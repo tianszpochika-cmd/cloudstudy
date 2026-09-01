@@ -1,0 +1,434 @@
+{
+  "taskId": "P1R-M1-017",
+  "draftOnly": false,
+  "canonicalTaskStatus": "ACCEPTED",
+  "sourceCommit": "600438218b35c1b5a9931dd16fa0ad210050c68d",
+  "artifactDigests": [
+    {
+      "path": "config/b26-event-runtime.json",
+      "algorithm": "sha256",
+      "digest": "204fbfc7435afd72ea704cc212534a15a266699667de6dd58e09c6fa865846a9"
+    },
+    {
+      "path": "config/g1-contract-data.json",
+      "algorithm": "sha256",
+      "digest": "054e255b52aabedf6712e6ee1aa5a5d99219c377c1a8979447adccc484da2694"
+    },
+    {
+      "path": "config/p1r-analytics-ingress.v1.json",
+      "algorithm": "sha256",
+      "digest": "31b337529b2424bb926b737aef3fc54d5524433172ee56bb4904330ec29c09d3"
+    },
+    {
+      "path": "config/p1r-learner-planning-contract.v1.json",
+      "algorithm": "sha256",
+      "digest": "c78b255e5b525f67ce377388d1e9936b5cea1ad83bab62f91cb07840e389827d"
+    },
+    {
+      "path": "config/p1r-m1-017-audit-export.v1.json",
+      "algorithm": "sha256",
+      "digest": "84ae0e185c903973381e397637ddcb72455a8355867a4ad87dbd7815f104ab6a"
+    },
+    {
+      "path": "config/p1r-privacy-analytics-audit-contract.v1.json",
+      "algorithm": "sha256",
+      "digest": "fb397b204f1abef8c743da4729e295c4ed7dd66a0879a8d31d21d3039fc97393"
+    },
+    {
+      "path": "config/p1r-privacy-lifecycle-contract.v1.json",
+      "algorithm": "sha256",
+      "digest": "a160c4bd8a843024e89d747d35b8f832d1ce0cd537cff3454a738f765f754509"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/phase1-business-operation/m1-017-privacy-lifecycle-contract.md",
+      "algorithm": "sha256",
+      "digest": "088b5716fda6a416df2c23635958feac6bb30051be3c1d78fe5649dfd40685e0"
+    },
+    {
+      "path": "docs/07-operations/analytics-ingress.md",
+      "algorithm": "sha256",
+      "digest": "98b84f7f9ca6bab4b2da44dd86fe4d47b9989faa0e3193afb8fa442d05d9ff19"
+    },
+    {
+      "path": "docs/07-operations/g-gate-validation.md",
+      "algorithm": "sha256",
+      "digest": "93a04b617d4a395ee0d4799032be275c3727a82f01cbf8468327df6a3557deda"
+    },
+    {
+      "path": "docs/07-operations/p1r-m1-017-audit-export.md",
+      "algorithm": "sha256",
+      "digest": "dc9adcd34363dfe0ec1cd1c650e79b4d36ef8c9990d6eab29ab3bec355b6e8ca"
+    },
+    {
+      "path": "package.json",
+      "algorithm": "sha256",
+      "digest": "93dbb28442c74f803b520b39e75f74c6da25f4f09665bebb251582982a4deb60"
+    },
+    {
+      "path": "packages/api-client/src/generated/index.ts",
+      "algorithm": "sha256",
+      "digest": "f7232952798fab08303d4b6032e63c66e8499fbbbb9eb71ee107638ba4d327cf"
+    },
+    {
+      "path": "packages/contracts/events/v1/catalog.json",
+      "algorithm": "sha256",
+      "digest": "f58e0b7117b73671451d96ea5cbf967546ef5c150ea097394210924a3180e612"
+    },
+    {
+      "path": "packages/contracts/events/v1/fragments/m1-017-privacy-deletion-v2.events.json",
+      "algorithm": "sha256",
+      "digest": "9c033bf38aafadecf0bdc9a7713fa92428bfb45f5008e65219f833bab73ae310"
+    },
+    {
+      "path": "packages/contracts/events/v1/reliability-policy.json",
+      "algorithm": "sha256",
+      "digest": "fe4e06e32daa5281b62b37fcc2abd208b44924d12ef56f22e50f5a1412fb7aad"
+    },
+    {
+      "path": "packages/contracts/fragments/b1/b1-onboarding-privacy.openapi.json",
+      "algorithm": "sha256",
+      "digest": "5929702999c52ecafbd220cb0d6600eb6a792432a706011140fe95b2795d65bf"
+    },
+    {
+      "path": "packages/contracts/fragments/b13/b13-commerce-admin-analytics.openapi.json",
+      "algorithm": "sha256",
+      "digest": "3b9f80576b3e2b1d8ef17ee4ae9f71fec83fccc057ac912983441b52d9e0725e"
+    },
+    {
+      "path": "packages/contracts/fragments/m1-017-audit-export.openapi.json",
+      "algorithm": "sha256",
+      "digest": "998c0eb661b19343de604214eb91626ea4c16a88c777d640e698943fe53a3a52"
+    },
+    {
+      "path": "packages/contracts/fragments/m1-017-privacy-lifecycle.openapi.json",
+      "algorithm": "sha256",
+      "digest": "df498e0a8054cde590c59f967164e3f0bc4613f0d5fafa20e2f4b3108c257196"
+    },
+    {
+      "path": "packages/contracts/fragments/p1r-gateway-boundary.openapi.json",
+      "algorithm": "sha256",
+      "digest": "213e234425858f94c3d66c1747a582d8b9300bbb919ecba83881eea923d4fd10"
+    },
+    {
+      "path": "packages/contracts/generated/events.ts",
+      "algorithm": "sha256",
+      "digest": "726fd61443245b51068962e8ad5e1a0afc1537538952bc50d1d7226e5e561192"
+    },
+    {
+      "path": "packages/contracts/generated/openapi.ts",
+      "algorithm": "sha256",
+      "digest": "be8ccc024e733eaaa7c0c9d7d0ad0992128bbb3829a2c0ee32e1a0a2dd5f9c17"
+    },
+    {
+      "path": "packages/contracts/openapi/v1/openapi.json",
+      "algorithm": "sha256",
+      "digest": "5affe3ab3f9a2a26375d9378ca38fa8c764725991658a6077be37532d12bd889"
+    },
+    {
+      "path": "scripts/audit/p1r-content-lifecycle-check.mjs",
+      "algorithm": "sha256",
+      "digest": "9b80c8193c630c3460ac3243bea5b37d6f63ed68e435e24286898f2c58f4af59"
+    },
+    {
+      "path": "scripts/audit/p1r-event-governance-check.mjs",
+      "algorithm": "sha256",
+      "digest": "ed80258011a058b34554e8bf7fff52529bb6d2b3584a7037302fa2f118a96fbc"
+    },
+    {
+      "path": "scripts/audit/p1r-event-reliability-check.mjs",
+      "algorithm": "sha256",
+      "digest": "8e47f6c80712d0fb2d22e6781973126e8656f1f18689c13ad3d3e0aea31133eb"
+    },
+    {
+      "path": "scripts/audit/p1r-gateway-contract-check.mjs",
+      "algorithm": "sha256",
+      "digest": "15b99c291fd7155575d5b36e84f1ddf706103ee6ebe442a3d6454c1a65136441"
+    },
+    {
+      "path": "scripts/audit/p1r-learner-planning-contract-check.mjs",
+      "algorithm": "sha256",
+      "digest": "f7934efc21bf3942e66f863e127d92787f6d9c00cce98991900849475a2317b0"
+    },
+    {
+      "path": "scripts/audit/p1r-notification-sync-support-contract-check.mjs",
+      "algorithm": "sha256",
+      "digest": "111dd981da6790a57c946ba2fb17ca8f53c777ce9bc3b569489abe40bf83ae76"
+    },
+    {
+      "path": "scripts/audit/p1r-privacy-analytics-audit-contract-check.mjs",
+      "algorithm": "sha256",
+      "digest": "52da448065d2635842bde7f6ccaf08cd6b0b965f4eb8c22f73b41968be5b1e9d"
+    },
+    {
+      "path": "scripts/audit/p1r-privacy-lifecycle-contract-check.mjs",
+      "algorithm": "sha256",
+      "digest": "99bb4f1d95870e3cef3e223bc7f197d4ecc6aa927920cc76b1d1562abd667df6"
+    },
+    {
+      "path": "scripts/contracts/compatibility-diff.mjs",
+      "algorithm": "sha256",
+      "digest": "ca848cff58901b1a4229eb8da3ecc396f5ae77c53140b22defb7e62a0274123c"
+    },
+    {
+      "path": "scripts/contracts/compatibility-git-baseline.mjs",
+      "algorithm": "sha256",
+      "digest": "43304abc80596eb3bbefbecc4228389d18efcbdec98b5495a37077a75b33d370"
+    },
+    {
+      "path": "scripts/contracts/event-catalog-policy.mjs",
+      "algorithm": "sha256",
+      "digest": "4c40a543637e6d46ca4dad13bc73c32dd7f3a1a0d867d53c57ad90a3c917a571"
+    },
+    {
+      "path": "scripts/contracts/merge-b1-fragments.mjs",
+      "algorithm": "sha256",
+      "digest": "01206ff3c134f075e8b47c31576687e7f88fc08450b30e18270336111bb9ebd8"
+    },
+    {
+      "path": "scripts/runtime/validate-b26-event-runtime.mjs",
+      "algorithm": "sha256",
+      "digest": "ce68542fa98a718a49a1680874311d3843bf81b16a6df32ba2cf1c8b77001e00"
+    },
+    {
+      "path": "tests/b26/b26-event-runtime.test.mjs",
+      "algorithm": "sha256",
+      "digest": "2165b7d49c766c2def3d71a204416012d1fa507e4a0b88bf4b3fe6a1f6dd341f"
+    },
+    {
+      "path": "tests/g/g1-contract-data.test.mjs",
+      "algorithm": "sha256",
+      "digest": "27b9dd7db5abee68dd064d43515c36719e2d4758caee525182c62a40edcf854d"
+    },
+    {
+      "path": "tests/p1r/m1-017/p1r-m1-017-audit-export.test.mjs",
+      "algorithm": "sha256",
+      "digest": "8b5863f75119cc944d432404169a1adc61b4cbd886338e15457d054f0c7e027c"
+    },
+    {
+      "path": "tests/p1r/p1r-analytics-ingress-contract.test.mjs",
+      "algorithm": "sha256",
+      "digest": "60b486cf6c09da5f2b31f0c0ee1829ec611e2510b0459784b88ee47f77314949"
+    },
+    {
+      "path": "tests/p1r/p1r-content-lifecycle.test.mjs",
+      "algorithm": "sha256",
+      "digest": "ce5079e55e3516fbd2771f1b06346149b4cab3697fee8eb1b86db96d2faf9ff6"
+    },
+    {
+      "path": "tests/p1r/p1r-contract-tooling.test.mjs",
+      "algorithm": "sha256",
+      "digest": "a8746e7e41bab32feccf5e624478dd6edc2e558336d4d1b48521894af4bdbc03"
+    },
+    {
+      "path": "tests/p1r/p1r-event-governance.test.mjs",
+      "algorithm": "sha256",
+      "digest": "13a5fa86edd5f4ac702d5269c94718e3ecaa36ad4146c9193ee23588f127b62f"
+    },
+    {
+      "path": "tests/p1r/p1r-event-reliability.test.mjs",
+      "algorithm": "sha256",
+      "digest": "3449b7ab9b04f111b8332a294c03ac748ebdd484f7e6bc06c98e7a84954994c7"
+    },
+    {
+      "path": "tests/p1r/p1r-gateway-contract.test.mjs",
+      "algorithm": "sha256",
+      "digest": "ae56196c8d89c9710abe2b13a167cfb5dc9e7c96f530c8a05d9db2b4977472a1"
+    },
+    {
+      "path": "tests/p1r/p1r-learner-planning-contract.test.mjs",
+      "algorithm": "sha256",
+      "digest": "22ece676c46a93d71703c1317111ce23db391813681c561bdfd0d3317e83e900"
+    },
+    {
+      "path": "tests/p1r/p1r-m1-017-compatibility.test.mjs",
+      "algorithm": "sha256",
+      "digest": "33e53bd15fb6e99b4b8b29906badf3445309afaa85b924109a4abbd98c44cd2c"
+    },
+    {
+      "path": "tests/p1r/p1r-privacy-analytics-audit-contract.test.mjs",
+      "algorithm": "sha256",
+      "digest": "2d6a9c0e3e33b811a55b2cecb19fae9c0685b360939de58d0481d4f34a24749f"
+    },
+    {
+      "path": "tests/p1r/p1r-privacy-lifecycle-contract.test.mjs",
+      "algorithm": "sha256",
+      "digest": "ed2e37ea72b8345a684cda51fc1b36431f8b0ddb0773358e090125a2300202d2"
+    }
+  ],
+  "environment": {
+    "kind": "repository-contract-governance",
+    "branch": "dev",
+    "sourceCheckpoint": "b1d79a09e266179988270e1832a1309a1cb4af4d",
+    "taskStartCommit": "6245ca42ef254ecc4a45e86e57a5c65922c69c22",
+    "sourceRange": "6245ca42ef254ecc4a45e86e57a5c65922c69c22..600438218b35c1b5a9931dd16fa0ad210050c68d",
+    "acceptedContractBaseline": "463c4b238caceb1592bff6c61327c00ab9bac922",
+    "immutableGovernanceBaseline": "868c2177f62b6d2cf613bed702686dddcfe6943f",
+    "sourceContractBaseline": "b1d79a09e266179988270e1832a1309a1cb4af4d",
+    "previousPromotion": "P1R-M1-016",
+    "promotion": "M1-017_PRIVACY_ANALYTICS_AUDIT_PROMOTION",
+    "contractMaturity": "D2_CONTRACT_READY",
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+    "b26RuntimeGate": "static-only",
+    "b26RuntimeStatus": "pending",
+    "b26DefaultDecision": "NO-GO",
+    "m2RuntimeTasks": {
+      "P1R-M2-004": "NOT_COMPLETED",
+      "P1R-M2-005": "NOT_COMPLETED",
+      "P1R-M2-006": "NOT_COMPLETED"
+    },
+    "m6RuntimeTasks": "NOT_COMPLETED",
+    "m8E2eTask": "NOT_COMPLETED",
+    "releaseBlocker": "P1R-M0-006 BLOCKED"
+  },
+  "startedAt": "2026-09-01T09:28:15+08:00",
+  "finishedAt": "2026-09-01T11:28:58+08:00",
+  "actors": [
+    "root-coordinator",
+    "m1_017_privacy_deletion",
+    "m1_017_analytics_ingress",
+    "m1_017_audit_export",
+    "m1_017_integration_redteam"
+  ],
+  "sourceIds": [
+    "P1R-M1-017",
+    "JNY-P1-15",
+    "INT-P1-015",
+    "INT-P1-016",
+    "INT-P1-018",
+    "CONTRACT-GAP-ANL-001",
+    "CONTRACT-GAP-PRIVACY-DELETION",
+    "CONTRACT-GAP-PRIVACY-EXPORT",
+    "CONTRACT-GAP-USR-DEL-001",
+    "EVENT-GAP-BIND-PRIV-001",
+    "EVENT-GAP-USR-DEL-001"
+  ],
+  "journeys": [
+    "JNY-P1-15"
+  ],
+  "pages": [],
+  "rules": [
+    "P1R_PRIVACY_LIFECYCLE_V1",
+    "P1R_ANALYTICS_INGRESS_V1",
+    "P1R_AUDIT_EXPORT_V1"
+  ],
+  "integrations": [
+    "INT-P1-015",
+    "INT-P1-016",
+    "INT-P1-018"
+  ],
+  "e2eScenarios": [],
+  "serviceOwners": [
+    "learner-service",
+    "iam-service",
+    "analytics-service",
+    "audit-service",
+    "workflow-service",
+    "api-gateway"
+  ],
+  "dataOwners": [
+    "learner-service.privacy",
+    "iam-service",
+    "analytics-service",
+    "audit-service"
+  ],
+  "statusTrajectory": [
+    "PLANNED",
+    "READY",
+    "IN_PROGRESS",
+    "REVIEW",
+    "REWORK",
+    "IN_PROGRESS",
+    "REVIEW",
+    "ACCEPTED"
+  ],
+  "reviewHistory": [
+    {
+      "round": 1,
+      "sourceCommit": "600438218b35c1b5a9931dd16fa0ad210050c68d",
+      "reviewer": "agent:m1_017_integration_redteam:gpt-5.6-luna:max",
+      "decision": "REWORK",
+      "p1": 1,
+      "p2": 0,
+      "details": "Pre-commit adversarial review found synchronized public audit-export, sensitive schema-field and root runtime-promotion bypasses; the coordinator repaired source/canonical/Gateway guards and added fail-closed mutations before the source commit."
+    },
+    {
+      "round": 2,
+      "sourceCommit": "600438218b35c1b5a9931dd16fa0ad210050c68d",
+      "reviewer": "agent:m1_017_final_review:gpt-5.6-luna:max",
+      "decision": "ACCEPTED",
+      "p1": 0,
+      "p2": 0,
+      "details": "Independent final review accepted the source-bound privacy export, 168-hour account deletion, analytics ingress and internal audit export D2 contracts. Specialized, contract, compatibility, event, Gateway, B26, 1347/1347 P1R and 7/7 typecheck gates passed without runtime promotion."
+    }
+  ],
+  "commands": [
+    "pnpm p1r:privacy-analytics-audit-contract:check -- --json",
+    "node --test tests/p1r/p1r-privacy-lifecycle-contract.test.mjs tests/p1r/p1r-analytics-ingress-contract.test.mjs tests/p1r/p1r-privacy-analytics-audit-contract.test.mjs tests/p1r/m1-017/p1r-m1-017-audit-export.test.mjs",
+    "pnpm test:p1r",
+    "pnpm contracts:merge:check",
+    "pnpm contracts:generate:check",
+    "pnpm contracts:validate",
+    "pnpm contracts:compatibility:git -- --ref 463c4b238caceb1592bff6c61327c00ab9bac922 --governance-ref 868c2177f62b6d2cf613bed702686dddcfe6943f --kind all --json",
+    "pnpm contracts:compatibility:git -- --ref b1d79a09e266179988270e1832a1309a1cb4af4d --governance-ref 868c2177f62b6d2cf613bed702686dddcfe6943f --kind all --json",
+    "pnpm p1r:event-governance:check",
+    "pnpm p1r:event-reliability:check",
+    "pnpm p1r:gateway-contract:check",
+    "node scripts/runtime/validate-b26-event-runtime.mjs --mode static",
+    "pnpm typecheck",
+    "pnpm plan:p1r:check",
+    "pnpm p1r:ci:check",
+    "pnpm p1r:evidence:check -- --json",
+    "git diff --check 6245ca42ef254ecc4a45e86e57a5c65922c69c22 600438218b35c1b5a9931dd16fa0ad210050c68d"
+  ],
+  "results": [
+    {
+      "check": "privacy-analytics-audit-contract",
+      "status": "PASS",
+      "details": "17 canonical operations and 5 canonical events pass 79/79 specialized checks at D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED; deletion coolingOffHours is exactly 168."
+    },
+    {
+      "check": "contract-event-and-compatibility",
+      "status": "PASS",
+      "details": "26 OpenAPI fragments and 19 event fragments merge without drift. OpenAPI 427 operations/783 schemas, 188 events/138 payload schemas and AsyncAPI 47 channels/165 operations validate; both fixed baselines are compatible."
+    },
+    {
+      "check": "gateway-b26-and-security-boundary",
+      "status": "PASS",
+      "details": "Gateway audit passes 56 route rules, 365/365 public operations and 62/62 denied internal operations. B26 static validation passes 12 topics, 47 routes and 42 consumer groups while remaining pending/NO-GO."
+    },
+    {
+      "check": "p1r-regression-and-typecheck",
+      "status": "PASS",
+      "details": "Full P1R regression passes 1347/1347 and workspace typecheck passes 7/7; all relevant specialized static gates pass."
+    },
+    {
+      "check": "final-independent-review",
+      "status": "PASS",
+      "details": "agent:m1_017_final_review:gpt-5.6-luna:max accepted 600438218b35c1b5a9931dd16fa0ad210050c68d with P1/P2=0/0 and made no repository changes."
+    },
+    {
+      "check": "runtime-boundary",
+      "status": "PASS",
+      "details": "Database, object storage, IAM/JWT/JWKS, live session revocation, Kafka/Outbox/consumer, workflow, browser/device and E2E evidence remain unverified."
+    }
+  ],
+  "requestIds": [],
+  "traceIds": [],
+  "eventIds": [],
+  "rollbackEvidence": [
+    {
+      "status": "PASS",
+      "details": "Revert the M1-017 Evidence/tracking commits and then 600438218b35c1b5a9931dd16fa0ad210050c68d in reverse order; rerun specialized, contract, compatibility, event, Gateway, B26, P1R, typecheck, plan, gap, Evidence and diff gates. Source rollback is not runtime data or infrastructure rollback."
+    }
+  ],
+  "knownGaps": [
+    "P1R-M2-004/005/006 remain responsible for real owner schema/grants/transactions, Kafka/Outbox/consumer and workflow recovery evidence.",
+    "P1R-M6 and P1R-M8 retain real client, privacy workflow and end-to-end runtime ownership.",
+    "Real database, object storage, IAM/JWT/JWKS, live session revocation, Kafka, workflow, browser/device and E2E behavior are not verified.",
+    "B1/B13 remain historical input only and must not be dual-published or promoted as current runtime.",
+    "B26 remains static-only, pending and NO-GO; P1R-M0-006 remains BLOCKED.",
+    "P1R-M1-018 must resolve all remaining Contract/Event GAP semantics without mechanically promoting conditional IAM events."
+  ],
+  "reviewer": "agent:m1_017_final_review:gpt-5.6-luna:max",
+  "decision": "ACCEPTED"
+}

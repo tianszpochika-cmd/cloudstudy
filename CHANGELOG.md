@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1R-M1-017-ACCEPT-20260901] 接受隐私导出、168 小时账号删除冷静期/owner receipt、Analytics ingress 与 internal-only 审计导出 D2 契约：最终实现源 `600438218b35c1b5a9931dd16fa0ad210050c68d` 经独立 Luna Max reviewer 判定 `ACCEPT`、P1/P2=`0/0`；专项 `79/79`、P1R `1347/1347`、typecheck `7/7`，contracts/compatibility/event/Gateway/B26 static 均 PASS。六个目标 GAP 仅按 `D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED` 关闭；真实 DB、对象存储、IAM/JWT、Kafka、workflow、浏览器/E2E 仍未验证，B26 继续 pending/NO-GO，M0-006 继续 `BLOCKED`。
+
 - [P1R-M1-017-START-20260901] 启动 Phase 1 隐私导出、账号删除冷静期/owner receipt、analytics ingress 与审计导出 D2 契约：以已同步的 `dev@b1d79a09e266179988270e1832a1309a1cb4af4d` 为不可变来源检查点，冻结 `learner-service.privacy`、`iam-service`、`analytics-service`、`audit-service` 与 workflow 编排边界，以及本人二次确认、7 天冷静期、短时下载、过期、脱敏、同意/删除联动、合法保留和部分失败恢复。该条只记录 `IN_PROGRESS`；B1/B13 与 core-api 继续 historical-only，真实数据库、对象存储、Kafka、workflow、PEP、浏览器/E2E 均未验证，B26 继续 `static-only/pending/NO-GO`，M0-006 继续 `BLOCKED`。
 
 - [P1R-M1-016-EVIDENCE-D-20260831] 完成 M1-016 C/D Evidence 集成：C 检查点 `cbf25c329dba70c29a793d30908f53724a05f371` 写入 M1-016 canonical Evidence、关闭四个 INF/support/notification GAP，并把 M1-001..009、011..015 的 current-source 摘要绑定到审计实现源 `9a38ff2185286bc8e279f785ff3fad5de30de569`；D 提交 `034a36973656721dbb1e7d2dce764aa5baddb8e2` 将唯一包含 GAP registry 的 M1-010 摘要绑定到 C。原任务 provenance/reviewHistory 均保留；全局 Evidence Gate 在干净 D 提交上 PASS（108 tasks、23 ACCEPTED、1 BLOCKED、84 PLANNED、0 errors）。结论仍仅为 `D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`，B26、M2/M6/M8 与 M0-006 边界不变。

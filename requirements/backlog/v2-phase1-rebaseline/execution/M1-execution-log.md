@@ -4,7 +4,7 @@
 
 ## 当前任务
 
-- `P1R-M1-001` 至 `P1R-M1-016` 均为 `ACCEPTED`；各自原实现源、完成时间、reviewer 与兼容基线保存在 canonical manifest `provenance`。M1-016 最终源码为 `9a38ff2185286bc8e279f785ff3fad5de30de569`，独立 reviewer `agent:m1_016_independent_review:gpt-5.6-luna:max` 判定 `ACCEPT`，P1/P2=`0/0`。C=`cbf25c329dba70c29a793d30908f53724a05f371`、D=`034a36973656721dbb1e7d2dce764aa5baddb8e2`，全局 Evidence Gate PASS；旧任务原始成果未被改写。`P1R-M1-017` 已从 `dev@b1d79a09e266179988270e1832a1309a1cb4af4d` 启动为 `IN_PROGRESS`。
+- `P1R-M1-001` 至 `P1R-M1-017` 均为 `ACCEPTED`；各自原实现源、完成时间、reviewer 与兼容基线保存在 canonical manifest `provenance`。M1-017 最终源码为 `600438218b35c1b5a9931dd16fa0ad210050c68d`，独立 reviewer `agent:m1_017_final_review:gpt-5.6-luna:max` 判定 `ACCEPT`，P1/P2=`0/0`；旧任务原始成果未被改写，运行状态继续为 `NOT_RUNTIME_VERIFIED`。
 - `P1R-M1-010`：`ACCEPTED`；不可变来源检查点 `760621e45b9adc95a6aa40fb1678a8d3ebc87797`，原最终源码 `cd92378bd8ba0c57c920fc6e79db52de717b0b05`，Evidence `evidence/p1r/m1/P1R-M1-010/manifest.json`；M1-016 post-C D 阶段已把其 current-source manifest 与全部 artifactDigests 绑定至 `cbf25c329dba70c29a793d30908f53724a05f371`，本轮审计实现源为 `9a38ff2185286bc8e279f785ff3fad5de30de569`；原复审 P1/P2 为 `0/0`。
 - `P1R-M1-011`：`ACCEPTED`；不可变来源检查点 `14da16c00add0c2cbcd0cb53ec141b1c4d2b0fe1`，最终源码 `daa543b369c0e369a8f70e2f79278eb934ff9a09`，Evidence `evidence/p1r/m1/P1R-M1-011/manifest.json`；独立 reviewer `agent:m1_011_independent_review:gpt-5.6-luna:max` 最终接受，P1/P2 为 `0/0`。
 - `P1R-M1-012`：`ACCEPTED`；不可变来源检查点 `270b0dfbf8dbec1329b8dc7036ee3e7490a8ffb3`，最终源码 `aac5c3462e01f3b3bec34bb13e7cd9f74ff34f72`，Evidence `evidence/p1r/m1/P1R-M1-012/manifest.json`；独立 reviewer `agent:m1_012_independent_review:gpt-5.6-luna:max` 接受，P1/P2 为 `0/0`。
@@ -197,6 +197,15 @@
 3. audit-export：冻结 auditor/tenant scope、异步导出、短时下载、过期、字段脱敏、不可变审计和失败恢复。
 
 三条实施轨道只修改互斥 source fragment/config/test/docs；canonical catalog/AsyncAPI、Gateway、B26、生成物、compatibility、GAP registry、状态、Evidence、提交与推送由统筹 Agent 独占。结果只能是 `D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`，不得提前关闭 M2/M6/M8 运行责任；M0-006 继续 `BLOCKED`。
+
+## M1-017 执行与结果摘要
+
+- 最终验收：`600438218b35c1b5a9931dd16fa0ad210050c68d` 经 `agent:m1_017_final_review:gpt-5.6-luna:max` 独立终验 `ACCEPT`，P1/P2=`0/0`；Evidence 为 `evidence/p1r/m1/P1R-M1-017/manifest.json`。
+- 结果：隐私/Analytics/审计专项 `79/79`、全量 P1R `1347/1347`、typecheck `7/7`；contracts、双固定兼容、event governance/reliability、Gateway、B26 static、plan、CI 与 diff 门禁均 PASS。
+- 规模：OpenAPI `427 operations / 783 schemas`，events `188 / 138 payload schemas`，AsyncAPI `47 channels / 165 operations`；Gateway `365/365 public`、`62/62 internal deny`；B26 `12 topics / 47 routes / 42 groups`。
+- 安全返工：预提交对抗审查发现并关闭 public audit-export、敏感 schema field 与 root runtime-promotion 同步绕过；最终 reviewer 复测无 P1/P2。
+- GAP：四个 Contract 与两个 Event GAP 只按 D2 Evidence 关闭；真实数据库、对象存储、IAM/JWT、Kafka/Outbox、workflow、浏览器/E2E 继续由 M2/M6/M8 负责。
+- 边界：`D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`；B26 继续 `static-only/pending/NO-GO`，M0-006 继续 `BLOCKED`。下一任务为 `P1R-M1-018` D2 总 Gate。
 
 ## M1-011 执行轨道
 

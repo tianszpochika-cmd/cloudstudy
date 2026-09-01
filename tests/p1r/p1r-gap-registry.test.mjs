@@ -24,7 +24,7 @@ test('canonical GAP registry matches the plan matrix and task ledger', () => {
   const report = validateGapRegistry({ root });
   assert.equal(report.result, 'PASS', report.errors?.join('\n'));
   assert.equal(report.gapCount, 45);
-  assert.deepEqual(report.statusCounts, { OPEN: 37, CLOSED: 8 });
+  assert.deepEqual(report.statusCounts, { OPEN: 31, CLOSED: 14 });
 });
 
 test('missing, duplicate and unknown GAP records fail closed', () => {

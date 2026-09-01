@@ -1,8 +1,10 @@
 # 当前跨电脑交接（dev）
 
-更新时间：2026-08-31（Asia/Shanghai）。本文件只说明如何恢复当前开发检查点，不替代任务台账或 Evidence manifest。
+更新时间：2026-09-01（Asia/Shanghai）。本文件只说明如何恢复当前开发检查点，不替代任务台账或 Evidence manifest。
 
 M0 canonical Evidence 的实现源提交：`0f8b60ae4e83d0f31d891eed8d9383c007485130`。交接提交在其后，只增加任务状态、manifest、Gate 摘要与交接记录。
+
+M1-017 隐私导出、168 小时账号删除冷静期/owner receipt、Analytics ingress 与 internal-only 审计导出 D2 契约已接受：最终实现源 `600438218b35c1b5a9931dd16fa0ad210050c68d`，独立 reviewer `agent:m1_017_final_review:gpt-5.6-luna:max` 判定 `ACCEPT`，P1/P2=`0/0`。专项 `79/79`、P1R `1347/1347`、typecheck `7/7`；六个目标 GAP 仅按 canonical D2 Evidence 关闭。共享制品 current-source 摘要已前移到该实现源；M1-010 因包含 GAP registry 摘要继续采用 post-C 单独绑定。真实 DB、对象存储、IAM/JWT、Kafka、workflow、浏览器/E2E 未验证，B26 仍 pending/NO-GO，M0-006 仍 `BLOCKED`。
 
 M1-001 canonical API 基座的原实现源提交：`96e1b541cdda8e9e5ad02bc79ea0c5b9032064c4`；共享制品最新在 `9a38ff2185286bc8e279f785ff3fad5de30de569` 完成 M1-016 current-source revalidation，验收状态与摘要以 `evidence/p1r/m1/P1R-M1-001/manifest.json` 为准。
 
@@ -124,8 +126,8 @@ pnpm --dir apps/mobile test:b12
 
 ## 5. 推荐接手顺序
 
-1. 先核对 `dev` 包含 M1-016 审计实现源 `9a38ff2185286bc8e279f785ff3fad5de30de569`、canonical Evidence、current-source revalidation 与 M1-010 post-C binding，并复核 `pnpm plan:p1r:check`、`node scripts/audit/p1r-gap-registry-check.mjs --json` 与 `pnpm p1r:evidence:check`。
-2. 下一依赖就绪任务为 `P1R-M1-017`：冻结隐私导出、账号删除冷静期/receipt、analytics ingress 与审计导出契约；先建立不可变来源检查点并保持 privacy/analytics/audit owner、脱敏、同意/删除联动和运行边界失败关闭。
+1. 先核对 `dev` 包含 M1-017 审计实现源 `600438218b35c1b5a9931dd16fa0ad210050c68d`、canonical Evidence、current-source revalidation 与 M1-010 post-C binding，并复核 `pnpm plan:p1r:check`、`node scripts/audit/p1r-gap-registry-check.mjs --json` 与 `pnpm p1r:evidence:check`。
+2. 下一依赖就绪任务为 `P1R-M1-018`：运行 D2 总 Gate，核对 24 个 Contract、15 个原子 Event 与 1 个绑定族别名；三项 IAM 条件 Event 必须先作明确 canonical event 或不需要跨域事件的设计决定，禁止机械关 GAP。
 3. 每次修改公共 API、事件、数据 owner 或迁移责任后，先从最近已接受 manifest 选择不可变 baseline；M1-006 的历史基线是 `463c4b2`，其首次引入的治理字段由固定 `868c217` 保护，不得回退到旧 B/DEV/G 快照或移动治理基线。
 4. 每个任务先改契约与政策，再更新生成物/测试，最后在当前源提交生成 canonical manifest；不要继承旧 B/DEV/G 的完成状态。
 5. DCloud 发布官方 Vite 6.4.3+ 兼容编译器族后，单独恢复 `P1R-M0-006` 并重跑 H5/App/mp-weixin 与完整供应链 Gate。

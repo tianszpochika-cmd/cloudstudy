@@ -5,7 +5,7 @@
 ## 当前检查点
 
 - 工作分支：`dev`。
-- 当前台账计数：`23 ACCEPTED / 1 BLOCKED / 1 IN_PROGRESS / 83 PLANNED`（共 108 项）。
+- 当前台账计数：`24 ACCEPTED / 1 BLOCKED / 0 IN_PROGRESS / 83 PLANNED`（共 108 项）。
 - M0 实现范围已经完成统一集成；`P1R-M0-001`、`002`、`003`、`004`、`005`、`007`、`008` 已接受。
 - `P1R-M0-006` 的版本清单、锁文件、许可证与 SBOM 机制已完成，但严格安全 Gate 保持 `BLOCKED`：移动端 uni-app 工具链仍带有 1 个 Vite high 漏洞，未添加豁免、未强制覆盖不兼容的编译器 peer dependency。
 - M1 只允许从已接受的 `P1R-M0-008` 依赖边界开始做契约工作；M0 安全红灯解除前，不得把整个 M0 或任何发布 Gate 宣告为 PASS。
@@ -26,6 +26,8 @@
 - `P1R-M1-014` 已接受：原最终源码 `aab1fa24bb7d46e3dd730fe3801ab2e986301e0d`，独立 reviewer `agent:m1_014_final_review:gpt-5.6-luna:max` 判定 `ACCEPT`，P1/P2=`0/0`；共享制品已在 `9a38ff2185286bc8e279f785ff3fad5de30de569` 完成 M1-016 current-source revalidation。28/28 canonical routes、10/10 canonical events 与定点 161/161 通过；三项 GAM/SOC GAP 已按 D2 Evidence 关闭，B4/B12 v1 仍为 historical-only，真实 schema/Outbox/Kafka/WebSocket/browser/E2E 均未验证。
 - `P1R-M1-015` 已接受：最终源码 `f7a2e76fcc206c26f296ae6f1c2a4296d0a8a573`，独立 reviewer `agent:m1_015_requirements_review:gpt-5.6-luna:max` 判定 `ACCEPT`，P1/P2=`0/0`；13/13 routes、9/9 events、定点 146/146、P1R 1153/1153 通过。C/D Evidence 为 `b41af4a`/`d0cd4fc`；共享制品最新已在 `9a38ff2185286bc8e279f785ff3fad5de30de569` 完成 M1-016 current-source revalidation，原验收 provenance 保留。
 - `P1R-M1-016` 已接受：最终源码 `9a38ff2185286bc8e279f785ff3fad5de30de569`，独立 reviewer `agent:m1_016_independent_review:gpt-5.6-luna:max` 判定 `ACCEPT`，P1/P2=`0/0`；专项 `85/85`、generated-types `2/2`、tooling `59/59`、P1R `1261/1261`、typecheck `7/7` 通过。C/D Evidence 为 `cbf25c3`/`034a369`，全局 Evidence Gate PASS；四个通知/同步/客服 GAP 已按 D2 Evidence 关闭，运行仍为 `NOT_RUNTIME_VERIFIED`。
+- `P1R-M1-017` 已接受：最终源码 `600438218b35c1b5a9931dd16fa0ad210050c68d`，独立 reviewer `agent:m1_017_final_review:gpt-5.6-luna:max` 判定 `ACCEPT`，P1/P2=`0/0`；专项 `79/79`、P1R `1347/1347`、typecheck `7/7`，contracts/compatibility/event/Gateway/B26 static 均 PASS。六个隐私/删除/Analytics/审计 GAP 只按 D2 Evidence 关闭，运行仍为 `NOT_RUNTIME_VERIFIED`。
+- M1-017 接受后，`P1R-M1-001..009`、`P1R-M1-011..016` 的共享制品摘要已绑定到 `600438218b35c1b5a9931dd16fa0ad210050c68d` 并保留原 provenance；包含 GAP registry 的 M1-010 在 post-C 阶段单独重算。
 
 ## M0 记录索引
 
@@ -62,4 +64,4 @@
 | `P1R-M1-014` | `P1R-M1-014.md` | `ACCEPTED` |
 | `P1R-M1-015` | `P1R-M1-015.md` | `ACCEPTED` |
 | `P1R-M1-016` | `P1R-M1-016.md` | `ACCEPTED` |
-| `P1R-M1-017` | `P1R-M1-017.md` | `IN_PROGRESS` |
+| `P1R-M1-017` | `P1R-M1-017.md` | `ACCEPTED` |
