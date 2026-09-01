@@ -5,7 +5,7 @@
 ## 当前检查点
 
 - 工作分支：`dev`。
-- 当前台账计数：`25 ACCEPTED / 1 BLOCKED / 0 IN_PROGRESS / 82 PLANNED`（共 108 项）。
+- 当前台账计数：`25 ACCEPTED / 1 BLOCKED / 2 IN_PROGRESS / 80 PLANNED`（共 108 项）。
 - M0 实现范围已经完成统一集成；`P1R-M0-001`、`002`、`003`、`004`、`005`、`007`、`008` 已接受。
 - `P1R-M0-006` 的版本清单、锁文件、许可证与 SBOM 机制已完成，但严格安全 Gate 保持 `BLOCKED`：移动端 uni-app 工具链仍带有 1 个 Vite high 漏洞，未添加豁免、未强制覆盖不兼容的编译器 peer dependency。
 - M1 只允许从已接受的 `P1R-M0-008` 依赖边界开始做契约工作；M0 安全红灯解除前，不得把整个 M0 或任何发布 Gate 宣告为 PASS。
@@ -67,3 +67,12 @@
 | `P1R-M1-016` | `P1R-M1-016.md` | `ACCEPTED` |
 | `P1R-M1-017` | `P1R-M1-017.md` | `ACCEPTED` |
 | `P1R-M1-018` | `P1R-M1-018.md` | `ACCEPTED` |
+
+## M2 记录索引
+
+| 任务 | 执行记录 | canonical 状态 |
+|---|---|---|
+| `P1R-M2-001` | `P1R-M2-001.md` | `IN_PROGRESS` |
+| `P1R-M2-002` | `P1R-M2-002.md` | `IN_PROGRESS` |
+
+M2-001 与 M2-002 从 M1-018 已接受的 D2 边界并行启动；M2-003 依赖两者，不提前实现。进程内 Java 测试、静态配置与本地可启动性不能代替真实 Redis/MySQL/JWKS/upstream/浏览器/集群网络证据，未实证项继续标记 `NOT_RUNTIME_VERIFIED`。

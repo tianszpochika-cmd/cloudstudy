@@ -399,6 +399,30 @@
       "actor": "root-coordinator",
       "reason": "Source dea989ab48dcfa5190fac43ce0ba083ad9488f80 entered REWORK for the total gate timeout defect; c548b601caae41fecc417f44f2a3e8e2016332d0 fixed bounded execution. Evidence integration then exposed stale OPEN descriptions and manifests, repaired through 9820ff4c4cf4723050471426df11a0bdd091be20, 2a747ba3917acd92664911c6b4be070ff469e302 and C checkpoint 3ab5d50e5d22c02a8a8c1d1f92643e37528d85c1. Independent reviewer agent:m1_018_closure_fix_review:gpt-5.6-luna:max accepted C with P1/P2=0/0; runtime remains NOT_RUNTIME_VERIFIED.",
       "evidencePath": "evidence/p1r/m1/P1R-M1-018/manifest.json"
+    },
+    {
+      "taskId": "P1R-M2-001",
+      "path": [
+        "PLANNED",
+        "READY",
+        "IN_PROGRESS"
+      ],
+      "recordedAt": "2026-09-01T16:17:22+08:00",
+      "actor": "root-coordinator",
+      "reason": "M1-018 and the global Evidence Gate are accepted. Gateway implementation starts with a shared route/auth-class policy, credentialed browser Origin/Referer protection, Redis-oriented rate limiting and Java 25 process-level tests; real Redis/JWKS/upstream/browser/NetworkPolicy and durable audit remain NOT_RUNTIME_VERIFIED.",
+      "evidencePath": "requirements/backlog/v2-phase1-rebaseline/execution/P1R-M2-001.md"
+    },
+    {
+      "taskId": "P1R-M2-002",
+      "path": [
+        "PLANNED",
+        "READY",
+        "IN_PROGRESS"
+      ],
+      "recordedAt": "2026-09-01T16:17:22+08:00",
+      "actor": "root-coordinator",
+      "reason": "M1-018 and the global Evidence Gate are accepted. IAM implementation starts from the frozen RS256/JWKS, refresh rotation/replay, device session, adult gate, consent and policy boundaries; real MySQL/Redis and cross-process runtime remain NOT_RUNTIME_VERIFIED.",
+      "evidencePath": "requirements/backlog/v2-phase1-rebaseline/execution/P1R-M2-002.md"
     }
   ]
 }

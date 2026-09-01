@@ -7,7 +7,7 @@
 - 分支：`dev`。
 - M1-018 审计实现源：`2a747ba3917acd92664911c6b4be070ff469e302`；Evidence C 集成检查点：`3ab5d50e5d22c02a8a8c1d1f92643e37528d85c1`。
 - 独立终验：`agent:m1_018_closure_fix_review:gpt-5.6-luna:max` 已对 C 判定 `ACCEPT`，P1/P2=`0/0`。
-- 当前台账：`25 ACCEPTED / 1 BLOCKED / 0 IN_PROGRESS / 82 PLANNED`，共 108 项。
+- 当前台账：`25 ACCEPTED / 1 BLOCKED / 2 IN_PROGRESS / 80 PLANNED`，共 108 项。
 - M1-018 canonical Evidence：`evidence/p1r/m1/P1R-M1-018/manifest.json`。
 - C 阶段将 M1-001..009、11..017 的 current-source 摘要绑定到 `2a747ba`；D 阶段已将唯一包含 GAP registry 摘要的 M1-010 绑定到 C，并录入最终终验。
 
@@ -46,3 +46,9 @@
 3. 从 `P1R-M2-001` 和 `P1R-M2-002` 两条可并行轨道开始；它们验收后再进入 `P1R-M2-003`。
 4. 所有 Java 25 测试显式使用 `C:\Program Files\Java\jdk-25`；默认 PATH 上的 JDK 21 不是 M2 验收工具链。
 5. 没有真实运行环境的检查只能记为 `NOT_RUNTIME_VERIFIED`，不得改写为 PASS/GO。
+
+## 6. 当前执行中的 M2 轨道
+
+- `P1R-M2-001`：Gateway 进程内实现与 Java 25 测试正在进行；文件边界限定为 `services/api-gateway/**`。真实 Redis/JWKS/upstream/浏览器/NetworkPolicy 与 durable audit 仍待运行 Evidence。
+- `P1R-M2-002`：IAM 运行实现正在进行；文件边界优先限定为 `services/iam-service/**`。真实 MySQL/Redis、跨进程 Gateway/领域服务和故障恢复仍待运行 Evidence。
+- `P1R-M2-003` 仅做只读预研；必须等待 M2-001/M2-002 验收后才能转为实现。
