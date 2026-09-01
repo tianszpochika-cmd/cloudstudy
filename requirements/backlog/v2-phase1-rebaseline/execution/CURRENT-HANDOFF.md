@@ -5,11 +5,11 @@
 ## 1. 当前检查点
 
 - 分支：`dev`。
-- M1-018 Evidence C 集成候选源：`2a747ba3917acd92664911c6b4be070ff469e302`。
-- 独立终验：`c548b60` 原始源已 ACCEPT；`9820ff4` / `2a747ba` 分别因旧文档与未集成 manifest 返回 REWORK。当前等待 post-C 终验。
+- M1-018 审计实现源：`2a747ba3917acd92664911c6b4be070ff469e302`；Evidence C 集成检查点：`3ab5d50e5d22c02a8a8c1d1f92643e37528d85c1`。
+- 独立终验：`agent:m1_018_closure_fix_review:gpt-5.6-luna:max` 已对 C 判定 `ACCEPT`，P1/P2=`0/0`。
 - 当前台账：`25 ACCEPTED / 1 BLOCKED / 0 IN_PROGRESS / 82 PLANNED`，共 108 项。
 - M1-018 canonical Evidence：`evidence/p1r/m1/P1R-M1-018/manifest.json`。
-- C 阶段将 M1-001..009、11..017 的 current-source 摘要绑定到 `2a747ba`；post-C 终验后，D 阶段需将唯一包含 GAP registry 摘要的 M1-010 绑定到 C 提交并录入最终终验。
+- C 阶段将 M1-001..009、11..017 的 current-source 摘要绑定到 `2a747ba`；D 阶段已将唯一包含 GAP registry 摘要的 M1-010 绑定到 C，并录入最终终验。
 
 ## 2. M1-018 已完成的内容
 

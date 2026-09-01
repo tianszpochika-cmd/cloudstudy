@@ -353,7 +353,7 @@
     "releaseBlocker": "P1R-M0-006 BLOCKED"
   },
   "startedAt": "2026-09-01T11:43:25+08:00",
-  "finishedAt": "2026-09-01T15:39:29+08:00",
+  "finishedAt": "2026-09-01T15:58:02+08:00",
   "actors": [
     "root-coordinator",
     "m1_018_gate_hardening"
@@ -436,6 +436,15 @@
       "p1": 0,
       "p2": 1,
       "details": "The final source corrected all predecessor execution documents, but canonical M1-010/M1-011 manifest text was still outside the commit. Evidence C must integrate those records before final acceptance."
+    },
+    {
+      "round": 5,
+      "sourceCommit": "3ab5d50e5d22c02a8a8c1d1f92643e37528d85c1",
+      "reviewer": "agent:m1_018_closure_fix_review:gpt-5.6-luna:max",
+      "decision": "ACCEPTED",
+      "p1": 0,
+      "p2": 0,
+      "details": "Post-C independent review accepted the complete M1-018 integration. Registry, canonical owner Evidence, assessment/planning closure audits, 1408/1408 P1R regression and runtime honesty all passed; M1-010 digest rebinding remains the mechanical Evidence D step."
     }
   ],
   "commands": [
@@ -456,7 +465,8 @@
     "pnpm plan:p1r:check",
     "pnpm p1r:ci:check",
     "pnpm p1r:evidence:check -- --json",
-    "git diff --check 0b6b80038dbbf43e8d218750fcb39f49970703bb 2a747ba3917acd92664911c6b4be070ff469e302"
+    "git diff --check 0b6b80038dbbf43e8d218750fcb39f49970703bb 2a747ba3917acd92664911c6b4be070ff469e302",
+    "Post-C independent review: ACCEPTED at 3ab5d50e5d22c02a8a8c1d1f92643e37528d85c1"
   ],
   "results": [
     {
@@ -487,7 +497,7 @@
     {
       "check": "final-independent-review",
       "status": "PASS",
-      "details": "agent:m1_018_closure_fix_review:gpt-5.6-luna:max reviewed 2a747ba3917acd92664911c6b4be070ff469e302: source logic and documents passed, while final acceptance remained conditional on this Evidence C integration. The post-C review is recorded in the D-stage manifest update."
+      "details": "agent:m1_018_closure_fix_review:gpt-5.6-luna:max accepted integration checkpoint 3ab5d50e5d22c02a8a8c1d1f92643e37528d85c1 with P1/P2=0/0. Registry 40 CLOSED/5 OPEN, owner Evidence, assessment/planning closure audits, final total gate and P1R 1408/1408 passed; runtime remains NOT_RUNTIME_VERIFIED and B26 remains static-only/pending/NO-GO."
     },
     {
       "check": "runtime-boundary",

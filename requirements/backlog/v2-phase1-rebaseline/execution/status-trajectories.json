@@ -395,9 +395,9 @@
         "REVIEW",
         "ACCEPTED"
       ],
-      "recordedAt": "2026-09-01T14:40:33+08:00",
+      "recordedAt": "2026-09-01T15:58:02+08:00",
       "actor": "root-coordinator",
-      "reason": "Source dea989ab48dcfa5190fac43ce0ba083ad9488f80 entered REWORK for the total gate timeout defect; c548b601caae41fecc417f44f2a3e8e2016332d0 fixed bounded execution and was accepted. Evidence integration then exposed stale OPEN descriptions, repaired in 9820ff4c4cf4723050471426df11a0bdd091be20 and 2a747ba3917acd92664911c6b4be070ff469e302. Post-C final review is pending; runtime remains NOT_RUNTIME_VERIFIED.",
+      "reason": "Source dea989ab48dcfa5190fac43ce0ba083ad9488f80 entered REWORK for the total gate timeout defect; c548b601caae41fecc417f44f2a3e8e2016332d0 fixed bounded execution. Evidence integration then exposed stale OPEN descriptions and manifests, repaired through 9820ff4c4cf4723050471426df11a0bdd091be20, 2a747ba3917acd92664911c6b4be070ff469e302 and C checkpoint 3ab5d50e5d22c02a8a8c1d1f92643e37528d85c1. Independent reviewer agent:m1_018_closure_fix_review:gpt-5.6-luna:max accepted C with P1/P2=0/0; runtime remains NOT_RUNTIME_VERIFIED.",
       "evidencePath": "evidence/p1r/m1/P1R-M1-018/manifest.json"
     }
   ]
