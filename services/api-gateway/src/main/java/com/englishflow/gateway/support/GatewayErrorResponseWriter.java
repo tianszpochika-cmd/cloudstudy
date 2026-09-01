@@ -18,6 +18,7 @@ public final class GatewayErrorResponseWriter {
             return Mono.error(new IllegalStateException("gateway response is already committed"));
         }
 
+        exchange.getAttributes().putIfAbsent(GatewayAuditAttributes.REASON_CODE, error.code());
         exchange.getResponse().setStatusCode(HttpStatusCode.valueOf(error.status()));
         exchange.getResponse().getHeaders().setContentType(MediaType.APPLICATION_JSON);
         exchange.getResponse().getHeaders().setCacheControl("no-store");

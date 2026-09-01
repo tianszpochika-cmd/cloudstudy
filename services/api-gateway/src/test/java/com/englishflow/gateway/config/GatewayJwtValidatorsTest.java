@@ -15,7 +15,9 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtException;
 
 import java.time.Instant;
+import java.util.Map;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -46,7 +48,9 @@ class GatewayJwtValidatorsTest {
                 .issuer(ISSUER)
                 .audience(List.of(AUDIENCE))
                 .issuedAt(now.minusSeconds(600))
+                .notBefore(now.minusSeconds(600))
                 .expiresAt(now.minusSeconds(300))
+                .claim("jti", "expired-token-1")
                 .claim("token_type", "access")
                 .claim("scope", "learner.profile.read")
                 .build();
@@ -55,11 +59,37 @@ class GatewayJwtValidatorsTest {
     }
 
     @Test
+    void rejectsEveryMissingRequiredAccessClaim() {
+        var validator = GatewayJwtValidators.forSecurity(security());
+
+        for (String claim : List.of("iss", "sub", "aud", "exp", "iat", "nbf", "jti", "token_type", "scope")) {
+            assertTrue(validator.validate(jwt(ISSUER, AUDIENCE, claims -> claims.remove(claim))).hasErrors(),
+                    () -> "expected missing " + claim + " to be rejected");
+        }
+    }
+
+    @Test
+    void rejectsIncorrectRequiredAccessClaims() {
+        var validator = GatewayJwtValidators.forSecurity(security());
+        Instant now = Instant.now();
+
+        assertTrue(validator.validate(jwt("https://other.example.test", AUDIENCE)).hasErrors());
+        assertTrue(validator.validate(jwt(ISSUER, "wrong-audience")).hasErrors());
+        assertTrue(validator.validate(jwt(ISSUER, AUDIENCE, claims -> claims.put("sub", " "))).hasErrors());
+        assertTrue(validator.validate(expiredJwt()).hasErrors());
+        assertTrue(validator.validate(futureIssuedJwt()).hasErrors());
+        assertTrue(validator.validate(jwt(ISSUER, AUDIENCE, claims -> claims.put("nbf", now.plusSeconds(120)))).hasErrors());
+        assertTrue(validator.validate(jwt(ISSUER, AUDIENCE, claims -> claims.put("jti", " "))).hasErrors());
+        assertTrue(validator.validate(jwt(ISSUER, AUDIENCE, claims -> claims.put("token_type", "refresh"))).hasErrors());
+        assertTrue(validator.validate(jwt(ISSUER, AUDIENCE, claims -> claims.put("scope", " "))).hasErrors());
+    }
+
+    @Test
     void enabledResourceServerRequiresAudienceAndPrevalidationBacking() {
         var missingAudience = new GatewayProperties.Security(
-                false, true, true, ISSUER, " ");
+                false, true, true, ISSUER, " ", ISSUER + "/api/v1/auth/jwks");
         var unbackedPrevalidation = new GatewayProperties.Security(
-                true, false, true, ISSUER, AUDIENCE);
+                true, false, true, ISSUER, AUDIENCE, ISSUER + "/api/v1/auth/jwks");
 
         assertFalse(missingAudience.isAudienceConfiguredWhenEnabled());
         assertFalse(unbackedPrevalidation.isPrevalidationBackedByResourceServer());
@@ -69,7 +99,8 @@ class GatewayJwtValidatorsTest {
     void configuresIamJwksAndVerifiesAnRs256AccessToken() throws Exception {
         RSAKey signingKey = new RSAKeyGenerator(2048).keyID("gateway-test-key").generate();
         GatewayProperties.Security security = new GatewayProperties.Security(
-                false, true, true, "http://iam.example.test", AUDIENCE);
+                false, true, true, "http://iam.example.test", AUDIENCE,
+                "http://iam.example.test/api/v1/auth/jwks");
         assertEquals("http://iam.example.test/api/v1/auth/jwks", security.jwkSetUri());
 
         NimbusJwtDecoder decoder = NimbusJwtDecoder.withPublicKey(signingKey.toRSAPublicKey()).build();
@@ -115,20 +146,26 @@ class GatewayJwtValidatorsTest {
                         .subject("subject-1")
                         .audience(audience)
                         .issueTime(java.util.Date.from(now.minusSeconds(5)))
+                        .notBeforeTime(java.util.Date.from(now.minusSeconds(5)))
                         .expirationTime(java.util.Date.from(now.plusSeconds(300)))
-                         .claim("token_type", "access")
-                         .claim("scope", "learner.profile.read")
-                         .build());
+                        .jwtID("jwt-1")
+                        .claim("token_type", "access")
+                        .claim("scope", "learner.profile.read")
+                        .build());
         token.sign(new RSASSASigner(signingKey.toPrivateKey()));
         return token.serialize();
     }
 
     private static GatewayProperties.Security security() {
         return new GatewayProperties.Security(
-                false, true, true, ISSUER, AUDIENCE);
+                false, true, true, ISSUER, AUDIENCE, ISSUER + "/api/v1/auth/jwks");
     }
 
     private static Jwt jwt(String issuer, String audience) {
+        return jwt(issuer, audience, ignored -> { });
+    }
+
+    private static Jwt jwt(String issuer, String audience, Consumer<Map<String, Object>> claims) {
         Instant now = Instant.now();
         return Jwt.withTokenValue("access-token")
                 .header("alg", "RS256")
@@ -138,6 +175,40 @@ class GatewayJwtValidatorsTest {
                 .issuedAt(now.minusSeconds(5))
                 .notBefore(now.minusSeconds(5))
                 .expiresAt(now.plusSeconds(60))
+                .claim("jti", "jwt-1")
+                .claim("token_type", "access")
+                .claim("scope", "learner.profile.read")
+                .claims(claims)
+                .build();
+    }
+
+    private static Jwt expiredJwt() {
+        Instant now = Instant.now();
+        return Jwt.withTokenValue("expired-access-token")
+                .header("alg", "RS256")
+                .issuer(ISSUER)
+                .audience(List.of(AUDIENCE))
+                .subject("subject-1")
+                .issuedAt(now.minusSeconds(300))
+                .notBefore(now.minusSeconds(300))
+                .expiresAt(now.minusSeconds(120))
+                .claim("jti", "expired-jwt-1")
+                .claim("token_type", "access")
+                .claim("scope", "learner.profile.read")
+                .build();
+    }
+
+    private static Jwt futureIssuedJwt() {
+        Instant now = Instant.now();
+        return Jwt.withTokenValue("future-issued-access-token")
+                .header("alg", "RS256")
+                .issuer(ISSUER)
+                .audience(List.of(AUDIENCE))
+                .subject("subject-1")
+                .issuedAt(now.plusSeconds(120))
+                .notBefore(now.minusSeconds(5))
+                .expiresAt(now.plusSeconds(300))
+                .claim("jti", "future-jwt-1")
                 .claim("token_type", "access")
                 .claim("scope", "learner.profile.read")
                 .build();

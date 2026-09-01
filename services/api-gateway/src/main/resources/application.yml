@@ -106,29 +106,61 @@ gateway:
     # denied unless the explicit local profile enables read-only compatibility.
     anonymous-read-enabled: false
   cors:
-    allowed-origins:
-      - ${CORS_ALLOWED_ORIGIN_LEARNER:http://127.0.0.1:18180}
-      - ${CORS_ALLOWED_ORIGIN_ADMIN:http://127.0.0.1:18181}
-      - ${CORS_ALLOWED_ORIGIN_OFFICIAL:http://127.0.0.1:18182}
-      - ${CORS_ALLOWED_ORIGIN_MOBILE:http://127.0.0.1:18183}
+    # The browser profiles map exactly to the M1-004 boundary.  Keep legacy
+    # variable aliases only as a migration input; the profile-specific values
+    # below are what the Gateway enforces.
+    learner-web-origin: ${CORS_ALLOWED_ORIGIN_LEARNER_WEB:${CORS_ALLOWED_ORIGIN_LEARNER:http://127.0.0.1:18180}}
+    admin-web-origin: ${CORS_ALLOWED_ORIGIN_ADMIN_WEB:${CORS_ALLOWED_ORIGIN_ADMIN:http://127.0.0.1:18181}}
+    mobile-h5-origin: ${CORS_ALLOWED_ORIGIN_MOBILE_H5:${CORS_ALLOWED_ORIGIN_MOBILE:http://127.0.0.1:18183}}
+    official-site-origin: ${CORS_ALLOWED_ORIGIN_OFFICIAL_SITE:${CORS_ALLOWED_ORIGIN_OFFICIAL:http://127.0.0.1:18182}}
     allowed-methods: GET,POST,PUT,PATCH,DELETE,OPTIONS
     # Keep this list in lock-step with the shared client envelope.  These are
     # non-safelisted headers emitted by learner-web/mobile for tenant-safe
     # device context, locale negotiation, snapshots and request tracing.
-    allowed-headers: Authorization,Content-Type,Idempotency-Key,X-Request-Id,X-Trace-Id,X-Device-Id,X-Client-Version,X-Timezone,X-UI-Locale,X-Content-Locale,X-Snapshot-Id,X-Performance-Level,traceparent
+    credentialed-allowed-headers: Authorization,Content-Type,Idempotency-Key,X-Request-Id,X-Trace-Id,X-Device-Id,X-Client-Version,X-Timezone,X-UI-Locale,X-Content-Locale,X-Snapshot-Id,X-Performance-Level,traceparent,X-Auth-Transport
+    public-allowed-headers: Content-Type,X-Request-Id,X-Trace-Id,X-UI-Locale,X-Content-Locale,traceparent
     exposed-headers: X-Request-Id,X-Trace-Id,Retry-After
-    allow-credentials: true
+    refresh-cookie-name: ${IAM_REFRESH_COOKIE_NAME:yuxuexing_refresh}
+    native-auth-transport: NATIVE_SECURE_STORAGE
     max-age: 30m
   rate-limit:
-    # The filter is real when enabled. Use Redis for a multi-instance runtime;
-    # memory is intentionally bounded to one Gateway process for local smoke.
-    enabled: ${GATEWAY_RATE_LIMIT_ENABLED:false}
-    requests-per-window: ${GATEWAY_RATE_LIMIT_REQUESTS:120}
-    window: ${GATEWAY_RATE_LIMIT_WINDOW:1m}
-    key-strategy: remote-address
-    backend: ${GATEWAY_RATE_LIMIT_BACKEND:memory}
+    # Non-local operation defaults to distributed Redis and fails closed. The
+    # local profile below is the explicit one-process development exception.
+    enabled: ${GATEWAY_RATE_LIMIT_ENABLED:true}
+    backend: ${GATEWAY_RATE_LIMIT_BACKEND:redis}
     max-keys: ${GATEWAY_RATE_LIMIT_MAX_KEYS:10000}
     fail-open: ${GATEWAY_RATE_LIMIT_FAIL_OPEN:false}
+    # Bound every Redis admission operation so an unavailable Lettuce connection
+    # cannot keep a Gateway request open while it retries in the background.
+    backend-timeout: ${GATEWAY_RATE_LIMIT_BACKEND_TIMEOUT:750ms}
+    policies:
+      public-read:
+        requests-per-window: ${GATEWAY_RATE_LIMIT_PUBLIC_READ_REQUESTS:${GATEWAY_RATE_LIMIT_REQUESTS:240}}
+        window: ${GATEWAY_RATE_LIMIT_PUBLIC_READ_WINDOW:${GATEWAY_RATE_LIMIT_WINDOW:1m}}
+      auth-register:
+        requests-per-window: ${GATEWAY_RATE_LIMIT_AUTH_REGISTER_REQUESTS:20}
+        window: ${GATEWAY_RATE_LIMIT_AUTH_REGISTER_WINDOW:1m}
+      auth-login:
+        requests-per-window: ${GATEWAY_RATE_LIMIT_AUTH_LOGIN_REQUESTS:10}
+        window: ${GATEWAY_RATE_LIMIT_AUTH_LOGIN_WINDOW:1m}
+      auth-refresh:
+        requests-per-window: ${GATEWAY_RATE_LIMIT_AUTH_REFRESH_REQUESTS:30}
+        window: ${GATEWAY_RATE_LIMIT_AUTH_REFRESH_WINDOW:1m}
+      password-reset:
+        requests-per-window: ${GATEWAY_RATE_LIMIT_PASSWORD_RESET_REQUESTS:10}
+        window: ${GATEWAY_RATE_LIMIT_PASSWORD_RESET_WINDOW:1m}
+      authenticated-read:
+        requests-per-window: ${GATEWAY_RATE_LIMIT_AUTHENTICATED_READ_REQUESTS:180}
+        window: ${GATEWAY_RATE_LIMIT_AUTHENTICATED_READ_WINDOW:1m}
+      authenticated-write:
+        requests-per-window: ${GATEWAY_RATE_LIMIT_AUTHENTICATED_WRITE_REQUESTS:90}
+        window: ${GATEWAY_RATE_LIMIT_AUTHENTICATED_WRITE_WINDOW:1m}
+      high-risk-admin:
+        requests-per-window: ${GATEWAY_RATE_LIMIT_HIGH_RISK_ADMIN_REQUESTS:30}
+        window: ${GATEWAY_RATE_LIMIT_HIGH_RISK_ADMIN_WINDOW:1m}
+      provider-callback:
+        requests-per-window: ${GATEWAY_RATE_LIMIT_PROVIDER_CALLBACK_REQUESTS:120}
+        window: ${GATEWAY_RATE_LIMIT_PROVIDER_CALLBACK_WINDOW:1m}
   request-context:
     max-id-length: 128
   security:

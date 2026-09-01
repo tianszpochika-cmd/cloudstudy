@@ -37,7 +37,7 @@ public final class RedisRateLimitBackend implements RateLimitBackend {
     }
 
     @Override
-    public Mono<RateLimitDecision> consume(String key, GatewayProperties.RateLimit policy) {
+    public Mono<RateLimitDecision> consume(String key, GatewayProperties.RateLimitPolicy policy) {
         long now = Instant.now().toEpochMilli();
         String redisKey = "englishflow:gateway:rate-limit:" + digest(key);
         return redis.execute(
@@ -52,7 +52,7 @@ public final class RedisRateLimitBackend implements RateLimitBackend {
 
     private static RateLimitDecision decision(
             String result,
-            GatewayProperties.RateLimit policy,
+            GatewayProperties.RateLimitPolicy policy,
             long now
     ) {
         String[] values = result.split(":", 2);

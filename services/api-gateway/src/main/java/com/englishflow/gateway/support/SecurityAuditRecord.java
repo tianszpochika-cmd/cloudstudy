@@ -2,15 +2,22 @@ package com.englishflow.gateway.support;
 
 import java.time.Instant;
 
-/** Safe edge audit record: path only, never query, body, token or role headers. */
+/**
+ * Exact redacted Gateway boundary audit shape. It intentionally excludes path
+ * parameters, query strings, bodies, cookies, tokens and client authority headers.
+ */
 public record SecurityAuditRecord(
-        String decisionId,
+        Instant occurredAt,
+        String routeId,
+        String method,
+        int status,
         String requestId,
         String traceId,
-        String method,
-        String path,
-        int status,
-        String reason,
-        Instant occurredAt
+        String subjectHash,
+        String tenantHash,
+        String clientProfile,
+        String decision,
+        String reasonCode,
+        String latencyBucket
 ) {
 }

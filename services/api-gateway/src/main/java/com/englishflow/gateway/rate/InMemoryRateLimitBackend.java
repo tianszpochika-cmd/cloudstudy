@@ -30,10 +30,10 @@ public final class InMemoryRateLimitBackend implements RateLimitBackend {
     }
 
     @Override
-    public Mono<RateLimitDecision> consume(String key, GatewayProperties.RateLimit policy) {
+    public Mono<RateLimitDecision> consume(String key, GatewayProperties.RateLimitPolicy policy) {
         long now = System.currentTimeMillis();
         Window window = windows.computeIfAbsent(key, ignored -> {
-            evictIfNeeded(policy.maxKeys());
+            evictIfNeeded(properties.rateLimit().maxKeys());
             return new Window(now, policy.window().toMillis());
         });
 

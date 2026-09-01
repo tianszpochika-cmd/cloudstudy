@@ -1,6 +1,7 @@
 package com.englishflow.gateway.filter;
 
 import com.englishflow.gateway.config.GatewayProperties;
+import com.englishflow.gateway.policy.GatewayRoutePolicy;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.web.server.MockServerWebExchange;
@@ -15,7 +16,8 @@ class JwtPreValidationBoundaryGlobalFilterTest {
     void doesNotTreatBearerPresenceAsAuthenticationWhenVerifierIsUnavailable() {
         GatewayProperties properties = org.mockito.Mockito.mock(GatewayProperties.class);
         org.mockito.Mockito.when(properties.security()).thenReturn(
-                new GatewayProperties.Security(true, false, true, "http://127.0.0.1:18087", "yuxuexing-api"));
+                new GatewayProperties.Security(true, false, true, "http://127.0.0.1:18087", "yuxuexing-api",
+                        "http://127.0.0.1:18087/api/v1/auth/jwks"));
         org.mockito.Mockito.when(properties.requestContext()).thenReturn(new GatewayProperties.RequestContext(128));
         var exchange = MockServerWebExchange.from(MockServerHttpRequest.get("/api/v1/learner/profile")
                 .header("Authorization", "Bearer not-a-jwt")
@@ -24,7 +26,7 @@ class JwtPreValidationBoundaryGlobalFilterTest {
                 .build());
         var reached = new boolean[1];
 
-        new JwtPreValidationBoundaryGlobalFilter(properties)
+        new JwtPreValidationBoundaryGlobalFilter(properties, new GatewayRoutePolicy())
                 .filter(exchange, ignored -> {
                     reached[0] = true;
                     return Mono.empty();
@@ -41,12 +43,13 @@ class JwtPreValidationBoundaryGlobalFilterTest {
     void allowsPasswordLoginToReachIamWithoutAResourceServerToken() {
         GatewayProperties properties = org.mockito.Mockito.mock(GatewayProperties.class);
         org.mockito.Mockito.when(properties.security()).thenReturn(
-                new GatewayProperties.Security(true, false, true, "https://iam.example.test", "yuxuexing-api"));
+                new GatewayProperties.Security(true, false, true, "https://iam.example.test", "yuxuexing-api",
+                        "https://iam.example.test/api/v1/auth/jwks"));
         var exchange = MockServerWebExchange.from(MockServerHttpRequest.post(
                 "/api/v1/auth/login").build());
         var reached = new boolean[1];
 
-        new JwtPreValidationBoundaryGlobalFilter(properties)
+        new JwtPreValidationBoundaryGlobalFilter(properties, new GatewayRoutePolicy())
                 .filter(exchange, ignored -> {
                     reached[0] = true;
                     return Mono.empty();
@@ -60,12 +63,13 @@ class JwtPreValidationBoundaryGlobalFilterTest {
     void allowsPublicJwksToReachIamWithoutAResourceServerToken() {
         GatewayProperties properties = org.mockito.Mockito.mock(GatewayProperties.class);
         org.mockito.Mockito.when(properties.security()).thenReturn(
-                new GatewayProperties.Security(true, false, true, "https://iam.example.test", "yuxuexing-api"));
+                new GatewayProperties.Security(true, false, true, "https://iam.example.test", "yuxuexing-api",
+                        "https://iam.example.test/api/v1/auth/jwks"));
         var exchange = MockServerWebExchange.from(MockServerHttpRequest.get(
                 "/api/v1/auth/jwks").build());
         var reached = new boolean[1];
 
-        new JwtPreValidationBoundaryGlobalFilter(properties)
+        new JwtPreValidationBoundaryGlobalFilter(properties, new GatewayRoutePolicy())
                 .filter(exchange, ignored -> {
                     reached[0] = true;
                     return Mono.empty();

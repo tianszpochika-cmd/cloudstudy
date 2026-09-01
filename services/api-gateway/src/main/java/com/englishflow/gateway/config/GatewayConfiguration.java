@@ -15,17 +15,26 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusReactiveJwtDecoder;
+import org.springframework.security.oauth2.jwt.BadJwtException;
+import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.security.web.server.authentication.ServerAuthenticationEntryPointFailureHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.CorsConfigurationSource;
 import org.springframework.web.cors.reactive.CorsWebFilter;
-import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
+import com.englishflow.gateway.filter.ClientAuthorizationContextHeaders;
+import com.englishflow.gateway.policy.GatewayRoutePolicy;
 import com.englishflow.gateway.support.BoundedSecurityAuditSink;
 import com.englishflow.gateway.support.CorrelationIds;
+import com.englishflow.gateway.support.GatewayAuthenticationFailureHandler;
 import com.englishflow.gateway.support.GatewayErrorMapper;
 import com.englishflow.gateway.support.GatewayErrorResponseWriter;
+import com.englishflow.gateway.support.SecurityAuditRecorder;
 import com.englishflow.gateway.support.SecurityAuditSink;
+import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatcher;
 import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
+import reactor.core.Exceptions;
 
 import java.util.Arrays;
 
@@ -36,44 +45,38 @@ public class GatewayConfiguration {
     SecurityWebFilterChain platform0SecurityChain(
             ServerHttpSecurity http,
             GatewayProperties properties,
-            Environment environment
+            Environment environment,
+            GatewayRoutePolicy routePolicy,
+            SecurityAuditRecorder auditRecorder,
+            GatewayAuthenticationFailureHandler authenticationFailureHandler
     ) {
         boolean localReadOnlyCompatibility = properties.compatibility().anonymousReadEnabled()
                 && environment.acceptsProfiles(Profiles.of("local"));
         boolean resourceServerEnabled = Boolean.TRUE.equals(properties.security().resourceServerEnabled());
 
         ServerHttpSecurity configured = http
+                // Cookie-bearing unsafe requests are decided by the single
+                // BrowserOriginCsrfGlobalFilter policy. Spring's synchronizer
+                // token mechanism is deliberately not enabled because the
+                // canonical Gateway contract freezes Origin-first / Referer-
+                // fallback semantics instead.
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
                 .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
                 .cors(Customizer.withDefaults())
                 .exceptionHandling(exceptionHandling -> exceptionHandling
-                        .authenticationEntryPoint((exchange, failure) ->
-                                GatewayErrorResponseWriter.write(exchange, GatewayErrorMapper.map(
-                                        failure,
-                                        requestId(exchange),
-                                        traceId(exchange))))
-                        .accessDeniedHandler((exchange, failure) -> accessDeniedResponse(exchange, failure)))
+                        .authenticationEntryPoint(authenticationFailureHandler)
+                        .accessDeniedHandler((exchange, failure) -> accessDeniedResponse(exchange, failure, auditRecorder)))
                 .authorizeExchange(exchanges -> {
                     exchanges.pathMatchers("/actuator/health/**", "/actuator/info").permitAll();
-                    exchanges.pathMatchers(HttpMethod.OPTIONS, "/api/**").permitAll();
-                    exchanges.pathMatchers(HttpMethod.GET, "/api/v1/health").permitAll();
-                    exchanges.pathMatchers(HttpMethod.HEAD, "/api/v1/health").permitAll();
-                    exchanges.pathMatchers(HttpMethod.GET, "/api/v1/public/commerce/catalog").permitAll();
-                    exchanges.pathMatchers(HttpMethod.HEAD, "/api/v1/public/commerce/catalog").permitAll();
-                    exchanges.pathMatchers(HttpMethod.GET, "/api/v1/public/content/catalog").permitAll();
-                    exchanges.pathMatchers(HttpMethod.HEAD, "/api/v1/public/content/catalog").permitAll();
-                    exchanges.pathMatchers(HttpMethod.GET, "/api/v1/public/content/*").permitAll();
-                    exchanges.pathMatchers(HttpMethod.HEAD, "/api/v1/public/content/*").permitAll();
-                    exchanges.pathMatchers(HttpMethod.GET, "/api/v1/public/site/projection").permitAll();
-                    exchanges.pathMatchers(HttpMethod.HEAD, "/api/v1/public/site/projection").permitAll();
-                    exchanges.pathMatchers(HttpMethod.POST,
-                            "/api/v1/auth/register",
-                            "/api/v1/auth/login",
-                            "/api/v1/auth/token/refresh",
-                            "/api/v1/auth/password-reset/request",
-                            "/api/v1/auth/password-reset/confirm").permitAll();
-                    exchanges.pathMatchers(HttpMethod.GET, "/api/v1/auth/jwks").permitAll();
+                    exchanges.matchers(exchange -> routePolicy.permitsAnonymous(exchange.getRequest())
+                                    ? ServerWebExchangeMatcher.MatchResult.match()
+                                    : ServerWebExchangeMatcher.MatchResult.notMatch())
+                            .permitAll();
+                    exchanges.matchers(exchange -> routePolicy.isKnownPreflight(exchange.getRequest())
+                                    ? ServerWebExchangeMatcher.MatchResult.match()
+                                    : ServerWebExchangeMatcher.MatchResult.notMatch())
+                            .permitAll();
                     if (resourceServerEnabled) {
                         exchanges.anyExchange().authenticated();
                     } else {
@@ -89,9 +92,28 @@ public class GatewayConfiguration {
                 });
 
         if (resourceServerEnabled) {
-            configured.oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
+            configured.oauth2ResourceServer(oauth2 -> oauth2
+                    // Resource Server authentication happens before authorization
+                    // exception handling. Wire the same redacted entry point here
+                    // so malformed, signature, claim and JWKS failures cannot use
+                    // Spring's verbose Bearer challenge response.
+                    .authenticationEntryPoint(authenticationFailureHandler)
+                    .authenticationFailureHandler(resourceServerFailureHandler(authenticationFailureHandler))
+                    .jwt(Customizer.withDefaults()));
         }
         return configured.build();
+    }
+
+    private static ServerAuthenticationEntryPointFailureHandler resourceServerFailureHandler(
+            GatewayAuthenticationFailureHandler authenticationFailureHandler
+    ) {
+        ServerAuthenticationEntryPointFailureHandler failureHandler =
+                new ServerAuthenticationEntryPointFailureHandler(authenticationFailureHandler);
+        // Spring Security otherwise rethrows AuthenticationServiceException.
+        // Decoder/JWKS failures must use the same canonical, non-diagnostic 401
+        // envelope as malformed, signature and claims failures.
+        failureHandler.setRethrowAuthenticationServiceException(false);
+        return failureHandler;
     }
 
     @Bean
@@ -103,22 +125,54 @@ public class GatewayConfiguration {
         }
         NimbusReactiveJwtDecoder nimbus = NimbusReactiveJwtDecoder.withJwkSetUri(properties.security().jwkSetUri()).build();
         nimbus.setJwtValidator(GatewayJwtValidators.forSecurity(properties.security()));
-        return nimbus;
+        return token -> Mono.defer(() -> nimbus.decode(token))
+                .onErrorMap(GatewayConfiguration::resourceServerJwtFailure);
+    }
+
+    private static Throwable resourceServerJwtFailure(Throwable failure) {
+        // Do not hide JVM-fatal failures. Every other decoder/JWKS transport
+        // failure must become a JwtException so AuthenticationWebFilter sends it
+        // through the redacted Gateway authentication failure handler instead
+        // of leaking a framework 500 response.
+        Exceptions.throwIfFatal(failure);
+        if (failure instanceof JwtException) {
+            return failure;
+        }
+        return new BadJwtException("JWT decoding failed", failure);
     }
 
     @Bean
-    CorsConfigurationSource corsConfigurationSource(GatewayProperties properties) {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(properties.cors().allowedOrigins());
-        configuration.setAllowedMethods(csv(properties.cors().allowedMethods()));
-        configuration.setAllowedHeaders(csv(properties.cors().allowedHeaders()));
-        configuration.setExposedHeaders(csv(properties.cors().exposedHeaders()));
-        configuration.setAllowCredentials(properties.cors().allowCredentials());
-        configuration.setMaxAge(properties.cors().maxAge().toSeconds());
+    CorsConfigurationSource corsConfigurationSource(
+            GatewayProperties properties,
+            GatewayRoutePolicy routePolicy
+    ) {
+        return exchange -> {
+            String origin = exchange.getRequest().getHeaders().getOrigin();
+            GatewayProperties.Cors.OriginProfile profile = properties.cors().profileFor(origin);
+            GatewayRoutePolicy.Resolution resolution = HttpMethod.OPTIONS.equals(exchange.getRequest().getMethod())
+                    ? routePolicy.resolvePreflight(exchange.getRequest())
+                    : routePolicy.resolve(exchange.getRequest());
+            if (profile == GatewayProperties.Cors.OriginProfile.UNKNOWN || !resolution.matched()) {
+                return null;
+            }
+            if (profile == GatewayProperties.Cors.OriginProfile.OFFICIAL_SITE
+                    && resolution.rule().authClass() != GatewayRoutePolicy.AuthClass.PUBLIC_READ) {
+                return null;
+            }
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
+            CorsConfiguration configuration = new CorsConfiguration();
+            configuration.setAllowedOrigins(java.util.List.of(origin));
+            configuration.setAllowedMethods(profile == GatewayProperties.Cors.OriginProfile.OFFICIAL_SITE
+                    ? java.util.List.of(HttpMethod.GET.name())
+                    : csv(properties.cors().allowedMethods()));
+            configuration.setAllowedHeaders(profile == GatewayProperties.Cors.OriginProfile.OFFICIAL_SITE
+                    ? csv(properties.cors().publicAllowedHeaders())
+                    : csv(properties.cors().credentialedAllowedHeaders()));
+            configuration.setExposedHeaders(csv(properties.cors().exposedHeaders()));
+            configuration.setAllowCredentials(properties.cors().isCredentialedProfile(profile));
+            configuration.setMaxAge(properties.cors().maxAge().toSeconds());
+            return configuration;
+        };
     }
 
     @Bean
@@ -550,11 +604,7 @@ public class GatewayConfiguration {
             GatewayFilterSpec filters,
             String routeName,
             GatewayProperties.B14Services.RouteMode mode) {
-        GatewayFilterSpec configured = filters
-                .removeRequestHeader("X-B5-Role")
-                .removeRequestHeader("X-Role")
-                .removeRequestHeader("X-Tenant-Id")
-                .removeRequestHeader("X-Owner-Id")
+        GatewayFilterSpec configured = sanitizeClientAuthorityHeaders(filters)
                 .addRequestHeader("X-Gateway-Route", routeName);
         if (mode != null) {
             configured = configured.addRequestHeader("X-B14-Route-Mode", mode.name());
@@ -563,20 +613,13 @@ public class GatewayConfiguration {
     }
 
     private static GatewayFilterSpec identityFilters(GatewayFilterSpec filters, String routeName) {
-        return filters
-                .removeRequestHeader("X-B5-Role")
-                .removeRequestHeader("X-Role")
-                .removeRequestHeader("X-Tenant-Id")
-                .removeRequestHeader("X-Owner-Id")
-                .removeRequestHeader("X-Subject-Id")
-                .removeRequestHeader("X-Permissions")
-                .removeRequestHeader("X-Policy-Version")
+        return sanitizeClientAuthorityHeaders(filters)
                 .addRequestHeader("X-Gateway-Route", routeName);
     }
 
     private static GatewayFilterSpec compatibilityFilters(
             GatewayFilterSpec filters, GatewayProperties properties) {
-        GatewayFilterSpec configured = filters
+        GatewayFilterSpec configured = sanitizeClientAuthorityHeaders(filters)
                 .removeRequestHeader("X-Compatibility-Route")
                 .addRequestHeader("X-Compatibility-Route", "core-api-v1")
                 .addResponseHeader("X-EnglishFlow-Compatibility", "core-api-v1");
@@ -584,6 +627,18 @@ public class GatewayConfiguration {
             configured = configured
                     .addResponseHeader("Deprecation", "true")
                     .addResponseHeader("Sunset", properties.b14().deprecationSunsetAt());
+        }
+        return configured;
+    }
+
+    /**
+     * Route filters repeat the global boundary sanitization so a future route
+     * that changes filter ordering cannot forward a forged authority fact.
+     */
+    private static GatewayFilterSpec sanitizeClientAuthorityHeaders(GatewayFilterSpec filters) {
+        GatewayFilterSpec configured = filters;
+        for (String header : ClientAuthorizationContextHeaders.NAMES) {
+            configured = configured.removeRequestHeader(header);
         }
         return configured;
     }
@@ -630,7 +685,7 @@ public class GatewayConfiguration {
                 .uri(services.notificationUri().toString()));
         builder.route("b12-gamification-public", route -> route
                 .path("/api/v1/gamification/me/**")
-                .filters(filters -> filters
+                .filters(filters -> sanitizeClientAuthorityHeaders(filters)
                         .rewritePath("/api/v1/gamification/me/(?<segment>.*)", "/internal/v1/gamification/${segment}")
                         .removeRequestHeader("X-B5-Role")
                         .removeRequestHeader("X-Role")
@@ -640,7 +695,7 @@ public class GatewayConfiguration {
                 .uri(services.gamificationUri().toString()));
         builder.route("b12-gamification-trusted-events", route -> route
                 .path("/internal/v1/gamification/**")
-                .filters(filters -> filters
+                .filters(filters -> sanitizeClientAuthorityHeaders(filters)
                         .removeRequestHeader("X-B5-Role")
                         .removeRequestHeader("X-Role")
                         .removeRequestHeader("X-Tenant-Id")
@@ -649,7 +704,7 @@ public class GatewayConfiguration {
                 .uri(services.gamificationUri().toString()));
         builder.route("b12-social-public", route -> route
                 .path("/api/v1/social/**")
-                .filters(filters -> filters
+                .filters(filters -> sanitizeClientAuthorityHeaders(filters)
                         .removeRequestHeader("X-B5-Role")
                         .removeRequestHeader("X-Role")
                         .removeRequestHeader("X-Tenant-Id")
@@ -658,7 +713,7 @@ public class GatewayConfiguration {
                 .uri(services.socialUri().toString()));
         builder.route("b12-social-internal", route -> route
                 .path("/internal/v1/social/**")
-                .filters(filters -> filters
+                .filters(filters -> sanitizeClientAuthorityHeaders(filters)
                         .removeRequestHeader("X-B5-Role")
                         .removeRequestHeader("X-Role")
                         .removeRequestHeader("X-Tenant-Id")
@@ -667,7 +722,7 @@ public class GatewayConfiguration {
                 .uri(services.socialUri().toString()));
         builder.route("b12-notification-public", route -> route
                 .path("/api/v1/notifications/**")
-                .filters(filters -> filters
+                .filters(filters -> sanitizeClientAuthorityHeaders(filters)
                         .rewritePath("/api/v1/notifications/(?<segment>.*)", "/internal/v1/notifications/${segment}")
                         .removeRequestHeader("X-B5-Role")
                         .removeRequestHeader("X-Role")
@@ -677,7 +732,7 @@ public class GatewayConfiguration {
                 .uri(services.notificationUri().toString()));
         builder.route("b12-notification-internal", route -> route
                 .path("/internal/v1/notifications/**")
-                .filters(filters -> filters
+                .filters(filters -> sanitizeClientAuthorityHeaders(filters)
                         .removeRequestHeader("X-B5-Role")
                         .removeRequestHeader("X-Role")
                         .removeRequestHeader("X-Tenant-Id")
@@ -689,7 +744,7 @@ public class GatewayConfiguration {
         // the learner client must not fall back to core-api for sync writes.
         builder.route("b12-sync-public", route -> route
                 .path("/api/v1/sync/**")
-                .filters(filters -> filters
+                .filters(filters -> sanitizeClientAuthorityHeaders(filters)
                         .rewritePath("/api/v1/sync/(?<segment>.*)", "/internal/v1/sync/${segment}")
                         .removeRequestHeader("X-B5-Role")
                         .removeRequestHeader("X-Role")
@@ -705,7 +760,7 @@ public class GatewayConfiguration {
                 .path("/api/v1/public/commerce/catalog")
                 .and()
                 .method(HttpMethod.GET, HttpMethod.HEAD)
-                .filters(filters -> filters
+                .filters(filters -> sanitizeClientAuthorityHeaders(filters)
                         .rewritePath("/api/v1/public/commerce/catalog", "/internal/v1/commerce/public/catalog")
                         .removeRequestHeader("X-B5-Role")
                         .removeRequestHeader("X-Role")
@@ -717,7 +772,7 @@ public class GatewayConfiguration {
                 .path("/api/v1/commerce/orders/*/payment-intents")
                 .and()
                 .method(HttpMethod.POST)
-                .filters(filters -> filters
+                .filters(filters -> sanitizeClientAuthorityHeaders(filters)
                         .rewritePath("/api/v1/commerce/orders/(?<orderId>[^/]+)/payment-intents",
                                 "/internal/v1/commerce/orders/${orderId}/payment-intents")
                         .removeRequestHeader("X-B5-Role")
@@ -728,7 +783,7 @@ public class GatewayConfiguration {
                 .uri(services.commerceUri().toString()));
         builder.route("b13-commerce-public", route -> route
                 .path("/api/v1/commerce/**")
-                .filters(filters -> filters
+                .filters(filters -> sanitizeClientAuthorityHeaders(filters)
                         .rewritePath("/api/v1/commerce/(?<segment>.*)", "/internal/v1/commerce/${segment}")
                         .removeRequestHeader("X-B5-Role")
                         .removeRequestHeader("X-Role")
@@ -738,7 +793,7 @@ public class GatewayConfiguration {
                 .uri(services.commerceUri().toString()));
         builder.route("b13-commerce-internal", route -> route
                 .path("/internal/v1/commerce/**")
-                .filters(filters -> filters
+                .filters(filters -> sanitizeClientAuthorityHeaders(filters)
                         .removeRequestHeader("X-B5-Role")
                         .removeRequestHeader("X-Role")
                         .removeRequestHeader("X-Tenant-Id")
@@ -749,7 +804,7 @@ public class GatewayConfiguration {
                 .path("/api/v1/admin/ops/metrics")
                 .and()
                 .method(HttpMethod.GET)
-                .filters(filters -> filters
+                .filters(filters -> sanitizeClientAuthorityHeaders(filters)
                         .rewritePath("/api/v1/admin/ops/metrics", "/internal/v1/analytics/metrics")
                         .removeRequestHeader("X-B5-Role")
                         .removeRequestHeader("X-Role")
@@ -759,7 +814,7 @@ public class GatewayConfiguration {
                 .uri(services.analyticsUri().toString()));
         builder.route("b13-admin-ops", route -> route
                 .path("/api/v1/admin/ops/**")
-                .filters(filters -> filters
+                .filters(filters -> sanitizeClientAuthorityHeaders(filters)
                         .rewritePath("/api/v1/admin/ops/(?<segment>.*)", "/internal/v1/admin-ops/${segment}")
                         .removeRequestHeader("X-B5-Role")
                         .removeRequestHeader("X-Role")
@@ -769,7 +824,7 @@ public class GatewayConfiguration {
                 .uri(services.adminOpsUri().toString()));
         builder.route("b13-admin-ops-internal", route -> route
                 .path("/internal/v1/admin-ops/**")
-                .filters(filters -> filters
+                .filters(filters -> sanitizeClientAuthorityHeaders(filters)
                         .removeRequestHeader("X-B5-Role")
                         .removeRequestHeader("X-Role")
                         .removeRequestHeader("X-Tenant-Id")
@@ -778,7 +833,7 @@ public class GatewayConfiguration {
                 .uri(services.adminOpsUri().toString()));
         builder.route("b13-analytics-internal", route -> route
                 .path("/internal/v1/analytics/**")
-                .filters(filters -> filters
+                .filters(filters -> sanitizeClientAuthorityHeaders(filters)
                         .removeRequestHeader("X-B5-Role")
                         .removeRequestHeader("X-Role")
                         .removeRequestHeader("X-Tenant-Id")
@@ -807,9 +862,10 @@ public class GatewayConfiguration {
         );
     }
 
-    private static reactor.core.publisher.Mono<Void> accessDeniedResponse(
+    private static Mono<Void> accessDeniedResponse(
             ServerWebExchange exchange,
-            org.springframework.security.access.AccessDeniedException failure) {
+            org.springframework.security.access.AccessDeniedException failure,
+            SecurityAuditRecorder auditRecorder) {
         return exchange.getPrincipal()
                 .filter(GatewayConfiguration::isAuthenticatedPrincipal)
                 .flatMap(ignored -> GatewayErrorResponseWriter.write(
@@ -822,7 +878,8 @@ public class GatewayConfiguration {
                                 "unauthorized",
                                 "Authentication is required.",
                                 requestId(exchange),
-                                traceId(exchange))));
+                                traceId(exchange))))
+                .then(auditRecorder.record(exchange, System.nanoTime()));
     }
 
     private static boolean isAuthenticatedPrincipal(java.security.Principal principal) {

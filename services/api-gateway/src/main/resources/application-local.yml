@@ -3,6 +3,13 @@ spring:
     activate:
       on-profile: local
 
+# Local development must not make background OTLP metric export attempts.
+management:
+  otlp:
+    metrics:
+      export:
+        enabled: false
+
 gateway:
   b12:
     enabled: ${B12_SERVICES_ENABLED:true}
@@ -25,7 +32,8 @@ gateway:
     # Local smoke testing only: routes remain GET/HEAD-only and never expose writes.
     anonymous-read-enabled: true
   rate-limit:
-    # Local profile exercises the real bounded limiter unless explicitly disabled.
+    # Local-only single-process limiter. It is useful for development tests but
+    # is never evidence of distributed Redis behaviour.
     enabled: ${GATEWAY_RATE_LIMIT_ENABLED:true}
     backend: ${GATEWAY_RATE_LIMIT_BACKEND:memory}
     fail-open: ${GATEWAY_RATE_LIMIT_FAIL_OPEN:false}

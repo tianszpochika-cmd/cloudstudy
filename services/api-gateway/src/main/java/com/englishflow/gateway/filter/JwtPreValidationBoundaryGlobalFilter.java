@@ -1,12 +1,12 @@
 package com.englishflow.gateway.filter;
 
 import com.englishflow.gateway.config.GatewayProperties;
+import com.englishflow.gateway.policy.GatewayRoutePolicy;
 import com.englishflow.gateway.support.CorrelationIds;
 import com.englishflow.gateway.support.GatewayError;
 import com.englishflow.gateway.support.GatewayErrorResponseWriter;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
-import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
@@ -15,9 +15,14 @@ import reactor.core.publisher.Mono;
 public class JwtPreValidationBoundaryGlobalFilter implements GlobalFilter, Ordered {
 
     private final GatewayProperties properties;
+    private final GatewayRoutePolicy routePolicy;
 
-    public JwtPreValidationBoundaryGlobalFilter(GatewayProperties properties) {
+    public JwtPreValidationBoundaryGlobalFilter(
+            GatewayProperties properties,
+            GatewayRoutePolicy routePolicy
+    ) {
         this.properties = properties;
+        this.routePolicy = routePolicy;
     }
 
     @Override
@@ -28,7 +33,9 @@ public class JwtPreValidationBoundaryGlobalFilter implements GlobalFilter, Order
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, org.springframework.cloud.gateway.filter.GatewayFilterChain chain) {
         if (Boolean.TRUE.equals(properties.security().resourceServerEnabled())
-                || isPublicEdgePath(exchange)) {
+                || routePolicy.permitsAnonymous(exchange.getRequest())
+                || routePolicy.isKnownPreflight(exchange.getRequest())
+                || isActuatorProbe(exchange)) {
             return chain.filter(exchange);
         }
 
@@ -50,26 +57,9 @@ public class JwtPreValidationBoundaryGlobalFilter implements GlobalFilter, Order
         ));
     }
 
-    private static boolean isPublicEdgePath(ServerWebExchange exchange) {
+    private static boolean isActuatorProbe(ServerWebExchange exchange) {
         String path = exchange.getRequest().getPath().value();
-        HttpMethod method = exchange.getRequest().getMethod();
-        if (path.startsWith("/actuator/")) {
-            return true;
-        }
-        if (HttpMethod.OPTIONS.equals(method) && path.startsWith("/api/")) {
-            return true;
-        }
-        if (HttpMethod.POST.equals(method)
-                && ("/api/v1/auth/register".equals(path)
-                || "/api/v1/auth/login".equals(path)
-                || "/api/v1/auth/token/refresh".equals(path)
-                || "/api/v1/auth/password-reset/request".equals(path)
-                || "/api/v1/auth/password-reset/confirm".equals(path))) {
-            return true;
-        }
-        if (HttpMethod.GET.equals(method) && "/api/v1/auth/jwks".equals(path)) return true;
-        return (HttpMethod.GET.equals(method) || HttpMethod.HEAD.equals(method))
-                && "/api/v1/health".equals(path);
+        return path.startsWith("/actuator/health/") || "/actuator/info".equals(path);
     }
 
     private String requestId(ServerWebExchange exchange) {

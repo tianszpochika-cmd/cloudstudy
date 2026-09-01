@@ -9,5 +9,5 @@ import reactor.core.publisher.Mono;
  */
 public interface RateLimitBackend {
 
-    Mono<RateLimitDecision> consume(String key, GatewayProperties.RateLimit policy);
+    Mono<RateLimitDecision> consume(String key, GatewayProperties.RateLimitPolicy policy);
 }

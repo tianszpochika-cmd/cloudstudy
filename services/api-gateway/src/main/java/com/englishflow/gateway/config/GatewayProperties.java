@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import com.englishflow.gateway.policy.GatewayRoutePolicy;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.DurationUnit;
 import org.springframework.validation.annotation.Validated;
@@ -171,43 +172,128 @@ public record GatewayProperties(
     }
 
     public record Cors(
-            @NotEmpty List<@NotBlank String> allowedOrigins,
+            @NotBlank String learnerWebOrigin,
+            @NotBlank String adminWebOrigin,
+            @NotBlank String mobileH5Origin,
+            @NotBlank String officialSiteOrigin,
             @NotBlank String allowedMethods,
-            @NotBlank String allowedHeaders,
+            @NotBlank String credentialedAllowedHeaders,
+            @NotBlank String publicAllowedHeaders,
             @NotBlank String exposedHeaders,
-            @NotNull Boolean allowCredentials,
+            @NotBlank String refreshCookieName,
+            @NotBlank String nativeAuthTransport,
             @NotNull @DurationUnit(ChronoUnit.SECONDS) Duration maxAge
     ) {
-        @AssertTrue(message = "credentialed CORS cannot use wildcard origins")
+        public enum OriginProfile {
+            LEARNER_WEB,
+            ADMIN_WEB,
+            MOBILE_H5,
+            OFFICIAL_SITE,
+            UNKNOWN
+        }
+
+        public OriginProfile profileFor(String origin) {
+            if (learnerWebOrigin.equals(origin)) return OriginProfile.LEARNER_WEB;
+            if (adminWebOrigin.equals(origin)) return OriginProfile.ADMIN_WEB;
+            if (mobileH5Origin.equals(origin)) return OriginProfile.MOBILE_H5;
+            if (officialSiteOrigin.equals(origin)) return OriginProfile.OFFICIAL_SITE;
+            return OriginProfile.UNKNOWN;
+        }
+
+        public boolean isCredentialedProfile(OriginProfile profile) {
+            return profile == OriginProfile.LEARNER_WEB
+                    || profile == OriginProfile.ADMIN_WEB
+                    || profile == OriginProfile.MOBILE_H5;
+        }
+
+        public List<String> credentialedOrigins() {
+            return List.of(learnerWebOrigin, adminWebOrigin, mobileH5Origin);
+        }
+
+        public List<String> allOrigins() {
+            return List.of(learnerWebOrigin, adminWebOrigin, mobileH5Origin, officialSiteOrigin);
+        }
+
+        @AssertTrue(message = "Gateway browser origins must be exact, unique http(s) origins without a path")
         public boolean isOriginPolicySafe() {
-            return !Boolean.TRUE.equals(allowCredentials) || allowedOrigins.stream().noneMatch("*"::equals);
+            List<String> origins = allOrigins();
+            return origins.stream().allMatch(Cors::isExactOrigin)
+                    && origins.stream().distinct().count() == origins.size();
+        }
+
+        private static boolean isExactOrigin(String candidate) {
+            try {
+                URI uri = URI.create(candidate);
+                return ("http".equalsIgnoreCase(uri.getScheme()) || "https".equalsIgnoreCase(uri.getScheme()))
+                        && uri.getHost() != null
+                        && uri.getUserInfo() == null
+                        && (uri.getRawPath() == null || uri.getRawPath().isBlank())
+                        && uri.getRawQuery() == null
+                        && uri.getRawFragment() == null;
+            } catch (IllegalArgumentException ignored) {
+                return false;
+            }
         }
     }
 
     public record RateLimit(
             @NotNull Boolean enabled,
-            @Min(1) int requestsPerWindow,
-            @NotNull @DurationUnit(ChronoUnit.SECONDS) Duration window,
-            @NotBlank String keyStrategy,
             @NotBlank String backend,
             @Min(1) int maxKeys,
-            @NotNull Boolean failOpen
+            @NotNull Boolean failOpen,
+            @NotNull @DurationUnit(ChronoUnit.MILLIS) Duration backendTimeout,
+            @NotEmpty Map<String, @Valid RateLimitPolicy> policies
     ) {
+        public RateLimit {
+            policies = policies == null ? Map.of() : Map.copyOf(policies);
+        }
+
+        public RateLimitPolicy policyFor(GatewayRoutePolicy.AuthClass authClass) {
+            String required = authClass.rateLimitPolicyKey();
+            for (Map.Entry<String, RateLimitPolicy> entry : policies.entrySet()) {
+                if (normalizePolicyKey(entry.getKey()).equals(required)) {
+                    return entry.getValue();
+                }
+            }
+            throw new IllegalStateException("missing rate-limit policy for " + authClass);
+        }
+
         @AssertTrue(message = "gateway.rate-limit.backend must be memory or redis")
         public boolean isBackendSupported() {
             return backend != null && Set.of("memory", "redis").contains(backend.trim().toLowerCase(Locale.ROOT));
         }
 
-        @AssertTrue(message = "gateway.rate-limit.key-strategy must be remote-address or principal")
-        public boolean isKeyStrategySupported() {
-            return keyStrategy != null
-                    && Set.of("remote-address", "principal")
-                    .contains(keyStrategy.trim().toLowerCase(Locale.ROOT));
+        @AssertTrue(message = "gateway.rate-limit must define a policy for every Gateway auth class")
+        public boolean arePoliciesComplete() {
+            return java.util.Arrays.stream(GatewayRoutePolicy.AuthClass.values())
+                    .map(GatewayRoutePolicy.AuthClass::rateLimitPolicyKey)
+                    .allMatch(required -> policies.keySet().stream()
+                            .map(RateLimit::normalizePolicyKey)
+                            .anyMatch(required::equals));
         }
 
         @AssertTrue(message = "gateway.rate-limit.fail-open must remain false for the security boundary")
         public boolean isFailClosed() {
             return !Boolean.TRUE.equals(failOpen);
+        }
+
+        @AssertTrue(message = "gateway.rate-limit.backend-timeout must be strictly positive")
+        public boolean isBackendTimeoutStrictlyPositive() {
+            return backendTimeout != null && !backendTimeout.isZero() && !backendTimeout.isNegative();
+        }
+
+        private static String normalizePolicyKey(String value) {
+            return value == null ? "" : value.trim().toLowerCase(Locale.ROOT).replace('_', '-');
+        }
+    }
+
+    public record RateLimitPolicy(
+            @Min(1) int requestsPerWindow,
+            @NotNull @DurationUnit(ChronoUnit.SECONDS) Duration window
+    ) {
+        @AssertTrue(message = "gateway.rate-limit policy window must be strictly positive")
+        public boolean isWindowStrictlyPositive() {
+            return window != null && !window.isZero() && !window.isNegative();
         }
     }
 
@@ -224,12 +310,6 @@ public record GatewayProperties(
         String audience,
         String jwkSetUri
     ) {
-        public Security(Boolean jwtPrevalidationEnabled, Boolean resourceServerEnabled, Boolean auditEnabled,
-                        String issuerUri, String audience) {
-            this(jwtPrevalidationEnabled, resourceServerEnabled, auditEnabled, issuerUri, audience,
-                    issuerUri == null ? null : issuerUri.replaceAll("/$", "") + "/api/v1/auth/jwks");
-        }
-
         @AssertTrue(message = "JWT issuer is required when verification is enabled")
         public boolean isIssuerConfiguredWhenEnabled() {
             return (!Boolean.TRUE.equals(jwtPrevalidationEnabled) && !Boolean.TRUE.equals(resourceServerEnabled))
