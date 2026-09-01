@@ -85,6 +85,23 @@ class GatewayJwtValidatorsTest {
     }
 
     @Test
+    void rejectsMissingOrNonJwtJoseTypeBeforeRouting() throws Exception {
+        var validator = GatewayJwtValidators.forSecurity(security());
+        assertTrue(validator.validate(jwtWithType(ISSUER, AUDIENCE, null)).hasErrors());
+        assertTrue(validator.validate(jwtWithType(ISSUER, AUDIENCE, "at+jwt")).hasErrors());
+
+        RSAKey signingKey = new RSAKeyGenerator(2048).keyID("gateway-typ-test-key").generate();
+        NimbusJwtDecoder decoder = NimbusJwtDecoder.withPublicKey(signingKey.toRSAPublicKey()).build();
+        decoder.setJwtValidator(validator);
+
+        assertThrows(JwtValidationException.class,
+                () -> decoder.decode(signedToken(signingKey, ISSUER, AUDIENCE, JWSAlgorithm.RS256, null)));
+        assertThrows(JwtValidationException.class,
+                () -> decoder.decode(signedToken(signingKey, ISSUER, AUDIENCE, JWSAlgorithm.RS256, "at+jwt")));
+        assertNotNull(decoder.decode(signedToken(signingKey, ISSUER, AUDIENCE, JWSAlgorithm.RS256, "JWT")));
+    }
+
+    @Test
     void enabledResourceServerRequiresAudienceAndPrevalidationBacking() {
         var missingAudience = new GatewayProperties.Security(
                 false, true, true, ISSUER, " ", ISSUER + "/api/v1/auth/jwks");
@@ -135,12 +152,23 @@ class GatewayJwtValidatorsTest {
     }
 
     private static String signedToken(RSAKey signingKey, String issuer, String audience, JWSAlgorithm algorithm) throws Exception {
+        return signedToken(signingKey, issuer, audience, algorithm, "JWT");
+    }
+
+    private static String signedToken(
+            RSAKey signingKey,
+            String issuer,
+            String audience,
+            JWSAlgorithm algorithm,
+            String joseType
+    ) throws Exception {
         Instant now = Instant.now();
+        JWSHeader.Builder header = new JWSHeader.Builder(algorithm).keyID(signingKey.getKeyID());
+        if (joseType != null) {
+            header.type(new JOSEObjectType(joseType));
+        }
         SignedJWT token = new SignedJWT(
-                new JWSHeader.Builder(algorithm)
-                        .keyID(signingKey.getKeyID())
-                        .type(JOSEObjectType.JWT)
-                        .build(),
+                header.build(),
                 new JWTClaimsSet.Builder()
                         .issuer(issuer)
                         .subject("subject-1")
@@ -166,9 +194,26 @@ class GatewayJwtValidatorsTest {
     }
 
     private static Jwt jwt(String issuer, String audience, Consumer<Map<String, Object>> claims) {
+        return jwtWithType(issuer, audience, "JWT", claims);
+    }
+
+    private static Jwt jwtWithType(String issuer, String audience, String joseType) {
+        return jwtWithType(issuer, audience, joseType, ignored -> { });
+    }
+
+    private static Jwt jwtWithType(
+            String issuer,
+            String audience,
+            String joseType,
+            Consumer<Map<String, Object>> claims
+    ) {
         Instant now = Instant.now();
-        return Jwt.withTokenValue("access-token")
-                .header("alg", "RS256")
+        var builder = Jwt.withTokenValue("access-token")
+                .header("alg", "RS256");
+        if (joseType != null) {
+            builder.header("typ", joseType);
+        }
+        return builder
                 .issuer(issuer)
                 .audience(List.of(audience))
                 .subject("subject-1")

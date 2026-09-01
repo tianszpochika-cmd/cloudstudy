@@ -10,6 +10,7 @@ import org.springframework.mock.web.server.MockServerWebExchange;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -32,12 +33,16 @@ class CanonicalRoutePolicyWebFilterTest {
 
         assertFalse(reached[0]);
         assertEquals(404, exchange.getResponse().getStatusCode().value());
-        assertTrue(exchange.getResponse().getBodyAsString().block().contains("unknown_api_route"));
+        assertTrue(exchange.getResponse().getBodyAsString().block().contains("\"errorCode\":\"NOT_FOUND\""));
     }
 
     @Test
     void rejectsExternalInternalAliasesBeforeTheRemainingChain() {
-        for (String path : List.of("/internal/v1/learning/test", "/api/v1/internal/learning/test")) {
+        for (String path : List.of(
+                "/internal/v1/learning/test",
+                "/api/v1/internal/learning/test",
+                "/internal/gateway/health"
+        )) {
             var exchange = MockServerWebExchange.from(MockServerHttpRequest.get(path).build());
             boolean[] reached = new boolean[1];
 
@@ -48,7 +53,7 @@ class CanonicalRoutePolicyWebFilterTest {
 
             assertFalse(reached[0], path);
             assertEquals(404, exchange.getResponse().getStatusCode().value(), path);
-            assertTrue(exchange.getResponse().getBodyAsString().block().contains("internal_route_not_public"), path);
+            assertTrue(exchange.getResponse().getBodyAsString().block().contains("\"errorCode\":\"NOT_FOUND\""), path);
         }
     }
 
@@ -64,7 +69,7 @@ class CanonicalRoutePolicyWebFilterTest {
 
         assertFalse(reached[0]);
         assertEquals(404, exchange.getResponse().getStatusCode().value());
-        assertTrue(exchange.getResponse().getBodyAsString().block().contains("unknown_api_route"));
+        assertTrue(exchange.getResponse().getBodyAsString().block().contains("\"errorCode\":\"NOT_FOUND\""));
     }
 
     @Test
@@ -82,7 +87,7 @@ class CanonicalRoutePolicyWebFilterTest {
 
         assertFalse(reached[0]);
         assertEquals(404, exchange.getResponse().getStatusCode().value());
-        assertTrue(exchange.getResponse().getBodyAsString().block().contains("ambiguous_api_route"));
+        assertTrue(exchange.getResponse().getBodyAsString().block().contains("\"errorCode\":\"NOT_FOUND\""));
     }
 
     @Test
@@ -104,13 +109,68 @@ class CanonicalRoutePolicyWebFilterTest {
         }
     }
 
+    @Test
+    void rejectsCanonicalRoutesWhenTheirConfiguredOwnerTargetIsDisabled() {
+        GatewayRoutePolicy policy = new GatewayRoutePolicy();
+        var exchange = MockServerWebExchange.from(MockServerHttpRequest.get("/api/v1/learning/sync/receipts").build());
+        boolean[] reached = new boolean[1];
+
+        filter(policy).filter(exchange, forwarded -> {
+            reached[0] = true;
+            return Mono.empty();
+        }).block();
+
+        assertFalse(reached[0]);
+        assertEquals(404, exchange.getResponse().getStatusCode().value());
+        assertTrue(exchange.getResponse().getBodyAsString().block().contains("\"errorCode\":\"NOT_FOUND\""));
+    }
+
+    @Test
+    void rejectsCanonicalRoutesWhenTheirB14OwnerIsNotInTargetMode() {
+        GatewayRoutePolicy policy = new GatewayRoutePolicy();
+        GatewayProperties.B14Services nonTargetLearning = new GatewayProperties.B14Services(
+                true,
+                false,
+                "2027-06-30T00:00:00Z",
+                Map.of("learning", "http://127.0.0.1:18090"),
+                Map.of("learning", "LEGACY")
+        );
+        var exchange = MockServerWebExchange.from(MockServerHttpRequest.get("/api/v1/learning/sync/receipts").build());
+        boolean[] reached = new boolean[1];
+
+        filter(policy, nonTargetLearning).filter(exchange, forwarded -> {
+            reached[0] = true;
+            return Mono.empty();
+        }).block();
+
+        assertFalse(reached[0]);
+        assertEquals(404, exchange.getResponse().getStatusCode().value());
+        assertTrue(exchange.getResponse().getBodyAsString().block().contains("\"errorCode\":\"NOT_FOUND\""));
+    }
+
     private static CanonicalRoutePolicyWebFilter filter(GatewayRoutePolicy policy) {
+        return filter(policy, new GatewayProperties.B14Services(
+                false, false, "2027-06-30T00:00:00Z", Map.of(), Map.of()
+        ));
+    }
+
+    private static CanonicalRoutePolicyWebFilter filter(
+            GatewayRoutePolicy policy,
+            GatewayProperties.B14Services b14
+    ) {
         GatewayProperties properties = mock(GatewayProperties.class);
         when(properties.requestContext()).thenReturn(new GatewayProperties.RequestContext(128));
         when(properties.security()).thenReturn(new GatewayProperties.Security(
                 false, false, false, null, null, null));
+        when(properties.identity()).thenReturn(new GatewayProperties.Identity(true, "http://127.0.0.1:18087"));
+        when(properties.b14()).thenReturn(b14);
         SecurityAuditRecorder auditRecorder = new SecurityAuditRecorder(properties, policy, ignored -> { });
-        return new CanonicalRoutePolicyWebFilter(properties, policy, auditRecorder);
+        return new CanonicalRoutePolicyWebFilter(
+                properties,
+                policy,
+                new GatewayRouteExecutionPolicy(properties, policy),
+                auditRecorder
+        );
     }
 
     private static GatewayRoutePolicy.Rule rule(String ruleId) {

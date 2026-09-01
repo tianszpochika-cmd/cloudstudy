@@ -73,7 +73,7 @@ class GatewayBoundaryProcessTest {
     @Test
     void protectedRouteReturnsCanonical401WithCorrelationIds() {
         webTestClient.get()
-                .uri("/api/v1/learner/profile")
+                .uri("/api/v1/iam/policy-versions")
                 .header("X-Request-Id", "gateway-401-test")
                 .header("X-Trace-Id", "trace-401-test")
                 .exchange()
@@ -82,7 +82,9 @@ class GatewayBoundaryProcessTest {
                 .expectHeader().valueEquals("X-Trace-Id", "trace-401-test")
                 .expectHeader().valueEquals(HttpHeaders.WWW_AUTHENTICATE, "Bearer")
                 .expectBody()
-                .jsonPath("$.error.code").isEqualTo("unauthorized");
+                .jsonPath("$.error.errorCode").isEqualTo("AUTH_REQUIRED")
+                .jsonPath("$.meta.requestId").isEqualTo("gateway-401-test")
+                .jsonPath("$.meta.traceId").isEqualTo("trace-401-test");
 
         assertTrue(auditSink.records().stream().anyMatch(record -> record.status() == 401
                 && "gateway-401-test".equals(record.requestId())
@@ -103,7 +105,7 @@ class GatewayBoundaryProcessTest {
                 .expectHeader().valueEquals("X-Request-Id", "gateway-403-test")
                 .expectHeader().valueEquals("X-Trace-Id", "trace-403-test")
                 .expectBody()
-                .jsonPath("$.error.code").isEqualTo("forbidden");
+                .jsonPath("$.error.errorCode").isEqualTo("FORBIDDEN");
 
         assertTrue(auditSink.records().stream().anyMatch(record -> record.status() == 403
                 && "origin_referer_conflict".equals(record.reasonCode())
@@ -115,7 +117,7 @@ class GatewayBoundaryProcessTest {
         rateLimitBackend.mode = ControllableRateLimitBackend.Mode.DENY;
 
         webTestClient.get()
-                .uri("/api/v1/public/content/catalog")
+                .uri("/api/v1/auth/jwks")
                 .header("X-Request-Id", "gateway-429-test")
                 .header("X-Trace-Id", "trace-429-test")
                 .exchange()
@@ -124,7 +126,7 @@ class GatewayBoundaryProcessTest {
                 .expectHeader().exists("Retry-After")
                 .expectHeader().valueEquals("X-Request-Id", "gateway-429-test")
                 .expectBody()
-                .jsonPath("$.error.code").isEqualTo("rate_limited");
+                .jsonPath("$.error.errorCode").isEqualTo("RATE_LIMITED");
 
         assertTrue(auditSink.records().stream().anyMatch(record -> record.status() == 429
                 && "rate_limited".equals(record.reasonCode())));
@@ -135,7 +137,7 @@ class GatewayBoundaryProcessTest {
         rateLimitBackend.mode = ControllableRateLimitBackend.Mode.FAIL;
 
         webTestClient.get()
-                .uri("/api/v1/public/content/catalog")
+                .uri("/api/v1/auth/jwks")
                 .header("X-Request-Id", "gateway-503-test")
                 .header("X-Trace-Id", "trace-503-test")
                 .exchange()
@@ -143,10 +145,67 @@ class GatewayBoundaryProcessTest {
                 .expectHeader().valueEquals("X-RateLimit-Backend", "unavailable")
                 .expectHeader().valueEquals("X-Request-Id", "gateway-503-test")
                 .expectBody()
-                .jsonPath("$.error.code").isEqualTo("rate_limit_backend_unavailable");
+                .jsonPath("$.error.errorCode").isEqualTo("SERVICE_UNAVAILABLE");
 
         assertTrue(auditSink.records().stream().anyMatch(record -> record.status() == 503
                 && "rate_limit_backend_unavailable".equals(record.reasonCode())));
+    }
+
+    @Test
+    void nativeTransportRejectsEveryCookieHeaderNotOnlyTheRefreshCookie() {
+        webTestClient.post()
+                .uri("/api/v1/auth/token/refresh")
+                .header("X-Auth-Transport", "NATIVE_SECURE_STORAGE")
+                .header(HttpHeaders.COOKIE, "unrelated_cookie=must-not-cross-native-boundary")
+                .header("X-Request-Id", "gateway-native-cookie-test")
+                .header("X-Trace-Id", "trace-native-cookie-test")
+                .exchange()
+                .expectStatus().isForbidden()
+                .expectHeader().valueEquals("X-API-Version", "v1")
+                .expectBody()
+                .jsonPath("$.error.errorCode").isEqualTo("FORBIDDEN")
+                .jsonPath("$.meta.requestId").isEqualTo("gateway-native-cookie-test");
+
+        assertTrue(auditSink.records().stream().anyMatch(record -> record.status() == 403
+                && "native_cookie_forbidden".equals(record.reasonCode())));
+    }
+
+    @Test
+    void unknownOriginPreflightUsesCanonicalForbiddenEnvelopeAndAuditInsteadOfCorsShortCircuit() {
+        webTestClient.options()
+                .uri("/api/v1/public/content/catalog")
+                .header(HttpHeaders.ORIGIN, "https://untrusted.example.test")
+                .header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET")
+                .header(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS, "X-Request-Id")
+                .header("X-Request-Id", "gateway-cors-deny-test")
+                .header("X-Trace-Id", "trace-cors-deny-test")
+                .exchange()
+                .expectStatus().isForbidden()
+                .expectHeader().valueEquals("X-Request-Id", "gateway-cors-deny-test")
+                .expectHeader().valueEquals("X-Trace-Id", "trace-cors-deny-test")
+                .expectHeader().valueEquals("X-API-Version", "v1")
+                .expectBody()
+                .jsonPath("$.error.errorCode").isEqualTo("FORBIDDEN")
+                .jsonPath("$.meta.requestId").isEqualTo("gateway-cors-deny-test");
+
+        assertTrue(auditSink.records().stream().anyMatch(record -> record.status() == 403
+                && "cors_origin_forbidden".equals(record.reasonCode())));
+    }
+
+    @Test
+    void allowedPreflightIsAnsweredByTheCanonicalOriginPolicy() {
+        webTestClient.options()
+                .uri("/api/v1/public/content/catalog")
+                .header(HttpHeaders.ORIGIN, LEARNER_ORIGIN)
+                .header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET")
+                .header(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS, "X-Request-Id")
+                .header("X-Request-Id", "gateway-cors-allow-test")
+                .header("X-Trace-Id", "trace-cors-allow-test")
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().valueEquals(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, LEARNER_ORIGIN)
+                .expectHeader().valueEquals(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true")
+                .expectHeader().valueEquals("X-API-Version", "v1");
     }
 
     @TestConfiguration(proxyBeanMethods = false)

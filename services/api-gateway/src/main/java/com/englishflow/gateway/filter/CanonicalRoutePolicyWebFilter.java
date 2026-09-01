@@ -2,6 +2,7 @@ package com.englishflow.gateway.filter;
 
 import com.englishflow.gateway.config.GatewayProperties;
 import com.englishflow.gateway.policy.GatewayRoutePolicy;
+import com.englishflow.gateway.policy.GatewayRouteExecutionPolicy;
 import com.englishflow.gateway.support.CorrelationIds;
 import com.englishflow.gateway.support.GatewayAuditAttributes;
 import com.englishflow.gateway.support.GatewayError;
@@ -25,15 +26,18 @@ public final class CanonicalRoutePolicyWebFilter implements WebFilter, Ordered {
 
     private final GatewayProperties properties;
     private final GatewayRoutePolicy routePolicy;
+    private final GatewayRouteExecutionPolicy routeExecutionPolicy;
     private final SecurityAuditRecorder auditRecorder;
 
     public CanonicalRoutePolicyWebFilter(
             GatewayProperties properties,
             GatewayRoutePolicy routePolicy,
+            GatewayRouteExecutionPolicy routeExecutionPolicy,
             SecurityAuditRecorder auditRecorder
     ) {
         this.properties = properties;
         this.routePolicy = routePolicy;
+        this.routeExecutionPolicy = routeExecutionPolicy;
         this.auditRecorder = auditRecorder;
     }
 
@@ -68,6 +72,12 @@ public final class CanonicalRoutePolicyWebFilter implements WebFilter, Ordered {
                     ? "ambiguous_api_route"
                     : "unknown_api_route";
             return deny(exchange, code, "The API route is not available.");
+        }
+        if (!routeExecutionPolicy.isAvailable(resolution.rule())) {
+            // A canonical contract route must not fall through to a configured
+            // broad predicate when its exact owner target is disabled, not in
+            // B14 TARGET mode, or not configured at all.
+            return deny(exchange, "canonical_route_target_unavailable", "The API route is not available.");
         }
         return chain.filter(exchange);
     }

@@ -68,6 +68,7 @@ public final class GatewayErrorMapper {
             case 404 -> "not_found";
             case 409 -> "conflict";
             case 429 -> "rate_limited";
+            case 504 -> "upstream_timeout";
             default -> status >= 500 ? "upstream_failure" : "gateway_error";
         };
     }
@@ -80,6 +81,7 @@ public final class GatewayErrorMapper {
             case 404 -> "The requested route was not found.";
             case 409 -> "The request conflicts with current state.";
             case 429 -> "Too many requests.";
+            case 504 -> "The upstream service timed out.";
             default -> status >= 500 ? "The gateway or upstream service failed." : "The request could not be completed.";
         };
     }

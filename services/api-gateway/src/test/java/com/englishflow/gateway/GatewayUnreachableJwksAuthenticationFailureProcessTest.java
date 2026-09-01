@@ -53,7 +53,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
                 "gateway.identity.enabled=false",
                 "gateway.b12.enabled=false",
                 "gateway.b13.enabled=false",
-                "gateway.b14.enabled=false",
+                // The learner route must exist so the test exercises resource
+                // server authentication rather than canonical no-route denial.
+                "gateway.b14.enabled=true",
                 "management.otlp.metrics.export.enabled=false",
                 "management.tracing.export.enabled=false"
         }
@@ -107,7 +109,7 @@ class GatewayUnreachableJwksAuthenticationFailureProcessTest {
                 .returnResult()
                 .getResponseBody();
 
-        assertTrue(body.contains("\"code\":\"unauthorized\""));
+        assertTrue(body.contains("\"errorCode\":\"AUTH_REQUIRED\""));
         assertFalse(body.contains(UNKNOWN_KID));
         assertFalse(body.contains("Could not obtain the keys"));
         assertFalse(body.contains("127.0.0.1:" + UNREACHABLE_JWKS_PORT));

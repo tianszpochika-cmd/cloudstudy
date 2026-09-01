@@ -47,7 +47,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
                 "gateway.identity.enabled=false",
                 "gateway.b12.enabled=false",
                 "gateway.b13.enabled=false",
-                "gateway.b14.enabled=false",
+                // Keep the canonical learner route present. Authentication must
+                // fail before any upstream target can be reached.
+                "gateway.b14.enabled=true",
                 "management.otlp.metrics.export.enabled=false",
                 "management.tracing.export.enabled=false"
         }
@@ -92,7 +94,7 @@ class GatewayResourceServerAuthenticationFailureProcessTest {
                 .returnResult()
                 .getResponseBody();
 
-        assertTrue(body.contains("\"code\":\"unauthorized\""));
+        assertTrue(body.contains("\"errorCode\":\"AUTH_REQUIRED\""));
         assertFalse(body.contains("not-a-jwt"));
         assertCanonicalAudit("bad-token-request", "bad-token-trace", "not-a-jwt");
     }
@@ -129,7 +131,9 @@ class GatewayResourceServerAuthenticationFailureProcessTest {
                 .getResponseBody();
         assertCanonicalAudit("paired-auth-request", "paired-auth-trace", "not-a-jwt");
 
-        assertEquals(missingBody, malformedBody);
+        // `serverTime` is deliberately generated per response; all stable
+        // canonical envelope fields must remain indistinguishable.
+        assertEquals(withoutServerTime(missingBody), withoutServerTime(malformedBody));
     }
 
     @Test
@@ -148,7 +152,7 @@ class GatewayResourceServerAuthenticationFailureProcessTest {
                 .returnResult()
                 .getResponseBody();
 
-        assertTrue(body.contains("\"code\":\"unauthorized\""));
+        assertTrue(body.contains("\"errorCode\":\"AUTH_REQUIRED\""));
         assertFalse(body.contains(DECODER_FAILURE_TOKEN));
         assertFalse(body.contains(DECODER_DIAGNOSTIC));
         assertCanonicalAudit("decoder-failure-request", "decoder-failure-trace", DECODER_DIAGNOSTIC);
@@ -164,6 +168,10 @@ class GatewayResourceServerAuthenticationFailureProcessTest {
                 || record.routeId().contains(forbiddenDetail)
                 || record.requestId().contains(forbiddenDetail)
                 || record.traceId().contains(forbiddenDetail)));
+    }
+
+    private static String withoutServerTime(String body) {
+        return body.replaceAll("\\\"serverTime\\\":\\\"[^\\\"]+\\\"", "\"serverTime\":\"<generated>\"");
     }
 
     private static RSAKey signingKey() {

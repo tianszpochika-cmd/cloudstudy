@@ -116,7 +116,9 @@ class RateLimitGlobalFilterTest {
                 assertEquals(503, exchange.getResponse().getStatusCode().value(), mode.name());
                 assertEquals("unavailable", exchange.getResponse().getHeaders().getFirst("X-RateLimit-Backend"), mode.name());
                 assertTrue(exchange.getResponse().getBodyAsString().block()
-                        .contains("rate_limit_backend_unavailable"), mode.name());
+                        // The internal audit reason stays specific, while the
+                        // external response is constrained by the OpenAPI enum.
+                        .contains("\"errorCode\":\"SERVICE_UNAVAILABLE\""), mode.name());
             }
         }
     }

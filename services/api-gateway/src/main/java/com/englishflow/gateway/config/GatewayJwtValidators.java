@@ -25,11 +25,19 @@ final class GatewayJwtValidators {
         OAuth2TokenValidator<Jwt> algorithm = jwt -> "RS256".equals(jwt.getHeaders().get("alg"))
                 ? OAuth2TokenValidatorResult.success()
                 : OAuth2TokenValidatorResult.failure(new OAuth2Error("invalid_token", "JWT algorithm is not allowed", null));
+        OAuth2TokenValidator<Jwt> joseType = jwt -> "JWT".equals(jwt.getHeaders().get("typ"))
+                ? OAuth2TokenValidatorResult.success()
+                : OAuth2TokenValidatorResult.failure(new OAuth2Error(
+                        "invalid_token",
+                        "JWT typ header is required and must be JWT",
+                        null
+                ));
         return new DelegatingOAuth2TokenValidator<>(
                 JwtValidators.createDefaultWithIssuer(security.issuerUri()),
                 new JwtAudienceValidator(security.audience()),
                 new JwtTimestampValidator(CLOCK_SKEW),
                 algorithm,
+                joseType,
                 requiredClaim("iss", jwt -> nonBlank(jwt.getClaim("iss"))),
                 requiredClaim("sub", jwt -> nonBlank(jwt.getClaim("sub"))),
                 requiredClaim("aud", GatewayJwtValidators::hasAudience),

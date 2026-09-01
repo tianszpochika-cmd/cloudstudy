@@ -38,4 +38,16 @@ class GatewayErrorMapperTest {
         assertEquals(403, error.status());
         assertEquals("forbidden", error.code());
     }
+
+    @Test
+    void preservesExplicitGatewayTimeoutAsUpstreamTimeout() {
+        GatewayError error = GatewayErrorMapper.map(
+                new ResponseStatusException(HttpStatus.GATEWAY_TIMEOUT),
+                "request-1",
+                "trace-1"
+        );
+
+        assertEquals(504, error.status());
+        assertEquals("upstream_timeout", error.code());
+    }
 }

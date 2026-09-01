@@ -56,9 +56,10 @@ public final class BrowserOriginCsrfGlobalFilter implements GlobalFilter, Ordere
         String origin = request.getHeaders().getOrigin();
         GatewayProperties.Cors.OriginProfile profile = cors.profileFor(origin);
         boolean nativeTransport = cors.nativeAuthTransport().equals(request.getHeaders().getFirst("X-Auth-Transport"));
+        boolean hasAnyCookieHeader = request.getHeaders().getFirst(HttpHeaders.COOKIE) != null;
         boolean hasBusinessCookie = request.getCookies().containsKey(cors.refreshCookieName());
 
-        if (nativeTransport && hasBusinessCookie) {
+        if (nativeTransport && hasAnyCookieHeader) {
             return deny(exchange, "native_cookie_forbidden", "Native secure storage transport cannot send browser cookies.");
         }
 
