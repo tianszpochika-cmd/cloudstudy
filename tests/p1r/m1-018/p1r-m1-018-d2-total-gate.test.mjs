@@ -77,6 +77,8 @@ function staticReports() {
     exitCode: 0,
     executed: true,
     argv: [...check.argv],
+    timeoutMs: check.timeoutMs,
+    timedOut: false,
   }]));
 }
 
@@ -267,11 +269,14 @@ const integrityMutations = [
   ['catalog closure duplicates an owner task', (input) => { const closure = input.catalog['x-p1r-event-governance'].plannedClosures.find((item) => item.gapId === 'EVENT-GAP-ONB-001'); closure.d2ClosureTasks.push(closure.d2ClosureTasks[0]); }, /duplicate-free/],
   ['static reports are omitted', (input) => { delete input.staticChecks; }, /static checker/],
   ['static report command is forged', (input) => { input.staticChecks['api-contract'].argv = ['scripts/forged.mjs']; }, /argv/],
+  ['static report timeout is forged', (input) => { input.staticChecks['domain-contracts'].timeoutMs = 180_000; }, /timeout/],
+  ['static report is timed out', (input) => { input.staticChecks['domain-contracts'].timedOut = true; }, /timed out/],
   ['static report is not PASS', (input) => { input.staticChecks['event-governance'].result = 'FAIL'; }, /did not report PASS/],
   ['static checker bypass flag', (input) => { input.requireStaticChecks = false; }, /disabled/],
   ['checkpoint is retargeted', (input) => { input.policy.sourceCheckpoint = 'a'.repeat(40); }, /checkpoint/],
   ['task start commit is retargeted', (input) => { input.policy.taskStartCommit = 'b'.repeat(40); }, /taskStartCommit/],
   ['canonical input path is retargeted', (input) => { input.policy.canonicalInputs.eventCatalog = 'config/fake.json'; }, /canonical input/],
+  ['static checker timeout policy is shortened', (input) => { input.policy.requiredStaticChecks.find((check) => check.id === 'domain-contracts').timeoutMs = 180_000; }, /static checker/],
   ['mode policy is weakened', (input) => { input.policy.modes.review.allowTargetRegistryStatus = 'CLOSED'; }, /mode/],
   ['prohibition is removed', (input) => { input.policy.prohibitions.pop(); }, /prohibitions/],
 ];

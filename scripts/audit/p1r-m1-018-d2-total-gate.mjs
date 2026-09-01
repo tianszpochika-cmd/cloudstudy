@@ -197,21 +197,23 @@ const EXPECTED_PROHIBITIONS = Object.freeze([
   'closure-without-canonical-evidence',
   'no-static-check-bypass',
 ]);
+const DEFAULT_STATIC_CHECK_TIMEOUT_MS = 180_000;
+const LONG_RUNNING_STATIC_CHECK_TIMEOUT_MS = 600_000;
 const EXPECTED_STATIC_CHECKS = Object.freeze([
-  { id: 'api-contract', owner: 'contract-governance', argv: ['scripts/audit/p1r-api-contract-check.mjs'] },
-  { id: 'auth-contract', owner: 'iam-service', argv: ['scripts/audit/p1r-auth-contract-check.mjs'] },
-  { id: 'iam-policy', owner: 'iam-service', argv: ['scripts/audit/p1r-iam-policy-contract-check.mjs'] },
-  { id: 'gateway-contract', owner: 'api-gateway', argv: ['scripts/audit/p1r-gateway-contract-check.mjs'] },
-  { id: 'data-ownership', owner: 'data-governance', argv: ['scripts/audit/p1r-data-ownership-check.mjs', '--json'] },
-  { id: 'event-governance', owner: 'event-governance', argv: ['scripts/audit/p1r-event-governance-check.mjs', '--json'] },
-  { id: 'event-reliability', owner: 'workflow-service', argv: ['scripts/audit/p1r-event-reliability-check.mjs', '--json'] },
-  { id: 'saga-recovery', owner: 'workflow-service', argv: ['scripts/audit/p1r-saga-recovery-check.mjs', '--json'] },
-  { id: 'domain-contracts', owner: 'domain-owners', argv: ['scripts/dev/run-node-tests.mjs', 'tests/p1r'] },
-  { id: 'contract-tooling', owner: 'contract-governance', argv: ['scripts/dev/run-node-tests.mjs', 'tests/p1r/p1r-contract-tooling.test.mjs'] },
-  { id: 'compatibility', owner: 'contract-governance', argv: ['scripts/contracts/compatibility-git-baseline.mjs', '--ref', EXPECTED_CONTRACT_BASELINE, '--governance-ref', EXPECTED_GOVERNANCE_BASELINE, '--kind', 'all', '--json'] },
-  { id: 'generated-types', owner: 'contract-governance', argv: ['scripts/contracts/generate-contracts.mjs', '--check'] },
-  { id: 'migration-policy', owner: 'data-governance', argv: ['scripts/database/validate-migrations.mjs'] },
-  { id: 'plan-and-evidence', owner: 'qa-governance', argv: ['scripts/audit/verify-phase1-rebaseline-plan.mjs'] },
+  { id: 'api-contract', owner: 'contract-governance', timeoutMs: DEFAULT_STATIC_CHECK_TIMEOUT_MS, argv: ['scripts/audit/p1r-api-contract-check.mjs'] },
+  { id: 'auth-contract', owner: 'iam-service', timeoutMs: DEFAULT_STATIC_CHECK_TIMEOUT_MS, argv: ['scripts/audit/p1r-auth-contract-check.mjs'] },
+  { id: 'iam-policy', owner: 'iam-service', timeoutMs: DEFAULT_STATIC_CHECK_TIMEOUT_MS, argv: ['scripts/audit/p1r-iam-policy-contract-check.mjs'] },
+  { id: 'gateway-contract', owner: 'api-gateway', timeoutMs: DEFAULT_STATIC_CHECK_TIMEOUT_MS, argv: ['scripts/audit/p1r-gateway-contract-check.mjs'] },
+  { id: 'data-ownership', owner: 'data-governance', timeoutMs: DEFAULT_STATIC_CHECK_TIMEOUT_MS, argv: ['scripts/audit/p1r-data-ownership-check.mjs', '--json'] },
+  { id: 'event-governance', owner: 'event-governance', timeoutMs: DEFAULT_STATIC_CHECK_TIMEOUT_MS, argv: ['scripts/audit/p1r-event-governance-check.mjs', '--json'] },
+  { id: 'event-reliability', owner: 'workflow-service', timeoutMs: DEFAULT_STATIC_CHECK_TIMEOUT_MS, argv: ['scripts/audit/p1r-event-reliability-check.mjs', '--json'] },
+  { id: 'saga-recovery', owner: 'workflow-service', timeoutMs: DEFAULT_STATIC_CHECK_TIMEOUT_MS, argv: ['scripts/audit/p1r-saga-recovery-check.mjs', '--json'] },
+  { id: 'domain-contracts', owner: 'domain-owners', timeoutMs: LONG_RUNNING_STATIC_CHECK_TIMEOUT_MS, argv: ['scripts/dev/run-node-tests.mjs', 'tests/p1r'] },
+  { id: 'contract-tooling', owner: 'contract-governance', timeoutMs: LONG_RUNNING_STATIC_CHECK_TIMEOUT_MS, argv: ['scripts/dev/run-node-tests.mjs', 'tests/p1r/p1r-contract-tooling.test.mjs'] },
+  { id: 'compatibility', owner: 'contract-governance', timeoutMs: DEFAULT_STATIC_CHECK_TIMEOUT_MS, argv: ['scripts/contracts/compatibility-git-baseline.mjs', '--ref', EXPECTED_CONTRACT_BASELINE, '--governance-ref', EXPECTED_GOVERNANCE_BASELINE, '--kind', 'all', '--json'] },
+  { id: 'generated-types', owner: 'contract-governance', timeoutMs: DEFAULT_STATIC_CHECK_TIMEOUT_MS, argv: ['scripts/contracts/generate-contracts.mjs', '--check'] },
+  { id: 'migration-policy', owner: 'data-governance', timeoutMs: DEFAULT_STATIC_CHECK_TIMEOUT_MS, argv: ['scripts/database/validate-migrations.mjs'] },
+  { id: 'plan-and-evidence', owner: 'qa-governance', timeoutMs: DEFAULT_STATIC_CHECK_TIMEOUT_MS, argv: ['scripts/audit/verify-phase1-rebaseline-plan.mjs'] },
 ]);
 
 function isRecord(value) { return value !== null && typeof value === 'object' && !Array.isArray(value); }
@@ -582,6 +584,8 @@ function checkStaticReports(staticChecks, policy, errors) {
     add(errors, report.exitCode === 0, `static checker ${expected.id} did not exit successfully`);
     add(errors, report.executed === true, `static checker ${expected.id} is not bound to an executed command`);
     add(errors, sameArray(report.argv, expected.argv), `static checker ${expected.id} argv drifted from the fixed command`);
+    add(errors, report.timeoutMs === expected.timeoutMs, `static checker ${expected.id} timeout drifted from the fixed policy`);
+    add(errors, report.timedOut === false, `static checker ${expected.id} timed out`);
   }
 }
 
@@ -681,16 +685,18 @@ export function executeM1018RequiredStaticChecks({ root = DEFAULT_ROOT, policy }
   const errors = [];
   for (const check of effectivePolicy.requiredStaticChecks ?? []) {
     const argv = Array.isArray(check?.argv) ? check.argv : [];
-    if (!nonEmpty(check?.id) || argv.length === 0) {
+    const timeoutMs = check?.timeoutMs;
+    if (!nonEmpty(check?.id) || argv.length === 0 || !Number.isInteger(timeoutMs) || timeoutMs < 1_000 || timeoutMs > 900_000) {
       errors.push(`cannot execute malformed static checker definition ${check?.id ?? '(missing id)'}`);
       continue;
     }
     let execution;
+    const startedAt = Date.now();
     try {
       execution = spawnSync(process.execPath, argv, {
         cwd: root,
         encoding: 'utf8',
-        timeout: 180_000,
+        timeout: timeoutMs,
         windowsHide: true,
         maxBuffer: 16 * 1024 * 1024,
       });
@@ -699,14 +705,22 @@ export function executeM1018RequiredStaticChecks({ root = DEFAULT_ROOT, policy }
     }
     const exitCode = typeof execution?.status === 'number' ? execution.status : -1;
     const output = `${execution?.stdout ?? ''}${execution?.stderr ?? ''}`;
+    const timedOut = execution?.error?.code === 'ETIMEDOUT';
     reports[check.id] = {
       result: exitCode === 0 && !execution?.error ? 'PASS' : 'FAIL',
       exitCode,
       executed: true,
       argv: [...argv],
+      timeoutMs,
+      timedOut,
+      durationMs: Date.now() - startedAt,
       outputTail: output.slice(-2000),
     };
-    if (reports[check.id].result !== 'PASS') errors.push(`static checker ${check.id} failed (exit=${exitCode})`);
+    if (reports[check.id].result !== 'PASS') {
+      errors.push(timedOut
+        ? `static checker ${check.id} timed out after ${timeoutMs}ms`
+        : `static checker ${check.id} failed (exit=${exitCode})`);
+    }
   }
   return { reports, errors };
 }
