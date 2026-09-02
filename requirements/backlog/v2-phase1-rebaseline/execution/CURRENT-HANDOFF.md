@@ -1,6 +1,6 @@
 # 当前跨电脑交接（dev）
 
-更新时间：2026-09-01（Asia/Shanghai）。本文件只说明如何恢复当前开发检查点，不替代任务台账或 canonical Evidence manifest。
+更新时间：2026-09-02（Asia/Shanghai）。本文件只说明如何恢复当前开发检查点，不替代任务台账或 canonical Evidence manifest。
 
 ## 1. 当前检查点
 
@@ -8,6 +8,7 @@
 - M1-018 审计实现源：`2a747ba3917acd92664911c6b4be070ff469e302`；Evidence C 集成检查点：`3ab5d50e5d22c02a8a8c1d1f92643e37528d85c1`。
 - 独立终验：`agent:m1_018_closure_fix_review:gpt-5.6-luna:max` 已对 C 判定 `ACCEPT`，P1/P2=`0/0`。
 - 当前台账：`25 ACCEPTED / 1 BLOCKED / 2 IN_PROGRESS / 80 PLANNED`，共 108 项。
+- M2 开发检查点：IAM `127fe44`，Gateway 与 canonical execution projection `a10c7ec`；两者均是可恢复的 `IN_PROGRESS / NOT_RUNTIME_VERIFIED` 源码检查点，不是 canonical Evidence 或验收提交。
 - M1-018 canonical Evidence：`evidence/p1r/m1/P1R-M1-018/manifest.json`。
 - C 阶段将 M1-001..009、11..017 的 current-source 摘要绑定到 `2a747ba`；D 阶段已将唯一包含 GAP registry 摘要的 M1-010 绑定到 C，并录入最终终验。
 
@@ -28,6 +29,8 @@
 - contracts merge/generate/validate：PASS。
 - 固定 `463c4b2` 与 `97497af` compatibility：OpenAPI/events/schema 全 compatible。
 - event governance/reliability、Gateway、IAM、data ownership/migration、B26 static、plan、CI、diff：PASS。
+- M2 检查点专项：Gateway Java 25 `61/61`、Gateway Node 契约 `95/95`；IAM Java 25 普通测试 `41` 项（其中 9 项数据库测试按配置跳过）、启用 MySQL 后 `41/41`，Flyway 11 个迁移至 schema V12；Auth/Policy/Gateway contract audit、contracts merge/generate/validate、plan 和 diff 均 PASS。
+- 2026-09-02 全量 P1R 首轮 `1415/1416`；唯一失败是测试进程在清单修正前读到 IAM migration `fileCount=9`。清单已修正为 `11/V12`，修正后 data-ownership 定向回归 `34/34` PASS，最终提交状态第二轮全量 P1R `1416/1416` PASS。
 
 ## 4. 必须保留的真实边界
 
@@ -44,11 +47,19 @@
 1. `git fetch origin` 并确认 `dev` 包含 M1-018 最终源、C/D Evidence 提交。
 2. 运行 `pnpm plan:p1r:check`、`node scripts/audit/p1r-gap-registry-check.mjs --json`、`pnpm p1r:evidence:check`。
 3. 从 `P1R-M2-001` 和 `P1R-M2-002` 两条可并行轨道开始；它们验收后再进入 `P1R-M2-003`。
-4. 所有 Java 25 测试显式使用 `C:\Program Files\Java\jdk-25`；默认 PATH 上的 JDK 21 不是 M2 验收工具链。
+4. 所有 Java 25 测试必须显式使用有效的 JDK 25；当前主机已验证 `C:\Users\tiansongzhen\.jdks\openjdk-25.0.2`，默认 PATH 上的 JDK 21 不是 M2 验收工具链。
 5. 没有真实运行环境的检查只能记为 `NOT_RUNTIME_VERIFIED`，不得改写为 PASS/GO。
 
 ## 6. 当前执行中的 M2 轨道
 
-- `P1R-M2-001`：Gateway 进程内实现与 Java 25 测试正在进行；文件边界限定为 `services/api-gateway/**`。真实 Redis/JWKS/upstream/浏览器/NetworkPolicy 与 durable audit 仍待运行 Evidence。
-- `P1R-M2-002`：IAM 运行实现正在进行；文件边界优先限定为 `services/iam-service/**`。真实 MySQL/Redis、跨进程 Gateway/领域服务和故障恢复仍待运行 Evidence。
+- `P1R-M2-001`：Gateway 进程内实现与 canonical execution projection 已保存到 `a10c7ec`；真实 Redis/JWKS/upstream/浏览器/NetworkPolicy 与 durable audit 仍待运行 Evidence。
+- `P1R-M2-002`：IAM 密码、会话、成人 Gate/同意、幂等、限流、Policy/PDP 和 JDBC/Flyway 检查点已保存到 `127fe44`；真实 Redis、跨进程 Gateway/领域服务和故障恢复仍待运行 Evidence。
 - `P1R-M2-003` 仅做只读预研；必须等待 M2-001/M2-002 验收后才能转为实现。
+
+## 7. M2 检查点验收前必须关闭的风险
+
+- IAM legacy Consent 中摘要为空的历史行仍可能导致 `JdbcConsentStore.history()` 读取失败，需要兼容迁移或读取策略及回归测试。
+- 登录与并发密码重置之间缺少锁内 password-hash 复验，旧密码仍存在一次竞态登录窗口。
+- Idempotency 外层事务与 Consent/Policy 内层事务的预期拒绝可能形成 rollback-only，最终转为 500 并回滚拒绝审计；需补 controller + idempotency + MySQL 组合测试。
+- 登录失败计数当前使用独立事务，仍可能出现锁定事实已提交而审计失败的非原子状态。
+- 正式 Consent 策略来源、密码重置消息投递、VERIFIED device trust，以及 Gateway 的真实 Redis/JWKS/upstream/浏览器/NetworkPolicy/durable audit 尚未形成运行 Evidence。
