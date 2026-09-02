@@ -1,10 +1,15 @@
 package com.englishflow.iam.domain;
 
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.Propagation;
 
 import java.sql.ResultSet;
 import java.sql.Timestamp;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Objects;
@@ -13,12 +18,13 @@ import java.util.Set;
 import java.util.UUID;
 
 /** Durable IAM account store. Passwords are stored only as BCrypt/Argon-compatible hashes. */
-public final class JdbcAccountStore implements AccountStore {
+public class JdbcAccountStore implements AccountStore {
     private final JdbcTemplate jdbc;
 
     public JdbcAccountStore(JdbcTemplate jdbc) { this.jdbc = Objects.requireNonNull(jdbc, "jdbc"); }
 
     @Override
+    @Transactional(transactionManager = "iamTransactionManager")
     public AccountRecord save(AccountRecord account) {
         try {
             jdbc.update("INSERT INTO iam_principal (principal_id, tenant_id, status) VALUES (?, ?, 'ACTIVE')",
@@ -30,6 +36,8 @@ public final class JdbcAccountStore implements AccountStore {
                     account.lockedUntil() == null ? null : Timestamp.from(account.lockedUntil()),
                     Timestamp.from(account.createdAt()), Timestamp.from(account.updatedAt()));
             return account;
+        } catch (DuplicateKeyException exception) {
+            throw new IamPolicyException(IamDecisionCode.ACCOUNT_CONFLICT, "iam.account.already_exists");
         } catch (DataAccessException | IllegalArgumentException exception) {
             throw unavailable(exception);
         }
@@ -49,7 +57,73 @@ public final class JdbcAccountStore implements AccountStore {
                 principalId.toString());
     }
 
+    /**
+     * Serializes failed-attempt accounting at the MySQL row boundary. A JVM monitor in
+     * PasswordAccountService cannot protect two IAM processes; SELECT ... FOR UPDATE keeps the
+     * counter and lock transition from being lost under concurrent invalid passwords.
+     */
     @Override
+    @Transactional(transactionManager = "iamTransactionManager", propagation = Propagation.REQUIRES_NEW)
+    public AccountRecord recordFailedLogin(AccountRecord observed, Instant at, int maxAttempts,
+                                           Duration lockDuration) {
+        try {
+            AccountRecord current = query("SELECT principal_id, identifier, password_hash, roles, permissions, status, failed_attempts, "
+                            + "locked_until, created_at, updated_at FROM iam_account WHERE principal_id = ? FOR UPDATE",
+                    observed.principalId().toString()).orElseThrow(() -> unavailable(null));
+            if (current.status() == AccountStatus.DISABLED) return current;
+            if (current.status() == AccountStatus.LOCKED
+                    && current.lockedUntil() != null && current.lockedUntil().isAfter(at)) {
+                return current;
+            }
+            if (current.status() == AccountStatus.LOCKED) current = current.unlocked(at);
+            AccountRecord failed = current.failedLogin(at, Math.max(1, maxAttempts),
+                    at.plus(lockDuration == null || lockDuration.isNegative() || lockDuration.isZero()
+                            ? Duration.ofMinutes(15) : lockDuration));
+            int updated = jdbc.update("UPDATE iam_account SET status = ?, failed_attempts = ?, locked_until = ?, updated_at = ? "
+                            + "WHERE principal_id = ?",
+                    failed.status().name(), failed.failedAttempts(),
+                    failed.lockedUntil() == null ? null : Timestamp.from(failed.lockedUntil()),
+                    Timestamp.from(failed.updatedAt()), failed.principalId().toString());
+            if (updated != 1) throw unavailable(null);
+            return failed;
+        } catch (IamPolicyException exception) {
+            throw exception;
+        } catch (DataAccessException | IllegalArgumentException exception) {
+            throw unavailable(exception);
+        }
+    }
+
+    @Override
+    @Transactional(transactionManager = "iamTransactionManager")
+    public AccountRecord recordSuccessfulLogin(AccountRecord observed, Instant at) {
+        try {
+            AccountRecord current = query("SELECT principal_id, identifier, password_hash, roles, permissions, status, failed_attempts, "
+                            + "locked_until, created_at, updated_at FROM iam_account WHERE principal_id = ? FOR UPDATE",
+                    observed.principalId().toString()).orElseThrow(() -> unavailable(null));
+            // A stale successful-password check must never clear a newer lock or disabled
+            // account. An expired lock may be cleared only after the current row is re-read.
+            if (current.status() == AccountStatus.DISABLED) return current;
+            AccountStatus persistedStatus = current.status();
+            if (current.status() == AccountStatus.LOCKED) {
+                if (current.lockedUntil() == null || current.lockedUntil().isAfter(at)) return current;
+                current = current.unlocked(at);
+            }
+            AccountRecord loggedIn = current.successfulLogin(at);
+            int updated = jdbc.update("UPDATE iam_account SET status = ?, failed_attempts = 0, locked_until = NULL, updated_at = ? "
+                            + "WHERE principal_id = ? AND status = ?",
+                    loggedIn.status().name(), Timestamp.from(loggedIn.updatedAt()), loggedIn.principalId().toString(),
+                    persistedStatus.name());
+            if (updated != 1) throw unavailable(null);
+            return loggedIn;
+        } catch (IamPolicyException exception) {
+            throw exception;
+        } catch (DataAccessException | IllegalArgumentException exception) {
+            throw unavailable(exception);
+        }
+    }
+
+    @Override
+    @Transactional(transactionManager = "iamTransactionManager")
     public AccountRecord replace(AccountRecord account) {
         try {
             int updated = jdbc.update("UPDATE iam_account SET identifier = ?, password_hash = ?, roles = ?, permissions = ?, "
@@ -60,6 +134,25 @@ public final class JdbcAccountStore implements AccountStore {
                     Timestamp.from(account.updatedAt()), account.principalId().toString());
             if (updated != 1) throw unavailable(null);
             return account;
+        } catch (DataAccessException | IllegalArgumentException exception) {
+            throw unavailable(exception);
+        }
+    }
+
+    @Override
+    @Transactional(transactionManager = "iamTransactionManager")
+    public AccountRecord changePassword(PrincipalId principalId, String passwordHash, Instant at) {
+        try {
+            AccountRecord current = query("SELECT principal_id, identifier, password_hash, roles, permissions, status, failed_attempts, "
+                            + "locked_until, created_at, updated_at FROM iam_account WHERE principal_id = ? FOR UPDATE",
+                    principalId.toString()).orElseThrow(() -> new IamPolicyException(
+                            IamDecisionCode.PRINCIPAL_NOT_FOUND, "iam.principal.not_found"));
+            int updated = jdbc.update("UPDATE iam_account SET password_hash = ?, updated_at = ? "
+                            + "WHERE principal_id = ?", passwordHash, Timestamp.from(at), principalId.toString());
+            if (updated != 1) throw unavailable(null);
+            return current.withPasswordHashPreservingSecurity(passwordHash, at);
+        } catch (IamPolicyException exception) {
+            throw exception;
         } catch (DataAccessException | IllegalArgumentException exception) {
             throw unavailable(exception);
         }

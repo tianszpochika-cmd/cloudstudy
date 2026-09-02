@@ -13,12 +13,13 @@ import java.util.Optional;
 import java.util.UUID;
 
 /** Durable refresh-session adapter with a conditional rotation update and digest history. */
-public final class JdbcSessionStore implements SessionStore {
+public class JdbcSessionStore implements SessionStore {
     private final JdbcTemplate jdbc;
 
     public JdbcSessionStore(JdbcTemplate jdbc) { this.jdbc = Objects.requireNonNull(jdbc, "jdbc"); }
 
     @Override
+    @Transactional(transactionManager = "iamTransactionManager")
     public SessionRecord save(SessionRecord session) {
         try {
             jdbc.update("INSERT INTO iam_session (session_id, principal_id, device_id, token_family_id, refresh_token_hash, "
@@ -53,7 +54,7 @@ public final class JdbcSessionStore implements SessionStore {
     }
 
     @Override
-    @Transactional
+    @Transactional(transactionManager = "iamTransactionManager")
     public Optional<SessionRecord> replaceIfCurrent(SessionId id, long expectedRotation,
                                                     String expectedDigest, SessionRecord replacement) {
         try {
@@ -72,6 +73,7 @@ public final class JdbcSessionStore implements SessionStore {
     }
 
     @Override
+    @Transactional(transactionManager = "iamTransactionManager")
     public Optional<SessionRecord> revoke(SessionId id, Instant at, String reason) {
         try {
             jdbc.update("UPDATE iam_session SET status = 'REVOKED', revoked_at = ?, revoke_reason = ? "

@@ -1,0 +1,12 @@
+spring:
+  config:
+    activate:
+      on-profile: local
+
+iam:
+  # Explicit local-only opt-out; production/default configuration remains Secure.
+  jwt:
+    ephemeral-keys-allowed: true
+    refresh-cookie-secure: false
+  idempotency:
+    replay-secret: local-only-idempotency-replay-secret-2026

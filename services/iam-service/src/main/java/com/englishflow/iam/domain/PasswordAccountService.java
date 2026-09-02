@@ -23,15 +23,23 @@ public final class PasswordAccountService {
     private final AuditFactPort audit;
     private final Clock clock;
     private final IamServiceProperties.AccountProperties properties;
+    private final RateLimitStore rateLimits;
     private final ConcurrentHashMap<String, Object> locks = new ConcurrentHashMap<>();
 
     public PasswordAccountService(AccountStore accounts, PasswordEncoder passwordEncoder,
                                   AuditFactPort audit, Clock clock, IamServiceProperties properties) {
+        this(accounts, passwordEncoder, audit, clock, properties, null);
+    }
+
+    public PasswordAccountService(AccountStore accounts, PasswordEncoder passwordEncoder,
+                                  AuditFactPort audit, Clock clock, IamServiceProperties properties,
+                                  RateLimitStore rateLimits) {
         this.accounts = Objects.requireNonNull(accounts, "accounts");
         this.passwordEncoder = Objects.requireNonNull(passwordEncoder, "passwordEncoder");
         this.audit = Objects.requireNonNull(audit, "audit");
         this.clock = Objects.requireNonNull(clock, "clock");
         this.properties = Objects.requireNonNull(properties, "properties").getAccount();
+        this.rateLimits = rateLimits;
     }
 
     public AccountRecord register(String identifier, String rawPassword, ClientAuthorityClaims clientAuthorityClaims) {
@@ -57,27 +65,37 @@ public final class PasswordAccountService {
 
     public AccountRecord authenticate(String identifier, String rawPassword) {
         String normalized = safeIdentifier(identifier);
-        AccountRecord account = accounts.findByIdentifier(normalized).orElse(null);
-        boolean passwordMatches = account != null && passwordEncoder.matches(rawPassword == null ? "" : rawPassword,
-                account.passwordHash());
-        if (account == null) {
-            passwordEncoder.matches(rawPassword == null ? "" : rawPassword, DUMMY_HASH);
-            throw invalidCredentials();
-        }
         synchronized (locks.computeIfAbsent(normalized, ignored -> new Object())) {
             Instant now = Instant.now(clock);
+            if (rateLimits != null && !rateLimits.allow("login", rateKey(normalized), now,
+                    Math.max(1, properties.getLoginRequestsPerMinute()), java.time.Duration.ofMinutes(1))) {
+                throw new IamPolicyException(IamDecisionCode.RATE_LIMITED, "iam.login.rate_limited");
+            }
+            // Read inside the JVM guard. The previous read-before-lock sequence allowed a
+            // stale failedAttempts value to replace a newer JDBC row, losing concurrent
+            // failures. JdbcAccountStore also re-reads under SELECT ... FOR UPDATE so the
+            // same guarantee holds across IAM processes.
+            AccountRecord account = accounts.findByIdentifier(normalized).orElse(null);
+            boolean passwordMatches = account != null && passwordEncoder.matches(rawPassword == null ? "" : rawPassword,
+                    account.passwordHash());
+            if (account == null) {
+                passwordEncoder.matches(rawPassword == null ? "" : rawPassword, DUMMY_HASH);
+                throw invalidCredentials();
+            }
             if (account.status() == AccountStatus.DISABLED) throw invalidCredentials();
             if (account.status() == AccountStatus.LOCKED) {
                 if (account.lockedUntil() == null || account.lockedUntil().isAfter(now)) {
                     appendAudit(account, IamDecisionCode.ACCOUNT_LOCKED, "account_locked");
                     throw new IamPolicyException(IamDecisionCode.ACCOUNT_LOCKED, "iam.account.locked");
                 }
-                account = accounts.replace(account.unlocked(now));
+                // Keep the unlock decision local. Durable adapters re-read under a row lock on
+                // the eventual write, so this request cannot overwrite a newer lock.
+                account = account.unlocked(now);
             }
             if (!passwordMatches) {
-                Instant lockUntil = now.plus(positive(properties.getLockDuration(), java.time.Duration.ofMinutes(15)));
-                AccountRecord failed = accounts.replace(account.failedLogin(now,
-                        Math.max(1, properties.getMaxFailedAttempts()), lockUntil));
+                AccountRecord failed = accounts.recordFailedLogin(account, now,
+                        Math.max(1, properties.getMaxFailedAttempts()),
+                        positive(properties.getLockDuration(), java.time.Duration.ofMinutes(15)));
                 appendAudit(failed, failed.status() == AccountStatus.LOCKED
                         ? IamDecisionCode.ACCOUNT_LOCKED : IamDecisionCode.INVALID_CREDENTIALS,
                         failed.status() == AccountStatus.LOCKED ? "account_locked" : "login_failed");
@@ -86,7 +104,12 @@ public final class PasswordAccountService {
                 }
                 throw invalidCredentials();
             }
-            AccountRecord loggedIn = accounts.replace(account.successfulLogin(now));
+            AccountRecord loggedIn = accounts.recordSuccessfulLogin(account, now);
+            if (loggedIn.status() == AccountStatus.LOCKED) {
+                appendAudit(loggedIn, IamDecisionCode.ACCOUNT_LOCKED, "account_locked");
+                throw new IamPolicyException(IamDecisionCode.ACCOUNT_LOCKED, "iam.account.locked");
+            }
+            if (loggedIn.status() == AccountStatus.DISABLED) throw invalidCredentials();
             appendAudit(loggedIn, IamDecisionCode.ACCOUNT_LOGIN, "account_login");
             return loggedIn;
         }
@@ -99,8 +122,8 @@ public final class PasswordAccountService {
 
     public AccountRecord changePassword(PrincipalId principalId, String rawPassword) {
         validatePassword(rawPassword);
-        AccountRecord current = find(principalId);
-        AccountRecord changed = accounts.replace(current.withPasswordHash(passwordEncoder.encode(rawPassword), Instant.now(clock)));
+        AccountRecord changed = accounts.changePassword(principalId,
+                passwordEncoder.encode(rawPassword), Instant.now(clock));
         appendAudit(changed, IamDecisionCode.PASSWORD_RESET_COMPLETED, "password_reset_completed");
         return changed;
     }
@@ -121,9 +144,20 @@ public final class PasswordAccountService {
         return new IamPolicyException(IamDecisionCode.INVALID_CREDENTIALS, "iam.credentials.invalid");
     }
 
+    private static String rateKey(String normalizedIdentifier) {
+        return SecretDigests.sha256Hex("iam-account-rate:" + normalizedIdentifier);
+    }
+
     private void appendAudit(AccountRecord account, IamDecisionCode code, String type) {
-        audit.append(AuditDecision.of(type, code, code != IamDecisionCode.INVALID_CREDENTIALS,
-                TenantScope.derive(account.principalId()), Instant.now(clock), Set.of(), Set.of()));
+        try {
+            audit.append(AuditDecision.of(type, code, code != IamDecisionCode.INVALID_CREDENTIALS,
+                    TenantScope.derive(account.principalId()), Instant.now(clock), Set.of(), Set.of()));
+        } catch (RuntimeException exception) {
+            // A lock/rate/credential decision is only durable when its audit fact is durable.
+            // Surface a typed infrastructure failure so the idempotency transaction rolls back
+            // unknown persistence faults instead of returning a misleading authentication result.
+            throw new IamPolicyException(IamDecisionCode.AUDIT_UNAVAILABLE, "iam.audit.unavailable");
+        }
     }
 
     private static java.time.Duration positive(java.time.Duration value, java.time.Duration fallback) {

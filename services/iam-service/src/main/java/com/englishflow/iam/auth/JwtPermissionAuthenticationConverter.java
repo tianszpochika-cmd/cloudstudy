@@ -14,13 +14,16 @@ import java.util.List;
 public final class JwtPermissionAuthenticationConverter implements Converter<Jwt, AbstractAuthenticationToken> {
     @Override
     public AbstractAuthenticationToken convert(Jwt jwt) {
-        JwtAuthenticationConverter delegate = new JwtAuthenticationConverter();
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        add(jwt.getClaim("permissions"), authorities, "PERM_");
-        add(jwt.getClaim("roles"), authorities, "ROLE_");
-        addScope(jwt.getClaimAsString("scope"), authorities);
-        JwtAuthenticationConverter standard = new JwtAuthenticationConverter();
-        AbstractAuthenticationToken token = standard.convert(jwt);
+        String tokenType = jwt.getClaimAsString("token_type");
+        authorities.add(new SimpleGrantedAuthority("TOKEN_TYPE_" + tokenType));
+        if ("service".equals(tokenType)) {
+            authorities.add(new SimpleGrantedAuthority("SERVICE_" + jwt.getClaimAsString("service_id")));
+        } else {
+            add(jwt.getClaim("permissions"), authorities, "PERM_");
+            add(jwt.getClaim("roles"), authorities, "ROLE_");
+            addScope(jwt.getClaimAsString("scope"), authorities);
+        }
         return new org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken(
                 jwt, authorities, jwt.getSubject());
     }

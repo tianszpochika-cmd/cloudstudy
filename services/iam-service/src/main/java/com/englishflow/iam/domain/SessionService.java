@@ -3,6 +3,8 @@ package com.englishflow.iam.domain;
 import com.englishflow.iam.config.IamServiceProperties;
 
 import java.security.SecureRandom;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.Base64;
@@ -19,6 +21,7 @@ public final class SessionService {
     private final Clock clock;
     private final java.time.Duration refreshTtl;
     private final java.time.Duration accessTtl;
+    private final byte[] replaySecret;
     private final SecureRandom random = new SecureRandom();
     private final ConcurrentHashMap<SessionId, Object> locks = new ConcurrentHashMap<>();
 
@@ -28,13 +31,23 @@ public final class SessionService {
         this.clock = Objects.requireNonNull(clock, "clock");
         this.refreshTtl = positive(properties.getJwt().getRefreshTokenTtl(), java.time.Duration.ofDays(30));
         this.accessTtl = positive(properties.getJwt().getAccessTokenTtl(), java.time.Duration.ofMinutes(15));
+        String configuredReplaySecret = properties.getIdempotency().getReplaySecret();
+        this.replaySecret = configuredReplaySecret == null || configuredReplaySecret.isBlank()
+                ? randomSecret() : SecretDigests.sha256Bytes(configuredReplaySecret);
     }
 
     public SessionCreation open(ServerPrincipalContext context, DeviceId deviceId) {
-        String token = randomToken();
+        return open(context, deviceId, null);
+    }
+
+    /** Opens a session with a stable server-secret-derived token for an idempotent retry. */
+    public SessionCreation open(ServerPrincipalContext context, DeviceId deviceId, String replaySeed) {
+        SessionId sessionId = SessionId.random();
+        String tokenFamilyId = UUID.randomUUID().toString();
+        String token = replaySeed == null ? randomToken() : deterministicToken(replaySeed, sessionId, tokenFamilyId, 0);
         Instant now = Instant.now(clock);
-        SessionRecord session = new SessionRecord(SessionId.random(), context.principalId(), context.scope(), deviceId,
-                UUID.randomUUID().toString(), SecretDigests.sha256Hex(token), 0, SessionStatus.ACTIVE,
+        SessionRecord session = new SessionRecord(sessionId, context.principalId(), context.scope(), deviceId,
+                tokenFamilyId, SecretDigests.sha256Hex(token), 0, SessionStatus.ACTIVE,
                 now, now, now.plus(refreshTtl), null, null);
         SessionRecord saved = sessions.save(session);
         appendAudit(saved.scope(), IamDecisionCode.SESSION_OPENED, "session_opened", true);
@@ -54,6 +67,10 @@ public final class SessionService {
     }
 
     public SessionRotationResult rotate(SessionId sessionId, String presentedRefreshToken) {
+        return rotate(sessionId, presentedRefreshToken, null);
+    }
+
+    public SessionRotationResult rotate(SessionId sessionId, String presentedRefreshToken, String replaySeed) {
         if (presentedRefreshToken == null || presentedRefreshToken.isBlank()) throw invalidRefresh();
         synchronized (locks.computeIfAbsent(sessionId, ignored -> new Object())) {
             SessionRecord current = sessions.find(sessionId).orElseThrow(() -> new IamPolicyException(
@@ -70,15 +87,21 @@ public final class SessionService {
                 appendAudit(current.scope(), IamDecisionCode.SESSION_REPLAY, "session_replay", false);
                 throw new IamPolicyException(IamDecisionCode.SESSION_REPLAY, "iam.session.replay");
             }
-            String nextToken = randomToken();
+            String nextToken = replaySeed == null
+                    ? randomToken()
+                    : deterministicToken(replaySeed, current.sessionId(), current.tokenFamilyId(), current.rotation() + 1);
             SessionRecord next = current.rotate(SecretDigests.sha256Hex(nextToken), now);
             SessionRecord persisted;
             try {
                 persisted = sessions.replaceIfCurrent(current.sessionId(), current.rotation(), current.refreshTokenDigest(), next)
                         .orElseThrow(() -> new IamPolicyException(IamDecisionCode.SESSION_REPLAY, "iam.session.replay"));
             } catch (IamPolicyException exception) {
-                revokeLocally(current, "rotation_compare_and_set_conflict");
-                appendAudit(current.scope(), IamDecisionCode.SESSION_REPLAY, "session_replay", false);
+                // An empty CAS result is a replay only. Storage failures must remain a 503 and
+                // must not be mislabeled as an authentication replay.
+                if (exception.code() == IamDecisionCode.SESSION_REPLAY) {
+                    revokeLocally(current, "rotation_compare_and_set_conflict");
+                    appendAudit(current.scope(), IamDecisionCode.SESSION_REPLAY, "session_replay", false);
+                }
                 throw exception;
             } catch (RuntimeException exception) {
                 revokeLocally(current, "session_store_unavailable");
@@ -91,15 +114,37 @@ public final class SessionService {
     }
 
     public SessionRotationResult rotateByRefreshToken(String presentedRefreshToken) {
+        return rotateByRefreshToken(presentedRefreshToken, null);
+    }
+
+    public SessionRotationResult rotateByRefreshToken(String presentedRefreshToken, String replaySeed) {
         if (presentedRefreshToken == null || presentedRefreshToken.isBlank()) throw invalidRefresh();
         String digest = SecretDigests.sha256Hex(presentedRefreshToken);
         SessionRecord session = sessions.findByRefreshTokenDigest(digest).orElseThrow(() ->
                 new IamPolicyException(IamDecisionCode.SESSION_NOT_FOUND, "iam.session.not_found"));
-        return rotate(session.sessionId(), presentedRefreshToken);
+        return rotate(session.sessionId(), presentedRefreshToken, replaySeed);
     }
 
     public SessionRecord find(SessionId sessionId) { return sessions.find(sessionId).orElseThrow(() ->
             new IamPolicyException(IamDecisionCode.SESSION_NOT_FOUND, "iam.session.not_found")); }
+    public SessionRecord findByRefreshToken(String refreshToken) {
+        if (refreshToken == null || refreshToken.isBlank()) throw invalidRefresh();
+        return sessions.findByRefreshTokenDigest(SecretDigests.sha256Hex(refreshToken)).orElseThrow(() ->
+                new IamPolicyException(IamDecisionCode.SESSION_NOT_FOUND, "iam.session.not_found"));
+    }
+
+    /** Reconstructs an idempotent refresh credential without persisting the credential itself. */
+    public String replayRefreshToken(SessionRecord session, String replaySeed) {
+        if (replaySeed == null || replaySeed.isBlank()) throw idempotencyResultUnavailable();
+        if (session.status() != SessionStatus.ACTIVE || !session.expiresAt().isAfter(Instant.now(clock))) {
+            throw idempotencyResultUnavailable();
+        }
+        String token = deterministicToken(replaySeed, session.sessionId(), session.tokenFamilyId(), session.rotation());
+        if (!SecretDigests.constantTimeEquals(session.refreshTokenDigest(), SecretDigests.sha256Hex(token))) {
+            throw idempotencyResultUnavailable();
+        }
+        return token;
+    }
     public List<SessionRecord> findByDevice(PrincipalId principalId, DeviceId deviceId) { return sessions.findByDevice(principalId, deviceId); }
     public List<SessionRecord> findByPrincipal(PrincipalId principalId) { return sessions.findByPrincipal(principalId); }
 
@@ -133,6 +178,22 @@ public final class SessionService {
     }
 
     private String randomToken() { byte[] bytes = new byte[48]; random.nextBytes(bytes); return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes); }
+    private String deterministicToken(String replaySeed, SessionId sessionId, String tokenFamilyId, long rotation) {
+        try {
+            Mac mac = Mac.getInstance("HmacSHA256");
+            mac.init(new SecretKeySpec(replaySecret, "HmacSHA256"));
+            byte[] bytes = mac.doFinal((replaySeed + "|" + sessionId + "|" + tokenFamilyId + "|" + rotation)
+                    .getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
+        } catch (java.security.GeneralSecurityException exception) {
+            throw idempotencyResultUnavailable();
+        }
+    }
+    private static byte[] randomSecret() { byte[] bytes = new byte[32]; new SecureRandom().nextBytes(bytes); return bytes; }
+    private static IamPolicyException idempotencyResultUnavailable() {
+        return new IamPolicyException(IamDecisionCode.IDEMPOTENCY_RESULT_UNAVAILABLE,
+                "iam.idempotency.result_unavailable");
+    }
     private static IamPolicyException invalidRefresh() { return new IamPolicyException(IamDecisionCode.SESSION_NOT_FOUND, "iam.session.not_found"); }
     private static java.time.Duration positive(java.time.Duration value, java.time.Duration fallback) { return value == null || value.isNegative() || value.isZero() ? fallback : value; }
 

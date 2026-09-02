@@ -10,7 +10,7 @@ import java.time.Instant;
 import java.util.Objects;
 
 /** JDBC adapter for the IAM-owned adult Gate columns on iam_principal. */
-public final class JdbcAdultGateFactStore implements AdultGateFactStore {
+public class JdbcAdultGateFactStore implements AdultGateFactStore {
 
     private final JdbcTemplate jdbc;
 
@@ -43,9 +43,42 @@ public final class JdbcAdultGateFactStore implements AdultGateFactStore {
         try {
             int updated = jdbc.update(
                     "UPDATE iam_principal SET adult_gate_status = 'APPROVED', "
-                            + "adult_gate_version = ?, adult_verified_at = ? WHERE principal_id = ?",
-                    policyVersion, Timestamp.from(evaluatedAt), principalId.toString());
-            if (updated != 1) throw unavailable();
+                            + "adult_gate_version = ?, adult_verified_at = ? WHERE principal_id = ? "
+                            + "AND NOT (adult_gate_status = 'APPROVED' AND adult_gate_version = ? "
+                            + "AND adult_verified_at IS NOT NULL)",
+                    policyVersion, Timestamp.from(evaluatedAt), principalId.toString(), policyVersion);
+            if (updated != 1) {
+                AdultGateFact current = find(principalId, evaluatedAt);
+                if (!"APPROVED".equals(current.status()) || !policyVersion.equals(current.policyVersion())) {
+                    throw unavailable();
+                }
+                return current;
+            }
+            return find(principalId, evaluatedAt);
+        } catch (DataAccessException | IllegalArgumentException exception) {
+            throw unavailable();
+        }
+    }
+
+    @Override
+    @Transactional(transactionManager = "iamTransactionManager")
+    public AdultGateFact invalidate(PrincipalId principalId, String policyVersion, Instant evaluatedAt) {
+        Objects.requireNonNull(principalId, "principalId");
+        Objects.requireNonNull(policyVersion, "policyVersion");
+        Objects.requireNonNull(evaluatedAt, "evaluatedAt");
+        try {
+            int updated = jdbc.update(
+                    "UPDATE iam_principal SET adult_gate_status = 'REJECTED', "
+                            + "adult_gate_version = ?, adult_verified_at = NULL WHERE principal_id = ? "
+                            + "AND NOT (adult_gate_status = 'REJECTED' AND adult_gate_version = ?)",
+                    policyVersion, principalId.toString(), policyVersion);
+            if (updated != 1) {
+                AdultGateFact current = find(principalId, evaluatedAt);
+                if (!"REJECTED".equals(current.status()) || !policyVersion.equals(current.policyVersion())) {
+                    throw unavailable();
+                }
+                return current;
+            }
             return find(principalId, evaluatedAt);
         } catch (DataAccessException | IllegalArgumentException exception) {
             throw unavailable();

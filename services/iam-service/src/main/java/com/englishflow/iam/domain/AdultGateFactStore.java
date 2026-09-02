@@ -8,4 +8,6 @@ public interface AdultGateFactStore {
     AdultGateFact find(PrincipalId principalId, Instant fallbackEvaluatedAt);
 
     AdultGateFact approve(PrincipalId principalId, String policyVersion, Instant evaluatedAt);
+
+    AdultGateFact invalidate(PrincipalId principalId, String policyVersion, Instant evaluatedAt);
 }

@@ -20,4 +20,11 @@ public final class InMemoryAdultGateFactStore implements AdultGateFactStore {
         facts.put(principalId, fact);
         return fact;
     }
+
+    @Override
+    public AdultGateFact invalidate(PrincipalId principalId, String policyVersion, Instant evaluatedAt) {
+        AdultGateFact fact = new AdultGateFact("REJECTED", policyVersion, evaluatedAt, true);
+        facts.put(principalId, fact);
+        return fact;
+    }
 }

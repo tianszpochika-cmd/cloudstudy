@@ -2,6 +2,7 @@ package com.englishflow.iam.auth;
 
 import com.englishflow.iam.config.IamServiceProperties;
 import com.englishflow.iam.domain.AccountRecord;
+import com.englishflow.iam.domain.SecretDigests;
 import com.englishflow.iam.domain.SessionRecord;
 import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
@@ -31,9 +32,19 @@ public final class JwtTokenService {
     }
 
     public IssuedAccessToken issue(AccountRecord account, SessionRecord session) {
-        Instant issuedAt = Instant.now(clock);
+        return issue(account, session, null);
+    }
+
+    /**
+     * Issues a deterministic access token for a durable idempotency replay. The seed is never
+     * persisted or returned as a claim; only its SHA-256-derived JTI is used. The session's
+     * update timestamp is the stable issuance instant, so a retry does not mint a second JWT.
+     */
+    public IssuedAccessToken issue(AccountRecord account, SessionRecord session, String replaySeed) {
+        Instant issuedAt = replaySeed == null ? Instant.now(clock) : session.updatedAt();
         Instant expiresAt = issuedAt.plus(positive(properties.getAccessTokenTtl(), java.time.Duration.ofMinutes(15)));
-        String jti = UUID.randomUUID().toString();
+        String jti = replaySeed == null ? UUID.randomUUID().toString()
+                : SecretDigests.sha256Hex(replaySeed + "|access|" + session.sessionId() + "|" + session.rotation());
         String scope = String.join(" ", account.permissions());
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer(properties.getIssuer())

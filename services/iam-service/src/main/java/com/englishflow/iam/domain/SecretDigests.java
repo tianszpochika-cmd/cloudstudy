@@ -28,6 +28,18 @@ public final class SecretDigests {
         }
     }
 
+    public static byte[] sha256Bytes(String value) {
+        if (value == null || value.isBlank() || value.length() > 8192
+                || value.chars().anyMatch(Character::isISOControl)) {
+            throw new IllegalArgumentException("value is invalid");
+        }
+        try {
+            return MessageDigest.getInstance("SHA-256").digest(value.getBytes(StandardCharsets.UTF_8));
+        } catch (NoSuchAlgorithmException exception) {
+            throw new IllegalStateException("SHA-256 is required by the JDK", exception);
+        }
+    }
+
     public static boolean constantTimeEquals(String left, String right) {
         if (left == null || right == null) {
             return false;

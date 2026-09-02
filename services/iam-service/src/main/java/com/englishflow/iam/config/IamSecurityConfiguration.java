@@ -23,6 +23,8 @@ import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.web.SecurityFilterChain;
 
 import java.time.Duration;
+import java.util.UUID;
+import java.util.regex.Pattern;
 
 /** IAM verifies its own access JWTs independently, including issuer, signature and audience. */
 @Configuration(proxyBeanMethods = false)
@@ -39,14 +41,15 @@ public class IamSecurityConfiguration {
                         .requestMatchers("/api/v1/auth/register", "/api/v1/auth/login",
                                 "/api/v1/auth/token/refresh", "/api/v1/auth/jwks",
                                 "/api/v1/auth/password-reset/**").permitAll()
-                        .anyRequest().authenticated())
+                        .requestMatchers("/internal/v1/**").hasAuthority("TOKEN_TYPE_service")
+                        .anyRequest().hasAuthority("TOKEN_TYPE_access"))
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.decoder(iamJwtDecoder)
                         .jwtAuthenticationConverter(converter)))
                 .build();
     }
 
     @Bean
-    JwtDecoder iamJwtDecoder(IamServiceProperties properties, JwtSigningKeyProvider keys) {
+    public JwtDecoder iamJwtDecoder(IamServiceProperties properties, JwtSigningKeyProvider keys) {
         if (!"RS256".equals(properties.getJwt().getAlgorithm())) {
             throw new IllegalStateException("IAM currently requires RS256 signing");
         }
@@ -54,13 +57,15 @@ public class IamSecurityConfiguration {
         OAuth2TokenValidator<Jwt> algorithm = jwt -> "RS256".equals(jwt.getHeaders().get("alg"))
                 ? OAuth2TokenValidatorResult.success()
                 : OAuth2TokenValidatorResult.failure(new OAuth2Error("invalid_token", "JWT algorithm is not allowed", null));
-        OAuth2TokenValidator<Jwt> tokenType = new JwtClaimValidator<String>("token_type", "access"::equals);
-        OAuth2TokenValidator<Jwt> scope = new JwtClaimValidator<String>("scope", value -> value != null && !value.isBlank());
+        OAuth2TokenValidator<Jwt> typeHeader = jwt -> "JWT".equals(String.valueOf(jwt.getHeaders().get("typ")))
+                ? OAuth2TokenValidatorResult.success()
+                : invalid("JWT typ header is required");
+        OAuth2TokenValidator<Jwt> requiredProfile = IamSecurityConfiguration::validateRequiredProfile;
         OAuth2TokenValidator<Jwt> validator = new DelegatingOAuth2TokenValidator<>(
                 JwtValidators.createDefaultWithIssuer(properties.getJwt().getIssuer()),
                 new JwtAudienceValidator(properties.getJwt().getAudience()),
                 new JwtTimestampValidator(positive(properties.getJwt().getClockSkew(), Duration.ofSeconds(60))),
-                algorithm, tokenType, scope);
+                algorithm, typeHeader, requiredProfile);
         decoder.setJwtValidator(validator);
         return decoder;
     }
@@ -72,5 +77,46 @@ public class IamSecurityConfiguration {
 
     private static Duration positive(Duration value, Duration fallback) {
         return value == null || value.isNegative() ? fallback : value;
+    }
+
+    private static final Pattern SERVICE_ID = Pattern.compile("[a-z][a-z0-9-]{1,63}");
+
+    private static OAuth2TokenValidatorResult validateRequiredProfile(Jwt jwt) {
+        if (jwt.getSubject() == null || jwt.getSubject().isBlank()
+                || jwt.getIssuedAt() == null || jwt.getNotBefore() == null || jwt.getExpiresAt() == null
+                || jwt.getId() == null || jwt.getId().isBlank() || jwt.getId().length() > 128) {
+            return invalid("JWT sub, iat, nbf, exp and jti are required");
+        }
+        String tokenType = jwt.getClaimAsString("token_type");
+        if ("access".equals(tokenType)) {
+            if (!uuid(jwt.getSubject()) || blank(jwt.getClaimAsString("scope"))
+                    || !uuid(jwt.getClaimAsString("session_id"))
+                    || blank(jwt.getClaimAsString("tenant_id"))
+                    || !uuid(jwt.getClaimAsString("owner_id"))) {
+                return invalid("access JWT profile is incomplete");
+            }
+            return OAuth2TokenValidatorResult.success();
+        }
+        if ("service".equals(tokenType)) {
+            String serviceId = jwt.getClaimAsString("service_id");
+            if (blank(serviceId) || !SERVICE_ID.matcher(serviceId).matches()
+                    || !serviceId.equals(jwt.getSubject())) {
+                return invalid("service JWT identity binding is invalid");
+            }
+            return OAuth2TokenValidatorResult.success();
+        }
+        return invalid("JWT token_type is not allowed");
+    }
+
+    private static OAuth2TokenValidatorResult invalid(String description) {
+        return OAuth2TokenValidatorResult.failure(new OAuth2Error("invalid_token", description, null));
+    }
+
+    private static boolean blank(String value) { return value == null || value.isBlank(); }
+
+    private static boolean uuid(String value) {
+        if (blank(value)) return false;
+        try { UUID.fromString(value); return true; }
+        catch (IllegalArgumentException exception) { return false; }
     }
 }

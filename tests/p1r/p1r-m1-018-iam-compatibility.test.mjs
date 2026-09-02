@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 
 import {
   buildM1018OpenApiExpectedProjection,
+  M2001_SOURCE_CONTRACT_BASELINE_REF,
   M1018_SOURCE_CONTRACT_BASELINE_REF,
   compareB26WorkflowGovernance,
   compareContracts,
@@ -28,10 +29,10 @@ function readJson(relativePath) {
   return JSON.parse(fs.readFileSync(path.join(repoRoot, ...relativePath.split('/')), 'utf8'));
 }
 
-function readBaselineJson(relativePath) {
+function readBaselineJson(relativePath, ref = M1018_SOURCE_CONTRACT_BASELINE_REF) {
   return JSON.parse(execFileSync(
     'git',
-    ['show', `${M1018_SOURCE_CONTRACT_BASELINE_REF}:${relativePath}`],
+    ['show', `${ref}:${relativePath}`],
     { cwd: repoRoot, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024, windowsHide: true },
   ));
 }
@@ -62,7 +63,10 @@ const baseline = Object.freeze({
   b26: readBaselineJson('config/b26-event-runtime.json'),
 });
 const expected = Object.freeze({
-  openapi: readJson('packages/contracts/openapi/v1/openapi.json'),
+  // M2-001 adds the Gateway execution-target root extension after the M1-018
+  // checkpoint. Keep this M1-only test bound to that immutable handoff; the
+  // M2 successor is tested by the dedicated gateway compatibility projection.
+  openapi: readBaselineJson('packages/contracts/openapi/v1/openapi.json', M2001_SOURCE_CONTRACT_BASELINE_REF),
   events: buildExpectedCatalog(),
   b26: readJson('config/b26-event-runtime.json'),
 });

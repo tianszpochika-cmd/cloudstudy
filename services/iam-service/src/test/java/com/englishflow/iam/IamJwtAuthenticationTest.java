@@ -21,6 +21,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtClaimsSet;
+import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
+import org.springframework.security.oauth2.jwt.JwsHeader;
+import org.springframework.security.oauth2.jwt.JwtValidationException;
+import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.jwk.JWKSet;
@@ -30,6 +35,7 @@ import com.nimbusds.jose.jwk.RSAKey;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
+import java.time.Duration;
 import java.security.KeyPairGenerator;
 import java.security.interfaces.RSAPublicKey;
 import java.util.ArrayList;
@@ -100,6 +106,36 @@ class IamJwtAuthenticationTest {
     }
 
     @Test
+    void idempotentCredentialReplayReconstructsTheSameAccessAndRefreshCredentials() {
+        IamServiceProperties properties = properties();
+        properties.getIdempotency().setReplaySecret("stable-test-replay-secret");
+        RecordingAudit audit = new RecordingAudit();
+        var principal = com.englishflow.iam.domain.PrincipalId.random();
+        SessionService sessions = new SessionService(new InMemorySessionStore(), audit, CLOCK, properties);
+        SessionService.SessionCreation creation = sessions.open(
+                ServerPrincipalContext.forPlatform(principal, Set.of("learner")),
+                new DeviceId("device-idempotent"), "scope|key|hash");
+        var rotated = sessions.rotateByRefreshToken(creation.refreshToken(), "scope|refresh-key|hash");
+        SessionRecord rotatedSession = sessions.find(rotated.sessionId());
+        assertEquals(rotated.nextRefreshToken(), sessions.replayRefreshToken(rotatedSession,
+                "scope|refresh-key|hash"));
+
+        AccountRecord account = new AccountRecord(principal, "deterministic@example.com", "$2a$12$C6UzMDM.H6dfI/f/IKcEeVn2xL1Xg9sN8m5p4wJ7w7j9y9e3dF6",
+                Set.of("learner"), Set.of("iam.self.read"), com.englishflow.iam.domain.AccountStatus.ACTIVE,
+                0, null, NOW, NOW);
+        JwtSigningKeyProvider keyProvider = new JwtSigningKeyProvider(properties);
+        JwtTokenService tokenService = new JwtTokenService(
+                new org.springframework.security.oauth2.jwt.NimbusJwtEncoder(
+                        (selector, context) -> List.of(keyProvider.signingKey())),
+                keyProvider, properties, CLOCK);
+        var first = tokenService.issue(account, rotatedSession, "scope|refresh-key|hash");
+        var replay = tokenService.issue(account, rotatedSession, "scope|refresh-key|hash");
+        assertEquals(first.value(), replay.value());
+        assertEquals(first.jti(), replay.jti());
+        assertEquals(first.expiresAt(), replay.expiresAt());
+    }
+
+    @Test
     void repeatedWrongPasswordsLockAccountAndClientAuthorityDoesNotOverride() {
         IamServiceProperties properties = properties();
         properties.getAccount().setMaxFailedAttempts(2);
@@ -130,6 +166,77 @@ class IamJwtAuthenticationTest {
         assertEquals(2, provider.publicJwks().size());
         assertTrue(provider.publicJwks().stream().anyMatch(key -> "iam-previous-2026-07".equals(key.get("kid"))));
         assertTrue(provider.publicJwks().stream().allMatch(key -> !key.containsKey("d")));
+    }
+
+    @Test
+    void decoderRequiresCompleteAccessProfileAndJwtTypeHeader() {
+        IamServiceProperties properties = properties();
+        JwtSigningKeyProvider keyProvider = new JwtSigningKeyProvider(properties);
+        var encoder = new org.springframework.security.oauth2.jwt.NimbusJwtEncoder(
+                (selector, context) -> List.of(keyProvider.signingKey()));
+        JwtDecoder decoder = new com.englishflow.iam.config.IamSecurityConfiguration()
+                .iamJwtDecoder(properties, keyProvider);
+        Instant now = Instant.now();
+        String principal = java.util.UUID.randomUUID().toString();
+        String session = java.util.UUID.randomUUID().toString();
+        JwtClaimsSet validClaims = JwtClaimsSet.builder()
+                .issuer(properties.getJwt().getIssuer()).subject(principal)
+                .audience(List.of(properties.getJwt().getAudience()))
+                .issuedAt(now).notBefore(now).expiresAt(now.plus(Duration.ofMinutes(5)))
+                .id(java.util.UUID.randomUUID().toString()).claim("token_type", "access")
+                .claim("scope", "iam.self.read").claim("session_id", session)
+                .claim("tenant_id", "platform").claim("owner_id", principal).build();
+
+        assertEquals(principal, decoder.decode(encode(encoder, validClaims, "JWT")).getSubject());
+        JwtClaimsSet missingJti = JwtClaimsSet.builder()
+                .issuer(properties.getJwt().getIssuer()).subject(principal)
+                .audience(List.of(properties.getJwt().getAudience()))
+                .issuedAt(now).notBefore(now).expiresAt(now.plus(Duration.ofMinutes(5)))
+                .claim("token_type", "access").claim("scope", "iam.self.read")
+                .claim("session_id", session).claim("tenant_id", "platform")
+                .claim("owner_id", principal).build();
+        JwtClaimsSet missingNotBefore = JwtClaimsSet.builder()
+                .issuer(properties.getJwt().getIssuer()).subject(principal)
+                .audience(List.of(properties.getJwt().getAudience()))
+                .issuedAt(now).expiresAt(now.plus(Duration.ofMinutes(5)))
+                .id(java.util.UUID.randomUUID().toString()).claim("token_type", "access")
+                .claim("scope", "iam.self.read").claim("session_id", session)
+                .claim("tenant_id", "platform").claim("owner_id", principal).build();
+        assertThrows(JwtValidationException.class, () -> decoder.decode(encode(encoder, missingJti, "JWT")));
+        assertThrows(JwtValidationException.class, () -> decoder.decode(encode(encoder, missingNotBefore, "JWT")));
+        assertThrows(JwtValidationException.class, () -> decoder.decode(encode(encoder, validClaims, "at+jwt")));
+    }
+
+    @Test
+    void decoderAcceptsOnlySubjectBoundServiceIdentityProfile() {
+        IamServiceProperties properties = properties();
+        JwtSigningKeyProvider keyProvider = new JwtSigningKeyProvider(properties);
+        var encoder = new org.springframework.security.oauth2.jwt.NimbusJwtEncoder(
+                (selector, context) -> List.of(keyProvider.signingKey()));
+        JwtDecoder decoder = new com.englishflow.iam.config.IamSecurityConfiguration()
+                .iamJwtDecoder(properties, keyProvider);
+        Instant now = Instant.now();
+        JwtClaimsSet valid = serviceClaims(properties, now, "learning-service", "learning-service");
+        assertEquals("learning-service", decoder.decode(encode(encoder, valid, "JWT"))
+                .getClaimAsString("service_id"));
+        JwtClaimsSet forgedBinding = serviceClaims(properties, now, "learning-service", "assessment-service");
+        assertThrows(JwtValidationException.class,
+                () -> decoder.decode(encode(encoder, forgedBinding, "JWT")));
+    }
+
+    private static JwtClaimsSet serviceClaims(IamServiceProperties properties, Instant now,
+                                              String subject, String serviceId) {
+        return JwtClaimsSet.builder().issuer(properties.getJwt().getIssuer()).subject(subject)
+                .audience(List.of(properties.getJwt().getAudience()))
+                .issuedAt(now).notBefore(now).expiresAt(now.plus(Duration.ofMinutes(5)))
+                .id(java.util.UUID.randomUUID().toString()).claim("token_type", "service")
+                .claim("service_id", serviceId).build();
+    }
+
+    private static String encode(org.springframework.security.oauth2.jwt.JwtEncoder encoder,
+                                 JwtClaimsSet claims, String type) {
+        JwsHeader header = JwsHeader.with(SignatureAlgorithm.RS256).type(type).build();
+        return encoder.encode(JwtEncoderParameters.from(header, claims)).getTokenValue();
     }
 
     private static IamServiceProperties properties() {

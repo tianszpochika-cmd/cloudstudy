@@ -30,6 +30,7 @@ public final class IamRequestCorrelationFilter extends OncePerRequestFilter {
         IamRequestCorrelationContext.set(requestId, traceId);
         response.setHeader(REQUEST_ID, requestId);
         response.setHeader(TRACE_ID, traceId);
+        response.setHeader("X-API-Version", "v1");
         try {
             filterChain.doFilter(request, response);
         } finally {

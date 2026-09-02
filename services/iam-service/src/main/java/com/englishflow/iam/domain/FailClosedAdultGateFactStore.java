@@ -15,6 +15,11 @@ public final class FailClosedAdultGateFactStore implements AdultGateFactStore {
         throw unavailable();
     }
 
+    @Override
+    public AdultGateFact invalidate(PrincipalId principalId, String policyVersion, Instant evaluatedAt) {
+        throw unavailable();
+    }
+
     private static IamPolicyException unavailable() {
         return new IamPolicyException(IamDecisionCode.IAM_PERSISTENCE_UNAVAILABLE,
                 "iam.persistence.unavailable");

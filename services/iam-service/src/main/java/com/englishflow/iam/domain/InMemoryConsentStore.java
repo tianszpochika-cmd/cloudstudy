@@ -21,13 +21,27 @@ public final class InMemoryConsentStore implements ConsentStore {
     }
 
     @Override
+    public synchronized ConsentRecord appendIfCurrent(ConsentRecord record, ConsentRecord expected) {
+        ConsentRecord current = find(record.principalId(), record.type()).orElse(null);
+        if (!java.util.Objects.equals(current, expected)) {
+            throw new IamPolicyException(IamDecisionCode.CONSENT_VERSION_MISMATCH,
+                    "iam.consent.version_mismatch");
+        }
+        return append(record);
+    }
+
+    @Override
     public Optional<ConsentRecord> find(PrincipalId principalId, ConsentType type) {
         return Optional.ofNullable(records.get(key(principalId, type)));
     }
 
     @Override
     public synchronized List<ConsentRecord> history(PrincipalId principalId, ConsentType type) {
-        return List.copyOf(history.getOrDefault(key(principalId, type), List.of()));
+        return history.getOrDefault(key(principalId, type), List.of()).stream()
+                .sorted(java.util.Comparator.comparing(ConsentRecord::effectiveAt)
+                        .thenComparing(ConsentRecord::recordedAt)
+                        .thenComparing(ConsentRecord::consentId))
+                .toList();
     }
 
     private static String key(PrincipalId principalId, ConsentType type) {

@@ -68,12 +68,14 @@ iam:
     # Public JWK JSON for the previous signer during a controlled overlap window.
     previous-public-keys-json: ${IAM_JWT_PREVIOUS_PUBLIC_KEYS_JSON:}
     # Local-only default. Production must set false and mount a KMS/secret-manager key.
-    ephemeral-keys-allowed: ${IAM_JWT_EPHEMERAL_KEYS_ALLOWED:true}
+    ephemeral-keys-allowed: ${IAM_JWT_EPHEMERAL_KEYS_ALLOWED:false}
     access-token-ttl: ${IAM_ACCESS_TOKEN_TTL:15m}
     refresh-token-ttl: ${IAM_REFRESH_TOKEN_TTL:30d}
     clock-skew: ${IAM_JWT_CLOCK_SKEW:60s}
     refresh-cookie-name: ${IAM_REFRESH_COOKIE_NAME:yuxuexing_refresh}
-    refresh-cookie-secure: ${IAM_REFRESH_COOKIE_SECURE:false}
+    # Secure is fail-closed. Only application-local.yaml/application-test.yaml may explicitly
+    # disable it; an environment variable must not silently downgrade production cookies.
+    refresh-cookie-secure: true
   account:
     password-min-length: ${IAM_PASSWORD_MIN_LENGTH:12}
     max-failed-attempts: ${IAM_MAX_FAILED_ATTEMPTS:5}
@@ -83,7 +85,16 @@ iam:
     reset-requests-per-minute: ${IAM_RESET_RATE_LIMIT:5}
   persistence:
     enabled: ${IAM_PERSISTENCE_ENABLED:false}
-    jdbc-url: ${IAM_JDBC_URL:jdbc:mysql://127.0.0.1:13306/yuxuexing?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC}
-    username: ${IAM_JDBC_USERNAME:yuxuexing}
-    password: ${IAM_JDBC_PASSWORD:yuxuexing}
+    jdbc-url: ${IAM_JDBC_URL:jdbc:mysql://127.0.0.1:13306/iam_service?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC}
+    username: ${IAM_JDBC_USERNAME:}
+    password: ${IAM_JDBC_PASSWORD:}
     schema: iam_service
+  idempotency:
+    # Required when persistence is enabled; never use a committed/default production secret.
+    replay-secret: ${IAM_IDEMPOTENCY_REPLAY_SECRET:}
+    retention: ${IAM_IDEMPOTENCY_RETENTION:24h}
+  policy:
+    bootstrap:
+      # Deliberately disabled unless an explicit local/test operator bootstrap is requested.
+      enabled: ${IAM_POLICY_BOOTSTRAP_ENABLED:false}
+      existing-account-identifier: ${IAM_POLICY_BOOTSTRAP_EXISTING_ACCOUNT_IDENTIFIER:}

@@ -84,4 +84,15 @@ public record AccountRecord(
         return new AccountRecord(principalId, identifier, nextHash, roles, permissions,
                 AccountStatus.ACTIVE, 0, null, createdAt, at);
     }
+
+    /** Changes credentials without allowing a stale reset request to clear newer lock facts. */
+    public AccountRecord withPasswordHashPreservingSecurity(String nextHash, Instant at) {
+        return new AccountRecord(principalId, identifier, nextHash, roles, permissions,
+                status, failedAttempts, lockedUntil, createdAt, at);
+    }
+
+    public AccountRecord withPermissions(Set<String> nextPermissions) {
+        return new AccountRecord(principalId, identifier, passwordHash, roles, nextPermissions,
+                status, failedAttempts, lockedUntil, createdAt, updatedAt);
+    }
 }

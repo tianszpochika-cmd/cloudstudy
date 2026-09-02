@@ -41,6 +41,12 @@ public class IamServiceProperties {
     @Valid
     private PersistenceProperties persistence = new PersistenceProperties();
 
+    @Valid
+    private IdempotencyProperties idempotency = new IdempotencyProperties();
+
+    @Valid
+    private PolicyProperties policy = new PolicyProperties();
+
     public String getPhase() { return phase; }
     public void setPhase(String phase) { this.phase = phase; }
     public String getPlatformTenant() { return platformTenant; }
@@ -53,6 +59,10 @@ public class IamServiceProperties {
     public void setAccount(AccountProperties account) { this.account = account == null ? new AccountProperties() : account; }
     public PersistenceProperties getPersistence() { return persistence; }
     public void setPersistence(PersistenceProperties persistence) { this.persistence = persistence == null ? new PersistenceProperties() : persistence; }
+    public IdempotencyProperties getIdempotency() { return idempotency; }
+    public void setIdempotency(IdempotencyProperties idempotency) { this.idempotency = idempotency == null ? new IdempotencyProperties() : idempotency; }
+    public PolicyProperties getPolicy() { return policy; }
+    public void setPolicy(PolicyProperties policy) { this.policy = policy == null ? new PolicyProperties() : policy; }
 
     public static class JwtProperties {
         @NotBlank
@@ -70,14 +80,14 @@ public class IamServiceProperties {
         /** JSON JWK set containing previous public signing keys kept during rotation overlap. */
         private String previousPublicKeysJson;
         /** Ephemeral keys are allowed only for local development; production sets this false. */
-        private boolean ephemeralKeysAllowed = true;
+        private boolean ephemeralKeysAllowed;
         private Duration accessTokenTtl = Duration.ofMinutes(15);
         private Duration refreshTokenTtl = Duration.ofDays(30);
         private Duration clockSkew = Duration.ofSeconds(60);
         @NotBlank
         @Size(max = 64)
         private String refreshCookieName = "yuxuexing_refresh";
-        private boolean refreshCookieSecure;
+        private boolean refreshCookieSecure = true;
 
         public String getIssuer() { return issuer; }
         public void setIssuer(String issuer) { this.issuer = issuer; }
@@ -148,5 +158,41 @@ public class IamServiceProperties {
         public void setPassword(String password) { this.password = password; }
         public String getSchema() { return schema; }
         public void setSchema(String schema) { this.schema = schema; }
+    }
+
+    public static class IdempotencyProperties {
+        /** Stable secret for deterministic credential replay; production must inject it. */
+        @Size(max = 256)
+        private String replaySecret = "";
+        private Duration retention = Duration.ofHours(24);
+
+        public String getReplaySecret() { return replaySecret; }
+        public void setReplaySecret(String replaySecret) { this.replaySecret = replaySecret == null ? "" : replaySecret; }
+        public Duration getRetention() { return retention; }
+        public void setRetention(Duration retention) { this.retention = retention; }
+    }
+
+    public static class PolicyProperties {
+        @Valid
+        private BootstrapProperties bootstrap = new BootstrapProperties();
+
+        public BootstrapProperties getBootstrap() { return bootstrap; }
+        public void setBootstrap(BootstrapProperties bootstrap) {
+            this.bootstrap = bootstrap == null ? new BootstrapProperties() : bootstrap;
+        }
+    }
+
+    public static class BootstrapProperties {
+        /** Explicitly local/test-only. Production must provision policy operators outside this seam. */
+        private boolean enabled;
+        @Size(max = 128)
+        private String existingAccountIdentifier = "";
+
+        public boolean isEnabled() { return enabled; }
+        public void setEnabled(boolean enabled) { this.enabled = enabled; }
+        public String getExistingAccountIdentifier() { return existingAccountIdentifier; }
+        public void setExistingAccountIdentifier(String existingAccountIdentifier) {
+            this.existingAccountIdentifier = existingAccountIdentifier == null ? "" : existingAccountIdentifier;
+        }
     }
 }

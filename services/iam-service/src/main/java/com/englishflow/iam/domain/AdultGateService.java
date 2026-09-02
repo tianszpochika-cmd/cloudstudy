@@ -20,10 +20,32 @@ public final class AdultGateService {
 
     private final AuditFactPort audit;
     private final Clock clock;
+    private final AdultGateFactStore facts;
+    private final SessionService sessions;
+    private final IamTransactionRunner transactions;
 
     public AdultGateService(AuditFactPort audit, Clock clock) {
+        this(audit, clock, null, null, IamTransactionRunner.direct());
+    }
+
+    public AdultGateService(AuditFactPort audit, Clock clock, AdultGateFactStore facts,
+                            SessionService sessions, IamTransactionRunner transactions) {
         this.audit = Objects.requireNonNull(audit, "audit");
         this.clock = Objects.requireNonNull(clock, "clock");
+        this.facts = facts;
+        this.sessions = sessions;
+        this.transactions = Objects.requireNonNull(transactions, "transactions");
+    }
+
+    /** Invalidates an existing adult decision and revokes all sessions as one IAM workflow. */
+    public void invalidate(PrincipalId principalId, String policyVersion) {
+        if (facts == null || sessions == null) return;
+        transactions.execute(() -> {
+            Instant now = Instant.now(clock);
+            facts.invalidate(principalId, policyVersion, now);
+            sessions.revokeAll(principalId, "adult_gate_invalidated");
+            return null;
+        });
     }
 
     public AdultGateResult evaluate(AdultGateCommand command) {
