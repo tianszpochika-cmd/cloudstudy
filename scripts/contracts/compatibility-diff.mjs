@@ -4306,6 +4306,107 @@ function compareM1018B26Promotion(previous, current, allowance) {
   });
 }
 
+// M2-001 is intentionally narrower than the M1 contract promotions: it
+// changes no public request/response wire shape.  It promotes one complete
+// Gateway root extension from the accepted M1-018 checkpoint so the finite
+// execution-target table cannot be treated as an unreviewed OpenAPI drift.
+// The entire extension is copied from the approved artifact and is bound by
+// both a root digest and the full OpenAPI digest; no field-level wildcard or
+// fallback is allowed.
+export const M2001_GATEWAY_EXECUTION_TARGET_PROMOTION_ID = 'P1R-M2-001';
+export const M2001_SOURCE_CONTRACT_BASELINE_REF = '66246d5b4a68a988a9af4ece68a446640b123812';
+export const M2001_OPENAPI_SOURCE_SEMANTIC_SHA256 = 'a154f2004f06e5da096abea630855152fac9e87224ad48565a38e6010ab9416b';
+export const M2001_GATEWAY_ROOT_SEMANTIC_SHA256 = '5b86770eb64fe51e13c602fd19efc6f2c2a4726c51c1e27281a34f868101f8af';
+export const M2001_EXECUTION_TARGET_POLICY_SEMANTIC_SHA256 = '4cfdcf2b40b444aaa8b114e87ef1025509cd71e4557998cb2f93e3b150b4c69d';
+export const M2001_OPENAPI_EXPECTED_SEMANTIC_SHA256 = 'c0e010949da3e80e442c153384b95e086435564e7c67e2ee47909ddbb717d46d';
+export const M2001_OPENAPI_ROOT_EXTENSION = 'x-p1r-gateway-boundary';
+export const M2001_PROMOTION_ALLOWANCE_KEYS = Object.freeze([
+  'id',
+  'sourceContractBaseline',
+  'previousPromotion',
+  'runtimeStatus',
+  'scope',
+  'rootExtension',
+]);
+export const M2001_OPENAPI_EXPECTED_CHANGE_DESCRIPTORS = Object.freeze([
+  ['x-p1r-gateway-boundary', 'approved M2-001 Gateway execution-target root extension changed'],
+]);
+export const M2001_OPENAPI_DESCRIPTOR_SET_SHA256 = stableGovernanceSha256(M2001_OPENAPI_EXPECTED_CHANGE_DESCRIPTORS.map(([location, reason]) => (
+  describeChange('openapi', location, reason)
+)));
+
+export function isValidM2001PromotionAllowance(allowance) {
+  return isRecord(allowance)
+    && stableGovernanceValue(Object.keys(allowance).sort()) === stableGovernanceValue([...M2001_PROMOTION_ALLOWANCE_KEYS].sort())
+    && allowance.id === M2001_GATEWAY_EXECUTION_TARGET_PROMOTION_ID
+    && allowance.sourceContractBaseline === M2001_SOURCE_CONTRACT_BASELINE_REF
+    && allowance.previousPromotion === M1018_IAM_EVENT_PROMOTION_ID
+    && allowance.runtimeStatus === 'NOT_RUNTIME_VERIFIED'
+    && allowance.scope === 'OPENAPI_GATEWAY_EXECUTION_TARGET_ROOT_EXTENSION_ONLY'
+    && allowance.rootExtension === M2001_OPENAPI_ROOT_EXTENSION;
+}
+
+/**
+ * Rebuild the one permitted M2-001 projection from the accepted M1-018
+ * OpenAPI checkpoint.  M2-001 owns the Gateway execution table only; all
+ * paths, schemas, tags and every other root extension remain byte-for-byte
+ * equivalent under stable semantic comparison.
+ */
+export function buildM2001OpenApiExpectedProjection(previous, approved, allowance) {
+  if (!isRecord(previous) || !isRecord(approved) || !isValidM2001PromotionAllowance(allowance)
+    || stableGovernanceSha256(previous) !== M2001_OPENAPI_SOURCE_SEMANTIC_SHA256
+    || !isRecord(previous[M2001_OPENAPI_ROOT_EXTENSION])
+    || !isRecord(approved[M2001_OPENAPI_ROOT_EXTENSION])) return undefined;
+  const expected = structuredClone(previous);
+  expected[M2001_OPENAPI_ROOT_EXTENSION] = structuredClone(approved[M2001_OPENAPI_ROOT_EXTENSION]);
+  return expected;
+}
+
+export function compareM2001OpenApiDescriptors(previous, current) {
+  if (stableGovernanceValue(previous?.[M2001_OPENAPI_ROOT_EXTENSION])
+    === stableGovernanceValue(current?.[M2001_OPENAPI_ROOT_EXTENSION])) return [];
+  return [describeChange(
+    'openapi',
+    M2001_OPENAPI_ROOT_EXTENSION,
+    'approved M2-001 Gateway execution-target root extension changed',
+  )];
+}
+
+function compareM2001OpenApiPromotion(previous, current, allowance) {
+  if (!isValidM2001PromotionAllowance(allowance)) {
+    return [describeChange('openapi', 'm2-001.compatibilityPromotion', 'M2-001 allowance is not the frozen Gateway execution-target root-extension policy')];
+  }
+  const changes = [];
+  if (stableGovernanceSha256(previous) !== M2001_OPENAPI_SOURCE_SEMANTIC_SHA256) {
+    changes.push(describeChange('openapi', 'm2-001.source', 'M2-001 OpenAPI source is not the accepted 66246d5 M1-018 checkpoint'));
+  }
+  const actualDescriptors = compareM2001OpenApiDescriptors(previous, current);
+  if (stableGovernanceSha256(actualDescriptors) !== M2001_OPENAPI_DESCRIPTOR_SET_SHA256) {
+    changes.push(describeChange('openapi', 'm2-001.change-descriptors', 'current OpenAPI changes do not exactly match the frozen M2-001 Gateway root-extension descriptor set'));
+  }
+  const gatewayRoot = current?.[M2001_OPENAPI_ROOT_EXTENSION];
+  if (!isRecord(gatewayRoot) || stableGovernanceSha256(gatewayRoot) !== M2001_GATEWAY_ROOT_SEMANTIC_SHA256) {
+    changes.push(describeChange('openapi', 'm2-001.gateway-root', 'Gateway boundary root extension is not the frozen M2-001 execution-target projection'));
+  }
+  const executionTargetPolicy = gatewayRoot?.executionTargetPolicy;
+  if (!isRecord(executionTargetPolicy)
+    || stableGovernanceSha256(executionTargetPolicy) !== M2001_EXECUTION_TARGET_POLICY_SEMANTIC_SHA256) {
+    changes.push(describeChange('openapi', 'm2-001.execution-target-policy', 'Gateway execution-target policy is not the frozen M2-001 policy projection'));
+  }
+  const expectedProjection = buildM2001OpenApiExpectedProjection(previous, current, allowance);
+  if (expectedProjection === undefined) {
+    changes.push(describeChange('openapi', 'm2-001.projection', 'the approved M2-001 Gateway execution-target projection cannot be constructed from the frozen source'));
+  } else {
+    if (stableGovernanceSha256(expectedProjection) !== M2001_OPENAPI_EXPECTED_SEMANTIC_SHA256) {
+      changes.push(describeChange('openapi', 'm2-001.expected-projection', 'the allowlisted M2-001 Gateway execution-target projection does not match its frozen semantic digest'));
+    }
+    if (stableGovernanceValue(expectedProjection) !== stableGovernanceValue(current)) {
+      changes.push(describeChange('openapi', 'm2-001.projection', 'current OpenAPI is not the unique frozen-source M2-001 Gateway execution-target projection'));
+    }
+  }
+  return changes;
+}
+
 function duplicateEventNames(events) {
   const seen = new Set();
   const duplicates = new Set();
@@ -4727,6 +4828,9 @@ function compareSchemaRegistry(previous, current) {
 
 export function compareContracts(kind, previous, current, { governanceBaseline, allowance } = {}) {
   if (kind === 'openapi') {
+    if (allowance?.id === M2001_GATEWAY_EXECUTION_TARGET_PROMOTION_ID) {
+      return compareM2001OpenApiPromotion(previous, current, allowance);
+    }
     if (allowance?.id === M1018_IAM_EVENT_PROMOTION_ID) {
       return compareM1018OpenApiPromotion(previous, current, allowance);
     }

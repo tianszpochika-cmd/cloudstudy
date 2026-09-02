@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import { createHash } from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { isDeepStrictEqual } from 'node:util';
@@ -9,6 +10,91 @@ const ROOT_EXTENSION = 'x-p1r-gateway-boundary';
 const EXPECTED_PUBLIC_OPERATION_COUNT = 365;
 const EXPECTED_INTERNAL_OPERATION_COUNT = 62;
 const EXPECTED_ROUTE_RULE_COUNT = 56;
+// Execution targets are deliberately separate from the broad route-owner
+// policy.  A route rule answers who is authoritative; an execution projection
+// answers whether this exact, canonical public operation has a verified local
+// controller target today.  The latter must never turn a coarse PREFIX rule
+// into an arbitrary upstream proxy.
+const EXPECTED_EXECUTION_PLAN_COUNT = 56;
+const EXPECTED_AVAILABLE_EXECUTION_OPERATION_COUNT = 171;
+// This is a reviewed semantic binding for the finite M2-001 target table. It
+// deliberately prevents a target from silently moving to a different, still
+// valid controller method without a corresponding Gateway parity change.
+export const FROZEN_EXECUTION_TARGET_PLAN_SHA256 = 'b20763363fd94ceacc78973054dccf8badce22c4a1aaab8e951cfab55a19c738';
+const EXECUTION_POLICY_FIELDS = [
+  'schemaVersion',
+  'sourceOfTruth',
+  'runtimeImplementationTask',
+  'defaultExecutionStatus',
+  'unknownRuleDecision',
+  'unknownPathDecision',
+  'unavailableOperationDecision',
+  'legacyCoreApiFallback',
+  'controllerEvidenceRequired',
+  'configuredUriRequiredForUpstream',
+  'runtimeStatus',
+  'compatibilityPromotion',
+];
+const M2001_EXECUTION_TARGET_COMPATIBILITY_PROMOTION = Object.freeze({
+  id: 'P1R-M2-001',
+  sourceContractBaseline: '66246d5b4a68a988a9af4ece68a446640b123812',
+  previousPromotion: 'P1R-M1-018',
+  runtimeStatus: 'NOT_RUNTIME_VERIFIED',
+  scope: 'OPENAPI_GATEWAY_EXECUTION_TARGET_ROOT_EXTENSION_ONLY',
+  rootExtension: ROOT_EXTENSION,
+});
+const EXECUTION_PLAN_FIELDS = ['ruleId', 'defaultStatus', 'defaultReason', 'projections'];
+const EXECUTION_PROJECTION_FIELDS = [
+  'projectionId',
+  'status',
+  'publicPathTemplate',
+  'methods',
+  'executionKind',
+  'upstreamOwner',
+  'targetUriConfig',
+  'pathStrategy',
+  'targetPathTemplate',
+  'controllerEvidence',
+];
+const CONTROLLER_EVIDENCE_FIELDS = ['sourcePath', 'requestMapping'];
+const EXECUTION_URI_CONFIG_BY_OWNER = {
+  'api-gateway': 'GATEWAY_LOCAL_FORWARD',
+  'iam-service': 'gateway.identity.iam-base-url',
+  'learner-service': 'gateway.b14.service-base-urls.learner',
+  'content-service': 'gateway.b14.service-base-urls.content',
+  'learning-service': 'gateway.b14.service-base-urls.learning',
+  'assessment-service': 'gateway.b14.service-base-urls.assessment',
+  'media-service': 'gateway.b14.service-base-urls.media',
+  'gamification-service': 'gateway.b14.service-base-urls.gamification',
+  'social-service': 'gateway.b14.service-base-urls.social',
+  'commerce-service': 'gateway.b14.service-base-urls.commerce',
+  'notification-service': 'gateway.b12.notification-base-url',
+  'analytics-service': 'gateway.b13.analytics-base-url',
+  'admin-ops-service': 'gateway.b13.admin-ops-base-url',
+};
+const EXPECTED_UNAVAILABLE_EXECUTION_REASONS = {
+  'public-site': 'canonical_owner_admin_ops_conflicts_with_current_content_controller',
+  'admin-content-publish-tasks': 'content_owner_controller_mapping_not_present',
+  'admin-recovery': 'workflow_owner_has_no_configured_gateway_target',
+  'learning-content-snapshot': 'content_owner_controller_mapping_not_present',
+  'speaking-recordings': 'canonical_media_owner_conflicts_with_current_learning_controller',
+  'speaking-shadowing-completion': 'canonical_assessment_owner_conflicts_with_current_learning_controller',
+  'iam-account-deletions': 'iam_owner_controller_mapping_not_present',
+  'privacy-exports': 'learner_owner_plural_export_controller_mapping_not_present',
+  'sync-domain': 'canonical_learning_owner_conflicts_with_current_notification_controller',
+  'exam-domain': 'assessment_owner_controller_mapping_not_present',
+  'grammar-domain': 'canonical_assessment_owner_conflicts_with_current_learning_or_content_controller',
+  'listening-domain': 'canonical_assessment_owner_conflicts_with_current_learning_or_content_controller',
+  'reading-domain': 'canonical_assessment_owner_conflicts_with_current_learning_or_content_controller',
+  'writing-domain': 'canonical_assessment_owner_conflicts_with_current_learning_or_content_controller',
+  'phonetics-domain': 'canonical_assessment_owner_conflicts_with_current_content_controller',
+  'speaking-domain': 'canonical_assessment_owner_conflicts_with_current_learning_controller',
+  'multimodal-domain': 'media_owner_controller_mapping_not_present',
+  'messages-domain': 'canonical_notification_owner_method_mapping_not_present',
+  'data-reliability-domain': 'workflow_owner_has_no_configured_gateway_target',
+  'release-domain': 'workflow_owner_has_no_configured_gateway_target',
+  'quality-domain': 'admin_ops_owner_controller_mapping_not_present',
+};
 const EXPECTED_M1015_INTERNAL_OPERATIONS = [
   {
     route: '/internal/v1/commerce/entitlements/{entitlementId}/snapshot',
@@ -621,6 +707,240 @@ function highestRules(rules, route, method) {
   return matches.filter((rule) => rule.priority === priority);
 }
 
+function hasOnlyKeys(value, allowedKeys) {
+  return isRecord(value) && Object.keys(value).every((key) => allowedKeys.includes(key));
+}
+
+function hasExactKeys(value, requiredKeys) {
+  return hasOnlyKeys(value, requiredKeys)
+    && requiredKeys.every((key) => Object.hasOwn(value, key));
+}
+
+function stableJson(value) {
+  if (Array.isArray(value)) return `[${value.map(stableJson).join(',')}]`;
+  if (isRecord(value)) {
+    return `{${Object.keys(value).sort().map((key) => `${JSON.stringify(key)}:${stableJson(value[key])}`).join(',')}}`;
+  }
+  return JSON.stringify(value) ?? 'null';
+}
+
+export function executionTargetPlanDigest(policy) {
+  return createHash('sha256').update(stableJson({
+    executionTargetPolicy: policy?.executionTargetPolicy,
+    routeExecutions: policy?.routeExecutions,
+  })).digest('hex');
+}
+
+function uniqueStrings(values) {
+  return Array.isArray(values) && values.every((value) => nonEmpty(value)) && new Set(values).size === values.length;
+}
+
+function templateParameters(template) {
+  if (!nonEmpty(template)) return [];
+  return [...template.matchAll(/\{([A-Za-z][A-Za-z0-9]*)\}/g)].map((match) => match[1]);
+}
+
+function sameStringSet(left, right) {
+  return left.length === right.length && left.every((value) => right.includes(value));
+}
+
+function sourcePathIsOwnedBy(owner, sourcePath) {
+  return nonEmpty(sourcePath)
+    && sourcePath.replace(/\\/g, '/').startsWith(`services/${owner}/`);
+}
+
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function controllerAnnotationPaths(source, method) {
+  const annotation = `@${method.slice(0, 1)}${method.slice(1).toLowerCase()}Mapping`;
+  const paths = [];
+  const pattern = new RegExp(
+    `${escapeRegExp(annotation)}\\s*\\(\\s*(?:(?:path|value)\\s*=\\s*)?(?:\\{\\s*)?"([^"]+)"`,
+    'g',
+  );
+  for (const match of source.matchAll(pattern)) {
+    paths.push(match[1]);
+  }
+  if (new RegExp(`${escapeRegExp(annotation)}\\b(?!\\s*\\()`).test(source)
+      || new RegExp(`${escapeRegExp(annotation)}\\s*\\(\\s*\\)`).test(source)) {
+    paths.push('');
+  }
+  return paths;
+}
+
+function controllerPathTemplateMatches(actualPath, declaredPath) {
+  const actualSegments = actualPath.split('/');
+  const declaredSegments = declaredPath.split('/');
+  return actualSegments.length === declaredSegments.length
+    && actualSegments.every((segment, index) => {
+      const declared = declaredSegments[index];
+      return /^\{[A-Za-z][A-Za-z0-9]*\}$/.test(declared)
+        ? segment.length > 0
+        : segment === declared;
+    });
+}
+
+function controllerDeclaresTargetMethod(source, requestMapping, targetPathTemplate, method) {
+  const declaredPaths = [targetPathTemplate];
+  if (targetPathTemplate === requestMapping) declaredPaths.push('');
+  else if (targetPathTemplate.startsWith(`${requestMapping}/`)) {
+    declaredPaths.push(targetPathTemplate.slice(requestMapping.length));
+  }
+  const handlerPaths = controllerAnnotationPaths(source, method);
+  return declaredPaths.some((declaredPath) => handlerPaths.some((handlerPath) => controllerPathTemplateMatches(declaredPath, handlerPath)));
+}
+
+function executionProjectionMatches(projection, operation) {
+  return projection?.status === 'AVAILABLE'
+    && projection.publicPathTemplate === operation.route
+    && Array.isArray(projection.methods)
+    && projection.methods.includes(operation.method);
+}
+
+function checkExecutionTargetPolicy(policy, errors) {
+  const executionPolicy = policy.executionTargetPolicy;
+  add(errors, isRecord(executionPolicy), 'Gateway executionTargetPolicy is required');
+  if (!isRecord(executionPolicy)) return;
+  add(errors, hasExactKeys(executionPolicy, EXECUTION_POLICY_FIELDS), 'Gateway executionTargetPolicy must contain exactly the frozen fields');
+  add(errors, executionPolicy.schemaVersion === '1.0.0', 'Gateway execution target policy schemaVersion must be 1.0.0');
+  add(errors, executionPolicy.sourceOfTruth === 'routeExecutions', 'Gateway execution target policy source must be routeExecutions');
+  add(errors, executionPolicy.runtimeImplementationTask === 'P1R-M2-001', 'Gateway execution target policy must remain owned by M2-001');
+  add(errors, executionPolicy.defaultExecutionStatus === 'UNAVAILABLE', 'Gateway execution target policy must default to UNAVAILABLE');
+  add(errors, executionPolicy.unknownRuleDecision === 'DENY' && executionPolicy.unknownPathDecision === 'DENY' && executionPolicy.unavailableOperationDecision === 'DENY', 'Gateway execution target policy must deny unknown or unavailable operations');
+  add(errors, executionPolicy.legacyCoreApiFallback === 'FORBIDDEN', 'Gateway execution target policy must forbid core-api fallback');
+  add(errors, executionPolicy.controllerEvidenceRequired === true && executionPolicy.configuredUriRequiredForUpstream === true, 'Gateway execution target policy must require controller evidence and configured upstream URI');
+  add(errors, executionPolicy.runtimeStatus === 'NOT_RUNTIME_VERIFIED', 'Gateway execution target policy must not promote runtime verification');
+  add(errors, stableJson(executionPolicy.compatibilityPromotion) === stableJson(M2001_EXECUTION_TARGET_COMPATIBILITY_PROMOTION), 'Gateway execution target compatibility promotion must remain the frozen M2-001 root-extension-only allowance');
+}
+
+function checkControllerEvidence(projection, sourceRoot, errors) {
+  const evidence = projection.controllerEvidence;
+  add(errors, hasExactKeys(evidence, CONTROLLER_EVIDENCE_FIELDS), `Gateway execution controller evidence must contain exactly the frozen fields: ${projection.projectionId ?? '<unknown>'}`);
+  add(errors, nonEmpty(evidence?.sourcePath) && nonEmpty(evidence?.requestMapping), `Gateway execution controller evidence is incomplete: ${projection.projectionId ?? '<unknown>'}`);
+  if (!nonEmpty(evidence?.sourcePath) || !nonEmpty(evidence?.requestMapping)) return;
+  add(errors, !path.isAbsolute(evidence.sourcePath) && !evidence.sourcePath.includes('..') && sourcePathIsOwnedBy(projection.upstreamOwner, evidence.sourcePath), `Gateway execution controller evidence has an invalid owner source path: ${projection.projectionId}`);
+  const resolved = path.resolve(sourceRoot, evidence.sourcePath);
+  const relative = path.relative(sourceRoot, resolved);
+  if (relative.startsWith('..') || path.isAbsolute(relative)) {
+    errors.push(`Gateway execution controller evidence escapes the repository: ${projection.projectionId}`);
+    return;
+  }
+  try {
+    const source = fs.readFileSync(resolved, 'utf8');
+    add(errors, source.includes(`\"${evidence.requestMapping}\"`), `Gateway execution controller mapping is not present in source: ${projection.projectionId}`);
+    add(
+      errors,
+      (Array.isArray(projection.methods) ? projection.methods : []).every((method) => controllerDeclaresTargetMethod(
+        source,
+        evidence.requestMapping,
+        projection.targetPathTemplate,
+        method,
+      )),
+      `Gateway execution target is not declared by the evidenced controller: ${projection.projectionId}`,
+    );
+  } catch (error) {
+    errors.push(`Gateway execution controller evidence cannot be read: ${projection.projectionId} (${error instanceof Error ? error.message : String(error)})`);
+  }
+  add(
+    errors,
+    projection.targetPathTemplate === evidence.requestMapping
+      || projection.targetPathTemplate?.startsWith(`${evidence.requestMapping}/`) === true,
+    `Gateway execution target path must remain under its controller mapping: ${projection.projectionId}`,
+  );
+}
+
+function checkRouteExecutions(policy, canonicalOpenApi, ownerById, sourceRoot, errors) {
+  const plans = Array.isArray(policy.routeExecutions) ? policy.routeExecutions : [];
+  const rules = Array.isArray(policy.routeRules) ? policy.routeRules : [];
+  const rulesById = new Map(rules.filter(isRecord).map((rule) => [rule.ruleId, rule]));
+  add(errors, Array.isArray(policy.routeExecutions) && plans.length === EXPECTED_EXECUTION_PLAN_COUNT, `Gateway route execution plan count must be ${EXPECTED_EXECUTION_PLAN_COUNT}`);
+  const planByRuleId = new Map();
+  const projectionIds = new Set();
+  let declaredProjectionCount = 0;
+
+  for (const plan of plans ?? []) {
+    add(errors, hasExactKeys(plan, EXECUTION_PLAN_FIELDS), `Gateway route execution plan must contain exactly the frozen fields: ${plan?.ruleId ?? '<unknown>'}`);
+    if (!isRecord(plan)) continue;
+    add(errors, nonEmpty(plan.ruleId) && rulesById.has(plan.ruleId), `Gateway route execution plan references an unknown rule: ${plan.ruleId ?? '<unknown>'}`);
+    if (!nonEmpty(plan.ruleId) || !rulesById.has(plan.ruleId)) continue;
+    add(errors, !planByRuleId.has(plan.ruleId), `Gateway route execution plan is duplicated: ${plan.ruleId}`);
+    planByRuleId.set(plan.ruleId, plan);
+    add(errors, plan.defaultStatus === 'UNAVAILABLE' && nonEmpty(plan.defaultReason), `Gateway route execution plan must fail closed by default: ${plan.ruleId}`);
+    add(errors, Array.isArray(plan.projections), `Gateway route execution projections are required: ${plan.ruleId}`);
+    const expectedUnavailableReason = EXPECTED_UNAVAILABLE_EXECUTION_REASONS[plan.ruleId];
+    const projections = Array.isArray(plan.projections) ? plan.projections : [];
+    if (expectedUnavailableReason) {
+      add(errors, projections.length === 0 && plan.defaultReason === expectedUnavailableReason, `Gateway unavailable execution rule is not frozen: ${plan.ruleId}`);
+    } else {
+      add(errors, projections.length > 0 && plan.defaultReason === 'no_exact_canonical_execution_target', `Gateway executable rule must retain only exact targets and an unavailable default: ${plan.ruleId}`);
+    }
+
+    const rule = rulesById.get(plan.ruleId);
+    for (const projection of projections) {
+      declaredProjectionCount += 1;
+      add(errors, hasExactKeys(projection, EXECUTION_PROJECTION_FIELDS), `Gateway execution projection must contain exactly the frozen fields: ${projection?.projectionId ?? '<unknown>'}`);
+      if (!isRecord(projection)) continue;
+      add(errors, nonEmpty(projection.projectionId) && !projectionIds.has(projection.projectionId), `Gateway execution projection id is invalid or duplicated: ${projection.projectionId ?? '<unknown>'}`);
+      if (nonEmpty(projection.projectionId)) projectionIds.add(projection.projectionId);
+      add(errors, projection.status === 'AVAILABLE', `Gateway execution projection must be explicitly AVAILABLE: ${projection.projectionId ?? '<unknown>'}`);
+      add(errors, nonEmpty(projection.publicPathTemplate) && !projection.publicPathTemplate.includes('*') && isRecord(canonicalOpenApi?.paths?.[projection.publicPathTemplate]), `Gateway execution projection must name one canonical exact public path: ${projection.projectionId ?? '<unknown>'}`);
+      add(errors, uniqueStrings(projection.methods) && projection.methods.every((method) => method === method.toUpperCase() && HTTP_METHODS.has(method.toLowerCase())), `Gateway execution projection methods are invalid: ${projection.projectionId ?? '<unknown>'}`);
+      const methods = Array.isArray(projection.methods) ? projection.methods : [];
+      const matchedOperations = methods.map((method) => ({
+        route: projection.publicPathTemplate,
+        method,
+        operation: canonicalOpenApi?.paths?.[projection.publicPathTemplate]?.[method.toLowerCase()],
+      }));
+      add(errors, matchedOperations.length > 0 && matchedOperations.every((item) => isRecord(item.operation)), `Gateway execution projection must only admit canonical public operations: ${projection.projectionId ?? '<unknown>'}`);
+      for (const operation of matchedOperations) {
+        const top = highestRules(rules, operation.route, operation.method);
+        add(errors, top.length === 1 && top[0]?.ruleId === plan.ruleId, `Gateway execution projection crosses an owner rule boundary: ${projection.projectionId ?? '<unknown>'}`);
+      }
+      add(errors, projection.upstreamOwner === rule.upstreamOwner && ownerById.get(projection.upstreamOwner)?.publicRouteEligible === true && projection.upstreamOwner !== 'core-api', `Gateway execution projection upstream owner drifted: ${projection.projectionId ?? '<unknown>'}`);
+      add(errors, nonEmpty(projection.targetPathTemplate) && projection.targetPathTemplate.startsWith('/') && !projection.targetPathTemplate.includes('*') && !projection.targetPathTemplate.includes('?') && !projection.targetPathTemplate.includes('#'), `Gateway execution target path is invalid: ${projection.projectionId ?? '<unknown>'}`);
+      add(errors, sameStringSet(templateParameters(projection.publicPathTemplate), templateParameters(projection.targetPathTemplate)), `Gateway execution target path parameters drifted: ${projection.projectionId ?? '<unknown>'}`);
+      const expectedUriConfig = EXECUTION_URI_CONFIG_BY_OWNER[projection.upstreamOwner];
+      add(errors, projection.targetUriConfig === expectedUriConfig, `Gateway execution projection must use the configured owner URI: ${projection.projectionId ?? '<unknown>'}`);
+      if (projection.executionKind === 'LOCAL') {
+        add(errors, rule.upstreamOwner === 'api-gateway' && rule.internalTargetClass === 'GATEWAY_LOCAL' && projection.targetUriConfig === 'GATEWAY_LOCAL_FORWARD' && projection.pathStrategy === 'FORWARD_LOCAL', `Gateway local execution projection is invalid: ${projection.projectionId ?? '<unknown>'}`);
+      } else {
+        add(errors, projection.executionKind === 'UPSTREAM' && rule.upstreamOwner !== 'api-gateway' && rule.internalTargetClass === 'INTERNAL_V1', `Gateway upstream execution projection is invalid: ${projection.projectionId ?? '<unknown>'}`);
+        add(errors, ['REWRITE_PATH', 'PRESERVE_PUBLIC_PATH'].includes(projection.pathStrategy), `Gateway upstream path strategy is invalid: ${projection.projectionId ?? '<unknown>'}`);
+        if (projection.pathStrategy === 'REWRITE_PATH') add(errors, projection.targetPathTemplate.startsWith('/internal/v1/'), `Gateway rewritten target must use the internal prefix: ${projection.projectionId ?? '<unknown>'}`);
+        if (projection.pathStrategy === 'PRESERVE_PUBLIC_PATH') add(errors, projection.targetPathTemplate === projection.publicPathTemplate, `Gateway preserved target path must equal the public canonical path: ${projection.projectionId ?? '<unknown>'}`);
+      }
+      checkControllerEvidence(projection, sourceRoot, errors);
+    }
+  }
+
+  add(errors, planByRuleId.size === rulesById.size && [...rulesById.keys()].every((id) => planByRuleId.has(id)), 'Gateway execution plans must define every canonical route rule exactly once');
+  const publicOperations = operations(canonicalOpenApi, policy.d2Boundary?.publicPrefix ?? '/api/v1');
+  let availableOperationCount = 0;
+  let unavailableOperationCount = 0;
+  for (const operation of publicOperations) {
+    const top = highestRules(rules, operation.route, operation.method);
+    if (top.length !== 1) continue;
+    const plan = planByRuleId.get(top[0].ruleId);
+    const matches = (Array.isArray(plan?.projections) ? plan.projections : [])
+      .filter((projection) => executionProjectionMatches(projection, operation));
+    add(errors, matches.length <= 1, `Gateway execution target is ambiguous: ${operation.method} ${operation.route}`);
+    if (matches.length === 1) availableOperationCount += 1;
+    else {
+      unavailableOperationCount += 1;
+      add(errors, plan?.defaultStatus === 'UNAVAILABLE', `Gateway unavailable operation must not fall back upstream: ${operation.method} ${operation.route}`);
+    }
+  }
+  add(errors, availableOperationCount === EXPECTED_AVAILABLE_EXECUTION_OPERATION_COUNT, `Gateway available execution operation count must be ${EXPECTED_AVAILABLE_EXECUTION_OPERATION_COUNT}, got ${availableOperationCount}`);
+  return {
+    planCount: planByRuleId.size,
+    projectionCount: declaredProjectionCount,
+    availableOperationCount,
+    unavailableOperationCount,
+  };
+}
+
 function checkDocumentRoot(document, errors) {
   add(errors, isRecord(document), 'Gateway policy fragment must be a JSON object');
   if (!isRecord(document)) return;
@@ -644,7 +964,7 @@ function checkProjection(document, canonicalOpenApi, errors) {
 
 function checkBoundary(policy, errors) {
   const source = policy.sourceOfTruth;
-  add(errors, policy.schemaVersion === '1.0.0', 'Gateway policy schemaVersion must be 1.0.0');
+  add(errors, policy.schemaVersion === '1.1.0', 'Gateway policy schemaVersion must be 1.1.0');
   add(errors, source?.taskId === 'P1R-M1-004', 'Gateway policy source task must be P1R-M1-004');
   add(errors, source?.kind === 'D2_CONTRACT_ONLY', 'Gateway policy must remain D2_CONTRACT_ONLY');
   add(errors, source?.canonicalProjection === `#/${ROOT_EXTENSION}`, 'Gateway policy canonical projection pointer is invalid');
@@ -910,7 +1230,7 @@ function checkEnvelopeAuditAndRuntimeGaps(policy, errors) {
   for (const id of requiredGaps) add(errors, ids.has(id), `M2 Gateway runtime gap is missing: ${id}`);
 }
 
-export function validateGatewayContractData({ document, canonicalOpenApi } = {}) {
+export function validateGatewayContractData({ document, canonicalOpenApi, root = process.cwd() } = {}) {
   const errors = [];
   checkDocumentRoot(document, errors);
   if (!isRecord(document) || !isRecord(document[ROOT_EXTENSION])) return { result: 'FAIL', errors, summary: {} };
@@ -925,6 +1245,15 @@ export function validateGatewayContractData({ document, canonicalOpenApi } = {})
   }
   const owners = checkServiceOwners(policy, errors);
   const routeSummary = checkRouteRules(policy, canonicalOpenApi, owners, errors);
+  checkExecutionTargetPolicy(policy, errors);
+  const executionSummary = checkRouteExecutions(policy, canonicalOpenApi, owners, root, errors);
+  const executionTargetDigest = executionTargetPlanDigest(policy);
+  add(
+    errors,
+    FROZEN_EXECUTION_TARGET_PLAN_SHA256 !== 'PENDING_M2_001_EXECUTION_TARGET_PLAN_SHA256'
+      && executionTargetDigest === FROZEN_EXECUTION_TARGET_PLAN_SHA256,
+    'Gateway execution target plan digest drifted from the frozen M2-001 source binding',
+  );
   const internalSummary = checkInternalPolicy(policy, canonicalOpenApi, errors);
   checkOriginsCsrfAndNative(policy, errors);
   checkJwtAndRatePolicy(policy, errors);
@@ -937,6 +1266,11 @@ export function validateGatewayContractData({ document, canonicalOpenApi } = {})
       publicOperationCount: routeSummary.publicOperations.length,
       coveredPublicOperationCount: routeSummary.covered,
       publicCoverageErrorCount: routeSummary.coverageErrors,
+      executionPlanCount: executionSummary.planCount,
+      executionProjectionCount: executionSummary.projectionCount,
+      availableExecutionOperationCount: executionSummary.availableOperationCount,
+      unavailableExecutionOperationCount: executionSummary.unavailableOperationCount,
+      executionTargetPlanDigest: executionTargetDigest,
       internalOperationCount: internalSummary.internalOperations.length,
       externalDeniedInternalOperationCount: internalSummary.denied,
       canonicalProjectionMatches: projectionMatches,
@@ -953,7 +1287,7 @@ export function validateGatewayContract({ root = process.cwd(), input, canonical
     return {
       input: path.relative(root, inputPath),
       canonicalInput: path.relative(root, canonicalPath),
-      ...validateGatewayContractData({ document, canonicalOpenApi }),
+      ...validateGatewayContractData({ document, canonicalOpenApi, root }),
     };
   } catch (error) {
     return {

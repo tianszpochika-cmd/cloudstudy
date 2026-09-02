@@ -73,10 +73,10 @@ public final class CanonicalRoutePolicyWebFilter implements WebFilter, Ordered {
                     : "unknown_api_route";
             return deny(exchange, code, "The API route is not available.");
         }
-        if (!routeExecutionPolicy.isAvailable(resolution.rule())) {
-            // A canonical contract route must not fall through to a configured
-            // broad predicate when its exact owner target is disabled, not in
-            // B14 TARGET mode, or not configured at all.
+        if (!routeExecutionPolicy.canExecute(resolution.rule(), request.getMethod(), path)) {
+            // A canonical contract prefix is not enough to authorize a
+            // forward. The execution projection must have a source-verified
+            // owner/controller target for this exact method and path.
             return deny(exchange, "canonical_route_target_unavailable", "The API route is not available.");
         }
         return chain.filter(exchange);

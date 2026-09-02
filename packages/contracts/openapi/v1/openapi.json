@@ -75136,7 +75136,7 @@
     "examples": {}
   },
   "x-p1r-gateway-boundary": {
-    "schemaVersion": "1.0.0",
+    "schemaVersion": "1.1.0",
     "sourceOfTruth": {
       "taskId": "P1R-M1-004",
       "kind": "D2_CONTRACT_ONLY",
@@ -76186,6 +76186,3035 @@
         "visibility": "AUTHENTICATED",
         "authClass": "HIGH_RISK_ADMIN",
         "compatibilityMode": "NONE"
+      }
+    ],
+    "executionTargetPolicy": {
+      "schemaVersion": "1.0.0",
+      "sourceOfTruth": "routeExecutions",
+      "runtimeImplementationTask": "P1R-M2-001",
+      "defaultExecutionStatus": "UNAVAILABLE",
+      "unknownRuleDecision": "DENY",
+      "unknownPathDecision": "DENY",
+      "unavailableOperationDecision": "DENY",
+      "legacyCoreApiFallback": "FORBIDDEN",
+      "controllerEvidenceRequired": true,
+      "configuredUriRequiredForUpstream": true,
+      "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+      "compatibilityPromotion": {
+        "id": "P1R-M2-001",
+        "sourceContractBaseline": "66246d5b4a68a988a9af4ece68a446640b123812",
+        "previousPromotion": "P1R-M1-018",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "scope": "OPENAPI_GATEWAY_EXECUTION_TARGET_ROOT_EXTENSION_ONLY",
+        "rootExtension": "x-p1r-gateway-boundary"
+      }
+    },
+    "routeExecutions": [
+      {
+        "ruleId": "gateway-health",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "gateway-health.health",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/health",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "LOCAL",
+            "upstreamOwner": "api-gateway",
+            "targetUriConfig": "GATEWAY_LOCAL_FORWARD",
+            "pathStrategy": "FORWARD_LOCAL",
+            "targetPathTemplate": "/internal/gateway/health",
+            "controllerEvidence": {
+              "sourcePath": "services/api-gateway/src/main/java/com/englishflow/gateway/web/GatewayHealthController.java",
+              "requestMapping": "/internal/gateway/health"
+            }
+          }
+        ]
+      },
+      {
+        "ruleId": "iam-jwks-public",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "iam-jwks-public.jwks",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/auth/jwks",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "iam-service",
+            "targetUriConfig": "gateway.identity.iam-base-url",
+            "pathStrategy": "PRESERVE_PUBLIC_PATH",
+            "targetPathTemplate": "/api/v1/auth/jwks",
+            "controllerEvidence": {
+              "sourcePath": "services/iam-service/src/main/java/com/englishflow/iam/web/IamProviderBoundaryController.java",
+              "requestMapping": "/api/v1"
+            }
+          }
+        ]
+      },
+      {
+        "ruleId": "iam-register",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "iam-register.register",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/auth/register",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "iam-service",
+            "targetUriConfig": "gateway.identity.iam-base-url",
+            "pathStrategy": "PRESERVE_PUBLIC_PATH",
+            "targetPathTemplate": "/api/v1/auth/register",
+            "controllerEvidence": {
+              "sourcePath": "services/iam-service/src/main/java/com/englishflow/iam/web/IamProviderBoundaryController.java",
+              "requestMapping": "/api/v1"
+            }
+          }
+        ]
+      },
+      {
+        "ruleId": "iam-login",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "iam-login.login",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/auth/login",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "iam-service",
+            "targetUriConfig": "gateway.identity.iam-base-url",
+            "pathStrategy": "PRESERVE_PUBLIC_PATH",
+            "targetPathTemplate": "/api/v1/auth/login",
+            "controllerEvidence": {
+              "sourcePath": "services/iam-service/src/main/java/com/englishflow/iam/web/IamProviderBoundaryController.java",
+              "requestMapping": "/api/v1"
+            }
+          }
+        ]
+      },
+      {
+        "ruleId": "iam-refresh",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "iam-refresh.refresh",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/auth/token/refresh",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "iam-service",
+            "targetUriConfig": "gateway.identity.iam-base-url",
+            "pathStrategy": "PRESERVE_PUBLIC_PATH",
+            "targetPathTemplate": "/api/v1/auth/token/refresh",
+            "controllerEvidence": {
+              "sourcePath": "services/iam-service/src/main/java/com/englishflow/iam/web/IamProviderBoundaryController.java",
+              "requestMapping": "/api/v1"
+            }
+          }
+        ]
+      },
+      {
+        "ruleId": "iam-password-reset",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "iam-password-reset.password-reset-request",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/auth/password-reset/request",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "iam-service",
+            "targetUriConfig": "gateway.identity.iam-base-url",
+            "pathStrategy": "PRESERVE_PUBLIC_PATH",
+            "targetPathTemplate": "/api/v1/auth/password-reset/request",
+            "controllerEvidence": {
+              "sourcePath": "services/iam-service/src/main/java/com/englishflow/iam/web/IamProviderBoundaryController.java",
+              "requestMapping": "/api/v1"
+            }
+          },
+          {
+            "projectionId": "iam-password-reset.password-reset-confirm",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/auth/password-reset/confirm",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "iam-service",
+            "targetUriConfig": "gateway.identity.iam-base-url",
+            "pathStrategy": "PRESERVE_PUBLIC_PATH",
+            "targetPathTemplate": "/api/v1/auth/password-reset/confirm",
+            "controllerEvidence": {
+              "sourcePath": "services/iam-service/src/main/java/com/englishflow/iam/web/IamProviderBoundaryController.java",
+              "requestMapping": "/api/v1"
+            }
+          }
+        ]
+      },
+      {
+        "ruleId": "public-content",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "public-content.catalog",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/public/content/catalog",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "content-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.content",
+            "pathStrategy": "PRESERVE_PUBLIC_PATH",
+            "targetPathTemplate": "/api/v1/public/content/catalog",
+            "controllerEvidence": {
+              "sourcePath": "services/content-service/src/main/java/com/englishflow/content/web/ContentHttpController.java",
+              "requestMapping": "/api/v1/public/content/catalog"
+            }
+          },
+          {
+            "projectionId": "public-content.content",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/public/content/{contentCode}",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "content-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.content",
+            "pathStrategy": "PRESERVE_PUBLIC_PATH",
+            "targetPathTemplate": "/api/v1/public/content/{contentCode}",
+            "controllerEvidence": {
+              "sourcePath": "services/content-service/src/main/java/com/englishflow/content/web/ContentHttpController.java",
+              "requestMapping": "/api/v1/public/content/{contentCode}"
+            }
+          }
+        ]
+      },
+      {
+        "ruleId": "public-commerce",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "public-commerce.catalog",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/public/commerce/catalog",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "commerce-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.commerce",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/commerce/public/catalog",
+            "controllerEvidence": {
+              "sourcePath": "services/commerce-service/src/main/java/com/englishflow/commerce/adapter/http/CommerceController.java",
+              "requestMapping": "/internal/v1/commerce"
+            }
+          }
+        ]
+      },
+      {
+        "ruleId": "public-site",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "canonical_owner_admin_ops_conflicts_with_current_content_controller",
+        "projections": []
+      },
+      {
+        "ruleId": "wechat-callback",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "wechat-callback.wechat",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/commerce/wechat/callback",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "commerce-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.commerce",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/commerce/providers/wechat/callbacks",
+            "controllerEvidence": {
+              "sourcePath": "services/commerce-service/src/main/java/com/englishflow/commerce/adapter/http/CommerceController.java",
+              "requestMapping": "/internal/v1/commerce"
+            }
+          }
+        ]
+      },
+      {
+        "ruleId": "alipay-callback",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "alipay-callback.alipay",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/commerce/alipay/notify",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "commerce-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.commerce",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/commerce/providers/alipay/callbacks",
+            "controllerEvidence": {
+              "sourcePath": "services/commerce-service/src/main/java/com/englishflow/commerce/adapter/http/CommerceController.java",
+              "requestMapping": "/internal/v1/commerce"
+            }
+          }
+        ]
+      },
+      {
+        "ruleId": "apple-notification",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "apple-notification.apple",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/commerce/apple/notifications",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "commerce-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.commerce",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/commerce/providers/apple/callbacks",
+            "controllerEvidence": {
+              "sourcePath": "services/commerce-service/src/main/java/com/englishflow/commerce/adapter/http/CommerceController.java",
+              "requestMapping": "/internal/v1/commerce"
+            }
+          }
+        ]
+      },
+      {
+        "ruleId": "admin-content",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "admin-content.commands",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/admin/content-commands",
+            "methods": [
+              "GET",
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "content-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.content",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/content/admin-commands",
+            "controllerEvidence": {
+              "sourcePath": "services/content-service/src/main/java/com/englishflow/content/web/B9ContentAdminController.java",
+              "requestMapping": "/internal/v1/content/admin-commands"
+            }
+          },
+          {
+            "projectionId": "admin-content.command-detail",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/admin/content-commands/{contentCode}",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "content-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.content",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/content/admin-commands/{contentCode}",
+            "controllerEvidence": {
+              "sourcePath": "services/content-service/src/main/java/com/englishflow/content/web/B9ContentAdminController.java",
+              "requestMapping": "/internal/v1/content/admin-commands"
+            }
+          }
+        ]
+      },
+      {
+        "ruleId": "admin-content-publish-tasks",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "content_owner_controller_mapping_not_present",
+        "projections": []
+      },
+      {
+        "ruleId": "admin-recovery",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "workflow_owner_has_no_configured_gateway_target",
+        "projections": []
+      },
+      {
+        "ruleId": "admin-analytics",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "admin-analytics.metrics",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/admin/ops/metrics",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "analytics-service",
+            "targetUriConfig": "gateway.b13.analytics-base-url",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/analytics/metrics",
+            "controllerEvidence": {
+              "sourcePath": "services/analytics-service/src/main/java/com/englishflow/analytics/web/AnalyticsController.java",
+              "requestMapping": "/internal/v1/analytics"
+            }
+          }
+        ]
+      },
+      {
+        "ruleId": "analytics-telemetry",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "analytics-telemetry.events",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/analytics/telemetry",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "analytics-service",
+            "targetUriConfig": "gateway.b13.analytics-base-url",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/analytics/events",
+            "controllerEvidence": {
+              "sourcePath": "services/analytics-service/src/main/java/com/englishflow/analytics/web/AnalyticsController.java",
+              "requestMapping": "/internal/v1/analytics"
+            }
+          }
+        ]
+      },
+      {
+        "ruleId": "learning-content-snapshot",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "content_owner_controller_mapping_not_present",
+        "projections": []
+      },
+      {
+        "ruleId": "speaking-recordings",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "canonical_media_owner_conflicts_with_current_learning_controller",
+        "projections": []
+      },
+      {
+        "ruleId": "speaking-shadowing-completion",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "canonical_assessment_owner_conflicts_with_current_learning_controller",
+        "projections": []
+      },
+      {
+        "ruleId": "auth-domain",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "auth-domain.logout",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/auth/logout",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "iam-service",
+            "targetUriConfig": "gateway.identity.iam-base-url",
+            "pathStrategy": "PRESERVE_PUBLIC_PATH",
+            "targetPathTemplate": "/api/v1/auth/logout",
+            "controllerEvidence": {
+              "sourcePath": "services/iam-service/src/main/java/com/englishflow/iam/web/IamProviderBoundaryController.java",
+              "requestMapping": "/api/v1"
+            }
+          },
+          {
+            "projectionId": "auth-domain.revoke-session",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/auth/sessions/{sessionId}/revoke",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "iam-service",
+            "targetUriConfig": "gateway.identity.iam-base-url",
+            "pathStrategy": "PRESERVE_PUBLIC_PATH",
+            "targetPathTemplate": "/api/v1/auth/sessions/{sessionId}/revoke",
+            "controllerEvidence": {
+              "sourcePath": "services/iam-service/src/main/java/com/englishflow/iam/web/IamProviderBoundaryController.java",
+              "requestMapping": "/api/v1"
+            }
+          }
+        ]
+      },
+      {
+        "ruleId": "iam-domain",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "iam-domain.principal",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/iam/principal/me",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "iam-service",
+            "targetUriConfig": "gateway.identity.iam-base-url",
+            "pathStrategy": "PRESERVE_PUBLIC_PATH",
+            "targetPathTemplate": "/api/v1/iam/principal/me",
+            "controllerEvidence": {
+              "sourcePath": "services/iam-service/src/main/java/com/englishflow/iam/web/IamProviderBoundaryController.java",
+              "requestMapping": "/api/v1"
+            }
+          },
+          {
+            "projectionId": "iam-domain.devices",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/iam/devices",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "iam-service",
+            "targetUriConfig": "gateway.identity.iam-base-url",
+            "pathStrategy": "PRESERVE_PUBLIC_PATH",
+            "targetPathTemplate": "/api/v1/iam/devices",
+            "controllerEvidence": {
+              "sourcePath": "services/iam-service/src/main/java/com/englishflow/iam/web/IamProviderBoundaryController.java",
+              "requestMapping": "/api/v1"
+            }
+          },
+          {
+            "projectionId": "iam-domain.kickout",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/iam/devices/{deviceId}/kickout",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "iam-service",
+            "targetUriConfig": "gateway.identity.iam-base-url",
+            "pathStrategy": "PRESERVE_PUBLIC_PATH",
+            "targetPathTemplate": "/api/v1/iam/devices/{deviceId}/kickout",
+            "controllerEvidence": {
+              "sourcePath": "services/iam-service/src/main/java/com/englishflow/iam/web/IamProviderBoundaryController.java",
+              "requestMapping": "/api/v1"
+            }
+          },
+          {
+            "projectionId": "iam-domain.adult-gate",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/iam/adult-gate",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "iam-service",
+            "targetUriConfig": "gateway.identity.iam-base-url",
+            "pathStrategy": "PRESERVE_PUBLIC_PATH",
+            "targetPathTemplate": "/api/v1/iam/adult-gate",
+            "controllerEvidence": {
+              "sourcePath": "services/iam-service/src/main/java/com/englishflow/iam/web/IamProviderBoundaryController.java",
+              "requestMapping": "/api/v1"
+            }
+          },
+          {
+            "projectionId": "iam-domain.consents",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/iam/consents",
+            "methods": [
+              "GET",
+              "PUT"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "iam-service",
+            "targetUriConfig": "gateway.identity.iam-base-url",
+            "pathStrategy": "PRESERVE_PUBLIC_PATH",
+            "targetPathTemplate": "/api/v1/iam/consents",
+            "controllerEvidence": {
+              "sourcePath": "services/iam-service/src/main/java/com/englishflow/iam/web/IamProviderBoundaryController.java",
+              "requestMapping": "/api/v1"
+            }
+          },
+          {
+            "projectionId": "iam-domain.permissions",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/iam/permissions",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "iam-service",
+            "targetUriConfig": "gateway.identity.iam-base-url",
+            "pathStrategy": "PRESERVE_PUBLIC_PATH",
+            "targetPathTemplate": "/api/v1/iam/permissions",
+            "controllerEvidence": {
+              "sourcePath": "services/iam-service/src/main/java/com/englishflow/iam/web/IamProviderBoundaryController.java",
+              "requestMapping": "/api/v1"
+            }
+          },
+          {
+            "projectionId": "iam-domain.policy-versions",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/iam/policy-versions",
+            "methods": [
+              "GET",
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "iam-service",
+            "targetUriConfig": "gateway.identity.iam-base-url",
+            "pathStrategy": "PRESERVE_PUBLIC_PATH",
+            "targetPathTemplate": "/api/v1/iam/policy-versions",
+            "controllerEvidence": {
+              "sourcePath": "services/iam-service/src/main/java/com/englishflow/iam/web/IamPolicyControlController.java",
+              "requestMapping": "/api/v1/iam/policy-versions"
+            }
+          },
+          {
+            "projectionId": "iam-domain.policy-version",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/iam/policy-versions/{policyVersionId}",
+            "methods": [
+              "GET",
+              "PUT"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "iam-service",
+            "targetUriConfig": "gateway.identity.iam-base-url",
+            "pathStrategy": "PRESERVE_PUBLIC_PATH",
+            "targetPathTemplate": "/api/v1/iam/policy-versions/{policyVersionId}",
+            "controllerEvidence": {
+              "sourcePath": "services/iam-service/src/main/java/com/englishflow/iam/web/IamPolicyControlController.java",
+              "requestMapping": "/api/v1/iam/policy-versions"
+            }
+          },
+          {
+            "projectionId": "iam-domain.policy-submit",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/iam/policy-versions/{policyVersionId}/submit",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "iam-service",
+            "targetUriConfig": "gateway.identity.iam-base-url",
+            "pathStrategy": "PRESERVE_PUBLIC_PATH",
+            "targetPathTemplate": "/api/v1/iam/policy-versions/{policyVersionId}/submit",
+            "controllerEvidence": {
+              "sourcePath": "services/iam-service/src/main/java/com/englishflow/iam/web/IamPolicyControlController.java",
+              "requestMapping": "/api/v1/iam/policy-versions"
+            }
+          },
+          {
+            "projectionId": "iam-domain.policy-approval",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/iam/policy-versions/{policyVersionId}/approvals",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "iam-service",
+            "targetUriConfig": "gateway.identity.iam-base-url",
+            "pathStrategy": "PRESERVE_PUBLIC_PATH",
+            "targetPathTemplate": "/api/v1/iam/policy-versions/{policyVersionId}/approvals",
+            "controllerEvidence": {
+              "sourcePath": "services/iam-service/src/main/java/com/englishflow/iam/web/IamPolicyControlController.java",
+              "requestMapping": "/api/v1/iam/policy-versions"
+            }
+          },
+          {
+            "projectionId": "iam-domain.policy-activate",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/iam/policy-versions/{policyVersionId}/activate",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "iam-service",
+            "targetUriConfig": "gateway.identity.iam-base-url",
+            "pathStrategy": "PRESERVE_PUBLIC_PATH",
+            "targetPathTemplate": "/api/v1/iam/policy-versions/{policyVersionId}/activate",
+            "controllerEvidence": {
+              "sourcePath": "services/iam-service/src/main/java/com/englishflow/iam/web/IamPolicyControlController.java",
+              "requestMapping": "/api/v1/iam/policy-versions"
+            }
+          },
+          {
+            "projectionId": "iam-domain.policy-revoke",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/iam/policy-versions/{policyVersionId}/revoke",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "iam-service",
+            "targetUriConfig": "gateway.identity.iam-base-url",
+            "pathStrategy": "PRESERVE_PUBLIC_PATH",
+            "targetPathTemplate": "/api/v1/iam/policy-versions/{policyVersionId}/revoke",
+            "controllerEvidence": {
+              "sourcePath": "services/iam-service/src/main/java/com/englishflow/iam/web/IamPolicyControlController.java",
+              "requestMapping": "/api/v1/iam/policy-versions"
+            }
+          }
+        ]
+      },
+      {
+        "ruleId": "iam-account-deletions",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "iam_owner_controller_mapping_not_present",
+        "projections": []
+      },
+      {
+        "ruleId": "learner-domain",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "learner-domain.profile",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/learner/profile",
+            "methods": [
+              "GET",
+              "PATCH"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learner-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learner",
+            "pathStrategy": "PRESERVE_PUBLIC_PATH",
+            "targetPathTemplate": "/api/v1/learner/profile",
+            "controllerEvidence": {
+              "sourcePath": "services/learner-service/src/main/java/com/englishflow/learner/web/LearnerHttpController.java",
+              "requestMapping": "/api/v1/learner"
+            }
+          },
+          {
+            "projectionId": "learner-domain.targets",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/learner/targets",
+            "methods": [
+              "GET",
+              "PUT"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learner-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learner",
+            "pathStrategy": "PRESERVE_PUBLIC_PATH",
+            "targetPathTemplate": "/api/v1/learner/targets",
+            "controllerEvidence": {
+              "sourcePath": "services/learner-service/src/main/java/com/englishflow/learner/web/LearnerHttpController.java",
+              "requestMapping": "/api/v1/learner"
+            }
+          },
+          {
+            "projectionId": "learner-domain.preferences",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/learner/preferences",
+            "methods": [
+              "GET",
+              "PATCH"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learner-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learner",
+            "pathStrategy": "PRESERVE_PUBLIC_PATH",
+            "targetPathTemplate": "/api/v1/learner/preferences",
+            "controllerEvidence": {
+              "sourcePath": "services/learner-service/src/main/java/com/englishflow/learner/web/LearnerHttpController.java",
+              "requestMapping": "/api/v1/learner"
+            }
+          },
+          {
+            "projectionId": "learner-domain.first-day",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/learner/first-day",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learner-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learner",
+            "pathStrategy": "PRESERVE_PUBLIC_PATH",
+            "targetPathTemplate": "/api/v1/learner/first-day",
+            "controllerEvidence": {
+              "sourcePath": "services/learner-service/src/main/java/com/englishflow/learner/web/LearnerHttpController.java",
+              "requestMapping": "/api/v1/learner"
+            }
+          },
+          {
+            "projectionId": "learner-domain.home",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/learner/home",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learner-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learner",
+            "pathStrategy": "PRESERVE_PUBLIC_PATH",
+            "targetPathTemplate": "/api/v1/learner/home",
+            "controllerEvidence": {
+              "sourcePath": "services/learner-service/src/main/java/com/englishflow/learner/web/LearnerHttpController.java",
+              "requestMapping": "/api/v1/learner"
+            }
+          }
+        ]
+      },
+      {
+        "ruleId": "onboarding-domain",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "onboarding-domain.options",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/onboarding/options",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learner-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learner",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/learner/onboarding/options",
+            "controllerEvidence": {
+              "sourcePath": "services/learner-service/src/main/java/com/englishflow/learner/web/B25LearnerJdbcController.java",
+              "requestMapping": "/internal/v1/learner"
+            }
+          },
+          {
+            "projectionId": "onboarding-domain.daily-tasks-today",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/onboarding/daily-tasks/today",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learner-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learner",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/learner/onboarding/daily-tasks/today",
+            "controllerEvidence": {
+              "sourcePath": "services/learner-service/src/main/java/com/englishflow/learner/web/B25LearnerJdbcController.java",
+              "requestMapping": "/internal/v1/learner"
+            }
+          },
+          {
+            "projectionId": "onboarding-domain.daily-tasks-ensure",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/onboarding/daily-tasks/ensure",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learner-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learner",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/learner/onboarding/daily-tasks/ensure",
+            "controllerEvidence": {
+              "sourcePath": "services/learner-service/src/main/java/com/englishflow/learner/web/B25LearnerJdbcController.java",
+              "requestMapping": "/internal/v1/learner"
+            }
+          },
+          {
+            "projectionId": "onboarding-domain.daily-task-complete",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/onboarding/daily-tasks/{taskId}/complete",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learner-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learner",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/learner/onboarding/daily-tasks/{taskId}/complete",
+            "controllerEvidence": {
+              "sourcePath": "services/learner-service/src/main/java/com/englishflow/learner/web/B25LearnerJdbcController.java",
+              "requestMapping": "/internal/v1/learner"
+            }
+          }
+        ]
+      },
+      {
+        "ruleId": "privacy-domain",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "privacy-domain.export",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/privacy/export",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learner-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learner",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/learner/privacy/export",
+            "controllerEvidence": {
+              "sourcePath": "services/learner-service/src/main/java/com/englishflow/learner/web/B25LearnerJdbcController.java",
+              "requestMapping": "/internal/v1/learner"
+            }
+          }
+        ]
+      },
+      {
+        "ruleId": "privacy-exports",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "learner_owner_plural_export_controller_mapping_not_present",
+        "projections": []
+      },
+      {
+        "ruleId": "content-domain",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "content-domain.learner-catalog",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/content/learner/catalog",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "content-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.content",
+            "pathStrategy": "PRESERVE_PUBLIC_PATH",
+            "targetPathTemplate": "/api/v1/content/learner/catalog",
+            "controllerEvidence": {
+              "sourcePath": "services/content-service/src/main/java/com/englishflow/content/web/ContentHttpController.java",
+              "requestMapping": "/api/v1/content/learner/catalog"
+            }
+          },
+          {
+            "projectionId": "content-domain.learner-content",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/content/learner/{contentCode}",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "content-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.content",
+            "pathStrategy": "PRESERVE_PUBLIC_PATH",
+            "targetPathTemplate": "/api/v1/content/learner/{contentCode}",
+            "controllerEvidence": {
+              "sourcePath": "services/content-service/src/main/java/com/englishflow/content/web/ContentHttpController.java",
+              "requestMapping": "/api/v1/content/learner/{contentCode}"
+            }
+          },
+          {
+            "projectionId": "content-domain.learner-vocabulary",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/content/learner/vocabulary/{vocabularyId}",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "content-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.content",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/content/learner/vocabulary/{vocabularyId}",
+            "controllerEvidence": {
+              "sourcePath": "services/content-service/src/main/java/com/englishflow/content/web/B25ContentJdbcController.java",
+              "requestMapping": "/internal/v1/content/learner"
+            }
+          }
+        ]
+      },
+      {
+        "ruleId": "vocabulary-domain",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "vocabulary-domain.expressions",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/vocab/expressions",
+            "methods": [
+              "GET",
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learning-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learning",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/learning/vocab/expressions",
+            "controllerEvidence": {
+              "sourcePath": "services/learning-service/src/main/java/com/englishflow/learning/web/B25LearningJdbcController.java",
+              "requestMapping": "/internal/v1/learning"
+            }
+          },
+          {
+            "projectionId": "vocabulary-domain.expression",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/vocab/expressions/{expressionId}",
+            "methods": [
+              "PATCH",
+              "DELETE"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learning-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learning",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/learning/vocab/expressions/{expressionId}",
+            "controllerEvidence": {
+              "sourcePath": "services/learning-service/src/main/java/com/englishflow/learning/web/B25LearningJdbcController.java",
+              "requestMapping": "/internal/v1/learning"
+            }
+          },
+          {
+            "projectionId": "vocabulary-domain.library",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/vocab/library",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learning-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learning",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/learning/vocab/library",
+            "controllerEvidence": {
+              "sourcePath": "services/learning-service/src/main/java/com/englishflow/learning/web/B25LearningJdbcController.java",
+              "requestMapping": "/internal/v1/learning"
+            }
+          },
+          {
+            "projectionId": "vocabulary-domain.library-entry",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/vocab/library/entries",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learning-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learning",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/learning/vocab/library/entries",
+            "controllerEvidence": {
+              "sourcePath": "services/learning-service/src/main/java/com/englishflow/learning/web/B25LearningJdbcController.java",
+              "requestMapping": "/internal/v1/learning"
+            }
+          },
+          {
+            "projectionId": "vocabulary-domain.library-entry-delete",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/vocab/library/entries/{entryId}",
+            "methods": [
+              "DELETE"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learning-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learning",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/learning/vocab/library/entries/{entryId}",
+            "controllerEvidence": {
+              "sourcePath": "services/learning-service/src/main/java/com/englishflow/learning/web/B25LearningJdbcController.java",
+              "requestMapping": "/internal/v1/learning"
+            }
+          }
+        ]
+      },
+      {
+        "ruleId": "learning-domain",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "learning-domain.continue-context",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/learning/continue-context",
+            "methods": [
+              "GET",
+              "PUT"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learning-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learning",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/learning/continue-context",
+            "controllerEvidence": {
+              "sourcePath": "services/learning-service/src/main/java/com/englishflow/learning/web/B25LearningJdbcController.java",
+              "requestMapping": "/internal/v1/learning"
+            }
+          },
+          {
+            "projectionId": "learning-domain.daily-report",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/learning/stats/daily-report",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learning-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learning",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/learning/stats/daily-report",
+            "controllerEvidence": {
+              "sourcePath": "services/learning-service/src/main/java/com/englishflow/learning/web/B25LearningJdbcController.java",
+              "requestMapping": "/internal/v1/learning"
+            }
+          },
+          {
+            "projectionId": "learning-domain.weekly-report",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/learning/stats/weekly-report",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learning-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learning",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/learning/stats/weekly-report",
+            "controllerEvidence": {
+              "sourcePath": "services/learning-service/src/main/java/com/englishflow/learning/web/B25LearningJdbcController.java",
+              "requestMapping": "/internal/v1/learning"
+            }
+          },
+          {
+            "projectionId": "learning-domain.daily-summary",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/learning/stats/daily-summary",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learning-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learning",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/learning/stats/daily-summary",
+            "controllerEvidence": {
+              "sourcePath": "services/learning-service/src/main/java/com/englishflow/learning/web/B25LearningJdbcController.java",
+              "requestMapping": "/internal/v1/learning"
+            }
+          },
+          {
+            "projectionId": "learning-domain.srs-batches",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/learning/srs/batches",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learning-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learning",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/learning/srs/batches",
+            "controllerEvidence": {
+              "sourcePath": "services/learning-service/src/main/java/com/englishflow/learning/web/B25LearningJdbcController.java",
+              "requestMapping": "/internal/v1/learning"
+            }
+          },
+          {
+            "projectionId": "learning-domain.srs-batch",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/learning/srs/batches/{snapshotId}",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learning-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learning",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/learning/srs/batches/{snapshotId}",
+            "controllerEvidence": {
+              "sourcePath": "services/learning-service/src/main/java/com/englishflow/learning/web/B25LearningJdbcController.java",
+              "requestMapping": "/internal/v1/learning"
+            }
+          },
+          {
+            "projectionId": "learning-domain.srs-reviews",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/learning/srs/reviews",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learning-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learning",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/learning/srs/reviews",
+            "controllerEvidence": {
+              "sourcePath": "services/learning-service/src/main/java/com/englishflow/learning/web/B25LearningJdbcController.java",
+              "requestMapping": "/internal/v1/learning"
+            }
+          },
+          {
+            "projectionId": "learning-domain.srs-reviews-sync",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/learning/srs/reviews:sync",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learning-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learning",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/learning/srs/reviews:sync",
+            "controllerEvidence": {
+              "sourcePath": "services/learning-service/src/main/java/com/englishflow/learning/web/B25LearningJdbcController.java",
+              "requestMapping": "/internal/v1/learning"
+            }
+          },
+          {
+            "projectionId": "learning-domain.srs-states",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/learning/srs/states",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learning-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learning",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/learning/srs/states",
+            "controllerEvidence": {
+              "sourcePath": "services/learning-service/src/main/java/com/englishflow/learning/web/B25LearningJdbcController.java",
+              "requestMapping": "/internal/v1/learning"
+            }
+          },
+          {
+            "projectionId": "learning-domain.srs-overview",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/learning/srs/overview",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learning-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learning",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/learning/srs/overview",
+            "controllerEvidence": {
+              "sourcePath": "services/learning-service/src/main/java/com/englishflow/learning/web/B25LearningJdbcController.java",
+              "requestMapping": "/internal/v1/learning"
+            }
+          },
+          {
+            "projectionId": "learning-domain.plan-current",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/learning/plan/current",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learning-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learning",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/learning/plan/current",
+            "controllerEvidence": {
+              "sourcePath": "services/learning-service/src/main/java/com/englishflow/learning/web/B25LearningJdbcController.java",
+              "requestMapping": "/internal/v1/learning"
+            }
+          },
+          {
+            "projectionId": "learning-domain.stream-today",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/learning/stream/today",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learning-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learning",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/learning/stream/today",
+            "controllerEvidence": {
+              "sourcePath": "services/learning-service/src/main/java/com/englishflow/learning/web/B25LearningJdbcController.java",
+              "requestMapping": "/internal/v1/learning"
+            }
+          },
+          {
+            "projectionId": "learning-domain.mistakes-queue",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/learning/mistakes/queue",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learning-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learning",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/learning/mistakes/queue",
+            "controllerEvidence": {
+              "sourcePath": "services/learning-service/src/main/java/com/englishflow/learning/web/B25LearningJdbcController.java",
+              "requestMapping": "/internal/v1/learning"
+            }
+          },
+          {
+            "projectionId": "learning-domain.review-queue",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/learning/review-queue",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learning-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learning",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/learning/review-queue",
+            "controllerEvidence": {
+              "sourcePath": "services/learning-service/src/main/java/com/englishflow/learning/web/B25LearningJdbcController.java",
+              "requestMapping": "/internal/v1/learning"
+            }
+          },
+          {
+            "projectionId": "learning-domain.review-queue-complete",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/learning/review-queue/{queueItemId}/complete",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learning-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learning",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/learning/review-queue/{queueItemId}/complete",
+            "controllerEvidence": {
+              "sourcePath": "services/learning-service/src/main/java/com/englishflow/learning/web/B25LearningJdbcController.java",
+              "requestMapping": "/internal/v1/learning"
+            }
+          },
+          {
+            "projectionId": "learning-domain.media-progress",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/learning/media-progress",
+            "methods": [
+              "PUT"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learning-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learning",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/learning/experiences/media-progress",
+            "controllerEvidence": {
+              "sourcePath": "services/learning-service/src/main/java/com/englishflow/learning/web/B3LearningJdbcController.java",
+              "requestMapping": "/internal/v1/learning/experiences"
+            }
+          }
+        ]
+      },
+      {
+        "ruleId": "mastery-domain",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "mastery-domain.overview",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/mastery/overview",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learning-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learning",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/learning/experiences/mastery/overview",
+            "controllerEvidence": {
+              "sourcePath": "services/learning-service/src/main/java/com/englishflow/learning/web/B3LearningJdbcController.java",
+              "requestMapping": "/internal/v1/learning/experiences"
+            }
+          },
+          {
+            "projectionId": "mastery-domain.mistakes",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/mastery/mistakes",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learning-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learning",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/learning/experiences/mastery/mistakes",
+            "controllerEvidence": {
+              "sourcePath": "services/learning-service/src/main/java/com/englishflow/learning/web/B3LearningJdbcController.java",
+              "requestMapping": "/internal/v1/learning/experiences"
+            }
+          },
+          {
+            "projectionId": "mastery-domain.mistake-retry",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/mastery/mistakes/{mistakeId}/retry",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learning-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learning",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/learning/experiences/mastery/mistakes/{mistakeId}/retry",
+            "controllerEvidence": {
+              "sourcePath": "services/learning-service/src/main/java/com/englishflow/learning/web/B3LearningJdbcController.java",
+              "requestMapping": "/internal/v1/learning/experiences"
+            }
+          },
+          {
+            "projectionId": "mastery-domain.verifications",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/mastery/verifications",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learning-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learning",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/learning/experiences/mastery/verifications",
+            "controllerEvidence": {
+              "sourcePath": "services/learning-service/src/main/java/com/englishflow/learning/web/B3LearningJdbcController.java",
+              "requestMapping": "/internal/v1/learning/experiences"
+            }
+          },
+          {
+            "projectionId": "mastery-domain.verification-submit",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/mastery/verifications/{verificationId}/submit",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learning-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learning",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/learning/experiences/mastery/verifications/{verificationId}/submit",
+            "controllerEvidence": {
+              "sourcePath": "services/learning-service/src/main/java/com/englishflow/learning/web/B3LearningJdbcController.java",
+              "requestMapping": "/internal/v1/learning/experiences"
+            }
+          }
+        ]
+      },
+      {
+        "ruleId": "offline-domain",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "offline-domain.sync-push",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/offline/sync/push",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learning-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learning",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/learning/experiences/offline/sync/push",
+            "controllerEvidence": {
+              "sourcePath": "services/learning-service/src/main/java/com/englishflow/learning/web/B3LearningJdbcController.java",
+              "requestMapping": "/internal/v1/learning/experiences"
+            }
+          },
+          {
+            "projectionId": "offline-domain.sync-pull",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/offline/sync/pull",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learning-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learning",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/learning/experiences/offline/sync/pull",
+            "controllerEvidence": {
+              "sourcePath": "services/learning-service/src/main/java/com/englishflow/learning/web/B3LearningJdbcController.java",
+              "requestMapping": "/internal/v1/learning/experiences"
+            }
+          }
+        ]
+      },
+      {
+        "ruleId": "sync-domain",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "canonical_learning_owner_conflicts_with_current_notification_controller",
+        "projections": []
+      },
+      {
+        "ruleId": "assessment-domain",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "assessment-domain.placement-start",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/assessment/placement/start",
+            "methods": [
+              "GET",
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "assessment-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.assessment",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/assessment/placement/start",
+            "controllerEvidence": {
+              "sourcePath": "services/assessment-service/src/main/java/com/englishflow/assessment/web/B25AssessmentJdbcController.java",
+              "requestMapping": "/internal/v1/assessment"
+            }
+          },
+          {
+            "projectionId": "assessment-domain.placement-submit-step",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/assessment/placement/submit-step",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "assessment-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.assessment",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/assessment/placement/submit-step",
+            "controllerEvidence": {
+              "sourcePath": "services/assessment-service/src/main/java/com/englishflow/assessment/web/B25AssessmentJdbcController.java",
+              "requestMapping": "/internal/v1/assessment"
+            }
+          },
+          {
+            "projectionId": "assessment-domain.placement-skip",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/assessment/placement/skip",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "assessment-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.assessment",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/assessment/placement/skip",
+            "controllerEvidence": {
+              "sourcePath": "services/assessment-service/src/main/java/com/englishflow/assessment/web/B25AssessmentJdbcController.java",
+              "requestMapping": "/internal/v1/assessment"
+            }
+          },
+          {
+            "projectionId": "assessment-domain.placement-report",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/assessment/placement/report/{sessionId}",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "assessment-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.assessment",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/assessment/placement/report/{sessionId}",
+            "controllerEvidence": {
+              "sourcePath": "services/assessment-service/src/main/java/com/englishflow/assessment/web/B25AssessmentJdbcController.java",
+              "requestMapping": "/internal/v1/assessment"
+            }
+          },
+          {
+            "projectionId": "assessment-domain.daily-stream",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/assessment/daily-stream",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "assessment-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.assessment",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/assessment/daily-stream",
+            "controllerEvidence": {
+              "sourcePath": "services/assessment-service/src/main/java/com/englishflow/assessment/web/B25AssessmentJdbcController.java",
+              "requestMapping": "/internal/v1/assessment"
+            }
+          },
+          {
+            "projectionId": "assessment-domain.session-create",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/assessment/sessions",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "assessment-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.assessment",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/assessment/sessions",
+            "controllerEvidence": {
+              "sourcePath": "services/assessment-service/src/main/java/com/englishflow/assessment/web/B10AssessmentJdbcController.java",
+              "requestMapping": "/internal/v1/assessment"
+            }
+          },
+          {
+            "projectionId": "assessment-domain.session",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/assessment/sessions/{sessionId}",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "assessment-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.assessment",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/assessment/sessions/{sessionId}",
+            "controllerEvidence": {
+              "sourcePath": "services/assessment-service/src/main/java/com/englishflow/assessment/web/B10AssessmentJdbcController.java",
+              "requestMapping": "/internal/v1/assessment"
+            }
+          },
+          {
+            "projectionId": "assessment-domain.attempt-create",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/assessment/sessions/{sessionId}/attempts",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "assessment-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.assessment",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/assessment/sessions/{sessionId}/attempts",
+            "controllerEvidence": {
+              "sourcePath": "services/assessment-service/src/main/java/com/englishflow/assessment/web/B10AssessmentJdbcController.java",
+              "requestMapping": "/internal/v1/assessment"
+            }
+          },
+          {
+            "projectionId": "assessment-domain.attempt-checkpoint",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/assessment/sessions/{sessionId}/attempts/{attemptId}/checkpoint",
+            "methods": [
+              "PUT"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "assessment-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.assessment",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/assessment/sessions/{sessionId}/attempts/{attemptId}/checkpoint",
+            "controllerEvidence": {
+              "sourcePath": "services/assessment-service/src/main/java/com/englishflow/assessment/web/B10AssessmentJdbcController.java",
+              "requestMapping": "/internal/v1/assessment"
+            }
+          },
+          {
+            "projectionId": "assessment-domain.report",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/assessment/reports/{reportId}",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "assessment-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.assessment",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/assessment/reports/{reportId}",
+            "controllerEvidence": {
+              "sourcePath": "services/assessment-service/src/main/java/com/englishflow/assessment/web/B10AssessmentJdbcController.java",
+              "requestMapping": "/internal/v1/assessment"
+            }
+          }
+        ]
+      },
+      {
+        "ruleId": "exam-domain",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "assessment_owner_controller_mapping_not_present",
+        "projections": []
+      },
+      {
+        "ruleId": "grammar-domain",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "canonical_assessment_owner_conflicts_with_current_learning_or_content_controller",
+        "projections": []
+      },
+      {
+        "ruleId": "listening-domain",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "canonical_assessment_owner_conflicts_with_current_learning_or_content_controller",
+        "projections": []
+      },
+      {
+        "ruleId": "reading-domain",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "canonical_assessment_owner_conflicts_with_current_learning_or_content_controller",
+        "projections": []
+      },
+      {
+        "ruleId": "writing-domain",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "canonical_assessment_owner_conflicts_with_current_learning_or_content_controller",
+        "projections": []
+      },
+      {
+        "ruleId": "phonetics-domain",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "canonical_assessment_owner_conflicts_with_current_content_controller",
+        "projections": []
+      },
+      {
+        "ruleId": "speaking-domain",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "canonical_assessment_owner_conflicts_with_current_learning_controller",
+        "projections": []
+      },
+      {
+        "ruleId": "media-domain",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "media-domain.asset",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/media/assets/{assetId}",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "media-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.media",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/media/assets/{assetId}",
+            "controllerEvidence": {
+              "sourcePath": "services/media-service/src/main/java/com/englishflow/media/web/MediaController.java",
+              "requestMapping": "/internal/v1/media"
+            }
+          },
+          {
+            "projectionId": "media-domain.asset-manifest",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/media/assets/{assetId}/manifest",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "media-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.media",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/media/assets/{assetId}/manifest",
+            "controllerEvidence": {
+              "sourcePath": "services/media-service/src/main/java/com/englishflow/media/web/MediaController.java",
+              "requestMapping": "/internal/v1/media"
+            }
+          },
+          {
+            "projectionId": "media-domain.asset-signed-url",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/media/assets/{assetId}/signed-url",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "media-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.media",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/media/assets/{assetId}/signed-url",
+            "controllerEvidence": {
+              "sourcePath": "services/media-service/src/main/java/com/englishflow/media/web/MediaController.java",
+              "requestMapping": "/internal/v1/media"
+            }
+          }
+        ]
+      },
+      {
+        "ruleId": "multimodal-domain",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "media_owner_controller_mapping_not_present",
+        "projections": []
+      },
+      {
+        "ruleId": "gamification-domain",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "gamification-domain.streak",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/gamification/streak",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "gamification-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.gamification",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/gamification/streak",
+            "controllerEvidence": {
+              "sourcePath": "services/gamification-service/src/main/java/com/englishflow/gamification/adapter/http/GamificationController.java",
+              "requestMapping": "/internal/v1/gamification"
+            }
+          },
+          {
+            "projectionId": "gamification-domain.streak-settings",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/gamification/streak/settings",
+            "methods": [
+              "PUT"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "gamification-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.gamification",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/gamification/streak/settings",
+            "controllerEvidence": {
+              "sourcePath": "services/gamification-service/src/main/java/com/englishflow/gamification/adapter/http/GamificationLocalFeatureController.java",
+              "requestMapping": "/internal/v1/gamification"
+            }
+          },
+          {
+            "projectionId": "gamification-domain.streak-rescue",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/gamification/streak/rescue",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "gamification-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.gamification",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/gamification/streak/rescue",
+            "controllerEvidence": {
+              "sourcePath": "services/gamification-service/src/main/java/com/englishflow/gamification/adapter/http/GamificationLocalFeatureController.java",
+              "requestMapping": "/internal/v1/gamification"
+            }
+          },
+          {
+            "projectionId": "gamification-domain.quests",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/gamification/quests",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "gamification-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.gamification",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/gamification/quests",
+            "controllerEvidence": {
+              "sourcePath": "services/gamification-service/src/main/java/com/englishflow/gamification/adapter/http/GamificationLocalFeatureController.java",
+              "requestMapping": "/internal/v1/gamification"
+            }
+          },
+          {
+            "projectionId": "gamification-domain.quest-claim",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/gamification/quests/{questId}/claim",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "gamification-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.gamification",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/gamification/quests/{questId}/claim",
+            "controllerEvidence": {
+              "sourcePath": "services/gamification-service/src/main/java/com/englishflow/gamification/adapter/http/GamificationLocalFeatureController.java",
+              "requestMapping": "/internal/v1/gamification"
+            }
+          },
+          {
+            "projectionId": "gamification-domain.achievements",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/gamification/achievements",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "gamification-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.gamification",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/gamification/achievements",
+            "controllerEvidence": {
+              "sourcePath": "services/gamification-service/src/main/java/com/englishflow/gamification/adapter/http/GamificationLocalFeatureController.java",
+              "requestMapping": "/internal/v1/gamification"
+            }
+          },
+          {
+            "projectionId": "gamification-domain.achievement-showcase",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/gamification/achievements/{achievementCode}/showcase",
+            "methods": [
+              "PUT"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "gamification-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.gamification",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/gamification/achievements/{achievementCode}/showcase",
+            "controllerEvidence": {
+              "sourcePath": "services/gamification-service/src/main/java/com/englishflow/gamification/adapter/http/GamificationLocalFeatureController.java",
+              "requestMapping": "/internal/v1/gamification"
+            }
+          },
+          {
+            "projectionId": "gamification-domain.chests",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/gamification/chests",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "gamification-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.gamification",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/gamification/chests",
+            "controllerEvidence": {
+              "sourcePath": "services/gamification-service/src/main/java/com/englishflow/gamification/adapter/http/GamificationLocalFeatureController.java",
+              "requestMapping": "/internal/v1/gamification"
+            }
+          },
+          {
+            "projectionId": "gamification-domain.chest-probability",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/gamification/chests/{chestGrantId}/probability",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "gamification-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.gamification",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/gamification/chests/{chestGrantId}/probability",
+            "controllerEvidence": {
+              "sourcePath": "services/gamification-service/src/main/java/com/englishflow/gamification/adapter/http/GamificationLocalFeatureController.java",
+              "requestMapping": "/internal/v1/gamification"
+            }
+          },
+          {
+            "projectionId": "gamification-domain.chest-open",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/gamification/chests/{chestGrantId}/open",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "gamification-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.gamification",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/gamification/chests/{chestGrantId}/open",
+            "controllerEvidence": {
+              "sourcePath": "services/gamification-service/src/main/java/com/englishflow/gamification/adapter/http/GamificationLocalFeatureController.java",
+              "requestMapping": "/internal/v1/gamification"
+            }
+          },
+          {
+            "projectionId": "gamification-domain.collection",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/gamification/collection",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "gamification-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.gamification",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/gamification/collection",
+            "controllerEvidence": {
+              "sourcePath": "services/gamification-service/src/main/java/com/englishflow/gamification/adapter/http/GamificationLocalFeatureController.java",
+              "requestMapping": "/internal/v1/gamification"
+            }
+          },
+          {
+            "projectionId": "gamification-domain.catalog",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/gamification/catalog",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "gamification-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.gamification",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/gamification/catalog",
+            "controllerEvidence": {
+              "sourcePath": "services/gamification-service/src/main/java/com/englishflow/gamification/adapter/http/GamificationLocalFeatureController.java",
+              "requestMapping": "/internal/v1/gamification"
+            }
+          },
+          {
+            "projectionId": "gamification-domain.catalog-redeem",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/gamification/catalog/{catalogItemId}/redeem",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "gamification-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.gamification",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/gamification/catalog/{catalogItemId}/redeem",
+            "controllerEvidence": {
+              "sourcePath": "services/gamification-service/src/main/java/com/englishflow/gamification/adapter/http/GamificationLocalFeatureController.java",
+              "requestMapping": "/internal/v1/gamification"
+            }
+          },
+          {
+            "projectionId": "gamification-domain.season-rewards",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/gamification/seasons/{seasonId}/rewards",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "gamification-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.gamification",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/gamification/seasons/{seasonId}/rewards",
+            "controllerEvidence": {
+              "sourcePath": "services/gamification-service/src/main/java/com/englishflow/gamification/adapter/http/GamificationLocalFeatureController.java",
+              "requestMapping": "/internal/v1/gamification"
+            }
+          },
+          {
+            "projectionId": "gamification-domain.me-summary",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/gamification/me/summary",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "gamification-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.gamification",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/gamification/summary",
+            "controllerEvidence": {
+              "sourcePath": "services/gamification-service/src/main/java/com/englishflow/gamification/adapter/http/GamificationController.java",
+              "requestMapping": "/internal/v1/gamification"
+            }
+          },
+          {
+            "projectionId": "gamification-domain.me-ledger",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/gamification/me/ledger",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "gamification-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.gamification",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/gamification/ledger",
+            "controllerEvidence": {
+              "sourcePath": "services/gamification-service/src/main/java/com/englishflow/gamification/adapter/http/GamificationController.java",
+              "requestMapping": "/internal/v1/gamification"
+            }
+          },
+          {
+            "projectionId": "gamification-domain.me-rewards",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/gamification/me/rewards",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "gamification-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.gamification",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/gamification/rewards",
+            "controllerEvidence": {
+              "sourcePath": "services/gamification-service/src/main/java/com/englishflow/gamification/adapter/http/GamificationController.java",
+              "requestMapping": "/internal/v1/gamification"
+            }
+          },
+          {
+            "projectionId": "gamification-domain.me-reward-probability",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/gamification/me/rewards/{grantId}/probability",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "gamification-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.gamification",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/gamification/rewards/{grantId}/probability",
+            "controllerEvidence": {
+              "sourcePath": "services/gamification-service/src/main/java/com/englishflow/gamification/adapter/http/GamificationController.java",
+              "requestMapping": "/internal/v1/gamification"
+            }
+          },
+          {
+            "projectionId": "gamification-domain.me-reward-claim",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/gamification/me/rewards/{grantId}/claim",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "gamification-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.gamification",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/gamification/rewards/{grantId}/claim",
+            "controllerEvidence": {
+              "sourcePath": "services/gamification-service/src/main/java/com/englishflow/gamification/adapter/http/GamificationController.java",
+              "requestMapping": "/internal/v1/gamification"
+            }
+          },
+          {
+            "projectionId": "gamification-domain.season",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/gamification/season",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "gamification-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.gamification",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/gamification/season",
+            "controllerEvidence": {
+              "sourcePath": "services/gamification-service/src/main/java/com/englishflow/gamification/adapter/http/GamificationController.java",
+              "requestMapping": "/internal/v1/gamification"
+            }
+          }
+        ]
+      },
+      {
+        "ruleId": "games-domain",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "games-domain.catalog",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/games/catalog",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "gamification-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.gamification",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/gamification/games/catalog",
+            "controllerEvidence": {
+              "sourcePath": "services/gamification-service/src/main/java/com/englishflow/gamification/adapter/http/GamificationLocalFeatureController.java",
+              "requestMapping": "/internal/v1/gamification"
+            }
+          },
+          {
+            "projectionId": "games-domain.sessions",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/games/sessions",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "gamification-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.gamification",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/gamification/games/sessions",
+            "controllerEvidence": {
+              "sourcePath": "services/gamification-service/src/main/java/com/englishflow/gamification/adapter/http/GamificationLocalFeatureController.java",
+              "requestMapping": "/internal/v1/gamification"
+            }
+          },
+          {
+            "projectionId": "games-domain.session",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/games/sessions/{sessionId}",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "gamification-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.gamification",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/gamification/games/sessions/{sessionId}",
+            "controllerEvidence": {
+              "sourcePath": "services/gamification-service/src/main/java/com/englishflow/gamification/adapter/http/GamificationLocalFeatureController.java",
+              "requestMapping": "/internal/v1/gamification"
+            }
+          },
+          {
+            "projectionId": "games-domain.events",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/games/sessions/{sessionId}/events",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "gamification-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.gamification",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/gamification/games/sessions/{sessionId}/events",
+            "controllerEvidence": {
+              "sourcePath": "services/gamification-service/src/main/java/com/englishflow/gamification/adapter/http/GamificationLocalFeatureController.java",
+              "requestMapping": "/internal/v1/gamification"
+            }
+          },
+          {
+            "projectionId": "games-domain.pause",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/games/sessions/{sessionId}/pause",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "gamification-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.gamification",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/gamification/games/sessions/{sessionId}/pause",
+            "controllerEvidence": {
+              "sourcePath": "services/gamification-service/src/main/java/com/englishflow/gamification/adapter/http/GamificationLocalFeatureController.java",
+              "requestMapping": "/internal/v1/gamification"
+            }
+          },
+          {
+            "projectionId": "games-domain.resume",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/games/sessions/{sessionId}/resume",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "gamification-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.gamification",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/gamification/games/sessions/{sessionId}/resume",
+            "controllerEvidence": {
+              "sourcePath": "services/gamification-service/src/main/java/com/englishflow/gamification/adapter/http/GamificationLocalFeatureController.java",
+              "requestMapping": "/internal/v1/gamification"
+            }
+          },
+          {
+            "projectionId": "games-domain.finish",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/games/sessions/{sessionId}/finish",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "gamification-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.gamification",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/gamification/games/sessions/{sessionId}/finish",
+            "controllerEvidence": {
+              "sourcePath": "services/gamification-service/src/main/java/com/englishflow/gamification/adapter/http/GamificationLocalFeatureController.java",
+              "requestMapping": "/internal/v1/gamification"
+            }
+          }
+        ]
+      },
+      {
+        "ruleId": "avatar-domain",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "avatar-domain.profile",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/avatar/profile",
+            "methods": [
+              "GET",
+              "PUT"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "gamification-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.gamification",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/gamification/avatar/profile",
+            "controllerEvidence": {
+              "sourcePath": "services/gamification-service/src/main/java/com/englishflow/gamification/adapter/http/GamificationLocalFeatureController.java",
+              "requestMapping": "/internal/v1/gamification"
+            }
+          },
+          {
+            "projectionId": "avatar-domain.items",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/avatar/items",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "gamification-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.gamification",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/gamification/avatar/items",
+            "controllerEvidence": {
+              "sourcePath": "services/gamification-service/src/main/java/com/englishflow/gamification/adapter/http/GamificationLocalFeatureController.java",
+              "requestMapping": "/internal/v1/gamification"
+            }
+          },
+          {
+            "projectionId": "avatar-domain.loadouts",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/avatar/loadouts",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "gamification-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.gamification",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/gamification/avatar/loadouts",
+            "controllerEvidence": {
+              "sourcePath": "services/gamification-service/src/main/java/com/englishflow/gamification/adapter/http/GamificationLocalFeatureController.java",
+              "requestMapping": "/internal/v1/gamification"
+            }
+          },
+          {
+            "projectionId": "avatar-domain.loadout",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/avatar/loadouts/{loadoutId}",
+            "methods": [
+              "PUT"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "gamification-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.gamification",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/gamification/avatar/loadouts/{loadoutId}",
+            "controllerEvidence": {
+              "sourcePath": "services/gamification-service/src/main/java/com/englishflow/gamification/adapter/http/GamificationLocalFeatureController.java",
+              "requestMapping": "/internal/v1/gamification"
+            }
+          },
+          {
+            "projectionId": "avatar-domain.loadout-equip",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/avatar/loadouts/{loadoutId}/equip",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "gamification-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.gamification",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/gamification/avatar/loadouts/{loadoutId}/equip",
+            "controllerEvidence": {
+              "sourcePath": "services/gamification-service/src/main/java/com/englishflow/gamification/adapter/http/GamificationLocalFeatureController.java",
+              "requestMapping": "/internal/v1/gamification"
+            }
+          },
+          {
+            "projectionId": "avatar-domain.resources",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/avatar/resources",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "gamification-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.gamification",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/gamification/avatar/resources",
+            "controllerEvidence": {
+              "sourcePath": "services/gamification-service/src/main/java/com/englishflow/gamification/adapter/http/GamificationLocalFeatureController.java",
+              "requestMapping": "/internal/v1/gamification"
+            }
+          },
+          {
+            "projectionId": "avatar-domain.study-space",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/avatar/study-space",
+            "methods": [
+              "GET",
+              "PUT"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "gamification-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.gamification",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/gamification/avatar/study-space",
+            "controllerEvidence": {
+              "sourcePath": "services/gamification-service/src/main/java/com/englishflow/gamification/adapter/http/GamificationLocalFeatureController.java",
+              "requestMapping": "/internal/v1/gamification"
+            }
+          }
+        ]
+      },
+      {
+        "ruleId": "social-domain",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "social-domain.rooms",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/social/rooms",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "social-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.social",
+            "pathStrategy": "PRESERVE_PUBLIC_PATH",
+            "targetPathTemplate": "/api/v1/social/rooms",
+            "controllerEvidence": {
+              "sourcePath": "services/social-service/src/main/java/com/englishflow/social/web/SocialLocalRealController.java",
+              "requestMapping": "/api/v1/social"
+            }
+          },
+          {
+            "projectionId": "social-domain.room",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/social/rooms/{roomId}",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "social-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.social",
+            "pathStrategy": "PRESERVE_PUBLIC_PATH",
+            "targetPathTemplate": "/api/v1/social/rooms/{roomId}",
+            "controllerEvidence": {
+              "sourcePath": "services/social-service/src/main/java/com/englishflow/social/web/SocialLocalRealController.java",
+              "requestMapping": "/api/v1/social"
+            }
+          },
+          {
+            "projectionId": "social-domain.join",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/social/rooms/{roomId}/join",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "social-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.social",
+            "pathStrategy": "PRESERVE_PUBLIC_PATH",
+            "targetPathTemplate": "/api/v1/social/rooms/{roomId}/join",
+            "controllerEvidence": {
+              "sourcePath": "services/social-service/src/main/java/com/englishflow/social/web/SocialLocalRealController.java",
+              "requestMapping": "/api/v1/social"
+            }
+          },
+          {
+            "projectionId": "social-domain.leave",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/social/rooms/{roomId}/leave",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "social-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.social",
+            "pathStrategy": "PRESERVE_PUBLIC_PATH",
+            "targetPathTemplate": "/api/v1/social/rooms/{roomId}/leave",
+            "controllerEvidence": {
+              "sourcePath": "services/social-service/src/main/java/com/englishflow/social/web/SocialLocalRealController.java",
+              "requestMapping": "/api/v1/social"
+            }
+          },
+          {
+            "projectionId": "social-domain.interactions",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/social/rooms/{roomId}/interactions",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "social-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.social",
+            "pathStrategy": "PRESERVE_PUBLIC_PATH",
+            "targetPathTemplate": "/api/v1/social/rooms/{roomId}/interactions",
+            "controllerEvidence": {
+              "sourcePath": "services/social-service/src/main/java/com/englishflow/social/web/SocialLocalRealController.java",
+              "requestMapping": "/api/v1/social"
+            }
+          },
+          {
+            "projectionId": "social-domain.leaderboards",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/social/leaderboards",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "social-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.social",
+            "pathStrategy": "PRESERVE_PUBLIC_PATH",
+            "targetPathTemplate": "/api/v1/social/leaderboards",
+            "controllerEvidence": {
+              "sourcePath": "services/social-service/src/main/java/com/englishflow/social/web/SocialLocalRealController.java",
+              "requestMapping": "/api/v1/social"
+            }
+          },
+          {
+            "projectionId": "social-domain.ws-ticket",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/social/ws-ticket",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "social-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.social",
+            "pathStrategy": "PRESERVE_PUBLIC_PATH",
+            "targetPathTemplate": "/api/v1/social/ws-ticket",
+            "controllerEvidence": {
+              "sourcePath": "services/social-service/src/main/java/com/englishflow/social/web/SocialLocalRealController.java",
+              "requestMapping": "/api/v1/social"
+            }
+          },
+          {
+            "projectionId": "social-domain.moderation-report",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/social/moderation/reports",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "social-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.social",
+            "pathStrategy": "PRESERVE_PUBLIC_PATH",
+            "targetPathTemplate": "/api/v1/social/moderation/reports",
+            "controllerEvidence": {
+              "sourcePath": "services/social-service/src/main/java/com/englishflow/social/web/SocialLocalRealController.java",
+              "requestMapping": "/api/v1/social"
+            }
+          },
+          {
+            "projectionId": "social-domain.moderation-appeal",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/social/moderation/reports/{reportId}/appeal",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "social-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.social",
+            "pathStrategy": "PRESERVE_PUBLIC_PATH",
+            "targetPathTemplate": "/api/v1/social/moderation/reports/{reportId}/appeal",
+            "controllerEvidence": {
+              "sourcePath": "services/social-service/src/main/java/com/englishflow/social/web/SocialLocalRealController.java",
+              "requestMapping": "/api/v1/social"
+            }
+          },
+          {
+            "projectionId": "social-domain.focus",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/social/rooms/{roomId}/focus",
+            "methods": [
+              "POST",
+              "PATCH"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "social-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.social",
+            "pathStrategy": "PRESERVE_PUBLIC_PATH",
+            "targetPathTemplate": "/api/v1/social/rooms/{roomId}/focus",
+            "controllerEvidence": {
+              "sourcePath": "services/social-service/src/main/java/com/englishflow/social/web/SocialLocalRealController.java",
+              "requestMapping": "/api/v1/social"
+            }
+          },
+          {
+            "projectionId": "social-domain.visibility",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/social/me/visibility",
+            "methods": [
+              "PATCH"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "social-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.social",
+            "pathStrategy": "PRESERVE_PUBLIC_PATH",
+            "targetPathTemplate": "/api/v1/social/me/visibility",
+            "controllerEvidence": {
+              "sourcePath": "services/social-service/src/main/java/com/englishflow/social/web/SocialLocalRealController.java",
+              "requestMapping": "/api/v1/social"
+            }
+          },
+          {
+            "projectionId": "social-domain.room-report",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/social/rooms/{roomId}/reports",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "social-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.social",
+            "pathStrategy": "PRESERVE_PUBLIC_PATH",
+            "targetPathTemplate": "/api/v1/social/rooms/{roomId}/reports",
+            "controllerEvidence": {
+              "sourcePath": "services/social-service/src/main/java/com/englishflow/social/web/SocialLocalRealController.java",
+              "requestMapping": "/api/v1/social"
+            }
+          },
+          {
+            "projectionId": "social-domain.report",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/social/reports/{reportId}",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "social-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.social",
+            "pathStrategy": "PRESERVE_PUBLIC_PATH",
+            "targetPathTemplate": "/api/v1/social/reports/{reportId}",
+            "controllerEvidence": {
+              "sourcePath": "services/social-service/src/main/java/com/englishflow/social/web/SocialLocalRealController.java",
+              "requestMapping": "/api/v1/social"
+            }
+          }
+        ]
+      },
+      {
+        "ruleId": "commerce-domain",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "commerce-domain.skus",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/commerce/skus",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "commerce-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.commerce",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/commerce/skus",
+            "controllerEvidence": {
+              "sourcePath": "services/commerce-service/src/main/java/com/englishflow/commerce/adapter/http/CommerceController.java",
+              "requestMapping": "/internal/v1/commerce"
+            }
+          },
+          {
+            "projectionId": "commerce-domain.orders",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/commerce/orders",
+            "methods": [
+              "GET",
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "commerce-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.commerce",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/commerce/orders",
+            "controllerEvidence": {
+              "sourcePath": "services/commerce-service/src/main/java/com/englishflow/commerce/adapter/http/CommerceController.java",
+              "requestMapping": "/internal/v1/commerce"
+            }
+          },
+          {
+            "projectionId": "commerce-domain.order",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/commerce/orders/{orderId}",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "commerce-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.commerce",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/commerce/orders/{orderId}",
+            "controllerEvidence": {
+              "sourcePath": "services/commerce-service/src/main/java/com/englishflow/commerce/adapter/http/CommerceController.java",
+              "requestMapping": "/internal/v1/commerce"
+            }
+          },
+          {
+            "projectionId": "commerce-domain.payment-intent",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/commerce/orders/{orderId}/payment-intents",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "commerce-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.commerce",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/commerce/orders/{orderId}/payment-intents",
+            "controllerEvidence": {
+              "sourcePath": "services/commerce-service/src/main/java/com/englishflow/commerce/adapter/http/CommerceController.java",
+              "requestMapping": "/internal/v1/commerce"
+            }
+          },
+          {
+            "projectionId": "commerce-domain.entitlements",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/commerce/entitlements/me",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "commerce-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.commerce",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/commerce/entitlements/me",
+            "controllerEvidence": {
+              "sourcePath": "services/commerce-service/src/main/java/com/englishflow/commerce/adapter/http/CommerceController.java",
+              "requestMapping": "/internal/v1/commerce"
+            }
+          },
+          {
+            "projectionId": "commerce-domain.activation-redeem",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/commerce/activation-codes/redeem",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "commerce-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.commerce",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/commerce/activation-codes/redeem",
+            "controllerEvidence": {
+              "sourcePath": "services/commerce-service/src/main/java/com/englishflow/commerce/adapter/http/CommerceController.java",
+              "requestMapping": "/internal/v1/commerce"
+            }
+          },
+          {
+            "projectionId": "commerce-domain.refunds",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/commerce/orders/{orderId}/refunds",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "commerce-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.commerce",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/commerce/orders/{orderId}/refunds",
+            "controllerEvidence": {
+              "sourcePath": "services/commerce-service/src/main/java/com/englishflow/commerce/adapter/http/CommerceController.java",
+              "requestMapping": "/internal/v1/commerce"
+            }
+          },
+          {
+            "projectionId": "commerce-domain.readiness",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/commerce/readiness",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "commerce-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.commerce",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/commerce/readiness",
+            "controllerEvidence": {
+              "sourcePath": "services/commerce-service/src/main/java/com/englishflow/commerce/adapter/http/CommerceController.java",
+              "requestMapping": "/internal/v1/commerce"
+            }
+          }
+        ]
+      },
+      {
+        "ruleId": "notifications-domain",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "notifications-domain.preferences",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/notifications/preferences",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "notification-service",
+            "targetUriConfig": "gateway.b12.notification-base-url",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/notifications/preferences",
+            "controllerEvidence": {
+              "sourcePath": "services/notification-service/src/main/java/com/englishflow/notification/adapter/http/NotificationController.java",
+              "requestMapping": "/internal/v1/notifications"
+            }
+          },
+          {
+            "projectionId": "notifications-domain.preference",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/notifications/preferences/{notificationType}/{channel}",
+            "methods": [
+              "PUT"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "notification-service",
+            "targetUriConfig": "gateway.b12.notification-base-url",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/notifications/preferences/{notificationType}/{channel}",
+            "controllerEvidence": {
+              "sourcePath": "services/notification-service/src/main/java/com/englishflow/notification/adapter/http/NotificationController.java",
+              "requestMapping": "/internal/v1/notifications"
+            }
+          },
+          {
+            "projectionId": "notifications-domain.messages",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/notifications/messages",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "notification-service",
+            "targetUriConfig": "gateway.b12.notification-base-url",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/notifications/messages",
+            "controllerEvidence": {
+              "sourcePath": "services/notification-service/src/main/java/com/englishflow/notification/adapter/http/NotificationController.java",
+              "requestMapping": "/internal/v1/notifications"
+            }
+          },
+          {
+            "projectionId": "notifications-domain.message-read",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/notifications/messages/{messageId}/read",
+            "methods": [
+              "PUT"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "notification-service",
+            "targetUriConfig": "gateway.b12.notification-base-url",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/notifications/messages/{messageId}/read",
+            "controllerEvidence": {
+              "sourcePath": "services/notification-service/src/main/java/com/englishflow/notification/adapter/http/NotificationReadJdbcController.java",
+              "requestMapping": "/internal/v1/notifications"
+            }
+          },
+          {
+            "projectionId": "notifications-domain.messages-read-all",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/notifications/messages/read-all",
+            "methods": [
+              "PUT"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "notification-service",
+            "targetUriConfig": "gateway.b12.notification-base-url",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/notifications/messages/read-all",
+            "controllerEvidence": {
+              "sourcePath": "services/notification-service/src/main/java/com/englishflow/notification/adapter/http/NotificationReadJdbcController.java",
+              "requestMapping": "/internal/v1/notifications"
+            }
+          }
+        ]
+      },
+      {
+        "ruleId": "messages-domain",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "canonical_notification_owner_method_mapping_not_present",
+        "projections": []
+      },
+      {
+        "ruleId": "settings-domain",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "settings-domain.notifications",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/settings/notifications",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "notification-service",
+            "targetUriConfig": "gateway.b12.notification-base-url",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/notifications/preferences",
+            "controllerEvidence": {
+              "sourcePath": "services/notification-service/src/main/java/com/englishflow/notification/adapter/http/NotificationController.java",
+              "requestMapping": "/internal/v1/notifications"
+            }
+          }
+        ]
+      },
+      {
+        "ruleId": "support-domain",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "support-domain.tickets",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/support/tickets",
+            "methods": [
+              "GET",
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "admin-ops-service",
+            "targetUriConfig": "gateway.b13.admin-ops-base-url",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/admin-ops/support/tickets",
+            "controllerEvidence": {
+              "sourcePath": "services/admin-ops-service/src/main/java/com/englishflow/adminops/web/SupportController.java",
+              "requestMapping": "/internal/v1/admin-ops/support"
+            }
+          },
+          {
+            "projectionId": "support-domain.ticket",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/support/tickets/{ticketId}",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "admin-ops-service",
+            "targetUriConfig": "gateway.b13.admin-ops-base-url",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/admin-ops/support/tickets/{ticketId}",
+            "controllerEvidence": {
+              "sourcePath": "services/admin-ops-service/src/main/java/com/englishflow/adminops/web/SupportController.java",
+              "requestMapping": "/internal/v1/admin-ops/support"
+            }
+          }
+        ]
+      },
+      {
+        "ruleId": "admin-domain",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "admin-domain.commerce-orders",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/admin/ops/commerce/orders",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "admin-ops-service",
+            "targetUriConfig": "gateway.b13.admin-ops-base-url",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/admin-ops/commerce/orders",
+            "controllerEvidence": {
+              "sourcePath": "services/admin-ops-service/src/main/java/com/englishflow/adminops/web/AdminOpsController.java",
+              "requestMapping": "/internal/v1/admin-ops"
+            }
+          },
+          {
+            "projectionId": "admin-domain.tickets",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/admin/ops/tickets",
+            "methods": [
+              "GET",
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "admin-ops-service",
+            "targetUriConfig": "gateway.b13.admin-ops-base-url",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/admin-ops/tickets",
+            "controllerEvidence": {
+              "sourcePath": "services/admin-ops-service/src/main/java/com/englishflow/adminops/web/SupportController.java",
+              "requestMapping": "/internal/v1/admin-ops"
+            }
+          },
+          {
+            "projectionId": "admin-domain.ticket",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/admin/ops/tickets/{ticketId}",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "admin-ops-service",
+            "targetUriConfig": "gateway.b13.admin-ops-base-url",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/admin-ops/tickets/{ticketId}",
+            "controllerEvidence": {
+              "sourcePath": "services/admin-ops-service/src/main/java/com/englishflow/adminops/web/SupportController.java",
+              "requestMapping": "/internal/v1/admin-ops"
+            }
+          },
+          {
+            "projectionId": "admin-domain.commands",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/admin/ops/commands",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "admin-ops-service",
+            "targetUriConfig": "gateway.b13.admin-ops-base-url",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/admin-ops/commands",
+            "controllerEvidence": {
+              "sourcePath": "services/admin-ops-service/src/main/java/com/englishflow/adminops/web/AdminOpsController.java",
+              "requestMapping": "/internal/v1/admin-ops"
+            }
+          },
+          {
+            "projectionId": "admin-domain.commands-prepare",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/admin/ops/commands/prepare",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "admin-ops-service",
+            "targetUriConfig": "gateway.b13.admin-ops-base-url",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/admin-ops/commands/prepare",
+            "controllerEvidence": {
+              "sourcePath": "services/admin-ops-service/src/main/java/com/englishflow/adminops/web/AdminOpsController.java",
+              "requestMapping": "/internal/v1/admin-ops"
+            }
+          },
+          {
+            "projectionId": "admin-domain.audit",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/admin/ops/audit",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "admin-ops-service",
+            "targetUriConfig": "gateway.b13.admin-ops-base-url",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/admin-ops/audit",
+            "controllerEvidence": {
+              "sourcePath": "services/admin-ops-service/src/main/java/com/englishflow/adminops/web/AdminOpsController.java",
+              "requestMapping": "/internal/v1/admin-ops"
+            }
+          }
+        ]
+      },
+      {
+        "ruleId": "data-reliability-domain",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "workflow_owner_has_no_configured_gateway_target",
+        "projections": []
+      },
+      {
+        "ruleId": "release-domain",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "workflow_owner_has_no_configured_gateway_target",
+        "projections": []
+      },
+      {
+        "ruleId": "quality-domain",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "admin_ops_owner_controller_mapping_not_present",
+        "projections": []
       }
     ],
     "internalOperationPolicy": {

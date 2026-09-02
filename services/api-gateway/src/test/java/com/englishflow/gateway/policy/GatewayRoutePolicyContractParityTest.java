@@ -1,5 +1,6 @@
 package com.englishflow.gateway.policy;
 
+import com.englishflow.gateway.config.GatewayProperties;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpMethod;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
@@ -9,10 +10,16 @@ import tools.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -69,6 +76,67 @@ class GatewayRoutePolicyContractParityTest {
     }
 
     @Test
+    void runtimeExecutionProjectionEqualsTheSourceOwnedRouteExecutionsExactly() throws IOException {
+        JsonNode boundary = objectMapper.readTree(Files.readString(contractPath()))
+                .path("x-p1r-gateway-boundary");
+        JsonNode targetPolicy = boundary.path("executionTargetPolicy");
+        assertEquals("routeExecutions", targetPolicy.path("sourceOfTruth").asText());
+        assertEquals("UNAVAILABLE", targetPolicy.path("defaultExecutionStatus").asText());
+        assertEquals("DENY", targetPolicy.path("unknownPathDecision").asText());
+        assertEquals("FORBIDDEN", targetPolicy.path("legacyCoreApiFallback").asText());
+
+        List<ExecutionPlanProjection> expected = new ArrayList<>();
+        for (JsonNode plan : boundary.path("routeExecutions")) {
+            List<ExecutionProjection> projections = new ArrayList<>();
+            for (JsonNode projection : plan.path("projections")) {
+                List<String> methods = new ArrayList<>();
+                for (JsonNode method : projection.path("methods")) {
+                    methods.add(method.asText());
+                }
+                JsonNode evidence = projection.path("controllerEvidence");
+                projections.add(new ExecutionProjection(
+                        projection.path("projectionId").asText(),
+                        projection.path("status").asText(),
+                        projection.path("publicPathTemplate").asText(),
+                        methods,
+                        projection.path("executionKind").asText(),
+                        projection.path("upstreamOwner").asText(),
+                        projection.path("targetUriConfig").asText(),
+                        projection.path("pathStrategy").asText(),
+                        projection.path("targetPathTemplate").asText(),
+                        evidence.path("sourcePath").asText(),
+                        evidence.path("requestMapping").asText()
+                ));
+            }
+            expected.add(new ExecutionPlanProjection(
+                    plan.path("ruleId").asText(),
+                    plan.path("defaultStatus").asText(),
+                    plan.path("defaultReason").asText(),
+                    projections.stream().sorted(Comparator.comparing(ExecutionProjection::projectionId)).toList()
+            ));
+        }
+
+        GatewayRouteExecutionPolicy executionPolicy = new GatewayRouteExecutionPolicy(
+                executableGatewayProperties(), routePolicy);
+        Map<String, List<GatewayRouteExecutionPolicy.RouteBinding>> bindingsByRule = executionPolicy.routeBindings().stream()
+                .collect(Collectors.groupingBy(
+                        binding -> binding.rule().ruleId(), LinkedHashMap::new, Collectors.toList()));
+        List<ExecutionPlanProjection> actual = routePolicy.rules().stream()
+                .map(rule -> new ExecutionPlanProjection(
+                        rule.ruleId(),
+                        "UNAVAILABLE",
+                        executionPolicy.defaultUnavailableReason(rule),
+                        bindingsByRule.getOrDefault(rule.ruleId(), List.of()).stream()
+                                .map(binding -> runtimeProjection(rule, binding))
+                                .sorted(Comparator.comparing(ExecutionProjection::projectionId))
+                                .toList()))
+                .toList();
+
+        assertEquals(expected, actual,
+                "Gateway's only RouteLocator execution source must remain an exact projection of routeExecutions");
+    }
+
+    @Test
     void resolverUsesTheHighestPriorityRuleForSharedPrefixesAndPreflight() {
         GatewayRoutePolicy.Resolution export = routePolicy.resolve(
                 HttpMethod.POST, "/api/v1/privacy/exports/request-1");
@@ -82,6 +150,9 @@ class GatewayRoutePolicyContractParityTest {
                         .build());
         assertTrue(preflight.matched());
         assertEquals(GatewayRoutePolicy.AuthClass.PUBLIC_READ, preflight.rule().authClass());
+
+        assertFalse(routePolicy.resolve(HttpMethod.HEAD, "/api/v1/public/content/lesson-1").matched(),
+                "HEAD must not inherit a GET operation that the canonical contract does not declare");
     }
 
     private static Path contractPath() {
@@ -96,6 +167,55 @@ class GatewayRoutePolicyContractParityTest {
         throw new IllegalStateException("Cannot locate the canonical Gateway boundary contract from the test working directory");
     }
 
+    private static ExecutionProjection runtimeProjection(
+            GatewayRoutePolicy.Rule rule,
+            GatewayRouteExecutionPolicy.RouteBinding binding
+    ) {
+        GatewayRouteExecutionPolicy.PathProjection projection = binding.pathProjection();
+        GatewayRouteExecutionPolicy.ControllerEvidence evidence = projection.controllerEvidence();
+        return new ExecutionProjection(
+                rule.ruleId() + "." + projection.bindingId(),
+                "AVAILABLE",
+                projection.publicPathTemplate(),
+                projection.methods().stream().map(HttpMethod::name).toList(),
+                binding.kind().name(),
+                rule.upstreamOwner(),
+                binding.targetUriConfig(),
+                projection.strategy().name(),
+                projection.targetPathTemplate(),
+                evidence.sourceRelativePath(),
+                evidence.requestMapping()
+        );
+    }
+
+    private static GatewayProperties executableGatewayProperties() {
+        Map<String, String> b14Targets = Map.of(
+                "learner", "http://127.0.0.1:28088",
+                "content", "http://127.0.0.1:28089",
+                "learning", "http://127.0.0.1:28090",
+                "assessment", "http://127.0.0.1:28091",
+                "media", "http://127.0.0.1:28092",
+                "gamification", "http://127.0.0.1:28094",
+                "social", "http://127.0.0.1:28095",
+                "commerce", "http://127.0.0.1:28096"
+        );
+        Map<String, String> b14Modes = b14Targets.keySet().stream()
+                .collect(Collectors.toUnmodifiableMap(domain -> domain, ignored -> "TARGET"));
+        return new GatewayProperties(
+                new GatewayProperties.Compatibility(false, "http://127.0.0.1:28080", false),
+                new GatewayProperties.Identity(true, "http://127.0.0.1:28087"),
+                new GatewayProperties.B12Services(true, "http://127.0.0.1:28094", "http://127.0.0.1:28095", "http://127.0.0.1:28093"),
+                new GatewayProperties.B13Services(true, "http://127.0.0.1:28096", "http://127.0.0.1:28097", "http://127.0.0.1:28098"),
+                new GatewayProperties.B14Services(true, false, "2027-06-30T00:00:00Z", b14Targets, b14Modes),
+                new GatewayProperties.Cors(
+                        "http://127.0.0.1:28180", "http://127.0.0.1:28181", "http://127.0.0.1:28183", "http://127.0.0.1:28182",
+                        "GET,POST,PUT,PATCH,DELETE,OPTIONS", "Authorization", "Content-Type", "X-Request-Id", "refresh", "NATIVE_SECURE_STORAGE", Duration.ofMinutes(30)),
+                new GatewayProperties.RateLimit(false, "memory", 32, false, Duration.ofMillis(100), Map.of()),
+                new GatewayProperties.RequestContext(128),
+                new GatewayProperties.Security(true, true, true, "https://iam.contract-parity.test", "yuxuexing-api", "http://127.0.0.1:28087/jwks")
+        );
+    }
+
     private record RouteRuleProjection(
             String ruleId,
             int priority,
@@ -107,6 +227,29 @@ class GatewayRoutePolicyContractParityTest {
             String visibility,
             String authClass,
             String compatibilityMode
+    ) {
+    }
+
+    private record ExecutionPlanProjection(
+            String ruleId,
+            String defaultStatus,
+            String defaultReason,
+            List<ExecutionProjection> projections
+    ) {
+    }
+
+    private record ExecutionProjection(
+            String projectionId,
+            String status,
+            String publicPathTemplate,
+            List<String> methods,
+            String executionKind,
+            String upstreamOwner,
+            String targetUriConfig,
+            String pathStrategy,
+            String targetPathTemplate,
+            String sourcePath,
+            String requestMapping
     ) {
     }
 }

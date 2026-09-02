@@ -1,5 +1,6 @@
 package com.englishflow.gateway.filter;
 
+import com.englishflow.gateway.support.GatewayAuditAttributes;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
@@ -33,5 +34,8 @@ class GatewayErrorHandlingGlobalFilterTest {
         String body = exchange.getResponse().getBodyAsString().block();
         assertTrue(body.contains("\"errorCode\":\"SERVICE_UNAVAILABLE\""));
         assertTrue(body.contains("\"requestId\":\"gateway-timeout-test\""));
+        // The frozen public OpenAPI exposes the non-topological 5xx code,
+        // while the auditable boundary reason retains the exact timeout fact.
+        assertEquals("upstream_timeout", exchange.getAttribute(GatewayAuditAttributes.REASON_CODE));
     }
 }

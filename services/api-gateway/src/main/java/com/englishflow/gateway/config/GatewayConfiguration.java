@@ -144,9 +144,14 @@ public class GatewayConfiguration {
             GatewayRoutePolicy.Resolution resolution = HttpMethod.OPTIONS.equals(exchange.getRequest().getMethod())
                     ? routePolicy.resolvePreflight(exchange.getRequest())
                     : routePolicy.resolve(exchange.getRequest());
+            HttpMethod admittedMethod = HttpMethod.OPTIONS.equals(exchange.getRequest().getMethod())
+                    ? parseHttpMethod(exchange.getRequest().getHeaders()
+                            .getFirst(org.springframework.http.HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD))
+                    : exchange.getRequest().getMethod();
             if (profile == GatewayProperties.Cors.OriginProfile.UNKNOWN
                     || !resolution.matched()
-                    || !routeExecutionPolicy.isAvailable(resolution.rule())) {
+                    || !routeExecutionPolicy.canExecute(
+                            resolution.rule(), admittedMethod, exchange.getRequest().getPath().pathWithinApplication().value())) {
                 return null;
             }
             if (profile == GatewayProperties.Cors.OriginProfile.OFFICIAL_SITE
@@ -178,10 +183,10 @@ public class GatewayConfiguration {
         for (GatewayRouteExecutionPolicy.RouteBinding binding : routeExecutionPolicy.routeBindings()) {
             GatewayRoutePolicy.Rule rule = binding.rule();
             builder.route(binding.routeId(), route -> route
-                    .path(routePatterns(rule))
+                    .path(binding.externalPathPatterns().toArray(String[]::new))
                     .and()
-                    .method(routeMethods(rule))
-                    .filters(filters -> identityFilters(filters, binding.routeId()))
+                    .method(routeMethods(binding.methods()))
+                    .filters(filters -> executionFilters(identityFilters(filters, binding.routeId()), binding))
                     .metadata(binding.metadata())
                     .customize(routeBuilder -> routeBuilder.order(-rule.priority()))
                     .uri(binding.targetUri()));
@@ -192,19 +197,29 @@ public class GatewayConfiguration {
         return builder.build();
     }
 
-    private static String[] routePatterns(GatewayRoutePolicy.Rule rule) {
-        return switch (rule.matchType()) {
-            case EXACT -> new String[] {rule.path()};
-            case PREFIX -> new String[] {rule.path(), rule.path() + "/**"};
-        };
+    private static HttpMethod[] routeMethods(java.util.List<HttpMethod> allowedMethods) {
+        return allowedMethods.toArray(HttpMethod[]::new);
     }
 
-    private static HttpMethod[] routeMethods(GatewayRoutePolicy.Rule rule) {
-        java.util.LinkedHashSet<HttpMethod> methods = new java.util.LinkedHashSet<>(rule.methods());
-        if (methods.contains(HttpMethod.GET)) {
-            methods.add(HttpMethod.HEAD);
+    private static GatewayFilterSpec executionFilters(
+            GatewayFilterSpec filters,
+            GatewayRouteExecutionPolicy.RouteBinding binding
+    ) {
+        GatewayRouteExecutionPolicy.PathProjection projection = binding.pathProjection();
+        return projection.rewritesPath()
+                ? filters.rewritePath(projection.admissionRegex(), projection.rewriteReplacement())
+                : filters;
+    }
+
+    private static HttpMethod parseHttpMethod(String value) {
+        if (value == null || value.isBlank()) {
+            return null;
         }
-        return methods.toArray(HttpMethod[]::new);
+        try {
+            return HttpMethod.valueOf(value.trim());
+        } catch (IllegalArgumentException ignored) {
+            return null;
+        }
     }
 
     private static GatewayFilterSpec identityFilters(GatewayFilterSpec filters, String routeName) {

@@ -101,6 +101,11 @@ import {
   M1018_REQUIRED_COMPATIBILITY_CHECKS_SEMANTIC_SHA256,
   M1018_B26_STATIC_POLICY_SEMANTIC_SHA256,
   isValidM1018PromotionAllowance,
+  M2001_GATEWAY_EXECUTION_TARGET_PROMOTION_ID,
+  M2001_SOURCE_CONTRACT_BASELINE_REF,
+  M2001_OPENAPI_SOURCE_SEMANTIC_SHA256,
+  M2001_PROMOTION_ALLOWANCE_KEYS,
+  isValidM2001PromotionAllowance,
   buildM1008PromotionExpectedCatalog,
   compareB26WorkflowGovernance,
   compareContracts,
@@ -128,6 +133,7 @@ const commerceContractPolicyPath = 'config/p1r-commerce-contract.v1.json';
 const notificationSyncSupportContractPolicyPath = 'config/p1r-notification-sync-support-contract.v1.json';
 const privacyAnalyticsAuditContractPolicyPath = 'config/p1r-privacy-analytics-audit-contract.v1.json';
 const iamEventContractPolicyPath = 'config/p1r-iam-event-contract.v1.json';
+const gatewayBoundaryContractPath = 'packages/contracts/fragments/p1r-gateway-boundary.openapi.json';
 
 export const REQUIRED_CI_CONTRACT_BASELINE_REF = '463c4b238caceb1592bff6c61327c00ab9bac922';
 export const REQUIRED_EVENT_GOVERNANCE_BASELINE_REF = '868c2177f62b6d2cf613bed702686dddcfe6943f';
@@ -142,6 +148,7 @@ export const REQUIRED_M1015_SOURCE_CONTRACT_BASELINE_REF = M1015_SOURCE_CONTRACT
 export const REQUIRED_M1016_SOURCE_CONTRACT_BASELINE_REF = M1016_SOURCE_CONTRACT_BASELINE_REF;
 export const REQUIRED_M1017_SOURCE_CONTRACT_BASELINE_REF = M1017_SOURCE_CONTRACT_BASELINE_REF;
 export const REQUIRED_M1018_SOURCE_CONTRACT_BASELINE_REF = M1018_SOURCE_CONTRACT_BASELINE_REF;
+export const REQUIRED_M2001_SOURCE_CONTRACT_BASELINE_REF = M2001_SOURCE_CONTRACT_BASELINE_REF;
 export const REQUIRED_CI_CONTRACT_COMPATIBILITY_COMMAND =
   `pnpm contracts:compatibility:git -- --ref ${REQUIRED_CI_CONTRACT_BASELINE_REF} --governance-ref ${REQUIRED_EVENT_GOVERNANCE_BASELINE_REF} --kind all --json`;
 export const REQUIRED_CI_CONTRACT_COMMANDS = Object.freeze([
@@ -1491,6 +1498,51 @@ function loadM1018SourceContractBaseline(promotion, git) {
   };
 }
 
+export function validateM2001CompatibilityPolicy(gatewayBoundaryDocument) {
+  const errors = [];
+  const executionTargetPolicy = gatewayBoundaryDocument?.['x-p1r-gateway-boundary']?.executionTargetPolicy;
+  const promotion = executionTargetPolicy?.compatibilityPromotion;
+  exactPolicyKeys(promotion, M2001_PROMOTION_ALLOWANCE_KEYS, 'M2-001 compatibility promotion', errors);
+  if (!isValidM2001PromotionAllowance(promotion)) {
+    errors.push('M2-001 compatibility promotion is not the frozen Gateway execution-target root-extension allowance');
+  }
+  return errors;
+}
+
+function loadM2001CompatibilityPolicy(readFile) {
+  let document;
+  try {
+    document = JSON.parse(readFile(path.join(repoRoot, ...gatewayBoundaryContractPath.split('/'))));
+  } catch (error) {
+    throw new Error(`M2-001 Gateway execution-target compatibility policy could not be loaded: ${error instanceof Error ? error.message : String(error)}`);
+  }
+  const errors = validateM2001CompatibilityPolicy(document);
+  if (errors.length > 0) {
+    throw new Error(`M2-001 Gateway execution-target compatibility policy is invalid (fail closed):\n${errors.map((error) => `- ${error}`).join('\n')}`);
+  }
+  return Object.freeze({ ...document['x-p1r-gateway-boundary'].executionTargetPolicy.compatibilityPromotion });
+}
+
+function loadM2001SourceContractBaseline(promotion, git) {
+  const ref = promotion.sourceContractBaseline;
+  const commit = git(['rev-parse', '--verify', `${ref}^{commit}`]).trim();
+  if (commit !== REQUIRED_M2001_SOURCE_CONTRACT_BASELINE_REF) {
+    throw new Error(
+      `M2-001 source contract ref ${REQUIRED_M2001_SOURCE_CONTRACT_BASELINE_REF} resolved to ${commit || '<empty>'}; it must resolve to the frozen full commit.`,
+    );
+  }
+  const openapi = JSON.parse(git(['show', `${commit}:${contractPaths.openapi}`]));
+  if (stableGovernanceSha256(openapi) !== M2001_OPENAPI_SOURCE_SEMANTIC_SHA256) {
+    throw new Error('M2-001 source contract is not the frozen accepted M1-018 OpenAPI checkpoint.');
+  }
+  return {
+    ref,
+    commit,
+    openapi,
+    source: `git:${commit}:${contractPaths.openapi}`,
+  };
+}
+
 function loadImmutableGovernanceBaseline(governanceRef, git) {
   if (governanceRef !== REQUIRED_EVENT_GOVERNANCE_BASELINE_REF) {
     throw new Error(
@@ -1642,6 +1694,23 @@ export function runGitBaselineCompatibility({
   const needsM1016Promotion = selectedKinds.some((contractKind) => contractKind === 'events' || contractKind === 'openapi');
   const needsM1017Promotion = selectedKinds.some((contractKind) => contractKind === 'events' || contractKind === 'openapi');
   const needsM1018Promotion = selectedKinds.some((contractKind) => contractKind === 'events' || contractKind === 'openapi');
+  const needsM2001Promotion = selectedKinds.includes('openapi');
+  const m2001BaselineRefs = new Set([
+    REQUIRED_CI_CONTRACT_BASELINE_REF,
+    REQUIRED_M1008_SOURCE_CONTRACT_BASELINE_REF,
+    REQUIRED_M1009_SOURCE_CONTRACT_BASELINE_REF,
+    REQUIRED_M1010_SOURCE_CONTRACT_BASELINE_REF,
+    REQUIRED_M1011_SOURCE_CONTRACT_BASELINE_REF,
+    REQUIRED_M1012_SOURCE_CONTRACT_BASELINE_REF,
+    REQUIRED_M1013_SOURCE_CONTRACT_BASELINE_REF,
+    REQUIRED_M1014_SOURCE_CONTRACT_BASELINE_REF,
+    REQUIRED_M1015_SOURCE_CONTRACT_BASELINE_REF,
+    REQUIRED_M1016_SOURCE_CONTRACT_BASELINE_REF,
+    REQUIRED_M1017_SOURCE_CONTRACT_BASELINE_REF,
+    REQUIRED_M1018_SOURCE_CONTRACT_BASELINE_REF,
+    REQUIRED_M2001_SOURCE_CONTRACT_BASELINE_REF,
+  ]);
+  const useM2001Promotion = needsM2001Promotion && m2001BaselineRefs.has(baselineCommit);
   const m1018BaselineRefs = new Set([
     REQUIRED_CI_CONTRACT_BASELINE_REF,
     REQUIRED_M1008_SOURCE_CONTRACT_BASELINE_REF,
@@ -1795,6 +1864,12 @@ export function runGitBaselineCompatibility({
     : undefined;
   const iamEventSourceContractBaseline = useM1018Promotion
     ? loadM1018SourceContractBaseline(iamEventPromotion, git)
+    : undefined;
+  const gatewayExecutionPromotion = useM2001Promotion
+    ? loadM2001CompatibilityPolicy(readFile)
+    : undefined;
+  const gatewayExecutionSourceContractBaseline = useM2001Promotion
+    ? loadM2001SourceContractBaseline(gatewayExecutionPromotion, git)
     : undefined;
   const immutableBaselineIntegrityChanges = needsEventGovernance
     ? [
@@ -2022,6 +2097,14 @@ export function runGitBaselineCompatibility({
       { allowance: privacyAnalyticsAuditPromotion },
     )
     : [];
+  const m1018ToM2001OpenApiIntegrityChanges = useM2001Promotion && useM1018Promotion
+    ? compareContracts(
+      'openapi',
+      iamEventSourceContractBaseline.openapi,
+      gatewayExecutionSourceContractBaseline.openapi,
+      { allowance: iamEventPromotion },
+    )
+    : [];
 
   const governanceSummary = immutableGovernanceBaseline === undefined
     ? undefined
@@ -2044,7 +2127,40 @@ export function runGitBaselineCompatibility({
     let breakingChanges;
     let resultGovernanceBaseline;
     let promotionResult;
-    if (contractKind === 'openapi' && useM1018Promotion) {
+    if (contractKind === 'openapi' && useM2001Promotion) {
+      breakingChanges = [
+        ...(useM1018Promotion ? [
+          ...m1008ToM1009IntegrityChanges,
+          ...m1009ToM1010OpenApiIntegrityChanges,
+          ...m1010ToM1011OpenApiIntegrityChanges,
+          ...m1011ToM1012OpenApiIntegrityChanges,
+          ...m1012ToM1013OpenApiIntegrityChanges,
+          ...m1013ToM1014OpenApiIntegrityChanges,
+          ...m1014ToM1015OpenApiIntegrityChanges,
+          ...m1015ToM1016OpenApiIntegrityChanges,
+          ...m1017ToM1018OpenApiIntegrityChanges,
+          ...m1018ToM2001OpenApiIntegrityChanges,
+        ] : []),
+        ...compareContracts(
+          'openapi',
+          gatewayExecutionSourceContractBaseline.openapi,
+          current,
+          { allowance: gatewayExecutionPromotion },
+        ),
+      ];
+      const uniqueChanges = new Map();
+      for (const change of breakingChanges) uniqueChanges.set(stableGovernanceValue(change), change);
+      breakingChanges = [...uniqueChanges.values()];
+      promotionResult = {
+        id: gatewayExecutionPromotion.id,
+        sourceContractBaseline: gatewayExecutionSourceContractBaseline.commit,
+        previousPromotion: M1018_IAM_EVENT_PROMOTION_ID,
+        previousPromotionSource: M1018_SOURCE_CONTRACT_BASELINE_REF,
+        runtimeStatus: gatewayExecutionPromotion.runtimeStatus,
+        scope: gatewayExecutionPromotion.scope,
+        accepted: breakingChanges.length === 0,
+      };
+    } else if (contractKind === 'openapi' && useM1018Promotion) {
       breakingChanges = [
         ...m1008ToM1009IntegrityChanges,
         ...m1009ToM1010OpenApiIntegrityChanges,
@@ -2737,7 +2853,16 @@ export function runGitBaselineCompatibility({
     baselineCommit,
     currentCommit,
     governanceBaseline: governanceSummary,
-    promotion: useM1018Promotion
+    promotion: useM2001Promotion
+      ? {
+        id: gatewayExecutionPromotion.id,
+        sourceContractBaseline: gatewayExecutionSourceContractBaseline.commit,
+        previousPromotion: M1018_IAM_EVENT_PROMOTION_ID,
+        previousPromotionSource: M1018_SOURCE_CONTRACT_BASELINE_REF,
+        runtimeStatus: gatewayExecutionPromotion.runtimeStatus,
+        scope: gatewayExecutionPromotion.scope,
+      }
+      : useM1018Promotion
       ? {
         id: iamEventPromotion.id,
         sourceContractBaseline: iamEventSourceContractBaseline.commit,

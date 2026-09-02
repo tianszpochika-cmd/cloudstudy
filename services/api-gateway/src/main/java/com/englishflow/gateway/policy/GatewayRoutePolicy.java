@@ -71,8 +71,7 @@ public final class GatewayRoutePolicy {
         }
 
         boolean matches(HttpMethod requestMethod, String requestPath) {
-            HttpMethod normalizedMethod = normalizeMethod(requestMethod);
-            if (normalizedMethod == null || !methods.contains(normalizedMethod)) {
+            if (requestMethod == null || !methods.contains(requestMethod)) {
                 return false;
             }
             return switch (matchType) {
@@ -95,12 +94,6 @@ public final class GatewayRoutePolicy {
                 throw new IllegalStateException("Invalid canonical provider callback rule: " + ruleId);
             }
             return ruleId.substring(0, separator);
-        }
-
-        private static HttpMethod normalizeMethod(HttpMethod method) {
-            // Spring WebFlux handles HEAD through GET handlers. The D2 policy records
-            // canonical OpenAPI GET operations, so HEAD inherits the corresponding GET rule.
-            return HttpMethod.HEAD.equals(method) ? HttpMethod.GET : method;
         }
     }
 

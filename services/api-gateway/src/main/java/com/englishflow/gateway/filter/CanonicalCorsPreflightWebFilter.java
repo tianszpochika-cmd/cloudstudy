@@ -70,7 +70,10 @@ public final class CanonicalCorsPreflightWebFilter implements WebFilter, Ordered
         if (!resolution.matched()) {
             return deny(exchange, startedAtNanos, "cors_preflight_route_forbidden", "The CORS route is not available.");
         }
-        if (!routeExecutionPolicy.isAvailable(resolution.rule())) {
+        HttpMethod requestedMethod = parseHttpMethod(request.getHeaders()
+                .getFirst(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD));
+        if (!routeExecutionPolicy.canExecute(
+                resolution.rule(), requestedMethod, request.getPath().pathWithinApplication().value())) {
             return deny(exchange, startedAtNanos, "cors_preflight_target_unavailable", "The CORS route is not available.");
         }
         if (profile == GatewayProperties.Cors.OriginProfile.OFFICIAL_SITE
@@ -78,8 +81,8 @@ public final class CanonicalCorsPreflightWebFilter implements WebFilter, Ordered
             return deny(exchange, startedAtNanos, "official_site_preflight_forbidden", "Official-site requests are limited to named public reads.");
         }
 
-        String requestedMethod = request.getHeaders().getFirst(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD);
-        if (!methodAllowed(profile, requestedMethod, cors) || !requestedHeadersAllowed(profile, request, cors)) {
+        String requestedMethodHeader = request.getHeaders().getFirst(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD);
+        if (!methodAllowed(profile, requestedMethodHeader, cors) || !requestedHeadersAllowed(profile, request, cors)) {
             return deny(exchange, startedAtNanos, "cors_preflight_headers_or_method_forbidden", "The CORS request is not permitted.");
         }
         return allow(exchange, origin, profile, cors);
@@ -126,6 +129,17 @@ public final class CanonicalCorsPreflightWebFilter implements WebFilter, Ordered
     private static boolean isPreflight(ServerHttpRequest request) {
         return HttpMethod.OPTIONS.equals(request.getMethod())
                 && request.getHeaders().getFirst(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD) != null;
+    }
+
+    private static HttpMethod parseHttpMethod(String value) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+        try {
+            return HttpMethod.valueOf(value.trim());
+        } catch (IllegalArgumentException ignored) {
+            return null;
+        }
     }
 
     private static boolean methodAllowed(

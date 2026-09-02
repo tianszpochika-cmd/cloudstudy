@@ -4,6 +4,8 @@ import path from 'node:path';
 import test from 'node:test';
 
 import {
+  FROZEN_EXECUTION_TARGET_PLAN_SHA256,
+  executionTargetPlanDigest,
   validateGatewayContract,
   validateGatewayContractData,
 } from '../../scripts/audit/p1r-gateway-contract-check.mjs';
@@ -23,6 +25,20 @@ function fixture() {
 function rule(document, ruleId) {
   const found = document[extension].routeRules.find((candidate) => candidate.ruleId === ruleId);
   assert.ok(found, `missing fixture route rule ${ruleId}`);
+  return found;
+}
+
+function executionPlan(document, ruleId) {
+  const found = document[extension].routeExecutions.find((candidate) => candidate.ruleId === ruleId);
+  assert.ok(found, `missing fixture execution plan ${ruleId}`);
+  return found;
+}
+
+function executionProjection(document, projectionId) {
+  const found = document[extension].routeExecutions
+    .flatMap((plan) => plan.projections)
+    .find((candidate) => candidate.projectionId === projectionId);
+  assert.ok(found, `missing fixture execution projection ${projectionId}`);
   return found;
 }
 
@@ -50,10 +66,59 @@ test('Gateway contract audit passes the dedicated fragment and exact canonical p
     publicOperationCount: 365,
     coveredPublicOperationCount: 365,
     publicCoverageErrorCount: 0,
+    executionPlanCount: 56,
+    executionProjectionCount: 154,
+    availableExecutionOperationCount: 171,
+    unavailableExecutionOperationCount: 194,
+    executionTargetPlanDigest: FROZEN_EXECUTION_TARGET_PLAN_SHA256,
     internalOperationCount: 62,
     externalDeniedInternalOperationCount: 62,
     canonicalProjectionMatches: true,
   });
+});
+
+test('Gateway execution targets cannot drift to a different upstream owner or controller path', () => {
+  assertMutationFails((document) => {
+    executionProjection(document, 'commerce-domain.skus').upstreamOwner = 'content-service';
+  }, /execution projection upstream owner drifted/);
+  assertMutationFails((document) => {
+    executionProjection(document, 'commerce-domain.skus').targetPathTemplate = '/internal/v1/commerce/not-a-controller-route';
+  }, /execution target is not declared by the evidenced controller/);
+  assertMutationFails((document) => {
+    executionProjection(document, 'commerce-domain.skus').targetPathTemplate = '/internal/v1/commerce/readiness';
+  }, /execution target plan digest drifted/);
+});
+
+test('Gateway execution plan digest binds the reviewed finite target table', () => {
+  const policy = fragment[extension];
+  assert.equal(executionTargetPlanDigest(policy), FROZEN_EXECUTION_TARGET_PLAN_SHA256);
+  assert.equal(FROZEN_EXECUTION_TARGET_PLAN_SHA256.length, 64);
+});
+
+test('Gateway execution targets cannot broaden a rule into a wildcard public proxy', () => {
+  assertMutationFails((document) => {
+    executionProjection(document, 'learning-domain.plan-current').publicPathTemplate = '/api/v1/learning/*';
+  }, /execution projection must name one canonical exact public path/);
+});
+
+test('Gateway executable rules cannot lose their finite targets', () => {
+  assertMutationFails((document) => {
+    executionPlan(document, 'learning-domain').projections = [];
+  }, /executable rule must retain only exact targets/);
+});
+
+test('Gateway execution plan shape cannot bypass validation', () => {
+  assertMutationFails((document) => {
+    document[extension].routeExecutions = {};
+  }, /route execution plan count must be 56/);
+});
+
+test('Gateway unavailable rules cannot be promoted to an upstream projection', () => {
+  assertMutationFails((document) => {
+    executionPlan(document, 'grammar-domain').projections = [
+      structuredClone(executionProjection(document, 'assessment-domain.placement-start')),
+    ];
+  }, /unavailable execution rule is not frozen/);
 });
 
 test('D2 policy cannot claim the M2 runtime is complete', () => {

@@ -31,13 +31,20 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 import java.time.Instant;
 import java.net.URI;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -102,8 +109,9 @@ class CanonicalRoutePolicyRouteLocatorIntegrationTest {
     @Test
     void validJwtCannotTurnAnUnavailableCanonicalTargetIntoBroadWrongOwnerForwarding() throws Exception {
         List<String> routeIds = routeLocator.getRoutes().map(route -> route.getId()).collectList().block();
-        assertTrue(routeIds.contains("canonical-iam-login"));
-        assertTrue(routeIds.contains("canonical-iam-account-deletions"));
+        assertTrue(routeIds.contains("canonical-iam-login-login"));
+        assertFalse(routeIds.stream().anyMatch(routeId -> routeId.startsWith("canonical-iam-account-deletions-")));
+        assertFalse(routeIds.stream().anyMatch(routeId -> routeId.startsWith("canonical-grammar-domain-")));
 
         String token = validAccessToken();
         assertEquals("integration-subject", jwtDecoder.decode(token).block().getSubject());
@@ -116,6 +124,13 @@ class CanonicalRoutePolicyRouteLocatorIntegrationTest {
 
         client.delete()
                 .uri("/api/v1/auth/login")
+                .header("Authorization", "Bearer " + token)
+                .exchange()
+                .expectStatus().isNotFound()
+                .expectBody().jsonPath("$.error.errorCode").isEqualTo("NOT_FOUND");
+
+        client.post()
+                .uri("/api/v1/grammar/practice/attempts")
                 .header("Authorization", "Bearer " + token)
                 .exchange()
                 .expectStatus().isNotFound()
@@ -141,10 +156,15 @@ class CanonicalRoutePolicyRouteLocatorIntegrationTest {
                 "RouteLocator must expose exactly the executable canonical policy projection");
         for (GatewayRoutePolicy.Rule rule : routePolicy.rules()) {
             GatewayRouteExecutionPolicy.Resolution resolution = routeExecutionPolicy.resolve(rule);
-            assertEquals(resolution.isAvailable(), canonicalRoutes.containsKey("canonical-" + rule.ruleId()),
+            boolean hasRoute = bindings.stream().anyMatch(binding -> binding.rule().ruleId().equals(rule.ruleId()));
+            assertEquals(resolution.isAvailable(), hasRoute,
                     () -> "route availability drift for " + rule.ruleId());
             assertEquals(resolution.isAvailable(), routeExecutionPolicy.isAvailable(rule),
                     () -> "route admission availability drift for " + rule.ruleId());
+            if (!resolution.isAvailable()) {
+                assertTrue(routeExecutionPolicy.failClosedReasons().containsKey(rule.ruleId()),
+                        () -> "unavailable canonical rule must declare a fail-closed reason: " + rule.ruleId());
+            }
         }
         assertEquals(List.of("gateway-health"), routeExecutionPolicy.localRules().stream()
                 .map(GatewayRoutePolicy.Rule::ruleId)
@@ -194,6 +214,83 @@ class CanonicalRoutePolicyRouteLocatorIntegrationTest {
                 .jsonPath("$.meta.apiVersion").isEqualTo("v1")
                 .jsonPath("$.meta.schemaVersion").isEqualTo("1.0.0")
                 .jsonPath("$.meta.serverTime").exists();
+    }
+
+    @Test
+    void pathProjectionUsesOnlyCurrentOwnerControllerMappingsAndRejectsCrossOwnerRules() throws IOException {
+        Path repository = repositoryRoot();
+        for (GatewayRouteExecutionPolicy.RouteBinding binding : routeExecutionPolicy.routeBindings()) {
+            GatewayRouteExecutionPolicy.ControllerEvidence evidence = binding.pathProjection().controllerEvidence();
+            assertEquals(binding.rule().upstreamOwner(), evidence.ownerService(),
+                    binding.routeId() + " owner evidence");
+            Path source = repository.resolve(evidence.sourceRelativePath());
+            assertTrue(Files.isRegularFile(source), binding.routeId() + " controller evidence source");
+            assertTrue(Files.readString(source).contains(evidence.requestMapping()),
+                    binding.routeId() + " current controller mapping");
+        }
+
+        assertProjected("assessment-domain", "session-create", HttpMethod.POST,
+                "/api/v1/assessment/sessions", "/internal/v1/assessment/sessions");
+        assertProjected("onboarding-domain", "daily-tasks-ensure", HttpMethod.POST,
+                "/api/v1/onboarding/daily-tasks/ensure", "/internal/v1/learner/onboarding/daily-tasks/ensure");
+        assertProjected("admin-domain", "commerce-orders", HttpMethod.GET,
+                "/api/v1/admin/ops/commerce/orders", "/internal/v1/admin-ops/commerce/orders");
+        assertProjected("notifications-domain", "preferences", HttpMethod.GET,
+                "/api/v1/notifications/preferences", "/internal/v1/notifications/preferences");
+        assertProjected("support-domain", "tickets", HttpMethod.POST,
+                "/api/v1/support/tickets", "/internal/v1/admin-ops/support/tickets");
+        assertProjected("learning-domain", "stream-today", HttpMethod.GET,
+                "/api/v1/learning/stream/today", "/internal/v1/learning/stream/today");
+
+        assertUnavailable(HttpMethod.POST, "/api/v1/grammar/practice/attempts", "grammar-domain");
+        assertUnavailable(HttpMethod.POST, "/api/v1/sync/changes", "sync-domain");
+        assertUnavailable(HttpMethod.GET, "/api/v1/admin/recovery/tasks", "admin-recovery");
+        assertUnavailable(HttpMethod.GET, "/api/v1/public/site/projection", "public-site");
+        assertUnavailable(HttpMethod.POST, "/api/v1/messages/message-1/read", "messages-domain");
+        assertUnavailable(HttpMethod.POST, "/api/v1/social/rooms/room-1/disconnect", "social-domain");
+        assertUnavailable(HttpMethod.POST, "/api/v1/social/rooms/room-1/recover", "social-domain");
+        assertUnavailable(HttpMethod.POST, "/api/v1/social/rooms/room-1/lease/renew", "social-domain");
+        assertUnavailable(HttpMethod.PUT, "/api/v1/settings/notifications", "settings-domain");
+    }
+
+    @Test
+    void everyAvailableProjectionIsAnExactCurrentOpenApiOperationAndEveryOtherOperationFailsClosed() throws IOException {
+        JsonNode paths = new ObjectMapper().readTree(Files.readString(
+                        repositoryRoot().resolve("packages/contracts/openapi/v1/openapi.json")))
+                .path("paths");
+        List<GatewayRouteExecutionPolicy.RouteBinding> bindings = routeExecutionPolicy.routeBindings();
+        for (GatewayRouteExecutionPolicy.RouteBinding binding : bindings) {
+            String template = binding.pathProjection().publicPathTemplate();
+            JsonNode pathItem = paths.path(template);
+            assertTrue(pathItem.isObject(), binding.routeId() + " template must exist in OpenAPI");
+            for (HttpMethod method : binding.methods()) {
+                assertTrue(pathItem.path(method.name().toLowerCase(Locale.ROOT)).isObject(),
+                        binding.routeId() + " method must exist in OpenAPI");
+                String concretePath = materialize(template);
+                GatewayRoutePolicy.Resolution resolution = routePolicy.resolve(method, concretePath);
+                assertTrue(resolution.matched(), binding.routeId() + " must resolve in canonical policy");
+                assertEquals(binding.rule().ruleId(), resolution.rule().ruleId(), binding.routeId() + " policy owner rule");
+                assertTrue(routeExecutionPolicy.canExecute(resolution.rule(), method, concretePath), binding.routeId());
+            }
+        }
+
+        for (Map.Entry<String, JsonNode> path : paths.properties()) {
+            for (HttpMethod method : List.of(HttpMethod.GET, HttpMethod.POST, HttpMethod.PUT, HttpMethod.PATCH, HttpMethod.DELETE)) {
+                if (!path.getValue().path(method.name().toLowerCase(Locale.ROOT)).isObject()) {
+                    continue;
+                }
+                GatewayRoutePolicy.Resolution resolution = routePolicy.resolve(method, path.getKey());
+                if (!resolution.matched()) {
+                    continue;
+                }
+                boolean mappedByExactProjection = bindings.stream()
+                        .filter(binding -> binding.rule().ruleId().equals(resolution.rule().ruleId()))
+                        .anyMatch(binding -> binding.pathProjection().accepts(method, path.getKey()));
+                assertEquals(mappedByExactProjection,
+                        routeExecutionPolicy.canExecute(resolution.rule(), method, path.getKey()),
+                        () -> "canonical operation admission drift for " + method + " " + path.getKey());
+            }
+        }
     }
 
     @TestConfiguration(proxyBeanMethods = false)
@@ -248,28 +345,79 @@ class CanonicalRoutePolicyRouteLocatorIntegrationTest {
             org.springframework.cloud.gateway.route.Route route,
             GatewayRouteExecutionPolicy.RouteBinding binding
     ) {
-        GatewayRoutePolicy.Rule rule = binding.rule();
-        for (HttpMethod method : rule.methods()) {
-            assertTrue(matches(route, method, rule.path()),
-                    () -> binding.routeId() + " must match canonical " + method + " " + rule.path());
-            if (rule.matchType() == GatewayRoutePolicy.MatchType.PREFIX) {
-                assertTrue(matches(route, method, rule.path() + "/exact-child"),
-                        () -> binding.routeId() + " must match canonical prefix descendants");
+        for (String pattern : binding.externalPathPatterns()) {
+            String path = samplePath(pattern);
+            for (HttpMethod method : binding.methods()) {
+                assertTrue(matches(route, method, path),
+                        () -> binding.routeId() + " must match projected " + method + " " + path);
             }
         }
-        if (rule.methods().contains(HttpMethod.GET)) {
-            assertTrue(matches(route, HttpMethod.HEAD, rule.path()),
-                    () -> binding.routeId() + " must inherit HEAD from canonical GET");
-        }
+        String representativePath = samplePath(binding.externalPathPatterns().getFirst());
+        assertFalse(matches(route, HttpMethod.HEAD, representativePath),
+                () -> binding.routeId() + " must not infer HEAD from a canonical GET operation");
         HttpMethod deniedMethod = List.of(HttpMethod.GET, HttpMethod.POST, HttpMethod.PUT, HttpMethod.PATCH, HttpMethod.DELETE, HttpMethod.OPTIONS)
                 .stream()
-                .filter(method -> !rule.methods().contains(method))
+                .filter(method -> !binding.methods().contains(method))
                 .findFirst()
                 .orElseThrow();
-        assertTrue(!matches(route, deniedMethod, rule.path()),
-                () -> binding.routeId() + " must not broaden methods beyond the policy");
-        assertTrue(!matches(route, rule.methods().getFirst(), rule.path() + "-outside"),
+        assertFalse(matches(route, deniedMethod, representativePath),
+                () -> binding.routeId() + " must not broaden methods beyond its execution projection");
+        assertFalse(matches(route, binding.methods().getFirst(), binding.rule().path() + "-outside"),
                 () -> binding.routeId() + " must not broaden its canonical path");
+    }
+
+    private void assertProjected(
+            String ruleId,
+            String projectionId,
+            HttpMethod method,
+            String publicPath,
+            String expectedInternalPath
+    ) {
+        GatewayRouteExecutionPolicy.RouteBinding binding = routeExecutionPolicy.routeBindings().stream()
+                .filter(candidate -> candidate.rule().ruleId().equals(ruleId))
+                .filter(candidate -> candidate.pathProjection().bindingId().equals(projectionId))
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("Missing projection " + ruleId + "/" + projectionId));
+        assertTrue(binding.pathProjection().accepts(method, publicPath), binding.routeId());
+        assertTrue(routeExecutionPolicy.canExecute(binding.rule(), method, publicPath), binding.routeId());
+        assertEquals(expectedInternalPath, binding.pathProjection().transformedTargetPath(publicPath), binding.routeId());
+    }
+
+    private void assertUnavailable(HttpMethod method, String publicPath, String ruleId) {
+        GatewayRoutePolicy.Resolution policyResolution = routePolicy.resolve(method, publicPath);
+        assertTrue(policyResolution.matched(), publicPath + " must first resolve to canonical policy");
+        assertEquals(ruleId, policyResolution.rule().ruleId());
+        assertFalse(routeExecutionPolicy.canExecute(policyResolution.rule(), method, publicPath),
+                () -> "unexpected projection admission for " + method + " " + publicPath + ": "
+                        + routeExecutionPolicy.routeBindings().stream()
+                        .filter(binding -> binding.rule().ruleId().equals(ruleId))
+                        .filter(binding -> binding.pathProjection().accepts(method, publicPath))
+                        .map(GatewayRouteExecutionPolicy.RouteBinding::routeId)
+                        .toList());
+        if (!routeExecutionPolicy.isAvailable(policyResolution.rule())) {
+            assertTrue(routeExecutionPolicy.failClosedReasons().containsKey(ruleId),
+                    () -> "whole-rule unavailability must expose a reason for " + ruleId);
+        }
+    }
+
+    private static String samplePath(String pattern) {
+        return pattern.replace("**", "exact-child").replace("*", "exact-child");
+    }
+
+    private static String materialize(String template) {
+        return template.replaceAll("\\{[A-Za-z][A-Za-z0-9]*}", "projection-id");
+    }
+
+    private static Path repositoryRoot() {
+        Path candidate = Path.of("").toAbsolutePath().normalize();
+        while (candidate != null) {
+            if (Files.isRegularFile(candidate.resolve("pom.xml"))
+                    && Files.isRegularFile(candidate.resolve("packages/contracts/fragments/p1r-gateway-boundary.openapi.json"))) {
+                return candidate;
+            }
+            candidate = candidate.getParent();
+        }
+        throw new IllegalStateException("Cannot find repository root");
     }
 
     private static MockServerWebExchange exchange(HttpMethod method, String path) {

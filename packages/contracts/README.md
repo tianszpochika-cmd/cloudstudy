@@ -24,6 +24,7 @@ API、事件、JSON Schema、AI 输入输出和内容 schema 的共享契约。�
 ### P1R-M1-004 Gateway 边界 profile
 
 - `fragments/p1r-gateway-boundary.openapi.json` 的 `x-p1r-gateway-boundary` 是 Gateway D2 单一事实源。每个 active `/api/v1` operation 必须命中唯一最高优先级 route rule 并映射到唯一 service owner；未覆盖、等优先级歧义、未知 owner、外部 `/internal/v1` 和新 `core-api` 写入均 fail closed。
+- P1R-M2-001 在同一 profile 的 `executionTargetPolicy` / `routeExecutions` 冻结有限的执行投影：只有逐条列出的 public path + method 才能使用已配置 owner URI、target path/template 和当前 Controller evidence；任何未列出、无当前 Controller 或无配置 URI 的 operation 均为 `UNAVAILABLE` / `DENY`，不得把粗粒度 prefix 变成代理或回退到 `core-api`。
 - learner-web、admin-web、mobile H5、official-site 和原生端分别使用具名 origin/transport profile。credentialed CORS 只允许精确 origin，禁止 wildcard；官网只做具名公开读取且不建立业务会话；原生端不得发送或接收 Cookie。
 - Web Cookie 非安全方法必须精确验证 `Origin`；只有没有 `Origin` 时才允许精确 `Referer` origin 回退。缺失、不受信或冲突使用 canonical 403。原生 `NATIVE_SECURE_STORAGE` 不适用 Cookie CSRF，但必须与可信客户端/设备上下文交叉校验。
 - JWT 预检固定 RS256/JWKS/issuer/audience/time/token type/scope，不能仅凭 `Authorization` 头存在或客户端 authority 头建立身份，也不能替代服务 PEP。具名 route class 绑定限流，429 必带 `Retry-After`，受保护/高风险策略的限流后端异常返回 canonical 503。
