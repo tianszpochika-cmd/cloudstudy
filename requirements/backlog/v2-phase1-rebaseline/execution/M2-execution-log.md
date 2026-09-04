@@ -1,5 +1,12 @@
 # P1R M2 执行日志
 
+## 2026-09-04 IAM 账户/密码并发安全检查点
+
+- 源码：`9deb899`。认证改为锁前单次 cost-12 BCrypt、锁内 current principal/hash/status/counter 复核；credential epoch 在校验期间变化时统一 `INVALID_CREDENTIALS` 且零写入，避免旧在途请求污染或锁死刚重置的新凭据。
+- 真实 MySQL 8.4/Spring 事务测试覆盖：单笔与四笔旧 hash 在途时 reset 先提交、旧请求全部失败关闭、新 epoch 计数/状态不变、新密码随后登录成功；同一 current hash 四路普通错误精确累计至锁定；audit outage 同时回滚账户事实与 idempotency claim。
+- 验证：Java 25 定向 `29/29`；普通全套 `57` 项、`0 failure / 0 error`（13 项外部集成按配置跳过）；MySQL 专项 `8/8`；只含 `9deb899` 的临时 detached worktree 定向 `29/29`；diff PASS。
+- 独立审查首轮发现“stale credential 污染新 epoch 计数”并判定 `REWORK`；返工后同一 reviewer 最终 `ACCEPT`、P1/P2=`0/0`。本结论仅关闭账户密码并发批次，`P1R-M2-002` 继续 `IN_PROGRESS / NOT_RUNTIME_VERIFIED`。
+
 ## 2026-09-04 Gateway health 与 Evidence 责任闭环校正
 
 - 修正 canonical `GET /api/v1/health` 身份：summary 为“读取 API Gateway 健康状态”，`HealthData.service=api-gateway`；路径、method、operationId、响应 envelope/status/header/schema 与其他 wire shape 均未晋升。
