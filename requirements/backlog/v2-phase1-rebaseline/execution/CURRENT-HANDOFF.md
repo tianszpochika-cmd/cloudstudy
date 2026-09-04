@@ -8,8 +8,8 @@
 - M1-018 审计实现源：`2a747ba3917acd92664911c6b4be070ff469e302`；Evidence C 集成检查点：`3ab5d50e5d22c02a8a8c1d1f92643e37528d85c1`。
 - 独立终验：`agent:m1_018_closure_fix_review:gpt-5.6-luna:max` 已对 C 判定 `ACCEPT`，P1/P2=`0/0`。
 - 当前台账：`25 ACCEPTED / 1 BLOCKED / 2 IN_PROGRESS / 80 PLANNED`，共 108 项。
-- M2 开发检查点：IAM `127fe44`；Gateway 基础投影 `a10c7ec`，随后安全收口检查点 `acee36a84ee1fd6557ac3b62a41d033622e8da4a`。两条轨道均为可恢复的 `IN_PROGRESS / NOT_RUNTIME_VERIFIED` 源码检查点，不是 canonical Evidence 或验收提交。
-- 2026-09-04 恢复审计起点为干净且与当时 `origin/dev@9e88958` 一致；`acee36a` 已在本地提交，但首次 `git fetch`/`git push` 均因 GitHub 443 连接失败而未同步，接手者必须先重试推送并核对远程差异。
+- M2 开发检查点：IAM `127fe44`；Gateway 基础投影 `a10c7ec`、安全收口 `acee36a84ee1fd6557ac3b62a41d033622e8da4a`、health/Evidence 责任治理源码 `9560c75`。两条轨道均为可恢复的 `IN_PROGRESS / NOT_RUNTIME_VERIFIED` 源码检查点，不是 canonical Evidence 或验收提交。
+- 2026-09-04 恢复审计起点为干净且与当时 `origin/dev@9e88958` 一致；Gateway 治理源码为 `9560c75`，其后的本交接绑定提交已纳入本地 `dev`，相对该远程跟踪提交共领先 4 个提交。此前 `git fetch`/`git push` 均因 GitHub 443 连接失败而未同步，接手者必须重试推送并核对远程差异。
 - M1-018 canonical Evidence：`evidence/p1r/m1/P1R-M1-018/manifest.json`。
 - C 阶段将 M1-001..009、11..017 的 current-source 摘要绑定到 `2a747ba`；D 阶段已将唯一包含 GAP registry 摘要的 M1-010 绑定到 C，并录入最终终验。
 
@@ -33,11 +33,12 @@
 - M2 检查点专项：Gateway Java 25 `61/61`、Gateway Node 契约 `95/95`；IAM Java 25 普通测试 `41` 项（其中 9 项数据库测试按配置跳过）、启用 MySQL 后 `41/41`，Flyway 11 个迁移至 schema V12；Auth/Policy/Gateway contract audit、contracts merge/generate/validate、plan 和 diff 均 PASS。
 - 2026-09-02 全量 P1R 首轮 `1415/1416`；唯一失败是测试进程在清单修正前读到 IAM migration `fileCount=9`。清单已修正为 `11/V12`，修正后 data-ownership 定向回归 `34/34` PASS，最终提交状态第二轮全量 P1R `1416/1416` PASS。
 - 2026-09-04 `acee36a` Gateway 安全收口：Java 25 `62/62`、Gateway Node `32/32`、全量 P1R `1416/1416`、canonical Gateway audit `56 rules / 151 projections / 168 available / 197 unavailable`、contracts merge/validate、三类 Git baseline compatibility、plan、GAP registry 和 diff 均 PASS。该组仍不是跨进程/浏览器/Redis/网络/持久审计 Evidence。
+- 2026-09-04 Gateway health/治理源码 `9560c75`：Java 25 `63/63`、Gateway Node `37/37`、contract tooling `63/63`、merge `26 OpenAPI fragments / 20 event fragments / 396 routes / 191 events`、validate `427 operations / 783 schemas / 191 events`、生成物 `5/5`、相对 `66246d5` compatibility `0 breaking`、计划 `108/108` 均 PASS；独立 reviewer `gateway_governance_independent_review` 最终 `ACCEPT`、P1/P2=`0/0`。该结论仍不构成真实 Redis/JWKS/upstream/browser、durable audit 或 NetworkPolicy Evidence。
 
 ## 4. 必须保留的真实边界
 
 - 当前只是 `D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED`。
-- 真实 Gateway CORS/CSRF/Origin、Redis 分布式限流、JWT/JWKS、持久审计和直连阻断归 M2-001。
+- 真实 Gateway CORS/CSRF/Origin、Redis 分布式限流与 JWT/JWKS 归 M2-001；durable audit、NetworkPolicy 直连阻断、平台关联终验和 staging 复验分别归 M2-006、M2-008、M2-010、M8-013，见 `M2-EVIDENCE-RESPONSIBILITY-ADDENDUM-2026-09-04.md`。
 - 真实 IAM 密码/锁定、refresh rotation/replay、会话撤销、成人 Gate/同意、policy/PDP 归 M2-002。
 - 11 个领域服务 Resource Server/PEP 默认拒绝归 M2-003。
 - owner schema/grants/TenantScope/Redis ACL 归 M2-004；Kafka/Outbox/consumer/DLQ/replay 归 M2-005；workflow/audit 归 M2-006。
@@ -54,17 +55,17 @@
 
 ## 6. 当前执行中的 M2 轨道
 
-- `P1R-M2-001`：Gateway 进程内实现与 canonical execution projection 已保存到 `a10c7ec`，支付回调 fail-closed、单值关联 header、默认关闭未验收 owner 路由及兼容路由死配置已保存到 `acee36a`；真实 Redis/JWKS/upstream/浏览器仍待当前源码运行 Evidence。独立审查判定仍需修正 `/api/v1/health` 的旧 `core-api` 身份契约，且生产 Netty header 顺序尚未真实跨进程证明。
+- `P1R-M2-001`：Gateway 进程内实现与 canonical execution projection 已保存到 `a10c7ec`，支付回调 fail-closed、单值关联 header、默认关闭未验收 owner 路由及兼容路由死配置已保存到 `acee36a`；`9560c75` 将 `/api/v1/health` contract-first 修正为 `api-gateway` 身份，冻结 Gateway root 与 health 两个标量节点的受控晋升、不可用 owner 真实 WebFlux 404 和 Evidence 责任校正，并取得独立 `ACCEPT`。真实 Redis/JWKS/upstream/浏览器与生产 Netty header 顺序仍待当前源码跨进程 Evidence，任务继续 `IN_PROGRESS / NOT_RUNTIME_VERIFIED`。
 - `P1R-M2-002`：IAM 密码、会话、成人 Gate/同意、幂等、限流、Policy/PDP 和 JDBC/Flyway 检查点已保存到 `127fe44`；真实 Redis、跨进程 Gateway/领域服务和故障恢复仍待运行 Evidence。
 - `P1R-M2-003` 仅做只读预研；必须等待 M2-001/M2-002 验收后才能转为实现。
 
 ## 7. M2 检查点验收前必须关闭的风险
 
 - IAM legacy Consent 中摘要为空的历史行仍可能导致 `JdbcConsentStore.history()` 读取失败，需要兼容迁移或读取策略及回归测试。
-- 登录与并发密码重置之间缺少锁内 password-hash 复验，旧密码仍存在一次竞态登录窗口。
+- IAM 登录/并发密码重置修复已进入返工：实现方向已改为锁前 BCrypt、短事务锁内重读 hash/status/counter，仍须补真实并发与 Spring 事务回滚证据并取得独立复审 `ACCEPT`。
 - Idempotency 外层事务与 Consent/Policy 内层事务的预期拒绝可能形成 rollback-only，最终转为 500 并回滚拒绝审计；需补 controller + idempotency + MySQL 组合测试。
-- 登录失败计数当前使用独立事务，仍可能出现锁定事实已提交而审计失败的非原子状态。
-- 正式 Consent 策略来源、密码重置消息投递、VERIFIED device trust，以及 Gateway 的真实 Redis/JWKS/upstream/浏览器/NetworkPolicy/durable audit 尚未形成运行 Evidence。
-- Gateway `/api/v1/health` 当前由 Gateway 本地处理，却受旧 canonical `HealthData.service=core-api` 约束；必须契约先行修正，不能把错误身份用于验收 Evidence。
-- M2-001 当前把 durable audit 与 NetworkPolicy Evidence 都作为自身前置，但自然实现 owner 分别是 M2-006 和 M2-008，且二者反向依赖 M2-001，形成语义依赖闭环。应先以独立治理提交明确 `implementationOwnerTask/evidenceOwnerTask/finalGateTask`，保持最终 D3/M2-010 标准不变；在校正前不得把 M2-001 标记 `ACCEPTED`。
-- IAM 独立安全审查还确认：裸 SHA-256 幂等指纹可形成密码离线校验器；凭据 response snapshot 可绕过撤销/rotation 当前事实；`NATIVE_SECURE_STORAGE` 仅由客户端自证；新用户拿不到当前 Consent descriptor；无效 dummy BCrypt 破坏账号枚举耗时均衡。上述均须补失败测试并修复后再复审。
+- IAM 登录失败计数、锁定事实、幂等完成与审计必须在同一 Spring 事务中接受 MySQL 并发/回滚验证；在该验证完成前不得宣称原子性 PASS。
+- 正式 Consent 策略来源、密码重置消息投递、VERIFIED device trust，以及 Gateway 的真实 Redis/JWKS/upstream/浏览器尚未形成当前提交运行 Evidence；NetworkPolicy/durable audit 的后续责任已校正到 M2-008/M2-006，但对应 GAP 仍为 `OPEN / NOT_RUNTIME_VERIFIED`。
+- Gateway health 身份与 Evidence 责任闭环已在 `9560c75` 完成契约、实现和文档校正；执行入口、交接、Addendum 范围和 M2-004 audit-service owner 已同步，独立治理复审最终 `ACCEPT`、P1/P2=`0/0`。该校正不产生 runtime PASS，也不降低 M2-010/M8-013 最终标准。
+- IAM 幂等已引入独立 HMAC 指纹、版本化存储与 credential current-facts callback，Java 25 普通测试和隔离 MySQL 8.4 全套均为 `52/52`；独立安全审查仍判定 `REWORK`：账户锁定/禁用当前事实、access-token replay TTL、未知 scope 默认拒绝、公开测试密钥构造器及 V13 滚动迁移/升级竞态尚须修复并补证据。
+- IAM 其他未关闭风险仍包括：`NATIVE_SECURE_STORAGE` 客户端自证、正式 Consent descriptor/策略来源、legacy 空摘要兼容、外层幂等事务与内层预期拒绝的 rollback-only、密码重置消息投递及限流/缺失账户审计；均须分批修复并独立复审。
