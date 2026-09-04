@@ -4,8 +4,9 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.annotation.Propagation;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.time.Duration;
@@ -58,12 +59,80 @@ public class JdbcAccountStore implements AccountStore {
     }
 
     /**
+     * Performs the expensive password check before taking the account row lock. The later locking
+     * read is a MySQL current read, so a password reset may complete during BCrypt and the login
+     * then fails closed without mutating the new credential epoch if principal/hash changed. A
+     * missing identifier returns after the dummy check and therefore never takes an InnoDB gap lock.
+     */
+    @Override
+    @Transactional(transactionManager = "iamTransactionManager")
+    public PasswordLoginResult authenticatePassword(
+            String identifier,
+            String dummyPasswordHash,
+            PasswordHashVerifier verifier,
+            Instant at,
+            int maxAttempts,
+            Duration lockDuration
+    ) {
+        try {
+            Objects.requireNonNull(dummyPasswordHash, "dummyPasswordHash");
+            Objects.requireNonNull(verifier, "verifier");
+            Objects.requireNonNull(at, "at");
+            String normalizedIdentifier = AccountRecord.normalizeIdentifier(identifier);
+            AccountRecord observed = query("SELECT principal_id, identifier, password_hash, roles, permissions, status, failed_attempts, "
+                            + "locked_until, created_at, updated_at FROM iam_account WHERE identifier = ?",
+                    normalizedIdentifier).orElse(null);
+            boolean passwordMatches = verifier.matches(
+                    observed == null ? dummyPasswordHash : observed.passwordHash());
+            if (observed == null) {
+                return new PasswordLoginResult(null, IamDecisionCode.INVALID_CREDENTIALS);
+            }
+            AccountRecord current = query("SELECT principal_id, identifier, password_hash, roles, permissions, status, failed_attempts, "
+                            + "locked_until, created_at, updated_at FROM iam_account WHERE identifier = ? FOR UPDATE",
+                    normalizedIdentifier).orElse(null);
+            if (current == null) {
+                return new PasswordLoginResult(null, IamDecisionCode.INVALID_CREDENTIALS);
+            }
+            boolean credentialUnchanged = current.principalId().equals(observed.principalId())
+                    && sameHash(current.passwordHash(), observed.passwordHash());
+            if (!credentialUnchanged) {
+                return new PasswordLoginResult(current, IamDecisionCode.INVALID_CREDENTIALS);
+            }
+            if (current.status() == AccountStatus.DISABLED) {
+                return new PasswordLoginResult(current, IamDecisionCode.INVALID_CREDENTIALS);
+            }
+            if (current.status() == AccountStatus.LOCKED) {
+                if (current.lockedUntil() == null || current.lockedUntil().isAfter(at)) {
+                    return new PasswordLoginResult(current, IamDecisionCode.ACCOUNT_LOCKED);
+                }
+                current = current.unlocked(at);
+            }
+            if (!passwordMatches) {
+                Duration effectiveLockDuration = positive(lockDuration, Duration.ofMinutes(15));
+                AccountRecord failed = current.failedLogin(
+                        at, Math.max(1, maxAttempts), at.plus(effectiveLockDuration));
+                updateLoginSecurity(failed);
+                return new PasswordLoginResult(failed, failed.status() == AccountStatus.LOCKED
+                        ? IamDecisionCode.ACCOUNT_LOCKED
+                        : IamDecisionCode.INVALID_CREDENTIALS);
+            }
+            AccountRecord loggedIn = current.successfulLogin(at);
+            updateLoginSecurity(loggedIn);
+            return new PasswordLoginResult(loggedIn, IamDecisionCode.ACCOUNT_LOGIN);
+        } catch (IamPolicyException exception) {
+            throw exception;
+        } catch (DataAccessException | IllegalArgumentException exception) {
+            throw unavailable(exception);
+        }
+    }
+
+    /**
      * Serializes failed-attempt accounting at the MySQL row boundary. A JVM monitor in
      * PasswordAccountService cannot protect two IAM processes; SELECT ... FOR UPDATE keeps the
      * counter and lock transition from being lost under concurrent invalid passwords.
      */
     @Override
-    @Transactional(transactionManager = "iamTransactionManager", propagation = Propagation.REQUIRES_NEW)
+    @Transactional(transactionManager = "iamTransactionManager")
     public AccountRecord recordFailedLogin(AccountRecord observed, Instant at, int maxAttempts,
                                            Duration lockDuration) {
         try {
@@ -158,6 +227,15 @@ public class JdbcAccountStore implements AccountStore {
         }
     }
 
+    private void updateLoginSecurity(AccountRecord account) {
+        int updated = jdbc.update("UPDATE iam_account SET status = ?, failed_attempts = ?, locked_until = ?, updated_at = ? "
+                        + "WHERE principal_id = ?",
+                account.status().name(), account.failedAttempts(),
+                account.lockedUntil() == null ? null : Timestamp.from(account.lockedUntil()),
+                Timestamp.from(account.updatedAt()), account.principalId().toString());
+        if (updated != 1) throw unavailable(null);
+    }
+
     private Optional<AccountRecord> query(String sql, Object argument) {
         try {
             return jdbc.query(sql, (ResultSet rs, int rowNum) -> map(rs), argument).stream().findFirst();
@@ -183,6 +261,16 @@ public class JdbcAccountStore implements AccountStore {
     }
 
     private static String csv(Set<String> values) { return String.join(",", values); }
+
+    private static Duration positive(Duration value, Duration fallback) {
+        return value == null || value.isNegative() || value.isZero() ? fallback : value;
+    }
+
+    private static boolean sameHash(String left, String right) {
+        return MessageDigest.isEqual(
+                left.getBytes(StandardCharsets.UTF_8),
+                right.getBytes(StandardCharsets.UTF_8));
+    }
 
     private static IamPolicyException unavailable(Exception exception) {
         return new IamPolicyException(IamDecisionCode.IAM_PERSISTENCE_UNAVAILABLE,

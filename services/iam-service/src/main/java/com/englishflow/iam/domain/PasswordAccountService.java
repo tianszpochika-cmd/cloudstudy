@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /** Account-password verifier with bounded failed-attempt lockout and non-enumerating failures. */
 public final class PasswordAccountService {
-    private static final String DUMMY_HASH = "$2a$12$C6UzMDM.H6dfI/f/IKcEe.Vn2xL1Xg9sN8m5p4wJ7w7j9y9e3dF6";
+    private static final String DUMMY_HASH = "$2a$12$.E3ViZlXxYqOQ1kI0hTnBOjUaLEQkvjLANReLduflGx9udo9iuOj.";
     private static final Set<String> LEARNER_ROLES = Set.of("learner");
     private static final Set<String> LEARNER_PERMISSIONS = Set.of(
             "learner.profile.read", "learner.profile.write", "learning.plan.read",
@@ -71,47 +71,33 @@ public final class PasswordAccountService {
                     Math.max(1, properties.getLoginRequestsPerMinute()), java.time.Duration.ofMinutes(1))) {
                 throw new IamPolicyException(IamDecisionCode.RATE_LIMITED, "iam.login.rate_limited");
             }
-            // Read inside the JVM guard. The previous read-before-lock sequence allowed a
-            // stale failedAttempts value to replace a newer JDBC row, losing concurrent
-            // failures. JdbcAccountStore also re-reads under SELECT ... FOR UPDATE so the
-            // same guarantee holds across IAM processes.
-            AccountRecord account = accounts.findByIdentifier(normalized).orElse(null);
-            boolean passwordMatches = account != null && passwordEncoder.matches(rawPassword == null ? "" : rawPassword,
-                    account.passwordHash());
-            if (account == null) {
-                passwordEncoder.matches(rawPassword == null ? "" : rawPassword, DUMMY_HASH);
-                throw invalidCredentials();
-            }
-            if (account.status() == AccountStatus.DISABLED) throw invalidCredentials();
-            if (account.status() == AccountStatus.LOCKED) {
-                if (account.lockedUntil() == null || account.lockedUntil().isAfter(now)) {
-                    appendAudit(account, IamDecisionCode.ACCOUNT_LOCKED, "account_locked");
-                    throw new IamPolicyException(IamDecisionCode.ACCOUNT_LOCKED, "iam.account.locked");
-                }
-                // Keep the unlock decision local. Durable adapters re-read under a row lock on
-                // the eventual write, so this request cannot overwrite a newer lock.
-                account = account.unlocked(now);
-            }
-            if (!passwordMatches) {
-                AccountRecord failed = accounts.recordFailedLogin(account, now,
-                        Math.max(1, properties.getMaxFailedAttempts()),
-                        positive(properties.getLockDuration(), java.time.Duration.ofMinutes(15)));
-                appendAudit(failed, failed.status() == AccountStatus.LOCKED
-                        ? IamDecisionCode.ACCOUNT_LOCKED : IamDecisionCode.INVALID_CREDENTIALS,
-                        failed.status() == AccountStatus.LOCKED ? "account_locked" : "login_failed");
-                if (failed.status() == AccountStatus.LOCKED) {
-                    throw new IamPolicyException(IamDecisionCode.ACCOUNT_LOCKED, "iam.account.locked");
-                }
-                throw invalidCredentials();
-            }
-            AccountRecord loggedIn = accounts.recordSuccessfulLogin(account, now);
-            if (loggedIn.status() == AccountStatus.LOCKED) {
-                appendAudit(loggedIn, IamDecisionCode.ACCOUNT_LOCKED, "account_locked");
+            String presentedPassword = rawPassword == null ? "" : rawPassword;
+            AccountStore.PasswordLoginResult result = accounts.authenticatePassword(
+                    normalized,
+                    DUMMY_HASH,
+                    encodedPassword -> passwordEncoder.matches(presentedPassword, encodedPassword),
+                    now,
+                    Math.max(1, properties.getMaxFailedAttempts()),
+                    positive(properties.getLockDuration(), java.time.Duration.ofMinutes(15)));
+            AccountRecord account = result.account();
+            if (result.decisionCode() == IamDecisionCode.ACCOUNT_LOCKED) {
+                appendAudit(account, IamDecisionCode.ACCOUNT_LOCKED, "account_locked");
                 throw new IamPolicyException(IamDecisionCode.ACCOUNT_LOCKED, "iam.account.locked");
             }
-            if (loggedIn.status() == AccountStatus.DISABLED) throw invalidCredentials();
-            appendAudit(loggedIn, IamDecisionCode.ACCOUNT_LOGIN, "account_login");
-            return loggedIn;
+            if (result.decisionCode() == IamDecisionCode.INVALID_CREDENTIALS) {
+                // Missing and disabled accounts remain non-enumerating. A normal failed login
+                // retains its durable counter/audit fact from the store result.
+                if (account != null && account.status() != AccountStatus.DISABLED) {
+                    appendAudit(account, IamDecisionCode.INVALID_CREDENTIALS, "login_failed");
+                }
+                throw invalidCredentials();
+            }
+            if (result.decisionCode() != IamDecisionCode.ACCOUNT_LOGIN || account == null) {
+                throw new IamPolicyException(IamDecisionCode.IAM_PERSISTENCE_UNAVAILABLE,
+                        "iam.persistence.unavailable");
+            }
+            appendAudit(account, IamDecisionCode.ACCOUNT_LOGIN, "account_login");
+            return account;
         }
     }
 
@@ -150,7 +136,7 @@ public final class PasswordAccountService {
 
     private void appendAudit(AccountRecord account, IamDecisionCode code, String type) {
         try {
-            audit.append(AuditDecision.of(type, code, code != IamDecisionCode.INVALID_CREDENTIALS,
+            audit.append(AuditDecision.of(type, code, auditAllows(code),
                     TenantScope.derive(account.principalId()), Instant.now(clock), Set.of(), Set.of()));
         } catch (RuntimeException exception) {
             // A lock/rate/credential decision is only durable when its audit fact is durable.
@@ -158,6 +144,12 @@ public final class PasswordAccountService {
             // unknown persistence faults instead of returning a misleading authentication result.
             throw new IamPolicyException(IamDecisionCode.AUDIT_UNAVAILABLE, "iam.audit.unavailable");
         }
+    }
+
+    private static boolean auditAllows(IamDecisionCode code) {
+        return code == IamDecisionCode.ACCOUNT_REGISTERED
+                || code == IamDecisionCode.ACCOUNT_LOGIN
+                || code == IamDecisionCode.PASSWORD_RESET_COMPLETED;
     }
 
     private static java.time.Duration positive(java.time.Duration value, java.time.Duration fallback) {

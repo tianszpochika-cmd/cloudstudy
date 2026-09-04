@@ -1,5 +1,6 @@
 package com.englishflow.iam;
 
+import com.englishflow.iam.config.IamServiceProperties;
 import com.englishflow.iam.domain.AccountRecord;
 import com.englishflow.iam.domain.AccountStore;
 import com.englishflow.iam.domain.AccountStatus;
@@ -9,6 +10,7 @@ import com.englishflow.iam.domain.IdempotencyStore;
 import com.englishflow.iam.domain.IamTransactionRunner;
 import com.englishflow.iam.domain.IamDecisionCode;
 import com.englishflow.iam.domain.IamPolicyException;
+import com.englishflow.iam.domain.PasswordAccountService;
 import com.englishflow.iam.domain.DeviceId;
 import com.englishflow.iam.domain.ServerPrincipalContext;
 import com.englishflow.iam.domain.SessionRecord;
@@ -22,15 +24,25 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.aop.support.AopUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Set;
+import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -89,6 +101,12 @@ class IamJdbcPersistenceContextTest {
 
     @Autowired
     private SessionService sessions;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private IamServiceProperties properties;
 
     @Test
     void flywayCreatesAllIamFactTablesInTheConfiguredMySql() {
@@ -236,6 +254,259 @@ class IamJdbcPersistenceContextTest {
         } finally {
             jdbc.update("DELETE FROM iam_account WHERE principal_id = ?", principal.toString());
             jdbc.update("DELETE FROM iam_principal WHERE principal_id = ?", principal.toString());
+        }
+    }
+
+    @Test
+    void passwordResetMayCommitDuringBcryptAndTheOldPasswordThenFailsClosed() throws Exception {
+        PrincipalId principal = new PrincipalId(UUID.randomUUID());
+        String identifier = "jdbc-reset-race-" + principal + "@example.com";
+        String oldPassword = "Old password 2026!";
+        String newPassword = "New password 2026!";
+        String oldHash = passwordEncoder.encode(oldPassword);
+        String newHash = passwordEncoder.encode(newPassword);
+        Instant now = Instant.now();
+        AccountRecord account = new AccountRecord(principal, identifier, oldHash,
+                Set.of("learner"), Set.of("iam.self.read"), AccountStatus.ACTIVE,
+                0, null, now, now);
+        CountDownLatch verificationStarted = new CountDownLatch(1);
+        CountDownLatch continueVerification = new CountDownLatch(1);
+        PasswordEncoder blockingEncoder = new PasswordEncoder() {
+            @Override
+            public String encode(CharSequence rawPassword) {
+                return passwordEncoder.encode(rawPassword);
+            }
+
+            @Override
+            public boolean matches(CharSequence rawPassword, String encodedPassword) {
+                verificationStarted.countDown();
+                awaitLatch(continueVerification);
+                return passwordEncoder.matches(rawPassword, encodedPassword);
+            }
+        };
+        PasswordAccountService passwords = new PasswordAccountService(
+                accounts, blockingEncoder, decision -> { }, Clock.systemUTC(), properties);
+        ExecutorService executor = Executors.newFixedThreadPool(2);
+        try {
+            accounts.save(account);
+            assertTrue(AopUtils.isAopProxy(accounts),
+                    "the integration test must exercise Spring's transactional AccountStore proxy");
+            Future<IamDecisionCode> login = executor.submit(() -> {
+                try {
+                    passwords.authenticate(identifier, oldPassword);
+                    return IamDecisionCode.ACCOUNT_LOGIN;
+                } catch (IamPolicyException exception) {
+                    return exception.code();
+                }
+            });
+            assertTrue(verificationStarted.await(15, TimeUnit.SECONDS),
+                    "login did not reach the BCrypt callback");
+
+            Future<AccountRecord> reset = executor.submit(() ->
+                    accounts.changePassword(principal, newHash, Instant.now()));
+            AccountRecord changed = reset.get(15, TimeUnit.SECONDS);
+            assertEquals(newHash, changed.passwordHash(),
+                    "password reset must not wait for the unlocked BCrypt callback");
+
+            continueVerification.countDown();
+            assertEquals(IamDecisionCode.INVALID_CREDENTIALS, login.get(15, TimeUnit.SECONDS),
+                    "a password accepted against the pre-reset hash must fail after the locked current read");
+            AccountRecord persisted = accounts.findByPrincipalId(principal).orElseThrow();
+            assertEquals(newHash, persisted.passwordHash());
+            assertEquals(0, persisted.failedAttempts(),
+                    "a stale password result must not count against the new credential epoch");
+            assertEquals(AccountStatus.ACTIVE, persisted.status());
+        } finally {
+            continueVerification.countDown();
+            executor.shutdownNow();
+            jdbc.update("DELETE FROM iam_account WHERE principal_id = ?", principal.toString());
+            jdbc.update("DELETE FROM iam_principal WHERE principal_id = ?", principal.toString());
+        }
+    }
+
+    @Test
+    void multipleInFlightOldHashRequestsDoNotPoisonTheNewCredentialEpoch() throws Exception {
+        int inFlightRequests = 4;
+        PrincipalId principal = new PrincipalId(UUID.randomUUID());
+        String identifier = "jdbc-reset-epoch-" + principal + "@example.com";
+        String oldPassword = "Old epoch password 2026!";
+        String newPassword = "New epoch password 2026!";
+        String oldHash = passwordEncoder.encode(oldPassword);
+        String newHash = passwordEncoder.encode(newPassword);
+        String dummyHash = passwordEncoder.encode("unused epoch dummy");
+        Instant now = Instant.now();
+        AccountRecord account = new AccountRecord(principal, identifier, oldHash,
+                Set.of("learner"), Set.of("iam.self.read"), AccountStatus.ACTIVE,
+                0, null, now, now);
+        CountDownLatch allVerifying = new CountDownLatch(inFlightRequests);
+        CountDownLatch continueVerification = new CountDownLatch(1);
+        ExecutorService executor = Executors.newFixedThreadPool(inFlightRequests);
+        try {
+            accounts.save(account);
+            assertTrue(AopUtils.isAopProxy(accounts),
+                    "the integration test must exercise Spring's transactional AccountStore proxy");
+            List<Future<AccountStore.PasswordLoginResult>> staleLogins = new ArrayList<>();
+            for (int index = 0; index < inFlightRequests; index++) {
+                Instant attemptAt = now.plusMillis(index + 1L);
+                staleLogins.add(executor.submit(() -> accounts.authenticatePassword(
+                        identifier,
+                        dummyHash,
+                        hash -> {
+                            allVerifying.countDown();
+                            awaitLatch(continueVerification);
+                            return passwordEncoder.matches(oldPassword, hash);
+                        },
+                        attemptAt,
+                        2,
+                        Duration.ofMinutes(15))));
+            }
+            assertTrue(allVerifying.await(15, TimeUnit.SECONDS),
+                    "all stale requests must observe the old hash before reset");
+
+            AccountRecord reset = accounts.changePassword(principal, newHash, Instant.now());
+            assertEquals(newHash, reset.passwordHash(),
+                    "reset must commit while all BCrypt callbacks remain in flight");
+            continueVerification.countDown();
+
+            for (Future<AccountStore.PasswordLoginResult> staleLogin : staleLogins) {
+                AccountStore.PasswordLoginResult result = staleLogin.get(20, TimeUnit.SECONDS);
+                assertEquals(IamDecisionCode.INVALID_CREDENTIALS, result.decisionCode());
+                assertEquals(0, result.account().failedAttempts());
+                assertEquals(AccountStatus.ACTIVE, result.account().status());
+            }
+            AccountRecord afterStaleLogins = accounts.findByPrincipalId(principal).orElseThrow();
+            assertEquals(newHash, afterStaleLogins.passwordHash());
+            assertEquals(0, afterStaleLogins.failedAttempts());
+            assertEquals(AccountStatus.ACTIVE, afterStaleLogins.status());
+
+            PasswordAccountService currentEpochPasswords = new PasswordAccountService(
+                    accounts, passwordEncoder, decision -> { }, Clock.systemUTC(), properties);
+            AccountRecord loggedIn = currentEpochPasswords.authenticate(identifier, newPassword);
+            assertEquals(principal, loggedIn.principalId());
+            assertEquals(0, loggedIn.failedAttempts());
+            assertEquals(AccountStatus.ACTIVE, loggedIn.status());
+        } finally {
+            continueVerification.countDown();
+            executor.shutdownNow();
+            jdbc.update("DELETE FROM iam_account WHERE principal_id = ?", principal.toString());
+            jdbc.update("DELETE FROM iam_principal WHERE principal_id = ?", principal.toString());
+        }
+    }
+
+    @Test
+    void concurrentWrongPasswordsIncrementTheLockedCurrentCounterExactly() throws Exception {
+        int attempts = 4;
+        PrincipalId principal = new PrincipalId(UUID.randomUUID());
+        String identifier = "jdbc-concurrent-failure-" + principal + "@example.com";
+        Instant now = Instant.now();
+        AccountRecord account = new AccountRecord(principal, identifier,
+                passwordEncoder.encode("Correct password 2026!"),
+                Set.of("learner"), Set.of("iam.self.read"), AccountStatus.ACTIVE,
+                0, null, now, now);
+        String dummyHash = passwordEncoder.encode("unused dummy");
+        CountDownLatch allVerifying = new CountDownLatch(attempts);
+        CountDownLatch continueVerification = new CountDownLatch(1);
+        ExecutorService executor = Executors.newFixedThreadPool(attempts);
+        try {
+            accounts.save(account);
+            assertTrue(AopUtils.isAopProxy(accounts),
+                    "the integration test must exercise Spring's transactional AccountStore proxy");
+            List<Future<AccountStore.PasswordLoginResult>> failures = new ArrayList<>();
+            for (int index = 0; index < attempts; index++) {
+                Instant attemptAt = now.plusMillis(index + 1L);
+                failures.add(executor.submit(() -> accounts.authenticatePassword(
+                        identifier,
+                        dummyHash,
+                        hash -> {
+                            allVerifying.countDown();
+                            awaitLatch(continueVerification);
+                            return passwordEncoder.matches("Wrong password 2026!", hash);
+                        },
+                        attemptAt,
+                        attempts,
+                        Duration.ofMinutes(15))));
+            }
+            assertTrue(allVerifying.await(15, TimeUnit.SECONDS),
+                    "every transaction must finish its non-locking read before row-lock accounting starts");
+            continueVerification.countDown();
+
+            List<AccountStore.PasswordLoginResult> results = new ArrayList<>();
+            for (Future<AccountStore.PasswordLoginResult> failure : failures) {
+                results.add(failure.get(20, TimeUnit.SECONDS));
+            }
+            assertEquals(1L, results.stream()
+                    .filter(result -> result.decisionCode() == IamDecisionCode.ACCOUNT_LOCKED)
+                    .count());
+            assertEquals(attempts - 1L, results.stream()
+                    .filter(result -> result.decisionCode() == IamDecisionCode.INVALID_CREDENTIALS)
+                    .count());
+            AccountRecord persisted = accounts.findByPrincipalId(principal).orElseThrow();
+            assertEquals(attempts, persisted.failedAttempts());
+            assertEquals(AccountStatus.LOCKED, persisted.status());
+        } finally {
+            continueVerification.countDown();
+            executor.shutdownNow();
+            jdbc.update("DELETE FROM iam_account WHERE principal_id = ?", principal.toString());
+            jdbc.update("DELETE FROM iam_principal WHERE principal_id = ?", principal.toString());
+        }
+    }
+
+    @Test
+    void auditFailureRollsBackAccountFailureAndIdempotencyClaimTogether() {
+        PrincipalId principal = new PrincipalId(UUID.randomUUID());
+        String identifier = "jdbc-audit-rollback-" + principal + "@example.com";
+        String scope = "/api/v1/auth/login";
+        String key = "jdbc-audit-rollback-" + UUID.randomUUID();
+        String requestHash = idempotency.fingerprint(identifier, "Wrong password 2026!");
+        Instant now = Instant.now();
+        AccountRecord account = new AccountRecord(principal, identifier,
+                passwordEncoder.encode("Correct password 2026!"),
+                Set.of("learner"), Set.of("iam.self.read"), AccountStatus.ACTIVE,
+                0, null, now, now);
+        PasswordAccountService passwords = new PasswordAccountService(
+                accounts,
+                passwordEncoder,
+                decision -> { throw new IllegalStateException("injected audit outage"); },
+                Clock.systemUTC(),
+                properties);
+        try {
+            accounts.save(account);
+            assertTrue(AopUtils.isAopProxy(accounts),
+                    "the integration test must exercise Spring's transactional AccountStore proxy");
+
+            IamPolicyException failure = assertThrows(IamPolicyException.class, () ->
+                    idempotency.execute(scope, key, requestHash,
+                            () -> {
+                                passwords.authenticate(identifier, "Wrong password 2026!");
+                                return new IdempotencyService.Execution<>(ResponseEntity.ok("must-not-run"), "bad");
+                            },
+                            record -> ResponseEntity.ok("must-not-replay")));
+
+            assertEquals(IamDecisionCode.AUDIT_UNAVAILABLE, failure.code());
+            AccountRecord persisted = accounts.findByPrincipalId(principal).orElseThrow();
+            assertEquals(0, persisted.failedAttempts(),
+                    "the account failure counter must roll back when its required audit fact fails");
+            assertEquals(AccountStatus.ACTIVE, persisted.status());
+            Integer claimCount = jdbc.queryForObject(
+                    "SELECT COUNT(*) FROM iam_idempotency_record WHERE scope_key = ? AND idempotency_key = ?",
+                    Integer.class, scope, key);
+            assertEquals(0, claimCount,
+                    "the idempotency claim must roll back in the same outer transaction");
+        } finally {
+            jdbc.update("DELETE FROM iam_idempotency_record WHERE scope_key = ? AND idempotency_key = ?", scope, key);
+            jdbc.update("DELETE FROM iam_account WHERE principal_id = ?", principal.toString());
+            jdbc.update("DELETE FROM iam_principal WHERE principal_id = ?", principal.toString());
+        }
+    }
+
+    private static void awaitLatch(CountDownLatch latch) {
+        try {
+            if (!latch.await(30, TimeUnit.SECONDS)) {
+                throw new IllegalStateException("timed out waiting for test coordination latch");
+            }
+        } catch (InterruptedException exception) {
+            Thread.currentThread().interrupt();
+            throw new IllegalStateException("test coordination interrupted", exception);
         }
     }
 }
