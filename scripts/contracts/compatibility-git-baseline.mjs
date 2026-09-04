@@ -1504,7 +1504,7 @@ export function validateM2001CompatibilityPolicy(gatewayBoundaryDocument) {
   const promotion = executionTargetPolicy?.compatibilityPromotion;
   exactPolicyKeys(promotion, M2001_PROMOTION_ALLOWANCE_KEYS, 'M2-001 compatibility promotion', errors);
   if (!isValidM2001PromotionAllowance(promotion)) {
-    errors.push('M2-001 compatibility promotion is not the frozen Gateway execution-target root-extension allowance');
+    errors.push('M2-001 compatibility promotion is not the frozen Gateway root-and-health-identity-only allowance');
   }
   return errors;
 }

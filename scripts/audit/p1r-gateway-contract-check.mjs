@@ -20,7 +20,7 @@ const EXPECTED_AVAILABLE_EXECUTION_OPERATION_COUNT = 168;
 // This is a reviewed semantic binding for the finite M2-001 target table. It
 // deliberately prevents a target from silently moving to a different, still
 // valid controller method without a corresponding Gateway parity change.
-export const FROZEN_EXECUTION_TARGET_PLAN_SHA256 = '5fbbaa85800a951a06251478270fb97ff1a5c61bbada38e62c11823792377af1';
+export const FROZEN_EXECUTION_TARGET_PLAN_SHA256 = '89b7361e29ff87defa1c4579bbf44ed0c4ec1d0ac7327d71fbe6a2d504b13694';
 const EXECUTION_POLICY_FIELDS = [
   'schemaVersion',
   'sourceOfTruth',
@@ -40,8 +40,106 @@ const M2001_EXECUTION_TARGET_COMPATIBILITY_PROMOTION = Object.freeze({
   sourceContractBaseline: '66246d5b4a68a988a9af4ece68a446640b123812',
   previousPromotion: 'P1R-M1-018',
   runtimeStatus: 'NOT_RUNTIME_VERIFIED',
-  scope: 'OPENAPI_GATEWAY_EXECUTION_TARGET_ROOT_EXTENSION_ONLY',
+  scope: 'OPENAPI_GATEWAY_ROOT_AND_HEALTH_IDENTITY_ONLY',
   rootExtension: ROOT_EXTENSION,
+});
+const M2001_HEALTH_CONTRACT_PROMOTION = Object.freeze({
+  taskId: 'P1R-M2-001',
+  path: '/api/v1/health',
+  method: 'GET',
+  operationId: 'getHealth',
+  canonicalSummary: '读取 API Gateway 健康状态',
+  healthDataSchema: '#/components/schemas/HealthData',
+  serviceConst: 'api-gateway',
+  allowedCanonicalChanges: [
+    'paths./api/v1/health.get.summary',
+    'components.schemas.HealthData.properties.service.const',
+  ],
+  wireShapeExpansionAllowed: false,
+});
+const AUDIT_POLICY_FIELDS = [
+  'required',
+  'sink',
+  'allowedFields',
+  'boundedFields',
+  'redactedFields',
+  'clientAuthorityFactsPersisted',
+  'durableRuntimeEvidenceRequired',
+  'gatewayEnvelopeImplementationTask',
+  'durableSinkImplementationTask',
+  'durableEvidenceTask',
+  'correlationGateTask',
+];
+const DIRECT_CONNECT_POLICY_FIELDS = [
+  'externalTrafficGatewayOnly',
+  'publicDomainServicePorts',
+  'ingressNetworkPolicyRequired',
+  'serviceCredentialsRequired',
+  'gatewayInternalPathDenyIsSufficient',
+  'runtimeProbeRequired',
+  'failureDecision',
+  'gatewayApplicationDenyTask',
+  'networkPolicyImplementationTask',
+  'runtimeEvidenceTask',
+  'correlationGateTask',
+  'stagingRevalidationTask',
+];
+const M2_RUNTIME_EVIDENCE_RESPONSIBILITY = Object.freeze({
+  schemaVersion: '1.0.0',
+  addendumId: 'M2-EVIDENCE-RESPONSIBILITY-2026-09-04',
+  addendumPath: 'requirements/backlog/v2-phase1-rebaseline/execution/M2-EVIDENCE-RESPONSIBILITY-ADDENDUM-2026-09-04.md',
+  effectiveDate: '2026-09-04',
+  taskCountChanged: false,
+  m2003DependsOn: ['P1R-M2-001', 'P1R-M2-002'],
+  finalM2Standard: 'UNCHANGED',
+  stagingRevalidationTask: 'P1R-M8-013',
+  m2001AcceptanceBoundary: {
+    requires: [
+      'CANONICAL_ROUTE_CONTROLLER_PARITY',
+      'REAL_GATEWAY_PROCESS',
+      'REAL_IAM_JWKS',
+      'REAL_REDIS_MULTI_PROCESS_RATE_LIMIT',
+      'REAL_BROWSER_CORS_CSRF',
+      'REAL_UPSTREAM_REWRITE',
+      'AUTHORITY_HEADER_STRIPPING',
+      'REQUEST_TRACE_PROPAGATION',
+      'REDACTED_AUDIT_ENVELOPE',
+      'APPLICATION_INTERNAL_PATH_DENY',
+    ],
+    doesNotClaim: [
+      'DURABLE_AUDIT_SERVICE',
+      'KUBERNETES_NETWORK_POLICY',
+      'M2_END_TO_END_CORRELATION',
+      'STAGING_NETWORK_REVALIDATION',
+    ],
+  },
+  gapLifecycle: {
+    allowedStatuses: ['OPEN', 'CLOSED'],
+    closedRequires: ['evidenceManifestPath', 'evidenceCommit', 'reviewerDecision', 'closedAt'],
+    requiredReviewerDecision: 'ACCEPT',
+  },
+});
+const M2_RUNTIME_GAP_BASE_FIELDS = [
+  'id',
+  'status',
+  'implementationOwnerTask',
+  'evidenceOwnerTask',
+  'finalGateTask',
+  'description',
+];
+const M2_RUNTIME_GAP_CLOSURE_FIELDS = [
+  'evidenceManifestPath',
+  'evidenceCommit',
+  'reviewerDecision',
+  'closedAt',
+];
+const M2_RUNTIME_GAP_RESPONSIBILITY = Object.freeze({
+  'M2-GW-CSRF': ['P1R-M2-001', 'P1R-M2-001', 'P1R-M2-010'],
+  'M2-GW-PUBLIC-PATH': ['P1R-M2-001', 'P1R-M2-001', 'P1R-M2-010'],
+  'M2-GW-RATE-LIMIT': ['P1R-M2-001', 'P1R-M2-001', 'P1R-M2-010'],
+  'M2-GW-AUDIT': ['P1R-M2-006', 'P1R-M2-006', 'P1R-M2-010'],
+  'M2-GW-DIRECT-CONNECT': ['P1R-M2-008', 'P1R-M2-008', 'P1R-M2-010'],
+  'M2-GW-RUNTIME-EVIDENCE': ['P1R-M2-010', 'P1R-M2-010', 'P1R-M2-010'],
 });
 const EXECUTION_PLAN_FIELDS = ['ruleId', 'defaultStatus', 'defaultReason', 'projections'];
 const EXECUTION_PROJECTION_FIELDS = [
@@ -815,7 +913,7 @@ function checkExecutionTargetPolicy(policy, errors) {
   add(errors, executionPolicy.legacyCoreApiFallback === 'FORBIDDEN', 'Gateway execution target policy must forbid core-api fallback');
   add(errors, executionPolicy.controllerEvidenceRequired === true && executionPolicy.configuredUriRequiredForUpstream === true, 'Gateway execution target policy must require controller evidence and configured upstream URI');
   add(errors, executionPolicy.runtimeStatus === 'NOT_RUNTIME_VERIFIED', 'Gateway execution target policy must not promote runtime verification');
-  add(errors, stableJson(executionPolicy.compatibilityPromotion) === stableJson(M2001_EXECUTION_TARGET_COMPATIBILITY_PROMOTION), 'Gateway execution target compatibility promotion must remain the frozen M2-001 root-extension-only allowance');
+  add(errors, stableJson(executionPolicy.compatibilityPromotion) === stableJson(M2001_EXECUTION_TARGET_COMPATIBILITY_PROMOTION), 'Gateway compatibility promotion must remain the frozen M2-001 root-and-health-identity-only allowance');
 }
 
 function checkControllerEvidence(projection, sourceRoot, errors) {
@@ -1206,6 +1304,30 @@ function checkJwtAndRatePolicy(policy, errors) {
   add(errors, bindings?.defaultReadClass === 'AUTHENTICATED_READ' && bindings?.defaultWriteClass === 'AUTHENTICATED_WRITE' && bindings?.adminPrefixClass === 'HIGH_RISK_ADMIN', 'route class default bindings are invalid');
 }
 
+function checkGatewayHealthContract(policy, canonicalOpenApi, errors) {
+  const promotion = policy.healthContractPromotion;
+  add(errors, isRecord(promotion), 'Gateway health contract promotion is required');
+  add(
+    errors,
+    stableJson(promotion) === stableJson(M2001_HEALTH_CONTRACT_PROMOTION),
+    'Gateway health contract promotion must remain the exact M2-001 two-node identity correction',
+  );
+  const operation = canonicalOpenApi?.paths?.[M2001_HEALTH_CONTRACT_PROMOTION.path]?.get;
+  add(
+    errors,
+    isRecord(operation)
+      && operation.operationId === M2001_HEALTH_CONTRACT_PROMOTION.operationId
+      && operation.summary === M2001_HEALTH_CONTRACT_PROMOTION.canonicalSummary,
+    'Gateway health operation must retain getHealth with the canonical API Gateway summary',
+  );
+  const service = canonicalOpenApi?.components?.schemas?.HealthData?.properties?.service;
+  add(
+    errors,
+    isRecord(service) && service.type === 'string' && service.const === M2001_HEALTH_CONTRACT_PROMOTION.serviceConst,
+    'HealthData.service must remain the exact api-gateway identity',
+  );
+}
+
 function checkEnvelopeAuditAndRuntimeGaps(policy, errors) {
   const correlation = policy.correlation;
   add(errors, correlation?.requestId?.header === 'X-Request-Id' && correlation?.requestId?.sanitizeAndBound === true && correlation?.requestId?.generateWhenMissingOrInvalid === true, 'requestId must be bounded and generated when unsafe');
@@ -1217,18 +1339,69 @@ function checkEnvelopeAuditAndRuntimeGaps(policy, errors) {
   for (const [status, expected] of Object.entries(REQUIRED_ERROR_REFS)) add(errors, policy.errors?.[status] === expected, `Gateway error ${status} must use ${expected}`);
   add(errors, policy.errors?.rateLimitedRetryAfterRequired === true && policy.errors?.authenticationAndAuthorizationDistinct === true, 'Gateway 401/403 distinction and 429 Retry-After are required');
   const audit = policy.audit;
+  add(errors, hasExactKeys(audit, AUDIT_POLICY_FIELDS), 'Gateway audit policy must contain exactly the frozen responsibility fields');
   add(errors, audit?.required === true && audit?.sink === 'audit-service' && audit?.boundedFields === true && audit?.clientAuthorityFactsPersisted === false && audit?.durableRuntimeEvidenceRequired === true, 'Gateway audit policy must be bounded, redacted and durably evidenced');
   add(errors, hasAll(audit?.allowedFields, ['routeId', 'method', 'status', 'requestId', 'traceId', 'subjectHash', 'tenantHash', 'decision', 'reasonCode']) && hasAll(audit?.redactedFields, ['Authorization', 'Cookie', 'Set-Cookie', 'accessToken', 'refreshToken', 'password', 'requestBody', 'queryString']), 'Gateway audit allow-list/redaction is incomplete');
+  add(
+    errors,
+    audit?.gatewayEnvelopeImplementationTask === 'P1R-M2-001'
+      && audit?.durableSinkImplementationTask === 'P1R-M2-006'
+      && audit?.durableEvidenceTask === 'P1R-M2-006'
+      && audit?.correlationGateTask === 'P1R-M2-010',
+    'Gateway audit responsibility must keep envelope in M2-001, durable evidence in M2-006 and correlation in M2-010',
+  );
   const direct = policy.directConnect;
+  add(errors, hasExactKeys(direct, DIRECT_CONNECT_POLICY_FIELDS), 'Gateway direct-connect policy must contain exactly the frozen responsibility fields');
   add(errors, direct?.externalTrafficGatewayOnly === true && direct?.publicDomainServicePorts === false && direct?.ingressNetworkPolicyRequired === true && direct?.serviceCredentialsRequired === true && direct?.gatewayInternalPathDenyIsSufficient === false && direct?.runtimeProbeRequired === true && direct?.failureDecision === 'DENY', 'Gateway direct-connect policy must deny public service access and require runtime network proof');
+  add(
+    errors,
+    direct?.gatewayApplicationDenyTask === 'P1R-M2-001'
+      && direct?.networkPolicyImplementationTask === 'P1R-M2-008'
+      && direct?.runtimeEvidenceTask === 'P1R-M2-008'
+      && direct?.correlationGateTask === 'P1R-M2-010'
+      && direct?.stagingRevalidationTask === 'P1R-M8-013',
+    'Gateway direct-connect responsibility must keep application deny in M2-001, NetworkPolicy evidence in M2-008, correlation in M2-010 and staging revalidation in M8-013',
+  );
+  const responsibility = policy.runtimeEvidenceResponsibility;
+  add(errors, isRecord(responsibility), 'Gateway runtime Evidence responsibility addendum binding is required');
+  add(
+    errors,
+    stableJson(responsibility) === stableJson(M2_RUNTIME_EVIDENCE_RESPONSIBILITY),
+    'Gateway runtime Evidence responsibility must preserve the dated addendum, M2-003 dependency and unchanged final standard',
+  );
   const gaps = policy.m2RuntimeGaps;
-  const requiredGaps = ['M2-GW-CSRF', 'M2-GW-PUBLIC-PATH', 'M2-GW-RATE-LIMIT', 'M2-GW-AUDIT', 'M2-GW-DIRECT-CONNECT', 'M2-GW-RUNTIME-EVIDENCE'];
+  const requiredGaps = Object.keys(M2_RUNTIME_GAP_RESPONSIBILITY);
   add(errors, Array.isArray(gaps) && gaps.length === requiredGaps.length, 'M2 Gateway runtime gaps are incomplete');
   const ids = new Set();
-  for (const gap of gaps ?? []) {
+  for (const gap of Array.isArray(gaps) ? gaps : []) {
     add(errors, nonEmpty(gap?.id) && !ids.has(gap.id), `M2 Gateway runtime gap is invalid or duplicated: ${gap?.id ?? '<unknown>'}`);
     if (nonEmpty(gap?.id)) ids.add(gap.id);
-    add(errors, gap?.ownerTask === 'P1R-M2-001' && gap?.status === 'OPEN' && nonEmpty(gap?.description), `M2 Gateway runtime gap must remain open and owned by M2-001: ${gap?.id ?? '<unknown>'}`);
+    const expected = M2_RUNTIME_GAP_RESPONSIBILITY[gap?.id];
+    add(errors, expected !== undefined, `M2 Gateway runtime gap is unknown: ${gap?.id ?? '<unknown>'}`);
+    add(
+      errors,
+      expected !== undefined
+        && gap?.implementationOwnerTask === expected[0]
+        && gap?.evidenceOwnerTask === expected[1]
+        && gap?.finalGateTask === expected[2],
+      `M2 Gateway runtime gap responsibility drifted: ${gap?.id ?? '<unknown>'}`,
+    );
+    add(errors, nonEmpty(gap?.description), `M2 Gateway runtime gap description is required: ${gap?.id ?? '<unknown>'}`);
+    add(errors, responsibility?.gapLifecycle?.allowedStatuses?.includes(gap?.status), `M2 Gateway runtime gap status is invalid: ${gap?.id ?? '<unknown>'}`);
+    const expectedFields = gap?.status === 'CLOSED'
+      ? [...M2_RUNTIME_GAP_BASE_FIELDS, ...M2_RUNTIME_GAP_CLOSURE_FIELDS]
+      : M2_RUNTIME_GAP_BASE_FIELDS;
+    add(errors, hasExactKeys(gap, expectedFields), `M2 Gateway runtime gap fields do not match lifecycle state: ${gap?.id ?? '<unknown>'}`);
+    if (gap?.status === 'CLOSED') {
+      add(
+        errors,
+        gap.evidenceManifestPath === `evidence/p1r/m2/${gap.evidenceOwnerTask}/manifest.json`,
+        `M2 Gateway runtime gap closure manifest must belong to its evidence owner: ${gap?.id ?? '<unknown>'}`,
+      );
+      add(errors, /^[0-9a-f]{40}$/.test(gap.evidenceCommit ?? ''), `M2 Gateway runtime gap closure requires a full evidence commit SHA: ${gap?.id ?? '<unknown>'}`);
+      add(errors, gap.reviewerDecision === responsibility?.gapLifecycle?.requiredReviewerDecision, `M2 Gateway runtime gap closure requires independent ACCEPT: ${gap?.id ?? '<unknown>'}`);
+      add(errors, nonEmpty(gap.closedAt) && Number.isFinite(Date.parse(gap.closedAt)), `M2 Gateway runtime gap closure requires a valid timestamp: ${gap?.id ?? '<unknown>'}`);
+    }
   }
   for (const id of requiredGaps) add(errors, ids.has(id), `M2 Gateway runtime gap is missing: ${id}`);
 }
@@ -1260,6 +1433,7 @@ export function validateGatewayContractData({ document, canonicalOpenApi, root =
   const internalSummary = checkInternalPolicy(policy, canonicalOpenApi, errors);
   checkOriginsCsrfAndNative(policy, errors);
   checkJwtAndRatePolicy(policy, errors);
+  checkGatewayHealthContract(policy, canonicalOpenApi, errors);
   checkEnvelopeAuditAndRuntimeGaps(policy, errors);
   return {
     result: errors.length === 0 ? 'PASS' : 'FAIL',

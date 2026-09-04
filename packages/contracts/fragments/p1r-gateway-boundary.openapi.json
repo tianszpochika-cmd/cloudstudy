@@ -21,6 +21,20 @@
       "equalPriorityDecision": "DENY",
       "runtimeCompletionClaimed": false
     },
+    "healthContractPromotion": {
+      "taskId": "P1R-M2-001",
+      "path": "/api/v1/health",
+      "method": "GET",
+      "operationId": "getHealth",
+      "canonicalSummary": "读取 API Gateway 健康状态",
+      "healthDataSchema": "#/components/schemas/HealthData",
+      "serviceConst": "api-gateway",
+      "allowedCanonicalChanges": [
+        "paths./api/v1/health.get.summary",
+        "components.schemas.HealthData.properties.service.const"
+      ],
+      "wireShapeExpansionAllowed": false
+    },
     "serviceOwners": [
       { "id": "api-gateway", "publicRouteEligible": true, "domainWritesAllowed": false },
       { "id": "iam-service", "publicRouteEligible": true, "domainWritesAllowed": true },
@@ -114,7 +128,7 @@
         "sourceContractBaseline": "66246d5b4a68a988a9af4ece68a446640b123812",
         "previousPromotion": "P1R-M1-018",
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
-        "scope": "OPENAPI_GATEWAY_EXECUTION_TARGET_ROOT_EXTENSION_ONLY",
+        "scope": "OPENAPI_GATEWAY_ROOT_AND_HEALTH_IDENTITY_ONLY",
         "rootExtension": "x-p1r-gateway-boundary"
       }
     },
@@ -3172,7 +3186,11 @@
       "boundedFields": true,
       "redactedFields": ["Authorization", "Cookie", "Set-Cookie", "accessToken", "refreshToken", "password", "requestBody", "queryString", "rawAudio", "base64Audio", "uploadUrl", "accessUrl", "signedUrl", "objectUrl", "objectKey", "objectCredential", "transcript", "transcriptText", "subtitleText", "captionText", "paymentCredential"],
       "clientAuthorityFactsPersisted": false,
-      "durableRuntimeEvidenceRequired": true
+      "durableRuntimeEvidenceRequired": true,
+      "gatewayEnvelopeImplementationTask": "P1R-M2-001",
+      "durableSinkImplementationTask": "P1R-M2-006",
+      "durableEvidenceTask": "P1R-M2-006",
+      "correlationGateTask": "P1R-M2-010"
     },
     "directConnect": {
       "externalTrafficGatewayOnly": true,
@@ -3181,15 +3199,55 @@
       "serviceCredentialsRequired": true,
       "gatewayInternalPathDenyIsSufficient": false,
       "runtimeProbeRequired": true,
-      "failureDecision": "DENY"
+      "failureDecision": "DENY",
+      "gatewayApplicationDenyTask": "P1R-M2-001",
+      "networkPolicyImplementationTask": "P1R-M2-008",
+      "runtimeEvidenceTask": "P1R-M2-008",
+      "correlationGateTask": "P1R-M2-010",
+      "stagingRevalidationTask": "P1R-M8-013"
+    },
+    "runtimeEvidenceResponsibility": {
+      "schemaVersion": "1.0.0",
+      "addendumId": "M2-EVIDENCE-RESPONSIBILITY-2026-09-04",
+      "addendumPath": "requirements/backlog/v2-phase1-rebaseline/execution/M2-EVIDENCE-RESPONSIBILITY-ADDENDUM-2026-09-04.md",
+      "effectiveDate": "2026-09-04",
+      "taskCountChanged": false,
+      "m2003DependsOn": ["P1R-M2-001", "P1R-M2-002"],
+      "finalM2Standard": "UNCHANGED",
+      "stagingRevalidationTask": "P1R-M8-013",
+      "m2001AcceptanceBoundary": {
+        "requires": [
+          "CANONICAL_ROUTE_CONTROLLER_PARITY",
+          "REAL_GATEWAY_PROCESS",
+          "REAL_IAM_JWKS",
+          "REAL_REDIS_MULTI_PROCESS_RATE_LIMIT",
+          "REAL_BROWSER_CORS_CSRF",
+          "REAL_UPSTREAM_REWRITE",
+          "AUTHORITY_HEADER_STRIPPING",
+          "REQUEST_TRACE_PROPAGATION",
+          "REDACTED_AUDIT_ENVELOPE",
+          "APPLICATION_INTERNAL_PATH_DENY"
+        ],
+        "doesNotClaim": [
+          "DURABLE_AUDIT_SERVICE",
+          "KUBERNETES_NETWORK_POLICY",
+          "M2_END_TO_END_CORRELATION",
+          "STAGING_NETWORK_REVALIDATION"
+        ]
+      },
+      "gapLifecycle": {
+        "allowedStatuses": ["OPEN", "CLOSED"],
+        "closedRequires": ["evidenceManifestPath", "evidenceCommit", "reviewerDecision", "closedAt"],
+        "requiredReviewerDecision": "ACCEPT"
+      }
     },
     "m2RuntimeGaps": [
-      { "id": "M2-GW-CSRF", "ownerTask": "P1R-M2-001", "status": "OPEN", "description": "WebFlux currently disables CSRF and lacks the exact Origin/Referer profile enforcement." },
-      { "id": "M2-GW-PUBLIC-PATH", "ownerTask": "P1R-M2-001", "status": "OPEN", "description": "Verifier-disabled public-path handling is not proven to equal the canonical anonymous route set." },
-      { "id": "M2-GW-RATE-LIMIT", "ownerTask": "P1R-M2-001", "status": "OPEN", "description": "Distributed rate limiting is disabled by default and needs Redis failure evidence." },
-      { "id": "M2-GW-AUDIT", "ownerTask": "P1R-M2-001", "status": "OPEN", "description": "The bounded in-memory audit sink is not durable audit-service evidence." },
-      { "id": "M2-GW-DIRECT-CONNECT", "ownerTask": "P1R-M2-001", "status": "OPEN", "description": "Application rejection of /internal does not prove domain service ports are network-isolated." },
-      { "id": "M2-GW-RUNTIME-EVIDENCE", "ownerTask": "P1R-M2-001", "status": "OPEN", "description": "Real browser, JWKS rotation, cross-process and network-isolation evidence remains required." }
+      { "id": "M2-GW-CSRF", "status": "OPEN", "implementationOwnerTask": "P1R-M2-001", "evidenceOwnerTask": "P1R-M2-001", "finalGateTask": "P1R-M2-010", "description": "Close only after current-commit real-browser Cookie and exact Origin/Referer allow-and-deny evidence passes." },
+      { "id": "M2-GW-PUBLIC-PATH", "status": "OPEN", "implementationOwnerTask": "P1R-M2-001", "evidenceOwnerTask": "P1R-M2-001", "finalGateTask": "P1R-M2-010", "description": "Close only after a real Gateway process proves the anonymous route set equals the canonical policy and unknown paths fail closed." },
+      { "id": "M2-GW-RATE-LIMIT", "status": "OPEN", "implementationOwnerTask": "P1R-M2-001", "evidenceOwnerTask": "P1R-M2-001", "finalGateTask": "P1R-M2-010", "description": "Close only after real Redis, shared multi-process quota, Retry-After 429, backend-failure 503 and recovery evidence passes." },
+      { "id": "M2-GW-AUDIT", "status": "OPEN", "implementationOwnerTask": "P1R-M2-006", "evidenceOwnerTask": "P1R-M2-006", "finalGateTask": "P1R-M2-010", "description": "M2-001 supplies the bounded redacted Gateway envelope; M2-006 must implement and evidence canonical durable audit-service ingestion, append-only storage and replay." },
+      { "id": "M2-GW-DIRECT-CONNECT", "status": "OPEN", "implementationOwnerTask": "P1R-M2-008", "evidenceOwnerTask": "P1R-M2-008", "finalGateTask": "P1R-M2-010", "description": "M2-001 supplies application-layer internal-path denial; M2-008 must implement and probe real NetworkPolicy isolation, with staging revalidation in M8-013." },
+      { "id": "M2-GW-RUNTIME-EVIDENCE", "status": "OPEN", "implementationOwnerTask": "P1R-M2-010", "evidenceOwnerTask": "P1R-M2-010", "finalGateTask": "P1R-M2-010", "description": "M2-010 aggregates current-commit Gateway, IAM, owner, durable audit and network-isolation evidence; M8-013 revalidates the deployment boundary in staging." }
     ]
   }
 }

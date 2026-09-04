@@ -4306,20 +4306,24 @@ function compareM1018B26Promotion(previous, current, allowance) {
   });
 }
 
-// M2-001 is intentionally narrower than the M1 contract promotions: it
-// changes no public request/response wire shape.  It promotes one complete
-// Gateway root extension from the accepted M1-018 checkpoint so the finite
-// execution-target table cannot be treated as an unreviewed OpenAPI drift.
-// The entire extension is copied from the approved artifact and is bound by
-// both a root digest and the full OpenAPI digest; no field-level wildcard or
-// fallback is allowed.
+// M2-001 is intentionally narrower than the M1 contract promotions. It
+// promotes one complete Gateway root extension plus the two exact scalar
+// nodes that correct /api/v1/health from its legacy core-api identity to the
+// already frozen api-gateway owner. No path, operationId, response, schema
+// structure or other public request/response wire shape may change. The
+// unique projection is source-derived and bound by root, descriptor and full
+// OpenAPI digests; no field-level wildcard or fallback is allowed.
 export const M2001_GATEWAY_EXECUTION_TARGET_PROMOTION_ID = 'P1R-M2-001';
 export const M2001_SOURCE_CONTRACT_BASELINE_REF = '66246d5b4a68a988a9af4ece68a446640b123812';
 export const M2001_OPENAPI_SOURCE_SEMANTIC_SHA256 = 'a154f2004f06e5da096abea630855152fac9e87224ad48565a38e6010ab9416b';
-export const M2001_GATEWAY_ROOT_SEMANTIC_SHA256 = '3ab6f617f927da7ee0b35ba86d2e7aec90d671a4226fde4bf2ca6044b423bb25';
-export const M2001_EXECUTION_TARGET_POLICY_SEMANTIC_SHA256 = '4cfdcf2b40b444aaa8b114e87ef1025509cd71e4557998cb2f93e3b150b4c69d';
-export const M2001_OPENAPI_EXPECTED_SEMANTIC_SHA256 = '2e3555a30835048957f5823dd4fec16d1e6562d81e9f185cf0dccdbe9dc77d9d';
+export const M2001_GATEWAY_ROOT_SEMANTIC_SHA256 = 'c58a64d1dec50705e462c5ff11fee166ac10c3caf9e4432a7c154b2bbab99ab3';
+export const M2001_EXECUTION_TARGET_POLICY_SEMANTIC_SHA256 = 'd5182f41d59ef89a4e4743db930eda8ab0e42eb1113d6d57b08b9e4af507c2f9';
+export const M2001_OPENAPI_EXPECTED_SEMANTIC_SHA256 = '1f85e59cc7263cae9cd3517a89f1a394f07fcedfb9aac2669d92aae0e07031d7';
 export const M2001_OPENAPI_ROOT_EXTENSION = 'x-p1r-gateway-boundary';
+const M2001_HEALTH_PATH = '/api/v1/health';
+const M2001_HEALTH_OPERATION_ID = 'getHealth';
+const M2001_HEALTH_SUMMARY = '读取 API Gateway 健康状态';
+const M2001_HEALTH_SERVICE_CONST = 'api-gateway';
 export const M2001_PROMOTION_ALLOWANCE_KEYS = Object.freeze([
   'id',
   'sourceContractBaseline',
@@ -4329,7 +4333,9 @@ export const M2001_PROMOTION_ALLOWANCE_KEYS = Object.freeze([
   'rootExtension',
 ]);
 export const M2001_OPENAPI_EXPECTED_CHANGE_DESCRIPTORS = Object.freeze([
-  ['x-p1r-gateway-boundary', 'approved M2-001 Gateway execution-target root extension changed'],
+  ['x-p1r-gateway-boundary', 'approved M2-001 Gateway root extension changed'],
+  ['GET /api/v1/health.summary', 'Gateway-owned health summary corrected'],
+  ['components.schemas.HealthData.properties.service.const', 'Gateway-owned health service identity corrected'],
 ]);
 export const M2001_OPENAPI_DESCRIPTOR_SET_SHA256 = stableGovernanceSha256(M2001_OPENAPI_EXPECTED_CHANGE_DESCRIPTORS.map(([location, reason]) => (
   describeChange('openapi', location, reason)
@@ -4342,39 +4348,70 @@ export function isValidM2001PromotionAllowance(allowance) {
     && allowance.sourceContractBaseline === M2001_SOURCE_CONTRACT_BASELINE_REF
     && allowance.previousPromotion === M1018_IAM_EVENT_PROMOTION_ID
     && allowance.runtimeStatus === 'NOT_RUNTIME_VERIFIED'
-    && allowance.scope === 'OPENAPI_GATEWAY_EXECUTION_TARGET_ROOT_EXTENSION_ONLY'
+    && allowance.scope === 'OPENAPI_GATEWAY_ROOT_AND_HEALTH_IDENTITY_ONLY'
     && allowance.rootExtension === M2001_OPENAPI_ROOT_EXTENSION;
 }
 
 /**
  * Rebuild the one permitted M2-001 projection from the accepted M1-018
- * OpenAPI checkpoint.  M2-001 owns the Gateway execution table only; all
- * paths, schemas, tags and every other root extension remain byte-for-byte
- * equivalent under stable semantic comparison.
+ * OpenAPI checkpoint. M2-001 owns the complete Gateway root and exactly two
+ * health identity scalars; every other path, operation field, schema field,
+ * tag and root extension remains equivalent under stable comparison.
  */
 export function buildM2001OpenApiExpectedProjection(previous, approved, allowance) {
+  const approvedHealth = approved?.paths?.[M2001_HEALTH_PATH]?.get;
+  const approvedHealthService = approved?.components?.schemas?.HealthData?.properties?.service;
   if (!isRecord(previous) || !isRecord(approved) || !isValidM2001PromotionAllowance(allowance)
     || stableGovernanceSha256(previous) !== M2001_OPENAPI_SOURCE_SEMANTIC_SHA256
     || !isRecord(previous[M2001_OPENAPI_ROOT_EXTENSION])
-    || !isRecord(approved[M2001_OPENAPI_ROOT_EXTENSION])) return undefined;
+    || !isRecord(approved[M2001_OPENAPI_ROOT_EXTENSION])
+    || !isRecord(previous?.paths?.[M2001_HEALTH_PATH]?.get)
+    || !isRecord(previous?.components?.schemas?.HealthData?.properties?.service)
+    || !isRecord(approvedHealth)
+    || approvedHealth.operationId !== M2001_HEALTH_OPERATION_ID
+    || approvedHealth.summary !== M2001_HEALTH_SUMMARY
+    || !isRecord(approvedHealthService)
+    || approvedHealthService.type !== 'string'
+    || approvedHealthService.const !== M2001_HEALTH_SERVICE_CONST) return undefined;
   const expected = structuredClone(previous);
   expected[M2001_OPENAPI_ROOT_EXTENSION] = structuredClone(approved[M2001_OPENAPI_ROOT_EXTENSION]);
+  expected.paths[M2001_HEALTH_PATH].get.summary = M2001_HEALTH_SUMMARY;
+  expected.components.schemas.HealthData.properties.service.const = M2001_HEALTH_SERVICE_CONST;
   return expected;
 }
 
 export function compareM2001OpenApiDescriptors(previous, current) {
+  const changes = [];
   if (stableGovernanceValue(previous?.[M2001_OPENAPI_ROOT_EXTENSION])
-    === stableGovernanceValue(current?.[M2001_OPENAPI_ROOT_EXTENSION])) return [];
-  return [describeChange(
-    'openapi',
-    M2001_OPENAPI_ROOT_EXTENSION,
-    'approved M2-001 Gateway execution-target root extension changed',
-  )];
+    !== stableGovernanceValue(current?.[M2001_OPENAPI_ROOT_EXTENSION])) {
+    changes.push(describeChange(
+      'openapi',
+      M2001_OPENAPI_ROOT_EXTENSION,
+      'approved M2-001 Gateway root extension changed',
+    ));
+  }
+  if (previous?.paths?.[M2001_HEALTH_PATH]?.get?.summary
+    !== current?.paths?.[M2001_HEALTH_PATH]?.get?.summary) {
+    changes.push(describeChange(
+      'openapi',
+      'GET /api/v1/health.summary',
+      'Gateway-owned health summary corrected',
+    ));
+  }
+  if (previous?.components?.schemas?.HealthData?.properties?.service?.const
+    !== current?.components?.schemas?.HealthData?.properties?.service?.const) {
+    changes.push(describeChange(
+      'openapi',
+      'components.schemas.HealthData.properties.service.const',
+      'Gateway-owned health service identity corrected',
+    ));
+  }
+  return changes;
 }
 
 function compareM2001OpenApiPromotion(previous, current, allowance) {
   if (!isValidM2001PromotionAllowance(allowance)) {
-    return [describeChange('openapi', 'm2-001.compatibilityPromotion', 'M2-001 allowance is not the frozen Gateway execution-target root-extension policy')];
+    return [describeChange('openapi', 'm2-001.compatibilityPromotion', 'M2-001 allowance is not the frozen Gateway root-and-health-identity-only policy')];
   }
   const changes = [];
   if (stableGovernanceSha256(previous) !== M2001_OPENAPI_SOURCE_SEMANTIC_SHA256) {
@@ -4382,7 +4419,7 @@ function compareM2001OpenApiPromotion(previous, current, allowance) {
   }
   const actualDescriptors = compareM2001OpenApiDescriptors(previous, current);
   if (stableGovernanceSha256(actualDescriptors) !== M2001_OPENAPI_DESCRIPTOR_SET_SHA256) {
-    changes.push(describeChange('openapi', 'm2-001.change-descriptors', 'current OpenAPI changes do not exactly match the frozen M2-001 Gateway root-extension descriptor set'));
+    changes.push(describeChange('openapi', 'm2-001.change-descriptors', 'current OpenAPI changes do not exactly match the frozen M2-001 Gateway root-and-health descriptor set'));
   }
   const gatewayRoot = current?.[M2001_OPENAPI_ROOT_EXTENSION];
   if (!isRecord(gatewayRoot) || stableGovernanceSha256(gatewayRoot) !== M2001_GATEWAY_ROOT_SEMANTIC_SHA256) {
@@ -4392,6 +4429,14 @@ function compareM2001OpenApiPromotion(previous, current, allowance) {
   if (!isRecord(executionTargetPolicy)
     || stableGovernanceSha256(executionTargetPolicy) !== M2001_EXECUTION_TARGET_POLICY_SEMANTIC_SHA256) {
     changes.push(describeChange('openapi', 'm2-001.execution-target-policy', 'Gateway execution-target policy is not the frozen M2-001 policy projection'));
+  }
+  if (current?.paths?.[M2001_HEALTH_PATH]?.get?.operationId !== M2001_HEALTH_OPERATION_ID
+    || current?.paths?.[M2001_HEALTH_PATH]?.get?.summary !== M2001_HEALTH_SUMMARY) {
+    changes.push(describeChange('openapi', 'm2-001.health-operation', 'Gateway health operation is not the exact frozen getHealth identity correction'));
+  }
+  if (current?.components?.schemas?.HealthData?.properties?.service?.type !== 'string'
+    || current?.components?.schemas?.HealthData?.properties?.service?.const !== M2001_HEALTH_SERVICE_CONST) {
+    changes.push(describeChange('openapi', 'm2-001.health-service', 'HealthData.service is not the exact frozen api-gateway identity correction'));
   }
   const expectedProjection = buildM2001OpenApiExpectedProjection(previous, current, allowance);
   if (expectedProjection === undefined) {

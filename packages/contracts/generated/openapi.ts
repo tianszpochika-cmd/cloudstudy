@@ -130,7 +130,7 @@ export type HealthDependency = { name: string; status: HealthStatus; latencyMs?:
 /**
  * Generated from the contract source.
  */
-export type HealthData = { status: HealthStatus; service: "core-api"; version: SemanticVersion; build: string; dependencies: ReadonlyArray<HealthDependency>; };
+export type HealthData = { status: HealthStatus; service: "api-gateway"; version: SemanticVersion; build: string; dependencies: ReadonlyArray<HealthDependency>; };
 
 /**
  * Generated from the contract source.

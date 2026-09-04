@@ -221,7 +221,7 @@ class CanonicalRoutePolicyRouteLocatorIntegrationTest {
                 .expectHeader().valueEquals("X-RateLimit-Policy", "public-read")
                 .expectBody()
                 .jsonPath("$.data.status").isEqualTo("UP")
-                .jsonPath("$.data.service").isEqualTo("core-api")
+                .jsonPath("$.data.service").isEqualTo("api-gateway")
                 .jsonPath("$.data.version").isEqualTo("1.0.0")
                 .jsonPath("$.data.build").isEqualTo("p1r-m2-001-boundary")
                 .jsonPath("$.data.dependencies").isArray()

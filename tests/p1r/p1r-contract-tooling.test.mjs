@@ -3301,13 +3301,13 @@ test('M1-018 exact OpenAPI API-repair projection is source-derived and descripto
   assert.deepEqual(runM1018OpenApiPromotionWithMutation(), { openApiChanges: [], compatible: true });
 });
 
-test('M2-001 Gateway execution-target root projection is source-derived and descriptor-bound', () => {
+test('M2-001 Gateway root-and-health projection is source-derived and descriptor-bound', () => {
   assert.deepEqual(validateM2001CompatibilityPolicy(gatewayBoundaryContract), []);
   assert.equal(m2001Allowance.id, M2001_GATEWAY_EXECUTION_TARGET_PROMOTION_ID);
   assert.equal(m2001Allowance.sourceContractBaseline, REQUIRED_M2001_SOURCE_CONTRACT_BASELINE_REF);
   assert.equal(m2001Allowance.previousPromotion, M1018_IAM_EVENT_PROMOTION_ID);
   assert.equal(m2001Allowance.runtimeStatus, 'NOT_RUNTIME_VERIFIED');
-  assert.equal(m2001Allowance.scope, 'OPENAPI_GATEWAY_EXECUTION_TARGET_ROOT_EXTENSION_ONLY');
+  assert.equal(m2001Allowance.scope, 'OPENAPI_GATEWAY_ROOT_AND_HEALTH_IDENTITY_ONLY');
 
   const projection = m2001ExpectedOpenApiProjection();
   assert.deepEqual(projection, openApi);

@@ -93,6 +93,25 @@ class GatewayBoundaryProcessTest {
     }
 
     @Test
+    void disabledUnacceptedOwnerRouteFailsClosedInsteadOfFallingThrough() {
+        webTestClient.get()
+                .uri("/api/v1/public/site/projection")
+                .header("X-Request-Id", "gateway-disabled-owner-test")
+                .header("X-Trace-Id", "trace-disabled-owner-test")
+                .exchange()
+                .expectStatus().isNotFound()
+                .expectHeader().valueEquals("X-Request-Id", "gateway-disabled-owner-test")
+                .expectHeader().valueEquals("X-Trace-Id", "trace-disabled-owner-test")
+                .expectBody()
+                .jsonPath("$.error.errorCode").isEqualTo("NOT_FOUND")
+                .jsonPath("$.meta.requestId").isEqualTo("gateway-disabled-owner-test");
+
+        assertTrue(auditSink.records().stream().anyMatch(record -> record.status() == 404
+                && "canonical_route_target_unavailable".equals(record.reasonCode())
+                && "gateway-disabled-owner-test".equals(record.requestId())));
+    }
+
+    @Test
     void credentialedUnsafeRequestPrefersOriginAndRejectsConflictingReferer() {
         webTestClient.post()
                 .uri("/api/v1/auth/token/refresh")

@@ -18,11 +18,9 @@ import java.util.Map;
  * Local Gateway health projection for the canonical GATEWAY_LOCAL rule.
  *
  * <p>This endpoint intentionally reports only the Gateway process and does
- * not proxy core-api. The response retains the current frozen OpenAPI
- * {@code HealthData.service=core-api} wire label for compatibility; that label
- * is a contract-level follow-up and must not be silently changed by this
- * runtime boundary task. Owner service/dependency health is not inferred
- * here.</p>
+ * not proxy core-api. The wire identity therefore stays aligned with the
+ * canonical route owner ({@code api-gateway}); owner-service or dependency
+ * health is not inferred here.</p>
  */
 @RestController
 public final class GatewayHealthController {
@@ -50,7 +48,7 @@ public final class GatewayHealthController {
         Map<String, Object> body = Map.of(
                 "data", Map.of(
                         "status", "UP",
-                        "service", "core-api",
+                        "service", "api-gateway",
                         "version", SCHEMA_VERSION,
                         "build", "p1r-m2-001-boundary",
                         "dependencies", List.of()
