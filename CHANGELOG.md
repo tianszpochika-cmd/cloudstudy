@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1R-M2-001-GATEWAY-SAFETY-CHECKPOINT-20260904] 保存 `acee36a84ee1fd6557ac3b62a41d033622e8da4a` Gateway 安全收口检查点：未实现 provider-signature 边界的微信/支付宝/Apple 回调精确 fail closed，响应 request/trace header 归一为单值，未验收领域目标与未注册 core-api compatibility 默认关闭；canonical execution projection 为 `151/168/197`，Java 25 `62/62`、Gateway Node `32/32`、P1R `1416/1416` 及 contracts/compatibility/plan/GAP/diff 门禁通过。独立审查仍要求修正 Gateway health 的旧 `core-api` 身份，并补真实 Netty、Redis/JWKS、浏览器、持久审计和网络隔离 Evidence；任务继续 `IN_PROGRESS / NOT_RUNTIME_VERIFIED`，不解锁 M2-003。
+
 - [P1R-M1-018-EVIDENCE-D-ACCEPTED-20260901] D2 总 Gate 审计实现源固定为 `2a747ba3917acd92664911c6b4be070ff469e302`，Evidence C 集成检查点为 `3ab5d50e5d22c02a8a8c1d1f92643e37528d85c1`。独立 reviewer `agent:m1_018_closure_fix_review:gpt-5.6-luna:max` 对 C 判定 `ACCEPT`、P1/P2=`0/0`；M1-010 的 28 个 current-source 摘要已按 C 的 Git blob 重算。专项 `48/48`、IAM compatibility `7/7`、P1R `1408/1408`、G `41/41`、typecheck `7/7` 与全局 Evidence Gate 通过；40 个 Contract/Event GAP 只按 D2 Evidence 关闭，2 个 Implementation 与 3 个 Evidence GAP 继续 OPEN，运行仍为 `NOT_RUNTIME_VERIFIED`，B26 仍为 `static-only/pending/NO-GO`。
 
 - [P1R-M1-018-START-20260901] 以全局 Evidence Gate 已通过的 `dev@97497afe1f31703601d1491c8d47d00121c90089` 启动 D2 总 Gate：精确核对 24 个 Contract、15 个原子 Event 与 1 个绑定族别名，先解决三项 IAM 条件事件的 canonical v2 设计决定，再关闭剩余 Contract/Event GAP；同时修复 G0/G3 stale source marker，但保持 G0/G3 runtime、M0-006、B26 和 M2–M8 的阻塞/待运行边界不变。
