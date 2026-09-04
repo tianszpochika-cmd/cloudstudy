@@ -59,6 +59,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
                 "gateway.rate-limit.enabled=false",
                 "gateway.rate-limit.backend=memory",
                 "gateway.compatibility.enabled=false",
+                "gateway.b12.enabled=true",
+                "gateway.b13.enabled=true",
                 "gateway.b14.enabled=true",
                 "management.otlp.metrics.export.enabled=false",
                 "management.tracing.export.enabled=false",
@@ -135,6 +137,20 @@ class CanonicalRoutePolicyRouteLocatorIntegrationTest {
                 .exchange()
                 .expectStatus().isNotFound()
                 .expectBody().jsonPath("$.error.errorCode").isEqualTo("NOT_FOUND");
+
+        List.of(
+                "/api/v1/commerce/wechat/callback",
+                "/api/v1/commerce/alipay/notify",
+                "/api/v1/commerce/apple/notifications"
+        ).forEach(callback -> client.post()
+                .uri(callback)
+                .exchange()
+                .expectStatus().isNotFound()
+                .expectBody().jsonPath("$.error.errorCode").isEqualTo("NOT_FOUND"));
+
+        assertFalse(routeIds.stream().anyMatch(routeId -> routeId.startsWith("canonical-wechat-callback-")));
+        assertFalse(routeIds.stream().anyMatch(routeId -> routeId.startsWith("canonical-alipay-callback-")));
+        assertFalse(routeIds.stream().anyMatch(routeId -> routeId.startsWith("canonical-apple-notification-")));
 
     }
 

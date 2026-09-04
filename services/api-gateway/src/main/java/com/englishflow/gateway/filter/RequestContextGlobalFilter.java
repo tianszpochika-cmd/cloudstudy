@@ -46,6 +46,14 @@ public class RequestContextGlobalFilter implements GlobalFilter, Ordered {
         var response = exchange.getResponse();
         response.getHeaders().set("X-Request-Id", requestId);
         response.getHeaders().set("X-Trace-Id", traceId);
+        // An owner service may echo the correlation headers. Netty copies
+        // upstream headers after this filter starts, so normalize them again
+        // immediately before commit to keep the public boundary single-valued.
+        response.beforeCommit(() -> {
+            response.getHeaders().set("X-Request-Id", requestId);
+            response.getHeaders().set("X-Trace-Id", traceId);
+            return Mono.empty();
+        });
 
         return chain.filter(exchange.mutate().request(request).build());
     }

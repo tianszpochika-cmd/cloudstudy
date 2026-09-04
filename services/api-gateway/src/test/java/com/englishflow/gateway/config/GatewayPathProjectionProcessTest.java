@@ -185,6 +185,12 @@ class GatewayPathProjectionProcessTest {
                 .routeId();
         assertEquals(expectedRouteId, received.routeId(), publicPath + " generated canonical route id");
         assertEquals(200, response.getStatus().value(), publicPath + " Gateway response status");
+        assertEquals("projection-process-request", response.getResponseHeaders().getFirst("X-Request-Id"));
+        assertEquals("projection-process-trace", response.getResponseHeaders().getFirst("X-Trace-Id"));
+        assertEquals(1, response.getResponseHeaders().get("X-Request-Id").size(),
+                publicPath + " request correlation response header must remain single-valued");
+        assertEquals(1, response.getResponseHeaders().get("X-Trace-Id").size(),
+                publicPath + " trace correlation response header must remain single-valued");
     }
 
     @TestConfiguration(proxyBeanMethods = false)
@@ -234,6 +240,12 @@ class GatewayPathProjectionProcessTest {
                     .flatMap(result -> {
                         exchange.getResponse().setStatusCode(HttpStatusCode.valueOf(result.status()));
                         exchange.getResponse().getHeaders().set(HttpHeaders.CONTENT_TYPE, "application/json");
+                        // Model an owner that echoes the propagated correlation
+                        // headers, as IAM does in the real cross-process path.
+                        exchange.getResponse().getHeaders().add("X-Request-Id",
+                                exchange.getRequest().getHeaders().getFirst("X-Request-Id"));
+                        exchange.getResponse().getHeaders().add("X-Trace-Id",
+                                exchange.getRequest().getHeaders().getFirst("X-Trace-Id"));
                         DataBuffer body = exchange.getResponse().bufferFactory().wrap(result.body());
                         return exchange.getResponse().writeWith(Mono.just(body));
                     });

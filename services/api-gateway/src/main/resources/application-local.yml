@@ -28,9 +28,6 @@ gateway:
       gamification: ${B14_ROUTE_MODE_GAMIFICATION:TARGET}
       social: ${B14_ROUTE_MODE_SOCIAL:TARGET}
       commerce: ${B14_ROUTE_MODE_COMMERCE:TARGET}
-  compatibility:
-    # Local smoke testing only: routes remain GET/HEAD-only and never expose writes.
-    anonymous-read-enabled: true
   rate-limit:
     # Local-only single-process limiter. It is useful for development tests but
     # is never evidence of distributed Redis behaviour.

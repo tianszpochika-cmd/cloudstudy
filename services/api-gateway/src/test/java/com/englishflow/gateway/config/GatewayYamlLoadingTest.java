@@ -11,6 +11,7 @@ import org.springframework.core.env.StandardEnvironment;
 import java.time.Duration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class GatewayYamlLoadingTest {
@@ -42,6 +43,12 @@ class GatewayYamlLoadingTest {
         assertTrue(security.jwtPrevalidationEnabled());
         assertTrue(security.resourceServerEnabled());
         assertTrue(properties.security().jwtPrevalidationEnabled());
+        assertTrue(properties.identity().enabled());
+        assertFalse(properties.b12().enabled(), "unaccepted domain routes must be opt-in");
+        assertFalse(properties.b13().enabled(), "unaccepted admin/analytics routes must be opt-in");
+        assertFalse(properties.b14().enabled(), "unaccepted domain routes must be opt-in");
+        assertFalse(properties.compatibility().enabled(), "core-api compatibility must be opt-in and no route is registered");
+        assertFalse(properties.compatibility().anonymousReadEnabled(), "anonymous compatibility reads must stay disabled");
         assertEquals(Duration.ofMillis(750), properties.rateLimit().backendTimeout());
         assertTrue(properties.rateLimit().isBackendTimeoutStrictlyPositive());
     }

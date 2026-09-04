@@ -103,6 +103,9 @@ public final class GatewayRouteExecutionPolicy {
 
     private static final Map<String, List<PathProjection>> EXECUTABLE_PROJECTIONS = executableProjections();
     private static final Map<String, String> FAIL_CLOSED_REASONS = Map.ofEntries(
+            Map.entry("wechat-callback", "commerce_provider_callback_signature_boundary_not_implemented"),
+            Map.entry("alipay-callback", "commerce_provider_callback_signature_boundary_not_implemented"),
+            Map.entry("apple-notification", "commerce_provider_callback_signature_boundary_not_implemented"),
             Map.entry("public-site", "canonical_owner_admin_ops_conflicts_with_current_content_controller"),
             Map.entry("admin-content-publish-tasks", "content_owner_controller_mapping_not_present"),
             Map.entry("admin-recovery", "workflow_owner_has_no_configured_gateway_target"),
@@ -442,10 +445,6 @@ public final class GatewayRouteExecutionPolicy {
                 preserve("catalog", "/api/v1/public/content/catalog", CONTENT_PUBLIC_CATALOG, HttpMethod.GET),
                 preserve("content", "/api/v1/public/content/{contentCode}", CONTENT_PUBLIC_DETAIL, HttpMethod.GET));
         add(definitions, "public-commerce", rewrite("catalog", "/api/v1/public/commerce/catalog", "/internal/v1/commerce/public/catalog", COMMERCE, HttpMethod.GET));
-        add(definitions, "wechat-callback", rewrite("wechat", "/api/v1/commerce/wechat/callback", "/internal/v1/commerce/providers/wechat/callbacks", COMMERCE, HttpMethod.POST));
-        add(definitions, "alipay-callback", rewrite("alipay", "/api/v1/commerce/alipay/notify", "/internal/v1/commerce/providers/alipay/callbacks", COMMERCE, HttpMethod.POST));
-        add(definitions, "apple-notification", rewrite("apple", "/api/v1/commerce/apple/notifications", "/internal/v1/commerce/providers/apple/callbacks", COMMERCE, HttpMethod.POST));
-
         add(definitions, "admin-content",
                 rewrite("commands", "/api/v1/admin/content-commands", "/internal/v1/content/admin-commands", CONTENT_ADMIN, HttpMethod.GET, HttpMethod.POST),
                 rewrite("command-detail", "/api/v1/admin/content-commands/{contentCode}", "/internal/v1/content/admin-commands/{contentCode}", CONTENT_ADMIN, HttpMethod.GET));

@@ -68,17 +68,19 @@ gateway:
     enabled: ${IAM_ROUTE_ENABLED:true}
     iam-base-url: ${IAM_SERVICE_BASE_URL:http://127.0.0.1:18087}
   b12:
-    enabled: ${B12_SERVICES_ENABLED:true}
+    # Domain routes are activated only by an explicit deployment/integration
+    # profile after the corresponding service PEP is accepted.
+    enabled: ${B12_SERVICES_ENABLED:false}
     gamification-base-url: ${GAMIFICATION_SERVICE_BASE_URL:http://127.0.0.1:18094}
     social-base-url: ${SOCIAL_SERVICE_BASE_URL:http://127.0.0.1:18095}
     notification-base-url: ${NOTIFICATION_SERVICE_BASE_URL:http://127.0.0.1:18093}
   b13:
-    enabled: ${B13_SERVICES_ENABLED:true}
+    enabled: ${B13_SERVICES_ENABLED:false}
     commerce-base-url: ${COMMERCE_SERVICE_BASE_URL:http://127.0.0.1:18096}
     admin-ops-base-url: ${ADMIN_OPS_SERVICE_BASE_URL:http://127.0.0.1:18097}
     analytics-base-url: ${ANALYTICS_SERVICE_BASE_URL:http://127.0.0.1:18098}
   b14:
-    enabled: ${B14_STRANGLER_ENABLED:true}
+    enabled: ${B14_STRANGLER_ENABLED:false}
     deprecation-headers-enabled: ${B14_DEPRECATION_HEADERS_ENABLED:true}
     deprecation-sunset-at: ${B14_DEPRECATION_SUNSET_AT:2027-06-30T00:00:00Z}
     service-base-urls:
@@ -100,10 +102,10 @@ gateway:
       social: ${B14_ROUTE_MODE_SOCIAL:TARGET}
       commerce: ${B14_ROUTE_MODE_COMMERCE:TARGET}
   compatibility:
-    enabled: ${CORE_API_COMPAT_ENABLED:true}
+    # Reserved migration settings only. No compatibility route is registered
+    # by the canonical RouteLocator, and the default must stay fail closed.
+    enabled: ${CORE_API_COMPAT_ENABLED:false}
     core-api-base-url: ${CORE_API_BASE_URL:http://127.0.0.1:18080}
-    # The legacy route is registered for migration, but anonymous access is
-    # denied unless the explicit local profile enables read-only compatibility.
     anonymous-read-enabled: false
   cors:
     # The browser profiles map exactly to the M1-004 boundary.  Keep legacy

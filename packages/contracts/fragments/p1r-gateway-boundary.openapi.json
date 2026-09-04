@@ -354,74 +354,20 @@
       {
         "ruleId": "wechat-callback",
         "defaultStatus": "UNAVAILABLE",
-        "defaultReason": "no_exact_canonical_execution_target",
-        "projections": [
-          {
-            "projectionId": "wechat-callback.wechat",
-            "status": "AVAILABLE",
-            "publicPathTemplate": "/api/v1/commerce/wechat/callback",
-            "methods": [
-              "POST"
-            ],
-            "executionKind": "UPSTREAM",
-            "upstreamOwner": "commerce-service",
-            "targetUriConfig": "gateway.b14.service-base-urls.commerce",
-            "pathStrategy": "REWRITE_PATH",
-            "targetPathTemplate": "/internal/v1/commerce/providers/wechat/callbacks",
-            "controllerEvidence": {
-              "sourcePath": "services/commerce-service/src/main/java/com/englishflow/commerce/adapter/http/CommerceController.java",
-              "requestMapping": "/internal/v1/commerce"
-            }
-          }
-        ]
+        "defaultReason": "commerce_provider_callback_signature_boundary_not_implemented",
+        "projections": []
       },
       {
         "ruleId": "alipay-callback",
         "defaultStatus": "UNAVAILABLE",
-        "defaultReason": "no_exact_canonical_execution_target",
-        "projections": [
-          {
-            "projectionId": "alipay-callback.alipay",
-            "status": "AVAILABLE",
-            "publicPathTemplate": "/api/v1/commerce/alipay/notify",
-            "methods": [
-              "POST"
-            ],
-            "executionKind": "UPSTREAM",
-            "upstreamOwner": "commerce-service",
-            "targetUriConfig": "gateway.b14.service-base-urls.commerce",
-            "pathStrategy": "REWRITE_PATH",
-            "targetPathTemplate": "/internal/v1/commerce/providers/alipay/callbacks",
-            "controllerEvidence": {
-              "sourcePath": "services/commerce-service/src/main/java/com/englishflow/commerce/adapter/http/CommerceController.java",
-              "requestMapping": "/internal/v1/commerce"
-            }
-          }
-        ]
+        "defaultReason": "commerce_provider_callback_signature_boundary_not_implemented",
+        "projections": []
       },
       {
         "ruleId": "apple-notification",
         "defaultStatus": "UNAVAILABLE",
-        "defaultReason": "no_exact_canonical_execution_target",
-        "projections": [
-          {
-            "projectionId": "apple-notification.apple",
-            "status": "AVAILABLE",
-            "publicPathTemplate": "/api/v1/commerce/apple/notifications",
-            "methods": [
-              "POST"
-            ],
-            "executionKind": "UPSTREAM",
-            "upstreamOwner": "commerce-service",
-            "targetUriConfig": "gateway.b14.service-base-urls.commerce",
-            "pathStrategy": "REWRITE_PATH",
-            "targetPathTemplate": "/internal/v1/commerce/providers/apple/callbacks",
-            "controllerEvidence": {
-              "sourcePath": "services/commerce-service/src/main/java/com/englishflow/commerce/adapter/http/CommerceController.java",
-              "requestMapping": "/internal/v1/commerce"
-            }
-          }
-        ]
+        "defaultReason": "commerce_provider_callback_signature_boundary_not_implemented",
+        "projections": []
       },
       {
         "ruleId": "admin-content",

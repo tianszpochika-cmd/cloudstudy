@@ -155,6 +155,27 @@ class GatewayRoutePolicyContractParityTest {
                 "HEAD must not inherit a GET operation that the canonical contract does not declare");
     }
 
+    @Test
+    void providerCallbacksStayFailClosedUntilCommerceOwnsTheSignedExternalBoundary() {
+        GatewayRouteExecutionPolicy executionPolicy = new GatewayRouteExecutionPolicy(
+                executableGatewayProperties(), routePolicy);
+        Map<String, String> callbacks = Map.of(
+                "/api/v1/commerce/wechat/callback", "wechat-callback",
+                "/api/v1/commerce/alipay/notify", "alipay-callback",
+                "/api/v1/commerce/apple/notifications", "apple-notification"
+        );
+
+        callbacks.forEach((path, ruleId) -> {
+            GatewayRoutePolicy.Resolution route = routePolicy.resolve(HttpMethod.POST, path);
+            assertTrue(route.matched(), path + " must retain its canonical owner rule");
+            assertEquals(ruleId, route.rule().ruleId());
+            assertFalse(executionPolicy.canExecute(route.rule(), HttpMethod.POST, path),
+                    path + " must not proxy to a workload-only controller");
+            assertEquals("commerce_provider_callback_signature_boundary_not_implemented",
+                    executionPolicy.defaultUnavailableReason(route.rule()));
+        });
+    }
+
     private static Path contractPath() {
         Path candidate = Path.of("").toAbsolutePath().normalize();
         while (candidate != null) {

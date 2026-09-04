@@ -16,11 +16,11 @@ const EXPECTED_ROUTE_RULE_COUNT = 56;
 // controller target today.  The latter must never turn a coarse PREFIX rule
 // into an arbitrary upstream proxy.
 const EXPECTED_EXECUTION_PLAN_COUNT = 56;
-const EXPECTED_AVAILABLE_EXECUTION_OPERATION_COUNT = 171;
+const EXPECTED_AVAILABLE_EXECUTION_OPERATION_COUNT = 168;
 // This is a reviewed semantic binding for the finite M2-001 target table. It
 // deliberately prevents a target from silently moving to a different, still
 // valid controller method without a corresponding Gateway parity change.
-export const FROZEN_EXECUTION_TARGET_PLAN_SHA256 = 'b20763363fd94ceacc78973054dccf8badce22c4a1aaab8e951cfab55a19c738';
+export const FROZEN_EXECUTION_TARGET_PLAN_SHA256 = '5fbbaa85800a951a06251478270fb97ff1a5c61bbada38e62c11823792377af1';
 const EXECUTION_POLICY_FIELDS = [
   'schemaVersion',
   'sourceOfTruth',
@@ -73,6 +73,9 @@ const EXECUTION_URI_CONFIG_BY_OWNER = {
   'admin-ops-service': 'gateway.b13.admin-ops-base-url',
 };
 const EXPECTED_UNAVAILABLE_EXECUTION_REASONS = {
+  'wechat-callback': 'commerce_provider_callback_signature_boundary_not_implemented',
+  'alipay-callback': 'commerce_provider_callback_signature_boundary_not_implemented',
+  'apple-notification': 'commerce_provider_callback_signature_boundary_not_implemented',
   'public-site': 'canonical_owner_admin_ops_conflicts_with_current_content_controller',
   'admin-content-publish-tasks': 'content_owner_controller_mapping_not_present',
   'admin-recovery': 'workflow_owner_has_no_configured_gateway_target',
