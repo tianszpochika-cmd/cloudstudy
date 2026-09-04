@@ -9,7 +9,7 @@
 - 独立终验：`agent:m1_018_closure_fix_review:gpt-5.6-luna:max` 已对 C 判定 `ACCEPT`，P1/P2=`0/0`。
 - 当前台账：`25 ACCEPTED / 1 BLOCKED / 2 IN_PROGRESS / 80 PLANNED`，共 108 项。
 - M2 开发检查点：IAM `127fe44`；Gateway 基础投影 `a10c7ec`、安全收口 `acee36a84ee1fd6557ac3b62a41d033622e8da4a`、health/Evidence 责任治理源码 `9560c75`。两条轨道均为可恢复的 `IN_PROGRESS / NOT_RUNTIME_VERIFIED` 源码检查点，不是 canonical Evidence 或验收提交。
-- 2026-09-04 恢复审计起点为干净且与当时 `origin/dev@9e88958` 一致；Gateway 治理源码为 `9560c75`，其后的本交接绑定提交已纳入本地 `dev`，相对该远程跟踪提交共领先 4 个提交。此前 `git fetch`/`git push` 均因 GitHub 443 连接失败而未同步，接手者必须重试推送并核对远程差异。
+- 2026-09-04 恢复审计起点为干净且与当时 `origin/dev@9e88958` 一致；Gateway 治理源码 `9560c75` 与交接绑定检查点 `d840539` 已成功推送，`origin/dev` 从 `9e88958` 前进到 `d840539`。此后的原子提交仍须逐一推送并用远程差异核对结果，不能仅凭本地 SHA 宣称同步。
 - M1-018 canonical Evidence：`evidence/p1r/m1/P1R-M1-018/manifest.json`。
 - C 阶段将 M1-001..009、11..017 的 current-source 摘要绑定到 `2a747ba`；D 阶段已将唯一包含 GAP registry 摘要的 M1-010 绑定到 C，并录入最终终验。
 
