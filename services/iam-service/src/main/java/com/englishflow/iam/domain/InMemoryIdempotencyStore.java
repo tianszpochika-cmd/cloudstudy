@@ -77,7 +77,7 @@ public final class InMemoryIdempotencyStore implements IdempotencyStore {
         String recordKey = recordKey(scope, key);
         IdempotencyRecord existing = records.get(recordKey);
         if (existing != null && !existing.completed() && !existing.rejected()
-                && existing.requestHash().equals(requestHash)) {
+                && IdempotencyRequestFingerprint.matchesCurrent(existing.requestHash(), requestHash)) {
             records.remove(recordKey);
         }
     }
@@ -90,7 +90,7 @@ public final class InMemoryIdempotencyStore implements IdempotencyStore {
     }
 
     private static void verifyHash(IdempotencyRecord existing, String requestHash) {
-        if (!SecretDigests.constantTimeEquals(existing.requestHash(), requestHash)) {
+        if (!IdempotencyRequestFingerprint.matchesCurrent(existing.requestHash(), requestHash)) {
             throw new IamPolicyException(IamDecisionCode.IDEMPOTENCY_KEY_REUSED,
                     "iam.idempotency.key_reused");
         }

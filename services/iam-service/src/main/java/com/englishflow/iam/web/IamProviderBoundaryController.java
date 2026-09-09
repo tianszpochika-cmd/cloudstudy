@@ -6,6 +6,7 @@ import com.englishflow.iam.auth.JwtSigningKeyProvider;
 import com.englishflow.iam.auth.JwtTokenService;
 import com.englishflow.iam.config.IamServiceProperties;
 import com.englishflow.iam.domain.AccountRecord;
+import com.englishflow.iam.domain.AccountStatus;
 import com.englishflow.iam.domain.AdultGateCommand;
 import com.englishflow.iam.domain.AdultGateFact;
 import com.englishflow.iam.domain.AdultGateFactStore;
@@ -26,6 +27,7 @@ import com.englishflow.iam.domain.DeviceService;
 import com.englishflow.iam.domain.IamDecisionCode;
 import com.englishflow.iam.domain.IamPolicyException;
 import com.englishflow.iam.domain.IdempotencyRecord;
+import com.englishflow.iam.domain.IdempotencyRequestFingerprint;
 import com.englishflow.iam.domain.IdempotencyService;
 import com.englishflow.iam.domain.PasswordAccountService;
 import com.englishflow.iam.domain.PasswordResetService;
@@ -59,6 +61,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 
 import java.time.Duration;
+import java.time.Clock;
 import java.time.Instant;
 import java.time.Year;
 import java.util.Arrays;
@@ -74,6 +77,7 @@ import java.util.function.Supplier;
 @RestController
 @RequestMapping("/api/v1")
 class IamAuthenticationController {
+    private static final String CREDENTIAL_REPLAY_REFERENCE_VERSION = "credential-replay-v1";
     private final IamServiceProperties properties;
     private final PasswordAccountService passwords;
     private final PasswordResetService passwordResets;
@@ -86,13 +90,15 @@ class IamAuthenticationController {
     private final ConsentService consents;
     private final ConsentStore consentStore;
     private final IdempotencyService idempotency;
+    private final Clock clock;
 
     IamAuthenticationController(IamServiceProperties properties, PasswordAccountService passwords,
                                          PasswordResetService passwordResets, JwtTokenService tokens,
                                          JwtSigningKeyProvider keys, SessionService sessions,
                                          DeviceService devices, AdultGateService adultGates,
                                          AdultGateFactStore adultGateFacts, ConsentService consents,
-                                         ConsentStore consentStore, IdempotencyService idempotency) {
+                                         ConsentStore consentStore, IdempotencyService idempotency,
+                                         Clock clock) {
         this.properties = Objects.requireNonNull(properties, "properties");
         this.passwords = Objects.requireNonNull(passwords, "passwords");
         this.passwordResets = Objects.requireNonNull(passwordResets, "passwordResets");
@@ -105,6 +111,7 @@ class IamAuthenticationController {
         this.consents = Objects.requireNonNull(consents, "consents");
         this.consentStore = Objects.requireNonNull(consentStore, "consentStore");
         this.idempotency = Objects.requireNonNull(idempotency, "idempotency");
+        this.clock = Objects.requireNonNull(clock, "clock");
     }
 
     @PostMapping("/auth/register")
@@ -118,9 +125,8 @@ class IamAuthenticationController {
         String hash = fingerprint(scope, transport, request, request.password());
         return idempotent(scope, key, hash, new TypeReference<ApiSuccessEnvelope<AuthTokenResponse>>() {}, () -> {
                     AccountRecord account = passwords.register(request.identifier(), request.password(), ClientAuthorityClaims.none());
-                    ResponseEntity<ApiSuccessEnvelope<AuthTokenResponse>> response =
-                            establish(account, request.device(), transport, HttpStatus.CREATED, replaySeed(scope, key, hash));
-                    return executed(response, response.getBody().data().sessionId());
+                    return establish(account, request.device(), transport, HttpStatus.CREATED,
+                            replaySeed(scope, key, hash));
                 }, record -> replayAuth(record, request.identifier(), transport, scope, key, hash));
     }
 
@@ -135,9 +141,8 @@ class IamAuthenticationController {
         String hash = fingerprint(scope, transport, request, request.password());
         return idempotent(scope, key, hash, new TypeReference<ApiSuccessEnvelope<AuthTokenResponse>>() {}, () -> {
                     AccountRecord account = passwords.authenticate(request.identifier(), request.password());
-                    ResponseEntity<ApiSuccessEnvelope<AuthTokenResponse>> response =
-                            establish(account, request.device(), transport, HttpStatus.OK, replaySeed(scope, key, hash));
-                    return executed(response, response.getBody().data().sessionId());
+                    return establish(account, request.device(), transport, HttpStatus.OK,
+                            replaySeed(scope, key, hash));
                 }, record -> replayAuth(record, request.identifier(), transport, scope, key, hash));
     }
 
@@ -157,6 +162,7 @@ class IamAuthenticationController {
                     // post-rotation check below closes the device-revocation race.
                     SessionRecord candidate = sessions.findByRefreshToken(presented);
                     validateRefreshBinding(candidate, request, transport);
+                    requireActiveCredentialAccount(passwords.find(candidate.principalId()));
                     SessionRotationResult rotation = sessions.rotateByRefreshToken(presented, replaySeed(scope, key, hash));
                     SessionRecord session = sessions.find(rotation.sessionId());
                     try {
@@ -166,8 +172,10 @@ class IamAuthenticationController {
                         catch (RuntimeException ignored) { /* fail closed even if the compensating write is unavailable */ }
                         throw exception;
                     }
-                    AccountRecord account = tokenAccount(passwords.find(rotation.principalId()));
-                    JwtTokenService.IssuedAccessToken access = tokens.issue(account, session,
+                    AccountRecord account = passwords.find(rotation.principalId());
+                    requireActiveCredentialAccount(account);
+                    AccountRecord effectiveAccount = tokenAccount(account);
+                    JwtTokenService.IssuedAccessToken access = tokens.issue(effectiveAccount, session,
                             replaySeed(scope, key, hash));
                     ApiResponseMeta meta = responseMeta();
                     ResponseEntity.BodyBuilder builder = ResponseEntity.ok().cacheControl(CacheControl.noStore());
@@ -177,7 +185,7 @@ class IamAuthenticationController {
                     }
                     ResponseEntity<ApiSuccessEnvelope<AuthTokenResponse>> response = builder.body(new ApiSuccessEnvelope<>(
                             tokenResponse(access, rotation.nextRefreshToken(), session, transport), meta));
-                    return executed(response, session.sessionId() + ":" + session.rotation());
+                    return executed(response, credentialReplayReference(effectiveAccount, session));
                 }, record -> replayRefresh(record, request, transport, scope, key, hash));
     }
 
@@ -452,6 +460,75 @@ class IamAuthenticationController {
         return scope + "|" + key + "|" + requestHash;
     }
 
+    private String credentialReplayReference(AccountRecord effectiveAccount, SessionRecord session) {
+        return String.join("|", CREDENTIAL_REPLAY_REFERENCE_VERSION,
+                session.sessionId().toString(), Long.toString(session.rotation()),
+                session.deviceId().value(), IdempotencyRequestFingerprint.CREDENTIAL_BINDING_VERSION,
+                idempotency.credentialBinding(effectiveAccount, session));
+    }
+
+    private static CredentialReplayReference credentialReplayReference(String encoded) {
+        if (encoded == null) throw idempotencyResultUnavailable();
+        String[] parts = encoded.split("\\|", -1);
+        if (parts.length != 6 || !CREDENTIAL_REPLAY_REFERENCE_VERSION.equals(parts[0])
+                || !IdempotencyRequestFingerprint.CREDENTIAL_BINDING_VERSION.equals(parts[4])
+                || !parts[5].matches("[0-9a-f]{64}")) {
+            throw idempotencyResultUnavailable();
+        }
+        try {
+            UUID sessionUuid = UUID.fromString(parts[1]);
+            if (!sessionUuid.toString().equals(parts[1])) throw new IllegalArgumentException();
+            long rotation = Long.parseLong(parts[2]);
+            if (rotation < 0 || !Long.toString(rotation).equals(parts[2])) throw new IllegalArgumentException();
+            UUID deviceUuid = UUID.fromString(parts[3]);
+            if (!deviceUuid.toString().equals(parts[3])) throw new IllegalArgumentException();
+            return new CredentialReplayReference(new SessionId(sessionUuid), rotation,
+                    new DeviceId(deviceUuid.toString()), parts[5]);
+        } catch (RuntimeException exception) {
+            throw idempotencyResultUnavailable();
+        }
+    }
+
+    private static void requireCurrentCredentialFacts(CredentialReplayReference reference,
+                                                       AccountRecord account,
+                                                       SessionRecord session) {
+        if (account.status() != AccountStatus.ACTIVE
+                || !session.principalId().equals(account.principalId())
+                || session.rotation() != reference.rotation()
+                || !session.deviceId().equals(reference.deviceId())
+                || session.status() != SessionStatus.ACTIVE) {
+            throw idempotencyResultUnavailable();
+        }
+    }
+
+    private static void requireActiveCredentialAccount(AccountRecord account) {
+        if (account.status() == AccountStatus.LOCKED) {
+            throw new IamPolicyException(IamDecisionCode.ACCOUNT_LOCKED, "iam.account.locked");
+        }
+        if (account.status() != AccountStatus.ACTIVE) {
+            throw new IamPolicyException(IamDecisionCode.INVALID_CREDENTIALS, "iam.credentials.invalid");
+        }
+    }
+
+    private static <T> T currentCredentialReplay(Supplier<T> operation) {
+        try {
+            return operation.get();
+        } catch (IamPolicyException exception) {
+            if (exception.code() == IamDecisionCode.IDEMPOTENCY_RESULT_UNAVAILABLE) throw exception;
+            throw idempotencyResultUnavailable();
+        } catch (RuntimeException exception) {
+            throw idempotencyResultUnavailable();
+        }
+    }
+
+    private static IamPolicyException idempotencyResultUnavailable() {
+        return new IamPolicyException(IamDecisionCode.IDEMPOTENCY_RESULT_UNAVAILABLE,
+                "iam.idempotency.result_unavailable");
+    }
+
+    private record CredentialReplayReference(SessionId sessionId, long rotation, DeviceId deviceId,
+                                             String credentialBinding) {}
+
     private AccountRecord authenticatedAccount(Jwt jwt) {
         PrincipalId principal = principalId(jwt);
         AccountRecord account = passwords.find(principal);
@@ -516,22 +593,30 @@ class IamAuthenticationController {
                                                                                String scope,
                                                                                String key,
                                                                                String hash) {
-        SessionId id = parseSessionId(record.resultReference());
-        SessionRecord session = sessions.find(id);
-        AccountRecord account = passwords.find(session.principalId());
-        if (!account.identifier().equals(AccountRecord.normalizeIdentifier(identifier))) {
-            throw new IamPolicyException(IamDecisionCode.IDEMPOTENCY_RESULT_UNAVAILABLE,
-                    "iam.idempotency.result_unavailable");
-        }
-        if (session.status() != SessionStatus.ACTIVE || !session.expiresAt().isAfter(Instant.now())) {
-            throw new IamPolicyException(IamDecisionCode.IDEMPOTENCY_RESULT_UNAVAILABLE,
-                    "iam.idempotency.result_unavailable");
-        }
-        validateTrustedTransport(session, transport);
-        String refresh = sessions.replayRefreshToken(session, replaySeed(scope, key, hash));
-        return authResponse(tokenAccount(account), session, refresh, transport,
-                HttpStatus.valueOf(record.responseStatus() == null ? HttpStatus.OK.value() : record.responseStatus()),
-                replaySeed(scope, key, hash));
+        return currentCredentialReplay(() -> {
+            CredentialReplayReference reference = credentialReplayReference(record.resultReference());
+            SessionRecord session = sessions.find(reference.sessionId());
+            AccountRecord account = passwords.find(session.principalId());
+            requireCurrentCredentialFacts(reference, account, session);
+            if (!account.identifier().equals(AccountRecord.normalizeIdentifier(identifier))) {
+                throw idempotencyResultUnavailable();
+            }
+            if (session.status() != SessionStatus.ACTIVE
+                    || !session.expiresAt().isAfter(Instant.now(clock))) {
+                throw idempotencyResultUnavailable();
+            }
+            validateTrustedTransport(session, transport);
+            AccountRecord effectiveAccount = tokenAccount(account);
+            if (!idempotency.credentialBindingMatches(effectiveAccount, session,
+                    reference.credentialBinding())) {
+                throw idempotencyResultUnavailable();
+            }
+            String refresh = sessions.replayRefreshToken(session, replaySeed(scope, key, hash));
+            return authResponse(effectiveAccount, session, refresh, transport,
+                    HttpStatus.valueOf(record.responseStatus() == null
+                            ? HttpStatus.OK.value() : record.responseStatus()),
+                    replaySeed(scope, key, hash));
+        });
     }
 
     private ResponseEntity<ApiSuccessEnvelope<AuthTokenResponse>> replayRefresh(IdempotencyRecord record,
@@ -540,24 +625,21 @@ class IamAuthenticationController {
                                                                                   String scope,
                                                                                   String key,
                                                                                   String hash) {
-        String reference = record.resultReference();
-        if (reference == null) throw new IamPolicyException(IamDecisionCode.IDEMPOTENCY_RESULT_UNAVAILABLE,
-                "iam.idempotency.result_unavailable");
-        int separator = reference.lastIndexOf(':');
-        if (separator <= 0) throw new IamPolicyException(IamDecisionCode.IDEMPOTENCY_RESULT_UNAVAILABLE,
-                "iam.idempotency.result_unavailable");
-        SessionId id = parseSessionId(reference.substring(0, separator));
-        long rotation;
-        try { rotation = Long.parseLong(reference.substring(separator + 1)); }
-        catch (NumberFormatException exception) { throw new IamPolicyException(IamDecisionCode.IDEMPOTENCY_RESULT_UNAVAILABLE,
-                "iam.idempotency.result_unavailable"); }
-        SessionRecord session = sessions.find(id);
-        if (session.rotation() != rotation) throw new IamPolicyException(IamDecisionCode.IDEMPOTENCY_RESULT_UNAVAILABLE,
-                "iam.idempotency.result_unavailable");
-        validateRefreshBinding(session, request, transport);
-        String refresh = sessions.replayRefreshToken(session, replaySeed(scope, key, hash));
-        AccountRecord account = tokenAccount(passwords.find(session.principalId()));
-        return authResponse(account, session, refresh, transport, HttpStatus.OK, replaySeed(scope, key, hash));
+        return currentCredentialReplay(() -> {
+            CredentialReplayReference reference = credentialReplayReference(record.resultReference());
+            SessionRecord session = sessions.find(reference.sessionId());
+            AccountRecord account = passwords.find(session.principalId());
+            requireCurrentCredentialFacts(reference, account, session);
+            validateRefreshBinding(session, request, transport);
+            AccountRecord effectiveAccount = tokenAccount(account);
+            if (!idempotency.credentialBindingMatches(effectiveAccount, session,
+                    reference.credentialBinding())) {
+                throw idempotencyResultUnavailable();
+            }
+            String refresh = sessions.replayRefreshToken(session, replaySeed(scope, key, hash));
+            return authResponse(effectiveAccount, session, refresh, transport, HttpStatus.OK,
+                    replaySeed(scope, key, hash));
+        });
     }
 
     private ResponseEntity<ApiSuccessEnvelope<SessionRevocationResponse>> replayLogout(IdempotencyRecord record,
@@ -668,8 +750,9 @@ class IamAuthenticationController {
         return builder.body(new ApiSuccessEnvelope<>(tokenResponse(access, refresh, session, transport), meta));
     }
 
-    private ResponseEntity<ApiSuccessEnvelope<AuthTokenResponse>> establish(AccountRecord account, DeviceInput input,
-                                                         AuthTransport transport, HttpStatus status, String replaySeed) {
+    private IdempotencyService.Execution<ApiSuccessEnvelope<AuthTokenResponse>> establish(
+            AccountRecord account, DeviceInput input, AuthTransport transport,
+            HttpStatus status, String replaySeed) {
         DeviceInput device = requireDevice(input, transport);
         DeviceId deviceId = device.deviceId() == null || device.deviceId().isBlank()
                 ? new DeviceId(UUID.randomUUID().toString()) : parseDeviceId(device.deviceId());
@@ -685,14 +768,16 @@ class IamAuthenticationController {
         if (transport == AuthTransport.WEB_COOKIE) {
             builder.header(HttpHeaders.SET_COOKIE, refreshCookie(creation.session(), creation.refreshToken()).toString());
         }
-        return builder.body(new ApiSuccessEnvelope<>(
+        ResponseEntity<ApiSuccessEnvelope<AuthTokenResponse>> response = builder.body(new ApiSuccessEnvelope<>(
                 tokenResponse(access, creation.refreshToken(), creation.session(), transport), meta));
+        return executed(response, credentialReplayReference(effectiveAccount, creation.session()));
     }
 
     private AuthTokenResponse tokenResponse(JwtTokenService.IssuedAccessToken access, String refresh,
                                             SessionRecord session, AuthTransport transport) {
-        long accessSeconds = Math.max(1, Duration.between(access.issuedAt(), access.expiresAt()).toSeconds());
-        long refreshSeconds = Math.max(1, Duration.between(access.issuedAt(), session.expiresAt()).toSeconds());
+        Instant now = Instant.now(clock);
+        long accessSeconds = Math.max(1, Duration.between(now, access.expiresAt()).toSeconds());
+        long refreshSeconds = Math.max(1, Duration.between(now, session.expiresAt()).toSeconds());
         return new AuthTokenResponse(transport.name(), access.value(),
                 transport == AuthTransport.NATIVE_SECURE_STORAGE ? refresh : null,
                 "Bearer", accessSeconds, refreshSeconds, session.sessionId().toString(), session.deviceId().value());
@@ -701,7 +786,7 @@ class IamAuthenticationController {
     private ResponseCookie refreshCookie(SessionRecord session, String value) {
         return ResponseCookie.from(properties.getJwt().getRefreshCookieName(), value).httpOnly(true)
                 .secure(properties.getJwt().isRefreshCookieSecure()).sameSite("Lax").path("/api/v1/auth")
-                .maxAge(Math.max(0, Duration.between(Instant.now(), session.expiresAt()).getSeconds())).build();
+                .maxAge(Math.max(0, Duration.between(Instant.now(clock), session.expiresAt()).getSeconds())).build();
     }
     private ResponseCookie clearRefreshCookie() {
         return ResponseCookie.from(properties.getJwt().getRefreshCookieName(), "").httpOnly(true)

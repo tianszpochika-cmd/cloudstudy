@@ -62,6 +62,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
                 "iam.persistence.password=${IAM_JDBC_PASSWORD:}",
                 "spring.flyway.enabled=true",
                 "iam.idempotency.replay-secret=test-only-idempotency-replay-secret",
+                "iam.idempotency.fingerprint-secret=test-only-idempotency-fingerprint-secret",
+                "iam.idempotency.v13-writers-drained=true",
                 "iam.jwt.ephemeral-keys-allowed=true",
                 "management.opentelemetry.enabled=false",
                 "management.tracing.export.enabled=false",
@@ -131,7 +133,8 @@ class IamJdbcPersistenceContextTest {
                     Integer.class, column);
             assertTrue(present != null && present == 0, "idempotency table must not persist credential column " + column);
         }
-        for (String column : Set.of("response_ciphertext", "response_nonce", "response_key_version",
+        for (String column : Set.of("request_fingerprint", "request_fingerprint_version",
+                "replay_ciphertext", "replay_nonce", "replay_key_version",
                 "error_code", "error_message_key")) {
             Integer present = jdbc.queryForObject(
                     "SELECT COUNT(*) FROM information_schema.columns "
@@ -139,11 +142,19 @@ class IamJdbcPersistenceContextTest {
                     Integer.class, column);
             assertTrue(present != null && present == 1, "missing idempotency snapshot column " + column);
         }
+        for (String column : Set.of("request_hash", "request_hash_version", "response_ciphertext",
+                "response_nonce", "response_key_version")) {
+            Integer present = jdbc.queryForObject(
+                    "SELECT COUNT(*) FROM information_schema.columns "
+                            + "WHERE table_schema = DATABASE() AND table_name = 'iam_idempotency_record' AND column_name = ?",
+                    Integer.class, column);
+            assertEquals(0, present, "V13 must remove the legacy writer column " + column);
+        }
     }
 
     @Test
     void jdbcIdempotencySnapshotReplaysAfterLaterOperationAndRejectsPersist() {
-        String scope = "/integration/refresh/" + UUID.randomUUID();
+        String scope = "/api/v1/iam/consents";
         String firstKey = "jdbc-k1-123456789";
         String secondKey = "jdbc-k2-123456789";
         TypeReference<String> type = new TypeReference<>() {};
@@ -156,11 +167,11 @@ class IamJdbcPersistenceContextTest {
                             .body("access-opaque-secret"), "session-ref"),
                     record -> ResponseEntity.status(500).body("fallback-must-not-run"));
             byte[][] snapshotColumns = jdbc.queryForObject(
-                    "SELECT response_ciphertext, response_nonce FROM iam_idempotency_record "
+                    "SELECT replay_ciphertext, replay_nonce FROM iam_idempotency_record "
                             + "WHERE scope_key = ? AND idempotency_key = ?",
                     (rs, rowNum) -> new byte[][]{rs.getBytes(1), rs.getBytes(2)}, scope, firstKey);
             String keyVersion = jdbc.queryForObject(
-                    "SELECT response_key_version FROM iam_idempotency_record "
+                    "SELECT replay_key_version FROM iam_idempotency_record "
                             + "WHERE scope_key = ? AND idempotency_key = ?", String.class, scope, firstKey);
             assertTrue(snapshotColumns != null && snapshotColumns[0] != null
                             && snapshotColumns[0].length > 0 && snapshotColumns[1] != null
@@ -173,7 +184,8 @@ class IamJdbcPersistenceContextTest {
                     record -> ResponseEntity.status(500).body("fallback-must-not-run"));
             IdempotencyService restarted = new IdempotencyService(idempotencyStore,
                     new com.englishflow.iam.config.IamRuntimeConfiguration().iamObjectMapper(), transactions,
-                    "test-only-idempotency-replay-secret", Duration.ofHours(24));
+                    "test-only-idempotency-replay-secret",
+                    "test-only-idempotency-fingerprint-secret", Duration.ofHours(24));
             ResponseEntity<String> replay = restarted.execute(scope, firstKey, firstHash, type,
                     () -> new IdempotencyService.Execution<>(ResponseEntity.ok("must-not-run"), "bad"),
                     record -> ResponseEntity.status(500).body("fallback-must-not-run"));

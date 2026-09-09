@@ -10,3 +10,5 @@ iam:
     refresh-cookie-secure: false
   idempotency:
     replay-secret: test-only-idempotency-replay-secret
+    fingerprint-secret: test-only-idempotency-fingerprint-secret
+    v13-writers-drained: true

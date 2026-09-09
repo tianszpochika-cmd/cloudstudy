@@ -92,6 +92,11 @@ iam:
   idempotency:
     # Required when persistence is enabled; never use a committed/default production secret.
     replay-secret: ${IAM_IDEMPOTENCY_REPLAY_SECRET:}
+    # Independent HMAC key for request bindings; required in every non-local/test deployment.
+    fingerprint-secret: ${IAM_IDEMPOTENCY_FINGERPRINT_SECRET:}
+    # One-way V13 cutover acknowledgment. Set true only after old IAM writers and in-flight
+    # requests are stopped; once V13 is recorded successful normal restarts do not require it.
+    v13-writers-drained: ${IAM_IDEMPOTENCY_V13_WRITERS_DRAINED:false}
     retention: ${IAM_IDEMPOTENCY_RETENTION:24h}
   policy:
     bootstrap:

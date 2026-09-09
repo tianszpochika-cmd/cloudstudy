@@ -42,6 +42,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.mock.env.MockEnvironment;
 
 import java.time.Clock;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
@@ -59,6 +60,10 @@ class IamSecurityFactsTest {
 
     private static final Instant NOW = Instant.parse("2026-09-01T00:00:00Z");
     private static final Clock CLOCK = Clock.fixed(NOW, ZoneOffset.UTC);
+    private static final String IDEMPOTENCY_REPLAY_KEY =
+            "security-facts-idempotency-replay-key-2026";
+    private static final String IDEMPOTENCY_FINGERPRINT_KEY =
+            "security-facts-idempotency-fingerprint-key-2026";
 
     @Test
     void resetChallengeIsOneTimeAndPasswordResetRevokesAllSessionsAtTheBoundary() {
@@ -324,7 +329,8 @@ class IamSecurityFactsTest {
     @Test
     void idempotencyReplaysSameResultAndRejectsDifferentPayloadWithoutPersistingSecrets() {
         IdempotencyService idempotency = new IdempotencyService(new com.englishflow.iam.domain.InMemoryIdempotencyStore(),
-                runtimeObjectMapper());
+                runtimeObjectMapper(), com.englishflow.iam.domain.IamTransactionRunner.direct(),
+                IDEMPOTENCY_REPLAY_KEY, IDEMPOTENCY_FINGERPRINT_KEY, Duration.ofHours(24));
         AtomicInteger operations = new AtomicInteger();
         String hash = idempotency.fingerprint("payload", "password-is-transient");
         ResponseEntity<String> first = idempotency.execute("/auth/login", "key-1234567890123456", hash,
@@ -354,10 +360,10 @@ class IamSecurityFactsTest {
         var store = new com.englishflow.iam.domain.InMemoryIdempotencyStore();
         IdempotencyService idempotency = new IdempotencyService(store, mapper,
                 com.englishflow.iam.domain.IamTransactionRunner.direct(),
-                "stable-test-idempotency-replay-secret-2026");
+                IDEMPOTENCY_REPLAY_KEY, IDEMPOTENCY_FINGERPRINT_KEY, Duration.ofHours(24));
         TypeReference<String> type = new TypeReference<>() {};
         String firstHash = idempotency.fingerprint("K1", "refresh");
-        ResponseEntity<String> first = idempotency.execute("/auth/token/refresh", "key-k1-123456789",
+        ResponseEntity<String> first = idempotency.execute("/api/v1/iam/consents", "key-k1-123456789",
                 firstHash, type,
                 () -> new IdempotencyService.Execution<>(ResponseEntity.ok()
                         .header(HttpHeaders.SET_COOKIE, "refresh=opaque-secret; HttpOnly")
@@ -365,11 +371,11 @@ class IamSecurityFactsTest {
                 record -> ResponseEntity.status(500).body("fallback-must-not-run"));
 
         String secondHash = idempotency.fingerprint("K2", "refresh");
-        idempotency.execute("/auth/token/refresh", "key-k2-123456789", secondHash, type,
+        idempotency.execute("/api/v1/iam/consents", "key-k2-123456789", secondHash, type,
                 () -> new IdempotencyService.Execution<>(ResponseEntity.ok().body("later-rotation"), "later"),
                 record -> ResponseEntity.status(500).body("fallback-must-not-run"));
 
-        ResponseEntity<String> replay = idempotency.execute("/auth/token/refresh", "key-k1-123456789",
+        ResponseEntity<String> replay = idempotency.execute("/api/v1/iam/consents", "key-k1-123456789",
                 firstHash, type,
                 () -> new IdempotencyService.Execution<>(ResponseEntity.ok().body("must-not-run"), "bad"),
                 record -> ResponseEntity.status(500).body("fallback-must-not-run"));
@@ -398,7 +404,7 @@ class IamSecurityFactsTest {
 
         assertThrows(IllegalStateException.class,
                 () -> new IdempotencyService(store, mapper, com.englishflow.iam.domain.IamTransactionRunner.direct(),
-                        "weak-secret"));
+                        "weak-secret", IDEMPOTENCY_FINGERPRINT_KEY, Duration.ofHours(24)));
     }
 
     @Test
@@ -407,16 +413,16 @@ class IamSecurityFactsTest {
         var store = new com.englishflow.iam.domain.InMemoryIdempotencyStore();
         IdempotencyService idempotency = new IdempotencyService(store, mapper,
                 com.englishflow.iam.domain.IamTransactionRunner.direct(),
-                "stable-test-idempotency-replay-secret-2026");
+                IDEMPOTENCY_REPLAY_KEY, IDEMPOTENCY_FINGERPRINT_KEY, Duration.ofHours(24));
         TypeReference<TimedEnvelope> type = new TypeReference<>() {};
         String hash = idempotency.fingerprint("instant-envelope", NOW);
 
-        ResponseEntity<TimedEnvelope> first = idempotency.execute("/auth/register",
+        ResponseEntity<TimedEnvelope> first = idempotency.execute("/api/v1/iam/adult-gate",
                 "key-instant-123456789", hash, type,
                 () -> new IdempotencyService.Execution<>(
                         ResponseEntity.ok(new TimedEnvelope("created", NOW)), "session-ref"),
                 record -> ResponseEntity.status(500).build());
-        ResponseEntity<TimedEnvelope> replay = idempotency.execute("/auth/register",
+        ResponseEntity<TimedEnvelope> replay = idempotency.execute("/api/v1/iam/adult-gate",
                 "key-instant-123456789", hash, type,
                 () -> new IdempotencyService.Execution<>(
                         ResponseEntity.ok(new TimedEnvelope("must-not-run", NOW.plusSeconds(1))), "bad"),

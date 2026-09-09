@@ -164,10 +164,23 @@ public class IamServiceProperties {
         /** Stable secret for deterministic credential replay; production must inject it. */
         @Size(max = 256)
         private String replaySecret = "";
+        /** Independent HMAC key that prevents persisted request bindings becoming password oracles. */
+        @Size(max = 256)
+        private String fingerprintSecret = "";
+        /** One-time operator confirmation that all V12 writers and in-flight requests are drained. */
+        private boolean v13WritersDrained;
         private Duration retention = Duration.ofHours(24);
 
         public String getReplaySecret() { return replaySecret; }
         public void setReplaySecret(String replaySecret) { this.replaySecret = replaySecret == null ? "" : replaySecret; }
+        public String getFingerprintSecret() { return fingerprintSecret; }
+        public void setFingerprintSecret(String fingerprintSecret) {
+            this.fingerprintSecret = fingerprintSecret == null ? "" : fingerprintSecret;
+        }
+        public boolean isV13WritersDrained() { return v13WritersDrained; }
+        public void setV13WritersDrained(boolean v13WritersDrained) {
+            this.v13WritersDrained = v13WritersDrained;
+        }
         public Duration getRetention() { return retention; }
         public void setRetention(Duration retention) { this.retention = retention; }
     }

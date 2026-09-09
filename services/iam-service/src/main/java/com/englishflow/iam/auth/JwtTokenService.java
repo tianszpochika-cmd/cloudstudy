@@ -2,8 +2,12 @@ package com.englishflow.iam.auth;
 
 import com.englishflow.iam.config.IamServiceProperties;
 import com.englishflow.iam.domain.AccountRecord;
+import com.englishflow.iam.domain.AccountStatus;
+import com.englishflow.iam.domain.IamDecisionCode;
+import com.englishflow.iam.domain.IamPolicyException;
 import com.englishflow.iam.domain.SecretDigests;
 import com.englishflow.iam.domain.SessionRecord;
+import com.englishflow.iam.domain.SessionStatus;
 import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
@@ -41,11 +45,28 @@ public final class JwtTokenService {
      * update timestamp is the stable issuance instant, so a retry does not mint a second JWT.
      */
     public IssuedAccessToken issue(AccountRecord account, SessionRecord session, String replaySeed) {
+        Objects.requireNonNull(account, "account");
+        Objects.requireNonNull(session, "session");
+        if (account.status() != AccountStatus.ACTIVE) {
+            throw new IamPolicyException(account.status() == AccountStatus.LOCKED
+                    ? IamDecisionCode.ACCOUNT_LOCKED : IamDecisionCode.INVALID_CREDENTIALS,
+                    account.status() == AccountStatus.LOCKED ? "iam.account.locked" : "iam.credentials.invalid");
+        }
+        if (!account.principalId().equals(session.principalId())
+                || session.status() != SessionStatus.ACTIVE) {
+            throw new IamPolicyException(IamDecisionCode.SESSION_REVOKED, "iam.session.revoked");
+        }
         Instant issuedAt = replaySeed == null ? Instant.now(clock) : session.updatedAt();
         Instant expiresAt = issuedAt.plus(positive(properties.getAccessTokenTtl(), java.time.Duration.ofMinutes(15)));
+        if (replaySeed != null && !expiresAt.isAfter(Instant.now(clock))) {
+            throw new IamPolicyException(IamDecisionCode.IDEMPOTENCY_RESULT_UNAVAILABLE,
+                    "iam.idempotency.result_unavailable");
+        }
         String jti = replaySeed == null ? UUID.randomUUID().toString()
                 : SecretDigests.sha256Hex(replaySeed + "|access|" + session.sessionId() + "|" + session.rotation());
-        String scope = String.join(" ", account.permissions());
+        List<String> roles = account.roles().stream().sorted().toList();
+        List<String> permissions = account.permissions().stream().sorted().toList();
+        String scope = String.join(" ", permissions);
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer(properties.getIssuer())
                 .subject(account.principalId().toString())
@@ -56,8 +77,8 @@ public final class JwtTokenService {
                 .id(jti)
                 .claim("token_type", "access")
                 .claim("scope", scope)
-                .claim("roles", account.roles())
-                .claim("permissions", account.permissions())
+                .claim("roles", roles)
+                .claim("permissions", permissions)
                 .claim("tenant_id", session.scope().tenantId())
                 .claim("owner_id", session.scope().owner().toString())
                 .claim("session_id", session.sessionId().toString())

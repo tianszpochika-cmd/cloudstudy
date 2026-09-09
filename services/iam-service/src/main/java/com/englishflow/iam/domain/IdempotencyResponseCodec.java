@@ -25,11 +25,10 @@ import java.util.Objects;
 /**
  * Encrypts an idempotent response snapshot before it crosses the persistence boundary.
  *
- * <p>Credential-producing IAM responses contain access tokens, refresh tokens and sometimes a
- * {@code Set-Cookie} header. A deterministic token recipe cannot replay a completed response
- * after the session has rotated, so the exact response is retained as AES-GCM ciphertext. The
- * stable replay secret is injected from the deployment secret boundary; no plaintext response,
- * cookie or credential is handed to a JDBC store.</p>
+ * <p>The stable replay secret is injected from the deployment secret boundary, and no plaintext
+ * response or header is handed to a JDBC store. {@link IdempotencyReplayPolicy} prohibits this
+ * codec for credential-producing scopes: those responses are rebuilt only after the endpoint's
+ * current security facts have been validated.</p>
  */
 public final class IdempotencyResponseCodec {
     public static final String KEY_VERSION = "v1";
@@ -84,7 +83,7 @@ public final class IdempotencyResponseCodec {
         }
     }
 
-    /** Restores the exact response, including credential-bearing headers, for a safe retry. */
+    /** Restores an exact reviewed non-credential response; the replay policy gates this method. */
     public <T> ResponseEntity<T> restore(String scope, String keyValue, String requestHash,
                                          IdempotencyRecord record, TypeReference<T> responseType) {
         Objects.requireNonNull(record, "record");

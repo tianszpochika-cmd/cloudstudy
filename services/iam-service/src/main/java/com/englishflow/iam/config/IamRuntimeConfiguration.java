@@ -29,6 +29,8 @@ import com.englishflow.iam.domain.InMemoryIdempotencyStore;
 import com.englishflow.iam.domain.IdempotencyService;
 import com.englishflow.iam.domain.IdempotencyStore;
 import com.englishflow.iam.domain.IdempotencyResponseCodec;
+import com.englishflow.iam.domain.IdempotencyReplayPolicy;
+import com.englishflow.iam.domain.IdempotencyRequestFingerprint;
 import com.englishflow.iam.domain.IamTransactionRunner;
 import com.englishflow.iam.domain.JdbcAccountStore;
 import com.englishflow.iam.domain.JdbcAdultGateFactStore;
@@ -62,6 +64,8 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 import org.flywaydb.core.Flyway;
+import org.flywaydb.core.api.MigrationInfo;
+import org.flywaydb.core.api.MigrationState;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -85,12 +89,31 @@ import javax.sql.DataSource;
 import java.time.Clock;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.Set;
 
 /** Composition root for the self-owned JWT authentication center. */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(IamServiceProperties.class)
 @EnableTransactionManagement(proxyTargetClass = false)
 public class IamRuntimeConfiguration {
+    private static final String IDEMPOTENCY_TABLE = "iam_idempotency_record";
+    private static final Set<String> V12_IDEMPOTENCY_COLUMNS = Set.of(
+            "request_hash", "response_ciphertext", "response_nonce", "response_key_version");
+    private static final Set<String> V13_IDEMPOTENCY_COLUMNS = Set.of(
+            "request_fingerprint", "request_fingerprint_version", "replay_ciphertext",
+            "replay_nonce", "replay_key_version");
+    private static final String REQUIRED_V13_FINGERPRINT_CHECK = canonicalizeFingerprintCheck("""
+            (((request_fingerprint_version = 'legacy-invalidated-v0')
+              and (request_fingerprint = 0x0000000000000000000000000000000000000000000000000000000000000000)
+              and (replay_ciphertext is null) and (replay_nonce is null)
+              and (replay_key_version is null))
+             or ((request_fingerprint_version = 'hmac-sha256-v1')
+              and (request_fingerprint <> 0x0000000000000000000000000000000000000000000000000000000000000000)
+              and (((replay_ciphertext is null) and (replay_nonce is null)
+                and (replay_key_version is null))
+               or ((replay_ciphertext is not null) and (replay_nonce is not null)
+                and (replay_key_version is not null)))))
+            """);
 
     @Bean public Clock iamClock() { return Clock.system(ZoneOffset.UTC); }
     @Bean
@@ -119,8 +142,22 @@ public class IamRuntimeConfiguration {
             throw new IllegalStateException("IAM ephemeral signing keys are allowed only in an explicit local/test profile");
         }
         if (properties.getPersistence().isEnabled()
+                && Boolean.FALSE.equals(environment.getProperty("spring.flyway.enabled", Boolean.class))) {
+            throw new IllegalStateException("IAM durable persistence cannot disable Flyway migrations");
+        }
+        if (properties.getPersistence().isEnabled()
                 && !IdempotencyResponseCodec.isStrongSecret(properties.getIdempotency().getReplaySecret())) {
             throw new IllegalStateException("IAM persistence requires a stable 32-character IAM_IDEMPOTENCY_REPLAY_SECRET");
+        }
+        if (!IdempotencyRequestFingerprint.isStrongSecret(
+                properties.getIdempotency().getFingerprintSecret())) {
+            throw new IllegalStateException(
+                    "IAM requires a stable 32-character IAM_IDEMPOTENCY_FINGERPRINT_SECRET");
+        }
+        if (properties.getIdempotency().getReplaySecret()
+                .equals(properties.getIdempotency().getFingerprintSecret())) {
+            throw new IllegalStateException(
+                    "IAM idempotency replay and fingerprint secrets must be independently provisioned");
         }
         if (properties.getPersistence().isEnabled()
                 && !schemaMatchesJdbcUrl(properties.getPersistence().getJdbcUrl(), properties.getPersistence().getSchema())) {
@@ -186,7 +223,38 @@ public class IamRuntimeConfiguration {
                 .baselineOnMigrate(true)
                 .baselineVersion("0")
                 .load();
+
+        MigrationInfo[] pending = flyway.info().pending();
+        boolean v13Pending = hasVersion(pending, "13");
+        Set<String> columns = idempotencyColumns(dataSource, ownerSchema);
+        if (v13Pending) {
+            if (columns.stream().anyMatch(V13_IDEMPOTENCY_COLUMNS::contains)) {
+                throw new IllegalStateException("IAM idempotency V13 schema exists while Flyway history is pending; "
+                        + "keep IAM stopped, verify the final schema, then run Flyway repair before restart");
+            }
+            if (!columns.isEmpty() && (!columns.containsAll(V12_IDEMPOTENCY_COLUMNS)
+                    || columns.contains("request_hash_version")
+                    || !"InnoDB".equalsIgnoreCase(idempotencyTableEngine(dataSource, ownerSchema)))) {
+                throw new IllegalStateException("IAM idempotency V13 found a partial or non-InnoDB V12 schema; "
+                        + "keep IAM stopped and restore the exact V12 schema before retrying the atomic migration");
+            }
+            if (!properties.getIdempotency().isV13WritersDrained()) {
+                throw new IllegalStateException("IAM idempotency V13 is a one-way cutover; stop the write entrance, "
+                        + "drain every old writer and in-flight request, then set "
+                        + "IAM_IDEMPOTENCY_V13_WRITERS_DRAINED=true for the migration start");
+            }
+        } else if (hasSuccessfulVersion(flyway.info().all(), "13")) {
+            requireFinalV13Schema(dataSource, ownerSchema, columns);
+        } else {
+            throw new IllegalStateException("IAM idempotency V13 is neither pending nor SUCCESS; "
+                    + "keep IAM stopped and inspect Flyway history before repair");
+        }
+
         flyway.migrate();
+        if (!hasSuccessfulVersion(flyway.info().all(), "13")) {
+            throw new IllegalStateException("IAM idempotency V13 was not recorded successful; readiness denied");
+        }
+        requireFinalV13Schema(dataSource, ownerSchema, idempotencyColumns(dataSource, ownerSchema));
         return flyway;
     }
 
@@ -282,12 +350,19 @@ public class IamRuntimeConfiguration {
     }
 
     @Bean
+    public IdempotencyReplayPolicy idempotencyReplayPolicy() {
+        return IdempotencyReplayPolicy.failClosedDefaults();
+    }
+
+    @Bean
     public IdempotencyService idempotencyService(IdempotencyStore store, ObjectMapper objectMapper,
                                                  IamTransactionRunner transactions,
-                                                 IamServiceProperties properties) {
+                                                 IamServiceProperties properties,
+                                                 IdempotencyReplayPolicy replayPolicy) {
         return new IdempotencyService(store, objectMapper, transactions,
                 properties.getIdempotency().getReplaySecret(),
-                properties.getIdempotency().getRetention());
+                properties.getIdempotency().getFingerprintSecret(),
+                properties.getIdempotency().getRetention(), replayPolicy);
     }
 
     @Bean public PasswordResetService passwordResetService(AccountStore accounts, PasswordResetChallengeStore challenges,
@@ -391,5 +466,107 @@ public class IamRuntimeConfiguration {
         int query = database.indexOf('?');
         if (query >= 0) database = database.substring(0, query);
         return schema.equals(database);
+    }
+
+    private static boolean hasVersion(MigrationInfo[] migrations, String expected) {
+        return java.util.Arrays.stream(migrations)
+                .anyMatch(info -> info.getVersion() != null
+                        && expected.equals(info.getVersion().getVersion()));
+    }
+
+    private static boolean hasSuccessfulVersion(MigrationInfo[] migrations, String expected) {
+        return java.util.Arrays.stream(migrations)
+                .anyMatch(info -> info.getVersion() != null
+                        && expected.equals(info.getVersion().getVersion())
+                        && info.getState() == MigrationState.SUCCESS);
+    }
+
+    private static Set<String> idempotencyColumns(DataSource dataSource, String schema) {
+        return Set.copyOf(new JdbcTemplate(dataSource).query(
+                "SELECT column_name FROM information_schema.columns "
+                        + "WHERE table_schema = ? AND table_name = ?",
+                (rs, rowNum) -> rs.getString(1), schema, IDEMPOTENCY_TABLE));
+    }
+
+    private static String idempotencyTableEngine(DataSource dataSource, String schema) {
+        List<String> engines = new JdbcTemplate(dataSource).query(
+                "SELECT engine FROM information_schema.tables WHERE table_schema = ? AND table_name = ?",
+                (rs, rowNum) -> rs.getString(1), schema, IDEMPOTENCY_TABLE);
+        return engines.size() == 1 ? engines.getFirst() : "";
+    }
+
+    private static void requireFinalV13Schema(DataSource dataSource, String schema, Set<String> columns) {
+        boolean oldColumnsRemain = columns.stream().anyMatch(V12_IDEMPOTENCY_COLUMNS::contains)
+                || columns.contains("request_hash_version");
+        if (oldColumnsRemain || !columns.containsAll(V13_IDEMPOTENCY_COLUMNS)
+                || !"InnoDB".equalsIgnoreCase(idempotencyTableEngine(dataSource, schema))) {
+            throw new IllegalStateException("IAM idempotency V13 Flyway history/schema mismatch; "
+                    + "keep IAM stopped, verify the one-way cutover, and repair history only after validation");
+        }
+        JdbcTemplate jdbc = new JdbcTemplate(dataSource);
+        Integer validColumnDefinitions = jdbc.queryForObject(
+                "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema = ? "
+                        + "AND table_name = ? AND ((column_name = 'request_fingerprint' "
+                        + "AND data_type = 'binary' AND character_maximum_length = 32 "
+                        + "AND is_nullable = 'NO' AND column_default = '0x') "
+                        + "OR (column_name = 'request_fingerprint_version' AND data_type = 'varchar' "
+                        + "AND character_maximum_length = 32 AND is_nullable = 'NO' "
+                        + "AND column_default = 'legacy-invalidated-v0') "
+                        + "OR (column_name = 'replay_ciphertext' AND data_type = 'mediumblob' "
+                        + "AND is_nullable = 'YES' AND column_default IS NULL) "
+                        + "OR (column_name = 'replay_nonce' AND data_type = 'binary' "
+                        + "AND character_maximum_length = 12 AND is_nullable = 'YES' "
+                        + "AND column_default IS NULL) "
+                        + "OR (column_name = 'replay_key_version' AND data_type = 'varchar' "
+                        + "AND character_maximum_length = 16 AND is_nullable = 'YES' "
+                        + "AND column_default IS NULL))",
+                Integer.class, schema, IDEMPOTENCY_TABLE);
+        List<String> checkClauses = jdbc.query(
+                "SELECT cc.check_clause FROM information_schema.table_constraints tc "
+                        + "JOIN information_schema.check_constraints cc "
+                        + "ON cc.constraint_schema = tc.constraint_schema "
+                        + "AND cc.constraint_name = tc.constraint_name "
+                        + "WHERE tc.table_schema = ? AND tc.table_name = ? "
+                        + "AND tc.constraint_name = 'chk_iam_idempotency_request_fingerprint' "
+                        + "AND tc.constraint_type = 'CHECK' AND tc.enforced = 'YES'",
+                (rs, rowNum) -> rs.getString(1), schema, IDEMPOTENCY_TABLE);
+        boolean strongCheck = checkClauses.size() == 1
+                && hasStrongFingerprintCheck(checkClauses.getFirst());
+        Integer invalidRows = jdbc.queryForObject(
+                "SELECT COUNT(*) FROM iam_idempotency_record WHERE NOT ("
+                        + "(request_fingerprint_version = 'legacy-invalidated-v0' "
+                        + "AND request_fingerprint = 0x0000000000000000000000000000000000000000000000000000000000000000 "
+                        + "AND replay_ciphertext IS NULL AND replay_nonce IS NULL AND replay_key_version IS NULL) "
+                        + "OR (request_fingerprint_version = 'hmac-sha256-v1' "
+                        + "AND request_fingerprint <> 0x0000000000000000000000000000000000000000000000000000000000000000 "
+                        + "AND ((replay_ciphertext IS NULL AND replay_nonce IS NULL AND replay_key_version IS NULL) "
+                        + "OR (replay_ciphertext IS NOT NULL AND replay_nonce IS NOT NULL "
+                        + "AND replay_key_version IS NOT NULL))))",
+                Integer.class);
+        if (!Integer.valueOf(5).equals(validColumnDefinitions) || !strongCheck
+                || !Integer.valueOf(0).equals(invalidRows)) {
+            throw new IllegalStateException("IAM idempotency V13 column/default/CHECK drift detected; "
+                    + "readiness denied until the final schema is independently verified");
+        }
+    }
+
+    private static boolean hasStrongFingerprintCheck(String clause) {
+        if (clause == null) return false;
+        return REQUIRED_V13_FINGERPRINT_CHECK.equals(canonicalizeFingerprintCheck(clause));
+    }
+
+    /**
+     * Removes only representational differences introduced by MySQL metadata. Parentheses and
+     * operators remain intact, so a reordered or weakened boolean expression cannot pass merely
+     * because it still contains every expected column and literal.
+     */
+    private static String canonicalizeFingerprintCheck(String clause) {
+        return clause.toLowerCase(java.util.Locale.ROOT)
+                .replace("`", "")
+                .replace("\\'", "'")
+                .replaceAll("_[a-z0-9]+(?=')", "")
+                .replaceAll("x'([0-9a-f]{64})'", "0x$1")
+                .replace("!=", "<>")
+                .replaceAll("\\s+", "");
     }
 }

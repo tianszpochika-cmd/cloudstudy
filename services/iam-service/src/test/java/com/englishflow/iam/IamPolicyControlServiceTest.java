@@ -159,7 +159,8 @@ class IamPolicyControlServiceTest {
         InMemoryIdempotencyStore idempotencyStore = new InMemoryIdempotencyStore();
         IdempotencyService idempotency = new IdempotencyService(idempotencyStore,
                 new IamRuntimeConfiguration().iamObjectMapper(), IamTransactionRunner.direct(),
-                "policy-control-test-replay-secret-2026");
+                "policy-control-test-replay-secret-2026",
+                "policy-control-test-fingerprint-secret-2026", java.time.Duration.ofHours(24));
         IamPolicyControlController controller = new IamPolicyControlController(fixture.policies, idempotency,
                 fixture.accessVerifier);
         JwtAuthenticationToken access = fixture.provisionAccess(actorId, Set.of("iam.policy.draft.create"));
@@ -170,7 +171,8 @@ class IamPolicyControlServiceTest {
                 controller.create(access, body, "policy-create-idempotency-key");
         IdempotencyService restarted = new IdempotencyService(idempotencyStore,
                 new IamRuntimeConfiguration().iamObjectMapper(), IamTransactionRunner.direct(),
-                "policy-control-test-replay-secret-2026");
+                "policy-control-test-replay-secret-2026",
+                "policy-control-test-fingerprint-secret-2026", java.time.Duration.ofHours(24));
         IamPolicyControlController restartedController = new IamPolicyControlController(fixture.policies, restarted,
                 fixture.accessVerifier);
         ResponseEntity<IamPolicyControlController.SuccessEnvelope<IamPolicyControlController.PolicyMutationResponse>> replay =

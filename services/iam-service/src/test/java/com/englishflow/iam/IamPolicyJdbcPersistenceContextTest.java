@@ -60,6 +60,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
                 "iam.persistence.password=${IAM_JDBC_PASSWORD:}",
                 "spring.flyway.enabled=true",
                 "iam.idempotency.replay-secret=test-only-idempotency-replay-secret",
+                "iam.idempotency.fingerprint-secret=test-only-idempotency-fingerprint-secret",
+                "iam.idempotency.v13-writers-drained=true",
                 "iam.jwt.ephemeral-keys-allowed=true",
                 "management.opentelemetry.enabled=false",
                 "management.tracing.export.enabled=false",
@@ -94,7 +96,9 @@ class IamPolicyJdbcPersistenceContextTest {
                     new DeviceId(UUID.randomUUID().toString())).session();
             IamPolicyControlController firstController = new IamPolicyControlController(policyControl,
                     new IdempotencyService(idempotencyStore, iamObjectMapper, transactions,
-                            "test-only-idempotency-replay-secret"), accessVerifier);
+                            "test-only-idempotency-replay-secret",
+                            "test-only-idempotency-fingerprint-secret", java.time.Duration.ofHours(24)),
+                    accessVerifier);
             IamPolicyControlController.PolicyCreateRequest request =
                     new IamPolicyControlController.PolicyCreateRequest(document(), "durable policy draft");
             JwtAuthenticationToken token = accessToken(principal, session, Set.of("iam.policy.draft.create"));
@@ -105,7 +109,9 @@ class IamPolicyJdbcPersistenceContextTest {
             // New adapters model a process restart: no in-memory policy or replay result is reused.
             IamPolicyControlController restarted = new IamPolicyControlController(policyControl,
                     new IdempotencyService(idempotencyStore, iamObjectMapper, transactions,
-                            "test-only-idempotency-replay-secret"), accessVerifier);
+                            "test-only-idempotency-replay-secret",
+                            "test-only-idempotency-fingerprint-secret", java.time.Duration.ofHours(24)),
+                    accessVerifier);
             var replay = restarted.create(token, request, key);
             assertEquals(first.getBody(), replay.getBody(), "same key must restore the exact encrypted envelope");
 

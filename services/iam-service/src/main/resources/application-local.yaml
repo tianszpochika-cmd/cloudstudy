@@ -10,3 +10,5 @@ iam:
     refresh-cookie-secure: false
   idempotency:
     replay-secret: local-only-idempotency-replay-secret-2026
+    fingerprint-secret: local-only-idempotency-fingerprint-secret-2026
+    # V13 cutover requires an explicit IAM_IDEMPOTENCY_V13_WRITERS_DRAINED confirmation.

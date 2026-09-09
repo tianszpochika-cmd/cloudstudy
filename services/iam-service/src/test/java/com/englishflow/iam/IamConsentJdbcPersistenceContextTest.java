@@ -44,6 +44,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
                 "iam.persistence.password=${IAM_JDBC_PASSWORD:}",
                 "spring.flyway.enabled=true",
                 "iam.idempotency.replay-secret=test-only-idempotency-replay-secret",
+                "iam.idempotency.fingerprint-secret=test-only-idempotency-fingerprint-secret",
+                "iam.idempotency.v13-writers-drained=true",
                 "iam.jwt.ephemeral-keys-allowed=true",
                 "management.opentelemetry.enabled=false",
                 "management.tracing.export.enabled=false",

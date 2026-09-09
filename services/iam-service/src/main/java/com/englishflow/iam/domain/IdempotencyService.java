@@ -1,61 +1,66 @@
 package com.englishflow.iam.domain;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.ResponseEntity;
 
-import java.security.MessageDigest;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
- * Claims persistent writes before invoking business logic and stores the canonical response for
- * a safe retry. A completed retry never reaches refresh rotation or another domain mutation.
+ * Claims persistent writes before invoking business logic and selects a safe replay path.
+ * Non-credential responses may use an encrypted snapshot; credential responses must be rebuilt
+ * only after their supplied replay callback validates current session and rotation facts.
  */
 public final class IdempotencyService {
     private final IdempotencyStore store;
     private final ObjectMapper objectMapper;
     private final IamTransactionRunner transactions;
     private final IdempotencyResponseCodec responseCodec;
+    private final IdempotencyRequestFingerprint requestFingerprint;
+    private final IdempotencyReplayPolicy replayPolicy;
     private final Duration retention;
 
-    public IdempotencyService(IdempotencyStore store, ObjectMapper objectMapper) {
-        this(store, objectMapper, IamTransactionRunner.direct(), testReplaySecret(), Duration.ofHours(24));
-    }
-
     public IdempotencyService(IdempotencyStore store, ObjectMapper objectMapper,
-                              IamTransactionRunner transactions) {
-        this(store, objectMapper, transactions, testReplaySecret(), Duration.ofHours(24));
-    }
-
-    public IdempotencyService(IdempotencyStore store, ObjectMapper objectMapper,
-                              IamTransactionRunner transactions, String replaySecret) {
-        this(store, objectMapper, transactions, replaySecret, Duration.ofHours(24));
+                              IamTransactionRunner transactions, String replaySecret,
+                              String fingerprintSecret, Duration retention) {
+        this(store, objectMapper, transactions, replaySecret, fingerprintSecret, retention,
+                IdempotencyReplayPolicy.failClosedDefaults());
     }
 
     public IdempotencyService(IdempotencyStore store, ObjectMapper objectMapper,
                               IamTransactionRunner transactions, String replaySecret,
-                              Duration retention) {
+                              String fingerprintSecret, Duration retention,
+                              IdempotencyReplayPolicy replayPolicy) {
         this.store = Objects.requireNonNull(store, "store");
         this.objectMapper = Objects.requireNonNull(objectMapper, "objectMapper");
         this.transactions = Objects.requireNonNull(transactions, "transactions");
         this.responseCodec = new IdempotencyResponseCodec(objectMapper, replaySecret);
+        this.requestFingerprint = new IdempotencyRequestFingerprint(fingerprintSecret);
+        if (Objects.equals(replaySecret, fingerprintSecret)) {
+            throw new IllegalStateException("IAM idempotency replay and fingerprint secrets must be independent");
+        }
+        this.replayPolicy = Objects.requireNonNull(replayPolicy, "replayPolicy");
         this.retention = retention == null || retention.isNegative() || retention.isZero()
                 ? Duration.ofHours(24) : retention;
     }
 
     public String fingerprint(Object... components) {
-        try {
-            return hex(MessageDigest.getInstance("SHA-256")
-                    .digest(objectMapper.writeValueAsBytes(Arrays.asList(components))));
-        } catch (JsonProcessingException | java.security.NoSuchAlgorithmException exception) {
-            throw new IamPolicyException(IamDecisionCode.INVALID_REQUEST, "iam.idempotency.invalid");
-        }
+        return requestFingerprint.fingerprint(objectMapper, components);
+    }
+
+    /** Returns a non-secret binding for a credential-producing replay reference. */
+    public String credentialBinding(AccountRecord account, SessionRecord session) {
+        return requestFingerprint.credentialBinding(objectMapper, account, session);
+    }
+
+    /** Recomputes and compares the current credential/session generation in constant time. */
+    public boolean credentialBindingMatches(AccountRecord account, SessionRecord session,
+                                            String presented) {
+        return requestFingerprint.credentialBindingMatches(objectMapper, account, session, presented);
     }
 
     public <T> ResponseEntity<T> execute(String scope, String key, String requestHash,
@@ -65,16 +70,27 @@ public final class IdempotencyService {
     }
 
     /**
-     * Executes or safely replays a request with a response type token. The type token is needed
-     * only to turn the decrypted JSON snapshot back into the generated envelope type; no token
-     * or cookie is ever exposed to the persistence store.
+     * Executes or safely replays a request with a response type token. The type token is used only
+     * when the scope policy permits an encrypted JSON snapshot. Credential scopes ignore the
+     * snapshot path and always invoke their current-facts replay callback.
      */
     public <T> ResponseEntity<T> execute(String scope, String key, String requestHash,
                                          TypeReference<T> responseType,
                                          Supplier<Execution<T>> operation,
                                          Function<IdempotencyRecord, ResponseEntity<T>> replay) {
+        String normalizedScope = normalize(scope, 128, "scope");
+        String normalizedKey = normalize(key, 128, "key");
+        String validatedFingerprint;
+        try {
+            validatedFingerprint = IdempotencyRequestFingerprint.requireCurrent(requestHash);
+        } catch (IllegalArgumentException exception) {
+            throw new IamPolicyException(IamDecisionCode.INVALID_REQUEST, "iam.idempotency.invalid");
+        }
+        IdempotencyReplayPolicy.ReplayMode replayMode = Objects.requireNonNull(
+                replayPolicy.modeFor(normalizedScope), "idempotency replay mode");
         Outcome<T> outcome = transactions.execute(() ->
-                executeWithinTransaction(scope, key, requestHash, responseType, operation, replay));
+                executeWithinTransaction(normalizedScope, normalizedKey, validatedFingerprint,
+                        replayMode, responseType, operation, replay));
         if (outcome.failure() != null) throw outcome.failure();
         return outcome.response();
     }
@@ -84,19 +100,21 @@ public final class IdempotencyService {
      * removes the operation-to-complete crash window: a process crash rolls back both the domain
      * mutation and its IN_PROGRESS claim, allowing a safe retry rather than an unreplayable key.
      */
-    private <T> Outcome<T> executeWithinTransaction(String scope, String key, String requestHash,
+    private <T> Outcome<T> executeWithinTransaction(String normalizedScope, String normalizedKey,
+                                                    String requestHash,
+                                                    IdempotencyReplayPolicy.ReplayMode replayMode,
                                                     TypeReference<T> responseType,
                                                     Supplier<Execution<T>> operation,
                                                     Function<IdempotencyRecord, ResponseEntity<T>> replay) {
-        String normalizedScope = normalize(scope, 128, "scope");
-        String normalizedKey = normalize(key, 128, "key");
         store.purgeExpired(Instant.now(), retention);
         IdempotencyRecord claim = store.claim(normalizedScope, normalizedKey, requestHash);
         if (claim.rejected()) return Outcome.failure(replayRejection(claim));
         if (claim.completed()) {
-            ResponseEntity<T> response = claim.hasResponseSnapshot() && responseType != null
-                    ? responseCodec.restore(normalizedScope, normalizedKey, requestHash, claim, responseType)
-                    : replay.apply(claim);
+            ResponseEntity<T> response = replayMode == IdempotencyReplayPolicy.ReplayMode.REQUIRE_CURRENT_FACTS_CALLBACK
+                    ? replay.apply(claim)
+                    : claim.hasResponseSnapshot() && responseType != null
+                            ? responseCodec.restore(normalizedScope, normalizedKey, requestHash, claim, responseType)
+                            : replay.apply(claim);
             return Outcome.success(Objects.requireNonNull(response, "idempotent replay response"));
         }
 
@@ -117,8 +135,10 @@ public final class IdempotencyService {
         }
 
         ResponseEntity<T> response = Objects.requireNonNull(execution.response(), "idempotent response");
-        IdempotencyRecord.ResponseSnapshot snapshot = responseCodec.capture(
-                normalizedScope, normalizedKey, requestHash, response);
+        IdempotencyRecord.ResponseSnapshot snapshot =
+                replayMode == IdempotencyReplayPolicy.ReplayMode.ENCRYPTED_SNAPSHOT
+                        ? responseCodec.capture(normalizedScope, normalizedKey, requestHash, response)
+                        : null;
         store.complete(normalizedScope, normalizedKey, requestHash, response.getStatusCode().value(),
                 safeResultReference(execution.resultReference()), snapshot);
         return Outcome.success(response);
@@ -183,8 +203,6 @@ public final class IdempotencyService {
         return normalized;
     }
 
-    private static String hex(byte[] bytes) { return java.util.HexFormat.of().formatHex(bytes); }
-
     private static String safeResultReference(String reference) {
         if (reference == null) return null;
         if (reference.length() > 512 || reference.chars().anyMatch(Character::isISOControl)) {
@@ -193,7 +211,4 @@ public final class IdempotencyService {
         return reference;
     }
 
-    private static String testReplaySecret() {
-        return "test-only-idempotency-replay-secret";
-    }
 }
