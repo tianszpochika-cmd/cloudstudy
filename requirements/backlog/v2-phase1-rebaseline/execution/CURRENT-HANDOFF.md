@@ -1,6 +1,16 @@
 # 当前跨电脑交接（dev）
 
-更新时间：2026-09-04（Asia/Shanghai）。本文件只说明如何恢复当前开发检查点，不替代任务台账或 canonical Evidence manifest。
+更新时间：2026-09-09（Asia/Shanghai）。本文件只说明如何恢复当前开发检查点，不替代任务台账或 canonical Evidence manifest。
+
+## 2026-09-09 阶段性收尾（最新恢复入口）
+
+- 按用户要求保存当前成果并暂停后续研发。Gateway 检查点 `22ab84f`；IAM 幂等/V13 与迁移资产清单检查点 `ad172e5`。两者均为待最终独立审查的开发检查点，不是任务验收或生产放行。
+- 台账仍为 `25 ACCEPTED / 1 BLOCKED / 2 IN_PROGRESS / 80 PLANNED`；M2-001、M2-002 保持 `IN_PROGRESS`，M2-003 及后续依赖未解锁；总阶段仍为 `D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED`。
+- 完整收尾、测试日期、风险与恢复步骤见 [M2 阶段收尾记录](M2-STAGE-CHECKPOINT-2026-09-09.md)。下文 2026-09-04 记录为历史验证，不能当成本日环境验证。
+- 本日全局 Evidence Gate 为 `FAIL`：M0/M1 current-source artifactDigests 与 HEAD 存在漂移；GAP registry 仍 PASS（40 CLOSED / 5 OPEN）。下次须复核对应回归和 review history 后更新 manifest，不能只刷新摘要。台账保留历史验收状态，不表示当前 HEAD 已通过全局门禁。
+- 2026-09-09 Java 25 IAM 定向测试 `41/41`、Gateway Node `7/7`、计划 `108/108`、data ownership 静态检查与 diff 检查通过。此前 Gateway Java 25 全套 `69/69` 和 MySQL 8.4 V12→V13 `1/1` 结果保留；本日 Docker Linux engine 不可连接，未重新执行数据库/容器测试。
+- V13 是单向、非滚动升级。已移除 local profile 中自动确认 drain 的设置；升级前必须停止写入口、排空旧 writer，再显式设置 `IAM_IDEMPOTENCY_V13_WRITERS_DRAINED=true`。旧隔离 `iam_service` 曾应用未提交旧版 V13，恢复时须核对 schema/Flyway history，不能直接重跑或修改已部署迁移掩盖漂移。
+- 下一步：先完成两个检查点的独立复审与适用修复；IAM 按嵌套事务/Consent CAS → legacy Consent/V14 → password reset 投递与审计 → native trusted-context 顺序推进，Gateway 补当前提交真实服务、Redis 故障恢复与浏览器证据。
 
 ## 1. 当前检查点
 
@@ -68,5 +78,5 @@
 - IAM 正式 login 路径的失败计数/锁定事实、幂等 claim 与审计同事务回滚已在 `9deb899` 通过 MySQL 8.4/Spring 代理验证；未来 audit-service 拆分后必须改用 M2-005/006 的 Outbox/Saga，不能把当前单库事务扩张为跨服务原子性声明。
 - 正式 Consent 策略来源、密码重置消息投递、VERIFIED device trust，以及 Gateway 的真实 Redis/JWKS/upstream/浏览器尚未形成当前提交运行 Evidence；NetworkPolicy/durable audit 的后续责任已校正到 M2-008/M2-006，但对应 GAP 仍为 `OPEN / NOT_RUNTIME_VERIFIED`。
 - Gateway health 身份与 Evidence 责任闭环已在 `9560c75` 完成契约、实现和文档校正；执行入口、交接、Addendum 范围和 M2-004 audit-service owner 已同步，独立治理复审最终 `ACCEPT`、P1/P2=`0/0`。该校正不产生 runtime PASS，也不降低 M2-010/M8-013 最终标准。
-- IAM 幂等已引入但尚未提交的独立 HMAC 指纹、版本化存储与 credential current-facts callback；当前普通全套为 `57` 项零失败/错误（13 项外部集成跳过），但独立安全审查仍判定该批次 `REWORK`：账户锁定/禁用当前事实、access-token replay TTL、未知 scope 默认拒绝、公开测试密钥构造器及 V13 滚动迁移/升级竞态尚须修复并补证据。
+- IAM 幂等返工源码已保存至 `ad172e5`：独立 HMAC 指纹、版本化 CAS、credential current-facts callback、账户状态/credential binding、access replay TTL、未知 scope 默认回调与单 ALTER V13 已实现并通过定向测试；最终独立复审仍未取得，保持待审检查点。历史 `57` 项普通测试不代表当前全套验证，最新范围见收尾记录。
 - IAM 其他未关闭风险仍包括：`NATIVE_SECURE_STORAGE` 客户端自证、正式 Consent descriptor/策略来源、legacy 空摘要兼容、外层幂等事务与内层预期拒绝的 rollback-only、密码重置消息投递及限流/缺失账户审计；均须分批修复并独立复审。

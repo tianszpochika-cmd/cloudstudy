@@ -1,5 +1,9 @@
 # Changelog
 
+- [P1R-M2-CHECKPOINT-EVIDENCE-GAP-20260909] 阶段收尾全局 Evidence Gate 检出 M0/M1 current-source artifactDigests 漂移，结果 FAIL；GAP registry PASS（40 CLOSED / 5 OPEN）。精确影响与恢复要求已记入收尾记录和 CURRENT-HANDOFF，未刷新历史摘要掩盖未完成审查，也未提升任务状态。
+
+- [P1R-M2-STAGE-CHECKPOINT-20260909] 按阶段收尾要求保存 Gateway 运行夹具/非持久化审计检查点 `22ab84f` 和 IAM 幂等 HMAC/当前事实重放/单 ALTER V13 检查点 `ad172e5`；同步迁移资产清单，移除 local 自动 drain 确认，更新任务入口、台账与 CURRENT-HANDOFF。Java 25 IAM 定向 `41/41`、Gateway Node `7/7`、计划与数据归属静态检查通过；保留此前 Gateway Java `69/69`、MySQL V13 `1/1` 的日期与范围。本日 Docker 不可连接，最终独立复审、跨进程/浏览器与 IAM 剩余安全批次未完成；M2-001/M2-002 继续 IN_PROGRESS，不构成 Phase 1 完成或生产放行。
+
 - [P1R-M2-002-IAM-PASSWORD-CONCURRENCY-CHECKPOINT-20260904] 源码 `9deb899` 将密码认证收紧为锁前单次 cost-12 BCrypt 与锁内 current principal/hash/status/counter 复核；credential epoch 并发变化统一拒绝且零写入，同一 current hash 的错误计数精确串行，`ACCOUNT_LOCKED` 审计为 DENY，正式 login 下 audit failure 同时回滚账户事实和 idempotency claim。Java 25 定向 `29/29`、普通全套 57 项零失败/错误（13 项外部集成跳过）、真实 MySQL 8.4 `8/8`、独立 worktree `29/29` 均通过；独立复审最终 `ACCEPT`、P1/P2=`0/0`。该局部检查点不关闭 M2-002，幂等/V13、Consent、transport/device trust、消息投递、Redis 与跨进程 Evidence 仍未完成。
 
 - [P1R-M2-001-GATEWAY-GOVERNANCE-CHECKPOINT-20260904] 源码 `9560c75` 将 canonical `/api/v1/health` 身份 contract-first 修正为 `api-gateway`，把 compatibility 晋升限制为完整 Gateway root 与两个 health 身份标量，新增不可用 owner 经真实 WebFlux 管线 404/audit 的回归；同时以补充决定消除 M2-001 对 M2-006 durable audit、M2-008 NetworkPolicy、M2-010 关联终验和 M8-013 staging 复验的责任回边。Java 25 Gateway `63/63`、Gateway Node `37/37`、contract tooling `63/63`、merge/validate/generate、相对 `66246d5` compatibility 与计划门禁通过；独立治理复审最终 `ACCEPT`、P1/P2=`0/0`。六项 runtime GAP 均保持 OPEN，任务继续 `IN_PROGRESS / NOT_RUNTIME_VERIFIED`，仍待真实跨进程 Evidence。
