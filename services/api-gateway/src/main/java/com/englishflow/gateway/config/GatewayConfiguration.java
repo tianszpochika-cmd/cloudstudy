@@ -3,13 +3,11 @@ package com.englishflow.gateway.config;
 import com.englishflow.gateway.filter.ClientAuthorizationContextHeaders;
 import com.englishflow.gateway.policy.GatewayRouteExecutionPolicy;
 import com.englishflow.gateway.policy.GatewayRoutePolicy;
-import com.englishflow.gateway.support.BoundedSecurityAuditSink;
 import com.englishflow.gateway.support.CorrelationIds;
 import com.englishflow.gateway.support.GatewayAuthenticationFailureHandler;
 import com.englishflow.gateway.support.GatewayErrorMapper;
 import com.englishflow.gateway.support.GatewayErrorResponseWriter;
 import com.englishflow.gateway.support.SecurityAuditRecorder;
-import com.englishflow.gateway.support.SecurityAuditSink;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.GatewayFilterSpec;
@@ -237,11 +235,6 @@ public class GatewayConfiguration {
             configured = configured.removeRequestHeader(header);
         }
         return configured;
-    }
-
-    @Bean
-    SecurityAuditSink securityAuditSink() {
-        return new BoundedSecurityAuditSink(512);
     }
 
     private static String requestId(ServerWebExchange exchange) {

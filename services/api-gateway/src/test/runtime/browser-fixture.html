@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M2 Gateway browser boundary fixture</title>
+  <style>
+    body { max-width: 62rem; margin: 2rem auto; padding: 0 1rem; font: 16px/1.5 system-ui, sans-serif; }
+    fieldset { display: grid; gap: .75rem; margin-block: 1rem; }
+    label { display: grid; gap: .25rem; }
+    input, button { font: inherit; padding: .55rem; }
+    button { width: fit-content; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border: 1px solid #aaa; padding: .5rem; text-align: left; }
+    .warning { padding: .75rem; background: #fff4ce; color: #472b00; }
+  </style>
+  <script type="module" src="/browser-fixture-client.js"></script>
+</head>
+<body>
+  <h1>M2 Gateway browser boundary fixture</h1>
+  <p class="warning">Manual/external-browser fixture only. A green row is not repository runtime evidence until the operator captures browser Network and Gateway audit output.</p>
+  <p id="origin"></p>
+  <fieldset>
+    <legend>Ephemeral local account</legend>
+    <label>Identifier <input id="identifier" autocomplete="off" value=""></label>
+    <label>Password <input id="password" type="password" autocomplete="new-password" value=""></label>
+  </fieldset>
+  <p>
+    <button data-action="jwks">Public JWKS</button>
+    <button data-action="register">Register and hold access material in memory</button>
+    <button data-action="principal">Protected principal</button>
+    <button data-action="refresh">Cookie-authenticated unsafe refresh</button>
+  </p>
+  <table>
+    <thead><tr><th>Check</th><th>Result</th><th>HTTP</th><th>Correlation headers</th></tr></thead>
+    <tbody id="results"></tbody>
+  </table>
+</body>
+</html>
