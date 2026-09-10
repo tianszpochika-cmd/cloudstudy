@@ -1,8 +1,18 @@
 # 当前跨电脑交接（dev）
 
-更新时间：2026-09-10（Asia/Shanghai）。本文件只说明如何恢复当前开发检查点，不替代任务台账或 canonical Evidence manifest。
+更新时间：2026-09-11（Asia/Shanghai）。本文件只说明如何恢复当前开发检查点，不替代任务台账或 canonical Evidence manifest。
 
-## 2026-09-10 阶段更新（最新恢复入口）
+## 2026-09-11 阶段更新（最新恢复入口）
+
+- 本轮两条可恢复开发批次（提交后才有 current-commit 证据；台账状态不变）：
+  - `P1R-M2-001` 浏览器证据批次：新增 `--run --browser`（Playwright + 系统 Edge + CDP 请求/响应拦截）与 11 个浏览器用例、`reasonCode` 审计断言；单测 8/8、运行栈机制冒烟通过。canonical 批次待提交并构建后执行。
+  - `P1R-M2-002` 幂等边界预期拒绝批次：修复 Consent/Policy 内层事务 rollback-only（`UnexpectedRollbackException`）与幂等重放状态映射；新增 opt-in MySQL 测试 4/4，全套 71 tests 通过。
+- 前端契约修复：三个客户端删除契约外 `X-Client-Platform`，真实浏览器登录恢复（Playwright 实测 200 并跳转 onboarding）。
+- 台账仍为 `25 ACCEPTED / 1 BLOCKED / 2 IN_PROGRESS / 80 PLANNED`；M2-001/M2-002 保持 `IN_PROGRESS / NOT_RUNTIME_VERIFIED`，M2-003 及后续依赖未解锁；总阶段仍为 `D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED`。
+- 本机提醒：`v2,local-real` 启动的 IAM 无 `local` profile，正式 Consent 策略来源缺失时 `/api/v1/iam/principal/me` 返回 503 `iam.consent.version_unavailable`（M2-002 待办）；`m2-evidence` 夹具使用显式 `local` profile，不受影响。本地栈密钥/幂等秘密在 `C:\Temp\yuxuexing-local\`（不入库）。
+- 下一步：① 提交当前 services 树后执行 `node services/api-gateway/src/test/runtime/p1r-m2-001-runtime.mjs --run --browser`（先停 18180/18182 前端）；② 取 M2-001/M2-002 最终独立复审；③ M2-002 继续 legacy Consent 空摘要兼容、密码重置投递与 device trust。
+
+## 2026-09-10 阶段更新（历史，已被上节取代）
 
 - 本轮起点 `dev@6131783`；本轮提交：`6ceaf7f`（门禁列数修复）→ `d4909f1`（M0/M1 基线重定）→ `d530c0f`（CHANGELOG）→ `5172581`（`.gitattributes`）→ `7551da5`（CHANGELOG）→ `51a86c8`（Gateway 信封 JWKS 修复）。
 - **门禁回归修复**：台账第 9 列「资产验证」上线时漏改 `scripts/audit/p1r-evidence-gate.mjs`，而 `p1r-gap-registry-check.mjs` 通过 `import { parseLedger }` 复用它，导致 evidence gate 与 gap registry **双双结构性失败**（`tasks: []`，根本走不到 digest 比对）。修复后两者恢复。
