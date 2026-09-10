@@ -7,7 +7,6 @@ import {
   type B8RefreshRequest,
 } from '@englishflow/contracts'
 import { MobileApiError, mobileApiClient } from '../api/client'
-import { isNativeAppRuntime } from '../platform/uni-runtime'
 import { safeInternalReturnTo } from '../platform/gateway'
 
 export type MobileAdultGateStatus = 'UNKNOWN' | 'REQUIRED' | 'PASSED' | 'REJECTED'
@@ -116,10 +115,6 @@ function parseSnapshot(value: unknown): MobileAuthSnapshot | null {
   }
 }
 
-function clientHeaders(): Record<string, string> {
-  return { 'X-Client-Platform': isNativeAppRuntime() ? 'mobile' : 'web' }
-}
-
 let loginSequence = 0
 
 function authIdempotencyKey(prefix: string): string {
@@ -135,7 +130,7 @@ export function createGatewayMobileAuthAdapter(): MobileAuthAdapter {
       return parseTokenPair(await mobileApiClient.request('/auth/login', {
         method: 'POST',
         data: input,
-        header: { ...clientHeaders(), 'Idempotency-Key': authIdempotencyKey('login') },
+        header: { 'Idempotency-Key': authIdempotencyKey('login') },
         skipAuthRetry: true,
       }))
     },
@@ -151,7 +146,7 @@ export function createGatewayMobileAuthAdapter(): MobileAuthAdapter {
       return parseTokenPair(await mobileApiClient.request('/auth/token/refresh', {
         method: 'POST',
         data: input,
-        header: { ...clientHeaders(), 'Idempotency-Key': authIdempotencyKey('refresh') },
+        header: { 'Idempotency-Key': authIdempotencyKey('refresh') },
         skipAuthRetry: true,
       }))
     },
@@ -167,7 +162,7 @@ export function createGatewayMobileAuthAdapter(): MobileAuthAdapter {
       return parseSnapshot(await mobileApiClient.request('/iam/adult-gate', {
         method: 'POST',
         data: input,
-        header: { ...clientHeaders(), 'Idempotency-Key': authIdempotencyKey('adult-gate') },
+        header: { 'Idempotency-Key': authIdempotencyKey('adult-gate') },
         skipAuthRetry: true,
       }))
     },
@@ -175,7 +170,7 @@ export function createGatewayMobileAuthAdapter(): MobileAuthAdapter {
       await mobileApiClient.request('/auth/logout', {
         method: 'POST',
         data: input ?? {},
-        header: { ...clientHeaders(), 'Idempotency-Key': authIdempotencyKey('logout') },
+        header: { 'Idempotency-Key': authIdempotencyKey('logout') },
         skipAuthRetry: true,
       })
     },
@@ -183,7 +178,7 @@ export function createGatewayMobileAuthAdapter(): MobileAuthAdapter {
       await mobileApiClient.request(`/auth/sessions/${encodeURIComponent(sessionId)}/revoke`, {
         method: 'POST',
         data: {},
-        header: { ...clientHeaders(), 'Idempotency-Key': authIdempotencyKey('revoke') },
+        header: { 'Idempotency-Key': authIdempotencyKey('revoke') },
         skipAuthRetry: true,
       })
     },

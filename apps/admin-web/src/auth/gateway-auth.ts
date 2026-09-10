@@ -82,13 +82,12 @@ function parseSnapshot(value: unknown): AdminAuthSnapshot | null {
 }
 
 export function createGatewayAdminAuthAdapter(options: { client: AdminApiClient }): AdminAuthAdapter {
-  const webHeaders = { 'X-Client-Platform': 'web' }
   return {
     async login(input) {
       return parsePair(await options.client.request('/auth/login', {
         method: 'POST',
         body: input,
-        headers: { ...webHeaders, 'Idempotency-Key': authIdempotencyKey('login') },
+        headers: { 'Idempotency-Key': authIdempotencyKey('login') },
         skipAuthRetry: true,
       }))
     },
@@ -100,7 +99,7 @@ export function createGatewayAdminAuthAdapter(options: { client: AdminApiClient 
       return parsePair(await options.client.request('/auth/token/refresh', {
         method: 'POST',
         body: input?.refreshToken ? { refreshToken: input.refreshToken } : undefined,
-        headers: { ...webHeaders, 'Idempotency-Key': authIdempotencyKey('refresh') },
+        headers: { 'Idempotency-Key': authIdempotencyKey('refresh') },
         skipAuthRetry: true,
       }))
     },
@@ -112,7 +111,7 @@ export function createGatewayAdminAuthAdapter(options: { client: AdminApiClient 
       await options.client.request('/auth/logout', {
         method: 'POST',
         body: input ?? {},
-        headers: { ...webHeaders, 'Idempotency-Key': authIdempotencyKey('logout') },
+        headers: { 'Idempotency-Key': authIdempotencyKey('logout') },
         skipAuthRetry: true,
       })
     },

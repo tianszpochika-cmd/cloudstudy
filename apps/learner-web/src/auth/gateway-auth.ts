@@ -143,12 +143,11 @@ export function createGatewayAuthAdapter(options: GatewayAuthAdapterOptions): Jw
     fetchImpl: options.fetchImpl,
     credentials: 'include',
   })
-  const webHeaders = { 'X-Client-Platform': 'web' }
 
   return {
     async login(input) {
       return parseTokenPair(await client.post('/auth/login', input, {
-        headers: { ...webHeaders, 'Idempotency-Key': authIdempotencyKey('login') },
+        headers: { 'Idempotency-Key': authIdempotencyKey('login') },
         skipAuthRetry: true,
       }))
     },
@@ -163,7 +162,7 @@ export function createGatewayAuthAdapter(options: GatewayAuthAdapterOptions): Jw
     async refresh(input) {
       const body = input?.refreshToken ? { refreshToken: input.refreshToken } : undefined
       return parseTokenPair(await client.post('/auth/token/refresh', body, {
-        headers: { ...webHeaders, 'Idempotency-Key': authIdempotencyKey('refresh') },
+        headers: { 'Idempotency-Key': authIdempotencyKey('refresh') },
         skipAuthRetry: true,
       }))
     },
@@ -183,7 +182,7 @@ export function createGatewayAuthAdapter(options: GatewayAuthAdapterOptions): Jw
     },
     async logout(input) {
       await client.post('/auth/logout', input, {
-        headers: { ...webHeaders, 'Idempotency-Key': authIdempotencyKey('logout') },
+        headers: { 'Idempotency-Key': authIdempotencyKey('logout') },
         skipAuthRetry: true,
       })
     },
