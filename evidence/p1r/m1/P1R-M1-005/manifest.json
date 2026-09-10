@@ -2,17 +2,17 @@
   "taskId": "P1R-M1-005",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "2a747ba3917acd92664911c6b4be070ff469e302",
+  "sourceCommit": "6ceaf7f91109d4880c89d5dbbf24bef7b9a1ca3b",
   "artifactDigests": [
     {
       "path": "package.json",
       "algorithm": "sha256",
-      "digest": "96ae121ef89516277196ff9d2f51cbe66cc9ea1c41984d1acffd7234cbeb1d39"
+      "digest": "cd10ff008af85507b1e9269cb701f4cdfe431ea32748eac373cb4023ade02da9"
     },
     {
       "path": "config/p1r-data-ownership.v1.json",
       "algorithm": "sha256",
-      "digest": "5f855a64d6a8cbfc92cd8a5ae83cdd6bb99e7ac49fc463ea5cb8ade38c883b1b"
+      "digest": "da127b2d1b299c3ac712d7241455f3790dab8a574e3cf20ee459cbaf4ae6a998"
     },
     {
       "path": "scripts/audit/p1r-data-ownership-check.mjs",
@@ -151,6 +151,16 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-01T15:39:29+08:00",
         "details": "Final current-source revalidation after M1-018 closure-audit reconciliation at 2a747ba3917acd92664911c6b4be070ff469e302. The prior c548b601caae41fecc417f44f2a3e8e2016332d0 acceptance record and all original task provenance remain unchanged; runtime evidence is not promoted."
+      },
+      {
+        "taskId": "P1R-M1-005",
+        "sourceCommit": "6ceaf7f91109d4880c89d5dbbf24bef7b9a1ca3b",
+        "auditedImplementationSource": "6ceaf7f91109d4880c89d5dbbf24bef7b9a1ca3b",
+        "integrationCheckpoint": "6ceaf7f91109d4880c89d5dbbf24bef7b9a1ca3b",
+        "reviewer": "agent:p1r_current_source_revalidation:workbuddy",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-10T22:24:25+08:00",
+        "details": "Current-source revalidation after the 2026-09-10 commits (a149335 docs/asset-preflight, 6131783 dev unit-test completion, 6ceaf7f evidence-gate 9-column fix) invalidated previously recorded artifact digests. Rebased sourceCommit to 6ceaf7f91109d4880c89d5dbbf24bef7b9a1ca3b after the full P1R regression passed 1421/1421 under Node 20.19.5 on an LF-normalized worktree. Original provenance and review history remain unchanged; runtime evidence is not promoted."
       }
     ],
     "previousCurrentSourceCommit": "c548b601caae41fecc417f44f2a3e8e2016332d0",

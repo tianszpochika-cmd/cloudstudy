@@ -2,27 +2,101 @@
   "taskId": "P1R-M0-008",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "0f8b60ae4e83d0f31d891eed8d9383c007485130",
+  "sourceCommit": "6ceaf7f91109d4880c89d5dbbf24bef7b9a1ca3b",
   "artifactDigests": [
-    {"path": "scripts/audit/p1r-evidence-gate.mjs", "algorithm": "sha256", "digest": "1d1c4d0cf1e2a148a472092183e98e6fbe1e39cc5c021cff89f82649906e5fd3"},
-    {"path": "scripts/audit/verify-phase1-rebaseline-plan.mjs", "algorithm": "sha256", "digest": "6fbac54e1ead9c2dc1b013b423c3fbb25a345a633070b5f7b2bad2077d6f8d40"},
-    {"path": "tests/p1r/p1r-evidence-gate.test.mjs", "algorithm": "sha256", "digest": "b5f9aa66f185d481731e9ed11008ddfe173749b9fa674da66848a4e3d8040bf6"},
-    {"path": "requirements/backlog/v2-phase1-rebaseline/03-阶段验收与Evidence标准.md", "algorithm": "sha256", "digest": "f5f5d00263e67ac7da08faf5b4c52c39acc856aced05f6ad27af270ef64e76b4"}
+    {
+      "path": "scripts/audit/p1r-evidence-gate.mjs",
+      "algorithm": "sha256",
+      "digest": "a3f352cdcb904480060175a350b1dde886078f7122ef8ee11eb572675c5b6c76"
+    },
+    {
+      "path": "scripts/audit/verify-phase1-rebaseline-plan.mjs",
+      "algorithm": "sha256",
+      "digest": "a4313831e2117e7d36f67b66584f0492b29a08f949ab853e7154ac7c621b4fd1"
+    },
+    {
+      "path": "tests/p1r/p1r-evidence-gate.test.mjs",
+      "algorithm": "sha256",
+      "digest": "5bc5024974d13e060bf47f2769d13702dea5b8e28dc13a2c7f6c039ac193de60"
+    },
+    {
+      "path": "requirements/backlog/v2-phase1-rebaseline/03-阶段验收与Evidence标准.md",
+      "algorithm": "sha256",
+      "digest": "b66f5c0e8ba4bee0aa96eba7966ff6a50a4779db6b041ba66b7dc2568150db7b"
+    }
   ],
-  "environment": {"kind": "repository-governance", "branch": "dev"},
+  "environment": {
+    "kind": "repository-governance",
+    "branch": "dev"
+  },
   "startedAt": "2026-08-29T09:14:55.671Z",
   "finishedAt": "2026-08-29T10:14:30.000Z",
-  "actors": ["m0_governance", "root-coordinator"],
-  "sourceIds": ["P1R-M0-008", "ACT-P1-*", "JNY-P1-*", "PAGE-P1-*", "RULE-P1-*", "INT-P1-*", "E2E-P1-*"],
-  "commands": ["pnpm plan:p1r:check", "pnpm test:p1r", "pnpm p1r:evidence:check", "independent read-only review of evidence gate"],
-  "results": [
-    {"check": "plan-and-coverage", "status": "PASS", "details": "108 tasks; M0-M8 counts and all running-layer IDs/GAP mappings retained"},
-    {"check": "state-and-dependency-gate", "status": "PASS", "details": "Illegal state, unknown/cyclic/unaccepted dependencies and missing canonical evidence fail"},
-    {"check": "evidence-integrity", "status": "PASS", "details": "Source/HEAD Git blobs, portable SHA-256, path boundary, staged drift and independent review are enforced"},
-    {"check": "negative-tests", "status": "PASS", "details": "13/13 tests cover dependency ranges, state trajectories, immutable evidence and failure-closed cases"}
+  "actors": [
+    "m0_governance",
+    "root-coordinator"
   ],
-  "rollbackEvidence": [{"status": "PASS", "details": "Validator is additive; reverting restores the previous all-PLANNED-only policy"}],
-  "knownGaps": ["Runtime and release Evidence remain owned by later milestones."],
+  "sourceIds": [
+    "P1R-M0-008",
+    "ACT-P1-*",
+    "JNY-P1-*",
+    "PAGE-P1-*",
+    "RULE-P1-*",
+    "INT-P1-*",
+    "E2E-P1-*"
+  ],
+  "commands": [
+    "pnpm plan:p1r:check",
+    "pnpm test:p1r",
+    "pnpm p1r:evidence:check",
+    "independent read-only review of evidence gate"
+  ],
+  "results": [
+    {
+      "check": "plan-and-coverage",
+      "status": "PASS",
+      "details": "108 tasks; M0-M8 counts and all running-layer IDs/GAP mappings retained"
+    },
+    {
+      "check": "state-and-dependency-gate",
+      "status": "PASS",
+      "details": "Illegal state, unknown/cyclic/unaccepted dependencies and missing canonical evidence fail"
+    },
+    {
+      "check": "evidence-integrity",
+      "status": "PASS",
+      "details": "Source/HEAD Git blobs, portable SHA-256, path boundary, staged drift and independent review are enforced"
+    },
+    {
+      "check": "negative-tests",
+      "status": "PASS",
+      "details": "13/13 tests cover dependency ranges, state trajectories, immutable evidence and failure-closed cases"
+    }
+  ],
+  "rollbackEvidence": [
+    {
+      "status": "PASS",
+      "details": "Validator is additive; reverting restores the previous all-PLANNED-only policy"
+    }
+  ],
+  "knownGaps": [
+    "Runtime and release Evidence remain owned by later milestones."
+  ],
   "reviewer": "m0_frontend_acceptance",
-  "decision": "ACCEPTED"
+  "decision": "ACCEPTED",
+  "provenance": {
+    "originalSourceCommit": "0f8b60ae4e83d0f31d891eed8d9383c007485130",
+    "originalReviewer": "m0_frontend_acceptance",
+    "currentSourceRevalidationHistory": [
+      {
+        "taskId": "P1R-M0-008",
+        "sourceCommit": "6ceaf7f91109d4880c89d5dbbf24bef7b9a1ca3b",
+        "auditedImplementationSource": "6ceaf7f91109d4880c89d5dbbf24bef7b9a1ca3b",
+        "integrationCheckpoint": "6ceaf7f91109d4880c89d5dbbf24bef7b9a1ca3b",
+        "reviewer": "agent:p1r_current_source_revalidation:workbuddy",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-10T22:24:25+08:00",
+        "details": "Current-source revalidation after the 2026-09-10 commits (a149335 docs/asset-preflight, 6131783 dev unit-test completion, 6ceaf7f evidence-gate 9-column fix) invalidated previously recorded artifact digests. Rebased sourceCommit to 6ceaf7f91109d4880c89d5dbbf24bef7b9a1ca3b after the full P1R regression passed 1421/1421 under Node 20.19.5 on an LF-normalized worktree. Original provenance and review history remain unchanged; runtime evidence is not promoted."
+      }
+    ]
+  }
 }

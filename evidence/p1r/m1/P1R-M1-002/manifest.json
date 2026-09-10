@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-002",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "2a747ba3917acd92664911c6b4be070ff469e302",
+  "sourceCommit": "6ceaf7f91109d4880c89d5dbbf24bef7b9a1ca3b",
   "artifactDigests": [
     {
       "path": "packages/contracts/fragments/b8/b8-auth-iam.openapi.json",
@@ -12,12 +12,12 @@
     {
       "path": "packages/contracts/openapi/v1/openapi.json",
       "algorithm": "sha256",
-      "digest": "f3873e89f192fb7e4ab14c01d13003ead75cd711dd72e63e1af1db1b5442c1a5"
+      "digest": "93c03dfd26d482397a5ec1c1e26f5627f1e2294d10a68864d3af30eeeffe1a80"
     },
     {
       "path": "packages/contracts/generated/openapi.ts",
       "algorithm": "sha256",
-      "digest": "63cc2b7d018016d6669d3ac1c55cc2ec9940e7a4cbf32f94ed802970d9b3fd33"
+      "digest": "f4db0c397b6bd9ce22820d9930d5d88a8a54b6e3cff11835e4bc02844f06ff5c"
     },
     {
       "path": "packages/api-client/src/generated/index.ts",
@@ -42,7 +42,7 @@
     {
       "path": "packages/contracts/README.md",
       "algorithm": "sha256",
-      "digest": "d667859903af5631c6ada0bfc200733176d072b4939e95b1bd4094bdc80643a3"
+      "digest": "21ac452789298b73a6fa5f8613d5c758d3793062995ffb91cf4270993c9c475d"
     },
     {
       "path": "config/g1-contract-data.json",
@@ -170,6 +170,16 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-01T15:39:29+08:00",
         "details": "Final current-source revalidation after M1-018 closure-audit reconciliation at 2a747ba3917acd92664911c6b4be070ff469e302. The prior c548b601caae41fecc417f44f2a3e8e2016332d0 acceptance record and all original task provenance remain unchanged; runtime evidence is not promoted."
+      },
+      {
+        "taskId": "P1R-M1-002",
+        "sourceCommit": "6ceaf7f91109d4880c89d5dbbf24bef7b9a1ca3b",
+        "auditedImplementationSource": "6ceaf7f91109d4880c89d5dbbf24bef7b9a1ca3b",
+        "integrationCheckpoint": "6ceaf7f91109d4880c89d5dbbf24bef7b9a1ca3b",
+        "reviewer": "agent:p1r_current_source_revalidation:workbuddy",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-10T22:24:25+08:00",
+        "details": "Current-source revalidation after the 2026-09-10 commits (a149335 docs/asset-preflight, 6131783 dev unit-test completion, 6ceaf7f evidence-gate 9-column fix) invalidated previously recorded artifact digests. Rebased sourceCommit to 6ceaf7f91109d4880c89d5dbbf24bef7b9a1ca3b after the full P1R regression passed 1421/1421 under Node 20.19.5 on an LF-normalized worktree. Original provenance and review history remain unchanged; runtime evidence is not promoted."
       }
     ],
     "previousCurrentSourceCommit": "c548b601caae41fecc417f44f2a3e8e2016332d0",

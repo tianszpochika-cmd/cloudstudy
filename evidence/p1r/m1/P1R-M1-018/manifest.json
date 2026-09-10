@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-018",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "2a747ba3917acd92664911c6b4be070ff469e302",
+  "sourceCommit": "6ceaf7f91109d4880c89d5dbbf24bef7b9a1ca3b",
   "artifactDigests": [
     {
       "path": "config/b26-event-runtime.json",
@@ -47,7 +47,7 @@
     {
       "path": "package.json",
       "algorithm": "sha256",
-      "digest": "96ae121ef89516277196ff9d2f51cbe66cc9ea1c41984d1acffd7234cbeb1d39"
+      "digest": "cd10ff008af85507b1e9269cb701f4cdfe431ea32748eac373cb4023ade02da9"
     },
     {
       "path": "packages/api-client/src/generated/index.ts",
@@ -117,12 +117,12 @@
     {
       "path": "packages/contracts/generated/openapi.ts",
       "algorithm": "sha256",
-      "digest": "63cc2b7d018016d6669d3ac1c55cc2ec9940e7a4cbf32f94ed802970d9b3fd33"
+      "digest": "f4db0c397b6bd9ce22820d9930d5d88a8a54b6e3cff11835e4bc02844f06ff5c"
     },
     {
       "path": "packages/contracts/openapi/v1/openapi.json",
       "algorithm": "sha256",
-      "digest": "f3873e89f192fb7e4ab14c01d13003ead75cd711dd72e63e1af1db1b5442c1a5"
+      "digest": "93c03dfd26d482397a5ec1c1e26f5627f1e2294d10a68864d3af30eeeffe1a80"
     },
     {
       "path": "requirements/backlog/v2-phase1-rebaseline/04-追溯覆盖矩阵.md",
@@ -162,12 +162,12 @@
     {
       "path": "scripts/contracts/compatibility-diff.mjs",
       "algorithm": "sha256",
-      "digest": "148888da985a2cd47fc5e12ea212b0a0b347a22649917ffd505e3351b2225f6a"
+      "digest": "fe7ce9217cc1bcb5eedb4e8bc287a62b0d4c86751898902f968c6d917e36ae11"
     },
     {
       "path": "scripts/contracts/compatibility-git-baseline.mjs",
       "algorithm": "sha256",
-      "digest": "6165ab1e51652b1b5a040ce0b1af5676ee2c14eb4946eafd10455d0b6ffdfcf2"
+      "digest": "76d7bbfbfea07fd891c1c1ecaa72b1a99aab0b76150ce6fc846a0a9e09db6730"
     },
     {
       "path": "scripts/contracts/event-catalog-policy.mjs",
@@ -242,7 +242,7 @@
     {
       "path": "tests/p1r/p1r-contract-tooling.test.mjs",
       "algorithm": "sha256",
-      "digest": "5d55d7303333405a3ba0441462e95bebe17c624e204db4415d8c2c738ea36b0a"
+      "digest": "06ae41a75b93c0509019a3ec2e692916ff99b97b01a2ec72558c269a7728fa30"
     },
     {
       "path": "tests/p1r/p1r-event-governance.test.mjs",
@@ -262,7 +262,7 @@
     {
       "path": "tests/p1r/p1r-m1-018-iam-compatibility.test.mjs",
       "algorithm": "sha256",
-      "digest": "f09bb529809826cc566c1d425b742b4f31d24427b5910da420e6de6f8300cbab"
+      "digest": "c5546e6c90ae761d8e15a6b2a18ed6500a8d2d3e691b852e63aaaf5a1a0f829c"
     },
     {
       "path": "config/p1r-assessment-contract.v1.json",
@@ -521,5 +521,21 @@
     "B26 remains static-only, pending and NO-GO; P1R-M0-006 remains BLOCKED."
   ],
   "reviewer": "agent:m1_018_closure_fix_review:gpt-5.6-luna:max",
-  "decision": "ACCEPTED"
+  "decision": "ACCEPTED",
+  "provenance": {
+    "originalSourceCommit": "2a747ba3917acd92664911c6b4be070ff469e302",
+    "originalReviewer": "agent:m1_018_closure_fix_review:gpt-5.6-luna:max",
+    "currentSourceRevalidationHistory": [
+      {
+        "taskId": "P1R-M1-018",
+        "sourceCommit": "6ceaf7f91109d4880c89d5dbbf24bef7b9a1ca3b",
+        "auditedImplementationSource": "6ceaf7f91109d4880c89d5dbbf24bef7b9a1ca3b",
+        "integrationCheckpoint": "6ceaf7f91109d4880c89d5dbbf24bef7b9a1ca3b",
+        "reviewer": "agent:p1r_current_source_revalidation:workbuddy",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-10T22:24:25+08:00",
+        "details": "Current-source revalidation after the 2026-09-10 commits (a149335 docs/asset-preflight, 6131783 dev unit-test completion, 6ceaf7f evidence-gate 9-column fix) invalidated previously recorded artifact digests. Rebased sourceCommit to 6ceaf7f91109d4880c89d5dbbf24bef7b9a1ca3b after the full P1R regression passed 1421/1421 under Node 20.19.5 on an LF-normalized worktree. Original provenance and review history remain unchanged; runtime evidence is not promoted."
+      }
+    ]
+  }
 }

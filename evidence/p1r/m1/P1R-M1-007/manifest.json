@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-007",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "2a747ba3917acd92664911c6b4be070ff469e302",
+  "sourceCommit": "6ceaf7f91109d4880c89d5dbbf24bef7b9a1ca3b",
   "artifactDigests": [
     {
       "path": ".github/workflows/ci.yml",
@@ -12,7 +12,7 @@
     {
       "path": "package.json",
       "algorithm": "sha256",
-      "digest": "96ae121ef89516277196ff9d2f51cbe66cc9ea1c41984d1acffd7234cbeb1d39"
+      "digest": "cd10ff008af85507b1e9269cb701f4cdfe431ea32748eac373cb4023ade02da9"
     },
     {
       "path": "config/b25-data.json",
@@ -32,7 +32,7 @@
     {
       "path": "config/p1r-data-ownership.v1.json",
       "algorithm": "sha256",
-      "digest": "5f855a64d6a8cbfc92cd8a5ae83cdd6bb99e7ac49fc463ea5cb8ade38c883b1b"
+      "digest": "da127b2d1b299c3ac712d7241455f3790dab8a574e3cf20ee459cbaf4ae6a998"
     },
     {
       "path": "config/p1r-saga-recovery.v1.json",
@@ -67,7 +67,7 @@
     {
       "path": "packages/contracts/README.md",
       "algorithm": "sha256",
-      "digest": "d667859903af5631c6ada0bfc200733176d072b4939e95b1bd4094bdc80643a3"
+      "digest": "21ac452789298b73a6fa5f8613d5c758d3793062995ffb91cf4270993c9c475d"
     },
     {
       "path": "packages/contracts/events/v1/catalog.json",
@@ -92,7 +92,7 @@
     {
       "path": "packages/contracts/generated/openapi.ts",
       "algorithm": "sha256",
-      "digest": "63cc2b7d018016d6669d3ac1c55cc2ec9940e7a4cbf32f94ed802970d9b3fd33"
+      "digest": "f4db0c397b6bd9ce22820d9930d5d88a8a54b6e3cff11835e4bc02844f06ff5c"
     },
     {
       "path": "packages/contracts/generated/schemas.ts",
@@ -102,7 +102,7 @@
     {
       "path": "packages/contracts/openapi/v1/openapi.json",
       "algorithm": "sha256",
-      "digest": "f3873e89f192fb7e4ab14c01d13003ead75cd711dd72e63e1af1db1b5442c1a5"
+      "digest": "93c03dfd26d482397a5ec1c1e26f5627f1e2294d10a68864d3af30eeeffe1a80"
     },
     {
       "path": "packages/contracts/schemas/v1/registry.json",
@@ -142,7 +142,7 @@
     {
       "path": "scripts/audit/p1r-gateway-contract-check.mjs",
       "algorithm": "sha256",
-      "digest": "15b99c291fd7155575d5b36e84f1ddf706103ee6ebe442a3d6454c1a65136441"
+      "digest": "2a188219acc2f7fc3c512c8604d0b25d90b99095647ddaada1fa3ad3da667c6d"
     },
     {
       "path": "scripts/audit/p1r-iam-policy-contract-check.mjs",
@@ -157,17 +157,17 @@
     {
       "path": "scripts/audit/verify-phase1-rebaseline-plan.mjs",
       "algorithm": "sha256",
-      "digest": "6fbac54e1ead9c2dc1b013b423c3fbb25a345a633070b5f7b2bad2077d6f8d40"
+      "digest": "a4313831e2117e7d36f67b66584f0492b29a08f949ab853e7154ac7c621b4fd1"
     },
     {
       "path": "scripts/contracts/compatibility-diff.mjs",
       "algorithm": "sha256",
-      "digest": "148888da985a2cd47fc5e12ea212b0a0b347a22649917ffd505e3351b2225f6a"
+      "digest": "fe7ce9217cc1bcb5eedb4e8bc287a62b0d4c86751898902f968c6d917e36ae11"
     },
     {
       "path": "scripts/contracts/compatibility-git-baseline.mjs",
       "algorithm": "sha256",
-      "digest": "6165ab1e51652b1b5a040ce0b1af5676ee2c14eb4946eafd10455d0b6ffdfcf2"
+      "digest": "76d7bbfbfea07fd891c1c1ecaa72b1a99aab0b76150ce6fc846a0a9e09db6730"
     },
     {
       "path": "scripts/contracts/event-catalog-policy.mjs",
@@ -232,7 +232,7 @@
     {
       "path": "tests/p1r/p1r-contract-tooling.test.mjs",
       "algorithm": "sha256",
-      "digest": "5d55d7303333405a3ba0441462e95bebe17c624e204db4415d8c2c738ea36b0a"
+      "digest": "06ae41a75b93c0509019a3ec2e692916ff99b97b01a2ec72558c269a7728fa30"
     },
     {
       "path": "tests/p1r/p1r-data-ownership.test.mjs",
@@ -252,7 +252,7 @@
     {
       "path": "tests/p1r/p1r-gateway-contract.test.mjs",
       "algorithm": "sha256",
-      "digest": "ae56196c8d89c9710abe2b13a167cfb5dc9e7c96f530c8a05d9db2b4977472a1"
+      "digest": "114748544fec4e8be82bf3472e65dd3774a6b85cf0f05161b44e85869fbd93fd"
     },
     {
       "path": "tests/p1r/p1r-iam-policy-contract.test.mjs",
@@ -621,6 +621,16 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-01T15:39:29+08:00",
         "details": "Final current-source revalidation after M1-018 closure-audit reconciliation at 2a747ba3917acd92664911c6b4be070ff469e302. The prior c548b601caae41fecc417f44f2a3e8e2016332d0 acceptance record and all original task provenance remain unchanged; runtime evidence is not promoted."
+      },
+      {
+        "taskId": "P1R-M1-007",
+        "sourceCommit": "6ceaf7f91109d4880c89d5dbbf24bef7b9a1ca3b",
+        "auditedImplementationSource": "6ceaf7f91109d4880c89d5dbbf24bef7b9a1ca3b",
+        "integrationCheckpoint": "6ceaf7f91109d4880c89d5dbbf24bef7b9a1ca3b",
+        "reviewer": "agent:p1r_current_source_revalidation:workbuddy",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-10T22:24:25+08:00",
+        "details": "Current-source revalidation after the 2026-09-10 commits (a149335 docs/asset-preflight, 6131783 dev unit-test completion, 6ceaf7f evidence-gate 9-column fix) invalidated previously recorded artifact digests. Rebased sourceCommit to 6ceaf7f91109d4880c89d5dbbf24bef7b9a1ca3b after the full P1R regression passed 1421/1421 under Node 20.19.5 on an LF-normalized worktree. Original provenance and review history remain unchanged; runtime evidence is not promoted."
       }
     ],
     "previousCurrentSourceCommit": "c548b601caae41fecc417f44f2a3e8e2016332d0",
