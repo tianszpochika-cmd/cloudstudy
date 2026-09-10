@@ -44,7 +44,18 @@ public final class ConsentService {
     }
 
     public ConsentRecord record(ServerPrincipalContext context, ConsentCommand command) {
-        return transactions.execute(() -> recordWithinTransaction(context, command));
+        RecordOutcome outcome = transactions.execute(() -> {
+            try {
+                return new RecordOutcome(recordWithinTransaction(context, command), null);
+            } catch (IamPolicyException exception) {
+                if (infrastructureFailure(exception.code())) throw exception;
+                // Return a value from the transaction callback so an expected rejection is
+                // committed by the outer idempotency boundary rather than becoming rollback-only.
+                return new RecordOutcome(null, exception);
+            }
+        });
+        if (outcome.failure() != null) throw outcome.failure();
+        return outcome.record();
     }
 
     private ConsentRecord recordWithinTransaction(ServerPrincipalContext context, ConsentCommand command) {
@@ -282,4 +293,5 @@ public final class ConsentService {
     }
 
     private record WithdrawalOutcome(ConsentRecord record, IamPolicyException failure) {}
+    private record RecordOutcome(ConsentRecord record, IamPolicyException failure) {}
 }

@@ -12,6 +12,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 /**
  * Owns the P1 immutable policy lifecycle and serializes ACTIVE-policy switches. This service
@@ -38,7 +39,7 @@ public final class PolicyControlService {
 
     public synchronized PolicyMutation create(PolicyActor actor, PolicyDocument document, String reason,
                                                String requestId, String traceId) {
-        return transactions.execute(() -> {
+        return executeLifecycle(() -> {
             actor.require("iam.policy.draft.create");
             requireReason(reason);
             Instant now = Instant.now(clock);
@@ -57,7 +58,7 @@ public final class PolicyControlService {
 
     public synchronized PolicyMutation update(UUID policyVersionId, int expectedRevision, PolicyDocument document,
                                                String reason, PolicyActor actor, String requestId, String traceId) {
-        return transactions.execute(() -> {
+        return executeLifecycle(() -> {
             actor.require("iam.policy.draft.update");
             requireReason(reason);
             PolicyVersionRecord current = requirePolicy(policyVersionId);
@@ -78,7 +79,7 @@ public final class PolicyControlService {
 
     public synchronized PolicyMutation submit(UUID policyVersionId, int expectedRevision, String reason,
                                                PolicyActor actor, String requestId, String traceId) {
-        return transactions.execute(() -> {
+        return executeLifecycle(() -> {
             actor.require("iam.policy.submit");
             requireReason(reason);
             PolicyVersionRecord current = requirePolicy(policyVersionId);
@@ -98,8 +99,8 @@ public final class PolicyControlService {
 
     public synchronized PolicyMutation approve(UUID policyVersionId, int expectedRevision, String reason,
                                                 PolicyActor actor, String requestId, String traceId) {
-        try {
-            return transactions.execute(() -> {
+        return executeLifecycle(() -> {
+            try {
                 actor.require("iam.policy.approve");
                 requireReason(reason);
                 PolicyVersionRecord current = requirePolicy(policyVersionId);
@@ -118,24 +119,21 @@ public final class PolicyControlService {
                 PolicyVersionRecord saved = store.compareAndSet(current, next, policyAudit, false);
                 appendControlAudit(policyAudit, IamDecisionCode.POLICY_APPROVED, true);
                 return new PolicyMutation(saved, policyAudit, saved.cacheInvalidation());
-            });
-        } catch (IamPolicyException exception) {
-            if (exception.code() != IamDecisionCode.POLICY_SEPARATION_OF_DUTIES) throw exception;
-            // The rejected lifecycle transaction rolls back. Persist the denial in a new,
-            // successful transaction and only then rethrow; otherwise the security audit
-            // would be rolled back together with the forbidden approval attempt.
-            transactions.execute(() -> {
-                appendDeniedAudit(actor, policyVersionId, "iam.policy.version.approval_denied.v1", requestId, traceId,
-                        IamDecisionCode.POLICY_SEPARATION_OF_DUTIES);
-                return null;
-            });
-            throw exception;
-        }
+            } catch (IamPolicyException exception) {
+                if (exception.code() == IamDecisionCode.POLICY_SEPARATION_OF_DUTIES) {
+                    // The callback stays non-throwing for this expected denial, so the denial audit
+                    // commits together with the outer idempotency rejection instead of rolling back.
+                    appendDeniedAudit(actor, policyVersionId, "iam.policy.version.approval_denied.v1", requestId, traceId,
+                            IamDecisionCode.POLICY_SEPARATION_OF_DUTIES);
+                }
+                throw exception;
+            }
+        });
     }
 
     public synchronized PolicyMutation activate(UUID policyVersionId, int expectedRevision, String reason,
                                                  PolicyActor actor, String requestId, String traceId) {
-        return transactions.execute(() -> {
+        return executeLifecycle(() -> {
             actor.require("iam.policy.activate");
             requireReason(reason);
             PolicyVersionRecord current = requirePolicy(policyVersionId);
@@ -172,7 +170,7 @@ public final class PolicyControlService {
 
     public synchronized PolicyMutation revoke(UUID policyVersionId, int expectedRevision, String reason,
                                                PolicyActor actor, String requestId, String traceId) {
-        return transactions.execute(() -> {
+        return executeLifecycle(() -> {
             actor.require("iam.policy.revoke");
             requireReason(reason);
             PolicyVersionRecord current = requirePolicy(policyVersionId);
@@ -317,6 +315,30 @@ public final class PolicyControlService {
             throw new IamPolicyException(IamDecisionCode.POLICY_DOCUMENT_INVALID, "iam.policy.document_invalid");
         }
     }
+
+    private <T> T executeLifecycle(Supplier<T> operation) {
+        LifecycleOutcome<T> outcome = transactions.execute(() -> {
+            try {
+                return new LifecycleOutcome<>(operation.get(), null);
+            } catch (IamPolicyException exception) {
+                if (infrastructureFailure(exception.code())) throw exception;
+                // Return a value from the transaction callback so an expected lifecycle rejection
+                // is committed by the outer idempotency boundary rather than becoming rollback-only.
+                return new LifecycleOutcome<>(null, exception);
+            }
+        });
+        if (outcome.failure() != null) throw outcome.failure();
+        return outcome.record();
+    }
+
+    private static boolean infrastructureFailure(IamDecisionCode code) {
+        return switch (code) {
+            case AUDIT_UNAVAILABLE, IAM_PERSISTENCE_UNAVAILABLE, IDEMPOTENCY_RESULT_UNAVAILABLE -> true;
+            default -> false;
+        };
+    }
+
+    private record LifecycleOutcome<T>(T record, IamPolicyException failure) {}
 
     private static String correlation(String value) {
         if (value == null || value.isBlank() || value.length() > 128 || value.chars().anyMatch(Character::isISOControl)) {
