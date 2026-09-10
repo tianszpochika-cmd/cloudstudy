@@ -32,6 +32,7 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.Exceptions;
 import reactor.core.publisher.Mono;
 
+import java.time.Clock;
 import java.util.Arrays;
 
 @Configuration(proxyBeanMethods = false)
@@ -112,7 +113,12 @@ public class GatewayConfiguration {
                 || properties.security().jwkSetUri() == null || properties.security().jwkSetUri().isBlank()) {
             throw new IllegalStateException("Gateway JWT verifier requires issuer and explicit JWKS URI");
         }
-        NimbusReactiveJwtDecoder nimbus = NimbusReactiveJwtDecoder.withJwkSetUri(properties.security().jwkSetUri()).build();
+        // The IAM public JWKS is published as an ApiSuccessEnvelope, so the stock
+        // withJwkSetUri parser would hand the envelope to JWKSet.parse and fail.
+        // Resolve the documented envelope instead, with a bounded shared cache.
+        GatewayIamPublicJwkSource publicKeys = new GatewayIamPublicJwkSource(
+                properties.security().jwkSetUri(), Clock.systemUTC());
+        NimbusReactiveJwtDecoder nimbus = NimbusReactiveJwtDecoder.withJwkSource(publicKeys::select).build();
         nimbus.setJwtValidator(GatewayJwtValidators.forSecurity(properties.security()));
         return token -> Mono.defer(() -> nimbus.decode(token))
                 .onErrorMap(GatewayConfiguration::resourceServerJwtFailure);
