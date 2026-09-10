@@ -15,7 +15,7 @@ import {
 } from '../../scripts/audit/p1r-evidence-gate.mjs';
 
 function row(id, depends, status) {
-  return `| \`${id}\` | task | trace | owner | ${depends} | NEW | evidence | \`${status}\` |`;
+  return `| \`${id}\` | task | trace | owner | ${depends} | NEW | evidence | \`${status}\` | \`不适用\` |`;
 }
 
 function withTempRepo(callback) {

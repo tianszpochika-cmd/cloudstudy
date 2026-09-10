@@ -72,7 +72,7 @@ export function parseLedger(text) {
     .filter((line) => /^\|\s*`P1R-M\d-\d{3}`\s*\|/.test(line));
   const tasks = rows.map((line) => {
     const columns = splitRow(line);
-    if (columns.length !== 8) throw new Error(`task row must have 8 columns: ${line}`);
+    if (columns.length !== 9) throw new Error(`task row must have 9 columns: ${line}`);
     const id = columns[0].match(/^`(P1R-M\d-\d{3})`$/)?.[1];
     const status = columns[7].match(/^`([A-Z_]+)`$/)?.[1];
     const dependencies = parseDependencyCell(columns[4]);
