@@ -16,6 +16,7 @@ import {
   serializeEvidence,
   validateAuditEnvelope,
 } from './lib/m2-runtime-lib.mjs'
+import { BROWSER_CASE_IDS, planHeaderRewrite } from './lib/m2-browser-checks.mjs'
 
 const root = path.dirname(fileURLToPath(import.meta.url))
 const runtimeSource = fs.readFileSync(path.join(root, 'p1r-m2-001-runtime.mjs'), 'utf8')
@@ -43,12 +44,37 @@ function audit(overrides = {}) {
 }
 
 test('CLI requires one explicit mode and keeps failure injection opt-in', () => {
-  assert.deepEqual(parseArguments(['--run']), { mode: 'run', fault: false })
-  assert.deepEqual(parseArguments(['--run', '--fault']), { mode: 'run', fault: true })
-  assert.deepEqual(parseArguments(['--probe-only']), { mode: 'probe-only', fault: false })
+  assert.deepEqual(parseArguments(['--run']), { mode: 'run', fault: false, browser: false })
+  assert.deepEqual(parseArguments(['--run', '--fault']), { mode: 'run', fault: true, browser: false })
+  assert.deepEqual(parseArguments(['--run', '--browser']), { mode: 'run', fault: false, browser: true })
+  assert.deepEqual(parseArguments(['--probe-only']), { mode: 'probe-only', fault: false, browser: false })
   assert.throws(() => parseArguments([]), /exactly one/u)
   assert.throws(() => parseArguments(['--run', '--probe-only']), /exactly one/u)
   assert.throws(() => parseArguments(['--run', '--unknown']), /unsupported/u)
+})
+
+test('browser refresh rewrite plans are bounded, deterministic, and non-mutating', () => {
+  const original = [
+    { name: 'Origin', value: 'http://127.0.0.1:18180' },
+    { name: 'Referer', value: 'http://127.0.0.1:18180/' },
+    { name: 'Idempotency-Key', value: 'key-1' },
+  ]
+  const keep = planHeaderRewrite('KEEP_ORIGIN_UNTRUSTED_REFERER', original)
+  assert.equal(keep.find((item) => item.name.toLowerCase() === 'origin').value, 'http://127.0.0.1:18180')
+  assert.match(keep.find((item) => item.name.toLowerCase() === 'referer').value, /^https:\/\/untrusted\.invalid\//u)
+  const fallback = planHeaderRewrite('DROP_ORIGIN_TRUSTED_REFERER', original)
+  assert.equal(fallback.some((item) => item.name.toLowerCase() === 'origin'), false)
+  assert.equal(fallback.find((item) => item.name.toLowerCase() === 'referer').value, 'http://127.0.0.1:18180/')
+  const untrusted = planHeaderRewrite('DROP_ORIGIN_UNTRUSTED_REFERER', original)
+  assert.equal(untrusted.some((item) => item.name.toLowerCase() === 'origin'), false)
+  assert.match(untrusted.find((item) => item.name.toLowerCase() === 'referer').value, /^https:\/\/untrusted\.invalid\//u)
+  const forged = planHeaderRewrite('FORGE_AUTHORITY', original)
+  assert.equal(forged.find((item) => item.name.toLowerCase() === 'x-role').value, 'admin')
+  assert.equal(forged.find((item) => item.name.toLowerCase() === 'x-tenant-id').value, 'forged-tenant')
+  assert.equal(original.length, 3)
+  assert.throws(() => planHeaderRewrite('UNKNOWN_MODE', original), /unknown browser header rewrite mode/u)
+  assert.equal(BROWSER_CASE_IDS.length, 11)
+  assert.equal(new Set(BROWSER_CASE_IDS).size, BROWSER_CASE_IDS.length)
 })
 
 test('Gateway health Redis key is pinned to the production hash algorithm', () => {
@@ -105,6 +131,8 @@ test('runtime source has bounded exact-container failure injection and no destru
   assert.match(runtimeSource, /healthData\?\.service === 'api-gateway'/u)
   assert.match(runtimeSource, /healthData\.dependencies\.length === 0/u)
   assert.match(runtimeSource, /SEQUENTIAL_DISTINCT_PROCESSES_NOT_CONCURRENT_REPLICAS/u)
+  assert.match(runtimeSource, /runBrowserChecks/u)
+  assert.doesNotMatch(runtimeSource, /x-client-platform/u)
 })
 
 test('browser fixture uses only registered ports and never stores or renders access material', () => {

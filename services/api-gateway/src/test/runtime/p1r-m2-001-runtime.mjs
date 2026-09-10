@@ -19,6 +19,7 @@ import {
   serializeEvidence,
   sha256,
 } from './lib/m2-runtime-lib.mjs'
+import { runBrowserChecks } from './lib/m2-browser-checks.mjs'
 
 const runtimeDirectory = path.dirname(fileURLToPath(import.meta.url))
 const repositoryRoot = path.resolve(runtimeDirectory, '../../../../..')
@@ -331,7 +332,6 @@ async function ordinaryRuntimeChecks(checks) {
     headers: {
       'idempotency-key': `${runId}-register`,
       'x-auth-transport': 'WEB_COOKIE',
-      'x-client-platform': 'web',
     },
     body: {
       identifier,
@@ -501,6 +501,17 @@ function verifyAuditCoverage(requiredStatuses, checks) {
   return selected
 }
 
+function verifyBrowserAudit(requirements) {
+  const selected = []
+  for (const requirement of requirements) {
+    const row = auditRows.find((candidate) => candidate.envelope.status === requirement.status
+      && candidate.envelope.reasonCode === requirement.reasonCode)
+    check(row, 'BROWSER_AUDIT_REASON', `the evidence sink did not emit ${requirement.reasonCode}`)
+    selected.push({ sourceProcess: row.source, matchedCheck: requirement.checkId, ...row.envelope })
+  }
+  return selected
+}
+
 async function runFull(options) {
   const checks = []
   const source = assertCommittedInputs()
@@ -518,13 +529,22 @@ async function runFull(options) {
     iam = await startIam(javaBin, iamBuild.jar)
     gateway = await startGateway(javaBin, gatewayBuild.jar, 'gateway-baseline')
     await ordinaryRuntimeChecks(checks)
+    const browserAuditRequirements = []
+    const browser = options.browser
+      ? await runBrowserChecks({
+        gatewayOrigin,
+        fixtureServerPath: path.join(runtimeDirectory, 'browser-fixture-server.mjs'),
+        checks,
+        auditRequirements: browserAuditRequirements,
+      })
+      : null
     if (options.fault) await faultCheck(checks)
     await stopChild(gateway)
     gateway = undefined
     await sequentialProcessCheck(javaBin, gatewayBuild.jar, checks)
     await new Promise((resolve) => setTimeout(resolve, 150))
     const statuses = options.fault ? [200, 401, 403, 404, 429, 503] : [200, 401, 403, 404, 429]
-    const audits = verifyAuditCoverage(statuses, checks)
+    const audits = [...verifyAuditCoverage(statuses, checks), ...verifyBrowserAudit(browserAuditRequirements)]
     return {
       schema: RUNTIME_SCHEMA,
       result: options.fault ? 'PASS' : 'PARTIAL',
@@ -549,10 +569,19 @@ async function runFull(options) {
         faultInjection: options.fault ? 'EXACT_CONTAINER_PAUSE_AND_RECOVER' : 'NOT_REQUESTED',
       },
       checks,
+      browser: browser ?? { status: 'NOT_EXECUTED' },
       audit: { schema: AUDIT_SCHEMA, durability: 'NON_DURABLE_TEST_ONLY', rows: audits },
       sensitiveMaterial: { persisted: false, emitted: false },
-      notRuntimeVerified: options.fault ? [] : ['HTTP_503_AND_REDIS_RECOVERY'],
-      exclusions: ['M2-006_DURABLE_AUDIT', 'M2-008_NETWORK_POLICY', 'CONCURRENT_GATEWAY_REPLICAS', 'BROWSER_EXECUTION'],
+      notRuntimeVerified: [
+        ...(options.fault ? [] : ['HTTP_503_AND_REDIS_RECOVERY']),
+        ...(options.browser ? [] : ['BROWSER_EXECUTION']),
+      ],
+      exclusions: [
+        'M2-006_DURABLE_AUDIT',
+        'M2-008_NETWORK_POLICY',
+        'CONCURRENT_GATEWAY_REPLICAS',
+        ...(options.browser ? [] : ['BROWSER_EXECUTION']),
+      ],
     }
   } finally {
     await stopChild(gateway)
@@ -605,6 +634,7 @@ for (const signal of ['SIGINT', 'SIGTERM']) {
 try {
   const options = parseArguments(process.argv.slice(2))
   check(!options.fault || options.mode === 'run', 'FAULT_MODE', '--fault is valid only with --run')
+  check(!options.browser || options.mode === 'run', 'BROWSER_MODE', '--browser is valid only with --run')
   const evidence = options.mode === 'run' ? await runFull(options) : await runProbeOnly()
   process.stdout.write(serializeEvidence(evidence))
 } catch (error) {

@@ -33,6 +33,16 @@ node services/api-gateway/src/test/runtime/p1r-m2-001-runtime.mjs --run
 
 `M2_JAVA_BIN`, `M2_GATEWAY_JAR`, and `M2_IAM_JAR` may identify Java 25 and jars inside each service's own `target` directory. The no-fault form returns `PARTIAL` and keeps HTTP 503/recovery unverified.
 
+## Automated browser batch
+
+`--run --browser` executes the Cookie/CORS/CSRF/Origin/Referer cases against the same real Gateway/IAM processes, using Playwright with the installed system Microsoft Edge (`channel: msedge`, headless) and CDP request interception. The batch starts the existing fixture server for the `learner`, `official`, and unregistered (`localhost`) profiles, so any running frontend on 18180/18182 must be stopped first; an occupied fixture port fails closed. It asserts the 11 `browser-` checks, including the three CDP source-precedence cases, and matches the redacted audit sink rows by `reasonCode` (`origin_referer_conflict`, `credentialed_referer_untrusted`, `cors_origin_forbidden`). It never returns response bodies, credentials, or grant values.
+
+```powershell
+node services/api-gateway/src/test/runtime/p1r-m2-001-runtime.mjs --run --browser
+```
+
+The operator fixture below remains the manual cross-check and is not required by the automated batch.
+
 Redis failure injection is a separate explicit action. Supply one exact container name only after confirming that no other work depends on it:
 
 ```powershell

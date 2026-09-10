@@ -46,12 +46,16 @@ export function gatewayHealthRateKey(remoteAddress = FIXED.host) {
 
 export function parseArguments(argv) {
   const values = new Set(argv)
-  const known = new Set(['--run', '--probe-only', '--fault'])
+  const known = new Set(['--run', '--probe-only', '--fault', '--browser'])
   const unknown = [...values].filter((value) => !known.has(value))
   if (unknown.length) throw safeFailure('UNSUPPORTED_ARGUMENT', 'an unsupported argument was supplied')
   const modes = ['--run', '--probe-only'].filter((value) => values.has(value))
   if (modes.length !== 1) throw safeFailure('MODE_REQUIRED', 'select exactly one of --run or --probe-only')
-  return Object.freeze({ mode: modes[0].slice(2), fault: values.has('--fault') })
+  return Object.freeze({
+    mode: modes[0].slice(2),
+    fault: values.has('--fault'),
+    browser: values.has('--browser'),
+  })
 }
 
 export function validateAuditEnvelope(value) {
