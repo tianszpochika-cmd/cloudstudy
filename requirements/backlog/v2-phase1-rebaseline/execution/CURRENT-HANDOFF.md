@@ -1,8 +1,20 @@
 # 当前跨电脑交接（dev）
 
-更新时间：2026-09-09（Asia/Shanghai）。本文件只说明如何恢复当前开发检查点，不替代任务台账或 canonical Evidence manifest。
+更新时间：2026-09-10（Asia/Shanghai）。本文件只说明如何恢复当前开发检查点，不替代任务台账或 canonical Evidence manifest。
 
-## 2026-09-09 阶段性收尾（最新恢复入口）
+## 2026-09-10 阶段更新（最新恢复入口）
+
+- 本轮起点 `dev@6131783`；本轮提交：`6ceaf7f`（门禁列数修复）→ `d4909f1`（M0/M1 基线重定）→ `d530c0f`（CHANGELOG）→ `5172581`（`.gitattributes`）→ `7551da5`（CHANGELOG）→ `51a86c8`（Gateway 信封 JWKS 修复）。
+- **门禁回归修复**：台账第 9 列「资产验证」上线时漏改 `scripts/audit/p1r-evidence-gate.mjs`，而 `p1r-gap-registry-check.mjs` 通过 `import { parseLedger }` 复用它，导致 evidence gate 与 gap registry **双双结构性失败**（`tasks: []`，根本走不到 digest 比对）。修复后两者恢复。
+- **跨平台换行符**：项目此前只有 `.editorconfig`（仅约束编辑器）而**无 `.gitattributes`**，本机 `core.autocrlf=true` 使工作区检出为 CRLF，任何用 `\n` 匹配的测试必然失败（实测 2 项 P1R 测试假失败，接口正则提取数为 0、转 LF 后为 191）。已新增 `.gitattributes`（`* text=auto eol=lf`；二进制 `binary`；`*.bat`/`*.cmd` 保持 CRLF）并将工作区 2318 个文件转为 LF（worktree/index/HEAD 三者 hash 一致，**无内容变更**）。恢复 `core.autocrlf=true` 后重新检出仍为 LF，证明 `.gitattributes` 已接管。
+- **M0/M1 证据基线重定**：按既定 current-source 重验证流程把 22 个 manifest 的 `sourceCommit` 前移至 `6ceaf7f91109d4880c89d5dbbf24bef7b9a1ca3b`，646 条 `artifactDigests` 重算（实际变化 136 条），逐项追加 `provenance.currentSourceRevalidationHistory`，原 provenance / reviewHistory 未动。复核依据为全量 P1R 回归 **1421/1421 PASS**（Node 20.19.5）。**9-09 记录的全局 Evidence Gate FAIL 已消除：`pnpm p1r:evidence:check` 现为 PASS（108 tasks / `errors: []`）**；gap registry PASS（40 CLOSED / 5 OPEN）；plan check PASS（25/1/2/80）。
+- **M2-001 首次真实跨进程运行**：`--run` 首次执行即暴露出一个真实解码缺陷——IAM 按冻结契约把 `/api/v1/auth/jwks` 发布为 `ApiSuccessEnvelope`，而 Gateway 的 `NimbusReactiveJwtDecoder.withJwkSetUri(...)` 把整个文档交给 `JWKSet.parse`（只接受裸 RFC 7517 JWK Set），导致**合法 access token 一律 401 且在网关本地即拒绝、从未转发到 IAM**。已在消费侧修复（提 `51a86c8`：新增 `GatewayIamPublicJwkSource`，+13 测试），随后 `--run --fault` 取得 **`result: PASS`，18/18 检查 PASS，`notRuntimeVerified: []`**（含真实 401/403/404/429/503、Redis 故障 fail-closed 与恢复、DB15 跨进程额度续算、脱敏 audit envelope）。证据：`evidence/p1r/m2/P1R-M2-001/runtime-evidence-2026-09-10.json`。详见 [P1R-M2-001 执行记录](P1R-M2-001.md)。
+- **台账状态与阶段结论均未变**：`25 ACCEPTED / 1 BLOCKED / 2 IN_PROGRESS / 80 PLANNED`；M2-001、M2-002 仍 `IN_PROGRESS`，M2-003 及后续依赖未解锁；总阶段仍为 `D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED`。
+- **本机（本轮实际使用）环境**：JDK 25 `C:\Program Files\Microsoft\jdk-25.0.4.101-hotspot`（已设用户级 `JAVA_HOME`）；Node **20.19.5** 位于 `C:\Users\Administrator\Tools\node-v20.19.5-win-x64`（已由管理员写入 Machine PATH 首位）；Maven 3.9.9；Docker 引擎运行中，MySQL 13306 / Redis 16379 / Kafka 19092 / MinIO 19000 均 healthy；Edge 152 满足浏览器要求；`node scripts/dev/p1r-toolchain-check.mjs` **PASS（errors: []）**；项目禁止的 `yuxuexing-local-keycloak-1` 容器已停止。
+- 本机特有陷阱（不影响用户真实终端）：① Git Bash 会话缺失 `ProgramFiles` / `ProgramFiles(x86)`，会让 Docker compose 插件探测与浏览器探测**假失败**，需 `env 'ProgramFiles=C:\Program Files' 'ProgramFiles(x86)=C:\Program Files (x86)'`；② Git Bash 直接跑 `mvn`（unix 脚本）报 `classworlds.launcher.Launcher` 找不到属 MSYS 路径转换问题（Maven 完好），改直接 `java -classpath <MVN>/boot/plexus-classworlds-*.jar ... Launcher` 或 PowerShell 调 `mvn.cmd`。
+- 下一步：① M2-001 补浏览器 Cookie/CORS/CSRF/Origin/Referer 正负例（需人工或外部浏览器运行器，按 `services/api-gateway/src/test/runtime/README.md`）；② M2-001/M2-002 取得**最终独立复审**（独立于实现者）；③ M2-002 按既有顺序推进 IAM 剩余风险批次。
+
+## 2026-09-09 阶段性收尾（历史，已被上节取代）
 
 - 按用户要求保存当前成果并暂停后续研发。Gateway 检查点 `22ab84f`；IAM 幂等/V13 与迁移资产清单检查点 `ad172e5`。两者均为待最终独立审查的开发检查点，不是任务验收或生产放行。
 - 台账仍为 `25 ACCEPTED / 1 BLOCKED / 2 IN_PROGRESS / 80 PLANNED`；M2-001、M2-002 保持 `IN_PROGRESS`，M2-003 及后续依赖未解锁；总阶段仍为 `D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED`。
@@ -61,8 +73,9 @@
 1. `git fetch origin` 并确认 `dev` 包含 M1-018 最终源、C/D Evidence 提交。
 2. 运行 `pnpm plan:p1r:check`、`node scripts/audit/p1r-gap-registry-check.mjs --json`、`pnpm p1r:evidence:check`。
 3. 从 `P1R-M2-001` 和 `P1R-M2-002` 两条可并行轨道开始；它们验收后再进入 `P1R-M2-003`。
-4. 所有 Java 25 测试必须显式使用有效的 JDK 25；当前主机已验证 `C:\Users\tiansongzhen\.jdks\openjdk-25.0.2`，默认 PATH 上的 JDK 21 不是 M2 验收工具链。
-5. 没有真实运行环境的检查只能记为 `NOT_RUNTIME_VERIFIED`，不得改写为 PASS/GO。
+4. 所有 Java 25 测试必须显式使用有效的 JDK 25。已验证路径：本机 `C:\Program Files\Microsoft\jdk-25.0.4.101-hotspot`；另一台主机 `C:\Users\tiansongzhen\.jdks\openjdk-25.0.2`。默认 PATH 上的旧 JDK 不是 M2 验收工具链。前端/脚本工具链要求 **Node 20.19.5**（项目 `engines`），Maven 使用 3.9.9。
+5. M2-001 真实跨进程运行批次：`node services/api-gateway/src/test/runtime/p1r-m2-001-runtime.mjs --run`；含 Redis 故障注入时加 `--fault` 并提供 `M2_REDIS_FAULT_OPT_IN=PAUSE_EXACT_REDIS_16379_AND_RECOVER` 与 `M2_REDIS_CONTAINER=<exact-name>`。该批次**要求 Gateway/IAM 两棵源码树已提交且 jar 为 Java 25 当前构建**，并拒绝已存在的 DB15 health 限流键（须等其 TTL 自然过期，不得删除）。
+6. 没有真实运行环境的检查只能记为 `NOT_RUNTIME_VERIFIED`，不得改写为 PASS/GO。
 
 ## 6. 当前执行中的 M2 轨道
 

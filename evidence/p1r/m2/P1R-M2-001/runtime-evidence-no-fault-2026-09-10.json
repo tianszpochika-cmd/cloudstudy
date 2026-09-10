@@ -1,0 +1,248 @@
+{
+  "schema": "m2.gateway.runtime-evidence.v1",
+  "result": "PARTIAL",
+  "scope": "P1R-M2-001_GATEWAY_BOUNDARY_RUNTIME",
+  "runId": "m2-1789054903526-ca296648",
+  "repository": {
+    "revision": "51a86c8d4d92d69e4beab199b446bdc773ce95e9",
+    "serviceInputs": "CLEAN"
+  },
+  "processes": {
+    "gateway": {
+      "artifact": "services/api-gateway/target/api-gateway-0.1.0-SNAPSHOT.jar",
+      "artifactDigest": "d5d8c3ffee5d06fdf443cdd788557f2c0c8e8c27c4247281fe9d5ff8ef2b5034",
+      "sourceTree": "45c5f5cd8ed43b3bf4fef41672cb96abeec6da40",
+      "host": "127.0.0.1",
+      "port": 18070
+    },
+    "iam": {
+      "artifact": "services/iam-service/target/iam-service-0.1.0-SNAPSHOT.jar",
+      "artifactDigest": "b1cbc38e478b7e73df7c53f22f29af47d9f1b687c9dc0e3ec2c06f04c41f5b3e",
+      "sourceTree": "f859a38bf4438d141d4860589653f43a3f19a96c",
+      "host": "127.0.0.1",
+      "port": 18087
+    }
+  },
+  "redis": {
+    "host": "127.0.0.1",
+    "port": 16379,
+    "database": 15,
+    "destructiveCommandsUsed": false,
+    "faultInjection": "NOT_REQUESTED"
+  },
+  "checks": [
+    {
+      "id": "gateway-to-iam-jwks",
+      "result": "PASS",
+      "status": 200,
+      "requestId": "m2-1789054903526-ca296648-jwks",
+      "traceId": "5a76e920cf7f78479fc00aaacb3eff1d"
+    },
+    {
+      "id": "jwks-public-material-only",
+      "result": "PASS",
+      "keyCount": 1,
+      "kidDigest": "a7feb6000d72b9be3c8efaf9a103a80e03d14a5e328ab870d581ca6a461faab3"
+    },
+    {
+      "id": "protected-route-no-auth",
+      "result": "PASS",
+      "status": 401,
+      "requestId": "m2-1789054903526-ca296648-no-auth",
+      "traceId": "9fb63f8438cb85e25d234d495542fb52"
+    },
+    {
+      "id": "protected-route-malformed-auth",
+      "result": "PASS",
+      "status": 401,
+      "requestId": "m2-1789054903526-ca296648-bad-auth",
+      "traceId": "d15450922746cd401fc131d064426391"
+    },
+    {
+      "id": "iam-account-registration",
+      "result": "PASS",
+      "status": 201,
+      "requestId": "m2-1789054903526-ca296648-register",
+      "traceId": "0392392836881fb93f0e1c180fa905ed"
+    },
+    {
+      "id": "protected-iam-upstream",
+      "result": "PASS",
+      "status": 200,
+      "requestId": "m2-1789054903526-ca296648-principal",
+      "traceId": "7cf83e141b55e595c011dbc74acaa9e0"
+    },
+    {
+      "id": "authority-headers-ignored",
+      "result": "PASS",
+      "serverDerived": true
+    },
+    {
+      "id": "ordinary-user-policy-forbidden",
+      "result": "PASS",
+      "status": 403,
+      "requestId": "m2-1789054903526-ca296648-forbidden",
+      "traceId": "60e05351fffca250fd72a86c191a2c10"
+    },
+    {
+      "id": "default-owner-route-fail-closed",
+      "result": "PASS",
+      "status": 404,
+      "requestId": "m2-1789054903526-ca296648-owner-404",
+      "traceId": "227ff977efd55d9dea2ec6894f703c9b"
+    },
+    {
+      "id": "internal-path-not-exposed",
+      "result": "PASS",
+      "status": 404,
+      "requestId": "m2-1789054903526-ca296648-internal-404",
+      "traceId": "20cd6b9fccf0cd3c9f9e36fa8cb038ad"
+    },
+    {
+      "id": "redis-limit-process-a-first",
+      "result": "PASS",
+      "status": 200,
+      "requestId": "m2-1789054903526-ca296648-rate-a1",
+      "traceId": "b73f20996d6a77cfbe10ab08651128f2"
+    },
+    {
+      "id": "gateway-health-owner",
+      "result": "PASS",
+      "owner": "api-gateway",
+      "dependencyCount": 0
+    },
+    {
+      "id": "redis-limit-process-a-second",
+      "result": "PASS",
+      "status": 200,
+      "requestId": "m2-1789054903526-ca296648-rate-a2",
+      "traceId": "06f215b9df3a55a128d2203392f8eba6"
+    },
+    {
+      "id": "redis-limit-process-b-continues",
+      "result": "PASS",
+      "status": 200,
+      "requestId": "m2-1789054903526-ca296648-rate-b1",
+      "traceId": "d70e6cadf2f5bd0b5c6098525b9a029a"
+    },
+    {
+      "id": "redis-limit-process-b-rejects",
+      "result": "PASS",
+      "status": 429,
+      "requestId": "m2-1789054903526-ca296648-rate-b2",
+      "traceId": "af97a63d0cdadc82d9054b9ba4fbba37"
+    },
+    {
+      "id": "sequential-cross-process-state-continuation",
+      "result": "PASS",
+      "topology": "SEQUENTIAL_DISTINCT_PROCESSES_NOT_CONCURRENT_REPLICAS",
+      "processAObservedCount": 2,
+      "processBObservedCount": 4,
+      "retryAfterSeconds": 293
+    }
+  ],
+  "audit": {
+    "schema": "m2.gateway.security-audit.evidence.v1",
+    "durability": "NON_DURABLE_TEST_ONLY",
+    "rows": [
+      {
+        "sourceProcess": "gateway-baseline",
+        "schema": "m2.gateway.security-audit.evidence.v1",
+        "durability": "NON_DURABLE_TEST_ONLY",
+        "occurredAt": "2026-09-10T15:41:58.971471700Z",
+        "routeId": "iam-jwks-public",
+        "method": "GET",
+        "status": 200,
+        "requestId": "m2-1789054903526-ca296648-jwks",
+        "traceId": "5a76e920cf7f78479fc00aaacb3eff1d",
+        "subjectHash": "",
+        "tenantHash": "",
+        "clientProfile": "NO_BROWSER_PROFILE",
+        "decision": "ALLOW",
+        "reasonCode": "completed",
+        "latencyBucket": "250_TO_999_MS"
+      },
+      {
+        "sourceProcess": "gateway-baseline",
+        "schema": "m2.gateway.security-audit.evidence.v1",
+        "durability": "NON_DURABLE_TEST_ONLY",
+        "occurredAt": "2026-09-10T15:41:59.001095Z",
+        "routeId": "iam-domain",
+        "method": "GET",
+        "status": 401,
+        "requestId": "m2-1789054903526-ca296648-no-auth",
+        "traceId": "9fb63f8438cb85e25d234d495542fb52",
+        "subjectHash": "",
+        "tenantHash": "",
+        "clientProfile": "NO_BROWSER_PROFILE",
+        "decision": "DENY",
+        "reasonCode": "unauthorized",
+        "latencyBucket": "LT_50_MS"
+      },
+      {
+        "sourceProcess": "gateway-baseline",
+        "schema": "m2.gateway.security-audit.evidence.v1",
+        "durability": "NON_DURABLE_TEST_ONLY",
+        "occurredAt": "2026-09-10T15:41:59.688580100Z",
+        "routeId": "iam-domain",
+        "method": "GET",
+        "status": 403,
+        "requestId": "m2-1789054903526-ca296648-forbidden",
+        "traceId": "60e05351fffca250fd72a86c191a2c10",
+        "subjectHash": "0133a3354c26c4e9baead4b1081d531d87488ada520259dbe57cf17a0191e67e",
+        "tenantHash": "d294fcce0cc88587843099d85dd805aeef1b09a63b0db1dd3e4dc62a343c1db5",
+        "clientProfile": "NO_BROWSER_PROFILE",
+        "decision": "DENY",
+        "reasonCode": "forbidden",
+        "latencyBucket": "LT_50_MS"
+      },
+      {
+        "sourceProcess": "gateway-baseline",
+        "schema": "m2.gateway.security-audit.evidence.v1",
+        "durability": "NON_DURABLE_TEST_ONLY",
+        "occurredAt": "2026-09-10T15:41:59.695698400Z",
+        "routeId": "public-site",
+        "method": "GET",
+        "status": 404,
+        "requestId": "m2-1789054903526-ca296648-owner-404",
+        "traceId": "227ff977efd55d9dea2ec6894f703c9b",
+        "subjectHash": "",
+        "tenantHash": "",
+        "clientProfile": "NO_BROWSER_PROFILE",
+        "decision": "DENY",
+        "reasonCode": "canonical_route_target_unavailable",
+        "latencyBucket": "LT_50_MS"
+      },
+      {
+        "sourceProcess": "gateway-b",
+        "schema": "m2.gateway.security-audit.evidence.v1",
+        "durability": "NON_DURABLE_TEST_ONLY",
+        "occurredAt": "2026-09-10T15:42:15.878925200Z",
+        "routeId": "gateway-health",
+        "method": "GET",
+        "status": 429,
+        "requestId": "m2-1789054903526-ca296648-rate-b2",
+        "traceId": "af97a63d0cdadc82d9054b9ba4fbba37",
+        "subjectHash": "",
+        "tenantHash": "",
+        "clientProfile": "NO_BROWSER_PROFILE",
+        "decision": "DENY",
+        "reasonCode": "rate_limited",
+        "latencyBucket": "LT_50_MS"
+      }
+    ]
+  },
+  "sensitiveMaterial": {
+    "persisted": false,
+    "emitted": false
+  },
+  "notRuntimeVerified": [
+    "HTTP_503_AND_REDIS_RECOVERY"
+  ],
+  "exclusions": [
+    "M2-006_DURABLE_AUDIT",
+    "M2-008_NETWORK_POLICY",
+    "CONCURRENT_GATEWAY_REPLICAS",
+    "BROWSER_EXECUTION"
+  ]
+}
