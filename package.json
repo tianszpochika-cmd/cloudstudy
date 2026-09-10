@@ -159,6 +159,8 @@
     "redis:validate": "node scripts/database/validate-redis-keyspace.mjs",
     "config:check": "node scripts/check-runtime-config.mjs",
     "dod:check": "node scripts/check-dod.mjs --json",
+    "docs:audit": "node scripts/audit/doc-audit.mjs",
+    "docs:audit:json": "node scripts/audit/doc-audit.mjs --json",
     "tasks:v2:check": "node scripts/audit/verify-v2-b7plus-task-baseline.mjs",
     "plan:p1r:check": "node scripts/audit/verify-phase1-rebaseline-plan.mjs",
     "core-api:build": "mvn -f services/core-api/pom.xml -DskipTests package",
@@ -169,6 +171,7 @@
     "format": "prettier --write ."
   },
   "devDependencies": {
+    "playwright": "^1.63.0",
     "prettier": "^3.3.0",
     "turbo": "^2.0.0",
     "typescript": "^5.4.0"

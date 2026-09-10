@@ -1,5 +1,9 @@
 # Changelog
 
+- [DOC-AUDIT-REMEDIATION-20260910] 文档体系审计与整改：修复审计发现 9 项中的 8 项（计划入口 README 状态计数过期、`docs/` 根缺索引、16 个目录缺 README、ADR 0002/0003 编号断档、索引命名不统一、3 处命名违规、CONTRIBUTING 未指向治理规则、`07-operations` 快照未索引）；撤回 1 项（台账代码式任务 ID 属机器解析契约，改为 Markdown 链接会使计划门禁脚本报错）。`document-governance.md` 升版 v2.4 并新增第 6 节「文档文件命名规范」；新增只读检查器 `scripts/audit/doc-audit.mjs` 与命令 `pnpm docs:audit` / `docs:audit:json`。豁免 2 个被 `evidence/p1r/m1/P1R-M1-012/manifest.json` 的 `artifactDigests` 锁定的中文名文件（改名会破坏证据链）。核查更正：310 个「待细化签收」单元全部属 Phase 2/3（Phase 1 为 0），本轮无需细化。验证：`pnpm docs:audit` PASS（死链 0 / 缺索引 0）、`node scripts/check-dod.mjs --json` 与 `--strict` 均 5/5 PASS、`verify-phase1-rebaseline-plan.mjs` 25/1/2/80 PASS。未覆盖：M-4 存量命名仅整改实际违规项，未做全量英文化。
+
+- [ASSET-PREFLIGHT-20260910] M3–M8 资产预检与计划文档改造：对 22 项 `REUSE-VERIFY` 任务做函数级现状核查，结论 `已验-可用` 12 / `已验-需修` 10 / `已验-不可用` 0，无一项需整体 REWRITE；核查确认全部 `services/` 均为 Java 25 + Spring Boot 4.1.1，无 Java 17 单体残留。台账新增「资产验证」列（位于状态列之后）并回填 22 项；10 项任务的「最小退出证据」点名补入具体缺口；`M7-004` 依赖补 `M2-005`。`01-里程碑与依赖图.md` 新增 §3.1 资产预检门并挂到 `M3`–`M7` 进入条件；`03-阶段验收与Evidence标准.md` 新增 §8「资产复用与禁止引用」。门禁脚本列数校验由 8 改为 9，并新增「资产验证」值域校验。报告：`requirements/backlog/v2-phase1-rebaseline/execution/asset-preflight-report-2026-09-10.md`。验证：同上三项门禁 PASS。未覆盖：剩余 43 项 `未验` 的 `REPAIR`/`NEW` 任务待各自里程碑预检门处理；V13 漂移恢复方案仍待编制。
+
 - [P1R-M2-CHECKPOINT-EVIDENCE-GAP-20260909] 阶段收尾全局 Evidence Gate 检出 M0/M1 current-source artifactDigests 漂移，结果 FAIL；GAP registry PASS（40 CLOSED / 5 OPEN）。精确影响与恢复要求已记入收尾记录和 CURRENT-HANDOFF，未刷新历史摘要掩盖未完成审查，也未提升任务状态。
 
 - [P1R-M2-STAGE-CHECKPOINT-20260909] 按阶段收尾要求保存 Gateway 运行夹具/非持久化审计检查点 `22ab84f` 和 IAM 幂等 HMAC/当前事实重放/单 ALTER V13 检查点 `ad172e5`；同步迁移资产清单，移除 local 自动 drain 确认，更新任务入口、台账与 CURRENT-HANDOFF。Java 25 IAM 定向 `41/41`、Gateway Node `7/7`、计划与数据归属静态检查通过；保留此前 Gateway Java `69/69`、MySQL V13 `1/1` 的日期与范围。本日 Docker 不可连接，最终独立复审、跨进程/浏览器与 IAM 剩余安全批次未完成；M2-001/M2-002 继续 IN_PROGRESS，不构成 Phase 1 完成或生产放行。

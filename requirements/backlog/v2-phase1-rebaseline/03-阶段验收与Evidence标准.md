@@ -224,3 +224,32 @@ manifest 不得包含密码、Token、私钥、真实手机号、原始用户音
 | `P3` | 文案、低影响视觉或非阻断维护项 | 可进入后续任务，但不得掩盖为“无问题” |
 
 最终 Go/No-Go 必须是独立评审结果。计划完成、静态 Gate 通过、D3 完成或本机 E2E 局部通过都不能自动产生 `GO`。
+
+## 8. 资产复用与禁止引用（M3+ 强制）
+
+本节由 2026-09-10 的 M3–M8 资产预检结论补充，适用于 `M3` 及其后全部里程碑。
+
+### 8.1 禁止引用清单
+
+`services/core-api` 是迁移中的 v1 兼容单体（Strangler 反腐层与回滚边界），**其任何实现不得进入 v2 正式业务路径**。已识别的禁止引用项包括（不限于）：
+
+- `B2AssessmentEngine`、`AssessmentB2Controller`（旧测评引擎与控制器）
+- `InMemoryIdentityRepository`、`InMemorySessionRepository`、`InMemoryB4DurableRepository`（内存实现冒充持久化）
+
+`M5` 开工前必须先产出**完整的 core-api 禁止引用清单**，并以静态检查（import / 符号扫描）保证不被违反。违反视为**强制失败**，按 `P1` 处理。
+
+### 8.2 复用资产的前置条件
+
+`M3`–`M7` 中资产策略含 `REUSE-VERIFY` / `REPAIR` / `REWRITE` 的任务，其**进入条件**见 [01-里程碑与依赖图 §3.1 资产预检门](01-里程碑与依赖图.md)。**台账「资产验证」列仍为 `未验` 的适用任务不得开工。**
+
+复用结论必须落到台账「资产验证」列：`已验-可用` / `已验-需修` / `已验-不可用`。判定为 `已验-不可用` 时，须将该任务的资产策略改为 `REWRITE` 或 `NEW`，并同步评估工期。
+
+### 8.3 测试覆盖的执行口径
+
+第 4 节 Unit/Service 要求为「正常 / 边界 / 异常 / 授权 / 幂等」。**仅存在 smoke / 冒烟测试不视为满足该要求。**
+
+当前实际覆盖显著不足（`learning` / `assessment` / `content` / `media` 各仅 1 个 smoke 测试，`admin-ops` 为 0），相关任务在提交验收前必须补齐关键路径测试。
+
+### 8.4 预检发现索引
+
+`M3`–`M8` 的资产预检逐项判定、风险清单与核实记录见 [execution/asset-preflight-report-2026-09-10.md](execution/asset-preflight-report-2026-09-10.md)。其中 R1–R9 的具体缺口已点名写入对应任务的「最小退出证据」。

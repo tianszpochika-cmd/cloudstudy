@@ -2,7 +2,7 @@
 
 > **状态：Historical / Superseded（历史 v1 UI/UX 补充）。** `P1-BASELINE-20260820` 仅用于旧任务回放；新一轮业务设计、任务与验收以 [`../../v2-980plus/README.md`](../../v2-980plus/README.md) 为唯一基线。
 > 唯一事实范围：本文件只补充 UI/UX 可追溯关系、页面状态和验收映射，不改变需求账本、共享 README、功能矩阵、API 契约或代码。  
-> 阅读基线：[AGENTS.md](../../../../AGENTS.md)、[requirements](../../../../requirements/README.md)、[Phase 1 跨文档基线](../../../../requirements/backlog/Phase-1范围冻结与跨文档基线.md)、[feature-matrix.md](../../../../requirements/feature-matrix.md)、[UIUX 00~24](../uiux-specs/00_README_设计文档索引.md)、[detailed-specs 01~08](../../detailed-specs/01_Onboarding与自适应首屏详细设计.md)。
+> 阅读基线：[AGENTS.md](../../../../AGENTS.md)、[requirements](../../../../requirements/README.md)、[Phase 1 跨文档基线](../../../../requirements/backlog/Phase-1范围冻结与跨文档基线.md)、[feature-matrix.md](../../../../requirements/feature-matrix.md)、[UIUX 00~24](../uiux-specs/README.md)、[detailed-specs 01~08](../../detailed-specs/01_Onboarding与自适应首屏详细设计.md)。
 
 ## 0. 范围与追溯口径
 

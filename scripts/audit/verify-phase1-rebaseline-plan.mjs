@@ -37,6 +37,14 @@ const allowedTaskStatuses = new Set([
   'REWORK',
 ]);
 
+const allowedAssetVerification = new Set([
+  '不适用',
+  '未验',
+  '已验-可用',
+  '已验-需修',
+  '已验-不可用',
+]);
+
 function fail(message) {
   console.error(`FAIL: ${message}`);
   process.exit(1);
@@ -82,11 +90,15 @@ if (duplicateTaskIds.length) fail(`duplicate task IDs: ${unique(duplicateTaskIds
 
 for (const line of taskRows) {
   const columns = line.slice(1, -1).split('|').map((column) => column.trim());
-  if (columns.length !== 8) fail(`task row must have 8 columns: ${line}`);
+  if (columns.length !== 9) fail(`task row must have 9 columns: ${line}`);
   if (columns.some((column) => !column)) fail(`task row has an empty required column: ${line}`);
   const status = columns[7].match(/^`([A-Z_]+)`$/)?.[1];
   if (!status || !allowedTaskStatuses.has(status)) {
     fail(`invalid task status: ${columns[0]}=${columns[7]}`);
+  }
+  const assetVerification = columns[8].replace(/`/g, '');
+  if (!allowedAssetVerification.has(assetVerification)) {
+    fail(`invalid asset verification: ${columns[0]}=${columns[8]}`);
   }
   let dependencies;
   try {

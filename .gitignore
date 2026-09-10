@@ -29,6 +29,7 @@ secrets/
 Thumbs.db
 .vscode/
 .idea/
+.workbuddy/
 *.swp
 
 # local data and logs

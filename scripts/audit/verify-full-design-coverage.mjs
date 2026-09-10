@@ -30,7 +30,7 @@ const legacyEntryPoints = [
   'docs/06-design/detailed-specs/README.md',
   'docs/06-design/phase-1/README.md',
   'docs/06-design/phase-1/uiux-specs/00_README_设计文档索引.md',
-  'docs/06-design/phase-1/uiux-specs/SOURCE.md',
+  'docs/06-design/phase-1/uiux-specs/source.md',
   'docs/06-design/phase-1/full-coverage/成长社群商业后台原子功能补充设计.md',
   'docs/06-design/phase-1/full-coverage/学习与练习原子功能补充设计.md',
   'docs/06-design/phase-1/full-coverage/UIUX需求追溯与页面状态补充设计.md',

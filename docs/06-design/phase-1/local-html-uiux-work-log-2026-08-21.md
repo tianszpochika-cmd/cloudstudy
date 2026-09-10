@@ -15,7 +15,7 @@
 - [HTML UI 构建清单](./html-ui-build-manifest.json)
 - [HTML UI 组件清单](./html-ui-component-manifest.json)
 - [HTML UI 状态记录](./html-ui-build-state.json)
-- [Phase 1 UI/UX 设计规范](./uiux-specs/00_README_设计文档索引.md)
+- [Phase 1 UI/UX 设计规范](./uiux-specs/README.md)
 - [完整页面地图与交付蓝图](./uiux-specs/24_完整UIUX页面地图与交付蓝图.md)
 - [高保真原型目录](./mockups/README.md)
 

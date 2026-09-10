@@ -7,6 +7,8 @@
 | 编号 | 决策 | 状态 |
 | :--- | :--- | :--- |
 | ADR-0001 | 模块化单体优先 | superseded（后端目标由 ADR-0010 取代；迁移期仍适用于旧 `core-api`） |
+| ADR-0002 | 移动端 App 采用 Tauri 2.0 主线 | superseded（移动端随 [ADR-0004](0004-stack-switch-uniapp-springboot.md) 改用 uni-app 原生渲染；Tauri/RN 路线分析作为历史参考保留） |
+| ADR-0003 | Core API 采用 Node.js (NestJS) | superseded（随 [ADR-0004](0004-stack-switch-uniapp-springboot.md) 改用 Java / Spring Boot 3；NestJS 评估作为历史参考保留） |
 | ADR-0004 | Vue 3 + uni-app + Spring Boot 3 主线 | superseded（当前前端矩阵见 [ADR-0008](0008-four-frontend-projects-and-platform-targets.md)；当前后端/事件平台见 [ADR-0010](0010-java25-microservices-gateway-iam.md)） |
 | ADR-0005 | 保留 Python FastAPI AI 编排层 | accepted |
 | ADR-0006 | MySQL 8.x + Redis 7.x 数据主线 | accepted |
@@ -19,4 +21,4 @@
 | ADR-0013 | 自有 JWT 认证中心 | accepted / 当前正式登录基线 |
 | ADR-0014 | Phase 1 客服与隐私编排事实所有权 | accepted |
 
-ADR-0001 与 ADR-0004 不删除，保留用于解释 `core-api` 的迁移来源。Git 历史仅用于审计，不作为当前开发依据。
+ADR-0001、ADR-0002、ADR-0003 与 ADR-0004 均为 superseded 但不删除，保留用于解释 `core-api`、移动端与技术栈选型的迁移来源和已放弃路线；编号序列 `0001–0014` 保持连续，不得留空号。Git 历史仅用于审计，不作为当前开发依据。

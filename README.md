@@ -18,7 +18,9 @@
 - **UI/UX 设计规范**：`docs/06-design/` 与 `packages/design-tokens/`
 - **PRD 全量设计追溯**：[`docs/06-design/traceability/README.md`](docs/06-design/traceability/README.md)（原子需求、设计登记、用户故事、验收与冲突）
 - **980+ 全量设计 v2**：[`docs/06-design/v2-980plus/README.md`](docs/06-design/v2-980plus/README.md)（980 个设计单元、逐条交互/状态/契约/验收登记）
-- **文档治理规则**：`docs/00-vision/document-governance.md`
+- **文档治理规则**：[`docs/00-vision/document-governance.md`](docs/00-vision/document-governance.md)
+- **文档树总入口**：[`docs/README.md`](docs/README.md)（12 个顶层目录定位与按任务阅读路径）
+- **文档健康检查**：`pnpm docs:audit`（死链 / 孤儿文档 / 缺索引目录，只读）
 
 ---
 
