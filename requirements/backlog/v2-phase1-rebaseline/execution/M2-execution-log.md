@@ -68,6 +68,12 @@
 - 终审复跑：IAM `90/0/0（20 skipped）`、opt-in 全矩阵 `19/19`、V13 `1/1`、P1R `1421/1421`、evidence gate PASS。
 - `P1R-M2-003` 依赖满足但未认领；总体阶段仍 `D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED`。
 
+## 2026-09-11 M2-003 Batch 1a：learning-service 事实来源修复
+
+- 用户确认采用“服务侧 PDP/本地策略事实”方案；JWT 只提供身份/租户/角色/权限。
+- learning-service：新增 JWT authorities 转换器与 `LearningHttpPrincipals` 默认拒绝入口（缺 tenant/角色/权限即 401/403），删除生产 `phaseOne()` 硬编码 GRANTED 工厂与死代码 resolver；测试夹具迁移 test-only。
+- 验证（JDK 25）：learning 全套 `121/0/0/0`；learning-loop contract PASS（50 adversarial cases）。
+
 ## 2026-09-04 IAM 账户/密码并发安全检查点
 
 - 源码：`9deb899`。认证改为锁前单次 cost-12 BCrypt、锁内 current principal/hash/status/counter 复核；credential epoch 在校验期间变化时统一 `INVALID_CREDENTIALS` 且零写入，避免旧在途请求污染或锁死刚重置的新凭据。

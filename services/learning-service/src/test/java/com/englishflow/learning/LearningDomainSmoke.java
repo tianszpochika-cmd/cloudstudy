@@ -104,7 +104,7 @@ public final class LearningDomainSmoke {
                 "client tenant override is denied");
 
         AuthorizationDecision tenantMismatch = policy.authorize(
-                LearningPrincipalContext.phaseOne(PRINCIPAL, 7001), "learning.plan.read",
+                LearningTestPrincipals.phaseOne(PRINCIPAL, 7001), "learning.plan.read",
                 "learning-plan", "1000", "other-tenant", PRINCIPAL);
         assertEquals(LearningDecisionCode.TENANT_MISMATCH, tenantMismatch.code(),
                 "cross-tenant access is denied");
@@ -365,7 +365,7 @@ public final class LearningDomainSmoke {
 
     private static final class Fixture {
         private final InMemoryLearningFactStore store = new InMemoryLearningFactStore();
-        private final LearningPrincipalContext context = LearningPrincipalContext.phaseOne(PRINCIPAL, 7001);
+        private final LearningPrincipalContext context = LearningTestPrincipals.phaseOne(PRINCIPAL, 7001);
         private final LearningPlanService plans;
         private final LearningReviewService reviews;
         private final LearningProgressService progress;

@@ -1,5 +1,6 @@
 package com.englishflow.learning.adapter.failclosed;
 
+import com.englishflow.learning.LearningTestPrincipals;
 import com.englishflow.learning.domain.IdempotencyKey;
 import com.englishflow.learning.domain.LearningItemType;
 import com.englishflow.learning.domain.LearningPlan;
@@ -31,7 +32,7 @@ class FailClosedAdaptersTest {
     private static final LearningTenantScope SCOPE =
             LearningTenantScope.forPhaseOne("prn_learningtest0001", 7001);
     private static final LearningPrincipalContext CTX =
-            LearningPrincipalContext.phaseOne("prn_learningtest0001", 7001);
+            LearningTestPrincipals.phaseOne("prn_learningtest0001", 7001);
 
     private static LearningFactStore store() {
         return new FailClosedLearningFactStore();

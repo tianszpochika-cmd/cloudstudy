@@ -16,7 +16,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -843,14 +842,7 @@ public class B25LearningJdbcController {
         return view;
     }
     private Principal principal(Authentication authentication) {
-        if (!(authentication instanceof JwtAuthenticationToken jwt) || !authentication.isAuthenticated()) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "verified JWT principal is required");
-        Object tenant = jwt.getToken().getClaims().get("tenant_id");
-        if (tenant != null && !TENANT.equals(String.valueOf(tenant))) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "tenant is not allowed");
-        }
-        String subject = jwt.getToken().getSubject();
-        if (subject == null || subject.isBlank()) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "subject is missing");
-        return new Principal(subject);
+        return new Principal(LearningHttpPrincipals.require(authentication).subject());
     }
     private static final long B25_SRS_SNAPSHOT_ID = 25001L;
     private static final long B25_SRS_SNAPSHOT_ITEM_ID = 25001L;

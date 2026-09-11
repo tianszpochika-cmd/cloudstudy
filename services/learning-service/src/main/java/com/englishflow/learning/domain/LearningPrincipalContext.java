@@ -27,26 +27,6 @@ public record LearningPrincipalContext(
                 : clientAuthorityClaims;
     }
 
-    public static LearningPrincipalContext phaseOne(String principalId, long userId) {
-        return new LearningPrincipalContext(
-                LearningTenantScope.forPhaseOne(principalId, userId),
-                "phase-1",
-                Set.of("learner"),
-                Set.of(
-                        "learning.plan.read",
-                        "learning.plan.write",
-                        "learning.review.read",
-                        "learning.review.write",
-                        "learning.progress.read",
-                        "learning.progress.write",
-                        "learning.mastery.read",
-                        "learning.mastery.write",
-                        "learning.task.write"),
-                ConsentState.GRANTED,
-                false,
-                ClientAuthorityClaims.none());
-    }
-
     public boolean hasRole(String role) {
         return role != null && roles.contains(role);
     }

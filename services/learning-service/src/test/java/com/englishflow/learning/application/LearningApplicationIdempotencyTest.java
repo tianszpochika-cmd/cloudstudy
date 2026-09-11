@@ -1,5 +1,6 @@
 package com.englishflow.learning.application;
 
+import com.englishflow.learning.LearningTestPrincipals;
 import com.englishflow.learning.adapter.memory.InMemoryLearningFactStore;
 import com.englishflow.learning.adapter.memory.InMemoryLearningIdGenerator;
 import com.englishflow.learning.domain.IdempotencyKey;
@@ -44,7 +45,7 @@ class LearningApplicationIdempotencyTest {
 
     private static final class Fixture {
         final InMemoryLearningFactStore store = new InMemoryLearningFactStore();
-        final LearningPrincipalContext context = LearningPrincipalContext.phaseOne(PRINCIPAL, 7001);
+        final LearningPrincipalContext context = LearningTestPrincipals.phaseOne(PRINCIPAL, 7001);
         final LearningPlanService plans;
         final LearningReviewService reviews;
         final LearningProgressService progress;

@@ -42,6 +42,11 @@ public class SecurityConfiguration {
     ClientAuthorityHeaderFilter clientAuthorityHeaderFilter() { return new ClientAuthorityHeaderFilter(); }
 
     @Bean
+    LearningJwtAuthenticationConverter learningJwtAuthenticationConverter() {
+        return new LearningJwtAuthenticationConverter();
+    }
+
+    @Bean
     @ConditionalOnProperty(prefix = "security.resource-server", name = "enabled", havingValue = "true")
     JwtDecoder verifiedJwtDecoder(ResourceServerSecurityProperties properties) {
         NimbusJwtDecoder decoder = NimbusJwtDecoder.withJwkSetUri(properties.getJwkSetUri()).build();
@@ -56,6 +61,7 @@ public class SecurityConfiguration {
             ResourceServerSecurityProperties properties,
             ObjectProvider<JwtDecoder> decoderProvider,
             ClientAuthorityHeaderFilter authorityHeaderFilter,
+            LearningJwtAuthenticationConverter jwtAuthenticationConverter,
             ObjectMapper objectMapper) throws Exception {
         AuthenticationEntryPoint entryPoint = (request, response, exception) ->
                 write(objectMapper, response, 401, "UNAUTHENTICATED", "authentication required");
@@ -75,7 +81,8 @@ public class SecurityConfiguration {
                 throw new IllegalStateException("Resource Server is enabled without a JwtDecoder");
             });
             http.oauth2ResourceServer(oauth2 -> oauth2.authenticationEntryPoint(entryPoint)
-                    .accessDeniedHandler(deniedHandler).jwt(jwt -> jwt.decoder(decoder)));
+                    .accessDeniedHandler(deniedHandler)
+                    .jwt(jwt -> jwt.decoder(decoder).jwtAuthenticationConverter(jwtAuthenticationConverter)));
         }
         return http.build();
     }

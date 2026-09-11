@@ -1,5 +1,6 @@
 package com.englishflow.learning.domain;
 
+import com.englishflow.learning.LearningTestPrincipals;
 import org.junit.jupiter.api.Test;
 
 import java.time.Clock;
@@ -18,7 +19,7 @@ class LearningAccessPolicyTest {
     private static final String PRINCIPAL = "prn_learningtest0001";
 
     private static LearningPrincipalContext allowed() {
-        return LearningPrincipalContext.phaseOne(PRINCIPAL, 7001);
+        return LearningTestPrincipals.phaseOne(PRINCIPAL, 7001);
     }
 
     private static LearningAccessPolicy policy() {
