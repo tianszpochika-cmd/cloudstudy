@@ -12,6 +12,7 @@
 - 已知边界（M2-002）：真实邮件/短信投递与重试、真实 App Attest/Play Integrity 与真机 Keychain/Keystore、并发 IAM 副本/HA 未验证；2 项 P3（legacy 重放控制器级 409 用例、规范必需类型映射维护断言）留待后续。
 - 本机 opt-in 隔离库：标准栈 MySQL 8.0（`iam_service` + `iam_v13_test_20260911_a`，`iam_runtime` 仅本地测试）；opt-in 全矩阵 19/19 与 V13 1/1 已在孤立库复现。
 - M2-001 验收门禁（提交 `183c08a`）：`plan:p1r:check` PASS（26/1/1/80）、`p1r-gap-registry-check` PASS（40 CLOSED / 5 OPEN）、`p1r:evidence:check` PASS（108 tasks / `errors: []`）、`docs:audit` PASS、`check-dod --strict` PASS=5 WARN=0 FAIL=0、全量 P1R **1421/1421 PASS**（Node 20.19.5）。
+- M2-002 验收门禁（提交 `52b3891`）：`plan:p1r:check` PASS（27/1/0/80）、`p1r-gap-registry-check` PASS（40 CLOSED / 5 OPEN）、`p1r:evidence:check` PASS（108 tasks / `errors: []`，M2-002 manifest 摘要与 sourceCommit/HEAD blob 比对通过）、`docs:audit` PASS、`check-dod --strict` PASS=5 WARN=0 FAIL=0、全量 P1R **1421/1421 PASS**（Node 20.19.5）。
 - GitHub 网络仍间歇不可达，本地提交待网络恢复后推送。
 
 ## 2026-09-11 阶段更新（历史，已被上节取代）
