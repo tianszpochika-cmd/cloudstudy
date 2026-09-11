@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-009",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "6ceaf7f91109d4880c89d5dbbf24bef7b9a1ca3b",
+  "sourceCommit": "f30e60c867923b6e1c0ef6bf26e6e1efc941b24e",
   "artifactDigests": [
     {
       "path": "config/g1-contract-data.json",
@@ -67,7 +67,7 @@
     {
       "path": "packages/contracts/fragments/b8/b8-auth-iam.openapi.json",
       "algorithm": "sha256",
-      "digest": "adeaf107a42e3f00ec49c74434eb6aaa6f903e37471e5cd852f81d5b55c493a1"
+      "digest": "3aac0ede2c97b1f539353e9edf7dbef2d2a6b0f5d30c56dbfaf0b52f43f5fde8"
     },
     {
       "path": "packages/contracts/fragments/p1r-gateway-boundary.openapi.json",
@@ -82,7 +82,7 @@
     {
       "path": "packages/contracts/openapi/v1/openapi.json",
       "algorithm": "sha256",
-      "digest": "93c03dfd26d482397a5ec1c1e26f5627f1e2294d10a68864d3af30eeeffe1a80"
+      "digest": "ec7ad767e2ecf42f290cc3e23204ff0de2058c8250803907898348c4320e8829"
     },
     {
       "path": "scripts/audit/p1r-gateway-contract-check.mjs",
@@ -266,6 +266,16 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-10T22:24:25+08:00",
         "details": "Current-source revalidation after the 2026-09-10 commits (a149335 docs/asset-preflight, 6131783 dev unit-test completion, 6ceaf7f evidence-gate 9-column fix) invalidated previously recorded artifact digests. Rebased sourceCommit to 6ceaf7f91109d4880c89d5dbbf24bef7b9a1ca3b after the full P1R regression passed 1421/1421 under Node 20.19.5 on an LF-normalized worktree. Original provenance and review history remain unchanged; runtime evidence is not promoted."
+      },
+      {
+        "taskId": "P1R-M1-009",
+        "sourceCommit": "f30e60c867923b6e1c0ef6bf26e6e1efc941b24e",
+        "auditedImplementationSource": "f30e60c867923b6e1c0ef6bf26e6e1efc941b24e",
+        "integrationCheckpoint": "f30e60c867923b6e1c0ef6bf26e6e1efc941b24e",
+        "reviewer": "agent:p1r_current_source_revalidation:opencode-worker",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-11T12:31:01+08:00",
+        "details": "Current-source artifact digest rebase after the additive canonical 403 declarations on auth register/login/refresh operations in packages/contracts/fragments/b8/b8-auth-iam.openapi.json and the regenerated packages/contracts/openapi/v1/openapi.json. OpenAPI compatibility vs the parent commit reports 0 breaking changes; no schema or generated artifact changed."
       }
     ],
     "currentSourceRevalidationAuditedImplementationSource": "2a747ba3917acd92664911c6b4be070ff469e302",
