@@ -4,13 +4,13 @@
 
 ## 2026-09-11 阶段更新（最新恢复入口）
 
-- 本轮两条可恢复开发批次（提交后才有 current-commit 证据；台账状态不变）：
-  - `P1R-M2-001` 浏览器证据批次：新增 `--run --browser`（Playwright + 系统 Edge + CDP 请求/响应拦截）与 11 个浏览器用例、`reasonCode` 审计断言；单测 8/8、运行栈机制冒烟通过。canonical 批次待提交并构建后执行。
-  - `P1R-M2-002` 幂等边界预期拒绝批次：修复 Consent/Policy 内层事务 rollback-only（`UnexpectedRollbackException`）与幂等重放状态映射；新增 opt-in MySQL 测试 4/4，全套 71 tests 通过。
-- 前端契约修复：三个客户端删除契约外 `X-Client-Platform`，真实浏览器登录恢复（Playwright 实测 200 并跳转 onboarding）。
+- `P1R-M2-001` 真实运行批次已完成并归档：在标准本地栈 `yuxuexing-local`（Redis 7 `127.0.0.1:16379`）以 JDK 25 构建两棵服务树后执行（`dev@352879a`，services 树 `CLEAN`）。`--run --browser` → 27/27 PASS（16 普通 + 11 浏览器，`PARTIAL`，仅 503 未请求）；`--run --browser --fault`（精确 pause/unpause `yuxuexing-local-redis-1`）→ **`result: PASS`，29/29 PASS，`notRuntimeVerified: []`**，审计覆盖 `200/401/403/404/429/503` 与三个浏览器 reasonCode，`redis.destructiveCommandsUsed=false`、`sensitiveMaterial={persisted:false,emitted:false}`。证据：`evidence/p1r/m2/P1R-M2-001/runtime-evidence-2026-09-11.json`。首次 `--run --browser` 曾在 `redis-limit-process-a-first` 瞬时 `HTTP_STATUS` 失败（健康桶未写入、DB15 仅存浏览器阶段 `iam-jwks-public` 桶，排除 429；判定为首次请求超过 750ms 后端预算的 fail-closed），等待健康键自然过期后重跑通过，未删除任何键。详见 [P1R-M2-001 执行记录](P1R-M2-001.md)。
+- `P1R-M2-002` 幂等边界预期拒绝批次源码（提交 `4bc645c`）：修复 Consent/Policy 内层事务 rollback-only（`UnexpectedRollbackException`）与幂等重放状态映射；新增 opt-in MySQL 测试 4/4，全套 71 tests 通过。详见 [P1R-M2-002 执行记录](P1R-M2-002.md)。
+- 前端契约修复：三个客户端删除契约外 `X-Client-Platform`，真实浏览器登录恢复（提交 `db49906`）。
 - 台账仍为 `25 ACCEPTED / 1 BLOCKED / 2 IN_PROGRESS / 80 PLANNED`；M2-001/M2-002 保持 `IN_PROGRESS / NOT_RUNTIME_VERIFIED`，M2-003 及后续依赖未解锁；总阶段仍为 `D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED`。
-- 本机提醒：`v2,local-real` 启动的 IAM 无 `local` profile，正式 Consent 策略来源缺失时 `/api/v1/iam/principal/me` 返回 503 `iam.consent.version_unavailable`（M2-002 待办）；`m2-evidence` 夹具使用显式 `local` profile，不受影响。本地栈密钥/幂等秘密在 `C:\Temp\yuxuexing-local\`（不入库）。
-- 下一步：① 提交当前 services 树后执行 `node services/api-gateway/src/test/runtime/p1r-m2-001-runtime.mjs --run --browser`（先停 18180/18182 前端）；② 取 M2-001/M2-002 最终独立复审；③ M2-002 继续 legacy Consent 空摘要兼容、密码重置投递与 device trust。
+- 本机环境：JDK 25 `C:\Users\tiansongzhen\.jdks\openjdk-25.0.2`（系统 `JAVA_HOME` 仍为 JDK 21，本项目按命令临时覆盖，不影响其他项目）；标准栈 `yuxuexing-local`（MySQL 13306 / Redis 16379 / Kafka 19092 / MinIO 19000-19001 / RabbitMQ 15689-15690）已替代临时 `cloudstudy-p1r-m2-*` 夹具并全部 healthy；Node 20.19.5、Maven 3.9.12、Edge 152、Playwright 1.63。项目历史临时容器已移除；`cloudstudy-p1r-m2-*` 数据卷保留。GitHub 网络间歇不可达，push 需等网络恢复。
+- 本机仍存 M2-002 待办：`v2,local-real` 启动的 IAM 无 `local` profile，正式 Consent 策略来源缺失时 `/api/v1/iam/principal/me` 返回 503 `iam.consent.version_unavailable`；`m2-evidence` 夹具使用显式 `local` profile，不受影响。
+- 下一步：① 取 M2-001/M2-002 **最终独立只读复审**；② M2-002 继续 legacy Consent 空摘要兼容、密码重置投递与 device trust；③ 网络恢复后推送本轮证据与文档提交。
 
 ## 2026-09-10 阶段更新（历史，已被上节取代）
 
