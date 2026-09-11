@@ -569,13 +569,13 @@ class IamAuthenticationController {
     /**
      * The transport header and the device declaration are both client inputs and can be forged
      * together. Until a server-verifiable device proof (App Attest/Play Integrity) is
-     * provisioned, NATIVE_SECURE_STORAGE is denied by default; the explicit local/test policy
-     * allows local onboarding without claiming production trust.
+     * provisioned, NATIVE_SECURE_STORAGE is denied by default. The denial is a declared-boundary
+     * validation failure (400), not an authorization grant; the explicit local/test policy only
+     * enables local onboarding and never claims production trust.
      */
     private void requireTrustedNativeTransport(AuthTransport transport) {
         if (transport == AuthTransport.NATIVE_SECURE_STORAGE && !nativeTransportTrusted()) {
-            throw new IamPolicyException(IamDecisionCode.CLIENT_TRUSTED_INPUT_REJECTED,
-                    "iam.auth.native_transport_untrusted");
+            throw badRequest("iam.auth.native_transport_untrusted");
         }
     }
 

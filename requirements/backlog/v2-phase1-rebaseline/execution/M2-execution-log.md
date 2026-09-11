@@ -29,10 +29,9 @@
 
 ## 2026-09-11 M2-002 返工批次 4：native 可信上下文默认拒绝
 
-- 契约先行（`f30e60c`）：register/login/refresh 三个认证操作补 `403 ApiForbidden` 声明；merge/validate/generate:check/auth-contract:check PASS，OpenAPI compatibility 相对父提交 0 breaking。16 份受影响 manifest 以 current-source 流程重定摘要（`24f2572`，evidence gate PASS）。
-- 实现：`iam.auth.native-transport-policy` 默认 `deny`，`local-unverified` 仅限显式 local/test（启动守卫）；`requireDevice`/`trustedSession`/`validateTrustedTransport` 统一拒绝未配置可信上下文的 `NATIVE_SECURE_STORAGE`（403 `CLIENT_TRUSTED_INPUT_REJECTED`）；`application-local.yaml` 用 env 可覆盖占位符显式开启本地允许。Web 行为不变。
-- 验证（JDK 25）：全套 `82/0/0（19 skipped）`（+2 新测试）；进程冒烟：deny 下 native register 403 FORBIDDEN + Web 201（refresh 仅 Cookie）；local 默认 native 201 + body token。
-- 边界：只关闭 P1-4；真实 App Attest/Play Integrity 与真机 Keychain/Keystore 验收仍属外部配置；任务保持 `IN_PROGRESS / NOT_RUNTIME_VERIFIED`，下一批为 P1-5 与 Consent/Policy 加固（批次 ⑤⑥）。
+- 实现：`iam.auth.native-transport-policy` 默认 `deny`，`local-unverified` 仅限显式 local/test（启动守卫）；`requireDevice`/`trustedSession`/`validateTrustedTransport` 统一拒绝未配置可信上下文的 `NATIVE_SECURE_STORAGE`（400 `iam.auth.native_transport_untrusted`，复用已声明的边界校验，无契约变更）；`application-local.yaml` 用 env 可覆盖占位符显式开启本地允许。Web 行为不变。曾评估的 403 契约声明因触发 M1 固定基线链 promotion 治理而撤回。
+- 验证（JDK 25）：全套 `82/0/0（19 skipped）`（+2 新测试）；进程冒烟：deny 下 native register 400 + Web 201（refresh 仅 Cookie）；local 默认 native 201 + body token。
+- 边界：只关闭 P1-4；真实 App Attest/Play Integrity 与真机 Keychain/Keystore 验收仍属外部配置；任务保持 `IN_PROGRESS / NOT_RUNTIME_VERIFIED`，下一批为 Consent/Policy 加固（批次 ⑤）与 opt-in Evidence（⑥）。
 
 ## 2026-09-04 IAM 账户/密码并发安全检查点
 

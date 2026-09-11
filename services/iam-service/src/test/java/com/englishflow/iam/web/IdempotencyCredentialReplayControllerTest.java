@@ -319,10 +319,10 @@ class IdempotencyCredentialReplayControllerTest {
         IamAuthenticationController.LoginRequest nativeRequest = nativeLogin("denied-native-device");
         IamPolicyException failure = assertThrows(IamPolicyException.class,
                 () -> fixture.controller().login(nativeRequest, NATIVE, "deny-native-login-key-123456"));
-        assertEquals(IamDecisionCode.CLIENT_TRUSTED_INPUT_REJECTED, failure.code());
+        assertEquals(IamDecisionCode.INVALID_REQUEST, failure.code());
         var denial = fixture.controller().handlePolicy(failure, new MockHttpServletRequest());
-        assertEquals(403, denial.getStatusCode().value());
-        assertEquals("FORBIDDEN", denial.getBody().error().errorCode());
+        assertEquals(400, denial.getStatusCode().value());
+        assertEquals("VALIDATION_ERROR", denial.getBody().error().errorCode());
 
         // Register and refresh use the same trusted-context boundary.
         IamAuthenticationController.RegisterRequest nativeRegister =
@@ -330,7 +330,7 @@ class IdempotencyCredentialReplayControllerTest {
                         new IamAuthenticationController.DeviceInput(null, "ANDROID", "deny-device", "1", "1"));
         IamPolicyException registerDenied = assertThrows(IamPolicyException.class,
                 () -> fixture.controller().register(nativeRegister, NATIVE, "deny-native-register-key-1234"));
-        assertEquals(IamDecisionCode.CLIENT_TRUSTED_INPUT_REJECTED, registerDenied.code());
+        assertEquals(IamDecisionCode.INVALID_REQUEST, registerDenied.code());
 
         // The Web cookie transport keeps its ordinary non-enumerating behavior.
         var web = fixture.controller().login(new IamAuthenticationController.LoginRequest(
