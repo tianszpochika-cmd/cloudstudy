@@ -24,7 +24,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -356,6 +355,6 @@ public class B25AssessmentJdbcController {
     private static void bad(String message) { throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message); }
     private Map<String, Object> one(String sql, Object... args) { List<Map<String, Object>> rows = jdbc.queryForList(sql, args); return rows.isEmpty() ? null : rows.get(0); }
     private Object oneValue(String sql, Object... args) { Map<String, Object> row = one(sql, args); return row == null ? null : row.values().stream().findFirst().orElse(null); }
-    private Principal principal(Authentication authentication) { if (!(authentication instanceof JwtAuthenticationToken jwt) || !authentication.isAuthenticated()) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "verified JWT principal is required"); Object tenant = jwt.getToken().getClaims().get("tenant_id"); if (tenant != null && !TENANT.equals(String.valueOf(tenant))) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "tenant is not allowed"); String subject = jwt.getToken().getSubject(); if (subject == null || subject.isBlank()) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "subject is missing"); return new Principal(subject); }
+    private Principal principal(Authentication authentication) { return new Principal(AssessmentHttpPrincipals.require(authentication).subject()); }
     private record Principal(String subject) {}
 }

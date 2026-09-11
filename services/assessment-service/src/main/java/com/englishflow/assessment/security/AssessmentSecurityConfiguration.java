@@ -43,6 +43,11 @@ public class AssessmentSecurityConfiguration {
     }
 
     @Bean
+    AssessmentJwtAuthenticationConverter assessmentJwtAuthenticationConverter() {
+        return new AssessmentJwtAuthenticationConverter();
+    }
+
+    @Bean
     @ConditionalOnProperty(
             prefix = "security.resource-server",
             name = "enabled",
@@ -60,6 +65,7 @@ public class AssessmentSecurityConfiguration {
             AssessmentResourceServerSecurityProperties properties,
             ObjectProvider<JwtDecoder> decoderProvider,
             AssessmentClientAuthorityHeaderFilter authorityHeaderFilter,
+            AssessmentJwtAuthenticationConverter jwtAuthenticationConverter,
             ObjectMapper objectMapper) throws Exception {
         AuthenticationEntryPoint entryPoint = (request, response, exception) ->
                 write(objectMapper, response, 401, "UNAUTHENTICATED", "authentication required");
@@ -85,7 +91,7 @@ public class AssessmentSecurityConfiguration {
             http.oauth2ResourceServer(oauth2 -> oauth2
                     .authenticationEntryPoint(entryPoint)
                     .accessDeniedHandler(deniedHandler)
-                    .jwt(jwt -> jwt.decoder(decoder)));
+                    .jwt(jwt -> jwt.decoder(decoder).jwtAuthenticationConverter(jwtAuthenticationConverter)));
         }
         return http.build();
     }

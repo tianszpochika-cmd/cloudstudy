@@ -74,6 +74,12 @@
 - learning-service：新增 JWT authorities 转换器与 `LearningHttpPrincipals` 默认拒绝入口（缺 tenant/角色/权限即 401/403），删除生产 `phaseOne()` 硬编码 GRANTED 工厂与死代码 resolver；测试夹具迁移 test-only。
 - 验证（JDK 25）：learning 全套 `121/0/0/0`；learning-loop contract PASS（50 adversarial cases）。
 
+## 2026-09-11 M2-003 Batch 1b：assessment-service PEP 基线
+
+- assessment-service：新增 JWT authorities 转换器与 `AssessmentHttpPrincipals` 默认拒绝入口（缺 tenant/角色/权限即 401/403），B10/B25 控制器统一接入；关闭此前 tenant 缺省放行分支。
+- 验证（JDK 25）：assessment 全套 `37/0/0/0`；assessment contract PASS（5 routes / 78 adversarial cases）。
+- 下一步：Batch 1c content-service 与 learner-service 对齐；随后 Batch 2-4。
+
 ## 2026-09-04 IAM 账户/密码并发安全检查点
 
 - 源码：`9deb899`。认证改为锁前单次 cost-12 BCrypt、锁内 current principal/hash/status/counter 复核；credential epoch 在校验期间变化时统一 `INVALID_CREDENTIALS` 且零写入，避免旧在途请求污染或锁死刚重置的新凭据。

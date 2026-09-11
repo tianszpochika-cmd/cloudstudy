@@ -21,7 +21,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -500,12 +499,7 @@ public class B10AssessmentJdbcController {
     private Object oneValue(String sql, Object... args) { List<Map<String, Object>> rows = jdbc.queryForList(sql, args); return rows.isEmpty() ? null : rows.getFirst().values().stream().findFirst().orElse(null); }
 
     private Principal principal(Authentication authentication) {
-        if (!(authentication instanceof JwtAuthenticationToken jwt) || !jwt.isAuthenticated()) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "verified JWT principal is required");
-        String tenant = jwt.getToken().getClaimAsString("tenant_id");
-        if (tenant != null && !TENANT.equals(tenant)) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "tenant is not allowed");
-        String subject = jwt.getToken().getSubject();
-        if (subject == null || subject.isBlank()) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "subject is missing");
-        return new Principal(subject);
+        return new Principal(AssessmentHttpPrincipals.require(authentication).subject());
     }
 
     private record Principal(String subject) {}
