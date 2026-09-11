@@ -141,19 +141,9 @@ public final class PolicyControlService {
             requireRevision(current, expectedRevision);
             Instant now = Instant.now(clock);
             Optional<PolicyVersionRecord> priorActive = store.lockActive(current.tenantId());
-            if (priorActive.isPresent() && !priorActive.get().policyVersionId().equals(current.policyVersionId())) {
-                PolicyVersionRecord prior = priorActive.get();
-                if (prior.status() != PolicyLifecycleStatus.ACTIVE) {
-                    throw new IamPolicyException(IamDecisionCode.POLICY_UNAVAILABLE, "iam.policy.active_slot_invalid");
-                }
-                PolicyVersionRecord superseded = copy(prior, PolicyLifecycleStatus.REVOKED, prior.revision() + 1,
-                        prior.document(), prior.artifactDigest(), now, prior.contributors(), prior.submittedBy(),
-                        prior.approvedBy(), prior.activatedBy(), actor.principalId(), prior.activatedAt(), now,
-                        PolicyCacheInvalidationReceipt.pendingRevocation(now));
-                PolicyAuditRecord priorAudit = audit(superseded, actor, "iam.policy.version.superseded.v1", reason,
-                        requestId, traceId, now);
-                store.compareAndSet(prior, superseded, priorAudit, false);
-                appendControlAudit(priorAudit, IamDecisionCode.POLICY_REVOKED, true);
+            if (priorActive.isPresent() && !priorActive.get().policyVersionId().equals(current.policyVersionId())
+                    && priorActive.get().status() != PolicyLifecycleStatus.ACTIVE) {
+                throw new IamPolicyException(IamDecisionCode.POLICY_UNAVAILABLE, "iam.policy.active_slot_invalid");
             }
             PolicyVersionRecord next = copy(current, PolicyLifecycleStatus.ACTIVE, current.revision() + 1,
                     current.document(), current.artifactDigest(), now, current.contributors(), current.submittedBy(),
@@ -161,7 +151,29 @@ public final class PolicyControlService {
                     PolicyCacheInvalidationReceipt.pendingActivation(now));
             PolicyAuditRecord policyAudit = audit(next, actor, "iam.policy.version.activated.v1", reason,
                     requestId, traceId, now);
+            // The target revision CAS runs before every dependent write, so an expected revision
+            // conflict commits nothing while the outer idempotency boundary still records the
+            // rejection.
             PolicyVersionRecord saved = store.compareAndSet(current, next, policyAudit, false);
+            if (priorActive.isPresent() && !priorActive.get().policyVersionId().equals(current.policyVersionId())) {
+                PolicyVersionRecord prior = priorActive.get();
+                PolicyVersionRecord superseded = copy(prior, PolicyLifecycleStatus.REVOKED, prior.revision() + 1,
+                        prior.document(), prior.artifactDigest(), now, prior.contributors(), prior.submittedBy(),
+                        prior.approvedBy(), prior.activatedBy(), actor.principalId(), prior.activatedAt(), now,
+                        PolicyCacheInvalidationReceipt.pendingRevocation(now));
+                PolicyAuditRecord priorAudit = audit(superseded, actor, "iam.policy.version.superseded.v1", reason,
+                        requestId, traceId, now);
+                try {
+                    store.compareAndSet(prior, superseded, priorAudit, false);
+                } catch (IamPolicyException supersedeFailure) {
+                    // The new version is already active earlier in this transaction. A concurrent
+                    // change to the prior version must roll the whole activation back instead of
+                    // committing two active versions or a partial supersede.
+                    throw new IamPolicyException(IamDecisionCode.IAM_PERSISTENCE_UNAVAILABLE,
+                            "iam.policy.supersede_conflict");
+                }
+                appendControlAudit(priorAudit, IamDecisionCode.POLICY_REVOKED, true);
+            }
             store.setActive(current.tenantId(), saved.policyVersionId());
             appendControlAudit(policyAudit, IamDecisionCode.POLICY_ACTIVATED, true);
             return new PolicyMutation(saved, policyAudit, saved.cacheInvalidation());

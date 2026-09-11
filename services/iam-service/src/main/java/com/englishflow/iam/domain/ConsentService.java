@@ -114,8 +114,10 @@ public final class ConsentService {
                 recordedAt,
                 descriptor.withdrawalEffect(),
                 descriptor.revokeSessions());
-        appendAudit(context.scope(), IamDecisionCode.CONSENT_RECORDED, "consent_recorded");
         ConsentRecord saved = consents.appendIfCurrent(record, current.orElse(null));
+        // The audit fact is durable only together with the CAS-persisted consent fact: a rejected
+        // append must never leave a success audit claiming a fact that was not stored.
+        appendAudit(context.scope(), IamDecisionCode.CONSENT_RECORDED, "consent_recorded");
         return saved;
     }
 
@@ -225,8 +227,9 @@ public final class ConsentService {
                 recordedAt,
                 descriptor.withdrawalEffect(),
                 descriptor.revokeSessions());
-        appendAudit(context.scope(), IamDecisionCode.CONSENT_WITHDRAWN, "consent_withdrawn");
         ConsentRecord saved = consents.appendIfCurrent(withdrawn, current);
+        // As with record(), the withdrawal audit commits only after the CAS persisted the fact.
+        appendAudit(context.scope(), IamDecisionCode.CONSENT_WITHDRAWN, "consent_withdrawn");
         if (sessions != null && descriptor.revokeSessions()) {
             sessions.revokeAll(context.principalId(), "consent_withdrawn:" + descriptor.purpose());
         }

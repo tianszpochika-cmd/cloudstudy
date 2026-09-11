@@ -33,6 +33,13 @@
 - 验证（JDK 25）：全套 `82/0/0（19 skipped）`（+2 新测试）；进程冒烟：deny 下 native register 400 + Web 201（refresh 仅 Cookie）；local 默认 native 201 + body token。
 - 边界：只关闭 P1-4；真实 App Attest/Play Integrity 与真机 Keychain/Keystore 验收仍属外部配置；任务保持 `IN_PROGRESS / NOT_RUNTIME_VERIFIED`，下一批为 Consent/Policy 加固（批次 ⑤）与 opt-in Evidence（⑥）。
 
+## 2026-09-11 M2-002 返工批次 5：Consent/Policy 部分提交加固
+
+- `ConsentService` 成功审计移至 CAS 之后（拒绝零审计、审计失败随生产事务整体回滚）；`PolicyControlService.activate` 先目标 CAS 后 supersede，旧版本并发 CAS 失败转基础设施失败整体回滚，杜绝两个 ACTIVE 或半 supersede。
+- 故障注入测试：activate 目标 CAS 拒绝 → 零 supersede、旧 active 不变；Consent CAS 拒绝 → 零成功审计；审计失败不可见事实测试改为事务化模拟（`TransactionalConsentStore`）后通过。
+- 验证（JDK 25）：全套 `84/0/0（19 skipped）`；opt-in MySQL 事务矩阵 `10/10`。
+- 边界：下一批 ⑥ 全 opt-in/跨进程 Evidence（P1-5），随后 ⑦ `local-adult-gate-enabled` 守卫（P2-3）；任务保持 `IN_PROGRESS / NOT_RUNTIME_VERIFIED`。
+
 ## 2026-09-04 IAM 账户/密码并发安全检查点
 
 - 源码：`9deb899`。认证改为锁前单次 cost-12 BCrypt、锁内 current principal/hash/status/counter 复核；credential epoch 在校验期间变化时统一 `INVALID_CREDENTIALS` 且零写入，避免旧在途请求污染或锁死刚重置的新凭据。

@@ -27,12 +27,14 @@ import com.englishflow.iam.domain.PdpDecision;
 import com.englishflow.iam.domain.PdpDecisionService;
 import com.englishflow.iam.domain.PolicyActor;
 import com.englishflow.iam.domain.PolicyAccessAuthenticationVerifier;
+import com.englishflow.iam.domain.PolicyAuditRecord;
 import com.englishflow.iam.domain.PolicyBootstrapService;
 import com.englishflow.iam.domain.PolicyCacheInvalidationReceipt;
 import com.englishflow.iam.domain.PolicyControlService;
 import com.englishflow.iam.domain.PolicyDocument;
 import com.englishflow.iam.domain.PolicyLifecycleStatus;
 import com.englishflow.iam.domain.PolicyMutation;
+import com.englishflow.iam.domain.PolicyStore;
 import com.englishflow.iam.domain.PolicyVersionRecord;
 import com.englishflow.iam.domain.PrincipalId;
 import com.englishflow.iam.domain.ServerPrincipalContext;
@@ -52,6 +54,7 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -118,6 +121,45 @@ class IamPolicyControlServiceTest {
         assertEquals("REVOCATION_AND_AFFECTED_PEP_SECURITY_CACHES", revoked.cacheInvalidation().scope());
         assertThrows(IamPolicyException.class, fixture.policies::activeBundle);
         assertTrue(fixture.audit.codes().contains(IamDecisionCode.POLICY_SEPARATION_OF_DUTIES));
+    }
+
+    @Test
+    void activationTargetConflictPerformsNoDependentSupersedeWrites() {
+        RecordingAudit audit = new RecordingAudit();
+        InMemoryPolicyStore delegate = new InMemoryPolicyStore();
+        RejectingTargetPolicyStore store = new RejectingTargetPolicyStore(delegate);
+        PolicyControlService policies = new PolicyControlService(store, audit, IamTransactionRunner.direct(),
+                new IamRuntimeConfiguration().iamObjectMapper(), CLOCK);
+
+        PolicyActor firstAuthor = policyOperator();
+        PolicyMutation first = policies.create(firstAuthor, learningDocument(), "create", "req-a", "trace-a");
+        policies.submit(first.policy().policyVersionId(), 1, "submit", firstAuthor, "req-b", "trace-b");
+        PolicyMutation firstApproved = policies.approve(first.policy().policyVersionId(), 2, "approve",
+                policyOperator(), "req-c", "trace-c");
+        PolicyMutation active = policies.activate(firstApproved.policy().policyVersionId(), 3, "activate",
+                policyOperator(), "req-d", "trace-d");
+        assertEquals(PolicyLifecycleStatus.ACTIVE, active.policy().status());
+
+        PolicyActor secondAuthor = policyOperator();
+        PolicyMutation second = policies.create(secondAuthor, learningDocument(), "create", "req-e", "trace-e");
+        policies.submit(second.policy().policyVersionId(), 1, "submit", secondAuthor, "req-f", "trace-f");
+        PolicyMutation secondApproved = policies.approve(second.policy().policyVersionId(), 2, "approve",
+                policyOperator(), "req-g", "trace-g");
+
+        store.rejectTargetCas(secondApproved.policy().policyVersionId());
+        IamPolicyException conflict = assertThrows(IamPolicyException.class, () -> policies.activate(
+                secondApproved.policy().policyVersionId(), 3, "activate", policyOperator(), "req-h", "trace-h"));
+        assertEquals(IamDecisionCode.POLICY_REVISION_CONFLICT, conflict.code());
+        assertEquals(0, store.supersedeWrites(),
+                "a rejected target CAS must not supersede the prior active version first");
+        assertEquals(active.policy().policyVersionId(),
+                delegate.active(TenantScope.PLATFORM_TENANT).orElseThrow().policyVersionId(),
+                "the prior active version must stay active after the rejected activation");
+    }
+
+    private static PolicyActor policyOperator() {
+        return new PolicyActor(PrincipalId.random(), TenantScope.PLATFORM_TENANT,
+                PolicyBootstrapService.CONTROL_PERMISSIONS);
     }
 
     @Test
@@ -349,6 +391,75 @@ class IamPolicyControlServiceTest {
     }
 
     private static String hex(char digit) { return String.valueOf(digit).repeat(64); }
+
+    /** Wraps an in-memory store to force the target activation CAS to lose and count supersede writes. */
+    private static final class RejectingTargetPolicyStore implements PolicyStore {
+        private final InMemoryPolicyStore delegate;
+        private UUID rejectTarget;
+        private int supersedeWrites;
+
+        private RejectingTargetPolicyStore(InMemoryPolicyStore delegate) {
+            this.delegate = delegate;
+        }
+
+        private void rejectTargetCas(UUID policyVersionId) {
+            this.rejectTarget = policyVersionId;
+        }
+
+        private int supersedeWrites() {
+            return supersedeWrites;
+        }
+
+        @Override
+        public PolicyVersionRecord create(PolicyVersionRecord record, PolicyAuditRecord audit) {
+            return delegate.create(record, audit);
+        }
+
+        @Override
+        public Optional<PolicyVersionRecord> find(UUID policyVersionId) {
+            return delegate.find(policyVersionId);
+        }
+
+        @Override
+        public List<PolicyVersionRecord> list(String tenantId) {
+            return delegate.list(tenantId);
+        }
+
+        @Override
+        public List<PolicyAuditRecord> audits(UUID policyVersionId) {
+            return delegate.audits(policyVersionId);
+        }
+
+        @Override
+        public PolicyVersionRecord compareAndSet(PolicyVersionRecord previous, PolicyVersionRecord next,
+                                                 PolicyAuditRecord audit, boolean addActorAsContributor) {
+            if (next.policyVersionId().equals(rejectTarget) && next.status() == PolicyLifecycleStatus.ACTIVE) {
+                throw new IamPolicyException(IamDecisionCode.POLICY_REVISION_CONFLICT, "iam.policy.revision_conflict");
+            }
+            if (next.status() == PolicyLifecycleStatus.REVOKED) supersedeWrites++;
+            return delegate.compareAndSet(previous, next, audit, addActorAsContributor);
+        }
+
+        @Override
+        public Optional<PolicyVersionRecord> active(String tenantId) {
+            return delegate.active(tenantId);
+        }
+
+        @Override
+        public Optional<PolicyVersionRecord> lockActive(String tenantId) {
+            return delegate.lockActive(tenantId);
+        }
+
+        @Override
+        public void setActive(String tenantId, UUID policyVersionId) {
+            delegate.setActive(tenantId, policyVersionId);
+        }
+
+        @Override
+        public void clearActive(String tenantId, UUID expectedPolicyVersionId) {
+            delegate.clearActive(tenantId, expectedPolicyVersionId);
+        }
+    }
 
     private static final class ControlFixture {
         private final RecordingAudit audit = new RecordingAudit();

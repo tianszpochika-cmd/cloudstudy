@@ -9,9 +9,11 @@ import com.englishflow.iam.domain.AuditDecision;
 import com.englishflow.iam.domain.AuditFactPort;
 import com.englishflow.iam.domain.ClientAuthorityClaims;
 import com.englishflow.iam.domain.ConsentCommand;
+import com.englishflow.iam.domain.ConsentHistoryEntry;
 import com.englishflow.iam.domain.ConsentPolicyDescriptor;
 import com.englishflow.iam.domain.ConsentRecord;
 import com.englishflow.iam.domain.ConsentService;
+import com.englishflow.iam.domain.ConsentStore;
 import com.englishflow.iam.domain.ConsentType;
 import com.englishflow.iam.domain.ConsentVersion;
 import com.englishflow.iam.domain.InMemoryAccountStore;
@@ -25,6 +27,7 @@ import com.englishflow.iam.domain.IdempotencyRecord;
 import com.englishflow.iam.domain.IdempotencyService;
 import com.englishflow.iam.domain.IamDecisionCode;
 import com.englishflow.iam.domain.IamPolicyException;
+import com.englishflow.iam.domain.IamTransactionRunner;
 import com.englishflow.iam.domain.PasswordAccountService;
 import com.englishflow.iam.domain.PasswordResetChallenge;
 import com.englishflow.iam.domain.PasswordResetService;
@@ -47,9 +50,13 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -235,11 +242,11 @@ class IamSecurityFactsTest {
     @Test
     void consentFactIsNotVisibleWhenImmutableAuditAppendFails() {
         StaticConsentPolicy policy = StaticConsentPolicy.localCandidate(true);
-        InMemoryConsentStore store = new InMemoryConsentStore();
+        TransactionalConsentStore store = new TransactionalConsentStore();
         AuditFactPort failingAudit = decision -> {
             throw new IllegalStateException("audit unavailable");
         };
-        ConsentService consents = new ConsentService(store, policy, failingAudit, CLOCK);
+        ConsentService consents = new ConsentService(store, policy, failingAudit, CLOCK, null, store.runner());
         PrincipalId principal = PrincipalId.random();
         ServerPrincipalContext context = ServerPrincipalContext.forPlatform(principal, Set.of("learner"));
         ConsentPolicyDescriptor descriptor = policy.descriptor(ConsentType.TERMS_OF_SERVICE);
@@ -527,8 +534,7 @@ class IamSecurityFactsTest {
     }
 
     @Test
-    void unprovisionedDeliveryIsAuditedWithoutChangingTheAcceptedOutcome() {
-        IamServiceProperties properties = properties();
+    void unprovisionedDeliveryIsAuditedWithoutChangingTheAcceptedOutcome() {        IamServiceProperties properties = properties();
         RecordingAudit audit = new RecordingAudit();
         InMemoryAccountStore accounts = new InMemoryAccountStore();
         PasswordAccountService passwords = new PasswordAccountService(accounts,
@@ -618,6 +624,23 @@ class IamSecurityFactsTest {
                 .allMatch(session -> session.status() == com.englishflow.iam.domain.SessionStatus.REVOKED));
     }
 
+    @Test
+    void rejectedConsentCasLeavesNoSuccessAudit() {
+        RecordingAudit audit = new RecordingAudit();
+        ConsentVersion version = new ConsentVersion("b30-consent-v1");
+        ConsentService consents = new ConsentService(new RejectingConsentStore(),
+                new StaticConsentPolicy(Map.of(ConsentType.TERMS_OF_SERVICE, version)), audit, CLOCK, null,
+                com.englishflow.iam.domain.IamTransactionRunner.direct());
+        ServerPrincipalContext context = ServerPrincipalContext.forPlatform(PrincipalId.random(), Set.of("learner"));
+
+        IamPolicyException failure = assertThrows(IamPolicyException.class, () -> consents.record(context,
+                new ConsentCommand(ConsentType.TERMS_OF_SERVICE, version, true, ClientAuthorityClaims.none())));
+        assertEquals(IamDecisionCode.CONSENT_VERSION_MISMATCH, failure.code());
+        assertTrue(audit.decisions().stream().noneMatch(decision ->
+                        "consent_recorded".equals(decision.decisionType())),
+                "a rejected consent CAS must not leave a success audit claiming an unstored fact");
+    }
+
     private static IamServiceProperties properties() {
         IamServiceProperties properties = new IamServiceProperties();
         properties.getAccount().setPasswordMinLength(12);
@@ -640,6 +663,101 @@ class IamSecurityFactsTest {
 
         List<AuditDecision> decisions() {
             return List.copyOf(decisions);
+        }
+    }
+
+    /**
+     * In-memory store plus runner that emulates the production transaction rollback: when the
+     * operation throws, every record appended during it is discarded, so audit/CAS atomicity can
+     * be asserted without a database.
+     */
+    private static final class TransactionalConsentStore implements ConsentStore {
+        private InMemoryConsentStore delegate = new InMemoryConsentStore();
+        private final LinkedHashSet<String> touched = new LinkedHashSet<>();
+
+        IamTransactionRunner runner() {
+            return new IamTransactionRunner() {
+                @Override
+                public <T> T execute(java.util.function.Supplier<T> operation) {
+                    Map<String, List<ConsentRecord>> snapshot = new HashMap<>();
+                    for (String key : touched) {
+                        String[] parts = key.split("\\|", 2);
+                        PrincipalId principal = new PrincipalId(UUID.fromString(parts[0]));
+                        ConsentType type = ConsentType.valueOf(parts[1]);
+                        snapshot.put(key, delegate.history(principal, type).stream()
+                                .map(ConsentHistoryEntry::verifiedRecord).toList());
+                    }
+                    try {
+                        return operation.get();
+                    } catch (RuntimeException failure) {
+                        InMemoryConsentStore restored = new InMemoryConsentStore();
+                        snapshot.values().forEach(records -> records.forEach(restored::append));
+                        delegate = restored;
+                        throw failure;
+                    }
+                }
+            };
+        }
+
+        private void touch(PrincipalId principalId, ConsentType type) {
+            touched.add(principalId + "|" + type.name());
+        }
+
+        @Override
+        public Optional<ConsentRecord> find(PrincipalId principalId, ConsentType type) {
+            touch(principalId, type);
+            return delegate.find(principalId, type);
+        }
+
+        @Override
+        public Optional<ConsentRecord> findForUpdate(PrincipalId principalId, ConsentType type) {
+            touch(principalId, type);
+            return delegate.findForUpdate(principalId, type);
+        }
+
+        @Override
+        public ConsentRecord append(ConsentRecord record) {
+            touch(record.principalId(), record.type());
+            return delegate.append(record);
+        }
+
+        @Override
+        public ConsentRecord appendIfCurrent(ConsentRecord record, ConsentRecord expected) {
+            touch(record.principalId(), record.type());
+            return delegate.appendIfCurrent(record, expected);
+        }
+
+        @Override
+        public List<ConsentHistoryEntry> history(PrincipalId principalId, ConsentType type) {
+            touch(principalId, type);
+            return delegate.history(principalId, type);
+        }
+    }
+
+    /** Store whose guarded append always loses the CAS, so the audit ordering is observable. */
+    private static final class RejectingConsentStore implements ConsentStore {        @Override
+        public Optional<ConsentRecord> find(PrincipalId principalId, ConsentType type) {
+            return Optional.empty();
+        }
+
+        @Override
+        public Optional<ConsentRecord> findForUpdate(PrincipalId principalId, ConsentType type) {
+            return Optional.empty();
+        }
+
+        @Override
+        public ConsentRecord append(ConsentRecord record) {
+            throw new IamPolicyException(IamDecisionCode.CONSENT_VERSION_MISMATCH, "iam.consent.version_mismatch");
+        }
+
+        @Override
+        public ConsentRecord appendIfCurrent(ConsentRecord record, ConsentRecord expected) {
+            throw new IamPolicyException(IamDecisionCode.CONSENT_VERSION_MISMATCH, "iam.consent.version_mismatch");
+        }
+
+        @Override
+        public List<ConsentHistoryEntry> history(PrincipalId principalId, ConsentType type) {
+            return List.of();
         }
     }
 }
