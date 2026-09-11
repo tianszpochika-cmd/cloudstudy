@@ -62,6 +62,12 @@
 - 验证（JDK 25）：IAM 全套 `89/0/0（19 skipped）`；opt-in 同意类 `5/5`。
 - 下一步：复审确认后进入 `REVIEW → ACCEPTED` 与 canonical manifest。
 
+## 2026-09-11 M2-002 最终验收（ACCEPTED）
+
+- 终审对 `c9f935b` 判定 `ACCEPT`（P0/P1/P2=0/0/0）；canonical manifest `evidence/p1r/m2/P1R-M2-002/manifest.json`（35 artifacts，sourceCommit `c9f935b`）；台账 `ACCEPTED`，轨迹 `PLANNED→READY→IN_PROGRESS→REVIEW→ACCEPTED`。
+- 终审复跑：IAM `90/0/0（20 skipped）`、opt-in 全矩阵 `19/19`、V13 `1/1`、P1R `1421/1421`、evidence gate PASS。
+- `P1R-M2-003` 依赖满足但未认领；总体阶段仍 `D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED`。
+
 ## 2026-09-04 IAM 账户/密码并发安全检查点
 
 - 源码：`9deb899`。认证改为锁前单次 cost-12 BCrypt、锁内 current principal/hash/status/counter 复核；credential epoch 在校验期间变化时统一 `INVALID_CREDENTIALS` 且零写入，避免旧在途请求污染或锁死刚重置的新凭据。

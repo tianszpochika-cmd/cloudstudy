@@ -419,12 +419,14 @@
       "path": [
         "PLANNED",
         "READY",
-        "IN_PROGRESS"
+        "IN_PROGRESS",
+        "REVIEW",
+        "ACCEPTED"
       ],
-      "recordedAt": "2026-09-01T16:17:22+08:00",
+      "recordedAt": "2026-09-11T16:35:53+08:00",
       "actor": "root-coordinator",
-      "reason": "M1-018 and the global Evidence Gate are accepted. IAM implementation starts from the frozen RS256/JWKS, refresh rotation/replay, device session, adult gate, consent and policy boundaries; real MySQL/Redis and cross-process runtime remain NOT_RUNTIME_VERIFIED.",
-      "evidencePath": "requirements/backlog/v2-phase1-rebaseline/execution/P1R-M2-002.md"
+      "reason": "M2-002 rework batches 1-8 closed all five original P1 findings and two latent consent fail-open P2 findings raised by the independent final review. Runtime evidence: opt-in MySQL matrix 19/19, V13 migration security 1/1, non-local cross-process restart refresh 200 with rotation=1, IAM suite 90/0/0 (20 opt-in skips), P1R 1421/1421. Independent reviewer agent:m2_002_final_review:opencode-general accepted with P0/P1/P2=0/0/0 and two non-blocking P3 follow-ups. Canonical manifest binds 35 artifacts at sourceCommit c9f935b. Real delivery/attestation/HA remain NOT_RUNTIME_VERIFIED and the overall phase stays D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED; P1R-M2-003 unlocks but must be claimed through the P1R flow.",
+      "evidencePath": "evidence/p1r/m2/P1R-M2-002/manifest.json"
     }
   ]
 }

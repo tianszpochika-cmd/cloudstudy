@@ -1,0 +1,324 @@
+{
+  "taskId": "P1R-M2-002",
+  "draftOnly": false,
+  "canonicalTaskStatus": "ACCEPTED",
+  "sourceCommit": "c9f935b8439d8c81191f397780d73d67c5d7df7b",
+  "artifactDigests": [
+    {
+      "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/ConsentService.java",
+      "algorithm": "sha256",
+      "digest": "844206f555248e3dcb64b8fe66322e08423168ded8867624e4a976c69b89914e"
+    },
+    {
+      "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/ConsentHistoryEntry.java",
+      "algorithm": "sha256",
+      "digest": "b4700df48f63d4ac44ad1afe51064ae30c40b87e7167b14c2776f8bb876f8f4e"
+    },
+    {
+      "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/ConsentStore.java",
+      "algorithm": "sha256",
+      "digest": "1d486bfb505d29ad1af38a293ccd041e282cd1fad37effdb1561d91d24e41b92"
+    },
+    {
+      "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/JdbcConsentStore.java",
+      "algorithm": "sha256",
+      "digest": "5134df96f631fc318ba17e47dcf74f4597855c544eadddea71a34e53e639e854"
+    },
+    {
+      "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/InMemoryConsentStore.java",
+      "algorithm": "sha256",
+      "digest": "0c1b969f31c698980e17681be56baac35936a5d23a470123c2b38d41e7fbdef7"
+    },
+    {
+      "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/FailClosedConsentStore.java",
+      "algorithm": "sha256",
+      "digest": "773999775bf042ec71fa02ffe617782c3ded6d557f46310247ff253fa0b4a25f"
+    },
+    {
+      "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/JdbcConsentPolicy.java",
+      "algorithm": "sha256",
+      "digest": "f37aac4fd563ea14c7a3d06078a6b698ae6d315f47056935670639c27eed4de9"
+    },
+    {
+      "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/PasswordResetService.java",
+      "algorithm": "sha256",
+      "digest": "8d66f39eda62f27c13471941d7adda7423fda22fa2c2701f12fb881b66bd22c1"
+    },
+    {
+      "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/PasswordResetDelivery.java",
+      "algorithm": "sha256",
+      "digest": "71360fd3f88899ffdfe02244c7df1e9d8d4c83563fed50ee46a6c1dc0f20aad7"
+    },
+    {
+      "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/PasswordResetDeliveryPort.java",
+      "algorithm": "sha256",
+      "digest": "005ddc5d09824f3ea122c0d2796ea8705cfbaf1533129773789745bcfb655352"
+    },
+    {
+      "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/InMemoryPasswordResetDelivery.java",
+      "algorithm": "sha256",
+      "digest": "e8e07a579d0ba5f344af1e34474e5e190e140af67e352292b61178487255189f"
+    },
+    {
+      "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/UnprovisionedPasswordResetDelivery.java",
+      "algorithm": "sha256",
+      "digest": "8a4d7f1f565f3040e61fddafaa3ebae14ab32d92f7d8ed69003579ba3b78a61c"
+    },
+    {
+      "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/PrincipalId.java",
+      "algorithm": "sha256",
+      "digest": "68c7d5d7ef9ac311dff328126afa44fc5a03e6174674a0bb588360c3f0250351"
+    },
+    {
+      "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/AuditDecision.java",
+      "algorithm": "sha256",
+      "digest": "bbee79af00acb3577afb5218ad010a47548e053f9567cc4bda2a926de79f1194"
+    },
+    {
+      "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/SecretDigests.java",
+      "algorithm": "sha256",
+      "digest": "8229b0f650697c0848c4c9a0549d21d3c0579815a6869712dd38ab510f440668"
+    },
+    {
+      "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/IdempotencyService.java",
+      "algorithm": "sha256",
+      "digest": "49549c4af847f006afb42ae29f903d75e5303e82d413610c81e4e73ef467403b"
+    },
+    {
+      "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/PolicyControlService.java",
+      "algorithm": "sha256",
+      "digest": "6dc443cc1fc0db212e214d3ae9240d8177eeb1adde1ea637ed9348cfc12fe75f"
+    },
+    {
+      "path": "services/iam-service/src/main/java/com/englishflow/iam/config/IamRuntimeConfiguration.java",
+      "algorithm": "sha256",
+      "digest": "9bdb1b3a649f9a6b6319903f6e8be0ca65716ec01e5f0fe87a6bf41df6de0e0a"
+    },
+    {
+      "path": "services/iam-service/src/main/java/com/englishflow/iam/config/IamServiceProperties.java",
+      "algorithm": "sha256",
+      "digest": "eda60eb662fd30586ccc98c2cd3a414e0fbe7acd4b5eb25e41c6f2be43f063d8"
+    },
+    {
+      "path": "services/iam-service/src/main/java/com/englishflow/iam/web/IamProviderBoundaryController.java",
+      "algorithm": "sha256",
+      "digest": "c212bf0ce68189f70ad171186dc517f01c400e301bb811735b52df59a8b60c75"
+    },
+    {
+      "path": "services/iam-service/src/main/resources/application.yaml",
+      "algorithm": "sha256",
+      "digest": "a37ea4fd7b43b1739bebb661c01a12d5ce83bbebe3d18bc943b1dc8c8ac59b28"
+    },
+    {
+      "path": "services/iam-service/src/main/resources/application-local.yaml",
+      "algorithm": "sha256",
+      "digest": "10ca724d14b82006a6b5e2144643b74b06d0b8ed30c0bcd5243fa741a3cc4a16"
+    },
+    {
+      "path": "services/iam-service/src/main/resources/db/migration/V14__create_iam_consent_document_control.sql",
+      "algorithm": "sha256",
+      "digest": "bbe3deefb752defe92c85593cea32d12deaf2b286f1feeeccd4409b0a39a332d"
+    },
+    {
+      "path": "services/iam-service/src/test/java/com/englishflow/iam/ConsentHistoryEntryTest.java",
+      "algorithm": "sha256",
+      "digest": "1e79c47cfd3844910607a42adbc98503f77959a64aa8ad40d5fe4de10af9c49b"
+    },
+    {
+      "path": "services/iam-service/src/test/java/com/englishflow/iam/IamConsentJdbcPersistenceContextTest.java",
+      "algorithm": "sha256",
+      "digest": "1614ce3433615a1516f7d8ff5895bbec765409388e16550cbd27817a97c54ab4"
+    },
+    {
+      "path": "services/iam-service/src/test/java/com/englishflow/iam/IamConsentIdempotencyRollbackSafetyTest.java",
+      "algorithm": "sha256",
+      "digest": "a90c061b035987c1019a600a87f82c4213803a90acc83a388f63a584883c3080"
+    },
+    {
+      "path": "services/iam-service/src/test/java/com/englishflow/iam/IamConsentPolicyJdbcPersistenceContextTest.java",
+      "algorithm": "sha256",
+      "digest": "7c7639f478174c53dc3f9ff95f5003eb806f1cc241b87417344b5170417afe25"
+    },
+    {
+      "path": "services/iam-service/src/test/java/com/englishflow/iam/domain/IdempotencySecurityHardeningTest.java",
+      "algorithm": "sha256",
+      "digest": "e0e1ba98fdd7a6a3b07f196baf21233b3c44605c786109788e916151b4ae00a0"
+    },
+    {
+      "path": "services/iam-service/src/test/java/com/englishflow/iam/web/IdempotencyCredentialReplayControllerTest.java",
+      "algorithm": "sha256",
+      "digest": "36e7e50a01f101f759bc57143da7fd134d1ed68e7cf6967235d2fb4afdd1987d"
+    },
+    {
+      "path": "services/iam-service/src/test/java/com/englishflow/iam/IamPolicyControlServiceTest.java",
+      "algorithm": "sha256",
+      "digest": "f52a72287c678c032e4b99110e95d8206595677c81947a29877f4341b0a39289"
+    },
+    {
+      "path": "services/iam-service/src/test/java/com/englishflow/iam/IamSecurityFactsTest.java",
+      "algorithm": "sha256",
+      "digest": "c078866f0f9ba00c84cad7112d91966a1db98d069fa19dcfff2b6f4e46fb02cf"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/opt-in-cross-process-evidence-2026-09-11.json",
+      "algorithm": "sha256",
+      "digest": "24659c0a42af72cd2929dfb52dd88feaf39cbf9da97ca1b15293a7e1438f6c93"
+    },
+    {
+      "path": "config/p1r-data-ownership.v1.json",
+      "algorithm": "sha256",
+      "digest": "1133b539d36a28fbba2c1359dc523f8b324da2143bcbdb7f5669ef1ed9c1d586"
+    },
+    {
+      "path": "docs/10-decisions/0013-self-owned-jwt-authentication-center.md",
+      "algorithm": "sha256",
+      "digest": "46a8e3809acb4b10e08bcf4d70c57954f47844c44376c0aaef86573f84eb71ab"
+    },
+    {
+      "path": "packages/contracts/openapi/v1/openapi.json",
+      "algorithm": "sha256",
+      "digest": "93c03dfd26d482397a5ec1c1e26f5627f1e2294d10a68864d3af30eeeffe1a80"
+    }
+  ],
+  "environment": {
+    "kind": "iam-runtime-evidence",
+    "branch": "dev",
+    "phaseStatus": "D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED",
+    "runtimeStatus": "M2_002_BOUNDARY_RUNTIME_VERIFIED",
+    "reviewedRevision": "c9f935b8439d8c81191f397780d73d67c5d7df7b",
+    "toolchain": {
+      "java": "OpenJDK 25.0.2",
+      "maven": "3.9.12",
+      "node": "20.19.5"
+    },
+    "datastore": {
+      "kind": "mysql",
+      "image": "mysql:8.0.46",
+      "endpoint": "127.0.0.1:13306",
+      "schemas": [
+        "iam_service",
+        "iam_v13_test_20260911_a"
+      ],
+      "flywayVersion": 14
+    },
+    "runtimeProfiles": [
+      "v2",
+      "local-real"
+    ]
+  },
+  "provenance": {
+    "reworkBatches": [
+      "32e8835 legacy consent history entries",
+      "c17c94f consent control plane (V14 + JdbcConsentPolicy + policy-source)",
+      "1bec2a0 password reset delivery handoff, audits, HMAC target digest and Retry-After",
+      "ec7b4ea + 84b2ba6 native trusted-context default deny (403 contract attempt reverted)",
+      "49e337a consent/policy all-or-nothing mutations",
+      "172dfca refresh missing-body and media-type error mapping fixes",
+      "a9e577d opt-in and cross-process evidence archive",
+      "1a51bd4 adult-gate startup guard and idempotent replay hardening",
+      "7c0f428 empty-control-plane consent fail-closed",
+      "c9f935b canonical published consent set per capability"
+    ],
+    "evidenceFile": "evidence/p1r/m2/P1R-M2-002/opt-in-cross-process-evidence-2026-09-11.json",
+    "evidenceFileNote": "The archived runtime evidence binds the historical implementation commit 172dfca; later commits are code/docs hardening only and their quantitative results were re-verified at HEAD.",
+    "reviewHistory": [
+      {
+        "reviewer": "agent:m2_002_final_review:opencode-general",
+        "session": "ses_f709e572cffetZ632oK96ebMtt",
+        "verdict": "ACCEPT",
+        "p0": 0,
+        "p1": 0,
+        "p2": 0,
+        "p3": 2,
+        "finishedAt": "2026-09-11T16:30:00+08:00",
+        "details": "Independent read-only final review closed all five original P1 findings and two latent fail-open P2 findings (7c0f428 empty control plane, c9f935b canonical published set per capability). Re-verified at HEAD: IAM 90/0/0 (20 opt-in skips), opt-in matrix 19/19, V13 migration security 1/1, P1R 1421/1421, evidence gate PASS, clean tree. Remaining P3: legacy controller-level 409 regression case and canonical map maintenance assertion; both non-blocking."
+      }
+    ]
+  },
+  "startedAt": "2026-09-01T16:17:22+08:00",
+  "finishedAt": "2026-09-11T16:36:27+08:00",
+  "actors": [
+    "root-coordinator",
+    "m2-002-iam-executor"
+  ],
+  "sourceIds": [
+    "P1R-M2-002",
+    "ARCH-IAM-001",
+    "ARCH-IAM-002",
+    "INT-P1-001",
+    "INT-P1-002",
+    "ADR-0013"
+  ],
+  "commands": [
+    "mvn.cmd -f services/iam-service/pom.xml test (JDK 25)",
+    "mvn.cmd -f services/iam-service/pom.xml test -Diam.jdbc.integration=true -Dtest=IamJdbcPersistenceContextTest,IamPolicyJdbcPersistenceContextTest,IamPolicyIdempotencyRollbackSafetyTest,IamConsentJdbcPersistenceContextTest,IamConsentIdempotencyRollbackSafetyTest,IamConsentPolicyJdbcPersistenceContextTest",
+    "mvn.cmd -f services/iam-service/pom.xml test -Diam.jdbc.migration.integration=true -DIAM_V13_TEST_* -Dtest=IdempotencyV13MigrationSecurityTest",
+    "node scripts/dev/run-node-tests.mjs tests/p1r (Node 20.19.5)",
+    "node scripts/audit/p1r-evidence-gate.mjs --json",
+    "non-local v2,local-real cross-process restart smoke: register 201, restart, refresh 200 with rotation=1",
+    "independent read-only review session ses_f709e572cffetZ632oK96ebMtt"
+  ],
+  "results": [
+    {
+      "check": "iam-in-process-suite",
+      "status": "PASS",
+      "details": "90 tests / 0 failures / 0 errors / 20 opt-in skips under JDK 25."
+    },
+    {
+      "check": "iam-opt-in-mysql-matrix",
+      "status": "PASS",
+      "details": "19/19 across IamJdbcPersistenceContextTest, IamPolicyJdbcPersistenceContextTest, IamPolicyIdempotencyRollbackSafetyTest, IamConsentJdbcPersistenceContextTest, IamConsentIdempotencyRollbackSafetyTest and IamConsentPolicyJdbcPersistenceContextTest on isolated MySQL 8.0.46."
+    },
+    {
+      "check": "v13-migration-security",
+      "status": "PASS",
+      "details": "1/1 on isolated iam_v13_test_20260911_a schema: populated V12 atomic upgrade, drained-writer gate and history edges."
+    },
+    {
+      "check": "cross-process-persistence",
+      "status": "PASS",
+      "details": "Non-local v2,local-real process registered a session (201), was restarted, and a new process completed refresh (200) with session rotation=1 and one iam_refresh_token_history row; DB checks matched."
+    },
+    {
+      "check": "consent-fail-closed",
+      "status": "PASS",
+      "details": "Empty and partially published control planes both restrict LEARNING; canonical required set per capability; legacy history entries remain readable but never authorize."
+    },
+    {
+      "check": "native-trusted-context",
+      "status": "PASS",
+      "details": "NATIVE_SECURE_STORAGE is denied by default outside explicit local/test (400 declared-boundary validation); Web cookie behavior unchanged."
+    },
+    {
+      "check": "p1r-regression",
+      "status": "PASS",
+      "details": "1421/1421 under Node 20.19.5 after the contract 403 attempt was fully reverted."
+    },
+    {
+      "check": "independent-review",
+      "status": "PASS",
+      "details": "agent:m2_002_final_review:opencode-general ACCEPT with P0/P1/P2=0/0/0 and two non-blocking P3 maintenance items after two hardening follow-ups."
+    },
+    {
+      "check": "scope-boundaries",
+      "status": "PASS",
+      "details": "No claim is made for real email/SMS delivery, real device attestation or HA; M2-003 stays locked until this acceptance."
+    }
+  ],
+  "rollbackEvidence": [
+    {
+      "status": "PASS",
+      "details": "The M2-002 rework changes stay inside services/iam-service plus evidence and execution records; V13 is a one-way cutover untouched by this rework and V14 is purely additive. Reverting the rework commits restores the pre-acceptance IAM behavior without schema rollback. The opt-in tests self-clean and no port or container was mutated."
+    }
+  ],
+  "knownGaps": [
+    "M2-IAM-DELIVERY real email/SMS password-reset delivery and retry remain with the later Outbox/notification work as OPEN / NOT_RUNTIME_VERIFIED.",
+    "M2-IAM-ATTESTATION real App Attest/Play Integrity device proof and real-device Keychain/Keystore acceptance need external configuration and are NOT_RUNTIME_VERIFIED.",
+    "M2-IAM-HA concurrent IAM replicas and failover are not covered; only single-process restart persistence is proven.",
+    "P3 follow-ups: controller-level legacy consent replay 409 regression case and a maintenance assertion that the canonical consent map stays in sync with supported capabilities.",
+    "The archived runtime evidence binds the historical implementation commit 172dfca; later hardening commits were re-verified separately at HEAD.",
+    "Overall phase remains D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED; P1R-M2-003 unlocks with this acceptance."
+  ],
+  "reviewer": "agent:m2_002_final_review:opencode-general",
+  "decision": "ACCEPTED"
+}

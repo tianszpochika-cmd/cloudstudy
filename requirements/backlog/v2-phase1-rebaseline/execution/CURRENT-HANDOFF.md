@@ -2,15 +2,15 @@
 
 更新时间：2026-09-11（Asia/Shanghai）。本文件只说明如何恢复当前开发检查点，不替代任务台账或 canonical Evidence manifest。
 
-## 2026-09-11 M2-001 验收与 M2-002 复审（最新恢复入口）
+## 2026-09-11 M2-001/M2-002 均验收（最新恢复入口）
 
-更新时间：2026-09-11 11:00（Asia/Shanghai）。
+更新时间：2026-09-11 16:40（Asia/Shanghai）。
 
 - `P1R-M2-001` 独立只读终审判定 **`ACCEPT`**（P0/P1/P2=`0/0/0`，5 条 P3 加固建议不阻塞），台账晋升 **`ACCEPTED`**；canonical manifest `evidence/p1r/m2/P1R-M2-001/manifest.json`（23 artifacts，`sourceCommit=7ba4d33`），状态轨迹追加 `REVIEW → ACCEPTED`。运行证据 `evidence/p1r/m2/P1R-M2-001/runtime-evidence-2026-09-11.json`（`--run --browser --fault` PASS，29/29，`notRuntimeVerified: []`）。未验证边界不变：durable audit/NetworkPolicy/平台关联/staging/并发副本分别归 M2-006/008/010 与 M8-013。
-- `P1R-M2-002` 独立只读复审判定 **`REWORK`**（P0=0、P1=5、P2=3、P3=3），保持 `IN_PROGRESS / NOT_RUNTIME_VERIFIED`；返工按 [P1R-M2-002 执行记录](P1R-M2-002.md) 的有序批次：① legacy Consent 空摘要兼容 → ② 正式 Consent 策略来源 → ③ 密码重置投递/审计 → ④ native 可信上下文 → ⑤ Consent/Policy 部分提交加固 → ⑥ 隔离库 opt-in Evidence → ⑦ localAdultGate 守卫 → ⑧ 重跑最终复审。
-- `P1R-M2-002` 返工进展：批次 ①②③④⑤⑥⑦ 已实现——① legacy Consent 显式历史条目；② 正式 Consent 控制面策略来源；③ 密码重置投递 handoff/审计/HMAC/Retry-After；④ native 可信上下文默认拒绝；⑤ Consent/Policy 部分提交加固；⑥ 全 opt-in 矩阵（18/18）+ V13 隔离库（1/1）+ 跨进程重启持久化刷新（200，rotation=1），并修复 refresh 空 body NPE 与媒体类型 500→400；⑦ non-local `local-adult-gate-enabled` 启动守卫 + 幂等预期回放失败不逃逸事务回调。证据：`evidence/p1r/m2/P1R-M2-002/opt-in-cross-process-evidence-2026-09-11.json`。下一步：⑧ 重跑最终独立只读复审，通过后按协议将任务提交 REVIEW/ACCEPTED。验证：IAM 全套 `88/0/0（19 skipped）`。
-- 台账：`26 ACCEPTED / 1 BLOCKED / 1 IN_PROGRESS / 80 PLANNED`；总阶段仍为 `D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED`；`P1R-M2-003` 须待 M2-002 验收后才解锁。
-- 已复现的复核证据：Gateway Java 25 `82/82`、IAM Java 25 全套 `76/0/0（18 skipped）`、运行器 Node `8/8`、IAM compatibility `7/7`。本机已具备 opt-in 隔离库：标准栈 MySQL 8.0 新建 `iam_service` 库与 `iam_runtime` 用户（仅本地测试），批次 ① 的 opt-in consent `6/6` 已复现；其余 opt-in 类（`IamJdbcPersistenceContextTest`、`IamPolicyJdbcPersistenceContextTest`、`IamPolicyIdempotencyRollbackSafetyTest`、`IdempotencyV13MigrationSecurityTest`）在批次 ⑥ 补齐矩阵。
+- `P1R-M2-002` 独立只读终审判定 **`ACCEPT`**（P0/P1/P2=`0/0/0`，余 2 条非阻塞 P3），台账晋升 **`ACCEPTED`**；canonical manifest `evidence/p1r/m2/P1R-M2-002/manifest.json`（35 artifacts，`sourceCommit=c9f935b`），状态轨迹追加 `REVIEW → ACCEPTED`。返工批次 ①–⑧ 关闭全部 5 项原始 P1 与 2 项终审新发现的同意 fail-open（`7c0f428` 空控制面、`c9f935b` 部分发布规范必需集）。运行证据：opt-in MySQL 矩阵 **19/19**、V13 迁移安全 **1/1**、跨进程重启刷新 **200（rotation=1）**、IAM 全套 **90/0/0（20 skipped）**、P1R **1421/1421**；归档 `evidence/p1r/m2/P1R-M2-002/opt-in-cross-process-evidence-2026-09-11.json`（历史绑定 `172dfca`，后续加固已在 HEAD 复验）。
+- 台账：`27 ACCEPTED / 1 BLOCKED / 0 IN_PROGRESS / 80 PLANNED`；总阶段仍为 `D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED`；`P1R-M2-003` 依赖已满足（M2-001 + M2-002 均 `ACCEPTED`），尚未认领/启动，须按 P1R 流程从 `PLANNED/READY` 进入。
+- 已知边界（M2-002）：真实邮件/短信投递与重试、真实 App Attest/Play Integrity 与真机 Keychain/Keystore、并发 IAM 副本/HA 未验证；2 项 P3（legacy 重放控制器级 409 用例、规范必需类型映射维护断言）留待后续。
+- 本机 opt-in 隔离库：标准栈 MySQL 8.0（`iam_service` + `iam_v13_test_20260911_a`，`iam_runtime` 仅本地测试）；opt-in 全矩阵 19/19 与 V13 1/1 已在孤立库复现。
 - M2-001 验收门禁（提交 `183c08a`）：`plan:p1r:check` PASS（26/1/1/80）、`p1r-gap-registry-check` PASS（40 CLOSED / 5 OPEN）、`p1r:evidence:check` PASS（108 tasks / `errors: []`）、`docs:audit` PASS、`check-dod --strict` PASS=5 WARN=0 FAIL=0、全量 P1R **1421/1421 PASS**（Node 20.19.5）。
 - GitHub 网络仍间歇不可达，本地提交待网络恢复后推送。
 
