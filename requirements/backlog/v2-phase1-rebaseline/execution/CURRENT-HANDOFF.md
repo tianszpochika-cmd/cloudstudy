@@ -10,6 +10,7 @@
 - `P1R-M2-002` 独立只读复审判定 **`REWORK`**（P0=0、P1=5、P2=3、P3=3），保持 `IN_PROGRESS / NOT_RUNTIME_VERIFIED`；返工按 [P1R-M2-002 执行记录](P1R-M2-002.md) 的有序批次：① legacy Consent 空摘要兼容 → ② 正式 Consent 策略来源 → ③ 密码重置投递/审计 → ④ native 可信上下文 → ⑤ Consent/Policy 部分提交加固 → ⑥ 隔离库 opt-in Evidence → ⑦ localAdultGate 守卫 → ⑧ 重跑最终复审。
 - 台账：`26 ACCEPTED / 1 BLOCKED / 1 IN_PROGRESS / 80 PLANNED`；总阶段仍为 `D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED`；`P1R-M2-003` 须待 M2-002 验收后才解锁。
 - 已复现的复核证据：Gateway Java 25 `82/82`、IAM Java 25 `71/71（18 skipped）`、运行器 Node `8/8`、IAM compatibility `7/7`；本机标准栈无 `iam_service` schema 与 `iam_runtime` 凭据，6 个 opt-in MySQL 类（18 项）未在本次复审复现，须在授权隔离库补证据。
+- M2-001 验收门禁（提交 `183c08a`）：`plan:p1r:check` PASS（26/1/1/80）、`p1r-gap-registry-check` PASS（40 CLOSED / 5 OPEN）、`p1r:evidence:check` PASS（108 tasks / `errors: []`）、`docs:audit` PASS、`check-dod --strict` PASS=5 WARN=0 FAIL=0、全量 P1R **1421/1421 PASS**（Node 20.19.5）。
 - GitHub 网络仍间歇不可达，本地提交待网络恢复后推送。
 
 ## 2026-09-11 阶段更新（历史，已被上节取代）
