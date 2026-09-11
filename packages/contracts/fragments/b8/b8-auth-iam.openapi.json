@@ -321,6 +321,9 @@
           "400": {
             "$ref": "#/components/responses/ApiBadRequest"
           },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
           "409": {
             "$ref": "#/components/responses/ApiConflict"
           },
@@ -434,6 +437,9 @@
           },
           "401": {
             "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
           },
           "423": {
             "$ref": "#/components/responses/B8AccountLocked"
@@ -557,6 +563,9 @@
           },
           "401": {
             "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
           }
         }
       }
