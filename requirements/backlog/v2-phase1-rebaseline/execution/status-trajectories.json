@@ -427,6 +427,18 @@
       "actor": "root-coordinator",
       "reason": "M2-002 rework batches 1-8 closed all five original P1 findings and two latent consent fail-open P2 findings raised by the independent final review. Runtime evidence: opt-in MySQL matrix 19/19, V13 migration security 1/1, non-local cross-process restart refresh 200 with rotation=1, IAM suite 90/0/0 (20 opt-in skips), P1R 1421/1421. Independent reviewer agent:m2_002_final_review:opencode-general accepted with P0/P1/P2=0/0/0 and two non-blocking P3 follow-ups. Canonical manifest binds 35 artifacts at sourceCommit c9f935b. Real delivery/attestation/HA remain NOT_RUNTIME_VERIFIED and the overall phase stays D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED; P1R-M2-003 unlocks but must be claimed through the P1R flow.",
       "evidencePath": "evidence/p1r/m2/P1R-M2-002/manifest.json"
+    },
+    {
+      "taskId": "P1R-M2-003",
+      "path": [
+        "PLANNED",
+        "READY",
+        "IN_PROGRESS"
+      ],
+      "recordedAt": "2026-09-11T17:10:00+08:00",
+      "actor": "root-coordinator",
+      "reason": "Dependencies P1R-M2-001 and P1R-M2-002 are accepted. A read-only survey found all 11 domain services already have a resource-server baseline but split across three copy-paste families with zero reuse of the service-template security baseline; the highest-risk gaps are assessment-service (no access policy or permission model) and learning-service (hardcoded consent/permissions fail-open). Repair batches are recorded in execution/P1R-M2-003.md; real runtime evidence remains NOT_RUNTIME_VERIFIED.",
+      "evidencePath": "requirements/backlog/v2-phase1-rebaseline/execution/P1R-M2-003.md"
     }
   ]
 }
