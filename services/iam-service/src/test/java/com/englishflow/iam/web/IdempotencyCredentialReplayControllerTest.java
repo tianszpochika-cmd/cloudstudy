@@ -24,6 +24,7 @@ import com.englishflow.iam.domain.InMemoryConsentStore;
 import com.englishflow.iam.domain.InMemoryDeviceRegistry;
 import com.englishflow.iam.domain.InMemoryIdempotencyStore;
 import com.englishflow.iam.domain.InMemoryPasswordResetChallengeStore;
+import com.englishflow.iam.domain.InMemoryPasswordResetDelivery;
 import com.englishflow.iam.domain.InMemoryRateLimitStore;
 import com.englishflow.iam.domain.InMemorySessionStore;
 import com.englishflow.iam.domain.PasswordAccountService;
@@ -301,6 +302,17 @@ class IdempotencyCredentialReplayControllerTest {
         assertFalse(error.getBody().toString().contains(firstCookie));
     }
 
+    @Test
+    void rateLimitedPolicyErrorsCarryCanonicalRetryAfter() {
+        Fixture fixture = fixture();
+        var response = fixture.controller().handlePolicy(
+                new IamPolicyException(IamDecisionCode.RATE_LIMITED, "iam.password_reset.rate_limited"),
+                new MockHttpServletRequest());
+        assertEquals(429, response.getStatusCode().value());
+        assertEquals("60", response.getHeaders().getFirst("Retry-After"));
+        assertTrue(response.getHeaders().getCacheControl().contains("no-store"));
+    }
+
     private static IamAuthenticationController.LoginRequest nativeLogin(String deviceId) {
         return new IamAuthenticationController.LoginRequest("replay@example.com", PASSWORD,
                 new IamAuthenticationController.DeviceInput(deviceId, "IOS", "test-device", "1", "1"));
@@ -361,7 +373,8 @@ class IdempotencyCredentialReplayControllerTest {
                 audit, clock, sessions, IamTransactionRunner.direct());
         PasswordResetService passwordResets = new PasswordResetService(accounts,
                 new InMemoryPasswordResetChallengeStore(), passwords, audit, clock, properties,
-                sessions, IamTransactionRunner.direct(), rateLimits);
+                sessions, IamTransactionRunner.direct(), rateLimits,
+                new InMemoryPasswordResetDelivery(), properties.getIdempotency().getFingerprintSecret());
 
         JwtSigningKeyProvider keys = new JwtSigningKeyProvider(properties);
         JWKSource<SecurityContext> source = (selector, context) -> List.of(keys.signingKey());

@@ -17,6 +17,7 @@ import com.englishflow.iam.domain.ConsentVersion;
 import com.englishflow.iam.domain.InMemoryAccountStore;
 import com.englishflow.iam.domain.InMemoryConsentStore;
 import com.englishflow.iam.domain.InMemoryPasswordResetChallengeStore;
+import com.englishflow.iam.domain.InMemoryPasswordResetDelivery;
 import com.englishflow.iam.domain.InMemoryRateLimitStore;
 import com.englishflow.iam.domain.InMemorySessionStore;
 import com.englishflow.iam.domain.InMemoryAdultGateFactStore;
@@ -52,6 +53,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -82,7 +84,8 @@ class IamSecurityFactsTest {
         sessions.open(ServerPrincipalContext.forPlatform(account.principalId(), account.roles()),
                 new com.englishflow.iam.domain.DeviceId("reset-session"));
         PasswordResetService reset = new PasswordResetService(accountStore, challenges, passwords, audit, CLOCK,
-                properties, sessions, com.englishflow.iam.domain.IamTransactionRunner.direct());
+                properties, sessions, com.englishflow.iam.domain.IamTransactionRunner.direct(), null,
+                new InMemoryPasswordResetDelivery(), IDEMPOTENCY_FINGERPRINT_KEY);
 
         assertEquals(account.principalId(), reset.confirm("reset@example.com", token,
                 "new correct horse battery staple!").principalId());
@@ -450,11 +453,99 @@ class IamSecurityFactsTest {
 
         PasswordResetService resets = new PasswordResetService(accountsStore,
                 new InMemoryPasswordResetChallengeStore(), passwords, audit, CLOCK, properties,
-                null, com.englishflow.iam.domain.IamTransactionRunner.direct(), limits);
+                null, com.englishflow.iam.domain.IamTransactionRunner.direct(), limits,
+                new InMemoryPasswordResetDelivery(), IDEMPOTENCY_FINGERPRINT_KEY);
         resets.request("rate@example.com");
         IamPolicyException resetLimited = assertThrows(IamPolicyException.class,
                 () -> resets.request("rate@example.com"));
         assertEquals(IamDecisionCode.RATE_LIMITED, resetLimited.code());
+    }
+
+    @Test
+    void passwordResetHandoffIsNonEnumeratingAuditedAndKeyed() {
+        IamServiceProperties properties = properties();
+        properties.getAccount().setResetRequestsPerMinute(2);
+        RecordingAudit audit = new RecordingAudit();
+        InMemoryAccountStore accounts = new InMemoryAccountStore();
+        PasswordAccountService passwords = new PasswordAccountService(accounts,
+                new BCryptPasswordEncoder(12), audit, CLOCK, properties);
+        AccountRecord active = passwords.register("handoff@example.com", "correct horse battery staple!",
+                ClientAuthorityClaims.none());
+        PrincipalId disabledPrincipal = PrincipalId.random();
+        accounts.save(new AccountRecord(disabledPrincipal, "disabled@example.com", active.passwordHash(),
+                active.roles(), active.permissions(), com.englishflow.iam.domain.AccountStatus.DISABLED,
+                0, null, NOW, NOW));
+        InMemoryPasswordResetDelivery delivery = new InMemoryPasswordResetDelivery();
+        InMemoryRateLimitStore limits = new InMemoryRateLimitStore();
+        PasswordResetService resets = new PasswordResetService(accounts,
+                new InMemoryPasswordResetChallengeStore(), passwords, audit, CLOCK, properties,
+                null, com.englishflow.iam.domain.IamTransactionRunner.direct(), limits, delivery,
+                IDEMPOTENCY_FINGERPRINT_KEY);
+
+        resets.request("handoff@example.com");
+        assertEquals(1, delivery.deliveredCount());
+        assertTrue(delivery.deliveries().get(0).expiresAt().isAfter(NOW));
+        assertTrue(audit.decisions().stream().anyMatch(decision ->
+                "password_reset_requested".equals(decision.decisionType()) && decision.allowed()));
+
+        resets.request("missing@example.com");
+        assertEquals(1, delivery.deliveredCount(), "unknown identifiers must not receive a challenge");
+        AuditDecision missing = audit.decisions().get(audit.decisions().size() - 1);
+        assertEquals("password_reset_denied", missing.decisionType());
+        assertTrue(missing.principalId().isUnresolved());
+        assertFalse(missing.allowed());
+
+        resets.request("disabled@example.com");
+        assertEquals(1, delivery.deliveredCount(), "disabled accounts must not receive a challenge");
+        AuditDecision disabled = audit.decisions().get(audit.decisions().size() - 1);
+        assertEquals("password_reset_denied", disabled.decisionType());
+        assertEquals(disabledPrincipal, disabled.principalId());
+        assertFalse(disabled.allowed());
+
+        // Audit facts never carry the identifier, the token or any other secret material.
+        assertTrue(audit.decisions().stream().allMatch(decision -> decision.safeAttributes().isEmpty()));
+        assertTrue(audit.decisions().stream().noneMatch(decision ->
+                decision.decisionType().contains("@")
+                        || decision.decisionType().toLowerCase(java.util.Locale.ROOT).contains("token")));
+
+        // The rate-limit denial is audited and its public shape stays the canonical 429 error.
+        resets.request("handoff@example.com");
+        IamPolicyException limited = assertThrows(IamPolicyException.class,
+                () -> resets.request("handoff@example.com"));
+        assertEquals(IamDecisionCode.RATE_LIMITED, limited.code());
+        AuditDecision limitedAudit = audit.decisions().get(audit.decisions().size() - 1);
+        assertEquals("password_reset_rate_limited", limitedAudit.decisionType());
+        assertTrue(limitedAudit.principalId().isUnresolved());
+        assertFalse(limitedAudit.allowed());
+
+        // A different deployment HMAC key selects an independent rate bucket for the same target.
+        PasswordResetService otherDeployment = new PasswordResetService(accounts,
+                new InMemoryPasswordResetChallengeStore(), passwords, audit, CLOCK, properties,
+                null, com.englishflow.iam.domain.IamTransactionRunner.direct(), null,
+                new InMemoryPasswordResetDelivery(), IDEMPOTENCY_REPLAY_KEY);
+        otherDeployment.request("handoff@example.com");
+    }
+
+    @Test
+    void unprovisionedDeliveryIsAuditedWithoutChangingTheAcceptedOutcome() {
+        IamServiceProperties properties = properties();
+        RecordingAudit audit = new RecordingAudit();
+        InMemoryAccountStore accounts = new InMemoryAccountStore();
+        PasswordAccountService passwords = new PasswordAccountService(accounts,
+                new BCryptPasswordEncoder(12), audit, CLOCK, properties);
+        passwords.register("nodelivery@example.com", "correct horse battery staple!",
+                ClientAuthorityClaims.none());
+        PasswordResetService resets = new PasswordResetService(accounts,
+                new InMemoryPasswordResetChallengeStore(), passwords, audit, CLOCK, properties,
+                null, com.englishflow.iam.domain.IamTransactionRunner.direct(), null,
+                new com.englishflow.iam.domain.UnprovisionedPasswordResetDelivery(),
+                IDEMPOTENCY_FINGERPRINT_KEY);
+
+        resets.request("nodelivery@example.com");
+        assertTrue(audit.decisions().stream().anyMatch(decision ->
+                        "password_reset_delivery_unprovisioned".equals(decision.decisionType())
+                                && !decision.allowed()),
+                "a missing transport must stay visible to operations through audit");
     }
 
     @Test
@@ -527,6 +618,10 @@ class IamSecurityFactsTest {
         @Override
         public void append(AuditDecision decision) {
             decisions.add(decision);
+        }
+
+        List<AuditDecision> decisions() {
+            return List.copyOf(decisions);
         }
     }
 }

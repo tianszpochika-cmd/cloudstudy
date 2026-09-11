@@ -19,26 +19,15 @@ public final class PasswordResetService {
     private final SessionService sessions;
     private final IamTransactionRunner transactions;
     private final RateLimitStore rateLimits;
+    private final PasswordResetDeliveryPort delivery;
+    private final String resetTargetSecret;
     private final SecureRandom random = new SecureRandom();
 
     public PasswordResetService(AccountStore accounts, PasswordResetChallengeStore challenges,
                                 PasswordAccountService passwords, AuditFactPort audit, Clock clock,
-                                IamServiceProperties properties) {
-        this(accounts, challenges, passwords, audit, clock, properties, null,
-                IamTransactionRunner.direct(), null);
-    }
-
-    public PasswordResetService(AccountStore accounts, PasswordResetChallengeStore challenges,
-                                PasswordAccountService passwords, AuditFactPort audit, Clock clock,
                                 IamServiceProperties properties, SessionService sessions,
-                                IamTransactionRunner transactions) {
-        this(accounts, challenges, passwords, audit, clock, properties, sessions, transactions, null);
-    }
-
-    public PasswordResetService(AccountStore accounts, PasswordResetChallengeStore challenges,
-                                PasswordAccountService passwords, AuditFactPort audit, Clock clock,
-                                IamServiceProperties properties, SessionService sessions,
-                                IamTransactionRunner transactions, RateLimitStore rateLimits) {
+                                IamTransactionRunner transactions, RateLimitStore rateLimits,
+                                PasswordResetDeliveryPort delivery, String resetTargetSecret) {
         this.accounts = Objects.requireNonNull(accounts, "accounts");
         this.challenges = Objects.requireNonNull(challenges, "challenges");
         this.passwords = Objects.requireNonNull(passwords, "passwords");
@@ -48,16 +37,30 @@ public final class PasswordResetService {
         this.sessions = sessions;
         this.transactions = Objects.requireNonNull(transactions, "transactions");
         this.rateLimits = rateLimits;
+        this.delivery = Objects.requireNonNull(delivery, "delivery");
+        if (resetTargetSecret == null || resetTargetSecret.trim().length() < 32) {
+            throw new IllegalArgumentException("password reset target secret must be at least 32 characters");
+        }
+        this.resetTargetSecret = resetTargetSecret;
     }
 
-    /** Returns no token to HTTP callers; a delivery adapter must send it out-of-band. */
+    /** Returns no token to HTTP callers; the delivery port sends it out-of-band. */
     public void request(String identifier) {
-        String normalizedIdentifier;
-        try { normalizedIdentifier = AccountRecord.normalizeIdentifier(identifier); }
-        catch (RuntimeException ignored) { return; }
         Instant now = Instant.now(clock);
+        String normalizedIdentifier;
+        try {
+            normalizedIdentifier = AccountRecord.normalizeIdentifier(identifier);
+        } catch (RuntimeException ignored) {
+            // A malformed identifier is indistinguishable from an unknown account: audit the
+            // denied attempt with an unresolved subject and keep the public response uniform.
+            appendAudit(AuditDecision.unresolved("password_reset_denied",
+                    IamDecisionCode.PASSWORD_RESET_INVALID, false, now));
+            return;
+        }
         if (rateLimits != null && !rateLimits.allow("password_reset", rateKey(normalizedIdentifier), now,
                 Math.max(1, properties.getResetRequestsPerMinute()), java.time.Duration.ofMinutes(1))) {
+            appendAudit(AuditDecision.unresolved("password_reset_rate_limited",
+                    IamDecisionCode.RATE_LIMITED, false, now));
             throw new IamPolicyException(IamDecisionCode.RATE_LIMITED, "iam.password_reset.rate_limited");
         }
         AccountRecord account;
@@ -65,11 +68,26 @@ public final class PasswordResetService {
             account = accounts.findByIdentifier(normalizedIdentifier).orElse(null);
         } catch (IamPolicyException exception) {
             if (exception.code() == IamDecisionCode.IAM_PERSISTENCE_UNAVAILABLE) throw exception;
+            appendAudit(AuditDecision.unresolved("password_reset_denied",
+                    IamDecisionCode.PASSWORD_RESET_INVALID, false, now));
             return;
         } catch (RuntimeException ignored) {
+            appendAudit(AuditDecision.unresolved("password_reset_denied",
+                    IamDecisionCode.PASSWORD_RESET_INVALID, false, now));
             return;
         }
-        if (account == null) return;
+        if (account == null) {
+            appendAudit(AuditDecision.unresolved("password_reset_denied",
+                    IamDecisionCode.PASSWORD_RESET_INVALID, false, now));
+            return;
+        }
+        if (account.status() == AccountStatus.DISABLED) {
+            // A disabled account must never receive a live challenge, and the caller still sees
+            // the same accepted result as every other identifier.
+            appendAudit(AuditDecision.of("password_reset_denied", IamDecisionCode.PASSWORD_RESET_INVALID,
+                    false, TenantScope.derive(account.principalId()), now, java.util.Set.of(), java.util.Set.of()));
+            return;
+        }
         String token = randomToken();
         PasswordResetChallenge challenge = new PasswordResetChallenge(
                 UUIDs.random(), account.principalId(), SecretDigests.sha256Hex(token), now,
@@ -77,7 +95,26 @@ public final class PasswordResetService {
         challenges.save(challenge);
         appendAudit(AuditDecision.of("password_reset_requested", IamDecisionCode.PASSWORD_RESET_REQUESTED,
                 true, TenantScope.derive(account.principalId()), now, java.util.Set.of(), java.util.Set.of()));
-        // The delivery port is not part of the HTTP contract. Never log or return token.
+        handOff(challenge, account, token, now);
+    }
+
+    private void handOff(PasswordResetChallenge challenge, AccountRecord account, String token, Instant now) {
+        TenantScope scope = TenantScope.derive(account.principalId());
+        if (!delivery.provisioned()) {
+            // No deployment-provisioned transport is wired yet. The accepted response never
+            // claims delivery; the denied handoff is durable in audit for operations.
+            appendAudit(AuditDecision.of("password_reset_delivery_unprovisioned",
+                    IamDecisionCode.POLICY_UNAVAILABLE, false, scope, now, java.util.Set.of(), java.util.Set.of()));
+            return;
+        }
+        try {
+            delivery.deliver(new PasswordResetDelivery(challenge.challengeId(), account.principalId(),
+                    account.identifier(), token, challenge.expiresAt()));
+        } catch (RuntimeException exception) {
+            // The public response stays non-enumerating and never exposes transport state.
+            appendAudit(AuditDecision.of("password_reset_delivery_failed",
+                    IamDecisionCode.POLICY_UNAVAILABLE, false, scope, now, java.util.Set.of(), java.util.Set.of()));
+        }
     }
 
     public AccountRecord confirm(String identifier, String token, String newPassword) {
@@ -104,6 +141,7 @@ public final class PasswordResetService {
         Instant now = Instant.now(clock);
         if (challenge.consumed() || !challenge.expiresAt().isAfter(now)) invalid();
         AccountRecord account = passwords.find(challenge.principalId());
+        if (account.status() == AccountStatus.DISABLED) invalid();
         if (!account.identifier().equals(AccountRecord.normalizeIdentifier(identifier))) invalid();
         PasswordResetChallenge consumed = challenges.consume(challenge.challengeId());
         AccountRecord changed = passwords.changePassword(consumed.principalId(), newPassword);
@@ -142,8 +180,10 @@ public final class PasswordResetService {
         return value == null || value.isNegative() || value.isZero() ? fallback : value;
     }
 
-    private static String rateKey(String normalizedIdentifier) {
-        return SecretDigests.sha256Hex("iam-reset-rate:" + normalizedIdentifier);
+    private String rateKey(String normalizedIdentifier) {
+        // Keyed so an attacker cannot confirm a guessable email by recomputing the bucket key.
+        return SecretDigests.hmacSha256Hex(resetTargetSecret,
+                "iam-password-reset-target:" + normalizedIdentifier);
     }
 
     private static boolean infrastructureFailure(IamDecisionCode code) {

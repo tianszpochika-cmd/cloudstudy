@@ -70,6 +70,29 @@ public record AuditDecision(
                 Map.of());
     }
 
+    /**
+     * Records an attempt that cannot be bound to a platform principal, such as a password-reset
+     * request for an unknown identifier. The unresolved subject lets security monitoring
+     * correlate denied attempts without storing the identifier.
+     */
+    public static AuditDecision unresolved(
+            String decisionType,
+            IamDecisionCode code,
+            boolean allowed,
+            Instant occurredAt) {
+        return new AuditDecision(
+                UUID.randomUUID(),
+                decisionType,
+                code,
+                allowed,
+                PrincipalId.unresolved(),
+                TenantScope.PLATFORM_TENANT,
+                occurredAt,
+                Set.of(),
+                Set.of(),
+                Map.of());
+    }
+
     private static void requireSafeText(String value, String name) {
         if (value == null || value.isBlank() || value.chars().anyMatch(Character::isISOControl)) {
             throw new IllegalArgumentException(name + " must be safe text");

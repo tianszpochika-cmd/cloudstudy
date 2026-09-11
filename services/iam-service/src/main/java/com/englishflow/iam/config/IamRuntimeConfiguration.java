@@ -24,6 +24,7 @@ import com.englishflow.iam.domain.InMemoryAuditFactPort;
 import com.englishflow.iam.domain.InMemoryConsentStore;
 import com.englishflow.iam.domain.InMemoryDeviceRegistry;
 import com.englishflow.iam.domain.InMemoryPasswordResetChallengeStore;
+import com.englishflow.iam.domain.InMemoryPasswordResetDelivery;
 import com.englishflow.iam.domain.InMemorySessionStore;
 import com.englishflow.iam.domain.InMemoryIdempotencyStore;
 import com.englishflow.iam.domain.IdempotencyService;
@@ -46,6 +47,7 @@ import com.englishflow.iam.domain.FailClosedRateLimitStore;
 import com.englishflow.iam.domain.InMemoryRateLimitStore;
 import com.englishflow.iam.domain.PasswordAccountService;
 import com.englishflow.iam.domain.PasswordResetChallengeStore;
+import com.englishflow.iam.domain.PasswordResetDeliveryPort;
 import com.englishflow.iam.domain.PasswordResetService;
 import com.englishflow.iam.domain.PolicyBootstrapService;
 import com.englishflow.iam.domain.PolicyAccessAuthenticationVerifier;
@@ -59,6 +61,7 @@ import com.englishflow.iam.domain.RateLimitStore;
 import com.englishflow.iam.domain.SessionService;
 import com.englishflow.iam.domain.SessionStore;
 import com.englishflow.iam.domain.StaticConsentPolicy;
+import com.englishflow.iam.domain.UnprovisionedPasswordResetDelivery;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -394,9 +397,21 @@ public class IamRuntimeConfiguration {
                                                            PasswordAccountService passwords, AuditFactPort audit,
                                                            Clock clock, IamServiceProperties properties,
                                                            SessionService sessions, IamTransactionRunner transactions,
-                                                           RateLimitStore rateLimits) {
+                                                           RateLimitStore rateLimits,
+                                                           PasswordResetDeliveryPort passwordResetDelivery) {
         return new PasswordResetService(accounts, challenges, passwords, audit, clock, properties,
-                sessions, transactions, rateLimits);
+                sessions, transactions, rateLimits, passwordResetDelivery,
+                properties.getIdempotency().getFingerprintSecret());
+    }
+
+    @Bean
+    public PasswordResetDeliveryPort passwordResetDeliveryPort(Environment environment) {
+        boolean localOrTest = java.util.Arrays.stream(environment.getActiveProfiles())
+                .anyMatch(profile -> "local".equals(profile) || "test".equals(profile));
+        // Phase 1 IAM owns the challenge but not transport: local/test use the explicit
+        // in-memory sink, while non-local stays fail-closed until the notification/outbox
+        // handoff is provisioned. Neither variant claims a delivery guarantee.
+        return localOrTest ? new InMemoryPasswordResetDelivery() : new UnprovisionedPasswordResetDelivery();
     }
 
     @Bean

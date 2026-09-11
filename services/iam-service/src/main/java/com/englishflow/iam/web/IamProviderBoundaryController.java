@@ -1076,6 +1076,11 @@ class IamAuthenticationController {
                 exception.messageKey(), status.is5xxServerError());
         ResponseEntity.BodyBuilder builder = ResponseEntity.status(status).cacheControl(CacheControl.noStore());
         addCorrelationHeaders(builder, envelope.meta());
+        if (status == HttpStatus.TOO_MANY_REQUESTS) {
+            // Contract ApiRateLimited already declares Retry-After; every IAM rate window is
+            // one minute, so the canonical backoff is 60 seconds.
+            builder.header(HttpHeaders.RETRY_AFTER, "60");
+        }
         return builder.body(envelope);
     }
 

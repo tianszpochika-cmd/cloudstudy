@@ -20,6 +20,13 @@
 - 非 local 进程冒烟（`v2,local-real` + 持久化 + 真实 RSA 文件密钥）：注册 201、三类同意写入 200、`/iam/principal/me` 200（原 503）且 `consentState.accepted=true`、`unsatisfiedPurposes=[]`、`policySource=IAM_ACTIVE_POLICY_CONTROL_PLANE`；`RESTRICTED` 仅因成人 Gate 未评估（P2-3）。
 - 边界：只关闭 P1-2；任务保持 `IN_PROGRESS / NOT_RUNTIME_VERIFIED`，下一批为 P1-3 密码重置投递与审计。
 
+## 2026-09-11 M2-002 返工批次 3：密码重置投递 handoff、审计、HMAC 与 Retry-After
+
+- 新增 `PasswordResetDeliveryPort`/`PasswordResetDelivery` 及 local/test 内存适配器与非 local `UnprovisionedPasswordResetDelivery`：未配置传输不宣称送达，202 仅“已受理”，DENY 审计 `password_reset_delivery_unprovisioned`；传输异常只记 DENY 不改响应。未改 HTTP 契约（`ApiRateLimited` 已声明 `Retry-After`）。
+- 防枚举审计：畸形/缺失标识符用 `PrincipalId.unresolved()` 哨兵主体、禁用账户用真实主体，均写 DENY 且不生成挑战/不投递；`confirm()` 对禁用账户返回 401。限流键改为域分离 `HMAC-SHA256(fingerprintSecret, "iam-password-reset-target:"+identifier)`。429 统一返回 `Retry-After: 60`。
+- 验证（JDK 25）：全套 `80/0/0（19 skipped）`（新增 3 项）；真实 HTTP 冒烟（local profile）同一标识符第 6 次请求 429 + `Retry-After: 60` + 规范 `RATE_LIMITED` envelope。
+- 边界：只关闭 P1-3；真实投递与重试归后续 Outbox/notification；任务保持 `IN_PROGRESS / NOT_RUNTIME_VERIFIED`，下一批为 P1-4 native 可信上下文。
+
 ## 2026-09-04 IAM 账户/密码并发安全检查点
 
 - 源码：`9deb899`。认证改为锁前单次 cost-12 BCrypt、锁内 current principal/hash/status/counter 复核；credential epoch 在校验期间变化时统一 `INVALID_CREDENTIALS` 且零写入，避免旧在途请求污染或锁死刚重置的新凭据。
