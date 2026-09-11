@@ -1,0 +1,106 @@
+{
+  "kind": "p1r-m2-002-opt-in-cross-process-evidence",
+  "taskId": "P1R-M2-002",
+  "recordedAt": "2026-09-11T15:05:00+08:00",
+  "sourceCommit": "172dfca2b8e0331c0954f51f55d5397dedc6438a",
+  "environment": {
+    "toolchain": {
+      "java": "OpenJDK 25.0.2",
+      "maven": "3.9.12",
+      "node": "20.19.5"
+    },
+    "datastore": {
+      "kind": "mysql",
+      "image": "mysql:8.0.46",
+      "endpoint": "127.0.0.1:13306",
+      "schemas": [
+        "iam_service",
+        "iam_v13_test_20260911_a"
+      ],
+      "flywayVersion": 14
+    },
+    "runtimeProfiles": [
+      "v2",
+      "local-real"
+    ]
+  },
+  "optInMatrix": {
+    "command": "mvn -f services/iam-service/pom.xml test -Diam.jdbc.integration=true -Dtest=IamJdbcPersistenceContextTest,IamPolicyJdbcPersistenceContextTest,IamPolicyIdempotencyRollbackSafetyTest,IamConsentJdbcPersistenceContextTest,IamConsentIdempotencyRollbackSafetyTest,IamConsentPolicyJdbcPersistenceContextTest",
+    "result": "PASS",
+    "testsRun": 18,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "classes": [
+      {
+        "name": "IamJdbcPersistenceContextTest",
+        "tests": 8
+      },
+      {
+        "name": "IamPolicyJdbcPersistenceContextTest",
+        "tests": 1
+      },
+      {
+        "name": "IamPolicyIdempotencyRollbackSafetyTest",
+        "tests": 2
+      },
+      {
+        "name": "IamConsentJdbcPersistenceContextTest",
+        "tests": 4
+      },
+      {
+        "name": "IamConsentIdempotencyRollbackSafetyTest",
+        "tests": 2
+      },
+      {
+        "name": "IamConsentPolicyJdbcPersistenceContextTest",
+        "tests": 1
+      }
+    ]
+  },
+  "v13MigrationSecurity": {
+    "command": "mvn -f services/iam-service/pom.xml test -Diam.jdbc.migration.integration=true -DIAM_V13_TEST_JDBC_URL=... -DIAM_V13_TEST_JDBC_USERNAME=... -DIAM_V13_TEST_JDBC_PASSWORD=... -DIAM_V13_TEST_SCHEMA=iam_v13_test_20260911_a -Dtest=IdempotencyV13MigrationSecurityTest",
+    "result": "PASS",
+    "testsRun": 1,
+    "failures": 0,
+    "errors": 0
+  },
+  "inProcessSuite": {
+    "command": "mvn -f services/iam-service/pom.xml test",
+    "result": "PASS",
+    "testsRun": 86,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 19
+  },
+  "crossProcessRestart": {
+    "register": {
+      "status": 201,
+      "sessionCreated": "dbf5ddee-03fd-49a5-a465-17fc67dc9a77"
+    },
+    "restart": "process stopped; new JVM started with the same MySQL schema, non-local v2,local-real profile, real RSA file key and no in-memory fallback",
+    "refresh": {
+      "status": 200,
+      "session": "dbf5ddee-03fd-49a5-a465-17fc67dc9a77",
+      "rotation": 1,
+      "rotatedCookieIssued": true
+    },
+    "databaseChecks": {
+      "sessionStatus": "ACTIVE",
+      "sessionRotation": 1,
+      "sessionRotatedAtSet": true,
+      "refreshTokenHistoryRows": 1
+    }
+  },
+  "runtimeFindingsFixed": [
+    "The contract marks the refresh request body optional for WEB_COOKIE, but a missing body produced an internal failure at the idempotency fingerprint; the body is now normalized to an empty RefreshRequest and covered by a controller regression test.",
+    "An unsupported request media type was mapped to 500; it is now the canonical 400 validation error and unexpected failures are logged server-side without exposing internals."
+  ],
+  "notCovered": [
+    "Real email/SMS password-reset delivery and retry (Outbox/notification)",
+    "Real App Attest/Play Integrity device proof and real-device Keychain/Keystore acceptance",
+    "Concurrent IAM replicas or HA failover",
+    "P2-3 local adult-gate profile guard and remaining P3 items",
+    "M2-003 and later scope stay locked"
+  ]
+}

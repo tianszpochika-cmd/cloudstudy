@@ -40,6 +40,14 @@
 - 验证（JDK 25）：全套 `84/0/0（19 skipped）`；opt-in MySQL 事务矩阵 `10/10`。
 - 边界：下一批 ⑥ 全 opt-in/跨进程 Evidence（P1-5），随后 ⑦ `local-adult-gate-enabled` 守卫（P2-3）；任务保持 `IN_PROGRESS / NOT_RUNTIME_VERIFIED`。
 
+## 2026-09-11 M2-002 返工批次 6：全 opt-in 矩阵与跨进程持久化 Evidence
+
+- opt-in 矩阵（真实 MySQL 8.0 隔离库，Flyway V14）：六个类 **18/18 PASS**；隔离 schema `iam_v13_test_20260911_a` 上 `IdempotencyV13MigrationSecurityTest` **1/1 PASS**；IAM 全套 `86/0/0（19 skipped）`。
+- 跨进程持久化冒烟（`v2,local-real` + 持久化 + 真实 RSA 密钥）：注册 201 → 重启进程 → 刷新 200 且 `rotation=1`、history 1 行，DB `ACTIVE` 校验一致。
+- 冒烟发现并修复两个真实缺陷：refresh 缺失 body 的幂等指纹 NPE（契约允许空 body）；不支持媒体类型被映射为 500（现为 400，并增加未预期异常服务端日志）。
+- 证据：`evidence/p1r/m2/P1R-M2-002/opt-in-cross-process-evidence-2026-09-11.json`（sourceCommit=实现提交）。
+- 边界：下一批 ⑦ `local-adult-gate-enabled` 守卫（P2-3）与 P3，随后重跑最终独立复审；任务保持 `IN_PROGRESS / NOT_RUNTIME_VERIFIED`。
+
 ## 2026-09-04 IAM 账户/密码并发安全检查点
 
 - 源码：`9deb899`。认证改为锁前单次 cost-12 BCrypt、锁内 current principal/hash/status/counter 复核；credential epoch 在校验期间变化时统一 `INVALID_CREDENTIALS` 且零写入，避免旧在途请求污染或锁死刚重置的新凭据。
