@@ -2,7 +2,18 @@
 
 更新时间：2026-09-11（Asia/Shanghai）。本文件只说明如何恢复当前开发检查点，不替代任务台账或 canonical Evidence manifest。
 
-## 2026-09-11 M2-001/M2-002 均验收（最新恢复入口）
+## 2026-09-11 M2-003 Batch 1 进展（最新恢复入口）
+
+更新时间：2026-09-11 18:05（Asia/Shanghai）。本次会话完整开发记录见 [SESSION-LOG-2026-09-11.md](SESSION-LOG-2026-09-11.md)。
+
+- `P1R-M2-003`（领域服务 PEP 默认拒绝扩展）已认领并完成 **Batch 1 高危四服务**；事实来源决策（用户确认）：JWT 只提供已验证身份/租户/角色/权限，phase/consent/rights/撤销由服务侧策略/PDP 提供，缺失或异常默认拒绝。
+- Batch 1 结果：`learning-service` **121/0/0/0**（删除生产 `phaseOne()` 硬编码 `ConsentState.GRANTED` + 死代码 resolver）、`assessment-service` **37/0/0/0**（此前无 PEP/权限模型，最高危）、`content-service` **113/0/0/0**（工厂显式 platform tenant + 非空 authority；修复头过滤器驼峰参数黑名单缺陷）、`learner-service` **30/0/0/0**（UUID/`prn_` 主体 + 默认拒绝入口）。
+- 每服务均补 JWT 转换器、默认拒绝入口与伪造头负例测试；契约检查 PASS（learning-loop 50 / assessment 78 / learner-planning 146 adversarial cases）。
+- 台账：`27 ACCEPTED / 1 BLOCKED / 1 IN_PROGRESS / 79 PLANNED`；总阶段仍为 `D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED`；本次会话 24 个提交已推送（`origin/dev=c15abe4`）。
+- M2-003 下一步：Batch 2（media/social/admin-ops，含 social tenant 缺省回退修复）→ Batch 3（notification/commerce/analytics）→ Batch 4（gamification）→ 运行证据与最终独立复审。
+- M2-003 已知边界：端点级细粒度 `@PreAuthorize` 权限矩阵与 phase/consent/rights 的 PDP 事实源尚未接线（Batch 1 为“JWT 身份 + 默认拒绝”基线）；M2-002 遗留 2 项 P3（legacy 控制器级 409 用例、规范映射维护断言）。
+
+## 2026-09-11 M2-001/M2-002 均验收（历史，已被上节取代）
 
 更新时间：2026-09-11 16:40（Asia/Shanghai）。
 
