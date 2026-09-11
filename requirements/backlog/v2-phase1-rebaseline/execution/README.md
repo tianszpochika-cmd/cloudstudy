@@ -72,7 +72,7 @@
 
 | 任务 | 执行记录 | canonical 状态 |
 |---|---|---|
-| `P1R-M2-001` | `P1R-M2-001.md` | `IN_PROGRESS` |
+| `P1R-M2-001` | `P1R-M2-001.md` | `ACCEPTED` |
 | `P1R-M2-002` | `P1R-M2-002.md` | `IN_PROGRESS` |
 
-M2-001 与 M2-002 从 M1-018 已接受的 D2 边界并行启动；M2-003 依赖两者，不提前实现。进程内 Java 测试、静态配置与本地可启动性不能代替真实 Redis/MySQL/JWKS/upstream/浏览器/集群网络证据，未实证项继续标记 `NOT_RUNTIME_VERIFIED`。
+M2-001 已于 2026-09-11 取得当前提交真实运行 PASS 并经独立只读终审 `ACCEPT`（canonical manifest `evidence/p1r/m2/P1R-M2-001/manifest.json`）；M2-002 独立复审判定 `REWORK`，5 项开放 P1 按执行记录中的有序批次返工。M2-003 依赖两者，不提前实现。进程内 Java 测试、静态配置与本地可启动性不能代替真实 Redis/MySQL/JWKS/upstream/浏览器/集群网络证据；durable audit、NetworkPolicy、平台关联终验与 staging 复验分别归 M2-006/008/010 与 M8-013，未实证项继续标记 `NOT_RUNTIME_VERIFIED`。

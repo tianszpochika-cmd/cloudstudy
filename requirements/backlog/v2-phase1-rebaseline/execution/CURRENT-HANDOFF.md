@@ -2,7 +2,17 @@
 
 更新时间：2026-09-11（Asia/Shanghai）。本文件只说明如何恢复当前开发检查点，不替代任务台账或 canonical Evidence manifest。
 
-## 2026-09-11 阶段更新（最新恢复入口）
+## 2026-09-11 M2-001 验收与 M2-002 复审（最新恢复入口）
+
+更新时间：2026-09-11 11:00（Asia/Shanghai）。
+
+- `P1R-M2-001` 独立只读终审判定 **`ACCEPT`**（P0/P1/P2=`0/0/0`，5 条 P3 加固建议不阻塞），台账晋升 **`ACCEPTED`**；canonical manifest `evidence/p1r/m2/P1R-M2-001/manifest.json`（23 artifacts，`sourceCommit=7ba4d33`），状态轨迹追加 `REVIEW → ACCEPTED`。运行证据 `evidence/p1r/m2/P1R-M2-001/runtime-evidence-2026-09-11.json`（`--run --browser --fault` PASS，29/29，`notRuntimeVerified: []`）。未验证边界不变：durable audit/NetworkPolicy/平台关联/staging/并发副本分别归 M2-006/008/010 与 M8-013。
+- `P1R-M2-002` 独立只读复审判定 **`REWORK`**（P0=0、P1=5、P2=3、P3=3），保持 `IN_PROGRESS / NOT_RUNTIME_VERIFIED`；返工按 [P1R-M2-002 执行记录](P1R-M2-002.md) 的有序批次：① legacy Consent 空摘要兼容 → ② 正式 Consent 策略来源 → ③ 密码重置投递/审计 → ④ native 可信上下文 → ⑤ Consent/Policy 部分提交加固 → ⑥ 隔离库 opt-in Evidence → ⑦ localAdultGate 守卫 → ⑧ 重跑最终复审。
+- 台账：`26 ACCEPTED / 1 BLOCKED / 1 IN_PROGRESS / 80 PLANNED`；总阶段仍为 `D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED`；`P1R-M2-003` 须待 M2-002 验收后才解锁。
+- 已复现的复核证据：Gateway Java 25 `82/82`、IAM Java 25 `71/71（18 skipped）`、运行器 Node `8/8`、IAM compatibility `7/7`；本机标准栈无 `iam_service` schema 与 `iam_runtime` 凭据，6 个 opt-in MySQL 类（18 项）未在本次复审复现，须在授权隔离库补证据。
+- GitHub 网络仍间歇不可达，本地提交待网络恢复后推送。
+
+## 2026-09-11 阶段更新（历史，已被上节取代）
 
 - `P1R-M2-001` 真实运行批次已完成并归档：在标准本地栈 `yuxuexing-local`（Redis 7 `127.0.0.1:16379`）以 JDK 25 构建两棵服务树后执行（`dev@352879a`，services 树 `CLEAN`）。`--run --browser` → 27/27 PASS（16 普通 + 11 浏览器，`PARTIAL`，仅 503 未请求）；`--run --browser --fault`（精确 pause/unpause `yuxuexing-local-redis-1`）→ **`result: PASS`，29/29 PASS，`notRuntimeVerified: []`**，审计覆盖 `200/401/403/404/429/503` 与三个浏览器 reasonCode，`redis.destructiveCommandsUsed=false`、`sensitiveMaterial={persisted:false,emitted:false}`。证据：`evidence/p1r/m2/P1R-M2-001/runtime-evidence-2026-09-11.json`。首次 `--run --browser` 曾在 `redis-limit-process-a-first` 瞬时 `HTTP_STATUS` 失败（健康桶未写入、DB15 仅存浏览器阶段 `iam-jwks-public` 桶，排除 429；判定为首次请求超过 750ms 后端预算的 fail-closed），等待健康键自然过期后重跑通过，未删除任何键。详见 [P1R-M2-001 执行记录](P1R-M2-001.md)。
 - `P1R-M2-002` 幂等边界预期拒绝批次源码（提交 `4bc645c`）：修复 Consent/Policy 内层事务 rollback-only（`UnexpectedRollbackException`）与幂等重放状态映射；新增 opt-in MySQL 测试 4/4，全套 71 tests 通过。详见 [P1R-M2-002 执行记录](P1R-M2-002.md)。

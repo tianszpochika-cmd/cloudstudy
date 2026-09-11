@@ -1,5 +1,11 @@
 # P1R M2 执行日志
 
+## 2026-09-11 M2-001 验收与 M2-002 复审判定
+
+- `P1R-M2-001`：在标准 `yuxuexing-local` 栈（Redis 7 @127.0.0.1:16379）以 JDK 25 构建两棵服务树并执行 `--run --browser --fault` → **`result: PASS`，29/29 检查，`notRuntimeVerified: []`**，11 个真实浏览器用例（Playwright + 系统 Edge CDP），审计覆盖 `200/401/403/404/429/503` 与 `origin_referer_conflict`/`credentialed_referer_untrusted`/`cors_origin_forbidden`；证据 `evidence/p1r/m2/P1R-M2-001/runtime-evidence-2026-09-11.json`。独立只读终审 `agent:m2_001_final_review:opencode-general` 判定 **`ACCEPT`**（P0/P1/P2=`0/0/0`，5 条 P3 加固建议不阻塞）；台账晋升 `ACCEPTED`，canonical manifest 绑定 23 artifacts（`sourceCommit=7ba4d33`，含 jar/sourceTree 摘要核验），状态轨迹 `PLANNED→READY→IN_PROGRESS→REVIEW→ACCEPTED`。责任边界：durable audit→M2-006、NetworkPolicy→M2-008、平台关联→M2-010、staging→M8-013；并发副本不在本任务范围。
+- `P1R-M2-002`：独立只读复审判定 **`REWORK`**（P0=0、P1=5、P2=3、P3=3）。`4bc645c` 的 rollback-only 修复方向正确，全套 `71/71（18 skipped）`、IAM compatibility `7/7` 可复现；但 legacy Consent 空摘要兼容、正式 Consent 策略来源、密码重置投递与审计、native 可信上下文、真实 DB/跨进程 Evidence 仍未关闭。任务保持 `IN_PROGRESS / NOT_RUNTIME_VERIFIED`，按执行记录中的 8 个有序批次返工；`P1R-M2-003` 继续锁定。
+- 审判依据与 P1/P2/P3 明细、复现命令及限制见 [P1R-M2-001 执行记录](P1R-M2-001.md) 与 [P1R-M2-002 执行记录](P1R-M2-002.md)。
+
 ## 2026-09-04 IAM 账户/密码并发安全检查点
 
 - 源码：`9deb899`。认证改为锁前单次 cost-12 BCrypt、锁内 current principal/hash/status/counter 复核；credential epoch 在校验期间变化时统一 `INVALID_CREDENTIALS` 且零写入，避免旧在途请求污染或锁死刚重置的新凭据。

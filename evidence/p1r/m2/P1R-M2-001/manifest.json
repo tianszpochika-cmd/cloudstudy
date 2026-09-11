@@ -1,0 +1,238 @@
+{
+  "taskId": "P1R-M2-001",
+  "draftOnly": false,
+  "canonicalTaskStatus": "ACCEPTED",
+  "sourceCommit": "7ba4d33f820efae6756164a97dfd38f02c0e89c4",
+  "artifactDigests": [
+    {
+      "path": "services/api-gateway/src/main/java/com/englishflow/gateway/policy/GatewayRoutePolicy.java",
+      "algorithm": "sha256",
+      "digest": "3f39fdbf8587eca6a60568a0e41537135ad19e1e36e935f723d9aae06e775bc7"
+    },
+    {
+      "path": "services/api-gateway/src/main/java/com/englishflow/gateway/policy/GatewayRouteExecutionPolicy.java",
+      "algorithm": "sha256",
+      "digest": "4048c906abdb1b7f319464557864057fb448e654a224ee59f1bdf7f4a9009031"
+    },
+    {
+      "path": "services/api-gateway/src/main/java/com/englishflow/gateway/config/GatewayConfiguration.java",
+      "algorithm": "sha256",
+      "digest": "523f8f336735e00993a40b85bbb38fd563046145c53e2f16dc5e69537aeb69bb"
+    },
+    {
+      "path": "services/api-gateway/src/main/java/com/englishflow/gateway/config/GatewayIamPublicJwkSource.java",
+      "algorithm": "sha256",
+      "digest": "bc3fd76268902ccb3a3a05d971d0f55f341f1066f0e2afe8b2a65608dcd0498c"
+    },
+    {
+      "path": "services/api-gateway/src/main/java/com/englishflow/gateway/filter/RateLimitGlobalFilter.java",
+      "algorithm": "sha256",
+      "digest": "f6344f4053fa885a5e49430ad8969916981775eb91ccea3846be99717c936e6b"
+    },
+    {
+      "path": "services/api-gateway/src/main/java/com/englishflow/gateway/rate/RedisRateLimitBackend.java",
+      "algorithm": "sha256",
+      "digest": "a90b85b3f35da9cc91743ea84e75bdfe22a9f725e6a1321945df4030041854c5"
+    },
+    {
+      "path": "services/api-gateway/src/main/java/com/englishflow/gateway/rate/InMemoryRateLimitBackend.java",
+      "algorithm": "sha256",
+      "digest": "dc2d763223c38e2634974de78a66cfdce5a437dbce8b119ab4e785a002390bc2"
+    },
+    {
+      "path": "services/api-gateway/src/main/java/com/englishflow/gateway/support/RuntimeEvidenceSecurityAuditSink.java",
+      "algorithm": "sha256",
+      "digest": "fba2d4cc2a2bc0419893e8c5299646f40965e9805208d58f38f5b0449711dffd"
+    },
+    {
+      "path": "services/api-gateway/src/main/java/com/englishflow/gateway/support/SecurityAuditRecorder.java",
+      "algorithm": "sha256",
+      "digest": "a38f30140f0ccc46846ebad787d9a6d39978d13800afc8099b004a56134c5d93"
+    },
+    {
+      "path": "services/api-gateway/src/test/runtime/p1r-m2-001-runtime.mjs",
+      "algorithm": "sha256",
+      "digest": "57719a93d85b80e2bf3a9473bbaca6c530e5964a38724a3081f82218ec4ce981"
+    },
+    {
+      "path": "services/api-gateway/src/test/runtime/lib/m2-runtime-lib.mjs",
+      "algorithm": "sha256",
+      "digest": "ec360b70ef143b6d915b9ed972e83cc538fac115f6ebcf93ab7f66ae5cbdc0ec"
+    },
+    {
+      "path": "services/api-gateway/src/test/runtime/lib/m2-browser-checks.mjs",
+      "algorithm": "sha256",
+      "digest": "68527b9ad83a3a0a7d8eabc8b7b0ae649246a2b4c5c16e3ba06c48e7f40dc716"
+    },
+    {
+      "path": "services/api-gateway/src/test/runtime/browser-fixture-server.mjs",
+      "algorithm": "sha256",
+      "digest": "32cc045fdb4d12683f90a38aff69b20139fec4488c7931a5e4dd43250e9e2e8e"
+    },
+    {
+      "path": "services/api-gateway/src/test/runtime/p1r-m2-001-runtime.test.mjs",
+      "algorithm": "sha256",
+      "digest": "acc51fc92aa55606c30357f87a658be59e62dc062a2a90d19f69b8982dee9b0c"
+    },
+    {
+      "path": "services/api-gateway/src/test/runtime/README.md",
+      "algorithm": "sha256",
+      "digest": "892f6b2a37b2dcd9cbd34825fbadeeaa7cc39caa4df4231e544a9ee0b7b5e2ad"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-001/runtime-evidence-2026-09-11.json",
+      "algorithm": "sha256",
+      "digest": "4a9489454dd649140bd5e0eda28b90e5d3b1f9268859b480b4db69f9a9b49786"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-001/runtime-evidence-2026-09-10.json",
+      "algorithm": "sha256",
+      "digest": "6c42ce698faeaae2ca9fe7065bbac748503409264b94cf585bcb6c41ba1cb7de"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-001/runtime-evidence-no-fault-2026-09-10.json",
+      "algorithm": "sha256",
+      "digest": "236c27170f322c5889150ee80a23abfd9a5afad1e0923a764be988c9b440d00e"
+    },
+    {
+      "path": "packages/contracts/openapi/v1/openapi.json",
+      "algorithm": "sha256",
+      "digest": "93c03dfd26d482397a5ec1c1e26f5627f1e2294d10a68864d3af30eeeffe1a80"
+    },
+    {
+      "path": "docs/10-decisions/0010-java25-microservices-gateway-iam.md",
+      "algorithm": "sha256",
+      "digest": "f6e191bbf69ea3437c82f0d4fccde364dcc189d525ea3bcd4d4b91695afaa023"
+    },
+    {
+      "path": "docs/10-decisions/0013-self-owned-jwt-authentication-center.md",
+      "algorithm": "sha256",
+      "digest": "46a8e3809acb4b10e08bcf4d70c57954f47844c44376c0aaef86573f84eb71ab"
+    },
+    {
+      "path": "docs/02-architecture/security-and-data-boundaries.md",
+      "algorithm": "sha256",
+      "digest": "e55b085b07caea013eb904722d95efcce0432070b19aea3a426ed393eda93434"
+    },
+    {
+      "path": "requirements/backlog/v2-phase1-rebaseline/execution/M2-EVIDENCE-RESPONSIBILITY-ADDENDUM-2026-09-04.md",
+      "algorithm": "sha256",
+      "digest": "eff0a78d8d2c05ebda07c4245c0dc012b6c4109652c2b1e39de5ce4ec33910b9"
+    }
+  ],
+  "environment": {
+    "kind": "gateway-boundary-runtime-evidence",
+    "branch": "dev",
+    "phaseStatus": "D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED",
+    "runtimeStatus": "M2_001_BOUNDARY_RUNTIME_VERIFIED",
+    "reviewedRevision": "7ba4d33f820efae6756164a97dfd38f02c0e89c4",
+    "runtimeEvidenceRevision": "352879aea97293da1b06057d4344662436bdf964",
+    "toolchain": {
+      "java": "OpenJDK 25.0.2",
+      "maven": "3.9.12",
+      "node": "20.19.5",
+      "playwright": "1.63.0",
+      "browser": "Microsoft Edge 152 via channel msedge (headless)"
+    },
+    "localInfrastructure": "yuxuexing-local (Redis 7 at 127.0.0.1:16379 database 15; no destructive commands)"
+  },
+  "provenance": {
+    "implementationCheckpoints": [
+      "a10c7ec",
+      "acee36a84ee1fd6557ac3b62a41d033622e8da4a",
+      "9560c75"
+    ],
+    "jwkEnvelopeFix": "51a86c8d4d92d69e4beab199b446bdc773ce95e9",
+    "browserBatch": "dce7172",
+    "runtimeEvidenceCommit": "0d662d3",
+    "reviewHistory": [
+      {
+        "reviewer": "agent:m2_001_final_review:opencode-general",
+        "session": "ses_f71a168d0ffen8uwdKRVgWIWAd",
+        "verdict": "ACCEPT",
+        "p0": 0,
+        "p1": 0,
+        "p2": 0,
+        "p3": 5,
+        "finishedAt": "2026-09-11T10:58:00+08:00",
+        "details": "Independent read-only review verified evidence provenance (sourceTree and jar digests at 352879a), 29/29 runtime checks, 11 browser cases, rate-limit key semantics, audit redaction, Addendum scope, Node 8/8, Gateway 82/82 and IAM 71/71 (18 opt-in skips). P3 hardening suggestions are recorded in execution/P1R-M2-001.md and do not block acceptance; durable audit, NetworkPolicy, platform correlation and staging remain with M2-006/M2-008/M2-010/M8-013."
+      }
+    ]
+  },
+  "startedAt": "2026-09-01T16:17:22+08:00",
+  "finishedAt": "2026-09-11T10:59:16+08:00",
+  "actors": [
+    "root-coordinator",
+    "m2-gateway-runtime-executor"
+  ],
+  "sourceIds": [
+    "P1R-M2-001",
+    "ARCH-GW-001",
+    "INT-P1-001",
+    "INT-P1-002",
+    "ADR-0010",
+    "ADR-0013"
+  ],
+  "commands": [
+    "node services/api-gateway/src/test/runtime/p1r-m2-001-runtime.mjs --run --browser --fault (M2_JAVA_BIN=JDK25; M2_REDIS_FAULT_OPT_IN=PAUSE_EXACT_REDIS_16379_AND_RECOVER; M2_REDIS_CONTAINER=yuxuexing-local-redis-1)",
+    "M2_JAVA_BIN=JDK25; mvn.cmd -f services/api-gateway/pom.xml -DskipTests package",
+    "M2_JAVA_BIN=JDK25; mvn.cmd -f services/iam-service/pom.xml -DskipTests package",
+    "node --test services/api-gateway/src/test/runtime/p1r-m2-001-runtime.test.mjs",
+    "JAVA_HOME=JDK25; mvn.cmd -f services/api-gateway/pom.xml test",
+    "JAVA_HOME=JDK25; mvn.cmd -f services/iam-service/pom.xml test",
+    "independent read-only review session ses_f71a168d0ffen8uwdKRVgWIWAd"
+  ],
+  "results": [
+    {
+      "check": "gateway-boundary-runtime-batch",
+      "status": "PASS",
+      "details": "result PASS; 29/29 checks; notRuntimeVerified []; browser 11/11 via Playwright system Edge CDP; audit rows 200/401/403/404/429/503 plus origin_referer_conflict, credentialed_referer_untrusted and cors_origin_forbidden; redis.destructiveCommandsUsed=false; sensitiveMaterial persisted/emitted false."
+    },
+    {
+      "check": "runtime-node-suite",
+      "status": "PASS",
+      "details": "8/8 PASS on Node 20.19.5."
+    },
+    {
+      "check": "gateway-java-suite",
+      "status": "PASS",
+      "details": "82 tests / 0 failures / 0 errors under JDK 25 (independent reviewer rerun)."
+    },
+    {
+      "check": "iam-java-suite",
+      "status": "PASS",
+      "details": "71 tests / 0 failures / 0 errors / 18 opt-in integration skips under JDK 25 (independent reviewer rerun)."
+    },
+    {
+      "check": "canonical-health-identity",
+      "status": "PASS",
+      "details": "GET /api/v1/health keeps operationId getHealth, summary \"读取 API Gateway 健康状态\" and HealthData.service=api-gateway; promotion scope remains OPENAPI_GATEWAY_ROOT_AND_HEALTH_IDENTITY_ONLY."
+    },
+    {
+      "check": "independent-review",
+      "status": "PASS",
+      "details": "agent:m2_001_final_review:opencode-general ACCEPT with P0/P1/P2=0/0/0 and five non-blocking P3 hardening suggestions."
+    },
+    {
+      "check": "scope-boundaries",
+      "status": "PASS",
+      "details": "No claim is made for durable audit, NetworkPolicy, platform correlation, staging or concurrent replicas; the sequential cross-process limitation is explicit in the evidence."
+    }
+  ],
+  "rollbackEvidence": [
+    {
+      "status": "PASS",
+      "details": "M2-001 changes stay inside services/api-gateway plus evidence and execution records; no contract, schema or migration change is involved. Reverting to checkpoint 9560c75 / 51a86c8 restores the pre-acceptance Gateway behavior while M0/M1 D2 artifacts and the frozen M1-018 baseline stay untouched. The runtime harness is non-destructive and rerunable on the registered fixed ports."
+    }
+  ],
+  "knownGaps": [
+    "M2-GW-AUDIT durable audit-service ingest, append-only storage and replay remain with P1R-M2-006 as OPEN / NOT_RUNTIME_VERIFIED.",
+    "M2-GW-DIRECT-CONNECT real NetworkPolicy direct-connect probes remain with P1R-M2-008 as OPEN / NOT_RUNTIME_VERIFIED.",
+    "M2-GW-RUNTIME-EVIDENCE platform-wide Gateway to IAM to PEP to owner to audit correlation remains with P1R-M2-010; staging revalidation remains with P1R-M8-013.",
+    "Concurrent Gateway replicas are not covered; only sequential distinct processes sharing DB15 state through Redis are proven.",
+    "P3 hardening suggestions from the independent review: preflight negative audit anchors, Referer-fallback Origin-removal assertion, browser requestId echo comparison and CDP event bounded waiting.",
+    "Overall phase remains D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED; P1R-M2-003 stays locked until P1R-M2-002 is also ACCEPTED."
+  ],
+  "reviewer": "agent:m2_001_final_review:opencode-general",
+  "decision": "ACCEPTED"
+}

@@ -405,12 +405,14 @@
       "path": [
         "PLANNED",
         "READY",
-        "IN_PROGRESS"
+        "IN_PROGRESS",
+        "REVIEW",
+        "ACCEPTED"
       ],
-      "recordedAt": "2026-09-01T16:17:22+08:00",
+      "recordedAt": "2026-09-11T10:59:16+08:00",
       "actor": "root-coordinator",
-      "reason": "M1-018 and the global Evidence Gate are accepted. Gateway implementation starts with a shared route/auth-class policy, credentialed browser Origin/Referer protection, Redis-oriented rate limiting and Java 25 process-level tests; real Redis/JWKS/upstream/browser/NetworkPolicy and durable audit remain NOT_RUNTIME_VERIFIED.",
-      "evidencePath": "requirements/backlog/v2-phase1-rebaseline/execution/P1R-M2-001.md"
+      "reason": "Gateway boundary runtime batch passed on the committed services tree at 352879a: --run --browser --fault returned result PASS with 29/29 checks, notRuntimeVerified [], 11 real browser cases, 401/403/404/429/503 audit coverage and non-destructive Redis fault recovery. Independent read-only review agent:m2_001_final_review:opencode-general accepted with P0/P1/P2=0/0/0 and five non-blocking P3 hardening notes. Canonical manifest binds 23 artifacts. Durable audit, NetworkPolicy, platform correlation, staging and concurrent replicas remain with M2-006/M2-008/M2-010/M8-013; overall phase stays D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED and M2-003 remains locked until M2-002 is accepted.",
+      "evidencePath": "evidence/p1r/m2/P1R-M2-001/manifest.json"
     },
     {
       "taskId": "P1R-M2-002",
