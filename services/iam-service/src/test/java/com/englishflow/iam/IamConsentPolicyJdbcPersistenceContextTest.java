@@ -120,7 +120,34 @@ class IamConsentPolicyJdbcPersistenceContextTest {
         assertTrue(policy.descriptors().isEmpty(), "a deployment without published documents stays fail-closed");
     }
 
+    @Test
+    void partiallyPublishedControlPlaneMissingALearningRequiredTypeFailsClosed() {
+        deletePublishedDocuments();
+        PrincipalId principal = PrincipalId.random();
+        ServerPrincipalContext context = ServerPrincipalContext.forPlatform(principal, Set.of("learner"));
+        try {
+            publishDocuments(Set.of("TERMS_OF_SERVICE", "PRIVACY_NOTICE"));
+            for (ConsentType type : List.of(ConsentType.TERMS_OF_SERVICE, ConsentType.PRIVACY_NOTICE)) {
+                ConsentPolicyDescriptor descriptor = policy.descriptor(type);
+                consents.record(context, new ConsentCommand(type, descriptor.documentVersion(), true,
+                        ClientAuthorityClaims.none(), descriptor.documentDigest()));
+            }
+            assertFalse(consents.hasRequiredConsentFor(principal, "LEARNING"),
+                    "a control plane missing ADULT_LEARNING must not authorize LEARNING");
+            assertTrue(consents.hasRequiredConsentFor(principal, "ACCOUNT"),
+                    "ACCOUNT only needs the published and satisfied BASE_REQUIRED types");
+        } finally {
+            cleanupPrincipal(principal);
+            deletePublishedDocuments();
+        }
+    }
+
     private void publishDocuments() {
+        publishDocuments(Set.of("TERMS_OF_SERVICE", "PRIVACY_NOTICE", "ADULT_LEARNING",
+                "PRODUCT_ANALYTICS", "VOICE_RECORDING"));
+    }
+
+    private void publishDocuments(Set<String> onlyTypes) {
         Instant publishedAt = Instant.now().minusSeconds(86_400);
         List<String[]> documents = List.of(
                 new String[]{"TERMS_OF_SERVICE", "1", "BASE_REQUIRED", "[\"ACCOUNT\",\"LEARNING\"]", "RESTRICT_ALL_LEARNING_ACCESS", "1"},
@@ -131,6 +158,7 @@ class IamConsentPolicyJdbcPersistenceContextTest {
                         "[\"VOICE_REMOTE_RECORD\",\"VOICE_REMOTE_UPLOAD\",\"VOICE_REMOTE_PROCESS\",\"VOICE_REMOTE_REPLAY\"]",
                         "RESTRICT_PROTECTED_CAPABILITY", "0"});
         for (String[] document : documents) {
+            if (!onlyTypes.contains(document[0])) continue;
             jdbc.update("INSERT INTO iam_consent_document_version (consent_document_id, tenant_id, consent_type, "
                             + "document_version, document_digest, published_at, policy_version, policy_digest, "
                             + "requirement, capabilities, withdrawal_effect, revoke_sessions, policy_ref, "

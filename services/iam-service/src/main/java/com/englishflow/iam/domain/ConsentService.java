@@ -2,7 +2,7 @@ package com.englishflow.iam.domain;
 
 import java.time.Clock;
 import java.time.Instant;
-import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -13,6 +13,25 @@ public final class ConsentService {
     private static final Set<String> SUPPORTED_CAPABILITIES = Set.of(
             "ACCOUNT", "LEARNING", "ANALYTICS", "VOICE_REMOTE_RECORD", "VOICE_REMOTE_UPLOAD",
             "VOICE_REMOTE_PROCESS", "VOICE_REMOTE_REPLAY");
+
+    /**
+     * Canonical consent types every capability needs. The aggregate must not infer its
+     * requirements from whatever the control plane happens to publish: a partially published
+     * plane would otherwise silently drop a required type and authorize the capability.
+     */
+    private static final Map<String, Set<ConsentType>> CANONICAL_REQUIRED_TYPES = Map.ofEntries(
+            Map.entry("ACCOUNT", Set.of(ConsentType.TERMS_OF_SERVICE, ConsentType.PRIVACY_NOTICE)),
+            Map.entry("LEARNING", Set.of(ConsentType.TERMS_OF_SERVICE, ConsentType.PRIVACY_NOTICE,
+                    ConsentType.ADULT_LEARNING)),
+            Map.entry("ANALYTICS", Set.of(ConsentType.TERMS_OF_SERVICE, ConsentType.PRIVACY_NOTICE)),
+            Map.entry("VOICE_REMOTE_RECORD", Set.of(ConsentType.TERMS_OF_SERVICE, ConsentType.PRIVACY_NOTICE,
+                    ConsentType.VOICE_RECORDING)),
+            Map.entry("VOICE_REMOTE_UPLOAD", Set.of(ConsentType.TERMS_OF_SERVICE, ConsentType.PRIVACY_NOTICE,
+                    ConsentType.VOICE_RECORDING)),
+            Map.entry("VOICE_REMOTE_PROCESS", Set.of(ConsentType.TERMS_OF_SERVICE, ConsentType.PRIVACY_NOTICE,
+                    ConsentType.VOICE_RECORDING)),
+            Map.entry("VOICE_REMOTE_REPLAY", Set.of(ConsentType.TERMS_OF_SERVICE, ConsentType.PRIVACY_NOTICE,
+                    ConsentType.VOICE_RECORDING)));
 
     private final ConsentStore consents;
     private final ConsentPolicyPort policy;
@@ -137,16 +156,23 @@ public final class ConsentService {
         try {
             if (!policy.evaluationEnabled() || capability == null
                     || !SUPPORTED_CAPABILITIES.contains(capability)) return false;
-            List<ConsentPolicyDescriptor> required = policy.descriptors().stream()
-                    .filter(descriptor -> descriptor.requiredFor(capability)
+            Set<ConsentType> canonical = CANONICAL_REQUIRED_TYPES.get(capability);
+            if (canonical == null) return false;
+            Map<ConsentType, ConsentPolicyDescriptor> published = policy.descriptors().stream()
+                    .filter(descriptor -> canonical.contains(descriptor.type())
                             && descriptor.isPublishedAt(Instant.now(clock)))
-                    .toList();
-            // An empty published-required set cannot prove that a required consent exists, so it
-            // must restrict the capability instead of authorizing it vacuously.
-            return !required.isEmpty() && required.stream()
-                    .allMatch(descriptor -> consents.find(principalId, descriptor.type())
-                            .map(record -> samePublishedFact(record, descriptor) && record.accepted())
-                            .orElse(false));
+                    .collect(java.util.stream.Collectors.toMap(ConsentPolicyDescriptor::type,
+                            descriptor -> descriptor, (first, second) -> first));
+            // Every canonically required type must be published and currently satisfied. A
+            // partially published control plane therefore restricts the capability instead of
+            // silently treating the missing type as not required.
+            return canonical.stream().allMatch(type -> {
+                ConsentPolicyDescriptor descriptor = published.get(type);
+                return descriptor != null && descriptor.requiredFor(capability)
+                        && consents.find(principalId, type)
+                                .map(record -> samePublishedFact(record, descriptor) && record.accepted())
+                                .orElse(false);
+            });
         } catch (RuntimeException unavailable) {
             // A missing policy or store must restrict the capability rather than accidentally
             // issuing a fully-authorized token.
