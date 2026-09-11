@@ -175,6 +175,12 @@ public class IamRuntimeConfiguration {
             throw new IllegalStateException(
                     "unverified NATIVE_SECURE_STORAGE trust is allowed only in an explicit local/test profile");
         }
+        if (!localOrTest && properties.isLocalAdultGateEnabled()) {
+            // The birth-year attestation switch accepts client input; outside local/test there is
+            // no trusted adult-evidence source yet, so the deployment must not start with it.
+            throw new IllegalStateException(
+                    "the local adult-gate attestation switch is allowed only in an explicit local/test profile");
+        }
         if (properties.getPolicy().getBootstrap().isEnabled()
                 && blank(properties.getPolicy().getBootstrap().getExistingAccountIdentifier())) {
             throw new IllegalStateException("IAM policy bootstrap requires an explicit existing account identifier");

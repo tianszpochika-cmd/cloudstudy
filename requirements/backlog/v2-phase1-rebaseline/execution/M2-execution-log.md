@@ -48,6 +48,13 @@
 - 证据：`evidence/p1r/m2/P1R-M2-002/opt-in-cross-process-evidence-2026-09-11.json`（sourceCommit=实现提交）。
 - 边界：下一批 ⑦ `local-adult-gate-enabled` 守卫（P2-3）与 P3，随后重跑最终独立复审；任务保持 `IN_PROGRESS / NOT_RUNTIME_VERIFIED`。
 
+## 2026-09-11 M2-002 返工批次 7：adult gate 守卫与幂等回调加固
+
+- P2-3：非 local 启用 `iam.local-adult-gate-enabled` 即启动失败（local/test 放行），单元测试覆盖。
+- P3：completed replay 的预期 `IamPolicyException` 不再于事务回调内抛出（转 `Outcome.failure` 事务外抛出），记录型 runner 测试证明；首答=重放一致性已由既有控制器测试覆盖；Clock 注入剩余项为元数据时间戳，另行排期。
+- 验证（JDK 25）：IAM 全套 `88/0/0（19 skipped）`。
+- 边界：全部返工批次（①–⑦）完成，下一步重跑最终独立复审；任务保持 `IN_PROGRESS / NOT_RUNTIME_VERIFIED`。
+
 ## 2026-09-04 IAM 账户/密码并发安全检查点
 
 - 源码：`9deb899`。认证改为锁前单次 cost-12 BCrypt、锁内 current principal/hash/status/counter 复核；credential epoch 在校验期间变化时统一 `INVALID_CREDENTIALS` 且零写入，避免旧在途请求污染或锁死刚重置的新凭据。

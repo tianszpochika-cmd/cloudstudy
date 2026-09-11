@@ -168,6 +168,64 @@ class IdempotencySecurityHardeningTest {
     }
 
     @Test
+    void expectedReplayFailureDoesNotEscapeInsideTheTransactionCallback() {
+        InMemoryIdempotencyStore store = new InMemoryIdempotencyStore();
+        AtomicInteger callbacksThatThrew = new AtomicInteger();
+        IamTransactionRunner recording = new IamTransactionRunner() {
+            @Override
+            public <T> T execute(java.util.function.Supplier<T> operation) {
+                try {
+                    return operation.get();
+                } catch (RuntimeException failure) {
+                    callbacksThatThrew.incrementAndGet();
+                    throw failure;
+                }
+            }
+        };
+        IdempotencyService service = new IdempotencyService(store, new ObjectMapper(), recording,
+                REPLAY_SECRET, FINGERPRINT_SECRET, Duration.ofHours(24));
+        String scope = "/api/v1/iam/replay-hardening-test";
+        String key = "expected-replay-failure-key-123456";
+        String fingerprint = service.fingerprint(scope, "subject-1");
+        TypeReference<String> type = new TypeReference<>() {};
+
+        service.execute(scope, key, fingerprint, type,
+                () -> new IdempotencyService.Execution<>(ResponseEntity.ok("first-answer"), null),
+                record -> ResponseEntity.ok("first-answer"));
+
+        IamPolicyException failure = assertThrows(IamPolicyException.class, () -> service.execute(
+                scope, key, fingerprint, type,
+                () -> new IdempotencyService.Execution<>(ResponseEntity.ok("must-not-run"), null),
+                record -> {
+                    throw new IamPolicyException(IamDecisionCode.CONSENT_VERSION_MISMATCH,
+                            "iam.consent.version_mismatch");
+                }));
+        assertEquals(IamDecisionCode.CONSENT_VERSION_MISMATCH, failure.code());
+        assertEquals(0, callbacksThatThrew.get(),
+                "an expected replay failure must surface as an outcome, not throw inside the transaction callback");
+    }
+
+    @Test
+    void localAdultGateAttestationRequiresAnExplicitLocalOrTestProfile() {
+        IamServiceProperties properties = new IamServiceProperties();
+        properties.getPersistence().setEnabled(true);
+        properties.getPersistence().setJdbcUrl(
+                "jdbc:mysql://127.0.0.1:13306/iam_service?useUnicode=true&serverTimezone=UTC");
+        properties.getIdempotency().setReplaySecret(REPLAY_SECRET);
+        properties.getIdempotency().setFingerprintSecret(FINGERPRINT_SECRET);
+        properties.setLocalAdultGateEnabled(true);
+        IamRuntimeConfiguration configuration = new IamRuntimeConfiguration();
+
+        IllegalStateException rejected = assertThrows(IllegalStateException.class,
+                () -> configuration.iamSecurityConfigurationGuard(properties, new MockEnvironment()));
+        assertTrue(rejected.getMessage().contains("adult-gate"));
+
+        MockEnvironment local = new MockEnvironment();
+        local.setActiveProfiles("local");
+        configuration.iamSecurityConfigurationGuard(properties, local);
+    }
+
+    @Test
     void runtimeFailsClosedWithoutAnIndependentFingerprintSecret() {
         IamServiceProperties properties = new IamServiceProperties();
         properties.getPersistence().setEnabled(true);

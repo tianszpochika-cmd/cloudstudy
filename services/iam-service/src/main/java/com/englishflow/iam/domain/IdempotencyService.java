@@ -110,12 +110,20 @@ public final class IdempotencyService {
         IdempotencyRecord claim = store.claim(normalizedScope, normalizedKey, requestHash);
         if (claim.rejected()) return Outcome.failure(replayRejection(claim));
         if (claim.completed()) {
-            ResponseEntity<T> response = replayMode == IdempotencyReplayPolicy.ReplayMode.REQUIRE_CURRENT_FACTS_CALLBACK
-                    ? replay.apply(claim)
-                    : claim.hasResponseSnapshot() && responseType != null
-                            ? responseCodec.restore(normalizedScope, normalizedKey, requestHash, claim, responseType)
-                            : replay.apply(claim);
-            return Outcome.success(Objects.requireNonNull(response, "idempotent replay response"));
+            try {
+                ResponseEntity<T> response = replayMode == IdempotencyReplayPolicy.ReplayMode.REQUIRE_CURRENT_FACTS_CALLBACK
+                        ? replay.apply(claim)
+                        : claim.hasResponseSnapshot() && responseType != null
+                                ? responseCodec.restore(normalizedScope, normalizedKey, requestHash, claim, responseType)
+                                : replay.apply(claim);
+                return Outcome.success(Objects.requireNonNull(response, "idempotent replay response"));
+            } catch (IamPolicyException exception) {
+                // An expected replay failure (for example a legacy fact that needs re-consent)
+                // must surface through the outcome instead of escaping inside the transaction
+                // callback, where a reused outer transaction would become rollback-only.
+                if (infrastructureFailure(exception.code())) throw exception;
+                return Outcome.failure(exception);
+            }
         }
 
         Execution<T> execution;
