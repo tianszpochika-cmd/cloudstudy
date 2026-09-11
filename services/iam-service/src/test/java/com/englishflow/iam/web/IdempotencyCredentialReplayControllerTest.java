@@ -342,6 +342,43 @@ class IdempotencyCredentialReplayControllerTest {
                 "web transport must never expose the refresh token in JSON");
     }
 
+    @Test
+    void webRefreshAcceptsAContractValidMissingBody() {
+        Fixture fixture = fixture();
+        var login = fixture.controller().login(new IamAuthenticationController.LoginRequest(
+                        "replay@example.com", PASSWORD,
+                        new IamAuthenticationController.DeviceInput(null, "WEB", "missing-body-browser", "1", "1")),
+                WEB, "web-missing-body-login-key-1234");
+        assertEquals(200, login.getStatusCode().value());
+        String setCookie = login.getHeaders().getFirst("Set-Cookie");
+        assertNotNull(setCookie);
+        String pair = setCookie.substring(0, setCookie.indexOf(';'));
+        int separator = pair.indexOf('=');
+        MockHttpServletRequest servletRequest = new MockHttpServletRequest();
+        servletRequest.setCookies(new jakarta.servlet.http.Cookie(
+                pair.substring(0, separator), pair.substring(separator + 1)));
+
+        // The contract marks the refresh request body optional for WEB_COOKIE, so a missing body
+        // must rotate the session instead of surfacing an internal failure.
+        var refreshed = fixture.controller().refresh(null, servletRequest, WEB, "web-missing-body-refresh-key-1");
+        assertEquals(200, refreshed.getStatusCode().value());
+        assertNotNull(refreshed.getHeaders().getFirst("Set-Cookie"), "rotation must issue a new cookie");
+        assertNull(refreshed.getBody().data().refreshToken(),
+                "web transport must never expose the refresh token in JSON");
+    }
+
+    @Test
+    void unsupportedMediaTypeOnAPublicRequestIsAClientError() {
+        Fixture fixture = fixture();
+        var response = fixture.controller().handleUnexpected(
+                new org.springframework.web.HttpMediaTypeNotSupportedException(
+                        org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED,
+                        java.util.List.of(org.springframework.http.MediaType.APPLICATION_JSON)),
+                new MockHttpServletRequest());
+        assertEquals(400, response.getStatusCode().value());
+        assertEquals("VALIDATION_ERROR", response.getBody().error().errorCode());
+    }
+
     private static IamAuthenticationController.LoginRequest nativeLogin(String deviceId) {
         return new IamAuthenticationController.LoginRequest("replay@example.com", PASSWORD,
                 new IamAuthenticationController.DeviceInput(deviceId, "IOS", "test-device", "1", "1"));

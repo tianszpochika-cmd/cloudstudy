@@ -78,6 +78,9 @@ import java.util.function.Supplier;
 @RestController
 @RequestMapping("/api/v1")
 class IamAuthenticationController {
+
+    private static final org.slf4j.Logger LOG =
+            org.slf4j.LoggerFactory.getLogger(IamAuthenticationController.class);
     private static final String CREDENTIAL_REPLAY_REFERENCE_VERSION = "credential-replay-v1";
     private final IamServiceProperties properties;
     private final PasswordAccountService passwords;
@@ -154,20 +157,23 @@ class IamAuthenticationController {
                                                      @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey) {
         String key = requireIdempotencyKey(idempotencyKey);
         AuthTransport transport = parseTransport(authTransport);
+        // The contract allows a WEB refresh without a request body; normalize it before the
+        // idempotency fingerprint so a missing body is not an internal failure.
+        RefreshRequest body = request == null ? new RefreshRequest(null, null) : request;
         String refreshCookie = readRefreshCookie(httpRequest);
-        String presented = presentedRefresh(request, refreshCookie, transport);
+        String presented = presentedRefresh(body, refreshCookie, transport);
         String scope = "/api/v1/auth/token/refresh";
-        String hash = fingerprint(scope, transport, request, presented);
+        String hash = fingerprint(scope, transport, body, presented);
         return idempotent(scope, key, hash, new TypeReference<ApiSuccessEnvelope<AuthTokenResponse>>() {}, () -> {
                     // Bind the selected transport and native device before CAS rotation. A
                     // post-rotation check below closes the device-revocation race.
                     SessionRecord candidate = sessions.findByRefreshToken(presented);
-                    validateRefreshBinding(candidate, request, transport);
+                    validateRefreshBinding(candidate, body, transport);
                     requireActiveCredentialAccount(passwords.find(candidate.principalId()));
                     SessionRotationResult rotation = sessions.rotateByRefreshToken(presented, replaySeed(scope, key, hash));
                     SessionRecord session = sessions.find(rotation.sessionId());
                     try {
-                        validateRefreshBinding(session, request, transport);
+                        validateRefreshBinding(session, body, transport);
                     } catch (RuntimeException exception) {
                         try { sessions.revoke(session.sessionId(), "refresh_device_binding_failed"); }
                         catch (RuntimeException ignored) { /* fail closed even if the compensating write is unavailable */ }
@@ -1106,7 +1112,11 @@ class IamAuthenticationController {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorEnvelope> handleUnexpected(Exception exception, HttpServletRequest request) {
+        // Unexpected failures are logged server-side with correlation only; the response stays
+        // generic and never exposes internals, credentials or stack traces.
+        LOG.error("unhandled IAM request failure", exception);
         HttpStatus status = exception instanceof HttpMessageNotReadableException
+                || exception instanceof org.springframework.web.HttpMediaTypeNotSupportedException
                 ? HttpStatus.BAD_REQUEST : HttpStatus.INTERNAL_SERVER_ERROR;
         ErrorEnvelope envelope = ErrorEnvelope.of(request,
                 status == HttpStatus.BAD_REQUEST ? "VALIDATION_ERROR" : "INTERNAL_ERROR",

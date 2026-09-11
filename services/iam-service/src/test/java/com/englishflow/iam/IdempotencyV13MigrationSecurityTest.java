@@ -290,12 +290,14 @@ class IdempotencyV13MigrationSecurityTest {
 
     private static String requiredEnvironment(String name) {
         String value = System.getenv(name);
+        if (value == null || value.isBlank()) value = System.getProperty(name);
         if (value == null || value.isBlank()) throw new AssertionError(name + " is required");
         return value;
     }
 
     private static String requiredEnvironmentAllowEmpty(String name) {
         String value = System.getenv(name);
+        if (value == null) value = System.getProperty(name);
         if (value == null) throw new AssertionError(name + " is required (an empty value is allowed)");
         return value;
     }
