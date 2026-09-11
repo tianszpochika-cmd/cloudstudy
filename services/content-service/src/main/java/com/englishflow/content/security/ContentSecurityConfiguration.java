@@ -56,11 +56,17 @@ public class ContentSecurityConfiguration {
     }
 
     @Bean
+    ContentJwtAuthenticationConverter contentJwtAuthenticationConverter() {
+        return new ContentJwtAuthenticationConverter();
+    }
+
+    @Bean
     SecurityFilterChain contentSecurityFilterChain(
             HttpSecurity http,
             ContentResourceServerProperties properties,
             ObjectProvider<JwtDecoder> decoderProvider,
             ContentAuthorityAttemptFilter authorityAttemptFilter,
+            ContentJwtAuthenticationConverter jwtAuthenticationConverter,
             ContentSecurityErrorWriter errorWriter) throws Exception {
         AuthenticationEntryPoint entryPoint = (request, response, exception) ->
                 errorWriter.write(response, 401, "UNAUTHENTICATED", "authentication required");
@@ -90,7 +96,7 @@ public class ContentSecurityConfiguration {
             http.oauth2ResourceServer(oauth2 -> oauth2
                     .authenticationEntryPoint(entryPoint)
                     .accessDeniedHandler(deniedHandler)
-                    .jwt(jwt -> jwt.decoder(decoder)));
+                    .jwt(jwt -> jwt.decoder(decoder).jwtAuthenticationConverter(jwtAuthenticationConverter)));
         }
         return http.build();
     }

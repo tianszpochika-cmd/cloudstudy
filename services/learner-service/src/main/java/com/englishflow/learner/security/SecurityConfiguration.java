@@ -43,6 +43,11 @@ public class SecurityConfiguration {
     }
 
     @Bean
+    LearnerJwtAuthenticationConverter learnerJwtAuthenticationConverter() {
+        return new LearnerJwtAuthenticationConverter();
+    }
+
+    @Bean
     @ConditionalOnProperty(
             prefix = "security.resource-server",
             name = "enabled",
@@ -60,6 +65,7 @@ public class SecurityConfiguration {
             ResourceServerSecurityProperties properties,
             ObjectProvider<JwtDecoder> decoderProvider,
             ClientAuthorityHeaderFilter authorityHeaderFilter,
+            LearnerJwtAuthenticationConverter jwtAuthenticationConverter,
             ObjectMapper objectMapper) throws Exception {
         AuthenticationEntryPoint entryPoint = (request, response, exception) ->
                 write(objectMapper, response, 401, "UNAUTHENTICATED", "authentication required");
@@ -88,7 +94,7 @@ public class SecurityConfiguration {
             http.oauth2ResourceServer(oauth2 -> oauth2
                     .authenticationEntryPoint(entryPoint)
                     .accessDeniedHandler(deniedHandler)
-                    .jwt(jwt -> jwt.decoder(decoder)));
+                    .jwt(jwt -> jwt.decoder(decoder).jwtAuthenticationConverter(jwtAuthenticationConverter)));
         }
         return http.build();
     }

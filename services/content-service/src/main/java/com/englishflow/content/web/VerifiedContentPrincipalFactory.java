@@ -31,8 +31,9 @@ public final class VerifiedContentPrincipalFactory {
                     "CONTENT_PRINCIPAL_INVALID", "verified principal id is missing or invalid");
         }
         Object tenantClaim = token.getToken().getClaims().get("tenant_id");
-        if (tenantClaim != null && !PLATFORM_TENANT.equals(String.valueOf(tenantClaim))) {
-            throw ContentOperationException.forbidden("CONTENT_TENANT_DENIED", "tenant is outside Phase 1 scope");
+        if (!PLATFORM_TENANT.equals(tenantClaim == null ? null : String.valueOf(tenantClaim))) {
+            throw ContentOperationException.forbidden("CONTENT_TENANT_DENIED",
+                    "a verified platform tenant claim is required");
         }
         Set<String> roles = new LinkedHashSet<>();
         Set<String> permissions = new LinkedHashSet<>();
@@ -49,6 +50,10 @@ public final class VerifiedContentPrincipalFactory {
         }
         addClaimValues(token.getToken().getClaims().get("roles"), roles);
         addClaimValues(token.getToken().getClaims().get("permissions"), permissions);
+        if (roles.isEmpty() && permissions.isEmpty()) {
+            throw ContentOperationException.forbidden("CONTENT_AUTHORITIES_REQUIRED",
+                    "verified role or permission claims are required");
+        }
         return new ContentActor(subject, PLATFORM_TENANT, roles, permissions, false);
     }
 

@@ -15,7 +15,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -271,16 +270,7 @@ public final class B25ContentJdbcController {
     }
 
     private static void principal(Authentication authentication) {
-        if (!(authentication instanceof JwtAuthenticationToken jwt) || !jwt.isAuthenticated()) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "verified JWT principal is required");
-        }
-        String tokenTenant = jwt.getToken().getClaimAsString("tenant_id");
-        if (tokenTenant != null && !TENANT.equals(tokenTenant)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "tenant is not allowed");
-        }
-        if (jwt.getToken().getSubject() == null || jwt.getToken().getSubject().isBlank()) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "subject is missing");
-        }
+        ContentHttpPrincipals.require(authentication);
     }
 
     private static boolean blank(String value) { return value == null || value.isBlank(); }

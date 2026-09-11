@@ -80,6 +80,13 @@
 - 验证（JDK 25）：assessment 全套 `37/0/0/0`；assessment contract PASS（5 routes / 78 adversarial cases）。
 - 下一步：Batch 1c content-service 与 learner-service 对齐；随后 Batch 2-4。
 
+## 2026-09-11 M2-003 Batch 1c：content 与 learner 服务对齐
+
+- content-service：新增 JWT authorities 转换器与 `ContentHttpPrincipals` 默认拒绝入口（B3/B25 弱入口统一接入）；工厂要求显式 platform tenant 且 roles/permissions 不得同时为空；修复头过滤器驼峰参数黑名单永不匹配的真实缺陷。
+- learner-service：新增转换器与 `LearnerHttpPrincipals`（UUID/`prn_` 主体、platform 租户、learner 角色、非空权限），B25 统一接入。
+- 验证（JDK 25）：content `113/0/0/0`、learner `30/0/0/0`；新增负例测试全通过。
+- Batch 1（learning/assessment/content/learner）完成；下一步 Batch 2（media/social/admin-ops）。
+
 ## 2026-09-04 IAM 账户/密码并发安全检查点
 
 - 源码：`9deb899`。认证改为锁前单次 cost-12 BCrypt、锁内 current principal/hash/status/counter 复核；credential epoch 在校验期间变化时统一 `INVALID_CREDENTIALS` 且零写入，避免旧在途请求污染或锁死刚重置的新凭据。

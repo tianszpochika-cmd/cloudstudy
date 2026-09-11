@@ -8,7 +8,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -286,13 +285,6 @@ public final class B3ContentJdbcController {
     }
 
     private static void principal(Authentication authentication) {
-        if (!(authentication instanceof JwtAuthenticationToken jwt) || !jwt.isAuthenticated()
-                || jwt.getToken().getSubject() == null || jwt.getToken().getSubject().isBlank()) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "verified JWT principal is required");
-        }
-        String tenant = jwt.getToken().getClaimAsString("tenant_id");
-        if (tenant != null && !TENANT.equals(tenant)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "tenant is not allowed");
-        }
+        ContentHttpPrincipals.require(authentication);
     }
 }

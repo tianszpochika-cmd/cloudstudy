@@ -13,7 +13,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -439,19 +438,7 @@ public class B25LearnerJdbcController {
     }
 
     private static Principal principal(Authentication authentication) {
-        if (!(authentication instanceof JwtAuthenticationToken jwt) || !jwt.isAuthenticated()) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "verified JWT principal is required");
-        }
-        // Phase 1 tenant is derived by the service boundary. A provider claim is optional
-        // compatibility metadata, never a client-supplied authority; if present it must still
-        // agree with the server-derived platform scope.
-        String tokenTenant = jwt.getToken().getClaimAsString("tenant_id");
-        if (tokenTenant != null && !TENANT.equals(tokenTenant)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "tenant is not allowed");
-        }
-        String subject = jwt.getToken().getSubject();
-        if (subject == null || subject.isBlank()) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "subject is missing");
-        return new Principal(subject);
+        return new Principal(LearnerHttpPrincipals.require(authentication).subject());
     }
 
     private static String required(Map<String, Object> values, String key) {
