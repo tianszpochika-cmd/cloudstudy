@@ -13,6 +13,13 @@
 - 验证（JDK 25，标准栈 MySQL 8.0 隔离库 `iam_service`）：IAM 全套 `76/0/0（18 skipped）`；`ConsentHistoryEntryTest 5/5`；opt-in `IamConsentJdbcPersistenceContextTest 4/4` + `IamConsentIdempotencyRollbackSafetyTest 2/2`；IAM compatibility `7/7`。
 - 边界：只关闭 P1-1；任务保持 `IN_PROGRESS / NOT_RUNTIME_VERIFIED`，下一批为 P1-2 正式 Consent descriptor/策略来源。
 
+## 2026-09-11 M2-002 返工批次 2：正式 Consent 控制面策略来源
+
+- 新增 V14 `iam_consent_document_version` 控制表（不预置 fixture，未发布即失败关闭）与 `JdbcConsentPolicy`（只读 ACTIVE、每类型取最新、坏行/DB 异常一律 `POLICY_UNAVAILABLE`）；新增显式来源开关 `iam.consent.policy-source`（`auto`/`control-plane`/`local-candidate`，非 local/test 禁止 `local-candidate`）；组合根在持久化可用时装配控制面实现。无 HTTP 契约变更、无新增端点。
+- 验证（JDK 25，标准栈 MySQL 8.0 隔离库）：IAM 全套 `77/0/0（19 skipped）`；新增 opt-in `IamConsentPolicyJdbcPersistenceContextTest 1/1`（空表 503 → 五类发布后写入成功 → 删除后 503）；opt-in 同意三类 `7/7`；`p1r:data-ownership:check` PASS。
+- 非 local 进程冒烟（`v2,local-real` + 持久化 + 真实 RSA 文件密钥）：注册 201、三类同意写入 200、`/iam/principal/me` 200（原 503）且 `consentState.accepted=true`、`unsatisfiedPurposes=[]`、`policySource=IAM_ACTIVE_POLICY_CONTROL_PLANE`；`RESTRICTED` 仅因成人 Gate 未评估（P2-3）。
+- 边界：只关闭 P1-2；任务保持 `IN_PROGRESS / NOT_RUNTIME_VERIFIED`，下一批为 P1-3 密码重置投递与审计。
+
 ## 2026-09-04 IAM 账户/密码并发安全检查点
 
 - 源码：`9deb899`。认证改为锁前单次 cost-12 BCrypt、锁内 current principal/hash/status/counter 复核；credential epoch 在校验期间变化时统一 `INVALID_CREDENTIALS` 且零写入，避免旧在途请求污染或锁死刚重置的新凭据。

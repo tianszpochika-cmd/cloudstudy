@@ -255,7 +255,7 @@
   "migrationInventory": {
     "classification": "HISTORICAL_CANDIDATE_MIGRATION_INPUT",
     "existingCollections": [
-      {"service": "iam-service", "path": "services/iam-service/src/main/resources/db/migration", "fileCount": 12},
+      {"service": "iam-service", "path": "services/iam-service/src/main/resources/db/migration", "fileCount": 13},
       {"service": "learner-service", "path": "services/learner-service/src/main/resources/db/migration", "fileCount": 8},
       {"service": "content-service", "path": "services/content-service/src/main/resources/db/migration", "fileCount": 12},
       {"service": "learning-service", "path": "services/learning-service/src/main/resources/db/migration", "fileCount": 7},

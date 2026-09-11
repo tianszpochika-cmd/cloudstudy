@@ -35,6 +35,7 @@ import com.englishflow.iam.domain.IamTransactionRunner;
 import com.englishflow.iam.domain.JdbcAccountStore;
 import com.englishflow.iam.domain.JdbcAdultGateFactStore;
 import com.englishflow.iam.domain.JdbcAuditFactPort;
+import com.englishflow.iam.domain.JdbcConsentPolicy;
 import com.englishflow.iam.domain.JdbcConsentStore;
 import com.englishflow.iam.domain.JdbcDeviceRegistry;
 import com.englishflow.iam.domain.JdbcPasswordResetChallengeStore;
@@ -283,13 +284,37 @@ public class IamRuntimeConfiguration {
         return properties.getPersistence().isEnabled() ? new FailClosedConsentStore() : new InMemoryConsentStore();
     }
 
-    @Bean public ConsentPolicyPort consentPolicyPort(Environment environment) {
+    @Bean public ConsentPolicyPort consentPolicyPort(Environment environment, IamServiceProperties properties,
+                                                       ObjectProvider<JdbcTemplate> jdbc, ObjectMapper objectMapper) {
         boolean localOrTest = java.util.Arrays.stream(environment.getActiveProfiles())
                 .anyMatch(profile -> "local".equals(profile) || "test".equals(profile));
-        // These are explicit local/test candidates. A non-local deployment gets a read-only
-        // policy until published legal-document facts are provisioned, so missing production
-        // configuration can never silently authorize a consent write.
-        return StaticConsentPolicy.localCandidate(localOrTest);
+        String source = properties.getConsent().getPolicySource();
+        if ("local-candidate".equals(source)) {
+            if (!localOrTest) {
+                throw new IllegalStateException("local consent candidate documents require an explicit local/test profile");
+            }
+            return StaticConsentPolicy.localCandidate(true);
+        }
+        if ("control-plane".equals(source)) {
+            JdbcTemplate template = jdbc.getIfAvailable();
+            if (!properties.getPersistence().isEnabled() || template == null) {
+                throw new IllegalStateException("IAM consent control-plane policy requires durable persistence");
+            }
+            return new JdbcConsentPolicy(template, objectMapper);
+        }
+        if (localOrTest) {
+            // Local/test keep the explicit candidate documents so onboarding works offline.
+            return StaticConsentPolicy.localCandidate(true);
+        }
+        JdbcTemplate template = jdbc.getIfAvailable();
+        if (properties.getPersistence().isEnabled() && template != null) {
+            // Non-local deployments read only the published consent-document control plane; an
+            // empty or revoked set fails closed per type instead of falling back to fixtures.
+            return new JdbcConsentPolicy(template, objectMapper);
+        }
+        // Missing durable persistence cannot prove published documents, so the policy stays
+        // explicitly unavailable rather than exposing local candidate facts.
+        return StaticConsentPolicy.localCandidate(false);
     }
 
     @Bean public ConsentService consentService(ConsentStore consents, ConsentPolicyPort policy,

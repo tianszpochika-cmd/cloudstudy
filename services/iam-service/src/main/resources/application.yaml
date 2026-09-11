@@ -58,6 +58,12 @@ iam:
   phase: phase-1
   platform-tenant: platform
   local-adult-gate-enabled: ${IAM_LOCAL_ADULT_GATE_ENABLED:false}
+  consent:
+    # auto: local/test profiles use explicit candidate documents; other profiles read the
+    # published iam_consent_document_version control plane and fail closed without it.
+    # control-plane: force the published control plane (requires durable persistence).
+    # local-candidate: explicit local/test-only candidate documents.
+    policy-source: ${IAM_CONSENT_POLICY_SOURCE:auto}
   jwt:
     issuer: ${IAM_JWT_ISSUER:http://127.0.0.1:18087}
     audience: ${IAM_JWT_AUDIENCE:yuxuexing-api}

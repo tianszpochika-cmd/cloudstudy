@@ -33,6 +33,9 @@ public class IamServiceProperties {
     private boolean localAdultGateEnabled;
 
     @Valid
+    private ConsentProperties consent = new ConsentProperties();
+
+    @Valid
     private JwtProperties jwt = new JwtProperties();
 
     @Valid
@@ -53,6 +56,8 @@ public class IamServiceProperties {
     public void setPlatformTenant(String platformTenant) { this.platformTenant = platformTenant; }
     public boolean isLocalAdultGateEnabled() { return localAdultGateEnabled; }
     public void setLocalAdultGateEnabled(boolean localAdultGateEnabled) { this.localAdultGateEnabled = localAdultGateEnabled; }
+    public ConsentProperties getConsent() { return consent; }
+    public void setConsent(ConsentProperties consent) { this.consent = consent == null ? new ConsentProperties() : consent; }
     public JwtProperties getJwt() { return jwt; }
     public void setJwt(JwtProperties jwt) { this.jwt = jwt == null ? new JwtProperties() : jwt; }
     public AccountProperties getAccount() { return account; }
@@ -63,6 +68,16 @@ public class IamServiceProperties {
     public void setIdempotency(IdempotencyProperties idempotency) { this.idempotency = idempotency == null ? new IdempotencyProperties() : idempotency; }
     public PolicyProperties getPolicy() { return policy; }
     public void setPolicy(PolicyProperties policy) { this.policy = policy == null ? new PolicyProperties() : policy; }
+
+    /** Selects where server-published consent documents come from. */
+    public static class ConsentProperties {
+        @NotBlank
+        @Pattern(regexp = "auto|control-plane|local-candidate")
+        private String policySource = "auto";
+
+        public String getPolicySource() { return policySource; }
+        public void setPolicySource(String policySource) { this.policySource = policySource; }
+    }
 
     public static class JwtProperties {
         @NotBlank
