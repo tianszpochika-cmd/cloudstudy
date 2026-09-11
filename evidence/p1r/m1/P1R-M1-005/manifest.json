@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-005",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "6ceaf7f91109d4880c89d5dbbf24bef7b9a1ca3b",
+  "sourceCommit": "c17c94faf1b01c3d3f1dd6e1829326e8497f9435",
   "artifactDigests": [
     {
       "path": "package.json",
@@ -12,7 +12,7 @@
     {
       "path": "config/p1r-data-ownership.v1.json",
       "algorithm": "sha256",
-      "digest": "da127b2d1b299c3ac712d7241455f3790dab8a574e3cf20ee459cbaf4ae6a998"
+      "digest": "1133b539d36a28fbba2c1359dc523f8b324da2143bcbdb7f5669ef1ed9c1d586"
     },
     {
       "path": "scripts/audit/p1r-data-ownership-check.mjs",
@@ -161,6 +161,16 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-10T22:24:25+08:00",
         "details": "Current-source revalidation after the 2026-09-10 commits (a149335 docs/asset-preflight, 6131783 dev unit-test completion, 6ceaf7f evidence-gate 9-column fix) invalidated previously recorded artifact digests. Rebased sourceCommit to 6ceaf7f91109d4880c89d5dbbf24bef7b9a1ca3b after the full P1R regression passed 1421/1421 under Node 20.19.5 on an LF-normalized worktree. Original provenance and review history remain unchanged; runtime evidence is not promoted."
+      },
+      {
+        "taskId": "P1R-M1-005",
+        "sourceCommit": "c17c94faf1b01c3d3f1dd6e1829326e8497f9435",
+        "auditedImplementationSource": "c17c94faf1b01c3d3f1dd6e1829326e8497f9435",
+        "integrationCheckpoint": "c17c94faf1b01c3d3f1dd6e1829326e8497f9435",
+        "reviewer": "agent:p1r_current_source_revalidation:opencode-worker",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-11T11:55:49+08:00",
+        "details": "Current-source artifact digest rebase after config/p1r-data-ownership.v1.json updated the iam-service migration fileCount 12 -> 13 for V14 iam_consent_document_version (P1R-M2-002 rework batch 2). Full P1R regression 1421/1421 PASS under Node 20.19.5; original provenance and review history remain unchanged; runtime evidence is not promoted."
       }
     ],
     "previousCurrentSourceCommit": "c548b601caae41fecc417f44f2a3e8e2016332d0",
