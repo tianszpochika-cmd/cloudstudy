@@ -36,6 +36,9 @@ public class IamServiceProperties {
     private ConsentProperties consent = new ConsentProperties();
 
     @Valid
+    private AuthProperties auth = new AuthProperties();
+
+    @Valid
     private JwtProperties jwt = new JwtProperties();
 
     @Valid
@@ -58,6 +61,8 @@ public class IamServiceProperties {
     public void setLocalAdultGateEnabled(boolean localAdultGateEnabled) { this.localAdultGateEnabled = localAdultGateEnabled; }
     public ConsentProperties getConsent() { return consent; }
     public void setConsent(ConsentProperties consent) { this.consent = consent == null ? new ConsentProperties() : consent; }
+    public AuthProperties getAuth() { return auth; }
+    public void setAuth(AuthProperties auth) { this.auth = auth == null ? new AuthProperties() : auth; }
     public JwtProperties getJwt() { return jwt; }
     public void setJwt(JwtProperties jwt) { this.jwt = jwt == null ? new JwtProperties() : jwt; }
     public AccountProperties getAccount() { return account; }
@@ -77,6 +82,19 @@ public class IamServiceProperties {
 
         public String getPolicySource() { return policySource; }
         public void setPolicySource(String policySource) { this.policySource = policySource; }
+    }
+
+    /**
+     * Native transport trust policy. NATIVE_SECURE_STORAGE returns the refresh credential in the
+     * response body, so it stays denied until a server-verifiable device proof exists.
+     */
+    public static class AuthProperties {
+        @NotBlank
+        @Pattern(regexp = "deny|local-unverified")
+        private String nativeTransportPolicy = "deny";
+
+        public String getNativeTransportPolicy() { return nativeTransportPolicy; }
+        public void setNativeTransportPolicy(String nativeTransportPolicy) { this.nativeTransportPolicy = nativeTransportPolicy; }
     }
 
     public static class JwtProperties {

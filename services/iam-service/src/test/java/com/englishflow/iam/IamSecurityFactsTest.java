@@ -570,6 +570,24 @@ class IamSecurityFactsTest {
     }
 
     @Test
+    void unverifiedNativeTransportTrustRequiresAnExplicitLocalOrTestProfile() {
+        IamServiceProperties properties = properties();
+        properties.getPersistence().setEnabled(true);
+        properties.getPersistence().setJdbcUrl("jdbc:mysql://127.0.0.1:13306/iam_service");
+        properties.getIdempotency().setReplaySecret("native-guard-replay-secret-2026-abcdefgh");
+        properties.getIdempotency().setFingerprintSecret("native-guard-fingerprint-secret-2026-abcdefgh");
+        properties.getAuth().setNativeTransportPolicy("local-unverified");
+        assertThrows(IllegalStateException.class, () ->
+                new com.englishflow.iam.config.IamRuntimeConfiguration()
+                        .iamSecurityConfigurationGuard(properties, new MockEnvironment()));
+
+        MockEnvironment local = new MockEnvironment();
+        local.setActiveProfiles("local");
+        new com.englishflow.iam.config.IamRuntimeConfiguration()
+                .iamSecurityConfigurationGuard(properties, local);
+    }
+
+    @Test
     void adultInvalidationAndConsentWithdrawalRevokeSessions() {
         RecordingAudit audit = new RecordingAudit();
         var principal = com.englishflow.iam.domain.PrincipalId.random();

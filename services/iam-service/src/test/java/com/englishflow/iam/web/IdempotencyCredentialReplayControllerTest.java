@@ -313,6 +313,35 @@ class IdempotencyCredentialReplayControllerTest {
         assertTrue(response.getHeaders().getCacheControl().contains("no-store"));
     }
 
+    @Test
+    void nativeTransportIsDeniedByDefaultUntilServerVerifiableProofExists() {
+        Fixture fixture = fixture(Duration.ofMinutes(15), Duration.ofDays(30), "deny");
+        IamAuthenticationController.LoginRequest nativeRequest = nativeLogin("denied-native-device");
+        IamPolicyException failure = assertThrows(IamPolicyException.class,
+                () -> fixture.controller().login(nativeRequest, NATIVE, "deny-native-login-key-123456"));
+        assertEquals(IamDecisionCode.CLIENT_TRUSTED_INPUT_REJECTED, failure.code());
+        var denial = fixture.controller().handlePolicy(failure, new MockHttpServletRequest());
+        assertEquals(403, denial.getStatusCode().value());
+        assertEquals("FORBIDDEN", denial.getBody().error().errorCode());
+
+        // Register and refresh use the same trusted-context boundary.
+        IamAuthenticationController.RegisterRequest nativeRegister =
+                new IamAuthenticationController.RegisterRequest("native-deny@example.com", PASSWORD,
+                        new IamAuthenticationController.DeviceInput(null, "ANDROID", "deny-device", "1", "1"));
+        IamPolicyException registerDenied = assertThrows(IamPolicyException.class,
+                () -> fixture.controller().register(nativeRegister, NATIVE, "deny-native-register-key-1234"));
+        assertEquals(IamDecisionCode.CLIENT_TRUSTED_INPUT_REJECTED, registerDenied.code());
+
+        // The Web cookie transport keeps its ordinary non-enumerating behavior.
+        var web = fixture.controller().login(new IamAuthenticationController.LoginRequest(
+                        "replay@example.com", PASSWORD,
+                        new IamAuthenticationController.DeviceInput(null, "WEB", "test-browser", "1", "1")),
+                WEB, "deny-web-login-key-123456");
+        assertEquals(200, web.getStatusCode().value());
+        assertNull(web.getBody().data().refreshToken(),
+                "web transport must never expose the refresh token in JSON");
+    }
+
     private static IamAuthenticationController.LoginRequest nativeLogin(String deviceId) {
         return new IamAuthenticationController.LoginRequest("replay@example.com", PASSWORD,
                 new IamAuthenticationController.DeviceInput(deviceId, "IOS", "test-device", "1", "1"));
@@ -345,12 +374,17 @@ class IdempotencyCredentialReplayControllerTest {
     }
 
     private static Fixture fixture(Duration accessTtl, Duration refreshTtl) {
+        return fixture(accessTtl, refreshTtl, "local-unverified");
+    }
+
+    private static Fixture fixture(Duration accessTtl, Duration refreshTtl, String nativeTransportPolicy) {
         MutableClock clock = new MutableClock(Instant.parse("2026-09-04T00:00:00Z"));
         IamServiceProperties properties = new IamServiceProperties();
         properties.getJwt().setEphemeralKeysAllowed(true);
         properties.getJwt().setRefreshCookieSecure(true);
         properties.getJwt().setAccessTokenTtl(accessTtl);
         properties.getJwt().setRefreshTokenTtl(refreshTtl);
+        properties.getAuth().setNativeTransportPolicy(nativeTransportPolicy);
         properties.getIdempotency().setReplaySecret("controller-replay-secret-for-idempotency-2026");
         properties.getIdempotency().setFingerprintSecret("controller-fingerprint-secret-for-idempotency-2026");
 

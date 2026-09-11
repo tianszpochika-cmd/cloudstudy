@@ -171,6 +171,10 @@ public class IamRuntimeConfiguration {
         if (properties.getPolicy().getBootstrap().isEnabled() && !localOrTest) {
             throw new IllegalStateException("IAM policy bootstrap is permitted only in an explicit local/test profile");
         }
+        if (!localOrTest && "local-unverified".equals(properties.getAuth().getNativeTransportPolicy())) {
+            throw new IllegalStateException(
+                    "unverified NATIVE_SECURE_STORAGE trust is allowed only in an explicit local/test profile");
+        }
         if (properties.getPolicy().getBootstrap().isEnabled()
                 && blank(properties.getPolicy().getBootstrap().getExistingAccountIdentifier())) {
             throw new IllegalStateException("IAM policy bootstrap requires an explicit existing account identifier");

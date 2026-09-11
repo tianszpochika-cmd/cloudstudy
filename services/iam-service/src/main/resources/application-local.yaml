@@ -8,6 +8,10 @@ iam:
   jwt:
     ephemeral-keys-allowed: true
     refresh-cookie-secure: false
+  auth:
+    # Explicit local-only opt-in; the base default stays deny until real device proof exists.
+    # The placeholder keeps an environment override effective in this profile.
+    native-transport-policy: ${IAM_NATIVE_TRANSPORT_POLICY:local-unverified}
   idempotency:
     replay-secret: local-only-idempotency-replay-secret-2026
     fingerprint-secret: local-only-idempotency-fingerprint-secret-2026

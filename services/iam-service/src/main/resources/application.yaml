@@ -64,6 +64,11 @@ iam:
     # control-plane: force the published control plane (requires durable persistence).
     # local-candidate: explicit local/test-only candidate documents.
     policy-source: ${IAM_CONSENT_POLICY_SOURCE:auto}
+  auth:
+    # deny: NATIVE_SECURE_STORAGE is refused until a server-verifiable device proof
+    # (App Attest/Play Integrity) is provisioned; local-unverified is allowed only in an
+    # explicit local/test profile and never claims production trust.
+    native-transport-policy: ${IAM_NATIVE_TRANSPORT_POLICY:deny}
   jwt:
     issuer: ${IAM_JWT_ISSUER:http://127.0.0.1:18087}
     audience: ${IAM_JWT_AUDIENCE:yuxuexing-api}

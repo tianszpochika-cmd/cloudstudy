@@ -27,6 +27,13 @@
 - 验证（JDK 25）：全套 `80/0/0（19 skipped）`（新增 3 项）；真实 HTTP 冒烟（local profile）同一标识符第 6 次请求 429 + `Retry-After: 60` + 规范 `RATE_LIMITED` envelope。
 - 边界：只关闭 P1-3；真实投递与重试归后续 Outbox/notification；任务保持 `IN_PROGRESS / NOT_RUNTIME_VERIFIED`，下一批为 P1-4 native 可信上下文。
 
+## 2026-09-11 M2-002 返工批次 4：native 可信上下文默认拒绝
+
+- 契约先行（`f30e60c`）：register/login/refresh 三个认证操作补 `403 ApiForbidden` 声明；merge/validate/generate:check/auth-contract:check PASS，OpenAPI compatibility 相对父提交 0 breaking。16 份受影响 manifest 以 current-source 流程重定摘要（`24f2572`，evidence gate PASS）。
+- 实现：`iam.auth.native-transport-policy` 默认 `deny`，`local-unverified` 仅限显式 local/test（启动守卫）；`requireDevice`/`trustedSession`/`validateTrustedTransport` 统一拒绝未配置可信上下文的 `NATIVE_SECURE_STORAGE`（403 `CLIENT_TRUSTED_INPUT_REJECTED`）；`application-local.yaml` 用 env 可覆盖占位符显式开启本地允许。Web 行为不变。
+- 验证（JDK 25）：全套 `82/0/0（19 skipped）`（+2 新测试）；进程冒烟：deny 下 native register 403 FORBIDDEN + Web 201（refresh 仅 Cookie）；local 默认 native 201 + body token。
+- 边界：只关闭 P1-4；真实 App Attest/Play Integrity 与真机 Keychain/Keystore 验收仍属外部配置；任务保持 `IN_PROGRESS / NOT_RUNTIME_VERIFIED`，下一批为 P1-5 与 Consent/Policy 加固（批次 ⑤⑥）。
+
 ## 2026-09-04 IAM 账户/密码并发安全检查点
 
 - 源码：`9deb899`。认证改为锁前单次 cost-12 BCrypt、锁内 current principal/hash/status/counter 复核；credential epoch 在校验期间变化时统一 `INVALID_CREDENTIALS` 且零写入，避免旧在途请求污染或锁死刚重置的新凭据。

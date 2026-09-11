@@ -561,8 +561,26 @@ class IamAuthenticationController {
             if (nativePlatform != (transport == AuthTransport.NATIVE_SECURE_STORAGE)) {
                 throw badRequest("iam.auth.transport_device_mismatch");
             }
+            requireTrustedNativeTransport(transport);
         }
         return session;
+    }
+
+    /**
+     * The transport header and the device declaration are both client inputs and can be forged
+     * together. Until a server-verifiable device proof (App Attest/Play Integrity) is
+     * provisioned, NATIVE_SECURE_STORAGE is denied by default; the explicit local/test policy
+     * allows local onboarding without claiming production trust.
+     */
+    private void requireTrustedNativeTransport(AuthTransport transport) {
+        if (transport == AuthTransport.NATIVE_SECURE_STORAGE && !nativeTransportTrusted()) {
+            throw new IamPolicyException(IamDecisionCode.CLIENT_TRUSTED_INPUT_REJECTED,
+                    "iam.auth.native_transport_untrusted");
+        }
+    }
+
+    private boolean nativeTransportTrusted() {
+        return "local-unverified".equals(properties.getAuth().getNativeTransportPolicy());
     }
 
     private static boolean isNativePlatform(String platform) {
@@ -744,6 +762,7 @@ class IamAuthenticationController {
                 != (transport == AuthTransport.NATIVE_SECURE_STORAGE)) {
             throw new IamPolicyException(IamDecisionCode.DEVICE_NOT_FOUND, "iam.auth.transport_device_mismatch");
         }
+        requireTrustedNativeTransport(transport);
     }
 
     private ResponseEntity<ApiSuccessEnvelope<AuthTokenResponse>> authResponse(AccountRecord account,
@@ -816,12 +835,12 @@ class IamAuthenticationController {
     private static SessionId sessionId(Jwt jwt) { try { return new SessionId(UUID.fromString(sessionClaim(jwt))); } catch (RuntimeException e) { throw new IamPolicyException(IamDecisionCode.SESSION_NOT_FOUND, "iam.session.not_found"); } }
     private static String sessionClaim(Jwt jwt) { String value = jwt.getClaimAsString("session_id"); if (value == null || value.isBlank()) throw new IamPolicyException(IamDecisionCode.SESSION_NOT_FOUND, "iam.session.not_found"); return value; }
     private static SessionId parseSessionId(String value) { try { return new SessionId(UUID.fromString(value)); } catch (RuntimeException e) { throw new IamPolicyException(IamDecisionCode.SESSION_NOT_FOUND, "iam.session.not_found"); } }
-    private static void requireRequest(LoginRequest request, AuthTransport transport) {
+    private void requireRequest(LoginRequest request, AuthTransport transport) {
         if (request == null) throw badRequest("iam.request.invalid");
         requireCredentials(request.identifier(), request.password());
         requireDevice(request.device(), transport);
     }
-    private static void requireRequest(RegisterRequest request, AuthTransport transport) {
+    private void requireRequest(RegisterRequest request, AuthTransport transport) {
         if (request == null) throw badRequest("iam.request.invalid");
         requireCredentials(request.identifier(), request.password());
         requireDevice(request.device(), transport);
@@ -895,7 +914,7 @@ class IamAuthenticationController {
         try { return AuthTransport.valueOf(value.trim().toUpperCase(java.util.Locale.ROOT)); }
         catch (IllegalArgumentException exception) { throw badRequest("iam.auth.transport.invalid"); }
     }
-    private static DeviceInput requireDevice(DeviceInput input, AuthTransport transport) {
+    private DeviceInput requireDevice(DeviceInput input, AuthTransport transport) {
         if (input == null || input.deviceType() == null || input.clientVersion() == null
                 || input.clientVersion().isBlank() || input.clientVersion().length() > 32) {
             throw badRequest("iam.device.invalid");
@@ -905,6 +924,7 @@ class IamAuthenticationController {
         if ((transport == AuthTransport.NATIVE_SECURE_STORAGE) != nativeDevice) {
             throw badRequest("iam.auth.transport_device_mismatch");
         }
+        requireTrustedNativeTransport(transport);
         if (input.deviceId() != null && !input.deviceId().isBlank()) {
             try { UUID.fromString(input.deviceId()); }
             catch (IllegalArgumentException exception) { throw badRequest("iam.device.id_invalid"); }
