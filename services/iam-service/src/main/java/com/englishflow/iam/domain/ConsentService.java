@@ -2,6 +2,7 @@ package com.englishflow.iam.domain;
 
 import java.time.Clock;
 import java.time.Instant;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -136,9 +137,13 @@ public final class ConsentService {
         try {
             if (!policy.evaluationEnabled() || capability == null
                     || !SUPPORTED_CAPABILITIES.contains(capability)) return false;
-            return policy.descriptors().stream()
+            List<ConsentPolicyDescriptor> required = policy.descriptors().stream()
                     .filter(descriptor -> descriptor.requiredFor(capability)
                             && descriptor.isPublishedAt(Instant.now(clock)))
+                    .toList();
+            // An empty published-required set cannot prove that a required consent exists, so it
+            // must restrict the capability instead of authorizing it vacuously.
+            return !required.isEmpty() && required.stream()
                     .allMatch(descriptor -> consents.find(principalId, descriptor.type())
                             .map(record -> samePublishedFact(record, descriptor) && record.accepted())
                             .orElse(false));

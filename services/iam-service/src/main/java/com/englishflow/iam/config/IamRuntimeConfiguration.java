@@ -181,6 +181,10 @@ public class IamRuntimeConfiguration {
             throw new IllegalStateException(
                     "the local adult-gate attestation switch is allowed only in an explicit local/test profile");
         }
+        if (!localOrTest && "local-candidate".equals(properties.getConsent().getPolicySource())) {
+            throw new IllegalStateException(
+                    "local consent candidate documents require an explicit local/test profile");
+        }
         if (properties.getPolicy().getBootstrap().isEnabled()
                 && blank(properties.getPolicy().getBootstrap().getExistingAccountIdentifier())) {
             throw new IllegalStateException("IAM policy bootstrap requires an explicit existing account identifier");
@@ -303,9 +307,8 @@ public class IamRuntimeConfiguration {
                 .anyMatch(profile -> "local".equals(profile) || "test".equals(profile));
         String source = properties.getConsent().getPolicySource();
         if ("local-candidate".equals(source)) {
-            if (!localOrTest) {
-                throw new IllegalStateException("local consent candidate documents require an explicit local/test profile");
-            }
+            // The startup guard rejects this outside local/test; the branch stays explicit so
+            // tests and local onboarding can select the candidate documents directly.
             return StaticConsentPolicy.localCandidate(true);
         }
         if ("control-plane".equals(source)) {

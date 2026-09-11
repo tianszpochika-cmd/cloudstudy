@@ -226,6 +226,26 @@ class IdempotencySecurityHardeningTest {
     }
 
     @Test
+    void localConsentCandidateSourceRequiresAnExplicitLocalOrTestProfile() {
+        IamServiceProperties properties = new IamServiceProperties();
+        properties.getPersistence().setEnabled(true);
+        properties.getPersistence().setJdbcUrl(
+                "jdbc:mysql://127.0.0.1:13306/iam_service?useUnicode=true&serverTimezone=UTC");
+        properties.getIdempotency().setReplaySecret(REPLAY_SECRET);
+        properties.getIdempotency().setFingerprintSecret(FINGERPRINT_SECRET);
+        properties.getConsent().setPolicySource("local-candidate");
+        IamRuntimeConfiguration configuration = new IamRuntimeConfiguration();
+
+        IllegalStateException rejected = assertThrows(IllegalStateException.class,
+                () -> configuration.iamSecurityConfigurationGuard(properties, new MockEnvironment()));
+        assertTrue(rejected.getMessage().contains("local consent candidate"));
+
+        MockEnvironment local = new MockEnvironment();
+        local.setActiveProfiles("local");
+        configuration.iamSecurityConfigurationGuard(properties, local);
+    }
+
+    @Test
     void runtimeFailsClosedWithoutAnIndependentFingerprintSecret() {
         IamServiceProperties properties = new IamServiceProperties();
         properties.getPersistence().setEnabled(true);

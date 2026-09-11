@@ -27,6 +27,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -83,6 +84,8 @@ class IamConsentPolicyJdbcPersistenceContextTest {
                 () -> policy.descriptor(ConsentType.TERMS_OF_SERVICE));
         assertEquals(IamDecisionCode.POLICY_UNAVAILABLE, unavailable.code());
         assertEquals(Set.of(), policy.descriptors());
+        assertFalse(consents.hasRequiredConsentFor(PrincipalId.random(), "LEARNING"),
+                "an empty published-required set must restrict the capability instead of authorizing it");
 
         PrincipalId principal = PrincipalId.random();
         ServerPrincipalContext context = ServerPrincipalContext.forPlatform(principal, Set.of("learner"));

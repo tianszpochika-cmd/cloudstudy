@@ -55,6 +55,13 @@
 - 验证（JDK 25）：IAM 全套 `88/0/0（19 skipped）`。
 - 边界：全部返工批次（①–⑦）完成，下一步重跑最终独立复审；任务保持 `IN_PROGRESS / NOT_RUNTIME_VERIFIED`。
 
+## 2026-09-11 M2-002 批次 8：终审 ACCEPT 与 P2-1 加固
+
+- 最终独立只读复审判定 `ACCEPT`（P0=0、P1=0；P2=1 潜伏 fail-open、P3=2 非阻塞）；复跑 IAM `88/0/0（19 skipped）`、opt-in `18/18`、V13 `1/1`、P1R `1421/1421`、evidence gate PASS。
+- 按复审建议加固：`hasRequiredConsentFor` 空必需描述符集合改为失败关闭（消除空控制面 fail-open）；`local-candidate` 来源守卫上移启动守卫并补单测；Clock 说明更正；legacy 控制器级 409 用例留作 P3 后续。
+- 验证（JDK 25）：IAM 全套 `89/0/0（19 skipped）`；opt-in 同意类 `5/5`。
+- 下一步：复审确认后进入 `REVIEW → ACCEPTED` 与 canonical manifest。
+
 ## 2026-09-04 IAM 账户/密码并发安全检查点
 
 - 源码：`9deb899`。认证改为锁前单次 cost-12 BCrypt、锁内 current principal/hash/status/counter 复核；credential epoch 在校验期间变化时统一 `INVALID_CREDENTIALS` 且零写入，避免旧在途请求污染或锁死刚重置的新凭据。
