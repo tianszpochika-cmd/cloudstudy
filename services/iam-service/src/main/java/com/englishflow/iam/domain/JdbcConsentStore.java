@@ -111,7 +111,7 @@ public class JdbcConsentStore implements ConsentStore {
     }
 
     @Override
-    public List<ConsentRecord> history(PrincipalId principalId, ConsentType type) {
+    public List<ConsentHistoryEntry> history(PrincipalId principalId, ConsentType type) {
         try {
             return jdbc.query(
                     "SELECT c.principal_id, c.consent_type, c.purpose, c.required_scope, c.document_version, "
@@ -119,7 +119,7 @@ public class JdbcConsentStore implements ConsentStore {
                             + "c.effective_at, c.withdrawal_effect, c.revoke_sessions, c.consent_id "
                             + "FROM iam_consent c WHERE c.principal_id = ? AND c.consent_type = ? "
                             + "ORDER BY c.effective_at ASC, c.granted_at ASC, c.consent_id ASC",
-                    (ResultSet rs, int rowNum) -> map(rs), principalId.toString(), type.name());
+                    (ResultSet rs, int rowNum) -> mapHistory(rs), principalId.toString(), type.name());
         } catch (DataAccessException | IllegalArgumentException exception) {
             throw unavailable();
         }
@@ -133,30 +133,38 @@ public class JdbcConsentStore implements ConsentStore {
     }
 
     private static ConsentRecord map(ResultSet rs) throws java.sql.SQLException {
+        ConsentHistoryEntry entry = mapHistory(rs);
+        if (entry.legacy()) {
+            // Legacy rows without a published digest cannot participate in authorization.
+            throw new IamPolicyException(IamDecisionCode.CONSENT_VERSION_MISMATCH,
+                    "iam.consent.legacy_fact_revalidation_required");
+        }
+        return entry.verifiedRecord();
+    }
+
+    private static ConsentHistoryEntry mapHistory(ResultSet rs) throws java.sql.SQLException {
         PrincipalId principal = new PrincipalId(UUID.fromString(rs.getString("principal_id")));
-        String consentId = rs.getString("consent_id");
+        UUID consentId = UUID.fromString(rs.getString("consent_id"));
+        ConsentType type = ConsentType.fromLegacyStorage(rs.getString("consent_type"));
         String purpose = rs.getString("purpose");
         String requirementScope = rs.getString("required_scope");
         String documentVersion = rs.getString("document_version");
-        String documentDigest = rs.getString("document_digest");
         String policyVersion = rs.getString("policy_version");
+        String documentDigest = rs.getString("document_digest");
         String policyDigest = rs.getString("policy_digest");
         Timestamp recordedAt = rs.getTimestamp("granted_at");
         Timestamp effectiveAt = rs.getTimestamp("effective_at");
         if (consentId == null || purpose == null || requirementScope == null || documentVersion == null
-                || documentDigest == null || policyVersion == null || policyDigest == null
-                || recordedAt == null || effectiveAt == null) {
-            // Legacy rows without a published document fact cannot participate in authorization.
+                || policyVersion == null || recordedAt == null || effectiveAt == null) {
             throw new IamPolicyException(IamDecisionCode.CONSENT_VERSION_MISMATCH,
                     "iam.consent.legacy_fact_revalidation_required");
         }
-        return new ConsentRecord(UUID.fromString(consentId), principal, TenantScope.derive(principal),
-                ConsentType.fromLegacyStorage(rs.getString("consent_type")), purpose, requirementScope,
-                "BASE_REQUIRED".equals(requirementScope) || "LEARNING_REQUIRED".equals(requirementScope),
-                new ConsentVersion(documentVersion), documentDigest, new ConsentVersion(policyVersion),
-                policyDigest, "GRANTED".equals(rs.getString("status")), recordedAt.toInstant(),
-                effectiveAt.toInstant(), ConsentPolicyDescriptor.WithdrawalEffect.valueOf(
-                        rs.getString("withdrawal_effect")), rs.getBoolean("revoke_sessions"));
+        return new ConsentHistoryEntry(consentId, principal, TenantScope.derive(principal), type, purpose,
+                requirementScope, "BASE_REQUIRED".equals(requirementScope) || "LEARNING_REQUIRED".equals(requirementScope),
+                new ConsentVersion(documentVersion), documentDigest, new ConsentVersion(policyVersion), policyDigest,
+                "GRANTED".equals(rs.getString("status")), recordedAt.toInstant(), effectiveAt.toInstant(),
+                ConsentPolicyDescriptor.WithdrawalEffect.valueOf(rs.getString("withdrawal_effect")),
+                rs.getBoolean("revoke_sessions"), documentDigest == null || policyDigest == null);
     }
 
     private static IamPolicyException unavailable() {

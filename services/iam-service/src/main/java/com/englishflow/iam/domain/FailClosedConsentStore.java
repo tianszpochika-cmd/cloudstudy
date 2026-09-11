@@ -11,5 +11,5 @@ public final class FailClosedConsentStore implements ConsentStore {
     }
     @Override public ConsentRecord append(ConsentRecord record) { throw unavailable(); }
     @Override public Optional<ConsentRecord> find(PrincipalId principalId, ConsentType type) { throw unavailable(); }
-    @Override public List<ConsentRecord> history(PrincipalId principalId, ConsentType type) { throw unavailable(); }
+    @Override public List<ConsentHistoryEntry> history(PrincipalId principalId, ConsentType type) { throw unavailable(); }
 }

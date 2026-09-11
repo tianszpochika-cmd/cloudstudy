@@ -30,5 +30,9 @@ public interface ConsentStore {
         return append(record);
     }
 
-    List<ConsentRecord> history(PrincipalId principalId, ConsentType type);
+    /**
+     * Full immutable history in decision order. Legacy rows without a server-published digest are
+     * returned as explicit legacy entries; they stay readable and never authorize.
+     */
+    List<ConsentHistoryEntry> history(PrincipalId principalId, ConsentType type);
 }

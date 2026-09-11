@@ -14,6 +14,7 @@ import com.englishflow.iam.domain.AdultGateResult;
 import com.englishflow.iam.domain.AdultGateService;
 import com.englishflow.iam.domain.ClientAuthorityClaims;
 import com.englishflow.iam.domain.ConsentCommand;
+import com.englishflow.iam.domain.ConsentHistoryEntry;
 import com.englishflow.iam.domain.ConsentPolicyDescriptor;
 import com.englishflow.iam.domain.ConsentRecord;
 import com.englishflow.iam.domain.ConsentService;
@@ -697,20 +698,30 @@ class IamAuthenticationController {
             consentId = null;
         }
         UUID resolvedConsentId = consentId;
-        ConsentRecord record = resolvedConsentId == null ? null : consentStore.history(principal, type).stream()
+        ConsentHistoryEntry entry = resolvedConsentId == null ? null : consentStore.history(principal, type).stream()
                 .filter(value -> value.consentId().equals(resolvedConsentId)).findFirst().orElse(null);
-        if (record == null) {
+        if (entry == null) {
             // A pre-M2-002 idempotency row used a timestamp. Keep a read-only compatibility path
             // for those rows, but all new writes use the immutable consent_id above.
             long recordedAt = legacyConsentTimestamp(resultReference);
             if (recordedAt != Long.MIN_VALUE) {
-                record = consentStore.history(principal, type).stream()
-                        .filter(value -> value.recordedAt().toEpochMilli() == recordedAt).findFirst().orElse(null);
+                entry = consentStore.history(principal, type).stream()
+                        .filter(value -> value.recordedAt() != null
+                                && value.recordedAt().toEpochMilli() == recordedAt)
+                        .findFirst().orElse(null);
             }
         }
-        if (record == null) record = consentStore.find(principal, type).orElseThrow(() ->
-                new IamPolicyException(IamDecisionCode.IDEMPOTENCY_RESULT_UNAVAILABLE,
-                        "iam.idempotency.result_unavailable"));
+        if (entry != null && entry.legacy()) {
+            // The original answer depended on a pre-V11 row without a server-published digest.
+            // Fabricating one is forbidden, so the caller must re-consent against the current
+            // published document instead of receiving an unrecoverable internal failure.
+            throw new IamPolicyException(IamDecisionCode.CONSENT_VERSION_MISMATCH,
+                    "iam.consent.legacy_fact_revalidation_required");
+        }
+        ConsentRecord record = entry != null ? entry.verifiedRecord()
+                : consentStore.find(principal, type).orElseThrow(() ->
+                        new IamPolicyException(IamDecisionCode.IDEMPOTENCY_RESULT_UNAVAILABLE,
+                                "iam.idempotency.result_unavailable"));
         if (!record.principalId().equals(principal) || record.type() != type) throw new IamPolicyException(
                 IamDecisionCode.IDEMPOTENCY_RESULT_UNAVAILABLE, "iam.idempotency.result_unavailable");
         return success(HttpStatus.OK, consentResponse(record), CacheControl.noStore());

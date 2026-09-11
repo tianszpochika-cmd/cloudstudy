@@ -6,6 +6,13 @@
 - `P1R-M2-002`：独立只读复审判定 **`REWORK`**（P0=0、P1=5、P2=3、P3=3）。`4bc645c` 的 rollback-only 修复方向正确，全套 `71/71（18 skipped）`、IAM compatibility `7/7` 可复现；但 legacy Consent 空摘要兼容、正式 Consent 策略来源、密码重置投递与审计、native 可信上下文、真实 DB/跨进程 Evidence 仍未关闭。任务保持 `IN_PROGRESS / NOT_RUNTIME_VERIFIED`，按执行记录中的 8 个有序批次返工；`P1R-M2-003` 继续锁定。
 - 审判依据与 P1/P2/P3 明细、复现命令及限制见 [P1R-M2-001 执行记录](P1R-M2-001.md) 与 [P1R-M2-002 执行记录](P1R-M2-002.md)。
 
+## 2026-09-11 M2-002 返工批次 1：legacy Consent 空摘要兼容
+
+- 对应开放 P1-1。选择显式 legacy 历史表示而非 V14 伪造摘要回填：新增 `ConsentHistoryEntry`（legacy 条目不得携带摘要、`verifiedRecord()` 失败关闭），`ConsentStore.history` 返回类型同步为 `List<ConsentHistoryEntry>`，JDBC/InMemory/FailClosed 三实现一致；`find/findForUpdate` 继续过滤 legacy，授权不受影响。
+- 重放语义：`replayConsent` 命中 legacy 条目时确定性 409 `iam.consent.legacy_fact_revalidation_required`；无关 legacy 行不再导致已验证记录重放失败。
+- 验证（JDK 25，标准栈 MySQL 8.0 隔离库 `iam_service`）：IAM 全套 `76/0/0（18 skipped）`；`ConsentHistoryEntryTest 5/5`；opt-in `IamConsentJdbcPersistenceContextTest 4/4` + `IamConsentIdempotencyRollbackSafetyTest 2/2`；IAM compatibility `7/7`。
+- 边界：只关闭 P1-1；任务保持 `IN_PROGRESS / NOT_RUNTIME_VERIFIED`，下一批为 P1-2 正式 Consent descriptor/策略来源。
+
 ## 2026-09-04 IAM 账户/密码并发安全检查点
 
 - 源码：`9deb899`。认证改为锁前单次 cost-12 BCrypt、锁内 current principal/hash/status/counter 复核；credential epoch 在校验期间变化时统一 `INVALID_CREDENTIALS` 且零写入，避免旧在途请求污染或锁死刚重置的新凭据。

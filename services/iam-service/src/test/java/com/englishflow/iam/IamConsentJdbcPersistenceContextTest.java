@@ -1,6 +1,7 @@
 package com.englishflow.iam;
 
 import com.englishflow.iam.domain.ClientAuthorityClaims;
+import com.englishflow.iam.domain.ConsentHistoryEntry;
 import com.englishflow.iam.domain.ConsentPolicyDescriptor;
 import com.englishflow.iam.domain.ConsentPolicyPort;
 import com.englishflow.iam.domain.ConsentRecord;
@@ -122,11 +123,15 @@ class IamConsentJdbcPersistenceContextTest {
             assertTrue(regranted.accepted());
 
             JdbcConsentStore restarted = new JdbcConsentStore(jdbc);
-            List<ConsentRecord> history = restarted.history(principal, ConsentType.TERMS_OF_SERVICE);
+            List<ConsentHistoryEntry> history = restarted.history(principal, ConsentType.TERMS_OF_SERVICE);
             assertEquals(3, history.size(), "grant/withdraw/re-grant must retain immutable history");
+            assertTrue(history.stream().noneMatch(ConsentHistoryEntry::legacy),
+                    "server-published facts must never be reported as legacy");
             assertTrue(history.get(0).accepted());
             assertTrue(!history.get(1).accepted());
             assertTrue(history.get(2).accepted());
+            assertEquals(granted, history.get(0).verifiedRecord(),
+                    "history entries must round-trip their verified authorization fact");
             ConsentRecord current = restarted.find(principal, ConsentType.TERMS_OF_SERVICE).orElseThrow();
             assertEquals(regranted, current, "a new store instance must read the current projection");
             Integer currentRows = jdbc.queryForObject(
@@ -195,12 +200,27 @@ class IamConsentJdbcPersistenceContextTest {
             jdbc.update("INSERT INTO iam_consent_current (principal_id, consent_type, consent_id, updated_at) VALUES (?, ?, ?, ?)",
                     principal.toString(), ConsentType.TERMS_OF_SERVICE.name(), legacyId, now);
 
+            JdbcConsentStore store = new JdbcConsentStore(jdbc);
+            List<ConsentHistoryEntry> legacyHistory = store.history(principal, ConsentType.TERMS_OF_SERVICE);
+            assertEquals(1, legacyHistory.size(), "legacy rows must stay readable as explicit history");
+            assertTrue(legacyHistory.get(0).legacy(), "a row without published digests is an explicit legacy fact");
+            assertEquals(legacyId, legacyHistory.get(0).consentId().toString());
+            assertThrows(IllegalStateException.class, legacyHistory.get(0)::verifiedRecord,
+                    "a legacy entry must never be usable as an authorization fact");
+
             assertTrue(!consents.hasRequiredConsentFor(principal, "LEARNING"),
                     "legacy rows without published digests must not authorize learning");
             ConsentRecord fresh = consents.record(context, command(descriptor));
             assertTrue(fresh.accepted());
             assertEquals(descriptor.documentDigest(), fresh.documentDigest());
             assertEquals(fresh, new JdbcConsentStore(jdbc).find(principal, ConsentType.TERMS_OF_SERVICE).orElseThrow());
+
+            List<ConsentHistoryEntry> fullHistory = store.history(principal, ConsentType.TERMS_OF_SERVICE);
+            assertEquals(2, fullHistory.size(), "the fresh consent must append after the legacy fact");
+            assertTrue(fullHistory.get(0).legacy(), "the legacy fact stays in immutable history");
+            assertTrue(!fullHistory.get(1).legacy());
+            assertTrue(fullHistory.get(1).accepted());
+            assertEquals(descriptor.documentDigest(), fullHistory.get(1).documentDigest());
         } finally {
             cleanup(principal);
         }

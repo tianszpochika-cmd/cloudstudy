@@ -36,11 +36,12 @@ public final class InMemoryConsentStore implements ConsentStore {
     }
 
     @Override
-    public synchronized List<ConsentRecord> history(PrincipalId principalId, ConsentType type) {
+    public synchronized List<ConsentHistoryEntry> history(PrincipalId principalId, ConsentType type) {
         return history.getOrDefault(key(principalId, type), List.of()).stream()
                 .sorted(java.util.Comparator.comparing(ConsentRecord::effectiveAt)
                         .thenComparing(ConsentRecord::recordedAt)
                         .thenComparing(ConsentRecord::consentId))
+                .map(ConsentHistoryEntry::verified)
                 .toList();
     }
 
