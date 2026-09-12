@@ -19,6 +19,7 @@ function clone(value) {
 
 function expectedSchema(serviceId) {
   if (serviceId === 'iam-service') return 'iam_service';
+  if (serviceId === 'audit-service') return 'audit_service';
   if (serviceId === 'core-api') return 'legacy_compatibility';
   return inputs.ownerManifest.services.find((service) => service.id === serviceId)?.schema;
 }
@@ -188,14 +189,16 @@ function buildRuntimeEvidence(overrides = {}) {
   };
 }
 
-test('B29 static gate covers 14 processes, fixed ports, readiness and external Gateway policy', () => {
+test('B29 static gate covers every backend process, fixed ports, readiness and external Gateway policy', () => {
   const result = validateB29BackendRuntime(inputs, { runtimeRequested: false });
   assert.equal(result.result, 'PASS', result.errors.join('\n'));
   assert.equal(result.staticStatus, 'PASS');
   assert.equal(result.runtimeStatus, 'not-requested');
   assert.equal(result.runtimeGate, 'static-only');
-  assert.equal(result.runtimeProcessCount, 14);
-  assert.equal(result.fixedPortCount, 14);
+  // audit-service joined the local runtime in P1R-M2-004 Batch D3, so the backend baseline is 15
+  // processes and 15 fixed ports while the Phase 1 domain owner count stays at 11.
+  assert.equal(result.runtimeProcessCount, 15);
+  assert.equal(result.fixedPortCount, 15);
   assert.equal(result.ownerSchemaCount, 11);
   assert.equal(result.execution.dockerInvoked, false);
   assert.equal(result.execution.databaseWritten, false);
@@ -236,8 +239,8 @@ test('B29 accepts a complete external runtime evidence set and consumes it witho
   const evidence = buildRuntimeEvidence();
   const directValidation = validateB29RuntimeEvidence(inputs, evidence);
   assert.equal(directValidation.result, 'PASS', directValidation.errors.join('\n'));
-  assert.equal(directValidation.runtimeProcessCount, 14);
-  assert.equal(directValidation.fixedPortCount, 14);
+  assert.equal(directValidation.runtimeProcessCount, 15);
+  assert.equal(directValidation.fixedPortCount, 15);
 
   const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'b29-runtime-evidence-'));
   try {

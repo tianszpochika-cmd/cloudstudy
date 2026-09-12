@@ -47,7 +47,7 @@
   },
   "runtimeServices": {
     "manifest": "config/v2-runtime-services.json",
-    "requiredProcessCount": 14,
+    "requiredProcessCount": 15,
     "legacyCompatibilityServices": ["core-api"],
     "coreApiMayWriteV2DomainFacts": false,
     "externalIngress": "api-gateway"

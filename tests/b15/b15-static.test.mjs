@@ -10,7 +10,9 @@ const readJson = (file) => JSON.parse(fs.readFileSync(path.join(root, file), 'ut
 test('B15 runtime manifest covers Phase 1 services and excludes future phases', () => {
   const manifest = readJson('config/v2-runtime-services.json');
   assert.equal(manifest.host, '127.0.0.1');
-  assert.equal(manifest.services.length, 14);
+  // audit-service joined the local runtime in P1R-M2-004 Batch D3, so the manifest now carries 15
+  // services; the disabled future-phase list is unchanged.
+  assert.equal(manifest.services.length, 15);
   assert.ok(manifest.services.every((service) => service.profile === 'v2' || service.profile === 'legacy-compatibility'));
   assert.deepEqual(manifest.disabledPhaseServices.sort(), [
     'ai-orchestrator',

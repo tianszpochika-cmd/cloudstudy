@@ -34,7 +34,8 @@ test('B28 static validator passes fixed ports, real dependencies and owner/schem
   assert.equal(result.staticStatus, 'PASS');
   assert.equal(result.runtimeStatus, 'not-requested');
   assert.equal(result.runtimeGate, 'static-only');
-  assert.equal(result.runtimeProcessCount, 14);
+  // audit-service joined the local runtime in P1R-M2-004 Batch D3; the domain owner count is unchanged.
+  assert.equal(result.runtimeProcessCount, 15);
   assert.equal(result.requiredDependencyCount, 4);
   assert.equal(result.ownerSchemaCount, 11);
   assert.equal(result.fixedPortCount, 5);

@@ -254,7 +254,7 @@ export function validateB28LocalRuntime(inputs = readB28Inputs(), options = {}) 
   staticCheck('Docker Compose file must exist', fs.existsSync(path.join(inputs.root, config.toolchain.docker.composeFile)));
 
   staticCheck('v2 runtime host must be loopback', runtimeManifest.host === '127.0.0.1');
-  staticCheck('v2 runtime process count must be 14', runtimeManifest.services.length === config.runtimeServices.requiredProcessCount);
+  staticCheck(`v2 runtime process count must be ${config.runtimeServices.requiredProcessCount}`, runtimeManifest.services.length === config.runtimeServices.requiredProcessCount);
   staticCheck('api-gateway must be the external ingress', runtimeManifest.services.some((service) => service.id === config.runtimeServices.externalIngress));
   staticCheck('core-api must remain legacy compatibility', runtimeManifest.services.find((service) => service.id === 'core-api')?.profile === 'legacy-compatibility');
   staticCheck('core-api may not write v2 domain facts', config.runtimeServices.coreApiMayWriteV2DomainFacts === false);

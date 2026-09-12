@@ -147,7 +147,7 @@ function validateStaticInputs(inputs) {
   staticCheck(state, 'owner manifest source must be config/b17-runtime-services.json', config?.sourceOfTruth?.ownerManifest === 'config/b17-runtime-services.json');
 
   staticCheck(state, 'v2 runtime host must be loopback', runtimeManifest?.host === portPolicy.host && portPolicy.host === '127.0.0.1');
-  staticCheck(state, 'backend process count must be 14', manifestServices.length === backend.requiredProcessCount && expectedIds.length === backend.requiredProcessCount);
+  staticCheck(state, `backend process count must be ${backend.requiredProcessCount}`, manifestServices.length === backend.requiredProcessCount && expectedIds.length === backend.requiredProcessCount);
   staticCheck(state, 'backend service ids must be unique', unique(actualIds));
   staticCheck(state, 'backend service order must match the B29 target', JSON.stringify(actualIds) === JSON.stringify(expectedIds));
   staticCheck(state, 'api-gateway must be the external ingress', runtimeManifest?.services?.some((service) => service?.id === backend.gatewayServiceId));
@@ -188,7 +188,7 @@ function validateStaticInputs(inputs) {
     }
   }
   state.fixedPortCount = seenPorts.size;
-  staticCheck(state, 'all 14 backend ports must be unique', seenPorts.size === backend.requiredProcessCount);
+  staticCheck(state, `all ${backend.requiredProcessCount} backend ports must be unique`, seenPorts.size === backend.requiredProcessCount);
 
   const gateway = manifestServices.find((service) => service?.id === backend.gatewayServiceId);
   const gatewayInput = sourceById.get(backend.gatewayServiceId);
@@ -201,7 +201,12 @@ function validateStaticInputs(inputs) {
 
   const ownerServices = Array.isArray(ownerManifest?.services) ? ownerManifest.services : [];
   const ownerIds = ownerServices.map((service) => service?.id);
-  const domainIds = expectedIds.filter((id) => id !== backend.gatewayServiceId && id !== 'iam-service' && id !== 'core-api');
+  // Platform services own a schema and an independent credential without being Phase 1 domain
+  // owners, so they are declared in backend.platformOwnedSchemaServices instead of the B17 owner
+  // manifest. Deriving the domain set by subtraction alone would demand a B17 entry for them.
+  const platformOwned = new Set(backend.platformOwnedSchemaServices ?? ['iam-service']);
+  const domainIds = expectedIds.filter((id) => id !== backend.gatewayServiceId
+    && id !== 'core-api' && !platformOwned.has(id));
   const schemas = ownerServices.map((service) => service?.schema);
   const credentials = ownerServices.map((service) => service?.dbCredential);
   staticCheck(state, 'owner manifest must contain 11 domain services', ownerServices.length === domainIds.length && ownerServices.length === 11);
@@ -209,6 +214,7 @@ function validateStaticInputs(inputs) {
   staticCheck(state, 'owner schemas must be unique', unique(schemas));
   staticCheck(state, 'owner credentials must be unique', unique(credentials));
   staticCheck(state, 'owner manifest must not own gateway/IAM/core-api', !ownerIds.includes(backend.gatewayServiceId) && !ownerIds.includes('iam-service') && !ownerIds.includes('core-api'));
+  staticCheck(state, 'platform-owned schema services must stay out of the owner manifest', [...platformOwned].every((id) => !ownerIds.includes(id)));
   for (const id of domainIds) {
     const owner = ownerServices.find((service) => service?.id === id);
     const registered = localPorts?.services?.[id];

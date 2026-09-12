@@ -178,7 +178,7 @@ async function main() {
   const direct = await fetchProbe(`http://${runtime.host}:${ports.services['learner-service'].port}/api/v1/learner/profile`, correlationHeaders);
   const sourceRevision = commandJson('git.exe', ['rev-parse', '--short', 'HEAD']) || `workspace-${Date.now()}`;
   const checks = [
-    ['process-startup', 'all 14 processes have real listening PIDs'],
+    ['process-startup', `all ${runtime.services.length} processes have real listening PIDs`],
     ['fixed-port-binding', 'all services bind the registered loopback ports'],
     ['readiness-health', 'all readiness and liveness probes return UP/200'],
     ['gateway-external-ingress', 'protected request traverses Gateway with correlation headers'],

@@ -44,8 +44,7 @@
   },
   "portPolicy": {
     "source": "config/local-ports.json",
-    "host": "127.0.0.1",
-    "bindOnlyToLoopback": true,
+    "host": "127.0.0.1",    "bindOnlyToLoopback": true,
     "autoIncrement": false,
     "unique": true,
     "portProtocol": "http"
@@ -93,7 +92,8 @@
       "social-service",
       "commerce-service",
       "admin-ops-service",
-      "analytics-service"
+      "analytics-service",
+      "audit-service"
     ],
     "failClosedServicesAreNotBusinessFacts": true,
     "requiredRuntimeFlags": [
