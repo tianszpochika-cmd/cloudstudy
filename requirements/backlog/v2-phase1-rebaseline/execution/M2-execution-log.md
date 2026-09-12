@@ -263,6 +263,12 @@
 - 验证：gamification 55/0/0（2 跳过）；opt-in 1/1 PASS。
 - 下一步：notification（'unknown' 默认清理与 tenant 列补齐）。
 
+## 2026-09-12 M2-004 Batch C（完成）：notification 'unknown' 默认清除
+
+- V5 迁移移除 notification_outbox_event 四列 `DEFAULT 'unknown'`；opt-in NotificationTenantIsolationTest 验证默认确实为 NULL、缺 tenant 插入被拒、显式插入成功、受限账号跨 schema 写被拒。
+- 验证：notification 96/0/0（2 跳过）；迁移 opt-in 1/1 PASS；租户 opt-in 1/1 PASS。
+- Batch C 服务覆盖 learning/assessment/content/media/gamification/notification；剩余 admin-ops/analytics/commerce/social 与运行时编排顺延。
+
 ## 2026-09-04 IAM 账户/密码并发安全检查点
 
 - 源码：`9deb899`。认证改为锁前单次 cost-12 BCrypt、锁内 current principal/hash/status/counter 复核；credential epoch 在校验期间变化时统一 `INVALID_CREDENTIALS` 且零写入，避免旧在途请求污染或锁死刚重置的新凭据。

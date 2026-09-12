@@ -1,0 +1,5 @@
+ALTER TABLE notification_outbox_event
+    MODIFY COLUMN tenant_id VARCHAR(128) NOT NULL,
+    MODIFY COLUMN principal_id VARCHAR(128) NOT NULL,
+    MODIFY COLUMN trace_id VARCHAR(128) NOT NULL,
+    MODIFY COLUMN request_id VARCHAR(128) NOT NULL;
