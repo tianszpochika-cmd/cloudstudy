@@ -11,7 +11,7 @@ test('B14 Gateway has an explicit Phase 1 strangler route matrix and safe deprec
   const properties = read('services/api-gateway/src/main/java/com/englishflow/gateway/config/GatewayProperties.java')
   const configuration = read('services/api-gateway/src/main/java/com/englishflow/gateway/config/GatewayConfiguration.java')
   const guard = read('services/api-gateway/src/main/java/com/englishflow/gateway/filter/B14RouteModeGuardGlobalFilter.java')
-  const application = read('services/api-gateway/src/main/resources/application.yaml')
+  const application = read('services/api-gateway/src/main/resources/application.yml')
   const local = read('services/api-gateway/src/main/resources/application-local.yaml')
   const env = read('.env.example')
 

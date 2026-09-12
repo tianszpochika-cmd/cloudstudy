@@ -8,7 +8,7 @@ const root = join(fileURLToPath(new URL('.', import.meta.url)), '..', '..');
 const read = (path) => readFileSync(join(root, path), 'utf8');
 
 test('Gateway points IAM to the registered loopback port and requires explicit JWT validation', () => {
-  const yaml = read('services/api-gateway/src/main/resources/application.yaml');
+  const yaml = read('services/api-gateway/src/main/resources/application.yml');
   const properties = read('services/api-gateway/src/main/java/com/englishflow/gateway/config/GatewayProperties.java');
   const env = read('.env.example');
   assert.match(yaml, /iam-base-url: \$\{IAM_SERVICE_BASE_URL:http:\/\/127\.0\.0\.1:18087\}/);

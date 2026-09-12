@@ -21,7 +21,7 @@ test('B16 security manifest keeps Phase 1 default-deny and self-owned JWT signin
 });
 
 test('B16 Gateway has fixed loopback boundary, CORS, rate-limit and security facts', () => {
-  const yaml = read('services/api-gateway/src/main/resources/application.yaml');
+  const yaml = read('services/api-gateway/src/main/resources/application.yml');
   const rateLimit = read('services/api-gateway/src/main/java/com/englishflow/gateway/filter/RateLimitGlobalFilter.java');
   const legacyRateLimit = read('services/api-gateway/src/main/java/com/englishflow/gateway/filter/RateLimitPlaceholderGlobalFilter.java');
   assert.match(yaml, /address: \$\{SERVER_ADDRESS:127\.0\.0\.1\}/);
