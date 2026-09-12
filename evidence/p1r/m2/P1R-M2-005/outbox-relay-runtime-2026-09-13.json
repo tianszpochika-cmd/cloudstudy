@@ -1,0 +1,63 @@
+{
+  "schema": "platform.outbox.relay.runtime-evidence.v1",
+  "taskId": "P1R-M2-005",
+  "batch": "E4",
+  "sourceCommit": "ae0647b6928d9246b2d045d735b6e6cfdf74437b",
+  "capturedAt": "2026-09-12T20:54:54.912Z",
+  "service": "content-service",
+  "topic": "platform.content.v1",
+  "contract": "config/b26-event-runtime.json",
+  "observed": {
+    "outboxStatusCounts": {
+      "PUBLISHED": 47
+    },
+    "attemptsByStatus": [
+      {
+        "status": "PUBLISHED",
+        "rows": 47,
+        "totalAttempts": 47,
+        "minAttempts": 1,
+        "maxAttempts": 1
+      }
+    ],
+    "probeEvents": [
+      {
+        "eventId": "6f40bcc4-036e-4f0f-bdb1-a4b1c21af79d",
+        "status": "PUBLISHED",
+        "attemptCount": 1,
+        "errorCode": "-"
+      },
+      {
+        "eventId": "b6acf767-723c-4970-8215-b27ff73f76dc",
+        "status": "PUBLISHED",
+        "attemptCount": 1,
+        "errorCode": "-"
+      }
+    ],
+    "topicPartitions": 12,
+    "topicLogEndOffsets": 67,
+    "topicEarliestOffsets": 20,
+    "topicRetainedMessages": 47
+  },
+  "claims": {
+    "every-outbox-row-reached-published": true,
+    "published-rows-equal-retained-topic-messages": true,
+    "observed-duplicates": 0,
+    "topic-spread-across-all-declared-partitions": true
+  },
+  "harnessNotes": {
+    "events-published-by-the-relay": 47,
+    "messages-removed-by-retention-during-the-run": 20,
+    "the-run-was-operator-driven": true,
+    "a-scripted-fault-harness-is-still-to-be-written": true
+  },
+  "notVerifiedHere": [
+    "consumer-side deduplication on (consumerGroup, eventId): not implemented yet, so duplicate-delivery absorption is unproven",
+    "out-of-order delivery: not exercised yet",
+    "a duplicate reader pass is needed to assert per-eventId delivery counts from a clean consumer group"
+  ],
+  "sensitiveMaterial": {
+    "persisted": false,
+    "emitted": false
+  }
+}
