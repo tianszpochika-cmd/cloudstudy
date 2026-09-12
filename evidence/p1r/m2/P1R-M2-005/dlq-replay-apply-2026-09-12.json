@@ -3,12 +3,19 @@
   "taskId": "P1R-M2-005",
   "mode": "apply",
   "dlqTopic": "platform.events.dlq.v1",
-  "sourceCommit": "f647a63c146affdd55019afafa404e55d2744e0c",
-  "capturedAt": "2026-09-12T22:04:34.313Z",
-  "deadLettersSeen": 11,
+  "sourceCommit": "1e99ddbf4191d90454082a32b699f775bda7ddbe",
+  "capturedAt": "2026-09-12T22:15:59.537Z",
+  "deadLettersSeen": 13,
   "recoverable": [
     {
       "eventId": "fd80088b-9d8a-40be-8820-7d914f5d46da",
+      "topic": "platform.iam.v1",
+      "consumerGroup": "cg.content-from-iam.v1",
+      "failureCode": "CannotGetJdbcConnectionException",
+      "recoveryState": "AWAITING_OPERATOR"
+    },
+    {
+      "eventId": "6ec428ee-d6d5-4a0b-a3f2-4881998813fa",
       "topic": "platform.iam.v1",
       "consumerGroup": "cg.content-from-iam.v1",
       "failureCode": "CannotGetJdbcConnectionException",
@@ -67,12 +74,17 @@
       "reason": "envelope missing or origin topic unknown",
       "eventId": null,
       "recoveryState": "AWAITING_OPERATOR"
+    },
+    {
+      "reason": "envelope missing or origin topic unknown",
+      "eventId": null,
+      "recoveryState": "AWAITING_OPERATOR"
     }
   ],
   "selected": 1,
   "replayed": [
     {
-      "eventId": "e37244ba-77f4-43f9-b0de-8a19d42a92df",
+      "eventId": "6ec428ee-d6d5-4a0b-a3f2-4881998813fa",
       "topic": "platform.iam.v1"
     }
   ],

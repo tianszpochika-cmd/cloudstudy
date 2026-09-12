@@ -3,8 +3,8 @@
   "taskId": "P1R-M2-005",
   "batch": "E7",
   "mode": "runtime",
-  "sourceCommit": "f647a63c146affdd55019afafa404e55d2744e0c",
-  "capturedAt": "2026-09-12T22:04:49.742Z",
+  "sourceCommit": "1e99ddbf4191d90454082a32b699f775bda7ddbe",
+  "capturedAt": "2026-09-12T22:16:15.396Z",
   "topic": "platform.iam.v1",
   "consumerGroup": "cg.content-from-iam.v1",
   "dlqTopic": "platform.events.dlq.v1",
@@ -33,11 +33,11 @@
         "consumed-in-publish-order": true
       },
       "observed": {
-        "aggregateId": "p1r-m2-005-order-795517b3",
+        "aggregateId": "p1r-m2-005-order-fdf6ddf6",
         "partitionOffsets": [
           {
             "partition": 0,
-            "offset": 7
+            "offset": 10
           },
           {
             "partition": 1,
@@ -45,11 +45,11 @@
           },
           {
             "partition": 2,
-            "offset": 12
+            "offset": 16
           },
           {
             "partition": 3,
-            "offset": 0
+            "offset": 3
           },
           {
             "partition": 4,
@@ -75,8 +75,8 @@
         "an-unreadable-envelope-reached-the-dead-letter-topic": true
       },
       "observed": {
-        "dlqLogEndOffsetBefore": 19,
-        "dlqLogEndOffsetAfter": 20
+        "dlqLogEndOffsetBefore": 21,
+        "dlqLogEndOffsetAfter": 22
       }
     },
     {
@@ -89,11 +89,35 @@
         "mysql-was-restored": true
       },
       "observed": {
-        "eventId": "e37244ba-77f4-43f9-b0de-8a19d42a92df",
-        "aggregateId": "p1r-m2-005-replay-561f384c",
-        "dlqLogEndOffsetBefore": 20,
-        "dlqLogEndOffsetAfter": 21,
+        "eventId": "6ec428ee-d6d5-4a0b-a3f2-4881998813fa",
+        "aggregateId": "p1r-m2-005-replay-eb1c22e5",
+        "dlqLogEndOffsetBefore": 22,
+        "dlqLogEndOffsetAfter": 23,
         "receiptRows": 0
+      }
+    },
+    {
+      "id": "fault-kafka",
+      "passed": true,
+      "claims": {
+        "the-outbox-row-was-written": true,
+        "the-relay-recorded-a-failure-while-the-broker-was-down": true,
+        "the-broker-was-restored": true,
+        "the-same-row-reached-published-after-recovery": true
+      },
+      "observed": {
+        "eventId": "45e4ed4b-8f73-4d29-b7ab-4d97f0b35837",
+        "aggregateId": "p1r-m2-005-broker-7fa4f1e6",
+        "statusDuringOutage": [
+          "RETRY",
+          "1",
+          "TimeoutException"
+        ],
+        "statusAfterRecovery": [
+          "PUBLISHED",
+          "2",
+          "-"
+        ]
       }
     },
     {
@@ -106,7 +130,7 @@
         "a-second-replay-cannot-apply-the-effect-again": true
       },
       "observed": {
-        "eventId": "e37244ba-77f4-43f9-b0de-8a19d42a92df",
+        "eventId": "6ec428ee-d6d5-4a0b-a3f2-4881998813fa",
         "afterFirstReplay": {
           "receipts": 1,
           "applied": 1

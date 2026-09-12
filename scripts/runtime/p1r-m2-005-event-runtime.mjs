@@ -25,9 +25,9 @@ const TOPIC = 'platform.iam.v1';
 const DLQ_TOPIC = 'platform.events.dlq.v1';
 const EVENT_NAME = 'iam.account.registered.v1';
 
-const phases = ['--dedupe', '--ordering', '--dlq', '--fault-db', '--replay']
+const phases = ['--dedupe', '--ordering', '--dlq', '--fault-db', '--fault-kafka', '--replay']
   .filter((flag) => process.argv.includes(flag));
-const KNOWN = ['--dedupe', '--ordering', '--dlq', '--fault-db', '--replay'];
+const KNOWN = ['--dedupe', '--ordering', '--dlq', '--fault-db', '--fault-kafka', '--replay'];
 const unknown = process.argv.slice(2).filter((arg) => !KNOWN.includes(arg));
 if (unknown.length > 0) {
   console.error(`unsupported argument(s): ${unknown.join(', ')}`);
@@ -39,6 +39,64 @@ if (unknown.length > 0) {
 // cannot pause an arbitrary container.
 const MYSQL_CONTAINER = 'yuxuexing-local-mysql-1';
 const FAULT_OPT_IN = 'PAUSE_EXACT_MYSQL_13306_AND_RECOVER';
+const KAFKA_CONTAINER = 'yuxuexing-local-kafka-1';
+const KAFKA_FAULT_OPT_IN = 'PAUSE_EXACT_KAFKA_19092_AND_RECOVER';
+
+/** Inserts a pending content outbox row through the same columns the service's own writer uses. */
+function insertPendingOutboxRow(eventId, aggregateId, dedupeKey) {
+  return mysql(`INSERT INTO content_outbox_event
+    (event_id, owner_domain, aggregate_type, aggregate_id, event_name, schema_version, event_version,
+     actor_id, dedupe_key, payload_json, request_id, trace_id, occurred_at, status, attempt_count,
+     available_at, created_at)
+   VALUES ('${eventId}', 'content-service', 'content_definition', '${aggregateId}',
+     'content.version.published.v1', 'content.event.v1', 1, 'p1r-m2-005', '${dedupeKey}',
+     JSON_OBJECT('probe', 'fault-kafka'), 'p1r-m2-005-req', 'p1r-m2-005-trace', UTC_TIMESTAMP(6),
+     'PENDING', 0, UTC_TIMESTAMP(6), UTC_TIMESTAMP(6));`).ok;
+}
+
+/**
+ * Stops the broker so the outbox relay cannot publish, lets the relay try and record the failure,
+ * then restores the broker and proves the same row still reaches the topic. That is the property an
+ * operator actually cares about: a broker outage delays delivery, it does not lose the event.
+ */
+async function faultKafkaPhase() {
+  const optIn = process.env.M2_KAFKA_FAULT_OPT_IN;
+  if (optIn !== KAFKA_FAULT_OPT_IN) {
+    record('fault-kafka', { 'fault-injection-is-opt-in': false }, {
+      requiredEnv: 'M2_KAFKA_FAULT_OPT_IN', requiredValue: KAFKA_FAULT_OPT_IN, observed: optIn ?? null,
+    });
+    return;
+  }
+  const eventId = crypto.randomUUID();
+  const aggregateId = `p1r-m2-005-broker-${crypto.randomUUID().slice(0, 8)}`;
+  const statusOf = () => rows(`SELECT status, attempt_count, IFNULL(last_error_code,'-')
+    FROM content_outbox_event WHERE event_id='${eventId}';`)[0] ?? null;
+
+  docker(['stop', KAFKA_CONTAINER]);
+  const inserted = insertPendingOutboxRow(eventId, aggregateId, `p1r-m2-005-broker-${eventId.slice(0, 8)}`);
+  // The relay polls every 5s after a 10s initial delay and each failed publish blocks on metadata
+  // before giving up, so this waits for the first recorded failure rather than a fixed sleep.
+  const failed = await waitFor(() => {
+    const row = statusOf();
+    return row !== null && Number(row[1]) >= 1 && row[2] !== '-';
+  }, 90000, 3000);
+  const duringOutage = statusOf();
+
+  docker(['start', KAFKA_CONTAINER]);
+  const restored = await waitFor(() => dockerInspect(KAFKA_CONTAINER) === 'healthy', 120000, 4000);
+  const recovered = await waitFor(() => (statusOf() ?? [])[0] === 'PUBLISHED', 150000, 4000);
+  const settled = statusOf();
+
+  record('fault-kafka', {
+    'the-outbox-row-was-written': inserted,
+    'the-relay-recorded-a-failure-while-the-broker-was-down': failed && duringOutage !== null && duringOutage[2] !== '-',
+    'the-broker-was-restored': restored,
+    'the-same-row-reached-published-after-recovery': recovered,
+  }, { eventId, aggregateId, statusDuringOutage: duringOutage, statusAfterRecovery: settled });
+
+  // The row is a real published fact now, so it stays; only the broker's own state is asserted.
+  await waitFor(() => scalar(`SELECT COUNT(*) FROM content_outbox_event WHERE event_id='${eventId}' AND status='PUBLISHED';`) === 1, 10000, 2000);
+}
 
 function mysql(sql, { database = SCHEMA } = {}) {
   // -i is required: without it stdin is not attached and docker exec returns 0 having run nothing.
@@ -268,6 +326,7 @@ if (phases.includes('--dedupe')) await dedupePhase();
 if (phases.includes('--ordering')) await orderingPhase();
 if (phases.includes('--dlq')) await dlqPhase();
 if (phases.includes('--fault-db')) await faultDbPhase();
+if (phases.includes('--fault-kafka')) await faultKafkaPhase();
 if (phases.includes('--replay')) await replayPhase();
 
 const evidence = {
