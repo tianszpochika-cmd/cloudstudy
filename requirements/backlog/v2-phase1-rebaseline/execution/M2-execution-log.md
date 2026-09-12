@@ -229,6 +229,12 @@
 - 共存矩阵：commerce/analytics baselineVersion=1 不重放；其余 baselineVersion=0 但 V1 均 IF NOT EXISTS，幂等无副作用；IAM 不在 b17 列表。
 - 下一步：Batch C（tenant guard 真实 MySQL 阻断矩阵）。
 
+## 2026-09-12 M2-004 Batch C（进行中）：learning 真实 MySQL 双租户隔离
+
+- 新增 opt-in `LearningTenantIsolationTest`：真实 `JdbcLearningFactStore` + Flyway V1–V7，验证跨租户 0 行、跨租户规划键 OWNER_MISMATCH、租户级幂等独立、受限账号跨 schema 写被 DB 拒绝。
+- 验证：learning 141/0/0（2 跳过）；opt-in 1/1 PASS。
+- 下一步：assessment 租户谓词与会话/报告读写的真实隔离用例。
+
 ## 2026-09-04 IAM 账户/密码并发安全检查点
 
 - 源码：`9deb899`。认证改为锁前单次 cost-12 BCrypt、锁内 current principal/hash/status/counter 复核；credential epoch 在校验期间变化时统一 `INVALID_CREDENTIALS` 且零写入，避免旧在途请求污染或锁死刚重置的新凭据。
