@@ -20,6 +20,7 @@ public final class GamificationPrincipalResolver {
     private static final String READ_PERMISSION = "gamification.read";
     private static final String CLAIM_PERMISSION = "gamification.rewards.claim";
     private static final String EVENT_PERMISSION = "gamification.events.consume";
+    private static final String PLATFORM_TENANT = "platform";
 
     private final GamificationAccessPolicy access;
 
@@ -31,6 +32,7 @@ public final class GamificationPrincipalResolver {
         JwtAuthenticationToken jwt = requireJwt(authentication);
         Set<String> authorities = authorities(jwt);
         access.requirePermission(authorities, READ_PERMISSION);
+        requirePlatformTenant(jwt);
         String subject = jwt.getToken().getSubject();
         if (subject == null || subject.isBlank()) {
             throw GamificationDomainException.unauthorized();
@@ -42,6 +44,7 @@ public final class GamificationPrincipalResolver {
         JwtAuthenticationToken jwt = requireJwt(authentication);
         Set<String> authorities = authorities(jwt);
         access.requirePermission(authorities, CLAIM_PERMISSION);
+        requirePlatformTenant(jwt);
         String subject = jwt.getToken().getSubject();
         if (subject == null || subject.isBlank()) {
             throw GamificationDomainException.unauthorized();
@@ -52,12 +55,30 @@ public final class GamificationPrincipalResolver {
     public String requireTrustedEventConsumer(Authentication authentication) {
         JwtAuthenticationToken jwt = requireJwt(authentication);
         access.requirePermission(authorities(jwt), EVENT_PERMISSION);
+        requirePlatformTenant(jwt);
         Object source = jwt.getToken().getClaims().get("source_service");
         if (!(source instanceof String sourceService)
                 || !TrustedCompletionEvent.isAllowlistedSource(sourceService)) {
             throw GamificationDomainException.forbidden();
         }
         return sourceService;
+    }
+
+    /**
+     * Phase 1 has a single platform tenant. A missing tenant claim is an incomplete identity fact
+     * (401) and a foreign tenant is outside the verifiable scope (403); neither is defaulted.
+     */
+    private static void requirePlatformTenant(JwtAuthenticationToken jwt) {
+        Object raw = jwt.getToken().getClaims().get("tenant_id");
+        if (!(raw instanceof String value) || value.isBlank()) {
+            raw = jwt.getToken().getClaims().get("tenant");
+        }
+        if (!(raw instanceof String tenant) || tenant.isBlank()) {
+            throw GamificationDomainException.unauthorized();
+        }
+        if (!PLATFORM_TENANT.equals(tenant)) {
+            throw GamificationDomainException.forbidden();
+        }
     }
 
     private static JwtAuthenticationToken requireJwt(Authentication authentication) {

@@ -123,6 +123,12 @@
 - 验证（JDK 25）：analytics `29/0/0/0`；privacy-analytics-audit contract PASS。
 - Batch 3 完成（notification 76 / commerce 72 / analytics 29）；下一步 Batch 4 gamification-service。
 
+## 2026-09-11 M2-003 Batch 4：gamification-service（11/11 服务完成）
+
+- 头拒绝 5→13 并新增参数拒绝；`GamificationPrincipalResolver` 统一强制显式 platform 租户（缺 401/异租户 403）；新增 filter/resolver/owner 策略测试。
+- 验证（JDK 25）：gamification `35/0/0/0`；gamification-social contract PASS。
+- M2-003 实施批次完成，共 11 服务；下一步 M2-003 运行证据 + 最终独立复审 + manifest。
+
 ## 2026-09-04 IAM 账户/密码并发安全检查点
 
 - 源码：`9deb899`。认证改为锁前单次 cost-12 BCrypt、锁内 current principal/hash/status/counter 复核；credential epoch 在校验期间变化时统一 `INVALID_CREDENTIALS` 且零写入，避免旧在途请求污染或锁死刚重置的新凭据。
