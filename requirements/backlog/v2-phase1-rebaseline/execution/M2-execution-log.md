@@ -117,6 +117,12 @@
 - 验证（JDK 25）：commerce `72/0/0/0`；commerce contract PASS。
 - 下一步 Batch 3③ analytics-service。
 
+## 2026-09-11 M2-003 Batch 3③：analytics-service
+
+- 新增 JWT authorities 转换器并接入；头拒绝由 6 扩展到基线 14 个并新增查询参数拒绝；resolver 负例测试覆盖权限/租户/撤销/来源 allowlist；tenant/owner 默认拒绝边界确认（查询强制 caller 租户、重算字段白名单）。
+- 验证（JDK 25）：analytics `29/0/0/0`；privacy-analytics-audit contract PASS。
+- Batch 3 完成（notification 76 / commerce 72 / analytics 29）；下一步 Batch 4 gamification-service。
+
 ## 2026-09-04 IAM 账户/密码并发安全检查点
 
 - 源码：`9deb899`。认证改为锁前单次 cost-12 BCrypt、锁内 current principal/hash/status/counter 复核；credential epoch 在校验期间变化时统一 `INVALID_CREDENTIALS` 且零写入，避免旧在途请求污染或锁死刚重置的新凭据。

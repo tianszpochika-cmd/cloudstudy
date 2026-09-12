@@ -37,6 +37,11 @@ public class AnalyticsSecurityConfiguration {
     }
 
     @Bean
+    AnalyticsJwtAuthenticationConverter analyticsJwtAuthenticationConverter() {
+        return new AnalyticsJwtAuthenticationConverter();
+    }
+
+    @Bean
     @ConditionalOnProperty(prefix = "analytics.security", name = "resource-server-enabled", havingValue = "true")
     JwtDecoder analyticsJwtDecoder(
             @Value("${analytics.security.issuer-uri:}") String issuerUri,
@@ -54,6 +59,7 @@ public class AnalyticsSecurityConfiguration {
     @Bean
     SecurityFilterChain analyticsSecurityFilterChain(HttpSecurity http,
             UntrustedSecurityFactsFilter untrustedHeaders,
+            AnalyticsJwtAuthenticationConverter jwtAuthenticationConverter,
             ObjectProvider<JwtDecoder> decoderProvider,
             @Value("${analytics.security.resource-server-enabled:false}") boolean resourceServerEnabled)
             throws Exception {
@@ -80,7 +86,8 @@ public class AnalyticsSecurityConfiguration {
             JwtDecoder decoder = decoderProvider.getIfAvailable(() -> {
                 throw new IllegalStateException("analytics resource server is enabled without a JwtDecoder");
             });
-            http.oauth2ResourceServer(oauth -> oauth.jwt(jwt -> jwt.decoder(decoder))
+            http.oauth2ResourceServer(oauth -> oauth
+                    .jwt(jwt -> jwt.decoder(decoder).jwtAuthenticationConverter(jwtAuthenticationConverter))
                     .authenticationEntryPoint(entryPoint).accessDeniedHandler(deniedHandler));
         }
         return http.build();
