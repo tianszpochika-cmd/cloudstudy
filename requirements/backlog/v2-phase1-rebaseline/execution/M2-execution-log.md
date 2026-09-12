@@ -136,6 +136,12 @@
 - 验证（JDK 25）：learning `125/0/0/0`。
 - 推广计划：其余 10 服务 + service-template 分批复制并加解析单测，然后重做运行证据与复审。
 
+## 2026-09-11 M2-003 Batch 5 推广①：assessment / content / learner / media
+
+- 四服务复制 `IamEnvelopedJwkSource` 并替换 decoder；各 +4 项单测。
+- 验证（JDK 25）：assessment 41、content 117、learner 34、media 55，全 `0 failures / 0 errors`。
+- 剩余：推广② social/admin-ops/notification/commerce；③ analytics/gamification/service-template。
+
 ## 2026-09-04 IAM 账户/密码并发安全检查点
 
 - 源码：`9deb899`。认证改为锁前单次 cost-12 BCrypt、锁内 current principal/hash/status/counter 复核；credential epoch 在校验期间变化时统一 `INVALID_CREDENTIALS` 且零写入，避免旧在途请求污染或锁死刚重置的新凭据。

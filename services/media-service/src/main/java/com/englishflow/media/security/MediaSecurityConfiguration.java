@@ -43,7 +43,7 @@ public class MediaSecurityConfiguration {
                 || properties.getJwkSetUri() == null || properties.getJwkSetUri().isBlank()) {
             throw new IllegalStateException("media resource server requires issuer-uri and jwk-set-uri");
         }
-        NimbusJwtDecoder decoder = NimbusJwtDecoder.withJwkSetUri(properties.getJwkSetUri()).build();
+        NimbusJwtDecoder decoder = IamEnvelopedJwkSource.decoder(properties.getJwkSetUri(), java.time.Clock.systemUTC());
         OAuth2TokenValidator<Jwt> validator = jwtValidator(properties.getIssuerUri(), properties.getAudience());
         decoder.setJwtValidator(validator);
         return decoder;
