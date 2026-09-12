@@ -2,7 +2,7 @@
   "taskId": "P1R-M0-006",
   "draftOnly": false,
   "canonicalTaskStatus": "BLOCKED",
-  "sourceCommit": "6ceaf7f91109d4880c89d5dbbf24bef7b9a1ca3b",
+  "sourceCommit": "e9c4ebd7876b6cabb7d03168df7a3547932e2e0e",
   "artifactDigests": [
     {
       "path": "config/p1r-dependency-policy.json",
@@ -12,27 +12,27 @@
     {
       "path": "pnpm-lock.yaml",
       "algorithm": "sha256",
-      "digest": "c4f1db2e4f463c1cc99b65d293295ec3babc134e71d78f3f31fac81e78161159"
+      "digest": "d2dcc241058b91a66b9b111873b33d0a2c0f07ef4537ba6d000cc92d6fa0032c"
     },
     {
       "path": "scripts/audit/p1r-dependency-audit.mjs",
       "algorithm": "sha256",
-      "digest": "cd5eae682e00d1312595e3f1c38f9508c2e7bebf3ea9983c14fc71a6ee07814b"
+      "digest": "b89ecbf7f583ea0cd2e6b5f6732f6e4e7c249673a5116ccd490e54791d0faf5d"
     },
     {
       "path": "evidence/p1r/m0/devex/dependency-governance.json",
       "algorithm": "sha256",
-      "digest": "02c0fb3f368f099a51ceb1037de8abb9b50b33041880014c1273f754eeed9f82"
+      "digest": "f40f30796a75ed1213a0440b3459200e8ec1e44004c8b44a4eb81b2dfa562204"
     },
     {
       "path": "evidence/p1r/m0/devex/sbom-node.cdx.json",
       "algorithm": "sha256",
-      "digest": "f058aa498e9a799acce08efccd0110197d548bf457f794a7b2025f023374f7f1"
+      "digest": "6a2c7b4b80d7a25fa8ba8494b96b8b8d68cd34e94ec244fca4673ab0b0b7c878"
     },
     {
       "path": "evidence/p1r/m0/devex/sbom-maven.cdx.json",
       "algorithm": "sha256",
-      "digest": "705de944f369c8fd7d84360cbbe26668d0a0ed3c68ff65c29e3d0c8a72c4770f"
+      "digest": "f583a184e5d66c15189ab98629d18389f24d2f559b1c3d083245e9456c06c3b4"
     }
   ],
   "environment": {
@@ -111,7 +111,25 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-10T22:24:25+08:00",
         "details": "Current-source revalidation after the 2026-09-10 commits (a149335 docs/asset-preflight, 6131783 dev unit-test completion, 6ceaf7f evidence-gate 9-column fix) invalidated previously recorded artifact digests. Rebased sourceCommit to 6ceaf7f91109d4880c89d5dbbf24bef7b9a1ca3b after the full P1R regression passed 1421/1421 under Node 20.19.5 on an LF-normalized worktree. Original provenance and review history remain unchanged; runtime evidence is not promoted."
+      },
+      {
+        "taskId": "P1R-M0-006",
+        "sourceCommit": "e9c4ebd7876b6cabb7d03168df7a3547932e2e0e",
+        "auditedImplementationSource": "e9c4ebd7876b6cabb7d03168df7a3547932e2e0e",
+        "integrationCheckpoint": "e9c4ebd7876b6cabb7d03168df7a3547932e2e0e",
+        "reviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-12T15:59:44.043Z",
+        "details": "Current-source artifact digest rebase after P1R-M0-006 moved apps/mobile to the uni-app vite 8 compiler line (apps/mobile/package.json, pnpm-lock.yaml), migrated the previously ignored pnpm overrides into pnpm-workspace.yaml and added publicHoistPattern, removed the dead pnpm.overrides field from the root package.json, corrected the dependency gate so it decides on reported high/critical severities, and refreshed config/toolchain-baseline.json portsCanonicalSha256 plus the M0 devex evidence. Original provenance, review history and runtime status unchanged."
       }
-    ]
+    ],
+    "previousCurrentSourceCommit": "6ceaf7f91109d4880c89d5dbbf24bef7b9a1ca3b",
+    "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
+    "currentSourceRevalidationTask": "P1R-M0-006",
+    "currentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
+    "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
+    "currentSourceRevalidationFinishedAt": "2026-09-12T15:59:44.043Z",
+    "currentSourceRevalidationAuditedImplementationSource": "e9c4ebd7876b6cabb7d03168df7a3547932e2e0e",
+    "currentSourceRevalidationIntegrationCheckpoint": "e9c4ebd7876b6cabb7d03168df7a3547932e2e0e"
   }
 }

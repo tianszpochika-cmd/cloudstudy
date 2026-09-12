@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-010",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "d0849b3eb96ed57c8b29097ba1a78ab7690b158a",
+  "sourceCommit": "e9c4ebd7876b6cabb7d03168df7a3547932e2e0e",
   "artifactDigests": [
     {
       "path": "config/g1-contract-data.json",
@@ -52,7 +52,7 @@
     {
       "path": "package.json",
       "algorithm": "sha256",
-      "digest": "1bf448ea6392c3f085a3a7929963b9177dda596e40c704371af287f03ecad5a2"
+      "digest": "8dcad1f48c5c987d6b8a90417683debcc54bd20df74743627388bda464e05e7f"
     },
     {
       "path": "packages/api-client/src/generated/index.ts",
@@ -476,18 +476,28 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-12T17:45:44.804+08:00",
         "details": "Current-source artifact digest rebase after P1R-M2-004 Batch D2a added scripts/database/reconcile-redis-acl.mjs, a persisted Redis ACL file in infra/docker/docker-compose.dev.yml, the pnpm redis:acl entry, per-service Redis password variables in .env.example and the database/redis/README.md D2 section (stale: package.json). Original provenance, review history and runtime status unchanged."
+      },
+      {
+        "taskId": "P1R-M1-010",
+        "sourceCommit": "e9c4ebd7876b6cabb7d03168df7a3547932e2e0e",
+        "auditedImplementationSource": "e9c4ebd7876b6cabb7d03168df7a3547932e2e0e",
+        "integrationCheckpoint": "e9c4ebd7876b6cabb7d03168df7a3547932e2e0e",
+        "reviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-12T15:59:44.043Z",
+        "details": "Current-source artifact digest rebase after P1R-M0-006 moved apps/mobile to the uni-app vite 8 compiler line (apps/mobile/package.json, pnpm-lock.yaml), migrated the previously ignored pnpm overrides into pnpm-workspace.yaml and added publicHoistPattern, removed the dead pnpm.overrides field from the root package.json, corrected the dependency gate so it decides on reported high/critical severities, and refreshed config/toolchain-baseline.json portsCanonicalSha256 plus the M0 devex evidence. Original provenance, review history and runtime status unchanged."
       }
     ],
-    "previousCurrentSourceCommit": "6ceaf7f91109d4880c89d5dbbf24bef7b9a1ca3b",
-    "previousCurrentSourceRevalidationTask": "P1R-M1-017",
-    "previousCurrentSourceRevalidationReviewer": "agent:m1_017_final_review:gpt-5.6-luna:max",
+    "previousCurrentSourceCommit": "2a747ba3917acd92664911c6b4be070ff469e302",
+    "previousCurrentSourceRevalidationTask": "P1R-M1-018",
+    "previousCurrentSourceRevalidationReviewer": "agent:m1_018_closure_fix_review:gpt-5.6-luna:max",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "previousCurrentSourceRevalidationFinishedAt": "2026-09-01T11:38:31+08:00",
-    "currentSourceRevalidationTask": "P1R-M1-018",
-    "currentSourceRevalidationReviewer": "agent:m1_018_closure_fix_review:gpt-5.6-luna:max",
+    "previousCurrentSourceRevalidationFinishedAt": "2026-09-01T15:58:02+08:00",
+    "currentSourceRevalidationTask": "P1R-M0-006",
+    "currentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-01T15:58:02+08:00",
-    "currentSourceRevalidationAuditedImplementationSource": "2a747ba3917acd92664911c6b4be070ff469e302",
-    "currentSourceRevalidationIntegrationCheckpoint": "3ab5d50e5d22c02a8a8c1d1f92643e37528d85c1"
+    "currentSourceRevalidationFinishedAt": "2026-09-12T15:59:44.043Z",
+    "currentSourceRevalidationAuditedImplementationSource": "e9c4ebd7876b6cabb7d03168df7a3547932e2e0e",
+    "currentSourceRevalidationIntegrationCheckpoint": "e9c4ebd7876b6cabb7d03168df7a3547932e2e0e"
   }
 }
