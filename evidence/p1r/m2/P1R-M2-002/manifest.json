@@ -2,7 +2,7 @@
   "taskId": "P1R-M2-002",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "ec20ef51a8b0ea99d4b72bf7598777df075f4889",
+  "sourceCommit": "fca70a3a6cd0aadd819def96c48f5f951ccac0e1",
   "artifactDigests": [
     {
       "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/ConsentService.java",
@@ -167,7 +167,7 @@
     {
       "path": "config/p1r-data-ownership.v1.json",
       "algorithm": "sha256",
-      "digest": "3c2456a88533e13ef559cfcf24bce672a9b25ae8613bc6d7a43fc082f0f102c0"
+      "digest": "57972a9f8faad2d7fea04c9c84f236e0339ce2e157100ed8d55c2f44fd57af49"
     },
     {
       "path": "docs/10-decisions/0013-self-owned-jwt-authentication-center.md",
@@ -254,9 +254,27 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-12T16:14:22.647+08:00",
         "details": "Current-source artifact digest rebase after P1R-M2-004 Batch C completed notification-service tenant hardening: V5 removed the unknown tenant defaults and the data-ownership policy registered notification-service migration fileCount 5 (13 existing / 1 planned collections unchanged). Full P1R regression 1421/1421 PASS; the original provenance, review history and runtime status are unchanged."
+      },
+      {
+        "taskId": "P1R-M2-002",
+        "sourceCommit": "fca70a3a6cd0aadd819def96c48f5f951ccac0e1",
+        "auditedImplementationSource": "fca70a3a6cd0aadd819def96c48f5f951ccac0e1",
+        "integrationCheckpoint": "fca70a3a6cd0aadd819def96c48f5f951ccac0e1",
+        "reviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-12T19:10:57.939Z",
+        "details": "Current-source artifact digest rebase after P1R-M2-004 Batch D3 brought audit-service into the orchestrated local stack (fifteenth runtime service, B29 baseline at 15, platform-owner provisioning in the reconcile script and its own runner environment block) and fixed the audit schema_version width. The only artifact of these tasks that moved is config/p1r-data-ownership.v1.json, whose migrationInventory existingCollections fileCount for audit-service went from 1 to 2 to match the added V2 migration. Original provenance, review history and runtime status unchanged."
       }
     ],
-    "previousCurrentSourceCommit": "02b438b8324fce4ccb20c544496be4659a351535"
+    "previousCurrentSourceCommit": "ec20ef51a8b0ea99d4b72bf7598777df075f4889",
+    "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
+    "currentSourceRevalidationTask": "P1R-M2-004",
+    "currentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
+    "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
+    "currentSourceRevalidationFinishedAt": "2026-09-12T19:10:57.939Z",
+    "currentSourceRevalidationAuditedImplementationSource": "fca70a3a6cd0aadd819def96c48f5f951ccac0e1",
+    "currentSourceRevalidationIntegrationCheckpoint": "fca70a3a6cd0aadd819def96c48f5f951ccac0e1",
+    "originalSourceCommit": "ec20ef51a8b0ea99d4b72bf7598777df075f4889"
   },
   "startedAt": "2026-09-01T16:17:22+08:00",
   "finishedAt": "2026-09-11T16:36:27+08:00",

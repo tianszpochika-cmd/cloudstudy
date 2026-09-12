@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-005",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "e9c4ebd7876b6cabb7d03168df7a3547932e2e0e",
+  "sourceCommit": "fca70a3a6cd0aadd819def96c48f5f951ccac0e1",
   "artifactDigests": [
     {
       "path": "package.json",
@@ -12,7 +12,7 @@
     {
       "path": "config/p1r-data-ownership.v1.json",
       "algorithm": "sha256",
-      "digest": "3c2456a88533e13ef559cfcf24bce672a9b25ae8613bc6d7a43fc082f0f102c0"
+      "digest": "57972a9f8faad2d7fea04c9c84f236e0339ce2e157100ed8d55c2f44fd57af49"
     },
     {
       "path": "scripts/audit/p1r-data-ownership-check.mjs",
@@ -211,19 +211,29 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-12T15:59:44.043Z",
         "details": "Current-source artifact digest rebase after P1R-M0-006 moved apps/mobile to the uni-app vite 8 compiler line (apps/mobile/package.json, pnpm-lock.yaml), migrated the previously ignored pnpm overrides into pnpm-workspace.yaml and added publicHoistPattern, removed the dead pnpm.overrides field from the root package.json, corrected the dependency gate so it decides on reported high/critical severities, and refreshed config/toolchain-baseline.json portsCanonicalSha256 plus the M0 devex evidence. Original provenance, review history and runtime status unchanged."
+      },
+      {
+        "taskId": "P1R-M1-005",
+        "sourceCommit": "fca70a3a6cd0aadd819def96c48f5f951ccac0e1",
+        "auditedImplementationSource": "fca70a3a6cd0aadd819def96c48f5f951ccac0e1",
+        "integrationCheckpoint": "fca70a3a6cd0aadd819def96c48f5f951ccac0e1",
+        "reviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-12T19:10:57.939Z",
+        "details": "Current-source artifact digest rebase after P1R-M2-004 Batch D3 brought audit-service into the orchestrated local stack (fifteenth runtime service, B29 baseline at 15, platform-owner provisioning in the reconcile script and its own runner environment block) and fixed the audit schema_version width. The only artifact of these tasks that moved is config/p1r-data-ownership.v1.json, whose migrationInventory existingCollections fileCount for audit-service went from 1 to 2 to match the added V2 migration. Original provenance, review history and runtime status unchanged."
       }
     ],
-    "previousCurrentSourceCommit": "2a747ba3917acd92664911c6b4be070ff469e302",
-    "previousCurrentSourceRevalidationTask": "P1R-M1-018",
-    "currentSourceRevalidationTask": "P1R-M0-006",
+    "previousCurrentSourceCommit": "e9c4ebd7876b6cabb7d03168df7a3547932e2e0e",
+    "previousCurrentSourceRevalidationTask": "P1R-M0-006",
+    "currentSourceRevalidationTask": "P1R-M2-004",
     "currentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
-    "previousCurrentSourceRevalidationReviewer": "agent:m1_018_closure_fix_review:gpt-5.6-luna:max",
+    "previousCurrentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "previousCurrentSourceRevalidationFinishedAt": "2026-09-01T15:39:29+08:00",
+    "previousCurrentSourceRevalidationFinishedAt": "2026-09-12T15:59:44.043Z",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-12T15:59:44.043Z",
-    "currentSourceRevalidationAuditedImplementationSource": "e9c4ebd7876b6cabb7d03168df7a3547932e2e0e",
-    "currentSourceRevalidationIntegrationCheckpoint": "e9c4ebd7876b6cabb7d03168df7a3547932e2e0e"
+    "currentSourceRevalidationFinishedAt": "2026-09-12T19:10:57.939Z",
+    "currentSourceRevalidationAuditedImplementationSource": "fca70a3a6cd0aadd819def96c48f5f951ccac0e1",
+    "currentSourceRevalidationIntegrationCheckpoint": "fca70a3a6cd0aadd819def96c48f5f951ccac0e1"
   },
   "startedAt": "2026-08-30T00:53:14+08:00",
   "finishedAt": "2026-09-01T15:39:29+08:00",
