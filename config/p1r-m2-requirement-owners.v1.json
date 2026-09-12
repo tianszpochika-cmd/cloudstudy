@@ -1,0 +1,60 @@
+{
+  "$schema": "p1r.m2.requirement-owners.v1",
+  "schemaVersion": 1,
+  "taskId": "P1R-M2-004",
+  "sourceOfTruth": "requirements/backlog/v2-phase1-rebaseline/02-编号任务台账.md",
+  "note": "The identifiers in config/p1r-data-ownership.v1.json#m2RuntimeRequirements are prefixed M2-004- because P1R-M2-004 first asserts them, not because P1R-M2-004 delivers them. The ledger assigns each deferred capability to a later task, so this file records that assignment. It exists separately because the ownership policy's document shape is frozen and adding fields to it would require a D2 schema review. A requirement whose ownerTask is not P1R-M2-004 is NOT_APPLICABLE to that task's submission and must be listed in its knownGaps.",
+  "requirements": [
+    {
+      "id": "M2-004-OWNER-SCHEMA-GRANTS",
+      "assertedBy": "P1R-M2-004",
+      "ownerTask": "P1R-M2-004",
+      "rationale": "P1R-M2-004 scope: independent schema, Flyway, credentials, Redis namespace and tenant guard."
+    },
+    {
+      "id": "M2-004-FLYWAY-EMPTY-AND-EXISTING",
+      "assertedBy": "P1R-M2-004",
+      "ownerTask": "P1R-M2-004",
+      "rationale": "P1R-M2-004 exit evidence names MySQL empty and existing database migrations, audit-service included."
+    },
+    {
+      "id": "M2-004-CROSS-OWNER-DENY",
+      "assertedBy": "P1R-M2-004",
+      "ownerTask": "P1R-M2-004",
+      "rationale": "P1R-M2-004 exit evidence names independent schema, credentials, write permissions and cross-database write blocking."
+    },
+    {
+      "id": "M2-004-TENANT-GUARD",
+      "assertedBy": "P1R-M2-004",
+      "ownerTask": "P1R-M2-009",
+      "supportingTasks": ["P1R-M0-007"],
+      "rationale": "HTTP-level two-tenant denial needs a synthetic per-owner account, which P1R-M0-007 builds and P1R-M2-009 wires into real CI."
+    },
+    {
+      "id": "M2-004-REDIS-NAMESPACE-ACL",
+      "assertedBy": "P1R-M2-004",
+      "ownerTask": "P1R-M2-004",
+      "rationale": "P1R-M2-004 scope: Redis namespace; batch D2a provisioned fifteen namespaces with aclfile persistence."
+    },
+    {
+      "id": "M2-004-REDIS-REBUILD",
+      "assertedBy": "P1R-M2-004",
+      "ownerTask": "P1R-M2-006",
+      "supportingTasks": ["P1R-M3-006"],
+      "rationale": "A projection rebuild entrypoint belongs to the workflow and platform runtime in P1R-M2-006; content cache invalidation belongs to P1R-M3-006."
+    },
+    {
+      "id": "M2-004-ROLLBACK-COMPENSATION",
+      "assertedBy": "P1R-M2-004",
+      "ownerTask": "P1R-M2-006",
+      "rationale": "P1R-M2-006 scope: workflow Saga, compensation, scheduled jobs and manual recovery, which produce the owner, trace, audit and recovery receipts this requirement asks for."
+    },
+    {
+      "id": "M2-004-RETENTION-DELETE-HOLD",
+      "assertedBy": "P1R-M2-004",
+      "ownerTask": "P1R-M6-008",
+      "supportingTasks": ["P1R-M8-012"],
+      "rationale": "P1R-M6-008 implements account deletion requests, the cooling-off period, withdrawal, cross-domain anonymisation and the final subject state; P1R-M8-012 drills retention and deletion."
+    }
+  ]
+}

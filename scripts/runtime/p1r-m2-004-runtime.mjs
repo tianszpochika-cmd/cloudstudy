@@ -341,16 +341,29 @@ function verifyEmptySchemaAndInvalidSql(owners) {
 }
 
 function notVerifiable() {
-  const reasons = {
-    'M2-004-TENANT-GUARD': 'needs per-service HTTP denials with two tenants; the owner services expose no tenant-scoped write endpoint that the harness may call without a synthetic per-owner account (see P1R-M2-009)',
-    'M2-004-REDIS-REBUILD': 'needs a projection rebuild entrypoint; no owner service publishes one yet (see P1R-M2-006)',
-    'M2-004-ROLLBACK-COMPENSATION': 'needs workflow-service compensation and recovery receipts; the service does not exist yet (see P1R-M2-006)',
-    'M2-004-RETENTION-DELETE-HOLD': 'needs the retention/deletion runtime implementation behind the P1R-M1-017 frozen contract (see P1R-M2-005)',
-  };
+  // A requirement whose ledger owner is a later task is NOT_APPLICABLE to this submission: this
+  // task asserts the requirement, it does not deliver it. Anything this task does own and has not
+  // verified is reported as FAILED, never softened.
+  const owners = readJson('config/p1r-m2-requirement-owners.v1.json');
+  const ownerById = new Map((owners.requirements ?? []).map((entry) => [entry.id, entry]));
   for (const entry of ownership.m2RuntimeRequirements ?? []) {
     if (requirements.some((item) => item.id === entry.id)) continue;
-    record(`requirement:${entry.id}`, 'NOT_VERIFIABLE_HERE', { requirement: entry.requirement, reason: reasons[entry.id] ?? 'no local runtime probe defined' });
-    requirements.push({ id: entry.id, status: 'NOT_VERIFIABLE_HERE', reason: reasons[entry.id] ?? 'no local runtime probe defined' });
+    const owner = ownerById.get(entry.id);
+    const ownedHere = !owner || owner.ownerTask === 'P1R-M2-004';
+    const status = ownedHere ? 'FAILED' : 'NOT_APPLICABLE';
+    record(`requirement:${entry.id}`, status === 'NOT_APPLICABLE' ? 'NOT_APPLICABLE' : 'FAIL', {
+      requirement: entry.requirement,
+      assertedBy: owner?.assertedBy ?? 'P1R-M2-004',
+      ownerTask: owner?.ownerTask ?? 'P1R-M2-004',
+      supportingTasks: owner?.supportingTasks ?? [],
+      rationale: owner?.rationale ?? 'no owner assignment recorded',
+    });
+    requirements.push({
+      id: entry.id,
+      status,
+      ownerTask: owner?.ownerTask ?? 'P1R-M2-004',
+      reason: owner?.rationale ?? 'no owner assignment recorded',
+    });
   }
 }
 

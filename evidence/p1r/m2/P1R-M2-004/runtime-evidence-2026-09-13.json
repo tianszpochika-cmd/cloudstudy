@@ -2,9 +2,9 @@
   "schema": "m2.data-ownership.runtime-evidence.v1",
   "taskId": "P1R-M2-004",
   "result": "PARTIAL",
-  "sourceCommit": "81c7ccc29f638cfc975f9a1634cb46a9a843434a",
-  "startedAt": "2026-09-12T19:44:37.127Z",
-  "finishedAt": "2026-09-12T19:45:12.512Z",
+  "sourceCommit": "8017d3d1fa6e2ff0ecd50def600989019c88eb07",
+  "startedAt": "2026-09-12T22:29:35.971Z",
+  "finishedAt": "2026-09-12T22:30:10.978Z",
   "ownerCount": 13,
   "requirements": [
     {
@@ -25,23 +25,27 @@
     },
     {
       "id": "M2-004-TENANT-GUARD",
-      "status": "NOT_VERIFIABLE_HERE",
-      "reason": "needs per-service HTTP denials with two tenants; the owner services expose no tenant-scoped write endpoint that the harness may call without a synthetic per-owner account (see P1R-M2-009)"
+      "status": "NOT_APPLICABLE",
+      "ownerTask": "P1R-M2-009",
+      "reason": "HTTP-level two-tenant denial needs a synthetic per-owner account, which P1R-M0-007 builds and P1R-M2-009 wires into real CI."
     },
     {
       "id": "M2-004-REDIS-REBUILD",
-      "status": "NOT_VERIFIABLE_HERE",
-      "reason": "needs a projection rebuild entrypoint; no owner service publishes one yet (see P1R-M2-006)"
+      "status": "NOT_APPLICABLE",
+      "ownerTask": "P1R-M2-006",
+      "reason": "A projection rebuild entrypoint belongs to the workflow and platform runtime in P1R-M2-006; content cache invalidation belongs to P1R-M3-006."
     },
     {
       "id": "M2-004-ROLLBACK-COMPENSATION",
-      "status": "NOT_VERIFIABLE_HERE",
-      "reason": "needs workflow-service compensation and recovery receipts; the service does not exist yet (see P1R-M2-006)"
+      "status": "NOT_APPLICABLE",
+      "ownerTask": "P1R-M2-006",
+      "reason": "P1R-M2-006 scope: workflow Saga, compensation, scheduled jobs and manual recovery, which produce the owner, trace, audit and recovery receipts this requirement asks for."
     },
     {
       "id": "M2-004-RETENTION-DELETE-HOLD",
-      "status": "NOT_VERIFIABLE_HERE",
-      "reason": "needs the retention/deletion runtime implementation behind the P1R-M1-017 frozen contract (see P1R-M2-005)"
+      "status": "NOT_APPLICABLE",
+      "ownerTask": "P1R-M6-008",
+      "reason": "P1R-M6-008 implements account deletion requests, the cooling-off period, withdrawal, cross-domain anonymisation and the final subject state; P1R-M8-012 drills retention and deletion."
     }
   ],
   "checks": [
@@ -68,7 +72,7 @@
       "credential": "svc_content",
       "source": "external-migration",
       "migrationMode": "external",
-      "tableCount": 15,
+      "tableCount": 17,
       "readAllowed": true,
       "ddlDenied": true,
       "ddlErrorCode": "1142",
@@ -710,7 +714,7 @@
     },
     {
       "id": "migration-existing-schema:learner-service",
-      "migrationFiles": 8,
+      "migrationFiles": 9,
       "declaredVersions": [
         1,
         2,
@@ -719,7 +723,8 @@
         5,
         6,
         7,
-        8
+        8,
+        9
       ],
       "recordedVersions": [
         1,
@@ -729,14 +734,15 @@
         5,
         6,
         7,
-        8
+        8,
+        9
       ],
       "historyComplete": true,
       "result": "PASS"
     },
     {
       "id": "migration-existing-schema:content-service",
-      "migrationFiles": 12,
+      "migrationFiles": 14,
       "declaredVersions": [
         1,
         3,
@@ -749,7 +755,9 @@
         10,
         11,
         12,
-        13
+        13,
+        14,
+        15
       ],
       "recordedVersions": [
         1,
@@ -763,14 +771,16 @@
         10,
         11,
         12,
-        13
+        13,
+        14,
+        15
       ],
       "historyComplete": true,
       "result": "PASS"
     },
     {
       "id": "migration-existing-schema:learning-service",
-      "migrationFiles": 7,
+      "migrationFiles": 9,
       "declaredVersions": [
         1,
         2,
@@ -778,7 +788,9 @@
         4,
         5,
         6,
-        7
+        7,
+        8,
+        9
       ],
       "recordedVersions": [
         1,
@@ -787,47 +799,15 @@
         4,
         5,
         6,
-        7
+        7,
+        8,
+        9
       ],
       "historyComplete": true,
       "result": "PASS"
     },
     {
       "id": "migration-existing-schema:assessment-service",
-      "migrationFiles": 4,
-      "declaredVersions": [
-        1,
-        2,
-        3,
-        4
-      ],
-      "recordedVersions": [
-        1,
-        2,
-        3,
-        4
-      ],
-      "historyComplete": true,
-      "result": "PASS"
-    },
-    {
-      "id": "migration-existing-schema:media-service",
-      "migrationFiles": 3,
-      "declaredVersions": [
-        1,
-        2,
-        3
-      ],
-      "recordedVersions": [
-        1,
-        2,
-        3
-      ],
-      "historyComplete": true,
-      "result": "PASS"
-    },
-    {
-      "id": "migration-existing-schema:notification-service",
       "migrationFiles": 5,
       "declaredVersions": [
         1,
@@ -847,17 +827,59 @@
       "result": "PASS"
     },
     {
-      "id": "migration-existing-schema:gamification-service",
-      "migrationFiles": 3,
+      "id": "migration-existing-schema:media-service",
+      "migrationFiles": 4,
       "declaredVersions": [
         1,
         2,
-        3
+        3,
+        4
       ],
       "recordedVersions": [
         1,
         2,
-        3
+        3,
+        4
+      ],
+      "historyComplete": true,
+      "result": "PASS"
+    },
+    {
+      "id": "migration-existing-schema:notification-service",
+      "migrationFiles": 6,
+      "declaredVersions": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "recordedVersions": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "historyComplete": true,
+      "result": "PASS"
+    },
+    {
+      "id": "migration-existing-schema:gamification-service",
+      "migrationFiles": 4,
+      "declaredVersions": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "recordedVersions": [
+        1,
+        2,
+        3,
+        4
       ],
       "historyComplete": true,
       "result": "PASS"
@@ -878,18 +900,6 @@
     },
     {
       "id": "migration-existing-schema:commerce-service",
-      "migrationFiles": 1,
-      "declaredVersions": [
-        1
-      ],
-      "recordedVersions": [
-        1
-      ],
-      "historyComplete": true,
-      "result": "PASS"
-    },
-    {
-      "id": "migration-existing-schema:admin-ops-service",
       "migrationFiles": 2,
       "declaredVersions": [
         1,
@@ -898,6 +908,22 @@
       "recordedVersions": [
         1,
         2
+      ],
+      "historyComplete": true,
+      "result": "PASS"
+    },
+    {
+      "id": "migration-existing-schema:admin-ops-service",
+      "migrationFiles": 3,
+      "declaredVersions": [
+        1,
+        2,
+        3
+      ],
+      "recordedVersions": [
+        1,
+        2,
+        3
       ],
       "historyComplete": true,
       "result": "PASS"
@@ -950,27 +976,45 @@
     },
     {
       "requirement": "Prove server-derived TenantScope, tenant_id/index rules where applicable, and cross-tenant denial; do not claim MySQL automatic row-level isolation.",
-      "reason": "needs per-service HTTP denials with two tenants; the owner services expose no tenant-scoped write endpoint that the harness may call without a synthetic per-owner account (see P1R-M2-009)",
+      "assertedBy": "P1R-M2-004",
+      "ownerTask": "P1R-M2-009",
+      "supportingTasks": [
+        "P1R-M0-007"
+      ],
+      "rationale": "HTTP-level two-tenant denial needs a synthetic per-owner account, which P1R-M0-007 builds and P1R-M2-009 wires into real CI.",
       "id": "requirement:M2-004-TENANT-GUARD",
-      "result": "NOT_VERIFIABLE_HERE"
+      "result": "NOT_APPLICABLE"
     },
     {
       "requirement": "Prove cache, lock, dedupe, rate-limit, and projection rebuild/degradation behavior against durable owner facts.",
-      "reason": "needs a projection rebuild entrypoint; no owner service publishes one yet (see P1R-M2-006)",
+      "assertedBy": "P1R-M2-004",
+      "ownerTask": "P1R-M2-006",
+      "supportingTasks": [
+        "P1R-M3-006"
+      ],
+      "rationale": "A projection rebuild entrypoint belongs to the workflow and platform runtime in P1R-M2-006; content cache invalidation belongs to P1R-M3-006.",
       "id": "requirement:M2-004-REDIS-REBUILD",
-      "result": "NOT_VERIFIABLE_HERE"
+      "result": "NOT_APPLICABLE"
     },
     {
       "requirement": "Exercise compatible rollback or owner compensation and record owner, trace, audit, and recovery receipts.",
-      "reason": "needs workflow-service compensation and recovery receipts; the service does not exist yet (see P1R-M2-006)",
+      "assertedBy": "P1R-M2-004",
+      "ownerTask": "P1R-M2-006",
+      "supportingTasks": [],
+      "rationale": "P1R-M2-006 scope: workflow Saga, compensation, scheduled jobs and manual recovery, which produce the owner, trace, audit and recovery receipts this requirement asks for.",
       "id": "requirement:M2-004-ROLLBACK-COMPENSATION",
-      "result": "NOT_VERIFIABLE_HERE"
+      "result": "NOT_APPLICABLE"
     },
     {
       "requirement": "Implement exact approved retention, deletion/anonymization, legal-hold, and cross-owner receipt policies after P1R-M1-017 freezes the governing contract.",
-      "reason": "needs the retention/deletion runtime implementation behind the P1R-M1-017 frozen contract (see P1R-M2-005)",
+      "assertedBy": "P1R-M2-004",
+      "ownerTask": "P1R-M6-008",
+      "supportingTasks": [
+        "P1R-M8-012"
+      ],
+      "rationale": "P1R-M6-008 implements account deletion requests, the cooling-off period, withdrawal, cross-domain anonymisation and the final subject state; P1R-M8-012 drills retention and deletion.",
       "id": "requirement:M2-004-RETENTION-DELETE-HOLD",
-      "result": "NOT_VERIFIABLE_HERE"
+      "result": "NOT_APPLICABLE"
     }
   ],
   "detail": {
@@ -997,7 +1041,7 @@
         "credential": "svc_content",
         "source": "external-migration",
         "migrationMode": "external",
-        "tableCount": 15,
+        "tableCount": 17,
         "readAllowed": true,
         "ddlDenied": true,
         "ddlErrorCode": "1142",
@@ -1607,7 +1651,7 @@
     "migrations": [
       {
         "id": "learner-service",
-        "migrationFiles": 8,
+        "migrationFiles": 9,
         "declaredVersions": [
           1,
           2,
@@ -1616,7 +1660,8 @@
           5,
           6,
           7,
-          8
+          8,
+          9
         ],
         "recordedVersions": [
           1,
@@ -1626,13 +1671,14 @@
           5,
           6,
           7,
-          8
+          8,
+          9
         ],
         "historyComplete": true
       },
       {
         "id": "content-service",
-        "migrationFiles": 12,
+        "migrationFiles": 14,
         "declaredVersions": [
           1,
           3,
@@ -1645,7 +1691,9 @@
           10,
           11,
           12,
-          13
+          13,
+          14,
+          15
         ],
         "recordedVersions": [
           1,
@@ -1659,13 +1707,15 @@
           10,
           11,
           12,
-          13
+          13,
+          14,
+          15
         ],
         "historyComplete": true
       },
       {
         "id": "learning-service",
-        "migrationFiles": 7,
+        "migrationFiles": 9,
         "declaredVersions": [
           1,
           2,
@@ -1673,7 +1723,9 @@
           4,
           5,
           6,
-          7
+          7,
+          8,
+          9
         ],
         "recordedVersions": [
           1,
@@ -1682,44 +1734,14 @@
           4,
           5,
           6,
-          7
+          7,
+          8,
+          9
         ],
         "historyComplete": true
       },
       {
         "id": "assessment-service",
-        "migrationFiles": 4,
-        "declaredVersions": [
-          1,
-          2,
-          3,
-          4
-        ],
-        "recordedVersions": [
-          1,
-          2,
-          3,
-          4
-        ],
-        "historyComplete": true
-      },
-      {
-        "id": "media-service",
-        "migrationFiles": 3,
-        "declaredVersions": [
-          1,
-          2,
-          3
-        ],
-        "recordedVersions": [
-          1,
-          2,
-          3
-        ],
-        "historyComplete": true
-      },
-      {
-        "id": "notification-service",
         "migrationFiles": 5,
         "declaredVersions": [
           1,
@@ -1738,17 +1760,57 @@
         "historyComplete": true
       },
       {
-        "id": "gamification-service",
-        "migrationFiles": 3,
+        "id": "media-service",
+        "migrationFiles": 4,
         "declaredVersions": [
           1,
           2,
-          3
+          3,
+          4
         ],
         "recordedVersions": [
           1,
           2,
-          3
+          3,
+          4
+        ],
+        "historyComplete": true
+      },
+      {
+        "id": "notification-service",
+        "migrationFiles": 6,
+        "declaredVersions": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "recordedVersions": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "historyComplete": true
+      },
+      {
+        "id": "gamification-service",
+        "migrationFiles": 4,
+        "declaredVersions": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "recordedVersions": [
+          1,
+          2,
+          3,
+          4
         ],
         "historyComplete": true
       },
@@ -1767,17 +1829,6 @@
       },
       {
         "id": "commerce-service",
-        "migrationFiles": 1,
-        "declaredVersions": [
-          1
-        ],
-        "recordedVersions": [
-          1
-        ],
-        "historyComplete": true
-      },
-      {
-        "id": "admin-ops-service",
         "migrationFiles": 2,
         "declaredVersions": [
           1,
@@ -1786,6 +1837,21 @@
         "recordedVersions": [
           1,
           2
+        ],
+        "historyComplete": true
+      },
+      {
+        "id": "admin-ops-service",
+        "migrationFiles": 3,
+        "declaredVersions": [
+          1,
+          2,
+          3
+        ],
+        "recordedVersions": [
+          1,
+          2,
+          3
         ],
         "historyComplete": true
       },

@@ -2,7 +2,7 @@
   "taskId": "P1R-M2-004",
   "draftOnly": false,
   "canonicalTaskStatus": "REVIEW",
-  "sourceCommit": "a7ebe48bddfaf32c56f2b06901b7358c17eedf4b",
+  "sourceCommit": "8017d3d1fa6e2ff0ecd50def600989019c88eb07",
   "artifactDigests": [
     {
       "path": "config/p1r-data-ownership.v1.json",
@@ -37,7 +37,7 @@
     {
       "path": "scripts/runtime/p1r-m2-004-runtime.mjs",
       "algorithm": "sha256",
-      "digest": "362de83ae27f38ccab05b538d350ff2c597981e5867d76302c8d6047a8c395f9"
+      "digest": "29e17f32690643b9c609bd032e6177167818e91ed52ced7bb874267f2bd6b16a"
     },
     {
       "path": "services/audit-service/src/main/resources/db/migration/V2__widen_audit_schema_version.sql",
@@ -97,7 +97,12 @@
     {
       "path": "evidence/p1r/m2/P1R-M2-004/runtime-evidence-2026-09-13.json",
       "algorithm": "sha256",
-      "digest": "7ba5c8fe54a7507dda106846b366ef428733f5f058a90bec473c06464de236d5"
+      "digest": "ebec89783072b20a1c83d59900ff5a7f05319a9bb322706528b0f657d5389377"
+    },
+    {
+      "path": "config/p1r-m2-requirement-owners.v1.json",
+      "algorithm": "sha256",
+      "digest": "1b83813cbe0961ed9024ecd4939366852f15d29b302848b8f0ad85eff364f674"
     }
   ],
   "environment": {
@@ -137,7 +142,7 @@
     "reviewHistory": []
   },
   "startedAt": "2026-09-09T00:00:00+08:00",
-  "finishedAt": "2026-09-12T22:24:03.048Z",
+  "finishedAt": "2026-09-12T22:30:31.423Z",
   "actors": [
     "root-coordinator",
     "p1r-implementation"
@@ -179,23 +184,37 @@
     },
     {
       "check": "M2-004-TENANT-GUARD",
-      "status": "NOT_VERIFIABLE_HERE",
-      "details": "Blocked on P1R-M2-009: needs per-service HTTP denials with two tenants and a synthetic per-owner account."
+      "status": "NOT_APPLICABLE",
+      "details": "HTTP-level two-tenant denial needs a synthetic per-owner account, which P1R-M0-007 builds and P1R-M2-009 wires into real CI. Asserted here, delivered by P1R-M2-009.",
+      "ownerTask": "P1R-M2-009",
+      "supportingTasks": [
+        "P1R-M0-007"
+      ]
     },
     {
       "check": "M2-004-REDIS-REBUILD",
-      "status": "NOT_VERIFIABLE_HERE",
-      "details": "Blocked on P1R-M2-006: no owner service publishes a projection rebuild entrypoint yet."
+      "status": "NOT_APPLICABLE",
+      "details": "A projection rebuild entrypoint belongs to the workflow and platform runtime in P1R-M2-006; content cache invalidation belongs to P1R-M3-006. Asserted here, delivered by P1R-M2-006.",
+      "ownerTask": "P1R-M2-006",
+      "supportingTasks": [
+        "P1R-M3-006"
+      ]
     },
     {
       "check": "M2-004-ROLLBACK-COMPENSATION",
-      "status": "NOT_VERIFIABLE_HERE",
-      "details": "Blocked on P1R-M2-006: workflow-service does not exist, so there is no compensation or recovery receipt to exercise."
+      "status": "NOT_APPLICABLE",
+      "details": "P1R-M2-006 scope: workflow Saga, compensation, scheduled jobs and manual recovery, which produce the owner, trace, audit and recovery receipts this requirement asks for. Asserted here, delivered by P1R-M2-006.",
+      "ownerTask": "P1R-M2-006",
+      "supportingTasks": []
     },
     {
       "check": "M2-004-RETENTION-DELETE-HOLD",
-      "status": "NOT_VERIFIABLE_HERE",
-      "details": "Blocked on P1R-M2-005: the retention, deletion and legal-hold runtime implementation is not built; the governing contract was frozen by the accepted P1R-M1-017."
+      "status": "NOT_APPLICABLE",
+      "details": "P1R-M6-008 implements account deletion requests, the cooling-off period, withdrawal, cross-domain anonymisation and the final subject state; P1R-M8-012 drills retention and deletion. Asserted here, delivered by P1R-M6-008.",
+      "ownerTask": "P1R-M6-008",
+      "supportingTasks": [
+        "P1R-M8-012"
+      ]
     },
     {
       "check": "audit-service-contract-defect",
@@ -215,10 +234,11 @@
     }
   ],
   "knownGaps": [
-    "Four of the eight runtime requirements are not verifiable yet and are named above with the task that blocks each one: TENANT-GUARD needs P1R-M2-009, REDIS-REBUILD and ROLLBACK-COMPENSATION need P1R-M2-006, RETENTION-DELETE-HOLD needs P1R-M2-005.",
+    "Four of the eight runtime requirements are not owned by this task and are reported NOT_APPLICABLE with their owner: TENANT-GUARD to P1R-M2-009, REDIS-REBUILD and ROLLBACK-COMPENSATION to P1R-M2-006, RETENTION-DELETE-HOLD to P1R-M6-008. The assignment is recorded in config/p1r-m2-requirement-owners.v1.json with the ledger wording that establishes it.",
     "The per-service Redis namespaces and ACLs are provisioned but not yet used by any domain service: only api-gateway (as svc_gateway since batch D2b) and the legacy core-api configure Redis, so namespace isolation is a reserved allocation rather than an enforced boundary for the other twelve.",
     "The owner outbox tables now carry the contract shape, but only content-service has a publisher and a consumer; the other owners still append rows that nothing publishes.",
     "Eight of the twelve provisioning owners were baselined from an existing schema rather than migrated from empty, so their migration history records what was already applied rather than a replay from scratch.",
+    "M2-004 is a declared dependency of P1R-M2-005, and the ledger gate refuses a dependent task anything past PLANNED until its dependency is ACCEPTED. This submission is therefore the blocking item for M2-005 through M2-010 and needs an independent reviewer.",
     "Overall phase remains D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED."
   ],
   "reviewer": "root-coordinator",
