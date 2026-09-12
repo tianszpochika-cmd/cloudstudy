@@ -2,7 +2,7 @@
   "taskId": "P1R-M2-002",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "c9f935b8439d8c81191f397780d73d67c5d7df7b",
+  "sourceCommit": "02b438b8324fce4ccb20c544496be4659a351535",
   "artifactDigests": [
     {
       "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/ConsentService.java",
@@ -167,7 +167,7 @@
     {
       "path": "config/p1r-data-ownership.v1.json",
       "algorithm": "sha256",
-      "digest": "1133b539d36a28fbba2c1359dc523f8b324da2143bcbdb7f5669ef1ed9c1d586"
+      "digest": "73872df0b3e5b7a5aa2480760833b7ae75cee0adf01e30de76e1ac6496ab5741"
     },
     {
       "path": "docs/10-decisions/0013-self-owned-jwt-authentication-center.md",
@@ -232,6 +232,18 @@
         "p3": 2,
         "finishedAt": "2026-09-11T16:30:00+08:00",
         "details": "Independent read-only final review closed all five original P1 findings and two latent fail-open P2 findings (7c0f428 empty control plane, c9f935b canonical published set per capability). Re-verified at HEAD: IAM 90/0/0 (20 opt-in skips), opt-in matrix 19/19, V13 migration security 1/1, P1R 1421/1421, evidence gate PASS, clean tree. Remaining P3: legacy controller-level 409 regression case and canonical map maintenance assertion; both non-blocking."
+      }
+    ],
+    "currentSourceRevalidationHistory": [
+      {
+        "taskId": "P1R-M2-002",
+        "sourceCommit": "02b438b8324fce4ccb20c544496be4659a351535",
+        "auditedImplementationSource": "02b438b8324fce4ccb20c544496be4659a351535",
+        "integrationCheckpoint": "02b438b8324fce4ccb20c544496be4659a351535",
+        "reviewer": "agent:p1r_current_source_revalidation:opencode-worker",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-12T14:13:51+08:00",
+        "details": "Current-source artifact digest rebase after P1R-M2-004 Batch A created audit-service and updated the data-ownership policy, checker, and P1R freeze assertions (13 existing / 1 planned migration collections). Full P1R regression 1421/1421 PASS; the original provenance, review history and runtime status are unchanged."
       }
     ]
   },

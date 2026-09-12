@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-007",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "c17c94faf1b01c3d3f1dd6e1829326e8497f9435",
+  "sourceCommit": "02b438b8324fce4ccb20c544496be4659a351535",
   "artifactDigests": [
     {
       "path": ".github/workflows/ci.yml",
@@ -32,7 +32,7 @@
     {
       "path": "config/p1r-data-ownership.v1.json",
       "algorithm": "sha256",
-      "digest": "1133b539d36a28fbba2c1359dc523f8b324da2143bcbdb7f5669ef1ed9c1d586"
+      "digest": "73872df0b3e5b7a5aa2480760833b7ae75cee0adf01e30de76e1ac6496ab5741"
     },
     {
       "path": "config/p1r-saga-recovery.v1.json",
@@ -127,7 +127,7 @@
     {
       "path": "scripts/audit/p1r-data-ownership-check.mjs",
       "algorithm": "sha256",
-      "digest": "327c59f7e6a3577b68704dc4dbfce37024d4fa0937ca6162b4187cbca8d55c4a"
+      "digest": "18f2771e84e602cbdb9b23cbb4d3422e2551da259deb484b1a6e61b26afd1d85"
     },
     {
       "path": "scripts/audit/p1r-event-governance-check.mjs",
@@ -237,7 +237,7 @@
     {
       "path": "tests/p1r/p1r-data-ownership.test.mjs",
       "algorithm": "sha256",
-      "digest": "45ff98545bad7954ae0f095e31f232a3ba440e3beb54db77432ae225f1dd89a0"
+      "digest": "4a492ab81c70b5df78fed4c831bdd9ab241095017407c796f8128afed85b3f6a"
     },
     {
       "path": "tests/p1r/p1r-event-governance.test.mjs",
@@ -641,6 +641,16 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-11T11:55:49+08:00",
         "details": "Current-source artifact digest rebase after config/p1r-data-ownership.v1.json updated the iam-service migration fileCount 12 -> 13 for V14 iam_consent_document_version (P1R-M2-002 rework batch 2). Full P1R regression 1421/1421 PASS under Node 20.19.5; original provenance and review history remain unchanged; runtime evidence is not promoted."
+      },
+      {
+        "taskId": "P1R-M1-007",
+        "sourceCommit": "02b438b8324fce4ccb20c544496be4659a351535",
+        "auditedImplementationSource": "02b438b8324fce4ccb20c544496be4659a351535",
+        "integrationCheckpoint": "02b438b8324fce4ccb20c544496be4659a351535",
+        "reviewer": "agent:p1r_current_source_revalidation:opencode-worker",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-12T14:13:51+08:00",
+        "details": "Current-source artifact digest rebase after P1R-M2-004 Batch A created audit-service and updated the data-ownership policy, checker, and P1R freeze assertions (13 existing / 1 planned migration collections). Full P1R regression 1421/1421 PASS; the original provenance, review history and runtime status are unchanged."
       }
     ],
     "previousCurrentSourceCommit": "c548b601caae41fecc417f44f2a3e8e2016332d0",
