@@ -164,7 +164,8 @@
     "p1r:m2-004:runtime": "node scripts/runtime/p1r-m2-004-runtime.mjs",
     "p1r:kafka:topics": "node scripts/runtime/provision-kafka-topics.mjs",
     "p1r:m2-005:dedupe": "node scripts/runtime/verify-content-consumer-dedupe.mjs",
-    "p1r:m2-005:events": "node scripts/runtime/p1r-m2-005-event-runtime.mjs"
+    "p1r:m2-005:events": "node scripts/runtime/p1r-m2-005-event-runtime.mjs",
+    "p1r:m2-005:replay": "node scripts/runtime/replay-dlq.mjs"
   },
   "devDependencies": {
     "playwright": "^1.63.0",

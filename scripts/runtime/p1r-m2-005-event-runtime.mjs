@@ -25,12 +25,20 @@ const TOPIC = 'platform.iam.v1';
 const DLQ_TOPIC = 'platform.events.dlq.v1';
 const EVENT_NAME = 'iam.account.registered.v1';
 
-const phases = ['--dedupe', '--ordering', '--dlq'].filter((flag) => process.argv.includes(flag));
-const unknown = process.argv.slice(2).filter((arg) => !['--dedupe', '--ordering', '--dlq'].includes(arg));
+const phases = ['--dedupe', '--ordering', '--dlq', '--fault-db', '--replay']
+  .filter((flag) => process.argv.includes(flag));
+const KNOWN = ['--dedupe', '--ordering', '--dlq', '--fault-db', '--replay'];
+const unknown = process.argv.slice(2).filter((arg) => !KNOWN.includes(arg));
 if (unknown.length > 0) {
   console.error(`unsupported argument(s): ${unknown.join(', ')}`);
   process.exit(2);
 }
+
+// Container fault injection is opt-in and pinned to one exact container, the same discipline the
+// M2-001 harness uses: the opt-in string names the action and the port so a copy-pasted environment
+// cannot pause an arbitrary container.
+const MYSQL_CONTAINER = 'yuxuexing-local-mysql-1';
+const FAULT_OPT_IN = 'PAUSE_EXACT_MYSQL_13306_AND_RECOVER';
 
 function mysql(sql, { database = SCHEMA } = {}) {
   // -i is required: without it stdin is not attached and docker exec returns 0 having run nothing.
@@ -44,6 +52,17 @@ const rows = (sql, options) => mysql(sql, options).stdout.split('\n').filter(Boo
 const scalar = (sql, options) => Number(rows(sql, options)[0]?.[0] ?? '0');
 const kafka = (args) => spawnSync('docker', ['exec', KAFKA, 'sh', '-c', `${KAFKA_BIN}/${args}`],
   { encoding: 'utf8', windowsHide: true }).stdout.replace(/\r/g, '').trim();
+
+const docker = (args) => spawnSync('docker', args, { encoding: 'utf8', windowsHide: true });
+
+/** Returns the container health status, or null when the named container is not running. */
+function dockerInspect(name) {
+  const result = spawnSync('docker', ['inspect', '--format', '{{.State.Health.Status}}', name],
+    { encoding: 'utf8', windowsHide: true });
+  if (result.status !== 0) return null;
+  const status = (result.stdout ?? '').trim();
+  return status === '' ? 'running' : status;
+}
 
 /**
  * Produces records with kafka-console-producer.
@@ -151,6 +170,83 @@ async function dlqPhase() {
   }, { dlqLogEndOffsetBefore: before, dlqLogEndOffsetAfter: after });
 }
 
+/**
+ * Pauses MySQL so a readable event fails transiently, exhausts its retry budget and lands in the
+ * dead letter topic, then restores MySQL. Without this the only dead letters are unreadable
+ * envelopes, which cannot exercise the replay path.
+ */
+async function faultDbPhase() {
+  const optIn = process.env.M2_MYSQL_FAULT_OPT_IN;
+  if (optIn !== FAULT_OPT_IN) {
+    record('fault-db', { 'fault-injection-is-opt-in': false }, {
+      requiredEnv: 'M2_MYSQL_FAULT_OPT_IN', requiredValue: FAULT_OPT_IN, observed: optIn ?? null,
+    });
+    return;
+  }
+  const container = dockerInspect(MYSQL_CONTAINER);
+  if (!container) {
+    record('fault-db', { 'the-named-container-is-the-registered-mysql': false }, { container: MYSQL_CONTAINER });
+    return;
+  }
+  const dlqOffset = () => Number(kafka(`kafka-get-offsets.sh --bootstrap-server localhost:9092 --topic ${DLQ_TOPIC} --time -1 2>/dev/null`)
+    .split('\n').filter(Boolean).reduce((total, line) => total + Number(line.split(':')[2]), 0));
+  const before = dlqOffset();
+  const eventId = crypto.randomUUID();
+  const aggregateId = `p1r-m2-005-replay-${crypto.randomUUID().slice(0, 8)}`;
+  let paused = true;
+  let produced = { ok: false };
+  let deadLettered = false;
+  try {
+    docker(['stop', MYSQL_CONTAINER]);
+    produced = produce([`${headerLine(eventId, aggregateId, 'p1r-m2-005-replay-key')}\t${aggregateId}\t{"probe":"replay"}`]);
+    // Five attempts with 1s, 2s, 4s and 8s backoff, plus the connection attempt itself.
+    deadLettered = await waitFor(() => dlqOffset() > before, 90000, 3000);
+  } finally {
+    if (paused) {
+      docker(['start', MYSQL_CONTAINER]);
+      paused = false;
+      await waitFor(() => dockerInspect(MYSQL_CONTAINER) === 'healthy', 120000, 4000);
+    }
+  }
+  const applied = scalar(`SELECT COUNT(*) FROM content_event_receipt WHERE consumer_group='${GROUP}' AND event_id='${eventId}';`);
+  record('fault-db', {
+    'producer-accepted-the-readable-event': produced.ok,
+    'a-transiently-unprocessable-event-reached-the-dead-letter-topic': deadLettered,
+    'the-failed-event-did-not-take-effect': applied === 0,
+    'mysql-was-restored': dockerInspect(MYSQL_CONTAINER) === 'healthy',
+  }, { eventId, aggregateId, dlqLogEndOffsetBefore: before, dlqLogEndOffsetAfter: dlqOffset(), receiptRows: applied });
+  process.env.M2_REPLAY_EVENT_ID = eventId;
+}
+
+/** Replays the dead letter and proves a second replay cannot apply the effect twice. */
+async function replayPhase() {
+  const eventId = process.env.M2_REPLAY_EVENT_ID;
+  const target = eventId ? ['--event-id', eventId] : [];
+  const first = spawnSync('node', ['scripts/runtime/replay-dlq.mjs', '--apply', ...target],
+    { cwd: root, encoding: 'utf8', windowsHide: true });
+  const appliedOnce = await waitFor(() => scalar(`SELECT IFNULL(SUM(applied_count),0) FROM content_inbound_event_stat WHERE consumer_group='${GROUP}';`) === 1
+    && scalar(`SELECT COUNT(*) FROM content_event_receipt WHERE consumer_group='${GROUP}';`) === 1, 45000);
+  const afterFirst = {
+    receipts: scalar(`SELECT COUNT(*) FROM content_event_receipt WHERE consumer_group='${GROUP}';`),
+    applied: scalar(`SELECT IFNULL(SUM(applied_count),0) FROM content_inbound_event_stat WHERE consumer_group='${GROUP}';`),
+  };
+  const second = spawnSync('node', ['scripts/runtime/replay-dlq.mjs', '--apply', ...target],
+    { cwd: root, encoding: 'utf8', windowsHide: true });
+  await new Promise((resolve) => setTimeout(resolve, 15000));
+  const afterSecond = {
+    receipts: scalar(`SELECT COUNT(*) FROM content_event_receipt WHERE consumer_group='${GROUP}';`),
+    applied: scalar(`SELECT IFNULL(SUM(applied_count),0) FROM content_inbound_event_stat WHERE consumer_group='${GROUP}';`),
+  };
+  record('replay', {
+    'replay-ran': first.status === 0,
+    'the-replayed-event-took-effect-once': appliedOnce && afterFirst.applied === 1,
+    'a-second-replay-ran': second.status === 0,
+    'a-second-replay-cannot-apply-the-effect-again': afterSecond.applied === afterFirst.applied
+      && afterSecond.receipts === afterFirst.receipts,
+  }, { eventId: eventId ?? '(whole dlq)', afterFirstReplay: afterFirst, afterSecondReplay: afterSecond });
+  cleanup();
+}
+
 if (phases.length === 0) {
   console.log(JSON.stringify({
     schema: 'platform.event-runtime.harness.v1',
@@ -159,15 +255,20 @@ if (phases.length === 0) {
     topic: TOPIC,
     consumerGroup: GROUP,
     dlqTopic: DLQ_TOPIC,
-    availablePhases: ['--dedupe', '--ordering', '--dlq'],
-    note: 'phases write only their own probe rows and remove them again',
+    availablePhases: KNOWN,
+    notes: [
+      'phases write only their own probe rows and remove them again',
+      `--fault-db requires M2_MYSQL_FAULT_OPT_IN=${FAULT_OPT_IN} and pauses only ${MYSQL_CONTAINER}`,
+      '--replay replays the dead letter and then proves a second replay cannot double-apply',
+    ],
   }, null, 2));
   process.exit(0);
 }
-
 if (phases.includes('--dedupe')) await dedupePhase();
 if (phases.includes('--ordering')) await orderingPhase();
 if (phases.includes('--dlq')) await dlqPhase();
+if (phases.includes('--fault-db')) await faultDbPhase();
+if (phases.includes('--replay')) await replayPhase();
 
 const evidence = {
   schema: 'platform.event-runtime.harness.v1',

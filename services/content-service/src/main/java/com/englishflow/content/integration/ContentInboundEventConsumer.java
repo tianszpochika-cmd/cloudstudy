@@ -172,6 +172,11 @@ public final class ContentInboundEventConsumer {
         header(headers, "attempt", String.valueOf(attempt));
         header(headers, "failedAt", clock.instant().toString());
         header(headers, "recoveryState", "AWAITING_OPERATOR");
+        // Not one of the contract's required failure fields, but without it an operator replaying a
+        // dead letter has to guess the origin topic, and guessing is how a recovery writes an event
+        // into the wrong domain. The framework's own recoverer records this as
+        // kafka_dlt-original-topic; this listener records the same fact under a stable name.
+        header(headers, "originalTopic", record.topic());
         ProducerRecord<String, String> dead = new ProducerRecord<>(
                 properties.getDlqTopic(), null, record.key(), record.value(), headers);
         try {
