@@ -86,8 +86,14 @@ test('Gateway health Redis key is pinned to the production hash algorithm', () =
 })
 
 test('Redis helper rejects every write command before opening a socket', async () => {
-  await assert.rejects(redisCommand(['DEL', 'any-key']), /permits only PING, GET, and PTTL/u)
-  await assert.rejects(redisCommand(['FLUSHDB']), /permits only PING, GET, and PTTL/u)
+  const boundary = /permits only PING, GET, PTTL and CLIENT LIST/u
+  await assert.rejects(redisCommand(['DEL', 'any-key']), boundary)
+  await assert.rejects(redisCommand(['FLUSHDB']), boundary)
+  // CLIENT is admitted only for LIST, so the introspection identity probe cannot be widened
+  // into a destructive subcommand such as CLIENT KILL.
+  await assert.rejects(redisCommand(['CLIENT', 'KILL', 'ID', '1']), boundary)
+  await assert.rejects(redisCommand(['CLIENT']), boundary)
+  await assert.rejects(redisCommand(['CLIENT', 'NO-EVICT', 'ON']), boundary)
 })
 
 test('NDJSON parser accepts only the closed bounded audit schema', () => {
