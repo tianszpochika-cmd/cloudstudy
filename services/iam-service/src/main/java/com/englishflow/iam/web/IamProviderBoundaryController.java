@@ -358,7 +358,16 @@ class IamAuthenticationController {
         String scope = "/api/v1/iam/adult-gate";
         String hash = fingerprint(scope, principal, request);
         return idempotent(scope, key, hash, new TypeReference<ApiSuccessEnvelope<AdultGateResponse>>() {}, () -> {
-            int age = Year.now().getValue() - request.birthYear();
+            // Validated here because this age is derived from unvalidated client input and handed to a
+            // domain type that rejects anything outside 0..150 with an unchecked exception. Without this
+            // check the boundary answered 500 iam.internal.error, whose retryable flag invites a client
+            // to retry an input that can never succeed.
+            int currentYear = Year.now().getValue();
+            int age = currentYear - request.birthYear();
+            if (age < 0 || age > 150) {
+                throw new IamPolicyException(IamDecisionCode.ADULT_AGE_EVIDENCE_INVALID,
+                        "iam.adult_gate.birth_year_invalid");
+            }
             AdultGateResult result = adultGates.evaluate(new AdultGateCommand(principal, true,
                     TrustedAgeEvidence.fromServerAttestation(age, "local-development-attestation", Instant.now()),
                     null, null, ClientAuthorityClaims.none()));
