@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-008",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "7aaebac87e8870fd763bd93dc97afcd18f80b714",
+  "sourceCommit": "844598683b408e6d606670ed07d7853364b41fb8",
   "artifactDigests": [
     {
       "path": "config/b20-privacy-content-gates.json",
@@ -207,7 +207,7 @@
     {
       "path": "tests/b10/b10-contract-boundaries.test.mjs",
       "algorithm": "sha256",
-      "digest": "2db8c127dc9ae713fd353e091b5aad77569a3905e90a23488285fdeda1198468"
+      "digest": "a9523f73fa814f0fc9ea13080399e2910b122578eb92297491b49c51c86193b9"
     },
     {
       "path": "tests/b26/b26-event-runtime.test.mjs",
@@ -270,9 +270,9 @@
     "originalFinishedAt": "2026-08-30T12:32:26+08:00",
     "originalReviewer": "agent:m1_008_independent_review:gpt-5.6-luna:max",
     "originalAcceptedContractBaseline": "463c4b238caceb1592bff6c61327c00ab9bac922",
-    "previousCurrentSourceCommit": "1eefbe6d5b22d87872c4f8c1cc0ecad46497e3a6",
+    "previousCurrentSourceCommit": "7aaebac87e8870fd763bd93dc97afcd18f80b714",
     "previousCurrentSourceRevalidationTask": "P1R-M2-005",
-    "currentSourceRevalidationTask": "P1R-M2-005",
+    "currentSourceRevalidationTask": "P1R-M1-008",
     "currentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "currentSourceRevalidationHistory": [
       {
@@ -444,15 +444,25 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-12T22:07:09.012Z",
         "details": "Current-source artifact digest rebase after P1R-M2-005 E8 registered the operator dead letter replay entry as p1r:m2-005:replay in package.json. The only artifact of these tasks that moved is package.json. Original provenance, review history and runtime status unchanged."
+      },
+      {
+        "taskId": "P1R-M1-008",
+        "sourceCommit": "844598683b408e6d606670ed07d7853364b41fb8",
+        "auditedImplementationSource": "844598683b408e6d606670ed07d7853364b41fb8",
+        "integrationCheckpoint": "844598683b408e6d606670ed07d7853364b41fb8",
+        "reviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-12T23:35:27.174Z",
+        "details": "Current-source revalidation after its recorded test was strengthened rather than relaxed. tests/b10/b10-contract-boundaries.test.mjs compared the B10 event fragment against a frozen list, which failed on any legitimate addition while never checking whether the addition was allowed; it now requires the B10 chain to stay covered and requires every event in the fragment to be registered in the contract catalog. Accepted behaviour is unchanged; the assertion is strictly stronger."
       }
     ],
     "previousCurrentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "previousCurrentSourceRevalidationFinishedAt": "2026-09-12T21:46:47.793Z",
+    "previousCurrentSourceRevalidationFinishedAt": "2026-09-12T22:07:09.012Z",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-12T22:07:09.012Z",
-    "currentSourceRevalidationAuditedImplementationSource": "7aaebac87e8870fd763bd93dc97afcd18f80b714",
-    "currentSourceRevalidationIntegrationCheckpoint": "7aaebac87e8870fd763bd93dc97afcd18f80b714"
+    "currentSourceRevalidationFinishedAt": "2026-09-12T23:35:27.174Z",
+    "currentSourceRevalidationAuditedImplementationSource": "844598683b408e6d606670ed07d7853364b41fb8",
+    "currentSourceRevalidationIntegrationCheckpoint": "844598683b408e6d606670ed07d7853364b41fb8"
   },
   "startedAt": "2026-08-30T09:15:05+08:00",
   "finishedAt": "2026-09-01T15:39:29+08:00",
