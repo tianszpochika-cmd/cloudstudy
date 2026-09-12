@@ -466,7 +466,8 @@
       ],
       "recordedAt": "2026-09-12T22:17:26.076Z",
       "actor": "agent:p1r_implementation:deepseek-harness",
-      "reason": "The Kafka transport, outbox publisher, consumer deduplication, DLQ and replay foundations are implemented and every evidence type the task names is produced by a scripted harness. The work stays IN_PROGRESS because the ledger gate refused REVIEW: P1R-M2-004, this task's declared dependency, is not ACCEPTED yet."
+      "reason": "The Kafka transport, outbox publisher, consumer deduplication, DLQ and replay foundations are implemented and every evidence type the task names is produced by a scripted harness. The work stays IN_PROGRESS because the ledger gate refused REVIEW: P1R-M2-004, this task's declared dependency, is not ACCEPTED yet.",
+      "evidencePath": "evidence/p1r/m2/P1R-M2-005/event-runtime-harness-2026-09-12.json"
     }
   ]
 }
