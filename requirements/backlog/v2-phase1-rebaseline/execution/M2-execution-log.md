@@ -129,6 +129,13 @@
 - 验证（JDK 25）：gamification `35/0/0/0`；gamification-social contract PASS。
 - M2-003 实施批次完成，共 11 服务；下一步 M2-003 运行证据 + 最终独立复审 + manifest。
 
+## 2026-09-11 M2-003 Batch 5：IAM 信封 JWKS 兼容修复（learning 原型）
+
+- 运行冒烟发现关键集成缺陷：领域服务标准 `withJwkSetUri` 无法解析 IAM 的 `{"data":{"keys":[...]}}` 信封 JWKS → 真实令牌全部 401（仅 Gateway 有信封感知源）。
+- learning 原型：新增 `IamEnvelopedJwkSource`（信封/裸 Set、TTL 缓存、失败关闭）+ `decoder(...)`；4 项单测；真实进程冒烟：缺/篡改 401、伪造头 403、合法令牌不再 401（404 属 jdbc 控制器未激活预期）。
+- 验证（JDK 25）：learning `125/0/0/0`。
+- 推广计划：其余 10 服务 + service-template 分批复制并加解析单测，然后重做运行证据与复审。
+
 ## 2026-09-04 IAM 账户/密码并发安全检查点
 
 - 源码：`9deb899`。认证改为锁前单次 cost-12 BCrypt、锁内 current principal/hash/status/counter 复核；credential epoch 在校验期间变化时统一 `INVALID_CREDENTIALS` 且零写入，避免旧在途请求污染或锁死刚重置的新凭据。
