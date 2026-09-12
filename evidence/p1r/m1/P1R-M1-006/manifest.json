@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-006",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "e9c4ebd7876b6cabb7d03168df7a3547932e2e0e",
+  "sourceCommit": "171203e89780a1d069fffee2b98c1f0e6c173093",
   "artifactDigests": [
     {
       "path": ".github/workflows/ci.yml",
@@ -12,7 +12,7 @@
     {
       "path": "package.json",
       "algorithm": "sha256",
-      "digest": "8dcad1f48c5c987d6b8a90417683debcc54bd20df74743627388bda464e05e7f"
+      "digest": "4abcff6ec7cbcb62f4e321bdd87032341ab5da5a0d97c5e5d5ffaca905195552"
     },
     {
       "path": "config/b26-event-runtime.json",
@@ -328,19 +328,29 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-12T15:59:44.043Z",
         "details": "Current-source artifact digest rebase after P1R-M0-006 moved apps/mobile to the uni-app vite 8 compiler line (apps/mobile/package.json, pnpm-lock.yaml), migrated the previously ignored pnpm overrides into pnpm-workspace.yaml and added publicHoistPattern, removed the dead pnpm.overrides field from the root package.json, corrected the dependency gate so it decides on reported high/critical severities, and refreshed config/toolchain-baseline.json portsCanonicalSha256 plus the M0 devex evidence. Original provenance, review history and runtime status unchanged."
+      },
+      {
+        "taskId": "P1R-M1-006",
+        "sourceCommit": "171203e89780a1d069fffee2b98c1f0e6c173093",
+        "auditedImplementationSource": "171203e89780a1d069fffee2b98c1f0e6c173093",
+        "integrationCheckpoint": "171203e89780a1d069fffee2b98c1f0e6c173093",
+        "reviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-12T19:49:48.935Z",
+        "details": "Current-source artifact digest rebase after P1R-M2-004 Batch D4 registered the data-ownership runtime harness (scripts/runtime/p1r-m2-004-runtime.mjs) as the p1r:m2-004:runtime script in package.json and moved the owner list into scripts/database/lib/owner-manifest.mjs. The only artifact of these tasks that moved is package.json. Original provenance, review history and runtime status unchanged."
       }
     ],
-    "previousCurrentSourceCommit": "2a747ba3917acd92664911c6b4be070ff469e302",
-    "previousCurrentSourceRevalidationTask": "P1R-M1-018",
-    "currentSourceRevalidationTask": "P1R-M0-006",
+    "previousCurrentSourceCommit": "e9c4ebd7876b6cabb7d03168df7a3547932e2e0e",
+    "previousCurrentSourceRevalidationTask": "P1R-M0-006",
+    "currentSourceRevalidationTask": "P1R-M2-004",
     "currentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
-    "previousCurrentSourceRevalidationReviewer": "agent:m1_018_closure_fix_review:gpt-5.6-luna:max",
+    "previousCurrentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "previousCurrentSourceRevalidationFinishedAt": "2026-09-01T15:39:29+08:00",
+    "previousCurrentSourceRevalidationFinishedAt": "2026-09-12T15:59:44.043Z",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-12T15:59:44.043Z",
-    "currentSourceRevalidationAuditedImplementationSource": "e9c4ebd7876b6cabb7d03168df7a3547932e2e0e",
-    "currentSourceRevalidationIntegrationCheckpoint": "e9c4ebd7876b6cabb7d03168df7a3547932e2e0e"
+    "currentSourceRevalidationFinishedAt": "2026-09-12T19:49:48.935Z",
+    "currentSourceRevalidationAuditedImplementationSource": "171203e89780a1d069fffee2b98c1f0e6c173093",
+    "currentSourceRevalidationIntegrationCheckpoint": "171203e89780a1d069fffee2b98c1f0e6c173093"
   },
   "startedAt": "2026-08-30T02:24:20+08:00",
   "finishedAt": "2026-09-01T15:39:29+08:00",
