@@ -2,7 +2,7 @@
   "taskId": "P1R-M2-001",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "b1e2a2124c72b7a0526085d25e14c871d1a12cb1",
+  "sourceCommit": "f4885a3cc8d4d518d7e430c60de86f91443ddc1d",
   "artifactDigests": [
     {
       "path": "services/api-gateway/src/main/java/com/englishflow/gateway/policy/GatewayRoutePolicy.java",
@@ -72,7 +72,7 @@
     {
       "path": "services/api-gateway/src/test/runtime/p1r-m2-001-runtime.test.mjs",
       "algorithm": "sha256",
-      "digest": "acc51fc92aa55606c30357f87a658be59e62dc062a2a90d19f69b8982dee9b0c"
+      "digest": "c2564eb3952afd78243bb8ea1d9d2160aeb9f4be2a1709116ea23c04024247e7"
     },
     {
       "path": "services/api-gateway/src/test/runtime/README.md",
@@ -167,19 +167,19 @@
     "currentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
     "currentSourceRevalidationFinishedAt": "2026-09-12T17:54:32.728Z",
-    "currentSourceRevalidationAuditedImplementationSource": "b1e2a2124c72b7a0526085d25e14c871d1a12cb1",
-    "currentSourceRevalidationIntegrationCheckpoint": "b1e2a2124c72b7a0526085d25e14c871d1a12cb1",
+    "currentSourceRevalidationAuditedImplementationSource": "f4885a3cc8d4d518d7e430c60de86f91443ddc1d",
+    "currentSourceRevalidationIntegrationCheckpoint": "f4885a3cc8d4d518d7e430c60de86f91443ddc1d",
     "originalSourceCommit": "7ba4d33f820efae6756164a97dfd38f02c0e89c4",
     "currentSourceRevalidationHistory": [
       {
         "taskId": "P1R-M2-001",
-        "sourceCommit": "b1e2a2124c72b7a0526085d25e14c871d1a12cb1",
-        "auditedImplementationSource": "b1e2a2124c72b7a0526085d25e14c871d1a12cb1",
-        "integrationCheckpoint": "b1e2a2124c72b7a0526085d25e14c871d1a12cb1",
+        "sourceCommit": "f4885a3cc8d4d518d7e430c60de86f91443ddc1d",
+        "auditedImplementationSource": "f4885a3cc8d4d518d7e430c60de86f91443ddc1d",
+        "integrationCheckpoint": "f4885a3cc8d4d518d7e430c60de86f91443ddc1d",
         "reviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
         "runtimeStatus": "RUNTIME_VERIFIED",
         "finishedAt": "2026-09-12T17:54:32.728Z",
-        "details": "Current-source rebase for P1R-M2-004 Batch D2b. The Gateway runtime harness and its shared library now authenticate against Redis as the scoped svc_gateway ACL user instead of the credential-less default user, and CLIENT LIST was added to the read-only probe allowlist so the identity is asserted rather than inferred. Runtime evidence re-captured at this source with --run --browser --fault: result PASS, 30/30 checks, notRuntimeVerified empty, including the new redis-acl-authenticated-user check (observed users: svc_gateway, default). The recorded ACCEPTED decision, its review history and the earlier evidence files are unchanged."
+        "details": "Current-source rebase for P1R-M2-004 Batch D2b. The Gateway runtime harness and its shared library now authenticate against Redis as the scoped svc_gateway ACL user instead of the credential-less default user, and CLIENT LIST was added to the read-only probe allowlist so the identity is asserted rather than inferred. Runtime evidence re-captured at this source with --run --browser --fault: result PASS, 30/30 checks, notRuntimeVerified empty, including the new redis-acl-authenticated-user check (observed users: svc_gateway, default). The recorded ACCEPTED decision, its review history and the earlier evidence files are unchanged. Rebound to a source commit that actually contains every recorded artifact: the new evidence file arrived in 7371689 and the narrowed CLIENT boundary test in f4885a3, neither of which existed at the earlier binding."
       }
     ]
   },
