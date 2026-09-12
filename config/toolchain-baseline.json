@@ -56,6 +56,7 @@
     "commerce-service",
     "admin-ops-service",
     "analytics-service",
+    "audit-service",
     "service-template"
   ],
   "legacyServices": ["core-api"]

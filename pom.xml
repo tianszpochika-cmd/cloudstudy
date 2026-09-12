@@ -34,6 +34,7 @@
     <module>services/commerce-service</module>
     <module>services/admin-ops-service</module>
     <module>services/analytics-service</module>
+    <module>services/audit-service</module>
     <module>services/service-template</module>
   </modules>
 
