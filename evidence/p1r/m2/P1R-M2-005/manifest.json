@@ -1,0 +1,196 @@
+{
+  "taskId": "P1R-M2-005",
+  "draftOnly": false,
+  "canonicalTaskStatus": "BLOCKED",
+  "sourceCommit": "10bc8e2dba06a800fd6bb014b0827d898b7c1b8b",
+  "artifactDigests": [
+    {
+      "path": "config/b26-event-runtime.json",
+      "algorithm": "sha256",
+      "digest": "837779ccf7085a6bb9d4df1843516afc9be20467da68f79f4e698ca95d0fbcd7"
+    },
+    {
+      "path": "config/p1r-data-ownership.v1.json",
+      "algorithm": "sha256",
+      "digest": "111b8f5185d6d1ec2f0c7b75140e430a52406777bc5c1c0b6ad5a78f1194d54b"
+    },
+    {
+      "path": "scripts/runtime/provision-kafka-topics.mjs",
+      "algorithm": "sha256",
+      "digest": "db9a0375f7d3daed80e396f2283065a4e5b1ebc1a3c692aa95013e5b536e4420"
+    },
+    {
+      "path": "scripts/runtime/p1r-m2-005-event-runtime.mjs",
+      "algorithm": "sha256",
+      "digest": "39083f4acc151afe80143f6bbd4f0995b67f7a118a33c41eb3e6e95802738fac"
+    },
+    {
+      "path": "scripts/runtime/replay-dlq.mjs",
+      "algorithm": "sha256",
+      "digest": "762bbe69eeb663a9d2c6dd5a81a9627684be042862422133a7f04f613eecf483"
+    },
+    {
+      "path": "scripts/runtime/verify-content-consumer-dedupe.mjs",
+      "algorithm": "sha256",
+      "digest": "b712f68709b41163ef1219e6a2f88682bfc75381824e3a74b6eda36444a63274"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-005/consumer-dedupe-runtime-2026-09-13.json",
+      "algorithm": "sha256",
+      "digest": "0f24a9f0ecfd70f5ebdbbe02248a3fdd7ea53867ae5bb49137b6a1bea129464e"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-005/consumer-idempotency-2026-09-13.json",
+      "algorithm": "sha256",
+      "digest": "b0cee6aa460dd7f72c0386028a10e7e194a05ce84ed945b46de9fadc777507c5"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-005/dlq-replay-apply-2026-09-12.json",
+      "algorithm": "sha256",
+      "digest": "06775de6255b2e1db9b286c8deb0d051575b28662eb3addae07e9d3d7499e7f4"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-005/dlq-replay-plan-2026-09-12.json",
+      "algorithm": "sha256",
+      "digest": "aa7e05e950b0dbb20d84be1e1708e1398a1edd65fd922bc2a5b626e31fb00784"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-005/event-runtime-harness-2026-09-12.json",
+      "algorithm": "sha256",
+      "digest": "55816d5e400b941fe361e73352d12e61ff2161d1c0361b6d8a4fed07c2e3a2ed"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-005/outbox-relay-runtime-2026-09-13.json",
+      "algorithm": "sha256",
+      "digest": "47fbce1f2e1060a7e2d1e6b2bbcb3bea77cab4c3969a6722cc58746968b8eba0"
+    }
+  ],
+  "environment": {
+    "kind": "event-runtime-evidence",
+    "branch": "dev",
+    "phaseStatus": "D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED",
+    "runtimeStatus": "M2_005_EVENT_RUNTIME_VERIFIED",
+    "reviewedRevision": "10bc8e2dba06a800fd6bb014b0827d898b7c1b8b",
+    "toolchain": {
+      "java": "OpenJDK 25.0.4.1",
+      "maven": "3.9.12",
+      "node": "20.19.5",
+      "kafka": "3.9.2"
+    },
+    "evidenceFile": "evidence/p1r/m2/P1R-M2-005/event-runtime-harness-2026-09-12.json",
+    "contract": "config/b26-event-runtime.json",
+    "kafka": {
+      "bootstrap": "127.0.0.1:19092",
+      "topics": 12,
+      "partitions": "12 or 6 per the contract topic table"
+    }
+  },
+  "provenance": {
+    "survey": "No pom carried a Kafka client at all and the owner outbox code was in-memory only, so nothing consumed what the services appended. The twelve declared topics were half present and the six that existed had been created by hand with three partitions and no retention, cleanup or in-sync-replica configuration.",
+    "batches": [
+      "E1 topic topology provisioned from the contract and the six hand-made topics repaired",
+      "E2 the ten owner outbox tables standardised to the ADR-0015 shape with the claim index",
+      "E3 the content-service publish side: claim, publish, acknowledge-before-mark, bounded backoff and DLQ",
+      "E4 real broker runtime evidence for the publisher",
+      "E5 transactional consumer-side deduplication on (consumerGroup, eventId)",
+      "E6 the Kafka listener wired to that applier",
+      "E7 to E8 the whole thing reduced to a repeatable harness with two fault phases and an operator replay entry"
+    ],
+    "reviewHistory": []
+  },
+  "startedAt": "2026-09-13T00:00:00+08:00",
+  "finishedAt": "2026-09-12T22:35:01.519Z",
+  "actors": [
+    "root-coordinator",
+    "p1r-implementation"
+  ],
+  "sourceIds": [
+    "P1R-M2-005",
+    "ARCH-EVT-001",
+    "INT-P1-017",
+    "ADR-0015"
+  ],
+  "commands": [
+    "node scripts/runtime/provision-kafka-topics.mjs --apply",
+    "node scripts/runtime/p1r-m2-005-event-runtime.mjs --dedupe --ordering --dlq --fault-db --fault-kafka --replay",
+    "node scripts/runtime/replay-dlq.mjs --apply",
+    "node scripts/runtime/verify-content-consumer-dedupe.mjs",
+    "mvn -f services/content-service/pom.xml test (JDK 25)",
+    "node scripts/dev/run-node-tests.mjs tests/p1r (Node 20.19.5)"
+  ],
+  "results": [
+    {
+      "check": "kafka-topic-topology",
+      "status": "PASS",
+      "details": "Twelve declared topics; six were created and six repaired from three partitions to the declared twelve or six with retention, cleanup policy and in-sync replicas set. A second apply reports twelve conforming and no changes."
+    },
+    {
+      "check": "owner-outbox-shape",
+      "status": "PASS",
+      "details": "Ten owner outbox tables brought to the standard shape; every one was missing the claim machinery and several were missing envelope columns. Re-inventory reports zero missing columns and analytics_event_journal is still reported as non-conforming by design, because it is a consumer idempotency journal rather than an outbox."
+    },
+    {
+      "check": "outbox-publish-at-least-once",
+      "status": "PASS",
+      "details": "Forty-five pending events plus two probe events all reached PUBLISHED with exactly one attempt each; the topic retained forty-seven messages across all twelve partitions with no duplicate eventId. A row is marked published only after the broker acknowledges it."
+    },
+    {
+      "check": "reference-then-ack",
+      "status": "PASS",
+      "details": "The applier writes the receipt and its effect in one transaction and the offset is acknowledged only afterwards, so a crash before the acknowledgement redelivers a record the receipt absorbs rather than skipping an effect that never ran."
+    },
+    {
+      "check": "duplicate-delivery-absorbed",
+      "status": "PASS",
+      "details": "Three identical deliveries of one event through the real topic produced one receipt and one applied effect, with lag at zero on every partition."
+    },
+    {
+      "check": "partition-key-ordering",
+      "status": "PASS",
+      "details": "Three events of one aggregate shared a partition and were consumed in publish order. The contract fixes partitionKey to aggregateId and states no stale-version rule, so that is what is proven rather than an invented rule."
+    },
+    {
+      "check": "unprocessable-record-to-dlq",
+      "status": "PASS",
+      "details": "A record with a decodable but incomplete envelope is routed straight to platform.events.dlq.v1 carrying the original envelope fields plus the contract failure fields, instead of being retried forever at the head of its partition."
+    },
+    {
+      "check": "broker-outage-and-recovery",
+      "status": "PASS",
+      "details": "With the broker stopped the relay recorded RETRY with a TimeoutException, and the same row reached PUBLISHED on the second attempt after the broker was restored: an outage delays delivery rather than losing the event."
+    },
+    {
+      "check": "transient-database-outage",
+      "status": "PASS",
+      "details": "With MySQL paused a readable event exhausted its retry budget and reached the DLQ without taking effect, and MySQL was restored healthy."
+    },
+    {
+      "check": "replay-without-double-write",
+      "status": "PASS",
+      "details": "The operator replay entry took the dead letter and the effect applied once; a second replay left both the receipt count and the applied count unchanged."
+    },
+    {
+      "check": "p1r-regression",
+      "status": "PASS",
+      "details": "content-service 148 tests with zero failures; P1R 1425/1425 under Node 20.19.5; evidence gate, plan, gap registry, docs audit, data ownership, ci guard and the runtime dependency audit all PASS."
+    }
+  ],
+  "rollbackEvidence": [
+    {
+      "status": "PASS",
+      "details": "The relay and the inbound consumer are both disabled by default, so reverting the commits returns the services to their previous behaviour with no broker contact. The outbox migrations are additive and the reconcile runner records applied versions, so a schema rollback is a deliberate operator action. The Kafka topics are external state: reverting the repository does not remove them and they remain conforming."
+    }
+  ],
+  "blockers": [
+    "P1R-M2-004 is not ACCEPTED. The ledger gate fixes the statuses that require ACCEPTED dependencies to READY, IN_PROGRESS, REVIEW and ACCEPTED, so this task cannot be recorded above PLANNED until its declared dependency closes. That in turn blocks P1R-M2-006 through P1R-M2-010, because each declares the previous one as a dependency."
+  ],
+  "knownGaps": [
+    "Consumer-side deduplication and the publish side exist only in content-service. The other owners now have the contract table shape but nothing publishes their rows and no consumer group of theirs has a receipt table.",
+    "Only the two fault phases are scripted against the local stack. There is no scheduler that runs the harness on a cadence, so the evidence is reproducible on demand rather than continuously re-verified.",
+    "The DLQ replay entry is a script an operator runs; there is no approval workflow, rate limit or audit receipt around it.",
+    "The contract declares forty-eight consumer groups across twelve topics; one group (cg.content-from-iam.v1) is actually consuming today.",
+    "Overall phase remains D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED."
+  ],
+  "reviewer": "root-coordinator",
+  "decision": "BLOCKED"
+}
