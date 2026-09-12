@@ -6,15 +6,6 @@
     "node": "20.19.5",
     "pnpm": "10.19.0"
   },
-  "pnpm": {
-    "overrides": {
-      "express>path-to-regexp": "0.1.13",
-      "@dcloudio/uni-nvue-styler>postcss": "8.5.23",
-      "@dcloudio/uni-cli-shared>adm-zip": "0.6.0",
-      "@dcloudio/uni-cli-shared>@intlify/core-base": "9.1.11",
-      "@intlify/message-resolver": "9.1.11"
-    }
-  },
   "scripts": {
     "dev": "turbo dev",
     "dev:all": "pnpm ports:check && turbo dev",

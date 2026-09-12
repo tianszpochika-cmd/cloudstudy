@@ -8,3 +8,27 @@ onlyBuiltDependencies:
   - core-js
   - esbuild
   - vue-demi
+
+publicHoistPattern:
+  # Vite 8 bundles with Rolldown and the uni-app plugin pins preserveSymlinks: true
+  # (see @dcloudio/vite-plugin-uni/dist/config/resolve.js), so module ids stay on the
+  # symlinked path (apps/mobile/node_modules/pinia/dist/pinia.mjs) instead of the real
+  # store path. pinia's own runtime dependencies are therefore not resolvable under
+  # pnpm's isolated layout. These are exactly pinia 2.3.1's runtime dependencies other
+  # than vue; hoisting only them keeps every other package isolated.
+  - '*vue-demi*'
+  - '*@vue/devtools-api*'
+
+overrides:
+  # Migrated from package.json#pnpm.overrides. pnpm 10 no longer reads that field,
+  # so these five security pins had been silently inactive since the workspace
+  # upgraded to pnpm 10. Verified with `pnpm config get overrides`.
+  express>path-to-regexp: 0.1.13
+  '@dcloudio/uni-nvue-styler>postcss': 8.5.23
+  '@dcloudio/uni-cli-shared>adm-zip': 0.6.0
+  '@dcloudio/uni-cli-shared>@intlify/core-base': 9.1.11
+  '@intlify/message-resolver': 9.1.11
+  # GHSA-w27v-7q3p-w38r (high) / GHSA-4vpr-x523-8j87 (moderate): svgo < 4.1.0 lets
+  # removeScripts be bypassed. Reached in production through
+  # official-site > nuxt > @nuxt/vite-builder > cssnano > postcss-svgo.
+  svgo: '>=4.1.0'
