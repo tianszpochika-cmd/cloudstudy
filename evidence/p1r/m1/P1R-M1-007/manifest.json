@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-007",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "ec20ef51a8b0ea99d4b72bf7598777df075f4889",
+  "sourceCommit": "d0849b3eb96ed57c8b29097ba1a78ab7690b158a",
   "artifactDigests": [
     {
       "path": ".github/workflows/ci.yml",
@@ -12,7 +12,7 @@
     {
       "path": "package.json",
       "algorithm": "sha256",
-      "digest": "cd10ff008af85507b1e9269cb701f4cdfe431ea32748eac373cb4023ade02da9"
+      "digest": "1bf448ea6392c3f085a3a7929963b9177dda596e40c704371af287f03ecad5a2"
     },
     {
       "path": "config/b25-data.json",
@@ -661,9 +661,19 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-12T16:14:22.647+08:00",
         "details": "Current-source artifact digest rebase after P1R-M2-004 Batch C completed notification-service tenant hardening: V5 removed the unknown tenant defaults and the data-ownership policy registered notification-service migration fileCount 5 (13 existing / 1 planned collections unchanged). Full P1R regression 1421/1421 PASS; the original provenance, review history and runtime status are unchanged."
+      },
+      {
+        "taskId": "P1R-M1-007",
+        "sourceCommit": "d0849b3eb96ed57c8b29097ba1a78ab7690b158a",
+        "auditedImplementationSource": "d0849b3eb96ed57c8b29097ba1a78ab7690b158a",
+        "integrationCheckpoint": "d0849b3eb96ed57c8b29097ba1a78ab7690b158a",
+        "reviewer": "agent:p1r_current_source_revalidation:opencode-worker",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-12T17:45:44.804+08:00",
+        "details": "Current-source artifact digest rebase after P1R-M2-004 Batch D2a added scripts/database/reconcile-redis-acl.mjs, a persisted Redis ACL file in infra/docker/docker-compose.dev.yml, the pnpm redis:acl entry, per-service Redis password variables in .env.example and the database/redis/README.md D2 section (stale: package.json). Original provenance, review history and runtime status unchanged."
       }
     ],
-    "previousCurrentSourceCommit": "02b438b8324fce4ccb20c544496be4659a351535",
+    "previousCurrentSourceCommit": "ec20ef51a8b0ea99d4b72bf7598777df075f4889",
     "previousCurrentSourceRevalidationTask": "P1R-M1-018",
     "currentSourceRevalidationTask": "P1R-M1-018",
     "currentSourceRevalidationReviewer": "agent:m1_018_closure_fix_review:gpt-5.6-luna:max",

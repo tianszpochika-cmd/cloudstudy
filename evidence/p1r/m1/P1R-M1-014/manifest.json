@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-014",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "6ceaf7f91109d4880c89d5dbbf24bef7b9a1ca3b",
+  "sourceCommit": "d0849b3eb96ed57c8b29097ba1a78ab7690b158a",
   "artifactDigests": [
     {
       "path": "config/b26-event-runtime.json",
@@ -47,7 +47,7 @@
     {
       "path": "package.json",
       "algorithm": "sha256",
-      "digest": "cd10ff008af85507b1e9269cb701f4cdfe431ea32748eac373cb4023ade02da9"
+      "digest": "1bf448ea6392c3f085a3a7929963b9177dda596e40c704371af287f03ecad5a2"
     },
     {
       "path": "packages/api-client/src/generated/index.ts",
@@ -457,9 +457,19 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-10T22:24:25+08:00",
         "details": "Current-source revalidation after the 2026-09-10 commits (a149335 docs/asset-preflight, 6131783 dev unit-test completion, 6ceaf7f evidence-gate 9-column fix) invalidated previously recorded artifact digests. Rebased sourceCommit to 6ceaf7f91109d4880c89d5dbbf24bef7b9a1ca3b after the full P1R regression passed 1421/1421 under Node 20.19.5 on an LF-normalized worktree. Original provenance and review history remain unchanged; runtime evidence is not promoted."
+      },
+      {
+        "taskId": "P1R-M1-014",
+        "sourceCommit": "d0849b3eb96ed57c8b29097ba1a78ab7690b158a",
+        "auditedImplementationSource": "d0849b3eb96ed57c8b29097ba1a78ab7690b158a",
+        "integrationCheckpoint": "d0849b3eb96ed57c8b29097ba1a78ab7690b158a",
+        "reviewer": "agent:p1r_current_source_revalidation:opencode-worker",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-12T17:45:44.804+08:00",
+        "details": "Current-source artifact digest rebase after P1R-M2-004 Batch D2a added scripts/database/reconcile-redis-acl.mjs, a persisted Redis ACL file in infra/docker/docker-compose.dev.yml, the pnpm redis:acl entry, per-service Redis password variables in .env.example and the database/redis/README.md D2 section (stale: package.json). Original provenance, review history and runtime status unchanged."
       }
     ],
-    "previousCurrentSourceCommit": "c548b601caae41fecc417f44f2a3e8e2016332d0",
+    "previousCurrentSourceCommit": "6ceaf7f91109d4880c89d5dbbf24bef7b9a1ca3b",
     "previousCurrentSourceRevalidationTask": "P1R-M1-018",
     "previousCurrentSourceRevalidationReviewer": "agent:m1_018_final_review:gpt-5.6-luna:max",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
