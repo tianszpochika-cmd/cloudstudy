@@ -15,16 +15,30 @@ import java.util.concurrent.ConcurrentMap;
  */
 public final class FailClosedPep {
 
-    private static final Duration PDP_TIMEOUT = Duration.ofMillis(250);
-    private static final Duration CACHE_TTL = Duration.ofSeconds(30);
+    private static final Duration DEFAULT_PDP_TIMEOUT = Duration.ofMillis(250);
+    private static final Duration DEFAULT_CACHE_TTL = Duration.ofSeconds(30);
 
     private final PdpPort pdp;
     private final Clock clock;
+    private final Duration cacheTtl;
+    private final Duration pdpTimeout;
     private final ConcurrentMap<String, CachedDecision> cache = new ConcurrentHashMap<>();
 
     public FailClosedPep(PdpPort pdp, Clock clock) {
+        this(pdp, clock, DEFAULT_CACHE_TTL, DEFAULT_PDP_TIMEOUT);
+    }
+
+    public FailClosedPep(PdpPort pdp, Clock clock, Duration cacheTtl, Duration pdpTimeout) {
         this.pdp = Objects.requireNonNull(pdp, "pdp");
         this.clock = Objects.requireNonNull(clock, "clock");
+        if (cacheTtl == null || cacheTtl.isZero() || cacheTtl.isNegative()) {
+            throw new IllegalArgumentException("cache TTL must be positive");
+        }
+        if (pdpTimeout == null || pdpTimeout.isZero() || pdpTimeout.isNegative()) {
+            throw new IllegalArgumentException("PDP timeout must be positive");
+        }
+        this.cacheTtl = cacheTtl;
+        this.pdpTimeout = pdpTimeout;
     }
 
     public PdpDecision evaluate(String subject, String tenant, String action, String requiredPolicyVersion) {
@@ -33,12 +47,12 @@ public final class FailClosedPep {
         Objects.requireNonNull(action, "action");
         String key = subject + '|' + tenant + '|' + action;
         CachedDecision cached = cache.get(key);
-        if (cached != null && !cached.expiredAt(clock)) {
+        if (cached != null && !cached.expiredAt(clock, cacheTtl)) {
             return decide(cached.decision(), requiredPolicyVersion);
         }
         PdpDecision decision;
         try {
-            decision = pdp.evaluate(new PdpRequest(subject, tenant, action), PDP_TIMEOUT);
+            decision = pdp.evaluate(new PdpRequest(subject, tenant, action), pdpTimeout);
         } catch (RuntimeException unavailable) {
             // Timeout, transport failure, missing implementation or policy version mismatch all
             // deny; the caller never receives an implicit allow.
@@ -66,8 +80,8 @@ public final class FailClosedPep {
 
     private record CachedDecision(PdpDecision decision, Instant fetchedAt) {
 
-        boolean expiredAt(Clock clock) {
-            return fetchedAt.plus(CACHE_TTL).isBefore(clock.instant());
+        boolean expiredAt(Clock clock, Duration cacheTtl) {
+            return fetchedAt.plus(cacheTtl).isBefore(clock.instant());
         }
     }
 }

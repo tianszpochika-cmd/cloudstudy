@@ -53,6 +53,10 @@ public final class AnalyticsPrincipalResolver {
             throw AnalyticsDomainException.rejected(AnalyticsErrorCode.UNAUTHENTICATED,
                     "verified JWT is missing required analytics identity facts");
         }
+        if (!"platform".equals(tenant)) {
+            throw AnalyticsDomainException.rejected(AnalyticsErrorCode.FORBIDDEN,
+                    "tenant is not allowed");
+        }
         if (Boolean.TRUE.equals(jwt.getToken().getClaims().get("revoked"))
                 || "REVOKED".equals(jwt.getToken().getClaims().get("revocation_status"))
                 || "SUSPENDED".equals(jwt.getToken().getClaims().get("account_status"))) {

@@ -23,8 +23,8 @@ public final class AdminOpsJwtAuthenticationConverter implements Converter<Jwt, 
     public AdminOpsAuthenticationToken convert(Jwt jwt) {
         String subject = jwt.getSubject();
         String tenant = firstString(jwt, "tenant_id", "tenant");
-        if (tenant == null || tenant.isBlank()) {
-            throw new BadCredentialsException("verified IAM principal is missing tenant scope");
+        if (tenant == null || tenant.isBlank() || !"platform".equals(tenant)) {
+            throw new BadCredentialsException("verified IAM principal is missing the platform tenant scope");
         }
         Set<String> permissions = new LinkedHashSet<>(claimStrings(jwt.getClaim("permissions")));
         permissions.addAll(claimStrings(jwt.getClaim("scp")));

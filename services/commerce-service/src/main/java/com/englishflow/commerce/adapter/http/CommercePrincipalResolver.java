@@ -21,6 +21,7 @@ public final class CommercePrincipalResolver {
         if (tenant == null) tenant = claim(jwt, "tenant");
         String subject = jwt.getToken().getSubject();
         if (tenant == null || tenant.isBlank() || subject == null || subject.isBlank()) throw CommerceException.unauthorized();
+        requirePlatformTenant(tenant);
         return new CommercePrincipal(tenant, subject, authorities(jwt), true, true, false);
     }
 
@@ -33,7 +34,15 @@ public final class CommercePrincipalResolver {
         if (tenant == null || tenant.isBlank() || workload == null || workload.isBlank()) {
             throw CommerceException.unauthorized();
         }
+        requirePlatformTenant(tenant);
         return new CommercePrincipal(tenant, "workload:" + workload, authorities(jwt), true, true, true);
+    }
+
+    /** Phase 1 has a single platform tenant: a foreign tenant is never accepted. */
+    private static void requirePlatformTenant(String tenant) {
+        if (!"platform".equals(tenant)) {
+            throw CommerceException.forbidden("tenant is not allowed");
+        }
     }
 
     private static JwtAuthenticationToken requireJwt(Authentication authentication) {

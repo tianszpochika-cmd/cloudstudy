@@ -24,7 +24,7 @@ public final class NotificationPrincipalResolver {
             throw new NotificationDomainException(NotificationDomainException.Code.UNAUTHORIZED,
                     "verified JWT principal is required");
         }
-        String tenantId = claim(jwt, "tenant_id");
+        String tenantId = requirePlatformTenant(jwt);
         String deviceId = claim(jwt, "device_id");
         String principalId = jwt.getToken().getSubject();
         Set<String> authorities = jwt.getAuthorities().stream()
@@ -49,7 +49,7 @@ public final class NotificationPrincipalResolver {
             throw new NotificationDomainException(NotificationDomainException.Code.UNAUTHORIZED,
                     "verified service JWT principal is required");
         }
-        String tenantId = claim(jwt, "tenant_id");
+        String tenantId = requirePlatformTenant(jwt);
         String principalId = jwt.getToken().getSubject();
         if (principalId == null || principalId.isBlank()) {
             throw new NotificationDomainException(NotificationDomainException.Code.UNAUTHORIZED,
@@ -86,6 +86,16 @@ public final class NotificationPrincipalResolver {
                     "required principal claim is missing");
         }
         return string;
+    }
+
+    /** Phase 1 has a single platform tenant: a missing or foreign tenant is never accepted. */
+    private static String requirePlatformTenant(JwtAuthenticationToken authentication) {
+        String tenant = claim(authentication, "tenant_id");
+        if (!"platform".equals(tenant)) {
+            throw new NotificationDomainException(NotificationDomainException.Code.FORBIDDEN,
+                    "tenant is not allowed");
+        }
+        return tenant;
     }
 
     private static java.util.Optional<String> optionalClaim(JwtAuthenticationToken authentication, String name) {

@@ -55,8 +55,9 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    FailClosedPep failClosedPep(PdpPort pdpPort) {
-        return new FailClosedPep(pdpPort, java.time.Clock.systemUTC());
+    FailClosedPep failClosedPep(PdpPort pdpPort, ResourceServerSecurityProperties properties) {
+        return new FailClosedPep(pdpPort, java.time.Clock.systemUTC(),
+                properties.getPolicyCacheTtl(), properties.getPdpTimeout());
     }
 
     @Bean

@@ -63,4 +63,10 @@ class IamEnvelopedJwkSourceTest {
         assertThrows(IllegalStateException.class,
                 () -> source.get(new JWKSelector(new JWKMatcher.Builder().build()), null));
     }
+
+    @Test
+    void oversizedDocumentsAreRejectedBeforeParsing() {
+        String oversized = "{\"data\":{\"keys\":[" + "x".repeat(262_145) + "]}}";
+        assertThrows(IllegalStateException.class, () -> IamEnvelopedJwkSource.parseJwkSet(oversized));
+    }
 }

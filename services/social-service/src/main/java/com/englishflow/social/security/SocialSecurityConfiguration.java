@@ -113,6 +113,7 @@ public class SocialSecurityConfiguration {
             SocialAuthorityAttemptFilter authorityAttemptFilter,
             ClientAuthorityHeaderFilter clientAuthorityHeaderFilter,
             SecurityErrorWriter errorWriter,
+            JwtDecoder decoder,
             SocialJwtAuthenticationConverter jwtAuthenticationConverter) throws Exception {
         AuthenticationEntryPoint entryPoint = (request, response, exception) ->
                 errorWriter.write(request, response, 401, "UNAUTHENTICATED", "authentication required");
@@ -141,7 +142,7 @@ public class SocialSecurityConfiguration {
             http.oauth2ResourceServer(oauth2 -> oauth2
                     .authenticationEntryPoint(entryPoint)
                     .accessDeniedHandler(deniedHandler)
-                    .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter)));
+                    .jwt(jwt -> jwt.decoder(decoder).jwtAuthenticationConverter(jwtAuthenticationConverter)));
         }
         return http.build();
     }

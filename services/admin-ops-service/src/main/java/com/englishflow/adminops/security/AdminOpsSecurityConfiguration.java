@@ -102,6 +102,7 @@ public class AdminOpsSecurityConfiguration {
             AdminOpsResourceServerProperties properties,
             ClientAuthorityHeaderFilter clientAuthorityHeaderFilter,
             AdminOpsSecurityErrorWriter errorWriter,
+            JwtDecoder decoder,
             AdminOpsJwtAuthenticationConverter jwtAuthenticationConverter) throws Exception {
         AuthenticationEntryPoint entryPoint = (request, response, exception) ->
                 errorWriter.write(request, response, 401, "ADMIN_UNAUTHENTICATED", "authentication required");
@@ -129,7 +130,7 @@ public class AdminOpsSecurityConfiguration {
             http.oauth2ResourceServer(oauth2 -> oauth2
                     .authenticationEntryPoint(entryPoint)
                     .accessDeniedHandler(deniedHandler)
-                    .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter)));
+                    .jwt(jwt -> jwt.decoder(decoder).jwtAuthenticationConverter(jwtAuthenticationConverter)));
         }
         return http.build();
     }

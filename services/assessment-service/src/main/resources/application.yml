@@ -61,8 +61,6 @@ assessment:
     password: ${ASSESSMENT_DB_PASSWORD:}
     driver-class-name: ${ASSESSMENT_DB_DRIVER:com.mysql.cj.jdbc.Driver}
     tolerate-corrupt-legacy-rows: ${ASSESSMENT_TOLERATE_CORRUPT_LEGACY_ROWS:false}
-  security:
-    default-deny: ${ASSESSMENT_DEFAULT_DENY:true}
   scoring:
     client-visible: false
 

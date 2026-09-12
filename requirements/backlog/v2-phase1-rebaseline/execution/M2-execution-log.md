@@ -184,6 +184,12 @@
 - 验证（JDK 25）：11 服务合计 `843/0/0/0`；模板 22。
 - 下一步：7c（死配置/tenant 严格性/显式接线/超限单测/证据元数据）。
 
+## 2026-09-11 M2-003 Batch 7c：P2/P3 清理与统一
+
+- `FailClosedPep` 支持可配置 TTL/超时并接入 learning/learner 属性；删除 assessment 死配置；admin-ops/notification/commerce/analytics 统一强制 platform 租户；social/admin-ops 显式 `.decoder(...)`；超限 JWKS 单测同步 12 副本。
+- 验证（JDK 25）：learning 139、learner 48、assessment 55、social 66、admin-ops 62、notification 94、commerce 90、analytics 47，全通过。
+- 下一步：7d 全矩阵 + 终审。
+
 ## 2026-09-04 IAM 账户/密码并发安全检查点
 
 - 源码：`9deb899`。认证改为锁前单次 cost-12 BCrypt、锁内 current principal/hash/status/counter 复核；credential epoch 在校验期间变化时统一 `INVALID_CREDENTIALS` 且零写入，避免旧在途请求污染或锁死刚重置的新凭据。
