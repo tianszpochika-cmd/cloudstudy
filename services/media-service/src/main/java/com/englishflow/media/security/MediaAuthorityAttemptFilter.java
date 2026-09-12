@@ -15,9 +15,12 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public final class MediaAuthorityAttemptFilter extends OncePerRequestFilter {
 
     private static final Set<String> REJECTED_HEADERS = Set.of(
-            "x-role", "x-b5-role", "x-tenant-id", "x-owner-id", "x-permission");
+            "x-role", "x-b5-role", "x-tenant-id", "x-owner-id", "x-permission", "x-authority",
+            "x-workload-identity", "x-service-name", "x-forwarded-client-cert",
+            "x-forwarded-client-cert-info", "x-ssl-client-cert", "x-ssl-client-subject-dn");
     private static final Set<String> REJECTED_PARAMETERS = Set.of(
-            "tenantId", "ownerId", "tenant_id", "owner_id", "role", "permission", "contentRights");
+            "tenantId", "ownerId", "tenantid", "ownerid", "tenant_id", "owner_id",
+            "role", "permission", "authority", "contentRights");
 
     private final MediaSecurityErrorWriter errorWriter;
 

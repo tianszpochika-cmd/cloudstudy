@@ -87,6 +87,12 @@
 - 验证（JDK 25）：content `113/0/0/0`、learner `30/0/0/0`；新增负例测试全通过。
 - Batch 1（learning/assessment/content/learner）完成；下一步 Batch 2（media/social/admin-ops）。
 
+## 2026-09-11 M2-003 Batch 2①：media-service
+
+- 新增 JWT authorities 转换器与 `MediaHttpPrincipals` 默认拒绝入口，`MediaController.context()` 统一接入；头过滤器由 5 个拒绝头扩展到基线 12 个（含工作负载身份/mTLS 头）与 10 个参数。
+- 验证（JDK 25）：media `51/0/0/0`；media contract PASS。
+- 下一步 Batch 2② social-service、③ admin-ops-service。
+
 ## 2026-09-04 IAM 账户/密码并发安全检查点
 
 - 源码：`9deb899`。认证改为锁前单次 cost-12 BCrypt、锁内 current principal/hash/status/counter 复核；credential epoch 在校验期间变化时统一 `INVALID_CREDENTIALS` 且零写入，避免旧在途请求污染或锁死刚重置的新凭据。

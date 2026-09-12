@@ -34,7 +34,6 @@ import jakarta.validation.constraints.PositiveOrZero;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.validation.annotation.Validated;
@@ -160,40 +159,18 @@ public class MediaController {
                 || !authentication.isAuthenticated()) {
             return MediaAuthorizationContext.anonymous();
         }
+        MediaHttpPrincipals.VerifiedMediaPrincipal principal = MediaHttpPrincipals.requireJwt(authentication);
         Jwt jwt = jwtAuthentication.getToken();
-        String subject = firstClaim(jwt, "sub");
-        String tenant = firstClaim(jwt, "tenant_id", "tenantId", "tid");
         String phase = firstClaim(jwt, "phase");
-        if (subject == null || subject.isBlank()) {
-            return MediaAuthorizationContext.anonymous();
-        }
-        Set<String> roles = claimValues(jwt.getClaims().get("roles"));
-        Set<String> permissions = claimValues(jwt.getClaims().get("permissions"));
-        permissions = new LinkedHashSet<>(permissions);
-        permissions.addAll(claimValues(jwt.getClaims().get("scope")));
-        for (GrantedAuthority authority : authentication.getAuthorities()) {
-            String value = authority.getAuthority();
-            if (value == null || value.isBlank()) {
-                continue;
-            }
-            if (value.startsWith("ROLE_")) {
-                roles = new LinkedHashSet<>(roles);
-                roles.add(value.substring("ROLE_".length()));
-            } else if (value.startsWith("SCOPE_")) {
-                permissions.add(value.substring("SCOPE_".length()));
-            } else {
-                permissions.add(value);
-            }
-        }
         String consentClaim = firstClaim(jwt, "media_consent", "consent");
         boolean consent = "true".equalsIgnoreCase(consentClaim) || "granted".equalsIgnoreCase(consentClaim);
         boolean deviceTrusted = Boolean.TRUE.equals(jwt.getClaims().get("device_trusted"))
                 || "true".equalsIgnoreCase(firstClaim(jwt, "device_trusted"));
         return MediaAuthorizationContext.verified(
-                subject,
-                tenant == null ? "unknown" : tenant,
-                roles,
-                permissions,
+                principal.subject(),
+                principal.tenantId(),
+                principal.roles(),
+                principal.permissions(),
                 phase == null ? "UNKNOWN" : phase,
                 claimValues(jwt.getClaims().get("content_rights")),
                 consent,

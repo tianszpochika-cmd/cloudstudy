@@ -60,11 +60,17 @@ public class MediaSecurityConfiguration {
     }
 
     @Bean
+    MediaJwtAuthenticationConverter mediaJwtAuthenticationConverter() {
+        return new MediaJwtAuthenticationConverter();
+    }
+
+    @Bean
     SecurityFilterChain mediaSecurityFilterChain(
             HttpSecurity http,
             MediaResourceServerProperties properties,
             ObjectProvider<JwtDecoder> decoderProvider,
             MediaAuthorityAttemptFilter authorityAttemptFilter,
+            MediaJwtAuthenticationConverter jwtAuthenticationConverter,
             MediaSecurityErrorWriter errorWriter) throws Exception {
         AuthenticationEntryPoint entryPoint = (request, response, exception) ->
                 errorWriter.write(response, 401, "UNAUTHENTICATED", "authentication required");
@@ -92,7 +98,7 @@ public class MediaSecurityConfiguration {
             http.oauth2ResourceServer(oauth2 -> oauth2
                     .authenticationEntryPoint(entryPoint)
                     .accessDeniedHandler(deniedHandler)
-                    .jwt(jwt -> jwt.decoder(decoder)));
+                    .jwt(jwt -> jwt.decoder(decoder).jwtAuthenticationConverter(jwtAuthenticationConverter)));
         }
         return http.build();
     }
