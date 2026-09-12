@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-018",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "e9c4ebd7876b6cabb7d03168df7a3547932e2e0e",
+  "sourceCommit": "88f38ebec17bf06f5c3d5120811170ad8ad1388f",
   "artifactDigests": [
     {
       "path": "config/b26-event-runtime.json",
@@ -147,7 +147,7 @@
     {
       "path": "scripts/audit/p1r-m1-018-d2-total-gate.mjs",
       "algorithm": "sha256",
-      "digest": "0998fffee66eb300f7d3d0f6cc40e31a0afb4d25ff4e05097ecec5231cfabe28"
+      "digest": "f826234f42f07283268899ab1c967532d466ca4e1eb0dee5c5fec7dc5f7f4fff"
     },
     {
       "path": "scripts/audit/p1r-notification-sync-support-contract-check.mjs",
@@ -227,7 +227,7 @@
     {
       "path": "tests/p1r/m1-018/p1r-m1-018-d2-total-gate.test.mjs",
       "algorithm": "sha256",
-      "digest": "5693133769fa09114cd8fc856f95acb82dcf9b377b4864a4aa7044d4cfa221c2"
+      "digest": "3bcd3930afa30e3ab91b1dd733b6a8ba5b8153611a233340543449f25422cfe9"
     },
     {
       "path": "tests/p1r/p1r-analytics-ingress-contract.test.mjs",
@@ -555,15 +555,28 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-12T15:59:44.043Z",
         "details": "Current-source artifact digest rebase after P1R-M0-006 moved apps/mobile to the uni-app vite 8 compiler line (apps/mobile/package.json, pnpm-lock.yaml), migrated the previously ignored pnpm overrides into pnpm-workspace.yaml and added publicHoistPattern, removed the dead pnpm.overrides field from the root package.json, corrected the dependency gate so it decides on reported high/critical severities, and refreshed config/toolchain-baseline.json portsCanonicalSha256 plus the M0 devex evidence. Original provenance, review history and runtime status unchanged."
+      },
+      {
+        "taskId": "P1R-M1-018",
+        "sourceCommit": "88f38ebec17bf06f5c3d5120811170ad8ad1388f",
+        "auditedImplementationSource": "88f38ebec17bf06f5c3d5120811170ad8ad1388f",
+        "integrationCheckpoint": "88f38ebec17bf06f5c3d5120811170ad8ad1388f",
+        "reviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-12T17:05:42.981Z",
+        "details": "Current-source artifact digest rebase after repairing this gate itself: its local ledger parser required the status cell to be the final cell and therefore matched none of the 108 rows once the 资产验证 column was added on 2026-09-10, and the anti-wash guard pinned M0-006 to BLOCKED/BLOCKED. The parser now matches the last two cells and the guard accepts a resolution carrying manifest evidence. Original provenance, review history and runtime status unchanged."
       }
     ],
-    "previousCurrentSourceCommit": "d0849b3eb96ed57c8b29097ba1a78ab7690b158a",
+    "previousCurrentSourceCommit": "e9c4ebd7876b6cabb7d03168df7a3547932e2e0e",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
     "currentSourceRevalidationTask": "P1R-M0-006",
     "currentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-12T15:59:44.043Z",
-    "currentSourceRevalidationAuditedImplementationSource": "e9c4ebd7876b6cabb7d03168df7a3547932e2e0e",
-    "currentSourceRevalidationIntegrationCheckpoint": "e9c4ebd7876b6cabb7d03168df7a3547932e2e0e"
+    "currentSourceRevalidationFinishedAt": "2026-09-12T17:05:42.981Z",
+    "currentSourceRevalidationAuditedImplementationSource": "88f38ebec17bf06f5c3d5120811170ad8ad1388f",
+    "currentSourceRevalidationIntegrationCheckpoint": "88f38ebec17bf06f5c3d5120811170ad8ad1388f",
+    "previousCurrentSourceRevalidationTask": "P1R-M0-006",
+    "previousCurrentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
+    "previousCurrentSourceRevalidationFinishedAt": "2026-09-12T15:59:44.043Z"
   }
 }
