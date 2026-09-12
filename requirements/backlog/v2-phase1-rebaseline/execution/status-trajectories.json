@@ -1,7 +1,7 @@
 {
   "schemaVersion": "p1r.status-trajectories.v1",
   "historyMode": "m0-integration-reconstruction",
-  "recordedAt": "2026-08-30T05:06:43+08:00",
+  "recordedAt": "2026-09-12T22:17:26.076Z",
   "note": "M0 trajectories were reconstructed during the first integration review from the task execution records and canonical decisions. From M1 onward, every transition must be recorded when it occurs.",
   "records": [
     {
@@ -455,6 +455,19 @@
       "actor": "root-coordinator",
       "reason": "Dependency P1R-M2-003 is accepted. A read-only survey found the data-ownership contract surface is complete and statically checked, but runtime verification is absent: audit-service does not exist, commerce has no Flyway dependency, most spring.flyway properties are dead under Boot 4, tenant guards have real DB-level bypass surfaces (media asset PK, content cross-tenant upsert, assessment unbounded load, gamification reads, notification unknown-tenant default) and credentials/minimal grants are not runtime-verified. Implementation batches A-D are recorded in execution/P1R-M2-004.md; runtime evidence remains NOT_RUNTIME_VERIFIED.",
       "evidencePath": "requirements/backlog/v2-phase1-rebaseline/execution/P1R-M2-004.md"
+    },
+    {
+      "taskId": "P1R-M2-005",
+      "path": [
+        "PLANNED",
+        "READY",
+        "IN_PROGRESS",
+        "REVIEW"
+      ],
+      "recordedAt": "2026-09-12T22:17:26.076Z",
+      "actor": "agent:p1r_implementation:deepseek-harness",
+      "reason": "The Kafka transport, outbox publisher, consumer deduplication, DLQ and replay foundations are implemented and every evidence type the task names is now produced by a scripted harness rather than by hand: duplicate delivery is absorbed by the (consumerGroup, eventId) receipt, one aggregate stays in one partition and is consumed in publish order, an unreadable envelope and a transiently unprocessable event both reach the dead letter topic, the same outbox row survives a broker outage and publishes after recovery, and replaying a dead letter cannot apply its effect twice. Submitted to REVIEW: acceptance is an independent reviewer decision, and this implementer also changed a runtime harness and the reconcile migration runner, so it must not accept its own work.",
+      "evidencePath": "evidence/p1r/m2/P1R-M2-005/event-runtime-harness-2026-09-12.json"
     }
   ]
 }
