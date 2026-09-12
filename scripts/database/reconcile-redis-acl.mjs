@@ -15,7 +15,9 @@ const services = [
   { id: 'social-service', user: 'svc_social', namespace: 'social' },
   { id: 'notification-service', user: 'svc_notification', namespace: 'notification' },
   { id: 'analytics-service', user: 'svc_analytics', namespace: 'analytics' },
-  { id: 'admin-ops-service', user: 'svc_adminops', namespace: 'admin-ops' },
+  // The ACL user name follows the same <svc>_<id without the -service suffix, dashes to underscores>
+  // convention as the MySQL credential so an operator finds the same principal in both stores.
+  { id: 'admin-ops-service', user: 'svc_admin_ops', namespace: 'admin-ops' },
   { id: 'commerce-service', user: 'svc_commerce', namespace: 'commerce' },
   { id: 'audit-service', user: 'svc_audit', namespace: 'audit' },
   { id: 'workflow-service', user: 'svc_workflow', namespace: 'workflow' },

@@ -3,23 +3,13 @@ import crypto from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { runMysql as runMysqlClient } from './lib/mysql-client.mjs';
+import { readOwnerManifest } from './lib/owner-manifest.mjs';
 import { repositoryRoot } from './lib/migration-utils.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
-const ownerManifest = JSON.parse(fs.readFileSync(path.join(root, 'config/b17-runtime-services.json'), 'utf8'));
-// Platform services own a schema and an independent credential but are not Phase 1 domain owners,
-// so they stay out of config/b17-runtime-services.json, whose validator pins the Phase 1 domain
-// service order. audit-service has no runtime Flyway (unlike iam-service, which self-migrates), so
-// its schema and DML-only credential have to be provisioned exactly like a domain owner's.
-const platformOwners = [
-  {
-    id: 'audit-service',
-    schema: 'audit_service',
-    dbCredential: 'svc_audit',
-    migrationPath: 'services/audit-service/src/main/resources/db/migration/V1__create_audit_service_schema.sql'
-  }
-];
-const owners = { ...ownerManifest, services: [...ownerManifest.services, ...platformOwners] };
+// The owner list, including the platform services that own a schema without being Phase 1 domain
+// owners, lives in ./lib/owner-manifest.mjs so the runtime harness verifies the same set.
+const owners = readOwnerManifest(root);
 const apply = process.argv.includes('--apply');
 const mysqlBin = process.env.MYSQL_BIN || 'mysql';
 const host = process.env.MYSQL_HOST || '127.0.0.1';

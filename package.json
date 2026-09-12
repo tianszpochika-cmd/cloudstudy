@@ -160,7 +160,8 @@
     "test": "turbo test",
     "lint": "turbo lint",
     "typecheck": "turbo typecheck",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "p1r:m2-004:runtime": "node scripts/runtime/p1r-m2-004-runtime.mjs"
   },
   "devDependencies": {
     "playwright": "^1.63.0",
