@@ -172,6 +172,12 @@
 - 验证（JDK 25）：11 服务合计 `766/0/0/0`；service-template `22/0/0/0`。
 - 下一步：7b fail-closed PDP/策略缓存与入口守卫。
 
+## 2026-09-11 M2-003 Batch 7b 原型：learning fail-closed PEP
+
+- 新增 `PdpPort`/`PdpDecision`/`UnavailablePdpPort`/`FailClosedPep`（缓存未命中/过期、超时、未实现、null、版本不匹配、撤销未知均拒绝）/`PdpActivationGuard`（动态事实必需且无 PDP 则拒绝启动），并在 SecurityConfiguration 装配 Bean。
+- 验证（JDK 25）：learning 138/0/0（+7 测试）。
+- 下一步：7b 推广到其余 10 服务与模板。
+
 ## 2026-09-04 IAM 账户/密码并发安全检查点
 
 - 源码：`9deb899`。认证改为锁前单次 cost-12 BCrypt、锁内 current principal/hash/status/counter 复核；credential epoch 在校验期间变化时统一 `INVALID_CREDENTIALS` 且零写入，避免旧在途请求污染或锁死刚重置的新凭据。
