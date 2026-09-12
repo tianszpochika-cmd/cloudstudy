@@ -1,0 +1,74 @@
+{
+  "kind": "p1r-m2-003-pep-boundary-evidence",
+  "taskId": "P1R-M2-003",
+  "recordedAt": "2026-09-12T13:08:54+08:00",
+  "sourceCommit": "28fea02ffc72e92d4dde3b6449bc15533c341269",
+  "supersedes": "evidence/p1r/m2/P1R-M2-003/runtime-evidence-2026-09-11.json (removed; its claims are fully re-verified and extended in this file)",
+  "environment": {
+    "toolchain": {
+      "java": "OpenJDK 25.0.2",
+      "maven": "3.9.12",
+      "node": "20.19.5"
+    },
+    "runtimeSmoke": {
+      "iam": "iam-service local profile, in-memory persistence, ephemeral RS256 keys, 127.0.0.1:18087",
+      "domainService": "learning-service, security.resource-server.enabled=true, learning.persistence.mode=fail-closed, 127.0.0.1:18090",
+      "database": "not required for this boundary smoke; service schemas/Flyway remain with M2-004"
+    }
+  },
+  "suiteMatrix": {
+    "command": "mvn -f services/<service>/pom.xml test (JDK 25)",
+    "result": "PASS",
+    "totals": {
+      "services": 11,
+      "tests": 854,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "services": [
+      {"name": "learning-service", "tests": 139},
+      {"name": "assessment-service", "tests": 55},
+      {"name": "content-service", "tests": 131},
+      {"name": "learner-service", "tests": 48},
+      {"name": "media-service", "tests": 69},
+      {"name": "social-service", "tests": 66},
+      {"name": "admin-ops-service", "tests": 62},
+      {"name": "notification-service", "tests": 94},
+      {"name": "commerce-service", "tests": 90},
+      {"name": "analytics-service", "tests": 47},
+      {"name": "gamification-service", "tests": 53}
+    ],
+    "serviceTemplate": {"name": "service-template", "tests": 23, "failures": 0, "errors": 0}
+  },
+  "runtimeSmoke": {
+    "command": "POST /api/v1/auth/register (IAM) then GET /internal/v1/learning/plan/current (learning-service)",
+    "register": {"status": 201, "accessToken": "issued by IAM local profile"},
+    "probes": [
+      {"case": "no-token", "status": 401, "expectation": "missing JWT is rejected"},
+      {"case": "tampered-token", "status": 401, "expectation": "invalid signature is rejected"},
+      {"case": "forged-x-role-header", "status": 403, "expectation": "client authority header rejected before controller"},
+      {"case": "valid-token", "status": 404, "expectation": "JWT verified against enveloped IAM JWKS; 404 is the expected non-jdbc route (B25 controller requires learning.persistence.mode=jdbc)"},
+      {"case": "valid-token-forged-x-tenant-id", "status": 403, "expectation": "client tenant header rejected after authentication"}
+    ]
+  },
+  "reworkClosure": {
+    "P1-1_fail_closed_pdp": "Compact fail-closed PEP delivered in all 11 domain services (PdpPort, PdpRequest, PdpDecision with UNKNOWN revocation never treated as not-revoked, UnavailablePdpPort, FailClosedPep with configurable TTL/timeout, PdpActivationGuard refusing startup when dynamic facts are required without a provisioned PDP). learning/learner wire the configured policy-cache-ttl/pdp-timeout; service-template already carried richer PdpPort/PolicyCache/PepGuard with fail-closed tests.",
+    "P1-2_jwt_negatives": "Every domain service and service-template gained a decoder-level JWT negative test (local enveloped-JWKS HTTP fixture and Nimbus-signed tokens): valid token accepted; bad signature, expiry, wrong issuer, wrong audience and non-RS256 algorithms rejected.",
+    "P1-3_dynamic_facts": "Entry gates keep static verified facts; dynamic-fact consultation is routed through the fail-closed PEP seam and business activation is guarded by PdpActivationGuard (startup refusal without a provisioned PDP). Endpoint-level dynamic consultation remains a documented boundary until the PDP source is provisioned.",
+    "P2-1_dead_config": "FailClosedPep consumes the previously dead policy-cache-ttl/pdp-timeout properties in learning/learner; the unused ASSESSMENT_DEFAULT_DENY configuration was removed.",
+    "P3_items": "Tenant strictness unified to platform in admin-ops/notification/commerce/analytics token-side resolvers; oversized JWKS (>262144 chars) covered by test in all copies; social/admin-ops wire an explicit JwtDecoder; evidence metadata now matches its filename."
+  },
+  "keyFindingFixed": {
+    "summary": "IAM publishes the contract-mandated ApiSuccessEnvelope JWKS ({\"data\":{\"keys\":[...]}}), but all 11 domain services and service-template used the stock NimbusJwtDecoder.withJwkSetUri parser, which only accepts a bare RFC 7517 JWK Set. Real IAM access tokens were therefore rejected with 401 by every domain service; only the Gateway had an envelope-aware source.",
+    "fix": "IamEnvelopedJwkSource copied into every domain service and service-template (envelope and bare-set parsing, cached refresh, fail-closed for empty/invalid/oversized documents), wired through a DefaultJWTProcessor plus JWSVerificationKeySelector decoder. The IAM contract is unchanged; the repair is on the consumer side."
+  },
+  "notCovered": [
+    "phase/consent/rights as live endpoint inputs: the fail-closed PEP seam exists and guards activation, but no business endpoint consults it yet because Phase 1 IAM tokens do not carry those facts and the PDP source is not provisioned.",
+    "Endpoint-level fine-grained @PreAuthorize permission matrix is not applied; services enforce verified identity, platform tenant, role/permission presence and per-domain PEP checks.",
+    "Service-owned MySQL schemas, Flyway migrations and cross-tenant database guards remain with M2-004.",
+    "Only learning-service was exercised as a real process smoke; other services are covered by their security unit suites (JWT negatives, PEP fail-closed, header rejection, converter/resolver negatives).",
+    "Notification/commerce provider signature verification and durable outbound delivery remain with their later tasks."
+  ],
+  "overallPhase": "D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED"
+}

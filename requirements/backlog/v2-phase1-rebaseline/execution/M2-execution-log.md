@@ -190,6 +190,12 @@
 - 验证（JDK 25）：learning 139、learner 48、assessment 55、social 66、admin-ops 62、notification 94、commerce 90、analytics 47，全通过。
 - 下一步：7d 全矩阵 + 终审。
 
+## 2026-09-12 M2-003 Batch 7d：返工后全矩阵与证据重建
+
+- 11 服务矩阵合计 `854/0/0/0`；service-template 23；learning 真实进程冒烟复现（401/401/403/合法令牌通过/伪造租户头 403）。
+- 证据重建为 `evidence/p1r/m2/P1R-M2-003/runtime-evidence-2026-09-12.json`（sourceCommit `28fea02`）；旧文件移除。
+- 下一步：最终独立复审 → manifest → ACCEPTED。
+
 ## 2026-09-04 IAM 账户/密码并发安全检查点
 
 - 源码：`9deb899`。认证改为锁前单次 cost-12 BCrypt、锁内 current principal/hash/status/counter 复核；credential epoch 在校验期间变化时统一 `INVALID_CREDENTIALS` 且零写入，避免旧在途请求污染或锁死刚重置的新凭据。
