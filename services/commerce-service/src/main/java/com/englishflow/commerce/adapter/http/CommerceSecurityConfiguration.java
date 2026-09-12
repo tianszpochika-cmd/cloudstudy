@@ -22,6 +22,7 @@ import org.springframework.security.oauth2.jwt.JwtValidators;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import com.englishflow.commerce.security.CommerceJwtAuthenticationConverter;
+import com.englishflow.commerce.security.IamEnvelopedJwkSource;
 
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
@@ -38,7 +39,7 @@ public class CommerceSecurityConfiguration {
         if (issuerUri.isBlank() || jwkSetUri.isBlank() || audience.isBlank()) {
             throw new IllegalStateException("commerce resource server requires issuer-uri, jwk-set-uri and audience");
         }
-        NimbusJwtDecoder decoder = NimbusJwtDecoder.withJwkSetUri(jwkSetUri).build();
+        NimbusJwtDecoder decoder = IamEnvelopedJwkSource.decoder(jwkSetUri, java.time.Clock.systemUTC());
         OAuth2TokenValidator<Jwt> validator = jwtValidator(issuerUri, audience);
         decoder.setJwtValidator(validator);
         return decoder;

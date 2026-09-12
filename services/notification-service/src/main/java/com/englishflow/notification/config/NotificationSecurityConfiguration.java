@@ -27,6 +27,7 @@ import org.springframework.security.web.access.intercept.AuthorizationFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.englishflow.notification.security.IamEnvelopedJwkSource;
 import com.englishflow.notification.security.NotificationAuthorityAttemptFilter;
 import com.englishflow.notification.security.NotificationJwtAuthenticationConverter;
 import com.englishflow.notification.security.NotificationSecurityErrorWriter;
@@ -52,7 +53,7 @@ public class NotificationSecurityConfiguration {
         if (issuerUri.isBlank() || jwkSetUri.isBlank() || audience.isBlank()) {
             throw new IllegalStateException("notification resource server requires issuer-uri, jwk-set-uri and audience");
         }
-        NimbusJwtDecoder decoder = NimbusJwtDecoder.withJwkSetUri(jwkSetUri).build();
+        NimbusJwtDecoder decoder = IamEnvelopedJwkSource.decoder(jwkSetUri, java.time.Clock.systemUTC());
         OAuth2TokenValidator<Jwt> validator = jwtValidator(issuerUri, audience);
         decoder.setJwtValidator(validator);
         return decoder;
