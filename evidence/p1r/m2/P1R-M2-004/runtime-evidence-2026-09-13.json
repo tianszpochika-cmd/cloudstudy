@@ -1,0 +1,1836 @@
+{
+  "schema": "m2.data-ownership.runtime-evidence.v1",
+  "taskId": "P1R-M2-004",
+  "result": "PARTIAL",
+  "sourceCommit": "81c7ccc29f638cfc975f9a1634cb46a9a843434a",
+  "startedAt": "2026-09-12T19:44:37.127Z",
+  "finishedAt": "2026-09-12T19:45:12.512Z",
+  "ownerCount": 13,
+  "requirements": [
+    {
+      "id": "M2-004-OWNER-SCHEMA-GRANTS",
+      "status": "VERIFIED"
+    },
+    {
+      "id": "M2-004-CROSS-OWNER-DENY",
+      "status": "VERIFIED"
+    },
+    {
+      "id": "M2-004-REDIS-NAMESPACE-ACL",
+      "status": "VERIFIED"
+    },
+    {
+      "id": "M2-004-FLYWAY-EMPTY-AND-EXISTING",
+      "status": "VERIFIED"
+    },
+    {
+      "id": "M2-004-TENANT-GUARD",
+      "status": "NOT_VERIFIABLE_HERE",
+      "reason": "needs per-service HTTP denials with two tenants; the owner services expose no tenant-scoped write endpoint that the harness may call without a synthetic per-owner account (see P1R-M2-009)"
+    },
+    {
+      "id": "M2-004-REDIS-REBUILD",
+      "status": "NOT_VERIFIABLE_HERE",
+      "reason": "needs a projection rebuild entrypoint; no owner service publishes one yet (see P1R-M2-006)"
+    },
+    {
+      "id": "M2-004-ROLLBACK-COMPENSATION",
+      "status": "NOT_VERIFIABLE_HERE",
+      "reason": "needs workflow-service compensation and recovery receipts; the service does not exist yet (see P1R-M2-006)"
+    },
+    {
+      "id": "M2-004-RETENTION-DELETE-HOLD",
+      "status": "NOT_VERIFIABLE_HERE",
+      "reason": "needs the retention/deletion runtime implementation behind the P1R-M1-017 frozen contract (see P1R-M2-005)"
+    }
+  ],
+  "checks": [
+    {
+      "id": "owner-schema-grants:learner-service",
+      "schema": "learner_service",
+      "credential": "svc_learner",
+      "source": "external-migration",
+      "migrationMode": "external",
+      "tableCount": 14,
+      "readAllowed": true,
+      "ddlDenied": true,
+      "ddlErrorCode": "1142",
+      "alterDenied": true,
+      "alterErrorCode": "1142",
+      "probeObjectsLeaked": 0,
+      "grantCount": 2,
+      "foreignSchemaGrants": 0,
+      "result": "PASS"
+    },
+    {
+      "id": "owner-schema-grants:content-service",
+      "schema": "content_service",
+      "credential": "svc_content",
+      "source": "external-migration",
+      "migrationMode": "external",
+      "tableCount": 15,
+      "readAllowed": true,
+      "ddlDenied": true,
+      "ddlErrorCode": "1142",
+      "alterDenied": true,
+      "alterErrorCode": "1142",
+      "probeObjectsLeaked": 0,
+      "grantCount": 2,
+      "foreignSchemaGrants": 0,
+      "result": "PASS"
+    },
+    {
+      "id": "owner-schema-grants:learning-service",
+      "schema": "learning_service",
+      "credential": "svc_learning",
+      "source": "external-migration",
+      "migrationMode": "external",
+      "tableCount": 23,
+      "readAllowed": true,
+      "ddlDenied": true,
+      "ddlErrorCode": "1142",
+      "alterDenied": true,
+      "alterErrorCode": "1142",
+      "probeObjectsLeaked": 0,
+      "grantCount": 2,
+      "foreignSchemaGrants": 0,
+      "result": "PASS"
+    },
+    {
+      "id": "owner-schema-grants:assessment-service",
+      "schema": "assessment_service",
+      "credential": "svc_assessment",
+      "source": "external-migration",
+      "migrationMode": "external",
+      "tableCount": 21,
+      "readAllowed": true,
+      "ddlDenied": true,
+      "ddlErrorCode": "1142",
+      "alterDenied": true,
+      "alterErrorCode": "1142",
+      "probeObjectsLeaked": 0,
+      "grantCount": 2,
+      "foreignSchemaGrants": 0,
+      "result": "PASS"
+    },
+    {
+      "id": "owner-schema-grants:media-service",
+      "schema": "media_service",
+      "credential": "svc_media",
+      "source": "external-migration",
+      "migrationMode": "external",
+      "tableCount": 5,
+      "readAllowed": true,
+      "ddlDenied": true,
+      "ddlErrorCode": "1142",
+      "alterDenied": true,
+      "alterErrorCode": "1142",
+      "probeObjectsLeaked": 0,
+      "grantCount": 2,
+      "foreignSchemaGrants": 0,
+      "result": "PASS"
+    },
+    {
+      "id": "owner-schema-grants:notification-service",
+      "schema": "notification_service",
+      "credential": "svc_notification",
+      "source": "external-migration",
+      "migrationMode": "external",
+      "tableCount": 17,
+      "readAllowed": true,
+      "ddlDenied": true,
+      "ddlErrorCode": "1142",
+      "alterDenied": true,
+      "alterErrorCode": "1142",
+      "probeObjectsLeaked": 0,
+      "grantCount": 2,
+      "foreignSchemaGrants": 0,
+      "result": "PASS"
+    },
+    {
+      "id": "owner-schema-grants:gamification-service",
+      "schema": "gamification_service",
+      "credential": "svc_gamification",
+      "source": "external-migration",
+      "migrationMode": "external",
+      "tableCount": 12,
+      "readAllowed": true,
+      "ddlDenied": true,
+      "ddlErrorCode": "1142",
+      "alterDenied": true,
+      "alterErrorCode": "1142",
+      "probeObjectsLeaked": 0,
+      "grantCount": 2,
+      "foreignSchemaGrants": 0,
+      "result": "PASS"
+    },
+    {
+      "id": "owner-schema-grants:social-service",
+      "schema": "social_service",
+      "credential": "svc_social",
+      "source": "external-migration",
+      "migrationMode": "external",
+      "tableCount": 10,
+      "readAllowed": true,
+      "ddlDenied": true,
+      "ddlErrorCode": "1142",
+      "alterDenied": true,
+      "alterErrorCode": "1142",
+      "probeObjectsLeaked": 0,
+      "grantCount": 2,
+      "foreignSchemaGrants": 0,
+      "result": "PASS"
+    },
+    {
+      "id": "owner-schema-grants:commerce-service",
+      "schema": "commerce_service",
+      "credential": "svc_commerce",
+      "source": "external-migration",
+      "migrationMode": "external",
+      "tableCount": 13,
+      "readAllowed": true,
+      "ddlDenied": true,
+      "ddlErrorCode": "1142",
+      "alterDenied": true,
+      "alterErrorCode": "1142",
+      "probeObjectsLeaked": 0,
+      "grantCount": 2,
+      "foreignSchemaGrants": 0,
+      "result": "PASS"
+    },
+    {
+      "id": "owner-schema-grants:admin-ops-service",
+      "schema": "admin_ops_service",
+      "credential": "svc_admin_ops",
+      "source": "external-migration",
+      "migrationMode": "external",
+      "tableCount": 8,
+      "readAllowed": true,
+      "ddlDenied": true,
+      "ddlErrorCode": "1142",
+      "alterDenied": true,
+      "alterErrorCode": "1142",
+      "probeObjectsLeaked": 0,
+      "grantCount": 2,
+      "foreignSchemaGrants": 0,
+      "result": "PASS"
+    },
+    {
+      "id": "owner-schema-grants:analytics-service",
+      "schema": "analytics_service",
+      "credential": "svc_analytics",
+      "source": "external-migration",
+      "migrationMode": "external",
+      "tableCount": 5,
+      "readAllowed": true,
+      "ddlDenied": true,
+      "ddlErrorCode": "1142",
+      "alterDenied": true,
+      "alterErrorCode": "1142",
+      "probeObjectsLeaked": 0,
+      "grantCount": 2,
+      "foreignSchemaGrants": 0,
+      "result": "PASS"
+    },
+    {
+      "id": "owner-schema-grants:audit-service",
+      "schema": "audit_service",
+      "credential": "svc_audit",
+      "source": "external-migration",
+      "migrationMode": "external",
+      "tableCount": 3,
+      "readAllowed": true,
+      "ddlDenied": true,
+      "ddlErrorCode": "1142",
+      "alterDenied": true,
+      "alterErrorCode": "1142",
+      "probeObjectsLeaked": 0,
+      "grantCount": 2,
+      "foreignSchemaGrants": 0,
+      "result": "PASS"
+    },
+    {
+      "id": "owner-schema-grants:iam-service",
+      "schema": "iam_service",
+      "credential": "svc_iam",
+      "source": "self-migrating",
+      "migrationMode": "self",
+      "tableCount": 23,
+      "readAllowed": true,
+      "ddlDenied": false,
+      "ddlErrorCode": null,
+      "alterDenied": false,
+      "alterErrorCode": null,
+      "probeObjectsLeaked": 0,
+      "grantCount": 2,
+      "foreignSchemaGrants": 0,
+      "result": "PASS"
+    },
+    {
+      "id": "cross-owner-deny:learner-service",
+      "probes": [
+        {
+          "target": "content-service",
+          "denied": true,
+          "code": "1142"
+        },
+        {
+          "target": "social-service",
+          "denied": true,
+          "code": "1142"
+        },
+        {
+          "target": "iam-service",
+          "denied": true,
+          "code": "1142"
+        }
+      ],
+      "allDenied": true,
+      "result": "PASS"
+    },
+    {
+      "id": "cross-owner-deny:content-service",
+      "probes": [
+        {
+          "target": "learner-service",
+          "denied": true,
+          "code": "1142"
+        },
+        {
+          "target": "social-service",
+          "denied": true,
+          "code": "1142"
+        },
+        {
+          "target": "iam-service",
+          "denied": true,
+          "code": "1142"
+        }
+      ],
+      "allDenied": true,
+      "result": "PASS"
+    },
+    {
+      "id": "cross-owner-deny:learning-service",
+      "probes": [
+        {
+          "target": "learner-service",
+          "denied": true,
+          "code": "1142"
+        },
+        {
+          "target": "social-service",
+          "denied": true,
+          "code": "1142"
+        },
+        {
+          "target": "iam-service",
+          "denied": true,
+          "code": "1142"
+        }
+      ],
+      "allDenied": true,
+      "result": "PASS"
+    },
+    {
+      "id": "cross-owner-deny:assessment-service",
+      "probes": [
+        {
+          "target": "learner-service",
+          "denied": true,
+          "code": "1142"
+        },
+        {
+          "target": "social-service",
+          "denied": true,
+          "code": "1142"
+        },
+        {
+          "target": "iam-service",
+          "denied": true,
+          "code": "1142"
+        }
+      ],
+      "allDenied": true,
+      "result": "PASS"
+    },
+    {
+      "id": "cross-owner-deny:media-service",
+      "probes": [
+        {
+          "target": "learner-service",
+          "denied": true,
+          "code": "1142"
+        },
+        {
+          "target": "social-service",
+          "denied": true,
+          "code": "1142"
+        },
+        {
+          "target": "iam-service",
+          "denied": true,
+          "code": "1142"
+        }
+      ],
+      "allDenied": true,
+      "result": "PASS"
+    },
+    {
+      "id": "cross-owner-deny:notification-service",
+      "probes": [
+        {
+          "target": "learner-service",
+          "denied": true,
+          "code": "1142"
+        },
+        {
+          "target": "social-service",
+          "denied": true,
+          "code": "1142"
+        },
+        {
+          "target": "iam-service",
+          "denied": true,
+          "code": "1142"
+        }
+      ],
+      "allDenied": true,
+      "result": "PASS"
+    },
+    {
+      "id": "cross-owner-deny:gamification-service",
+      "probes": [
+        {
+          "target": "learner-service",
+          "denied": true,
+          "code": "1142"
+        },
+        {
+          "target": "social-service",
+          "denied": true,
+          "code": "1142"
+        },
+        {
+          "target": "iam-service",
+          "denied": true,
+          "code": "1142"
+        }
+      ],
+      "allDenied": true,
+      "result": "PASS"
+    },
+    {
+      "id": "cross-owner-deny:social-service",
+      "probes": [
+        {
+          "target": "learner-service",
+          "denied": true,
+          "code": "1142"
+        },
+        {
+          "target": "gamification-service",
+          "denied": true,
+          "code": "1142"
+        },
+        {
+          "target": "iam-service",
+          "denied": true,
+          "code": "1142"
+        }
+      ],
+      "allDenied": true,
+      "result": "PASS"
+    },
+    {
+      "id": "cross-owner-deny:commerce-service",
+      "probes": [
+        {
+          "target": "learner-service",
+          "denied": true,
+          "code": "1142"
+        },
+        {
+          "target": "gamification-service",
+          "denied": true,
+          "code": "1142"
+        },
+        {
+          "target": "iam-service",
+          "denied": true,
+          "code": "1142"
+        }
+      ],
+      "allDenied": true,
+      "result": "PASS"
+    },
+    {
+      "id": "cross-owner-deny:admin-ops-service",
+      "probes": [
+        {
+          "target": "learner-service",
+          "denied": true,
+          "code": "1142"
+        },
+        {
+          "target": "gamification-service",
+          "denied": true,
+          "code": "1142"
+        },
+        {
+          "target": "iam-service",
+          "denied": true,
+          "code": "1142"
+        }
+      ],
+      "allDenied": true,
+      "result": "PASS"
+    },
+    {
+      "id": "cross-owner-deny:analytics-service",
+      "probes": [
+        {
+          "target": "learner-service",
+          "denied": true,
+          "code": "1142"
+        },
+        {
+          "target": "gamification-service",
+          "denied": true,
+          "code": "1142"
+        },
+        {
+          "target": "iam-service",
+          "denied": true,
+          "code": "1142"
+        }
+      ],
+      "allDenied": true,
+      "result": "PASS"
+    },
+    {
+      "id": "cross-owner-deny:audit-service",
+      "probes": [
+        {
+          "target": "learner-service",
+          "denied": true,
+          "code": "1142"
+        },
+        {
+          "target": "gamification-service",
+          "denied": true,
+          "code": "1142"
+        },
+        {
+          "target": "iam-service",
+          "denied": true,
+          "code": "1142"
+        }
+      ],
+      "allDenied": true,
+      "result": "PASS"
+    },
+    {
+      "id": "cross-owner-deny:iam-service",
+      "probes": [
+        {
+          "target": "learner-service",
+          "denied": true,
+          "code": "1142"
+        },
+        {
+          "target": "gamification-service",
+          "denied": true,
+          "code": "1142"
+        },
+        {
+          "target": "audit-service",
+          "denied": true,
+          "code": "1142"
+        }
+      ],
+      "allDenied": true,
+      "result": "PASS"
+    },
+    {
+      "id": "redis-namespace-acl:learner-service",
+      "credential": "svc_learner",
+      "namespace": "learner",
+      "declaredPattern": "~learner:*",
+      "expectedPattern": "~learner:*",
+      "patternMatches": true,
+      "ownNamespaceAllowed": true,
+      "foreignNamespace": "content",
+      "foreignNamespaceDenied": true,
+      "result": "PASS"
+    },
+    {
+      "id": "redis-namespace-acl:content-service",
+      "credential": "svc_content",
+      "namespace": "content",
+      "declaredPattern": "~content:*",
+      "expectedPattern": "~content:*",
+      "patternMatches": true,
+      "ownNamespaceAllowed": true,
+      "foreignNamespace": "learner",
+      "foreignNamespaceDenied": true,
+      "result": "PASS"
+    },
+    {
+      "id": "redis-namespace-acl:learning-service",
+      "credential": "svc_learning",
+      "namespace": "learning",
+      "declaredPattern": "~learning:*",
+      "expectedPattern": "~learning:*",
+      "patternMatches": true,
+      "ownNamespaceAllowed": true,
+      "foreignNamespace": "learner",
+      "foreignNamespaceDenied": true,
+      "result": "PASS"
+    },
+    {
+      "id": "redis-namespace-acl:assessment-service",
+      "credential": "svc_assessment",
+      "namespace": "assessment",
+      "declaredPattern": "~assessment:*",
+      "expectedPattern": "~assessment:*",
+      "patternMatches": true,
+      "ownNamespaceAllowed": true,
+      "foreignNamespace": "learner",
+      "foreignNamespaceDenied": true,
+      "result": "PASS"
+    },
+    {
+      "id": "redis-namespace-acl:media-service",
+      "credential": "svc_media",
+      "namespace": "media",
+      "declaredPattern": "~media:*",
+      "expectedPattern": "~media:*",
+      "patternMatches": true,
+      "ownNamespaceAllowed": true,
+      "foreignNamespace": "learner",
+      "foreignNamespaceDenied": true,
+      "result": "PASS"
+    },
+    {
+      "id": "redis-namespace-acl:notification-service",
+      "credential": "svc_notification",
+      "namespace": "notification",
+      "declaredPattern": "~notification:*",
+      "expectedPattern": "~notification:*",
+      "patternMatches": true,
+      "ownNamespaceAllowed": true,
+      "foreignNamespace": "learner",
+      "foreignNamespaceDenied": true,
+      "result": "PASS"
+    },
+    {
+      "id": "redis-namespace-acl:gamification-service",
+      "credential": "svc_gamification",
+      "namespace": "gamification",
+      "declaredPattern": "~gamification:*",
+      "expectedPattern": "~gamification:*",
+      "patternMatches": true,
+      "ownNamespaceAllowed": true,
+      "foreignNamespace": "learner",
+      "foreignNamespaceDenied": true,
+      "result": "PASS"
+    },
+    {
+      "id": "redis-namespace-acl:social-service",
+      "credential": "svc_social",
+      "namespace": "social",
+      "declaredPattern": "~social:*",
+      "expectedPattern": "~social:*",
+      "patternMatches": true,
+      "ownNamespaceAllowed": true,
+      "foreignNamespace": "learner",
+      "foreignNamespaceDenied": true,
+      "result": "PASS"
+    },
+    {
+      "id": "redis-namespace-acl:commerce-service",
+      "credential": "svc_commerce",
+      "namespace": "commerce",
+      "declaredPattern": "~commerce:*",
+      "expectedPattern": "~commerce:*",
+      "patternMatches": true,
+      "ownNamespaceAllowed": true,
+      "foreignNamespace": "learner",
+      "foreignNamespaceDenied": true,
+      "result": "PASS"
+    },
+    {
+      "id": "redis-namespace-acl:admin-ops-service",
+      "credential": "svc_admin_ops",
+      "namespace": "admin-ops",
+      "declaredPattern": "~admin-ops:*",
+      "expectedPattern": "~admin-ops:*",
+      "patternMatches": true,
+      "ownNamespaceAllowed": true,
+      "foreignNamespace": "learner",
+      "foreignNamespaceDenied": true,
+      "result": "PASS"
+    },
+    {
+      "id": "redis-namespace-acl:analytics-service",
+      "credential": "svc_analytics",
+      "namespace": "analytics",
+      "declaredPattern": "~analytics:*",
+      "expectedPattern": "~analytics:*",
+      "patternMatches": true,
+      "ownNamespaceAllowed": true,
+      "foreignNamespace": "learner",
+      "foreignNamespaceDenied": true,
+      "result": "PASS"
+    },
+    {
+      "id": "redis-namespace-acl:audit-service",
+      "credential": "svc_audit",
+      "namespace": "audit",
+      "declaredPattern": "~audit:*",
+      "expectedPattern": "~audit:*",
+      "patternMatches": true,
+      "ownNamespaceAllowed": true,
+      "foreignNamespace": "learner",
+      "foreignNamespaceDenied": true,
+      "result": "PASS"
+    },
+    {
+      "id": "redis-namespace-acl:iam-service",
+      "credential": "svc_iam",
+      "namespace": "iam",
+      "declaredPattern": "~iam:*",
+      "expectedPattern": "~iam:*",
+      "patternMatches": true,
+      "ownNamespaceAllowed": true,
+      "foreignNamespace": "learner",
+      "foreignNamespaceDenied": true,
+      "result": "PASS"
+    },
+    {
+      "id": "migration-existing-schema:learner-service",
+      "migrationFiles": 8,
+      "declaredVersions": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "recordedVersions": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "historyComplete": true,
+      "result": "PASS"
+    },
+    {
+      "id": "migration-existing-schema:content-service",
+      "migrationFiles": 12,
+      "declaredVersions": [
+        1,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "recordedVersions": [
+        1,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "historyComplete": true,
+      "result": "PASS"
+    },
+    {
+      "id": "migration-existing-schema:learning-service",
+      "migrationFiles": 7,
+      "declaredVersions": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "recordedVersions": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "historyComplete": true,
+      "result": "PASS"
+    },
+    {
+      "id": "migration-existing-schema:assessment-service",
+      "migrationFiles": 4,
+      "declaredVersions": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "recordedVersions": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "historyComplete": true,
+      "result": "PASS"
+    },
+    {
+      "id": "migration-existing-schema:media-service",
+      "migrationFiles": 3,
+      "declaredVersions": [
+        1,
+        2,
+        3
+      ],
+      "recordedVersions": [
+        1,
+        2,
+        3
+      ],
+      "historyComplete": true,
+      "result": "PASS"
+    },
+    {
+      "id": "migration-existing-schema:notification-service",
+      "migrationFiles": 5,
+      "declaredVersions": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "recordedVersions": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "historyComplete": true,
+      "result": "PASS"
+    },
+    {
+      "id": "migration-existing-schema:gamification-service",
+      "migrationFiles": 3,
+      "declaredVersions": [
+        1,
+        2,
+        3
+      ],
+      "recordedVersions": [
+        1,
+        2,
+        3
+      ],
+      "historyComplete": true,
+      "result": "PASS"
+    },
+    {
+      "id": "migration-existing-schema:social-service",
+      "migrationFiles": 2,
+      "declaredVersions": [
+        1,
+        2
+      ],
+      "recordedVersions": [
+        1,
+        2
+      ],
+      "historyComplete": true,
+      "result": "PASS"
+    },
+    {
+      "id": "migration-existing-schema:commerce-service",
+      "migrationFiles": 1,
+      "declaredVersions": [
+        1
+      ],
+      "recordedVersions": [
+        1
+      ],
+      "historyComplete": true,
+      "result": "PASS"
+    },
+    {
+      "id": "migration-existing-schema:admin-ops-service",
+      "migrationFiles": 2,
+      "declaredVersions": [
+        1,
+        2
+      ],
+      "recordedVersions": [
+        1,
+        2
+      ],
+      "historyComplete": true,
+      "result": "PASS"
+    },
+    {
+      "id": "migration-existing-schema:analytics-service",
+      "migrationFiles": 1,
+      "declaredVersions": [
+        1
+      ],
+      "recordedVersions": [
+        1
+      ],
+      "historyComplete": true,
+      "result": "PASS"
+    },
+    {
+      "id": "migration-existing-schema:audit-service",
+      "migrationFiles": 2,
+      "declaredVersions": [
+        1,
+        2
+      ],
+      "recordedVersions": [
+        1,
+        2
+      ],
+      "historyComplete": true,
+      "result": "PASS"
+    },
+    {
+      "donor": "learner-service",
+      "migration": "V1__create_learner_service_schema.sql",
+      "expectedTables": 5,
+      "createdTables": 5,
+      "id": "migration-empty-database",
+      "result": "PASS"
+    },
+    {
+      "rejected": true,
+      "residualTables": 0,
+      "id": "migration-invalid-sql-rejected",
+      "result": "PASS"
+    },
+    {
+      "schema": "workflow_service",
+      "reason": "the service has no runtime yet; the ownership policy records it as a planned migration collection",
+      "id": "owner-not-built:workflow-service",
+      "result": "NOT_VERIFIABLE_HERE"
+    },
+    {
+      "requirement": "Prove server-derived TenantScope, tenant_id/index rules where applicable, and cross-tenant denial; do not claim MySQL automatic row-level isolation.",
+      "reason": "needs per-service HTTP denials with two tenants; the owner services expose no tenant-scoped write endpoint that the harness may call without a synthetic per-owner account (see P1R-M2-009)",
+      "id": "requirement:M2-004-TENANT-GUARD",
+      "result": "NOT_VERIFIABLE_HERE"
+    },
+    {
+      "requirement": "Prove cache, lock, dedupe, rate-limit, and projection rebuild/degradation behavior against durable owner facts.",
+      "reason": "needs a projection rebuild entrypoint; no owner service publishes one yet (see P1R-M2-006)",
+      "id": "requirement:M2-004-REDIS-REBUILD",
+      "result": "NOT_VERIFIABLE_HERE"
+    },
+    {
+      "requirement": "Exercise compatible rollback or owner compensation and record owner, trace, audit, and recovery receipts.",
+      "reason": "needs workflow-service compensation and recovery receipts; the service does not exist yet (see P1R-M2-006)",
+      "id": "requirement:M2-004-ROLLBACK-COMPENSATION",
+      "result": "NOT_VERIFIABLE_HERE"
+    },
+    {
+      "requirement": "Implement exact approved retention, deletion/anonymization, legal-hold, and cross-owner receipt policies after P1R-M1-017 freezes the governing contract.",
+      "reason": "needs the retention/deletion runtime implementation behind the P1R-M1-017 frozen contract (see P1R-M2-005)",
+      "id": "requirement:M2-004-RETENTION-DELETE-HOLD",
+      "result": "NOT_VERIFIABLE_HERE"
+    }
+  ],
+  "detail": {
+    "grants": [
+      {
+        "id": "learner-service",
+        "schema": "learner_service",
+        "credential": "svc_learner",
+        "source": "external-migration",
+        "migrationMode": "external",
+        "tableCount": 14,
+        "readAllowed": true,
+        "ddlDenied": true,
+        "ddlErrorCode": "1142",
+        "alterDenied": true,
+        "alterErrorCode": "1142",
+        "probeObjectsLeaked": 0,
+        "grantCount": 2,
+        "foreignSchemaGrants": 0
+      },
+      {
+        "id": "content-service",
+        "schema": "content_service",
+        "credential": "svc_content",
+        "source": "external-migration",
+        "migrationMode": "external",
+        "tableCount": 15,
+        "readAllowed": true,
+        "ddlDenied": true,
+        "ddlErrorCode": "1142",
+        "alterDenied": true,
+        "alterErrorCode": "1142",
+        "probeObjectsLeaked": 0,
+        "grantCount": 2,
+        "foreignSchemaGrants": 0
+      },
+      {
+        "id": "learning-service",
+        "schema": "learning_service",
+        "credential": "svc_learning",
+        "source": "external-migration",
+        "migrationMode": "external",
+        "tableCount": 23,
+        "readAllowed": true,
+        "ddlDenied": true,
+        "ddlErrorCode": "1142",
+        "alterDenied": true,
+        "alterErrorCode": "1142",
+        "probeObjectsLeaked": 0,
+        "grantCount": 2,
+        "foreignSchemaGrants": 0
+      },
+      {
+        "id": "assessment-service",
+        "schema": "assessment_service",
+        "credential": "svc_assessment",
+        "source": "external-migration",
+        "migrationMode": "external",
+        "tableCount": 21,
+        "readAllowed": true,
+        "ddlDenied": true,
+        "ddlErrorCode": "1142",
+        "alterDenied": true,
+        "alterErrorCode": "1142",
+        "probeObjectsLeaked": 0,
+        "grantCount": 2,
+        "foreignSchemaGrants": 0
+      },
+      {
+        "id": "media-service",
+        "schema": "media_service",
+        "credential": "svc_media",
+        "source": "external-migration",
+        "migrationMode": "external",
+        "tableCount": 5,
+        "readAllowed": true,
+        "ddlDenied": true,
+        "ddlErrorCode": "1142",
+        "alterDenied": true,
+        "alterErrorCode": "1142",
+        "probeObjectsLeaked": 0,
+        "grantCount": 2,
+        "foreignSchemaGrants": 0
+      },
+      {
+        "id": "notification-service",
+        "schema": "notification_service",
+        "credential": "svc_notification",
+        "source": "external-migration",
+        "migrationMode": "external",
+        "tableCount": 17,
+        "readAllowed": true,
+        "ddlDenied": true,
+        "ddlErrorCode": "1142",
+        "alterDenied": true,
+        "alterErrorCode": "1142",
+        "probeObjectsLeaked": 0,
+        "grantCount": 2,
+        "foreignSchemaGrants": 0
+      },
+      {
+        "id": "gamification-service",
+        "schema": "gamification_service",
+        "credential": "svc_gamification",
+        "source": "external-migration",
+        "migrationMode": "external",
+        "tableCount": 12,
+        "readAllowed": true,
+        "ddlDenied": true,
+        "ddlErrorCode": "1142",
+        "alterDenied": true,
+        "alterErrorCode": "1142",
+        "probeObjectsLeaked": 0,
+        "grantCount": 2,
+        "foreignSchemaGrants": 0
+      },
+      {
+        "id": "social-service",
+        "schema": "social_service",
+        "credential": "svc_social",
+        "source": "external-migration",
+        "migrationMode": "external",
+        "tableCount": 10,
+        "readAllowed": true,
+        "ddlDenied": true,
+        "ddlErrorCode": "1142",
+        "alterDenied": true,
+        "alterErrorCode": "1142",
+        "probeObjectsLeaked": 0,
+        "grantCount": 2,
+        "foreignSchemaGrants": 0
+      },
+      {
+        "id": "commerce-service",
+        "schema": "commerce_service",
+        "credential": "svc_commerce",
+        "source": "external-migration",
+        "migrationMode": "external",
+        "tableCount": 13,
+        "readAllowed": true,
+        "ddlDenied": true,
+        "ddlErrorCode": "1142",
+        "alterDenied": true,
+        "alterErrorCode": "1142",
+        "probeObjectsLeaked": 0,
+        "grantCount": 2,
+        "foreignSchemaGrants": 0
+      },
+      {
+        "id": "admin-ops-service",
+        "schema": "admin_ops_service",
+        "credential": "svc_admin_ops",
+        "source": "external-migration",
+        "migrationMode": "external",
+        "tableCount": 8,
+        "readAllowed": true,
+        "ddlDenied": true,
+        "ddlErrorCode": "1142",
+        "alterDenied": true,
+        "alterErrorCode": "1142",
+        "probeObjectsLeaked": 0,
+        "grantCount": 2,
+        "foreignSchemaGrants": 0
+      },
+      {
+        "id": "analytics-service",
+        "schema": "analytics_service",
+        "credential": "svc_analytics",
+        "source": "external-migration",
+        "migrationMode": "external",
+        "tableCount": 5,
+        "readAllowed": true,
+        "ddlDenied": true,
+        "ddlErrorCode": "1142",
+        "alterDenied": true,
+        "alterErrorCode": "1142",
+        "probeObjectsLeaked": 0,
+        "grantCount": 2,
+        "foreignSchemaGrants": 0
+      },
+      {
+        "id": "audit-service",
+        "schema": "audit_service",
+        "credential": "svc_audit",
+        "source": "external-migration",
+        "migrationMode": "external",
+        "tableCount": 3,
+        "readAllowed": true,
+        "ddlDenied": true,
+        "ddlErrorCode": "1142",
+        "alterDenied": true,
+        "alterErrorCode": "1142",
+        "probeObjectsLeaked": 0,
+        "grantCount": 2,
+        "foreignSchemaGrants": 0
+      },
+      {
+        "id": "iam-service",
+        "schema": "iam_service",
+        "credential": "svc_iam",
+        "source": "self-migrating",
+        "migrationMode": "self",
+        "tableCount": 23,
+        "readAllowed": true,
+        "ddlDenied": false,
+        "ddlErrorCode": null,
+        "alterDenied": false,
+        "alterErrorCode": null,
+        "probeObjectsLeaked": 0,
+        "grantCount": 2,
+        "foreignSchemaGrants": 0
+      }
+    ],
+    "crossOwner": [
+      {
+        "id": "learner-service",
+        "probes": [
+          {
+            "target": "content-service",
+            "denied": true,
+            "code": "1142"
+          },
+          {
+            "target": "social-service",
+            "denied": true,
+            "code": "1142"
+          },
+          {
+            "target": "iam-service",
+            "denied": true,
+            "code": "1142"
+          }
+        ],
+        "allDenied": true
+      },
+      {
+        "id": "content-service",
+        "probes": [
+          {
+            "target": "learner-service",
+            "denied": true,
+            "code": "1142"
+          },
+          {
+            "target": "social-service",
+            "denied": true,
+            "code": "1142"
+          },
+          {
+            "target": "iam-service",
+            "denied": true,
+            "code": "1142"
+          }
+        ],
+        "allDenied": true
+      },
+      {
+        "id": "learning-service",
+        "probes": [
+          {
+            "target": "learner-service",
+            "denied": true,
+            "code": "1142"
+          },
+          {
+            "target": "social-service",
+            "denied": true,
+            "code": "1142"
+          },
+          {
+            "target": "iam-service",
+            "denied": true,
+            "code": "1142"
+          }
+        ],
+        "allDenied": true
+      },
+      {
+        "id": "assessment-service",
+        "probes": [
+          {
+            "target": "learner-service",
+            "denied": true,
+            "code": "1142"
+          },
+          {
+            "target": "social-service",
+            "denied": true,
+            "code": "1142"
+          },
+          {
+            "target": "iam-service",
+            "denied": true,
+            "code": "1142"
+          }
+        ],
+        "allDenied": true
+      },
+      {
+        "id": "media-service",
+        "probes": [
+          {
+            "target": "learner-service",
+            "denied": true,
+            "code": "1142"
+          },
+          {
+            "target": "social-service",
+            "denied": true,
+            "code": "1142"
+          },
+          {
+            "target": "iam-service",
+            "denied": true,
+            "code": "1142"
+          }
+        ],
+        "allDenied": true
+      },
+      {
+        "id": "notification-service",
+        "probes": [
+          {
+            "target": "learner-service",
+            "denied": true,
+            "code": "1142"
+          },
+          {
+            "target": "social-service",
+            "denied": true,
+            "code": "1142"
+          },
+          {
+            "target": "iam-service",
+            "denied": true,
+            "code": "1142"
+          }
+        ],
+        "allDenied": true
+      },
+      {
+        "id": "gamification-service",
+        "probes": [
+          {
+            "target": "learner-service",
+            "denied": true,
+            "code": "1142"
+          },
+          {
+            "target": "social-service",
+            "denied": true,
+            "code": "1142"
+          },
+          {
+            "target": "iam-service",
+            "denied": true,
+            "code": "1142"
+          }
+        ],
+        "allDenied": true
+      },
+      {
+        "id": "social-service",
+        "probes": [
+          {
+            "target": "learner-service",
+            "denied": true,
+            "code": "1142"
+          },
+          {
+            "target": "gamification-service",
+            "denied": true,
+            "code": "1142"
+          },
+          {
+            "target": "iam-service",
+            "denied": true,
+            "code": "1142"
+          }
+        ],
+        "allDenied": true
+      },
+      {
+        "id": "commerce-service",
+        "probes": [
+          {
+            "target": "learner-service",
+            "denied": true,
+            "code": "1142"
+          },
+          {
+            "target": "gamification-service",
+            "denied": true,
+            "code": "1142"
+          },
+          {
+            "target": "iam-service",
+            "denied": true,
+            "code": "1142"
+          }
+        ],
+        "allDenied": true
+      },
+      {
+        "id": "admin-ops-service",
+        "probes": [
+          {
+            "target": "learner-service",
+            "denied": true,
+            "code": "1142"
+          },
+          {
+            "target": "gamification-service",
+            "denied": true,
+            "code": "1142"
+          },
+          {
+            "target": "iam-service",
+            "denied": true,
+            "code": "1142"
+          }
+        ],
+        "allDenied": true
+      },
+      {
+        "id": "analytics-service",
+        "probes": [
+          {
+            "target": "learner-service",
+            "denied": true,
+            "code": "1142"
+          },
+          {
+            "target": "gamification-service",
+            "denied": true,
+            "code": "1142"
+          },
+          {
+            "target": "iam-service",
+            "denied": true,
+            "code": "1142"
+          }
+        ],
+        "allDenied": true
+      },
+      {
+        "id": "audit-service",
+        "probes": [
+          {
+            "target": "learner-service",
+            "denied": true,
+            "code": "1142"
+          },
+          {
+            "target": "gamification-service",
+            "denied": true,
+            "code": "1142"
+          },
+          {
+            "target": "iam-service",
+            "denied": true,
+            "code": "1142"
+          }
+        ],
+        "allDenied": true
+      },
+      {
+        "id": "iam-service",
+        "probes": [
+          {
+            "target": "learner-service",
+            "denied": true,
+            "code": "1142"
+          },
+          {
+            "target": "gamification-service",
+            "denied": true,
+            "code": "1142"
+          },
+          {
+            "target": "audit-service",
+            "denied": true,
+            "code": "1142"
+          }
+        ],
+        "allDenied": true
+      }
+    ],
+    "redis": [
+      {
+        "id": "learner-service",
+        "credential": "svc_learner",
+        "namespace": "learner",
+        "declaredPattern": "~learner:*",
+        "expectedPattern": "~learner:*",
+        "patternMatches": true,
+        "ownNamespaceAllowed": true,
+        "foreignNamespace": "content",
+        "foreignNamespaceDenied": true
+      },
+      {
+        "id": "content-service",
+        "credential": "svc_content",
+        "namespace": "content",
+        "declaredPattern": "~content:*",
+        "expectedPattern": "~content:*",
+        "patternMatches": true,
+        "ownNamespaceAllowed": true,
+        "foreignNamespace": "learner",
+        "foreignNamespaceDenied": true
+      },
+      {
+        "id": "learning-service",
+        "credential": "svc_learning",
+        "namespace": "learning",
+        "declaredPattern": "~learning:*",
+        "expectedPattern": "~learning:*",
+        "patternMatches": true,
+        "ownNamespaceAllowed": true,
+        "foreignNamespace": "learner",
+        "foreignNamespaceDenied": true
+      },
+      {
+        "id": "assessment-service",
+        "credential": "svc_assessment",
+        "namespace": "assessment",
+        "declaredPattern": "~assessment:*",
+        "expectedPattern": "~assessment:*",
+        "patternMatches": true,
+        "ownNamespaceAllowed": true,
+        "foreignNamespace": "learner",
+        "foreignNamespaceDenied": true
+      },
+      {
+        "id": "media-service",
+        "credential": "svc_media",
+        "namespace": "media",
+        "declaredPattern": "~media:*",
+        "expectedPattern": "~media:*",
+        "patternMatches": true,
+        "ownNamespaceAllowed": true,
+        "foreignNamespace": "learner",
+        "foreignNamespaceDenied": true
+      },
+      {
+        "id": "notification-service",
+        "credential": "svc_notification",
+        "namespace": "notification",
+        "declaredPattern": "~notification:*",
+        "expectedPattern": "~notification:*",
+        "patternMatches": true,
+        "ownNamespaceAllowed": true,
+        "foreignNamespace": "learner",
+        "foreignNamespaceDenied": true
+      },
+      {
+        "id": "gamification-service",
+        "credential": "svc_gamification",
+        "namespace": "gamification",
+        "declaredPattern": "~gamification:*",
+        "expectedPattern": "~gamification:*",
+        "patternMatches": true,
+        "ownNamespaceAllowed": true,
+        "foreignNamespace": "learner",
+        "foreignNamespaceDenied": true
+      },
+      {
+        "id": "social-service",
+        "credential": "svc_social",
+        "namespace": "social",
+        "declaredPattern": "~social:*",
+        "expectedPattern": "~social:*",
+        "patternMatches": true,
+        "ownNamespaceAllowed": true,
+        "foreignNamespace": "learner",
+        "foreignNamespaceDenied": true
+      },
+      {
+        "id": "commerce-service",
+        "credential": "svc_commerce",
+        "namespace": "commerce",
+        "declaredPattern": "~commerce:*",
+        "expectedPattern": "~commerce:*",
+        "patternMatches": true,
+        "ownNamespaceAllowed": true,
+        "foreignNamespace": "learner",
+        "foreignNamespaceDenied": true
+      },
+      {
+        "id": "admin-ops-service",
+        "credential": "svc_admin_ops",
+        "namespace": "admin-ops",
+        "declaredPattern": "~admin-ops:*",
+        "expectedPattern": "~admin-ops:*",
+        "patternMatches": true,
+        "ownNamespaceAllowed": true,
+        "foreignNamespace": "learner",
+        "foreignNamespaceDenied": true
+      },
+      {
+        "id": "analytics-service",
+        "credential": "svc_analytics",
+        "namespace": "analytics",
+        "declaredPattern": "~analytics:*",
+        "expectedPattern": "~analytics:*",
+        "patternMatches": true,
+        "ownNamespaceAllowed": true,
+        "foreignNamespace": "learner",
+        "foreignNamespaceDenied": true
+      },
+      {
+        "id": "audit-service",
+        "credential": "svc_audit",
+        "namespace": "audit",
+        "declaredPattern": "~audit:*",
+        "expectedPattern": "~audit:*",
+        "patternMatches": true,
+        "ownNamespaceAllowed": true,
+        "foreignNamespace": "learner",
+        "foreignNamespaceDenied": true
+      },
+      {
+        "id": "iam-service",
+        "credential": "svc_iam",
+        "namespace": "iam",
+        "declaredPattern": "~iam:*",
+        "expectedPattern": "~iam:*",
+        "patternMatches": true,
+        "ownNamespaceAllowed": true,
+        "foreignNamespace": "learner",
+        "foreignNamespaceDenied": true
+      }
+    ],
+    "migrations": [
+      {
+        "id": "learner-service",
+        "migrationFiles": 8,
+        "declaredVersions": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "recordedVersions": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "historyComplete": true
+      },
+      {
+        "id": "content-service",
+        "migrationFiles": 12,
+        "declaredVersions": [
+          1,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13
+        ],
+        "recordedVersions": [
+          1,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13
+        ],
+        "historyComplete": true
+      },
+      {
+        "id": "learning-service",
+        "migrationFiles": 7,
+        "declaredVersions": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "recordedVersions": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "historyComplete": true
+      },
+      {
+        "id": "assessment-service",
+        "migrationFiles": 4,
+        "declaredVersions": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "recordedVersions": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "historyComplete": true
+      },
+      {
+        "id": "media-service",
+        "migrationFiles": 3,
+        "declaredVersions": [
+          1,
+          2,
+          3
+        ],
+        "recordedVersions": [
+          1,
+          2,
+          3
+        ],
+        "historyComplete": true
+      },
+      {
+        "id": "notification-service",
+        "migrationFiles": 5,
+        "declaredVersions": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "recordedVersions": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "historyComplete": true
+      },
+      {
+        "id": "gamification-service",
+        "migrationFiles": 3,
+        "declaredVersions": [
+          1,
+          2,
+          3
+        ],
+        "recordedVersions": [
+          1,
+          2,
+          3
+        ],
+        "historyComplete": true
+      },
+      {
+        "id": "social-service",
+        "migrationFiles": 2,
+        "declaredVersions": [
+          1,
+          2
+        ],
+        "recordedVersions": [
+          1,
+          2
+        ],
+        "historyComplete": true
+      },
+      {
+        "id": "commerce-service",
+        "migrationFiles": 1,
+        "declaredVersions": [
+          1
+        ],
+        "recordedVersions": [
+          1
+        ],
+        "historyComplete": true
+      },
+      {
+        "id": "admin-ops-service",
+        "migrationFiles": 2,
+        "declaredVersions": [
+          1,
+          2
+        ],
+        "recordedVersions": [
+          1,
+          2
+        ],
+        "historyComplete": true
+      },
+      {
+        "id": "analytics-service",
+        "migrationFiles": 1,
+        "declaredVersions": [
+          1
+        ],
+        "recordedVersions": [
+          1
+        ],
+        "historyComplete": true
+      },
+      {
+        "id": "audit-service",
+        "migrationFiles": 2,
+        "declaredVersions": [
+          1,
+          2
+        ],
+        "recordedVersions": [
+          1,
+          2
+        ],
+        "historyComplete": true
+      }
+    ],
+    "emptyAndInvalid": {
+      "donor": "learner-service",
+      "migration": "V1__create_learner_service_schema.sql",
+      "expectedTables": 5,
+      "createdTables": 5,
+      "invalidRejected": true,
+      "scratchSchemaDropped": true
+    }
+  },
+  "sensitiveMaterial": {
+    "persisted": false,
+    "emitted": false
+  },
+  "notRuntimeVerified": [
+    "M2-004-TENANT-GUARD",
+    "M2-004-REDIS-REBUILD",
+    "M2-004-ROLLBACK-COMPENSATION",
+    "M2-004-RETENTION-DELETE-HOLD"
+  ]
+}
