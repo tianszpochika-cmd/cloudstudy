@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-012",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "171203e89780a1d069fffee2b98c1f0e6c173093",
+  "sourceCommit": "396635c0b9ced09eebb4cec5bdc3178a16ab34f6",
   "artifactDigests": [
     {
       "path": "config/b26-event-runtime.json",
@@ -97,7 +97,7 @@
     {
       "path": "package.json",
       "algorithm": "sha256",
-      "digest": "4abcff6ec7cbcb62f4e321bdd87032341ab5da5a0d97c5e5d5ffaca905195552"
+      "digest": "74faf3caa2cfcc9634f78585d1da14e33b9f573114b5927eef95c8f5569f9ab7"
     },
     {
       "path": "packages/api-client/src/generated/index.ts",
@@ -609,18 +609,28 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-12T19:49:48.935Z",
         "details": "Current-source artifact digest rebase after P1R-M2-004 Batch D4 registered the data-ownership runtime harness (scripts/runtime/p1r-m2-004-runtime.mjs) as the p1r:m2-004:runtime script in package.json and moved the owner list into scripts/database/lib/owner-manifest.mjs. The only artifact of these tasks that moved is package.json. Original provenance, review history and runtime status unchanged."
+      },
+      {
+        "taskId": "P1R-M1-012",
+        "sourceCommit": "396635c0b9ced09eebb4cec5bdc3178a16ab34f6",
+        "auditedImplementationSource": "396635c0b9ced09eebb4cec5bdc3178a16ab34f6",
+        "integrationCheckpoint": "396635c0b9ced09eebb4cec5bdc3178a16ab34f6",
+        "reviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-12T20:08:43.159Z",
+        "details": "Current-source artifact digest rebase after P1R-M2-004 Batch D4 registered the Kafka topic provisioner (scripts/runtime/provision-kafka-topics.mjs) as the p1r:kafka:topics script in package.json. The only artifact of these tasks that moved is package.json. Original provenance, review history and runtime status unchanged."
       }
     ],
-    "previousCurrentSourceCommit": "e9c4ebd7876b6cabb7d03168df7a3547932e2e0e",
-    "previousCurrentSourceRevalidationTask": "P1R-M0-006",
+    "previousCurrentSourceCommit": "171203e89780a1d069fffee2b98c1f0e6c173093",
+    "previousCurrentSourceRevalidationTask": "P1R-M2-004",
     "previousCurrentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "previousCurrentSourceRevalidationFinishedAt": "2026-09-12T15:59:44.043Z",
+    "previousCurrentSourceRevalidationFinishedAt": "2026-09-12T19:49:48.935Z",
     "currentSourceRevalidationTask": "P1R-M2-004",
     "currentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-12T19:49:48.935Z",
-    "currentSourceRevalidationAuditedImplementationSource": "171203e89780a1d069fffee2b98c1f0e6c173093",
-    "currentSourceRevalidationIntegrationCheckpoint": "171203e89780a1d069fffee2b98c1f0e6c173093"
+    "currentSourceRevalidationFinishedAt": "2026-09-12T20:08:43.159Z",
+    "currentSourceRevalidationAuditedImplementationSource": "396635c0b9ced09eebb4cec5bdc3178a16ab34f6",
+    "currentSourceRevalidationIntegrationCheckpoint": "396635c0b9ced09eebb4cec5bdc3178a16ab34f6"
   }
 }
