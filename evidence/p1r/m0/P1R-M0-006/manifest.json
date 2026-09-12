@@ -1,7 +1,7 @@
 {
   "taskId": "P1R-M0-006",
   "draftOnly": false,
-  "canonicalTaskStatus": "BLOCKED",
+  "canonicalTaskStatus": "REVIEW",
   "sourceCommit": "e9c4ebd7876b6cabb7d03168df7a3547932e2e0e",
   "artifactDigests": [
     {
@@ -72,12 +72,12 @@
     {
       "check": "cyclonedx-sbom",
       "status": "PASS",
-      "details": "1,097 locked Node components and 183 resolved Maven components"
+      "details": "1,108 locked Node components and 21 direct Maven components after the mobile toolchain upgrade"
     },
     {
       "check": "high-critical-vulnerability-policy",
-      "status": "FAIL",
-      "details": "1 high, 0 critical; GHSA-fx2h-pf6j-xcff remains through mobile Vite 5.4.21"
+      "status": "PASS",
+      "details": "0 high, 0 critical across 1,120 audited dependencies (8 low, 7 moderate); the production-only audit reports 0 advisories at every severity"
     }
   ],
   "rollbackEvidence": [
@@ -87,17 +87,17 @@
     }
   ],
   "knownGaps": [
-    "The supported uni-app Vue3 compiler line still declares an exact Vite 5.2.8 peer dependency."
+    "The 4.x/5.x uni-app Vue3 line still declares an exact Vite 5.2.8 peer and has no patched Vite, so remaining on it is no longer possible; apps/mobile is now on the 10.x line.",
+    "8 low and 7 moderate advisories remain. They are dev-only except adm-zip, whose upstream has no fixed release (patched_versions \"<0.0.0\"); the policy only fails on high/critical.",
+    "The uni-app plugin pins preserveSymlinks: true, so pnpm's isolated layout needs a narrow publicHoistPattern for pinia's runtime dependencies."
   ],
-  "blockers": [
-    "GHSA-fx2h-pf6j-xcff requires Vite >=6.4.3, but the current supported DCloud Vue3 compiler family is not compatible with that Vite major."
-  ],
+  "blockers": [],
   "nextSteps": [
-    "Monitor an official DCloud compiler release compatible with Vite >=6.4.3, or approve an alternative through ADR and security review.",
-    "After a supported upgrade, rerun frozen install, H5/App/mp-weixin builds, B10/B11/B12, license/SBOM and registry vulnerability gates."
+    "Independent review of this submission (implementer submitted to REVIEW; acceptance is the reviewer's decision).",
+    "Re-evaluate whether src/compat/vue.ts and the vue-router entry shim are still required once a later uni-app line stops importing the Vue internals they provide."
   ],
   "reviewer": "root-coordinator",
-  "decision": "BLOCKED",
+  "decision": "REVIEW",
   "provenance": {
     "originalSourceCommit": "0f8b60ae4e83d0f31d891eed8d9383c007485130",
     "originalReviewer": "root-coordinator",
