@@ -215,11 +215,31 @@ let vulnerability = { checked: false, result: 'NOT_RUN', reason: 'Run with --run
 let mavenSbom = { checked: false, result: 'NOT_RUN', reason: 'Run with --runtime under Java 25.' };
 let mavenLicenseReport = { checked: false, result: 'NOT_RUN', groups: [], denied: [], unknown: [] };
 if (runtime) {
-  const audit = run('pnpm', ['audit', '--json', '--audit-level', 'high']);
+  const audit = run('pnpm', ['audit', '--json']);
   let auditPayload = null;
-  try { auditPayload = parseJsonOutput(audit.stdout); } catch { /* command status remains authoritative */ }
-  vulnerability = { checked: true, result: audit.status === 0 ? 'PASS' : 'FAIL', exitCode: audit.status, payload: compactAudit(auditPayload) };
-  if (audit.status !== 0) errors.push('pnpm audit found a high/critical vulnerability or the registry was unavailable');
+  try { auditPayload = parseJsonOutput(audit.stdout); } catch { /* the command status stays authoritative */ }
+  // `pnpm audit` exits non-zero for advisories at ANY severity; --audit-level only filters what
+  // is printed. The dependency policy fails on high/critical only, so the decision has to come
+  // from the reported severities rather than the raw exit code. A payload that cannot be parsed
+  // (registry unavailable) keeps the exit code authoritative, so the check stays fail-closed.
+  const severityCounts = auditPayload?.metadata?.vulnerabilities ?? null;
+  const blockingVulnerabilities = severityCounts
+    ? Number(severityCounts.high ?? 0) + Number(severityCounts.critical ?? 0)
+    : null;
+  const auditPassed = blockingVulnerabilities === null ? audit.status === 0 : blockingVulnerabilities === 0;
+  vulnerability = {
+    checked: true,
+    result: auditPassed ? 'PASS' : 'FAIL',
+    exitCode: audit.status,
+    policy: policy.policy.highOrCriticalVulnerability,
+    blockingVulnerabilities,
+    payload: compactAudit(auditPayload)
+  };
+  if (!auditPassed) {
+    errors.push(blockingVulnerabilities === null
+      ? 'pnpm audit returned no parsable report; treating the registry result as unavailable'
+      : `pnpm audit found ${blockingVulnerabilities} high/critical vulnerability(ies)`);
+  }
 
   const goal = policy.sbom.mavenGoal;
   const maven = run('mvn', ['--batch-mode', '--no-transfer-progress', '-f', 'pom.xml', '-DskipTests', '-DoutputFormat=json', '-DoutputName=bom', goal]);
