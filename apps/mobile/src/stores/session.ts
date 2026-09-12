@@ -7,6 +7,17 @@ import { getUniRuntime, isNativeAppRuntime, type UniSecureStorage, type UniRunti
 const REFRESH_TOKEN_KEY = 'yx.auth.mobile.refresh-token'
 const RETURN_TO_KEY = 'yx.auth.mobile.return-to'
 
+/**
+ * The consent policy version the adult gate attests against.
+ *
+ * The server accepts exactly one value, checked literally in IamProviderBoundaryController's
+ * POST /iam/adult-gate; anything else is rejected with iam.adult_gate.policy_version_invalid and the
+ * gate stays closed. This constant previously read 'v2-phase1', which the server has never accepted,
+ * so no mobile learner could pass the adult gate and onboarding could not complete.
+ * The contract test beside this store pins the value against the server's own literal.
+ */
+export const ADULT_GATE_POLICY_VERSION = 'b30-adult-v1'
+
 function runtimeOrNull(): UniRuntime | null { try { return getUniRuntime() } catch { return null } }
 function secureStorage(): UniSecureStorage | undefined { return runtimeOrNull()?.getSecureStorage?.() }
 function secureValue(key: string): string | null { try { const value = secureStorage()?.getItem(key); return typeof value === 'string' && value.trim() ? value.trim() : null } catch { return null } }
@@ -116,7 +127,7 @@ export const useSessionStore = defineStore('session', () => {
   }
   async function logout(): Promise<boolean> { status.value = 'revoking'; try { await adapter().logout(); clear(); return true } catch (error) { clear(); lastError.value = error instanceof Error ? error.message : 'LOGOUT_FAILED'; return false } }
   async function revokeCurrentSession(): Promise<boolean> { if (!sessionId.value) { clear(); return false } status.value = 'revoking'; try { await adapter().revoke(sessionId.value); clear(); return true } catch (error) { clear(); lastError.value = error instanceof Error ? error.message : 'REVOKE_FAILED'; return false } }
-  async function confirmAdultGate(birthYear: number, policyVersion = 'v2-phase1'): Promise<boolean> { try { const snapshot = await adapter().confirmAdultGate({ confirmed: true, birthYear, policyVersion }); applySnapshot(snapshot); adultGate.value = snapshot?.adultGate === 'PASSED' ? 'PASSED' : 'REJECTED'; return adultGate.value === 'PASSED' } catch (error) { adultGate.value = 'REJECTED'; lastError.value = error instanceof Error ? error.message : 'ADULT_GATE_FAILED'; return false } }
+  async function confirmAdultGate(birthYear: number, policyVersion = ADULT_GATE_POLICY_VERSION): Promise<boolean> { try { const snapshot = await adapter().confirmAdultGate({ confirmed: true, birthYear, policyVersion }); applySnapshot(snapshot); adultGate.value = snapshot?.adultGate === 'PASSED' ? 'PASSED' : 'REJECTED'; return adultGate.value === 'PASSED' } catch (error) { adultGate.value = 'REJECTED'; lastError.value = error instanceof Error ? error.message : 'ADULT_GATE_FAILED'; return false } }
   function setReturnTo(value: unknown): void { runtimeOrNull()?.setStorageSync(RETURN_TO_KEY, safeMobileReturnTo(value)) }
   function peekReturnTo(): string { const value = runtimeOrNull()?.getStorageSync(RETURN_TO_KEY); return safeMobileReturnTo(typeof value === 'string' ? value : null) }
   function consumeReturnTo(): string { const value = peekReturnTo(); runtimeOrNull()?.removeStorageSync(RETURN_TO_KEY); return value }
