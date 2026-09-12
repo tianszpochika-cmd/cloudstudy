@@ -105,6 +105,12 @@
 - 新增 converter/AdminPep/头过滤器测试；验证（JDK 25）：admin-ops `44/0/0/0`。
 - Batch 2 完成（media 51、social 48、admin-ops 44）；下一步 Batch 3（notification/commerce/analytics）。
 
+## 2026-09-11 M2-003 Batch 3①：notification-service
+
+- 新增头拒绝过滤器（12 头/7 参数）、统一 401/403 envelope 与 JWT authorities 转换器并接入 Resource Server；resolver 既有 401/权限来源语义不变。
+- 验证（JDK 25）：notification `76/0/0/0`；notification-sync-support contract PASS。
+- 下一步 Batch 3② commerce、③ analytics。
+
 ## 2026-09-04 IAM 账户/密码并发安全检查点
 
 - 源码：`9deb899`。认证改为锁前单次 cost-12 BCrypt、锁内 current principal/hash/status/counter 复核；credential epoch 在校验期间变化时统一 `INVALID_CREDENTIALS` 且零写入，避免旧在途请求污染或锁死刚重置的新凭据。

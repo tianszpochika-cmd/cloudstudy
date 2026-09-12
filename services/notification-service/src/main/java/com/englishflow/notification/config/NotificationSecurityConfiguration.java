@@ -21,8 +21,17 @@ import org.springframework.security.oauth2.jwt.JwtTimestampValidator;
 import org.springframework.security.oauth2.jwt.JwtValidators;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.access.intercept.AuthorizationFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.englishflow.notification.security.NotificationAuthorityAttemptFilter;
+import com.englishflow.notification.security.NotificationJwtAuthenticationConverter;
+import com.englishflow.notification.security.NotificationSecurityErrorWriter;
+
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Gateway authentication is not enough: the service independently validates a
@@ -50,24 +59,54 @@ public class NotificationSecurityConfiguration {
     }
 
     @Bean
+    NotificationSecurityErrorWriter notificationSecurityErrorWriter(ObjectMapper objectMapper) {
+        return new NotificationSecurityErrorWriter(objectMapper);
+    }
+
+    @Bean
+    NotificationAuthorityAttemptFilter notificationAuthorityAttemptFilter(
+            NotificationSecurityErrorWriter errorWriter) {
+        return new NotificationAuthorityAttemptFilter(errorWriter);
+    }
+
+    @Bean
+    NotificationJwtAuthenticationConverter notificationJwtAuthenticationConverter() {
+        return new NotificationJwtAuthenticationConverter();
+    }
+
+    @Bean
     SecurityFilterChain notificationSecurityFilterChain(HttpSecurity http,
             ObjectProvider<JwtDecoder> decoderProvider,
+            NotificationAuthorityAttemptFilter authorityAttemptFilter,
+            NotificationJwtAuthenticationConverter jwtAuthenticationConverter,
+            NotificationSecurityErrorWriter errorWriter,
             @Value("${notification.security.resource-server-enabled:false}") boolean resourceServerEnabled)
             throws Exception {
         LOGGER.info("notification resource server enabled={}", resourceServerEnabled);
+        AuthenticationEntryPoint entryPoint = (request, response, exception) ->
+                errorWriter.write(response, 401, "UNAUTHENTICATED", "authentication required");
+        AccessDeniedHandler deniedHandler = (request, response, exception) ->
+                errorWriter.write(response, 403, "FORBIDDEN", "access denied");
         http.csrf(csrf -> csrf.disable())
                 .httpBasic(basic -> basic.disable())
                 .formLogin(form -> form.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(errors -> errors
+                        .authenticationEntryPoint(entryPoint)
+                        .accessDeniedHandler(deniedHandler))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/actuator/health", "/actuator/health/**").permitAll()
                         .requestMatchers("/internal/v1/**").authenticated()
-                        .anyRequest().denyAll());
+                        .anyRequest().denyAll())
+                .addFilterBefore(authorityAttemptFilter, AuthorizationFilter.class);
         if (resourceServerEnabled) {
             JwtDecoder decoder = decoderProvider.getIfAvailable(() -> {
                 throw new IllegalStateException("notification resource server is enabled without a JwtDecoder");
             });
-            http.oauth2ResourceServer(oauth -> oauth.jwt(jwt -> jwt.decoder(decoder)));
+            http.oauth2ResourceServer(oauth -> oauth
+                    .authenticationEntryPoint(entryPoint)
+                    .accessDeniedHandler(deniedHandler)
+                    .jwt(jwt -> jwt.decoder(decoder).jwtAuthenticationConverter(jwtAuthenticationConverter)));
         }
         return http.build();
     }
