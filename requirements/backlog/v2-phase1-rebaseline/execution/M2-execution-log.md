@@ -99,6 +99,12 @@
 - 验证（JDK 25）：social `48/0/0/0`；gamification-social contract PASS。
 - 下一步 Batch 2③ admin-ops-service。
 
+## 2026-09-11 M2-003 Batch 2③：admin-ops-service
+
+- 复核权限映射（`PERM_`/`ROLE_` 已正确、tenant 缺失已 fail-closed）；头拒绝由 5 个扩展到 13 个（工作负载身份/mTLS 头）。
+- 新增 converter/AdminPep/头过滤器测试；验证（JDK 25）：admin-ops `44/0/0/0`。
+- Batch 2 完成（media 51、social 48、admin-ops 44）；下一步 Batch 3（notification/commerce/analytics）。
+
 ## 2026-09-04 IAM 账户/密码并发安全检查点
 
 - 源码：`9deb899`。认证改为锁前单次 cost-12 BCrypt、锁内 current principal/hash/status/counter 复核；credential epoch 在校验期间变化时统一 `INVALID_CREDENTIALS` 且零写入，避免旧在途请求污染或锁死刚重置的新凭据。

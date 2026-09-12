@@ -18,7 +18,9 @@ public final class ClientAuthorityHeaderFilter extends OncePerRequestFilter {
     }
 
     private static final Set<String> FORBIDDEN_HEADERS = Set.of(
-            "x-role", "x-b5-role", "x-tenant-id", "x-owner-id", "x-user-id");
+            "x-role", "x-b5-role", "x-tenant-id", "x-owner-id", "x-user-id", "x-permission", "x-authority",
+            "x-workload-identity", "x-service-name", "x-forwarded-client-cert",
+            "x-forwarded-client-cert-info", "x-ssl-client-cert", "x-ssl-client-subject-dn");
 
     @Override
     protected void doFilterInternal(
