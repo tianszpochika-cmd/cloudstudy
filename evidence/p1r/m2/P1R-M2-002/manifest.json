@@ -2,7 +2,7 @@
   "taskId": "P1R-M2-002",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "21cfe242cbeedbedbb78724ef468a171f2a44900",
+  "sourceCommit": "db661afc478d67fe1dac27abeb3f6dba48f76481",
   "artifactDigests": [
     {
       "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/ConsentService.java",
@@ -102,7 +102,7 @@
     {
       "path": "services/iam-service/src/main/java/com/englishflow/iam/web/IamProviderBoundaryController.java",
       "algorithm": "sha256",
-      "digest": "c212bf0ce68189f70ad171186dc517f01c400e301bb811735b52df59a8b60c75"
+      "digest": "dc7bd2872cc1ba20fcda3549b9b36f2097adc10b4045a2a646ca2abd0366790d"
     },
     {
       "path": "services/iam-service/src/main/resources/application.yaml",
@@ -284,20 +284,30 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-12T21:04:38.453Z",
         "details": "Current-source artifact digest rebase after P1R-M2-005 E5 added consumer-side event deduplication: content_event_receipt keyed on (consumer_group, event_id) plus content_inbound_event_stat as the atomically applied effect, the p1r:m2-005:dedupe verification script in package.json, and one more content-service migration in the data ownership policy inventory. Only sourceCommit and the digests of the artifacts that moved change; original provenance, review history and runtime status are untouched."
+      },
+      {
+        "taskId": "P1R-M2-002",
+        "sourceCommit": "db661afc478d67fe1dac27abeb3f6dba48f76481",
+        "auditedImplementationSource": "db661afc478d67fe1dac27abeb3f6dba48f76481",
+        "integrationCheckpoint": "db661afc478d67fe1dac27abeb3f6dba48f76481",
+        "reviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-12T23:16:53.530Z",
+        "details": "Current-source revalidation after a defect fix inside this task's accepted artifact. POST /iam/adult-gate derived an age from the request birth year and passed it to TrustedAgeEvidence, whose constructor rejects anything outside 0..150 with an unchecked exception; the boundary did not translate it, so an implausible birth year answered 500 iam.internal.error with retryable: true. The boundary now validates the derived age first and rejects with ADULT_AGE_EVIDENCE_INVALID and iam.adult_gate.birth_year_invalid, a non-retryable 403. Accepted behaviour for valid input is unchanged: 1995 and 2008 still return 200 PASSED and a 6-year-old still returns 403 adult_only. This entry is a behaviour change, not a digest-only rebase, and a reviewer of this accepted task should see it."
       }
     ],
-    "previousCurrentSourceCommit": "d5246a8110cb4431778000684fa762b94f50cf3c",
+    "previousCurrentSourceCommit": "21cfe242cbeedbedbb78724ef468a171f2a44900",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationTask": "P1R-M2-005",
+    "currentSourceRevalidationTask": "P1R-M2-002",
     "currentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-12T21:04:38.453Z",
-    "currentSourceRevalidationAuditedImplementationSource": "21cfe242cbeedbedbb78724ef468a171f2a44900",
-    "currentSourceRevalidationIntegrationCheckpoint": "21cfe242cbeedbedbb78724ef468a171f2a44900",
+    "currentSourceRevalidationFinishedAt": "2026-09-12T23:16:53.530Z",
+    "currentSourceRevalidationAuditedImplementationSource": "db661afc478d67fe1dac27abeb3f6dba48f76481",
+    "currentSourceRevalidationIntegrationCheckpoint": "db661afc478d67fe1dac27abeb3f6dba48f76481",
     "originalSourceCommit": "ec20ef51a8b0ea99d4b72bf7598777df075f4889",
-    "previousCurrentSourceRevalidationTask": "P1R-M2-004",
+    "previousCurrentSourceRevalidationTask": "P1R-M2-005",
     "previousCurrentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
-    "previousCurrentSourceRevalidationFinishedAt": "2026-09-12T20:21:34.788Z"
+    "previousCurrentSourceRevalidationFinishedAt": "2026-09-12T21:04:38.453Z"
   },
   "startedAt": "2026-09-01T16:17:22+08:00",
   "finishedAt": "2026-09-11T16:36:27+08:00",
@@ -381,7 +391,8 @@
     "M2-IAM-HA concurrent IAM replicas and failover are not covered; only single-process restart persistence is proven.",
     "P3 follow-ups: controller-level legacy consent replay 409 regression case and a maintenance assertion that the canonical consent map stays in sync with supported capabilities.",
     "The archived runtime evidence binds the historical implementation commit 172dfca; later hardening commits were re-verified separately at HEAD.",
-    "Overall phase remains D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED; P1R-M2-003 unlocks with this acceptance."
+    "Overall phase remains D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED; P1R-M2-003 unlocks with this acceptance.",
+    "The adult gate birth-year validation was added after acceptance. Before it, an implausible birth year produced 500 iam.internal.error with retryable: true instead of a client error. The gate still failed closed, so no learner gained access, but the retryable flag was wrong and the unhandled exception was poor boundary hygiene. See the latest currentSourceRevalidationHistory entry."
   ],
   "reviewer": "agent:m2_002_final_review:opencode-general",
   "decision": "ACCEPTED"
