@@ -216,6 +216,12 @@
 - 验证（JDK 25）：commerce 91/0/0（1 跳过）；opt-in 1/1。
 - 剩余：其余 owner 迁移运行证据、reconcile 脚本全量升级、run-v2-services 死 env 复核。
 
+## 2026-09-12 M2-004 Batch B（续）：13/13 owner 真实迁移证据
+
+- 迁移测试模板推广到 12 个 owner；全部在真实 MySQL 上验证空库迁移、存量幂等、坏迁移 success=0、repair 恢复（13/13 PASS）。
+- runner env 审计：commerce 为唯一死 Flyway 缺口（已修复），其余服务均由程序化 Flyway 消费对应 env/属性。
+- 剩余：reconcile-owner-schemas 脚本全量迁移与历史校验；随后 Batch C。
+
 ## 2026-09-04 IAM 账户/密码并发安全检查点
 
 - 源码：`9deb899`。认证改为锁前单次 cost-12 BCrypt、锁内 current principal/hash/status/counter 复核；credential epoch 在校验期间变化时统一 `INVALID_CREDENTIALS` 且零写入，避免旧在途请求污染或锁死刚重置的新凭据。
