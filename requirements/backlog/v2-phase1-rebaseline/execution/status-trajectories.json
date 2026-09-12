@@ -433,12 +433,14 @@
       "path": [
         "PLANNED",
         "READY",
-        "IN_PROGRESS"
+        "IN_PROGRESS",
+        "REVIEW",
+        "ACCEPTED"
       ],
-      "recordedAt": "2026-09-11T17:10:00+08:00",
+      "recordedAt": "2026-09-12T13:30:00+08:00",
       "actor": "root-coordinator",
-      "reason": "Dependencies P1R-M2-001 and P1R-M2-002 are accepted. A read-only survey found all 11 domain services already have a resource-server baseline but split across three copy-paste families with zero reuse of the service-template security baseline; the highest-risk gaps are assessment-service (no access policy or permission model) and learning-service (hardcoded consent/permissions fail-open). Repair batches are recorded in execution/P1R-M2-003.md; real runtime evidence remains NOT_RUNTIME_VERIFIED.",
-      "evidencePath": "requirements/backlog/v2-phase1-rebaseline/execution/P1R-M2-003.md"
+      "reason": "The first independent final review returned REWORK (P1-1 fail-closed PDP missing, P1-2 per-service JWT negatives missing, P1-3 phase/consent/rights default deny not enforced). Rework closed every P1/P2/P3 item: decoder-level JWT negatives across 11 services and service-template, fail-closed dynamic policy PEP with activation guard rolled out to all domain services, configurable PEP timings wired, tenant strictness unified, explicit decoder wiring, oversized JWKS tests and rebuilt evidence. The resumed independent reviewer accepted with P0/P1/P2=0/0/0 and three non-blocking P3 items. Final matrix 854/0/0/0 across 11 services plus service-template 23; canonical manifest binds 81 artifacts at sourceCommit cacaf67. Overall phase stays D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED and P1R-M2-004 unlocks but must be claimed through the P1R flow.",
+      "evidencePath": "evidence/p1r/m2/P1R-M2-003/manifest.json"
     }
   ]
 }

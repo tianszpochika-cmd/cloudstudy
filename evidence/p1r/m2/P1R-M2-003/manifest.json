@@ -1,0 +1,553 @@
+{
+  "taskId": "P1R-M2-003",
+  "draftOnly": false,
+  "canonicalTaskStatus": "ACCEPTED",
+  "sourceCommit": "cacaf678670c2c0c5de63d7918ec28343056bc8b",
+  "artifactDigests": [
+    {
+      "path": "evidence/p1r/m2/P1R-M2-003/runtime-evidence-2026-09-12.json",
+      "algorithm": "sha256",
+      "digest": "58d14c1b3e2642aaf846015d9da31b4b0006d29daa04bac1dbf9e47fd428276f"
+    },
+    {
+      "path": "services/learning-service/src/main/java/com/englishflow/learning/security/IamEnvelopedJwkSource.java",
+      "algorithm": "sha256",
+      "digest": "8a300066f66f5f9db9130b97e4a33d833bc42c49091542b7bd9a9ad03e132758"
+    },
+    {
+      "path": "services/learning-service/src/main/java/com/englishflow/learning/security/FailClosedPep.java",
+      "algorithm": "sha256",
+      "digest": "94255bfb290a33960fabcb99d949fbaed30ec7005e2a34b5c68e7789bc733a28"
+    },
+    {
+      "path": "services/learning-service/src/main/java/com/englishflow/learning/security/PdpActivationGuard.java",
+      "algorithm": "sha256",
+      "digest": "225a0be8e8f50ab459c7ee01971ec35b69425c3f7083457d7c039d0a6fc6b950"
+    },
+    {
+      "path": "services/learning-service/src/main/java/com/englishflow/learning/security/PdpDecision.java",
+      "algorithm": "sha256",
+      "digest": "e8d94675f239c0417fa4c437589b10b438845568b01373a8b5f5457e0ec0ae65"
+    },
+    {
+      "path": "services/learning-service/src/main/java/com/englishflow/learning/security/PdpPort.java",
+      "algorithm": "sha256",
+      "digest": "75f290120557327a2faa6603f915fe6e360e6a21ebf150bb2a2b7f280f50672c"
+    },
+    {
+      "path": "services/learning-service/src/main/java/com/englishflow/learning/security/SecurityConfiguration.java",
+      "algorithm": "sha256",
+      "digest": "60bcb443b3433252d4959b6c79fd66cb733cf4462c00c8470182f3f38b505f0c"
+    },
+    {
+      "path": "services/learning-service/src/test/java/com/englishflow/learning/security/LearningJwtDecoderNegativeTest.java",
+      "algorithm": "sha256",
+      "digest": "fe91382bcec211bef3a7dd0ff43fe11f72d5fee3d6091de713c12972ebb25e13"
+    },
+    {
+      "path": "services/learning-service/src/test/java/com/englishflow/learning/security/FailClosedPepTest.java",
+      "algorithm": "sha256",
+      "digest": "e109a00a7eeb8e7d960fa0470c6e396ef444d45023f297cde9b5b43a5ec2c059"
+    },
+    {
+      "path": "services/learning-service/src/test/java/com/englishflow/learning/security/IamEnvelopedJwkSourceTest.java",
+      "algorithm": "sha256",
+      "digest": "f44fae5de46a67e9d10fd7771c001c5bd0aa827d35ca5fcb80b1442c9c6b4d87"
+    },
+    {
+      "path": "services/learning-service/src/test/java/com/englishflow/learning/security/PdpActivationGuardTest.java",
+      "algorithm": "sha256",
+      "digest": "dd3d40a4f130100a7813c8ef961da2b471a7d92202716ceab5bc5be963d36873"
+    },
+    {
+      "path": "services/admin-ops-service/src/main/java/com/englishflow/adminops/security/AdminOpsJwtAuthenticationConverter.java",
+      "algorithm": "sha256",
+      "digest": "5a0f0a8b984b818d5182a9c861ef9ec9483f8b2575d1ff10e3193781a40e352d"
+    },
+    {
+      "path": "services/admin-ops-service/src/main/java/com/englishflow/adminops/security/AdminOpsSecurityConfiguration.java",
+      "algorithm": "sha256",
+      "digest": "55b29d98f04c8a2bce0233b1b02d397dc4ccafe3e3a43e74e3772fde38515e80"
+    },
+    {
+      "path": "services/notification-service/src/main/java/com/englishflow/notification/adapter/http/NotificationPrincipalResolver.java",
+      "algorithm": "sha256",
+      "digest": "61a6d18faa94fc1a1f4f8b99286bddbd3bf1d42a63093f9877ef7b371de4d077"
+    },
+    {
+      "path": "services/commerce-service/src/main/java/com/englishflow/commerce/adapter/http/CommercePrincipalResolver.java",
+      "algorithm": "sha256",
+      "digest": "e20137062968c5d5a5872ba48dfa6af4aa925cf7953fdcae1a24d9612ab94758"
+    },
+    {
+      "path": "services/analytics-service/src/main/java/com/englishflow/analytics/security/AnalyticsPrincipalResolver.java",
+      "algorithm": "sha256",
+      "digest": "c92338d9e817fbc345a76713158860851e43ab3b3f7cc34f9f46fc10a11fcee4"
+    },
+    {
+      "path": "services/social-service/src/main/java/com/englishflow/social/security/SocialSecurityConfiguration.java",
+      "algorithm": "sha256",
+      "digest": "ced5b323c5586b65eb3272f6a28b3982ea5f4fdbc871e53f518ca281fccd10bc"
+    },
+    {
+      "path": "services/assessment-service/src/main/resources/application.yml",
+      "algorithm": "sha256",
+      "digest": "243b5558edbc1a6071e7083c4c56bc5f5544b7d93969dce494e6489ddd817a3e"
+    },
+    {
+      "path": "services/learner-service/src/main/java/com/englishflow/learner/security/SecurityConfiguration.java",
+      "algorithm": "sha256",
+      "digest": "4f8f1ec13de616f6a26383fcca2eddee482eb83d281ee2f028908496b7629b28"
+    },
+    {
+      "path": "services/service-template/src/main/java/com/englishflow/platform/template/security/IamEnvelopedJwkSource.java",
+      "algorithm": "sha256",
+      "digest": "6eb13ea2bae19fd02159a48edc804e1adf8d0a7706e0bf39da2b5dd16cabf676"
+    },
+    {
+      "path": "services/service-template/src/test/java/com/englishflow/platform/template/security/TemplateJwtDecoderNegativeTest.java",
+      "algorithm": "sha256",
+      "digest": "597af67510ccbfb01b11a0e2adec790dcc9c77079150046db9b5cf707385729b"
+    },
+    {
+      "path": "services/learner-service/src/main/java/com/englishflow/learner/security/IamEnvelopedJwkSource.java",
+      "algorithm": "sha256",
+      "digest": "729d17ad82942f07ae751e0bc63a5a59f75fd1650199b8a97c5ffc8127465723"
+    },
+    {
+      "path": "services/learner-service/src/main/java/com/englishflow/learner/security/FailClosedPep.java",
+      "algorithm": "sha256",
+      "digest": "c114019776ce99ef11e48667b388f10a5609236da4c005a67d183fde959bab2e"
+    },
+    {
+      "path": "services/learner-service/src/main/java/com/englishflow/learner/security/PdpActivationGuard.java",
+      "algorithm": "sha256",
+      "digest": "df2f261ea201b92c6e8adc46acd54109db266ee98fe55b8f9e052fd702ca17ff"
+    },
+    {
+      "path": "services/learner-service/src/test/java/com/englishflow/learner/security/LearnerJwtDecoderNegativeTest.java",
+      "algorithm": "sha256",
+      "digest": "71aaf6995c4d6a04973830b2ba9836cc779ef488123c8b04502e5e7da4520bce"
+    },
+    {
+      "path": "services/learner-service/src/test/java/com/englishflow/learner/security/FailClosedPepTest.java",
+      "algorithm": "sha256",
+      "digest": "8666874e4477e1613a1d5c84c13924af4ebfa75d7ff6d1fa7436740b6ad3c4ed"
+    },
+    {
+      "path": "services/learner-service/src/test/java/com/englishflow/learner/security/IamEnvelopedJwkSourceTest.java",
+      "algorithm": "sha256",
+      "digest": "f1cbaf4854ada6543c6499116b1cb3065c5c472e8b834ec497e016cb0941e567"
+    },
+    {
+      "path": "services/assessment-service/src/main/java/com/englishflow/assessment/security/IamEnvelopedJwkSource.java",
+      "algorithm": "sha256",
+      "digest": "3379d30c43dd0f366af7f0a6fcbd4fdfebcc51bec578fca181cd2bdbda8915d3"
+    },
+    {
+      "path": "services/assessment-service/src/main/java/com/englishflow/assessment/security/FailClosedPep.java",
+      "algorithm": "sha256",
+      "digest": "563bc8fad0a958d3d10acdaec7a18b8136a98c07efa99d465fd1bfce0bd636df"
+    },
+    {
+      "path": "services/assessment-service/src/main/java/com/englishflow/assessment/security/PdpActivationGuard.java",
+      "algorithm": "sha256",
+      "digest": "3dd676892361f1e04bd4fe5f10436f38ca57022229b587d74e005e42493fa422"
+    },
+    {
+      "path": "services/assessment-service/src/test/java/com/englishflow/assessment/security/AssessmentJwtDecoderNegativeTest.java",
+      "algorithm": "sha256",
+      "digest": "2fcff5400c5633ecfbb7687dfbaf1d0305eb500be79723018ad3650a2683b987"
+    },
+    {
+      "path": "services/assessment-service/src/test/java/com/englishflow/assessment/security/FailClosedPepTest.java",
+      "algorithm": "sha256",
+      "digest": "2600b6b2eb43cfc0e38c8ae48cb896f71f11e8cfc5e5c8a1b947174e0dfda1cf"
+    },
+    {
+      "path": "services/assessment-service/src/test/java/com/englishflow/assessment/security/IamEnvelopedJwkSourceTest.java",
+      "algorithm": "sha256",
+      "digest": "5c417ff001bf8fa30d5b0d1ff0443149d40d712daeedede3a8f9c90e9f16fe44"
+    },
+    {
+      "path": "services/content-service/src/main/java/com/englishflow/content/security/IamEnvelopedJwkSource.java",
+      "algorithm": "sha256",
+      "digest": "62a97185da8ff176acd435fc4bb8dde3fbac98ea133b197b73a9508e60618421"
+    },
+    {
+      "path": "services/content-service/src/main/java/com/englishflow/content/security/FailClosedPep.java",
+      "algorithm": "sha256",
+      "digest": "85131b2416666ba501389b6ac97dbe63326323f29d24e9060f9914bb6bd3e06f"
+    },
+    {
+      "path": "services/content-service/src/main/java/com/englishflow/content/security/PdpActivationGuard.java",
+      "algorithm": "sha256",
+      "digest": "8fc5e6b6d88028b85570019d1cf7f353ab894c6d42e09cbae3c7705c6f383922"
+    },
+    {
+      "path": "services/content-service/src/test/java/com/englishflow/content/security/ContentJwtDecoderNegativeTest.java",
+      "algorithm": "sha256",
+      "digest": "b326a0a70c750346b3edd464b314ec5d9345e01bbbff173dcbbd4533a6c63e7b"
+    },
+    {
+      "path": "services/content-service/src/test/java/com/englishflow/content/security/FailClosedPepTest.java",
+      "algorithm": "sha256",
+      "digest": "679905bea504693b513b06bc3a8b91f60c6e4f124d98510ecfe646823b64cdca"
+    },
+    {
+      "path": "services/content-service/src/test/java/com/englishflow/content/security/IamEnvelopedJwkSourceTest.java",
+      "algorithm": "sha256",
+      "digest": "b70881cf9dc22ef535de917efe2b71819bdbc55dc79611865bcdd8db527520e5"
+    },
+    {
+      "path": "services/media-service/src/main/java/com/englishflow/media/security/IamEnvelopedJwkSource.java",
+      "algorithm": "sha256",
+      "digest": "ee901ff17b00f68d68a0ebf54d016c9d110d6503a47472ceb88a6b053fb33de6"
+    },
+    {
+      "path": "services/media-service/src/main/java/com/englishflow/media/security/FailClosedPep.java",
+      "algorithm": "sha256",
+      "digest": "ea2cf15036bfbdbbf5125372dff4e377c0c6da12352abdbc2b4b8666185c45ef"
+    },
+    {
+      "path": "services/media-service/src/main/java/com/englishflow/media/security/PdpActivationGuard.java",
+      "algorithm": "sha256",
+      "digest": "a609cb7fd63de6913a098f0157b0dbd48bea6ca8cc34c545f03a445f3d4f02f2"
+    },
+    {
+      "path": "services/media-service/src/test/java/com/englishflow/media/security/MediaJwtDecoderNegativeTest.java",
+      "algorithm": "sha256",
+      "digest": "c639bed96aa2bb711f593bc009e82e8505b65d39809e21721466b9b71ec891ed"
+    },
+    {
+      "path": "services/media-service/src/test/java/com/englishflow/media/security/FailClosedPepTest.java",
+      "algorithm": "sha256",
+      "digest": "46a707dff6f6937c5e98d654e54d9dbf9c9ede8d9ad0f05036365ad92175a040"
+    },
+    {
+      "path": "services/media-service/src/test/java/com/englishflow/media/security/IamEnvelopedJwkSourceTest.java",
+      "algorithm": "sha256",
+      "digest": "b09dafa72a6554b1f9deb386be92a096dbc5ee45bd643f945f52c09e4e62523e"
+    },
+    {
+      "path": "services/social-service/src/main/java/com/englishflow/social/security/IamEnvelopedJwkSource.java",
+      "algorithm": "sha256",
+      "digest": "5be12111f0ec19a5233b977da36e23753979b158dc2f50f7f3a9b5e9a4e1b3e2"
+    },
+    {
+      "path": "services/social-service/src/main/java/com/englishflow/social/security/FailClosedPep.java",
+      "algorithm": "sha256",
+      "digest": "d29aeee1b27ef9c54cc2e770f61749d01d7563e1e5faed612814bc985fa198d2"
+    },
+    {
+      "path": "services/social-service/src/main/java/com/englishflow/social/security/PdpActivationGuard.java",
+      "algorithm": "sha256",
+      "digest": "0b1a1bc6d24c1076c8b6f9a7008aed0b9813b1bc35656008ca923b6204f3f87b"
+    },
+    {
+      "path": "services/social-service/src/test/java/com/englishflow/social/security/SocialJwtDecoderNegativeTest.java",
+      "algorithm": "sha256",
+      "digest": "c80572e71ba156ed074fd4b0cc95ec5a6af892a58fbc2a17bd9a486daa366b04"
+    },
+    {
+      "path": "services/social-service/src/test/java/com/englishflow/social/security/FailClosedPepTest.java",
+      "algorithm": "sha256",
+      "digest": "e5cf7c12fb1852881cf2292418fa6f107bddb5da20780175701c8952a5b13e67"
+    },
+    {
+      "path": "services/social-service/src/test/java/com/englishflow/social/security/IamEnvelopedJwkSourceTest.java",
+      "algorithm": "sha256",
+      "digest": "bc399e2785ba4dee6847df38eb68d2c8521cb395361a43263429d6ac582a9dea"
+    },
+    {
+      "path": "services/admin-ops-service/src/main/java/com/englishflow/adminops/security/IamEnvelopedJwkSource.java",
+      "algorithm": "sha256",
+      "digest": "94d833f407d466ae8e5f6624f3fd2e9c304f68e59740f71170e023446b5f64c8"
+    },
+    {
+      "path": "services/admin-ops-service/src/main/java/com/englishflow/adminops/security/FailClosedPep.java",
+      "algorithm": "sha256",
+      "digest": "6b21f9ba8ba64769a5b6d69a18623e545154767bc3a8c75b6e6502f71d322627"
+    },
+    {
+      "path": "services/admin-ops-service/src/main/java/com/englishflow/adminops/security/PdpActivationGuard.java",
+      "algorithm": "sha256",
+      "digest": "4b618302c03c9354c395c6ffb8638b6b38bd5c5dcd8e1653de4dbd6e0917dcc2"
+    },
+    {
+      "path": "services/admin-ops-service/src/test/java/com/englishflow/adminops/security/AdminOpsJwtDecoderNegativeTest.java",
+      "algorithm": "sha256",
+      "digest": "0d97fa0ceca89b17c868389d1404e9ab9266e40c31a474ad6365cdda00deed4b"
+    },
+    {
+      "path": "services/admin-ops-service/src/test/java/com/englishflow/adminops/security/FailClosedPepTest.java",
+      "algorithm": "sha256",
+      "digest": "ae485d3a02c9a791b13f881cce959986a6e32619edbf72eb31574b44df49946f"
+    },
+    {
+      "path": "services/admin-ops-service/src/test/java/com/englishflow/adminops/security/IamEnvelopedJwkSourceTest.java",
+      "algorithm": "sha256",
+      "digest": "1e1a8887d506f1496e29ae50422801844ed68e4ab819ec388d30f9ac819ed0a3"
+    },
+    {
+      "path": "services/notification-service/src/main/java/com/englishflow/notification/security/IamEnvelopedJwkSource.java",
+      "algorithm": "sha256",
+      "digest": "7db88cdb86bcbfcd125eb61267451ff2e62d6a89f0778b1adf46aad4b41bbc8c"
+    },
+    {
+      "path": "services/notification-service/src/main/java/com/englishflow/notification/security/FailClosedPep.java",
+      "algorithm": "sha256",
+      "digest": "992acf5773a0ed8cd81d926b8d9dfac6ef8c3ef43eb0f90e89c2e25bca9a3d35"
+    },
+    {
+      "path": "services/notification-service/src/main/java/com/englishflow/notification/security/PdpActivationGuard.java",
+      "algorithm": "sha256",
+      "digest": "53663ea28716220f8a7914b725b1ab2ff488501093bc35eec2e7e15c045cadc1"
+    },
+    {
+      "path": "services/notification-service/src/test/java/com/englishflow/notification/config/NotificationJwtDecoderNegativeTest.java",
+      "algorithm": "sha256",
+      "digest": "0a5329c2ff20036cc3244f473c2285ccb1b338695714dcf1295f3f0b5c3df4ed"
+    },
+    {
+      "path": "services/notification-service/src/test/java/com/englishflow/notification/security/FailClosedPepTest.java",
+      "algorithm": "sha256",
+      "digest": "d0661e3d76f6d13e7106cdfed5704b227481a38abd18ef957394411fc09fb15c"
+    },
+    {
+      "path": "services/notification-service/src/test/java/com/englishflow/notification/security/IamEnvelopedJwkSourceTest.java",
+      "algorithm": "sha256",
+      "digest": "cf2e4fba5b3a626b236f69dc4cfd9c20d4b868c73a25ced28af35c1e651637f5"
+    },
+    {
+      "path": "services/commerce-service/src/main/java/com/englishflow/commerce/security/IamEnvelopedJwkSource.java",
+      "algorithm": "sha256",
+      "digest": "f429108403c529c653f431ef32d8649bed1b17fc3bd4e61ed5bf319f91d8413e"
+    },
+    {
+      "path": "services/commerce-service/src/main/java/com/englishflow/commerce/security/FailClosedPep.java",
+      "algorithm": "sha256",
+      "digest": "8f8f3afa600e560fff98040cc52d7364b96b3e9a8dd871f28c35dce8136ee91f"
+    },
+    {
+      "path": "services/commerce-service/src/main/java/com/englishflow/commerce/security/PdpActivationGuard.java",
+      "algorithm": "sha256",
+      "digest": "d4d45f0be09f4e0e68b7c481fd5e3c6b4fef62ab07e3be015c6512aededaba70"
+    },
+    {
+      "path": "services/commerce-service/src/test/java/com/englishflow/commerce/adapter/http/CommerceJwtDecoderNegativeTest.java",
+      "algorithm": "sha256",
+      "digest": "57ab362d682e0a486b23dad531aec914f0eec7a7e0c114ba55d9d74127b848ca"
+    },
+    {
+      "path": "services/commerce-service/src/test/java/com/englishflow/commerce/security/FailClosedPepTest.java",
+      "algorithm": "sha256",
+      "digest": "91a78483049a0d9202b87d483c4f382af750ad2d2250240860ac9d900d61231f"
+    },
+    {
+      "path": "services/commerce-service/src/test/java/com/englishflow/commerce/security/IamEnvelopedJwkSourceTest.java",
+      "algorithm": "sha256",
+      "digest": "8cd762804a3ba12b5ea13cc8f9b4dc09f84d06e58889727eb88b9fbea9a42607"
+    },
+    {
+      "path": "services/analytics-service/src/main/java/com/englishflow/analytics/security/IamEnvelopedJwkSource.java",
+      "algorithm": "sha256",
+      "digest": "fcd2e2df204578c66ef40cd221fc592a5bb8d3038d658d59a46e09fc5f61074c"
+    },
+    {
+      "path": "services/analytics-service/src/main/java/com/englishflow/analytics/security/FailClosedPep.java",
+      "algorithm": "sha256",
+      "digest": "6f8a22917fe50c71418b2798671ba15219d218b98f8ee790237649babf58f4b9"
+    },
+    {
+      "path": "services/analytics-service/src/main/java/com/englishflow/analytics/security/PdpActivationGuard.java",
+      "algorithm": "sha256",
+      "digest": "9e2d374bced3b9df406f4fd0a6afbdaf2e0d91db7bdc211d81f983c3edb43280"
+    },
+    {
+      "path": "services/analytics-service/src/test/java/com/englishflow/analytics/security/AnalyticsJwtDecoderNegativeTest.java",
+      "algorithm": "sha256",
+      "digest": "5b58d8df7dd161fb213828f0114d13e31e297bf89457ac18a7f86d6005d5ebdf"
+    },
+    {
+      "path": "services/analytics-service/src/test/java/com/englishflow/analytics/security/FailClosedPepTest.java",
+      "algorithm": "sha256",
+      "digest": "61fbdf0b85f4c687ac115d5b4d66d7e323bd661a1692fb0813720e8162c6e3ea"
+    },
+    {
+      "path": "services/analytics-service/src/test/java/com/englishflow/analytics/security/IamEnvelopedJwkSourceTest.java",
+      "algorithm": "sha256",
+      "digest": "ea3c61246f80ac3b404ee561dcb91cedfaa3b4781971d1bea205ec083890cdb3"
+    },
+    {
+      "path": "services/gamification-service/src/main/java/com/englishflow/gamification/security/IamEnvelopedJwkSource.java",
+      "algorithm": "sha256",
+      "digest": "ec6859388409c2e43288229d8ef8648cc0552a502861743af9491ab49328d517"
+    },
+    {
+      "path": "services/gamification-service/src/main/java/com/englishflow/gamification/security/FailClosedPep.java",
+      "algorithm": "sha256",
+      "digest": "3e585c00a92af33e81bc9dede3ccced945a274f11b33e94e63c009eec0cbebf5"
+    },
+    {
+      "path": "services/gamification-service/src/main/java/com/englishflow/gamification/security/PdpActivationGuard.java",
+      "algorithm": "sha256",
+      "digest": "4c41fd15a25a9828b174a7ae3399efb1015e91b2b2b2c80880d94b7935e4acc9"
+    },
+    {
+      "path": "services/gamification-service/src/test/java/com/englishflow/gamification/adapter/http/GamificationJwtDecoderNegativeTest.java",
+      "algorithm": "sha256",
+      "digest": "11ac7ef54f81294d29fa50213df8704d049c10ddacff23d715bf432887291e2a"
+    },
+    {
+      "path": "services/gamification-service/src/test/java/com/englishflow/gamification/security/FailClosedPepTest.java",
+      "algorithm": "sha256",
+      "digest": "eb240729eeda083d3d1ef0d663b076223d1f615cbf95ab177dc5aee03adf728b"
+    },
+    {
+      "path": "services/gamification-service/src/test/java/com/englishflow/gamification/security/IamEnvelopedJwkSourceTest.java",
+      "algorithm": "sha256",
+      "digest": "dc030ce95a5e1b2803a6bdb5cbaf88aa586bac3e94b54aa11678479f05c2e4df"
+    }
+  ],
+  "environment": {
+    "kind": "domain-service-pep-boundary-evidence",
+    "branch": "dev",
+    "phaseStatus": "D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED",
+    "runtimeStatus": "M2_003_BOUNDARY_RUNTIME_VERIFIED",
+    "reviewedRevision": "cacaf678670c2c0c5de63d7918ec28343056bc8b",
+    "toolchain": {
+      "java": "OpenJDK 25.0.2",
+      "maven": "3.9.12",
+      "node": "20.19.5"
+    },
+    "evidenceFile": "evidence/p1r/m2/P1R-M2-003/runtime-evidence-2026-09-12.json",
+    "suiteMatrix": {
+      "services": 11,
+      "tests": 854,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "serviceTemplateTests": 23
+    },
+    "runtimeSmoke": "IAM local profile + learning-service: register 201; missing/tampered token 401; forged header 403; valid token verified against the enveloped IAM JWKS; valid token with forged tenant header 403."
+  },
+  "provenance": {
+    "survey": "All 11 domain services already carried a resource-server baseline in three copy-paste families; assessment had no PEP/permission model and learning hardcoded ConsentState.GRANTED with fixed permissions.",
+    "batches": [
+      "80454d6 learning JWT authorities + HTTP default-deny gate and hardcoded fact removal",
+      "32dc2d2 assessment PEP baseline",
+      "c15abe4 content and learner PEP alignment (plus content filter camelCase fix)",
+      "596eeab media header-set widening; 2124d51 social tenant fail-closed; dbbe1f4 admin-ops header set and PEP tests",
+      "79be34f notification header rejection + 401/403 envelope; 448b0ca commerce explicit rejection; fd483f1 analytics header/tenant hardening",
+      "4213c01 gamification platform tenant enforcement and header widening",
+      "09926d5 learning enveloped IAM JWKS decoder; 4faa4e0/1e70692/5a7a67e rollout to all services and service-template",
+      "3820a4b/2bbd085 decoder-level JWT negatives across services",
+      "6cd37c7/ab7ffa0 fail-closed dynamic policy PEP and rollout",
+      "28fea02 configurable PEP timings, tenant strictness and P3 cleanup",
+      "cacaf67 reworked runtime evidence rebuilt at 854/0/0/0"
+    ],
+    "reviewHistory": [
+      {
+        "reviewer": "agent:m2_003_final_review:opencode-general",
+        "session": "ses_f6c3e93edffeynLy2zpSvtGdTm",
+        "verdict": "REWORK",
+        "finishedAt": "2026-09-12T12:15:00+08:00",
+        "details": "First final review: baseline reproducible (700/0/0/0, 12 identical envelope decoders) but P1-1 fail-closed PDP, P1-2 per-service JWT negatives and P1-3 HTTP default-deny for phase/consent/rights were open, plus P2-1 dead config and four P3 items."
+      },
+      {
+        "reviewer": "agent:m2_003_final_review:opencode-general",
+        "session": "ses_f6c3e93edffeynLy2zpSvtGdTm",
+        "verdict": "ACCEPT",
+        "p0": 0,
+        "p1": 0,
+        "p2": 0,
+        "p3": 3,
+        "finishedAt": "2026-09-12T13:20:00+08:00",
+        "details": "Rework closure verified: decoder-level JWT negatives across 11 services and service-template calling the production decoder factories; FailClosedPep/PdpActivationGuard byte-identical across services with deny paths for timeout/unavailable/null/version-mismatch/unknown-revocation/expired cache and allow only for CONFIRMED_NOT_REVOKED; full matrix 854/0/0/0 plus template 23 matching the evidence JSON; tenant strictness, explicit decoder wiring, oversized test and evidence metadata checked. Remaining P3: revocation allow-list hardening, timeout self-enforcement inside FailClosedPep, assessment residual unused timing properties and a historical 700-test wording in P1R-M2-003.md."
+      }
+    ]
+  },
+  "startedAt": "2026-09-01T16:17:22+08:00",
+  "finishedAt": "2026-09-12T13:21:18+08:00",
+  "actors": [
+    "root-coordinator",
+    "m2-003-pep-executor"
+  ],
+  "sourceIds": [
+    "P1R-M2-003",
+    "ARCH-SEC-001",
+    "ARCH-SVC-001",
+    "ADR-0010",
+    "ADR-0013"
+  ],
+  "commands": [
+    "mvn.cmd -f services/<service>/pom.xml test (JDK 25) for the 11 domain services and service-template",
+    "node scripts/dev/run-node-tests.mjs tests/p1r (Node 20.19.5)",
+    "node scripts/audit/p1r-evidence-gate.mjs --json",
+    "node scripts/audit/p1r-gap-registry-check.mjs --json",
+    "pnpm docs:audit",
+    "node scripts/check-dod.mjs --strict",
+    "real-process smoke: IAM local profile 18087 + learning-service 18090, register then five boundary probes",
+    "independent read-only review sessions ses_f6c3e93edffeynLy2zpSvtGdTm (REWORK then ACCEPT)"
+  ],
+  "results": [
+    {
+      "check": "service-suite-matrix",
+      "status": "PASS",
+      "details": "11 domain services: 854 tests / 0 failures / 0 errors / 0 skipped; service-template: 23."
+    },
+    {
+      "check": "enveloped-jwks-decoder",
+      "status": "PASS",
+      "details": "All 11 domain services and service-template consume the contract ApiSuccessEnvelope JWKS; bare-set accepted for defence in depth; empty/invalid/oversized documents fail closed."
+    },
+    {
+      "check": "per-service-jwt-negatives",
+      "status": "PASS",
+      "details": "Each service has a decoder-level test proving valid tokens pass and bad signature, expiry, wrong issuer, wrong audience and non-RS256 are rejected."
+    },
+    {
+      "check": "fail-closed-dynamic-policy",
+      "status": "PASS",
+      "details": "FailClosedPep denies PDP timeout/unavailable/null, policy version mismatch, unknown or revoked state and expired cache; PdpActivationGuard refuses startup when dynamic facts are required without a provisioned PDP."
+    },
+    {
+      "check": "client-authority-header-rejection",
+      "status": "PASS",
+      "details": "All services reject forged role/tenant/owner/workload/mTLS headers with their canonical 400/403 responses and have negative tests."
+    },
+    {
+      "check": "runtime-smoke",
+      "status": "PASS",
+      "details": "Register 201; missing/tampered token 401; forged header 403; valid token verified against the enveloped JWKS (route 404 outside jdbc mode); valid token with forged tenant header 403."
+    },
+    {
+      "check": "p1r-regression",
+      "status": "PASS",
+      "details": "1421/1421 under Node 20.19.5; plan, gap registry, evidence gate, docs audit and check-dod all PASS."
+    },
+    {
+      "check": "independent-review",
+      "status": "PASS",
+      "details": "agent:m2_003_final_review:opencode-general accepted after rework with P0/P1/P2=0 and three non-blocking P3 items."
+    }
+  ],
+  "rollbackEvidence": [
+    {
+      "status": "PASS",
+      "details": "All changes are additive service-local security components and tests; no contract, schema or migration changes are involved. Reverting the M2-003 commits restores the pre-task service behavior without touching D2 artifacts or the frozen M1-018 baseline. The runtime smoke used local profiles only and left no processes or data behind."
+    }
+  ],
+  "knownGaps": [
+    "Dynamic facts (phase/consent/rights) are not consulted by business endpoints yet; the fail-closed PEP seam exists and PdpActivationGuard refuses activation without a provisioned PDP. A numbered follow-up must land the PDP source before M2-004 activates the JDBC controllers.",
+    "Endpoint-level fine-grained @PreAuthorize permission matrix is not applied; services enforce verified identity, platform tenant, role/permission presence and per-domain PEP checks.",
+    "Service-owned MySQL schemas, Flyway migrations and cross-tenant database guards remain with P1R-M2-004.",
+    "Only learning-service ran as a real process smoke; other services are covered by their security unit suites and shared component tests.",
+    "Notification/commerce provider signature verification and durable outbound delivery remain with their later tasks.",
+    "P3 hardening candidates: revocation allow-list instead of deny-list in FailClosedPep, self-enforced PDP deadline, assessment residual unused timing properties and the historical 700-test wording in execution/P1R-M2-003.md.",
+    "Overall phase remains D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED."
+  ],
+  "reviewer": "agent:m2_003_final_review:opencode-general",
+  "decision": "ACCEPTED"
+}

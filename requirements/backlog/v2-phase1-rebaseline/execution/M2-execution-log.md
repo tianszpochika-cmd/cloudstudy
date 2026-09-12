@@ -196,6 +196,12 @@
 - 证据重建为 `evidence/p1r/m2/P1R-M2-003/runtime-evidence-2026-09-12.json`（sourceCommit `28fea02`）；旧文件移除。
 - 下一步：最终独立复审 → manifest → ACCEPTED。
 
+## 2026-09-12 M2-003 最终验收（ACCEPTED）
+
+- 返工后独立只读终审判定 `ACCEPT`（P0/P1/P2=0/0/0，余 3 项非阻塞 P3）；canonical manifest `evidence/p1r/m2/P1R-M2-003/manifest.json`（81 artifacts，sourceCommit `cacaf67`）；台账 `ACCEPTED`，轨迹 `PLANNED→READY→IN_PROGRESS→REVIEW→ACCEPTED`。
+- 终审复跑：11 服务矩阵 `854/0/0/0` + 模板 23；learning 真实进程冒烟复现；evidence/docs/P1R 门禁 PASS。
+- `P1R-M2-004` 依赖满足但未认领；总体阶段仍 `D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED`。
+
 ## 2026-09-04 IAM 账户/密码并发安全检查点
 
 - 源码：`9deb899`。认证改为锁前单次 cost-12 BCrypt、锁内 current principal/hash/status/counter 复核；credential epoch 在校验期间变化时统一 `INVALID_CREDENTIALS` 且零写入，避免旧在途请求污染或锁死刚重置的新凭据。

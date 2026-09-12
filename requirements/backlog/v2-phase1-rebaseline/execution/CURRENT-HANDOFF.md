@@ -2,7 +2,18 @@
 
 更新时间：2026-09-11（Asia/Shanghai）。本文件只说明如何恢复当前开发检查点，不替代任务台账或 canonical Evidence manifest。
 
-## 2026-09-11 M2-003 Batch 1 进展（最新恢复入口）
+## 2026-09-12 M2 三项验收（最新恢复入口）
+
+更新时间：2026-09-12 13:30（Asia/Shanghai）。
+
+- **M2-001（Gateway）/ M2-002（IAM）/ M2-003（领域服务 PEP）均已 `ACCEPTED`**，各自 canonical manifest：`evidence/p1r/m2/P1R-M2-00{1,2,3}/manifest.json`。
+- `P1R-M2-003` 关键成果：11 领域服务 + `service-template` 全部具备“已验证 JWT（含修复 IAM 契约信封 JWKS，此前真实令牌全部 401）+ 默认拒绝入口 + 伪造头/参数拒绝 + decoder 级 JWT 负例（坏签名/过期/错误 iss/aud/alg）+ fail-closed 动态策略 PEP（超时/未实现/null/版本不匹配/撤销未知拒绝）+ 启动守卫”；最终矩阵 11 服务 **854/0/0/0**、模板 23；learning 真实进程冒烟复现（401/401/403/合法令牌通过/伪造租户头 403）。
+- 台账：`28 ACCEPTED / 1 BLOCKED / 0 IN_PROGRESS / 80 PLANNED`；总阶段仍为 `D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED`；`P1R-M2-004` 依赖已满足、尚未认领。
+- M2-003 已知边界（manifest knownGaps）：动态事实端点接线与 PDP 源（需编号任务承接）、端点级 `@PreAuthorize` 权限矩阵、schema/Flyway/跨租户库守卫（M2-004）、仅 learning 真实进程冒烟、3 项 P3 加固项。
+- M2-002 遗留 2 项 P3（legacy 重放控制器级 409 用例、规范同意映射维护断言）仍开放。
+- GitHub 连接间歇可用，本轮提交已推送至 `origin/dev=cacaf67`（验收文档与 manifest 提交随后推送）。
+
+## 2026-09-11 M2-003 Batch 1 进展（历史，已被上节取代）
 
 更新时间：2026-09-11 18:05（Asia/Shanghai）。本次会话完整开发记录见 [SESSION-LOG-2026-09-11.md](SESSION-LOG-2026-09-11.md)。
 
