@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-08-29T10:11:41.506Z",
-  "sourceCommit": "5deff771b3acb223e75b8f1e0696c34c056cbaac",
+  "generatedAt": "2026-09-12T15:52:54.416Z",
+  "sourceCommit": "f4aaa419720cc49163a8bca892abe73dd9c73f20",
   "mode": "runtime",
-  "result": "FAIL",
+  "result": "PASS",
   "catalog": {
     "node": "20.19.5",
     "pnpm": "10.19.0",
@@ -15,19 +15,19 @@
     "cycloneDxMavenPlugin": "2.9.1"
   },
   "hashes": {
-    "packageJson": "e2c26cd5ba501f88596bbdead41e19cbc1cfbf97a951ed46a0c3485baaea9262",
-    "pnpmLock": "356f62536d809e5f0359354659bab28ecf79d07ce7e9bfe6bd1ac6ce1458ef4e",
+    "packageJson": "8dcad1f48c5c987d6b8a90417683debcc54bd20df74743627388bda464e05e7f",
+    "pnpmLock": "d2dcc241058b91a66b9b111873b33d0a2c0f07ef4537ba6d000cc92d6fa0032c",
     "reactorPom": "5ce41e82da6cded2e95db59d90e6c173e3ab99330d2bc88985f22448e5fa9197",
-    "toolchainBaseline": "2d63b4576f16e285c31e06e664ea794b55f7de5a5ab6ffbc667539595d6bd5d5",
+    "toolchainBaseline": "e13823344e090259fe19bc9426b7afcdb4f8fa5100c7bbab234eead6fafafc74",
     "dependencyPolicy": "158a07e10e0e01ffb97801eddb79d98ffb1b2c39c0fd6fb148fe518b90d8de60"
   },
   "inventory": {
-    "nodeLockedComponents": 1097,
-    "mavenDirectComponents": 19
+    "nodeLockedComponents": 1108,
+    "mavenDirectComponents": 21
   },
   "licenses": {
     "result": "PASS",
-    "nodeGroups": 11,
+    "nodeGroups": 12,
     "mavenGroups": 11,
     "denied": [],
     "unknownNodeGroups": [],
@@ -35,42 +35,20 @@
   },
   "vulnerability": {
     "checked": true,
-    "result": "FAIL",
+    "result": "PASS",
     "exitCode": 1,
+    "policy": "fail",
+    "blockingVulnerabilities": 0,
     "payload": {
       "vulnerabilities": {
         "info": 0,
-        "low": 6,
-        "moderate": 8,
-        "high": 1,
+        "low": 8,
+        "moderate": 7,
+        "high": 0,
         "critical": 0
       },
-      "totalDependencies": 1109,
+      "totalDependencies": 1120,
       "advisories": [
-        {
-          "id": 1102341,
-          "githubAdvisoryId": "GHSA-67mh-4wv8-2f99",
-          "module": "esbuild",
-          "severity": "moderate",
-          "title": "esbuild enables any website to send any requests to the development server and read the response",
-          "url": "https://github.com/advisories/GHSA-67mh-4wv8-2f99",
-          "vulnerableVersions": "<=0.24.2",
-          "patchedVersions": ">=0.25.0",
-          "findings": [
-            {
-              "version": "0.20.2",
-              "paths": [
-                "apps__mobile>@dcloudio/uni-app>@dcloudio/uni-cloud>@dcloudio/uni-cli-shared>esbuild"
-              ]
-            },
-            {
-              "version": "0.21.5",
-              "paths": [
-                "apps__mobile>vite>esbuild"
-              ]
-            }
-          ]
-        },
         {
           "id": 1103907,
           "githubAdvisoryId": "GHSA-pxg6-pf52-xh8x",
@@ -174,24 +152,6 @@
           ]
         },
         {
-          "id": 1116229,
-          "githubAdvisoryId": "GHSA-4w7w-66w2-5vf9",
-          "module": "vite",
-          "severity": "moderate",
-          "title": "Vite Vulnerable to Path Traversal in Optimized Deps `.map` Handling",
-          "url": "https://github.com/advisories/GHSA-4w7w-66w2-5vf9",
-          "vulnerableVersions": "<=6.4.1",
-          "patchedVersions": ">=6.4.2",
-          "findings": [
-            {
-              "version": "5.4.21",
-              "paths": [
-                "apps__mobile>vite"
-              ]
-            }
-          ]
-        },
-        {
           "id": 1119502,
           "githubAdvisoryId": "GHSA-q8mj-m7cp-5q26",
           "module": "qs",
@@ -210,37 +170,19 @@
           ]
         },
         {
-          "id": 1120784,
-          "githubAdvisoryId": "GHSA-v6wh-96g9-6wx3",
-          "module": "vite",
-          "severity": "moderate",
-          "title": "launch-editor: NTLMv2 hash disclosure via UNC path handling on Windows",
-          "url": "https://github.com/advisories/GHSA-v6wh-96g9-6wx3",
-          "vulnerableVersions": "<=6.4.2",
-          "patchedVersions": ">=6.4.3",
+          "id": 1120680,
+          "githubAdvisoryId": "GHSA-g7r4-m6w7-qqqr",
+          "module": "esbuild",
+          "severity": "low",
+          "title": "esbuild allows arbitrary file read when running the development server on Windows",
+          "url": "https://github.com/advisories/GHSA-g7r4-m6w7-qqqr",
+          "vulnerableVersions": ">=0.27.3 <0.28.1",
+          "patchedVersions": ">=0.28.1",
           "findings": [
             {
-              "version": "5.4.21",
+              "version": "0.27.7",
               "paths": [
-                "apps__mobile>vite"
-              ]
-            }
-          ]
-        },
-        {
-          "id": 1123525,
-          "githubAdvisoryId": "GHSA-fx2h-pf6j-xcff",
-          "module": "vite",
-          "severity": "high",
-          "title": "vite: `server.fs.deny` bypass on Windows alternate paths",
-          "url": "https://github.com/advisories/GHSA-fx2h-pf6j-xcff",
-          "vulnerableVersions": "<=6.4.2",
-          "patchedVersions": ">=6.4.3",
-          "findings": [
-            {
-              "version": "5.4.21",
-              "paths": [
-                "apps__mobile>vite"
+                "apps__mobile>@dcloudio/uni-app>@dcloudio/uni-cloud>@dcloudio/uni-cli-shared>esbuild"
               ]
             }
           ]
@@ -280,6 +222,66 @@
               ]
             }
           ]
+        },
+        {
+          "id": 1153170,
+          "githubAdvisoryId": "GHSA-w9m9-85wc-3x92",
+          "module": "postcss-selector-parser",
+          "severity": "low",
+          "title": "postcss-selector-parser allows denial of service through uncontrolled AST recursion",
+          "url": "https://github.com/advisories/GHSA-w9m9-85wc-3x92",
+          "vulnerableVersions": ">=6.1.0 <6.1.3",
+          "patchedVersions": ">=6.1.3",
+          "findings": [
+            {
+              "version": "6.1.2",
+              "paths": [
+                "apps__mobile>@dcloudio/uni-app>@dcloudio/uni-cloud>@dcloudio/uni-cli-shared>postcss-selector-parser"
+              ]
+            }
+          ]
+        },
+        {
+          "id": 1158507,
+          "githubAdvisoryId": "GHSA-4mjr-xmp4-gh2g",
+          "module": "qs",
+          "severity": "moderate",
+          "title": "qs: Denial of Service via Attacker Controlled isBuffer",
+          "url": "https://github.com/advisories/GHSA-4mjr-xmp4-gh2g",
+          "vulnerableVersions": ">=2.2.5 <6.16.0",
+          "patchedVersions": ">=6.16.0",
+          "findings": [
+            {
+              "version": "6.13.0",
+              "paths": [
+                "apps__mobile>@dcloudio/vite-plugin-uni>express>body-parser>qs"
+              ]
+            },
+            {
+              "version": "6.11.0",
+              "paths": [
+                "apps__mobile>@dcloudio/vite-plugin-uni>express>qs"
+              ]
+            }
+          ]
+        },
+        {
+          "id": 1193734,
+          "githubAdvisoryId": "GHSA-vwc7-r8mq-g2x9",
+          "module": "adm-zip",
+          "severity": "moderate",
+          "title": "adm-zip extraction follows destination symlinks, allowing arbitrary file overwrite",
+          "url": "https://github.com/advisories/GHSA-vwc7-r8mq-g2x9",
+          "vulnerableVersions": ">=0.5.9 <=0.6.0",
+          "patchedVersions": "<0.0.0",
+          "findings": [
+            {
+              "version": "0.6.0",
+              "paths": [
+                "apps__mobile>@dcloudio/uni-app>@dcloudio/uni-cloud>@dcloudio/uni-cli-shared>adm-zip"
+              ]
+            }
+          ]
         }
       ]
     }
@@ -290,8 +292,8 @@
     "exitCode": 0,
     "path": "target/bom.json",
     "diagnostics": null,
-    "components": 183,
-    "componentsWithLicense": 183
+    "components": 185,
+    "componentsWithLicense": 185
   },
   "checks": [
     {
@@ -686,7 +688,5 @@
     }
   ],
   "warnings": [],
-  "errors": [
-    "pnpm audit found a high/critical vulnerability or the registry was unavailable"
-  ]
+  "errors": []
 }

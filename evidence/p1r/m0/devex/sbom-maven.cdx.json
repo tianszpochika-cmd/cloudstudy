@@ -4,7 +4,7 @@
   "serialNumber" : "urn:uuid:6dcd167f-cfac-3f50-b91a-2f28865b8c9b",
   "version" : 1,
   "metadata" : {
-    "timestamp" : "2026-08-29T10:11:41Z",
+    "timestamp" : "2026-09-12T15:52:53Z",
     "lifecycles" : [
       {
         "phase" : "build"
@@ -891,282 +891,6 @@
         {
           "type" : "vcs",
           "url" : "https://github.com/spring-projects/spring-boot"
-        }
-      ]
-    },
-    {
-      "type" : "library",
-      "bom-ref" : "pkg:maven/org.springframework.boot/spring-boot-jackson@4.1.1?type=jar",
-      "publisher" : "VMware, Inc.",
-      "group" : "org.springframework.boot",
-      "name" : "spring-boot-jackson",
-      "version" : "4.1.1",
-      "description" : "Spring Boot Jackson",
-      "scope" : "required",
-      "hashes" : [
-        {
-          "alg" : "MD5",
-          "content" : "25cf1458df4244b5d1e583ceffab5f2e"
-        },
-        {
-          "alg" : "SHA-1",
-          "content" : "1defff7e3f9dda050f26e98da3285b4321920dc1"
-        },
-        {
-          "alg" : "SHA-256",
-          "content" : "69a9b4d8850a0532a5e44ff7306a03621485b26596e7f9481de7d28e68a2dd42"
-        },
-        {
-          "alg" : "SHA-512",
-          "content" : "c65afe4055d80f88b88d2165bef3bfddaddabf0a59b61a3d26e698375ccb0eb30e856c61dbb3311b5433f72d3c63244d9c934e7cb4c132e1a36ce33a536ae91a"
-        },
-        {
-          "alg" : "SHA-384",
-          "content" : "d05681e79f18dd8361f22e31b76a78dd0b479045cba3847a8c7b7ec5369ac5e12697e5771ed557e2e6ddd0639699b37f"
-        },
-        {
-          "alg" : "SHA3-384",
-          "content" : "74b87aa4b4eadd3f936e0534d209f8b3f8f5a76e3289caa6996b315bed9771a995161725a5fcc8b2b8794aa11db46cbe"
-        },
-        {
-          "alg" : "SHA3-256",
-          "content" : "e005e0788698231b9cb0282946e819f832938815c68e78afe119876f508a8188"
-        },
-        {
-          "alg" : "SHA3-512",
-          "content" : "d2eb74bd5ad243ceb0ff81f25a32202568918c8d919994992448b762c60c122da24271cc75aba6113286523477b8212bd6581916cd66ee9efb7e902bd6ac3d57"
-        }
-      ],
-      "licenses" : [
-        {
-          "license" : {
-            "id" : "Apache-2.0"
-          }
-        }
-      ],
-      "purl" : "pkg:maven/org.springframework.boot/spring-boot-jackson@4.1.1?type=jar",
-      "externalReferences" : [
-        {
-          "type" : "website",
-          "url" : "https://spring.io/projects/spring-boot"
-        },
-        {
-          "type" : "issue-tracker",
-          "url" : "https://github.com/spring-projects/spring-boot/issues"
-        },
-        {
-          "type" : "vcs",
-          "url" : "https://github.com/spring-projects/spring-boot"
-        }
-      ]
-    },
-    {
-      "type" : "library",
-      "bom-ref" : "pkg:maven/tools.jackson.core/jackson-databind@3.1.5?type=jar",
-      "publisher" : "FasterXML",
-      "group" : "tools.jackson.core",
-      "name" : "jackson-databind",
-      "version" : "3.1.5",
-      "description" : "General data-binding functionality for Jackson: works on core streaming API",
-      "scope" : "required",
-      "hashes" : [
-        {
-          "alg" : "MD5",
-          "content" : "7b399cbb2bea1429c46c1b8c73af42b9"
-        },
-        {
-          "alg" : "SHA-1",
-          "content" : "782178f0b1fe088803c03b85eb9a406f60519044"
-        },
-        {
-          "alg" : "SHA-256",
-          "content" : "3a2338d996fd3056791df8d335fa9ba8a62a706ed4245ecf81b3e583df37d08a"
-        },
-        {
-          "alg" : "SHA-512",
-          "content" : "897ee93528010d2956908da5ea90c37dc9d6c37388bd1aa9da954c582a7bdf986a477f248d631d833c2bc281e0827782df978ecc76d5518a33e475aa9ddcb2d9"
-        },
-        {
-          "alg" : "SHA-384",
-          "content" : "da6c8695a80410cb666c33b13604d695db2993fff67a86bc08c90d4014e6e76ef2107bc014bcba3ab5a9db1640d6cb21"
-        },
-        {
-          "alg" : "SHA3-384",
-          "content" : "e2c113d73ce6b4526cdfd6b15539ad7469314b2e95a5df33f3df4039e125e7dd62c139ec590e6aee65bf9406dc125c14"
-        },
-        {
-          "alg" : "SHA3-256",
-          "content" : "8fa8f03e322972d87a6fe7f712714038b29bd9ddbeb3da599ec12d62fd2502c7"
-        },
-        {
-          "alg" : "SHA3-512",
-          "content" : "8882ba1d58fb5ab58d06663f510a69b551a1a73bae534206a07e91d9bfb4dd898c8b00d3e72ccf773b6309bcff17f5da8bed7089deb963fc16b4e0d36ef7d3d5"
-        }
-      ],
-      "licenses" : [
-        {
-          "license" : {
-            "id" : "Apache-2.0"
-          }
-        }
-      ],
-      "purl" : "pkg:maven/tools.jackson.core/jackson-databind@3.1.5?type=jar",
-      "externalReferences" : [
-        {
-          "type" : "website",
-          "url" : "https://github.com/FasterXML/jackson"
-        },
-        {
-          "type" : "distribution-intake",
-          "url" : "https://central.sonatype.com/api/v1/publisher"
-        },
-        {
-          "type" : "issue-tracker",
-          "url" : "https://github.com/FasterXML/jackson-databind/issues"
-        },
-        {
-          "type" : "vcs",
-          "url" : "https://github.com/FasterXML/jackson-databind"
-        }
-      ]
-    },
-    {
-      "type" : "library",
-      "bom-ref" : "pkg:maven/com.fasterxml.jackson.core/jackson-annotations@2.21?type=jar",
-      "publisher" : "FasterXML",
-      "group" : "com.fasterxml.jackson.core",
-      "name" : "jackson-annotations",
-      "version" : "2.21",
-      "description" : "Core annotations used for value types, used by Jackson data binding package.",
-      "scope" : "required",
-      "hashes" : [
-        {
-          "alg" : "MD5",
-          "content" : "e0d0c3e7300954f73e43c67d933aaea4"
-        },
-        {
-          "alg" : "SHA-1",
-          "content" : "b1bc1868bf02dc0bd6c7836257a036a331005309"
-        },
-        {
-          "alg" : "SHA-256",
-          "content" : "53ca085f4a150f703f49e1aabd935bd03b43e1ea3d55d135438292af22cef56b"
-        },
-        {
-          "alg" : "SHA-512",
-          "content" : "d832a99867acc2d5afb2596da760c50e6a6b54c1bbc8e6c4186f267a16e1d55c7a916ef8b034ad6b277c41e3342b91dcdc2e3dcea8bdccfe89e7c147894591be"
-        },
-        {
-          "alg" : "SHA-384",
-          "content" : "30b15d68f8da6f6c26aa9f6c95d09152b6c1a8092cd976cf600d63d1751509a73865f937e0ad97d8d55bf20f6a749b44"
-        },
-        {
-          "alg" : "SHA3-384",
-          "content" : "5205b51f6ed689cf31b58b98a61ca9e17a439c15d669dcb408ec4d430e77ac9ac57d39d5ca1f9973e8d184f6dd57ec4f"
-        },
-        {
-          "alg" : "SHA3-256",
-          "content" : "d6782d188a72b2bb96e4b595343e783012b3f98c30f7b9950244c21739334509"
-        },
-        {
-          "alg" : "SHA3-512",
-          "content" : "b648f1e9ffe818227d53fbde409e61858ac22d3f78705eaf08065587ed512c9b33b0f5e2222356bfb33fb2973bb5a3184e31d2a7099f8fc8d2fd23eb4612a4bf"
-        }
-      ],
-      "licenses" : [
-        {
-          "license" : {
-            "id" : "Apache-2.0"
-          }
-        }
-      ],
-      "purl" : "pkg:maven/com.fasterxml.jackson.core/jackson-annotations@2.21?type=jar",
-      "externalReferences" : [
-        {
-          "type" : "website",
-          "url" : "https://github.com/FasterXML/jackson"
-        },
-        {
-          "type" : "distribution-intake",
-          "url" : "https://central.sonatype.com/api/v1/publisher"
-        },
-        {
-          "type" : "issue-tracker",
-          "url" : "https://github.com/FasterXML/jackson-annotations/issues"
-        },
-        {
-          "type" : "vcs",
-          "url" : "https://github.com/FasterXML/jackson-annotations"
-        }
-      ]
-    },
-    {
-      "type" : "library",
-      "bom-ref" : "pkg:maven/tools.jackson.core/jackson-core@3.1.5?type=jar",
-      "publisher" : "FasterXML",
-      "group" : "tools.jackson.core",
-      "name" : "jackson-core",
-      "version" : "3.1.5",
-      "description" : "Core Jackson processing abstractions (aka Streaming API), implementation for JSON",
-      "scope" : "required",
-      "hashes" : [
-        {
-          "alg" : "MD5",
-          "content" : "ed1c26680ceec80183239a74ef15a838"
-        },
-        {
-          "alg" : "SHA-1",
-          "content" : "ccd7eb3269b8d33bc097b36770f367cdfe2f1150"
-        },
-        {
-          "alg" : "SHA-256",
-          "content" : "9431b7fa2673bbb618c11d865fe15e13222fd182a214ff998cb7e56afd8f35d2"
-        },
-        {
-          "alg" : "SHA-512",
-          "content" : "ca302aa4954b4bb543bcffe326f67b3371ce57f781e88d505e4e9c74d7722b1e5388b5a3545b1b30a32110c2718bb555a6ec13050b8cee9f8fba94fa88d9ba3d"
-        },
-        {
-          "alg" : "SHA-384",
-          "content" : "716ba8ca7cccf0aea47f9d6c82219a0b417c1935446ef4fcf997da7690357f60d350e1aa8b2726d3bc454279fa3fcafb"
-        },
-        {
-          "alg" : "SHA3-384",
-          "content" : "f085d86c0c1f3fb77cdb901f2ae10e94842acc170fc9c5fed6f7e806e30ab37087961def920eeea6a5c6e122903b4e87"
-        },
-        {
-          "alg" : "SHA3-256",
-          "content" : "e6a656f6451ac74824d1c339bb39c74e37ba546f4b565dbcc7a0777c813fa306"
-        },
-        {
-          "alg" : "SHA3-512",
-          "content" : "62130e669e9f41b0f12df47588d2535666ed35b4fd3b5916b1289479dcd6e4c5ff10d343c3add423932577b44a642b1ea40dab03e5071d22678277a56ebe0b64"
-        }
-      ],
-      "licenses" : [
-        {
-          "license" : {
-            "id" : "Apache-2.0"
-          }
-        }
-      ],
-      "purl" : "pkg:maven/tools.jackson.core/jackson-core@3.1.5?type=jar",
-      "externalReferences" : [
-        {
-          "type" : "website",
-          "url" : "https://github.com/FasterXML/jackson-core"
-        },
-        {
-          "type" : "distribution-intake",
-          "url" : "https://central.sonatype.com/api/v1/publisher"
-        },
-        {
-          "type" : "issue-tracker",
-          "url" : "https://github.com/FasterXML/jackson-core/issues"
-        },
-        {
-          "type" : "vcs",
-          "url" : "http://github.com/FasterXML/jackson-core"
         }
       ]
     },
@@ -4761,6 +4485,348 @@
         {
           "type" : "vcs",
           "url" : "https://github.com/FasterXML/java-classmate"
+        }
+      ]
+    },
+    {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/org.springframework.boot/spring-boot-starter-json@4.1.1?type=jar",
+      "publisher" : "VMware, Inc.",
+      "group" : "org.springframework.boot",
+      "name" : "spring-boot-starter-json",
+      "version" : "4.1.1",
+      "description" : "Starter for reading and writing JSON",
+      "scope" : "required",
+      "hashes" : [
+        {
+          "alg" : "MD5",
+          "content" : "7aecaacb190f0224ed5f9b825bad71f6"
+        },
+        {
+          "alg" : "SHA-1",
+          "content" : "1a1bb8c713347ed238b5d0cdbab9fda521ce31a5"
+        },
+        {
+          "alg" : "SHA-256",
+          "content" : "443e6bec336ac249cd50fcaddf8a32f53cd5310ff66413a4511883cf4130eb86"
+        },
+        {
+          "alg" : "SHA-512",
+          "content" : "20ab75955b5ca4c8805d038456ba63b59a9ee52a403f91a5a25abd3de091fb982871a5e00c27bf9ef1bde0d3a24d093f8a67323591ebaf3ca0ca915f1d2a54d8"
+        },
+        {
+          "alg" : "SHA-384",
+          "content" : "56adaed17ff98e26f426f73a13c1dcc79725edc25efeb2b99f319fbf9bcd762fb01622d6b31fac218fc7e5fcb4204694"
+        },
+        {
+          "alg" : "SHA3-384",
+          "content" : "2702b2dd7427ce035bef94faa1c4408e94acd7457e79f6a7f705ec50c3682beaa6bccb63ffd2ee4e9b2ab0c8bda9677d"
+        },
+        {
+          "alg" : "SHA3-256",
+          "content" : "6d6521fea6389c8eb6903274f1e913d481aba8676b510b9e02b40725e69a6498"
+        },
+        {
+          "alg" : "SHA3-512",
+          "content" : "4db9bb234be4f9edd33c95a3f12446d3e6fe6807152bbc485d9d50055cfc3249bc399cf31f988dec67abf5f0f86fbba41a1ffa5cda9a2b11df375cc6ded462f6"
+        }
+      ],
+      "licenses" : [
+        {
+          "license" : {
+            "id" : "Apache-2.0"
+          }
+        }
+      ],
+      "purl" : "pkg:maven/org.springframework.boot/spring-boot-starter-json@4.1.1?type=jar",
+      "externalReferences" : [
+        {
+          "type" : "website",
+          "url" : "https://spring.io/projects/spring-boot"
+        },
+        {
+          "type" : "issue-tracker",
+          "url" : "https://github.com/spring-projects/spring-boot/issues"
+        },
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/spring-projects/spring-boot"
+        }
+      ]
+    },
+    {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/org.springframework.boot/spring-boot-jackson@4.1.1?type=jar",
+      "publisher" : "VMware, Inc.",
+      "group" : "org.springframework.boot",
+      "name" : "spring-boot-jackson",
+      "version" : "4.1.1",
+      "description" : "Spring Boot Jackson",
+      "scope" : "required",
+      "hashes" : [
+        {
+          "alg" : "MD5",
+          "content" : "25cf1458df4244b5d1e583ceffab5f2e"
+        },
+        {
+          "alg" : "SHA-1",
+          "content" : "1defff7e3f9dda050f26e98da3285b4321920dc1"
+        },
+        {
+          "alg" : "SHA-256",
+          "content" : "69a9b4d8850a0532a5e44ff7306a03621485b26596e7f9481de7d28e68a2dd42"
+        },
+        {
+          "alg" : "SHA-512",
+          "content" : "c65afe4055d80f88b88d2165bef3bfddaddabf0a59b61a3d26e698375ccb0eb30e856c61dbb3311b5433f72d3c63244d9c934e7cb4c132e1a36ce33a536ae91a"
+        },
+        {
+          "alg" : "SHA-384",
+          "content" : "d05681e79f18dd8361f22e31b76a78dd0b479045cba3847a8c7b7ec5369ac5e12697e5771ed557e2e6ddd0639699b37f"
+        },
+        {
+          "alg" : "SHA3-384",
+          "content" : "74b87aa4b4eadd3f936e0534d209f8b3f8f5a76e3289caa6996b315bed9771a995161725a5fcc8b2b8794aa11db46cbe"
+        },
+        {
+          "alg" : "SHA3-256",
+          "content" : "e005e0788698231b9cb0282946e819f832938815c68e78afe119876f508a8188"
+        },
+        {
+          "alg" : "SHA3-512",
+          "content" : "d2eb74bd5ad243ceb0ff81f25a32202568918c8d919994992448b762c60c122da24271cc75aba6113286523477b8212bd6581916cd66ee9efb7e902bd6ac3d57"
+        }
+      ],
+      "licenses" : [
+        {
+          "license" : {
+            "id" : "Apache-2.0"
+          }
+        }
+      ],
+      "purl" : "pkg:maven/org.springframework.boot/spring-boot-jackson@4.1.1?type=jar",
+      "externalReferences" : [
+        {
+          "type" : "website",
+          "url" : "https://spring.io/projects/spring-boot"
+        },
+        {
+          "type" : "issue-tracker",
+          "url" : "https://github.com/spring-projects/spring-boot/issues"
+        },
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/spring-projects/spring-boot"
+        }
+      ]
+    },
+    {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/tools.jackson.core/jackson-databind@3.1.5?type=jar",
+      "publisher" : "FasterXML",
+      "group" : "tools.jackson.core",
+      "name" : "jackson-databind",
+      "version" : "3.1.5",
+      "description" : "General data-binding functionality for Jackson: works on core streaming API",
+      "scope" : "required",
+      "hashes" : [
+        {
+          "alg" : "MD5",
+          "content" : "7b399cbb2bea1429c46c1b8c73af42b9"
+        },
+        {
+          "alg" : "SHA-1",
+          "content" : "782178f0b1fe088803c03b85eb9a406f60519044"
+        },
+        {
+          "alg" : "SHA-256",
+          "content" : "3a2338d996fd3056791df8d335fa9ba8a62a706ed4245ecf81b3e583df37d08a"
+        },
+        {
+          "alg" : "SHA-512",
+          "content" : "897ee93528010d2956908da5ea90c37dc9d6c37388bd1aa9da954c582a7bdf986a477f248d631d833c2bc281e0827782df978ecc76d5518a33e475aa9ddcb2d9"
+        },
+        {
+          "alg" : "SHA-384",
+          "content" : "da6c8695a80410cb666c33b13604d695db2993fff67a86bc08c90d4014e6e76ef2107bc014bcba3ab5a9db1640d6cb21"
+        },
+        {
+          "alg" : "SHA3-384",
+          "content" : "e2c113d73ce6b4526cdfd6b15539ad7469314b2e95a5df33f3df4039e125e7dd62c139ec590e6aee65bf9406dc125c14"
+        },
+        {
+          "alg" : "SHA3-256",
+          "content" : "8fa8f03e322972d87a6fe7f712714038b29bd9ddbeb3da599ec12d62fd2502c7"
+        },
+        {
+          "alg" : "SHA3-512",
+          "content" : "8882ba1d58fb5ab58d06663f510a69b551a1a73bae534206a07e91d9bfb4dd898c8b00d3e72ccf773b6309bcff17f5da8bed7089deb963fc16b4e0d36ef7d3d5"
+        }
+      ],
+      "licenses" : [
+        {
+          "license" : {
+            "id" : "Apache-2.0"
+          }
+        }
+      ],
+      "purl" : "pkg:maven/tools.jackson.core/jackson-databind@3.1.5?type=jar",
+      "externalReferences" : [
+        {
+          "type" : "website",
+          "url" : "https://github.com/FasterXML/jackson"
+        },
+        {
+          "type" : "distribution-intake",
+          "url" : "https://central.sonatype.com/api/v1/publisher"
+        },
+        {
+          "type" : "issue-tracker",
+          "url" : "https://github.com/FasterXML/jackson-databind/issues"
+        },
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/FasterXML/jackson-databind"
+        }
+      ]
+    },
+    {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/com.fasterxml.jackson.core/jackson-annotations@2.21?type=jar",
+      "publisher" : "FasterXML",
+      "group" : "com.fasterxml.jackson.core",
+      "name" : "jackson-annotations",
+      "version" : "2.21",
+      "description" : "Core annotations used for value types, used by Jackson data binding package.",
+      "scope" : "required",
+      "hashes" : [
+        {
+          "alg" : "MD5",
+          "content" : "e0d0c3e7300954f73e43c67d933aaea4"
+        },
+        {
+          "alg" : "SHA-1",
+          "content" : "b1bc1868bf02dc0bd6c7836257a036a331005309"
+        },
+        {
+          "alg" : "SHA-256",
+          "content" : "53ca085f4a150f703f49e1aabd935bd03b43e1ea3d55d135438292af22cef56b"
+        },
+        {
+          "alg" : "SHA-512",
+          "content" : "d832a99867acc2d5afb2596da760c50e6a6b54c1bbc8e6c4186f267a16e1d55c7a916ef8b034ad6b277c41e3342b91dcdc2e3dcea8bdccfe89e7c147894591be"
+        },
+        {
+          "alg" : "SHA-384",
+          "content" : "30b15d68f8da6f6c26aa9f6c95d09152b6c1a8092cd976cf600d63d1751509a73865f937e0ad97d8d55bf20f6a749b44"
+        },
+        {
+          "alg" : "SHA3-384",
+          "content" : "5205b51f6ed689cf31b58b98a61ca9e17a439c15d669dcb408ec4d430e77ac9ac57d39d5ca1f9973e8d184f6dd57ec4f"
+        },
+        {
+          "alg" : "SHA3-256",
+          "content" : "d6782d188a72b2bb96e4b595343e783012b3f98c30f7b9950244c21739334509"
+        },
+        {
+          "alg" : "SHA3-512",
+          "content" : "b648f1e9ffe818227d53fbde409e61858ac22d3f78705eaf08065587ed512c9b33b0f5e2222356bfb33fb2973bb5a3184e31d2a7099f8fc8d2fd23eb4612a4bf"
+        }
+      ],
+      "licenses" : [
+        {
+          "license" : {
+            "id" : "Apache-2.0"
+          }
+        }
+      ],
+      "purl" : "pkg:maven/com.fasterxml.jackson.core/jackson-annotations@2.21?type=jar",
+      "externalReferences" : [
+        {
+          "type" : "website",
+          "url" : "https://github.com/FasterXML/jackson"
+        },
+        {
+          "type" : "distribution-intake",
+          "url" : "https://central.sonatype.com/api/v1/publisher"
+        },
+        {
+          "type" : "issue-tracker",
+          "url" : "https://github.com/FasterXML/jackson-annotations/issues"
+        },
+        {
+          "type" : "vcs",
+          "url" : "https://github.com/FasterXML/jackson-annotations"
+        }
+      ]
+    },
+    {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/tools.jackson.core/jackson-core@3.1.5?type=jar",
+      "publisher" : "FasterXML",
+      "group" : "tools.jackson.core",
+      "name" : "jackson-core",
+      "version" : "3.1.5",
+      "description" : "Core Jackson processing abstractions (aka Streaming API), implementation for JSON",
+      "scope" : "required",
+      "hashes" : [
+        {
+          "alg" : "MD5",
+          "content" : "ed1c26680ceec80183239a74ef15a838"
+        },
+        {
+          "alg" : "SHA-1",
+          "content" : "ccd7eb3269b8d33bc097b36770f367cdfe2f1150"
+        },
+        {
+          "alg" : "SHA-256",
+          "content" : "9431b7fa2673bbb618c11d865fe15e13222fd182a214ff998cb7e56afd8f35d2"
+        },
+        {
+          "alg" : "SHA-512",
+          "content" : "ca302aa4954b4bb543bcffe326f67b3371ce57f781e88d505e4e9c74d7722b1e5388b5a3545b1b30a32110c2718bb555a6ec13050b8cee9f8fba94fa88d9ba3d"
+        },
+        {
+          "alg" : "SHA-384",
+          "content" : "716ba8ca7cccf0aea47f9d6c82219a0b417c1935446ef4fcf997da7690357f60d350e1aa8b2726d3bc454279fa3fcafb"
+        },
+        {
+          "alg" : "SHA3-384",
+          "content" : "f085d86c0c1f3fb77cdb901f2ae10e94842acc170fc9c5fed6f7e806e30ab37087961def920eeea6a5c6e122903b4e87"
+        },
+        {
+          "alg" : "SHA3-256",
+          "content" : "e6a656f6451ac74824d1c339bb39c74e37ba546f4b565dbcc7a0777c813fa306"
+        },
+        {
+          "alg" : "SHA3-512",
+          "content" : "62130e669e9f41b0f12df47588d2535666ed35b4fd3b5916b1289479dcd6e4c5ff10d343c3add423932577b44a642b1ea40dab03e5071d22678277a56ebe0b64"
+        }
+      ],
+      "licenses" : [
+        {
+          "license" : {
+            "id" : "Apache-2.0"
+          }
+        }
+      ],
+      "purl" : "pkg:maven/tools.jackson.core/jackson-core@3.1.5?type=jar",
+      "externalReferences" : [
+        {
+          "type" : "website",
+          "url" : "https://github.com/FasterXML/jackson-core"
+        },
+        {
+          "type" : "distribution-intake",
+          "url" : "https://central.sonatype.com/api/v1/publisher"
+        },
+        {
+          "type" : "issue-tracker",
+          "url" : "https://github.com/FasterXML/jackson-core/issues"
+        },
+        {
+          "type" : "vcs",
+          "url" : "http://github.com/FasterXML/jackson-core"
         }
       ]
     },
@@ -10631,6 +10697,76 @@
     },
     {
       "type" : "library",
+      "bom-ref" : "pkg:maven/com.fasterxml.jackson.datatype/jackson-datatype-jsr310@2.21.5?type=jar",
+      "publisher" : "FasterXML",
+      "group" : "com.fasterxml.jackson.datatype",
+      "name" : "jackson-datatype-jsr310",
+      "version" : "2.21.5",
+      "description" : "Add-on module to support JSR-310 (Java 8 Date & Time API) data types.",
+      "scope" : "required",
+      "hashes" : [
+        {
+          "alg" : "MD5",
+          "content" : "6a1cfd9d7dace618bd512ad3647ebae6"
+        },
+        {
+          "alg" : "SHA-1",
+          "content" : "2f8d061404266c0edbdd5674131ed689b6d84491"
+        },
+        {
+          "alg" : "SHA-256",
+          "content" : "e941f9718d16a649614cb06711de06da34722afff9cee0b7725fc5318638304c"
+        },
+        {
+          "alg" : "SHA-512",
+          "content" : "1704cfbcd21d6b5a51b86e4f4c7ac5c30383f01ad49e108b14850e8b248f964bd2aaa209f5e63b2f14b907d43eba91dbade9cff1983648717d126f4dbfede382"
+        },
+        {
+          "alg" : "SHA-384",
+          "content" : "7072d6b6694cde868cf0c329d9b5380b641c396553618d302b93294dedbbf750c4dbc0fafb8f3ad445a4e5bcf9200330"
+        },
+        {
+          "alg" : "SHA3-384",
+          "content" : "235695963012014225cdaa2213d7f0ff88e8eba044bff9075d0ea32e845cfb5bdbf4982e3e05d5c6c6857f77ef7f350f"
+        },
+        {
+          "alg" : "SHA3-256",
+          "content" : "a65145aadafeb40035282c42d9f0c532760940847ea0b458de549c0fae43ca1c"
+        },
+        {
+          "alg" : "SHA3-512",
+          "content" : "8dc8391927336301f7f9d30fd53f7fe6f4c3f8c40970ce135e9d7f9544b6812afd636c7bf30b4307d57f73f2ab376cb394ec4e0b459352323499e6974e5251f1"
+        }
+      ],
+      "licenses" : [
+        {
+          "license" : {
+            "id" : "Apache-2.0"
+          }
+        }
+      ],
+      "purl" : "pkg:maven/com.fasterxml.jackson.datatype/jackson-datatype-jsr310@2.21.5?type=jar",
+      "externalReferences" : [
+        {
+          "type" : "website",
+          "url" : "https://github.com/FasterXML/jackson-modules-java8/jackson-datatype-jsr310"
+        },
+        {
+          "type" : "distribution-intake",
+          "url" : "https://central.sonatype.com/api/v1/publisher"
+        },
+        {
+          "type" : "issue-tracker",
+          "url" : "https://github.com/FasterXML/jackson-modules-java8/issues"
+        },
+        {
+          "type" : "vcs",
+          "url" : "http://github.com/FasterXML/jackson-modules-java8/jackson-datatype-jsr310"
+        }
+      ]
+    },
+    {
+      "type" : "library",
       "bom-ref" : "pkg:maven/com.mysql/mysql-connector-j@9.7.0?type=jar",
       "publisher" : "Oracle Corporation",
       "group" : "com.mysql",
@@ -11463,6 +11599,7 @@
         "pkg:maven/org.springframework.cloud/spring-cloud-starter-gateway-server-webflux@5.0.3?type=jar",
         "pkg:maven/org.springframework.boot/spring-boot-starter-actuator@4.1.1?type=jar",
         "pkg:maven/org.springframework.boot/spring-boot-starter-validation@4.1.1?type=jar",
+        "pkg:maven/org.springframework.boot/spring-boot-starter-json@4.1.1?type=jar",
         "pkg:maven/org.springframework.boot/spring-boot-starter-security@4.1.1?type=jar",
         "pkg:maven/org.springframework.boot/spring-boot-starter-security-oauth2-resource-server@4.1.1?type=jar",
         "pkg:maven/org.springframework.boot/spring-boot-starter-opentelemetry@4.1.1?type=jar",
@@ -12143,6 +12280,13 @@
       ]
     },
     {
+      "ref" : "pkg:maven/org.springframework.boot/spring-boot-starter-json@4.1.1?type=jar",
+      "dependsOn" : [
+        "pkg:maven/org.springframework.boot/spring-boot-starter@4.1.1?type=jar",
+        "pkg:maven/org.springframework.boot/spring-boot-jackson@4.1.1?type=jar"
+      ]
+    },
+    {
       "ref" : "pkg:maven/org.springframework.boot/spring-boot-starter-security@4.1.1?type=jar",
       "dependsOn" : [
         "pkg:maven/org.springframework.boot/spring-boot-starter@4.1.1?type=jar",
@@ -12581,6 +12725,7 @@
         "pkg:maven/org.springframework.boot/spring-boot-starter-web@4.1.1?type=jar",
         "pkg:maven/org.springframework/spring-jdbc@7.0.9?type=jar",
         "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.21.5?type=jar",
+        "pkg:maven/com.fasterxml.jackson.datatype/jackson-datatype-jsr310@2.21.5?type=jar",
         "pkg:maven/com.mysql/mysql-connector-j@9.7.0?type=jar",
         "pkg:maven/org.springframework.boot/spring-boot-starter-security@4.1.1?type=jar",
         "pkg:maven/org.springframework.boot/spring-boot-starter-oauth2-resource-server@4.1.1?type=jar",
@@ -12682,6 +12827,14 @@
     {
       "ref" : "pkg:maven/com.fasterxml.jackson.core/jackson-core@2.21.5?type=jar",
       "dependsOn" : [ ]
+    },
+    {
+      "ref" : "pkg:maven/com.fasterxml.jackson.datatype/jackson-datatype-jsr310@2.21.5?type=jar",
+      "dependsOn" : [
+        "pkg:maven/com.fasterxml.jackson.core/jackson-annotations@2.21?type=jar",
+        "pkg:maven/com.fasterxml.jackson.core/jackson-core@2.21.5?type=jar",
+        "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.21.5?type=jar"
+      ]
     },
     {
       "ref" : "pkg:maven/com.mysql/mysql-connector-j@9.7.0?type=jar",
@@ -12866,6 +13019,8 @@
         "pkg:maven/org.springframework.boot/spring-boot-starter-jdbc@4.1.1?type=jar",
         "pkg:maven/org.springframework.boot/spring-boot-starter-oauth2-resource-server@4.1.1?type=jar",
         "pkg:maven/org.springframework.boot/spring-boot-starter-opentelemetry@4.1.1?type=jar",
+        "pkg:maven/org.flywaydb/flyway-core@12.4.0?type=jar",
+        "pkg:maven/org.flywaydb/flyway-mysql@12.4.0?type=jar",
         "pkg:maven/com.mysql/mysql-connector-j@9.7.0?type=jar"
       ]
     },

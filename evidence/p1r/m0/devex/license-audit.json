@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-08-29T10:11:41.506Z",
-  "sourceCommit": "5deff771b3acb223e75b8f1e0696c34c056cbaac",
+  "generatedAt": "2026-09-12T15:52:54.416Z",
+  "sourceCommit": "f4aaa419720cc49163a8bca892abe73dd9c73f20",
   "policy": {
     "denied": [
       "AGPL-1.0",
@@ -56,98 +56,98 @@
         {
           "name": "@dcloudio/uni-app",
           "versions": [
-            "3.0.0-alpha-4080720251125001"
+            "3.0.0-alpha-1000920260909822"
           ],
           "license": "Apache-2.0"
         },
         {
           "name": "@dcloudio/uni-cli-shared",
           "versions": [
-            "3.0.0-alpha-4080720251125001"
+            "3.0.0-alpha-1000920260909822"
           ],
           "license": "Apache-2.0"
         },
         {
           "name": "@dcloudio/uni-cloud",
           "versions": [
-            "3.0.0-alpha-4080720251125001"
+            "3.0.0-alpha-1000920260909822"
           ],
           "license": "Apache-2.0"
         },
         {
           "name": "@dcloudio/uni-components",
           "versions": [
-            "3.0.0-alpha-4080720251125001"
+            "3.0.0-alpha-1000920260909822"
           ],
           "license": "Apache-2.0"
         },
         {
           "name": "@dcloudio/uni-console",
           "versions": [
-            "3.0.0-alpha-4080720251125001"
+            "3.0.0-alpha-1000920260909822"
           ],
           "license": "Apache-2.0"
         },
         {
           "name": "@dcloudio/uni-h5",
           "versions": [
-            "3.0.0-alpha-4080720251125001"
+            "3.0.0-alpha-1000920260909822"
           ],
           "license": "Apache-2.0"
         },
         {
           "name": "@dcloudio/uni-h5-vite",
           "versions": [
-            "3.0.0-alpha-4080720251125001"
+            "3.0.0-alpha-1000920260909822"
           ],
           "license": "Apache-2.0"
         },
         {
           "name": "@dcloudio/uni-h5-vue",
           "versions": [
-            "3.0.0-alpha-4080720251125001"
+            "3.0.0-alpha-1000920260909822"
           ],
           "license": "Apache-2.0"
         },
         {
           "name": "@dcloudio/uni-i18n",
           "versions": [
-            "3.0.0-alpha-4080720251125001"
+            "3.0.0-alpha-1000920260909822"
           ],
           "license": "Apache-2.0"
         },
         {
           "name": "@dcloudio/uni-nvue-styler",
           "versions": [
-            "3.0.0-alpha-4080720251125001"
+            "3.0.0-alpha-1000920260909822"
           ],
           "license": "Apache-2.0"
         },
         {
           "name": "@dcloudio/uni-push",
           "versions": [
-            "3.0.0-alpha-4080720251125001"
+            "3.0.0-alpha-1000920260909822"
           ],
           "license": "Apache-2.0"
         },
         {
           "name": "@dcloudio/uni-shared",
           "versions": [
-            "3.0.0-alpha-4080720251125001"
+            "3.0.0-alpha-1000920260909822"
           ],
           "license": "Apache-2.0"
         },
         {
           "name": "@dcloudio/uni-stat",
           "versions": [
-            "3.0.0-alpha-4080720251125001"
+            "3.0.0-alpha-1000920260909822"
           ],
           "license": "Apache-2.0"
         },
         {
           "name": "@dcloudio/vite-plugin-uni",
           "versions": [
-            "3.0.0-alpha-4080720251125001"
+            "3.0.0-alpha-1000920260909822"
           ],
           "license": "Apache-2.0"
         },
@@ -253,6 +253,20 @@
           "name": "human-signals",
           "versions": [
             "5.0.0"
+          ],
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "playwright",
+          "versions": [
+            "1.63.0"
+          ],
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "playwright-core",
+          "versions": [
+            "1.63.0"
           ],
           "license": "Apache-2.0"
         },
@@ -382,14 +396,14 @@
         {
           "name": "css-select",
           "versions": [
-            "5.2.2"
+            "6.0.0"
           ],
           "license": "BSD-2-Clause"
         },
         {
           "name": "css-what",
           "versions": [
-            "6.2.2"
+            "7.0.0"
           ],
           "license": "BSD-2-Clause"
         },
@@ -1506,6 +1520,13 @@
           "license": "MIT"
         },
         {
+          "name": "@babel/runtime-corejs3",
+          "versions": [
+            "7.29.7"
+          ],
+          "license": "MIT"
+        },
+        {
           "name": "@babel/template",
           "versions": [
             "7.29.7"
@@ -1586,9 +1607,8 @@
         {
           "name": "@esbuild/win32-x64",
           "versions": [
-            "0.20.2",
-            "0.21.5",
             "0.25.12",
+            "0.27.7",
             "0.28.2"
           ],
           "license": "MIT"
@@ -1839,7 +1859,8 @@
         {
           "name": "@oxc-project/types",
           "versions": [
-            "0.143.0"
+            "0.143.0",
+            "0.149.0"
           ],
           "license": "MIT"
         },
@@ -1903,6 +1924,13 @@
           "name": "@poppinss/exception",
           "versions": [
             "1.2.3"
+          ],
+          "license": "MIT"
+        },
+        {
+          "name": "@rolldown/binding-win32-x64-msvc",
+          "versions": [
+            "1.2.8"
           ],
           "license": "MIT"
         },
@@ -2084,9 +2112,16 @@
           "license": "MIT"
         },
         {
+          "name": "@vitejs/plugin-basic-ssl",
+          "versions": [
+            "2.3.0"
+          ],
+          "license": "MIT"
+        },
+        {
           "name": "@vitejs/plugin-legacy",
           "versions": [
-            "5.3.2"
+            "8.1.0"
           ],
           "license": "MIT"
         },
@@ -2094,6 +2129,7 @@
           "name": "@vitejs/plugin-vue",
           "versions": [
             "5.2.4",
+            "6.0.7",
             "6.0.8"
           ],
           "license": "MIT"
@@ -2101,7 +2137,6 @@
         {
           "name": "@vitejs/plugin-vue-jsx",
           "versions": [
-            "3.1.0",
             "5.1.6"
           ],
           "license": "MIT"
@@ -2139,7 +2174,6 @@
         {
           "name": "@vue/babel-helper-vue-transform-on",
           "versions": [
-            "1.5.0",
             "2.0.1"
           ],
           "license": "MIT"
@@ -2147,7 +2181,6 @@
         {
           "name": "@vue/babel-plugin-jsx",
           "versions": [
-            "1.5.0",
             "2.0.1"
           ],
           "license": "MIT"
@@ -2155,7 +2188,6 @@
         {
           "name": "@vue/babel-plugin-resolve-type",
           "versions": [
-            "1.5.0",
             "2.0.1"
           ],
           "license": "MIT"
@@ -2771,6 +2803,13 @@
           "license": "MIT"
         },
         {
+          "name": "core-js-pure",
+          "versions": [
+            "3.50.0"
+          ],
+          "license": "MIT"
+        },
+        {
           "name": "core-util-is",
           "versions": [
             "1.0.3"
@@ -3110,9 +3149,8 @@
         {
           "name": "esbuild",
           "versions": [
-            "0.20.2",
-            "0.21.5",
             "0.25.12",
+            "0.27.7",
             "0.28.2"
           ],
           "license": "MIT"
@@ -4770,6 +4808,13 @@
           "license": "MIT"
         },
         {
+          "name": "rolldown",
+          "versions": [
+            "1.2.8"
+          ],
+          "license": "MIT"
+        },
+        {
           "name": "rollup",
           "versions": [
             "4.62.4"
@@ -5063,7 +5108,7 @@
         {
           "name": "svgo",
           "versions": [
-            "4.0.2"
+            "4.1.0"
           ],
           "license": "MIT"
         },
@@ -5134,6 +5179,13 @@
           "name": "tinyclip",
           "versions": [
             "0.1.15"
+          ],
+          "license": "MIT"
+        },
+        {
+          "name": "tinycolor2",
+          "versions": [
+            "1.6.0"
           ],
           "license": "MIT"
         },
@@ -5418,9 +5470,9 @@
         {
           "name": "vite",
           "versions": [
-            "5.4.21",
             "6.4.3",
-            "7.3.6"
+            "7.3.6",
+            "8.2.2"
           ],
           "license": "MIT"
         },
@@ -5569,7 +5621,7 @@
         {
           "name": "xregexp",
           "versions": [
-            "3.1.0"
+            "5.1.2"
           ],
           "license": "MIT"
         },
@@ -5614,6 +5666,25 @@
           "license": "MIT OR Apache-2.0"
         }
       ]
+    },
+    {
+      "license": "MPL-2.0",
+      "packages": [
+        {
+          "name": "lightningcss",
+          "versions": [
+            "1.33.0"
+          ],
+          "license": "MPL-2.0"
+        },
+        {
+          "name": "lightningcss-win32-x64-msvc",
+          "versions": [
+            "1.33.0"
+          ],
+          "license": "MPL-2.0"
+        }
+      ]
     }
   ],
   "denied": [],
@@ -5642,6 +5713,7 @@
           "com.fasterxml.jackson.core:jackson-annotations@2.21",
           "com.fasterxml.jackson.core:jackson-core@2.21.5",
           "com.fasterxml.jackson.core:jackson-databind@2.21.5",
+          "com.fasterxml.jackson.datatype:jackson-datatype-jsr310@2.21.5",
           "com.fasterxml:classmate@1.7.3",
           "com.nimbusds:nimbus-jose-jwt@10.9.1",
           "com.squareup.okhttp3:okhttp-jvm@5.3.2",
@@ -5743,6 +5815,7 @@
           "org.springframework.boot:spring-boot-starter-data-redis@4.1.1",
           "org.springframework.boot:spring-boot-starter-jackson@4.1.1",
           "org.springframework.boot:spring-boot-starter-jdbc@4.1.1",
+          "org.springframework.boot:spring-boot-starter-json@4.1.1",
           "org.springframework.boot:spring-boot-starter-logging@4.1.1",
           "org.springframework.boot:spring-boot-starter-micrometer-metrics@4.1.1",
           "org.springframework.boot:spring-boot-starter-oauth2-resource-server@4.1.1",

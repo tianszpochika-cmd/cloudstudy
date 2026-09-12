@@ -3,11 +3,11 @@
   "specVersion": "1.6",
   "version": 1,
   "metadata": {
-    "timestamp": "2026-08-29T10:11:41.506Z",
+    "timestamp": "2026-09-12T15:52:54.416Z",
     "properties": [
       {
         "name": "englishflow:sourceCommit",
-        "value": "5deff771b3acb223e75b8f1e0696c34c056cbaac"
+        "value": "f4aaa419720cc49163a8bca892abe73dd9c73f20"
       }
     ]
   },
@@ -18,6 +18,19 @@
       "name": "jackson-databind",
       "version": "managed-by-spring-boot-4.1.1",
       "bom-ref": "maven:com.fasterxml.jackson.core:jackson-databind@managed-by-spring-boot-4.1.1",
+      "properties": [
+        {
+          "name": "englishflow:source",
+          "value": "services/iam-service/pom.xml"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "group": "com.fasterxml.jackson.datatype",
+      "name": "jackson-datatype-jsr310",
+      "version": "managed-by-spring-boot-4.1.1",
+      "bom-ref": "maven:com.fasterxml.jackson.datatype:jackson-datatype-jsr310@managed-by-spring-boot-4.1.1",
       "properties": [
         {
           "name": "englishflow:source",
@@ -126,6 +139,19 @@
         {
           "name": "englishflow:source",
           "value": "services/analytics-service/pom.xml"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "group": "org.springframework.boot",
+      "name": "spring-boot-starter-json",
+      "version": "managed-by-spring-boot-4.1.1",
+      "bom-ref": "maven:org.springframework.boot:spring-boot-starter-json@managed-by-spring-boot-4.1.1",
+      "properties": [
+        {
+          "name": "englishflow:source",
+          "value": "services/api-gateway/pom.xml"
         }
       ]
     },
