@@ -158,8 +158,12 @@ export async function redisCommand(command, options = {}) {
     throw safeFailure('REDIS_BOUNDARY', 'runtime harness only permits Redis 127.0.0.1:16379 database 15')
   }
   const operation = Array.isArray(command) && command.length > 0 ? String(command[0]).toUpperCase() : ''
-  if (!new Set(['PING', 'GET', 'PTTL']).has(operation)) {
-    throw safeFailure('REDIS_READ_ONLY', 'runtime harness permits only PING, GET, and PTTL Redis probes')
+  // CLIENT is admitted only for LIST. It is read-only introspection and is how the harness proves
+  // which ACL user the Gateway actually authenticated as; every other subcommand — notably
+  // CLIENT KILL — stays outside this boundary.
+  const clientList = operation === 'CLIENT' && String(command?.[1] ?? '').toUpperCase() === 'LIST'
+  if (!clientList && !new Set(['PING', 'GET', 'PTTL']).has(operation)) {
+    throw safeFailure('REDIS_READ_ONLY', 'runtime harness permits only PING, GET, PTTL and CLIENT LIST Redis probes')
   }
   const commands = [['SELECT', String(database)], command.map(String)]
   const payload = Buffer.concat(commands.map(encodeRedisCommand))

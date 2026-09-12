@@ -247,11 +247,35 @@ function assertHttp(checks, id, response, expectedStatus) {
   return response
 }
 
+// Redis ACL identity for the runtime profile. The local stack provisions svc_gateway scoped to
+// englishflow:gateway:*, which is the same namespace the rate limiter writes to, so the harness
+// connects the way a deployed Gateway does instead of riding the credential-less default user.
+// scripts/database/reconcile-redis-acl.mjs uses REDIS_OWNER_PASSWORD as the documented local
+// fallback, so this works out of the box on a provisioned stack and fails fast otherwise.
+const redisAclUser = process.env.M2_REDIS_ACL_USER?.trim() || 'svc_gateway'
+const redisAclPassword = (process.env.API_GATEWAY_REDIS_PASSWORD ?? process.env.REDIS_OWNER_PASSWORD ?? '').trim()
+
+function redisAclUrl() {
+  check(redisAclPassword.length > 0, 'REDIS_ACL_CREDENTIAL_REQUIRED',
+    `the runtime harness needs the ${redisAclUser} ACL credential; run pnpm redis:acl or set API_GATEWAY_REDIS_PASSWORD`)
+  return `redis://${encodeURIComponent(redisAclUser)}:${encodeURIComponent(redisAclPassword)}@${FIXED.host}:${FIXED.redisPort}/${FIXED.redisDatabase}`
+}
+
+// Reads the authenticated user of every live Redis connection. Used as direct identity evidence:
+// a credential-less client would show up as `default`, so seeing svc_gateway proves the Gateway
+// really authenticated with the scoped ACL credential rather than merely working by accident.
+async function redisAclUsers() {
+  const listing = String(await redisCommand(['CLIENT', 'LIST']))
+  return [...new Set(listing.split('\n')
+    .map((line) => /(?:^|\s)user=(\S+)/u.exec(line)?.[1])
+    .filter(Boolean))]
+}
+
 function gatewayEnvironment(publicLimit = 240) {
   return {
     API_GATEWAY_PORT: String(FIXED.gatewayPort),
     SERVER_ADDRESS: FIXED.host,
-    REDIS_URL: `redis://${FIXED.host}:${FIXED.redisPort}/${FIXED.redisDatabase}`,
+    REDIS_URL: redisAclUrl(),
     IAM_SERVICE_BASE_URL: iamOrigin,
     IAM_JWT_ISSUER: iamOrigin,
     IAM_JWT_AUDIENCE: 'yuxuexing-api',
@@ -474,6 +498,16 @@ async function sequentialProcessCheck(javaBin, gatewayJar, checks) {
     const afterSecond = await healthRateState()
     check(afterSecond?.count === 4 && afterSecond.ttlMillis > 0,
       'REDIS_PROCESS_B_STATE', 'Gateway process B did not continue the same DB15 rate state')
+    const aclUsers = await redisAclUsers()
+    check(aclUsers.includes(redisAclUser), 'REDIS_ACL_IDENTITY',
+      `the Gateway did not hold a Redis connection authenticated as ${redisAclUser}; observed ${aclUsers.join(', ') || 'no authenticated users'}`)
+    checks.push({
+      id: 'redis-acl-authenticated-user',
+      result: 'PASS',
+      expectedUser: redisAclUser,
+      observedUsers: aclUsers,
+      namespace: 'englishflow:gateway:*',
+    })
     checks.push({
       id: 'sequential-cross-process-state-continuation',
       result: 'PASS',
