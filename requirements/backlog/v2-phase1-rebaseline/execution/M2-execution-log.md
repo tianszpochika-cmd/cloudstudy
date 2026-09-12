@@ -93,6 +93,12 @@
 - 验证（JDK 25）：media `51/0/0/0`；media contract PASS。
 - 下一步 Batch 2② social-service、③ admin-ops-service。
 
+## 2026-09-11 M2-003 Batch 2②：social-service
+
+- 修复 `SocialJwtAuthenticationConverter` 的 tenant 缺省回退 `platform`：缺失/空白/非 platform 一律 `BadCredentialsException`（fail-closed）；新增 converter 负例测试（缺 tenant/异租户/无 consent 不可用）。
+- 验证（JDK 25）：social `48/0/0/0`；gamification-social contract PASS。
+- 下一步 Batch 2③ admin-ops-service。
+
 ## 2026-09-04 IAM 账户/密码并发安全检查点
 
 - 源码：`9deb899`。认证改为锁前单次 cost-12 BCrypt、锁内 current principal/hash/status/counter 复核；credential epoch 在校验期间变化时统一 `INVALID_CREDENTIALS` 且零写入，避免旧在途请求污染或锁死刚重置的新凭据。

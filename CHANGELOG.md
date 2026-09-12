@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1R-M2-003-SOCIAL-TENANT-FAIL-CLOSED-20260911] `P1R-M2-003` Batch 2②：修复 `social-service` 的 tenant fail-open——`SocialJwtAuthenticationConverter` 原先在 `tenant_id` 缺失时回退 `platform`，现缺失/空白/非 `platform` 一律 `BadCredentialsException`；新增 `SocialJwtAuthenticationConverterTest`（principal 与 `PERM_`/`ROLE_` authorities、缺 tenant/异租户拒绝、无 consent/phase 不可用）。**验证**（JDK 25）：social 全套 **48 tests / 0 failures / 0 errors / 0 skipped**；`p1r:gamification-social-contract:check` PASS（errors `[]`）。下一步 Batch 2③ admin-ops-service。
+
 - [P1R-M2-003-MEDIA-PEP-20260911] `P1R-M2-003` Batch 2①：`media-service` 对齐已验证 JWT 默认拒绝基线。新增 `MediaJwtAuthenticationConverter` 与 `MediaHttpPrincipals.requireJwt(...)`（显式 `platform` 租户、非空 authority），`MediaController.context()` 统一接入；**补齐安全缺口**：`MediaAuthorityAttemptFilter` 由 5 个拒绝头扩展到基线 12 个（含 `x-authority`/`x-workload-identity`/`x-service-name`/mTLS 头）与 10 个查询参数（含 `contentRights`）。**验证**（JDK 25）：media 全套 **51 tests / 0 failures / 0 errors / 0 skipped**；新增转换器/入口/头过滤器负例测试；`p1r:media-contract:check` PASS。下一步 social-service、admin-ops-service。
 
 - [P1R-M2-003-BATCH1-SESSION-20260911] 生成 2026-09-11 会话开发记录 `execution/SESSION-LOG-2026-09-11.md`（覆盖 M2-001/M2-002 验收与 M2-003 Batch 1，含 24 个提交时间线、证据指标、门禁结果、环境处理与遗留项），并同步 `CURRENT-HANDOFF.md` 最新恢复入口与台账 M2-003 Batch 1 进展。Batch 1 完成高危四服务：learning `121/0/0/0`、assessment `37/0/0/0`、content `113/0/0/0`、learner `30/0/0/0`；24 个提交已推送（`origin/dev=c15abe4`）。下一步 Batch 2（media/social/admin-ops）。

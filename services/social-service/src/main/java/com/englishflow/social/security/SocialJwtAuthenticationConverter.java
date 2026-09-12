@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -21,8 +22,10 @@ public final class SocialJwtAuthenticationConverter implements Converter<Jwt, So
     public SocialAuthenticationToken convert(Jwt jwt) {
         String subject = jwt.getSubject();
         String tenant = firstString(jwt, "tenant_id", "tenant");
-        if (tenant == null || tenant.isBlank()) {
-            tenant = SocialPrincipal.PLATFORM_TENANT;
+        if (tenant == null || tenant.isBlank() || !SocialPrincipal.PLATFORM_TENANT.equals(tenant)) {
+            // Phase 1 has a single platform tenant: a missing or foreign claim must never be
+            // silently replaced with the platform scope.
+            throw new BadCredentialsException("verified IAM principal is missing the platform tenant scope");
         }
         String phase = firstString(jwt, "phase", "phase_code");
         boolean consent = booleanClaim(jwt, "consent_granted")
