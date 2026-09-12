@@ -1,0 +1,226 @@
+{
+  "taskId": "P1R-M2-004",
+  "draftOnly": false,
+  "canonicalTaskStatus": "REVIEW",
+  "sourceCommit": "a7ebe48bddfaf32c56f2b06901b7358c17eedf4b",
+  "artifactDigests": [
+    {
+      "path": "config/p1r-data-ownership.v1.json",
+      "algorithm": "sha256",
+      "digest": "111b8f5185d6d1ec2f0c7b75140e430a52406777bc5c1c0b6ad5a78f1194d54b"
+    },
+    {
+      "path": "config/v2-runtime-services.json",
+      "algorithm": "sha256",
+      "digest": "bd57134a38bfe8a90aeb94da5ee1c63edf0b7f1a24b0256aa9bcd2cd7371a839"
+    },
+    {
+      "path": "config/b29-backend-runtime.json",
+      "algorithm": "sha256",
+      "digest": "8ffdd5a64141a71809aa0c8b030f5be26e52ba1915a888cd5859210c3683bd70"
+    },
+    {
+      "path": "scripts/database/lib/owner-manifest.mjs",
+      "algorithm": "sha256",
+      "digest": "584e1ae2deeae46867782a65a4b5116730da731ab47a41c1b9c3b9e5d7f2eda2"
+    },
+    {
+      "path": "scripts/database/reconcile-owner-schemas.mjs",
+      "algorithm": "sha256",
+      "digest": "f83432d4bfdd3b4241ab0bc447df05a3a957ed3440fc70efe0dbfc85f171d34f"
+    },
+    {
+      "path": "scripts/database/reconcile-redis-acl.mjs",
+      "algorithm": "sha256",
+      "digest": "b0b0f0fe8e28f147ca365b6d178aace17bf9a2aa135bea8144f17f04629447ec"
+    },
+    {
+      "path": "scripts/runtime/p1r-m2-004-runtime.mjs",
+      "algorithm": "sha256",
+      "digest": "362de83ae27f38ccab05b538d350ff2c597981e5867d76302c8d6047a8c395f9"
+    },
+    {
+      "path": "services/audit-service/src/main/resources/db/migration/V2__widen_audit_schema_version.sql",
+      "algorithm": "sha256",
+      "digest": "4e709f18dc682d36f2f7adb51b078c3fcd2c09a322b4dce7f0cd69743a2c5644"
+    },
+    {
+      "path": "services/admin-ops-service/src/main/resources/db/migration/V3__standardize_admin_ops_outbox_event_shape.sql",
+      "algorithm": "sha256",
+      "digest": "95c96f9c3e57d156daf80777afd5503d4f2b986af2c0396b1b9ae3cbbd4bc787"
+    },
+    {
+      "path": "services/assessment-service/src/main/resources/db/migration/V5__standardize_assessment_outbox_event_shape.sql",
+      "algorithm": "sha256",
+      "digest": "6ff3d19be1ef69674052e27daed9c60f73a5b911ab7892b744094b5c95af8509"
+    },
+    {
+      "path": "services/commerce-service/src/main/resources/db/migration/V2__standardize_commerce_outbox_event_shape.sql",
+      "algorithm": "sha256",
+      "digest": "125785a1dc12cd7124d950c46436d7f04cafbb3a4b3d04c7625547ae40a1d809"
+    },
+    {
+      "path": "services/content-service/src/main/resources/db/migration/V14__standardize_content_outbox_event_shape.sql",
+      "algorithm": "sha256",
+      "digest": "95a4a3e3820fe3b4ee7b4f39f5ac423eb476d9d0a225f3280576f24585e37df8"
+    },
+    {
+      "path": "services/gamification-service/src/main/resources/db/migration/V4__standardize_gamification_outbox_event_shape.sql",
+      "algorithm": "sha256",
+      "digest": "3bfad8ca9d598f66bd884bbf959d8d924053b4e84c825582b2d362c5c664bdd0"
+    },
+    {
+      "path": "services/learner-service/src/main/resources/db/migration/V9__standardize_learner_outbox_event_shape.sql",
+      "algorithm": "sha256",
+      "digest": "9850e485baae3a12c2ea4c36f279930eb8cd018a7eeae2ed7003368e10e26adc"
+    },
+    {
+      "path": "services/learning-service/src/main/resources/db/migration/V8__standardize_learning_outbox_event_shape.sql",
+      "algorithm": "sha256",
+      "digest": "a7c55070bb8d43725a5981ef18bf0babe6df284608a135aa5222b310b0da68de"
+    },
+    {
+      "path": "services/learning-service/src/main/resources/db/migration/V9__standardize_learning_runtime_outbox_event_shape.sql",
+      "algorithm": "sha256",
+      "digest": "8fa603c7f138fd5644982c3cd67be9a165928846abcc6039a8040502c6836280"
+    },
+    {
+      "path": "services/media-service/src/main/resources/db/migration/V4__standardize_media_outbox_event_shape.sql",
+      "algorithm": "sha256",
+      "digest": "bf2f0bf0a1137856da132aedd9640840f7057efb4a91c83b91aa46da164684cc"
+    },
+    {
+      "path": "services/notification-service/src/main/resources/db/migration/V6__standardize_notification_outbox_event_shape.sql",
+      "algorithm": "sha256",
+      "digest": "a5e8a0476d29ce6cecac5778874d906cf52f9ad2f50710ac31785d021fcd0154"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-004/runtime-evidence-2026-09-13.json",
+      "algorithm": "sha256",
+      "digest": "7ba5c8fe54a7507dda106846b366ef428733f5f058a90bec473c06464de236d5"
+    }
+  ],
+  "environment": {
+    "kind": "data-ownership-and-event-runtime-evidence",
+    "branch": "dev",
+    "phaseStatus": "D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED",
+    "runtimeStatus": "M2_004_PARTIAL_RUNTIME_VERIFIED",
+    "reviewedRevision": "a7ebe48bddfaf32c56f2b06901b7358c17eedf4b",
+    "toolchain": {
+      "java": "OpenJDK 25.0.4.1",
+      "maven": "3.9.12",
+      "node": "20.19.5",
+      "kafka": "3.9.2"
+    },
+    "evidenceFile": "evidence/p1r/m2/P1R-M2-004/runtime-evidence-2026-09-13.json",
+    "owners": {
+      "provisioned": 12,
+      "externalMigration": 11,
+      "selfMigrating": 1,
+      "declaredNotBuilt": 1,
+      "redisAclUsers": 15
+    }
+  },
+  "provenance": {
+    "survey": "The ownership policy already declared 15 services and 14 data owners, but the runtime did not match it: audit-service was a first-class runtime service that was absent from the Maven reactor, the toolchain baseline and every gate loop, and the ten owner outbox tables had drifted into four different shapes, none of which carried the claim machinery the event runtime contract requires.",
+    "batches": [
+      "Batch A audit-service boundary",
+      "Batch B commerce migrations and reconcile directory migration",
+      "Batch C ten domain owner tenant isolation evidence",
+      "Batch D1 owner DML-only grants and runtime zero-DDL",
+      "Batch D2a fifteen Redis namespaces and aclfile persistence",
+      "Batch D2b gateway rate limiting authenticated as the scoped Redis ACL user",
+      "Batch D3 audit-service joined the orchestrated stack, its schema_version width defect was fixed and the reconcile runner gained real migration history",
+      "Batch D4 the four locally provable runtime requirements were evidenced",
+      "Batch E2 to E8 owner outbox shape standardisation and the content-service publish and consume vertical slice"
+    ],
+    "reviewHistory": []
+  },
+  "startedAt": "2026-09-09T00:00:00+08:00",
+  "finishedAt": "2026-09-12T22:24:03.048Z",
+  "actors": [
+    "root-coordinator",
+    "p1r-implementation"
+  ],
+  "sourceIds": [
+    "P1R-M2-004",
+    "ARCH-EVT-001",
+    "ADR-0015",
+    "ADR-0010"
+  ],
+  "commands": [
+    "node scripts/database/reconcile-owner-schemas.mjs --apply",
+    "node scripts/runtime/p1r-m2-004-runtime.mjs",
+    "node scripts/runtime/provision-kafka-topics.mjs --apply",
+    "pnpm services:run -- --all",
+    "node scripts/dev/run-node-tests.mjs tests/p1r (Node 20.19.5)",
+    "node scripts/audit/p1r-evidence-gate.mjs --json"
+  ],
+  "results": [
+    {
+      "check": "M2-004-OWNER-SCHEMA-GRANTS",
+      "status": "PASS",
+      "details": "Twelve owners provisioned; each can read its own schema; the eleven externally migrated owners are DML-only with DDL and ALTER denied by privilege (error 1142); SHOW GRANTS names no foreign schema."
+    },
+    {
+      "check": "M2-004-CROSS-OWNER-DENY",
+      "status": "PASS",
+      "details": "Every owner was probed against three other owners and every read was denied; the exhaustive declaration check is the grant listing, which names only the owner schema."
+    },
+    {
+      "check": "M2-004-REDIS-NAMESPACE-ACL",
+      "status": "PASS",
+      "details": "Fifteen ACL users each hold exactly the namespace the policy declares, can read and write it, and receive NOPERM in another namespace. The namespaces are provisioned ahead of use: only the gateway and the legacy core-api configure Redis today."
+    },
+    {
+      "check": "M2-004-FLYWAY-EMPTY-AND-EXISTING",
+      "status": "PASS",
+      "details": "Twelve schemas have a p1r_schema_history whose version set matches the migration files; applying V1 into an empty scratch schema created all five expected tables; invalid SQL was rejected with no residue."
+    },
+    {
+      "check": "M2-004-TENANT-GUARD",
+      "status": "NOT_VERIFIABLE_HERE",
+      "details": "Blocked on P1R-M2-009: needs per-service HTTP denials with two tenants and a synthetic per-owner account."
+    },
+    {
+      "check": "M2-004-REDIS-REBUILD",
+      "status": "NOT_VERIFIABLE_HERE",
+      "details": "Blocked on P1R-M2-006: no owner service publishes a projection rebuild entrypoint yet."
+    },
+    {
+      "check": "M2-004-ROLLBACK-COMPENSATION",
+      "status": "NOT_VERIFIABLE_HERE",
+      "details": "Blocked on P1R-M2-006: workflow-service does not exist, so there is no compensation or recovery receipt to exercise."
+    },
+    {
+      "check": "M2-004-RETENTION-DELETE-HOLD",
+      "status": "NOT_VERIFIABLE_HERE",
+      "details": "Blocked on P1R-M2-005: the retention, deletion and legal-hold runtime implementation is not built; the governing contract was frozen by the accepted P1R-M1-017."
+    },
+    {
+      "check": "audit-service-contract-defect",
+      "status": "PASS",
+      "details": "The gateway contract schema identifier is 37 characters while both schema_version columns were VARCHAR(32). Because the receipt insert used INSERT IGNORE, MySQL truncated the value into a warning and stored a corrupted receipt while the fact insert failed outright, leaving three orphan receipts and no durable fact. V2 widens both columns and an ingest then returns 202 ACCEPTED with a 200 DUPLICATE replay."
+    },
+    {
+      "check": "p1r-regression",
+      "status": "PASS",
+      "details": "P1R 1425/1425 under Node 20.19.5; evidence gate, plan, gap registry, docs audit, data ownership, ci guard, toolchain and the runtime dependency audit all PASS. The full suite goes from 1885 pass / 25 fail before this work to 1886 / 24, so nothing regressed; the twenty-four remaining failures are pre-existing stale assertions in legacy B suites that ci.yml does not run."
+    }
+  ],
+  "rollbackEvidence": [
+    {
+      "status": "PASS",
+      "details": "The migrations are additive: they add columns, backfill from the legacy column where one exists and add an index. Reverting the commits restores the previous schema shape without dropping data, and the reconcile runner records applied versions so a rollback is a deliberate operator action rather than a silent re-run. The runtime services needed no code change for the outbox standardisation."
+    }
+  ],
+  "knownGaps": [
+    "Four of the eight runtime requirements are not verifiable yet and are named above with the task that blocks each one: TENANT-GUARD needs P1R-M2-009, REDIS-REBUILD and ROLLBACK-COMPENSATION need P1R-M2-006, RETENTION-DELETE-HOLD needs P1R-M2-005.",
+    "The per-service Redis namespaces and ACLs are provisioned but not yet used by any domain service: only api-gateway (as svc_gateway since batch D2b) and the legacy core-api configure Redis, so namespace isolation is a reserved allocation rather than an enforced boundary for the other twelve.",
+    "The owner outbox tables now carry the contract shape, but only content-service has a publisher and a consumer; the other owners still append rows that nothing publishes.",
+    "Eight of the twelve provisioning owners were baselined from an existing schema rather than migrated from empty, so their migration history records what was already applied rather than a replay from scratch.",
+    "Overall phase remains D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED."
+  ],
+  "reviewer": "root-coordinator",
+  "decision": "PENDING"
+}
