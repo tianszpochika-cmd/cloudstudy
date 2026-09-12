@@ -104,7 +104,7 @@ public class SecurityConfiguration {
             name = "enabled",
             havingValue = "true")
     JwtDecoder verifiedJwtDecoder(ResourceServerProperties properties) {
-        NimbusJwtDecoder decoder = NimbusJwtDecoder.withJwkSetUri(properties.getJwkSetUri()).build();
+        NimbusJwtDecoder decoder = IamEnvelopedJwkSource.decoder(properties.getJwkSetUri(), java.time.Clock.systemUTC());
         OAuth2TokenValidator<Jwt> validator = jwtValidator(properties.getIssuerUri(), properties.getAudience());
         decoder.setJwtValidator(validator);
         return decoder;

@@ -50,7 +50,7 @@ public class AnalyticsSecurityConfiguration {
         if (issuerUri.isBlank() || jwkSetUri.isBlank() || audience.isBlank()) {
             throw new IllegalStateException("analytics resource server requires issuer-uri, jwk-set-uri and audience");
         }
-        NimbusJwtDecoder decoder = NimbusJwtDecoder.withJwkSetUri(jwkSetUri).build();
+        NimbusJwtDecoder decoder = IamEnvelopedJwkSource.decoder(jwkSetUri, java.time.Clock.systemUTC());
         OAuth2TokenValidator<Jwt> validator = jwtValidator(issuerUri, audience);
         decoder.setJwtValidator(validator);
         return decoder;

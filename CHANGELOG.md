@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1R-M2-003-ENVELOPED-JWKS-ROLLOUT3-20260911] `P1R-M2-003` Batch 5 推广③（完成）：信封感知 JWKS 解码器推广到 `analytics-service`、`gamification-service`（新建 security 包）、`service-template`（各 +4 项单测）。**验证**（JDK 25）：analytics **33/0/0/0**、gamification **39/0/0/0**、service-template **16/0/0/0**。至此 **11 个领域服务 + service-template 全部对齐信封 JWKS**，真实 IAM 令牌可被服务侧校验；服务测试基线合计 700。下一步：跨服务运行证据复核 → 最终独立复审 → canonical manifest → `ACCEPTED`。
+
 - [P1R-M2-003-ENVELOPED-JWKS-ROLLOUT2-20260911] `P1R-M2-003` Batch 5 推广②：信封感知 JWKS 解码器推广到 `social-service`、`admin-ops-service`、`notification-service`、`commerce-service`（各复制 `IamEnvelopedJwkSource`，notification/commerce 跨包补充 import，各 +4 项单测）。**验证**（JDK 25）：social **52/0/0/0**、admin-ops **48/0/0/0**、notification **80/0/0/0**、commerce **76/0/0/0**。剩余推广：analytics/gamification/service-template（③）。
 
 - [P1R-M2-003-ENVELOPED-JWKS-ROLLOUT1-20260911] `P1R-M2-003` Batch 5 推广①：将信封感知 JWKS 解码器推广到 `assessment-service`、`content-service`、`learner-service`、`media-service`——各复制 `IamEnvelopedJwkSource`（5 分钟 TTL 缓存 + 单飞刷新、空/坏/超限文档失败关闭）并替换 decoder 构建，各新增 4 项解析/选择/缓存/失败关闭单测。**验证**（JDK 25）：assessment **41/0/0/0**、content **117/0/0/0**、learner **34/0/0/0**、media **55/0/0/0**。剩余推广：social/admin-ops/notification/commerce（②）与 analytics/gamification/service-template（③）。

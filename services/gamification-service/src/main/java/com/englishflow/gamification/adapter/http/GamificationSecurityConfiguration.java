@@ -3,6 +3,8 @@ package com.englishflow.gamification.adapter.http;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import com.englishflow.gamification.security.IamEnvelopedJwkSource;
+
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -38,7 +40,7 @@ public class GamificationSecurityConfiguration {
         if (issuerUri.isBlank() || jwkSetUri.isBlank() || audience.isBlank()) {
             throw new IllegalStateException("gamification resource server requires issuer-uri, jwk-set-uri and audience");
         }
-        NimbusJwtDecoder decoder = NimbusJwtDecoder.withJwkSetUri(jwkSetUri).build();
+        NimbusJwtDecoder decoder = IamEnvelopedJwkSource.decoder(jwkSetUri, java.time.Clock.systemUTC());
         OAuth2TokenValidator<Jwt> validator = jwtValidator(issuerUri, audience);
         decoder.setJwtValidator(validator);
         return decoder;
