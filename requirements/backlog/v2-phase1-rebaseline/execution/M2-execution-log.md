@@ -256,6 +256,13 @@
 - 验证：media 71/0/0（2 跳过）；opt-in 1/1 PASS。
 - 下一步：gamification/notification。
 
+## 2026-09-12 M2-004 Batch C（续）：gamification 真实 MySQL 事实隔离
+
+- opt-in `GamificationTenantIsolationTest`：真实 JdbcGamificationFactStore + Flyway V1–V3；XP 事务持久化/回读、他 subject 0、DB tenant=platform、受限账号跨 schema 写被拒。
+- 残留：subject-only 端口、读无 tenant 谓词、多表无 tenant 列、reward 插入硬编码 platform。
+- 验证：gamification 55/0/0（2 跳过）；opt-in 1/1 PASS。
+- 下一步：notification（'unknown' 默认清理与 tenant 列补齐）。
+
 ## 2026-09-04 IAM 账户/密码并发安全检查点
 
 - 源码：`9deb899`。认证改为锁前单次 cost-12 BCrypt、锁内 current principal/hash/status/counter 复核；credential epoch 在校验期间变化时统一 `INVALID_CREDENTIALS` 且零写入，避免旧在途请求污染或锁死刚重置的新凭据。
