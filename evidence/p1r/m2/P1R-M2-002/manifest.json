@@ -2,7 +2,7 @@
   "taskId": "P1R-M2-002",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "02b438b8324fce4ccb20c544496be4659a351535",
+  "sourceCommit": "ec20ef51a8b0ea99d4b72bf7598777df075f4889",
   "artifactDigests": [
     {
       "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/ConsentService.java",
@@ -167,7 +167,7 @@
     {
       "path": "config/p1r-data-ownership.v1.json",
       "algorithm": "sha256",
-      "digest": "73872df0b3e5b7a5aa2480760833b7ae75cee0adf01e30de76e1ac6496ab5741"
+      "digest": "3c2456a88533e13ef559cfcf24bce672a9b25ae8613bc6d7a43fc082f0f102c0"
     },
     {
       "path": "docs/10-decisions/0013-self-owned-jwt-authentication-center.md",
@@ -244,8 +244,19 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-12T14:13:51+08:00",
         "details": "Current-source artifact digest rebase after P1R-M2-004 Batch A created audit-service and updated the data-ownership policy, checker, and P1R freeze assertions (13 existing / 1 planned migration collections). Full P1R regression 1421/1421 PASS; the original provenance, review history and runtime status are unchanged."
+      },
+      {
+        "taskId": "P1R-M2-002",
+        "sourceCommit": "ec20ef51a8b0ea99d4b72bf7598777df075f4889",
+        "auditedImplementationSource": "ec20ef51a8b0ea99d4b72bf7598777df075f4889",
+        "integrationCheckpoint": "ec20ef51a8b0ea99d4b72bf7598777df075f4889",
+        "reviewer": "agent:p1r_current_source_revalidation:opencode-worker",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-12T16:14:22.647+08:00",
+        "details": "Current-source artifact digest rebase after P1R-M2-004 Batch C completed notification-service tenant hardening: V5 removed the unknown tenant defaults and the data-ownership policy registered notification-service migration fileCount 5 (13 existing / 1 planned collections unchanged). Full P1R regression 1421/1421 PASS; the original provenance, review history and runtime status are unchanged."
       }
-    ]
+    ],
+    "previousCurrentSourceCommit": "02b438b8324fce4ccb20c544496be4659a351535"
   },
   "startedAt": "2026-09-01T16:17:22+08:00",
   "finishedAt": "2026-09-11T16:36:27+08:00",
