@@ -1,5 +1,6 @@
 package com.englishflow.social.web;
 
+import com.englishflow.social.domain.SocialException;
 import com.englishflow.social.security.SocialAuthenticationToken;
 import com.englishflow.social.security.SocialPep;
 import com.englishflow.social.security.SocialPrincipal;
@@ -147,8 +148,25 @@ public final class SocialLocalRealController {
                         + "server_elapsed_seconds = TIMESTAMPDIFF(SECOND, started_at, UTC_TIMESTAMP(3)), qualified_seconds = CASE WHEN ? = 'COMPLETED' THEN LEAST(TIMESTAMPDIFF(SECOND, started_at, UTC_TIMESTAMP(3)), duration_minutes * 60) ELSE qualified_seconds END "
                         + "WHERE focus_id = ? AND tenant_id = ? AND subject_id = ? AND room_id = ?",
                 next, next, next, focusId, principal.tenantId(), principal.subjectId(), roomId);
-        return envelope(map("session", jdbc.queryForMap("SELECT focus_id, room_id, duration_minutes, focus_tag_code, state, started_at, server_elapsed_seconds FROM soc_focus_state WHERE focus_id = ?", focusId)
-                .entrySet().stream().collect(LinkedHashMap::new, (result, entry) -> result.put(normalize(entry.getKey()), entry.getValue()), Map::putAll)), request);
+        List<Map<String, Object>> sessions = jdbc.query(
+                "SELECT focus_id, room_id, duration_minutes, focus_tag_code, state, started_at, server_elapsed_seconds "
+                        + "FROM soc_focus_state WHERE focus_id = ? AND tenant_id = ? AND subject_id = ?",
+                (rs, rowNum) -> {
+                    Map<String, Object> session = new LinkedHashMap<>();
+                    session.put("focusId", rs.getString("focus_id"));
+                    session.put("roomId", rs.getString("room_id"));
+                    session.put("durationMinutes", rs.getInt("duration_minutes"));
+                    session.put("focusTagCode", rs.getString("focus_tag_code"));
+                    session.put("state", rs.getString("state"));
+                    session.put("startedAt", rs.getTimestamp("started_at"));
+                    session.put("serverElapsedSeconds", rs.getLong("server_elapsed_seconds"));
+                    return session;
+                }, focusId, principal.tenantId(), principal.subjectId());
+        if (sessions.isEmpty()) {
+            throw SocialException.notFound("SOCIAL_FOCUS_NOT_FOUND",
+                    "focus session is outside the verified tenant and owner scope");
+        }
+        return envelope(map("session", sessions.getFirst()), request);
     }
 
     @PostMapping("/rooms/{roomId}/interactions")

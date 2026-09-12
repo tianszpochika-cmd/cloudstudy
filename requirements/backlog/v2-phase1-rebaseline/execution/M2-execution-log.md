@@ -269,6 +269,13 @@
 - 验证：notification 96/0/0（2 跳过）；迁移 opt-in 1/1 PASS；租户 opt-in 1/1 PASS。
 - Batch C 服务覆盖 learning/assessment/content/media/gamification/notification；剩余 admin-ops/analytics/commerce/social 与运行时编排顺延。
 
+## 2026-09-12 M2-004 Batch C（完成）：commerce/analytics/social/admin-ops
+
+- commerce/analytics/admin-ops 新增 opt-in 租户隔离测试（真实适配器 + Flyway）：跨租户 0 行/策略拒绝、受限账号跨 schema 写被 DB 拒绝。
+- social 修复 `updateFocus` 读回跨租户泄露（加 tenant/subject 谓词 + SOCIAL_FOCUS_NOT_FOUND），新增 opt-in 测试验证。
+- 回归：commerce 92、analytics 49、social 68、admin-ops 64，均 0 失败（各 2 跳过）；opt-in 全 1/1 PASS。
+- Batch C 10/10 领域 owner 完成；下一步 Batch D（凭据/Redis/运行时编排/证据/复审/manifest）。
+
 ## 2026-09-04 IAM 账户/密码并发安全检查点
 
 - 源码：`9deb899`。认证改为锁前单次 cost-12 BCrypt、锁内 current principal/hash/status/counter 复核；credential epoch 在校验期间变化时统一 `INVALID_CREDENTIALS` 且零写入，避免旧在途请求污染或锁死刚重置的新凭据。
