@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import crypto from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { runMysql as runMysqlClient } from './lib/mysql-client.mjs';
@@ -60,8 +61,45 @@ function migrationFiles(owner) {
   const files = fs.readdirSync(directory).filter((name) => /^V\d+__.+\.sql$/i.test(name));
   if (files.length === 0) throw new Error(`${owner.id} has no versioned migrations in ${path.dirname(owner.migrationPath)}`);
   return files
-    .map((name) => ({ name, version: String(Number(name.match(/^V(\d+)__/i)[1])), sql: fs.readFileSync(path.join(directory, name), 'utf8') }))
+    .map((name) => {
+      const sql = fs.readFileSync(path.join(directory, name), 'utf8');
+      return {
+        name,
+        version: String(Number(name.match(/^V(\d+)__/i)[1])),
+        // Normalised to LF so a Windows checkout and a Linux checkout of the same migration agree.
+        checksum: crypto.createHash('sha256').update(sql.replaceAll('\r\n', '\n')).digest('hex'),
+        sql
+      };
+    })
     .sort((left, right) => Number(left.version) - Number(right.version));
+}
+
+// Tracks which versions have been applied, the way Flyway would. Without it the runner could only
+// compare table sets, so an additive or ALTER-only migration left the set unchanged and was skipped
+// in silence. Duplicate version numbers are rejected because the history table is keyed by version.
+function readSchemaHistory(schema, historyTable) {
+  query(`CREATE TABLE IF NOT EXISTS ${identifier(schema)}.\`${historyTable}\` (
+    version INT NOT NULL,
+    description VARCHAR(128) NOT NULL,
+    checksum CHAR(64) NOT NULL,
+    applied_at DATETIME(6) NOT NULL,
+    PRIMARY KEY (version)
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;`);
+  const output = query(`SELECT version, checksum FROM ${identifier(schema)}.\`${historyTable}\` ORDER BY version;`);
+  const rows = output ? output.split(/\r?\n/).filter(Boolean).map((line) => line.split('\t')) : [];
+  return new Map(rows.map(([version, checksum]) => [Number(version), String(checksum).trim()]));
+}
+
+function recordSchemaHistory(schema, historyTable, files) {
+  const versions = files.map((file) => Number(file.version));
+  if (new Set(versions).size !== versions.length) {
+    throw new Error(`${schema} has duplicate migration versions: ${versions.join(', ')}`);
+  }
+  if (files.length === 0) return;
+  const values = files.map((file) => `(${Number(file.version)}, ${quote(file.name.slice(0, 128))}, `
+    + `${quote(file.checksum)}, UTC_TIMESTAMP(6))`).join(', ');
+  query(`INSERT INTO ${identifier(schema)}.\`${historyTable}\` (version, description, checksum, applied_at) `
+    + `VALUES ${values};`);
 }
 
 function expectedTablesFor(files) {
@@ -154,17 +192,44 @@ function provisionOwner(owner) {
 
   const files = migrationFiles(owner);
   const expectedTables = expectedTablesFor(files);
-  const beforeTables = existingTables(owner.schema);
-  let migrationState = 'applied-now';
-  if (beforeTables.length === 0) {
+  const historyTable = 'p1r_schema_history';
+  const beforeTables = existingTables(owner.schema).filter((table) => table !== historyTable);
+  const applied = readSchemaHistory(owner.schema, historyTable);
+  let migrationState;
+
+  if (applied.size === 0 && beforeTables.length > 0) {
+    // Baseline an existing schema that predates history tracking. Every expected table is already
+    // present, so the files recorded here really are the ones that produced it. This is what makes
+    // the switch from "compare table sets" to real version tracking safe for the 11 domain owners
+    // and audit-service, all of which were migrated before the history table existed.
+    const missing = expectedTables.filter((table) => !beforeTables.includes(table));
+    if (missing.length > 0) {
+      throw new Error(`${owner.id} schema is partially migrated; missing tables: ${missing.join(', ')}`);
+    }
+    recordSchemaHistory(owner.schema, historyTable, files);
+    migrationState = 'baselined';
+  } else {
+    // Verify that already-recorded migrations were not edited after they were applied, in the same
+    // spirit as Flyway's checksum validation.
     for (const file of files) {
+      const recorded = applied.get(Number(file.version));
+      if (recorded !== undefined && recorded !== file.checksum) {
+        throw new Error(`${owner.id} migration ${file.name} changed after it was applied`);
+      }
+    }
+    const pending = files.filter((file) => !applied.has(Number(file.version)));
+    // A schema with no tables at all still runs every file; otherwise only the pending versions run,
+    // which is what lets additive and ALTER-only migrations actually take effect.
+    const toRun = beforeTables.length === 0 ? files : pending;
+    for (const file of toRun) {
       query(file.sql, { database: owner.schema });
     }
-  } else if (expectedTables.every((table) => beforeTables.includes(table))) {
-    migrationState = 'already-applied-verified';
-  } else {
-    const missing = expectedTables.filter((table) => !beforeTables.includes(table));
-    throw new Error(`${owner.id} schema is partially migrated; missing tables: ${missing.join(', ')}`);
+    if (toRun.length > 0) {
+      recordSchemaHistory(owner.schema, historyTable, files.filter((file) => !applied.has(Number(file.version))));
+      migrationState = beforeTables.length === 0 ? 'applied-now' : `applied-${toRun.length}-pending`;
+    } else {
+      migrationState = 'up-to-date';
+    }
   }
 
   const grantVerification = verifyOwnerGrants(owner, password);
