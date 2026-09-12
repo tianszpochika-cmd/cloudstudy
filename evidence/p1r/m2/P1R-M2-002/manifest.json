@@ -2,7 +2,7 @@
   "taskId": "P1R-M2-002",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "d5246a8110cb4431778000684fa762b94f50cf3c",
+  "sourceCommit": "21cfe242cbeedbedbb78724ef468a171f2a44900",
   "artifactDigests": [
     {
       "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/ConsentService.java",
@@ -167,7 +167,7 @@
     {
       "path": "config/p1r-data-ownership.v1.json",
       "algorithm": "sha256",
-      "digest": "09a9fa480a8c137068c78457cfbc7e32be3952c5b3a8fcd49af174c0bb26e600"
+      "digest": "111b8f5185d6d1ec2f0c7b75140e430a52406777bc5c1c0b6ad5a78f1194d54b"
     },
     {
       "path": "docs/10-decisions/0013-self-owned-jwt-authentication-center.md",
@@ -274,20 +274,30 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-12T20:21:34.788Z",
         "details": "Current-source artifact digest rebase after P1R-M2-005 standardized the ten owner outbox tables to the ADR-0015 shape, which added one migration to nine owner collections. The only artifact of these tasks that moved is config/p1r-data-ownership.v1.json, whose migrationInventory existingCollections fileCounts follow the added migrations. Original provenance, review history and runtime status unchanged."
+      },
+      {
+        "taskId": "P1R-M2-002",
+        "sourceCommit": "21cfe242cbeedbedbb78724ef468a171f2a44900",
+        "auditedImplementationSource": "21cfe242cbeedbedbb78724ef468a171f2a44900",
+        "integrationCheckpoint": "21cfe242cbeedbedbb78724ef468a171f2a44900",
+        "reviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-12T21:04:38.453Z",
+        "details": "Current-source artifact digest rebase after P1R-M2-005 E5 added consumer-side event deduplication: content_event_receipt keyed on (consumer_group, event_id) plus content_inbound_event_stat as the atomically applied effect, the p1r:m2-005:dedupe verification script in package.json, and one more content-service migration in the data ownership policy inventory. Only sourceCommit and the digests of the artifacts that moved change; original provenance, review history and runtime status are untouched."
       }
     ],
-    "previousCurrentSourceCommit": "fca70a3a6cd0aadd819def96c48f5f951ccac0e1",
+    "previousCurrentSourceCommit": "d5246a8110cb4431778000684fa762b94f50cf3c",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationTask": "P1R-M2-004",
+    "currentSourceRevalidationTask": "P1R-M2-005",
     "currentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-12T20:21:34.788Z",
-    "currentSourceRevalidationAuditedImplementationSource": "d5246a8110cb4431778000684fa762b94f50cf3c",
-    "currentSourceRevalidationIntegrationCheckpoint": "d5246a8110cb4431778000684fa762b94f50cf3c",
+    "currentSourceRevalidationFinishedAt": "2026-09-12T21:04:38.453Z",
+    "currentSourceRevalidationAuditedImplementationSource": "21cfe242cbeedbedbb78724ef468a171f2a44900",
+    "currentSourceRevalidationIntegrationCheckpoint": "21cfe242cbeedbedbb78724ef468a171f2a44900",
     "originalSourceCommit": "ec20ef51a8b0ea99d4b72bf7598777df075f4889",
     "previousCurrentSourceRevalidationTask": "P1R-M2-004",
     "previousCurrentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
-    "previousCurrentSourceRevalidationFinishedAt": "2026-09-12T19:10:57.939Z"
+    "previousCurrentSourceRevalidationFinishedAt": "2026-09-12T20:21:34.788Z"
   },
   "startedAt": "2026-09-01T16:17:22+08:00",
   "finishedAt": "2026-09-11T16:36:27+08:00",
