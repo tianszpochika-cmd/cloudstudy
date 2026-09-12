@@ -235,6 +235,13 @@
 - 验证：learning 141/0/0（2 跳过）；opt-in 1/1 PASS。
 - 下一步：assessment 租户谓词与会话/报告读写的真实隔离用例。
 
+## 2026-09-12 M2-004 Batch C（续）：assessment 真实 MySQL 租户隔离
+
+- 新增 opt-in `AssessmentTenantIsolationTest`：真实 `JdbcAssessmentStatePort` + Flyway V1–V4，验证租户级幂等隔离（他租户 0 行、同 key 独立）、空状态恢复、受限账号跨 schema 写被 DB 拒绝。
+- 记录 `load()` 全局重建为残留项（命令层按 principal 所有权校验），Phase 3 共享 schema 前需租户作用域化。
+- 验证：assessment 57/0/0（2 跳过）；opt-in 1/1 PASS。
+- 下一步：content/media/gamification/notification 的租户谓词与 schema 修补。
+
 ## 2026-09-04 IAM 账户/密码并发安全检查点
 
 - 源码：`9deb899`。认证改为锁前单次 cost-12 BCrypt、锁内 current principal/hash/status/counter 复核；credential epoch 在校验期间变化时统一 `INVALID_CREDENTIALS` 且零写入，避免旧在途请求污染或锁死刚重置的新凭据。
