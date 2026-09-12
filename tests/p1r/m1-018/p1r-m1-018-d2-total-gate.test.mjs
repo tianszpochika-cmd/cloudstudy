@@ -226,7 +226,8 @@ const mutations = [
   ['client event producer', (input) => { input.catalog['x-p1r-event-governance'].transportPolicy.clientProducer = 'ALLOWED'; }, /client|transport/],
   ['catalog runtime promotion', (input) => { input.catalog['x-p1r-event-governance'].runtimeStatus = 'PASS'; }, /runtime/],
   ['B26 GO promotion', (input) => { input.b26Runtime.defaultDecision = 'GO'; }, /B26/],
-  ['M0-006 blocker wash', (input) => { input.m0_006.decision = 'ACCEPTED'; input.m0_006.canonicalTaskStatus = 'ACCEPTED'; }, /M0-006/],
+  ['M0-006 blocker wash over an unresolved blocker', (input) => { input.m0_006.decision = 'ACCEPTED'; input.m0_006.canonicalTaskStatus = 'ACCEPTED'; input.m0_006.blockers = ['GHSA-fx2h-pf6j-xcff requires Vite >=6.4.3']; }, /M0-006/],
+  ['M0-006 resolution without a passing vulnerability policy', (input) => { input.m0_006.decision = 'ACCEPTED'; input.m0_006.canonicalTaskStatus = 'ACCEPTED'; input.m0_006.results = input.m0_006.results.map((result) => (result.check === 'high-critical-vulnerability-policy' ? { ...result, status: 'FAIL' } : result)); }, /M0-006/],
   ['alias closed without canonical evidence during review', (input) => { const gap = input.registry.gaps.find((item) => item.id === EVENT_GAP_ALIAS); gap.status = 'CLOSED'; gap.closureEvidence = null; }, /alias|Evidence|closure/],
 ];
 

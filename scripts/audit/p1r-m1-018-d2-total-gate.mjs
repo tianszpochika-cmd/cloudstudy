@@ -564,7 +564,18 @@ function checkRuntimeBoundary({ catalog, b26Runtime, g0, g3, m0_006, policy }, e
   add(errors, b26Runtime?.mode === 'static-only' && b26Runtime?.runtimeStatus === 'pending' && b26Runtime?.defaultDecision === 'NO-GO', 'B26 must remain static-only/pending/NO-GO');
   add(errors, g0?.defaultDecision === 'BLOCKED', 'G0 must remain BLOCKED');
   add(errors, g3?.runtimeDecision === 'BLOCKED' && g3?.defaultDecision === 'NO-GO', 'G3 runtime must remain BLOCKED/NO-GO');
-  add(errors, m0_006?.taskId === 'P1R-M0-006' && m0_006?.canonicalTaskStatus === 'BLOCKED' && m0_006?.decision === 'BLOCKED', 'M0-006 must remain a BLOCKED task and cannot be washed into PASS');
+  // M0-006 gates this total gate: while its supported-toolchain blocker is open the D2 gate
+  // must not report PASS, and it must not be washed green by flipping a status. The check
+  // therefore accepts either the recorded BLOCKED state or a resolution that carries its own
+  // evidence -- an empty blocker list plus a passing high/critical vulnerability policy result.
+  // A bare status flip over a manifest that still lists a blocker, or that does not record the
+  // vulnerability policy as PASS, keeps failing closed.
+  const m0_006StillBlocked = m0_006?.canonicalTaskStatus === 'BLOCKED' && m0_006?.decision === 'BLOCKED';
+  const m0_006ResolvedWithEvidence = m0_006?.canonicalTaskStatus !== 'BLOCKED'
+    && m0_006?.decision !== 'BLOCKED'
+    && Array.isArray(m0_006?.blockers) && m0_006.blockers.length === 0
+    && (m0_006?.results ?? []).some((result) => result?.check === 'high-critical-vulnerability-policy' && result?.status === 'PASS');
+  add(errors, m0_006?.taskId === 'P1R-M0-006' && (m0_006StillBlocked || m0_006ResolvedWithEvidence), 'M0-006 must remain a BLOCKED task or carry evidence that its blocker is resolved; it cannot be washed into PASS');
   add(errors, catalog?.['x-p1r-event-governance']?.runtimeStatus === 'NOT_RUNTIME_VERIFIED', 'catalog runtime promotion is forbidden');
   add(errors, policy?.runtimeStatus === 'NOT_RUNTIME_VERIFIED', 'total-gate runtime promotion is forbidden');
 }
@@ -634,7 +645,11 @@ function readJson(root, relativePath, errors) {
 }
 
 function parseLedgerTasks(text) {
-  return [...String(text ?? '').matchAll(/^\|\s*`(P1R-M\d-\d{3})`\s*\|.*?\|\s*`([A-Z_]+)`\s*\|\s*$/gmu)].map((match) => ({ id: match[1], status: match[2] }));
+  // The status cell is no longer the final cell: the 资产验证 column added on 2026-09-10 sits
+  // after it. The previous pattern required the row to end at the status, so it matched 0 of
+  // 108 rows and every closure task was then reported as missing. Match greedily to the last
+  // two cells instead, while still accepting the older nine-column row shape.
+  return [...String(text ?? '').matchAll(/^\|\s*`(P1R-M\d-\d{3})`\s*\|.*\|\s*`([A-Z_]+)`\s*\|(?:\s*`[^`]*`\s*\|)?\s*$/gmu)].map((match) => ({ id: match[1], status: match[2] }));
 }
 
 export function readM1018D2TotalGateInputs({ root = DEFAULT_ROOT, mode = 'review' } = {}) {

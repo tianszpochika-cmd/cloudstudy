@@ -97,7 +97,7 @@
     "Re-evaluate whether src/compat/vue.ts and the vue-router entry shim are still required once a later uni-app line stops importing the Vue internals they provide."
   ],
   "reviewer": "root-coordinator",
-  "decision": "REVIEW",
+  "decision": "PENDING",
   "provenance": {
     "originalSourceCommit": "0f8b60ae4e83d0f31d891eed8d9383c007485130",
     "originalReviewer": "root-coordinator",
