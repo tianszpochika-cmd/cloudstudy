@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-018",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "1eefbe6d5b22d87872c4f8c1cc0ecad46497e3a6",
+  "sourceCommit": "7aaebac87e8870fd763bd93dc97afcd18f80b714",
   "artifactDigests": [
     {
       "path": "config/b26-event-runtime.json",
@@ -47,7 +47,7 @@
     {
       "path": "package.json",
       "algorithm": "sha256",
-      "digest": "c37a2b3b5a515e5bd3fc68ccb52c6e56b28a5565dd1de1e0f84412e41e0cf9bf"
+      "digest": "c784ba8aab087f34b7239f1356a6eeff0c9f8468693ac2568f6628582526056d"
     },
     {
       "path": "packages/api-client/src/generated/index.ts",
@@ -605,18 +605,28 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-12T21:46:47.793Z",
         "details": "Current-source artifact digest rebase after P1R-M2-005 E7 registered the repeatable event runtime harness as p1r:m2-005:events in package.json. The only artifact of these tasks that moved is package.json. Original provenance, review history and runtime status unchanged."
+      },
+      {
+        "taskId": "P1R-M1-018",
+        "sourceCommit": "7aaebac87e8870fd763bd93dc97afcd18f80b714",
+        "auditedImplementationSource": "7aaebac87e8870fd763bd93dc97afcd18f80b714",
+        "integrationCheckpoint": "7aaebac87e8870fd763bd93dc97afcd18f80b714",
+        "reviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-12T22:07:09.012Z",
+        "details": "Current-source artifact digest rebase after P1R-M2-005 E8 registered the operator dead letter replay entry as p1r:m2-005:replay in package.json. The only artifact of these tasks that moved is package.json. Original provenance, review history and runtime status unchanged."
       }
     ],
-    "previousCurrentSourceCommit": "21cfe242cbeedbedbb78724ef468a171f2a44900",
+    "previousCurrentSourceCommit": "1eefbe6d5b22d87872c4f8c1cc0ecad46497e3a6",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
     "currentSourceRevalidationTask": "P1R-M2-005",
     "currentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-12T21:46:47.793Z",
-    "currentSourceRevalidationAuditedImplementationSource": "1eefbe6d5b22d87872c4f8c1cc0ecad46497e3a6",
-    "currentSourceRevalidationIntegrationCheckpoint": "1eefbe6d5b22d87872c4f8c1cc0ecad46497e3a6",
+    "currentSourceRevalidationFinishedAt": "2026-09-12T22:07:09.012Z",
+    "currentSourceRevalidationAuditedImplementationSource": "7aaebac87e8870fd763bd93dc97afcd18f80b714",
+    "currentSourceRevalidationIntegrationCheckpoint": "7aaebac87e8870fd763bd93dc97afcd18f80b714",
     "previousCurrentSourceRevalidationTask": "P1R-M2-005",
     "previousCurrentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
-    "previousCurrentSourceRevalidationFinishedAt": "2026-09-12T21:04:38.453Z"
+    "previousCurrentSourceRevalidationFinishedAt": "2026-09-12T21:46:47.793Z"
   }
 }
