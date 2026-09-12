@@ -161,7 +161,8 @@
     "lint": "turbo lint",
     "typecheck": "turbo typecheck",
     "format": "prettier --write .",
-    "p1r:m2-004:runtime": "node scripts/runtime/p1r-m2-004-runtime.mjs"
+    "p1r:m2-004:runtime": "node scripts/runtime/p1r-m2-004-runtime.mjs",
+    "p1r:kafka:topics": "node scripts/runtime/provision-kafka-topics.mjs"
   },
   "devDependencies": {
     "playwright": "^1.63.0",
