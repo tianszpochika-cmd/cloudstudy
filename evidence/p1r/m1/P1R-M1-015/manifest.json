@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-015",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "21cfe242cbeedbedbb78724ef468a171f2a44900",
+  "sourceCommit": "1eefbe6d5b22d87872c4f8c1cc0ecad46497e3a6",
   "artifactDigests": [
     {
       "path": "config/b20-commerce-dr-evidence.json",
@@ -62,7 +62,7 @@
     {
       "path": "package.json",
       "algorithm": "sha256",
-      "digest": "d32d7c2c939e52218139c74a6fb33756d85aa67a55e0c44353870bbf8ce810fe"
+      "digest": "c37a2b3b5a515e5bd3fc68ccb52c6e56b28a5565dd1de1e0f84412e41e0cf9bf"
     },
     {
       "path": "packages/api-client/src/generated/index.ts",
@@ -514,18 +514,28 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-12T21:04:38.453Z",
         "details": "Current-source artifact digest rebase after P1R-M2-005 E5 added consumer-side event deduplication: content_event_receipt keyed on (consumer_group, event_id) plus content_inbound_event_stat as the atomically applied effect, the p1r:m2-005:dedupe verification script in package.json, and one more content-service migration in the data ownership policy inventory. Only sourceCommit and the digests of the artifacts that moved change; original provenance, review history and runtime status are untouched."
+      },
+      {
+        "taskId": "P1R-M1-015",
+        "sourceCommit": "1eefbe6d5b22d87872c4f8c1cc0ecad46497e3a6",
+        "auditedImplementationSource": "1eefbe6d5b22d87872c4f8c1cc0ecad46497e3a6",
+        "integrationCheckpoint": "1eefbe6d5b22d87872c4f8c1cc0ecad46497e3a6",
+        "reviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-12T21:46:47.793Z",
+        "details": "Current-source artifact digest rebase after P1R-M2-005 E7 registered the repeatable event runtime harness as p1r:m2-005:events in package.json. The only artifact of these tasks that moved is package.json. Original provenance, review history and runtime status unchanged."
       }
     ],
-    "previousCurrentSourceCommit": "396635c0b9ced09eebb4cec5bdc3178a16ab34f6",
-    "previousCurrentSourceRevalidationTask": "P1R-M2-004",
+    "previousCurrentSourceCommit": "21cfe242cbeedbedbb78724ef468a171f2a44900",
+    "previousCurrentSourceRevalidationTask": "P1R-M2-005",
     "previousCurrentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "previousCurrentSourceRevalidationFinishedAt": "2026-09-12T20:08:43.159Z",
+    "previousCurrentSourceRevalidationFinishedAt": "2026-09-12T21:04:38.453Z",
     "currentSourceRevalidationTask": "P1R-M2-005",
     "currentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-12T21:04:38.453Z",
-    "currentSourceRevalidationAuditedImplementationSource": "21cfe242cbeedbedbb78724ef468a171f2a44900",
-    "currentSourceRevalidationIntegrationCheckpoint": "21cfe242cbeedbedbb78724ef468a171f2a44900"
+    "currentSourceRevalidationFinishedAt": "2026-09-12T21:46:47.793Z",
+    "currentSourceRevalidationAuditedImplementationSource": "1eefbe6d5b22d87872c4f8c1cc0ecad46497e3a6",
+    "currentSourceRevalidationIntegrationCheckpoint": "1eefbe6d5b22d87872c4f8c1cc0ecad46497e3a6"
   }
 }
