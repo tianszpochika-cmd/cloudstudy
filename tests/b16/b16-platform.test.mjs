@@ -22,23 +22,42 @@ test('B16 security manifest keeps Phase 1 default-deny and self-owned JWT signin
 
 test('B16 Gateway has fixed loopback boundary, CORS, rate-limit and security facts', () => {
   const yaml = read('services/api-gateway/src/main/resources/application.yml');
+  const local = read('services/api-gateway/src/main/resources/application-local.yml');
   const rateLimit = read('services/api-gateway/src/main/java/com/englishflow/gateway/filter/RateLimitGlobalFilter.java');
   const legacyRateLimit = read('services/api-gateway/src/main/java/com/englishflow/gateway/filter/RateLimitPlaceholderGlobalFilter.java');
   assert.match(yaml, /address: \$\{SERVER_ADDRESS:127\.0\.0\.1\}/);
   assert.match(yaml, /port: \$\{API_GATEWAY_PORT:18070\}/);
-  assert.match(yaml, /allowed-origins:/);
+  // M1-004 replaced one shared origin list with one origin per browser profile, so each
+  // application maps to exactly one boundary. Pinning every profile is stricter than accepting
+  // any list, and it also proves the legacy aliases are only fallbacks.
+  for (const profile of ['learner-web', 'admin-web', 'mobile-h5', 'official-site']) {
+    assert.match(yaml, new RegExp(`${profile}-origin: \\$\\{CORS_ALLOWED_ORIGIN_`));
+  }
+  assert.match(yaml, /allowed-methods: GET,POST,PUT,PATCH,DELETE,OPTIONS/);
   assert.match(yaml, /rate-limit:/);
   assert.match(yaml, /requests-per-window:/);
-  assert.match(yaml, /backend: \$\{GATEWAY_RATE_LIMIT_BACKEND:memory\}/);
+  // The default backend is distributed Redis, not the in-process map: a single-process limiter is
+  // not a rate limit for a horizontally scaled Gateway. The local profile keeps memory as an
+  // explicit development exception, so both facts are asserted rather than only one default.
+  assert.match(yaml, /backend: \$\{GATEWAY_RATE_LIMIT_BACKEND:redis\}/);
+  assert.match(local, /backend: \$\{GATEWAY_RATE_LIMIT_BACKEND:memory\}/);
   assert.match(yaml, /fail-open: \$\{GATEWAY_RATE_LIMIT_FAIL_OPEN:false\}/);
+  assert.match(local, /fail-open: \$\{GATEWAY_RATE_LIMIT_FAIL_OPEN:false\}/);
   assert.match(rateLimit, /RateLimitBackend/);
   assert.match(rateLimit, /TOO_MANY_REQUESTS/);
   assert.doesNotMatch(legacyRateLimit, /@Component/);
   assert.match(yaml, /X-Request-Id/);
   assert.match(yaml, /X-Trace-Id/);
+  // The forged-authority headers are declared once, in a class whose only job is to name them and
+  // strip them, and a global filter applies it to every exchange. Asserting the declaration and its
+  // single application point is stronger than finding the names somewhere in the configuration.
+  const forgedHeaders = read('services/api-gateway/src/main/java/com/englishflow/gateway/filter/ClientAuthorizationContextHeaders.java');
+  const sanitizer = read('services/api-gateway/src/main/java/com/englishflow/gateway/filter/ClientAuthorizationContextSanitizerGlobalFilter.java');
   for (const header of ['X-Role', 'X-B5-Role', 'X-Tenant-Id', 'X-Owner-Id']) {
-    assert.match(yaml + read('services/api-gateway/src/main/java/com/englishflow/gateway/config/GatewayConfiguration.java'), new RegExp(header));
+    assert.match(forgedHeaders, new RegExp(header));
   }
+  assert.match(forgedHeaders, /public static void removeFrom\(HttpHeaders headers\)/);
+  assert.match(sanitizer, /headers\(ClientAuthorizationContextHeaders::removeFrom\)/);
 });
 
 test('B16 IAM signs short-lived JWTs and keeps account/session secrets server-side', () => {

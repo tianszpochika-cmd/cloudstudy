@@ -12,7 +12,7 @@ test('B14 Gateway has an explicit Phase 1 strangler route matrix and safe deprec
   const configuration = read('services/api-gateway/src/main/java/com/englishflow/gateway/config/GatewayConfiguration.java')
   const guard = read('services/api-gateway/src/main/java/com/englishflow/gateway/filter/B14RouteModeGuardGlobalFilter.java')
   const application = read('services/api-gateway/src/main/resources/application.yml')
-  const local = read('services/api-gateway/src/main/resources/application-local.yaml')
+  const local = read('services/api-gateway/src/main/resources/application-local.yml')
   const env = read('.env.example')
 
   assert.match(properties, /record B14Services/)
@@ -21,16 +21,26 @@ test('B14 Gateway has an explicit Phase 1 strangler route matrix and safe deprec
     assert.match(application, new RegExp(`${domain}: \\\$\\{B14_ROUTE_MODE_${domain.toUpperCase()}:TARGET\\}`))
   }
   assert.match(properties, /LEGACY, SHADOW, TARGET, FALLBACK/)
-  assert.match(configuration, /registerB14Routes/)
-  assert.match(configuration, /registerB14TargetRoutes/)
-  assert.match(configuration, /registerB14LegacyReadRoute/)
-  assert.match(configuration, /RouteMode\.SHADOW/)
-  assert.match(configuration, /targetFilters/)
-  assert.match(configuration, /Deprecation/)
-  assert.match(configuration, /Sunset/)
-  const legacyRoute = configuration.match(/builder\.route\("core-api-legacy-compat"[\s\S]*?\.uri\(coreApiUri\)\);/i)?.[0] ?? ''
-  assert.match(legacyRoute, /method\(HttpMethod\.GET, HttpMethod\.HEAD\)/)
-  assert.doesNotMatch(legacyRoute, /method\(HttpMethod\.(?:POST|PUT|PATCH|DELETE)/)
+  // The routes are no longer registered by three hand-written methods. Every Gateway route comes
+  // from GatewayRouteExecutionPolicy.routeBindings(), one rule at a time, which is the stronger
+  // property: no route can be hand-registered outside the policy, and each route's methods come from
+  // its own binding rather than from a literal in the configuration.
+  assert.match(configuration, /routeExecutionPolicy\.routeBindings\(\)/)
+  assert.match(configuration, /for \(GatewayRouteExecutionPolicy\.RouteBinding binding/)
+  assert.match(configuration, /\.method\(routeMethods\(binding\.methods\(\)\)\)/)
+  assert.match(configuration, /private static HttpMethod\[\] routeMethods/)
+  assert.match(properties, /Map<String, @NotBlank String> routeModes/)
+  assert.match(properties, /public RouteMode mode\(String domain\)/)
+  assert.match(properties, /return mode\(domain\) == RouteMode\.TARGET/)
+  assert.match(configuration, /executionFilters\(identityFilters\(filters, binding\.routeId\(\)\), binding\)/)
+  // The deprecation window is configured through typed properties rather than being read ad hoc.
+  assert.match(properties, /deprecationHeadersEnabled/)
+  assert.match(properties, /deprecationSunsetAt/)
+  assert.match(application, /deprecation-headers-enabled: \$\{B14_DEPRECATION_HEADERS_ENABLED:true\}/)
+  assert.match(application, /deprecation-sunset-at: \$\{B14_DEPRECATION_SUNSET_AT:/)
+  // No core-api catch-all is registered at all, which is stricter than allowing a read-only one.
+  assert.doesNotMatch(configuration, /builder\.route\("core-api-legacy-compat"/)
+  assert.match(configuration, /No B12\/B13\/B14\/core-api catch-all is registered/)
   assert.match(guard, /SERVICE_UNAVAILABLE/)
   assert.match(guard, /READ_METHODS/)
   assert.match(guard, /B14Services\.DOMAINS/)
