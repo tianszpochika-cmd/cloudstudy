@@ -468,7 +468,7 @@
       "recordedAt": "2026-09-12T22:17:26.076Z",
       "actor": "agent:p1r_implementation:deepseek-harness",
       "reason": "The Kafka transport, outbox publisher, consumer deduplication, DLQ and replay foundations are implemented and every evidence type the task names is produced by a scripted harness. The ledger blocks it: the gate fixes the statuses that require ACCEPTED dependencies to READY, IN_PROGRESS, REVIEW and ACCEPTED, and the declared dependency P1R-M2-004 is in REVIEW, so BLOCKED is the only status that both records the truth and keeps the gate passing.",
-      "evidencePath": "evidence/p1r/m2/P1R-M2-005/event-runtime-harness-2026-09-12.json"
+      "evidencePath": "evidence/p1r/m2/P1R-M2-005/manifest.json"
     }
   ]
 }
