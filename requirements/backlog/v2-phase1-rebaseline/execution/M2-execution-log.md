@@ -111,6 +111,12 @@
 - 验证（JDK 25）：notification `76/0/0/0`；notification-sync-support contract PASS。
 - 下一步 Batch 3② commerce、③ analytics。
 
+## 2026-09-11 M2-003 Batch 3②：commerce-service
+
+- `UntrustedCommerceFactsFilter` 由静默剥离改为显式拒绝（13 头/7 参数，403）；新增 `CommerceJwtAuthenticationConverter` 并接入 Resource Server；callback 路径保持 authenticated fail-closed + 域层 HMAC 签名校验不变。
+- 验证（JDK 25）：commerce `72/0/0/0`；commerce contract PASS。
+- 下一步 Batch 3③ analytics-service。
+
 ## 2026-09-04 IAM 账户/密码并发安全检查点
 
 - 源码：`9deb899`。认证改为锁前单次 cost-12 BCrypt、锁内 current principal/hash/status/counter 复核；credential epoch 在校验期间变化时统一 `INVALID_CREDENTIALS` 且零写入，避免旧在途请求污染或锁死刚重置的新凭据。

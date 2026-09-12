@@ -21,6 +21,8 @@ import org.springframework.security.oauth2.jwt.JwtTimestampValidator;
 import org.springframework.security.oauth2.jwt.JwtValidators;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
+import com.englishflow.commerce.security.CommerceJwtAuthenticationConverter;
+
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.access.intercept.AuthorizationFilter;
@@ -44,7 +46,12 @@ public class CommerceSecurityConfiguration {
 
     @Bean UntrustedCommerceFactsFilter untrustedCommerceFactsFilter() { return new UntrustedCommerceFactsFilter(); }
 
+    @Bean CommerceJwtAuthenticationConverter commerceJwtAuthenticationConverter() {
+        return new CommerceJwtAuthenticationConverter();
+    }
+
     @Bean SecurityFilterChain commerceSecurityFilterChain(HttpSecurity http, UntrustedCommerceFactsFilter untrusted,
+            CommerceJwtAuthenticationConverter jwtAuthenticationConverter,
             ObjectProvider<JwtDecoder> decoderProvider,
             @Value("${commerce.security.resource-server-enabled:false}") boolean resourceServerEnabled) throws Exception {
         AuthenticationEntryPoint entryPoint = (request, response, exception) -> write(response, 401, "UNAUTHORIZED", "verified JWT is required");
@@ -64,7 +71,8 @@ public class CommerceSecurityConfiguration {
             JwtDecoder decoder = decoderProvider.getIfAvailable(() -> {
                 throw new IllegalStateException("commerce resource server is enabled without a JwtDecoder");
             });
-            http.oauth2ResourceServer(oauth -> oauth.jwt(jwt -> jwt.decoder(decoder))
+            http.oauth2ResourceServer(oauth -> oauth
+                    .jwt(jwt -> jwt.decoder(decoder).jwtAuthenticationConverter(jwtAuthenticationConverter))
                     .authenticationEntryPoint(entryPoint).accessDeniedHandler(denied));
         }
         return http.build();
