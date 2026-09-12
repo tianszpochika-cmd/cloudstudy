@@ -72,7 +72,7 @@ node scripts/audit/p1r-evidence-gate.mjs --json    # 期望 PASS，108 任务，
 
 ## 6. 已知缺口（实现者主动登记，非阻断）
 
-1. **移动端 H5 登录表单无法提交** —— 同一账号经 API 登录返回 200 + accessToken，页面渲染无错误、点击确实到达 `uni-button`，但 `submit()` 从未被调用；渲染后的 H5 不再有原生 `<form>`/`<button>`。**已用新旧版本源码对比确认这不是本次升级引入的回归**（新旧 uni-h5 的 form 提交判定逐字等价），属既有缺陷，归 `P1R-M4-001`。**不影响本任务验收结论**，但 `P1R-M4-001` 必须处理。
+1. ~~**移动端 H5 登录表单无法提交**~~ —— **已于 2026-09-13 修复并验证**（`apps/mobile/src/pages/login/login.vue`）。根因有两处，都是 uni-app 特有语义：按钮用了 HTML 的 `type="submit"`，而 uni 只从 `form-type` prop 解析提交；表单绑了 `@submit.prevent`，而 uni 的 submit 是以**组件事件**派发的、载荷里没有 `preventDefault`，Vue 对非 DOM 事件会**静默跳过**带该修饰符的处理函数。真实浏览器验证：现在会发出 `POST /api/v1/auth/login` 并跳转到 `#/pages/onboarding/onboarding`，0 页面错误。**已用新旧 uni-h5 源码对比确认两版的 form 提交判定逐字等价，因此不可归因于本任务**。详见 manifest 的 `knownGaps[3]`（已由 OPEN FINDING 改写为 RESOLVED）。
 2. 8 low / 7 moderate advisory 仍在（除 `adm-zip` 外均 dev-only；`adm-zip` 上游无修复版本，`patched_versions: "<0.0.0"`；策略仅对 high/critical 失败）。
 3. `preserveSymlinks: true` 使得 pinia 的运行时依赖需要窄范围 `publicHoistPattern`。
 4. `src/compat/vue.ts` 与 vue-router 入口 shim 仍然必需（新 uni-h5 仍引用这些 Vue 内部符号）。
