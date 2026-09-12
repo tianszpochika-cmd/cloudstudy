@@ -2,17 +2,17 @@
   "taskId": "P1R-M0-003",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "e9c4ebd7876b6cabb7d03168df7a3547932e2e0e",
+  "sourceCommit": "0b73b7c8ead637597794cfb7558c68e150464fc9",
   "artifactDigests": [
     {
       "path": "config/toolchain-baseline.json",
       "algorithm": "sha256",
-      "digest": "7f19197f7a66bdb4e1021859d1d12e10ee87741b77fa24ba200108591e1c6299"
+      "digest": "f0b5a53be94aec3a0b8cb474d9d7c2eda82d94dd60be557b8ca8a91adc96c48e"
     },
     {
       "path": "pom.xml",
       "algorithm": "sha256",
-      "digest": "5ce41e82da6cded2e95db59d90e6c173e3ab99330d2bc88985f22448e5fa9197"
+      "digest": "1c6d1325793456dcf95af0a38c51c209b2d8315ca2db0f2dfaed9349d43d2b52"
     },
     {
       "path": "scripts/dev/p1r-toolchain-check.mjs",
@@ -70,14 +70,14 @@
   "reviewer": "root-coordinator",
   "decision": "ACCEPTED",
   "provenance": {
-    "previousCurrentSourceCommit": "0f8b60ae4e83d0f31d891eed8d9383c007485130",
+    "previousCurrentSourceCommit": "e9c4ebd7876b6cabb7d03168df7a3547932e2e0e",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationTask": "P1R-M0-006",
+    "currentSourceRevalidationTask": "P1R-M2-004",
     "currentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-12T15:59:44.043Z",
-    "currentSourceRevalidationAuditedImplementationSource": "e9c4ebd7876b6cabb7d03168df7a3547932e2e0e",
-    "currentSourceRevalidationIntegrationCheckpoint": "e9c4ebd7876b6cabb7d03168df7a3547932e2e0e",
+    "currentSourceRevalidationFinishedAt": "2026-09-12T20:00:53.582Z",
+    "currentSourceRevalidationAuditedImplementationSource": "0b73b7c8ead637597794cfb7558c68e150464fc9",
+    "currentSourceRevalidationIntegrationCheckpoint": "0b73b7c8ead637597794cfb7558c68e150464fc9",
     "originalSourceCommit": "0f8b60ae4e83d0f31d891eed8d9383c007485130",
     "currentSourceRevalidationHistory": [
       {
@@ -89,7 +89,20 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-12T15:59:44.043Z",
         "details": "Current-source artifact digest rebase after P1R-M0-006 moved apps/mobile to the uni-app vite 8 compiler line (apps/mobile/package.json, pnpm-lock.yaml), migrated the previously ignored pnpm overrides into pnpm-workspace.yaml and added publicHoistPattern, removed the dead pnpm.overrides field from the root package.json, corrected the dependency gate so it decides on reported high/critical severities, and refreshed config/toolchain-baseline.json portsCanonicalSha256 plus the M0 devex evidence. Original provenance, review history and runtime status unchanged."
+      },
+      {
+        "taskId": "P1R-M0-003",
+        "sourceCommit": "0b73b7c8ead637597794cfb7558c68e150464fc9",
+        "auditedImplementationSource": "0b73b7c8ead637597794cfb7558c68e150464fc9",
+        "integrationCheckpoint": "0b73b7c8ead637597794cfb7558c68e150464fc9",
+        "reviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-12T20:00:53.582Z",
+        "details": "Current-source artifact digest rebase after audit-service, which P1R-M2-004 Batch D3 added to the local runtime, was brought into the Maven reactor and into config/toolchain-baseline.json v2Services. Both artifacts are recorded by this task because it froze the toolchain baseline and put the v2 modules into one reactor. Until now check-toolchain.mjs, p1r-toolchain-check.mjs and both dependency-audit loops skipped the module entirely. Original provenance, review history and runtime status unchanged."
       }
-    ]
+    ],
+    "previousCurrentSourceRevalidationTask": "P1R-M0-006",
+    "previousCurrentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
+    "previousCurrentSourceRevalidationFinishedAt": "2026-09-12T15:59:44.043Z"
   }
 }
