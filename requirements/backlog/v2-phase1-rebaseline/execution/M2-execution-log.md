@@ -202,6 +202,13 @@
 - 终审复跑：11 服务矩阵 `854/0/0/0` + 模板 23；learning 真实进程冒烟复现；evidence/docs/P1R 门禁 PASS。
 - `P1R-M2-004` 依赖满足但未认领；总体阶段仍 `D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED`。
 
+## 2026-09-12 M2-004 Batch A：audit-service 骨架与空库迁移
+
+- 新建 audit-service（18099/`audit_service`/`audit`）：append-only 审计表（receipt/fact/legal hold）、信封 JWKS + 默认拒绝安全链、`/internal/v1/audit/events` 摄取（权限+platform+幂等+fail-closed 503）、程序化 Flyway（外部预建 schema）。
+- 端口/文档/数据归属策略同步（13 existing / 1 planned；audit 升为 EXISTING_CANDIDATE_UNVERIFIED）。
+- 验证（JDK 25）：audit-service 21/0/0/0；data-ownership PASS；B17 PASS；全量 P1R 1421/1421。
+- 下一步：Batch B（commerce Flyway、空库/存量库与失败恢复证据）。
+
 ## 2026-09-04 IAM 账户/密码并发安全检查点
 
 - 源码：`9deb899`。认证改为锁前单次 cost-12 BCrypt、锁内 current principal/hash/status/counter 复核；credential epoch 在校验期间变化时统一 `INVALID_CREDENTIALS` 且零写入，避免旧在途请求污染或锁死刚重置的新凭据。

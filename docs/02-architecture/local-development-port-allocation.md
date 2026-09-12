@@ -29,7 +29,8 @@
 | Social Service | 18095 | Spring Boot | v2 自习室、租约、排行榜投影、预设互动和举报治理；独立 schema |
 | Commerce Service | 18096 | Spring Boot | v2 SKU、价格快照、订单、权益、支付 Gate、退款和对账；独立 schema |
 | Admin Ops Service | 18097 | Spring Boot | v2 脱敏投影、审批命令、客服工单和审计关联；不拥有领域事实 |
-| Analytics Service | 18098 | Spring Boot | v2 脱敏事件 allowlist、指标投影和重算；独立 schema |
+  | Analytics Service | 18098 | Spring Boot | v2 脱敏事件 allowlist、指标投影和重算；独立 schema |
+  | Audit Service | 18099 | Spring Boot | 平台 append-only 审计事实摄取与合规留存；独立 schema；仅服务边界验证 |
 | Core API | 18080 | Spring Boot | v1 兼容后端；Gateway 接入前的本地回滚入口 |
 | AI Orchestrator | 18081 | FastAPI | Phase 2，Phase 1 禁用 |
 | Content Worker | 18082 | Worker health | 可选 |
@@ -87,6 +88,7 @@
 - Social Service：http://127.0.0.1:18095/actuator/health（仅服务边界验证；客户端不得直连）
 - Commerce Service：http://127.0.0.1:18096/actuator/health（支付 Gate 默认关闭；仅服务边界验证；客户端不得直连）
 - Admin Ops Service：http://127.0.0.1:18097/actuator/health（默认拒绝；仅服务边界验证；客户端不得直连）
-- Analytics Service：http://127.0.0.1:18098/actuator/health（只消费 allowlist 脱敏事件；客户端不得直连）
+  - Analytics Service：http://127.0.0.1:18098/actuator/health（只消费 allowlist 脱敏事件；客户端不得直连）
+  - Audit Service：http://127.0.0.1:18099/actuator/health（append-only 审计摄取；客户端不得直连）
 - Core API：http://127.0.0.1:18080/api/v1
 - MinIO Console：http://127.0.0.1:19001

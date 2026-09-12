@@ -39,8 +39,9 @@ export const EXPECTED_EXISTING_MIGRATION_SERVICES = Object.freeze([
   'notification-service',
   'analytics-service',
   'admin-ops-service',
+  'audit-service',
 ]);
-export const EXPECTED_PLANNED_MIGRATION_SERVICES = Object.freeze(['audit-service', 'workflow-service']);
+export const EXPECTED_PLANNED_MIGRATION_SERVICES = Object.freeze(['workflow-service']);
 
 export const EXPECTED_B25_OWNERS = Object.freeze([
   { service: 'workflow-service', schema: 'workflow_service', redisNamespace: 'workflow' },
@@ -108,7 +109,7 @@ const EXPECTED_OWNER_GOVERNANCE = Object.freeze({
 
 const PROMOTED_STATES = new Set(['PASS', 'PASSED', 'ACCEPTED', 'VERIFIED', 'RUNTIME_VERIFIED', 'COMPLETE', 'CLOSED']);
 const EXPECTED_DOCUMENT_SHAPE_DIGESTS = Object.freeze({
-  policy: '46ac32963db1874d85f0f5afe575a96756aae57b7fc89f56ab66172367c54672',
+  policy: '3e39d6ff4a1a7b9e7a9301ba5eb4e6cc9ee3f54c1c6db16cdda99198e68b0366',
   b25: '507227b4bc819076810706f73f0a8fdacd24a390efaaf97d052eb9c6a56cd985',
   redis: '38c319c1f690c07860807ab5b65765570b3431b6be71816a340826d072d0f44b',
 });
@@ -471,8 +472,8 @@ function checkHeader(policy, errors) {
   add(errors, coverage?.totalServices === 15, 'coverage.totalServices must be 15');
   add(errors, coverage?.dataOwners === 14, 'coverage.dataOwners must be 14');
   add(errors, coverage?.gatewayWithoutBusinessSchema === 1, 'coverage.gatewayWithoutBusinessSchema must be 1');
-  add(errors, coverage?.existingMigrationCollections === 12, 'coverage.existingMigrationCollections must be 12');
-  add(errors, coverage?.plannedMigrationCollections === 2, 'coverage.plannedMigrationCollections must be 2');
+  add(errors, coverage?.existingMigrationCollections === 13, 'coverage.existingMigrationCollections must be 13');
+  add(errors, coverage?.plannedMigrationCollections === 1, 'coverage.plannedMigrationCollections must be 1');
 
   const claims = policy.prohibitedClaims;
   const requiredClaims = [
@@ -689,7 +690,7 @@ function checkMigrationInventory(policy, ownerByService, errors) {
   add(errors, Array.isArray(existing), 'migrationInventory.existingCollections must be an array');
   add(errors, Array.isArray(planned), 'migrationInventory.plannedCollections must be an array');
   if (Array.isArray(existing)) {
-    add(errors, existing.length === 12, 'migrationInventory must contain 12 existing candidate migration collections');
+    add(errors, existing.length === 13, 'migrationInventory must contain 13 existing candidate migration collections');
     const services = existing.map((item) => item?.service);
     assertExpectedSet(errors, services, EXPECTED_EXISTING_MIGRATION_SERVICES, 'existing migration services');
     const seen = new Set();
@@ -705,7 +706,7 @@ function checkMigrationInventory(policy, ownerByService, errors) {
     }
   }
   if (Array.isArray(planned)) {
-    add(errors, planned.length === 2, 'migrationInventory must contain 2 planned migration collections');
+    add(errors, planned.length === 1, 'migrationInventory must contain 1 planned migration collection');
     const services = planned.map((item) => item?.service);
     assertExpectedSet(errors, services, EXPECTED_PLANNED_MIGRATION_SERVICES, 'planned migration services');
     const seen = new Set();

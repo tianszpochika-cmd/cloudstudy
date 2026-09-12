@@ -42,8 +42,8 @@ test('canonical data ownership policy passes static audit and retains D2 runtime
     totalServices: 15,
     dataOwners: 14,
     gatewayWithoutBusinessSchema: 1,
-    existingMigrationCollections: 12,
-    plannedMigrationCollections: 2,
+    existingMigrationCollections: 13,
+    plannedMigrationCollections: 1,
     b25OwnerCount: 8,
     redisEntryCount: 29,
     redisCoreApiEntryCount: 28,
@@ -131,11 +131,11 @@ test('all owner schema, Flyway and credential claims remain candidate/unverified
   }, /schema\.status must be EXISTING_CANDIDATE_UNVERIFIED|databaseCredential\.status must be P1R-M2-004_REQUIRED|migrationOwner must be learner-service|promote/);
 });
 
-test('migration inventory freezes twelve existing candidates and two planned audit/workflow collections', () => {
+test('migration inventory freezes thirteen existing candidates and one planned workflow collection', () => {
   assertMutationFails((changed) => {
     changed.policy.migrationInventory.existingCollections.pop();
     changed.policy.migrationInventory.plannedCollections[0].status = 'READY';
-  }, /12 existing candidate|planned migration must remain PLANNED_M2_004|planned migration services/);
+  }, /13 existing candidate|planned migration must remain PLANNED_M2_004|planned migration services/);
 });
 
 test('cross-service writes, joins, shared ORM entities and legacy writes remain prohibited', () => {

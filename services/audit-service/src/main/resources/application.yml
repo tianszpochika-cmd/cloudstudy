@@ -1,0 +1,58 @@
+spring:
+  application:
+    name: audit-service
+  lifecycle:
+    timeout-per-shutdown-phase: ${AUDIT_SHUTDOWN_TIMEOUT:20s}
+
+server:
+  address: ${AUDIT_SERVICE_SERVER_ADDRESS:127.0.0.1}
+  port: ${AUDIT_SERVICE_PORT:18099}
+  shutdown: graceful
+
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: never
+      group:
+        liveness:
+          include: livenessState
+        readiness:
+          include: readinessState
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+  tracing:
+    propagation:
+      type: W3C
+    sampling:
+      probability: ${OTEL_TRACING_SAMPLING_PROBABILITY:0.1}
+    export:
+      enabled: ${OTEL_TRACING_ENABLED:false}
+
+service:
+  name: audit-service
+  owner: audit-service
+  schema: ${AUDIT_SCHEMA:audit_service}
+  redis-namespace: audit
+
+audit:
+  persistence:
+    enabled: ${AUDIT_PERSISTENCE_ENABLED:false}
+    jdbc-url: ${AUDIT_JDBC_URL:}
+    username: ${AUDIT_JDBC_USERNAME:}
+    password: ${AUDIT_JDBC_PASSWORD:}
+    schema: ${AUDIT_SCHEMA:audit_service}
+  security:
+    resource-server-enabled: ${AUDIT_RESOURCE_SERVER_ENABLED:true}
+    issuer-uri: ${AUDIT_SECURITY_ISSUER_URI:${IAM_JWT_ISSUER:http://127.0.0.1:18087}}
+    jwk-set-uri: ${AUDIT_SECURITY_JWK_SET_URI:${IAM_JWT_JWKS_URI:http://127.0.0.1:18087/api/v1/auth/jwks}}
+    audience: ${AUDIT_SECURITY_AUDIENCE:${IAM_JWT_AUDIENCE:yuxuexing-api}}
