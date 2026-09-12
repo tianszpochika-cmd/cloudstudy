@@ -41,8 +41,23 @@ function query(sql, { user = adminUser, password = adminPassword, database } = {
   });
 }
 
-function migrationTables(migration) {
-  return [...migration.matchAll(/CREATE\s+TABLE(?:\s+IF\s+NOT\s+EXISTS)?\s+`?([a-z][a-z0-9_]*)`?/gi)].map((match) => match[1]);
+function migrationFiles(owner) {
+  const directory = path.join(root, path.dirname(owner.migrationPath));
+  if (!fs.existsSync(directory)) throw new Error(`${owner.id} migration directory is missing: ${path.dirname(owner.migrationPath)}`);
+  const files = fs.readdirSync(directory).filter((name) => /^V\d+__.+\.sql$/i.test(name));
+  if (files.length === 0) throw new Error(`${owner.id} has no versioned migrations in ${path.dirname(owner.migrationPath)}`);
+  return files
+    .map((name) => ({ name, version: String(Number(name.match(/^V(\d+)__/i)[1])), sql: fs.readFileSync(path.join(directory, name), 'utf8') }))
+    .sort((left, right) => Number(left.version) - Number(right.version));
+}
+
+function expectedTablesFor(files) {
+  const tables = new Set();
+  for (const file of files) {
+    for (const match of file.sql.matchAll(/CREATE\s+TABLE(?:\s+IF\s+NOT\s+EXISTS)?\s+`?([a-z][a-z0-9_]*)`?/gi)) tables.add(match[1]);
+    for (const match of file.sql.matchAll(/DROP\s+TABLE(?:\s+IF\s+EXISTS)?\s+`?([a-z][a-z0-9_]*)`?/gi)) tables.delete(match[1]);
+  }
+  return [...tables];
 }
 
 function existingTables(schema) {
@@ -50,6 +65,25 @@ function existingTables(schema) {
     `SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA = ${quote(schema)} AND TABLE_TYPE = 'BASE TABLE' ORDER BY TABLE_NAME;`
   );
   return output ? output.split(/\r?\n/).filter(Boolean) : [];
+}
+
+function migrationHistory(schema, files) {
+  if (!existingTables(schema).includes('flyway_schema_history')) {
+    return { state: 'absent', appliedVersions: [], missingVersions: [], failedVersions: [] };
+  }
+  const output = query(`SELECT version, success FROM ${identifier(schema)}.flyway_schema_history ORDER BY installed_rank;`);
+  const rows = (output ? output.split(/\r?\n/).filter(Boolean) : [])
+    .map((line) => line.split('\t'))
+    .filter(([version]) => version && version !== 'NULL');
+  const appliedVersions = rows.filter(([, success]) => String(success).trim() === '1').map(([version]) => String(version));
+  const failedVersions = rows.filter(([, success]) => String(success).trim() !== '1').map(([version]) => String(version));
+  const missingVersions = files.map((file) => file.version).filter((version) => !appliedVersions.includes(version));
+  return {
+    state: missingVersions.length === 0 && failedVersions.length === 0 ? 'verified' : 'mismatch',
+    appliedVersions,
+    missingVersions,
+    failedVersions
+  };
 }
 
 function provisionOwner(owner) {
@@ -62,12 +96,14 @@ function provisionOwner(owner) {
     GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, ALTER, INDEX, REFERENCES, EXECUTE ON ${schema}.* TO ${user}@'%';
   `);
 
-  const migration = fs.readFileSync(path.join(root, owner.migrationPath), 'utf8');
-  const expectedTables = migrationTables(migration);
+  const files = migrationFiles(owner);
+  const expectedTables = expectedTablesFor(files);
   const beforeTables = existingTables(owner.schema);
   let migrationState = 'applied-now';
   if (beforeTables.length === 0) {
-    query(migration, { user: owner.dbCredential, password: ownerPassword, database: owner.schema });
+    for (const file of files) {
+      query(file.sql, { user: owner.dbCredential, password: ownerPassword, database: owner.schema });
+    }
   } else if (expectedTables.every((table) => beforeTables.includes(table))) {
     migrationState = 'already-applied-verified';
   } else {
@@ -76,10 +112,21 @@ function provisionOwner(owner) {
   }
 
   const tableCount = existingTables(owner.schema).length;
+  const history = migrationHistory(owner.schema, files);
   const accessCheck = query(
     `SELECT COUNT(*) FROM mysql.user WHERE User = ${quote(owner.dbCredential)} AND Host = '%';`
   );
-  return { id: owner.id, schema: owner.schema, credential: owner.dbCredential, tableCount, expectedTableCount: expectedTables.length, migrationState, access: Number(accessCheck) === 1 };
+  return {
+    id: owner.id,
+    schema: owner.schema,
+    credential: owner.dbCredential,
+    migrationFiles: files.map((file) => file.name),
+    tableCount,
+    expectedTableCount: expectedTables.length,
+    migrationState,
+    history,
+    access: Number(accessCheck) === 1
+  };
 }
 
 if (!apply) {

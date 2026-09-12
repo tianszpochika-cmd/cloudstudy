@@ -222,6 +222,13 @@
 - runner env 审计：commerce 为唯一死 Flyway 缺口（已修复），其余服务均由程序化 Flyway 消费对应 env/属性。
 - 剩余：reconcile-owner-schemas 脚本全量迁移与历史校验；随后 Batch C。
 
+## 2026-09-12 M2-004 Batch B（续 2）：reconcile 脚本升级与共存验证
+
+- 脚本改为目录级全量迁移（版本排序）+ 创建/删除表净集校验 + flyway_schema_history 状态输出，旧字段兼容 b28 probe。
+- 标准栈证据：首跑 11/11 applied-now（表数=期望）、重跑 11/11 already-applied-verified；history absent 属脚本供给路径预期。
+- 共存矩阵：commerce/analytics baselineVersion=1 不重放；其余 baselineVersion=0 但 V1 均 IF NOT EXISTS，幂等无副作用；IAM 不在 b17 列表。
+- 下一步：Batch C（tenant guard 真实 MySQL 阻断矩阵）。
+
 ## 2026-09-04 IAM 账户/密码并发安全检查点
 
 - 源码：`9deb899`。认证改为锁前单次 cost-12 BCrypt、锁内 current principal/hash/status/counter 复核；credential epoch 在校验期间变化时统一 `INVALID_CREDENTIALS` 且零写入，避免旧在途请求污染或锁死刚重置的新凭据。

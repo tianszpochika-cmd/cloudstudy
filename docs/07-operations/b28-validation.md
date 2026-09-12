@@ -16,7 +16,7 @@ B28 已于 2026-08-24 完成。运行证据为 `evidence/b28/b28-runtime-2026082
 ## 代码变更
 
 - `scripts/database/lib/mysql-client.mjs`：主机 MySQL 客户端不存在时自动使用 Docker 内客户端，不改变数据库语义；
-- `scripts/database/reconcile-owner-schemas.mjs`：创建本地 owner schema/账号、执行迁移，并对已完整落地 schema 做校验跳过；部分迁移会 fail-closed；
+- `scripts/database/reconcile-owner-schemas.mjs`：创建本地 owner schema/账号、按目录顺序执行全部 `V*.sql` 迁移，并对已完整落地 schema 做校验跳过；部分迁移会 fail-closed；P1R-M2-004 Batch B 起同时输出每个 owner 的迁移文件清单与 `flyway_schema_history` 状态（`absent`/`verified`/`mismatch`）；
 - `scripts/runtime/b28-runtime-probe.mjs`：串联工具链、基础设施、迁移、owner 对账、Redis 重建和重启读回，生成运行证据；
 - `database/mysql/seeds/dev/V0023__b25-phase1.sql`：固定本地连接的 utf8mb4 collation，修复 MySQL 8 默认 collation 与测试数据变量比较冲突。
 
