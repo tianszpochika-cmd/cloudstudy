@@ -174,6 +174,14 @@ function runtimeEnvironment(service, port) {
     environment.COMMERCE_SECURITY_JWK_SET_URI = jwtJwks;
     environment.COMMERCE_SECURITY_AUDIENCE = jwtAudience;
   }
+  if (service.id === 'content-service') {
+    // The outbox relay is off by default so an unconfigured broker cannot silently change delivery
+    // semantics; the local-real stack is the integration environment, so it turns it on against the
+    // registered loopback broker. The application never creates a topic.
+    environment.CONTENT_EVENT_RELAY_ENABLED = process.env.CONTENT_EVENT_RELAY_ENABLED ?? 'true';
+    environment.CONTENT_KAFKA_BOOTSTRAP_SERVERS = process.env.CONTENT_KAFKA_BOOTSTRAP_SERVERS
+      ?? `${process.env.KAFKA_HOST ?? '127.0.0.1'}:${process.env.KAFKA_PORT ?? '19092'}`;
+  }
   if (service.id === 'audit-service') {
     // audit-service is not in the owner manifest, so its persistence binding has to be supplied
     // here. It has no runtime Flyway: the audit_service schema and the DML-only svc_audit
