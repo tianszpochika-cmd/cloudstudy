@@ -441,6 +441,18 @@
       "actor": "root-coordinator",
       "reason": "The first independent final review returned REWORK (P1-1 fail-closed PDP missing, P1-2 per-service JWT negatives missing, P1-3 phase/consent/rights default deny not enforced). Rework closed every P1/P2/P3 item: decoder-level JWT negatives across 11 services and service-template, fail-closed dynamic policy PEP with activation guard rolled out to all domain services, configurable PEP timings wired, tenant strictness unified, explicit decoder wiring, oversized JWKS tests and rebuilt evidence. The resumed independent reviewer accepted with P0/P1/P2=0/0/0 and three non-blocking P3 items. Final matrix 854/0/0/0 across 11 services plus service-template 23; canonical manifest binds 81 artifacts at sourceCommit cacaf67. Overall phase stays D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED and P1R-M2-004 unlocks but must be claimed through the P1R flow.",
       "evidencePath": "evidence/p1r/m2/P1R-M2-003/manifest.json"
+    },
+    {
+      "taskId": "P1R-M2-004",
+      "path": [
+        "PLANNED",
+        "READY",
+        "IN_PROGRESS"
+      ],
+      "recordedAt": "2026-09-12T14:00:00+08:00",
+      "actor": "root-coordinator",
+      "reason": "Dependency P1R-M2-003 is accepted. A read-only survey found the data-ownership contract surface is complete and statically checked, but runtime verification is absent: audit-service does not exist, commerce has no Flyway dependency, most spring.flyway properties are dead under Boot 4, tenant guards have real DB-level bypass surfaces (media asset PK, content cross-tenant upsert, assessment unbounded load, gamification reads, notification unknown-tenant default) and credentials/minimal grants are not runtime-verified. Implementation batches A-D are recorded in execution/P1R-M2-004.md; runtime evidence remains NOT_RUNTIME_VERIFIED.",
+      "evidencePath": "requirements/backlog/v2-phase1-rebaseline/execution/P1R-M2-004.md"
     }
   ]
 }

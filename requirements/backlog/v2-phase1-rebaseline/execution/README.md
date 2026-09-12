@@ -75,5 +75,6 @@
 | `P1R-M2-001` | `P1R-M2-001.md` | `ACCEPTED` |
 | `P1R-M2-002` | `P1R-M2-002.md` | `ACCEPTED` |
 | `P1R-M2-003` | `P1R-M2-003.md` | `ACCEPTED` |
+| `P1R-M2-004` | `P1R-M2-004.md` | `IN_PROGRESS` |
 
-M2-001/M2-002/M2-003 均已取得当前提交真实运行证据并经独立只读终审 `ACCEPT`（canonical manifest 分别为 `evidence/p1r/m2/P1R-M2-001/manifest.json`、`evidence/p1r/m2/P1R-M2-002/manifest.json`、`evidence/p1r/m2/P1R-M2-003/manifest.json`）；`P1R-M2-004` 依赖已满足但尚未认领/启动，须按 P1R 流程进入。进程内 Java 测试、静态配置与本地可启动性不能代替真实 Redis/MySQL/JWKS/upstream/浏览器/集群网络证据；durable audit、NetworkPolicy、平台关联终验与 staging 复验分别归 M2-006/008/010 与 M8-013，未实证项继续标记 `NOT_RUNTIME_VERIFIED`。
+M2-001/M2-002/M2-003 均已取得当前提交真实运行证据并经独立只读终审 `ACCEPT`（canonical manifest 分别为 `evidence/p1r/m2/P1R-M2-001/manifest.json`、`evidence/p1r/m2/P1R-M2-002/manifest.json`、`evidence/p1r/m2/P1R-M2-003/manifest.json`）；`P1R-M2-004` 已于 2026-09-12 认领，按执行记录中的 Batch A–D 实施 schema/Flyway/凭据/tenant guard。M2-005 及后续依赖 M2-004，不提前实现。进程内 Java 测试、静态配置与本地可启动性不能代替真实 Redis/MySQL/JWKS/upstream/浏览器/集群网络证据；durable audit、NetworkPolicy、平台关联终验与 staging 复验分别归 M2-006/008/010 与 M8-013，未实证项继续标记 `NOT_RUNTIME_VERIFIED`。
