@@ -1,0 +1,92 @@
+{
+  "schema": "platform.event-runtime.harness.v1",
+  "taskId": "P1R-M2-005",
+  "batch": "E7",
+  "mode": "runtime",
+  "sourceCommit": "9c9775122d1f9396ac96f9c9fcdc5095c158fcda",
+  "capturedAt": "2026-09-12T21:44:34.018Z",
+  "topic": "platform.iam.v1",
+  "consumerGroup": "cg.content-from-iam.v1",
+  "dlqTopic": "platform.events.dlq.v1",
+  "phases": [
+    {
+      "id": "dedupe",
+      "passed": true,
+      "claims": {
+        "producer-accepted-all-three": true,
+        "three-deliveries-produced-one-receipt": true,
+        "the-effect-applied-exactly-once": true
+      },
+      "observed": {
+        "deliveries": 3,
+        "receiptRows": 1,
+        "appliedCount": 1
+      }
+    },
+    {
+      "id": "ordering",
+      "passed": true,
+      "claims": {
+        "producer-accepted-all-three": true,
+        "all-three-consumed": true,
+        "one-aggregate-stays-in-one-partition": true,
+        "consumed-in-publish-order": true
+      },
+      "observed": {
+        "aggregateId": "p1r-m2-005-order-d128fdb4",
+        "partitionOffsets": [
+          {
+            "partition": 0,
+            "offset": 7
+          },
+          {
+            "partition": 1,
+            "offset": 1
+          },
+          {
+            "partition": 2,
+            "offset": 8
+          },
+          {
+            "partition": 3,
+            "offset": 0
+          },
+          {
+            "partition": 4,
+            "offset": 3
+          },
+          {
+            "partition": 5,
+            "offset": 3
+          }
+        ],
+        "consumedOrder": [
+          0,
+          1,
+          2
+        ]
+      }
+    },
+    {
+      "id": "dlq",
+      "passed": true,
+      "claims": {
+        "producer-accepted-the-record": true,
+        "an-unreadable-envelope-reached-the-dead-letter-topic": true
+      },
+      "observed": {
+        "dlqLogEndOffsetBefore": 17,
+        "dlqLogEndOffsetAfter": 18
+      }
+    }
+  ],
+  "passed": true,
+  "notVerifiedHere": [
+    "broker outage and recovery: the operator-driven run in batch E4 covered it, and scripting the container stop/start is not part of this harness yet",
+    "publisher-side replay of a dead-lettered event"
+  ],
+  "sensitiveMaterial": {
+    "persisted": false,
+    "emitted": false
+  }
+}
