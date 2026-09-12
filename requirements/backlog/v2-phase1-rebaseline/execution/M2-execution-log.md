@@ -209,6 +209,13 @@
 - 验证（JDK 25）：audit-service 21/0/0/0；data-ownership PASS；B17 PASS；全量 P1R 1421/1421。
 - 下一步：Batch B（commerce Flyway、空库/存量库与失败恢复证据）。
 
+## 2026-09-12 M2-004 Batch B（进行中）：commerce Flyway 与真实迁移证据
+
+- commerce 补 flyway-core/flyway-mysql + `CommerceFlywayConfiguration`（local-real + spring.flyway.enabled），`COMMERCE_FLYWAY_ENABLED` 死配置被真正消费；baselineOnMigrate/baselineVersion=1 兼容预建 schema。
+- opt-in `CommerceFlywayMigrationTest`（真实 MySQL 隔离库）：空库迁移、存量幂等、坏迁移 success=0、repair 恢复全部通过。
+- 验证（JDK 25）：commerce 91/0/0（1 跳过）；opt-in 1/1。
+- 剩余：其余 owner 迁移运行证据、reconcile 脚本全量升级、run-v2-services 死 env 复核。
+
 ## 2026-09-04 IAM 账户/密码并发安全检查点
 
 - 源码：`9deb899`。认证改为锁前单次 cost-12 BCrypt、锁内 current principal/hash/status/counter 复核；credential epoch 在校验期间变化时统一 `INVALID_CREDENTIALS` 且零写入，避免旧在途请求污染或锁死刚重置的新凭据。
