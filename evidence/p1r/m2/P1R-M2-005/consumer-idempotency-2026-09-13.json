@@ -1,0 +1,44 @@
+{
+  "schema": "platform.consumer.idempotency.evidence.v1",
+  "taskId": "P1R-M2-005",
+  "batch": "E5",
+  "sourceCommit": "5e081c7d7a00ddd65aa6b0d5d65b1c82c8444ddc",
+  "capturedAt": "2026-09-12T21:01:56.147Z",
+  "contract": "config/b26-event-runtime.json#consumerReliability.deduplication",
+  "uniqueKey": [
+    "consumerGroup",
+    "eventId"
+  ],
+  "probe": {
+    "consumerGroup": "cg.content-iam-consumer.p1r-m2-005-probe",
+    "eventName": "p1r.m2-005.dedupe.probe.v1",
+    "eventId": "5fd11e3b-2c67-4f15-a43e-661291b1bb79"
+  },
+  "observed": {
+    "firstDeliveryCommitted": true,
+    "appliedCountAfterFirst": 1,
+    "secondDeliveryRejected": true,
+    "secondDeliveryError": "ERROR 1062 (23000) at line 1: Duplicate entry 'cg.content-iam-consumer.p1r-m2-005-probe-5fd11e3b-2c67-4f15-a43e' for key 'content_event_receipt.PRIMARY'",
+    "appliedCountAfterSecond": 1,
+    "thirdDeliveryCommittingRejected": true,
+    "appliedCountAfterThird": 1,
+    "receiptRows": 1,
+    "probeResidue": 0
+  },
+  "claims": {
+    "effect-and-dedupe-are-atomic": true,
+    "duplicate-delivery-is-rejected-by-the-primary-key": true,
+    "duplicate-delivery-does-not-apply-the-effect": true,
+    "committing-a-redelivery-also-cannot-apply-the-effect-twice": true,
+    "exactly-one-receipt-per-event-per-group": true,
+    "probe-rows-removed": true
+  },
+  "notes": {
+    "statements-executed": "the same two statements JdbcContentInboundEventApplier issues inside one @Transactional method",
+    "not-covered-here": "the Kafka listener that feeds this applier, DLQ consumption and out-of-order handling"
+  },
+  "sensitiveMaterial": {
+    "persisted": false,
+    "emitted": false
+  }
+}
