@@ -87,6 +87,18 @@ content:
       max-attempts: ${CONTENT_EVENT_RELAY_MAX_ATTEMPTS:5}
       base-delay: ${CONTENT_EVENT_RELAY_BASE_DELAY:1s}
       max-delay: ${CONTENT_EVENT_RELAY_MAX_DELAY:60s}
+    consumer:
+      # Off by default, like the relay: a consumer that starts against an unconfigured broker must be
+      # an explicit decision. The group id comes from the contract's topic table.
+      enabled: ${CONTENT_EVENT_CONSUMER_ENABLED:false}
+      group-id: ${CONTENT_EVENT_CONSUMER_GROUP_ID:cg.content-from-iam.v1}
+      topic: ${CONTENT_EVENT_CONSUMER_TOPIC:platform.iam.v1}
+      dlq-topic: ${CONTENT_EVENT_CONSUMER_DLQ_TOPIC:platform.events.dlq.v1}
+      bootstrap-servers: ${CONTENT_KAFKA_BOOTSTRAP_SERVERS:127.0.0.1:19092}
+      max-attempts: ${CONTENT_EVENT_CONSUMER_MAX_ATTEMPTS:5}
+      base-delay: ${CONTENT_EVENT_CONSUMER_BASE_DELAY:1s}
+      max-delay: ${CONTENT_EVENT_CONSUMER_MAX_DELAY:60s}
+      poll-timeout: ${CONTENT_EVENT_CONSUMER_POLL_TIMEOUT:3s}
 
 security:
   resource-server:
