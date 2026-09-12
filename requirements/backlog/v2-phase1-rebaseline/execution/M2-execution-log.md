@@ -160,6 +160,12 @@
 - 已知边界：PDP 事实源、端点级 @PreAuthorize 矩阵、schema/Flyway/跨租户守卫（M2-004）。
 - 下一步：最终独立只读复审 → manifest → ACCEPTED。
 
+## 2026-09-11 M2-003 Batch 7：终审判定 REWORK 与返工计划
+
+- 独立只读终审（`ses_f6c3e93edffeynLy2zpSvtGdTm`）判定 `REWORK`（P1=3/P2=1/P3=4）：基线可复现（700/0/0/0）、信封解码器 12 份同源，但 PDP fail-closed 未交付、每服务 JWT 负例缺失、phase/consent/rights 入口未默认拒绝；另死配置与 P3 若干。
+- 返工批次：7a 每服务 JWT 负例（本地 JWKS 夹具）→ 7b fail-closed PDP/策略缓存与入口守卫 → 7c 死配置/tenant 严格性/显式接线/超限单测/证据元数据 → 7d 重跑矩阵与终审。
+- 任务保持 `IN_PROGRESS / NOT_RUNTIME_VERIFIED`。
+
 ## 2026-09-04 IAM 账户/密码并发安全检查点
 
 - 源码：`9deb899`。认证改为锁前单次 cost-12 BCrypt、锁内 current principal/hash/status/counter 复核；credential epoch 在校验期间变化时统一 `INVALID_CREDENTIALS` 且零写入，避免旧在途请求污染或锁死刚重置的新凭据。
