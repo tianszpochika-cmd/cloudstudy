@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1R-M2-003-EVIDENCE-20260911] `P1R-M2-003` Batch 6：归档验收证据 `evidence/p1r/m2/P1R-M2-003/runtime-evidence-2026-09-11.json`（`sourceCommit=5a7a67e`）。**最终测试矩阵**（11 服务 + service-template）：合计 **700 / 0 failures / 0 errors / 0 skipped**（learning 125、assessment 41、content 117、learner 34、media 55、social 52、admin-ops 48、notification 80、commerce 76、analytics 33、gamification 39）+ 模板 16。**真实进程冒烟**（IAM local + learning）：register 201；缺/篡改 token 401、伪造头 403、合法令牌经信封 JWKS 校验通过、合法令牌 + 伪造租户头 403。记录 6 项真实修复（含关键的信封 JWKS 兼容）与已知边界（phase/consent/rights PDP 事实源、端点级权限矩阵、schema/Flyway 归 M2-004）。下一步：最终独立只读复审 → canonical manifest → `ACCEPTED`。
+
 - [P1R-M2-003-ENVELOPED-JWKS-ROLLOUT3-20260911] `P1R-M2-003` Batch 5 推广③（完成）：信封感知 JWKS 解码器推广到 `analytics-service`、`gamification-service`（新建 security 包）、`service-template`（各 +4 项单测）。**验证**（JDK 25）：analytics **33/0/0/0**、gamification **39/0/0/0**、service-template **16/0/0/0**。至此 **11 个领域服务 + service-template 全部对齐信封 JWKS**，真实 IAM 令牌可被服务侧校验；服务测试基线合计 700。下一步：跨服务运行证据复核 → 最终独立复审 → canonical manifest → `ACCEPTED`。
 
 - [P1R-M2-003-ENVELOPED-JWKS-ROLLOUT2-20260911] `P1R-M2-003` Batch 5 推广②：信封感知 JWKS 解码器推广到 `social-service`、`admin-ops-service`、`notification-service`、`commerce-service`（各复制 `IamEnvelopedJwkSource`，notification/commerce 跨包补充 import，各 +4 项单测）。**验证**（JDK 25）：social **52/0/0/0**、admin-ops **48/0/0/0**、notification **80/0/0/0**、commerce **76/0/0/0**。剩余推广：analytics/gamification/service-template（③）。

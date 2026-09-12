@@ -154,6 +154,12 @@
 - 验证（JDK 25）：analytics 33、gamification 39、service-template 16，全通过。
 - 11 领域服务 + 模板信封 JWKS 对齐完成；下一步跨服务运行证据 + 最终复审 + manifest。
 
+## 2026-09-11 M2-003 Batch 6：验收证据归档
+
+- 证据：`evidence/p1r/m2/P1R-M2-003/runtime-evidence-2026-09-11.json`（sourceCommit `5a7a67e`）；11 服务矩阵合计 700（0/0/0）+ 模板 16；learning 真实进程冒烟（401/401/403/合法令牌通过 JWKS/伪造租户头 403）。
+- 已知边界：PDP 事实源、端点级 @PreAuthorize 矩阵、schema/Flyway/跨租户守卫（M2-004）。
+- 下一步：最终独立只读复审 → manifest → ACCEPTED。
+
 ## 2026-09-04 IAM 账户/密码并发安全检查点
 
 - 源码：`9deb899`。认证改为锁前单次 cost-12 BCrypt、锁内 current principal/hash/status/counter 复核；credential epoch 在校验期间变化时统一 `INVALID_CREDENTIALS` 且零写入，避免旧在途请求污染或锁死刚重置的新凭据。
