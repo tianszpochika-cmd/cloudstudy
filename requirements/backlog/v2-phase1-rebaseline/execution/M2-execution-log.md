@@ -283,6 +283,12 @@
 - 回归：learner 49、content 133、learning 141、assessment 57、media 71 全绿。
 - 下一步：D2 Redis namespace/ACL 与真实缓存路径。
 
+## 2026-09-12 M2-004 Batch D（进行中）：D2a Redis ACL 供给与持久化
+
+- 新增 reconcile-redis-acl：15 命名空间 svc_* ACL 用户（最小命令集 + `<ns>:*` 键模式），ACL DRYRUN 自身允许/跨命名空间拒绝，ACL SAVE 落盘；compose 增加 --aclfile，重启后认证成功。
+- b32 探针改用 svc_learning 真实 ACL；标准栈暂无 SRS 源行，重建运行证据留 D4。
+- 下一步：D2b Gateway 真实限流路径 ACL 验证 / D3 运行时编排。
+
 ## 2026-09-04 IAM 账户/密码并发安全检查点
 
 - 源码：`9deb899`。认证改为锁前单次 cost-12 BCrypt、锁内 current principal/hash/status/counter 复核；credential epoch 在校验期间变化时统一 `INVALID_CREDENTIALS` 且零写入，避免旧在途请求污染或锁死刚重置的新凭据。

@@ -157,6 +157,7 @@
     "infra:check": "node scripts/check-local-infra.mjs --static-only",
     "db:validate": "node scripts/database/validate-migrations.mjs && node scripts/database/validate-fixtures.mjs",
     "redis:validate": "node scripts/database/validate-redis-keyspace.mjs",
+    "redis:acl": "node scripts/database/reconcile-redis-acl.mjs",
     "config:check": "node scripts/check-runtime-config.mjs",
     "dod:check": "node scripts/check-dod.mjs --json",
     "docs:audit": "node scripts/audit/doc-audit.mjs",

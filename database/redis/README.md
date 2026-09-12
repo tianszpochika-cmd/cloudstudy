@@ -72,3 +72,11 @@ node scripts/database/validate-redis-keyspace.mjs
 以上是 D2 设计约束，不能替代 Redis 7 的 ACL、丢失/重启读回、投影重建或安全降级的运行演练。它们与 owner grant、空库/存量库迁移、`TenantScope` 跨租户拒绝和 runtime rollback/compensation 一并由 `P1R-M2-004` 保持 OPEN 并验收。
 
 合成样例位于 [`tests/fixtures/redis-keyspace.fixture.json`](../../tests/fixtures/redis-keyspace.fixture.json)，仅包含测试 ID、哈希和演示版本，不包含真实手机号、邮箱、token、API key 或音频。
+
+## P1R-M2-004 Batch D2：ACL 供给与验证
+
+- `pnpm redis:acl`（`scripts/database/reconcile-redis-acl.mjs`）为 15 个命名空间创建/重建 Redis 7 ACL 用户 `svc_<name>`：密钥模式与命名空间一致（Gateway 为 `englishflow:gateway:*`，其余为 `<namespace>:*`），命令白名单为连接类 + 缓存/锁/去重/限流最小集合，`resetchannels`，默认用户保持不变。
+- 口令来自 `<SERVICE_ID_UPPER>_REDIS_PASSWORD`（独立口令）或 `REDIS_OWNER_PASSWORD`（本地回退）；脚本不输出口令，`ACL SAVE` 落盘为 SHA256 哈希（`/data/users.acl`，compose 已启用 `--aclfile`），Redis 重启后 ACL 依然生效。
+- 校验：对每个 ACL 用户执行 `ACL DRYRUN` 自身命名空间允许、跨命名空间拒绝，全部通过后输出 JSON 汇总。
+- 标准栈证据（2026-09-12）：15/15 用户 `allowedDryRun=true`、`crossNamespaceDenied=true`；重启后 `svc_learning` 认证 PING 成功。
+- `b32:redis-runtime` 改为以 `svc_learning` ACL 用户写入 `learning:srs:projection:*`，输出 `authenticatedUser`/`aclEnforced`；重建/重启恢复运行证据在 Batch D4 汇总。

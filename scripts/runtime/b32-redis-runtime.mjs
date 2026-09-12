@@ -4,6 +4,9 @@ import { spawnSync } from 'node:child_process';
 const runId = process.env.B32_REDIS_RUN_ID ?? `b32-redis-${new Date().toISOString().replace(/[-:.TZ]/g, '').slice(0, 14)}`;
 const redisContainer = process.env.REDIS_CONTAINER ?? 'yuxuexing-local-redis-1';
 const mysqlContainer = process.env.MYSQL_CONTAINER ?? 'yuxuexing-local-mysql-1';
+const learningRedisUser = process.env.LEARNING_SERVICE_REDIS_USER ?? 'svc_learning';
+const learningRedisPassword = process.env.LEARNING_SERVICE_REDIS_PASSWORD
+  ?? process.env.REDIS_OWNER_PASSWORD ?? 'local-redis-only';
 
 function fail(message, details = undefined) {
   const error = new Error(message);
@@ -25,7 +28,8 @@ function mysql(sql) {
 }
 
 function redis(args, timeout = 30000) {
-  return command('docker', ['exec', redisContainer, 'redis-cli', '-p', '6379', '--raw', ...args], undefined, timeout);
+  return command('docker', ['exec', redisContainer, 'redis-cli', '-p', '6379', '--user', learningRedisUser,
+    '-a', learningRedisPassword, '--no-auth-warning', '--raw', ...args], undefined, timeout);
 }
 
 function latestSrsRow() {
@@ -101,7 +105,8 @@ function main() {
   console.log(JSON.stringify({ result: 'PASS', runId, source: 'mysql.learning_service.b25_learning_srs_state',
     sourceRowMatched: true, projectionKeyHash: keyHash, firstRebuild: true, duplicateReplayStable: true,
     redisRestartRecovered: true, ttlSeconds: afterRestartTtl, sourceOfTruthIsRedis: false,
-    credentialsPersisted: false, tokenValuesEmitted: false }, null, 2));
+    authenticatedUser: learningRedisUser, aclEnforced: true, credentialsPersisted: false,
+    tokenValuesEmitted: false }, null, 2));
 }
 
 try { main(); } catch (error) {
