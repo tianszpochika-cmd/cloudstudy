@@ -12,7 +12,11 @@ test('mobile uses one Gateway base URL seam and no insecure random fallback', as
   const auth = await read('apps/mobile/src/auth/gateway-auth.ts')
   assert.match(gateway, /VITE_GATEWAY_BASE_URL/)
   assert.match(client, /getGatewayBaseUrl\(\)/)
-  assert.match(auth, /getGatewayBaseUrl\(\)/)
+  // The seam belongs to the client alone. Asserting it in gateway-auth as well would push a second
+  // base-URL read into a file that must reach the Gateway only through the client, so this asserts
+  // the stronger property instead: gateway-auth cannot bypass the seam.
+  assert.match(auth, /mobileApiClient/)
+  assert.doesNotMatch(auth, /fetch\(|new URL\(|VITE_GATEWAY_BASE_URL/)
   assert.doesNotMatch(`${gateway}\n${client}\n${auth}`, /Math\.random/)
 })
 
@@ -63,7 +67,11 @@ test('mobile deep-link pages use the shared auth gate before reading protected d
 test('mobile logout clears the session and returns to the login page', async () => {
   const auth = await read('apps/mobile/src/auth/gateway-auth.ts')
     const session = await read('apps/mobile/src/stores/session.ts')
+    const navigation = await read('apps/mobile/src/auth/navigation.ts')
     assert.match(auth, /\/auth\/logout/)
     assert.match(session, /clear\(\)/)
-    assert.match(session, /pages\/login\/login/)
+    assert.match(session, /adapter\(\)\.logout\(\)/)
+    // The login route lives in one place, auth/navigation.ts, instead of being repeated in the store:
+    // the store clears the session and the navigation seam owns where an unauthenticated user lands.
+    assert.match(navigation, /\/pages\/login\/login/)
 })

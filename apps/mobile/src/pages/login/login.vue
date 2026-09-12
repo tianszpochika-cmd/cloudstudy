@@ -74,7 +74,10 @@ async function submit(): Promise<void> {
     <text class="yx-description">{{ authT('login.description') }}</text>
 
     <view class="yx-card yx-login-card">
-      <form @submit.prevent="submit">
+      <!-- No .prevent here: uni emits submit as a component event whose payload has no
+           preventDefault, and Vue skips a handler guarded by a modifier that does not apply to a
+           non-DOM event. There is also no native default action left to cancel. -->
+      <form @submit="submit">
         <label class="yx-field">
           <text>{{ authT('login.identifier') }}</text>
           <input v-model="identifier" type="text" autocomplete="username" :placeholder="authT('login.identifierPlaceholder')" :disabled="submitting" />
@@ -84,7 +87,10 @@ async function submit(): Promise<void> {
           <input v-model="password" type="password" autocomplete="current-password" :placeholder="authT('login.passwordPlaceholder')" :disabled="submitting" />
         </label>
         <text v-if="error" class="yx-login-error" role="alert">{{ error }}</text>
-        <button class="yx-button" type="submit" :disabled="submitting">
+        <!-- uni-app resolves form submission from the form-type prop, not from the HTML type
+             attribute: its button component only calls form.submit() when props.formType is
+             'submit'. A plain type="submit" therefore looks right on H5 but never submits. -->
+        <button class="yx-button" form-type="submit" :disabled="submitting">
           {{ submitting ? authT('login.submitting') : authT('login.start') }}
         </button>
       </form>
