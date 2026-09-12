@@ -99,6 +99,13 @@ public class ContentInboundConsumerConfiguration {
         ExponentialBackOff backOff = new ExponentialBackOff(
                 properties.getBaseDelay().toMillis(), 2.0);
         backOff.setMaxInterval(properties.getMaxDelay().toMillis());
+        // ExponentialBackOff otherwise retries forever, which parks the retried record at the head of
+        // its partition and blocks every later record behind it. The budget is the total wait a
+        // maxAttempts sequence produces, so the handler gives up after exactly that many attempts
+        // and hands the record to the DLQ.
+        long attempts = Math.max(1, properties.getMaxAttempts());
+        long budget = properties.getBaseDelay().toMillis() * ((1L << Math.min(attempts - 1, 20)) - 1);
+        backOff.setMaxElapsedTime(Math.max(budget, properties.getBaseDelay().toMillis()));
         DefaultErrorHandler handler = new DefaultErrorHandler(recoverer, backOff);
         handler.setAckAfterHandle(true);
         return handler;

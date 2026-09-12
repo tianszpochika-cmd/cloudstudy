@@ -139,14 +139,21 @@ class ContentInboundEventConsumerTest {
     }
 
     @Test
-    void rejectsARecordWithNoEnvelopeHeader() {
+    void routesARecordWithNoEnvelopeHeaderStraightToDlq() {
+        // A record that cannot be read can never succeed however often it is retried, so it must be
+        // taken out of the partition immediately instead of blocking every later record behind it.
         FakeApplier applier = new FakeApplier(ApplyOutcome.APPLIED);
+        FakeKafka kafka = new FakeKafka();
         FakeAck ack = new FakeAck();
         ConsumerRecord<String, String> bare = new ConsumerRecord<>("platform.iam.v1", 0, 0L, "k", "{}");
 
-        assertThrows(IllegalArgumentException.class,
-                () -> consumer(applier, new FakeKafka()).onEvent(bare, ack));
-        assertEquals(0, ack.acknowledged, "a malformed envelope must not be acknowledged as handled");
+        consumer(applier, kafka).onEvent(bare, ack);
+
+        assertEquals(0, applier.calls.size(), "an unreadable envelope must never reach the effect");
+        assertEquals(1, kafka.sent.size(), "it is routed to the DLQ instead");
+        assertEquals("UNREADABLE", kafka.headersOf(0).get("envelopeState"));
+        assertEquals("IllegalArgumentException", kafka.headersOf(0).get("failureCode"));
+        assertEquals(1, ack.acknowledged, "and acknowledged, so the partition moves on");
     }
 
     @Test

@@ -181,6 +181,9 @@ function runtimeEnvironment(service, port) {
     environment.CONTENT_EVENT_RELAY_ENABLED = process.env.CONTENT_EVENT_RELAY_ENABLED ?? 'true';
     environment.CONTENT_KAFKA_BOOTSTRAP_SERVERS = process.env.CONTENT_KAFKA_BOOTSTRAP_SERVERS
       ?? `${process.env.KAFKA_HOST ?? '127.0.0.1'}:${process.env.KAFKA_PORT ?? '19092'}`;
+    // The inbound consumer is likewise off by default; the local-real stack turns it on so the
+    // declared consumer group actually consumes its topic.
+    environment.CONTENT_EVENT_CONSUMER_ENABLED = process.env.CONTENT_EVENT_CONSUMER_ENABLED ?? 'true';
   }
   if (service.id === 'audit-service') {
     // audit-service is not in the owner manifest, so its persistence binding has to be supplied

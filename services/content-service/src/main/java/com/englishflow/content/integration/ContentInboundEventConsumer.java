@@ -83,9 +83,22 @@ public final class ContentInboundEventConsumer {
     @KafkaListener(
             topics = "${content.events.consumer.topic:platform.iam.v1}",
             groupId = "${content.events.consumer.group-id:cg.content-from-iam.v1}",
+            // Named explicitly: @KafkaListener otherwise looks for a bean called
+            // kafkaListenerContainerFactory, and this service's factory is deliberately namespaced.
+            containerFactory = "contentInboundKafkaListenerContainerFactory",
             autoStartup = "${content.events.consumer.enabled:false}")
     public void onEvent(ConsumerRecord<String, String> record, Acknowledgment acknowledgment) {
-        InboundEvent event = toInboundEvent(record);
+        InboundEvent event;
+        try {
+            event = toInboundEvent(record);
+        } catch (RuntimeException malformed) {
+            // A record without the contract's envelope can never succeed, however often it is
+            // retried. Routing it straight to the DLQ keeps it out of the partition so it cannot
+            // block every later record behind it.
+            publishToDlq(record, null, malformed, 1);
+            acknowledgment.acknowledge();
+            return;
+        }
         int attempt = 0;
         while (true) {
             attempt++;
@@ -142,13 +155,19 @@ public final class ContentInboundEventConsumer {
     private void publishToDlq(ConsumerRecord<String, String> record, InboundEvent event,
                               Exception failure, int attempt) {
         RecordHeaders headers = new RecordHeaders();
-        header(headers, "eventId", event.eventId());
-        header(headers, "eventName", event.eventName());
-        header(headers, "schemaVersion", event.schemaVersion());
-        header(headers, "dedupeKey", event.dedupeKey());
+        if (event != null) {
+            header(headers, "eventId", event.eventId());
+            header(headers, "eventName", event.eventName());
+            header(headers, "schemaVersion", event.schemaVersion());
+            header(headers, "dedupeKey", event.dedupeKey());
+            header(headers, "consumerGroup", event.consumerGroup());
+        } else {
+            // The envelope could not be read, so carry whatever the record did have instead.
+            header(headers, "consumerGroup", properties.getGroupId());
+            header(headers, "envelopeState", "UNREADABLE");
+        }
         header(headers, "requestId", headerValue(record, "requestId"));
         header(headers, "traceId", headerValue(record, "traceId"));
-        header(headers, "consumerGroup", event.consumerGroup());
         header(headers, "failureCode", failure.getClass().getSimpleName());
         header(headers, "attempt", String.valueOf(attempt));
         header(headers, "failedAt", clock.instant().toString());
@@ -157,13 +176,13 @@ public final class ContentInboundEventConsumer {
                 properties.getDlqTopic(), null, record.key(), record.value(), headers);
         try {
             kafka.send(dead).get(properties.getPollTimeout().toMillis(), java.util.concurrent.TimeUnit.MILLISECONDS);
-            log.error("content inbound: event {} routed to {} after {} attempt(s): {}",
-                    event.eventId(), properties.getDlqTopic(), attempt, failure.getMessage());
+            log.error("content inbound: record routed to {} after {} attempt(s): {}",
+                    properties.getDlqTopic(), attempt, failure.getMessage());
         } catch (Exception dlqFailure) {
             // The DLQ write itself failed, so the record must NOT be acknowledged: redelivery is the
             // only way left to avoid losing it, and the duplicate is absorbed by the receipt.
             throw new IllegalStateException(
-                    "content inbound: failed to route event " + event.eventId() + " to the DLQ", dlqFailure);
+                    "content inbound: failed to route a record to the DLQ", dlqFailure);
         }
     }
 
