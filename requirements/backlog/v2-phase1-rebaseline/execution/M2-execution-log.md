@@ -276,6 +276,13 @@
 - 回归：commerce 92、analytics 49、social 68、admin-ops 64，均 0 失败（各 2 跳过）；opt-in 全 1/1 PASS。
 - Batch C 10/10 领域 owner 完成；下一步 Batch D（凭据/Redis/运行时编排/证据/复审/manifest）。
 
+## 2026-09-12 M2-004 Batch D（进行中）：D1 凭据最小权限与运行时零 DDL
+
+- reconcile 脚本：迁移由 admin 执行、owner 重建后仅 DML 授权、每服务口令支持、grantVerification 探针（DML 通过 + DDL/ALTER 被拒）；标准栈 11/11 验证通过。
+- 运行时零 DDL：5 服务 Flyway 加开关 + createSchemas(false)，runner 移除运行时迁移启用项并支持每服务口令；learning 以 svc_learning DML-only 启动，health UP。
+- 回归：learner 49、content 133、learning 141、assessment 57、media 71 全绿。
+- 下一步：D2 Redis namespace/ACL 与真实缓存路径。
+
 ## 2026-09-04 IAM 账户/密码并发安全检查点
 
 - 源码：`9deb899`。认证改为锁前单次 cost-12 BCrypt、锁内 current principal/hash/status/counter 复核；credential epoch 在校验期间变化时统一 `INVALID_CREDENTIALS` 且零写入，避免旧在途请求污染或锁死刚重置的新凭据。

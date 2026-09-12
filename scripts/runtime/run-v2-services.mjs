@@ -154,7 +154,11 @@ function runtimeEnvironment(service, port) {
   const ownerSchema = owner?.schema;
   if (ownerUser && ownerSchema) {
     const url = mysqlUrl(ownerSchema);
-    const password = environment.MYSQL_OWNER_PASSWORD;
+    const passwordEnv = `${service.id.toUpperCase().replaceAll('-', '_')}_DB_PASSWORD`;
+    const password = process.env[passwordEnv] ?? environment.MYSQL_OWNER_PASSWORD;
+    // Runtime credentials hold DML-only grants; migrations are pre-applied by
+    // scripts/database/reconcile-owner-schemas.mjs with the admin credential.
+    environment.SPRING_FLYWAY_ENABLED = 'false';
     const jdbc = {
       url,
       user: ownerUser,
@@ -174,7 +178,6 @@ function runtimeEnvironment(service, port) {
         environment.CONTENT_JDBC_PASSWORD = jdbc.password;
         break;
       case 'learning-service':
-        environment.LEARNING_FLYWAY_ENABLED = 'true';
         environment.LEARNING_PERSISTENCE_MODE = 'jdbc';
         environment.LEARNING_JDBC_URL = jdbc.url;
         environment.LEARNING_JDBC_USERNAME = jdbc.user;
@@ -182,7 +185,7 @@ function runtimeEnvironment(service, port) {
         break;
       case 'assessment-service':
         environment.ASSESSMENT_PERSISTENCE_ENABLED = 'true';
-        environment.ASSESSMENT_FLYWAY_ENABLED = 'true';
+        environment.ASSESSMENT_FLYWAY_ENABLED = 'false';
         // The local MySQL volume can retain pre-v2 synthetic rows in the legacy
         // assessment tables. Keep the production default fail-fast, while the
         // local-real runner skips only rows that cannot be rehydrated by the v2
@@ -193,25 +196,17 @@ function runtimeEnvironment(service, port) {
         environment.ASSESSMENT_DB_PASSWORD = jdbc.password;
         break;
       case 'notification-service':
-        environment.NOTIFICATION_FLYWAY_ENABLED = 'true';
         environment.NOTIFICATION_PERSISTENCE_MODE = 'jdbc';
         environment.NOTIFICATION_JDBC_URL = jdbc.url;
         environment.NOTIFICATION_JDBC_USERNAME = jdbc.user;
         environment.NOTIFICATION_JDBC_PASSWORD = jdbc.password;
         break;
       case 'commerce-service':
-        environment.COMMERCE_FLYWAY_ENABLED = 'true';
         environment.SPRING_DATASOURCE_URL = jdbc.url;
         environment.SPRING_DATASOURCE_USERNAME = jdbc.user;
         environment.SPRING_DATASOURCE_PASSWORD = jdbc.password;
         break;
       case 'media-service':
-        environment.MEDIA_FLYWAY_ENABLED = 'true';
-        environment.MEDIA_FLYWAY_BASELINE_ON_MIGRATE = 'true';
-        environment.MEDIA_FLYWAY_BASELINE_VERSION = '0';
-        environment.SPRING_FLYWAY_ENABLED = 'true';
-        environment.SPRING_FLYWAY_BASELINE_ON_MIGRATE = 'true';
-        environment.SPRING_FLYWAY_BASELINE_VERSION = '0';
         environment.MEDIA_SERVICE_SCHEMA = ownerSchema;
         environment.MEDIA_SERVICE_SIGNED_URL_BASE_URL = 'http://127.0.0.1:19000/yuxuexing-local';
         environment.SPRING_DATASOURCE_URL = jdbc.url;
@@ -219,8 +214,6 @@ function runtimeEnvironment(service, port) {
         environment.SPRING_DATASOURCE_PASSWORD = jdbc.password;
         break;
       case 'social-service':
-        environment.SOCIAL_FLYWAY_ENABLED = 'true';
-        environment.SPRING_FLYWAY_ENABLED = 'true';
         environment.SPRING_DATASOURCE_URL = jdbc.url;
         environment.SPRING_DATASOURCE_USERNAME = jdbc.user;
         environment.SPRING_DATASOURCE_PASSWORD = jdbc.password;
@@ -228,23 +221,12 @@ function runtimeEnvironment(service, port) {
       case 'gamification-service':
       case 'admin-ops-service':
       case 'analytics-service':
-        // These services already include JDBC/Flyway on the runtime classpath. Their
-        // durable repositories are closed in later chapters, but the local process
-        // must still boot against its independently owned schema for B29.
+        // Migrations are pre-applied by scripts/database/reconcile-owner-schemas.mjs with the
+        // admin credential. Runtime credentials hold DML-only grants, so Flyway stays disabled
+        // here and no service process performs DDL at startup.
         environment.SPRING_DATASOURCE_URL = jdbc.url;
         environment.SPRING_DATASOURCE_USERNAME = jdbc.user;
         environment.SPRING_DATASOURCE_PASSWORD = jdbc.password;
-        if (service.id === 'gamification-service') {
-          environment.GAMIFICATION_FLYWAY_ENABLED = 'true';
-          environment.SPRING_FLYWAY_ENABLED = 'true';
-        }
-        if (service.id === 'admin-ops-service' || service.id === 'analytics-service') {
-          // These two schemas were created by the earlier local bootstrap before a Flyway
-          // history table existed. Baseline that known V1 shape, then apply durable V2.
-          environment.SPRING_FLYWAY_ENABLED = 'true';
-          environment.SPRING_FLYWAY_BASELINE_ON_MIGRATE = 'true';
-          environment.SPRING_FLYWAY_BASELINE_VERSION = '1';
-        }
         break;
       default:
         break;

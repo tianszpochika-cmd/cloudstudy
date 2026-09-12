@@ -52,17 +52,21 @@ public class AssessmentPersistenceConfiguration {
      * can be present in the jar but never reach the local schema.
      */
     @Bean
-    Flyway assessmentFlyway(DataSource dataSource, AssessmentPersistenceProperties properties) {
+    Flyway assessmentFlyway(DataSource dataSource,
+                            @org.springframework.beans.factory.annotation.Value("${spring.flyway.enabled:false}") boolean migrationEnabled,
+                            AssessmentPersistenceProperties properties) {
         Flyway flyway = Flyway.configure()
                 .dataSource(dataSource)
                 .schemas(properties.getSchema())
                 .defaultSchema(properties.getSchema())
-                .createSchemas(true)
+                .createSchemas(false)
                 .baselineOnMigrate(true)
                 .baselineVersion("0")
                 .locations("classpath:db/migration")
                 .load();
-        flyway.migrate();
+        if (migrationEnabled) {
+            flyway.migrate();
+        }
         return flyway;
     }
 

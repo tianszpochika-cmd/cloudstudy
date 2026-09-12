@@ -72,17 +72,20 @@ public class MediaServiceConfiguration {
     @Profile("local-real")
     Flyway localRealMediaFlyway(
             DataSource dataSource,
+            @org.springframework.beans.factory.annotation.Value("${spring.flyway.enabled:false}") boolean migrationEnabled,
             MediaServiceProperties properties) {
         Flyway flyway = Flyway.configure()
                 .dataSource(dataSource)
                 .schemas(properties.getSchema())
                 .defaultSchema(properties.getSchema())
-                .createSchemas(true)
+                .createSchemas(false)
                 .baselineOnMigrate(true)
                 .baselineVersion("0")
                 .locations("classpath:db/migration")
                 .load();
-        flyway.migrate();
+        if (migrationEnabled) {
+            flyway.migrate();
+        }
         return flyway;
     }
 

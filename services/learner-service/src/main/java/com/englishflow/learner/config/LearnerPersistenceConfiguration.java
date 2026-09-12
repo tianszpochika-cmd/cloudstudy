@@ -58,15 +58,18 @@ public class LearnerPersistenceConfiguration {
     @ConditionalOnProperty(prefix = "learner.persistence", name = "mode", havingValue = "jdbc")
     Flyway learnerFlyway(
             DataSource dataSource,
+            @org.springframework.beans.factory.annotation.Value("${spring.flyway.enabled:false}") boolean migrationEnabled,
             @org.springframework.beans.factory.annotation.Value("${LEARNER_SCHEMA:learner_service}") String schema) {
         Flyway flyway = Flyway.configure()
                 .dataSource(dataSource)
                 .schemas(schema)
                 .defaultSchema(schema)
-                .createSchemas(true)
+                .createSchemas(false)
                 .locations("classpath:db/migration")
                 .load();
-        flyway.migrate();
+        if (migrationEnabled) {
+            flyway.migrate();
+        }
         return flyway;
     }
 

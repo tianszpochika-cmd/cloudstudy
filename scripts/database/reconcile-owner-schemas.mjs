@@ -86,14 +86,57 @@ function migrationHistory(schema, files) {
   };
 }
 
+function passwordEnvName(owner) {
+  return `${owner.id.toUpperCase().replaceAll('-', '_')}_DB_PASSWORD`;
+}
+
+function ownerPasswordFor(owner) {
+  const envName = passwordEnvName(owner);
+  const value = process.env[envName];
+  return value && value.trim()
+    ? { password: value, source: `service-env:${envName}` }
+    : { password: ownerPassword, source: 'shared-env:MYSQL_OWNER_PASSWORD' };
+}
+
+function verifyOwnerGrants(owner, password) {
+  const schema = identifier(owner.schema);
+  query(`CREATE TABLE ${schema}.\`p1r_grant_probe\` (id INT PRIMARY KEY, note VARCHAR(32) NULL);`);
+  const ownerArgs = { user: owner.dbCredential, password, database: owner.schema };
+  let dml = false;
+  let ddlDenied = false;
+  let alterDenied = false;
+  try {
+    query(`INSERT INTO p1r_grant_probe (id, note) VALUES (1, 'probe');`, ownerArgs);
+    query(`UPDATE p1r_grant_probe SET note = 'updated' WHERE id = 1;`, ownerArgs);
+    query(`SELECT note FROM p1r_grant_probe WHERE id = 1;`, ownerArgs);
+    query(`DELETE FROM p1r_grant_probe WHERE id = 1;`, ownerArgs);
+    dml = true;
+    try {
+      query(`CREATE TABLE ${schema}.\`p1r_grant_probe_should_fail\` (id INT);`, ownerArgs);
+    } catch {
+      ddlDenied = true;
+    }
+    try {
+      query(`ALTER TABLE ${schema}.\`p1r_grant_probe\` ADD COLUMN extra INT;`, ownerArgs);
+    } catch {
+      alterDenied = true;
+    }
+  } finally {
+    query(`DROP TABLE IF EXISTS ${schema}.\`p1r_grant_probe\`;`);
+    query(`DROP TABLE IF EXISTS ${schema}.\`p1r_grant_probe_should_fail\`;`);
+  }
+  return { dml, ddlDenied, alterDenied };
+}
+
 function provisionOwner(owner) {
   const schema = identifier(owner.schema);
   const user = quote(owner.dbCredential);
+  const { password, source } = ownerPasswordFor(owner);
   query(`
     CREATE DATABASE IF NOT EXISTS ${schema} CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-    CREATE USER IF NOT EXISTS ${user}@'%' IDENTIFIED BY ${quote(ownerPassword)};
-    ALTER USER ${user}@'%' IDENTIFIED BY ${quote(ownerPassword)};
-    GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, ALTER, INDEX, REFERENCES, EXECUTE ON ${schema}.* TO ${user}@'%';
+    DROP USER IF EXISTS ${user}@'%';
+    CREATE USER ${user}@'%' IDENTIFIED BY ${quote(password)};
+    GRANT SELECT, INSERT, UPDATE, DELETE ON ${schema}.* TO ${user}@'%';
   `);
 
   const files = migrationFiles(owner);
@@ -102,7 +145,7 @@ function provisionOwner(owner) {
   let migrationState = 'applied-now';
   if (beforeTables.length === 0) {
     for (const file of files) {
-      query(file.sql, { user: owner.dbCredential, password: ownerPassword, database: owner.schema });
+      query(file.sql, { database: owner.schema });
     }
   } else if (expectedTables.every((table) => beforeTables.includes(table))) {
     migrationState = 'already-applied-verified';
@@ -111,6 +154,7 @@ function provisionOwner(owner) {
     throw new Error(`${owner.id} schema is partially migrated; missing tables: ${missing.join(', ')}`);
   }
 
+  const grantVerification = verifyOwnerGrants(owner, password);
   const tableCount = existingTables(owner.schema).length;
   const history = migrationHistory(owner.schema, files);
   const accessCheck = query(
@@ -120,23 +164,28 @@ function provisionOwner(owner) {
     id: owner.id,
     schema: owner.schema,
     credential: owner.dbCredential,
+    credentialSource: source,
     migrationFiles: files.map((file) => file.name),
     tableCount,
     expectedTableCount: expectedTables.length,
     migrationState,
     history,
+    grantVerification,
     access: Number(accessCheck) === 1
   };
 }
 
 if (!apply) {
-  console.log(JSON.stringify({ mode: 'plan', owners: owners.services.map(({ id, schema, dbCredential, migrationPath }) => ({ id, schema, dbCredential, migrationPath })) }, null, 2));
+  console.log(JSON.stringify({ mode: 'plan', owners: owners.services.map(({ id, schema, dbCredential, migrationPath }) => ({ id, schema, dbCredential, migrationPath, passwordEnv: passwordEnvName({ id }) })) }, null, 2));
   process.exit(0);
 }
 
 try {
   const results = owners.services.map(provisionOwner);
-  if (results.some((item) => item.tableCount < 1 || !item.access)) throw new Error('owner schema/credential reconciliation returned an invalid result');
+  if (results.some((item) => item.tableCount < 1 || !item.access
+    || !item.grantVerification.dml || !item.grantVerification.ddlDenied || !item.grantVerification.alterDenied)) {
+    throw new Error('owner schema/credential reconciliation returned an invalid result');
+  }
   console.log(JSON.stringify({ mode: 'applied', ownerCount: results.length, results }, null, 2));
 } catch (error) {
   console.error(`owner schema reconciliation failed: ${error.message}`);

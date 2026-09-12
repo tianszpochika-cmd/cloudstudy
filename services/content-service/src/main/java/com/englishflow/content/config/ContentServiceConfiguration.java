@@ -110,15 +110,18 @@ public class ContentServiceConfiguration {
     @ConditionalOnProperty(prefix = "content.persistence", name = "mode", havingValue = "jdbc")
     Flyway contentFlyway(
             DataSource dataSource,
+            @org.springframework.beans.factory.annotation.Value("${spring.flyway.enabled:false}") boolean migrationEnabled,
             ContentServiceProperties serviceProperties) {
         Flyway flyway = Flyway.configure()
                 .dataSource(dataSource)
                 .schemas(serviceProperties.getSchema())
                 .defaultSchema(serviceProperties.getSchema())
-                .createSchemas(true)
+                .createSchemas(false)
                 .locations("classpath:db/migration")
                 .load();
-        flyway.migrate();
+        if (migrationEnabled) {
+            flyway.migrate();
+        }
         return flyway;
     }
 

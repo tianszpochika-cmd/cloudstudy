@@ -67,17 +67,19 @@ public class LearningRuntimeConfiguration {
 
     @Bean
     @ConditionalOnProperty(prefix = "learning.persistence", name = "mode", havingValue = "jdbc")
-    Flyway learningFlyway(DataSource dataSource, @org.springframework.beans.factory.annotation.Value("${service.schema:learning_service}") String schema) {
+    Flyway learningFlyway(DataSource dataSource, @org.springframework.beans.factory.annotation.Value("${spring.flyway.enabled:false}") boolean migrationEnabled, @org.springframework.beans.factory.annotation.Value("${service.schema:learning_service}") String schema) {
         Flyway flyway = Flyway.configure()
                 .dataSource(dataSource)
                 .schemas(schema)
                 .defaultSchema(schema)
-                .createSchemas(true)
+                .createSchemas(false)
                 .baselineOnMigrate(true)
                 .baselineVersion("0")
                 .locations("classpath:db/migration")
                 .load();
-        flyway.migrate();
+        if (migrationEnabled) {
+            flyway.migrate();
+        }
         return flyway;
     }
 
