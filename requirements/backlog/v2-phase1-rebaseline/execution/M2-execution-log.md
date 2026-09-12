@@ -166,6 +166,12 @@
 - 返工批次：7a 每服务 JWT 负例（本地 JWKS 夹具）→ 7b fail-closed PDP/策略缓存与入口守卫 → 7c 死配置/tenant 严格性/显式接线/超限单测/证据元数据 → 7d 重跑矩阵与终审。
 - 任务保持 `IN_PROGRESS / NOT_RUNTIME_VERIFIED`。
 
+## 2026-09-11 M2-003 Batch 7a：每服务 JWT 校验负例
+
+- 12 服务/模板各新增 decoder 级负例（信封 JWKS 本地夹具 + Nimbus 自签令牌：有效通过，坏签名/过期/错误 iss/aud/非 RS256 拒绝）。
+- 验证（JDK 25）：11 服务合计 `766/0/0/0`；service-template `22/0/0/0`。
+- 下一步：7b fail-closed PDP/策略缓存与入口守卫。
+
 ## 2026-09-04 IAM 账户/密码并发安全检查点
 
 - 源码：`9deb899`。认证改为锁前单次 cost-12 BCrypt、锁内 current principal/hash/status/counter 复核；credential epoch 在校验期间变化时统一 `INVALID_CREDENTIALS` 且零写入，避免旧在途请求污染或锁死刚重置的新凭据。
