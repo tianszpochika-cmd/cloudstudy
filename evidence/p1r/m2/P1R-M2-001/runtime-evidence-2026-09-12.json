@@ -1,0 +1,423 @@
+{
+  "schema": "m2.gateway.runtime-evidence.v1",
+  "result": "PASS",
+  "scope": "P1R-M2-001_GATEWAY_BOUNDARY_RUNTIME",
+  "runId": "m2-1789235600421-762d9afb",
+  "repository": {
+    "revision": "b1e2a2124c72b7a0526085d25e14c871d1a12cb1",
+    "serviceInputs": "CLEAN"
+  },
+  "processes": {
+    "gateway": {
+      "artifact": "services/api-gateway/target/api-gateway-0.1.0-SNAPSHOT.jar",
+      "artifactDigest": "d5d8c3ffee5d06fdf443cdd788557f2c0c8e8c27c4247281fe9d5ff8ef2b5034",
+      "sourceTree": "a8a596edb76187e1c34f8173da17d17a2b7f9291",
+      "host": "127.0.0.1",
+      "port": 18070
+    },
+    "iam": {
+      "artifact": "services/iam-service/target/iam-service-0.1.0-SNAPSHOT.jar",
+      "artifactDigest": "41e81e5b71fc5466cfae0af77da9e2d7704844d9c11c3fb03f7019fb9a801203",
+      "sourceTree": "dd783dc1c10fd19a3850dfc650bc75ec90ca9797",
+      "host": "127.0.0.1",
+      "port": 18087
+    }
+  },
+  "redis": {
+    "host": "127.0.0.1",
+    "port": 16379,
+    "database": 15,
+    "destructiveCommandsUsed": false,
+    "faultInjection": "EXACT_CONTAINER_PAUSE_AND_RECOVER"
+  },
+  "checks": [
+    {
+      "id": "gateway-to-iam-jwks",
+      "result": "PASS",
+      "status": 200,
+      "requestId": "m2-1789235600421-762d9afb-jwks",
+      "traceId": "5399ab81cd1cddd478b1a918c4d42adf"
+    },
+    {
+      "id": "jwks-public-material-only",
+      "result": "PASS",
+      "keyCount": 1,
+      "kidDigest": "a7feb6000d72b9be3c8efaf9a103a80e03d14a5e328ab870d581ca6a461faab3"
+    },
+    {
+      "id": "protected-route-no-auth",
+      "result": "PASS",
+      "status": 401,
+      "requestId": "m2-1789235600421-762d9afb-no-auth",
+      "traceId": "cfafc03c5deed264069376f2f73e6725"
+    },
+    {
+      "id": "protected-route-malformed-auth",
+      "result": "PASS",
+      "status": 401,
+      "requestId": "m2-1789235600421-762d9afb-bad-auth",
+      "traceId": "8303a57e64e40e3d4bee9eb335fdcf26"
+    },
+    {
+      "id": "iam-account-registration",
+      "result": "PASS",
+      "status": 201,
+      "requestId": "m2-1789235600421-762d9afb-register",
+      "traceId": "767146d94f531e84ab9a54a9b28b06d7"
+    },
+    {
+      "id": "protected-iam-upstream",
+      "result": "PASS",
+      "status": 200,
+      "requestId": "m2-1789235600421-762d9afb-principal",
+      "traceId": "6c94629dc76326bbcea80c13d477e388"
+    },
+    {
+      "id": "authority-headers-ignored",
+      "result": "PASS",
+      "serverDerived": true
+    },
+    {
+      "id": "ordinary-user-policy-forbidden",
+      "result": "PASS",
+      "status": 403,
+      "requestId": "m2-1789235600421-762d9afb-forbidden",
+      "traceId": "392a8f34db35732509dce3421210c2e7"
+    },
+    {
+      "id": "default-owner-route-fail-closed",
+      "result": "PASS",
+      "status": 404,
+      "requestId": "m2-1789235600421-762d9afb-owner-404",
+      "traceId": "7669b3396b67548af2d9de55e805641d"
+    },
+    {
+      "id": "internal-path-not-exposed",
+      "result": "PASS",
+      "status": 404,
+      "requestId": "m2-1789235600421-762d9afb-internal-404",
+      "traceId": "d23238a8a87704d6b027b1e08b3cb992"
+    },
+    {
+      "id": "browser-learner-jwks-and-correlation",
+      "result": "PASS",
+      "status": 200,
+      "exposedCorrelation": true
+    },
+    {
+      "id": "browser-learner-register-httponly-refresh-grant",
+      "result": "PASS",
+      "status": 201,
+      "refreshGrantHttpOnly": true,
+      "scriptReadable": false
+    },
+    {
+      "id": "browser-forged-authority-headers-preflight-denied",
+      "result": "PASS",
+      "transportDenied": true
+    },
+    {
+      "id": "browser-principal-authority-headers-ignored",
+      "result": "PASS",
+      "status": 200,
+      "serverDerived": true
+    },
+    {
+      "id": "browser-learner-credentialed-refresh",
+      "result": "PASS",
+      "status": 200
+    },
+    {
+      "id": "browser-refresh-origin-referer-conflict",
+      "result": "PASS",
+      "status": 403,
+      "wireStatus": 403
+    },
+    {
+      "id": "browser-refresh-referer-fallback",
+      "result": "PASS",
+      "status": 0,
+      "wireStatus": 200,
+      "browserVisible": "BROWSER_BLOCKED_WITHOUT_ORIGIN"
+    },
+    {
+      "id": "browser-refresh-untrusted-referer",
+      "result": "PASS",
+      "status": 0,
+      "wireStatus": 403
+    },
+    {
+      "id": "browser-official-jwks-public-read-only",
+      "result": "PASS",
+      "status": 200
+    },
+    {
+      "id": "browser-official-business-session-blocked",
+      "result": "PASS",
+      "transportDenied": true,
+      "refreshGrantIssued": false
+    },
+    {
+      "id": "browser-unknown-origin-blocked",
+      "result": "PASS",
+      "transportDenied": true
+    },
+    {
+      "id": "redis-failure-fails-closed",
+      "result": "PASS",
+      "status": 503,
+      "requestId": "m2-1789235600421-762d9afb-redis-unavailable",
+      "traceId": "376878925f0b0a2c98974cc90703ea3b"
+    },
+    {
+      "id": "redis-recovery-restores-traffic",
+      "result": "PASS",
+      "status": 200,
+      "requestId": "m2-1789235600421-762d9afb-redis-recovered",
+      "traceId": "8548b88be52b5891bd7a4f1f2ca31eaf"
+    },
+    {
+      "id": "redis-limit-process-a-first",
+      "result": "PASS",
+      "status": 200,
+      "requestId": "m2-1789235600421-762d9afb-rate-a1",
+      "traceId": "7ccda21b42faae92521b947072686dca"
+    },
+    {
+      "id": "gateway-health-owner",
+      "result": "PASS",
+      "owner": "api-gateway",
+      "dependencyCount": 0
+    },
+    {
+      "id": "redis-limit-process-a-second",
+      "result": "PASS",
+      "status": 200,
+      "requestId": "m2-1789235600421-762d9afb-rate-a2",
+      "traceId": "29cf4ec694ff944ad76d9e1061c79406"
+    },
+    {
+      "id": "redis-limit-process-b-continues",
+      "result": "PASS",
+      "status": 200,
+      "requestId": "m2-1789235600421-762d9afb-rate-b1",
+      "traceId": "f9470bef4e81234bd14b1b9ed350dbba"
+    },
+    {
+      "id": "redis-limit-process-b-rejects",
+      "result": "PASS",
+      "status": 429,
+      "requestId": "m2-1789235600421-762d9afb-rate-b2",
+      "traceId": "e54c0235199caa7a0cae78f0190df816"
+    },
+    {
+      "id": "redis-acl-authenticated-user",
+      "result": "PASS",
+      "expectedUser": "svc_gateway",
+      "observedUsers": [
+        "svc_gateway",
+        "default"
+      ],
+      "namespace": "englishflow:gateway:*"
+    },
+    {
+      "id": "sequential-cross-process-state-continuation",
+      "result": "PASS",
+      "topology": "SEQUENTIAL_DISTINCT_PROCESSES_NOT_CONCURRENT_REPLICAS",
+      "processAObservedCount": 2,
+      "processBObservedCount": 4,
+      "retryAfterSeconds": 296
+    }
+  ],
+  "browser": {
+    "schema": "m2.gateway.browser-evidence.v1",
+    "executable": "PLAYWRIGHT_SYSTEM_EDGE_CDP",
+    "fixture": "browser-fixture-server.mjs",
+    "caseCount": 11,
+    "cases": [
+      "browser-learner-jwks-and-correlation",
+      "browser-learner-register-httponly-refresh-grant",
+      "browser-forged-authority-headers-preflight-denied",
+      "browser-principal-authority-headers-ignored",
+      "browser-learner-credentialed-refresh",
+      "browser-refresh-origin-referer-conflict",
+      "browser-refresh-referer-fallback",
+      "browser-refresh-untrusted-referer",
+      "browser-official-jwks-public-read-only",
+      "browser-official-business-session-blocked",
+      "browser-unknown-origin-blocked"
+    ]
+  },
+  "audit": {
+    "schema": "m2.gateway.security-audit.evidence.v1",
+    "durability": "NON_DURABLE_TEST_ONLY",
+    "rows": [
+      {
+        "sourceProcess": "gateway-baseline",
+        "schema": "m2.gateway.security-audit.evidence.v1",
+        "durability": "NON_DURABLE_TEST_ONLY",
+        "occurredAt": "2026-09-12T17:53:28.640176700Z",
+        "routeId": "iam-jwks-public",
+        "method": "GET",
+        "status": 200,
+        "requestId": "m2-1789235600421-762d9afb-jwks",
+        "traceId": "5399ab81cd1cddd478b1a918c4d42adf",
+        "subjectHash": "",
+        "tenantHash": "",
+        "clientProfile": "NO_BROWSER_PROFILE",
+        "decision": "ALLOW",
+        "reasonCode": "completed",
+        "latencyBucket": "250_TO_999_MS"
+      },
+      {
+        "sourceProcess": "gateway-baseline",
+        "schema": "m2.gateway.security-audit.evidence.v1",
+        "durability": "NON_DURABLE_TEST_ONLY",
+        "occurredAt": "2026-09-12T17:53:28.664436100Z",
+        "routeId": "iam-domain",
+        "method": "GET",
+        "status": 401,
+        "requestId": "m2-1789235600421-762d9afb-no-auth",
+        "traceId": "cfafc03c5deed264069376f2f73e6725",
+        "subjectHash": "",
+        "tenantHash": "",
+        "clientProfile": "NO_BROWSER_PROFILE",
+        "decision": "DENY",
+        "reasonCode": "unauthorized",
+        "latencyBucket": "LT_50_MS"
+      },
+      {
+        "sourceProcess": "gateway-baseline",
+        "schema": "m2.gateway.security-audit.evidence.v1",
+        "durability": "NON_DURABLE_TEST_ONLY",
+        "occurredAt": "2026-09-12T17:53:29.213792800Z",
+        "routeId": "iam-domain",
+        "method": "GET",
+        "status": 403,
+        "requestId": "m2-1789235600421-762d9afb-forbidden",
+        "traceId": "392a8f34db35732509dce3421210c2e7",
+        "subjectHash": "af229589760263185c0b1232fa23e9edbc97e7833a91c31fc95cb3dbe301a68b",
+        "tenantHash": "d294fcce0cc88587843099d85dd805aeef1b09a63b0db1dd3e4dc62a343c1db5",
+        "clientProfile": "NO_BROWSER_PROFILE",
+        "decision": "DENY",
+        "reasonCode": "forbidden",
+        "latencyBucket": "LT_50_MS"
+      },
+      {
+        "sourceProcess": "gateway-baseline",
+        "schema": "m2.gateway.security-audit.evidence.v1",
+        "durability": "NON_DURABLE_TEST_ONLY",
+        "occurredAt": "2026-09-12T17:53:29.218818200Z",
+        "routeId": "public-site",
+        "method": "GET",
+        "status": 404,
+        "requestId": "m2-1789235600421-762d9afb-owner-404",
+        "traceId": "7669b3396b67548af2d9de55e805641d",
+        "subjectHash": "",
+        "tenantHash": "",
+        "clientProfile": "NO_BROWSER_PROFILE",
+        "decision": "DENY",
+        "reasonCode": "canonical_route_target_unavailable",
+        "latencyBucket": "LT_50_MS"
+      },
+      {
+        "sourceProcess": "gateway-b",
+        "schema": "m2.gateway.security-audit.evidence.v1",
+        "durability": "NON_DURABLE_TEST_ONLY",
+        "occurredAt": "2026-09-12T17:53:43.656016100Z",
+        "routeId": "gateway-health",
+        "method": "GET",
+        "status": 429,
+        "requestId": "m2-1789235600421-762d9afb-rate-b2",
+        "traceId": "e54c0235199caa7a0cae78f0190df816",
+        "subjectHash": "",
+        "tenantHash": "",
+        "clientProfile": "NO_BROWSER_PROFILE",
+        "decision": "DENY",
+        "reasonCode": "rate_limited",
+        "latencyBucket": "LT_50_MS"
+      },
+      {
+        "sourceProcess": "gateway-baseline",
+        "schema": "m2.gateway.security-audit.evidence.v1",
+        "durability": "NON_DURABLE_TEST_ONLY",
+        "occurredAt": "2026-09-12T17:53:34.255152700Z",
+        "routeId": "iam-jwks-public",
+        "method": "GET",
+        "status": 503,
+        "requestId": "m2-1789235600421-762d9afb-redis-unavailable",
+        "traceId": "376878925f0b0a2c98974cc90703ea3b",
+        "subjectHash": "",
+        "tenantHash": "",
+        "clientProfile": "NO_BROWSER_PROFILE",
+        "decision": "ERROR",
+        "reasonCode": "rate_limit_backend_unavailable",
+        "latencyBucket": "250_TO_999_MS"
+      },
+      {
+        "sourceProcess": "gateway-baseline",
+        "matchedCheck": "browser-refresh-origin-referer-conflict",
+        "schema": "m2.gateway.security-audit.evidence.v1",
+        "durability": "NON_DURABLE_TEST_ONLY",
+        "occurredAt": "2026-09-12T17:53:30.801978200Z",
+        "routeId": "iam-refresh",
+        "method": "POST",
+        "status": 403,
+        "requestId": "eafaa2ea-d651-49e1-a95b-bf6994d2b7f0",
+        "traceId": "556832ebcd054b7da7799c082f451b12",
+        "subjectHash": "",
+        "tenantHash": "",
+        "clientProfile": "LEARNER_WEB",
+        "decision": "DENY",
+        "reasonCode": "origin_referer_conflict",
+        "latencyBucket": "LT_50_MS"
+      },
+      {
+        "sourceProcess": "gateway-baseline",
+        "matchedCheck": "browser-refresh-untrusted-referer",
+        "schema": "m2.gateway.security-audit.evidence.v1",
+        "durability": "NON_DURABLE_TEST_ONLY",
+        "occurredAt": "2026-09-12T17:53:31.370735Z",
+        "routeId": "iam-refresh",
+        "method": "POST",
+        "status": 403,
+        "requestId": "72d2d0d7-6678-48e6-b1b8-be72d13eef30",
+        "traceId": "48b1edb400e94bd3909064a9a1595bbc",
+        "subjectHash": "",
+        "tenantHash": "",
+        "clientProfile": "NO_BROWSER_PROFILE",
+        "decision": "DENY",
+        "reasonCode": "credentialed_referer_untrusted",
+        "latencyBucket": "LT_50_MS"
+      },
+      {
+        "sourceProcess": "gateway-baseline",
+        "matchedCheck": "browser-unknown-origin-blocked",
+        "schema": "m2.gateway.security-audit.evidence.v1",
+        "durability": "NON_DURABLE_TEST_ONLY",
+        "occurredAt": "2026-09-12T17:53:33.060169300Z",
+        "routeId": "unknown",
+        "method": "OPTIONS",
+        "status": 403,
+        "requestId": "d2a41535-a4bf-4bd6-b374-492f08964474",
+        "traceId": "4cd1594968de4fa185708b4d37a0ad9b",
+        "subjectHash": "",
+        "tenantHash": "",
+        "clientProfile": "NO_BROWSER_PROFILE",
+        "decision": "DENY",
+        "reasonCode": "cors_origin_forbidden",
+        "latencyBucket": "LT_50_MS"
+      }
+    ]
+  },
+  "sensitiveMaterial": {
+    "persisted": false,
+    "emitted": false
+  },
+  "notRuntimeVerified": [],
+  "exclusions": [
+    "M2-006_DURABLE_AUDIT",
+    "M2-008_NETWORK_POLICY",
+    "CONCURRENT_GATEWAY_REPLICAS"
+  ]
+}

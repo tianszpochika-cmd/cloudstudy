@@ -2,7 +2,7 @@
   "taskId": "P1R-M2-001",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "7ba4d33f820efae6756164a97dfd38f02c0e89c4",
+  "sourceCommit": "b1e2a2124c72b7a0526085d25e14c871d1a12cb1",
   "artifactDigests": [
     {
       "path": "services/api-gateway/src/main/java/com/englishflow/gateway/policy/GatewayRoutePolicy.java",
@@ -52,12 +52,12 @@
     {
       "path": "services/api-gateway/src/test/runtime/p1r-m2-001-runtime.mjs",
       "algorithm": "sha256",
-      "digest": "57719a93d85b80e2bf3a9473bbaca6c530e5964a38724a3081f82218ec4ce981"
+      "digest": "ece3cdb964bbc58dc60f58809e2c426cb437cff62e9b10a8efc9a5e5ca7876ac"
     },
     {
       "path": "services/api-gateway/src/test/runtime/lib/m2-runtime-lib.mjs",
       "algorithm": "sha256",
-      "digest": "ec360b70ef143b6d915b9ed972e83cc538fac115f6ebcf93ab7f66ae5cbdc0ec"
+      "digest": "914532d29ddf3f0441325b62e4e326451e881e7708785b5e51b9c86936159e00"
     },
     {
       "path": "services/api-gateway/src/test/runtime/lib/m2-browser-checks.mjs",
@@ -118,6 +118,11 @@
       "path": "requirements/backlog/v2-phase1-rebaseline/execution/M2-EVIDENCE-RESPONSIBILITY-ADDENDUM-2026-09-04.md",
       "algorithm": "sha256",
       "digest": "eff0a78d8d2c05ebda07c4245c0dc012b6c4109652c2b1e39de5ce4ec33910b9"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-001/runtime-evidence-2026-09-12.json",
+      "algorithm": "sha256",
+      "digest": "56b3898f79a62888b1e4f83344ee67b1e3e58b49be9f9e6ff8d4aa925a2829d9"
     }
   ],
   "environment": {
@@ -156,6 +161,25 @@
         "p3": 5,
         "finishedAt": "2026-09-11T10:58:00+08:00",
         "details": "Independent read-only review verified evidence provenance (sourceTree and jar digests at 352879a), 29/29 runtime checks, 11 browser cases, rate-limit key semantics, audit redaction, Addendum scope, Node 8/8, Gateway 82/82 and IAM 71/71 (18 opt-in skips). P3 hardening suggestions are recorded in execution/P1R-M2-001.md and do not block acceptance; durable audit, NetworkPolicy, platform correlation and staging remain with M2-006/M2-008/M2-010/M8-013."
+      }
+    ],
+    "currentSourceRevalidationTask": "P1R-M2-004",
+    "currentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
+    "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
+    "currentSourceRevalidationFinishedAt": "2026-09-12T17:54:32.728Z",
+    "currentSourceRevalidationAuditedImplementationSource": "b1e2a2124c72b7a0526085d25e14c871d1a12cb1",
+    "currentSourceRevalidationIntegrationCheckpoint": "b1e2a2124c72b7a0526085d25e14c871d1a12cb1",
+    "originalSourceCommit": "7ba4d33f820efae6756164a97dfd38f02c0e89c4",
+    "currentSourceRevalidationHistory": [
+      {
+        "taskId": "P1R-M2-001",
+        "sourceCommit": "b1e2a2124c72b7a0526085d25e14c871d1a12cb1",
+        "auditedImplementationSource": "b1e2a2124c72b7a0526085d25e14c871d1a12cb1",
+        "integrationCheckpoint": "b1e2a2124c72b7a0526085d25e14c871d1a12cb1",
+        "reviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-12T17:54:32.728Z",
+        "details": "Current-source rebase for P1R-M2-004 Batch D2b. The Gateway runtime harness and its shared library now authenticate against Redis as the scoped svc_gateway ACL user instead of the credential-less default user, and CLIENT LIST was added to the read-only probe allowlist so the identity is asserted rather than inferred. Runtime evidence re-captured at this source with --run --browser --fault: result PASS, 30/30 checks, notRuntimeVerified empty, including the new redis-acl-authenticated-user check (observed users: svc_gateway, default). The recorded ACCEPTED decision, its review history and the earlier evidence files are unchanged."
       }
     ]
   },
