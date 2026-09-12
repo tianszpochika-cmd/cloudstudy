@@ -103,6 +103,18 @@ function mysqlUrl(schema) {
   return `jdbc:mysql://127.0.0.1:13306/${schema}?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true`;
 }
 
+// Active Spring profiles for one local service. Every service runs its declared v2 profile
+// plus `local-real` (real adapters instead of stubs). IAM additionally needs the explicit
+// `local` profile: since P1R-M2-002 P2-3 its guards reject the adult-gate attestation switch,
+// the missing idempotency secrets and the non-Secure refresh cookie outside local/test, and
+// application-local.yaml is the only place that supplies them. This matches the accepted
+// P1R-M2-001 runtime harness, which starts IAM with `--spring.profiles.active=local`.
+function activeProfiles(service) {
+  const profiles = [service.profile, 'local-real'];
+  if (service.id === 'iam-service') profiles.push('local');
+  return profiles.join(',');
+}
+
 function runtimeEnvironment(service, port) {
   const jwtIssuer = process.env.IAM_JWT_ISSUER ?? 'http://127.0.0.1:18087';
   const jwtJwks = process.env.IAM_JWT_JWKS_URI ?? `${jwtIssuer.replace(/\/$/, '')}/api/v1/auth/jwks`;
@@ -136,6 +148,19 @@ function runtimeEnvironment(service, port) {
     environment.IAM_JWT_AUDIENCE = jwtAudience;
     environment.IAM_JWT_ALGORITHM = process.env.IAM_JWT_ALGORITHM ?? 'RS256';
     environment.IAM_LOCAL_ADULT_GATE_ENABLED = process.env.IAM_LOCAL_ADULT_GATE_ENABLED ?? 'true';
+    // P1R-M2-002 P2-3 hardening: the adult-gate attestation switch, the local idempotency
+    // secrets and the non-Secure refresh cookie are permitted only in an explicit local/test
+    // profile, and the runner cannot start IAM without them. The accepted M2-001 runtime
+    // harness therefore starts IAM with `--spring.profiles.active=local`; see activeProfiles().
+    // A stable RSA file key keeps the published JWKS valid across restarts; without one IAM
+    // falls back to the local-profile ephemeral key and the JWKS rotates on every restart.
+    const signingKeyFile = process.env.IAM_JWT_PRIVATE_KEY_FILE ?? path.join('secrets', 'iam-rsa-private.pem');
+    if (signingKeyFile && existsSync(path.join(root, signingKeyFile))) {
+      environment.IAM_JWT_PRIVATE_KEY_FILE = signingKeyFile;
+    } else {
+      console.warn(`[services:run] iam-service: no signing key at ${signingKeyFile}; `
+        + 'falling back to the ephemeral local-profile key (JWKS rotates on restart)');
+    }
   }
   if (service.id === 'api-gateway') {
     environment.GATEWAY_RESOURCE_SERVER_ENABLED = 'true';
@@ -316,7 +341,7 @@ try {
       '-jar', jar,
       `--server.address=${manifest.host}`,
       `--server.port=${port}`,
-      `--spring.profiles.active=${service.profile},local-real`,
+      `--spring.profiles.active=${activeProfiles(service)}`,
       '--local.runtime.mode=local-real',
     ], {
       cwd: root,
