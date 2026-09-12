@@ -1,5 +1,10 @@
 package com.englishflow.gamification.adapter.http;
 
+import com.englishflow.gamification.security.FailClosedPep;
+import com.englishflow.gamification.security.PdpActivationGuard;
+import com.englishflow.gamification.security.PdpPort;
+import com.englishflow.gamification.security.UnavailablePdpPort;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
@@ -30,6 +35,41 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 /** Resource-server seam and default-deny service-side PEP. */
 @Configuration
 public class GamificationSecurityConfiguration {
+
+    @Bean
+
+    PdpPort pdpPort() {
+
+        // No dynamic PDP is provisioned in Phase 1 service slices yet; the fail-closed adapter
+
+        // keeps every future dynamic-fact consultation deny-by-default.
+
+        return new UnavailablePdpPort();
+
+    }
+
+
+    @Bean
+
+    FailClosedPep failClosedPep(PdpPort pdpPort) {
+
+        return new FailClosedPep(pdpPort, java.time.Clock.systemUTC());
+
+    }
+
+
+    @Bean
+
+    Object pdpActivationGuard(PdpPort pdpPort,
+
+            @Value("${security.pep.dynamic-facts-required:false}") boolean dynamicFactsRequired) {
+
+        PdpActivationGuard.requireProvisioned(dynamicFactsRequired, pdpPort);
+
+        return new Object();
+
+    }
+
 
     @Bean
     @ConditionalOnProperty(prefix = "gamification.security", name = "resource-server-enabled", havingValue = "true")

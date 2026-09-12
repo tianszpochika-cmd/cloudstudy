@@ -1,5 +1,10 @@
 package com.englishflow.notification.config;
 
+import com.englishflow.notification.security.FailClosedPep;
+import com.englishflow.notification.security.PdpActivationGuard;
+import com.englishflow.notification.security.PdpPort;
+import com.englishflow.notification.security.UnavailablePdpPort;
+
 import java.time.Duration;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -43,6 +48,41 @@ import tools.jackson.databind.ObjectMapper;
 public class NotificationSecurityConfiguration {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NotificationSecurityConfiguration.class);
+
+    @Bean
+
+    PdpPort pdpPort() {
+
+        // No dynamic PDP is provisioned in Phase 1 service slices yet; the fail-closed adapter
+
+        // keeps every future dynamic-fact consultation deny-by-default.
+
+        return new UnavailablePdpPort();
+
+    }
+
+
+    @Bean
+
+    FailClosedPep failClosedPep(PdpPort pdpPort) {
+
+        return new FailClosedPep(pdpPort, java.time.Clock.systemUTC());
+
+    }
+
+
+    @Bean
+
+    Object pdpActivationGuard(PdpPort pdpPort,
+
+            @Value("${security.pep.dynamic-facts-required:false}") boolean dynamicFactsRequired) {
+
+        PdpActivationGuard.requireProvisioned(dynamicFactsRequired, pdpPort);
+
+        return new Object();
+
+    }
+
 
     @Bean
     @ConditionalOnProperty(prefix = "notification.security", name = "resource-server-enabled", havingValue = "true")

@@ -178,6 +178,12 @@
 - 验证（JDK 25）：learning 138/0/0（+7 测试）。
 - 下一步：7b 推广到其余 10 服务与模板。
 
+## 2026-09-11 M2-003 Batch 7b 推广：fail-closed PEP 覆盖 11 服务
+
+- 紧凑 PEP 组件复制到其余 10 服务并装配 Bean（service-template 已有更强组件，跳过）。
+- 验证（JDK 25）：11 服务合计 `843/0/0/0`；模板 22。
+- 下一步：7c（死配置/tenant 严格性/显式接线/超限单测/证据元数据）。
+
 ## 2026-09-04 IAM 账户/密码并发安全检查点
 
 - 源码：`9deb899`。认证改为锁前单次 cost-12 BCrypt、锁内 current principal/hash/status/counter 复核；credential epoch 在校验期间变化时统一 `INVALID_CREDENTIALS` 且零写入，避免旧在途请求污染或锁死刚重置的新凭据。

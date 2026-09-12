@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1R-M2-003-FAILCLOSED-PEP-ROLLOUT-20260911] `P1R-M2-003` Batch 7b 推广：fail-closed 动态策略 PEP（`PdpPort`/`PdpDecision`/`UnavailablePdpPort`/`FailClosedPep`/`PdpActivationGuard`）覆盖其余 10 个领域服务并装配 Bean（`service-template` 已有更强组件，不重复）。**验证**（JDK 25）：learner 47、assessment 54、content 130、media 68、social 65、admin-ops 61、notification 93、commerce 89、analytics 46、gamification 52，加 learning 138，**11 服务合计 843 / 0 failures / 0 errors / 0 skipped**；service-template 22。下一步：7c（P2/P3 清理）→ 7d（全矩阵 + 终审 → manifest → `ACCEPTED`）。
+
 - [P1R-M2-003-FAILCLOSED-PEP-20260911] `P1R-M2-003` Batch 7b 原型（返工 P1-1/P1-3）：learning-service 引入 fail-closed 动态策略 PEP——`PdpPort`/`PdpRequest`/`PdpDecision`（撤销状态 UNKNOWN 绝不视为未撤销）、`UnavailablePdpPort`（未接线即抛错）、`FailClosedPep`（30s 缓存；未命中/过期即查 PDP；超时/未实现/null/版本不匹配/撤销未知/已撤销一律拒绝）、`PdpActivationGuard`（`security.pep.dynamic-facts-required=true` 且无真实 PDP 时拒绝启动）；Bean 装配默认不阻断现有启动。新增 `FailClosedPepTest`（8 场景）与 `PdpActivationGuardTest`；learning 全套 **138 tests / 0 failures / 0 errors / 0 skipped**。下一步：推广到其余 10 服务与 `service-template`。
 
 - [P1R-M2-003-JWT-NEGATIVES-20260911] `P1R-M2-003` Batch 7a（返工 P1-2）：为 11 个领域服务与 `service-template` 补齐 **decoder 级 JWT 校验负例**——本地 `HttpServer` 提供契约信封 JWKS，Nimbus 自签令牌断言：有效令牌通过；坏签名、过期、错误 issuer、错误 audience、非 RS256 算法一律拒绝（@Value 型配置测试置于配置同包）。**验证**（JDK 25）：learning 131、learner 40、assessment 47、content 123、media 61、social 58、admin-ops 54、notification 86、commerce 82、analytics 39、gamification 45，合计 **766 / 0 failures / 0 errors / 0 skipped**；service-template **22/0/0/0**。下一步：7b（P1-1/P1-3 fail-closed PDP/策略缓存与入口守卫）。

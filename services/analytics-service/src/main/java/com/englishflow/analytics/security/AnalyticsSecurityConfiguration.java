@@ -32,6 +32,41 @@ import org.springframework.security.web.access.intercept.AuthorizationFilter;
 public class AnalyticsSecurityConfiguration {
 
     @Bean
+
+    PdpPort pdpPort() {
+
+        // No dynamic PDP is provisioned in Phase 1 service slices yet; the fail-closed adapter
+
+        // keeps every future dynamic-fact consultation deny-by-default.
+
+        return new UnavailablePdpPort();
+
+    }
+
+
+    @Bean
+
+    FailClosedPep failClosedPep(PdpPort pdpPort) {
+
+        return new FailClosedPep(pdpPort, java.time.Clock.systemUTC());
+
+    }
+
+
+    @Bean
+
+    Object pdpActivationGuard(PdpPort pdpPort,
+
+            @Value("${security.pep.dynamic-facts-required:false}") boolean dynamicFactsRequired) {
+
+        PdpActivationGuard.requireProvisioned(dynamicFactsRequired, pdpPort);
+
+        return new Object();
+
+    }
+
+
+    @Bean
     UntrustedSecurityFactsFilter untrustedSecurityFactsFilter() {
         return new UntrustedSecurityFactsFilter();
     }

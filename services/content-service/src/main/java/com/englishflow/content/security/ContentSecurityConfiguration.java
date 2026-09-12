@@ -7,6 +7,7 @@ import com.englishflow.content.config.ContentResourceServerProperties;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -32,6 +33,41 @@ import org.springframework.security.web.access.intercept.AuthorizationFilter;
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(ContentResourceServerProperties.class)
 public class ContentSecurityConfiguration {
+
+    @Bean
+
+    PdpPort pdpPort() {
+
+        // No dynamic PDP is provisioned in Phase 1 service slices yet; the fail-closed adapter
+
+        // keeps every future dynamic-fact consultation deny-by-default.
+
+        return new UnavailablePdpPort();
+
+    }
+
+
+    @Bean
+
+    FailClosedPep failClosedPep(PdpPort pdpPort) {
+
+        return new FailClosedPep(pdpPort, java.time.Clock.systemUTC());
+
+    }
+
+
+    @Bean
+
+    Object pdpActivationGuard(PdpPort pdpPort,
+
+            @Value("${security.pep.dynamic-facts-required:false}") boolean dynamicFactsRequired) {
+
+        PdpActivationGuard.requireProvisioned(dynamicFactsRequired, pdpPort);
+
+        return new Object();
+
+    }
+
 
     @Bean
     @ConditionalOnProperty(
