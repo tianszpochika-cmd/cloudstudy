@@ -815,7 +815,7 @@
       {
         "service": "notification-service",
         "path": "services/notification-service/src/main/resources/db/migration",
-        "fileCount": 4
+        "fileCount": 5
       },
       {
         "service": "analytics-service",
