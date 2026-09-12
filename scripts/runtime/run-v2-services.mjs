@@ -174,6 +174,19 @@ function runtimeEnvironment(service, port) {
     environment.COMMERCE_SECURITY_JWK_SET_URI = jwtJwks;
     environment.COMMERCE_SECURITY_AUDIENCE = jwtAudience;
   }
+  if (service.id === 'audit-service') {
+    // audit-service is not in the owner manifest, so its persistence binding has to be supplied
+    // here. It has no runtime Flyway: the audit_service schema and the DML-only svc_audit
+    // credential come from scripts/database/reconcile-owner-schemas.mjs. Without this binding it
+    // boots with AUDIT_PERSISTENCE_ENABLED=false and fails every ingest closed with 503.
+    environment.AUDIT_PERSISTENCE_ENABLED = 'true';
+    environment.AUDIT_JDBC_URL = mysqlUrl('audit_service');
+    environment.AUDIT_JDBC_USERNAME = 'svc_audit';
+    environment.AUDIT_JDBC_PASSWORD = process.env.AUDIT_SERVICE_DB_PASSWORD ?? environment.MYSQL_OWNER_PASSWORD;
+    environment.AUDIT_SECURITY_ISSUER_URI = jwtIssuer;
+    environment.AUDIT_SECURITY_JWK_SET_URI = jwtJwks;
+    environment.AUDIT_SECURITY_AUDIENCE = jwtAudience;
+  }
   const owner = ownerManifest.services.find((item) => item.id === service.id);
   const ownerUser = owner?.dbCredential;
   const ownerSchema = owner?.schema;

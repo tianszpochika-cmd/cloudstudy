@@ -830,7 +830,7 @@
       {
         "service": "audit-service",
         "path": "services/audit-service/src/main/resources/db/migration",
-        "fileCount": 1
+        "fileCount": 2
       }
     ],
     "plannedCollections": [
