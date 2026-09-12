@@ -242,6 +242,13 @@
 - 验证：assessment 57/0/0（2 跳过）；opt-in 1/1 PASS。
 - 下一步：content/media/gamification/notification 的租户谓词与 schema 修补。
 
+## 2026-09-12 M2-004 Batch C（续）：content 应用层守卫真实 MySQL 证据
+
+- 用户确认 content 采用应用层守卫 + 真实 MySQL 证据；端口签名改造与 content_version/投影表 tenant 列记入残留。
+- opt-in `ContentTenantIsolationTest`：真实 JdbcContentRepository + Command/ReadService + Flyway V1–V13；跨租户 createVersion/readByCode 均 CONTENT_TENANT_DENIED，跨租户可见行 0，受限账号跨 schema 写被 DB 拒绝。
+- 验证：content 133/0/0（2 跳过）；opt-in 1/1 PASS。
+- 下一步：media/gamification/notification。
+
 ## 2026-09-04 IAM 账户/密码并发安全检查点
 
 - 源码：`9deb899`。认证改为锁前单次 cost-12 BCrypt、锁内 current principal/hash/status/counter 复核；credential epoch 在校验期间变化时统一 `INVALID_CREDENTIALS` 且零写入，避免旧在途请求污染或锁死刚重置的新凭据。
