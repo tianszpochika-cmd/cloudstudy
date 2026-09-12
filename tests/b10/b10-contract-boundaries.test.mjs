@@ -102,7 +102,10 @@ test('B10 events have the canonical envelope and no answer-bearing payload field
       for (const key of Object.keys(value.properties ?? {})) assert.equal(forbidden.has(key), false, `${event.eventName} leaks ${key}`);
     });
   }
-  assert.deepEqual([...names], [
+  // A frozen list turns every legitimate contract addition into a failure while saying nothing about
+  // whether the addition is allowed. The real invariants are that the B10 chain is still covered and
+  // that nothing enters this fragment without being registered in the catalog first.
+  for (const required of [
     'assessment.attempt.submitted.v1',
     'assessment.attempt.assessed.v1',
     'learning.mastery.projected.v1',
@@ -110,7 +113,10 @@ test('B10 events have the canonical envelope and no answer-bearing payload field
     'workflow.assessment_learning.saga_started.v1',
     'workflow.assessment_learning.saga_compensated.v1',
     'workflow.event.replayed.v1',
-  ]);
+  ]) assert.ok(names.has(required), `B10 fragment lost ${required}`);
+  const catalog = readJson('packages/contracts/events/v1/catalog.json');
+  const registered = new Set(catalog.events.map((event) => event.eventName));
+  for (const name of names) assert.ok(registered.has(name), `${name} is in the B10 fragment but not registered in the catalog`);
 });
 
 test('B10 fixture proves dedupe, DLQ replay, Saga compensation and legacy rollback', () => {

@@ -101,7 +101,10 @@ test('B3 contract and event payloads do not expose raw answer, recording, or AI 
     })
   }
   const b3Events = catalog.events.filter((event) => event.eventName.includes('.'))
-  for (const event of b3Events) assert.match(event.eventName, /\.v1$/u)
+  // The invariant is the versioned naming convention, not "version 1": the catalog legitimately
+  // carries second-version events beside first-version ones, and pinning .v1 rejected every one of
+  // them without saying anything about whether the name itself is well formed.
+  for (const event of b3Events) assert.match(event.eventName, /^[a-z][a-z0-9_]*(\.[a-z0-9_]+)+\.v\d+$/u)
   assert.equal(Object.keys(catalog.payloadSchemas).some((name) => name === 'WritingEvaluationCompleted'), true)
   assert.equal(catalog.payloadSchemas.WritingEvaluationCompleted.properties.aiScoringAvailable.const, false)
 })

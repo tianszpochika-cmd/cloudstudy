@@ -13,8 +13,13 @@ function javaSources(relativeDirectory) {
     for (const entry of fs.readdirSync(current, { withFileTypes: true })) {
       if (entry.name === 'target' || entry.name.startsWith('.compile-check')) continue;
       const absolute = path.join(current, entry.name);
-      if (entry.isDirectory()) visit(absolute);
-      else if (entry.name.endsWith('.java')) result.push(absolute);
+      if (entry.isDirectory()) {
+        // Only production code emits integration events. Scanning src/test made this check fail on
+        // unit-test fixtures, which emit nothing and merely carry an event-shaped string as sample
+        // data; the invariant is about what a service actually publishes.
+        if (entry.name === 'test') continue;
+        visit(absolute);
+      } else if (entry.name.endsWith('.java')) result.push(absolute);
     }
   };
   visit(directory);

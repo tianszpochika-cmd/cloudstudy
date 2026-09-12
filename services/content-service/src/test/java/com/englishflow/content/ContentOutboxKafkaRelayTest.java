@@ -159,7 +159,7 @@ class ContentOutboxKafkaRelayTest {
 
     private static ContentOutboxRelayPort.ClaimedEvent event(int attemptCount) {
         return new ContentOutboxRelayPort.ClaimedEvent(
-                "11111111-1111-4111-8111-111111111111", "content-1", "content.published.v1",
+                "11111111-1111-4111-8111-111111111111", "content-1", "content.version.published.v1",
                 "content.event.v1", 1, "dedupe-1", "{\"k\":\"v\"}", "req-1", "trace-1", attemptCount);
     }
 
