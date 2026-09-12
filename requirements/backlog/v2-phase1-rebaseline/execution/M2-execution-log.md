@@ -249,6 +249,13 @@
 - 验证：content 133/0/0（2 跳过）；opt-in 1/1 PASS。
 - 下一步：media/gamification/notification。
 
+## 2026-09-12 M2-004 Batch C（续）：media 策略守卫真实 MySQL 证据
+
+- opt-in `MediaTenantIsolationTest`：真实 JdbcMediaRepository + MediaAccessPolicy + Flyway V1–V3；跨租户 requireRead/requireMutation 均 MEDIA_TENANT_FORBIDDEN，受限账号跨 schema 写被 DB 拒绝。
+- 残留：findById 无租户参数、media_rendition/outbox 无 tenant 列。
+- 验证：media 71/0/0（2 跳过）；opt-in 1/1 PASS。
+- 下一步：gamification/notification。
+
 ## 2026-09-04 IAM 账户/密码并发安全检查点
 
 - 源码：`9deb899`。认证改为锁前单次 cost-12 BCrypt、锁内 current principal/hash/status/counter 复核；credential epoch 在校验期间变化时统一 `INVALID_CREDENTIALS` 且零写入，避免旧在途请求污染或锁死刚重置的新凭据。
