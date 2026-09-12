@@ -2,7 +2,7 @@
   "taskId": "P1R-M2-002",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "fca70a3a6cd0aadd819def96c48f5f951ccac0e1",
+  "sourceCommit": "d5246a8110cb4431778000684fa762b94f50cf3c",
   "artifactDigests": [
     {
       "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/ConsentService.java",
@@ -167,7 +167,7 @@
     {
       "path": "config/p1r-data-ownership.v1.json",
       "algorithm": "sha256",
-      "digest": "57972a9f8faad2d7fea04c9c84f236e0339ce2e157100ed8d55c2f44fd57af49"
+      "digest": "09a9fa480a8c137068c78457cfbc7e32be3952c5b3a8fcd49af174c0bb26e600"
     },
     {
       "path": "docs/10-decisions/0013-self-owned-jwt-authentication-center.md",
@@ -264,17 +264,30 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-12T19:10:57.939Z",
         "details": "Current-source artifact digest rebase after P1R-M2-004 Batch D3 brought audit-service into the orchestrated local stack (fifteenth runtime service, B29 baseline at 15, platform-owner provisioning in the reconcile script and its own runner environment block) and fixed the audit schema_version width. The only artifact of these tasks that moved is config/p1r-data-ownership.v1.json, whose migrationInventory existingCollections fileCount for audit-service went from 1 to 2 to match the added V2 migration. Original provenance, review history and runtime status unchanged."
+      },
+      {
+        "taskId": "P1R-M2-002",
+        "sourceCommit": "d5246a8110cb4431778000684fa762b94f50cf3c",
+        "auditedImplementationSource": "d5246a8110cb4431778000684fa762b94f50cf3c",
+        "integrationCheckpoint": "d5246a8110cb4431778000684fa762b94f50cf3c",
+        "reviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-12T20:21:34.788Z",
+        "details": "Current-source artifact digest rebase after P1R-M2-005 standardized the ten owner outbox tables to the ADR-0015 shape, which added one migration to nine owner collections. The only artifact of these tasks that moved is config/p1r-data-ownership.v1.json, whose migrationInventory existingCollections fileCounts follow the added migrations. Original provenance, review history and runtime status unchanged."
       }
     ],
-    "previousCurrentSourceCommit": "ec20ef51a8b0ea99d4b72bf7598777df075f4889",
+    "previousCurrentSourceCommit": "fca70a3a6cd0aadd819def96c48f5f951ccac0e1",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
     "currentSourceRevalidationTask": "P1R-M2-004",
     "currentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-12T19:10:57.939Z",
-    "currentSourceRevalidationAuditedImplementationSource": "fca70a3a6cd0aadd819def96c48f5f951ccac0e1",
-    "currentSourceRevalidationIntegrationCheckpoint": "fca70a3a6cd0aadd819def96c48f5f951ccac0e1",
-    "originalSourceCommit": "ec20ef51a8b0ea99d4b72bf7598777df075f4889"
+    "currentSourceRevalidationFinishedAt": "2026-09-12T20:21:34.788Z",
+    "currentSourceRevalidationAuditedImplementationSource": "d5246a8110cb4431778000684fa762b94f50cf3c",
+    "currentSourceRevalidationIntegrationCheckpoint": "d5246a8110cb4431778000684fa762b94f50cf3c",
+    "originalSourceCommit": "ec20ef51a8b0ea99d4b72bf7598777df075f4889",
+    "previousCurrentSourceRevalidationTask": "P1R-M2-004",
+    "previousCurrentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
+    "previousCurrentSourceRevalidationFinishedAt": "2026-09-12T19:10:57.939Z"
   },
   "startedAt": "2026-09-01T16:17:22+08:00",
   "finishedAt": "2026-09-11T16:36:27+08:00",

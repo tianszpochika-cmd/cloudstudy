@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-007",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "396635c0b9ced09eebb4cec5bdc3178a16ab34f6",
+  "sourceCommit": "d5246a8110cb4431778000684fa762b94f50cf3c",
   "artifactDigests": [
     {
       "path": ".github/workflows/ci.yml",
@@ -32,7 +32,7 @@
     {
       "path": "config/p1r-data-ownership.v1.json",
       "algorithm": "sha256",
-      "digest": "57972a9f8faad2d7fea04c9c84f236e0339ce2e157100ed8d55c2f44fd57af49"
+      "digest": "09a9fa480a8c137068c78457cfbc7e32be3952c5b3a8fcd49af174c0bb26e600"
     },
     {
       "path": "config/p1r-saga-recovery.v1.json",
@@ -711,18 +711,28 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-12T20:08:43.159Z",
         "details": "Current-source artifact digest rebase after P1R-M2-004 Batch D4 registered the Kafka topic provisioner (scripts/runtime/provision-kafka-topics.mjs) as the p1r:kafka:topics script in package.json. The only artifact of these tasks that moved is package.json. Original provenance, review history and runtime status unchanged."
+      },
+      {
+        "taskId": "P1R-M1-007",
+        "sourceCommit": "d5246a8110cb4431778000684fa762b94f50cf3c",
+        "auditedImplementationSource": "d5246a8110cb4431778000684fa762b94f50cf3c",
+        "integrationCheckpoint": "d5246a8110cb4431778000684fa762b94f50cf3c",
+        "reviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-12T20:21:34.788Z",
+        "details": "Current-source artifact digest rebase after P1R-M2-005 standardized the ten owner outbox tables to the ADR-0015 shape, which added one migration to nine owner collections. The only artifact of these tasks that moved is config/p1r-data-ownership.v1.json, whose migrationInventory existingCollections fileCounts follow the added migrations. Original provenance, review history and runtime status unchanged."
       }
     ],
-    "previousCurrentSourceCommit": "171203e89780a1d069fffee2b98c1f0e6c173093",
+    "previousCurrentSourceCommit": "396635c0b9ced09eebb4cec5bdc3178a16ab34f6",
     "previousCurrentSourceRevalidationTask": "P1R-M2-004",
     "currentSourceRevalidationTask": "P1R-M2-004",
     "currentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "previousCurrentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "previousCurrentSourceRevalidationFinishedAt": "2026-09-12T19:49:48.935Z",
+    "previousCurrentSourceRevalidationFinishedAt": "2026-09-12T20:08:43.159Z",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-12T20:08:43.159Z",
-    "currentSourceRevalidationAuditedImplementationSource": "396635c0b9ced09eebb4cec5bdc3178a16ab34f6",
-    "currentSourceRevalidationIntegrationCheckpoint": "396635c0b9ced09eebb4cec5bdc3178a16ab34f6"
+    "currentSourceRevalidationFinishedAt": "2026-09-12T20:21:34.788Z",
+    "currentSourceRevalidationAuditedImplementationSource": "d5246a8110cb4431778000684fa762b94f50cf3c",
+    "currentSourceRevalidationIntegrationCheckpoint": "d5246a8110cb4431778000684fa762b94f50cf3c"
   }
 }
