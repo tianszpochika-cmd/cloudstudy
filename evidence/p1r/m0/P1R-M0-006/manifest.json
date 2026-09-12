@@ -89,7 +89,8 @@
   "knownGaps": [
     "The 4.x/5.x uni-app Vue3 line still declares an exact Vite 5.2.8 peer and has no patched Vite, so remaining on it is no longer possible; apps/mobile is now on the 10.x line.",
     "8 low and 7 moderate advisories remain. They are dev-only except adm-zip, whose upstream has no fixed release (patched_versions \"<0.0.0\"); the policy only fails on high/critical.",
-    "The uni-app plugin pins preserveSymlinks: true, so pnpm's isolated layout needs a narrow publicHoistPattern for pinia's runtime dependencies."
+    "The uni-app plugin pins preserveSymlinks: true, so pnpm's isolated layout needs a narrow publicHoistPattern for pinia's runtime dependencies.",
+    "OPEN FINDING (2026-09-12, not resolved here): the mobile H5 login form could not be driven to submit. The same account logs in through the API (HTTP 200 with an access token) and the page renders with no page errors, but activating the submit control never invokes the page's submit() function -- no POST /api/v1/auth/login is issued, the validation error slot stays empty and the button never enters its submitting state -- even though the click does reach the uni-button element. The rendered H5 no longer contains a native form or an inner native button, so the template's HTML type=submit plus @submit.prevent wiring has no native submit path left. Clicking the host, pressing Enter, form.requestSubmit(), dispatching a submit CustomEvent on uni-form and injecting form-type=submit were all tried without effect. Whether this is a regression of the 10.x move or pre-existing is NOT established, because the pre-upgrade build was never probed the same way. It does not block P1R-M2-004 D2b through M2-008 (backend, gateway, data and CI only); it must be resolved before the mobile auth pages are built in M4."
   ],
   "blockers": [],
   "nextSteps": [
