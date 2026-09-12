@@ -1,8 +1,23 @@
 # 当前跨电脑交接（dev）
 
-更新时间：2026-09-11（Asia/Shanghai）。本文件只说明如何恢复当前开发检查点，不替代任务台账或 canonical Evidence manifest。
+更新时间：2026-09-12（Asia/Shanghai）。本文件只说明如何恢复当前开发检查点，不替代任务台账或 canonical Evidence manifest。
 
-## 2026-09-12 M2 三项验收（最新恢复入口）
+## 2026-09-12 P1R-M2-004 Batch A–D2a 完成（最新恢复入口）
+
+更新时间：2026-09-12 17:40（Asia/Shanghai）。会话工作树干净，`origin/dev=49e47c0` 全部已推送。
+
+- **状态**：`P1R-M2-004` 保持 `IN_PROGRESS`；台账 `28 ACCEPTED / 1 BLOCKED / 1 IN_PROGRESS / 78 PLANNED`；总阶段 `D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED`。M2-001/002/003 仍为 `ACCEPTED`（各自 canonical manifest 不变，摘要已按 current-source 流程重定至 `49e47c0`）。
+- **Batch A**（`02b438b`）：新建 `services/audit-service`（端口 18099、schema `audit_service`、V1 append-only + legal-hold + receipt、`/internal/v1/audit/events` fail-closed ingest，21/0/0/0）；数据归属策略升级为 13 existing / 1 planned（audit-service 计入）。
+- **Batch B**（`9a88da4`、`6fc4233`、`3b08773`）：commerce 补 Flyway（`COMMERCE_FLYWAY_ENABLED` 不再是死配置，`baselineOnMigrate`/`baselineVersion=1` 兼容预建 schema）；13/13 owner opt-in 真实 MySQL 迁移证据（空库/存量幂等/坏迁移 `success=0`/repair 恢复）；`reconcile-owner-schemas.mjs` 升级为目录级全量迁移 + 净表集合校验 + `flyway_schema_history` 状态输出，标准栈首跑 11/11 `applied-now`、重跑 11/11 `already-applied-verified`。
+- **Batch C**（`2eca7fb`、`4762e41`、`82bf2ee`、`aab59a4`、`63b6ea5`、`5c1df27`、`18e2e03` 等）：10/10 领域 owner opt-in 真实 MySQL 租户隔离证据（跨租户 0 行/403、受限账号跨 schema 写被 DB 拒绝）；social 修复 `updateFocus` 跨租户读回泄露（加 tenant/subject 谓词 + `SOCIAL_FOCUS_NOT_FOUND`）；notification V5 移除 `'unknown'` 默认；逐服务残留项（端口签名租户化、缺 tenant 列的表）已记录为 Phase 3 前置。
+- **Batch D1**（`8098c6b`）：`reconcile-owner-schemas.mjs` 迁移改由 admin 执行、owner 重建后仅 DML 授权（去 CREATE/ALTER/INDEX/REFERENCES/EXECUTE），新增每服务独立口令 `<SERVICE_ID_UPPER>_DB_PASSWORD`（回退 `MYSQL_OWNER_PASSWORD`）与 fail-closed `grantVerification` 探针；标准栈 11/11 owner `dml=true/ddlDenied=true/alterDenied=true`。运行时零 DDL：learner/content/learning/assessment/media Flyway 增加 `spring.flyway.enabled` 开关（默认 false）且 `createSchemas(false)`；`run-v2-services.mjs` 移除全部运行时 Flyway 启用项并支持每服务口令；learning 以 `svc_learning`（DML-only）+ Flyway 关闭启动成功（health 200 `UP`）。
+- **Batch D2a**（`d0849b3`）：新增 `scripts/database/reconcile-redis-acl.mjs`（`pnpm redis:acl`）——15 个命名空间 ACL 用户 `svc_<name>`、键模式 `<namespace>:*`（Gateway 为 `englishflow:gateway:*`）、最小命令白名单、`resetchannels`、`ACL DRYRUN` 自身允许/跨命名空间拒绝、`ACL SAVE`；`infra/docker/docker-compose.dev.yml` Redis 启用 `--aclfile /data/users.acl`，标准栈重建后 15/15 验证通过且重启后 `svc_learning` 认证成功；`b32:redis-runtime` 改为 `svc_learning` 真实 ACL 路径。
+- **验证状态**：全量 P1R 最后全绿在 `8098c6b`（1421/1421）。`d0849b3`/`49e47c0` 后已通过：evidence gate（PASS，16 manifests 摘要重定）、`p1r:data-ownership:check`、`plan:p1r:check`、`docs:audit`、`p1r:ci:check`、data-ownership 定向 34/34、`redis:validate`；**全量 P1R 复跑因会话收口未执行，恢复时先跑 `pnpm test:p1r` 确认**。
+- **下一步（按序）**：① D2b：M2-001 harness 支持 Redis ACL 凭据注入并以 `svc_gateway` 重跑真实限流路径（含 manifest 重定）；② D3：`run-v2-services` 全量编排 + audit-service 是否纳入 B29 14 后端基线的决策、fail-closed 链路真实编排复核；③ D4：8 项 runtime requirement 逐项证据（`b32:redis-runtime` 重建/重启恢复需真实 SRS 领域事实、rollback/compensation、`P1R-M1-017` 冻结后的 retention/delete/hold）+ `runtimeStatus` 升级；④ D5 独立复审（P0/P1=0）；⑤ D6 canonical manifest + 台账 `ACCEPTED`。
+- **残留与风险**：IAM `svc_iam` 未纳入 b17 最小权限统一；content/media/gamification/notification 的端口签名租户化与缺 `tenant_id` 表列留待 Phase 3；`P1R-M0-006` 移动工具链 high 漏洞仍 `BLOCKED`；GitHub 网络间歇不可达，push 失败需重试。
+- **环境**：JDK 25 `C:\Users\tiansongzhen\.jdks\openjdk-25.0.2`（每命令临时覆盖 `JAVA_HOME`，系统仍 JDK 21）；标准栈 `yuxuexing-local`（MySQL 13306 / Redis 16379 已启用 aclfile / Kafka 19092 / MinIO 19000-19001 / RabbitMQ 15689-15690）；opt-in 测试 env 前缀 `*_TENANT_TEST_ADMIN_*`/`*_FLYWAY_TEST_ADMIN_*`，admin 口令 `root-local-only`，owner 口令 `local-owner-only`（重定后 `reconcile-owner-schemas.mjs --apply` 会重建 owner 用户为 DML-only）。
+
+## 2026-09-12 M2 三项验收（历史，已被上节取代）
 
 更新时间：2026-09-12 13:30（Asia/Shanghai）。
 
