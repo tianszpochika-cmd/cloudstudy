@@ -87,8 +87,38 @@ M2-001 的运行时证据含 **`default-owner-route-fail-closed`：PASS，status
 
 即：**网关正确地 fail-closed，但底层"canonical owner 与实际控制器不一致"的矛盾未解决**，官网 SSR 消费的公开投影经网关不可达。**归属 `P1R-M3-008`（完成官网公开内容）**。b33 校验器已改为接受两种状态（已注册 / 已记录冲突），但**不允许路由无声消失**。
 
+### ⚠️ 本缺口的修复尝试与结论（第 20 轮）
+
+第 20 轮**实现了修复并做了运行时验证**，随后**回退**。记录全过程，供正式提升时使用。
+
+**修复内容（三层，顺序即契约优先）**：
+
+1. `packages/contracts/fragments/p1r-gateway-boundary.openapi.json`：`public-site` 规则的 `upstreamOwner` `admin-ops-service` → `content-service`；`routeExecutions` 中该条由 `"projections": []` 改为一条 `AVAILABLE` 投影（`publicPathTemplate`/`targetPathTemplate` 均为 `/api/v1/public/site/projection`，`executionKind: UPSTREAM`，`pathStrategy: PRESERVE_PUBLIC_PATH`，`targetUriConfig: gateway.b14.service-base-urls.content`，`controllerEvidence` 指向 `ContentHttpController`）
+2. `GatewayRoutePolicy`：同名规则的 owner 同步为 `content-service`
+3. `GatewayRouteExecutionPolicy`：新增证据常量 `CONTENT_PUBLIC_SITE_PROJECTION`、`add(definitions, "public-site", preserve("projection", …))`，并从 `FAIL_CLOSED_REASONS` 删除该条
+
+**运行时验证（已实测，回退前）**：
+
+```
+gateway /api/v1/public/site/projection : HTTP 200     ← 修复前 404
+  data keys: generatedAt, projectionVersion, contentEpoch, courses, pricing, downloads, announcements, compliance
+official-site SSR /api/public-projection : HTTP 200 (14615 bytes)
+```
+
+网关测试 82/82 PASS（含契约对齐测试）。
+
+**回退原因（治理，非技术）**：该改动是**破坏性契约变更**，会改写**已 ACCEPTED 的 M2-001 冻结基线**，并被多层冻结链校验：
+
+- `scripts/audit/p1r-gateway-contract-check.mjs`：`FROZEN_EXECUTION_TARGET_PLAN_SHA256`（重算得 `4138acfad884448ecfb0250cb301c9af3c1994fe0c806af570dd067e66b3b8c3`）、`EXPECTED_AVAILABLE_EXECUTION_OPERATION_COUNT`（168 → 169）、`EXPECTED_UNAVAILABLE_EXECUTION_REASONS` 需删除该条
+- `scripts/contracts/compatibility-git-baseline.mjs`：`m2-001.gateway-root` 与 `m2-001.expected-projection` 的冻结投影/语义摘要
+- 连带 M1-009…M1-018 的"固定基线链"测试（回退前 P1R 出现 10 项失败，均为此链）
+
+这属于**契约提升（promotion）**，项目已有机制（`M2001_GATEWAY_EXECUTION_TARGET_PROMOTION_ID`、`isValidM2001PromotionAllowance`、`previousPromotion: P1R-M1-018`）✓ 但它改写已验收任务的冻结基线，应与独立评审一同进行；**本轮预算不足以完整合规完成，故回退以保持仓库全绿**。
+
+**另需注意**：该投影聚合了 `pricing`（commerce 事实）与 `announcements`/`compliance`，因此"canonical owner 应为 admin-ops-service"或许才是**设计意图**，而实现把控制器放进了 content-service —— **设计/实现分歧的方向需在提升前一并判定**。
+
 ## 剩余
 
-无。
+无（B 系列测试 0 失败）。上项与测试无关，是端到端缺口。
 
 **覆盖不会丢失**：这些关切已由 `tests/p1r/p1r-gateway-contract.test.mjs` + **M2-001 运行时证据 30/30**（含 11 项真实浏览器 CORS/Origin 检查、限流 429+`Retry-After`、401/403、Redis fail-closed 503 与恢复）覆盖。
