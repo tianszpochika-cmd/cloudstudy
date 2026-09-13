@@ -20,6 +20,7 @@
     "commerce-service": {"port": 18096, "protocol": "http", "phase": "phase-1", "description": "SKU, price snapshot, order, entitlement, payment Gate and reconciliation boundary"},
     "admin-ops-service": {"port": 18097, "protocol": "http", "phase": "phase-1", "description": "Admin projections, approved domain commands, support tickets and audit association"},
     "analytics-service": {"port": 18098, "protocol": "http", "phase": "phase-1", "description": "Allowlisted sanitized events, versioned metric projections and replay boundary"},
+    "workflow-service": {"port": 18071, "protocol": "http", "phase": "platform-0", "description": "Saga state, scheduled jobs, compensation, DLQ handling and manual recovery"},
     "audit-service": {"port": 18099, "protocol": "http", "phase": "platform-0", "description": "Append-only audit fact ingest and immutable compliance store"},
     "core-api": {"port": 18080, "protocol": "http", "phase": "phase-1", "description": "Spring Boot Core API"},
     "ai-orchestrator": {"port": 18081, "protocol": "http", "phase": "phase-2", "description": "FastAPI AI orchestrator; disabled in Phase 1"},

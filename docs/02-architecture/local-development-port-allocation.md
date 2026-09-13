@@ -31,6 +31,7 @@
 | Admin Ops Service | 18097 | Spring Boot | v2 脱敏投影、审批命令、客服工单和审计关联；不拥有领域事实 |
   | Analytics Service | 18098 | Spring Boot | v2 脱敏事件 allowlist、指标投影和重算；独立 schema |
   | Audit Service | 18099 | Spring Boot | 平台 append-only 审计事实摄取与合规留存；独立 schema；仅服务边界验证 |
+  | Workflow Service | 18071 | Spring Boot | Saga 状态、定时任务、补偿、DLQ 与人工恢复；不跨域写表（P1R-M2-006 登记） |
 | Core API | 18080 | Spring Boot | v1 兼容后端；Gateway 接入前的本地回滚入口 |
 | AI Orchestrator | 18081 | FastAPI | Phase 2，Phase 1 禁用 |
 | Content Worker | 18082 | Worker health | 可选 |
