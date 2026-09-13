@@ -1,0 +1,69 @@
+spring:
+  application:
+    name: workflow-service
+  lifecycle:
+    timeout-per-shutdown-phase: ${WORKFLOW_SHUTDOWN_TIMEOUT:20s}
+
+server:
+  address: ${WORKFLOW_SERVICE_SERVER_ADDRESS:127.0.0.1}
+  port: ${WORKFLOW_SERVICE_PORT:18071}
+  shutdown: graceful
+
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: never
+      group:
+        liveness:
+          include: livenessState
+        readiness:
+          include: readinessState
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+  tracing:
+    propagation:
+      type: W3C
+    sampling:
+      probability: ${OTEL_TRACING_SAMPLING_PROBABILITY:0.1}
+    export:
+      enabled: ${OTEL_TRACING_ENABLED:false}
+
+service:
+  name: workflow-service
+  owner: workflow-service
+  schema: ${WORKFLOW_SCHEMA:workflow_service}
+  redis-namespace: workflow
+
+workflow:
+  persistence:
+    # Off by default, like every other owner: with persistence disabled the service answers readiness
+    # without claiming a database it has not been given, rather than appearing healthy against nothing.
+    enabled: ${WORKFLOW_PERSISTENCE_ENABLED:false}
+    jdbc-url: ${WORKFLOW_JDBC_URL:}
+    username: ${WORKFLOW_JDBC_USERNAME:}
+    password: ${WORKFLOW_JDBC_PASSWORD:}
+    schema: ${WORKFLOW_SCHEMA:workflow_service}
+  security:
+    resource-server-enabled: ${WORKFLOW_RESOURCE_SERVER_ENABLED:true}
+    issuer-uri: ${WORKFLOW_SECURITY_ISSUER_URI:${IAM_JWT_ISSUER:http://127.0.0.1:18087}}
+    jwk-set-uri: ${WORKFLOW_SECURITY_JWK_SET_URI:${IAM_JWT_JWKS_URI:http://127.0.0.1:18087/api/v1/auth/jwks}}
+    audience: ${WORKFLOW_SECURITY_AUDIENCE:${IAM_JWT_AUDIENCE:yuxuexing-api}}
+  scheduling:
+    # The scheduler stays off until a leased job runner exists, so a second instance cannot run the same
+    # job merely because it started.
+    enabled: ${WORKFLOW_SCHEDULING_ENABLED:false}
+    lease-duration: ${WORKFLOW_JOB_LEASE:60s}
+  recovery:
+    # Manual recovery is a two-person operation; the second approver is a different principal from the
+    # requester and the service refuses a self-approval.
+    require-second-approver: ${WORKFLOW_RECOVERY_REQUIRES_APPROVER:true}

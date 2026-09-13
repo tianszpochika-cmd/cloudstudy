@@ -14,6 +14,16 @@ export const PLATFORM_OWNERS = [
     schema: 'audit_service',
     dbCredential: 'svc_audit',
     migrationPath: 'services/audit-service/src/main/resources/db/migration/V1__create_audit_service_schema.sql'
+  },
+  {
+    // Built under P1R-M2-006. It owns saga state, job leases and recovery receipts and no domain facts,
+    // so it is a platform owner rather than a Phase 1 domain owner and stays out of the domain service
+    // order that config/b17-runtime-services.json pins. Its schema is migrated by the reconcile runner
+    // from V1 like audit-service's, which keeps its credential DML-only.
+    id: 'workflow-service',
+    schema: 'workflow_service',
+    dbCredential: 'svc_workflow',
+    migrationPath: 'services/workflow-service/src/main/resources/db/migration/V1__create_workflow_service_schema.sql'
   }
 ];
 
@@ -25,8 +35,10 @@ export const SELF_MIGRATING_OWNERS = [
 ];
 
 // Services the ownership policy already declares as data owners but which have no runtime yet. They
-// are excluded from runtime evidence instead of being reported as failures.
-export const DECLARED_NOT_BUILT = ['workflow-service'];
+// are excluded from runtime evidence instead of being reported as failures. workflow-service was the
+// only entry and has been built under P1R-M2-006, so the list is empty; it is kept rather than removed so
+// the next such service has a place to be declared.
+export const DECLARED_NOT_BUILT = [];
 
 // The credential name follows the same derivation the runtime runner uses:
 // <service id without the -service suffix, dashes to underscores>, prefixed with svc_.
