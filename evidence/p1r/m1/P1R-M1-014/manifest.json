@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-014",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "7aaebac87e8870fd763bd93dc97afcd18f80b714",
+  "sourceCommit": "306c2ab9d36b86a039d4af8ceb471b54489e1c09",
   "artifactDigests": [
     {
       "path": "config/b26-event-runtime.json",
@@ -167,7 +167,7 @@
     {
       "path": "tests/b4/b4-static.test.mjs",
       "algorithm": "sha256",
-      "digest": "1089bde909eb9010d6afd53a66f35c80f17ac705744f4303c92c0da47d0e7cc0"
+      "digest": "6b59234ecdab4ef909efb867d60378f4aca86f9d79965a17eac54b6f4d1d5207"
     },
     {
       "path": "tests/p1r/p1r-content-lifecycle.test.mjs",
@@ -527,18 +527,28 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-12T22:07:09.012Z",
         "details": "Current-source artifact digest rebase after P1R-M2-005 E8 registered the operator dead letter replay entry as p1r:m2-005:replay in package.json. The only artifact of these tasks that moved is package.json. Original provenance, review history and runtime status unchanged."
+      },
+      {
+        "taskId": "P1R-M1-014",
+        "sourceCommit": "306c2ab9d36b86a039d4af8ceb471b54489e1c09",
+        "auditedImplementationSource": "306c2ab9d36b86a039d4af8ceb471b54489e1c09",
+        "integrationCheckpoint": "306c2ab9d36b86a039d4af8ceb471b54489e1c09",
+        "reviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-13T00:52:21.516Z",
+        "details": "Current-source revalidation after its recorded B4 contract test followed a requirement rename. M1-016 reworked the notification surface, so the operation ids at /api/v1/notifications/messages and /api/v1/notifications/preferences carry M1016 rather than B12. The routes and their semantics are unchanged; only the expected identifier moved."
       }
     ],
-    "previousCurrentSourceCommit": "1eefbe6d5b22d87872c4f8c1cc0ecad46497e3a6",
+    "previousCurrentSourceCommit": "7aaebac87e8870fd763bd93dc97afcd18f80b714",
     "previousCurrentSourceRevalidationTask": "P1R-M2-005",
     "previousCurrentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "previousCurrentSourceRevalidationFinishedAt": "2026-09-12T21:46:47.793Z",
-    "currentSourceRevalidationTask": "P1R-M2-005",
+    "previousCurrentSourceRevalidationFinishedAt": "2026-09-12T22:07:09.012Z",
+    "currentSourceRevalidationTask": "P1R-M1-014",
     "currentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-12T22:07:09.012Z",
-    "currentSourceRevalidationAuditedImplementationSource": "7aaebac87e8870fd763bd93dc97afcd18f80b714",
-    "currentSourceRevalidationIntegrationCheckpoint": "7aaebac87e8870fd763bd93dc97afcd18f80b714"
+    "currentSourceRevalidationFinishedAt": "2026-09-13T00:52:21.516Z",
+    "currentSourceRevalidationAuditedImplementationSource": "306c2ab9d36b86a039d4af8ceb471b54489e1c09",
+    "currentSourceRevalidationIntegrationCheckpoint": "306c2ab9d36b86a039d4af8ceb471b54489e1c09"
   }
 }

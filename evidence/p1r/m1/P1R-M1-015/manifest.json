@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-015",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "7aaebac87e8870fd763bd93dc97afcd18f80b714",
+  "sourceCommit": "306c2ab9d36b86a039d4af8ceb471b54489e1c09",
   "artifactDigests": [
     {
       "path": "config/b20-commerce-dr-evidence.json",
@@ -177,7 +177,7 @@
     {
       "path": "tests/b13/b13-contract-migration.test.mjs",
       "algorithm": "sha256",
-      "digest": "e36f009110750951b016ebd57ac2d63cf4ac9ad36063d0c9f5f3722478ed907c"
+      "digest": "edefcd77fff3a435c2acff0bf054ec3adbf6cf6082f494d04b448009e0238076"
     },
     {
       "path": "tests/b26/b26-event-runtime.test.mjs",
@@ -534,18 +534,28 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-12T22:07:09.012Z",
         "details": "Current-source artifact digest rebase after P1R-M2-005 E8 registered the operator dead letter replay entry as p1r:m2-005:replay in package.json. The only artifact of these tasks that moved is package.json. Original provenance, review history and runtime status unchanged."
+      },
+      {
+        "taskId": "P1R-M1-015",
+        "sourceCommit": "306c2ab9d36b86a039d4af8ceb471b54489e1c09",
+        "auditedImplementationSource": "306c2ab9d36b86a039d4af8ceb471b54489e1c09",
+        "integrationCheckpoint": "306c2ab9d36b86a039d4af8ceb471b54489e1c09",
+        "reviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-13T00:52:21.528Z",
+        "details": "Current-source revalidation after its recorded B13 contract test followed two requirement renames and one case-sensitivity fix. M1-017 reworked the analytics telemetry intake, so /api/v1/analytics/telemetry carries an M1017 operation id and the traceability pattern accepts it; the forged-authority header assertion now matches case-insensitively, which is what HTTP header names require and what the commerce assertion beside it already did. No accepted behaviour changed."
       }
     ],
-    "previousCurrentSourceCommit": "1eefbe6d5b22d87872c4f8c1cc0ecad46497e3a6",
+    "previousCurrentSourceCommit": "7aaebac87e8870fd763bd93dc97afcd18f80b714",
     "previousCurrentSourceRevalidationTask": "P1R-M2-005",
     "previousCurrentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "previousCurrentSourceRevalidationFinishedAt": "2026-09-12T21:46:47.793Z",
-    "currentSourceRevalidationTask": "P1R-M2-005",
+    "previousCurrentSourceRevalidationFinishedAt": "2026-09-12T22:07:09.012Z",
+    "currentSourceRevalidationTask": "P1R-M1-015",
     "currentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-12T22:07:09.012Z",
-    "currentSourceRevalidationAuditedImplementationSource": "7aaebac87e8870fd763bd93dc97afcd18f80b714",
-    "currentSourceRevalidationIntegrationCheckpoint": "7aaebac87e8870fd763bd93dc97afcd18f80b714"
+    "currentSourceRevalidationFinishedAt": "2026-09-13T00:52:21.528Z",
+    "currentSourceRevalidationAuditedImplementationSource": "306c2ab9d36b86a039d4af8ceb471b54489e1c09",
+    "currentSourceRevalidationIntegrationCheckpoint": "306c2ab9d36b86a039d4af8ceb471b54489e1c09"
   }
 }
