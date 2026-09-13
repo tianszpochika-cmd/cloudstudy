@@ -498,8 +498,15 @@ function verifyGatedOwnerTests() {
   }
   if (evidence !== null && Array.isArray(evidence.results)) {
     for (const entry of evidence.results) {
-      const kind = entry.kind === 'tenant' ? 'tenant-isolation' : 'flyway-coverage';
-      record(`${kind}:${entry.service}`, entry.passed ? 'PASS' : 'FAIL', {
+      // Classified by the property's exact shape, not by a suffix: iam.jdbc.migration.integration also
+      // ends in "migration.integration" and was folded into the flyway coverage check, where it
+      // overwrote the real iam.migration.integration group and made a passing requirement look failed.
+      // The check id carries the property so two groups can never collide.
+      const kind = /^[a-z0-9-]+\.tenant\.integration$/u.test(entry.property) ? 'tenant-isolation'
+        : /^[a-z0-9-]+\.migration\.integration$/u.test(entry.property) ? 'flyway-coverage'
+          : 'iam-jdbc-persistence';
+      record(`${kind}:${entry.service}:${entry.property}`, entry.passed ? 'PASS' : 'FAIL', {
+        property: entry.property,
         classes: entry.classes,
         testsRun: entry.testsRun,
         failures: entry.failures,
@@ -508,6 +515,13 @@ function verifyGatedOwnerTests() {
         reason: entry.reason,
       });
     }
+    // The runner asserts its own coverage and so does the harness: a discovered class that was never
+    // executed is exactly the defect this wiring exists to expose.
+    record('gated-tests:discovery-coverage', evidence.uncoveredClasses?.length === 0 ? 'PASS' : 'FAIL', {
+      discoveredClasses: evidence.discoveredClasses,
+      uncoveredClasses: evidence.uncoveredClasses ?? [],
+      policy: evidence.policy,
+    });
     return { available: true, evidence };
   }
   // The Java toolchain or the database is not reachable from here. That is a real gap in the

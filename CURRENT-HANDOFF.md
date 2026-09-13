@@ -1,7 +1,7 @@
 # CURRENT-HANDOFF —— 语学星 Phase 1 重基线（P1R）
 
 > 本文件是**跨会话交接**的入口。它记录"当前在哪、下一步做什么、谁在等谁"。
-> 最后更新：**2026-09-13**（`P1R-M2-004` 返工完成并推送 `629d0d9`；`P1R-M0-006` 第二轮返工进行中）。
+> 最后更新：**2026-09-13**（`P1R-M2-004` 进入**第三轮**返工；`P1R-M0-006` 第二轮返工的 5 项 P1 已全部关闭）。
 
 ---
 
@@ -9,9 +9,9 @@
 
 | 项 | 值 |
 |---|---|
-| HEAD | `629d0d9`（`origin/dev` 同） |
-| `P1R-M2-004` | 返工 R1–R3 已完成并推送，**待第二轮独立评审** |
-| `P1R-M0-006` | 第一轮评审判 **REWORK**（P0/P1/P2 = 0/5/8），台账状态已回退 `IN_PROGRESS`，返工进行中 |
+| HEAD | `b0a562d`（`origin/dev` 为 `b3bc83d`，最新一次提交待推） |
+| `P1R-M2-004` | **第三轮返工进行中**：第二轮评审判 REWORK（P0/P1/P2 = 0/1/9），新 P1（gated runner 退出码判据）**已修**；7 个 IAM gated 类与 10 项 P2 **未完成** |
+| `P1R-M0-006` | 第一轮评审判 **REWORK**（0/5/8）；第二轮返工 **5 项 P1 已全部关闭**，**8 项 P2 未做** |
 
 ## 1. 当前状态
 
@@ -46,7 +46,8 @@
 | 前端修复 | H5 登录表单（`form-type` + 去掉非 DOM 事件的 `.prevent`）；成人 Gate 策略版本 `v2-phase1` → `b30-adult-v1`；IAM 越界出生年 500 → 403；learner-web 把 `CONSENT_REQUIRED` 当无权限而困死首次运行；两前端调用不存在的 `/learner/onboarding/options` |
 | legacy B 套件 | **33 → 0 失败**，18 个提交，零退役（登记为 M2-009 前置，见 `execution/P1R-M2-009.md`） |
 | M2-004 返工 | R1 四项全部关闭（TENANT-GUARD 改判并实测、ACL 探针 13→15、Redis 丢失行为证据、空库含 audit-service）；R2 六项；R3 四项 |
-| M0-006 返工 | P1-1 更正被证伪的根因主张（18 份 manifest + 5 处文档）；P1-2 换成 lockfile 解析级校验；P1-3 adm-zip→0.6.1 + @intlify 显式风险接受；P1-4 修 manifest provenance；P1-5 守卫收紧并补 6 个防洗白用例（55/55） |
+| M0-006 返工 | 5 项 P1 全关闭：P1-1 更正被证伪主张（18 份 manifest + 5 处文档）、P1-2 lockfile 解析级校验、P1-3 adm-zip→0.6.1 + @intlify 风险接受、P1-4 provenance 对齐、P1-5 守卫收紧 + 6 个防洗白用例（55/55） |
+| M2-004 第三轮 | 新 P1 已修：gated runner 改 fail-closed + 发现式覆盖 ⇒ discovered=30 failing=2 uncovered=0（旧版只跑 23 个）；**7 个 IAM 类与 10 项 P2 未完成** |
 
 ## 4. 下一步（按新优先级规则）
 
