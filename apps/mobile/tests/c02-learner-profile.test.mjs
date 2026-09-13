@@ -10,7 +10,12 @@ test('C02 Mobile onboarding uses learner-service options and valid quota choices
   const api = read('src/api/learner-content.ts')
   const store = read('src/stores/learner-content.ts')
   const page = read('src/pages/onboarding/onboarding.vue')
-  assert.match(api, /learner\/onboarding\/options/)
+  // The contract declares /api/v1/onboarding/options, and the onboarding-domain rule belongs to
+  // learner-service, so the path has no /learner segment. The previous assertion pinned
+  // /learner/onboarding/options, which no canonical projection serves: that call was answered 404
+  // and, because the 404 carried no CORS headers, the browser reported it as a CORS failure.
+  assert.match(api, /'\/onboarding\/options'/)
+  assert.doesNotMatch(api, /learner\/onboarding\/options/)
   assert.match(api, /birthYear\?: number/)
   assert.match(store, /const quotas = ref<number\[\]>/)
   assert.match(page, /v-for="item in store\.quotas"/)

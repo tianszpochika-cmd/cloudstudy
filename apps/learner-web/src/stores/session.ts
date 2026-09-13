@@ -243,9 +243,30 @@ export const useSessionStore = defineStore('session', () => {
     forbiddenReason.value = forbiddenMessage(error)
     const attemptedPath = currentInternalPath()
     const { router } = await import('../router')
+    // A learner who has not given consent yet is not forbidden: the learner service answers
+    // CONSENT_REQUIRED for profile, targets and preferences until the onboarding consents are given,
+    // and every other code in LearnerDecisionCode is a real denial. Treating this one as a denial
+    // sent a freshly registered learner to the forbidden page from the onboarding page they were
+    // already on, which strands the first-run journey with no way forward.
+    if (decisionCode(error) === 'CONSENT_REQUIRED') {
+      if (router.currentRoute.value.name !== 'onboarding') {
+        await router.replace({ name: 'onboarding', query: { redirect: safeReturnTo(attemptedPath) } })
+      }
+      return
+    }
     if (router.currentRoute.value.name !== 'forbidden') {
       await router.replace({ name: 'forbidden', query: { from: safeReturnTo(attemptedPath) } })
     }
+  }
+
+  /** The domain decision code the service returns, for example CONSENT_REQUIRED. */
+  function decisionCode(error: ApiError): string | null {
+    const details = error.details
+    if (typeof details !== 'object' || details === null) return null
+    const envelope = (details as { error?: unknown }).error
+    const source = typeof envelope === 'object' && envelope !== null ? envelope : details
+    const code = (source as Record<string, unknown>).code
+    return typeof code === 'string' && code.trim() ? code.trim() : null
   }
 
   function setAuthAdapter(next: JwtAuthAdapter): void {

@@ -36,7 +36,7 @@ const READ_MODEL_PATHS = {
   profile: '/learner/profile',
   target: '/learner/targets',
   preferences: '/learner/preferences',
-  onboardingOptions: '/learner/onboarding/options',
+  onboardingOptions: '/onboarding/options',
   firstDay: '/learner/first-day',
   home: '/learner/home',
   contentCatalog: '/content/learner/catalog',

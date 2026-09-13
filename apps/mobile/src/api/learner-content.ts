@@ -225,7 +225,7 @@ export const mobileLearnerContentApi = {
       requestOptional(query('/learner/profile', contentLocale)),
       requestOptional(query('/learner/targets', contentLocale)),
       requestOptional(query('/learner/preferences', contentLocale)),
-      requestOptional(query('/learner/onboarding/options', contentLocale)),
+      requestOptional(query('/onboarding/options', contentLocale)),
     ])
     return parseOnboarding(profile, target, preferences, options)
   },
