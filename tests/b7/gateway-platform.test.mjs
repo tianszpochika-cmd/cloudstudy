@@ -37,38 +37,62 @@ test('B7 Platform 0 locks Java 25, Boot 4.1 and the compatible Cloud train', () 
 });
 
 test('Gateway uses a required registered port and exposes health/readiness configuration', () => {
-  const application = read('services/api-gateway/src/main/resources/application.yaml');
+  const application = read('services/api-gateway/src/main/resources/application.yml');
+  const local = read('services/api-gateway/src/main/resources/application-local.yml');
   assert.match(application, /address: \$\{SERVER_ADDRESS:127\.0\.0\.1\}/);
   assert.match(application, /port: \$\{API_GATEWAY_PORT:18070\}/);
   assert.match(application, /probes:\s*\n\s*enabled: true/);
-  assert.match(application, /allowed-origins:/);
+  // M1-004 replaced one shared origin list with one origin per browser profile, so every application
+  // maps to exactly one boundary; asserting each profile is stricter than accepting any list.
+  for (const profile of ['learner-web', 'admin-web', 'mobile-h5', 'official-site']) {
+    assert.match(application, new RegExp(`${profile}-origin: \\$\\{CORS_ALLOWED_ORIGIN_`));
+  }
   assert.match(application, /rate-limit:/);
   assert.match(application, /anonymous-read-enabled: false/);
   assert.match(application, /jwt-prevalidation-enabled: \$\{GATEWAY_JWT_PREVALIDATION_ENABLED:true\}/);
-  assert.match(read('services/api-gateway/src/main/resources/application-local.yaml'), /on-profile: local/);
-  assert.match(read('services/api-gateway/src/main/resources/application-local.yaml'), /anonymous-read-enabled: true/);
+  assert.match(local, /on-profile: local/);
+  // The local profile no longer flips anonymous read on. It is an explicit development exception for
+  // the strangler and the in-process limiter, and anonymous read stays off there too.
+  assert.match(local, /b14:/);
+  assert.match(local, /enabled: \$\{B14_STRANGLER_ENABLED:true\}/);
+  assert.match(local, /backend: \$\{GATEWAY_RATE_LIMIT_BACKEND:memory\}/);
+  assert.doesNotMatch(local, /anonymous-read-enabled: true/);
 });
 
 test('Gateway exposes only explicit v1 compatibility routes and preserves the anti-corruption boundary', () => {
+  const policy = read('services/api-gateway/src/main/java/com/englishflow/gateway/policy/GatewayRoutePolicy.java');
+  const executionPolicy = read('services/api-gateway/src/main/java/com/englishflow/gateway/policy/GatewayRouteExecutionPolicy.java');
   const configuration = read('services/api-gateway/src/main/java/com/englishflow/gateway/config/GatewayConfiguration.java');
   const boundary = read('services/api-gateway/src/main/java/com/englishflow/gateway/filter/ApiVersionBoundaryGlobalFilter.java');
   const jwtBoundary = read('services/api-gateway/src/main/java/com/englishflow/gateway/filter/JwtPreValidationBoundaryGlobalFilter.java');
   const allGatewayJava = javaSources('services/api-gateway/src/main/java');
 
-  assert.match(configuration, /\/api\/v1\/health/);
-  assert.match(configuration, /\/api\/v1\/legacy\/\*\*/);
-  assert.match(configuration, /rewritePath\("\/api\/v1\/legacy\/\(\?<segment>\.\*\)"/);
-  assert.match(configuration, /\/api\/v1\/\$\{segment\}/);
-  assert.match(configuration, /X-Compatibility-Route/);
-  assert.match(configuration, /method\(HttpMethod\.GET, HttpMethod\.HEAD\)/);
+  assert.match(policy, /"\/api\/v1\/health"/);
+  assert.match(policy, /rule\("gateway-health"/);
+  // The B-line legacy rewrite route, its X-Compatibility-Route marker and the local-profile-only
+  // route are gone. Rather than a read-only compatibility route, no catch-all is registered at all,
+  // and every route comes from the canonical policy, so nothing can be rewritten around it.
+  assert.doesNotMatch(policy + configuration, /\/api\/v1\/legacy\//);
+  assert.doesNotMatch(policy + configuration, /X-Compatibility-Route/);
+  assert.doesNotMatch(policy + configuration, /acceptsProfiles/);
+  assert.match(configuration, /for \(GatewayRouteExecutionPolicy\.RouteBinding binding : routeExecutionPolicy\.routeBindings\(\)\)/);
+  assert.match(configuration, /\.method\(routeMethods\(binding\.methods\(\)\)\)/);
   assert.match(configuration, /anyExchange\(\)\.denyAll\(\)/);
-  assert.match(configuration, /acceptsProfiles\(Profiles\.of\("local"\)\)/);
   assert.doesNotMatch(configuration, /anyExchange\(\)\.permitAll\(\)/);
   assert.match(boundary, /unsupported_api_version/);
   assert.match(boundary, /internal_route_not_public/);
   assert.match(configuration, /SecurityWebFilterChain/);
   assert.match(jwtBoundary, /header-shortcut boundary/);
-  assert.doesNotMatch(allGatewayJava, /@RestController|JdbcTemplate|JpaRepository|@Entity/);
+  // The Gateway holds no domain or persistence code. The one controller is the canonical
+  // GATEWAY_LOCAL health projection, and naming it is stronger than a blanket ban: it must stay a
+  // local, dependency-free report on the Gateway process and must not infer owner-service health.
+  assert.doesNotMatch(allGatewayJava, /JdbcTemplate|JpaRepository|@Entity/);
+  const controllerNames = [...allGatewayJava.matchAll(/@RestController[\s\S]{0,240}?class\s+(\w+)/gu)].map((match) => match[1]);
+  assert.deepEqual(controllerNames, ['GatewayHealthController'],
+    'the canonical GATEWAY_LOCAL health projection must be the only Gateway controller');
+  const health = read('services/api-gateway/src/main/java/com/englishflow/gateway/web/GatewayHealthController.java');
+  assert.match(health, /"dependencies", List\.of\(\)/);
+  assert.match(health, /path = "\/internal\/gateway\/health"/);
 });
 
 test('Request/trace context is bounded and error mapping distinguishes edge failures', () => {
@@ -90,8 +114,12 @@ test('CORS and rate limiting are explicit platform seams, not domain behavior', 
   const configuration = read('services/api-gateway/src/main/java/com/englishflow/gateway/config/GatewayConfiguration.java');
   const rateLimit = read('services/api-gateway/src/main/java/com/englishflow/gateway/filter/RateLimitPlaceholderGlobalFilter.java');
   const readme = read('services/api-gateway/README.md');
-  assert.match(configuration, /CorsWebFilter/);
-  assert.match(configuration, /setAllowedOrigins/);
+  // CORS is a CorsConfigurationSource resolved per browser profile and applied through the security
+  // chain, so each origin gets exactly one allowed origin rather than a shared filter with a list.
+  assert.match(configuration, /CorsConfigurationSource corsConfigurationSource\(/);
+  assert.match(configuration, /properties\.cors\(\)\.profileFor\(origin\)/);
+  assert.match(configuration, /configuration\.setAllowedOrigins\(java\.util\.List\.of\(origin\)\)/);
+  assert.match(configuration, /\.cors\(Customizer\.withDefaults\(\)\)/);
   assert.match(rateLimit, /local-placeholder/);
   assert.match(rateLimit, /TOO_MANY_REQUESTS/);
   assert.match(readme, /does not own learner, content, order, permission or audit facts/);
