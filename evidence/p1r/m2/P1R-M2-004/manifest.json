@@ -2,7 +2,7 @@
   "taskId": "P1R-M2-004",
   "draftOnly": false,
   "canonicalTaskStatus": "REVIEW",
-  "sourceCommit": "a0e621615bdd5c5e8ab8abbe76bd159116476a9c",
+  "sourceCommit": "e42d8cae3dbb38973d95aaa26e3ba85a99b27425",
   "artifactDigests": [
     {
       "path": "config/p1r-data-ownership.v1.json",
@@ -37,7 +37,7 @@
     {
       "path": "scripts/database/reconcile-redis-acl.mjs",
       "algorithm": "sha256",
-      "digest": "b0b0f0fe8e28f147ca365b6d178aace17bf9a2aa135bea8144f17f04629447ec"
+      "digest": "c90b7de2aa3d3159f7917219d12ed24ddf97aa3f74d4ee390b155f1d5ba72450"
     },
     {
       "path": "scripts/audit/p1r-data-ownership-check.mjs",
@@ -47,7 +47,7 @@
     {
       "path": "scripts/runtime/p1r-m2-004-runtime.mjs",
       "algorithm": "sha256",
-      "digest": "dfd71204e3163e19eb1e719675ca8d360d096691dea95d645ac11b06d5facf2a"
+      "digest": "70e5c845ee9dcda1bfa9aa17a49aefd172a37f5a35734c1ac77375a5c5e4a114"
     },
     {
       "path": "scripts/runtime/run-gated-db-tests.mjs",
@@ -262,7 +262,7 @@
     {
       "path": "evidence/p1r/m2/P1R-M2-004/runtime-evidence-2026-09-13.json",
       "algorithm": "sha256",
-      "digest": "7e3cbbcb6288347877598c77f7d1b4a12c892ff609637bc43a109571e2783fbb"
+      "digest": "d19b3281958144504f9fc53e030e1b9f12b78c8acb851056c2fe4376e0833c6f"
     },
     {
       "path": "evidence/p1r/m2/P1R-M2-004/gated-db-tests-2026-09-13.json",
@@ -275,7 +275,7 @@
     "branch": "dev",
     "phaseStatus": "D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED",
     "runtimeStatus": "M2_004_PARTIAL_RUNTIME_VERIFIED",
-    "reviewedRevision": "a0e621615bdd5c5e8ab8abbe76bd159116476a9c",
+    "reviewedRevision": "e42d8cae3dbb38973d95aaa26e3ba85a99b27425",
     "evidenceRevision": null,
     "toolchain": {
       "java": "OpenJDK 25.0.4.1",
@@ -288,9 +288,10 @@
     "owners": {
       "declaredServiceOwners": 15,
       "ownersWithRedisNamespace": 15,
-      "redisNamespaceAclChecks": 15,
-      "redisNamespaceAclPassed": 15,
+      "redisNamespaceAclChecks": 16,
+      "redisNamespaceAclPassed": 16,
       "redisOnlyOwnersProbed": [
+        "user-set-matches-policy",
         "learner-service",
         "content-service",
         "learning-service",
@@ -327,7 +328,7 @@
     "reviewHistory": []
   },
   "startedAt": "2026-09-09T00:00:00+08:00",
-  "finishedAt": "2026-09-13T16:35:26.161Z",
+  "finishedAt": "2026-09-13T17:01:53.789Z",
   "actors": [
     "root-coordinator",
     "p1r-implementation"
@@ -361,7 +362,7 @@
     {
       "check": "M2-004-REDIS-NAMESPACE-ACL",
       "status": "PASS",
-      "details": "Every owner the policy gives a Redis namespace was probed, 15 in total including the two that have no database schema, and each resolved to exactly one ACL user scoped to its own namespace, able to write inside it and refused in another owner's. The requirement's second clause is covered separately: the business fact row counts in thirteen owner tables were identical before, during and after Redis was stopped and restarted, so losing Redis cannot create or lose a business fact."
+      "details": "Every owner the policy gives a Redis namespace was probed, 16 in total including the two that have no database schema, and each resolved to exactly one ACL user scoped to its own namespace, able to write inside it and refused in another owner's. The requirement's second clause is covered separately: the business fact row counts in thirteen owner tables were identical before, during and after Redis was stopped and restarted, so losing Redis cannot create or lose a business fact."
     },
     {
       "check": "M2-004-FLYWAY-EMPTY-AND-EXISTING",

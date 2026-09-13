@@ -2,9 +2,9 @@
   "schema": "m2.data-ownership.runtime-evidence.v1",
   "taskId": "P1R-M2-004",
   "result": "PARTIAL",
-  "sourceCommit": "9e5ba34d10637d6b351f85d6cb8af18c1ad6dd7d",
-  "startedAt": "2026-09-13T16:28:26.228Z",
-  "finishedAt": "2026-09-13T16:32:52.988Z",
+  "sourceCommit": "236b2a3f875eda0b1076002bb186bdb84b33836a",
+  "startedAt": "2026-09-13T16:56:53.603Z",
+  "finishedAt": "2026-09-13T17:01:35.689Z",
   "ownerCount": 13,
   "requirements": [
     {
@@ -556,6 +556,46 @@
         }
       ],
       "allDenied": true,
+      "result": "PASS"
+    },
+    {
+      "expectedUsers": [
+        "svc_admin_ops",
+        "svc_analytics",
+        "svc_assessment",
+        "svc_audit",
+        "svc_commerce",
+        "svc_content",
+        "svc_gamification",
+        "svc_gateway",
+        "svc_iam",
+        "svc_learner",
+        "svc_learning",
+        "svc_media",
+        "svc_notification",
+        "svc_social",
+        "svc_workflow"
+      ],
+      "actualUsers": [
+        "svc_admin_ops",
+        "svc_analytics",
+        "svc_assessment",
+        "svc_audit",
+        "svc_commerce",
+        "svc_content",
+        "svc_gamification",
+        "svc_gateway",
+        "svc_iam",
+        "svc_learner",
+        "svc_learning",
+        "svc_media",
+        "svc_notification",
+        "svc_social",
+        "svc_workflow"
+      ],
+      "unexpectedUsers": [],
+      "missingUsers": [],
+      "id": "redis-namespace-acl:user-set-matches-policy",
       "result": "PASS"
     },
     {
