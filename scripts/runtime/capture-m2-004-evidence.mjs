@@ -11,6 +11,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import { runtimeOwners } from '../database/lib/owner-manifest.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const head = execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).trim();
@@ -98,9 +99,25 @@ const manifest = {
       ownersWithRedisNamespace: redisOnlyNamespaced,
       redisNamespaceAclChecks: aclChecks.length,
       redisNamespaceAclPassed: aclChecks.filter((check) => check.result === 'PASS').length,
+      // The probes cover every owner the policy gives a namespace, plus one policy-level check that
+      // belongs to no owner. An earlier version of this field listed all of them under a name that said
+      // "redis-only" and included the policy-level check's own name, so it described neither what it
+      // contained nor how many owners there were.
+      ownersProbed: aclChecks
+        .map((check) => check.id.replace('redis-namespace-acl:', ''))
+        .filter((id) => ownership.serviceOwners.some((owner) => owner.service === id)),
+      policyLevelChecks: aclChecks
+        .map((check) => check.id.replace('redis-namespace-acl:', ''))
+        .filter((id) => !ownership.serviceOwners.some((owner) => owner.service === id)),
+      // The owners that hold a Redis namespace but no database schema of their own, which is what
+      // "redis-only" means. The policy has no field that says so: api-gateway carries
+      // businessSchema: null while workflow-service has no businessSchema key at all, exactly like the
+      // domain owners. The authority is the same owner manifest the harness reads, which lists the
+      // owners that actually have a database.
       redisOnlyOwnersProbed: aclChecks
-        .filter((check) => !ownership.serviceOwners.some((owner) => owner.service === check.id.replace('redis-namespace-acl:', '') && owner.businessSchema))
-        .map((check) => check.id.replace('redis-namespace-acl:', '')),
+        .map((check) => check.id.replace('redis-namespace-acl:', ''))
+        .filter((id) => ownership.serviceOwners.some((owner) => owner.service === id)
+          && !runtimeOwners(root).some((owner) => owner.id === id)),
       gatedTestClasses: gated.classesRun,
       gatedTestsRun: gated.testsRun,
     },
@@ -158,7 +175,12 @@ const manifest = {
     {
       check: 'M2-004-TENANT-GUARD',
       status: statusOf('M2-004-TENANT-GUARD') === 'VERIFIED' ? 'PASS' : 'FAIL',
-      details: `Delivered at the database and service layer. ${tenantChecks.length} *TenantIsolationTest classes write each owner's facts through the owner's own repository against a real MySQL and assert that a foreign tenant is refused, and all ${tenantChecks.length} pass when run with their flags. Only the HTTP-level two-tenant negative is residual, which needs the synthetic per-owner account P1R-M0-007 builds and P1R-M2-009 wires into CI.`,
+      // Corrected wording. The earlier text said the tests write each owner's facts "through the owner's
+      // own repository", which overstates them: read from their sources, all ten write with a
+      // JdbcTemplate issued against the owner's schema, and four of them reference no production class at
+      // all. What they do establish is that an owner's own schema accepts and isolates its tenant's rows
+      // against a real MySQL, and that a foreign tenant's rows are not returned.
+      details: `Delivered at the storage layer. ${tenantChecks.length} *TenantIsolationTest classes run against a real MySQL, each against its own owner's schema, writing and reading facts with a JdbcTemplate and asserting that a foreign tenant's rows are not returned; all ${tenantChecks.length} pass when run with their flags. Six of the ten also reference the owner's own adapter or guard classes, four do not, so this is evidence about schema-level isolation rather than about every service's request path. The HTTP-level two-tenant negative is residual and needs the synthetic per-owner account P1R-M0-007 builds and P1R-M2-009 wires into CI.`,
     },
     {
       check: 'M2-004-FLYWAY-OWNER-COVERAGE',
@@ -212,7 +234,7 @@ const manifest = {
     },
   ],
   knownGaps: [
-    `The tenant guard is delivered at the database and service layer through ${tenantChecks.length} passing *TenantIsolationTest classes. The HTTP-level two-tenant negative remains open and is handed to P1R-M2-009: it needs a synthetic per-owner account, which P1R-M0-007 builds and P1R-M2-009 wires into real CI. P1R-M2-009's ledger scope does not itself name tenant guard, so this is a residual gap recorded against this task rather than a reassignment of the requirement.`,
+    `The tenant guard is delivered at the storage layer through ${tenantChecks.length} passing *TenantIsolationTest classes, each running against a real MySQL and its own owner's schema. They write with a JdbcTemplate rather than through a service repository, and four of the ten reference no production class at all, so they show that each schema isolates its tenant's rows; they are not evidence that every service's request path enforces the same rule. The HTTP-level two-tenant negative remains open and is handed to P1R-M2-009: it needs a synthetic per-owner account, which P1R-M0-007 builds and P1R-M2-009 wires into real CI. P1R-M2-009's ledger scope does not itself name tenant guard, so this is a residual gap recorded against this task rather than a reassignment of the requirement.`,
     'The per-service Redis namespaces and ACLs are provisioned and probed for every namespaced owner, but no domain service uses Redis yet: only api-gateway and the legacy core-api configure it, so for the twelve domain owners the namespace is a reserved allocation rather than an enforced boundary in a live path.',
     'The owner outbox tables now carry the contract shape, but only content-service has a publisher and a consumer; the other owners still append rows that nothing publishes.',
     'Eight of the twelve provisioning owners were baselined from an existing schema rather than migrated from empty, so their migration history records what was already applied rather than a replay from scratch. The empty-database drill is covered separately by the Flyway tests above rather than by those baselines.',
