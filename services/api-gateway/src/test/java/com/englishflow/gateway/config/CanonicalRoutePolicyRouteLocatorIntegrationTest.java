@@ -258,10 +258,14 @@ class CanonicalRoutePolicyRouteLocatorIntegrationTest {
         assertProjected("learning-domain", "stream-today", HttpMethod.GET,
                 "/api/v1/learning/stream/today", "/internal/v1/learning/stream/today");
 
+        // The public site projection is served by content-service, which is also its canonical owner,
+        // so it is a current owner mapping rather than the cross-owner conflict it used to be.
+        assertProjected("public-site", "projection", HttpMethod.GET,
+                "/api/v1/public/site/projection", "/api/v1/public/site/projection");
+
         assertUnavailable(HttpMethod.POST, "/api/v1/grammar/practice/attempts", "grammar-domain");
         assertUnavailable(HttpMethod.POST, "/api/v1/sync/changes", "sync-domain");
         assertUnavailable(HttpMethod.GET, "/api/v1/admin/recovery/tasks", "admin-recovery");
-        assertUnavailable(HttpMethod.GET, "/api/v1/public/site/projection", "public-site");
         assertUnavailable(HttpMethod.POST, "/api/v1/messages/message-1/read", "messages-domain");
         assertUnavailable(HttpMethod.POST, "/api/v1/social/rooms/room-1/disconnect", "social-domain");
         assertUnavailable(HttpMethod.POST, "/api/v1/social/rooms/room-1/recover", "social-domain");

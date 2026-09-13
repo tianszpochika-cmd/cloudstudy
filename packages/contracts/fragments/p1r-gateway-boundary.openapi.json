@@ -62,7 +62,7 @@
       { "ruleId": "iam-password-reset", "priority": 900, "match": { "type": "PREFIX", "path": "/api/v1/auth/password-reset", "methods": ["POST"] }, "upstreamOwner": "iam-service", "internalTargetClass": "INTERNAL_V1", "visibility": "ANONYMOUS_PUBLIC", "authClass": "PASSWORD_RESET", "compatibilityMode": "NONE" },
       { "ruleId": "public-content", "priority": 900, "match": { "type": "PREFIX", "path": "/api/v1/public/content", "methods": ["GET"] }, "upstreamOwner": "content-service", "internalTargetClass": "INTERNAL_V1", "visibility": "ANONYMOUS_PUBLIC", "authClass": "PUBLIC_READ", "compatibilityMode": "NONE" },
       { "ruleId": "public-commerce", "priority": 900, "match": { "type": "PREFIX", "path": "/api/v1/public/commerce", "methods": ["GET"] }, "upstreamOwner": "commerce-service", "internalTargetClass": "INTERNAL_V1", "visibility": "ANONYMOUS_PUBLIC", "authClass": "PUBLIC_READ", "compatibilityMode": "NONE" },
-      { "ruleId": "public-site", "priority": 900, "match": { "type": "PREFIX", "path": "/api/v1/public/site", "methods": ["GET"] }, "upstreamOwner": "admin-ops-service", "internalTargetClass": "INTERNAL_V1", "visibility": "ANONYMOUS_PUBLIC", "authClass": "PUBLIC_READ", "compatibilityMode": "NONE" },
+      { "ruleId": "public-site", "priority": 900, "match": { "type": "PREFIX", "path": "/api/v1/public/site", "methods": ["GET"] }, "upstreamOwner": "content-service", "internalTargetClass": "INTERNAL_V1", "visibility": "ANONYMOUS_PUBLIC", "authClass": "PUBLIC_READ", "compatibilityMode": "NONE" },
       { "ruleId": "wechat-callback", "priority": 1000, "match": { "type": "EXACT", "path": "/api/v1/commerce/wechat/callback", "methods": ["POST"] }, "upstreamOwner": "commerce-service", "internalTargetClass": "INTERNAL_V1", "visibility": "SIGNED_EXTERNAL_CALLBACK", "authClass": "PROVIDER_CALLBACK", "compatibilityMode": "NONE" },
       { "ruleId": "alipay-callback", "priority": 1000, "match": { "type": "EXACT", "path": "/api/v1/commerce/alipay/notify", "methods": ["POST"] }, "upstreamOwner": "commerce-service", "internalTargetClass": "INTERNAL_V1", "visibility": "SIGNED_EXTERNAL_CALLBACK", "authClass": "PROVIDER_CALLBACK", "compatibilityMode": "NONE" },
       { "ruleId": "apple-notification", "priority": 1000, "match": { "type": "EXACT", "path": "/api/v1/commerce/apple/notifications", "methods": ["POST"] }, "upstreamOwner": "commerce-service", "internalTargetClass": "INTERNAL_V1", "visibility": "SIGNED_EXTERNAL_CALLBACK", "authClass": "PROVIDER_CALLBACK", "compatibilityMode": "NONE" },
@@ -362,8 +362,26 @@
       {
         "ruleId": "public-site",
         "defaultStatus": "UNAVAILABLE",
-        "defaultReason": "canonical_owner_admin_ops_conflicts_with_current_content_controller",
-        "projections": []
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "public-site.projection",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/public/site/projection",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "content-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.content",
+            "pathStrategy": "PRESERVE_PUBLIC_PATH",
+            "targetPathTemplate": "/api/v1/public/site/projection",
+            "controllerEvidence": {
+              "sourcePath": "services/content-service/src/main/java/com/englishflow/content/web/ContentHttpController.java",
+              "requestMapping": "/api/v1/public/site/projection"
+            }
+          }
+        ]
       },
       {
         "ruleId": "wechat-callback",

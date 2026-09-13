@@ -75387,7 +75387,7 @@
             "GET"
           ]
         },
-        "upstreamOwner": "admin-ops-service",
+        "upstreamOwner": "content-service",
         "internalTargetClass": "INTERNAL_V1",
         "visibility": "ANONYMOUS_PUBLIC",
         "authClass": "PUBLIC_READ",
@@ -76453,8 +76453,26 @@
       {
         "ruleId": "public-site",
         "defaultStatus": "UNAVAILABLE",
-        "defaultReason": "canonical_owner_admin_ops_conflicts_with_current_content_controller",
-        "projections": []
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "public-site.projection",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/public/site/projection",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "content-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.content",
+            "pathStrategy": "PRESERVE_PUBLIC_PATH",
+            "targetPathTemplate": "/api/v1/public/site/projection",
+            "controllerEvidence": {
+              "sourcePath": "services/content-service/src/main/java/com/englishflow/content/web/ContentHttpController.java",
+              "requestMapping": "/api/v1/public/site/projection"
+            }
+          }
+        ]
       },
       {
         "ruleId": "wechat-callback",

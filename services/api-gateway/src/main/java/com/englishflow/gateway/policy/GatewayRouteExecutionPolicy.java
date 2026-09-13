@@ -62,6 +62,8 @@ public final class GatewayRouteExecutionPolicy {
             "services/content-service/src/main/java/com/englishflow/content/web/ContentHttpController.java", "/api/v1/public/content/catalog");
     private static final ControllerEvidence CONTENT_PUBLIC_DETAIL = evidence("content-service",
             "services/content-service/src/main/java/com/englishflow/content/web/ContentHttpController.java", "/api/v1/public/content/{contentCode}");
+    private static final ControllerEvidence CONTENT_PUBLIC_SITE_PROJECTION = evidence("content-service",
+            "services/content-service/src/main/java/com/englishflow/content/web/ContentHttpController.java", "/api/v1/public/site/projection");
     private static final ControllerEvidence CONTENT_LEARNER_CATALOG = evidence("content-service",
             "services/content-service/src/main/java/com/englishflow/content/web/ContentHttpController.java", "/api/v1/content/learner/catalog");
     private static final ControllerEvidence CONTENT_LEARNER_DETAIL = evidence("content-service",
@@ -106,7 +108,6 @@ public final class GatewayRouteExecutionPolicy {
             Map.entry("wechat-callback", "commerce_provider_callback_signature_boundary_not_implemented"),
             Map.entry("alipay-callback", "commerce_provider_callback_signature_boundary_not_implemented"),
             Map.entry("apple-notification", "commerce_provider_callback_signature_boundary_not_implemented"),
-            Map.entry("public-site", "canonical_owner_admin_ops_conflicts_with_current_content_controller"),
             Map.entry("admin-content-publish-tasks", "content_owner_controller_mapping_not_present"),
             Map.entry("admin-recovery", "workflow_owner_has_no_configured_gateway_target"),
             Map.entry("learning-content-snapshot", "content_owner_controller_mapping_not_present"),
@@ -444,6 +445,8 @@ public final class GatewayRouteExecutionPolicy {
         add(definitions, "public-content",
                 preserve("catalog", "/api/v1/public/content/catalog", CONTENT_PUBLIC_CATALOG, HttpMethod.GET),
                 preserve("content", "/api/v1/public/content/{contentCode}", CONTENT_PUBLIC_DETAIL, HttpMethod.GET));
+        add(definitions, "public-site",
+                preserve("projection", "/api/v1/public/site/projection", CONTENT_PUBLIC_SITE_PROJECTION, HttpMethod.GET));
         add(definitions, "public-commerce", rewrite("catalog", "/api/v1/public/commerce/catalog", "/internal/v1/commerce/public/catalog", COMMERCE, HttpMethod.GET));
         add(definitions, "admin-content",
                 rewrite("commands", "/api/v1/admin/content-commands", "/internal/v1/content/admin-commands", CONTENT_ADMIN, HttpMethod.GET, HttpMethod.POST),

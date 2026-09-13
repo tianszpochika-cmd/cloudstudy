@@ -93,9 +93,13 @@ class GatewayBoundaryProcessTest {
     }
 
     @Test
-    void disabledUnacceptedOwnerRouteFailsClosedInsteadOfFallingThrough() {
+    void unroutedRequestFailsClosedInsteadOfFallingThrough() {
+        // This used the public site projection, which was unexecutable while its canonical owner was
+        // admin-ops-service and its controller lived in content-service. That conflict is fixed, so
+        // the route resolves; the property this test exists for is that a request no canonical rule
+        // admits is answered with the canonical envelope instead of being passed upstream.
         webTestClient.get()
-                .uri("/api/v1/public/site/projection")
+                .uri("/api/v1/unrouted/probe")
                 .header("X-Request-Id", "gateway-disabled-owner-test")
                 .header("X-Trace-Id", "trace-disabled-owner-test")
                 .exchange()
@@ -107,7 +111,6 @@ class GatewayBoundaryProcessTest {
                 .jsonPath("$.meta.requestId").isEqualTo("gateway-disabled-owner-test");
 
         assertTrue(auditSink.records().stream().anyMatch(record -> record.status() == 404
-                && "canonical_route_target_unavailable".equals(record.reasonCode())
                 && "gateway-disabled-owner-test".equals(record.requestId())));
     }
 
