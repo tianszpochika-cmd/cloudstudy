@@ -23,15 +23,35 @@
 | b16 | 读 `application.yaml`；`allowed-origins:` 单列表；`backend:…:memory` 默认；在 yml 里找伪造头 | 路径修正；改为**按 profile 的 origin 边界**、**默认 Redis 后端 + local 例外**、**伪造头声明处与唯一剥离点** |
 | b8（部分） | 读 `application.yaml` 不存在 | 路径修正（该 ENOENT 项已通过） |
 
-## ⚠️ 本轮新发现的真实缺口（已登记，未修）
+## ⚠️ 弃用窗口缺口的完整根因（第 16 轮查清）
 
-**弃用窗口被配置但从未发出** `[实测]`：
+上一轮只查到"配置了但没发出"。第 16 轮查清了**为什么发不出**，并**撤掉了我自己写的实现**。
 
-- `GatewayProperties` 声明 `deprecationHeadersEnabled` / `deprecationSunsetAt`（行 119–120）
-- `application.yml` 配置 `deprecation-headers-enabled: ${B14_DEPRECATION_HEADERS_ENABLED:true}`、`deprecation-sunset-at: ${B14_DEPRECATION_SUNSET_AT:2027-06-30T00:00:00Z}`
-- **但 `services/` 与 `apps/` 源码内没有任何代码设置 `Deprecation` 或 `Sunset` 响应头**，`GatewayRoutePolicy` 也不承载该元数据
+### 我做了什么，以及为什么删掉
 
-即：`B14_DEPRECATION_HEADERS_ENABLED:true` 声称了一个**并不存在**的行为。处置待定（实现头发出 vs 移除虚假配置）。
+我先实现了 `DeprecationHeadersGlobalFilter`（7 个单元测试全绿），随后发现**它永远无法触发**，于是删除。**没有交付它** —— 交付一个声称实现某行为却永不执行的过滤器，正是本仓库证据纪律禁止的那类虚假主张。
+
+### 根因（三条均为 `[读取]`/`[实测]`）
+
+1. **只有 `TARGET` 域才有路由**。`GatewayRouteExecutionPolicy.b14Target()` 仅在 `b14.enabled() && mode(domain) == TARGET` 时返回 URI，否则返回 `null` → `resolve()` 得到 `Resolution.unavailable("canonical_owner_target_unavailable")`，而 `routeBindings()` 有 `.filter(Resolution::isAvailable)` ⇒ 非 TARGET 域**不注册任何路由**。因此 `LEGACY`/`SHADOW`/`FALLBACK` 下没有路由 → 没有 `GATEWAY_ROUTE_ATTR` → 过滤器无从判断。
+2. **契约里没有任何遗留路由**：`packages/contracts/fragments/p1r-gateway-boundary.openapi.json` 的 **56 条 routeRules 全部 `compatibilityMode: "NONE"`** ⇒ 不存在"兼容路由"这一类可标记对象。
+3. `TARGET` 域不该被标记为弃用 ⇒ 触发器集合为空。
+
+### 处置
+
+`application.yml` 的 `deprecation-headers-enabled` 默认值 **`true` → `false`**，并加注释说明它**是保留项**：没有任何可达路由会被弃用、也没有代码发出该头，默认 `true`（配合 `B14_DEPRECATION_HEADERS_ENABLED` 这个名字）等于**声称了一个不存在的行为**。开启它应与"真正发出该头的代码"一同进行。b14 测试相应改为断言**默认关闭** + 断言 `b14Target` 的非 TARGET 返回 null + `routeBindings()` 的可用性过滤 + 源码中不存在 `Deprecation` 头。
+
+### ⚠️ 更正：我第 16 轮做的一次模式翻转实验是**无效**的
+
+我以 `B14_ROUTE_MODE_CONTENT=LEGACY` 启动全栈并探测 `/api/v1/content/learner/catalog`，得到 404，一度当作"非 TARGET ⇒ 路由消失"的实测。**该实验不能支持这个结论**：网关实际以 `--spring.profiles.active=v2,local-real` 运行（**不含 `local`**，只有 iam-service 含 `local`），而 `b14.enabled` 在 `application.yml` 默认 **`false`**、仅在 `application-local.yml` 为 `true` ⇒ **两次实验臂中 strangler 都是关闭的**，404 由 `enabled=false` 解释，与模式无关。结论 1 依据的是**代码路径**而非该实验。
+
+### 领域路由 404 是**已记录、已 ACCEPTED 的预期行为**，不是缺陷
+
+M2-001 的运行时证据含 **`default-owner-route-fail-closed`：PASS，status 404** —— 即"领域路由不可用时返回 404"已被独立证据确认 ✓（`evidence/p1r/m2/P1R-M2-001/runtime-evidence-2026-09-12.json`，30 项检查全部 PASS）。我一度以为这是重大缺口，核对后被推翻。
+
+### 仍待确认（下一轮）
+
+`application-local.yml` 的注释写着 *"switch individual domains to SHADOW or FALLBACK when testing a rollback without changing code"*。按上述代码路径，在 `local` profile（strangler 开启）下把某域切成 SHADOW/FALLBACK 会让该域**不可用**，而不是回滚。**这是注释与代码语义不符**，但**尚未实测确认**（需以 `local` profile 启动网关并翻转一个域）。验证方法：`--spring.profiles.active=v2,local-real,local` + `B14_ROUTE_MODE_LEARNER=FALLBACK`，探测 `/api/v1/learner/profile`。
 
 ## 剩余 18 项
 

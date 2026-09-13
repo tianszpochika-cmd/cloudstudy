@@ -33,11 +33,18 @@ test('B14 Gateway has an explicit Phase 1 strangler route matrix and safe deprec
   assert.match(properties, /public RouteMode mode\(String domain\)/)
   assert.match(properties, /return mode\(domain\) == RouteMode\.TARGET/)
   assert.match(configuration, /executionFilters\(identityFilters\(filters, binding\.routeId\(\)\), binding\)/)
-  // The deprecation window is configured through typed properties rather than being read ad hoc.
+  // The deprecation window is typed configuration, and it is reserved rather than active: only a
+  // TARGET domain resolves to a route, so nothing reachable can be deprecated and no code emits the
+  // headers. Asserting the default is off keeps the configuration from advertising a behaviour that
+  // does not exist, which is what the previous default of true did.
   assert.match(properties, /deprecationHeadersEnabled/)
   assert.match(properties, /deprecationSunsetAt/)
-  assert.match(application, /deprecation-headers-enabled: \$\{B14_DEPRECATION_HEADERS_ENABLED:true\}/)
+  assert.match(application, /deprecation-headers-enabled: \$\{B14_DEPRECATION_HEADERS_ENABLED:false\}/)
   assert.match(application, /deprecation-sunset-at: \$\{B14_DEPRECATION_SUNSET_AT:/)
+  const executionPolicy = read('services/api-gateway/src/main/java/com/englishflow/gateway/policy/GatewayRouteExecutionPolicy.java')
+  assert.match(executionPolicy, /b14\.mode\(domain\) == GatewayProperties\.B14Services\.RouteMode\.TARGET[\s\S]{0,120}?: null/)
+  assert.match(executionPolicy, /\.filter\(Resolution::isAvailable\)/)
+  assert.doesNotMatch(application + configuration + executionPolicy, /"Deprecation"|SUNSET_HEADER/)
   // No core-api catch-all is registered at all, which is stricter than allowing a read-only one.
   assert.doesNotMatch(configuration, /builder\.route\("core-api-legacy-compat"/)
   assert.match(configuration, /No B12\/B13\/B14\/core-api catch-all is registered/)

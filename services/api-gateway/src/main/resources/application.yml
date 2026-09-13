@@ -81,7 +81,11 @@ gateway:
     analytics-base-url: ${ANALYTICS_SERVICE_BASE_URL:http://127.0.0.1:18098}
   b14:
     enabled: ${B14_STRANGLER_ENABLED:false}
-    deprecation-headers-enabled: ${B14_DEPRECATION_HEADERS_ENABLED:true}
+    # Reserved, and deliberately off. A domain in any mode other than TARGET resolves to no route at
+    # all, and every canonical route rule in the contract is compatibilityMode NONE, so no reachable
+    # route is ever deprecated and nothing can emit the headers. Defaulting this to true advertised a
+    # behaviour that does not exist. Turn it on together with the code that emits the headers.
+    deprecation-headers-enabled: ${B14_DEPRECATION_HEADERS_ENABLED:false}
     deprecation-sunset-at: ${B14_DEPRECATION_SUNSET_AT:2027-06-30T00:00:00Z}
     service-base-urls:
       learner: ${LEARNER_SERVICE_BASE_URL:http://127.0.0.1:18088}
