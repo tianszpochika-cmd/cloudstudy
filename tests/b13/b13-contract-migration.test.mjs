@@ -73,7 +73,9 @@ test('B13 OpenAPI covers commerce, admin-ops, analytics and official-site bounda
 
   const operationIds = new Set()
   for (const { route, method, operation } of operations(openApi)) {
-    assert.match(operation.operationId, /(?:B13|M1015|M1016)/, `${method} ${route} must have a B13/M1-015/M1-016 operation id`)
+    // Operation ids stay traceable to the requirement that introduced them; M1-017 reworked the
+    // analytics telemetry intake, which is why that operation carries an M1017 id.
+    assert.match(operation.operationId, /(?:B13|M1015|M1016|M1017)/, `${method} ${route} must have a B13/M1-015/M1-016/M1-017 operation id`)
     assert.equal(operationIds.has(operation.operationId), false, `duplicate operation ${operation.operationId}`)
     operationIds.add(operation.operationId)
 

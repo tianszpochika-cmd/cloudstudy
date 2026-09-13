@@ -33,8 +33,10 @@ test('B4 OpenAPI covers gamification, social, notification and offline entry poi
     '/api/v1/offline/sync/pull',
   ];
   for (const route of requiredPaths) assert.ok(openapi.paths[route], `missing B4 route ${route}`);
-  assert.equal(openapi.paths['/api/v1/notifications/messages'].get.operationId, 'listB12Notifications');
-  assert.equal(openapi.paths['/api/v1/notifications/preferences'].get.operationId, 'listB12NotificationPreferences');
+  // The operation ids carry the requirement that last reworked the notification surface, M1-016,
+  // rather than the original B12 batch. The routes and their semantics are unchanged.
+  assert.equal(openapi.paths['/api/v1/notifications/messages'].get.operationId, 'listM1016NotificationMessages');
+  assert.equal(openapi.paths['/api/v1/notifications/preferences'].get.operationId, 'listM1016NotificationPreferences');
   for (const retired of ['/api/v1/gamification/profile', '/api/v1/gamification/seasons/current', '/api/v1/user/notification-preferences']) {
     assert.equal(openapi.paths[retired], undefined, `retired B4 route still present: ${retired}`);
   }

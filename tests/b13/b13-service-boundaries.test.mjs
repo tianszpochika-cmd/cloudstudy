@@ -87,7 +87,9 @@ test('admin-ops-service is default-deny, JWT-derived, command/idempotent and pro
 test('analytics-service is default-deny, JWT-derived, allowlisted, deduplicated and privacy-sanitized', () => {
   assert.match(analyticsSecurity, /anyRequest\(\)\.denyAll\(\)/)
   assert.match(analyticsSecurity, /oauth2ResourceServer/)
-  assert.match(analyticsHeaders, /X-Role|X-B5-Role|X-Tenant-Id|X-Owner-Id/)
+  // HTTP header names are case-insensitive and the filter declares them in lower case; matching
+  // case-insensitively is also what the commerce assertion in this file does.
+  assert.match(analyticsHeaders, /x-role|x-b5-role|x-tenant-id|x-owner-id/i)
   assert.match(analyticsPrincipal, /JwtAuthenticationToken/)
   assert.match(analyticsPrincipal, /tenant_id/)
   assert.match(analyticsPrincipal, /requirePermission/)
