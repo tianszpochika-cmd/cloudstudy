@@ -1,10 +1,42 @@
-# 契约提升请求：官网公开投影路由（`public-site`）
+# 契约提升：官网公开投影路由（`public-site`）
 
-- 状态：**待执行**（需要一次独立评审；本文件是实现者提供的完整依据与执行配方）
-- 发现轮次：第 19 轮；修复实现与运行时验证：第 20 轮；机制查清与提升包产出：第 21 轮
-- 影响任务：`P1R-M2-001`（冻结基线）、`P1R-M3-008`（官网公开内容，缺口归属）
+- 状态：**已执行并验证**（第 22 轮）
+- 发现轮次：第 19 轮；修复实现与运行时验证：第 20 轮；机制查清与提升包产出：第 21 轮；**执行与复验：第 22 轮**
+- 影响任务：`P1R-M2-001`（冻结基线）、`P1R-M3-008`（官网公开内容）
+
+## 0. 执行结果（第 22 轮）
+
+| 项 | 结果 |
+|---|---|
+| 网关测试 | **82/82 PASS** |
+| P1R | **1427/1427 PASS** |
+| 全量 `tests/` | **1922 项、1915 pass、0 fail** |
+| 兼容性门禁 | **`compatible: true`** |
+| 网关契约检查器 | **PASS** |
+| 证据门禁 | **PASS**（108 任务 / 0 errors） |
+| 运行时 | `/api/v1/public/site/projection` 经网关 **HTTP 200**（修复前 404）；官网 SSR **200** |
+
+**关键结论（印证第 21 轮的更正）**：本次提升**只重算了摘要，未扩展描述符集合** —— 三条 `M2001_OPENAPI_EXPECTED_CHANGE_DESCRIPTORS` **原封未动** ✓ 因为 `x-p1r-gateway-boundary` 的描述符本就涵盖"根扩展内部发生变更" ✓ ⇒ **提升落在既有放行范围内**，机制按设计工作 ✓
+
+实际重算的值：
+
+| 常量 | 旧 | 新 |
+|---|---|---|
+| `FROZEN_EXECUTION_TARGET_PLAN_SHA256` | `89b7361e…` | `4138acfa…` |
+| `EXPECTED_AVAILABLE_EXECUTION_OPERATION_COUNT` | 168 | **169** |
+| `M2001_GATEWAY_ROOT_SEMANTIC_SHA256` | `c58a64d1…` | `3c03d2bd…` |
+| `M2001_OPENAPI_EXPECTED_SEMANTIC_SHA256` | `1f85e59c…` | `c394848f…` |
+| `M2001_EXECUTION_TARGET_POLICY_SEMANTIC_SHA256` | `d5182f41…` | **未变** |
+| `M2001_OPENAPI_SOURCE_SEMANTIC_SHA256` | `a154f200…` | **未变**（源基线固定） |
+| `M2001_OPENAPI_DESCRIPTOR_SET_SHA256` | — | **未变** |
+| `p1r-gateway-contract.test.mjs` 汇总 | 151 / 168 / 197 | **152 / 169 / 196** |
+| 18 份 manifest | — | 已重定；`P1R-M2-001` 的 history 明确记载其冻结基线确实移动 |
+
+执行方式：`node scripts/contracts/promote-public-site-projection.mjs --apply` → `tmp/recompute-expected-digest.mjs --apply` → 更新两个网关测试 → 合并 → 全部门禁 → 运行时复验。
 
 ---
+
+
 
 ## 1. 缺口（已实测）
 
