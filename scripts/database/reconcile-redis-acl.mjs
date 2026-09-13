@@ -57,6 +57,25 @@ function redisOrFail(args) {
   return result.stdout;
 }
 
+/**
+ * Removes ACL users that the inventory does not name.
+ *
+ * Without this, a rename leaves the old account behind forever: the rename to svc_admin_ops created the
+ * new user and the stale svc_adminops stayed, so a claim that the old one had been deleted was wrong
+ * for weeks. Pruning makes the state match the inventory instead of accumulating whatever previous
+ * versions created, and every removal is reported rather than done silently.
+ */
+function pruneUnexpectedUsers() {
+  const listing = redisOrFail(['ACL', 'LIST']);
+  const expected = new Set(services.map((service) => service.user));
+  const present = listing.split(/\r?\n/u).filter(Boolean)
+    .map((line) => /^user (\S+)/u.exec(line)?.[1])
+    .filter((user) => user !== undefined && user !== 'default');
+  const stale = present.filter((user) => !expected.has(user));
+  for (const user of stale) redisOrFail(['ACL', 'DELUSER', user]);
+  return { expected: [...expected].sort(), present: present.sort(), stale: stale.sort() };
+}
+
 function provision(service) {
   const { password, source } = passwordFor(service);
   const pattern = `${service.namespace}:*`;
@@ -76,7 +95,11 @@ function dryRun(service, command, key) {
 }
 
 try {
+  // Pruned before provisioning, so a user dropped from the inventory is removed, and pruned again
+  // afterwards, so the set that is reported is the set that remains.
+  const pruningBefore = pruneUnexpectedUsers();
   const users = services.map(provision);
+  const pruning = pruneUnexpectedUsers();
   for (const service of users) {
     const own = dryRun(service, 'GET', `${service.namespace}:acl-probe`);
     if (own.status !== 0 || !/^OK$/m.test(own.output)) {
@@ -99,6 +122,11 @@ try {
     credentialsPersisted: false,
     passwordsEmitted: false,
     defaultUserUnchanged: true,
+    // Reported so a stale account cannot survive unnoticed, which is how svc_adminops outlived the
+    // rename that was supposed to remove it.
+    usersPruned: pruningBefore.stale.filter((user) => !pruning.stale.includes(user)),
+    usersStillPresent: pruning.present,
+    unexpectedUsersRemaining: pruning.stale,
     users,
   }, null, 2));
 } catch (error) {

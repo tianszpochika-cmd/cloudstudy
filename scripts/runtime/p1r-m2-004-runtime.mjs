@@ -371,6 +371,25 @@ async function verifyRedisNamespaceAcl(owners) {
     if (!namespace) continue;
     usersByNamespace.set(namespace, [...(usersByNamespace.get(namespace) ?? []), user]);
   }
+  // The set of ACL users must equal the set the ownership policy expects. Isolation probes alone do
+  // not notice an extra account: a leftover from a rename passes every per-owner check while remaining a
+  // live credential nobody owns, which is how svc_adminops outlived the rename meant to remove it.
+  const expectedUsers = new Set(owners
+    .filter((owner) => owner.redisNamespace)
+    .flatMap((owner) => [...usersByNamespace.entries()]
+      .filter(([candidate]) => candidate === owner.redisNamespace || candidate.endsWith(`:${owner.redisNamespace}`))
+      .flatMap(([, users]) => users)));
+  const actualUsers = [...aclUsers.keys()].filter((user) => user !== 'default');
+  const unexpectedUsers = actualUsers.filter((user) => !expectedUsers.has(user));
+  const missingUsers = [...expectedUsers].filter((user) => !actualUsers.includes(user));
+  record('redis-namespace-acl:user-set-matches-policy',
+    unexpectedUsers.length === 0 && missingUsers.length === 0 ? 'PASS' : 'FAIL', {
+      expectedUsers: [...expectedUsers].sort(),
+      actualUsers: [...actualUsers].sort(),
+      unexpectedUsers: unexpectedUsers.sort(),
+      missingUsers: missingUsers.sort(),
+    });
+
   const resolveUser = (namespace) => {
     if (!namespace) return { user: null, pattern: null, matchedNamespace: null };
     for (const [candidateNamespace, users] of usersByNamespace) {
