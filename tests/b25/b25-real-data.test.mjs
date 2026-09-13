@@ -68,9 +68,25 @@ test('B25 HTTP seams are durable, JWT-owned and idempotent', () => {
     const source = read(controller);
     assert.match(source, condition);
     assert.match(source, /JdbcTemplate/);
-    assert.match(source, /JwtAuthenticationToken/);
+    // Identity is resolved once, in the shared HTTP boundary, rather than by each controller
+    // depending on the Spring Security JWT type. Asserting the delegation plus the absence of any
+    // header read is stronger than finding the type name in four separate controllers: a controller
+    // that started trusting a client header would now fail here.
+    assert.match(source, /HttpPrincipals\.require\(authentication\)/);
+    assert.doesNotMatch(source, /getHeader\s*\(/);
     assert.match(source, /tenant_id/);
     if (!controller.includes('B25ContentJdbcController')) assert.match(source, /Idempotency-Key/);
+  }
+  // The verified-JWT requirement lives in the shared boundary each controller delegates to.
+  for (const boundary of [
+    'services/learner-service/src/main/java/com/englishflow/learner/web/LearnerHttpPrincipals.java',
+    'services/content-service/src/main/java/com/englishflow/content/web/ContentHttpPrincipals.java',
+    'services/learning-service/src/main/java/com/englishflow/learning/web/LearningHttpPrincipals.java',
+    'services/assessment-service/src/main/java/com/englishflow/assessment/web/AssessmentHttpPrincipals.java',
+  ]) {
+    const source = read(boundary);
+    assert.match(source, /instanceof JwtAuthenticationToken/, `${boundary} must require a verified JWT principal`);
+    assert.match(source, /isAuthenticated\(\)/);
   }
 
   const content = read(controllers[1][0]);
@@ -129,9 +145,21 @@ test('B25 seeds are replayable and do not perform destructive cleanup', () => {
 });
 
 test('B25 gateway preserves public paths while routing to service owners', () => {
-  const gateway = read('services/api-gateway/src/main/java/com/englishflow/gateway/config/GatewayConfiguration.java');
-  assert.match(gateway, /b25-learner-onboarding-target/);
-  assert.match(gateway, /internal\/v1\/learner\/onboarding\/daily-tasks/);
-  assert.match(gateway, /removeRequestHeader\("X-Owner-Id"\)/);
-  assert.match(gateway, /registerB14TargetRoutes/);
+  const configuration = read('services/api-gateway/src/main/java/com/englishflow/gateway/config/GatewayConfiguration.java');
+  const policy = read('services/api-gateway/src/main/java/com/englishflow/gateway/policy/GatewayRoutePolicy.java');
+  const executionPolicy = read('services/api-gateway/src/main/java/com/englishflow/gateway/policy/GatewayRouteExecutionPolicy.java');
+  const forgedHeaders = read('services/api-gateway/src/main/java/com/englishflow/gateway/filter/ClientAuthorizationContextHeaders.java');
+  // The onboarding route is a canonical rule whose projection rewrites the public path onto the
+  // learner service's internal boundary, instead of a B-line per-target route registered by hand.
+  assert.match(policy, /"onboarding-domain"/);
+  assert.match(policy, /"\/api\/v1\/onboarding"/);
+  assert.match(executionPolicy, /"\/internal\/v1\/learner\/onboarding\/daily-tasks\/today"/);
+  assert.match(executionPolicy, /"\/api\/v1\/onboarding\/daily-tasks\/today"/);
+  assert.match(executionPolicy, /LEARNER_INTERNAL/);
+  // Preserving the public path is a per-projection strategy, and forged identity headers are removed
+  // for every exchange rather than by each route.
+  assert.match(executionPolicy, /PathStrategy\.PRESERVE_PUBLIC_PATH/);
+  assert.match(executionPolicy, /PathStrategy\.FORWARD_LOCAL|PathStrategy\.REWRITE/);
+  assert.match(forgedHeaders, /X-Owner-Id/);
+  assert.match(configuration, /for \(GatewayRouteExecutionPolicy\.RouteBinding binding : routeExecutionPolicy\.routeBindings\(\)\)/);
 });

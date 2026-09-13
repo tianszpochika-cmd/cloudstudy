@@ -21,6 +21,8 @@ export function validateB31Static(root = repositoryRoot) {
     'scripts/database/validate-b25-data.mjs',
     'services/content-service/src/main/java/com/englishflow/content/web/B9ContentAdminController.java',
     'services/api-gateway/src/main/java/com/englishflow/gateway/config/GatewayConfiguration.java',
+    'services/api-gateway/src/main/java/com/englishflow/gateway/policy/GatewayRoutePolicy.java',
+    'services/api-gateway/src/main/java/com/englishflow/gateway/policy/GatewayRouteExecutionPolicy.java',
     'apps/learner-web/src/stores/learner-content.ts',
     'apps/mobile/src/api/learner-content.ts',
     'apps/admin-web/src/api/content-service-command-adapter.ts',
@@ -30,7 +32,8 @@ export function validateB31Static(root = repositoryRoot) {
 
   const fixture = JSON.parse(readRoot('database/mysql/fixtures/b25-phase1.json'));
   const contentController = readRoot('services/content-service/src/main/java/com/englishflow/content/web/B9ContentAdminController.java');
-  const gateway = readRoot('services/api-gateway/src/main/java/com/englishflow/gateway/config/GatewayConfiguration.java');
+  const gatewayPolicy = readRoot('services/api-gateway/src/main/java/com/englishflow/gateway/policy/GatewayRoutePolicy.java');
+  const gatewayExecution = readRoot('services/api-gateway/src/main/java/com/englishflow/gateway/policy/GatewayRouteExecutionPolicy.java');
   const learnerStore = readRoot('apps/learner-web/src/stores/learner-content.ts');
   const mobileApi = readRoot('apps/mobile/src/api/learner-content.ts');
   const adminApi = readRoot('apps/admin-web/src/api/content-service-command-adapter.ts');
@@ -43,8 +46,13 @@ export function validateB31Static(root = repositoryRoot) {
   }
   required(contentController.includes('ContentCommandService') && contentController.includes('ContentRepository'), 'admin commands must delegate to content aggregate and repository ports', errors);
   required(contentController.includes('ContentRequestContext') && contentController.includes('ContentIdempotencyKey'), 'content commands must persist correlation and idempotency facts', errors);
-  required(gateway.includes('b31-content-admin-commands'), 'Gateway must expose the B31 admin command route', errors);
-  required(gateway.includes('/internal/v1/content/admin-commands'), 'Gateway must rewrite admin commands to content-service internal boundary', errors);
+  // The admin command surface is a canonical rule plus an explicit projection onto the content
+  // service's internal boundary, rather than one hand-written route in the Gateway configuration.
+  // Checking both halves is stronger: the public path and the internal target must agree.
+  required(gatewayPolicy.includes('"admin-content"') && gatewayPolicy.includes('"/api/v1/admin/content-commands"'),
+    'Gateway must expose the canonical admin content command rule', errors);
+  required(gatewayExecution.includes('rewrite("commands", "/api/v1/admin/content-commands", "/internal/v1/content/admin-commands"'),
+    'Gateway must rewrite admin commands to content-service internal boundary', errors);
   required(learnerStore.includes('LOCAL_REAL_RUNTIME') && learnerStore.includes('submitAnswerAgainstServer') && learnerStore.includes('completeTaskAgainstServer'), 'learner local-real mode must fail closed on assessment/task writes', errors);
   required(mobileApi.includes("'/iam/consents'") && mobileApi.includes("type: 'PRIVACY'") && mobileApi.includes("type: 'TERMS'"), 'Mobile onboarding must persist IAM consent facts', errors);
   required(adminApi.includes("'/admin/content-commands"), 'admin frontend must use the Gateway content command contract', errors);
