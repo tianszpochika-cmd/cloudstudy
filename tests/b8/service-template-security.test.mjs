@@ -40,7 +40,17 @@ test('platform JWT verification is enabled by default and non-actuator traffic f
   assert.match(yaml, /issuer-uri: \$\{SERVICE_SECURITY_ISSUER_URI:/);
   assert.match(yaml, /jwk-set-uri: \$\{SERVICE_SECURITY_JWK_SET_URI:/);
   assert.match(props, /issuer-uri and jwk-set-uri are required/);
-  assert.match(config, /NimbusJwtDecoder\.withJwkSetUri/);
+  // Every service unwraps the envelope IAM publishes before validating signatures, so the decoder is
+  // built from IamEnvelopedJwkSource rather than straight from the endpoint. Asserting the shared
+  // source is the stronger claim: a decoder wired to the raw endpoint would fail on an enveloped
+  // response, and the source is where the public-material-only rule is enforced.
+  assert.match(config, /NimbusJwtDecoder/);
+  assert.match(config, /IamEnvelopedJwkSource\.decoder\(/);
+  const enveloped = read('services/service-template/src/main/java/com/englishflow/platform/template/security/IamEnvelopedJwkSource.java');
+  assert.match(enveloped, /keys/);
+  // Only public material is read: the RSA private exponent is a "d" member of a JWK. Matching the
+  // word "private" would only find Java modifiers and prose.
+  assert.doesNotMatch(enveloped, /"d"\s*:/u);
   assert.match(config, /auth\.anyRequest\(\)\.denyAll\(\)/);
   assert.match(config, /auth\.requestMatchers\("\/actuator\/\*\*"\)\.permitAll\(\)/);
   assert.match(config, /oauth2ResourceServer/);
