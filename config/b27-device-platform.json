@@ -65,11 +65,9 @@
         "path": "apps/miniapp-wechat",
         "allowedFiles": [
           "README.md",
-          "src/components/.gitkeep",
-          "src/pages/.gitkeep",
-          "src/services/.gitkeep"
+          "archive-boundary.json"
         ],
-        "rule": "migration-note-only; no pages, state, API client or domain implementation"
+        "rule": "migration-note-only; no pages, state, API client or domain implementation. The three src .gitkeep placeholders were removed during the P1R archive rewrite, and archive-boundary.json records that boundary: businessProject, buildable and publishable are all false, the source of truth is apps/mobile, and the directory must not enter workspace, CI, startup or release routing."
       }
     ],
     "forbiddenPatterns": [
