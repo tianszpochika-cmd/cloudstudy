@@ -337,12 +337,13 @@
       "evidenceClass": "static",
       "runtimeRequired": false,
       "evidenceId": "EV-B20-SEC-STATIC-PRIVILEGE",
-      "sourcePaths": ["packages/telemetry/policies/access-control.json", "services/api-gateway/src/main/java/com/englishflow/gateway/filter/ClientAuthorizationContextSanitizerGlobalFilter.java"],
+      "sourcePaths": ["packages/telemetry/policies/access-control.json", "services/api-gateway/src/main/java/com/englishflow/gateway/filter/ClientAuthorizationContextSanitizerGlobalFilter.java", "services/api-gateway/src/main/java/com/englishflow/gateway/filter/ClientAuthorizationContextHeaders.java"],
       "assertions": [
         { "contains": "\"defaultEffect\": \"deny\"" },
         { "contains": "\"globalRoles\": []" },
         { "contains": "X-Role" },
-        { "contains": "X-Tenant-Id" }
+        { "contains": "X-Tenant-Id" },
+        { "contains": "ClientAuthorizationContextHeaders::removeFrom" }
       ],
       "policyAssertions": ["server-derived-tenant", "no-client-role", "per-service-identity", "unknown-deny"]
     },
@@ -370,7 +371,7 @@
       "evidenceClass": "static",
       "runtimeRequired": false,
       "evidenceId": "EV-B20-SEC-STATIC-NETWORK",
-      "sourcePaths": ["services/api-gateway/src/main/resources/application.yaml", "infra/docker/docker-compose.dev.yml"],
+      "sourcePaths": ["services/api-gateway/src/main/resources/application.yml", "infra/docker/docker-compose.dev.yml"],
       "assertions": [
         { "contains": "address: ${SERVER_ADDRESS:127.0.0.1}" },
         { "contains": "127.0.0.1:${MYSQL_HOST_PORT:-13306}:3306" }
