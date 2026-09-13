@@ -1,0 +1,31 @@
+{
+  "schema": "platform.review-history.v1",
+  "taskId": "P1R-M2-004",
+  "note": "Review verdicts for this task, transcribed from the ledger's dated entries rather than produced by a measurement. Each entry names the round, the verdict, the counts and the commit reviewed. The ledger remains the authoritative record; this file exists so the manifest can carry the same history without the generator parsing prose.",
+  "rounds": [
+    {
+      "round": 1,
+      "verdict": "REWORK",
+      "counts": { "P0": 0, "P1": 4, "P2": 6 },
+      "reviewedCommit": "50953b71bcd18ffa6fb03afd2bb9b7e9883b07d2",
+      "reviewer": "independent review session (first round)",
+      "summary": "P0 was zero: cross-tenant write blocking, DML-only credentials with 1142 denials, no cross-schema grants, 20 of 20 artifact digests, 58 checks reproduced and the gates and 1429 regression all green were independently confirmed. The findings were about accounting rather than missing work."
+    },
+    {
+      "round": 2,
+      "verdict": "REWORK",
+      "counts": { "P0": 0, "P1": 1, "P2": 9 },
+      "reviewedCommit": null,
+      "reviewer": "independent review session (second round)",
+      "summary": "The four first-round P1 findings were confirmed closed: the reviewer independently re-ran 23 of 23 gated classes and recomputed 46 of 46 digests. One new P1 was raised, that the gated runner's pass criterion was the mvn exit code, which an entirely skipped class also satisfies, and which propagated into VERIFIED and a green gate. Ten P2 findings were raised as well."
+    },
+    {
+      "round": 3,
+      "verdict": "PENDING",
+      "counts": null,
+      "reviewedCommit": null,
+      "reviewer": "awaiting a fresh independent session",
+      "summary": "Not submitted. The third round has closed the new P1 and seven of the ten P2 findings so far; the remainder and the submission itself are outstanding."
+    }
+  ]
+}

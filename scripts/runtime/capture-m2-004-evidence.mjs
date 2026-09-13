@@ -18,6 +18,27 @@ const head = execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: '
 const read = (relative) => JSON.parse(fs.readFileSync(path.join(root, relative), 'utf8'));
 
 const evidenceFile = 'evidence/p1r/m2/P1R-M2-004/runtime-evidence-2026-09-13.json';
+
+/**
+ * The task's review rounds, read from a tracked record.
+ *
+ * The manifest carried an empty reviewHistory through two review rounds, so it said nothing about verdicts
+ * that had already happened. The records live in the ledger as prose; this file mirrors them so the
+ * generator can embed them without parsing markdown.
+ */
+function readReviewHistory() {
+  const path_ = 'evidence/p1r/m2/P1R-M2-004/review-history.json';
+  if (!fs.existsSync(path.join(root, path_))) return [];
+  const record = JSON.parse(fs.readFileSync(path.join(root, path_), 'utf8'));
+  return record.rounds.map((round) => ({
+    round: round.round,
+    verdict: round.verdict,
+    counts: round.counts,
+    reviewedCommit: round.reviewedCommit,
+    reviewer: round.reviewer,
+    summary: round.summary,
+  }));
+}
 const evidence = read(evidenceFile);
 const gated = read('evidence/p1r/m2/P1R-M2-004/gated-db-tests-2026-09-13.json');
 const ownership = read('config/p1r-data-ownership.v1.json');
@@ -84,10 +105,13 @@ const manifest = {
     branch: 'dev',
     phaseStatus: 'D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED',
     runtimeStatus: 'M2_004_PARTIAL_RUNTIME_VERIFIED',
-    // The revision this evidence was produced against. It is the commit the harness ran on, which is
-    // a different thing from sourceCommit, the commit that contains these artifacts.
-    reviewedRevision: evidence.repository?.revision ?? head,
-    evidenceRevision: evidence.repository?.revision ?? null,
+    // The revision this evidence was produced against. It is the commit the harness ran on, which is a
+    // different thing from sourceCommit, the commit that contains these artifacts. Reading it from the
+    // harness output is what makes it rebuildable: the harness records the revision it measured, and the
+    // generator previously fell back to its own working revision, which named a commit that did not exist
+    // when the measurement was taken.
+    reviewedRevision: evidence.sourceCommit ?? head,
+    measuredAt: evidence.finishedAt ?? null,
     toolchain: { java: 'OpenJDK 25.0.4.1', maven: '3.9.12', node: '20.19.5', kafka: '3.9.2' },
     evidenceFile,
     gatedTestEvidenceFile: 'evidence/p1r/m2/P1R-M2-004/gated-db-tests-2026-09-13.json',
@@ -136,7 +160,7 @@ const manifest = {
       'Batch E2 to E8 owner outbox shape standardisation and the content-service publish and consume vertical slice',
       'Batch R the review rework: the tenant guard and the migration coverage were verified by running their gated tests, the Redis probes were extended to every namespaced owner, and the Redis loss clause gained behavioural evidence',
     ],
-    reviewHistory: [],
+    reviewHistory: readReviewHistory(),
   },
   startedAt: '2026-09-09T00:00:00+08:00',
   finishedAt: new Date().toISOString(),
