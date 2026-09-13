@@ -1,16 +1,24 @@
 # CURRENT-HANDOFF —— 语学星 Phase 1 重基线（P1R）
 
 > 本文件是**跨会话交接**的入口。它记录"当前在哪、下一步做什么、谁在等谁"。
-> 最后更新：**2026-09-13**（`P1R-M2-004` 返工批 R1–R3 完成后）。
+> 最后更新：**2026-09-13**（`P1R-M2-004` 返工完成并推送 `629d0d9`；`P1R-M0-006` 第二轮返工进行中）。
 
 ---
+
+## 0. 检查点
+
+| 项 | 值 |
+|---|---|
+| HEAD | `629d0d9`（`origin/dev` 同） |
+| `P1R-M2-004` | 返工 R1–R3 已完成并推送，**待第二轮独立评审** |
+| `P1R-M0-006` | 第一轮评审判 **REWORK**（P0/P1/P2 = 0/5/8），台账状态已回退 `IN_PROGRESS`，返工进行中 |
 
 ## 1. 当前状态
 
 | 项 | 值 |
 |---|---|
 | 阶段 | `D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED` |
-| 台账 | **28 ACCEPTED / 1 REVIEW / 2 BLOCKED / 77 PLANNED**（108 项，计数固定） |
+| 台账 | **28 ACCEPTED / 2 REVIEW / 1 BLOCKED / 77 PLANNED**（108 项，计数固定） |
 | 全量 `tests/` | **1924 项、1917 pass、0 fail、7 skip** |
 | P1R | **1429/1429** |
 | 后端 | 15/15 服务在跑 |
@@ -21,7 +29,7 @@
 
 台账门禁要求"任何高于 `PLANNED` 的状态都必须依赖已 ACCEPTED"，因此：
 
-- 完成于 `REVIEW` / `BLOCKED`：`P1R-M0-006`（REVIEW）、`P1R-M2-004`（REVIEW，**第二轮评审待做**）、`P1R-M2-005`（BLOCKED，阻塞于 M2-004）
+- `P1R-M2-004`（REVIEW，返工已完成，**第二轮评审待做**）、`P1R-M0-006`（第一轮 REWORK，返工进行中）、`P1R-M2-005`（BLOCKED，阻塞于 M2-004）
 - 其后的 `M2-006 → M2-010 → M3…M8` 全部在等这次评审 ✓
 - **可推进的任务数为 0**（已枚举全部 108 项）
 
@@ -31,13 +39,14 @@
 
 | 批次 | 内容 |
 |---|---|
-| M0-006 | uni-app 迁移到 10.x 线；依赖门禁改按 high/critical 计数；防洗白守卫替换 |
+| M0-006 | uni-app 迁移到 10.x 线；依赖门禁改按 high/critical 计数；防洗白守卫收紧为「独立评审 ACCEPTED」 |
 | M2-004 | audit-service 进入编排栈、`schema_version` 列宽缺陷修复、reconcile 迁移历史、10 张 outbox 表统一形状、独立 schema/凭据/DML-only 授权/Redis namespace 与 ACL |
 | M2-005 | Kafka transport、Outbox publisher、consumer dedupe、DLQ；**六类证据全部脚本化**（重复/乱序/宕机/重启/DLQ/回放不重复写） |
 | 契约提升 | `public-site` 投影 owner 由 `admin-ops-service` 改为 `content-service`，官网首次运行投影经网关可达（404 → 200） |
 | 前端修复 | H5 登录表单（`form-type` + 去掉非 DOM 事件的 `.prevent`）；成人 Gate 策略版本 `v2-phase1` → `b30-adult-v1`；IAM 越界出生年 500 → 403；learner-web 把 `CONSENT_REQUIRED` 当无权限而困死首次运行；两前端调用不存在的 `/learner/onboarding/options` |
 | legacy B 套件 | **33 → 0 失败**，18 个提交，零退役（登记为 M2-009 前置，见 `execution/P1R-M2-009.md`） |
 | M2-004 返工 | R1 四项全部关闭（TENANT-GUARD 改判并实测、ACL 探针 13→15、Redis 丢失行为证据、空库含 audit-service）；R2 六项；R3 四项 |
+| M0-006 返工 | P1-1 更正被证伪的根因主张（18 份 manifest + 5 处文档）；P1-2 换成 lockfile 解析级校验；P1-3 adm-zip→0.6.1 + @intlify 显式风险接受；P1-4 修 manifest provenance；P1-5 守卫收紧并补 6 个防洗白用例（55/55） |
 
 ## 4. 下一步（按新优先级规则）
 

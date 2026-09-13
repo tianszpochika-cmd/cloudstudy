@@ -393,7 +393,7 @@
         "reviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-12T15:59:44.043Z",
-        "details": "Current-source artifact digest rebase after P1R-M0-006 moved apps/mobile to the uni-app vite 8 compiler line (apps/mobile/package.json, pnpm-lock.yaml), migrated the previously ignored pnpm overrides into pnpm-workspace.yaml and added publicHoistPattern, removed the dead pnpm.overrides field from the root package.json, corrected the dependency gate so it decides on reported high/critical severities, and refreshed config/toolchain-baseline.json portsCanonicalSha256 plus the M0 devex evidence. Original provenance, review history and runtime status unchanged."
+        "details": "Current-source artifact digest rebase after P1R-M0-006 moved apps/mobile to the uni-app vite 8 compiler line (apps/mobile/package.json, pnpm-lock.yaml), migrated the previously ignored pnpm overrides into pnpm-workspace.yaml and added publicHoistPattern, removed the dead pnpm.overrides field from the root package.json, corrected the dependency gate so it decides on reported high/critical severities, and refreshed config/toolchain-baseline.json portsCanonicalSha256 plus the M0 devex evidence. Original provenance, review history and runtime status unchanged. CORRECTION 2026-09-13: the five pnpm.overrides pins were never inactive. The pre-migration pnpm-lock.yaml carried an overrides: section listing exactly those pins, so moving them to pnpm-workspace.yaml relocated the configuration to pnpm 10's recommended location; it did not repair a silent failure, and pnpm 10.19.0 contains no such message."
       },
       {
         "taskId": "P1R-M1-008",

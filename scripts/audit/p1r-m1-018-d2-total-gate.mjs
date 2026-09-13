@@ -567,15 +567,26 @@ function checkRuntimeBoundary({ catalog, b26Runtime, g0, g3, m0_006, policy }, e
   // M0-006 gates this total gate: while its supported-toolchain blocker is open the D2 gate
   // must not report PASS, and it must not be washed green by flipping a status. The check
   // therefore accepts either the recorded BLOCKED state or a resolution that carries its own
-  // evidence -- an empty blocker list plus a passing high/critical vulnerability policy result.
-  // A bare status flip over a manifest that still lists a blocker, or that does not record the
-  // vulnerability policy as PASS, keeps failing closed.
+  // The earlier rule accepted any non-BLOCKED status together with a self-reported PASS. That was
+    // too weak in two ways: REWORK and IN_PROGRESS both satisfied it, and the implementer's own
+    // manifest was the only witness. It also contradicted the frozen boundary this file validates,
+    // which still pinned BLOCKED/BLOCKED. A blocker is now released only by an independent reviewer's
+    // ACCEPTED decision, which per the governance rule the implementer cannot write for itself.
   const m0_006StillBlocked = m0_006?.canonicalTaskStatus === 'BLOCKED' && m0_006?.decision === 'BLOCKED';
-  const m0_006ResolvedWithEvidence = m0_006?.canonicalTaskStatus !== 'BLOCKED'
-    && m0_006?.decision !== 'BLOCKED'
-    && Array.isArray(m0_006?.blockers) && m0_006.blockers.length === 0
-    && (m0_006?.results ?? []).some((result) => result?.check === 'high-critical-vulnerability-policy' && result?.status === 'PASS');
-  add(errors, m0_006?.taskId === 'P1R-M0-006' && (m0_006StillBlocked || m0_006ResolvedWithEvidence), 'M0-006 must remain a BLOCKED task or carry evidence that its blocker is resolved; it cannot be washed into PASS');
+  const m0_006AcceptedByReviewer = m0_006?.canonicalTaskStatus === 'ACCEPTED'
+      && m0_006?.decision === 'ACCEPTED'
+      && typeof m0_006?.reviewer === 'string' && m0_006.reviewer.trim().length > 0
+      // Independence is checked against the task's own actor list, which is the machine-readable form
+      // of the rule that an implementer cannot accept its own work. A status flip that leaves an
+      // implementer's name in the reviewer field still fails closed.
+      && !(m0_006?.actors ?? []).includes(m0_006.reviewer)
+      && !/awaiting|pending|self|implementer/i.test(m0_006.reviewer)
+      // The evidence requirements stay as well: tightening means adding a condition, not trading one
+      // for another. Nothing else in this gate asserts the vulnerability policy, so dropping it here
+      // would have removed the check rather than strengthened it.
+      && Array.isArray(m0_006?.blockers) && m0_006.blockers.length === 0
+      && (m0_006?.results ?? []).some((result) => result?.check === 'high-critical-vulnerability-policy' && result?.status === 'PASS');
+  add(errors, m0_006?.taskId === 'P1R-M0-006' && (m0_006StillBlocked || m0_006AcceptedByReviewer), 'M0-006 must remain BLOCKED or carry an independent reviewer decision of ACCEPTED; no other status releases the gate');
   add(errors, catalog?.['x-p1r-event-governance']?.runtimeStatus === 'NOT_RUNTIME_VERIFIED', 'catalog runtime promotion is forbidden');
   add(errors, policy?.runtimeStatus === 'NOT_RUNTIME_VERIFIED', 'total-gate runtime promotion is forbidden');
 }

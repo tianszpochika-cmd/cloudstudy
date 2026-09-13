@@ -17,7 +17,7 @@
 |---|---|
 | `apps/mobile/package.json` | 4 个 `@dcloudio/*` → `3.0.0-alpha-1000920260909822`；`vite` `5.4.21` → `8.2.2` |
 | `pnpm-workspace.yaml` | 新增 `overrides`（含 `svgo: '>=4.1.0'`）与 `publicHoistPattern` |
-| 根 `package.json` | 删除失效的 `pnpm.overrides`（否则 workspace overrides 不生效） |
+| 根 `package.json` | 删除 `pnpm.overrides` 字段，把 5 条 pin 移到 `pnpm-workspace.yaml#overrides`（⚠️ **更正**：原表述为"删除失效的"，暗示其已失效；实际它们**一直生效**，本次是位置迁移） |
 | 漏洞结果 | `pnpm audit` high **2 → 0**、critical 0；生产依赖 0/0/0/0 |
 
 ## 2. 证据在哪

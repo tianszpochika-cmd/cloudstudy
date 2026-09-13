@@ -144,7 +144,16 @@ function fixture() {
     b26Runtime: structuredClone(b26Runtime),
     g0: structuredClone(g0),
     g3: structuredClone(g3),
-    m0_006: structuredClone(m0_006),
+    // The base fixture uses the state the frozen policy boundary pins, BLOCKED, because the gate
+    // requires the policy to match that boundary exactly and accepts a still-blocked task as the
+    // honest open state. The task's own manifest carries whatever state it currently holds, so reading
+    // it directly would make every unrelated assertion depend on live task status; the mutations below
+    // reintroduce the resolved and washed states.
+    m0_006: {
+      ...structuredClone(m0_006),
+      canonicalTaskStatus: 'BLOCKED',
+      decision: 'BLOCKED',
+    },
     tasks: [...tasks.values()],
     manifests,
     iamEventDecision: structuredClone(policy.iamEventDecision),
@@ -227,7 +236,15 @@ const mutations = [
   ['catalog runtime promotion', (input) => { input.catalog['x-p1r-event-governance'].runtimeStatus = 'PASS'; }, /runtime/],
   ['B26 GO promotion', (input) => { input.b26Runtime.defaultDecision = 'GO'; }, /B26/],
   ['M0-006 blocker wash over an unresolved blocker', (input) => { input.m0_006.decision = 'ACCEPTED'; input.m0_006.canonicalTaskStatus = 'ACCEPTED'; input.m0_006.blockers = ['GHSA-fx2h-pf6j-xcff requires Vite >=6.4.3']; }, /M0-006/],
-  ['M0-006 resolution without a passing vulnerability policy', (input) => { input.m0_006.decision = 'ACCEPTED'; input.m0_006.canonicalTaskStatus = 'ACCEPTED'; input.m0_006.results = input.m0_006.results.map((result) => (result.check === 'high-critical-vulnerability-policy' ? { ...result, status: 'FAIL' } : result)); }, /M0-006/],
+  // The rule the second review found too loose: any non-BLOCKED status used to release the gate, so an
+  // implementer could move the task to REWORK or IN_PROGRESS and be treated as resolved.
+  ['M0-006 released by moving to REWORK', (input) => { input.m0_006.canonicalTaskStatus = 'REWORK'; input.m0_006.decision = 'REWORK'; }, /M0-006/],
+  ['M0-006 released by moving to IN_PROGRESS', (input) => { input.m0_006.canonicalTaskStatus = 'IN_PROGRESS'; input.m0_006.decision = 'PENDING'; }, /M0-006/],
+  ['M0-006 released by moving to REVIEW', (input) => { input.m0_006.canonicalTaskStatus = 'REVIEW'; input.m0_006.decision = 'PENDING'; }, /M0-006/],
+  ['M0-006 accepted by its own implementer', (input) => { const accepted = (self) => { self.canonicalTaskStatus = 'ACCEPTED'; self.decision = 'ACCEPTED'; self.blockers = []; }; accepted(input.m0_006); input.m0_006.reviewer = input.m0_006.actors[0]; }, /M0-006/],
+  ['M0-006 accepted with a placeholder reviewer', (input) => { input.m0_006.canonicalTaskStatus = 'ACCEPTED'; input.m0_006.decision = 'ACCEPTED'; input.m0_006.blockers = []; input.m0_006.reviewer = 'awaiting-independent-reviewer'; }, /M0-006/],
+  ['M0-006 accepted without a reviewer', (input) => { input.m0_006.canonicalTaskStatus = 'ACCEPTED'; input.m0_006.decision = 'ACCEPTED'; input.m0_006.blockers = []; delete input.m0_006.reviewer; }, /M0-006/],
+  ['M0-006 accepted without a passing vulnerability policy', (input) => { input.m0_006.canonicalTaskStatus = 'ACCEPTED'; input.m0_006.decision = 'ACCEPTED'; input.m0_006.blockers = []; input.m0_006.reviewer = 'agent:m0_006_independent_review:review-session'; input.m0_006.results = input.m0_006.results.map((result) => (result.check === 'high-critical-vulnerability-policy' ? { ...result, status: 'FAIL' } : result)); }, /M0-006/],
   ['alias closed without canonical evidence during review', (input) => { const gap = input.registry.gaps.find((item) => item.id === EVENT_GAP_ALIAS); gap.status = 'CLOSED'; gap.closureEvidence = null; }, /alias|Evidence|closure/],
 ];
 

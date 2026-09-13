@@ -2,7 +2,7 @@
   "taskId": "P1R-M0-006",
   "draftOnly": false,
   "canonicalTaskStatus": "REVIEW",
-  "sourceCommit": "61efea057c6a3aaed629f26912a3c5e319386231",
+  "sourceCommit": "629d0d904a61965e53de45701c4ad4fe47ff4705",
   "artifactDigests": [
     {
       "path": "config/p1r-dependency-policy.json",
@@ -42,7 +42,7 @@
     "maven": "3.9.12"
   },
   "startedAt": "2026-08-29T09:20:00.000Z",
-  "finishedAt": "2026-09-12T22:51:45.234Z",
+  "finishedAt": "2026-09-13T08:04:21.308Z",
   "actors": [
     "implementation_audit",
     "m0_security_remediation"
@@ -88,9 +88,11 @@
   ],
   "knownGaps": [
     "The 4.x/5.x uni-app Vue3 line still declares an exact Vite 5.2.8 peer and has no patched Vite, so remaining on it is no longer possible; apps/mobile is now on the 10.x line.",
-    "8 low and 7 moderate advisories remain. They are dev-only except adm-zip, whose upstream has no fixed release (patched_versions \"<0.0.0\"); the policy only fails on high/critical.",
+    "CORRECTED 2026-09-13: an earlier version of this gap said the vulnerable package had no fixed release upstream. That was wrong on both counts. adm-zip 0.6.0 was merely the affected upper bound and 0.6.1 is published and unaffected, so the override was raised to 0.6.1 and the lockfile now resolves it. @intlify/core-base has a fixed release at 9.14.5 and above, which leads to the risk acceptance below rather than to a claim that nothing exists.",
     "The uni-app plugin pins preserveSymlinks: true, so pnpm's isolated layout needs a narrow publicHoistPattern for pinia's runtime dependencies.",
-    "RESOLVED (2026-09-13): the mobile H5 login form could not be submitted. The page used the HTML type=submit attribute on a uni button, but uni resolves submission from the form-type prop, and it was bound with @submit.prevent, while uni emits submit as a component event with no preventDefault, which Vue silently skips for a non-DOM event. Both are fixed in apps/mobile/src/pages/login/login.vue, and a real-browser run now issues POST /api/v1/auth/login and navigates to onboarding with zero page errors. Whether the 10.x move caused it was never established, because the pre-upgrade build was never probed the same way, but the source comparison showed the two uni-h5 versions share the same form-submit logic, so it is not attributable to this task. Fixed ahead of P1R-M4-001, which owns the login page."
+    "RESOLVED (2026-09-13): the mobile H5 login form could not be submitted. The page used the HTML type=submit attribute on a uni button, but uni resolves submission from the form-type prop, and it was bound with @submit.prevent, while uni emits submit as a component event with no preventDefault, which Vue silently skips for a non-DOM event. Both are fixed in apps/mobile/src/pages/login/login.vue, and a real-browser run now issues POST /api/v1/auth/login and navigates to onboarding with zero page errors. Whether the 10.x move caused it was never established, because the pre-upgrade build was never probed the same way, but the source comparison showed the two uni-h5 versions share the same form-submit logic, so it is not attributable to this task. Fixed ahead of P1R-M4-001, which owns the login page.",
+    "RISK ACCEPTANCE 2026-09-13, owner: platform/security (P1R-M0-006). Moderate advisory GHSA on @intlify/core-base, present at the pinned 9.1.11, fixed at 9.14.5 and above. It is accepted as a known risk for Phase 1 rather than fixed, and the reasons are recorded so the acceptance can be revisited:",
+    "The dependency overrides are verified by scripts/dev/check-overrides.mjs, which reads pnpm-lock.yaml and asserts both that the lockfile records each override and that the resolved versions match it. The previous verification method, `pnpm config get overrides`, reports only the workspace-file source and returns undefined for overrides declared in package.json even while they are in effect, so it could not have detected a pin that had stopped applying."
   ],
   "blockers": [],
   "nextSteps": [
@@ -121,16 +123,29 @@
         "reviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-12T15:59:44.043Z",
-        "details": "Current-source artifact digest rebase after P1R-M0-006 moved apps/mobile to the uni-app vite 8 compiler line (apps/mobile/package.json, pnpm-lock.yaml), migrated the previously ignored pnpm overrides into pnpm-workspace.yaml and added publicHoistPattern, removed the dead pnpm.overrides field from the root package.json, corrected the dependency gate so it decides on reported high/critical severities, and refreshed config/toolchain-baseline.json portsCanonicalSha256 plus the M0 devex evidence. Original provenance, review history and runtime status unchanged."
+        "details": "Current-source artifact digest rebase after P1R-M0-006 moved apps/mobile to the uni-app vite 8 compiler line (apps/mobile/package.json, pnpm-lock.yaml), migrated the previously ignored pnpm overrides into pnpm-workspace.yaml and added publicHoistPattern, removed the dead pnpm.overrides field from the root package.json, corrected the dependency gate so it decides on reported high/critical severities, and refreshed config/toolchain-baseline.json portsCanonicalSha256 plus the M0 devex evidence. Original provenance, review history and runtime status unchanged. CORRECTION 2026-09-13: the five pnpm.overrides pins were never inactive. The pre-migration pnpm-lock.yaml carried an overrides: section listing exactly those pins, so moving them to pnpm-workspace.yaml relocated the configuration to pnpm 10's recommended location; it did not repair a silent failure, and pnpm 10.19.0 contains no such message."
+      },
+      {
+        "taskId": "P1R-M0-006",
+        "sourceCommit": "629d0d904a61965e53de45701c4ad4fe47ff4705",
+        "auditedImplementationSource": "629d0d904a61965e53de45701c4ad4fe47ff4705",
+        "integrationCheckpoint": "629d0d904a61965e53de45701c4ad4fe47ff4705",
+        "reviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-13T08:04:21.308Z",
+        "details": "Second-review rework. sourceCommit had moved to 61efea0 while this provenance still pointed at e9c4ebd, so the manifest contradicted itself; this entry closes that. The same rework corrected a falsified claim that this task wrote down: the six pins in package.json#pnpm.overrides were never inactive, because the pre-migration pnpm-lock.yaml carried an overrides: section listing exactly them, and the move to pnpm-workspace.yaml relocated the configuration to pnpm 10's recommended location rather than repairing a silent failure. The earlier \"verified with pnpm config get overrides\" method was also invalid, since that command reports only the workspace-file source."
       }
     ],
-    "previousCurrentSourceCommit": "6ceaf7f91109d4880c89d5dbbf24bef7b9a1ca3b",
+    "previousCurrentSourceCommit": "e9c4ebd7876b6cabb7d03168df7a3547932e2e0e",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
     "currentSourceRevalidationTask": "P1R-M0-006",
     "currentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-12T15:59:44.043Z",
-    "currentSourceRevalidationAuditedImplementationSource": "e9c4ebd7876b6cabb7d03168df7a3547932e2e0e",
-    "currentSourceRevalidationIntegrationCheckpoint": "e9c4ebd7876b6cabb7d03168df7a3547932e2e0e"
+    "currentSourceRevalidationFinishedAt": "2026-09-13T08:04:21.308Z",
+    "currentSourceRevalidationAuditedImplementationSource": "629d0d904a61965e53de45701c4ad4fe47ff4705",
+    "currentSourceRevalidationIntegrationCheckpoint": "629d0d904a61965e53de45701c4ad4fe47ff4705",
+    "previousCurrentSourceRevalidationTask": "P1R-M0-006",
+    "previousCurrentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
+    "previousCurrentSourceRevalidationFinishedAt": "2026-09-12T15:59:44.043Z"
   }
 }
