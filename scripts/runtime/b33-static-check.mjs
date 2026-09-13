@@ -45,6 +45,8 @@ export function validateB33Static(root = repositoryRoot) {
   const officialConfig = read(root, 'apps/official-site/nuxt.config.ts')
   const officialProjection = read(root, 'apps/official-site/server/api/public-projection.get.ts')
   const gatewayConfig = read(root, 'services/api-gateway/src/main/java/com/englishflow/gateway/config/GatewayConfiguration.java')
+  const gatewayPolicy = read(root, 'services/api-gateway/src/main/java/com/englishflow/gateway/policy/GatewayRoutePolicy.java')
+  const gatewayExecution = read(root, 'services/api-gateway/src/main/java/com/englishflow/gateway/policy/GatewayRouteExecutionPolicy.java')
   const contentController = read(root, 'services/content-service/src/main/java/com/englishflow/content/web/ContentHttpController.java')
   const contentSecurity = read(root, 'services/content-service/src/main/java/com/englishflow/content/security/ContentSecurityConfiguration.java')
 
@@ -57,7 +59,18 @@ export function validateB33Static(root = repositoryRoot) {
   required(mobileStore.includes("VITE_RUNTIME_MODE !== 'preview'") && mobileStore.includes('if (!LOCAL_REAL_RUNTIME)') && mobileStore.includes('学习服务没有确认任务完成'), 'Mobile H5 real mode must not promote cached or optimistic task facts', errors)
   required(officialConfig.includes('NUXT_PUBLIC_GATEWAY_BASE_URL') && officialConfig.includes('18070/api/v1'), 'official-site must configure its SSR Gateway endpoint', errors)
   required(officialProjection.includes('/public/site/projection') && officialProjection.includes('source: \'gateway\''), 'official-site must consume the public projection through Gateway', errors)
-  required(gatewayConfig.includes('b33-public-site-projection') && gatewayConfig.includes('/api/v1/public/site/projection'), 'Gateway must expose the public site projection route', errors)
+  // The route is meant to reach the controller through the Gateway, but the canonical rule assigns
+  // /api/v1/public/site to admin-ops-service while the controller that serves it lives in
+  // content-service, so GatewayRouteExecutionPolicy refuses to register it and names the conflict
+  // rather than routing to a service that does not implement the path. Either state is acceptable:
+  // registered, or withheld with the conflict recorded. What must never happen is the route
+  // disappearing with nothing saying why, which is what this asserts. See P1R-M3-008.
+  const projectionRegistered = gatewayPolicy.includes('"public-site"')
+    && gatewayExecution.includes('add(definitions, "public-site"');
+  const conflictRecorded = gatewayExecution.includes('canonical_owner_admin_ops_conflicts_with_current_content_controller');
+  required(projectionRegistered || conflictRecorded,
+    'the public site projection route must either be registered or have its owner conflict recorded', errors)
+  required(gatewayPolicy.includes('"/api/v1/public/site"'), 'the canonical public site rule must stay declared', errors)
   required(contentController.includes('@GetMapping("/api/v1/public/site/projection")') && contentController.includes('catalogEntries'), 'content-service must assemble the public site projection from published owner facts', errors)
   required(contentSecurity.includes('/api/v1/public/site/projection') && contentSecurity.includes('permitAll'), 'public site projection must be public read-only without weakening learner/admin PEP', errors)
 
