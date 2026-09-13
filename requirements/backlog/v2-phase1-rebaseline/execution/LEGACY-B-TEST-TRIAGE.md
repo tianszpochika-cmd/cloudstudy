@@ -65,24 +65,30 @@ M2-001 的运行时证据含 **`default-owner-route-fail-closed`：PASS，status
 
 **未改代码语义**：让非 TARGET 域回落到 core-api 属于实现回滚，与已 ACCEPTED 的 M2-001 设计（不注册任何 core-api/按域 catch-all）冲突。因此只修正描述，并把"模式命名暗示了代码未实现的回落语义"记为待决问题。
 
-## 剩余 8 项（第 18 轮更新，起点 33）
+## ✅ 已全部清零（第 19 轮，33 → 0）
 
-第 18 轮修复 **b7 全部 3 项 + b4 1 项 + b13 2 项**。b7 的三项同样是"重构而非移除"：legacy 重写路由、`X-Compatibility-Route` 标记与 local-profile 专用路由**都已删除**，因此断言从"存在只读兼容路由"改为**"根本不注册任何 catch-all、每条路由都来自 canonical 策略绑定"**（更强）；CORS 从 `CorsWebFilter` + 单一 origin 列表改为**按浏览器 profile 解析的 `CorsConfigurationSource`**；local profile 不再翻转匿名读。
+全量 `tests/`：**1922 项、1915 pass、0 fail、7 skip**。
 
-b7 的**反腐层检查**找到网关里唯一的控制器 —— canonical `GATEWAY_LOCAL` 健康投影。**没有删掉这条检查**，而是改为**点名并约束这个唯一例外**：`@RestController` 只允许 `GatewayHealthController`，且它必须报空依赖列表、留在内部路径上 —— 若将来有控制器开始推断下游健康就会被测出来。
+第 19 轮修复：**b25 ×2、b31 ×2、b27 ×2、b33 ×1、b20 ×1**。
 
-b4/b13 是**需求重命名**：M1-016 重做通知面（操作 id 带 `M1016`）、M1-017 重做遥测接入（带 `M1017`）；另有一处断言要求 `X-Role` 等为驼峰，而过滤器里声明为小写 —— HTTP 头名本就大小写不敏感，同文件 commerce 的断言早已用 `/i`。
+### 本轮的两个要点
 
-⚠️ **我在本轮又写错了两条自己的断言并已更正**：路由的 `for` 循环在 `GatewayConfiguration` 而非执行策略里；按 `class ` 切分源码会把 `@RestController` 归到前一段，改为从注解匹配类名。
+**b25 的身份边界**：四个 JDBC 控制器都不再直接依赖 `JwtAuthenticationToken`，改为接收 `Authentication` 并委托给共享的 `HttpPrincipals.require` —— **验证要求本身就在那里**（它检查 `instanceof JwtAuthenticationToken`、`isAuthenticated()`、subject 格式与 platform 租户）。断言改为"委托 + **从不读取任何请求头**"，后者更强：若有控制器开始信任客户端头部就会失败。同时断言四个边界类自身要求已验证主体。
 
-### 剩余明细
+**b31 的运行时语义**：该断言原本只接受 401。但在**出厂的 strangler 默认值**下（`B14_STRANGLER_ENABLED=false`）没有 canonical 路由被注册，路径返回 **404** —— 这正是已 ACCEPTED 的 M2-001 证据所记录的 `default-owner-route-fail-closed`。**两者都是拒绝**，因此改为要求"是拒绝 + 返回 canonical 错误信封 + 关联 ID"，而不是某一个特定状态码。
 
-| 簇 | 数量 | 初判 |
-|---|---|---|
-| b25 | 2 | 控制器存在但改用 `Authentication` + `principal(...)` helper |
-| b31 | 2 | 待核对当前路由矩阵 |
-| b27 | 2 | 占位目录含业务文件；校验器 FAIL |
-| b33 | 1 | Gateway 公开投影路由 → 现由 official-site 提供（疑似**真实所有权变更**） |
-| b20 | 1 | 校验器 FAIL（10 静态 + 10 运行时待证） |
+### ⚠️ 本轮发现的真实缺口（未修，已登记）
+
+**官网公开投影经网关不可达** `[读取]`：
+
+- `GatewayRoutePolicy` 的 canonical 规则 `public-site`（前缀 `/api/v1/public/site`）把 owner 定为 **`admin-ops-service`**
+- 但实际控制器在 **content-service**（`ContentHttpController:79 @GetMapping("/api/v1/public/site/projection")` ✓，`ContentSecurityConfiguration:120` permitAll ✓）；**admin-ops-service 中该路径 0 命中**
+- 因此 `GatewayRouteExecutionPolicy` **拒绝注册该路由**，并在 fail-closed 原因表中记录 `canonical_owner_admin_ops_conflicts_with_current_content_controller`
+
+即：**网关正确地 fail-closed，但底层"canonical owner 与实际控制器不一致"的矛盾未解决**，官网 SSR 消费的公开投影经网关不可达。**归属 `P1R-M3-008`（完成官网公开内容）**。b33 校验器已改为接受两种状态（已注册 / 已记录冲突），但**不允许路由无声消失**。
+
+## 剩余
+
+无。
 
 **覆盖不会丢失**：这些关切已由 `tests/p1r/p1r-gateway-contract.test.mjs` + **M2-001 运行时证据 30/30**（含 11 项真实浏览器 CORS/Origin 检查、限流 429+`Retry-After`、401/403、Redis fail-closed 503 与恢复）覆盖。
