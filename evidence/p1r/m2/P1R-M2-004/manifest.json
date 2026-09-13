@@ -2,7 +2,7 @@
   "taskId": "P1R-M2-004",
   "draftOnly": false,
   "canonicalTaskStatus": "REVIEW",
-  "sourceCommit": "b0a562d3cce320651ed968a5d651e4a8795a5505",
+  "sourceCommit": "5c274a05502c517d4d906cb4fa7934bcf288e378",
   "artifactDigests": [
     {
       "path": "config/p1r-data-ownership.v1.json",
@@ -275,7 +275,7 @@
     "branch": "dev",
     "phaseStatus": "D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED",
     "runtimeStatus": "M2_004_PARTIAL_RUNTIME_VERIFIED",
-    "reviewedRevision": "b0a562d3cce320651ed968a5d651e4a8795a5505",
+    "reviewedRevision": "5c274a05502c517d4d906cb4fa7934bcf288e378",
     "evidenceRevision": null,
     "toolchain": {
       "java": "OpenJDK 25.0.4.1",
@@ -327,7 +327,7 @@
     "reviewHistory": []
   },
   "startedAt": "2026-09-09T00:00:00+08:00",
-  "finishedAt": "2026-09-13T15:13:45.241Z",
+  "finishedAt": "2026-09-13T15:19:55.846Z",
   "actors": [
     "root-coordinator",
     "p1r-implementation"
