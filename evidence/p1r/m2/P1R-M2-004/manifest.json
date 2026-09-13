@@ -2,7 +2,7 @@
   "taskId": "P1R-M2-004",
   "draftOnly": false,
   "canonicalTaskStatus": "REVIEW",
-  "sourceCommit": "79b0e6950a301d9631d935b33ce1161b123893fa",
+  "sourceCommit": "36b36d7757efb7dff2a21f64cc8f3d02bb730ef7",
   "artifactDigests": [
     {
       "path": "config/p1r-data-ownership.v1.json",
@@ -275,8 +275,8 @@
     "branch": "dev",
     "phaseStatus": "D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED",
     "runtimeStatus": "M2_004_PARTIAL_RUNTIME_VERIFIED",
-    "reviewedRevision": "79b0e6950a301d9631d935b33ce1161b123893fa",
-    "evidenceRevision": null,
+    "reviewedRevision": "176d5ff68d6ff2e3a7f86bc80d6eecb5f083f787",
+    "measuredAt": "2026-09-13T17:55:32.440Z",
     "toolchain": {
       "java": "OpenJDK 25.0.4.1",
       "maven": "3.9.12",
@@ -331,10 +331,43 @@
       "Batch E2 to E8 owner outbox shape standardisation and the content-service publish and consume vertical slice",
       "Batch R the review rework: the tenant guard and the migration coverage were verified by running their gated tests, the Redis probes were extended to every namespaced owner, and the Redis loss clause gained behavioural evidence"
     ],
-    "reviewHistory": []
+    "reviewHistory": [
+      {
+        "round": 1,
+        "verdict": "REWORK",
+        "counts": {
+          "P0": 0,
+          "P1": 4,
+          "P2": 6
+        },
+        "reviewedCommit": "50953b71bcd18ffa6fb03afd2bb9b7e9883b07d2",
+        "reviewer": "independent review session (first round)",
+        "summary": "P0 was zero: cross-tenant write blocking, DML-only credentials with 1142 denials, no cross-schema grants, 20 of 20 artifact digests, 58 checks reproduced and the gates and 1429 regression all green were independently confirmed. The findings were about accounting rather than missing work."
+      },
+      {
+        "round": 2,
+        "verdict": "REWORK",
+        "counts": {
+          "P0": 0,
+          "P1": 1,
+          "P2": 9
+        },
+        "reviewedCommit": null,
+        "reviewer": "independent review session (second round)",
+        "summary": "The four first-round P1 findings were confirmed closed: the reviewer independently re-ran 23 of 23 gated classes and recomputed 46 of 46 digests. One new P1 was raised, that the gated runner's pass criterion was the mvn exit code, which an entirely skipped class also satisfies, and which propagated into VERIFIED and a green gate. Ten P2 findings were raised as well."
+      },
+      {
+        "round": 3,
+        "verdict": "PENDING",
+        "counts": null,
+        "reviewedCommit": null,
+        "reviewer": "awaiting a fresh independent session",
+        "summary": "Not submitted. The third round has closed the new P1 and seven of the ten P2 findings so far; the remainder and the submission itself are outstanding."
+      }
+    ]
   },
   "startedAt": "2026-09-09T00:00:00+08:00",
-  "finishedAt": "2026-09-13T18:06:27.204Z",
+  "finishedAt": "2026-09-13T18:16:21.975Z",
   "actors": [
     "root-coordinator",
     "p1r-implementation"
