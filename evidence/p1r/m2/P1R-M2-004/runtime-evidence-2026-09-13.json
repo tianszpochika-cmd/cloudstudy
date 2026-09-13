@@ -2,9 +2,9 @@
   "schema": "m2.data-ownership.runtime-evidence.v1",
   "taskId": "P1R-M2-004",
   "result": "PARTIAL",
-  "sourceCommit": "8017d3d1fa6e2ff0ecd50def600989019c88eb07",
-  "startedAt": "2026-09-12T22:29:35.971Z",
-  "finishedAt": "2026-09-12T22:30:10.978Z",
+  "sourceCommit": "50953b71bcd18ffa6fb03afd2bb9b7e9883b07d2",
+  "startedAt": "2026-09-13T04:36:37.161Z",
+  "finishedAt": "2026-09-13T04:40:53.209Z",
   "ownerCount": 13,
   "requirements": [
     {
@@ -25,9 +25,11 @@
     },
     {
       "id": "M2-004-TENANT-GUARD",
-      "status": "NOT_APPLICABLE",
-      "ownerTask": "P1R-M2-009",
-      "reason": "HTTP-level two-tenant denial needs a synthetic per-owner account, which P1R-M0-007 builds and P1R-M2-009 wires into real CI."
+      "status": "VERIFIED"
+    },
+    {
+      "id": "M2-004-FLYWAY-OWNER-COVERAGE",
+      "status": "VERIFIED"
     },
     {
       "id": "M2-004-REDIS-REBUILD",
@@ -562,7 +564,8 @@
       "namespace": "learner",
       "declaredPattern": "~learner:*",
       "expectedPattern": "~learner:*",
-      "patternMatches": true,
+      "patternUsesNestedNamespace": false,
+      "patternScopedToNamespace": true,
       "ownNamespaceAllowed": true,
       "foreignNamespace": "content",
       "foreignNamespaceDenied": true,
@@ -574,7 +577,8 @@
       "namespace": "content",
       "declaredPattern": "~content:*",
       "expectedPattern": "~content:*",
-      "patternMatches": true,
+      "patternUsesNestedNamespace": false,
+      "patternScopedToNamespace": true,
       "ownNamespaceAllowed": true,
       "foreignNamespace": "learner",
       "foreignNamespaceDenied": true,
@@ -586,7 +590,8 @@
       "namespace": "learning",
       "declaredPattern": "~learning:*",
       "expectedPattern": "~learning:*",
-      "patternMatches": true,
+      "patternUsesNestedNamespace": false,
+      "patternScopedToNamespace": true,
       "ownNamespaceAllowed": true,
       "foreignNamespace": "learner",
       "foreignNamespaceDenied": true,
@@ -598,7 +603,8 @@
       "namespace": "assessment",
       "declaredPattern": "~assessment:*",
       "expectedPattern": "~assessment:*",
-      "patternMatches": true,
+      "patternUsesNestedNamespace": false,
+      "patternScopedToNamespace": true,
       "ownNamespaceAllowed": true,
       "foreignNamespace": "learner",
       "foreignNamespaceDenied": true,
@@ -610,7 +616,8 @@
       "namespace": "media",
       "declaredPattern": "~media:*",
       "expectedPattern": "~media:*",
-      "patternMatches": true,
+      "patternUsesNestedNamespace": false,
+      "patternScopedToNamespace": true,
       "ownNamespaceAllowed": true,
       "foreignNamespace": "learner",
       "foreignNamespaceDenied": true,
@@ -622,7 +629,8 @@
       "namespace": "notification",
       "declaredPattern": "~notification:*",
       "expectedPattern": "~notification:*",
-      "patternMatches": true,
+      "patternUsesNestedNamespace": false,
+      "patternScopedToNamespace": true,
       "ownNamespaceAllowed": true,
       "foreignNamespace": "learner",
       "foreignNamespaceDenied": true,
@@ -634,7 +642,8 @@
       "namespace": "gamification",
       "declaredPattern": "~gamification:*",
       "expectedPattern": "~gamification:*",
-      "patternMatches": true,
+      "patternUsesNestedNamespace": false,
+      "patternScopedToNamespace": true,
       "ownNamespaceAllowed": true,
       "foreignNamespace": "learner",
       "foreignNamespaceDenied": true,
@@ -646,7 +655,8 @@
       "namespace": "social",
       "declaredPattern": "~social:*",
       "expectedPattern": "~social:*",
-      "patternMatches": true,
+      "patternUsesNestedNamespace": false,
+      "patternScopedToNamespace": true,
       "ownNamespaceAllowed": true,
       "foreignNamespace": "learner",
       "foreignNamespaceDenied": true,
@@ -658,7 +668,8 @@
       "namespace": "commerce",
       "declaredPattern": "~commerce:*",
       "expectedPattern": "~commerce:*",
-      "patternMatches": true,
+      "patternUsesNestedNamespace": false,
+      "patternScopedToNamespace": true,
       "ownNamespaceAllowed": true,
       "foreignNamespace": "learner",
       "foreignNamespaceDenied": true,
@@ -670,7 +681,8 @@
       "namespace": "admin-ops",
       "declaredPattern": "~admin-ops:*",
       "expectedPattern": "~admin-ops:*",
-      "patternMatches": true,
+      "patternUsesNestedNamespace": false,
+      "patternScopedToNamespace": true,
       "ownNamespaceAllowed": true,
       "foreignNamespace": "learner",
       "foreignNamespaceDenied": true,
@@ -682,7 +694,8 @@
       "namespace": "analytics",
       "declaredPattern": "~analytics:*",
       "expectedPattern": "~analytics:*",
-      "patternMatches": true,
+      "patternUsesNestedNamespace": false,
+      "patternScopedToNamespace": true,
       "ownNamespaceAllowed": true,
       "foreignNamespace": "learner",
       "foreignNamespaceDenied": true,
@@ -694,7 +707,8 @@
       "namespace": "audit",
       "declaredPattern": "~audit:*",
       "expectedPattern": "~audit:*",
-      "patternMatches": true,
+      "patternUsesNestedNamespace": false,
+      "patternScopedToNamespace": true,
       "ownNamespaceAllowed": true,
       "foreignNamespace": "learner",
       "foreignNamespaceDenied": true,
@@ -706,7 +720,34 @@
       "namespace": "iam",
       "declaredPattern": "~iam:*",
       "expectedPattern": "~iam:*",
-      "patternMatches": true,
+      "patternUsesNestedNamespace": false,
+      "patternScopedToNamespace": true,
+      "ownNamespaceAllowed": true,
+      "foreignNamespace": "learner",
+      "foreignNamespaceDenied": true,
+      "result": "PASS"
+    },
+    {
+      "id": "redis-namespace-acl:api-gateway",
+      "credential": "svc_gateway",
+      "namespace": "englishflow:gateway",
+      "declaredPattern": "~englishflow:gateway:*",
+      "expectedPattern": "~englishflow:gateway:*",
+      "patternUsesNestedNamespace": false,
+      "patternScopedToNamespace": true,
+      "ownNamespaceAllowed": true,
+      "foreignNamespace": "learner",
+      "foreignNamespaceDenied": true,
+      "result": "PASS"
+    },
+    {
+      "id": "redis-namespace-acl:workflow-service",
+      "credential": "svc_workflow",
+      "namespace": "workflow",
+      "declaredPattern": "~workflow:*",
+      "expectedPattern": "~workflow:*",
+      "patternUsesNestedNamespace": false,
+      "patternScopedToNamespace": true,
       "ownNamespaceAllowed": true,
       "foreignNamespace": "learner",
       "foreignNamespaceDenied": true,
@@ -969,21 +1010,339 @@
       "result": "PASS"
     },
     {
+      "classes": [
+        "AdminOpsTenantIsolationTest"
+      ],
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reason": null,
+      "id": "tenant-isolation:admin-ops",
+      "result": "PASS"
+    },
+    {
+      "classes": [
+        "AdminOpsFlywayMigrationTest"
+      ],
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reason": null,
+      "id": "flyway-coverage:admin-ops",
+      "result": "PASS"
+    },
+    {
+      "classes": [
+        "AnalyticsTenantIsolationTest"
+      ],
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reason": null,
+      "id": "tenant-isolation:analytics",
+      "result": "PASS"
+    },
+    {
+      "classes": [
+        "AnalyticsFlywayMigrationTest"
+      ],
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reason": null,
+      "id": "flyway-coverage:analytics",
+      "result": "PASS"
+    },
+    {
+      "classes": [
+        "AssessmentTenantIsolationTest"
+      ],
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reason": null,
+      "id": "tenant-isolation:assessment",
+      "result": "PASS"
+    },
+    {
+      "classes": [
+        "AssessmentFlywayMigrationTest"
+      ],
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reason": null,
+      "id": "flyway-coverage:assessment",
+      "result": "PASS"
+    },
+    {
+      "classes": [
+        "AuditFlywayMigrationTest"
+      ],
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reason": null,
+      "id": "flyway-coverage:audit",
+      "result": "PASS"
+    },
+    {
+      "classes": [
+        "CommerceTenantIsolationTest"
+      ],
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reason": null,
+      "id": "tenant-isolation:commerce",
+      "result": "PASS"
+    },
+    {
+      "classes": [
+        "CommerceFlywayMigrationTest"
+      ],
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reason": null,
+      "id": "flyway-coverage:commerce",
+      "result": "PASS"
+    },
+    {
+      "classes": [
+        "ContentTenantIsolationTest"
+      ],
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reason": null,
+      "id": "tenant-isolation:content",
+      "result": "PASS"
+    },
+    {
+      "classes": [
+        "ContentFlywayMigrationTest"
+      ],
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reason": null,
+      "id": "flyway-coverage:content",
+      "result": "PASS"
+    },
+    {
+      "classes": [
+        "GamificationTenantIsolationTest"
+      ],
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reason": null,
+      "id": "tenant-isolation:gamification",
+      "result": "PASS"
+    },
+    {
+      "classes": [
+        "GamificationFlywayMigrationTest"
+      ],
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reason": null,
+      "id": "flyway-coverage:gamification",
+      "result": "PASS"
+    },
+    {
+      "classes": [
+        "IamFlywayMigrationTest"
+      ],
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reason": null,
+      "id": "flyway-coverage:iam",
+      "result": "PASS"
+    },
+    {
+      "classes": [
+        "LearnerFlywayMigrationTest"
+      ],
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reason": null,
+      "id": "flyway-coverage:learner",
+      "result": "PASS"
+    },
+    {
+      "classes": [
+        "LearningTenantIsolationTest"
+      ],
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reason": null,
+      "id": "tenant-isolation:learning",
+      "result": "PASS"
+    },
+    {
+      "classes": [
+        "LearningFlywayMigrationTest"
+      ],
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reason": null,
+      "id": "flyway-coverage:learning",
+      "result": "PASS"
+    },
+    {
+      "classes": [
+        "MediaTenantIsolationTest"
+      ],
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reason": null,
+      "id": "tenant-isolation:media",
+      "result": "PASS"
+    },
+    {
+      "classes": [
+        "MediaFlywayMigrationTest"
+      ],
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reason": null,
+      "id": "flyway-coverage:media",
+      "result": "PASS"
+    },
+    {
+      "classes": [
+        "NotificationTenantIsolationTest"
+      ],
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reason": null,
+      "id": "tenant-isolation:notification",
+      "result": "PASS"
+    },
+    {
+      "classes": [
+        "NotificationFlywayMigrationTest"
+      ],
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reason": null,
+      "id": "flyway-coverage:notification",
+      "result": "PASS"
+    },
+    {
+      "classes": [
+        "SocialTenantIsolationTest"
+      ],
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reason": null,
+      "id": "tenant-isolation:social",
+      "result": "PASS"
+    },
+    {
+      "classes": [
+        "SocialFlywayMigrationTest"
+      ],
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reason": null,
+      "id": "flyway-coverage:social",
+      "result": "PASS"
+    },
+    {
+      "container": "yuxuexing-local-redis-1",
+      "healthWhileStopped": "unhealthy",
+      "healthAfterRestart": "healthy",
+      "restored": true,
+      "before": {
+        "learner_service.b25_learner_daily_task": 129,
+        "content_service.b25_content_answer_rule": 10,
+        "learning_service.b25_learning_continue_context": 117,
+        "assessment_service.assessment_answer": 10,
+        "media_service.media_asset": 11,
+        "notification_service.b25_notification_message": 11,
+        "gamification_service.coin_ledger": 126,
+        "social_service.soc_idempotency_record": 0,
+        "commerce_service.commerce_activation_code": 10,
+        "admin_ops_service.admin_audit_record": 10,
+        "analytics_service.analytics_metric_projection": 24,
+        "audit_service.audit_fact": 1,
+        "iam_service.iam_account": 47
+      },
+      "during": {
+        "learner_service.b25_learner_daily_task": 129,
+        "content_service.b25_content_answer_rule": 10,
+        "learning_service.b25_learning_continue_context": 117,
+        "assessment_service.assessment_answer": 10,
+        "media_service.media_asset": 11,
+        "notification_service.b25_notification_message": 11,
+        "gamification_service.coin_ledger": 126,
+        "social_service.soc_idempotency_record": 0,
+        "commerce_service.commerce_activation_code": 10,
+        "admin_ops_service.admin_audit_record": 10,
+        "analytics_service.analytics_metric_projection": 24,
+        "audit_service.audit_fact": 1,
+        "iam_service.iam_account": 47
+      },
+      "after": {
+        "learner_service.b25_learner_daily_task": 129,
+        "content_service.b25_content_answer_rule": 10,
+        "learning_service.b25_learning_continue_context": 117,
+        "assessment_service.assessment_answer": 10,
+        "media_service.media_asset": 11,
+        "notification_service.b25_notification_message": 11,
+        "gamification_service.coin_ledger": 126,
+        "social_service.soc_idempotency_record": 0,
+        "commerce_service.commerce_activation_code": 10,
+        "admin_ops_service.admin_audit_record": 10,
+        "analytics_service.analytics_metric_projection": 24,
+        "audit_service.audit_fact": 1,
+        "iam_service.iam_account": 47
+      },
+      "id": "redis-loss:business-facts-unchanged",
+      "result": "PASS"
+    },
+    {
       "schema": "workflow_service",
       "reason": "the service has no runtime yet; the ownership policy records it as a planned migration collection",
       "id": "owner-not-built:workflow-service",
       "result": "NOT_VERIFIABLE_HERE"
-    },
-    {
-      "requirement": "Prove server-derived TenantScope, tenant_id/index rules where applicable, and cross-tenant denial; do not claim MySQL automatic row-level isolation.",
-      "assertedBy": "P1R-M2-004",
-      "ownerTask": "P1R-M2-009",
-      "supportingTasks": [
-        "P1R-M0-007"
-      ],
-      "rationale": "HTTP-level two-tenant denial needs a synthetic per-owner account, which P1R-M0-007 builds and P1R-M2-009 wires into real CI.",
-      "id": "requirement:M2-004-TENANT-GUARD",
-      "result": "NOT_APPLICABLE"
     },
     {
       "requirement": "Prove cache, lock, dedupe, rate-limit, and projection rebuild/degradation behavior against durable owner facts.",
@@ -1510,7 +1869,8 @@
         "namespace": "learner",
         "declaredPattern": "~learner:*",
         "expectedPattern": "~learner:*",
-        "patternMatches": true,
+        "patternUsesNestedNamespace": false,
+        "patternScopedToNamespace": true,
         "ownNamespaceAllowed": true,
         "foreignNamespace": "content",
         "foreignNamespaceDenied": true
@@ -1521,7 +1881,8 @@
         "namespace": "content",
         "declaredPattern": "~content:*",
         "expectedPattern": "~content:*",
-        "patternMatches": true,
+        "patternUsesNestedNamespace": false,
+        "patternScopedToNamespace": true,
         "ownNamespaceAllowed": true,
         "foreignNamespace": "learner",
         "foreignNamespaceDenied": true
@@ -1532,7 +1893,8 @@
         "namespace": "learning",
         "declaredPattern": "~learning:*",
         "expectedPattern": "~learning:*",
-        "patternMatches": true,
+        "patternUsesNestedNamespace": false,
+        "patternScopedToNamespace": true,
         "ownNamespaceAllowed": true,
         "foreignNamespace": "learner",
         "foreignNamespaceDenied": true
@@ -1543,7 +1905,8 @@
         "namespace": "assessment",
         "declaredPattern": "~assessment:*",
         "expectedPattern": "~assessment:*",
-        "patternMatches": true,
+        "patternUsesNestedNamespace": false,
+        "patternScopedToNamespace": true,
         "ownNamespaceAllowed": true,
         "foreignNamespace": "learner",
         "foreignNamespaceDenied": true
@@ -1554,7 +1917,8 @@
         "namespace": "media",
         "declaredPattern": "~media:*",
         "expectedPattern": "~media:*",
-        "patternMatches": true,
+        "patternUsesNestedNamespace": false,
+        "patternScopedToNamespace": true,
         "ownNamespaceAllowed": true,
         "foreignNamespace": "learner",
         "foreignNamespaceDenied": true
@@ -1565,7 +1929,8 @@
         "namespace": "notification",
         "declaredPattern": "~notification:*",
         "expectedPattern": "~notification:*",
-        "patternMatches": true,
+        "patternUsesNestedNamespace": false,
+        "patternScopedToNamespace": true,
         "ownNamespaceAllowed": true,
         "foreignNamespace": "learner",
         "foreignNamespaceDenied": true
@@ -1576,7 +1941,8 @@
         "namespace": "gamification",
         "declaredPattern": "~gamification:*",
         "expectedPattern": "~gamification:*",
-        "patternMatches": true,
+        "patternUsesNestedNamespace": false,
+        "patternScopedToNamespace": true,
         "ownNamespaceAllowed": true,
         "foreignNamespace": "learner",
         "foreignNamespaceDenied": true
@@ -1587,7 +1953,8 @@
         "namespace": "social",
         "declaredPattern": "~social:*",
         "expectedPattern": "~social:*",
-        "patternMatches": true,
+        "patternUsesNestedNamespace": false,
+        "patternScopedToNamespace": true,
         "ownNamespaceAllowed": true,
         "foreignNamespace": "learner",
         "foreignNamespaceDenied": true
@@ -1598,7 +1965,8 @@
         "namespace": "commerce",
         "declaredPattern": "~commerce:*",
         "expectedPattern": "~commerce:*",
-        "patternMatches": true,
+        "patternUsesNestedNamespace": false,
+        "patternScopedToNamespace": true,
         "ownNamespaceAllowed": true,
         "foreignNamespace": "learner",
         "foreignNamespaceDenied": true
@@ -1609,7 +1977,8 @@
         "namespace": "admin-ops",
         "declaredPattern": "~admin-ops:*",
         "expectedPattern": "~admin-ops:*",
-        "patternMatches": true,
+        "patternUsesNestedNamespace": false,
+        "patternScopedToNamespace": true,
         "ownNamespaceAllowed": true,
         "foreignNamespace": "learner",
         "foreignNamespaceDenied": true
@@ -1620,7 +1989,8 @@
         "namespace": "analytics",
         "declaredPattern": "~analytics:*",
         "expectedPattern": "~analytics:*",
-        "patternMatches": true,
+        "patternUsesNestedNamespace": false,
+        "patternScopedToNamespace": true,
         "ownNamespaceAllowed": true,
         "foreignNamespace": "learner",
         "foreignNamespaceDenied": true
@@ -1631,7 +2001,8 @@
         "namespace": "audit",
         "declaredPattern": "~audit:*",
         "expectedPattern": "~audit:*",
-        "patternMatches": true,
+        "patternUsesNestedNamespace": false,
+        "patternScopedToNamespace": true,
         "ownNamespaceAllowed": true,
         "foreignNamespace": "learner",
         "foreignNamespaceDenied": true
@@ -1642,7 +2013,32 @@
         "namespace": "iam",
         "declaredPattern": "~iam:*",
         "expectedPattern": "~iam:*",
-        "patternMatches": true,
+        "patternUsesNestedNamespace": false,
+        "patternScopedToNamespace": true,
+        "ownNamespaceAllowed": true,
+        "foreignNamespace": "learner",
+        "foreignNamespaceDenied": true
+      },
+      {
+        "id": "api-gateway",
+        "credential": "svc_gateway",
+        "namespace": "englishflow:gateway",
+        "declaredPattern": "~englishflow:gateway:*",
+        "expectedPattern": "~englishflow:gateway:*",
+        "patternUsesNestedNamespace": false,
+        "patternScopedToNamespace": true,
+        "ownNamespaceAllowed": true,
+        "foreignNamespace": "learner",
+        "foreignNamespaceDenied": true
+      },
+      {
+        "id": "workflow-service",
+        "credential": "svc_workflow",
+        "namespace": "workflow",
+        "declaredPattern": "~workflow:*",
+        "expectedPattern": "~workflow:*",
+        "patternUsesNestedNamespace": false,
+        "patternScopedToNamespace": true,
         "ownNamespaceAllowed": true,
         "foreignNamespace": "learner",
         "foreignNamespaceDenied": true
@@ -1894,7 +2290,6 @@
     "emitted": false
   },
   "notRuntimeVerified": [
-    "M2-004-TENANT-GUARD",
     "M2-004-REDIS-REBUILD",
     "M2-004-ROLLBACK-COMPENSATION",
     "M2-004-RETENTION-DELETE-HOLD"

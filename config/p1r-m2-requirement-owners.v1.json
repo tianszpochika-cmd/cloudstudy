@@ -26,9 +26,10 @@
     {
       "id": "M2-004-TENANT-GUARD",
       "assertedBy": "P1R-M2-004",
-      "ownerTask": "P1R-M2-009",
-      "supportingTasks": ["P1R-M0-007"],
-      "rationale": "HTTP-level two-tenant denial needs a synthetic per-owner account, which P1R-M0-007 builds and P1R-M2-009 wires into real CI."
+      "ownerTask": "P1R-M2-004",
+      "deliveredLayer": "database-and-service",
+      "residualOwnerTask": "P1R-M2-009",
+      "rationale": "The task ledger line for P1R-M2-004 puts tenant guard inside its scope and names cross-tenant and cross-database write blocking in its exit evidence, and the task delivers it: ten *TenantIsolationTest classes assert cross-tenant denial against a real MySQL, writing each owner's facts through the owner's own repository and asserting that a foreign tenant is refused. Each carries @EnabledIfSystemProperty, so they only run when asked; scripts/runtime/run-gated-db-tests.mjs runs all ten and records the result. What is not delivered here is the HTTP-level two-tenant negative, which needs a synthetic per-owner account built by P1R-M0-007 and wired into CI by P1R-M2-009, and that residual is recorded as a gap rather than used to reassign the whole requirement."
     },
     {
       "id": "M2-004-REDIS-NAMESPACE-ACL",

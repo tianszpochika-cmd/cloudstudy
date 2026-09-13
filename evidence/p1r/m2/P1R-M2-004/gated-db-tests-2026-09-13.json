@@ -1,0 +1,311 @@
+{
+  "schema": "platform.gated-db-tests.v1",
+  "taskId": "P1R-M2-004",
+  "capturedAt": "2026-09-13T04:01:05.529Z",
+  "adminUrl": "jdbc:mysql://127.0.0.1:13306/",
+  "classesRun": 23,
+  "testsRun": 23,
+  "failing": 0,
+  "passed": true,
+  "results": [
+    {
+      "service": "admin-ops",
+      "kind": "tenant",
+      "classes": [
+        "AdminOpsTenantIsolationTest"
+      ],
+      "passed": true,
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reason": null
+    },
+    {
+      "service": "admin-ops",
+      "kind": "migration",
+      "classes": [
+        "AdminOpsFlywayMigrationTest"
+      ],
+      "passed": true,
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reason": null
+    },
+    {
+      "service": "analytics",
+      "kind": "tenant",
+      "classes": [
+        "AnalyticsTenantIsolationTest"
+      ],
+      "passed": true,
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reason": null
+    },
+    {
+      "service": "analytics",
+      "kind": "migration",
+      "classes": [
+        "AnalyticsFlywayMigrationTest"
+      ],
+      "passed": true,
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reason": null
+    },
+    {
+      "service": "assessment",
+      "kind": "tenant",
+      "classes": [
+        "AssessmentTenantIsolationTest"
+      ],
+      "passed": true,
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reason": null
+    },
+    {
+      "service": "assessment",
+      "kind": "migration",
+      "classes": [
+        "AssessmentFlywayMigrationTest"
+      ],
+      "passed": true,
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reason": null
+    },
+    {
+      "service": "audit",
+      "kind": "migration",
+      "classes": [
+        "AuditFlywayMigrationTest"
+      ],
+      "passed": true,
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reason": null
+    },
+    {
+      "service": "commerce",
+      "kind": "tenant",
+      "classes": [
+        "CommerceTenantIsolationTest"
+      ],
+      "passed": true,
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reason": null
+    },
+    {
+      "service": "commerce",
+      "kind": "migration",
+      "classes": [
+        "CommerceFlywayMigrationTest"
+      ],
+      "passed": true,
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reason": null
+    },
+    {
+      "service": "content",
+      "kind": "tenant",
+      "classes": [
+        "ContentTenantIsolationTest"
+      ],
+      "passed": true,
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reason": null
+    },
+    {
+      "service": "content",
+      "kind": "migration",
+      "classes": [
+        "ContentFlywayMigrationTest"
+      ],
+      "passed": true,
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reason": null
+    },
+    {
+      "service": "gamification",
+      "kind": "tenant",
+      "classes": [
+        "GamificationTenantIsolationTest"
+      ],
+      "passed": true,
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reason": null
+    },
+    {
+      "service": "gamification",
+      "kind": "migration",
+      "classes": [
+        "GamificationFlywayMigrationTest"
+      ],
+      "passed": true,
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reason": null
+    },
+    {
+      "service": "iam",
+      "kind": "migration",
+      "classes": [
+        "IamFlywayMigrationTest"
+      ],
+      "passed": true,
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reason": null
+    },
+    {
+      "service": "learner",
+      "kind": "migration",
+      "classes": [
+        "LearnerFlywayMigrationTest"
+      ],
+      "passed": true,
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reason": null
+    },
+    {
+      "service": "learning",
+      "kind": "tenant",
+      "classes": [
+        "LearningTenantIsolationTest"
+      ],
+      "passed": true,
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reason": null
+    },
+    {
+      "service": "learning",
+      "kind": "migration",
+      "classes": [
+        "LearningFlywayMigrationTest"
+      ],
+      "passed": true,
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reason": null
+    },
+    {
+      "service": "media",
+      "kind": "tenant",
+      "classes": [
+        "MediaTenantIsolationTest"
+      ],
+      "passed": true,
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reason": null
+    },
+    {
+      "service": "media",
+      "kind": "migration",
+      "classes": [
+        "MediaFlywayMigrationTest"
+      ],
+      "passed": true,
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reason": null
+    },
+    {
+      "service": "notification",
+      "kind": "tenant",
+      "classes": [
+        "NotificationTenantIsolationTest"
+      ],
+      "passed": true,
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reason": null
+    },
+    {
+      "service": "notification",
+      "kind": "migration",
+      "classes": [
+        "NotificationFlywayMigrationTest"
+      ],
+      "passed": true,
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reason": null
+    },
+    {
+      "service": "social",
+      "kind": "tenant",
+      "classes": [
+        "SocialTenantIsolationTest"
+      ],
+      "passed": true,
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reason": null
+    },
+    {
+      "service": "social",
+      "kind": "migration",
+      "classes": [
+        "SocialFlywayMigrationTest"
+      ],
+      "passed": true,
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reason": null
+    }
+  ]
+}

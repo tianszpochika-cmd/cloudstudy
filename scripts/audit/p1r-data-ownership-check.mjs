@@ -644,7 +644,11 @@ function checkGatewayOwner(owner, errors, indexes) {
   const redis = owner.redis;
   add(errors, isRecord(redis), 'Gateway Redis boundary is required');
   if (isRecord(redis)) {
-    add(errors, redis.namespace === 'gateway', 'Gateway Redis namespace must be gateway');
+    // The Gateway's keys are scoped englishflow:gateway, not gateway: RedisRateLimitBackend builds
+    // "englishflow:gateway:rate-limit:<digest>", the ACL provisioning script declares the same
+    // namespace for svc_gateway, and a probe against the bare "gateway" namespace is refused by
+    // Redis. The earlier value here was the only one of the three that disagreed, so it moved.
+    add(errors, redis.namespace === 'englishflow:gateway', 'Gateway Redis namespace must be englishflow:gateway');
     add(errors, redis.logicalCredentialId === 'redis-runtime-gateway', 'Gateway Redis credential must be redis-runtime-gateway');
     assertExpectedSet(errors, redis.allowedUses, ['rate-limit', 'JWT-precheck-support', 'edge-coordination'], 'api-gateway.redis.allowedUses');
     add(errors, redis.businessSourceOfTruth === false, 'Gateway Redis must not be a business source of truth');

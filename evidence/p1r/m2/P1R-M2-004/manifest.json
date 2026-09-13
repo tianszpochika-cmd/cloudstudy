@@ -2,12 +2,17 @@
   "taskId": "P1R-M2-004",
   "draftOnly": false,
   "canonicalTaskStatus": "REVIEW",
-  "sourceCommit": "c397a91f31b9b4458e8e84b93eab7be99239553a",
+  "sourceCommit": "50953b71bcd18ffa6fb03afd2bb9b7e9883b07d2",
   "artifactDigests": [
     {
       "path": "config/p1r-data-ownership.v1.json",
       "algorithm": "sha256",
-      "digest": "111b8f5185d6d1ec2f0c7b75140e430a52406777bc5c1c0b6ad5a78f1194d54b"
+      "digest": "cb2c3bd202e5b2910e5b0127c5fd54b80bbd5b3433157dbaf46cc69c67318786"
+    },
+    {
+      "path": "config/p1r-m2-requirement-owners.v1.json",
+      "algorithm": "sha256",
+      "digest": "9eca435862c8aaac4222d95f82b3a6679f306e21e946bc791bf58129d5f91b7a"
     },
     {
       "path": "config/v2-runtime-services.json",
@@ -35,9 +40,19 @@
       "digest": "b0b0f0fe8e28f147ca365b6d178aace17bf9a2aa135bea8144f17f04629447ec"
     },
     {
+      "path": "scripts/audit/p1r-data-ownership-check.mjs",
+      "algorithm": "sha256",
+      "digest": "77148fcb0c1501e5ae1e50328a6dd8e1af4aad04b146be770c59af17035c36f4"
+    },
+    {
       "path": "scripts/runtime/p1r-m2-004-runtime.mjs",
       "algorithm": "sha256",
-      "digest": "29e17f32690643b9c609bd032e6177167818e91ed52ced7bb874267f2bd6b16a"
+      "digest": "3317ba2a50b3742f7d08cbefb51f325f480316e4f091dfa8c86a1be682b7d3c4"
+    },
+    {
+      "path": "scripts/runtime/run-gated-db-tests.mjs",
+      "algorithm": "sha256",
+      "digest": "b42be3dbebac197ca835dec1185c5ccfe62e91043ece505639420157a37a625b"
     },
     {
       "path": "services/audit-service/src/main/resources/db/migration/V2__widen_audit_schema_version.sql",
@@ -95,14 +110,129 @@
       "digest": "a5e8a0476d29ce6cecac5778874d906cf52f9ad2f50710ac31785d021fcd0154"
     },
     {
-      "path": "evidence/p1r/m2/P1R-M2-004/runtime-evidence-2026-09-13.json",
+      "path": "services/admin-ops-service/src/test/java/com/englishflow/adminops/adapter/jdbc/AdminOpsTenantIsolationTest.java",
       "algorithm": "sha256",
-      "digest": "ebec89783072b20a1c83d59900ff5a7f05319a9bb322706528b0f657d5389377"
+      "digest": "7ae798ea46870990947470fda425a23d9f5bd2ab33e527c4b61981a03728f6e3"
     },
     {
-      "path": "config/p1r-m2-requirement-owners.v1.json",
+      "path": "services/admin-ops-service/src/test/java/com/englishflow/adminops/migration/AdminOpsFlywayMigrationTest.java",
       "algorithm": "sha256",
-      "digest": "1b83813cbe0961ed9024ecd4939366852f15d29b302848b8f0ad85eff364f674"
+      "digest": "5fe8de1e19dd8957e05e6a6cf791b5c7596dcf6c0565f70ec67552fc4bd8c007"
+    },
+    {
+      "path": "services/analytics-service/src/test/java/com/englishflow/analytics/adapter/jdbc/AnalyticsTenantIsolationTest.java",
+      "algorithm": "sha256",
+      "digest": "ce2b9bbababa9799b94d7c4762264150b7f9315aa4faa8a589cc649e05ed05d3"
+    },
+    {
+      "path": "services/analytics-service/src/test/java/com/englishflow/analytics/migration/AnalyticsFlywayMigrationTest.java",
+      "algorithm": "sha256",
+      "digest": "5f78db0c1a1d202331dea4734519287fcb36b6d138c67f1a08ea6f701b6d082b"
+    },
+    {
+      "path": "services/assessment-service/src/test/java/com/englishflow/assessment/adapter/jdbc/AssessmentTenantIsolationTest.java",
+      "algorithm": "sha256",
+      "digest": "0e8628f46168a840fed3687d8950007c4857e9df59e8f2c5e65fea214d56dbd9"
+    },
+    {
+      "path": "services/assessment-service/src/test/java/com/englishflow/assessment/migration/AssessmentFlywayMigrationTest.java",
+      "algorithm": "sha256",
+      "digest": "ec1225e851b24a1d80bc0063bf0d5709df97c8bb1b6bac4b641a876fc38acbce"
+    },
+    {
+      "path": "services/audit-service/src/test/java/com/englishflow/audit/migration/AuditFlywayMigrationTest.java",
+      "algorithm": "sha256",
+      "digest": "228ef405ddc5305359ba5a77847a05d622d7d1d1c14d7cb80c215e171481cb90"
+    },
+    {
+      "path": "services/commerce-service/src/test/java/com/englishflow/commerce/adapter/jdbc/CommerceTenantIsolationTest.java",
+      "algorithm": "sha256",
+      "digest": "99f225e354c22f9a26f83158eb0e6b67631c435bd8d2d1c66db8024a83391180"
+    },
+    {
+      "path": "services/commerce-service/src/test/java/com/englishflow/commerce/config/CommerceFlywayMigrationTest.java",
+      "algorithm": "sha256",
+      "digest": "b11059ea6246394481c514e38c15cabfe94765d4e04c1e8c8cdb4f10ee840b27"
+    },
+    {
+      "path": "services/content-service/src/test/java/com/englishflow/content/adapter/jdbc/ContentTenantIsolationTest.java",
+      "algorithm": "sha256",
+      "digest": "1bc5962afb74b9be7783b9046cf61f6707604c428ef3bcb5d4bb6d4e09ddcb11"
+    },
+    {
+      "path": "services/content-service/src/test/java/com/englishflow/content/migration/ContentFlywayMigrationTest.java",
+      "algorithm": "sha256",
+      "digest": "8652f0c528e333ccc90fcf65c6295f7d7194cd20cecc71b7dda3d836012daeb7"
+    },
+    {
+      "path": "services/gamification-service/src/test/java/com/englishflow/gamification/adapter/jdbc/GamificationTenantIsolationTest.java",
+      "algorithm": "sha256",
+      "digest": "bfc121b06e25764d426a4e0512270aacd21527f1eb6512a64aa4204eb72c7732"
+    },
+    {
+      "path": "services/gamification-service/src/test/java/com/englishflow/gamification/migration/GamificationFlywayMigrationTest.java",
+      "algorithm": "sha256",
+      "digest": "38e204a24cba75f0fd06e288f117665c6675a8793b579e95604e5a810f719512"
+    },
+    {
+      "path": "services/iam-service/src/test/java/com/englishflow/iam/migration/IamFlywayMigrationTest.java",
+      "algorithm": "sha256",
+      "digest": "7f4b06ca8ccb7498574e8e95a59ac36a9b4a0811e57a57f9fa7dd990bd979bb5"
+    },
+    {
+      "path": "services/learner-service/src/test/java/com/englishflow/learner/migration/LearnerFlywayMigrationTest.java",
+      "algorithm": "sha256",
+      "digest": "819b197c6c40c930a9d21deb0511e112b7efa9f308ccb3cfd8b46e7197ac7832"
+    },
+    {
+      "path": "services/learning-service/src/test/java/com/englishflow/learning/adapter/jdbc/LearningTenantIsolationTest.java",
+      "algorithm": "sha256",
+      "digest": "6c75b3f2cd7cce00292d4d2c98b5ef5b5a6b6ccaf7d7f44e19f1b94f1dbececf"
+    },
+    {
+      "path": "services/learning-service/src/test/java/com/englishflow/learning/migration/LearningFlywayMigrationTest.java",
+      "algorithm": "sha256",
+      "digest": "1b58a2286b5f520659b461793705e6fb82142ed437d0143b4ecf5b6ec6e6c577"
+    },
+    {
+      "path": "services/media-service/src/test/java/com/englishflow/media/adapter/jdbc/MediaTenantIsolationTest.java",
+      "algorithm": "sha256",
+      "digest": "aa44237d2a3fc5d9ac7c814fcf590f7d933e9777b00b15bc95b67fa2d0580d95"
+    },
+    {
+      "path": "services/media-service/src/test/java/com/englishflow/media/migration/MediaFlywayMigrationTest.java",
+      "algorithm": "sha256",
+      "digest": "330420ee6da86825250ed350099eca88898ef458650d9fe7dfe1ade7d8dfabfe"
+    },
+    {
+      "path": "services/notification-service/src/test/java/com/englishflow/notification/adapter/jdbc/NotificationTenantIsolationTest.java",
+      "algorithm": "sha256",
+      "digest": "4bb883e3a6df89f632ce4b058649339cf4ca6e4dd7e251070f9cc7f4c7304254"
+    },
+    {
+      "path": "services/notification-service/src/test/java/com/englishflow/notification/migration/NotificationFlywayMigrationTest.java",
+      "algorithm": "sha256",
+      "digest": "2ade1a9009da38f627988ba8b2a023ece73670715809f9348569d83cdebfe012"
+    },
+    {
+      "path": "services/social-service/src/test/java/com/englishflow/social/web/SocialTenantIsolationTest.java",
+      "algorithm": "sha256",
+      "digest": "411b5289b0ee7587de56d2020347b42a82c26ac29d2f6dd1323bca468c789874"
+    },
+    {
+      "path": "services/social-service/src/test/java/com/englishflow/social/migration/SocialFlywayMigrationTest.java",
+      "algorithm": "sha256",
+      "digest": "7a4e4c21789a4cc249ec20371f746f581ddb3503807c8344c97f16973d2a7aae"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-004/runtime-evidence-2026-09-13.json",
+      "algorithm": "sha256",
+      "digest": "fbf83de3022e189f37d48766e5d348dcf59bfd0ac4a9120780a1f24efb5b8f0e"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-004/gated-db-tests-2026-09-13.json",
+      "algorithm": "sha256",
+      "digest": "e9e86da1c03157760ddd9bdfd57cb1b13284ae7b209fdb3bba44ec108065c206"
     }
   ],
   "environment": {
@@ -110,7 +240,8 @@
     "branch": "dev",
     "phaseStatus": "D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED",
     "runtimeStatus": "M2_004_PARTIAL_RUNTIME_VERIFIED",
-    "reviewedRevision": "a7ebe48bddfaf32c56f2b06901b7358c17eedf4b",
+    "reviewedRevision": "50953b71bcd18ffa6fb03afd2bb9b7e9883b07d2",
+    "evidenceRevision": null,
     "toolchain": {
       "java": "OpenJDK 25.0.4.1",
       "maven": "3.9.12",
@@ -118,16 +249,35 @@
       "kafka": "3.9.2"
     },
     "evidenceFile": "evidence/p1r/m2/P1R-M2-004/runtime-evidence-2026-09-13.json",
+    "gatedTestEvidenceFile": "evidence/p1r/m2/P1R-M2-004/gated-db-tests-2026-09-13.json",
     "owners": {
-      "provisioned": 12,
-      "externalMigration": 11,
-      "selfMigrating": 1,
-      "declaredNotBuilt": 1,
-      "redisAclUsers": 15
+      "declaredServiceOwners": 15,
+      "ownersWithRedisNamespace": 15,
+      "redisNamespaceAclChecks": 15,
+      "redisNamespaceAclPassed": 15,
+      "redisOnlyOwnersProbed": [
+        "learner-service",
+        "content-service",
+        "learning-service",
+        "assessment-service",
+        "media-service",
+        "notification-service",
+        "gamification-service",
+        "social-service",
+        "commerce-service",
+        "admin-ops-service",
+        "analytics-service",
+        "audit-service",
+        "iam-service",
+        "api-gateway",
+        "workflow-service"
+      ],
+      "gatedTestClasses": 23,
+      "gatedTestsRun": 23
     }
   },
   "provenance": {
-    "survey": "The ownership policy already declared 15 services and 14 data owners, but the runtime did not match it: audit-service was a first-class runtime service that was absent from the Maven reactor, the toolchain baseline and every gate loop, and the ten owner outbox tables had drifted into four different shapes, none of which carried the claim machinery the event runtime contract requires.",
+    "survey": "The ownership policy already declared 15 services and 14 data owners, but the runtime did not match it: audit-service was a first-class runtime service absent from the Maven reactor, the toolchain baseline and every gate loop, and the ten owner outbox tables had drifted into four different shapes, none of which carried the claim machinery the event runtime contract requires.",
     "batches": [
       "Batch A audit-service boundary",
       "Batch B commerce migrations and reconcile directory migration",
@@ -137,12 +287,13 @@
       "Batch D2b gateway rate limiting authenticated as the scoped Redis ACL user",
       "Batch D3 audit-service joined the orchestrated stack, its schema_version width defect was fixed and the reconcile runner gained real migration history",
       "Batch D4 the four locally provable runtime requirements were evidenced",
-      "Batch E2 to E8 owner outbox shape standardisation and the content-service publish and consume vertical slice"
+      "Batch E2 to E8 owner outbox shape standardisation and the content-service publish and consume vertical slice",
+      "Batch R the review rework: the tenant guard and the migration coverage were verified by running their gated tests, the Redis probes were extended to every namespaced owner, and the Redis loss clause gained behavioural evidence"
     ],
     "reviewHistory": []
   },
   "startedAt": "2026-09-09T00:00:00+08:00",
-  "finishedAt": "2026-09-12T22:32:33.267Z",
+  "finishedAt": "2026-09-13T04:41:42.853Z",
   "actors": [
     "root-coordinator",
     "p1r-implementation"
@@ -154,8 +305,9 @@
     "ADR-0010"
   ],
   "commands": [
-    "node scripts/database/reconcile-owner-schemas.mjs --apply",
     "node scripts/runtime/p1r-m2-004-runtime.mjs",
+    "node scripts/runtime/run-gated-db-tests.mjs --json",
+    "node scripts/database/reconcile-owner-schemas.mjs --apply",
     "node scripts/runtime/provision-kafka-topics.mjs --apply",
     "pnpm services:run -- --all",
     "node scripts/dev/run-node-tests.mjs tests/p1r (Node 20.19.5)",
@@ -175,7 +327,7 @@
     {
       "check": "M2-004-REDIS-NAMESPACE-ACL",
       "status": "PASS",
-      "details": "Fifteen ACL users each hold exactly the namespace the policy declares, can read and write it, and receive NOPERM in another namespace. The namespaces are provisioned ahead of use: only the gateway and the legacy core-api configure Redis today."
+      "details": "Every owner the policy gives a Redis namespace was probed, 15 in total including the two that have no database schema, and each resolved to exactly one ACL user scoped to its own namespace, able to write inside it and refused in another owner's. The requirement's second clause is covered separately: the business fact row counts in thirteen owner tables were identical before, during and after Redis was stopped and restarted, so losing Redis cannot create or lose a business fact."
     },
     {
       "check": "M2-004-FLYWAY-EMPTY-AND-EXISTING",
@@ -184,37 +336,36 @@
     },
     {
       "check": "M2-004-TENANT-GUARD",
-      "status": "NOT_APPLICABLE",
-      "details": "HTTP-level two-tenant denial needs a synthetic per-owner account, which P1R-M0-007 builds and P1R-M2-009 wires into real CI. Asserted here, delivered by P1R-M2-009.",
-      "ownerTask": "P1R-M2-009",
-      "supportingTasks": [
-        "P1R-M0-007"
-      ]
+      "status": "PASS",
+      "details": "Delivered at the database and service layer. 10 *TenantIsolationTest classes write each owner's facts through the owner's own repository against a real MySQL and assert that a foreign tenant is refused, and all 10 pass when run with their flags. Only the HTTP-level two-tenant negative is residual, which needs the synthetic per-owner account P1R-M0-007 builds and P1R-M2-009 wires into CI."
+    },
+    {
+      "check": "M2-004-FLYWAY-OWNER-COVERAGE",
+      "status": "PASS",
+      "details": "13 *FlywayMigrationTest classes run emptyAndExistingDatabasesMigrateAndFailureRecovers against a real MySQL, one per service including audit-service, and all 13 pass. That is what makes the ledger's \"including audit-service\" phrasing true rather than an inference from version reconciliation."
     },
     {
       "check": "M2-004-REDIS-REBUILD",
       "status": "NOT_APPLICABLE",
-      "details": "A projection rebuild entrypoint belongs to the workflow and platform runtime in P1R-M2-006; content cache invalidation belongs to P1R-M3-006. Asserted here, delivered by P1R-M2-006.",
       "ownerTask": "P1R-M2-006",
-      "supportingTasks": [
-        "P1R-M3-006"
-      ]
+      "details": "A projection rebuild entrypoint belongs to the workflow and platform runtime in P1R-M2-006; content cache invalidation belongs to P1R-M3-006."
     },
     {
       "check": "M2-004-ROLLBACK-COMPENSATION",
       "status": "NOT_APPLICABLE",
-      "details": "P1R-M2-006 scope: workflow Saga, compensation, scheduled jobs and manual recovery, which produce the owner, trace, audit and recovery receipts this requirement asks for. Asserted here, delivered by P1R-M2-006.",
       "ownerTask": "P1R-M2-006",
-      "supportingTasks": []
+      "details": "P1R-M2-006 scope: workflow Saga, compensation, scheduled jobs and manual recovery, which produce the owner, trace, audit and recovery receipts this requirement asks for. The ledger exit evidence phrase \"rollback/compensation test\" is carried by that task."
     },
     {
       "check": "M2-004-RETENTION-DELETE-HOLD",
       "status": "NOT_APPLICABLE",
-      "details": "P1R-M6-008 implements account deletion requests, the cooling-off period, withdrawal, cross-domain anonymisation and the final subject state; P1R-M8-012 drills retention and deletion. Asserted here, delivered by P1R-M6-008.",
       "ownerTask": "P1R-M6-008",
-      "supportingTasks": [
-        "P1R-M8-012"
-      ]
+      "details": "P1R-M6-008 implements account deletion requests, the cooling-off period, withdrawal, cross-domain anonymisation and the final subject state; P1R-M8-012 drills retention and deletion. This single owner is also what config/p1r-m2-requirement-owners.v1.json records, so the earlier disagreement with the execution record is gone."
+    },
+    {
+      "check": "redis-loss-cannot-affect-business-facts",
+      "status": "PASS",
+      "details": "Redis was stopped (unhealthy) and restarted (healthy), and the row counts of 13 durable business tables were identical before, during and after."
     },
     {
       "check": "audit-service-contract-defect",
@@ -224,23 +375,32 @@
     {
       "check": "p1r-regression",
       "status": "PASS",
-      "details": "P1R 1425/1425 under Node 20.19.5; evidence gate, plan, gap registry, docs audit, data ownership, ci guard, toolchain and the runtime dependency audit all PASS. The full suite goes from 1885 pass / 25 fail before this work to 1886 / 24, so nothing regressed; the twenty-four remaining failures are pre-existing stale assertions in legacy B suites that ci.yml does not run."
+      "details": "P1R 1429/1429 under Node 20.19.5; evidence gate, plan, gap registry, docs audit, data ownership, ci guard, toolchain and the runtime dependency audit all PASS. The full suite goes from 1885 pass / 25 fail before this work to a green suite; the twenty-four legacy B failures that were pre-existing are now fixed and each fix strengthened the assertion rather than relaxing it."
     }
   ],
   "rollbackEvidence": [
     {
       "status": "PASS",
       "details": "The migrations are additive: they add columns, backfill from the legacy column where one exists and add an index. Reverting the commits restores the previous schema shape without dropping data, and the reconcile runner records applied versions so a rollback is a deliberate operator action rather than a silent re-run. The runtime services needed no code change for the outbox standardisation."
+    },
+    {
+      "status": "PASS",
+      "details": "The Redis namespace rename is the one change that moved data rather than code: the Gateway always built its keys as englishflow:gateway:*, so the policy value and the check that enforced it were corrected to match the ACL and the runtime. Redis holds no business facts, and the loss evidence shows the fact counts are unaffected by its absence, so there is nothing to migrate back."
     }
   ],
   "knownGaps": [
-    "Four of the eight runtime requirements are not owned by this task and are reported NOT_APPLICABLE with their owner: TENANT-GUARD to P1R-M2-009, REDIS-REBUILD and ROLLBACK-COMPENSATION to P1R-M2-006, RETENTION-DELETE-HOLD to P1R-M6-008. The assignment is recorded in config/p1r-m2-requirement-owners.v1.json with the ledger wording that establishes it.",
-    "The per-service Redis namespaces and ACLs are provisioned but not yet used by any domain service: only api-gateway (as svc_gateway since batch D2b) and the legacy core-api configure Redis, so namespace isolation is a reserved allocation rather than an enforced boundary for the other twelve.",
+    "The tenant guard is delivered at the database and service layer through 10 passing *TenantIsolationTest classes. The HTTP-level two-tenant negative remains open and is handed to P1R-M2-009: it needs a synthetic per-owner account, which P1R-M0-007 builds and P1R-M2-009 wires into real CI. P1R-M2-009's ledger scope does not itself name tenant guard, so this is a residual gap recorded against this task rather than a reassignment of the requirement.",
+    "The per-service Redis namespaces and ACLs are provisioned and probed for every namespaced owner, but no domain service uses Redis yet: only api-gateway and the legacy core-api configure it, so for the twelve domain owners the namespace is a reserved allocation rather than an enforced boundary in a live path.",
     "The owner outbox tables now carry the contract shape, but only content-service has a publisher and a consumer; the other owners still append rows that nothing publishes.",
-    "Eight of the twelve provisioning owners were baselined from an existing schema rather than migrated from empty, so their migration history records what was already applied rather than a replay from scratch.",
-    "M2-004 is a declared dependency of P1R-M2-005, and the ledger gate refuses a dependent task anything past PLANNED until its dependency is ACCEPTED. This submission is therefore the blocking item for M2-005 through M2-010 and needs an independent reviewer.",
+    "Eight of the twelve provisioning owners were baselined from an existing schema rather than migrated from empty, so their migration history records what was already applied rather than a replay from scratch. The empty-database drill is covered separately by the Flyway tests above rather than by those baselines.",
+    "p1r_schema_history, written by scripts/database/reconcile-owner-schemas.mjs, is authoritative for the eleven externally migrated owners and records the version and checksum the reconcile runner applied. flyway_schema_history belongs to the service that runs Flyway at startup, which is iam-service today, and to the service-owned tests. They are not interchangeable: the reconcile history is what the platform asserts, and a Flyway history exists only where a service or its tests actually ran Flyway.",
+    "The four gated test families in this task are unchanged in themselves; what changed is that they are now run on purpose. A default `mvn test` still reports them as skipped, so any future evidence that cites them has to run scripts/runtime/run-gated-db-tests.mjs.",
     "Overall phase remains D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED."
   ],
-  "reviewer": "root-coordinator",
-  "decision": "PENDING"
+  "reviewer": "awaiting-independent-reviewer",
+  "decision": "PENDING",
+  "nextSteps": [
+    "A second independent reviewer must re-decide this submission. The implementer also changed the data-ownership check, the harness and the manifest generator during the rework, so it must not accept its own output.",
+    "Fixing the Redis namespace disagreement touched an accepted governance check; the reviewer should confirm that moving the check to englishflow:gateway was right rather than renaming the Gateway key prefix."
+  ]
 }

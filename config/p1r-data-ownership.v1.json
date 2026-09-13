@@ -73,7 +73,7 @@
         "status": "NOT_APPLICABLE"
       },
       "redis": {
-        "namespace": "gateway",
+        "namespace": "englishflow:gateway",
         "logicalCredentialId": "redis-runtime-gateway",
         "allowedUses": [
           "rate-limit",
