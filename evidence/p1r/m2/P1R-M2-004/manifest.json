@@ -2,7 +2,7 @@
   "taskId": "P1R-M2-004",
   "draftOnly": false,
   "canonicalTaskStatus": "REVIEW",
-  "sourceCommit": "5c274a05502c517d4d906cb4fa7934bcf288e378",
+  "sourceCommit": "c2022849ccad7967ebb398b2a429da0603954802",
   "artifactDigests": [
     {
       "path": "config/p1r-data-ownership.v1.json",
@@ -52,7 +52,7 @@
     {
       "path": "scripts/runtime/run-gated-db-tests.mjs",
       "algorithm": "sha256",
-      "digest": "eeeda943d47221cb7eceeead7a04ea8873f2a591c8d1d4e471d5d073780e295e"
+      "digest": "17d16552fe922fb2c97c353526aec04df5d81af8f2f4658108c1739f1fb9d6ff"
     },
     {
       "path": "services/audit-service/src/main/resources/db/migration/V2__widen_audit_schema_version.sql",
@@ -262,12 +262,12 @@
     {
       "path": "evidence/p1r/m2/P1R-M2-004/runtime-evidence-2026-09-13.json",
       "algorithm": "sha256",
-      "digest": "900a51205f3a436a50d633f1bb51e0c2f0fe207c8f918982111194310d9e0e93"
+      "digest": "7e3cbbcb6288347877598c77f7d1b4a12c892ff609637bc43a109571e2783fbb"
     },
     {
       "path": "evidence/p1r/m2/P1R-M2-004/gated-db-tests-2026-09-13.json",
       "algorithm": "sha256",
-      "digest": "dada9896a2b311df9a1a22300d25e3ca148bfa580693097dc4ea620684def7ba"
+      "digest": "f57ef0bc41252011f241753241eb0dda418010f163d4508cd6861239a288857f"
     }
   ],
   "environment": {
@@ -275,7 +275,7 @@
     "branch": "dev",
     "phaseStatus": "D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED",
     "runtimeStatus": "M2_004_PARTIAL_RUNTIME_VERIFIED",
-    "reviewedRevision": "5c274a05502c517d4d906cb4fa7934bcf288e378",
+    "reviewedRevision": "c2022849ccad7967ebb398b2a429da0603954802",
     "evidenceRevision": null,
     "toolchain": {
       "java": "OpenJDK 25.0.4.1",
@@ -307,7 +307,7 @@
         "api-gateway",
         "workflow-service"
       ],
-      "gatedTestsRun": 26
+      "gatedTestsRun": 43
     }
   },
   "provenance": {
@@ -327,7 +327,7 @@
     "reviewHistory": []
   },
   "startedAt": "2026-09-09T00:00:00+08:00",
-  "finishedAt": "2026-09-13T15:19:55.846Z",
+  "finishedAt": "2026-09-13T16:33:06.859Z",
   "actors": [
     "root-coordinator",
     "p1r-implementation"

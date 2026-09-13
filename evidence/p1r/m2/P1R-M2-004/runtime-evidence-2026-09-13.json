@@ -1,10 +1,10 @@
 {
   "schema": "m2.data-ownership.runtime-evidence.v1",
   "taskId": "P1R-M2-004",
-  "result": "FAIL",
-  "sourceCommit": "b0a562d3cce320651ed968a5d651e4a8795a5505",
-  "startedAt": "2026-09-13T15:04:25.024Z",
-  "finishedAt": "2026-09-13T15:09:27.387Z",
+  "result": "PARTIAL",
+  "sourceCommit": "9e5ba34d10637d6b351f85d6cb8af18c1ad6dd7d",
+  "startedAt": "2026-09-13T16:28:26.228Z",
+  "finishedAt": "2026-09-13T16:32:52.988Z",
   "ownerCount": 13,
   "requirements": [
     {
@@ -1188,13 +1188,13 @@
         "IamPolicyIdempotencyRollbackSafetyTest",
         "IamPolicyJdbcPersistenceContextTest"
       ],
-      "testsRun": 2,
+      "testsRun": 19,
       "failures": 0,
-      "errors": 2,
+      "errors": 0,
       "skipped": 0,
-      "reason": "2 tests run for 6 classes, 0 failures, 2 errors, 0 skipped (exit 1)",
+      "reason": null,
       "id": "iam-jdbc-persistence:iam:iam.jdbc.integration",
-      "result": "FAIL"
+      "result": "PASS"
     },
     {
       "property": "iam.jdbc.migration.integration",
@@ -1202,12 +1202,12 @@
         "IdempotencyV13MigrationSecurityTest"
       ],
       "testsRun": 1,
-      "failures": 1,
+      "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "reason": "1 tests run for 1 classes, 1 failures, 0 errors, 0 skipped (exit 1)",
+      "reason": null,
       "id": "iam-jdbc-persistence:iam:iam.jdbc.migration.integration",
-      "result": "FAIL"
+      "result": "PASS"
     },
     {
       "property": "iam.migration.integration",

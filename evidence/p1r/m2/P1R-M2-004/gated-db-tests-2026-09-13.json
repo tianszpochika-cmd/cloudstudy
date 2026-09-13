@@ -1,15 +1,15 @@
 {
   "schema": "platform.gated-db-tests.v1",
   "taskId": "P1R-M2-004",
-  "capturedAt": "2026-09-13T15:13:44.116Z",
+  "capturedAt": "2026-09-13T16:28:26.133Z",
   "adminUrl": "jdbc:mysql://127.0.0.1:13306/",
   "discoveredClasses": 30,
   "selectedClasses": 30,
   "groupsRun": 25,
-  "testsRun": 26,
+  "testsRun": 43,
   "uncoveredClasses": [],
-  "failing": 2,
-  "passed": false,
+  "failing": 0,
+  "passed": true,
   "policy": "fail-closed: exit 0 with zero tests or any skipped test is a failure",
   "results": [
     {
@@ -18,12 +18,16 @@
       "classes": [
         "AdminOpsTenantIsolationTest"
       ],
+      "classesReporting": [
+        "com.englishflow.adminops.adapter.jdbc.AdminOpsTenantIsolationTest"
+      ],
       "exitStatus": 0,
       "passed": true,
       "testsRun": 1,
       "failures": 0,
       "errors": 0,
       "skipped": 0,
+      "failureMessages": [],
       "reason": null
     },
     {
@@ -32,12 +36,16 @@
       "classes": [
         "AdminOpsFlywayMigrationTest"
       ],
+      "classesReporting": [
+        "com.englishflow.adminops.migration.AdminOpsFlywayMigrationTest"
+      ],
       "exitStatus": 0,
       "passed": true,
       "testsRun": 1,
       "failures": 0,
       "errors": 0,
       "skipped": 0,
+      "failureMessages": [],
       "reason": null
     },
     {
@@ -46,12 +54,16 @@
       "classes": [
         "AnalyticsTenantIsolationTest"
       ],
+      "classesReporting": [
+        "com.englishflow.analytics.adapter.jdbc.AnalyticsTenantIsolationTest"
+      ],
       "exitStatus": 0,
       "passed": true,
       "testsRun": 1,
       "failures": 0,
       "errors": 0,
       "skipped": 0,
+      "failureMessages": [],
       "reason": null
     },
     {
@@ -60,12 +72,16 @@
       "classes": [
         "AnalyticsFlywayMigrationTest"
       ],
+      "classesReporting": [
+        "com.englishflow.analytics.migration.AnalyticsFlywayMigrationTest"
+      ],
       "exitStatus": 0,
       "passed": true,
       "testsRun": 1,
       "failures": 0,
       "errors": 0,
       "skipped": 0,
+      "failureMessages": [],
       "reason": null
     },
     {
@@ -74,12 +90,16 @@
       "classes": [
         "AssessmentTenantIsolationTest"
       ],
+      "classesReporting": [
+        "com.englishflow.assessment.adapter.jdbc.AssessmentTenantIsolationTest"
+      ],
       "exitStatus": 0,
       "passed": true,
       "testsRun": 1,
       "failures": 0,
       "errors": 0,
       "skipped": 0,
+      "failureMessages": [],
       "reason": null
     },
     {
@@ -88,12 +108,16 @@
       "classes": [
         "AssessmentFlywayMigrationTest"
       ],
+      "classesReporting": [
+        "com.englishflow.assessment.migration.AssessmentFlywayMigrationTest"
+      ],
       "exitStatus": 0,
       "passed": true,
       "testsRun": 1,
       "failures": 0,
       "errors": 0,
       "skipped": 0,
+      "failureMessages": [],
       "reason": null
     },
     {
@@ -102,12 +126,16 @@
       "classes": [
         "AuditFlywayMigrationTest"
       ],
+      "classesReporting": [
+        "com.englishflow.audit.migration.AuditFlywayMigrationTest"
+      ],
       "exitStatus": 0,
       "passed": true,
       "testsRun": 1,
       "failures": 0,
       "errors": 0,
       "skipped": 0,
+      "failureMessages": [],
       "reason": null
     },
     {
@@ -116,12 +144,16 @@
       "classes": [
         "CommerceTenantIsolationTest"
       ],
+      "classesReporting": [
+        "com.englishflow.commerce.adapter.jdbc.CommerceTenantIsolationTest"
+      ],
       "exitStatus": 0,
       "passed": true,
       "testsRun": 1,
       "failures": 0,
       "errors": 0,
       "skipped": 0,
+      "failureMessages": [],
       "reason": null
     },
     {
@@ -130,12 +162,16 @@
       "classes": [
         "CommerceFlywayMigrationTest"
       ],
+      "classesReporting": [
+        "com.englishflow.commerce.config.CommerceFlywayMigrationTest"
+      ],
       "exitStatus": 0,
       "passed": true,
       "testsRun": 1,
       "failures": 0,
       "errors": 0,
       "skipped": 0,
+      "failureMessages": [],
       "reason": null
     },
     {
@@ -144,12 +180,16 @@
       "classes": [
         "ContentTenantIsolationTest"
       ],
+      "classesReporting": [
+        "com.englishflow.content.adapter.jdbc.ContentTenantIsolationTest"
+      ],
       "exitStatus": 0,
       "passed": true,
       "testsRun": 1,
       "failures": 0,
       "errors": 0,
       "skipped": 0,
+      "failureMessages": [],
       "reason": null
     },
     {
@@ -158,12 +198,16 @@
       "classes": [
         "ContentFlywayMigrationTest"
       ],
+      "classesReporting": [
+        "com.englishflow.content.migration.ContentFlywayMigrationTest"
+      ],
       "exitStatus": 0,
       "passed": true,
       "testsRun": 1,
       "failures": 0,
       "errors": 0,
       "skipped": 0,
+      "failureMessages": [],
       "reason": null
     },
     {
@@ -172,12 +216,16 @@
       "classes": [
         "GamificationTenantIsolationTest"
       ],
+      "classesReporting": [
+        "com.englishflow.gamification.adapter.jdbc.GamificationTenantIsolationTest"
+      ],
       "exitStatus": 0,
       "passed": true,
       "testsRun": 1,
       "failures": 0,
       "errors": 0,
       "skipped": 0,
+      "failureMessages": [],
       "reason": null
     },
     {
@@ -186,12 +234,16 @@
       "classes": [
         "GamificationFlywayMigrationTest"
       ],
+      "classesReporting": [
+        "com.englishflow.gamification.migration.GamificationFlywayMigrationTest"
+      ],
       "exitStatus": 0,
       "passed": true,
       "testsRun": 1,
       "failures": 0,
       "errors": 0,
       "skipped": 0,
+      "failureMessages": [],
       "reason": null
     },
     {
@@ -205,13 +257,22 @@
         "IamPolicyIdempotencyRollbackSafetyTest",
         "IamPolicyJdbcPersistenceContextTest"
       ],
-      "exitStatus": 1,
-      "passed": false,
-      "testsRun": 2,
+      "classesReporting": [
+        "com.englishflow.iam.IamConsentIdempotencyRollbackSafetyTest",
+        "com.englishflow.iam.IamConsentJdbcPersistenceContextTest",
+        "com.englishflow.iam.IamConsentPolicyJdbcPersistenceContextTest",
+        "com.englishflow.iam.IamJdbcPersistenceContextTest",
+        "com.englishflow.iam.IamPolicyIdempotencyRollbackSafetyTest",
+        "com.englishflow.iam.IamPolicyJdbcPersistenceContextTest"
+      ],
+      "exitStatus": 0,
+      "passed": true,
+      "testsRun": 19,
       "failures": 0,
-      "errors": 2,
+      "errors": 0,
       "skipped": 0,
-      "reason": "2 tests run for 6 classes, 0 failures, 2 errors, 0 skipped (exit 1)"
+      "failureMessages": [],
+      "reason": null
     },
     {
       "service": "iam",
@@ -219,19 +280,8 @@
       "classes": [
         "IdempotencyV13MigrationSecurityTest"
       ],
-      "exitStatus": 1,
-      "passed": false,
-      "testsRun": 1,
-      "failures": 1,
-      "errors": 0,
-      "skipped": 0,
-      "reason": "1 tests run for 1 classes, 1 failures, 0 errors, 0 skipped (exit 1)"
-    },
-    {
-      "service": "iam",
-      "property": "iam.migration.integration",
-      "classes": [
-        "IamFlywayMigrationTest"
+      "classesReporting": [
+        "com.englishflow.iam.IdempotencyV13MigrationSecurityTest"
       ],
       "exitStatus": 0,
       "passed": true,
@@ -239,6 +289,25 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0,
+      "failureMessages": [],
+      "reason": null
+    },
+    {
+      "service": "iam",
+      "property": "iam.migration.integration",
+      "classes": [
+        "IamFlywayMigrationTest"
+      ],
+      "classesReporting": [
+        "com.englishflow.iam.migration.IamFlywayMigrationTest"
+      ],
+      "exitStatus": 0,
+      "passed": true,
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "failureMessages": [],
       "reason": null
     },
     {
@@ -247,12 +316,16 @@
       "classes": [
         "LearnerFlywayMigrationTest"
       ],
+      "classesReporting": [
+        "com.englishflow.learner.migration.LearnerFlywayMigrationTest"
+      ],
       "exitStatus": 0,
       "passed": true,
       "testsRun": 1,
       "failures": 0,
       "errors": 0,
       "skipped": 0,
+      "failureMessages": [],
       "reason": null
     },
     {
@@ -261,12 +334,16 @@
       "classes": [
         "LearningTenantIsolationTest"
       ],
+      "classesReporting": [
+        "com.englishflow.learning.adapter.jdbc.LearningTenantIsolationTest"
+      ],
       "exitStatus": 0,
       "passed": true,
       "testsRun": 1,
       "failures": 0,
       "errors": 0,
       "skipped": 0,
+      "failureMessages": [],
       "reason": null
     },
     {
@@ -275,12 +352,16 @@
       "classes": [
         "LearningFlywayMigrationTest"
       ],
+      "classesReporting": [
+        "com.englishflow.learning.migration.LearningFlywayMigrationTest"
+      ],
       "exitStatus": 0,
       "passed": true,
       "testsRun": 1,
       "failures": 0,
       "errors": 0,
       "skipped": 0,
+      "failureMessages": [],
       "reason": null
     },
     {
@@ -289,12 +370,16 @@
       "classes": [
         "MediaTenantIsolationTest"
       ],
+      "classesReporting": [
+        "com.englishflow.media.adapter.jdbc.MediaTenantIsolationTest"
+      ],
       "exitStatus": 0,
       "passed": true,
       "testsRun": 1,
       "failures": 0,
       "errors": 0,
       "skipped": 0,
+      "failureMessages": [],
       "reason": null
     },
     {
@@ -303,12 +388,16 @@
       "classes": [
         "MediaFlywayMigrationTest"
       ],
+      "classesReporting": [
+        "com.englishflow.media.migration.MediaFlywayMigrationTest"
+      ],
       "exitStatus": 0,
       "passed": true,
       "testsRun": 1,
       "failures": 0,
       "errors": 0,
       "skipped": 0,
+      "failureMessages": [],
       "reason": null
     },
     {
@@ -317,12 +406,16 @@
       "classes": [
         "NotificationTenantIsolationTest"
       ],
+      "classesReporting": [
+        "com.englishflow.notification.adapter.jdbc.NotificationTenantIsolationTest"
+      ],
       "exitStatus": 0,
       "passed": true,
       "testsRun": 1,
       "failures": 0,
       "errors": 0,
       "skipped": 0,
+      "failureMessages": [],
       "reason": null
     },
     {
@@ -331,12 +424,16 @@
       "classes": [
         "NotificationFlywayMigrationTest"
       ],
+      "classesReporting": [
+        "com.englishflow.notification.migration.NotificationFlywayMigrationTest"
+      ],
       "exitStatus": 0,
       "passed": true,
       "testsRun": 1,
       "failures": 0,
       "errors": 0,
       "skipped": 0,
+      "failureMessages": [],
       "reason": null
     },
     {
@@ -345,12 +442,16 @@
       "classes": [
         "SocialFlywayMigrationTest"
       ],
+      "classesReporting": [
+        "com.englishflow.social.migration.SocialFlywayMigrationTest"
+      ],
       "exitStatus": 0,
       "passed": true,
       "testsRun": 1,
       "failures": 0,
       "errors": 0,
       "skipped": 0,
+      "failureMessages": [],
       "reason": null
     },
     {
@@ -359,12 +460,16 @@
       "classes": [
         "SocialTenantIsolationTest"
       ],
+      "classesReporting": [
+        "com.englishflow.social.web.SocialTenantIsolationTest"
+      ],
       "exitStatus": 0,
       "passed": true,
       "testsRun": 1,
       "failures": 0,
       "errors": 0,
       "skipped": 0,
+      "failureMessages": [],
       "reason": null
     }
   ]
