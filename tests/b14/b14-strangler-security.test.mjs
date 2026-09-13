@@ -45,6 +45,12 @@ test('B14 Gateway has an explicit Phase 1 strangler route matrix and safe deprec
   assert.match(executionPolicy, /b14\.mode\(domain\) == GatewayProperties\.B14Services\.RouteMode\.TARGET[\s\S]{0,120}?: null/)
   assert.match(executionPolicy, /\.filter\(Resolution::isAvailable\)/)
   assert.doesNotMatch(application + configuration + executionPolicy, /"Deprecation"|SUNSET_HEADER/)
+  // Only TARGET resolves to a route, so any other mode withdraws the domain's routes. The local
+  // profile previously described that as a way to test a rollback, which would send an operator
+  // during an incident into taking the domain offline instead. Pin the accurate wording.
+  assert.match(local, /TARGET is the only mode that resolves to a route/)
+  assert.match(local, /fail-closed withdrawal, not a rollback to a legacy path/)
+  assert.doesNotMatch(local, /when testing a rollback/)
   // No core-api catch-all is registered at all, which is stricter than allowing a read-only one.
   assert.doesNotMatch(configuration, /builder\.route\("core-api-legacy-compat"/)
   assert.match(configuration, /No B12\/B13\/B14\/core-api catch-all is registered/)

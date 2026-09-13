@@ -49,9 +49,21 @@
 
 M2-001 的运行时证据含 **`default-owner-route-fail-closed`：PASS，status 404** —— 即"领域路由不可用时返回 404"已被独立证据确认 ✓（`evidence/p1r/m2/P1R-M2-001/runtime-evidence-2026-09-12.json`，30 项检查全部 PASS）。我一度以为这是重大缺口，核对后被推翻。
 
-### 仍待确认（下一轮）
+### ✅ 已实测确认：注释与代码语义不符（第 17 轮）
 
-`application-local.yml` 的注释写着 *"switch individual domains to SHADOW or FALLBACK when testing a rollback without changing code"*。按上述代码路径，在 `local` profile（strangler 开启）下把某域切成 SHADOW/FALLBACK 会让该域**不可用**，而不是回滚。**这是注释与代码语义不符**，但**尚未实测确认**（需以 `local` profile 启动网关并翻转一个域）。验证方法：`--spring.profiles.active=v2,local-real,local` + `B14_ROUTE_MODE_LEARNER=FALLBACK`，探测 `/api/v1/learner/profile`。
+第 16 轮我把这条列为"待确认"。第 17 轮用**有效实验**确认了它 —— 上次实验无效是因为两次都跑在 strangler 关闭的状态下；这次直接用 **`B14_STRANGLER_ENABLED=true` 环境变量**开启（主 `application.yml` 的占位符会读它，与 profile 无关）。
+
+| 路径 | learner=`TARGET` | learner=`FALLBACK` |
+|---|---|---|
+| `/api/v1/learner/profile` | **401**（路由存在） | **404**（路由消失） |
+| `/api/v1/content/learner/catalog`（content=TARGET） | 401 | **401**（不受影响） |
+| `/api/v1/iam/principal/me` | 401 | 401 |
+
+顺带确认了第 16 轮的根因：strangler 开启后 `/api/v1/learner/profile` 与 `/api/v1/content/learner/catalog` 由 **404 → 401**，即默认（`B14_STRANGLER_ENABLED=false`）时这些路由确实未注册 ✓
+
+**结论**：把某域切成 `SHADOW`/`FALLBACK` **不是回滚，而是让该域的路由消失（fail-closed 撤下）**。原注释 *"switch individual domains to SHADOW or FALLBACK when testing a rollback without changing code"* 会让运维在事故中把域**下线**而非回滚 —— 已改写为准确描述并加入测试断言（`assert.doesNotMatch(local, /when testing a rollback/)`）。
+
+**未改代码语义**：让非 TARGET 域回落到 core-api 属于实现回滚，与已 ACCEPTED 的 M2-001 设计（不注册任何 core-api/按域 catch-all）冲突。因此只修正描述，并把"模式命名暗示了代码未实现的回落语义"记为待决问题。
 
 ## 剩余 18 项
 

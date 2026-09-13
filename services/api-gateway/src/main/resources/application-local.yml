@@ -17,8 +17,13 @@ gateway:
     enabled: ${B13_SERVICES_ENABLED:true}
   b14:
     enabled: ${B14_STRANGLER_ENABLED:true}
-    # Local smoke keeps the target matrix enabled; switch individual domains
-    # to SHADOW or FALLBACK when testing a rollback without changing code.
+    # TARGET is the only mode that resolves to a route. Every other mode makes b14Target return null,
+    # which resolves the rule as unavailable, and routeBindings() drops unavailable resolutions, so
+    # switching a domain to LEGACY, SHADOW or FALLBACK takes its canonical routes out of service and
+    # they answer 404. That is a fail-closed withdrawal, not a rollback to a legacy path: the Gateway
+    # registers no core-api or per-domain catch-all, and every canonical route rule in the contract is
+    # compatibilityMode NONE. Measured on 2026-09-13 with the strangler enabled: /api/v1/learner/profile
+    # answers 401 while learner is TARGET and 404 once it is FALLBACK, with other domains unaffected.
     route-modes:
       learner: ${B14_ROUTE_MODE_LEARNER:TARGET}
       content: ${B14_ROUTE_MODE_CONTENT:TARGET}
