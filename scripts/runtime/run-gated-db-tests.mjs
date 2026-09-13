@@ -52,29 +52,81 @@ export function discoverGatedClasses(root = repositoryRoot) {
 }
 
 /**
- * The environment variables a class declares it needs, as literal names.
+ * The environment variables a class needs, as literal names.
  *
- * Taking the names straight from the source is deliberate: an earlier attempt derived a family from a
- * pattern and produced nothing for classes that name their variables differently, which made every
- * previously passing group fail. There is nothing to infer here.
+ * Two shapes matter here. A class may call required("NAME") and fail loudly when it is absent, and a
+ * @SpringBootTest may carry a ${NAME:default} placeholder in its properties, in which case a missing
+ * value is not an error but a context that starts against the wrong default. The IAM jdbc classes are
+ * the second shape: their placeholder defaults name a runtime user and an empty password, so the
+ * context fails to start, and reading only the required() calls missed it.
  */
 function requiredVariables(source) {
   const names = new Set();
   for (const match of source.matchAll(/(?:required|requiredEnvironment|requiredEnvironmentAllowEmpty)\("([A-Z][A-Z0-9_]*)"\)/gu)) {
     names.add(match[1]);
   }
+  for (const match of source.matchAll(/\$\{([A-Z][A-Z0-9_]*)(?::([^}]*))?\}/gu)) {
+    if (/_(?:URL|USERNAME|USER|PASSWORD|SCHEMA)$/u.test(match[1])) names.add(match[1]);
+  }
   return [...names];
 }
 
+/** Schema names the sources mention as placeholder defaults, so a URL can point at the right one. */
+function placeholderSchema(source) {
+  const match = /\$\{[A-Z][A-Z0-9_]*:(jdbc:mysql:\/\/[^}]*)\}/u.exec(source);
+  return match === null ? null : (/jdbc:mysql:\/\/[^/]+\/([A-Za-z0-9_]+)/u.exec(match[1])?.[1] ?? null);
+}
+
+/**
+ * The scratch-schema shape a class insists on.
+ *
+ * The migration test asserts that the schema it is given matches a regexp and that the JDBC URL
+ * selects exactly that schema, so both the name and the URL have to be derived from the same source
+ * rather than guessed. A generic generated name failed the regexp, and a URL without a database failed
+ * the agreement check.
+ */
+function scratchSchemaPattern(source) {
+  const pattern = /\.matches\("([^"]{3,80})"\)/u.exec(source)?.[1];
+  if (pattern === undefined) return null;
+  // Turn the regexp into a concrete name by keeping its literal prefix, which ends where the first
+  // character class begins.
+  const prefix = /^([a-z0-9_]+?)_?\[/u.exec(pattern)?.[1] ?? null;
+  return prefix === null ? null : `${prefix}_`;
+}
+
 /** Values for whatever connection variables a group's classes asked for. */
-function connectionEnvironment(variables, url, password) {
+function connectionEnvironment(variables, url, password, scratchSchema, schema) {
   const environment = {};
+  // When a class both names a schema and a JDBC URL, it may require the URL to select that schema.
+  const schemaVariable = variables.find((name) => name.endsWith('_SCHEMA')) ?? null;
   for (const name of variables) {
-    if (name.endsWith('_URL') || name.endsWith('_JDBC_URL')) environment[name] = url;
-    else if (name.endsWith('_USERNAME') || name.endsWith('_USER')) environment[name] = 'root';
+    if (name.endsWith('_SCHEMA')) environment[name] = scratchSchema;
+    else if (name.endsWith('_URL') || name.endsWith('_JDBC_URL')) {
+      // Keep the schema the placeholder's default named, and only replace credentials and host. When
+      // the class pairs the URL with a scratch schema, the URL selects that schema instead.
+      const target = schemaVariable !== null
+        ? `${url}${scratchSchema}?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC`
+        : name.endsWith('_JDBC_URL') && schema !== null
+          ? `${url}${schema}?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC`
+          : url;
+      environment[name] = target;
+    } else if (name.endsWith('_USERNAME') || name.endsWith('_USER')) environment[name] = 'root';
     else if (name.endsWith('_PASSWORD')) environment[name] = password;
   }
   return environment;
+}
+
+/** Runs one statement as the administrative user against the local MySQL container. */
+function adminStatement(statement, { host, port, password }) {
+  const result = spawnSync('docker', [
+    'compose', '-f', process.env.MYSQL_COMPOSE_FILE ?? 'infra/docker/docker-compose.dev.yml',
+    'exec', '-T', '-e', `MYSQL_PWD=${password}`,
+    process.env.MYSQL_COMPOSE_SERVICE ?? 'mysql',
+    'mysql', '--protocol=TCP', '--host', host === '127.0.0.1' ? '127.0.0.1' : host,
+    '--port', process.env.MYSQL_CONTAINER_PORT ?? '3306',
+    '--user', 'root', '--batch', '--skip-column-names', '--execute', statement,
+  ], { encoding: 'utf8', windowsHide: true });
+  return { ok: result.status === 0, output: `${result.stdout ?? ''}${result.stderr ?? ''}`.trim().slice(0, 300) };
 }
 
 export function runGatedDatabaseTests(options = {}) {
@@ -109,49 +161,106 @@ export function runGatedDatabaseTests(options = {}) {
     // than guessed from the property name: the IAM classes ask for IAM_V13_TEST_* and the flyway ones
     // for IAM_FLYWAY_TEST_ADMIN_*, and a convention-based guess silently produced neither.
     const variables = new Set();
+    let schema = null;
+    let schemaPrefix = null;
     for (const name of group.classes) {
       const file = findSource(root, group.service, name);
       if (file === null) continue;
       for (const variable of requiredVariables(file)) variables.add(variable);
+      schema = schema ?? placeholderSchema(file);
+      schemaPrefix = schemaPrefix ?? scratchSchemaPattern(file);
     }
+    const scratchSchema = schemaPrefix === null
+      ? `p1r_gated_${group.service.replaceAll('-', '_')}_${group.property.replaceAll('.', '_')}`
+      : `${schemaPrefix}p1r_${group.property.replaceAll('.', '_')}`;
+    // A class that names a scratch schema expects it to be provisioned and says so in its own
+    // documentation; connecting to a schema that does not exist fails with error 1049 rather than
+    // creating one. It is provisioned here and dropped after the group finishes.
+    const needsSchema = [...variables].some((name) => name.endsWith('_SCHEMA'));
+    const provisioned = needsSchema
+      ? adminStatement(`CREATE DATABASE IF NOT EXISTS \`${scratchSchema}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;`,
+        { host, port, password: rootPassword })
+      : null;
     const environment = {
       ...process.env,
       JAVA_HOME: javaHome,
-      ...connectionEnvironment([...variables], adminUrl(host, port), rootPassword),
+      ...connectionEnvironment([...variables], adminUrl(host, port), rootPassword, scratchSchema, schema),
     };
 
+    // The counts come from this run's own surefire XML reports, and the directory is cleared first so a
+    // report left behind by an earlier run cannot be read as this one's. Parsing the console text was
+    // unreliable: Maven wraps long per-class lines, and reading only the first summary took the first
+    // class's counts as the whole group's.
+    const reports = path.join(root, `services/${group.service}-service/target/surefire-reports`);
+    fs.rmSync(reports, { recursive: true, force: true });
     const result = spawnSync('mvn', ['-f', path.join(root, `services/${group.service}-service/pom.xml`), '-o',
       `-D${group.property}=true`, `-Dtest=${group.classes.join(',')}`, '-DfailIfNoTests=false', 'test'],
       { cwd: root, encoding: 'utf8', windowsHide: true, shell: true, env: environment });
     const output = `${result.stdout ?? ''}${result.stderr ?? ''}`;
-    const summary = /Tests run: (\d+), Failures: (\d+), Errors: (\d+), Skipped: (\d+)/u.exec(output);
-    const testsRun = summary ? Number(summary[1]) : 0;
-    const failures = summary ? Number(summary[2]) : 0;
-    const errors = summary ? Number(summary[3]) : 0;
-    const skipped = summary ? Number(summary[4]) : 0;
-    // Fail-closed. Exit code 0 alone is satisfied by an entirely skipped class, which is the defect
-    // this runner exists to avoid.
-    const passed = result.status === 0 && testsRun >= group.classes.length
+
+    const perClass = [];
+    if (fs.existsSync(reports)) {
+      for (const name of fs.readdirSync(reports).filter((entry) => entry.startsWith('TEST-') && entry.endsWith('.xml'))) {
+        const xml = fs.readFileSync(path.join(reports, name), 'utf8');
+        const suite = /<testsuite[^>]*>/u.exec(xml)?.[0] ?? '';
+        const attribute = (key) => Number(new RegExp(`${key}="(\\d+)"`, 'u').exec(suite)?.[1] ?? 0);
+        // The failure message is taken here rather than from the console, because the reports are
+        // cleared before the next group runs and the console wraps long lines. An <error> body carries
+        // the exception across several lines, so the first line of the body is kept as well.
+        const failure = /<(?:failure|error)[^>]*message="([^"]{0,400})"/u.exec(xml)?.[1] ?? null;
+        const body = /<(?:failure|error)[^>]*>([\s\S]{0,600})/u.exec(xml)?.[1] ?? null;
+        const firstLine = body === null ? null
+          : (body.split(/\r?\n/u).map((line) => line.trim()).find((line) => line.length > 0) ?? null);
+        perClass.push({
+          className: name.replace(/^TEST-/u, '').replace(/\.xml$/u, ''),
+          testsRun: attribute('tests'), failures: attribute('failures'),
+          errors: attribute('errors'), skipped: attribute('skipped'),
+          failureMessage: failure === null ? null : failure.replace(/&quot;/gu, '"').replace(/&apos;/gu, "'").replace(/&lt;/gu, '<').replace(/&gt;/gu, '>').replace(/&amp;/gu, '&'),
+          failureDetail: firstLine,
+        });
+      }
+    }
+    const { testsRun, failures, errors, skipped } = perClass.reduce((accumulator, entry) => ({
+      testsRun: accumulator.testsRun + entry.testsRun,
+      failures: accumulator.failures + entry.failures,
+      errors: accumulator.errors + entry.errors,
+      skipped: accumulator.skipped + entry.skipped,
+    }), { testsRun: 0, failures: 0, errors: 0, skipped: 0 });
+    const dropped = needsSchema
+      ? adminStatement(`DROP DATABASE IF EXISTS \`${scratchSchema}\`;`, { host, port, password: rootPassword })
+      : null;
+    // Fail-closed. Exit code 0 alone is satisfied by an entirely skipped class, and a group whose
+    // reports cover fewer classes than it asked for left some of them unrun. A scratch schema that
+    // could not be provisioned is a failure of the run, not a reason to skip it.
+    const passed = result.status === 0
+      && (provisioned === null || provisioned.ok)
+      && perClass.length === group.classes.length
+      && testsRun >= group.classes.length
       && failures === 0 && errors === 0 && skipped === 0;
     results.push({
       service: group.service,
       property: group.property,
       classes: group.classes,
+      classesReporting: perClass.map((entry) => entry.className),
       exitStatus: result.status,
       passed,
-      testsRun: summary ? testsRun : null,
+      testsRun: perClass.length === 0 ? null : testsRun,
       failures, errors, skipped,
+      failureMessages: perClass.filter((entry) => entry.failureMessage !== null || entry.failureDetail !== null)
+        .map((entry) => ({ className: entry.className, message: entry.failureMessage, detail: entry.failureDetail })),
       reason: passed ? null
-        : (summary === null
-          ? `no surefire summary in the output (exit ${result.status})`
-          : `${testsRun} tests run for ${group.classes.length} classes, ${failures} failures, ${errors} errors, ${skipped} skipped (exit ${result.status})`),
+        : (perClass.length === 0
+          ? `no surefire report was produced (exit ${result.status})`
+          : `${testsRun} tests, ${failures} failures, ${errors} errors, ${skipped} skipped; `
+            + `${perClass.length} of ${group.classes.length} classes reported (exit ${result.status}); `
+            + (perClass.find((entry) => entry.failureMessage !== null)?.failureMessage ?? 'no failure message recorded')),
     });
   }
 
-  // Every discovered class must appear in exactly one group, or the runner is not covering what the
-  // repository contains.
+  // Every class this run selected must appear in exactly one group. Comparing against the full
+  // discovered set would report the classes a --kind filter deliberately excluded as uncovered.
   const covered = new Set(results.flatMap((entry) => entry.classes));
-  const uncovered = discovered.filter((entry) => !covered.has(entry.name))
+  const uncovered = selected.filter((entry) => !covered.has(entry.name))
     .map((entry) => ({ service: entry.service, name: entry.name, property: entry.property }));
 
   const failing = results.filter((entry) => !entry.passed);
