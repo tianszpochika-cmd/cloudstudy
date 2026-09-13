@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-003",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "7aaebac87e8870fd763bd93dc97afcd18f80b714",
+  "sourceCommit": "c2ed12f71f250180fe387a31eceb91d0d451dd02",
   "artifactDigests": [
     {
       "path": "package.json",
@@ -17,7 +17,7 @@
     {
       "path": "packages/contracts/openapi/v1/openapi.json",
       "algorithm": "sha256",
-      "digest": "93c03dfd26d482397a5ec1c1e26f5627f1e2294d10a68864d3af30eeeffe1a80"
+      "digest": "9a4f084f1a645c9655f1664bb6df7c4506fd507f1bd74bedd9ae353c196b6354"
     },
     {
       "path": "packages/contracts/generated/openapi.ts",
@@ -280,19 +280,29 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-12T22:07:09.012Z",
         "details": "Current-source artifact digest rebase after P1R-M2-005 E8 registered the operator dead letter replay entry as p1r:m2-005:replay in package.json. The only artifact of these tasks that moved is package.json. Original provenance, review history and runtime status unchanged."
+      },
+      {
+        "taskId": "P1R-M1-003",
+        "sourceCommit": "c2ed12f71f250180fe387a31eceb91d0d451dd02",
+        "auditedImplementationSource": "c2ed12f71f250180fe387a31eceb91d0d451dd02",
+        "integrationCheckpoint": "c2ed12f71f250180fe387a31eceb91d0d451dd02",
+        "reviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-13T02:30:07.324Z",
+        "details": "Current-source revalidation after the public site projection contract promotion. The canonical rule for /api/v1/public/site named admin-ops-service as its owner while the controller that serves the projection lives in content-service, so GatewayRouteExecutionPolicy withheld the route and the official site could not reach its own projection through the Gateway. The owner is now content-service and the projection is registered. This task only records the contract files, so nothing it accepted changed; its digests are rebound to the commit that carries the promotion."
       }
     ],
-    "previousCurrentSourceCommit": "1eefbe6d5b22d87872c4f8c1cc0ecad46497e3a6",
+    "previousCurrentSourceCommit": "7aaebac87e8870fd763bd93dc97afcd18f80b714",
     "previousCurrentSourceRevalidationTask": "P1R-M2-005",
-    "currentSourceRevalidationTask": "P1R-M2-005",
+    "currentSourceRevalidationTask": "P1R-M1-003",
     "currentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "previousCurrentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "previousCurrentSourceRevalidationFinishedAt": "2026-09-12T21:46:47.793Z",
+    "previousCurrentSourceRevalidationFinishedAt": "2026-09-12T22:07:09.012Z",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-12T22:07:09.012Z",
-    "currentSourceRevalidationAuditedImplementationSource": "7aaebac87e8870fd763bd93dc97afcd18f80b714",
-    "currentSourceRevalidationIntegrationCheckpoint": "7aaebac87e8870fd763bd93dc97afcd18f80b714"
+    "currentSourceRevalidationFinishedAt": "2026-09-13T02:30:07.324Z",
+    "currentSourceRevalidationAuditedImplementationSource": "c2ed12f71f250180fe387a31eceb91d0d451dd02",
+    "currentSourceRevalidationIntegrationCheckpoint": "c2ed12f71f250180fe387a31eceb91d0d451dd02"
   },
   "startedAt": "2026-08-29T22:19:13+08:00",
   "finishedAt": "2026-09-01T15:39:29+08:00",

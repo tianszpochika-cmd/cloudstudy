@@ -2,17 +2,17 @@
   "taskId": "P1R-M2-001",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "f4885a3cc8d4d518d7e430c60de86f91443ddc1d",
+  "sourceCommit": "c2ed12f71f250180fe387a31eceb91d0d451dd02",
   "artifactDigests": [
     {
       "path": "services/api-gateway/src/main/java/com/englishflow/gateway/policy/GatewayRoutePolicy.java",
       "algorithm": "sha256",
-      "digest": "3f39fdbf8587eca6a60568a0e41537135ad19e1e36e935f723d9aae06e775bc7"
+      "digest": "360a188b357807358ce77ef4ffdbb0588ec13f60ada19cfd8535ec8548f62954"
     },
     {
       "path": "services/api-gateway/src/main/java/com/englishflow/gateway/policy/GatewayRouteExecutionPolicy.java",
       "algorithm": "sha256",
-      "digest": "4048c906abdb1b7f319464557864057fb448e654a224ee59f1bdf7f4a9009031"
+      "digest": "a684d533bbc3c56527c20b44db4a7f9b8b22a316072c25dc5e2b081ab4d03155"
     },
     {
       "path": "services/api-gateway/src/main/java/com/englishflow/gateway/config/GatewayConfiguration.java",
@@ -97,7 +97,7 @@
     {
       "path": "packages/contracts/openapi/v1/openapi.json",
       "algorithm": "sha256",
-      "digest": "93c03dfd26d482397a5ec1c1e26f5627f1e2294d10a68864d3af30eeeffe1a80"
+      "digest": "9a4f084f1a645c9655f1664bb6df7c4506fd507f1bd74bedd9ae353c196b6354"
     },
     {
       "path": "docs/10-decisions/0010-java25-microservices-gateway-iam.md",
@@ -163,12 +163,12 @@
         "details": "Independent read-only review verified evidence provenance (sourceTree and jar digests at 352879a), 29/29 runtime checks, 11 browser cases, rate-limit key semantics, audit redaction, Addendum scope, Node 8/8, Gateway 82/82 and IAM 71/71 (18 opt-in skips). P3 hardening suggestions are recorded in execution/P1R-M2-001.md and do not block acceptance; durable audit, NetworkPolicy, platform correlation and staging remain with M2-006/M2-008/M2-010/M8-013."
       }
     ],
-    "currentSourceRevalidationTask": "P1R-M2-004",
+    "currentSourceRevalidationTask": "P1R-M2-001",
     "currentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-12T17:54:32.728Z",
-    "currentSourceRevalidationAuditedImplementationSource": "f4885a3cc8d4d518d7e430c60de86f91443ddc1d",
-    "currentSourceRevalidationIntegrationCheckpoint": "f4885a3cc8d4d518d7e430c60de86f91443ddc1d",
+    "currentSourceRevalidationFinishedAt": "2026-09-13T02:30:07.521Z",
+    "currentSourceRevalidationAuditedImplementationSource": "c2ed12f71f250180fe387a31eceb91d0d451dd02",
+    "currentSourceRevalidationIntegrationCheckpoint": "c2ed12f71f250180fe387a31eceb91d0d451dd02",
     "originalSourceCommit": "7ba4d33f820efae6756164a97dfd38f02c0e89c4",
     "currentSourceRevalidationHistory": [
       {
@@ -180,8 +180,23 @@
         "runtimeStatus": "RUNTIME_VERIFIED",
         "finishedAt": "2026-09-12T17:54:32.728Z",
         "details": "Current-source rebase for P1R-M2-004 Batch D2b. The Gateway runtime harness and its shared library now authenticate against Redis as the scoped svc_gateway ACL user instead of the credential-less default user, and CLIENT LIST was added to the read-only probe allowlist so the identity is asserted rather than inferred. Runtime evidence re-captured at this source with --run --browser --fault: result PASS, 30/30 checks, notRuntimeVerified empty, including the new redis-acl-authenticated-user check (observed users: svc_gateway, default). The recorded ACCEPTED decision, its review history and the earlier evidence files are unchanged. Rebound to a source commit that actually contains every recorded artifact: the new evidence file arrived in 7371689 and the narrowed CLIENT boundary test in f4885a3, neither of which existed at the earlier binding."
+      },
+      {
+        "taskId": "P1R-M2-001",
+        "sourceCommit": "c2ed12f71f250180fe387a31eceb91d0d451dd02",
+        "auditedImplementationSource": "c2ed12f71f250180fe387a31eceb91d0d451dd02",
+        "integrationCheckpoint": "c2ed12f71f250180fe387a31eceb91d0d451dd02",
+        "reviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-13T02:30:07.521Z",
+        "details": "Current-source revalidation after the public site projection contract promotion. The canonical rule for /api/v1/public/site named admin-ops-service as its owner while the controller that serves the projection lives in content-service, so GatewayRouteExecutionPolicy withheld the route and the official site could not reach its own projection through the Gateway. The owner is now content-service and the projection is registered. This task is the one whose frozen baseline moved: its execution target plan digest, its available execution operation count, its gateway root semantic digest and its expected projection digest are all recomputed, and the unavailable-reason entry for the rule is gone. The three-item change descriptor set is untouched, because the descriptor for the gateway root extension already covers a change made inside it, which is why the promotion stays inside the allowance this task defined. Verified with the Gateway suite at 82, P1R at 1427, the full suite at 1922 with no failures, a compatible result from the compatibility gate, and a 200 from /api/v1/public/site/projection through the Gateway with the strangler enabled."
       }
-    ]
+    ],
+    "previousCurrentSourceCommit": "f4885a3cc8d4d518d7e430c60de86f91443ddc1d",
+    "previousCurrentSourceRevalidationTask": "P1R-M2-004",
+    "previousCurrentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
+    "previousCurrentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
+    "previousCurrentSourceRevalidationFinishedAt": "2026-09-12T17:54:32.728Z"
   },
   "startedAt": "2026-09-01T16:17:22+08:00",
   "finishedAt": "2026-09-11T10:59:16+08:00",

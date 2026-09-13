@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-011",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "7aaebac87e8870fd763bd93dc97afcd18f80b714",
+  "sourceCommit": "c2ed12f71f250180fe387a31eceb91d0d451dd02",
   "artifactDigests": [
     {
       "path": "config/b26-event-runtime.json",
@@ -102,7 +102,7 @@
     {
       "path": "packages/contracts/openapi/v1/openapi.json",
       "algorithm": "sha256",
-      "digest": "93c03dfd26d482397a5ec1c1e26f5627f1e2294d10a68864d3af30eeeffe1a80"
+      "digest": "9a4f084f1a645c9655f1664bb6df7c4506fd507f1bd74bedd9ae353c196b6354"
     },
     {
       "path": "scripts/audit/p1r-content-lifecycle-check.mjs",
@@ -122,7 +122,7 @@
     {
       "path": "scripts/audit/p1r-gateway-contract-check.mjs",
       "algorithm": "sha256",
-      "digest": "2a188219acc2f7fc3c512c8604d0b25d90b99095647ddaada1fa3ad3da667c6d"
+      "digest": "6741e15cadf11c77ce4e0f20a35a5e10b46f9f12cbb48d04ba276ed3337f8c4c"
     },
     {
       "path": "scripts/audit/p1r-learner-planning-contract-check.mjs",
@@ -132,7 +132,7 @@
     {
       "path": "scripts/contracts/compatibility-diff.mjs",
       "algorithm": "sha256",
-      "digest": "fe7ce9217cc1bcb5eedb4e8bc287a62b0d4c86751898902f968c6d917e36ae11"
+      "digest": "5bc8ebcbdeccd890de2d1a18fe41992c43e393c8b7c295ca0eba9365dd863ac5"
     },
     {
       "path": "scripts/contracts/compatibility-git-baseline.mjs",
@@ -187,7 +187,7 @@
     {
       "path": "tests/p1r/p1r-gateway-contract.test.mjs",
       "algorithm": "sha256",
-      "digest": "114748544fec4e8be82bf3472e65dd3774a6b85cf0f05161b44e85869fbd93fd"
+      "digest": "624ea998e236aebe2ba18baefabf2bc0aef586613306cc3fa53567744c472e2f"
     },
     {
       "path": "tests/p1r/p1r-learner-planning-contract.test.mjs",
@@ -574,18 +574,28 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-12T22:07:09.012Z",
         "details": "Current-source artifact digest rebase after P1R-M2-005 E8 registered the operator dead letter replay entry as p1r:m2-005:replay in package.json. The only artifact of these tasks that moved is package.json. Original provenance, review history and runtime status unchanged."
+      },
+      {
+        "taskId": "P1R-M1-011",
+        "sourceCommit": "c2ed12f71f250180fe387a31eceb91d0d451dd02",
+        "auditedImplementationSource": "c2ed12f71f250180fe387a31eceb91d0d451dd02",
+        "integrationCheckpoint": "c2ed12f71f250180fe387a31eceb91d0d451dd02",
+        "reviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-13T02:30:07.376Z",
+        "details": "Current-source revalidation after the public site projection contract promotion. The canonical rule for /api/v1/public/site named admin-ops-service as its owner while the controller that serves the projection lives in content-service, so GatewayRouteExecutionPolicy withheld the route and the official site could not reach its own projection through the Gateway. The owner is now content-service and the projection is registered. This task only records the contract files, so nothing it accepted changed; its digests are rebound to the commit that carries the promotion."
       }
     ],
-    "previousCurrentSourceCommit": "1eefbe6d5b22d87872c4f8c1cc0ecad46497e3a6",
+    "previousCurrentSourceCommit": "7aaebac87e8870fd763bd93dc97afcd18f80b714",
     "previousCurrentSourceRevalidationTask": "P1R-M2-005",
     "previousCurrentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "previousCurrentSourceRevalidationFinishedAt": "2026-09-12T21:46:47.793Z",
-    "currentSourceRevalidationTask": "P1R-M2-005",
+    "previousCurrentSourceRevalidationFinishedAt": "2026-09-12T22:07:09.012Z",
+    "currentSourceRevalidationTask": "P1R-M1-011",
     "currentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-12T22:07:09.012Z",
-    "currentSourceRevalidationAuditedImplementationSource": "7aaebac87e8870fd763bd93dc97afcd18f80b714",
-    "currentSourceRevalidationIntegrationCheckpoint": "7aaebac87e8870fd763bd93dc97afcd18f80b714"
+    "currentSourceRevalidationFinishedAt": "2026-09-13T02:30:07.376Z",
+    "currentSourceRevalidationAuditedImplementationSource": "c2ed12f71f250180fe387a31eceb91d0d451dd02",
+    "currentSourceRevalidationIntegrationCheckpoint": "c2ed12f71f250180fe387a31eceb91d0d451dd02"
   }
 }

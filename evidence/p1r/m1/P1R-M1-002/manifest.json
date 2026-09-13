@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-002",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "6ceaf7f91109d4880c89d5dbbf24bef7b9a1ca3b",
+  "sourceCommit": "c2ed12f71f250180fe387a31eceb91d0d451dd02",
   "artifactDigests": [
     {
       "path": "packages/contracts/fragments/b8/b8-auth-iam.openapi.json",
@@ -12,7 +12,7 @@
     {
       "path": "packages/contracts/openapi/v1/openapi.json",
       "algorithm": "sha256",
-      "digest": "93c03dfd26d482397a5ec1c1e26f5627f1e2294d10a68864d3af30eeeffe1a80"
+      "digest": "9a4f084f1a645c9655f1664bb6df7c4506fd507f1bd74bedd9ae353c196b6354"
     },
     {
       "path": "packages/contracts/generated/openapi.ts",
@@ -180,19 +180,29 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-10T22:24:25+08:00",
         "details": "Current-source revalidation after the 2026-09-10 commits (a149335 docs/asset-preflight, 6131783 dev unit-test completion, 6ceaf7f evidence-gate 9-column fix) invalidated previously recorded artifact digests. Rebased sourceCommit to 6ceaf7f91109d4880c89d5dbbf24bef7b9a1ca3b after the full P1R regression passed 1421/1421 under Node 20.19.5 on an LF-normalized worktree. Original provenance and review history remain unchanged; runtime evidence is not promoted."
+      },
+      {
+        "taskId": "P1R-M1-002",
+        "sourceCommit": "c2ed12f71f250180fe387a31eceb91d0d451dd02",
+        "auditedImplementationSource": "c2ed12f71f250180fe387a31eceb91d0d451dd02",
+        "integrationCheckpoint": "c2ed12f71f250180fe387a31eceb91d0d451dd02",
+        "reviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-13T02:30:07.317Z",
+        "details": "Current-source revalidation after the public site projection contract promotion. The canonical rule for /api/v1/public/site named admin-ops-service as its owner while the controller that serves the projection lives in content-service, so GatewayRouteExecutionPolicy withheld the route and the official site could not reach its own projection through the Gateway. The owner is now content-service and the projection is registered. This task only records the contract files, so nothing it accepted changed; its digests are rebound to the commit that carries the promotion."
       }
     ],
-    "previousCurrentSourceCommit": "c548b601caae41fecc417f44f2a3e8e2016332d0",
+    "previousCurrentSourceCommit": "2a747ba3917acd92664911c6b4be070ff469e302",
     "previousCurrentSourceRevalidationTask": "P1R-M1-018",
-    "currentSourceRevalidationTask": "P1R-M1-018",
-    "currentSourceRevalidationReviewer": "agent:m1_018_closure_fix_review:gpt-5.6-luna:max",
-    "previousCurrentSourceRevalidationReviewer": "agent:m1_018_final_review:gpt-5.6-luna:max",
+    "currentSourceRevalidationTask": "P1R-M1-002",
+    "currentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
+    "previousCurrentSourceRevalidationReviewer": "agent:m1_018_closure_fix_review:gpt-5.6-luna:max",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "previousCurrentSourceRevalidationFinishedAt": "2026-09-01T14:40:33+08:00",
+    "previousCurrentSourceRevalidationFinishedAt": "2026-09-01T15:39:29+08:00",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-01T15:39:29+08:00",
-    "currentSourceRevalidationAuditedImplementationSource": "2a747ba3917acd92664911c6b4be070ff469e302",
-    "currentSourceRevalidationIntegrationCheckpoint": "2a747ba3917acd92664911c6b4be070ff469e302"
+    "currentSourceRevalidationFinishedAt": "2026-09-13T02:30:07.317Z",
+    "currentSourceRevalidationAuditedImplementationSource": "c2ed12f71f250180fe387a31eceb91d0d451dd02",
+    "currentSourceRevalidationIntegrationCheckpoint": "c2ed12f71f250180fe387a31eceb91d0d451dd02"
   },
   "startedAt": "2026-08-29T20:33:21+08:00",
   "finishedAt": "2026-09-01T15:39:29+08:00",
