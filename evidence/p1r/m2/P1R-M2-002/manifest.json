@@ -2,7 +2,7 @@
   "taskId": "P1R-M2-002",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "c2ed12f71f250180fe387a31eceb91d0d451dd02",
+  "sourceCommit": "5408751e7c27277d6124d394b4da2465e10f60fa",
   "artifactDigests": [
     {
       "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/ConsentService.java",
@@ -167,7 +167,7 @@
     {
       "path": "config/p1r-data-ownership.v1.json",
       "algorithm": "sha256",
-      "digest": "111b8f5185d6d1ec2f0c7b75140e430a52406777bc5c1c0b6ad5a78f1194d54b"
+      "digest": "cb2c3bd202e5b2910e5b0127c5fd54b80bbd5b3433157dbaf46cc69c67318786"
     },
     {
       "path": "docs/10-decisions/0013-self-owned-jwt-authentication-center.md",
@@ -304,20 +304,30 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-13T02:30:07.528Z",
         "details": "Current-source revalidation after the public site projection contract promotion. The canonical rule for /api/v1/public/site named admin-ops-service as its owner while the controller that serves the projection lives in content-service, so GatewayRouteExecutionPolicy withheld the route and the official site could not reach its own projection through the Gateway. The owner is now content-service and the projection is registered. This task only records the contract files, so nothing it accepted changed; its digests are rebound to the commit that carries the promotion."
+      },
+      {
+        "taskId": "P1R-M2-002",
+        "sourceCommit": "5408751e7c27277d6124d394b4da2465e10f60fa",
+        "auditedImplementationSource": "5408751e7c27277d6124d394b4da2465e10f60fa",
+        "integrationCheckpoint": "5408751e7c27277d6124d394b4da2465e10f60fa",
+        "reviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-13T04:47:09.122Z",
+        "details": "Current-source revalidation after the P1R-M2-004 review rework. The rework moved config/p1r-data-ownership.v1.json, which corrects the Gateway Redis namespace to englishflow:gateway because the runtime keys, the ACL provisioning script and a live Redis denial all disagree with the previous value, and scripts/audit/p1r-data-ownership-check.mjs, whose assertion enforced that previous value. This task only records those files, so nothing it accepted changed; its digests are rebound to the commit that carries the rework."
       }
     ],
-    "previousCurrentSourceCommit": "db661afc478d67fe1dac27abeb3f6dba48f76481",
+    "previousCurrentSourceCommit": "c2ed12f71f250180fe387a31eceb91d0d451dd02",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
     "currentSourceRevalidationTask": "P1R-M2-002",
     "currentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-13T02:30:07.528Z",
-    "currentSourceRevalidationAuditedImplementationSource": "c2ed12f71f250180fe387a31eceb91d0d451dd02",
-    "currentSourceRevalidationIntegrationCheckpoint": "c2ed12f71f250180fe387a31eceb91d0d451dd02",
+    "currentSourceRevalidationFinishedAt": "2026-09-13T04:47:09.122Z",
+    "currentSourceRevalidationAuditedImplementationSource": "5408751e7c27277d6124d394b4da2465e10f60fa",
+    "currentSourceRevalidationIntegrationCheckpoint": "5408751e7c27277d6124d394b4da2465e10f60fa",
     "originalSourceCommit": "ec20ef51a8b0ea99d4b72bf7598777df075f4889",
     "previousCurrentSourceRevalidationTask": "P1R-M2-002",
     "previousCurrentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
-    "previousCurrentSourceRevalidationFinishedAt": "2026-09-12T23:16:53.530Z"
+    "previousCurrentSourceRevalidationFinishedAt": "2026-09-13T02:30:07.528Z"
   },
   "startedAt": "2026-09-01T16:17:22+08:00",
   "finishedAt": "2026-09-11T16:36:27+08:00",

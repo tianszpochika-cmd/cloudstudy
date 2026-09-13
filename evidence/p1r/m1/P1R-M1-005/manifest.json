@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-005",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "7aaebac87e8870fd763bd93dc97afcd18f80b714",
+  "sourceCommit": "5408751e7c27277d6124d394b4da2465e10f60fa",
   "artifactDigests": [
     {
       "path": "package.json",
@@ -12,12 +12,12 @@
     {
       "path": "config/p1r-data-ownership.v1.json",
       "algorithm": "sha256",
-      "digest": "111b8f5185d6d1ec2f0c7b75140e430a52406777bc5c1c0b6ad5a78f1194d54b"
+      "digest": "cb2c3bd202e5b2910e5b0127c5fd54b80bbd5b3433157dbaf46cc69c67318786"
     },
     {
       "path": "scripts/audit/p1r-data-ownership-check.mjs",
       "algorithm": "sha256",
-      "digest": "18f2771e84e602cbdb9b23cbb4d3422e2551da259deb484b1a6e61b26afd1d85"
+      "digest": "77148fcb0c1501e5ae1e50328a6dd8e1af4aad04b146be770c59af17035c36f4"
     },
     {
       "path": "tests/p1r/p1r-data-ownership.test.mjs",
@@ -281,19 +281,29 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-12T22:07:09.012Z",
         "details": "Current-source artifact digest rebase after P1R-M2-005 E8 registered the operator dead letter replay entry as p1r:m2-005:replay in package.json. The only artifact of these tasks that moved is package.json. Original provenance, review history and runtime status unchanged."
+      },
+      {
+        "taskId": "P1R-M1-005",
+        "sourceCommit": "5408751e7c27277d6124d394b4da2465e10f60fa",
+        "auditedImplementationSource": "5408751e7c27277d6124d394b4da2465e10f60fa",
+        "integrationCheckpoint": "5408751e7c27277d6124d394b4da2465e10f60fa",
+        "reviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-13T04:47:09.102Z",
+        "details": "Current-source revalidation after the P1R-M2-004 review rework. The rework moved config/p1r-data-ownership.v1.json, which corrects the Gateway Redis namespace to englishflow:gateway because the runtime keys, the ACL provisioning script and a live Redis denial all disagree with the previous value, and scripts/audit/p1r-data-ownership-check.mjs, whose assertion enforced that previous value. This task only records those files, so nothing it accepted changed; its digests are rebound to the commit that carries the rework."
       }
     ],
-    "previousCurrentSourceCommit": "1eefbe6d5b22d87872c4f8c1cc0ecad46497e3a6",
+    "previousCurrentSourceCommit": "7aaebac87e8870fd763bd93dc97afcd18f80b714",
     "previousCurrentSourceRevalidationTask": "P1R-M2-005",
-    "currentSourceRevalidationTask": "P1R-M2-005",
+    "currentSourceRevalidationTask": "P1R-M1-005",
     "currentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "previousCurrentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "previousCurrentSourceRevalidationFinishedAt": "2026-09-12T21:46:47.793Z",
+    "previousCurrentSourceRevalidationFinishedAt": "2026-09-12T22:07:09.012Z",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-12T22:07:09.012Z",
-    "currentSourceRevalidationAuditedImplementationSource": "7aaebac87e8870fd763bd93dc97afcd18f80b714",
-    "currentSourceRevalidationIntegrationCheckpoint": "7aaebac87e8870fd763bd93dc97afcd18f80b714"
+    "currentSourceRevalidationFinishedAt": "2026-09-13T04:47:09.102Z",
+    "currentSourceRevalidationAuditedImplementationSource": "5408751e7c27277d6124d394b4da2465e10f60fa",
+    "currentSourceRevalidationIntegrationCheckpoint": "5408751e7c27277d6124d394b4da2465e10f60fa"
   },
   "startedAt": "2026-08-30T00:53:14+08:00",
   "finishedAt": "2026-09-01T15:39:29+08:00",

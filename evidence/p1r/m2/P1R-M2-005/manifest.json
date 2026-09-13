@@ -2,7 +2,7 @@
   "taskId": "P1R-M2-005",
   "draftOnly": false,
   "canonicalTaskStatus": "BLOCKED",
-  "sourceCommit": "10bc8e2dba06a800fd6bb014b0827d898b7c1b8b",
+  "sourceCommit": "5408751e7c27277d6124d394b4da2465e10f60fa",
   "artifactDigests": [
     {
       "path": "config/b26-event-runtime.json",
@@ -12,7 +12,7 @@
     {
       "path": "config/p1r-data-ownership.v1.json",
       "algorithm": "sha256",
-      "digest": "111b8f5185d6d1ec2f0c7b75140e430a52406777bc5c1c0b6ad5a78f1194d54b"
+      "digest": "cb2c3bd202e5b2910e5b0127c5fd54b80bbd5b3433157dbaf46cc69c67318786"
     },
     {
       "path": "scripts/runtime/provision-kafka-topics.mjs",
@@ -96,7 +96,28 @@
       "E6 the Kafka listener wired to that applier",
       "E7 to E8 the whole thing reduced to a repeatable harness with two fault phases and an operator replay entry"
     ],
-    "reviewHistory": []
+    "reviewHistory": [],
+    "previousCurrentSourceCommit": "10bc8e2dba06a800fd6bb014b0827d898b7c1b8b",
+    "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
+    "currentSourceRevalidationTask": "P1R-M2-005",
+    "currentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
+    "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
+    "currentSourceRevalidationFinishedAt": "2026-09-13T04:47:09.129Z",
+    "currentSourceRevalidationAuditedImplementationSource": "5408751e7c27277d6124d394b4da2465e10f60fa",
+    "currentSourceRevalidationIntegrationCheckpoint": "5408751e7c27277d6124d394b4da2465e10f60fa",
+    "originalSourceCommit": "10bc8e2dba06a800fd6bb014b0827d898b7c1b8b",
+    "currentSourceRevalidationHistory": [
+      {
+        "taskId": "P1R-M2-005",
+        "sourceCommit": "5408751e7c27277d6124d394b4da2465e10f60fa",
+        "auditedImplementationSource": "5408751e7c27277d6124d394b4da2465e10f60fa",
+        "integrationCheckpoint": "5408751e7c27277d6124d394b4da2465e10f60fa",
+        "reviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-13T04:47:09.129Z",
+        "details": "Current-source revalidation after the P1R-M2-004 review rework. The rework moved config/p1r-data-ownership.v1.json, which corrects the Gateway Redis namespace to englishflow:gateway because the runtime keys, the ACL provisioning script and a live Redis denial all disagree with the previous value, and scripts/audit/p1r-data-ownership-check.mjs, whose assertion enforced that previous value. This task only records those files, so nothing it accepted changed; its digests are rebound to the commit that carries the rework."
+      }
+    ]
   },
   "startedAt": "2026-09-13T00:00:00+08:00",
   "finishedAt": "2026-09-12T22:35:01.519Z",
