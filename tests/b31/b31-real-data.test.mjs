@@ -33,7 +33,7 @@ test('B31 Gateway denies content and admin writes without a verified session', a
     const body = await response.json();
     assert.ok(body.error?.errorCode, `${path} must return the canonical error envelope`);
     assert.ok(body.meta?.requestId && body.meta?.traceId, `${path} must return correlation ids`);
-    if (response.status === 401) assert.equal(body.error.errorCode, 'UNAUTHORIZED');
+    if (response.status === 401) assert.equal(body.error.errorCode, 'AUTH_REQUIRED');
     else assert.equal(body.error.errorCode, 'NOT_FOUND');
   }
 });
