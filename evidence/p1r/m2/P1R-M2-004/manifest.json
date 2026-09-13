@@ -2,7 +2,7 @@
   "taskId": "P1R-M2-004",
   "draftOnly": false,
   "canonicalTaskStatus": "REVIEW",
-  "sourceCommit": "95fc78bfb73b37e02ac260a6e74c4007d831c4d9",
+  "sourceCommit": "514751b87174dd4f621cbb2721611ea2a95ee0ea",
   "artifactDigests": [
     {
       "path": "config/p1r-data-ownership.v1.json",
@@ -47,7 +47,7 @@
     {
       "path": "scripts/runtime/p1r-m2-004-runtime.mjs",
       "algorithm": "sha256",
-      "digest": "70e5c845ee9dcda1bfa9aa17a49aefd172a37f5a35734c1ac77375a5c5e4a114"
+      "digest": "f5e0fe2624e84e5c320b5a6e094e2ddf6f14f57a04061651a0426a79397563b3"
     },
     {
       "path": "scripts/runtime/run-gated-db-tests.mjs",
@@ -262,12 +262,12 @@
     {
       "path": "evidence/p1r/m2/P1R-M2-004/runtime-evidence-2026-09-13.json",
       "algorithm": "sha256",
-      "digest": "d19b3281958144504f9fc53e030e1b9f12b78c8acb851056c2fe4376e0833c6f"
+      "digest": "a66a3928df1ef5170266a05c0b2a193ec7dc683fc0f18f1e575344d50149c942"
     },
     {
       "path": "evidence/p1r/m2/P1R-M2-004/gated-db-tests-2026-09-13.json",
       "algorithm": "sha256",
-      "digest": "f57ef0bc41252011f241753241eb0dda418010f163d4508cd6861239a288857f"
+      "digest": "c392ec7ff75125bae764115d64297dabe8f968094e8317b7c2e5cb3dc39546f9"
     }
   ],
   "environment": {
@@ -275,7 +275,7 @@
     "branch": "dev",
     "phaseStatus": "D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED",
     "runtimeStatus": "M2_004_PARTIAL_RUNTIME_VERIFIED",
-    "reviewedRevision": "95fc78bfb73b37e02ac260a6e74c4007d831c4d9",
+    "reviewedRevision": "514751b87174dd4f621cbb2721611ea2a95ee0ea",
     "evidenceRevision": null,
     "toolchain": {
       "java": "OpenJDK 25.0.4.1",
@@ -328,7 +328,7 @@
     "reviewHistory": []
   },
   "startedAt": "2026-09-09T00:00:00+08:00",
-  "finishedAt": "2026-09-13T17:04:22.829Z",
+  "finishedAt": "2026-09-13T17:55:33.594Z",
   "actors": [
     "root-coordinator",
     "p1r-implementation"
