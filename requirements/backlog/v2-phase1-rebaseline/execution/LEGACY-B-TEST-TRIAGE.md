@@ -65,19 +65,23 @@ M2-001 的运行时证据含 **`default-owner-route-fail-closed`：PASS，status
 
 **未改代码语义**：让非 TARGET 域回落到 core-api 属于实现回滚，与已 ACCEPTED 的 M2-001 设计（不注册任何 core-api/按域 catch-all）冲突。因此只修正描述，并把"模式命名暗示了代码未实现的回落语义"记为待决问题。
 
-## 剩余 18 项
+## 剩余 14 项（第 17 轮更新）
+
+第 17 轮修复 **b8 全部 4 项**（现 29/29）。三项是**重构而非移除**：Gateway 从 `GatewayIamPublicJwkSource`、各服务从 `IamEnvelopedJwkSource` 构建解码器（因为 IAM 发布**信封化**文档，直连端点的解码器会拒绝）；IAM 面改为 canonical 规则（公开入口用精确路径、两个已鉴权域用前缀规则）而非单一 `iam-auth`；审计记录**根本不带 path**（比过滤 path 字段更强），鉴权与授权失败的区分移入 `decision` 字段而非跳过这些状态。
+
+⚠️ **我在本轮写错了两条断言并已更正**：在 JWK 源里匹配 `private` 只会命中 Java 修饰符与注释，精确的不变量是**绝不提取 RSA 私钥指数 `d`**；JWKS 端点位于类型化安全属性中，而非读取开关的那个过滤器里。
+
+### 剩余明细
 
 | 簇 | 数量 | 初判 |
 |---|---|---|
-| b8（JWKS 解码器、路由 id、审计过滤器） | 3 | 需按上述方法逐个核对当前实现后更新 |
-| b7（`/api/v1/health`、`CorsWebFilter`） | 3 | 同上 |
-| b25（`JwtAuthenticationToken`、路由 id `b25-learner-onboarding-target`） | 2 | 控制器存在但改用 `Authentication` + `principal(...)` helper |
-| b31（admin command 路由、`/api/v1/content/learner/catalog` 401 vs 404） | 2 | 需核对当前路由矩阵 |
-| b13（analytics 操作 id、安全过滤器头正则） | 2 | 操作 id 疑似被 M1-016 重命名 |
-| b4（`listB12Notifications` vs `listM1016NotificationMessages`） | 1 | 操作 id 被重命名 |
-| b33（Gateway 公开投影路由 → 现由 official-site 提供） | 1 | 疑似**真实所有权变更** |
-| b27（占位目录含业务文件；校验器 FAIL） | 2 | 需逐项确认 |
-| b20（校验器 FAIL，10 静态 + 10 运行时待证） | 1 | 需看校验器自身输出 |
-| b8 service-template JWKS | 1 | 属**可修**（信封化 JWKS） |
+| b7 | 3 | 待核对（`/api/v1/health`、`CorsWebFilter`） |
+| b25 | 2 | 控制器存在但改用 `Authentication` + `principal(...)` helper |
+| b31 | 2 | 待核对当前路由矩阵 |
+| b13 | 2 | 操作 id 疑似被 M1-016 重命名 |
+| b4 | 1 | 操作 id 被重命名（`listB12Notifications` → `listM1016NotificationMessages`） |
+| b33 | 1 | Gateway 公开投影路由 → 现由 official-site 提供（疑似**真实所有权变更**） |
+| b27 | 2 | 占位目录含业务文件；校验器 FAIL |
+| b20 | 1 | 校验器 FAIL（10 静态 + 10 运行时待证） |
 
 **覆盖不会丢失**：这些关切已由 `tests/p1r/p1r-gateway-contract.test.mjs` + **M2-001 运行时证据 30/30**（含 11 项真实浏览器 CORS/Origin 检查、限流 429+`Retry-After`、401/403、Redis fail-closed 503 与恢复）覆盖。
