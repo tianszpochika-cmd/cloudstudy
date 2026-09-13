@@ -2,7 +2,7 @@
   "taskId": "P1R-M0-003",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "0b73b7c8ead637597794cfb7558c68e150464fc9",
+  "sourceCommit": "00f684c9fb18db8dea67c0e5af945f1898733e1b",
   "artifactDigests": [
     {
       "path": "config/toolchain-baseline.json",
@@ -12,7 +12,7 @@
     {
       "path": "pom.xml",
       "algorithm": "sha256",
-      "digest": "1c6d1325793456dcf95af0a38c51c209b2d8315ca2db0f2dfaed9349d43d2b52"
+      "digest": "d663a16aea33c574e89b3062085adf916f0d7d4d6d14224e73445a825dc4ea0e"
     },
     {
       "path": "scripts/dev/p1r-toolchain-check.mjs",
@@ -70,14 +70,14 @@
   "reviewer": "root-coordinator",
   "decision": "ACCEPTED",
   "provenance": {
-    "previousCurrentSourceCommit": "e9c4ebd7876b6cabb7d03168df7a3547932e2e0e",
+    "previousCurrentSourceCommit": "0b73b7c8ead637597794cfb7558c68e150464fc9",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationTask": "P1R-M2-004",
+    "currentSourceRevalidationTask": "P1R-M0-003",
     "currentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-12T20:00:53.582Z",
-    "currentSourceRevalidationAuditedImplementationSource": "0b73b7c8ead637597794cfb7558c68e150464fc9",
-    "currentSourceRevalidationIntegrationCheckpoint": "0b73b7c8ead637597794cfb7558c68e150464fc9",
+    "currentSourceRevalidationFinishedAt": "2026-09-13T18:51:26.795Z",
+    "currentSourceRevalidationAuditedImplementationSource": "00f684c9fb18db8dea67c0e5af945f1898733e1b",
+    "currentSourceRevalidationIntegrationCheckpoint": "00f684c9fb18db8dea67c0e5af945f1898733e1b",
     "originalSourceCommit": "0f8b60ae4e83d0f31d891eed8d9383c007485130",
     "currentSourceRevalidationHistory": [
       {
@@ -99,10 +99,20 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-12T20:00:53.582Z",
         "details": "Current-source artifact digest rebase after audit-service, which P1R-M2-004 Batch D3 added to the local runtime, was brought into the Maven reactor and into config/toolchain-baseline.json v2Services. Both artifacts are recorded by this task because it froze the toolchain baseline and put the v2 modules into one reactor. Until now check-toolchain.mjs, p1r-toolchain-check.mjs and both dependency-audit loops skipped the module entirely. Original provenance, review history and runtime status unchanged."
+      },
+      {
+        "taskId": "P1R-M0-003",
+        "sourceCommit": "00f684c9fb18db8dea67c0e5af945f1898733e1b",
+        "auditedImplementationSource": "00f684c9fb18db8dea67c0e5af945f1898733e1b",
+        "integrationCheckpoint": "00f684c9fb18db8dea67c0e5af945f1898733e1b",
+        "reviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-13T18:51:26.795Z",
+        "details": "Digest rebind after P1R-M2-006 registered and created workflow-service, which adds a module to the root pom and an owner to scripts/database/lib/owner-manifest.mjs. Both files are recorded by this task as artifacts, so only their digests moved. No result, gap or claim in this manifest changed, and the review verdicts it carries are untouched."
       }
     ],
-    "previousCurrentSourceRevalidationTask": "P1R-M0-006",
+    "previousCurrentSourceRevalidationTask": "P1R-M2-004",
     "previousCurrentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
-    "previousCurrentSourceRevalidationFinishedAt": "2026-09-12T15:59:44.043Z"
+    "previousCurrentSourceRevalidationFinishedAt": "2026-09-12T20:00:53.582Z"
   }
 }

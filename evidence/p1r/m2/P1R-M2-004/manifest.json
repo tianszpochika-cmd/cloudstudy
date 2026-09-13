@@ -2,7 +2,7 @@
   "taskId": "P1R-M2-004",
   "draftOnly": false,
   "canonicalTaskStatus": "REVIEW",
-  "sourceCommit": "36b36d7757efb7dff2a21f64cc8f3d02bb730ef7",
+  "sourceCommit": "00f684c9fb18db8dea67c0e5af945f1898733e1b",
   "artifactDigests": [
     {
       "path": "config/p1r-data-ownership.v1.json",
@@ -27,7 +27,7 @@
     {
       "path": "scripts/database/lib/owner-manifest.mjs",
       "algorithm": "sha256",
-      "digest": "584e1ae2deeae46867782a65a4b5116730da731ab47a41c1b9c3b9e5d7f2eda2"
+      "digest": "1d603d677a1f036caf2e32126e3f1616b362057b8c98040837f83421b6d2e35a"
     },
     {
       "path": "scripts/database/reconcile-owner-schemas.mjs",
@@ -363,6 +363,25 @@
         "reviewedCommit": null,
         "reviewer": "awaiting a fresh independent session",
         "summary": "Not submitted. The third round has closed the new P1 and seven of the ten P2 findings so far; the remainder and the submission itself are outstanding."
+      }
+    ],
+    "previousCurrentSourceCommit": "36b36d7757efb7dff2a21f64cc8f3d02bb730ef7",
+    "currentSourceRevalidationTask": "P1R-M2-004",
+    "currentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
+    "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
+    "currentSourceRevalidationFinishedAt": "2026-09-13T18:51:26.805Z",
+    "currentSourceRevalidationAuditedImplementationSource": "00f684c9fb18db8dea67c0e5af945f1898733e1b",
+    "currentSourceRevalidationIntegrationCheckpoint": "00f684c9fb18db8dea67c0e5af945f1898733e1b",
+    "currentSourceRevalidationHistory": [
+      {
+        "taskId": "P1R-M2-004",
+        "sourceCommit": "00f684c9fb18db8dea67c0e5af945f1898733e1b",
+        "auditedImplementationSource": "00f684c9fb18db8dea67c0e5af945f1898733e1b",
+        "integrationCheckpoint": "00f684c9fb18db8dea67c0e5af945f1898733e1b",
+        "reviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-13T18:51:26.805Z",
+        "details": "Digest rebind after P1R-M2-006 registered and created workflow-service, which adds a module to the root pom and an owner to scripts/database/lib/owner-manifest.mjs. Both files are recorded by this task as artifacts, so only their digests moved. No result, gap or claim in this manifest changed, and the review verdicts it carries are untouched."
       }
     ]
   },
