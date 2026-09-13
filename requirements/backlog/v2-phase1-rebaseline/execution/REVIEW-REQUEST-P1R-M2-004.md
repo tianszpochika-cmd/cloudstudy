@@ -1,11 +1,13 @@
-# 独立评审请求 — P1R-M2-004
+# 独立评审请求 — P1R-M2-004（**第三轮**）
 
 - 任务：`P1R-M2-004`（实现独立 schema、Flyway、凭据、Redis namespace 和 tenant guard）
 - 台账状态：`REVIEW`（实现者已提交，等待独立评审）
 - 结论请求：`ACCEPTED` / `REWORK` / `BLOCKED`
 - 提交人：实现者（`agent:p1r_implementation:deepseek-harness`）
-- 提交时间：2026-09-13
+- 提交时间：2026-09-13（第三轮）
 - 建议评审人：**任何非本次实现的会话**
+- 前两轮结论：**均为 `REWORK`**（第一轮 P0/P1/P2 = 0/4/6；第二轮 0/1/9）。三轮判定与计数已记入 `evidence/p1r/m2/P1R-M2-004/review-history.json` 与台账日期条目。
+- 第三轮已关闭：第二轮的新 P1（gated runner 以 mvn 退出码为通过判据，整类被跳过也判 PASS）与 10 项 P2 中的 7 项。**尚未提交终审前的最后确认**。
 
 > **为什么这次评审特别关键**：台账的依赖门禁要求任何高于 `PLANNED` 的状态都必须依赖已 `ACCEPTED`。`P1R-M2-005` 因此被记为 `BLOCKED`，而 `M2-006 → M2-010` 依次依赖前一项 —— **整条 M2 链（以及其后的 M3–M8）当前可推进任务数为 0，全部在等这次评审**。
 
@@ -89,9 +91,18 @@ node scripts/runtime/verify-content-consumer-dedupe.mjs
 node scripts/runtime/provision-kafka-topics.mjs
 
 # 全量回归与门禁
-node scripts/dev/run-node-tests.mjs tests/p1r      # 期望 1425/1425
+node scripts/dev/run-node-tests.mjs tests/p1r      # 期望 1435/1435（此前本文写 1425，已随第三轮返工更正）
 node scripts/audit/p1r-evidence-gate.mjs --json    # 期望 PASS，108 任务，0 errors
 ```
+
+> ⚠️ **请勿运行下列命令，它们会写文件**（评审要求只读；本清单由第三轮返工补充，因为上一轮评审运行其中一条后弄脏了工作区）：
+>
+> - `& "$env:APPDATA\npm\pnpm.cmd" p1r:devex:evidence` —— 会**重写** `evidence/p1r/m0/devex/devex-verification.json`（该文件是生成物，第三轮返工时我随其他改动一并提交却未点名，故在此显式登记）
+> - `node scripts/database/reconcile-redis-acl.mjs` —— 会**供给并剪枝** Redis ACL 用户
+> - `node scripts/database/reconcile-owner-schemas.mjs --apply`
+> - `node scripts/runtime/run-gated-db-tests.mjs --write` —— 只读评审请去掉 `--write`
+>
+> 只读的等价形式：`node scripts/runtime/run-gated-db-tests.mjs`（不加 `--write` 即不落盘）。
 
 > 环境注意：Node 20.19.5；裸 `pnpm` 在本机跑 Node 24（DSH shim），请用 `& "$env:APPDATA\npm\pnpm.cmd"`。全栈用 `pnpm services:run -- --all`（15 服务）。
 
