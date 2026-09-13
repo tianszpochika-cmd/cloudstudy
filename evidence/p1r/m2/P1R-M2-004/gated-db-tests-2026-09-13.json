@@ -1,19 +1,24 @@
 {
   "schema": "platform.gated-db-tests.v1",
   "taskId": "P1R-M2-004",
-  "capturedAt": "2026-09-13T04:01:05.529Z",
+  "capturedAt": "2026-09-13T15:13:44.116Z",
   "adminUrl": "jdbc:mysql://127.0.0.1:13306/",
-  "classesRun": 23,
-  "testsRun": 23,
-  "failing": 0,
-  "passed": true,
+  "discoveredClasses": 30,
+  "selectedClasses": 30,
+  "groupsRun": 25,
+  "testsRun": 26,
+  "uncoveredClasses": [],
+  "failing": 2,
+  "passed": false,
+  "policy": "fail-closed: exit 0 with zero tests or any skipped test is a failure",
   "results": [
     {
       "service": "admin-ops",
-      "kind": "tenant",
+      "property": "adminops.tenant.integration",
       "classes": [
         "AdminOpsTenantIsolationTest"
       ],
+      "exitStatus": 0,
       "passed": true,
       "testsRun": 1,
       "failures": 0,
@@ -23,10 +28,11 @@
     },
     {
       "service": "admin-ops",
-      "kind": "migration",
+      "property": "adminops.migration.integration",
       "classes": [
         "AdminOpsFlywayMigrationTest"
       ],
+      "exitStatus": 0,
       "passed": true,
       "testsRun": 1,
       "failures": 0,
@@ -36,10 +42,11 @@
     },
     {
       "service": "analytics",
-      "kind": "tenant",
+      "property": "analytics.tenant.integration",
       "classes": [
         "AnalyticsTenantIsolationTest"
       ],
+      "exitStatus": 0,
       "passed": true,
       "testsRun": 1,
       "failures": 0,
@@ -49,10 +56,11 @@
     },
     {
       "service": "analytics",
-      "kind": "migration",
+      "property": "analytics.migration.integration",
       "classes": [
         "AnalyticsFlywayMigrationTest"
       ],
+      "exitStatus": 0,
       "passed": true,
       "testsRun": 1,
       "failures": 0,
@@ -62,10 +70,11 @@
     },
     {
       "service": "assessment",
-      "kind": "tenant",
+      "property": "assessment.tenant.integration",
       "classes": [
         "AssessmentTenantIsolationTest"
       ],
+      "exitStatus": 0,
       "passed": true,
       "testsRun": 1,
       "failures": 0,
@@ -75,10 +84,11 @@
     },
     {
       "service": "assessment",
-      "kind": "migration",
+      "property": "assessment.migration.integration",
       "classes": [
         "AssessmentFlywayMigrationTest"
       ],
+      "exitStatus": 0,
       "passed": true,
       "testsRun": 1,
       "failures": 0,
@@ -88,10 +98,11 @@
     },
     {
       "service": "audit",
-      "kind": "migration",
+      "property": "audit.migration.integration",
       "classes": [
         "AuditFlywayMigrationTest"
       ],
+      "exitStatus": 0,
       "passed": true,
       "testsRun": 1,
       "failures": 0,
@@ -101,10 +112,11 @@
     },
     {
       "service": "commerce",
-      "kind": "tenant",
+      "property": "commerce.tenant.integration",
       "classes": [
         "CommerceTenantIsolationTest"
       ],
+      "exitStatus": 0,
       "passed": true,
       "testsRun": 1,
       "failures": 0,
@@ -114,10 +126,11 @@
     },
     {
       "service": "commerce",
-      "kind": "migration",
+      "property": "commerce.migration.integration",
       "classes": [
         "CommerceFlywayMigrationTest"
       ],
+      "exitStatus": 0,
       "passed": true,
       "testsRun": 1,
       "failures": 0,
@@ -127,10 +140,11 @@
     },
     {
       "service": "content",
-      "kind": "tenant",
+      "property": "content.tenant.integration",
       "classes": [
         "ContentTenantIsolationTest"
       ],
+      "exitStatus": 0,
       "passed": true,
       "testsRun": 1,
       "failures": 0,
@@ -140,10 +154,11 @@
     },
     {
       "service": "content",
-      "kind": "migration",
+      "property": "content.migration.integration",
       "classes": [
         "ContentFlywayMigrationTest"
       ],
+      "exitStatus": 0,
       "passed": true,
       "testsRun": 1,
       "failures": 0,
@@ -153,10 +168,11 @@
     },
     {
       "service": "gamification",
-      "kind": "tenant",
+      "property": "gamification.tenant.integration",
       "classes": [
         "GamificationTenantIsolationTest"
       ],
+      "exitStatus": 0,
       "passed": true,
       "testsRun": 1,
       "failures": 0,
@@ -166,10 +182,11 @@
     },
     {
       "service": "gamification",
-      "kind": "migration",
+      "property": "gamification.migration.integration",
       "classes": [
         "GamificationFlywayMigrationTest"
       ],
+      "exitStatus": 0,
       "passed": true,
       "testsRun": 1,
       "failures": 0,
@@ -179,10 +196,44 @@
     },
     {
       "service": "iam",
-      "kind": "migration",
+      "property": "iam.jdbc.integration",
+      "classes": [
+        "IamConsentIdempotencyRollbackSafetyTest",
+        "IamConsentJdbcPersistenceContextTest",
+        "IamConsentPolicyJdbcPersistenceContextTest",
+        "IamJdbcPersistenceContextTest",
+        "IamPolicyIdempotencyRollbackSafetyTest",
+        "IamPolicyJdbcPersistenceContextTest"
+      ],
+      "exitStatus": 1,
+      "passed": false,
+      "testsRun": 2,
+      "failures": 0,
+      "errors": 2,
+      "skipped": 0,
+      "reason": "2 tests run for 6 classes, 0 failures, 2 errors, 0 skipped (exit 1)"
+    },
+    {
+      "service": "iam",
+      "property": "iam.jdbc.migration.integration",
+      "classes": [
+        "IdempotencyV13MigrationSecurityTest"
+      ],
+      "exitStatus": 1,
+      "passed": false,
+      "testsRun": 1,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0,
+      "reason": "1 tests run for 1 classes, 1 failures, 0 errors, 0 skipped (exit 1)"
+    },
+    {
+      "service": "iam",
+      "property": "iam.migration.integration",
       "classes": [
         "IamFlywayMigrationTest"
       ],
+      "exitStatus": 0,
       "passed": true,
       "testsRun": 1,
       "failures": 0,
@@ -192,10 +243,11 @@
     },
     {
       "service": "learner",
-      "kind": "migration",
+      "property": "learner.migration.integration",
       "classes": [
         "LearnerFlywayMigrationTest"
       ],
+      "exitStatus": 0,
       "passed": true,
       "testsRun": 1,
       "failures": 0,
@@ -205,10 +257,11 @@
     },
     {
       "service": "learning",
-      "kind": "tenant",
+      "property": "learning.tenant.integration",
       "classes": [
         "LearningTenantIsolationTest"
       ],
+      "exitStatus": 0,
       "passed": true,
       "testsRun": 1,
       "failures": 0,
@@ -218,10 +271,11 @@
     },
     {
       "service": "learning",
-      "kind": "migration",
+      "property": "learning.migration.integration",
       "classes": [
         "LearningFlywayMigrationTest"
       ],
+      "exitStatus": 0,
       "passed": true,
       "testsRun": 1,
       "failures": 0,
@@ -231,10 +285,11 @@
     },
     {
       "service": "media",
-      "kind": "tenant",
+      "property": "media.tenant.integration",
       "classes": [
         "MediaTenantIsolationTest"
       ],
+      "exitStatus": 0,
       "passed": true,
       "testsRun": 1,
       "failures": 0,
@@ -244,10 +299,11 @@
     },
     {
       "service": "media",
-      "kind": "migration",
+      "property": "media.migration.integration",
       "classes": [
         "MediaFlywayMigrationTest"
       ],
+      "exitStatus": 0,
       "passed": true,
       "testsRun": 1,
       "failures": 0,
@@ -257,10 +313,11 @@
     },
     {
       "service": "notification",
-      "kind": "tenant",
+      "property": "notification.tenant.integration",
       "classes": [
         "NotificationTenantIsolationTest"
       ],
+      "exitStatus": 0,
       "passed": true,
       "testsRun": 1,
       "failures": 0,
@@ -270,10 +327,11 @@
     },
     {
       "service": "notification",
-      "kind": "migration",
+      "property": "notification.migration.integration",
       "classes": [
         "NotificationFlywayMigrationTest"
       ],
+      "exitStatus": 0,
       "passed": true,
       "testsRun": 1,
       "failures": 0,
@@ -283,23 +341,25 @@
     },
     {
       "service": "social",
-      "kind": "tenant",
-      "classes": [
-        "SocialTenantIsolationTest"
-      ],
-      "passed": true,
-      "testsRun": 1,
-      "failures": 0,
-      "errors": 0,
-      "skipped": 0,
-      "reason": null
-    },
-    {
-      "service": "social",
-      "kind": "migration",
+      "property": "social.migration.integration",
       "classes": [
         "SocialFlywayMigrationTest"
       ],
+      "exitStatus": 0,
+      "passed": true,
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reason": null
+    },
+    {
+      "service": "social",
+      "property": "social.tenant.integration",
+      "classes": [
+        "SocialTenantIsolationTest"
+      ],
+      "exitStatus": 0,
       "passed": true,
       "testsRun": 1,
       "failures": 0,

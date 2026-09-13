@@ -2,7 +2,7 @@
   "taskId": "P1R-M2-004",
   "draftOnly": false,
   "canonicalTaskStatus": "REVIEW",
-  "sourceCommit": "5408751e7c27277d6124d394b4da2465e10f60fa",
+  "sourceCommit": "b0a562d3cce320651ed968a5d651e4a8795a5505",
   "artifactDigests": [
     {
       "path": "config/p1r-data-ownership.v1.json",
@@ -47,12 +47,12 @@
     {
       "path": "scripts/runtime/p1r-m2-004-runtime.mjs",
       "algorithm": "sha256",
-      "digest": "3317ba2a50b3742f7d08cbefb51f325f480316e4f091dfa8c86a1be682b7d3c4"
+      "digest": "dfd71204e3163e19eb1e719675ca8d360d096691dea95d645ac11b06d5facf2a"
     },
     {
       "path": "scripts/runtime/run-gated-db-tests.mjs",
       "algorithm": "sha256",
-      "digest": "b42be3dbebac197ca835dec1185c5ccfe62e91043ece505639420157a37a625b"
+      "digest": "eeeda943d47221cb7eceeead7a04ea8873f2a591c8d1d4e471d5d073780e295e"
     },
     {
       "path": "services/audit-service/src/main/resources/db/migration/V2__widen_audit_schema_version.sql",
@@ -175,6 +175,41 @@
       "digest": "38e204a24cba75f0fd06e288f117665c6675a8793b579e95604e5a810f719512"
     },
     {
+      "path": "services/iam-service/src/test/java/com/englishflow/iam/IamConsentIdempotencyRollbackSafetyTest.java",
+      "algorithm": "sha256",
+      "digest": "a90c061b035987c1019a600a87f82c4213803a90acc83a388f63a584883c3080"
+    },
+    {
+      "path": "services/iam-service/src/test/java/com/englishflow/iam/IamConsentJdbcPersistenceContextTest.java",
+      "algorithm": "sha256",
+      "digest": "1614ce3433615a1516f7d8ff5895bbec765409388e16550cbd27817a97c54ab4"
+    },
+    {
+      "path": "services/iam-service/src/test/java/com/englishflow/iam/IamConsentPolicyJdbcPersistenceContextTest.java",
+      "algorithm": "sha256",
+      "digest": "7c7639f478174c53dc3f9ff95f5003eb806f1cc241b87417344b5170417afe25"
+    },
+    {
+      "path": "services/iam-service/src/test/java/com/englishflow/iam/IamJdbcPersistenceContextTest.java",
+      "algorithm": "sha256",
+      "digest": "caabb835e414ef026813c9c66c59b66996928f16c396eec42b01e3ea3658ebac"
+    },
+    {
+      "path": "services/iam-service/src/test/java/com/englishflow/iam/IamPolicyIdempotencyRollbackSafetyTest.java",
+      "algorithm": "sha256",
+      "digest": "6746ea8d07a0db6c3c13da79db1d2d70316cb0333b8e0827b7f1216db81c9102"
+    },
+    {
+      "path": "services/iam-service/src/test/java/com/englishflow/iam/IamPolicyJdbcPersistenceContextTest.java",
+      "algorithm": "sha256",
+      "digest": "8eeaf0e06c3cc1f0e36070083d57b9bc0a586fc4aa8dcc2de757ced10f0d3ceb"
+    },
+    {
+      "path": "services/iam-service/src/test/java/com/englishflow/iam/IdempotencyV13MigrationSecurityTest.java",
+      "algorithm": "sha256",
+      "digest": "47ca1da71462005a7f2dc80a4b1b58b5b5ae73bc616371c576986ad41e000c21"
+    },
+    {
       "path": "services/iam-service/src/test/java/com/englishflow/iam/migration/IamFlywayMigrationTest.java",
       "algorithm": "sha256",
       "digest": "7f4b06ca8ccb7498574e8e95a59ac36a9b4a0811e57a57f9fa7dd990bd979bb5"
@@ -215,24 +250,24 @@
       "digest": "2ade1a9009da38f627988ba8b2a023ece73670715809f9348569d83cdebfe012"
     },
     {
-      "path": "services/social-service/src/test/java/com/englishflow/social/web/SocialTenantIsolationTest.java",
-      "algorithm": "sha256",
-      "digest": "411b5289b0ee7587de56d2020347b42a82c26ac29d2f6dd1323bca468c789874"
-    },
-    {
       "path": "services/social-service/src/test/java/com/englishflow/social/migration/SocialFlywayMigrationTest.java",
       "algorithm": "sha256",
       "digest": "7a4e4c21789a4cc249ec20371f746f581ddb3503807c8344c97f16973d2a7aae"
     },
     {
+      "path": "services/social-service/src/test/java/com/englishflow/social/web/SocialTenantIsolationTest.java",
+      "algorithm": "sha256",
+      "digest": "411b5289b0ee7587de56d2020347b42a82c26ac29d2f6dd1323bca468c789874"
+    },
+    {
       "path": "evidence/p1r/m2/P1R-M2-004/runtime-evidence-2026-09-13.json",
       "algorithm": "sha256",
-      "digest": "fbf83de3022e189f37d48766e5d348dcf59bfd0ac4a9120780a1f24efb5b8f0e"
+      "digest": "900a51205f3a436a50d633f1bb51e0c2f0fe207c8f918982111194310d9e0e93"
     },
     {
       "path": "evidence/p1r/m2/P1R-M2-004/gated-db-tests-2026-09-13.json",
       "algorithm": "sha256",
-      "digest": "e9e86da1c03157760ddd9bdfd57cb1b13284ae7b209fdb3bba44ec108065c206"
+      "digest": "dada9896a2b311df9a1a22300d25e3ca148bfa580693097dc4ea620684def7ba"
     }
   ],
   "environment": {
@@ -240,7 +275,7 @@
     "branch": "dev",
     "phaseStatus": "D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED",
     "runtimeStatus": "M2_004_PARTIAL_RUNTIME_VERIFIED",
-    "reviewedRevision": "50953b71bcd18ffa6fb03afd2bb9b7e9883b07d2",
+    "reviewedRevision": "b0a562d3cce320651ed968a5d651e4a8795a5505",
     "evidenceRevision": null,
     "toolchain": {
       "java": "OpenJDK 25.0.4.1",
@@ -272,8 +307,7 @@
         "api-gateway",
         "workflow-service"
       ],
-      "gatedTestClasses": 23,
-      "gatedTestsRun": 23
+      "gatedTestsRun": 26
     }
   },
   "provenance": {
@@ -290,31 +324,10 @@
       "Batch E2 to E8 owner outbox shape standardisation and the content-service publish and consume vertical slice",
       "Batch R the review rework: the tenant guard and the migration coverage were verified by running their gated tests, the Redis probes were extended to every namespaced owner, and the Redis loss clause gained behavioural evidence"
     ],
-    "reviewHistory": [],
-    "previousCurrentSourceCommit": "50953b71bcd18ffa6fb03afd2bb9b7e9883b07d2",
-    "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationTask": "P1R-M2-004",
-    "currentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
-    "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-13T04:47:09.126Z",
-    "currentSourceRevalidationAuditedImplementationSource": "5408751e7c27277d6124d394b4da2465e10f60fa",
-    "currentSourceRevalidationIntegrationCheckpoint": "5408751e7c27277d6124d394b4da2465e10f60fa",
-    "originalSourceCommit": "50953b71bcd18ffa6fb03afd2bb9b7e9883b07d2",
-    "currentSourceRevalidationHistory": [
-      {
-        "taskId": "P1R-M2-004",
-        "sourceCommit": "5408751e7c27277d6124d394b4da2465e10f60fa",
-        "auditedImplementationSource": "5408751e7c27277d6124d394b4da2465e10f60fa",
-        "integrationCheckpoint": "5408751e7c27277d6124d394b4da2465e10f60fa",
-        "reviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
-        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
-        "finishedAt": "2026-09-13T04:47:09.126Z",
-        "details": "Current-source revalidation after the P1R-M2-004 review rework. The rework moved config/p1r-data-ownership.v1.json, which corrects the Gateway Redis namespace to englishflow:gateway because the runtime keys, the ACL provisioning script and a live Redis denial all disagree with the previous value, and scripts/audit/p1r-data-ownership-check.mjs, whose assertion enforced that previous value. This task is the one under rework, so its manifest is regenerated rather than rebound: forty-six artifacts now include the ten tenant isolation and thirteen flyway migration test classes that the earlier submission cited without running, the owners counts are read from the policy instead of typed, and reviewedRevision is the commit the harness ran on."
-      }
-    ]
+    "reviewHistory": []
   },
   "startedAt": "2026-09-09T00:00:00+08:00",
-  "finishedAt": "2026-09-13T04:41:42.853Z",
+  "finishedAt": "2026-09-13T15:13:45.241Z",
   "actors": [
     "root-coordinator",
     "p1r-implementation"

@@ -1,10 +1,10 @@
 {
   "schema": "m2.data-ownership.runtime-evidence.v1",
   "taskId": "P1R-M2-004",
-  "result": "PARTIAL",
-  "sourceCommit": "50953b71bcd18ffa6fb03afd2bb9b7e9883b07d2",
-  "startedAt": "2026-09-13T04:36:37.161Z",
-  "finishedAt": "2026-09-13T04:40:53.209Z",
+  "result": "FAIL",
+  "sourceCommit": "b0a562d3cce320651ed968a5d651e4a8795a5505",
+  "startedAt": "2026-09-13T15:04:25.024Z",
+  "finishedAt": "2026-09-13T15:09:27.387Z",
   "ownerCount": 13,
   "requirements": [
     {
@@ -1010,6 +1010,7 @@
       "result": "PASS"
     },
     {
+      "property": "adminops.tenant.integration",
       "classes": [
         "AdminOpsTenantIsolationTest"
       ],
@@ -1018,10 +1019,11 @@
       "errors": 0,
       "skipped": 0,
       "reason": null,
-      "id": "tenant-isolation:admin-ops",
+      "id": "tenant-isolation:admin-ops:adminops.tenant.integration",
       "result": "PASS"
     },
     {
+      "property": "adminops.migration.integration",
       "classes": [
         "AdminOpsFlywayMigrationTest"
       ],
@@ -1030,10 +1032,11 @@
       "errors": 0,
       "skipped": 0,
       "reason": null,
-      "id": "flyway-coverage:admin-ops",
+      "id": "flyway-coverage:admin-ops:adminops.migration.integration",
       "result": "PASS"
     },
     {
+      "property": "analytics.tenant.integration",
       "classes": [
         "AnalyticsTenantIsolationTest"
       ],
@@ -1042,10 +1045,11 @@
       "errors": 0,
       "skipped": 0,
       "reason": null,
-      "id": "tenant-isolation:analytics",
+      "id": "tenant-isolation:analytics:analytics.tenant.integration",
       "result": "PASS"
     },
     {
+      "property": "analytics.migration.integration",
       "classes": [
         "AnalyticsFlywayMigrationTest"
       ],
@@ -1054,10 +1058,11 @@
       "errors": 0,
       "skipped": 0,
       "reason": null,
-      "id": "flyway-coverage:analytics",
+      "id": "flyway-coverage:analytics:analytics.migration.integration",
       "result": "PASS"
     },
     {
+      "property": "assessment.tenant.integration",
       "classes": [
         "AssessmentTenantIsolationTest"
       ],
@@ -1066,10 +1071,11 @@
       "errors": 0,
       "skipped": 0,
       "reason": null,
-      "id": "tenant-isolation:assessment",
+      "id": "tenant-isolation:assessment:assessment.tenant.integration",
       "result": "PASS"
     },
     {
+      "property": "assessment.migration.integration",
       "classes": [
         "AssessmentFlywayMigrationTest"
       ],
@@ -1078,10 +1084,11 @@
       "errors": 0,
       "skipped": 0,
       "reason": null,
-      "id": "flyway-coverage:assessment",
+      "id": "flyway-coverage:assessment:assessment.migration.integration",
       "result": "PASS"
     },
     {
+      "property": "audit.migration.integration",
       "classes": [
         "AuditFlywayMigrationTest"
       ],
@@ -1090,10 +1097,11 @@
       "errors": 0,
       "skipped": 0,
       "reason": null,
-      "id": "flyway-coverage:audit",
+      "id": "flyway-coverage:audit:audit.migration.integration",
       "result": "PASS"
     },
     {
+      "property": "commerce.tenant.integration",
       "classes": [
         "CommerceTenantIsolationTest"
       ],
@@ -1102,10 +1110,11 @@
       "errors": 0,
       "skipped": 0,
       "reason": null,
-      "id": "tenant-isolation:commerce",
+      "id": "tenant-isolation:commerce:commerce.tenant.integration",
       "result": "PASS"
     },
     {
+      "property": "commerce.migration.integration",
       "classes": [
         "CommerceFlywayMigrationTest"
       ],
@@ -1114,10 +1123,11 @@
       "errors": 0,
       "skipped": 0,
       "reason": null,
-      "id": "flyway-coverage:commerce",
+      "id": "flyway-coverage:commerce:commerce.migration.integration",
       "result": "PASS"
     },
     {
+      "property": "content.tenant.integration",
       "classes": [
         "ContentTenantIsolationTest"
       ],
@@ -1126,10 +1136,11 @@
       "errors": 0,
       "skipped": 0,
       "reason": null,
-      "id": "tenant-isolation:content",
+      "id": "tenant-isolation:content:content.tenant.integration",
       "result": "PASS"
     },
     {
+      "property": "content.migration.integration",
       "classes": [
         "ContentFlywayMigrationTest"
       ],
@@ -1138,10 +1149,11 @@
       "errors": 0,
       "skipped": 0,
       "reason": null,
-      "id": "flyway-coverage:content",
+      "id": "flyway-coverage:content:content.migration.integration",
       "result": "PASS"
     },
     {
+      "property": "gamification.tenant.integration",
       "classes": [
         "GamificationTenantIsolationTest"
       ],
@@ -1150,10 +1162,11 @@
       "errors": 0,
       "skipped": 0,
       "reason": null,
-      "id": "tenant-isolation:gamification",
+      "id": "tenant-isolation:gamification:gamification.tenant.integration",
       "result": "PASS"
     },
     {
+      "property": "gamification.migration.integration",
       "classes": [
         "GamificationFlywayMigrationTest"
       ],
@@ -1162,10 +1175,42 @@
       "errors": 0,
       "skipped": 0,
       "reason": null,
-      "id": "flyway-coverage:gamification",
+      "id": "flyway-coverage:gamification:gamification.migration.integration",
       "result": "PASS"
     },
     {
+      "property": "iam.jdbc.integration",
+      "classes": [
+        "IamConsentIdempotencyRollbackSafetyTest",
+        "IamConsentJdbcPersistenceContextTest",
+        "IamConsentPolicyJdbcPersistenceContextTest",
+        "IamJdbcPersistenceContextTest",
+        "IamPolicyIdempotencyRollbackSafetyTest",
+        "IamPolicyJdbcPersistenceContextTest"
+      ],
+      "testsRun": 2,
+      "failures": 0,
+      "errors": 2,
+      "skipped": 0,
+      "reason": "2 tests run for 6 classes, 0 failures, 2 errors, 0 skipped (exit 1)",
+      "id": "iam-jdbc-persistence:iam:iam.jdbc.integration",
+      "result": "FAIL"
+    },
+    {
+      "property": "iam.jdbc.migration.integration",
+      "classes": [
+        "IdempotencyV13MigrationSecurityTest"
+      ],
+      "testsRun": 1,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0,
+      "reason": "1 tests run for 1 classes, 1 failures, 0 errors, 0 skipped (exit 1)",
+      "id": "iam-jdbc-persistence:iam:iam.jdbc.migration.integration",
+      "result": "FAIL"
+    },
+    {
+      "property": "iam.migration.integration",
       "classes": [
         "IamFlywayMigrationTest"
       ],
@@ -1174,10 +1219,11 @@
       "errors": 0,
       "skipped": 0,
       "reason": null,
-      "id": "flyway-coverage:iam",
+      "id": "flyway-coverage:iam:iam.migration.integration",
       "result": "PASS"
     },
     {
+      "property": "learner.migration.integration",
       "classes": [
         "LearnerFlywayMigrationTest"
       ],
@@ -1186,10 +1232,11 @@
       "errors": 0,
       "skipped": 0,
       "reason": null,
-      "id": "flyway-coverage:learner",
+      "id": "flyway-coverage:learner:learner.migration.integration",
       "result": "PASS"
     },
     {
+      "property": "learning.tenant.integration",
       "classes": [
         "LearningTenantIsolationTest"
       ],
@@ -1198,10 +1245,11 @@
       "errors": 0,
       "skipped": 0,
       "reason": null,
-      "id": "tenant-isolation:learning",
+      "id": "tenant-isolation:learning:learning.tenant.integration",
       "result": "PASS"
     },
     {
+      "property": "learning.migration.integration",
       "classes": [
         "LearningFlywayMigrationTest"
       ],
@@ -1210,10 +1258,11 @@
       "errors": 0,
       "skipped": 0,
       "reason": null,
-      "id": "flyway-coverage:learning",
+      "id": "flyway-coverage:learning:learning.migration.integration",
       "result": "PASS"
     },
     {
+      "property": "media.tenant.integration",
       "classes": [
         "MediaTenantIsolationTest"
       ],
@@ -1222,10 +1271,11 @@
       "errors": 0,
       "skipped": 0,
       "reason": null,
-      "id": "tenant-isolation:media",
+      "id": "tenant-isolation:media:media.tenant.integration",
       "result": "PASS"
     },
     {
+      "property": "media.migration.integration",
       "classes": [
         "MediaFlywayMigrationTest"
       ],
@@ -1234,10 +1284,11 @@
       "errors": 0,
       "skipped": 0,
       "reason": null,
-      "id": "flyway-coverage:media",
+      "id": "flyway-coverage:media:media.migration.integration",
       "result": "PASS"
     },
     {
+      "property": "notification.tenant.integration",
       "classes": [
         "NotificationTenantIsolationTest"
       ],
@@ -1246,10 +1297,11 @@
       "errors": 0,
       "skipped": 0,
       "reason": null,
-      "id": "tenant-isolation:notification",
+      "id": "tenant-isolation:notification:notification.tenant.integration",
       "result": "PASS"
     },
     {
+      "property": "notification.migration.integration",
       "classes": [
         "NotificationFlywayMigrationTest"
       ],
@@ -1258,22 +1310,11 @@
       "errors": 0,
       "skipped": 0,
       "reason": null,
-      "id": "flyway-coverage:notification",
+      "id": "flyway-coverage:notification:notification.migration.integration",
       "result": "PASS"
     },
     {
-      "classes": [
-        "SocialTenantIsolationTest"
-      ],
-      "testsRun": 1,
-      "failures": 0,
-      "errors": 0,
-      "skipped": 0,
-      "reason": null,
-      "id": "tenant-isolation:social",
-      "result": "PASS"
-    },
-    {
+      "property": "social.migration.integration",
       "classes": [
         "SocialFlywayMigrationTest"
       ],
@@ -1282,7 +1323,27 @@
       "errors": 0,
       "skipped": 0,
       "reason": null,
-      "id": "flyway-coverage:social",
+      "id": "flyway-coverage:social:social.migration.integration",
+      "result": "PASS"
+    },
+    {
+      "property": "social.tenant.integration",
+      "classes": [
+        "SocialTenantIsolationTest"
+      ],
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reason": null,
+      "id": "tenant-isolation:social:social.tenant.integration",
+      "result": "PASS"
+    },
+    {
+      "discoveredClasses": 30,
+      "uncoveredClasses": [],
+      "policy": "fail-closed: exit 0 with zero tests or any skipped test is a failure",
+      "id": "gated-tests:discovery-coverage",
       "result": "PASS"
     },
     {
