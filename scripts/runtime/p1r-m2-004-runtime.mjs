@@ -87,14 +87,31 @@ async function verifyRedisLossCannotAffectBusinessFacts(counters) {
     return;
   }
   const before = counters();
+  // The probe table is measured alongside the counted set, so the row it writes is visible in the metric
+  // by construction rather than by hoping the chosen table is one of the thirteen.
+  const probe = businessFactProbe();
+  const countProbe = () => (probe === null ? null
+    : Number(admin(`SELECT COUNT(*) FROM ${probe.key};`).stdout.trim()));
+  const probeBefore = countProbe();
   spawnSync('docker', ['stop', REDIS_CONTAINER], { encoding: 'utf8', windowsHide: true });
   const stopped = dockerHealth(REDIS_CONTAINER);
   const during = counters();
+  // Equal counts on their own prove little: they would also be equal if the metric never moved, or if
+  // nothing had been written at all. A real row written through the owner's own DML credential while
+  // Redis is down shows the write path does not pass through Redis at all, and the exact increment it
+  // produces shows the counter is sensitive to that write.
+  const written = probe === null ? { ok: false, reason: 'no probe table' } : probe.insert();
+  const probeAfterWrite = countProbe();
+  const afterWrite = counters();
+  const removed = written.ok && probe !== null ? probe.remove() : { ok: false, reason: 'nothing written' };
   spawnSync('docker', ['start', REDIS_CONTAINER], { encoding: 'utf8', windowsHide: true });
   const restored = await waitFor(() => dockerHealth(REDIS_CONTAINER) === 'healthy', 120000, 3000);
+  const probeAfter = countProbe();
   const after = counters();
   const unchanged = (left, right) => JSON.stringify(left) === JSON.stringify(right);
-  record('redis-loss:business-facts-unchanged', 
+  const key = probe?.key ?? null;
+  const increment = probeBefore === null || probeAfterWrite === null ? null : probeAfterWrite - probeBefore;
+  record('redis-loss:business-facts-unchanged',
     unchanged(before, during) && unchanged(before, after) ? 'PASS' : 'FAIL', {
       container: REDIS_CONTAINER,
       healthWhileStopped: stopped,
@@ -102,6 +119,97 @@ async function verifyRedisLossCannotAffectBusinessFacts(counters) {
       restored,
       before, during, after,
     });
+  record('redis-loss:write-succeeds-with-redis-down',
+    written.ok && removed.ok && increment === 1 && probeAfter === probeBefore && unchanged(before, after)
+      ? 'PASS' : 'FAIL', {
+      probeKey: key,
+      writeSucceededWhileRedisStopped: written.ok,
+      writeDetail: written.reason ?? null,
+      rowCountBefore: probeBefore,
+      rowCountAfterWrite: probeAfterWrite,
+      rowCountAfterRemoval: probeAfter,
+      increment,
+      probeRemoved: removed.ok,
+      removeDetail: removed.reason ?? null,
+      note: 'an increment of exactly one shows the counter is sensitive to the write; the removal restores it '
+        + 'and the thirteen counted tables are unchanged throughout',
+    });
+}
+
+/**
+ * A single owner table the harness can write one row into and remove again, used to show that a business
+ * write does not depend on Redis.
+ *
+ * The table and the columns are chosen from the catalogue rather than hardcoded: the first attempt named
+ * a table whose task_id column has no default, so the insert was rejected and the probe proved nothing.
+ * The table with the fewest columns that must be supplied is picked, and a value is supplied for each of
+ * them. The statement is issued as the owner's own DML credential, so it stays inside the write boundary
+ * the ownership policy sets.
+ */
+function businessFactProbe() {
+  const candidates = admin(`SELECT t.table_schema, t.table_name,
+      COUNT(*) AS required
+    FROM information_schema.tables t
+    JOIN information_schema.columns c
+      ON c.table_schema = t.table_schema AND c.table_name = t.table_name
+    WHERE t.table_schema IN ('learner_service','content_service','learning_service')
+      AND t.table_type = 'BASE TABLE'
+      AND c.is_nullable = 'NO' AND c.column_default IS NULL
+      AND c.extra NOT LIKE '%auto_increment%'
+      AND c.data_type IN ('varchar','char','text','int','bigint','datetime','timestamp')
+    GROUP BY t.table_schema, t.table_name
+    ORDER BY required ASC, t.table_name ASC
+    LIMIT 1;`).stdout.split('\n').find(Boolean);
+  if (!candidates) return null;
+  const [schema, table, requiredCount] = candidates.split('\t');
+  const columns = admin(`SELECT column_name, data_type FROM information_schema.columns
+    WHERE table_schema='${schema}' AND table_name='${table}'
+      AND is_nullable='NO' AND column_default IS NULL
+      AND extra NOT LIKE '%auto_increment%'
+    ORDER BY ordinal_position;`).stdout.split('\n').filter(Boolean)
+    .map((line) => { const [name, type] = line.split('\t'); return { name, type }; });
+  if (columns.length !== Number(requiredCount)) return null;
+
+  const marker = `p1r-probe-${Date.now()}`;
+  const valueFor = (type) => {
+    if (type === 'int' || type === 'bigint') return '1';
+    if (type === 'datetime' || type === 'timestamp') return 'CURRENT_TIMESTAMP';
+    return `'${marker}'`;
+  };
+  const names = columns.map((entry) => entry.name).join(', ');
+  const values = columns.map((entry) => valueFor(entry.type)).join(', ');
+  const textColumns = columns.filter((entry) => !['int', 'bigint', 'datetime', 'timestamp'].includes(entry.type));
+  const key = `${schema}.${table}`;
+  return {
+    key,
+    columns: columns.map((entry) => entry.name),
+    insert: () => {
+      const result = runAsOwner('learner-service', `INSERT INTO ${schema}.${table} (${names}) VALUES (${values});`);
+      return result.ok ? { ok: true } : { ok: false, reason: result.reason };
+    },
+    remove: () => {
+      if (textColumns.length === 0) return { ok: false, reason: 'no text column to identify the probe row' };
+      const where = textColumns.map((entry) => `${entry.name} = '${marker}'`).join(' AND ');
+      const result = runAsOwner('learner-service', `DELETE FROM ${schema}.${table} WHERE ${where};`);
+      return result.ok ? { ok: true } : { ok: false, reason: result.reason };
+    },
+  };
+}
+
+/** Runs one statement as the named owner's own MySQL credential. */
+function runAsOwner(service, statement) {
+  // The credential name comes from the same module the provisioning scripts use, so the probe cannot
+  // drift from the account that was actually created.
+  const user = credentialFor(service);
+  if (user === null || user === undefined) return { ok: false, reason: `no credential recorded for ${service}` };
+  const result = spawnSync('docker', [
+    'compose', '-f', MYSQL.composeFile, 'exec', '-T', '-e', `MYSQL_PWD=${MYSQL.ownerPassword}`,
+    MYSQL.composeService, 'mysql', '--protocol=TCP', '--host', '127.0.0.1', '--port', MYSQL.containerPort,
+    '--user', user, '--batch', '--skip-column-names', '--execute', statement,
+  ], { encoding: 'utf8', windowsHide: true });
+  return result.status === 0
+    ? { ok: true }
+    : { ok: false, reason: `${result.stdout ?? ''}${result.stderr ?? ''}`.trim().slice(0, 200) };
 }
 
 /** Row counts for one durable business table per owner schema. */
@@ -420,20 +528,18 @@ async function verifyRedisNamespaceAcl(owners) {
       namespace: owner.redisNamespace,
       declaredPattern: resolved.pattern,
       expectedPattern: `~${owner.redisNamespace}:*`,
-      // The nested form is recorded rather than hidden: the policy names the namespace "gateway"
-      // while the ACL and the running Gateway both scope it as "englishflow:gateway".
-      patternUsesNestedNamespace: resolved.matchedNamespace !== null && resolved.matchedNamespace !== owner.redisNamespace,
-      patternScopedToNamespace: resolved.matchedNamespace !== null && resolved.pattern !== '~*',
+      // The exact pattern is asserted, not merely that the pattern is scoped. This was relaxed while the
+      // policy still called the Gateway namespace "gateway" and the ACL called it "englishflow:gateway";
+      // the policy was corrected instead, all fifteen owners now match exactly, and the weaker form is
+      // no longer needed. Measured before restoring it: fifteen owners, fifteen exact matches.
+      patternMatchesExactly: resolved.pattern === `~${owner.redisNamespace}:*`,
       ownNamespaceAllowed: own.ok && own.replies[1]?.value === 'OK' && own.replies[2]?.value === '1',
       foreignNamespace: foreignNamespace ?? null,
       foreignNamespaceDenied: Boolean(foreign.replies[1]?.value?.error?.startsWith('NOPERM')),
     };
     results.push(entry);
-    // Isolation is what is asserted. The literal pattern text is reported alongside it so a namespace
-    // naming disagreement shows up in the evidence instead of failing an isolation check it does not
-    // actually violate.
     record(`redis-namespace-acl:${owner.id}`,
-      entry.patternScopedToNamespace && entry.ownNamespaceAllowed && entry.foreignNamespaceDenied ? 'PASS' : 'FAIL', entry);
+      entry.patternMatchesExactly && entry.ownNamespaceAllowed && entry.foreignNamespaceDenied ? 'PASS' : 'FAIL', entry);
   }
   return results;
 }
