@@ -2,12 +2,12 @@
   "taskId": "P1R-M0-008",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "128980fa4ba8843f73ce01915a69245292c44a52",
+  "sourceCommit": "5d45941782ec8c9193cd3fab71cb0c845c4daa0b",
   "artifactDigests": [
     {
       "path": "scripts/audit/p1r-evidence-gate.mjs",
       "algorithm": "sha256",
-      "digest": "3fe819c5911973b88a683a0bb9ddc38d0610134aca5b82c5b79343d2c87a8a0b"
+      "digest": "bd2609af5d722f6fad54710d799d78651c083ae4a98fdae1ea25133f21e0d475"
     },
     {
       "path": "scripts/audit/verify-phase1-rebaseline-plan.mjs",
@@ -106,14 +106,24 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-14T01:48:11.245Z",
         "details": "Digest rebind after the evidence gate gained a cross-check that a requirement assigned to a task by the ownership config cannot be reported not-applicable by that task. The gate file is recorded here as an artifact, so only its digest moved; the rule it gained was mutation tested before being committed."
+      },
+      {
+        "taskId": "P1R-M0-008",
+        "sourceCommit": "5d45941782ec8c9193cd3fab71cb0c845c4daa0b",
+        "auditedImplementationSource": "5d45941782ec8c9193cd3fab71cb0c845c4daa0b",
+        "integrationCheckpoint": "5d45941782ec8c9193cd3fab71cb0c845c4daa0b",
+        "reviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-14T02:57:57.290Z",
+        "details": "Digest rebind after the evidence gate gained two rules the fifth review asked for: every requirement the ownership file says a task asserts must appear in its manifest, and the ownership file itself must be carried as a digest artifact. Both were mutation tested before being committed, and the gate file is recorded here as an artifact."
       }
     ],
-    "previousCurrentSourceCommit": "6ceaf7f91109d4880c89d5dbbf24bef7b9a1ca3b",
+    "previousCurrentSourceCommit": "128980fa4ba8843f73ce01915a69245292c44a52",
     "currentSourceRevalidationTask": "P1R-M0-008",
     "currentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-14T01:48:11.245Z",
-    "currentSourceRevalidationAuditedImplementationSource": "128980fa4ba8843f73ce01915a69245292c44a52",
-    "currentSourceRevalidationIntegrationCheckpoint": "128980fa4ba8843f73ce01915a69245292c44a52"
+    "currentSourceRevalidationFinishedAt": "2026-09-14T02:57:57.290Z",
+    "currentSourceRevalidationAuditedImplementationSource": "5d45941782ec8c9193cd3fab71cb0c845c4daa0b",
+    "currentSourceRevalidationIntegrationCheckpoint": "5d45941782ec8c9193cd3fab71cb0c845c4daa0b"
   }
 }
