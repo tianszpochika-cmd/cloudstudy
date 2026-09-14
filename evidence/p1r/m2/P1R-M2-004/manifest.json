@@ -1,8 +1,18 @@
 {
+  "checkLimits": [
+    "The manifest cannot summarise itself, so a hand edit to a derived figure in it is not detected by any rule: the",
+    "gate checks digests, ownership, coverage and status, and a number in a sentence is outside all four.",
+    "The stale-claims check reads documents, not evidence: `evidence/**`, `tests/**` and the changelog are excluded,",
+    "and so is everything after the ledger's dated entries, because those are records of what was true when written.",
+    "It matches fixed wordings in English and Chinese rather than meaning, so a claim phrased differently passes.",
+    "The dirty-tree rule covers `runtime-evidence*.json` only; the gated, regression and audit-ingest records carry no",
+    "such flag, and it reads the whole repository, so an unrelated service being edited during this task's capture",
+    "marks this task's evidence as dirty."
+  ],
   "taskId": "P1R-M2-004",
   "draftOnly": false,
   "canonicalTaskStatus": "REVIEW",
-  "sourceCommit": "c6e120dac858121a2c6cce8f3d6b412d27b8b036",
+  "sourceCommit": "e7122b93feae0d8e6e10361612f6ec8338448ae5",
   "artifactDigests": [
     {
       "path": "config/p1r-data-ownership.v1.json",
@@ -57,7 +67,7 @@
     {
       "path": "scripts/runtime/capture-m2-004-evidence.mjs",
       "algorithm": "sha256",
-      "digest": "4916c3a0e31187692714399b46b1370fbc5e44c10068b24d13bb58a39d8bb239"
+      "digest": "f4ee69562cd035e4de0e28773abe7750190f870e13aa47401e2ec9ede9d7009c"
     },
     {
       "path": "scripts/runtime/run-gated-db-tests.mjs",
@@ -528,7 +538,7 @@
     ]
   },
   "startedAt": "2026-09-09T00:00:00+08:00",
-  "finishedAt": "2026-09-14T09:03:13.353Z",
+  "finishedAt": "2026-09-14T09:09:52.206Z",
   "actors": [
     "root-coordinator",
     "p1r-implementation"
@@ -620,7 +630,7 @@
   "rollbackEvidence": [
     {
       "status": "PASS",
-      "details": "Checked against the migration files rather than asserted, and the scope is stated because the figure moves with it: 62 migrations belong to the owners that are migrated externally, and those were scanned for DROP COLUMN, DROP TABLE, RENAME and any MODIFY that narrows a column. 0 of them contain one. NOT SCANNED, and this is the part that changes the conclusion: iam-service migrates itself, so owner-manifest.mjs gives it a null migrationPath and the scan skips it. Its 13 migrations are the rest of the 75 in the tree, and 2 of them (V13__key_and_version_idempotency_request_hashes.sql, V5__create_self_owned_jwt_auth_schema.sql) do contain DROP TABLE or DROP COLUMN. The sentence above is therefore a claim about the externally migrated owners only, and an earlier version of it said \"across the owners\" and \"0 contain one\" without either qualifier, which the tenth review measured against the tree and found false."
+      "details": "Checked against the migration files rather than asserted, and the scope is stated because the figure moves with it: 62 migrations belong to the owners that are migrated externally, and those were scanned for DROP COLUMN, DROP TABLE, RENAME and MODIFY that sets a VARCHAR below a hundred characters, which is the shape this scan can actually see. 0 of them contain one. NOT SCANNED, and this is the part that changes the conclusion: iam-service migrates itself, so owner-manifest.mjs gives it a null migrationPath and the scan skips it. Its 13 migrations are the rest of the 75 in the tree, and 2 of them (V13__key_and_version_idempotency_request_hashes.sql, V5__create_self_owned_jwt_auth_schema.sql) do contain DROP TABLE or DROP COLUMN. The sentence above is therefore a claim about the externally migrated owners only, and an earlier version of it said \"across the owners\" and \"0 contain one\" without either qualifier, which the tenth review measured against the tree and found false."
     },
     {
       "status": "PASS",
@@ -628,7 +638,7 @@
     }
   ],
   "knownGaps": [
-    "The tenant guard is delivered at the storage layer through 10 passing *TenantIsolationTest classes, each running against a real MySQL and its own owner's schema. They write with a JdbcTemplate rather than through a service repository. 9 of the 10 instantiate an imported production class and 1 do not (NotificationTenantIsolationTest), and the classes do not all assert the same thing: most assert that a foreign tenant's rows are not returned, while at least one asserts only that a guarded column has no default and that the schema credential cannot write another owner's tables. So this is evidence about schema-level isolation, not about every service's request path, and the policy line asking for a server-derived TenantScope on a request path is not measured here. The HTTP-level two-tenant negative remains open and is handed to P1R-M2-009: it needs a synthetic per-owner account, which P1R-M0-007 builds and P1R-M2-009 wires into real CI. P1R-M2-009's ledger scope does not itself name tenant guard, so this is a residual gap recorded against this task rather than a reassignment of the requirement.",
+    "The tenant guard is delivered at the storage layer through 10 passing *TenantIsolationTest classes, each running against a real MySQL and its own owner's schema. They write with a JdbcTemplate rather than through a service repository. 9 of the 10 instantiate a production class, counted by resolving imported and same-package main classes together and 1 do not (NotificationTenantIsolationTest), and the classes do not all assert the same thing: most assert that a foreign tenant's rows are not returned, while at least one asserts only that a guarded column has no default and that the schema credential cannot write another owner's tables. So this is evidence about schema-level isolation, not about every service's request path, and the policy line asking for a server-derived TenantScope on a request path is not measured here. The HTTP-level two-tenant negative remains open and is handed to P1R-M2-009: it needs a synthetic per-owner account, which P1R-M0-007 builds and P1R-M2-009 wires into real CI. P1R-M2-009's ledger scope does not itself name tenant guard, so this is a residual gap recorded against this task rather than a reassignment of the requirement.",
     "The per-service Redis namespaces and ACLs are provisioned and probed for every namespaced owner, but no domain service uses Redis yet: only api-gateway and the legacy core-api configure it, so for the 14 domain owners the namespace is a reserved allocation rather than an enforced boundary in a live path. The Redis default user is still reachable without a password, so the namespace boundary does not constrain an unauthenticated client; that is a property of the local container rather than of this task's ACLs, and it is registered here rather than left implicit.",
     "The owner outbox tables now carry the contract shape, but only content-service has a publisher and a consumer; the other owners still append rows that nothing publishes.",
     "Some provisioning owners were baselined from an existing schema rather than migrated from empty, so their migration history records what was already applied rather than a replay from scratch. How many is NOT VERIFIED: the reconcile output reports the state per owner but no tracked record counts them, so a figure is not given here rather than repeated from an earlier run. The empty-database drill is covered by the Flyway tests above rather than by those baselines.",

@@ -165,6 +165,15 @@ function scanScope() {
   return { total, iamMigrations, iamDestructive, iamDestructiveFiles };
 }
 
+/**
+ * Migrations containing a statement that cannot be undone by reverting the code.
+ *
+ * WHAT IT CAN SEE, because the description above once claimed more than the mechanism delivers: a DROP TABLE or DROP
+ * COLUMN, a RENAME, and a MODIFY that sets a VARCHAR below a hundred characters. It cannot see a column narrowed
+ * from VARCHAR(255) to VARCHAR(128), nor a type change, because those need the previous definition to compare
+ * against and this reads one file at a time. A migration that narrows a column that way would be reported as
+ * additive.
+ */
 function nonAdditiveMigrations() {
   return scanMigrations().filter((entry) => !entry.additive);
 }
@@ -300,6 +309,18 @@ const auditWideningStatements = [...auditWideningText.matchAll(/ALTER\s+TABLE\s+
 const auditWideningMigrationWidensBothColumns = auditWideningStatements.length >= 2;
 
 const manifest = {
+  // What no rule here can check, written where a reader of the manifest will see it rather than left to be inferred
+  // from the absence of an error.
+  checkLimits: [
+    "The manifest cannot summarise itself, so a hand edit to a derived figure in it is not detected by any rule: the",
+    "gate checks digests, ownership, coverage and status, and a number in a sentence is outside all four.",
+    "The stale-claims check reads documents, not evidence: `evidence/**`, `tests/**` and the changelog are excluded,",
+    "and so is everything after the ledger's dated entries, because those are records of what was true when written.",
+    "It matches fixed wordings in English and Chinese rather than meaning, so a claim phrased differently passes.",
+    "The dirty-tree rule covers `runtime-evidence*.json` only; the gated, regression and audit-ingest records carry no",
+    "such flag, and it reads the whole repository, so an unrelated service being edited during this task's capture",
+    "marks this task's evidence as dirty.",
+  ],
   taskId: 'P1R-M2-004',
   draftOnly: false,
   canonicalTaskStatus: 'REVIEW',
@@ -492,7 +513,7 @@ const manifest = {
       // Every migration this task touched is checked for rollback-blocking statements rather than described
       // as additive. A narrowing or a drop is what makes a revert lossy, and those are what this looks for.
       status: nonAdditiveMigrations().length === 0 ? 'PASS' : 'FAIL',
-      details: `Checked against the migration files rather than asserted, and the scope is stated because the figure moves with it: ${additiveMigrations.length} migrations belong to the owners that are migrated externally, and those were scanned for DROP COLUMN, DROP TABLE, RENAME and any MODIFY that narrows a column. ${nonAdditiveMigrations().length} of them contain one. NOT SCANNED, and this is the part that changes the conclusion: iam-service migrates itself, so owner-manifest.mjs gives it a null migrationPath and the scan skips it. Its ${scanScope().iamMigrations} migrations are the rest of the ${scanScope().total} in the tree, and ${scanScope().iamDestructive} of them (${scanScope().iamDestructiveFiles.join(', ')}) do contain DROP TABLE or DROP COLUMN. The sentence above is therefore a claim about the externally migrated owners only, and an earlier version of it said "across the owners" and "0 contain one" without either qualifier, which the tenth review measured against the tree and found false.${nonAdditiveMigrations().length === 0 ? '' : ` The files that block it are ${nonAdditiveMigrations().map((entry) => `${entry.owner}/${entry.file} (${entry.blockers.join(', ')})`).join('; ')}.`}`,
+      details: `Checked against the migration files rather than asserted, and the scope is stated because the figure moves with it: ${additiveMigrations.length} migrations belong to the owners that are migrated externally, and those were scanned for DROP COLUMN, DROP TABLE, RENAME and MODIFY that sets a VARCHAR below a hundred characters, which is the shape this scan can actually see. ${nonAdditiveMigrations().length} of them contain one. NOT SCANNED, and this is the part that changes the conclusion: iam-service migrates itself, so owner-manifest.mjs gives it a null migrationPath and the scan skips it. Its ${scanScope().iamMigrations} migrations are the rest of the ${scanScope().total} in the tree, and ${scanScope().iamDestructive} of them (${scanScope().iamDestructiveFiles.join(', ')}) do contain DROP TABLE or DROP COLUMN. The sentence above is therefore a claim about the externally migrated owners only, and an earlier version of it said "across the owners" and "0 contain one" without either qualifier, which the tenth review measured against the tree and found false.${nonAdditiveMigrations().length === 0 ? '' : ` The files that block it are ${nonAdditiveMigrations().map((entry) => `${entry.owner}/${entry.file} (${entry.blockers.join(', ')})`).join('; ')}.`}`,
     },
     {
       // Read from the harness check rather than described. The check corrupts a recorded migration checksum,
@@ -505,7 +526,7 @@ const manifest = {
     },
   ],
   knownGaps: [
-    `The tenant guard is delivered at the storage layer through ${tenantChecks.length} passing *TenantIsolationTest classes, each running against a real MySQL and its own owner's schema. They write with a JdbcTemplate rather than through a service repository. ${tenantProductionClasses.instantiating} of the ${tenantChecks.length} instantiate an imported production class and ${tenantProductionClasses.notInstantiating.length} do not (${tenantProductionClasses.notInstantiating.join(', ')}), and the classes do not all assert the same thing: most assert that a foreign tenant's rows are not returned, while at least one asserts only that a guarded column has no default and that the schema credential cannot write another owner's tables. So this is evidence about schema-level isolation, not about every service's request path, and the policy line asking for a server-derived TenantScope on a request path is not measured here. The HTTP-level two-tenant negative remains open and is handed to P1R-M2-009: it needs a synthetic per-owner account, which P1R-M0-007 builds and P1R-M2-009 wires into real CI. P1R-M2-009's ledger scope does not itself name tenant guard, so this is a residual gap recorded against this task rather than a reassignment of the requirement.`,
+    `The tenant guard is delivered at the storage layer through ${tenantChecks.length} passing *TenantIsolationTest classes, each running against a real MySQL and its own owner's schema. They write with a JdbcTemplate rather than through a service repository. ${tenantProductionClasses.instantiating} of the ${tenantChecks.length} instantiate a production class, counted by resolving imported and same-package main classes together and ${tenantProductionClasses.notInstantiating.length} do not (${tenantProductionClasses.notInstantiating.join(', ')}), and the classes do not all assert the same thing: most assert that a foreign tenant's rows are not returned, while at least one asserts only that a guarded column has no default and that the schema credential cannot write another owner's tables. So this is evidence about schema-level isolation, not about every service's request path, and the policy line asking for a server-derived TenantScope on a request path is not measured here. The HTTP-level two-tenant negative remains open and is handed to P1R-M2-009: it needs a synthetic per-owner account, which P1R-M0-007 builds and P1R-M2-009 wires into real CI. P1R-M2-009's ledger scope does not itself name tenant guard, so this is a residual gap recorded against this task rather than a reassignment of the requirement.`,
     `The per-service Redis namespaces and ACLs are provisioned and probed for every namespaced owner, but no domain service uses Redis yet: only api-gateway and the legacy core-api configure it, so for the ${redisOnlyNamespaced - ownersWithoutDatabase.length} domain owners the namespace is a reserved allocation rather than an enforced boundary in a live path. The Redis default user is still reachable without a password, so the namespace boundary does not constrain an unauthenticated client; that is a property of the local container rather than of this task's ACLs, and it is registered here rather than left implicit.`,
     'The owner outbox tables now carry the contract shape, but only content-service has a publisher and a consumer; the other owners still append rows that nothing publishes.',
     'Some provisioning owners were baselined from an existing schema rather than migrated from empty, so their migration history records what was already applied rather than a replay from scratch. How many is NOT VERIFIED: the reconcile output reports the state per owner but no tracked record counts them, so a figure is not given here rather than repeated from an earlier run. The empty-database drill is covered by the Flyway tests above rather than by those baselines.',
