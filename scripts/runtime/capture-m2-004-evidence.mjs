@@ -102,7 +102,24 @@ function scanMigrations() {
     { name: 'DROP TABLE', regex: /\bDROP\s+TABLE\b/iu },
     { name: 'RENAME', regex: /\bRENAME\s+(?:TABLE|COLUMN)\b/iu },
     // A MODIFY that shrinks a column narrows it, which is what makes a revert lossy.
-    { name: 'narrowing MODIFY', regex: /\bMODIFY\s+COLUMN?\s+\w+\s+VARCHAR\((?:\d|1\d|2\d)\)/iu },
+    //
+    // The first version of this was /MODIFY\s+COLUMN?\s+\w+\s+VARCHAR\((?:\d|1\d|2\d)\)/, which reads COLUMN? as
+    // "COL" plus an optional "UMN" and therefore matches neither "MODIFY x VARCHAR(32)" nor "MODIFY COLUMN x
+    // VARCHAR(32)". The count it produced was the empty set while the manifest presented it as a scan that found
+    // nothing, and content-service V3 line 25 is a MODIFY of exactly the kind it was supposed to catch. A rule that
+    // cannot match is indistinguishable from a rule that passes, which is the same defect as a word outside a
+    // checker's vocabulary.
+    // A MODIFY that shrinks a column narrows it, which is what makes a revert lossy.
+    //
+    // The first version was /MODIFY\s+COLUMN?\s+\w+\s+VARCHAR\((?:\d|1\d|2\d)\)/, which reads COLUMN? as "COL"
+    // plus an optional "UMN" and matches neither "MODIFY x VARCHAR(32)" nor "MODIFY COLUMN x VARCHAR(32)". Its
+    // count was the empty set while the manifest presented it as a scan that found nothing, and content-service V3
+    // line 25 is a MODIFY of exactly the kind it was meant to catch. A rule that cannot match is indistinguishable
+    // from a rule that passes, the same defect as a word outside a checker's vocabulary.
+    //
+    // One or two digits is a width below a hundred, expressed in the pattern because the scanner tests the pattern
+    // and nothing else.
+    { name: 'narrowing MODIFY', regex: /\bMODIFY\s+(?:COLUMN\s+)?\w+\s+VARCHAR\s*\(\s*\d{1,2}\s*\)/iu },
   ];
   const found = [];
   for (const owner of runtimeOwners(root)) {

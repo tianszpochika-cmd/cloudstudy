@@ -143,6 +143,20 @@
     },
     {
       "round": 12,
+      "verdict": "REWORK",
+      "counts": {
+        "P0": 0,
+        "P1": 2,
+        "P2": 4
+      },
+      "reviewedCommit": "f7c124ed9da04f8e4406c13354797b84db6d1e6a",
+      "reviewStartedHead": "f7c124ed9da04f8e4406c13354797b84db6d1e6a",
+      "reviewEndedHead": "15b186063b9c0deaf232740b83abf0d4cf14b41a",
+      "reviewer": "independent review session (twelfth round)",
+      "summary": "P0 remained zero and every runtime fact was reproduced again: real MySQL 1142 across schemas, Redis ACL namespaces, 63/63 digests matching on disk and against the sourceCommit blob, no skipped tests, and all three not-applicable owners matching the ledger line. Two P1 findings, both introduced by the previous round's own repairs: the tracked test that guards the stale-claims check mutates files in the real repository, so a concurrently running gate reads the test's intermediate state and reports a false failure, and one run left a file modified; and the narrowing-MODIFY pattern written as COLUMN? reads as \"COL\" plus an optional \"UMN\" and matches neither spelling, so the manifest's \"0 of them contain one\" was the empty set while content-service V3 line 25 is a MODIFY of exactly the kind it was meant to catch. The reviewer also corrected its own opening misreading of the digest count."
+    },
+    {
+      "round": 13,
       "verdict": "PENDING",
       "counts": null,
       "reviewedCommit": null,

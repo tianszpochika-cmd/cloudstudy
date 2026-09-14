@@ -12,7 +12,7 @@
   "taskId": "P1R-M2-004",
   "draftOnly": false,
   "canonicalTaskStatus": "REVIEW",
-  "sourceCommit": "dcaaf37f599b7253140c9fba74a54217aa2c12bb",
+  "sourceCommit": "38a1deee09ec21563ea1709090c9c8b5c4532f58",
   "artifactDigests": [
     {
       "path": "config/p1r-data-ownership.v1.json",
@@ -67,7 +67,7 @@
     {
       "path": "scripts/runtime/capture-m2-004-evidence.mjs",
       "algorithm": "sha256",
-      "digest": "f4ee69562cd035e4de0e28773abe7750190f870e13aa47401e2ec9ede9d7009c"
+      "digest": "169a8a0710cd4669f31ced0ae5870cbb4de7aa6c39737187f00ee4947146aa5b"
     },
     {
       "path": "scripts/runtime/run-gated-db-tests.mjs",
@@ -327,7 +327,7 @@
     {
       "path": "evidence/p1r/m2/P1R-M2-004/review-history.json",
       "algorithm": "sha256",
-      "digest": "76562680122a589538e92470509a07852151d0ad9eddb9d6655e8e800cd600fc"
+      "digest": "e9a0c3a3e8df7eca7ccb791f85f5e6ea84cc236cb59c16df7591ca2bdcf82a9d"
     }
   ],
   "environment": {
@@ -529,6 +529,18 @@
       },
       {
         "round": 12,
+        "verdict": "REWORK",
+        "counts": {
+          "P0": 0,
+          "P1": 2,
+          "P2": 4
+        },
+        "reviewedCommit": "f7c124ed9da04f8e4406c13354797b84db6d1e6a",
+        "reviewer": "independent review session (twelfth round)",
+        "summary": "P0 remained zero and every runtime fact was reproduced again: real MySQL 1142 across schemas, Redis ACL namespaces, 63/63 digests matching on disk and against the sourceCommit blob, no skipped tests, and all three not-applicable owners matching the ledger line. Two P1 findings, both introduced by the previous round's own repairs: the tracked test that guards the stale-claims check mutates files in the real repository, so a concurrently running gate reads the test's intermediate state and reports a false failure, and one run left a file modified; and the narrowing-MODIFY pattern written as COLUMN? reads as \"COL\" plus an optional \"UMN\" and matches neither spelling, so the manifest's \"0 of them contain one\" was the empty set while content-service V3 line 25 is a MODIFY of exactly the kind it was meant to catch. The reviewer also corrected its own opening misreading of the digest count."
+      },
+      {
+        "round": 13,
         "verdict": "PENDING",
         "counts": null,
         "reviewedCommit": null,
@@ -538,7 +550,7 @@
     ]
   },
   "startedAt": "2026-09-09T00:00:00+08:00",
-  "finishedAt": "2026-09-14T09:09:53.777Z",
+  "finishedAt": "2026-09-14T10:30:59.159Z",
   "actors": [
     "root-coordinator",
     "p1r-implementation"
@@ -629,8 +641,8 @@
   ],
   "rollbackEvidence": [
     {
-      "status": "PASS",
-      "details": "Checked against the migration files rather than asserted, and the scope is stated because the figure moves with it: 62 migrations belong to the owners that are migrated externally, and those were scanned for DROP COLUMN, DROP TABLE, RENAME and MODIFY that sets a VARCHAR below a hundred characters, which is the shape this scan can actually see. 0 of them contain one. NOT SCANNED, and this is the part that changes the conclusion: iam-service migrates itself, so owner-manifest.mjs gives it a null migrationPath and the scan skips it. Its 13 migrations are the rest of the 75 in the tree, and 2 of them (V13__key_and_version_idempotency_request_hashes.sql, V5__create_self_owned_jwt_auth_schema.sql) do contain DROP TABLE or DROP COLUMN. The sentence above is therefore a claim about the externally migrated owners only, and an earlier version of it said \"across the owners\" and \"0 contain one\" without either qualifier, which the tenth review measured against the tree and found false."
+      "status": "FAIL",
+      "details": "Checked against the migration files rather than asserted, and the scope is stated because the figure moves with it: 62 migrations belong to the owners that are migrated externally, and those were scanned for DROP COLUMN, DROP TABLE, RENAME and MODIFY that sets a VARCHAR below a hundred characters, which is the shape this scan can actually see. 3 of them contain one. NOT SCANNED, and this is the part that changes the conclusion: iam-service migrates itself, so owner-manifest.mjs gives it a null migrationPath and the scan skips it. Its 13 migrations are the rest of the 75 in the tree, and 2 of them (V13__key_and_version_idempotency_request_hashes.sql, V5__create_self_owned_jwt_auth_schema.sql) do contain DROP TABLE or DROP COLUMN. The sentence above is therefore a claim about the externally migrated owners only, and an earlier version of it said \"across the owners\" and \"0 contain one\" without either qualifier, which the tenth review measured against the tree and found false. The files that block it are content-service/V3__complete_content_persistence_schema.sql (narrowing MODIFY); social-service/V2__add_moderation_appeals.sql (narrowing MODIFY); audit-service/V2__widen_audit_schema_version.sql (narrowing MODIFY)."
     },
     {
       "status": "PASS",
@@ -652,7 +664,7 @@
   "reviewer": "awaiting-independent-reviewer",
   "decision": "PENDING",
   "nextSteps": [
-    "12 independent reviews have returned 11 REWORK verdicts (round 1 P0/P1/P2 0/4/6; round 2 P0/P1/P2 0/1/9; round 3 P0/P1/P2 0/3/7; round 4 P0/P1/P2 0/4/8; round 5 P0/P1/P2 0/2/8; round 6 P0/P1/P2 0/3/9; round 7 P0/P1/P2 0/3/6; round 8 P0/P1/P2 0/4/9; round 9 P0/P1/P2 0/5/4; round 10 P0/P1/P2 0/4/8; round 11 P0/P1/P2 0/4/6), so another session has to re-decide this submission; the implementer changed the harness, the evidence generator and a governance check during the rework and must not accept its own output.",
+    "13 independent reviews have returned 12 REWORK verdicts (round 1 P0/P1/P2 0/4/6; round 2 P0/P1/P2 0/1/9; round 3 P0/P1/P2 0/3/7; round 4 P0/P1/P2 0/4/8; round 5 P0/P1/P2 0/2/8; round 6 P0/P1/P2 0/3/9; round 7 P0/P1/P2 0/3/6; round 8 P0/P1/P2 0/4/9; round 9 P0/P1/P2 0/5/4; round 10 P0/P1/P2 0/4/8; round 11 P0/P1/P2 0/4/6; round 12 P0/P1/P2 0/2/4), so another session has to re-decide this submission; the implementer changed the harness, the evidence generator and a governance check during the rework and must not accept its own output.",
     "The rollback and compensation requirement is owned by P1R-M2-006 and the ledger line for this task was changed to match, so the entry above reports NOT_APPLICABLE rather than claiming a drift-refusal check satisfies it. The workflow-service delivered under that task holds the compensation executor, the two-person approval and the recovery receipts.",
     "The workflow-service built under P1R-M2-006 is a provisioned owner, so this task's evidence describes 14 owners and its Redis loss check reads 14 tables including that service's. Its schema, credential, migration coverage and tenant guard are delivered by P1R-M2-006, not by this one, and that boundary is recorded in knownGaps rather than only here."
   ]
