@@ -2,15 +2,15 @@
   "schema": "platform.p1r-task-evidence.v1",
   "taskId": "P1R-M2-006",
   "draftOnly": false,
-  "canonicalTaskStatus": "IN_PROGRESS",
-  "decision": "IN_PROGRESS",
-  "sourceCommit": "dc31e4d8902f1f514bed545e2eb1300d4b86ea65",
-  "statusNote": "Not finished. The durable audit path from the gateway through IAM to the canonical ingest works end to end — the probe reports eight of eight against the running stack — but the workflow service suite reports 51 tests with one failure: the recovery sweep does not pick up an unfinished saga. Recorded rather than delivered, because DEV_DONE is for work whose tests pass.",
+  "canonicalTaskStatus": "DEV_DONE",
+  "decision": "DEV_DONE",
+  "sourceCommit": "28e4e2bad3ab83b08328d7e935d08e599e443e04",
+  "statusNote": "Development finished and the evidence is in the repository. The durable audit path from the gateway through IAM's service token to the canonical ingest works end to end, and the workflow service suite is 51 tests with no failures against real MySQL. Not independently verified: the owner directed that development proceed to M8 with acceptance testing afterwards, which is why this is DEV_DONE and not ACCEPTED.",
   "results": [
     {
       "check": "workflow-saga-state-machine",
-      "status": "FAIL",
-      "details": "Workflow service suite: 51 tests, 1 failure, 0 errors, run against real MySQL with the gated integration variables set. The failure is JdbcSagaStoreIntegrationTest.theRecoverySweepFindsUnfinishedSagasAndLeavesFinishedOnesAlone, which expects the sweep to pick up an unfinished saga and gets false. Without those variables the same suite reports 13 errors, because the gated tests cannot reach a database at all — which is why the earlier figure of zero tests in this manifest was wrong."
+      "status": "PASS",
+      "details": "Workflow service suite: 51 tests, 0 failures, 0 errors, run against real MySQL with the gated integration variables set. The one failure seen earlier was test data rather than a defect: the table held 52 unfinished sagas left by previous runs, the sweep returns the fifty oldest by updated_at, and the saga under test was fifty-third. Clearing the abandoned rows at the start of that case made it measure the predicate it is about."
     },
     {
       "check": "compensation-not-applied-twice",
@@ -45,7 +45,6 @@
     }
   ],
   "knownGaps": [
-    "The workflow service suite has one failing integration test: the recovery sweep does not pick up an unfinished saga. This is the item blocking the task, not a gap.",
     "The gateway's bounded in-memory sink remains the default when the durable settings are absent: gateway.audit.ingest-uri and its three companions are empty unless the environment supplies them, so a deployment that has not opted in keeps the old behaviour.",
     "The service client's secret is a local development value in the runner. A deployment needs it injected, and the rotation the ADR names is not implemented.",
     "The audit ingest accepts a service token type now, but nothing yet limits which service may claim audit.ingest beyond the permissions the client is granted at configuration time.",
@@ -157,9 +156,9 @@
     "originalReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationTask": "P1R-M2-006",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
-    "currentSourceRevalidationRuntimeStatus": "PARTIAL",
-    "currentSourceRevalidationFinishedAt": "2026-09-14T16:55:47.934Z",
-    "currentSourceRevalidationAuditedImplementationSource": "dc31e4d8902f1f514bed545e2eb1300d4b86ea65",
-    "currentSourceRevalidationIntegrationCheckpoint": "dc31e4d8902f1f514bed545e2eb1300d4b86ea65"
+    "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
+    "currentSourceRevalidationFinishedAt": "2026-09-14T17:07:08.547Z",
+    "currentSourceRevalidationAuditedImplementationSource": "28e4e2bad3ab83b08328d7e935d08e599e443e04",
+    "currentSourceRevalidationIntegrationCheckpoint": "28e4e2bad3ab83b08328d7e935d08e599e443e04"
   }
 }

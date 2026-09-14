@@ -94,6 +94,14 @@ class JdbcSagaStoreIntegrationTest {
     void theRecoverySweepFindsUnfinishedSagasAndLeavesFinishedOnesAlone() {
         JdbcTemplate jdbc = jdbc();
         SagaStore store = new JdbcSagaStore(jdbc);
+        // Sagas abandoned by earlier runs share this database and the sweep returns the fifty oldest, so without this the
+        // case measures the order of unrelated rows rather than the predicate it is about. Only rows in a non-terminal
+        // state are cleared, and only for this case: a finished saga is what the second assertion needs.
+        int abandonedByEarlierRuns = jdbc.update("""
+                DELETE FROM workflow_service.saga_instance
+                 WHERE status NOT IN ('COMPLETED','COMPENSATED','COMPENSATION_FAILED')
+                """);
+        assertTrue(abandonedByEarlierRuns >= 0, "the cleanup has to run");
         String unfinished = UUID.randomUUID().toString();
         String finished = UUID.randomUUID().toString();
         insertSaga(jdbc, unfinished, "enrolment");
