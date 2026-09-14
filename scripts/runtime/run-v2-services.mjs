@@ -145,6 +145,22 @@ function runtimeEnvironment(service, port) {
     environment.IAM_PERSISTENCE_USERNAME = 'svc_iam';
     environment.IAM_PERSISTENCE_PASSWORD = environment.MYSQL_OWNER_PASSWORD;
     environment.IAM_JWT_ISSUER = jwtIssuer;
+  if (service.id === 'workflow-service') {
+    // The saga, job lease, outbox and manual recovery all need the database, and it validates tokens like every other
+    // service. It was delivered by M2-006 with a fixed port and its own schema, but never added to the runtime
+    // manifest, so the runner never started it and it was the one service of fourteen whose readiness was not up.
+    environment.WORKFLOW_PERSISTENCE_ENABLED = 'true';
+    environment.WORKFLOW_SCHEMA = 'workflow_service';
+    environment.WORKFLOW_JDBC_URL = mysqlUrl('workflow_service');
+    environment.WORKFLOW_JDBC_USERNAME = 'svc_workflow';
+    environment.WORKFLOW_JDBC_PASSWORD = process.env.WORKFLOW_DB_PASSWORD ?? environment.MYSQL_OWNER_PASSWORD;
+    environment.WORKFLOW_RESOURCE_SERVER_ENABLED = 'true';
+    environment.WORKFLOW_SECURITY_ISSUER_URI = jwtIssuer;
+    environment.WORKFLOW_SECURITY_JWK_SET_URI = jwtJwks;
+    environment.WORKFLOW_SECURITY_AUDIENCE = jwtAudience;
+    environment.WORKFLOW_SCHEDULING_ENABLED = process.env.WORKFLOW_SCHEDULING_ENABLED ?? 'true';
+    environment.WORKFLOW_RECOVERY_REQUIRES_APPROVER = 'true';
+  }
   // The digest of the secret the gateway presents, so the service-token endpoint can verify it without the plaintext
   // existing anywhere but in the environment. It must match GATEWAY_AUDIT_SERVICE_CLIENT_SECRET below.
   environment.IAM_SERVICE_CLIENT_GATEWAY_SECRET_DIGEST = process.env.IAM_SERVICE_CLIENT_GATEWAY_SECRET_DIGEST
