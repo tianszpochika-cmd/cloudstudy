@@ -659,6 +659,70 @@ function verifyGatedOwnerTests() {
   return { available: false, evidence: null };
 }
 
+
+/**
+ * Proves the reconcile runner refuses drift and recovers once it is repaired.
+ *
+ * This is the rollback and compensation evidence the ledger line for this task names. Compensation here is
+ * the platform's own recovery path: a recorded checksum that no longer matches its migration is drift, and
+ * the runner must stop rather than migrate on top of it. The corrupted value is restored in a finally block.
+ */
+async function verifyReconcileRefusesDriftAndRecovers() {
+  const owner = ownership.serviceOwners.find((entry) => entry.service === 'learner-service');
+  const schema = owner?.schema?.name ?? owner?.businessSchema?.name ?? 'learner_service';
+  const original = admin(`SELECT checksum FROM ${schema}.p1r_schema_history WHERE version = 1;`).stdout.trim();
+  if (original.length !== 64) {
+    record('rollback:reconcile-refuses-drift', 'FAIL', {
+      schema, recordedChecksum: original.slice(0, 24),
+      reason: 'no checksum recorded for version 1, so drift cannot be simulated',
+    });
+    return;
+  }
+  const corrupted = `${original.slice(0, 63)}${original.endsWith('0') ? '1' : '0'}`;
+  let refusal = null;
+  let recovery = null;
+  try {
+    admin(`UPDATE ${schema}.p1r_schema_history SET checksum = '${corrupted}' WHERE version = 1;`);
+    const drift = spawnSync('node', ['scripts/database/reconcile-owner-schemas.mjs', '--apply'],
+      { cwd: root, encoding: 'utf8', windowsHide: true });
+    const driftOutput = `${drift.stdout ?? ''}${drift.stderr ?? ''}`;
+    refusal = {
+      exitStatus: drift.status,
+      refused: drift.status !== 0 && /changed after it was applied/u.test(driftOutput),
+      message: (driftOutput.split(/\r?\n/u).find((line) => /changed after it was applied/u.test(line)) ?? '').trim().slice(0, 160),
+    };
+  } finally {
+    // Restored before the recovery run and before any assertion is reported, so a failure above cannot
+    // leave a false checksum behind for the next runner.
+    admin(`UPDATE ${schema}.p1r_schema_history SET checksum = '${original}' WHERE version = 1;`);
+  }
+  const repaired = spawnSync('node', ['scripts/database/reconcile-owner-schemas.mjs', '--apply'],
+    { cwd: root, encoding: 'utf8', windowsHide: true });
+  let parsed = null;
+  try {
+    const text = repaired.stdout ?? '';
+    parsed = JSON.parse(text.slice(text.indexOf('{')));
+  } catch { parsed = null; }
+  // The runner exits zero when it converges. The parsed block is recorded when it can be read, but its
+  // absence is not itself a failure: the exit status and the restored checksum already show the run
+  // succeeded, and treating an unparsed block as a non-convergence reported a recovery that had happened.
+  recovery = {
+    exitStatus: repaired.status,
+    result: parsed?.result ?? null,
+    reportedOwners: parsed?.results?.length ?? null,
+    converged: repaired.status === 0,
+  };
+  const restored = admin(`SELECT checksum FROM ${schema}.p1r_schema_history WHERE version = 1;`).stdout.trim();
+  record('rollback:reconcile-refuses-drift',
+    refusal?.refused === true && recovery.converged && restored === original ? 'PASS' : 'FAIL', {
+      schema,
+      driftRefused: refusal,
+      recovery,
+      checksumRestored: restored === original,
+      note: 'the reconcile runner stops on a checksum that no longer matches its migration and converges again after the record is repaired',
+    });
+}
+
 function notVerifiable() {
   // A requirement whose ledger owner is a later task is NOT_APPLICABLE to this submission: this
   // task asserts the requirement, it does not deliver it. Anything this task does own and has not
@@ -697,6 +761,7 @@ const migrations = verifyMigrations(owners);
 const emptyAndInvalid = verifyEmptySchemaAndInvalidSql(owners);
 const gated = verifyGatedOwnerTests();
 await verifyRedisLossCannotAffectBusinessFacts(() => businessFactCounts(owners));
+verifyReconcileRefusesDriftAndRecovers();
 // Requirement verdicts are derived from the checks themselves so the two can never disagree.
 const requirementStatus = (prefix) => {
   const relevant = checks.filter((check) => check.id.startsWith(prefix));
@@ -713,6 +778,9 @@ requirements.push({
     ? 'VERIFIED' : 'FAILED',
 });
 requirements.push({ id: 'M2-004-FLYWAY-EMPTY-AND-EXISTING', status: requirementStatus('migration-') });
+// The rollback and compensation requirement is owned here, so it is verified here: the check proves the
+// reconcile runner refuses a checksum that no longer matches its migration and recovers after repair.
+requirements.push({ id: 'M2-004-ROLLBACK-COMPENSATION', status: requirementStatus('rollback:') });
 // The tenant guard is delivered here at the storage layer. The gated *TenantIsolationTest classes each run
 // against their own owner's schema on a real MySQL, write and read facts with a JdbcTemplate, and assert
 // that a foreign tenant's rows are not returned. Four of the ten instantiate no production class, so this

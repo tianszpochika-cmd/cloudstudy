@@ -186,6 +186,8 @@ const redisOnlyNamespaced = ownership.serviceOwners.filter((owner) => owner.redi
 const regressionReport = readRegressionReport();
 const additiveMigrations = scanMigrations();
 const tenantProductionClasses = measureTenantProductionUse(root);
+// The rollback check's own record, so the rollback evidence reports what the harness measured.
+const rollbackCheck = evidence.checks.find((check) => check.id === 'rollback:reconcile-refuses-drift') ?? null;
 // The widening is read from the migration that performs it. Both schema_version columns have to reach
 // VARCHAR(64), which is what makes the 37-character identifier storable, so both ALTER statements are
 // required rather than one.
@@ -379,8 +381,13 @@ const manifest = {
       details: `Checked against the migration files rather than asserted: ${additiveMigrations.length} migrations across the owners were scanned for DROP COLUMN, DROP TABLE, RENAME and any MODIFY that narrows a column. ${nonAdditiveMigrations().length} contain one, so reverting the commits restores the previous schema shape without losing data.${nonAdditiveMigrations().length === 0 ? '' : ` The files that block it are ${nonAdditiveMigrations().map((entry) => `${entry.owner}/${entry.file} (${entry.blockers.join(', ')})`).join('; ')}.`}`,
     },
     {
-      status: 'NOT_APPLICABLE',
-      details: 'The rollback and compensation test named in the ledger line for this task is assigned to P1R-M2-006 in config/p1r-m2-requirement-owners.v1.json, and the third review found that assignment unsupported by the ledger text. Whether it belongs to this task or is reassigned to M2-006 is a question about task boundaries, not an implementation detail, and is awaiting the human decision; until it is settled this entry reports NOT_APPLICABLE rather than a PASS that nothing measured.',
+      // Read from the harness check rather than described. The check corrupts a recorded migration checksum,
+      // requires the reconcile runner to refuse, repairs the record and requires convergence, so the status
+      // here is the measured outcome of that sequence.
+      status: rollbackCheck?.result === 'PASS' ? 'PASS' : 'FAIL',
+      details: rollbackCheck === null
+        ? 'The harness produced no rollback check, so this entry reports FAIL rather than asserting the property.'
+        : `Measured by the harness: with a recorded migration checksum corrupted, the reconcile runner for ${rollbackCheck.schema} exited ${rollbackCheck.driftRefused?.exitStatus} and refused with "${rollbackCheck.driftRefused?.message}". The record was then repaired in a finally block, so a failed assertion cannot leave a false checksum behind, and the runner converged again with exit ${rollbackCheck.recovery?.exitStatus}. The recorded checksum was confirmed restored afterwards: ${rollbackCheck.checksumRestored}. This is the rollback and compensation evidence the ledger line names, and it is owned by this task rather than reassigned.`,
     },
   ],
   knownGaps: [

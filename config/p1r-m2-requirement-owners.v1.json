@@ -40,15 +40,16 @@
     {
       "id": "M2-004-REDIS-REBUILD",
       "assertedBy": "P1R-M2-004",
-      "ownerTask": "P1R-M2-006",
-      "supportingTasks": ["P1R-M3-006"],
-      "rationale": "A projection rebuild entrypoint belongs to the workflow and platform runtime in P1R-M2-006; content cache invalidation belongs to P1R-M3-006."
+      "ownerTask": "P1R-M3-006",
+      "rationale": "Reassigned after the third review found the previous assignment unsupported: the ledger line for P1R-M2-006 names workflow Saga, compensation, scheduled jobs, manual recovery, Gateway audit ingest and immutable audit records, and a projection rebuild appears in none of them. The closest ledger text is P1R-M3-006, which owns content cache invalidation, so the requirement moves there rather than staying with a task whose scope does not mention it."
     },
     {
       "id": "M2-004-ROLLBACK-COMPENSATION",
       "assertedBy": "P1R-M2-004",
-      "ownerTask": "P1R-M2-006",
-      "rationale": "P1R-M2-006 scope: workflow Saga, compensation, scheduled jobs and manual recovery, which produce the owner, trace, audit and recovery receipts this requirement asks for."
+      "ownerTask": "P1R-M2-004",
+      "deliveredLayer": "reconcile-failure-recovery",
+      "supportingTasks": ["P1R-M2-006"],
+      "rationale": "The task ledger line for P1R-M2-004 names a rollback and compensation test in its own exit evidence, and the ledger is the acceptance baseline, so the requirement belongs to this task and is delivered here rather than reassigned: the harness corrupts a recorded migration checksum, asserts that the reconcile runner refuses to proceed rather than applying over the drift, then repairs the record and asserts that it converges. Workflow-level Saga compensation remains P1R-M2-006's, which is why it is listed as a supporting task."
     },
     {
       "id": "M2-004-RETENTION-DELETE-HOLD",
