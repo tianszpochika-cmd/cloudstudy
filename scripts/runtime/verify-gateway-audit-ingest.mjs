@@ -72,6 +72,15 @@ export async function verifyGatewayAuditIngest() {
     { name: 'the stored envelope carries no credential material', ok: redaction === 'no-credential-material', observed: redaction, expected: 'no-credential-material' },
   ];
   const failing = assertions.filter((entry) => !entry.ok);
+  // A failure here has a known cause rather than an unknown one, and the report says which: the Gateway has a
+  // durable sink but no way to authenticate to the ingest, because IAM issues no service token and the Gateway
+  // is forbidden from signing its own. The mechanism is a service-to-service authentication decision, which the
+  // architecture rules put behind an ADR, so it is recorded rather than invented here.
+  const blockedBy = failing.length === 0 ? null
+    : 'the Gateway has a durable sink (HttpSecurityAuditSink) but no credential for the canonical ingest: '
+      + 'iam-service exposes no service-token or client-credentials endpoint, audit-service validates issuer and '
+      + 'audience on /internal/v1/audit/**, and AGENTS.md makes iam-service the only token issuer. Service-to-service '
+      + 'authentication is an architecture boundary change and needs an ADR before it can be wired.';
   return {
     schema: 'platform.gateway-audit-ingest-check.v1',
     taskId: 'P1R-M2-006',
@@ -80,6 +89,7 @@ export async function verifyGatewayAuditIngest() {
     requestId,
     assertions,
     failing: failing.length,
+    blockedBy,
     result: failing.length === 0 ? 'PASS' : 'FAIL',
   };
 }
