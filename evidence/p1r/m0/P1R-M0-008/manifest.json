@@ -2,12 +2,12 @@
   "taskId": "P1R-M0-008",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "2b91819e4ad0df2e1d4535c9d5f4f6d22a4de213",
+  "sourceCommit": "35cbc9a368fab02ee73b1d2253c12839b9ededc4",
   "artifactDigests": [
     {
       "path": "scripts/audit/p1r-evidence-gate.mjs",
       "algorithm": "sha256",
-      "digest": "07cd0fb78bf7eddec319a4cfb92c18cbe2a6d12976c79b1d38f0eb0d17a86ae2"
+      "digest": "6023294a7376293a7cbd51701d6b231ba6ae15573ec374863f87993e5fb8db37"
     },
     {
       "path": "scripts/audit/verify-phase1-rebaseline-plan.mjs",
@@ -166,14 +166,24 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-14T07:42:23.179Z",
         "details": "Digest rebind after the evidence gate gained the stale-claims check as a gate rule, and the gate now requires that check in the digests."
+      },
+      {
+        "taskId": "P1R-M0-008",
+        "sourceCommit": "35cbc9a368fab02ee73b1d2253c12839b9ededc4",
+        "auditedImplementationSource": "35cbc9a368fab02ee73b1d2253c12839b9ededc4",
+        "integrationCheckpoint": "35cbc9a368fab02ee73b1d2253c12839b9ededc4",
+        "reviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-14T07:59:58.796Z",
+        "details": "Digest rebind after the gate gained a rule against evidence produced on a dirty tree, and the stale-claims check gained a tracked test and a documented exclusion."
       }
     ],
-    "previousCurrentSourceCommit": "a45aa95490a82feb6c0fdf32f7247e25d3855b01",
+    "previousCurrentSourceCommit": "2b91819e4ad0df2e1d4535c9d5f4f6d22a4de213",
     "currentSourceRevalidationTask": "P1R-M0-008",
     "currentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-14T07:42:23.179Z",
-    "currentSourceRevalidationAuditedImplementationSource": "2b91819e4ad0df2e1d4535c9d5f4f6d22a4de213",
-    "currentSourceRevalidationIntegrationCheckpoint": "2b91819e4ad0df2e1d4535c9d5f4f6d22a4de213"
+    "currentSourceRevalidationFinishedAt": "2026-09-14T07:59:58.796Z",
+    "currentSourceRevalidationAuditedImplementationSource": "35cbc9a368fab02ee73b1d2253c12839b9ededc4",
+    "currentSourceRevalidationIntegrationCheckpoint": "35cbc9a368fab02ee73b1d2253c12839b9ededc4"
   }
 }

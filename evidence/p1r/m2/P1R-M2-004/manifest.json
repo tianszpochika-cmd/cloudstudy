@@ -2,7 +2,7 @@
   "taskId": "P1R-M2-004",
   "draftOnly": false,
   "canonicalTaskStatus": "REVIEW",
-  "sourceCommit": "fa1b61dfd221b9ea3739ce3f5d69d161087baa10",
+  "sourceCommit": "35cbc9a368fab02ee73b1d2253c12839b9ededc4",
   "artifactDigests": [
     {
       "path": "config/p1r-data-ownership.v1.json",
@@ -47,12 +47,12 @@
     {
       "path": "scripts/audit/p1r-evidence-gate.mjs",
       "algorithm": "sha256",
-      "digest": "07cd0fb78bf7eddec319a4cfb92c18cbe2a6d12976c79b1d38f0eb0d17a86ae2"
+      "digest": "6023294a7376293a7cbd51701d6b231ba6ae15573ec374863f87993e5fb8db37"
     },
     {
       "path": "scripts/audit/p1r-stale-claims-check.mjs",
       "algorithm": "sha256",
-      "digest": "0417cc69045fa10d686dedb7755896afb6765d6a493e408f7c4ea576f66da803"
+      "digest": "6077f4aeff01a0aaf4cb5ad5a33f18226dcb15645369d0e504a0ba965b9084ad"
     },
     {
       "path": "scripts/runtime/capture-m2-004-evidence.mjs",
@@ -500,6 +500,25 @@
         "reviewedCommit": null,
         "reviewer": "awaiting a fresh independent session",
         "summary": "Not submitted."
+      }
+    ],
+    "previousCurrentSourceCommit": "fa1b61dfd221b9ea3739ce3f5d69d161087baa10",
+    "currentSourceRevalidationTask": "P1R-M2-004",
+    "currentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
+    "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
+    "currentSourceRevalidationFinishedAt": "2026-09-14T07:59:58.807Z",
+    "currentSourceRevalidationAuditedImplementationSource": "35cbc9a368fab02ee73b1d2253c12839b9ededc4",
+    "currentSourceRevalidationIntegrationCheckpoint": "35cbc9a368fab02ee73b1d2253c12839b9ededc4",
+    "currentSourceRevalidationHistory": [
+      {
+        "taskId": "P1R-M2-004",
+        "sourceCommit": "35cbc9a368fab02ee73b1d2253c12839b9ededc4",
+        "auditedImplementationSource": "35cbc9a368fab02ee73b1d2253c12839b9ededc4",
+        "integrationCheckpoint": "35cbc9a368fab02ee73b1d2253c12839b9ededc4",
+        "reviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-14T07:59:58.807Z",
+        "details": "Digest rebind after the gate gained a rule against evidence produced on a dirty tree, and the stale-claims check gained a tracked test and a documented exclusion."
       }
     ]
   },
