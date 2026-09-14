@@ -2,7 +2,7 @@
   "taskId": "P1R-M2-004",
   "draftOnly": false,
   "canonicalTaskStatus": "REVIEW",
-  "sourceCommit": "45d457f91142d49fffb3620d43607cf080780df0",
+  "sourceCommit": "883f73ea20540102980d6873703396de2a37048b",
   "artifactDigests": [
     {
       "path": "config/p1r-data-ownership.v1.json",
@@ -52,7 +52,7 @@
     {
       "path": "scripts/runtime/capture-m2-004-evidence.mjs",
       "algorithm": "sha256",
-      "digest": "ddc5c794619d0e6515f8d1e69d013550816c2d8601d049ca6872cb9a3a5a7138"
+      "digest": "57aceb40a2461d45f1650a96c60f10d6a314ca389ad1a4714dcfd1f38f04a9b7"
     },
     {
       "path": "scripts/runtime/run-gated-db-tests.mjs",
@@ -499,7 +499,7 @@
     ]
   },
   "startedAt": "2026-09-09T00:00:00+08:00",
-  "finishedAt": "2026-09-14T07:19:26.434Z",
+  "finishedAt": "2026-09-14T07:35:44.739Z",
   "actors": [
     "root-coordinator",
     "p1r-implementation"
@@ -591,7 +591,7 @@
   "rollbackEvidence": [
     {
       "status": "PASS",
-      "details": "Checked against the migration files rather than asserted: 62 migrations across the owners were scanned for DROP COLUMN, DROP TABLE, RENAME and any MODIFY that narrows a column. 0 contain one, so reverting the commits restores the previous schema shape without losing data."
+      "details": "Checked against the migration files rather than asserted, and the scope is stated because the figure moves with it: 62 migrations belong to the owners that are migrated externally, and those were scanned for DROP COLUMN, DROP TABLE, RENAME and any MODIFY that narrows a column. 0 of them contain one. NOT SCANNED, and this is the part that changes the conclusion: iam-service migrates itself, so owner-manifest.mjs gives it a null migrationPath and the scan skips it. Its 13 migrations are the rest of the 75 in the tree, and 2 of them (V13__key_and_version_idempotency_request_hashes.sql, V5__create_self_owned_jwt_auth_schema.sql) do contain DROP TABLE or DROP COLUMN. The sentence above is therefore a claim about the externally migrated owners only, and an earlier version of it said \"across the owners\" and \"0 contain one\" without either qualifier, which the tenth review measured against the tree and found false."
     },
     {
       "status": "PASS",

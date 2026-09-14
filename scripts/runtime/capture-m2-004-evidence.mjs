@@ -126,6 +126,45 @@ function scanMigrations() {
  * ALTER that adds one; the first version of this scan flagged every MODIFY regardless of direction and
  * reported the standardisation migrations as rollback blockers when they are the opposite.
  */
+/**
+ * What the destructive-statement scan covers, and what it leaves out.
+ *
+ * The scan walks the owners that carry a migration path; iam-service migrates itself through its own Flyway, so
+ * it has none and was skipped silently while the conclusion was written as a statement about the tree. This
+ * measures both sides so the manifest can say which one it is talking about.
+ */
+function scanScope() {
+  const directories = [];
+  const visit = (directory) => {
+    for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
+      if (!entry.isDirectory()) continue;
+      const absolute = path.join(directory, entry.name);
+      if (entry.name === 'migration') { directories.push(absolute); continue; }
+      if (entry.name === 'target' || entry.name === 'node_modules') continue;
+      visit(absolute);
+    }
+  };
+  visit(path.join(root, 'services'));
+  let total = 0;
+  let iamMigrations = 0;
+  let iamDestructive = 0;
+  const iamDestructiveFiles = [];
+  for (const directory of directories) {
+    const service = directory.includes(`iam-service`) ? 'iam-service' : '';
+    for (const file of fs.readdirSync(directory)) {
+      if (!file.endsWith('.sql')) continue;
+      total += 1;
+      if (service !== 'iam-service') continue;
+      iamMigrations += 1;
+      if (/DROP\s+(TABLE|COLUMN)/iu.test(fs.readFileSync(path.join(directory, file), 'utf8'))) {
+        iamDestructive += 1;
+        iamDestructiveFiles.push(file);
+      }
+    }
+  }
+  return { total, iamMigrations, iamDestructive, iamDestructiveFiles };
+}
+
 function nonAdditiveMigrations() {
   return scanMigrations().filter((entry) => !entry.additive);
 }
@@ -451,7 +490,7 @@ const manifest = {
       // Every migration this task touched is checked for rollback-blocking statements rather than described
       // as additive. A narrowing or a drop is what makes a revert lossy, and those are what this looks for.
       status: nonAdditiveMigrations().length === 0 ? 'PASS' : 'FAIL',
-      details: `Checked against the migration files rather than asserted: ${additiveMigrations.length} migrations across the owners were scanned for DROP COLUMN, DROP TABLE, RENAME and any MODIFY that narrows a column. ${nonAdditiveMigrations().length} contain one, so reverting the commits restores the previous schema shape without losing data.${nonAdditiveMigrations().length === 0 ? '' : ` The files that block it are ${nonAdditiveMigrations().map((entry) => `${entry.owner}/${entry.file} (${entry.blockers.join(', ')})`).join('; ')}.`}`,
+      details: `Checked against the migration files rather than asserted, and the scope is stated because the figure moves with it: ${additiveMigrations.length} migrations belong to the owners that are migrated externally, and those were scanned for DROP COLUMN, DROP TABLE, RENAME and any MODIFY that narrows a column. ${nonAdditiveMigrations().length} of them contain one. NOT SCANNED, and this is the part that changes the conclusion: iam-service migrates itself, so owner-manifest.mjs gives it a null migrationPath and the scan skips it. Its ${scanScope().iamMigrations} migrations are the rest of the ${scanScope().total} in the tree, and ${scanScope().iamDestructive} of them (${scanScope().iamDestructiveFiles.join(', ')}) do contain DROP TABLE or DROP COLUMN. The sentence above is therefore a claim about the externally migrated owners only, and an earlier version of it said "across the owners" and "0 contain one" without either qualifier, which the tenth review measured against the tree and found false.${nonAdditiveMigrations().length === 0 ? '' : ` The files that block it are ${nonAdditiveMigrations().map((entry) => `${entry.owner}/${entry.file} (${entry.blockers.join(', ')})`).join('; ')}.`}`,
     },
     {
       // Read from the harness check rather than described. The check corrupts a recorded migration checksum,
