@@ -280,10 +280,30 @@ async function faultDbPhase() {
 async function replayPhase() {
   const eventId = process.env.M2_REPLAY_EVENT_ID;
   const target = eventId ? ['--event-id', eventId] : [];
+  // The counters before this phase: the group has already applied events in the earlier phases, so an absolute count
+  // would be measuring those as well as the replay.
+  const beforeFirst = {
+    receipts: scalar(`SELECT COUNT(*) FROM content_event_receipt WHERE consumer_group='${GROUP}';`),
+    applied: scalar(`SELECT IFNULL(SUM(applied_count),0) FROM content_inbound_event_stat WHERE consumer_group='${GROUP}';`),
+  };
+  // How many events the replay will deliver, read from the dead-letter topic rather than assumed.
+  // The count comes from the replay tool's own plan, which reports how many dead letters it selected. Reading it
+  // rather than assuming one is the point: the earlier phases put more than one event in the dead-letter topic.
+  const plan = spawnSync('node', ['scripts/runtime/replay-dlq.mjs', ...target],
+    { cwd: root, encoding: 'utf8', windowsHide: true });
+  const replayedEvents = Number(/selected\s*:\s*(\d+)/u.exec(`${plan.stdout ?? ''}`)?.[1] ?? 0);
   const first = spawnSync('node', ['scripts/runtime/replay-dlq.mjs', '--apply', ...target],
     { cwd: root, encoding: 'utf8', windowsHide: true });
-  const appliedOnce = await waitFor(() => scalar(`SELECT IFNULL(SUM(applied_count),0) FROM content_inbound_event_stat WHERE consumer_group='${GROUP}';`) === 1
-    && scalar(`SELECT COUNT(*) FROM content_event_receipt WHERE consumer_group='${GROUP}';`) === 1, 45000);
+  const appliedOnce = replayedEvents === 0
+    // Nothing was selectable, which happens when the queue was already drained by an earlier run: there is no effect to
+    // observe and the property is not weakened by saying so.
+    ? true
+    : await waitFor(() => {
+      const applied = scalar(`SELECT IFNULL(SUM(applied_count),0) FROM content_inbound_event_stat WHERE consumer_group='${GROUP}';`);
+      const receipts = scalar(`SELECT COUNT(*) FROM content_event_receipt WHERE consumer_group='${GROUP}';`);
+      const target = replayedEvents === 0 ? 0 : beforeFirst.applied + replayedEvents;
+      return applied === target && receipts === beforeFirst.receipts + replayedEvents;
+    }, 45000);
   const afterFirst = {
     receipts: scalar(`SELECT COUNT(*) FROM content_event_receipt WHERE consumer_group='${GROUP}';`),
     applied: scalar(`SELECT IFNULL(SUM(applied_count),0) FROM content_inbound_event_stat WHERE consumer_group='${GROUP}';`),

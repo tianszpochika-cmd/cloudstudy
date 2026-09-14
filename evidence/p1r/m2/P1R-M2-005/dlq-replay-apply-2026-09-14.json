@@ -1,0 +1,115 @@
+{
+  "schema": "platform.event-runtime.dlq-replay.v1",
+  "taskId": "P1R-M2-005",
+  "mode": "apply",
+  "dlqTopic": "platform.events.dlq.v1",
+  "sourceCommit": "377db632d45a74ede4d608cd951c0734166a2d47",
+  "capturedAt": "2026-09-14T15:30:35.158Z",
+  "deadLettersSeen": 15,
+  "recoverable": [
+    {
+      "eventId": "fd80088b-9d8a-40be-8820-7d914f5d46da",
+      "topic": "platform.iam.v1",
+      "consumerGroup": "cg.content-from-iam.v1",
+      "failureCode": "CannotGetJdbcConnectionException",
+      "recoveryState": "AWAITING_OPERATOR"
+    },
+    {
+      "eventId": "6ec428ee-d6d5-4a0b-a3f2-4881998813fa",
+      "topic": "platform.iam.v1",
+      "consumerGroup": "cg.content-from-iam.v1",
+      "failureCode": "CannotGetJdbcConnectionException",
+      "recoveryState": "AWAITING_OPERATOR"
+    },
+    {
+      "eventId": "e37244ba-77f4-43f9-b0de-8a19d42a92df",
+      "topic": "platform.iam.v1",
+      "consumerGroup": "cg.content-from-iam.v1",
+      "failureCode": "CannotGetJdbcConnectionException",
+      "recoveryState": "AWAITING_OPERATOR"
+    }
+  ],
+  "unrecoverable": [
+    {
+      "reason": "envelope missing or origin topic unknown",
+      "eventId": null,
+      "recoveryState": "AWAITING_OPERATOR"
+    },
+    {
+      "reason": "envelope missing or origin topic unknown",
+      "eventId": null,
+      "recoveryState": "AWAITING_OPERATOR"
+    },
+    {
+      "reason": "envelope missing or origin topic unknown",
+      "eventId": null,
+      "recoveryState": "AWAITING_OPERATOR"
+    },
+    {
+      "reason": "envelope missing or origin topic unknown",
+      "eventId": null,
+      "recoveryState": "AWAITING_OPERATOR"
+    },
+    {
+      "reason": "envelope missing or origin topic unknown",
+      "eventId": null,
+      "recoveryState": "AWAITING_OPERATOR"
+    },
+    {
+      "reason": "envelope missing or origin topic unknown",
+      "eventId": null,
+      "recoveryState": "AWAITING_OPERATOR"
+    },
+    {
+      "reason": "envelope missing or origin topic unknown",
+      "eventId": null,
+      "recoveryState": "AWAITING_OPERATOR"
+    },
+    {
+      "reason": "envelope missing or origin topic unknown",
+      "eventId": null,
+      "recoveryState": "AWAITING_OPERATOR"
+    },
+    {
+      "reason": "envelope missing or origin topic unknown",
+      "eventId": null,
+      "recoveryState": "AWAITING_OPERATOR"
+    },
+    {
+      "reason": "envelope missing or origin topic unknown",
+      "eventId": null,
+      "recoveryState": "AWAITING_OPERATOR"
+    },
+    {
+      "reason": "envelope missing or origin topic unknown",
+      "eventId": null,
+      "recoveryState": "AWAITING_OPERATOR"
+    },
+    {
+      "reason": "envelope missing or origin topic unknown",
+      "eventId": null,
+      "recoveryState": "AWAITING_OPERATOR"
+    }
+  ],
+  "selected": 3,
+  "replayed": [
+    {
+      "eventId": "fd80088b-9d8a-40be-8820-7d914f5d46da",
+      "topic": "platform.iam.v1"
+    },
+    {
+      "eventId": "6ec428ee-d6d5-4a0b-a3f2-4881998813fa",
+      "topic": "platform.iam.v1"
+    },
+    {
+      "eventId": "e37244ba-77f4-43f9-b0de-8a19d42a92df",
+      "topic": "platform.iam.v1"
+    }
+  ],
+  "failures": [],
+  "note": "replaying is safe to repeat: the consumer receipt on (consumerGroup, eventId) absorbs a duplicate",
+  "sensitiveMaterial": {
+    "persisted": false,
+    "emitted": false
+  }
+}

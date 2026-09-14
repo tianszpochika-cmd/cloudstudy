@@ -1,0 +1,43 @@
+{
+  "schema": "platform.event-runtime.harness.v1",
+  "taskId": "P1R-M2-005",
+  "batch": "E7",
+  "mode": "runtime",
+  "sourceCommit": "377db632d45a74ede4d608cd951c0734166a2d47",
+  "capturedAt": "2026-09-14T15:30:50.701Z",
+  "topic": "platform.iam.v1",
+  "consumerGroup": "cg.content-from-iam.v1",
+  "dlqTopic": "platform.events.dlq.v1",
+  "phases": [
+    {
+      "id": "replay",
+      "passed": false,
+      "claims": {
+        "replay-ran": true,
+        "the-replayed-event-took-effect-once": false,
+        "a-second-replay-ran": true,
+        "a-second-replay-cannot-apply-the-effect-again": true
+      },
+      "observed": {
+        "eventId": "(whole dlq)",
+        "afterFirstReplay": {
+          "receipts": 3,
+          "applied": 3
+        },
+        "afterSecondReplay": {
+          "receipts": 3,
+          "applied": 3
+        }
+      }
+    }
+  ],
+  "passed": false,
+  "notVerifiedHere": [
+    "broker outage and recovery: the operator-driven run in batch E4 covered it, and scripting the container stop/start is not part of this harness yet",
+    "publisher-side replay of a dead-lettered event"
+  ],
+  "sensitiveMaterial": {
+    "persisted": false,
+    "emitted": false
+  }
+}
