@@ -2,7 +2,7 @@
   "taskId": "P1R-M2-004",
   "draftOnly": false,
   "canonicalTaskStatus": "REVIEW",
-  "sourceCommit": "17eb918cef4dec772ecea4cc21fb283b19b387f2",
+  "sourceCommit": "6880df7fb1cfff5de98e7a1ac9e1f83e548475bc",
   "artifactDigests": [
     {
       "path": "config/p1r-data-ownership.v1.json",
@@ -12,7 +12,7 @@
     {
       "path": "config/p1r-m2-requirement-owners.v1.json",
       "algorithm": "sha256",
-      "digest": "e0068c9c23028dc33061fe916886ea7b751f3b1a17d8a0d039041173812f7fd4"
+      "digest": "d4645e2fa45d642de885d8a8465e32e114eb9c4fe9b97eb497f85a9a949c3701"
     },
     {
       "path": "config/v2-runtime-services.json",
@@ -47,7 +47,7 @@
     {
       "path": "scripts/audit/p1r-evidence-gate.mjs",
       "algorithm": "sha256",
-      "digest": "d47c515ef897ce558bfbeffc705ccc95514e2cf97020a341e5e5b7f2245ddaa3"
+      "digest": "dbb109e1104af3a059389cf863370078d814821781eacee8b3b67624261183cf"
     },
     {
       "path": "scripts/runtime/capture-m2-004-evidence.mjs",
@@ -472,29 +472,10 @@
         "reviewer": "awaiting a fresh independent session",
         "summary": "Not submitted. The seventh round's findings are addressed: the reassignment is carried in all five places and checked for stale sentences, the tenant figure has one definition and the same number everywhere, the review request is regenerated from the manifest, and the gate requires the ledger line to name any task that owns one of the task's requirements."
       }
-    ],
-    "previousCurrentSourceCommit": "182fae60beb5316575068b33b7a2b78a60b83a59",
-    "currentSourceRevalidationTask": "P1R-M2-004",
-    "currentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
-    "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-14T05:03:52.289Z",
-    "currentSourceRevalidationAuditedImplementationSource": "17eb918cef4dec772ecea4cc21fb283b19b387f2",
-    "currentSourceRevalidationIntegrationCheckpoint": "17eb918cef4dec772ecea4cc21fb283b19b387f2",
-    "currentSourceRevalidationHistory": [
-      {
-        "taskId": "P1R-M2-004",
-        "sourceCommit": "17eb918cef4dec772ecea4cc21fb283b19b387f2",
-        "auditedImplementationSource": "17eb918cef4dec772ecea4cc21fb283b19b387f2",
-        "integrationCheckpoint": "17eb918cef4dec772ecea4cc21fb283b19b387f2",
-        "reviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
-        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
-        "finishedAt": "2026-09-14T05:03:52.289Z",
-        "details": "Digest rebind after the evidence gate gained the rule the seventh review asked for: the ledger line for a task must name any task that owns one of the requirements that task asserts, so a reassignment cannot be made on the evidence side alone."
-      }
     ]
   },
   "startedAt": "2026-09-09T00:00:00+08:00",
-  "finishedAt": "2026-09-14T04:50:52.837Z",
+  "finishedAt": "2026-09-14T05:24:31.012Z",
   "actors": [
     "root-coordinator",
     "p1r-implementation"
