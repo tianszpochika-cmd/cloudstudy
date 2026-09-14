@@ -1,9 +1,9 @@
 {
   "schema": "platform.audit-ingest-check.v1",
   "taskId": "P1R-M2-004",
-  "capturedAt": "2026-09-14T00:46:36.997Z",
+  "capturedAt": "2026-09-14T02:01:04.331Z",
   "auditOrigin": "http://127.0.0.1:18099",
-  "eventId": "d484d4f0-ec38-44b7-b12c-9ed117951bfb",
+  "eventId": "0a13f163-b07c-414a-ad83-e5911456ab9e",
   "assertions": [
     {
       "name": "first ingest accepted",

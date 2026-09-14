@@ -1,15 +1,15 @@
 {
   "schema": "platform.gated-db-tests.v1",
   "taskId": "P1R-M2-004",
-  "capturedAt": "2026-09-14T01:11:22.680Z",
+  "capturedAt": "2026-09-14T02:01:03.429Z",
   "adminUrl": "jdbc:mysql://127.0.0.1:13306/",
   "discoveredClasses": 31,
   "selectedClasses": 31,
   "groupsRun": 26,
   "testsRun": 46,
   "uncoveredClasses": [],
-  "failing": 1,
-  "passed": false,
+  "failing": 0,
+  "passed": true,
   "policy": "fail-closed: exit 0 with zero tests or any skipped test is a failure",
   "results": [
     {
@@ -481,20 +481,14 @@
       "classesReporting": [
         "com.englishflow.workflow.adapter.jdbc.JdbcSagaStoreIntegrationTest"
       ],
-      "exitStatus": 1,
-      "passed": false,
+      "exitStatus": 0,
+      "passed": true,
       "testsRun": 3,
       "failures": 0,
-      "errors": 3,
+      "errors": 0,
       "skipped": 0,
-      "failureMessages": [
-        {
-          "className": "com.englishflow.workflow.adapter.jdbc.JdbcSagaStoreIntegrationTest",
-          "message": "Failed to obtain JDBC Connection",
-          "detail": "<![CDATA[org.springframework.jdbc.CannotGetJdbcConnectionException: Failed to obtain JDBC Connection"
-        }
-      ],
-      "reason": "3 tests, 0 failures, 3 errors, 0 skipped; 1 of 1 classes reported (exit 1); Failed to obtain JDBC Connection"
+      "failureMessages": [],
+      "reason": null
     }
   ]
 }

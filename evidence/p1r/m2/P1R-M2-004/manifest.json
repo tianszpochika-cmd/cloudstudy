@@ -2,7 +2,7 @@
   "taskId": "P1R-M2-004",
   "draftOnly": false,
   "canonicalTaskStatus": "REVIEW",
-  "sourceCommit": "f2b31c3be17f6bd7ec6d231a7f168002c387e3ff",
+  "sourceCommit": "85431daee1407db46da5be336e10dd8c08e7145e",
   "artifactDigests": [
     {
       "path": "config/p1r-data-ownership.v1.json",
@@ -52,7 +52,7 @@
     {
       "path": "scripts/runtime/run-gated-db-tests.mjs",
       "algorithm": "sha256",
-      "digest": "f2beeca08a6fcbdab5fa87fba85868944d60d3d1c36398574912b744892a3891"
+      "digest": "960b3f497ccadc0a568058bd5384214fc7b31541195333d4f4fd19bf87979657"
     },
     {
       "path": "services/audit-service/src/main/resources/db/migration/V2__widen_audit_schema_version.sql",
@@ -262,7 +262,7 @@
     {
       "path": "evidence/p1r/m2/P1R-M2-004/runtime-evidence-2026-09-13.json",
       "algorithm": "sha256",
-      "digest": "f1a086a98cb47477b74e1e6adbfdf6b7d543d434a5a79485dc6357fd6839789c"
+      "digest": "ae9f26368655f284539b5d42b1c7c83b3586b4820f626b0d89a0d876501049bd"
     },
     {
       "path": "evidence/p1r/m2/P1R-M2-004/gated-db-tests-2026-09-13.json",
@@ -272,7 +272,7 @@
     {
       "path": "evidence/p1r/m2/P1R-M2-004/audit-ingest-check.json",
       "algorithm": "sha256",
-      "digest": "1f92586735b7444acf4bb8982531ae18ff974b11be40a5fb72c79f9d2ec03b93"
+      "digest": "9f6fcf38721c80efac6fdd9e40126ee78cc68c3d5e7e0b88705f1e2840835004"
     },
     {
       "path": "evidence/p1r/m2/P1R-M2-004/regression.json",
@@ -285,8 +285,8 @@
     "branch": "dev",
     "phaseStatus": "D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED",
     "runtimeStatus": "M2_004_PARTIAL_RUNTIME_VERIFIED",
-    "reviewedRevision": "0867da17187c813a5f7c724151b45f83896d4b40",
-    "measuredAt": "2026-09-14T01:16:37.983Z",
+    "reviewedRevision": "85431daee1407db46da5be336e10dd8c08e7145e",
+    "measuredAt": "2026-09-14T02:06:19.228Z",
     "toolchain": {
       "java": "OpenJDK 25.0.4.1",
       "maven": "3.9.12",
@@ -392,7 +392,7 @@
     ]
   },
   "startedAt": "2026-09-09T00:00:00+08:00",
-  "finishedAt": "2026-09-14T01:25:54.737Z",
+  "finishedAt": "2026-09-14T02:06:20.029Z",
   "actors": [
     "root-coordinator",
     "p1r-implementation"
@@ -407,6 +407,7 @@
     "$env:M2_REDIS_FAULT_OPT_IN='PAUSE_EXACT_REDIS_16379_AND_RECOVER'; node scripts/runtime/p1r-m2-004-runtime.mjs",
     "node scripts/runtime/run-gated-db-tests.mjs --json",
     "node scripts/runtime/run-gated-db-tests.mjs --write",
+    "node scripts/runtime/verify-audit-ingest.mjs --write",
     "node scripts/runtime/capture-m2-004-evidence.mjs",
     "node scripts/database/reconcile-owner-schemas.mjs --apply",
     "node scripts/database/reconcile-redis-acl.mjs",
