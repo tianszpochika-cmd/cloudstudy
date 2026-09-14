@@ -2,9 +2,9 @@
   "schema": "m2.data-ownership.runtime-evidence.v1",
   "taskId": "P1R-M2-004",
   "result": "PARTIAL",
-  "sourceCommit": "85431daee1407db46da5be336e10dd8c08e7145e",
-  "startedAt": "2026-09-14T02:01:04.420Z",
-  "finishedAt": "2026-09-14T02:06:19.228Z",
+  "sourceCommit": "a59f2dbef234a4cb3bc1529b417ab9da8e27c151",
+  "startedAt": "2026-09-14T03:32:32.807Z",
+  "finishedAt": "2026-09-14T03:38:10.418Z",
   "ownerCount": 14,
   "requirements": [
     {
@@ -25,7 +25,9 @@
     },
     {
       "id": "M2-004-ROLLBACK-COMPENSATION",
-      "status": "VERIFIED"
+      "status": "NOT_APPLICABLE",
+      "ownerTask": "P1R-M2-006",
+      "reassignedBecause": "config assigns this requirement to P1R-M2-006, so this task's checks no longer decide it"
     },
     {
       "id": "M2-004-TENANT-GUARD",
@@ -1416,9 +1418,11 @@
     {
       "property": "workflow.jdbc.integration",
       "classes": [
-        "JdbcSagaStoreIntegrationTest"
+        "JdbcJobLeaseStoreIntegrationTest",
+        "JdbcSagaStoreIntegrationTest",
+        "JdbcWorkflowOutboxIntegrationTest"
       ],
-      "testsRun": 3,
+      "testsRun": 13,
       "failures": 0,
       "errors": 0,
       "skipped": 0,
@@ -1427,7 +1431,7 @@
       "result": "PASS"
     },
     {
-      "discoveredClasses": 31,
+      "discoveredClasses": 33,
       "uncoveredClasses": [],
       "policy": "fail-closed: exit 0 with zero tests or any skipped test is a failure",
       "id": "gated-tests:discovery-coverage",
@@ -2490,6 +2494,7 @@
   },
   "notRuntimeVerified": [
     "M2-004-REDIS-REBUILD",
+    "M2-004-ROLLBACK-COMPENSATION",
     "M2-004-RETENTION-DELETE-HOLD"
   ]
 }

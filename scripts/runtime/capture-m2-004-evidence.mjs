@@ -63,14 +63,31 @@ function measureTenantProductionUse(root) {
     const imports = [...source.matchAll(/^import (com\.englishflow\.[A-Za-z0-9_.]+);/gmu)]
       .map((match) => match[1]).filter((name) => !name.endsWith('Test'));
     if (imports.length > 0) importing.push(path.basename(file).replace('.java', ''));
-    const instantiates = imports.some((name) => {
-      const simple = name.split('.').at(-1);
-      return new RegExp(`new\\s+${simple}\\s*[(<]`, 'u').test(source);
-    });
+
+    // A test may instantiate a production class from its own package without importing it, which is how
+    // three of these classes use theirs. Counting only imports therefore under-reported production use and
+    // the manifest named classes as unused that do use production code.
+    // The main-source directory sitting beside the test is the same package by construction, so its .java
+    // files are the classes this test can instantiate without importing them. Appending the package path
+    // again pointed at a directory that does not exist, so the same-package references were missed entirely.
+    const mainFile = file.replace(/src[/\\]test[/\\]java/u, 'src/main/java');
+    const packageDirectory = path.dirname(mainFile);
+    const samePackageNames = fs.existsSync(packageDirectory)
+      ? fs.readdirSync(packageDirectory).filter((name) => name.endsWith('.java') && !name.endsWith('Test.java'))
+        .map((name) => name.replace('.java', ''))
+      : [];
+    const names = [...new Set([...imports.map((name) => name.split('.').at(-1)), ...samePackageNames])];
+    const instantiates = names.some((simple) => new RegExp(`new\\s+${simple}\\s*[(<]`, 'u').test(source));
     const name = path.basename(file).replace('.java', '');
     if (instantiates) instantiating.push(name); else notInstantiating.push(name);
   }
-  return { total: tests.length, instantiating: instantiating.length, notInstantiating, importing: importing.length };
+  return {
+    total: tests.length,
+    instantiating: instantiating.length,
+    notInstantiating,
+    importing: importing.length,
+    detail: tests.map((file) => path.basename(file)),
+  };
 }
 
 /**
@@ -432,7 +449,7 @@ const manifest = {
       status: rollbackCheck?.result === 'PASS' ? 'PASS' : 'FAIL',
       details: rollbackCheck === null
         ? 'The harness produced no rollback check, so this entry reports FAIL rather than asserting the property.'
-        : `Measured by the harness: with a recorded migration checksum corrupted, the reconcile runner for ${rollbackCheck.schema} exited ${rollbackCheck.driftRefused?.exitStatus} and refused with "${rollbackCheck.driftRefused?.message}". The record was then repaired in a finally block, so a failed assertion cannot leave a false checksum behind, and the runner converged again with exit ${rollbackCheck.recovery?.exitStatus}. The recorded checksum was confirmed restored afterwards: ${rollbackCheck.checksumRestored}. This is the rollback and compensation evidence the ledger line names, and it is owned by this task rather than reassigned.`,
+        : `Measured by the harness: with a recorded migration checksum corrupted, the reconcile runner for ${rollbackCheck.schema} exited ${rollbackCheck.driftRefused?.exitStatus} and refused with "${rollbackCheck.driftRefused?.message}". The record was then repaired in a finally block, so a failed assertion cannot leave a false checksum behind, and the runner converged again with exit ${rollbackCheck.recovery?.exitStatus}. The recorded checksum was confirmed restored afterwards: ${rollbackCheck.checksumRestored}. This is the migration-safety evidence, not rollback or compensation: that requirement is owned by P1R-M2-006 and this task reports it NOT_APPLICABLE. The drift-refusal check above is a real property but it performs no rollback and writes none of the receipts the requirement names, which the fifth review established and which the earlier wording of this sentence denied.`,
     },
   ],
   knownGaps: [

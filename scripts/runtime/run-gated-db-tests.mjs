@@ -281,6 +281,12 @@ export function runGatedDatabaseTests(options = {}) {
     schema: 'platform.gated-db-tests.v1',
     taskId: 'P1R-M2-004',
     capturedAt: new Date().toISOString(),
+    // The revision this ran on. Without it the counts cannot be traced to a tree, which is how a manifest came
+    // to report figures from a run that predated two of the classes it was describing.
+    sourceCommit: (() => {
+      const head = spawnSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8', windowsHide: true });
+      return (head.stdout ?? '').trim() || null;
+    })(),
     adminUrl: adminUrl(host, port),
     discoveredClasses: discovered.length,
     selectedClasses: selected.length,

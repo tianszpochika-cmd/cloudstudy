@@ -727,12 +727,26 @@ function notVerifiable() {
   // A requirement whose ledger owner is a later task is NOT_APPLICABLE to this submission: this
   // task asserts the requirement, it does not deliver it. Anything this task does own and has not
   // verified is reported as FAILED, never softened.
+  //
+  // The ownership rule is applied to every requirement, including ones a check already recorded. It used to
+  // skip those, which meant a requirement could be recorded VERIFIED here and left that way after it was
+  // reassigned elsewhere: the rule that decides ownership never ran for it.
   const owners = readJson('config/p1r-m2-requirement-owners.v1.json');
   const ownerById = new Map((owners.requirements ?? []).map((entry) => [entry.id, entry]));
   for (const entry of ownership.m2RuntimeRequirements ?? []) {
-    if (requirements.some((item) => item.id === entry.id)) continue;
     const owner = ownerById.get(entry.id);
     const ownedHere = !owner || owner.ownerTask === 'P1R-M2-004';
+    const already = requirements.find((item) => item.id === entry.id);
+    if (already !== undefined) {
+      if (!ownedHere) {
+        // Reassigned after the fact. The verified status cannot stand, and the change is recorded rather than
+        // applied silently so the evidence says what happened.
+        already.status = 'NOT_APPLICABLE';
+        already.ownerTask = owner.ownerTask;
+        already.reassignedBecause = `config assigns this requirement to ${owner.ownerTask}, so this task's checks no longer decide it`;
+      }
+      continue;
+    }
     const status = ownedHere ? 'FAILED' : 'NOT_APPLICABLE';
     record(`requirement:${entry.id}`, status === 'NOT_APPLICABLE' ? 'NOT_APPLICABLE' : 'FAIL', {
       requirement: entry.requirement,

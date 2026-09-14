@@ -1,12 +1,13 @@
 {
   "schema": "platform.gated-db-tests.v1",
   "taskId": "P1R-M2-004",
-  "capturedAt": "2026-09-14T02:25:07.400Z",
+  "capturedAt": "2026-09-14T03:42:55.901Z",
+  "sourceCommit": "a59f2dbef234a4cb3bc1529b417ab9da8e27c151",
   "adminUrl": "jdbc:mysql://127.0.0.1:13306/",
-  "discoveredClasses": 31,
-  "selectedClasses": 31,
+  "discoveredClasses": 33,
+  "selectedClasses": 33,
   "groupsRun": 26,
-  "testsRun": 46,
+  "testsRun": 56,
   "uncoveredClasses": [],
   "failing": 0,
   "passed": true,
@@ -476,14 +477,18 @@
       "service": "workflow",
       "property": "workflow.jdbc.integration",
       "classes": [
-        "JdbcSagaStoreIntegrationTest"
+        "JdbcJobLeaseStoreIntegrationTest",
+        "JdbcSagaStoreIntegrationTest",
+        "JdbcWorkflowOutboxIntegrationTest"
       ],
       "classesReporting": [
-        "com.englishflow.workflow.adapter.jdbc.JdbcSagaStoreIntegrationTest"
+        "com.englishflow.workflow.adapter.jdbc.JdbcJobLeaseStoreIntegrationTest",
+        "com.englishflow.workflow.adapter.jdbc.JdbcSagaStoreIntegrationTest",
+        "com.englishflow.workflow.adapter.jdbc.JdbcWorkflowOutboxIntegrationTest"
       ],
       "exitStatus": 0,
       "passed": true,
-      "testsRun": 3,
+      "testsRun": 13,
       "failures": 0,
       "errors": 0,
       "skipped": 0,
