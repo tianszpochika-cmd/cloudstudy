@@ -2,10 +2,10 @@
   "schema": "m2.data-ownership.runtime-evidence.v1",
   "taskId": "P1R-M2-004",
   "result": "PARTIAL",
-  "workingTreeDirty": true,
-  "sourceCommit": "f901bc7c5afc062e32b729ddc6ba27a2102a8033",
-  "startedAt": "2026-09-14T06:59:35.747Z",
-  "finishedAt": "2026-09-14T07:05:10.535Z",
+  "workingTreeDirty": false,
+  "sourceCommit": "3e222432d92d4db64262edf078427812cb607979",
+  "startedAt": "2026-09-14T07:05:29.911Z",
+  "finishedAt": "2026-09-14T07:11:04.485Z",
   "ownerCount": 14,
   "requirements": [
     {
