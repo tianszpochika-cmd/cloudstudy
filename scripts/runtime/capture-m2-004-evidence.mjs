@@ -169,6 +169,13 @@ const artifacts = [
   'scripts/database/reconcile-owner-schemas.mjs',
   'scripts/database/reconcile-redis-acl.mjs',
   'scripts/audit/p1r-data-ownership-check.mjs',
+  // The tools that judge and produce this evidence. A reader of the manifest otherwise cannot tell that either
+  // changed, and the sixth review found both had changed without appearing here.
+  'scripts/audit/p1r-evidence-gate.mjs',
+  'scripts/runtime/capture-m2-004-evidence.mjs',
+  'scripts/runtime/run-gated-db-tests.mjs',
+  'scripts/runtime/verify-audit-ingest.mjs',
+  'scripts/database/reconcile-redis-acl.mjs',
   'scripts/runtime/p1r-m2-004-runtime.mjs',
   'scripts/runtime/run-gated-db-tests.mjs',
   'services/audit-service/src/main/resources/db/migration/V2__widen_audit_schema_version.sql',

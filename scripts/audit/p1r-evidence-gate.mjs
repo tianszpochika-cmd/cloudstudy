@@ -295,6 +295,42 @@ export function validateManifest({ root, task, manifest, manifestPath, checkGit 
     const absent = asserted.map((entry) => entry.id).filter((id) => !present.has(id));
     add(errors, absent.length === 0,
       `${task.id}: manifest.results omits requirements this task asserts: ${absent.join(', ')}`);
+
+    // The ownership file has to cover every requirement the frozen policy declares. Without this, deleting an
+    // entry is a way to make a requirement disappear: the review mutated exactly that and the gate passed,
+    // because a requirement nobody lists is a requirement nobody checks. The frozen policy is the source, so it
+    // cannot be emptied from the file that describes ownership of it.
+    const policyPath = path.join(root, 'config/p1r-data-ownership.v1.json');
+    if (fs.existsSync(policyPath)) {
+      const policy = JSON.parse(fs.readFileSync(policyPath, 'utf8'));
+      const declared = (policy.m2RuntimeRequirements ?? []).map((entry) => entry.id).sort();
+      const described = (ownership.requirements ?? []).map((entry) => entry.id).sort();
+      const undeclared = declared.filter((id) => !described.includes(id));
+      add(errors, undeclared.length === 0,
+        `config/p1r-m2-requirement-owners.v1.json omits requirements the frozen policy declares: ${undeclared.join(', ')}`);
+      // assertedBy says which task first claimed a requirement, and the ownership file is the only place that
+      // claim is recorded. Letting it drift lets a task disown a requirement by editing one string.
+      // assertedBy says which task first claimed a requirement. It is derived from the requirement's own id,
+      // which starts with the milestone and number of the claiming task, so the claim cannot be changed by
+      // editing a string: M2-004-ROLLBACK-COMPENSATION can only have been claimed by P1R-M2-004.
+      const misattributed = (ownership.requirements ?? []).filter((entry) => {
+        if (entry.assertedBy !== task.id) return false;
+        const derived = `P1R-${/^(M\d)-(\d{3})-/u.exec(entry.id)?.slice(1).join('-') ?? ''}`;
+        return entry.assertedBy !== derived;
+      });
+      add(errors, misattributed.length === 0,
+        `${task.id}: assertedBy does not match the id prefix: ${misattributed.map((entry) => `${entry.id}=${entry.assertedBy}`).join(', ')}`);
+      // A requirement owned by another task must not be reported as passing here: that would claim delivery of
+      // work this task does not do, and the review showed it passed silently.
+      for (const result of manifest.results) {
+        if (!isRecord(result) || typeof result.check !== 'string') continue;
+        const owner = (ownership.requirements ?? []).find((entry) => entry.id === result.check)?.ownerTask;
+        if (owner === undefined || owner === task.id) continue;
+        add(errors, result.status === 'NOT_APPLICABLE',
+          `${task.id}: ${result.check} is owned by ${owner} but reported ${result.status}`);
+      }
+    }
+
     // The ownership file decides who owns what, so a task that asserts requirements in it has to record it as
     // an artifact: a change to the file then shows up as a digest change rather than passing unnoticed. It
     // does not prove the manifest was generated, but it does mean the assignment a reader relies on is the
@@ -303,6 +339,13 @@ export function validateManifest({ root, task, manifest, manifestPath, checkGit 
       const digestPaths = new Set((manifest.artifactDigests ?? []).map((entry) => isRecord(entry) ? entry.path : undefined));
       add(errors, digestPaths.has('config/p1r-m2-requirement-owners.v1.json'),
         `${task.id}: artifactDigests must record config/p1r-m2-requirement-owners.v1.json, which decides ownership of the requirements it asserts`);
+      // The gate and the generator decide how the evidence is produced and judged, so they belong in the same
+      // list: a reader of the manifest otherwise cannot tell that either changed.
+      for (const tool of ['scripts/audit/p1r-evidence-gate.mjs', 'scripts/runtime/capture-m2-004-evidence.mjs']) {
+        if (!fs.existsSync(path.join(root, tool))) continue;
+        add(errors, digestPaths.has(tool),
+          `${task.id}: artifactDigests must record ${tool}, which decides how this evidence is judged or produced`);
+      }
     }
   }
 
