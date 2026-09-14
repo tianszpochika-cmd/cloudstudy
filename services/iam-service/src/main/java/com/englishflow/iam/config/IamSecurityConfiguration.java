@@ -41,6 +41,10 @@ public class IamSecurityConfiguration {
                         .requestMatchers("/api/v1/auth/register", "/api/v1/auth/login",
                                 "/api/v1/auth/token/refresh", "/api/v1/auth/jwks",
                                 "/api/v1/auth/password-reset/**").permitAll()
+                        // The one exception to the rule below, because requiring a service token to obtain one
+                        // is a closed loop. This path authenticates on the credentials in its body, verified by
+                        // the controller, exactly as the login path authenticates on a password.
+                        .requestMatchers("/internal/v1/iam/service-token").permitAll()
                         .requestMatchers("/internal/v1/**").hasAuthority("TOKEN_TYPE_service")
                         .anyRequest().hasAuthority("TOKEN_TYPE_access"))
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.decoder(iamJwtDecoder)

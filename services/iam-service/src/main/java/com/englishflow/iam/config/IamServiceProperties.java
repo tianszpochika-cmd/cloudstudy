@@ -8,6 +8,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
 import java.time.Duration;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Runtime configuration for the platform-owned authentication center.
@@ -52,6 +54,40 @@ public class IamServiceProperties {
 
     @Valid
     private PolicyProperties policy = new PolicyProperties();
+
+    /**
+     * Service clients allowed to exchange credentials for a short-lived service token (ADR-0016).
+     *
+     * <p>Keyed by client id. The secret is configured as a SHA-256 digest, so the plaintext exists only where it
+     * is injected and never in configuration or in an image. Empty by default: with no client configured no
+     * service token can be issued, which is the safe state for a deployment that has not opted in.
+     */
+    private Map<String, ServiceClientProperties> serviceClients = new java.util.LinkedHashMap<>();
+
+    /** One service client: the digest of its secret and the least privilege it is granted. */
+    public static class ServiceClientProperties {
+        private String secretDigest;
+        private List<String> permissions = new java.util.ArrayList<>();
+        private Duration tokenTtl = Duration.ofMinutes(5);
+
+        public String getSecretDigest() { return secretDigest; }
+
+        public void setSecretDigest(String secretDigest) { this.secretDigest = secretDigest; }
+
+        public List<String> getPermissions() { return permissions; }
+
+        public void setPermissions(List<String> permissions) { this.permissions = permissions; }
+
+        public Duration getTokenTtl() { return tokenTtl; }
+
+        public void setTokenTtl(Duration tokenTtl) { this.tokenTtl = tokenTtl; }
+    }
+
+    public Map<String, ServiceClientProperties> getServiceClients() { return serviceClients; }
+
+    public void setServiceClients(Map<String, ServiceClientProperties> serviceClients) {
+        this.serviceClients = serviceClients;
+    }
 
     public String getPhase() { return phase; }
     public void setPhase(String phase) { this.phase = phase; }

@@ -120,6 +120,20 @@ public class IamRuntimeConfiguration {
             """);
 
     @Bean public Clock iamClock() { return Clock.system(ZoneOffset.UTC); }
+
+    /**
+     * Issues service tokens for internal callers (ADR-0016).
+     *
+     * <p>Wired here rather than left to component scanning so that the dependency on the signing key and the
+     * properties is visible in one place next to the other authentication beans.
+     */
+    @Bean
+    public com.englishflow.iam.auth.ServiceTokenService iamServiceTokenService(
+            JwtEncoder iamJwtEncoder, com.englishflow.iam.auth.JwtSigningKeyProvider iamJwtSigningKeys,
+            IamServiceProperties iamServiceProperties) {
+        return new com.englishflow.iam.auth.ServiceTokenService(iamJwtEncoder, iamJwtSigningKeys, iamServiceProperties);
+    }
+
     @Bean
     public ObjectMapper iamObjectMapper() {
         ObjectMapper mapper = new ObjectMapper();
