@@ -458,11 +458,17 @@
         "REVIEW",
         "REWORK",
         "IN_PROGRESS",
+        "REVIEW",
+        "REWORK",
+        "IN_PROGRESS",
+        "REVIEW",
+        "REWORK",
+        "IN_PROGRESS",
         "REVIEW"
       ],
-      "recordedAt": "2026-09-12T22:26:07.500Z",
+      "recordedAt": "2026-09-14T01:45:53.037Z",
       "actor": "agent:p1r_implementation:deepseek-harness",
-      "reason": "Independent schema, credentials, Redis namespaces and outbox shape are provisioned, and all six locally provable runtime requirements of this task carry runtime evidence, as do the gated tenant isolation, migration and IAM persistence classes. Three independent reviews have returned REWORK (P0/P1/P2 of 0/4/6, then 0/1/9, then 0/3/7). The first two found the accounting wrong rather than the work missing. The third found a ledger exit-evidence item judged NOT_APPLICABLE with a literal PASS standing in for it, three numbers that did not match their evidence, and drift during the review caused by building workflow-service under M2-006, which changed the owner count this evidence describes. The mechanical findings are closed; whether the rollback and compensation test belongs to this task or to M2-006 is awaiting the human decision, so the task is not yet at a reviewable state.",
+      "reason": "Independent schema, credentials, Redis namespaces and outbox shape are provisioned, and all six locally provable runtime requirements of this task carry runtime evidence, as do the gated tenant isolation, migration and IAM persistence classes. Four independent reviews have returned REWORK (P0/P1/P2 of 0/4/6, then 0/1/9, then 0/3/7, then 0/4/8). Every round has had P0 zero, and every round's findings have been about accounting rather than about work that was not done: statements, figures or owner assignments that disagreed with the evidence beside them. The fourth round's causes are addressed at the root rather than one instance at a time: the evidence generator now derives every figure and owner assignment from data, the gate fails when a requirement config assigns to a task is reported not-applicable by that task, the gated runner discovers classes across the repository instead of a literal list, and the harness was re-run on a committed tree so its own sourceRevision contains the checks it reports. Whether the rollback and compensation requirement belongs here or to M2-006 was decided in favour of this task, because the ledger names it in this task's exit evidence, and it is delivered and verified here.",
       "evidencePath": "evidence/p1r/m2/P1R-M2-004/manifest.json"
     },
     {
