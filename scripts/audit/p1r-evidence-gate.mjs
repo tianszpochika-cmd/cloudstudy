@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import { checkStaleClaims } from './p1r-stale-claims-check.mjs';
 
 export const ALLOWED_STATUSES = new Set([
   'PLANNED',
@@ -372,7 +373,8 @@ export function validateManifest({ root, task, manifest, manifestPath, checkGit 
         `${task.id}: artifactDigests must record config/p1r-m2-requirement-owners.v1.json, which decides ownership of the requirements it asserts`);
       // The gate and the generator decide how the evidence is produced and judged, so they belong in the same
       // list: a reader of the manifest otherwise cannot tell that either changed.
-      for (const tool of ['scripts/audit/p1r-evidence-gate.mjs', 'scripts/runtime/capture-m2-004-evidence.mjs']) {
+      for (const tool of ['scripts/audit/p1r-evidence-gate.mjs', 'scripts/runtime/capture-m2-004-evidence.mjs',
+        'scripts/audit/p1r-stale-claims-check.mjs']) {
         if (!fs.existsSync(path.join(root, tool))) continue;
         add(errors, digestPaths.has(tool),
           `${task.id}: artifactDigests must record ${tool}, which decides how this evidence is judged or produced`);
@@ -412,8 +414,15 @@ export function validateManifest({ root, task, manifest, manifestPath, checkGit 
   return errors;
 }
 
-export function validateEvidenceGate({ root = process.cwd(), milestone, runPlanCheck = true, checkGit = true } = {}) {
+export function validateEvidenceGate(
+  { root = process.cwd(), milestone, runPlanCheck = true, checkGit = true } = {}) {
   const errors = [];
+  // The stale-claims check runs as part of the gate rather than as a command someone has to remember. The tenth
+  // review found it wired to nothing, which made it a tool rather than a protection.
+  {
+    const staleClaims = checkStaleClaims();
+    for (const message of staleClaims.errors) errors.push(`stale-claims: ${message}`);
+  }
   const ledgerPath = path.join(root, 'requirements', 'backlog', 'v2-phase1-rebaseline', '02-编号任务台账.md');
   if (!fs.existsSync(ledgerPath)) return { result: 'FAIL', errors: [`missing ledger: ${ledgerPath}`], tasks: [] };
   if (checkGit) validateCommittedPath(root, ledgerPath, 'canonical ledger', errors);

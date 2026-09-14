@@ -211,6 +211,8 @@ const artifacts = [
   // The tools that judge and produce this evidence. A reader of the manifest otherwise cannot tell that either
   // changed, and the sixth review found both had changed without appearing here.
   'scripts/audit/p1r-evidence-gate.mjs',
+  // The check the gate runs against the documents, recorded for the same reason the gate itself is.
+  'scripts/audit/p1r-stale-claims-check.mjs',
   'scripts/runtime/capture-m2-004-evidence.mjs',
   'scripts/runtime/run-gated-db-tests.mjs',
   'scripts/runtime/verify-audit-ingest.mjs',
