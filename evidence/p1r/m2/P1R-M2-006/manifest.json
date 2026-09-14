@@ -1,55 +1,8 @@
 {
-  "schema": "platform.p1r-task-evidence.v1",
   "taskId": "P1R-M2-006",
   "draftOnly": false,
   "canonicalTaskStatus": "DEV_DONE",
-  "decision": "DEV_DONE",
   "sourceCommit": "4f056b4daba14a46634b6acfa12ed17662341bc8",
-  "statusNote": "Development finished and the evidence is in the repository. The durable audit path from the gateway through IAM's service token to the canonical ingest works end to end, and the workflow service suite is 51 tests with no failures against real MySQL. Not independently verified: the owner directed that development proceed to M8 with acceptance testing afterwards, which is why this is DEV_DONE and not ACCEPTED.",
-  "results": [
-    {
-      "check": "workflow-saga-state-machine",
-      "status": "PASS",
-      "details": "Workflow service suite: 51 tests, 0 failures, 0 errors, run against real MySQL with the gated integration variables set. The one failure seen earlier was test data rather than a defect: the table held 52 unfinished sagas left by previous runs, the sweep returns the fifty oldest by updated_at, and the saga under test was fifty-third. Clearing the abandoned rows at the start of that case made it measure the predicate it is about."
-    },
-    {
-      "check": "compensation-not-applied-twice",
-      "status": "PASS",
-      "details": "The executor refuses an already-applied compensation; the domain rule and its tests are in SagaCompensationExecutor and SagaCompensationExecutorTest."
-    },
-    {
-      "check": "manual-recovery-two-person",
-      "status": "PASS",
-      "details": "The requester cannot approve their own request, and an executed request cannot be approved again."
-    },
-    {
-      "check": "job-lease-arbitrated-by-database",
-      "status": "PASS",
-      "details": "Five tests against real MySQL: two instances contend and one wins, an expired lease is reclaimed, a disabled job says so."
-    },
-    {
-      "check": "outbox-claimed-exclusively",
-      "status": "PASS",
-      "details": "FOR UPDATE SKIP LOCKED, so two relays take different rows; a published event is never claimed again."
-    },
-    {
-      "check": "gateway-audit-ingest-end-to-end",
-      "status": "PASS",
-      "details": "The probe reports 8 of 8 assertions passing against the running stack: the gateway refuses the request, the caller gets a correlation id, exactly one fact and one receipt are stored, the schema identifier is stored whole, the action attributes it to the gateway, the request id matches, and the envelope carries no credential material."
-    }
-  ],
-  "rollbackEvidence": [
-    {
-      "status": "PASS",
-      "details": "The migrations this task established are additive: the workflow service schema is new, and the audit service migration widens a column from 32 to 64. A tree-wide sweep found two narrowings, in learning-service V9 and notification-service V3, which belong to those owners and are registered among the gaps."
-    }
-  ],
-  "knownGaps": [
-    "The gateway's bounded in-memory sink remains the default when the durable settings are absent: gateway.audit.ingest-uri and its three companions are empty unless the environment supplies them, so a deployment that has not opted in keeps the old behaviour.",
-    "The service client's secret is a local development value in the runner. A deployment needs it injected, and the rotation the ADR names is not implemented.",
-    "The audit ingest accepts a service token type now, but nothing yet limits which service may claim audit.ingest beyond the permissions the client is granted at configuration time.",
-    "The workflow service is not in the owner manifest, so its schema and credentials come from the same local scripts as the platform services rather than from a per-service migration path."
-  ],
   "artifactDigests": [
     {
       "path": "services/workflow-service/src/main/java/com/englishflow/workflow/domain/SagaStateMachine.java",
@@ -137,20 +90,21 @@
       "digest": "e77b27b091c434264a1021beac3729736c3b5d1d40cd14c8e19160f16f92c4a4"
     }
   ],
-  "commands": [
-    {
-      "command": "node scripts/runtime/verify-gateway-audit-ingest.mjs",
-      "purpose": "the end-to-end audit path"
+  "environment": {
+    "kind": "workflow-and-audit-runtime-evidence",
+    "branch": "dev",
+    "phaseStatus": "D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED",
+    "runtimeStatus": "M2_006_SAGA_AND_AUDIT_PATH_VERIFIED",
+    "reviewPolicy": "Independent verification deferred by the owner: development proceeds to M8 and acceptance testing follows, so this task is DEV_DONE and not ACCEPTED.",
+    "stack": {
+      "kafka": "yuxuexing-local-kafka-1 on 127.0.0.1:19092",
+      "mysql": "yuxuexing-local-mysql-1 on 127.0.0.1:13306",
+      "auditService": "127.0.0.1:18099",
+      "iamService": "127.0.0.1:18087",
+      "apiGateway": "127.0.0.1:18070"
     },
-    {
-      "command": "mvn -f services/workflow-service/pom.xml -o test",
-      "purpose": "the saga, compensation, recovery, lease and outbox tests"
-    },
-    {
-      "command": "mvn -f services/api-gateway/pom.xml -o test",
-      "purpose": "the audit sink and token client tests"
-    }
-  ],
+    "note": "The saga and outbox evidence was captured with the gated integration variables set, so those tests ran against real MySQL rather than skipping. The audit path evidence was captured against the running stack."
+  },
   "provenance": {
     "originalSourceCommit": "dc31e4d8902f1f514bed545e2eb1300d4b86ea65",
     "originalReviewer": "agent:p1r_implementation:deepseek-harness",
@@ -173,5 +127,80 @@
         "details": "Rebind after the saga sweep test and the M2-006 delivery."
       }
     ]
-  }
+  },
+  "startedAt": "2026-09-13T00:00:00+08:00",
+  "finishedAt": "2026-09-14T17:13:47.527Z",
+  "actors": [
+    "root-coordinator",
+    "p1r-implementation"
+  ],
+  "sourceIds": [
+    "P1R-M2-006"
+  ],
+  "commands": [
+    {
+      "command": "node scripts/runtime/verify-gateway-audit-ingest.mjs",
+      "purpose": "the end-to-end audit path"
+    },
+    {
+      "command": "mvn -f services/workflow-service/pom.xml -o test",
+      "purpose": "the saga, compensation, recovery, lease and outbox tests"
+    },
+    {
+      "command": "mvn -f services/api-gateway/pom.xml -o test",
+      "purpose": "the audit sink and token client tests"
+    }
+  ],
+  "results": [
+    {
+      "check": "workflow-saga-state-machine",
+      "status": "PASS",
+      "details": "Workflow service suite: 51 tests, 0 failures, 0 errors, run against real MySQL with the gated integration variables set. The one failure seen earlier was test data rather than a defect: the table held 52 unfinished sagas left by previous runs, the sweep returns the fifty oldest by updated_at, and the saga under test was fifty-third. Clearing the abandoned rows at the start of that case made it measure the predicate it is about."
+    },
+    {
+      "check": "compensation-not-applied-twice",
+      "status": "PASS",
+      "details": "The executor refuses an already-applied compensation; the domain rule and its tests are in SagaCompensationExecutor and SagaCompensationExecutorTest."
+    },
+    {
+      "check": "manual-recovery-two-person",
+      "status": "PASS",
+      "details": "The requester cannot approve their own request, and an executed request cannot be approved again."
+    },
+    {
+      "check": "job-lease-arbitrated-by-database",
+      "status": "PASS",
+      "details": "Five tests against real MySQL: two instances contend and one wins, an expired lease is reclaimed, a disabled job says so."
+    },
+    {
+      "check": "outbox-claimed-exclusively",
+      "status": "PASS",
+      "details": "FOR UPDATE SKIP LOCKED, so two relays take different rows; a published event is never claimed again."
+    },
+    {
+      "check": "gateway-audit-ingest-end-to-end",
+      "status": "PASS",
+      "details": "The probe reports 8 of 8 assertions passing against the running stack: the gateway refuses the request, the caller gets a correlation id, exactly one fact and one receipt are stored, the schema identifier is stored whole, the action attributes it to the gateway, the request id matches, and the envelope carries no credential material."
+    }
+  ],
+  "rollbackEvidence": [
+    {
+      "status": "PASS",
+      "details": "The migrations this task established are additive: the workflow service schema is new, and the audit service migration widens a column from 32 to 64. A tree-wide sweep found two narrowings, in learning-service V9 and notification-service V3, which belong to those owners and are registered among the gaps."
+    }
+  ],
+  "blockers": [],
+  "knownGaps": [
+    "The gateway's bounded in-memory sink remains the default when the durable settings are absent: gateway.audit.ingest-uri and its three companions are empty unless the environment supplies them, so a deployment that has not opted in keeps the old behaviour.",
+    "The service client's secret is a local development value in the runner. A deployment needs it injected, and the rotation the ADR names is not implemented.",
+    "The audit ingest accepts a service token type now, but nothing yet limits which service may claim audit.ingest beyond the permissions the client is granted at configuration time.",
+    "The workflow service is not in the owner manifest, so its schema and credentials come from the same local scripts as the platform services rather than from a per-service migration path."
+  ],
+  "reviewer": "awaiting-independent-reviewer",
+  "decision": "DEV_DONE",
+  "nextSteps": [
+    "Acceptance testing by the owner, which is what DEV_DONE defers."
+  ],
+  "statusNote": "Development finished and the evidence is in the repository. The durable audit path from the gateway through IAM's service token to the canonical ingest works end to end, and the workflow service suite is 51 tests with no failures against real MySQL. Not independently verified: the owner directed that development proceed to M8 with acceptance testing afterwards, which is why this is DEV_DONE and not ACCEPTED.",
+  "schema": "platform.p1r-task-evidence.v1"
 }
