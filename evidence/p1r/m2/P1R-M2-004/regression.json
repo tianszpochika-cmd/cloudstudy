@@ -1,11 +1,11 @@
 {
   "schema": "platform.p1r-regression.v1",
-  "capturedAt": "2026-09-14T08:13:03.343Z",
-  "tests": 1439,
-  "pass": 1439,
+  "capturedAt": "2026-09-14T12:55:35.203Z",
+  "tests": 1442,
+  "pass": 1442,
   "fail": 0,
   "skipped": 0,
-  "suiteTests": 1934,
-  "suitePass": 1927,
-  "suiteFail": 0
+  "suiteTests": 1937,
+  "suitePass": 1929,
+  "suiteFail": 1
 }

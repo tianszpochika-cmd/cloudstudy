@@ -101,7 +101,7 @@ node scripts/runtime/verify-content-consumer-dedupe.mjs
 node scripts/runtime/provision-kafka-topics.mjs
 
 # 全量回归与门禁
-node scripts/dev/run-node-tests.mjs tests/p1r      # 期望 1439/1439（此前本文写 1425，已随第三轮返工更正）
+node scripts/dev/run-node-tests.mjs tests/p1r      # 期望 1442/1442（此前本文写 1425，已随第三轮返工更正）
 node scripts/audit/p1r-evidence-gate.mjs --json    # 期望 PASS，108 任务，0 errors
 ```
 

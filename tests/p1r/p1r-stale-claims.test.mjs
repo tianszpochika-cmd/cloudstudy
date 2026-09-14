@@ -81,8 +81,11 @@ const cases = [
     name: 'a round count written as an English word that is too small',
     file: 'requirements/backlog/v2-phase1-rebaseline/execution/status-trajectories.json',
     mutate: (text) => text.replace(
-      /(?:One|Two|Three|Four|Five|Six|Seven|Eight|Nine|Ten|Eleven|Twelve) independent reviews have returned REWORK/u,
+      /(?:One|Two|Three|Four|Five|Six|Seven|Eight|Nine|Ten|Eleven|Twelve|Thirteen|Fourteen|Fifteen|Sixteen|Seventeen|Eighteen|Nineteen|Twenty) independent reviews have returned REWORK/u,
       'Two independent reviews have returned REWORK'),
+    // If the sentence does not contain a word from that list the mutation silently does nothing, which is how this
+    // test failed once: the history reached thirteen while the pattern stopped at twelve.
+    assertMutationTookEffect: true,
     expect: /have returned REWORK where the history/u,
   },
 ];
@@ -94,10 +97,18 @@ test('the stale-claims check passes on the repository as it stands', () => {
 
 for (const scenario of cases) {
   test(`the stale-claims check fails on ${scenario.name}`, () => {
+    let mutatedSomething = false;
     const result = runCase((root) => {
       const target = path.join(root, scenario.file);
-      fs.writeFileSync(target, scenario.mutate(fs.readFileSync(target, 'utf8')));
+      const before = fs.readFileSync(target, 'utf8');
+      const after = scenario.mutate(before);
+      mutatedSomething = after !== before;
+      fs.writeFileSync(target, after);
     });
+    if (scenario.assertMutationTookEffect === true) {
+      // A mutation that changes nothing cannot be detected, and reporting that as a missing check would be wrong.
+      assert.ok(result.errors.length > 0 || mutatedSomething, `${scenario.name}: the mutation changed nothing`);
+    }
     assert.equal(result.result, 'FAIL', 'the mutation was not detected');
     assert.ok(result.errors.some((message) => scenario.expect.test(message)),
       `no error matched ${scenario.expect}: ${result.errors.join('; ')}`);
