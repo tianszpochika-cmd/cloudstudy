@@ -332,6 +332,18 @@ export function validateManifest({ root, task, manifest, manifestPath, checkGit 
           `${task.id}: ${result.check} is owned by ${owner} but reported ${result.status}`);
       }
 
+      // A result whose check is named like a requirement has to be a requirement. Tasks also report checks of
+      // their own and those are fine; what this stops is a passing line for an id that looks like a requirement
+      // and that nobody declared. The first version required every check name to be declared and fired on every
+      // task in the plan, which is not what it is for.
+      const knownIds = new Set((ownership.requirements ?? []).map((entry) => entry.id));
+      const unknown = manifest.results
+        .filter((result) => isRecord(result) && typeof result.check === 'string')
+        .map((result) => result.check)
+        .filter((id) => /^M\d-\d{3}-[A-Z0-9-]+$/u.test(id) && !knownIds.has(id));
+      add(errors, unknown.length === 0,
+        `${task.id}: manifest.results reports requirement-shaped checks that nobody declares: ${unknown.join(', ')}`);
+
       // The ledger is the acceptance baseline, so a reassignment has to be visible there and not only in the
       // ownership file. Without this, moving a requirement out of a task is a change the evidence side can make
       // by itself, which is what happened: the ledger line, the config and the manifest disagreed for two rounds

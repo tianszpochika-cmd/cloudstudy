@@ -29,7 +29,8 @@
       "ownerTask": "P1R-M2-004",
       "deliveredLayer": "database-and-service",
       "residualOwnerTask": "P1R-M2-009",
-      "rationale": "The task ledger line for P1R-M2-004 puts tenant guard inside its scope and names cross-tenant and cross-database write blocking in its exit evidence, and the task delivers it at the storage layer: ten *TenantIsolationTest classes assert cross-tenant denial against a real MySQL, each against its own owner's schema, writing and reading facts with a JdbcTemplate and asserting that a foreign tenant's rows are not returned. Nine of the ten instantiate a production class, counted by resolving both imported and same-package main classes and looking for a construction of one of them; NotificationTenantIsolationTest is the one that does not. Each carries @EnabledIfSystemProperty, so they only run when asked; scripts/runtime/run-gated-db-tests.mjs runs all of them and records the result. What is not delivered here is the HTTP-level two-tenant negative, which needs a synthetic per-owner account built by P1R-M0-007 and wired into CI by P1R-M2-009, and that residual is recorded as a gap rather than used to reassign the whole requirement."
+      "rationale": "The task ledger line for P1R-M2-004 puts tenant guard inside its scope and names cross-tenant and cross-database write blocking in its exit evidence, and the task delivers it at the storage layer: ten *TenantIsolationTest classes assert cross-tenant denial against a real MySQL, each against its own owner's schema, writing and reading facts with a JdbcTemplate and asserting that a foreign tenant's rows are not returned. Nine of the ten instantiate a production class, counted by resolving both imported and same-package main classes and looking for a construction of one of them; NotificationTenantIsolationTest is the one that does not. Each carries @EnabledIfSystemProperty, so they only run when asked; scripts/runtime/run-gated-db-tests.mjs runs all of them and records the result. What is not delivered here is the HTTP-level two-tenant negative, which needs a synthetic per-owner account built by P1R-M0-007 and wired into CI by P1R-M2-009, and that residual is recorded as a gap rather than used to reassign the whole requirement.",
+      "unmeasuredClause": "The policy also asks for a server-derived TenantScope to be proven on a request path. This task delivers that at the storage layer only, so the clause is UNMEASURED here and the residual is handed to P1R-M2-009 with the HTTP-level two-tenant negative, which needs the synthetic per-owner account P1R-M0-007 builds."
     },
     {
       "id": "M2-004-REDIS-NAMESPACE-ACL",
@@ -48,14 +49,22 @@
       "assertedBy": "P1R-M2-004",
       "ownerTask": "P1R-M2-006",
       "supportingTasks": [],
-      "rationale": "Reassigned to P1R-M2-006, and the ledger line for P1R-M2-004 changed with it. The fifth review found that the check delivered here was a drift-refusal test with no rollback action, no owner compensation and none of the owner, trace, audit and recovery receipts the requirement names, so reporting it PASS was a claim about a different property. P1R-M2-006 owns Saga compensation, scheduled jobs, manual recovery and the receipt tables, and the compensation executor, two-person approval and recovery receipts already delivered under it are the real thing. M2-004 keeps the parts of the ledger line it actually owns: schema, credentials, write permissions, cross-tenant and cross-database write blocking."
+      "rationale": "Reassigned to P1R-M2-006, and the ledger line for P1R-M2-004 changed with it. The fifth review found that the check delivered here was a drift-refusal test with no rollback action, no owner compensation and none of the owner, trace, audit and recovery receipts the requirement names, so reporting it PASS was a claim about a different property. The compensation work is CODE DELIVERED, EVIDENCE PACKAGE PENDING: the executor, the two-person approval, the recovery receipts and the receipt table exist under P1R-M2-006 and its tests pass, but that task is still PLANNED and has no manifest or review verdict, so the requirement is not verifiably delivered by anyone yet. An earlier version of this rationale said it was already delivered, which overstated it."
     },
     {
       "id": "M2-004-RETENTION-DELETE-HOLD",
       "assertedBy": "P1R-M2-004",
       "ownerTask": "P1R-M6-008",
-      "supportingTasks": ["P1R-M8-012"],
+      "supportingTasks": [
+        "P1R-M8-012"
+      ],
       "rationale": "P1R-M6-008 implements account deletion requests, the cooling-off period, withdrawal, cross-domain anonymisation and the final subject state; P1R-M8-012 drills retention and deletion."
+    },
+    {
+      "id": "M2-004-FLYWAY-OWNER-COVERAGE",
+      "assertedBy": "P1R-M2-004",
+      "ownerTask": "P1R-M2-004",
+      "rationale": "A check this task added rather than one the policy declares: the empty and existing database drill is performed by the *FlywayMigrationTest classes, and this task claims that every service has one and that they all pass. It is declared here because it is named like a requirement, and the gate now refuses a requirement-shaped check that nobody declares."
     }
   ]
 }
