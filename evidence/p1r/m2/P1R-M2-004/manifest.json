@@ -2,7 +2,7 @@
   "taskId": "P1R-M2-004",
   "draftOnly": false,
   "canonicalTaskStatus": "REVIEW",
-  "sourceCommit": "5a7295d9477468615124b966135937c858383302",
+  "sourceCommit": "28fa1b66c0df9c577dc52dda53e3ee6e032c2260",
   "artifactDigests": [
     {
       "path": "config/p1r-data-ownership.v1.json",
@@ -12,7 +12,7 @@
     {
       "path": "config/p1r-m2-requirement-owners.v1.json",
       "algorithm": "sha256",
-      "digest": "3a61ab722272f9ed7fc98c866a19251500e5ec1c866e777a84a36bdfd93c38a7"
+      "digest": "3c194b00c629fc36876e13cf9cfca91de38031c909661dd1b5103b4d89f2eb88"
     },
     {
       "path": "config/v2-runtime-services.json",
@@ -47,7 +47,7 @@
     {
       "path": "scripts/runtime/p1r-m2-004-runtime.mjs",
       "algorithm": "sha256",
-      "digest": "adc5e408ec3621b437151fe53265b9eeec8e71bdbb19344f4a7cae895a64fb1b"
+      "digest": "536e6a88b4ea1b6e13b09088a4d1aa766a12bb4de9ae08e60d22693f4fea1b00"
     },
     {
       "path": "scripts/runtime/run-gated-db-tests.mjs",
@@ -262,7 +262,7 @@
     {
       "path": "evidence/p1r/m2/P1R-M2-004/runtime-evidence-2026-09-13.json",
       "algorithm": "sha256",
-      "digest": "a66a3928df1ef5170266a05c0b2a193ec7dc683fc0f18f1e575344d50149c942"
+      "digest": "11ece12e34200b98a0c04681ad05683395d8c37f81d838387c132bbf580a36b7"
     },
     {
       "path": "evidence/p1r/m2/P1R-M2-004/gated-db-tests-2026-09-13.json",
@@ -275,8 +275,8 @@
     "branch": "dev",
     "phaseStatus": "D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED",
     "runtimeStatus": "M2_004_PARTIAL_RUNTIME_VERIFIED",
-    "reviewedRevision": "176d5ff68d6ff2e3a7f86bc80d6eecb5f083f787",
-    "measuredAt": "2026-09-13T17:55:32.440Z",
+    "reviewedRevision": "28fa1b66c0df9c577dc52dda53e3ee6e032c2260",
+    "measuredAt": "2026-09-14T00:39:11.161Z",
     "toolchain": {
       "java": "OpenJDK 25.0.4.1",
       "maven": "3.9.12",
@@ -303,9 +303,9 @@
         "admin-ops-service",
         "analytics-service",
         "audit-service",
+        "workflow-service",
         "iam-service",
-        "api-gateway",
-        "workflow-service"
+        "api-gateway"
       ],
       "policyLevelChecks": [
         "user-set-matches-policy"
@@ -382,7 +382,7 @@
     ]
   },
   "startedAt": "2026-09-09T00:00:00+08:00",
-  "finishedAt": "2026-09-14T00:17:18.826Z",
+  "finishedAt": "2026-09-14T00:39:12.011Z",
   "actors": [
     "root-coordinator",
     "p1r-implementation"
@@ -457,7 +457,7 @@
     {
       "check": "redis-loss-cannot-affect-business-facts",
       "status": "PASS",
-      "details": "Redis was stopped (unhealthy) and restarted (healthy), and the row counts of 13 durable business tables were identical before, during and after."
+      "details": "Redis was stopped (unhealthy) and restarted (healthy), and the row counts of 14 durable business tables were identical before, during and after."
     },
     {
       "check": "audit-service-contract-defect",
@@ -476,8 +476,8 @@
       "details": "Checked against the migration files rather than asserted: 62 migrations across the owners were scanned for DROP COLUMN, DROP TABLE, RENAME and any MODIFY that narrows a column. 0 contain one, so reverting the commits restores the previous schema shape without losing data."
     },
     {
-      "status": "NOT_APPLICABLE",
-      "details": "The rollback and compensation test named in the ledger line for this task is assigned to P1R-M2-006 in config/p1r-m2-requirement-owners.v1.json, and the third review found that assignment unsupported by the ledger text. Whether it belongs to this task or is reassigned to M2-006 is a question about task boundaries, not an implementation detail, and is awaiting the human decision; until it is settled this entry reports NOT_APPLICABLE rather than a PASS that nothing measured."
+      "status": "PASS",
+      "details": "Measured by the harness: with a recorded migration checksum corrupted, the reconcile runner for learner_service exited 2 and refused with \"owner schema reconciliation failed: learner-service migration V1__create_learner_service_schema.sql changed after it was applied\". The record was then repaired in a finally block, so a failed assertion cannot leave a false checksum behind, and the runner converged again with exit 0. The recorded checksum was confirmed restored afterwards: true. This is the rollback and compensation evidence the ledger line names, and it is owned by this task rather than reassigned."
     }
   ],
   "knownGaps": [

@@ -2,10 +2,10 @@
   "schema": "m2.data-ownership.runtime-evidence.v1",
   "taskId": "P1R-M2-004",
   "result": "PARTIAL",
-  "sourceCommit": "176d5ff68d6ff2e3a7f86bc80d6eecb5f083f787",
-  "startedAt": "2026-09-13T17:50:54.702Z",
-  "finishedAt": "2026-09-13T17:55:32.440Z",
-  "ownerCount": 13,
+  "sourceCommit": "28fa1b66c0df9c577dc52dda53e3ee6e032c2260",
+  "startedAt": "2026-09-14T00:33:55.807Z",
+  "finishedAt": "2026-09-14T00:39:11.161Z",
+  "ownerCount": 14,
   "requirements": [
     {
       "id": "M2-004-OWNER-SCHEMA-GRANTS",
@@ -24,6 +24,10 @@
       "status": "VERIFIED"
     },
     {
+      "id": "M2-004-ROLLBACK-COMPENSATION",
+      "status": "VERIFIED"
+    },
+    {
       "id": "M2-004-TENANT-GUARD",
       "status": "VERIFIED"
     },
@@ -34,14 +38,8 @@
     {
       "id": "M2-004-REDIS-REBUILD",
       "status": "NOT_APPLICABLE",
-      "ownerTask": "P1R-M2-006",
-      "reason": "A projection rebuild entrypoint belongs to the workflow and platform runtime in P1R-M2-006; content cache invalidation belongs to P1R-M3-006."
-    },
-    {
-      "id": "M2-004-ROLLBACK-COMPENSATION",
-      "status": "NOT_APPLICABLE",
-      "ownerTask": "P1R-M2-006",
-      "reason": "P1R-M2-006 scope: workflow Saga, compensation, scheduled jobs and manual recovery, which produce the owner, trace, audit and recovery receipts this requirement asks for."
+      "ownerTask": "P1R-M3-006",
+      "reason": "Reassigned after the third review found the previous assignment unsupported: the ledger line for P1R-M2-006 names workflow Saga, compensation, scheduled jobs, manual recovery, Gateway audit ingest and immutable audit records, and a projection rebuild appears in none of them. The closest ledger text is P1R-M3-006, which owns content cache invalidation, so the requirement moves there rather than staying with a task whose scope does not mention it."
     },
     {
       "id": "M2-004-RETENTION-DELETE-HOLD",
@@ -245,6 +243,23 @@
       "source": "external-migration",
       "migrationMode": "external",
       "tableCount": 3,
+      "readAllowed": true,
+      "ddlDenied": true,
+      "ddlErrorCode": "1142",
+      "alterDenied": true,
+      "alterErrorCode": "1142",
+      "probeObjectsLeaked": 0,
+      "grantCount": 2,
+      "foreignSchemaGrants": 0,
+      "result": "PASS"
+    },
+    {
+      "id": "owner-schema-grants:workflow-service",
+      "schema": "workflow_service",
+      "credential": "svc_workflow",
+      "source": "external-migration",
+      "migrationMode": "external",
+      "tableCount": 7,
       "readAllowed": true,
       "ddlDenied": true,
       "ddlErrorCode": "1142",
@@ -537,6 +552,28 @@
       "result": "PASS"
     },
     {
+      "id": "cross-owner-deny:workflow-service",
+      "probes": [
+        {
+          "target": "learner-service",
+          "denied": true,
+          "code": "1142"
+        },
+        {
+          "target": "gamification-service",
+          "denied": true,
+          "code": "1142"
+        },
+        {
+          "target": "iam-service",
+          "denied": true,
+          "code": "1142"
+        }
+      ],
+      "allDenied": true,
+      "result": "PASS"
+    },
+    {
       "id": "cross-owner-deny:iam-service",
       "probes": [
         {
@@ -550,7 +587,7 @@
           "code": "1142"
         },
         {
-          "target": "audit-service",
+          "target": "workflow-service",
           "denied": true,
           "code": "1142"
         }
@@ -743,6 +780,18 @@
       "result": "PASS"
     },
     {
+      "id": "redis-namespace-acl:workflow-service",
+      "credential": "svc_workflow",
+      "namespace": "workflow",
+      "declaredPattern": "~workflow:*",
+      "expectedPattern": "~workflow:*",
+      "patternMatchesExactly": true,
+      "ownNamespaceAllowed": true,
+      "foreignNamespace": "learner",
+      "foreignNamespaceDenied": true,
+      "result": "PASS"
+    },
+    {
       "id": "redis-namespace-acl:iam-service",
       "credential": "svc_iam",
       "namespace": "iam",
@@ -760,18 +809,6 @@
       "namespace": "englishflow:gateway",
       "declaredPattern": "~englishflow:gateway:*",
       "expectedPattern": "~englishflow:gateway:*",
-      "patternMatchesExactly": true,
-      "ownNamespaceAllowed": true,
-      "foreignNamespace": "learner",
-      "foreignNamespaceDenied": true,
-      "result": "PASS"
-    },
-    {
-      "id": "redis-namespace-acl:workflow-service",
-      "credential": "svc_workflow",
-      "namespace": "workflow",
-      "declaredPattern": "~workflow:*",
-      "expectedPattern": "~workflow:*",
       "patternMatchesExactly": true,
       "ownNamespaceAllowed": true,
       "foreignNamespace": "learner",
@@ -1016,6 +1053,18 @@
       "recordedVersions": [
         1,
         2
+      ],
+      "historyComplete": true,
+      "result": "PASS"
+    },
+    {
+      "id": "migration-existing-schema:workflow-service",
+      "migrationFiles": 1,
+      "declaredVersions": [
+        1
+      ],
+      "recordedVersions": [
+        1
       ],
       "historyComplete": true,
       "result": "PASS"
@@ -1389,6 +1438,7 @@
         "admin_ops_service.admin_audit_record": 10,
         "analytics_service.analytics_metric_projection": 24,
         "audit_service.audit_fact": 1,
+        "workflow_service.manual_recovery_request": 0,
         "iam_service.iam_account": 47
       },
       "during": {
@@ -1404,6 +1454,7 @@
         "admin_ops_service.admin_audit_record": 10,
         "analytics_service.analytics_metric_projection": 24,
         "audit_service.audit_fact": 1,
+        "workflow_service.manual_recovery_request": 0,
         "iam_service.iam_account": 47
       },
       "after": {
@@ -1419,6 +1470,7 @@
         "admin_ops_service.admin_audit_record": 10,
         "analytics_service.analytics_metric_projection": 24,
         "audit_service.audit_fact": 1,
+        "workflow_service.manual_recovery_request": 0,
         "iam_service.iam_account": 47
       },
       "id": "redis-loss:business-facts-unchanged",
@@ -1439,29 +1491,30 @@
       "result": "PASS"
     },
     {
-      "schema": "workflow_service",
-      "reason": "the service has no runtime yet; the ownership policy records it as a planned migration collection",
-      "id": "owner-not-built:workflow-service",
-      "result": "NOT_VERIFIABLE_HERE"
+      "schema": "learner_service",
+      "driftRefused": {
+        "exitStatus": 2,
+        "refused": true,
+        "message": "owner schema reconciliation failed: learner-service migration V1__create_learner_service_schema.sql changed after it was applied"
+      },
+      "recovery": {
+        "exitStatus": 0,
+        "result": null,
+        "reportedOwners": 13,
+        "converged": true
+      },
+      "checksumRestored": true,
+      "note": "the reconcile runner stops on a checksum that no longer matches its migration and converges again after the record is repaired",
+      "id": "rollback:reconcile-refuses-drift",
+      "result": "PASS"
     },
     {
       "requirement": "Prove cache, lock, dedupe, rate-limit, and projection rebuild/degradation behavior against durable owner facts.",
       "assertedBy": "P1R-M2-004",
-      "ownerTask": "P1R-M2-006",
-      "supportingTasks": [
-        "P1R-M3-006"
-      ],
-      "rationale": "A projection rebuild entrypoint belongs to the workflow and platform runtime in P1R-M2-006; content cache invalidation belongs to P1R-M3-006.",
-      "id": "requirement:M2-004-REDIS-REBUILD",
-      "result": "NOT_APPLICABLE"
-    },
-    {
-      "requirement": "Exercise compatible rollback or owner compensation and record owner, trace, audit, and recovery receipts.",
-      "assertedBy": "P1R-M2-004",
-      "ownerTask": "P1R-M2-006",
+      "ownerTask": "P1R-M3-006",
       "supportingTasks": [],
-      "rationale": "P1R-M2-006 scope: workflow Saga, compensation, scheduled jobs and manual recovery, which produce the owner, trace, audit and recovery receipts this requirement asks for.",
-      "id": "requirement:M2-004-ROLLBACK-COMPENSATION",
+      "rationale": "Reassigned after the third review found the previous assignment unsupported: the ledger line for P1R-M2-006 names workflow Saga, compensation, scheduled jobs, manual recovery, Gateway audit ingest and immutable audit records, and a projection rebuild appears in none of them. The closest ledger text is P1R-M3-006, which owns content cache invalidation, so the requirement moves there rather than staying with a task whose scope does not mention it.",
+      "id": "requirement:M2-004-REDIS-REBUILD",
       "result": "NOT_APPLICABLE"
     },
     {
@@ -1661,6 +1714,22 @@
         "source": "external-migration",
         "migrationMode": "external",
         "tableCount": 3,
+        "readAllowed": true,
+        "ddlDenied": true,
+        "ddlErrorCode": "1142",
+        "alterDenied": true,
+        "alterErrorCode": "1142",
+        "probeObjectsLeaked": 0,
+        "grantCount": 2,
+        "foreignSchemaGrants": 0
+      },
+      {
+        "id": "workflow-service",
+        "schema": "workflow_service",
+        "credential": "svc_workflow",
+        "source": "external-migration",
+        "migrationMode": "external",
+        "tableCount": 7,
         "readAllowed": true,
         "ddlDenied": true,
         "ddlErrorCode": "1142",
@@ -1941,6 +2010,27 @@
         "allDenied": true
       },
       {
+        "id": "workflow-service",
+        "probes": [
+          {
+            "target": "learner-service",
+            "denied": true,
+            "code": "1142"
+          },
+          {
+            "target": "gamification-service",
+            "denied": true,
+            "code": "1142"
+          },
+          {
+            "target": "iam-service",
+            "denied": true,
+            "code": "1142"
+          }
+        ],
+        "allDenied": true
+      },
+      {
         "id": "iam-service",
         "probes": [
           {
@@ -1954,7 +2044,7 @@
             "code": "1142"
           },
           {
-            "target": "audit-service",
+            "target": "workflow-service",
             "denied": true,
             "code": "1142"
           }
@@ -2096,6 +2186,17 @@
         "foreignNamespaceDenied": true
       },
       {
+        "id": "workflow-service",
+        "credential": "svc_workflow",
+        "namespace": "workflow",
+        "declaredPattern": "~workflow:*",
+        "expectedPattern": "~workflow:*",
+        "patternMatchesExactly": true,
+        "ownNamespaceAllowed": true,
+        "foreignNamespace": "learner",
+        "foreignNamespaceDenied": true
+      },
+      {
         "id": "iam-service",
         "credential": "svc_iam",
         "namespace": "iam",
@@ -2112,17 +2213,6 @@
         "namespace": "englishflow:gateway",
         "declaredPattern": "~englishflow:gateway:*",
         "expectedPattern": "~englishflow:gateway:*",
-        "patternMatchesExactly": true,
-        "ownNamespaceAllowed": true,
-        "foreignNamespace": "learner",
-        "foreignNamespaceDenied": true
-      },
-      {
-        "id": "workflow-service",
-        "credential": "svc_workflow",
-        "namespace": "workflow",
-        "declaredPattern": "~workflow:*",
-        "expectedPattern": "~workflow:*",
         "patternMatchesExactly": true,
         "ownNamespaceAllowed": true,
         "foreignNamespace": "learner",
@@ -2359,6 +2449,17 @@
           2
         ],
         "historyComplete": true
+      },
+      {
+        "id": "workflow-service",
+        "migrationFiles": 1,
+        "declaredVersions": [
+          1
+        ],
+        "recordedVersions": [
+          1
+        ],
+        "historyComplete": true
       }
     ],
     "emptyAndInvalid": {
@@ -2376,7 +2477,6 @@
   },
   "notRuntimeVerified": [
     "M2-004-REDIS-REBUILD",
-    "M2-004-ROLLBACK-COMPENSATION",
     "M2-004-RETENTION-DELETE-HOLD"
   ]
 }
