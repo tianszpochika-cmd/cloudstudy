@@ -484,7 +484,7 @@ const manifest = {
       status: regressionReport === null ? 'NOT_APPLICABLE' : 'PASS',
       details: regressionReport === null
         ? 'Not measured by this generator. Run node scripts/dev/run-node-tests.mjs tests/p1r and write evidence/p1r/m2/P1R-M2-004/regression.json with its counts to have this reported, rather than quoting a figure in prose.'
-        : `P1R ${regressionReport.tests}/${regressionReport.tests} with ${regressionReport.fail} failures and ${regressionReport.pass} passing, read from ${'evidence/p1r/m2/P1R-M2-004/regression.json'}; the full suite reports ${regressionReport.fullTests} tests with ${regressionReport.fullFail} failures. The legacy B failures that were pre-existing are fixed and each fix strengthened the assertion rather than relaxing it. How many is NOT VERIFIED here: no tracked record counts them, so a figure is not given rather than repeated.`,
+        : `P1R ${regressionReport.tests}/${regressionReport.tests} with ${regressionReport.fail} failures and ${regressionReport.pass} passing, read from ${'evidence/p1r/m2/P1R-M2-004/regression.json'}; the full suite reports ${regressionReport.suiteTests} tests with ${regressionReport.suiteFail} failures and ${regressionReport.suiteTests - regressionReport.suitePass - regressionReport.suiteFail} skipped or incomplete, read from the same record. The legacy B failures that were pre-existing are fixed and each fix strengthened the assertion rather than relaxing it. How many is NOT VERIFIED here: no tracked record counts them, so a figure is not given rather than repeated.`,
     },
   ],
   rollbackEvidence: [

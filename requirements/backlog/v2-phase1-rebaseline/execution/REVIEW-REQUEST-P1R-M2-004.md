@@ -1,12 +1,12 @@
-# 独立评审请求 — P1R-M2-004（**第十轮**）
+# 独立评审请求 — P1R-M2-004（**第十二轮**）
 
 - 任务：`P1R-M2-004`（实现独立 schema、Flyway、凭据、Redis namespace 和 tenant guard）
 - 台账状态：`REVIEW`（实现者已提交，等待独立评审）
 - 结论请求：`ACCEPTED` / `REWORK` / `BLOCKED`
 - 提交人：实现者（`agent:p1r_implementation:deepseek-harness`）
-- 提交时间：2026-09-14（第十轮）
+- 提交时间：2026-09-14（第十二轮）
 - 建议评审人：**任何非本次实现的会话**
-- 前 10 轮结论：**均为 `REWORK`**（P0/P1/P2 = 0/4/6 → 0/1/9 → 0/3/7 → 0/4/8 → 0/2/8 → 0/3/9 → 0/3/6 → 0/4/9 → 0/5/4 → 0/4/8）。**10 轮 P0 全部为 0**，每轮的核心运行时事实都被评审独立复现；失分形态始终是「账实不符」。10 轮判定与计数记入 `evidence/p1r/m2/P1R-M2-004/review-history.json` 与台账日期条目。
+- 前 11 轮结论：**均为 `REWORK`**（P0/P1/P2 = 0/4/6 → 0/1/9 → 0/3/7 → 0/4/8 → 0/2/8 → 0/3/9 → 0/3/6 → 0/4/9 → 0/5/4 → 0/4/8 → 0/4/6）。**11 轮 P0 全部为 0**，每轮的核心运行时事实都被评审独立复现；失分形态始终是「账实不符」。11 轮判定与计数记入 `evidence/p1r/m2/P1R-M2-004/review-history.json` 与台账日期条目。
 - 第四轮动作清单 9 项的处理：其中「生成器硬编码 PASS」「散文数字」「gated 硬编码服务列表」「先提交再重跑 harness」「文档一致性」「命令补 opt-in」「措辞同步」「REDIS-REBUILD 归属」已处理，处理方式是**结构性**的：生成器现在把每个数字与归属都从数据推导，门禁新增「config 判给本任务却报 NOT_APPLICABLE 即 error」的交叉校验（已做突变测试）。
 
 > **为什么这次评审特别关键**：台账的依赖门禁要求任何高于 `PLANNED` 的状态都必须依赖已 `ACCEPTED`。`P1R-M2-005` 因此被记为 `BLOCKED`，而 `M2-006 → M2-010` 依次依赖前一项 —— **整条 M2 链（以及其后的 M3–M8）当前可推进任务数为 0，全部在等这次评审**。
@@ -101,7 +101,7 @@ node scripts/runtime/verify-content-consumer-dedupe.mjs
 node scripts/runtime/provision-kafka-topics.mjs
 
 # 全量回归与门禁
-node scripts/dev/run-node-tests.mjs tests/p1r      # 期望 1435/1435（此前本文写 1425，已随第三轮返工更正）
+node scripts/dev/run-node-tests.mjs tests/p1r      # 期望 1439/1439（此前本文写 1425，已随第三轮返工更正）
 node scripts/audit/p1r-evidence-gate.mjs --json    # 期望 PASS，108 任务，0 errors
 ```
 

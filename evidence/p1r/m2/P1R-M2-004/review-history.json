@@ -129,12 +129,26 @@
     },
     {
       "round": 11,
+      "verdict": "REWORK",
+      "counts": {
+        "P0": 0,
+        "P1": 4,
+        "P2": 6
+      },
+      "reviewedCommit": "88b8314f6b39dbbe2cb0f44e13bb7d6c751e52c6",
+      "reviewStartedHead": "88b8314f6b39dbbe2cb0f44e13bb7d6c751e52c6",
+      "reviewEndedHead": "2aa4a9645a4ce05e41fc37c4c54bf092f2404256",
+      "reviewer": "independent review session (eleventh round)",
+      "summary": "P0 remained zero and the runtime facts were reproduced again on real MySQL and Redis; the digest, provenance and no-unrun-reference checks passed. Four P1 findings, all account-versus-reality: the reviewed revision moved during the review for the third round running, including a commit that rewrote the checker the manifest lists as an artifact; the trajectory registry claimed ten reviews and listed four, and the sentence that had correctly said nine was changed to \"Ten\", a word the checker's one-to-nine vocabulary could not see, so an alarm was silenced by choosing a word outside its range; the manifest rendered \"undefined tests with undefined failures\" because the regression record's keys were renamed when its producer moved into the repository and the reader was left on the old names; and the request document still said 1435 where the suite reports 1439 and still called itself the tenth round."
+    },
+    {
+      "round": 12,
       "verdict": "PENDING",
       "counts": null,
       "reviewedCommit": null,
       "reviewStartedHead": null,
       "reviewer": "awaiting a fresh independent session",
-      "summary": "Not submitted at the time of writing; submitted against a frozen revision."
+      "summary": "Not submitted."
     }
   ]
 }

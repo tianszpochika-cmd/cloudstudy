@@ -120,7 +120,13 @@ export function checkStaleClaims() {
     // the moment it was written and never extended. Counting them is mechanical, so it is checked.
     for (const file of files) {
       const text = file === ledgerFile && datedFrom > 0 ? read(file).slice(0, datedFrom) : read(file);
-      for (const match of text.matchAll(/（P0\/P1\/P2 = ([^）]*)）/gu)) {
+      // Two shapes: the full-width parenthetical and the "(P0/P1/P2 of a, then b)" form the trajectory registry
+      // uses, which the first version did not match at all.
+      const enumerations = [
+        ...text.matchAll(/（P0\/P1\/P2 = ([^）]*)）/gu),
+        ...text.matchAll(/\(P0\/P1\/P2 of ([^)]*then[^)]*)\)/gu),
+      ];
+      for (const match of enumerations) {
         const listed = match[1].match(/\d+\/\d+\/\d+/gu) ?? [];
         // A chain, not a single tuple: one parenthesised count describes one round, and flagging those would
         // report every sentence that mentions a verdict. The shape at issue is an enumeration joined by arrows.
@@ -138,7 +144,14 @@ export function checkStaleClaims() {
     if (recordedRounds !== decided + tooManyPending.length) {
       errors.push(`review history records ${recordedRounds} rounds but ${decided} verdicts and ${tooManyPending.length} pending: the pending round is missing or duplicated`);
     }
-    const numerals = ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十'];
+    // To twenty, and the guard below turns an overrun into a loud failure rather than a search for a name that
+    // cannot exist. Stopping at ten made round eleven invisible and it was reported missing however many times it
+    // was added, which is the same defect as the English list that stopped at nine.
+    const numerals = ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十',
+      '十一', '十二', '十三', '十四', '十五', '十六', '十七', '十八', '十九', '二十'];
+    if (decided > numerals.length) {
+      errors.push(`the review history has ${decided} decided rounds but the numeral list covers ${numerals.length}: it needs extending`);
+    }
     const missing = history.rounds
       .filter((round) => round.verdict !== 'PENDING')
       .filter((round) => !ledger.includes(`**第${numerals[round.round - 1]}轮**独立评审结论`));
@@ -150,7 +163,11 @@ export function checkStaleClaims() {
       const text = file === ledgerFile && datedFrom > 0 ? read(file).slice(0, datedFrom) : read(file);
       const claim = /(\w+) independent reviews have returned REWORK/u.exec(text) ?? /(\d+) 轮 REWORK/u.exec(text);
       if (claim === null) continue;
-      const words = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9 };
+      // One to twenty, because stopping at nine made "Ten" invisible and a sentence was corrected to that word to
+      // silence the very warning it should have raised.
+      const words = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9,
+        ten: 10, eleven: 11, twelve: 12, thirteen: 13, fourteen: 14, fifteen: 15, sixteen: 16, seventeen: 17,
+        eighteen: 18, nineteen: 19, twenty: 20 };
       const stated = Number(claim[1]) || words[String(claim[1]).toLowerCase()];
       if (Number.isFinite(stated) && stated !== decided) {
         errors.push(`${rel(file)}: says ${stated} reviews have returned REWORK where the history records ${decided}`);
