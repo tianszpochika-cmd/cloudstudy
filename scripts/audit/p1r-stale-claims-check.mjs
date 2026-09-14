@@ -23,13 +23,13 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '.
  * A changelog and a ledger's dated entries quote the figures that were true when they were written; holding them
  * to today's numbers would be wrong, and searching this file for the patterns it defines would only find them.
  */
-function documents() {
+function documents(scanRoot) {
   const found = [];
   const skip = new Set(['node_modules', '.git', 'target', 'dist', 'build', '.nuxt', 'coverage', 'tmp']);
   const self = fileURLToPath(import.meta.url);
   const dated = new Set(['CHANGELOG.md']);
   // Everything from the ledger's dated entries onward is a historical record.
-  const ledgerPath = path.join(root, 'requirements/backlog/v2-phase1-rebaseline/02-编号任务台账.md');
+  const ledgerPath = path.join(scanRoot, 'requirements/backlog/v2-phase1-rebaseline/02-编号任务台账.md');
   const datedFrom = fs.existsSync(ledgerPath)
     ? fs.readFileSync(ledgerPath, 'utf8').indexOf('## 11. 日期条目')
     : -1;
@@ -46,19 +46,23 @@ function documents() {
       found.push(absolute);
     }
   };
-  visit(root);
+  visit(scanRoot);
   return { files: found, ledgerPath, datedFrom };
 }
 
-export function checkStaleClaims() {
+export function checkStaleClaims({ root: rootOverride } = {}) {
+  // The root is a parameter so a caller can point the check at a copy. The test that proves this check can fail used
+  // to mutate the real repository, which made a concurrent gate read the test's intermediate state and left files
+  // modified when a run was killed.
+  const scanRoot = rootOverride ?? root;
   const errors = [];
-  const { files, ledgerPath: ledgerFile, datedFrom } = documents();
+  const { files, ledgerPath: ledgerFile, datedFrom } = documents(scanRoot);
   const read = (file) => fs.readFileSync(file, 'utf8');
-  const rel = (file) => path.relative(root, file).replaceAll('\\', '/');
+  const rel = (file) => path.relative(scanRoot, file).replaceAll('\\', '/');
 
   // 1. A requirement the config assigns to another task must not be described anywhere as delivered by the task
   //    that asserted it.
-  const ownersPath = path.join(root, 'config/p1r-m2-requirement-owners.v1.json');
+  const ownersPath = path.join(scanRoot, 'config/p1r-m2-requirement-owners.v1.json');
   if (fs.existsSync(ownersPath)) {
     const owners = JSON.parse(fs.readFileSync(ownersPath, 'utf8'));
     const reassigned = (owners.requirements ?? []).filter((entry) => entry.ownerTask !== entry.assertedBy);
@@ -104,7 +108,7 @@ export function checkStaleClaims() {
   // 2. Every task manifest's round count has to match the review history it embeds, and the history has to match
   //    the ledger's dated entries.
   const ledger = fs.existsSync(ledgerFile) ? read(ledgerFile) : '';
-  const historyPath = path.join(root, 'evidence/p1r/m2/P1R-M2-004/review-history.json');
+  const historyPath = path.join(scanRoot, 'evidence/p1r/m2/P1R-M2-004/review-history.json');
   if (fs.existsSync(historyPath)) {
     const history = JSON.parse(read(historyPath));
     const decided = history.rounds.filter((round) => round.verdict !== 'PENDING').length;
@@ -176,7 +180,7 @@ export function checkStaleClaims() {
   }
 
   // 3. Figures a document quotes about the manifest have to match it.
-  const manifestPath = path.join(root, 'evidence/p1r/m2/P1R-M2-004/manifest.json');
+  const manifestPath = path.join(scanRoot, 'evidence/p1r/m2/P1R-M2-004/manifest.json');
   if (fs.existsSync(manifestPath)) {
     const manifest = JSON.parse(read(manifestPath));
     const artifacts = manifest.artifactDigests.length;
