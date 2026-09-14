@@ -1,5 +1,8 @@
 {
   "checkLimits": [
+    "A widening MODIFY is counted as a narrowing one, because the direction is not visible in a single file:",
+    "audit-service V2 widens a column from 32 to 64 and is therefore among the three the scan reports, and the",
+    "converse holds too: a column narrowed across two migrations is not seen at all.",
     "The manifest cannot summarise itself, so a hand edit to a derived figure in it is not detected by any rule: the",
     "gate checks digests, ownership, coverage and status, and a number in a sentence is outside all four.",
     "The stale-claims check reads documents, not evidence: `evidence/**`, `tests/**` and the changelog are excluded,",
@@ -12,7 +15,7 @@
   "taskId": "P1R-M2-004",
   "draftOnly": false,
   "canonicalTaskStatus": "REVIEW",
-  "sourceCommit": "0c52da315d36ea991581cd684445459d4a1bf92b",
+  "sourceCommit": "37cc1c6563871a0a63b5a001e4983d576024a0f3",
   "artifactDigests": [
     {
       "path": "config/p1r-data-ownership.v1.json",
@@ -67,7 +70,7 @@
     {
       "path": "scripts/runtime/capture-m2-004-evidence.mjs",
       "algorithm": "sha256",
-      "digest": "013e2c1210bd56887aee19aef3e5945d9baa4d00fb80dcdbdd3f47e0133ed7bd"
+      "digest": "64c98eba612f31bc2d418838e9f24e00a55c0812effaa7fbdc75a50b93ce66c5"
     },
     {
       "path": "scripts/runtime/run-gated-db-tests.mjs",
@@ -327,7 +330,7 @@
     {
       "path": "evidence/p1r/m2/P1R-M2-004/review-history.json",
       "algorithm": "sha256",
-      "digest": "e9a0c3a3e8df7eca7ccb791f85f5e6ea84cc236cb59c16df7591ca2bdcf82a9d"
+      "digest": "05f16eb899b14b0daae9f4ebe61ce20170b9e706ae66c8c22f56d7497fbf0cc1"
     }
   ],
   "environment": {
@@ -541,6 +544,18 @@
       },
       {
         "round": 13,
+        "verdict": "REWORK",
+        "counts": {
+          "P0": 0,
+          "P1": 4,
+          "P2": 3
+        },
+        "reviewedCommit": "0e3c20e",
+        "reviewer": "independent review session (thirteenth round)",
+        "summary": "P0 remained zero and both of the twelfth round's findings were independently confirmed closed: the check takes a root and the suite leaves the repository untouched, and the narrowing pattern finds three files where the old one found none. Four P1 findings, one of them new and serious: the gate never read rollbackEvidence statuses, so a real FAIL could be turned into a PASS with the gate reporting nothing, which the reviewer demonstrated by mutation. The FAIL itself came from a false positive: audit-service V2 widens a column from 32 to 64 and a single-file rule cannot see the direction. The execution record still stated, inside the revision under review, that the twelfth round's findings were unfixed. And the HEAD moved during the review for the fourth round running."
+      },
+      {
+        "round": 14,
         "verdict": "PENDING",
         "counts": null,
         "reviewedCommit": null,
@@ -550,7 +565,7 @@
     ]
   },
   "startedAt": "2026-09-09T00:00:00+08:00",
-  "finishedAt": "2026-09-14T11:27:15.580Z",
+  "finishedAt": "2026-09-14T11:50:31.771Z",
   "actors": [
     "root-coordinator",
     "p1r-implementation"
@@ -664,7 +679,7 @@
   "reviewer": "awaiting-independent-reviewer",
   "decision": "PENDING",
   "nextSteps": [
-    "13 independent reviews have returned 12 REWORK verdicts (round 1 P0/P1/P2 0/4/6; round 2 P0/P1/P2 0/1/9; round 3 P0/P1/P2 0/3/7; round 4 P0/P1/P2 0/4/8; round 5 P0/P1/P2 0/2/8; round 6 P0/P1/P2 0/3/9; round 7 P0/P1/P2 0/3/6; round 8 P0/P1/P2 0/4/9; round 9 P0/P1/P2 0/5/4; round 10 P0/P1/P2 0/4/8; round 11 P0/P1/P2 0/4/6; round 12 P0/P1/P2 0/2/4), so another session has to re-decide this submission; the implementer changed the harness, the evidence generator and a governance check during the rework and must not accept its own output.",
+    "14 independent reviews have returned 13 REWORK verdicts (round 1 P0/P1/P2 0/4/6; round 2 P0/P1/P2 0/1/9; round 3 P0/P1/P2 0/3/7; round 4 P0/P1/P2 0/4/8; round 5 P0/P1/P2 0/2/8; round 6 P0/P1/P2 0/3/9; round 7 P0/P1/P2 0/3/6; round 8 P0/P1/P2 0/4/9; round 9 P0/P1/P2 0/5/4; round 10 P0/P1/P2 0/4/8; round 11 P0/P1/P2 0/4/6; round 12 P0/P1/P2 0/2/4; round 13 P0/P1/P2 0/4/3), so another session has to re-decide this submission; the implementer changed the harness, the evidence generator and a governance check during the rework and must not accept its own output.",
     "The rollback and compensation requirement is owned by P1R-M2-006 and the ledger line for this task was changed to match, so the entry above reports NOT_APPLICABLE rather than claiming a drift-refusal check satisfies it. The workflow-service delivered under that task holds the compensation executor, the two-person approval and the recovery receipts as CODE DELIVERED, EVIDENCE PACKAGE PENDING: that task is still PLANNED, has no manifest and no verdict, so the requirement is not verifiably delivered by anyone yet, and the ownership config says the same.",
     "The workflow-service built under P1R-M2-006 is a provisioned owner, so this task's evidence describes 14 owners and its Redis loss check reads 14 tables including that service's. Its schema, credential, migration coverage and tenant guard are delivered by P1R-M2-006, not by this one, and that boundary is recorded in knownGaps rather than only here."
   ]

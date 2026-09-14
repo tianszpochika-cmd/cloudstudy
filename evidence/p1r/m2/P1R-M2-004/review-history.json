@@ -157,6 +157,20 @@
     },
     {
       "round": 13,
+      "verdict": "REWORK",
+      "counts": {
+        "P0": 0,
+        "P1": 4,
+        "P2": 3
+      },
+      "reviewedCommit": "0e3c20e",
+      "reviewStartedHead": "0e3c20e",
+      "reviewEndedHead": "37cc1c6",
+      "reviewer": "independent review session (thirteenth round)",
+      "summary": "P0 remained zero and both of the twelfth round's findings were independently confirmed closed: the check takes a root and the suite leaves the repository untouched, and the narrowing pattern finds three files where the old one found none. Four P1 findings, one of them new and serious: the gate never read rollbackEvidence statuses, so a real FAIL could be turned into a PASS with the gate reporting nothing, which the reviewer demonstrated by mutation. The FAIL itself came from a false positive: audit-service V2 widens a column from 32 to 64 and a single-file rule cannot see the direction. The execution record still stated, inside the revision under review, that the twelfth round's findings were unfixed. And the HEAD moved during the review for the fourth round running."
+    },
+    {
+      "round": 14,
       "verdict": "PENDING",
       "counts": null,
       "reviewedCommit": null,

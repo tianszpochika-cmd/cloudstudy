@@ -329,6 +329,9 @@ const manifest = {
   // What no rule here can check, written where a reader of the manifest will see it rather than left to be inferred
   // from the absence of an error.
   checkLimits: [
+    "A widening MODIFY is counted as a narrowing one, because the direction is not visible in a single file:",
+    "audit-service V2 widens a column from 32 to 64 and is therefore among the three the scan reports, and the",
+    "converse holds too: a column narrowed across two migrations is not seen at all.",
     "The manifest cannot summarise itself, so a hand edit to a derived figure in it is not detected by any rule: the",
     "gate checks digests, ownership, coverage and status, and a number in a sentence is outside all four.",
     "The stale-claims check reads documents, not evidence: `evidence/**`, `tests/**` and the changelog are excluded,",
