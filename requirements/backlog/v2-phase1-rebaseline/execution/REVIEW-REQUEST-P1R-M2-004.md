@@ -1,13 +1,13 @@
-# 独立评审请求 — P1R-M2-004（**第三轮**）
+# 独立评审请求 — P1R-M2-004（**第五轮**）
 
 - 任务：`P1R-M2-004`（实现独立 schema、Flyway、凭据、Redis namespace 和 tenant guard）
 - 台账状态：`REVIEW`（实现者已提交，等待独立评审）
 - 结论请求：`ACCEPTED` / `REWORK` / `BLOCKED`
 - 提交人：实现者（`agent:p1r_implementation:deepseek-harness`）
-- 提交时间：2026-09-13（第三轮）
+- 提交时间：2026-09-14（第五轮）
 - 建议评审人：**任何非本次实现的会话**
-- 前两轮结论：**均为 `REWORK`**（第一轮 P0/P1/P2 = 0/4/6；第二轮 0/1/9）。三轮判定与计数已记入 `evidence/p1r/m2/P1R-M2-004/review-history.json` 与台账日期条目。
-- 第三轮已关闭：第二轮的新 P1（gated runner 以 mvn 退出码为通过判据，整类被跳过也判 PASS）与 10 项 P2 中的 7 项。**尚未提交终审前的最后确认**。
+- 前四轮结论：**均为 `REWORK`**（P0/P1/P2 = 0/4/6 → 0/1/9 → 0/3/7 → 0/4/8）。**四轮 P0 全部为 0**，每轮的核心运行时事实都被评审独立复现；失分形态始终是「账实不符」。四轮判定与计数记入 `evidence/p1r/m2/P1R-M2-004/review-history.json` 与台账日期条目。
+- 第四轮动作清单 9 项的处理：其中「生成器硬编码 PASS」「散文数字」「gated 硬编码服务列表」「先提交再重跑 harness」「文档一致性」「命令补 opt-in」「措辞同步」「REDIS-REBUILD 归属」已处理，处理方式是**结构性**的：生成器现在把每个数字与归属都从数据推导，门禁新增「config 判给本任务却报 NOT_APPLICABLE 即 error」的交叉校验（已做突变测试）。
 
 > **为什么这次评审特别关键**：台账的依赖门禁要求任何高于 `PLANNED` 的状态都必须依赖已 `ACCEPTED`。`P1R-M2-005` 因此被记为 `BLOCKED`，而 `M2-006 → M2-010` 依次依赖前一项 —— **整条 M2 链（以及其后的 M3–M8）当前可推进任务数为 0，全部在等这次评审**。
 
@@ -29,12 +29,12 @@
 
 | 内容 | 路径 |
 |---|---|
-| Canonical manifest（53 artifacts） | `evidence/p1r/m2/P1R-M2-004/manifest.json` |
-| 归属/授权/跨库阻断/migration 运行时证据 | `evidence/p1r/m2/P1R-M2-004/runtime-evidence-2026-09-13.json`（88 项检查） |
+| Canonical manifest（55 artifacts） | `evidence/p1r/m2/P1R-M2-004/manifest.json` |
+| 归属/授权/跨库阻断/migration 运行时证据 | `evidence/p1r/m2/P1R-M2-004/runtime-evidence-2026-09-13.json`（91 项检查） |
 | 事件运行时（6 阶段 harness） | `evidence/p1r/m2/P1R-M2-005/event-runtime-harness-2026-09-12.json` |
 | 执行记录 | `requirements/backlog/v2-phase1-rebaseline/execution/P1R-M2-004.md`、`P1R-M2-005.md` |
 
-manifest 的 `results`：**9 PASS + 3 NOT_APPLICABLE**。
+manifest 的 `results`：**10 PASS + 2 NOT_APPLICABLE**。
 
 ### 关于那 4 项 `NOT_APPLICABLE`（**本任务最需要你独立判断的一点**）
 

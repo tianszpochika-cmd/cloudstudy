@@ -318,6 +318,9 @@ const manifest = {
     '$env:M2_REDIS_FAULT_OPT_IN=\'PAUSE_EXACT_REDIS_16379_AND_RECOVER\'; node scripts/runtime/p1r-m2-004-runtime.mjs',
     'node scripts/runtime/run-gated-db-tests.mjs --json',
     'node scripts/runtime/run-gated-db-tests.mjs --write',
+    // Produces audit-ingest-check.json, which the audit result above is read from. Without it that entry
+    // reports FAIL rather than quoting a response nothing measured.
+    'node scripts/runtime/verify-audit-ingest.mjs --write',
     'node scripts/runtime/capture-m2-004-evidence.mjs',
     'node scripts/database/reconcile-owner-schemas.mjs --apply',
     'node scripts/database/reconcile-redis-acl.mjs',

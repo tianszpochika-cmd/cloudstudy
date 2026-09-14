@@ -74,6 +74,13 @@ function requiredVariables(source) {
   for (const match of source.matchAll(/\$\{([A-Z][A-Z0-9_]*)(?::([^}]*))?\}/gu)) {
     if (/_(?:URL|USERNAME|USER|PASSWORD|SCHEMA)$/u.test(match[1])) names.add(match[1]);
   }
+  // A class may also read a variable directly rather than through a helper, which is how an optional value
+  // like a password is usually read: getenv("NAME") or getOrDefault("NAME", ""). Reading only the helper
+  // calls missed the password entirely, so the runner supplied none and the connection failed with a message
+  // that named no variable.
+  for (const match of source.matchAll(/(?:getenv|getOrDefault)\("([A-Z][A-Z0-9_]*)"\s*[,)]/gu)) {
+    if (/_(?:URL|USERNAME|USER|PASSWORD|SCHEMA)$/u.test(match[1])) names.add(match[1]);
+  }
   return [...names];
 }
 
