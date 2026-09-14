@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-008",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "be48f5a256cf72bc8024f4bf03c30e1b0aee78df",
+  "sourceCommit": "146437f051f462218e3bc0ec0d822d95bf80e176",
   "artifactDigests": [
     {
       "path": "config/b20-privacy-content-gates.json",
@@ -270,7 +270,7 @@
     "originalFinishedAt": "2026-08-30T12:32:26+08:00",
     "originalReviewer": "agent:m1_008_independent_review:gpt-5.6-luna:max",
     "originalAcceptedContractBaseline": "463c4b238caceb1592bff6c61327c00ab9bac922",
-    "previousCurrentSourceCommit": "d4d27e9b1e637ebf1307a167dcb2ff886dc7db58",
+    "previousCurrentSourceCommit": "be48f5a256cf72bc8024f4bf03c30e1b0aee78df",
     "previousCurrentSourceRevalidationTask": "P1R-M1-008",
     "currentSourceRevalidationTask": "P1R-M1-008",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
@@ -484,15 +484,25 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-14T15:39:18.648Z",
         "details": "Digest rebind after M2-005 was delivered."
+      },
+      {
+        "taskId": "P1R-M1-008",
+        "sourceCommit": "146437f051f462218e3bc0ec0d822d95bf80e176",
+        "auditedImplementationSource": "146437f051f462218e3bc0ec0d822d95bf80e176",
+        "integrationCheckpoint": "146437f051f462218e3bc0ec0d822d95bf80e176",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-14T15:46:34.130Z",
+        "details": "Digest rebind after the event runtime harness changed."
       }
     ],
     "previousCurrentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
     "previousCurrentSourceRevalidationFinishedAt": "2026-09-12T23:35:27.174Z",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-14T15:39:18.648Z",
-    "currentSourceRevalidationAuditedImplementationSource": "be48f5a256cf72bc8024f4bf03c30e1b0aee78df",
-    "currentSourceRevalidationIntegrationCheckpoint": "be48f5a256cf72bc8024f4bf03c30e1b0aee78df"
+    "currentSourceRevalidationFinishedAt": "2026-09-14T15:46:34.130Z",
+    "currentSourceRevalidationAuditedImplementationSource": "146437f051f462218e3bc0ec0d822d95bf80e176",
+    "currentSourceRevalidationIntegrationCheckpoint": "146437f051f462218e3bc0ec0d822d95bf80e176"
   },
   "startedAt": "2026-08-30T09:15:05+08:00",
   "finishedAt": "2026-09-01T15:39:29+08:00",

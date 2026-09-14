@@ -2,7 +2,7 @@
   "taskId": "P1R-M0-001",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "be48f5a256cf72bc8024f4bf03c30e1b0aee78df",
+  "sourceCommit": "146437f051f462218e3bc0ec0d822d95bf80e176",
   "artifactDigests": [
     {
       "path": "config/p1r-current-asset-inventory.json",
@@ -89,14 +89,24 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-14T15:39:16.853Z",
         "details": "Digest rebind after M2-005 was delivered."
+      },
+      {
+        "taskId": "P1R-M0-001",
+        "sourceCommit": "146437f051f462218e3bc0ec0d822d95bf80e176",
+        "auditedImplementationSource": "146437f051f462218e3bc0ec0d822d95bf80e176",
+        "integrationCheckpoint": "146437f051f462218e3bc0ec0d822d95bf80e176",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-14T15:46:32.449Z",
+        "details": "Digest rebind after the event runtime harness changed."
       }
     ],
-    "previousCurrentSourceCommit": "d4d27e9b1e637ebf1307a167dcb2ff886dc7db58",
+    "previousCurrentSourceCommit": "be48f5a256cf72bc8024f4bf03c30e1b0aee78df",
     "currentSourceRevalidationTask": "P1R-M0-001",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-14T15:39:16.853Z",
-    "currentSourceRevalidationAuditedImplementationSource": "be48f5a256cf72bc8024f4bf03c30e1b0aee78df",
-    "currentSourceRevalidationIntegrationCheckpoint": "be48f5a256cf72bc8024f4bf03c30e1b0aee78df"
+    "currentSourceRevalidationFinishedAt": "2026-09-14T15:46:32.449Z",
+    "currentSourceRevalidationAuditedImplementationSource": "146437f051f462218e3bc0ec0d822d95bf80e176",
+    "currentSourceRevalidationIntegrationCheckpoint": "146437f051f462218e3bc0ec0d822d95bf80e176"
   }
 }
