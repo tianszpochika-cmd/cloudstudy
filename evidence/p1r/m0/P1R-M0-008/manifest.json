@@ -2,12 +2,12 @@
   "taskId": "P1R-M0-008",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "3a52cca094fde82eb444cfdb0930cab0e3ad3adb",
+  "sourceCommit": "17eb918cef4dec772ecea4cc21fb283b19b387f2",
   "artifactDigests": [
     {
       "path": "scripts/audit/p1r-evidence-gate.mjs",
       "algorithm": "sha256",
-      "digest": "85692c9ae6cbfd6797ff3b2babbb4ae9f3087fe102ca2b303e1b08754fb8e6bd"
+      "digest": "d47c515ef897ce558bfbeffc705ccc95514e2cf97020a341e5e5b7f2245ddaa3"
     },
     {
       "path": "scripts/audit/verify-phase1-rebaseline-plan.mjs",
@@ -136,14 +136,24 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-14T04:19:57.876Z",
         "details": "Digest rebind after the assertedBy rule was corrected: it had been guarded by assertedBy === task.id, so changing assertedBy to another task skipped the comparison, which the mutation test caught."
+      },
+      {
+        "taskId": "P1R-M0-008",
+        "sourceCommit": "17eb918cef4dec772ecea4cc21fb283b19b387f2",
+        "auditedImplementationSource": "17eb918cef4dec772ecea4cc21fb283b19b387f2",
+        "integrationCheckpoint": "17eb918cef4dec772ecea4cc21fb283b19b387f2",
+        "reviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-14T05:03:52.278Z",
+        "details": "Digest rebind after the evidence gate gained the rule the seventh review asked for: the ledger line for a task must name any task that owns one of the requirements that task asserts, so a reassignment cannot be made on the evidence side alone."
       }
     ],
-    "previousCurrentSourceCommit": "2ef192971efc5d4600fa6f40824274bbdb9d9de2",
+    "previousCurrentSourceCommit": "3a52cca094fde82eb444cfdb0930cab0e3ad3adb",
     "currentSourceRevalidationTask": "P1R-M0-008",
     "currentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-14T04:19:57.876Z",
-    "currentSourceRevalidationAuditedImplementationSource": "3a52cca094fde82eb444cfdb0930cab0e3ad3adb",
-    "currentSourceRevalidationIntegrationCheckpoint": "3a52cca094fde82eb444cfdb0930cab0e3ad3adb"
+    "currentSourceRevalidationFinishedAt": "2026-09-14T05:03:52.278Z",
+    "currentSourceRevalidationAuditedImplementationSource": "17eb918cef4dec772ecea4cc21fb283b19b387f2",
+    "currentSourceRevalidationIntegrationCheckpoint": "17eb918cef4dec772ecea4cc21fb283b19b387f2"
   }
 }

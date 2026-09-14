@@ -2,7 +2,7 @@
   "taskId": "P1R-M2-004",
   "draftOnly": false,
   "canonicalTaskStatus": "REVIEW",
-  "sourceCommit": "182fae60beb5316575068b33b7a2b78a60b83a59",
+  "sourceCommit": "17eb918cef4dec772ecea4cc21fb283b19b387f2",
   "artifactDigests": [
     {
       "path": "config/p1r-data-ownership.v1.json",
@@ -47,7 +47,7 @@
     {
       "path": "scripts/audit/p1r-evidence-gate.mjs",
       "algorithm": "sha256",
-      "digest": "85692c9ae6cbfd6797ff3b2babbb4ae9f3087fe102ca2b303e1b08754fb8e6bd"
+      "digest": "d47c515ef897ce558bfbeffc705ccc95514e2cf97020a341e5e5b7f2245ddaa3"
     },
     {
       "path": "scripts/runtime/capture-m2-004-evidence.mjs",
@@ -471,6 +471,25 @@
         "reviewedCommit": null,
         "reviewer": "awaiting a fresh independent session",
         "summary": "Not submitted. The seventh round's findings are addressed: the reassignment is carried in all five places and checked for stale sentences, the tenant figure has one definition and the same number everywhere, the review request is regenerated from the manifest, and the gate requires the ledger line to name any task that owns one of the task's requirements."
+      }
+    ],
+    "previousCurrentSourceCommit": "182fae60beb5316575068b33b7a2b78a60b83a59",
+    "currentSourceRevalidationTask": "P1R-M2-004",
+    "currentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
+    "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
+    "currentSourceRevalidationFinishedAt": "2026-09-14T05:03:52.289Z",
+    "currentSourceRevalidationAuditedImplementationSource": "17eb918cef4dec772ecea4cc21fb283b19b387f2",
+    "currentSourceRevalidationIntegrationCheckpoint": "17eb918cef4dec772ecea4cc21fb283b19b387f2",
+    "currentSourceRevalidationHistory": [
+      {
+        "taskId": "P1R-M2-004",
+        "sourceCommit": "17eb918cef4dec772ecea4cc21fb283b19b387f2",
+        "auditedImplementationSource": "17eb918cef4dec772ecea4cc21fb283b19b387f2",
+        "integrationCheckpoint": "17eb918cef4dec772ecea4cc21fb283b19b387f2",
+        "reviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-14T05:03:52.289Z",
+        "details": "Digest rebind after the evidence gate gained the rule the seventh review asked for: the ledger line for a task must name any task that owns one of the requirements that task asserts, so a reassignment cannot be made on the evidence side alone."
       }
     ]
   },
