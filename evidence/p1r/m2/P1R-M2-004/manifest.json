@@ -15,7 +15,7 @@
   "taskId": "P1R-M2-004",
   "draftOnly": false,
   "canonicalTaskStatus": "DEV_DONE",
-  "sourceCommit": "a5813d0579f77598c11cc75c72e04f4545b77eb2",
+  "sourceCommit": "dff758f443bd5e840ae6822e9b7b695f7a59c137",
   "artifactDigests": [
     {
       "path": "config/p1r-data-ownership.v1.json",
@@ -563,13 +563,13 @@
         "summary": "Not submitted."
       }
     ],
-    "previousCurrentSourceCommit": "b0065289f2f0871d2dbf79ecd23332ceb7f83109",
+    "previousCurrentSourceCommit": "a5813d0579f77598c11cc75c72e04f4545b77eb2",
     "currentSourceRevalidationTask": "P1R-M2-004",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-14T17:55:32.696Z",
-    "currentSourceRevalidationAuditedImplementationSource": "a5813d0579f77598c11cc75c72e04f4545b77eb2",
-    "currentSourceRevalidationIntegrationCheckpoint": "a5813d0579f77598c11cc75c72e04f4545b77eb2",
+    "currentSourceRevalidationFinishedAt": "2026-09-14T18:11:42.342Z",
+    "currentSourceRevalidationAuditedImplementationSource": "dff758f443bd5e840ae6822e9b7b695f7a59c137",
+    "currentSourceRevalidationIntegrationCheckpoint": "dff758f443bd5e840ae6822e9b7b695f7a59c137",
     "currentSourceRevalidationHistory": [
       {
         "taskId": "P1R-M2-004",
@@ -670,6 +670,16 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-14T17:55:32.696Z",
         "details": "Rebind after the runtime manifest and status changed."
+      },
+      {
+        "taskId": "P1R-M2-004",
+        "sourceCommit": "dff758f443bd5e840ae6822e9b7b695f7a59c137",
+        "auditedImplementationSource": "dff758f443bd5e840ae6822e9b7b695f7a59c137",
+        "integrationCheckpoint": "dff758f443bd5e840ae6822e9b7b695f7a59c137",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-14T18:11:42.342Z",
+        "details": "Rebind after the status cascade."
       }
     ]
   },
