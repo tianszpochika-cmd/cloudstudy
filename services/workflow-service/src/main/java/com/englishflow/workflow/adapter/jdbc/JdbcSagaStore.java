@@ -23,6 +23,17 @@ public class JdbcSagaStore implements SagaStore {
     }
 
     @Override
+    public void start(String sagaId, String sagaName, String correlationId) {
+        // The unique key on (saga_name, correlation_id) means a repeated request cannot start a second saga for
+        // the same correlation, which is what makes starting a saga safe to retry.
+        jdbc.update("""
+                INSERT INTO workflow_service.saga_instance
+                    (saga_id, saga_name, correlation_id, status, attempt_count, started_at)
+                VALUES (?, ?, ?, 'STARTED', 0, UTC_TIMESTAMP(6))
+                """, sagaId, sagaName, correlationId);
+    }
+
+    @Override
     public void recordStepPlanned(String sagaId, String stepName, int stepOrder, String compensationName) {
         // Inserted with the compensation already present. A duplicate is ignored rather than overwriting,
         // so a retry cannot replace a recorded compensation with a different one.

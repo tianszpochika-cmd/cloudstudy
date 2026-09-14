@@ -12,6 +12,9 @@ import java.util.Optional;
  */
 public interface SagaStore {
 
+    /** Creates a saga row. The correlation is what lets a caller find a saga from the request that started it. */
+    void start(String sagaId, String sagaName, String correlationId);
+
     /**
      * Records a step's compensation before the step is attempted.
      *

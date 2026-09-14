@@ -130,6 +130,11 @@ class SagaCompensationExecutorTest {
         }
 
         @Override
+        public void start(String sagaId, String sagaName, String correlationId) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
         public void recordStepPlanned(String sagaId, String stepName, int stepOrder, String compensationName) {
             throw new UnsupportedOperationException();
         }
