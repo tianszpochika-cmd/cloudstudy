@@ -330,7 +330,11 @@ if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(fileURLToP
   if (process.argv.includes('--write')) {
     const directory = path.join(repositoryRoot, 'evidence/p1r/m2/P1R-M2-004');
     fs.mkdirSync(directory, { recursive: true });
-    const file = path.join(directory, `gated-db-tests-${new Date().toISOString().slice(0, 10)}.json`);
+    // A fixed name, not one derived from today's date. The dated form meant every run wrote a new file and
+    // the manifest kept reading whichever name was hardcoded when it was written, so following the recorded
+    // commands could never refresh the figures the manifest reported — a re-run produced evidence nothing
+    // consumed. One name means the newest run is the evidence.
+    const file = path.join(directory, 'gated-db-tests.json');
     fs.writeFileSync(file, `${JSON.stringify(evidence, null, 2)}\n`);
     console.log(`written: ${path.relative(repositoryRoot, file).replaceAll('\\', '/')}`);
   }

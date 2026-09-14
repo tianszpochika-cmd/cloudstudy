@@ -134,7 +134,7 @@ function readReviewHistory() {
   }));
 }
 const evidence = read(evidenceFile);
-const gated = read('evidence/p1r/m2/P1R-M2-004/gated-db-tests-2026-09-13.json');
+const gated = read('evidence/p1r/m2/P1R-M2-004/gated-db-tests.json');
 const ownership = read('config/p1r-data-ownership.v1.json');
 
 const checksWith = (prefix) => evidence.checks.filter((check) => check.id.startsWith(prefix));
@@ -171,7 +171,7 @@ const artifacts = [
     return found;
   })).flat(),
   evidenceFile,
-  'evidence/p1r/m2/P1R-M2-004/gated-db-tests-2026-09-13.json',
+  'evidence/p1r/m2/P1R-M2-004/gated-db-tests.json',
   // Both are produced by tracked scripts and both are read back into results above, so a manifest that
   // cites them has to record them.
   'evidence/p1r/m2/P1R-M2-004/audit-ingest-check.json',
@@ -253,7 +253,7 @@ const manifest = {
     measuredAt: evidence.finishedAt ?? null,
     toolchain: { java: 'OpenJDK 25.0.4.1', maven: '3.9.12', node: '20.19.5', kafka: '3.9.2' },
     evidenceFile,
-    gatedTestEvidenceFile: 'evidence/p1r/m2/P1R-M2-004/gated-db-tests-2026-09-13.json',
+    gatedTestEvidenceFile: 'evidence/p1r/m2/P1R-M2-004/gated-db-tests.json',
     owners: {
       // Read from the policy rather than typed: the manifest previously claimed fifteen ACL users
       // while the evidence covered thirteen, because only the owners with a database manifest were

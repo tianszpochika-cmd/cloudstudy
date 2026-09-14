@@ -1,7 +1,7 @@
 {
   "schema": "platform.gated-db-tests.v1",
   "taskId": "P1R-M2-004",
-  "capturedAt": "2026-09-14T02:01:03.429Z",
+  "capturedAt": "2026-09-14T02:25:07.400Z",
   "adminUrl": "jdbc:mysql://127.0.0.1:13306/",
   "discoveredClasses": 31,
   "selectedClasses": 31,

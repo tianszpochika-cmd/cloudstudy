@@ -2,7 +2,7 @@
   "taskId": "P1R-M2-004",
   "draftOnly": false,
   "canonicalTaskStatus": "REVIEW",
-  "sourceCommit": "486c20fde2263a23fe886ba0a12dbce2bc9015f5",
+  "sourceCommit": "5b44184d0d9522db05c7d36b9720caa4b81372ae",
   "artifactDigests": [
     {
       "path": "config/p1r-data-ownership.v1.json",
@@ -52,7 +52,7 @@
     {
       "path": "scripts/runtime/run-gated-db-tests.mjs",
       "algorithm": "sha256",
-      "digest": "960b3f497ccadc0a568058bd5384214fc7b31541195333d4f4fd19bf87979657"
+      "digest": "46f217f3121cfea225318a2e84f61cbecaee993fd9b67682d06fdd8d7c073988"
     },
     {
       "path": "services/audit-service/src/main/resources/db/migration/V2__widen_audit_schema_version.sql",
@@ -260,14 +260,19 @@
       "digest": "411b5289b0ee7587de56d2020347b42a82c26ac29d2f6dd1323bca468c789874"
     },
     {
+      "path": "services/workflow-service/src/test/java/com/englishflow/workflow/adapter/jdbc/JdbcSagaStoreIntegrationTest.java",
+      "algorithm": "sha256",
+      "digest": "03952168812ed1029e05015217dab229788e3d37b682cc3c20e2e0f43a48c6a1"
+    },
+    {
       "path": "evidence/p1r/m2/P1R-M2-004/runtime-evidence-2026-09-13.json",
       "algorithm": "sha256",
       "digest": "ae9f26368655f284539b5d42b1c7c83b3586b4820f626b0d89a0d876501049bd"
     },
     {
-      "path": "evidence/p1r/m2/P1R-M2-004/gated-db-tests-2026-09-13.json",
+      "path": "evidence/p1r/m2/P1R-M2-004/gated-db-tests.json",
       "algorithm": "sha256",
-      "digest": "c392ec7ff75125bae764115d64297dabe8f968094e8317b7c2e5cb3dc39546f9"
+      "digest": "97370f0428a854ed87c9c64a5879450b021149010d220fbcd854d29eee1c0487"
     },
     {
       "path": "evidence/p1r/m2/P1R-M2-004/audit-ingest-check.json",
@@ -294,7 +299,7 @@
       "kafka": "3.9.2"
     },
     "evidenceFile": "evidence/p1r/m2/P1R-M2-004/runtime-evidence-2026-09-13.json",
-    "gatedTestEvidenceFile": "evidence/p1r/m2/P1R-M2-004/gated-db-tests-2026-09-13.json",
+    "gatedTestEvidenceFile": "evidence/p1r/m2/P1R-M2-004/gated-db-tests.json",
     "owners": {
       "declaredServiceOwners": 15,
       "ownersWithRedisNamespace": 15,
@@ -323,9 +328,9 @@
       "redisOnlyOwnersProbed": [
         "api-gateway"
       ],
-      "gatedTestClasses": 30,
-      "gatedGroupsRun": 25,
-      "gatedTestsRun": 43,
+      "gatedTestClasses": 31,
+      "gatedGroupsRun": 26,
+      "gatedTestsRun": 46,
       "declaredOwnersProvisioned": 14,
       "externallyMigratedOwners": 13
     }
@@ -392,7 +397,7 @@
     ]
   },
   "startedAt": "2026-09-09T00:00:00+08:00",
-  "finishedAt": "2026-09-14T02:06:33.070Z",
+  "finishedAt": "2026-09-14T02:25:08.334Z",
   "actors": [
     "root-coordinator",
     "p1r-implementation"
