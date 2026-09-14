@@ -116,6 +116,21 @@ export function checkStaleClaims() {
     if (unknownVerdicts.length > 0) {
       errors.push(`review history has rounds with an unrecognised verdict: ${unknownVerdicts.map((round) => `${round.round}=${round.verdict}`).join(', ')}`);
     }
+    // An enumeration that lists some of the rounds is the shape the tenth round's figures kept taking: correct at
+    // the moment it was written and never extended. Counting them is mechanical, so it is checked.
+    for (const file of files) {
+      const text = file === ledgerFile && datedFrom > 0 ? read(file).slice(0, datedFrom) : read(file);
+      for (const match of text.matchAll(/（P0\/P1\/P2 = ([^）]*)）/gu)) {
+        const listed = match[1].match(/\d+\/\d+\/\d+/gu) ?? [];
+        // A chain, not a single tuple: one parenthesised count describes one round, and flagging those would
+        // report every sentence that mentions a verdict. The shape at issue is an enumeration joined by arrows.
+        const chained = match[1].includes('→');
+        if (chained && listed.length !== decided) {
+          errors.push(`${rel(file)}: an enumeration of round counts is incomplete: it lists ${listed.length} where the history records ${decided} decided rounds`);
+        }
+      }
+    }
+
     const tooManyPending = history.rounds.filter((round) => round.verdict === 'PENDING');
     if (tooManyPending.length > 1) {
       errors.push(`review history has ${tooManyPending.length} pending rounds (${tooManyPending.map((round) => round.round).join(', ')}): only the latest should be pending, so a placeholder was left behind`);
