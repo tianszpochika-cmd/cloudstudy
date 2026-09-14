@@ -34,18 +34,29 @@
 | 事件运行时（6 阶段 harness） | `evidence/p1r/m2/P1R-M2-005/event-runtime-harness-2026-09-12.json` |
 | 执行记录 | `requirements/backlog/v2-phase1-rebaseline/execution/P1R-M2-004.md`、`P1R-M2-005.md` |
 
-manifest 的 `results`：**10 PASS + 2 NOT_APPLICABLE**。
+manifest 的 `results`：**9 PASS + 3 NOT_APPLICABLE**。下面这张表由 manifest 生成，不是手写的，所以它不会与 manifest 不一致。
 
-### 关于那 4 项 `NOT_APPLICABLE`（**本任务最需要你独立判断的一点**）
+### 关于那 3 项 `NOT_APPLICABLE`（**本任务最需要你独立判断的一点**）
 
-策略文件里这 8 项要求都以 `M2-004-` 为前缀，但**前缀只表示"该任务首次主张"，不表示"由它交付"**。实现者据台账把归属整理为机器可读的 `config/p1r-m2-requirement-owners.v1.json`：
+策略文件里这些要求都以 `M2-004-` 为前缀，但**前缀只表示「该任务首次主张」，不表示「由它交付」**。归属记在机器可读的 `config/p1r-m2-requirement-owners.v1.json` 里，且该文件本身是本 manifest 的摘要制品之一。
 
-| 要求 | 归属任务 | 台账原文依据 |
-|---|---|---|
-| `TENANT-GUARD` | `P1R-M2-009`（+`M0-007`） | 两租户 HTTP 拒绝需要合成 per-owner 账号，M0-007 建立、M2-009 接入真实 CI |
-| `REDIS-REBUILD` | `P1R-M2-006`（+`M3-006`） | 投影重建入口属 workflow/平台运行时 |
-| `ROLLBACK-COMPENSATION` | `P1R-M2-006` | 台账该任务范围含"Saga、补偿、定时任务、人工恢复" |
-| `RETENTION-DELETE-HOLD` | `P1R-M6-008`（+`M8-012`） | 台账该任务范围含"账号删除请求、冷静期、跨域匿名化" |
+| 要求 | manifest 的处置 |
+|---|---|
+| `OWNER-SCHEMA-GRANTS` | `PASS`，由本任务交付 |
+| `CROSS-OWNER-DENY` | `PASS`，由本任务交付 |
+| `REDIS-NAMESPACE-ACL` | `PASS`，由本任务交付 |
+| `FLYWAY-EMPTY-AND-EXISTING` | `PASS`，由本任务交付 |
+| `TENANT-GUARD` | `PASS`，由本任务交付 |
+| `FLYWAY-OWNER-COVERAGE` | `PASS`，由本任务交付 |
+| `REDIS-REBUILD` | `NOT_APPLICABLE`，归属 P1R-M3-006 |
+| `ROLLBACK-COMPENSATION` | `NOT_APPLICABLE`，归属 P1R-M2-006 |
+| `RETENTION-DELETE-HOLD` | `NOT_APPLICABLE`，归属 P1R-M6-008 |
+
+**请独立确认这些归属是否成立** —— 若评审认为某一项本就该由 M2-004 交付，应判 `REWORK`。
+
+> 注：第五轮评审指出「回滚/补偿测试」在**本任务内没有真实交付物**（原先交付的 drift-refusal 检查既无回滚动作、也无 owner 补偿与 receipt），据此**已改判 `P1R-M2-006` 并同步修改了台账第 76 行**。这不是为了让状态好看，而是该任务的范围确实含 Saga 补偿、人工恢复与 receipt 表，且那里已交付了补偿执行器、双人审批与 recovery receipt。
+
+> 注：直接给 `config/p1r-data-ownership.v1.json` 增加 `ownerTask` 字段会被 `p1r-data-ownership-check` 判为 **D2 schema 漂移**（该文档形状冻结），因此归属放在独立文件里。这一处置也请你确认是否恰当。
 
 **请独立确认这个归属是否成立** —— 如果评审认为某一项本就该由 M2-004 交付，则应判 `REWORK`，实现者去补做。
 
@@ -108,11 +119,18 @@ node scripts/audit/p1r-evidence-gate.mjs --json    # 期望 PASS，108 任务，
 
 ## 6. 已知缺口（实现者主动登记，非阻断）
 
-1. 4 项 `NOT_APPLICABLE` 的要求见上；`runtimeStatus` 因此保持 **`NOT_RUNTIME_VERIFIED`**。
-2. **per-service Redis namespace 已供给但未被领域服务使用** —— 目前只有 `api-gateway`（D2b 后用 `svc_gateway`）与 legacy `core-api` 配置 Redis；对另外 12 个服务它是**预留分配**而非已生效边界。
-3. owner outbox 表已有契约形状，但**只有 content-service 有发布器与消费者**。
-4. 12 个 provisioning owner 中有 8 个是从**既有 schema 基线化**而非从空库迁移。
-5. 事件契约声明的 48 个消费组中，当前**只有 1 个**（`cg.content-from-iam.v1`）在真实消费。
+以下 10 条直接取自 manifest 的 `knownGaps`，未在本文档另行改写：
+
+1. The tenant guard is delivered at the storage layer through 10 passing *TenantIsolationTest classes, each running against a real MySQL and its own owner's schema. They write with a JdbcTemplate rather than through a service repository. 6 of the 10 instantiate an imported production class and 4 do not (AssessmentTenantIsolationTest, GamificationTenantIsolationTest, NotificationTenantIsolationTest, SocialTenantIsolationTest), and the classes do not all assert the same thing: most assert that a foreign tenant's rows are not returned, while at least one asserts only that a guarded column has no default and that the schema credential cannot write another owner's tables. So this is evidence about schema-level isolation, not about every service's request path, and the policy line asking for a server-derived TenantScope on a request path is not measured here. The HTTP-level two-tenant negative remains open and is handed to P1R-M2-009: it needs a synthetic per-owner account, which P1R-M0-007 builds and P1R-M2-009 wires into real CI. P1R-M2-009's ledger scope does not itself name tenant guard, so this is a residual gap recorded against this task rather than a reassignment of the requirement.
+2. The per-service Redis namespaces and ACLs are provisioned and probed for every namespaced owner, but no domain service uses Redis yet: only api-gateway and the legacy core-api configure it, so for the 14 domain owners the namespace is a reserved allocation rather than an enforced boundary in a live path. The Redis default user is still reachable without a password, so the namespace boundary does not constrain an unauthenticated client; that is a property of the local container rather than of this task's ACLs, and it is registered here rather than left implicit.
+3. The owner outbox tables now carry the contract shape, but only content-service has a publisher and a consumer; the other owners still append rows that nothing publishes.
+4. Some provisioning owners were baselined from an existing schema rather than migrated from empty, so their migration history records what was already applied rather than a replay from scratch. How many is NOT VERIFIED: the reconcile output reports the state per owner but no tracked record counts them, so a figure is not given here rather than repeated from an earlier run. The empty-database drill is covered by the Flyway tests above rather than by those baselines.
+5. p1r_schema_history, written by scripts/database/reconcile-owner-schemas.mjs, is authoritative for the 13 externally migrated owners and records the version and checksum the reconcile runner applied. flyway_schema_history belongs to the service that runs Flyway at startup, which is iam-service today, and to the service-owned tests. They are not interchangeable: the reconcile history is what the platform asserts, and a Flyway history exists only where a service or its tests actually ran Flyway.
+6. The gated test families in this task are unchanged in themselves; what changed is that they are now run on purpose. A default `mvn test` still reports them as skipped, so any future evidence that cites them has to run scripts/runtime/run-gated-db-tests.mjs, which discovers 31 classes across the repository and reports the ones it could not run.
+7. This task changed a value in the frozen D2 data-ownership policy and the assertion that enforced it in the same commit: the api-gateway Redis namespace moved from gateway to englishflow:gateway so that the policy, the ACL provisioning script and the running Gateway agree. It is registered here because changing a policy and the check that guards it together is a conflict of interest, and leaving it to the commit message is not a record. The evidence for the change is in the harness: a probe against the bare gateway namespace is refused by Redis while englishflow:gateway is accepted.
+8. The workflow-service built under P1R-M2-006 is a provisioned owner, so the counts here include it: 14 owners in total and 13 externally migrated. Its schema, credential and migration are delivered by that task, and its tenant guard and gated coverage are not part of this snapshot, which is why the gated class count is 31 while the Flyway coverage check covers 13 services.
+9. The Redis default user is still enabled without a password, so the namespace boundary this task provisions does not constrain a client that never authenticates. That is a property of the local container rather than of these ACLs, and it is recorded because a reader could otherwise take "per-service Redis namespaces" for a complete boundary.
+10. Overall phase remains D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED.
 
 ## 7. 实现者的结论请求
 
