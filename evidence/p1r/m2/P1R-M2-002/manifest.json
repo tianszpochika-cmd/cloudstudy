@@ -2,7 +2,7 @@
   "taskId": "P1R-M2-002",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "5408751e7c27277d6124d394b4da2465e10f60fa",
+  "sourceCommit": "0015a176c0dce651ea89528692a356bb478d43c6",
   "artifactDigests": [
     {
       "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/ConsentService.java",
@@ -92,12 +92,12 @@
     {
       "path": "services/iam-service/src/main/java/com/englishflow/iam/config/IamRuntimeConfiguration.java",
       "algorithm": "sha256",
-      "digest": "9bdb1b3a649f9a6b6319903f6e8be0ca65716ec01e5f0fe87a6bf41df6de0e0a"
+      "digest": "eaedacd9cdeac288f393c2ae4d28880e68493cd33ca92848fce75c2993b111c3"
     },
     {
       "path": "services/iam-service/src/main/java/com/englishflow/iam/config/IamServiceProperties.java",
       "algorithm": "sha256",
-      "digest": "eda60eb662fd30586ccc98c2cd3a414e0fbe7acd4b5eb25e41c6f2be43f063d8"
+      "digest": "e660972a261761bf66108cbed5dd6a80ad7c0c4af637a4dc8b69b1d1b6cb8972"
     },
     {
       "path": "services/iam-service/src/main/java/com/englishflow/iam/web/IamProviderBoundaryController.java",
@@ -314,16 +314,26 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-13T04:47:09.122Z",
         "details": "Current-source revalidation after the P1R-M2-004 review rework. The rework moved config/p1r-data-ownership.v1.json, which corrects the Gateway Redis namespace to englishflow:gateway because the runtime keys, the ACL provisioning script and a live Redis denial all disagree with the previous value, and scripts/audit/p1r-data-ownership-check.mjs, whose assertion enforced that previous value. This task only records those files, so nothing it accepted changed; its digests are rebound to the commit that carries the rework."
+      },
+      {
+        "taskId": "P1R-M2-002",
+        "sourceCommit": "0015a176c0dce651ea89528692a356bb478d43c6",
+        "auditedImplementationSource": "0015a176c0dce651ea89528692a356bb478d43c6",
+        "integrationCheckpoint": "0015a176c0dce651ea89528692a356bb478d43c6",
+        "reviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-14T06:31:20.612Z",
+        "details": "Digest rebind after ADR-0016 added the service-token issuance path to iam-service. The change is additive: a new service class, a new endpoint, a new configuration section and one security rule permitting the path that cannot require a token to obtain one."
       }
     ],
-    "previousCurrentSourceCommit": "c2ed12f71f250180fe387a31eceb91d0d451dd02",
+    "previousCurrentSourceCommit": "5408751e7c27277d6124d394b4da2465e10f60fa",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
     "currentSourceRevalidationTask": "P1R-M2-002",
     "currentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-13T04:47:09.122Z",
-    "currentSourceRevalidationAuditedImplementationSource": "5408751e7c27277d6124d394b4da2465e10f60fa",
-    "currentSourceRevalidationIntegrationCheckpoint": "5408751e7c27277d6124d394b4da2465e10f60fa",
+    "currentSourceRevalidationFinishedAt": "2026-09-14T06:31:20.612Z",
+    "currentSourceRevalidationAuditedImplementationSource": "0015a176c0dce651ea89528692a356bb478d43c6",
+    "currentSourceRevalidationIntegrationCheckpoint": "0015a176c0dce651ea89528692a356bb478d43c6",
     "originalSourceCommit": "ec20ef51a8b0ea99d4b72bf7598777df075f4889",
     "previousCurrentSourceRevalidationTask": "P1R-M2-002",
     "previousCurrentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
