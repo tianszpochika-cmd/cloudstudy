@@ -1,0 +1,73 @@
+{
+  "task": "P1R-M2-007",
+  "capturedAt": "2026-09-14T17:24:53.233Z",
+  "sourceCommit": "65a67d185c200da988e029de65cf411ad7a3d151",
+  "workingTreeDirty": true,
+  "result": "FAIL",
+  "passed": 8,
+  "total": 10,
+  "requestId": "p1r-m2-007-1789406689294",
+  "checks": [
+    {
+      "name": "no-unexpected-private-key-in-the-repository",
+      "ok": true,
+      "observed": "none beyond the named local IAM key",
+      "expected": "only the local development IAM signing key"
+    },
+    {
+      "name": "the-local-iam-key-is-named-rather-than-hidden",
+      "ok": true,
+      "observed": "secrets\\iam-rsa-private.pem, secrets\\iam-rsa-private.pem (-----BEGIN PRIVATE KEY-----), secrets\\iam-rsa-public.pem",
+      "expected": "the key the local stack signs with, recorded so it is not mistaken for a leak"
+    },
+    {
+      "name": "the-caller-supplied-request-id-is-echoed-back",
+      "ok": true,
+      "observed": "p1r-m2-007-1789406689294",
+      "expected": "p1r-m2-007-1789406689294"
+    },
+    {
+      "name": "an-unauthenticated-request-is-refused-rather-than-answered",
+      "ok": true,
+      "observed": 404,
+      "expected": "401 or 403"
+    },
+    {
+      "name": "the-request-id-reaches-the-audit-fact",
+      "ok": true,
+      "observed": "1",
+      "expected": "1"
+    },
+    {
+      "name": "every-outbox-row-carries-a-distinct-event-id",
+      "ok": false,
+      "observed": "no outbox table holds rows (looked at 8: asm_b10_outbox_event, cnt_b9_outbox_event, com_b13_outbox_event, lrn_b10_outbox_event, lrn_b9_outbox_event, lrn_learning_outbox, ntf_b11_outbox_event, outbox_events)",
+      "expected": "as many distinct ids as rows"
+    },
+    {
+      "name": "every-service-answers-liveness-UP",
+      "ok": true,
+      "observed": "14 services UP",
+      "expected": "14 services answering 200 UP"
+    },
+    {
+      "name": "every-service-answers-readiness-UP",
+      "ok": true,
+      "observed": "14 services UP",
+      "expected": "14 services answering 200 UP"
+    },
+    {
+      "name": "every-service-shuts-down-gracefully",
+      "ok": true,
+      "observed": "17 configuration files",
+      "expected": "shutdown: graceful in every configuration"
+    },
+    {
+      "name": "every-service-bounds-its-shutdown",
+      "ok": false,
+      "observed": "services/core-api/src/main/resources/application.yml (v1 compatibility, out of scope)",
+      "expected": "timeout-per-shutdown-phase in every configuration"
+    }
+  ],
+  "note": "The correlation checks run against the local real stack: a request through the gateway, the same id looked up in the audit fact, and the outbox read from the database the service writes to. The lifecycle checks probe every declared port and read the shutdown settings from the committed configuration rather than from a running process."
+}

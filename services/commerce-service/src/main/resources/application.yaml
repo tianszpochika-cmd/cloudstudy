@@ -2,6 +2,7 @@ server:
   address: 127.0.0.1
   port: ${COMMERCE_SERVICE_PORT:18096}
   shutdown: graceful
+  timeout-per-shutdown-phase: ${COMMERCE_SHUTDOWN_TIMEOUT:20s}
 
 spring:
   application:
