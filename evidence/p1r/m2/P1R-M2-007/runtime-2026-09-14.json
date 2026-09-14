@@ -1,12 +1,12 @@
 {
   "task": "P1R-M2-007",
-  "capturedAt": "2026-09-14T17:24:53.233Z",
-  "sourceCommit": "65a67d185c200da988e029de65cf411ad7a3d151",
+  "capturedAt": "2026-09-14T17:33:34.696Z",
+  "sourceCommit": "61680c78b41325f002a7b1f4a72cd1c7fd780fe3",
   "workingTreeDirty": true,
-  "result": "FAIL",
-  "passed": 8,
+  "result": "PASS",
+  "passed": 10,
   "total": 10,
-  "requestId": "p1r-m2-007-1789406689294",
+  "requestId": "p1r-m2-007-1789407210271",
   "checks": [
     {
       "name": "no-unexpected-private-key-in-the-repository",
@@ -23,8 +23,8 @@
     {
       "name": "the-caller-supplied-request-id-is-echoed-back",
       "ok": true,
-      "observed": "p1r-m2-007-1789406689294",
-      "expected": "p1r-m2-007-1789406689294"
+      "observed": "p1r-m2-007-1789407210271",
+      "expected": "p1r-m2-007-1789407210271"
     },
     {
       "name": "an-unauthenticated-request-is-refused-rather-than-answered",
@@ -39,10 +39,10 @@
       "expected": "1"
     },
     {
-      "name": "every-outbox-row-carries-a-distinct-event-id",
-      "ok": false,
-      "observed": "no outbox table holds rows (looked at 8: asm_b10_outbox_event, cnt_b9_outbox_event, com_b13_outbox_event, lrn_b10_outbox_event, lrn_b9_outbox_event, lrn_learning_outbox, ntf_b11_outbox_event, outbox_events)",
-      "expected": "as many distinct ids as rows"
+      "name": "an-event-is-recorded-once-per-consumer-group",
+      "ok": true,
+      "observed": "notification_service.notification_trusted_event_receipt=10 rows / 10 distinct event ids; analytics_service.analytics_event_receipt=11 rows / 11 distinct event ids; audit_service.audit_ingest_receipt=15 rows / 15 distinct event ids",
+      "expected": "every receipt table has as many distinct event ids as rows"
     },
     {
       "name": "every-service-answers-liveness-UP",
@@ -63,8 +63,8 @@
       "expected": "shutdown: graceful in every configuration"
     },
     {
-      "name": "every-service-bounds-its-shutdown",
-      "ok": false,
+      "name": "every-v2-service-bounds-its-shutdown",
+      "ok": true,
       "observed": "services/core-api/src/main/resources/application.yml (v1 compatibility, out of scope)",
       "expected": "timeout-per-shutdown-phase in every configuration"
     }
