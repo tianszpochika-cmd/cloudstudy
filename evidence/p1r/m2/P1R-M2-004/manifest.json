@@ -2,7 +2,7 @@
   "taskId": "P1R-M2-004",
   "draftOnly": false,
   "canonicalTaskStatus": "REVIEW",
-  "sourceCommit": "71de5d5a4addcd8801b7069abc0d112951f4ec91",
+  "sourceCommit": "223e9eb86a28565fe72ffcf6b49f4af1157a3c39",
   "artifactDigests": [
     {
       "path": "config/p1r-data-ownership.v1.json",
@@ -52,7 +52,7 @@
     {
       "path": "scripts/runtime/capture-m2-004-evidence.mjs",
       "algorithm": "sha256",
-      "digest": "cc985286bafc8d0050c481ac5684570b2b328760b199fbbe88f210662fe9bf08"
+      "digest": "3b84f2cd56dbca31fac0cc84f51887c1c1be9039fe6fc34658fd67d62e38668c"
     },
     {
       "path": "scripts/runtime/run-gated-db-tests.mjs",
@@ -446,7 +446,7 @@
     ]
   },
   "startedAt": "2026-09-09T00:00:00+08:00",
-  "finishedAt": "2026-09-14T04:15:41.717Z",
+  "finishedAt": "2026-09-14T04:22:55.755Z",
   "actors": [
     "root-coordinator",
     "p1r-implementation"
@@ -532,7 +532,7 @@
     {
       "check": "p1r-regression",
       "status": "PASS",
-      "details": "P1R 1435/1435 with 0 failures and 1435 passing, read from evidence/p1r/m2/P1R-M2-004/regression.json; the full suite reports 1930 tests with 0 failures. The twenty-four legacy B failures that were pre-existing are fixed and each fix strengthened the assertion rather than relaxing it."
+      "details": "P1R 1435/1435 with 0 failures and 1435 passing, read from evidence/p1r/m2/P1R-M2-004/regression.json; the full suite reports 1930 tests with 0 failures. The legacy B failures that were pre-existing are fixed and each fix strengthened the assertion rather than relaxing it. How many is NOT VERIFIED here: no tracked record counts them, so a figure is not given rather than repeated."
     }
   ],
   "rollbackEvidence": [

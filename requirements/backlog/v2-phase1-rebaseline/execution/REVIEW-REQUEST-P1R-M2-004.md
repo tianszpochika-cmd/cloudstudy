@@ -29,12 +29,12 @@
 
 | 内容 | 路径 |
 |---|---|
-| Canonical manifest（55 artifacts） | `evidence/p1r/m2/P1R-M2-004/manifest.json` |
+| Canonical manifest（61 artifacts） | `evidence/p1r/m2/P1R-M2-004/manifest.json` |
 | 归属/授权/跨库阻断/migration 运行时证据 | `evidence/p1r/m2/P1R-M2-004/runtime-evidence-2026-09-13.json`（91 项检查） |
 | 事件运行时（6 阶段 harness） | `evidence/p1r/m2/P1R-M2-005/event-runtime-harness-2026-09-12.json` |
 | 执行记录 | `requirements/backlog/v2-phase1-rebaseline/execution/P1R-M2-004.md`、`P1R-M2-005.md` |
 
-manifest 的 `results`：**9 PASS + 3 NOT_APPLICABLE**。下面这张表由 manifest 生成，不是手写的，所以它不会与 manifest 不一致。
+manifest 的 `results`：**9 PASS + 3 NOT_APPLICABLE**。下面这张表的数字抄自 manifest（本次核对：artifacts、检查数、PASS/NA 计数逐项比对），**但本文档尚无生成脚本**，所以请以 manifest 本身为准。
 
 ### 关于那 3 项 `NOT_APPLICABLE`（**本任务最需要你独立判断的一点**）
 
@@ -86,7 +86,7 @@ manifest 的 `results`：**9 PASS + 3 NOT_APPLICABLE**。下面这张表由 mani
 ## 5. 复现命令
 
 ```powershell
-# 归属 / 授权 / migration / Redis 运行时证据（58 项检查）
+# 归属 / 授权 / migration / Redis 运行时证据（91 项检查）
 node scripts/runtime/p1r-m2-004-runtime.mjs
 
 # 事件运行时 6 阶段（重复/乱序/DLQ/宕机/重启/回放）
