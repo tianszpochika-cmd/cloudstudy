@@ -3,9 +3,9 @@
   "taskId": "P1R-M2-005",
   "mode": "apply",
   "dlqTopic": "platform.events.dlq.v1",
-  "sourceCommit": "377db632d45a74ede4d608cd951c0734166a2d47",
-  "capturedAt": "2026-09-14T15:30:35.158Z",
-  "deadLettersSeen": 15,
+  "sourceCommit": "be48f5a256cf72bc8024f4bf03c30e1b0aee78df",
+  "capturedAt": "2026-09-14T15:35:56.044Z",
+  "deadLettersSeen": 16,
   "recoverable": [
     {
       "eventId": "fd80088b-9d8a-40be-8820-7d914f5d46da",
@@ -30,6 +30,11 @@
     }
   ],
   "unrecoverable": [
+    {
+      "reason": "envelope missing or origin topic unknown",
+      "eventId": null,
+      "recoveryState": "AWAITING_OPERATOR"
+    },
     {
       "reason": "envelope missing or origin topic unknown",
       "eventId": null,

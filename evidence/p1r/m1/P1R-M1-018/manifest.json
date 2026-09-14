@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-018",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "d4d27e9b1e637ebf1307a167dcb2ff886dc7db58",
+  "sourceCommit": "be48f5a256cf72bc8024f4bf03c30e1b0aee78df",
   "artifactDigests": [
     {
       "path": "config/b26-event-runtime.json",
@@ -645,16 +645,26 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-14T15:11:08.150Z",
         "details": "Digest rebind after the dependency rule changed."
+      },
+      {
+        "taskId": "P1R-M1-018",
+        "sourceCommit": "be48f5a256cf72bc8024f4bf03c30e1b0aee78df",
+        "auditedImplementationSource": "be48f5a256cf72bc8024f4bf03c30e1b0aee78df",
+        "integrationCheckpoint": "be48f5a256cf72bc8024f4bf03c30e1b0aee78df",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-14T15:39:19.523Z",
+        "details": "Digest rebind after M2-005 was delivered."
       }
     ],
-    "previousCurrentSourceCommit": "0e4aaeba9d1e8da83e5ab11f066bfdbb77fc8cde",
+    "previousCurrentSourceCommit": "d4d27e9b1e637ebf1307a167dcb2ff886dc7db58",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
     "currentSourceRevalidationTask": "P1R-M1-018",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-14T15:11:08.150Z",
-    "currentSourceRevalidationAuditedImplementationSource": "d4d27e9b1e637ebf1307a167dcb2ff886dc7db58",
-    "currentSourceRevalidationIntegrationCheckpoint": "d4d27e9b1e637ebf1307a167dcb2ff886dc7db58",
+    "currentSourceRevalidationFinishedAt": "2026-09-14T15:39:19.523Z",
+    "currentSourceRevalidationAuditedImplementationSource": "be48f5a256cf72bc8024f4bf03c30e1b0aee78df",
+    "currentSourceRevalidationIntegrationCheckpoint": "be48f5a256cf72bc8024f4bf03c30e1b0aee78df",
     "previousCurrentSourceRevalidationTask": "P1R-M1-018",
     "previousCurrentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "previousCurrentSourceRevalidationFinishedAt": "2026-09-13T02:30:07.446Z"

@@ -15,7 +15,7 @@
   "taskId": "P1R-M2-004",
   "draftOnly": false,
   "canonicalTaskStatus": "DEV_DONE",
-  "sourceCommit": "d4d27e9b1e637ebf1307a167dcb2ff886dc7db58",
+  "sourceCommit": "be48f5a256cf72bc8024f4bf03c30e1b0aee78df",
   "artifactDigests": [
     {
       "path": "config/p1r-data-ownership.v1.json",
@@ -563,13 +563,13 @@
         "summary": "Not submitted."
       }
     ],
-    "previousCurrentSourceCommit": "4bf0f4904efcc7294920b539ad215807cd94f411",
+    "previousCurrentSourceCommit": "d4d27e9b1e637ebf1307a167dcb2ff886dc7db58",
     "currentSourceRevalidationTask": "P1R-M2-004",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-14T15:11:09.338Z",
-    "currentSourceRevalidationAuditedImplementationSource": "d4d27e9b1e637ebf1307a167dcb2ff886dc7db58",
-    "currentSourceRevalidationIntegrationCheckpoint": "d4d27e9b1e637ebf1307a167dcb2ff886dc7db58",
+    "currentSourceRevalidationFinishedAt": "2026-09-14T15:39:19.858Z",
+    "currentSourceRevalidationAuditedImplementationSource": "be48f5a256cf72bc8024f4bf03c30e1b0aee78df",
+    "currentSourceRevalidationIntegrationCheckpoint": "be48f5a256cf72bc8024f4bf03c30e1b0aee78df",
     "currentSourceRevalidationHistory": [
       {
         "taskId": "P1R-M2-004",
@@ -590,6 +590,16 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-14T15:11:09.338Z",
         "details": "Digest rebind after the dependency rule changed."
+      },
+      {
+        "taskId": "P1R-M2-004",
+        "sourceCommit": "be48f5a256cf72bc8024f4bf03c30e1b0aee78df",
+        "auditedImplementationSource": "be48f5a256cf72bc8024f4bf03c30e1b0aee78df",
+        "integrationCheckpoint": "be48f5a256cf72bc8024f4bf03c30e1b0aee78df",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-14T15:39:19.858Z",
+        "details": "Digest rebind after M2-005 was delivered."
       }
     ]
   },

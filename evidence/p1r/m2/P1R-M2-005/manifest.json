@@ -1,8 +1,8 @@
 {
   "taskId": "P1R-M2-005",
   "draftOnly": false,
-  "canonicalTaskStatus": "BLOCKED",
-  "sourceCommit": "d4d27e9b1e637ebf1307a167dcb2ff886dc7db58",
+  "canonicalTaskStatus": "DEV_DONE",
+  "sourceCommit": "be48f5a256cf72bc8024f4bf03c30e1b0aee78df",
   "artifactDigests": [
     {
       "path": "config/b26-event-runtime.json",
@@ -22,7 +22,7 @@
     {
       "path": "scripts/runtime/p1r-m2-005-event-runtime.mjs",
       "algorithm": "sha256",
-      "digest": "39083f4acc151afe80143f6bbd4f0995b67f7a118a33c41eb3e6e95802738fac"
+      "digest": "b9687ab328ac7d6c60dcb55c331b1b79536adc7c1b17b09d7d9fb2049239aa1d"
     },
     {
       "path": "scripts/runtime/replay-dlq.mjs",
@@ -97,14 +97,14 @@
       "E7 to E8 the whole thing reduced to a repeatable harness with two fault phases and an operator replay entry"
     ],
     "reviewHistory": [],
-    "previousCurrentSourceCommit": "f59f4c8232b0c3287fbca9c265012f0424a14758",
+    "previousCurrentSourceCommit": "d4d27e9b1e637ebf1307a167dcb2ff886dc7db58",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
     "currentSourceRevalidationTask": "P1R-M2-005",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-14T15:11:09.430Z",
-    "currentSourceRevalidationAuditedImplementationSource": "d4d27e9b1e637ebf1307a167dcb2ff886dc7db58",
-    "currentSourceRevalidationIntegrationCheckpoint": "d4d27e9b1e637ebf1307a167dcb2ff886dc7db58",
+    "currentSourceRevalidationFinishedAt": "2026-09-14T15:39:20.044Z",
+    "currentSourceRevalidationAuditedImplementationSource": "be48f5a256cf72bc8024f4bf03c30e1b0aee78df",
+    "currentSourceRevalidationIntegrationCheckpoint": "be48f5a256cf72bc8024f4bf03c30e1b0aee78df",
     "originalSourceCommit": "10bc8e2dba06a800fd6bb014b0827d898b7c1b8b",
     "currentSourceRevalidationHistory": [
       {
@@ -136,6 +136,16 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-14T15:11:09.430Z",
         "details": "Digest rebind after the dependency rule changed."
+      },
+      {
+        "taskId": "P1R-M2-005",
+        "sourceCommit": "be48f5a256cf72bc8024f4bf03c30e1b0aee78df",
+        "auditedImplementationSource": "be48f5a256cf72bc8024f4bf03c30e1b0aee78df",
+        "integrationCheckpoint": "be48f5a256cf72bc8024f4bf03c30e1b0aee78df",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-14T15:39:20.044Z",
+        "details": "Digest rebind after M2-005 was delivered."
       }
     ]
   },
@@ -233,11 +243,12 @@
     "Overall phase remains D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED."
   ],
   "reviewer": "awaiting-independent-reviewer",
-  "decision": "BLOCKED",
+  "decision": "DEV_DONE",
   "nextSteps": [
     "An independent reviewer must accept P1R-M2-004. That is the only item blocking this task: the evidence is complete and scripted, and the ledger gate refuses any status above PLANNED while the declared dependency sits in REVIEW.",
     "Once M2-004 is accepted this task moves to REVIEW with the same evidence; no further implementation is expected.",
     "Replicate the publish and consume vertical slice to the other owners, each with its own receipt table and consumer group.",
     "Add an approval, rate limit and audit receipt around the operator DLQ replay before it is used outside a local stack."
-  ]
+  ],
+  "statusNote": "Development finished and the evidence is in the repository. The six phases of the event runtime harness were reproduced against the local real stack: three identical deliveries produced one receipt and one effect; three events for one aggregate were consumed in publish order from one partition; an unreadable envelope reached the dead-letter topic; the MySQL outage left an event unapplied and in the dead letter queue and recovered; the Kafka outage left the outbox row RETRY with a TimeoutException and the same row reached PUBLISHED after recovery; and replaying the dead-letter queue applied each event once with a second replay changing nothing. The owner has directed that development proceed to M8 with acceptance testing afterwards, so this is DEV_DONE rather than ACCEPTED."
 }

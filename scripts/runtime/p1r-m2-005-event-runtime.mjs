@@ -317,7 +317,12 @@ async function replayPhase() {
   };
   record('replay', {
     'replay-ran': first.status === 0,
-    'the-replayed-event-took-effect-once': appliedOnce && afterFirst.applied === 1,
+    // Each replayed event takes effect exactly once, asserted as a delta: the group's totals include what the earlier
+      // phases applied, so comparing them against a constant was measuring something else. The number of events the
+      // replay delivered is read from the tool's own plan above.
+      'the-replayed-event-took-effect-once': appliedOnce
+        && afterFirst.applied - beforeFirst.applied === replayedEvents
+        && afterFirst.receipts - beforeFirst.receipts === replayedEvents,
     'a-second-replay-ran': second.status === 0,
     'a-second-replay-cannot-apply-the-effect-again': afterSecond.applied === afterFirst.applied
       && afterSecond.receipts === afterFirst.receipts,
