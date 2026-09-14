@@ -2,12 +2,12 @@
   "taskId": "P1R-M0-008",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "2ef192971efc5d4600fa6f40824274bbdb9d9de2",
+  "sourceCommit": "3a52cca094fde82eb444cfdb0930cab0e3ad3adb",
   "artifactDigests": [
     {
       "path": "scripts/audit/p1r-evidence-gate.mjs",
       "algorithm": "sha256",
-      "digest": "ab2700d705e6d870b18c3b9bd868c2d01bab3079171e1a18a3e76fdcd438c68e"
+      "digest": "85692c9ae6cbfd6797ff3b2babbb4ae9f3087fe102ca2b303e1b08754fb8e6bd"
     },
     {
       "path": "scripts/audit/verify-phase1-rebaseline-plan.mjs",
@@ -126,14 +126,24 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-14T03:52:50.610Z",
         "details": "Digest rebind after the evidence gate gained three ownership rules the sixth review asked for and mutated open: the ownership file must cover every requirement the frozen policy declares, assertedBy is derived from the requirement id prefix rather than trusted as a string, and a requirement owned by another task must be reported NOT_APPLICABLE. The gate and the generator were also added to the digests, since both decide how this evidence is judged or produced."
+      },
+      {
+        "taskId": "P1R-M0-008",
+        "sourceCommit": "3a52cca094fde82eb444cfdb0930cab0e3ad3adb",
+        "auditedImplementationSource": "3a52cca094fde82eb444cfdb0930cab0e3ad3adb",
+        "integrationCheckpoint": "3a52cca094fde82eb444cfdb0930cab0e3ad3adb",
+        "reviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-14T04:19:57.876Z",
+        "details": "Digest rebind after the assertedBy rule was corrected: it had been guarded by assertedBy === task.id, so changing assertedBy to another task skipped the comparison, which the mutation test caught."
       }
     ],
-    "previousCurrentSourceCommit": "5d45941782ec8c9193cd3fab71cb0c845c4daa0b",
+    "previousCurrentSourceCommit": "2ef192971efc5d4600fa6f40824274bbdb9d9de2",
     "currentSourceRevalidationTask": "P1R-M0-008",
     "currentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-14T03:52:50.610Z",
-    "currentSourceRevalidationAuditedImplementationSource": "2ef192971efc5d4600fa6f40824274bbdb9d9de2",
-    "currentSourceRevalidationIntegrationCheckpoint": "2ef192971efc5d4600fa6f40824274bbdb9d9de2"
+    "currentSourceRevalidationFinishedAt": "2026-09-14T04:19:57.876Z",
+    "currentSourceRevalidationAuditedImplementationSource": "3a52cca094fde82eb444cfdb0930cab0e3ad3adb",
+    "currentSourceRevalidationIntegrationCheckpoint": "3a52cca094fde82eb444cfdb0930cab0e3ad3adb"
   }
 }
