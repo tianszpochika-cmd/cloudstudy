@@ -25,16 +25,24 @@ public class HttpSecurityAuditSink implements SecurityAuditSink {
     private static final String SCHEMA_VERSION = "m2.gateway.security-audit.evidence.v1";
 
     private final URI endpoint;
-    private final String bearerToken;
+    /**
+     * Where the bearer token comes from, and whether it was refused last time.
+     *
+     * <p>A supplier rather than a token: the service token is short-lived by design, so holding a string would mean
+     * holding an expired one. A refusal is passed back so the supplier can replace rather than reuse it.
+     */
+    private final java.util.function.Function<Boolean, String> tokenSupplier;
     private final HttpClient client;
     private final Duration timeout;
     private final java.util.concurrent.Executor executor;
     private final java.util.concurrent.atomic.AtomicLong delivered = new java.util.concurrent.atomic.AtomicLong();
     private final java.util.concurrent.atomic.AtomicLong failed = new java.util.concurrent.atomic.AtomicLong();
     private final java.util.concurrent.atomic.AtomicLong dropped = new java.util.concurrent.atomic.AtomicLong();
+    private final java.util.concurrent.atomic.AtomicLong unauthorized = new java.util.concurrent.atomic.AtomicLong();
 
-    public HttpSecurityAuditSink(URI endpoint, String bearerToken, Duration timeout) {
-        this(endpoint, bearerToken, timeout,
+    public HttpSecurityAuditSink(URI endpoint, java.util.function.Function<Boolean, String> tokenSupplier,
+                                 Duration timeout) {
+        this(endpoint, tokenSupplier, timeout,
                 HttpClient.newBuilder().connectTimeout(timeout).build(),
                 java.util.concurrent.Executors.newSingleThreadExecutor((runnable) -> {
                     Thread thread = new Thread(runnable, "gateway-security-audit");
@@ -44,10 +52,15 @@ public class HttpSecurityAuditSink implements SecurityAuditSink {
                 }));
     }
 
-    HttpSecurityAuditSink(URI endpoint, String bearerToken, Duration timeout, HttpClient client,
-                          java.util.concurrent.Executor executor) {
+    /** A fixed token, for a deployment that supplies one out of band. */
+    public HttpSecurityAuditSink(URI endpoint, String bearerToken, Duration timeout) {
+        this(endpoint, (ignored) -> bearerToken, timeout);
+    }
+
+    HttpSecurityAuditSink(URI endpoint, java.util.function.Function<Boolean, String> tokenSupplier, Duration timeout,
+                          HttpClient client, java.util.concurrent.Executor executor) {
         this.endpoint = endpoint;
-        this.bearerToken = bearerToken;
+        this.tokenSupplier = tokenSupplier;
         this.timeout = timeout;
         this.client = client;
         this.executor = executor;
@@ -67,25 +80,46 @@ public class HttpSecurityAuditSink implements SecurityAuditSink {
     /** Performs the delivery. Package-private so a test can call it without the executor. */
     void send(SecurityAuditRecord record) {
         try {
-            HttpRequest request = HttpRequest.newBuilder(endpoint)
-                    .timeout(timeout)
-                    .header("content-type", "application/json")
-                    .header("authorization", "Bearer " + bearerToken)
-                    .POST(HttpRequest.BodyPublishers.ofString(envelope(record)))
-                    .build();
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            // 202 is the first acceptance and 200 the duplicate replay; both mean the fact is durable.
-            if (response.statusCode() == 202 || response.statusCode() == 200) {
-                delivered.incrementAndGet();
-            } else {
-                failed.incrementAndGet();
-            }
+            send(record, false);
         } catch (RuntimeException | java.io.IOException | InterruptedException failure) {
             if (failure instanceof InterruptedException) {
                 Thread.currentThread().interrupt();
             }
             failed.incrementAndGet();
         }
+    }
+
+    private void send(SecurityAuditRecord record, boolean afterRefusal)
+            throws java.io.IOException, InterruptedException {
+        String token = tokenSupplier.apply(afterRefusal);
+        if (token == null || token.isBlank()) {
+            // No credential, so nothing is sent. Counted rather than attempted: sending without a token would only
+            // produce a 401 and make an authentication problem look like a delivery problem.
+            failed.incrementAndGet();
+            return;
+        }
+        HttpRequest request = HttpRequest.newBuilder(endpoint)
+                .timeout(timeout)
+                .header("content-type", "application/json")
+                .header("authorization", "Bearer " + token)
+                .POST(HttpRequest.BodyPublishers.ofString(envelope(record)))
+                .build();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        int status = response.statusCode();
+        // 202 is the first acceptance and 200 the duplicate replay; both mean the fact is durable.
+        if (status == 202 || status == 200) {
+            delivered.incrementAndGet();
+            return;
+        }
+        if ((status == 401 || status == 403) && !afterRefusal) {
+            // The token was refused, which is what a short-lived credential looks like when it has just been
+            // rotated. Asking for a new one once and retrying is the difference between a stale token and an
+            // outage; a second refusal is counted as a failure rather than retried further.
+            unauthorized.incrementAndGet();
+            send(record, true);
+            return;
+        }
+        failed.incrementAndGet();
     }
 
     /**
@@ -162,6 +196,9 @@ public class HttpSecurityAuditSink implements SecurityAuditSink {
 
     /** Counts an operator can read to see whether auditing is keeping up. */
     public Map<String, Long> counters() {
-        return Map.of("delivered", delivered.get(), "failed", failed.get(), "dropped", dropped.get());
+        return Map.of("delivered", delivered.get(), "failed", failed.get(), "dropped", dropped.get(),
+                // Separate from failed: a refused token means the credential rotated, which is a different
+                // thing for an operator to act on than an unreachable audit service.
+                "refusedTokens", unauthorized.get());
     }
 }
