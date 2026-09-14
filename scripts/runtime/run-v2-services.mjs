@@ -1,4 +1,5 @@
 import net from 'node:net';
+import crypto from 'node:crypto';
 import { existsSync, mkdirSync, readdirSync, readFileSync } from 'node:fs';
 import { spawn, spawnSync } from 'node:child_process';
 import path from 'node:path';
@@ -144,6 +145,10 @@ function runtimeEnvironment(service, port) {
     environment.IAM_PERSISTENCE_USERNAME = 'svc_iam';
     environment.IAM_PERSISTENCE_PASSWORD = environment.MYSQL_OWNER_PASSWORD;
     environment.IAM_JWT_ISSUER = jwtIssuer;
+  // The digest of the secret the gateway presents, so the service-token endpoint can verify it without the plaintext
+  // existing anywhere but in the environment. It must match GATEWAY_AUDIT_SERVICE_CLIENT_SECRET below.
+  environment.IAM_SERVICE_CLIENT_GATEWAY_SECRET_DIGEST = process.env.IAM_SERVICE_CLIENT_GATEWAY_SECRET_DIGEST
+    ?? crypto.createHash('sha256').update(process.env.GATEWAY_AUDIT_SERVICE_CLIENT_SECRET ?? 'local-gateway-service-secret').digest('hex');
     environment.IAM_JWT_JWKS_URI = jwtJwks;
     environment.IAM_JWT_AUDIENCE = jwtAudience;
     environment.IAM_JWT_ALGORITHM = process.env.IAM_JWT_ALGORITHM ?? 'RS256';
@@ -197,6 +202,17 @@ function runtimeEnvironment(service, port) {
     environment.AUDIT_SECURITY_ISSUER_URI = jwtIssuer;
     environment.AUDIT_SECURITY_JWK_SET_URI = jwtJwks;
     environment.AUDIT_SECURITY_AUDIENCE = jwtAudience;
+  }
+
+  // The Gateway sends its redacted security envelopes to the canonical ingest, authenticated with a short-lived
+  // service token from IAM (ADR-0016). Without all four settings the bounded in-memory sink stays, which is what the
+  // gateway did before durable auditing existed. They live under gateway.audit rather than gateway.security because
+  // that record cannot carry optional components — see GatewayAuditProperties.
+  if (service.id === 'api-gateway') {
+    environment.GATEWAY_AUDIT_INGEST_URI = process.env.GATEWAY_AUDIT_INGEST_URI ?? 'http://127.0.0.1:18099/internal/v1/audit/events';
+    environment.GATEWAY_AUDIT_SERVICE_TOKEN_URI = process.env.GATEWAY_AUDIT_SERVICE_TOKEN_URI ?? 'http://127.0.0.1:18087/internal/v1/iam/service-token';
+    environment.GATEWAY_AUDIT_SERVICE_CLIENT_ID = process.env.GATEWAY_AUDIT_SERVICE_CLIENT_ID ?? 'api-gateway';
+    environment.GATEWAY_AUDIT_SERVICE_CLIENT_SECRET = process.env.GATEWAY_AUDIT_SERVICE_CLIENT_SECRET ?? 'local-gateway-service-secret';
   }
   const owner = ownerManifest.services.find((item) => item.id === service.id);
   const ownerUser = owner?.dbCredential;

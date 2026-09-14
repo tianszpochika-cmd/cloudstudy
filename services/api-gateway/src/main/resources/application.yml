@@ -177,3 +177,12 @@ gateway:
     issuer-uri: ${IAM_JWT_ISSUER:http://127.0.0.1:18087}
     audience: ${IAM_JWT_AUDIENCE:yuxuexing-api}
     jwk-set-uri: ${IAM_JWT_JWKS_URI:http://127.0.0.1:18087/api/v1/auth/jwks}
+  # Durable security audit. All four are empty by default, which leaves the bounded in-memory sink in place and the
+  # behaviour as it was. Setting all four sends the redacted envelope to the canonical ingest, authenticated with a
+  # short-lived service token from IAM (ADR-0016). A separate prefix from gateway.security because that record cannot
+  # carry optional components: see GatewayAuditProperties.
+  audit:
+    ingest-uri: ${GATEWAY_AUDIT_INGEST_URI:}
+    service-token-uri: ${GATEWAY_AUDIT_SERVICE_TOKEN_URI:}
+    service-client-id: ${GATEWAY_AUDIT_SERVICE_CLIENT_ID:}
+    service-client-secret: ${GATEWAY_AUDIT_SERVICE_CLIENT_SECRET:}

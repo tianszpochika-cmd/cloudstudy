@@ -114,3 +114,14 @@ iam:
       # Deliberately disabled unless an explicit local/test operator bootstrap is requested.
       enabled: ${IAM_POLICY_BOOTSTRAP_ENABLED:false}
       existing-account-identifier: ${IAM_POLICY_BOOTSTRAP_EXISTING_ACCOUNT_IDENTIFIER:}
+
+
+  # Service clients allowed to exchange credentials for a short-lived service token (ADR-0016). The key is here
+  # because a map key cannot be supplied by an environment variable; the digest is not, so no secret is committed.
+  # With no digest set the client does not exist and the endpoint refuses every request.
+  service-clients:
+    api-gateway:
+      secret-digest: ${IAM_SERVICE_CLIENT_GATEWAY_SECRET_DIGEST:}
+      permissions:
+        - audit.ingest
+      token-ttl: ${IAM_SERVICE_CLIENT_GATEWAY_TOKEN_TTL:5m}
