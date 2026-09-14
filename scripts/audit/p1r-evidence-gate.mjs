@@ -267,6 +267,26 @@ export function validateManifest({ root, task, manifest, manifestPath, checkGit 
     add(errors, failing.length === 0, `${task.id}: review evidence contains non-passing results: ${failing.join(', ')}`);
   }
 
+  // A requirement that the ownership config assigns to this task cannot be reported NOT_APPLICABLE in its
+  // own manifest. Accepting NOT_APPLICABLE without that cross-check is what let an exit-evidence item appear
+  // satisfied while nothing measured it: the manifest said the requirement belonged to another task and the
+  // config said this one, and no gate compared the two.
+  const requirementOwnersPath = path.join(root, 'config/p1r-m2-requirement-owners.v1.json');
+  if (fs.existsSync(requirementOwnersPath) && Array.isArray(manifest.results)) {
+    const ownership = JSON.parse(fs.readFileSync(requirementOwnersPath, 'utf8'));
+    for (const result of manifest.results) {
+      if (!isRecord(result) || typeof result.check !== 'string') continue;
+      const owned = ownership.requirements?.find((entry) => entry.id === result.check)?.ownerTask;
+      if (owned === undefined || owned !== task.id) continue;
+      add(errors, result.status !== 'NOT_APPLICABLE',
+        `${task.id}: ${result.check} is assigned to this task by config but reported NOT_APPLICABLE`);
+      if (isRecord(result.ownerTask) || typeof result.ownerTask === 'string') {
+        add(errors, result.ownerTask === owned,
+          `${task.id}: ${result.check} names ownerTask ${result.ownerTask} where config says ${owned}`);
+      }
+    }
+  }
+
   if (task.status === 'REVIEW') {
     add(errors, manifest.decision === null || manifest.decision === 'PENDING', `${task.id}: REVIEW decision must be PENDING/null`);
   }
