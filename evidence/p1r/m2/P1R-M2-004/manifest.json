@@ -2,7 +2,7 @@
   "taskId": "P1R-M2-004",
   "draftOnly": false,
   "canonicalTaskStatus": "REVIEW",
-  "sourceCommit": "df50206ec1e57637cdfb5457a27562e517c1c52c",
+  "sourceCommit": "7a3cf0e4724e0bae2fdcf9e88224d0e3b10d7bf7",
   "artifactDigests": [
     {
       "path": "config/p1r-data-ownership.v1.json",
@@ -292,7 +292,7 @@
     {
       "path": "evidence/p1r/m2/P1R-M2-004/runtime-evidence-2026-09-13.json",
       "algorithm": "sha256",
-      "digest": "a3b585b8685998113c408b79d6ada589e7c790cf5783500c15c63688bf564443"
+      "digest": "0d13dd7bc2703c3458ee6b0cd42f92f0272508a9aa0e55930acc655ebcaa69b2"
     },
     {
       "path": "evidence/p1r/m2/P1R-M2-004/gated-db-tests.json",
@@ -320,8 +320,8 @@
     "branch": "dev",
     "phaseStatus": "D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED",
     "runtimeStatus": "M2_004_PARTIAL_RUNTIME_VERIFIED",
-    "reviewedRevision": "54a7b1c237d57b23d2b7427316213220d30fad15",
-    "measuredAt": "2026-09-14T06:42:26.404Z",
+    "reviewedRevision": "7a3cf0e4724e0bae2fdcf9e88224d0e3b10d7bf7",
+    "measuredAt": "2026-09-14T06:50:48.261Z",
     "toolchain": {
       "java": "OpenJDK 25.0.4.1",
       "maven": "3.9.12",
@@ -495,7 +495,7 @@
     ]
   },
   "startedAt": "2026-09-09T00:00:00+08:00",
-  "finishedAt": "2026-09-14T06:42:28.875Z",
+  "finishedAt": "2026-09-14T06:50:49.627Z",
   "actors": [
     "root-coordinator",
     "p1r-implementation"
