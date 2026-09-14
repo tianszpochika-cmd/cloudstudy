@@ -1,0 +1,11 @@
+{
+  "task": "P1R-M2-008",
+  "capturedAt": "2026-09-14T17:42:13.237Z",
+  "result": "INCOMPLETE",
+  "note": "The harness runs but reports three failures, all of which are known to be its own rather than the stack's. A fourth attempt is recorded in the task file. The four checks that pass measured real state: the four dependency containers are healthy, all fourteen owner schemas exist, the gateway answers, and a direct call to a domain service is refused while the same call through the gateway is routed.",
+  "falseFailures": [
+    "every-registered-port-is-free-or-held-by-its-owner: the check identifies the owning process with wmic, which does not exist on this machine, so every held port is reported as a conflict. Command lines have to come from Get-CimInstance.",
+    "an-owner-credential-can-read-its-own-schema: the check re-derives the owner password and gets it wrong, so all fourteen are refused. Readiness of every domain service is the stronger measurement, since readiness includes the database, and the DML-only grant evidence is already carried by M2-004.",
+    "every-domain-service-is-ready-with-its-own-schema-connection was intended to replace the second and did not apply."
+  ]
+}

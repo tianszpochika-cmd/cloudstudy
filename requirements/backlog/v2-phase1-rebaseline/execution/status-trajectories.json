@@ -1,7 +1,7 @@
 {
   "schemaVersion": "p1r.status-trajectories.v1",
   "historyMode": "m0-integration-reconstruction",
-  "recordedAt": "2026-09-14T17:33:58.736Z",
+  "recordedAt": "2026-09-14T17:42:13.237Z",
   "note": "M0 trajectories were reconstructed during the first integration review from the task execution records and canonical decisions. From M1 onward, every transition must be recorded when it occurs.",
   "records": [
     {
@@ -512,6 +512,18 @@
       "actor": "agent:p1r_implementation:deepseek-harness",
       "reason": "Ten checks pass against the running stack: no unexpected private key, the caller's request id echoed back and found in the audit fact, three consumer receipt tables holding as many distinct event ids as rows, every declared port answering liveness and readiness, and every v2 service both shutting down gracefully and bounding it. The harness also found a real gap — commerce-service bound nothing — which is fixed. Tables without an event_id column are recorded as unmeasured rather than counted as passing.",
       "evidencePath": "evidence/p1r/m2/P1R-M2-007/manifest.json"
+    },
+    {
+      "taskId": "P1R-M2-008",
+      "path": [
+        "PLANNED",
+        "READY",
+        "IN_PROGRESS"
+      ],
+      "recordedAt": "2026-09-14T17:42:13.237Z",
+      "actor": "agent:p1r_implementation:deepseek-harness",
+      "reason": "Work has started. A harness measures the port preflight, the dependency containers, the owner schemas and whether a service can be reached other than through the gateway. Seven checks, four passing and measuring real state; the three failures are the harness's own and are named in the attempt record rather than left to look like defects.",
+      "evidencePath": "evidence/p1r/m2/P1R-M2-008/manifest.json"
     }
   ]
 }
