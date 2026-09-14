@@ -1,10 +1,10 @@
 {
   "schema": "m2.data-ownership.runtime-evidence.v1",
   "taskId": "P1R-M2-004",
-  "result": "PARTIAL",
-  "sourceCommit": "28fa1b66c0df9c577dc52dda53e3ee6e032c2260",
-  "startedAt": "2026-09-14T00:33:55.807Z",
-  "finishedAt": "2026-09-14T00:39:11.161Z",
+  "result": "FAIL",
+  "sourceCommit": "0867da17187c813a5f7c724151b45f83896d4b40",
+  "startedAt": "2026-09-14T01:11:22.769Z",
+  "finishedAt": "2026-09-14T01:16:37.983Z",
   "ownerCount": 14,
   "requirements": [
     {
@@ -1414,7 +1414,20 @@
       "result": "PASS"
     },
     {
-      "discoveredClasses": 30,
+      "property": "workflow.jdbc.integration",
+      "classes": [
+        "JdbcSagaStoreIntegrationTest"
+      ],
+      "testsRun": 3,
+      "failures": 0,
+      "errors": 3,
+      "skipped": 0,
+      "reason": "3 tests, 0 failures, 3 errors, 0 skipped; 1 of 1 classes reported (exit 1); Failed to obtain JDBC Connection",
+      "id": "iam-jdbc-persistence:workflow:workflow.jdbc.integration",
+      "result": "FAIL"
+    },
+    {
+      "discoveredClasses": 31,
       "uncoveredClasses": [],
       "policy": "fail-closed: exit 0 with zero tests or any skipped test is a failure",
       "id": "gated-tests:discovery-coverage",
@@ -1437,7 +1450,7 @@
         "commerce_service.commerce_activation_code": 10,
         "admin_ops_service.admin_audit_record": 10,
         "analytics_service.analytics_metric_projection": 24,
-        "audit_service.audit_fact": 1,
+        "audit_service.audit_fact": 3,
         "workflow_service.manual_recovery_request": 0,
         "iam_service.iam_account": 47
       },
@@ -1453,7 +1466,7 @@
         "commerce_service.commerce_activation_code": 10,
         "admin_ops_service.admin_audit_record": 10,
         "analytics_service.analytics_metric_projection": 24,
-        "audit_service.audit_fact": 1,
+        "audit_service.audit_fact": 3,
         "workflow_service.manual_recovery_request": 0,
         "iam_service.iam_account": 47
       },
@@ -1469,7 +1482,7 @@
         "commerce_service.commerce_activation_code": 10,
         "admin_ops_service.admin_audit_record": 10,
         "analytics_service.analytics_metric_projection": 24,
-        "audit_service.audit_fact": 1,
+        "audit_service.audit_fact": 3,
         "workflow_service.manual_recovery_request": 0,
         "iam_service.iam_account": 47
       },

@@ -2,7 +2,7 @@
   "taskId": "P1R-M2-004",
   "draftOnly": false,
   "canonicalTaskStatus": "REVIEW",
-  "sourceCommit": "8437ade558493bd2355bb30bbefd3f640d418cc4",
+  "sourceCommit": "e00246a8f9ede9dd002041dfef746d59fd006a80",
   "artifactDigests": [
     {
       "path": "config/p1r-data-ownership.v1.json",
@@ -52,7 +52,7 @@
     {
       "path": "scripts/runtime/run-gated-db-tests.mjs",
       "algorithm": "sha256",
-      "digest": "17d16552fe922fb2c97c353526aec04df5d81af8f2f4658108c1739f1fb9d6ff"
+      "digest": "f2beeca08a6fcbdab5fa87fba85868944d60d3d1c36398574912b744892a3891"
     },
     {
       "path": "services/audit-service/src/main/resources/db/migration/V2__widen_audit_schema_version.sql",
@@ -262,7 +262,7 @@
     {
       "path": "evidence/p1r/m2/P1R-M2-004/runtime-evidence-2026-09-13.json",
       "algorithm": "sha256",
-      "digest": "11ece12e34200b98a0c04681ad05683395d8c37f81d838387c132bbf580a36b7"
+      "digest": "f1a086a98cb47477b74e1e6adbfdf6b7d543d434a5a79485dc6357fd6839789c"
     },
     {
       "path": "evidence/p1r/m2/P1R-M2-004/gated-db-tests-2026-09-13.json",
@@ -285,8 +285,8 @@
     "branch": "dev",
     "phaseStatus": "D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED",
     "runtimeStatus": "M2_004_PARTIAL_RUNTIME_VERIFIED",
-    "reviewedRevision": "28fa1b66c0df9c577dc52dda53e3ee6e032c2260",
-    "measuredAt": "2026-09-14T00:39:11.161Z",
+    "reviewedRevision": "0867da17187c813a5f7c724151b45f83896d4b40",
+    "measuredAt": "2026-09-14T01:16:37.983Z",
     "toolchain": {
       "java": "OpenJDK 25.0.4.1",
       "maven": "3.9.12",
@@ -392,7 +392,7 @@
     ]
   },
   "startedAt": "2026-09-09T00:00:00+08:00",
-  "finishedAt": "2026-09-14T00:49:52.217Z",
+  "finishedAt": "2026-09-14T01:23:35.531Z",
   "actors": [
     "root-coordinator",
     "p1r-implementation"
@@ -419,7 +419,7 @@
     {
       "check": "M2-004-OWNER-SCHEMA-GRANTS",
       "status": "PASS",
-      "details": "Twelve owners provisioned; each can read its own schema; the eleven externally migrated owners are DML-only with DDL and ALTER denied by privilege (error 1142); SHOW GRANTS names no foreign schema."
+      "details": "14 owners provisioned; each can read its own schema; the 13 externally migrated owners are DML-only with DDL and ALTER denied by privilege (error 1142); SHOW GRANTS names no foreign schema."
     },
     {
       "check": "M2-004-CROSS-OWNER-DENY",
@@ -429,12 +429,12 @@
     {
       "check": "M2-004-REDIS-NAMESPACE-ACL",
       "status": "PASS",
-      "details": "Every owner the policy gives a Redis namespace was probed, 16 in total including the two that have no database schema, and each resolved to exactly one ACL user scoped to its own namespace, able to write inside it and refused in another owner's. The requirement's second clause is covered separately: the business fact row counts in thirteen owner tables were identical before, during and after Redis was stopped and restarted, so losing Redis cannot create or lose a business fact."
+      "details": "Every owner the policy gives a Redis namespace was probed, 16 in total: 15 owner probes covering all 15 namespaced owners, of which 1 hold no database of their own (api-gateway), plus 1 policy-level check. Each resolved to exactly one ACL user scoped to its own namespace, able to write inside it and refused in another owner's. The requirement's second clause is covered separately: the business fact row counts in 14 owner tables were identical before, during and after Redis was stopped and restarted, so losing Redis cannot create or lose a business fact."
     },
     {
       "check": "M2-004-FLYWAY-EMPTY-AND-EXISTING",
       "status": "PASS",
-      "details": "Twelve schemas have a p1r_schema_history whose version set matches the migration files; applying V1 into an empty scratch schema created all five expected tables; invalid SQL was rejected with no residue."
+      "details": "13 schemas have a p1r_schema_history whose version set matches the migration files; applying V1 into an empty scratch schema created all five expected tables; invalid SQL was rejected with no residue."
     },
     {
       "check": "M2-004-TENANT-GUARD",
@@ -449,20 +449,20 @@
     {
       "check": "M2-004-REDIS-REBUILD",
       "status": "NOT_APPLICABLE",
-      "ownerTask": "P1R-M2-006",
-      "details": "A projection rebuild entrypoint belongs to the workflow and platform runtime in P1R-M2-006; content cache invalidation belongs to P1R-M3-006."
+      "ownerTask": "P1R-M3-006",
+      "details": "Owned by P1R-M3-006: a projection rebuild appears in no part of the ledger line for P1R-M2-006, whose scope is Saga, compensation, scheduled jobs, manual recovery and audit ingest, while content cache invalidation belongs to P1R-M3-006."
     },
     {
       "check": "M2-004-ROLLBACK-COMPENSATION",
-      "status": "NOT_APPLICABLE",
-      "ownerTask": "P1R-M2-006",
-      "details": "P1R-M2-006 scope: workflow Saga, compensation, scheduled jobs and manual recovery, which produce the owner, trace, audit and recovery receipts this requirement asks for. The ledger exit evidence phrase \"rollback/compensation test\" is carried by that task."
+      "status": "PASS",
+      "ownerTask": "P1R-M2-004",
+      "details": "Owned by P1R-M2-004, because the ledger line for this task names a rollback and compensation test in its own exit evidence and the ledger is the acceptance baseline. It is delivered here: the harness corrupts a recorded migration checksum, requires the reconcile runner to refuse with its drift message, repairs the record in a finally block and requires convergence. Measured outcome: PASS. Workflow-level Saga compensation remains P1R-M2-006's and is listed there as a supporting task."
     },
     {
       "check": "M2-004-RETENTION-DELETE-HOLD",
       "status": "NOT_APPLICABLE",
       "ownerTask": "P1R-M6-008",
-      "details": "P1R-M6-008 implements account deletion requests, the cooling-off period, withdrawal, cross-domain anonymisation and the final subject state; P1R-M8-012 drills retention and deletion. This single owner is also what config/p1r-m2-requirement-owners.v1.json records, so the earlier disagreement with the execution record is gone."
+      "details": "Owned by P1R-M6-008: it implements account deletion requests, the cooling-off period, withdrawal, cross-domain anonymisation and the final subject state, and P1R-M8-012 drills retention and deletion. That single owner is what config/p1r-m2-requirement-owners.v1.json records, so the earlier disagreement with the execution record is gone."
     },
     {
       "check": "redis-loss-cannot-affect-business-facts",
@@ -492,10 +492,10 @@
   ],
   "knownGaps": [
     "The tenant guard is delivered at the storage layer through 10 passing *TenantIsolationTest classes, each running against a real MySQL and its own owner's schema. They write with a JdbcTemplate rather than through a service repository, and four of the ten reference no production class at all, so they show that each schema isolates its tenant's rows; they are not evidence that every service's request path enforces the same rule. The HTTP-level two-tenant negative remains open and is handed to P1R-M2-009: it needs a synthetic per-owner account, which P1R-M0-007 builds and P1R-M2-009 wires into real CI. P1R-M2-009's ledger scope does not itself name tenant guard, so this is a residual gap recorded against this task rather than a reassignment of the requirement.",
-    "The per-service Redis namespaces and ACLs are provisioned and probed for every namespaced owner, but no domain service uses Redis yet: only api-gateway and the legacy core-api configure it, so for the twelve domain owners the namespace is a reserved allocation rather than an enforced boundary in a live path.",
+    "The per-service Redis namespaces and ACLs are provisioned and probed for every namespaced owner, but no domain service uses Redis yet: only api-gateway and the legacy core-api configure it, so for the 14 domain owners the namespace is a reserved allocation rather than an enforced boundary in a live path. The Redis default user is still reachable without a password, so the namespace boundary does not constrain an unauthenticated client; that is a property of the local container rather than of this task's ACLs, and it is registered here rather than left implicit.",
     "The owner outbox tables now carry the contract shape, but only content-service has a publisher and a consumer; the other owners still append rows that nothing publishes.",
-    "Eight of the twelve provisioning owners were baselined from an existing schema rather than migrated from empty, so their migration history records what was already applied rather than a replay from scratch. The empty-database drill is covered separately by the Flyway tests above rather than by those baselines.",
-    "p1r_schema_history, written by scripts/database/reconcile-owner-schemas.mjs, is authoritative for the eleven externally migrated owners and records the version and checksum the reconcile runner applied. flyway_schema_history belongs to the service that runs Flyway at startup, which is iam-service today, and to the service-owned tests. They are not interchangeable: the reconcile history is what the platform asserts, and a Flyway history exists only where a service or its tests actually ran Flyway.",
+    "Some provisioning owners were baselined from an existing schema rather than migrated from empty, so their migration history records what was already applied rather than a replay from scratch. How many is NOT VERIFIED: the reconcile output reports the state per owner but no tracked record counts them, so a figure is not given here rather than repeated from an earlier run. The empty-database drill is covered by the Flyway tests above rather than by those baselines.",
+    "p1r_schema_history, written by scripts/database/reconcile-owner-schemas.mjs, is authoritative for the 13 externally migrated owners and records the version and checksum the reconcile runner applied. flyway_schema_history belongs to the service that runs Flyway at startup, which is iam-service today, and to the service-owned tests. They are not interchangeable: the reconcile history is what the platform asserts, and a Flyway history exists only where a service or its tests actually ran Flyway.",
     "The four gated test families in this task are unchanged in themselves; what changed is that they are now run on purpose. A default `mvn test` still reports them as skipped, so any future evidence that cites them has to run scripts/runtime/run-gated-db-tests.mjs.",
     "Overall phase remains D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED."
   ],

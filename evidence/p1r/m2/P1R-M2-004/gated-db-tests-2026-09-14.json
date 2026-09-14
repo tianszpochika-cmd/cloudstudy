@@ -1,0 +1,500 @@
+{
+  "schema": "platform.gated-db-tests.v1",
+  "taskId": "P1R-M2-004",
+  "capturedAt": "2026-09-14T01:11:22.680Z",
+  "adminUrl": "jdbc:mysql://127.0.0.1:13306/",
+  "discoveredClasses": 31,
+  "selectedClasses": 31,
+  "groupsRun": 26,
+  "testsRun": 46,
+  "uncoveredClasses": [],
+  "failing": 1,
+  "passed": false,
+  "policy": "fail-closed: exit 0 with zero tests or any skipped test is a failure",
+  "results": [
+    {
+      "service": "admin-ops",
+      "property": "adminops.tenant.integration",
+      "classes": [
+        "AdminOpsTenantIsolationTest"
+      ],
+      "classesReporting": [
+        "com.englishflow.adminops.adapter.jdbc.AdminOpsTenantIsolationTest"
+      ],
+      "exitStatus": 0,
+      "passed": true,
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "failureMessages": [],
+      "reason": null
+    },
+    {
+      "service": "admin-ops",
+      "property": "adminops.migration.integration",
+      "classes": [
+        "AdminOpsFlywayMigrationTest"
+      ],
+      "classesReporting": [
+        "com.englishflow.adminops.migration.AdminOpsFlywayMigrationTest"
+      ],
+      "exitStatus": 0,
+      "passed": true,
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "failureMessages": [],
+      "reason": null
+    },
+    {
+      "service": "analytics",
+      "property": "analytics.tenant.integration",
+      "classes": [
+        "AnalyticsTenantIsolationTest"
+      ],
+      "classesReporting": [
+        "com.englishflow.analytics.adapter.jdbc.AnalyticsTenantIsolationTest"
+      ],
+      "exitStatus": 0,
+      "passed": true,
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "failureMessages": [],
+      "reason": null
+    },
+    {
+      "service": "analytics",
+      "property": "analytics.migration.integration",
+      "classes": [
+        "AnalyticsFlywayMigrationTest"
+      ],
+      "classesReporting": [
+        "com.englishflow.analytics.migration.AnalyticsFlywayMigrationTest"
+      ],
+      "exitStatus": 0,
+      "passed": true,
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "failureMessages": [],
+      "reason": null
+    },
+    {
+      "service": "assessment",
+      "property": "assessment.tenant.integration",
+      "classes": [
+        "AssessmentTenantIsolationTest"
+      ],
+      "classesReporting": [
+        "com.englishflow.assessment.adapter.jdbc.AssessmentTenantIsolationTest"
+      ],
+      "exitStatus": 0,
+      "passed": true,
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "failureMessages": [],
+      "reason": null
+    },
+    {
+      "service": "assessment",
+      "property": "assessment.migration.integration",
+      "classes": [
+        "AssessmentFlywayMigrationTest"
+      ],
+      "classesReporting": [
+        "com.englishflow.assessment.migration.AssessmentFlywayMigrationTest"
+      ],
+      "exitStatus": 0,
+      "passed": true,
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "failureMessages": [],
+      "reason": null
+    },
+    {
+      "service": "audit",
+      "property": "audit.migration.integration",
+      "classes": [
+        "AuditFlywayMigrationTest"
+      ],
+      "classesReporting": [
+        "com.englishflow.audit.migration.AuditFlywayMigrationTest"
+      ],
+      "exitStatus": 0,
+      "passed": true,
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "failureMessages": [],
+      "reason": null
+    },
+    {
+      "service": "commerce",
+      "property": "commerce.tenant.integration",
+      "classes": [
+        "CommerceTenantIsolationTest"
+      ],
+      "classesReporting": [
+        "com.englishflow.commerce.adapter.jdbc.CommerceTenantIsolationTest"
+      ],
+      "exitStatus": 0,
+      "passed": true,
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "failureMessages": [],
+      "reason": null
+    },
+    {
+      "service": "commerce",
+      "property": "commerce.migration.integration",
+      "classes": [
+        "CommerceFlywayMigrationTest"
+      ],
+      "classesReporting": [
+        "com.englishflow.commerce.config.CommerceFlywayMigrationTest"
+      ],
+      "exitStatus": 0,
+      "passed": true,
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "failureMessages": [],
+      "reason": null
+    },
+    {
+      "service": "content",
+      "property": "content.tenant.integration",
+      "classes": [
+        "ContentTenantIsolationTest"
+      ],
+      "classesReporting": [
+        "com.englishflow.content.adapter.jdbc.ContentTenantIsolationTest"
+      ],
+      "exitStatus": 0,
+      "passed": true,
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "failureMessages": [],
+      "reason": null
+    },
+    {
+      "service": "content",
+      "property": "content.migration.integration",
+      "classes": [
+        "ContentFlywayMigrationTest"
+      ],
+      "classesReporting": [
+        "com.englishflow.content.migration.ContentFlywayMigrationTest"
+      ],
+      "exitStatus": 0,
+      "passed": true,
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "failureMessages": [],
+      "reason": null
+    },
+    {
+      "service": "gamification",
+      "property": "gamification.tenant.integration",
+      "classes": [
+        "GamificationTenantIsolationTest"
+      ],
+      "classesReporting": [
+        "com.englishflow.gamification.adapter.jdbc.GamificationTenantIsolationTest"
+      ],
+      "exitStatus": 0,
+      "passed": true,
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "failureMessages": [],
+      "reason": null
+    },
+    {
+      "service": "gamification",
+      "property": "gamification.migration.integration",
+      "classes": [
+        "GamificationFlywayMigrationTest"
+      ],
+      "classesReporting": [
+        "com.englishflow.gamification.migration.GamificationFlywayMigrationTest"
+      ],
+      "exitStatus": 0,
+      "passed": true,
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "failureMessages": [],
+      "reason": null
+    },
+    {
+      "service": "iam",
+      "property": "iam.jdbc.integration",
+      "classes": [
+        "IamConsentIdempotencyRollbackSafetyTest",
+        "IamConsentJdbcPersistenceContextTest",
+        "IamConsentPolicyJdbcPersistenceContextTest",
+        "IamJdbcPersistenceContextTest",
+        "IamPolicyIdempotencyRollbackSafetyTest",
+        "IamPolicyJdbcPersistenceContextTest"
+      ],
+      "classesReporting": [
+        "com.englishflow.iam.IamConsentIdempotencyRollbackSafetyTest",
+        "com.englishflow.iam.IamConsentJdbcPersistenceContextTest",
+        "com.englishflow.iam.IamConsentPolicyJdbcPersistenceContextTest",
+        "com.englishflow.iam.IamJdbcPersistenceContextTest",
+        "com.englishflow.iam.IamPolicyIdempotencyRollbackSafetyTest",
+        "com.englishflow.iam.IamPolicyJdbcPersistenceContextTest"
+      ],
+      "exitStatus": 0,
+      "passed": true,
+      "testsRun": 19,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "failureMessages": [],
+      "reason": null
+    },
+    {
+      "service": "iam",
+      "property": "iam.jdbc.migration.integration",
+      "classes": [
+        "IdempotencyV13MigrationSecurityTest"
+      ],
+      "classesReporting": [
+        "com.englishflow.iam.IdempotencyV13MigrationSecurityTest"
+      ],
+      "exitStatus": 0,
+      "passed": true,
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "failureMessages": [],
+      "reason": null
+    },
+    {
+      "service": "iam",
+      "property": "iam.migration.integration",
+      "classes": [
+        "IamFlywayMigrationTest"
+      ],
+      "classesReporting": [
+        "com.englishflow.iam.migration.IamFlywayMigrationTest"
+      ],
+      "exitStatus": 0,
+      "passed": true,
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "failureMessages": [],
+      "reason": null
+    },
+    {
+      "service": "learner",
+      "property": "learner.migration.integration",
+      "classes": [
+        "LearnerFlywayMigrationTest"
+      ],
+      "classesReporting": [
+        "com.englishflow.learner.migration.LearnerFlywayMigrationTest"
+      ],
+      "exitStatus": 0,
+      "passed": true,
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "failureMessages": [],
+      "reason": null
+    },
+    {
+      "service": "learning",
+      "property": "learning.tenant.integration",
+      "classes": [
+        "LearningTenantIsolationTest"
+      ],
+      "classesReporting": [
+        "com.englishflow.learning.adapter.jdbc.LearningTenantIsolationTest"
+      ],
+      "exitStatus": 0,
+      "passed": true,
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "failureMessages": [],
+      "reason": null
+    },
+    {
+      "service": "learning",
+      "property": "learning.migration.integration",
+      "classes": [
+        "LearningFlywayMigrationTest"
+      ],
+      "classesReporting": [
+        "com.englishflow.learning.migration.LearningFlywayMigrationTest"
+      ],
+      "exitStatus": 0,
+      "passed": true,
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "failureMessages": [],
+      "reason": null
+    },
+    {
+      "service": "media",
+      "property": "media.tenant.integration",
+      "classes": [
+        "MediaTenantIsolationTest"
+      ],
+      "classesReporting": [
+        "com.englishflow.media.adapter.jdbc.MediaTenantIsolationTest"
+      ],
+      "exitStatus": 0,
+      "passed": true,
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "failureMessages": [],
+      "reason": null
+    },
+    {
+      "service": "media",
+      "property": "media.migration.integration",
+      "classes": [
+        "MediaFlywayMigrationTest"
+      ],
+      "classesReporting": [
+        "com.englishflow.media.migration.MediaFlywayMigrationTest"
+      ],
+      "exitStatus": 0,
+      "passed": true,
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "failureMessages": [],
+      "reason": null
+    },
+    {
+      "service": "notification",
+      "property": "notification.tenant.integration",
+      "classes": [
+        "NotificationTenantIsolationTest"
+      ],
+      "classesReporting": [
+        "com.englishflow.notification.adapter.jdbc.NotificationTenantIsolationTest"
+      ],
+      "exitStatus": 0,
+      "passed": true,
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "failureMessages": [],
+      "reason": null
+    },
+    {
+      "service": "notification",
+      "property": "notification.migration.integration",
+      "classes": [
+        "NotificationFlywayMigrationTest"
+      ],
+      "classesReporting": [
+        "com.englishflow.notification.migration.NotificationFlywayMigrationTest"
+      ],
+      "exitStatus": 0,
+      "passed": true,
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "failureMessages": [],
+      "reason": null
+    },
+    {
+      "service": "social",
+      "property": "social.migration.integration",
+      "classes": [
+        "SocialFlywayMigrationTest"
+      ],
+      "classesReporting": [
+        "com.englishflow.social.migration.SocialFlywayMigrationTest"
+      ],
+      "exitStatus": 0,
+      "passed": true,
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "failureMessages": [],
+      "reason": null
+    },
+    {
+      "service": "social",
+      "property": "social.tenant.integration",
+      "classes": [
+        "SocialTenantIsolationTest"
+      ],
+      "classesReporting": [
+        "com.englishflow.social.web.SocialTenantIsolationTest"
+      ],
+      "exitStatus": 0,
+      "passed": true,
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "failureMessages": [],
+      "reason": null
+    },
+    {
+      "service": "workflow",
+      "property": "workflow.jdbc.integration",
+      "classes": [
+        "JdbcSagaStoreIntegrationTest"
+      ],
+      "classesReporting": [
+        "com.englishflow.workflow.adapter.jdbc.JdbcSagaStoreIntegrationTest"
+      ],
+      "exitStatus": 1,
+      "passed": false,
+      "testsRun": 3,
+      "failures": 0,
+      "errors": 3,
+      "skipped": 0,
+      "failureMessages": [
+        {
+          "className": "com.englishflow.workflow.adapter.jdbc.JdbcSagaStoreIntegrationTest",
+          "message": "Failed to obtain JDBC Connection",
+          "detail": "<![CDATA[org.springframework.jdbc.CannotGetJdbcConnectionException: Failed to obtain JDBC Connection"
+        }
+      ],
+      "reason": "3 tests, 0 failures, 3 errors, 0 skipped; 1 of 1 classes reported (exit 1); Failed to obtain JDBC Connection"
+    }
+  ]
+}
