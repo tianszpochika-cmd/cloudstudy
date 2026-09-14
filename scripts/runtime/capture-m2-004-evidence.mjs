@@ -190,6 +190,31 @@ const redisOnlyNamespaced = ownership.serviceOwners.filter((owner) => owner.redi
 const regressionReport = readRegressionReport();
 const additiveMigrations = scanMigrations();
 const tenantProductionClasses = measureTenantProductionUse(root);
+// Counts and assignments read from data. Nothing below repeats a number or an owner that lives elsewhere.
+const ownerSchemaGrantChecks = evidence.checks.filter((check) => check.id.startsWith('owner-schema-grants:'));
+const migrationHistoryChecks = evidence.checks.filter((check) => check.id.startsWith('migration-existing-schema:'));
+const redisChecks = evidence.checks.filter((check) => check.id.startsWith('redis-namespace-acl:'));
+const ownerProbes = redisChecks.filter((check) => ownership.serviceOwners.some((owner) => owner.service === check.id.replace('redis-namespace-acl:', '')));
+const policyLevelChecks = redisChecks.filter((check) => !ownerProbes.includes(check));
+const ownersWithoutDatabase = ownerProbes
+  .map((check) => check.id.replace('redis-namespace-acl:', ''))
+  .filter((id) => !runtimeOwners(root).some((owner) => owner.id === id));
+const externalOwnerCount = runtimeOwners(root).filter((owner) => owner.migrationMode === 'external').length;
+// The owner of a requirement is a decision recorded in one place; repeating it here is how this manifest came
+// to contradict its own config.
+const requirementOwners = JSON.parse(fs.readFileSync(path.join(root, 'config/p1r-m2-requirement-owners.v1.json'), 'utf8'));
+const ownerOf = (id) => requirementOwners.requirements.find((entry) => entry.id === id)?.ownerTask ?? 'UNKNOWN';
+/**
+ * A requirement's status, derived from its owner and the harness.
+ *
+ * A requirement another task owns is NOT_APPLICABLE here. A requirement this task owns is PASS only when the
+ * harness verified it; otherwise it is FAIL, because reporting a task's own requirement as not applicable is
+ * how an exit-evidence item can appear satisfied while nothing measured it. The rule is enforced in the gate
+ * as well, so a hand-written NOT_APPLICABLE cannot re-enter through this file.
+ */
+const statusForRequirement = (id) => (ownerOf(id) === 'P1R-M2-004'
+  ? (statusOf(id) === 'VERIFIED' ? 'PASS' : 'FAIL')
+  : 'NOT_APPLICABLE');
 // The rollback check's own record, so the rollback evidence reports what the harness measured.
 const rollbackCheck = evidence.checks.find((check) => check.id === 'rollback:reconcile-refuses-drift') ?? null;
 // The audit ingest check writes its own file, so this reads the measured responses rather than restating them.
@@ -305,7 +330,9 @@ const manifest = {
     {
       check: 'M2-004-OWNER-SCHEMA-GRANTS',
       status: statusOf('M2-004-OWNER-SCHEMA-GRANTS') === 'VERIFIED' ? 'PASS' : 'FAIL',
-      details: 'Twelve owners provisioned; each can read its own schema; the eleven externally migrated owners are DML-only with DDL and ALTER denied by privilege (error 1142); SHOW GRANTS names no foreign schema.',
+      details: `${ownerSchemaGrantChecks.length} owners provisioned; each can read its own schema; the `
+        + `${externalOwnerCount} externally migrated ${externalOwnerCount === 1 ? 'owner is' : 'owners are'} `
+        + 'DML-only with DDL and ALTER denied by privilege (error 1142); SHOW GRANTS names no foreign schema.',
     },
     {
       check: 'M2-004-CROSS-OWNER-DENY',
@@ -315,12 +342,13 @@ const manifest = {
     {
       check: 'M2-004-REDIS-NAMESPACE-ACL',
       status: statusOf('M2-004-REDIS-NAMESPACE-ACL') === 'VERIFIED' ? 'PASS' : 'FAIL',
-      details: `Every owner the policy gives a Redis namespace was probed, ${aclChecks.length} in total including the two that have no database schema, and each resolved to exactly one ACL user scoped to its own namespace, able to write inside it and refused in another owner's. The requirement's second clause is covered separately: the business fact row counts in thirteen owner tables were identical before, during and after Redis was stopped and restarted, so losing Redis cannot create or lose a business fact.`,
+      details: `Every owner the policy gives a Redis namespace was probed, ${aclChecks.length} in total: ${ownerProbes.length} owner probes covering all ${redisOnlyNamespaced} namespaced owners, of which ${ownersWithoutDatabase.length} hold no database of their own (${ownersWithoutDatabase.join(', ')}), plus ${policyLevelChecks.length} policy-level check. Each resolved to exactly one ACL user scoped to its own namespace, able to write inside it and refused in another owner's. The requirement's second clause is covered separately: the business fact row counts in ${Object.keys(redisLoss?.before ?? {}).length} owner tables were identical before, during and after Redis was stopped and restarted, so losing Redis cannot create or lose a business fact.`,
     },
     {
       check: 'M2-004-FLYWAY-EMPTY-AND-EXISTING',
       status: statusOf('M2-004-FLYWAY-EMPTY-AND-EXISTING') === 'VERIFIED' ? 'PASS' : 'FAIL',
-      details: 'Twelve schemas have a p1r_schema_history whose version set matches the migration files; applying V1 into an empty scratch schema created all five expected tables; invalid SQL was rejected with no residue.',
+      details: `${migrationHistoryChecks.length} schemas have a p1r_schema_history whose version set matches the migration `
+        + 'files; applying V1 into an empty scratch schema created all five expected tables; invalid SQL was rejected with no residue.',
     },
     {
       check: 'M2-004-TENANT-GUARD',
@@ -338,22 +366,26 @@ const manifest = {
       details: `${flywayChecks.length} *FlywayMigrationTest classes run emptyAndExistingDatabasesMigrateAndFailureRecovers against a real MySQL, one per service including audit-service, and all ${flywayChecks.length} pass. That is what makes the ledger's "including audit-service" phrasing true rather than an inference from version reconciliation.`,
     },
     {
+      // Status derived, not written. A requirement is NOT_APPLICABLE only when another task owns it; when
+      // this task owns it, the harness has to have verified it and anything else is a failure. The literal
+      // that used to sit here said NOT_APPLICABLE for a requirement config assigns to this task, which is the
+      // contradiction the fourth review found between this entry and the rollback evidence below it.
       check: 'M2-004-REDIS-REBUILD',
-      status: 'NOT_APPLICABLE',
-      ownerTask: 'P1R-M2-006',
-      details: 'A projection rebuild entrypoint belongs to the workflow and platform runtime in P1R-M2-006; content cache invalidation belongs to P1R-M3-006.',
+      status: statusForRequirement('M2-004-REDIS-REBUILD'),
+      ownerTask: ownerOf('M2-004-REDIS-REBUILD'),
+      details: `Owned by ${ownerOf('M2-004-REDIS-REBUILD')}: a projection rebuild appears in no part of the ledger line for P1R-M2-006, whose scope is Saga, compensation, scheduled jobs, manual recovery and audit ingest, while content cache invalidation belongs to P1R-M3-006.`,
     },
     {
       check: 'M2-004-ROLLBACK-COMPENSATION',
-      status: 'NOT_APPLICABLE',
-      ownerTask: 'P1R-M2-006',
-      details: 'P1R-M2-006 scope: workflow Saga, compensation, scheduled jobs and manual recovery, which produce the owner, trace, audit and recovery receipts this requirement asks for. The ledger exit evidence phrase "rollback/compensation test" is carried by that task.',
+      status: statusForRequirement('M2-004-ROLLBACK-COMPENSATION'),
+      ownerTask: ownerOf('M2-004-ROLLBACK-COMPENSATION'),
+      details: `Owned by ${ownerOf('M2-004-ROLLBACK-COMPENSATION')}, because the ledger line for this task names a rollback and compensation test in its own exit evidence and the ledger is the acceptance baseline. It is delivered here: the harness corrupts a recorded migration checksum, requires the reconcile runner to refuse with its drift message, repairs the record in a finally block and requires convergence. Measured outcome: ${rollbackCheck?.result ?? 'the harness produced no such check'}. Workflow-level Saga compensation remains P1R-M2-006's and is listed there as a supporting task.`,
     },
     {
       check: 'M2-004-RETENTION-DELETE-HOLD',
-      status: 'NOT_APPLICABLE',
-      ownerTask: 'P1R-M6-008',
-      details: 'P1R-M6-008 implements account deletion requests, the cooling-off period, withdrawal, cross-domain anonymisation and the final subject state; P1R-M8-012 drills retention and deletion. This single owner is also what config/p1r-m2-requirement-owners.v1.json records, so the earlier disagreement with the execution record is gone.',
+      status: statusForRequirement('M2-004-RETENTION-DELETE-HOLD'),
+      ownerTask: ownerOf('M2-004-RETENTION-DELETE-HOLD'),
+      details: `Owned by ${ownerOf('M2-004-RETENTION-DELETE-HOLD')}: it implements account deletion requests, the cooling-off period, withdrawal, cross-domain anonymisation and the final subject state, and P1R-M8-012 drills retention and deletion. That single owner is what config/p1r-m2-requirement-owners.v1.json records, so the earlier disagreement with the execution record is gone.`,
     },
     {
       check: 'redis-loss-cannot-affect-business-facts',
@@ -401,10 +433,10 @@ const manifest = {
   ],
   knownGaps: [
     `The tenant guard is delivered at the storage layer through ${tenantChecks.length} passing *TenantIsolationTest classes, each running against a real MySQL and its own owner's schema. They write with a JdbcTemplate rather than through a service repository, and four of the ten reference no production class at all, so they show that each schema isolates its tenant's rows; they are not evidence that every service's request path enforces the same rule. The HTTP-level two-tenant negative remains open and is handed to P1R-M2-009: it needs a synthetic per-owner account, which P1R-M0-007 builds and P1R-M2-009 wires into real CI. P1R-M2-009's ledger scope does not itself name tenant guard, so this is a residual gap recorded against this task rather than a reassignment of the requirement.`,
-    'The per-service Redis namespaces and ACLs are provisioned and probed for every namespaced owner, but no domain service uses Redis yet: only api-gateway and the legacy core-api configure it, so for the twelve domain owners the namespace is a reserved allocation rather than an enforced boundary in a live path.',
+    `The per-service Redis namespaces and ACLs are provisioned and probed for every namespaced owner, but no domain service uses Redis yet: only api-gateway and the legacy core-api configure it, so for the ${redisOnlyNamespaced - ownersWithoutDatabase.length} domain owners the namespace is a reserved allocation rather than an enforced boundary in a live path. The Redis default user is still reachable without a password, so the namespace boundary does not constrain an unauthenticated client; that is a property of the local container rather than of this task's ACLs, and it is registered here rather than left implicit.`,
     'The owner outbox tables now carry the contract shape, but only content-service has a publisher and a consumer; the other owners still append rows that nothing publishes.',
-    'Eight of the twelve provisioning owners were baselined from an existing schema rather than migrated from empty, so their migration history records what was already applied rather than a replay from scratch. The empty-database drill is covered separately by the Flyway tests above rather than by those baselines.',
-    'p1r_schema_history, written by scripts/database/reconcile-owner-schemas.mjs, is authoritative for the eleven externally migrated owners and records the version and checksum the reconcile runner applied. flyway_schema_history belongs to the service that runs Flyway at startup, which is iam-service today, and to the service-owned tests. They are not interchangeable: the reconcile history is what the platform asserts, and a Flyway history exists only where a service or its tests actually ran Flyway.',
+    'Some provisioning owners were baselined from an existing schema rather than migrated from empty, so their migration history records what was already applied rather than a replay from scratch. How many is NOT VERIFIED: the reconcile output reports the state per owner but no tracked record counts them, so a figure is not given here rather than repeated from an earlier run. The empty-database drill is covered by the Flyway tests above rather than by those baselines.',
+    `p1r_schema_history, written by scripts/database/reconcile-owner-schemas.mjs, is authoritative for the ${externalOwnerCount} externally migrated owners and records the version and checksum the reconcile runner applied. flyway_schema_history belongs to the service that runs Flyway at startup, which is iam-service today, and to the service-owned tests. They are not interchangeable: the reconcile history is what the platform asserts, and a Flyway history exists only where a service or its tests actually ran Flyway.`,
     'The four gated test families in this task are unchanged in themselves; what changed is that they are now run on purpose. A default `mvn test` still reports them as skipped, so any future evidence that cites them has to run scripts/runtime/run-gated-db-tests.mjs.',
     'Overall phase remains D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED.',
   ],
