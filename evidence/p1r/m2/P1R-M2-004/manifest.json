@@ -2,7 +2,7 @@
   "taskId": "P1R-M2-004",
   "draftOnly": false,
   "canonicalTaskStatus": "REVIEW",
-  "sourceCommit": "9eacca414a91516107cdbfd21016f5631fb1ed9c",
+  "sourceCommit": "fa66c2444968cbd257c3b469f496e108b32d2da8",
   "artifactDigests": [
     {
       "path": "config/p1r-data-ownership.v1.json",
@@ -47,12 +47,17 @@
     {
       "path": "scripts/audit/p1r-evidence-gate.mjs",
       "algorithm": "sha256",
-      "digest": "dbb109e1104af3a059389cf863370078d814821781eacee8b3b67624261183cf"
+      "digest": "07cd0fb78bf7eddec319a4cfb92c18cbe2a6d12976c79b1d38f0eb0d17a86ae2"
+    },
+    {
+      "path": "scripts/audit/p1r-stale-claims-check.mjs",
+      "algorithm": "sha256",
+      "digest": "0417cc69045fa10d686dedb7755896afb6765d6a493e408f7c4ea576f66da803"
     },
     {
       "path": "scripts/runtime/capture-m2-004-evidence.mjs",
       "algorithm": "sha256",
-      "digest": "57aceb40a2461d45f1650a96c60f10d6a314ca389ad1a4714dcfd1f38f04a9b7"
+      "digest": "9785b69189631cec21f6f2c7812063d01a32474507e2c4f9f2a33bd02e922ae3"
     },
     {
       "path": "scripts/runtime/run-gated-db-tests.mjs",
@@ -499,7 +504,7 @@
     ]
   },
   "startedAt": "2026-09-09T00:00:00+08:00",
-  "finishedAt": "2026-09-14T07:36:07.112Z",
+  "finishedAt": "2026-09-14T07:42:22.673Z",
   "actors": [
     "root-coordinator",
     "p1r-implementation"
