@@ -200,6 +200,10 @@ const artifacts = [
   // cites them has to record them.
   'evidence/p1r/m2/P1R-M2-004/audit-ingest-check.json',
   'evidence/p1r/m2/P1R-M2-004/regression.json',
+  // Transcribed by hand rather than measured, so it is recorded as an artifact: a change to it then shows up as
+  // a digest change instead of passing unnoticed, which is how it came to describe seven rounds while the ledger
+  // held four.
+  'evidence/p1r/m2/P1R-M2-004/review-history.json',
 ];
 const unique = [...new Set(artifacts)];
 const missing = unique.filter((relative) => !fs.existsSync(path.join(root, relative)));

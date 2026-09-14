@@ -2,7 +2,7 @@
   "taskId": "P1R-M2-004",
   "draftOnly": false,
   "canonicalTaskStatus": "REVIEW",
-  "sourceCommit": "31eaa28fa8e8911da27e8450584bb2f3489df44a",
+  "sourceCommit": "6d67a05f2f6a622818f5a862ac5142e2e8a98773",
   "artifactDigests": [
     {
       "path": "config/p1r-data-ownership.v1.json",
@@ -52,7 +52,7 @@
     {
       "path": "scripts/runtime/capture-m2-004-evidence.mjs",
       "algorithm": "sha256",
-      "digest": "d14090642f240e3ddeded0cae5ee6e7d939d3ab38731abdef43f5ec3cf16f6ce"
+      "digest": "ddc5c794619d0e6515f8d1e69d013550816c2d8601d049ca6872cb9a3a5a7138"
     },
     {
       "path": "scripts/runtime/run-gated-db-tests.mjs",
@@ -308,6 +308,11 @@
       "path": "evidence/p1r/m2/P1R-M2-004/regression.json",
       "algorithm": "sha256",
       "digest": "95e7ded9c7b12cd6c72558695a48cc3b64fcda680298bbead897b1521c69f98e"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-004/review-history.json",
+      "algorithm": "sha256",
+      "digest": "80947552476095169ed34b402e9746a4626e930e7d5a467062b1b846b9d9d805"
     }
   ],
   "environment": {
@@ -437,16 +442,40 @@
       },
       {
         "round": 6,
+        "verdict": "REWORK",
+        "counts": {
+          "P0": 0,
+          "P1": 3,
+          "P2": 9
+        },
+        "reviewedCommit": "3d82b13f17e3612d0a742bcb395f41b4c32a4bb5",
+        "reviewer": "independent review session (sixth round)",
+        "summary": "P0 remained zero and the core runtime facts were reproduced again. Three P1 findings: the reassignment of the rollback requirement had reached the ledger and the config while four other places still claimed this task delivered it and held it VERIFIED; the gated figures were stale again because two classes added under M2-006 during the review changed them; and the tenant production-class figure was six where the review counted nine, because same-package references were not counted. The review also mutated the gate open on three ownership channels."
+      },
+      {
+        "round": 7,
+        "verdict": "REWORK",
+        "counts": {
+          "P0": 0,
+          "P1": 3,
+          "P2": 6
+        },
+        "reviewedCommit": "f59f4c8232b0c3287fbca9c265012f0424a14758",
+        "reviewer": "independent review session (seventh round)",
+        "summary": "P0 remained zero and all sixty-one artifacts matched. Three P1 findings: two of the five places carrying the reassignment still claimed the opposite and a code comment did too; the tenant figure had two incompatible numbers in circulation with a stated definition matching neither; and the review request claimed to be transcribed from the manifest while carrying different figures, a duplicated block and a stale round number. The review confirmed the three ownership channels it had mutated open now fail on their mutations, stated that the circularity of in-repository self-verification is not by itself a reason to rework, declined to block, and named the one thing genuinely missing: a machine-readable requirement list on the ledger line."
+      },
+      {
+        "round": 8,
         "verdict": "PENDING",
         "counts": null,
         "reviewedCommit": null,
         "reviewer": "awaiting a fresh independent session",
-        "summary": "Not submitted. The fifth round's first finding is fixed: the gated evidence is written under one name, the generator reads it, and the figures are 31 classes, 26 groups and 46 tests. The second is settled by reassignment rather than by another check. Prose constants in nextSteps and knownGaps are derived rather than written."
+        "summary": "Not submitted. The seventh round's findings are addressed: the reassignment is carried in all five places and checked for stale sentences, the tenant figure has one definition and the same number everywhere, the review request is regenerated from the manifest, and the gate requires the ledger line to name any task that owns one of the task's requirements."
       }
     ]
   },
   "startedAt": "2026-09-09T00:00:00+08:00",
-  "finishedAt": "2026-09-14T04:47:00.936Z",
+  "finishedAt": "2026-09-14T04:50:51.414Z",
   "actors": [
     "root-coordinator",
     "p1r-implementation"
@@ -560,7 +589,7 @@
   "reviewer": "awaiting-independent-reviewer",
   "decision": "PENDING",
   "nextSteps": [
-    "6 independent reviews have returned 5 REWORK verdicts (round 1 P0/P1/P2 0/4/6; round 2 P0/P1/P2 0/1/9; round 3 P0/P1/P2 0/3/7; round 4 P0/P1/P2 0/4/8; round 5 P0/P1/P2 0/2/8), so another session has to re-decide this submission; the implementer changed the harness, the evidence generator and a governance check during the rework and must not accept its own output.",
+    "8 independent reviews have returned 7 REWORK verdicts (round 1 P0/P1/P2 0/4/6; round 2 P0/P1/P2 0/1/9; round 3 P0/P1/P2 0/3/7; round 4 P0/P1/P2 0/4/8; round 5 P0/P1/P2 0/2/8; round 6 P0/P1/P2 0/3/9; round 7 P0/P1/P2 0/3/6), so another session has to re-decide this submission; the implementer changed the harness, the evidence generator and a governance check during the rework and must not accept its own output.",
     "The rollback and compensation requirement is owned by P1R-M2-006 and the ledger line for this task was changed to match, so the entry above reports NOT_APPLICABLE rather than claiming a drift-refusal check satisfies it. The workflow-service delivered under that task holds the compensation executor, the two-person approval and the recovery receipts.",
     "The workflow-service built under P1R-M2-006 is a provisioned owner, so this task's evidence describes 14 owners and its Redis loss check reads 14 tables including that service's. Its schema, credential, migration coverage and tenant guard are delivered by P1R-M2-006, not by this one, and that boundary is recorded in knownGaps rather than only here."
   ]

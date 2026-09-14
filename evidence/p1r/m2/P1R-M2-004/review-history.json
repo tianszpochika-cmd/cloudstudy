@@ -6,7 +6,11 @@
     {
       "round": 1,
       "verdict": "REWORK",
-      "counts": { "P0": 0, "P1": 4, "P2": 6 },
+      "counts": {
+        "P0": 0,
+        "P1": 4,
+        "P2": 6
+      },
       "reviewedCommit": "50953b71bcd18ffa6fb03afd2bb9b7e9883b07d2",
       "reviewer": "independent review session (first round)",
       "summary": "P0 was zero: cross-tenant write blocking, DML-only credentials with 1142 denials, no cross-schema grants, 20 of 20 artifact digests, 58 checks reproduced and the gates and 1429 regression all green were independently confirmed. The findings were about accounting rather than missing work."
@@ -14,7 +18,11 @@
     {
       "round": 2,
       "verdict": "REWORK",
-      "counts": { "P0": 0, "P1": 1, "P2": 9 },
+      "counts": {
+        "P0": 0,
+        "P1": 1,
+        "P2": 9
+      },
       "reviewedCommit": null,
       "reviewer": "independent review session (second round)",
       "summary": "The four first-round P1 findings were confirmed closed: the reviewer independently re-ran 23 of 23 gated classes and recomputed 46 of 46 digests. One new P1 was raised, that the gated runner's pass criterion was the mvn exit code, which an entirely skipped class also satisfies, and which propagated into VERIFIED and a green gate. Ten P2 findings were raised as well."
@@ -22,7 +30,11 @@
     {
       "round": 3,
       "verdict": "REWORK",
-      "counts": { "P0": 0, "P1": 3, "P2": 7 },
+      "counts": {
+        "P0": 0,
+        "P1": 3,
+        "P2": 7
+      },
       "reviewedCommit": "73aa1cd716da7b4ea32a71140accb049247c2cde",
       "reviewer": "independent review session (third round)",
       "summary": "The third round closed the second round's new P1 and seven of its ten P2 findings. It returned REWORK on three new P1 findings: a ledger exit-evidence item judged NOT_APPLICABLE with a hardcoded PASS standing in for it, three numbers in the canonical manifest that did not match their evidence, and drift during the review, since building workflow-service for M2-006 made the evidence package unable to rebuild itself at the commit it named. P0 remained zero and the review independently reproduced the core runtime facts: DML-only credentials refused with error 1142, cross-schema denial, the Redis ACL scoping, and the migration histories."
@@ -30,7 +42,11 @@
     {
       "round": 4,
       "verdict": "REWORK",
-      "counts": { "P0": 0, "P1": 4, "P2": 8 },
+      "counts": {
+        "P0": 0,
+        "P1": 4,
+        "P2": 8
+      },
       "reviewedCommit": "d3f33995fab2e16844868d780ddcf9ba3b509669",
       "reviewer": "independent review session (fourth round)",
       "summary": "P0 remained zero and the core runtime facts were reproduced again. Four P1 findings: the ledger exit-evidence item for rollback and compensation was still NOT_APPLICABLE in results while the rollback evidence beside it reported PASS and config assigned the requirement here, so the manifest contradicted itself in three places; five prose figures in results and two in knownGaps disagreed with the figures the generator derived; reviewedRevision named a revision that could not reproduce the evidence it described; and the gated runner's discovery was limited by a hardcoded service list, so a class added under workflow-service was invisible while the coverage check reported PASS."
@@ -38,18 +54,46 @@
     {
       "round": 5,
       "verdict": "REWORK",
-      "counts": { "P0": 0, "P1": 2, "P2": 8 },
+      "counts": {
+        "P0": 0,
+        "P1": 2,
+        "P2": 8
+      },
       "reviewedCommit": "365e2b6cd72a12f686eb0f6d13acc00fc2e32012",
       "reviewer": "independent review session (fifth round)",
       "summary": "P0 remained zero, every artifact digest matched, and the three commands passed. Two P1 findings, both accepted. First, the gated figures in the manifest came from a run that predated workflow-service, because the runner named its output after the date and the generator read a hardcoded date, so re-running could only produce files nothing consumed; measured by the review as 30/25/43 against 31/26/46 in the committed evidence. Second, the requirement the ledger names as a rollback and compensation test was reported PASS on the strength of a drift-refusal check that performs no rollback, compensates no owner and writes none of the receipts the requirement names, which is a claim about a different property; the term had been redefined in a code comment. The remedy chosen was to reassign the requirement to P1R-M2-006 and change the ledger line to match, since that task owns Saga compensation, manual recovery and the receipt tables and has delivered them."
     },
     {
       "round": 6,
+      "verdict": "REWORK",
+      "counts": {
+        "P0": 0,
+        "P1": 3,
+        "P2": 9
+      },
+      "reviewedCommit": "3d82b13f17e3612d0a742bcb395f41b4c32a4bb5",
+      "reviewer": "independent review session (sixth round)",
+      "summary": "P0 remained zero and the core runtime facts were reproduced again. Three P1 findings: the reassignment of the rollback requirement had reached the ledger and the config while four other places still claimed this task delivered it and held it VERIFIED; the gated figures were stale again because two classes added under M2-006 during the review changed them; and the tenant production-class figure was six where the review counted nine, because same-package references were not counted. The review also mutated the gate open on three ownership channels."
+    },
+    {
+      "round": 7,
+      "verdict": "REWORK",
+      "counts": {
+        "P0": 0,
+        "P1": 3,
+        "P2": 6
+      },
+      "reviewedCommit": "f59f4c8232b0c3287fbca9c265012f0424a14758",
+      "reviewer": "independent review session (seventh round)",
+      "summary": "P0 remained zero and all sixty-one artifacts matched. Three P1 findings: two of the five places carrying the reassignment still claimed the opposite and a code comment did too; the tenant figure had two incompatible numbers in circulation with a stated definition matching neither; and the review request claimed to be transcribed from the manifest while carrying different figures, a duplicated block and a stale round number. The review confirmed the three ownership channels it had mutated open now fail on their mutations, stated that the circularity of in-repository self-verification is not by itself a reason to rework, declined to block, and named the one thing genuinely missing: a machine-readable requirement list on the ledger line."
+    },
+    {
+      "round": 8,
       "verdict": "PENDING",
       "counts": null,
       "reviewedCommit": null,
       "reviewer": "awaiting a fresh independent session",
-      "summary": "Not submitted. The fifth round's first finding is fixed: the gated evidence is written under one name, the generator reads it, and the figures are 31 classes, 26 groups and 46 tests. The second is settled by reassignment rather than by another check. Prose constants in nextSteps and knownGaps are derived rather than written."
+      "summary": "Not submitted. The seventh round's findings are addressed: the reassignment is carried in all five places and checked for stale sentences, the tenant figure has one definition and the same number everywhere, the review request is regenerated from the manifest, and the gate requires the ledger line to name any task that owns one of the task's requirements."
     }
   ]
 }
