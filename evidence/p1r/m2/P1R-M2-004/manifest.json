@@ -2,7 +2,7 @@
   "taskId": "P1R-M2-004",
   "draftOnly": false,
   "canonicalTaskStatus": "REVIEW",
-  "sourceCommit": "d4687b166d03a0322bb4064d64d8b36ad8ce5c85",
+  "sourceCommit": "e1eccc5efa475a640d35d7b958adb4c10cf87882",
   "artifactDigests": [
     {
       "path": "config/p1r-data-ownership.v1.json",
@@ -421,7 +421,7 @@
     ]
   },
   "startedAt": "2026-09-09T00:00:00+08:00",
-  "finishedAt": "2026-09-14T02:39:00.704Z",
+  "finishedAt": "2026-09-14T02:55:24.917Z",
   "actors": [
     "root-coordinator",
     "p1r-implementation"
@@ -526,7 +526,10 @@
     "The owner outbox tables now carry the contract shape, but only content-service has a publisher and a consumer; the other owners still append rows that nothing publishes.",
     "Some provisioning owners were baselined from an existing schema rather than migrated from empty, so their migration history records what was already applied rather than a replay from scratch. How many is NOT VERIFIED: the reconcile output reports the state per owner but no tracked record counts them, so a figure is not given here rather than repeated from an earlier run. The empty-database drill is covered by the Flyway tests above rather than by those baselines.",
     "p1r_schema_history, written by scripts/database/reconcile-owner-schemas.mjs, is authoritative for the 13 externally migrated owners and records the version and checksum the reconcile runner applied. flyway_schema_history belongs to the service that runs Flyway at startup, which is iam-service today, and to the service-owned tests. They are not interchangeable: the reconcile history is what the platform asserts, and a Flyway history exists only where a service or its tests actually ran Flyway.",
-    "The four gated test families in this task are unchanged in themselves; what changed is that they are now run on purpose. A default `mvn test` still reports them as skipped, so any future evidence that cites them has to run scripts/runtime/run-gated-db-tests.mjs.",
+    "The gated test families in this task are unchanged in themselves; what changed is that they are now run on purpose. A default `mvn test` still reports them as skipped, so any future evidence that cites them has to run scripts/runtime/run-gated-db-tests.mjs, which discovers 31 classes across the repository and reports the ones it could not run.",
+    "This task changed a value in the frozen D2 data-ownership policy and the assertion that enforced it in the same commit: the api-gateway Redis namespace moved from gateway to englishflow:gateway so that the policy, the ACL provisioning script and the running Gateway agree. It is registered here because changing a policy and the check that guards it together is a conflict of interest, and leaving it to the commit message is not a record. The evidence for the change is in the harness: a probe against the bare gateway namespace is refused by Redis while englishflow:gateway is accepted.",
+    "The workflow-service built under P1R-M2-006 is a provisioned owner, so the counts here include it: 14 owners in total and 13 externally migrated. Its schema, credential and migration are delivered by that task, and its tenant guard and gated coverage are not part of this snapshot, which is why the gated class count is 31 while the Flyway coverage check covers 13 services.",
+    "The Redis default user is still enabled without a password, so the namespace boundary this task provisions does not constrain a client that never authenticates. That is a property of the local container rather than of these ACLs, and it is recorded because a reader could otherwise take \"per-service Redis namespaces\" for a complete boundary.",
     "Overall phase remains D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED."
   ],
   "reviewer": "awaiting-independent-reviewer",
