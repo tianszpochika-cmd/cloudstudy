@@ -115,11 +115,26 @@
     },
     {
       "round": 10,
+      "verdict": "REWORK",
+      "counts": {
+        "P0": 0,
+        "P1": 4,
+        "P2": 8
+      },
+      "reviewedCommit": "e6dc7b395ab5cf06ee808a15e886c8271509154e",
+      "reviewStartedHead": "e6dc7b395ab5cf06ee808a15e886c8271509154e",
+      "reviewEndedHead": "883f73ea20540102980d6873703396de2a37048b",
+      "reviewer": "independent review session (tenth round)",
+      "summary": "P0 remained zero and the runtime facts were reproduced again on real MySQL, Redis and audit-service. Four P1 findings: the execution record's first section still listed the rollback path as this task's exit evidence while the ledger and manifest say it was reassigned, which is the sibling of the ninth round's line in the same file; the stale-claims check was wired to nothing, with no package script, no CI step, no gate call, no test and no entry in the manifest artifacts, so the previous round's structural fix was a tool rather than a protection; the reviewed files kept changing during the review, five commits including two that touched the manifest, ledger, review request, trajectories and history the reviewer was reading; and the rollback evidence claimed sixty-two migrations were scanned with no destructive statement found, where the tree holds seventy-five and the two files that do contain DROP TABLE or DROP COLUMN are both iam-service's, which the scan had skipped because that service migrates itself."
+    },
+    {
+      "round": 11,
       "verdict": "PENDING",
       "counts": null,
       "reviewedCommit": null,
+      "reviewStartedHead": null,
       "reviewer": "awaiting a fresh independent session",
-      "summary": "Not submitted."
+      "summary": "Not submitted at the time of writing; submitted against a frozen revision."
     }
   ]
 }
