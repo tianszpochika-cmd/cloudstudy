@@ -89,11 +89,15 @@
     },
     {
       "round": 8,
-      "verdict": "PENDING",
-      "counts": null,
-      "reviewedCommit": null,
-      "reviewer": "awaiting a fresh independent session",
-      "summary": "Not submitted. The seventh round's findings are addressed: the reassignment is carried in all five places and checked for stale sentences, the tenant figure has one definition and the same number everywhere, the review request is regenerated from the manifest, and the gate requires the ledger line to name any task that owns one of the task's requirements."
+      "verdict": "REWORK",
+      "counts": {
+        "P0": 0,
+        "P1": 4,
+        "P2": 9
+      },
+      "reviewedCommit": "7aa23e93e32896f28df4b3f636de4e5196adbb81",
+      "reviewer": "independent review session (eighth round)",
+      "summary": "P0 remained zero and all sixty-two artifacts matched, with acceptance alignment, runtime evidence, digest integrity, tooling and provenance all passing. Four P1 findings: a harness comment still called the drift check the rollback evidence the ledger names and redefined compensation as the platform recovery path; the same file still printed the tenant figure as six where the measurement gives nine; the execution record pointed the retention requirement at P1R-M2-005 where the config and manifest say P1R-M6-008, while the manifest claimed that disagreement was gone; and the review request still carried sixty-one artifacts against sixty-two, four rounds against seven, four not-applicable entries against three, and an unduplicated block it claimed to have removed. Each was findable with one grep, which is the shape of every round so far."
     },
     {
       "round": 9,

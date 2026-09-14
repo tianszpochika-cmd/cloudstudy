@@ -106,6 +106,21 @@ export function checkStaleClaims() {
   if (fs.existsSync(historyPath)) {
     const history = JSON.parse(read(historyPath));
     const decided = history.rounds.filter((round) => round.verdict !== 'PENDING').length;
+    // Derived from the history, and asserted against it. The count was hardcoded to seven, so a correct record
+    // would have been reported wrong once the history grew; and a placeholder left behind by a later edit is
+    // exactly the kind of thing this file exists to notice.
+    const recordedRounds = history.rounds.length;
+    const unknownVerdicts = history.rounds.filter((round) => !['REWORK', 'ACCEPTED', 'BLOCKED', 'PENDING'].includes(round.verdict));
+    if (unknownVerdicts.length > 0) {
+      errors.push(`review history has rounds with an unrecognised verdict: ${unknownVerdicts.map((round) => `${round.round}=${round.verdict}`).join(', ')}`);
+    }
+    const tooManyPending = history.rounds.filter((round) => round.verdict === 'PENDING');
+    if (tooManyPending.length > 1) {
+      errors.push(`review history has ${tooManyPending.length} pending rounds (${tooManyPending.map((round) => round.round).join(', ')}): only the latest should be pending, so a placeholder was left behind`);
+    }
+    if (recordedRounds !== decided + tooManyPending.length) {
+      errors.push(`review history records ${recordedRounds} rounds but ${decided} verdicts and ${tooManyPending.length} pending: the pending round is missing or duplicated`);
+    }
     const numerals = ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十'];
     const missing = history.rounds
       .filter((round) => round.verdict !== 'PENDING')
