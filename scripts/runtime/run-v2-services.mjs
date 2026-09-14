@@ -149,6 +149,10 @@ function runtimeEnvironment(service, port) {
   // existing anywhere but in the environment. It must match GATEWAY_AUDIT_SERVICE_CLIENT_SECRET below.
   environment.IAM_SERVICE_CLIENT_GATEWAY_SECRET_DIGEST = process.env.IAM_SERVICE_CLIENT_GATEWAY_SECRET_DIGEST
     ?? crypto.createHash('sha256').update(process.env.GATEWAY_AUDIT_SERVICE_CLIENT_SECRET ?? 'local-gateway-service-secret').digest('hex');
+  if (process.env.P1R_DIAG === '1') {
+    console.log('P1R-DIAG iam digest     =', environment.IAM_SERVICE_CLIENT_GATEWAY_SECRET_DIGEST);
+    console.log('P1R-DIAG iam digest len =', String(environment.IAM_SERVICE_CLIENT_GATEWAY_SECRET_DIGEST ?? '').length);
+  }
     environment.IAM_JWT_JWKS_URI = jwtJwks;
     environment.IAM_JWT_AUDIENCE = jwtAudience;
     environment.IAM_JWT_ALGORITHM = process.env.IAM_JWT_ALGORITHM ?? 'RS256';
@@ -213,6 +217,10 @@ function runtimeEnvironment(service, port) {
     environment.GATEWAY_AUDIT_SERVICE_TOKEN_URI = process.env.GATEWAY_AUDIT_SERVICE_TOKEN_URI ?? 'http://127.0.0.1:18087/internal/v1/iam/service-token';
     environment.GATEWAY_AUDIT_SERVICE_CLIENT_ID = process.env.GATEWAY_AUDIT_SERVICE_CLIENT_ID ?? 'api-gateway';
     environment.GATEWAY_AUDIT_SERVICE_CLIENT_SECRET = process.env.GATEWAY_AUDIT_SERVICE_CLIENT_SECRET ?? 'local-gateway-service-secret';
+    if (process.env.P1R_DIAG === '1') {
+      console.log('P1R-DIAG gateway secret =', environment.GATEWAY_AUDIT_SERVICE_CLIENT_SECRET);
+      console.log('P1R-DIAG gateway digest =', crypto.createHash('sha256').update(environment.GATEWAY_AUDIT_SERVICE_CLIENT_SECRET).digest('hex'));
+    }
   }
   const owner = ownerManifest.services.find((item) => item.id === service.id);
   const ownerUser = owner?.dbCredential;
