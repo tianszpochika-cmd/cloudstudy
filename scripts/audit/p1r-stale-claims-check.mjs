@@ -40,7 +40,9 @@ function documents() {
       if (entry.isDirectory()) { visit(absolute); continue; }
       if (!/\.(md|json|mjs|yaml|yml)$/u.test(entry.name)) continue;
       if (absolute.includes(`${path.sep}evidence${path.sep}`)) continue;
-      if (absolute === self || dated.has(entry.name)) continue;
+      // The test that proves this check can fail necessarily contains the strings it looks for, and so does this
+      // file. Excluding them is not a hole: neither is evidence about the task.
+      if (absolute === self || absolute.includes(`${path.sep}tests${path.sep}`) || dated.has(entry.name)) continue;
       found.push(absolute);
     }
   };

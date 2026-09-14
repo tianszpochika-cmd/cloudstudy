@@ -91,6 +91,29 @@ export function parseLedger(text) {
 
 export function validateStatusTrajectories({ root, tasks, checkGit = true }) {
   const errors = [];
+  // Evidence produced while tracked files were modified cannot be reconstructed from the revision it names, which
+  // is how a runtime-evidence file came to name a commit whose harness did not contain the text it had written. The
+  // harness has recorded the flag since then and nothing read it, so a dirty run still passed. It does not now.
+  {
+    const evidenceDirectories = [];
+    const collect = (directory) => {
+      if (!fs.existsSync(directory)) return;
+      for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
+        const absolute = path.join(directory, entry.name);
+        if (entry.isDirectory()) { collect(absolute); continue; }
+        if (!/^runtime-evidence.*\.json$/u.test(entry.name)) continue;
+        try {
+          const evidence = JSON.parse(fs.readFileSync(absolute, 'utf8'));
+          if (evidence.workingTreeDirty === true) {
+            errors.push(`${path.relative(root, absolute).replaceAll('\\', '/')}: produced while tracked files were modified (${evidence.sourceCommit ?? 'no revision'}), so the revision it names cannot rebuild it`);
+          }
+        } catch (unreadable) {
+          errors.push(`${path.relative(root, absolute).replaceAll('\\', '/')}: unreadable as evidence`);
+        }
+      }
+    };
+    collect(path.join(root, 'evidence', 'p1r'));
+  }
   const nonPlanned = tasks.filter((task) => task.status !== 'PLANNED');
   const trajectoryPath = path.join(root, 'requirements', 'backlog', 'v2-phase1-rebaseline', 'execution', 'status-trajectories.json');
   if (!fs.existsSync(trajectoryPath)) {
