@@ -2,9 +2,9 @@
   "schema": "m2.data-ownership.runtime-evidence.v1",
   "taskId": "P1R-M2-004",
   "result": "PARTIAL",
-  "sourceCommit": "7878f6348ab90f75d2ae139eaf9bcee31088a35a",
-  "startedAt": "2026-09-14T04:41:01.809Z",
-  "finishedAt": "2026-09-14T04:46:35.181Z",
+  "sourceCommit": "1c3e6d1c0bfb8580a03e25361f261434b82d6b7e",
+  "startedAt": "2026-09-14T05:51:52.308Z",
+  "finishedAt": "2026-09-14T05:57:29.124Z",
   "ownerCount": 14,
   "requirements": [
     {
@@ -1503,7 +1503,7 @@
       "increment": 1,
       "probeRemoved": true,
       "removeDetail": null,
-      "note": "an increment of exactly one shows the counter is sensitive to the write; the removal restores it and the thirteen counted tables are unchanged throughout",
+      "note": "an increment of exactly one shows the counter is sensitive to the write; the removal restores it and the counted tables are unchanged throughout",
       "id": "redis-loss:write-succeeds-with-redis-down",
       "result": "PASS"
     },

@@ -132,7 +132,7 @@ async function verifyRedisLossCannotAffectBusinessFacts(counters) {
       probeRemoved: removed.ok,
       removeDetail: removed.reason ?? null,
       note: 'an increment of exactly one shows the counter is sensitive to the write; the removal restores it '
-        + 'and the thirteen counted tables are unchanged throughout',
+        + 'and the counted tables are unchanged throughout',
     });
 }
 
@@ -663,9 +663,11 @@ function verifyGatedOwnerTests() {
 /**
  * Proves the reconcile runner refuses drift and recovers once it is repaired.
  *
- * This is the rollback and compensation evidence the ledger line for this task names. Compensation here is
- * the platform's own recovery path: a recorded checksum that no longer matches its migration is drift, and
- * the runner must stop rather than migrate on top of it. The corrupted value is restored in a finally block.
+ * This is migration-safety evidence. The rollback and compensation requirement named on the ledger line is owned
+ * by P1R-M2-006: this check performs no rollback, compensates no owner and writes none of the receipts that
+ * requirement names. An earlier version of this comment called the platform's own recovery path "compensation",
+ * which redefined the term the requirement uses and is how a drift check came to be reported as the evidence the
+ * ledger names.
  */
 async function verifyReconcileRefusesDriftAndRecovers() {
   const owner = ownership.serviceOwners.find((entry) => entry.service === 'learner-service');
@@ -799,7 +801,7 @@ requirements.push({ id: 'M2-004-FLYWAY-EMPTY-AND-EXISTING', status: requirementS
 requirements.push({ id: 'M2-004-ROLLBACK-COMPENSATION', status: requirementStatus('rollback:') });
 // The tenant guard is delivered here at the storage layer. The gated *TenantIsolationTest classes each run
 // against their own owner's schema on a real MySQL, write and read facts with a JdbcTemplate, and assert
-// that a foreign tenant's rows are not returned. Four of the ten instantiate no production class, so this
+// that a foreign tenant's rows are not returned. Nine of the ten instantiate a production class, so this
 // is evidence about schema-level isolation rather than about every service's request path. Only the
 // HTTP-level two-tenant negative is residual, and that is recorded as a gap rather than used to reassign
 // the requirement.

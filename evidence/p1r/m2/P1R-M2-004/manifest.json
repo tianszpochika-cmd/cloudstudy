@@ -2,7 +2,7 @@
   "taskId": "P1R-M2-004",
   "draftOnly": false,
   "canonicalTaskStatus": "REVIEW",
-  "sourceCommit": "6880df7fb1cfff5de98e7a1ac9e1f83e548475bc",
+  "sourceCommit": "1c3e6d1c0bfb8580a03e25361f261434b82d6b7e",
   "artifactDigests": [
     {
       "path": "config/p1r-data-ownership.v1.json",
@@ -67,7 +67,7 @@
     {
       "path": "scripts/runtime/p1r-m2-004-runtime.mjs",
       "algorithm": "sha256",
-      "digest": "afabce30ced145afaf75f1afae56511a10edff5179b914877294c3b03f374f44"
+      "digest": "41bf3dd30f0be734a4d87f4b6c38684b0a7bb13bf89008a48e59f51ecf6617b7"
     },
     {
       "path": "services/audit-service/src/main/resources/db/migration/V2__widen_audit_schema_version.sql",
@@ -292,7 +292,7 @@
     {
       "path": "evidence/p1r/m2/P1R-M2-004/runtime-evidence-2026-09-13.json",
       "algorithm": "sha256",
-      "digest": "fa48e93352143142bcaebccbe721d09a071e2dc310709c8bbb37bf1ea97d1180"
+      "digest": "4ba92a4a70ee75a0af67d1d22c470581452c107fefd16ccc3c6904fd549679ba"
     },
     {
       "path": "evidence/p1r/m2/P1R-M2-004/gated-db-tests.json",
@@ -320,8 +320,8 @@
     "branch": "dev",
     "phaseStatus": "D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED",
     "runtimeStatus": "M2_004_PARTIAL_RUNTIME_VERIFIED",
-    "reviewedRevision": "7878f6348ab90f75d2ae139eaf9bcee31088a35a",
-    "measuredAt": "2026-09-14T04:46:35.181Z",
+    "reviewedRevision": "1c3e6d1c0bfb8580a03e25361f261434b82d6b7e",
+    "measuredAt": "2026-09-14T05:57:29.124Z",
     "toolchain": {
       "java": "OpenJDK 25.0.4.1",
       "maven": "3.9.12",
@@ -475,7 +475,7 @@
     ]
   },
   "startedAt": "2026-09-09T00:00:00+08:00",
-  "finishedAt": "2026-09-14T05:24:31.012Z",
+  "finishedAt": "2026-09-14T05:57:30.133Z",
   "actors": [
     "root-coordinator",
     "p1r-implementation"
