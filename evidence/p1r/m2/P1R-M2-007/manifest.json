@@ -1,7 +1,7 @@
 {
   "taskId": "P1R-M2-007",
   "draftOnly": false,
-  "canonicalTaskStatus": "DEV_DONE",
+  "canonicalTaskStatus": "BLOCKED",
   "sourceCommit": "a5813d0579f77598c11cc75c72e04f4545b77eb2",
   "artifactDigests": [
     {
@@ -251,7 +251,9 @@
       "details": "This task adds a harness and bounds one shutdown timeout. Reverting either is additive-in-reverse: the harness is a script and the timeout is a value in a configuration file that a revert restores."
     }
   ],
-  "blockers": [],
+  "blockers": [
+    "M2-006 is not finished: the workflow service it delivers does not start. Every task that depends on it goes back to waiting, which is what the dependency rule is for."
+  ],
   "knownGaps": [
     "2 of 9 tables whose name contains \"receipt\" have no event_id column and are therefore not read by the event half of the check (notification_service.offline_sync_receipt, workflow_service.workflow_receipt). The three that are read all hold as many distinct event ids as rows, so the property holds where it can be measured; the rest is unmeasured rather than passing.",
     "The correlation check runs against the local stack. Nothing here exercises a distributed trace across process boundaries beyond the request id, because no collector is running.",
@@ -259,9 +261,9 @@
     "core-api, the v1 compatibility module, shuts down gracefully without bounding it. It is named in the observation and excluded from the check, which is about the v2 services."
   ],
   "reviewer": "agent:p1r_implementation:deepseek-harness",
-  "decision": "DEV_DONE",
+  "decision": "BLOCKED",
   "nextSteps": [
     "Acceptance testing by the owner, which is what DEV_DONE defers."
   ],
-  "statusNote": "Development finished and the evidence is in the repository. The correlation spine and the process lifecycle were measured against the running stack: ten checks, all passing, including a request id reaching the audit fact and three receipt tables holding as many distinct event ids as rows. Not independently verified, which is what DEV_DONE says and ACCEPTED would not."
+  "statusNote": "M2-006 is not finished: the workflow service it delivers does not start. Every task that depends on it goes back to waiting, which is what the dependency rule is for."
 }
