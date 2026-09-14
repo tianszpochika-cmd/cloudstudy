@@ -713,10 +713,12 @@ requirements.push({
     ? 'VERIFIED' : 'FAILED',
 });
 requirements.push({ id: 'M2-004-FLYWAY-EMPTY-AND-EXISTING', status: requirementStatus('migration-') });
-// The tenant guard is delivered here at the database and service layer: the gated
-// *TenantIsolationTest classes write each owner's facts through the owner's own repository and
-// assert that a foreign tenant is refused. Only the HTTP-level two-tenant negative is residual, and
-// that is recorded as a gap rather than used to reassign the requirement.
+// The tenant guard is delivered here at the storage layer. The gated *TenantIsolationTest classes each run
+// against their own owner's schema on a real MySQL, write and read facts with a JdbcTemplate, and assert
+// that a foreign tenant's rows are not returned. Four of the ten instantiate no production class, so this
+// is evidence about schema-level isolation rather than about every service's request path. Only the
+// HTTP-level two-tenant negative is residual, and that is recorded as a gap rather than used to reassign
+// the requirement.
 requirements.push({ id: 'M2-004-TENANT-GUARD', status: requirementStatus('tenant-isolation:') });
 requirements.push({ id: 'M2-004-FLYWAY-OWNER-COVERAGE', status: requirementStatus('flyway-coverage:') });
 // Declared owners that have no runtime yet are excluded rather than reported as failures; the
