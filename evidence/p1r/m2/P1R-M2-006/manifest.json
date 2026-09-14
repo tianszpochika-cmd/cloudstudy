@@ -1,8 +1,8 @@
 {
   "taskId": "P1R-M2-006",
   "draftOnly": false,
-  "canonicalTaskStatus": "IN_PROGRESS",
-  "sourceCommit": "dff758f443bd5e840ae6822e9b7b695f7a59c137",
+  "canonicalTaskStatus": "DEV_DONE",
+  "sourceCommit": "203338a94141769a1b5322d72146219a3a1d1b07",
   "artifactDigests": [
     {
       "path": "services/workflow-service/src/main/java/com/englishflow/workflow/domain/SagaStateMachine.java",
@@ -110,10 +110,10 @@
     "originalReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationTask": "P1R-M2-006",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
-    "currentSourceRevalidationRuntimeStatus": "FAILED_TO_START",
-    "currentSourceRevalidationFinishedAt": "2026-09-14T18:11:42.495Z",
-    "currentSourceRevalidationAuditedImplementationSource": "dff758f443bd5e840ae6822e9b7b695f7a59c137",
-    "currentSourceRevalidationIntegrationCheckpoint": "dff758f443bd5e840ae6822e9b7b695f7a59c137",
+    "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
+    "currentSourceRevalidationFinishedAt": "2026-09-14T18:24:59.474Z",
+    "currentSourceRevalidationAuditedImplementationSource": "203338a94141769a1b5322d72146219a3a1d1b07",
+    "currentSourceRevalidationIntegrationCheckpoint": "203338a94141769a1b5322d72146219a3a1d1b07",
     "previousCurrentSourceCommit": "b0065289f2f0871d2dbf79ecd23332ceb7f83109",
     "currentSourceRevalidationHistory": [
       {
@@ -184,8 +184,8 @@
     },
     {
       "check": "manual-recovery-two-person",
-      "status": "FAIL",
-      "details": "The domain rule and its tests pass, but the controller that exposes it cannot be constructed: the service has no bean of the type its constructor requires, so nothing can reach this behaviour in a running process."
+      "status": "PASS",
+      "details": "The domain rule refuses a self-approval and refuses re-approving a decided request, its tests pass, and since the wiring was added the controller that exposes it is constructed in a running process and the recoveries are persisted in workflow_service.manual_recovery_request."
     },
     {
       "check": "job-lease-arbitrated-by-database",
@@ -201,6 +201,11 @@
       "check": "gateway-audit-ingest-end-to-end",
       "status": "PASS",
       "details": "The probe reports 8 of 8 assertions passing against the running stack: the gateway refuses the request, the caller gets a correlation id, exactly one fact and one receipt are stored, the schema identifier is stored whole, the action attributes it to the gateway, the request id matches, and the envelope carries no credential material."
+    },
+    {
+      "check": "the-service-starts-and-reaches-its-schema",
+      "status": "PASS",
+      "details": "Started with the local real stack: Tomcat on 18071, HikariPool-1 added a MySQL connection and completed. It had never been run before, and this is the check that was missing from every earlier version of this evidence."
     }
   ],
   "rollbackEvidence": [
@@ -211,17 +216,17 @@
   ],
   "blockers": [],
   "knownGaps": [
-    "The service does not start. ManualRecoveryController requires a bean of type com.englishflow.workflow.application.ManualRecoveryService and none is defined, so the application context fails and the process exits with code 1. This was found the first time the service was ever run: it was delivered on the strength of its unit and integration tests, and the runner had never been given it to start because it was missing from config/v2-runtime-services.json.",
+    "Compensation records a receipt and logs that it does not reach the owning service: there is no transport for asking another service to undo a step, so a compensation is recorded as attempted rather than performed. This is the largest remaining gap in this task and it is visible in the code, not only here.",
     "The gateway's bounded in-memory sink remains the default when the durable settings are absent: gateway.audit.ingest-uri and its three companions are empty unless the environment supplies them, so a deployment that has not opted in keeps the old behaviour.",
     "The service client's secret is a local development value in the runner. A deployment needs it injected, and the rotation the ADR names is not implemented.",
     "The audit ingest accepts a service token type now, but nothing yet limits which service may claim audit.ingest beyond the permissions the client is granted at configuration time.",
     "The workflow service is not in the owner manifest, so its schema and credentials come from the same local scripts as the platform services rather than from a per-service migration path."
   ],
   "reviewer": "awaiting-independent-reviewer",
-  "decision": "IN_PROGRESS",
+  "decision": "DEV_DONE",
   "nextSteps": [
     "Acceptance testing by the owner, which is what DEV_DONE defers."
   ],
-  "statusNote": "Not finished. The service does not start. ManualRecoveryController requires a bean of type com.englishflow.workflow.application.ManualRecoveryService and none is defined, so the application context fails and the process exits with code 1. This was found the first time the service was ever run: it was delivered on the strength of its unit and integration tests, and the runner had never been given it to start because it was missing from config/v2-runtime-services.json. The saga domain rules, the compensation executor, the outbox and the audit path are all tested and the audit path is verified end to end, but the service that carries them cannot be started, so DEV_DONE would say something untrue.",
+  "statusNote": "Development finished and the evidence is in the repository. The service now starts: it had never been run, and starting it for the first time showed four missing pieces — a RecoveryStore implementation, a wiring configuration, a Spring DataSource and a runner branch that was nested inside another service's. With those in place it boots, connects to MySQL through Hikari and answers on 18071, the suite is 51 tests with no failures, and the audit path from the gateway through IAM to the canonical ingest reports eight of eight. Not independently verified, which DEV_DONE says and ACCEPTED would not.",
   "schema": "platform.p1r-task-evidence.v1"
 }
