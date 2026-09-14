@@ -66,7 +66,7 @@ manifest 的 `results`：**9 PASS + 3 NOT_APPLICABLE**。下面这张表的数�
 | 文件 | 实现者的改动 | 风险 |
 |---|---|---|
 | **`scripts/database/reconcile-owner-schemas.mjs`** | **迁移运行器从"比对表集合"改为真实版本追踪**（`p1r_schema_history` + checksum 校验 + 首跑基线化） | ⚠️ 这是**所有已接受任务共用的迁移执行器**。原实现会在表集合不变时**静默跳过 ALTER-only 迁移**（audit 的 `schema_version` 列宽缺陷正是这样进入运行栈的）。请确认新逻辑对**既有 12 个 schema 的基线化**是准确的、且 checksum 校验确实能拦住"已应用的迁移被改写" |
-| **`config/p1r-m2-requirement-owners.v1.json`**（新增） | 4 项要求判为 `NOT_APPLICABLE` | ⚠️ 直接决定本次提交能否通过，见上节 |
+| **`config/p1r-m2-requirement-owners.v1.json`**（新增） | 3 项要求判为 `NOT_APPLICABLE` | ⚠️ 直接决定本次提交能否通过，见上节 |
 | `scripts/runtime/p1r-m2-004-runtime.mjs`、`p1r-m2-005-event-runtime.mjs`、`verify-content-consumer-dedupe.mjs`、`provision-kafka-topics.mjs`、`replay-dlq.mjs` | 实现者**自己编写**的证据产出脚本 | 脚本通过 ≠ 系统正确。建议对至少一项独立复算（如直接查库/查 topic 比对证据文件） |
 | `scripts/runtime/run-v2-services.mjs` | 为 content-service 打开 relay 与 consumer | 确认默认关闭的语义未被削弱（未配置 broker 时不得静默改变投递语义） |
 | `scripts/database/reconcile-redis-acl.mjs` | `svc_adminops` → `svc_admin_ops` | 确认改名后没有服务仍引用旧名 |
