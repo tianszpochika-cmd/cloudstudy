@@ -2,7 +2,7 @@
   "taskId": "P1R-M0-003",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "123eb6ff540a4949f9bfec7d4a62c7bb0607f5c3",
+  "sourceCommit": "2a5a54d791250fb77b9d9e24a1d9449111d74065",
   "artifactDigests": [
     {
       "path": "config/toolchain-baseline.json",
@@ -70,14 +70,14 @@
   "reviewer": "root-coordinator",
   "decision": "ACCEPTED",
   "provenance": {
-    "previousCurrentSourceCommit": "0cb0d5cda334c99ca8bf5bfb9bc1d0e41b224823",
+    "previousCurrentSourceCommit": "123eb6ff540a4949f9bfec7d4a62c7bb0607f5c3",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
     "currentSourceRevalidationTask": "P1R-M0-003",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-14T23:52:06.640Z",
-    "currentSourceRevalidationAuditedImplementationSource": "123eb6ff540a4949f9bfec7d4a62c7bb0607f5c3",
-    "currentSourceRevalidationIntegrationCheckpoint": "123eb6ff540a4949f9bfec7d4a62c7bb0607f5c3",
+    "currentSourceRevalidationFinishedAt": "2026-09-14T23:58:02.390Z",
+    "currentSourceRevalidationAuditedImplementationSource": "2a5a54d791250fb77b9d9e24a1d9449111d74065",
+    "currentSourceRevalidationIntegrationCheckpoint": "2a5a54d791250fb77b9d9e24a1d9449111d74065",
     "originalSourceCommit": "0f8b60ae4e83d0f31d891eed8d9383c007485130",
     "currentSourceRevalidationHistory": [
       {
@@ -229,6 +229,16 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-14T23:52:06.640Z",
         "details": "Rebind after M2-007 was delivered."
+      },
+      {
+        "taskId": "P1R-M0-003",
+        "sourceCommit": "2a5a54d791250fb77b9d9e24a1d9449111d74065",
+        "auditedImplementationSource": "2a5a54d791250fb77b9d9e24a1d9449111d74065",
+        "integrationCheckpoint": "2a5a54d791250fb77b9d9e24a1d9449111d74065",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-14T23:58:02.390Z",
+        "details": "Rebind after M2-008 was delivered."
       }
     ],
     "previousCurrentSourceRevalidationTask": "P1R-M2-004",
