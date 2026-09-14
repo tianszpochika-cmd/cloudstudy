@@ -285,6 +285,25 @@ export function validateManifest({ root, task, manifest, manifestPath, checkGit 
           `${task.id}: ${result.check} names ownerTask ${result.ownerTask} where config says ${owned}`);
       }
     }
+    // Every requirement this task asserts has to appear. Checking only the entries that are present lets a
+    // result be deleted instead of corrected, which is a way to pass by removing the evidence: the review
+    // tested exactly that and the gate said nothing.
+    const asserted = (ownership.requirements ?? []).filter((entry) => entry.assertedBy === task.id);
+    const present = new Set(manifest.results
+      .filter((result) => isRecord(result) && typeof result.check === 'string')
+      .map((result) => result.check));
+    const absent = asserted.map((entry) => entry.id).filter((id) => !present.has(id));
+    add(errors, absent.length === 0,
+      `${task.id}: manifest.results omits requirements this task asserts: ${absent.join(', ')}`);
+    // The ownership file decides who owns what, so a task that asserts requirements in it has to record it as
+    // an artifact: a change to the file then shows up as a digest change rather than passing unnoticed. It
+    // does not prove the manifest was generated, but it does mean the assignment a reader relies on is the
+    // one that was reviewed. Only the tasks that appear in the file are held to it.
+    if (asserted.length > 0) {
+      const digestPaths = new Set((manifest.artifactDigests ?? []).map((entry) => isRecord(entry) ? entry.path : undefined));
+      add(errors, digestPaths.has('config/p1r-m2-requirement-owners.v1.json'),
+        `${task.id}: artifactDigests must record config/p1r-m2-requirement-owners.v1.json, which decides ownership of the requirements it asserts`);
+    }
   }
 
   if (task.status === 'REVIEW') {
