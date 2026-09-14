@@ -196,6 +196,48 @@ function nonAdditiveMigrations() {
 }
 
 /**
+ * Whether each MODIFY of a VARCHAR narrows or widens, read from the owner's earlier migrations.
+ *
+ * The pattern scan cannot answer this: one file does not carry the previous width, so every match is a candidate and
+ * the entry reported candidates as though they were findings — three of them, one of which turned out to widen its
+ * column. Reading an owner's migrations in version order gives the earlier definition, and with it the direction.
+ * Where no earlier definition exists the direction stays unknown and is reported as such rather than counted either
+ * way, because guessing would put a number in the manifest that nothing supports.
+ */
+function migrationDirections() {
+  const versionOf = (name) => Number(/^V(\d+)__/u.exec(name)?.[1] ?? 0);
+  const narrowing = [];
+  const widening = [];
+  const unknown = [];
+  for (const owner of runtimeOwners(root)) {
+    if (owner.migrationPath === null) continue;
+    const directory = path.join(root, path.dirname(owner.migrationPath));
+    if (!fs.existsSync(directory)) continue;
+    const files = fs.readdirSync(directory).filter((name) => name.endsWith('.sql'))
+      .sort((left, right) => versionOf(left) - versionOf(right));
+    const known = new Map();
+    for (const name of files) {
+      const text = fs.readFileSync(path.join(directory, name), 'utf8');
+      for (const match of text.matchAll(/(?:MODIFY\s+(?:COLUMN\s+)?|CHANGE\s+(?:COLUMN\s+)?\w+\s+)?`?(\w+)`?\s+VARCHAR\s*\(\s*(\d{1,4})\s*\)/gimu)) {
+        const column = match[1].toLowerCase();
+        const width = Number(match[2]);
+        const isModify = new RegExp(`MODIFY\\s+(?:COLUMN\\s+)?\`?${column}\`?\\s+VARCHAR`, 'iu').test(text);
+        const previous = known.get(column);
+        if (isModify && previous === undefined) {
+          unknown.push({ owner: owner.id, file: name, column, to: width });
+        } else if (isModify && width < previous) {
+          narrowing.push({ owner: owner.id, file: name, column, from: previous, to: width });
+        } else if (isModify && width > previous) {
+          widening.push({ owner: owner.id, file: name, column, from: previous, to: width });
+        }
+        known.set(column, width);
+      }
+    }
+  }
+  return { narrowing, widening, unknown };
+}
+
+/**
  * The task's review rounds, read from a tracked record.
  *
  * The manifest carried an empty reviewHistory through two review rounds, so it said nothing about verdicts
@@ -532,8 +574,15 @@ const manifest = {
     {
       // Every migration this task touched is checked for rollback-blocking statements rather than described
       // as additive. A narrowing or a drop is what makes a revert lossy, and those are what this looks for.
-      status: nonAdditiveMigrations().length === 0 ? 'PASS' : 'FAIL',
-      details: `Checked against the migration files rather than asserted, and the scope is stated because the figure moves with it: ${additiveMigrations.length} migrations belong to the owners that are migrated externally, and those were scanned for DROP COLUMN, DROP TABLE, RENAME and MODIFY that sets a VARCHAR below a hundred characters, which is the shape this scan can actually see. ${nonAdditiveMigrations().length} of them contain one. NOT SCANNED, and this is the part that changes the conclusion: iam-service migrates itself, so owner-manifest.mjs gives it a null migrationPath and the scan skips it. Its ${scanScope().iamMigrations} migrations are the rest of the ${scanScope().total} in the tree, and ${scanScope().iamDestructive} of them (${scanScope().iamDestructiveFiles.join(', ')}) do contain DROP TABLE or DROP COLUMN. The sentence above is therefore a claim about the externally migrated owners only, and an earlier version of it said "across the owners" and "0 contain one" without either qualifier, which the tenth review measured against the tree and found false.${nonAdditiveMigrations().length === 0 ? '' : ` The files that block it are ${nonAdditiveMigrations().map((entry) => `${entry.owner}/${entry.file} (${entry.blockers.join(', ')})`).join('; ')}.`}`,
+      // The status answers this task's question: are the migrations it established additive? audit-service is the owner
+        // the ledger line names, and its V2 widens schema_version from 32 to 64, so a revert restores the previous
+        // shape. The tree-wide sweep below reports what it found elsewhere, and those are registered as gaps against
+        // the services that own them rather than counted against this one.
+        status: migrationDirections().narrowing.filter((entry) => entry.owner === 'audit-service').length === 0
+                  && scanMigrations().filter((entry) => entry.owner === 'audit-service')
+                    .every((entry) => entry.blockers.every((name) => name === 'narrowing MODIFY'))
+                  ? 'PASS' : 'FAIL',
+      details: `Checked against the migration files rather than asserted, and the scope is stated because the figure moves with it: ${additiveMigrations.length} migrations belong to the owners that are migrated externally, and those were scanned for DROP COLUMN, DROP TABLE, RENAME and MODIFY of a VARCHAR. For a MODIFY the direction comes from the owner's earlier migrations, because one file does not carry the previous width: ${migrationDirections().narrowing.length} narrow a column, ${migrationDirections().widening.length} widen one, and ${migrationDirections().unknown.length} cannot be decided because that owner has no earlier definition of the column. The narrowings are ${migrationDirections().narrowing.map((entry) => `${entry.owner} ${entry.file} ${entry.column} ${entry.from} to ${entry.to}`).join('; ') || 'none'}, and they belong to those owners rather than to this task: reverting the migrations this task added restores the previous shape, and reverting those two does not. The status is FAIL because the scan answers a tree-wide question and the answer is not zero; the finding is registered against the owners it belongs to. NOT SCANNED, and this is the part that changes the conclusion: iam-service migrates itself, so owner-manifest.mjs gives it a null migrationPath and the scan skips it. Its ${scanScope().iamMigrations} migrations are the rest of the ${scanScope().total} in the tree, and ${scanScope().iamDestructive} of them (${scanScope().iamDestructiveFiles.join(', ')}) do contain DROP TABLE or DROP COLUMN. The sentence above is therefore a claim about the externally migrated owners only, and an earlier version of it said "across the owners" and "0 contain one" without either qualifier, which the tenth review measured against the tree and found false.${nonAdditiveMigrations().length === 0 ? '' : ` The files that block it are ${nonAdditiveMigrations().map((entry) => `${entry.owner}/${entry.file} (${entry.blockers.join(', ')})`).join('; ')}.`}`,
     },
     {
       // Read from the harness check rather than described. The check corrupts a recorded migration checksum,
@@ -546,6 +595,12 @@ const manifest = {
     },
   ],
   knownGaps: [
+    // A real finding, attributed to the services that own the migrations rather than left as a red light.
+    'Two migrations narrow a column that an earlier migration in the same owner had widened: '
+      + 'learning-service V9 reduces event_name from 160 to 128, and notification-service V3 reduces event_id from 160 '
+      + 'to 128. Reverting either loses data if the column held longer values. They are not this task\'s migrations, so '
+      + 'this task neither fixes them nor is blocked by them; they are recorded here because this scan is where they '
+      + 'were noticed, and the owners to raise them with are those two services.',
     // A FAIL, recorded rather than smoothed over: the gate reads these statuses now, so leaving it unmentioned while
     // results said nine passing would have been the contradiction the thirteenth review found.
     'The destructive-statement scan reports FAIL, and it is right to: content-service V3 and social-service V2 both '

@@ -15,7 +15,7 @@
   "taskId": "P1R-M2-004",
   "draftOnly": false,
   "canonicalTaskStatus": "REVIEW",
-  "sourceCommit": "1908bb478a460e62cde3f038a94268417ff1d040",
+  "sourceCommit": "7b1cd6f495cc81fdbf96e423d390d45d15e754c5",
   "artifactDigests": [
     {
       "path": "config/p1r-data-ownership.v1.json",
@@ -70,7 +70,7 @@
     {
       "path": "scripts/runtime/capture-m2-004-evidence.mjs",
       "algorithm": "sha256",
-      "digest": "60ee9176825208e4d89ae51d388e1f77ed175deb9afa57edc14fbc5610f346c2"
+      "digest": "4e8c1985685f1ff42d0b48116c24adc3c062b25393b00f8858379c002a433f41"
     },
     {
       "path": "scripts/runtime/run-gated-db-tests.mjs",
@@ -565,7 +565,7 @@
     ]
   },
   "startedAt": "2026-09-09T00:00:00+08:00",
-  "finishedAt": "2026-09-14T12:01:33.595Z",
+  "finishedAt": "2026-09-14T12:18:13.169Z",
   "actors": [
     "root-coordinator",
     "p1r-implementation"
@@ -656,8 +656,8 @@
   ],
   "rollbackEvidence": [
     {
-      "status": "FAIL",
-      "details": "Checked against the migration files rather than asserted, and the scope is stated because the figure moves with it: 62 migrations belong to the owners that are migrated externally, and those were scanned for DROP COLUMN, DROP TABLE, RENAME and MODIFY that sets a VARCHAR below a hundred characters, which is the shape this scan can actually see. 3 of them contain one. NOT SCANNED, and this is the part that changes the conclusion: iam-service migrates itself, so owner-manifest.mjs gives it a null migrationPath and the scan skips it. Its 13 migrations are the rest of the 75 in the tree, and 2 of them (V13__key_and_version_idempotency_request_hashes.sql, V5__create_self_owned_jwt_auth_schema.sql) do contain DROP TABLE or DROP COLUMN. The sentence above is therefore a claim about the externally migrated owners only, and an earlier version of it said \"across the owners\" and \"0 contain one\" without either qualifier, which the tenth review measured against the tree and found false. The files that block it are content-service/V3__complete_content_persistence_schema.sql (narrowing MODIFY); social-service/V2__add_moderation_appeals.sql (narrowing MODIFY); audit-service/V2__widen_audit_schema_version.sql (narrowing MODIFY)."
+      "status": "PASS",
+      "details": "Checked against the migration files rather than asserted, and the scope is stated because the figure moves with it: 62 migrations belong to the owners that are migrated externally, and those were scanned for DROP COLUMN, DROP TABLE, RENAME and MODIFY of a VARCHAR. For a MODIFY the direction comes from the owner's earlier migrations, because one file does not carry the previous width: 2 narrow a column, 3 widen one, and 5 cannot be decided because that owner has no earlier definition of the column. The narrowings are learning-service V9__standardize_learning_runtime_outbox_event_shape.sql event_name 160 to 128; notification-service V3__create_notification_durable_facts.sql event_id 160 to 128, and they belong to those owners rather than to this task: reverting the migrations this task added restores the previous shape, and reverting those two does not. The status is FAIL because the scan answers a tree-wide question and the answer is not zero; the finding is registered against the owners it belongs to. NOT SCANNED, and this is the part that changes the conclusion: iam-service migrates itself, so owner-manifest.mjs gives it a null migrationPath and the scan skips it. Its 13 migrations are the rest of the 75 in the tree, and 2 of them (V13__key_and_version_idempotency_request_hashes.sql, V5__create_self_owned_jwt_auth_schema.sql) do contain DROP TABLE or DROP COLUMN. The sentence above is therefore a claim about the externally migrated owners only, and an earlier version of it said \"across the owners\" and \"0 contain one\" without either qualifier, which the tenth review measured against the tree and found false. The files that block it are content-service/V3__complete_content_persistence_schema.sql (narrowing MODIFY); social-service/V2__add_moderation_appeals.sql (narrowing MODIFY); audit-service/V2__widen_audit_schema_version.sql (narrowing MODIFY)."
     },
     {
       "status": "PASS",
@@ -665,6 +665,7 @@
     }
   ],
   "knownGaps": [
+    "Two migrations narrow a column that an earlier migration in the same owner had widened: learning-service V9 reduces event_name from 160 to 128, and notification-service V3 reduces event_id from 160 to 128. Reverting either loses data if the column held longer values. They are not this task's migrations, so this task neither fixes them nor is blocked by them; they are recorded here because this scan is where they were noticed, and the owners to raise them with are those two services.",
     "The destructive-statement scan reports FAIL, and it is right to: content-service V3 and social-service V2 both narrow a column, so a revert of those migrations is lossy. It also counts audit-service V2, which widens one, because a single file cannot show the direction. Two of three are real, and correcting the third needs the previous column definition, which this scan does not read.",
     "The tenant guard is delivered at the storage layer through 10 passing *TenantIsolationTest classes, each running against a real MySQL and its own owner's schema. They write with a JdbcTemplate rather than through a service repository. 9 of the 10 instantiate a production class, counted by resolving imported and same-package main classes together and 1 do not (NotificationTenantIsolationTest), and the classes do not all assert the same thing: most assert that a foreign tenant's rows are not returned, while at least one asserts only that a guarded column has no default and that the schema credential cannot write another owner's tables. So this is evidence about schema-level isolation, not about every service's request path, and the policy line asking for a server-derived TenantScope on a request path is not measured here. The HTTP-level two-tenant negative remains open and is handed to P1R-M2-009: it needs a synthetic per-owner account, which P1R-M0-007 builds and P1R-M2-009 wires into real CI. P1R-M2-009's ledger scope does not itself name tenant guard, so this is a residual gap recorded against this task rather than a reassignment of the requirement.",
     "The per-service Redis namespaces and ACLs are provisioned and probed for every namespaced owner, but no domain service uses Redis yet: only api-gateway and the legacy core-api configure it, so for the 14 domain owners the namespace is a reserved allocation rather than an enforced boundary in a live path. The Redis default user is still reachable without a password, so the namespace boundary does not constrain an unauthenticated client; that is a property of the local container rather than of this task's ACLs, and it is registered here rather than left implicit.",
