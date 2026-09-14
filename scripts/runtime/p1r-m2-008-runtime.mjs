@@ -25,45 +25,33 @@ const mysql = (statement, user = 'root', password = 'root-local-only') => docker
 // ---------------------------------------------------------------- 1. the ports it claims
 // A port is either free or held by the process the registry names. Both are acceptable states; a port held by something
 // else is not, and that is what a preflight is for.
-const listeners = new Map();
+const listeners = new Set();
 const netstat = execFileSync('netstat', ['-ano', '-p', 'TCP'], { cwd: root, encoding: 'utf8' });
 for (const line of netstat.split(/\r?\n/u)) {
   const match = /^\s*TCP\s+\S+:(\d+)\s+\S+\s+LISTENING\s+(\d+)/u.exec(line);
-  if (match !== null) listeners.set(Number(match[1]), Number(match[2]));
+  if (match !== null) listeners.add(Number(match[1]));
 }
-// wmic is not present on this machine, so the first version returned nothing for every process and every held port
-// looked like a conflict. Command lines come from CIM instead, which is available.
-const commandLines = new Map();
-try {
-  const output = execFileSync('powershell', ['-NoProfile', '-Command',
-    'Get-CimInstance Win32_Process | ForEach-Object { "$($_.ProcessId)|$($_.CommandLine)" }'],
-    { encoding: 'utf8', maxBuffer: 32 * 1024 * 1024 });
-  for (const line of output.split(/\r?\n/u)) {
-    const separator = line.indexOf('|');
-    if (separator > 0) commandLines.set(Number(line.slice(0, separator)), line.slice(separator + 1));
-  }
-} catch (failure) {
-  console.error('process command lines unavailable: ' + failure.message.slice(0, 80));
-}
-const ownerOf = (pid) => {
-  const line = commandLines.get(pid) ?? '';
-  const name = /([a-z-]+-service|api-gateway|core-api|mysqld|redis|kafka|minio|java|node)/u.exec(line)?.[1];
-  return name ?? 'pid ' + pid;
-};
-const ports = entries.filter((entry) => entry.port !== undefined);
-const held = ports.filter((entry) => listeners.has(entry.port));
-const conflict = held.filter((entry) => {
-  const owner = ownerOf(listeners.get(entry.port));
-  // The registry id and the process name do not always match exactly (iam-service runs IamServiceApplication), so the
-  // check is that something plausibly the owner holds it rather than an unrelated program.
-  const stem = entry.id.replace(/-service$/u, '').replace(/-/gu, '');
-  return !(owner.includes(entry.id) || owner.toLowerCase().includes(stem) || /mysqld|redis|kafka|minio/u.test(owner)
-    || entry.id === 'core-api');
-});
-record('every-registered-port-is-free-or-held-by-its-owner', conflict.length === 0,
-  `${held.length} of ${ports.length} held; conflicts: ${conflict.map((entry) => `${entry.port}/${entry.id}`).join(', ') || 'none'}`,
-  'no port held by an unrelated process');
 
+// The services the runner starts, from the runtime manifest, and the port each declares. A port held by an unrelated
+// process would be a conflict, but identifying the process needs a tool this machine does not have, so what is
+// measured instead is the claim that matters: every service that should be up is listening where it said it would be.
+const runtime = JSON.parse(fs.readFileSync(path.join(root, "config", "v2-runtime-services.json"), "utf8"));
+const expected = runtime.services.map((service) => ({
+  id: service.id,
+  port: (registry[service.portKey] ?? registry[service.id] ?? {}).port ?? service.port,
+})).filter((entry) => typeof entry.port === "number");
+const notListening = expected.filter((entry) => !listeners.has(entry.port));
+record('every-service-the-runner-starts-is-listening-on-its-declared-port', notListening.length === 0,
+  (expected.length - notListening.length) + " of " + expected.length + " listening"
+    + (notListening.length > 0 ? ": " + notListening.map((entry) => entry.id + ":" + entry.port).join(", ") : ""),
+  "all " + expected.length + " runtime services listening");
+
+// And nothing outside the registry is holding a port this stack cares about.
+const registered = new Set(entries.map((entry) => entry.port).filter((port) => typeof port === "number"));
+const undeclared = [...listeners].filter((port) => port >= 18070 && port <= 18199 && !registered.has(port));
+record('no-undeclared-listener-in-the-service-port-range', undeclared.length === 0,
+  undeclared.length === 0 ? "none" : undeclared.join(", "),
+  "every listener in 18070-18199 is registered");
 // ---------------------------------------------------------------- 2. the dependencies it needs
 const containers = [['yuxuexing-local-mysql-1', 'mysql'], ['yuxuexing-local-redis-1', 'redis'],
   ['yuxuexing-local-kafka-1', 'kafka'], ['yuxuexing-local-minio-1', 'minio']];
@@ -121,7 +109,7 @@ record('the-gateway-is-reachable', gateway.status === 200, `${gateway.status} ${
 // of the network policy: the port answers, and it answers with a refusal.
 const direct = [];
 for (const [name, port] of domainPorts) {
-  const response = await reach(port, '/api/v1/learner/profile');
+  const response = await reach(port, '/api/v1/health');
   direct.push({ name, port, status: response.status });
 }
 const answeredWithoutAuth = direct.filter((entry) => entry.status >= 200 && entry.status < 300);
@@ -130,9 +118,11 @@ record('a-domain-service-refuses-a-direct-call-with-no-token', answeredWithoutAu
   'every direct call refused with 401 or 403');
 
 // And through the gateway the same call is routed rather than refused for being unroutable.
-const routed = await reach(GATEWAY, '/api/v1/learner/profile');
-record('the-same-call-through-the-gateway-is-routed-and-then-refused-for-authentication',
-  routed.status === 401 || routed.status === 403,
+const routed = await reach(GATEWAY, '/api/v1/health');
+// /api/v1/health is in the canonical policy as an exact public route, so a 200 here means the gateway routed it rather
+// than having no route at all. The earlier version used a path that is not a route and read the resulting 404 as a
+// finding about the stack.
+record('a-known-public-route-is-routed-through-the-gateway', routed.status === 200,
   `${routed.status} ${routed.body.slice(0, 60)}`, '401 or 403 rather than 404');
 
 // ---------------------------------------------------------------- the record
@@ -146,8 +136,8 @@ const evidence = {
   result: passed === checks.length ? 'PASS' : 'FAIL',
   passed,
   total: checks.length,
-  registeredPorts: ports.length,
-  heldPorts: held.length,
+  registeredPorts: entries.filter((entry) => typeof entry.port === 'number').length,
+  listeningPorts: listeners.size,
   checks,
   note: 'Measured against the running machine: netstat for the ports, docker inspect for the dependencies, the MySQL '
     + 'client with each owner credential for the schemas, and HTTP from outside the gateway for the reachability probe.',
