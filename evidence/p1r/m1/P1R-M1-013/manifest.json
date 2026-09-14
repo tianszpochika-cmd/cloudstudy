@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-013",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "dff758f443bd5e840ae6822e9b7b695f7a59c137",
+  "sourceCommit": "0cb0d5cda334c99ca8bf5bfb9bc1d0e41b224823",
   "artifactDigests": [
     {
       "path": "config/b26-event-runtime.json",
@@ -724,18 +724,28 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-14T18:11:41.057Z",
         "details": "Rebind after the status cascade."
+      },
+      {
+        "taskId": "P1R-M1-013",
+        "sourceCommit": "0cb0d5cda334c99ca8bf5bfb9bc1d0e41b224823",
+        "auditedImplementationSource": "0cb0d5cda334c99ca8bf5bfb9bc1d0e41b224823",
+        "integrationCheckpoint": "0cb0d5cda334c99ca8bf5bfb9bc1d0e41b224823",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-14T18:28:54.415Z",
+        "details": "Rebind after M2-006 was delivered again."
       }
     ],
-    "previousCurrentSourceCommit": "a5813d0579f77598c11cc75c72e04f4545b77eb2",
+    "previousCurrentSourceCommit": "dff758f443bd5e840ae6822e9b7b695f7a59c137",
     "currentSourceRevalidationTask": "P1R-M1-013",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-14T18:11:41.057Z",
+    "currentSourceRevalidationFinishedAt": "2026-09-14T18:28:54.415Z",
     "previousCurrentSourceRevalidationTask": "P1R-M2-005",
     "previousCurrentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
     "previousCurrentSourceRevalidationFinishedAt": "2026-09-12T22:07:09.012Z",
-    "currentSourceRevalidationAuditedImplementationSource": "dff758f443bd5e840ae6822e9b7b695f7a59c137",
-    "currentSourceRevalidationIntegrationCheckpoint": "dff758f443bd5e840ae6822e9b7b695f7a59c137"
+    "currentSourceRevalidationAuditedImplementationSource": "0cb0d5cda334c99ca8bf5bfb9bc1d0e41b224823",
+    "currentSourceRevalidationIntegrationCheckpoint": "0cb0d5cda334c99ca8bf5bfb9bc1d0e41b224823"
   }
 }
