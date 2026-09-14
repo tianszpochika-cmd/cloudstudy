@@ -172,6 +172,10 @@ const artifacts = [
   })).flat(),
   evidenceFile,
   'evidence/p1r/m2/P1R-M2-004/gated-db-tests-2026-09-13.json',
+  // Both are produced by tracked scripts and both are read back into results above, so a manifest that
+  // cites them has to record them.
+  'evidence/p1r/m2/P1R-M2-004/audit-ingest-check.json',
+  'evidence/p1r/m2/P1R-M2-004/regression.json',
 ];
 const unique = [...new Set(artifacts)];
 const missing = unique.filter((relative) => !fs.existsSync(path.join(root, relative)));
