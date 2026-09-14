@@ -2,7 +2,7 @@
   "taskId": "P1R-M0-006",
   "draftOnly": false,
   "canonicalTaskStatus": "REVIEW",
-  "sourceCommit": "629d0d904a61965e53de45701c4ad4fe47ff4705",
+  "sourceCommit": "4bf0f4904efcc7294920b539ad215807cd94f411",
   "artifactDigests": [
     {
       "path": "config/p1r-dependency-policy.json",
@@ -12,7 +12,7 @@
     {
       "path": "pnpm-lock.yaml",
       "algorithm": "sha256",
-      "digest": "d2dcc241058b91a66b9b111873b33d0a2c0f07ef4537ba6d000cc92d6fa0032c"
+      "digest": "f570d94e496bbdecc8c922898683d4cba43017652326c535e1a36aff3565dfe2"
     },
     {
       "path": "scripts/audit/p1r-dependency-audit.mjs",
@@ -134,16 +134,26 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-13T08:04:21.308Z",
         "details": "Second-review rework. sourceCommit had moved to 61efea0 while this provenance still pointed at e9c4ebd, so the manifest contradicted itself; this entry closes that. The same rework corrected a falsified claim that this task wrote down: the six pins in package.json#pnpm.overrides were never inactive, because the pre-migration pnpm-lock.yaml carried an overrides: section listing exactly them, and the move to pnpm-workspace.yaml relocated the configuration to pnpm 10's recommended location rather than repairing a silent failure. The earlier \"verified with pnpm config get overrides\" method was also invalid, since that command reports only the workspace-file source."
+      },
+      {
+        "taskId": "P1R-M0-006",
+        "sourceCommit": "4bf0f4904efcc7294920b539ad215807cd94f411",
+        "auditedImplementationSource": "4bf0f4904efcc7294920b539ad215807cd94f411",
+        "integrationCheckpoint": "4bf0f4904efcc7294920b539ad215807cd94f411",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-14T15:03:01.947Z",
+        "details": "Digest rebind after DEV_DONE was added to the status machinery, which the gate and plan validator are recorded as artifacts of."
       }
     ],
-    "previousCurrentSourceCommit": "e9c4ebd7876b6cabb7d03168df7a3547932e2e0e",
+    "previousCurrentSourceCommit": "629d0d904a61965e53de45701c4ad4fe47ff4705",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
     "currentSourceRevalidationTask": "P1R-M0-006",
-    "currentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
+    "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-13T08:04:21.308Z",
-    "currentSourceRevalidationAuditedImplementationSource": "629d0d904a61965e53de45701c4ad4fe47ff4705",
-    "currentSourceRevalidationIntegrationCheckpoint": "629d0d904a61965e53de45701c4ad4fe47ff4705",
+    "currentSourceRevalidationFinishedAt": "2026-09-14T15:03:01.947Z",
+    "currentSourceRevalidationAuditedImplementationSource": "4bf0f4904efcc7294920b539ad215807cd94f411",
+    "currentSourceRevalidationIntegrationCheckpoint": "4bf0f4904efcc7294920b539ad215807cd94f411",
     "previousCurrentSourceRevalidationTask": "P1R-M0-006",
     "previousCurrentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "previousCurrentSourceRevalidationFinishedAt": "2026-09-12T15:59:44.043Z"

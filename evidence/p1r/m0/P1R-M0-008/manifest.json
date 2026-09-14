@@ -2,17 +2,17 @@
   "taskId": "P1R-M0-008",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "5b39aa14dc68fc4af95414aee51c411bfd7ffa4e",
+  "sourceCommit": "4bf0f4904efcc7294920b539ad215807cd94f411",
   "artifactDigests": [
     {
       "path": "scripts/audit/p1r-evidence-gate.mjs",
       "algorithm": "sha256",
-      "digest": "72c99de7e7ae0a29df61a8e7f046d5a59fe3b9d4bddc83916a230de2dc1b6463"
+      "digest": "5136adefcb01026c30a6184d69a1882f1192e73457983e1b364558426b31e06e"
     },
     {
       "path": "scripts/audit/verify-phase1-rebaseline-plan.mjs",
       "algorithm": "sha256",
-      "digest": "a4313831e2117e7d36f67b66584f0492b29a08f949ab853e7154ac7c621b4fd1"
+      "digest": "4b00f44d5a87a11cc7dda8b7443385c68a8636d9fac4cec18c271b71f67bbc62"
     },
     {
       "path": "tests/p1r/p1r-evidence-gate.test.mjs",
@@ -186,14 +186,24 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-14T12:05:34.637Z",
         "details": "Digest rebind after the evidence gate gained a rule checking rollbackEvidence statuses."
+      },
+      {
+        "taskId": "P1R-M0-008",
+        "sourceCommit": "4bf0f4904efcc7294920b539ad215807cd94f411",
+        "auditedImplementationSource": "4bf0f4904efcc7294920b539ad215807cd94f411",
+        "integrationCheckpoint": "4bf0f4904efcc7294920b539ad215807cd94f411",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-14T15:03:01.950Z",
+        "details": "Digest rebind after DEV_DONE was added to the status machinery, which the gate and plan validator are recorded as artifacts of."
       }
     ],
-    "previousCurrentSourceCommit": "35cbc9a368fab02ee73b1d2253c12839b9ededc4",
+    "previousCurrentSourceCommit": "5b39aa14dc68fc4af95414aee51c411bfd7ffa4e",
     "currentSourceRevalidationTask": "P1R-M0-008",
-    "currentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
+    "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-14T12:05:34.637Z",
-    "currentSourceRevalidationAuditedImplementationSource": "5b39aa14dc68fc4af95414aee51c411bfd7ffa4e",
-    "currentSourceRevalidationIntegrationCheckpoint": "5b39aa14dc68fc4af95414aee51c411bfd7ffa4e"
+    "currentSourceRevalidationFinishedAt": "2026-09-14T15:03:01.950Z",
+    "currentSourceRevalidationAuditedImplementationSource": "4bf0f4904efcc7294920b539ad215807cd94f411",
+    "currentSourceRevalidationIntegrationCheckpoint": "4bf0f4904efcc7294920b539ad215807cd94f411"
   }
 }

@@ -514,8 +514,16 @@ export function validateEvidenceGate(
 
   for (const task of selected) {
     if (DEPENDENCY_READY_STATUSES.has(task.status)) {
-      const unmet = task.dependencies.filter((dependency) => byId.get(dependency)?.status !== 'ACCEPTED');
-      add(errors, unmet.length === 0, `${task.id}: ${task.status} requires ACCEPTED dependencies: ${unmet.join(', ')}`);
+      // A dependency is satisfied when its development is finished, whether or not somebody has reviewed it.
+
+      // Requiring ACCEPTED here is what made the whole chain wait on a review of each link, and the owner has
+
+      // directed that development run to M8 with acceptance afterwards.
+
+      const satisfied = new Set(['ACCEPTED', 'DEV_DONE']);
+
+      const unmet = task.dependencies.filter((dependency) => !satisfied.has(byId.get(dependency)?.status));
+      add(errors, unmet.length === 0, `${task.id}: ${task.status} requires finished dependencies: ${unmet.join(', ')}`);
     }
 
     const manifestPath = path.join(root, 'evidence', 'p1r', task.milestone.toLowerCase(), task.id, 'manifest.json');
