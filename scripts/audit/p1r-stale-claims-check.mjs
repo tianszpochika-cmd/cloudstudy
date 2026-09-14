@@ -42,7 +42,12 @@ function documents(scanRoot) {
       if (absolute.includes(`${path.sep}evidence${path.sep}`)) continue;
       // The test that proves this check can fail necessarily contains the strings it looks for, and so does this
       // file. Excluding them is not a hole: neither is evidence about the task.
-      if (absolute === self || absolute.includes(`${path.sep}tests${path.sep}`) || dated.has(entry.name)) continue;
+      // Three exclusions, each for the same reason: a file that writes or tests these sentences contains them. This
+      // check contains the patterns it looks for, the test contains the cases, and the script that derives the
+      // figures contains the templates. None is evidence about the task.
+      const writers = `${path.sep}sync-review-figures.mjs`;
+      if (absolute === self || absolute.includes(`${path.sep}tests${path.sep}`) || absolute.endsWith(writers)
+          || dated.has(entry.name)) continue;
       found.push(absolute);
     }
   };

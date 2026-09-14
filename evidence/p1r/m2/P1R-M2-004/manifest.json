@@ -12,7 +12,7 @@
   "taskId": "P1R-M2-004",
   "draftOnly": false,
   "canonicalTaskStatus": "REVIEW",
-  "sourceCommit": "018816cf6645883dbe9fda5f33d44358a3ed339b",
+  "sourceCommit": "5e1b414ffa9ddb3b95d7b559e163ad4a632cf195",
   "artifactDigests": [
     {
       "path": "config/p1r-data-ownership.v1.json",
@@ -62,7 +62,7 @@
     {
       "path": "scripts/audit/p1r-stale-claims-check.mjs",
       "algorithm": "sha256",
-      "digest": "9694e7fd6a2b30abb2b12b70230bc6627771f1deef710b1b294061026c8e1a13"
+      "digest": "e47460e61f3f5f3a625cd7abe4dd7e1ca60b4b6b0a96467afe26ceeb544d1646"
     },
     {
       "path": "scripts/runtime/capture-m2-004-evidence.mjs",
@@ -550,7 +550,7 @@
     ]
   },
   "startedAt": "2026-09-09T00:00:00+08:00",
-  "finishedAt": "2026-09-14T11:08:59.850Z",
+  "finishedAt": "2026-09-14T11:27:14.345Z",
   "actors": [
     "root-coordinator",
     "p1r-implementation"
