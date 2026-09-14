@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-006",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "dc31e4d8902f1f514bed545e2eb1300d4b86ea65",
+  "sourceCommit": "4f056b4daba14a46634b6acfa12ed17662341bc8",
   "artifactDigests": [
     {
       "path": ".github/workflows/ci.yml",
@@ -448,9 +448,19 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-14T16:55:49.577Z",
         "details": "Rebind after the audit validator, scope claim and probe changed."
+      },
+      {
+        "taskId": "P1R-M1-006",
+        "sourceCommit": "4f056b4daba14a46634b6acfa12ed17662341bc8",
+        "auditedImplementationSource": "4f056b4daba14a46634b6acfa12ed17662341bc8",
+        "integrationCheckpoint": "4f056b4daba14a46634b6acfa12ed17662341bc8",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-14T17:10:22.929Z",
+        "details": "Rebind after the saga sweep test and the M2-006 delivery."
       }
     ],
-    "previousCurrentSourceCommit": "0dec0961f07b53a5fd9e891397fb56872043038f",
+    "previousCurrentSourceCommit": "dc31e4d8902f1f514bed545e2eb1300d4b86ea65",
     "previousCurrentSourceRevalidationTask": "P1R-M2-005",
     "currentSourceRevalidationTask": "P1R-M1-006",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
@@ -458,9 +468,9 @@
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
     "previousCurrentSourceRevalidationFinishedAt": "2026-09-12T22:07:09.012Z",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-14T16:55:49.577Z",
-    "currentSourceRevalidationAuditedImplementationSource": "dc31e4d8902f1f514bed545e2eb1300d4b86ea65",
-    "currentSourceRevalidationIntegrationCheckpoint": "dc31e4d8902f1f514bed545e2eb1300d4b86ea65"
+    "currentSourceRevalidationFinishedAt": "2026-09-14T17:10:22.929Z",
+    "currentSourceRevalidationAuditedImplementationSource": "4f056b4daba14a46634b6acfa12ed17662341bc8",
+    "currentSourceRevalidationIntegrationCheckpoint": "4f056b4daba14a46634b6acfa12ed17662341bc8"
   },
   "startedAt": "2026-08-30T02:24:20+08:00",
   "finishedAt": "2026-09-01T15:39:29+08:00",

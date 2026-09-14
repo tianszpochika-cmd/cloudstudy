@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-008",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "dc31e4d8902f1f514bed545e2eb1300d4b86ea65",
+  "sourceCommit": "4f056b4daba14a46634b6acfa12ed17662341bc8",
   "artifactDigests": [
     {
       "path": "config/b20-privacy-content-gates.json",
@@ -270,7 +270,7 @@
     "originalFinishedAt": "2026-08-30T12:32:26+08:00",
     "originalReviewer": "agent:m1_008_independent_review:gpt-5.6-luna:max",
     "originalAcceptedContractBaseline": "463c4b238caceb1592bff6c61327c00ab9bac922",
-    "previousCurrentSourceCommit": "0dec0961f07b53a5fd9e891397fb56872043038f",
+    "previousCurrentSourceCommit": "dc31e4d8902f1f514bed545e2eb1300d4b86ea65",
     "previousCurrentSourceRevalidationTask": "P1R-M1-008",
     "currentSourceRevalidationTask": "P1R-M1-008",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
@@ -524,15 +524,25 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-14T16:55:49.732Z",
         "details": "Rebind after the audit validator, scope claim and probe changed."
+      },
+      {
+        "taskId": "P1R-M1-008",
+        "sourceCommit": "4f056b4daba14a46634b6acfa12ed17662341bc8",
+        "auditedImplementationSource": "4f056b4daba14a46634b6acfa12ed17662341bc8",
+        "integrationCheckpoint": "4f056b4daba14a46634b6acfa12ed17662341bc8",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-14T17:10:23.187Z",
+        "details": "Rebind after the saga sweep test and the M2-006 delivery."
       }
     ],
     "previousCurrentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
     "previousCurrentSourceRevalidationFinishedAt": "2026-09-12T23:35:27.174Z",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-14T16:55:49.732Z",
-    "currentSourceRevalidationAuditedImplementationSource": "dc31e4d8902f1f514bed545e2eb1300d4b86ea65",
-    "currentSourceRevalidationIntegrationCheckpoint": "dc31e4d8902f1f514bed545e2eb1300d4b86ea65"
+    "currentSourceRevalidationFinishedAt": "2026-09-14T17:10:23.187Z",
+    "currentSourceRevalidationAuditedImplementationSource": "4f056b4daba14a46634b6acfa12ed17662341bc8",
+    "currentSourceRevalidationIntegrationCheckpoint": "4f056b4daba14a46634b6acfa12ed17662341bc8"
   },
   "startedAt": "2026-08-30T09:15:05+08:00",
   "finishedAt": "2026-09-01T15:39:29+08:00",

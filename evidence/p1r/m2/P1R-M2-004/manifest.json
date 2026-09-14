@@ -15,7 +15,7 @@
   "taskId": "P1R-M2-004",
   "draftOnly": false,
   "canonicalTaskStatus": "DEV_DONE",
-  "sourceCommit": "dc31e4d8902f1f514bed545e2eb1300d4b86ea65",
+  "sourceCommit": "4f056b4daba14a46634b6acfa12ed17662341bc8",
   "artifactDigests": [
     {
       "path": "config/p1r-data-ownership.v1.json",
@@ -300,7 +300,7 @@
     {
       "path": "services/workflow-service/src/test/java/com/englishflow/workflow/adapter/jdbc/JdbcSagaStoreIntegrationTest.java",
       "algorithm": "sha256",
-      "digest": "03952168812ed1029e05015217dab229788e3d37b682cc3c20e2e0f43a48c6a1"
+      "digest": "b047e0d78b0e16c9a29201ee8666b776491da99f8ecdc0546f11b14373d37b40"
     },
     {
       "path": "services/workflow-service/src/test/java/com/englishflow/workflow/adapter/jdbc/JdbcWorkflowOutboxIntegrationTest.java",
@@ -563,13 +563,13 @@
         "summary": "Not submitted."
       }
     ],
-    "previousCurrentSourceCommit": "0dec0961f07b53a5fd9e891397fb56872043038f",
+    "previousCurrentSourceCommit": "dc31e4d8902f1f514bed545e2eb1300d4b86ea65",
     "currentSourceRevalidationTask": "P1R-M2-004",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-14T16:55:51.314Z",
-    "currentSourceRevalidationAuditedImplementationSource": "dc31e4d8902f1f514bed545e2eb1300d4b86ea65",
-    "currentSourceRevalidationIntegrationCheckpoint": "dc31e4d8902f1f514bed545e2eb1300d4b86ea65",
+    "currentSourceRevalidationFinishedAt": "2026-09-14T17:10:24.496Z",
+    "currentSourceRevalidationAuditedImplementationSource": "4f056b4daba14a46634b6acfa12ed17662341bc8",
+    "currentSourceRevalidationIntegrationCheckpoint": "4f056b4daba14a46634b6acfa12ed17662341bc8",
     "currentSourceRevalidationHistory": [
       {
         "taskId": "P1R-M2-004",
@@ -640,6 +640,16 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-14T16:55:51.314Z",
         "details": "Rebind after the audit validator, scope claim and probe changed."
+      },
+      {
+        "taskId": "P1R-M2-004",
+        "sourceCommit": "4f056b4daba14a46634b6acfa12ed17662341bc8",
+        "auditedImplementationSource": "4f056b4daba14a46634b6acfa12ed17662341bc8",
+        "integrationCheckpoint": "4f056b4daba14a46634b6acfa12ed17662341bc8",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-14T17:10:24.496Z",
+        "details": "Rebind after the saga sweep test and the M2-006 delivery."
       }
     ]
   },
