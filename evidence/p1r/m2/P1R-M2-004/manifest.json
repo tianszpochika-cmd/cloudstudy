@@ -2,7 +2,7 @@
   "taskId": "P1R-M2-004",
   "draftOnly": false,
   "canonicalTaskStatus": "REVIEW",
-  "sourceCommit": "6fdb3374eb5b8e9aeffb6aaf2e9201e426ac59e4",
+  "sourceCommit": "83033ce1fb9b68ee4a6801012111bbab406caae0",
   "artifactDigests": [
     {
       "path": "config/p1r-data-ownership.v1.json",
@@ -382,7 +382,7 @@
     ]
   },
   "startedAt": "2026-09-09T00:00:00+08:00",
-  "finishedAt": "2026-09-14T00:41:44.724Z",
+  "finishedAt": "2026-09-14T00:47:13.153Z",
   "actors": [
     "root-coordinator",
     "p1r-implementation"
@@ -462,7 +462,7 @@
     {
       "check": "audit-service-contract-defect",
       "status": "PASS",
-      "details": "The gateway contract schema identifier is 37 characters while both schema_version columns were VARCHAR(32). Because the receipt insert used INSERT IGNORE, MySQL truncated the value into a warning and stored a corrupted receipt while the fact insert failed outright. V2 widens both columns to VARCHAR(64), which is read from that migration file here. NOT MEASURED BY THIS GENERATOR: the 202 ACCEPTED and 200 DUPLICATE responses, which live only in the execution record prose and have no runner; the storage side was independently confirmed by the reviewer (column width 64, 37 characters stored untruncated, fact=receipt=1)."
+      "details": "The gateway contract schema identifier is 37 characters while both schema_version columns were VARCHAR(32). Because the receipt insert used INSERT IGNORE, MySQL truncated the value into a warning and stored a corrupted receipt while the fact insert failed outright. The widening is read from the migration that performs it, requiring both columns to reach VARCHAR(64). The endpoint behaviour is read from the tracked check `scripts/runtime/verify-audit-ingest.mjs`, which mints a short-lived RS256 token, ingests one event and replays it: first ingest accepted observed 202; replay is a duplicate observed 200; one receipt observed 1; one fact observed 1; schema identifier stored whole observed m2.gateway.security-audit.evidence.v1; column wide enough observed 64"
     },
     {
       "check": "p1r-regression",

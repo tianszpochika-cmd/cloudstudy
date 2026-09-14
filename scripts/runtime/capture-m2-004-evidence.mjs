@@ -188,6 +188,9 @@ const additiveMigrations = scanMigrations();
 const tenantProductionClasses = measureTenantProductionUse(root);
 // The rollback check's own record, so the rollback evidence reports what the harness measured.
 const rollbackCheck = evidence.checks.find((check) => check.id === 'rollback:reconcile-refuses-drift') ?? null;
+// The audit ingest check writes its own file, so this reads the measured responses rather than restating them.
+const auditIngestCheck = fs.existsSync(path.join(root, 'evidence/p1r/m2/P1R-M2-004/audit-ingest-check.json'))
+  ? JSON.parse(fs.readFileSync(path.join(root, 'evidence/p1r/m2/P1R-M2-004/audit-ingest-check.json'), 'utf8')) : null;
 // The widening is read from the migration that performs it. Both schema_version columns have to reach
 // VARCHAR(64), which is what makes the 37-character identifier storable, so both ALTER statements are
 // required rather than one.
@@ -357,11 +360,13 @@ const manifest = {
     },
     {
       check: 'audit-service-contract-defect',
-      // The column widths are read from the migration that widened them rather than asserted here. The
-      // 202/200 exchange is not measured by this generator and is not claimed as measured: it is recorded
-      // in the execution record's prose and has no runner, so the status says so.
-      status: auditWideningMigrationWidensBothColumns ? 'PASS' : 'FAIL',
-      details: 'The gateway contract schema identifier is 37 characters while both schema_version columns were VARCHAR(32). Because the receipt insert used INSERT IGNORE, MySQL truncated the value into a warning and stored a corrupted receipt while the fact insert failed outright. V2 widens both columns to VARCHAR(64), which is read from that migration file here. NOT MEASURED BY THIS GENERATOR: the 202 ACCEPTED and 200 DUPLICATE responses, which live only in the execution record prose and have no runner; the storage side was independently confirmed by the reviewer (column width 64, 37 characters stored untruncated, fact=receipt=1).',
+      // Both halves are measured: the column width from the migration that widens it, and the endpoint's
+      // responses from scripts/runtime/verify-audit-ingest.mjs, whose output is read here. The earlier
+      // version of this entry asserted the 202 and the 200 in prose and derived nothing.
+      status: auditWideningMigrationWidensBothColumns && auditIngestCheck?.result === 'PASS' ? 'PASS' : 'FAIL',
+      details: `The gateway contract schema identifier is 37 characters while both schema_version columns were VARCHAR(32). Because the receipt insert used INSERT IGNORE, MySQL truncated the value into a warning and stored a corrupted receipt while the fact insert failed outright. The widening is read from the migration that performs it, requiring both columns to reach VARCHAR(64). The endpoint behaviour is read from the tracked check ` + '`scripts/runtime/verify-audit-ingest.mjs`' + `, which mints a short-lived RS256 token, ingests one event and replays it: ${auditIngestCheck === null
+        ? 'that check has not been written, so this entry reports FAIL rather than quoting a response nothing measured'
+        : auditIngestCheck.assertions.map((entry) => `${entry.name} observed ${entry.observed}`).join('; ')}`,
     },
     {
       check: 'p1r-regression',

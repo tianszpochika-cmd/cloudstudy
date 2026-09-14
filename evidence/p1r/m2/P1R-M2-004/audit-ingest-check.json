@@ -1,0 +1,47 @@
+{
+  "schema": "platform.audit-ingest-check.v1",
+  "taskId": "P1R-M2-004",
+  "capturedAt": "2026-09-14T00:46:36.997Z",
+  "auditOrigin": "http://127.0.0.1:18099",
+  "eventId": "d484d4f0-ec38-44b7-b12c-9ed117951bfb",
+  "assertions": [
+    {
+      "name": "first ingest accepted",
+      "ok": true,
+      "observed": 202,
+      "expected": 202
+    },
+    {
+      "name": "replay is a duplicate",
+      "ok": true,
+      "observed": "200",
+      "expected": "200 DUPLICATE"
+    },
+    {
+      "name": "one receipt",
+      "ok": true,
+      "observed": 1,
+      "expected": 1
+    },
+    {
+      "name": "one fact",
+      "ok": true,
+      "observed": 1,
+      "expected": 1
+    },
+    {
+      "name": "schema identifier stored whole",
+      "ok": true,
+      "observed": "m2.gateway.security-audit.evidence.v1",
+      "expected": "m2.gateway.security-audit.evidence.v1"
+    },
+    {
+      "name": "column wide enough",
+      "ok": true,
+      "observed": 64,
+      "expected": ">= 37"
+    }
+  ],
+  "failing": 0,
+  "result": "PASS"
+}
