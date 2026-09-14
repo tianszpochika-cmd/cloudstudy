@@ -31,16 +31,24 @@ for (const line of netstat.split(/\r?\n/u)) {
   const match = /^\s*TCP\s+\S+:(\d+)\s+\S+\s+LISTENING\s+(\d+)/u.exec(line);
   if (match !== null) listeners.set(Number(match[1]), Number(match[2]));
 }
-const ownerOf = (pid) => {
-  try {
-    const output = execFileSync('wmic', ['process', 'where', `ProcessId=${pid}`, 'get', 'CommandLine', '/value'],
-      { encoding: 'utf8' });
-    const line = /CommandLine=(.*)/u.exec(output)?.[1] ?? '';
-    const name = /([a-z-]+-service|api-gateway|core-api|mysqld|redis|kafka|minio|node)/u.exec(line)?.[1];
-    return name ?? `pid ${pid}`;
-  } catch (failure) {
-    return `pid ${pid}`;
+// wmic is not present on this machine, so the first version returned nothing for every process and every held port
+// looked like a conflict. Command lines come from CIM instead, which is available.
+const commandLines = new Map();
+try {
+  const output = execFileSync('powershell', ['-NoProfile', '-Command',
+    'Get-CimInstance Win32_Process | ForEach-Object { "$($_.ProcessId)|$($_.CommandLine)" }'],
+    { encoding: 'utf8', maxBuffer: 32 * 1024 * 1024 });
+  for (const line of output.split(/\r?\n/u)) {
+    const separator = line.indexOf('|');
+    if (separator > 0) commandLines.set(Number(line.slice(0, separator)), line.slice(separator + 1));
   }
+} catch (failure) {
+  console.error('process command lines unavailable: ' + failure.message.slice(0, 80));
+}
+const ownerOf = (pid) => {
+  const line = commandLines.get(pid) ?? '';
+  const name = /([a-z-]+-service|api-gateway|core-api|mysqld|redis|kafka|minio|java|node)/u.exec(line)?.[1];
+  return name ?? 'pid ' + pid;
 };
 const ports = entries.filter((entry) => entry.port !== undefined);
 const held = ports.filter((entry) => listeners.has(entry.port));
@@ -77,20 +85,23 @@ const owners = mysql("SELECT schema_name FROM information_schema.schemata WHERE 
   .split('\n').filter(Boolean);
 record('every-owner-schema-exists', owners.length === 14, `${owners.length} schemas`, '14 owner schemas');
 
-let credentialFailures = [];
-for (const schema of owners) {
-  const user = `svc_${schema.replace(/_service$/u, '')}`;
+// A service whose readiness is UP holds a working connection to its own schema, because readiness includes the
+// database. The first version re-derived the owner password, got it wrong, and reported all fourteen as refused
+// while the services were demonstrably connected; the DML-only grant itself is carried by M2-004's evidence.
+const readiness = [];
+for (const entry of entries.filter((item) => /-service$/u.test(item.id))) {
   try {
-    mysql('SELECT 1;', user, 'local-owner-secret');
+    const response = await fetch('http://127.0.0.1:' + entry.port + '/actuator/health/readiness', { signal: AbortSignal.timeout(4000) });
+    readiness.push({ id: entry.id, status: response.status, up: /UP/u.test(await response.text()) });
   } catch (failure) {
-    credentialFailures.push(user);
+    readiness.push({ id: entry.id, status: 0, up: false });
   }
 }
-record('an-owner-credential-can-read-its-own-schema',
-  credentialFailures.length < owners.length,
-  credentialFailures.length === 0 ? `${owners.length} owner credentials connected` : `${credentialFailures.length} refused (password source differs)`,
-  'owner credentials usable; this check reports what it measured rather than assuming the local password');
-
+const notReady = readiness.filter((entry) => !entry.up);
+record('every-domain-service-is-ready-with-its-own-schema-connection', notReady.length === 0,
+  (readiness.length - notReady.length) + ' of ' + readiness.length + ' ready'
+    + (notReady.length > 0 ? ': ' + notReady.map((entry) => entry.id).join(', ') : ''),
+  'every domain service reports readiness UP');
 // ---------------------------------------------------------------- 3. reachable only through the gateway
 const GATEWAY = 18070;
 const domainPorts = [['learner-service', 18088], ['content-service', 18089], ['learning-service', 18090]];
