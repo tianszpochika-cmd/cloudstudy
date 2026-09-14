@@ -15,7 +15,7 @@
   "taskId": "P1R-M2-004",
   "draftOnly": false,
   "canonicalTaskStatus": "REVIEW",
-  "sourceCommit": "5fe3d27a3af9c732425d98db230592aaf14cacaf",
+  "sourceCommit": "1908bb478a460e62cde3f038a94268417ff1d040",
   "artifactDigests": [
     {
       "path": "config/p1r-data-ownership.v1.json",
@@ -60,7 +60,7 @@
     {
       "path": "scripts/audit/p1r-evidence-gate.mjs",
       "algorithm": "sha256",
-      "digest": "6023294a7376293a7cbd51701d6b231ba6ae15573ec374863f87993e5fb8db37"
+      "digest": "72c99de7e7ae0a29df61a8e7f046d5a59fe3b9d4bddc83916a230de2dc1b6463"
     },
     {
       "path": "scripts/audit/p1r-stale-claims-check.mjs",
@@ -70,7 +70,7 @@
     {
       "path": "scripts/runtime/capture-m2-004-evidence.mjs",
       "algorithm": "sha256",
-      "digest": "64c98eba612f31bc2d418838e9f24e00a55c0812effaa7fbdc75a50b93ce66c5"
+      "digest": "60ee9176825208e4d89ae51d388e1f77ed175deb9afa57edc14fbc5610f346c2"
     },
     {
       "path": "scripts/runtime/run-gated-db-tests.mjs",
@@ -565,7 +565,7 @@
     ]
   },
   "startedAt": "2026-09-09T00:00:00+08:00",
-  "finishedAt": "2026-09-14T11:53:43.672Z",
+  "finishedAt": "2026-09-14T12:01:33.595Z",
   "actors": [
     "root-coordinator",
     "p1r-implementation"
@@ -665,6 +665,7 @@
     }
   ],
   "knownGaps": [
+    "The destructive-statement scan reports FAIL, and it is right to: content-service V3 and social-service V2 both narrow a column, so a revert of those migrations is lossy. It also counts audit-service V2, which widens one, because a single file cannot show the direction. Two of three are real, and correcting the third needs the previous column definition, which this scan does not read.",
     "The tenant guard is delivered at the storage layer through 10 passing *TenantIsolationTest classes, each running against a real MySQL and its own owner's schema. They write with a JdbcTemplate rather than through a service repository. 9 of the 10 instantiate a production class, counted by resolving imported and same-package main classes together and 1 do not (NotificationTenantIsolationTest), and the classes do not all assert the same thing: most assert that a foreign tenant's rows are not returned, while at least one asserts only that a guarded column has no default and that the schema credential cannot write another owner's tables. So this is evidence about schema-level isolation, not about every service's request path, and the policy line asking for a server-derived TenantScope on a request path is not measured here. The HTTP-level two-tenant negative remains open and is handed to P1R-M2-009: it needs a synthetic per-owner account, which P1R-M0-007 builds and P1R-M2-009 wires into real CI. P1R-M2-009's ledger scope does not itself name tenant guard, so this is a residual gap recorded against this task rather than a reassignment of the requirement.",
     "The per-service Redis namespaces and ACLs are provisioned and probed for every namespaced owner, but no domain service uses Redis yet: only api-gateway and the legacy core-api configure it, so for the 14 domain owners the namespace is a reserved allocation rather than an enforced boundary in a live path. The Redis default user is still reachable without a password, so the namespace boundary does not constrain an unauthenticated client; that is a property of the local container rather than of this task's ACLs, and it is registered here rather than left implicit.",
     "The owner outbox tables now carry the contract shape, but only content-service has a publisher and a consumer; the other owners still append rows that nothing publishes.",
