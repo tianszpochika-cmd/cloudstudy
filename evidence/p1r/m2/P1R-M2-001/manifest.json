@@ -2,7 +2,7 @@
   "taskId": "P1R-M2-001",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "4f056b4daba14a46634b6acfa12ed17662341bc8",
+  "sourceCommit": "b0065289f2f0871d2dbf79ecd23332ceb7f83109",
   "artifactDigests": [
     {
       "path": "services/api-gateway/src/main/java/com/englishflow/gateway/policy/GatewayRoutePolicy.java",
@@ -166,9 +166,9 @@
     "currentSourceRevalidationTask": "P1R-M2-001",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-14T17:10:24.157Z",
-    "currentSourceRevalidationAuditedImplementationSource": "4f056b4daba14a46634b6acfa12ed17662341bc8",
-    "currentSourceRevalidationIntegrationCheckpoint": "4f056b4daba14a46634b6acfa12ed17662341bc8",
+    "currentSourceRevalidationFinishedAt": "2026-09-14T17:37:01.445Z",
+    "currentSourceRevalidationAuditedImplementationSource": "b0065289f2f0871d2dbf79ecd23332ceb7f83109",
+    "currentSourceRevalidationIntegrationCheckpoint": "b0065289f2f0871d2dbf79ecd23332ceb7f83109",
     "originalSourceCommit": "7ba4d33f820efae6756164a97dfd38f02c0e89c4",
     "currentSourceRevalidationHistory": [
       {
@@ -260,9 +260,19 @@
         "runtimeStatus": "RUNTIME_VERIFIED",
         "finishedAt": "2026-09-14T17:10:24.157Z",
         "details": "Rebind after the saga sweep test and the M2-006 delivery."
+      },
+      {
+        "taskId": "P1R-M2-001",
+        "sourceCommit": "b0065289f2f0871d2dbf79ecd23332ceb7f83109",
+        "auditedImplementationSource": "b0065289f2f0871d2dbf79ecd23332ceb7f83109",
+        "integrationCheckpoint": "b0065289f2f0871d2dbf79ecd23332ceb7f83109",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-14T17:37:01.445Z",
+        "details": "Rebind after M2-007 was delivered."
       }
     ],
-    "previousCurrentSourceCommit": "dc31e4d8902f1f514bed545e2eb1300d4b86ea65",
+    "previousCurrentSourceCommit": "4f056b4daba14a46634b6acfa12ed17662341bc8",
     "previousCurrentSourceRevalidationTask": "P1R-M2-004",
     "previousCurrentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "previousCurrentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
