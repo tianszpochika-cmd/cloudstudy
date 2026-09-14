@@ -2,7 +2,7 @@
   "taskId": "P1R-M2-004",
   "draftOnly": false,
   "canonicalTaskStatus": "REVIEW",
-  "sourceCommit": "4fb939b58836126fd3ff73b604ea4eecf9c8cab5",
+  "sourceCommit": "d1fd9f1494ef3f6ea60352920805356591993cb5",
   "artifactDigests": [
     {
       "path": "config/p1r-data-ownership.v1.json",
@@ -12,7 +12,7 @@
     {
       "path": "config/p1r-m2-requirement-owners.v1.json",
       "algorithm": "sha256",
-      "digest": "9eca435862c8aaac4222d95f82b3a6679f306e21e946bc791bf58129d5f91b7a"
+      "digest": "3a61ab722272f9ed7fc98c866a19251500e5ec1c866e777a84a36bdfd93c38a7"
     },
     {
       "path": "config/v2-runtime-services.json",
@@ -47,7 +47,7 @@
     {
       "path": "scripts/runtime/p1r-m2-004-runtime.mjs",
       "algorithm": "sha256",
-      "digest": "f5e0fe2624e84e5c320b5a6e094e2ddf6f14f57a04061651a0426a79397563b3"
+      "digest": "adc5e408ec3621b437151fe53265b9eeec8e71bdbb19344f4a7cae895a64fb1b"
     },
     {
       "path": "scripts/runtime/run-gated-db-tests.mjs",
@@ -370,7 +370,7 @@
     ]
   },
   "startedAt": "2026-09-09T00:00:00+08:00",
-  "finishedAt": "2026-09-14T00:01:28.696Z",
+  "finishedAt": "2026-09-14T00:06:59.509Z",
   "actors": [
     "root-coordinator",
     "p1r-implementation"
