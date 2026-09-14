@@ -2,7 +2,7 @@
   "taskId": "P1R-M2-004",
   "draftOnly": false,
   "canonicalTaskStatus": "REVIEW",
-  "sourceCommit": "e00246a8f9ede9dd002041dfef746d59fd006a80",
+  "sourceCommit": "f2b31c3be17f6bd7ec6d231a7f168002c387e3ff",
   "artifactDigests": [
     {
       "path": "config/p1r-data-ownership.v1.json",
@@ -392,7 +392,7 @@
     ]
   },
   "startedAt": "2026-09-09T00:00:00+08:00",
-  "finishedAt": "2026-09-14T01:23:35.531Z",
+  "finishedAt": "2026-09-14T01:25:54.737Z",
   "actors": [
     "root-coordinator",
     "p1r-implementation"
