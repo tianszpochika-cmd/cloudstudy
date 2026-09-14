@@ -13,19 +13,28 @@ export const ALLOWED_STATUSES = new Set([
   'ACCEPTED',
   'BLOCKED',
   'REWORK',
+  // Development finished, evidence in the repository, no independent verification. Distinct from ACCEPTED on purpose:
+  // the owner's verification pass later has to be able to tell what somebody reproduced from what only its author has.
+  'DEV_DONE',
 ]);
 
-const DEPENDENCY_READY_STATUSES = new Set(['READY', 'IN_PROGRESS', 'REVIEW', 'ACCEPTED']);
-const EVIDENCE_REQUIRED_STATUSES = new Set(['REVIEW', 'ACCEPTED', 'BLOCKED', 'REWORK']);
+// DEV_DONE counts as ready for dependents: the work exists and its evidence is in the repository, so the next task
+// can start. That is what lets the plan advance without waiting for a review of every link in the chain.
+const DEPENDENCY_READY_STATUSES = new Set(['READY', 'IN_PROGRESS', 'REVIEW', 'DEV_DONE', 'ACCEPTED']);
+// DEV_DONE is in this set deliberately: the state waives the wait for a reviewer, not the evidence. A task marked
+// done without a manifest, runtime evidence or passing gates would be the one thing this change must not allow.
+const EVIDENCE_REQUIRED_STATUSES = new Set(['REVIEW', 'DEV_DONE', 'ACCEPTED', 'BLOCKED', 'REWORK']);
 const TERMINAL_DECISIONS = new Set(['ACCEPTED', 'BLOCKED', 'REWORK']);
 const STATUS_TRANSITIONS = new Map([
   ['PLANNED', new Set(['READY'])],
   ['READY', new Set(['IN_PROGRESS', 'BLOCKED'])],
-  ['IN_PROGRESS', new Set(['REVIEW', 'BLOCKED'])],
-  ['REVIEW', new Set(['ACCEPTED', 'REWORK', 'BLOCKED'])],
-  ['BLOCKED', new Set(['READY', 'IN_PROGRESS', 'REWORK'])],
-  ['REWORK', new Set(['IN_PROGRESS', 'BLOCKED'])],
+  ['IN_PROGRESS', new Set(['REVIEW', 'DEV_DONE', 'BLOCKED'])],
+  ['REVIEW', new Set(['ACCEPTED', 'DEV_DONE', 'REWORK', 'BLOCKED'])],
+  ['BLOCKED', new Set(['READY', 'IN_PROGRESS', 'REWORK', 'DEV_DONE'])],
+  ['REWORK', new Set(['IN_PROGRESS', 'DEV_DONE', 'BLOCKED'])],
   ['ACCEPTED', new Set(['REWORK'])],
+  // Done means done by its author. Its acceptance is a separate act and the only transition out is back to rework.
+  ['DEV_DONE', new Set(['ACCEPTED', 'REWORK'])],
 ]);
 const SHA40 = /^[0-9a-f]{40}$/i;
 const SHA256 = /^[0-9a-f]{64}$/i;

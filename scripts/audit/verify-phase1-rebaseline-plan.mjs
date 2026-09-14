@@ -35,6 +35,10 @@ const allowedTaskStatuses = new Set([
   'ACCEPTED',
   'BLOCKED',
   'REWORK',
+  // Development finished with tests and evidence in the repository, but not independently verified. It is a distinct
+  // state on purpose: ACCEPTED means somebody reproduced the claims, and nothing here should say that when it is not
+  // true. The owner's verification pass later needs to tell these two apart.
+  'DEV_DONE',
 ]);
 
 const allowedAssetVerification = new Set([

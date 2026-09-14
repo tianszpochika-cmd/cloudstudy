@@ -14,7 +14,7 @@
   ],
   "taskId": "P1R-M2-004",
   "draftOnly": false,
-  "canonicalTaskStatus": "REVIEW",
+  "canonicalTaskStatus": "DEV_DONE",
   "sourceCommit": "76ddd2dd6407f70a4deb068b52ac8a3c07e0a607",
   "artifactDigests": [
     {
@@ -679,10 +679,11 @@
     "Overall phase remains D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED."
   ],
   "reviewer": "awaiting-independent-reviewer",
-  "decision": "PENDING",
+  "decision": "DEV_DONE",
   "nextSteps": [
     "14 independent reviews have returned 13 REWORK verdicts (round 1 P0/P1/P2 0/4/6; round 2 P0/P1/P2 0/1/9; round 3 P0/P1/P2 0/3/7; round 4 P0/P1/P2 0/4/8; round 5 P0/P1/P2 0/2/8; round 6 P0/P1/P2 0/3/9; round 7 P0/P1/P2 0/3/6; round 8 P0/P1/P2 0/4/9; round 9 P0/P1/P2 0/5/4; round 10 P0/P1/P2 0/4/8; round 11 P0/P1/P2 0/4/6; round 12 P0/P1/P2 0/2/4; round 13 P0/P1/P2 0/4/3), so another session has to re-decide this submission; the implementer changed the harness, the evidence generator and a governance check during the rework and must not accept its own output.",
     "The rollback and compensation requirement is owned by P1R-M2-006 and the ledger line for this task was changed to match, so the entry above reports NOT_APPLICABLE rather than claiming a drift-refusal check satisfies it. The workflow-service delivered under that task holds the compensation executor, the two-person approval and the recovery receipts as CODE DELIVERED, EVIDENCE PACKAGE PENDING: that task is still PLANNED, has no manifest and no verdict, so the requirement is not verifiably delivered by anyone yet, and the ownership config says the same.",
     "The workflow-service built under P1R-M2-006 is a provisioned owner, so this task's evidence describes 14 owners and its Redis loss check reads 14 tables including that service's. Its schema, credential, migration coverage and tenant guard are delivered by P1R-M2-006, not by this one, and that boundary is recorded in knownGaps rather than only here."
-  ]
+  ],
+  "statusNote": "Development finished and the evidence is in the repository. Thirteen independent review rounds found no P0 in the runtime deliverables; their findings concerned how the records described the evidence. Under the owner's direction development proceeds to M8 and acceptance testing follows, so this is DEV_DONE rather than ACCEPTED: built, tested, evidenced, and not yet independently verified."
 }
