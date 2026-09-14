@@ -232,14 +232,30 @@ test('artifact path traversal is rejected', () => {
   });
 });
 
-test('full gate rejects READY task whose dependency is not accepted', () => {
+test('full gate rejects a task whose dependency is neither finished nor accepted', () => {
   withTempRepo((root) => {
+    // The dependency is PLANNED, so it is neither accepted nor finished and the task may not proceed.
     writeSyntheticLedger(root, {
       'P1R-M0-002': { depends: 'M0-001', status: 'READY' },
     });
     const report = validateEvidenceGate({ root, milestone: 'M0', runPlanCheck: false, checkGit: false });
     assert.equal(report.result, 'FAIL');
-    assert(report.errors.some((error) => error.includes('requires ACCEPTED dependencies')));
+    assert(report.errors.some((error) => error.includes('requires finished dependencies')));
+  });
+});
+
+test('a finished dependency satisfies the task that depends on it', () => {
+  withTempRepo((root) => {
+    // DEV_DONE means built, tested and evidenced. Waiting for a review of every link is what the owner's direction
+    // removes, so this must not be reported as an unmet dependency; whether the task then fails for some other reason
+    // is not this case's business.
+    writeSyntheticLedger(root, {
+      'P1R-M0-002': { depends: 'M0-001', status: 'READY' },
+      'P1R-M0-001': { status: 'DEV_DONE' },
+    });
+    const report = validateEvidenceGate({ root, milestone: 'M0', runPlanCheck: false, checkGit: false });
+    assert(!report.errors.some((error) => error.includes('requires finished dependencies')),
+      report.errors.join('; '));
   });
 });
 

@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-007",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "146437f051f462218e3bc0ec0d822d95bf80e176",
+  "sourceCommit": "17b7d4923f8f0b9116b4698535fc26448d58d598",
   "artifactDigests": [
     {
       "path": ".github/workflows/ci.yml",
@@ -811,9 +811,19 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-14T15:46:33.933Z",
         "details": "Digest rebind after the event runtime harness changed."
+      },
+      {
+        "taskId": "P1R-M1-007",
+        "sourceCommit": "17b7d4923f8f0b9116b4698535fc26448d58d598",
+        "auditedImplementationSource": "17b7d4923f8f0b9116b4698535fc26448d58d598",
+        "integrationCheckpoint": "17b7d4923f8f0b9116b4698535fc26448d58d598",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-14T16:09:34.076Z",
+        "details": "Digest rebind after the two tests were corrected."
       }
     ],
-    "previousCurrentSourceCommit": "be48f5a256cf72bc8024f4bf03c30e1b0aee78df",
+    "previousCurrentSourceCommit": "146437f051f462218e3bc0ec0d822d95bf80e176",
     "previousCurrentSourceRevalidationTask": "P1R-M1-007",
     "currentSourceRevalidationTask": "P1R-M1-007",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
@@ -821,8 +831,8 @@
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
     "previousCurrentSourceRevalidationFinishedAt": "2026-09-13T02:30:07.343Z",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-14T15:46:33.933Z",
-    "currentSourceRevalidationAuditedImplementationSource": "146437f051f462218e3bc0ec0d822d95bf80e176",
-    "currentSourceRevalidationIntegrationCheckpoint": "146437f051f462218e3bc0ec0d822d95bf80e176"
+    "currentSourceRevalidationFinishedAt": "2026-09-14T16:09:34.076Z",
+    "currentSourceRevalidationAuditedImplementationSource": "17b7d4923f8f0b9116b4698535fc26448d58d598",
+    "currentSourceRevalidationIntegrationCheckpoint": "17b7d4923f8f0b9116b4698535fc26448d58d598"
   }
 }

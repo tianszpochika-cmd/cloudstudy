@@ -80,11 +80,11 @@ const cases = [
   {
     name: 'a round count written as an English word that is too small',
     file: 'requirements/backlog/v2-phase1-rebaseline/execution/status-trajectories.json',
-    mutate: (text) => text.replace(
-      /(?:One|Two|Three|Four|Five|Six|Seven|Eight|Nine|Ten|Eleven|Twelve|Thirteen|Fourteen|Fifteen|Sixteen|Seventeen|Eighteen|Nineteen|Twenty) independent reviews have returned REWORK/u,
-      'Two independent reviews have returned REWORK'),
-    // If the sentence does not contain a word from that list the mutation silently does nothing, which is how this
-    // test failed once: the history reached thirteen while the pattern stopped at twelve.
+    // Appended rather than substituted. The sentence this used to replace disappeared when delivering a task rewrote
+    // the trajectory reason wholesale, so the substitution became a no-op — and the guard below is what reported that
+    // rather than letting the case pass while testing nothing. Adding a line with the wrong numeral is a mutation
+    // whether or not such a line is already there.
+    mutate: (text) => `${text}\n  "probe": "Two independent reviews have returned REWORK",`,
     assertMutationTookEffect: true,
     expect: /have returned REWORK where the history/u,
   },
