@@ -278,9 +278,15 @@ const manifest = {
   actors: ['root-coordinator', 'p1r-implementation'],
   sourceIds: ['P1R-M2-004', 'ARCH-EVT-001', 'ADR-0015', 'ADR-0010'],
   commands: [
-    'node scripts/runtime/p1r-m2-004-runtime.mjs',
+    // The Redis loss checks are opt-in by design: without the variable the harness records them as FAIL,
+    // because a fault that was never injected has no evidence. A reader following the plain command would
+    // see two failures and a non-zero exit, so the variable is part of the reproduction, not an aside.
+    '$env:M2_REDIS_FAULT_OPT_IN=\'PAUSE_EXACT_REDIS_16379_AND_RECOVER\'; node scripts/runtime/p1r-m2-004-runtime.mjs',
     'node scripts/runtime/run-gated-db-tests.mjs --json',
+    'node scripts/runtime/run-gated-db-tests.mjs --write',
+    'node scripts/runtime/capture-m2-004-evidence.mjs',
     'node scripts/database/reconcile-owner-schemas.mjs --apply',
+    'node scripts/database/reconcile-redis-acl.mjs',
     'node scripts/runtime/provision-kafka-topics.mjs --apply',
     'pnpm services:run -- --all',
     'node scripts/dev/run-node-tests.mjs tests/p1r (Node 20.19.5)',
@@ -389,8 +395,9 @@ const manifest = {
   reviewer: 'awaiting-independent-reviewer',
   decision: 'PENDING',
   nextSteps: [
-    'A second independent reviewer must re-decide this submission. The implementer also changed the data-ownership check, the harness and the manifest generator during the rework, so it must not accept its own output.',
-    'Fixing the Redis namespace disagreement touched an accepted governance check; the reviewer should confirm that moving the check to englishflow:gateway was right rather than renaming the Gateway key prefix.',
+    'Two independent reviews have returned REWORK, so a third one has to re-decide this submission; the implementer changed the harness, the evidence generator and a governance check during the rework and must not accept its own output.',
+    'Whether the rollback and compensation test belongs to this task or to P1R-M2-006 is a question about task boundaries: the ledger line for this task names it, while config/p1r-m2-requirement-owners.v1.json assigns it to M2-006. That entry reports NOT_APPLICABLE until the human decides, and the decision should be reflected in the ledger text rather than only in the config.',
+    'The workflow-service built under P1R-M2-006 is now a provisioned owner, which changes the owner count this evidence describes. Its schema, credential and tenant guard are delivered by that task, not by this one, so this task\'s snapshot should either be re-measured on a revision that includes it or state that boundary explicitly.',
   ],
 };
 
