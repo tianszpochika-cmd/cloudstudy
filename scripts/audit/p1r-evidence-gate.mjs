@@ -331,6 +331,23 @@ export function validateManifest({ root, task, manifest, manifestPath, checkGit 
         add(errors, result.status === 'NOT_APPLICABLE',
           `${task.id}: ${result.check} is owned by ${owner} but reported ${result.status}`);
       }
+
+      // The ledger is the acceptance baseline, so a reassignment has to be visible there and not only in the
+      // ownership file. Without this, moving a requirement out of a task is a change the evidence side can make
+      // by itself, which is what happened: the ledger line, the config and the manifest disagreed for two rounds
+      // and each review found a different one of them. This is the measure the seventh review named as the one
+      // thing genuinely missing.
+      const ledgerPath = path.join(root, 'requirements/backlog/v2-phase1-rebaseline/02-编号任务台账.md');
+      if (fs.existsSync(ledgerPath)) {
+        const ledgerLine = parseLedger(fs.readFileSync(ledgerPath, 'utf8'))
+          .find((row) => row.id === task.id)?.line ?? '';
+        const reassigned = (ownership.requirements ?? [])
+          .filter((entry) => entry.assertedBy === task.id && entry.ownerTask !== undefined && entry.ownerTask !== task.id);
+        const unnamed = reassigned.filter((entry) => !ledgerLine.includes(entry.ownerTask));
+        add(errors, unnamed.length === 0,
+          `${task.id}: the ledger line does not name the owner of requirements reassigned away from it: `
+          + unnamed.map((entry) => `${entry.id}->${entry.ownerTask}`).join(', '));
+      }
     }
 
     // The ownership file decides who owns what, so a task that asserts requirements in it has to record it as
