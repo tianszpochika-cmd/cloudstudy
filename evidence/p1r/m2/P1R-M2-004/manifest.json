@@ -2,7 +2,7 @@
   "taskId": "P1R-M2-004",
   "draftOnly": false,
   "canonicalTaskStatus": "REVIEW",
-  "sourceCommit": "35cbc9a368fab02ee73b1d2253c12839b9ededc4",
+  "sourceCommit": "ee94f39b1dcb12a733b1bbdbf31731fc9b488889",
   "artifactDigests": [
     {
       "path": "config/p1r-data-ownership.v1.json",
@@ -312,12 +312,12 @@
     {
       "path": "evidence/p1r/m2/P1R-M2-004/regression.json",
       "algorithm": "sha256",
-      "digest": "95e7ded9c7b12cd6c72558695a48cc3b64fcda680298bbead897b1521c69f98e"
+      "digest": "5cefaf2af542472f5ca20a0888201fd2b1aaf38325557327129fecf396b588db"
     },
     {
       "path": "evidence/p1r/m2/P1R-M2-004/review-history.json",
       "algorithm": "sha256",
-      "digest": "5e6eb0c1cb47864730f53dc6937a676505195b70ae1a6ee13551cc632c45f84c"
+      "digest": "dfc30230941945e79c6824d9966fd158020492d5d7815f6f1b667b8cb27ada41"
     }
   ],
   "environment": {
@@ -501,29 +501,10 @@
         "reviewer": "awaiting a fresh independent session",
         "summary": "Not submitted."
       }
-    ],
-    "previousCurrentSourceCommit": "fa1b61dfd221b9ea3739ce3f5d69d161087baa10",
-    "currentSourceRevalidationTask": "P1R-M2-004",
-    "currentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
-    "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-14T07:59:58.807Z",
-    "currentSourceRevalidationAuditedImplementationSource": "35cbc9a368fab02ee73b1d2253c12839b9ededc4",
-    "currentSourceRevalidationIntegrationCheckpoint": "35cbc9a368fab02ee73b1d2253c12839b9ededc4",
-    "currentSourceRevalidationHistory": [
-      {
-        "taskId": "P1R-M2-004",
-        "sourceCommit": "35cbc9a368fab02ee73b1d2253c12839b9ededc4",
-        "auditedImplementationSource": "35cbc9a368fab02ee73b1d2253c12839b9ededc4",
-        "integrationCheckpoint": "35cbc9a368fab02ee73b1d2253c12839b9ededc4",
-        "reviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
-        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
-        "finishedAt": "2026-09-14T07:59:58.807Z",
-        "details": "Digest rebind after the gate gained a rule against evidence produced on a dirty tree, and the stale-claims check gained a tracked test and a documented exclusion."
-      }
     ]
   },
   "startedAt": "2026-09-09T00:00:00+08:00",
-  "finishedAt": "2026-09-14T07:42:24.546Z",
+  "finishedAt": "2026-09-14T08:13:04.284Z",
   "actors": [
     "root-coordinator",
     "p1r-implementation"
@@ -609,7 +590,7 @@
     {
       "check": "p1r-regression",
       "status": "PASS",
-      "details": "P1R 1435/1435 with 0 failures and 1435 passing, read from evidence/p1r/m2/P1R-M2-004/regression.json; the full suite reports 1930 tests with 0 failures. The legacy B failures that were pre-existing are fixed and each fix strengthened the assertion rather than relaxing it. How many is NOT VERIFIED here: no tracked record counts them, so a figure is not given rather than repeated."
+      "details": "P1R 1439/1439 with 0 failures and 1439 passing, read from evidence/p1r/m2/P1R-M2-004/regression.json; the full suite reports undefined tests with undefined failures. The legacy B failures that were pre-existing are fixed and each fix strengthened the assertion rather than relaxing it. How many is NOT VERIFIED here: no tracked record counts them, so a figure is not given rather than repeated."
     }
   ],
   "rollbackEvidence": [

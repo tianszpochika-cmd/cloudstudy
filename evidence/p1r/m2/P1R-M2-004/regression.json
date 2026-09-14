@@ -1,13 +1,11 @@
 {
-  "schema": "platform.regression-record.v1",
-  "taskId": "P1R-M2-004",
-  "capturedAt": "2026-09-13T23:57:49.147Z",
-  "command": "node scripts/dev/run-node-tests.mjs tests/p1r",
-  "tests": 1435,
-  "pass": 1435,
+  "schema": "platform.p1r-regression.v1",
+  "capturedAt": "2026-09-14T08:13:03.343Z",
+  "tests": 1439,
+  "pass": 1439,
   "fail": 0,
-  "fullCommand": "node scripts/dev/run-node-tests.mjs tests",
-  "fullTests": 1930,
-  "fullPass": 1923,
-  "fullFail": 0
+  "skipped": 0,
+  "suiteTests": 1934,
+  "suitePass": 1927,
+  "suiteFail": 0
 }
