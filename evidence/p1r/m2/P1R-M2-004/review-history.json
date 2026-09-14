@@ -21,11 +21,19 @@
     },
     {
       "round": 3,
+      "verdict": "REWORK",
+      "counts": { "P0": 0, "P1": 3, "P2": 7 },
+      "reviewedCommit": "73aa1cd716da7b4ea32a71140accb049247c2cde",
+      "reviewer": "independent review session (third round)",
+      "summary": "The third round closed the second round's new P1 and seven of its ten P2 findings. It returned REWORK on three new P1 findings: a ledger exit-evidence item judged NOT_APPLICABLE with a hardcoded PASS standing in for it, three numbers in the canonical manifest that did not match their evidence, and drift during the review, since building workflow-service for M2-006 made the evidence package unable to rebuild itself at the commit it named. P0 remained zero and the review independently reproduced the core runtime facts: DML-only credentials refused with error 1142, cross-schema denial, the Redis ACL scoping, and the migration histories."
+    },
+    {
+      "round": 4,
       "verdict": "PENDING",
       "counts": null,
       "reviewedCommit": null,
       "reviewer": "awaiting a fresh independent session",
-      "summary": "Not submitted. The third round has closed the new P1 and seven of the ten P2 findings so far; the remainder and the submission itself are outstanding."
+      "summary": "Not submitted. The mechanical findings of the third review have been addressed: the generator's four literal statuses are now derived from measurements, three disputed numbers are corrected with their definitions, the reproduction command carries its opt-in, and the stale wording and figures in the surrounding documents are aligned. Whether the rollback and compensation test belongs to this task or to M2-006 is a question about task boundaries and is awaiting the human decision, so that entry reports NOT_APPLICABLE."
     }
   ]
 }

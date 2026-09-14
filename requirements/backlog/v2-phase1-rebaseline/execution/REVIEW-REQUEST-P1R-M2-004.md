@@ -29,12 +29,12 @@
 
 | 内容 | 路径 |
 |---|---|
-| Canonical manifest（20 artifacts） | `evidence/p1r/m2/P1R-M2-004/manifest.json` |
-| 归属/授权/跨库阻断/migration 运行时证据 | `evidence/p1r/m2/P1R-M2-004/runtime-evidence-2026-09-13.json`（58 项检查） |
+| Canonical manifest（53 artifacts） | `evidence/p1r/m2/P1R-M2-004/manifest.json` |
+| 归属/授权/跨库阻断/migration 运行时证据 | `evidence/p1r/m2/P1R-M2-004/runtime-evidence-2026-09-13.json`（88 项检查） |
 | 事件运行时（6 阶段 harness） | `evidence/p1r/m2/P1R-M2-005/event-runtime-harness-2026-09-12.json` |
 | 执行记录 | `requirements/backlog/v2-phase1-rebaseline/execution/P1R-M2-004.md`、`P1R-M2-005.md` |
 
-manifest 的 `results`：**4 PASS + 4 NOT_APPLICABLE + 2 PASS**。
+manifest 的 `results`：**9 PASS + 3 NOT_APPLICABLE**。
 
 ### 关于那 4 项 `NOT_APPLICABLE`（**本任务最需要你独立判断的一点**）
 
