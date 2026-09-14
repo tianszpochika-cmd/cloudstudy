@@ -2,7 +2,7 @@
   "taskId": "P1R-M2-004",
   "draftOnly": false,
   "canonicalTaskStatus": "REVIEW",
-  "sourceCommit": "4d52452b1ef3c9c3175429076682b04e8eef8f09",
+  "sourceCommit": "54a7b1c237d57b23d2b7427316213220d30fad15",
   "artifactDigests": [
     {
       "path": "config/p1r-data-ownership.v1.json",
@@ -67,7 +67,7 @@
     {
       "path": "scripts/runtime/p1r-m2-004-runtime.mjs",
       "algorithm": "sha256",
-      "digest": "41bf3dd30f0be734a4d87f4b6c38684b0a7bb13bf89008a48e59f51ecf6617b7"
+      "digest": "8a721cf95f05210fc7f42f0e8a15782fef90c5a827a0952b9598bc1e7f20d2db"
     },
     {
       "path": "services/audit-service/src/main/resources/db/migration/V2__widen_audit_schema_version.sql",
@@ -292,7 +292,7 @@
     {
       "path": "evidence/p1r/m2/P1R-M2-004/runtime-evidence-2026-09-13.json",
       "algorithm": "sha256",
-      "digest": "4ba92a4a70ee75a0af67d1d22c470581452c107fefd16ccc3c6904fd549679ba"
+      "digest": "a3b585b8685998113c408b79d6ada589e7c790cf5783500c15c63688bf564443"
     },
     {
       "path": "evidence/p1r/m2/P1R-M2-004/gated-db-tests.json",
@@ -312,7 +312,7 @@
     {
       "path": "evidence/p1r/m2/P1R-M2-004/review-history.json",
       "algorithm": "sha256",
-      "digest": "80947552476095169ed34b402e9746a4626e930e7d5a467062b1b846b9d9d805"
+      "digest": "dac1078910a55c7e453942d7c068075e2659b355a4b7b4ad578c5246ee752d57"
     }
   ],
   "environment": {
@@ -320,8 +320,8 @@
     "branch": "dev",
     "phaseStatus": "D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED",
     "runtimeStatus": "M2_004_PARTIAL_RUNTIME_VERIFIED",
-    "reviewedRevision": "1c3e6d1c0bfb8580a03e25361f261434b82d6b7e",
-    "measuredAt": "2026-09-14T05:57:29.124Z",
+    "reviewedRevision": "54a7b1c237d57b23d2b7427316213220d30fad15",
+    "measuredAt": "2026-09-14T06:42:26.404Z",
     "toolchain": {
       "java": "OpenJDK 25.0.4.1",
       "maven": "3.9.12",
@@ -471,11 +471,31 @@
         "reviewedCommit": null,
         "reviewer": "awaiting a fresh independent session",
         "summary": "Not submitted. The seventh round's findings are addressed: the reassignment is carried in all five places and checked for stale sentences, the tenant figure has one definition and the same number everywhere, the review request is regenerated from the manifest, and the gate requires the ledger line to name any task that owns one of the task's requirements."
+      },
+      {
+        "round": 9,
+        "verdict": "REWORK",
+        "counts": {
+          "P0": 0,
+          "P1": 5,
+          "P2": 4
+        },
+        "reviewedCommit": "11e429dbb354d6313e48eae8f9001c4e7df00724",
+        "reviewer": "independent review session (ninth round)",
+        "summary": "P0 remained zero and the runtime facts were reproduced again on real MySQL and Redis. Five P1 findings: the review request still carried four not-applicable entries against three, a byte-identical duplicated block and an inconsistent round number; the execution record still claimed the rollback requirement was delivered and implemented here while naming P1R-M2-006 on the same line; the runtime evidence named a revision whose harness did not contain the text it had written, because it was produced on a dirty tree; the review history had no eighth round while the commit message and the review request both referenced it; and the stale-claims checker was structurally unable to fire on the shape it was written for, because its exemption was per file and the exempt files were exactly the ones carrying those sentences."
+      },
+      {
+        "round": 10,
+        "verdict": "PENDING",
+        "counts": null,
+        "reviewedCommit": null,
+        "reviewer": "awaiting a fresh independent session",
+        "summary": "Not submitted."
       }
     ]
   },
   "startedAt": "2026-09-09T00:00:00+08:00",
-  "finishedAt": "2026-09-14T06:00:24.837Z",
+  "finishedAt": "2026-09-14T06:42:27.657Z",
   "actors": [
     "root-coordinator",
     "p1r-implementation"
@@ -589,7 +609,7 @@
   "reviewer": "awaiting-independent-reviewer",
   "decision": "PENDING",
   "nextSteps": [
-    "8 independent reviews have returned 7 REWORK verdicts (round 1 P0/P1/P2 0/4/6; round 2 P0/P1/P2 0/1/9; round 3 P0/P1/P2 0/3/7; round 4 P0/P1/P2 0/4/8; round 5 P0/P1/P2 0/2/8; round 6 P0/P1/P2 0/3/9; round 7 P0/P1/P2 0/3/6), so another session has to re-decide this submission; the implementer changed the harness, the evidence generator and a governance check during the rework and must not accept its own output.",
+    "10 independent reviews have returned 8 REWORK verdicts (round 1 P0/P1/P2 0/4/6; round 2 P0/P1/P2 0/1/9; round 3 P0/P1/P2 0/3/7; round 4 P0/P1/P2 0/4/8; round 5 P0/P1/P2 0/2/8; round 6 P0/P1/P2 0/3/9; round 7 P0/P1/P2 0/3/6; round 9 P0/P1/P2 0/5/4), so another session has to re-decide this submission; the implementer changed the harness, the evidence generator and a governance check during the rework and must not accept its own output.",
     "The rollback and compensation requirement is owned by P1R-M2-006 and the ledger line for this task was changed to match, so the entry above reports NOT_APPLICABLE rather than claiming a drift-refusal check satisfies it. The workflow-service delivered under that task holds the compensation executor, the two-person approval and the recovery receipts.",
     "The workflow-service built under P1R-M2-006 is a provisioned owner, so this task's evidence describes 14 owners and its Redis loss check reads 14 tables including that service's. Its schema, credential, migration coverage and tenant guard are delivered by P1R-M2-006, not by this one, and that boundary is recorded in knownGaps rather than only here."
   ]

@@ -823,6 +823,10 @@ const evidence = {
   schema: 'm2.data-ownership.runtime-evidence.v1',
   taskId: 'P1R-M2-004',
   result: failures.length === 0 ? 'PARTIAL' : 'FAIL',
+  // Whether the tree was clean when this ran. Evidence from a dirty tree cannot be reconstructed from
+  // the revision it names, which is how a file came to record a sourceCommit whose harness did not contain
+  // the text it had written. Recording the flag makes that visible instead of leaving a reader to find it.
+  workingTreeDirty: ((spawnSync('git', ['status', '--porcelain'], { encoding: 'utf8', windowsHide: true }).stdout ?? '').trim().length > 0),
   sourceCommit: gitRevision,
   startedAt,
   finishedAt: new Date().toISOString(),

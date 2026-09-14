@@ -94,6 +94,26 @@
       "reviewedCommit": null,
       "reviewer": "awaiting a fresh independent session",
       "summary": "Not submitted. The seventh round's findings are addressed: the reassignment is carried in all five places and checked for stale sentences, the tenant figure has one definition and the same number everywhere, the review request is regenerated from the manifest, and the gate requires the ledger line to name any task that owns one of the task's requirements."
+    },
+    {
+      "round": 9,
+      "verdict": "REWORK",
+      "counts": {
+        "P0": 0,
+        "P1": 5,
+        "P2": 4
+      },
+      "reviewedCommit": "11e429dbb354d6313e48eae8f9001c4e7df00724",
+      "reviewer": "independent review session (ninth round)",
+      "summary": "P0 remained zero and the runtime facts were reproduced again on real MySQL and Redis. Five P1 findings: the review request still carried four not-applicable entries against three, a byte-identical duplicated block and an inconsistent round number; the execution record still claimed the rollback requirement was delivered and implemented here while naming P1R-M2-006 on the same line; the runtime evidence named a revision whose harness did not contain the text it had written, because it was produced on a dirty tree; the review history had no eighth round while the commit message and the review request both referenced it; and the stale-claims checker was structurally unable to fire on the shape it was written for, because its exemption was per file and the exempt files were exactly the ones carrying those sentences."
+    },
+    {
+      "round": 10,
+      "verdict": "PENDING",
+      "counts": null,
+      "reviewedCommit": null,
+      "reviewer": "awaiting a fresh independent session",
+      "summary": "Not submitted."
     }
   ]
 }
