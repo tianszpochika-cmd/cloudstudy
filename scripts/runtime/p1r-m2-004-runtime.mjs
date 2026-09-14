@@ -792,8 +792,10 @@ requirements.push({
     ? 'VERIFIED' : 'FAILED',
 });
 requirements.push({ id: 'M2-004-FLYWAY-EMPTY-AND-EXISTING', status: requirementStatus('migration-') });
-// The rollback and compensation requirement is owned here, so it is verified here: the check proves the
-// reconcile runner refuses a checksum that no longer matches its migration and recovers after repair.
+// The rollback and compensation requirement is owned by P1R-M2-006 and this task reports it NOT_APPLICABLE.
+// The check below is migration-safety evidence: it proves the reconcile runner refuses a checksum that no
+// longer matches its migration and recovers after repair, which is a real property but not the one the ledger
+// names, since it performs no rollback and writes none of the receipts.
 requirements.push({ id: 'M2-004-ROLLBACK-COMPENSATION', status: requirementStatus('rollback:') });
 // The tenant guard is delivered here at the storage layer. The gated *TenantIsolationTest classes each run
 // against their own owner's schema on a real MySQL, write and read facts with a JdbcTemplate, and assert

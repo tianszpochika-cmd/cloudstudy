@@ -2,7 +2,7 @@
   "taskId": "P1R-M2-004",
   "draftOnly": false,
   "canonicalTaskStatus": "REVIEW",
-  "sourceCommit": "3c6c4fe58b65cdbc0b6a37a8640384ebb74fbab8",
+  "sourceCommit": "7878f6348ab90f75d2ae139eaf9bcee31088a35a",
   "artifactDigests": [
     {
       "path": "config/p1r-data-ownership.v1.json",
@@ -12,7 +12,7 @@
     {
       "path": "config/p1r-m2-requirement-owners.v1.json",
       "algorithm": "sha256",
-      "digest": "86eadf753b9f07a016c80260c8b1d5b3ef913a5f090d16d6e137c7a2bb94bfaf"
+      "digest": "e0068c9c23028dc33061fe916886ea7b751f3b1a17d8a0d039041173812f7fd4"
     },
     {
       "path": "config/v2-runtime-services.json",
@@ -52,7 +52,7 @@
     {
       "path": "scripts/runtime/capture-m2-004-evidence.mjs",
       "algorithm": "sha256",
-      "digest": "3b84f2cd56dbca31fac0cc84f51887c1c1be9039fe6fc34658fd67d62e38668c"
+      "digest": "d14090642f240e3ddeded0cae5ee6e7d939d3ab38731abdef43f5ec3cf16f6ce"
     },
     {
       "path": "scripts/runtime/run-gated-db-tests.mjs",
@@ -67,7 +67,7 @@
     {
       "path": "scripts/runtime/p1r-m2-004-runtime.mjs",
       "algorithm": "sha256",
-      "digest": "2d05d1125189954259b3c01084d2b85c03c24897a77eadf9bed4663563f98cad"
+      "digest": "afabce30ced145afaf75f1afae56511a10edff5179b914877294c3b03f374f44"
     },
     {
       "path": "services/audit-service/src/main/resources/db/migration/V2__widen_audit_schema_version.sql",
@@ -292,7 +292,7 @@
     {
       "path": "evidence/p1r/m2/P1R-M2-004/runtime-evidence-2026-09-13.json",
       "algorithm": "sha256",
-      "digest": "55a3e961433346a1b0c8fc5c1eb812d3ec2191d294e7fdcf3f2ab97e8da5e1e9"
+      "digest": "fa48e93352143142bcaebccbe721d09a071e2dc310709c8bbb37bf1ea97d1180"
     },
     {
       "path": "evidence/p1r/m2/P1R-M2-004/gated-db-tests.json",
@@ -315,8 +315,8 @@
     "branch": "dev",
     "phaseStatus": "D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED",
     "runtimeStatus": "M2_004_PARTIAL_RUNTIME_VERIFIED",
-    "reviewedRevision": "a59f2dbef234a4cb3bc1529b417ab9da8e27c151",
-    "measuredAt": "2026-09-14T03:38:10.418Z",
+    "reviewedRevision": "7878f6348ab90f75d2ae139eaf9bcee31088a35a",
+    "measuredAt": "2026-09-14T04:46:35.181Z",
     "toolchain": {
       "java": "OpenJDK 25.0.4.1",
       "maven": "3.9.12",
@@ -446,7 +446,7 @@
     ]
   },
   "startedAt": "2026-09-09T00:00:00+08:00",
-  "finishedAt": "2026-09-14T04:23:09.660Z",
+  "finishedAt": "2026-09-14T04:46:36.230Z",
   "actors": [
     "root-coordinator",
     "p1r-implementation"
@@ -494,7 +494,7 @@
     {
       "check": "M2-004-TENANT-GUARD",
       "status": "PASS",
-      "details": "Delivered at the storage layer. 10 *TenantIsolationTest classes run against a real MySQL, each against its own owner's schema, writing and reading facts with a JdbcTemplate and asserting that a foreign tenant's rows are not returned; all 10 pass when run with their flags. MEASURED, WITH ITS DEFINITION, because the figure moves with the method: counting `new <imported com.englishflow production class>(` in each test's source, 9 of the 10 instantiate at least one production class and 1 do not (NotificationTenantIsolationTest). Counting any import from a service package instead gives 8; counting any reference including static calls gives more. So this is evidence about schema-level isolation, and it is not evidence that every service's request path enforces the same rule. The HTTP-level two-tenant negative is residual and needs the synthetic per-owner account P1R-M0-007 builds and P1R-M2-009 wires into CI."
+      "details": "Delivered at the storage layer. 10 *TenantIsolationTest classes run against a real MySQL, each against its own owner's schema, writing and reading facts with a JdbcTemplate and asserting that a foreign tenant's rows are not returned; all 10 pass when run with their flags. MEASURED, WITH ITS DEFINITION, because the figure moves with the method: resolving each test's imported production classes together with the main classes in its own package, then looking for a construction of one of them, 9 of the 10 instantiate at least one production class and 1 do not (NotificationTenantIsolationTest). Counting any import from a service package instead gives 8; counting any reference including static calls gives more. So this is evidence about schema-level isolation, and it is not evidence that every service's request path enforces the same rule. The HTTP-level two-tenant negative is residual and needs the synthetic per-owner account P1R-M0-007 builds and P1R-M2-009 wires into CI."
     },
     {
       "check": "M2-004-FLYWAY-OWNER-COVERAGE",
