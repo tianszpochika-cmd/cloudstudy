@@ -74,7 +74,7 @@ manifest 的 `results`：**9 PASS + 3 NOT_APPLICABLE**。下面这张表的数�
 
 ## 4. 建议的复核清单
 
-- [ ] **`NOT_APPLICABLE` 的 4 项归属**是否成立（对照台账原文）
+- [ ] **`NOT_APPLICABLE` 的 3 项归属**是否成立（对照台账原文）
 - [ ] **迁移运行器**：构造一个 ALTER-only 迁移，确认它**会被执行**；再确认改动一个已应用迁移会被 checksum 拦下
 - [ ] **审计缺陷修复**：确认 `schema_version` 两列已加宽、且 ingest 返回 202 / 重放返回 200 同一 auditId（证据文件有记录，请独立复算）
 - [ ] **跨库写阻断**：直接以 `svc_learner` 尝试读另一个 schema，确认被拒
