@@ -3,6 +3,14 @@ spring:
     name: workflow-service
   lifecycle:
     timeout-per-shutdown-phase: ${WORKFLOW_SHUTDOWN_TIMEOUT:20s}
+  # The JdbcTemplate the wiring needs. workflow.persistence below is this service's own view of the same
+  # settings; Spring builds its DataSource from these, and without them the application fails to start with
+  # "Failed to determine a suitable driver class" before any bean is created.
+  datasource:
+    url: ${WORKFLOW_JDBC_URL:}
+    username: ${WORKFLOW_JDBC_USERNAME:}
+    password: ${WORKFLOW_JDBC_PASSWORD:}
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
 server:
   address: ${WORKFLOW_SERVICE_SERVER_ADDRESS:127.0.0.1}
