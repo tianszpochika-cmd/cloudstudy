@@ -1,0 +1,152 @@
+// Fails when a document contradicts the ownership file or the manifest.
+//
+// Eight reviews in a row found the same thing: a correction made where the review named it, with a sibling
+// sentence left saying the opposite. Each was findable with one grep, and each was found by a reviewer rather
+// than by the implementer, because the implementer checked the place that had been named. This script is the
+// systematic version of that grep: it derives what the documents must say from the config and the manifest, then
+// searches the repository for sentences that say otherwise.
+//
+// It is deliberately about claims that can be decided mechanically. Prose about what a test proves still needs a
+// reader; who owns a requirement and how many rounds have happened do not.
+//
+// Usage: node scripts/audit/p1r-stale-claims-check.mjs [--json]
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
+
+/**
+ * Every tracked text file worth searching, excluding build output, the evidence of other tasks, this script
+ * itself, and the two places that are dated records by design.
+ *
+ * A changelog and a ledger's dated entries quote the figures that were true when they were written; holding them
+ * to today's numbers would be wrong, and searching this file for the patterns it defines would only find them.
+ */
+function documents() {
+  const found = [];
+  const skip = new Set(['node_modules', '.git', 'target', 'dist', 'build', '.nuxt', 'coverage', 'tmp']);
+  const self = fileURLToPath(import.meta.url);
+  const dated = new Set(['CHANGELOG.md']);
+  // Everything from the ledger's dated entries onward is a historical record.
+  const ledgerPath = path.join(root, 'requirements/backlog/v2-phase1-rebaseline/02-编号任务台账.md');
+  const datedFrom = fs.existsSync(ledgerPath)
+    ? fs.readFileSync(ledgerPath, 'utf8').indexOf('## 11. 日期条目')
+    : -1;
+  const visit = (directory) => {
+    for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
+      if (skip.has(entry.name)) continue;
+      const absolute = path.join(directory, entry.name);
+      if (entry.isDirectory()) { visit(absolute); continue; }
+      if (!/\.(md|json|mjs|yaml|yml)$/u.test(entry.name)) continue;
+      if (absolute.includes(`${path.sep}evidence${path.sep}`)) continue;
+      if (absolute === self || dated.has(entry.name)) continue;
+      found.push(absolute);
+    }
+  };
+  visit(root);
+  return { files: found, ledgerPath, datedFrom };
+}
+
+export function checkStaleClaims() {
+  const errors = [];
+  const { files, ledgerPath: ledgerFile, datedFrom } = documents();
+  const read = (file) => fs.readFileSync(file, 'utf8');
+  const rel = (file) => path.relative(root, file).replaceAll('\\', '/');
+
+  // 1. A requirement the config assigns to another task must not be described anywhere as delivered by the task
+  //    that asserted it.
+  const ownersPath = path.join(root, 'config/p1r-m2-requirement-owners.v1.json');
+  if (fs.existsSync(ownersPath)) {
+    const owners = JSON.parse(fs.readFileSync(ownersPath, 'utf8'));
+    const reassigned = (owners.requirements ?? []).filter((entry) => entry.ownerTask !== entry.assertedBy);
+    // The sentences that asserted delivery here, kept as patterns rather than as prose.
+    const deliveryClaims = [
+      /已交付（本任务）/u,
+      /owned by this task rather than reassigned/u,
+      /delivered and verified here/u,
+      /decided in favour of this task/u,
+      /owned here, so it is verified here/u,
+      /is delivered here/u,
+    ];
+    for (const file of files) {
+      const text = file === ledgerFile && datedFrom > 0 ? read(file).slice(0, datedFrom) : read(file);
+      for (const pattern of deliveryClaims) {
+        const match = pattern.exec(text);
+        if (match === null) continue;
+        // A file that also carries the reassignment is allowed to mention the old wording as superseded; only a
+        // file that claims delivery without recording the reassignment is a contradiction.
+        const recordsReassignment = reassigned.some((entry) => text.includes(entry.ownerTask));
+        if (!recordsReassignment) {
+          errors.push(`${rel(file)}: says a reassigned requirement is delivered there ("${match[0]}") without recording the reassignment`);
+        }
+      }
+    }
+  }
+
+  // 2. Every task manifest's round count has to match the review history it embeds, and the history has to match
+  //    the ledger's dated entries.
+  const ledger = fs.existsSync(ledgerFile) ? read(ledgerFile) : '';
+  const historyPath = path.join(root, 'evidence/p1r/m2/P1R-M2-004/review-history.json');
+  if (fs.existsSync(historyPath)) {
+    const history = JSON.parse(read(historyPath));
+    const decided = history.rounds.filter((round) => round.verdict !== 'PENDING').length;
+    const numerals = ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十'];
+    const missing = history.rounds
+      .filter((round) => round.verdict !== 'PENDING')
+      .filter((round) => !ledger.includes(`**第${numerals[round.round - 1]}轮**独立评审结论`));
+    if (missing.length > 0) {
+      errors.push(`the ledger does not record review rounds the history records: ${missing.map((round) => round.round).join(', ')}`);
+    }
+    // Any document quoting a different number of reviews is stale.
+    for (const file of files) {
+      const text = file === ledgerFile && datedFrom > 0 ? read(file).slice(0, datedFrom) : read(file);
+      const claim = /(\w+) independent reviews have returned REWORK/u.exec(text) ?? /(\d+) 轮 REWORK/u.exec(text);
+      if (claim === null) continue;
+      const words = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9 };
+      const stated = Number(claim[1]) || words[String(claim[1]).toLowerCase()];
+      if (Number.isFinite(stated) && stated !== decided) {
+        errors.push(`${rel(file)}: says ${stated} reviews have returned REWORK where the history records ${decided}`);
+      }
+    }
+  }
+
+  // 3. Figures a document quotes about the manifest have to match it.
+  const manifestPath = path.join(root, 'evidence/p1r/m2/P1R-M2-004/manifest.json');
+  if (fs.existsSync(manifestPath)) {
+    const manifest = JSON.parse(read(manifestPath));
+    const artifacts = manifest.artifactDigests.length;
+    const passing = manifest.results.filter((entry) => entry.status === 'PASS').length;
+    const notApplicable = manifest.results.filter((entry) => entry.status === 'NOT_APPLICABLE').length;
+    // Only the review request: it is the one document whose whole purpose is to describe this task's current
+    // state. An execution record also mentions other tasks' manifests, so a figure inside it may legitimately
+    // refer to something else, and telling which needs a reader. The ownership and round-count checks above are
+    // unambiguous and run everywhere; this one admits its limit rather than guessing.
+    const aboutThisTask = files.filter((file) => /REVIEW-REQUEST-P1R-M2-004/u.test(path.basename(file)));
+    for (const file of aboutThisTask) {
+      const text = file === ledgerFile && datedFrom > 0 ? read(file).slice(0, datedFrom) : read(file);
+      for (const match of text.matchAll(/(\d+) artifacts/gu)) {
+        if (Number(match[1]) !== artifacts) {
+          errors.push(`${rel(file)}: says ${match[1]} artifacts where the manifest records ${artifacts}`);
+        }
+      }
+      for (const match of text.matchAll(/(\d+) PASS \+ (\d+) NOT_APPLICABLE/gu)) {
+        if (Number(match[1]) !== passing || Number(match[2]) !== notApplicable) {
+          errors.push(`${rel(file)}: says ${match[1]} PASS and ${match[2]} NOT_APPLICABLE where the manifest records ${passing} and ${notApplicable}`);
+        }
+      }
+    }
+  }
+
+  return { schema: 'platform.stale-claims-check.v1', checkedFiles: files.length, errors, result: errors.length === 0 ? 'PASS' : 'FAIL' };
+}
+
+if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(fileURLToPath(import.meta.url))) {
+  const report = checkStaleClaims();
+  if (process.argv.includes('--json')) process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
+  else {
+    console.log(`stale-claims check: ${report.result} (${report.checkedFiles} files)`);
+    for (const error of report.errors) console.log(`  - ${error}`);
+  }
+  process.exitCode = report.result === 'PASS' ? 0 : 1;
+}
