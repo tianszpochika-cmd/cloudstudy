@@ -2,7 +2,7 @@
   "taskId": "P1R-M2-004",
   "draftOnly": false,
   "canonicalTaskStatus": "REVIEW",
-  "sourceCommit": "00f684c9fb18db8dea67c0e5af945f1898733e1b",
+  "sourceCommit": "4fb939b58836126fd3ff73b604ea4eecf9c8cab5",
   "artifactDigests": [
     {
       "path": "config/p1r-data-ownership.v1.json",
@@ -311,10 +311,13 @@
         "user-set-matches-policy"
       ],
       "redisOnlyOwnersProbed": [
-        "api-gateway",
-        "workflow-service"
+        "api-gateway"
       ],
-      "gatedTestsRun": 43
+      "gatedTestClasses": 30,
+      "gatedGroupsRun": 25,
+      "gatedTestsRun": 43,
+      "declaredOwnersProvisioned": 14,
+      "externallyMigratedOwners": 13
     }
   },
   "provenance": {
@@ -364,29 +367,10 @@
         "reviewer": "awaiting a fresh independent session",
         "summary": "Not submitted. The third round has closed the new P1 and seven of the ten P2 findings so far; the remainder and the submission itself are outstanding."
       }
-    ],
-    "previousCurrentSourceCommit": "36b36d7757efb7dff2a21f64cc8f3d02bb730ef7",
-    "currentSourceRevalidationTask": "P1R-M2-004",
-    "currentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
-    "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-13T18:51:26.805Z",
-    "currentSourceRevalidationAuditedImplementationSource": "00f684c9fb18db8dea67c0e5af945f1898733e1b",
-    "currentSourceRevalidationIntegrationCheckpoint": "00f684c9fb18db8dea67c0e5af945f1898733e1b",
-    "currentSourceRevalidationHistory": [
-      {
-        "taskId": "P1R-M2-004",
-        "sourceCommit": "00f684c9fb18db8dea67c0e5af945f1898733e1b",
-        "auditedImplementationSource": "00f684c9fb18db8dea67c0e5af945f1898733e1b",
-        "integrationCheckpoint": "00f684c9fb18db8dea67c0e5af945f1898733e1b",
-        "reviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
-        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
-        "finishedAt": "2026-09-13T18:51:26.805Z",
-        "details": "Digest rebind after P1R-M2-006 registered and created workflow-service, which adds a module to the root pom and an owner to scripts/database/lib/owner-manifest.mjs. Both files are recorded by this task as artifacts, so only their digests moved. No result, gap or claim in this manifest changed, and the review verdicts it carries are untouched."
-      }
     ]
   },
   "startedAt": "2026-09-09T00:00:00+08:00",
-  "finishedAt": "2026-09-13T18:16:21.975Z",
+  "finishedAt": "2026-09-14T00:01:28.696Z",
   "actors": [
     "root-coordinator",
     "p1r-implementation"
@@ -430,7 +414,7 @@
     {
       "check": "M2-004-TENANT-GUARD",
       "status": "PASS",
-      "details": "Delivered at the storage layer. 10 *TenantIsolationTest classes run against a real MySQL, each against its own owner's schema, writing and reading facts with a JdbcTemplate and asserting that a foreign tenant's rows are not returned; all 10 pass when run with their flags. Six of the ten also reference the owner's own adapter or guard classes, four do not, so this is evidence about schema-level isolation rather than about every service's request path. The HTTP-level two-tenant negative is residual and needs the synthetic per-owner account P1R-M0-007 builds and P1R-M2-009 wires into CI."
+      "details": "Delivered at the storage layer. 10 *TenantIsolationTest classes run against a real MySQL, each against its own owner's schema, writing and reading facts with a JdbcTemplate and asserting that a foreign tenant's rows are not returned; all 10 pass when run with their flags. MEASURED, WITH ITS DEFINITION, because the figure moves with the method: counting `new <imported com.englishflow production class>(` in each test's source, 6 of the 10 instantiate at least one production class and 4 do not (AssessmentTenantIsolationTest, GamificationTenantIsolationTest, NotificationTenantIsolationTest, SocialTenantIsolationTest). Counting any import from a service package instead gives 8; counting any reference including static calls gives more. So this is evidence about schema-level isolation, and it is not evidence that every service's request path enforces the same rule. The HTTP-level two-tenant negative is residual and needs the synthetic per-owner account P1R-M0-007 builds and P1R-M2-009 wires into CI."
     },
     {
       "check": "M2-004-FLYWAY-OWNER-COVERAGE",
@@ -463,22 +447,22 @@
     {
       "check": "audit-service-contract-defect",
       "status": "PASS",
-      "details": "The gateway contract schema identifier is 37 characters while both schema_version columns were VARCHAR(32). Because the receipt insert used INSERT IGNORE, MySQL truncated the value into a warning and stored a corrupted receipt while the fact insert failed outright, leaving three orphan receipts and no durable fact. V2 widens both columns and an ingest then returns 202 ACCEPTED with a 200 DUPLICATE replay."
+      "details": "The gateway contract schema identifier is 37 characters while both schema_version columns were VARCHAR(32). Because the receipt insert used INSERT IGNORE, MySQL truncated the value into a warning and stored a corrupted receipt while the fact insert failed outright. V2 widens both columns to VARCHAR(64), which is read from that migration file here. NOT MEASURED BY THIS GENERATOR: the 202 ACCEPTED and 200 DUPLICATE responses, which live only in the execution record prose and have no runner; the storage side was independently confirmed by the reviewer (column width 64, 37 characters stored untruncated, fact=receipt=1)."
     },
     {
       "check": "p1r-regression",
       "status": "PASS",
-      "details": "P1R 1429/1429 under Node 20.19.5; evidence gate, plan, gap registry, docs audit, data ownership, ci guard, toolchain and the runtime dependency audit all PASS. The full suite goes from 1885 pass / 25 fail before this work to a green suite; the twenty-four legacy B failures that were pre-existing are now fixed and each fix strengthened the assertion rather than relaxing it."
+      "details": "P1R 1435/1435 with 0 failures and 1435 passing, read from evidence/p1r/m2/P1R-M2-004/regression.json; the full suite reports 1930 tests with 0 failures. The twenty-four legacy B failures that were pre-existing are fixed and each fix strengthened the assertion rather than relaxing it."
     }
   ],
   "rollbackEvidence": [
     {
       "status": "PASS",
-      "details": "The migrations are additive: they add columns, backfill from the legacy column where one exists and add an index. Reverting the commits restores the previous schema shape without dropping data, and the reconcile runner records applied versions so a rollback is a deliberate operator action rather than a silent re-run. The runtime services needed no code change for the outbox standardisation."
+      "details": "Checked against the migration files rather than asserted: 62 migrations across the owners were scanned for DROP COLUMN, DROP TABLE, RENAME and any MODIFY that narrows a column. 0 contain one, so reverting the commits restores the previous schema shape without losing data."
     },
     {
-      "status": "PASS",
-      "details": "The Redis namespace rename is the one change that moved data rather than code: the Gateway always built its keys as englishflow:gateway:*, so the policy value and the check that enforced it were corrected to match the ACL and the runtime. Redis holds no business facts, and the loss evidence shows the fact counts are unaffected by its absence, so there is nothing to migrate back."
+      "status": "NOT_APPLICABLE",
+      "details": "The rollback and compensation test named in the ledger line for this task is assigned to P1R-M2-006 in config/p1r-m2-requirement-owners.v1.json, and the third review found that assignment unsupported by the ledger text. Whether it belongs to this task or is reassigned to M2-006 is a question about task boundaries, not an implementation detail, and is awaiting the human decision; until it is settled this entry reports NOT_APPLICABLE rather than a PASS that nothing measured."
     }
   ],
   "knownGaps": [
