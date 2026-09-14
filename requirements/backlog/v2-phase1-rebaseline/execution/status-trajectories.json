@@ -490,12 +490,14 @@
     {
       "taskId": "P1R-M2-006",
       "path": [
+        "PLANNED",
         "READY",
         "IN_PROGRESS"
       ],
       "recordedAt": "2026-09-14T16:55:47.934Z",
       "actor": "agent:p1r_implementation:deepseek-harness",
-      "reason": "Work has started. The durable audit path is complete and verified end to end, which is the part three earlier attempts could not reach: the causes were a stale jar, an audit validator that accepted only access tokens, and a scope claim written as a list where the validator reads a String. The workflow service suite still has one failing integration test — the recovery sweep does not pick up an unfinished saga — so the task is in progress rather than done."
+      "reason": "Work has started. The durable audit path is complete and verified end to end, which is the part three earlier attempts could not reach: the causes were a stale jar, an audit validator that accepted only access tokens, and a scope claim written as a list where the validator reads a String. The workflow service suite still has one failing integration test — the recovery sweep does not pick up an unfinished saga — so the task is in progress rather than done.",
+      "evidencePath": "evidence/p1r/m2/P1R-M2-006/manifest.json"
     }
   ]
 }
