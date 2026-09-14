@@ -244,6 +244,22 @@ export function validateManifest({ root, task, manifest, manifestPath, checkGit 
   add(errors, Array.isArray(manifest.commands) && manifest.commands.length > 0, `${task.id}: commands are required`);
   add(errors, Array.isArray(manifest.results) && manifest.results.length > 0, `${task.id}: results are required`);
   add(errors, Array.isArray(manifest.rollbackEvidence), `${task.id}: rollbackEvidence must be an array`);
+  // Each entry carries a status and the gate only checked that the array existed, so a real FAIL could be turned into
+  // a PASS without the gate saying anything. The thirteenth review demonstrated that by mutation: changing the status
+  // moved the error count by zero. That is a genuine way to pass by editing the manifest, which is the one thing the
+  // gate exists to prevent. The status is checked the same way a result's status is.
+  for (const [index, item] of (manifest.rollbackEvidence ?? []).entries()) {
+    if (!isRecord(item)) {
+      errors.push(`${task.id}: rollbackEvidence[${index}] must be an object`);
+      continue;
+    }
+    if (typeof item.status !== 'string') {
+      errors.push(`${task.id}: rollbackEvidence[${index}] must carry a status`);
+      continue;
+    }
+    add(errors, ['PASS', 'SKIP', 'NOT_APPLICABLE'].includes(item.status),
+      `${task.id}: rollbackEvidence[${index}] reports ${item.status}: ${String(item.check ?? item.description ?? '').slice(0, 90)}`);
+  }
   add(errors, Array.isArray(manifest.knownGaps), `${task.id}: knownGaps must be an array`);
 
   add(errors, Array.isArray(manifest.artifactDigests) && manifest.artifactDigests.length > 0, `${task.id}: artifactDigests are required`);
