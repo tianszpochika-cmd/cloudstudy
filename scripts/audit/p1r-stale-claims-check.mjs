@@ -63,23 +63,38 @@ export function checkStaleClaims() {
     // The sentences that asserted delivery here, kept as patterns rather than as prose.
     const deliveryClaims = [
       /已交付（本任务）/u,
+      /归本任务并已实现/u,
       /owned by this task rather than reassigned/u,
       /delivered and verified here/u,
       /decided in favour of this task/u,
       /owned here, so it is verified here/u,
-      /is delivered here/u,
+      /is delivered here by this task/u,
+      /由本任务交付并已实现/u,
     ];
+    // Per line, and the contradiction is inside the line. A file-level exemption meant any file naming an owner
+    // task was immune, which covered the ledger, the execution record, the review request, the trajectory
+    // registry and the changelog: exactly where these sentences live, so the rule could never fire on the shape
+    // it was written for. The ninth review proved that by mutation after the implementer explained the same
+    // result away as intended behaviour.
+    //
+    // Firing on every delivery claim is too broad in the other direction: "the tenant guard is delivered here at
+    // the storage layer" is true, because that requirement is this task's. What is wrong is a line that claims
+    // delivery here and names the task it was reassigned to, which is what the execution record did.
     for (const file of files) {
       const text = file === ledgerFile && datedFrom > 0 ? read(file).slice(0, datedFrom) : read(file);
-      for (const pattern of deliveryClaims) {
-        const match = pattern.exec(text);
-        if (match === null) continue;
-        // A file that also carries the reassignment is allowed to mention the old wording as superseded; only a
-        // file that claims delivery without recording the reassignment is a contradiction.
-        const recordsReassignment = reassigned.some((entry) => text.includes(entry.ownerTask));
-        if (!recordsReassignment) {
-          errors.push(`${rel(file)}: says a reassigned requirement is delivered there ("${match[0]}") without recording the reassignment`);
-        }
+      for (const [index, line] of text.split(/\r?\n/u).entries()) {
+        const claim = deliveryClaims.map((pattern) => pattern.exec(line)).find((match) => match !== null);
+        if (claim === undefined) continue;
+        const reassignedHere = reassigned.filter((entry) => line.includes(entry.ownerTask));
+        // Two shapes are contradictions: the line both claims delivery and names the owner it went to, or the
+        // wording is the one that specifically denied the reassignment.
+        const deniesReassignment = /owned by this task rather than reassigned|decided in favour of this task|owned here, so it is verified here|归本任务并已实现/u.test(claim[0]);
+        if (reassignedHere.length === 0 && !deniesReassignment) continue;
+        errors.push(`${rel(file)}:${index + 1}: claims delivery here while `
+          + (reassignedHere.length > 0
+            ? `naming ${reassignedHere.map((entry) => entry.ownerTask).join(', ')} as the owner`
+            : 'denying the reassignment outright')
+          + ` ("${claim[0]}")`);
       }
     }
   }
