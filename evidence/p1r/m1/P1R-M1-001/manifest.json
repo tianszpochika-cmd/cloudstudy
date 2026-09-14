@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-001",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "0dec0961f07b53a5fd9e891397fb56872043038f",
+  "sourceCommit": "dc31e4d8902f1f514bed545e2eb1300d4b86ea65",
   "artifactDigests": [
     {
       "path": "scripts/audit/p1r-api-contract-check.mjs",
@@ -37,7 +37,7 @@
     "originalFinishedAt": "2026-08-29T20:28:20+08:00",
     "originalReviewer": "m1_001_final_review",
     "originalAcceptedContractBaseline": "4d7f73a867ff3e1db8582eab7593c173625bc8a3",
-    "previousCurrentSourceCommit": "17b7d4923f8f0b9116b4698535fc26448d58d598",
+    "previousCurrentSourceCommit": "0dec0961f07b53a5fd9e891397fb56872043038f",
     "previousCurrentSourceRevalidationTask": "P1R-M1-018",
     "currentSourceRevalidationTask": "P1R-M1-001",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
@@ -199,15 +199,25 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-14T16:12:44.949Z",
         "details": "Digest rebind after the gate test changed."
+      },
+      {
+        "taskId": "P1R-M1-001",
+        "sourceCommit": "dc31e4d8902f1f514bed545e2eb1300d4b86ea65",
+        "auditedImplementationSource": "dc31e4d8902f1f514bed545e2eb1300d4b86ea65",
+        "integrationCheckpoint": "dc31e4d8902f1f514bed545e2eb1300d4b86ea65",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-14T16:55:49.012Z",
+        "details": "Rebind after the audit validator, scope claim and probe changed."
       }
     ],
     "previousCurrentSourceRevalidationReviewer": "agent:m1_018_final_review:gpt-5.6-luna:max",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
     "previousCurrentSourceRevalidationFinishedAt": "2026-09-01T14:40:33+08:00",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-14T16:12:44.949Z",
-    "currentSourceRevalidationAuditedImplementationSource": "0dec0961f07b53a5fd9e891397fb56872043038f",
-    "currentSourceRevalidationIntegrationCheckpoint": "0dec0961f07b53a5fd9e891397fb56872043038f"
+    "currentSourceRevalidationFinishedAt": "2026-09-14T16:55:49.012Z",
+    "currentSourceRevalidationAuditedImplementationSource": "dc31e4d8902f1f514bed545e2eb1300d4b86ea65",
+    "currentSourceRevalidationIntegrationCheckpoint": "dc31e4d8902f1f514bed545e2eb1300d4b86ea65"
   },
   "startedAt": "2026-08-29T11:15:00+08:00",
   "finishedAt": "2026-09-01T15:39:29+08:00",

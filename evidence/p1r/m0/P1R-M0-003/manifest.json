@@ -2,7 +2,7 @@
   "taskId": "P1R-M0-003",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "0dec0961f07b53a5fd9e891397fb56872043038f",
+  "sourceCommit": "dc31e4d8902f1f514bed545e2eb1300d4b86ea65",
   "artifactDigests": [
     {
       "path": "config/toolchain-baseline.json",
@@ -70,14 +70,14 @@
   "reviewer": "root-coordinator",
   "decision": "ACCEPTED",
   "provenance": {
-    "previousCurrentSourceCommit": "17b7d4923f8f0b9116b4698535fc26448d58d598",
+    "previousCurrentSourceCommit": "0dec0961f07b53a5fd9e891397fb56872043038f",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
     "currentSourceRevalidationTask": "P1R-M0-003",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-14T16:12:44.445Z",
-    "currentSourceRevalidationAuditedImplementationSource": "0dec0961f07b53a5fd9e891397fb56872043038f",
-    "currentSourceRevalidationIntegrationCheckpoint": "0dec0961f07b53a5fd9e891397fb56872043038f",
+    "currentSourceRevalidationFinishedAt": "2026-09-14T16:55:48.388Z",
+    "currentSourceRevalidationAuditedImplementationSource": "dc31e4d8902f1f514bed545e2eb1300d4b86ea65",
+    "currentSourceRevalidationIntegrationCheckpoint": "dc31e4d8902f1f514bed545e2eb1300d4b86ea65",
     "originalSourceCommit": "0f8b60ae4e83d0f31d891eed8d9383c007485130",
     "currentSourceRevalidationHistory": [
       {
@@ -159,6 +159,16 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-14T16:12:44.445Z",
         "details": "Digest rebind after the gate test changed."
+      },
+      {
+        "taskId": "P1R-M0-003",
+        "sourceCommit": "dc31e4d8902f1f514bed545e2eb1300d4b86ea65",
+        "auditedImplementationSource": "dc31e4d8902f1f514bed545e2eb1300d4b86ea65",
+        "integrationCheckpoint": "dc31e4d8902f1f514bed545e2eb1300d4b86ea65",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-14T16:55:48.388Z",
+        "details": "Rebind after the audit validator, scope claim and probe changed."
       }
     ],
     "previousCurrentSourceRevalidationTask": "P1R-M2-004",

@@ -1,9 +1,9 @@
 {
   "schema": "platform.gateway-audit-ingest-check.v1",
   "taskId": "P1R-M2-006",
-  "capturedAt": "2026-09-14T05:45:52.003Z",
+  "capturedAt": "2026-09-14T16:54:16.250Z",
   "gateway": "http://127.0.0.1:18070",
-  "requestId": "p1r-m2-006-1789364733090",
+  "requestId": "p1r-m2-006-1789404855043",
   "assertions": [
     {
       "name": "the gateway refused the request, so an event was produced",
@@ -14,47 +14,47 @@
     {
       "name": "the caller was given a request id to correlate with",
       "ok": true,
-      "observed": "p1r-m2-006-1789364733090",
-      "expected": "p1r-m2-006-1789364733090"
+      "observed": "p1r-m2-006-1789404855043",
+      "expected": "p1r-m2-006-1789404855043"
     },
     {
       "name": "exactly one audit fact was stored",
-      "ok": false,
-      "observed": 0,
+      "ok": true,
+      "observed": 1,
       "expected": 1
     },
     {
       "name": "the fact has exactly one ingest receipt",
-      "ok": false,
-      "observed": 0,
+      "ok": true,
+      "observed": 1,
       "expected": 1
     },
     {
       "name": "the schema identifier was stored whole",
-      "ok": false,
-      "observed": null,
+      "ok": true,
+      "observed": "m2.gateway.security-audit.evidence.v1",
       "expected": "m2.gateway.security-audit.evidence.v1"
     },
     {
       "name": "the fact is attributed to the gateway",
-      "ok": false,
-      "observed": null,
-      "expected": "api-gateway"
+      "ok": true,
+      "observed": "gateway.iam-domain",
+      "expected": "gateway.<route>"
     },
     {
       "name": "the stored request id matches the one the caller saw",
-      "ok": false,
-      "observed": null,
-      "expected": "p1r-m2-006-1789364733090"
+      "ok": true,
+      "observed": "p1r-m2-006-1789404855043",
+      "expected": "p1r-m2-006-1789404855043"
     },
     {
       "name": "the stored envelope carries no credential material",
-      "ok": false,
-      "observed": null,
+      "ok": true,
+      "observed": "no-credential-material",
       "expected": "no-credential-material"
     }
   ],
-  "failing": 6,
-  "blockedBy": "the Gateway has a durable sink (HttpSecurityAuditSink) but no credential for the canonical ingest: iam-service exposes no service-token or client-credentials endpoint, audit-service validates issuer and audience on /internal/v1/audit/**, and AGENTS.md makes iam-service the only token issuer. Service-to-service authentication is an architecture boundary change and needs an ADR before it can be wired.",
-  "result": "FAIL"
+  "failing": 0,
+  "blockedBy": null,
+  "result": "PASS"
 }

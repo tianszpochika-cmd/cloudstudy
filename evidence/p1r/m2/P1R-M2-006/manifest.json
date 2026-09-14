@@ -1,0 +1,165 @@
+{
+  "schema": "platform.p1r-task-evidence.v1",
+  "taskId": "P1R-M2-006",
+  "draftOnly": false,
+  "canonicalTaskStatus": "IN_PROGRESS",
+  "decision": "IN_PROGRESS",
+  "sourceCommit": "dc31e4d8902f1f514bed545e2eb1300d4b86ea65",
+  "statusNote": "Not finished. The durable audit path from the gateway through IAM to the canonical ingest works end to end — the probe reports eight of eight against the running stack — but the workflow service suite reports 51 tests with one failure: the recovery sweep does not pick up an unfinished saga. Recorded rather than delivered, because DEV_DONE is for work whose tests pass.",
+  "results": [
+    {
+      "check": "workflow-saga-state-machine",
+      "status": "FAIL",
+      "details": "Workflow service suite: 51 tests, 1 failure, 0 errors, run against real MySQL with the gated integration variables set. The failure is JdbcSagaStoreIntegrationTest.theRecoverySweepFindsUnfinishedSagasAndLeavesFinishedOnesAlone, which expects the sweep to pick up an unfinished saga and gets false. Without those variables the same suite reports 13 errors, because the gated tests cannot reach a database at all — which is why the earlier figure of zero tests in this manifest was wrong."
+    },
+    {
+      "check": "compensation-not-applied-twice",
+      "status": "PASS",
+      "details": "The executor refuses an already-applied compensation; the domain rule and its tests are in SagaCompensationExecutor and SagaCompensationExecutorTest."
+    },
+    {
+      "check": "manual-recovery-two-person",
+      "status": "PASS",
+      "details": "The requester cannot approve their own request, and an executed request cannot be approved again."
+    },
+    {
+      "check": "job-lease-arbitrated-by-database",
+      "status": "PASS",
+      "details": "Five tests against real MySQL: two instances contend and one wins, an expired lease is reclaimed, a disabled job says so."
+    },
+    {
+      "check": "outbox-claimed-exclusively",
+      "status": "PASS",
+      "details": "FOR UPDATE SKIP LOCKED, so two relays take different rows; a published event is never claimed again."
+    },
+    {
+      "check": "gateway-audit-ingest-end-to-end",
+      "status": "PASS",
+      "details": "The probe reports 8 of 8 assertions passing against the running stack: the gateway refuses the request, the caller gets a correlation id, exactly one fact and one receipt are stored, the schema identifier is stored whole, the action attributes it to the gateway, the request id matches, and the envelope carries no credential material."
+    }
+  ],
+  "rollbackEvidence": [
+    {
+      "status": "PASS",
+      "details": "The migrations this task established are additive: the workflow service schema is new, and the audit service migration widens a column from 32 to 64. A tree-wide sweep found two narrowings, in learning-service V9 and notification-service V3, which belong to those owners and are registered among the gaps."
+    }
+  ],
+  "knownGaps": [
+    "The workflow service suite has one failing integration test: the recovery sweep does not pick up an unfinished saga. This is the item blocking the task, not a gap.",
+    "The gateway's bounded in-memory sink remains the default when the durable settings are absent: gateway.audit.ingest-uri and its three companions are empty unless the environment supplies them, so a deployment that has not opted in keeps the old behaviour.",
+    "The service client's secret is a local development value in the runner. A deployment needs it injected, and the rotation the ADR names is not implemented.",
+    "The audit ingest accepts a service token type now, but nothing yet limits which service may claim audit.ingest beyond the permissions the client is granted at configuration time.",
+    "The workflow service is not in the owner manifest, so its schema and credentials come from the same local scripts as the platform services rather than from a per-service migration path."
+  ],
+  "artifactDigests": [
+    {
+      "path": "services/workflow-service/src/main/java/com/englishflow/workflow/domain/SagaStateMachine.java",
+      "algorithm": "sha256",
+      "digest": "73540b702b9a123ce93b78de01ec384e75f210e806e56987f4fbfc16328dae3f"
+    },
+    {
+      "path": "services/workflow-service/src/main/java/com/englishflow/workflow/domain/SagaStore.java",
+      "algorithm": "sha256",
+      "digest": "dbe1e93f894b24040ddc7cbb777e6ac954094ddf02f552391c44174e568b3434"
+    },
+    {
+      "path": "services/workflow-service/src/main/java/com/englishflow/workflow/application/SagaCompensationExecutor.java",
+      "algorithm": "sha256",
+      "digest": "b1dc15214721d5e9ff9c9f161e7dabf0636895dbb1e45426a1ecabc735dad11f"
+    },
+    {
+      "path": "services/workflow-service/src/main/java/com/englishflow/workflow/application/ManualRecoveryService.java",
+      "algorithm": "sha256",
+      "digest": "498b7fa559c3f45a315be2cb4092aa576e3e17d98184387c68698495f1cd18aa"
+    },
+    {
+      "path": "services/workflow-service/src/main/java/com/englishflow/workflow/adapter/http/ManualRecoveryController.java",
+      "algorithm": "sha256",
+      "digest": "cd7d684df3c48e86171934cf180ae1650948ad8fa3b074f38ff5f985dd350981"
+    },
+    {
+      "path": "services/workflow-service/src/main/java/com/englishflow/workflow/adapter/jdbc/JdbcJobLeaseStore.java",
+      "algorithm": "sha256",
+      "digest": "3f5beb04c4d574963861673a7b5d827a345cd5be51944261cac51b21799597e2"
+    },
+    {
+      "path": "services/workflow-service/src/main/java/com/englishflow/workflow/adapter/jdbc/JdbcWorkflowOutbox.java",
+      "algorithm": "sha256",
+      "digest": "edb13211a16c83c02e484a05f0e075c60afe623578f077d2073e8c38b317af37"
+    },
+    {
+      "path": "services/workflow-service/src/main/resources/db/migration/V1__create_workflow_service_schema.sql",
+      "algorithm": "sha256",
+      "digest": "bff137e681732a35918133d6ab40c00fa690c8858712509d645a57bf1dc3bd8f"
+    },
+    {
+      "path": "services/api-gateway/src/main/java/com/englishflow/gateway/support/HttpSecurityAuditSink.java",
+      "algorithm": "sha256",
+      "digest": "a39d8ca615016e2745964218a70239dad5ed2c46f03188cae515562fbb2547e1"
+    },
+    {
+      "path": "services/api-gateway/src/main/java/com/englishflow/gateway/support/ServiceTokenClient.java",
+      "algorithm": "sha256",
+      "digest": "5734796e1ebcab24bdf3f7accebf4199919189f63a9e0fc8512d39287234faea"
+    },
+    {
+      "path": "services/api-gateway/src/main/java/com/englishflow/gateway/config/GatewayAuditProperties.java",
+      "algorithm": "sha256",
+      "digest": "225df62711ff4a21c4525c243b6f5e65beb3e6855898962b75f33e9e945e58e9"
+    },
+    {
+      "path": "services/api-gateway/src/main/java/com/englishflow/gateway/config/SecurityAuditSinkConfiguration.java",
+      "algorithm": "sha256",
+      "digest": "76848c1e3f7bced3a98892c775841a0de6f96de9bf5a4b0e6f5a3c339d9fb46a"
+    },
+    {
+      "path": "services/iam-service/src/main/java/com/englishflow/iam/auth/ServiceTokenService.java",
+      "algorithm": "sha256",
+      "digest": "1a7d9d40a31066c1a04588703b49ba21b5667ae6eefd88296861bb7a4832f098"
+    },
+    {
+      "path": "services/iam-service/src/main/java/com/englishflow/iam/web/IamServiceTokenController.java",
+      "algorithm": "sha256",
+      "digest": "f73e9d195b4b0b82dfbd8e8460972b82b234415275933eb87d1a3963b4b44924"
+    },
+    {
+      "path": "services/audit-service/src/main/java/com/englishflow/audit/security/AuditSecurityConfiguration.java",
+      "algorithm": "sha256",
+      "digest": "ef16dde07396c0cffd65f8273ed47c3d5bafcda44804d2e9c4aac064242474f4"
+    },
+    {
+      "path": "scripts/runtime/verify-gateway-audit-ingest.mjs",
+      "algorithm": "sha256",
+      "digest": "6d9c997ee21f0f4d76e1ffad38c8286186986eb7a145f8857785ab4d892c618e"
+    },
+    {
+      "path": "docs/10-decisions/0016-service-identity-and-internal-token-issuance.md",
+      "algorithm": "sha256",
+      "digest": "e77b27b091c434264a1021beac3729736c3b5d1d40cd14c8e19160f16f92c4a4"
+    }
+  ],
+  "commands": [
+    {
+      "command": "node scripts/runtime/verify-gateway-audit-ingest.mjs",
+      "purpose": "the end-to-end audit path"
+    },
+    {
+      "command": "mvn -f services/workflow-service/pom.xml -o test",
+      "purpose": "the saga, compensation, recovery, lease and outbox tests"
+    },
+    {
+      "command": "mvn -f services/api-gateway/pom.xml -o test",
+      "purpose": "the audit sink and token client tests"
+    }
+  ],
+  "provenance": {
+    "originalSourceCommit": "dc31e4d8902f1f514bed545e2eb1300d4b86ea65",
+    "originalReviewer": "agent:p1r_implementation:deepseek-harness",
+    "currentSourceRevalidationTask": "P1R-M2-006",
+    "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
+    "currentSourceRevalidationRuntimeStatus": "PARTIAL",
+    "currentSourceRevalidationFinishedAt": "2026-09-14T16:55:47.934Z",
+    "currentSourceRevalidationAuditedImplementationSource": "dc31e4d8902f1f514bed545e2eb1300d4b86ea65",
+    "currentSourceRevalidationIntegrationCheckpoint": "dc31e4d8902f1f514bed545e2eb1300d4b86ea65"
+  }
+}

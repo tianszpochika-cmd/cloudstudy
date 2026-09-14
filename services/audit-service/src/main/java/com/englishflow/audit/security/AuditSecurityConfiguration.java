@@ -114,7 +114,12 @@ public class AuditSecurityConfiguration {
                 new JwtAudienceValidator(audience),
                 new JwtTimestampValidator(Duration.ofSeconds(60)),
                 algorithm,
-                new JwtClaimValidator<String>("token_type", "access"::equals),
+                // Both token types, because this service is written to by other services as well as by people. ADR-0016
+                // issues a short-lived service token for exactly that, and until this accepted it the Gateway's ingest
+                // was refused at the decoder: a valid token, issued by the only issuer, rejected because its
+                // token_type said "service". A service token still has to carry a scope and an authority claim, and
+                // anyRequest().denyAll() keeps everything except the ingest closed to it.
+                new JwtClaimValidator<String>("token_type", value -> "access".equals(value) || "service".equals(value)),
                 new JwtClaimValidator<String>("scope", value -> value != null && !value.isBlank()),
                 authorityClaims);
     }

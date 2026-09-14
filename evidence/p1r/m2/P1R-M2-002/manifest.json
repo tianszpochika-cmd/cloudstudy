@@ -2,7 +2,7 @@
   "taskId": "P1R-M2-002",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "0dec0961f07b53a5fd9e891397fb56872043038f",
+  "sourceCommit": "dc31e4d8902f1f514bed545e2eb1300d4b86ea65",
   "artifactDigests": [
     {
       "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/ConsentService.java",
@@ -107,7 +107,7 @@
     {
       "path": "services/iam-service/src/main/resources/application.yaml",
       "algorithm": "sha256",
-      "digest": "a37ea4fd7b43b1739bebb661c01a12d5ce83bbebe3d18bc943b1dc8c8ac59b28"
+      "digest": "d257f430757fa16edf46e57b9247e75c7bb9954ed9aa43f128e68ece6ea3f4c7"
     },
     {
       "path": "services/iam-service/src/main/resources/application-local.yaml",
@@ -384,16 +384,26 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-14T16:12:46.853Z",
         "details": "Digest rebind after the gate test changed."
+      },
+      {
+        "taskId": "P1R-M2-002",
+        "sourceCommit": "dc31e4d8902f1f514bed545e2eb1300d4b86ea65",
+        "auditedImplementationSource": "dc31e4d8902f1f514bed545e2eb1300d4b86ea65",
+        "integrationCheckpoint": "dc31e4d8902f1f514bed545e2eb1300d4b86ea65",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-14T16:55:51.063Z",
+        "details": "Rebind after the audit validator, scope claim and probe changed."
       }
     ],
-    "previousCurrentSourceCommit": "17b7d4923f8f0b9116b4698535fc26448d58d598",
+    "previousCurrentSourceCommit": "0dec0961f07b53a5fd9e891397fb56872043038f",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
     "currentSourceRevalidationTask": "P1R-M2-002",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-14T16:12:46.853Z",
-    "currentSourceRevalidationAuditedImplementationSource": "0dec0961f07b53a5fd9e891397fb56872043038f",
-    "currentSourceRevalidationIntegrationCheckpoint": "0dec0961f07b53a5fd9e891397fb56872043038f",
+    "currentSourceRevalidationFinishedAt": "2026-09-14T16:55:51.063Z",
+    "currentSourceRevalidationAuditedImplementationSource": "dc31e4d8902f1f514bed545e2eb1300d4b86ea65",
+    "currentSourceRevalidationIntegrationCheckpoint": "dc31e4d8902f1f514bed545e2eb1300d4b86ea65",
     "originalSourceCommit": "ec20ef51a8b0ea99d4b72bf7598777df075f4889",
     "previousCurrentSourceRevalidationTask": "P1R-M2-002",
     "previousCurrentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",

@@ -53,11 +53,14 @@ export async function verifyGatewayAuditIngest() {
     }
     await new Promise((resolve) => setTimeout(resolve, 500));
   }
-  const storedSource = facts > 0
-    ? scalar(`SELECT source_service FROM audit_service.audit_fact WHERE request_id = '${requestId}' LIMIT 1;`)
+  // audit_fact has no source column. The gateway's attribution is in the action it sets, gateway.<route>, so that is
+  // what is read. The earlier version queried a column that does not exist, and three assertions could therefore never
+  // have passed regardless of what the gateway did.
+  const storedAction = facts > 0
+    ? scalar(`SELECT action FROM audit_service.audit_fact WHERE request_id = '${requestId}' LIMIT 1;`)
     : null;
   const redaction = facts > 0
-    ? scalar(`SELECT IF(payload_json LIKE '%authorization%' OR payload_json LIKE '%Bearer %', 'LEAKED', 'no-credential-material')
+    ? scalar(`SELECT IF(redacted_payload LIKE '%authorization%' OR redacted_payload LIKE '%Bearer %', 'LEAKED', 'no-credential-material')
         FROM audit_service.audit_fact WHERE request_id = '${requestId}' LIMIT 1;`)
     : null;
 
@@ -67,7 +70,7 @@ export async function verifyGatewayAuditIngest() {
     { name: 'exactly one audit fact was stored', ok: facts === 1, observed: facts, expected: 1 },
     { name: 'the fact has exactly one ingest receipt', ok: receipts === 1, observed: receipts, expected: 1 },
     { name: 'the schema identifier was stored whole', ok: storedSchema === schemaIdentifier, observed: storedSchema, expected: schemaIdentifier },
-    { name: 'the fact is attributed to the gateway', ok: storedSource === 'api-gateway', observed: storedSource, expected: 'api-gateway' },
+    { name: 'the fact is attributed to the gateway', ok: typeof storedAction === 'string' && storedAction.startsWith('gateway.'), observed: storedAction, expected: 'gateway.<route>' },
     { name: 'the stored request id matches the one the caller saw', ok: storedRequestId === requestId, observed: storedRequestId, expected: requestId },
     { name: 'the stored envelope carries no credential material', ok: redaction === 'no-credential-material', observed: redaction, expected: 'no-credential-material' },
   ];

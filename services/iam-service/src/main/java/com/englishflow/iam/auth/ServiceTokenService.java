@@ -87,7 +87,10 @@ public final class ServiceTokenService {
                 // The same claim names the user tokens carry, with a different value: every existing authority
                 // mapping continues to work, and a service token can never be mistaken for a human one.
                 .claim("token_type", "service")
-                .claim("scope", client.getPermissions())
+                // A space-delimited String, which is what a scope claim is: audit validates it as a String, and a List here made
+                // an otherwise valid token fail validation with "authentication required". The permissions claim
+                // below keeps the list form, because the validators that read it accept either.
+                .claim("scope", String.join(" ", client.getPermissions()))
                 .claim("roles", List.of())
                 .claim("permissions", client.getPermissions())
                 .claim("tenant_id", properties.getPlatformTenant())

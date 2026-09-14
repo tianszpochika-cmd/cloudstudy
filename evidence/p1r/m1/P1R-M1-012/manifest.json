@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-012",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "0dec0961f07b53a5fd9e891397fb56872043038f",
+  "sourceCommit": "dc31e4d8902f1f514bed545e2eb1300d4b86ea65",
   "artifactDigests": [
     {
       "path": "config/b26-event-runtime.json",
@@ -709,9 +709,19 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-14T16:12:46.149Z",
         "details": "Digest rebind after the gate test changed."
+      },
+      {
+        "taskId": "P1R-M1-012",
+        "sourceCommit": "dc31e4d8902f1f514bed545e2eb1300d4b86ea65",
+        "auditedImplementationSource": "dc31e4d8902f1f514bed545e2eb1300d4b86ea65",
+        "integrationCheckpoint": "dc31e4d8902f1f514bed545e2eb1300d4b86ea65",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-14T16:55:50.242Z",
+        "details": "Rebind after the audit validator, scope claim and probe changed."
       }
     ],
-    "previousCurrentSourceCommit": "17b7d4923f8f0b9116b4698535fc26448d58d598",
+    "previousCurrentSourceCommit": "0dec0961f07b53a5fd9e891397fb56872043038f",
     "previousCurrentSourceRevalidationTask": "P1R-M2-005",
     "previousCurrentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
@@ -719,8 +729,8 @@
     "currentSourceRevalidationTask": "P1R-M1-012",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-14T16:12:46.149Z",
-    "currentSourceRevalidationAuditedImplementationSource": "0dec0961f07b53a5fd9e891397fb56872043038f",
-    "currentSourceRevalidationIntegrationCheckpoint": "0dec0961f07b53a5fd9e891397fb56872043038f"
+    "currentSourceRevalidationFinishedAt": "2026-09-14T16:55:50.242Z",
+    "currentSourceRevalidationAuditedImplementationSource": "dc31e4d8902f1f514bed545e2eb1300d4b86ea65",
+    "currentSourceRevalidationIntegrationCheckpoint": "dc31e4d8902f1f514bed545e2eb1300d4b86ea65"
   }
 }
