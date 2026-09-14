@@ -49,7 +49,25 @@ for (const file of manifests) {
       if (write) entry.digest = digest;
     }
   }
-  if (stale.length === 0) continue;
+  // The revision matters even when every digest already matches the tree: the gate checks each digest against the
+  // blob at sourceCommit as well, so a manifest whose artifacts changed inside a recorded revision needs the revision
+  // moved even though nothing is stale. Without this the tool reported nothing to do while the gate stayed red.
+  const revisionDescribes = (() => {
+    try {
+      const stamped = execFileSync('git', ['rev-parse', manifest.sourceCommit], { cwd: root, encoding: 'utf8' }).trim();
+      const current = execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).trim();
+      if (stamped === current) return true;
+      for (const entry of manifest.artifactDigests ?? []) {
+        const blob = execFileSync('git', ['rev-parse', `${manifest.sourceCommit}:${entry.path}`],
+          { cwd: root, encoding: 'utf8' }).trim();
+        if (blob !== entry.digest) return false;
+      }
+      return true;
+    } catch (missing) {
+      return false;
+    }
+  })();
+  if (stale.length === 0 && revisionDescribes) continue;
 
   if (write) {
     const previous = manifest.sourceCommit;

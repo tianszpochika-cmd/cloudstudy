@@ -2,7 +2,7 @@
   "taskId": "P1R-M2-005",
   "draftOnly": false,
   "canonicalTaskStatus": "BLOCKED",
-  "sourceCommit": "f59f4c8232b0c3287fbca9c265012f0424a14758",
+  "sourceCommit": "d4d27e9b1e637ebf1307a167dcb2ff886dc7db58",
   "artifactDigests": [
     {
       "path": "config/b26-event-runtime.json",
@@ -97,14 +97,14 @@
       "E7 to E8 the whole thing reduced to a repeatable harness with two fault phases and an operator replay entry"
     ],
     "reviewHistory": [],
-    "previousCurrentSourceCommit": "5408751e7c27277d6124d394b4da2465e10f60fa",
+    "previousCurrentSourceCommit": "f59f4c8232b0c3287fbca9c265012f0424a14758",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
     "currentSourceRevalidationTask": "P1R-M2-005",
-    "currentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
+    "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-14T04:28:45.880Z",
-    "currentSourceRevalidationAuditedImplementationSource": "f59f4c8232b0c3287fbca9c265012f0424a14758",
-    "currentSourceRevalidationIntegrationCheckpoint": "f59f4c8232b0c3287fbca9c265012f0424a14758",
+    "currentSourceRevalidationFinishedAt": "2026-09-14T15:11:09.430Z",
+    "currentSourceRevalidationAuditedImplementationSource": "d4d27e9b1e637ebf1307a167dcb2ff886dc7db58",
+    "currentSourceRevalidationIntegrationCheckpoint": "d4d27e9b1e637ebf1307a167dcb2ff886dc7db58",
     "originalSourceCommit": "10bc8e2dba06a800fd6bb014b0827d898b7c1b8b",
     "currentSourceRevalidationHistory": [
       {
@@ -126,6 +126,16 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-14T04:28:45.880Z",
         "details": "Rebind and figure correction: the P1R regression figure was written by hand as 1425 and the suite reports 1435/1435. The value is now read from the recorded regression result rather than retyped, and the manifest states when it was measured."
+      },
+      {
+        "taskId": "P1R-M2-005",
+        "sourceCommit": "d4d27e9b1e637ebf1307a167dcb2ff886dc7db58",
+        "auditedImplementationSource": "d4d27e9b1e637ebf1307a167dcb2ff886dc7db58",
+        "integrationCheckpoint": "d4d27e9b1e637ebf1307a167dcb2ff886dc7db58",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-14T15:11:09.430Z",
+        "details": "Digest rebind after the dependency rule changed."
       }
     ]
   },

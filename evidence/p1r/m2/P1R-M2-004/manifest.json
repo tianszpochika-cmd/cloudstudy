@@ -15,7 +15,7 @@
   "taskId": "P1R-M2-004",
   "draftOnly": false,
   "canonicalTaskStatus": "DEV_DONE",
-  "sourceCommit": "4bf0f4904efcc7294920b539ad215807cd94f411",
+  "sourceCommit": "d4d27e9b1e637ebf1307a167dcb2ff886dc7db58",
   "artifactDigests": [
     {
       "path": "config/p1r-data-ownership.v1.json",
@@ -563,13 +563,13 @@
         "summary": "Not submitted."
       }
     ],
-    "previousCurrentSourceCommit": "76ddd2dd6407f70a4deb068b52ac8a3c07e0a607",
+    "previousCurrentSourceCommit": "4bf0f4904efcc7294920b539ad215807cd94f411",
     "currentSourceRevalidationTask": "P1R-M2-004",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-14T15:03:02.093Z",
-    "currentSourceRevalidationAuditedImplementationSource": "4bf0f4904efcc7294920b539ad215807cd94f411",
-    "currentSourceRevalidationIntegrationCheckpoint": "4bf0f4904efcc7294920b539ad215807cd94f411",
+    "currentSourceRevalidationFinishedAt": "2026-09-14T15:11:09.338Z",
+    "currentSourceRevalidationAuditedImplementationSource": "d4d27e9b1e637ebf1307a167dcb2ff886dc7db58",
+    "currentSourceRevalidationIntegrationCheckpoint": "d4d27e9b1e637ebf1307a167dcb2ff886dc7db58",
     "currentSourceRevalidationHistory": [
       {
         "taskId": "P1R-M2-004",
@@ -580,6 +580,16 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-14T15:03:02.093Z",
         "details": "Digest rebind after DEV_DONE was added to the status machinery, which the gate and plan validator are recorded as artifacts of."
+      },
+      {
+        "taskId": "P1R-M2-004",
+        "sourceCommit": "d4d27e9b1e637ebf1307a167dcb2ff886dc7db58",
+        "auditedImplementationSource": "d4d27e9b1e637ebf1307a167dcb2ff886dc7db58",
+        "integrationCheckpoint": "d4d27e9b1e637ebf1307a167dcb2ff886dc7db58",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-14T15:11:09.338Z",
+        "details": "Digest rebind after the dependency rule changed."
       }
     ]
   },

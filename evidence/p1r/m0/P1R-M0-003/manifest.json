@@ -2,7 +2,7 @@
   "taskId": "P1R-M0-003",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "00f684c9fb18db8dea67c0e5af945f1898733e1b",
+  "sourceCommit": "d4d27e9b1e637ebf1307a167dcb2ff886dc7db58",
   "artifactDigests": [
     {
       "path": "config/toolchain-baseline.json",
@@ -70,14 +70,14 @@
   "reviewer": "root-coordinator",
   "decision": "ACCEPTED",
   "provenance": {
-    "previousCurrentSourceCommit": "0b73b7c8ead637597794cfb7558c68e150464fc9",
+    "previousCurrentSourceCommit": "00f684c9fb18db8dea67c0e5af945f1898733e1b",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
     "currentSourceRevalidationTask": "P1R-M0-003",
-    "currentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
+    "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-13T18:51:26.795Z",
-    "currentSourceRevalidationAuditedImplementationSource": "00f684c9fb18db8dea67c0e5af945f1898733e1b",
-    "currentSourceRevalidationIntegrationCheckpoint": "00f684c9fb18db8dea67c0e5af945f1898733e1b",
+    "currentSourceRevalidationFinishedAt": "2026-09-14T15:11:05.367Z",
+    "currentSourceRevalidationAuditedImplementationSource": "d4d27e9b1e637ebf1307a167dcb2ff886dc7db58",
+    "currentSourceRevalidationIntegrationCheckpoint": "d4d27e9b1e637ebf1307a167dcb2ff886dc7db58",
     "originalSourceCommit": "0f8b60ae4e83d0f31d891eed8d9383c007485130",
     "currentSourceRevalidationHistory": [
       {
@@ -109,6 +109,16 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-13T18:51:26.795Z",
         "details": "Digest rebind after P1R-M2-006 registered and created workflow-service, which adds a module to the root pom and an owner to scripts/database/lib/owner-manifest.mjs. Both files are recorded by this task as artifacts, so only their digests moved. No result, gap or claim in this manifest changed, and the review verdicts it carries are untouched."
+      },
+      {
+        "taskId": "P1R-M0-003",
+        "sourceCommit": "d4d27e9b1e637ebf1307a167dcb2ff886dc7db58",
+        "auditedImplementationSource": "d4d27e9b1e637ebf1307a167dcb2ff886dc7db58",
+        "integrationCheckpoint": "d4d27e9b1e637ebf1307a167dcb2ff886dc7db58",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-14T15:11:05.367Z",
+        "details": "Digest rebind after the dependency rule changed."
       }
     ],
     "previousCurrentSourceRevalidationTask": "P1R-M2-004",

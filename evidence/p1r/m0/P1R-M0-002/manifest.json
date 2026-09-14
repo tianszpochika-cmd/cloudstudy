@@ -2,23 +2,79 @@
   "taskId": "P1R-M0-002",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "0f8b60ae4e83d0f31d891eed8d9383c007485130",
+  "sourceCommit": "d4d27e9b1e637ebf1307a167dcb2ff886dc7db58",
   "artifactDigests": [
-    {"path": "config/p1r-historical-candidate-map.json", "algorithm": "sha256", "digest": "dc96cf40d16702f1d95f103ae90967305dc429527fc8d1b343103ee814ec42d9"}
+    {
+      "path": "config/p1r-historical-candidate-map.json",
+      "algorithm": "sha256",
+      "digest": "dc96cf40d16702f1d95f103ae90967305dc429527fc8d1b343103ee814ec42d9"
+    }
   ],
-  "environment": {"kind": "git-history-discovery", "branch": "dev"},
+  "environment": {
+    "kind": "git-history-discovery",
+    "branch": "dev"
+  },
   "startedAt": "2026-08-29T09:14:55.671Z",
   "finishedAt": "2026-08-29T10:13:18.541Z",
-  "actors": ["m0_governance"],
-  "sourceIds": ["P1R-M0-002", "P1R-M0-001"],
-  "commands": ["scan B0-B36, DEV, G and V2-B identifiers", "git log --diff-filter=A for historical sources", "verify historical manifest attachments"],
-  "results": [
-    {"check": "historical-scope", "status": "PASS", "details": "37 B batches, 140 DEV IDs, 5 G gates, 180 V2-B IDs and 2 old manifests mapped"},
-    {"check": "non-inheritance", "status": "PASS", "details": "Every record remains historical-candidate and zero P1R tasks were auto-accepted"},
-    {"check": "missing-attachment-disclosure", "status": "PASS", "details": "Old manifest child-artifact absence is recorded"}
+  "actors": [
+    "m0_governance"
   ],
-  "rollbackEvidence": [{"status": "PASS", "details": "Mapping is additive and does not mutate historical source records"}],
-  "knownGaps": ["Any reused historical implementation must be revalidated at a current source commit."],
+  "sourceIds": [
+    "P1R-M0-002",
+    "P1R-M0-001"
+  ],
+  "commands": [
+    "scan B0-B36, DEV, G and V2-B identifiers",
+    "git log --diff-filter=A for historical sources",
+    "verify historical manifest attachments"
+  ],
+  "results": [
+    {
+      "check": "historical-scope",
+      "status": "PASS",
+      "details": "37 B batches, 140 DEV IDs, 5 G gates, 180 V2-B IDs and 2 old manifests mapped"
+    },
+    {
+      "check": "non-inheritance",
+      "status": "PASS",
+      "details": "Every record remains historical-candidate and zero P1R tasks were auto-accepted"
+    },
+    {
+      "check": "missing-attachment-disclosure",
+      "status": "PASS",
+      "details": "Old manifest child-artifact absence is recorded"
+    }
+  ],
+  "rollbackEvidence": [
+    {
+      "status": "PASS",
+      "details": "Mapping is additive and does not mutate historical source records"
+    }
+  ],
+  "knownGaps": [
+    "Any reused historical implementation must be revalidated at a current source commit."
+  ],
   "reviewer": "root-coordinator",
-  "decision": "ACCEPTED"
+  "decision": "ACCEPTED",
+  "provenance": {
+    "previousCurrentSourceCommit": "0f8b60ae4e83d0f31d891eed8d9383c007485130",
+    "currentSourceRevalidationTask": "P1R-M0-002",
+    "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
+    "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
+    "currentSourceRevalidationFinishedAt": "2026-09-14T15:11:05.186Z",
+    "currentSourceRevalidationAuditedImplementationSource": "d4d27e9b1e637ebf1307a167dcb2ff886dc7db58",
+    "currentSourceRevalidationIntegrationCheckpoint": "d4d27e9b1e637ebf1307a167dcb2ff886dc7db58",
+    "currentSourceRevalidationHistory": [
+      {
+        "taskId": "P1R-M0-002",
+        "sourceCommit": "d4d27e9b1e637ebf1307a167dcb2ff886dc7db58",
+        "auditedImplementationSource": "d4d27e9b1e637ebf1307a167dcb2ff886dc7db58",
+        "integrationCheckpoint": "d4d27e9b1e637ebf1307a167dcb2ff886dc7db58",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-14T15:11:05.186Z",
+        "details": "Digest rebind after the dependency rule changed."
+      }
+    ]
+  }
 }

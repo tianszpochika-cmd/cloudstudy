@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-004",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "c2ed12f71f250180fe387a31eceb91d0d451dd02",
+  "sourceCommit": "d4d27e9b1e637ebf1307a167dcb2ff886dc7db58",
   "artifactDigests": [
     {
       "path": "package.json",
@@ -265,19 +265,29 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-13T02:30:07.328Z",
         "details": "Current-source revalidation after the public site projection contract promotion. The canonical rule for /api/v1/public/site named admin-ops-service as its owner while the controller that serves the projection lives in content-service, so GatewayRouteExecutionPolicy withheld the route and the official site could not reach its own projection through the Gateway. The owner is now content-service and the projection is registered. This task only records the contract files, so nothing it accepted changed; its digests are rebound to the commit that carries the promotion."
+      },
+      {
+        "taskId": "P1R-M1-004",
+        "sourceCommit": "d4d27e9b1e637ebf1307a167dcb2ff886dc7db58",
+        "auditedImplementationSource": "d4d27e9b1e637ebf1307a167dcb2ff886dc7db58",
+        "integrationCheckpoint": "d4d27e9b1e637ebf1307a167dcb2ff886dc7db58",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-14T15:11:06.719Z",
+        "details": "Digest rebind after the dependency rule changed."
       }
     ],
-    "previousCurrentSourceCommit": "7aaebac87e8870fd763bd93dc97afcd18f80b714",
+    "previousCurrentSourceCommit": "c2ed12f71f250180fe387a31eceb91d0d451dd02",
     "previousCurrentSourceRevalidationTask": "P1R-M2-005",
     "currentSourceRevalidationTask": "P1R-M1-004",
-    "currentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
+    "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "previousCurrentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
     "previousCurrentSourceRevalidationFinishedAt": "2026-09-12T22:07:09.012Z",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-13T02:30:07.328Z",
-    "currentSourceRevalidationAuditedImplementationSource": "c2ed12f71f250180fe387a31eceb91d0d451dd02",
-    "currentSourceRevalidationIntegrationCheckpoint": "c2ed12f71f250180fe387a31eceb91d0d451dd02"
+    "currentSourceRevalidationFinishedAt": "2026-09-14T15:11:06.719Z",
+    "currentSourceRevalidationAuditedImplementationSource": "d4d27e9b1e637ebf1307a167dcb2ff886dc7db58",
+    "currentSourceRevalidationIntegrationCheckpoint": "d4d27e9b1e637ebf1307a167dcb2ff886dc7db58"
   },
   "startedAt": "2026-08-29T23:52:04+08:00",
   "finishedAt": "2026-09-01T15:39:29+08:00",

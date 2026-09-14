@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-007",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "4bf0f4904efcc7294920b539ad215807cd94f411",
+  "sourceCommit": "d4d27e9b1e637ebf1307a167dcb2ff886dc7db58",
   "artifactDigests": [
     {
       "path": ".github/workflows/ci.yml",
@@ -781,9 +781,19 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-14T15:03:01.974Z",
         "details": "Digest rebind after DEV_DONE was added to the status machinery, which the gate and plan validator are recorded as artifacts of."
+      },
+      {
+        "taskId": "P1R-M1-007",
+        "sourceCommit": "d4d27e9b1e637ebf1307a167dcb2ff886dc7db58",
+        "auditedImplementationSource": "d4d27e9b1e637ebf1307a167dcb2ff886dc7db58",
+        "integrationCheckpoint": "d4d27e9b1e637ebf1307a167dcb2ff886dc7db58",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-14T15:11:06.966Z",
+        "details": "Digest rebind after the dependency rule changed."
       }
     ],
-    "previousCurrentSourceCommit": "5408751e7c27277d6124d394b4da2465e10f60fa",
+    "previousCurrentSourceCommit": "4bf0f4904efcc7294920b539ad215807cd94f411",
     "previousCurrentSourceRevalidationTask": "P1R-M1-007",
     "currentSourceRevalidationTask": "P1R-M1-007",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
@@ -791,8 +801,8 @@
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
     "previousCurrentSourceRevalidationFinishedAt": "2026-09-13T02:30:07.343Z",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-14T15:03:01.974Z",
-    "currentSourceRevalidationAuditedImplementationSource": "4bf0f4904efcc7294920b539ad215807cd94f411",
-    "currentSourceRevalidationIntegrationCheckpoint": "4bf0f4904efcc7294920b539ad215807cd94f411"
+    "currentSourceRevalidationFinishedAt": "2026-09-14T15:11:06.966Z",
+    "currentSourceRevalidationAuditedImplementationSource": "d4d27e9b1e637ebf1307a167dcb2ff886dc7db58",
+    "currentSourceRevalidationIntegrationCheckpoint": "d4d27e9b1e637ebf1307a167dcb2ff886dc7db58"
   }
 }

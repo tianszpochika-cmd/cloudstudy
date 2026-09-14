@@ -2,7 +2,7 @@
   "taskId": "P1R-M2-002",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "d05f0b2bfc4cd07bd7f0d6389b81b369cb89ed83",
+  "sourceCommit": "d4d27e9b1e637ebf1307a167dcb2ff886dc7db58",
   "artifactDigests": [
     {
       "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/ConsentService.java",
@@ -334,16 +334,26 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-14T07:25:24.992Z",
         "details": "Digest rebind after tests were added for the service-token issuance path ADR-0016 introduces."
+      },
+      {
+        "taskId": "P1R-M2-002",
+        "sourceCommit": "d4d27e9b1e637ebf1307a167dcb2ff886dc7db58",
+        "auditedImplementationSource": "d4d27e9b1e637ebf1307a167dcb2ff886dc7db58",
+        "integrationCheckpoint": "d4d27e9b1e637ebf1307a167dcb2ff886dc7db58",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-14T15:11:08.645Z",
+        "details": "Digest rebind after the dependency rule changed."
       }
     ],
-    "previousCurrentSourceCommit": "0015a176c0dce651ea89528692a356bb478d43c6",
+    "previousCurrentSourceCommit": "d05f0b2bfc4cd07bd7f0d6389b81b369cb89ed83",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
     "currentSourceRevalidationTask": "P1R-M2-002",
-    "currentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
+    "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-14T07:25:24.992Z",
-    "currentSourceRevalidationAuditedImplementationSource": "d05f0b2bfc4cd07bd7f0d6389b81b369cb89ed83",
-    "currentSourceRevalidationIntegrationCheckpoint": "d05f0b2bfc4cd07bd7f0d6389b81b369cb89ed83",
+    "currentSourceRevalidationFinishedAt": "2026-09-14T15:11:08.645Z",
+    "currentSourceRevalidationAuditedImplementationSource": "d4d27e9b1e637ebf1307a167dcb2ff886dc7db58",
+    "currentSourceRevalidationIntegrationCheckpoint": "d4d27e9b1e637ebf1307a167dcb2ff886dc7db58",
     "originalSourceCommit": "ec20ef51a8b0ea99d4b72bf7598777df075f4889",
     "previousCurrentSourceRevalidationTask": "P1R-M2-002",
     "previousCurrentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
