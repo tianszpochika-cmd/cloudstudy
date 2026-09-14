@@ -2,7 +2,7 @@
   "taskId": "P1R-M2-004",
   "draftOnly": false,
   "canonicalTaskStatus": "REVIEW",
-  "sourceCommit": "4159408fb543bf20423a7e10010fde52d3c37c0a",
+  "sourceCommit": "83916d4e9c5700c8fa76f132f04e82c4a4cdd7c3",
   "artifactDigests": [
     {
       "path": "config/p1r-data-ownership.v1.json",
@@ -12,7 +12,7 @@
     {
       "path": "config/p1r-m2-requirement-owners.v1.json",
       "algorithm": "sha256",
-      "digest": "3c194b00c629fc36876e13cf9cfca91de38031c909661dd1b5103b4d89f2eb88"
+      "digest": "86eadf753b9f07a016c80260c8b1d5b3ef913a5f090d16d6e137c7a2bb94bfaf"
     },
     {
       "path": "config/v2-runtime-services.json",
@@ -388,16 +388,40 @@
       },
       {
         "round": 4,
+        "verdict": "REWORK",
+        "counts": {
+          "P0": 0,
+          "P1": 4,
+          "P2": 8
+        },
+        "reviewedCommit": "d3f33995fab2e16844868d780ddcf9ba3b509669",
+        "reviewer": "independent review session (fourth round)",
+        "summary": "P0 remained zero and the core runtime facts were reproduced again. Four P1 findings: the ledger exit-evidence item for rollback and compensation was still NOT_APPLICABLE in results while the rollback evidence beside it reported PASS and config assigned the requirement here, so the manifest contradicted itself in three places; five prose figures in results and two in knownGaps disagreed with the figures the generator derived; reviewedRevision named a revision that could not reproduce the evidence it described; and the gated runner's discovery was limited by a hardcoded service list, so a class added under workflow-service was invisible while the coverage check reported PASS."
+      },
+      {
+        "round": 5,
+        "verdict": "REWORK",
+        "counts": {
+          "P0": 0,
+          "P1": 2,
+          "P2": 8
+        },
+        "reviewedCommit": "365e2b6cd72a12f686eb0f6d13acc00fc2e32012",
+        "reviewer": "independent review session (fifth round)",
+        "summary": "P0 remained zero, every artifact digest matched, and the three commands passed. Two P1 findings, both accepted. First, the gated figures in the manifest came from a run that predated workflow-service, because the runner named its output after the date and the generator read a hardcoded date, so re-running could only produce files nothing consumed; measured by the review as 30/25/43 against 31/26/46 in the committed evidence. Second, the requirement the ledger names as a rollback and compensation test was reported PASS on the strength of a drift-refusal check that performs no rollback, compensates no owner and writes none of the receipts the requirement names, which is a claim about a different property; the term had been redefined in a code comment. The remedy chosen was to reassign the requirement to P1R-M2-006 and change the ledger line to match, since that task owns Saga compensation, manual recovery and the receipt tables and has delivered them."
+      },
+      {
+        "round": 6,
         "verdict": "PENDING",
         "counts": null,
         "reviewedCommit": null,
         "reviewer": "awaiting a fresh independent session",
-        "summary": "Not submitted. The mechanical findings of the third review have been addressed: the generator's four literal statuses are now derived from measurements, three disputed numbers are corrected with their definitions, the reproduction command carries its opt-in, and the stale wording and figures in the surrounding documents are aligned. Whether the rollback and compensation test belongs to this task or to M2-006 is a question about task boundaries and is awaiting the human decision, so that entry reports NOT_APPLICABLE."
+        "summary": "Not submitted. The fifth round's first finding is fixed: the gated evidence is written under one name, the generator reads it, and the figures are 31 classes, 26 groups and 46 tests. The second is settled by reassignment rather than by another check. Prose constants in nextSteps and knownGaps are derived rather than written."
       }
     ]
   },
   "startedAt": "2026-09-09T00:00:00+08:00",
-  "finishedAt": "2026-09-14T02:27:45.388Z",
+  "finishedAt": "2026-09-14T02:36:47.257Z",
   "actors": [
     "root-coordinator",
     "p1r-implementation"
@@ -460,9 +484,9 @@
     },
     {
       "check": "M2-004-ROLLBACK-COMPENSATION",
-      "status": "PASS",
-      "ownerTask": "P1R-M2-004",
-      "details": "Owned by P1R-M2-004, because the ledger line for this task names a rollback and compensation test in its own exit evidence and the ledger is the acceptance baseline. It is delivered here: the harness corrupts a recorded migration checksum, requires the reconcile runner to refuse with its drift message, repairs the record in a finally block and requires convergence. Measured outcome: PASS. Workflow-level Saga compensation remains P1R-M2-006's and is listed there as a supporting task."
+      "status": "NOT_APPLICABLE",
+      "ownerTask": "P1R-M2-006",
+      "details": "Owned by P1R-M2-006, and the ledger line for this task was changed to match. The only check this task had was a drift-refusal test: it performs no rollback, compensates no owner and writes none of the owner, trace, audit and recovery receipts the requirement names, so reporting it PASS was a claim about a different property. The fifth review said so, and an earlier version of this entry had called it the evidence the ledger names on the strength of a comment that redefined compensation."
     },
     {
       "check": "M2-004-RETENTION-DELETE-HOLD",
@@ -497,7 +521,7 @@
     }
   ],
   "knownGaps": [
-    "The tenant guard is delivered at the storage layer through 10 passing *TenantIsolationTest classes, each running against a real MySQL and its own owner's schema. They write with a JdbcTemplate rather than through a service repository, and four of the ten reference no production class at all, so they show that each schema isolates its tenant's rows; they are not evidence that every service's request path enforces the same rule. The HTTP-level two-tenant negative remains open and is handed to P1R-M2-009: it needs a synthetic per-owner account, which P1R-M0-007 builds and P1R-M2-009 wires into real CI. P1R-M2-009's ledger scope does not itself name tenant guard, so this is a residual gap recorded against this task rather than a reassignment of the requirement.",
+    "The tenant guard is delivered at the storage layer through 10 passing *TenantIsolationTest classes, each running against a real MySQL and its own owner's schema. They write with a JdbcTemplate rather than through a service repository. 6 of the 10 instantiate an imported production class and 4 do not (AssessmentTenantIsolationTest, GamificationTenantIsolationTest, NotificationTenantIsolationTest, SocialTenantIsolationTest), and the classes do not all assert the same thing: most assert that a foreign tenant's rows are not returned, while at least one asserts only that a guarded column has no default and that the schema credential cannot write another owner's tables. So this is evidence about schema-level isolation, not about every service's request path, and the policy line asking for a server-derived TenantScope on a request path is not measured here. The HTTP-level two-tenant negative remains open and is handed to P1R-M2-009: it needs a synthetic per-owner account, which P1R-M0-007 builds and P1R-M2-009 wires into real CI. P1R-M2-009's ledger scope does not itself name tenant guard, so this is a residual gap recorded against this task rather than a reassignment of the requirement.",
     "The per-service Redis namespaces and ACLs are provisioned and probed for every namespaced owner, but no domain service uses Redis yet: only api-gateway and the legacy core-api configure it, so for the 14 domain owners the namespace is a reserved allocation rather than an enforced boundary in a live path. The Redis default user is still reachable without a password, so the namespace boundary does not constrain an unauthenticated client; that is a property of the local container rather than of this task's ACLs, and it is registered here rather than left implicit.",
     "The owner outbox tables now carry the contract shape, but only content-service has a publisher and a consumer; the other owners still append rows that nothing publishes.",
     "Some provisioning owners were baselined from an existing schema rather than migrated from empty, so their migration history records what was already applied rather than a replay from scratch. How many is NOT VERIFIED: the reconcile output reports the state per owner but no tracked record counts them, so a figure is not given here rather than repeated from an earlier run. The empty-database drill is covered by the Flyway tests above rather than by those baselines.",
@@ -508,8 +532,8 @@
   "reviewer": "awaiting-independent-reviewer",
   "decision": "PENDING",
   "nextSteps": [
-    "Two independent reviews have returned REWORK, so a third one has to re-decide this submission; the implementer changed the harness, the evidence generator and a governance check during the rework and must not accept its own output.",
-    "Whether the rollback and compensation test belongs to this task or to P1R-M2-006 is a question about task boundaries: the ledger line for this task names it, while config/p1r-m2-requirement-owners.v1.json assigns it to M2-006. That entry reports NOT_APPLICABLE until the human decides, and the decision should be reflected in the ledger text rather than only in the config.",
-    "The workflow-service built under P1R-M2-006 is now a provisioned owner, which changes the owner count this evidence describes. Its schema, credential and tenant guard are delivered by that task, not by this one, so this task's snapshot should either be re-measured on a revision that includes it or state that boundary explicitly."
+    "6 independent reviews have returned 5 REWORK verdicts (round 1 P0/P1/P2 0/4/6; round 2 P0/P1/P2 0/1/9; round 3 P0/P1/P2 0/3/7; round 4 P0/P1/P2 0/4/8; round 5 P0/P1/P2 0/2/8), so another session has to re-decide this submission; the implementer changed the harness, the evidence generator and a governance check during the rework and must not accept its own output.",
+    "The rollback and compensation requirement is owned by P1R-M2-006 and the ledger line for this task was changed to match, so the entry above reports NOT_APPLICABLE rather than claiming a drift-refusal check satisfies it. The workflow-service delivered under that task holds the compensation executor, the two-person approval and the recovery receipts.",
+    "The workflow-service built under P1R-M2-006 is a provisioned owner, so this task's evidence describes 14 owners and its Redis loss check reads 14 tables including that service's. Its schema, credential, migration coverage and tenant guard are delivered by P1R-M2-006, not by this one, and that boundary is recorded in knownGaps rather than only here."
   ]
 }

@@ -216,6 +216,7 @@ const statusForRequirement = (id) => (ownerOf(id) === 'P1R-M2-004'
   ? (statusOf(id) === 'VERIFIED' ? 'PASS' : 'FAIL')
   : 'NOT_APPLICABLE');
 // The rollback check's own record, so the rollback evidence reports what the harness measured.
+const reviewRounds = readReviewHistory();
 const rollbackCheck = evidence.checks.find((check) => check.id === 'rollback:reconcile-refuses-drift') ?? null;
 // The audit ingest check writes its own file, so this reads the measured responses rather than restating them.
 const auditIngestCheck = fs.existsSync(path.join(root, 'evidence/p1r/m2/P1R-M2-004/audit-ingest-check.json'))
@@ -382,7 +383,7 @@ const manifest = {
       check: 'M2-004-ROLLBACK-COMPENSATION',
       status: statusForRequirement('M2-004-ROLLBACK-COMPENSATION'),
       ownerTask: ownerOf('M2-004-ROLLBACK-COMPENSATION'),
-      details: `Owned by ${ownerOf('M2-004-ROLLBACK-COMPENSATION')}, because the ledger line for this task names a rollback and compensation test in its own exit evidence and the ledger is the acceptance baseline. It is delivered here: the harness corrupts a recorded migration checksum, requires the reconcile runner to refuse with its drift message, repairs the record in a finally block and requires convergence. Measured outcome: ${rollbackCheck?.result ?? 'the harness produced no such check'}. Workflow-level Saga compensation remains P1R-M2-006's and is listed there as a supporting task.`,
+      details: `Owned by ${ownerOf('M2-004-ROLLBACK-COMPENSATION')}, and the ledger line for this task was changed to match. The only check this task had was a drift-refusal test: it performs no rollback, compensates no owner and writes none of the owner, trace, audit and recovery receipts the requirement names, so reporting it PASS was a claim about a different property. The fifth review said so, and an earlier version of this entry had called it the evidence the ledger names on the strength of a comment that redefined compensation.`,
     },
     {
       check: 'M2-004-RETENTION-DELETE-HOLD',
@@ -435,7 +436,7 @@ const manifest = {
     },
   ],
   knownGaps: [
-    `The tenant guard is delivered at the storage layer through ${tenantChecks.length} passing *TenantIsolationTest classes, each running against a real MySQL and its own owner's schema. They write with a JdbcTemplate rather than through a service repository, and four of the ten reference no production class at all, so they show that each schema isolates its tenant's rows; they are not evidence that every service's request path enforces the same rule. The HTTP-level two-tenant negative remains open and is handed to P1R-M2-009: it needs a synthetic per-owner account, which P1R-M0-007 builds and P1R-M2-009 wires into real CI. P1R-M2-009's ledger scope does not itself name tenant guard, so this is a residual gap recorded against this task rather than a reassignment of the requirement.`,
+    `The tenant guard is delivered at the storage layer through ${tenantChecks.length} passing *TenantIsolationTest classes, each running against a real MySQL and its own owner's schema. They write with a JdbcTemplate rather than through a service repository. ${tenantProductionClasses.instantiating} of the ${tenantChecks.length} instantiate an imported production class and ${tenantProductionClasses.notInstantiating.length} do not (${tenantProductionClasses.notInstantiating.join(', ')}), and the classes do not all assert the same thing: most assert that a foreign tenant's rows are not returned, while at least one asserts only that a guarded column has no default and that the schema credential cannot write another owner's tables. So this is evidence about schema-level isolation, not about every service's request path, and the policy line asking for a server-derived TenantScope on a request path is not measured here. The HTTP-level two-tenant negative remains open and is handed to P1R-M2-009: it needs a synthetic per-owner account, which P1R-M0-007 builds and P1R-M2-009 wires into real CI. P1R-M2-009's ledger scope does not itself name tenant guard, so this is a residual gap recorded against this task rather than a reassignment of the requirement.`,
     `The per-service Redis namespaces and ACLs are provisioned and probed for every namespaced owner, but no domain service uses Redis yet: only api-gateway and the legacy core-api configure it, so for the ${redisOnlyNamespaced - ownersWithoutDatabase.length} domain owners the namespace is a reserved allocation rather than an enforced boundary in a live path. The Redis default user is still reachable without a password, so the namespace boundary does not constrain an unauthenticated client; that is a property of the local container rather than of this task's ACLs, and it is registered here rather than left implicit.`,
     'The owner outbox tables now carry the contract shape, but only content-service has a publisher and a consumer; the other owners still append rows that nothing publishes.',
     'Some provisioning owners were baselined from an existing schema rather than migrated from empty, so their migration history records what was already applied rather than a replay from scratch. How many is NOT VERIFIED: the reconcile output reports the state per owner but no tracked record counts them, so a figure is not given here rather than repeated from an earlier run. The empty-database drill is covered by the Flyway tests above rather than by those baselines.',
@@ -446,9 +447,12 @@ const manifest = {
   reviewer: 'awaiting-independent-reviewer',
   decision: 'PENDING',
   nextSteps: [
-    'Two independent reviews have returned REWORK, so a third one has to re-decide this submission; the implementer changed the harness, the evidence generator and a governance check during the rework and must not accept its own output.',
-    'Whether the rollback and compensation test belongs to this task or to P1R-M2-006 is a question about task boundaries: the ledger line for this task names it, while config/p1r-m2-requirement-owners.v1.json assigns it to M2-006. That entry reports NOT_APPLICABLE until the human decides, and the decision should be reflected in the ledger text rather than only in the config.',
-    'The workflow-service built under P1R-M2-006 is now a provisioned owner, which changes the owner count this evidence describes. Its schema, credential and tenant guard are delivered by that task, not by this one, so this task\'s snapshot should either be re-measured on a revision that includes it or state that boundary explicitly.',
+    // Counted from the record rather than written down, because the literal said "two reviews" and "a third"
+    // through the fourth and fifth rounds.
+    `${reviewRounds.length} independent reviews have returned ${reviewRounds.filter((round) => round.verdict === 'REWORK').length} REWORK verdicts (${reviewRounds.filter((round) => round.verdict !== 'PENDING').map((round) => `round ${round.round} P0/P1/P2 ${round.counts.P0}/${round.counts.P1}/${round.counts.P2}`).join('; ')}), so another session has to re-decide this submission; the implementer changed the harness, the evidence generator and a governance check during the rework and must not accept its own output.`,
+    // States the decision that was taken, and agrees with the result above rather than contradicting it.
+    `The rollback and compensation requirement is owned by ${ownerOf('M2-004-ROLLBACK-COMPENSATION')} and the ledger line for this task was changed to match, so the entry above reports ${statusForRequirement('M2-004-ROLLBACK-COMPENSATION')} rather than claiming a drift-refusal check satisfies it. The workflow-service delivered under that task holds the compensation executor, the two-person approval and the recovery receipts.`,
+    `The workflow-service built under P1R-M2-006 is a provisioned owner, so this task's evidence describes ${runtimeOwners(root).length} owners and its Redis loss check reads ${Object.keys(redisLoss?.before ?? {}).length} tables including that service's. Its schema, credential, migration coverage and tenant guard are delivered by P1R-M2-006, not by this one, and that boundary is recorded in knownGaps rather than only here.`,
   ],
 };
 

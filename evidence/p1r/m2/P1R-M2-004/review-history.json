@@ -29,11 +29,27 @@
     },
     {
       "round": 4,
+      "verdict": "REWORK",
+      "counts": { "P0": 0, "P1": 4, "P2": 8 },
+      "reviewedCommit": "d3f33995fab2e16844868d780ddcf9ba3b509669",
+      "reviewer": "independent review session (fourth round)",
+      "summary": "P0 remained zero and the core runtime facts were reproduced again. Four P1 findings: the ledger exit-evidence item for rollback and compensation was still NOT_APPLICABLE in results while the rollback evidence beside it reported PASS and config assigned the requirement here, so the manifest contradicted itself in three places; five prose figures in results and two in knownGaps disagreed with the figures the generator derived; reviewedRevision named a revision that could not reproduce the evidence it described; and the gated runner's discovery was limited by a hardcoded service list, so a class added under workflow-service was invisible while the coverage check reported PASS."
+    },
+    {
+      "round": 5,
+      "verdict": "REWORK",
+      "counts": { "P0": 0, "P1": 2, "P2": 8 },
+      "reviewedCommit": "365e2b6cd72a12f686eb0f6d13acc00fc2e32012",
+      "reviewer": "independent review session (fifth round)",
+      "summary": "P0 remained zero, every artifact digest matched, and the three commands passed. Two P1 findings, both accepted. First, the gated figures in the manifest came from a run that predated workflow-service, because the runner named its output after the date and the generator read a hardcoded date, so re-running could only produce files nothing consumed; measured by the review as 30/25/43 against 31/26/46 in the committed evidence. Second, the requirement the ledger names as a rollback and compensation test was reported PASS on the strength of a drift-refusal check that performs no rollback, compensates no owner and writes none of the receipts the requirement names, which is a claim about a different property; the term had been redefined in a code comment. The remedy chosen was to reassign the requirement to P1R-M2-006 and change the ledger line to match, since that task owns Saga compensation, manual recovery and the receipt tables and has delivered them."
+    },
+    {
+      "round": 6,
       "verdict": "PENDING",
       "counts": null,
       "reviewedCommit": null,
       "reviewer": "awaiting a fresh independent session",
-      "summary": "Not submitted. The mechanical findings of the third review have been addressed: the generator's four literal statuses are now derived from measurements, three disputed numbers are corrected with their definitions, the reproduction command carries its opt-in, and the stale wording and figures in the surrounding documents are aligned. Whether the rollback and compensation test belongs to this task or to M2-006 is a question about task boundaries and is awaiting the human decision, so that entry reports NOT_APPLICABLE."
+      "summary": "Not submitted. The fifth round's first finding is fixed: the gated evidence is written under one name, the generator reads it, and the figures are 31 classes, 26 groups and 46 tests. The second is settled by reassignment rather than by another check. Prose constants in nextSteps and knownGaps are derived rather than written."
     }
   ]
 }
