@@ -19,22 +19,28 @@ import { fileURLToPath } from 'node:url';
 
 export const repositoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 
-const SERVICES = [
-  'admin-ops', 'analytics', 'assessment', 'audit', 'commerce', 'content',
-  'gamification', 'iam', 'learner', 'learning', 'media', 'notification', 'social',
-];
-
 /** The tests append the scratch schema to this URL, so it must end at the slash. */
 export function adminUrl(host = '127.0.0.1', port = '13306') {
   return `jdbc:mysql://${host}:${port}/`;
 }
 
-/** Every gated test class in the repository, with the property that enables it. */
+/**
+ * Every gated test class in the repository, with the property that enables it.
+ *
+ * The scan covers every directory under services/, not a hardcoded list of service names. An earlier version
+ * filtered by a literal array and described itself as annotation-driven and unable to miss a class; when
+ * workflow-service was added, its gated class was invisible while uncoveredClasses stayed empty and the
+ * harness's coverage check reported PASS. A discovery step that cannot see a class cannot report it missing.
+ */
 export function discoverGatedClasses(root = repositoryRoot) {
   const found = [];
-  for (const service of SERVICES) {
-    const directory = path.join(root, `services/${service}-service/src/test/java`);
+  const servicesRoot = path.join(root, 'services');
+  if (!fs.existsSync(servicesRoot)) return found;
+  for (const serviceEntry of fs.readdirSync(servicesRoot, { withFileTypes: true })) {
+    if (!serviceEntry.isDirectory()) continue;
+    const directory = path.join(servicesRoot, serviceEntry.name, 'src/test/java');
     if (!fs.existsSync(directory)) continue;
+    const service = serviceEntry.name.replace(/-service$/u, '');
     const visit = (current) => {
       for (const entry of fs.readdirSync(current, { withFileTypes: true })) {
         const absolute = path.join(current, entry.name);
@@ -43,7 +49,7 @@ export function discoverGatedClasses(root = repositoryRoot) {
         const source = fs.readFileSync(absolute, 'utf8');
         const property = /@EnabledIfSystemProperty\([^)]*named\s*=\s*"([^"]+)"/u.exec(source)?.[1];
         if (!property) continue;
-        found.push({ service, name: entry.name.replace('.java', ''), property });
+        found.push({ service, name: entry.name.replace('.java', ''), property, path: absolute });
       }
     };
     visit(directory);
