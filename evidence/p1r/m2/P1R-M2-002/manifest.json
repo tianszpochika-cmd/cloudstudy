@@ -2,7 +2,7 @@
   "taskId": "P1R-M2-002",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "0015a176c0dce651ea89528692a356bb478d43c6",
+  "sourceCommit": "d05f0b2bfc4cd07bd7f0d6389b81b369cb89ed83",
   "artifactDigests": [
     {
       "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/ConsentService.java",
@@ -324,16 +324,26 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-14T06:31:20.612Z",
         "details": "Digest rebind after ADR-0016 added the service-token issuance path to iam-service. The change is additive: a new service class, a new endpoint, a new configuration section and one security rule permitting the path that cannot require a token to obtain one."
+      },
+      {
+        "taskId": "P1R-M2-002",
+        "sourceCommit": "d05f0b2bfc4cd07bd7f0d6389b81b369cb89ed83",
+        "auditedImplementationSource": "d05f0b2bfc4cd07bd7f0d6389b81b369cb89ed83",
+        "integrationCheckpoint": "d05f0b2bfc4cd07bd7f0d6389b81b369cb89ed83",
+        "reviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-14T07:25:24.992Z",
+        "details": "Digest rebind after tests were added for the service-token issuance path ADR-0016 introduces."
       }
     ],
-    "previousCurrentSourceCommit": "5408751e7c27277d6124d394b4da2465e10f60fa",
+    "previousCurrentSourceCommit": "0015a176c0dce651ea89528692a356bb478d43c6",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
     "currentSourceRevalidationTask": "P1R-M2-002",
     "currentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-14T06:31:20.612Z",
-    "currentSourceRevalidationAuditedImplementationSource": "0015a176c0dce651ea89528692a356bb478d43c6",
-    "currentSourceRevalidationIntegrationCheckpoint": "0015a176c0dce651ea89528692a356bb478d43c6",
+    "currentSourceRevalidationFinishedAt": "2026-09-14T07:25:24.992Z",
+    "currentSourceRevalidationAuditedImplementationSource": "d05f0b2bfc4cd07bd7f0d6389b81b369cb89ed83",
+    "currentSourceRevalidationIntegrationCheckpoint": "d05f0b2bfc4cd07bd7f0d6389b81b369cb89ed83",
     "originalSourceCommit": "ec20ef51a8b0ea99d4b72bf7598777df075f4889",
     "previousCurrentSourceRevalidationTask": "P1R-M2-002",
     "previousCurrentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
