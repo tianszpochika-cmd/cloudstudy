@@ -313,8 +313,10 @@ export function validateManifest({ root, task, manifest, manifestPath, checkGit 
       // assertedBy says which task first claimed a requirement. It is derived from the requirement's own id,
       // which starts with the milestone and number of the claiming task, so the claim cannot be changed by
       // editing a string: M2-004-ROLLBACK-COMPENSATION can only have been claimed by P1R-M2-004.
+      //
+      // Checked for every entry, not only the ones this task claims. Guarding it with assertedBy === task.id
+      // meant changing assertedBy to some other task skipped the comparison, which the mutation test caught.
       const misattributed = (ownership.requirements ?? []).filter((entry) => {
-        if (entry.assertedBy !== task.id) return false;
         const derived = `P1R-${/^(M\d)-(\d{3})-/u.exec(entry.id)?.slice(1).join('-') ?? ''}`;
         return entry.assertedBy !== derived;
       });
