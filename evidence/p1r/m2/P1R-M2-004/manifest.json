@@ -2,7 +2,7 @@
   "taskId": "P1R-M2-004",
   "draftOnly": false,
   "canonicalTaskStatus": "REVIEW",
-  "sourceCommit": "5c542cf02bf13ac53dfc4169b7e64ba962f98ae1",
+  "sourceCommit": "585417fe03a641b54b8001e43dbaf1db69054028",
   "artifactDigests": [
     {
       "path": "config/p1r-data-ownership.v1.json",
@@ -45,14 +45,29 @@
       "digest": "77148fcb0c1501e5ae1e50328a6dd8e1af4aad04b146be770c59af17035c36f4"
     },
     {
-      "path": "scripts/runtime/p1r-m2-004-runtime.mjs",
+      "path": "scripts/audit/p1r-evidence-gate.mjs",
       "algorithm": "sha256",
-      "digest": "2d05d1125189954259b3c01084d2b85c03c24897a77eadf9bed4663563f98cad"
+      "digest": "ab2700d705e6d870b18c3b9bd868c2d01bab3079171e1a18a3e76fdcd438c68e"
+    },
+    {
+      "path": "scripts/runtime/capture-m2-004-evidence.mjs",
+      "algorithm": "sha256",
+      "digest": "cc985286bafc8d0050c481ac5684570b2b328760b199fbbe88f210662fe9bf08"
     },
     {
       "path": "scripts/runtime/run-gated-db-tests.mjs",
       "algorithm": "sha256",
       "digest": "bddad15cf6401860f36d919f381beb279f9da9837d31f6051d649702abdca494"
+    },
+    {
+      "path": "scripts/runtime/verify-audit-ingest.mjs",
+      "algorithm": "sha256",
+      "digest": "b5911e6a5b99de0a427aac0e4df2c602667891bb0cc99fb43094d2d2658c2e22"
+    },
+    {
+      "path": "scripts/runtime/p1r-m2-004-runtime.mjs",
+      "algorithm": "sha256",
+      "digest": "2d05d1125189954259b3c01084d2b85c03c24897a77eadf9bed4663563f98cad"
     },
     {
       "path": "services/audit-service/src/main/resources/db/migration/V2__widen_audit_schema_version.sql",
@@ -431,7 +446,7 @@
     ]
   },
   "startedAt": "2026-09-09T00:00:00+08:00",
-  "finishedAt": "2026-09-14T03:43:11.521Z",
+  "finishedAt": "2026-09-14T03:50:20.812Z",
   "actors": [
     "root-coordinator",
     "p1r-implementation"
