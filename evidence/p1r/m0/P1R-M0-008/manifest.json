@@ -2,12 +2,12 @@
   "taskId": "P1R-M0-008",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "6ceaf7f91109d4880c89d5dbbf24bef7b9a1ca3b",
+  "sourceCommit": "128980fa4ba8843f73ce01915a69245292c44a52",
   "artifactDigests": [
     {
       "path": "scripts/audit/p1r-evidence-gate.mjs",
       "algorithm": "sha256",
-      "digest": "a3f352cdcb904480060175a350b1dde886078f7122ef8ee11eb572675c5b6c76"
+      "digest": "3fe819c5911973b88a683a0bb9ddc38d0610134aca5b82c5b79343d2c87a8a0b"
     },
     {
       "path": "scripts/audit/verify-phase1-rebaseline-plan.mjs",
@@ -96,7 +96,24 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-10T22:24:25+08:00",
         "details": "Current-source revalidation after the 2026-09-10 commits (a149335 docs/asset-preflight, 6131783 dev unit-test completion, 6ceaf7f evidence-gate 9-column fix) invalidated previously recorded artifact digests. Rebased sourceCommit to 6ceaf7f91109d4880c89d5dbbf24bef7b9a1ca3b after the full P1R regression passed 1421/1421 under Node 20.19.5 on an LF-normalized worktree. Original provenance and review history remain unchanged; runtime evidence is not promoted."
+      },
+      {
+        "taskId": "P1R-M0-008",
+        "sourceCommit": "128980fa4ba8843f73ce01915a69245292c44a52",
+        "auditedImplementationSource": "128980fa4ba8843f73ce01915a69245292c44a52",
+        "integrationCheckpoint": "128980fa4ba8843f73ce01915a69245292c44a52",
+        "reviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-14T01:48:11.245Z",
+        "details": "Digest rebind after the evidence gate gained a cross-check that a requirement assigned to a task by the ownership config cannot be reported not-applicable by that task. The gate file is recorded here as an artifact, so only its digest moved; the rule it gained was mutation tested before being committed."
       }
-    ]
+    ],
+    "previousCurrentSourceCommit": "6ceaf7f91109d4880c89d5dbbf24bef7b9a1ca3b",
+    "currentSourceRevalidationTask": "P1R-M0-008",
+    "currentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
+    "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
+    "currentSourceRevalidationFinishedAt": "2026-09-14T01:48:11.245Z",
+    "currentSourceRevalidationAuditedImplementationSource": "128980fa4ba8843f73ce01915a69245292c44a52",
+    "currentSourceRevalidationIntegrationCheckpoint": "128980fa4ba8843f73ce01915a69245292c44a52"
   }
 }
