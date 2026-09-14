@@ -2,12 +2,12 @@
   "taskId": "P1R-M0-008",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "17eb918cef4dec772ecea4cc21fb283b19b387f2",
+  "sourceCommit": "a45aa95490a82feb6c0fdf32f7247e25d3855b01",
   "artifactDigests": [
     {
       "path": "scripts/audit/p1r-evidence-gate.mjs",
       "algorithm": "sha256",
-      "digest": "d47c515ef897ce558bfbeffc705ccc95514e2cf97020a341e5e5b7f2245ddaa3"
+      "digest": "dbb109e1104af3a059389cf863370078d814821781eacee8b3b67624261183cf"
     },
     {
       "path": "scripts/audit/verify-phase1-rebaseline-plan.mjs",
@@ -146,14 +146,24 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-14T05:03:52.278Z",
         "details": "Digest rebind after the evidence gate gained the rule the seventh review asked for: the ledger line for a task must name any task that owns one of the requirements that task asserts, so a reassignment cannot be made on the evidence side alone."
+      },
+      {
+        "taskId": "P1R-M0-008",
+        "sourceCommit": "a45aa95490a82feb6c0fdf32f7247e25d3855b01",
+        "auditedImplementationSource": "a45aa95490a82feb6c0fdf32f7247e25d3855b01",
+        "integrationCheckpoint": "a45aa95490a82feb6c0fdf32f7247e25d3855b01",
+        "reviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-14T05:24:31.205Z",
+        "details": "Digest rebind after the evidence gate gained a rule against requirement-shaped check names that nobody declares."
       }
     ],
-    "previousCurrentSourceCommit": "3a52cca094fde82eb444cfdb0930cab0e3ad3adb",
+    "previousCurrentSourceCommit": "17eb918cef4dec772ecea4cc21fb283b19b387f2",
     "currentSourceRevalidationTask": "P1R-M0-008",
     "currentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-14T05:03:52.278Z",
-    "currentSourceRevalidationAuditedImplementationSource": "17eb918cef4dec772ecea4cc21fb283b19b387f2",
-    "currentSourceRevalidationIntegrationCheckpoint": "17eb918cef4dec772ecea4cc21fb283b19b387f2"
+    "currentSourceRevalidationFinishedAt": "2026-09-14T05:24:31.205Z",
+    "currentSourceRevalidationAuditedImplementationSource": "a45aa95490a82feb6c0fdf32f7247e25d3855b01",
+    "currentSourceRevalidationIntegrationCheckpoint": "a45aa95490a82feb6c0fdf32f7247e25d3855b01"
   }
 }
