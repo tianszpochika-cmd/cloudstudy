@@ -225,6 +225,32 @@ public final class ContentReadService {
             PublicContentProjection projection) {
     }
 
+    /**
+     * M5-001 substitute resolution: explicit, explainable alternative for an unavailable
+     * pin. Candidates come from the same rights-gated catalog the learner reads, so the
+     * substitute is always published and rights-ready; selection is deterministic by
+     * content code. Session-pin population ({@code alternativeContentVersionId}) is wired
+     * in M5-002; this method is the server-side resolution it calls.
+     */
+    public Optional<com.englishflow.content.domain.ContentSubstitutePolicy.SubstituteResolution> resolveSubstitute(
+            String unavailableCode,
+            String reasonCode,
+            ContentAudience audience,
+            ContentChannel channel,
+            ContentActor actor) {
+        List<com.englishflow.content.domain.ContentSubstitutePolicy.SubstituteCandidate> catalog =
+                catalogEntries(audience, channel, actor, null, null, null).stream()
+                        .map(entry -> new com.englishflow.content.domain.ContentSubstitutePolicy.SubstituteCandidate(
+                                entry.contentCode(),
+                                entry.projection().versionId(),
+                                entry.projection().kind(),
+                                entry.projection().targetLevel(),
+                                entry.projection().title()))
+                        .toList();
+        return com.englishflow.content.domain.ContentSubstitutePolicy.resolve(
+                unavailableCode, reasonCode, catalog, candidate -> true);
+    }
+
     public record CatalogEntry(
             String contentCode,
             int versionNumber,

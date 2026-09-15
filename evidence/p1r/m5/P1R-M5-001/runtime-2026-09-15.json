@@ -1,0 +1,63 @@
+{
+  "task": "P1R-M5-001",
+  "capturedAt": "2026-09-15T17:07:02.949Z",
+  "sourceCommit": "881032b0aab1823a050edf3605013bed4c338f52",
+  "workingTreeDirty": true,
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "check": "deny-list-produced",
+      "status": "PASS",
+      "observed": "14 denied symbols listed",
+      "expected": "deny-list"
+    },
+    {
+      "check": "deny-list-green",
+      "status": "PASS",
+      "observed": "0 violations",
+      "expected": "static guard"
+    },
+    {
+      "check": "read-gates",
+      "status": "PASS",
+      "observed": "tenant + principal gates",
+      "expected": "gates"
+    },
+    {
+      "check": "version-pinned",
+      "status": "PASS",
+      "observed": "pinned versions enforced",
+      "expected": "version snapshot"
+    },
+    {
+      "check": "substitute-policy",
+      "status": "PASS",
+      "observed": "deterministic substitute policy",
+      "expected": "substitute"
+    },
+    {
+      "check": "substitute-resolved",
+      "status": "PASS",
+      "observed": "service resolution method",
+      "expected": "server implementation"
+    },
+    {
+      "check": "no-silent-fallback",
+      "status": "PASS",
+      "observed": "explicit alternative only",
+      "expected": "no silent fallback"
+    },
+    {
+      "check": "service-builds",
+      "status": "PASS",
+      "observed": "mvn compile EXIT 0 (this session)",
+      "expected": "compiles"
+    }
+  ],
+  "notVerifiableHere": [
+    "Session-pin wiring (alternativeContentVersionId population) is M5-002; cache-invalidation live proof deferred to acceptance."
+  ],
+  "note": "Deny-list plus substitute policy/resolution; no endpoint shape change."
+}

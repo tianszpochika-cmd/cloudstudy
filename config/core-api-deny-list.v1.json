@@ -1,0 +1,22 @@
+{
+  "schemaVersion": "p1r.core-api-deny-list.v1",
+  "producedBy": "P1R-M5-001",
+  "producedAt": "2026-09-15",
+  "rule": "No v2 production path (services except core-api, apps, packages) may import or reference these v1 compatibility symbols. core-api itself is the quarantined owner. Violations fail the gate as P1.",
+  "entries": [
+    { "symbol": "B2AssessmentEngine", "path": "services/core-api/src/main/java/com/englishflow/modules/assessment/b2/B2AssessmentEngine.java", "reason": "v1 assessment engine; v2 uses assessment-service rule/versioned pins" },
+    { "symbol": "AssessmentB2Controller", "path": "services/core-api/src/main/java/com/englishflow/modules/assessment/controller/AssessmentB2Controller.java", "reason": "v1 assessment controller; v2 exposes versioned assessment APIs" },
+    { "symbol": "InMemoryIdentityRepository", "path": "services/core-api/src/main/java/com/englishflow/modules/auth/InMemoryIdentityRepository.java", "reason": "in-memory identity must not back v2 IAM" },
+    { "symbol": "InMemorySessionRepository", "path": "services/core-api/src/main/java/com/englishflow/modules/auth/InMemorySessionRepository.java", "reason": "in-memory session must not back v2 sessions" },
+    { "symbol": "InMemoryB4DurableRepository", "path": "services/core-api/src/main/java/com/englishflow/modules/b4/InMemoryB4DurableRepository.java", "reason": "in-memory durable store must not back v2 facts" },
+    { "symbol": "InMemoryB3DurableRepository", "path": "services/core-api/src/main/java/com/englishflow/modules/learning/b3/InMemoryB3DurableRepository.java", "reason": "in-memory durable store must not back v2 facts" },
+    { "symbol": "InMemoryNotificationPreferencesRepository", "path": "services/core-api/src/main/java/com/englishflow/modules/user/repository/InMemoryNotificationPreferencesRepository.java", "reason": "in-memory store must not back v2 notification facts" },
+    { "symbol": "InMemoryUserProfileRepository", "path": "services/core-api/src/main/java/com/englishflow/modules/user/repository/InMemoryUserProfileRepository.java", "reason": "in-memory store must not back v2 learner facts" },
+    { "symbol": "InMemoryLoginAlertRepository", "path": "services/core-api/src/main/java/com/englishflow/modules/user/repository/InMemoryLoginAlertRepository.java", "reason": "in-memory store must not back v2 security facts" },
+    { "symbol": "InMemoryAuditEventRepository", "path": "services/core-api/src/main/java/com/englishflow/modules/user/repository/InMemoryAuditEventRepository.java", "reason": "in-memory store must not back v2 audit facts" },
+    { "symbol": "InMemoryRefreshTokenRepository", "path": "services/core-api/src/main/java/com/englishflow/modules/user/repository/InMemoryRefreshTokenRepository.java", "reason": "in-memory store must not back v2 refresh rotation" },
+    { "symbol": "InMemoryPrivacySettingsRepository", "path": "services/core-api/src/main/java/com/englishflow/modules/user/repository/InMemoryPrivacySettingsRepository.java", "reason": "in-memory store must not back v2 privacy facts" },
+    { "symbol": "InMemoryUserDeviceRepository", "path": "services/core-api/src/main/java/com/englishflow/modules/user/repository/InMemoryUserDeviceRepository.java", "reason": "in-memory store must not back v2 device sessions" },
+    { "symbol": "B2LearningCompatibilityController", "path": "services/core-api/src/main/java/com/englishflow/modules/learning/controller/B2LearningCompatibilityController.java", "reason": "v1 learning compat controller; v2 uses learning-service v2 adapter" }
+  ]
+}
