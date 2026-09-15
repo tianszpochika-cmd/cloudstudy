@@ -871,6 +871,19 @@
       "actor": "agent:p1r_implementation:deepseek-harness",
       "reason": "Owner route A. Dependencies M3-004 + M5-002 DEV_DONE. Real waveform extraction/rendering plus peaks anchor delivered; dual builds green, 8/8 harness PASS; live degrade run deferred as knownGap.",
       "evidencePath": "evidence/p1r/m5/P1R-M5-004/manifest.json"
+    },
+    {
+      "taskId": "P1R-M5-005",
+      "path": [
+        "PLANNED",
+        "READY",
+        "IN_PROGRESS",
+        "DEV_DONE"
+      ],
+      "recordedAt": "2026-09-15T19:07:00Z",
+      "actor": "agent:p1r_implementation:deepseek-harness",
+      "reason": "Owner route A (REUSE-VERIFY, no production change). Dependencies M1-009 + M5-002 DEV_DONE. Eight speaking/writing checks pass; upload/retention live run deferred as knownGap.",
+      "evidencePath": "evidence/p1r/m5/P1R-M5-005/manifest.json"
     }
   ]
 }
