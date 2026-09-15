@@ -1,0 +1,63 @@
+{
+  "task": "P1R-M5-003",
+  "capturedAt": "2026-09-15T17:12:30.613Z",
+  "sourceCommit": "1eb68fa35cf4729ab55114d28f9d22ba47924da3",
+  "workingTreeDirty": false,
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "check": "vocab-page",
+      "status": "PASS",
+      "observed": "B2PracticePage present",
+      "expected": "vocab"
+    },
+    {
+      "check": "grammar-page",
+      "status": "PASS",
+      "observed": "B3GrammarPage present",
+      "expected": "grammar"
+    },
+    {
+      "check": "rule-feedback",
+      "status": "PASS",
+      "observed": "rule feedback + version",
+      "expected": "rule feedback"
+    },
+    {
+      "check": "content-version",
+      "status": "PASS",
+      "observed": "content versions shared",
+      "expected": "versions"
+    },
+    {
+      "check": "keyboard-touch",
+      "status": "PASS",
+      "observed": "keyboard + drag/touch",
+      "expected": "input parity"
+    },
+    {
+      "check": "error-recovery",
+      "status": "PASS",
+      "observed": "error states",
+      "expected": "recovery"
+    },
+    {
+      "check": "no-ai-feedback",
+      "status": "PASS",
+      "observed": "no generative AI",
+      "expected": "rule-only"
+    },
+    {
+      "check": "no-impl-change",
+      "status": "PASS",
+      "observed": "REUSE-VERIFY this round",
+      "expected": "reuse"
+    }
+  ],
+  "notVerifiableHere": [
+    "Dual-end live browser run deferred to M8."
+  ],
+  "note": "REUSE-VERIFY: read from the committed learner-web tree; no production change."
+}
