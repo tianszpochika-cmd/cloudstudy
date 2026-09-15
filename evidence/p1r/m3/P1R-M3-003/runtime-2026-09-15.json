@@ -1,0 +1,51 @@
+{
+  "task": "P1R-M3-003",
+  "capturedAt": "2026-09-15T15:59:24.345Z",
+  "sourceCommit": "3b923e1747cedd05366ac6eb8c6608e4dd273c70",
+  "workingTreeDirty": true,
+  "result": "PASS",
+  "passed": 6,
+  "total": 6,
+  "checks": [
+    {
+      "check": "validator-exists",
+      "status": "PASS",
+      "observed": "rights/window/leak/stage checks + rule version",
+      "expected": "auto validator"
+    },
+    {
+      "check": "endpoint-exists",
+      "status": "PASS",
+      "observed": "POST /validate/auto returns ruleVersion report",
+      "expected": "auto endpoint"
+    },
+    {
+      "check": "read-only-report",
+      "status": "PASS",
+      "observed": "read-only report",
+      "expected": "no mutation"
+    },
+    {
+      "check": "leak-guard-shared",
+      "status": "PASS",
+      "observed": "shares projection deny-list",
+      "expected": "single leak definition"
+    },
+    {
+      "check": "rights-window-checked",
+      "status": "PASS",
+      "observed": "window start/end checked",
+      "expected": "rights window"
+    },
+    {
+      "check": "service-builds",
+      "status": "PASS",
+      "observed": "mvn compile EXIT 0 (this session)",
+      "expected": "compiles"
+    }
+  ],
+  "notVerifiableHere": [
+    "Fixture-driven expiry blocking and audit-evidence replay against MySQL need the running stack and are deferred to acceptance."
+  ],
+  "note": "Read from the committed content-service tree."
+}

@@ -229,6 +229,44 @@ public final class B9ContentAdminController {
     }
 
     /**
+     * M3-003 automatic validation report: copyright/source/stage/answer-leak/structure.
+     * Read-only: never mutates content, never emits projections; the report carries the
+     * rule version so audits can replay which checks ran.
+     */
+    @PostMapping("/validate/auto")
+    public ResponseEntity<Map<String, Object>> validateAuto(
+            @RequestBody(required = false) Map<String, Object> body,
+            Authentication authentication,
+            @RequestHeader HttpHeaders headers) {
+        ContentActor actor = adminActor(authentication);
+        requireAdminRead(actor);
+        Map<String, Object> input = body == null ? Map.of() : body;
+        String contentCode = text(input.get("contentCode"));
+        Map<String, Object> draft = record(input.get("content"));
+        ContentRights rights;
+        if (!contentCode.isBlank() && repository.findByCode(contentCode).isPresent()) {
+            ContentDefinition existing = owned(contentCode, actor);
+            ContentVersion latest = existing.versions().stream().reduce((left, right) -> right).orElse(null);
+            rights = latest == null || latest.rights().isEmpty() ? rights(draft) : latest.rights().get();
+            if (draft.isEmpty() && latest != null) {
+                draft = latest.payload().raw();
+            }
+        } else {
+            rights = rights(draft);
+        }
+        com.englishflow.content.domain.ContentAutoValidation.Report report =
+                com.englishflow.content.domain.ContentAutoValidation.validate(draft, rights, Instant.now());
+        Map<String, Object> data = new LinkedHashMap<>();
+        data.put("passed", report.passed());
+        data.put("ruleVersion", report.ruleVersion());
+        data.put("findings", report.findings().stream().map(f -> Map.of(
+                "code", f.code(), "severity", f.severity(), "detail", f.detail())).toList());
+        data.put("summary", report.summary());
+        data.put("checkedAt", Instant.now());
+        return ResponseEntity.ok(Map.of("data", data));
+    }
+
+    /**
      * Idempotent batch import: one Idempotency-Key covers the whole batch; each item
      * derives a stable sub-key so replaying the same batch never creates duplicates.
      * Existing content codes are reported SKIPPED (not FAILED), so retry is safe.
