@@ -1,0 +1,63 @@
+{
+  "task": "P1R-M6-009",
+  "capturedAt": "2026-09-15T18:08:21.201Z",
+  "sourceCommit": "4f23897cdad9c747cad75f9173b8bc634e8cee12",
+  "workingTreeDirty": false,
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "check": "governance-view",
+      "status": "PASS",
+      "observed": "governance + recovery tabs",
+      "expected": "governance"
+    },
+    {
+      "check": "audit-redacted",
+      "status": "PASS",
+      "observed": "redacted audit + export",
+      "expected": "audit"
+    },
+    {
+      "check": "least-privilege",
+      "status": "PASS",
+      "observed": "permission-gated nav/routes",
+      "expected": "least privilege"
+    },
+    {
+      "check": "dual-approval",
+      "status": "PASS",
+      "observed": "dual approval gate",
+      "expected": "dual approval"
+    },
+    {
+      "check": "recovery-idempotent",
+      "status": "PASS",
+      "observed": "idempotent recovery commands",
+      "expected": "recovery"
+    },
+    {
+      "check": "immutable-audit",
+      "status": "PASS",
+      "observed": "audit trail wording",
+      "expected": "audit"
+    },
+    {
+      "check": "desensitized",
+      "status": "PASS",
+      "observed": "hash/ref only",
+      "expected": "desensitization"
+    },
+    {
+      "check": "no-impl-change",
+      "status": "PASS",
+      "observed": "REUSE-VERIFY this round",
+      "expected": "reuse"
+    }
+  ],
+  "notVerifiableHere": [
+    "DLQ/Saga live recovery browser run deferred to acceptance."
+  ],
+  "note": "REUSE-VERIFY: read from the committed admin-web tree; no production change."
+}
