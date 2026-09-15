@@ -20,7 +20,10 @@
     },
     "note": "Measured against the running machine: netstat for the ports, docker inspect for the containers, HTTP for the probes, and the runtime manifest for which services should be up."
   },
-  "actors": [],
+  "actors": [
+    "root-coordinator",
+    "p1r-implementation"
+  ],
   "sourceIds": [
     "P1R-M2-008"
   ],
