@@ -559,6 +559,19 @@
       "actor": "agent:p1r_implementation:deepseek-harness",
       "reason": "Owner route A. Dependencies M2-001..009 are all finished (3 ACCEPTED + 6 DEV_DONE), so the task moved PLANNED->READY->IN_PROGRESS->DEV_DONE. Ten aggregation checks pass on the committed tree by reference; the live requestId-carried run and staging re-verification are recorded as knownGaps for acceptance (M8-013 still PLANNED).",
       "evidencePath": "evidence/p1r/m2/P1R-M2-010/manifest.json"
+    },
+    {
+      "taskId": "P1R-M3-001",
+      "path": [
+        "PLANNED",
+        "READY",
+        "IN_PROGRESS",
+        "DEV_DONE"
+      ],
+      "recordedAt": "2026-09-15T15:55:00Z",
+      "actor": "agent:p1r_implementation:deepseek-harness",
+      "reason": "Owner route A. Dependency M2-010 DEV_DONE. Ten shell/guard/state checks pass on the committed admin-web tree; live browser eight-state run deferred to M8-007 as knownGap.",
+      "evidencePath": "evidence/p1r/m3/P1R-M3-001/manifest.json"
     }
   ]
 }
