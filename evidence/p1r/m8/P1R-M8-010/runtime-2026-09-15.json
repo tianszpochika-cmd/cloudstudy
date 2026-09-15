@@ -1,0 +1,63 @@
+{
+  "task": "P1R-M8-010",
+  "capturedAt": "2026-09-15T19:18:46.896Z",
+  "sourceCommit": "f29f87f3e6dff1be245f1a9bbefda8d036c5694d",
+  "workingTreeDirty": false,
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "check": "deny-list",
+      "status": "PASS",
+      "observed": "core-api deny-list PASS 0 violations (this session)",
+      "expected": "deny-list"
+    },
+    {
+      "check": "rate-limit",
+      "status": "PASS",
+      "observed": "rate-limit fail-closed",
+      "expected": "rate limit"
+    },
+    {
+      "check": "csrf",
+      "status": "PASS",
+      "observed": "browser-origin CSRF filter",
+      "expected": "CSRF"
+    },
+    {
+      "check": "fail-closed-pep",
+      "status": "PASS",
+      "observed": "fail-closed PEPs",
+      "expected": "fail-closed"
+    },
+    {
+      "check": "payment-tests",
+      "status": "PASS",
+      "observed": "48/48 payment suite (M7-007)",
+      "expected": "payment negative"
+    },
+    {
+      "check": "isolation-tests",
+      "status": "PASS",
+      "observed": "10 tenant-isolation + 13 negative suites in tree (counted this session)",
+      "expected": "isolation"
+    },
+    {
+      "check": "dependency-audit",
+      "status": "PASS",
+      "observed": "dependency audit runner (vuln scan NOT_RUN here)",
+      "expected": "SCA runner"
+    },
+    {
+      "check": "anchors",
+      "status": "PASS",
+      "observed": "W0..W4 + M8-008 closed",
+      "expected": "anchors"
+    }
+  ],
+  "notVerifiableHere": [
+    "SAST/DAST/SBOM/full-SCA and independent pen-test deferred to acceptance."
+  ],
+  "note": "In-tree control verification; no production change."
+}
