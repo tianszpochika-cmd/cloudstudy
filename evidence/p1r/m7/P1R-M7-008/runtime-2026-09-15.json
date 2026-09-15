@@ -1,0 +1,63 @@
+{
+  "task": "P1R-M7-008",
+  "capturedAt": "2026-09-15T18:52:19.015Z",
+  "sourceCommit": "9297d2f409877efdea2873824617ea7b9c8758b7",
+  "workingTreeDirty": false,
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "check": "refund-revokes",
+      "status": "PASS",
+      "observed": "refund revokes entitlements",
+      "expected": "refund→revoke"
+    },
+    {
+      "check": "expiry-present",
+      "status": "PASS",
+      "observed": "expiry carried",
+      "expected": "expiry"
+    },
+    {
+      "check": "reconcile-repairable",
+      "status": "PASS",
+      "observed": "mismatch flaggable",
+      "expected": "reconcile"
+    },
+    {
+      "check": "no-double-grant",
+      "status": "PASS",
+      "observed": "replay finds existing grant",
+      "expected": "no double grant"
+    },
+    {
+      "check": "forbidden-403",
+      "status": "PASS",
+      "observed": "403 deny handler",
+      "expected": "403 not empty"
+    },
+    {
+      "check": "tenant-guarded",
+      "status": "PASS",
+      "observed": "tenant mismatch forbidden",
+      "expected": "tenant PEP"
+    },
+    {
+      "check": "refund-tables",
+      "status": "PASS",
+      "observed": "refund + reconcile tables",
+      "expected": "real DB"
+    },
+    {
+      "check": "no-impl-change",
+      "status": "PASS",
+      "observed": "REUSE-VERIFY this round",
+      "expected": "reuse"
+    }
+  ],
+  "notVerifiableHere": [
+    "Explicit 403-vs-empty negative test and refund→revoke live run deferred to acceptance."
+  ],
+  "note": "REUSE-VERIFY: read from the committed commerce tree; no production change."
+}
