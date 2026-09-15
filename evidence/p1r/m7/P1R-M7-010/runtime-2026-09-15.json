@@ -1,0 +1,63 @@
+{
+  "task": "P1R-M7-010",
+  "capturedAt": "2026-09-15T18:56:58.258Z",
+  "sourceCommit": "9bbf8d08efcad3813daa75fa9bda06e90861fdd6",
+  "workingTreeDirty": false,
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "check": "four-levels",
+      "status": "PASS",
+      "observed": "Ultra/High/Medium/Performance",
+      "expected": "four levels"
+    },
+    {
+      "check": "auto-degrade",
+      "status": "PASS",
+      "observed": "auto degrade + static fallback",
+      "expected": "degrade"
+    },
+    {
+      "check": "adult-gate",
+      "status": "PASS",
+      "observed": "router adult gate",
+      "expected": "adult gate"
+    },
+    {
+      "check": "consent-gate",
+      "status": "PASS",
+      "observed": "consent-gated learning",
+      "expected": "consent gate"
+    },
+    {
+      "check": "entitlement-gate",
+      "status": "PASS",
+      "observed": "entitlement-gated display",
+      "expected": "entitlement gate"
+    },
+    {
+      "check": "payment-gated",
+      "status": "PASS",
+      "observed": "dual payment gates",
+      "expected": "sandbox OFF"
+    },
+    {
+      "check": "phase-gate",
+      "status": "PASS",
+      "observed": "phase isolation gates",
+      "expected": "phase gates"
+    },
+    {
+      "check": "no-impl-change",
+      "status": "PASS",
+      "observed": "verification only, no code change",
+      "expected": "verify"
+    }
+  ],
+  "notVerifiableHere": [
+    "Live four-end sweep (low-spec/offline/flag matrix) deferred to M8."
+  ],
+  "note": "Cross-tree verification; no production change."
+}
