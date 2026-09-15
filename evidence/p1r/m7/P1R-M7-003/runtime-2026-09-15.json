@@ -1,0 +1,63 @@
+{
+  "task": "P1R-M7-003",
+  "capturedAt": "2026-09-15T18:36:32.578Z",
+  "sourceCommit": "a16703f6dfafaf62a50793cbd452c0ef911f879f",
+  "workingTreeDirty": false,
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "check": "world-page",
+      "status": "PASS",
+      "observed": "world page present",
+      "expected": "world"
+    },
+    {
+      "check": "ledger-projection",
+      "status": "PASS",
+      "observed": "server facts only",
+      "expected": "ledger"
+    },
+    {
+      "check": "avatar-fallback",
+      "status": "PASS",
+      "observed": "2D fallback",
+      "expected": "avatar"
+    },
+    {
+      "check": "probability-disclosed",
+      "status": "PASS",
+      "observed": "pre-claim disclosure",
+      "expected": "source explanation"
+    },
+    {
+      "check": "duplicate-shown",
+      "status": "PASS",
+      "observed": "replay display",
+      "expected": "duplicate claims"
+    },
+    {
+      "check": "no-local-draw",
+      "status": "PASS",
+      "observed": "no client draw",
+      "expected": "server draw"
+    },
+    {
+      "check": "states-kept",
+      "status": "PASS",
+      "observed": "empty/error/offline states",
+      "expected": "states"
+    },
+    {
+      "check": "no-impl-change",
+      "status": "PASS",
+      "observed": "REUSE-VERIFY this round",
+      "expected": "reuse"
+    }
+  ],
+  "notVerifiableHere": [
+    "Cross-end live browser run deferred to M8."
+  ],
+  "note": "REUSE-VERIFY: read from the committed trees; no production change."
+}
