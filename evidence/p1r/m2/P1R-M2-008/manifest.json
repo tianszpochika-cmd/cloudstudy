@@ -3,7 +3,7 @@
   "draftOnly": false,
   "canonicalTaskStatus": "DEV_DONE",
   "decision": "DEV_DONE",
-  "sourceCommit": "3fb4b1213f0d50cc2f77650a0724bc7950a68771",
+  "sourceCommit": "984ddecff776d1525d0a1c637c671661bfb379e5",
   "startedAt": "2026-09-15T00:02:43.324Z",
   "finishedAt": "2026-09-15T00:07:12.881Z",
   "environment": {
@@ -118,8 +118,21 @@
     "currentSourceRevalidationTask": "P1R-M2-008",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-15T00:07:12.881Z",
-    "currentSourceRevalidationAuditedImplementationSource": "3fb4b1213f0d50cc2f77650a0724bc7950a68771",
-    "currentSourceRevalidationIntegrationCheckpoint": "3fb4b1213f0d50cc2f77650a0724bc7950a68771"
+    "currentSourceRevalidationFinishedAt": "2026-09-15T00:07:25.537Z",
+    "currentSourceRevalidationAuditedImplementationSource": "984ddecff776d1525d0a1c637c671661bfb379e5",
+    "currentSourceRevalidationIntegrationCheckpoint": "984ddecff776d1525d0a1c637c671661bfb379e5",
+    "previousCurrentSourceCommit": "3fb4b1213f0d50cc2f77650a0724bc7950a68771",
+    "currentSourceRevalidationHistory": [
+      {
+        "taskId": "P1R-M2-008",
+        "sourceCommit": "984ddecff776d1525d0a1c637c671661bfb379e5",
+        "auditedImplementationSource": "984ddecff776d1525d0a1c637c671661bfb379e5",
+        "integrationCheckpoint": "984ddecff776d1525d0a1c637c671661bfb379e5",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-15T00:07:25.537Z",
+        "details": "Rebind after M2-008 was delivered."
+      }
+    ]
   }
 }
