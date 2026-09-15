@@ -268,8 +268,40 @@ public final class ContentCommandService {
                 });
     }
 
-    private void rebuildProjections(ContentDefinition content, ContentVersion version, Instant now) {
-        projectionStore.put(ContentProjectionPolicy.project(
+    /**
+     * M3-006 projection rebuild (M2-004 reassignment): owner DB is the fact source;
+     * public/learner projections (including any Redis/cache copy) are rebuilt from it.
+     * Rights-gated: versions whose rights are not ready are skipped, never forced.
+     */
+    public RebuildReport rebuildPublishedProjections(ContentActor actor) {
+        Objects.requireNonNull(actor, "actor is required");
+        Instant now = clock.instant();
+        int rebuilt = 0;
+        int skipped = 0;
+        for (com.englishflow.content.domain.ContentDefinition content : repository.findAll()) {
+            if (!"platform".equals(content.tenantId())) {
+                continue;
+            }
+            com.englishflow.content.domain.ContentVersion current =
+                    content.currentPublishedVersion().orElse(null);
+            if (current == null) {
+                skipped++;
+                continue;
+            }
+            try {
+                rebuildProjections(content, current, now);
+                rebuilt++;
+            } catch (ContentOperationException notReady) {
+                skipped++;
+            }
+        }
+        return new RebuildReport(rebuilt, skipped, now);
+    }
+
+    public record RebuildReport(int rebuilt, int skipped, Instant rebuiltAt) {
+    }
+
+    private void rebuildProjections(ContentDefinition content, ContentVersion version, Instant now) {        projectionStore.put(ContentProjectionPolicy.project(
                 content, version, ContentAudience.PUBLIC,
                 com.englishflow.content.domain.ContentChannel.PUBLIC, now, false));
         projectionStore.put(ContentProjectionPolicy.project(

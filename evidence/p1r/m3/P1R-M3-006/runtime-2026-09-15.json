@@ -1,0 +1,63 @@
+{
+  "task": "P1R-M3-006",
+  "capturedAt": "2026-09-15T16:12:27.126Z",
+  "sourceCommit": "bc520853c00cc9fcc0cef314e9cdc93774dc5776",
+  "workingTreeDirty": true,
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "check": "publish-gated",
+      "status": "PASS",
+      "observed": "publisher + dual + rights across service/domain",
+      "expected": "publish gate"
+    },
+    {
+      "check": "draft-not-readable",
+      "status": "PASS",
+      "observed": "unpublished refused to public/learner",
+      "expected": "draft isolation"
+    },
+    {
+      "check": "projections-rebuilt-on-publish",
+      "status": "PASS",
+      "observed": "publish rebuilds PUBLIC+LEARNER",
+      "expected": "projection write"
+    },
+    {
+      "check": "invalidation-emitted",
+      "status": "PASS",
+      "observed": "outbox invalidated + cache invalidated",
+      "expected": "invalidation"
+    },
+    {
+      "check": "rebuild-endpoint-exists",
+      "status": "PASS",
+      "observed": "POST /projections/rebuild from owner DB",
+      "expected": "M2-004 rebuild"
+    },
+    {
+      "check": "rebuild-rights-gated",
+      "status": "PASS",
+      "observed": "rights-not-ready skipped",
+      "expected": "rights gate"
+    },
+    {
+      "check": "epoch-version-carried",
+      "status": "PASS",
+      "observed": "projectionVersion/contentEpoch advanced",
+      "expected": "versioning"
+    },
+    {
+      "check": "service-builds",
+      "status": "PASS",
+      "observed": "mvn compile EXIT 0 (this session)",
+      "expected": "compiles"
+    }
+  ],
+  "notVerifiableHere": [
+    "Timed/scheduled publish orchestration lives with workflow timers and is deferred; timezone/idempotency/delay live proof deferred to acceptance."
+  ],
+  "note": "Read from the committed content-service tree."
+}

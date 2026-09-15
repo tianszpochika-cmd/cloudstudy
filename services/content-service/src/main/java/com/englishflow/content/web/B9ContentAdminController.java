@@ -229,6 +229,28 @@ public final class B9ContentAdminController {
     }
 
     /**
+     * M3-006 projection rebuild (M2-004 reassignment): rebuilds public/learner
+     * projections from the owner DB. Cache/Redis copies are consequences, never sources.
+     */
+    @PostMapping("/projections/rebuild")
+    public ResponseEntity<Map<String, Object>> rebuildProjections(
+            Authentication authentication,
+            @RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey,
+            @RequestHeader HttpHeaders headers) {
+        ContentActor actor = adminActor(authentication);
+        requireEditor(actor);
+        requireIdempotencyKey(idempotencyKey);
+        ContentCommandService.RebuildReport report = commands.rebuildPublishedProjections(actor);
+        Map<String, Object> data = new LinkedHashMap<>();
+        data.put("commandId", commandId(idempotencyKey.trim()));
+        data.put("rebuilt", report.rebuilt());
+        data.put("skipped", report.skipped());
+        data.put("rebuiltAt", report.rebuiltAt());
+        data.put("status", "ACCEPTED");
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(Map.of("data", data));
+    }
+
+    /**
      * M3-003 automatic validation report: copyright/source/stage/answer-leak/structure.
      * Read-only: never mutates content, never emits projections; the report carries the
      * rule version so audits can replay which checks ran.
