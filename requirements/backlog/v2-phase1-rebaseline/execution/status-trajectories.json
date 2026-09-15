@@ -1079,6 +1079,19 @@
       "actor": "agent:p1r_implementation:deepseek-harness",
       "reason": "Owner route A. Dependency M6-005 DEV_DONE. Learner dual-end support pages delivered; dual typechecks green, 8/8 harness PASS; live browser proofs deferred as knownGap.",
       "evidencePath": "evidence/p1r/m6/P1R-M6-006/manifest.json"
+    },
+    {
+      "taskId": "P1R-M6-007",
+      "path": [
+        "PLANNED",
+        "READY",
+        "IN_PROGRESS",
+        "DEV_DONE"
+      ],
+      "recordedAt": "2026-09-15T20:33:00Z",
+      "actor": "agent:p1r_implementation:deepseek-harness",
+      "reason": "Owner route A. Dependencies M2-006 + M1-017 DEV_DONE. Learner-fragment lifecycle (status/download/expiry/receipt) delivered; compile green, 8/8 harness PASS; cross-owner fan-out deferred as knownGap.",
+      "evidencePath": "evidence/p1r/m6/P1R-M6-007/manifest.json"
     }
   ]
 }
