@@ -1,0 +1,63 @@
+{
+  "task": "P1R-M8-003",
+  "capturedAt": "2026-09-15T19:06:12.618Z",
+  "sourceCommit": "81fee53234208444715047635f43d684185a9ec6",
+  "workingTreeDirty": false,
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "check": "register",
+      "status": "PASS",
+      "observed": "register page",
+      "expected": "register"
+    },
+    {
+      "check": "goal",
+      "status": "PASS",
+      "observed": "onboarding save",
+      "expected": "goal"
+    },
+    {
+      "check": "placement",
+      "status": "PASS",
+      "observed": "placement start/submit",
+      "expected": "placement"
+    },
+    {
+      "check": "plan-today",
+      "status": "PASS",
+      "observed": "first-day/today endpoints",
+      "expected": "plan/today"
+    },
+    {
+      "check": "attempt",
+      "status": "PASS",
+      "observed": "answer submit + dual-emit",
+      "expected": "attempt"
+    },
+    {
+      "check": "chain-gates",
+      "status": "PASS",
+      "observed": "M4-010 + M5-014 closed",
+      "expected": "gate anchors"
+    },
+    {
+      "check": "w0-done",
+      "status": "PASS",
+      "observed": "M8-002 closed",
+      "expected": "W0 anchor"
+    },
+    {
+      "check": "no-impl-change",
+      "status": "PASS",
+      "observed": "aggregation by reference, no code change",
+      "expected": "aggregate"
+    }
+  ],
+  "notVerifiableHere": [
+    "Live full-chain run deferred to acceptance."
+  ],
+  "note": "W1 aggregation by reference; no production change."
+}
