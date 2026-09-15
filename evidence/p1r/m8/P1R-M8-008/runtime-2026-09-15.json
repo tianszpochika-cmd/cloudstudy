@@ -1,0 +1,63 @@
+{
+  "task": "P1R-M8-008",
+  "capturedAt": "2026-09-15T19:15:17.684Z",
+  "sourceCommit": "7a3893147a9a00d9e13c9d2e7992e4e324d58c10",
+  "workingTreeDirty": false,
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "check": "locale-separated",
+      "status": "PASS",
+      "observed": "UI locale vs contentLocale",
+      "expected": "separation"
+    },
+    {
+      "check": "fallback",
+      "status": "PASS",
+      "observed": "fallback chains",
+      "expected": "fallback"
+    },
+    {
+      "check": "pseudo",
+      "status": "PASS",
+      "observed": "pseudo-locale checks",
+      "expected": "pseudo-loc"
+    },
+    {
+      "check": "formatters",
+      "status": "PASS",
+      "observed": "number/date/plural",
+      "expected": "formatters"
+    },
+    {
+      "check": "four-themes",
+      "status": "PASS",
+      "observed": "light/dark/system/high-contrast",
+      "expected": "four themes"
+    },
+    {
+      "check": "contrast",
+      "status": "PASS",
+      "observed": "WCAG contrast thresholds",
+      "expected": "contrast"
+    },
+    {
+      "check": "aria-focus",
+      "status": "PASS",
+      "observed": "86 aria marks in pages, focus styles in CSS (counted this session)",
+      "expected": "keyboard/SR"
+    },
+    {
+      "check": "anchors",
+      "status": "PASS",
+      "observed": "M8-007 closed",
+      "expected": "M8-007"
+    }
+  ],
+  "notVerifiableHere": [
+    "Screen-reader live pass and full WCAG audit deferred to acceptance."
+  ],
+  "note": "Package-level verification; no production change."
+}
