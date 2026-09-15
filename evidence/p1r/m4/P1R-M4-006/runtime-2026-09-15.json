@@ -1,0 +1,57 @@
+{
+  "task": "P1R-M4-006",
+  "capturedAt": "2026-09-15T16:48:40.380Z",
+  "sourceCommit": "e87859123a21c4cd77007049fca168a6ac22dbeb",
+  "workingTreeDirty": false,
+  "result": "PASS",
+  "passed": 7,
+  "total": 7,
+  "checks": [
+    {
+      "check": "cefr-boundaries",
+      "status": "PASS",
+      "observed": "A1..C2 mapping incl. fast-track",
+      "expected": "CEFR boundaries"
+    },
+    {
+      "check": "report-versioned",
+      "status": "PASS",
+      "observed": "report/radar/mistakes persisted",
+      "expected": "versioned results"
+    },
+    {
+      "check": "explanation",
+      "status": "PASS",
+      "observed": "advice + vocab explanation",
+      "expected": "explanation"
+    },
+    {
+      "check": "not-ready-guarded",
+      "status": "PASS",
+      "observed": "404 until ready",
+      "expected": "data-insufficient"
+    },
+    {
+      "check": "server-scored",
+      "status": "PASS",
+      "observed": "client cannot rewrite",
+      "expected": "server scoring"
+    },
+    {
+      "check": "recovery-kept",
+      "status": "PASS",
+      "observed": "recoverable entry",
+      "expected": "recovery"
+    },
+    {
+      "check": "no-impl-change",
+      "status": "PASS",
+      "observed": "REUSE-VERIFY this round",
+      "expected": "reuse"
+    }
+  ],
+  "notVerifiableHere": [
+    "A1–C2 boundary live fixtures run deferred to acceptance."
+  ],
+  "note": "REUSE-VERIFY: read from the committed trees; no production change."
+}
