@@ -1,0 +1,45 @@
+{
+  "task": "P1R-M4-010",
+  "capturedAt": "2026-09-15T17:01:27.468Z",
+  "sourceCommit": "03b6149b4daa9984e41e625a36424849c4d8e436",
+  "workingTreeDirty": false,
+  "result": "PASS",
+  "passed": 5,
+  "total": 5,
+  "checks": [
+    {
+      "check": "ledger-chain-finished",
+      "status": "PASS",
+      "observed": "P1R-M4-001=DEV_DONE, P1R-M4-002=DEV_DONE, P1R-M4-003=DEV_DONE, P1R-M4-004=DEV_DONE, P1R-M4-005=DEV_DONE, P1R-M4-006=DEV_DONE, P1R-M4-007=DEV_DONE, P1R-M4-008=DEV_DONE, P1R-M4-009=DEV_DONE",
+      "expected": "M4-001..009 all DEV_DONE"
+    },
+    {
+      "check": "manifests-exist",
+      "status": "PASS",
+      "observed": "9 manifests present",
+      "expected": "9 manifests"
+    },
+    {
+      "check": "manifests-agree-and-pass",
+      "status": "PASS",
+      "observed": "9 agree, all passing",
+      "expected": "agreement"
+    },
+    {
+      "check": "entry-to-plan-covered",
+      "status": "PASS",
+      "observed": "entry→goal→plan→first-day owned",
+      "expected": "journey"
+    },
+    {
+      "check": "w0-w1-ready",
+      "status": "PASS",
+      "observed": "M2-010 + M3-010 finished",
+      "expected": "W0/W1 precondition"
+    }
+  ],
+  "notVerifiableHere": [
+    "Live entry→adult→goal→placement→plan→today run deferred to M8 W0/W1."
+  ],
+  "note": "Aggregation by reference over the nine committed M4 manifests."
+}
