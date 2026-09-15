@@ -1,0 +1,63 @@
+{
+  "task": "P1R-M8-011",
+  "capturedAt": "2026-09-15T19:20:13.265Z",
+  "sourceCommit": "d7bf14cb6c564f1701407bfbd3f4ebc0f4049184",
+  "workingTreeDirty": false,
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "check": "saga-states",
+      "status": "PASS",
+      "observed": "compensating/compensated/failed states",
+      "expected": "saga states"
+    },
+    {
+      "check": "compensation-order",
+      "status": "PASS",
+      "observed": "reverse-order compensation",
+      "expected": "compensation"
+    },
+    {
+      "check": "two-person",
+      "status": "PASS",
+      "observed": "two-person recovery rule",
+      "expected": "manual recovery"
+    },
+    {
+      "check": "idempotent-executor",
+      "status": "PASS",
+      "observed": "applied compensations skipped",
+      "expected": "no double undo"
+    },
+    {
+      "check": "dlq",
+      "status": "PASS",
+      "observed": "consumer DLQ routing",
+      "expected": "DLQ"
+    },
+    {
+      "check": "retry-backoff",
+      "status": "PASS",
+      "observed": "bounded backoff+jitter",
+      "expected": "retry"
+    },
+    {
+      "check": "graceful",
+      "status": "PASS",
+      "observed": "graceful shutdown",
+      "expected": "shutdown"
+    },
+    {
+      "check": "anchors",
+      "status": "PASS",
+      "observed": "M8-006 + M8-009 closed",
+      "expected": "anchors"
+    }
+  ],
+  "notVerifiableHere": [
+    "Live fault-injection runs and alert drills deferred to acceptance."
+  ],
+  "note": "Mechanism verification; no production change."
+}
