@@ -1,0 +1,42 @@
+{
+  "taskId": "P1R-M7-002",
+  "draftOnly": false,
+  "canonicalTaskStatus": "DEV_DONE",
+  "decision": "DEV_DONE",
+  "sourceCommit": "f5fb0d3e58a8d33a696980b0a1ef339a8c19d5e9",
+  "startedAt": "2026-09-15T21:05:00.000Z",
+  "finishedAt": "2026-09-15T21:07:00.000Z",
+  "environment": {
+    "kind": "game-gate-reuse-evidence",
+    "branch": "dev",
+    "phaseStatus": "D3_DOMAIN",
+    "runtimeStatus": "M7_002_GAMES_VERIFIED",
+    "reviewPolicy": "Independent verification deferred by the owner: development proceeds to M8 and acceptance testing follows, so this task is DEV_DONE and not ACCEPTED.",
+    "note": "REUSE-VERIFY: P0-only catalog gate already in the committed tree."
+  },
+  "actors": ["root-coordinator", "p1r-implementation"],
+  "sourceIds": ["P1R-M7-002"],
+  "commands": [{ "command": "node scripts/runtime/p1r-m7-002-runtime.mjs", "purpose": "game gate checks" }],
+  "results": [{ "check": "games-8-checks", "status": "PASS", "details": "8/8: P0 gate, rejections, separation, lobby, degrade" }],
+  "rollbackEvidence": [{ "status": "PASS", "details": "Adds harness + evidence only; deleting them restores prior state." }],
+  "blockers": [],
+  "knownGaps": ["Low-spec live degrade run deferred to M8-009."],
+  "artifactDigests": [
+    { "path": "scripts/runtime/p1r-m7-002-runtime.mjs", "algorithm": "sha256", "digest": "8a65404db4b9e71db148602780f3ac02dd289c43c058238beb86949db987ece1" },
+    { "path": "evidence/p1r/m7/P1R-M7-002/runtime-2026-09-15.json", "algorithm": "sha256", "digest": "f44571e062a8973b09363d416e589b27ce11b22d416cf838d7f7565b6137f643" }
+  ],
+  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "nextSteps": ["Acceptance testing by the owner, which is what DEV_DONE defers."],
+  "statusNote": "Development finished and the evidence is in the repository. Eight reuse checks pass. Not independently verified, which DEV_DONE says.",
+  "provenance": {
+    "originalSourceCommit": "f5fb0d3e58a8d33a696980b0a1ef339a8c19d5e9",
+    "originalReviewer": "agent:p1r_implementation:deepseek-harness",
+    "currentSourceRevalidationTask": "P1R-M7-002",
+    "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
+    "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
+    "currentSourceRevalidationFinishedAt": "2026-09-15T21:07:00.000Z",
+    "currentSourceRevalidationAuditedImplementationSource": "f5fb0d3e58a8d33a696980b0a1ef339a8c19d5e9",
+    "currentSourceRevalidationIntegrationCheckpoint": "f5fb0d3e58a8d33a696980b0a1ef339a8c19d5e9",
+    "currentSourceRevalidationHistory": [{ "taskId": "P1R-M7-002", "sourceCommit": "f5fb0d3e58a8d33a696980b0a1ef339a8c19d5e9", "auditedImplementationSource": "f5fb0d3e58a8d33a696980b0a1ef339a8c19d5e9", "integrationCheckpoint": "f5fb0d3e58a8d33a696980b0a1ef339a8c19d5e9", "reviewer": "agent:p1r_implementation:deepseek-harness", "runtimeStatus": "RUNTIME_VERIFIED", "finishedAt": "2026-09-15T21:07:00.000Z", "details": "Initial DEV_DONE delivery under owner route A (REUSE-VERIFY)." }]
+  }
+}
