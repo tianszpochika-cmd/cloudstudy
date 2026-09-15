@@ -637,6 +637,19 @@
       "actor": "agent:p1r_implementation:deepseek-harness",
       "reason": "Owner route A. Dependencies M2-006 + M3-005 DEV_DONE. Publish gate plus owner-DB rebuild delivered (M2-004 reassignment); compile green, 8/8 harness PASS; timed scheduling deferred to workflow as knownGap.",
       "evidencePath": "evidence/p1r/m3/P1R-M3-006/manifest.json"
+    },
+    {
+      "taskId": "P1R-M3-007",
+      "path": [
+        "PLANNED",
+        "READY",
+        "IN_PROGRESS",
+        "DEV_DONE"
+      ],
+      "recordedAt": "2026-09-15T16:52:00Z",
+      "actor": "agent:p1r_implementation:deepseek-harness",
+      "reason": "Owner route A (REUSE-VERIFY, no production change). Dependency M3-006 DEV_DONE. Eight takedown/rollback checks pass; emergency-reason audit and learner recovery copy deferred as knownGap.",
+      "evidencePath": "evidence/p1r/m3/P1R-M3-007/manifest.json"
     }
   ]
 }
