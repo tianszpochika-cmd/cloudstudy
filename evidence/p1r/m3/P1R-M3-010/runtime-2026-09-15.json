@@ -1,0 +1,51 @@
+{
+  "task": "P1R-M3-010",
+  "capturedAt": "2026-09-15T16:26:10.125Z",
+  "sourceCommit": "9826d9c14e503b247b7e519100a6d42bc62045d7",
+  "workingTreeDirty": false,
+  "result": "PASS",
+  "passed": 6,
+  "total": 6,
+  "checks": [
+    {
+      "check": "ledger-chain-finished",
+      "status": "PASS",
+      "observed": "P1R-M3-001=DEV_DONE, P1R-M3-002=DEV_DONE, P1R-M3-003=DEV_DONE, P1R-M3-004=DEV_DONE, P1R-M3-005=DEV_DONE, P1R-M3-006=DEV_DONE, P1R-M3-007=DEV_DONE, P1R-M3-008=DEV_DONE, P1R-M3-009=DEV_DONE",
+      "expected": "M3-001..009 all DEV_DONE"
+    },
+    {
+      "check": "manifests-exist",
+      "status": "PASS",
+      "observed": "9 manifests present",
+      "expected": "9 manifests"
+    },
+    {
+      "check": "manifests-agree-and-pass",
+      "status": "PASS",
+      "observed": "9 agree with ledger, all results passing",
+      "expected": "agreement"
+    },
+    {
+      "check": "draft-to-publish-covered",
+      "status": "PASS",
+      "observed": "draft→review→publish→takedown/rollback owned",
+      "expected": "lifecycle"
+    },
+    {
+      "check": "four-projections-covered",
+      "status": "PASS",
+      "observed": "learner/public projections owned",
+      "expected": "projections"
+    },
+    {
+      "check": "content-publish-e2e-ready",
+      "status": "PASS",
+      "observed": "outbox/Kafka spine (M2-005) + publish (M3-006) finished",
+      "expected": "E2E precondition"
+    }
+  ],
+  "notVerifiableHere": [
+    "Live draft→dual-review→publish→four-projection→takedown/rollback run across the running stack is deferred to M8 W0 CONTENT-PUBLISH."
+  ],
+  "note": "Aggregation by reference over the nine committed M3 manifests."
+}
