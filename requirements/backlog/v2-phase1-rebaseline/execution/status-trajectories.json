@@ -1053,6 +1053,19 @@
       "actor": "agent:p1r_implementation:deepseek-harness",
       "reason": "Owner route A. Dependencies M4-002 + M6-001 DEV_DONE. Settings revoke buttons plus preferences mount delivered; typecheck green, 8/8 harness PASS; live invalidation proof deferred as knownGap.",
       "evidencePath": "evidence/p1r/m6/P1R-M6-004/manifest.json"
+    },
+    {
+      "taskId": "P1R-M6-005",
+      "path": [
+        "PLANNED",
+        "READY",
+        "IN_PROGRESS",
+        "DEV_DONE"
+      ],
+      "recordedAt": "2026-09-15T20:17:00Z",
+      "actor": "agent:p1r_implementation:deepseek-harness",
+      "reason": "Owner route A (REUSE-VERIFY, no production change). Dependencies M2-010 + M1-016 DEV_DONE. Eight ticket checks pass; live parity deferred as knownGap.",
+      "evidencePath": "evidence/p1r/m6/P1R-M6-005/manifest.json"
     }
   ]
 }

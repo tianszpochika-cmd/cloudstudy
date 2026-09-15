@@ -1,0 +1,42 @@
+{
+  "taskId": "P1R-M6-005",
+  "draftOnly": false,
+  "canonicalTaskStatus": "DEV_DONE",
+  "decision": "DEV_DONE",
+  "sourceCommit": "c4de922ea725a4616d40fb7522aa6f5f8e5fbf63",
+  "startedAt": "2026-09-15T20:15:00.000Z",
+  "finishedAt": "2026-09-15T20:17:00.000Z",
+  "environment": {
+    "kind": "tickets-reuse-evidence",
+    "branch": "dev",
+    "phaseStatus": "D3_DOMAIN",
+    "runtimeStatus": "M6_005_TICKETS_VERIFIED",
+    "reviewPolicy": "Independent verification deferred by the owner: development proceeds to M8 and acceptance testing follows, so this task is DEV_DONE and not ACCEPTED.",
+    "note": "REUSE-VERIFY: ticket owner plus SLA/assignment already in the committed tree."
+  },
+  "actors": ["root-coordinator", "p1r-implementation"],
+  "sourceIds": ["P1R-M6-005"],
+  "commands": [{ "command": "node scripts/runtime/p1r-m6-005-runtime.mjs", "purpose": "ticket checks" }],
+  "results": [{ "check": "tickets-8-checks", "status": "PASS", "details": "8/8: owner, assignment, SLA, state, PEP, redaction, dedupe" }],
+  "rollbackEvidence": [{ "status": "PASS", "details": "Adds harness + evidence only; deleting them restores prior state." }],
+  "blockers": [],
+  "knownGaps": ["Learner/admin same-schema live parity run deferred to acceptance."],
+  "artifactDigests": [
+    { "path": "scripts/runtime/p1r-m6-005-runtime.mjs", "algorithm": "sha256", "digest": "6df77e248d2f6efdcfa3c3c6f54e1775063a3a44000e8aa16051cf584828836f" },
+    { "path": "evidence/p1r/m6/P1R-M6-005/runtime-2026-09-15.json", "algorithm": "sha256", "digest": "45e462242669422ad6bc98aab188318cd6ced843f4f6ce622f3f1690568a64b6" }
+  ],
+  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "nextSteps": ["Acceptance testing by the owner, which is what DEV_DONE defers."],
+  "statusNote": "Development finished and the evidence is in the repository. Eight reuse checks pass. Not independently verified, which DEV_DONE says.",
+  "provenance": {
+    "originalSourceCommit": "c4de922ea725a4616d40fb7522aa6f5f8e5fbf63",
+    "originalReviewer": "agent:p1r_implementation:deepseek-harness",
+    "currentSourceRevalidationTask": "P1R-M6-005",
+    "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
+    "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
+    "currentSourceRevalidationFinishedAt": "2026-09-15T20:17:00.000Z",
+    "currentSourceRevalidationAuditedImplementationSource": "c4de922ea725a4616d40fb7522aa6f5f8e5fbf63",
+    "currentSourceRevalidationIntegrationCheckpoint": "c4de922ea725a4616d40fb7522aa6f5f8e5fbf63",
+    "currentSourceRevalidationHistory": [{ "taskId": "P1R-M6-005", "sourceCommit": "c4de922ea725a4616d40fb7522aa6f5f8e5fbf63", "auditedImplementationSource": "c4de922ea725a4616d40fb7522aa6f5f8e5fbf63", "integrationCheckpoint": "c4de922ea725a4616d40fb7522aa6f5f8e5fbf63", "reviewer": "agent:p1r_implementation:deepseek-harness", "runtimeStatus": "RUNTIME_VERIFIED", "finishedAt": "2026-09-15T20:17:00.000Z", "details": "Initial DEV_DONE delivery under owner route A (REUSE-VERIFY)." }]
+  }
+}
