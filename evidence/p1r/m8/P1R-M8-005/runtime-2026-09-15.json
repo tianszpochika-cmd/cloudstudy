@@ -1,0 +1,63 @@
+{
+  "task": "P1R-M8-005",
+  "capturedAt": "2026-09-15T19:09:37.272Z",
+  "sourceCommit": "4ede5726d719b903ab779ad6626d34029f61ffd3",
+  "workingTreeDirty": false,
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "check": "no-double-reward",
+      "status": "PASS",
+      "observed": "replay absorbs redelivery",
+      "expected": "no double reward"
+    },
+    {
+      "check": "kafka-settlement",
+      "status": "PASS",
+      "observed": "Kafka settlement path",
+      "expected": "Kafka path"
+    },
+    {
+      "check": "lease-recovery",
+      "status": "PASS",
+      "observed": "disconnect/lease recovery",
+      "expected": "lease recovery"
+    },
+    {
+      "check": "sandbox-admission",
+      "status": "PASS",
+      "observed": "refund→revoke admission",
+      "expected": "sandbox/refund/revoke"
+    },
+    {
+      "check": "refund-workbench",
+      "status": "PASS",
+      "observed": "refund ops workbench",
+      "expected": "refund ops"
+    },
+    {
+      "check": "production-off",
+      "status": "PASS",
+      "observed": "production OFF held",
+      "expected": "production OFF"
+    },
+    {
+      "check": "anchors",
+      "status": "PASS",
+      "observed": "M7-011 + M8-003 closed",
+      "expected": "anchors"
+    },
+    {
+      "check": "no-impl-change",
+      "status": "PASS",
+      "observed": "aggregation by reference, no code change",
+      "expected": "aggregate"
+    }
+  ],
+  "notVerifiableHere": [
+    "Live W3 sweep and payment-sandbox segment deferred to acceptance."
+  ],
+  "note": "W3 aggregation by reference; no production change."
+}
