@@ -1,0 +1,48 @@
+{
+  "taskId": "P1R-M7-011",
+  "draftOnly": false,
+  "canonicalTaskStatus": "DEV_DONE",
+  "decision": "DEV_DONE",
+  "sourceCommit": "bb4fd202d146a85d054d88d0326c298a4f4ab476",
+  "startedAt": "2026-09-15T21:50:00.000Z",
+  "finishedAt": "2026-09-15T21:52:00.000Z",
+  "environment": {
+    "kind": "m7-gate-aggregation-evidence",
+    "branch": "dev",
+    "phaseStatus": "D3_DOMAIN",
+    "runtimeStatus": "M7_011_GATE_AGGREGATED",
+    "reviewPolicy": "Independent verification deferred by the owner: development proceeds to M8 and acceptance testing follows, so this task is DEV_DONE and not ACCEPTED.",
+    "note": "Aggregation by reference over the ten committed M7 manifests; live run deferred to M8."
+  },
+  "actors": ["root-coordinator", "p1r-implementation"],
+  "sourceIds": ["P1R-M7-011"],
+  "commands": [{ "command": "node scripts/runtime/p1r-m7-011-runtime.mjs", "purpose": "aggregate M7-001..010" }],
+  "results": [
+    { "check": "ledger-chain-finished", "status": "PASS", "details": "10/10 DEV_DONE" },
+    { "check": "manifests-exist", "status": "PASS", "details": "10 manifests present" },
+    { "check": "manifests-agree-and-pass", "status": "PASS", "details": "10 agree, all passing" },
+    { "check": "reward-chain", "status": "PASS", "details": "trusted-to-reward owned" },
+    { "check": "commerce-off", "status": "PASS", "details": "production OFF held" }
+  ],
+  "rollbackEvidence": [{ "status": "PASS", "details": "Adds harness + evidence only; deleting them restores prior state." }],
+  "blockers": [],
+  "knownGaps": ["Minimal live integration run deferred to M8."],
+  "artifactDigests": [
+    { "path": "scripts/runtime/p1r-m7-011-runtime.mjs", "algorithm": "sha256", "digest": "3289e33a6d5d0755e2d21f4ff88779ecbd77ee687b3abbdc9f80b3859f25c68b" },
+    { "path": "evidence/p1r/m7/P1R-M7-011/runtime-2026-09-15.json", "algorithm": "sha256", "digest": "f6966385a2aaec667fdae0cab0f4d71530e975f754e1ec16a24ed98009a3ede6" }
+  ],
+  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "nextSteps": ["Acceptance testing by the owner, which is what DEV_DONE defers."],
+  "statusNote": "Development finished and the evidence is in the repository. Five aggregation checks pass. Not independently verified, which DEV_DONE says.",
+  "provenance": {
+    "originalSourceCommit": "bb4fd202d146a85d054d88d0326c298a4f4ab476",
+    "originalReviewer": "agent:p1r_implementation:deepseek-harness",
+    "currentSourceRevalidationTask": "P1R-M7-011",
+    "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
+    "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
+    "currentSourceRevalidationFinishedAt": "2026-09-15T21:52:00.000Z",
+    "currentSourceRevalidationAuditedImplementationSource": "bb4fd202d146a85d054d88d0326c298a4f4ab476",
+    "currentSourceRevalidationIntegrationCheckpoint": "bb4fd202d146a85d054d88d0326c298a4f4ab476",
+    "currentSourceRevalidationHistory": [{ "taskId": "P1R-M7-011", "sourceCommit": "bb4fd202d146a85d054d88d0326c298a4f4ab476", "auditedImplementationSource": "bb4fd202d146a85d054d88d0326c298a4f4ab476", "integrationCheckpoint": "bb4fd202d146a85d054d88d0326c298a4f4ab476", "reviewer": "agent:p1r_implementation:deepseek-harness", "runtimeStatus": "RUNTIME_VERIFIED", "finishedAt": "2026-09-15T21:52:00.000Z", "details": "Initial DEV_DONE delivery under owner route A." }]
+  }
+}
