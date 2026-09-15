@@ -1,0 +1,42 @@
+{
+  "taskId": "P1R-M5-010",
+  "draftOnly": false,
+  "canonicalTaskStatus": "DEV_DONE",
+  "decision": "DEV_DONE",
+  "sourceCommit": "020230e1951f4cbe9c3758c6e33e32b8b5c3bf2f",
+  "startedAt": "2026-09-15T19:30:00.000Z",
+  "finishedAt": "2026-09-15T19:32:00.000Z",
+  "environment": {
+    "kind": "mastery-reuse-evidence",
+    "branch": "dev",
+    "phaseStatus": "D3_DOMAIN",
+    "runtimeStatus": "M5_010_MASTERY_VERIFIED",
+    "reviewPolicy": "Independent verification deferred by the owner: development proceeds to M8 and acceptance testing follows, so this task is DEV_DONE and not ACCEPTED.",
+    "note": "REUSE-VERIFY: D7-gated replayable mastery already in the committed tree."
+  },
+  "actors": ["root-coordinator", "p1r-implementation"],
+  "sourceIds": ["P1R-M5-010"],
+  "commands": [{ "command": "node scripts/runtime/p1r-m5-010-runtime.mjs", "purpose": "mastery checks" }],
+  "results": [{ "check": "mastery-8-checks", "status": "PASS", "details": "8/8: D7 gate, stages, replay, version, separation, owner, degrade" }],
+  "rollbackEvidence": [{ "status": "PASS", "details": "Adds harness + evidence only; deleting them restores prior state." }],
+  "blockers": [],
+  "knownGaps": ["History-migration replay and failure-degrade live runs deferred to acceptance."],
+  "artifactDigests": [
+    { "path": "scripts/runtime/p1r-m5-010-runtime.mjs", "algorithm": "sha256", "digest": "99382b7babca974799b2cc857c229fc62dd63f2bed159da21431548584c340b5" },
+    { "path": "evidence/p1r/m5/P1R-M5-010/runtime-2026-09-15.json", "algorithm": "sha256", "digest": "2f29d65a1932f4430481090dc2c36fb0df0acb358da9ee87ba53fe11fd685bfb" }
+  ],
+  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "nextSteps": ["Acceptance testing by the owner, which is what DEV_DONE defers."],
+  "statusNote": "Development finished and the evidence is in the repository. Eight reuse checks pass. Not independently verified, which DEV_DONE says.",
+  "provenance": {
+    "originalSourceCommit": "020230e1951f4cbe9c3758c6e33e32b8b5c3bf2f",
+    "originalReviewer": "agent:p1r_implementation:deepseek-harness",
+    "currentSourceRevalidationTask": "P1R-M5-010",
+    "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
+    "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
+    "currentSourceRevalidationFinishedAt": "2026-09-15T19:32:00.000Z",
+    "currentSourceRevalidationAuditedImplementationSource": "020230e1951f4cbe9c3758c6e33e32b8b5c3bf2f",
+    "currentSourceRevalidationIntegrationCheckpoint": "020230e1951f4cbe9c3758c6e33e32b8b5c3bf2f",
+    "currentSourceRevalidationHistory": [{ "taskId": "P1R-M5-010", "sourceCommit": "020230e1951f4cbe9c3758c6e33e32b8b5c3bf2f", "auditedImplementationSource": "020230e1951f4cbe9c3758c6e33e32b8b5c3bf2f", "integrationCheckpoint": "020230e1951f4cbe9c3758c6e33e32b8b5c3bf2f", "reviewer": "agent:p1r_implementation:deepseek-harness", "runtimeStatus": "RUNTIME_VERIFIED", "finishedAt": "2026-09-15T19:32:00.000Z", "details": "Initial DEV_DONE delivery under owner route A (REUSE-VERIFY)." }]
+  }
+}
