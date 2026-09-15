@@ -1,0 +1,63 @@
+{
+  "task": "P1R-M7-009",
+  "capturedAt": "2026-09-15T18:55:25.756Z",
+  "sourceCommit": "3f3ffcc2c5beeec9aef962b452e4b9e2fce2688d",
+  "workingTreeDirty": true,
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "check": "learner-commerce",
+      "status": "PASS",
+      "observed": "learner commerce page",
+      "expected": "learner page"
+    },
+    {
+      "check": "refund-workbench",
+      "status": "PASS",
+      "observed": "refund ops card",
+      "expected": "refund workbench"
+    },
+    {
+      "check": "two-step-confirm",
+      "status": "PASS",
+      "observed": "prepare→confirm→execute",
+      "expected": "two-step confirm"
+    },
+    {
+      "check": "reason-allowlisted",
+      "status": "PASS",
+      "observed": "fixed reason codes",
+      "expected": "reason codes"
+    },
+    {
+      "check": "backend-chain",
+      "status": "PASS",
+      "observed": "backend action exists",
+      "expected": "backend chain"
+    },
+    {
+      "check": "orders-readonly",
+      "status": "PASS",
+      "observed": "orders stay read-only",
+      "expected": "separation"
+    },
+    {
+      "check": "sandbox-gated",
+      "status": "PASS",
+      "observed": "sandbox gate shown",
+      "expected": "sandbox OFF"
+    },
+    {
+      "check": "typecheck-green",
+      "status": "PASS",
+      "observed": "vue-tsc EXIT 0 (this session)",
+      "expected": "typechecks"
+    }
+  ],
+  "notVerifiableHere": [
+    "Live refund browser run and eight-state sweep deferred to acceptance."
+  ],
+  "note": "Refund ops workbench delivered; orders stay read-only."
+}

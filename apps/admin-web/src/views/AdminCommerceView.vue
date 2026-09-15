@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { ElMessage } from 'element-plus'
-import { executeB13Command, listB13AdminOrders, listB13Metrics, listB13SupportTickets } from '../api/b13'
+import { executeB13Command, listB13AdminOrders, listB13Metrics, listB13SupportTickets, prepareB13Command } from '../api/b13'
 import { recordList, text, num } from '../domain/b5'
 
 type Row = Record<string, unknown>
@@ -10,6 +10,10 @@ const tickets = ref<Row[]>([])
 const metrics = ref<Row[]>([])
 const loading = ref(false)
 const errorMessage = ref('')
+const refundOrderRef = ref('')
+const refundReason = ref('USER_REQUEST')
+const refundChallenge = ref<{ token: string; decisionId: string; resourceRef: string } | null>(null)
+const refundBusy = ref(false)
 
 function rows(value: unknown): Row[] {
   if (Array.isArray(value)) return value.filter((item): item is Row => typeof item === 'object' && item !== null)
@@ -60,6 +64,59 @@ async function resolveTicket(ticket: Row): Promise<void> {
   }
 }
 
+const REFUND_REASONS = ['USER_REQUEST', 'DUPLICATE_CHARGE', 'SERVICE_ISSUE', 'ADMIN_REVIEW'] as const
+
+function refundBody(): Record<string, unknown> {
+  return {
+    aggregateType: 'COMMERCE',
+    aggregateRef: refundOrderRef.value.trim(),
+    actionCode: 'COMMERCE_REFUND',
+    reasonCode: refundReason.value,
+  }
+}
+
+function parseChallenge(value: unknown): { token: string; decisionId: string; resourceRef: string } | null {
+  const root = value && typeof value === 'object' && 'data' in value
+    ? (value as { data?: unknown }).data
+    : value
+  if (!root || typeof root !== 'object') return null
+  const record = root as Record<string, unknown>
+  const token = text(record.token)
+  if (!token) return null
+  return { token, decisionId: text(record.decisionId), resourceRef: text(record.resourceRef, refundOrderRef.value.trim()) }
+}
+
+async function prepareRefund(): Promise<void> {
+  if (!refundOrderRef.value.trim() || refundBusy.value) return
+  refundBusy.value = true
+  refundChallenge.value = null
+  try {
+    refundChallenge.value = parseChallenge(await prepareB13Command(refundBody()))
+    if (!refundChallenge.value) throw new Error('服务端未返回确认挑战。')
+    ElMessage.info('退款已进入二次确认；请核对订单后确认执行。')
+  } catch (error) {
+    ElMessage.error(error instanceof Error ? error.message : '退款预检失败。')
+  } finally {
+    refundBusy.value = false
+  }
+}
+
+async function confirmRefund(): Promise<void> {
+  if (!refundChallenge.value || refundBusy.value) return
+  refundBusy.value = true
+  try {
+    await executeB13Command(refundBody(), refundChallenge.value.token)
+    ElMessage.success('退款命令已提交，等待服务端状态更新。')
+    refundChallenge.value = null
+    refundOrderRef.value = ''
+    await load()
+  } catch (error) {
+    ElMessage.error(error instanceof Error ? error.message : '退款命令提交失败。')
+  } finally {
+    refundBusy.value = false
+  }
+}
+
 onMounted(() => { void load() })
 </script>
 
@@ -95,6 +152,25 @@ onMounted(() => { void load() })
       <el-empty v-if="!orders.length" description="暂无订单投影；这不等同于零订单事实。" />
     </el-card>
 
+    <el-card shadow="never">
+      <template #header><div class="card-header"><span>退款操作</span><el-tag type="danger">二次确认</el-tag></div></template>
+      <p class="b13-refund-note">退款走 COMMERCE_REFUND 审批命令：先预检生成确认挑战，再二次确认执行；服务端幂等，重复提交不会重复退款。</p>
+      <div class="b13-refund-form">
+        <el-input v-model="refundOrderRef" placeholder="订单引用（orderRef）" clearable style="max-width: 320px" />
+        <el-select v-model="refundReason" style="width: 220px" aria-label="退款原因">
+          <el-option v-for="reason in REFUND_REASONS" :key="reason" :label="reason" :value="reason" />
+        </el-select>
+        <el-button type="warning" :loading="refundBusy" :disabled="!refundOrderRef.trim()" @click="prepareRefund">预检退款</el-button>
+      </div>
+      <div v-if="refundChallenge" class="b13-refund-challenge" role="status">
+        <span>待确认退款：{{ refundChallenge.resourceRef }} · 决策 {{ refundChallenge.decisionId || '服务端已受理' }}</span>
+        <div>
+          <el-button type="danger" :loading="refundBusy" @click="confirmRefund">确认执行退款</el-button>
+          <el-button :disabled="refundBusy" @click="refundChallenge = null">取消</el-button>
+        </div>
+      </div>
+    </el-card>
+
     <el-row :gutter="16">
       <el-col :span="12">
         <el-card shadow="never">
@@ -120,5 +196,5 @@ onMounted(() => { void load() })
 </template>
 
 <style scoped>
-.b13-ops{display:grid;gap:16px}.b13-stat-label{display:block;color:var(--ef-color-text-secondary,#667085);font-size:13px}.b13-stat-value{display:block;margin:8px 0;font-size:30px;color:var(--ef-color-text-primary,#1f2937)}.b13-ops small{color:var(--ef-color-text-secondary,#667085)}
+.b13-ops{display:grid;gap:16px}.b13-stat-label{display:block;color:var(--ef-color-text-secondary,#667085);font-size:13px}.b13-stat-value{display:block;margin:8px 0;font-size:30px;color:var(--ef-color-text-primary,#1f2937)}.b13-ops small{color:var(--ef-color-text-secondary,#667085)}.b13-refund-note{margin:0 0 12px;color:var(--ef-color-text-secondary,#667085);font-size:13px;line-height:1.6}.b13-refund-form{display:flex;gap:12px;flex-wrap:wrap;align-items:center}.b13-refund-challenge{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-top:12px;padding:12px 14px;border:1px solid #f2c7ce;border-radius:12px;background:#fff8f9;font-size:13px}.b13-refund-challenge>div{display:flex;gap:8px}
 </style>
