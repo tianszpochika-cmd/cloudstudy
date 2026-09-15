@@ -25,6 +25,16 @@ const routes: RouteRecordRaw[] = [
     component: () => import('../pages/LoginPage.vue'),
   },
   {
+    path: '/register',
+    name: 'register',
+    component: () => import('../pages/RegisterPage.vue'),
+  },
+  {
+    path: '/reset-password',
+    name: 'reset-password',
+    component: () => import('../pages/PasswordResetPage.vue'),
+  },
+  {
     path: '/home',
     name: 'home',
     component: () => import('../pages/HomePage.vue'),
@@ -201,7 +211,7 @@ router.beforeEach(async (to) => {
     return { name: 'login', query: { redirect: to.fullPath } }
   }
 
-  if (to.name === 'login' && session.isAuthenticated) {
+  if ((to.name === 'login' || to.name === 'register' || to.name === 'reset-password') && session.isAuthenticated) {
     return session.consumeReturnTo()
   }
 

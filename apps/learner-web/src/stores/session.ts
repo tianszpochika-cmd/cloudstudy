@@ -142,7 +142,64 @@ export const useSessionStore = defineStore('session', () => {
       clear()
       status.value = 'error'
       authErrorCode.value = 'AUTH_FAILED'
-      lastError.value = error instanceof Error ? error.message : 'LOGIN_FAILED'
+      // Anti-enumeration + rate-limit surfacing: the message never says whether the
+      // identifier exists; 429/423 keep their own recoverable wording from the server.
+      lastError.value = error instanceof ApiError && error.status === 429
+        ? '请求过于频繁，请稍后再试。'
+        : error instanceof ApiError && error.status === 423
+          ? '账号已被暂时锁定，请稍后再试或走密码重置。'
+          : error instanceof Error ? error.message : 'LOGIN_FAILED'
+      return false
+    }
+  }
+
+  async function register(identifier: string, password: string): Promise<boolean> {
+    status.value = 'restoring'
+    authErrorCode.value = null
+    lastError.value = null
+    try {
+      const pair = await adapter().register({
+        identifier: identifier.trim(),
+        password,
+        device: { deviceType: 'WEB', clientVersion: 'local-dev', deviceName: '浏览器' },
+      })
+      setTokenPair(pair)
+      applySnapshot(await adapter().getPermissions())
+      return true
+    } catch (error) {
+      clear()
+      status.value = 'error'
+      authErrorCode.value = 'AUTH_FAILED'
+      lastError.value = error instanceof ApiError && error.status === 429
+        ? '请求过于频繁，请稍后再试。'
+        : error instanceof ApiError && error.status === 409
+          ? '该账号已存在，请直接登录或走密码重置。'
+          : error instanceof Error ? error.message : 'REGISTER_FAILED'
+      return false
+    }
+  }
+
+  async function requestPasswordReset(identifier: string): Promise<boolean> {
+    lastError.value = null
+    try {
+      await adapter().requestPasswordReset({ identifier: identifier.trim() })
+      // Anti-enumeration: identical success wording whether or not the account exists.
+      return true
+    } catch (error) {
+      lastError.value = error instanceof ApiError && error.status === 429
+        ? '请求过于频繁，请稍后再试。'
+        : error instanceof Error ? error.message : 'RESET_REQUEST_FAILED'
+      return false
+    }
+  }
+
+  async function confirmPasswordReset(token: string, newPassword: string): Promise<boolean> {
+    lastError.value = null
+    try {
+      await adapter().confirmPasswordReset({ token: token.trim(), newPassword })
+      return true
+    } catch (error) {
+      lastError.value = error instanceof Error ? error.message : 'RESET_CONFIRM_FAILED'
       return false
     }
   }
@@ -306,6 +363,9 @@ export const useSessionStore = defineStore('session', () => {
     restore,
     prepareLogin,
     login,
+    register,
+    requestPasswordReset,
+    confirmPasswordReset,
     setTokenPair,
     refreshSilently,
     logout,

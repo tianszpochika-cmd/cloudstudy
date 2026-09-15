@@ -155,6 +155,20 @@
       }
     },
     {
+      "path": "pages/register/register",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "注册"
+      }
+    },
+    {
+      "path": "pages/reset-password/reset-password",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "找回密码"
+      }
+    },
+    {
       "path": "pages/forbidden/forbidden",
       "style": {
         "navigationStyle": "custom",

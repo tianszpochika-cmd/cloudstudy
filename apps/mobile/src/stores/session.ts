@@ -106,6 +106,46 @@ export const useSessionStore = defineStore('session', () => {
       return false
     }
   }
+  async function register(identifier: string, password: string): Promise<boolean> {
+    status.value = 'restoring'
+    lastError.value = null
+    try {
+      setTokenPair(await adapter().register({
+        identifier: identifier.trim(),
+        password,
+        device: { deviceType: deviceType(), clientVersion: 'local-dev', deviceName: '语学星移动端' },
+      }))
+      applySnapshot(await adapter().getPermissions())
+      status.value = 'authenticated'
+      restored.value = true
+      return true
+    } catch (error) {
+      clear()
+      status.value = 'error'
+      lastError.value = error instanceof Error ? error.message : 'REGISTER_FAILED'
+      return false
+    }
+  }
+  async function requestPasswordReset(identifier: string): Promise<boolean> {
+    lastError.value = null
+    try {
+      await adapter().requestPasswordReset({ identifier: identifier.trim() })
+      return true
+    } catch (error) {
+      lastError.value = error instanceof Error ? error.message : 'RESET_REQUEST_FAILED'
+      return false
+    }
+  }
+  async function confirmPasswordReset(token: string, newPassword: string): Promise<boolean> {
+    lastError.value = null
+    try {
+      await adapter().confirmPasswordReset({ token: token.trim(), newPassword })
+      return true
+    } catch (error) {
+      lastError.value = error instanceof Error ? error.message : 'RESET_CONFIRM_FAILED'
+      return false
+    }
+  }
   async function refreshSilently(): Promise<boolean> {
     if (refreshPromise) return refreshPromise
     refreshPromise = (async () => {
@@ -144,7 +184,7 @@ export const useSessionStore = defineStore('session', () => {
     try { secureStorage()?.removeItem(REFRESH_TOKEN_KEY) } catch { /* best effort */ }
   }
 
-  return { accessToken, deviceId, sessionId, permissions, status, adultGate, lastError, restored, isAuthenticated, isLearningReady, restore, login, refreshSilently, logout, revokeCurrentSession, confirmAdultGate, setReturnTo, peekReturnTo, consumeReturnTo, setAuthAdapter, clear }
+  return { accessToken, deviceId, sessionId, permissions, status, adultGate, lastError, restored, isAuthenticated, isLearningReady, restore, login, register, requestPasswordReset, confirmPasswordReset, refreshSilently, logout, revokeCurrentSession, confirmAdultGate, setReturnTo, peekReturnTo, consumeReturnTo, setAuthAdapter, clear }
 })
 
 export function readAccessToken(): string | null { return getInMemoryAccessToken() }

@@ -42,6 +42,9 @@ export interface MobileLoginCredentials {
 
 export interface MobileAuthAdapter {
   login(input: MobileLoginCredentials): Promise<MobileTokenPair>
+  register(input: MobileLoginCredentials): Promise<MobileTokenPair>
+  requestPasswordReset(input: { identifier: string }): Promise<{ accepted: boolean }>
+  confirmPasswordReset(input: { token: string; newPassword: string }): Promise<void>
   restoreSession(): Promise<MobileAuthSnapshot | null>
   refresh(input?: B8RefreshRequest): Promise<MobileTokenPair>
   getPermissions(): Promise<MobileAuthSnapshot | null>
@@ -133,6 +136,31 @@ export function createGatewayMobileAuthAdapter(): MobileAuthAdapter {
         header: { 'Idempotency-Key': authIdempotencyKey('login') },
         skipAuthRetry: true,
       }))
+    },
+    async register(input) {
+      return parseTokenPair(await mobileApiClient.request('/auth/register', {
+        method: 'POST',
+        data: input,
+        header: { 'Idempotency-Key': authIdempotencyKey('register') },
+        skipAuthRetry: true,
+      }))
+    },
+    async requestPasswordReset(input) {
+      await mobileApiClient.request('/auth/password-reset/request', {
+        method: 'POST',
+        data: input,
+        header: { 'Idempotency-Key': authIdempotencyKey('pwd-request') },
+        skipAuthRetry: true,
+      })
+      return { accepted: true }
+    },
+    async confirmPasswordReset(input) {
+      await mobileApiClient.request('/auth/password-reset/confirm', {
+        method: 'POST',
+        data: input,
+        header: { 'Idempotency-Key': authIdempotencyKey('pwd-confirm') },
+        skipAuthRetry: true,
+      })
     },
     async restoreSession() {
       try {

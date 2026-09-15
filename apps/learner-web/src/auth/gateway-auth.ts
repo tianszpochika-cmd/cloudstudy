@@ -43,6 +43,9 @@ export interface LoginCredentials {
 
 export interface JwtAuthAdapter {
   login(input: LoginCredentials): Promise<AuthTokenPair>
+  register(input: LoginCredentials): Promise<AuthTokenPair>
+  requestPasswordReset(input: { identifier: string }): Promise<{ accepted: boolean }>
+  confirmPasswordReset(input: { token: string; newPassword: string }): Promise<void>
   restoreSession(): Promise<AuthSessionSnapshot | null>
   refresh(input?: { refreshToken?: string }): Promise<AuthTokenPair>
   getPermissions(): Promise<AuthSessionSnapshot | null>
@@ -150,6 +153,26 @@ export function createGatewayAuthAdapter(options: GatewayAuthAdapterOptions): Jw
         headers: { 'Idempotency-Key': authIdempotencyKey('login') },
         skipAuthRetry: true,
       }))
+    },
+    async register(input) {
+      return parseTokenPair(await client.post('/auth/register', input, {
+        headers: { 'Idempotency-Key': authIdempotencyKey('register') },
+        skipAuthRetry: true,
+      }))
+    },
+    async requestPasswordReset(input) {
+      const raw = await client.post('/auth/password-reset/request', input, {
+        headers: { 'Idempotency-Key': authIdempotencyKey('pwd-request') },
+        skipAuthRetry: true,
+      })
+      const data = unwrap(raw);
+      return { accepted: true, ...((data && typeof data === 'object' ? data : {}) as object) };
+    },
+    async confirmPasswordReset(input) {
+      await client.post('/auth/password-reset/confirm', input, {
+        headers: { 'Idempotency-Key': authIdempotencyKey('pwd-confirm') },
+        skipAuthRetry: true,
+      })
     },
     async restoreSession() {
       try {

@@ -1,0 +1,93 @@
+{
+  "task": "P1R-M4-001",
+  "capturedAt": "2026-09-15T16:34:44.204Z",
+  "sourceCommit": "63550d1684dd79eea73fc4958a2d4e0f2cab7457",
+  "workingTreeDirty": true,
+  "result": "PASS",
+  "passed": 13,
+  "total": 13,
+  "checks": [
+    {
+      "check": "web-adapter-register-reset",
+      "status": "PASS",
+      "observed": "register + reset request/confirm",
+      "expected": "contract paths"
+    },
+    {
+      "check": "web-anti-enumeration",
+      "status": "PASS",
+      "observed": "identical wording + 429/423",
+      "expected": "anti-enumeration + rate-limit"
+    },
+    {
+      "check": "web-weak-password",
+      "status": "PASS",
+      "observed": "409 existing → login/reset hint",
+      "expected": "weak/existing handling"
+    },
+    {
+      "check": "web-page:RegisterPage.vue",
+      "status": "PASS",
+      "observed": "present",
+      "expected": "present"
+    },
+    {
+      "check": "web-page:PasswordResetPage.vue",
+      "status": "PASS",
+      "observed": "present",
+      "expected": "present"
+    },
+    {
+      "check": "web-routes",
+      "status": "PASS",
+      "observed": "/register + /reset-password",
+      "expected": "routes"
+    },
+    {
+      "check": "web-returnTo",
+      "status": "PASS",
+      "observed": "returnTo across register/reset",
+      "expected": "deep-link recovery"
+    },
+    {
+      "check": "mobile-adapter-register-reset",
+      "status": "PASS",
+      "observed": "mobile register + reset",
+      "expected": "parity"
+    },
+    {
+      "check": "mobile-session-methods",
+      "status": "PASS",
+      "observed": "mobile session methods",
+      "expected": "parity"
+    },
+    {
+      "check": "mobile-page:register.vue",
+      "status": "PASS",
+      "observed": "present",
+      "expected": "present"
+    },
+    {
+      "check": "mobile-page:reset-password.vue",
+      "status": "PASS",
+      "observed": "present",
+      "expected": "present"
+    },
+    {
+      "check": "mobile-routes",
+      "status": "PASS",
+      "observed": "pages.json entries",
+      "expected": "routes"
+    },
+    {
+      "check": "dual-typecheck",
+      "status": "PASS",
+      "observed": "learner-web vue-tsc + mobile tsc EXIT 0 (this session)",
+      "expected": "typechecks"
+    }
+  ],
+  "notVerifiableHere": [
+    "Live browser dual-end run (register→login→reset→returnTo with 401/429/lockout) deferred to M8 W0/W1."
+  ],
+  "note": "Read from the committed learner-web + mobile trees; typechecks green this session."
+}
