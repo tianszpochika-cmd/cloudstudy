@@ -585,6 +585,19 @@
       "actor": "agent:p1r_implementation:deepseek-harness",
       "reason": "Owner route A. Dependency M3-001 DEV_DONE. Batch import implemented with idempotent sub-keys and standard expectedStateVersion->409 optimistic lock; compile green, 8/8 harness PASS; live MySQL duel deferred as knownGap.",
       "evidencePath": "evidence/p1r/m3/P1R-M3-002/manifest.json"
+    },
+    {
+      "taskId": "P1R-M3-003",
+      "path": [
+        "PLANNED",
+        "READY",
+        "IN_PROGRESS",
+        "DEV_DONE"
+      ],
+      "recordedAt": "2026-09-15T16:20:00Z",
+      "actor": "agent:p1r_implementation:deepseek-harness",
+      "reason": "Owner route A. Dependency M3-002 DEV_DONE. Auto validation domain plus read-only report endpoint delivered; compile green, 6/6 harness PASS; fixture/audit replay deferred as knownGap.",
+      "evidencePath": "evidence/p1r/m3/P1R-M3-003/manifest.json"
     }
   ]
 }

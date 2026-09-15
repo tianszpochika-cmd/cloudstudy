@@ -1,0 +1,54 @@
+{
+  "taskId": "P1R-M3-003",
+  "draftOnly": false,
+  "canonicalTaskStatus": "DEV_DONE",
+  "decision": "DEV_DONE",
+  "sourceCommit": "6a587ed932ccaec71b1f15aa55147e7951c0eabf",
+  "startedAt": "2026-09-15T16:15:00.000Z",
+  "finishedAt": "2026-09-15T16:20:00.000Z",
+  "environment": {
+    "kind": "content-auto-validation-evidence",
+    "branch": "dev",
+    "phaseStatus": "D3_DOMAIN",
+    "runtimeStatus": "M3_003_AUTO_VALIDATE_VERIFIED",
+    "reviewPolicy": "Independent verification deferred by the owner: development proceeds to M8 and acceptance testing follows, so this task is DEV_DONE and not ACCEPTED.",
+    "note": "Pure-function validator plus read-only report endpoint; compile green; fixture/audit replay deferred."
+  },
+  "actors": ["root-coordinator", "p1r-implementation"],
+  "sourceIds": ["P1R-M3-003"],
+  "commands": [
+    { "command": "mvn -pl services/content-service -am compile -DskipTests", "purpose": "content-service builds with auto validation" },
+    { "command": "node scripts/runtime/p1r-m3-003-runtime.mjs", "purpose": "copyright/stage/leak/structure checks" }
+  ],
+  "results": [
+    { "check": "validator-exists", "status": "PASS", "details": "rights/window/leak/stage checks + rule version" },
+    { "check": "endpoint-exists", "status": "PASS", "details": "POST /validate/auto returns ruleVersion report" },
+    { "check": "read-only-report", "status": "PASS", "details": "read-only report" },
+    { "check": "leak-guard-shared", "status": "PASS", "details": "shares projection deny-list" },
+    { "check": "rights-window-checked", "status": "PASS", "details": "window start/end checked" },
+    { "check": "service-builds", "status": "PASS", "details": "mvn compile EXIT 0" }
+  ],
+  "rollbackEvidence": [{ "status": "PASS", "details": "Adds one domain class plus one endpoint; deleting them restores prior behavior." }],
+  "blockers": [],
+  "knownGaps": ["Fixture-driven expiry blocking and audit-evidence replay against MySQL deferred to acceptance."],
+  "artifactDigests": [
+    { "path": "services/content-service/src/main/java/com/englishflow/content/domain/ContentAutoValidation.java", "algorithm": "sha256", "digest": "016c95d9da346d8641b7129508b78f64b5b69c72689c970fa6ce1776cd60f876" },
+    { "path": "services/content-service/src/main/java/com/englishflow/content/web/B9ContentAdminController.java", "algorithm": "sha256", "digest": "2a73d9a72fb3d41d0559a04e69245247a5aa212b153cbb58ffa3bfe842474cbe" },
+    { "path": "scripts/runtime/p1r-m3-003-runtime.mjs", "algorithm": "sha256", "digest": "02b0d507d43455af99f8ff0ff761bbced838c9a72ed37229c7262feb35e83cc6" },
+    { "path": "evidence/p1r/m3/P1R-M3-003/runtime-2026-09-15.json", "algorithm": "sha256", "digest": "439af03b2a064f8ec1446de6776220163f5cf530f192e8a0dad1beadb90e0815" }
+  ],
+  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "nextSteps": ["Acceptance testing by the owner, which is what DEV_DONE defers."],
+  "statusNote": "Development finished and the evidence is in the repository. Six checks pass with a green compile. Not independently verified, which DEV_DONE says.",
+  "provenance": {
+    "originalSourceCommit": "6a587ed932ccaec71b1f15aa55147e7951c0eabf",
+    "originalReviewer": "agent:p1r_implementation:deepseek-harness",
+    "currentSourceRevalidationTask": "P1R-M3-003",
+    "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
+    "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
+    "currentSourceRevalidationFinishedAt": "2026-09-15T16:20:00.000Z",
+    "currentSourceRevalidationAuditedImplementationSource": "6a587ed932ccaec71b1f15aa55147e7951c0eabf",
+    "currentSourceRevalidationIntegrationCheckpoint": "6a587ed932ccaec71b1f15aa55147e7951c0eabf",
+    "currentSourceRevalidationHistory": [{ "taskId": "P1R-M3-003", "sourceCommit": "6a587ed932ccaec71b1f15aa55147e7951c0eabf", "auditedImplementationSource": "6a587ed932ccaec71b1f15aa55147e7951c0eabf", "integrationCheckpoint": "6a587ed932ccaec71b1f15aa55147e7951c0eabf", "reviewer": "agent:p1r_implementation:deepseek-harness", "runtimeStatus": "RUNTIME_VERIFIED", "finishedAt": "2026-09-15T16:20:00.000Z", "details": "Initial DEV_DONE delivery under owner route A after M3-002 reached DEV_DONE." }]
+  }
+}
