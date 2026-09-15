@@ -1,0 +1,63 @@
+{
+  "task": "P1R-M4-009",
+  "capturedAt": "2026-09-15T16:59:05.989Z",
+  "sourceCommit": "5f0af03f6b6e3aa71b1fbd59605525ac9938f5ea",
+  "workingTreeDirty": false,
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "check": "returnTo-same-guards",
+      "status": "PASS",
+      "observed": "identical traversal guards",
+      "expected": "deep-link safety parity"
+    },
+    {
+      "check": "returnTo-platform-fallbacks",
+      "status": "PASS",
+      "observed": "per-platform fallbacks",
+      "expected": "correct fallbacks"
+    },
+    {
+      "check": "offline-states",
+      "status": "PASS",
+      "observed": "offline state both ends",
+      "expected": "offline parity"
+    },
+    {
+      "check": "responsive-web",
+      "status": "PASS",
+      "observed": "web media queries",
+      "expected": "responsive web"
+    },
+    {
+      "check": "responsive-mobile",
+      "status": "PASS",
+      "observed": "mobile rpx units",
+      "expected": "responsive mobile"
+    },
+    {
+      "check": "relogin-returnTo",
+      "status": "PASS",
+      "observed": "returnTo after re-login both",
+      "expected": "re-login recovery"
+    },
+    {
+      "check": "same-owner-reads",
+      "status": "PASS",
+      "observed": "owner-scoped reads",
+      "expected": "same owner state"
+    },
+    {
+      "check": "no-impl-change",
+      "status": "PASS",
+      "observed": "REUSE-VERIFY this round",
+      "expected": "reuse"
+    }
+  ],
+  "notVerifiableHere": [
+    "Live Web/H5/iPad size matrix and offline-kill run deferred to M8-007."
+  ],
+  "note": "REUSE-VERIFY: read from both client trees; no production change."
+}
