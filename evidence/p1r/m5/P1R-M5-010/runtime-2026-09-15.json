@@ -1,0 +1,63 @@
+{
+  "task": "P1R-M5-010",
+  "capturedAt": "2026-09-15T17:30:26.147Z",
+  "sourceCommit": "d3a3d693e355d7c2f18d466b1e3261fb390b36b9",
+  "workingTreeDirty": false,
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "check": "d7-gate",
+      "status": "PASS",
+      "observed": "CONSOLIDATED needs D7 + score + attempts",
+      "expected": "D7 gate"
+    },
+    {
+      "check": "stage-machine",
+      "status": "PASS",
+      "observed": "guarded transitions",
+      "expected": "state machine"
+    },
+    {
+      "check": "replayable",
+      "status": "PASS",
+      "observed": "duplicate evidence no-op",
+      "expected": "replayable"
+    },
+    {
+      "check": "evidence-versioned",
+      "status": "PASS",
+      "observed": "rule version pinned",
+      "expected": "rule version"
+    },
+    {
+      "check": "server-never-scores",
+      "status": "PASS",
+      "observed": "projection only, never scores",
+      "expected": "separation"
+    },
+    {
+      "check": "owner-scoped",
+      "status": "PASS",
+      "observed": "durable owner projection",
+      "expected": "owner DB"
+    },
+    {
+      "check": "degrade-failclosed",
+      "status": "PASS",
+      "observed": "fail-closed store",
+      "expected": "degrade"
+    },
+    {
+      "check": "no-impl-change",
+      "status": "PASS",
+      "observed": "REUSE-VERIFY this round",
+      "expected": "reuse"
+    }
+  ],
+  "notVerifiableHere": [
+    "History-migration replay and failure-degrade live runs deferred to acceptance."
+  ],
+  "note": "REUSE-VERIFY: read from the committed learning-service tree; no production change."
+}
