@@ -141,6 +141,11 @@ public final class LearningPlanService {
                             .findFirst().orElseThrow();
                     store.appendOutbox(LearningEventFactory.taskCompleted(
                             scope, task, command.metadata(), clock.instant()));
+                    // M5-013 trusted completion (v2): same idempotent block, so replays
+                    // append once. v1 is retained for existing consumers until the M8 cutover.
+                    store.appendOutbox(LearningEventFactory.trustedTaskCompleted(
+                            scope, task, current.contentEpoch(), "P1_TASK_COMPLETION_V1",
+                            command.metadata(), clock.instant()));
                     return completed;
                 }));
     }

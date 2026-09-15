@@ -1,0 +1,63 @@
+{
+  "task": "P1R-M5-013",
+  "capturedAt": "2026-09-15T17:38:23.818Z",
+  "sourceCommit": "a731ba34024beb0e8a40dafa120137ec49dfd330",
+  "workingTreeDirty": true,
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "check": "trusted-v2-shape",
+      "status": "PASS",
+      "observed": "v2 name + schema v2",
+      "expected": "canonical event"
+    },
+    {
+      "check": "whitelist-predicate",
+      "status": "PASS",
+      "observed": "SERVER_SETTLED qualifier + source set",
+      "expected": "source whitelist"
+    },
+    {
+      "check": "dedupe-stable",
+      "status": "PASS",
+      "observed": "per-task-version dedupe key",
+      "expected": "dedupe"
+    },
+    {
+      "check": "no-raw-answers",
+      "status": "PASS",
+      "observed": "digests/pins only",
+      "expected": "no raw answers/audio"
+    },
+    {
+      "check": "emitted-once",
+      "status": "PASS",
+      "observed": "emitted in idempotent block",
+      "expected": "Outbox emission"
+    },
+    {
+      "check": "v1-retained",
+      "status": "PASS",
+      "observed": "v1 kept until cutover",
+      "expected": "compat window"
+    },
+    {
+      "check": "outbox-path",
+      "status": "PASS",
+      "observed": "outbox facts",
+      "expected": "Outbox"
+    },
+    {
+      "check": "service-builds",
+      "status": "PASS",
+      "observed": "mvn compile EXIT 0 (this session)",
+      "expected": "compiles"
+    }
+  ],
+  "notVerifiableHere": [
+    "Assessment-side item.assessed.v2, review-due/report-ready shapes and consumer contract tests deferred to acceptance."
+  ],
+  "note": "Learning-side trusted completion delivered; assessment-side shapes deferred."
+}

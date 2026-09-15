@@ -97,6 +97,68 @@ final class LearningEventFactory {
                 metadata, occurredAt);
     }
 
+    /**
+     * M5-013 trusted completion (v2, M1014): the gamification/ledger whitelist entry.
+     * Only SERVER_SETTLED completions qualify; the payload carries pins and digests,
+     * never raw answers, audio or free text. Dedupe key is stable per task version so
+     * replays append once.
+     */
+    static final java.util.Set<String> TRUSTED_COMPLETION_SOURCES =
+            java.util.Set.of("learning.task.completed.v2");
+
+    static LearningOutboxEvent trustedTaskCompleted(
+            LearningTenantScope scope,
+            LearningTask task,
+            long contentEpoch,
+            String completionRuleVersion,
+            LearningRequestMetadata metadata,
+            Instant occurredAt) {
+        String outcomeDigest = sha256Hex(task.taskId() + ":" + task.completionVersion() + ":"
+                + task.contentVersionId() + ":" + completionRuleVersion);
+        return v2event(scope, "learning_task_completion", Long.toString(task.taskId()),
+                "learning.task.completed.v2",
+                "trusted-task-completed-" + task.taskId() + "-v" + task.completionVersion(),
+                Map.of(
+                        "producerService", "learning-service",
+                        "taskStatus", "COMPLETED",
+                        "completionFact", "SERVER_SETTLED",
+                        "taskId", task.taskId(),
+                        "completionVersion", task.completionVersion(),
+                        "contentVersionId", task.contentVersionId(),
+                        "contentEpoch", contentEpoch,
+                        "completionRuleVersion", completionRuleVersion,
+                        "outcomeDigest", outcomeDigest,
+                        "completedAt", occurredAt.toString()),
+                metadata, occurredAt);
+    }
+
+    private static LearningOutboxEvent v2event(
+            LearningTenantScope scope,
+            String aggregateType,
+            String aggregateId,
+            String eventType,
+            String dedupeKey,
+            Map<String, Object> payload,
+            LearningRequestMetadata metadata,
+            Instant occurredAt) {
+        return new LearningOutboxEvent(
+                UUID.randomUUID(), scope, aggregateType, aggregateId, eventType, "v2", 2,
+                scope.principalId(), dedupeKey, payload,
+                metadata.requestId(), metadata.traceId(), occurredAt);
+    }
+
+    private static String sha256Hex(String value) {
+        try {
+            java.security.MessageDigest digest = java.security.MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(value.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            StringBuilder hex = new StringBuilder();
+            for (byte b : hash) hex.append(String.format("%02x", b));
+            return hex.toString();
+        } catch (java.security.NoSuchAlgorithmException impossible) {
+            throw new IllegalStateException(impossible);
+        }
+    }
+
     static LearningOutboxEvent queueCreated(
             LearningTenantScope scope,
             long scheduleSnapshotId,
