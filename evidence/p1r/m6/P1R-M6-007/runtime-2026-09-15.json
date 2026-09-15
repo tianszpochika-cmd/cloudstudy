@@ -1,0 +1,63 @@
+{
+  "task": "P1R-M6-007",
+  "capturedAt": "2026-09-15T18:02:07.218Z",
+  "sourceCommit": "8c6e38ff8671968d3da1b7d0463d95d960974c83",
+  "workingTreeDirty": true,
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "check": "request-idempotent",
+      "status": "PASS",
+      "observed": "idempotent request",
+      "expected": "request"
+    },
+    {
+      "check": "status-endpoint",
+      "status": "PASS",
+      "observed": "status read",
+      "expected": "status"
+    },
+    {
+      "check": "download-gated",
+      "status": "PASS",
+      "observed": "READY-only download",
+      "expected": "download"
+    },
+    {
+      "check": "expiry-evaluated",
+      "status": "PASS",
+      "observed": "on-read expiry",
+      "expected": "expiry"
+    },
+    {
+      "check": "receipt-carried",
+      "status": "PASS",
+      "observed": "receipt descriptor",
+      "expected": "receipt"
+    },
+    {
+      "check": "self-scoped",
+      "status": "PASS",
+      "observed": "self scope enforced",
+      "expected": "owner scope"
+    },
+    {
+      "check": "migration-v7",
+      "status": "PASS",
+      "observed": "V7 lifecycle columns",
+      "expected": "migration"
+    },
+    {
+      "check": "service-builds",
+      "status": "PASS",
+      "observed": "mvn compile EXIT 0 (this session)",
+      "expected": "compiles"
+    }
+  ],
+  "notVerifiableHere": [
+    "Cross-owner fragment fan-out and receipt reconciliation via workflow deferred to acceptance."
+  ],
+  "note": "Learner-fragment lifecycle delivered; cross-owner orchestration deferred."
+}

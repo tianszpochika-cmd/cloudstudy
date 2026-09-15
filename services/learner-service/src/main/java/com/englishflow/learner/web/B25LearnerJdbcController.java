@@ -273,10 +273,96 @@ public class B25LearnerJdbcController {
         String exportId = "privacy-export-" + UUID.randomUUID();
         jdbc.update("""
                 INSERT INTO b25_learner_privacy_export
-                    (export_id, principal_id, tenant_id, policy_name, export_status, idempotency_key, created_at)
-                VALUES (?, ?, ?, ?, 'QUEUED', ?, CURRENT_TIMESTAMP(6))
+                    (export_id, principal_id, tenant_id, policy_name, export_status, idempotency_key, created_at,
+                     expires_at, downloaded_at, receipt_json)
+                VALUES (?, ?, ?, ?, 'QUEUED', ?, CURRENT_TIMESTAMP(6),
+                     DATE_ADD(CURRENT_TIMESTAMP(6), INTERVAL 7 DAY), NULL, NULL)
                 """, exportId, p.subject(), TENANT, policyName, idempotencyKey);
         return privacyExportResponse(exportId, "QUEUED", policyName);
+    }
+
+    /**
+     * M6-007 export status: self-scoped read with on-read expiry. An expired export
+     * reports EXPIRED and never yields a download; the fact row is retained for audit.
+     */
+    @GetMapping("/privacy/export/{exportId}")
+    public Map<String, Object> privacyExportStatus(@PathVariable String exportId,
+            Authentication authentication) {
+        Principal p = principal(authentication);
+        Map<String, Object> row = one("""
+                SELECT export_id, export_status, policy_name, created_at, expires_at, downloaded_at
+                  FROM b25_learner_privacy_export
+                 WHERE export_id = ? AND tenant_id = ? AND principal_id = ?
+                """, exportId, TENANT, p.subject());
+        if (row == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "privacy export does not exist");
+        }
+        String status = evaluateExportStatus(row);
+        return privacyExportDetail(row, status);
+    }
+
+    /**
+     * M6-007 short-lived download descriptor: only a READY, unexpired export yields one,
+     * and the first download stamps downloaded_at (second confirmation is the request
+     * itself being replay-safe: same key returns the same descriptor, never a new file).
+     * The descriptor carries redaction policy and expiry, never raw cross-owner bytes.
+     */
+    @GetMapping("/privacy/export/{exportId}/download")
+    @Transactional(transactionManager = "learnerTransactionManager")
+    public Map<String, Object> privacyExportDownload(@PathVariable String exportId,
+            Authentication authentication) {
+        Principal p = principal(authentication);
+        Map<String, Object> row = one("""
+                SELECT export_id, export_status, policy_name, created_at, expires_at, downloaded_at
+                  FROM b25_learner_privacy_export
+                 WHERE export_id = ? AND tenant_id = ? AND principal_id = ?
+                """, exportId, TENANT, p.subject());
+        if (row == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "privacy export does not exist");
+        }
+        if (!"READY".equals(evaluateExportStatus(row))) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "privacy export is not downloadable");
+        }
+        if (row.get("downloaded_at") == null) {
+            jdbc.update("""
+                    UPDATE b25_learner_privacy_export
+                       SET downloaded_at = CURRENT_TIMESTAMP(6)
+                     WHERE export_id = ? AND tenant_id = ? AND principal_id = ?
+                    """, exportId, TENANT, p.subject());
+        }
+        Map<String, Object> data = new LinkedHashMap<>();
+        data.put("exportId", row.get("export_id"));
+        data.put("status", "READY");
+        data.put("redactionPolicy", "learner-self");
+        data.put("expiresAt", row.get("expires_at"));
+        data.put("receipt", Map.of("exportId", row.get("export_id"), "policyName", row.get("policy_name")));
+        return Map.of("data", data);
+    }
+
+    private static String evaluateExportStatus(Map<String, Object> row) {
+        Object expiresAt = row.get("expires_at");
+        if (expiresAt != null) {
+            try {
+                java.time.Instant expiry = ((java.sql.Timestamp) expiresAt).toInstant();
+                if (!expiry.isAfter(java.time.Instant.now())) {
+                    return "EXPIRED";
+                }
+            } catch (ClassCastException ignored) {
+                // A non-timestamp expiry is treated as not expired; schema migration V7
+                // guarantees TIMESTAMP, so this branch only guards exotic drivers.
+            }
+        }
+        return String.valueOf(row.get("export_status"));
+    }
+
+    private static Map<String, Object> privacyExportDetail(Map<String, Object> row, String status) {
+        Map<String, Object> data = new LinkedHashMap<>();
+        data.put("exportId", row.get("export_id"));
+        data.put("status", status);
+        data.put("policyName", row.get("policy_name"));
+        data.put("expiresAt", row.get("expires_at"));
+        data.put("downloadedAt", row.get("downloaded_at"));
+        return Map.of("data", data);
     }
 
     @GetMapping("/first-day")
