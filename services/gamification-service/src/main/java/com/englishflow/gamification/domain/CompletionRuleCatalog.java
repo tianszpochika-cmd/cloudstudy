@@ -7,6 +7,7 @@ public final class CompletionRuleCatalog {
 
     private final Map<String, CompletionRule> rules = Map.ofEntries(
             Map.entry("learning.task.completed.v1", new CompletionRule("learning.task.completed.v1", 15, 1, 8, "LEARNING_REWARD_BOX")),
+            Map.entry("learning.task.completed.v2", new CompletionRule("learning.task.completed.v2", 15, 1, 8, "LEARNING_REWARD_BOX")),
             Map.entry("learning.lesson.completed.v1", new CompletionRule("learning.lesson.completed.v1", 20, 1, 10, "LEARNING_REWARD_BOX")),
             Map.entry("learning.review.completed.v1", new CompletionRule("learning.review.completed.v1", 15, 1, 8, "LEARNING_REWARD_BOX")),
             Map.entry("learning.reading.completed.v1", new CompletionRule("learning.reading.completed.v1", 20, 1, 10, "LEARNING_REWARD_BOX")),

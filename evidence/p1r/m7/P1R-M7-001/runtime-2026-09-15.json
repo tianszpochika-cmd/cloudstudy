@@ -1,0 +1,63 @@
+{
+  "task": "P1R-M7-001",
+  "capturedAt": "2026-09-15T18:29:10.205Z",
+  "sourceCommit": "96d0348cfb97aabe47fd48280718f4d34bba07d4",
+  "workingTreeDirty": true,
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "check": "kafka-dep",
+      "status": "PASS",
+      "observed": "spring-kafka dependency",
+      "expected": "Kafka dep"
+    },
+    {
+      "check": "consumer-exists",
+      "status": "PASS",
+      "observed": "Kafka consumer present",
+      "expected": "consumer"
+    },
+    {
+      "check": "off-by-default",
+      "status": "PASS",
+      "observed": "disabled unless explicit",
+      "expected": "off by default"
+    },
+    {
+      "check": "group-topic",
+      "status": "PASS",
+      "observed": "contract group + topic",
+      "expected": "group/topic"
+    },
+    {
+      "check": "same-settlement",
+      "status": "PASS",
+      "observed": "same idempotent settlement",
+      "expected": "settlement"
+    },
+    {
+      "check": "v2-accepted",
+      "status": "PASS",
+      "observed": "v2 envelope accepted",
+      "expected": "v2 shape"
+    },
+    {
+      "check": "dlq-routed",
+      "status": "PASS",
+      "observed": "DLQ routing",
+      "expected": "DLQ"
+    },
+    {
+      "check": "service-builds",
+      "status": "PASS",
+      "observed": "mvn compile EXIT 0 (this session)",
+      "expected": "compiles"
+    }
+  ],
+  "notVerifiableHere": [
+    "Learning-side Outbox relay to platform.learning.v1 and HTTP cutover are follow-ups; HTTP stays legacy-compat."
+  ],
+  "note": "Consumer side delivered; producer relay deferred."
+}

@@ -27,7 +27,10 @@ public record TrustedCompletionEvent(
 
     public static final String RULE_VERSION = "GAM_RULE_2026_08_20_01";
     public static final String SCHEMA_VERSION = "v1";
-    private static final Set<String> ALLOWED_SCHEMA_VERSIONS = Set.of("v1", "1", "1.0", "1.0.0");
+    private static final Set<String> ALLOWED_SCHEMA_VERSIONS = Set.of("v1", "1", "1.0", "1.0.0", "v2", "2", "2.0", "2.0.0");
+    /** M7-001: the trusted learning completion v2 rule version rides the same settlement. */
+    public static final String RULE_VERSION_V2 = "P1_TASK_COMPLETION_V1";
+    private static final Set<String> ALLOWED_RULE_VERSIONS = Set.of(RULE_VERSION, RULE_VERSION_V2);
 
     private static final Set<String> ALLOWED_FIELDS = Set.of(
             "sourceService", "eventId", "traceId", "schemaVersion", "occurredAt",
@@ -40,6 +43,7 @@ public record TrustedCompletionEvent(
     private static final Map<String, Set<String>> SOURCE_EVENT_TYPES = Map.of(
             "learning-service", Set.of(
             "learning.task.completed.v1",
+            "learning.task.completed.v2",
             "learning.lesson.completed.v1",
                     "learning.review.completed.v1",
                     "learning.reading.completed.v1",
@@ -70,7 +74,7 @@ public record TrustedCompletionEvent(
         if (!ALLOWED_SCHEMA_VERSIONS.contains(schemaVersion)) {
             throw GamificationDomainException.invalidEvent("schemaVersion is unsupported");
         }
-        if (!RULE_VERSION.equals(ruleVersion)) {
+        if (!RULE_VERSION.equals(ruleVersion) && !ALLOWED_RULE_VERSIONS.contains(ruleVersion)) {
             throw GamificationDomainException.invalidEvent("ruleVersion is unsupported");
         }
         if (!ALLOWED_SOURCES.contains(sourceService)

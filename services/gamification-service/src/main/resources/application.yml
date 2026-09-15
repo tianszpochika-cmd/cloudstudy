@@ -62,6 +62,15 @@ gamification:
     enabled: ${GAMIFICATION_FEATURE_ENABLED:true}
   default-time-zone: ${GAMIFICATION_DEFAULT_TIME_ZONE:Asia/Shanghai}
   local-feature-state-enabled: ${GAMIFICATION_LOCAL_FEATURE_STATE_ENABLED:true}
+  events:
+    consumer:
+      # Off by default: a consumer that starts against an unconfigured broker must be
+      # an explicit decision. Group/topic come from the event runtime contract's topic table.
+      enabled: ${GAMIFICATION_EVENT_CONSUMER_ENABLED:false}
+      group-id: ${GAMIFICATION_EVENT_CONSUMER_GROUP_ID:cg.gamification-from-learning.v1}
+      topic: ${GAMIFICATION_EVENT_CONSUMER_TOPIC:platform.learning.v1}
+      dlq-topic: ${GAMIFICATION_EVENT_CONSUMER_DLQ_TOPIC:platform.events.dlq.v1}
+      bootstrap-servers: ${GAMIFICATION_KAFKA_BOOTSTRAP_SERVERS:127.0.0.1:19092}
   security:
     resource-server-enabled: ${GAMIFICATION_RESOURCE_SERVER_ENABLED:true}
     issuer-uri: ${GAMIFICATION_SECURITY_ISSUER_URI:${IAM_JWT_ISSUER:http://127.0.0.1:18087}}
