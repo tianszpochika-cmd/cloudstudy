@@ -1,0 +1,63 @@
+{
+  "task": "P1R-M8-009",
+  "capturedAt": "2026-09-15T19:16:56.127Z",
+  "sourceCommit": "8e12e027f10370d1b440b7c8d79e745333faab24",
+  "workingTreeDirty": false,
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "check": "four-levels",
+      "status": "PASS",
+      "observed": "four levels",
+      "expected": "levels"
+    },
+    {
+      "check": "budgets",
+      "status": "PASS",
+      "observed": "resource budgets",
+      "expected": "budgets"
+    },
+    {
+      "check": "audio-range",
+      "status": "PASS",
+      "observed": "0.5x-2.0x rates",
+      "expected": "audio range"
+    },
+    {
+      "check": "offline-queue",
+      "status": "PASS",
+      "observed": "offline progress queue",
+      "expected": "offline"
+    },
+    {
+      "check": "perf-selector",
+      "status": "PASS",
+      "observed": "in-page perf switch",
+      "expected": "low-spec"
+    },
+    {
+      "check": "slo-doc",
+      "status": "PASS",
+      "observed": "SLO baseline doc",
+      "expected": "SLO report"
+    },
+    {
+      "check": "probes",
+      "status": "PASS",
+      "observed": "health probes",
+      "expected": "probes"
+    },
+    {
+      "check": "anchors",
+      "status": "PASS",
+      "observed": "M8-004 + M8-007 closed",
+      "expected": "anchors"
+    }
+  ],
+  "notVerifiableHere": [
+    "Load/soak runs and capacity report deferred to acceptance."
+  ],
+  "note": "Local-segment verification; no production change."
+}
