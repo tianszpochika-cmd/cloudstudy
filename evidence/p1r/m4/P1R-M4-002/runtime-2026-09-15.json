@@ -1,0 +1,63 @@
+{
+  "task": "P1R-M4-002",
+  "capturedAt": "2026-09-15T16:37:44.746Z",
+  "sourceCommit": "053a9c6c4be652c423b6f5b256863e2cf59d86f4",
+  "workingTreeDirty": false,
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "check": "web-access-memory-only",
+      "status": "PASS",
+      "observed": "memory-only access token",
+      "expected": "Web Access Token仅内存"
+    },
+    {
+      "check": "web-refresh-cookie",
+      "status": "PASS",
+      "observed": "cookie credentials include",
+      "expected": "HttpOnly refresh"
+    },
+    {
+      "check": "mobile-memory-only",
+      "status": "PASS",
+      "observed": "memory-only access",
+      "expected": "mobile memory"
+    },
+    {
+      "check": "mobile-secure-only",
+      "status": "PASS",
+      "observed": "Keychain/Keystore only, no fallback",
+      "expected": "mobile secure storage"
+    },
+    {
+      "check": "refresh-single-flight",
+      "status": "PASS",
+      "observed": "single-flight refresh merge",
+      "expected": "refresh merge"
+    },
+    {
+      "check": "logout-revoke",
+      "status": "PASS",
+      "observed": "logout + revoke paths",
+      "expected": "logout/revoke"
+    },
+    {
+      "check": "devices-managed",
+      "status": "PASS",
+      "observed": "devices + kickout APIs",
+      "expected": "device sessions"
+    },
+    {
+      "check": "dual-typecheck-kept",
+      "status": "PASS",
+      "observed": "no impl change; typechecks green round 11",
+      "expected": "typechecks"
+    }
+  ],
+  "notVerifiableHere": [
+    "Replay-then-revoke live invalidation run against IAM deferred to acceptance (rotation covered by M2-002)."
+  ],
+  "note": "REUSE-VERIFY: read from both client trees; no production change."
+}
