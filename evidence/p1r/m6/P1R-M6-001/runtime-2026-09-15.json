@@ -1,0 +1,63 @@
+{
+  "task": "P1R-M6-001",
+  "capturedAt": "2026-09-15T17:43:51.327Z",
+  "sourceCommit": "44d9caf985d162b8b73724e3fb851caf1352386f",
+  "workingTreeDirty": false,
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "check": "subscription-table",
+      "status": "PASS",
+      "observed": "subscription table",
+      "expected": "Subscription table"
+    },
+    {
+      "check": "template-table",
+      "status": "PASS",
+      "observed": "template table",
+      "expected": "Template table"
+    },
+    {
+      "check": "subscription-entity",
+      "status": "PASS",
+      "observed": "subscription entity",
+      "expected": "Subscription entity"
+    },
+    {
+      "check": "template-entity",
+      "status": "PASS",
+      "observed": "versioned template entity",
+      "expected": "Template entity"
+    },
+    {
+      "check": "preferences-kept",
+      "status": "PASS",
+      "observed": "versioned preferences",
+      "expected": "preferences"
+    },
+    {
+      "check": "messages-kept",
+      "status": "PASS",
+      "observed": "messages present",
+      "expected": "messages"
+    },
+    {
+      "check": "read-receipts",
+      "status": "PASS",
+      "observed": "READ receipts",
+      "expected": "read receipts"
+    },
+    {
+      "check": "service-builds",
+      "status": "PASS",
+      "observed": "mvn compile EXIT 0 (this session)",
+      "expected": "compiles"
+    }
+  ],
+  "notVerifiableHere": [
+    "Message eight-state live browser run deferred to M8."
+  ],
+  "note": "Subscription/template entities plus kept preferences/messages/receipts; compile green."
+}
