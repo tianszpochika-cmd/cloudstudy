@@ -1,0 +1,63 @@
+{
+  "task": "P1R-M8-004",
+  "capturedAt": "2026-09-15T19:08:14.087Z",
+  "sourceCommit": "5002ea26d208b8d75d6bc0a890bf7a13772865b4",
+  "workingTreeDirty": false,
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "check": "srs",
+      "status": "PASS",
+      "observed": "SRS batch + sync",
+      "expected": "SRS"
+    },
+    {
+      "check": "mistake-d1d7",
+      "status": "PASS",
+      "observed": "D1/D7 + variant trace",
+      "expected": "mistake mastery"
+    },
+    {
+      "check": "multiskill",
+      "status": "PASS",
+      "observed": "reading/writing/grammar submits",
+      "expected": "six skills"
+    },
+    {
+      "check": "offline",
+      "status": "PASS",
+      "observed": "offline error path",
+      "expected": "offline"
+    },
+    {
+      "check": "audio-degrade",
+      "status": "PASS",
+      "observed": "audio fallback",
+      "expected": "audio degrade"
+    },
+    {
+      "check": "reports",
+      "status": "PASS",
+      "observed": "learning reports",
+      "expected": "reports"
+    },
+    {
+      "check": "w1-done",
+      "status": "PASS",
+      "observed": "M8-003 closed",
+      "expected": "W1 anchor"
+    },
+    {
+      "check": "no-impl-change",
+      "status": "PASS",
+      "observed": "aggregation by reference, no code change",
+      "expected": "aggregate"
+    }
+  ],
+  "notVerifiableHere": [
+    "Live W2 sweep deferred to acceptance."
+  ],
+  "note": "W2 aggregation by reference; no production change."
+}
