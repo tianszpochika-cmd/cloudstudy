@@ -1,7 +1,7 @@
 {
   "schemaVersion": "p1r.status-trajectories.v1",
   "historyMode": "m0-integration-reconstruction",
-  "recordedAt": "2026-09-14T23:47:56.328Z",
+  "recordedAt": "2026-09-15T00:07:12.881Z",
   "note": "M0 trajectories were reconstructed during the first integration review from the task execution records and canonical decisions. From M1 onward, every transition must be recorded when it occurs.",
   "records": [
     {
@@ -524,11 +524,13 @@
       "taskId": "P1R-M2-008",
       "path": [
         "PLANNED",
-        "READY"
+        "READY",
+        "IN_PROGRESS",
+        "DEV_DONE"
       ],
-      "recordedAt": "2026-09-14T23:47:56.328Z",
+      "recordedAt": "2026-09-15T00:07:12.881Z",
       "actor": "agent:p1r_implementation:deepseek-harness",
-      "reason": "Ready: M2-007 is delivered, so the stack-readiness task can proceed.",
+      "reason": "Eight checks pass against the running stack: every runtime service is listening on its declared port, nothing undeclared holds a port in that range, the dependency containers are healthy, the owner schemas exist, every domain service is ready with its own schema connection, the gateway answers, a direct call is refused, and a known public route is routed. The reachability probe measures refusal on one machine rather than a network policy, and says so.",
       "evidencePath": "evidence/p1r/m2/P1R-M2-008/manifest.json"
     }
   ]

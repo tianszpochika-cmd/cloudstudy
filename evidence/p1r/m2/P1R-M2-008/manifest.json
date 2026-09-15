@@ -1,0 +1,125 @@
+{
+  "taskId": "P1R-M2-008",
+  "draftOnly": false,
+  "canonicalTaskStatus": "DEV_DONE",
+  "decision": "DEV_DONE",
+  "sourceCommit": "3fb4b1213f0d50cc2f77650a0724bc7950a68771",
+  "startedAt": "2026-09-15T00:02:43.324Z",
+  "finishedAt": "2026-09-15T00:07:12.881Z",
+  "environment": {
+    "kind": "stack-readiness-runtime-evidence",
+    "branch": "dev",
+    "phaseStatus": "D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED",
+    "runtimeStatus": "M2_008_STACK_READY",
+    "reviewPolicy": "Independent verification deferred by the owner: development proceeds to M8 and acceptance testing follows, so this task is DEV_DONE and not ACCEPTED.",
+    "stack": {
+      "mysql": "127.0.0.1:13306",
+      "redis": "127.0.0.1:16379",
+      "kafka": "127.0.0.1:19092",
+      "gateway": "127.0.0.1:18070"
+    },
+    "note": "Measured against the running machine: netstat for the ports, docker inspect for the containers, HTTP for the probes, and the runtime manifest for which services should be up."
+  },
+  "actors": [],
+  "sourceIds": [
+    "P1R-M2-008"
+  ],
+  "commands": [
+    {
+      "command": "node scripts/runtime/p1r-m2-008-runtime.mjs",
+      "purpose": "ports, dependencies, reachability"
+    }
+  ],
+  "results": [
+    {
+      "check": "every-service-the-runner-starts-is-listening-on-its-declared-port",
+      "status": "PASS",
+      "details": "observed 16 of 16 listening | expected all 16 runtime services listening"
+    },
+    {
+      "check": "no-undeclared-listener-in-the-service-port-range",
+      "status": "PASS",
+      "details": "observed none | expected every listener in 18070-18199 is registered"
+    },
+    {
+      "check": "every-declared-dependency-container-is-healthy",
+      "status": "PASS",
+      "details": "observed mysql, redis, kafka, minio | expected mysql, redis, kafka and minio healthy"
+    },
+    {
+      "check": "every-owner-schema-exists",
+      "status": "PASS",
+      "details": "observed 14 schemas | expected 14 owner schemas"
+    },
+    {
+      "check": "every-domain-service-is-ready-with-its-own-schema-connection",
+      "status": "PASS",
+      "details": "observed 14 of 14 ready | expected every domain service reports readiness UP"
+    },
+    {
+      "check": "the-gateway-is-reachable",
+      "status": "PASS",
+      "details": "observed 200 {\"groups\":[\"liveness\",\"readiness\"],\"stat | expected 200"
+    },
+    {
+      "check": "a-domain-service-refuses-a-direct-call-with-no-token",
+      "status": "PASS",
+      "details": "observed learner-service:401, content-service:401, learning-service:401 | expected every direct call refused with 401 or 403"
+    },
+    {
+      "check": "a-known-public-route-is-routed-through-the-gateway",
+      "status": "PASS",
+      "details": "observed 200 {\"meta\":{\"requestId\":\"37106843-1ef6-40de-9254-f04b6cba4c26\", | expected 401 or 403 rather than 404"
+    }
+  ],
+  "rollbackEvidence": [
+    {
+      "status": "PASS",
+      "details": "This task adds a harness and one shutdown timeout. Reverting either restores the previous state: the harness is a script and the timeout is a value in a configuration file."
+    }
+  ],
+  "blockers": [],
+  "knownGaps": [
+    "The reachability probe measures that a domain service refuses an unauthenticated direct call, which is what can be tested on one machine. It does not measure a network policy, because there is no cluster here; on a cluster the claim would need a probe from outside the namespace, and that is not what this evidence shows.",
+    "The port check identifies services by the runtime manifest rather than by inspecting which process holds a port, because the tool for the latter is not present on this machine. A port held by an unrelated process inside the declared range would be reported only as an undeclared listener, not as a conflict with a named service.",
+    "Two of the nine tables whose name contains receipt have no event_id column and cannot be read by M2-007's event check; that is recorded there rather than here.",
+    "core-api, the v1 compatibility module, shuts down gracefully without bounding it. It is named in the observation and excluded from the check, which is about the v2 services."
+  ],
+  "artifactDigests": [
+    {
+      "path": "scripts/runtime/p1r-m2-008-runtime.mjs",
+      "algorithm": "sha256",
+      "digest": "81a226d709516acbf69b32c7ce5cbf2162cc06578ad5ee46ed4e3ff65cc82ac4"
+    },
+    {
+      "path": "config/v2-runtime-services.json",
+      "algorithm": "sha256",
+      "digest": "e4d8f5b2c498b1812e1beda74498a2bac320169d8079577b055828560acc5011"
+    },
+    {
+      "path": "config/local-ports.json",
+      "algorithm": "sha256",
+      "digest": "0a6b43d35379fed2e679961b34a0ad0e9ec1888dfb7d1a2c76eed20706e5ca95"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-008/runtime-2026-09-15.json",
+      "algorithm": "sha256",
+      "digest": "541b75edb12bb201814155310cf49891334fdc2fb6dcaed042b9cb5ba3c40fd3"
+    }
+  ],
+  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "nextSteps": [
+    "Acceptance testing by the owner, which is what DEV_DONE defers."
+  ],
+  "statusNote": "Development finished and the evidence is in the repository. Eight checks pass against the running stack: every service the runner starts is listening on its declared port, nothing undeclared holds a port in that range, the four dependency containers are healthy, all fourteen owner schemas exist, every domain service is ready with its own schema connection, the gateway answers, a direct call to a domain service is refused, and a known public route is routed through the gateway. Not independently verified, which DEV_DONE says.",
+  "provenance": {
+    "originalSourceCommit": "3fb4b1213f0d50cc2f77650a0724bc7950a68771",
+    "originalReviewer": "agent:p1r_implementation:deepseek-harness",
+    "currentSourceRevalidationTask": "P1R-M2-008",
+    "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
+    "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
+    "currentSourceRevalidationFinishedAt": "2026-09-15T00:07:12.881Z",
+    "currentSourceRevalidationAuditedImplementationSource": "3fb4b1213f0d50cc2f77650a0724bc7950a68771",
+    "currentSourceRevalidationIntegrationCheckpoint": "3fb4b1213f0d50cc2f77650a0724bc7950a68771"
+  }
+}

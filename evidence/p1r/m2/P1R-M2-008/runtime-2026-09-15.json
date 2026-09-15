@@ -1,0 +1,62 @@
+{
+  "task": "P1R-M2-008",
+  "capturedAt": "2026-09-15T00:02:43.324Z",
+  "sourceCommit": "3fb4b1213f0d50cc2f77650a0724bc7950a68771",
+  "workingTreeDirty": false,
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "registeredPorts": 44,
+  "listeningPorts": 67,
+  "checks": [
+    {
+      "name": "every-service-the-runner-starts-is-listening-on-its-declared-port",
+      "ok": true,
+      "observed": "16 of 16 listening",
+      "expected": "all 16 runtime services listening"
+    },
+    {
+      "name": "no-undeclared-listener-in-the-service-port-range",
+      "ok": true,
+      "observed": "none",
+      "expected": "every listener in 18070-18199 is registered"
+    },
+    {
+      "name": "every-declared-dependency-container-is-healthy",
+      "ok": true,
+      "observed": "mysql, redis, kafka, minio",
+      "expected": "mysql, redis, kafka and minio healthy"
+    },
+    {
+      "name": "every-owner-schema-exists",
+      "ok": true,
+      "observed": "14 schemas",
+      "expected": "14 owner schemas"
+    },
+    {
+      "name": "every-domain-service-is-ready-with-its-own-schema-connection",
+      "ok": true,
+      "observed": "14 of 14 ready",
+      "expected": "every domain service reports readiness UP"
+    },
+    {
+      "name": "the-gateway-is-reachable",
+      "ok": true,
+      "observed": "200 {\"groups\":[\"liveness\",\"readiness\"],\"stat",
+      "expected": "200"
+    },
+    {
+      "name": "a-domain-service-refuses-a-direct-call-with-no-token",
+      "ok": true,
+      "observed": "learner-service:401, content-service:401, learning-service:401",
+      "expected": "every direct call refused with 401 or 403"
+    },
+    {
+      "name": "a-known-public-route-is-routed-through-the-gateway",
+      "ok": true,
+      "observed": "200 {\"meta\":{\"requestId\":\"37106843-1ef6-40de-9254-f04b6cba4c26\",",
+      "expected": "401 or 403 rather than 404"
+    }
+  ],
+  "note": "Measured against the running machine: netstat for the ports, docker inspect for the dependencies, the MySQL client with each owner credential for the schemas, and HTTP from outside the gateway for the reachability probe."
+}
