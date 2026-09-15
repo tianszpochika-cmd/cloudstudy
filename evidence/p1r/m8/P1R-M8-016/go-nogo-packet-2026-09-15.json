@@ -1,0 +1,29 @@
+{
+  "packet": "P1R-Go-NoGo-2026-09-15",
+  "rcCommit": "25534c7f00f01b6e6e12d7892d38f729f6870ffa",
+  "generatedAt": "2026-09-15T19:34:13.989Z",
+  "gates": [
+    "M2",
+    "M3",
+    "M4",
+    "M5",
+    "M6",
+    "M7",
+    "M8"
+  ],
+  "gatesResult": "PASS (re-run this session)",
+  "openP0P1": [],
+  "signoffRoles": [
+    "product",
+    "architecture",
+    "security",
+    "privacy",
+    "operations",
+    "release"
+  ],
+  "sloRef": "docs/02-architecture/v2-microservices-architecture.md#7.1",
+  "rollbackRef": "RC index + manifest pins; delete post-RC commits",
+  "decision": "PENDING_INDEPENDENT",
+  "decidedBy": null,
+  "decidedAt": null
+}

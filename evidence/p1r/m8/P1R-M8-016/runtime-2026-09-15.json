@@ -1,0 +1,63 @@
+{
+  "task": "P1R-M8-016",
+  "capturedAt": "2026-09-15T19:34:13.989Z",
+  "sourceCommit": "25534c7f00f01b6e6e12d7892d38f729f6870ffa",
+  "workingTreeDirty": false,
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "check": "rc-index",
+      "status": "PASS",
+      "observed": "RC index present",
+      "expected": "RC index"
+    },
+    {
+      "check": "gates-green",
+      "status": "PASS",
+      "observed": "M2-M8 re-run PASS this session (M8-015)",
+      "expected": "gates"
+    },
+    {
+      "check": "no-p0p1-open",
+      "status": "PASS",
+      "observed": "no open P0/P1 in dev scope; gaps tracked per manifest",
+      "expected": "risk state"
+    },
+    {
+      "check": "slo-defined",
+      "status": "PASS",
+      "observed": "SLO baseline",
+      "expected": "SLO"
+    },
+    {
+      "check": "rollback-defined",
+      "status": "PASS",
+      "observed": "runbook + rollback pins",
+      "expected": "rollback"
+    },
+    {
+      "check": "roles-listed",
+      "status": "PASS",
+      "observed": "product/arch/security/privacy/ops/release sign-off required",
+      "expected": "roles"
+    },
+    {
+      "check": "decision-pending",
+      "status": "PASS",
+      "observed": "decision field PENDING_INDEPENDENT; no GO claimed",
+      "expected": "no self-approval"
+    },
+    {
+      "check": "no-impl-change",
+      "status": "PASS",
+      "observed": "packet staging only",
+      "expected": "packet"
+    }
+  ],
+  "notVerifiableHere": [
+    "Independent Go/No-Go decision itself; packet staged only."
+  ],
+  "note": "Decision packet staged; conclusion left to the independent party."
+}
