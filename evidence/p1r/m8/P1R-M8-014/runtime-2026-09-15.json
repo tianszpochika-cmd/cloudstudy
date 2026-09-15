@@ -1,0 +1,63 @@
+{
+  "task": "P1R-M8-014",
+  "capturedAt": "2026-09-15T19:26:27.702Z",
+  "sourceCommit": "0960bc4e135d2afdd66e95502fa6d5813666f16a",
+  "workingTreeDirty": false,
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "check": "migrations",
+      "status": "PASS",
+      "observed": "156 SQL files (migrations + fixtures)",
+      "expected": "migrations"
+    },
+    {
+      "check": "payment-flag",
+      "status": "PASS",
+      "observed": "payment production gate",
+      "expected": "payment flag"
+    },
+    {
+      "check": "feature-flag",
+      "status": "PASS",
+      "observed": "gamification feature flag",
+      "expected": "feature flag"
+    },
+    {
+      "check": "phase-flags",
+      "status": "PASS",
+      "observed": "phase gates",
+      "expected": "phase flags"
+    },
+    {
+      "check": "consumer-flag",
+      "status": "PASS",
+      "observed": "consumer enabled flag",
+      "expected": "consumer flag"
+    },
+    {
+      "check": "rollback-paths",
+      "status": "PASS",
+      "observed": "publish rollback + saga compensations",
+      "expected": "rollback"
+    },
+    {
+      "check": "runbook",
+      "status": "PASS",
+      "observed": "incident runbook",
+      "expected": "runbook"
+    },
+    {
+      "check": "anchors",
+      "status": "PASS",
+      "observed": "M8-012 + M8-013 closed",
+      "expected": "anchors"
+    }
+  ],
+  "notVerifiableHere": [
+    "Live canary/rollback drill deferred to acceptance."
+  ],
+  "note": "Release-train verification; no production change."
+}
