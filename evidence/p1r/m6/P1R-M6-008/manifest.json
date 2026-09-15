@@ -1,0 +1,47 @@
+{
+  "taskId": "P1R-M6-008",
+  "draftOnly": false,
+  "canonicalTaskStatus": "DEV_DONE",
+  "decision": "DEV_DONE",
+  "sourceCommit": "4119a8fefbed327af52d62cdcd7d7b9208c44326",
+  "startedAt": "2026-09-15T20:35:00.000Z",
+  "finishedAt": "2026-09-15T20:38:00.000Z",
+  "environment": {
+    "kind": "deletion-lifecycle-evidence",
+    "branch": "dev",
+    "phaseStatus": "D3_DOMAIN",
+    "runtimeStatus": "M6_008_DELETION_VERIFIED",
+    "reviewPolicy": "Independent verification deferred by the owner: development proceeds to M8 and acceptance testing follows, so this task is DEV_DONE and not ACCEPTED.",
+    "note": "IAM deletion lifecycle delivered; cross-owner fan-out deferred."
+  },
+  "actors": ["root-coordinator", "p1r-implementation"],
+  "sourceIds": ["P1R-M6-008"],
+  "commands": [
+    { "command": "mvn -pl services/iam-service -am compile -DskipTests", "purpose": "iam-service builds with deletion" },
+    { "command": "node scripts/runtime/p1r-m6-008-runtime.mjs", "purpose": "deletion lifecycle checks" }
+  ],
+  "results": [{ "check": "deletion-8-checks", "status": "PASS", "details": "8/8: request, cooling, cancel, execute, revocation, receipts, gateway, migration" }],
+  "rollbackEvidence": [{ "status": "PASS", "details": "Adds migration, one controller plus harness/evidence; deleting them restores prior state." }],
+  "blockers": [],
+  "knownGaps": ["Cross-owner anonymization fan-out via workflow deferred to acceptance."],
+  "artifactDigests": [
+    { "path": "services/iam-service/src/main/resources/db/migration/V15__create_account_deletion.sql", "algorithm": "sha256", "digest": "6f370ba65cf0fdf6504430358c083ae5ecbf441aeae0556dd425c102a4af47ec" },
+    { "path": "services/iam-service/src/main/java/com/englishflow/iam/web/IamAccountDeletionController.java", "algorithm": "sha256", "digest": "6980e1d167ac8476d9c26c547bea7f90e82515b5a746a7b529e41f0f862a3fa7" },
+    { "path": "scripts/runtime/p1r-m6-008-runtime.mjs", "algorithm": "sha256", "digest": "da38c8f0e04a94d4bb611f81dfbf9e23fef6bb6cb951a103405c926bb678d478" },
+    { "path": "evidence/p1r/m6/P1R-M6-008/runtime-2026-09-15.json", "algorithm": "sha256", "digest": "363efe01a2a47457eab58f48b18ecac70e02bc0ad5ba767bd92c0d98df5715bf" }
+  ],
+  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "nextSteps": ["Acceptance testing by the owner, which is what DEV_DONE defers."],
+  "statusNote": "Development finished and the evidence is in the repository. Eight checks pass with a green compile. Not independently verified, which DEV_DONE says.",
+  "provenance": {
+    "originalSourceCommit": "4119a8fefbed327af52d62cdcd7d7b9208c44326",
+    "originalReviewer": "agent:p1r_implementation:deepseek-harness",
+    "currentSourceRevalidationTask": "P1R-M6-008",
+    "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
+    "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
+    "currentSourceRevalidationFinishedAt": "2026-09-15T20:38:00.000Z",
+    "currentSourceRevalidationAuditedImplementationSource": "4119a8fefbed327af52d62cdcd7d7b9208c44326",
+    "currentSourceRevalidationIntegrationCheckpoint": "4119a8fefbed327af52d62cdcd7d7b9208c44326",
+    "currentSourceRevalidationHistory": [{ "taskId": "P1R-M6-008", "sourceCommit": "4119a8fefbed327af52d62cdcd7d7b9208c44326", "auditedImplementationSource": "4119a8fefbed327af52d62cdcd7d7b9208c44326", "integrationCheckpoint": "4119a8fefbed327af52d62cdcd7d7b9208c44326", "reviewer": "agent:p1r_implementation:deepseek-harness", "runtimeStatus": "RUNTIME_VERIFIED", "finishedAt": "2026-09-15T20:38:00.000Z", "details": "Initial DEV_DONE delivery under owner route A." }]
+  }
+}
