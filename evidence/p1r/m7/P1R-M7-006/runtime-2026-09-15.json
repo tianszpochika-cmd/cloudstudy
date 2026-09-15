@@ -1,0 +1,63 @@
+{
+  "task": "P1R-M7-006",
+  "capturedAt": "2026-09-15T18:45:32.437Z",
+  "sourceCommit": "58b53149434400fe101677f3c8edc24f7a60f464",
+  "workingTreeDirty": false,
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "check": "sku-versioned",
+      "status": "PASS",
+      "observed": "versioned SKU",
+      "expected": "SKU/version"
+    },
+    {
+      "check": "activation-idempotent",
+      "status": "PASS",
+      "observed": "idempotent issue/redeem",
+      "expected": "activation"
+    },
+    {
+      "check": "expiry-used",
+      "status": "PASS",
+      "observed": "expiry + used states",
+      "expected": "expiry/used"
+    },
+    {
+      "check": "state-machine",
+      "status": "PASS",
+      "observed": "guarded transitions",
+      "expected": "state machine"
+    },
+    {
+      "check": "entitlement-explained",
+      "status": "PASS",
+      "observed": "entitlement views",
+      "expected": "free/paid explanation"
+    },
+    {
+      "check": "official-pricing",
+      "status": "PASS",
+      "observed": "pricing page present",
+      "expected": "official projection"
+    },
+    {
+      "check": "real-db",
+      "status": "PASS",
+      "observed": "activation tables",
+      "expected": "real DB"
+    },
+    {
+      "check": "no-impl-change",
+      "status": "PASS",
+      "observed": "REUSE-VERIFY this round",
+      "expected": "reuse"
+    }
+  ],
+  "notVerifiableHere": [
+    "Live sandbox redeem run deferred to acceptance (M7-007 owns sandbox)."
+  ],
+  "note": "REUSE-VERIFY: read from the committed trees; no production change."
+}
