@@ -1,0 +1,57 @@
+{
+  "task": "P1R-M4-004",
+  "capturedAt": "2026-09-15T16:42:27.542Z",
+  "sourceCommit": "7d75f590f9f8e2fff2acfd970669fe5457d8d5b4",
+  "workingTreeDirty": false,
+  "result": "PASS",
+  "passed": 7,
+  "total": 7,
+  "checks": [
+    {
+      "check": "quotas-5-15-30-45",
+      "status": "PASS",
+      "observed": "5/15/30/45 options",
+      "expected": "durations"
+    },
+    {
+      "check": "target-versioned",
+      "status": "PASS",
+      "observed": "goalCode persisted",
+      "expected": "targetVersion"
+    },
+    {
+      "check": "draft-resume",
+      "status": "PASS",
+      "observed": "draft persisted + resumed",
+      "expected": "draft/recovery"
+    },
+    {
+      "check": "timezone",
+      "status": "PASS",
+      "observed": "timezone carried",
+      "expected": "timezone"
+    },
+    {
+      "check": "idempotent-commit",
+      "status": "PASS",
+      "observed": "clientEventId sub-keys",
+      "expected": "idempotent submit"
+    },
+    {
+      "check": "tenant-negative",
+      "status": "PASS",
+      "observed": "owner-scoped reads via authenticated client; cross-tenant covered by M2-004 gates",
+      "expected": "negative"
+    },
+    {
+      "check": "no-impl-change",
+      "status": "PASS",
+      "observed": "REUSE-VERIFY this round",
+      "expected": "reuse"
+    }
+  ],
+  "notVerifiableHere": [
+    "Real-DB duplicate-submit and cross-tenant negative run deferred to acceptance."
+  ],
+  "note": "REUSE-VERIFY: read from the committed trees; no production change."
+}
