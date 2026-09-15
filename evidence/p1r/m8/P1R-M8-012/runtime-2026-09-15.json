@@ -1,0 +1,63 @@
+{
+  "task": "P1R-M8-012",
+  "capturedAt": "2026-09-15T19:21:44.327Z",
+  "sourceCommit": "00afdb8287c81433244187d2198b3987061d6cf2",
+  "workingTreeDirty": false,
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "check": "rpo-rto",
+      "status": "PASS",
+      "observed": "RPO/RTO targets doc",
+      "expected": "RPO/RTO"
+    },
+    {
+      "check": "reconcile",
+      "status": "PASS",
+      "observed": "order reconcile + repair flag",
+      "expected": "reconcile"
+    },
+    {
+      "check": "owner-receipts",
+      "status": "PASS",
+      "observed": "owner receipt contract",
+      "expected": "owner receipts"
+    },
+    {
+      "check": "legal-hold",
+      "status": "PASS",
+      "observed": "legal-hold outcomes",
+      "expected": "legal hold"
+    },
+    {
+      "check": "export-expiry",
+      "status": "PASS",
+      "observed": "export expiry enforced",
+      "expected": "retention/expiry"
+    },
+    {
+      "check": "deletion-retained",
+      "status": "PASS",
+      "observed": "deletion rows retained + receipts",
+      "expected": "delete retention"
+    },
+    {
+      "check": "recovery-receipts",
+      "status": "PASS",
+      "observed": "recovery receipts",
+      "expected": "recovery audit"
+    },
+    {
+      "check": "anchors",
+      "status": "PASS",
+      "observed": "M8-006 + M8-011 closed",
+      "expected": "anchors"
+    }
+  ],
+  "notVerifiableHere": [
+    "Live backup-restore drill and PITR proof deferred to acceptance."
+  ],
+  "note": "DR capability verification; no production change."
+}
