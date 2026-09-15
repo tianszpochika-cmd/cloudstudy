@@ -3,7 +3,7 @@
   "draftOnly": false,
   "canonicalTaskStatus": "DEV_DONE",
   "decision": "DEV_DONE",
-  "sourceCommit": "ea3af99054b4d312bc743ad6de2d5f1c64312cea",
+  "sourceCommit": "6d87815a1adff1d4b331a4b591d27824593c3d08",
   "startedAt": "2026-09-15T16:00:00.000Z",
   "finishedAt": "2026-09-15T16:10:00.000Z",
   "environment": {
@@ -87,7 +87,7 @@
     {
       "path": "services/content-service/src/main/java/com/englishflow/content/web/B9ContentAdminController.java",
       "algorithm": "sha256",
-      "digest": "2a73d9a72fb3d41d0559a04e69245247a5aa212b153cbb58ffa3bfe842474cbe"
+      "digest": "091165c39ca7fd3e3f1413020c4a6687c58686c25c4b3a387ebafc2b85d4ee5e"
     },
     {
       "path": "scripts/runtime/p1r-m3-002-runtime.mjs",
@@ -111,9 +111,9 @@
     "currentSourceRevalidationTask": "P1R-M3-002",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-15T16:00:40.101Z",
-    "currentSourceRevalidationAuditedImplementationSource": "ea3af99054b4d312bc743ad6de2d5f1c64312cea",
-    "currentSourceRevalidationIntegrationCheckpoint": "ea3af99054b4d312bc743ad6de2d5f1c64312cea",
+    "currentSourceRevalidationFinishedAt": "2026-09-15T16:14:42.335Z",
+    "currentSourceRevalidationAuditedImplementationSource": "6d87815a1adff1d4b331a4b591d27824593c3d08",
+    "currentSourceRevalidationIntegrationCheckpoint": "6d87815a1adff1d4b331a4b591d27824593c3d08",
     "currentSourceRevalidationHistory": [
       {
         "taskId": "P1R-M3-002",
@@ -134,6 +134,16 @@
         "runtimeStatus": "RUNTIME_VERIFIED",
         "finishedAt": "2026-09-15T16:00:40.101Z",
         "details": "Rebind after M3-003 extended the same B9 controller; M3-002 logic unchanged."
+      },
+      {
+        "taskId": "P1R-M3-002",
+        "sourceCommit": "6d87815a1adff1d4b331a4b591d27824593c3d08",
+        "auditedImplementationSource": "6d87815a1adff1d4b331a4b591d27824593c3d08",
+        "integrationCheckpoint": "6d87815a1adff1d4b331a4b591d27824593c3d08",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-15T16:14:42.335Z",
+        "details": "Rebind after M3-006 extended the same B9 controller; logic unchanged, harness still PASS."
       }
     ],
     "previousCurrentSourceCommit": "80267761aad3fcba2ff29b67364eb357bb7fc31b"
