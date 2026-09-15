@@ -1,0 +1,92 @@
+{
+  "task": "P1R-M8-001",
+  "capturedAt": "2026-09-15T19:02:12.874Z",
+  "sourceCommit": "0dce442cfc90ddf0365e5e0705dacd0da13d43fe",
+  "workingTreeDirty": false,
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "check": "orchestrator-present",
+      "status": "PASS",
+      "observed": "run-v2-services.mjs",
+      "expected": "orchestrator"
+    },
+    {
+      "check": "service-registry",
+      "status": "PASS",
+      "observed": "16 runtime services",
+      "expected": ">=14 services"
+    },
+    {
+      "check": "ports-pinned",
+      "status": "PASS",
+      "observed": "loopback + no auto-increment",
+      "expected": "pinned ports"
+    },
+    {
+      "check": "gateway-port",
+      "status": "PASS",
+      "observed": "gateway 18070",
+      "expected": "gateway port"
+    },
+    {
+      "check": "data-ports",
+      "status": "PASS",
+      "observed": "mysql 13306 / redis 16379 / kafka 19092",
+      "expected": "data ports"
+    },
+    {
+      "check": "ci-present",
+      "status": "PASS",
+      "observed": "ci.yml",
+      "expected": "CI binding"
+    },
+    {
+      "check": "cleanup-documented",
+      "status": "PASS",
+      "observed": "stop path in runner",
+      "expected": "cleanup"
+    },
+    {
+      "check": "commit-bound",
+      "status": "PASS",
+      "observed": "0dce442",
+      "expected": "commit SHA40"
+    }
+  ],
+  "environment": {
+    "commit": "0dce442cfc90ddf0365e5e0705dacd0da13d43fe",
+    "host": "127.0.0.1",
+    "services": [
+      "api-gateway",
+      "iam-service",
+      "learner-service",
+      "content-service",
+      "learning-service",
+      "assessment-service",
+      "media-service",
+      "notification-service",
+      "gamification-service",
+      "social-service",
+      "commerce-service",
+      "admin-ops-service",
+      "analytics-service",
+      "audit-service",
+      "core-api",
+      "workflow-service"
+    ],
+    "gatewayPort": 18070,
+    "seedPolicy": "deterministic suites use fixed seeds; no random acceptance data",
+    "cleanup": "stop service owners on fixed ports; never auto-increment",
+    "configDigests": {
+      "config/v2-runtime-services.json": "e4d8f5b2c498b1812e1beda74498a2bac320169d8079577b055828560acc5011",
+      "config/local-ports.json": "0a6b43d35379fed2e679961b34a0ad0e9ec1888dfb7d1a2c76eed20706e5ca95"
+    }
+  },
+  "notVerifiableHere": [
+    "Real staging and immutable RC signing are out of reach here; recorded for M8-013/015."
+  ],
+  "note": "Environment binding by reference; no production change."
+}
