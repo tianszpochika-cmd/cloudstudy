@@ -1209,6 +1209,19 @@
       "actor": "agent:p1r_implementation:deepseek-harness",
       "reason": "Owner route A (durable-path verification, no production change). Dependency M7-004 DEV_DONE. Eight safety checks pass; delay filter and live negative run deferred as knownGap.",
       "evidencePath": "evidence/p1r/m7/P1R-M7-005/manifest.json"
+    },
+    {
+      "taskId": "P1R-M7-006",
+      "path": [
+        "PLANNED",
+        "READY",
+        "IN_PROGRESS",
+        "DEV_DONE"
+      ],
+      "recordedAt": "2026-09-15T21:27:00Z",
+      "actor": "agent:p1r_implementation:deepseek-harness",
+      "reason": "Owner route A (REUSE-VERIFY, no production change). Dependencies M3-008 + M2-010 DEV_DONE. Eight commerce checks pass; live sandbox redeem deferred to M7-007 as knownGap.",
+      "evidencePath": "evidence/p1r/m7/P1R-M7-006/manifest.json"
     }
   ]
 }
