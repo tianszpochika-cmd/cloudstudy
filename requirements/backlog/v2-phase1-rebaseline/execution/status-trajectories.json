@@ -1118,6 +1118,19 @@
       "actor": "agent:p1r_implementation:deepseek-harness",
       "reason": "Owner route A (REUSE-VERIFY, no production change). Dependencies M3-009 + M6-002/005/008 DEV_DONE. Eight governance checks pass; live recovery run deferred as knownGap.",
       "evidencePath": "evidence/p1r/m6/P1R-M6-009/manifest.json"
+    },
+    {
+      "taskId": "P1R-M6-010",
+      "path": [
+        "PLANNED",
+        "READY",
+        "IN_PROGRESS",
+        "DEV_DONE"
+      ],
+      "recordedAt": "2026-09-15T20:48:00Z",
+      "actor": "agent:p1r_implementation:deepseek-harness",
+      "reason": "Owner route A. Dependencies M1-017 + M6-007/008 DEV_DONE. Deletion-effect purge delivered across three adapters; compile green, 8/8 harness PASS; consent-off list deferred as knownGap.",
+      "evidencePath": "evidence/p1r/m6/P1R-M6-010/manifest.json"
     }
   ]
 }
