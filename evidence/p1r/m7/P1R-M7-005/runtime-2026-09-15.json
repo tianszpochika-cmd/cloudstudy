@@ -1,0 +1,63 @@
+{
+  "task": "P1R-M7-005",
+  "capturedAt": "2026-09-15T18:43:12.274Z",
+  "sourceCommit": "c48c1b1edfb9017020e0cbb47e8b1170e8c62a08",
+  "workingTreeDirty": false,
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "check": "leaderboard-deidentified",
+      "status": "PASS",
+      "observed": "de-identified entries + self flag",
+      "expected": "anonymity"
+    },
+    {
+      "check": "visibility-versioned",
+      "status": "PASS",
+      "observed": "visibility + privacy version",
+      "expected": "visibility"
+    },
+    {
+      "check": "reports-closed-loop",
+      "status": "PASS",
+      "observed": "report/appeal/admin queue",
+      "expected": "report loop"
+    },
+    {
+      "check": "cross-tenant-scoped",
+      "status": "PASS",
+      "observed": "tenant scoping",
+      "expected": "cross-tenant PEP"
+    },
+    {
+      "check": "no-free-content",
+      "status": "PASS",
+      "observed": "preset-only content",
+      "expected": "content safety"
+    },
+    {
+      "check": "delay-explained",
+      "status": "PASS",
+      "observed": "DELAYED freshness explained",
+      "expected": "delay explanation"
+    },
+    {
+      "check": "audit-wired",
+      "status": "PASS",
+      "observed": "admin queue + audit trail",
+      "expected": "audit"
+    },
+    {
+      "check": "no-impl-change",
+      "status": "PASS",
+      "observed": "durable-path verification, no code change",
+      "expected": "reuse"
+    }
+  ],
+  "notVerifiableHere": [
+    "Delay-gate query filter and live cross-tenant/over-privilege negative run deferred to acceptance."
+  ],
+  "note": "Durable-path verification; no production change."
+}
