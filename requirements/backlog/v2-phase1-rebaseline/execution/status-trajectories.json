@@ -1352,6 +1352,19 @@
       "actor": "agent:p1r_implementation:deepseek-harness",
       "reason": "Owner route A (aggregation by reference). Dependencies M8-003 + M7-011 DEV_DONE. Eight W3 checks pass; live sweep and sandbox deferred as knownGap.",
       "evidencePath": "evidence/p1r/m8/P1R-M8-005/manifest.json"
+    },
+    {
+      "taskId": "P1R-M8-006",
+      "path": [
+        "PLANNED",
+        "READY",
+        "IN_PROGRESS",
+        "DEV_DONE"
+      ],
+      "recordedAt": "2026-09-15T22:22:00Z",
+      "actor": "agent:p1r_implementation:deepseek-harness",
+      "reason": "Owner route A (aggregation by reference). Dependencies M8-004 + M6-011 DEV_DONE. Eight W4 checks pass; live fault sweep deferred as knownGap.",
+      "evidencePath": "evidence/p1r/m8/P1R-M8-006/manifest.json"
     }
   ]
 }

@@ -1,0 +1,42 @@
+{
+  "taskId": "P1R-M8-006",
+  "draftOnly": false,
+  "canonicalTaskStatus": "DEV_DONE",
+  "decision": "DEV_DONE",
+  "sourceCommit": "1b1e34c5d9ca025609a19827b992f39b8b61717f",
+  "startedAt": "2026-09-15T22:20:00.000Z",
+  "finishedAt": "2026-09-15T22:22:00.000Z",
+  "environment": {
+    "kind": "w4-aggregation-evidence",
+    "branch": "dev",
+    "phaseStatus": "D3_DOMAIN",
+    "runtimeStatus": "M8_006_W4_AGGREGATED",
+    "reviewPolicy": "Independent verification deferred by the owner and acceptance testing follows, so this task is DEV_DONE and not ACCEPTED.",
+    "note": "W4 aggregation by reference; no production change."
+  },
+  "actors": ["root-coordinator", "p1r-implementation"],
+  "sourceIds": ["P1R-M8-006"],
+  "commands": [{ "command": "node scripts/runtime/p1r-m8-006-runtime.mjs", "purpose": "W4 chain checks" }],
+  "results": [{ "check": "w4-8-checks", "status": "PASS", "details": "8/8: notify, sync, support, export, delete, DLQ, anchors" }],
+  "rollbackEvidence": [{ "status": "PASS", "details": "Adds harness + evidence only; deleting them restores prior state." }],
+  "blockers": [],
+  "knownGaps": ["Live fault-injection sweep deferred to acceptance."],
+  "artifactDigests": [
+    { "path": "scripts/runtime/p1r-m8-006-runtime.mjs", "algorithm": "sha256", "digest": "66788230e8b8d34284178e326ab3ea8d55a5e0f3e57921a55733d073c7c4fe42" },
+    { "path": "evidence/p1r/m8/P1R-M8-006/runtime-2026-09-15.json", "algorithm": "sha256", "digest": "a57383caf54d8fad9603714f60dd8cfa748359be005724b8d1d0d8aef19f2b40" }
+  ],
+  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "nextSteps": ["Acceptance testing by the owner, which is what DEV_DONE defers."],
+  "statusNote": "Development finished and the evidence is in the repository. Eight checks pass. Not independently verified, which DEV_DONE says.",
+  "provenance": {
+    "originalSourceCommit": "1b1e34c5d9ca025609a19827b992f39b8b61717f",
+    "originalReviewer": "agent:p1r_implementation:deepseek-harness",
+    "currentSourceRevalidationTask": "P1R-M8-006",
+    "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
+    "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
+    "currentSourceRevalidationFinishedAt": "2026-09-15T22:22:00.000Z",
+    "currentSourceRevalidationAuditedImplementationSource": "1b1e34c5d9ca025609a19827b992f39b8b61717f",
+    "currentSourceRevalidationIntegrationCheckpoint": "1b1e34c5d9ca025609a19827b992f39b8b61717f",
+    "currentSourceRevalidationHistory": [{ "taskId": "P1R-M8-006", "sourceCommit": "1b1e34c5d9ca025609a19827b992f39b8b61717f", "auditedImplementationSource": "1b1e34c5d9ca025609a19827b992f39b8b61717f", "integrationCheckpoint": "1b1e34c5d9ca025609a19827b992f39b8b61717f", "reviewer": "agent:p1r_implementation:deepseek-harness", "runtimeStatus": "RUNTIME_VERIFIED", "finishedAt": "2026-09-15T22:22:00.000Z", "details": "Initial DEV_DONE delivery under owner route A." }]
+  }
+}
