@@ -1,0 +1,63 @@
+{
+  "task": "P1R-M5-012",
+  "capturedAt": "2026-09-15T17:34:29.644Z",
+  "sourceCommit": "6bf36b4a41a7ea19f37751c91750c9f5f68e2048",
+  "workingTreeDirty": false,
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "check": "report-to-today",
+      "status": "PASS",
+      "observed": "assessment→today",
+      "expected": "repair→verify"
+    },
+    {
+      "check": "practice-to-today",
+      "status": "PASS",
+      "observed": "practice→today",
+      "expected": "verify→report"
+    },
+    {
+      "check": "home-hub",
+      "status": "PASS",
+      "observed": "home fans out",
+      "expected": "hub"
+    },
+    {
+      "check": "loop-links",
+      "status": "PASS",
+      "observed": "loop→srs/report",
+      "expected": "loop"
+    },
+    {
+      "check": "today-continues",
+      "status": "PASS",
+      "observed": "today→session",
+      "expected": "next task"
+    },
+    {
+      "check": "no-fake-mastery",
+      "status": "PASS",
+      "observed": "no local mastery",
+      "expected": "honest loop"
+    },
+    {
+      "check": "offline-kept",
+      "status": "PASS",
+      "observed": "error/recovery kept",
+      "expected": "recovery"
+    },
+    {
+      "check": "no-impl-change",
+      "status": "PASS",
+      "observed": "REUSE-VERIFY this round",
+      "expected": "reuse"
+    }
+  ],
+  "notVerifiableHere": [
+    "Live browser loop run (fix→verify→report→next with refresh/relogin/offline) deferred to M8 W2."
+  ],
+  "note": "REUSE-VERIFY: read from the committed learner-web tree; no production change."
+}
