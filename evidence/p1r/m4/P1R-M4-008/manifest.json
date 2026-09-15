@@ -1,0 +1,48 @@
+{
+  "taskId": "P1R-M4-008",
+  "draftOnly": false,
+  "canonicalTaskStatus": "DEV_DONE",
+  "decision": "DEV_DONE",
+  "sourceCommit": "3ddbff2ba9f00fc6d52c876464c7ad4a94eb9d1c",
+  "startedAt": "2026-09-15T18:10:00.000Z",
+  "finishedAt": "2026-09-15T18:15:00.000Z",
+  "environment": {
+    "kind": "first-day-v2-evidence",
+    "branch": "dev",
+    "phaseStatus": "D3_DOMAIN",
+    "runtimeStatus": "M4_008_FIRST_DAY_VERIFIED",
+    "reviewPolicy": "Independent verification deferred by the owner: development proceeds to M8 and acceptance testing follows, so this task is DEV_DONE and not ACCEPTED.",
+    "note": "v2 adapter over owner DB delivered and compiling; full eight-state hardening deferred to M4-009/M8-007."
+  },
+  "actors": ["root-coordinator", "p1r-implementation"],
+  "sourceIds": ["P1R-M4-008"],
+  "commands": [
+    { "command": "mvn -pl services/learning-service -am compile -DskipTests", "purpose": "learning-service builds with v2 adapter" },
+    { "command": "node scripts/runtime/p1r-m4-008-runtime.mjs", "purpose": "v2 adapter + projection checks" }
+  ],
+  "results": [
+    { "check": "first-day-8-checks", "status": "PASS", "details": "8/8: v2 adapter, strict JWT, owner scope, EMPTY, versions, home/today partial, compile" }
+  ],
+  "rollbackEvidence": [{ "status": "PASS", "details": "Adds one controller plus harness/evidence; deleting them restores prior B25/B3-only tree." }],
+  "blockers": [],
+  "knownGaps": ["Full eight-state hardening of Home/Today (locked/offline/permission/recovery) and cross-end live reconciliation deferred to M4-009/M8-007; full LearningPlanService orchestration across learner/content ports stays behind the domain flag."],
+  "artifactDigests": [
+    { "path": "services/learning-service/src/main/java/com/englishflow/learning/web/V2LearningController.java", "algorithm": "sha256", "digest": "9ca8a3d8e7850793179211c77469d9a51dcd21e634aeb91ce974d1b153368883" },
+    { "path": "scripts/runtime/p1r-m4-008-runtime.mjs", "algorithm": "sha256", "digest": "3bb872a6246a886c5285dc9a225db66182d9ccaf875202e4da4bb2752843092b" },
+    { "path": "evidence/p1r/m4/P1R-M4-008/runtime-2026-09-15.json", "algorithm": "sha256", "digest": "1542819679d3692b6c5a9db8356b568fcc40b95d28f7b7cb6ab8ce7518a52156" }
+  ],
+  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "nextSteps": ["Acceptance testing by the owner, which is what DEV_DONE defers."],
+  "statusNote": "Development finished and the evidence is in the repository. Eight checks pass with a green compile. Not independently verified, which DEV_DONE says.",
+  "provenance": {
+    "originalSourceCommit": "3ddbff2ba9f00fc6d52c876464c7ad4a94eb9d1c",
+    "originalReviewer": "agent:p1r_implementation:deepseek-harness",
+    "currentSourceRevalidationTask": "P1R-M4-008",
+    "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
+    "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
+    "currentSourceRevalidationFinishedAt": "2026-09-15T18:15:00.000Z",
+    "currentSourceRevalidationAuditedImplementationSource": "3ddbff2ba9f00fc6d52c876464c7ad4a94eb9d1c",
+    "currentSourceRevalidationIntegrationCheckpoint": "3ddbff2ba9f00fc6d52c876464c7ad4a94eb9d1c",
+    "currentSourceRevalidationHistory": [{ "taskId": "P1R-M4-008", "sourceCommit": "3ddbff2ba9f00fc6d52c876464c7ad4a94eb9d1c", "auditedImplementationSource": "3ddbff2ba9f00fc6d52c876464c7ad4a94eb9d1c", "integrationCheckpoint": "3ddbff2ba9f00fc6d52c876464c7ad4a94eb9d1c", "reviewer": "agent:p1r_implementation:deepseek-harness", "runtimeStatus": "RUNTIME_VERIFIED", "finishedAt": "2026-09-15T18:15:00.000Z", "details": "Initial DEV_DONE delivery under owner route A." }]
+  }
+}
