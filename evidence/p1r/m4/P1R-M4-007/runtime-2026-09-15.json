@@ -1,0 +1,57 @@
+{
+  "task": "P1R-M4-007",
+  "capturedAt": "2026-09-15T16:51:13.913Z",
+  "sourceCommit": "7d8ac8ed5bc2a9eec1be09c091cdcc002622f342",
+  "workingTreeDirty": false,
+  "result": "PASS",
+  "passed": 7,
+  "total": 7,
+  "checks": [
+    {
+      "check": "quotas-frozen",
+      "status": "PASS",
+      "observed": "5/15/30/45 enforced",
+      "expected": "budget"
+    },
+    {
+      "check": "timezone-carried",
+      "status": "PASS",
+      "observed": "timezone in plan",
+      "expected": "timezone/DST"
+    },
+    {
+      "check": "idempotent-saga",
+      "status": "PASS",
+      "observed": "create/resume idempotent",
+      "expected": "idempotent Saga"
+    },
+    {
+      "check": "version-guarded",
+      "status": "PASS",
+      "observed": "expectedPlanVersion guard",
+      "expected": "reorder guard"
+    },
+    {
+      "check": "reason-codes",
+      "status": "PASS",
+      "observed": "reasonTrace codes",
+      "expected": "reason codes"
+    },
+    {
+      "check": "queue-ordered",
+      "status": "PASS",
+      "observed": "due-ordered queue",
+      "expected": "deterministic order"
+    },
+    {
+      "check": "no-impl-change",
+      "status": "PASS",
+      "observed": "REUSE-VERIFY this round",
+      "expected": "reuse"
+    }
+  ],
+  "notVerifiableHere": [
+    "Pure-function determinism fixtures and DST boundary proof deferred to acceptance."
+  ],
+  "note": "REUSE-VERIFY: read from the committed learning-service tree; no production change."
+}
