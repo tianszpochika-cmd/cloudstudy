@@ -1,0 +1,63 @@
+{
+  "task": "P1R-M3-005",
+  "capturedAt": "2026-09-15T16:07:38.454Z",
+  "sourceCommit": "620ebe39228b2805f4630c465cbdd7c5515b5ff0",
+  "workingTreeDirty": false,
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "check": "l1-l2-separated",
+      "status": "PASS",
+      "observed": "FIRST/FINAL stages with IN_REVIEW gate",
+      "expected": "L1/L2 separation"
+    },
+    {
+      "check": "self-review-blocked",
+      "status": "PASS",
+      "observed": "editor≠reviewer/publisher enforced",
+      "expected": "author self-review block"
+    },
+    {
+      "check": "dual-distinct-reviewers",
+      "status": "PASS",
+      "observed": "first≠final enforced",
+      "expected": "dual review"
+    },
+    {
+      "check": "reject-returns-to-draft",
+      "status": "PASS",
+      "observed": "reject clears reviewers → DRAFT",
+      "expected": "return/revise"
+    },
+    {
+      "check": "publish-requires-dual",
+      "status": "PASS",
+      "observed": "publish gated on dual approval",
+      "expected": "publish gate"
+    },
+    {
+      "check": "tenant-scoped",
+      "status": "PASS",
+      "observed": "cross-tenant denied",
+      "expected": "tenant guard"
+    },
+    {
+      "check": "commands-routed",
+      "status": "PASS",
+      "observed": "REVIEW_FIRST/FINAL routed",
+      "expected": "command boundary"
+    },
+    {
+      "check": "service-builds",
+      "status": "PASS",
+      "observed": "compile verified round 4 (no impl change this round)",
+      "expected": "compiles"
+    }
+  ],
+  "notVerifiableHere": [
+    "Comment/audit trail replay and cross-tenant negative against live MySQL deferred to acceptance."
+  ],
+  "note": "REUSE-VERIFY: read from the committed domain + boundary; no production change this round."
+}
