@@ -1,0 +1,63 @@
+{
+  "task": "P1R-M8-006",
+  "capturedAt": "2026-09-15T19:10:57.676Z",
+  "sourceCommit": "d683928f76e6b470275cca9bf175cd9d2f2e3929",
+  "workingTreeDirty": false,
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "check": "notify-owned",
+      "status": "PASS",
+      "observed": "M6-001/002 closed",
+      "expected": "notification"
+    },
+    {
+      "check": "sync-owned",
+      "status": "PASS",
+      "observed": "M6-003 closed",
+      "expected": "sync"
+    },
+    {
+      "check": "support-owned",
+      "status": "PASS",
+      "observed": "M6-005/006 closed",
+      "expected": "support"
+    },
+    {
+      "check": "export-owned",
+      "status": "PASS",
+      "observed": "M6-007 export closed",
+      "expected": "export receipt"
+    },
+    {
+      "check": "delete-owned",
+      "status": "PASS",
+      "observed": "M6-008 deletion closed",
+      "expected": "delete receipt"
+    },
+    {
+      "check": "dlq-owned",
+      "status": "PASS",
+      "observed": "DLQ routing present",
+      "expected": "DLQ/recovery"
+    },
+    {
+      "check": "anchors",
+      "status": "PASS",
+      "observed": "M6-011 + M8-004 closed",
+      "expected": "anchors"
+    },
+    {
+      "check": "no-impl-change",
+      "status": "PASS",
+      "observed": "aggregation by reference, no code change",
+      "expected": "aggregate"
+    }
+  ],
+  "notVerifiableHere": [
+    "Live fault-injection sweep deferred to acceptance."
+  ],
+  "note": "W4 aggregation by reference; no production change."
+}
