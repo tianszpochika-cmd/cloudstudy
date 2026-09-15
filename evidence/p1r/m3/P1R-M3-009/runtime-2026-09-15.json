@@ -1,0 +1,69 @@
+{
+  "task": "P1R-M3-009",
+  "capturedAt": "2026-09-15T16:24:10.894Z",
+  "sourceCommit": "edf1e6823b7ed097d9f82d9cf75076b20a908a75",
+  "workingTreeDirty": false,
+  "result": "PASS",
+  "passed": 9,
+  "total": 9,
+  "checks": [
+    {
+      "check": "slice-exists:AdminContentView.vue",
+      "status": "PASS",
+      "observed": "present",
+      "expected": "present"
+    },
+    {
+      "check": "slice-exists:AdminAuditView.vue",
+      "status": "PASS",
+      "observed": "present",
+      "expected": "present"
+    },
+    {
+      "check": "slice-exists:AdminB12GovernanceView.vue",
+      "status": "PASS",
+      "observed": "present",
+      "expected": "present"
+    },
+    {
+      "check": "slice-exists:AdminCommerceView.vue",
+      "status": "PASS",
+      "observed": "present",
+      "expected": "present"
+    },
+    {
+      "check": "slice-exists:AdminB6ReleaseView.vue",
+      "status": "PASS",
+      "observed": "present",
+      "expected": "present"
+    },
+    {
+      "check": "audit-redacted-export",
+      "status": "PASS",
+      "observed": "redacted export",
+      "expected": "desensitization"
+    },
+    {
+      "check": "governance-recovery-entries",
+      "status": "PASS",
+      "observed": "recovery + permission states",
+      "expected": "recovery entries"
+    },
+    {
+      "check": "publish-rollback-gated",
+      "status": "PASS",
+      "observed": "publish/rollback gated",
+      "expected": "PEP"
+    },
+    {
+      "check": "read-only-projection",
+      "status": "PASS",
+      "observed": "server projection wording",
+      "expected": "read-only"
+    }
+  ],
+  "notVerifiableHere": [
+    "Cross-tenant negative against live admin-ops/audit and dual-approval live run deferred to acceptance."
+  ],
+  "note": "REUSE-VERIFY: read from the committed admin-web tree; no production change."
+}
