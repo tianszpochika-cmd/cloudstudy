@@ -101,6 +101,24 @@ public final class AssessmentMistake {
         nextActionAt = verifiedAt;
     }
 
+    /**
+     * M5-009 variant repair: a fresh surface form of the same error category and rule
+     * version is issued for re-verification. The variant is linked in the reason trace
+     * (no new fact table); the mistake returns to PENDING_RETRY so D0/D1/D7 run again
+     * against the variant. A mastered mistake reopens first, preserving the invariant
+     * that MASTERED is never silently extended.
+     */
+    public void registerVariant(long variantItemId, Instant issuedAt) {
+        if (variantItemId < 1 || variantItemId == itemId) throw AssessmentDomainException.invalid("ASM_VARIANT_INVALID", "variant item must differ from the original");
+        if (mistakeStatus == MistakeStatus.MASTERED) mistakeStatus = MistakeStatus.REOPENED;
+        mistakeStatus = MistakeStatus.PENDING_RETRY;
+        masteryStatus = MasteryStatus.LEARNING;
+        lastErrorAt = issuedAt;
+        nextActionAt = issuedAt;
+        reasonTrace.add(Map.of("ruleVersion", ruleVersion, "errorCategory", errorCategory,
+                "variantItemId", variantItemId, "variantOf", mistakeId, "occurredAt", issuedAt.toString()));
+    }
+
     public long mistakeId() { return mistakeId; }
     public String tenantId() { return tenantId; }
     public String ownerSubjectId() { return ownerSubjectId; }

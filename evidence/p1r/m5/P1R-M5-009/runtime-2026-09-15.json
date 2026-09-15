@@ -1,0 +1,63 @@
+{
+  "task": "P1R-M5-009",
+  "capturedAt": "2026-09-15T17:28:33.430Z",
+  "sourceCommit": "68317ac23967d0edb0911dfa77e0370cd02b8e18",
+  "workingTreeDirty": true,
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "check": "mistake-lifecycle",
+      "status": "PASS",
+      "observed": "PENDING→D1→D7→MASTERED",
+      "expected": "lifecycle"
+    },
+    {
+      "check": "variant-repair",
+      "status": "PASS",
+      "observed": "trace-linked variant repair",
+      "expected": "variant"
+    },
+    {
+      "check": "reason-trace",
+      "status": "PASS",
+      "observed": "rule-versioned trace",
+      "expected": "reasonTrace"
+    },
+    {
+      "check": "reopen-guarded",
+      "status": "PASS",
+      "observed": "mastered reopens on re-wrong",
+      "expected": "reopen"
+    },
+    {
+      "check": "due-index",
+      "status": "PASS",
+      "observed": "due index on next_action_at",
+      "expected": "D1/D7 schedule"
+    },
+    {
+      "check": "owner-scoped",
+      "status": "PASS",
+      "observed": "owner-scoped facts",
+      "expected": "owner"
+    },
+    {
+      "check": "stage-migration",
+      "status": "PASS",
+      "observed": "mastery stages",
+      "expected": "stage migration"
+    },
+    {
+      "check": "service-builds",
+      "status": "PASS",
+      "observed": "mvn compile EXIT 0 (this session)",
+      "expected": "compiles"
+    }
+  ],
+  "notVerifiableHere": [
+    "Variant-issuing endpoint wiring and timezone live D1/D7 proof deferred to acceptance."
+  ],
+  "note": "Variant repair added to the committed domain; lifecycle pre-exists."
+}
