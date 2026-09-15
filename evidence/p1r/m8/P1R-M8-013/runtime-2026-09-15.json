@@ -1,0 +1,63 @@
+{
+  "task": "P1R-M8-013",
+  "capturedAt": "2026-09-15T19:24:01.633Z",
+  "sourceCommit": "348d9ec1d44cc1d5be4e91cf84732a0cdca7e1fc",
+  "workingTreeDirty": false,
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "check": "kustomize-base",
+      "status": "PASS",
+      "observed": "kustomize base present",
+      "expected": "single source"
+    },
+    {
+      "check": "immutable-image",
+      "status": "PASS",
+      "observed": "digest-pinned image",
+      "expected": "immutable image"
+    },
+    {
+      "check": "probes",
+      "status": "PASS",
+      "observed": "liveness + readiness",
+      "expected": "probes"
+    },
+    {
+      "check": "secret-injection",
+      "status": "PASS",
+      "observed": "external secret store",
+      "expected": "secret injection"
+    },
+    {
+      "check": "network-policy",
+      "status": "PASS",
+      "observed": "M2-008 boundary present",
+      "expected": "NetworkPolicy"
+    },
+    {
+      "check": "gitops",
+      "status": "PASS",
+      "observed": "staging + prod apps",
+      "expected": "GitOps shape"
+    },
+    {
+      "check": "m2-green",
+      "status": "PASS",
+      "observed": "M2 evidence gate PASS x2 this session",
+      "expected": "M2-008/010 non-regression"
+    },
+    {
+      "check": "anchors",
+      "status": "PASS",
+      "observed": "M8-010 + M8-011 closed",
+      "expected": "anchors"
+    }
+  ],
+  "notVerifiableHere": [
+    "Real OCI registry, K8s staging apply and immutable RC signing deferred to acceptance."
+  ],
+  "note": "Deploy-source verification + M2 gate re-run; no production change."
+}
