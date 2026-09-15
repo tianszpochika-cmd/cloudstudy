@@ -1,0 +1,63 @@
+{
+  "task": "P1R-M3-007",
+  "capturedAt": "2026-09-15T16:16:24.584Z",
+  "sourceCommit": "57b52d63af1ed3ccd85b9a59e5244189a8391beb",
+  "workingTreeDirty": false,
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "check": "unpublish-archives",
+      "status": "PASS",
+      "observed": "UNPUBLISH → ARCHIVED with event",
+      "expected": "takedown"
+    },
+    {
+      "check": "rollback-guarded",
+      "status": "PASS",
+      "observed": "rollback needs approved/published target + source",
+      "expected": "rollback"
+    },
+    {
+      "check": "rollback-keeps-dual-rights",
+      "status": "PASS",
+      "observed": "rollback keeps dual + rights gates",
+      "expected": "safe rollback"
+    },
+    {
+      "check": "epoch-bumps",
+      "status": "PASS",
+      "observed": "contentEpoch++ on revision",
+      "expected": "cache busting"
+    },
+    {
+      "check": "old-versions-kept",
+      "status": "PASS",
+      "observed": "previous versions retained",
+      "expected": "old safe version"
+    },
+    {
+      "check": "commands-routed",
+      "status": "PASS",
+      "observed": "UNPUBLISH/ROLLBACK routed",
+      "expected": "boundary"
+    },
+    {
+      "check": "projections-invalidated",
+      "status": "PASS",
+      "observed": "invalidation on takedown/rollback",
+      "expected": "cache cleanup"
+    },
+    {
+      "check": "no-impl-change",
+      "status": "PASS",
+      "observed": "REUSE-VERIFY this round",
+      "expected": "reuse"
+    }
+  ],
+  "notVerifiableHere": [
+    "Emergency-block reason audit and learner-facing explainable recovery copy need live flows and are deferred to acceptance."
+  ],
+  "note": "REUSE-VERIFY: read from the committed tree; no production change."
+}
