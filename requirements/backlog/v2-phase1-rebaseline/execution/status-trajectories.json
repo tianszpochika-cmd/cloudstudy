@@ -1417,6 +1417,19 @@
       "actor": "agent:p1r_implementation:deepseek-harness",
       "reason": "Owner route A (in-tree control verification). Dependencies M8-002..006 + M8-008 DEV_DONE. Deny-list PASS plus 8/8 checks; SAST/DAST/SBOM deferred as knownGap.",
       "evidencePath": "evidence/p1r/m8/P1R-M8-010/manifest.json"
+    },
+    {
+      "taskId": "P1R-M8-011",
+      "path": [
+        "PLANNED",
+        "READY",
+        "IN_PROGRESS",
+        "DEV_DONE"
+      ],
+      "recordedAt": "2026-09-15T22:47:00Z",
+      "actor": "agent:p1r_implementation:deepseek-harness",
+      "reason": "Owner route A (mechanism verification). Dependencies M8-006 + M8-009 DEV_DONE. Eight recovery checks pass; live drills deferred as knownGap.",
+      "evidencePath": "evidence/p1r/m8/P1R-M8-011/manifest.json"
     }
   ]
 }
