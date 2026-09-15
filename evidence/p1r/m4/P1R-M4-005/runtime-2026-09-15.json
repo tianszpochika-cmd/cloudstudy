@@ -1,0 +1,57 @@
+{
+  "task": "P1R-M4-005",
+  "capturedAt": "2026-09-15T16:45:15.009Z",
+  "sourceCommit": "19a4b697a5b1becd46b9b884903fddddc912363f",
+  "workingTreeDirty": false,
+  "result": "PASS",
+  "passed": 7,
+  "total": 7,
+  "checks": [
+    {
+      "check": "manifest-frozen",
+      "status": "PASS",
+      "observed": "P1_PLACEMENT_V1 ten-item manifest",
+      "expected": "manifest"
+    },
+    {
+      "check": "ten-four-dimensions",
+      "status": "PASS",
+      "observed": "10 items, 4 dimensions",
+      "expected": "selection set"
+    },
+    {
+      "check": "placement-lifecycle",
+      "status": "PASS",
+      "observed": "start/submit/skip/report",
+      "expected": "lifecycle"
+    },
+    {
+      "check": "checkpoint-monotonic",
+      "status": "PASS",
+      "observed": "monotonic seq + hash guard",
+      "expected": "checkpoint"
+    },
+    {
+      "check": "resume-idempotent",
+      "status": "PASS",
+      "observed": "idempotent submit/resume",
+      "expected": "resume"
+    },
+    {
+      "check": "content-pinned",
+      "status": "PASS",
+      "observed": "content version pins",
+      "expected": "contentVersion"
+    },
+    {
+      "check": "no-impl-change",
+      "status": "PASS",
+      "observed": "REUSE-VERIFY this round",
+      "expected": "reuse"
+    }
+  ],
+  "notVerifiableHere": [
+    "Fixed-input/output determinism run and boundary/confidence live fixtures deferred to acceptance."
+  ],
+  "note": "REUSE-VERIFY: read from contracts + assessment-service; no production change."
+}
