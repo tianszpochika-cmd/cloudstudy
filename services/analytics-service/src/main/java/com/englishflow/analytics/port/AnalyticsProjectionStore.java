@@ -33,4 +33,16 @@ public interface AnalyticsProjectionStore {
     void replaceProjection(MetricProjection projection);
 
     void clearProjections(RecomputeRequest request);
+
+    /**
+     * M6-010 deletion effect: removes the principal's journal rows and the receipts that
+     * reference them, then journals the purge itself so replays are idempotent.
+     * Aggregate metric projections are not rewound here; they rebuild from the journal
+     * through the existing recompute path.
+     */
+    PurgeResult purgePrincipal(TenantScope tenant, AnalyticsEventReceipt purgeReceipt,
+            SanitizedAnalyticsEvent purgeJournal, String actorRef);
+
+    record PurgeResult(int journalDeleted, int receiptsDeleted) {
+    }
 }

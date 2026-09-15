@@ -58,6 +58,12 @@ public final class FailClosedAnalyticsProjectionStore implements AnalyticsProjec
         throw unavailable("ANALYTICS_PROJECTION_WRITE_FAILED");
     }
 
+    @Override
+    public PurgeResult purgePrincipal(TenantScope tenant, AnalyticsEventReceipt purgeReceipt,
+            SanitizedAnalyticsEvent purgeJournal, String actorRef) {
+        throw unavailable("ANALYTICS_PROJECTION_WRITE_FAILED");
+    }
+
     private static IllegalStateException unavailable(String code) {
         return new IllegalStateException(code + ": local-real durable adapter is not configured");
     }

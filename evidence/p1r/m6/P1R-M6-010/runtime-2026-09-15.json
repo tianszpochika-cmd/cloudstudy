@@ -1,0 +1,63 @@
+{
+  "task": "P1R-M6-010",
+  "capturedAt": "2026-09-15T18:16:41.604Z",
+  "sourceCommit": "5cd1c60b4860fb4d7d84737615701736ad233e33",
+  "workingTreeDirty": true,
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "check": "deletion-branch",
+      "status": "PASS",
+      "observed": "deletion branch pre-validator",
+      "expected": "delete linkage"
+    },
+    {
+      "check": "source-gated",
+      "status": "PASS",
+      "observed": "iam-service source gate",
+      "expected": "source check"
+    },
+    {
+      "check": "purge-port",
+      "status": "PASS",
+      "observed": "purge port + result",
+      "expected": "purge port"
+    },
+    {
+      "check": "purge-deduped",
+      "status": "PASS",
+      "observed": "purge replays idempotent",
+      "expected": "dedupe"
+    },
+    {
+      "check": "privacy-kept",
+      "status": "PASS",
+      "observed": "token/audio/answer/freetext barred",
+      "expected": "privacy boundary"
+    },
+    {
+      "check": "ui-kafka-split",
+      "status": "PASS",
+      "observed": "telemetry UI-only, no Kafka",
+      "expected": "isolation"
+    },
+    {
+      "check": "fail-closed",
+      "status": "PASS",
+      "observed": "purge fail-closed",
+      "expected": "fail-closed"
+    },
+    {
+      "check": "service-builds",
+      "status": "PASS",
+      "observed": "mvn compile EXIT 0 (this session)",
+      "expected": "compiles"
+    }
+  ],
+  "notVerifiableHere": [
+    "Per-type consent-off list and aggregate rewind are follow-ups; aggregates rebuild via recompute."
+  ],
+  "note": "Deletion-effect purge delivered; UI/Kafka split verified in tree."
+}

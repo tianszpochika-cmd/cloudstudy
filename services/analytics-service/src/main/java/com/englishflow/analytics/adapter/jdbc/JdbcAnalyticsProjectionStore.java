@@ -144,6 +144,44 @@ public class JdbcAnalyticsProjectionStore implements AnalyticsProjectionStore {
         }
     }
 
+    @Override
+    @Transactional
+    public PurgeResult purgePrincipal(TenantScope tenant, AnalyticsEventReceipt purgeReceipt,
+            SanitizedAnalyticsEvent purgeJournal, String actorRef) {
+        List<String> eventIds = jdbc.query(
+                "SELECT event_id FROM analytics_event_journal WHERE tenant_id=? AND ("
+                        + "JSON_UNQUOTE(JSON_EXTRACT(sanitized_payload_json,'$.principalId'))=? OR "
+                        + "JSON_UNQUOTE(JSON_EXTRACT(sanitized_payload_json,'$.subjectRef'))=? OR "
+                        + "JSON_UNQUOTE(JSON_EXTRACT(sanitized_payload_json,'$.subject'))=?)",
+                (rs, rowNum) -> rs.getString("event_id"),
+                tenant.tenantId(), actorRef, actorRef, actorRef);
+        int receiptsDeleted = 0;
+        for (String eventId : eventIds) {
+            receiptsDeleted += jdbc.update(
+                    "DELETE FROM analytics_event_receipt WHERE tenant_id=? AND event_id=?",
+                    tenant.tenantId(), eventId);
+        }
+        int journalDeleted = eventIds.isEmpty() ? 0 : jdbc.update(
+                "DELETE FROM analytics_event_journal WHERE tenant_id=? AND event_id IN ("
+                        + String.join(",", java.util.Collections.nCopies(eventIds.size(), "?")) + ")",
+                java.util.stream.Stream.concat(java.util.stream.Stream.of(tenant.tenantId()),
+                        eventIds.stream()).toArray());
+        jdbc.update("INSERT INTO analytics_event_receipt "
+                        + "(tenant_id,event_id,event_name,schema_version,dedupe_key,payload_hash,metric_version,"
+                        + "receipt_state,reason_code,received_at) VALUES (?,?,?,?,?,?,?,?,?,?)",
+                purgeReceipt.tenant().tenantId(), purgeReceipt.eventId(), purgeReceipt.eventName(),
+                purgeJournal.schemaVersion(), purgeReceipt.dedupeKey(), purgeReceipt.payloadHash(),
+                purgeReceipt.metricVersion(), purgeReceipt.state().name(), nullable(purgeReceipt.reasonCode()),
+                Timestamp.from(purgeReceipt.receivedAt()));
+        jdbc.update("INSERT INTO analytics_event_journal "
+                        + "(tenant_id,event_id,event_name,schema_version,dedupe_key,payload_hash,occurred_at,"
+                        + "sanitized_payload_json) VALUES (?,?,?,?,?,?,?,?)",
+                purgeJournal.tenant().tenantId(), purgeJournal.eventId(), purgeJournal.eventName(),
+                purgeJournal.schemaVersion(), purgeJournal.dedupeKey(), purgeJournal.payloadHash(),
+                Timestamp.from(purgeJournal.occurredAt()), json(purgeJournal.payload()));
+        return new PurgeResult(journalDeleted, receiptsDeleted);
+    }
+
     private void upsertProjection(MetricProjection projection) {
         jdbc.update("INSERT INTO analytics_metric_projection "
                         + "(tenant_id,metric_id,metric_version,period_start,dimension_key,projection_state,"

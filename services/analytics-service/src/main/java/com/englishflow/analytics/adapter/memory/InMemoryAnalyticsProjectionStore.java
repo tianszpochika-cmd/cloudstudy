@@ -60,6 +60,54 @@ public final class InMemoryAnalyticsProjectionStore implements AnalyticsProjecti
     }
 
     @Override
+    public synchronized PurgeResult purgePrincipal(TenantScope tenant, AnalyticsEventReceipt purgeReceipt,
+            SanitizedAnalyticsEvent purgeJournal, String actorRef) {
+        failIfWriteFails();
+        List<String> eventIds = journal.values().stream()
+                .filter(entry -> entry.tenant().equals(tenant) && principalMatches(entry, actorRef))
+                .map(SanitizedAnalyticsEvent::eventId)
+                .toList();
+        int receiptsDeleted = 0;
+        for (String eventId : eventIds) {
+            String key = receiptKey(tenant, eventId);
+            SanitizedAnalyticsEvent removed = journal.remove(key);
+            if (removed != null) {
+                receiptsDeleted += removeReceiptsForEvent(tenant, eventId) ? 1 : 0;
+            }
+        }
+        String purgeDedupe = receiptKey(tenant, purgeReceipt.dedupeKey());
+        String purgeEvent = receiptKey(tenant, purgeReceipt.eventId());
+        if (receiptsByDedupe.containsKey(purgeDedupe) || receiptsByEvent.containsKey(purgeEvent)
+                || journal.containsKey(purgeEvent)) {
+            throw new IllegalStateException("analytics receipt already exists");
+        }
+        receiptsByDedupe.put(purgeDedupe, purgeReceipt);
+        receiptsByEvent.put(purgeEvent, purgeReceipt);
+        journal.put(purgeEvent, purgeJournal);
+        return new PurgeResult(eventIds.size(), receiptsDeleted);
+    }
+
+    private boolean removeReceiptsForEvent(TenantScope tenant, String eventId) {
+        String key = receiptKey(tenant, eventId);
+        AnalyticsEventReceipt removed = receiptsByEvent.remove(key);
+        if (removed != null) {
+            receiptsByDedupe.values().removeIf(candidate -> candidate.eventId().equals(eventId)
+                    && candidate.tenant().equals(tenant));
+            return true;
+        }
+        return false;
+    }
+
+    private static boolean principalMatches(SanitizedAnalyticsEvent entry, String actorRef) {
+        for (String field : new String[]{"principalId", "subjectRef", "subject"}) {
+            if (actorRef.equals(String.valueOf(entry.payload().get(field)))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
     public synchronized List<SanitizedAnalyticsEvent> readJournal(TenantScope tenant, LocalDate from, LocalDate to) {
         failIfReadFails();
         return journal.values().stream()
