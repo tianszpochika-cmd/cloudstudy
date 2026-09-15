@@ -35,6 +35,12 @@ const routes: RouteRecordRaw[] = [
     component: () => import('../pages/PasswordResetPage.vue'),
   },
   {
+    path: '/support',
+    name: 'support',
+    component: () => import('../pages/SupportPage.vue'),
+    meta: { requiresAuth: true, title: '客服与帮助' },
+  },
+  {
     path: '/home',
     name: 'home',
     component: () => import('../pages/HomePage.vue'),

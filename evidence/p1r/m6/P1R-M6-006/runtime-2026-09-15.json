@@ -1,0 +1,63 @@
+{
+  "task": "P1R-M6-006",
+  "capturedAt": "2026-09-15T17:57:23.777Z",
+  "sourceCommit": "86ef559891ea638a28d6fdbcfd3e7c10376019ff",
+  "workingTreeDirty": true,
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "check": "web-api",
+      "status": "PASS",
+      "observed": "list/create/get/reopen client",
+      "expected": "web API"
+    },
+    {
+      "check": "web-page",
+      "status": "PASS",
+      "observed": "draft + fingerprint + detail + reopen",
+      "expected": "web page"
+    },
+    {
+      "check": "web-route-nav",
+      "status": "PASS",
+      "observed": "/support route + nav",
+      "expected": "route/nav"
+    },
+    {
+      "check": "fingerprint-not-raw",
+      "status": "PASS",
+      "observed": "raw text never sent",
+      "expected": "privacy"
+    },
+    {
+      "check": "mobile-api-page",
+      "status": "PASS",
+      "observed": "mobile client + page",
+      "expected": "mobile parity"
+    },
+    {
+      "check": "mobile-route",
+      "status": "PASS",
+      "observed": "pages.json entry",
+      "expected": "mobile route"
+    },
+    {
+      "check": "admin-slices-kept",
+      "status": "PASS",
+      "observed": "admin support view kept",
+      "expected": "admin side"
+    },
+    {
+      "check": "dual-typecheck",
+      "status": "PASS",
+      "observed": "vue-tsc + tsc EXIT 0 (this session)",
+      "expected": "typechecks"
+    }
+  ],
+  "notVerifiableHere": [
+    "SLA/attachment-limit/cross-user live browser proofs deferred to acceptance."
+  ],
+  "note": "Learner dual-end pages added; admin slices kept; typechecks green."
+}
