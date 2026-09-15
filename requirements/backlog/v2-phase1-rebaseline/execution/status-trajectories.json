@@ -1196,6 +1196,19 @@
       "actor": "agent:p1r_implementation:deepseek-harness",
       "reason": "Owner route A (durable-path verification, no production change). Dependencies M2-005/010 + M1-014 DEV_DONE. Eight durable-slice checks pass; v2 reconnect and memory retirement deferred as knownGap.",
       "evidencePath": "evidence/p1r/m7/P1R-M7-004/manifest.json"
+    },
+    {
+      "taskId": "P1R-M7-005",
+      "path": [
+        "PLANNED",
+        "READY",
+        "IN_PROGRESS",
+        "DEV_DONE"
+      ],
+      "recordedAt": "2026-09-15T21:22:00Z",
+      "actor": "agent:p1r_implementation:deepseek-harness",
+      "reason": "Owner route A (durable-path verification, no production change). Dependency M7-004 DEV_DONE. Eight safety checks pass; delay filter and live negative run deferred as knownGap.",
+      "evidencePath": "evidence/p1r/m7/P1R-M7-005/manifest.json"
     }
   ]
 }
