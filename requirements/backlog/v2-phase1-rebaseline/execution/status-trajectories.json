@@ -1482,6 +1482,19 @@
       "actor": "agent:p1r_implementation:deepseek-harness",
       "reason": "Owner route A (RC index + full gate re-run). Dependencies M8-002..014 DEV_DONE. Seven gates green, 80 manifests agree, drift repaired; signature deferred as knownGap.",
       "evidencePath": "evidence/p1r/m8/P1R-M8-015/manifest.json"
+    },
+    {
+      "taskId": "P1R-M8-016",
+      "path": [
+        "PLANNED",
+        "READY",
+        "IN_PROGRESS",
+        "DEV_DONE"
+      ],
+      "recordedAt": "2026-09-15T23:12:00Z",
+      "actor": "agent:p1r_implementation:deepseek-harness",
+      "reason": "Owner route A (packet staged). Dependency M8-015 DEV_DONE. Eight packet checks pass; decision PENDING_INDEPENDENT, no self-approval. M8 closes 16/16.",
+      "evidencePath": "evidence/p1r/m8/P1R-M8-016/manifest.json"
     }
   ]
 }
