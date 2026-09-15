@@ -1,0 +1,105 @@
+{
+  "task": "P1R-M3-008",
+  "capturedAt": "2026-09-15T16:21:56.154Z",
+  "sourceCommit": "8f170d497fef19b36d8e8c47509b6b9e5e83c32c",
+  "workingTreeDirty": true,
+  "result": "PASS",
+  "passed": 15,
+  "total": 15,
+  "checks": [
+    {
+      "check": "page-exists:privacy.vue",
+      "status": "PASS",
+      "observed": "present",
+      "expected": "present"
+    },
+    {
+      "check": "privacy.vue-has-seo",
+      "status": "PASS",
+      "observed": "SEO wired",
+      "expected": "SEO"
+    },
+    {
+      "check": "privacy.vue-no-token",
+      "status": "PASS",
+      "observed": "no token handling",
+      "expected": "public only"
+    },
+    {
+      "check": "page-exists:terms.vue",
+      "status": "PASS",
+      "observed": "present",
+      "expected": "present"
+    },
+    {
+      "check": "terms.vue-has-seo",
+      "status": "PASS",
+      "observed": "SEO wired",
+      "expected": "SEO"
+    },
+    {
+      "check": "terms.vue-no-token",
+      "status": "PASS",
+      "observed": "no token handling",
+      "expected": "public only"
+    },
+    {
+      "check": "page-exists:minors.vue",
+      "status": "PASS",
+      "observed": "present",
+      "expected": "present"
+    },
+    {
+      "check": "minors.vue-has-seo",
+      "status": "PASS",
+      "observed": "SEO wired",
+      "expected": "SEO"
+    },
+    {
+      "check": "minors.vue-no-token",
+      "status": "PASS",
+      "observed": "no token handling",
+      "expected": "public only"
+    },
+    {
+      "check": "page-exists:status.vue",
+      "status": "PASS",
+      "observed": "present",
+      "expected": "present"
+    },
+    {
+      "check": "status.vue-has-seo",
+      "status": "PASS",
+      "observed": "SEO wired",
+      "expected": "SEO"
+    },
+    {
+      "check": "status.vue-no-token",
+      "status": "PASS",
+      "observed": "no token handling",
+      "expected": "public only"
+    },
+    {
+      "check": "footer-links-new-routes",
+      "status": "PASS",
+      "observed": "footer points at new routes",
+      "expected": "navigation"
+    },
+    {
+      "check": "sitemap-covers-new-routes",
+      "status": "PASS",
+      "observed": "publicRoutes extended",
+      "expected": "sitemap"
+    },
+    {
+      "check": "site-builds",
+      "status": "PASS",
+      "observed": "nuxt build complete (this session; typecheck lacks tsconfig, pre-existing)",
+      "expected": "builds"
+    }
+  ],
+  "notVerifiableHere": [
+    "Live browser matrix (responsive/deep-link/install) deferred to M8-007."
+  ],
+  "note": "Read from the committed official-site tree; nuxt build verified this session."
+}

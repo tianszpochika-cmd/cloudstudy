@@ -22,9 +22,10 @@ export const footerNavigation = Object.freeze([
     title: '公开信息',
     links: [
       { label: '合规公示', to: '/compliance' },
-      { label: '隐私与数据', to: '/compliance#privacy' },
-      { label: '用户协议', to: '/compliance#terms' },
-      { label: '未成年人保护声明', to: '/compliance#minors' },
+      { label: '隐私与数据', to: '/privacy' },
+      { label: '用户协议', to: '/terms' },
+      { label: '未成年人保护声明', to: '/minors' },
+      { label: '服务状态', to: '/status' },
     ],
   },
 ])
@@ -146,7 +147,7 @@ export const complianceNotices = Object.freeze([
   },
 ])
 
-export const publicRoutes = Object.freeze(['/', '/courses', '/pricing', '/download', '/about', '/announcements', '/compliance'])
+export const publicRoutes = Object.freeze(['/', '/courses', '/pricing', '/download', '/about', '/announcements', '/compliance', '/privacy', '/terms', '/minors', '/status'])
 
 export function filterCourses(courses, filter = 'all') {
   if (filter === 'all') return courses
