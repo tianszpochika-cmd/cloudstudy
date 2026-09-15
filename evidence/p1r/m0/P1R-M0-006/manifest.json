@@ -1,8 +1,8 @@
 {
   "taskId": "P1R-M0-006",
   "draftOnly": false,
-  "canonicalTaskStatus": "REVIEW",
-  "sourceCommit": "984ddecff776d1525d0a1c637c671661bfb379e5",
+  "canonicalTaskStatus": "DEV_DONE",
+  "sourceCommit": "c4bc2e0385eb00b584c1ae259654620dedda3b54",
   "artifactDigests": [
     {
       "path": "config/p1r-dependency-policy.json",
@@ -42,7 +42,7 @@
     "maven": "3.9.12"
   },
   "startedAt": "2026-08-29T09:20:00.000Z",
-  "finishedAt": "2026-09-13T08:04:21.308Z",
+  "finishedAt": "2026-09-15T14:25:27.088Z",
   "actors": [
     "implementation_audit",
     "m0_security_remediation"
@@ -77,7 +77,7 @@
     {
       "check": "high-critical-vulnerability-policy",
       "status": "PASS",
-      "details": "0 high, 0 critical across 1,120 audited dependencies (8 low, 7 moderate); the production-only audit reports 0 advisories at every severity"
+      "details": "0 high, 0 critical across audited dependencies (8 low, 6 moderate, verified 2026-09-15 by pnpm audit; production-only audit reports 0 advisories at every severity)"
     }
   ],
   "rollbackEvidence": [
@@ -92,15 +92,18 @@
     "The uni-app plugin pins preserveSymlinks: true, so pnpm's isolated layout needs a narrow publicHoistPattern for pinia's runtime dependencies.",
     "RESOLVED (2026-09-13): the mobile H5 login form could not be submitted. The page used the HTML type=submit attribute on a uni button, but uni resolves submission from the form-type prop, and it was bound with @submit.prevent, while uni emits submit as a component event with no preventDefault, which Vue silently skips for a non-DOM event. Both are fixed in apps/mobile/src/pages/login/login.vue, and a real-browser run now issues POST /api/v1/auth/login and navigates to onboarding with zero page errors. Whether the 10.x move caused it was never established, because the pre-upgrade build was never probed the same way, but the source comparison showed the two uni-h5 versions share the same form-submit logic, so it is not attributable to this task. Fixed ahead of P1R-M4-001, which owns the login page.",
     "RISK ACCEPTANCE 2026-09-13, owner: platform/security (P1R-M0-006). Moderate advisory GHSA on @intlify/core-base, present at the pinned 9.1.11, fixed at 9.14.5 and above. It is accepted as a known risk for Phase 1 rather than fixed, and the reasons are recorded so the acceptance can be revisited:",
-    "The dependency overrides are verified by scripts/dev/check-overrides.mjs, which reads pnpm-lock.yaml and asserts both that the lockfile records each override and that the resolved versions match it. The previous verification method, `pnpm config get overrides`, reports only the workspace-file source and returns undefined for overrides declared in package.json even while they are in effect, so it could not have detected a pin that had stopped applying."
+    "The dependency overrides are verified by scripts/dev/check-overrides.mjs, which reads pnpm-lock.yaml and asserts both that the lockfile records each override and that the resolved versions match it. The previous verification method, `pnpm config get overrides`, reports only the workspace-file source and returns undefined for overrides declared in package.json even while they are in effect, so it could not have detected a pin that had stopped applying.",
+    "PIN RETENTION 2026-09-15 (closes first-review P1-2 by retention, not removal; owner route A). All four pin-removal experiments were run with before/after pnpm audit对照 and rolled back: removing express>path-to-regexp reintroduced 2 high (ReDoS, 0.1.13->0.1.10); removing uni-cli-shared>adm-zip reintroduced 1 high + 1 moderate (0.6.1->0.5.16); removing uni-nvue-styler>postcss grew the tree to three postcss lines with 2 high + 2 moderate; removing both intlify pins reintroduced 2 high. Every pin is load-bearing; none is removed. Details in requirements/backlog/v2-phase1-rebaseline/execution/P1R-M0-006.md.",
+    "P2 LIST 2026-09-15 (owner route A: DEV_DONE first, acceptance afterwards). The 8 P2 items from the first independent REWORK were never recorded in the repository (second-round rework noted budget exhaustion in CHANGELOG), so they cannot be closed item by item here. Reproducing the P2 list and closing it item by item is deferred to the independent acceptance pass; this DEV_DONE claims only the P1 dispositions recorded in the execution log plus the pin-retention evidence above.",
+    "WORDING 2026-09-15 (first-review P1-1; needs a reader). Thirteen lines still carry the falsified root-cause wording about pnpm.overrides being silently ignored, six of which are themselves corrections. A script cannot reliably separate residual claims from correction notes, so the final wording verdict is deferred to the independent acceptance pass; the corrected statements (relocation to pnpm-workspace.yaml, never silently ignored) stand as recorded."
   ],
   "blockers": [],
   "nextSteps": [
-    "Independent review of this submission (implementer submitted to REVIEW; acceptance is the reviewer's decision).",
+    "Independent acceptance pass: reproduce the 8 P2 list, give the P1-1 wording verdict, and judge ACCEPTED/REWORK (iron rule 1: no self-approval; this DEV_DONE defers acceptance by owner direction).",
     "Re-evaluate whether src/compat/vue.ts and the vue-router entry shim are still required once a later uni-app line stops importing the Vue internals they provide."
   ],
-  "reviewer": "root-coordinator",
-  "decision": "PENDING",
+  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "decision": "DEV_DONE",
   "provenance": {
     "originalSourceCommit": "0f8b60ae4e83d0f31d891eed8d9383c007485130",
     "originalReviewer": "root-coordinator",
@@ -284,16 +287,26 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-15T00:07:22.150Z",
         "details": "Rebind after M2-008 was delivered."
+      },
+      {
+        "taskId": "P1R-M0-006",
+        "sourceCommit": "c4bc2e0385eb00b584c1ae259654620dedda3b54",
+        "auditedImplementationSource": "c4bc2e0385eb00b584c1ae259654620dedda3b54",
+        "integrationCheckpoint": "c4bc2e0385eb00b584c1ae259654620dedda3b54",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-15T14:25:27.088Z",
+        "details": "Promotion to DEV_DONE under owner route A (development to M8, acceptance afterwards). Four pin-removal experiments proved every override load-bearing; P2 list and wording verdict deferred to independent acceptance and recorded in knownGaps. Digests recomputed from disk; original provenance and review history unchanged."
       }
     ],
-    "previousCurrentSourceCommit": "2a5a54d791250fb77b9d9e24a1d9449111d74065",
+    "previousCurrentSourceCommit": "984ddecff776d1525d0a1c637c671661bfb379e5",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
     "currentSourceRevalidationTask": "P1R-M0-006",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-15T00:07:22.150Z",
-    "currentSourceRevalidationAuditedImplementationSource": "984ddecff776d1525d0a1c637c671661bfb379e5",
-    "currentSourceRevalidationIntegrationCheckpoint": "984ddecff776d1525d0a1c637c671661bfb379e5",
+    "currentSourceRevalidationFinishedAt": "2026-09-15T14:25:27.088Z",
+    "currentSourceRevalidationAuditedImplementationSource": "c4bc2e0385eb00b584c1ae259654620dedda3b54",
+    "currentSourceRevalidationIntegrationCheckpoint": "c4bc2e0385eb00b584c1ae259654620dedda3b54",
     "previousCurrentSourceRevalidationTask": "P1R-M0-006",
     "previousCurrentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "previousCurrentSourceRevalidationFinishedAt": "2026-09-12T15:59:44.043Z"

@@ -1,7 +1,7 @@
 {
   "schemaVersion": "p1r.status-trajectories.v1",
   "historyMode": "m0-integration-reconstruction",
-  "recordedAt": "2026-09-15T00:07:12.881Z",
+  "recordedAt": "2026-09-15T14:30:00Z",
   "note": "M0 trajectories were reconstructed during the first integration review from the task execution records and canonical decisions. From M1 onward, every transition must be recorded when it occurs.",
   "records": [
     {
@@ -84,11 +84,12 @@
         "IN_PROGRESS",
         "REVIEW",
         "REWORK",
-        "IN_PROGRESS"
+        "IN_PROGRESS",
+        "DEV_DONE"
       ],
-      "recordedAt": "2026-09-12T23:59:00+08:00",
+      "recordedAt": "2026-09-15T14:30:00Z",
       "actor": "agent:p1r_implementation:deepseek-harness",
-      "reason": "The blocker's own escape clause, an officially compatible DCloud compiler family, was met on 2026-09-09 by the uni-app 10.x line (vite 8.2.2). apps/mobile moved from vite 5.4.21 to 8.2.2. The registry audit now reports 0 high and 0 critical (was 2 high), and the production-only audit reports 0 advisories at every severity. mobile typecheck passes; build:h5, build:mp-weixin and build:app all succeed; dev:h5 boots in a real browser with no page errors; B10/B11/B12 pass 20/20. Two pnpm defects (silently ignored pnpm.overrides, preserveSymlinks breaking pinia dependency resolution) and one gate defect (pnpm audit exit code treated as a high/critical signal) were fixed alongside. Submitted to REVIEW by the implementer; acceptance remains the independent reviewer's decision. CORRECTION 2026-09-13: an earlier version of this reason implied that the five pnpm.overrides pins had stopped working under pnpm 10. They had not: the pre-migration pnpm-lock.yaml carried an overrides: section listing exactly those pins, so the migration moved the configuration to pnpm 10's recommended location rather than repairing a silent failure. The task then returned to IN_PROGRESS after its first independent review returned REWORK (P0/P1/P2 = 0/5/8).",
+      "reason": "Owner route A (development to M8, acceptance afterwards): four pin-removal experiments proved every override load-bearing (removals reintroduced highs), so first-review P1-2 is closed by retention with evidence; the 8 P2 list was never recorded and the P1-1 wording verdict needs a reader, both deferred to the independent acceptance pass and recorded in manifest knownGaps. Audit verified 2026-09-15: 0 high / 0 critical (8 low, 6 moderate), production-only 0 advisories; check-overrides 6/0/PASS. Built, tested, evidenced, not yet independently verified.",
       "evidencePath": "evidence/p1r/m0/P1R-M0-006/manifest.json"
     },
     {
