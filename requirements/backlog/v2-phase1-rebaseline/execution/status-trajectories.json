@@ -1378,6 +1378,19 @@
       "actor": "agent:p1r_implementation:deepseek-harness",
       "reason": "Owner route A (local-segment verification). Dependencies M8-002..006 DEV_DONE. Eight matrix checks pass; device runs deferred as knownGap.",
       "evidencePath": "evidence/p1r/m8/P1R-M8-007/manifest.json"
+    },
+    {
+      "taskId": "P1R-M8-008",
+      "path": [
+        "PLANNED",
+        "READY",
+        "IN_PROGRESS",
+        "DEV_DONE"
+      ],
+      "recordedAt": "2026-09-15T22:32:00Z",
+      "actor": "agent:p1r_implementation:deepseek-harness",
+      "reason": "Owner route A (package-level verification). Dependency M8-007 DEV_DONE. Eight a11y checks pass; live SR pass deferred as knownGap.",
+      "evidencePath": "evidence/p1r/m8/P1R-M8-008/manifest.json"
     }
   ]
 }
