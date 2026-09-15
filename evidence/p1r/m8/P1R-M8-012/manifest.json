@@ -1,0 +1,42 @@
+{
+  "taskId": "P1R-M8-012",
+  "draftOnly": false,
+  "canonicalTaskStatus": "DEV_DONE",
+  "decision": "DEV_DONE",
+  "sourceCommit": "da77789620cd79e64e7bfb0e79ad398c879dd26d",
+  "startedAt": "2026-09-15T22:50:00.000Z",
+  "finishedAt": "2026-09-15T22:52:00.000Z",
+  "environment": {
+    "kind": "dr-reuse-evidence",
+    "branch": "dev",
+    "phaseStatus": "D3_DOMAIN",
+    "runtimeStatus": "M8_012_DR_VERIFIED",
+    "reviewPolicy": "Independent verification deferred by the owner and acceptance testing follows, so this task is DEV_DONE and not ACCEPTED.",
+    "note": "DR capability verification; no production change."
+  },
+  "actors": ["root-coordinator", "p1r-implementation"],
+  "sourceIds": ["P1R-M8-012"],
+  "commands": [{ "command": "node scripts/runtime/p1r-m8-012-runtime.mjs", "purpose": "DR capability checks" }],
+  "results": [{ "check": "dr-8-checks", "status": "PASS", "details": "8/8: RPO/RTO, reconcile, receipts, hold, expiry, retention, recovery, anchors" }],
+  "rollbackEvidence": [{ "status": "PASS", "details": "Adds harness + evidence only; deleting them restores prior state." }],
+  "blockers": [],
+  "knownGaps": ["Live backup-restore drill and PITR proof deferred to acceptance."],
+  "artifactDigests": [
+    { "path": "scripts/runtime/p1r-m8-012-runtime.mjs", "algorithm": "sha256", "digest": "8a75bca8ee8aefd37b0c18a038456e46b746c6a172816bb2d0c07fea299dd009" },
+    { "path": "evidence/p1r/m8/P1R-M8-012/runtime-2026-09-15.json", "algorithm": "sha256", "digest": "3bc9ad441a538627304702c873502f4ab48ba153f7b3a421a209ad0634f454fd" }
+  ],
+  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "nextSteps": ["Acceptance testing by the owner, which is what DEV_DONE defers."],
+  "statusNote": "Development finished and the evidence is in the repository. Eight checks pass. Not independently verified, which DEV_DONE says.",
+  "provenance": {
+    "originalSourceCommit": "da77789620cd79e64e7bfb0e79ad398c879dd26d",
+    "originalReviewer": "agent:p1r_implementation:deepseek-harness",
+    "currentSourceRevalidationTask": "P1R-M8-012",
+    "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
+    "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
+    "currentSourceRevalidationFinishedAt": "2026-09-15T22:52:00.000Z",
+    "currentSourceRevalidationAuditedImplementationSource": "da77789620cd79e64e7bfb0e79ad398c879dd26d",
+    "currentSourceRevalidationIntegrationCheckpoint": "da77789620cd79e64e7bfb0e79ad398c879dd26d",
+    "currentSourceRevalidationHistory": [{ "taskId": "P1R-M8-012", "sourceCommit": "da77789620cd79e64e7bfb0e79ad398c879dd26d", "auditedImplementationSource": "da77789620cd79e64e7bfb0e79ad398c879dd26d", "integrationCheckpoint": "da77789620cd79e64e7bfb0e79ad398c879dd26d", "reviewer": "agent:p1r_implementation:deepseek-harness", "runtimeStatus": "RUNTIME_VERIFIED", "finishedAt": "2026-09-15T22:52:00.000Z", "details": "Initial DEV_DONE delivery under owner route A." }]
+  }
+}

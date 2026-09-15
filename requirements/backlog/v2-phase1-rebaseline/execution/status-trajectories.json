@@ -1430,6 +1430,19 @@
       "actor": "agent:p1r_implementation:deepseek-harness",
       "reason": "Owner route A (mechanism verification). Dependencies M8-006 + M8-009 DEV_DONE. Eight recovery checks pass; live drills deferred as knownGap.",
       "evidencePath": "evidence/p1r/m8/P1R-M8-011/manifest.json"
+    },
+    {
+      "taskId": "P1R-M8-012",
+      "path": [
+        "PLANNED",
+        "READY",
+        "IN_PROGRESS",
+        "DEV_DONE"
+      ],
+      "recordedAt": "2026-09-15T22:52:00Z",
+      "actor": "agent:p1r_implementation:deepseek-harness",
+      "reason": "Owner route A (capability verification). Dependencies M8-006 + M8-011 DEV_DONE. Eight DR checks pass; live drill deferred as knownGap.",
+      "evidencePath": "evidence/p1r/m8/P1R-M8-012/manifest.json"
     }
   ]
 }
