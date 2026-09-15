@@ -1,0 +1,63 @@
+{
+  "task": "P1R-M5-007",
+  "capturedAt": "2026-09-15T17:23:50.435Z",
+  "sourceCommit": "f657236977dd750ff87c40d828edb28f4e2e1590",
+  "workingTreeDirty": false,
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "check": "formula-frozen",
+      "status": "PASS",
+      "observed": "SM2_Q03_V1 pinned",
+      "expected": "algorithm version"
+    },
+    {
+      "check": "quality-0-3",
+      "status": "PASS",
+      "observed": "Q0–Q3 range",
+      "expected": "quality range"
+    },
+    {
+      "check": "confidence-cap",
+      "status": "PASS",
+      "observed": "confidence caps quality",
+      "expected": "quality cap"
+    },
+    {
+      "check": "ef-interval",
+      "status": "PASS",
+      "observed": "EF clamp + anchors",
+      "expected": "EF/interval"
+    },
+    {
+      "check": "out-of-order-guarded",
+      "status": "PASS",
+      "observed": "backwards time refused",
+      "expected": "ordering"
+    },
+    {
+      "check": "timezone-due",
+      "status": "PASS",
+      "observed": "tz-aware due",
+      "expected": "timezone"
+    },
+    {
+      "check": "single-entry",
+      "status": "PASS",
+      "observed": "review service funnels SM2",
+      "expected": "single write"
+    },
+    {
+      "check": "no-impl-change",
+      "status": "PASS",
+      "observed": "REUSE-VERIFY this round",
+      "expected": "reuse"
+    }
+  ],
+  "notVerifiableHere": [
+    "Repeat/old-version live duel deferred to acceptance."
+  ],
+  "note": "REUSE-VERIFY: read from the committed learning-service tree; no production change."
+}
