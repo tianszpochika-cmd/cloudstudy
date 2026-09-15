@@ -1,0 +1,42 @@
+{
+  "taskId": "P1R-M5-007",
+  "draftOnly": false,
+  "canonicalTaskStatus": "DEV_DONE",
+  "decision": "DEV_DONE",
+  "sourceCommit": "bbf37ae360525602a644e8160a6bf1cf7c4d11f1",
+  "startedAt": "2026-09-15T19:15:00.000Z",
+  "finishedAt": "2026-09-15T19:17:00.000Z",
+  "environment": {
+    "kind": "srs-reuse-evidence",
+    "branch": "dev",
+    "phaseStatus": "D3_DOMAIN",
+    "runtimeStatus": "M5_007_SRS_VERIFIED",
+    "reviewPolicy": "Independent verification deferred by the owner: development proceeds to M8 and acceptance testing follows, so this task is DEV_DONE and not ACCEPTED.",
+    "note": "REUSE-VERIFY: frozen SM2 formula plus single review funnel already in the committed tree."
+  },
+  "actors": ["root-coordinator", "p1r-implementation"],
+  "sourceIds": ["P1R-M5-007"],
+  "commands": [{ "command": "node scripts/runtime/p1r-m5-007-runtime.mjs", "purpose": "SRS checks" }],
+  "results": [{ "check": "srs-8-checks", "status": "PASS", "details": "8/8: formula, Q0-3, cap, EF/interval, order, tz, funnel" }],
+  "rollbackEvidence": [{ "status": "PASS", "details": "Adds harness + evidence only; deleting them restores prior state." }],
+  "blockers": [],
+  "knownGaps": ["Repeat/old-version live duel deferred to acceptance."],
+  "artifactDigests": [
+    { "path": "scripts/runtime/p1r-m5-007-runtime.mjs", "algorithm": "sha256", "digest": "2f76f778067047f52ba7d25f2a99df545106c382ad0732d730bae0b16149fe55" },
+    { "path": "evidence/p1r/m5/P1R-M5-007/runtime-2026-09-15.json", "algorithm": "sha256", "digest": "233290d6dfb1824da153e4128d76e967a2e16466f8605787fa5166f6ce6ee305" }
+  ],
+  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "nextSteps": ["Acceptance testing by the owner, which is what DEV_DONE defers."],
+  "statusNote": "Development finished and the evidence is in the repository. Eight reuse checks pass. Not independently verified, which DEV_DONE says.",
+  "provenance": {
+    "originalSourceCommit": "bbf37ae360525602a644e8160a6bf1cf7c4d11f1",
+    "originalReviewer": "agent:p1r_implementation:deepseek-harness",
+    "currentSourceRevalidationTask": "P1R-M5-007",
+    "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
+    "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
+    "currentSourceRevalidationFinishedAt": "2026-09-15T19:17:00.000Z",
+    "currentSourceRevalidationAuditedImplementationSource": "bbf37ae360525602a644e8160a6bf1cf7c4d11f1",
+    "currentSourceRevalidationIntegrationCheckpoint": "bbf37ae360525602a644e8160a6bf1cf7c4d11f1",
+    "currentSourceRevalidationHistory": [{ "taskId": "P1R-M5-007", "sourceCommit": "bbf37ae360525602a644e8160a6bf1cf7c4d11f1", "auditedImplementationSource": "bbf37ae360525602a644e8160a6bf1cf7c4d11f1", "integrationCheckpoint": "bbf37ae360525602a644e8160a6bf1cf7c4d11f1", "reviewer": "agent:p1r_implementation:deepseek-harness", "runtimeStatus": "RUNTIME_VERIFIED", "finishedAt": "2026-09-15T19:17:00.000Z", "details": "Initial DEV_DONE delivery under owner route A (REUSE-VERIFY)." }]
+  }
+}
