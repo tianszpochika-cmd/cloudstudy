@@ -1,0 +1,63 @@
+{
+  "task": "P1R-M6-003",
+  "capturedAt": "2026-09-15T17:47:40.287Z",
+  "sourceCommit": "efee56ccac624a58af8abf3957886ba3f030113b",
+  "workingTreeDirty": false,
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "check": "sync-page",
+      "status": "PASS",
+      "observed": "sync page present",
+      "expected": "sync page"
+    },
+    {
+      "check": "queue-visible",
+      "status": "PASS",
+      "observed": "queue visible",
+      "expected": "queue"
+    },
+    {
+      "check": "conflicts-shown",
+      "status": "PASS",
+      "observed": "conflicts shown",
+      "expected": "conflicts"
+    },
+    {
+      "check": "no-silent-overwrite",
+      "status": "PASS",
+      "observed": "conflict outcomes explicit",
+      "expected": "no silent overwrite"
+    },
+    {
+      "check": "versioned-sync",
+      "status": "PASS",
+      "observed": "cursor carried",
+      "expected": "versions"
+    },
+    {
+      "check": "owner-pep",
+      "status": "PASS",
+      "observed": "owner-scoped sync service",
+      "expected": "owner PEP"
+    },
+    {
+      "check": "recovery-entry",
+      "status": "PASS",
+      "observed": "retry entry",
+      "expected": "recovery"
+    },
+    {
+      "check": "no-impl-change",
+      "status": "PASS",
+      "observed": "REUSE-VERIFY this round",
+      "expected": "reuse"
+    }
+  ],
+  "notVerifiableHere": [
+    "Post-refresh reconciliation live run deferred to acceptance."
+  ],
+  "note": "REUSE-VERIFY: read from the committed trees; no production change."
+}
