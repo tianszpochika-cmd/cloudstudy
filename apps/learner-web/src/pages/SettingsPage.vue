@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
+import LearningPreferences from '../components/LearningPreferences.vue'
 import { useB1Store } from '../stores/b1'
 import { dailyQuotaOptions, type DailyQuotaMinutes } from '../domain/b1'
 
@@ -47,6 +48,10 @@ async function savePrivacy(): Promise<void> {
 }
 
 async function exportData(): Promise<void> { await b1.exportData() }
+
+async function revokeDevice(deviceId: string): Promise<void> { await b1.removeDevice(deviceId) }
+async function revokeOthers(): Promise<void> { await b1.removeOtherDevices() }
+async function refreshDevices(): Promise<void> { await b1.refreshDevices() }
 </script>
 
 <template>
@@ -60,6 +65,9 @@ async function exportData(): Promise<void> { await b1.exportData() }
       <label>每日目标<select v-model="quota"><option v-for="item in dailyQuotaOptions" :key="item" :value="item">{{ item }} 分钟</option></select></label>
       <button class="button button--primary" type="button" :disabled="saving" @click="save">{{ saving ? '保存中…' : '保存修改' }}</button>
       <p v-if="saved" class="success-text" role="status">资料已保存到服务端。</p>
+      <h3>显示偏好</h3>
+      <p class="muted">界面语言与内容语言分离保存；主题支持跟随系统与高对比。</p>
+      <LearningPreferences />
     </article>
     <article v-else-if="section === 'privacy'" class="form-card">
       <h3>隐私与数据</h3>
@@ -71,7 +79,9 @@ async function exportData(): Promise<void> { await b1.exportData() }
     </article>
     <article v-else class="form-card">
       <h3>设备会话</h3>
-      <div v-for="device in b1.devices" :key="device.deviceId" class="device"><div><strong>{{ device.deviceName }}</strong><p>{{ device.region }} · {{ device.clientVersion }}</p></div><span>{{ device.current ? '当前设备' : device.status }}</span></div>
+      <p class="muted">撤销后该设备 Token 立即失效，需要重新登录。</p>
+      <div v-for="device in b1.devices" :key="device.deviceId" class="device"><div><strong>{{ device.deviceName }}</strong><p>{{ device.region }} · {{ device.clientVersion }}</p></div><span>{{ device.current ? '当前设备' : device.status }}</span><button v-if="!device.current" class="button button--ghost" type="button" @click="revokeDevice(device.deviceId)">撤销</button></div>
+      <div class="device-actions"><button class="button button--secondary" type="button" @click="refreshDevices">刷新设备列表</button><button class="button button--secondary" type="button" @click="revokeOthers">撤销其他设备</button></div>
     </article>
     <p v-if="b1.lastError" class="error-text" role="alert">{{ b1.lastError }}</p>
   </section>

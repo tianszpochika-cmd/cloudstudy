@@ -1,0 +1,63 @@
+{
+  "task": "P1R-M6-004",
+  "capturedAt": "2026-09-15T17:50:14.541Z",
+  "sourceCommit": "86a75992bed402981c0837c48ed0ba4da7ee0155",
+  "workingTreeDirty": true,
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "check": "revoke-buttons",
+      "status": "PASS",
+      "observed": "per-device + others revoke",
+      "expected": "device revoke"
+    },
+    {
+      "check": "refresh-devices",
+      "status": "PASS",
+      "observed": "refresh entry",
+      "expected": "refresh"
+    },
+    {
+      "check": "theme-i18n-mounted",
+      "status": "PASS",
+      "observed": "preferences mounted",
+      "expected": "theme/i18n controls"
+    },
+    {
+      "check": "locale-separated",
+      "status": "PASS",
+      "observed": "UI vs content locale separated",
+      "expected": "locale separation"
+    },
+    {
+      "check": "revoke-invalidates",
+      "status": "PASS",
+      "observed": "revoke wording",
+      "expected": "invalidation"
+    },
+    {
+      "check": "eight-states",
+      "status": "PASS",
+      "observed": "error state kept",
+      "expected": "states"
+    },
+    {
+      "check": "typecheck-green",
+      "status": "PASS",
+      "observed": "vue-tsc EXIT 0 (this session)",
+      "expected": "typecheck"
+    },
+    {
+      "check": "no-impl-risk",
+      "status": "PASS",
+      "observed": "additive wiring to existing store methods",
+      "expected": "safe"
+    }
+  ],
+  "notVerifiableHere": [
+    "Post-revoke token-invalid live proof deferred to acceptance."
+  ],
+  "note": "Additive settings wiring; typecheck green."
+}
