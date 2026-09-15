@@ -1,0 +1,63 @@
+{
+  "task": "P1R-M6-002",
+  "capturedAt": "2026-09-15T17:46:04.431Z",
+  "sourceCommit": "5fa39d9256355fc5eca76275faa0c9ccbe32487a",
+  "workingTreeDirty": false,
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "check": "retry-dispatched",
+      "status": "PASS",
+      "observed": "retry dispatch + audit",
+      "expected": "retry"
+    },
+    {
+      "check": "dlq-routed",
+      "status": "PASS",
+      "observed": "DLQ routing + event",
+      "expected": "DLQ"
+    },
+    {
+      "check": "manual-recovery",
+      "status": "PASS",
+      "observed": "gated manual recovery + audit",
+      "expected": "recovery"
+    },
+    {
+      "check": "recovery-notice",
+      "status": "PASS",
+      "observed": "safe recovery notice",
+      "expected": "notice"
+    },
+    {
+      "check": "trace-audit",
+      "status": "PASS",
+      "observed": "trace + audit links",
+      "expected": "trace"
+    },
+    {
+      "check": "domain-isolated",
+      "status": "PASS",
+      "observed": "notification-only writes",
+      "expected": "isolation"
+    },
+    {
+      "check": "deduped",
+      "status": "PASS",
+      "observed": "idempotent dispatch",
+      "expected": "dedupe"
+    },
+    {
+      "check": "no-impl-change",
+      "status": "PASS",
+      "observed": "REUSE-VERIFY this round",
+      "expected": "reuse"
+    }
+  ],
+  "notVerifiableHere": [
+    "Channel-failure live run (no rollback of learning/payment) deferred to acceptance."
+  ],
+  "note": "REUSE-VERIFY: read from the committed notification-service tree; no production change."
+}
