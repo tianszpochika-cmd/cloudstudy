@@ -1,0 +1,63 @@
+{
+  "task": "P1R-M6-008",
+  "capturedAt": "2026-09-15T18:06:22.912Z",
+  "sourceCommit": "88991428c7fd9efca39cddada3a2d7a7baa07e58",
+  "workingTreeDirty": false,
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "check": "request-cooling",
+      "status": "PASS",
+      "observed": "request + 168h cooling",
+      "expected": "request/cooling"
+    },
+    {
+      "check": "cancel-guarded",
+      "status": "PASS",
+      "observed": "cooling-only cancel",
+      "expected": "cancel"
+    },
+    {
+      "check": "execute-internal",
+      "status": "PASS",
+      "observed": "service-only execute",
+      "expected": "execute"
+    },
+    {
+      "check": "sessions-revoked",
+      "status": "PASS",
+      "observed": "sessions revoked + account DELETED",
+      "expected": "final state"
+    },
+    {
+      "check": "receipts-recovery",
+      "status": "PASS",
+      "observed": "receipts + recovery views",
+      "expected": "receipts"
+    },
+    {
+      "check": "gateway-routed",
+      "status": "PASS",
+      "observed": "gateway PREFIX route",
+      "expected": "gateway"
+    },
+    {
+      "check": "migration-v15",
+      "status": "PASS",
+      "observed": "V15 deletion table",
+      "expected": "migration"
+    },
+    {
+      "check": "service-builds",
+      "status": "PASS",
+      "observed": "mvn compile EXIT 0 (this session)",
+      "expected": "compiles"
+    }
+  ],
+  "notVerifiableHere": [
+    "Cross-owner anonymization fan-out via workflow deferred to acceptance."
+  ],
+  "note": "IAM deletion lifecycle delivered; fan-out deferred."
+}
