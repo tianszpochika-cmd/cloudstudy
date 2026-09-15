@@ -1235,6 +1235,19 @@
       "actor": "agent:p1r_implementation:deepseek-harness",
       "reason": "Owner route A (test-verified, no production change). Dependency M7-006 DEV_DONE. Five suites 48/48 green plus 8/8 harness PASS; ledger stale wording corrected; live callback run deferred as knownGap.",
       "evidencePath": "evidence/p1r/m7/P1R-M7-007/manifest.json"
+    },
+    {
+      "taskId": "P1R-M7-008",
+      "path": [
+        "PLANNED",
+        "READY",
+        "IN_PROGRESS",
+        "DEV_DONE"
+      ],
+      "recordedAt": "2026-09-15T21:37:00Z",
+      "actor": "agent:p1r_implementation:deepseek-harness",
+      "reason": "Owner route A (REUSE-VERIFY, no production change). Dependencies M7-007 + M3-006 + M5-001 DEV_DONE. Eight entitlement checks pass; live negative run deferred as knownGap.",
+      "evidencePath": "evidence/p1r/m7/P1R-M7-008/manifest.json"
     }
   ]
 }
