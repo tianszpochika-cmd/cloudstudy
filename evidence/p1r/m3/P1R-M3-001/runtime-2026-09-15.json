@@ -1,0 +1,75 @@
+{
+  "task": "P1R-M3-001",
+  "capturedAt": "2026-09-15T15:51:46.421Z",
+  "sourceCommit": "904f642c0f3faac7c787ac6bf43f70951b823161",
+  "workingTreeDirty": false,
+  "result": "PASS",
+  "passed": 10,
+  "total": 10,
+  "checks": [
+    {
+      "check": "view-exists:AdminLoginView.vue",
+      "status": "PASS",
+      "observed": "present",
+      "expected": "present"
+    },
+    {
+      "check": "view-exists:AdminDashboardView.vue",
+      "status": "PASS",
+      "observed": "present",
+      "expected": "present"
+    },
+    {
+      "check": "view-exists:AdminForbiddenView.vue",
+      "status": "PASS",
+      "observed": "present",
+      "expected": "present"
+    },
+    {
+      "check": "view-exists:App.vue",
+      "status": "PASS",
+      "observed": "present",
+      "expected": "present"
+    },
+    {
+      "check": "router-requires-auth-and-permission",
+      "status": "PASS",
+      "observed": "requiresAuth + admin.* permission on domain routes",
+      "expected": "guarded routes"
+    },
+    {
+      "check": "permission-snapshot-from-server",
+      "status": "PASS",
+      "observed": "getPermissions + applySnapshot",
+      "expected": "server snapshot"
+    },
+    {
+      "check": "no-client-role-headers",
+      "status": "PASS",
+      "observed": "forged headers listed and rejected",
+      "expected": "client cannot escalate"
+    },
+    {
+      "check": "eight-ui-states-defined",
+      "status": "PASS",
+      "observed": "loading,empty,error,permission,recovery,offline,success,partial",
+      "expected": "loading,empty,error,permission,recovery,offline,success,partial"
+    },
+    {
+      "check": "forbidden-explains-server-policy",
+      "status": "PASS",
+      "observed": "forbidden view renders permission context",
+      "expected": "permission explanation"
+    },
+    {
+      "check": "menu-filtered-by-permission",
+      "status": "PASS",
+      "observed": "menu filtered by session.can(permission)",
+      "expected": "role navigation"
+    }
+  ],
+  "notVerifiableHere": [
+    "Live browser eight-state run (deep-link/403/empty/error/recovery across editor/reviewer/release/auditor) needs a browser runner and is deferred to M8-007; what is measured is the committed shell, guards and state definitions."
+  ],
+  "note": "Read from the committed admin-web tree."
+}
