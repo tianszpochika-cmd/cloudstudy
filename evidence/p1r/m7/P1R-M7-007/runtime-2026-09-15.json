@@ -1,0 +1,63 @@
+{
+  "task": "P1R-M7-007",
+  "capturedAt": "2026-09-15T18:48:28.816Z",
+  "sourceCommit": "71772ff32aa0388ce1c8da8bc36ce262ba2ca7a2",
+  "workingTreeDirty": false,
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "check": "hmac-tests",
+      "status": "PASS",
+      "observed": "13/13 signature cases",
+      "expected": "verify tests"
+    },
+    {
+      "check": "dedupe-tests",
+      "status": "PASS",
+      "observed": "4/4 dedupe cases",
+      "expected": "dedupe tests"
+    },
+    {
+      "check": "sandbox-tests",
+      "status": "PASS",
+      "observed": "8/8 sandbox cases",
+      "expected": "sandbox tests"
+    },
+    {
+      "check": "gate-tests",
+      "status": "PASS",
+      "observed": "9/9 gate cases",
+      "expected": "gate tests"
+    },
+    {
+      "check": "state-machine",
+      "status": "PASS",
+      "observed": "14/14 state cases",
+      "expected": "order machine"
+    },
+    {
+      "check": "suite-green",
+      "status": "PASS",
+      "observed": "48/48 this session (4+13+8+9+14, 0 fail)",
+      "expected": "green suite"
+    },
+    {
+      "check": "production-off",
+      "status": "PASS",
+      "observed": "production gate present",
+      "expected": "production OFF"
+    },
+    {
+      "check": "no-impl-change",
+      "status": "PASS",
+      "observed": "test-verified this round",
+      "expected": "verified"
+    }
+  ],
+  "notVerifiableHere": [
+    "Out-of-order/amount-conflict live callback run deferred to acceptance."
+  ],
+  "note": "Specialized unit tests verified green this session; ledger wording corrected."
+}
