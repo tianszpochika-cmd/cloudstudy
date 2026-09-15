@@ -1,0 +1,63 @@
+{
+  "task": "P1R-M7-002",
+  "capturedAt": "2026-09-15T18:33:30.513Z",
+  "sourceCommit": "50091e7d7682cfb322c6372d8105de69a6d68973",
+  "workingTreeDirty": false,
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "check": "p0-only-enabled",
+      "status": "PASS",
+      "observed": "SENTENCE_TRAIN P0 on, rest off",
+      "expected": "P0 gate"
+    },
+    {
+      "check": "unknown-rejected",
+      "status": "PASS",
+      "observed": "unknown codes rejected",
+      "expected": "unknown games"
+    },
+    {
+      "check": "disabled-rejected",
+      "status": "PASS",
+      "observed": "disabled games rejected",
+      "expected": "disabled games"
+    },
+    {
+      "check": "registry-not-enable",
+      "status": "PASS",
+      "observed": "registry ≠ enablement",
+      "expected": "separation"
+    },
+    {
+      "check": "lobby-gated",
+      "status": "PASS",
+      "observed": "lobby follows server gate",
+      "expected": "lobby"
+    },
+    {
+      "check": "low-spec-degrade",
+      "status": "PASS",
+      "observed": "Performance static fallback",
+      "expected": "degrade"
+    },
+    {
+      "check": "no-local-answers",
+      "status": "PASS",
+      "observed": "no local answers/scores",
+      "expected": "server判定"
+    },
+    {
+      "check": "no-impl-change",
+      "status": "PASS",
+      "observed": "REUSE-VERIFY this round",
+      "expected": "reuse"
+    }
+  ],
+  "notVerifiableHere": [
+    "Low-spec live degrade run deferred to M8-009."
+  ],
+  "note": "REUSE-VERIFY: read from the committed trees; no production change."
+}
