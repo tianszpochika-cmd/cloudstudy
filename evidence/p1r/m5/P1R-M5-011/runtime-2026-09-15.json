@@ -1,0 +1,63 @@
+{
+  "task": "P1R-M5-011",
+  "capturedAt": "2026-09-15T17:32:16.032Z",
+  "sourceCommit": "8e56cad91535117ae4bcc53894e59994e79c1915",
+  "workingTreeDirty": false,
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "check": "daily-report",
+      "status": "PASS",
+      "observed": "daily endpoint",
+      "expected": "daily"
+    },
+    {
+      "check": "weekly-report",
+      "status": "PASS",
+      "observed": "weekly endpoint",
+      "expected": "weekly"
+    },
+    {
+      "check": "watermark",
+      "status": "PASS",
+      "observed": "calculation version watermark",
+      "expected": "watermark"
+    },
+    {
+      "check": "generated-at",
+      "status": "PASS",
+      "observed": "data watermark time",
+      "expected": "watermark time"
+    },
+    {
+      "check": "idempotent-rebuild",
+      "status": "PASS",
+      "observed": "replay-safe rebuild",
+      "expected": "rebuild"
+    },
+    {
+      "check": "report-page",
+      "status": "PASS",
+      "observed": "version shown",
+      "expected": "report page"
+    },
+    {
+      "check": "sources-traced",
+      "status": "PASS",
+      "observed": "source trace",
+      "expected": "trace"
+    },
+    {
+      "check": "no-impl-change",
+      "status": "PASS",
+      "observed": "REUSE-VERIFY this round",
+      "expected": "reuse"
+    }
+  ],
+  "notVerifiableHere": [
+    "Late-event rebuild and cross-owner reconciliation live runs deferred to acceptance."
+  ],
+  "note": "REUSE-VERIFY: read from the committed trees; no production change."
+}
