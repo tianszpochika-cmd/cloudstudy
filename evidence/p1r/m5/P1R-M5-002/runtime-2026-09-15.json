@@ -1,0 +1,63 @@
+{
+  "task": "P1R-M5-002",
+  "capturedAt": "2026-09-15T17:10:28.744Z",
+  "sourceCommit": "403aa8b3c06c731e4883513001d6db2e0ebd73e0",
+  "workingTreeDirty": false,
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "check": "session-entry",
+      "status": "PASS",
+      "observed": "sessions with idempotency",
+      "expected": "session"
+    },
+    {
+      "check": "checkpoint-entry",
+      "status": "PASS",
+      "observed": "versioned checkpoint + digest",
+      "expected": "checkpoint"
+    },
+    {
+      "check": "attempt-idempotent",
+      "status": "PASS",
+      "observed": "digest-guarded idempotency",
+      "expected": "attempt idempotency"
+    },
+    {
+      "check": "submission-digest",
+      "status": "PASS",
+      "observed": "submission digests",
+      "expected": "digest"
+    },
+    {
+      "check": "owner-db",
+      "status": "PASS",
+      "observed": "owner-scoped writes",
+      "expected": "owner DB"
+    },
+    {
+      "check": "resume-path",
+      "status": "PASS",
+      "observed": "session resume read",
+      "expected": "resume"
+    },
+    {
+      "check": "old-version-kept",
+      "status": "PASS",
+      "observed": "version pins kept",
+      "expected": "old versions"
+    },
+    {
+      "check": "no-impl-change",
+      "status": "PASS",
+      "observed": "REUSE-VERIFY this round",
+      "expected": "reuse"
+    }
+  ],
+  "notVerifiableHere": [
+    "alternativeContentVersionId population from the M5-001 policy and repeat/timeout/out-of-order live duel deferred to acceptance."
+  ],
+  "note": "REUSE-VERIFY: read from the committed assessment-service tree; no production change."
+}
