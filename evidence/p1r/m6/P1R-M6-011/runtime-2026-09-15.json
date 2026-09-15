@@ -1,0 +1,45 @@
+{
+  "task": "P1R-M6-011",
+  "capturedAt": "2026-09-15T18:18:46.228Z",
+  "sourceCommit": "f18563d412fe63ccd099c6c4dc7bd6f9a21458fa",
+  "workingTreeDirty": false,
+  "result": "PASS",
+  "passed": 5,
+  "total": 5,
+  "checks": [
+    {
+      "check": "ledger-chain-finished",
+      "status": "PASS",
+      "observed": "10/10 DEV_DONE",
+      "expected": "M6-001..010 all DEV_DONE"
+    },
+    {
+      "check": "manifests-exist",
+      "status": "PASS",
+      "observed": "10 manifests present",
+      "expected": "10 manifests"
+    },
+    {
+      "check": "manifests-agree-and-pass",
+      "status": "PASS",
+      "observed": "10 agree, all passing",
+      "expected": "agreement"
+    },
+    {
+      "check": "notify-sync-owned",
+      "status": "PASS",
+      "observed": "notify/sync owned",
+      "expected": "notify chain"
+    },
+    {
+      "check": "privacy-owned",
+      "status": "PASS",
+      "observed": "export/delete/telemetry owned",
+      "expected": "privacy chain"
+    }
+  ],
+  "notVerifiableHere": [
+    "Live notify/sync/support/privacy W4 run deferred to M8."
+  ],
+  "note": "Aggregation by reference over the ten committed M6 manifests."
+}
