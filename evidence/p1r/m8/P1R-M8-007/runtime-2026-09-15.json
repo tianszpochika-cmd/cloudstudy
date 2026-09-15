@@ -1,0 +1,63 @@
+{
+  "task": "P1R-M8-007",
+  "capturedAt": "2026-09-15T19:13:46.588Z",
+  "sourceCommit": "67bbe2c42bc28b2921a8b20e51c14cbe2562561a",
+  "workingTreeDirty": false,
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "check": "canonical-routes",
+      "status": "PASS",
+      "observed": "32 learner-web routes",
+      "expected": "canonical routes"
+    },
+    {
+      "check": "responsive",
+      "status": "PASS",
+      "observed": "media queries present",
+      "expected": "responsive"
+    },
+    {
+      "check": "pwa",
+      "status": "PASS",
+      "observed": "manifest + sw",
+      "expected": "PWA install/update"
+    },
+    {
+      "check": "mobile-h5",
+      "status": "PASS",
+      "observed": "mobile manifest + pages",
+      "expected": "mobile H5"
+    },
+    {
+      "check": "no-5th-codebase",
+      "status": "PASS",
+      "observed": "archive boundary, no package",
+      "expected": "no 5th codebase"
+    },
+    {
+      "check": "conditional-compile",
+      "status": "PASS",
+      "observed": "miniapp via conditional compile",
+      "expected": "conditional target"
+    },
+    {
+      "check": "anchors",
+      "status": "PASS",
+      "observed": "W0..W4 closed",
+      "expected": "M8-002..006"
+    },
+    {
+      "check": "no-impl-change",
+      "status": "PASS",
+      "observed": "verification only, no code change",
+      "expected": "verify"
+    }
+  ],
+  "notVerifiableHere": [
+    "Real devices, iOS/Android/iPad runs and miniapp device runs deferred to acceptance."
+  ],
+  "note": "Local matrix segments verified; device runs deferred."
+}
