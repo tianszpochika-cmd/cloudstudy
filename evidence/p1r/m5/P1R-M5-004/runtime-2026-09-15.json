@@ -1,0 +1,63 @@
+{
+  "task": "P1R-M5-004",
+  "capturedAt": "2026-09-15T17:17:19.264Z",
+  "sourceCommit": "4fdf2c29ab024a92a719480fcd824db84fc8aa91",
+  "workingTreeDirty": true,
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "check": "waveform-registered",
+      "status": "PASS",
+      "observed": "POST waveform integrity anchor",
+      "expected": "waveform capability"
+    },
+    {
+      "check": "waveform-served",
+      "status": "PASS",
+      "observed": "GET waveform descriptor",
+      "expected": "peaks served"
+    },
+    {
+      "check": "peaks-extracted",
+      "status": "PASS",
+      "observed": "Web Audio extraction",
+      "expected": "real extraction"
+    },
+    {
+      "check": "peaks-rendered",
+      "status": "PASS",
+      "observed": "extracted bars preferred, fallback kept",
+      "expected": "real rendering"
+    },
+    {
+      "check": "rates-documented",
+      "status": "PASS",
+      "observed": "0.5x–2.0x + preservesPitch",
+      "expected": "rate/pitch"
+    },
+    {
+      "check": "degrade-kept",
+      "status": "PASS",
+      "observed": "fallback + low-config path kept",
+      "expected": "degrade"
+    },
+    {
+      "check": "rights-gate-kept",
+      "status": "PASS",
+      "observed": "rights status surfaced",
+      "expected": "copyright gate"
+    },
+    {
+      "check": "builds-green",
+      "status": "PASS",
+      "observed": "media mvn + web vue-tsc EXIT 0 (this session)",
+      "expected": "builds"
+    }
+  ],
+  "notVerifiableHere": [
+    "Weak-network/low-device live degrade run deferred to M8-009."
+  ],
+  "note": "Server peaks anchor plus real client extraction/rendering; transcode path pre-exists."
+}

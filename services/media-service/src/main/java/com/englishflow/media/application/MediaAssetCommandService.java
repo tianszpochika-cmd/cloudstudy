@@ -215,6 +215,56 @@ public final class MediaAssetCommandService {
         return saved;
     }
 
+    /**
+     * M5-004 waveform peaks: the client extracts peaks with the Web Audio API and
+     * registers them here; the service stores them as a reserved rendition and serves
+     * them to any owner reader. Peaks are display metadata, never audio bytes, and the
+     * rendition checksum covers the canonical peaks payload.
+     */
+    public MediaAsset upsertWaveform(
+            String assetId, java.util.List<Double> peaks, long sampleCount, long durationMs, String extractor,
+            MediaAuthorizationContext context) {
+        MediaAsset asset = require(assetId);
+        MediaAccessPolicy.requireMutation(asset, context);
+        if (peaks == null || peaks.size() < 32 || peaks.size() > 256) {
+            throw MediaOperationException.badRequest("MEDIA_WAVEFORM_PEAKS_INVALID", "peaks must contain 32..256 entries");
+        }
+        for (Double peak : peaks) {
+            if (peak == null || peak < 0.0 || peak > 1.0) {
+                throw MediaOperationException.badRequest("MEDIA_WAVEFORM_PEAKS_INVALID", "peaks must be in [0,1]");
+            }
+        }
+        if (sampleCount < 1 || durationMs < 1) {
+            throw MediaOperationException.badRequest("MEDIA_WAVEFORM_META_INVALID", "sampleCount and durationMs are required");
+        }
+        String safeExtractor = extractor == null || extractor.isBlank() ? "web-audio-v1"
+                : extractor.trim().substring(0, Math.min(extractor.trim().length(), 64));
+        String canonical = peaks.stream().map(p -> String.format(java.util.Locale.ROOT, "%.4f", p))
+                .collect(java.util.stream.Collectors.joining(","));
+        String checksum;
+        try {
+            java.security.MessageDigest digest = java.security.MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest((assetId + "|" + canonical + "|" + sampleCount).getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            StringBuilder hex = new StringBuilder();
+            for (byte b : hash) hex.append(String.format("%02x", b));
+            checksum = hex.toString();
+        } catch (java.security.NoSuchAlgorithmException impossible) {
+            throw new IllegalStateException(impossible);
+        }
+        MediaRendition rendition = new MediaRendition(
+                "waveform:peaks:v1", "application/json", null, checksum, canonical.length(), false,
+                com.englishflow.media.domain.RenditionStatus.READY, clock.instant(), null);
+        MediaAsset saved = repository.save(asset.withRendition(rendition, clock.instant()));
+        publish("media.waveform_updated.v1", saved, context, Map.of(
+                "renditionKey", rendition.renditionKey(),
+                "peakCount", Integer.toString(peaks.size()),
+                "sampleCount", Long.toString(sampleCount),
+                "durationMs", Long.toString(durationMs),
+                "extractor", safeExtractor,
+                "assetVersion", Integer.toString(saved.assetVersion())));
+        return saved;
+    }
+
     public MediaAsset revoke(String assetId, String reason, MediaAuthorizationContext context) {        MediaAsset asset = require(assetId);
         MediaAccessPolicy.requireMutation(asset, context);
         String safeReason = reason == null || reason.isBlank() ? "UNSPECIFIED" : reason.trim();

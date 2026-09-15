@@ -212,6 +212,41 @@ public class MediaController {
                 assetId, MediaDeliveryChannel.RECORDING, null, ttl, context(authentication));
     }
 
+    /**
+     * M5-004 waveform integrity descriptor: which peaks payload the owner registered
+     * for this asset (peaks are extracted client-side with the Web Audio API from the
+     * authorized bytes and verified against this checksum).
+     */
+    @GetMapping("/assets/{assetId}/waveform")
+    public Map<String, Object> waveform(@PathVariable String assetId, Authentication authentication) {
+        MediaAsset asset = readService.describe(assetId, context(authentication));
+        return asset.renditions().stream()
+                .filter(r -> "waveform:peaks:v1".equals(r.renditionKey()))
+                .findFirst()
+                .map(r -> Map.<String, Object>of(
+                        "assetId", asset.assetId(),
+                        "assetVersion", asset.assetVersion(),
+                        "renditionKey", r.renditionKey(),
+                        "peakChecksumSha256", r.checksumSha256(),
+                        "registeredAt", r.updatedAt().toString()))
+                .map(Map::copyOf)
+                .orElse(Map.of("assetId", asset.assetId(), "assetVersion", asset.assetVersion()));
+    }
+
+    /**
+     * M5-004 waveform registration: stores the peaks integrity anchor as a reserved
+     * rendition (peaks bytes never cross this service; see {@code upsertWaveform}).
+     */
+    @PostMapping("/assets/{assetId}/waveform")
+    public Map<String, Object> waveform(
+            @PathVariable String assetId,
+            @Valid @RequestBody WaveformRequest request,
+            Authentication authentication) {
+        return Map.of("asset", commandService.upsertWaveform(
+                assetId, request.peaks(), request.sampleCount(), request.durationMs(),
+                request.extractor(), context(authentication)).safeView());
+    }
+
     @ExceptionHandler(MediaOperationException.class)
     ResponseEntity<ProblemResponse> handleMediaException(MediaOperationException exception) {
         return ResponseEntity.status(exception.status())
@@ -351,6 +386,13 @@ public class MediaController {
     }
 
     public record UploadUrlRequest(Long ttlSeconds) {
+    }
+
+    public record WaveformRequest(
+            @NotNull java.util.List<Double> peaks,
+            @Positive long sampleCount,
+            @Positive long durationMs,
+            String extractor) {
     }
 
     public record ProblemResponse(String code, String message, boolean retryable) {
