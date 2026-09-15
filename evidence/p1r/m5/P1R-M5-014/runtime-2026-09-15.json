@@ -1,0 +1,45 @@
+{
+  "task": "P1R-M5-014",
+  "capturedAt": "2026-09-15T17:40:57.812Z",
+  "sourceCommit": "4c86b2bce56185db6b83a700571e78f5ad682352",
+  "workingTreeDirty": false,
+  "result": "PASS",
+  "passed": 5,
+  "total": 5,
+  "checks": [
+    {
+      "check": "ledger-chain-finished",
+      "status": "PASS",
+      "observed": "13/13 DEV_DONE",
+      "expected": "M5-001..013 all DEV_DONE"
+    },
+    {
+      "check": "manifests-exist",
+      "status": "PASS",
+      "observed": "13 manifests present",
+      "expected": "13 manifests"
+    },
+    {
+      "check": "manifests-agree-and-pass",
+      "status": "PASS",
+      "observed": "13 agree, all passing",
+      "expected": "agreement"
+    },
+    {
+      "check": "six-skills-covered",
+      "status": "PASS",
+      "observed": "six skills → attempt owned",
+      "expected": "skills"
+    },
+    {
+      "check": "loop-closed",
+      "status": "PASS",
+      "observed": "SRS/mistake/mastery/report/events owned",
+      "expected": "closed loop"
+    }
+  ],
+  "notVerifiableHere": [
+    "Live six-skill→SRS→D1/D7→report run deferred to M8 W2."
+  ],
+  "note": "Aggregation by reference over the thirteen committed M5 manifests."
+}
