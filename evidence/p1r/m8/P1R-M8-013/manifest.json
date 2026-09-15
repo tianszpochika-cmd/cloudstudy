@@ -1,0 +1,45 @@
+{
+  "taskId": "P1R-M8-013",
+  "draftOnly": false,
+  "canonicalTaskStatus": "DEV_DONE",
+  "decision": "DEV_DONE",
+  "sourceCommit": "453f1ea60c027f9e576717a4ad96f1959f6cb573",
+  "startedAt": "2026-09-15T22:55:00.000Z",
+  "finishedAt": "2026-09-15T22:57:00.000Z",
+  "environment": {
+    "kind": "deploy-source-evidence",
+    "branch": "dev",
+    "phaseStatus": "D3_DOMAIN",
+    "runtimeStatus": "M8_013_DEPLOY_VERIFIED",
+    "reviewPolicy": "Independent verification deferred by the owner and acceptance testing follows, so this task is DEV_DONE and not ACCEPTED.",
+    "note": "Deploy-source verification + M2 gate re-run; no production change."
+  },
+  "actors": ["root-coordinator", "p1r-implementation"],
+  "sourceIds": ["P1R-M8-013"],
+  "commands": [
+    { "command": "node scripts/audit/p1r-evidence-gate.mjs --milestone M2 --json", "purpose": "M2 non-regression PASS this session" },
+    { "command": "node scripts/runtime/p1r-m8-013-runtime.mjs", "purpose": "deploy source checks" }
+  ],
+  "results": [{ "check": "deploy-8-checks", "status": "PASS", "details": "8/8: kustomize, digest, probes, secrets, policy, gitops, M2 green, anchors" }],
+  "rollbackEvidence": [{ "status": "PASS", "details": "Adds harness + evidence only; deleting them restores prior state." }],
+  "blockers": [],
+  "knownGaps": ["Real OCI registry, K8s staging apply and immutable RC signing deferred to acceptance."],
+  "artifactDigests": [
+    { "path": "scripts/runtime/p1r-m8-013-runtime.mjs", "algorithm": "sha256", "digest": "d723e42c83bea9777593efcdcc24301dc863f2845f3badf299878f42550148d4" },
+    { "path": "evidence/p1r/m8/P1R-M8-013/runtime-2026-09-15.json", "algorithm": "sha256", "digest": "66531f76e5797cab3f7bf067f8ec28060ed4487fef8e99d8aae80899f54f4d40" }
+  ],
+  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "nextSteps": ["Acceptance testing by the owner, which is what DEV_DONE defers."],
+  "statusNote": "Development finished and the evidence is in the repository. Eight checks pass. Not independently verified, which DEV_DONE says.",
+  "provenance": {
+    "originalSourceCommit": "453f1ea60c027f9e576717a4ad96f1959f6cb573",
+    "originalReviewer": "agent:p1r_implementation:deepseek-harness",
+    "currentSourceRevalidationTask": "P1R-M8-013",
+    "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
+    "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
+    "currentSourceRevalidationFinishedAt": "2026-09-15T22:57:00.000Z",
+    "currentSourceRevalidationAuditedImplementationSource": "453f1ea60c027f9e576717a4ad96f1959f6cb573",
+    "currentSourceRevalidationIntegrationCheckpoint": "453f1ea60c027f9e576717a4ad96f1959f6cb573",
+    "currentSourceRevalidationHistory": [{ "taskId": "P1R-M8-013", "sourceCommit": "453f1ea60c027f9e576717a4ad96f1959f6cb573", "auditedImplementationSource": "453f1ea60c027f9e576717a4ad96f1959f6cb573", "integrationCheckpoint": "453f1ea60c027f9e576717a4ad96f1959f6cb573", "reviewer": "agent:p1r_implementation:deepseek-harness", "runtimeStatus": "RUNTIME_VERIFIED", "finishedAt": "2026-09-15T22:57:00.000Z", "details": "Initial DEV_DONE delivery under owner route A." }]
+  }
+}

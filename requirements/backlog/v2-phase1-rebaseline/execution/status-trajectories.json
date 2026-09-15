@@ -1443,6 +1443,19 @@
       "actor": "agent:p1r_implementation:deepseek-harness",
       "reason": "Owner route A (capability verification). Dependencies M8-006 + M8-011 DEV_DONE. Eight DR checks pass; live drill deferred as knownGap.",
       "evidencePath": "evidence/p1r/m8/P1R-M8-012/manifest.json"
+    },
+    {
+      "taskId": "P1R-M8-013",
+      "path": [
+        "PLANNED",
+        "READY",
+        "IN_PROGRESS",
+        "DEV_DONE"
+      ],
+      "recordedAt": "2026-09-15T22:57:00Z",
+      "actor": "agent:p1r_implementation:deepseek-harness",
+      "reason": "Owner route A (source verification + gate re-run). Dependencies M8-010 + M8-011 DEV_DONE. M2 gate re-PASS plus 8/8 checks; real registry/staging deferred as knownGap.",
+      "evidencePath": "evidence/p1r/m8/P1R-M8-013/manifest.json"
     }
   ]
 }
