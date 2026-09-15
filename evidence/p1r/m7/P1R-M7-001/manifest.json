@@ -1,0 +1,52 @@
+{
+  "taskId": "P1R-M7-001",
+  "draftOnly": false,
+  "canonicalTaskStatus": "DEV_DONE",
+  "decision": "DEV_DONE",
+  "sourceCommit": "91ca9fa0a3cb0ceae029241a1600a471281933ec",
+  "startedAt": "2026-09-15T20:55:00.000Z",
+  "finishedAt": "2026-09-15T21:00:00.000Z",
+  "environment": {
+    "kind": "ledger-kafka-evidence",
+    "branch": "dev",
+    "phaseStatus": "D3_DOMAIN",
+    "runtimeStatus": "M7_001_LEDGER_VERIFIED",
+    "reviewPolicy": "Independent verification deferred by the owner: development proceeds to M8 and acceptance testing follows, so this task is DEV_DONE and not ACCEPTED.",
+    "note": "Consumer side delivered; learning relay and HTTP cutover are follow-ups."
+  },
+  "actors": ["root-coordinator", "p1r-implementation"],
+  "sourceIds": ["P1R-M7-001"],
+  "commands": [
+    { "command": "mvn -pl services/gamification-service -am compile -DskipTests", "purpose": "gamification-service builds with consumer" },
+    { "command": "node scripts/runtime/p1r-m7-001-runtime.mjs", "purpose": "ledger consumer checks" }
+  ],
+  "results": [{ "check": "ledger-8-checks", "status": "PASS", "details": "8/8: dep, consumer, defaults, group, settlement, v2, DLQ, compile" }],
+  "rollbackEvidence": [{ "status": "PASS", "details": "Adds Kafka stack plus v2 acceptance; deleting restores HTTP-only tree." }],
+  "blockers": [],
+  "knownGaps": ["Learning-side Outbox relay to platform.learning.v1 and HTTP cutover are follow-ups; HTTP stays legacy-compat."],
+  "artifactDigests": [
+    { "path": "services/gamification-service/pom.xml", "algorithm": "sha256", "digest": "f7b195689de107de1bb007956be8301d1765f0a9de48407f578084a6d11742a2" },
+    { "path": "services/gamification-service/src/main/java/com/englishflow/gamification/domain/TrustedCompletionEvent.java", "algorithm": "sha256", "digest": "e23ac82df4560c0c09dfb9753150a846f620640bd735fc667175ce0863a3b326" },
+    { "path": "services/gamification-service/src/main/java/com/englishflow/gamification/domain/CompletionRuleCatalog.java", "algorithm": "sha256", "digest": "95e4bc074ad9094d9e16139dea6682d1681a44e7e0713d01d99e2ac3a7f75b6f" },
+    { "path": "services/gamification-service/src/main/java/com/englishflow/gamification/config/GamificationConsumerProperties.java", "algorithm": "sha256", "digest": "2a204e7c5e0482e1c6398e14166a97c257e79f2eeb3e0a37140179bfda7fd93a" },
+    { "path": "services/gamification-service/src/main/java/com/englishflow/gamification/config/GamificationConsumerConfiguration.java", "algorithm": "sha256", "digest": "b0befa08c7694c8fcad5f16c438dc0e22565bd5300034a2179e4bfe6db74cb88" },
+    { "path": "services/gamification-service/src/main/java/com/englishflow/gamification/integration/TrustedCompletionKafkaConsumer.java", "algorithm": "sha256", "digest": "1b470e1e4d645fd3ba8aea2abae82725f102a7ed74819d150ec85176b37fe19d" },
+    { "path": "services/gamification-service/src/main/resources/application.yml", "algorithm": "sha256", "digest": "e829e67fd2ed7e95d32cf07f5f7c00b4640f97641487e98bdf4772727f8de5b7" },
+    { "path": "scripts/runtime/p1r-m7-001-runtime.mjs", "algorithm": "sha256", "digest": "b14e7b83d2e9fba45d5282ba78996b035a6393c0b1c3e9b8ba789b4f03464b90" },
+    { "path": "evidence/p1r/m7/P1R-M7-001/runtime-2026-09-15.json", "algorithm": "sha256", "digest": "f48d3fb97494f153de7a8a8ef477fe3421f019e3e063bf4ce169cbeac42cf186" }
+  ],
+  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "nextSteps": ["Acceptance testing by the owner, which is what DEV_DONE defers."],
+  "statusNote": "Development finished and the evidence is in the repository. Eight checks pass with a green compile. Not independently verified, which DEV_DONE says.",
+  "provenance": {
+    "originalSourceCommit": "91ca9fa0a3cb0ceae029241a1600a471281933ec",
+    "originalReviewer": "agent:p1r_implementation:deepseek-harness",
+    "currentSourceRevalidationTask": "P1R-M7-001",
+    "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
+    "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
+    "currentSourceRevalidationFinishedAt": "2026-09-15T21:00:00.000Z",
+    "currentSourceRevalidationAuditedImplementationSource": "91ca9fa0a3cb0ceae029241a1600a471281933ec",
+    "currentSourceRevalidationIntegrationCheckpoint": "91ca9fa0a3cb0ceae029241a1600a471281933ec",
+    "currentSourceRevalidationHistory": [{ "taskId": "P1R-M7-001", "sourceCommit": "91ca9fa0a3cb0ceae029241a1600a471281933ec", "auditedImplementationSource": "91ca9fa0a3cb0ceae029241a1600a471281933ec", "integrationCheckpoint": "91ca9fa0a3cb0ceae029241a1600a471281933ec", "reviewer": "agent:p1r_implementation:deepseek-harness", "runtimeStatus": "RUNTIME_VERIFIED", "finishedAt": "2026-09-15T21:00:00.000Z", "details": "Initial DEV_DONE delivery under owner route A." }]
+  }
+}
