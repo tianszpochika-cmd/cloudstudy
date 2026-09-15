@@ -1,0 +1,63 @@
+{
+  "task": "P1R-M5-006",
+  "capturedAt": "2026-09-15T17:21:43.095Z",
+  "sourceCommit": "09f0e5a1e6136bc52f9ca06b6bec4936e2accd92",
+  "workingTreeDirty": false,
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "check": "hub-page",
+      "status": "PASS",
+      "observed": "practice hub present",
+      "expected": "hub"
+    },
+    {
+      "check": "report-page",
+      "status": "PASS",
+      "observed": "report page present",
+      "expected": "report"
+    },
+    {
+      "check": "report-versioned",
+      "status": "PASS",
+      "observed": "calculation version shown",
+      "expected": "watermark/version"
+    },
+    {
+      "check": "server-snapshots",
+      "status": "PASS",
+      "observed": "server snapshots only",
+      "expected": "no client rewrite"
+    },
+    {
+      "check": "no-answer-leak",
+      "status": "PASS",
+      "observed": "no answer rules in report",
+      "expected": "no leak"
+    },
+    {
+      "check": "checkpoint-api",
+      "status": "PASS",
+      "observed": "checkpoint client calls",
+      "expected": "checkpoint"
+    },
+    {
+      "check": "states-wired",
+      "status": "PASS",
+      "observed": "eight-state panel wired",
+      "expected": "states"
+    },
+    {
+      "check": "no-impl-change",
+      "status": "PASS",
+      "observed": "REUSE-VERIFY this round",
+      "expected": "reuse"
+    }
+  ],
+  "notVerifiableHere": [
+    "Browser→DB→report reconciliation live run deferred to acceptance."
+  ],
+  "note": "REUSE-VERIFY: read from the committed learner-web tree; no production change."
+}
