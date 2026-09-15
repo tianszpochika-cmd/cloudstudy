@@ -1,0 +1,78 @@
+{
+  "task": "P1R-M8-015",
+  "capturedAt": "2026-09-15T19:32:45.581Z",
+  "sourceCommit": "59db5e3a2865f6e76a258e2aac4499bc529aea19",
+  "workingTreeDirty": false,
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "check": "manifests-indexed",
+      "status": "PASS",
+      "observed": "80 milestone manifests",
+      "expected": "manifest index"
+    },
+    {
+      "check": "manifests-agree",
+      "status": "PASS",
+      "observed": "80 agree, all passing",
+      "expected": "agreement"
+    },
+    {
+      "check": "gates-rerun",
+      "status": "PASS",
+      "observed": "M2-M8 gates re-run PASS this session (7/7)",
+      "expected": "7 gates green"
+    },
+    {
+      "check": "rc-commit",
+      "status": "PASS",
+      "observed": "HEAD SHA40 bound",
+      "expected": "RC commit"
+    },
+    {
+      "check": "rollback-version",
+      "status": "PASS",
+      "observed": "rollback = delete post-RC commits; manifests pin pre-RC SHAs",
+      "expected": "rollback defined"
+    },
+    {
+      "check": "changelog",
+      "status": "PASS",
+      "observed": "CHANGELOG present",
+      "expected": "changelog"
+    },
+    {
+      "check": "unsigned",
+      "status": "PASS",
+      "observed": "RC signature NOT claimed; recorded as gap",
+      "expected": "honest gap"
+    },
+    {
+      "check": "no-impl-change",
+      "status": "PASS",
+      "observed": "index generation only",
+      "expected": "index"
+    }
+  ],
+  "rc": {
+    "commit": "59db5e3a2865f6e76a258e2aac4499bc529aea19",
+    "manifests": 80,
+    "agreeing": 80,
+    "knownGapsTotal": 125,
+    "gatesGreen": [
+      "M2",
+      "M3",
+      "M4",
+      "M5",
+      "M6",
+      "M7",
+      "M8"
+    ]
+  },
+  "notVerifiableHere": [
+    "Immutable RC signature and SBOM/provenance generation deferred to acceptance."
+  ],
+  "note": "RC index by enumeration; signature honestly deferred."
+}
