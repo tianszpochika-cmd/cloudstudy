@@ -1,0 +1,63 @@
+{
+  "task": "P1R-M5-005",
+  "capturedAt": "2026-09-15T17:19:23.033Z",
+  "sourceCommit": "828eb5f626f06c6d2fb20ef48afee12bd763d2b9",
+  "workingTreeDirty": false,
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "check": "speaking-page",
+      "status": "PASS",
+      "observed": "present",
+      "expected": "speaking"
+    },
+    {
+      "check": "writing-page",
+      "status": "PASS",
+      "observed": "present",
+      "expected": "writing"
+    },
+    {
+      "check": "local-encrypt",
+      "status": "PASS",
+      "observed": "local encrypt + hash",
+      "expected": "recording vault"
+    },
+    {
+      "check": "no-ai",
+      "status": "PASS",
+      "observed": "no AI scoring stated",
+      "expected": "no AI"
+    },
+    {
+      "check": "permission-states",
+      "status": "PASS",
+      "observed": "mic permission states",
+      "expected": "authorization"
+    },
+    {
+      "check": "rule-feedback",
+      "status": "PASS",
+      "observed": "rule versions",
+      "expected": "rule feedback"
+    },
+    {
+      "check": "offline-draft",
+      "status": "PASS",
+      "observed": "offline draft kept",
+      "expected": "retention/recovery"
+    },
+    {
+      "check": "no-impl-change",
+      "status": "PASS",
+      "observed": "REUSE-VERIFY this round",
+      "expected": "reuse"
+    }
+  ],
+  "notVerifiableHere": [
+    "Upload-failure and retention-policy live runs deferred to acceptance."
+  ],
+  "note": "REUSE-VERIFY: read from the committed learner-web tree; no production change."
+}
