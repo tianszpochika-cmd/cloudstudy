@@ -1,0 +1,63 @@
+{
+  "task": "P1R-M6-005",
+  "capturedAt": "2026-09-15T17:52:21.517Z",
+  "sourceCommit": "a65db60c2266fe036ed79d40c5ebae6263286e2b",
+  "workingTreeDirty": false,
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "check": "ticket-owner",
+      "status": "PASS",
+      "observed": "tenant + create PEP",
+      "expected": "owner"
+    },
+    {
+      "check": "assignment",
+      "status": "PASS",
+      "observed": "assignee tracked",
+      "expected": "assignment"
+    },
+    {
+      "check": "sla",
+      "status": "PASS",
+      "observed": "SLA due + status",
+      "expected": "SLA"
+    },
+    {
+      "check": "state-machine",
+      "status": "PASS",
+      "observed": "guarded transitions",
+      "expected": "state"
+    },
+    {
+      "check": "cross-tenant-denied",
+      "status": "PASS",
+      "observed": "tenant enforced",
+      "expected": "cross-tenant PEP"
+    },
+    {
+      "check": "redaction",
+      "status": "PASS",
+      "observed": "refs redacted",
+      "expected": "retention-safe"
+    },
+    {
+      "check": "deduped",
+      "status": "PASS",
+      "observed": "fingerprint/idempotency",
+      "expected": "dedupe"
+    },
+    {
+      "check": "no-impl-change",
+      "status": "PASS",
+      "observed": "REUSE-VERIFY this round",
+      "expected": "reuse"
+    }
+  ],
+  "notVerifiableHere": [
+    "Learner/admin same-schema live parity run deferred to acceptance."
+  ],
+  "note": "REUSE-VERIFY: read from the committed admin-ops tree; no production change."
+}
