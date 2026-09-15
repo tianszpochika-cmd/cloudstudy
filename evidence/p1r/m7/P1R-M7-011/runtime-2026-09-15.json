@@ -1,0 +1,45 @@
+{
+  "task": "P1R-M7-011",
+  "capturedAt": "2026-09-15T18:58:21.970Z",
+  "sourceCommit": "1c77c681361093fd1894d1716d19fa54848690d9",
+  "workingTreeDirty": false,
+  "result": "PASS",
+  "passed": 5,
+  "total": 5,
+  "checks": [
+    {
+      "check": "ledger-chain-finished",
+      "status": "PASS",
+      "observed": "10/10 DEV_DONE",
+      "expected": "M7-001..010 all DEV_DONE"
+    },
+    {
+      "check": "manifests-exist",
+      "status": "PASS",
+      "observed": "10 manifests present",
+      "expected": "10 manifests"
+    },
+    {
+      "check": "manifests-agree-and-pass",
+      "status": "PASS",
+      "observed": "10 agree, all passing",
+      "expected": "agreement"
+    },
+    {
+      "check": "reward-chain",
+      "status": "PASS",
+      "observed": "trusted→reward owned",
+      "expected": "reward chain"
+    },
+    {
+      "check": "commerce-off",
+      "status": "PASS",
+      "observed": "production OFF held",
+      "expected": "production OFF"
+    }
+  ],
+  "notVerifiableHere": [
+    "Minimal live integration run deferred to M8."
+  ],
+  "note": "Aggregation by reference over the ten committed M7 manifests."
+}
