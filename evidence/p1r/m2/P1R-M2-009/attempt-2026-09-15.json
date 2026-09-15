@@ -1,0 +1,10 @@
+{
+  "task": "P1R-M2-009",
+  "capturedAt": "2026-09-15T00:23:12.684Z",
+  "sourceCommit": "af731c52704f259ebf81f548bccc54ed67b564cd",
+  "result": "PASS",
+  "note": "The harness passes on every check but the task is not finished, because it depends on M0-006 and M0-006 is still in progress. What is recorded here is the measurement: one locked toolchain that all four frontends and the v2 services resolve through, a pipeline that runs on pull requests and pushes and has no job allowed to fail and no step that swallows a failure, and a report uploaded with if: always() so a failing run still leaves one behind.",
+  "notVerifiableHere": [
+    "dev/master refusing a failing push is a repository setting on the host, not a fact in the tree. What is measured here is that the workflow has no job allowed to fail and no step that swallows a failure, which is the half that can live in the repository. The protection rule itself needs a call to the host API."
+  ]
+}

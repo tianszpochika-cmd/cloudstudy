@@ -1,0 +1,105 @@
+{
+  "task": "P1R-M2-009",
+  "capturedAt": "2026-09-15T00:23:12.684Z",
+  "sourceCommit": "af731c52704f259ebf81f548bccc54ed67b564cd",
+  "workingTreeDirty": false,
+  "result": "PASS",
+  "passed": 14,
+  "total": 14,
+  "toolchain": {
+    "node": "20.19.5",
+    "pnpm": "10.19.0",
+    "java": 25,
+    "lockfile": "pnpm-lock.yaml"
+  },
+  "checks": [
+    {
+      "name": "the-workspace-declares-the-apps-and-services",
+      "ok": true,
+      "observed": "apps/*, services/*, packages/*, '@parcel/watcher', core-js, esbuild, vue-demi, '*vue-demi*', '*@vue/devtools-api*'",
+      "expected": "apps/* and services/* are workspace members"
+    },
+    {
+      "name": "pnpm-is-pinned-exactly",
+      "ok": true,
+      "observed": "pnpm@10.19.0",
+      "expected": "pnpm@<version>"
+    },
+    {
+      "name": "node-is-pinned-exactly",
+      "ok": true,
+      "observed": "20.19.5",
+      "expected": "an exact node version"
+    },
+    {
+      "name": "the-pnpm-version-pin-and-the-engine-agree",
+      "ok": true,
+      "observed": "pnpm@10.19.0 vs engines.pnpm 10.19.0",
+      "expected": "the same version in both places"
+    },
+    {
+      "name": "a-lockfile-is-committed",
+      "ok": true,
+      "observed": "pnpm-lock.yaml present",
+      "expected": "pnpm-lock.yaml"
+    },
+    {
+      "name": "no-workspace-member-carries-its-own-lockfile",
+      "ok": true,
+      "observed": "none",
+      "expected": "one lockfile for the workspace"
+    },
+    {
+      "name": "all-four-frontends-are-workspace-packages-with-manifests",
+      "ok": true,
+      "observed": "apps/mobile, apps/learner-web, apps/admin-web, apps/official-site",
+      "expected": "four manifests"
+    },
+    {
+      "name": "every-v2-service-pins-the-same-java-release",
+      "ok": true,
+      "observed": "17 poms pin release 25",
+      "expected": "every v2 service pom pins Java 25; core-api is v1 and pinned at 17"
+    },
+    {
+      "name": "the-pipeline-runs-on-pull-requests-and-pushes",
+      "ok": true,
+      "observed": "triggers read from ci.yml",
+      "expected": "pull_request and push"
+    },
+    {
+      "name": "no-job-is-allowed-to-fail",
+      "ok": true,
+      "observed": "no continue-on-error",
+      "expected": "every job must pass for the pipeline to pass"
+    },
+    {
+      "name": "the-pipeline-has-more-than-one-job",
+      "ok": true,
+      "observed": "pull_request, push, governance, contracts-and-data, frontend, backend-v2, legacy-core-api, supply-chain",
+      "expected": "the gates are separate jobs"
+    },
+    {
+      "name": "no-step-swallows-a-failure",
+      "ok": true,
+      "observed": "none",
+      "expected": "no \"|| true\""
+    },
+    {
+      "name": "the-pipeline-uploads-artifacts",
+      "ok": true,
+      "observed": "|",
+      "expected": "at least one upload-artifact step"
+    },
+    {
+      "name": "a-report-is-uploaded-even-when-the-run-fails",
+      "ok": true,
+      "observed": "1 of 1 upload steps run always",
+      "expected": "at least one upload with if: always()"
+    }
+  ],
+  "notVerifiableHere": [
+    "dev/master refusing a failing push is a repository setting on the host, not a fact in the tree. What is measured here is that the workflow has no job allowed to fail and no step that swallows a failure, which is the half that can live in the repository. The protection rule itself needs a call to the host API."
+  ],
+  "note": "Read from the committed files: the workspace manifest, the root package manifest, the lockfile, the four frontend manifests, every service pom and the workflow."
+}
