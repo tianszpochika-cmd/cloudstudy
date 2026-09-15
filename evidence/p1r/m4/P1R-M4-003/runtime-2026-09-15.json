@@ -1,0 +1,63 @@
+{
+  "task": "P1R-M4-003",
+  "capturedAt": "2026-09-15T16:40:03.201Z",
+  "sourceCommit": "159b23790f2c3067ecf24da795292c75e103e54b",
+  "workingTreeDirty": false,
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "check": "adult-18-plus",
+      "status": "PASS",
+      "observed": "birthYear ≤ currentYear-18",
+      "expected": "18+ gate"
+    },
+    {
+      "check": "reject-logs-out",
+      "status": "PASS",
+      "observed": "reject → logout + login",
+      "expected": "minor reject"
+    },
+    {
+      "check": "consent-checkboxes",
+      "status": "PASS",
+      "observed": "privacy + terms consents",
+      "expected": "consent page"
+    },
+    {
+      "check": "consent-versioned",
+      "status": "PASS",
+      "observed": "versioned consents via /iam/consents",
+      "expected": "consent version"
+    },
+    {
+      "check": "gate-guard",
+      "status": "PASS",
+      "observed": "router blocks until PASSED",
+      "expected": "restricted nav"
+    },
+    {
+      "check": "deep-link-kept",
+      "status": "PASS",
+      "observed": "returnTo preserved",
+      "expected": "deep-link"
+    },
+    {
+      "check": "service-403",
+      "status": "PASS",
+      "observed": "CONSENT_REQUIRED not forbidden",
+      "expected": "service 403"
+    },
+    {
+      "check": "no-impl-change",
+      "status": "PASS",
+      "observed": "REUSE-VERIFY this round",
+      "expected": "reuse"
+    }
+  ],
+  "notVerifiableHere": [
+    "Consent-withdraw live flow and cross-end deep-link run deferred to M8 W0."
+  ],
+  "note": "REUSE-VERIFY: read from the committed learner-web tree; no production change."
+}
