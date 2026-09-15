@@ -1,0 +1,42 @@
+{
+  "taskId": "P1R-M8-007",
+  "draftOnly": false,
+  "canonicalTaskStatus": "DEV_DONE",
+  "decision": "DEV_DONE",
+  "sourceCommit": "be1268d935cab9c2677e3ebca6d3a89f7ca27514",
+  "startedAt": "2026-09-15T22:25:00.000Z",
+  "finishedAt": "2026-09-15T22:27:00.000Z",
+  "environment": {
+    "kind": "matrix-reuse-evidence",
+    "branch": "dev",
+    "phaseStatus": "D3_DOMAIN",
+    "runtimeStatus": "M8_007_MATRIX_VERIFIED",
+    "reviewPolicy": "Independent verification deferred by the owner and acceptance testing follows, so this task is DEV_DONE and not ACCEPTED.",
+    "note": "Local matrix segments verified; device runs deferred."
+  },
+  "actors": ["root-coordinator", "p1r-implementation"],
+  "sourceIds": ["P1R-M8-007"],
+  "commands": [{ "command": "node scripts/runtime/p1r-m8-007-runtime.mjs", "purpose": "four-end matrix checks" }],
+  "results": [{ "check": "matrix-8-checks", "status": "PASS", "details": "8/8: routes, responsive, PWA, mobile, no-5th, conditional, anchors" }],
+  "rollbackEvidence": [{ "status": "PASS", "details": "Adds harness + evidence only; deleting them restores prior state." }],
+  "blockers": [],
+  "knownGaps": ["Real devices, iOS/Android/iPad runs and miniapp device runs deferred to acceptance."],
+  "artifactDigests": [
+    { "path": "scripts/runtime/p1r-m8-007-runtime.mjs", "algorithm": "sha256", "digest": "9a3f8f84f714351a8a2fbd28044dbbe659efb4c925fd20d5ca3955a8eca405a8" },
+    { "path": "evidence/p1r/m8/P1R-M8-007/runtime-2026-09-15.json", "algorithm": "sha256", "digest": "64fc8e6582005f9039239e41fe9d0458dda0e11572819c37b13ccef058a4fd2a" }
+  ],
+  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "nextSteps": ["Acceptance testing by the owner, which is what DEV_DONE defers."],
+  "statusNote": "Development finished and the evidence is in the repository. Eight checks pass. Not independently verified, which DEV_DONE says.",
+  "provenance": {
+    "originalSourceCommit": "be1268d935cab9c2677e3ebca6d3a89f7ca27514",
+    "originalReviewer": "agent:p1r_implementation:deepseek-harness",
+    "currentSourceRevalidationTask": "P1R-M8-007",
+    "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
+    "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
+    "currentSourceRevalidationFinishedAt": "2026-09-15T22:27:00.000Z",
+    "currentSourceRevalidationAuditedImplementationSource": "be1268d935cab9c2677e3ebca6d3a89f7ca27514",
+    "currentSourceRevalidationIntegrationCheckpoint": "be1268d935cab9c2677e3ebca6d3a89f7ca27514",
+    "currentSourceRevalidationHistory": [{ "taskId": "P1R-M8-007", "sourceCommit": "be1268d935cab9c2677e3ebca6d3a89f7ca27514", "auditedImplementationSource": "be1268d935cab9c2677e3ebca6d3a89f7ca27514", "integrationCheckpoint": "be1268d935cab9c2677e3ebca6d3a89f7ca27514", "reviewer": "agent:p1r_implementation:deepseek-harness", "runtimeStatus": "RUNTIME_VERIFIED", "finishedAt": "2026-09-15T22:27:00.000Z", "details": "Initial DEV_DONE delivery under owner route A." }]
+  }
+}
