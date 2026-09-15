@@ -611,6 +611,19 @@
       "actor": "agent:p1r_implementation:deepseek-harness",
       "reason": "Owner route A. Dependencies M2-010 + M3-002 DEV_DONE. Media bench (tasks/retry/subtitles/upload-url) over existing aggregate, no new tables, compile green, 8/8 harness PASS; storage/browser run deferred as knownGap.",
       "evidencePath": "evidence/p1r/m3/P1R-M3-004/manifest.json"
+    },
+    {
+      "taskId": "P1R-M3-005",
+      "path": [
+        "PLANNED",
+        "READY",
+        "IN_PROGRESS",
+        "DEV_DONE"
+      ],
+      "recordedAt": "2026-09-15T16:38:00Z",
+      "actor": "agent:p1r_implementation:deepseek-harness",
+      "reason": "Owner route A (REUSE-VERIFY, no production change). Dependencies M3-002/003/004 DEV_DONE. Eight domain/boundary checks pass; comment/audit replay deferred as knownGap.",
+      "evidencePath": "evidence/p1r/m3/P1R-M3-005/manifest.json"
     }
   ]
 }

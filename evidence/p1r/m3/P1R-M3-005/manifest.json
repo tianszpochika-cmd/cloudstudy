@@ -1,0 +1,51 @@
+{
+  "taskId": "P1R-M3-005",
+  "draftOnly": false,
+  "canonicalTaskStatus": "DEV_DONE",
+  "decision": "DEV_DONE",
+  "sourceCommit": "1f3a67b0a435e0a762aaccb8c2a16d45a27d3e6b",
+  "startedAt": "2026-09-15T16:35:00.000Z",
+  "finishedAt": "2026-09-15T16:38:00.000Z",
+  "environment": {
+    "kind": "dual-review-reuse-evidence",
+    "branch": "dev",
+    "phaseStatus": "D3_DOMAIN",
+    "runtimeStatus": "M3_005_DUAL_REVIEW_VERIFIED",
+    "reviewPolicy": "Independent verification deferred by the owner: development proceeds to M8 and acceptance testing follows, so this task is DEV_DONE and not ACCEPTED.",
+    "note": "REUSE-VERIFY: no production change; domain already enforces L1/L2, four-eyes, dual-distinct, reject-to-draft and publish gate."
+  },
+  "actors": ["root-coordinator", "p1r-implementation"],
+  "sourceIds": ["P1R-M3-005"],
+  "commands": [{ "command": "node scripts/runtime/p1r-m3-005-runtime.mjs", "purpose": "dual-review checks" }],
+  "results": [
+    { "check": "l1-l2-separated", "status": "PASS", "details": "FIRST/FINAL stages with IN_REVIEW gate" },
+    { "check": "self-review-blocked", "status": "PASS", "details": "editor≠reviewer/publisher enforced" },
+    { "check": "dual-distinct-reviewers", "status": "PASS", "details": "first≠final enforced" },
+    { "check": "reject-returns-to-draft", "status": "PASS", "details": "reject clears reviewers → DRAFT" },
+    { "check": "publish-requires-dual", "status": "PASS", "details": "publish gated on dual approval" },
+    { "check": "tenant-scoped", "status": "PASS", "details": "cross-tenant denied" },
+    { "check": "commands-routed", "status": "PASS", "details": "REVIEW_FIRST/FINAL routed" },
+    { "check": "service-builds", "status": "PASS", "details": "compile verified round 4" }
+  ],
+  "rollbackEvidence": [{ "status": "PASS", "details": "Adds harness + evidence only; deleting them restores prior state." }],
+  "blockers": [],
+  "knownGaps": ["Comment/audit trail replay and cross-tenant negative against live MySQL deferred to acceptance."],
+  "artifactDigests": [
+    { "path": "scripts/runtime/p1r-m3-005-runtime.mjs", "algorithm": "sha256", "digest": "90914f2befb4bbbd66e3c1851bf78707a2d6fe2922a752514130f190ffc66c85" },
+    { "path": "evidence/p1r/m3/P1R-M3-005/runtime-2026-09-15.json", "algorithm": "sha256", "digest": "968b8128536c5fe7d1a133108dbdedee78db1681108bf8e952dcd4f2c0b289eb" }
+  ],
+  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "nextSteps": ["Acceptance testing by the owner, which is what DEV_DONE defers."],
+  "statusNote": "Development finished and the evidence is in the repository. Eight reuse checks pass. Not independently verified, which DEV_DONE says.",
+  "provenance": {
+    "originalSourceCommit": "1f3a67b0a435e0a762aaccb8c2a16d45a27d3e6b",
+    "originalReviewer": "agent:p1r_implementation:deepseek-harness",
+    "currentSourceRevalidationTask": "P1R-M3-005",
+    "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
+    "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
+    "currentSourceRevalidationFinishedAt": "2026-09-15T16:38:00.000Z",
+    "currentSourceRevalidationAuditedImplementationSource": "1f3a67b0a435e0a762aaccb8c2a16d45a27d3e6b",
+    "currentSourceRevalidationIntegrationCheckpoint": "1f3a67b0a435e0a762aaccb8c2a16d45a27d3e6b",
+    "currentSourceRevalidationHistory": [{ "taskId": "P1R-M3-005", "sourceCommit": "1f3a67b0a435e0a762aaccb8c2a16d45a27d3e6b", "auditedImplementationSource": "1f3a67b0a435e0a762aaccb8c2a16d45a27d3e6b", "integrationCheckpoint": "1f3a67b0a435e0a762aaccb8c2a16d45a27d3e6b", "reviewer": "agent:p1r_implementation:deepseek-harness", "runtimeStatus": "RUNTIME_VERIFIED", "finishedAt": "2026-09-15T16:38:00.000Z", "details": "Initial DEV_DONE delivery under owner route A (REUSE-VERIFY)." }]
+  }
+}
