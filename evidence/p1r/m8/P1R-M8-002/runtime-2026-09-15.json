@@ -1,0 +1,63 @@
+{
+  "task": "P1R-M8-002",
+  "capturedAt": "2026-09-15T19:04:44.588Z",
+  "sourceCommit": "b5f5d8f0fb72729474e5499da1cea211c0444fd6",
+  "workingTreeDirty": false,
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "check": "w0-gates-green",
+      "status": "PASS",
+      "observed": "M2-010/M3-010/M4-010/M5-014 all DEV_DONE+pass",
+      "expected": "gate agreement"
+    },
+    {
+      "check": "public-entry",
+      "status": "PASS",
+      "observed": "register route in boundary",
+      "expected": "public entry"
+    },
+    {
+      "check": "auth-lifecycle",
+      "status": "PASS",
+      "observed": "account/session schema",
+      "expected": "auth lifecycle"
+    },
+    {
+      "check": "adult-consent",
+      "status": "PASS",
+      "observed": "adult + consent gates",
+      "expected": "adult/consent"
+    },
+    {
+      "check": "content-publish",
+      "status": "PASS",
+      "observed": "publisher-gated publish (B9 + requirePublisher)",
+      "expected": "content publish"
+    },
+    {
+      "check": "env-bound",
+      "status": "PASS",
+      "observed": "M8-001 env bound",
+      "expected": "M8-001"
+    },
+    {
+      "check": "m7-gate",
+      "status": "PASS",
+      "observed": "M7-011 closed",
+      "expected": "M7 gate"
+    },
+    {
+      "check": "no-impl-change",
+      "status": "PASS",
+      "observed": "aggregation by reference, no code change",
+      "expected": "aggregate"
+    }
+  ],
+  "notVerifiableHere": [
+    "Live Browser/API/DB/Event/Audit/Recovery sweep deferred to acceptance."
+  ],
+  "note": "W0 aggregation by reference; no production change."
+}
