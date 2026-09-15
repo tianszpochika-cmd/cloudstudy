@@ -1,0 +1,63 @@
+{
+  "task": "P1R-M4-008",
+  "capturedAt": "2026-09-15T16:56:36.604Z",
+  "sourceCommit": "810b2828ef8c675ed0a0305f8d8ddad6c26b8bb3",
+  "workingTreeDirty": false,
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "check": "v2-adapter-exists",
+      "status": "PASS",
+      "observed": "V2LearningController with first-day + today",
+      "expected": "v2 adapter"
+    },
+    {
+      "check": "v2-jwt-strict",
+      "status": "PASS",
+      "observed": "verified JWT (platform/learner/permissions)",
+      "expected": "strict auth"
+    },
+    {
+      "check": "v2-owner-scoped",
+      "status": "PASS",
+      "observed": "owner-scoped reads",
+      "expected": "owner scope"
+    },
+    {
+      "check": "v2-empty-not-404",
+      "status": "PASS",
+      "observed": "EMPTY plan, not 404",
+      "expected": "empty handling"
+    },
+    {
+      "check": "v2-versions-echoed",
+      "status": "PASS",
+      "observed": "plan/target versions echoed",
+      "expected": "reconciliation"
+    },
+    {
+      "check": "home-states-partial",
+      "status": "PASS",
+      "observed": "loading/empty/error present",
+      "expected": "home states"
+    },
+    {
+      "check": "today-states-partial",
+      "status": "PASS",
+      "observed": "error + empty present",
+      "expected": "today states"
+    },
+    {
+      "check": "service-builds",
+      "status": "PASS",
+      "observed": "mvn compile EXIT 0 (this session)",
+      "expected": "compiles"
+    }
+  ],
+  "notVerifiableHere": [
+    "Full eight-state hardening of Home/Today (locked/offline/permission/recovery) and cross-end live reconciliation deferred to M4-009/M8-007; full LearningPlanService orchestration across learner/content ports stays behind the domain flag."
+  ],
+  "note": "Backend v2 adapter delivered and compiling; frontend states partially present."
+}
