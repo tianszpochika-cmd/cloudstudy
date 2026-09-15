@@ -1027,6 +1027,19 @@
       "actor": "agent:p1r_implementation:deepseek-harness",
       "reason": "Owner route A (REUSE-VERIFY, no production change). Dependencies M6-001 + M2-006 DEV_DONE. Eight retry/DLQ/recovery checks pass; live channel-failure run deferred as knownGap.",
       "evidencePath": "evidence/p1r/m6/P1R-M6-002/manifest.json"
+    },
+    {
+      "taskId": "P1R-M6-003",
+      "path": [
+        "PLANNED",
+        "READY",
+        "IN_PROGRESS",
+        "DEV_DONE"
+      ],
+      "recordedAt": "2026-09-15T20:07:00Z",
+      "actor": "agent:p1r_implementation:deepseek-harness",
+      "reason": "Owner route A (REUSE-VERIFY, no production change). Dependencies M5-008 + M2-006 DEV_DONE. Eight general-sync checks pass; live reconciliation deferred as knownGap.",
+      "evidencePath": "evidence/p1r/m6/P1R-M6-003/manifest.json"
     }
   ]
 }
