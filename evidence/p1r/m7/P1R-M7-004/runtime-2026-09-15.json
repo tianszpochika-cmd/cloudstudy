@@ -1,0 +1,63 @@
+{
+  "task": "P1R-M7-004",
+  "capturedAt": "2026-09-15T18:39:55.809Z",
+  "sourceCommit": "be4bc2551fc0073ff55dc8ab601d10a0bcadfea5",
+  "workingTreeDirty": false,
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "check": "durable-rooms",
+      "status": "PASS",
+      "observed": "rooms + join durable",
+      "expected": "rooms"
+    },
+    {
+      "check": "lease-versioned",
+      "status": "PASS",
+      "observed": "versioned seat leases",
+      "expected": "lease"
+    },
+    {
+      "check": "focus-server-elapsed",
+      "status": "PASS",
+      "observed": "server-side elapsed",
+      "expected": "focus"
+    },
+    {
+      "check": "reconnect-path",
+      "status": "PASS",
+      "observed": "disconnect grace + heartbeat",
+      "expected": "reconnect"
+    },
+    {
+      "check": "preset-only",
+      "status": "PASS",
+      "observed": "no free posting/DMs",
+      "expected": "preset interactions"
+    },
+    {
+      "check": "tenant-owner-scoped",
+      "status": "PASS",
+      "observed": "tenant + owner scoping",
+      "expected": "PEP scope"
+    },
+    {
+      "check": "reports-durable",
+      "status": "PASS",
+      "observed": "reports + appeals durable",
+      "expected": "moderation"
+    },
+    {
+      "check": "local-real-live",
+      "status": "PASS",
+      "observed": "standard stack runs local-real",
+      "expected": "durable path live"
+    }
+  ],
+  "notVerifiableHere": [
+    "v2-verified reconnect run and in-memory SocialService retirement are follow-ups; memory profile stays smoke-only."
+  ],
+  "note": "Durable local-real slice verified; in-memory remains smoke-profile only."
+}
