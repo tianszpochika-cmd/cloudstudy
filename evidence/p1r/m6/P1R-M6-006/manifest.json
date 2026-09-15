@@ -1,0 +1,53 @@
+{
+  "taskId": "P1R-M6-006",
+  "draftOnly": false,
+  "canonicalTaskStatus": "DEV_DONE",
+  "decision": "DEV_DONE",
+  "sourceCommit": "549e370edc158db66c9e5f451383798c9290a763",
+  "startedAt": "2026-09-15T20:20:00.000Z",
+  "finishedAt": "2026-09-15T20:25:00.000Z",
+  "environment": {
+    "kind": "support-pages-evidence",
+    "branch": "dev",
+    "phaseStatus": "D3_DOMAIN",
+    "runtimeStatus": "M6_006_SUPPORT_VERIFIED",
+    "reviewPolicy": "Independent verification deferred by the owner: development proceeds to M8 and acceptance testing follows, so this task is DEV_DONE and not ACCEPTED.",
+    "note": "Learner dual-end support pages added; admin slices kept; dual typechecks green."
+  },
+  "actors": ["root-coordinator", "p1r-implementation"],
+  "sourceIds": ["P1R-M6-006"],
+  "commands": [
+    { "command": "pnpm --filter learner-web exec vue-tsc --noEmit", "purpose": "web typechecks with support page" },
+    { "command": "pnpm --filter mobile exec tsc --noEmit -p tsconfig.json", "purpose": "mobile typechecks with support page" },
+    { "command": "node scripts/runtime/p1r-m6-006-runtime.mjs", "purpose": "support page checks" }
+  ],
+  "results": [{ "check": "support-8-checks", "status": "PASS", "details": "8/8: web api/page/route/nav, privacy, mobile parity, admin kept, typechecks" }],
+  "rollbackEvidence": [{ "status": "PASS", "details": "Adds dual-end pages plus route/nav entries; deleting them restores admin-only support." }],
+  "blockers": [],
+  "knownGaps": ["SLA/attachment-limit/cross-user live browser proofs deferred to acceptance."],
+  "artifactDigests": [
+    { "path": "apps/learner-web/src/api/support.ts", "algorithm": "sha256", "digest": "9f91072412c629684cd63686c701df7699aecb631e71525ccf7ed88bc2d93a81" },
+    { "path": "apps/learner-web/src/pages/SupportPage.vue", "algorithm": "sha256", "digest": "ba4cce8b1722dbea99a84b8ec23dae0daa916aaddc1b3a34070e922bd3d4776a" },
+    { "path": "apps/learner-web/src/router/index.ts", "algorithm": "sha256", "digest": "4889acfc93e971ff9a8d9625d4e853aa7b0113a4c20a0b8c1d0a2f954717a0ad" },
+    { "path": "apps/learner-web/src/layouts/AppShell.vue", "algorithm": "sha256", "digest": "916fdf99040baf62a440f34c6d18772a222f93b801ebc3a208198cbe758b1b1c" },
+    { "path": "apps/mobile/src/api/support.ts", "algorithm": "sha256", "digest": "35990393290172de39426308cb1dd6bfa6a6969fe9ae6aed02e51415126f6391" },
+    { "path": "apps/mobile/src/pages/support/support.vue", "algorithm": "sha256", "digest": "4016973b7c5a4fa6acaecc8a3db4651d0ebfffb916438ec562bc1890de2381c9" },
+    { "path": "apps/mobile/src/pages.json", "algorithm": "sha256", "digest": "3c745dc9e6f8ba3427e4a7ec313b5a5e0f1b4f7832bd3463d9624fd57bb5cfae" },
+    { "path": "scripts/runtime/p1r-m6-006-runtime.mjs", "algorithm": "sha256", "digest": "a0aae44a35a68c7046aa2b20a745ff4127616f175e2a5d9c38c879e3ac6ebd9d" },
+    { "path": "evidence/p1r/m6/P1R-M6-006/runtime-2026-09-15.json", "algorithm": "sha256", "digest": "d34cdec778f9159154d1ce746e9bc6b189af4583ce11d5ff307115c999" }
+  ],
+  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "nextSteps": ["Acceptance testing by the owner, which is what DEV_DONE defers."],
+  "statusNote": "Development finished and the evidence is in the repository. Eight checks pass with dual typechecks green. Not independently verified, which DEV_DONE says.",
+  "provenance": {
+    "originalSourceCommit": "549e370edc158db66c9e5f451383798c9290a763",
+    "originalReviewer": "agent:p1r_implementation:deepseek-harness",
+    "currentSourceRevalidationTask": "P1R-M6-006",
+    "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
+    "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
+    "currentSourceRevalidationFinishedAt": "2026-09-15T20:25:00.000Z",
+    "currentSourceRevalidationAuditedImplementationSource": "549e370edc158db66c9e5f451383798c9290a763",
+    "currentSourceRevalidationIntegrationCheckpoint": "549e370edc158db66c9e5f451383798c9290a763",
+    "currentSourceRevalidationHistory": [{ "taskId": "P1R-M6-006", "sourceCommit": "549e370edc158db66c9e5f451383798c9290a763", "auditedImplementationSource": "549e370edc158db66c9e5f451383798c9290a763", "integrationCheckpoint": "549e370edc158db66c9e5f451383798c9290a763", "reviewer": "agent:p1r_implementation:deepseek-harness", "runtimeStatus": "RUNTIME_VERIFIED", "finishedAt": "2026-09-15T20:25:00.000Z", "details": "Initial DEV_DONE delivery under owner route A." }]
+  }
+}
