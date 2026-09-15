@@ -1,0 +1,76 @@
+{
+  "task": "P1R-M2-010",
+  "capturedAt": "2026-09-15T15:44:19.813Z",
+  "sourceCommit": "e265af2f6960527b5de7c2bdb2a6d1e4fda6e1d1",
+  "workingTreeDirty": false,
+  "result": "PASS",
+  "passed": 10,
+  "total": 10,
+  "checks": [
+    {
+      "check": "ledger-dependency-chain-finished",
+      "status": "PASS",
+      "observed": "P1R-M2-001=ACCEPTED, P1R-M2-002=ACCEPTED, P1R-M2-003=ACCEPTED, P1R-M2-004=DEV_DONE, P1R-M2-005=DEV_DONE, P1R-M2-006=DEV_DONE, P1R-M2-007=DEV_DONE, P1R-M2-008=DEV_DONE, P1R-M2-009=DEV_DONE",
+      "expected": "M2-001..009 all ACCEPTED or DEV_DONE"
+    },
+    {
+      "check": "predecessor-manifests-exist",
+      "status": "PASS",
+      "observed": "9 manifests present",
+      "expected": "9 canonical manifests"
+    },
+    {
+      "check": "predecessor-decisions-are-final-for-development",
+      "status": "PASS",
+      "observed": "9 manifests agree with ledger",
+      "expected": "manifest canonicalTaskStatus matches ledger"
+    },
+    {
+      "check": "gateway-iam-pep-spine-referenced",
+      "status": "PASS",
+      "observed": "P1R-M2-001:7 results, 0 failing, P1R-M2-002:9 results, 0 failing, P1R-M2-003:8 results, 0 failing",
+      "expected": "M2-001/002/003 results all passing"
+    },
+    {
+      "check": "owner-db-outbox-kafka-spine-referenced",
+      "status": "PASS",
+      "observed": "P1R-M2-004:12 results, 0 failing, P1R-M2-005:11 results, 0 failing",
+      "expected": "M2-004/005 results all passing"
+    },
+    {
+      "check": "saga-audit-correlation-spine-referenced",
+      "status": "PASS",
+      "observed": "P1R-M2-006:7 results, 0 failing, P1R-M2-007:10 results, 0 failing",
+      "expected": "M2-006/007 results all passing"
+    },
+    {
+      "check": "stack-and-ci-spine-referenced",
+      "status": "PASS",
+      "observed": "P1R-M2-008:8 results, 0 failing, P1R-M2-009:14 results, 0 failing",
+      "expected": "M2-008 (8) / M2-009 (14) results all passing"
+    },
+    {
+      "check": "success-chain-request-trace-audit-documented",
+      "status": "PASS",
+      "observed": "M2-007 correlation + M2-006 audit-ingest manifests present",
+      "expected": "requestId→traceId→auditId links owned by M2-006/007"
+    },
+    {
+      "check": "fault-chain-direct-and-broker-documented",
+      "status": "PASS",
+      "observed": "M2-001 fault + M2-005 DLQ/replay + M2-008 direct-refusal manifests present",
+      "expected": "direct-connect negative + broker fault + replay dedupe owned by M2-001/005/008"
+    },
+    {
+      "check": "staging-reverification-reserved-for-m8-013",
+      "status": "PASS",
+      "observed": "P1R-M8-013=PLANNED",
+      "expected": "M8-013 still PLANNED so staging re-verification is not claimed here"
+    }
+  ],
+  "notVerifiableHere": [
+    "A live end-to-end run (one requestId carried Gateway→IAM→PEP→owner DB→Outbox/Kafka→consumer→durable audit, plus a fault chain) needs the running machine with all services up. This harness aggregates the committed evidence of the nine links instead of re-running the stack.",
+    "Staging re-verification (M2-008 NetworkPolicy isolation + M2-010 audit correlation on a cluster) is reserved for P1R-M8-013 and is not claimed here."
+  ],
+  "note": "Read from the committed ledger and the nine canonical manifests: the aggregation duty is closed by reference, the live run is deferred to acceptance."
+}
