@@ -1,0 +1,56 @@
+{
+  "taskId": "P1R-M3-008",
+  "draftOnly": false,
+  "canonicalTaskStatus": "DEV_DONE",
+  "decision": "DEV_DONE",
+  "sourceCommit": "9cfb12cc314d9cfb7346bbd88ca4a49868b68cfd",
+  "startedAt": "2026-09-15T17:00:00.000Z",
+  "finishedAt": "2026-09-15T17:10:00.000Z",
+  "environment": {
+    "kind": "official-site-static-evidence",
+    "branch": "dev",
+    "phaseStatus": "D3_DOMAIN",
+    "runtimeStatus": "M3_008_OFFICIAL_VERIFIED",
+    "reviewPolicy": "Independent verification deferred by the owner: development proceeds to M8 and acceptance testing follows, so this task is DEV_DONE and not ACCEPTED.",
+    "note": "Four static public pages plus nav/sitemap; nuxt build green; browser matrix deferred to M8-007."
+  },
+  "actors": ["root-coordinator", "p1r-implementation"],
+  "sourceIds": ["P1R-M3-008"],
+  "commands": [
+    { "command": "pnpm --filter official-site exec nuxt build", "purpose": "official-site builds with four new pages" },
+    { "command": "node scripts/runtime/p1r-m3-008-runtime.mjs", "purpose": "four-page presence/SEO/no-token/nav checks" }
+  ],
+  "results": [
+    { "check": "four-pages-present", "status": "PASS", "details": "privacy/terms/minors/status present" },
+    { "check": "seo-wired", "status": "PASS", "details": "useOfficialSeo on all four" },
+    { "check": "no-token-handling", "status": "PASS", "details": "no token handling in public pages" },
+    { "check": "nav-and-sitemap", "status": "PASS", "details": "footer + publicRoutes extended" },
+    { "check": "site-builds", "status": "PASS", "details": "nuxt build complete" }
+  ],
+  "rollbackEvidence": [{ "status": "PASS", "details": "Adds four pages plus nav/sitemap lines; deleting them restores prior state." }],
+  "blockers": [],
+  "knownGaps": ["Live browser matrix (responsive/deep-link/install) deferred to M8-007; nuxt typecheck lacks tsconfig (pre-existing, not introduced here)."],
+  "artifactDigests": [
+    { "path": "apps/official-site/pages/privacy.vue", "algorithm": "sha256", "digest": "a1d2e37fa8f9315712dc78ddcf0f5a9c3483cbf115dd29e8ee1a3d17a63f35ac" },
+    { "path": "apps/official-site/pages/terms.vue", "algorithm": "sha256", "digest": "deeb784ff45e9bb69e496ab8510f582e210dd8d518ba3590ca47aaf46ddecbbb" },
+    { "path": "apps/official-site/pages/minors.vue", "algorithm": "sha256", "digest": "b2bcf27b1aab0cbe2af2da4a0c8dfe3ef8d839757f3f425c80968f4281d35bbf" },
+    { "path": "apps/official-site/pages/status.vue", "algorithm": "sha256", "digest": "21f5070e3d32821aabc389518e34528179b413f0dc8b96a3cd14c19b30025b49" },
+    { "path": "apps/official-site/utils/site-content.mjs", "algorithm": "sha256", "digest": "5f7c9f3d27f9cd23aa3f10591317fc4c1a41a36391556ca70e4e4d0a3e72bec3" },
+    { "path": "scripts/runtime/p1r-m3-008-runtime.mjs", "algorithm": "sha256", "digest": "f605184de99c4746a6052da518326284e40bef657666ee22aa87569ee353a7f9" },
+    { "path": "evidence/p1r/m3/P1R-M3-008/runtime-2026-09-15.json", "algorithm": "sha256", "digest": "e6ad0a193229bca09cdca314191bc9ba4966b9a9b0e47c791a6079f69b455ee3" }
+  ],
+  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "nextSteps": ["Acceptance testing by the owner, which is what DEV_DONE defers."],
+  "statusNote": "Development finished and the evidence is in the repository. Fifteen checks pass with a green build. Not independently verified, which DEV_DONE says.",
+  "provenance": {
+    "originalSourceCommit": "9cfb12cc314d9cfb7346bbd88ca4a49868b68cfd",
+    "originalReviewer": "agent:p1r_implementation:deepseek-harness",
+    "currentSourceRevalidationTask": "P1R-M3-008",
+    "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
+    "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
+    "currentSourceRevalidationFinishedAt": "2026-09-15T17:10:00.000Z",
+    "currentSourceRevalidationAuditedImplementationSource": "9cfb12cc314d9cfb7346bbd88ca4a49868b68cfd",
+    "currentSourceRevalidationIntegrationCheckpoint": "9cfb12cc314d9cfb7346bbd88ca4a49868b68cfd",
+    "currentSourceRevalidationHistory": [{ "taskId": "P1R-M3-008", "sourceCommit": "9cfb12cc314d9cfb7346bbd88ca4a49868b68cfd", "auditedImplementationSource": "9cfb12cc314d9cfb7346bbd88ca4a49868b68cfd", "integrationCheckpoint": "9cfb12cc314d9cfb7346bbd88ca4a49868b68cfd", "reviewer": "agent:p1r_implementation:deepseek-harness", "runtimeStatus": "RUNTIME_VERIFIED", "finishedAt": "2026-09-15T17:10:00.000Z", "details": "Initial DEV_DONE delivery under owner route A." }]
+  }
+}

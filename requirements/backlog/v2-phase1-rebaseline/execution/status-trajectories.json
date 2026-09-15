@@ -650,6 +650,19 @@
       "actor": "agent:p1r_implementation:deepseek-harness",
       "reason": "Owner route A (REUSE-VERIFY, no production change). Dependency M3-006 DEV_DONE. Eight takedown/rollback checks pass; emergency-reason audit and learner recovery copy deferred as knownGap.",
       "evidencePath": "evidence/p1r/m3/P1R-M3-007/manifest.json"
+    },
+    {
+      "taskId": "P1R-M3-008",
+      "path": [
+        "PLANNED",
+        "READY",
+        "IN_PROGRESS",
+        "DEV_DONE"
+      ],
+      "recordedAt": "2026-09-15T17:10:00Z",
+      "actor": "agent:p1r_implementation:deepseek-harness",
+      "reason": "Owner route A. Dependency M3-006 DEV_DONE. Four static pages plus nav/sitemap delivered, nuxt build green, 15/15 harness PASS; browser matrix deferred to M8-007 as knownGap.",
+      "evidencePath": "evidence/p1r/m3/P1R-M3-008/manifest.json"
     }
   ]
 }
