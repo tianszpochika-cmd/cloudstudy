@@ -3,9 +3,9 @@
   "draftOnly": false,
   "canonicalTaskStatus": "DEV_DONE",
   "decision": "DEV_DONE",
-  "sourceCommit": "db8ecc69f9d22b1865371f7c65f4217daf5da624",
+  "sourceCommit": "9f23f12b5add3b38d6707642a6f07389718ff8aa",
   "startedAt": "2026-09-15T17:25:00.000Z",
-  "finishedAt": "2026-09-15T17:35:00.000Z",
+  "finishedAt": "2026-09-15T19:30:25.798Z",
   "environment": {
     "kind": "entry-auth-dual-evidence",
     "branch": "dev",
@@ -14,35 +14,110 @@
     "reviewPolicy": "Independent verification deferred by the owner: development proceeds to M8 and acceptance testing follows, so this task is DEV_DONE and not ACCEPTED.",
     "note": "Web + mobile register/reset with anti-enumeration, rate-limit surfacing and returnTo; dual typechecks green; live browser run deferred to M8."
   },
-  "actors": ["root-coordinator", "p1r-implementation"],
-  "sourceIds": ["P1R-M4-001"],
+  "actors": [
+    "root-coordinator",
+    "p1r-implementation"
+  ],
+  "sourceIds": [
+    "P1R-M4-001"
+  ],
   "commands": [
-    { "command": "pnpm --filter learner-web exec vue-tsc --noEmit", "purpose": "web typechecks with new pages" },
-    { "command": "pnpm --filter mobile exec tsc --noEmit -p tsconfig.json", "purpose": "mobile typechecks with new pages" },
-    { "command": "node scripts/runtime/p1r-m4-001-runtime.mjs", "purpose": "entry checks" }
+    {
+      "command": "pnpm --filter learner-web exec vue-tsc --noEmit",
+      "purpose": "web typechecks with new pages"
+    },
+    {
+      "command": "pnpm --filter mobile exec tsc --noEmit -p tsconfig.json",
+      "purpose": "mobile typechecks with new pages"
+    },
+    {
+      "command": "node scripts/runtime/p1r-m4-001-runtime.mjs",
+      "purpose": "entry checks"
+    }
   ],
   "results": [
-    { "check": "entry-13-checks", "status": "PASS", "details": "13/13: adapters, anti-enumeration, pages, routes, returnTo, parity, typechecks" }
+    {
+      "check": "entry-13-checks",
+      "status": "PASS",
+      "details": "13/13: adapters, anti-enumeration, pages, routes, returnTo, parity, typechecks"
+    }
   ],
-  "rollbackEvidence": [{ "status": "PASS", "details": "Adds adapters methods, store methods, four pages and route entries; reverting restores prior login-only entry." }],
+  "rollbackEvidence": [
+    {
+      "status": "PASS",
+      "details": "Adds adapters methods, store methods, four pages and route entries; reverting restores prior login-only entry."
+    }
+  ],
   "blockers": [],
-  "knownGaps": ["Live browser dual-end run (register→login→reset→returnTo with 401/429/lockout) deferred to M8 W0/W1; new-page i18n keys use literals, backfill deferred to M8-008."],
+  "knownGaps": [
+    "Live browser dual-end run (register→login→reset→returnTo with 401/429/lockout) deferred to M8 W0/W1; new-page i18n keys use literals, backfill deferred to M8-008."
+  ],
   "artifactDigests": [
-    { "path": "apps/learner-web/src/auth/gateway-auth.ts", "algorithm": "sha256", "digest": "fef1afa70bc66b9d9e053f93b68543375b6b82c749a48d44ea55de38ef4346c8" },
-    { "path": "apps/learner-web/src/stores/session.ts", "algorithm": "sha256", "digest": "a9875cb6da491a9175e757184034db3f226cdc2d94e6c4d5e87299b0b353d12b" },
-    { "path": "apps/learner-web/src/pages/RegisterPage.vue", "algorithm": "sha256", "digest": "b8e0c6cedcd3107f95498b90dc55b967a7a8650b3209d3d7d8b7cf8dbb40e514" },
-    { "path": "apps/learner-web/src/pages/PasswordResetPage.vue", "algorithm": "sha256", "digest": "cd6e01b7d73262816ae2ebbfe628439076334a70bd08f17a539d3136f0f93235" },
-    { "path": "apps/learner-web/src/router/index.ts", "algorithm": "sha256", "digest": "25bf6f62d0074029d75c1b2846ccd2b735aebda06db8e2a4ca5e4427699a26c2" },
-    { "path": "apps/mobile/src/auth/gateway-auth.ts", "algorithm": "sha256", "digest": "cf572cd396a200c4da4170be9de65d13ea9032d170488081ab1517f36e4315ab" },
-    { "path": "apps/mobile/src/stores/session.ts", "algorithm": "sha256", "digest": "2654b2698042f93e23ec8b5714658403321cd656bfed02ca66b44f6c36844be2" },
-    { "path": "apps/mobile/src/pages/register/register.vue", "algorithm": "sha256", "digest": "c56678c593ef96e7d2dfa4f64f93f312c2ad9388aed5fb031648a2e4f098a21c" },
-    { "path": "apps/mobile/src/pages/reset-password/reset-password.vue", "algorithm": "sha256", "digest": "373f06ffd1886c106a3d001bee7e9a9976615471602e5b678bd931717ac3404b" },
-    { "path": "apps/mobile/src/pages.json", "algorithm": "sha256", "digest": "6c1cce2833d09958b90da48f418e40d641c9d91599c113a4a20726b1240330d2" },
-    { "path": "scripts/runtime/p1r-m4-001-runtime.mjs", "algorithm": "sha256", "digest": "c5bfce2d2e078e16893b268249cb1eaeb61394024c54b61347d91fba4034dc5c" },
-    { "path": "evidence/p1r/m4/P1R-M4-001/runtime-2026-09-15.json", "algorithm": "sha256", "digest": "7819fdea4e7b3f124e04c6072739af7d86f45f498c1ce37579a7e12117c8079e" }
+    {
+      "path": "apps/learner-web/src/auth/gateway-auth.ts",
+      "algorithm": "sha256",
+      "digest": "fef1afa70bc66b9d9e053f93b68543375b6b82c749a48d44ea55de38ef4346c8"
+    },
+    {
+      "path": "apps/learner-web/src/stores/session.ts",
+      "algorithm": "sha256",
+      "digest": "a9875cb6da491a9175e757184034db3f226cdc2d94e6c4d5e87299b0b353d12b"
+    },
+    {
+      "path": "apps/learner-web/src/pages/RegisterPage.vue",
+      "algorithm": "sha256",
+      "digest": "b8e0c6cedcd3107f95498b90dc55b967a7a8650b3209d3d7d8b7cf8dbb40e514"
+    },
+    {
+      "path": "apps/learner-web/src/pages/PasswordResetPage.vue",
+      "algorithm": "sha256",
+      "digest": "cd6e01b7d73262816ae2ebbfe628439076334a70bd08f17a539d3136f0f93235"
+    },
+    {
+      "path": "apps/learner-web/src/router/index.ts",
+      "algorithm": "sha256",
+      "digest": "4889acfc93e971ff9a8d9625d4e853aa7b0113a4c20a0b8c1d0a2f954717a0ad"
+    },
+    {
+      "path": "apps/mobile/src/auth/gateway-auth.ts",
+      "algorithm": "sha256",
+      "digest": "cf572cd396a200c4da4170be9de65d13ea9032d170488081ab1517f36e4315ab"
+    },
+    {
+      "path": "apps/mobile/src/stores/session.ts",
+      "algorithm": "sha256",
+      "digest": "2654b2698042f93e23ec8b5714658403321cd656bfed02ca66b44f6c36844be2"
+    },
+    {
+      "path": "apps/mobile/src/pages/register/register.vue",
+      "algorithm": "sha256",
+      "digest": "c56678c593ef96e7d2dfa4f64f93f312c2ad9388aed5fb031648a2e4f098a21c"
+    },
+    {
+      "path": "apps/mobile/src/pages/reset-password/reset-password.vue",
+      "algorithm": "sha256",
+      "digest": "373f06ffd1886c106a3d001bee7e9a9976615471602e5b678bd931717ac3404b"
+    },
+    {
+      "path": "apps/mobile/src/pages.json",
+      "algorithm": "sha256",
+      "digest": "3c745dc9e6f8ba3427e4a7ec313b5a5e0f1b4f7832bd3463d9624fd57bb5cfae"
+    },
+    {
+      "path": "scripts/runtime/p1r-m4-001-runtime.mjs",
+      "algorithm": "sha256",
+      "digest": "c5bfce2d2e078e16893b268249cb1eaeb61394024c54b61347d91fba4034dc5c"
+    },
+    {
+      "path": "evidence/p1r/m4/P1R-M4-001/runtime-2026-09-15.json",
+      "algorithm": "sha256",
+      "digest": "7819fdea4e7b3f124e04c6072739af7d86f45f498c1ce37579a7e12117c8079e"
+    }
   ],
   "reviewer": "agent:p1r_implementation:deepseek-harness",
-  "nextSteps": ["Acceptance testing by the owner, which is what DEV_DONE defers."],
+  "nextSteps": [
+    "Acceptance testing by the owner, which is what DEV_DONE defers."
+  ],
   "statusNote": "Development finished and the evidence is in the repository. Thirteen checks pass with dual typechecks green. Not independently verified, which DEV_DONE says.",
   "provenance": {
     "originalSourceCommit": "db8ecc69f9d22b1865371f7c65f4217daf5da624",
@@ -50,9 +125,30 @@
     "currentSourceRevalidationTask": "P1R-M4-001",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-15T17:35:00.000Z",
-    "currentSourceRevalidationAuditedImplementationSource": "db8ecc69f9d22b1865371f7c65f4217daf5da624",
-    "currentSourceRevalidationIntegrationCheckpoint": "db8ecc69f9d22b1865371f7c65f4217daf5da624",
-    "currentSourceRevalidationHistory": [{ "taskId": "P1R-M4-001", "sourceCommit": "db8ecc69f9d22b1865371f7c65f4217daf5da624", "auditedImplementationSource": "db8ecc69f9d22b1865371f7c65f4217daf5da624", "integrationCheckpoint": "db8ecc69f9d22b1865371f7c65f4217daf5da624", "reviewer": "agent:p1r_implementation:deepseek-harness", "runtimeStatus": "RUNTIME_VERIFIED", "finishedAt": "2026-09-15T17:35:00.000Z", "details": "Initial DEV_DONE delivery under owner route A." }]
+    "currentSourceRevalidationFinishedAt": "2026-09-15T19:30:25.798Z",
+    "currentSourceRevalidationAuditedImplementationSource": "9f23f12b5add3b38d6707642a6f07389718ff8aa",
+    "currentSourceRevalidationIntegrationCheckpoint": "9f23f12b5add3b38d6707642a6f07389718ff8aa",
+    "currentSourceRevalidationHistory": [
+      {
+        "taskId": "P1R-M4-001",
+        "sourceCommit": "db8ecc69f9d22b1865371f7c65f4217daf5da624",
+        "auditedImplementationSource": "db8ecc69f9d22b1865371f7c65f4217daf5da624",
+        "integrationCheckpoint": "db8ecc69f9d22b1865371f7c65f4217daf5da624",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-15T17:35:00.000Z",
+        "details": "Initial DEV_DONE delivery under owner route A."
+      },
+      {
+        "taskId": "P1R-M4-001",
+        "sourceCommit": "9f23f12b5add3b38d6707642a6f07389718ff8aa",
+        "auditedImplementationSource": "9f23f12b5add3b38d6707642a6f07389718ff8aa",
+        "integrationCheckpoint": "9f23f12b5add3b38d6707642a6f07389718ff8aa",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-15T19:30:25.798Z",
+        "details": "M8-015 RC re-run: M6-006 additive drift re-verified, harness 13/13 PASS at HEAD."
+      }
+    ]
   }
 }
