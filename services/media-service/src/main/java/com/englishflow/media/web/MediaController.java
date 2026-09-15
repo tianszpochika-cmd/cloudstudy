@@ -148,6 +148,70 @@ public class MediaController {
         return Map.of("asset", commandService.revoke(assetId, request.reason(), context(authentication)).safeView());
     }
 
+    /**
+     * M3-004 processing-task workbench view: transcoding state plus every rendition
+     * (including subtitle tracks) from the committed aggregate. Read-only.
+     */
+    @GetMapping("/assets/{assetId}/tasks")
+    public Map<String, Object> tasks(@PathVariable String assetId, Authentication authentication) {
+        MediaAsset asset = readService.describe(assetId, context(authentication));
+        return Map.of("tasks", Map.of(
+                "assetId", asset.assetId(),
+                "assetVersion", asset.assetVersion(),
+                "status", asset.status().name(),
+                "transcodingStatus", asset.transcodingStatus().name(),
+                "renditions", asset.renditions().stream().map(r -> Map.of(
+                        "renditionKey", r.renditionKey(),
+                        "mimeType", r.mimeType(),
+                        "status", r.status().name(),
+                        "sizeBytes", r.sizeBytes(),
+                        "updatedAt", r.updatedAt().toString())).toList()));
+    }
+
+    /**
+     * M3-004 failure retry: FAILED transcoding/renditions return to QUEUED.
+     * Idempotent in effect (nothing FAILED → 409 MEDIA_NOTHING_TO_RETRY).
+     */
+    @PostMapping("/assets/{assetId}/retry")
+    public Map<String, Object> retry(
+            @PathVariable String assetId,
+            @RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey,
+            Authentication authentication) {
+        if (idempotencyKey == null || idempotencyKey.isBlank()) {
+            throw MediaOperationException.badRequest("MEDIA_IDEMPOTENCY_KEY_INVALID", "Idempotency-Key is required");
+        }
+        return Map.of("asset", commandService.retryFailed(assetId, context(authentication)).safeView());
+    }
+
+    /**
+     * M3-004 subtitle track upsert (VTT/SRT, zh-CN/en-US), stored as a reserved rendition.
+     */
+    @PostMapping("/assets/{assetId}/subtitles")
+    public Map<String, Object> subtitle(
+            @PathVariable String assetId,
+            @Valid @RequestBody SubtitleRequest request,
+            Authentication authentication) {
+        return Map.of("asset", commandService.upsertSubtitle(
+                assetId, request.locale(), request.format(), request.checksumSha256(),
+                request.sizeBytes(), context(authentication)).safeView());
+    }
+
+    /**
+     * M3-004 short-lived upload grant: metadata only, bytes never cross this service.
+     * Issued on the RECORDING channel with a capped TTL (at most 15 minutes).
+     */
+    @PostMapping("/assets/{assetId}/upload-url")
+    public SignedMediaUrl uploadUrl(
+            @PathVariable String assetId,
+            @Valid @RequestBody(required = false) UploadUrlRequest request,
+            Authentication authentication) {
+        Duration ttl = request == null || request.ttlSeconds() == null
+                ? Duration.ofMinutes(5)
+                : Duration.ofSeconds(Math.max(60, Math.min(request.ttlSeconds(), 900)));
+        return readService.issueSignedUrl(
+                assetId, MediaDeliveryChannel.RECORDING, null, ttl, context(authentication));
+    }
+
     @ExceptionHandler(MediaOperationException.class)
     ResponseEntity<ProblemResponse> handleMediaException(MediaOperationException exception) {
         return ResponseEntity.status(exception.status())
@@ -277,6 +341,16 @@ public class MediaController {
     }
 
     public record RevokeRequest(@NotBlank String reason) {
+    }
+
+    public record SubtitleRequest(
+            @NotBlank String locale,
+            @NotBlank String format,
+            @NotBlank String checksumSha256,
+            @Positive long sizeBytes) {
+    }
+
+    public record UploadUrlRequest(Long ttlSeconds) {
     }
 
     public record ProblemResponse(String code, String message, boolean retryable) {

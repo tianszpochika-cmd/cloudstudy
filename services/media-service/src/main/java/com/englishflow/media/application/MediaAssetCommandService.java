@@ -153,8 +153,69 @@ public final class MediaAssetCommandService {
         return saved;
     }
 
-    public MediaAsset revoke(String assetId, String reason, MediaAuthorizationContext context) {
+    /**
+     * M3-004 failure retry workbench: FAILED transcoding and FAILED renditions return to
+     * QUEUED for another attempt. Nothing is deleted; the retry is a state transition that
+     * is itself audited via the domain event below. At least one FAILED unit is required.
+     */
+    public MediaAsset retryFailed(String assetId, MediaAuthorizationContext context) {
         MediaAsset asset = require(assetId);
+        MediaAccessPolicy.requireMutation(asset, context);
+        boolean transcodingFailed = asset.transcodingStatus() == TranscodingStatus.FAILED;
+        long failedRenditions = asset.renditions().stream()
+                .filter(r -> r.status() == com.englishflow.media.domain.RenditionStatus.FAILED).count();
+        if (!transcodingFailed && failedRenditions == 0) {
+            throw MediaOperationException.conflict("MEDIA_NOTHING_TO_RETRY", "no failed transcoding or rendition to retry");
+        }
+        Instant now = clock.instant();
+        MediaAsset next = asset;
+        if (transcodingFailed) {
+            next = repository.save(next.withTranscoding(TranscodingStatus.QUEUED, null, now));
+        }
+        for (MediaRendition failed : next.renditions().stream()
+                .filter(r -> r.status() == com.englishflow.media.domain.RenditionStatus.FAILED).toList()) {
+            MediaRendition queued = new MediaRendition(
+                    failed.renditionKey(), failed.mimeType(), failed.objectVersion(), failed.checksumSha256(),
+                    failed.sizeBytes(), failed.supportsRange(),
+                    com.englishflow.media.domain.RenditionStatus.QUEUED, now, null);
+            next = repository.save(next.withRendition(queued, now));
+        }
+        publish("media.retry_requested.v1", next, context, Map.of(
+                "assetVersion", Integer.toString(next.assetVersion())));
+        return next;
+    }
+
+    /**
+     * M3-004 subtitle track: stored as a rendition with a reserved key so playback,
+     * manifests and revocation keep working without a new table. Format allow-list
+     * keeps the workbench honest (VTT/SRT only).
+     */
+    public MediaAsset upsertSubtitle(
+            String assetId, String locale, String format, String checksumSha256, long sizeBytes,
+            MediaAuthorizationContext context) {
+        MediaAsset asset = require(assetId);
+        MediaAccessPolicy.requireMutation(asset, context);
+        String safeLocale = locale == null ? "" : locale.trim();
+        if (!safeLocale.equalsIgnoreCase("zh-CN") && !safeLocale.equalsIgnoreCase("en-US")) {
+            throw MediaOperationException.badRequest("MEDIA_SUBTITLE_LOCALE_INVALID", "subtitle locale must be zh-CN or en-US");
+        }
+        String safeFormat = format == null ? "" : format.trim().toUpperCase(java.util.Locale.ROOT);
+        if (!safeFormat.equals("VTT") && !safeFormat.equals("SRT")) {
+            throw MediaOperationException.badRequest("MEDIA_SUBTITLE_FORMAT_INVALID", "subtitle format must be VTT or SRT");
+        }
+        String mimeType = safeFormat.equals("VTT") ? "text/vtt" : "application/x-subrip";
+        MediaRendition rendition = new MediaRendition(
+                "subtitle:" + safeLocale.toLowerCase(java.util.Locale.ROOT) + ":" + safeFormat,
+                mimeType, null, checksumSha256, sizeBytes, false,
+                com.englishflow.media.domain.RenditionStatus.READY, clock.instant(), null);
+        MediaAsset saved = repository.save(asset.withRendition(rendition, clock.instant()));
+        publish("media.subtitle_updated.v1", saved, context, Map.of(
+                "renditionKey", rendition.renditionKey(),
+                "assetVersion", Integer.toString(saved.assetVersion())));
+        return saved;
+    }
+
+    public MediaAsset revoke(String assetId, String reason, MediaAuthorizationContext context) {        MediaAsset asset = require(assetId);
         MediaAccessPolicy.requireMutation(asset, context);
         String safeReason = reason == null || reason.isBlank() ? "UNSPECIFIED" : reason.trim();
         if (safeReason.length() > 96) {

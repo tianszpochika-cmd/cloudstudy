@@ -1,0 +1,63 @@
+{
+  "task": "P1R-M3-004",
+  "capturedAt": "2026-09-15T16:05:11.375Z",
+  "sourceCommit": "241ae79d6c21d9a035eb9f232ad06f67984edee3",
+  "workingTreeDirty": true,
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "check": "upload-grant-exists",
+      "status": "PASS",
+      "observed": "POST upload-url on RECORDING, TTL capped 900s",
+      "expected": "short-lived upload grant"
+    },
+    {
+      "check": "no-byte-transfer",
+      "status": "PASS",
+      "observed": "metadata-only boundary documented",
+      "expected": "no byte controller"
+    },
+    {
+      "check": "tasks-view-exists",
+      "status": "PASS",
+      "observed": "GET tasks with transcoding + renditions",
+      "expected": "task states"
+    },
+    {
+      "check": "retry-exists",
+      "status": "PASS",
+      "observed": "POST retry resets FAILED→QUEUED",
+      "expected": "failure retry"
+    },
+    {
+      "check": "subtitle-exists",
+      "status": "PASS",
+      "observed": "subtitle track as reserved rendition (VTT/SRT, zh-CN/en-US)",
+      "expected": "subtitles"
+    },
+    {
+      "check": "read-grant-kept",
+      "status": "PASS",
+      "observed": "short-lived read grants kept",
+      "expected": "read URL"
+    },
+    {
+      "check": "metadata-redacted",
+      "status": "PASS",
+      "observed": "safeView projections",
+      "expected": "desensitized metadata"
+    },
+    {
+      "check": "service-builds",
+      "status": "PASS",
+      "observed": "mvn compile EXIT 0 (this session)",
+      "expected": "compiles"
+    }
+  ],
+  "notVerifiableHere": [
+    "Object-storage round-trip and live browser workbench run need MinIO + browser and are deferred to acceptance."
+  ],
+  "note": "Read from the committed media-service tree."
+}
