@@ -1,0 +1,132 @@
+{
+  "taskId": "P1R-M2-010",
+  "draftOnly": false,
+  "canonicalTaskStatus": "DEV_DONE",
+  "decision": "DEV_DONE",
+  "sourceCommit": "77de5786a722fc93fae6f09194488429787de094",
+  "startedAt": "2026-09-15T15:40:00.000Z",
+  "finishedAt": "2026-09-15T15:44:19.813Z",
+  "environment": {
+    "kind": "d3-gate-aggregation-by-reference",
+    "branch": "dev",
+    "phaseStatus": "D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED",
+    "runtimeStatus": "M2_010_GATE_AGGREGATED",
+    "reviewPolicy": "Independent verification deferred by the owner: development proceeds to M8 and acceptance testing follows, so this task is DEV_DONE and not ACCEPTED.",
+    "note": "Read from the committed ledger and the nine canonical manifests, not from a live end-to-end run: the measurement covers that every predecessor link is finished and agrees with the ledger, and that its success/fault evidence is present to be referenced. A live requestId-carried run and staging re-verification are not claimed."
+  },
+  "actors": [
+    "root-coordinator",
+    "p1r-implementation"
+  ],
+  "sourceIds": [
+    "P1R-M2-010"
+  ],
+  "commands": [
+    {
+      "command": "node scripts/runtime/p1r-m2-010-runtime.mjs",
+      "purpose": "aggregate M2-001..009 links into one D3 gate by reference"
+    }
+  ],
+  "results": [
+    {
+      "check": "ledger-dependency-chain-finished",
+      "status": "PASS",
+      "details": "P1R-M2-001=ACCEPTED, P1R-M2-002=ACCEPTED, P1R-M2-003=ACCEPTED, P1R-M2-004=DEV_DONE, P1R-M2-005=DEV_DONE, P1R-M2-006=DEV_DONE, P1R-M2-007=DEV_DONE, P1R-M2-008=DEV_DONE, P1R-M2-009=DEV_DONE"
+    },
+    {
+      "check": "predecessor-manifests-exist",
+      "status": "PASS",
+      "details": "9 manifests present"
+    },
+    {
+      "check": "predecessor-decisions-are-final-for-development",
+      "status": "PASS",
+      "details": "9 manifests agree with ledger"
+    },
+    {
+      "check": "gateway-iam-pep-spine-referenced",
+      "status": "PASS",
+      "details": "P1R-M2-001:7 results, 0 failing, P1R-M2-002:9 results, 0 failing, P1R-M2-003:8 results, 0 failing"
+    },
+    {
+      "check": "owner-db-outbox-kafka-spine-referenced",
+      "status": "PASS",
+      "details": "P1R-M2-004:12 results, 0 failing, P1R-M2-005:11 results, 0 failing"
+    },
+    {
+      "check": "saga-audit-correlation-spine-referenced",
+      "status": "PASS",
+      "details": "P1R-M2-006:7 results, 0 failing, P1R-M2-007:10 results, 0 failing"
+    },
+    {
+      "check": "stack-and-ci-spine-referenced",
+      "status": "PASS",
+      "details": "P1R-M2-008:8 results, 0 failing, P1R-M2-009:14 results, 0 failing"
+    },
+    {
+      "check": "success-chain-request-trace-audit-documented",
+      "status": "PASS",
+      "details": "M2-007 correlation + M2-006 audit-ingest manifests present"
+    },
+    {
+      "check": "fault-chain-direct-and-broker-documented",
+      "status": "PASS",
+      "details": "M2-001 fault + M2-005 DLQ/replay + M2-008 direct-refusal manifests present"
+    },
+    {
+      "check": "staging-reverification-reserved-for-m8-013",
+      "status": "PASS",
+      "details": "P1R-M8-013=PLANNED"
+    }
+  ],
+  "rollbackEvidence": [
+    {
+      "status": "PASS",
+      "details": "This task adds a harness script, one runtime JSON and one manifest and changes no production code, workflow or dependency: deleting them restores the previous state."
+    }
+  ],
+  "blockers": [],
+  "knownGaps": [
+    "A live end-to-end run (one requestId carried Gateway→IAM→PEP→owner DB→Outbox/Kafka→consumer→durable audit, plus a fault chain with a real direct-connect negative) needs the running machine with all services up and is not claimed here; the aggregation closes the duty by reference to the nine links that own each segment.",
+    "Staging re-verification (M2-008 NetworkPolicy isolation + M2-010 audit correlation on a cluster) is reserved for P1R-M8-013, which is still PLANNED."
+  ],
+  "artifactDigests": [
+    {
+      "path": "scripts/runtime/p1r-m2-010-runtime.mjs",
+      "algorithm": "sha256",
+      "digest": "2e51ff65ed1b9726b194438015cf5096d3665d8b8b827283dab8970a98ff7b42"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-010/runtime-2026-09-15.json",
+      "algorithm": "sha256",
+      "digest": "e29a1f48d0731444e3dbc87c0244d7006e810a7441a4654c40aeffcc885c9400"
+    }
+  ],
+  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "nextSteps": [
+    "Acceptance testing by the owner, which is what DEV_DONE defers."
+  ],
+  "statusNote": "Development finished and the evidence is in the repository. Ten checks aggregate the nine finished links by reference: ledger finished, manifests present and agreeing, four spine groups passing, success and fault evidence present, staging reserved for M8-013. Not independently verified, which DEV_DONE says.",
+  "provenance": {
+    "originalSourceCommit": "77de5786a722fc93fae6f09194488429787de094",
+    "originalReviewer": "agent:p1r_implementation:deepseek-harness",
+    "currentSourceRevalidationTask": "P1R-M2-010",
+    "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
+    "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
+    "currentSourceRevalidationFinishedAt": "2026-09-15T15:44:19.813Z",
+    "currentSourceRevalidationAuditedImplementationSource": "77de5786a722fc93fae6f09194488429787de094",
+    "currentSourceRevalidationIntegrationCheckpoint": "77de5786a722fc93fae6f09194488429787de094",
+    "currentSourceRevalidationHistory": [
+      {
+        "taskId": "P1R-M2-010",
+        "sourceCommit": "77de5786a722fc93fae6f09194488429787de094",
+        "auditedImplementationSource": "77de5786a722fc93fae6f09194488429787de094",
+        "integrationCheckpoint": "77de5786a722fc93fae6f09194488429787de094",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-15T15:44:19.813Z",
+        "details": "Initial DEV_DONE delivery under owner route A after M2-009 reached DEV_DONE."
+      }
+    ]
+  }
+}
