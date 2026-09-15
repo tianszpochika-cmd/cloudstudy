@@ -1,0 +1,63 @@
+{
+  "task": "P1R-M5-008",
+  "capturedAt": "2026-09-15T17:25:44.623Z",
+  "sourceCommit": "e006ddd09294232dc640d04edbd753c73b032cfe",
+  "workingTreeDirty": false,
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "check": "sync-page",
+      "status": "PASS",
+      "observed": "sync page present",
+      "expected": "sync page"
+    },
+    {
+      "check": "queue-visible",
+      "status": "PASS",
+      "observed": "visible persisted queue",
+      "expected": "queue"
+    },
+    {
+      "check": "client-seq",
+      "status": "PASS",
+      "observed": "clientSeq ordering",
+      "expected": "clientSeq"
+    },
+    {
+      "check": "base-version",
+      "status": "PASS",
+      "observed": "baseStateVersion carried",
+      "expected": "baseVersion"
+    },
+    {
+      "check": "conflicts-surfaced",
+      "status": "PASS",
+      "observed": "SERVER_WINS/LOCAL_RETRY/MERGED",
+      "expected": "no silent overwrite"
+    },
+    {
+      "check": "queued-not-mastered",
+      "status": "PASS",
+      "observed": "queued≠mastered wording",
+      "expected": "safe sync"
+    },
+    {
+      "check": "no-client-kafka",
+      "status": "PASS",
+      "observed": "no client event production",
+      "expected": "no client events"
+    },
+    {
+      "check": "no-impl-change",
+      "status": "PASS",
+      "observed": "REUSE-VERIFY this round",
+      "expected": "reuse"
+    }
+  ],
+  "notVerifiableHere": [
+    "Offline/disorder/duplicate live conflict run deferred to acceptance."
+  ],
+  "note": "REUSE-VERIFY: read from the committed learner-web tree; no production change."
+}
