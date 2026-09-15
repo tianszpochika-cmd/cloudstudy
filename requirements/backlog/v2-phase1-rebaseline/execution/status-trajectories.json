@@ -1287,6 +1287,19 @@
       "actor": "agent:p1r_implementation:deepseek-harness",
       "reason": "Owner route A. Dependencies M7-001..010 + M5-014 all DEV_DONE. Five aggregation checks pass by reference; live integration run deferred to M8 as knownGap. M7 closes 11/11.",
       "evidencePath": "evidence/p1r/m7/P1R-M7-011/manifest.json"
+    },
+    {
+      "taskId": "P1R-M8-001",
+      "path": [
+        "PLANNED",
+        "READY",
+        "IN_PROGRESS",
+        "DEV_DONE"
+      ],
+      "recordedAt": "2026-09-15T21:57:00Z",
+      "actor": "agent:p1r_implementation:deepseek-harness",
+      "reason": "Owner route A. Dependencies M3-010 + M4-010 + M5-014 + M6-011 + M7-011 all DEV_DONE. Eight environment checks pass; staging and RC signing deferred as knownGap.",
+      "evidencePath": "evidence/p1r/m8/P1R-M8-001/manifest.json"
     }
   ]
 }
