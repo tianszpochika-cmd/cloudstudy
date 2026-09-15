@@ -1,0 +1,50 @@
+{
+  "taskId": "P1R-M5-001",
+  "draftOnly": false,
+  "canonicalTaskStatus": "DEV_DONE",
+  "decision": "DEV_DONE",
+  "sourceCommit": "f3288a4b07f8766703534b10943b889ef65b3bef",
+  "startedAt": "2026-09-15T18:30:00.000Z",
+  "finishedAt": "2026-09-15T18:40:00.000Z",
+  "environment": {
+    "kind": "content-read-substitute-evidence",
+    "branch": "dev",
+    "phaseStatus": "D3_DOMAIN",
+    "runtimeStatus": "M5_001_CONTENT_VERIFIED",
+    "reviewPolicy": "Independent verification deferred by the owner: development proceeds to M8 and acceptance testing follows, so this task is DEV_DONE and not ACCEPTED.",
+    "note": "Deny-list plus substitute policy/resolution; session-pin wiring is M5-002."
+  },
+  "actors": ["root-coordinator", "p1r-implementation"],
+  "sourceIds": ["P1R-M5-001"],
+  "commands": [
+    { "command": "node scripts/audit/check-core-api-deny-list.mjs", "purpose": "deny-list static guard" },
+    { "command": "mvn -pl services/content-service -am compile -DskipTests", "purpose": "content-service builds with substitute" },
+    { "command": "node scripts/runtime/p1r-m5-001-runtime.mjs", "purpose": "read/substitute checks" }
+  ],
+  "results": [{ "check": "content-8-checks", "status": "PASS", "details": "8/8: deny-list, guard, gates, pins, substitute" }],
+  "rollbackEvidence": [{ "status": "PASS", "details": "Adds deny-list, checker, policy and one service method; deleting them restores prior state." }],
+  "blockers": [],
+  "knownGaps": ["Session-pin wiring (alternativeContentVersionId population) is M5-002; cache-invalidation live proof deferred to acceptance."],
+  "artifactDigests": [
+    { "path": "config/core-api-deny-list.v1.json", "algorithm": "sha256", "digest": "2f28d1d7303eb1c745107317da7a4b77ca13efb94935a1ff12a0adc90e451627" },
+    { "path": "scripts/audit/check-core-api-deny-list.mjs", "algorithm": "sha256", "digest": "71f9333a6e2a93f29e0af33ffabfa76d6dc09a4969f065cf7edabde070b659e8" },
+    { "path": "services/content-service/src/main/java/com/englishflow/content/domain/ContentSubstitutePolicy.java", "algorithm": "sha256", "digest": "abd0b023073358deea113e12c883f40f1d672c06cb1775c4e021b384805b0c73" },
+    { "path": "services/content-service/src/main/java/com/englishflow/content/application/ContentReadService.java", "algorithm": "sha256", "digest": "582b462b0d0bb9890754518ce8d1f81a16bd2668b09af61666de758b602e78fd" },
+    { "path": "scripts/runtime/p1r-m5-001-runtime.mjs", "algorithm": "sha256", "digest": "320e29a38e15acff9cd74262451f8f9ef114af7b65b2cc711537156b9e32d735" },
+    { "path": "evidence/p1r/m5/P1R-M5-001/runtime-2026-09-15.json", "algorithm": "sha256", "digest": "a45769cb849c12b133aac3a7f983c77081fe312f20a060feef2943fcf2c15c4f" }
+  ],
+  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "nextSteps": ["Acceptance testing by the owner, which is what DEV_DONE defers."],
+  "statusNote": "Development finished and the evidence is in the repository. Eight checks pass with deny-list green and compile green. Not independently verified, which DEV_DONE says.",
+  "provenance": {
+    "originalSourceCommit": "f3288a4b07f8766703534b10943b889ef65b3bef",
+    "originalReviewer": "agent:p1r_implementation:deepseek-harness",
+    "currentSourceRevalidationTask": "P1R-M5-001",
+    "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
+    "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
+    "currentSourceRevalidationFinishedAt": "2026-09-15T18:40:00.000Z",
+    "currentSourceRevalidationAuditedImplementationSource": "f3288a4b07f8766703534b10943b889ef65b3bef",
+    "currentSourceRevalidationIntegrationCheckpoint": "f3288a4b07f8766703534b10943b889ef65b3bef",
+    "currentSourceRevalidationHistory": [{ "taskId": "P1R-M5-001", "sourceCommit": "f3288a4b07f8766703534b10943b889ef65b3bef", "auditedImplementationSource": "f3288a4b07f8766703534b10943b889ef65b3bef", "integrationCheckpoint": "f3288a4b07f8766703534b10943b889ef65b3bef", "reviewer": "agent:p1r_implementation:deepseek-harness", "runtimeStatus": "RUNTIME_VERIFIED", "finishedAt": "2026-09-15T18:40:00.000Z", "details": "Initial DEV_DONE delivery under owner route A." }]
+  }
+}
