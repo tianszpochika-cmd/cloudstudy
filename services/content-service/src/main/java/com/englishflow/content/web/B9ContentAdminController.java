@@ -228,6 +228,92 @@ public final class B9ContentAdminController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(Map.of("data", result));
     }
 
+    /**
+     * Idempotent batch import: one Idempotency-Key covers the whole batch; each item
+     * derives a stable sub-key so replaying the same batch never creates duplicates.
+     * Existing content codes are reported SKIPPED (not FAILED), so retry is safe.
+     */
+    @PostMapping("/import/batch")
+    public ResponseEntity<Map<String, Object>> importBatch(
+            @RequestBody(required = false) Map<String, Object> body,
+            Authentication authentication,
+            @RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey,
+            @RequestHeader HttpHeaders headers) {
+        ContentActor actor = adminActor(authentication);
+        requireEditor(actor);
+        String batchKey = requireIdempotencyKey(idempotencyKey);
+        Map<String, Object> input = body == null ? Map.of() : body;
+        Object rawItems = input.get("items");
+        List<Map<String, Object>> items = rawItems instanceof List<?> list
+                ? list.stream().filter(Map.class::isInstance).map(Map.class::cast)
+                        .map(B9ContentAdminController::record).toList()
+                : List.of();
+        if (items.isEmpty()) {
+            throw ContentOperationException.badRequest("CONTENT_BATCH_EMPTY", "items must contain at least one entry");
+        }
+        if (items.size() > 100) {
+            throw ContentOperationException.badRequest("CONTENT_BATCH_TOO_LARGE", "at most 100 items per batch");
+        }
+        ContentRequestContext context = context(headers);
+        List<Map<String, Object>> results = new ArrayList<>();
+        for (int index = 0; index < items.size(); index++) {
+            Map<String, Object> item = items.get(index);
+            String contentCode = text(item.get("contentCode"));
+            Map<String, Object> draft = record(item.get("content"));
+            Map<String, Object> entry = new LinkedHashMap<>();
+            entry.put("index", index);
+            entry.put("contentCode", contentCode);
+            if (contentCode.isBlank()) {
+                entry.put("status", "FAILED");
+                entry.put("errorCode", "CONTENT_FIELD_REQUIRED");
+                results.add(entry);
+                continue;
+            }
+            String subKey = batchKey + ":item:" + index + ":" + contentCode;
+            try {
+                if (repository.findByCode(contentCode).isPresent()) {
+                    ContentDefinition existing = owned(contentCode, actor);
+                    entry.put("status", "SKIPPED");
+                    entry.put("reason", "CONTENT_EXISTS");
+                    entry.put("stateVersion", stateVersion(existing));
+                } else {
+                    Map<String, Object> merged = new LinkedHashMap<>(draft);
+                    merged.putIfAbsent("title", contentCode);
+                    ContentId contentId = ContentId.of(contentCode);
+                    commands.createContent(
+                            new ContentCommandService.CreateContent(
+                                    contentId, contentCode, kind(merged.get("contentType")),
+                                    required(merged, "title"),
+                                    textOr(merged.get("contentLocale"), "en-US"),
+                                    textOr(merged.get("targetLevel"), "A1"), "PHASE1"),
+                            actor, key(subKey + ":definition"), context);
+                    ContentVersionSnapshot created = commands.createVersion(
+                            new ContentCommandService.CreateVersion(
+                                    contentId, repository.nextVersionId(), payload(merged), rights(merged),
+                                    textOr(merged.get("releaseNote"), "batch import")),
+                            actor, key(subKey + ":version"), context);
+                    entry.put("status", "ACCEPTED");
+                    entry.put("contentVersionId", created.versionId().value());
+                    entry.put("stateVersion", created.stateVersion());
+                }
+            } catch (ContentOperationException error) {
+                entry.put("status", "FAILED");
+                entry.put("errorCode", error.code());
+            }
+            results.add(entry);
+        }
+        Map<String, Object> data = new LinkedHashMap<>();
+        data.put("batchKey", batchKey);
+        data.put("commandId", commandId(batchKey));
+        data.put("total", results.size());
+        data.put("accepted", results.stream().filter(r -> "ACCEPTED".equals(r.get("status"))).count());
+        data.put("skipped", results.stream().filter(r -> "SKIPPED".equals(r.get("status"))).count());
+        data.put("failed", results.stream().filter(r -> "FAILED".equals(r.get("status"))).count());
+        data.put("items", results);
+        data.put("acceptedAt", Instant.now());
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(Map.of("data", data));
+    }
+
     private ContentActor adminActor(Authentication authentication) {
         return principals.from(authentication);
     }
@@ -258,6 +344,17 @@ public final class B9ContentAdminController {
     }
 
     private static ContentVersion targetVersion(ContentDefinition content, Map<String, Object> input) {
+        // Standard optimistic locking: callers pass the stateVersion they read; a stale
+        // writer gets 409 VERSION_CONFLICT instead of silently overwriting. The version
+        // column is ContentVersion.stateVersion (persisted as content_version.state_version).
+        Object expected = input.get("expectedStateVersion");
+        if (expected instanceof Number number && number.longValue() > 0) {
+            long current = content.versions().stream().mapToLong(ContentVersion::stateVersion).max().orElse(0L);
+            if (current != number.longValue()) {
+                throw ContentOperationException.conflict("VERSION_CONFLICT",
+                        "stale stateVersion: expected " + number.longValue() + " but current is " + current);
+            }
+        }
         Object raw = input.get("targetVersionNumber");
         if (raw instanceof Number number && number.intValue() > 0) {
             return content.versions().stream()

@@ -1,0 +1,63 @@
+{
+  "task": "P1R-M3-002",
+  "capturedAt": "2026-09-15T15:56:52.745Z",
+  "sourceCommit": "f0dfa614ae0287c70af8b27b91b80487810e1c00",
+  "workingTreeDirty": true,
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "check": "batch-endpoint-exists",
+      "status": "PASS",
+      "observed": "/import/batch with Idempotency-Key",
+      "expected": "batch import endpoint"
+    },
+    {
+      "check": "batch-is-idempotent",
+      "status": "PASS",
+      "observed": "existing codes SKIPPED via stable sub-keys",
+      "expected": "idempotent import"
+    },
+    {
+      "check": "batch-bounded",
+      "status": "PASS",
+      "observed": "100-item cap",
+      "expected": "bounded batch"
+    },
+    {
+      "check": "standard-optimistic-lock",
+      "status": "PASS",
+      "observed": "expectedStateVersion guard → 409 VERSION_CONFLICT",
+      "expected": "optimistic lock"
+    },
+    {
+      "check": "lock-uses-state-version-column",
+      "status": "PASS",
+      "observed": "state_version version column",
+      "expected": "version column"
+    },
+    {
+      "check": "no-client-role-facts",
+      "status": "PASS",
+      "observed": "actor/tenant from JWT only",
+      "expected": "no client role facts"
+    },
+    {
+      "check": "draft-isolation-kept",
+      "status": "PASS",
+      "observed": "CREATE_DRAFT + SAVE_DRAFT paths",
+      "expected": "draft isolation"
+    },
+    {
+      "check": "service-builds",
+      "status": "PASS",
+      "observed": "mvn compile EXIT 0 (verified in this session before evidence write)",
+      "expected": "content-service compiles"
+    }
+  ],
+  "notVerifiableHere": [
+    "Real-DB concurrency duel (two writers, one stale 409) and full batch round-trip against MySQL need the running stack and are deferred to acceptance; what is evidenced is the endpoint, the idempotent sub-keys, the version guard and a green compile."
+  ],
+  "note": "Read from the committed content-service tree."
+}
