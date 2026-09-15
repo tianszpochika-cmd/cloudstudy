@@ -1,0 +1,180 @@
+{
+  "taskId": "P1R-M2-009",
+  "draftOnly": false,
+  "canonicalTaskStatus": "DEV_DONE",
+  "decision": "DEV_DONE",
+  "sourceCommit": "d0af03af46f4b485428ca50b75a906f3ff32fd4d",
+  "startedAt": "2026-09-15T00:23:12.684Z",
+  "finishedAt": "2026-09-15T14:31:55.599Z",
+  "environment": {
+    "kind": "toolchain-pipeline-static-evidence",
+    "branch": "dev",
+    "phaseStatus": "D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED",
+    "runtimeStatus": "M2_009_TOOLCHAIN_PIPELINE_PASS",
+    "reviewPolicy": "Independent verification deferred by the owner: development proceeds to M8 and acceptance testing follows, so this task is DEV_DONE and not ACCEPTED.",
+    "toolchain": {
+      "node": "20.19.5",
+      "pnpm": "10.19.0",
+      "java": 25,
+      "lockfile": "pnpm-lock.yaml"
+    },
+    "note": "Read from the committed files, not from a running pipeline: the measurement covers the locked toolchain, the fail-closed pipeline shape and downloadable reports. A live pipeline run is not claimed."
+  },
+  "actors": [
+    "root-coordinator",
+    "p1r-implementation"
+  ],
+  "sourceIds": [
+    "P1R-M2-009"
+  ],
+  "commands": [
+    {
+      "command": "node scripts/runtime/p1r-m2-009-runtime.mjs",
+      "purpose": "locked toolchain, fail-closed pipeline, downloadable reports"
+    }
+  ],
+  "results": [
+    {
+      "check": "the-workspace-declares-the-apps-and-services",
+      "status": "PASS",
+      "details": "observed apps/*, services/*, packages/*, '@parcel/watcher', core-js, esbuild, vue-demi, '*vue-demi*', '*@vue/devtools-api*' | expected apps/* and services/* are workspace members"
+    },
+    {
+      "check": "pnpm-is-pinned-exactly",
+      "status": "PASS",
+      "details": "observed pnpm@10.19.0 | expected pnpm@<version>"
+    },
+    {
+      "check": "node-is-pinned-exactly",
+      "status": "PASS",
+      "details": "observed 20.19.5 | expected an exact node version"
+    },
+    {
+      "check": "the-pnpm-version-pin-and-the-engine-agree",
+      "status": "PASS",
+      "details": "observed pnpm@10.19.0 vs engines.pnpm 10.19.0 | expected the same version in both places"
+    },
+    {
+      "check": "a-lockfile-is-committed",
+      "status": "PASS",
+      "details": "observed pnpm-lock.yaml present | expected pnpm-lock.yaml"
+    },
+    {
+      "check": "no-workspace-member-carries-its-own-lockfile",
+      "status": "PASS",
+      "details": "observed none | expected one lockfile for the workspace"
+    },
+    {
+      "check": "all-four-frontends-are-workspace-packages-with-manifests",
+      "status": "PASS",
+      "details": "observed apps/mobile, apps/learner-web, apps/admin-web, apps/official-site | expected four manifests"
+    },
+    {
+      "check": "every-v2-service-pins-the-same-java-release",
+      "status": "PASS",
+      "details": "observed 17 poms pin release 25 | expected every v2 service pom pins Java 25; core-api is v1 and pinned at 17"
+    },
+    {
+      "check": "the-pipeline-runs-on-pull-requests-and-pushes",
+      "status": "PASS",
+      "details": "observed triggers read from ci.yml | expected pull_request and push"
+    },
+    {
+      "check": "no-job-is-allowed-to-fail",
+      "status": "PASS",
+      "details": "observed no continue-on-error | expected every job must pass for the pipeline to pass"
+    },
+    {
+      "check": "the-pipeline-has-more-than-one-job",
+      "status": "PASS",
+      "details": "observed pull_request, push, governance, contracts-and-data, frontend, backend-v2, legacy-core-api, supply-chain | expected the gates are separate jobs"
+    },
+    {
+      "check": "no-step-swallows-a-failure",
+      "status": "PASS",
+      "details": "observed none | expected no \"|| true\""
+    },
+    {
+      "check": "the-pipeline-uploads-artifacts",
+      "status": "PASS",
+      "details": "observed | | expected at least one upload-artifact step"
+    },
+    {
+      "check": "a-report-is-uploaded-even-when-the-run-fails",
+      "status": "PASS",
+      "details": "observed 1 of 1 upload steps run always | expected at least one upload with if: always()"
+    }
+  ],
+  "rollbackEvidence": [
+    {
+      "status": "PASS",
+      "details": "This task adds a harness script and two evidence JSON files and changes no production code, workflow or dependency: deleting them restores the previous state."
+    }
+  ],
+  "blockers": [],
+  "knownGaps": [
+    "dev/master refusing a failing push is a repository setting on the host, not a fact in the tree; what is measured is that the workflow has no job allowed to fail and no step that swallows a failure. The protection rule itself needs a host API call, deferred to acceptance.",
+    "The 2026-09-15 attempt note said the task could not pass PLANNED while P1R-M0-006 was unfinished; M0-006 reached DEV_DONE the same day under owner route A, so the dependency is satisfied and this promotion follows. The attempt file is kept as history, not rewritten.",
+    "The seven CI gates (contract/build/unit/integration/security/SBOM/plan-evidence) are wired as workflow jobs and their outcomes are owned by their respective tasks and suites, not re-executed here; this manifest covers the toolchain/pipeline/report shape only."
+  ],
+  "artifactDigests": [
+    {
+      "path": "scripts/runtime/p1r-m2-009-runtime.mjs",
+      "algorithm": "sha256",
+      "digest": "f34f8292d779732c5c93177ec586c919b596229a22478f425f20574e8c0bd625"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-009/runtime-2026-09-15.json",
+      "algorithm": "sha256",
+      "digest": "f08dae1f375e4df3cde9dc62b95cd0f8976e3c77873565dabed80748cdc57ba0"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-009/attempt-2026-09-15.json",
+      "algorithm": "sha256",
+      "digest": "699d29396f3895dfb1ec9c3c51dd0e5490fe8d7955e054e5daa0129ab85f04dc"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "algorithm": "sha256",
+      "digest": "c1df3401bf8815b7c90797bea918a28db5d2daf13eeda8b756bf601acd557398"
+    },
+    {
+      "path": "package.json",
+      "algorithm": "sha256",
+      "digest": "c784ba8aab087f34b7239f1356a6eeff0c9f8468693ac2568f6628582526056d"
+    },
+    {
+      "path": "pnpm-workspace.yaml",
+      "algorithm": "sha256",
+      "digest": "aa9d11ed2d445f999ecaaa5bd542e6b548e8dd811043bbb5c3ca68cdca31e4c9"
+    }
+  ],
+  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "nextSteps": [
+    "Acceptance testing by the owner, which is what DEV_DONE defers."
+  ],
+  "statusNote": "Development finished and the evidence is in the repository. Fourteen checks pass on the committed tree: one locked toolchain, a fail-closed pipeline shape and downloadable reports. Not independently verified, which DEV_DONE says.",
+  "provenance": {
+    "originalSourceCommit": "d0af03af46f4b485428ca50b75a906f3ff32fd4d",
+    "originalReviewer": "agent:p1r_implementation:deepseek-harness",
+    "currentSourceRevalidationTask": "P1R-M2-009",
+    "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
+    "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
+    "currentSourceRevalidationFinishedAt": "2026-09-15T14:31:55.599Z",
+    "currentSourceRevalidationAuditedImplementationSource": "d0af03af46f4b485428ca50b75a906f3ff32fd4d",
+    "currentSourceRevalidationIntegrationCheckpoint": "d0af03af46f4b485428ca50b75a906f3ff32fd4d",
+    "previousCurrentSourceCommit": "d0af03af46f4b485428ca50b75a906f3ff32fd4d",
+    "currentSourceRevalidationHistory": [
+      {
+        "taskId": "P1R-M2-009",
+        "sourceCommit": "d0af03af46f4b485428ca50b75a906f3ff32fd4d",
+        "auditedImplementationSource": "d0af03af46f4b485428ca50b75a906f3ff32fd4d",
+        "integrationCheckpoint": "d0af03af46f4b485428ca50b75a906f3ff32fd4d",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-15T14:31:55.599Z",
+        "details": "Initial DEV_DONE delivery under owner route A after M0-006 reached DEV_DONE."
+      }
+    ]
+  }
+}
