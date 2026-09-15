@@ -702,6 +702,19 @@
       "actor": "agent:p1r_implementation:deepseek-harness",
       "reason": "Owner route A. Dependencies M2-010 + M3-008 DEV_DONE. Dual-end register/reset with anti-enumeration and returnTo; dual typechecks green, 13/13 harness PASS; live browser run deferred as knownGap.",
       "evidencePath": "evidence/p1r/m4/P1R-M4-001/manifest.json"
+    },
+    {
+      "taskId": "P1R-M4-002",
+      "path": [
+        "PLANNED",
+        "READY",
+        "IN_PROGRESS",
+        "DEV_DONE"
+      ],
+      "recordedAt": "2026-09-15T17:42:00Z",
+      "actor": "agent:p1r_implementation:deepseek-harness",
+      "reason": "Owner route A (REUSE-VERIFY, no production change). Dependency M4-001 DEV_DONE. Eight storage/merge/logout/revoke checks pass; live replay-revoke run deferred as knownGap.",
+      "evidencePath": "evidence/p1r/m4/P1R-M4-002/manifest.json"
     }
   ]
 }
