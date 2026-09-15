@@ -728,6 +728,19 @@
       "actor": "agent:p1r_implementation:deepseek-harness",
       "reason": "Owner route A (REUSE-VERIFY, no production change). Dependency M4-002 DEV_DONE. Eight gate/consent checks pass; withdraw/deep-link live run deferred as knownGap.",
       "evidencePath": "evidence/p1r/m4/P1R-M4-003/manifest.json"
+    },
+    {
+      "taskId": "P1R-M4-004",
+      "path": [
+        "PLANNED",
+        "READY",
+        "IN_PROGRESS",
+        "DEV_DONE"
+      ],
+      "recordedAt": "2026-09-15T17:52:00Z",
+      "actor": "agent:p1r_implementation:deepseek-harness",
+      "reason": "Owner route A (REUSE-VERIFY, no production change). Dependency M4-003 DEV_DONE. Seven onboarding checks pass; real-DB duplicate/cross-tenant run deferred as knownGap.",
+      "evidencePath": "evidence/p1r/m4/P1R-M4-004/manifest.json"
     }
   ]
 }

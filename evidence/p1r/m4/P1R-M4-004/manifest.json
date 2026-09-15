@@ -1,0 +1,42 @@
+{
+  "taskId": "P1R-M4-004",
+  "draftOnly": false,
+  "canonicalTaskStatus": "DEV_DONE",
+  "decision": "DEV_DONE",
+  "sourceCommit": "e563c4c14a5cfe789911c5be2d3ca1440293e1e0",
+  "startedAt": "2026-09-15T17:50:00.000Z",
+  "finishedAt": "2026-09-15T17:52:00.000Z",
+  "environment": {
+    "kind": "onboarding-reuse-evidence",
+    "branch": "dev",
+    "phaseStatus": "D3_DOMAIN",
+    "runtimeStatus": "M4_004_ONBOARDING_VERIFIED",
+    "reviewPolicy": "Independent verification deferred by the owner: development proceeds to M8 and acceptance testing follows, so this task is DEV_DONE and not ACCEPTED.",
+    "note": "REUSE-VERIFY: quotas/goals/draft/timezone/idempotency already in the committed trees."
+  },
+  "actors": ["root-coordinator", "p1r-implementation"],
+  "sourceIds": ["P1R-M4-004"],
+  "commands": [{ "command": "node scripts/runtime/p1r-m4-004-runtime.mjs", "purpose": "onboarding checks" }],
+  "results": [{ "check": "onboarding-7-checks", "status": "PASS", "details": "7/7: quotas, goals, draft, timezone, idempotency" }],
+  "rollbackEvidence": [{ "status": "PASS", "details": "Adds harness + evidence only; deleting them restores prior state." }],
+  "blockers": [],
+  "knownGaps": ["Real-DB duplicate-submit and cross-tenant negative run deferred to acceptance."],
+  "artifactDigests": [
+    { "path": "scripts/runtime/p1r-m4-004-runtime.mjs", "algorithm": "sha256", "digest": "9e055e78b11c1f1252175c76541fc1d7eecc3bdf80afbe680ac174a3462110f4" },
+    { "path": "evidence/p1r/m4/P1R-M4-004/runtime-2026-09-15.json", "algorithm": "sha256", "digest": "13f36f00bcdc599ed1b9a191c366b1824b57ab11e312c451a1584416a43b2838" }
+  ],
+  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "nextSteps": ["Acceptance testing by the owner, which is what DEV_DONE defers."],
+  "statusNote": "Development finished and the evidence is in the repository. Seven reuse checks pass. Not independently verified, which DEV_DONE says.",
+  "provenance": {
+    "originalSourceCommit": "e563c4c14a5cfe789911c5be2d3ca1440293e1e0",
+    "originalReviewer": "agent:p1r_implementation:deepseek-harness",
+    "currentSourceRevalidationTask": "P1R-M4-004",
+    "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
+    "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
+    "currentSourceRevalidationFinishedAt": "2026-09-15T17:52:00.000Z",
+    "currentSourceRevalidationAuditedImplementationSource": "e563c4c14a5cfe789911c5be2d3ca1440293e1e0",
+    "currentSourceRevalidationIntegrationCheckpoint": "e563c4c14a5cfe789911c5be2d3ca1440293e1e0",
+    "currentSourceRevalidationHistory": [{ "taskId": "P1R-M4-004", "sourceCommit": "e563c4c14a5cfe789911c5be2d3ca1440293e1e0", "auditedImplementationSource": "e563c4c14a5cfe789911c5be2d3ca1440293e1e0", "integrationCheckpoint": "e563c4c14a5cfe789911c5be2d3ca1440293e1e0", "reviewer": "agent:p1r_implementation:deepseek-harness", "runtimeStatus": "RUNTIME_VERIFIED", "finishedAt": "2026-09-15T17:52:00.000Z", "details": "Initial DEV_DONE delivery under owner route A (REUSE-VERIFY)." }]
+  }
+}
