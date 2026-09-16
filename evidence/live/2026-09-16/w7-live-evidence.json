@@ -1,0 +1,64 @@
+{
+  "task": "W7-LIVE-STAFF",
+  "capturedAt": "2026-09-16T11:50:55.934Z",
+  "ticketId": "3fb69e2d-dae7-4290-a6f1-c23f0bbe97cf",
+  "result": "PASS",
+  "passed": 9,
+  "total": 9,
+  "checks": [
+    {
+      "name": "setup-learner",
+      "ok": true,
+      "observed": "learner ready",
+      "expected": "token"
+    },
+    {
+      "name": "ticket-create",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200/201 + id"
+    },
+    {
+      "name": "staff-provisioned",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200 + token"
+    },
+    {
+      "name": "admin-list",
+      "ok": true,
+      "observed": "HTTP 200 n=31",
+      "expected": "HTTP 200 sees ticket"
+    },
+    {
+      "name": "same-schema",
+      "ok": true,
+      "observed": "learner=[categoryCode,priority,redactionVersion,slaDueAt,slaState,state,ticketId] admin=[categoryCode,priority,redactionVersion,slaDueAt,slaState,state,ticketId]",
+      "expected": "identical keys"
+    },
+    {
+      "name": "transition-start",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200 IN_PROGRESS"
+    },
+    {
+      "name": "prepare-resolve",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200 + challenge"
+    },
+    {
+      "name": "transition-resolve",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200 RESOLVED"
+    },
+    {
+      "name": "learner-sees-resolved",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200 RESOLVED"
+    }
+  ]
+}

@@ -1073,11 +1073,12 @@
         "PLANNED",
         "READY",
         "IN_PROGRESS",
-        "DEV_DONE"
+        "DEV_DONE",
+        "ACCEPTED"
       ],
-      "recordedAt": "2026-09-15T20:17:00Z",
-      "actor": "agent:p1r_implementation:deepseek-harness",
-      "reason": "Owner route A (REUSE-VERIFY, no production change). Dependencies M2-010 + M1-016 DEV_DONE. Eight ticket checks pass; live parity deferred as knownGap.",
+      "recordedAt": "2026-09-16T12:00:00Z",
+      "actor": "human-owner-delegated acceptance (live E2E session 2026-09-16)",
+      "reason": "Same-schema parity + confirmed transitions green (W7 9/9).",
       "evidencePath": "evidence/p1r/m6/P1R-M6-005/manifest.json"
     },
     {

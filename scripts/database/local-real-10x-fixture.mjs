@@ -811,7 +811,7 @@ const adminProjectionRows = each((index) => [
 
 const supportTicketRows = each((index) => [
   stableUuid('support-ticket', index), TENANT_ID, SUBJECTS[index - 1],
-  index % 3 === 0 ? 'RESOLVED' : 'OPEN', index % 2 ? 'MEDIUM' : 'HIGH',
+  index % 3 === 0 ? 'RESOLVED' : 'OPEN', index % 2 ? 'NORMAL' : 'HIGH',
   `本地测试工单摘要 ${index}`, now, now, 'TECHNICAL', fixtureText('ticket-resource', index),
   sha256(`${FIXTURE_ID}:ticket:${index}`), raw('DATE_ADD(UTC_TIMESTAMP(6), INTERVAL 2 DAY)'),
   null, fixtureText('admin-audit', index), 1, jsonValue([]),

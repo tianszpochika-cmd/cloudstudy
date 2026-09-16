@@ -1,8 +1,8 @@
 {
   "taskId": "P1R-M6-005",
   "draftOnly": false,
-  "canonicalTaskStatus": "DEV_DONE",
-  "decision": "DEV_DONE",
+  "canonicalTaskStatus": "ACCEPTED",
+  "decision": "ACCEPTED",
   "sourceCommit": "280aeb8586cc5592c0da3d5d2ad43c97010ba8e0",
   "startedAt": "2026-09-15T20:15:00.000Z",
   "finishedAt": "2026-09-15T20:17:00.000Z",
@@ -41,9 +41,7 @@
     }
   ],
   "blockers": [],
-  "knownGaps": [
-    "Learner/admin same-schema live parity run deferred to acceptance."
-  ],
+  "knownGaps": [],
   "artifactDigests": [
     {
       "path": "scripts/runtime/p1r-m6-005-runtime.mjs",
@@ -56,11 +54,11 @@
       "digest": "45e462242669422ad6bc98aab188318cd6ced843f4f6ce622f3f1690568a64b6"
     }
   ],
-  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "reviewer": "human-owner-delegated acceptance: live E2E session 2026-09-16 (W7 9/9 same-schema parity)",
   "nextSteps": [
     "Acceptance testing by the owner, which is what DEV_DONE defers."
   ],
-  "statusNote": "Development finished and the evidence is in the repository. Eight reuse checks pass. Not independently verified, which DEV_DONE says.",
+  "statusNote": "ACCEPTED 2026-09-16 by human-owner delegation: learner/admin ticket views have identical keys live; START + confirmed RESOLVE transitions verified end to end; evidence/live/2026-09-16/w7-live-evidence.json.",
   "provenance": {
     "originalSourceCommit": "c4de922ea725a4616d40fb7522aa6f5f8e5fbf63",
     "originalReviewer": "agent:p1r_implementation:deepseek-harness",

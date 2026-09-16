@@ -825,7 +825,7 @@
       {
         "service": "admin-ops-service",
         "path": "services/admin-ops-service/src/main/resources/db/migration",
-        "fileCount": 3
+        "fileCount": 4
       },
       {
         "service": "audit-service",

@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1-LIVE-016-STAFF-20260916] **staff 面解锁 + 工单管理链全通；翻牌 M6-005（50 ACCEPTED / 58 DEV_DONE，工具待验）。** 本地配窄权限 staff（DB 授权，夹具并具名）：建单→全量列举（逐键同模）→START→RESOLVE 确认挑战→学员见 RESOLVED，新链 W7 **9/9**。附带三修：种子 MEDIUM 枚举漂移（admin 列举 500）、outbox event_id 装不下前缀（V4 扩 64）、写侧缺 occurred_at（6 家写侧至此无掉队）。验证：admin-ops 64/0/0。
+
 - [P1-LIVE-015-REJOIN-20260916] **自习室离开后重连 500 改重激活：成员唯一键按人而非按次。** `join()` 对 LEFT 行直接 INSERT 撞 `uk_soc_member_subject`；现先 UPDATE 重激活（ACTIVE/ONLINE）再无行才 INSERT。W3 加断线重连三腿（leave→rejoin→ws-ticket），**24/24**。M7-004 留置（另一半：在内存 SocialService 退役属代码删除工作）。
 
 - [P1R-MATRIX-H5-20260916] **矩阵加 H5 登录流：同一 IAM 账号直登 uni-app 构建（16 腿，13 洁 + 3 具名）。** 附带：撤回用户被正确导回 onboarding（受限导航活证）。M5-003 留置（B3 读接口缺失），M4-008 留置（locked 态实现中不存在）。

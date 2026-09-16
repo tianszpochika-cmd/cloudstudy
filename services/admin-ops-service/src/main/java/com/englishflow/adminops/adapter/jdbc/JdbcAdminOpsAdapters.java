@@ -120,12 +120,15 @@ public final class JdbcAdminOpsAdapters {
             payload.put("expectedVersion", command.expectedVersion());
             payload.put("reasonCode", command.reasonCode());
             payload.put("attributes", command.attributes());
+            // P1-LIVE-016: occurred_at is NOT NULL without default since the V3
+            // standardize migration; the writer predates it (same drift species
+            // as the learner/commerce outbox fixes).
             jdbc.update("INSERT INTO admin_ops_outbox_event "
                             + "(event_id,aggregate_id,event_name,schema_version,dedupe_key,payload_json,status,"
-                            + "attempt_count,available_at,created_at) VALUES (?,?,?,?,?,?,?,?,?,?)",
+                            + "attempt_count,available_at,created_at,occurred_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
                     command.commandId(), command.resourceRef(), "admin.command." + command.action().name(),
                     "admin.command.v1", command.commandId(), json(payload), "ACCEPTED", 0,
-                    Timestamp.from(acceptedAt), Timestamp.from(acceptedAt));
+                    Timestamp.from(acceptedAt), Timestamp.from(acceptedAt), Timestamp.from(acceptedAt));
             return new CommandForwardResult(command.commandId(), command.domain().targetService(), "ACCEPTED", acceptedAt);
         }
 
