@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1R-5A-SHAPES-20260916] **5A 形状落定（半程）：report.ready.v1 第 51 个 canonical 事件 + 消费者契约测试 5/5。** review-due 即 review.scheduled.v2（具名等价）；冻结合约五处扩容（inventory/50→51/191→192/路由/策略表/测试数）；生成器全过。M5-013 留置收窄：只剩 B10 活切片的发射接线。
+
 - [P1R-PIN-WIRING-2-20260916] **7B pin 装配（全程）：W5 23/23 pin 对决 + 翻 M5-001/M5-002（57 ACCEPTED / 51 DEV_DONE，工具待验）。** 坏 pin 无规则仍 410；替代决议活取；SUBSTITUTED 会话 pin 落定并判分 200。残留：会话过期超时对决未跑。
 
 - [P1R-PIN-WIRING-1-20260916] **7B pin 装配（半程）：content 替代决议口 + 网关路由 + 契约 + assessment 会话 pin 列。** `GET /api/v1/content/learner/substitute`（与 catalog 同守卫）；网关 preserve 路由；b9 操作 + boundary 投影 + merge（397 routes）；assessment `alternative_*` 三列（V6）+ 请求 pin 保留、履行另存、判分跟履行走。验证：content 148/0/0、gateway 94/0/0、assessment 57/0/0。待下轮：双服务构建重启 + 活对决 + 翻 M5-001/M5-002。

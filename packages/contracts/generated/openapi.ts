@@ -4363,6 +4363,7 @@ export interface ApiOperationRegistry {
   recordM1017AccountDeletionOwnerReceipt: { method: "POST"; path: "/internal/v1/iam/account-deletions/{deletionRequestId}/owner-receipts"; request: M1017OwnerReceiptSubmission; response: M1017AccountDeletionEnvelope; idempotent: true };
   recoverM1017AccountDeletion: { method: "POST"; path: "/internal/v1/iam/account-deletions/{deletionRequestId}/recovery"; request: M1017DeletionRecoveryCommand; response: M1017AccountDeletionEnvelope; idempotent: true };
   ingestM1017AnalyticsTelemetry: { method: "POST"; path: "/api/v1/analytics/telemetry"; request: M1017AnalyticsTelemetryRequest; response: ApiSuccessEnvelope & { data: M1017AnalyticsTelemetryReceipt; }; idempotent: true };
+  resolveB9LearnerContentSubstitute: { method: "GET"; path: "/api/v1/content/learner/substitute"; request: never; response: { data: { unavailableCode: string; reasonCode: string; alternativeAction: string; substitute: { contentCode: string; contentVersionId: number; kind?: string; targetLevel?: string; title?: string; }; }; }; idempotent: false };
 }
 
 export type ApiOperationId = keyof ApiOperationRegistry;

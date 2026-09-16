@@ -49,16 +49,17 @@ test('canonical P1R event governance and generated AsyncAPI projection pass with
   const report = validateEventGovernance({ root });
   assert.equal(report.result, 'PASS', report.errors.join('\n'));
   assert.deepEqual(report.summary, {
-    totalEvents: 191,
-    canonicalEvents: 50,
+    // P1R decision 5A (human owner 2026-09-16): learning.report.ready.v1 defined.
+    totalEvents: 192,
+    canonicalEvents: 51,
     historicalCandidates: 141,
     deprecatedEvents: 0,
-    canonicalConsumerBindings: 134,
+    canonicalConsumerBindings: 136,
     plannedEventGaps: 0,
     d2ContractClosedEventGaps: 16,
     runtimeStatus: 'NOT_RUNTIME_VERIFIED',
-    asyncApiChannels: 50,
-    asyncApiOperations: 184,
+    asyncApiChannels: 51,
+    asyncApiOperations: 187,
   });
   assert.equal(baseline.b26Runtime.runtimeStatus, 'pending');
   assert.equal(baseline.b26Runtime.defaultDecision, 'NO-GO');
@@ -68,10 +69,10 @@ test('AsyncAPI is a deterministic catalog projection with one send and all gover
   const candidate = structuredClone(baseline.catalog);
   const projection = projectCanonicalAsyncApi(candidate);
   assert.deepEqual(projection, baseline.catalog.asyncapi);
-  assert.equal(Object.keys(projection.channels).length, 50);
-  assert.equal(Object.values(projection.operations).filter((operation) => operation.action === 'send').length, 50);
-  assert.equal(Object.values(projection.operations).filter((operation) => operation.action === 'receive').length, 134);
-  assert.deepEqual(validateAsyncApiProjection(candidate), { channelCount: 50, operationCount: 184 });
+  assert.equal(Object.keys(projection.channels).length, 51);
+  assert.equal(Object.values(projection.operations).filter((operation) => operation.action === 'send').length, 51);
+  assert.equal(Object.values(projection.operations).filter((operation) => operation.action === 'receive').length, 136);
+  assert.deepEqual(validateAsyncApiProjection(candidate), { channelCount: 51, operationCount: 187 });
 });
 
 test('M1-014 reward-source policy requires a complete approved profile and predicate beyond a Kafka consumer binding', () => {

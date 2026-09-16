@@ -68,7 +68,8 @@
         "eventNames": [
           "assessment.item.assessed.v2",
           "learning.mastery.projected.v2",
-          "learning.review.scheduled.v2"
+          "learning.review.scheduled.v2",
+          "learning.report.ready.v1"
         ]
       },
       {
@@ -10264,6 +10265,85 @@
         "ACTIVE requires invalidationScope AFFECTED_PEP_SECURITY_CACHES",
         "REVOKED requires invalidationScope REVOCATION_AND_AFFECTED_PEP_SECURITY_CACHES"
       ]
+    },
+    "B10LearningReportReadyV1": {
+      "$id": "platform.events.learning.report.ready.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "x-p1r-cross-field-invariants": [
+        "totalCorrect + totalMistakes = totalItems",
+        "scoreBucket=FULL => totalMistakes=0; scoreBucket=ZERO => totalCorrect=0"
+      ],
+      "required": [
+        "tenantId",
+        "principalId",
+        "reportId",
+        "attemptId",
+        "sessionId",
+        "contentCode",
+        "contentVersionId",
+        "scoreBucket",
+        "totalItems",
+        "totalCorrect",
+        "totalMistakes",
+        "completedAt"
+      ],
+      "properties": {
+        "tenantId": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_-]{1,63}$"
+        },
+        "principalId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "reportId": {
+          "type": "string",
+          "pattern": "^rpt_[A-Za-z0-9._:-]{8,127}$"
+        },
+        "attemptId": {
+          "type": "string",
+          "pattern": "^aatm_[A-Za-z0-9._:-]{8,127}$"
+        },
+        "sessionId": {
+          "type": "string",
+          "pattern": "^asess_[A-Za-z0-9._:-]{8,127}$"
+        },
+        "contentCode": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "contentVersionId": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "scoreBucket": {
+          "type": "string",
+          "enum": [
+            "FULL",
+            "PARTIAL",
+            "ZERO"
+          ]
+        },
+        "totalItems": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "totalCorrect": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "totalMistakes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "completedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
     }
   },
   "events": [
@@ -17329,6 +17409,86 @@
           "INT-P1-002"
         ]
       }
+    },
+    {
+      "eventName": "learning.report.ready.v1",
+      "domain": "learning",
+      "version": 1,
+      "schema": "learning.event.v1",
+      "aggregateType": "learning_report",
+      "aggregateIdField": "reportId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B10LearningReportReadyV1"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish learning.report.ready.v2",
+        "consumerRule": "assessment-service is the sole writer of immutable reports; consumers are idempotent by reportId and must not reinterpret scoreBucket without rulePin.assessmentVersion. No raw answers, answer keys, rule text, audio or client-side facts are accepted."
+      },
+      "status": "CANONICAL_D2",
+      "x-p1r-governance": {
+        "status": "CANONICAL_D2",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "scope": "CROSS_SERVICE_INTEGRATION_FACT",
+        "producer": {
+          "service": "assessment-service",
+          "dataOwner": "assessment-service",
+          "outboxRequired": true,
+          "publishOperationId": "publish_learning_report_ready_v1"
+        },
+        "consumers": [
+          {
+            "service": "learning-service",
+            "consumerGroup": "cg.learning-from-assessment.v1",
+            "subscriptionOperationId": "subscribe_learning_report_ready_v1_cg_learning_from_assessment_v1"
+          },
+          {
+            "service": "gamification-service",
+            "consumerGroup": "cg.gamification-from-assessment.v1",
+            "subscriptionOperationId": "subscribe_learning_report_ready_v1_cg_gamification_from_assessment_v1"
+          }
+        ],
+        "transport": {
+          "protocol": "kafka",
+          "topic": "platform.assessment.v1",
+          "partitionKey": "aggregateId",
+          "aggregateIdSource": "payload.reportId",
+          "delivery": "at-least-once",
+          "bindingVersion": "0.5.0",
+          "channelId": "learning_report_ready_v1"
+        },
+        "schema": {
+          "schemaVersion": "learning.event.v1",
+          "payloadRef": "#/payloadSchemas/B10LearningReportReadyV1",
+          "compatibility": "additive"
+        },
+        "correlation": [
+          "eventId",
+          "aggregateId",
+          "requestId",
+          "traceId",
+          "dedupeKey"
+        ],
+        "traceability": [
+          "ARCH-EVT-001",
+          "INT-P1-017"
+        ]
+      }
     }
   ],
   "asyncapi": {
@@ -18677,6 +18837,33 @@
             "x-event-name": "iam.policy.security_state_changed.v2",
             "payload": {
               "$ref": "#/payloadSchemas/M1018IamPolicySecurityStateChanged"
+            },
+            "bindings": {
+              "kafka": {
+                "key": {
+                  "type": "string",
+                  "description": "Canonical partition key from envelope.aggregateId."
+                },
+                "bindingVersion": "0.5.0"
+              }
+            }
+          }
+        }
+      },
+      "learning_report_ready_v1": {
+        "address": "platform.assessment.v1",
+        "bindings": {
+          "kafka": {
+            "topic": "platform.assessment.v1",
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "messages": {
+          "event": {
+            "name": "learning.report.ready.v1",
+            "x-event-name": "learning.report.ready.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B10LearningReportReadyV1"
             },
             "bindings": {
               "kafka": {
@@ -22673,6 +22860,70 @@
           }
         },
         "x-consumer-service": "workflow-service"
+      },
+      "publish_learning_report_ready_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/learning_report_ready_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/learning_report_ready_v1/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-producer-service": "assessment-service",
+        "x-data-owner": "assessment-service"
+      },
+      "subscribe_learning_report_ready_v1_cg_learning_from_assessment_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/learning_report_ready_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/learning_report_ready_v1/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.learning-from-assessment.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "learning-service"
+      },
+      "subscribe_learning_report_ready_v1_cg_gamification_from_assessment_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/learning_report_ready_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/learning_report_ready_v1/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.gamification-from-assessment.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "gamification-service"
       }
     }
   }

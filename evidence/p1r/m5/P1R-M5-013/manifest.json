@@ -46,7 +46,7 @@
   ],
   "blockers": [],
   "knownGaps": [
-    "Assessment-side item.assessed.v2, review-due/report-ready shapes and consumer contract tests deferred to acceptance."
+    "Assessment-side item.assessed.v2 + report-ready emission wiring (outbox appends from the B10 live slice) deferred to acceptance; shapes (item.assessed.v2, review-scheduled.v2 as review-due, report.ready.v1) and consumer contract tests are live (tests/p1r/p1r-m5-013-v2-shapes.test.mjs 5/5)."
   ],
   "artifactDigests": [
     {
@@ -74,7 +74,7 @@
   "nextSteps": [
     "Acceptance testing by the owner, which is what DEV_DONE defers."
   ],
-  "statusNote": "Owner decision 5A (2026-09-16): define trusted-completion v2 shapes now; consumer contract tests to follow. Development finished and the evidence is in the repository. Eight checks pass with a green compile. Not independently verified, which DEV_DONE says.",
+  "statusNote": "Owner decision 5A executed (2026-09-16): report.ready.v1 defined with full canonical governance (51st event); review-due documented as learning.review.scheduled.v2; consumer tests green.",
   "provenance": {
     "originalSourceCommit": "86e36ebbe64c09d4c7569898946c3d4d50401e96",
     "originalReviewer": "agent:p1r_implementation:deepseek-harness",

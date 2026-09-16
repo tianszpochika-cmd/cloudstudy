@@ -635,6 +635,8 @@ const expectedEventRoutingBindings = [
   'leaderboard.snapshot_published.v2|platform.social.v1|aggregateId|cg.analytics-from-social.v1,cg.audit-from-social.v1,cg.workflow-from-social.v1',
   'learner.target.updated.v1|platform.learner.v1|aggregateId|cg.learning-from-learner.v1,cg.workflow-from-learner.v1',
   'learning.mastery.projected.v2|platform.learning.v1|aggregateId|cg.assessment-from-learning.v1,cg.gamification-from-learning.v1,cg.social-from-learning.v1,cg.workflow-from-learning.v1',
+  // P1R decision 5A (human owner 2026-09-16): report-ready defined now.
+  'learning.report.ready.v1|platform.assessment.v1|aggregateId|cg.gamification-from-assessment.v1,cg.learning-from-assessment.v1',
   'learning.review.scheduled.v2|platform.learning.v1|aggregateId|cg.assessment-from-learning.v1,cg.notification-from-learning.v1,cg.workflow-from-learning.v1',
   'learning.task.completed.v2|platform.learning.v1|aggregateId|cg.gamification-from-learning.v1,cg.workflow-from-learning.v1',
   'social.report.created.v2|platform.social.v1|aggregateId|cg.admin-ops-from-social.v1,cg.audit-from-social.v1,cg.workflow-from-social.v1',

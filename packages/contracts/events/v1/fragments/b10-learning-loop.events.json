@@ -7,8 +7,24 @@
       "schema": "assessment.event.v2",
       "aggregateType": "assessment_item",
       "aggregateIdField": "itemAssessmentId",
-      "x-envelope-required": ["eventId", "eventName", "schema", "version", "occurredAt", "aggregateType", "aggregateId", "actorId", "traceId", "requestId", "schemaVersion", "dedupeKey", "payload"],
-      "payloadSchema": { "$ref": "#/payloadSchemas/B10AssessmentItemAssessedV2" },
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B10AssessmentItemAssessedV2"
+      },
       "compatibility": {
         "strategy": "additive",
         "breakingChange": "publish assessment.item.assessed.v3",
@@ -22,8 +38,24 @@
       "schema": "learning.event.v2",
       "aggregateType": "mastery_projection",
       "aggregateIdField": "projectionId",
-      "x-envelope-required": ["eventId", "eventName", "schema", "version", "occurredAt", "aggregateType", "aggregateId", "actorId", "traceId", "requestId", "schemaVersion", "dedupeKey", "payload"],
-      "payloadSchema": { "$ref": "#/payloadSchemas/B10LearningMasteryProjectedV2" },
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B10LearningMasteryProjectedV2"
+      },
       "compatibility": {
         "strategy": "additive",
         "breakingChange": "publish learning.mastery.projected.v3",
@@ -37,12 +69,59 @@
       "schema": "learning.event.v2",
       "aggregateType": "learning_review_queue",
       "aggregateIdField": "queueItemId",
-      "x-envelope-required": ["eventId", "eventName", "schema", "version", "occurredAt", "aggregateType", "aggregateId", "actorId", "traceId", "requestId", "schemaVersion", "dedupeKey", "payload"],
-      "payloadSchema": { "$ref": "#/payloadSchemas/B10LearningReviewScheduledV2" },
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B10LearningReviewScheduledV2"
+      },
       "compatibility": {
         "strategy": "additive",
         "breakingChange": "publish learning.review.scheduled.v3",
         "consumerRule": "learning-service 只发布已由服务端算法、内容 pin 与时区规则确定的队列事实；消费者按 queueItemId、queueVersion 幂等，reasonCodes 按 Unicode code-point 升序解释，不能以客户端时间或状态改写 dueAt。"
+      }
+    },
+    {
+      "eventName": "learning.report.ready.v1",
+      "domain": "learning",
+      "version": 1,
+      "schema": "learning.event.v1",
+      "aggregateType": "learning_report",
+      "aggregateIdField": "reportId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B10LearningReportReadyV1"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish learning.report.ready.v2",
+        "consumerRule": "assessment-service is the sole writer of immutable reports; consumers are idempotent by reportId and must not reinterpret scoreBucket without rulePin.assessmentVersion. No raw answers, answer keys, rule text, audio or client-side facts are accepted."
       }
     }
   ],
@@ -82,53 +161,150 @@
         "assessedAt"
       ],
       "properties": {
-        "tenantId": { "type": "string", "pattern": "^[a-z][a-z0-9_-]{1,63}$" },
-        "principalId": { "type": "string", "pattern": "^prn_[A-Za-z0-9._:-]{15,127}$" },
-        "itemAssessmentId": { "type": "string", "pattern": "^aitm_[A-Za-z0-9._:-]{8,127}$" },
-        "attemptId": { "type": "string", "pattern": "^aatm_[A-Za-z0-9._:-]{8,127}$" },
-        "sessionId": { "type": "string", "pattern": "^asess_[A-Za-z0-9._:-]{8,127}$" },
-        "logicalItemId": { "type": "string", "pattern": "^li_[A-Za-z0-9._:-]{8,127}$" },
+        "tenantId": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_-]{1,63}$"
+        },
+        "principalId": {
+          "type": "string",
+          "pattern": "^prn_[A-Za-z0-9._:-]{15,127}$"
+        },
+        "itemAssessmentId": {
+          "type": "string",
+          "pattern": "^aitm_[A-Za-z0-9._:-]{8,127}$"
+        },
+        "attemptId": {
+          "type": "string",
+          "pattern": "^aatm_[A-Za-z0-9._:-]{8,127}$"
+        },
+        "sessionId": {
+          "type": "string",
+          "pattern": "^asess_[A-Za-z0-9._:-]{8,127}$"
+        },
+        "logicalItemId": {
+          "type": "string",
+          "pattern": "^li_[A-Za-z0-9._:-]{8,127}$"
+        },
         "contentPin": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["contentVersionId", "contentEpoch", "snapshotId", "snapshotHash"],
+          "required": [
+            "contentVersionId",
+            "contentEpoch",
+            "snapshotId",
+            "snapshotHash"
+          ],
           "properties": {
-            "contentVersionId": { "type": "integer", "format": "int64", "minimum": 1 },
-            "contentEpoch": { "type": "integer", "format": "int64", "minimum": 0 },
-            "snapshotId": { "type": "string", "pattern": "^snap_[A-Za-z0-9._:-]{8,127}$" },
-            "snapshotHash": { "type": "string", "pattern": "^[A-Fa-f0-9]{64}$" }
+            "contentVersionId": {
+              "type": "integer",
+              "format": "int64",
+              "minimum": 1
+            },
+            "contentEpoch": {
+              "type": "integer",
+              "format": "int64",
+              "minimum": 0
+            },
+            "snapshotId": {
+              "type": "string",
+              "pattern": "^snap_[A-Za-z0-9._:-]{8,127}$"
+            },
+            "snapshotHash": {
+              "type": "string",
+              "pattern": "^[A-Fa-f0-9]{64}$"
+            }
           }
         },
         "rulePin": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["answerRuleSetVersion", "answerRuleVersion", "ruleDigest", "completionRuleVersion", "assessmentVersion"],
+          "required": [
+            "answerRuleSetVersion",
+            "answerRuleVersion",
+            "ruleDigest",
+            "completionRuleVersion",
+            "assessmentVersion"
+          ],
           "properties": {
-            "answerRuleSetVersion": { "type": "string", "minLength": 1, "maxLength": 96 },
-            "answerRuleVersion": { "type": "string", "minLength": 1, "maxLength": 96 },
-            "ruleDigest": { "type": "string", "pattern": "^[A-Fa-f0-9]{64}$" },
-            "completionRuleVersion": { "type": "string", "minLength": 1, "maxLength": 96 },
-            "assessmentVersion": { "type": "string", "minLength": 1, "maxLength": 96 }
+            "answerRuleSetVersion": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96
+            },
+            "answerRuleVersion": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96
+            },
+            "ruleDigest": {
+              "type": "string",
+              "pattern": "^[A-Fa-f0-9]{64}$"
+            },
+            "completionRuleVersion": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96
+            },
+            "assessmentVersion": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96
+            }
           }
         },
         "reportPin": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["reportId", "reportVersion", "reportRuleVersion", "reportStatus", "reportDigest", "asOf"],
+          "required": [
+            "reportId",
+            "reportVersion",
+            "reportRuleVersion",
+            "reportStatus",
+            "reportDigest",
+            "asOf"
+          ],
           "properties": {
-            "reportId": { "type": "string", "pattern": "^rpt_[A-Za-z0-9._:-]{8,127}$" },
-            "reportVersion": { "type": "integer", "minimum": 1 },
-            "reportRuleVersion": { "type": "string", "minLength": 1, "maxLength": 96 },
-            "reportStatus": { "type": "string", "enum": ["READY", "PARTIAL", "FAILED"] },
-            "reportDigest": { "type": "string", "pattern": "^[A-Fa-f0-9]{64}$" },
-            "asOf": { "type": "string", "format": "date-time" }
+            "reportId": {
+              "type": "string",
+              "pattern": "^rpt_[A-Za-z0-9._:-]{8,127}$"
+            },
+            "reportVersion": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "reportRuleVersion": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96
+            },
+            "reportStatus": {
+              "type": "string",
+              "enum": [
+                "READY",
+                "PARTIAL",
+                "FAILED"
+              ]
+            },
+            "reportDigest": {
+              "type": "string",
+              "pattern": "^[A-Fa-f0-9]{64}$"
+            },
+            "asOf": {
+              "type": "string",
+              "format": "date-time"
+            }
           }
         },
         "objectivePolicyPin": {
           "type": "object",
           "additionalProperties": false,
           "description": "Assessment-service server-predeclared proof that determines whether an item is objective-scored. Clients cannot create, override or widen this pin.",
-          "required": ["practiceType", "objectiveExpected", "policyVersion", "policyDigest"],
+          "required": [
+            "practiceType",
+            "objectiveExpected",
+            "policyVersion",
+            "policyDigest"
+          ],
           "properties": {
             "practiceType": {
               "type": "string",
@@ -139,25 +315,76 @@
                 "ACTIVE_RECALL_SELF_RATING"
               ]
             },
-            "objectiveExpected": { "type": "boolean" },
-            "policyVersion": { "type": "string", "minLength": 1, "maxLength": 96 },
-            "policyDigest": { "type": "string", "pattern": "^[A-Fa-f0-9]{64}$" }
+            "objectiveExpected": {
+              "type": "boolean"
+            },
+            "policyVersion": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96
+            },
+            "policyDigest": {
+              "type": "string",
+              "pattern": "^[A-Fa-f0-9]{64}$"
+            }
           }
         },
         "objectiveOutcome": {
           "type": "string",
-          "enum": ["CORRECT_VERIFIED", "INCORRECT", "UNANSWERED", "REVEALED_BEFORE_ANSWER", "GUESSED", "NO_OBJECTIVE_EXPECTED"]
+          "enum": [
+            "CORRECT_VERIFIED",
+            "INCORRECT",
+            "UNANSWERED",
+            "REVEALED_BEFORE_ANSWER",
+            "GUESSED",
+            "NO_OBJECTIVE_EXPECTED"
+          ]
         },
-        "objectiveNumerator": { "type": "integer", "minimum": 0, "maximum": 1 },
-        "objectiveDenominator": { "type": "integer", "minimum": 0, "maximum": 1 },
-        "objectiveCorrect": { "type": "boolean" },
-        "guessSignal": { "type": "boolean" },
+        "objectiveNumerator": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "objectiveDenominator": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "objectiveCorrect": {
+          "type": "boolean"
+        },
+        "guessSignal": {
+          "type": "boolean"
+        },
         "semanticErrorCategory": {
           "type": "string",
-          "enum": ["KNOWLEDGE_GAP", "MEMORY_FUZZY", "CONFUSABLE", "RULE_CONCEPT", "LISTENING_DISCRIMINATION", "READING_COMPREHENSION", "SPELLING_OR_STRUCTURE", "CARELESS_OR_OMISSION", "TIME_INSUFFICIENT", "UNCLASSIFIED"]
+          "enum": [
+            "KNOWLEDGE_GAP",
+            "MEMORY_FUZZY",
+            "CONFUSABLE",
+            "RULE_CONCEPT",
+            "LISTENING_DISCRIMINATION",
+            "READING_COMPREHENSION",
+            "SPELLING_OR_STRUCTURE",
+            "CARELESS_OR_OMISSION",
+            "TIME_INSUFFICIENT",
+            "UNCLASSIFIED"
+          ]
         },
-        "mappingVersion": { "type": "string", "minLength": 1, "maxLength": 96 },
-        "verificationStage": { "type": "string", "enum": ["NONE", "IMMEDIATE_REPAIR", "D1", "D7"] },
+        "mappingVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96
+        },
+        "verificationStage": {
+          "type": "string",
+          "enum": [
+            "NONE",
+            "IMMEDIATE_REPAIR",
+            "D1",
+            "D7"
+          ]
+        },
         "reasonTrace": {
           "type": "array",
           "minItems": 1,
@@ -165,119 +392,270 @@
           "items": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["ruleCode", "ruleVersion", "category", "reasonCode", "evidenceRef"],
+            "required": [
+              "ruleCode",
+              "ruleVersion",
+              "category",
+              "reasonCode",
+              "evidenceRef"
+            ],
             "properties": {
-              "ruleCode": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]{1,95}$" },
-              "ruleVersion": { "type": "string", "minLength": 1, "maxLength": 96 },
+              "ruleCode": {
+                "type": "string",
+                "pattern": "^[A-Z][A-Z0-9_]{1,95}$"
+              },
+              "ruleVersion": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 96
+              },
               "category": {
                 "type": "string",
-                "enum": ["KNOWLEDGE_GAP", "MEMORY_FUZZY", "CONFUSABLE", "RULE_CONCEPT", "LISTENING_DISCRIMINATION", "READING_COMPREHENSION", "SPELLING_OR_STRUCTURE", "CARELESS_OR_OMISSION", "TIME_INSUFFICIENT", "UNCLASSIFIED"]
+                "enum": [
+                  "KNOWLEDGE_GAP",
+                  "MEMORY_FUZZY",
+                  "CONFUSABLE",
+                  "RULE_CONCEPT",
+                  "LISTENING_DISCRIMINATION",
+                  "READING_COMPREHENSION",
+                  "SPELLING_OR_STRUCTURE",
+                  "CARELESS_OR_OMISSION",
+                  "TIME_INSUFFICIENT",
+                  "UNCLASSIFIED"
+                ]
               },
-              "reasonCode": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]{1,95}$" },
-              "evidenceRef": { "type": "string", "pattern": "^[A-Za-z][A-Za-z0-9._:-]{3,191}$" }
+              "reasonCode": {
+                "type": "string",
+                "pattern": "^[A-Z][A-Z0-9_]{1,95}$"
+              },
+              "evidenceRef": {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9._:-]{3,191}$"
+              }
             }
           }
         },
-        "outcomeDigest": { "type": "string", "pattern": "^[A-Fa-f0-9]{64}$" },
-        "assessmentFactWatermark": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$" },
-        "assessedAt": { "type": "string", "format": "date-time" }
+        "outcomeDigest": {
+          "type": "string",
+          "pattern": "^[A-Fa-f0-9]{64}$"
+        },
+        "assessmentFactWatermark": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "assessedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
       },
       "oneOf": [
         {
           "properties": {
             "objectivePolicyPin": {
               "properties": {
-                "objectiveExpected": { "enum": [true] },
-                "practiceType": { "enum": ["OBJECTIVE_ASSESSMENT"] }
+                "objectiveExpected": {
+                  "enum": [
+                    true
+                  ]
+                },
+                "practiceType": {
+                  "enum": [
+                    "OBJECTIVE_ASSESSMENT"
+                  ]
+                }
               }
             },
-            "objectiveOutcome": { "const": "CORRECT_VERIFIED" },
-            "objectiveNumerator": { "const": 1 },
-            "objectiveDenominator": { "const": 1 },
-            "objectiveCorrect": { "const": true },
-            "guessSignal": { "const": false }
+            "objectiveOutcome": {
+              "const": "CORRECT_VERIFIED"
+            },
+            "objectiveNumerator": {
+              "const": 1
+            },
+            "objectiveDenominator": {
+              "const": 1
+            },
+            "objectiveCorrect": {
+              "const": true
+            },
+            "guessSignal": {
+              "const": false
+            }
           }
         },
         {
           "properties": {
             "objectivePolicyPin": {
               "properties": {
-                "objectiveExpected": { "enum": [true] },
-                "practiceType": { "enum": ["OBJECTIVE_ASSESSMENT"] }
+                "objectiveExpected": {
+                  "enum": [
+                    true
+                  ]
+                },
+                "practiceType": {
+                  "enum": [
+                    "OBJECTIVE_ASSESSMENT"
+                  ]
+                }
               }
             },
-            "objectiveOutcome": { "const": "INCORRECT" },
-            "objectiveNumerator": { "const": 0 },
-            "objectiveDenominator": { "const": 1 },
-            "objectiveCorrect": { "const": false },
-            "guessSignal": { "const": false }
+            "objectiveOutcome": {
+              "const": "INCORRECT"
+            },
+            "objectiveNumerator": {
+              "const": 0
+            },
+            "objectiveDenominator": {
+              "const": 1
+            },
+            "objectiveCorrect": {
+              "const": false
+            },
+            "guessSignal": {
+              "const": false
+            }
           }
         },
         {
           "properties": {
             "objectivePolicyPin": {
               "properties": {
-                "objectiveExpected": { "enum": [true] },
-                "practiceType": { "enum": ["OBJECTIVE_ASSESSMENT"] }
+                "objectiveExpected": {
+                  "enum": [
+                    true
+                  ]
+                },
+                "practiceType": {
+                  "enum": [
+                    "OBJECTIVE_ASSESSMENT"
+                  ]
+                }
               }
             },
-            "objectiveOutcome": { "const": "UNANSWERED" },
-            "objectiveNumerator": { "const": 0 },
-            "objectiveDenominator": { "const": 1 },
-            "objectiveCorrect": { "const": false },
-            "guessSignal": { "const": false }
+            "objectiveOutcome": {
+              "const": "UNANSWERED"
+            },
+            "objectiveNumerator": {
+              "const": 0
+            },
+            "objectiveDenominator": {
+              "const": 1
+            },
+            "objectiveCorrect": {
+              "const": false
+            },
+            "guessSignal": {
+              "const": false
+            }
           }
         },
         {
           "properties": {
             "objectivePolicyPin": {
               "properties": {
-                "objectiveExpected": { "enum": [true] },
-                "practiceType": { "enum": ["OBJECTIVE_ASSESSMENT"] }
+                "objectiveExpected": {
+                  "enum": [
+                    true
+                  ]
+                },
+                "practiceType": {
+                  "enum": [
+                    "OBJECTIVE_ASSESSMENT"
+                  ]
+                }
               }
             },
-            "objectiveOutcome": { "const": "REVEALED_BEFORE_ANSWER" },
-            "objectiveNumerator": { "const": 0 },
-            "objectiveDenominator": { "const": 1 },
-            "objectiveCorrect": { "const": false },
-            "guessSignal": { "const": false }
+            "objectiveOutcome": {
+              "const": "REVEALED_BEFORE_ANSWER"
+            },
+            "objectiveNumerator": {
+              "const": 0
+            },
+            "objectiveDenominator": {
+              "const": 1
+            },
+            "objectiveCorrect": {
+              "const": false
+            },
+            "guessSignal": {
+              "const": false
+            }
           }
         },
         {
           "properties": {
             "objectivePolicyPin": {
               "properties": {
-                "objectiveExpected": { "enum": [true] },
-                "practiceType": { "enum": ["OBJECTIVE_ASSESSMENT"] }
+                "objectiveExpected": {
+                  "enum": [
+                    true
+                  ]
+                },
+                "practiceType": {
+                  "enum": [
+                    "OBJECTIVE_ASSESSMENT"
+                  ]
+                }
               }
             },
-            "objectiveOutcome": { "const": "GUESSED" },
-            "objectiveNumerator": { "const": 1 },
-            "objectiveDenominator": { "const": 1 },
-            "objectiveCorrect": { "const": true },
-            "guessSignal": { "const": true }
+            "objectiveOutcome": {
+              "const": "GUESSED"
+            },
+            "objectiveNumerator": {
+              "const": 1
+            },
+            "objectiveDenominator": {
+              "const": 1
+            },
+            "objectiveCorrect": {
+              "const": true
+            },
+            "guessSignal": {
+              "const": true
+            }
           }
         },
         {
           "properties": {
             "objectivePolicyPin": {
               "properties": {
-                "objectiveExpected": { "enum": [true] },
-                "practiceType": { "enum": ["OBJECTIVE_ASSESSMENT"] }
+                "objectiveExpected": {
+                  "enum": [
+                    true
+                  ]
+                },
+                "practiceType": {
+                  "enum": [
+                    "OBJECTIVE_ASSESSMENT"
+                  ]
+                }
               }
             },
-            "objectiveOutcome": { "const": "GUESSED" },
-            "objectiveNumerator": { "const": 0 },
-            "objectiveDenominator": { "const": 1 },
-            "objectiveCorrect": { "const": false },
-            "guessSignal": { "const": true }
+            "objectiveOutcome": {
+              "const": "GUESSED"
+            },
+            "objectiveNumerator": {
+              "const": 0
+            },
+            "objectiveDenominator": {
+              "const": 1
+            },
+            "objectiveCorrect": {
+              "const": false
+            },
+            "guessSignal": {
+              "const": true
+            }
           }
         },
         {
           "properties": {
             "objectivePolicyPin": {
               "properties": {
-                "objectiveExpected": { "enum": [false] },
+                "objectiveExpected": {
+                  "enum": [
+                    false
+                  ]
+                },
                 "practiceType": {
                   "enum": [
                     "SPEAKING_SELF_RATING",
@@ -287,11 +665,21 @@
                 }
               }
             },
-            "objectiveOutcome": { "const": "NO_OBJECTIVE_EXPECTED" },
-            "objectiveNumerator": { "const": 0 },
-            "objectiveDenominator": { "const": 0 },
-            "objectiveCorrect": { "const": false },
-            "guessSignal": { "const": false }
+            "objectiveOutcome": {
+              "const": "NO_OBJECTIVE_EXPECTED"
+            },
+            "objectiveNumerator": {
+              "const": 0
+            },
+            "objectiveDenominator": {
+              "const": 0
+            },
+            "objectiveCorrect": {
+              "const": false
+            },
+            "guessSignal": {
+              "const": false
+            }
           }
         }
       ]
@@ -332,58 +720,213 @@
         "projectedAt"
       ],
       "properties": {
-        "tenantId": { "type": "string", "pattern": "^[a-z][a-z0-9_-]{1,63}$" },
-        "principalId": { "type": "string", "pattern": "^prn_[A-Za-z0-9._:-]{15,127}$" },
-        "projectionId": { "type": "string", "pattern": "^mp_[A-Za-z0-9._:-]{8,127}$" },
-        "logicalItemId": { "type": "string", "pattern": "^li_[A-Za-z0-9._:-]{8,127}$" },
-        "sourceAssessmentEventId": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$" },
-        "sourceItemAssessmentId": { "type": "string", "pattern": "^aitm_[A-Za-z0-9._:-]{8,127}$" },
+        "tenantId": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_-]{1,63}$"
+        },
+        "principalId": {
+          "type": "string",
+          "pattern": "^prn_[A-Za-z0-9._:-]{15,127}$"
+        },
+        "projectionId": {
+          "type": "string",
+          "pattern": "^mp_[A-Za-z0-9._:-]{8,127}$"
+        },
+        "logicalItemId": {
+          "type": "string",
+          "pattern": "^li_[A-Za-z0-9._:-]{8,127}$"
+        },
+        "sourceAssessmentEventId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+        },
+        "sourceItemAssessmentId": {
+          "type": "string",
+          "pattern": "^aitm_[A-Za-z0-9._:-]{8,127}$"
+        },
         "contentPin": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["contentVersionId", "contentEpoch", "snapshotId", "snapshotHash"],
+          "required": [
+            "contentVersionId",
+            "contentEpoch",
+            "snapshotId",
+            "snapshotHash"
+          ],
           "properties": {
-            "contentVersionId": { "type": "integer", "format": "int64", "minimum": 1 },
-            "contentEpoch": { "type": "integer", "format": "int64", "minimum": 0 },
-            "snapshotId": { "type": "string", "pattern": "^snap_[A-Za-z0-9._:-]{8,127}$" },
-            "snapshotHash": { "type": "string", "pattern": "^[A-Fa-f0-9]{64}$" }
+            "contentVersionId": {
+              "type": "integer",
+              "format": "int64",
+              "minimum": 1
+            },
+            "contentEpoch": {
+              "type": "integer",
+              "format": "int64",
+              "minimum": 0
+            },
+            "snapshotId": {
+              "type": "string",
+              "pattern": "^snap_[A-Za-z0-9._:-]{8,127}$"
+            },
+            "snapshotHash": {
+              "type": "string",
+              "pattern": "^[A-Fa-f0-9]{64}$"
+            }
           }
         },
-        "masteryStageBefore": { "type": "string", "enum": ["NEW", "LEARNING", "MASTERED", "CONSOLIDATED"] },
-        "masteryStageAfter": { "type": "string", "enum": ["NEW", "LEARNING", "MASTERED", "CONSOLIDATED"] },
-        "evidenceCount": { "type": "integer", "minimum": 0, "maximum": 3 },
-        "evidenceDigest": { "type": "string", "pattern": "^[A-Fa-f0-9]{64}$" },
+        "masteryStageBefore": {
+          "type": "string",
+          "enum": [
+            "NEW",
+            "LEARNING",
+            "MASTERED",
+            "CONSOLIDATED"
+          ]
+        },
+        "masteryStageAfter": {
+          "type": "string",
+          "enum": [
+            "NEW",
+            "LEARNING",
+            "MASTERED",
+            "CONSOLIDATED"
+          ]
+        },
+        "evidenceCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 3
+        },
+        "evidenceDigest": {
+          "type": "string",
+          "pattern": "^[A-Fa-f0-9]{64}$"
+        },
         "evidenceLocalDates": {
           "type": "array",
           "minItems": 0,
           "maxItems": 3,
           "uniqueItems": true,
-          "items": { "type": "string", "format": "date" }
+          "items": {
+            "type": "string",
+            "format": "date"
+          }
         },
         "d7Gate": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["result", "reasonCode"],
+          "required": [
+            "result",
+            "reasonCode"
+          ],
           "properties": {
-            "result": { "type": "string", "enum": ["NOT_DUE", "NOT_PASSED", "PASSED", "FAILED"] },
-            "reasonCode": { "type": "string", "enum": ["D7_NOT_DUE", "D7_NOT_PASSED", "D7_PASSED", "D7_FAILED", "MASTERY_GATE_NOT_MET"] }
+            "result": {
+              "type": "string",
+              "enum": [
+                "NOT_DUE",
+                "NOT_PASSED",
+                "PASSED",
+                "FAILED"
+              ]
+            },
+            "reasonCode": {
+              "type": "string",
+              "enum": [
+                "D7_NOT_DUE",
+                "D7_NOT_PASSED",
+                "D7_PASSED",
+                "D7_FAILED",
+                "MASTERY_GATE_NOT_MET"
+              ]
+            }
           },
           "oneOf": [
-            { "properties": { "result": { "const": "NOT_DUE" }, "reasonCode": { "const": "D7_NOT_DUE" } } },
-            { "properties": { "result": { "const": "NOT_PASSED" }, "reasonCode": { "const": "D7_NOT_PASSED" } } },
-            { "properties": { "result": { "const": "NOT_PASSED" }, "reasonCode": { "const": "MASTERY_GATE_NOT_MET" } } },
-            { "properties": { "result": { "const": "PASSED" }, "reasonCode": { "const": "D7_PASSED" } } },
-            { "properties": { "result": { "const": "FAILED" }, "reasonCode": { "const": "D7_FAILED" } } }
+            {
+              "properties": {
+                "result": {
+                  "const": "NOT_DUE"
+                },
+                "reasonCode": {
+                  "const": "D7_NOT_DUE"
+                }
+              }
+            },
+            {
+              "properties": {
+                "result": {
+                  "const": "NOT_PASSED"
+                },
+                "reasonCode": {
+                  "const": "D7_NOT_PASSED"
+                }
+              }
+            },
+            {
+              "properties": {
+                "result": {
+                  "const": "NOT_PASSED"
+                },
+                "reasonCode": {
+                  "const": "MASTERY_GATE_NOT_MET"
+                }
+              }
+            },
+            {
+              "properties": {
+                "result": {
+                  "const": "PASSED"
+                },
+                "reasonCode": {
+                  "const": "D7_PASSED"
+                }
+              }
+            },
+            {
+              "properties": {
+                "result": {
+                  "const": "FAILED"
+                },
+                "reasonCode": {
+                  "const": "D7_FAILED"
+                }
+              }
+            }
           ]
         },
-        "aggregateScore": { "type": "number", "minimum": 0, "maximum": 100 },
-        "latestEffectiveQuality": { "type": "integer", "minimum": 0, "maximum": 3 },
-        "latestGuessSignal": { "type": "boolean" },
-        "masteryEpochId": { "type": "string", "pattern": "^mep_[A-Za-z0-9._:-]{8,127}$" },
-        "masteryEpochVersion": { "type": "integer", "minimum": 1 },
-        "projectionVersion": { "type": "integer", "minimum": 1 },
-        "masteryRuleVersion": { "type": "string", "enum": ["P1_MASTERY_V1"] },
-        "masteryFactWatermark": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$" },
+        "aggregateScore": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "latestEffectiveQuality": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 3
+        },
+        "latestGuessSignal": {
+          "type": "boolean"
+        },
+        "masteryEpochId": {
+          "type": "string",
+          "pattern": "^mep_[A-Za-z0-9._:-]{8,127}$"
+        },
+        "masteryEpochVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "projectionVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "masteryRuleVersion": {
+          "type": "string",
+          "enum": [
+            "P1_MASTERY_V1"
+          ]
+        },
+        "masteryFactWatermark": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
         "reasonTrace": {
           "type": "array",
           "minItems": 1,
@@ -391,57 +934,147 @@
           "items": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["ruleCode", "ruleVersion", "category", "reasonCode", "evidenceRef"],
+            "required": [
+              "ruleCode",
+              "ruleVersion",
+              "category",
+              "reasonCode",
+              "evidenceRef"
+            ],
             "properties": {
-              "ruleCode": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]{1,95}$" },
-              "ruleVersion": { "type": "string", "minLength": 1, "maxLength": 96 },
-              "category": { "type": "string", "enum": ["EVIDENCE", "D7_GATE", "STAGE_TRANSITION", "CONTENT_VERSION", "REPLAY"] },
-              "reasonCode": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]{1,95}$" },
-              "evidenceRef": { "type": "string", "pattern": "^[A-Za-z][A-Za-z0-9._:-]{3,191}$" }
+              "ruleCode": {
+                "type": "string",
+                "pattern": "^[A-Z][A-Z0-9_]{1,95}$"
+              },
+              "ruleVersion": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 96
+              },
+              "category": {
+                "type": "string",
+                "enum": [
+                  "EVIDENCE",
+                  "D7_GATE",
+                  "STAGE_TRANSITION",
+                  "CONTENT_VERSION",
+                  "REPLAY"
+                ]
+              },
+              "reasonCode": {
+                "type": "string",
+                "pattern": "^[A-Z][A-Z0-9_]{1,95}$"
+              },
+              "evidenceRef": {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9._:-]{3,191}$"
+              }
             }
           }
         },
-        "projectedAt": { "type": "string", "format": "date-time" }
+        "projectedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
       },
       "oneOf": [
         {
           "title": "MASTERED_GATE",
           "properties": {
-            "masteryStageAfter": { "enum": ["MASTERED"] },
+            "masteryStageAfter": {
+              "enum": [
+                "MASTERED"
+              ]
+            },
             "d7Gate": {
-              "required": ["result", "reasonCode"],
+              "required": [
+                "result",
+                "reasonCode"
+              ],
               "properties": {
-                "result": { "enum": ["PASSED"] },
-                "reasonCode": { "enum": ["D7_PASSED"] }
+                "result": {
+                  "enum": [
+                    "PASSED"
+                  ]
+                },
+                "reasonCode": {
+                  "enum": [
+                    "D7_PASSED"
+                  ]
+                }
               }
             },
-            "evidenceCount": { "minimum": 3, "maximum": 3 },
-            "evidenceLocalDates": { "minItems": 3, "maxItems": 3 },
-            "aggregateScore": { "minimum": 85 }
+            "evidenceCount": {
+              "minimum": 3,
+              "maximum": 3
+            },
+            "evidenceLocalDates": {
+              "minItems": 3,
+              "maxItems": 3
+            },
+            "aggregateScore": {
+              "minimum": 85
+            }
           }
         },
         {
           "title": "CONSOLIDATED_GATE",
           "properties": {
-            "masteryStageAfter": { "enum": ["CONSOLIDATED"] },
+            "masteryStageAfter": {
+              "enum": [
+                "CONSOLIDATED"
+              ]
+            },
             "d7Gate": {
-              "required": ["result", "reasonCode"],
+              "required": [
+                "result",
+                "reasonCode"
+              ],
               "properties": {
-                "result": { "enum": ["PASSED"] },
-                "reasonCode": { "enum": ["D7_PASSED"] }
+                "result": {
+                  "enum": [
+                    "PASSED"
+                  ]
+                },
+                "reasonCode": {
+                  "enum": [
+                    "D7_PASSED"
+                  ]
+                }
               }
             },
-            "evidenceCount": { "minimum": 3, "maximum": 3 },
-            "evidenceLocalDates": { "minItems": 3, "maxItems": 3 },
-            "aggregateScore": { "minimum": 95 },
-            "latestEffectiveQuality": { "enum": [3] },
-            "latestGuessSignal": { "enum": [false] }
+            "evidenceCount": {
+              "minimum": 3,
+              "maximum": 3
+            },
+            "evidenceLocalDates": {
+              "minItems": 3,
+              "maxItems": 3
+            },
+            "aggregateScore": {
+              "minimum": 95
+            },
+            "latestEffectiveQuality": {
+              "enum": [
+                3
+              ]
+            },
+            "latestGuessSignal": {
+              "enum": [
+                false
+              ]
+            }
           }
         },
         {
           "title": "NON_MASTERED_PROJECTION",
           "properties": {
-            "masteryStageAfter": { "enum": ["NEW", "LEARNING"] }
+            "masteryStageAfter": {
+              "enum": [
+                "NEW",
+                "LEARNING"
+              ]
+            }
           }
         }
       ],
@@ -450,26 +1083,53 @@
           "oneOf": [
             {
               "properties": {
-                "evidenceCount": { "enum": [0] },
-                "evidenceLocalDates": { "maxItems": 0 }
+                "evidenceCount": {
+                  "enum": [
+                    0
+                  ]
+                },
+                "evidenceLocalDates": {
+                  "maxItems": 0
+                }
               }
             },
             {
               "properties": {
-                "evidenceCount": { "enum": [1] },
-                "evidenceLocalDates": { "minItems": 1, "maxItems": 1 }
+                "evidenceCount": {
+                  "enum": [
+                    1
+                  ]
+                },
+                "evidenceLocalDates": {
+                  "minItems": 1,
+                  "maxItems": 1
+                }
               }
             },
             {
               "properties": {
-                "evidenceCount": { "enum": [2] },
-                "evidenceLocalDates": { "minItems": 2, "maxItems": 2 }
+                "evidenceCount": {
+                  "enum": [
+                    2
+                  ]
+                },
+                "evidenceLocalDates": {
+                  "minItems": 2,
+                  "maxItems": 2
+                }
               }
             },
             {
               "properties": {
-                "evidenceCount": { "enum": [3] },
-                "evidenceLocalDates": { "minItems": 3, "maxItems": 3 }
+                "evidenceCount": {
+                  "enum": [
+                    3
+                  ]
+                },
+                "evidenceLocalDates": {
+                  "minItems": 3,
+                  "maxItems": 3
+                }
               }
             }
           ]
@@ -509,32 +1169,116 @@
         "scheduledAt"
       ],
       "properties": {
-        "tenantId": { "type": "string", "pattern": "^[a-z][a-z0-9_-]{1,63}$" },
-        "principalId": { "type": "string", "pattern": "^prn_[A-Za-z0-9._:-]{15,127}$" },
-        "queueItemId": { "type": "string", "pattern": "^rq_[A-Za-z0-9._:-]{8,127}$" },
-        "logicalItemId": { "type": "string", "pattern": "^li_[A-Za-z0-9._:-]{8,127}$" },
-        "queueVersion": { "type": "integer", "minimum": 1 },
-        "srsStage": { "type": "string", "enum": ["NEW", "LEARNING", "MASTERED", "CONSOLIDATED"] },
-        "repairWorkflowState": { "type": "string", "enum": ["REVIEW_QUEUE", "LEARNING", "DELAY_VERIFY_D1", "DELAY_VERIFY_D7", "MASTERED", "REOPENED"] },
-        "masteryStage": { "type": "string", "enum": ["NEW", "LEARNING", "MASTERED", "CONSOLIDATED"] },
-        "sourceAssessmentEventId": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$" },
-        "sourceItemAssessmentId": { "type": "string", "pattern": "^aitm_[A-Za-z0-9._:-]{8,127}$" },
-        "algorithmVersion": { "type": "string", "enum": ["SM2_Q03_V1"] },
-        "timePolicyVersion": { "type": "string", "minLength": 1, "maxLength": 96 },
+        "tenantId": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_-]{1,63}$"
+        },
+        "principalId": {
+          "type": "string",
+          "pattern": "^prn_[A-Za-z0-9._:-]{15,127}$"
+        },
+        "queueItemId": {
+          "type": "string",
+          "pattern": "^rq_[A-Za-z0-9._:-]{8,127}$"
+        },
+        "logicalItemId": {
+          "type": "string",
+          "pattern": "^li_[A-Za-z0-9._:-]{8,127}$"
+        },
+        "queueVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "srsStage": {
+          "type": "string",
+          "enum": [
+            "NEW",
+            "LEARNING",
+            "MASTERED",
+            "CONSOLIDATED"
+          ]
+        },
+        "repairWorkflowState": {
+          "type": "string",
+          "enum": [
+            "REVIEW_QUEUE",
+            "LEARNING",
+            "DELAY_VERIFY_D1",
+            "DELAY_VERIFY_D7",
+            "MASTERED",
+            "REOPENED"
+          ]
+        },
+        "masteryStage": {
+          "type": "string",
+          "enum": [
+            "NEW",
+            "LEARNING",
+            "MASTERED",
+            "CONSOLIDATED"
+          ]
+        },
+        "sourceAssessmentEventId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+        },
+        "sourceItemAssessmentId": {
+          "type": "string",
+          "pattern": "^aitm_[A-Za-z0-9._:-]{8,127}$"
+        },
+        "algorithmVersion": {
+          "type": "string",
+          "enum": [
+            "SM2_Q03_V1"
+          ]
+        },
+        "timePolicyVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96
+        },
         "contentPin": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["contentVersionId", "contentEpoch", "snapshotId", "snapshotHash"],
+          "required": [
+            "contentVersionId",
+            "contentEpoch",
+            "snapshotId",
+            "snapshotHash"
+          ],
           "properties": {
-            "contentVersionId": { "type": "integer", "format": "int64", "minimum": 1 },
-            "contentEpoch": { "type": "integer", "format": "int64", "minimum": 0 },
-            "snapshotId": { "type": "string", "pattern": "^snap_[A-Za-z0-9._:-]{8,127}$" },
-            "snapshotHash": { "type": "string", "pattern": "^[A-Fa-f0-9]{64}$" }
+            "contentVersionId": {
+              "type": "integer",
+              "format": "int64",
+              "minimum": 1
+            },
+            "contentEpoch": {
+              "type": "integer",
+              "format": "int64",
+              "minimum": 0
+            },
+            "snapshotId": {
+              "type": "string",
+              "pattern": "^snap_[A-Za-z0-9._:-]{8,127}$"
+            },
+            "snapshotHash": {
+              "type": "string",
+              "pattern": "^[A-Fa-f0-9]{64}$"
+            }
           }
         },
-        "dueLocalDate": { "type": "string", "format": "date" },
-        "dueAt": { "type": "string", "format": "date-time" },
-        "timezoneId": { "type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_+./-]{0,127}$" },
+        "dueLocalDate": {
+          "type": "string",
+          "format": "date"
+        },
+        "dueAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "timezoneId": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9_+./-]{0,127}$"
+        },
         "reasonCodes": {
           "type": "array",
           "minItems": 1,
@@ -542,48 +1286,112 @@
           "uniqueItems": true,
           "items": {
             "type": "string",
-            "enum": ["RESUME_SESSION", "SUBMISSION_CONFIRMATION", "D1_VERIFICATION", "D7_VERIFICATION", "DUE_TODAY", "OVERDUE_HIGH_RISK", "RECENT_MISTAKE", "REPEATED_ERROR_CATEGORY", "GOAL_FOUNDATION", "GOAL_COLLEGE_CET", "GOAL_POSTGRADUATE_ENGLISH", "GOAL_WORKPLACE_DAILY", "PLAN_CHECKPOINT", "NEW_CORE", "SKILL_ROTATION", "CATCH_UP_PROTECTION", "MANUAL_LEGAL_COURSE", "GOAL_LIGHT_ITEM_UNAVAILABLE", "CONTENT_ESTIMATE_UNSCHEDULABLE"]
+            "enum": [
+              "RESUME_SESSION",
+              "SUBMISSION_CONFIRMATION",
+              "D1_VERIFICATION",
+              "D7_VERIFICATION",
+              "DUE_TODAY",
+              "OVERDUE_HIGH_RISK",
+              "RECENT_MISTAKE",
+              "REPEATED_ERROR_CATEGORY",
+              "GOAL_FOUNDATION",
+              "GOAL_COLLEGE_CET",
+              "GOAL_POSTGRADUATE_ENGLISH",
+              "GOAL_WORKPLACE_DAILY",
+              "PLAN_CHECKPOINT",
+              "NEW_CORE",
+              "SKILL_ROTATION",
+              "CATCH_UP_PROTECTION",
+              "MANUAL_LEGAL_COURSE",
+              "GOAL_LIGHT_ITEM_UNAVAILABLE",
+              "CONTENT_ESTIMATE_UNSCHEDULABLE"
+            ]
           }
         },
-        "scheduledAt": { "type": "string", "format": "date-time" }
+        "scheduledAt": {
+          "type": "string",
+          "format": "date-time"
+        }
       },
       "oneOf": [
         {
           "title": "D1_VERIFICATION_QUEUE",
           "properties": {
-            "repairWorkflowState": { "enum": ["DELAY_VERIFY_D1"] },
+            "repairWorkflowState": {
+              "enum": [
+                "DELAY_VERIFY_D1"
+              ]
+            },
             "reasonCodes": {
-              "contains": { "enum": ["D1_VERIFICATION"] }
+              "contains": {
+                "enum": [
+                  "D1_VERIFICATION"
+                ]
+              }
             }
           }
         },
         {
           "title": "D7_VERIFICATION_QUEUE",
           "properties": {
-            "repairWorkflowState": { "enum": ["DELAY_VERIFY_D7"] },
+            "repairWorkflowState": {
+              "enum": [
+                "DELAY_VERIFY_D7"
+              ]
+            },
             "reasonCodes": {
-              "contains": { "enum": ["D7_VERIFICATION"] }
+              "contains": {
+                "enum": [
+                  "D7_VERIFICATION"
+                ]
+              }
             }
           }
         },
         {
           "title": "MASTERED_REPAIR_QUEUE",
           "properties": {
-            "repairWorkflowState": { "enum": ["MASTERED"] },
-            "masteryStage": { "enum": ["MASTERED", "CONSOLIDATED"] },
+            "repairWorkflowState": {
+              "enum": [
+                "MASTERED"
+              ]
+            },
+            "masteryStage": {
+              "enum": [
+                "MASTERED",
+                "CONSOLIDATED"
+              ]
+            },
             "reasonCodes": {
-              "contains": { "enum": ["D7_VERIFICATION"] }
+              "contains": {
+                "enum": [
+                  "D7_VERIFICATION"
+                ]
+              }
             }
           }
         },
         {
           "title": "REOPENED_REPAIR_QUEUE",
           "properties": {
-            "repairWorkflowState": { "enum": ["REOPENED"] },
-            "masteryStage": { "enum": ["LEARNING"] },
+            "repairWorkflowState": {
+              "enum": [
+                "REOPENED"
+              ]
+            },
+            "masteryStage": {
+              "enum": [
+                "LEARNING"
+              ]
+            },
             "reasonCodes": {
               "contains": {
-                "enum": ["D1_VERIFICATION", "D7_VERIFICATION", "CATCH_UP_PROTECTION"]
+                "enum": [
+                  "D1_VERIFICATION",
+                  "D7_VERIFICATION",
+                  "CATCH_UP_PROTECTION"
+                ]
               }
             }
           }
@@ -591,10 +1399,94 @@
         {
           "title": "ACTIVE_REVIEW_QUEUE",
           "properties": {
-            "repairWorkflowState": { "enum": ["REVIEW_QUEUE", "LEARNING"] }
+            "repairWorkflowState": {
+              "enum": [
+                "REVIEW_QUEUE",
+                "LEARNING"
+              ]
+            }
           }
         }
       ]
+    },
+    "B10LearningReportReadyV1": {
+      "$id": "platform.events.learning.report.ready.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "x-p1r-cross-field-invariants": [
+        "totalCorrect + totalMistakes = totalItems",
+        "scoreBucket=FULL => totalMistakes=0; scoreBucket=ZERO => totalCorrect=0"
+      ],
+      "required": [
+        "tenantId",
+        "principalId",
+        "reportId",
+        "attemptId",
+        "sessionId",
+        "contentCode",
+        "contentVersionId",
+        "scoreBucket",
+        "totalItems",
+        "totalCorrect",
+        "totalMistakes",
+        "completedAt"
+      ],
+      "properties": {
+        "tenantId": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_-]{1,63}$"
+        },
+        "principalId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "reportId": {
+          "type": "string",
+          "pattern": "^rpt_[A-Za-z0-9._:-]{8,127}$"
+        },
+        "attemptId": {
+          "type": "string",
+          "pattern": "^aatm_[A-Za-z0-9._:-]{8,127}$"
+        },
+        "sessionId": {
+          "type": "string",
+          "pattern": "^asess_[A-Za-z0-9._:-]{8,127}$"
+        },
+        "contentCode": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "contentVersionId": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "scoreBucket": {
+          "type": "string",
+          "enum": [
+            "FULL",
+            "PARTIAL",
+            "ZERO"
+          ]
+        },
+        "totalItems": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "totalCorrect": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "totalMistakes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "completedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
     }
   }
 }

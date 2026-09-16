@@ -46,6 +46,7 @@
       "leaderboard.snapshot_published.v2",
       "learner.target.updated.v1",
       "learning.mastery.projected.v2",
+      "learning.report.ready.v1",
       "learning.review.scheduled.v2",
       "learning.task.completed.v2",
       "notification.recovery.completed.v2",
@@ -159,10 +160,24 @@
       "expiredLeaseMayBeReclaimed": true,
       "concurrentOwnerRequired": true
     },
-    "states": ["PENDING", "PUBLISHING", "PUBLISHED", "RETRY_WAIT", "DLQ"],
+    "states": [
+      "PENDING",
+      "PUBLISHING",
+      "PUBLISHED",
+      "RETRY_WAIT",
+      "DLQ"
+    ],
     "transitions": [
-      { "from": "PENDING", "action": "CLAIM", "to": "PUBLISHING" },
-      { "from": "PUBLISHING", "action": "BROKER_ACK", "to": "PUBLISHED" },
+      {
+        "from": "PENDING",
+        "action": "CLAIM",
+        "to": "PUBLISHING"
+      },
+      {
+        "from": "PUBLISHING",
+        "action": "BROKER_ACK",
+        "to": "PUBLISHED"
+      },
       {
         "from": "PUBLISHING",
         "action": "RETRYABLE_FAILURE_UNDER_BUDGET",
@@ -181,7 +196,10 @@
     ],
     "ackRule": "BROKER_ACK_BEFORE_PUBLISHED",
     "crashAfterAckRule": "RETRY_WITH_SAME_EVENT_ID_AND_CONSUMER_DEDUPE",
-    "terminalStates": ["PUBLISHED", "DLQ"],
+    "terminalStates": [
+      "PUBLISHED",
+      "DLQ"
+    ],
     "runtimeVerificationTask": "P1R-M2-005"
   },
   "consumer": {
@@ -189,7 +207,10 @@
     "receiptSchemaRef": "platform.event.consumer-effect-receipt.v1",
     "delivery": "AT_LEAST_ONCE",
     "deduplication": {
-      "primaryUniqueKey": ["consumerGroup", "eventId"],
+      "primaryUniqueKey": [
+        "consumerGroup",
+        "eventId"
+      ],
       "secondaryKey": "dedupeKey",
       "sameDedupeKeyDifferentEventId": "REJECT_AND_AUDIT",
       "effectAndReceiptSameOwnerTransaction": true,
@@ -205,7 +226,11 @@
       "DLQ"
     ],
     "transitions": [
-      { "from": "RECEIVED", "action": "CLAIM", "to": "PROCESSING" },
+      {
+        "from": "RECEIVED",
+        "action": "CLAIM",
+        "to": "PROCESSING"
+      },
       {
         "from": "PROCESSING",
         "action": "EFFECT_AND_RECEIPT_COMMITTED",
@@ -232,7 +257,11 @@
         "to": "PROCESSING"
       }
     ],
-    "terminalStates": ["APPLIED", "DUPLICATE_SKIPPED", "DLQ"],
+    "terminalStates": [
+      "APPLIED",
+      "DUPLICATE_SKIPPED",
+      "DLQ"
+    ],
     "runtimeVerificationTask": "P1R-M2-005"
   },
   "retryBudget": {
@@ -352,7 +381,11 @@
     "contractResult": "D2_CONTRACT_READY",
     "currentRuntimeResult": "NOT_RUNTIME_VERIFIED",
     "b26MustRemain": "STATIC_ONLY_PENDING_NO_GO",
-    "m2RequiredTasks": ["P1R-M2-004", "P1R-M2-005", "P1R-M2-006"],
+    "m2RequiredTasks": [
+      "P1R-M2-004",
+      "P1R-M2-005",
+      "P1R-M2-006"
+    ],
     "cannotBeSatisfiedBy": [
       "EMPTY_TOPIC",
       "HEALTH_HTTP_200",

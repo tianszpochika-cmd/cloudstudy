@@ -55,6 +55,8 @@ const EXPECTED_CANONICAL_EVENTS = [
   'leaderboard.snapshot_published.v2',
   'learner.target.updated.v1',
   'learning.mastery.projected.v2',
+  // P1R decision 5A (human owner 2026-09-16): report-ready defined now.
+  'learning.report.ready.v1',
   'learning.review.scheduled.v2',
   'learning.task.completed.v2',
   'notification.recovery.completed.v2',
@@ -769,7 +771,7 @@ export function validateEventGovernanceData({ catalog, ownerPolicy, b26Runtime, 
 
   checkPlatformGovernance(catalog, errors);
   add(errors, b26Runtime.mode === 'static-only' && b26Runtime.runtimeStatus === 'pending' && b26Runtime.defaultDecision === 'NO-GO', 'B26 input must remain static-only, pending and NO-GO');
-  add(errors, Array.isArray(catalog.events) && catalog.events.length === 191, 'event catalog must contain exactly 191 current candidates');
+  add(errors, Array.isArray(catalog.events) && catalog.events.length === 192, 'event catalog must contain exactly 192 current candidates');
 
   const services = new Set((ownerPolicy.serviceOwners ?? []).map((owner) => owner.service));
   const dataOwners = new Set((ownerPolicy.serviceOwners ?? []).filter((owner) => owner.dataOwner === true).map((owner) => owner.service));
@@ -780,7 +782,7 @@ export function validateEventGovernanceData({ catalog, ownerPolicy, b26Runtime, 
   add(errors, duplicates(groupNames).length === 0, `B26 duplicates consumer group names: ${duplicates(groupNames).join(', ')}`);
   const routeNames = (b26Runtime.eventRouting ?? []).map((route) => route?.eventName);
   add(errors, duplicates(routeNames).length === 0, `B26 duplicates event routes: ${duplicates(routeNames).join(', ')}`);
-  add(errors, JSON.stringify([...routeNames].sort()) === JSON.stringify(EXPECTED_CANONICAL_EVENTS), 'B26 event routing must cover the exact fifty canonical governance events');
+  add(errors, JSON.stringify([...routeNames].sort()) === JSON.stringify(EXPECTED_CANONICAL_EVENTS), 'B26 event routing must cover the exact fifty-one canonical governance events');
   const routeByEvent = new Map((b26Runtime.eventRouting ?? []).map((route) => [route.eventName, route]));
   if (gamificationSocialPolicy !== undefined) checkTrustedCompletionPolicy(gamificationSocialPolicy, catalog, routeByEvent, errors);
   const eventNames = (catalog.events ?? []).map((event) => event?.eventName);
@@ -815,8 +817,8 @@ export function validateEventGovernanceData({ catalog, ownerPolicy, b26Runtime, 
       add(errors, isRecord(event['x-p1r-deprecation']), `${event.eventName} deprecated event requires migration metadata`);
     }
   }
-  add(errors, JSON.stringify(canonicalNames.sort()) === JSON.stringify(EXPECTED_CANONICAL_EVENTS), 'CANONICAL_D2 set must be the exact fifty governed events');
-  add(errors, counts.canonical === 50 && counts.historical === 141 && counts.deprecated === 0, 'event status counts must be 50 canonical / 141 historical / 0 deprecated');
+  add(errors, JSON.stringify(canonicalNames.sort()) === JSON.stringify(EXPECTED_CANONICAL_EVENTS), 'CANONICAL_D2 set must be the exact fifty-one governed events');
+  add(errors, counts.canonical === 51 && counts.historical === 141 && counts.deprecated === 0, 'event status counts must be 51 canonical / 141 historical / 0 deprecated');
 
   const fragmentInventory = catalog['x-p1r-event-governance']?.fragmentInventory ?? [];
   const inventoryPaths = fragmentInventory.map((fragment) => fragment?.path);

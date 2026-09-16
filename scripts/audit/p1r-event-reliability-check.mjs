@@ -45,6 +45,8 @@ const CANONICAL_EVENTS = [
   "leaderboard.snapshot_published.v2",
   "learner.target.updated.v1",
   "learning.mastery.projected.v2",
+  // P1R decision 5A (human owner 2026-09-16): report-ready defined now.
+  "learning.report.ready.v1",
   "learning.review.scheduled.v2",
   "learning.task.completed.v2",
   "notification.recovery.completed.v2",
