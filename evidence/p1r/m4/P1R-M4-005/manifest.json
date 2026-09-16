@@ -3,7 +3,7 @@
   "draftOnly": false,
   "canonicalTaskStatus": "DEV_DONE",
   "decision": "DEV_DONE",
-  "sourceCommit": "ea5f60b8ef6d8b7e1d3e148ff5b030066889df5b",
+  "sourceCommit": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
   "startedAt": "2026-09-15T17:55:00.000Z",
   "finishedAt": "2026-09-15T17:57:00.000Z",
   "environment": {
@@ -14,19 +14,52 @@
     "reviewPolicy": "Independent verification deferred by the owner: development proceeds to M8 and acceptance testing follows, so this task is DEV_DONE and not ACCEPTED.",
     "note": "REUSE-VERIFY: frozen manifest plus engine/checkpoint/resume already in the committed tree."
   },
-  "actors": ["root-coordinator", "p1r-implementation"],
-  "sourceIds": ["P1R-M4-005"],
-  "commands": [{ "command": "node scripts/runtime/p1r-m4-005-runtime.mjs", "purpose": "placement checks" }],
-  "results": [{ "check": "placement-7-checks", "status": "PASS", "details": "7/7: manifest, 10x4, lifecycle, checkpoint, resume, pins" }],
-  "rollbackEvidence": [{ "status": "PASS", "details": "Adds harness + evidence only; deleting them restores prior state." }],
+  "actors": [
+    "root-coordinator",
+    "p1r-implementation"
+  ],
+  "sourceIds": [
+    "P1R-M4-005"
+  ],
+  "commands": [
+    {
+      "command": "node scripts/runtime/p1r-m4-005-runtime.mjs",
+      "purpose": "placement checks"
+    }
+  ],
+  "results": [
+    {
+      "check": "placement-7-checks",
+      "status": "PASS",
+      "details": "7/7: manifest, 10x4, lifecycle, checkpoint, resume, pins"
+    }
+  ],
+  "rollbackEvidence": [
+    {
+      "status": "PASS",
+      "details": "Adds harness + evidence only; deleting them restores prior state."
+    }
+  ],
   "blockers": [],
-  "knownGaps": ["Fixed-input/output determinism run and boundary/confidence live fixtures deferred to acceptance."],
+  "knownGaps": [
+    "Fixed-input/output determinism run and boundary/confidence live fixtures deferred to acceptance."
+  ],
   "artifactDigests": [
-    { "path": "scripts/runtime/p1r-m4-005-runtime.mjs", "algorithm": "sha256", "digest": "613da43ee1b0f1c6a732555134391db5b9d47d279b6f455654bd5b2dd88798b1" },
-    { "path": "evidence/p1r/m4/P1R-M4-005/runtime-2026-09-15.json", "algorithm": "sha256", "digest": "081d526c6d5375b67e4ed72f00e2a09aac3c473737ddb3e65ff2fdf3ad0f2f43" }
+    {
+      "path": "scripts/runtime/p1r-m4-005-runtime.mjs",
+      "algorithm": "sha256",
+      "digest": "613da43ee1b0f1c6a732555134391db5b9d47d279b6f455654bd5b2dd88798b1"
+    },
+    {
+      "path": "evidence/p1r/m4/P1R-M4-005/runtime-2026-09-15.json",
+      "algorithm": "sha256",
+      "digest": "081d526c6d5375b67e4ed72f00e2a09aac3c473737ddb3e65ff2fdf3ad0f2f43"
+    }
   ],
   "reviewer": "agent:p1r_implementation:deepseek-harness",
-  "nextSteps": ["Acceptance testing by the owner, which is what DEV_DONE defers."],
+  "nextSteps": [
+    "Acceptance testing by the owner, which is what DEV_DONE defers."
+  ],
   "statusNote": "Development finished and the evidence is in the repository. Seven reuse checks pass. Not independently verified, which DEV_DONE says.",
   "provenance": {
     "originalSourceCommit": "ea5f60b8ef6d8b7e1d3e148ff5b030066889df5b",
@@ -34,9 +67,31 @@
     "currentSourceRevalidationTask": "P1R-M4-005",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-15T17:57:00.000Z",
-    "currentSourceRevalidationAuditedImplementationSource": "ea5f60b8ef6d8b7e1d3e148ff5b030066889df5b",
-    "currentSourceRevalidationIntegrationCheckpoint": "ea5f60b8ef6d8b7e1d3e148ff5b030066889df5b",
-    "currentSourceRevalidationHistory": [{ "taskId": "P1R-M4-005", "sourceCommit": "ea5f60b8ef6d8b7e1d3e148ff5b030066889df5b", "auditedImplementationSource": "ea5f60b8ef6d8b7e1d3e148ff5b030066889df5b", "integrationCheckpoint": "ea5f60b8ef6d8b7e1d3e148ff5b030066889df5b", "reviewer": "agent:p1r_implementation:deepseek-harness", "runtimeStatus": "RUNTIME_VERIFIED", "finishedAt": "2026-09-15T17:57:00.000Z", "details": "Initial DEV_DONE delivery under owner route A (REUSE-VERIFY)." }]
+    "currentSourceRevalidationFinishedAt": "2026-09-16T05:24:50.563Z",
+    "currentSourceRevalidationAuditedImplementationSource": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+    "currentSourceRevalidationIntegrationCheckpoint": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+    "currentSourceRevalidationHistory": [
+      {
+        "taskId": "P1R-M4-005",
+        "sourceCommit": "ea5f60b8ef6d8b7e1d3e148ff5b030066889df5b",
+        "auditedImplementationSource": "ea5f60b8ef6d8b7e1d3e148ff5b030066889df5b",
+        "integrationCheckpoint": "ea5f60b8ef6d8b7e1d3e148ff5b030066889df5b",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-15T17:57:00.000Z",
+        "details": "Initial DEV_DONE delivery under owner route A (REUSE-VERIFY)."
+      },
+      {
+        "taskId": "P1R-M4-005",
+        "sourceCommit": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+        "auditedImplementationSource": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+        "integrationCheckpoint": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T05:24:50.563Z",
+        "details": "P1R live-acceptance round 2026-09-16: contracts, checks, IAM/gateway/learner/learning/assessment/social/commerce/admin-ops sources and tests evolved under live E2E; rebind reviewed digests."
+      }
+    ],
+    "previousCurrentSourceCommit": "ea5f60b8ef6d8b7e1d3e148ff5b030066889df5b"
   }
 }

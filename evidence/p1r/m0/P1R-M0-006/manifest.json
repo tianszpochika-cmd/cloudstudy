@@ -2,7 +2,7 @@
   "taskId": "P1R-M0-006",
   "draftOnly": false,
   "canonicalTaskStatus": "DEV_DONE",
-  "sourceCommit": "c4bc2e0385eb00b584c1ae259654620dedda3b54",
+  "sourceCommit": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
   "artifactDigests": [
     {
       "path": "config/p1r-dependency-policy.json",
@@ -297,16 +297,26 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-15T14:25:27.088Z",
         "details": "Promotion to DEV_DONE under owner route A (development to M8, acceptance afterwards). Four pin-removal experiments proved every override load-bearing; P2 list and wording verdict deferred to independent acceptance and recorded in knownGaps. Digests recomputed from disk; original provenance and review history unchanged."
+      },
+      {
+        "taskId": "P1R-M0-006",
+        "sourceCommit": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+        "auditedImplementationSource": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+        "integrationCheckpoint": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T05:24:47.323Z",
+        "details": "P1R live-acceptance round 2026-09-16: contracts, checks, IAM/gateway/learner/learning/assessment/social/commerce/admin-ops sources and tests evolved under live E2E; rebind reviewed digests."
       }
     ],
-    "previousCurrentSourceCommit": "984ddecff776d1525d0a1c637c671661bfb379e5",
+    "previousCurrentSourceCommit": "c4bc2e0385eb00b584c1ae259654620dedda3b54",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
     "currentSourceRevalidationTask": "P1R-M0-006",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-15T14:25:27.088Z",
-    "currentSourceRevalidationAuditedImplementationSource": "c4bc2e0385eb00b584c1ae259654620dedda3b54",
-    "currentSourceRevalidationIntegrationCheckpoint": "c4bc2e0385eb00b584c1ae259654620dedda3b54",
+    "currentSourceRevalidationFinishedAt": "2026-09-16T05:24:47.323Z",
+    "currentSourceRevalidationAuditedImplementationSource": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+    "currentSourceRevalidationIntegrationCheckpoint": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
     "previousCurrentSourceRevalidationTask": "P1R-M0-006",
     "previousCurrentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "previousCurrentSourceRevalidationFinishedAt": "2026-09-12T15:59:44.043Z"

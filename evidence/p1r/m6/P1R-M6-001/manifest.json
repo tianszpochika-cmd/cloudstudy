@@ -3,7 +3,7 @@
   "draftOnly": false,
   "canonicalTaskStatus": "DEV_DONE",
   "decision": "DEV_DONE",
-  "sourceCommit": "df84b59f6f3884400c6ae94e11d5d89cb5d3da55",
+  "sourceCommit": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
   "startedAt": "2026-09-15T19:55:00.000Z",
   "finishedAt": "2026-09-15T19:58:00.000Z",
   "environment": {
@@ -14,25 +14,71 @@
     "reviewPolicy": "Independent verification deferred by the owner: development proceeds to M8 and acceptance testing follows, so this task is DEV_DONE and not ACCEPTED.",
     "note": "Subscription/template entities plus kept preferences/messages/receipts; compile green."
   },
-  "actors": ["root-coordinator", "p1r-implementation"],
-  "sourceIds": ["P1R-M6-001"],
-  "commands": [
-    { "command": "mvn -pl services/notification-service -am compile -DskipTests", "purpose": "notification-service builds with entities" },
-    { "command": "node scripts/runtime/p1r-m6-001-runtime.mjs", "purpose": "subscription/template checks" }
+  "actors": [
+    "root-coordinator",
+    "p1r-implementation"
   ],
-  "results": [{ "check": "notify-8-checks", "status": "PASS", "details": "8/8: tables, entities, preferences, messages, receipts, compile" }],
-  "rollbackEvidence": [{ "status": "PASS", "details": "Adds migration, two entities plus harness/evidence; deleting them restores prior state." }],
+  "sourceIds": [
+    "P1R-M6-001"
+  ],
+  "commands": [
+    {
+      "command": "mvn -pl services/notification-service -am compile -DskipTests",
+      "purpose": "notification-service builds with entities"
+    },
+    {
+      "command": "node scripts/runtime/p1r-m6-001-runtime.mjs",
+      "purpose": "subscription/template checks"
+    }
+  ],
+  "results": [
+    {
+      "check": "notify-8-checks",
+      "status": "PASS",
+      "details": "8/8: tables, entities, preferences, messages, receipts, compile"
+    }
+  ],
+  "rollbackEvidence": [
+    {
+      "status": "PASS",
+      "details": "Adds migration, two entities plus harness/evidence; deleting them restores prior state."
+    }
+  ],
   "blockers": [],
-  "knownGaps": ["Message eight-state live browser run deferred to M8."],
+  "knownGaps": [
+    "Message eight-state live browser run deferred to M8."
+  ],
   "artifactDigests": [
-    { "path": "services/notification-service/src/main/resources/db/migration/V7__create_subscription_and_template.sql", "algorithm": "sha256", "digest": "b088c4246858fe55fb60eb2373a92b1740f977d914564da420764167d40d3e24" },
-    { "path": "services/notification-service/src/main/java/com/englishflow/notification/domain/NotificationSubscription.java", "algorithm": "sha256", "digest": "32217035f61cb21c47744954e652d62bf17639a039a933779d11e0229a2dd527" },
-    { "path": "services/notification-service/src/main/java/com/englishflow/notification/domain/NotificationTemplate.java", "algorithm": "sha256", "digest": "faf3572ed43efa9216d010889d2bd00c206be3d1a41fa1cef75ade852e2c9f19" },
-    { "path": "scripts/runtime/p1r-m6-001-runtime.mjs", "algorithm": "sha256", "digest": "4eaea2050ae8cdb7659d850dc25ec06e7bca1e6aea3bdd24c02588687992c4e4" },
-    { "path": "evidence/p1r/m6/P1R-M6-001/runtime-2026-09-15.json", "algorithm": "sha256", "digest": "a5e3fac74885bfe3443dac2723d786874c730bb44bcee10fcb6464f279ccd88f" }
+    {
+      "path": "services/notification-service/src/main/resources/db/migration/V7__create_subscription_and_template.sql",
+      "algorithm": "sha256",
+      "digest": "b088c4246858fe55fb60eb2373a92b1740f977d914564da420764167d40d3e24"
+    },
+    {
+      "path": "services/notification-service/src/main/java/com/englishflow/notification/domain/NotificationSubscription.java",
+      "algorithm": "sha256",
+      "digest": "32217035f61cb21c47744954e652d62bf17639a039a933779d11e0229a2dd527"
+    },
+    {
+      "path": "services/notification-service/src/main/java/com/englishflow/notification/domain/NotificationTemplate.java",
+      "algorithm": "sha256",
+      "digest": "faf3572ed43efa9216d010889d2bd00c206be3d1a41fa1cef75ade852e2c9f19"
+    },
+    {
+      "path": "scripts/runtime/p1r-m6-001-runtime.mjs",
+      "algorithm": "sha256",
+      "digest": "4eaea2050ae8cdb7659d850dc25ec06e7bca1e6aea3bdd24c02588687992c4e4"
+    },
+    {
+      "path": "evidence/p1r/m6/P1R-M6-001/runtime-2026-09-15.json",
+      "algorithm": "sha256",
+      "digest": "a5e3fac74885bfe3443dac2723d786874c730bb44bcee10fcb6464f279ccd88f"
+    }
   ],
   "reviewer": "agent:p1r_implementation:deepseek-harness",
-  "nextSteps": ["Acceptance testing by the owner, which is what DEV_DONE defers."],
+  "nextSteps": [
+    "Acceptance testing by the owner, which is what DEV_DONE defers."
+  ],
   "statusNote": "Development finished and the evidence is in the repository. Eight checks pass with a green compile. Not independently verified, which DEV_DONE says.",
   "provenance": {
     "originalSourceCommit": "df84b59f6f3884400c6ae94e11d5d89cb5d3da55",
@@ -40,9 +86,31 @@
     "currentSourceRevalidationTask": "P1R-M6-001",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-15T19:58:00.000Z",
-    "currentSourceRevalidationAuditedImplementationSource": "df84b59f6f3884400c6ae94e11d5d89cb5d3da55",
-    "currentSourceRevalidationIntegrationCheckpoint": "df84b59f6f3884400c6ae94e11d5d89cb5d3da55",
-    "currentSourceRevalidationHistory": [{ "taskId": "P1R-M6-001", "sourceCommit": "df84b59f6f3884400c6ae94e11d5d89cb5d3da55", "auditedImplementationSource": "df84b59f6f3884400c6ae94e11d5d89cb5d3da55", "integrationCheckpoint": "df84b59f6f3884400c6ae94e11d5d89cb5d3da55", "reviewer": "agent:p1r_implementation:deepseek-harness", "runtimeStatus": "RUNTIME_VERIFIED", "finishedAt": "2026-09-15T19:58:00.000Z", "details": "Initial DEV_DONE delivery under owner route A." }]
+    "currentSourceRevalidationFinishedAt": "2026-09-16T05:24:51.967Z",
+    "currentSourceRevalidationAuditedImplementationSource": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+    "currentSourceRevalidationIntegrationCheckpoint": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+    "currentSourceRevalidationHistory": [
+      {
+        "taskId": "P1R-M6-001",
+        "sourceCommit": "df84b59f6f3884400c6ae94e11d5d89cb5d3da55",
+        "auditedImplementationSource": "df84b59f6f3884400c6ae94e11d5d89cb5d3da55",
+        "integrationCheckpoint": "df84b59f6f3884400c6ae94e11d5d89cb5d3da55",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-15T19:58:00.000Z",
+        "details": "Initial DEV_DONE delivery under owner route A."
+      },
+      {
+        "taskId": "P1R-M6-001",
+        "sourceCommit": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+        "auditedImplementationSource": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+        "integrationCheckpoint": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T05:24:51.967Z",
+        "details": "P1R live-acceptance round 2026-09-16: contracts, checks, IAM/gateway/learner/learning/assessment/social/commerce/admin-ops sources and tests evolved under live E2E; rebind reviewed digests."
+      }
+    ],
+    "previousCurrentSourceCommit": "df84b59f6f3884400c6ae94e11d5d89cb5d3da55"
   }
 }

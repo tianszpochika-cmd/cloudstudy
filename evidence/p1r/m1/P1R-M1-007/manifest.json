@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-007",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "984ddecff776d1525d0a1c637c671661bfb379e5",
+  "sourceCommit": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
   "artifactDigests": [
     {
       "path": ".github/workflows/ci.yml",
@@ -32,7 +32,7 @@
     {
       "path": "config/p1r-data-ownership.v1.json",
       "algorithm": "sha256",
-      "digest": "cb2c3bd202e5b2910e5b0127c5fd54b80bbd5b3433157dbaf46cc69c67318786"
+      "digest": "924a04708d55f394431b0925a3e5647e4a4e092c5a003552343cbb59362b205c"
     },
     {
       "path": "config/p1r-saga-recovery.v1.json",
@@ -102,7 +102,7 @@
     {
       "path": "packages/contracts/openapi/v1/openapi.json",
       "algorithm": "sha256",
-      "digest": "9a4f084f1a645c9655f1664bb6df7c4506fd507f1bd74bedd9ae353c196b6354"
+      "digest": "8f4ef5aa46f831152f9160e3b4c8172af636261d2256a4ac341a99ef671d0a3f"
     },
     {
       "path": "packages/contracts/schemas/v1/registry.json",
@@ -127,7 +127,7 @@
     {
       "path": "scripts/audit/p1r-data-ownership-check.mjs",
       "algorithm": "sha256",
-      "digest": "77148fcb0c1501e5ae1e50328a6dd8e1af4aad04b146be770c59af17035c36f4"
+      "digest": "93d5f600aada211151703dba8312833c47597ae6ca10eb3b5db71263157d3be1"
     },
     {
       "path": "scripts/audit/p1r-event-governance-check.mjs",
@@ -142,7 +142,7 @@
     {
       "path": "scripts/audit/p1r-gateway-contract-check.mjs",
       "algorithm": "sha256",
-      "digest": "6741e15cadf11c77ce4e0f20a35a5e10b46f9f12cbb48d04ba276ed3337f8c4c"
+      "digest": "7f8fd15ff6174e681af14ebe40820c70c42413abfe60ae736b5f1311da9b4320"
     },
     {
       "path": "scripts/audit/p1r-iam-policy-contract-check.mjs",
@@ -162,7 +162,7 @@
     {
       "path": "scripts/contracts/compatibility-diff.mjs",
       "algorithm": "sha256",
-      "digest": "5bc8ebcbdeccd890de2d1a18fe41992c43e393c8b7c295ca0eba9365dd863ac5"
+      "digest": "ceb2789bcd41af3194083496472019aa3d16db8f89c98966f0c1146db3d12079"
     },
     {
       "path": "scripts/contracts/compatibility-git-baseline.mjs",
@@ -237,7 +237,7 @@
     {
       "path": "tests/p1r/p1r-data-ownership.test.mjs",
       "algorithm": "sha256",
-      "digest": "4a492ab81c70b5df78fed4c831bdd9ab241095017407c796f8128afed85b3f6a"
+      "digest": "bca2be8b3c632a347442fe3174efdf59ee2769ae8f5d7e6036c67dd16b6a6940"
     },
     {
       "path": "tests/p1r/p1r-event-governance.test.mjs",
@@ -252,7 +252,7 @@
     {
       "path": "tests/p1r/p1r-gateway-contract.test.mjs",
       "algorithm": "sha256",
-      "digest": "624ea998e236aebe2ba18baefabf2bc0aef586613306cc3fa53567744c472e2f"
+      "digest": "02697e7c8382ae2183797016e4b49b00e925119aa4ea4ed07cfcda96c0bbdaa1"
     },
     {
       "path": "tests/p1r/p1r-iam-policy-contract.test.mjs",
@@ -921,9 +921,29 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-15T00:07:22.968Z",
         "details": "Rebind after M2-008 was delivered."
+      },
+      {
+        "taskId": "P1R-M1-007",
+        "sourceCommit": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+        "auditedImplementationSource": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+        "integrationCheckpoint": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T05:24:47.935Z",
+        "details": "P1R live-acceptance round 2026-09-16: contracts, checks, IAM/gateway/learner/learning/assessment/social/commerce/admin-ops sources and tests evolved under live E2E; rebind reviewed digests."
+      },
+      {
+        "taskId": "P1R-M1-007",
+        "sourceCommit": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+        "auditedImplementationSource": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+        "integrationCheckpoint": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T05:37:12.608Z",
+        "details": "Rebind after CRLF-to-LF normalization of python-written files; digests recomputed over canonical LF bytes."
       }
     ],
-    "previousCurrentSourceCommit": "2a5a54d791250fb77b9d9e24a1d9449111d74065",
+    "previousCurrentSourceCommit": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
     "previousCurrentSourceRevalidationTask": "P1R-M1-007",
     "currentSourceRevalidationTask": "P1R-M1-007",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
@@ -931,8 +951,8 @@
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
     "previousCurrentSourceRevalidationFinishedAt": "2026-09-13T02:30:07.343Z",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-15T00:07:22.968Z",
-    "currentSourceRevalidationAuditedImplementationSource": "984ddecff776d1525d0a1c637c671661bfb379e5",
-    "currentSourceRevalidationIntegrationCheckpoint": "984ddecff776d1525d0a1c637c671661bfb379e5"
+    "currentSourceRevalidationFinishedAt": "2026-09-16T05:37:12.608Z",
+    "currentSourceRevalidationAuditedImplementationSource": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+    "currentSourceRevalidationIntegrationCheckpoint": "9a38b3b584346c601620b1b0e31dc8dd847a9047"
   }
 }

@@ -3,7 +3,7 @@
   "draftOnly": false,
   "canonicalTaskStatus": "DEV_DONE",
   "decision": "DEV_DONE",
-  "sourceCommit": "6f34f03ceb0831347a6feb0bbe04cc3e12078dbf",
+  "sourceCommit": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
   "startedAt": "2026-09-15T15:50:00.000Z",
   "finishedAt": "2026-09-15T15:55:00.000Z",
   "environment": {
@@ -14,30 +14,97 @@
     "reviewPolicy": "Independent verification deferred by the owner: development proceeds to M8 and acceptance testing follows, so this task is DEV_DONE and not ACCEPTED.",
     "note": "Read from the committed admin-web tree; live browser eight-state run deferred to M8-007."
   },
-  "actors": ["root-coordinator", "p1r-implementation"],
-  "sourceIds": ["P1R-M3-001"],
-  "commands": [{ "command": "node scripts/runtime/p1r-m3-001-runtime.mjs", "purpose": "admin login/shell/dashboard/permission states" }],
-  "results": [
-    { "check": "view-exists:AdminLoginView.vue", "status": "PASS", "details": "present" },
-    { "check": "view-exists:AdminDashboardView.vue", "status": "PASS", "details": "present" },
-    { "check": "view-exists:AdminForbiddenView.vue", "status": "PASS", "details": "present" },
-    { "check": "view-exists:App.vue", "status": "PASS", "details": "present" },
-    { "check": "router-requires-auth-and-permission", "status": "PASS", "details": "requiresAuth + admin.* permission on domain routes" },
-    { "check": "permission-snapshot-from-server", "status": "PASS", "details": "getPermissions + applySnapshot" },
-    { "check": "no-client-role-headers", "status": "PASS", "details": "forged headers listed and rejected" },
-    { "check": "eight-ui-states-defined", "status": "PASS", "details": "loading,empty,error,permission,recovery,offline,success,partial" },
-    { "check": "forbidden-explains-server-policy", "status": "PASS", "details": "forbidden view renders permission context" },
-    { "check": "menu-filtered-by-permission", "status": "PASS", "details": "menu filtered by session.can(permission)" }
+  "actors": [
+    "root-coordinator",
+    "p1r-implementation"
   ],
-  "rollbackEvidence": [{ "status": "PASS", "details": "Adds a harness script, one runtime JSON and one manifest; deleting them restores the previous state." }],
+  "sourceIds": [
+    "P1R-M3-001"
+  ],
+  "commands": [
+    {
+      "command": "node scripts/runtime/p1r-m3-001-runtime.mjs",
+      "purpose": "admin login/shell/dashboard/permission states"
+    }
+  ],
+  "results": [
+    {
+      "check": "view-exists:AdminLoginView.vue",
+      "status": "PASS",
+      "details": "present"
+    },
+    {
+      "check": "view-exists:AdminDashboardView.vue",
+      "status": "PASS",
+      "details": "present"
+    },
+    {
+      "check": "view-exists:AdminForbiddenView.vue",
+      "status": "PASS",
+      "details": "present"
+    },
+    {
+      "check": "view-exists:App.vue",
+      "status": "PASS",
+      "details": "present"
+    },
+    {
+      "check": "router-requires-auth-and-permission",
+      "status": "PASS",
+      "details": "requiresAuth + admin.* permission on domain routes"
+    },
+    {
+      "check": "permission-snapshot-from-server",
+      "status": "PASS",
+      "details": "getPermissions + applySnapshot"
+    },
+    {
+      "check": "no-client-role-headers",
+      "status": "PASS",
+      "details": "forged headers listed and rejected"
+    },
+    {
+      "check": "eight-ui-states-defined",
+      "status": "PASS",
+      "details": "loading,empty,error,permission,recovery,offline,success,partial"
+    },
+    {
+      "check": "forbidden-explains-server-policy",
+      "status": "PASS",
+      "details": "forbidden view renders permission context"
+    },
+    {
+      "check": "menu-filtered-by-permission",
+      "status": "PASS",
+      "details": "menu filtered by session.can(permission)"
+    }
+  ],
+  "rollbackEvidence": [
+    {
+      "status": "PASS",
+      "details": "Adds a harness script, one runtime JSON and one manifest; deleting them restores the previous state."
+    }
+  ],
   "blockers": [],
-  "knownGaps": ["Live browser eight-state run across editor/reviewer/release/auditor (deep-link/403/empty/error/recovery) deferred to M8-007; what is evidenced is the committed shell, guards and state definitions."],
+  "knownGaps": [
+    "Live browser eight-state run across editor/reviewer/release/auditor (deep-link/403/empty/error/recovery) deferred to M8-007; what is evidenced is the committed shell, guards and state definitions."
+  ],
   "artifactDigests": [
-    { "path": "scripts/runtime/p1r-m3-001-runtime.mjs", "algorithm": "sha256", "digest": "5bfedbc5d3422a59ab214c717ec1d9cee8edefbcce6fe1c9b3ef8b5f913c2f9b" },
-    { "path": "evidence/p1r/m3/P1R-M3-001/runtime-2026-09-15.json", "algorithm": "sha256", "digest": "45c038a76cfcf6e18653d377addf06f389257091f6b496718debc7df938cfe9f" }
+    {
+      "path": "scripts/runtime/p1r-m3-001-runtime.mjs",
+      "algorithm": "sha256",
+      "digest": "5bfedbc5d3422a59ab214c717ec1d9cee8edefbcce6fe1c9b3ef8b5f913c2f9b"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-001/runtime-2026-09-15.json",
+      "algorithm": "sha256",
+      "digest": "45c038a76cfcf6e18653d377addf06f389257091f6b496718debc7df938cfe9f"
+    }
   ],
   "reviewer": "agent:p1r_implementation:deepseek-harness",
-  "nextSteps": ["Acceptance testing by the owner, which is what DEV_DONE defers."],
+  "nextSteps": [
+    "Acceptance testing by the owner, which is what DEV_DONE defers."
+  ],
   "statusNote": "Development finished and the evidence is in the repository. Ten checks pass on the committed admin-web tree. Not independently verified, which DEV_DONE says.",
   "provenance": {
     "originalSourceCommit": "6f34f03ceb0831347a6feb0bbe04cc3e12078dbf",
@@ -45,9 +112,31 @@
     "currentSourceRevalidationTask": "P1R-M3-001",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-15T15:55:00.000Z",
-    "currentSourceRevalidationAuditedImplementationSource": "6f34f03ceb0831347a6feb0bbe04cc3e12078dbf",
-    "currentSourceRevalidationIntegrationCheckpoint": "6f34f03ceb0831347a6feb0bbe04cc3e12078dbf",
-    "currentSourceRevalidationHistory": [{ "taskId": "P1R-M3-001", "sourceCommit": "6f34f03ceb0831347a6feb0bbe04cc3e12078dbf", "auditedImplementationSource": "6f34f03ceb0831347a6feb0bbe04cc3e12078dbf", "integrationCheckpoint": "6f34f03ceb0831347a6feb0bbe04cc3e12078dbf", "reviewer": "agent:p1r_implementation:deepseek-harness", "runtimeStatus": "RUNTIME_VERIFIED", "finishedAt": "2026-09-15T15:55:00.000Z", "details": "Initial DEV_DONE delivery under owner route A after M2-010 reached DEV_DONE." }]
+    "currentSourceRevalidationFinishedAt": "2026-09-16T05:24:49.604Z",
+    "currentSourceRevalidationAuditedImplementationSource": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+    "currentSourceRevalidationIntegrationCheckpoint": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+    "currentSourceRevalidationHistory": [
+      {
+        "taskId": "P1R-M3-001",
+        "sourceCommit": "6f34f03ceb0831347a6feb0bbe04cc3e12078dbf",
+        "auditedImplementationSource": "6f34f03ceb0831347a6feb0bbe04cc3e12078dbf",
+        "integrationCheckpoint": "6f34f03ceb0831347a6feb0bbe04cc3e12078dbf",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-15T15:55:00.000Z",
+        "details": "Initial DEV_DONE delivery under owner route A after M2-010 reached DEV_DONE."
+      },
+      {
+        "taskId": "P1R-M3-001",
+        "sourceCommit": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+        "auditedImplementationSource": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+        "integrationCheckpoint": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T05:24:49.604Z",
+        "details": "P1R live-acceptance round 2026-09-16: contracts, checks, IAM/gateway/learner/learning/assessment/social/commerce/admin-ops sources and tests evolved under live E2E; rebind reviewed digests."
+      }
+    ],
+    "previousCurrentSourceCommit": "6f34f03ceb0831347a6feb0bbe04cc3e12078dbf"
   }
 }

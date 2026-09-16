@@ -3,7 +3,7 @@
   "draftOnly": false,
   "canonicalTaskStatus": "DEV_DONE",
   "decision": "DEV_DONE",
-  "sourceCommit": "c7c0b2e2fd5a085409c0243f99afe195418563d5",
+  "sourceCommit": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
   "startedAt": "2026-09-15T21:40:00.000Z",
   "finishedAt": "2026-09-15T21:43:00.000Z",
   "environment": {
@@ -14,23 +14,61 @@
     "reviewPolicy": "Independent verification deferred by the owner: development proceeds to M8 and acceptance testing follows, so this task is DEV_DONE and not ACCEPTED.",
     "note": "Refund ops workbench delivered; orders stay read-only."
   },
-  "actors": ["root-coordinator", "p1r-implementation"],
-  "sourceIds": ["P1R-M7-009"],
-  "commands": [
-    { "command": "pnpm --filter @englishflow/admin-web exec vue-tsc --noEmit", "purpose": "admin-web typechecks with workbench" },
-    { "command": "node scripts/runtime/p1r-m7-009-runtime.mjs", "purpose": "ops workbench checks" }
+  "actors": [
+    "root-coordinator",
+    "p1r-implementation"
   ],
-  "results": [{ "check": "ops-8-checks", "status": "PASS", "details": "8/8: learner page, refund card, two-step, reasons, backend, readonly, gate, typecheck" }],
-  "rollbackEvidence": [{ "status": "PASS", "details": "Adds refund card plus harness/evidence; deleting restores read-only tree." }],
+  "sourceIds": [
+    "P1R-M7-009"
+  ],
+  "commands": [
+    {
+      "command": "pnpm --filter @englishflow/admin-web exec vue-tsc --noEmit",
+      "purpose": "admin-web typechecks with workbench"
+    },
+    {
+      "command": "node scripts/runtime/p1r-m7-009-runtime.mjs",
+      "purpose": "ops workbench checks"
+    }
+  ],
+  "results": [
+    {
+      "check": "ops-8-checks",
+      "status": "PASS",
+      "details": "8/8: learner page, refund card, two-step, reasons, backend, readonly, gate, typecheck"
+    }
+  ],
+  "rollbackEvidence": [
+    {
+      "status": "PASS",
+      "details": "Adds refund card plus harness/evidence; deleting restores read-only tree."
+    }
+  ],
   "blockers": [],
-  "knownGaps": ["Live refund browser run and eight-state sweep deferred to acceptance."],
+  "knownGaps": [
+    "Live refund browser run and eight-state sweep deferred to acceptance."
+  ],
   "artifactDigests": [
-    { "path": "apps/admin-web/src/views/AdminCommerceView.vue", "algorithm": "sha256", "digest": "cb3824c7444b72779bd26197fbfb3bf3174e07a5c50b210dba17168123c3b007" },
-    { "path": "scripts/runtime/p1r-m7-009-runtime.mjs", "algorithm": "sha256", "digest": "b9080513a1c761981eaba53eb616c0c30d7ced1a5c8fe9f1f1708ac518335b04" },
-    { "path": "evidence/p1r/m7/P1R-M7-009/runtime-2026-09-15.json", "algorithm": "sha256", "digest": "a49ffe916552a01afe91f79b45ff9d691b6225da72dd9ba93fd2544c2520f235" }
+    {
+      "path": "apps/admin-web/src/views/AdminCommerceView.vue",
+      "algorithm": "sha256",
+      "digest": "cb3824c7444b72779bd26197fbfb3bf3174e07a5c50b210dba17168123c3b007"
+    },
+    {
+      "path": "scripts/runtime/p1r-m7-009-runtime.mjs",
+      "algorithm": "sha256",
+      "digest": "b9080513a1c761981eaba53eb616c0c30d7ced1a5c8fe9f1f1708ac518335b04"
+    },
+    {
+      "path": "evidence/p1r/m7/P1R-M7-009/runtime-2026-09-15.json",
+      "algorithm": "sha256",
+      "digest": "a49ffe916552a01afe91f79b45ff9d691b6225da72dd9ba93fd2544c2520f235"
+    }
   ],
   "reviewer": "agent:p1r_implementation:deepseek-harness",
-  "nextSteps": ["Acceptance testing by the owner, which is what DEV_DONE defers."],
+  "nextSteps": [
+    "Acceptance testing by the owner, which is what DEV_DONE defers."
+  ],
   "statusNote": "Development finished and the evidence is in the repository. Eight checks pass with a green typecheck. Not independently verified, which DEV_DONE says.",
   "provenance": {
     "originalSourceCommit": "c7c0b2e2fd5a085409c0243f99afe195418563d5",
@@ -38,9 +76,31 @@
     "currentSourceRevalidationTask": "P1R-M7-009",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-15T21:43:00.000Z",
-    "currentSourceRevalidationAuditedImplementationSource": "c7c0b2e2fd5a085409c0243f99afe195418563d5",
-    "currentSourceRevalidationIntegrationCheckpoint": "c7c0b2e2fd5a085409c0243f99afe195418563d5",
-    "currentSourceRevalidationHistory": [{ "taskId": "P1R-M7-009", "sourceCommit": "c7c0b2e2fd5a085409c0243f99afe195418563d5", "auditedImplementationSource": "c7c0b2e2fd5a085409c0243f99afe195418563d5", "integrationCheckpoint": "c7c0b2e2fd5a085409c0243f99afe195418563d5", "reviewer": "agent:p1r_implementation:deepseek-harness", "runtimeStatus": "RUNTIME_VERIFIED", "finishedAt": "2026-09-15T21:43:00.000Z", "details": "Initial DEV_DONE delivery under owner route A." }]
+    "currentSourceRevalidationFinishedAt": "2026-09-16T05:24:53.302Z",
+    "currentSourceRevalidationAuditedImplementationSource": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+    "currentSourceRevalidationIntegrationCheckpoint": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+    "currentSourceRevalidationHistory": [
+      {
+        "taskId": "P1R-M7-009",
+        "sourceCommit": "c7c0b2e2fd5a085409c0243f99afe195418563d5",
+        "auditedImplementationSource": "c7c0b2e2fd5a085409c0243f99afe195418563d5",
+        "integrationCheckpoint": "c7c0b2e2fd5a085409c0243f99afe195418563d5",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-15T21:43:00.000Z",
+        "details": "Initial DEV_DONE delivery under owner route A."
+      },
+      {
+        "taskId": "P1R-M7-009",
+        "sourceCommit": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+        "auditedImplementationSource": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+        "integrationCheckpoint": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T05:24:53.302Z",
+        "details": "P1R live-acceptance round 2026-09-16: contracts, checks, IAM/gateway/learner/learning/assessment/social/commerce/admin-ops sources and tests evolved under live E2E; rebind reviewed digests."
+      }
+    ],
+    "previousCurrentSourceCommit": "c7c0b2e2fd5a085409c0243f99afe195418563d5"
   }
 }

@@ -3,7 +3,7 @@
   "draftOnly": false,
   "canonicalTaskStatus": "DEV_DONE",
   "decision": "DEV_DONE",
-  "sourceCommit": "acf7063cc1f15cde88ae8847eb8076ba6578c843",
+  "sourceCommit": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
   "startedAt": "2026-09-15T20:00:00.000Z",
   "finishedAt": "2026-09-15T20:02:00.000Z",
   "environment": {
@@ -14,19 +14,52 @@
     "reviewPolicy": "Independent verification deferred by the owner: development proceeds to M8 and acceptance testing follows, so this task is DEV_DONE and not ACCEPTED.",
     "note": "REUSE-VERIFY: retry/DLQ/recovery already in the committed tree."
   },
-  "actors": ["root-coordinator", "p1r-implementation"],
-  "sourceIds": ["P1R-M6-002"],
-  "commands": [{ "command": "node scripts/runtime/p1r-m6-002-runtime.mjs", "purpose": "retry checks" }],
-  "results": [{ "check": "retry-8-checks", "status": "PASS", "details": "8/8: retry, DLQ, recovery, notice, trace, isolation, dedupe" }],
-  "rollbackEvidence": [{ "status": "PASS", "details": "Adds harness + evidence only; deleting them restores prior state." }],
+  "actors": [
+    "root-coordinator",
+    "p1r-implementation"
+  ],
+  "sourceIds": [
+    "P1R-M6-002"
+  ],
+  "commands": [
+    {
+      "command": "node scripts/runtime/p1r-m6-002-runtime.mjs",
+      "purpose": "retry checks"
+    }
+  ],
+  "results": [
+    {
+      "check": "retry-8-checks",
+      "status": "PASS",
+      "details": "8/8: retry, DLQ, recovery, notice, trace, isolation, dedupe"
+    }
+  ],
+  "rollbackEvidence": [
+    {
+      "status": "PASS",
+      "details": "Adds harness + evidence only; deleting them restores prior state."
+    }
+  ],
   "blockers": [],
-  "knownGaps": ["Channel-failure live run deferred to acceptance."],
+  "knownGaps": [
+    "Channel-failure live run deferred to acceptance."
+  ],
   "artifactDigests": [
-    { "path": "scripts/runtime/p1r-m6-002-runtime.mjs", "algorithm": "sha256", "digest": "2ee9677685bb277bf06e269fc17001d901205a493e7e0b49ba314f298d0ad2fe" },
-    { "path": "evidence/p1r/m6/P1R-M6-002/runtime-2026-09-15.json", "algorithm": "sha256", "digest": "8096a76bb2511a9d92865bac9ce593a924ffa076979909df99ec76dc764b597c" }
+    {
+      "path": "scripts/runtime/p1r-m6-002-runtime.mjs",
+      "algorithm": "sha256",
+      "digest": "2ee9677685bb277bf06e269fc17001d901205a493e7e0b49ba314f298d0ad2fe"
+    },
+    {
+      "path": "evidence/p1r/m6/P1R-M6-002/runtime-2026-09-15.json",
+      "algorithm": "sha256",
+      "digest": "8096a76bb2511a9d92865bac9ce593a924ffa076979909df99ec76dc764b597c"
+    }
   ],
   "reviewer": "agent:p1r_implementation:deepseek-harness",
-  "nextSteps": ["Acceptance testing by the owner, which is what DEV_DONE defers."],
+  "nextSteps": [
+    "Acceptance testing by the owner, which is what DEV_DONE defers."
+  ],
   "statusNote": "Development finished and the evidence is in the repository. Eight reuse checks pass. Not independently verified, which DEV_DONE says.",
   "provenance": {
     "originalSourceCommit": "acf7063cc1f15cde88ae8847eb8076ba6578c843",
@@ -34,9 +67,31 @@
     "currentSourceRevalidationTask": "P1R-M6-002",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-15T20:02:00.000Z",
-    "currentSourceRevalidationAuditedImplementationSource": "acf7063cc1f15cde88ae8847eb8076ba6578c843",
-    "currentSourceRevalidationIntegrationCheckpoint": "acf7063cc1f15cde88ae8847eb8076ba6578c843",
-    "currentSourceRevalidationHistory": [{ "taskId": "P1R-M6-002", "sourceCommit": "acf7063cc1f15cde88ae8847eb8076ba6578c843", "auditedImplementationSource": "acf7063cc1f15cde88ae8847eb8076ba6578c843", "integrationCheckpoint": "acf7063cc1f15cde88ae8847eb8076ba6578c843", "reviewer": "agent:p1r_implementation:deepseek-harness", "runtimeStatus": "RUNTIME_VERIFIED", "finishedAt": "2026-09-15T20:02:00.000Z", "details": "Initial DEV_DONE delivery under owner route A (REUSE-VERIFY)." }]
+    "currentSourceRevalidationFinishedAt": "2026-09-16T05:24:52.036Z",
+    "currentSourceRevalidationAuditedImplementationSource": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+    "currentSourceRevalidationIntegrationCheckpoint": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+    "currentSourceRevalidationHistory": [
+      {
+        "taskId": "P1R-M6-002",
+        "sourceCommit": "acf7063cc1f15cde88ae8847eb8076ba6578c843",
+        "auditedImplementationSource": "acf7063cc1f15cde88ae8847eb8076ba6578c843",
+        "integrationCheckpoint": "acf7063cc1f15cde88ae8847eb8076ba6578c843",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-15T20:02:00.000Z",
+        "details": "Initial DEV_DONE delivery under owner route A (REUSE-VERIFY)."
+      },
+      {
+        "taskId": "P1R-M6-002",
+        "sourceCommit": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+        "auditedImplementationSource": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+        "integrationCheckpoint": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T05:24:52.036Z",
+        "details": "P1R live-acceptance round 2026-09-16: contracts, checks, IAM/gateway/learner/learning/assessment/social/commerce/admin-ops sources and tests evolved under live E2E; rebind reviewed digests."
+      }
+    ],
+    "previousCurrentSourceCommit": "acf7063cc1f15cde88ae8847eb8076ba6578c843"
   }
 }

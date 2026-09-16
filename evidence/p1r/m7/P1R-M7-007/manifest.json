@@ -3,7 +3,7 @@
   "draftOnly": false,
   "canonicalTaskStatus": "DEV_DONE",
   "decision": "DEV_DONE",
-  "sourceCommit": "1c99a7b975de4adda1858fb3e4bc8917bd7c7c66",
+  "sourceCommit": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
   "startedAt": "2026-09-15T21:30:00.000Z",
   "finishedAt": "2026-09-15T21:32:00.000Z",
   "environment": {
@@ -14,19 +14,52 @@
     "reviewPolicy": "Independent verification deferred by the owner: development proceeds to M8 and acceptance testing follows, so this task is DEV_DONE and not ACCEPTED.",
     "note": "Specialized callback/dedupe/sandbox tests verified green this session; ledger corrected."
   },
-  "actors": ["root-coordinator", "p1r-implementation"],
-  "sourceIds": ["P1R-M7-007"],
-  "commands": [{ "command": "mvn -pl services/commerce-service test -Dtest=PaymentCallback*,Hmac*,Sandbox*,PaymentGate*,CommerceStateMachine*", "purpose": "sandbox suite 48/48" }],
-  "results": [{ "check": "sandbox-8-checks", "status": "PASS", "details": "8/8: hmac 13, dedupe 4, sandbox 8, gate 9, machine 14, suite green, prod OFF" }],
-  "rollbackEvidence": [{ "status": "PASS", "details": "Adds harness + evidence only; deleting them restores prior state." }],
+  "actors": [
+    "root-coordinator",
+    "p1r-implementation"
+  ],
+  "sourceIds": [
+    "P1R-M7-007"
+  ],
+  "commands": [
+    {
+      "command": "mvn -pl services/commerce-service test -Dtest=PaymentCallback*,Hmac*,Sandbox*,PaymentGate*,CommerceStateMachine*",
+      "purpose": "sandbox suite 48/48"
+    }
+  ],
+  "results": [
+    {
+      "check": "sandbox-8-checks",
+      "status": "PASS",
+      "details": "8/8: hmac 13, dedupe 4, sandbox 8, gate 9, machine 14, suite green, prod OFF"
+    }
+  ],
+  "rollbackEvidence": [
+    {
+      "status": "PASS",
+      "details": "Adds harness + evidence only; deleting them restores prior state."
+    }
+  ],
   "blockers": [],
-  "knownGaps": ["Out-of-order/amount-conflict live callback run deferred to acceptance."],
+  "knownGaps": [
+    "Out-of-order/amount-conflict live callback run deferred to acceptance."
+  ],
   "artifactDigests": [
-    { "path": "scripts/runtime/p1r-m7-007-runtime.mjs", "algorithm": "sha256", "digest": "e4e90354b69d26761cfdf33f23bbd3da8c95a2f0e1a6f3b6c91cad193c964e98" },
-    { "path": "evidence/p1r/m7/P1R-M7-007/runtime-2026-09-15.json", "algorithm": "sha256", "digest": "0ffefb3050392b385a893c91000c889fd1a5840821d959a2bb61103fcb5c6645" }
+    {
+      "path": "scripts/runtime/p1r-m7-007-runtime.mjs",
+      "algorithm": "sha256",
+      "digest": "e4e90354b69d26761cfdf33f23bbd3da8c95a2f0e1a6f3b6c91cad193c964e98"
+    },
+    {
+      "path": "evidence/p1r/m7/P1R-M7-007/runtime-2026-09-15.json",
+      "algorithm": "sha256",
+      "digest": "0ffefb3050392b385a893c91000c889fd1a5840821d959a2bb61103fcb5c6645"
+    }
   ],
   "reviewer": "agent:p1r_implementation:deepseek-harness",
-  "nextSteps": ["Acceptance testing by the owner, which is what DEV_DONE defers."],
+  "nextSteps": [
+    "Acceptance testing by the owner, which is what DEV_DONE defers."
+  ],
   "statusNote": "Development finished and the evidence is in the repository. Eight checks pass with 48/48 green. Not independently verified, which DEV_DONE says.",
   "provenance": {
     "originalSourceCommit": "1c99a7b975de4adda1858fb3e4bc8917bd7c7c66",
@@ -34,9 +67,31 @@
     "currentSourceRevalidationTask": "P1R-M7-007",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-15T21:32:00.000Z",
-    "currentSourceRevalidationAuditedImplementationSource": "1c99a7b975de4adda1858fb3e4bc8917bd7c7c66",
-    "currentSourceRevalidationIntegrationCheckpoint": "1c99a7b975de4adda1858fb3e4bc8917bd7c7c66",
-    "currentSourceRevalidationHistory": [{ "taskId": "P1R-M7-007", "sourceCommit": "1c99a7b975de4adda1858fb3e4bc8917bd7c7c66", "auditedImplementationSource": "1c99a7b975de4adda1858fb3e4bc8917bd7c7c66", "integrationCheckpoint": "1c99a7b975de4adda1858fb3e4bc8917bd7c7c66", "reviewer": "agent:p1r_implementation:deepseek-harness", "runtimeStatus": "RUNTIME_VERIFIED", "finishedAt": "2026-09-15T21:32:00.000Z", "details": "Initial DEV_DONE delivery under owner route A (test-verified)." }]
+    "currentSourceRevalidationFinishedAt": "2026-09-16T05:24:53.164Z",
+    "currentSourceRevalidationAuditedImplementationSource": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+    "currentSourceRevalidationIntegrationCheckpoint": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+    "currentSourceRevalidationHistory": [
+      {
+        "taskId": "P1R-M7-007",
+        "sourceCommit": "1c99a7b975de4adda1858fb3e4bc8917bd7c7c66",
+        "auditedImplementationSource": "1c99a7b975de4adda1858fb3e4bc8917bd7c7c66",
+        "integrationCheckpoint": "1c99a7b975de4adda1858fb3e4bc8917bd7c7c66",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-15T21:32:00.000Z",
+        "details": "Initial DEV_DONE delivery under owner route A (test-verified)."
+      },
+      {
+        "taskId": "P1R-M7-007",
+        "sourceCommit": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+        "auditedImplementationSource": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+        "integrationCheckpoint": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T05:24:53.164Z",
+        "details": "P1R live-acceptance round 2026-09-16: contracts, checks, IAM/gateway/learner/learning/assessment/social/commerce/admin-ops sources and tests evolved under live E2E; rebind reviewed digests."
+      }
+    ],
+    "previousCurrentSourceCommit": "1c99a7b975de4adda1858fb3e4bc8917bd7c7c66"
   }
 }

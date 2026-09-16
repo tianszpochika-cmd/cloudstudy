@@ -3,7 +3,7 @@
   "draftOnly": false,
   "canonicalTaskStatus": "DEV_DONE",
   "decision": "DEV_DONE",
-  "sourceCommit": "6f11365524ee8fda084cb5a80a0f18b10819a176",
+  "sourceCommit": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
   "startedAt": "2026-09-15T19:25:00.000Z",
   "finishedAt": "2026-09-15T19:28:00.000Z",
   "environment": {
@@ -14,23 +14,61 @@
     "reviewPolicy": "Independent verification deferred by the owner: development proceeds to M8 and acceptance testing follows, so this task is DEV_DONE and not ACCEPTED.",
     "note": "Variant repair added to the committed domain; lifecycle pre-exists; compile green."
   },
-  "actors": ["root-coordinator", "p1r-implementation"],
-  "sourceIds": ["P1R-M5-009"],
-  "commands": [
-    { "command": "mvn -pl services/assessment-service -am compile -DskipTests", "purpose": "assessment-service builds with variant" },
-    { "command": "node scripts/runtime/p1r-m5-009-runtime.mjs", "purpose": "mistake checks" }
+  "actors": [
+    "root-coordinator",
+    "p1r-implementation"
   ],
-  "results": [{ "check": "mistake-8-checks", "status": "PASS", "details": "8/8: lifecycle, variant, trace, reopen, due, owner, stages, compile" }],
-  "rollbackEvidence": [{ "status": "PASS", "details": "Adds one domain method plus harness/evidence; deleting them restores prior state." }],
+  "sourceIds": [
+    "P1R-M5-009"
+  ],
+  "commands": [
+    {
+      "command": "mvn -pl services/assessment-service -am compile -DskipTests",
+      "purpose": "assessment-service builds with variant"
+    },
+    {
+      "command": "node scripts/runtime/p1r-m5-009-runtime.mjs",
+      "purpose": "mistake checks"
+    }
+  ],
+  "results": [
+    {
+      "check": "mistake-8-checks",
+      "status": "PASS",
+      "details": "8/8: lifecycle, variant, trace, reopen, due, owner, stages, compile"
+    }
+  ],
+  "rollbackEvidence": [
+    {
+      "status": "PASS",
+      "details": "Adds one domain method plus harness/evidence; deleting them restores prior state."
+    }
+  ],
   "blockers": [],
-  "knownGaps": ["Variant-issuing endpoint wiring and timezone live D1/D7 proof deferred to acceptance."],
+  "knownGaps": [
+    "Variant-issuing endpoint wiring and timezone live D1/D7 proof deferred to acceptance."
+  ],
   "artifactDigests": [
-    { "path": "services/assessment-service/src/main/java/com/englishflow/assessment/domain/AssessmentMistake.java", "algorithm": "sha256", "digest": "cc58061fcf6ede0b848385930ddf1bef789e30d0162067d01ade5addd1e9ad92" },
-    { "path": "scripts/runtime/p1r-m5-009-runtime.mjs", "algorithm": "sha256", "digest": "fc240d94ae42ed75a27bf94578ccb8f47ba99f4ff1b3058ba2e65ec7d1b11d99" },
-    { "path": "evidence/p1r/m5/P1R-M5-009/runtime-2026-09-15.json", "algorithm": "sha256", "digest": "d32898b8847722e877733d65a3895c8f00c3847104752c94c3168280813eef9e" }
+    {
+      "path": "services/assessment-service/src/main/java/com/englishflow/assessment/domain/AssessmentMistake.java",
+      "algorithm": "sha256",
+      "digest": "cc58061fcf6ede0b848385930ddf1bef789e30d0162067d01ade5addd1e9ad92"
+    },
+    {
+      "path": "scripts/runtime/p1r-m5-009-runtime.mjs",
+      "algorithm": "sha256",
+      "digest": "fc240d94ae42ed75a27bf94578ccb8f47ba99f4ff1b3058ba2e65ec7d1b11d99"
+    },
+    {
+      "path": "evidence/p1r/m5/P1R-M5-009/runtime-2026-09-15.json",
+      "algorithm": "sha256",
+      "digest": "d32898b8847722e877733d65a3895c8f00c3847104752c94c3168280813eef9e"
+    }
   ],
   "reviewer": "agent:p1r_implementation:deepseek-harness",
-  "nextSteps": ["Acceptance testing by the owner, which is what DEV_DONE defers."],
+  "nextSteps": [
+    "Acceptance testing by the owner, which is what DEV_DONE defers."
+  ],
   "statusNote": "Development finished and the evidence is in the repository. Eight checks pass with a green compile. Not independently verified, which DEV_DONE says.",
   "provenance": {
     "originalSourceCommit": "6f11365524ee8fda084cb5a80a0f18b10819a176",
@@ -38,9 +76,31 @@
     "currentSourceRevalidationTask": "P1R-M5-009",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-15T19:28:00.000Z",
-    "currentSourceRevalidationAuditedImplementationSource": "6f11365524ee8fda084cb5a80a0f18b10819a176",
-    "currentSourceRevalidationIntegrationCheckpoint": "6f11365524ee8fda084cb5a80a0f18b10819a176",
-    "currentSourceRevalidationHistory": [{ "taskId": "P1R-M5-009", "sourceCommit": "6f11365524ee8fda084cb5a80a0f18b10819a176", "auditedImplementationSource": "6f11365524ee8fda084cb5a80a0f18b10819a176", "integrationCheckpoint": "6f11365524ee8fda084cb5a80a0f18b10819a176", "reviewer": "agent:p1r_implementation:deepseek-harness", "runtimeStatus": "RUNTIME_VERIFIED", "finishedAt": "2026-09-15T19:28:00.000Z", "details": "Initial DEV_DONE delivery under owner route A." }]
+    "currentSourceRevalidationFinishedAt": "2026-09-16T05:24:51.550Z",
+    "currentSourceRevalidationAuditedImplementationSource": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+    "currentSourceRevalidationIntegrationCheckpoint": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+    "currentSourceRevalidationHistory": [
+      {
+        "taskId": "P1R-M5-009",
+        "sourceCommit": "6f11365524ee8fda084cb5a80a0f18b10819a176",
+        "auditedImplementationSource": "6f11365524ee8fda084cb5a80a0f18b10819a176",
+        "integrationCheckpoint": "6f11365524ee8fda084cb5a80a0f18b10819a176",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-15T19:28:00.000Z",
+        "details": "Initial DEV_DONE delivery under owner route A."
+      },
+      {
+        "taskId": "P1R-M5-009",
+        "sourceCommit": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+        "auditedImplementationSource": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+        "integrationCheckpoint": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T05:24:51.550Z",
+        "details": "P1R live-acceptance round 2026-09-16: contracts, checks, IAM/gateway/learner/learning/assessment/social/commerce/admin-ops sources and tests evolved under live E2E; rebind reviewed digests."
+      }
+    ],
+    "previousCurrentSourceCommit": "6f11365524ee8fda084cb5a80a0f18b10819a176"
   }
 }

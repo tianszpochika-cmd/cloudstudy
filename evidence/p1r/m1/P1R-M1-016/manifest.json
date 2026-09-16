@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-016",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "984ddecff776d1525d0a1c637c671661bfb379e5",
+  "sourceCommit": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
   "artifactDigests": [
     {
       "path": "config/b26-event-runtime.json",
@@ -102,7 +102,7 @@
     {
       "path": "packages/contracts/fragments/p1r-gateway-boundary.openapi.json",
       "algorithm": "sha256",
-      "digest": "ff9e876513658c8cf5930677fb5cbd61c74660edf6f6f47d57f5a353d61a915d"
+      "digest": "f3ad92d351cb809d7a64f4a413a6d471b1d55698a52b00d26e259b5a57fb930b"
     },
     {
       "path": "packages/contracts/generated/events.ts",
@@ -117,7 +117,7 @@
     {
       "path": "packages/contracts/openapi/v1/openapi.json",
       "algorithm": "sha256",
-      "digest": "9a4f084f1a645c9655f1664bb6df7c4506fd507f1bd74bedd9ae353c196b6354"
+      "digest": "8f4ef5aa46f831152f9160e3b4c8172af636261d2256a4ac341a99ef671d0a3f"
     },
     {
       "path": "requirements/feature-matrix.md",
@@ -152,7 +152,7 @@
     {
       "path": "scripts/audit/p1r-gateway-contract-check.mjs",
       "algorithm": "sha256",
-      "digest": "6741e15cadf11c77ce4e0f20a35a5e10b46f9f12cbb48d04ba276ed3337f8c4c"
+      "digest": "7f8fd15ff6174e681af14ebe40820c70c42413abfe60ae736b5f1311da9b4320"
     },
     {
       "path": "scripts/audit/p1r-learning-loop-contract-check.mjs",
@@ -167,7 +167,7 @@
     {
       "path": "scripts/contracts/compatibility-diff.mjs",
       "algorithm": "sha256",
-      "digest": "5bc8ebcbdeccd890de2d1a18fe41992c43e393c8b7c295ca0eba9365dd863ac5"
+      "digest": "ceb2789bcd41af3194083496472019aa3d16db8f89c98966f0c1146db3d12079"
     },
     {
       "path": "scripts/contracts/compatibility-git-baseline.mjs",
@@ -247,7 +247,7 @@
     {
       "path": "tests/p1r/p1r-gateway-contract.test.mjs",
       "algorithm": "sha256",
-      "digest": "624ea998e236aebe2ba18baefabf2bc0aef586613306cc3fa53567744c472e2f"
+      "digest": "02697e7c8382ae2183797016e4b49b00e925119aa4ea4ed07cfcda96c0bbdaa1"
     },
     {
       "path": "tests/p1r/p1r-learning-loop-contract.test.mjs",
@@ -727,15 +727,25 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-15T00:07:24.566Z",
         "details": "Rebind after M2-008 was delivered."
+      },
+      {
+        "taskId": "P1R-M1-016",
+        "sourceCommit": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+        "auditedImplementationSource": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+        "integrationCheckpoint": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T05:24:48.605Z",
+        "details": "P1R live-acceptance round 2026-09-16: contracts, checks, IAM/gateway/learner/learning/assessment/social/commerce/admin-ops sources and tests evolved under live E2E; rebind reviewed digests."
       }
     ],
     "currentSourceRevalidationTask": "P1R-M1-016",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-15T00:07:24.566Z",
-    "currentSourceRevalidationAuditedImplementationSource": "984ddecff776d1525d0a1c637c671661bfb379e5",
-    "currentSourceRevalidationIntegrationCheckpoint": "984ddecff776d1525d0a1c637c671661bfb379e5",
-    "previousCurrentSourceCommit": "2a5a54d791250fb77b9d9e24a1d9449111d74065",
+    "currentSourceRevalidationFinishedAt": "2026-09-16T05:24:48.605Z",
+    "currentSourceRevalidationAuditedImplementationSource": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+    "currentSourceRevalidationIntegrationCheckpoint": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+    "previousCurrentSourceCommit": "984ddecff776d1525d0a1c637c671661bfb379e5",
     "previousCurrentSourceRevalidationTask": "P1R-M1-016",
     "previousCurrentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",

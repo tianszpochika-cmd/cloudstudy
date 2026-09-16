@@ -3,7 +3,7 @@
   "draftOnly": false,
   "canonicalTaskStatus": "DEV_DONE",
   "decision": "DEV_DONE",
-  "sourceCommit": "b304d0deb860daa4ccf5c510e23bf44a656d2ead",
+  "sourceCommit": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
   "startedAt": "2026-09-15T16:40:00.000Z",
   "finishedAt": "2026-09-15T16:45:00.000Z",
   "environment": {
@@ -14,33 +14,101 @@
     "reviewPolicy": "Independent verification deferred by the owner: development proceeds to M8 and acceptance testing follows, so this task is DEV_DONE and not ACCEPTED.",
     "note": "Publish gate plus owner-DB rebuild (M2-004 reassignment); timed scheduling lives with workflow timers."
   },
-  "actors": ["root-coordinator", "p1r-implementation"],
-  "sourceIds": ["P1R-M3-006"],
+  "actors": [
+    "root-coordinator",
+    "p1r-implementation"
+  ],
+  "sourceIds": [
+    "P1R-M3-006"
+  ],
   "commands": [
-    { "command": "mvn -pl services/content-service -am compile -DskipTests", "purpose": "content-service builds with rebuild" },
-    { "command": "node scripts/runtime/p1r-m3-006-runtime.mjs", "purpose": "publish/projection/invalidation checks" }
+    {
+      "command": "mvn -pl services/content-service -am compile -DskipTests",
+      "purpose": "content-service builds with rebuild"
+    },
+    {
+      "command": "node scripts/runtime/p1r-m3-006-runtime.mjs",
+      "purpose": "publish/projection/invalidation checks"
+    }
   ],
   "results": [
-    { "check": "publish-gated", "status": "PASS", "details": "publisher + dual + rights across service/domain" },
-    { "check": "draft-not-readable", "status": "PASS", "details": "unpublished refused to public/learner" },
-    { "check": "projections-rebuilt-on-publish", "status": "PASS", "details": "publish rebuilds PUBLIC+LEARNER" },
-    { "check": "invalidation-emitted", "status": "PASS", "details": "outbox invalidated + cache invalidated" },
-    { "check": "rebuild-endpoint-exists", "status": "PASS", "details": "POST /projections/rebuild from owner DB" },
-    { "check": "rebuild-rights-gated", "status": "PASS", "details": "rights-not-ready skipped" },
-    { "check": "epoch-version-carried", "status": "PASS", "details": "projectionVersion/contentEpoch advanced" },
-    { "check": "service-builds", "status": "PASS", "details": "mvn compile EXIT 0" }
+    {
+      "check": "publish-gated",
+      "status": "PASS",
+      "details": "publisher + dual + rights across service/domain"
+    },
+    {
+      "check": "draft-not-readable",
+      "status": "PASS",
+      "details": "unpublished refused to public/learner"
+    },
+    {
+      "check": "projections-rebuilt-on-publish",
+      "status": "PASS",
+      "details": "publish rebuilds PUBLIC+LEARNER"
+    },
+    {
+      "check": "invalidation-emitted",
+      "status": "PASS",
+      "details": "outbox invalidated + cache invalidated"
+    },
+    {
+      "check": "rebuild-endpoint-exists",
+      "status": "PASS",
+      "details": "POST /projections/rebuild from owner DB"
+    },
+    {
+      "check": "rebuild-rights-gated",
+      "status": "PASS",
+      "details": "rights-not-ready skipped"
+    },
+    {
+      "check": "epoch-version-carried",
+      "status": "PASS",
+      "details": "projectionVersion/contentEpoch advanced"
+    },
+    {
+      "check": "service-builds",
+      "status": "PASS",
+      "details": "mvn compile EXIT 0"
+    }
   ],
-  "rollbackEvidence": [{ "status": "PASS", "details": "Adds one service method plus one endpoint; deleting them restores prior behavior." }],
+  "rollbackEvidence": [
+    {
+      "status": "PASS",
+      "details": "Adds one service method plus one endpoint; deleting them restores prior behavior."
+    }
+  ],
   "blockers": [],
-  "knownGaps": ["Timed/scheduled publish orchestration lives with workflow timers and is deferred; timezone/idempotency/delay live proof deferred to acceptance."],
+  "knownGaps": [
+    "Timed/scheduled publish orchestration lives with workflow timers and is deferred; timezone/idempotency/delay live proof deferred to acceptance."
+  ],
   "artifactDigests": [
-    { "path": "services/content-service/src/main/java/com/englishflow/content/application/ContentCommandService.java", "algorithm": "sha256", "digest": "764e8663d83d1cdf12a116df1939a697aba6ef52f5a844ef7da31a87521a3520" },
-    { "path": "services/content-service/src/main/java/com/englishflow/content/web/B9ContentAdminController.java", "algorithm": "sha256", "digest": "091165c39ca7fd3e3f1413020c4a6687c58686c25c4b3a387ebafc2b85d4ee5e" },
-    { "path": "scripts/runtime/p1r-m3-006-runtime.mjs", "algorithm": "sha256", "digest": "4e07d2af211332345e17c3e2c8ac107a740a65d3f8e48371933e6255ecdf5a1a" },
-    { "path": "evidence/p1r/m3/P1R-M3-006/runtime-2026-09-15.json", "algorithm": "sha256", "digest": "109c36c781eeaf52c28cab30b8b29ca88ae207e2f33598a065bbacff2d7139c7" }
+    {
+      "path": "services/content-service/src/main/java/com/englishflow/content/application/ContentCommandService.java",
+      "algorithm": "sha256",
+      "digest": "764e8663d83d1cdf12a116df1939a697aba6ef52f5a844ef7da31a87521a3520"
+    },
+    {
+      "path": "services/content-service/src/main/java/com/englishflow/content/web/B9ContentAdminController.java",
+      "algorithm": "sha256",
+      "digest": "091165c39ca7fd3e3f1413020c4a6687c58686c25c4b3a387ebafc2b85d4ee5e"
+    },
+    {
+      "path": "scripts/runtime/p1r-m3-006-runtime.mjs",
+      "algorithm": "sha256",
+      "digest": "4e07d2af211332345e17c3e2c8ac107a740a65d3f8e48371933e6255ecdf5a1a"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-006/runtime-2026-09-15.json",
+      "algorithm": "sha256",
+      "digest": "109c36c781eeaf52c28cab30b8b29ca88ae207e2f33598a065bbacff2d7139c7"
+    }
   ],
   "reviewer": "agent:p1r_implementation:deepseek-harness",
-  "nextSteps": ["Acceptance testing by the owner, which is what DEV_DONE defers."],
+  "nextSteps": [
+    "Acceptance testing by the owner, which is what DEV_DONE defers."
+  ],
   "statusNote": "Development finished and the evidence is in the repository. Eight checks pass with a green compile. Not independently verified, which DEV_DONE says.",
   "provenance": {
     "originalSourceCommit": "b304d0deb860daa4ccf5c510e23bf44a656d2ead",
@@ -48,9 +116,31 @@
     "currentSourceRevalidationTask": "P1R-M3-006",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-15T16:45:00.000Z",
-    "currentSourceRevalidationAuditedImplementationSource": "b304d0deb860daa4ccf5c510e23bf44a656d2ead",
-    "currentSourceRevalidationIntegrationCheckpoint": "b304d0deb860daa4ccf5c510e23bf44a656d2ead",
-    "currentSourceRevalidationHistory": [{ "taskId": "P1R-M3-006", "sourceCommit": "b304d0deb860daa4ccf5c510e23bf44a656d2ead", "auditedImplementationSource": "b304d0deb860daa4ccf5c510e23bf44a656d2ead", "integrationCheckpoint": "b304d0deb860daa4ccf5c510e23bf44a656d2ead", "reviewer": "agent:p1r_implementation:deepseek-harness", "runtimeStatus": "RUNTIME_VERIFIED", "finishedAt": "2026-09-15T16:45:00.000Z", "details": "Initial DEV_DONE delivery under owner route A." }]
+    "currentSourceRevalidationFinishedAt": "2026-09-16T05:24:49.935Z",
+    "currentSourceRevalidationAuditedImplementationSource": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+    "currentSourceRevalidationIntegrationCheckpoint": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+    "currentSourceRevalidationHistory": [
+      {
+        "taskId": "P1R-M3-006",
+        "sourceCommit": "b304d0deb860daa4ccf5c510e23bf44a656d2ead",
+        "auditedImplementationSource": "b304d0deb860daa4ccf5c510e23bf44a656d2ead",
+        "integrationCheckpoint": "b304d0deb860daa4ccf5c510e23bf44a656d2ead",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-15T16:45:00.000Z",
+        "details": "Initial DEV_DONE delivery under owner route A."
+      },
+      {
+        "taskId": "P1R-M3-006",
+        "sourceCommit": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+        "auditedImplementationSource": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+        "integrationCheckpoint": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T05:24:49.935Z",
+        "details": "P1R live-acceptance round 2026-09-16: contracts, checks, IAM/gateway/learner/learning/assessment/social/commerce/admin-ops sources and tests evolved under live E2E; rebind reviewed digests."
+      }
+    ],
+    "previousCurrentSourceCommit": "b304d0deb860daa4ccf5c510e23bf44a656d2ead"
   }
 }

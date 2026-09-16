@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-005",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "984ddecff776d1525d0a1c637c671661bfb379e5",
+  "sourceCommit": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
   "artifactDigests": [
     {
       "path": "package.json",
@@ -12,17 +12,17 @@
     {
       "path": "config/p1r-data-ownership.v1.json",
       "algorithm": "sha256",
-      "digest": "cb2c3bd202e5b2910e5b0127c5fd54b80bbd5b3433157dbaf46cc69c67318786"
+      "digest": "924a04708d55f394431b0925a3e5647e4a4e092c5a003552343cbb59362b205c"
     },
     {
       "path": "scripts/audit/p1r-data-ownership-check.mjs",
       "algorithm": "sha256",
-      "digest": "77148fcb0c1501e5ae1e50328a6dd8e1af4aad04b146be770c59af17035c36f4"
+      "digest": "93d5f600aada211151703dba8312833c47597ae6ca10eb3b5db71263157d3be1"
     },
     {
       "path": "tests/p1r/p1r-data-ownership.test.mjs",
       "algorithm": "sha256",
-      "digest": "4a492ab81c70b5df78fed4c831bdd9ab241095017407c796f8128afed85b3f6a"
+      "digest": "bca2be8b3c632a347442fe3174efdf59ee2769ae8f5d7e6036c67dd16b6a6940"
     },
     {
       "path": "database/redis/README.md",
@@ -431,9 +431,29 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-15T00:07:22.806Z",
         "details": "Rebind after M2-008 was delivered."
+      },
+      {
+        "taskId": "P1R-M1-005",
+        "sourceCommit": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+        "auditedImplementationSource": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+        "integrationCheckpoint": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T05:24:47.790Z",
+        "details": "P1R live-acceptance round 2026-09-16: contracts, checks, IAM/gateway/learner/learning/assessment/social/commerce/admin-ops sources and tests evolved under live E2E; rebind reviewed digests."
+      },
+      {
+        "taskId": "P1R-M1-005",
+        "sourceCommit": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+        "auditedImplementationSource": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+        "integrationCheckpoint": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T05:37:12.513Z",
+        "details": "Rebind after CRLF-to-LF normalization of python-written files; digests recomputed over canonical LF bytes."
       }
     ],
-    "previousCurrentSourceCommit": "2a5a54d791250fb77b9d9e24a1d9449111d74065",
+    "previousCurrentSourceCommit": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
     "previousCurrentSourceRevalidationTask": "P1R-M2-005",
     "currentSourceRevalidationTask": "P1R-M1-005",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
@@ -441,9 +461,9 @@
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
     "previousCurrentSourceRevalidationFinishedAt": "2026-09-12T22:07:09.012Z",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-15T00:07:22.806Z",
-    "currentSourceRevalidationAuditedImplementationSource": "984ddecff776d1525d0a1c637c671661bfb379e5",
-    "currentSourceRevalidationIntegrationCheckpoint": "984ddecff776d1525d0a1c637c671661bfb379e5"
+    "currentSourceRevalidationFinishedAt": "2026-09-16T05:37:12.513Z",
+    "currentSourceRevalidationAuditedImplementationSource": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+    "currentSourceRevalidationIntegrationCheckpoint": "9a38b3b584346c601620b1b0e31dc8dd847a9047"
   },
   "startedAt": "2026-08-30T00:53:14+08:00",
   "finishedAt": "2026-09-01T15:39:29+08:00",

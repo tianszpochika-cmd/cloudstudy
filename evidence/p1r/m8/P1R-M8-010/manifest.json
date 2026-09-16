@@ -3,7 +3,7 @@
   "draftOnly": false,
   "canonicalTaskStatus": "DEV_DONE",
   "decision": "DEV_DONE",
-  "sourceCommit": "3f99bf550ba70f48f878cd78cceb7538a06ccfcf",
+  "sourceCommit": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
   "startedAt": "2026-09-15T22:40:00.000Z",
   "finishedAt": "2026-09-15T22:42:00.000Z",
   "environment": {
@@ -14,22 +14,56 @@
     "reviewPolicy": "Independent verification deferred by the owner and acceptance testing follows, so this task is DEV_DONE and not ACCEPTED.",
     "note": "In-tree control verification; no production change."
   },
-  "actors": ["root-coordinator", "p1r-implementation"],
-  "sourceIds": ["P1R-M8-010"],
-  "commands": [
-    { "command": "node scripts/audit/check-core-api-deny-list.mjs", "purpose": "deny-list PASS this session" },
-    { "command": "node scripts/runtime/p1r-m8-010-runtime.mjs", "purpose": "security control checks" }
+  "actors": [
+    "root-coordinator",
+    "p1r-implementation"
   ],
-  "results": [{ "check": "sec-8-checks", "status": "PASS", "details": "8/8: deny-list, rate-limit, CSRF, PEP, payment, isolation, SCA runner, anchors" }],
-  "rollbackEvidence": [{ "status": "PASS", "details": "Adds harness + evidence only; deleting them restores prior state." }],
+  "sourceIds": [
+    "P1R-M8-010"
+  ],
+  "commands": [
+    {
+      "command": "node scripts/audit/check-core-api-deny-list.mjs",
+      "purpose": "deny-list PASS this session"
+    },
+    {
+      "command": "node scripts/runtime/p1r-m8-010-runtime.mjs",
+      "purpose": "security control checks"
+    }
+  ],
+  "results": [
+    {
+      "check": "sec-8-checks",
+      "status": "PASS",
+      "details": "8/8: deny-list, rate-limit, CSRF, PEP, payment, isolation, SCA runner, anchors"
+    }
+  ],
+  "rollbackEvidence": [
+    {
+      "status": "PASS",
+      "details": "Adds harness + evidence only; deleting them restores prior state."
+    }
+  ],
   "blockers": [],
-  "knownGaps": ["SAST/DAST/SBOM/full-SCA and independent pen-test deferred to acceptance."],
+  "knownGaps": [
+    "SAST/DAST/SBOM/full-SCA and independent pen-test deferred to acceptance."
+  ],
   "artifactDigests": [
-    { "path": "scripts/runtime/p1r-m8-010-runtime.mjs", "algorithm": "sha256", "digest": "f13f1cb0b3e7447bd073780d4c7e6ef2ae8ba55a17dd86d372a66e74adea42a5" },
-    { "path": "evidence/p1r/m8/P1R-M8-010/runtime-2026-09-15.json", "algorithm": "sha256", "digest": "dd762e3135e4b3ada7db083ba461a6d08160b1af081e24aacabd8e5d075bad0c" }
+    {
+      "path": "scripts/runtime/p1r-m8-010-runtime.mjs",
+      "algorithm": "sha256",
+      "digest": "f13f1cb0b3e7447bd073780d4c7e6ef2ae8ba55a17dd86d372a66e74adea42a5"
+    },
+    {
+      "path": "evidence/p1r/m8/P1R-M8-010/runtime-2026-09-15.json",
+      "algorithm": "sha256",
+      "digest": "dd762e3135e4b3ada7db083ba461a6d08160b1af081e24aacabd8e5d075bad0c"
+    }
   ],
   "reviewer": "agent:p1r_implementation:deepseek-harness",
-  "nextSteps": ["Acceptance testing by the owner, which is what DEV_DONE defers."],
+  "nextSteps": [
+    "Acceptance testing by the owner, which is what DEV_DONE defers."
+  ],
   "statusNote": "Development finished and the evidence is in the repository. Eight checks pass. Not independently verified, which DEV_DONE says.",
   "provenance": {
     "originalSourceCommit": "3f99bf550ba70f48f878cd78cceb7538a06ccfcf",
@@ -37,9 +71,31 @@
     "currentSourceRevalidationTask": "P1R-M8-010",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-15T22:42:00.000Z",
-    "currentSourceRevalidationAuditedImplementationSource": "3f99bf550ba70f48f878cd78cceb7538a06ccfcf",
-    "currentSourceRevalidationIntegrationCheckpoint": "3f99bf550ba70f48f878cd78cceb7538a06ccfcf",
-    "currentSourceRevalidationHistory": [{ "taskId": "P1R-M8-010", "sourceCommit": "3f99bf550ba70f48f878cd78cceb7538a06ccfcf", "auditedImplementationSource": "3f99bf550ba70f48f878cd78cceb7538a06ccfcf", "integrationCheckpoint": "3f99bf550ba70f48f878cd78cceb7538a06ccfcf", "reviewer": "agent:p1r_implementation:deepseek-harness", "runtimeStatus": "RUNTIME_VERIFIED", "finishedAt": "2026-09-15T22:42:00.000Z", "details": "Initial DEV_DONE delivery under owner route A." }]
+    "currentSourceRevalidationFinishedAt": "2026-09-16T05:24:54.198Z",
+    "currentSourceRevalidationAuditedImplementationSource": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+    "currentSourceRevalidationIntegrationCheckpoint": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+    "currentSourceRevalidationHistory": [
+      {
+        "taskId": "P1R-M8-010",
+        "sourceCommit": "3f99bf550ba70f48f878cd78cceb7538a06ccfcf",
+        "auditedImplementationSource": "3f99bf550ba70f48f878cd78cceb7538a06ccfcf",
+        "integrationCheckpoint": "3f99bf550ba70f48f878cd78cceb7538a06ccfcf",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-15T22:42:00.000Z",
+        "details": "Initial DEV_DONE delivery under owner route A."
+      },
+      {
+        "taskId": "P1R-M8-010",
+        "sourceCommit": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+        "auditedImplementationSource": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+        "integrationCheckpoint": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T05:24:54.198Z",
+        "details": "P1R live-acceptance round 2026-09-16: contracts, checks, IAM/gateway/learner/learning/assessment/social/commerce/admin-ops sources and tests evolved under live E2E; rebind reviewed digests."
+      }
+    ],
+    "previousCurrentSourceCommit": "3f99bf550ba70f48f878cd78cceb7538a06ccfcf"
   }
 }
