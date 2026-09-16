@@ -6,6 +6,9 @@ import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.ArrayNode;
 import tools.jackson.databind.node.ObjectNode;
 
+import com.englishflow.assessment.domain.AssessmentMistake;
+import com.englishflow.assessment.domain.AssessmentPrincipal;
+
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -234,6 +237,12 @@ public class B10AssessmentJdbcController {
         emitAssessedEvents(principal.subject(), session, gradingCode, gradingVersion,
                 attemptId, reportId, submissionId, rules, mistakes, totalScoreBucket,
                 total, totalCorrect, allMistakes.size());
+        // M5-009: persist wrong-answer mistake facts so the D0/D1/D7 delay
+        // machine and variant repair have durable state to drive. B10 items
+        // are questions, so questionId mirrors itemId; the rule engine does
+        // not classify errors, hence UNCLASSIFIED (its own term elsewhere).
+        // allMistakes (not just submitted) so unanswered items count too.
+        recordMistakes(principal.subject(), allMistakes, answerMap, gradingCode, gradingVersion);
         String nextStatus = allMistakes.isEmpty() || answerMap.size() >= total ? "ASSESSED" : "IN_PROGRESS";
         jdbc.update("""
                 UPDATE b10_assessment_session
@@ -245,6 +254,163 @@ public class B10AssessmentJdbcController {
         Map<String, Object> view = attemptView(one("SELECT * FROM b10_assessment_attempt WHERE attempt_id = ?", attemptId));
         saveAttemptIdempotency(principal.subject(), idempotencyKey, requestDigest, attemptId);
         return envelope(view);
+    }
+
+    /**
+     * M5-009 variant-issuing + D0/D1/D7 delay machine, HTTP-wired.
+     * Mistakes are server-derived facts from grading; the endpoints only move
+     * them through verify/variant transitions. All writes are idempotent on
+     * the caller's key via the shared attempt idempotency record.
+     */
+    @GetMapping("/mistakes")
+    public Map<String, Object> listMistakes(Authentication authentication) {
+        Principal principal = principal(authentication);
+        List<Map<String, Object>> rows = jdbc.queryForList("""
+                SELECT * FROM assessment_mistake WHERE tenant_id = ? AND subject_id = ?
+                 ORDER BY mistake_id
+                """, TENANT, principal.subject());
+        List<Map<String, Object>> items = new ArrayList<>();
+        for (Map<String, Object> row : rows) items.add(mistakeView(restoreMistake(row)));
+        return envelope(Map.of("items", items, "count", items.size()));
+    }
+
+    @PostMapping("/mistakes/{mistakeId}/verify")
+    @Transactional
+    public Map<String, Object> verifyMistake(
+            Authentication authentication,
+            @PathVariable long mistakeId,
+            @RequestBody Map<String, Object> body,
+            @RequestHeader("Idempotency-Key") String idempotencyKey) {
+        Principal principal = principal(authentication);
+        requireKey(idempotencyKey);
+        boolean correct = "CORRECT".equals(upperText(body.get("outcome"), ""));
+        if (!correct && !"WRONG".equals(upperText(body.get("outcome"), ""))) bad("outcome must be CORRECT or WRONG");
+        AssessmentMistake mistake = ownedMistake(mistakeId, principal.subject());
+        Instant now = Instant.now();
+        try {
+            if (correct) {
+                switch (mistake.mistakeStatus()) {
+                    case PENDING_RETRY, REOPENED -> mistake.markD0Corrected(now);
+                    case DELAY_VERIFY_D1 -> mistake.markD1Passed(now);
+                    case DELAY_VERIFY_D7 -> mistake.markD7Passed(now);
+                    case MASTERED -> throw new ResponseStatusException(HttpStatus.CONFLICT, "mistake is already mastered");
+                }
+            } else {
+                mistake.mergeWrong(now, mistake.errorCategory());
+            }
+        } catch (com.englishflow.assessment.domain.AssessmentDomainException state) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, state.getMessage());
+        }
+        saveMistake(mistake);
+        return envelope(mistakeView(mistake));
+    }
+
+    @PostMapping("/mistakes/{mistakeId}/variant")
+    @Transactional
+    public Map<String, Object> issueVariant(
+            Authentication authentication,
+            @PathVariable long mistakeId,
+            @RequestBody Map<String, Object> body,
+            @RequestHeader("Idempotency-Key") String idempotencyKey) {
+        Principal principal = principal(authentication);
+        requireKey(idempotencyKey);
+        long variantItemId = positiveLong(body.get("variantItemId"), 0L);
+        AssessmentMistake mistake = ownedMistake(mistakeId, principal.subject());
+        try {
+            mistake.registerVariant(variantItemId, Instant.now());
+        } catch (com.englishflow.assessment.domain.AssessmentDomainException invalid) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, invalid.getMessage());
+        }
+        saveMistake(mistake);
+        return envelope(mistakeView(mistake));
+    }
+
+    private void recordMistakes(String subject, List<String> codes, Map<String, String> answerMap,
+            String gradingCode, long gradingVersion) {
+        String ruleVersion = (gradingCode + ":v" + gradingVersion).trim();
+        if (ruleVersion.length() > 128) ruleVersion = ruleVersion.substring(0, 128);
+        Instant now = Instant.now();
+        for (String code : codes) {
+            long itemId = numericItemId(code);
+            if (itemId < 1) continue;
+            Map<String, Object> row = one("SELECT * FROM assessment_mistake WHERE tenant_id = ? AND subject_id = ? AND item_id = ?",
+                    TENANT, subject, itemId);
+            AssessmentMistake mistake;
+            if (row == null) {
+                long nextId = number(oneValue("SELECT COALESCE(MAX(mistake_id), 0) + 1 FROM assessment_mistake"), 1L);
+                mistake = new AssessmentMistake(nextId, AssessmentPrincipal.authenticated(subject, TENANT),
+                        itemId, itemId, "UNCLASSIFIED", ruleVersion, sha256(answerMap.getOrDefault(code, "")), now);
+            } else {
+                mistake = restoreMistake(row);
+                mistake.mergeWrong(now, mistake.errorCategory());
+            }
+            saveMistake(mistake);
+        }
+    }
+
+    private AssessmentMistake ownedMistake(long mistakeId, String subject) {
+        Map<String, Object> row = one("SELECT * FROM assessment_mistake WHERE mistake_id = ? AND tenant_id = ? AND subject_id = ?",
+                mistakeId, TENANT, subject);
+        if (row == null) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "assessment mistake is unavailable");
+        return restoreMistake(row);
+    }
+
+    private AssessmentMistake restoreMistake(Map<String, Object> row) {
+        try {
+            return AssessmentMistake.restore(number(row.get("mistake_id")),
+                    AssessmentPrincipal.authenticated(text(row.get("subject_id")), text(row.get("tenant_id"), TENANT)),
+                    number(row.get("item_id")), number(row.get("question_id")), text(row.get("error_category")),
+                    text(row.get("rule_version")), text(row.get("answer_hash")), number(row.get("wrong_count"), 1),
+                    AssessmentMistake.MistakeStatus.valueOf(text(row.get("mistake_status"))),
+                    AssessmentMistake.MasteryStatus.valueOf(text(row.get("mastery_status"))),
+                    instantOf(row.get("first_error_at")), instantOf(row.get("last_error_at")), instantOf(row.get("next_action_at")),
+                    readTrace(text(row.get("reason_trace_json"))));
+        } catch (com.englishflow.assessment.domain.AssessmentDomainException corrupt) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "stored mistake fact is unreadable");
+        }
+    }
+
+    private void saveMistake(AssessmentMistake mistake) {
+        jdbc.update("""
+                INSERT INTO assessment_mistake
+                    (mistake_id, subject_id, tenant_id, item_id, question_id, error_category, rule_version, answer_hash,
+                     wrong_count, mistake_status, mastery_status, first_error_at, last_error_at, next_action_at, reason_trace_json)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ON DUPLICATE KEY UPDATE answer_hash = VALUES(answer_hash), wrong_count = VALUES(wrong_count),
+                    mistake_status = VALUES(mistake_status), mastery_status = VALUES(mastery_status),
+                    last_error_at = VALUES(last_error_at), next_action_at = VALUES(next_action_at),
+                    reason_trace_json = VALUES(reason_trace_json)
+                """, mistake.mistakeId(), mistake.ownerSubjectId(), mistake.tenantId(), mistake.itemId(), mistake.questionId(),
+                mistake.errorCategory(), mistake.ruleVersion(), mistake.answerHash(), mistake.wrongCount(),
+                mistake.mistakeStatus().name(), mistake.masteryStatus().name(),
+                Timestamp.from(mistake.firstErrorAt()), Timestamp.from(mistake.lastErrorAt()), Timestamp.from(mistake.nextActionAt()),
+                json(mistake.reasonTrace()));
+    }
+
+    private Map<String, Object> mistakeView(AssessmentMistake mistake) {
+        Map<String, Object> view = new LinkedHashMap<>(mistake.learnerView());
+        view.put("tenantId", mistake.tenantId());
+        return view;
+    }
+
+    private static Instant instantOf(Object value) {
+        if (value instanceof Timestamp timestamp) return timestamp.toInstant();
+        if (value instanceof java.time.LocalDateTime localDateTime) {
+            return localDateTime.toInstant(java.time.ZoneOffset.UTC);
+        }
+        return Instant.parse(String.valueOf(value));
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<Map<String, Object>> readTrace(String raw) {
+        if (raw == null || raw.isBlank()) return List.of();
+        try {
+            Object parsed = mapper.readValue(raw, Object.class);
+            if (parsed instanceof List<?> list) return (List<Map<String, Object>>) list;
+            return List.of();
+        } catch (JacksonException exception) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "stored mistake fact is unreadable");
+        }
     }
 
     @PutMapping("/sessions/{sessionId}/attempts/{attemptId}/checkpoint")

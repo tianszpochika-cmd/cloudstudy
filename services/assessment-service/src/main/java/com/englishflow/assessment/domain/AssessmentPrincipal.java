@@ -10,7 +10,9 @@ import java.util.Objects;
  */
 public record AssessmentPrincipal(String subjectId, String tenantId, boolean authenticated) {
     public AssessmentPrincipal {
-        subjectId = required(subjectId, "subjectId", "prn_[A-Za-z0-9._:-]{15,127}");
+        // Local IAM mints bare-UUID subjects; the prn_-only pattern rejected
+        // every real producer (same widening as the B10 event principalId).
+        subjectId = required(subjectId, "subjectId", "(prn_[A-Za-z0-9._:-]{15,127}|[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})");
         tenantId = required(tenantId, "tenantId", "[A-Za-z0-9._:-]{2,64}");
     }
 

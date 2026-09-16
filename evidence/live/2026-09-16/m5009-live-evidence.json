@@ -1,0 +1,82 @@
+{
+  "task": "M5009-LIVE-VARIANTS",
+  "capturedAt": "2026-09-16T23:20:27.939Z",
+  "gateway": "http://127.0.0.1:18070",
+  "result": "PASS",
+  "passed": 12,
+  "total": 12,
+  "checks": [
+    {
+      "name": "setup-register",
+      "ok": true,
+      "observed": "HTTP 201",
+      "expected": "HTTP 201"
+    },
+    {
+      "name": "setup-login",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200 + token"
+    },
+    {
+      "name": "wrong-submit",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200 graded"
+    },
+    {
+      "name": "mistake-recorded",
+      "ok": true,
+      "observed": "HTTP 200 n=2 status=PENDING_RETRY",
+      "expected": "PENDING_RETRY row"
+    },
+    {
+      "name": "mistake-not-found",
+      "ok": true,
+      "observed": "HTTP 404",
+      "expected": "HTTP 404 unknown id"
+    },
+    {
+      "name": "d0-to-d1",
+      "ok": true,
+      "observed": "HTTP 200 +24h exact=true sh 2026-09-17->2026-09-18",
+      "expected": "DELAY_VERIFY_D1 +24h"
+    },
+    {
+      "name": "variant-issued",
+      "ok": true,
+      "observed": "HTTP 200 trace-linked=true",
+      "expected": "PENDING_RETRY + trace"
+    },
+    {
+      "name": "variant-same-item-denied",
+      "ok": true,
+      "observed": "HTTP 400",
+      "expected": "HTTP 400 same item"
+    },
+    {
+      "name": "d1-to-d7",
+      "ok": true,
+      "observed": "HTTP 200 +7d exact=true",
+      "expected": "DELAY_VERIFY_D7 +7d"
+    },
+    {
+      "name": "d7-to-mastered",
+      "ok": true,
+      "observed": "HTTP 200 status=MASTERED",
+      "expected": "MASTERED"
+    },
+    {
+      "name": "mastered-denied",
+      "ok": true,
+      "observed": "HTTP 409",
+      "expected": "HTTP 409 terminal"
+    },
+    {
+      "name": "wrong-reopens",
+      "ok": true,
+      "observed": "HTTP 200 status=PENDING_RETRY",
+      "expected": "REOPENED->PENDING_RETRY"
+    }
+  ]
+}

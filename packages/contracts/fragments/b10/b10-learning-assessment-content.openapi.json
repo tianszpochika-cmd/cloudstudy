@@ -1082,45 +1082,45 @@
         ],
         "summary": "Complete a review action through learning-service",
         "operationId": "completeB10LearningReview",
-          "security": [
-            {
-              "bearerAuth": []
-            }
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "learning-service",
+        "x-contract": {
+          "owner": "learning-service",
+          "command": "learning.review.complete",
+          "canonical": true,
+          "singleWritePath": true,
+          "authority": "learning-service derives SRS scheduling, repair workflow and mastery projection",
+          "assessment": "only assessment-service may produce assessment outcome facts; an assessment outcome never authorizes a mastery or SRS write",
+          "clientAuthority": "observed review facts and concurrency/content pins only"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "learning.srs.write",
+          "pep": "learning-service-local",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
           ],
-          "x-owner": "learning-service",
-          "x-contract": {
-            "owner": "learning-service",
-            "command": "learning.review.complete",
-            "canonical": true,
-            "singleWritePath": true,
-            "authority": "learning-service derives SRS scheduling, repair workflow and mastery projection",
-            "assessment": "only assessment-service may produce assessment outcome facts; an assessment outcome never authorizes a mastery or SRS write",
-            "clientAuthority": "observed review facts and concurrency/content pins only"
-          },
-          "x-authorization": {
-            "defaultDecision": "DENY",
-            "requiredPermission": "learning.srs.write",
-            "pep": "learning-service-local",
-            "trustedFacts": [
-              "subject",
-              "tenant",
-              "resourceOwner",
-              "roles",
-              "permissions",
-              "phase",
-              "adultGate",
-              "consent",
-              "contentRights",
-              "policyVersion"
-            ],
-            "clientAuthority": "none for result, effective quality, schedule, repair or mastery"
-          },
-          "x-idempotency": {
-            "required": true,
-            "strategy": "b10-learning-review-complete",
-            "keyHeader": "Idempotency-Key",
-            "replayBehavior": "same queue item, command digest and client sequence return the original review receipt",
-            "conflictBehavior": "stale baseStateVersion, reused clientEventId with a different payload, content pin mismatch or sequence gap returns 409; the client never retries by changing server-derived fields"
+          "clientAuthority": "none for result, effective quality, schedule, repair or mastery"
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "b10-learning-review-complete",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "same queue item, command digest and client sequence return the original review receipt",
+          "conflictBehavior": "stale baseStateVersion, reused clientEventId with a different payload, content pin mismatch or sequence gap returns 409; the client never retries by changing server-derived fields"
         },
         "parameters": [
           {
@@ -1158,11 +1158,11 @@
                       "required": [
                         "data"
                       ],
-                        "properties": {
-                          "data": {
-                            "$ref": "#/components/schemas/B10LearningReviewResult"
-                          }
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B10LearningReviewResult"
                         }
+                      }
                     }
                   ]
                 }
@@ -1205,37 +1205,37 @@
         ],
         "summary": "Read the current mastery projection for an item",
         "operationId": "getB10LearningMasteryProjection",
-          "security": [
-            {
-              "bearerAuth": []
-            }
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "learning-service",
+        "x-contract": {
+          "owner": "learning-service",
+          "canonical": true,
+          "readModel": "mastery_projection",
+          "historicalSource": "assessment event; no direct assessment table read",
+          "authority": "mastery stage and evidence are learning-service projections"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "learning.mastery.read",
+          "pep": "learning-service-local",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
           ],
-          "x-owner": "learning-service",
-          "x-contract": {
-            "owner": "learning-service",
-            "canonical": true,
-            "readModel": "mastery_projection",
-            "historicalSource": "assessment event; no direct assessment table read",
-            "authority": "mastery stage and evidence are learning-service projections"
-          },
-          "x-authorization": {
-            "defaultDecision": "DENY",
-            "requiredPermission": "learning.mastery.read",
-            "pep": "learning-service-local",
-            "trustedFacts": [
-              "subject",
-              "tenant",
-              "resourceOwner",
-              "roles",
-              "permissions",
-              "phase",
-              "adultGate",
-              "consent",
-              "contentRights",
-              "policyVersion"
-            ],
-            "clientAuthority": "none; mastery evidence, stage and versions are server-derived"
-          },
+          "clientAuthority": "none; mastery evidence, stage and versions are server-derived"
+        },
         "parameters": [
           {
             "$ref": "#/components/parameters/B10ItemId"
@@ -2092,6 +2092,124 @@
           }
         }
       }
+    },
+    "/api/v1/assessment/mistakes": {
+      "get": {
+        "tags": [
+          "B10-Assessment"
+        ],
+        "summary": "List learner mistake facts with D0/D1/D7 states (M5-009 live)",
+        "operationId": "listAssessmentMistakes",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/assessment/mistakes/{mistakeId}/verify": {
+      "post": {
+        "tags": [
+          "B10-Assessment"
+        ],
+        "summary": "Drive a mistake through D0/D1/D7 verification (M5-009 live)",
+        "operationId": "verifyAssessmentMistake",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "mistakeId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "outcome"
+                ],
+                "properties": {
+                  "outcome": {
+                    "type": "string",
+                    "enum": [
+                      "CORRECT",
+                      "WRONG"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/assessment/mistakes/{mistakeId}/variant": {
+      "post": {
+        "tags": [
+          "B10-Assessment"
+        ],
+        "summary": "Issue a variant surface form for re-verification (M5-009 live)",
+        "operationId": "issueAssessmentVariant",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "mistakeId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "variantItemId"
+                ],
+                "properties": {
+                  "variantItemId": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -2878,20 +2996,42 @@
             "properties": {
               "pinStatus": {
                 "type": "string",
-                "enum": ["PINNED"]
+                "enum": [
+                  "PINNED"
+                ]
               },
               "recoveryReasonCode": {
                 "type": "string",
-                "enum": ["NONE"]
+                "enum": [
+                  "NONE"
+                ]
               }
             },
-            "required": ["recoveryReasonCode"],
+            "required": [
+              "recoveryReasonCode"
+            ],
             "not": {
               "anyOf": [
-                { "required": ["fallbackVersionId"] },
-                { "required": ["fallbackContentEpoch"] },
-                { "required": ["fallbackSnapshotId"] },
-                { "required": ["fallbackSnapshotHash"] }
+                {
+                  "required": [
+                    "fallbackVersionId"
+                  ]
+                },
+                {
+                  "required": [
+                    "fallbackContentEpoch"
+                  ]
+                },
+                {
+                  "required": [
+                    "fallbackSnapshotId"
+                  ]
+                },
+                {
+                  "required": [
+                    "fallbackSnapshotHash"
+                  ]
+                }
               ]
             }
           },
@@ -2899,20 +3039,42 @@
             "properties": {
               "pinStatus": {
                 "type": "string",
-                "enum": ["UNPUBLISHED"]
+                "enum": [
+                  "UNPUBLISHED"
+                ]
               },
               "recoveryReasonCode": {
                 "type": "string",
-                "enum": ["CONTENT_UNPUBLISHED"]
+                "enum": [
+                  "CONTENT_UNPUBLISHED"
+                ]
               }
             },
-            "required": ["recoveryReasonCode"],
+            "required": [
+              "recoveryReasonCode"
+            ],
             "not": {
               "anyOf": [
-                { "required": ["fallbackVersionId"] },
-                { "required": ["fallbackContentEpoch"] },
-                { "required": ["fallbackSnapshotId"] },
-                { "required": ["fallbackSnapshotHash"] }
+                {
+                  "required": [
+                    "fallbackVersionId"
+                  ]
+                },
+                {
+                  "required": [
+                    "fallbackContentEpoch"
+                  ]
+                },
+                {
+                  "required": [
+                    "fallbackSnapshotId"
+                  ]
+                },
+                {
+                  "required": [
+                    "fallbackSnapshotHash"
+                  ]
+                }
               ]
             }
           },
@@ -2920,20 +3082,46 @@
             "properties": {
               "pinStatus": {
                 "type": "string",
-                "enum": ["RECOVERABLE"]
+                "enum": [
+                  "RECOVERABLE"
+                ]
               },
               "recoveryReasonCode": {
                 "type": "string",
-                "enum": ["CONTENT_UNPUBLISHED", "RIGHTS_EXPIRED", "SNAPSHOT_MISSING", "POLICY_DENIED", "SERVICE_DEGRADED"]
+                "enum": [
+                  "CONTENT_UNPUBLISHED",
+                  "RIGHTS_EXPIRED",
+                  "SNAPSHOT_MISSING",
+                  "POLICY_DENIED",
+                  "SERVICE_DEGRADED"
+                ]
               }
             },
-            "required": ["recoveryReasonCode"],
+            "required": [
+              "recoveryReasonCode"
+            ],
             "not": {
               "anyOf": [
-                { "required": ["fallbackVersionId"] },
-                { "required": ["fallbackContentEpoch"] },
-                { "required": ["fallbackSnapshotId"] },
-                { "required": ["fallbackSnapshotHash"] }
+                {
+                  "required": [
+                    "fallbackVersionId"
+                  ]
+                },
+                {
+                  "required": [
+                    "fallbackContentEpoch"
+                  ]
+                },
+                {
+                  "required": [
+                    "fallbackSnapshotId"
+                  ]
+                },
+                {
+                  "required": [
+                    "fallbackSnapshotHash"
+                  ]
+                }
               ]
             }
           },
@@ -2941,33 +3129,71 @@
             "properties": {
               "pinStatus": {
                 "type": "string",
-                "enum": ["RECOVERED"]
+                "enum": [
+                  "RECOVERED"
+                ]
               },
               "recoveryReasonCode": {
                 "type": "string",
-                "enum": ["CONTENT_UNPUBLISHED", "RIGHTS_EXPIRED", "SNAPSHOT_MISSING", "POLICY_DENIED", "SERVICE_DEGRADED"]
+                "enum": [
+                  "CONTENT_UNPUBLISHED",
+                  "RIGHTS_EXPIRED",
+                  "SNAPSHOT_MISSING",
+                  "POLICY_DENIED",
+                  "SERVICE_DEGRADED"
+                ]
               }
             },
-            "required": ["recoveryReasonCode", "fallbackVersionId", "fallbackContentEpoch", "fallbackSnapshotId", "fallbackSnapshotHash"]
+            "required": [
+              "recoveryReasonCode",
+              "fallbackVersionId",
+              "fallbackContentEpoch",
+              "fallbackSnapshotId",
+              "fallbackSnapshotHash"
+            ]
           },
           {
             "properties": {
               "pinStatus": {
                 "type": "string",
-                "enum": ["UNAVAILABLE"]
+                "enum": [
+                  "UNAVAILABLE"
+                ]
               },
               "recoveryReasonCode": {
                 "type": "string",
-                "enum": ["RIGHTS_REMOVED", "SECURITY_REMOVED", "LEGAL_REMOVED"]
+                "enum": [
+                  "RIGHTS_REMOVED",
+                  "SECURITY_REMOVED",
+                  "LEGAL_REMOVED"
+                ]
               }
             },
-            "required": ["recoveryReasonCode"],
+            "required": [
+              "recoveryReasonCode"
+            ],
             "not": {
               "anyOf": [
-                { "required": ["fallbackVersionId"] },
-                { "required": ["fallbackContentEpoch"] },
-                { "required": ["fallbackSnapshotId"] },
-                { "required": ["fallbackSnapshotHash"] }
+                {
+                  "required": [
+                    "fallbackVersionId"
+                  ]
+                },
+                {
+                  "required": [
+                    "fallbackContentEpoch"
+                  ]
+                },
+                {
+                  "required": [
+                    "fallbackSnapshotId"
+                  ]
+                },
+                {
+                  "required": [
+                    "fallbackSnapshotHash"
+                  ]
+                }
               ]
             }
           }
@@ -2981,7 +3207,10 @@
         "x-p1r-active-pin-policy": {
           "usage": "ACTIVE_SESSION_OR_ATTEMPT",
           "versionIdentity": "IMMUTABLE",
-          "allowedOutcomes": ["AVAILABLE", "UNAVAILABLE"],
+          "allowedOutcomes": [
+            "AVAILABLE",
+            "UNAVAILABLE"
+          ],
           "safeFutureFallback": "PROHIBITED",
           "silentReplacement": "PROHIBITED"
         },
@@ -3012,18 +3241,29 @@
           },
           "status": {
             "type": "string",
-            "enum": ["AVAILABLE", "UNAVAILABLE"]
+            "enum": [
+              "AVAILABLE",
+              "UNAVAILABLE"
+            ]
           },
           "pinnedAt": {
             "$ref": "#/components/schemas/B10DateTime"
           },
           "reasonCode": {
             "type": "string",
-            "enum": ["RIGHTS_REMOVED", "SECURITY_REMOVED", "LEGAL_REMOVED"]
+            "enum": [
+              "RIGHTS_REMOVED",
+              "SECURITY_REMOVED",
+              "LEGAL_REMOVED"
+            ]
           },
           "alternativeAction": {
             "type": "string",
-            "enum": ["RETURN_TO_CATALOG", "SELECT_ALTERNATIVE_TASK", "CONTACT_SUPPORT"]
+            "enum": [
+              "RETURN_TO_CATALOG",
+              "SELECT_ALTERNATIVE_TASK",
+              "CONTACT_SUPPORT"
+            ]
           },
           "alternativeContentVersionId": {
             "$ref": "#/components/schemas/B10Int64Id"
@@ -3034,15 +3274,31 @@
             "properties": {
               "status": {
                 "type": "string",
-                "enum": ["AVAILABLE"]
+                "enum": [
+                  "AVAILABLE"
+                ]
               }
             },
-            "required": ["status"],
+            "required": [
+              "status"
+            ],
             "not": {
               "anyOf": [
-                { "required": ["reasonCode"] },
-                { "required": ["alternativeAction"] },
-                { "required": ["alternativeContentVersionId"] }
+                {
+                  "required": [
+                    "reasonCode"
+                  ]
+                },
+                {
+                  "required": [
+                    "alternativeAction"
+                  ]
+                },
+                {
+                  "required": [
+                    "alternativeContentVersionId"
+                  ]
+                }
               ]
             }
           },
@@ -3050,10 +3306,16 @@
             "properties": {
               "status": {
                 "type": "string",
-                "enum": ["UNAVAILABLE"]
+                "enum": [
+                  "UNAVAILABLE"
+                ]
               }
             },
-            "required": ["status", "reasonCode", "alternativeAction"]
+            "required": [
+              "status",
+              "reasonCode",
+              "alternativeAction"
+            ]
           }
         ]
       },
@@ -3159,7 +3421,9 @@
           },
           "sealed": {
             "type": "boolean",
-            "enum": [true]
+            "enum": [
+              true
+            ]
           }
         }
       },
@@ -3307,7 +3571,9 @@
         "properties": {
           "usageScope": {
             "type": "string",
-            "enum": ["FUTURE_READ_ONLY"]
+            "enum": [
+              "FUTURE_READ_ONLY"
+            ]
           },
           "requestedVersionId": {
             "$ref": "#/components/schemas/B10Int64Id"
@@ -3348,7 +3614,9 @@
           },
           "mustNotRegrade": {
             "type": "boolean",
-            "enum": [true]
+            "enum": [
+              true
+            ]
           },
           "resolvedAt": {
             "$ref": "#/components/schemas/B10DateTime"
@@ -3359,46 +3627,85 @@
             "properties": {
               "resolution": {
                 "type": "string",
-                "enum": ["EXACT_PIN"]
+                "enum": [
+                  "EXACT_PIN"
+                ]
               }
             },
-            "required": ["resolvedVersionId", "resolvedSnapshotId"]
+            "required": [
+              "resolvedVersionId",
+              "resolvedSnapshotId"
+            ]
           },
           {
             "properties": {
               "resolution": {
                 "type": "string",
-                "enum": ["IMMUTABLE_SNAPSHOT"]
+                "enum": [
+                  "IMMUTABLE_SNAPSHOT"
+                ]
               }
             },
-            "required": ["resolvedSnapshotId"],
-            "not": { "required": ["resolvedVersionId"] }
+            "required": [
+              "resolvedSnapshotId"
+            ],
+            "not": {
+              "required": [
+                "resolvedVersionId"
+              ]
+            }
           },
           {
             "properties": {
               "resolution": {
                 "type": "string",
-                "enum": ["SAFE_FUTURE_FALLBACK"]
+                "enum": [
+                  "SAFE_FUTURE_FALLBACK"
+                ]
               }
             },
-            "required": ["resolvedVersionId", "resolvedSnapshotId"]
+            "required": [
+              "resolvedVersionId",
+              "resolvedSnapshotId"
+            ]
           },
           {
             "properties": {
               "resolution": {
                 "type": "string",
-                "enum": ["UNAVAILABLE"]
+                "enum": [
+                  "UNAVAILABLE"
+                ]
               },
               "recoveryReasonCode": {
                 "type": "string",
-                "enum": ["CONTENT_UNPUBLISHED", "RIGHTS_EXPIRED", "SNAPSHOT_MISSING", "POLICY_DENIED", "SERVICE_DEGRADED", "RIGHTS_REMOVED", "SECURITY_REMOVED", "LEGAL_REMOVED"]
+                "enum": [
+                  "CONTENT_UNPUBLISHED",
+                  "RIGHTS_EXPIRED",
+                  "SNAPSHOT_MISSING",
+                  "POLICY_DENIED",
+                  "SERVICE_DEGRADED",
+                  "RIGHTS_REMOVED",
+                  "SECURITY_REMOVED",
+                  "LEGAL_REMOVED"
+                ]
               }
             },
-            "required": ["recoveryReasonCode"],
+            "required": [
+              "recoveryReasonCode"
+            ],
             "not": {
               "anyOf": [
-                { "required": ["resolvedVersionId"] },
-                { "required": ["resolvedSnapshotId"] }
+                {
+                  "required": [
+                    "resolvedVersionId"
+                  ]
+                },
+                {
+                  "required": [
+                    "resolvedSnapshotId"
+                  ]
+                }
               ]
             }
           }
@@ -4426,7 +4733,9 @@
           },
           "replayable": {
             "type": "boolean",
-            "enum": [true]
+            "enum": [
+              true
+            ]
           },
           "partialReasonCodes": {
             "type": "array",
@@ -5317,62 +5626,62 @@
           }
         }
       },
-        "B10MasteryProjection": {
-          "type": "object",
-          "additionalProperties": false,
-          "description": "Learning-service mastery projection. SRS scheduling, repair verification and mastery are separate server-owned state machines.",
-          "required": [
-            "itemId",
-            "srsStage",
-            "repairWorkflowState",
-            "masteryStage",
-            "projectionVersion",
-            "projectionStatus",
-            "stateVersion",
-            "pin",
-            "projectedAt"
-          ],
-          "properties": {
-            "itemId": {
-              "$ref": "#/components/schemas/B10Int64Id"
-            },
-            "srsStage": {
-              "type": "string",
-              "enum": [
-                "NEW",
-                "LEARNING",
-                "MASTERED",
-                "CONSOLIDATED"
-              ]
-            },
-            "repairWorkflowState": {
-              "type": "string",
-              "enum": [
-                "REVIEW_QUEUE",
-                "LEARNING",
-                "DELAY_VERIFY_D1",
-                "DELAY_VERIFY_D7",
-                "MASTERED",
-                "REOPENED"
-              ]
-            },
-            "masteryStage": {
-              "type": "string",
-              "enum": [
-                "NEW",
-                "LEARNING",
-                "MASTERED",
-                "CONSOLIDATED"
-              ]
-            },
-            "verificationStage": {
-              "type": "string",
-              "enum": [
-                "IMMEDIATE_REPAIR",
-                "D1",
-                "D7"
-              ]
-            },
+      "B10MasteryProjection": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Learning-service mastery projection. SRS scheduling, repair verification and mastery are separate server-owned state machines.",
+        "required": [
+          "itemId",
+          "srsStage",
+          "repairWorkflowState",
+          "masteryStage",
+          "projectionVersion",
+          "projectionStatus",
+          "stateVersion",
+          "pin",
+          "projectedAt"
+        ],
+        "properties": {
+          "itemId": {
+            "$ref": "#/components/schemas/B10Int64Id"
+          },
+          "srsStage": {
+            "type": "string",
+            "enum": [
+              "NEW",
+              "LEARNING",
+              "MASTERED",
+              "CONSOLIDATED"
+            ]
+          },
+          "repairWorkflowState": {
+            "type": "string",
+            "enum": [
+              "REVIEW_QUEUE",
+              "LEARNING",
+              "DELAY_VERIFY_D1",
+              "DELAY_VERIFY_D7",
+              "MASTERED",
+              "REOPENED"
+            ]
+          },
+          "masteryStage": {
+            "type": "string",
+            "enum": [
+              "NEW",
+              "LEARNING",
+              "MASTERED",
+              "CONSOLIDATED"
+            ]
+          },
+          "verificationStage": {
+            "type": "string",
+            "enum": [
+              "IMMEDIATE_REPAIR",
+              "D1",
+              "D7"
+            ]
+          },
           "nextReviewAt": {
             "$ref": "#/components/schemas/B10DateTime",
             "nullable": true
@@ -5390,17 +5699,17 @@
               "MANUAL_REVIEW"
             ]
           },
-            "sourceAssessmentId": {
-              "$ref": "#/components/schemas/B10AttemptId",
-              "nullable": true
-            },
-            "sourceReviewEventId": {
-              "$ref": "#/components/schemas/B10ReviewEventId",
-              "nullable": true
-            },
-            "stateVersion": {
-              "$ref": "#/components/schemas/B10StateVersion"
-            },
+          "sourceAssessmentId": {
+            "$ref": "#/components/schemas/B10AttemptId",
+            "nullable": true
+          },
+          "sourceReviewEventId": {
+            "$ref": "#/components/schemas/B10ReviewEventId",
+            "nullable": true
+          },
+          "stateVersion": {
+            "$ref": "#/components/schemas/B10StateVersion"
+          },
           "pin": {
             "$ref": "#/components/schemas/B10ActiveSessionAttemptPin"
           },
@@ -5409,606 +5718,606 @@
           }
         }
       },
-        "B10RepairItem": {
-          "type": "object",
-          "additionalProperties": false,
-          "description": "Learning-service repair projection. Verification timing is a repair workflow concern and is separate from the SRS and mastery stages.",
-          "required": [
-            "repairId",
-            "itemId",
-            "sourceAssessmentEventId",
-            "repairWorkflowState",
-            "verificationStage",
-            "srsStage",
-            "masteryStage",
-            "dueAt",
-            "contentPin",
-            "stateVersion",
-            "reasonTrace"
-          ],
-          "properties": {
-            "repairId": {
-              "$ref": "#/components/schemas/B10RepairId"
+      "B10RepairItem": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Learning-service repair projection. Verification timing is a repair workflow concern and is separate from the SRS and mastery stages.",
+        "required": [
+          "repairId",
+          "itemId",
+          "sourceAssessmentEventId",
+          "repairWorkflowState",
+          "verificationStage",
+          "srsStage",
+          "masteryStage",
+          "dueAt",
+          "contentPin",
+          "stateVersion",
+          "reasonTrace"
+        ],
+        "properties": {
+          "repairId": {
+            "$ref": "#/components/schemas/B10RepairId"
+          },
+          "itemId": {
+            "$ref": "#/components/schemas/B10Int64Id"
+          },
+          "sourceAssessmentEventId": {
+            "type": "string",
+            "pattern": "^evt_[A-Za-z0-9._:-]{8,127}$"
+          },
+          "repairWorkflowState": {
+            "type": "string",
+            "enum": [
+              "REVIEW_QUEUE",
+              "LEARNING",
+              "DELAY_VERIFY_D1",
+              "DELAY_VERIFY_D7",
+              "MASTERED",
+              "REOPENED"
+            ]
+          },
+          "verificationStage": {
+            "type": "string",
+            "enum": [
+              "IMMEDIATE_REPAIR",
+              "D1",
+              "D7"
+            ]
+          },
+          "srsStage": {
+            "type": "string",
+            "enum": [
+              "NEW",
+              "LEARNING",
+              "MASTERED",
+              "CONSOLIDATED"
+            ]
+          },
+          "masteryStage": {
+            "type": "string",
+            "enum": [
+              "NEW",
+              "LEARNING",
+              "MASTERED",
+              "CONSOLIDATED"
+            ]
+          },
+          "dueAt": {
+            "$ref": "#/components/schemas/B10DateTime",
+            "nullable": true
+          },
+          "contentPin": {
+            "$ref": "#/components/schemas/B10ContentVersionPin"
+          },
+          "stateVersion": {
+            "$ref": "#/components/schemas/B10StateVersion"
+          },
+          "reasonTrace": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/B10ReasonTrace"
             },
-            "itemId": {
-              "$ref": "#/components/schemas/B10Int64Id"
-            },
-            "sourceAssessmentEventId": {
-              "type": "string",
-              "pattern": "^evt_[A-Za-z0-9._:-]{8,127}$"
-            },
-            "repairWorkflowState": {
-              "type": "string",
-              "enum": [
-                "REVIEW_QUEUE",
-                "LEARNING",
-                "DELAY_VERIFY_D1",
-                "DELAY_VERIFY_D7",
-                "MASTERED",
-                "REOPENED"
-              ]
-            },
-            "verificationStage": {
-              "type": "string",
-              "enum": [
-                "IMMEDIATE_REPAIR",
-                "D1",
-                "D7"
-              ]
-            },
-            "srsStage": {
-              "type": "string",
-              "enum": [
-                "NEW",
-                "LEARNING",
-                "MASTERED",
-                "CONSOLIDATED"
-              ]
-            },
-            "masteryStage": {
-              "type": "string",
-              "enum": [
-                "NEW",
-                "LEARNING",
-                "MASTERED",
-                "CONSOLIDATED"
-              ]
-            },
-            "dueAt": {
-              "$ref": "#/components/schemas/B10DateTime",
-              "nullable": true
-            },
-            "contentPin": {
-              "$ref": "#/components/schemas/B10ContentVersionPin"
-            },
-            "stateVersion": {
-              "$ref": "#/components/schemas/B10StateVersion"
-            },
-            "reasonTrace": {
-              "type": "array",
-              "items": {
-                "$ref": "#/components/schemas/B10ReasonTrace"
+            "maxItems": 32
+          }
+        }
+      },
+      "B10MasteryOverview": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Learning-service mastery counts as of a server-owned projection watermark.",
+        "required": [
+          "projectionVersion",
+          "stateVersion",
+          "asOf",
+          "newCount",
+          "learningCount",
+          "masteredCount",
+          "consolidatedCount"
+        ],
+        "properties": {
+          "projectionVersion": {
+            "$ref": "#/components/schemas/B10ProjectionVersion"
+          },
+          "stateVersion": {
+            "$ref": "#/components/schemas/B10StateVersion"
+          },
+          "asOf": {
+            "$ref": "#/components/schemas/B10DateTime"
+          },
+          "newCount": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "learningCount": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "masteredCount": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "consolidatedCount": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          }
+        }
+      },
+      "B10ReportInputVersions": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Version pins used to build a learning report. These are input facts, not client-supplied report claims.",
+        "required": [
+          "planVersion",
+          "streamRevision",
+          "srsStateVersion",
+          "masteryProjectionVersion",
+          "assessmentReportVersion",
+          "contentEpoch"
+        ],
+        "properties": {
+          "planVersion": {
+            "$ref": "#/components/schemas/B10ProjectionVersion"
+          },
+          "streamRevision": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9._:-]{1,128}$"
+          },
+          "srsStateVersion": {
+            "$ref": "#/components/schemas/B10StateVersion"
+          },
+          "masteryProjectionVersion": {
+            "$ref": "#/components/schemas/B10ProjectionVersion"
+          },
+          "assessmentReportVersion": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1
+          },
+          "contentEpoch": {
+            "$ref": "#/components/schemas/B10ContentEpoch"
+          }
+        }
+      },
+      "B10LearningReportMetric": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "metricCode",
+          "status",
+          "numerator",
+          "denominator",
+          "value"
+        ],
+        "properties": {
+          "metricCode": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9_]{1,95}$"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PROCESSING",
+              "READY",
+              "NOT_APPLICABLE"
+            ]
+          },
+          "numerator": {
+            "oneOf": [
+              {
+                "type": "integer",
+                "format": "int64",
+                "minimum": 0
               },
-              "maxItems": 32
-            }
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "denominator": {
+            "oneOf": [
+              {
+                "type": "integer",
+                "format": "int64",
+                "minimum": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "value": {
+            "oneOf": [
+              {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
-        "B10MasteryOverview": {
-          "type": "object",
-          "additionalProperties": false,
-          "description": "Learning-service mastery counts as of a server-owned projection watermark.",
-          "required": [
-            "projectionVersion",
-            "stateVersion",
-            "asOf",
-            "newCount",
-            "learningCount",
-            "masteredCount",
-            "consolidatedCount"
-          ],
-          "properties": {
-            "projectionVersion": {
-              "$ref": "#/components/schemas/B10ProjectionVersion"
-            },
-            "stateVersion": {
-              "$ref": "#/components/schemas/B10StateVersion"
-            },
-            "asOf": {
-              "$ref": "#/components/schemas/B10DateTime"
-            },
-            "newCount": {
-              "type": "integer",
-              "format": "int64",
-              "minimum": 0
-            },
-            "learningCount": {
-              "type": "integer",
-              "format": "int64",
-              "minimum": 0
-            },
-            "masteredCount": {
-              "type": "integer",
-              "format": "int64",
-              "minimum": 0
-            },
-            "consolidatedCount": {
-              "type": "integer",
-              "format": "int64",
-              "minimum": 0
-            }
-          }
-        },
-        "B10ReportInputVersions": {
-          "type": "object",
-          "additionalProperties": false,
-          "description": "Version pins used to build a learning report. These are input facts, not client-supplied report claims.",
-          "required": [
-            "planVersion",
-            "streamRevision",
-            "srsStateVersion",
-            "masteryProjectionVersion",
-            "assessmentReportVersion",
-            "contentEpoch"
-          ],
-          "properties": {
-            "planVersion": {
-              "$ref": "#/components/schemas/B10ProjectionVersion"
-            },
-            "streamRevision": {
-              "type": "string",
-              "pattern": "^[A-Za-z0-9._:-]{1,128}$"
-            },
-            "srsStateVersion": {
-              "$ref": "#/components/schemas/B10StateVersion"
-            },
-            "masteryProjectionVersion": {
-              "$ref": "#/components/schemas/B10ProjectionVersion"
-            },
-            "assessmentReportVersion": {
-              "type": "integer",
-              "format": "int64",
-              "minimum": 1
-            },
-            "contentEpoch": {
-              "$ref": "#/components/schemas/B10ContentEpoch"
-            }
-          }
-        },
-        "B10LearningReportMetric": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "metricCode",
-            "status",
-            "numerator",
-            "denominator",
-            "value"
-          ],
-          "properties": {
-            "metricCode": {
-              "type": "string",
-              "pattern": "^[A-Z][A-Z0-9_]{1,95}$"
-            },
-            "status": {
-              "type": "string",
-              "enum": [
-                "PROCESSING",
-                "READY",
-                "NOT_APPLICABLE"
-              ]
-            },
-            "numerator": {
-              "oneOf": [
-                {
-                  "type": "integer",
-                  "format": "int64",
-                  "minimum": 0
-                },
-                {
-                  "type": "null"
-                }
-              ]
-            },
-            "denominator": {
-              "oneOf": [
-                {
-                  "type": "integer",
-                  "format": "int64",
-                  "minimum": 1
-                },
-                {
-                  "type": "null"
-                }
-              ]
-            },
-            "value": {
-              "oneOf": [
-                {
-                  "type": "number",
-                  "minimum": 0,
-                  "maximum": 1
-                },
-                {
-                  "type": "null"
-                }
-              ]
+        "oneOf": [
+          {
+            "required": [
+              "metricCode",
+              "status",
+              "numerator",
+              "denominator",
+              "value"
+            ],
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "PROCESSING"
+                ]
+              },
+              "numerator": {
+                "type": "null"
+              },
+              "denominator": {
+                "type": "null"
+              },
+              "value": {
+                "type": "null"
+              }
             }
           },
-          "oneOf": [
-            {
-              "required": [
-                "metricCode",
-                "status",
-                "numerator",
-                "denominator",
-                "value"
-              ],
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "enum": [
-                    "PROCESSING"
-                  ]
-                },
-                "numerator": {
-                  "type": "null"
-                },
-                "denominator": {
-                  "type": "null"
-                },
-                "value": {
-                  "type": "null"
-                }
-              }
-            },
-            {
-              "required": [
-                "metricCode",
-                "status",
-                "numerator",
-                "denominator",
-                "value"
-              ],
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "enum": [
-                    "READY"
-                  ]
-                },
-                "numerator": {
-                  "type": "integer",
-                  "format": "int64",
-                  "minimum": 0
-                },
-                "denominator": {
-                  "type": "integer",
-                  "format": "int64",
-                  "minimum": 1
-                },
-                "value": {
-                  "type": "number",
-                  "minimum": 0,
-                  "maximum": 1
-                }
-              }
-            },
-            {
-              "required": [
-                "metricCode",
-                "status",
-                "numerator",
-                "denominator",
-                "value"
-              ],
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "enum": [
-                    "NOT_APPLICABLE"
-                  ]
-                },
-                "numerator": {
-                  "type": "null"
-                },
-                "denominator": {
-                  "type": "null"
-                },
-                "value": {
-                  "type": "null"
-                }
+          {
+            "required": [
+              "metricCode",
+              "status",
+              "numerator",
+              "denominator",
+              "value"
+            ],
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "READY"
+                ]
+              },
+              "numerator": {
+                "type": "integer",
+                "format": "int64",
+                "minimum": 0
+              },
+              "denominator": {
+                "type": "integer",
+                "format": "int64",
+                "minimum": 1
+              },
+              "value": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
               }
             }
-          ]
-        },
-        "B10LearningReport": {
-          "type": "object",
-          "additionalProperties": false,
-          "description": "Learning-service report aggregation. Missing or late facts are visible through status, watermarks and reconciliation fields rather than silently treated as zero.",
-          "required": [
-            "reportId",
-            "reportVersion",
-            "reportType",
-            "windowStart",
-            "windowEnd",
-            "asOf",
-            "reportRuleVersion",
-            "planningRuleVersion",
-            "srsAlgorithmVersion",
-            "contentEpoch",
-            "sourceWatermarks",
-            "sourceWatermarkDigest",
-            "inputVersions",
-            "metricDefinitionsVersion",
-            "sourceFactDigest",
-            "status",
-            "metrics",
-            "generatedAt",
-            "replayable"
-          ],
-          "properties": {
-            "reportId": {
-              "$ref": "#/components/schemas/B10ReportId"
-            },
-            "reportVersion": {
-              "type": "integer",
-              "format": "int64",
-              "minimum": 1
-            },
-            "reportType": {
-              "$ref": "#/components/schemas/B10LearningReportType"
-            },
-            "windowStart": {
-              "$ref": "#/components/schemas/B10DateTime"
-            },
-            "windowEnd": {
-              "$ref": "#/components/schemas/B10DateTime"
-            },
-            "asOf": {
-              "$ref": "#/components/schemas/B10DateTime"
-            },
-            "reportRuleVersion": {
-              "type": "string",
-              "enum": [
-                "P1_REPORT_V1"
-              ]
-            },
-            "planningRuleVersion": {
-              "type": "string",
-              "enum": [
-                "P1_DAILY_PLAN_V1"
-              ]
-            },
-            "srsAlgorithmVersion": {
-              "type": "string",
-              "enum": [
-                "SM2_Q03_V1"
-              ]
-            },
-            "contentEpoch": {
-              "$ref": "#/components/schemas/B10ContentEpoch"
-            },
-            "sourceWatermarks": {
-              "type": "array",
-              "items": {
-                "$ref": "#/components/schemas/B10SourceWatermark"
-              },
-              "minItems": 2,
-              "maxItems": 16
-            },
-            "sourceWatermarkDigest": {
-              "$ref": "#/components/schemas/B10Sha256"
-            },
-            "inputVersions": {
-              "$ref": "#/components/schemas/B10ReportInputVersions"
-            },
-            "metricDefinitionsVersion": {
-              "type": "string",
-              "enum": [
-                "P1_REPORT_V1"
-              ]
-            },
-            "sourceFactDigest": {
-              "$ref": "#/components/schemas/B10Sha256"
-            },
-            "status": {
-              "type": "string",
-              "enum": [
-                "PROCESSING",
-                "READY",
-                "PARTIAL",
-                "FAILED"
-              ]
-            },
-            "metrics": {
-              "type": "array",
-              "items": {
-                "$ref": "#/components/schemas/B10LearningReportMetric"
-              },
-              "maxItems": 256
-            },
-            "lateEventCount": {
-              "type": "integer",
-              "format": "int64",
-              "minimum": 0
-            },
-            "supersedesReportVersion": {
-              "type": "integer",
-              "format": "int64",
-              "minimum": 1,
-              "nullable": true
-            },
-            "rebuildStatus": {
-              "type": "string",
-              "enum": [
-                "NOT_REQUIRED",
-                "PENDING",
-                "REBUILT"
-              ]
-            },
-            "reconciliationStatus": {
-              "type": "string",
-              "enum": [
-                "NOT_REQUIRED",
-                "PENDING",
-                "RECONCILED",
-                "DISCREPANCY"
-              ]
-            },
-            "sourceTrace": {
-              "type": "array",
-              "items": {
+          },
+          {
+            "required": [
+              "metricCode",
+              "status",
+              "numerator",
+              "denominator",
+              "value"
+            ],
+            "properties": {
+              "status": {
                 "type": "string",
-                "maxLength": 191
+                "enum": [
+                  "NOT_APPLICABLE"
+                ]
               },
-              "maxItems": 64
-            },
-            "missingFacts": {
-              "type": "array",
-              "items": {
-                "type": "string",
-                "maxLength": 191
+              "numerator": {
+                "type": "null"
               },
-              "maxItems": 64
-            },
-            "generatedAt": {
-              "$ref": "#/components/schemas/B10DateTime"
-            },
-            "replayable": {
-              "type": "boolean",
-              "enum": [
-                true
-              ]
+              "denominator": {
+                "type": "null"
+              },
+              "value": {
+                "type": "null"
+              }
             }
           }
-        },
-        "B10LearningReviewResult": {
-          "type": "object",
-          "additionalProperties": false,
-          "description": "Server receipt for the canonical public SRS review command. Derived SRS values, repair state and mastery state are response facts only.",
-          "required": [
-            "reviewEventId",
-            "eventStatus",
-            "riskDecision",
-            "stateVersion",
-            "srsStage",
-            "repairWorkflowState",
-            "masteryStage",
-            "repetitionCount",
-            "easeFactor",
-            "intervalDays",
-            "dueAt",
-            "algorithmVersion",
-            "contentPin",
-            "projectionVersion",
-            "projectedAt",
-            "replayed"
-          ],
-          "properties": {
-            "reviewEventId": {
-              "$ref": "#/components/schemas/B10ReviewEventId"
+        ]
+      },
+      "B10LearningReport": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Learning-service report aggregation. Missing or late facts are visible through status, watermarks and reconciliation fields rather than silently treated as zero.",
+        "required": [
+          "reportId",
+          "reportVersion",
+          "reportType",
+          "windowStart",
+          "windowEnd",
+          "asOf",
+          "reportRuleVersion",
+          "planningRuleVersion",
+          "srsAlgorithmVersion",
+          "contentEpoch",
+          "sourceWatermarks",
+          "sourceWatermarkDigest",
+          "inputVersions",
+          "metricDefinitionsVersion",
+          "sourceFactDigest",
+          "status",
+          "metrics",
+          "generatedAt",
+          "replayable"
+        ],
+        "properties": {
+          "reportId": {
+            "$ref": "#/components/schemas/B10ReportId"
+          },
+          "reportVersion": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1
+          },
+          "reportType": {
+            "$ref": "#/components/schemas/B10LearningReportType"
+          },
+          "windowStart": {
+            "$ref": "#/components/schemas/B10DateTime"
+          },
+          "windowEnd": {
+            "$ref": "#/components/schemas/B10DateTime"
+          },
+          "asOf": {
+            "$ref": "#/components/schemas/B10DateTime"
+          },
+          "reportRuleVersion": {
+            "type": "string",
+            "enum": [
+              "P1_REPORT_V1"
+            ]
+          },
+          "planningRuleVersion": {
+            "type": "string",
+            "enum": [
+              "P1_DAILY_PLAN_V1"
+            ]
+          },
+          "srsAlgorithmVersion": {
+            "type": "string",
+            "enum": [
+              "SM2_Q03_V1"
+            ]
+          },
+          "contentEpoch": {
+            "$ref": "#/components/schemas/B10ContentEpoch"
+          },
+          "sourceWatermarks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/B10SourceWatermark"
             },
-            "eventStatus": {
+            "minItems": 2,
+            "maxItems": 16
+          },
+          "sourceWatermarkDigest": {
+            "$ref": "#/components/schemas/B10Sha256"
+          },
+          "inputVersions": {
+            "$ref": "#/components/schemas/B10ReportInputVersions"
+          },
+          "metricDefinitionsVersion": {
+            "type": "string",
+            "enum": [
+              "P1_REPORT_V1"
+            ]
+          },
+          "sourceFactDigest": {
+            "$ref": "#/components/schemas/B10Sha256"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PROCESSING",
+              "READY",
+              "PARTIAL",
+              "FAILED"
+            ]
+          },
+          "metrics": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/B10LearningReportMetric"
+            },
+            "maxItems": 256
+          },
+          "lateEventCount": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "supersedesReportVersion": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1,
+            "nullable": true
+          },
+          "rebuildStatus": {
+            "type": "string",
+            "enum": [
+              "NOT_REQUIRED",
+              "PENDING",
+              "REBUILT"
+            ]
+          },
+          "reconciliationStatus": {
+            "type": "string",
+            "enum": [
+              "NOT_REQUIRED",
+              "PENDING",
+              "RECONCILED",
+              "DISCREPANCY"
+            ]
+          },
+          "sourceTrace": {
+            "type": "array",
+            "items": {
               "type": "string",
-              "enum": [
-                "ACCEPTED",
-                "DUPLICATE",
-                "RISK_FILTERED",
-                "CONFLICT",
-                "REJECTED",
-                "EXPIRED"
-              ]
+              "maxLength": 191
             },
-            "riskDecision": {
+            "maxItems": 64
+          },
+          "missingFacts": {
+            "type": "array",
+            "items": {
               "type": "string",
-              "enum": [
-                "ALLOW",
-                "ACCEPT_NO_REWARD",
-                "THROTTLE",
-                "REJECT",
-                "REVIEW"
-              ]
+              "maxLength": 191
             },
-            "stateVersion": {
-              "$ref": "#/components/schemas/B10StateVersion"
-            },
-            "srsStage": {
-              "type": "string",
-              "enum": [
-                "NEW",
-                "LEARNING",
-                "MASTERED",
-                "CONSOLIDATED"
-              ]
-            },
-            "repairWorkflowState": {
-              "type": "string",
-              "enum": [
-                "REVIEW_QUEUE",
-                "LEARNING",
-                "DELAY_VERIFY_D1",
-                "DELAY_VERIFY_D7",
-                "MASTERED",
-                "REOPENED"
-              ]
-            },
-            "masteryStage": {
-              "type": "string",
-              "enum": [
-                "NEW",
-                "LEARNING",
-                "MASTERED",
-                "CONSOLIDATED"
-              ]
-            },
-            "verificationStage": {
-              "type": "string",
-              "enum": [
-                "IMMEDIATE_REPAIR",
-                "D1",
-                "D7"
-              ]
-            },
-            "repetitionCount": {
-              "type": "integer",
-              "format": "int32",
-              "minimum": 0
-            },
-            "easeFactor": {
-              "type": "number",
-              "minimum": 1.3,
-              "maximum": 2.5
-            },
-            "intervalDays": {
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 365
-            },
-            "dueAt": {
-              "$ref": "#/components/schemas/B10DateTime",
-              "nullable": true
-            },
-            "algorithmVersion": {
-              "type": "string",
-              "enum": [
-                "SM2_Q03_V1"
-              ]
-            },
-            "contentPin": {
-              "$ref": "#/components/schemas/B10ContentVersionPin"
-            },
-            "projectionVersion": {
-              "$ref": "#/components/schemas/B10ProjectionVersion"
-            },
-            "projectedAt": {
-              "$ref": "#/components/schemas/B10DateTime"
-            },
-            "replayed": {
-              "type": "boolean"
-            }
+            "maxItems": 64
+          },
+          "generatedAt": {
+            "$ref": "#/components/schemas/B10DateTime"
+          },
+          "replayable": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
           }
-        },
-        "B10LearnerContentSnapshotResponse": {
+        }
+      },
+      "B10LearningReviewResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Server receipt for the canonical public SRS review command. Derived SRS values, repair state and mastery state are response facts only.",
+        "required": [
+          "reviewEventId",
+          "eventStatus",
+          "riskDecision",
+          "stateVersion",
+          "srsStage",
+          "repairWorkflowState",
+          "masteryStage",
+          "repetitionCount",
+          "easeFactor",
+          "intervalDays",
+          "dueAt",
+          "algorithmVersion",
+          "contentPin",
+          "projectionVersion",
+          "projectedAt",
+          "replayed"
+        ],
+        "properties": {
+          "reviewEventId": {
+            "$ref": "#/components/schemas/B10ReviewEventId"
+          },
+          "eventStatus": {
+            "type": "string",
+            "enum": [
+              "ACCEPTED",
+              "DUPLICATE",
+              "RISK_FILTERED",
+              "CONFLICT",
+              "REJECTED",
+              "EXPIRED"
+            ]
+          },
+          "riskDecision": {
+            "type": "string",
+            "enum": [
+              "ALLOW",
+              "ACCEPT_NO_REWARD",
+              "THROTTLE",
+              "REJECT",
+              "REVIEW"
+            ]
+          },
+          "stateVersion": {
+            "$ref": "#/components/schemas/B10StateVersion"
+          },
+          "srsStage": {
+            "type": "string",
+            "enum": [
+              "NEW",
+              "LEARNING",
+              "MASTERED",
+              "CONSOLIDATED"
+            ]
+          },
+          "repairWorkflowState": {
+            "type": "string",
+            "enum": [
+              "REVIEW_QUEUE",
+              "LEARNING",
+              "DELAY_VERIFY_D1",
+              "DELAY_VERIFY_D7",
+              "MASTERED",
+              "REOPENED"
+            ]
+          },
+          "masteryStage": {
+            "type": "string",
+            "enum": [
+              "NEW",
+              "LEARNING",
+              "MASTERED",
+              "CONSOLIDATED"
+            ]
+          },
+          "verificationStage": {
+            "type": "string",
+            "enum": [
+              "IMMEDIATE_REPAIR",
+              "D1",
+              "D7"
+            ]
+          },
+          "repetitionCount": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "easeFactor": {
+            "type": "number",
+            "minimum": 1.3,
+            "maximum": 2.5
+          },
+          "intervalDays": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 365
+          },
+          "dueAt": {
+            "$ref": "#/components/schemas/B10DateTime",
+            "nullable": true
+          },
+          "algorithmVersion": {
+            "type": "string",
+            "enum": [
+              "SM2_Q03_V1"
+            ]
+          },
+          "contentPin": {
+            "$ref": "#/components/schemas/B10ContentVersionPin"
+          },
+          "projectionVersion": {
+            "$ref": "#/components/schemas/B10ProjectionVersion"
+          },
+          "projectedAt": {
+            "$ref": "#/components/schemas/B10DateTime"
+          },
+          "replayed": {
+            "type": "boolean"
+          }
+        }
+      },
+      "B10LearnerContentSnapshotResponse": {
         "type": "object",
         "additionalProperties": false,
         "required": [

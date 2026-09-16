@@ -546,7 +546,11 @@ public final class GatewayRouteExecutionPolicy {
                 rewrite("session", "/api/v1/assessment/sessions/{sessionId}", "/internal/v1/assessment/sessions/{sessionId}", ASSESSMENT_B10, HttpMethod.GET),
                 rewrite("attempt-create", "/api/v1/assessment/sessions/{sessionId}/attempts", "/internal/v1/assessment/sessions/{sessionId}/attempts", ASSESSMENT_B10, HttpMethod.POST),
                 rewrite("attempt-checkpoint", "/api/v1/assessment/sessions/{sessionId}/attempts/{attemptId}/checkpoint", "/internal/v1/assessment/sessions/{sessionId}/attempts/{attemptId}/checkpoint", ASSESSMENT_B10, HttpMethod.PUT),
-                rewrite("report", "/api/v1/assessment/reports/{reportId}", "/internal/v1/assessment/reports/{reportId}", ASSESSMENT_B10, HttpMethod.GET));
+                rewrite("report", "/api/v1/assessment/reports/{reportId}", "/internal/v1/assessment/reports/{reportId}", ASSESSMENT_B10, HttpMethod.GET),
+                // M5-009 live: mistake queue + verify + variant in projectionId order (parity sorts).
+                rewrite("mistake-queue", "/api/v1/assessment/mistakes", "/internal/v1/assessment/mistakes", ASSESSMENT_B10, HttpMethod.GET),
+                rewrite("mistake-variant", "/api/v1/assessment/mistakes/{mistakeId}/variant", "/internal/v1/assessment/mistakes/{mistakeId}/variant", ASSESSMENT_B10, HttpMethod.POST),
+                rewrite("mistake-verify", "/api/v1/assessment/mistakes/{mistakeId}/verify", "/internal/v1/assessment/mistakes/{mistakeId}/verify", ASSESSMENT_B10, HttpMethod.POST));
         add(definitions, "media-domain",
                 rewrite("asset", "/api/v1/media/assets/{assetId}", "/internal/v1/media/assets/{assetId}", MEDIA, HttpMethod.GET),
                 rewrite("asset-activate", "/api/v1/media/assets/{assetId}/active", "/internal/v1/media/assets/{assetId}/active", MEDIA, HttpMethod.PUT),

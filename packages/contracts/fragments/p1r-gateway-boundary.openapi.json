@@ -2878,6 +2878,57 @@
               "sourcePath": "services/assessment-service/src/main/java/com/englishflow/assessment/web/B10AssessmentJdbcController.java",
               "requestMapping": "/internal/v1/assessment"
             }
+          },
+          {
+            "projectionId": "assessment-domain.mistake-queue",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/assessment/mistakes",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "assessment-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.assessment",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/assessment/mistakes",
+            "controllerEvidence": {
+              "sourcePath": "services/assessment-service/src/main/java/com/englishflow/assessment/web/B10AssessmentJdbcController.java",
+              "requestMapping": "/internal/v1/assessment"
+            }
+          },
+          {
+            "projectionId": "assessment-domain.mistake-variant",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/assessment/mistakes/{mistakeId}/variant",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "assessment-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.assessment",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/assessment/mistakes/{mistakeId}/variant",
+            "controllerEvidence": {
+              "sourcePath": "services/assessment-service/src/main/java/com/englishflow/assessment/web/B10AssessmentJdbcController.java",
+              "requestMapping": "/internal/v1/assessment"
+            }
+          },
+          {
+            "projectionId": "assessment-domain.mistake-verify",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/assessment/mistakes/{mistakeId}/verify",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "assessment-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.assessment",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/assessment/mistakes/{mistakeId}/verify",
+            "controllerEvidence": {
+              "sourcePath": "services/assessment-service/src/main/java/com/englishflow/assessment/web/B10AssessmentJdbcController.java",
+              "requestMapping": "/internal/v1/assessment"
+            }
           }
         ]
       },

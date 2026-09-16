@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1R-M5-009-VARIANT-20260916] **翻牌 M5-009：变式签发装配 + D1/D7 时区活证（71 ACCEPTED / 37 DEV_DONE，工具待验）。** 新链 `p1r-live-m5009.mjs` 12/12：答错落行 → D0→D1（+24h 精确）→ 变式重挂链 → 同题 400 → D1→D7（+7d 精确）→ MASTERED → 终态 409 → 重开。附带：B10 错题行 + 3 端口 + 主体加宽 + 网关 3 投影（415 routes）；assessment 57/0/0、gateway 94/0/0。
+
 - [P1R-M5-005-SPEAKING-20260916] **翻牌 M5-005：上传失败 + 保留策略活跑（70 ACCEPTED / 38 DEV_DONE，工具待验）。** 新链 `p1r-live-m5005.mjs` 9/9：缺段 400 无落库 → 加密存储 → 自评 → 删除持久 → 跨用户隔离。残留：网关 speaking 属主冲突 fail-closed（具名，归人类定）。
 
 - [P1R-M3-004-ROUNDTRIP-20260916] **翻牌 M3-004：对象存储回环 + 浏览器工作台（69 ACCEPTED / 39 DEV_DONE，工具待验）。** 新链 `p1r-live-m3004.mjs` 15/15：注册/重放 → 授权 → MinIO PUT → 激活 → 读取授权 → MinIO GET sha 一致 → 任务/字幕/清单 → 重试 409 → 学员读 → 听力台零错。附带：media JDBC 端口×2、V5/V6 栏宽、上传授权门修正、空时间修正、网关 6 投影（412 routes）；media 71/0/0、gateway 94/0/0。

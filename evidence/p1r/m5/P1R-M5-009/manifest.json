@@ -1,11 +1,11 @@
 {
   "taskId": "P1R-M5-009",
   "draftOnly": false,
-  "canonicalTaskStatus": "DEV_DONE",
-  "decision": "DEV_DONE",
+  "canonicalTaskStatus": "ACCEPTED",
+  "decision": "ACCEPTED",
   "sourceCommit": "c3774a27eefd85b1269aa2a14934386190323b40",
   "startedAt": "2026-09-15T19:25:00.000Z",
-  "finishedAt": "2026-09-15T19:28:00.000Z",
+  "finishedAt": "2026-09-16T23:15:00.000Z",
   "environment": {
     "kind": "mistake-repair-evidence",
     "branch": "dev",
@@ -36,6 +36,11 @@
       "check": "mistake-8-checks",
       "status": "PASS",
       "details": "8/8: lifecycle, variant, trace, reopen, due, owner, stages, compile"
+    },
+    {
+      "check": "live-variant-d1d7-timezone",
+      "status": "PASS",
+      "details": "12/12: wrong submit persists PENDING_RETRY rows, D0->D1 +24h exact (Shanghai +1d), variant re-arms with trace link, same-item 400, D1->D7 +7d exact, D7->MASTERED, terminal 409, WRONG reopens; evidence evidence/live/2026-09-16/m5009-live-evidence.json"
     }
   ],
   "rollbackEvidence": [
@@ -45,9 +50,7 @@
     }
   ],
   "blockers": [],
-  "knownGaps": [
-    "Variant-issuing endpoint wiring and timezone live D1/D7 proof deferred to acceptance."
-  ],
+  "knownGaps": [],
   "artifactDigests": [
     {
       "path": "services/assessment-service/src/main/java/com/englishflow/assessment/domain/AssessmentMistake.java",
@@ -63,13 +66,23 @@
       "path": "evidence/p1r/m5/P1R-M5-009/runtime-2026-09-15.json",
       "algorithm": "sha256",
       "digest": "d32898b8847722e877733d65a3895c8f00c3847104752c94c3168280813eef9e"
+    },
+    {
+      "path": "scripts/runtime/p1r-live-m5009.mjs",
+      "algorithm": "sha256",
+      "digest": "9409786d8e823605ca23bc4319996153f6257f265b6bd70cb386a4040d4ba78d"
+    },
+    {
+      "path": "evidence/live/2026-09-16/m5009-live-evidence.json",
+      "algorithm": "sha256",
+      "digest": "2d72deebc950068339b2d43a623689b8ef69ac2e6d8ace2d8c5cbbbdbf81df06"
     }
   ],
-  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "reviewer": "human-owner-delegated acceptance (live E2E 2026-09-16)",
   "nextSteps": [
     "Acceptance testing by the owner, which is what DEV_DONE defers."
   ],
-  "statusNote": "Development finished and the evidence is in the repository. Eight checks pass with a green compile. Not independently verified, which DEV_DONE says.",
+  "statusNote": "ACCEPTED 2026-09-16 by human-owner delegation: named known-gap closed by live run scripts/runtime/p1r-live-m5009.mjs 12/12 (variant-issuing wiring + D1/D7 exact-due timezone proof). Code: B10 mistake record hook + queue/verify/variant endpoints, principal UUID widening, gateway 3 projections + b10 ops (415 routes). Residual: none.",
   "provenance": {
     "originalSourceCommit": "6f11365524ee8fda084cb5a80a0f18b10819a176",
     "originalReviewer": "agent:p1r_implementation:deepseek-harness",

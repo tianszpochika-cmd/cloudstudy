@@ -36568,6 +36568,124 @@
           }
         }
       }
+    },
+    "/api/v1/assessment/mistakes": {
+      "get": {
+        "tags": [
+          "B10-Assessment"
+        ],
+        "summary": "List learner mistake facts with D0/D1/D7 states (M5-009 live)",
+        "operationId": "listAssessmentMistakes",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/assessment/mistakes/{mistakeId}/verify": {
+      "post": {
+        "tags": [
+          "B10-Assessment"
+        ],
+        "summary": "Drive a mistake through D0/D1/D7 verification (M5-009 live)",
+        "operationId": "verifyAssessmentMistake",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "mistakeId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "outcome"
+                ],
+                "properties": {
+                  "outcome": {
+                    "type": "string",
+                    "enum": [
+                      "CORRECT",
+                      "WRONG"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/assessment/mistakes/{mistakeId}/variant": {
+      "post": {
+        "tags": [
+          "B10-Assessment"
+        ],
+        "summary": "Issue a variant surface form for re-verification (M5-009 live)",
+        "operationId": "issueAssessmentVariant",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "mistakeId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "variantItemId"
+                ],
+                "properties": {
+                  "variantItemId": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -76704,7 +76822,8 @@
           "path": "/api/v1/media",
           "methods": [
             "GET",
-            "POST"
+            "POST",
+            "PUT"
           ]
         },
         "upstreamOwner": "media-service",
@@ -78756,6 +78875,57 @@
             "targetUriConfig": "gateway.b14.service-base-urls.assessment",
             "pathStrategy": "REWRITE_PATH",
             "targetPathTemplate": "/internal/v1/assessment/reports/{reportId}",
+            "controllerEvidence": {
+              "sourcePath": "services/assessment-service/src/main/java/com/englishflow/assessment/web/B10AssessmentJdbcController.java",
+              "requestMapping": "/internal/v1/assessment"
+            }
+          },
+          {
+            "projectionId": "assessment-domain.mistake-queue",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/assessment/mistakes",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "assessment-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.assessment",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/assessment/mistakes",
+            "controllerEvidence": {
+              "sourcePath": "services/assessment-service/src/main/java/com/englishflow/assessment/web/B10AssessmentJdbcController.java",
+              "requestMapping": "/internal/v1/assessment"
+            }
+          },
+          {
+            "projectionId": "assessment-domain.mistake-variant",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/assessment/mistakes/{mistakeId}/variant",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "assessment-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.assessment",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/assessment/mistakes/{mistakeId}/variant",
+            "controllerEvidence": {
+              "sourcePath": "services/assessment-service/src/main/java/com/englishflow/assessment/web/B10AssessmentJdbcController.java",
+              "requestMapping": "/internal/v1/assessment"
+            }
+          },
+          {
+            "projectionId": "assessment-domain.mistake-verify",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/assessment/mistakes/{mistakeId}/verify",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "assessment-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.assessment",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/assessment/mistakes/{mistakeId}/verify",
             "controllerEvidence": {
               "sourcePath": "services/assessment-service/src/main/java/com/englishflow/assessment/web/B10AssessmentJdbcController.java",
               "requestMapping": "/internal/v1/assessment"

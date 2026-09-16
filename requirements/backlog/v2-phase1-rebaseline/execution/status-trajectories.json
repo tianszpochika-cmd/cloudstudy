@@ -951,11 +951,12 @@
         "PLANNED",
         "READY",
         "IN_PROGRESS",
-        "DEV_DONE"
+        "DEV_DONE",
+        "ACCEPTED"
       ],
-      "recordedAt": "2026-09-15T19:28:00Z",
-      "actor": "agent:p1r_implementation:deepseek-harness",
-      "reason": "Owner route A. Dependencies M5-002 + M5-007 DEV_DONE. Trace-linked variant repair delivered; compile green, 8/8 harness PASS; endpoint wiring and live D1/D7 proof deferred as knownGap.",
+      "recordedAt": "2026-09-16T23:15:00Z",
+      "actor": "human-owner-delegated acceptance (live E2E 2026-09-16)",
+      "reason": "Named known-gap closed: variant wiring + D1/D7 green 12/12 (p1r-live-m5009.mjs).",
       "evidencePath": "evidence/p1r/m5/P1R-M5-009/manifest.json"
     },
     {
