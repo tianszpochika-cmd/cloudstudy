@@ -1,11 +1,11 @@
 {
   "taskId": "P1R-M3-005",
   "draftOnly": false,
-  "canonicalTaskStatus": "DEV_DONE",
-  "decision": "DEV_DONE",
+  "canonicalTaskStatus": "ACCEPTED",
+  "decision": "ACCEPTED",
   "sourceCommit": "1ae0e17bc49922e010d2b63a1b5ea4d502133039",
   "startedAt": "2026-09-15T16:35:00.000Z",
-  "finishedAt": "2026-09-15T16:38:00.000Z",
+  "finishedAt": "2026-09-16T20:15:00.000Z",
   "environment": {
     "kind": "dual-review-reuse-evidence",
     "branch": "dev",
@@ -67,6 +67,11 @@
       "check": "service-builds",
       "status": "PASS",
       "details": "compile verified round 4"
+    },
+    {
+      "check": "live-trail-replay-x-tenant",
+      "status": "PASS",
+      "details": "10/10: dual-review flow with reasonCode/reviewNote, outbox trail submitted > reviewed x2 > published, payloads FIRST/APPROVED then FINAL/APPROVED, reviewer columns match r1/r2 subs, forged tenant headers ignored (platform-owned); evidence evidence/live/2026-09-16/m3005-live-evidence.json"
     }
   ],
   "rollbackEvidence": [
@@ -76,9 +81,7 @@
     }
   ],
   "blockers": [],
-  "knownGaps": [
-    "Comment/audit trail replay and cross-tenant negative against live MySQL deferred to acceptance."
-  ],
+  "knownGaps": [],
   "artifactDigests": [
     {
       "path": "scripts/runtime/p1r-m3-005-runtime.mjs",
@@ -89,13 +92,23 @@
       "path": "evidence/p1r/m3/P1R-M3-005/runtime-2026-09-15.json",
       "algorithm": "sha256",
       "digest": "968b8128536c5fe7d1a133108dbdedee78db1681108bf8e952dcd4f2c0b289eb"
+    },
+    {
+      "path": "scripts/runtime/p1r-live-m3005.mjs",
+      "algorithm": "sha256",
+      "digest": "042e8b325943b0695484af906eab37009ed41e63bd3d4162f1518e12b32df59a"
+    },
+    {
+      "path": "evidence/live/2026-09-16/m3005-live-evidence.json",
+      "algorithm": "sha256",
+      "digest": "9a41612f321cd2da41dcc87189b019479141322c15b4eec3d290a04e4e0e7a5a"
     }
   ],
-  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "reviewer": "human-owner-delegated acceptance (live E2E 2026-09-16)",
   "nextSteps": [
     "Acceptance testing by the owner, which is what DEV_DONE defers."
   ],
-  "statusNote": "Development finished and the evidence is in the repository. Eight reuse checks pass. Not independently verified, which DEV_DONE says.",
+  "statusNote": "ACCEPTED 2026-09-16 by human-owner delegation: named known-gap closed by live run scripts/runtime/p1r-live-m3005.mjs 10/10 (dual-review audit-trail replay against MySQL + cross-tenant negative). Observation (unfiled): reviewNote/reasonCode accepted at API but not carried into outbox payloads (stage/decision/actor durable). Residual otherwise none.",
   "provenance": {
     "originalSourceCommit": "1f3a67b0a435e0a762aaccb8c2a16d45a27d3e6b",
     "originalReviewer": "agent:p1r_implementation:deepseek-harness",

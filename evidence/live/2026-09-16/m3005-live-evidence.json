@@ -1,0 +1,70 @@
+{
+  "task": "M3005-LIVE-TRAIL",
+  "capturedAt": "2026-09-16T20:12:31.616Z",
+  "gateway": "http://127.0.0.1:18070",
+  "result": "PASS",
+  "passed": 10,
+  "total": 10,
+  "checks": [
+    {
+      "name": "staff-ready",
+      "ok": true,
+      "observed": "3 staff tokens",
+      "expected": "tokens"
+    },
+    {
+      "name": "create-draft",
+      "ok": true,
+      "observed": "HTTP 202 vid=261049",
+      "expected": "HTTP 202 + vid"
+    },
+    {
+      "name": "submit-review",
+      "ok": true,
+      "observed": "HTTP 202",
+      "expected": "HTTP 202"
+    },
+    {
+      "name": "review-first",
+      "ok": true,
+      "observed": "HTTP 202",
+      "expected": "HTTP 202"
+    },
+    {
+      "name": "review-final",
+      "ok": true,
+      "observed": "HTTP 202",
+      "expected": "HTTP 202"
+    },
+    {
+      "name": "publish",
+      "ok": true,
+      "observed": "HTTP 202",
+      "expected": "HTTP 202"
+    },
+    {
+      "name": "trail-ordered",
+      "ok": true,
+      "observed": "content.version.submitted.v1 > content.version.reviewed.v1 > content.version.reviewed.v1 > content.version.published.v1",
+      "expected": "submitted > reviewed x2 > published"
+    },
+    {
+      "name": "trail-payloads",
+      "ok": true,
+      "observed": "content.version.reviewed.v1\t\"FIRST_REVIEW\"\t\"APPROVED\" | content.version.reviewed.v1\t\"FINAL_REVIEW\"\t\"APPROVED\"",
+      "expected": "FIRST/APPROVED then FINAL/APPROVED"
+    },
+    {
+      "name": "trail-actors",
+      "ok": true,
+      "observed": "reviewer columns match r1/r2 subs",
+      "expected": "columns match"
+    },
+    {
+      "name": "x-tenant-ignored",
+      "ok": true,
+      "observed": "HTTP 202 foreign=0 tenant=platform",
+      "expected": "platform-owned, headers ignored"
+    }
+  ]
+}

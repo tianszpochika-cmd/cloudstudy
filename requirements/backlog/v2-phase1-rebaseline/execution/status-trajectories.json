@@ -622,11 +622,12 @@
         "PLANNED",
         "READY",
         "IN_PROGRESS",
-        "DEV_DONE"
+        "DEV_DONE",
+        "ACCEPTED"
       ],
-      "recordedAt": "2026-09-15T16:38:00Z",
-      "actor": "agent:p1r_implementation:deepseek-harness",
-      "reason": "Owner route A (REUSE-VERIFY, no production change). Dependencies M3-002/003/004 DEV_DONE. Eight domain/boundary checks pass; comment/audit replay deferred as knownGap.",
+      "recordedAt": "2026-09-16T20:15:00Z",
+      "actor": "human-owner-delegated acceptance (live E2E 2026-09-16)",
+      "reason": "Named known-gap closed: trail replay + x-tenant negative green 10/10 (p1r-live-m3005.mjs).",
       "evidencePath": "evidence/p1r/m3/P1R-M3-005/manifest.json"
     },
     {
