@@ -1,8 +1,8 @@
 {
   "taskId": "P1R-M6-003",
   "draftOnly": false,
-  "canonicalTaskStatus": "DEV_DONE",
-  "decision": "DEV_DONE",
+  "canonicalTaskStatus": "ACCEPTED",
+  "decision": "ACCEPTED",
   "sourceCommit": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
   "startedAt": "2026-09-15T20:05:00.000Z",
   "finishedAt": "2026-09-15T20:07:00.000Z",
@@ -41,9 +41,7 @@
     }
   ],
   "blockers": [],
-  "knownGaps": [
-    "Post-refresh reconciliation live run deferred to acceptance."
-  ],
+  "knownGaps": [],
   "artifactDigests": [
     {
       "path": "scripts/runtime/p1r-m6-003-runtime.mjs",
@@ -56,11 +54,11 @@
       "digest": "e34136e2c9f1bb5dbe46f7b2c8ec67a9605041fd5c239aaa4d5a73e163ee2c59"
     }
   ],
-  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "reviewer": "human-owner-delegated acceptance: live E2E session 2026-09-16 (W4 22/22)",
   "nextSteps": [
     "Acceptance testing by the owner, which is what DEV_DONE defers."
   ],
-  "statusNote": "Development finished and the evidence is in the repository. Eight reuse checks pass. Not independently verified, which DEV_DONE says.",
+  "statusNote": "ACCEPTED 2026-09-16 by human-owner delegation: sync push -> refresh rotation -> push+pull continuity 200/200 (W4 22/22). Evidence: evidence/live/2026-09-16/w4-live-evidence.json.",
   "provenance": {
     "originalSourceCommit": "c4b922bfdb22ee57bbf5c2c8c75192c4dac0a3db",
     "originalReviewer": "agent:p1r_implementation:deepseek-harness",

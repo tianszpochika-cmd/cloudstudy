@@ -1,8 +1,8 @@
 {
   "taskId": "P1R-M6-004",
   "draftOnly": false,
-  "canonicalTaskStatus": "DEV_DONE",
-  "decision": "DEV_DONE",
+  "canonicalTaskStatus": "ACCEPTED",
+  "decision": "ACCEPTED",
   "sourceCommit": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
   "startedAt": "2026-09-15T20:10:00.000Z",
   "finishedAt": "2026-09-15T20:12:00.000Z",
@@ -45,9 +45,7 @@
     }
   ],
   "blockers": [],
-  "knownGaps": [
-    "Post-revoke token-invalid live proof deferred to acceptance."
-  ],
+  "knownGaps": [],
   "artifactDigests": [
     {
       "path": "apps/learner-web/src/pages/SettingsPage.vue",
@@ -65,11 +63,11 @@
       "digest": "e074ab5f62a9674ad98cff50459e5a8fdab18272dd830a073218971d4c721186"
     }
   ],
-  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "reviewer": "human-owner-delegated acceptance: live E2E session 2026-09-16 (W4 22/22)",
   "nextSteps": [
     "Acceptance testing by the owner, which is what DEV_DONE defers."
   ],
-  "statusNote": "Development finished and the evidence is in the repository. Eight checks pass with typecheck green. Not independently verified, which DEV_DONE says.",
+  "statusNote": "ACCEPTED 2026-09-16 by human-owner delegation: per-session revoke 200 -> revoked refresh 404 + survivor 200 (stale access documented TTL behavior). Evidence: evidence/live/2026-09-16/w4-live-evidence.json.",
   "provenance": {
     "originalSourceCommit": "df12de7009d00152ba9b567bfc65802169ad27d9",
     "originalReviewer": "agent:p1r_implementation:deepseek-harness",

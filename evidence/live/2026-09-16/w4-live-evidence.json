@@ -1,10 +1,10 @@
 {
   "task": "W4-LIVE-E2E",
-  "capturedAt": "2026-09-16T08:41:48.947Z",
+  "capturedAt": "2026-09-16T08:55:56.264Z",
   "gateway": "http://127.0.0.1:18070",
   "result": "PASS",
-  "passed": 15,
-  "total": 15,
+  "passed": 22,
+  "total": 22,
   "checks": [
     {
       "name": "setup-a",
@@ -27,7 +27,7 @@
     {
       "name": "notif-pref-put",
       "ok": true,
-      "observed": "HTTP 200 {\"channel\":\"PUSH\",\"enabled\":false,\"locale\":\"zh-CN\",\"notificationType\":\"REVIEW_DUE\",\"principalId\":\"deaf444b-8993-4ea3-823",
+      "observed": "HTTP 200 {\"channel\":\"PUSH\",\"enabled\":false,\"locale\":\"zh-CN\",\"notificationType\":\"REVIEW_DUE\",\"principalId\":\"6ea6f239-26b7-43e1-a29",
       "expected": "HTTP 200"
     },
     {
@@ -51,7 +51,7 @@
     {
       "name": "notif-deliver-filtered",
       "ok": true,
-      "observed": "HTTP 200 {\"attempt\":{\"attemptId\":\"delivery-2da4a3aa-3c83-40a9-9444-4bcd5865e1e0\",\"messageId\":\"msg-45c750d7-928c-4409-898a-30e80f93088c\",\"channel\":\"PU",
+      "observed": "HTTP 200 {\"attempt\":{\"attemptId\":\"delivery-0ac862f4-c981-4f1c-98ed-3b7260e97173\",\"messageId\":\"msg-c092f586-7d78-42f9-ae43-c9cc9d654ee6\",\"channel\":\"PU",
       "expected": "CANCELLED/PREFERENCE_DISABLED"
     },
     {
@@ -63,11 +63,53 @@
     {
       "name": "sync-push",
       "ok": true,
-      "observed": "HTTP 200 {\"conflicts\":[],\"clientBatchId\":\"\",\"acceptedChangeIds\":[],\"serverVersion\":1789548108147,\"nextCursor\":\"1789548108147\",\"source\":\"mysql\"}",
+      "observed": "HTTP 200 {\"conflicts\":[],\"clientBatchId\":\"\",\"acceptedChangeIds\":[],\"serverVersion\":1789548955306,\"nextCursor\":\"1789548955306\",\"source\":\"mysql\"}",
       "expected": "HTTP 200"
     },
     {
       "name": "sync-pull",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200"
+    },
+    {
+      "name": "revoke-two-sessions",
+      "ok": true,
+      "observed": "HTTP 200/200",
+      "expected": "HTTP 200 x2 distinct"
+    },
+    {
+      "name": "sync-refresh-rotation",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200 rotated"
+    },
+    {
+      "name": "sync-post-refresh",
+      "ok": true,
+      "observed": "HTTP 200/200",
+      "expected": "HTTP 200/200 continuity"
+    },
+    {
+      "name": "session-revoke",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200"
+    },
+    {
+      "name": "revoked-access-ttl-stale",
+      "ok": true,
+      "observed": "HTTP 200 (stateless JWT within TTL, by design)",
+      "expected": "HTTP 200"
+    },
+    {
+      "name": "revoked-refresh-invalid",
+      "ok": true,
+      "observed": "HTTP 404",
+      "expected": "HTTP 401/404"
+    },
+    {
+      "name": "survivor-alive",
       "ok": true,
       "observed": "HTTP 200",
       "expected": "HTTP 200"

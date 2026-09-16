@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1R-ACCEPT-M6-003-M6-004-20260916] **翻牌 M6-003/M6-004：W4 22/22（44 ACCEPTED / 64 DEV_DONE）。** 刷新后同步连续性 + 单会话撤销（被撤销方 refresh 404、存活方 200；TTL 内旧 access 放行为 JWT 标准语义已断言）。
+
 - [P1R-W5-DUEL-20260916] **W5 补到 19/19：判分 repeat/duplicate/out-of-order 对决全绿；M5-002 留置（缺 pin 接线）。** 同幂等键重放同 attempt、submissionId 复用同答案同 attempt、换答案 409、检查点 v1→v2→v1 末写获胜、报告直读；均为活断言。M5-002 缺口另一半（`alternativeContentVersionId` 会话 pin）两边互指均未实现（content 注释称 M5-002 接线，assessment 无此代码），属产品工作未动手。
 
 - [P1R-ACCEPT-M6-002-20260916] **`M6-002` 翻牌：通道失败活跑通，W4 15/15。** 关偏好后 PUSH 送达被过滤（`CANCELLED/PREFERENCE_DISABLED`），投递尝试可查。排队/送达走直连（无网关执行，P1-LIVE-013 同类，已具名）。验证：W4 **15/15**。

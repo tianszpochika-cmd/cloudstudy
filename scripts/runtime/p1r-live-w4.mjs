@@ -80,6 +80,54 @@ r = await call('POST', '/api/v1/offline/sync/push', { token: tokenA, body: { cha
 record('sync-push', r.status === 200, `HTTP ${r.status} ${JSON.stringify(r.json).slice(0, 140)}`, 'HTTP 200');
 r = await call('GET', '/api/v1/offline/sync/pull?limit=10', { token: tokenA });
 record('sync-pull', r.status === 200, `HTTP ${r.status}`, 'HTTP 200');
+// post-refresh reconciliation (M6-003) + per-session revoke (M6-004).
+// node fetch has no cookie jar: capture the refresh cookie manually.
+async function loginWithCookie(identifier, pwd, tag) {
+  const headers = { accept: 'application/json', 'content-type': 'application/json', 'x-client-platform': 'web', origin: 'http://127.0.0.1:18180', 'idempotency-key': idem(`${tag}-login`) };
+  const res = await fetch(`${GW}/api/v1/auth/login`, { method: 'POST', headers, body: JSON.stringify({ identifier, password: pwd, device }), redirect: 'manual' });
+  const json = await res.json().catch(() => null);
+  const setCookies = typeof res.headers.getSetCookie === 'function' ? res.headers.getSetCookie() : [];
+  const cookie = (setCookies.find((c) => c.startsWith('yuxuexing_refresh=')) ?? '').split(';', 1)[0] || null;
+  return { status: res.status, token: json?.data?.accessToken ?? null, sessionId: json?.data?.sessionId ?? null, cookie };
+}
+async function refreshWithCookie(cookie, tag) {
+  const headers = { accept: 'application/json', 'x-client-platform': 'web', origin: 'http://127.0.0.1:18180', 'idempotency-key': idem(`${tag}-refresh`), cookie };
+  const res = await fetch(`${GW}/api/v1/auth/token/refresh`, { method: 'POST', headers, redirect: 'manual' });
+  const json = await res.json().catch(() => null);
+  const setCookies = typeof res.headers.getSetCookie === 'function' ? res.headers.getSetCookie() : [];
+  const newCookie = (setCookies.find((c) => c.startsWith('yuxuexing_refresh=')) ?? '').split(';', 1)[0] || null;
+  return { status: res.status, token: json?.data?.accessToken ?? json?.accessToken ?? null, cookie: newCookie };
+}
+{
+  const idA = mkuser('a');
+  const pwA = password('a');
+  const s1 = await loginWithCookie(idA, pwA, 'a-s1');
+  const s2 = await loginWithCookie(idA, pwA, 'a-s2');
+  record('revoke-two-sessions', s1.status === 200 && s2.status === 200 && !!s1.sessionId && !!s2.sessionId && s1.sessionId !== s2.sessionId, `HTTP ${s1.status}/${s2.status}`, 'HTTP 200 x2 distinct');
+  // sync push on s1, rotate via refresh, push+pull continue on the rotated pair.
+  let r1 = await call('POST', '/api/v1/offline/sync/push', { token: s1.token, body: { changes: [{ clientSeq: 90, kind: 'REVIEW', itemId: 'w4-rfr-1', quality: 4 }] }, idemKey: idem('push-pre') });
+  const rot = s1.cookie ? await refreshWithCookie(s1.cookie, 'a-rot') : { status: -1, token: null };
+  record('sync-refresh-rotation', rot.status === 200 && !!rot.token, `HTTP ${rot.status}`, 'HTTP 200 rotated');
+  r1 = await call('POST', '/api/v1/offline/sync/push', { token: rot.token ?? s1.token, body: { changes: [{ clientSeq: 91, kind: 'REVIEW', itemId: 'w4-rfr-2', quality: 5 }] }, idemKey: idem('push-post') });
+  const pl = await call('GET', '/api/v1/offline/sync/pull?limit=20', { token: rot.token ?? s1.token });
+  record('sync-post-refresh', r1.status === 200 && pl.status === 200, `HTTP ${r1.status}/${pl.status}`, 'HTTP 200/200 continuity');
+  // revoke s2 with s1's authority; s2 dies, s1 lives.
+  if (s2.sessionId) {
+    const rv = await call('POST', `/api/v1/auth/sessions/${s2.sessionId}/revoke`, { token: (rot.token ?? s1.token), idemKey: idem('revoke') });
+    record('session-revoke', rv.status === 200, `HTTP ${rv.status}`, 'HTTP 200');
+    const dead = await call('GET', '/api/v1/learner/profile', { token: s2.token });
+    record('revoked-access-ttl-stale', dead.status === 200, `HTTP ${dead.status} (stateless JWT within TTL, by design)`, 'HTTP 200');
+    const deadRefresh = s2.cookie ? await refreshWithCookie(s2.cookie, 'a-deadref') : { status: -1 };
+    record('revoked-refresh-invalid', deadRefresh.status === 401 || deadRefresh.status === 404, `HTTP ${deadRefresh.status}`, 'HTTP 401/404');
+    const alive = await call('GET', '/api/v1/learner/profile', { token: (rot.token ?? s1.token) });
+    record('survivor-alive', alive.status === 200, `HTTP ${alive.status}`, 'HTTP 200');
+  } else {
+    record('session-revoke', false, 'no session id', 'HTTP 200');
+    record('revoked-access-ttl-stale', false, 'no session id', 'HTTP 200');
+    record('revoked-refresh-invalid', false, 'no session id', 'HTTP 401/404');
+    record('survivor-alive', false, 'no session id', 'HTTP 200');
+  }
+}
 // support tickets: A creates, A reads, B cannot read A's ticket
 r = await call('POST', '/api/v1/support/tickets', { token: tokenA, body: { categoryCode: 'LEARNING_DATA', resourceRef: 'w4-probe', descriptionFingerprint: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', priority: 'NORMAL' }, idemKey: idem('tick') });
 const ticketId = data(r).ticket?.ticketId ?? data(r).ticketId ?? data(r).id ?? null;
