@@ -105,6 +105,45 @@ for (const t of ['TERMS', 'PRIVACY', 'ADULT_LEARNING']) {
   await api('PUT', '/api/v1/iam/consents', { token, body: { type: t, version: 'b30-consent-v1', decision: 'ACCEPTED' }, idem: `wui-${stamp}-c-${t}` });
 }
 console.log('ui-user ready:', identifier);
+
+async function visitWorldTabs() {
+  // M7-003 cross-end run: one login, then the world/games/social/avatar/offline tabs.
+  const out = { id: 'learner-world-tabs', url: 'http://127.0.0.1:18180/world', status: -1, title: '', errors: [], tabs: {} };
+  const browser = await chromium.launch();
+  const page = await (await browser.newContext({ viewport: { width: 1440, height: 900 } })).newPage();
+  page.on('pageerror', (e) => out.errors.push('pageerror: ' + String(e).slice(0, 140)));
+  page.on('console', (m) => {
+    if (m.type() === 'error' && !/favicon|Failed to load resource/i.test(m.text())) out.errors.push('console.error: ' + m.text().slice(0, 140));
+  });
+  try {
+    await page.goto('http://127.0.0.1:18180/login', { waitUntil: 'domcontentloaded', timeout: 45000 });
+    await page.waitForTimeout(2000);
+    await page.getByLabel(/账号|邮箱/i).first().fill(identifier);
+    await page.getByLabel(/密码/i).first().fill(password);
+    await page.getByRole('button', { name: /登录/i }).first().click();
+    await page.waitForTimeout(4000);
+    const resp = await page.goto('http://127.0.0.1:18180/world', { waitUntil: 'domcontentloaded', timeout: 45000 });
+    out.status = resp ? resp.status() : -1;
+    await page.waitForTimeout(3000);
+    out.title = await page.title();
+    for (const tab of ['游戏大厅', '自习室', 'Avatar', '离线包']) {
+      try {
+        await page.getByRole('button', { name: new RegExp(tab) }).first().click({ timeout: 6000 });
+        await page.waitForTimeout(1500);
+        const snap = await page.locator('main, body').first().ariaSnapshot().catch(() => '(no snapshot)');
+        out.tabs[tab] = { ok: true, snapshot: snap.slice(0, 400) };
+      } catch (e) {
+        out.tabs[tab] = { ok: false, error: String(e).slice(0, 120) };
+      }
+    }
+  } catch (e) {
+    out.errors.push('goto-fail: ' + String(e).slice(0, 160));
+  }
+  results.push(out);
+  const tabsOk = Object.values(out.tabs).filter((t) => t.ok).length;
+  console.log(`${out.status === 200 && tabsOk === 4 ? 'ok  ' : 'FAIL'} learner-world-tabs :: HTTP ${out.status} tabs=${tabsOk}/4 errors=${out.errors.length}`);
+  await browser.close();
+}
 // Set a learning goal via API so post-onboarding deep links resolve for this user.
 await api('PUT', '/api/v1/learner/targets', { token, body: { expectedStateVersion: 0, goalCode: 'CET_4_6', targetLevel: 'A2', dailyQuotaMinutes: 30 }, idem: `wui-${stamp}-tgt-01` });
 
@@ -116,6 +155,7 @@ await visit('learner-login-returnto', 'http://127.0.0.1:18180/login?redirect=/to
 await visit('learner-login-reload', 'http://127.0.0.1:18180/login', { loginFlow: { identifier, password }, afterLogin: 'reload' });
 await visit('learner-login-offline', 'http://127.0.0.1:18180/login', { loginFlow: { identifier, password }, afterLogin: 'offline' });
 await visit('learner-ipad', 'http://127.0.0.1:18180/login', { loginFlow: { identifier, password }, viewport: { width: 820, height: 1180 } });
+await visitWorldTabs();
 await visit('learner-today', 'http://127.0.0.1:18180/today');
 await visit('admin-login', 'http://127.0.0.1:18181/login');
 await visit('mobile-h5-login', 'http://127.0.0.1:18183/#/pages/login/login', { waitMs: 8000 });

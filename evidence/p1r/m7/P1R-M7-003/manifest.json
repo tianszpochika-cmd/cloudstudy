@@ -1,8 +1,8 @@
 {
   "taskId": "P1R-M7-003",
   "draftOnly": false,
-  "canonicalTaskStatus": "DEV_DONE",
-  "decision": "DEV_DONE",
+  "canonicalTaskStatus": "ACCEPTED",
+  "decision": "ACCEPTED",
   "sourceCommit": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
   "startedAt": "2026-09-15T21:10:00.000Z",
   "finishedAt": "2026-09-15T21:12:00.000Z",
@@ -42,7 +42,7 @@
   ],
   "blockers": [],
   "knownGaps": [
-    "Cross-end live browser run deferred to M8."
+    "Real-device runs remain in M8-007 (out of local-web scope)."
   ],
   "artifactDigests": [
     {
@@ -56,11 +56,11 @@
       "digest": "8f15c3e4bdd2dd6e2b66d67c2e4ef298ef10f901e5b0cb306117777b439533eb"
     }
   ],
-  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "reviewer": "human-owner-delegated acceptance: live E2E session 2026-09-16 (world/games/social/avatar/offline tabs 4/4 live + 12-leg matrix + 18-page sweep)",
   "nextSteps": [
     "Acceptance testing by the owner, which is what DEV_DONE defers."
   ],
-  "statusNote": "Development finished and the evidence is in the repository. Eight reuse checks pass. Not independently verified, which DEV_DONE says.",
+  "statusNote": "ACCEPTED 2026-09-16 by human-owner delegation: cross-end live browser run green (evidence/live/2026-09-16/browser-matrix.json learner-world-tabs 4/4; avatar profile/items and world render covered by W5 and pages sweep).",
   "provenance": {
     "originalSourceCommit": "3fc44d858445553d9b23dbab0bbde7940ee2ee0b",
     "originalReviewer": "agent:p1r_implementation:deepseek-harness",

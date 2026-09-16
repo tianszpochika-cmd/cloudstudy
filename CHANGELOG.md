@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1R-ACCEPT-M7-003-20260916] **`M7-003` 翻牌：世界五 tab 跨端浏览器跑 4/4。** 矩阵新增 `learner-world-tabs` 腿（世界/游戏大厅/自习室/Avatar/离线包零 pageerror；`/sync/offline-packages` 缺路由为 P1-LIVE-013 已立案项）。配套 avatar（W5）与 18 页扫描。残留：真机留 M8-007。验证：矩阵 11/13 洁 + 2 环境误差具名。
+
 - [P1R-ACCEPT-M4-007-20260916] **`M4-007` 翻牌：确定性/DST 验收执行 26 单测 + smoke main 全绿。** 关闭其 manifest 缺口（纯函数确定性夹具与 DST 边界证明）：`Sm2SchedulerTest` 14、`LearningPlanStateMachineTest` 12、`LearningDomainSmoke` main（含 DST spring-forward 23 小时证明）PASS，证据入库。残留：计划编排无 HTTP 触发口（产品工作）。验证：learning 142/0/0 全套件亦绿。
 
 - [P1-LIVE-013-PAGES-20260916] **登录态 18 页扫描：12 洁 + 4 页离线面板按设计降级 + B3 读接口整面缺失立案。** 新脚本 `scripts/runtime/p1r-live-pages.mjs`（单点登录后逐路由快照，以 `.state-panel--*` 类判定状态；修掉两次探针自误：短幂等键致门未确认、register token 无登录态调写接口——后者反证门前剥离生效）。语法/写作/听力/阅读四页正确落离线面板（八态设计活验证）；其余后台取数失败均为同一根因：B3 读路径（约 15 条）网关与后端双无实现（后端仅 19 个写口），立 **P1-LIVE-013**（M5-003 产品构建，未动手）。验证：18 路由零 pageerror。
