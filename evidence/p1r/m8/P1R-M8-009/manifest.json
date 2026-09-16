@@ -3,7 +3,7 @@
   "draftOnly": false,
   "canonicalTaskStatus": "DEV_DONE",
   "decision": "DEV_DONE",
-  "sourceCommit": "2dec957d8d3203c7e534727910eacd4e38d733a3",
+  "sourceCommit": "c3774a27eefd85b1269aa2a14934386190323b40",
   "startedAt": "2026-09-15T22:35:00.000Z",
   "finishedAt": "2026-09-15T22:37:00.000Z",
   "environment": {
@@ -67,9 +67,9 @@
     "currentSourceRevalidationTask": "P1R-M8-009",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-16T22:23:47.154Z",
-    "currentSourceRevalidationAuditedImplementationSource": "2dec957d8d3203c7e534727910eacd4e38d733a3",
-    "currentSourceRevalidationIntegrationCheckpoint": "2dec957d8d3203c7e534727910eacd4e38d733a3",
+    "currentSourceRevalidationFinishedAt": "2026-09-16T22:36:54.035Z",
+    "currentSourceRevalidationAuditedImplementationSource": "c3774a27eefd85b1269aa2a14934386190323b40",
+    "currentSourceRevalidationIntegrationCheckpoint": "c3774a27eefd85b1269aa2a14934386190323b40",
     "currentSourceRevalidationHistory": [
       {
         "taskId": "P1R-M8-009",
@@ -270,8 +270,18 @@
         "runtimeStatus": "RUNTIME_VERIFIED",
         "finishedAt": "2026-09-16T22:23:47.154Z",
         "details": "M3-004 media workbench routes + V5/V6 migrations re-merge openapi"
+      },
+      {
+        "taskId": "P1R-M8-009",
+        "sourceCommit": "c3774a27eefd85b1269aa2a14934386190323b40",
+        "auditedImplementationSource": "c3774a27eefd85b1269aa2a14934386190323b40",
+        "integrationCheckpoint": "c3774a27eefd85b1269aa2a14934386190323b40",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T22:36:54.035Z",
+        "details": "M5-005 live speaking chain + evidence"
       }
     ],
-    "previousCurrentSourceCommit": "35a62a0ab878b4090caf36cb94b2658b990f1edb"
+    "previousCurrentSourceCommit": "2dec957d8d3203c7e534727910eacd4e38d733a3"
   }
 }

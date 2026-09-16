@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-006",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "2dec957d8d3203c7e534727910eacd4e38d733a3",
+  "sourceCommit": "c3774a27eefd85b1269aa2a14934386190323b40",
   "artifactDigests": [
     {
       "path": ".github/workflows/ci.yml",
@@ -718,9 +718,19 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-16T22:23:41.327Z",
         "details": "M3-004 media workbench routes + V5/V6 migrations re-merge openapi"
+      },
+      {
+        "taskId": "P1R-M1-006",
+        "sourceCommit": "c3774a27eefd85b1269aa2a14934386190323b40",
+        "auditedImplementationSource": "c3774a27eefd85b1269aa2a14934386190323b40",
+        "integrationCheckpoint": "c3774a27eefd85b1269aa2a14934386190323b40",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T22:36:48.064Z",
+        "details": "M5-005 live speaking chain + evidence"
       }
     ],
-    "previousCurrentSourceCommit": "35a62a0ab878b4090caf36cb94b2658b990f1edb",
+    "previousCurrentSourceCommit": "2dec957d8d3203c7e534727910eacd4e38d733a3",
     "previousCurrentSourceRevalidationTask": "P1R-M2-005",
     "currentSourceRevalidationTask": "P1R-M1-006",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
@@ -728,9 +738,9 @@
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
     "previousCurrentSourceRevalidationFinishedAt": "2026-09-12T22:07:09.012Z",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-16T22:23:41.327Z",
-    "currentSourceRevalidationAuditedImplementationSource": "2dec957d8d3203c7e534727910eacd4e38d733a3",
-    "currentSourceRevalidationIntegrationCheckpoint": "2dec957d8d3203c7e534727910eacd4e38d733a3"
+    "currentSourceRevalidationFinishedAt": "2026-09-16T22:36:48.064Z",
+    "currentSourceRevalidationAuditedImplementationSource": "c3774a27eefd85b1269aa2a14934386190323b40",
+    "currentSourceRevalidationIntegrationCheckpoint": "c3774a27eefd85b1269aa2a14934386190323b40"
   },
   "startedAt": "2026-08-30T02:24:20+08:00",
   "finishedAt": "2026-09-01T15:39:29+08:00",
