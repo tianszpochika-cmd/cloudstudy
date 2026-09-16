@@ -1,0 +1,46 @@
+{
+  "task": "PLOOP-LIVE",
+  "capturedAt": "2026-09-16T10:40:34.360Z",
+  "identifier": "wpl-mu3yytlc@local.invalid",
+  "result": "PASS",
+  "passed": 6,
+  "total": 6,
+  "checks": [
+    {
+      "name": "ploop-login",
+      "ok": true,
+      "observed": "http://127.0.0.1:18180/home",
+      "expected": "lands home"
+    },
+    {
+      "name": "ploop-answered",
+      "ok": true,
+      "observed": "2 answers",
+      "expected": ">=1 answered"
+    },
+    {
+      "name": "ploop-report",
+      "ok": true,
+      "observed": "report panel",
+      "expected": "report shown"
+    },
+    {
+      "name": "ploop-report-page",
+      "ok": true,
+      "observed": "report page renders",
+      "expected": "report renders"
+    },
+    {
+      "name": "ploop-today",
+      "ok": true,
+      "observed": "http://127.0.0.1:18180/today",
+      "expected": "today reachable"
+    },
+    {
+      "name": "ploop-no-errors",
+      "ok": true,
+      "observed": "0 pageerrors",
+      "expected": "zero"
+    }
+  ]
+}
