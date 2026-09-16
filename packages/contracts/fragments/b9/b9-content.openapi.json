@@ -966,6 +966,52 @@
           }
         }
       }
+    },
+    "/api/v1/admin/content-commands/validate/auto": {
+      "post": {
+        "tags": [
+          "b9-content-admin"
+        ],
+        "summary": "Read-only automatic validation report (M3-003 live)",
+        "operationId": "validateB9ContentAuto",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-contract": {
+          "owner": "content-service",
+          "caller": "admin-ops-service/admin-web",
+          "readOnly": true,
+          "fieldFiltering": "admin role-specific fields; never mutates content or emits projections"
+        },
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "contentCode": {
+                    "type": "string"
+                  },
+                  "content": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Validation report with ruleVersion + findings"
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
+          }
+        }
+      }
     }
   },
   "components": {

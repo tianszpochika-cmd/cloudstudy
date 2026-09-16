@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1R-M3-003-VALIDATE-20260916] **翻牌 M3-003：夹具过期阻断 + MySQL 审计回放（65 ACCEPTED / 43 DEV_DONE，工具待验）。** 新链 `p1r-live-m3003.mjs` 9/9：合法稿通过；DB 过期窗 → RIGHTS_EXPIRED；回放与库窗一致；未来窗 → NOT_YET_VALID；solution 键 → ANSWER_LEAK；校验零变更。附带开网关投影 validate/auto + b9 操作（406 routes）；gateway 94/0/0。
+
 - [P1R-M5-006-RECONCILE-20260916] **翻牌 M5-006：Browser→DB→report 活对账（64 ACCEPTED / 44 DEV_DONE，工具待验）。** 新链 `p1r-live-m5006.mjs` 9/9：4 条复习 → 报告 reviewItems=4 accuracy=75 精确对账 → MySQL 直查 4/3 → 同 key 重放吸收 → 浏览器报告页显示一致零错。
 
 - [P1R-M7-005-NEG-20260916] **翻牌 M7-005：榜单延迟门查询过滤 + 跨租户/越权活负例（63 ACCEPTED / 45 DEV_DONE，工具待验）。** 新链 `p1r-live-m7005.mjs` 12/12：榜单 kind/period/roomId 过滤 + 去标识断言 + 租户伪造头/参被忽略 + 工单跨用户隔离（B-get 403）+ 越权 CREATE_DRAFT 403 + 自批 403 + 未认证 401。观察：local-real 榜单 kind 透传 SQL 无枚举门（未知 kind 回 200 空集，属实现原样）。

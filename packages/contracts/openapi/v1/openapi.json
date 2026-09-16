@@ -36241,6 +36241,52 @@
           }
         }
       }
+    },
+    "/api/v1/admin/content-commands/validate/auto": {
+      "post": {
+        "tags": [
+          "b9-content-admin"
+        ],
+        "summary": "Read-only automatic validation report (M3-003 live)",
+        "operationId": "validateB9ContentAuto",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-contract": {
+          "owner": "content-service",
+          "caller": "admin-ops-service/admin-web",
+          "readOnly": true,
+          "fieldFiltering": "admin role-specific fields; never mutates content or emits projections"
+        },
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "contentCode": {
+                    "type": "string"
+                  },
+                  "content": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Validation report with ruleVersion + findings"
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -76972,7 +77018,24 @@
             "targetPathTemplate": "/internal/v1/content/admin-commands/import/batch",
             "controllerEvidence": {
               "sourcePath": "services/content-service/src/main/java/com/englishflow/content/web/B9ContentAdminController.java",
-              "requestMapping": "/internal/v1/content/admin-commands/import/batch"
+              "requestMapping": "/internal/v1/content/admin-commands"
+            }
+          },
+          {
+            "projectionId": "admin-content.validate-auto",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/admin/content-commands/validate/auto",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "content-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.content",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/content/admin-commands/validate/auto",
+            "controllerEvidence": {
+              "sourcePath": "services/content-service/src/main/java/com/englishflow/content/web/B9ContentAdminController.java",
+              "requestMapping": "/internal/v1/content/admin-commands"
             }
           }
         ]

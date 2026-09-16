@@ -467,7 +467,9 @@ public final class GatewayRouteExecutionPolicy {
                 rewrite("command-detail", "/api/v1/admin/content-commands/{contentCode}", "/internal/v1/content/admin-commands/{contentCode}", CONTENT_ADMIN, HttpMethod.GET),
                 rewrite("commands", "/api/v1/admin/content-commands", "/internal/v1/content/admin-commands", CONTENT_ADMIN, HttpMethod.GET, HttpMethod.POST),
                 // M3-002 live duel: idempotent batch import round-trip.
-                rewrite("import-batch", "/api/v1/admin/content-commands/import/batch", "/internal/v1/content/admin-commands/import/batch", CONTENT_ADMIN, HttpMethod.POST));
+                rewrite("import-batch", "/api/v1/admin/content-commands/import/batch", "/internal/v1/content/admin-commands/import/batch", CONTENT_ADMIN, HttpMethod.POST),
+                // M3-003 live: read-only auto validation report.
+                rewrite("validate-auto", "/api/v1/admin/content-commands/validate/auto", "/internal/v1/content/admin-commands/validate/auto", CONTENT_ADMIN, HttpMethod.POST));
         add(definitions, "admin-analytics", rewrite("metrics", "/api/v1/admin/ops/metrics", "/internal/v1/analytics/metrics", ANALYTICS, HttpMethod.GET));
         // P1R decision 1A: recovery console routes (request/approve/reject/execute + saga views).
         // NOTE: projection order is significant — parity sorts by projectionId.

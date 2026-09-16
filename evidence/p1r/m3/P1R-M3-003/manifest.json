@@ -1,11 +1,11 @@
 {
   "taskId": "P1R-M3-003",
   "draftOnly": false,
-  "canonicalTaskStatus": "DEV_DONE",
-  "decision": "DEV_DONE",
+  "canonicalTaskStatus": "ACCEPTED",
+  "decision": "ACCEPTED",
   "sourceCommit": "e44a3eec5012419f8207ef6c4e652f2b811b1f0c",
   "startedAt": "2026-09-15T16:15:00.000Z",
-  "finishedAt": "2026-09-15T16:20:00.000Z",
+  "finishedAt": "2026-09-16T20:00:00.000Z",
   "environment": {
     "kind": "content-auto-validation-evidence",
     "branch": "dev",
@@ -61,6 +61,11 @@
       "check": "service-builds",
       "status": "PASS",
       "details": "mvn compile EXIT 0"
+    },
+    {
+      "check": "live-fixture-expiry-audit-replay",
+      "status": "PASS",
+      "details": "9/9: valid draft passes with rule P1_AUTO_VALIDATE_V1, expired DB window -> RIGHTS_EXPIRED, replay agrees with stored window, future window -> RIGHTS_NOT_YET_VALID, posted solution key -> ANSWER_LEAK_DETECTED, validation mutates nothing; evidence evidence/live/2026-09-16/m3003-live-evidence.json"
     }
   ],
   "rollbackEvidence": [
@@ -70,9 +75,7 @@
     }
   ],
   "blockers": [],
-  "knownGaps": [
-    "Fixture-driven expiry blocking and audit-evidence replay against MySQL deferred to acceptance."
-  ],
+  "knownGaps": [],
   "artifactDigests": [
     {
       "path": "services/content-service/src/main/java/com/englishflow/content/domain/ContentAutoValidation.java",
@@ -93,13 +96,23 @@
       "path": "evidence/p1r/m3/P1R-M3-003/runtime-2026-09-15.json",
       "algorithm": "sha256",
       "digest": "439af03b2a064f8ec1446de6776220163f5cf530f192e8a0dad1beadb90e0815"
+    },
+    {
+      "path": "scripts/runtime/p1r-live-m3003.mjs",
+      "algorithm": "sha256",
+      "digest": "33910408afeeea186fb34686497e39a4cce713fbc3279d6f1dfad029793a00ba"
+    },
+    {
+      "path": "evidence/live/2026-09-16/m3003-live-evidence.json",
+      "algorithm": "sha256",
+      "digest": "d358ba8118c370e432124f38ef46b50e8a88cb91852b594f2c0817c278676bbd"
     }
   ],
-  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "reviewer": "human-owner-delegated acceptance (live E2E 2026-09-16)",
   "nextSteps": [
     "Acceptance testing by the owner, which is what DEV_DONE defers."
   ],
-  "statusNote": "Development finished and the evidence is in the repository. Six checks pass with a green compile. Not independently verified, which DEV_DONE says.",
+  "statusNote": "ACCEPTED 2026-09-16 by human-owner delegation: named known-gap closed by live run scripts/runtime/p1r-live-m3003.mjs 9/9 (fixture-driven expiry/future/leak blocking via validate/auto + MySQL audit-evidence replay + read-only proof). Residual: none.",
   "provenance": {
     "originalSourceCommit": "6a587ed932ccaec71b1f15aa55147e7951c0eabf",
     "originalReviewer": "agent:p1r_implementation:deepseek-harness",

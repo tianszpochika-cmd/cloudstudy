@@ -1418,6 +1418,23 @@
               "sourcePath": "services/content-service/src/main/java/com/englishflow/content/web/B9ContentAdminController.java",
               "requestMapping": "/internal/v1/content/admin-commands"
             }
+          },
+          {
+            "projectionId": "admin-content.validate-auto",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/admin/content-commands/validate/auto",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "content-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.content",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/content/admin-commands/validate/auto",
+            "controllerEvidence": {
+              "sourcePath": "services/content-service/src/main/java/com/englishflow/content/web/B9ContentAdminController.java",
+              "requestMapping": "/internal/v1/content/admin-commands"
+            }
           }
         ]
       },

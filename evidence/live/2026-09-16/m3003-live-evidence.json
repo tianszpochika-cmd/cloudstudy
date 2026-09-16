@@ -1,0 +1,64 @@
+{
+  "task": "M3003-LIVE-VALIDATE",
+  "capturedAt": "2026-09-16T20:01:22.130Z",
+  "gateway": "http://127.0.0.1:18070",
+  "result": "PASS",
+  "passed": 9,
+  "total": 9,
+  "checks": [
+    {
+      "name": "setup-register",
+      "ok": true,
+      "observed": "HTTP 201",
+      "expected": "HTTP 201"
+    },
+    {
+      "name": "setup-login",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200 + token"
+    },
+    {
+      "name": "valid-draft",
+      "ok": true,
+      "observed": "HTTP 202",
+      "expected": "HTTP 202"
+    },
+    {
+      "name": "valid-pass",
+      "ok": true,
+      "observed": "HTTP 200 passed=true rule=P1_AUTO_VALIDATE_V1",
+      "expected": "passed + rule version"
+    },
+    {
+      "name": "expired-blocked",
+      "ok": true,
+      "observed": "HTTP 200 findings=RIGHTS_EXPIRED",
+      "expected": "RIGHTS_EXPIRED BLOCKER"
+    },
+    {
+      "name": "audit-replay",
+      "ok": true,
+      "observed": "db_window=2020-01-01 00:00:00.000000\t2020-06-01 00:00:00.000000 replay_blocked=true",
+      "expected": "DB window + replay agree"
+    },
+    {
+      "name": "future-blocked",
+      "ok": true,
+      "observed": "HTTP 200 findings=RIGHTS_NOT_YET_VALID",
+      "expected": "RIGHTS_NOT_YET_VALID BLOCKER"
+    },
+    {
+      "name": "leak-blocked",
+      "ok": true,
+      "observed": "HTTP 200 findings=ANSWER_LEAK_DETECTED",
+      "expected": "ANSWER_LEAK_DETECTED"
+    },
+    {
+      "name": "read-only",
+      "ok": true,
+      "observed": "versions before=1 after=1",
+      "expected": "no mutation"
+    }
+  ]
+}
