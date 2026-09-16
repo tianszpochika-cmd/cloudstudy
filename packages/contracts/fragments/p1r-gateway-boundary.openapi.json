@@ -1401,6 +1401,23 @@
               "sourcePath": "services/content-service/src/main/java/com/englishflow/content/web/B9ContentAdminController.java",
               "requestMapping": "/internal/v1/content/admin-commands"
             }
+          },
+          {
+            "projectionId": "admin-content.import-batch",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/admin/content-commands/import/batch",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "content-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.content",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/content/admin-commands/import/batch",
+            "controllerEvidence": {
+              "sourcePath": "services/content-service/src/main/java/com/englishflow/content/web/B9ContentAdminController.java",
+              "requestMapping": "/internal/v1/content/admin-commands"
+            }
           }
         ]
       },

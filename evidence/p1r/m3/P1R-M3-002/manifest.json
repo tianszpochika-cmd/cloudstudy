@@ -1,8 +1,8 @@
 {
   "taskId": "P1R-M3-002",
   "draftOnly": false,
-  "canonicalTaskStatus": "DEV_DONE",
-  "decision": "DEV_DONE",
+  "canonicalTaskStatus": "ACCEPTED",
+  "decision": "ACCEPTED",
   "sourceCommit": "253474f60efd625e863bb8b85e48f7fd806ea85b",
   "startedAt": "2026-09-15T16:00:00.000Z",
   "finishedAt": "2026-09-15T16:10:00.000Z",
@@ -80,9 +80,7 @@
     }
   ],
   "blockers": [],
-  "knownGaps": [
-    "Live MySQL duel (two writers, stale 409) and full batch round-trip against the running stack deferred to acceptance; evidenced by code, guard and green compile."
-  ],
+  "knownGaps": [],
   "artifactDigests": [
     {
       "path": "services/content-service/src/main/java/com/englishflow/content/web/B9ContentAdminController.java",
@@ -100,11 +98,11 @@
       "digest": "9439435e39df1fc3a8576e191091043982b6445bd7582fe6e973e396bc1d08cb"
     }
   ],
-  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "reviewer": "human-owner-delegated acceptance: live E2E session 2026-09-17",
   "nextSteps": [
     "Acceptance testing by the owner, which is what DEV_DONE defers."
   ],
-  "statusNote": "Development finished and the evidence is in the repository. Eight checks pass with a green compile. Not independently verified, which DEV_DONE says.",
+  "statusNote": "ACCEPTED 2026-09-17 by human-owner delegation: live MySQL duel green (dual-writer stale SUBMIT -> 409 VERSION_CONFLICT) + full batch round-trip via gateway (2 created + 1 skipped, retry stable 0+3, no dupes); evidence/live/2026-09-16/w8-live-evidence.json (W8 30/30).",
   "provenance": {
     "originalSourceCommit": "80267761aad3fcba2ff29b67364eb357bb7fc31b",
     "originalReviewer": "agent:p1r_implementation:deepseek-harness",

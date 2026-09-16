@@ -464,18 +464,21 @@ public final class GatewayRouteExecutionPolicy {
                 preserve("projection", "/api/v1/public/site/projection", CONTENT_PUBLIC_SITE_PROJECTION, HttpMethod.GET));
         add(definitions, "public-commerce", rewrite("catalog", "/api/v1/public/commerce/catalog", "/internal/v1/commerce/public/catalog", COMMERCE, HttpMethod.GET));
         add(definitions, "admin-content",
+                rewrite("command-detail", "/api/v1/admin/content-commands/{contentCode}", "/internal/v1/content/admin-commands/{contentCode}", CONTENT_ADMIN, HttpMethod.GET),
                 rewrite("commands", "/api/v1/admin/content-commands", "/internal/v1/content/admin-commands", CONTENT_ADMIN, HttpMethod.GET, HttpMethod.POST),
-                rewrite("command-detail", "/api/v1/admin/content-commands/{contentCode}", "/internal/v1/content/admin-commands/{contentCode}", CONTENT_ADMIN, HttpMethod.GET));
+                // M3-002 live duel: idempotent batch import round-trip.
+                rewrite("import-batch", "/api/v1/admin/content-commands/import/batch", "/internal/v1/content/admin-commands/import/batch", CONTENT_ADMIN, HttpMethod.POST));
         add(definitions, "admin-analytics", rewrite("metrics", "/api/v1/admin/ops/metrics", "/internal/v1/analytics/metrics", ANALYTICS, HttpMethod.GET));
         // P1R decision 1A: recovery console routes (request/approve/reject/execute + saga views).
+        // NOTE: projection order is significant — parity sorts by projectionId.
         add(definitions, "admin-recovery",
-                rewrite("recovery-request", "/api/v1/admin/recovery/recoveries", "/internal/v1/workflow/recoveries", WORKFLOW_RECOVERY, HttpMethod.POST),
                 rewrite("recovery-approve", "/api/v1/admin/recovery/recoveries/{recoveryId}/approve", "/internal/v1/workflow/recoveries/{recoveryId}/approve", WORKFLOW_RECOVERY, HttpMethod.POST),
-                rewrite("recovery-reject", "/api/v1/admin/recovery/recoveries/{recoveryId}/reject", "/internal/v1/workflow/recoveries/{recoveryId}/reject", WORKFLOW_RECOVERY, HttpMethod.POST),
                 rewrite("recovery-execute", "/api/v1/admin/recovery/recoveries/{recoveryId}/execute", "/internal/v1/workflow/recoveries/{recoveryId}/execute", WORKFLOW_RECOVERY, HttpMethod.POST),
-                rewrite("sagas-unfinished", "/api/v1/admin/recovery/sagas/unfinished", "/internal/v1/workflow/sagas/unfinished", WORKFLOW_SAGA, HttpMethod.GET),
+                rewrite("recovery-reject", "/api/v1/admin/recovery/recoveries/{recoveryId}/reject", "/internal/v1/workflow/recoveries/{recoveryId}/reject", WORKFLOW_RECOVERY, HttpMethod.POST),
+                rewrite("recovery-request", "/api/v1/admin/recovery/recoveries", "/internal/v1/workflow/recoveries", WORKFLOW_RECOVERY, HttpMethod.POST),
+                rewrite("saga-compensate", "/api/v1/admin/recovery/sagas/{sagaId}/compensate", "/internal/v1/workflow/sagas/{sagaId}/compensate", WORKFLOW_SAGA, HttpMethod.POST),
                 rewrite("saga-detail", "/api/v1/admin/recovery/sagas/{sagaId}", "/internal/v1/workflow/sagas/{sagaId}", WORKFLOW_SAGA, HttpMethod.GET),
-                rewrite("saga-compensate", "/api/v1/admin/recovery/sagas/{sagaId}/compensate", "/internal/v1/workflow/sagas/{sagaId}/compensate", WORKFLOW_SAGA, HttpMethod.POST));
+                rewrite("sagas-unfinished", "/api/v1/admin/recovery/sagas/unfinished", "/internal/v1/workflow/sagas/unfinished", WORKFLOW_SAGA, HttpMethod.GET));
         add(definitions, "analytics-telemetry", rewrite("events", "/api/v1/analytics/telemetry", "/internal/v1/analytics/events", ANALYTICS, HttpMethod.POST));
 
         add(definitions, "learner-domain",

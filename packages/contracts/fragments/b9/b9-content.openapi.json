@@ -913,6 +913,59 @@
           }
         }
       }
+    },
+    "/api/v1/admin/content-commands/import/batch": {
+      "post": {
+        "tags": [
+          "b9-content-admin"
+        ],
+        "summary": "Idempotent batch import of content drafts (M3-002 live duel)",
+        "operationId": "importB9ContentBatch",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-contract": {
+          "owner": "content-service",
+          "caller": "admin-ops-service/admin-web",
+          "readOnly": false,
+          "fieldFiltering": "admin role-specific fields; no direct database projection"
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "items"
+                ],
+                "properties": {
+                  "items": {
+                    "type": "array",
+                    "maxItems": 100,
+                    "items": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Batch import results (per-item CREATED/SKIPPED/FAILED)"
+          },
+          "202": {
+            "description": "Batch import accepted"
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1365,22 +1418,43 @@
         "x-task-state-field-policy": {
           "SCHEDULED": {
             "required": [],
-            "forbidden": ["completedAt", "failureCode", "recoveryTaskId"]
+            "forbidden": [
+              "completedAt",
+              "failureCode",
+              "recoveryTaskId"
+            ]
           },
           "CANCELLED": {
-            "required": ["completedAt"],
-            "forbidden": ["recoveryTaskId"]
+            "required": [
+              "completedAt"
+            ],
+            "forbidden": [
+              "recoveryTaskId"
+            ]
           },
           "EXECUTED": {
-            "required": ["completedAt"],
-            "forbidden": ["failureCode", "recoveryTaskId"]
+            "required": [
+              "completedAt"
+            ],
+            "forbidden": [
+              "failureCode",
+              "recoveryTaskId"
+            ]
           },
           "INVALIDATED": {
-            "required": ["failureCode", "completedAt"],
-            "forbidden": ["recoveryTaskId"]
+            "required": [
+              "failureCode",
+              "completedAt"
+            ],
+            "forbidden": [
+              "recoveryTaskId"
+            ]
           },
           "RECOVERY_REQUIRED": {
-            "required": ["failureCode", "recoveryTaskId"],
+            "required": [
+              "failureCode",
+              "recoveryTaskId"
+            ],
             "forbidden": []
           }
         },
@@ -1388,60 +1462,104 @@
           {
             "properties": {
               "status": {
-                "enum": ["SCHEDULED"]
+                "enum": [
+                  "SCHEDULED"
+                ]
               }
             },
             "not": {
               "anyOf": [
-                { "required": ["completedAt"] },
-                { "required": ["failureCode"] },
-                { "required": ["recoveryTaskId"] }
+                {
+                  "required": [
+                    "completedAt"
+                  ]
+                },
+                {
+                  "required": [
+                    "failureCode"
+                  ]
+                },
+                {
+                  "required": [
+                    "recoveryTaskId"
+                  ]
+                }
               ]
             }
           },
           {
             "properties": {
               "status": {
-                "enum": ["CANCELLED"]
+                "enum": [
+                  "CANCELLED"
+                ]
               }
             },
-            "required": ["completedAt"],
+            "required": [
+              "completedAt"
+            ],
             "not": {
-              "required": ["recoveryTaskId"]
-            }
-          },
-          {
-            "properties": {
-              "status": {
-                "enum": ["EXECUTED"]
-              }
-            },
-            "required": ["completedAt"],
-            "not": {
-              "anyOf": [
-                { "required": ["failureCode"] },
-                { "required": ["recoveryTaskId"] }
+              "required": [
+                "recoveryTaskId"
               ]
             }
           },
           {
             "properties": {
               "status": {
-                "enum": ["INVALIDATED"]
+                "enum": [
+                  "EXECUTED"
+                ]
               }
             },
-            "required": ["failureCode", "completedAt"],
+            "required": [
+              "completedAt"
+            ],
             "not": {
-              "required": ["recoveryTaskId"]
+              "anyOf": [
+                {
+                  "required": [
+                    "failureCode"
+                  ]
+                },
+                {
+                  "required": [
+                    "recoveryTaskId"
+                  ]
+                }
+              ]
             }
           },
           {
             "properties": {
               "status": {
-                "enum": ["RECOVERY_REQUIRED"]
+                "enum": [
+                  "INVALIDATED"
+                ]
               }
             },
-            "required": ["failureCode", "recoveryTaskId"]
+            "required": [
+              "failureCode",
+              "completedAt"
+            ],
+            "not": {
+              "required": [
+                "recoveryTaskId"
+              ]
+            }
+          },
+          {
+            "properties": {
+              "status": {
+                "enum": [
+                  "RECOVERY_REQUIRED"
+                ]
+              }
+            },
+            "required": [
+              "failureCode",
+              "recoveryTaskId"
+            ]
           }
         ]
       },
@@ -1560,207 +1678,530 @@
         },
         "x-command-field-policy": {
           "CREATE_DRAFT": {
-            "required": ["content"],
-            "allowed": ["command", "contentCode", "expectedStateVersion", "content"]
+            "required": [
+              "content"
+            ],
+            "allowed": [
+              "command",
+              "contentCode",
+              "expectedStateVersion",
+              "content"
+            ]
           },
           "SAVE_DRAFT": {
-            "required": ["content"],
-            "allowed": ["command", "contentCode", "expectedStateVersion", "content"]
+            "required": [
+              "content"
+            ],
+            "allowed": [
+              "command",
+              "contentCode",
+              "expectedStateVersion",
+              "content"
+            ]
           },
           "VALIDATE_DRAFT": {
             "required": [],
-            "allowed": ["command", "contentCode", "expectedStateVersion"]
+            "allowed": [
+              "command",
+              "contentCode",
+              "expectedStateVersion"
+            ]
           },
           "SUBMIT_REVIEW": {
             "required": [],
-            "allowed": ["command", "contentCode", "expectedStateVersion"]
+            "allowed": [
+              "command",
+              "contentCode",
+              "expectedStateVersion"
+            ]
           },
           "REVIEW_FIRST": {
-            "required": ["reviewDecision"],
-            "allowed": ["command", "contentCode", "expectedStateVersion", "reviewDecision", "reviewNote"]
+            "required": [
+              "reviewDecision"
+            ],
+            "allowed": [
+              "command",
+              "contentCode",
+              "expectedStateVersion",
+              "reviewDecision",
+              "reviewNote"
+            ]
           },
           "REVIEW_FINAL": {
-            "required": ["reviewDecision"],
-            "allowed": ["command", "contentCode", "expectedStateVersion", "reviewDecision", "reviewNote"]
+            "required": [
+              "reviewDecision"
+            ],
+            "allowed": [
+              "command",
+              "contentCode",
+              "expectedStateVersion",
+              "reviewDecision",
+              "reviewNote"
+            ]
           },
           "PUBLISH": {
-            "required": ["targetVersionNumber"],
-            "allowed": ["command", "contentCode", "expectedStateVersion", "targetVersionNumber"]
+            "required": [
+              "targetVersionNumber"
+            ],
+            "allowed": [
+              "command",
+              "contentCode",
+              "expectedStateVersion",
+              "targetVersionNumber"
+            ]
           },
           "SCHEDULE_PUBLISH": {
-            "required": ["schedule"],
-            "allowed": ["command", "contentCode", "expectedStateVersion", "schedule"]
+            "required": [
+              "schedule"
+            ],
+            "allowed": [
+              "command",
+              "contentCode",
+              "expectedStateVersion",
+              "schedule"
+            ]
           },
           "CANCEL_SCHEDULED_PUBLISH": {
-            "required": ["scheduledPublishTaskId"],
-            "allowed": ["command", "contentCode", "expectedStateVersion", "scheduledPublishTaskId", "reasonCode"]
+            "required": [
+              "scheduledPublishTaskId"
+            ],
+            "allowed": [
+              "command",
+              "contentCode",
+              "expectedStateVersion",
+              "scheduledPublishTaskId",
+              "reasonCode"
+            ]
           },
           "UNPUBLISH": {
-            "required": ["reasonCode"],
-            "allowed": ["command", "contentCode", "expectedStateVersion", "reasonCode"]
+            "required": [
+              "reasonCode"
+            ],
+            "allowed": [
+              "command",
+              "contentCode",
+              "expectedStateVersion",
+              "reasonCode"
+            ]
           },
           "ROLLBACK": {
-            "required": ["targetVersionNumber", "reasonCode"],
-            "allowed": ["command", "contentCode", "expectedStateVersion", "targetVersionNumber", "reasonCode"]
+            "required": [
+              "targetVersionNumber",
+              "reasonCode"
+            ],
+            "allowed": [
+              "command",
+              "contentCode",
+              "expectedStateVersion",
+              "targetVersionNumber",
+              "reasonCode"
+            ]
           }
         },
         "oneOf": [
           {
             "properties": {
               "command": {
-                "enum": ["CREATE_DRAFT", "SAVE_DRAFT"]
+                "enum": [
+                  "CREATE_DRAFT",
+                  "SAVE_DRAFT"
+                ]
               }
             },
-            "required": ["content"],
+            "required": [
+              "content"
+            ],
             "not": {
               "anyOf": [
-                { "required": ["targetVersionNumber"] },
-                { "required": ["reasonCode"] },
-                { "required": ["reviewDecision"] },
-                { "required": ["reviewNote"] },
-                { "required": ["schedule"] },
-                { "required": ["scheduledPublishTaskId"] }
+                {
+                  "required": [
+                    "targetVersionNumber"
+                  ]
+                },
+                {
+                  "required": [
+                    "reasonCode"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewDecision"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewNote"
+                  ]
+                },
+                {
+                  "required": [
+                    "schedule"
+                  ]
+                },
+                {
+                  "required": [
+                    "scheduledPublishTaskId"
+                  ]
+                }
               ]
             }
           },
           {
             "properties": {
               "command": {
-                "enum": ["VALIDATE_DRAFT"]
+                "enum": [
+                  "VALIDATE_DRAFT"
+                ]
               }
             },
             "not": {
               "anyOf": [
-                { "required": ["targetVersionNumber"] },
-                { "required": ["reasonCode"] },
-                { "required": ["content"] },
-                { "required": ["reviewDecision"] },
-                { "required": ["reviewNote"] },
-                { "required": ["schedule"] },
-                { "required": ["scheduledPublishTaskId"] }
+                {
+                  "required": [
+                    "targetVersionNumber"
+                  ]
+                },
+                {
+                  "required": [
+                    "reasonCode"
+                  ]
+                },
+                {
+                  "required": [
+                    "content"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewDecision"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewNote"
+                  ]
+                },
+                {
+                  "required": [
+                    "schedule"
+                  ]
+                },
+                {
+                  "required": [
+                    "scheduledPublishTaskId"
+                  ]
+                }
               ]
             }
           },
           {
             "properties": {
               "command": {
-                "enum": ["SUBMIT_REVIEW"]
+                "enum": [
+                  "SUBMIT_REVIEW"
+                ]
               }
             },
             "not": {
               "anyOf": [
-                { "required": ["targetVersionNumber"] },
-                { "required": ["reasonCode"] },
-                { "required": ["content"] },
-                { "required": ["reviewDecision"] },
-                { "required": ["reviewNote"] },
-                { "required": ["schedule"] },
-                { "required": ["scheduledPublishTaskId"] }
+                {
+                  "required": [
+                    "targetVersionNumber"
+                  ]
+                },
+                {
+                  "required": [
+                    "reasonCode"
+                  ]
+                },
+                {
+                  "required": [
+                    "content"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewDecision"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewNote"
+                  ]
+                },
+                {
+                  "required": [
+                    "schedule"
+                  ]
+                },
+                {
+                  "required": [
+                    "scheduledPublishTaskId"
+                  ]
+                }
               ]
             }
           },
           {
             "properties": {
               "command": {
-                "enum": ["REVIEW_FIRST", "REVIEW_FINAL"]
+                "enum": [
+                  "REVIEW_FIRST",
+                  "REVIEW_FINAL"
+                ]
               }
             },
-            "required": ["reviewDecision"],
+            "required": [
+              "reviewDecision"
+            ],
             "not": {
               "anyOf": [
-                { "required": ["targetVersionNumber"] },
-                { "required": ["reasonCode"] },
-                { "required": ["content"] },
-                { "required": ["schedule"] },
-                { "required": ["scheduledPublishTaskId"] }
+                {
+                  "required": [
+                    "targetVersionNumber"
+                  ]
+                },
+                {
+                  "required": [
+                    "reasonCode"
+                  ]
+                },
+                {
+                  "required": [
+                    "content"
+                  ]
+                },
+                {
+                  "required": [
+                    "schedule"
+                  ]
+                },
+                {
+                  "required": [
+                    "scheduledPublishTaskId"
+                  ]
+                }
               ]
             }
           },
           {
             "properties": {
               "command": {
-                "enum": ["PUBLISH"]
+                "enum": [
+                  "PUBLISH"
+                ]
               }
             },
-            "required": ["targetVersionNumber"],
+            "required": [
+              "targetVersionNumber"
+            ],
             "not": {
               "anyOf": [
-                { "required": ["reasonCode"] },
-                { "required": ["content"] },
-                { "required": ["reviewDecision"] },
-                { "required": ["reviewNote"] },
-                { "required": ["schedule"] },
-                { "required": ["scheduledPublishTaskId"] }
+                {
+                  "required": [
+                    "reasonCode"
+                  ]
+                },
+                {
+                  "required": [
+                    "content"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewDecision"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewNote"
+                  ]
+                },
+                {
+                  "required": [
+                    "schedule"
+                  ]
+                },
+                {
+                  "required": [
+                    "scheduledPublishTaskId"
+                  ]
+                }
               ]
             }
           },
           {
             "properties": {
               "command": {
-                "enum": ["SCHEDULE_PUBLISH"]
+                "enum": [
+                  "SCHEDULE_PUBLISH"
+                ]
               }
             },
-            "required": ["schedule"],
+            "required": [
+              "schedule"
+            ],
             "not": {
               "anyOf": [
-                { "required": ["targetVersionNumber"] },
-                { "required": ["reasonCode"] },
-                { "required": ["content"] },
-                { "required": ["reviewDecision"] },
-                { "required": ["reviewNote"] },
-                { "required": ["scheduledPublishTaskId"] }
+                {
+                  "required": [
+                    "targetVersionNumber"
+                  ]
+                },
+                {
+                  "required": [
+                    "reasonCode"
+                  ]
+                },
+                {
+                  "required": [
+                    "content"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewDecision"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewNote"
+                  ]
+                },
+                {
+                  "required": [
+                    "scheduledPublishTaskId"
+                  ]
+                }
               ]
             }
           },
           {
             "properties": {
               "command": {
-                "enum": ["CANCEL_SCHEDULED_PUBLISH"]
+                "enum": [
+                  "CANCEL_SCHEDULED_PUBLISH"
+                ]
               }
             },
-            "required": ["scheduledPublishTaskId"],
+            "required": [
+              "scheduledPublishTaskId"
+            ],
             "not": {
               "anyOf": [
-                { "required": ["targetVersionNumber"] },
-                { "required": ["content"] },
-                { "required": ["reviewDecision"] },
-                { "required": ["reviewNote"] },
-                { "required": ["schedule"] }
+                {
+                  "required": [
+                    "targetVersionNumber"
+                  ]
+                },
+                {
+                  "required": [
+                    "content"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewDecision"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewNote"
+                  ]
+                },
+                {
+                  "required": [
+                    "schedule"
+                  ]
+                }
               ]
             }
           },
           {
             "properties": {
               "command": {
-                "enum": ["UNPUBLISH"]
+                "enum": [
+                  "UNPUBLISH"
+                ]
               }
             },
-            "required": ["reasonCode"],
+            "required": [
+              "reasonCode"
+            ],
             "not": {
               "anyOf": [
-                { "required": ["targetVersionNumber"] },
-                { "required": ["content"] },
-                { "required": ["reviewDecision"] },
-                { "required": ["reviewNote"] },
-                { "required": ["schedule"] },
-                { "required": ["scheduledPublishTaskId"] }
+                {
+                  "required": [
+                    "targetVersionNumber"
+                  ]
+                },
+                {
+                  "required": [
+                    "content"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewDecision"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewNote"
+                  ]
+                },
+                {
+                  "required": [
+                    "schedule"
+                  ]
+                },
+                {
+                  "required": [
+                    "scheduledPublishTaskId"
+                  ]
+                }
               ]
             }
           },
           {
             "properties": {
               "command": {
-                "enum": ["ROLLBACK"]
+                "enum": [
+                  "ROLLBACK"
+                ]
               }
             },
-            "required": ["targetVersionNumber", "reasonCode"],
+            "required": [
+              "targetVersionNumber",
+              "reasonCode"
+            ],
             "not": {
               "anyOf": [
-                { "required": ["content"] },
-                { "required": ["reviewDecision"] },
-                { "required": ["reviewNote"] },
-                { "required": ["schedule"] },
-                { "required": ["scheduledPublishTaskId"] }
+                {
+                  "required": [
+                    "content"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewDecision"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewNote"
+                  ]
+                },
+                {
+                  "required": [
+                    "schedule"
+                  ]
+                },
+                {
+                  "required": [
+                    "scheduledPublishTaskId"
+                  ]
+                }
               ]
             }
           }
@@ -1947,7 +2388,9 @@
           },
           "availability": {
             "type": "string",
-            "enum": ["PUBLISHED"],
+            "enum": [
+              "PUBLISHED"
+            ],
             "description": "公开投影只返回已发布版本；投影落后或重建期间通过 projectionStatus 表达，不降级为空列表或草稿。"
           },
           "projectionStatus": {
@@ -2093,7 +2536,9 @@
             ],
             "properties": {
               "status": {
-                "enum": ["AVAILABLE"]
+                "enum": [
+                  "AVAILABLE"
+                ]
               }
             },
             "not": {
@@ -2125,7 +2570,9 @@
             ],
             "properties": {
               "status": {
-                "enum": ["UNAVAILABLE"]
+                "enum": [
+                  "UNAVAILABLE"
+                ]
               }
             }
           }
@@ -2177,7 +2624,9 @@
           },
           "availability": {
             "type": "string",
-            "enum": ["PUBLISHED"]
+            "enum": [
+              "PUBLISHED"
+            ]
           }
         }
       },

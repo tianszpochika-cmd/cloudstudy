@@ -581,11 +581,12 @@
         "PLANNED",
         "READY",
         "IN_PROGRESS",
-        "DEV_DONE"
+        "DEV_DONE",
+        "ACCEPTED"
       ],
-      "recordedAt": "2026-09-15T16:10:00Z",
-      "actor": "agent:p1r_implementation:deepseek-harness",
-      "reason": "Owner route A. Dependency M3-001 DEV_DONE. Batch import implemented with idempotent sub-keys and standard expectedStateVersion->409 optimistic lock; compile green, 8/8 harness PASS; live MySQL duel deferred as knownGap.",
+      "recordedAt": "2026-09-17T02:50:00Z",
+      "actor": "human-owner-delegated acceptance (live E2E 2026-09-17)",
+      "reason": "Live duel + batch round-trip green (W8 30/30).",
       "evidencePath": "evidence/p1r/m3/P1R-M3-002/manifest.json"
     },
     {

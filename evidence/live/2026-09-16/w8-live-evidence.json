@@ -1,10 +1,10 @@
 {
   "task": "W8-LIVE-PUBLISH",
-  "capturedAt": "2026-09-16T13:29:04.286Z",
-  "contentCode": "wct-live-mu44zwxs",
+  "capturedAt": "2026-09-16T18:58:28.193Z",
+  "contentCode": "wct-live-mu4grj6m",
   "result": "PASS",
-  "passed": 25,
-  "total": 25,
+  "passed": 30,
+  "total": 30,
   "checks": [
     {
       "name": "staff-ready",
@@ -155,6 +155,36 @@
       "ok": true,
       "observed": "HTTP 200",
       "expected": "content PUBLISHED again"
+    },
+    {
+      "name": "duel-draft",
+      "ok": true,
+      "observed": "HTTP 202",
+      "expected": "HTTP 202"
+    },
+    {
+      "name": "duel-submit",
+      "ok": true,
+      "observed": "HTTP 202",
+      "expected": "HTTP 202 advances"
+    },
+    {
+      "name": "duel-stale-409",
+      "ok": true,
+      "observed": "HTTP 409",
+      "expected": "HTTP 409 VERSION_CONFLICT"
+    },
+    {
+      "name": "batch-roundtrip",
+      "ok": true,
+      "observed": "HTTP 202 accepted=2 skipped=1",
+      "expected": "HTTP 202 2+1"
+    },
+    {
+      "name": "batch-retry-stable",
+      "ok": true,
+      "observed": "HTTP 202 accepted=0 skipped=3",
+      "expected": "HTTP 202 0+3 no dupes"
     }
   ]
 }

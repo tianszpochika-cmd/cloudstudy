@@ -109,6 +109,26 @@ record('rollback', r.status === 202, `HTTP ${r.status}`, 'HTTP 202 back to v1');
 r = await call('GET', `/api/v1/admin/content-commands/${RB}`, { token: r2 });
 const rbState = JSON.stringify(r.json);
 record('rollback-state', r.status === 200 && rbState.includes('PUBLISHED'), `HTTP ${r.status}`, 'content PUBLISHED again');
+// dual-writer duel (M3-002): writer B advances, writer A replays stale -> 409.
+const DU = `wct-duel-${stamp}`;
+r = await call('POST', '/api/v1/admin/content-commands', { token: ed, body: { command: 'CREATE_DRAFT', contentCode: DU, content: { contentType: 'COURSE_UNIT', title: 'duel probe' } } });
+record('duel-draft', r.status === 202, `HTTP ${r.status}`, 'HTTP 202');
+r = await call('POST', '/api/v1/admin/content-commands', { token: ed, body: { command: 'SUBMIT_REVIEW', contentCode: DU } });
+record('duel-submit', r.status === 202, `HTTP ${r.status}`, 'HTTP 202 advances');
+r = await call('POST', '/api/v1/admin/content-commands', { token: ed, body: { command: 'SUBMIT_REVIEW', contentCode: DU, expectedStateVersion: 1 } });
+record('duel-stale-409', r.status === 409 && JSON.stringify(r.json).includes('VERSION_CONFLICT'), `HTTP ${r.status}`, 'HTTP 409 VERSION_CONFLICT');
+// batch round-trip via gateway: 2 created + 1 skipped dupe; replay stable.
+const batchBody = { items: [
+  { contentCode: `${DU}-b1`, content: { contentType: 'COURSE_UNIT', title: 'batch one' } },
+  { contentCode: `${DU}-b2`, content: { contentType: 'COURSE_UNIT', title: 'batch two' } },
+  { contentCode: DU, content: { contentType: 'COURSE_UNIT', title: 'dupe' } },
+] };
+r = await call('POST', '/api/v1/admin/content-commands/import/batch', { token: ed, body: batchBody });
+const bdata = r.json?.data ?? r.json ?? {};
+record('batch-roundtrip', r.status === 202 && bdata.accepted === 2 && bdata.skipped === 1, `HTTP ${r.status} accepted=${bdata.accepted} skipped=${bdata.skipped}`, 'HTTP 202 2+1');
+r = await call('POST', '/api/v1/admin/content-commands/import/batch', { token: ed, body: batchBody });
+const bdata2 = r.json?.data ?? r.json ?? {};
+record('batch-retry-stable', r.status === 202 && bdata2.accepted === 0 && bdata2.skipped === 3, `HTTP ${r.status} accepted=${bdata2.accepted} skipped=${bdata2.skipped}`, 'HTTP 202 0+3 no dupes');
 const passed = checks.filter((c) => c.ok).length;
 const evidence = { task: 'W8-LIVE-PUBLISH', capturedAt: new Date().toISOString(), contentCode: CODE, result: passed === checks.length ? 'PASS' : 'FAIL', passed, total: checks.length, checks };
 fs.mkdirSync('evidence/live/2026-09-16', { recursive: true });

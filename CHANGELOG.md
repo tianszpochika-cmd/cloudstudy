@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1R-M3-002-DUEL-20260917] **翻牌 M3-002：双写 stale 对决 + 批量往返（62 ACCEPTED / 46 DEV_DONE，工具待验）。** W8 30/30：stale SUBMIT → 409；批量经网关（2 建 1 跳）+ 重试稳定；批量口新开网关投影（此前 404）。
+
 - [P1R-1A-RECOVERY-20260917] **1A 恢复台建成 + 翻 M6-009（61 ACCEPTED / 47 DEV_DONE，工具待验）。** 网关 7 路由 + workflow 资源服安全链（此前裸奔：无链 bean，Boot 默认链吞掉一切 Bearer）+ 中台恢复页；双人申请/自批 403/批准/执行 + Saga 扫 9/9。验证：gateway 94/0/0、workflow 51/0/0、vue-tsc 0 错误。DLQ 重放仍是脚本。
 
 - [P1R-1A-MESSAGES-20260917] **1A 消息中心建成 + 翻 M6-001（60 ACCEPTED / 48 DEV_DONE，工具待验）。** 站内消息 + 偏好开关 + 已读回执 + 八态，活跑 7/7，vue-tsc 0 错误。观察：偏好缺 locale 回 403 非 400（方向正确码形可议，未立案；UI 必带 locale）。
