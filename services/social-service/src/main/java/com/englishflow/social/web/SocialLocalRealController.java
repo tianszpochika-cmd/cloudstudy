@@ -95,9 +95,17 @@ public final class SocialLocalRealController {
                         + "lease_expires_at = ?, last_activity_at = ? WHERE tenant_id = ? AND room_id = ? AND seat_index = ? AND state = 'AVAILABLE'",
                 principal.subjectId(), leaseId, leaseVersion, Timestamp.from(expiresAt), Timestamp.from(Instant.now()),
                 principal.tenantId(), roomId, seat.get("seatIndex"));
-        jdbc.update("INSERT INTO soc_room_member(membership_id, room_id, tenant_id, subject_id, state, presence_state, "
-                        + "room_visibility, privacy_version, joined_at, last_activity_at) VALUES (?, ?, ?, ?, 'ACTIVE', 'ONLINE', 'PUBLIC', 1, ?, ?)",
-                membershipId, roomId, principal.tenantId(), principal.subjectId(), Timestamp.from(Instant.now()), Timestamp.from(Instant.now()));
+        // P1-LIVE-015: a LEFT row already exists for a rejoining member (the
+        // unique key is per subject, not per visit). Reactivate it instead of
+        // inserting a second row, which raised a duplicate-key 500.
+        int reactivated = jdbc.update("UPDATE soc_room_member SET state = 'ACTIVE', presence_state = 'ONLINE', "
+                        + "left_at = NULL, last_activity_at = ? WHERE tenant_id = ? AND room_id = ? AND subject_id = ? AND state <> 'ACTIVE'",
+                Timestamp.from(Instant.now()), principal.tenantId(), roomId, principal.subjectId());
+        if (reactivated == 0) {
+            jdbc.update("INSERT INTO soc_room_member(membership_id, room_id, tenant_id, subject_id, state, presence_state, "
+                            + "room_visibility, privacy_version, joined_at, last_activity_at) VALUES (?, ?, ?, ?, 'ACTIVE', 'ONLINE', 'PUBLIC', 1, ?, ?)",
+                    membershipId, roomId, principal.tenantId(), principal.subjectId(), Timestamp.from(Instant.now()), Timestamp.from(Instant.now()));
+        }
         Map<String, Object> member = map("membershipId", membershipId, "roomId", roomId, "subjectId", principal.subjectId(),
                 "state", "ACTIVE", "presence", "ONLINE", "seatIndex", seat.get("seatIndex"), "leaseId", leaseId,
                 "leaseVersion", leaseVersion, "leaseExpiresAt", expiresAt.toString());

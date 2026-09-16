@@ -79,10 +79,23 @@ if (targetRoom) {
   } else {
     record('room-focus-nonmember-denied', false, 'need 2+ rooms', 'HTTP 409');
   }
+  // disconnect/reconnect cycle (M7-004): leave frees the seat and drops
+  // presence; rejoin restores ONLINE with a fresh lease; ws-ticket mints the
+  // reconnect credential.
+  const lv = await call('POST', `/api/v1/social/rooms/${roomId}/leave`, { token, body: {}, idemKey: idem('leave') });
+  record('room-leave', lv.status === 200, `HTTP ${lv.status}`, 'HTTP 200 LEFT');
+  const rj = await call('POST', `/api/v1/social/rooms/${roomId}/join`, { token, body: {}, idemKey: idem('rejoin') });
+  const rjMember = rj.json?.data?.member ?? rj.json?.member ?? {};
+  record('room-rejoin', rj.status === 200 && rjMember.state === 'ACTIVE', `HTTP ${rj.status} presence=${rjMember.presence ?? '?'}`, 'HTTP 200 ACTIVE');
+  const wt = await call('POST', '/api/v1/social/ws-ticket', { token, idemKey: idem('wstick') });
+  record('room-ws-ticket', wt.status === 200 && !!(wt.json?.data?.ticket ?? wt.json?.ticket), `HTTP ${wt.status}`, 'HTTP 200 + ticket');
 } else {
   record('room-join', false, 'no rooms seeded', 'HTTP 200');
   record('room-focus', false, 'no rooms seeded', 'HTTP 200');
   record('room-focus-nonmember-denied', false, 'no rooms seeded', 'HTTP 409');
+  record('room-leave', false, 'no rooms seeded', 'HTTP 200');
+  record('room-rejoin', false, 'no rooms seeded', 'HTTP 200');
+  record('room-ws-ticket', false, 'no rooms seeded', 'HTTP 200');
 }
 r = await call('GET', '/api/v1/social/leaderboards', { token });
 {

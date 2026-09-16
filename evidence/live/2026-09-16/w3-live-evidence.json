@@ -1,11 +1,11 @@
 {
   "task": "W3-LIVE-E2E",
-  "capturedAt": "2026-09-16T10:45:42.020Z",
+  "capturedAt": "2026-09-16T11:23:36.232Z",
   "gateway": "http://127.0.0.1:18070",
-  "identifier": "w3-mu3z5w5j@local.invalid",
+  "identifier": "w3-mu40il8b@local.invalid",
   "result": "PASS",
-  "passed": 21,
-  "total": 21,
+  "passed": 24,
+  "total": 24,
   "checks": [
     {
       "name": "setup-register",
@@ -80,6 +80,24 @@
       "expected": "HTTP 409 membership guard"
     },
     {
+      "name": "room-leave",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200 LEFT"
+    },
+    {
+      "name": "room-rejoin",
+      "ok": true,
+      "observed": "HTTP 200 presence=ONLINE",
+      "expected": "HTTP 200 ACTIVE"
+    },
+    {
+      "name": "room-ws-ticket",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200 + ticket"
+    },
+    {
       "name": "leaderboards",
       "ok": true,
       "observed": "HTTP 200 n=0 delayExplicit=true",
@@ -106,7 +124,7 @@
     {
       "name": "pay-intent-sandbox",
       "ok": true,
-      "observed": "HTTP 202 {\"orderId\":\"ord_b3daa91f-338e-4df3-a07b-94bb0495caf4\",\"attemptId\":\"pay_acd19d0b-a08b-46aa-9eb3-c6dfe3a82f6e\",\"provider\":",
+      "observed": "HTTP 202 {\"orderId\":\"ord_1519f465-f7f7-48b3-a63c-b8793b727e9e\",\"attemptId\":\"pay_3f4f4f90-7da5-4f8c-b6d5-4563d310a6df\",\"provider\":",
       "expected": "sandbox intent, no real provider"
     },
     {
