@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-015",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "34ccffeafb1f4abb2b1974a0711cbf437b8befa7",
+  "sourceCommit": "e44a3eec5012419f8207ef6c4e652f2b811b1f0c",
   "artifactDigests": [
     {
       "path": "config/b20-commerce-dr-evidence.json",
@@ -824,9 +824,19 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-16T19:22:18.908Z",
         "details": "M7-005 live negatives chain + evidence"
+      },
+      {
+        "taskId": "P1R-M1-015",
+        "sourceCommit": "e44a3eec5012419f8207ef6c4e652f2b811b1f0c",
+        "auditedImplementationSource": "e44a3eec5012419f8207ef6c4e652f2b811b1f0c",
+        "integrationCheckpoint": "e44a3eec5012419f8207ef6c4e652f2b811b1f0c",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T19:34:24.284Z",
+        "details": "M5-006 live reconcile chain + evidence"
       }
     ],
-    "previousCurrentSourceCommit": "2438e70e3979a74732bce30a2c7a0fb3d1ba3d5a",
+    "previousCurrentSourceCommit": "34ccffeafb1f4abb2b1974a0711cbf437b8befa7",
     "previousCurrentSourceRevalidationTask": "P1R-M1-015",
     "previousCurrentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
@@ -834,8 +844,8 @@
     "currentSourceRevalidationTask": "P1R-M1-015",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-16T19:22:18.908Z",
-    "currentSourceRevalidationAuditedImplementationSource": "34ccffeafb1f4abb2b1974a0711cbf437b8befa7",
-    "currentSourceRevalidationIntegrationCheckpoint": "34ccffeafb1f4abb2b1974a0711cbf437b8befa7"
+    "currentSourceRevalidationFinishedAt": "2026-09-16T19:34:24.284Z",
+    "currentSourceRevalidationAuditedImplementationSource": "e44a3eec5012419f8207ef6c4e652f2b811b1f0c",
+    "currentSourceRevalidationIntegrationCheckpoint": "e44a3eec5012419f8207ef6c4e652f2b811b1f0c"
   }
 }
