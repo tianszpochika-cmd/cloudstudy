@@ -2,7 +2,7 @@
   "taskId": "P1R-M0-007",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "8051eb2a4530f7103ffa92df0b9b6749df7fc540",
+  "sourceCommit": "b70df18e2ddad921a87bbaaf0c3e3de159e63d50",
   "artifactDigests": [
     {
       "path": "config/p1r-fixtures.v1.json",
@@ -78,13 +78,13 @@
   "reviewer": "root-coordinator",
   "decision": "ACCEPTED",
   "provenance": {
-    "previousCurrentSourceCommit": "c3774a27eefd85b1269aa2a14934386190323b40",
+    "previousCurrentSourceCommit": "8051eb2a4530f7103ffa92df0b9b6749df7fc540",
     "currentSourceRevalidationTask": "P1R-M0-007",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-16T23:27:10.323Z",
-    "currentSourceRevalidationAuditedImplementationSource": "8051eb2a4530f7103ffa92df0b9b6749df7fc540",
-    "currentSourceRevalidationIntegrationCheckpoint": "8051eb2a4530f7103ffa92df0b9b6749df7fc540",
+    "currentSourceRevalidationFinishedAt": "2026-09-16T23:40:40.396Z",
+    "currentSourceRevalidationAuditedImplementationSource": "b70df18e2ddad921a87bbaaf0c3e3de159e63d50",
+    "currentSourceRevalidationIntegrationCheckpoint": "b70df18e2ddad921a87bbaaf0c3e3de159e63d50",
     "currentSourceRevalidationHistory": [
       {
         "taskId": "P1R-M0-007",
@@ -435,6 +435,16 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-16T23:27:10.323Z",
         "details": "M5-009 mistake endpoints + b10 ops re-merge openapi"
+      },
+      {
+        "taskId": "P1R-M0-007",
+        "sourceCommit": "b70df18e2ddad921a87bbaaf0c3e3de159e63d50",
+        "auditedImplementationSource": "b70df18e2ddad921a87bbaaf0c3e3de159e63d50",
+        "integrationCheckpoint": "b70df18e2ddad921a87bbaaf0c3e3de159e63d50",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T23:40:40.396Z",
+        "details": "M7-006 live redeem chain + evidence"
       }
     ]
   }

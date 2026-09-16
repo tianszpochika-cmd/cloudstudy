@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-017",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "8051eb2a4530f7103ffa92df0b9b6749df7fc540",
+  "sourceCommit": "b70df18e2ddad921a87bbaaf0c3e3de159e63d50",
   "artifactDigests": [
     {
       "path": "config/b26-event-runtime.json",
@@ -442,7 +442,7 @@
     "originalFinishedAt": "2026-09-01T11:28:58+08:00",
     "originalReviewer": "agent:m1_017_final_review:gpt-5.6-luna:max",
     "originalAcceptedContractBaseline": "463c4b238caceb1592bff6c61327c00ab9bac922",
-    "previousCurrentSourceCommit": "c3774a27eefd85b1269aa2a14934386190323b40",
+    "previousCurrentSourceCommit": "8051eb2a4530f7103ffa92df0b9b6749df7fc540",
     "previousCurrentSourceRevalidationTask": "P1R-M2-005",
     "currentSourceRevalidationTask": "P1R-M1-017",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
@@ -906,14 +906,24 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-16T23:27:11.707Z",
         "details": "M5-009 mistake endpoints + b10 ops re-merge openapi"
+      },
+      {
+        "taskId": "P1R-M1-017",
+        "sourceCommit": "b70df18e2ddad921a87bbaaf0c3e3de159e63d50",
+        "auditedImplementationSource": "b70df18e2ddad921a87bbaaf0c3e3de159e63d50",
+        "integrationCheckpoint": "b70df18e2ddad921a87bbaaf0c3e3de159e63d50",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T23:40:41.667Z",
+        "details": "M7-006 live redeem chain + evidence"
       }
     ],
     "previousCurrentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
     "previousCurrentSourceRevalidationFinishedAt": "2026-09-12T22:07:09.012Z",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-16T23:27:11.707Z",
-    "currentSourceRevalidationAuditedImplementationSource": "8051eb2a4530f7103ffa92df0b9b6749df7fc540",
-    "currentSourceRevalidationIntegrationCheckpoint": "8051eb2a4530f7103ffa92df0b9b6749df7fc540"
+    "currentSourceRevalidationFinishedAt": "2026-09-16T23:40:41.667Z",
+    "currentSourceRevalidationAuditedImplementationSource": "b70df18e2ddad921a87bbaaf0c3e3de159e63d50",
+    "currentSourceRevalidationIntegrationCheckpoint": "b70df18e2ddad921a87bbaaf0c3e3de159e63d50"
   }
 }
