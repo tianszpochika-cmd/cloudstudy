@@ -2,7 +2,7 @@
   "taskId": "P1R-M0-004",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "fcf22a4fd8133c090100bf50b4848605652a30bd",
+  "sourceCommit": "1158c7e723fabffddde5ccda0f0332cd4bb97286",
   "artifactDigests": [
     {
       "path": ".gitignore",
@@ -378,14 +378,24 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-16T20:19:02.183Z",
         "details": "M3-005 live trail chain + evidence"
+      },
+      {
+        "taskId": "P1R-M0-004",
+        "sourceCommit": "1158c7e723fabffddde5ccda0f0332cd4bb97286",
+        "auditedImplementationSource": "1158c7e723fabffddde5ccda0f0332cd4bb97286",
+        "integrationCheckpoint": "1158c7e723fabffddde5ccda0f0332cd4bb97286",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T20:31:21.842Z",
+        "details": "M5-010 live replay chain + evidence"
       }
     ],
-    "previousCurrentSourceCommit": "1ae0e17bc49922e010d2b63a1b5ea4d502133039",
+    "previousCurrentSourceCommit": "fcf22a4fd8133c090100bf50b4848605652a30bd",
     "currentSourceRevalidationTask": "P1R-M0-004",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-16T20:19:02.183Z",
-    "currentSourceRevalidationAuditedImplementationSource": "fcf22a4fd8133c090100bf50b4848605652a30bd",
-    "currentSourceRevalidationIntegrationCheckpoint": "fcf22a4fd8133c090100bf50b4848605652a30bd"
+    "currentSourceRevalidationFinishedAt": "2026-09-16T20:31:21.842Z",
+    "currentSourceRevalidationAuditedImplementationSource": "1158c7e723fabffddde5ccda0f0332cd4bb97286",
+    "currentSourceRevalidationIntegrationCheckpoint": "1158c7e723fabffddde5ccda0f0332cd4bb97286"
   }
 }
