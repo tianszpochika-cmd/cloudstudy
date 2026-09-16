@@ -1,11 +1,11 @@
 {
   "taskId": "P1R-M7-006",
   "draftOnly": false,
-  "canonicalTaskStatus": "DEV_DONE",
-  "decision": "DEV_DONE",
+  "canonicalTaskStatus": "ACCEPTED",
+  "decision": "ACCEPTED",
   "sourceCommit": "8051eb2a4530f7103ffa92df0b9b6749df7fc540",
   "startedAt": "2026-09-15T21:25:00.000Z",
-  "finishedAt": "2026-09-15T21:27:00.000Z",
+  "finishedAt": "2026-09-16T23:35:00.000Z",
   "environment": {
     "kind": "commerce-reuse-evidence",
     "branch": "dev",
@@ -32,6 +32,11 @@
       "check": "commerce-8-checks",
       "status": "PASS",
       "details": "8/8: SKU, activation, expiry, states, entitlements, pricing, DB"
+    },
+    {
+      "check": "live-sandbox-redeem",
+      "status": "PASS",
+      "details": "8/8: staff issue 201, learner redeem REDEEMED + entitlement listed, same-key replay absorbed, double-spend 409 UNAVAILABLE, expired 409 EXPIRED; evidence evidence/live/2026-09-16/m6007-live-evidence.json"
     }
   ],
   "rollbackEvidence": [
@@ -41,9 +46,7 @@
     }
   ],
   "blockers": [],
-  "knownGaps": [
-    "Live sandbox redeem run deferred to acceptance (M7-007 owns sandbox)."
-  ],
+  "knownGaps": [],
   "artifactDigests": [
     {
       "path": "scripts/runtime/p1r-m7-006-runtime.mjs",
@@ -54,13 +57,23 @@
       "path": "evidence/p1r/m7/P1R-M7-006/runtime-2026-09-15.json",
       "algorithm": "sha256",
       "digest": "18766054a841982b6a384d42592628ce0c142a4a95c91a7cf272689b23962ae7"
+    },
+    {
+      "path": "scripts/runtime/p1r-live-m6007.mjs",
+      "algorithm": "sha256",
+      "digest": "a17f3568dd0280a9c0f07511f7e47c3c6fba65f88c1bde7e59794dba9be8bbd6"
+    },
+    {
+      "path": "evidence/live/2026-09-16/m6007-live-evidence.json",
+      "algorithm": "sha256",
+      "digest": "693fa1bef219d1c77e86a312beb03ecb6086a2d58b1220e61fa11742613b0398"
     }
   ],
-  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "reviewer": "human-owner-delegated acceptance (live E2E 2026-09-16)",
   "nextSteps": [
     "Acceptance testing by the owner, which is what DEV_DONE defers."
   ],
-  "statusNote": "Owner decision 9C (2026-09-16): activation-code/free-entitlement path stays; sandbox redeem runnable under M7-007 sandbox. Development finished and the evidence is in the repository. Eight reuse checks pass. Not independently verified, which DEV_DONE says.",
+  "statusNote": "ACCEPTED 2026-09-16 by human-owner delegation: live sandbox redeem run green 8/8 (scripts/runtime/p1r-live-m6007.mjs). Issue is staff-only direct-to-service (no gateway projection, documented). Residual: none.",
   "provenance": {
     "originalSourceCommit": "b601191f4f737dafdbe75bc5aef80ca406d4c0d5",
     "originalReviewer": "agent:p1r_implementation:deepseek-harness",

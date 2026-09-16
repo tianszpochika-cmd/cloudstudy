@@ -1,0 +1,58 @@
+{
+  "task": "M6007-LIVE-REDEEM",
+  "capturedAt": "2026-09-16T23:33:12.513Z",
+  "gateway": "http://127.0.0.1:18070",
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "name": "staff-ready",
+      "ok": true,
+      "observed": "issuer ready",
+      "expected": "token"
+    },
+    {
+      "name": "issue",
+      "ok": true,
+      "observed": "HTTP 201",
+      "expected": "HTTP 201 + code"
+    },
+    {
+      "name": "learner-ready",
+      "ok": true,
+      "observed": "learner ready",
+      "expected": "token"
+    },
+    {
+      "name": "redeem",
+      "ok": true,
+      "observed": "HTTP 200 state=REDEEMED",
+      "expected": "REDEEMED + entitlement"
+    },
+    {
+      "name": "entitlement-present",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "entitlement listed"
+    },
+    {
+      "name": "redeem-replay",
+      "ok": true,
+      "observed": "HTTP 200 replayed=true",
+      "expected": "absorbed"
+    },
+    {
+      "name": "double-spend-denied",
+      "ok": true,
+      "observed": "HTTP 409",
+      "expected": "HTTP 409 used"
+    },
+    {
+      "name": "expired-denied",
+      "ok": true,
+      "observed": "HTTP 409",
+      "expected": "HTTP 409 expired"
+    }
+  ]
+}
