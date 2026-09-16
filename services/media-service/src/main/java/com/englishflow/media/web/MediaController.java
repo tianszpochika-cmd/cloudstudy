@@ -208,8 +208,7 @@ public class MediaController {
         Duration ttl = request == null || request.ttlSeconds() == null
                 ? Duration.ofMinutes(5)
                 : Duration.ofSeconds(Math.max(60, Math.min(request.ttlSeconds(), 900)));
-        return readService.issueSignedUrl(
-                assetId, MediaDeliveryChannel.RECORDING, null, ttl, context(authentication));
+        return readService.issueUploadUrl(assetId, ttl, context(authentication));
     }
 
     /**

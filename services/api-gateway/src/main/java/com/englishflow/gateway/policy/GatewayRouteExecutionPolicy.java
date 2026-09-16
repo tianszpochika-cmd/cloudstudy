@@ -549,8 +549,15 @@ public final class GatewayRouteExecutionPolicy {
                 rewrite("report", "/api/v1/assessment/reports/{reportId}", "/internal/v1/assessment/reports/{reportId}", ASSESSMENT_B10, HttpMethod.GET));
         add(definitions, "media-domain",
                 rewrite("asset", "/api/v1/media/assets/{assetId}", "/internal/v1/media/assets/{assetId}", MEDIA, HttpMethod.GET),
+                rewrite("asset-activate", "/api/v1/media/assets/{assetId}/active", "/internal/v1/media/assets/{assetId}/active", MEDIA, HttpMethod.PUT),
                 rewrite("asset-manifest", "/api/v1/media/assets/{assetId}/manifest", "/internal/v1/media/assets/{assetId}/manifest", MEDIA, HttpMethod.GET),
-                rewrite("asset-signed-url", "/api/v1/media/assets/{assetId}/signed-url", "/internal/v1/media/assets/{assetId}/signed-url", MEDIA, HttpMethod.POST));
+                // M3-004 live: workbench write paths in projectionId order (parity sorts).
+                rewrite("asset-register", "/api/v1/media/assets", "/internal/v1/media/assets", MEDIA, HttpMethod.POST),
+                rewrite("asset-retry", "/api/v1/media/assets/{assetId}/retry", "/internal/v1/media/assets/{assetId}/retry", MEDIA, HttpMethod.POST),
+                rewrite("asset-signed-url", "/api/v1/media/assets/{assetId}/signed-url", "/internal/v1/media/assets/{assetId}/signed-url", MEDIA, HttpMethod.POST),
+                rewrite("asset-subtitles", "/api/v1/media/assets/{assetId}/subtitles", "/internal/v1/media/assets/{assetId}/subtitles", MEDIA, HttpMethod.POST),
+                rewrite("asset-tasks", "/api/v1/media/assets/{assetId}/tasks", "/internal/v1/media/assets/{assetId}/tasks", MEDIA, HttpMethod.GET),
+                rewrite("asset-upload-url", "/api/v1/media/assets/{assetId}/upload-url", "/internal/v1/media/assets/{assetId}/upload-url", MEDIA, HttpMethod.POST));
         add(definitions, "gamification-domain",
                 rewrite("streak", "/api/v1/gamification/streak", "/internal/v1/gamification/streak", GAMIFICATION_CORE, HttpMethod.GET),
                 rewrite("streak-settings", "/api/v1/gamification/streak/settings", "/internal/v1/gamification/streak/settings", GAMIFICATION_LOCAL, HttpMethod.PUT),

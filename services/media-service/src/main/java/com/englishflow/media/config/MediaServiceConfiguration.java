@@ -1,7 +1,7 @@
 package com.englishflow.media.config;
 
-import com.englishflow.media.adapter.failclosed.FailClosedMediaEventOutbox;
-import com.englishflow.media.adapter.failclosed.FailClosedMediaRegistrationIdempotencyStore;
+import com.englishflow.media.adapter.jdbc.JdbcMediaEventOutbox;
+import com.englishflow.media.adapter.jdbc.JdbcMediaRegistrationIdempotencyStore;
 import com.englishflow.media.adapter.jdbc.JdbcMediaRepository;
 import com.englishflow.media.adapter.memory.InMemoryMediaEventOutbox;
 import com.englishflow.media.adapter.memory.InMemoryMediaRepository;
@@ -118,8 +118,11 @@ public class MediaServiceConfiguration {
 
     @Bean
     @Profile("local-real")
-    MediaEventPort localRealMediaEventPort() {
-        return new FailClosedMediaEventOutbox();
+    MediaEventPort localRealMediaEventPort(JdbcTemplate localRealMediaJdbcTemplate,
+            MediaServiceProperties properties) {
+        // M3-004: durable outbox now that the schema carries the standard
+        // shape (V4) with a wide enough event id (V5).
+        return new JdbcMediaEventOutbox(localRealMediaJdbcTemplate, properties.getSchema());
     }
 
     @Bean
@@ -130,8 +133,10 @@ public class MediaServiceConfiguration {
 
     @Bean
     @Profile("local-real")
-    MediaRegistrationIdempotencyPort localRealMediaRegistrationIdempotencyPort() {
-        return new FailClosedMediaRegistrationIdempotencyStore();
+    MediaRegistrationIdempotencyPort localRealMediaRegistrationIdempotencyPort(
+            JdbcTemplate localRealMediaJdbcTemplate, MediaServiceProperties properties) {
+        // M3-004: durable idempotency so a restart cannot change a key's meaning.
+        return new JdbcMediaRegistrationIdempotencyStore(localRealMediaJdbcTemplate, properties.getSchema());
     }
 
     @Bean

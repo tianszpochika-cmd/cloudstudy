@@ -61,7 +61,9 @@ public final class MediaAssetCommandService {
         Objects.requireNonNull(draft, "draft is required");
         MediaAccessPolicy.requireWrite(context);
         String key = normalizeIdempotencyKey(idempotencyKey);
-        String fingerprint = draft.toString();
+        // Hex form on both sides: the rendering is unbounded, the durable
+        // column is CHAR(64) (M3-004).
+        String fingerprint = MediaRegistrationIdempotencyPort.fingerprintHex(draft.toString());
         MediaRegistrationIdempotencyPort.RegistrationReceipt previous =
                 idempotencyPort.find(context.tenantId(), context.subjectId(), key).orElse(null);
         if (previous != null) {

@@ -62,6 +62,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
                 "gateway.identity.enabled=false",
                 "gateway.b12.enabled=false",
                 "gateway.b13.enabled=false",
+                "gateway.workflow.enabled=false",
                 // The learner route must exist so the test exercises resource
                 // server authentication rather than canonical no-route denial.
                 "gateway.b14.enabled=true",

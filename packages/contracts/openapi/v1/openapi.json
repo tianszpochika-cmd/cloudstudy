@@ -36287,6 +36287,287 @@
           }
         }
       }
+    },
+    "/api/v1/media/assets": {
+      "post": {
+        "tags": [
+          "P1R-Media"
+        ],
+        "summary": "Register a media asset (metadata only; bytes go to object storage via grants)",
+        "operationId": "registerMediaAsset",
+        "x-contract": {
+          "owner": "media-service",
+          "phase": "P1",
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "LIVE_VERIFIED_M3004"
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "assetId",
+                  "assetKey",
+                  "kind",
+                  "mimeType",
+                  "storageProvider",
+                  "bucketName",
+                  "objectKey",
+                  "checksumSha256",
+                  "sizeBytes",
+                  "contentVersionId",
+                  "contentRole",
+                  "rightsId",
+                  "licenseCode",
+                  "rightsStatus",
+                  "permittedChannels"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "202": {
+            "description": "Accepted"
+          }
+        }
+      }
+    },
+    "/api/v1/media/assets/{assetId}/tasks": {
+      "get": {
+        "tags": [
+          "P1R-Media"
+        ],
+        "summary": "Read-only processing-task workbench view (transcoding + renditions)",
+        "operationId": "readMediaAssetTasks",
+        "x-contract": {
+          "owner": "media-service",
+          "phase": "P1",
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "LIVE_VERIFIED_M3004"
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "assetId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "202": {
+            "description": "Accepted"
+          }
+        }
+      }
+    },
+    "/api/v1/media/assets/{assetId}/retry": {
+      "post": {
+        "tags": [
+          "P1R-Media"
+        ],
+        "summary": "Reset FAILED transcoding/renditions to QUEUED (409 when nothing failed)",
+        "operationId": "retryMediaAsset",
+        "x-contract": {
+          "owner": "media-service",
+          "phase": "P1",
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "LIVE_VERIFIED_M3004"
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "assetId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "202": {
+            "description": "Accepted"
+          }
+        }
+      }
+    },
+    "/api/v1/media/assets/{assetId}/subtitles": {
+      "post": {
+        "tags": [
+          "P1R-Media"
+        ],
+        "summary": "Upsert a subtitle track as a reserved rendition (VTT/SRT, zh-CN/en-US)",
+        "operationId": "upsertMediaSubtitle",
+        "x-contract": {
+          "owner": "media-service",
+          "phase": "P1",
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "LIVE_VERIFIED_M3004"
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "assetId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "locale",
+                  "format",
+                  "checksumSha256",
+                  "sizeBytes"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "202": {
+            "description": "Accepted"
+          }
+        }
+      }
+    },
+    "/api/v1/media/assets/{assetId}/upload-url": {
+      "post": {
+        "tags": [
+          "P1R-Media"
+        ],
+        "summary": "Mint a short-lived RECORDING-channel upload grant (TTL capped 900s, metadata only)",
+        "operationId": "mintMediaUploadUrl",
+        "x-contract": {
+          "owner": "media-service",
+          "phase": "P1",
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "LIVE_VERIFIED_M3004"
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "assetId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "202": {
+            "description": "Accepted"
+          }
+        }
+      }
+    },
+    "/api/v1/media/assets/{assetId}/active": {
+      "put": {
+        "tags": [
+          "P1R-Media"
+        ],
+        "summary": "Activate an asset with client-verified checksum + size (M3-004 live)",
+        "operationId": "activateMediaAsset",
+        "x-contract": {
+          "owner": "media-service",
+          "phase": "P1",
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "LIVE_VERIFIED_M3004"
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "assetId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "verifiedChecksumSha256",
+                  "verifiedSizeBytes"
+                ],
+                "properties": {
+                  "verifiedChecksumSha256": {
+                    "type": "string"
+                  },
+                  "verifiedSizeBytes": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -78575,6 +78856,108 @@
             "targetUriConfig": "gateway.b14.service-base-urls.media",
             "pathStrategy": "REWRITE_PATH",
             "targetPathTemplate": "/internal/v1/media/assets/{assetId}/signed-url",
+            "controllerEvidence": {
+              "sourcePath": "services/media-service/src/main/java/com/englishflow/media/web/MediaController.java",
+              "requestMapping": "/internal/v1/media"
+            }
+          },
+          {
+            "projectionId": "media-domain.asset-register",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/media/assets",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "media-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.media",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/media/assets",
+            "controllerEvidence": {
+              "sourcePath": "services/media-service/src/main/java/com/englishflow/media/web/MediaController.java",
+              "requestMapping": "/internal/v1/media"
+            }
+          },
+          {
+            "projectionId": "media-domain.asset-retry",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/media/assets/{assetId}/retry",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "media-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.media",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/media/assets/{assetId}/retry",
+            "controllerEvidence": {
+              "sourcePath": "services/media-service/src/main/java/com/englishflow/media/web/MediaController.java",
+              "requestMapping": "/internal/v1/media"
+            }
+          },
+          {
+            "projectionId": "media-domain.asset-subtitles",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/media/assets/{assetId}/subtitles",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "media-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.media",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/media/assets/{assetId}/subtitles",
+            "controllerEvidence": {
+              "sourcePath": "services/media-service/src/main/java/com/englishflow/media/web/MediaController.java",
+              "requestMapping": "/internal/v1/media"
+            }
+          },
+          {
+            "projectionId": "media-domain.asset-tasks",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/media/assets/{assetId}/tasks",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "media-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.media",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/media/assets/{assetId}/tasks",
+            "controllerEvidence": {
+              "sourcePath": "services/media-service/src/main/java/com/englishflow/media/web/MediaController.java",
+              "requestMapping": "/internal/v1/media"
+            }
+          },
+          {
+            "projectionId": "media-domain.asset-upload-url",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/media/assets/{assetId}/upload-url",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "media-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.media",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/media/assets/{assetId}/upload-url",
+            "controllerEvidence": {
+              "sourcePath": "services/media-service/src/main/java/com/englishflow/media/web/MediaController.java",
+              "requestMapping": "/internal/v1/media"
+            }
+          },
+          {
+            "projectionId": "media-domain.asset-activate",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/media/assets/{assetId}/active",
+            "methods": [
+              "PUT"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "media-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.media",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/media/assets/{assetId}/active",
             "controllerEvidence": {
               "sourcePath": "services/media-service/src/main/java/com/englishflow/media/web/MediaController.java",
               "requestMapping": "/internal/v1/media"

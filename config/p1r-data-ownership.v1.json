@@ -795,7 +795,7 @@
       {
         "service": "media-service",
         "path": "services/media-service/src/main/resources/db/migration",
-        "fileCount": 4
+        "fileCount": 6
       },
       {
         "service": "gamification-service",

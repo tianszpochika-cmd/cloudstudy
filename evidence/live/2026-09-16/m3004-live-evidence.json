@@ -1,0 +1,101 @@
+{
+  "task": "M3004-LIVE-ROUNDTRIP",
+  "capturedAt": "2026-09-16T22:15:53.534Z",
+  "gateway": "http://127.0.0.1:18070",
+  "assetId": "m3004-asset-mu4nt77y",
+  "result": "PASS",
+  "passed": 15,
+  "total": 15,
+  "checks": [
+    {
+      "name": "setup-register",
+      "ok": true,
+      "observed": "HTTP 201",
+      "expected": "HTTP 201"
+    },
+    {
+      "name": "setup-login",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200 + token"
+    },
+    {
+      "name": "register",
+      "ok": true,
+      "observed": "HTTP 201",
+      "expected": "HTTP 201"
+    },
+    {
+      "name": "register-replay",
+      "ok": true,
+      "observed": "HTTP 201 same asset",
+      "expected": "same-key replay"
+    },
+    {
+      "name": "upload-grant",
+      "ok": true,
+      "observed": "HTTP 200 ttl-capped=true",
+      "expected": "HTTP 200 grant"
+    },
+    {
+      "name": "minio-put",
+      "ok": true,
+      "observed": "1024 bytes -> probe/m3004-asset-mu4nt77y.mp3",
+      "expected": "PUT ok"
+    },
+    {
+      "name": "activate",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200 ACTIVE"
+    },
+    {
+      "name": "read-grant",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200 grant"
+    },
+    {
+      "name": "roundtrip-match",
+      "ok": true,
+      "observed": "sha match=true",
+      "expected": "bytes identical"
+    },
+    {
+      "name": "tasks",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200 workbench"
+    },
+    {
+      "name": "subtitle",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200 subtitle"
+    },
+    {
+      "name": "manifest",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200 checksum in manifest"
+    },
+    {
+      "name": "retry-negative",
+      "ok": true,
+      "observed": "HTTP 409",
+      "expected": "HTTP 409 nothing failed"
+    },
+    {
+      "name": "learner-manifest",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200 learner read"
+    },
+    {
+      "name": "browser-workbench",
+      "ok": true,
+      "observed": "workbench renders + zero errors",
+      "expected": "renders, zero errors"
+    }
+  ]
+}

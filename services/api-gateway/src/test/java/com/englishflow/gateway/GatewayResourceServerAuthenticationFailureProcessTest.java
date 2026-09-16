@@ -47,6 +47,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
                 "gateway.identity.enabled=false",
                 "gateway.b12.enabled=false",
                 "gateway.b13.enabled=false",
+                "gateway.workflow.enabled=false",
                 // Keep the canonical learner route present. Authentication must
                 // fail before any upstream target can be reached.
                 "gateway.b14.enabled=true",

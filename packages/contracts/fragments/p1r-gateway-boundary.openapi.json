@@ -821,7 +821,8 @@
           "path": "/api/v1/media",
           "methods": [
             "GET",
-            "POST"
+            "POST",
+            "PUT"
           ]
         },
         "upstreamOwner": "media-service",
@@ -2973,6 +2974,108 @@
             "targetUriConfig": "gateway.b14.service-base-urls.media",
             "pathStrategy": "REWRITE_PATH",
             "targetPathTemplate": "/internal/v1/media/assets/{assetId}/signed-url",
+            "controllerEvidence": {
+              "sourcePath": "services/media-service/src/main/java/com/englishflow/media/web/MediaController.java",
+              "requestMapping": "/internal/v1/media"
+            }
+          },
+          {
+            "projectionId": "media-domain.asset-register",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/media/assets",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "media-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.media",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/media/assets",
+            "controllerEvidence": {
+              "sourcePath": "services/media-service/src/main/java/com/englishflow/media/web/MediaController.java",
+              "requestMapping": "/internal/v1/media"
+            }
+          },
+          {
+            "projectionId": "media-domain.asset-retry",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/media/assets/{assetId}/retry",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "media-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.media",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/media/assets/{assetId}/retry",
+            "controllerEvidence": {
+              "sourcePath": "services/media-service/src/main/java/com/englishflow/media/web/MediaController.java",
+              "requestMapping": "/internal/v1/media"
+            }
+          },
+          {
+            "projectionId": "media-domain.asset-subtitles",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/media/assets/{assetId}/subtitles",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "media-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.media",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/media/assets/{assetId}/subtitles",
+            "controllerEvidence": {
+              "sourcePath": "services/media-service/src/main/java/com/englishflow/media/web/MediaController.java",
+              "requestMapping": "/internal/v1/media"
+            }
+          },
+          {
+            "projectionId": "media-domain.asset-tasks",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/media/assets/{assetId}/tasks",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "media-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.media",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/media/assets/{assetId}/tasks",
+            "controllerEvidence": {
+              "sourcePath": "services/media-service/src/main/java/com/englishflow/media/web/MediaController.java",
+              "requestMapping": "/internal/v1/media"
+            }
+          },
+          {
+            "projectionId": "media-domain.asset-upload-url",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/media/assets/{assetId}/upload-url",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "media-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.media",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/media/assets/{assetId}/upload-url",
+            "controllerEvidence": {
+              "sourcePath": "services/media-service/src/main/java/com/englishflow/media/web/MediaController.java",
+              "requestMapping": "/internal/v1/media"
+            }
+          },
+          {
+            "projectionId": "media-domain.asset-activate",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/media/assets/{assetId}/active",
+            "methods": [
+              "PUT"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "media-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.media",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/media/assets/{assetId}/active",
             "controllerEvidence": {
               "sourcePath": "services/media-service/src/main/java/com/englishflow/media/web/MediaController.java",
               "requestMapping": "/internal/v1/media"

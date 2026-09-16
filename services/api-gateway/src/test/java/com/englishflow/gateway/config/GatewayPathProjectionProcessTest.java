@@ -78,6 +78,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
                 "gateway.identity.enabled=true",
                 "gateway.b12.enabled=true",
                 "gateway.b13.enabled=true",
+                "gateway.workflow.enabled=true",
                 "gateway.b14.enabled=true",
                 "management.otlp.metrics.export.enabled=false",
                 "management.tracing.export.enabled=false",

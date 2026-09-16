@@ -89,6 +89,26 @@ public final class MediaReadService {
         return signedUrlPort.issue(asset, context, channel, range, now, now.plus(ttl));
     }
 
+    /**
+     * M3-004: upload grants authorize byte delivery TO object storage for an
+     * asset that is still UPLOADING, so the readiness gate must not apply.
+     * Rights, channel and TTL checks stay exactly as strict as reads.
+     */
+    public SignedMediaUrl issueUploadUrl(
+            String assetId,
+            Duration requestedTtl,
+            MediaAuthorizationContext context) {
+        MediaAsset asset = require(assetId);
+        Instant now = clock.instant();
+        MediaAccessPolicy.requireRead(asset, context, MediaDeliveryChannel.RECORDING, now);
+        if (asset.revoked()) {
+            throw MediaOperationException.unavailable("MEDIA_NOT_READY", "media object is not ready for delivery");
+        }
+        Duration ttl = normalizeTtl(requestedTtl);
+        return signedUrlPort.issue(asset, context, MediaDeliveryChannel.RECORDING,
+                ByteRange.entire(asset.sizeBytes()), now, now.plus(ttl));
+    }
+
     public SignedUrlGrant validateSignedUrl(
             String token,
             String assetId,

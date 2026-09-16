@@ -40,6 +40,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
                 "gateway.compatibility.enabled=false",
                 "gateway.b12.enabled=false",
                 "gateway.b13.enabled=false",
+                "gateway.workflow.enabled=false",
                 "gateway.b14.enabled=true",
                 "management.otlp.metrics.export.enabled=false",
                 "management.tracing.export.enabled=false"

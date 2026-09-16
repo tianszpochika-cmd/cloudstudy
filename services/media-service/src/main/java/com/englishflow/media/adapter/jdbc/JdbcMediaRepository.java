@@ -155,6 +155,7 @@ public final class JdbcMediaRepository implements MediaRepository {
         return value != null && Boolean.parseBoolean(String.valueOf(value));
     }
     private static Instant instant(Object value) {
+        if (value == null) return null;
         if (value instanceof Timestamp timestamp) return timestamp.toInstant();
         if (value instanceof java.time.LocalDateTime localDateTime) return localDateTime.toInstant(java.time.ZoneOffset.UTC);
         return Instant.parse(String.valueOf(value));

@@ -145,7 +145,7 @@ public final class GatewayRoutePolicy {
             rule("writing-domain", 100, MatchType.PREFIX, "/api/v1/writing", "assessment-service", "INTERNAL_V1", "AUTHENTICATED", AuthClass.AUTHENTICATED_WRITE, "NONE", HttpMethod.GET, HttpMethod.POST),
             rule("phonetics-domain", 100, MatchType.PREFIX, "/api/v1/phonetics", "assessment-service", "INTERNAL_V1", "AUTHENTICATED", AuthClass.AUTHENTICATED_READ, "NONE", HttpMethod.GET),
             rule("speaking-domain", 100, MatchType.PREFIX, "/api/v1/speaking", "assessment-service", "INTERNAL_V1", "AUTHENTICATED", AuthClass.AUTHENTICATED_WRITE, "NONE", HttpMethod.GET, HttpMethod.POST, HttpMethod.DELETE),
-            rule("media-domain", 100, MatchType.PREFIX, "/api/v1/media", "media-service", "INTERNAL_V1", "AUTHENTICATED", AuthClass.AUTHENTICATED_WRITE, "NONE", HttpMethod.GET, HttpMethod.POST),
+            rule("media-domain", 100, MatchType.PREFIX, "/api/v1/media", "media-service", "INTERNAL_V1", "AUTHENTICATED", AuthClass.AUTHENTICATED_WRITE, "NONE", HttpMethod.GET, HttpMethod.POST, HttpMethod.PUT),
             rule("multimodal-domain", 100, MatchType.PREFIX, "/api/v1/multimodal", "media-service", "INTERNAL_V1", "AUTHENTICATED", AuthClass.AUTHENTICATED_WRITE, "NONE", HttpMethod.POST),
             rule("gamification-domain", 100, MatchType.PREFIX, "/api/v1/gamification", "gamification-service", "INTERNAL_V1", "AUTHENTICATED", AuthClass.AUTHENTICATED_WRITE, "NONE", HttpMethod.GET, HttpMethod.POST, HttpMethod.PUT),
             rule("games-domain", 100, MatchType.PREFIX, "/api/v1/games", "gamification-service", "INTERNAL_V1", "AUTHENTICATED", AuthClass.AUTHENTICATED_WRITE, "NONE", HttpMethod.GET, HttpMethod.POST),

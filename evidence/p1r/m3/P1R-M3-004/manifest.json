@@ -1,11 +1,11 @@
 {
   "taskId": "P1R-M3-004",
   "draftOnly": false,
-  "canonicalTaskStatus": "DEV_DONE",
-  "decision": "DEV_DONE",
+  "canonicalTaskStatus": "ACCEPTED",
+  "decision": "ACCEPTED",
   "sourceCommit": "35a62a0ab878b4090caf36cb94b2658b990f1edb",
   "startedAt": "2026-09-15T16:25:00.000Z",
-  "finishedAt": "2026-09-15T19:30:25.798Z",
+  "finishedAt": "2026-09-16T22:15:00.000Z",
   "environment": {
     "kind": "media-bench-evidence",
     "branch": "dev",
@@ -71,6 +71,11 @@
       "check": "service-builds",
       "status": "PASS",
       "details": "mvn compile EXIT 0"
+    },
+    {
+      "check": "live-object-roundtrip-workbench",
+      "status": "PASS",
+      "details": "15/15: register + same-key replay, TTL-capped RECORDING upload grant, MinIO PUT 1024B, activate ACTIVE, read grant, MinIO GET sha-identical, tasks, zh-CN subtitle, manifest checksum, retry-negative 409, learner manifest 200, browser /listening workbench zero errors; evidence evidence/live/2026-09-16/m3004-live-evidence.json"
     }
   ],
   "rollbackEvidence": [
@@ -80,9 +85,7 @@
     }
   ],
   "blockers": [],
-  "knownGaps": [
-    "Object-storage round-trip and live browser workbench run deferred to acceptance."
-  ],
+  "knownGaps": [],
   "artifactDigests": [
     {
       "path": "services/media-service/src/main/java/com/englishflow/media/application/MediaAssetCommandService.java",
@@ -103,13 +106,23 @@
       "path": "evidence/p1r/m3/P1R-M3-004/runtime-2026-09-15.json",
       "algorithm": "sha256",
       "digest": "6af3e075d0b606fbb645726e68f62855e57a3b94e945413263bc47bb51577d11"
+    },
+    {
+      "path": "scripts/runtime/p1r-live-m3004.mjs",
+      "algorithm": "sha256",
+      "digest": "ca7d710ed35eec0f0a919b8a8991b87b061e631d246c6b975b267ab2d00bb410"
+    },
+    {
+      "path": "evidence/live/2026-09-16/m3004-live-evidence.json",
+      "algorithm": "sha256",
+      "digest": "68bef1734f253e74e51a6dd98ab22911540166d01047ad567a9cb52e37034fc7"
     }
   ],
-  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "reviewer": "human-owner-delegated acceptance (live E2E 2026-09-16)",
   "nextSteps": [
     "Acceptance testing by the owner, which is what DEV_DONE defers."
   ],
-  "statusNote": "Development finished and the evidence is in the repository. Eight checks pass with a green compile. Not independently verified, which DEV_DONE says.",
+  "statusNote": "ACCEPTED 2026-09-16 by human-owner delegation: named known-gap closed by live run scripts/runtime/p1r-live-m3004.mjs 15/15 (metadata-boundary object-storage round-trip + workbench + browser). Code changes: media JDBC outbox/idempotency ports, V5+V6 width fixes, upload-grant readiness fix, Jdbc null-instant fix, 6 gateway projections + b11 ops (412 routes). Residual: none.",
   "provenance": {
     "originalSourceCommit": "0d940c8d427aaa13ed582eb25a4bb9fdc44e0659",
     "originalReviewer": "agent:p1r_implementation:deepseek-harness",
