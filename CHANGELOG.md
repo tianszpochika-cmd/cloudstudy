@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1R-W5-DUEL-20260916] **W5 补到 19/19：判分 repeat/duplicate/out-of-order 对决全绿；M5-002 留置（缺 pin 接线）。** 同幂等键重放同 attempt、submissionId 复用同答案同 attempt、换答案 409、检查点 v1→v2→v1 末写获胜、报告直读；均为活断言。M5-002 缺口另一半（`alternativeContentVersionId` 会话 pin）两边互指均未实现（content 注释称 M5-002 接线，assessment 无此代码），属产品工作未动手。
+
 - [P1R-ACCEPT-M6-002-20260916] **`M6-002` 翻牌：通道失败活跑通，W4 15/15。** 关偏好后 PUSH 送达被过滤（`CANCELLED/PREFERENCE_DISABLED`），投递尝试可查。排队/送达走直连（无网关执行，P1-LIVE-013 同类，已具名）。验证：W4 **15/15**。
 
 - [P1R-MATRIX-NOTIF-20260916] **矩阵加通知腿：world 未读 1 活验证；M6-001 缺口收窄（未翻）。** 学员 `POST /messages` 有实现无网关路由（P1-LIVE-013 同类，直连播种并具名），播种后 world 指标 `通知1/未读通知` 活现；此前空态已证。M6-001 留置：缺专用消息中心八态页（learner/mobile 均无通知列表页，仅 world 指标）。

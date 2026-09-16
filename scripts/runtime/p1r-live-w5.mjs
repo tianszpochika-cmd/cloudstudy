@@ -65,8 +65,39 @@ if (bsess && bitems.length > 0) {
     // parses exact digit strings (positiveLong) and also accepts itemCode.
     return { itemId: String(it.itemId ?? it.id), itemCode: it.itemCode, response: String(key) };
   });
-  r = await call('POST', `/api/v1/assessment/sessions/${bsess}/attempts`, { token, body: { submissionId: `w5-${stamp}-s1`, items: subs }, idemKey: idem('batt') });
+  const battKey = idem('batt');
+  r = await call('POST', `/api/v1/assessment/sessions/${bsess}/attempts`, { token, body: { submissionId: `w5-${stamp}-s1`, items: subs }, idemKey: battKey });
   record('b10-attempt', [200, 201].includes(r.status), `HTTP ${r.status} body=${JSON.stringify(r.json).slice(0, 300)} sessKeys=${Object.keys(data(r)).join(',')}`, 'HTTP 200/201 graded');
+  const attemptId = data(r).attemptId ?? null;
+  const attemptBody = { submissionId: `w5-${stamp}-s1`, items: subs };
+  // repeat: same idempotency key must replay the same attempt, not duplicate.
+  const rp = await call('POST', `/api/v1/assessment/sessions/${bsess}/attempts`, { token, body: attemptBody, idemKey: battKey });
+  record('b10-attempt-replay', [200, 201].includes(rp.status) && (data(rp).attemptId ?? null) === attemptId, `HTTP ${rp.status} same=${(data(rp).attemptId ?? null) === attemptId}`, 'HTTP 200 same attempt');
+  // duplicate submissionId, new key, same answers -> same attempt.
+  const dp = await call('POST', `/api/v1/assessment/sessions/${bsess}/attempts`, { token, body: attemptBody, idemKey: idem('batt-dup') });
+  record('b10-duplicate-same', [200, 201].includes(dp.status) && (data(dp).attemptId ?? null) === attemptId, `HTTP ${dp.status} same=${(data(dp).attemptId ?? null) === attemptId}`, 'HTTP 200 same attempt');
+  // duplicate submissionId, different answers -> 409.
+  const flipped = subs.map((s) => ({ ...s, response: s.response === 'a' ? 'b' : 'a' }));
+  const cf = await call('POST', `/api/v1/assessment/sessions/${bsess}/attempts`, { token, body: { submissionId: `w5-${stamp}-s1`, items: flipped }, idemKey: idem('batt-conflict') });
+  record('b10-duplicate-conflict', cf.status === 409, `HTTP ${cf.status}`, 'HTTP 409 reused submission');
+  // checkpoints v1 -> v2 -> v1: last-write-wins, final cursor is v1's.
+  if (attemptId) {
+    const ck = async (v, cursor, tag) => call('PUT', `/api/v1/assessment/sessions/${bsess}/attempts/${attemptId}/checkpoint`, { token, body: { checkpointVersion: v, itemCursor: cursor, checkpointDigest: `w5digest-${v}-${cursor}`, completedItemIds: [] }, idemKey: idem(tag) });
+    await ck(1, 0, 'ck1');
+    await ck(2, 1, 'ck2');
+    const c3 = await ck(1, 0, 'ck3');
+    record('b10-checkpoint-order', c3.status === 200 && (data(c3).itemCursor ?? data(c3).checkpoint?.itemCursor) === 0, `HTTP ${c3.status}`, 'HTTP 200 LWW cursor=0');
+  } else {
+    record('b10-checkpoint-order', false, 'no attempt id', 'HTTP 200');
+  }
+  // report read.
+  const reportId = data(r).reportId ?? null;
+  if (reportId) {
+    const rep = await call('GET', `/api/v1/assessment/reports/${reportId}`, { token });
+    record('b10-report', rep.status === 200, `HTTP ${rep.status}`, 'HTTP 200');
+  } else {
+    record('b10-report', false, 'no report id', 'HTTP 200');
+  }
 } else {
   record('b10-attempt', false, `session=${!!bsess} items=${bitems.length}`, 'HTTP 200/201 graded');
 }
