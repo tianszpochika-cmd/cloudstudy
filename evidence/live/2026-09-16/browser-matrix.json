@@ -1,0 +1,76 @@
+{
+  "capturedAt": "2026-09-16T05:15:11.497Z",
+  "results": [
+    {
+      "id": "official-home",
+      "url": "http://127.0.0.1:18192/",
+      "status": 200,
+      "title": "语学星｜让每一次学习都走向下一步",
+      "errors": [],
+      "a11y": "- link \"跳到主要内容\":\n  - /url: \"#main-content\"\n- banner:\n  - link \"语学星首页\":\n    - /url: /\n    - strong: 语学星\n    - text: ENGLISHFLOW\n  - navigation \"官网主导航\":\n    - link \"首页\":\n      - /url: /\n    - link \"课程体系\":\n      - /url: /courses\n    - link \"价格方案\":\n      - /url: /pricing\n    - link \"下载体验\":\n      - /url: /download\n    - link \"服务公告\":\n      - /url: /announcements\n    - link \"关于我们\":\n      - /url: /about\n    - button \"切换到深色模式\": 深色\n    - link \"进入学习\":\n      - /url: http://127.0.0.1:18180/login?returnTo=%2Fhome&uiLocale=zh-CN&theme=system\n- main:\n  - text: Adult learning · Phase 1\n  - heading \"把学习拆成 下一步，每天都走得更远。\" [level=1]:\n    - text: 把学习拆成\n    - emphasis: 下一步\n    - text: ，每天都走得更远。\n  - paragraph: 语学星把目标、练习、反馈、复习和复盘连成一个可持续的学习闭环。先知道今天该做什么，再看见自己为什么进步。\n  - link \"查看课程体系 →\":\n    - /url: /courses\n  - link \"开始学习\":\n    - /url: http://127.0.0.1:18180/login?returnTo=%2Fonboarding%3Fsource%3Dofficial-home&uiLocale=zh-CN&theme=system\n  - paragraph: 当前面向成年用户与大学生，AI 与 K12 能力按阶段开放。\n  - text: 今日任务 · 3 个小步骤\n  - strong: 今天的学习地图\n  - text: 星期三 闭环进度\n  - strong: 68%\n  - strong: 复习 12 张词卡\n  - text: 高频生活场景 · 约 8 分钟 继续 →\n  - strong: 听读精练\n  - text: 带字幕回放 · 已保存进度 稍后 有反馈，才有下一次复习 Why EnglishFlow\n  - heading \"每一步都留下可继续的线索。",
+      "flow": null
+    },
+    {
+      "id": "learner-home",
+      "url": "http://127.0.0.1:18180/",
+      "status": 200,
+      "title": "语学星",
+      "errors": [],
+      "a11y": "- main:\n  - region \"登录后，马上开始学习\":\n    - text: 语学星\n    - heading \"登录后，马上开始学习\" [level=1]\n    - paragraph: 使用语学星账号登录；首次进入只需完成一个简短设置。\n    - text: 账号\n    - textbox \"账号\":\n      - /placeholder: 邮箱或账号\n    - text: 密码\n    - textbox \"密码\":\n      - /placeholder: 输入密码\n    - status:\n      - strong: 等待登录\n      - paragraph: 账号密码由语学星认证中心校验。\n    - button \"登录并继续\"\n    - paragraph: 登录完成后，你只需要确认年龄、同意必要说明并选择学习目标。",
+      "flow": null
+    },
+    {
+      "id": "learner-login-flow",
+      "url": "http://127.0.0.1:18180/login",
+      "status": 200,
+      "title": "语学星",
+      "errors": [],
+      "a11y": "- main:\n  - region \"登录后，马上开始学习\":\n    - text: 语学星\n    - heading \"登录后，马上开始学习\" [level=1]\n    - paragraph: 使用语学星账号登录；首次进入只需完成一个简短设置。\n    - text: 账号\n    - textbox \"账号\":\n      - /placeholder: 邮箱或账号\n    - text: 密码\n    - textbox \"密码\":\n      - /placeholder: 输入密码\n    - status:\n      - strong: 等待登录\n      - paragraph: 账号密码由语学星认证中心校验。\n    - button \"登录并继续\"\n    - paragraph: 登录完成后，你只需要确认年龄、同意必要说明并选择学习目标。",
+      "flow": {
+        "steps": [
+          "filled"
+        ],
+        "afterUrl": "http://127.0.0.1:18180/home",
+        "afterTitle": "语学星",
+        "homeA11y": "- complementary \"主导航\":\n  - link \"语学星学习首页\":\n    - /url: /home\n    - text: 语学星\n  - navigation:\n    - paragraph: 学习\n    - link \"学习首页\":\n      - /url: /home\n    - link \"今日任务\":\n      - /url: /today\n    - link \"学习流\":\n      - /url: /learn\n    - paragraph: 练习\n    - link \"练习中心\":\n      - /url: /practice\n    - link \"词汇与 SRS\":\n      - /url: /vocabulary\n    - link \"学习报告\":\n      - /url: /b2/report\n    - link \"语法 X 光机\":\n      - /url: /grammar\n    - link \"规则写作\":\n      - /url: /writing\n    - link \"听力精练\":\n      - /url: /listening\n    - link \"分级阅读\":\n      - /url: /reading\n    - link \"口语自练\":\n      - /url: /speaking\n    - paragraph: 探索\n    - link \"世界\":\n      - /url: /world\n    - link \"课程\":\n      - /url: /courses\n    - link \"学习权益\":\n      - /url: /commerce\n    - link \"客服与帮助\":\n      - /url: /support\n  - button \"画质 High\"\n  - button \"退出登录\"\n- main:\n  - paragraph: LEARNING SPACE\n  - heading \"学习首页\" [level=1]\n  - sear",
+        "loggedIn": true
+      }
+    },
+    {
+      "id": "learner-today",
+      "url": "http://127.0.0.1:18180/today",
+      "status": 200,
+      "title": "语学星",
+      "errors": [],
+      "a11y": "- main:\n  - region \"登录后，马上开始学习\":\n    - text: 语学星\n    - heading \"登录后，马上开始学习\" [level=1]\n    - paragraph: 使用语学星账号登录；首次进入只需完成一个简短设置。\n    - text: 账号\n    - textbox \"账号\":\n      - /placeholder: 邮箱或账号\n    - text: 密码\n    - textbox \"密码\":\n      - /placeholder: 输入密码\n    - status:\n      - strong: 等待登录\n      - paragraph: 账号密码由语学星认证中心校验。\n    - button \"登录并继续\"\n    - paragraph: 登录完成后，你只需要确认年龄、同意必要说明并选择学习目标。",
+      "flow": null
+    },
+    {
+      "id": "admin-login",
+      "url": "http://127.0.0.1:18181/login",
+      "status": 200,
+      "title": "语学星教研与运营中台",
+      "errors": [],
+      "a11y": "- main:\n  - text: ENGLISHFLOW ADMIN\n  - heading \"教研与运营中台\" [level=1]\n  - paragraph: 使用平台管理员账号登录。角色和权限只由 IAM 服务端判定。\n  - text: 管理员账号\n  - textbox \"管理员账号\":\n    - /placeholder: 邮箱或账号\n  - text: 密码\n  - textbox \"密码\":\n    - /placeholder: 输入密码\n  - status: 账号密码由语学星认证中心校验。\n  - button \"登录后台\"",
+      "flow": null
+    },
+    {
+      "id": "mobile-h5-login",
+      "url": "http://127.0.0.1:18183/#/pages/login/login",
+      "status": 200,
+      "title": "登录",
+      "errors": [],
+      "a11y": "- text: 语学星 ACCOUNT 登录后，马上开始学习 使用语学星账号和密码登录。Access Token 只在当前运行时内存中使用，Refresh Token 由安全会话边界保护。 账号 输入邮箱或账号\n- textbox\n- text: 密码 输入密码\n- textbox\n- text: 登录并继续 登录完成后，你只需要确认年龄、同意必要说明并选择学习目标。",
+      "flow": null
+    },
+    {
+      "id": "mobile-h5-home",
+      "url": "http://127.0.0.1:18183/#/pages/home/home",
+      "status": 200,
+      "title": "登录",
+      "errors": [],
+      "a11y": "- text: 语学星 ACCOUNT 登录后，马上开始学习 使用语学星账号和密码登录。Access Token 只在当前运行时内存中使用，Refresh Token 由安全会话边界保护。 账号 输入邮箱或账号\n- textbox\n- text: 密码 输入密码\n- textbox\n- text: 登录并继续 登录完成后，你只需要确认年龄、同意必要说明并选择学习目标。",
+      "flow": null
+    }
+  ]
+}

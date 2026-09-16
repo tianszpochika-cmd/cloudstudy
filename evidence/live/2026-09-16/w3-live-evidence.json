@@ -1,0 +1,125 @@
+{
+  "task": "W3-LIVE-E2E",
+  "capturedAt": "2026-09-16T05:14:07.837Z",
+  "gateway": "http://127.0.0.1:18070",
+  "identifier": "w3-mu3nbgyk@local.invalid",
+  "result": "FAIL",
+  "passed": 16,
+  "total": 19,
+  "checks": [
+    {
+      "name": "setup-register",
+      "ok": true,
+      "observed": "HTTP 201",
+      "expected": "HTTP 201"
+    },
+    {
+      "name": "setup-login",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200 + token"
+    },
+    {
+      "name": "streak-read",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200"
+    },
+    {
+      "name": "quests-list",
+      "ok": true,
+      "observed": "HTTP 200 n=2",
+      "expected": "HTTP 200 + list"
+    },
+    {
+      "name": "quest-claim",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200"
+    },
+    {
+      "name": "quest-claim-replay",
+      "ok": true,
+      "observed": "HTTP 200 (same key)",
+      "expected": "HTTP 200 absorbed"
+    },
+    {
+      "name": "games-catalog",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200"
+    },
+    {
+      "name": "rooms-list",
+      "ok": true,
+      "observed": "HTTP 200 n=11",
+      "expected": "HTTP 200 + list"
+    },
+    {
+      "name": "room-join",
+      "ok": true,
+      "observed": "HTTP 200 room=room-local-foundations",
+      "expected": "HTTP 200"
+    },
+    {
+      "name": "room-focus",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200"
+    },
+    {
+      "name": "leaderboards",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200"
+    },
+    {
+      "name": "mod-report",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200/201"
+    },
+    {
+      "name": "skus-list",
+      "ok": true,
+      "observed": "HTTP 200 n=11",
+      "expected": "HTTP 200 + list"
+    },
+    {
+      "name": "order-create",
+      "ok": false,
+      "observed": "HTTP 403",
+      "expected": "HTTP 200/201"
+    },
+    {
+      "name": "pay-intent-sandbox",
+      "ok": false,
+      "observed": "no order id",
+      "expected": "sandbox intent"
+    },
+    {
+      "name": "refund-sandbox",
+      "ok": false,
+      "observed": "no order id",
+      "expected": "HTTP 200/201"
+    },
+    {
+      "name": "entitlements",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200"
+    },
+    {
+      "name": "redeem-invalid-negative",
+      "ok": true,
+      "observed": "HTTP 409",
+      "expected": "HTTP 404/409/422"
+    },
+    {
+      "name": "readiness-disabled",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200 (production off)"
+    }
+  ]
+}

@@ -1,0 +1,82 @@
+{
+  "task": "W4-LIVE-E2E",
+  "capturedAt": "2026-09-16T05:14:19.355Z",
+  "gateway": "http://127.0.0.1:18070",
+  "result": "PASS",
+  "passed": 12,
+  "total": 12,
+  "checks": [
+    {
+      "name": "setup-a",
+      "ok": true,
+      "observed": "user A ready",
+      "expected": "token"
+    },
+    {
+      "name": "setup-b",
+      "ok": true,
+      "observed": "user B ready",
+      "expected": "token"
+    },
+    {
+      "name": "notif-prefs-get",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200"
+    },
+    {
+      "name": "notif-pref-put",
+      "ok": true,
+      "observed": "HTTP 200 {\"channel\":\"PUSH\",\"enabled\":false,\"locale\":\"zh-CN\",\"notificationType\":\"REVIEW_DUE\",\"principalId\":\"0ac9a400-f241-4b88-a5a",
+      "expected": "HTTP 200"
+    },
+    {
+      "name": "notif-messages",
+      "ok": true,
+      "observed": "HTTP 200 n=0",
+      "expected": "HTTP 200 + list"
+    },
+    {
+      "name": "notif-read-all",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200/404"
+    },
+    {
+      "name": "sync-push",
+      "ok": true,
+      "observed": "HTTP 200 {\"conflicts\":[],\"source\":\"mysql\",\"nextCursor\":\"1789535658595\",\"serverVersion\":1789535658595,\"acceptedChangeIds\":[],\"clientBatchId\":\"\"}",
+      "expected": "HTTP 200"
+    },
+    {
+      "name": "sync-pull",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200"
+    },
+    {
+      "name": "ticket-create",
+      "ok": true,
+      "observed": "HTTP 200 id=present",
+      "expected": "HTTP 200/201 + id"
+    },
+    {
+      "name": "ticket-read-owner",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200"
+    },
+    {
+      "name": "ticket-cross-user-denied",
+      "ok": true,
+      "observed": "HTTP 403",
+      "expected": "HTTP 403 (no global read)"
+    },
+    {
+      "name": "export-request",
+      "ok": true,
+      "observed": "HTTP 200 id=present",
+      "expected": "HTTP 200/201/202"
+    }
+  ]
+}

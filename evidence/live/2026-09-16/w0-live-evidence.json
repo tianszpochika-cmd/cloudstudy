@@ -1,0 +1,77 @@
+{
+  "task": "W0-LIVE-E2E",
+  "capturedAt": "2026-09-16T05:12:47.822Z",
+  "gateway": "http://127.0.0.1:18070",
+  "identifier": "w0-mu3n9sf7@local.invalid",
+  "result": "PASS",
+  "passed": 11,
+  "total": 11,
+  "checks": [
+    {
+      "name": "register-201",
+      "ok": true,
+      "observed": "HTTP 201 token=present",
+      "expected": "HTTP 201 + accessToken"
+    },
+    {
+      "name": "duplicate-409",
+      "ok": true,
+      "observed": "HTTP 409",
+      "expected": "HTTP 409"
+    },
+    {
+      "name": "login-200-token",
+      "ok": true,
+      "observed": "HTTP 200 token=present",
+      "expected": "HTTP 200 + accessToken"
+    },
+    {
+      "name": "login-refresh-cookie",
+      "ok": true,
+      "observed": "refresh-cookie=present",
+      "expected": "yuxuexing_refresh cookie"
+    },
+    {
+      "name": "consent-TERMS",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200"
+    },
+    {
+      "name": "consent-PRIVACY",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200"
+    },
+    {
+      "name": "consent-ADULT_LEARNING",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200"
+    },
+    {
+      "name": "adult-gate-pass",
+      "ok": true,
+      "observed": "HTTP 200 {\"data\":{\"status\":\"PASSED\",\"learningAccess\":\"ELIGIBLE\",\"effectiveAt\":\"2026-09-16T05:12:47.298588Z\",\"policyVersion\":\"b30-adult-v1\",\"minimumAg",
+      "expected": "HTTP 200 PASSED"
+    },
+    {
+      "name": "relogin-200-token",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200 + fresh token"
+    },
+    {
+      "name": "profile-authed",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200"
+    },
+    {
+      "name": "profile-anon-401",
+      "ok": true,
+      "observed": "HTTP 401",
+      "expected": "HTTP 401"
+    }
+  ]
+}

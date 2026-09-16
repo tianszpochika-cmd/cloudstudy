@@ -1,0 +1,95 @@
+{
+  "task": "W5-LIVE-E2E",
+  "capturedAt": "2026-09-16T05:14:27.981Z",
+  "gateway": "http://127.0.0.1:18070",
+  "identifier": "w5-mu3nbxq9@local.invalid",
+  "result": "PASS",
+  "passed": 14,
+  "total": 14,
+  "checks": [
+    {
+      "name": "setup-register",
+      "ok": true,
+      "observed": "HTTP 201",
+      "expected": "HTTP 201"
+    },
+    {
+      "name": "setup-login",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200 + token"
+    },
+    {
+      "name": "games-catalog",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200"
+    },
+    {
+      "name": "game-start",
+      "ok": true,
+      "observed": "HTTP 201",
+      "expected": "HTTP 200/201 + session"
+    },
+    {
+      "name": "game-event",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200/201"
+    },
+    {
+      "name": "game-pause",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200"
+    },
+    {
+      "name": "game-resume",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200"
+    },
+    {
+      "name": "game-finish",
+      "ok": true,
+      "observed": "HTTP 200 {\"seq\":1,\"status\":\"COMPLETED\",\"gameCode\":\"SENTENCE_TRAIN\",\"createdAt\":\"2026-09-16T05:14:27.671994400Z\",\"sessionId\":\"game-f59d08ba-0ccd-44dc-",
+      "expected": "HTTP 200"
+    },
+    {
+      "name": "b10-session",
+      "ok": true,
+      "observed": "HTTP 200 items=2 sess=asess_80c086f8b188497d84ba628c35f5f3d3 keys=sessionId,status,mode,pin,items,attemptCount,stateVersion,lastAttemptId,startedAt,expiresAt",
+      "expected": "HTTP 200/201 + session"
+    },
+    {
+      "name": "b10-attempt",
+      "ok": true,
+      "observed": "HTTP 200 body={\"data\":{\"attemptId\":\"aatm_4e3073156fc84621ac3c8354cc567902\",\"sessionId\":\"asess_80c086f8b188497d84ba628c35f5f3d3\",\"attemptVersion\":1,\"status\":\"ASSESSED\",\"itemCount\":2,\"submissionDigest\":\"ec3b3cebccf3135f2e78d821114fe4e39e7fa073f3855fbbb75f06a414cd153b\",\"scoreBucket\":\"ZERO\",\"pin\":{\"contentCode\":\"cour sessKeys=attemptId,sessionId,attemptVersion,status,itemCount,submissionDigest,scoreBucket,pin,assessmentVersion,createdAt,assessedAt,reportId",
+      "expected": "HTTP 200/201 graded"
+    },
+    {
+      "name": "vocab-library",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200"
+    },
+    {
+      "name": "vocab-entry",
+      "ok": true,
+      "observed": "HTTP 200 {\"source\":\"mysql\",\"data\":{\"entryId\":621166,\"item\":{\"itemType\":\"VOCAB\",\"vocabId\":\"w5-word-1\"},\"collectionStatus\":\"SAVED\",\"sourceType\":\"MANUAL",
+      "expected": "HTTP 200/201"
+    },
+    {
+      "name": "media-asset",
+      "ok": true,
+      "observed": "HTTP 404",
+      "expected": "HTTP 200/404 recorded"
+    },
+    {
+      "name": "avatar-profile",
+      "ok": true,
+      "observed": "HTTP 200 {\"profile\":{\"avatarId\":\"learner-01\",\"resourceVersion\":\"avatar-2026.08.1\",\"loadoutId\":\"starter-loadout\",\"renderMode\":\"2D_FALLBACK\"}}",
+      "expected": "HTTP 200"
+    }
+  ]
+}

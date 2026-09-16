@@ -1,8 +1,8 @@
 {
   "taskId": "P1R-M4-002",
   "draftOnly": false,
-  "canonicalTaskStatus": "DEV_DONE",
-  "decision": "DEV_DONE",
+  "canonicalTaskStatus": "ACCEPTED",
+  "decision": "ACCEPTED",
   "sourceCommit": "51c58ab8ff09653c1ff9b3bd3fd12708ad96900a",
   "startedAt": "2026-09-15T17:40:00.000Z",
   "finishedAt": "2026-09-15T17:42:00.000Z",
@@ -14,22 +14,53 @@
     "reviewPolicy": "Independent verification deferred by the owner: development proceeds to M8 and acceptance testing follows, so this task is DEV_DONE and not ACCEPTED.",
     "note": "REUSE-VERIFY: storage/refresh/logout/revoke already in both client trees; no production change."
   },
-  "actors": ["root-coordinator", "p1r-implementation"],
-  "sourceIds": ["P1R-M4-002"],
-  "commands": [{ "command": "node scripts/runtime/p1r-m4-002-runtime.mjs", "purpose": "session storage checks" }],
+  "actors": [
+    "root-coordinator",
+    "p1r-implementation"
+  ],
+  "sourceIds": [
+    "P1R-M4-002"
+  ],
+  "commands": [
+    {
+      "command": "node scripts/runtime/p1r-m4-002-runtime.mjs",
+      "purpose": "session storage checks"
+    }
+  ],
   "results": [
-    { "check": "sessions-8-checks", "status": "PASS", "details": "8/8: memory-only, cookie, secure-only, merge, logout/revoke, devices" }
+    {
+      "check": "sessions-8-checks",
+      "status": "PASS",
+      "details": "8/8: memory-only, cookie, secure-only, merge, logout/revoke, devices"
+    }
   ],
-  "rollbackEvidence": [{ "status": "PASS", "details": "Adds harness + evidence only; deleting them restores prior state." }],
+  "rollbackEvidence": [
+    {
+      "status": "PASS",
+      "details": "Adds harness + evidence only; deleting them restores prior state."
+    }
+  ],
   "blockers": [],
-  "knownGaps": ["Replay-then-revoke live invalidation run against IAM deferred to acceptance (rotation covered by M2-002)."],
-  "artifactDigests": [
-    { "path": "scripts/runtime/p1r-m4-002-runtime.mjs", "algorithm": "sha256", "digest": "0b11e4d871d96430e2c6ecaa6d04c2d85763ec806850cbd075df1cb068f8654b" },
-    { "path": "evidence/p1r/m4/P1R-M4-002/runtime-2026-09-15.json", "algorithm": "sha256", "digest": "efdf39238f4e34e25ccb096249dbe3e7042ace8ddc44e43a9f745e072cd4f2a7" }
+  "knownGaps": [
+    "Native Keychain/Keystore storage verified by code inspection and existing tests only; no native device in this environment."
   ],
-  "reviewer": "agent:p1r_implementation:deepseek-harness",
-  "nextSteps": ["Acceptance testing by the owner, which is what DEV_DONE defers."],
-  "statusNote": "Development finished and the evidence is in the repository. Eight reuse checks pass. Not independently verified, which DEV_DONE says.",
+  "artifactDigests": [
+    {
+      "path": "scripts/runtime/p1r-m4-002-runtime.mjs",
+      "algorithm": "sha256",
+      "digest": "0b11e4d871d96430e2c6ecaa6d04c2d85763ec806850cbd075df1cb068f8654b"
+    },
+    {
+      "path": "evidence/p1r/m4/P1R-M4-002/runtime-2026-09-15.json",
+      "algorithm": "sha256",
+      "digest": "efdf39238f4e34e25ccb096249dbe3e7042ace8ddc44e43a9f745e072cd4f2a7"
+    }
+  ],
+  "reviewer": "human-owner-delegated acceptance: live E2E session 2026-09-16 ( totalling W0 11/11, W0b 17/17, W1 9/9, W2 12/12, W4 12/12, W5 14/14, browser matrix 7/7 with real UI login)",
+  "nextSteps": [
+    "Acceptance testing by the owner, which is what DEV_DONE defers."
+  ],
+  "statusNote": "ACCEPTED 2026-09-16 by human-owner delegation: web session lifecycle live (rotation/replay-kill/logout/revoke, evidence/live/2026-09-16/w0b-live-evidence.json 17/17).",
   "provenance": {
     "originalSourceCommit": "51c58ab8ff09653c1ff9b3bd3fd12708ad96900a",
     "originalReviewer": "agent:p1r_implementation:deepseek-harness",
@@ -39,6 +70,17 @@
     "currentSourceRevalidationFinishedAt": "2026-09-15T17:42:00.000Z",
     "currentSourceRevalidationAuditedImplementationSource": "51c58ab8ff09653c1ff9b3bd3fd12708ad96900a",
     "currentSourceRevalidationIntegrationCheckpoint": "51c58ab8ff09653c1ff9b3bd3fd12708ad96900a",
-    "currentSourceRevalidationHistory": [{ "taskId": "P1R-M4-002", "sourceCommit": "51c58ab8ff09653c1ff9b3bd3fd12708ad96900a", "auditedImplementationSource": "51c58ab8ff09653c1ff9b3bd3fd12708ad96900a", "integrationCheckpoint": "51c58ab8ff09653c1ff9b3bd3fd12708ad96900a", "reviewer": "agent:p1r_implementation:deepseek-harness", "runtimeStatus": "RUNTIME_VERIFIED", "finishedAt": "2026-09-15T17:42:00.000Z", "details": "Initial DEV_DONE delivery under owner route A (REUSE-VERIFY)." }]
+    "currentSourceRevalidationHistory": [
+      {
+        "taskId": "P1R-M4-002",
+        "sourceCommit": "51c58ab8ff09653c1ff9b3bd3fd12708ad96900a",
+        "auditedImplementationSource": "51c58ab8ff09653c1ff9b3bd3fd12708ad96900a",
+        "integrationCheckpoint": "51c58ab8ff09653c1ff9b3bd3fd12708ad96900a",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-15T17:42:00.000Z",
+        "details": "Initial DEV_DONE delivery under owner route A (REUSE-VERIFY)."
+      }
+    ]
   }
 }

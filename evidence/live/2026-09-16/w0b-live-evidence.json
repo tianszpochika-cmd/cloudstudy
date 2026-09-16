@@ -1,0 +1,113 @@
+{
+  "task": "W0B-LIVE-E2E",
+  "capturedAt": "2026-09-16T05:13:34.769Z",
+  "gateway": "http://127.0.0.1:18070",
+  "identifier": "w0b-mu3nan88@local.invalid",
+  "result": "PASS",
+  "passed": 17,
+  "total": 17,
+  "checks": [
+    {
+      "name": "register",
+      "ok": true,
+      "observed": "HTTP 201",
+      "expected": "HTTP 201"
+    },
+    {
+      "name": "login",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200 + token + cookie"
+    },
+    {
+      "name": "refresh-rotation",
+      "ok": true,
+      "observed": "HTTP 200 rotated=true",
+      "expected": "HTTP 200 + rotated pair"
+    },
+    {
+      "name": "logout",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200"
+    },
+    {
+      "name": "refresh-after-logout-rejected",
+      "ok": true,
+      "observed": "HTTP 404",
+      "expected": "HTTP 404 revoked family"
+    },
+    {
+      "name": "relogin-b",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200"
+    },
+    {
+      "name": "rotation-b",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200"
+    },
+    {
+      "name": "refresh-replay-rejected",
+      "ok": true,
+      "observed": "HTTP 401",
+      "expected": "HTTP 401 reuse kills family"
+    },
+    {
+      "name": "reset-request-accepted",
+      "ok": true,
+      "observed": "HTTP 202",
+      "expected": "HTTP 200/202"
+    },
+    {
+      "name": "reset-unknown-same-shape",
+      "ok": true,
+      "observed": "HTTP 202",
+      "expected": "HTTP 200/202 (no enumeration)"
+    },
+    {
+      "name": "reset-confirm-negative",
+      "ok": true,
+      "observed": "HTTP 401",
+      "expected": "HTTP 400/401/404"
+    },
+    {
+      "name": "relogin",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200"
+    },
+    {
+      "name": "consent-withdrawn",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200"
+    },
+    {
+      "name": "withdrawn-token-ttl-stale-allowed",
+      "ok": true,
+      "observed": "HTTP 200 (stale-but-unexpired, by design)",
+      "expected": "HTTP 200"
+    },
+    {
+      "name": "relogin-post-withdraw",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200 + token"
+    },
+    {
+      "name": "withdrawn-fresh-token-denied",
+      "ok": true,
+      "observed": "HTTP 403",
+      "expected": "HTTP 401/403 on fresh issuance"
+    },
+    {
+      "name": "withdrawn-refresh",
+      "ok": true,
+      "observed": "HTTP 404 (404=family revoked, 200=restricted-but-live)",
+      "expected": "HTTP 404/200 recorded"
+    }
+  ]
+}

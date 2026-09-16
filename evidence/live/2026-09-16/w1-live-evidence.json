@@ -1,0 +1,65 @@
+{
+  "task": "W1-LIVE-E2E",
+  "capturedAt": "2026-09-16T05:13:45.520Z",
+  "gateway": "http://127.0.0.1:18070",
+  "identifier": "w1-mu3nb0zv@local.invalid",
+  "result": "PASS",
+  "passed": 9,
+  "total": 9,
+  "checks": [
+    {
+      "name": "setup-register",
+      "ok": true,
+      "observed": "HTTP 201",
+      "expected": "HTTP 201"
+    },
+    {
+      "name": "setup-gate",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200"
+    },
+    {
+      "name": "setup-login",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200 + token"
+    },
+    {
+      "name": "targets-put",
+      "ok": true,
+      "observed": "HTTP 200 {\"data\":{\"targetId\":1012,\"goalCode\":\"CET_4_6\",\"targetLevel\":\"A2\",\"examCode\":null,\"dailyQuotaMinutes\":30,\"targetDate\":null,\"status\":\"ACTIVE\",\"stateVersion\":1,\"up",
+      "expected": "HTTP 200"
+    },
+    {
+      "name": "placement-start",
+      "ok": true,
+      "observed": "HTTP 200 session=present",
+      "expected": "HTTP 200 + session"
+    },
+    {
+      "name": "placement-complete",
+      "ok": true,
+      "observed": "rounds=2 completed=true",
+      "expected": "completed within 15 rounds"
+    },
+    {
+      "name": "placement-report",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200"
+    },
+    {
+      "name": "learning-today",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200"
+    },
+    {
+      "name": "learner-first-day",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200"
+    }
+  ]
+}

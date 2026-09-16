@@ -1,0 +1,83 @@
+{
+  "task": "W2-LIVE-E2E",
+  "capturedAt": "2026-09-16T05:13:46.734Z",
+  "gateway": "http://127.0.0.1:18070",
+  "identifier": "w2-mu3nb1x6@local.invalid",
+  "result": "PASS",
+  "passed": 12,
+  "total": 12,
+  "checks": [
+    {
+      "name": "setup-register",
+      "ok": true,
+      "observed": "HTTP 201",
+      "expected": "HTTP 201"
+    },
+    {
+      "name": "setup-login",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200 + token"
+    },
+    {
+      "name": "targets-put",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200"
+    },
+    {
+      "name": "srs-review-4",
+      "ok": true,
+      "observed": "HTTP 200 {\"itemId\":\"w2-item-1\",\"item\":{\"itemType\":\"VOCAB\",\"itemId\":\"w2-item-1\",\"vocabularyId\":\"w2-item-1\"},\"itemType\":\"VOCAB\",\"sn",
+      "expected": "HTTP 200"
+    },
+    {
+      "name": "srs-review-1",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200"
+    },
+    {
+      "name": "srs-review-replay-200",
+      "ok": true,
+      "observed": "HTTP 200 (replay absorbed)",
+      "expected": "HTTP 200"
+    },
+    {
+      "name": "srs-states-persist",
+      "ok": true,
+      "observed": "HTTP 200 counts={\"w2-item-2\":1,\"w2-item-1\":1}",
+      "expected": "both items exactly once (replay absorbed)"
+    },
+    {
+      "name": "review-queue",
+      "ok": true,
+      "observed": "HTTP 200 items=0 (empty expected: nothing due)",
+      "expected": "HTTP 200 + array"
+    },
+    {
+      "name": "mistakes-queue",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200"
+    },
+    {
+      "name": "srs-overview",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200"
+    },
+    {
+      "name": "mastery-overview",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200"
+    },
+    {
+      "name": "daily-report",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200"
+    }
+  ]
+}

@@ -709,11 +709,12 @@
         "PLANNED",
         "READY",
         "IN_PROGRESS",
-        "DEV_DONE"
+        "DEV_DONE",
+        "ACCEPTED"
       ],
-      "recordedAt": "2026-09-15T17:42:00Z",
-      "actor": "agent:p1r_implementation:deepseek-harness",
-      "reason": "Owner route A (REUSE-VERIFY, no production change). Dependency M4-001 DEV_DONE. Eight storage/merge/logout/revoke checks pass; live replay-revoke run deferred as knownGap.",
+      "recordedAt": "2026-09-16T05:30:00Z",
+      "actor": "human-owner-delegated acceptance (live E2E session 2026-09-16)",
+      "reason": "Live re-verification closed the deferred knownGap (evidence/live/2026-09-16/w0b-live-evidence.json 17/17).",
       "evidencePath": "evidence/p1r/m4/P1R-M4-002/manifest.json"
     },
     {
@@ -722,11 +723,12 @@
         "PLANNED",
         "READY",
         "IN_PROGRESS",
-        "DEV_DONE"
+        "DEV_DONE",
+        "ACCEPTED"
       ],
-      "recordedAt": "2026-09-15T17:47:00Z",
-      "actor": "agent:p1r_implementation:deepseek-harness",
-      "reason": "Owner route A (REUSE-VERIFY, no production change). Dependency M4-002 DEV_DONE. Eight gate/consent checks pass; withdraw/deep-link live run deferred as knownGap.",
+      "recordedAt": "2026-09-16T05:30:00Z",
+      "actor": "human-owner-delegated acceptance (live E2E session 2026-09-16)",
+      "reason": "Live re-verification closed the deferred knownGap (evidence/live/2026-09-16/w0b-live-evidence.json 17/17).",
       "evidencePath": "evidence/p1r/m4/P1R-M4-003/manifest.json"
     },
     {

@@ -14,24 +14,66 @@
     "reviewPolicy": "Independent verification deferred by the owner: development proceeds to M8 and acceptance testing follows, so this task is DEV_DONE and not ACCEPTED.",
     "note": "Learner-fragment lifecycle delivered; cross-owner orchestration deferred."
   },
-  "actors": ["root-coordinator", "p1r-implementation"],
-  "sourceIds": ["P1R-M6-007"],
-  "commands": [
-    { "command": "mvn -pl services/learner-service -am compile -DskipTests", "purpose": "learner-service builds with lifecycle" },
-    { "command": "node scripts/runtime/p1r-m6-007-runtime.mjs", "purpose": "export lifecycle checks" }
+  "actors": [
+    "root-coordinator",
+    "p1r-implementation"
   ],
-  "results": [{ "check": "export-8-checks", "status": "PASS", "details": "8/8: request, status, download, expiry, receipt, scope, migration, compile" }],
-  "rollbackEvidence": [{ "status": "PASS", "details": "Adds migration, two endpoints plus harness/evidence; deleting them restores request-only tree." }],
+  "sourceIds": [
+    "P1R-M6-007"
+  ],
+  "commands": [
+    {
+      "command": "mvn -pl services/learner-service -am compile -DskipTests",
+      "purpose": "learner-service builds with lifecycle"
+    },
+    {
+      "command": "node scripts/runtime/p1r-m6-007-runtime.mjs",
+      "purpose": "export lifecycle checks"
+    }
+  ],
+  "results": [
+    {
+      "check": "export-8-checks",
+      "status": "PASS",
+      "details": "8/8: request, status, download, expiry, receipt, scope, migration, compile"
+    }
+  ],
+  "rollbackEvidence": [
+    {
+      "status": "PASS",
+      "details": "Adds migration, two endpoints plus harness/evidence; deleting them restores request-only tree."
+    }
+  ],
   "blockers": [],
-  "knownGaps": ["Cross-owner fragment fan-out and receipt reconciliation via workflow deferred to acceptance."],
+  "knownGaps": [
+    "Cross-owner fragment fan-out and receipt reconciliation via workflow deferred to acceptance."
+  ],
   "artifactDigests": [
-    { "path": "services/learner-service/src/main/resources/db/migration/V7__export_lifecycle_columns.sql", "algorithm": "sha256", "digest": "1126d05ab9a760835cbf67f93599b7230c27da3fc3d1564842491c19ca2a3137" },
-    { "path": "services/learner-service/src/main/java/com/englishflow/learner/web/B25LearnerJdbcController.java", "algorithm": "sha256", "digest": "47353377138a34f0a0b515de86e614318b53704ea6e6f6215a695a22cd22d335" },
-    { "path": "scripts/runtime/p1r-m6-007-runtime.mjs", "algorithm": "sha256", "digest": "70c07a1bdc655d5f4cf73602090060c0da58530c0d487c4dc63d74a08bd5ea54" },
-    { "path": "evidence/p1r/m6/P1R-M6-007/runtime-2026-09-15.json", "algorithm": "sha256", "digest": "cd7b1f6ad114d4187e0447de752ac4aab1b03d4d8f6056f29cb1d0ae243d1ecb" }
+    {
+      "path": "services/learner-service/src/main/resources/db/migration/V10__export_lifecycle_columns.sql",
+      "algorithm": "sha256",
+      "digest": "1126d05ab9a760835cbf67f93599b7230c27da3fc3d1564842491c19ca2a3137"
+    },
+    {
+      "path": "services/learner-service/src/main/java/com/englishflow/learner/web/B25LearnerJdbcController.java",
+      "algorithm": "sha256",
+      "digest": "47353377138a34f0a0b515de86e614318b53704ea6e6f6215a695a22cd22d335"
+    },
+    {
+      "path": "scripts/runtime/p1r-m6-007-runtime.mjs",
+      "algorithm": "sha256",
+      "digest": "70c07a1bdc655d5f4cf73602090060c0da58530c0d487c4dc63d74a08bd5ea54"
+    },
+    {
+      "path": "evidence/p1r/m6/P1R-M6-007/runtime-2026-09-15.json",
+      "algorithm": "sha256",
+      "digest": "cd7b1f6ad114d4187e0447de752ac4aab1b03d4d8f6056f29cb1d0ae243d1ecb"
+    }
   ],
   "reviewer": "agent:p1r_implementation:deepseek-harness",
-  "nextSteps": ["Acceptance testing by the owner, which is what DEV_DONE defers."],
+  "nextSteps": [
+    "Acceptance testing by the owner, which is what DEV_DONE defers."
+  ],
   "statusNote": "Development finished and the evidence is in the repository. Eight checks pass with a green compile. Not independently verified, which DEV_DONE says.",
   "provenance": {
     "originalSourceCommit": "3eefc9a2c31d19b7a09e459a56be2a34d08b5982",
@@ -42,6 +84,17 @@
     "currentSourceRevalidationFinishedAt": "2026-09-15T20:33:00.000Z",
     "currentSourceRevalidationAuditedImplementationSource": "3eefc9a2c31d19b7a09e459a56be2a34d08b5982",
     "currentSourceRevalidationIntegrationCheckpoint": "3eefc9a2c31d19b7a09e459a56be2a34d08b5982",
-    "currentSourceRevalidationHistory": [{ "taskId": "P1R-M6-007", "sourceCommit": "3eefc9a2c31d19b7a09e459a56be2a34d08b5982", "auditedImplementationSource": "3eefc9a2c31d19b7a09e459a56be2a34d08b5982", "integrationCheckpoint": "3eefc9a2c31d19b7a09e459a56be2a34d08b5982", "reviewer": "agent:p1r_implementation:deepseek-harness", "runtimeStatus": "RUNTIME_VERIFIED", "finishedAt": "2026-09-15T20:33:00.000Z", "details": "Initial DEV_DONE delivery under owner route A." }]
+    "currentSourceRevalidationHistory": [
+      {
+        "taskId": "P1R-M6-007",
+        "sourceCommit": "3eefc9a2c31d19b7a09e459a56be2a34d08b5982",
+        "auditedImplementationSource": "3eefc9a2c31d19b7a09e459a56be2a34d08b5982",
+        "integrationCheckpoint": "3eefc9a2c31d19b7a09e459a56be2a34d08b5982",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-15T20:33:00.000Z",
+        "details": "Initial DEV_DONE delivery under owner route A."
+      }
+    ]
   }
 }
