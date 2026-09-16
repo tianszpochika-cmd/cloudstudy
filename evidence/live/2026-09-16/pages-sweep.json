@@ -1,9 +1,9 @@
 {
   "task": "PAGES-LIVE-SWEEP",
-  "capturedAt": "2026-09-16T13:32:56.481Z",
-  "identifier": "wpg-mu453ulk@local.invalid",
+  "capturedAt": "2026-09-16T16:51:14.482Z",
+  "identifier": "wpg-mu4c6pvr@local.invalid",
   "result": "PASS",
-  "routes": 18,
+  "routes": 21,
   "pageErrors": 0,
   "rows": [
     {
@@ -66,6 +66,33 @@
       "finalUrl": "http://127.0.0.1:18180/b2/report",
       "title": "语学星",
       "headline": "学习报告",
+      "state": "rendered",
+      "newErrors": 0
+    },
+    {
+      "route": "/mistakes",
+      "status": 200,
+      "finalUrl": "http://127.0.0.1:18180/mistakes",
+      "title": "语学星",
+      "headline": "错题本",
+      "state": "rendered",
+      "newErrors": 0
+    },
+    {
+      "route": "/mastery",
+      "status": 200,
+      "finalUrl": "http://127.0.0.1:18180/mastery",
+      "title": "语学星",
+      "headline": "掌握度",
+      "state": "rendered",
+      "newErrors": 0
+    },
+    {
+      "route": "/plan-map",
+      "status": 200,
+      "finalUrl": "http://127.0.0.1:18180/plan-map",
+      "title": "语学星",
+      "headline": "计划地图",
       "state": "rendered",
       "newErrors": 0
     },
@@ -170,12 +197,12 @@
     }
   ],
   "errors": [
-    "console.error: Access to fetch at 'http://127.0.0.1:18070/api/v1/grammar/points?limit=50' from origin 'http://127.0.0.1:18180' has been blocked by CORS pol",
     "console.error: Access to fetch at 'http://127.0.0.1:18070/api/v1/grammar/exercises?limit=20' from origin 'http://127.0.0.1:18180' has been blocked by CORS ",
+    "console.error: Access to fetch at 'http://127.0.0.1:18070/api/v1/grammar/points?limit=50' from origin 'http://127.0.0.1:18180' has been blocked by CORS pol",
     "console.error: Access to fetch at 'http://127.0.0.1:18070/api/v1/grammar/mastery' from origin 'http://127.0.0.1:18180' has been blocked by CORS policy: Res",
+    "console.error: Access to fetch at 'http://127.0.0.1:18070/api/v1/writing/materials?limit=20' from origin 'http://127.0.0.1:18180' has been blocked by CORS ",
     "console.error: Access to fetch at 'http://127.0.0.1:18070/api/v1/writing/prompts?limit=20' from origin 'http://127.0.0.1:18180' has been blocked by CORS po",
     "console.error: Access to fetch at 'http://127.0.0.1:18070/api/v1/writing/templates?limit=20' from origin 'http://127.0.0.1:18180' has been blocked by CORS ",
-    "console.error: Access to fetch at 'http://127.0.0.1:18070/api/v1/writing/materials?limit=20' from origin 'http://127.0.0.1:18180' has been blocked by CORS ",
     "console.error: Access to fetch at 'http://127.0.0.1:18070/api/v1/writing/history?limit=20' from origin 'http://127.0.0.1:18180' has been blocked by CORS po",
     "console.error: Access to fetch at 'http://127.0.0.1:18070/api/v1/writing/proofreading/exercises?limit=20' from origin 'http://127.0.0.1:18180' has been blo",
     "console.error: Access to fetch at 'http://127.0.0.1:18070/api/v1/listening/materials?limit=20' from origin 'http://127.0.0.1:18180' has been blocked by COR",

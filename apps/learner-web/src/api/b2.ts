@@ -272,4 +272,50 @@ export function isB2OfflineError(error: unknown): boolean {
   return error instanceof TypeError || (isRecord(error) && typeof error.status === 'number' && (error.status === 0 || error.status >= 500))
 }
 
+/** P1R decision 1A: loop pages read owner projections directly (no local math). */
+export interface LoopMistake { interactionId: unknown; resourceKey: string | null; domainCode: string | null; actionCode: string | null; feedbackCode: string | null; message: string | null; errorCategory: string | null; mistakeStatus: string | null }
+export interface LoopMastery { total: number; newCount: number; learningCount: number; reviewCount: number; masteredCount: number }
+export interface LoopPlan { status: string | null; targetMinutes: number | null; planVersion: number | null; updatedAt: string | null }
+
+export async function fetchMistakesQueue(): Promise<LoopMistake[]> {
+  const response = await apiClient.get<unknown>('/learning/mistakes/queue')
+  const items = unwrap(response)
+  const list = Array.isArray(items) ? items : isRecord(items) && Array.isArray(items.items) ? items.items as unknown[] : []
+  return list.filter(isRecord).map((row) => ({
+    interactionId: row.interaction_id ?? null,
+    resourceKey: stringValue(row.resource_key),
+    domainCode: stringValue(row.domain_code),
+    actionCode: stringValue(row.action_code),
+    feedbackCode: stringValue(row.feedback_code),
+    message: stringValue(row.message),
+    errorCategory: stringValue(row.error_category),
+    mistakeStatus: stringValue(row.mistake_status) ?? 'OPEN',
+  }))
+}
+
+export async function fetchSrsOverview(): Promise<LoopMastery> {
+  const response = await apiClient.get<unknown>('/learning/srs/overview')
+  const data = unwrap(response)
+  const row = isRecord(data) ? data : {}
+  return {
+    total: numberValue(row.total) ?? 0,
+    newCount: numberValue(row.newCount ?? row.new_count) ?? 0,
+    learningCount: numberValue(row.learningCount ?? row.learning_count) ?? 0,
+    reviewCount: numberValue(row.reviewCount ?? row.review_count) ?? 0,
+    masteredCount: numberValue(row.masteredCount ?? row.mastered_count) ?? 0,
+  }
+}
+
+export async function fetchPlanCurrent(): Promise<LoopPlan> {
+  const response = await apiClient.get<unknown>('/learning/plan/current')
+  const data = unwrap(response)
+  const row = isRecord(data) ? data : {}
+  return {
+    status: stringValue(row.status),
+    targetMinutes: numberValue(row.targetMinutes ?? row.target_minutes),
+    planVersion: numberValue(row.planVersion ?? row.plan_version),
+    updatedAt: stringValue(row.updatedAt ?? row.updated_at),
+  }
+}
+
 export function itemTypeOf(item: LearningItemRef): ItemType { return item.itemType }

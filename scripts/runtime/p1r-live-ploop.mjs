@@ -66,6 +66,13 @@ record('ploop-report-page', /报告|得分|正确|暂无/.test(bodyText), 'repor
 await page.goto(`${WEB}/today`, { waitUntil: 'domcontentloaded', timeout: 45000 }).catch(() => null);
 await page.waitForTimeout(3000);
 record('ploop-today', page.url().includes('/today'), page.url(), 'today reachable');
+// loop pages (decision 1A): mistakes -> mastery -> plan-map close the loop.
+for (const [route, marker] of [['/mistakes', '错题'], ['/mastery', '掌握'], ['/plan-map', '计划']]) {
+  await page.goto(`${WEB}${route}`, { waitUntil: 'domcontentloaded', timeout: 45000 }).catch(() => null);
+  await page.waitForTimeout(2500);
+  const t = (await page.locator('body').first().textContent().catch(() => '')) ?? '';
+  record(`ploop-${route.slice(1)}`, page.url().includes(route) && t.includes(marker), route, 'renders');
+}
 record('ploop-no-errors', errs.length === 0, `${errs.length} pageerrors`, 'zero');
 await browser.close();
 const passed = checks.filter((c) => c.ok).length;

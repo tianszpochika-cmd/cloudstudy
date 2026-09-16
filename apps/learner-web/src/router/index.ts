@@ -101,6 +101,24 @@ const routes: RouteRecordRaw[] = [
     meta: { requiresAuth: true, shell: true, title: '错题与学习报告' },
   },
   {
+    path: '/mistakes',
+    name: 'mistakes',
+    component: () => import('../pages/MistakesPage.vue'),
+    meta: { requiresAuth: true, shell: true, title: '错题本' },
+  },
+  {
+    path: '/mastery',
+    name: 'mastery',
+    component: () => import('../pages/MasteryPage.vue'),
+    meta: { requiresAuth: true, shell: true, title: '掌握度' },
+  },
+  {
+    path: '/plan-map',
+    name: 'plan-map',
+    component: () => import('../pages/PlanMapPage.vue'),
+    meta: { requiresAuth: true, shell: true, title: '计划地图' },
+  },
+  {
     path: '/grammar',
     name: 'b3-grammar',
     component: () => import('../pages/B3GrammarPage.vue'),

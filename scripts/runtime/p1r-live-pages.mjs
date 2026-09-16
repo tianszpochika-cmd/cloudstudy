@@ -36,7 +36,7 @@ r = await api('PUT', '/api/v1/learner/targets', { token, body: { expectedStateVe
 if (r.status !== 200) { console.error(`setup targets failed: HTTP ${r.status}`); process.exit(1); }
 console.log('pages-user ready:', identifier);
 
-const ROUTES = ['/home', '/today', '/assessment', '/vocabulary', '/learn', '/practice', '/b2/report', '/grammar', '/writing', '/listening', '/reading', '/speaking', '/world', '/commerce', '/support', '/courses', '/me', '/settings'];
+const ROUTES = ['/home', '/today', '/assessment', '/vocabulary', '/learn', '/practice', '/b2/report', '/mistakes', '/mastery', '/plan-map', '/grammar', '/writing', '/listening', '/reading', '/speaking', '/world', '/commerce', '/support', '/courses', '/me', '/settings'];
 const browser = await chromium.launch();
 const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
 const page = await context.newPage();

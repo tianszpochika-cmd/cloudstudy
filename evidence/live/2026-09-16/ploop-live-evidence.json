@@ -1,10 +1,10 @@
 {
   "task": "PLOOP-LIVE",
-  "capturedAt": "2026-09-16T13:34:31.486Z",
-  "identifier": "wpl-mu456ipw@local.invalid",
+  "capturedAt": "2026-09-16T16:52:18.122Z",
+  "identifier": "wpl-mu4c8pa2@local.invalid",
   "result": "PASS",
-  "passed": 6,
-  "total": 6,
+  "passed": 9,
+  "total": 9,
   "checks": [
     {
       "name": "ploop-login",
@@ -35,6 +35,24 @@
       "ok": true,
       "observed": "http://127.0.0.1:18180/today",
       "expected": "today reachable"
+    },
+    {
+      "name": "ploop-mistakes",
+      "ok": true,
+      "observed": "/mistakes",
+      "expected": "renders"
+    },
+    {
+      "name": "ploop-mastery",
+      "ok": true,
+      "observed": "/mastery",
+      "expected": "renders"
+    },
+    {
+      "name": "ploop-plan-map",
+      "ok": true,
+      "observed": "/plan-map",
+      "expected": "renders"
     },
     {
       "name": "ploop-no-errors",

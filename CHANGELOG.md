@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1R-1A-LOOP-20260917] **1A 闭环页建成 + 翻 M5-012（59 ACCEPTED / 49 DEV_DONE，工具待验）。** 错题本/掌握度/计划地图三新页（owner 投影直读 + 八态 + 互链 + 导航）；完整浏览器闭环 9/9；页面横扫扩到 21 路零错。验证：vue-tsc 0 错误。
+
 - [P1R-5A-EMIT-20260917] **5A 发射接线（全程）：B10 判分原子写出事件 + 翻 M5-013（58 ACCEPTED / 50 DEV_DONE，工具待验）。** assessed逐条 + report.ready 随判分同事务落 outbox（W5 25/25，载荷过 schema）；principalId 契约只认 prn_ 前缀、与 IAM 签发裸 UUID 矛盾——加宽为超集。附带修出box同物种两处缺 occurred_at（B10 写侧 + port 适配器；累计 7 家写侧）。残留：Kafka 中继归 M2-005。
 
 - [P1R-5A-SHAPES-20260916] **5A 形状落定（半程）：report.ready.v1 第 51 个 canonical 事件 + 消费者契约测试 5/5。** review-due 即 review.scheduled.v2（具名等价）；冻结合约五处扩容（inventory/50→51/191→192/路由/策略表/测试数）；生成器全过。M5-013 留置收窄：只剩 B10 活切片的发射接线。
