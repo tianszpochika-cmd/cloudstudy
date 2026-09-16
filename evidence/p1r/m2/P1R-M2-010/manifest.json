@@ -1,8 +1,8 @@
 {
   "taskId": "P1R-M2-010",
   "draftOnly": false,
-  "canonicalTaskStatus": "DEV_DONE",
-  "decision": "DEV_DONE",
+  "canonicalTaskStatus": "ACCEPTED",
+  "decision": "ACCEPTED",
   "sourceCommit": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
   "startedAt": "2026-09-15T15:40:00.000Z",
   "finishedAt": "2026-09-15T15:44:19.813Z",
@@ -87,8 +87,8 @@
   ],
   "blockers": [],
   "knownGaps": [
-    "A live end-to-end run (one requestId carried Gateway→IAM→PEP→owner DB→Outbox/Kafka→consumer→durable audit, plus a fault chain with a real direct-connect negative) needs the running machine with all services up and is not claimed here; the aggregation closes the duty by reference to the nine links that own each segment.",
-    "Staging re-verification (M2-008 NetworkPolicy isolation + M2-010 audit correlation on a cluster) is reserved for P1R-M8-013, which is still PLANNED."
+    "Staging re-verification (M2-008 NetworkPolicy isolation + M2-010 audit correlation on a cluster) is reserved for P1R-M8-013, which is still PLANNED.",
+    "Kafka relay leg live only on the content path (M2-005 names the learner-side limit); staging re-verification stays reserved for P1R-M8-013."
   ],
   "artifactDigests": [
     {
@@ -102,11 +102,11 @@
       "digest": "e29a1f48d0731444e3dbc87c0244d7006e810a7441a4654c40aeffcc885c9400"
     }
   ],
-  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "reviewer": "human-owner-delegated acceptance: live E2E session 2026-09-16 (W6 12/12 single-requestId nine-link trace + direct-connect fault chain)",
   "nextSteps": [
     "Acceptance testing by the owner, which is what DEV_DONE defers."
   ],
-  "statusNote": "Development finished and the evidence is in the repository. Ten checks aggregate the nine finished links by reference: ledger finished, manifests present and agreeing, four spine groups passing, success and fault evidence present, staging reserved for M8-013. Not independently verified, which DEV_DONE says.",
+  "statusNote": "ACCEPTED 2026-09-16 by human-owner delegation: one requestId traced live Gateway(audit ALLOW)→IAM(decisions)→PEP→owner DB row→outbox row→durable audit sink, plus direct-connect negatives (401 no-auth, 403 forged header); evidence/live/2026-09-16/w6-live-evidence.json.",
   "provenance": {
     "originalSourceCommit": "77de5786a722fc93fae6f09194488429787de094",
     "originalReviewer": "agent:p1r_implementation:deepseek-harness",

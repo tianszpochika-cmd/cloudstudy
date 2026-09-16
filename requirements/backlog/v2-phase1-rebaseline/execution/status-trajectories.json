@@ -553,11 +553,12 @@
         "PLANNED",
         "READY",
         "IN_PROGRESS",
-        "DEV_DONE"
+        "DEV_DONE",
+        "ACCEPTED"
       ],
-      "recordedAt": "2026-09-15T15:45:00Z",
-      "actor": "agent:p1r_implementation:deepseek-harness",
-      "reason": "Owner route A. Dependencies M2-001..009 are all finished (3 ACCEPTED + 6 DEV_DONE), so the task moved PLANNED->READY->IN_PROGRESS->DEV_DONE. Ten aggregation checks pass on the committed tree by reference; the live requestId-carried run and staging re-verification are recorded as knownGaps for acceptance (M8-013 still PLANNED).",
+      "recordedAt": "2026-09-16T08:00:00Z",
+      "actor": "human-owner-delegated acceptance (live E2E session 2026-09-16)",
+      "reason": "Live nine-link requestId trace + direct-connect fault chain green (W6 12/12).",
       "evidencePath": "evidence/p1r/m2/P1R-M2-010/manifest.json"
     },
     {

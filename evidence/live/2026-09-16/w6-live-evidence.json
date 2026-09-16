@@ -1,0 +1,86 @@
+{
+  "task": "W6-LIVE-TRACE",
+  "capturedAt": "2026-09-16T07:49:30.553Z",
+  "gateway": "http://127.0.0.1:18070",
+  "identifier": "w6-mu3svbds@local.invalid",
+  "putRequestId": "req-a3ccfd6e72cd4b0da1f36a126402b336",
+  "targetId": 1026,
+  "result": "PASS",
+  "passed": 12,
+  "total": 12,
+  "checks": [
+    {
+      "name": "setup-register",
+      "ok": true,
+      "observed": "HTTP 201",
+      "expected": "HTTP 201"
+    },
+    {
+      "name": "setup-login",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200"
+    },
+    {
+      "name": "traced-put",
+      "ok": true,
+      "observed": "HTTP 200 req=req-a3ccfd6e72cd4b0da1f36a126402b336 target=1026",
+      "expected": "HTTP 200 + req + target"
+    },
+    {
+      "name": "audit-register",
+      "ok": true,
+      "observed": "register req=req-ddaa0bde16824dde8a429d9ffc0a3774 -> 1 row(s): gateway.iam-register\tALLOW",
+      "expected": "audit row present"
+    },
+    {
+      "name": "audit-login",
+      "ok": true,
+      "observed": "login req=req-e2f0233871e24d8cba8ae8a5be71d776 -> 1 row(s): gateway.iam-login\tALLOW",
+      "expected": "audit row present"
+    },
+    {
+      "name": "audit-targets-put",
+      "ok": true,
+      "observed": "targets-put req=req-a3ccfd6e72cd4b0da1f36a126402b336 -> 1 row(s): gateway.learner-domain\tALLOW",
+      "expected": "audit row present"
+    },
+    {
+      "name": "iam-register",
+      "ok": true,
+      "observed": "account_registered\tALLOW",
+      "expected": "decision row present"
+    },
+    {
+      "name": "iam-login",
+      "ok": true,
+      "observed": "account_login\tALLOW",
+      "expected": "decision row present"
+    },
+    {
+      "name": "owner-db",
+      "ok": true,
+      "observed": "1026\tCET_4_6",
+      "expected": "owner row present"
+    },
+    {
+      "name": "owner-outbox",
+      "ok": true,
+      "observed": "learner.target.updated.v1\tNULL",
+      "expected": "target-updated outbox row"
+    },
+    {
+      "name": "direct-noauth-401",
+      "ok": true,
+      "observed": "HTTP 401",
+      "expected": "HTTP 401 service-side"
+    },
+    {
+      "name": "direct-forged-403",
+      "ok": true,
+      "observed": "HTTP 403",
+      "expected": "HTTP 403 untrusted-fact"
+    }
+  ],
+  "kafkaNote": "learner outbox rows are durable-but-unrelayed (M2-005 names it); Kafka relay live only on the content path."
+}

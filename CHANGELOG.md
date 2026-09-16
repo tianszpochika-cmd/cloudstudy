@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1R-ACCEPT-M2-010-20260916] **`M2-010` 翻牌：单 requestId 活穿九链（W6 12/12）。** 网关审计→IAM 决策→PEP→owner 行→outbox 行→持久审计 sink 逐链按 requestId 查库对证；直连故障链（401/403 伪造头——纠正：设计即 403）。残留：learner 侧 Kafka 中继（M2-005 结论）、staging（M8-013）。
+
 - [P1R-ACCEPT-M7-003-20260916] **`M7-003` 翻牌：世界五 tab 跨端浏览器跑 4/4。** 矩阵新增 `learner-world-tabs` 腿（世界/游戏大厅/自习室/Avatar/离线包零 pageerror；`/sync/offline-packages` 缺路由为 P1-LIVE-013 已立案项）。配套 avatar（W5）与 18 页扫描。残留：真机留 M8-007。验证：矩阵 11/13 洁 + 2 环境误差具名。
 
 - [P1R-ACCEPT-M4-007-20260916] **`M4-007` 翻牌：确定性/DST 验收执行 26 单测 + smoke main 全绿。** 关闭其 manifest 缺口（纯函数确定性夹具与 DST 边界证明）：`Sm2SchedulerTest` 14、`LearningPlanStateMachineTest` 12、`LearningDomainSmoke` main（含 DST spring-forward 23 小时证明）PASS，证据入库。残留：计划编排无 HTTP 触发口（产品工作）。验证：learning 142/0/0 全套件亦绿。
