@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-006",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "f28885e487ec965a0b7b73067ddae7ca420c68c0",
+  "sourceCommit": "05999dbcd4e785ffef3b9a0772baedd935049365",
   "artifactDigests": [
     {
       "path": ".github/workflows/ci.yml",
@@ -568,9 +568,19 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-16T11:59:47.020Z",
         "details": "admin-ops fileCount 3->4 for V4 outbox event_id widening."
+      },
+      {
+        "taskId": "P1R-M1-006",
+        "sourceCommit": "05999dbcd4e785ffef3b9a0772baedd935049365",
+        "auditedImplementationSource": "05999dbcd4e785ffef3b9a0772baedd935049365",
+        "integrationCheckpoint": "05999dbcd4e785ffef3b9a0772baedd935049365",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T13:03:47.911Z",
+        "details": "P1-LIVE-012 b8 fragment gains media_consent + content_rights; merged openapi regenerated."
       }
     ],
-    "previousCurrentSourceCommit": "280aeb8586cc5592c0da3d5d2ad43c97010ba8e0",
+    "previousCurrentSourceCommit": "f28885e487ec965a0b7b73067ddae7ca420c68c0",
     "previousCurrentSourceRevalidationTask": "P1R-M2-005",
     "currentSourceRevalidationTask": "P1R-M1-006",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
@@ -578,9 +588,9 @@
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
     "previousCurrentSourceRevalidationFinishedAt": "2026-09-12T22:07:09.012Z",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-16T11:59:47.020Z",
-    "currentSourceRevalidationAuditedImplementationSource": "f28885e487ec965a0b7b73067ddae7ca420c68c0",
-    "currentSourceRevalidationIntegrationCheckpoint": "f28885e487ec965a0b7b73067ddae7ca420c68c0"
+    "currentSourceRevalidationFinishedAt": "2026-09-16T13:03:47.911Z",
+    "currentSourceRevalidationAuditedImplementationSource": "05999dbcd4e785ffef3b9a0772baedd935049365",
+    "currentSourceRevalidationIntegrationCheckpoint": "05999dbcd4e785ffef3b9a0772baedd935049365"
   },
   "startedAt": "2026-08-30T02:24:20+08:00",
   "finishedAt": "2026-09-01T15:39:29+08:00",

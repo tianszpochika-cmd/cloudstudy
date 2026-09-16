@@ -3,7 +3,7 @@
   "draftOnly": false,
   "canonicalTaskStatus": "DEV_DONE",
   "decision": "DEV_DONE",
-  "sourceCommit": "f28885e487ec965a0b7b73067ddae7ca420c68c0",
+  "sourceCommit": "05999dbcd4e785ffef3b9a0772baedd935049365",
   "startedAt": "2026-09-15T22:50:00.000Z",
   "finishedAt": "2026-09-15T22:52:00.000Z",
   "environment": {
@@ -67,9 +67,9 @@
     "currentSourceRevalidationTask": "P1R-M8-012",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-16T11:59:53.473Z",
-    "currentSourceRevalidationAuditedImplementationSource": "f28885e487ec965a0b7b73067ddae7ca420c68c0",
-    "currentSourceRevalidationIntegrationCheckpoint": "f28885e487ec965a0b7b73067ddae7ca420c68c0",
+    "currentSourceRevalidationFinishedAt": "2026-09-16T13:03:55.382Z",
+    "currentSourceRevalidationAuditedImplementationSource": "05999dbcd4e785ffef3b9a0772baedd935049365",
+    "currentSourceRevalidationIntegrationCheckpoint": "05999dbcd4e785ffef3b9a0772baedd935049365",
     "currentSourceRevalidationHistory": [
       {
         "taskId": "P1R-M8-012",
@@ -120,8 +120,18 @@
         "runtimeStatus": "RUNTIME_VERIFIED",
         "finishedAt": "2026-09-16T11:59:53.473Z",
         "details": "admin-ops fileCount 3->4 for V4 outbox event_id widening."
+      },
+      {
+        "taskId": "P1R-M8-012",
+        "sourceCommit": "05999dbcd4e785ffef3b9a0772baedd935049365",
+        "auditedImplementationSource": "05999dbcd4e785ffef3b9a0772baedd935049365",
+        "integrationCheckpoint": "05999dbcd4e785ffef3b9a0772baedd935049365",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T13:03:55.382Z",
+        "details": "P1-LIVE-012 b8 fragment gains media_consent + content_rights; merged openapi regenerated."
       }
     ],
-    "previousCurrentSourceCommit": "280aeb8586cc5592c0da3d5d2ad43c97010ba8e0"
+    "previousCurrentSourceCommit": "f28885e487ec965a0b7b73067ddae7ca420c68c0"
   }
 }

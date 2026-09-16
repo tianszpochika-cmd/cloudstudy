@@ -2,7 +2,7 @@
   "taskId": "P1R-M2-003",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "f28885e487ec965a0b7b73067ddae7ca420c68c0",
+  "sourceCommit": "05999dbcd4e785ffef3b9a0772baedd935049365",
   "artifactDigests": [
     {
       "path": "evidence/p1r/m2/P1R-M2-003/runtime-evidence-2026-09-12.json",
@@ -467,13 +467,13 @@
         "details": "Rework closure verified: decoder-level JWT negatives across 11 services and service-template calling the production decoder factories; FailClosedPep/PdpActivationGuard byte-identical across services with deny paths for timeout/unavailable/null/version-mismatch/unknown-revocation/expired cache and allow only for CONFIRMED_NOT_REVOKED; full matrix 854/0/0/0 plus template 23 matching the evidence JSON; tenant strictness, explicit decoder wiring, oversized test and evidence metadata checked. Remaining P3: revocation allow-list hardening, timeout self-enforcement inside FailClosedPep, assessment residual unused timing properties and a historical 700-test wording in P1R-M2-003.md."
       }
     ],
-    "previousCurrentSourceCommit": "280aeb8586cc5592c0da3d5d2ad43c97010ba8e0",
+    "previousCurrentSourceCommit": "f28885e487ec965a0b7b73067ddae7ca420c68c0",
     "currentSourceRevalidationTask": "P1R-M2-003",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-16T11:59:48.109Z",
-    "currentSourceRevalidationAuditedImplementationSource": "f28885e487ec965a0b7b73067ddae7ca420c68c0",
-    "currentSourceRevalidationIntegrationCheckpoint": "f28885e487ec965a0b7b73067ddae7ca420c68c0",
+    "currentSourceRevalidationFinishedAt": "2026-09-16T13:03:49.508Z",
+    "currentSourceRevalidationAuditedImplementationSource": "05999dbcd4e785ffef3b9a0772baedd935049365",
+    "currentSourceRevalidationIntegrationCheckpoint": "05999dbcd4e785ffef3b9a0772baedd935049365",
     "currentSourceRevalidationHistory": [
       {
         "taskId": "P1R-M2-003",
@@ -654,6 +654,16 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-16T11:59:48.109Z",
         "details": "admin-ops fileCount 3->4 for V4 outbox event_id widening."
+      },
+      {
+        "taskId": "P1R-M2-003",
+        "sourceCommit": "05999dbcd4e785ffef3b9a0772baedd935049365",
+        "auditedImplementationSource": "05999dbcd4e785ffef3b9a0772baedd935049365",
+        "integrationCheckpoint": "05999dbcd4e785ffef3b9a0772baedd935049365",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T13:03:49.508Z",
+        "details": "P1-LIVE-012 b8 fragment gains media_consent + content_rights; merged openapi regenerated."
       }
     ]
   },

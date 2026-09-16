@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-016",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "f28885e487ec965a0b7b73067ddae7ca420c68c0",
+  "sourceCommit": "05999dbcd4e785ffef3b9a0772baedd935049365",
   "artifactDigests": [
     {
       "path": "config/b26-event-runtime.json",
@@ -117,7 +117,7 @@
     {
       "path": "packages/contracts/openapi/v1/openapi.json",
       "algorithm": "sha256",
-      "digest": "8f4ef5aa46f831152f9160e3b4c8172af636261d2256a4ac341a99ef671d0a3f"
+      "digest": "5f3df140bc024f4e37382f555c6400617e0f21e0e9d6640aef10d44455a2a8bc"
     },
     {
       "path": "requirements/feature-matrix.md",
@@ -767,15 +767,25 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-16T11:59:47.753Z",
         "details": "admin-ops fileCount 3->4 for V4 outbox event_id widening."
+      },
+      {
+        "taskId": "P1R-M1-016",
+        "sourceCommit": "05999dbcd4e785ffef3b9a0772baedd935049365",
+        "auditedImplementationSource": "05999dbcd4e785ffef3b9a0772baedd935049365",
+        "integrationCheckpoint": "05999dbcd4e785ffef3b9a0772baedd935049365",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T13:03:49.061Z",
+        "details": "P1-LIVE-012 b8 fragment gains media_consent + content_rights; merged openapi regenerated."
       }
     ],
     "currentSourceRevalidationTask": "P1R-M1-016",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-16T11:59:47.753Z",
-    "currentSourceRevalidationAuditedImplementationSource": "f28885e487ec965a0b7b73067ddae7ca420c68c0",
-    "currentSourceRevalidationIntegrationCheckpoint": "f28885e487ec965a0b7b73067ddae7ca420c68c0",
-    "previousCurrentSourceCommit": "280aeb8586cc5592c0da3d5d2ad43c97010ba8e0",
+    "currentSourceRevalidationFinishedAt": "2026-09-16T13:03:49.061Z",
+    "currentSourceRevalidationAuditedImplementationSource": "05999dbcd4e785ffef3b9a0772baedd935049365",
+    "currentSourceRevalidationIntegrationCheckpoint": "05999dbcd4e785ffef3b9a0772baedd935049365",
+    "previousCurrentSourceCommit": "f28885e487ec965a0b7b73067ddae7ca420c68c0",
     "previousCurrentSourceRevalidationTask": "P1R-M1-016",
     "previousCurrentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",

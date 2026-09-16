@@ -2,7 +2,7 @@
   "taskId": "P1R-M2-002",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "f28885e487ec965a0b7b73067ddae7ca420c68c0",
+  "sourceCommit": "05999dbcd4e785ffef3b9a0772baedd935049365",
   "artifactDigests": [
     {
       "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/ConsentService.java",
@@ -97,22 +97,22 @@
     {
       "path": "services/iam-service/src/main/java/com/englishflow/iam/config/IamServiceProperties.java",
       "algorithm": "sha256",
-      "digest": "e660972a261761bf66108cbed5dd6a80ad7c0c4af637a4dc8b69b1d1b6cb8972"
+      "digest": "c12e02f0bda15195fa97771d8c757bf86e64a5d4cd5808c84b15af5c96a5a48a"
     },
     {
       "path": "services/iam-service/src/main/java/com/englishflow/iam/web/IamProviderBoundaryController.java",
       "algorithm": "sha256",
-      "digest": "28fe3f02bdd32d0a3d71c53ff3520fab2739639a14700ef0ed4747560354c7c6"
+      "digest": "ac324f01d59f98a9aba9908a9fd07ad6b4ba463529e3e940a6be0f289af94f68"
     },
     {
       "path": "services/iam-service/src/main/resources/application.yaml",
       "algorithm": "sha256",
-      "digest": "d257f430757fa16edf46e57b9247e75c7bb9954ed9aa43f128e68ece6ea3f4c7"
+      "digest": "278b68b596c6dfbbcc7d1b101d190c57320b334f7a58fe8f74b02b0397b56c74"
     },
     {
       "path": "services/iam-service/src/main/resources/application-local.yaml",
       "algorithm": "sha256",
-      "digest": "10ca724d14b82006a6b5e2144643b74b06d0b8ed30c0bcd5243fa741a3cc4a16"
+      "digest": "794a221236e2e226b5619f5ec1f5e552294ff2412b7f32538a5d7ae4427d5bd8"
     },
     {
       "path": "services/iam-service/src/main/resources/db/migration/V14__create_iam_consent_document_control.sql",
@@ -177,7 +177,7 @@
     {
       "path": "packages/contracts/openapi/v1/openapi.json",
       "algorithm": "sha256",
-      "digest": "8f4ef5aa46f831152f9160e3b4c8172af636261d2256a4ac341a99ef671d0a3f"
+      "digest": "5f3df140bc024f4e37382f555c6400617e0f21e0e9d6640aef10d44455a2a8bc"
     }
   ],
   "environment": {
@@ -524,16 +524,26 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-16T11:59:48.038Z",
         "details": "admin-ops fileCount 3->4 for V4 outbox event_id widening."
+      },
+      {
+        "taskId": "P1R-M2-002",
+        "sourceCommit": "05999dbcd4e785ffef3b9a0772baedd935049365",
+        "auditedImplementationSource": "05999dbcd4e785ffef3b9a0772baedd935049365",
+        "integrationCheckpoint": "05999dbcd4e785ffef3b9a0772baedd935049365",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T13:03:49.395Z",
+        "details": "P1-LIVE-012 b8 fragment gains media_consent + content_rights; merged openapi regenerated."
       }
     ],
-    "previousCurrentSourceCommit": "280aeb8586cc5592c0da3d5d2ad43c97010ba8e0",
+    "previousCurrentSourceCommit": "f28885e487ec965a0b7b73067ddae7ca420c68c0",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
     "currentSourceRevalidationTask": "P1R-M2-002",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-16T11:59:48.038Z",
-    "currentSourceRevalidationAuditedImplementationSource": "f28885e487ec965a0b7b73067ddae7ca420c68c0",
-    "currentSourceRevalidationIntegrationCheckpoint": "f28885e487ec965a0b7b73067ddae7ca420c68c0",
+    "currentSourceRevalidationFinishedAt": "2026-09-16T13:03:49.395Z",
+    "currentSourceRevalidationAuditedImplementationSource": "05999dbcd4e785ffef3b9a0772baedd935049365",
+    "currentSourceRevalidationIntegrationCheckpoint": "05999dbcd4e785ffef3b9a0772baedd935049365",
     "originalSourceCommit": "ec20ef51a8b0ea99d4b72bf7598777df075f4889",
     "previousCurrentSourceRevalidationTask": "P1R-M2-002",
     "previousCurrentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
