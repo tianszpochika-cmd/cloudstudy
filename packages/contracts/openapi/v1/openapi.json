@@ -79661,7 +79661,9 @@
         "adult_gate",
         "consent_state",
         "phase",
-        "account_status"
+        "account_status",
+        "media_consent",
+        "content_rights"
       ],
       "eligibilityClaims": {
         "adult_gate": {
@@ -79679,6 +79681,18 @@
             "WITHDRAWN"
           ],
           "semantics": "Server-evaluated learning-consent fact at token issuance: GRANTED only when every LEARNING-required consent matches the published document/policy digest. Domain PEPs deny on any other value or absence."
+        },
+        "media_consent": {
+          "values": [
+            "granted"
+          ],
+          "semantics": "P1-LIVE-012 (decision A): ADULT_LEARNING consent covers learner media reads, so media_consent mirrors consent_state (present as granted only when GRANTED, absent otherwise). Media PEPs deny on absence; pre-consent tokens never carry it."
+        },
+        "content_rights": {
+          "values": [
+            "<license code or rights id>"
+          ],
+          "semantics": "P1-LIVE-012 (decision A): configured license/rights grants minted for consent-granted learners only (iam.media.learner-content-rights, empty by default). Media owner checks accept a matching rights id or license code; absent pre-consent."
         },
         "freshness": "Claims are frozen at issuance and bounded by maxLifetimeSeconds (900s). Consent withdrawal revokes sessions, so the next issuance re-evaluates; a withdrawn principal cannot ride an old token past its TTL.",
         "issuerChange": "P1-LIVE-001: iam-service previously minted access tokens without these claims while domain PEPs already required them, so every authenticated learner request failed closed at the learner/learning boundary. Issuance now always evaluates both facts; evaluation failure fails the issuance itself, never mints an over-privileged token."

@@ -55,6 +55,9 @@ public class IamServiceProperties {
     @Valid
     private PolicyProperties policy = new PolicyProperties();
 
+    @Valid
+    private MediaProperties media = new MediaProperties();
+
     /**
      * Service clients allowed to exchange credentials for a short-lived service token (ADR-0016).
      *
@@ -109,6 +112,24 @@ public class IamServiceProperties {
     public void setIdempotency(IdempotencyProperties idempotency) { this.idempotency = idempotency == null ? new IdempotencyProperties() : idempotency; }
     public PolicyProperties getPolicy() { return policy; }
     public void setPolicy(PolicyProperties policy) { this.policy = policy == null ? new PolicyProperties() : policy; }
+    public MediaProperties getMedia() { return media; }
+    public void setMedia(MediaProperties media) { this.media = media == null ? new MediaProperties() : media; }
+
+    /**
+     * P1-LIVE-012 (decision A): content rights (license codes / rights ids) minted
+     * into access tokens for consent-granted learners. Empty by default, which keeps
+     * media reads denied; deployments opt in explicitly (local profile grants the
+     * fixture license).
+     */
+    public static class MediaProperties {
+        private List<String> learnerContentRights = new java.util.ArrayList<>();
+
+        public List<String> getLearnerContentRights() { return learnerContentRights; }
+
+        public void setLearnerContentRights(List<String> learnerContentRights) {
+            this.learnerContentRights = learnerContentRights == null ? new java.util.ArrayList<>() : learnerContentRights;
+        }
+    }
 
     /** Selects where server-published consent documents come from. */
     public static class ConsentProperties {

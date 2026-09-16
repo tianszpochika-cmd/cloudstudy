@@ -1,7 +1,7 @@
-# P1-LIVE-012：media 读取的签发缺口（待人类负责人产品/法务决策）
+# P1-LIVE-012：media 读取的签发缺口（已决策：A，人类负责人 2026-09-16）
 
-- 状态：PROPOSED（未执行任何改动；铸造同意声明需要人类判断）
-- 日期：2026-09-16
+- 状态：ACCEPTED（决策 A：`ADULT_LEARNING` 同意覆盖学员 media 读取）
+- 日期：2026-09-16（立案）；同日人类负责人选 A 后结案
 - 发现：本地全栈活探（consented 学员 token 读种子 asset → 403 `MEDIA_CONSENT_REQUIRED`）
 
 ## 活实测结论
@@ -19,3 +19,10 @@
 - A：确认 `ADULT_LEARNING` 覆盖 media 读取 → 我补签发 `media_consent` + `media:read` + 种子 asset 授权，活验证关单。
 - B：media 同意是独立事项 → 需要新增同意类型 + 前端同意页 + 签发，排期到 M5-003 轮次。
 - C：Phase 1 学员不直读 media（经 content-service 中介）→ 我验证 B3 中介链，direct-media 读保持拒绝并记为设计。
+
+## 结案（决策 A，已执行并活验证）
+
+- IAM 签发：`media_consent=granted` 镜像 `consent_state`（仅 GRANTED 时带）；`content_rights` 带配置的学员授权（`iam.media.learner-content-rights`，默认空即拒；local 配 `LOCAL_FIXTURE`）；`media:read` 进学员 allow-list。
+- 门禁前保持拒：`media:` 冒号形补进剥离表，门禁前 token 无声明、无权限、无 rights，直读仍 403。
+- 验证：新链 `scripts/runtime/p1r-live-media.mjs` **6/6**（元数据 + manifest 双 200，门禁前 403）；IAM 101/0/0。DOWNLOAD/OFFLINE 通道仍需设备信任与下载权限，未放行（有意）。
+- 证据：`evidence/live/2026-09-16/w9-live-evidence.json`。

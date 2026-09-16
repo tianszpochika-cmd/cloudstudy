@@ -114,6 +114,10 @@ iam:
       # Deliberately disabled unless an explicit local/test operator bootstrap is requested.
       enabled: ${IAM_POLICY_BOOTSTRAP_ENABLED:false}
       existing-account-identifier: ${IAM_POLICY_BOOTSTRAP_EXISTING_ACCOUNT_IDENTIFIER:}
+  media:
+    # P1-LIVE-012 (decision A): content rights minted for consent-granted learners.
+    # Empty by default (fail closed); local/test deployments opt in explicitly.
+    learner-content-rights: ${IAM_MEDIA_LEARNER_CONTENT_RIGHTS:}
 
 
   # Service clients allowed to exchange credentials for a short-lived service token (ADR-0016). The key is here

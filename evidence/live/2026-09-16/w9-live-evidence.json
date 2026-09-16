@@ -1,0 +1,46 @@
+{
+  "task": "W9-LIVE-MEDIA",
+  "capturedAt": "2026-09-16T12:53:58.652Z",
+  "assetId": "0bb6cfe1-826c-4dcf-8237-c64170d6afde",
+  "result": "PASS",
+  "passed": 6,
+  "total": 6,
+  "checks": [
+    {
+      "name": "seed-asset",
+      "ok": true,
+      "observed": "asset=0bb6cfe1…",
+      "expected": "seed asset exists"
+    },
+    {
+      "name": "pregate-no-media",
+      "ok": true,
+      "observed": "no media facts pre-gate",
+      "expected": "absent pre-gate"
+    },
+    {
+      "name": "pregate-denied",
+      "ok": true,
+      "observed": "HTTP 403",
+      "expected": "HTTP 403 CONSENT"
+    },
+    {
+      "name": "granted-media-facts",
+      "ok": true,
+      "observed": "consent=granted rights=[\"LOCAL_FIXTURE\"]",
+      "expected": "facts present"
+    },
+    {
+      "name": "metadata",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200 asset"
+    },
+    {
+      "name": "manifest",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200 manifest"
+    }
+  ]
+}

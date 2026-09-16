@@ -72,12 +72,25 @@ class JwtTokenServiceTest {
     void evaluatedEligibilityIsCarriedAsExplicitClaims() {
         Fixture fixture = fixture();
         fixture.service().issue(fixture.account(), fixture.session(), null,
-                new JwtTokenService.EligibilityClaims("PASSED", "GRANTED", "phase-1", "ACTIVE"));
+                new JwtTokenService.EligibilityClaims("PASSED", "GRANTED", "phase-1", "ACTIVE", "granted",
+                        java.util.List.of("LOCAL_FIXTURE")));
         assertEquals("PASSED", fixture.encoder().claims.getClaim("adult_gate"));
         assertEquals("GRANTED", fixture.encoder().claims.getClaim("consent_state"));
         assertEquals("phase-1", fixture.encoder().claims.getClaim("phase"));
         assertEquals("ACTIVE", fixture.encoder().claims.getClaim("account_status"));
         assertEquals("device-claims-test", fixture.encoder().claims.getClaim("device_id"));
+        // P1-LIVE-012 (decision A): media consent mirrors consent; rights ride along.
+        assertEquals("granted", fixture.encoder().claims.getClaim("media_consent"));
+        assertEquals(java.util.List.of("LOCAL_FIXTURE"), fixture.encoder().claims.getClaim("content_rights"));
+    }
+
+    @Test
+    void unknownEligibilityOmitsMediaClaims() {
+        Fixture fixture = fixture();
+        fixture.service().issue(fixture.account(), fixture.session(), null);
+        // Fail closed: no media_consent and no content_rights before evaluation.
+        assertNull(fixture.encoder().claims.getClaim("media_consent"));
+        assertNull(fixture.encoder().claims.getClaim("content_rights"));
     }
 
     @Test

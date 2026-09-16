@@ -47,9 +47,10 @@ public final class JwtTokenService {
      * {@link #unknown()} is the fail-closed default: it emits explicit deny values, never an
      * over-privileged token.
      */
-    public record EligibilityClaims(String adultGate, String consentState, String phase, String accountStatus) {
+    public record EligibilityClaims(String adultGate, String consentState, String phase, String accountStatus,
+                                        String mediaConsent, java.util.List<String> contentRights) {
         public static EligibilityClaims unknown() {
-            return new EligibilityClaims("NOT_EVALUATED", "UNKNOWN", "phase-1", "ACTIVE");
+            return new EligibilityClaims("NOT_EVALUATED", "UNKNOWN", "phase-1", "ACTIVE", null, java.util.List.of());
         }
     }
 
@@ -121,6 +122,15 @@ public final class JwtTokenService {
             }
             if (eligibility.accountStatus() != null) {
                 builder.claim("account_status", eligibility.accountStatus());
+            }
+            // P1-LIVE-012 (decision A): ADULT_LEARNING consent covers learner media
+            // reads. media_consent mirrors consent_state; content_rights carries the
+            // configured license/rights grants. Both are absent pre-consent (fail closed).
+            if (eligibility.mediaConsent() != null) {
+                builder.claim("media_consent", eligibility.mediaConsent());
+            }
+            if (eligibility.contentRights() != null && !eligibility.contentRights().isEmpty()) {
+                builder.claim("content_rights", eligibility.contentRights());
             }
         }
         JwtClaimsSet claims = builder.build();

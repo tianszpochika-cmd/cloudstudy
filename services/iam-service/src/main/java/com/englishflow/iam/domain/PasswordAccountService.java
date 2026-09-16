@@ -46,7 +46,10 @@ public final class PasswordAccountService {
             "commerce:order:read", "commerce:order:write", "commerce:payment:write",
             "commerce:entitlement:read", "commerce:refund:write", "commerce:activation:redeem",
             "support.ticket.create",
-            "notification.read", "notification.write");
+            "notification.read", "notification.write",
+            // P1-LIVE-012 (decision A): consented learners may stream licensed media.
+            // Pre-gate tokens are stripped of it (see isLearningPermission media: cover).
+            "media:read");
 
     private final AccountStore accounts;
     private final PasswordEncoder passwordEncoder;

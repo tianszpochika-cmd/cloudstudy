@@ -625,6 +625,9 @@ class IamAuthenticationController {
                 || permission.startsWith("learner.") && !permission.startsWith("learner.profile.")
                 || permission.startsWith("gamification.") || permission.startsWith("social.")
                 || permission.startsWith("commerce:") || permission.startsWith("media.")
+                // P1-LIVE-012: media perms use the colon form (media:read); strip it too,
+                // or pre-gate tokens would carry read permission without consent.
+                || permission.startsWith("media:")
                 || permission.startsWith("support.") || permission.startsWith("notification."));
     }
 
@@ -980,8 +983,17 @@ class IamAuthenticationController {
         ConsentState consent = consentState(account.principalId(), gate);
         // phase comes from server configuration and account status is enforced ACTIVE
         // before any issuance, so both are sound issuance-time facts (P1-LIVE-006).
-        return new JwtTokenService.EligibilityClaims(gate.status(), consent.accepted() ? "GRANTED" : "UNKNOWN",
-                properties.getPhase(), account.status().name());
+        // P1-LIVE-012 (decision A): ADULT_LEARNING consent covers learner media reads,
+        // so media_consent mirrors the evaluated consent state and the configured learner
+        // content rights ride along. Pre-consent tokens carry neither (fail closed).
+        boolean granted = consent.accepted();
+        java.util.List<String> mediaRights = granted
+                ? properties.getMedia().getLearnerContentRights().stream()
+                        .filter(right -> right != null && !right.isBlank()).toList()
+                : java.util.List.of();
+        return new JwtTokenService.EligibilityClaims(gate.status(), granted ? "GRANTED" : "UNKNOWN",
+                properties.getPhase(), account.status().name(), granted ? "granted" : null,
+                mediaRights);
     }
 
     private PrincipalResponse principalResponse(AccountRecord account, Jwt jwt) {

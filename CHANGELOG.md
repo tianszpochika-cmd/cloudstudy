@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1-LIVE-012-CLOSED-20260916] **P1-LIVE-012 结案（人类负责人选 A）：学员 media 直读打通，新链 W9 6/6。** IAM 签发 `media_consent`（镜像同意态）+ `content_rights`（配置授权，local 给 fixture 证）+ `media:read` 进 allow-list；`media:` 冒号形补进门禁前剥离（否则门禁前就带权限）；契约 b8 补两声明。门禁前仍 403，DOWNLOAD/OFFLINE 仍需设备信任（有意未放）。验证：IAM 101/0/0、W9 6/6。
+
 - [P1R-W8-ROLLBACK-20260916] **W8 补到 25/25：回滚闭环（v1→v2→回 v1，仍 PUBLISHED）。** ADR-0026 残留关闭；M3-007 留置（紧急块无对应实现：UNPUBLISH 无 reason 字段、学员侧无下线说明面，均属产品工作）。
 
 - [P1R-ACCEPT-M3-009-20260916] **翻牌 M3-009：双审活证 + 审计导出/拒止活证（52 ACCEPTED / 56 DEV_DONE，工具待验）。** 跨租户否决属单租户结构性空命题。附带：审核员中台内容工作区浏览器 5/5（M3-001 留置收窄）。
