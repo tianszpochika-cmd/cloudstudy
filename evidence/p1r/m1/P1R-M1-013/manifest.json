@@ -2,12 +2,12 @@
   "taskId": "P1R-M1-013",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "1d982dc35a5150712b9b8c9dbc09994d3d1c14d2",
+  "sourceCommit": "a97beb9a9c5e241648aa81aa127de570cff93ad4",
   "artifactDigests": [
     {
       "path": "config/b26-event-runtime.json",
       "algorithm": "sha256",
-      "digest": "837779ccf7085a6bb9d4df1843516afc9be20467da68f79f4e698ca95d0fbcd7"
+      "digest": "44334ce8c0e396c92f33366dd0b096028cd4399469ef85e4864f606c5481105a"
     },
     {
       "path": "config/g1-contract-data.json",
@@ -42,22 +42,22 @@
     {
       "path": "packages/api-client/src/generated/index.ts",
       "algorithm": "sha256",
-      "digest": "e78a6bc0f751282845ac573df73bbe43be9de6f1714df0d9108c2f31e1e9b6e9"
+      "digest": "512e7d2fb09925d11a830fca6e482826dcb6ab10ecac79e18d6a1d74a646f1f9"
     },
     {
       "path": "packages/contracts/events/v1/catalog.json",
       "algorithm": "sha256",
-      "digest": "6368b60e701e373490ddf64571e88c8496858ac94af7798e0f1b25493f2f7093"
+      "digest": "ffa09bf3912f6487fd5a011b06bc2a0c81fedafa0441fe3e7998070c758c9400"
     },
     {
       "path": "packages/contracts/events/v1/fragments/b10-learning-loop.events.json",
       "algorithm": "sha256",
-      "digest": "60034e24787d8affd7286ddea8d4da4e449f7705ca587f0e854e81a4ef03e992"
+      "digest": "6fd0b460be3a674c0a66a20b6d1adf6b7e903da4a950b9eed93283787ad9ae0c"
     },
     {
       "path": "packages/contracts/events/v1/reliability-policy.json",
       "algorithm": "sha256",
-      "digest": "c3509892525a5512a75e5c81972653d5d3c00596b23c9a7dd84700fe7efa102d"
+      "digest": "31c2a259234c08e9f83b78056c467c44c2351b0af3b3c4abd4aa5a0f1f3339f7"
     },
     {
       "path": "packages/contracts/fragments/b1/b1-auth-user-onboarding.openapi.json",
@@ -87,12 +87,12 @@
     {
       "path": "packages/contracts/generated/events.ts",
       "algorithm": "sha256",
-      "digest": "920911be0600f8f019fb664f7b5cca9f9fbfda06975653339daadc7468f4209c"
+      "digest": "d683bdb882a75561cd5ded13ada32608d895ee87347ee458ad6fdd2a454d0dd7"
     },
     {
       "path": "packages/contracts/generated/openapi.ts",
       "algorithm": "sha256",
-      "digest": "f4db0c397b6bd9ce22820d9930d5d88a8a54b6e3cff11835e4bc02844f06ff5c"
+      "digest": "751d8d6923783c7d8a2261c0fead227cfa3737964eeaef172d5f77931258aff0"
     },
     {
       "path": "packages/contracts/openapi/v1/openapi.json",
@@ -112,12 +112,12 @@
     {
       "path": "scripts/audit/p1r-event-governance-check.mjs",
       "algorithm": "sha256",
-      "digest": "e60680731b6c6f2ac9e80184aa7753a4ec85e55e07d947f15184c7c5d130a6e8"
+      "digest": "14a84fce24c16044727c5891eaddb9c608f869026de72ec0e280d5638987ea8b"
     },
     {
       "path": "scripts/audit/p1r-event-reliability-check.mjs",
       "algorithm": "sha256",
-      "digest": "e273c0ecf30f0f61fe490a1b3d745d5a452fcfb72097d9e3136adc3900c0d6a3"
+      "digest": "f07424685ce20e084f74bdf0fe3b852cf4021dfd218ed9c4f3b9b10426029a5a"
     },
     {
       "path": "scripts/audit/p1r-gateway-contract-check.mjs",
@@ -142,7 +142,7 @@
     {
       "path": "scripts/contracts/event-catalog-policy.mjs",
       "algorithm": "sha256",
-      "digest": "721c02be49b116b0dd06ee699c4f43ba1f06cc82eee3faf532a81d8d65122d0a"
+      "digest": "a77d54d3120b0bd5f50726d45c839c2662e25241ec75438ec55ab1f9a513a2e0"
     },
     {
       "path": "scripts/contracts/merge-b1-fragments.mjs",
@@ -152,7 +152,7 @@
     {
       "path": "scripts/runtime/validate-b26-event-runtime.mjs",
       "algorithm": "sha256",
-      "digest": "6e754f37eed4ff66f5fef96ddc3330726cb841e3961d4ad8bc7abefa3dae2454"
+      "digest": "57f0a59f31fa9cc8d7f58c10d51313717a26305aad644eb7d8eac2fbe8ac8c79"
     },
     {
       "path": "tests/b26/b26-event-runtime.test.mjs",
@@ -187,7 +187,7 @@
     {
       "path": "tests/p1r/p1r-event-governance.test.mjs",
       "algorithm": "sha256",
-      "digest": "d1bc357c77a1910060d5cb76ed4839b086038eedfefb49608d4b94e58100fa23"
+      "digest": "1c5f934aea79afb1f8fc5b8fa0f3018df5eec98a006f1ece494c71eb2045bc37"
     },
     {
       "path": "tests/p1r/p1r-event-reliability.test.mjs",
@@ -834,18 +834,28 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-16T14:30:55.785Z",
         "details": "7B pin part 1: substitute endpoint/route/contract/session columns."
+      },
+      {
+        "taskId": "P1R-M1-013",
+        "sourceCommit": "a97beb9a9c5e241648aa81aa127de570cff93ad4",
+        "auditedImplementationSource": "a97beb9a9c5e241648aa81aa127de570cff93ad4",
+        "integrationCheckpoint": "a97beb9a9c5e241648aa81aa127de570cff93ad4",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T15:46:04.224Z",
+        "details": "5A shapes: report.ready.v1 canonical expansion regenerates merged/generated artifacts."
       }
     ],
-    "previousCurrentSourceCommit": "05999dbcd4e785ffef3b9a0772baedd935049365",
+    "previousCurrentSourceCommit": "1d982dc35a5150712b9b8c9dbc09994d3d1c14d2",
     "currentSourceRevalidationTask": "P1R-M1-013",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-16T14:30:55.785Z",
+    "currentSourceRevalidationFinishedAt": "2026-09-16T15:46:04.224Z",
     "previousCurrentSourceRevalidationTask": "P1R-M2-005",
     "previousCurrentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
     "previousCurrentSourceRevalidationFinishedAt": "2026-09-12T22:07:09.012Z",
-    "currentSourceRevalidationAuditedImplementationSource": "1d982dc35a5150712b9b8c9dbc09994d3d1c14d2",
-    "currentSourceRevalidationIntegrationCheckpoint": "1d982dc35a5150712b9b8c9dbc09994d3d1c14d2"
+    "currentSourceRevalidationAuditedImplementationSource": "a97beb9a9c5e241648aa81aa127de570cff93ad4",
+    "currentSourceRevalidationIntegrationCheckpoint": "a97beb9a9c5e241648aa81aa127de570cff93ad4"
   }
 }

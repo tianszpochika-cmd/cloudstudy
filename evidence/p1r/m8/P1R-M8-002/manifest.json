@@ -3,7 +3,7 @@
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
   "decision": "ACCEPTED",
-  "sourceCommit": "1d982dc35a5150712b9b8c9dbc09994d3d1c14d2",
+  "sourceCommit": "a97beb9a9c5e241648aa81aa127de570cff93ad4",
   "startedAt": "2026-09-15T22:00:00.000Z",
   "finishedAt": "2026-09-15T22:02:00.000Z",
   "environment": {
@@ -65,9 +65,9 @@
     "currentSourceRevalidationTask": "P1R-M8-002",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-16T14:31:06.561Z",
-    "currentSourceRevalidationAuditedImplementationSource": "1d982dc35a5150712b9b8c9dbc09994d3d1c14d2",
-    "currentSourceRevalidationIntegrationCheckpoint": "1d982dc35a5150712b9b8c9dbc09994d3d1c14d2",
+    "currentSourceRevalidationFinishedAt": "2026-09-16T15:46:10.978Z",
+    "currentSourceRevalidationAuditedImplementationSource": "a97beb9a9c5e241648aa81aa127de570cff93ad4",
+    "currentSourceRevalidationIntegrationCheckpoint": "a97beb9a9c5e241648aa81aa127de570cff93ad4",
     "currentSourceRevalidationHistory": [
       {
         "taskId": "P1R-M8-002",
@@ -138,8 +138,18 @@
         "runtimeStatus": "RUNTIME_VERIFIED",
         "finishedAt": "2026-09-16T14:31:06.561Z",
         "details": "7B pin part 1: substitute endpoint/route/contract/session columns."
+      },
+      {
+        "taskId": "P1R-M8-002",
+        "sourceCommit": "a97beb9a9c5e241648aa81aa127de570cff93ad4",
+        "auditedImplementationSource": "a97beb9a9c5e241648aa81aa127de570cff93ad4",
+        "integrationCheckpoint": "a97beb9a9c5e241648aa81aa127de570cff93ad4",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T15:46:10.978Z",
+        "details": "5A shapes: report.ready.v1 canonical expansion regenerates merged/generated artifacts."
       }
     ],
-    "previousCurrentSourceCommit": "05999dbcd4e785ffef3b9a0772baedd935049365"
+    "previousCurrentSourceCommit": "1d982dc35a5150712b9b8c9dbc09994d3d1c14d2"
   }
 }
