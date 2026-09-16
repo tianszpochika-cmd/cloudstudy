@@ -1,0 +1,88 @@
+{
+  "task": "W8-LIVE-PUBLISH",
+  "capturedAt": "2026-09-16T12:09:43.315Z",
+  "contentCode": "wct-live-mu425wir",
+  "result": "PASS",
+  "passed": 13,
+  "total": 13,
+  "checks": [
+    {
+      "name": "staff-ready",
+      "ok": true,
+      "observed": "4 staff tokens",
+      "expected": "tokens"
+    },
+    {
+      "name": "create-draft",
+      "ok": true,
+      "observed": "HTTP 202",
+      "expected": "HTTP 202"
+    },
+    {
+      "name": "submit-review",
+      "ok": true,
+      "observed": "HTTP 202",
+      "expected": "HTTP 202"
+    },
+    {
+      "name": "editor-cannot-review",
+      "ok": true,
+      "observed": "HTTP 403",
+      "expected": "HTTP 403 (no review perm)"
+    },
+    {
+      "name": "review-first",
+      "ok": true,
+      "observed": "HTTP 202",
+      "expected": "HTTP 202"
+    },
+    {
+      "name": "review-final",
+      "ok": true,
+      "observed": "HTTP 202",
+      "expected": "HTTP 202"
+    },
+    {
+      "name": "publish",
+      "ok": true,
+      "observed": "HTTP 202",
+      "expected": "HTTP 202"
+    },
+    {
+      "name": "projection-shows",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "catalog lists it"
+    },
+    {
+      "name": "super-draft",
+      "ok": true,
+      "observed": "HTTP 202",
+      "expected": "HTTP 202"
+    },
+    {
+      "name": "super-submit",
+      "ok": true,
+      "observed": "HTTP 202",
+      "expected": "HTTP 202"
+    },
+    {
+      "name": "four-eyes",
+      "ok": true,
+      "observed": "HTTP 409",
+      "expected": "HTTP 409 FOUR_EYES"
+    },
+    {
+      "name": "unpublish",
+      "ok": true,
+      "observed": "HTTP 202",
+      "expected": "HTTP 202"
+    },
+    {
+      "name": "projection-gone",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "catalog hides it"
+    }
+  ]
+}

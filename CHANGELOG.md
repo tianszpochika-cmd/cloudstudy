@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1R-ACCEPT-M3-010-20260916] **翻牌 M3-010：内容发布全链 13/13（51 ACCEPTED / 57 DEV_DONE，工具待验）。** 三窄角色起草→双审→发布→学员投影→下线；editor 审稿 403、全权限同人自审 409 四眼。残留：ROLLBACK 未跑（回归项）。
+
 - [P1-LIVE-016-STAFF-20260916] **staff 面解锁 + 工单管理链全通；翻牌 M6-005（50 ACCEPTED / 58 DEV_DONE，工具待验）。** 本地配窄权限 staff（DB 授权，夹具并具名）：建单→全量列举（逐键同模）→START→RESOLVE 确认挑战→学员见 RESOLVED，新链 W7 **9/9**。附带三修：种子 MEDIUM 枚举漂移（admin 列举 500）、outbox event_id 装不下前缀（V4 扩 64）、写侧缺 occurred_at（6 家写侧至此无掉队）。验证：admin-ops 64/0/0。
 
 - [P1-LIVE-015-REJOIN-20260916] **自习室离开后重连 500 改重激活：成员唯一键按人而非按次。** `join()` 对 LEFT 行直接 INSERT 撞 `uk_soc_member_subject`；现先 UPDATE 重激活（ACTIVE/ONLINE）再无行才 INSERT。W3 加断线重连三腿（leave→rejoin→ws-ticket），**24/24**。M7-004 留置（另一半：在内存 SocialService 退役属代码删除工作）。

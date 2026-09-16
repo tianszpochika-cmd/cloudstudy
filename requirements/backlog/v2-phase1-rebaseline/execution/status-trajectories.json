@@ -686,11 +686,12 @@
         "PLANNED",
         "READY",
         "IN_PROGRESS",
-        "DEV_DONE"
+        "DEV_DONE",
+        "ACCEPTED"
       ],
-      "recordedAt": "2026-09-15T17:22:00Z",
-      "actor": "agent:p1r_implementation:deepseek-harness",
-      "reason": "Owner route A. Dependencies M3-001..009 all DEV_DONE. Six aggregation checks pass by reference; live full-chain run deferred to M8 W0 as knownGap. M3 closes 10/10.",
+      "recordedAt": "2026-09-16T12:20:00Z",
+      "actor": "human-owner-delegated acceptance (live E2E session 2026-09-16)",
+      "reason": "Full publish run live incl. four-eyes (W8 13/13).",
       "evidencePath": "evidence/p1r/m3/P1R-M3-010/manifest.json"
     },
     {
