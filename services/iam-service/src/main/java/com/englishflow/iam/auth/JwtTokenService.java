@@ -36,7 +36,21 @@ public final class JwtTokenService {
     }
 
     public IssuedAccessToken issue(AccountRecord account, SessionRecord session) {
-        return issue(account, session, null);
+        return issue(account, session, null, EligibilityClaims.unknown());
+    }
+
+    /**
+     * Server-evaluated learning-eligibility facts carried in the access token.
+     *
+     * <p>P1-LIVE-001: domain PEPs (learner/learning) grant only on explicit {@code PASSED} /
+     * {@code GRANTED} values and deny on absence, so issuance must always evaluate both facts.
+     * {@link #unknown()} is the fail-closed default: it emits explicit deny values, never an
+     * over-privileged token.
+     */
+    public record EligibilityClaims(String adultGate, String consentState) {
+        public static EligibilityClaims unknown() {
+            return new EligibilityClaims("NOT_EVALUATED", "UNKNOWN");
+        }
     }
 
     /**
@@ -45,6 +59,15 @@ public final class JwtTokenService {
      * update timestamp is the stable issuance instant, so a retry does not mint a second JWT.
      */
     public IssuedAccessToken issue(AccountRecord account, SessionRecord session, String replaySeed) {
+        return issue(account, session, replaySeed, EligibilityClaims.unknown());
+    }
+
+    /**
+     * Issues an access token with server-evaluated eligibility claims. A {@code null} eligibility
+     * omits the claims (callers inside the issuance boundary always pass evaluated facts instead).
+     */
+    public IssuedAccessToken issue(AccountRecord account, SessionRecord session, String replaySeed,
+                                    EligibilityClaims eligibility) {
         Objects.requireNonNull(account, "account");
         Objects.requireNonNull(session, "session");
         if (account.status() != AccountStatus.ACTIVE) {
@@ -67,7 +90,7 @@ public final class JwtTokenService {
         List<String> roles = account.roles().stream().sorted().toList();
         List<String> permissions = account.permissions().stream().sorted().toList();
         String scope = String.join(" ", permissions);
-        JwtClaimsSet claims = JwtClaimsSet.builder()
+        JwtClaimsSet.Builder builder = JwtClaimsSet.builder()
                 .issuer(properties.getIssuer())
                 .subject(account.principalId().toString())
                 .audience(List.of(properties.getAudience()))
@@ -82,8 +105,16 @@ public final class JwtTokenService {
                 .claim("tenant_id", session.scope().tenantId())
                 .claim("owner_id", session.scope().owner().toString())
                 .claim("session_id", session.sessionId().toString())
-                .claim("amr", List.of("pwd"))
-                .build();
+                .claim("amr", List.of("pwd"));
+        if (eligibility != null) {
+            if (eligibility.adultGate() != null) {
+                builder.claim("adult_gate", eligibility.adultGate());
+            }
+            if (eligibility.consentState() != null) {
+                builder.claim("consent_state", eligibility.consentState());
+            }
+        }
+        JwtClaimsSet claims = builder.build();
         JwsHeader header = JwsHeader.with(SignatureAlgorithm.RS256)
                 .keyId(keys.signingKey().getKeyID()).type("JWT").build();
         return new IssuedAccessToken(encoder.encode(JwtEncoderParameters.from(header, claims)).getTokenValue(),

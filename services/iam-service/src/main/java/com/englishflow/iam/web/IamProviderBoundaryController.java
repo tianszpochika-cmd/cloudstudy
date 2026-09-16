@@ -183,7 +183,7 @@ class IamAuthenticationController {
                     requireActiveCredentialAccount(account);
                     AccountRecord effectiveAccount = tokenAccount(account);
                     JwtTokenService.IssuedAccessToken access = tokens.issue(effectiveAccount, session,
-                            replaySeed(scope, key, hash));
+                            replaySeed(scope, key, hash), eligibilityClaims(effectiveAccount));
                     ApiResponseMeta meta = responseMeta();
                     ResponseEntity.BodyBuilder builder = ResponseEntity.ok().cacheControl(CacheControl.noStore());
                     addCorrelationHeaders(builder, meta);
@@ -786,7 +786,8 @@ class IamAuthenticationController {
                                                                                  AuthTransport transport,
                                                                                  HttpStatus status,
                                                                                  String replaySeed) {
-        JwtTokenService.IssuedAccessToken access = tokens.issue(account, session, replaySeed);
+        JwtTokenService.IssuedAccessToken access = tokens.issue(account, session, replaySeed,
+                eligibilityClaims(account));
         ApiResponseMeta meta = responseMeta();
         ResponseEntity.BodyBuilder builder = ResponseEntity.status(status).cacheControl(CacheControl.noStore());
         addCorrelationHeaders(builder, meta);
@@ -806,7 +807,8 @@ class IamAuthenticationController {
                 safeLabel(device.deviceName()), ClientAuthorityClaims.none()));
         SessionService.SessionCreation creation = sessions.open(context, deviceId, replaySeed);
         AccountRecord effectiveAccount = tokenAccount(account);
-        JwtTokenService.IssuedAccessToken access = tokens.issue(effectiveAccount, creation.session(), replaySeed);
+        JwtTokenService.IssuedAccessToken access = tokens.issue(effectiveAccount, creation.session(), replaySeed,
+                eligibilityClaims(effectiveAccount));
         ApiResponseMeta meta = responseMeta();
         ResponseEntity.BodyBuilder builder = ResponseEntity.status(status).cacheControl(CacheControl.noStore());
         addCorrelationHeaders(builder, meta);
@@ -961,6 +963,17 @@ class IamAuthenticationController {
             throw badRequest("iam.device.id_invalid");
         }
     }
+    /**
+     * P1-LIVE-001: evaluates the learning-eligibility facts carried in every access token.
+     * Domain PEPs grant only on explicit {@code PASSED}/{@code GRANTED}; evaluation failure
+     * propagates and fails the issuance itself, never mints an over-privileged token.
+     */
+    private JwtTokenService.EligibilityClaims eligibilityClaims(AccountRecord account) {
+        AdultGateResponse gate = adultGateResponse(adultGateFacts.find(account.principalId(), account.createdAt()));
+        ConsentState consent = consentState(account.principalId(), gate);
+        return new JwtTokenService.EligibilityClaims(gate.status(), consent.accepted() ? "GRANTED" : "UNKNOWN");
+    }
+
     private PrincipalResponse principalResponse(AccountRecord account, Jwt jwt) {
         AdultGateResponse gate = adultGateResponse(adultGateFacts.find(account.principalId(), account.createdAt()));
         ConsentState consent = consentState(account.principalId(), gate);
