@@ -1,0 +1,39 @@
+{
+  "task": "CONTENT-WORKSPACE-LIVE",
+  "capturedAt": "2026-09-16T12:16:50.453Z",
+  "result": "PASS",
+  "passed": 5,
+  "total": 5,
+  "checks": [
+    {
+      "name": "staff-granted",
+      "ok": true,
+      "observed": "reviewer-1 + admin.content.read",
+      "expected": "grant"
+    },
+    {
+      "name": "content-renders",
+      "ok": true,
+      "observed": "http://127.0.0.1:18181/content",
+      "expected": "workspace renders"
+    },
+    {
+      "name": "content-list",
+      "ok": true,
+      "observed": "projection list visible",
+      "expected": "list visible"
+    },
+    {
+      "name": "content-commands",
+      "ok": true,
+      "observed": "command buttons visible",
+      "expected": "commands visible"
+    },
+    {
+      "name": "content-no-errors",
+      "ok": true,
+      "observed": "0 errors",
+      "expected": "zero"
+    }
+  ]
+}

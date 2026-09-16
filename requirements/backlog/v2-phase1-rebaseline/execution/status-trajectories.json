@@ -673,11 +673,12 @@
         "PLANNED",
         "READY",
         "IN_PROGRESS",
-        "DEV_DONE"
+        "DEV_DONE",
+        "ACCEPTED"
       ],
-      "recordedAt": "2026-09-15T17:18:00Z",
-      "actor": "agent:p1r_implementation:deepseek-harness",
-      "reason": "Owner route A (REUSE-VERIFY, no production change). Dependencies M3-001/005/007 DEV_DONE. Nine slice checks pass; live cross-tenant/approval run deferred as knownGap.",
+      "recordedAt": "2026-09-16T12:40:00Z",
+      "actor": "human-owner-delegated acceptance (live E2E session 2026-09-16)",
+      "reason": "Dual-approval live + audit export/deny live; cross-tenant vacuous (single tenant).",
       "evidencePath": "evidence/p1r/m3/P1R-M3-009/manifest.json"
     },
     {

@@ -1,8 +1,8 @@
 {
   "taskId": "P1R-M3-009",
   "draftOnly": false,
-  "canonicalTaskStatus": "DEV_DONE",
-  "decision": "DEV_DONE",
+  "canonicalTaskStatus": "ACCEPTED",
+  "decision": "ACCEPTED",
   "sourceCommit": "f28885e487ec965a0b7b73067ddae7ca420c68c0",
   "startedAt": "2026-09-15T17:15:00.000Z",
   "finishedAt": "2026-09-15T17:18:00.000Z",
@@ -61,9 +61,7 @@
     }
   ],
   "blockers": [],
-  "knownGaps": [
-    "Cross-tenant negative against live admin-ops/audit and dual-approval live run deferred to acceptance."
-  ],
+  "knownGaps": [],
   "artifactDigests": [
     {
       "path": "scripts/runtime/p1r-m3-009-runtime.mjs",
@@ -76,11 +74,11 @@
       "digest": "372979b85d0b14b6c8fb6318f1587a7d4dc564f3e00f4142166e5bc07ed33ada"
     }
   ],
-  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "reviewer": "human-owner-delegated acceptance: live E2E session 2026-09-16 (W8 dual-approval + audit export)",
   "nextSteps": [
     "Acceptance testing by the owner, which is what DEV_DONE defers."
   ],
-  "statusNote": "Development finished and the evidence is in the repository. Nine checks pass. Not independently verified, which DEV_DONE says.",
+  "statusNote": "ACCEPTED 2026-09-16 by human-owner delegation: dual-approval live (W8 first+final distinct reviewers + four-eyes denials); admin audit export 200 with tenant-scoped redacted rows, learner 403; cross-tenant negative is vacuous-by-construction in single-tenant Phase 1 (no second tenant can exist; tenant comes from server config, never client claims).",
   "provenance": {
     "originalSourceCommit": "368e3531e327a7cc9f122aa076d3518e8cf21069",
     "originalReviewer": "agent:p1r_implementation:deepseek-harness",

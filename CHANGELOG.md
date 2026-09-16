@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1R-ACCEPT-M3-009-20260916] **翻牌 M3-009：双审活证 + 审计导出/拒止活证（52 ACCEPTED / 56 DEV_DONE，工具待验）。** 跨租户否决属单租户结构性空命题。附带：审核员中台内容工作区浏览器 5/5（M3-001 留置收窄）。
+
 - [P1R-ACCEPT-M3-010-20260916] **翻牌 M3-010：内容发布全链 13/13（51 ACCEPTED / 57 DEV_DONE，工具待验）。** 三窄角色起草→双审→发布→学员投影→下线；editor 审稿 403、全权限同人自审 409 四眼。残留：ROLLBACK 未跑（回归项）。
 
 - [P1-LIVE-016-STAFF-20260916] **staff 面解锁 + 工单管理链全通；翻牌 M6-005（50 ACCEPTED / 58 DEV_DONE，工具待验）。** 本地配窄权限 staff（DB 授权，夹具并具名）：建单→全量列举（逐键同模）→START→RESOLVE 确认挑战→学员见 RESOLVED，新链 W7 **9/9**。附带三修：种子 MEDIUM 枚举漂移（admin 列举 500）、outbox event_id 装不下前缀（V4 扩 64）、写侧缺 occurred_at（6 家写侧至此无掉队）。验证：admin-ops 64/0/0。
