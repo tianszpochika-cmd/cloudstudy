@@ -76,6 +76,13 @@ public final class GatewayRouteExecutionPolicy {
             "services/learning-service/src/main/java/com/englishflow/learning/web/B25LearningJdbcController.java", "/internal/v1/learning");
     private static final ControllerEvidence LEARNING_B3 = evidence("learning-service",
             "services/learning-service/src/main/java/com/englishflow/learning/web/B3LearningJdbcController.java", "/internal/v1/learning/experiences");
+    /**
+     * P1-LIVE-002: M4-008 added the v2 first-day projection adapter serving its canonical
+     * paths directly, but no gateway execution admitted them, so both failed closed with
+     * "route not available" for every user.
+     */
+    private static final ControllerEvidence LEARNING_V2 = evidence("learning-service",
+            "services/learning-service/src/main/java/com/englishflow/learning/web/V2LearningController.java", "/api/v1/learning");
     private static final ControllerEvidence ASSESSMENT_B10 = evidence("assessment-service",
             "services/assessment-service/src/main/java/com/englishflow/assessment/web/B10AssessmentJdbcController.java", "/internal/v1/assessment");
     private static final ControllerEvidence ASSESSMENT_B25 = evidence("assessment-service",
@@ -493,7 +500,8 @@ public final class GatewayRouteExecutionPolicy {
                 rewrite("mistakes-queue", "/api/v1/learning/mistakes/queue", "/internal/v1/learning/mistakes/queue", LEARNING_B25, HttpMethod.GET),
                 rewrite("review-queue", "/api/v1/learning/review-queue", "/internal/v1/learning/review-queue", LEARNING_B25, HttpMethod.GET),
                 rewrite("review-queue-complete", "/api/v1/learning/review-queue/{queueItemId}/complete", "/internal/v1/learning/review-queue/{queueItemId}/complete", LEARNING_B25, HttpMethod.POST),
-                rewrite("media-progress", "/api/v1/learning/media-progress", "/internal/v1/learning/experiences/media-progress", LEARNING_B3, HttpMethod.PUT));
+                rewrite("media-progress", "/api/v1/learning/media-progress", "/internal/v1/learning/experiences/media-progress", LEARNING_B3, HttpMethod.PUT),
+                preserve("today-v2", "/api/v1/learning/today", LEARNING_V2, HttpMethod.GET));
         add(definitions, "mastery-domain",
                 rewrite("overview", "/api/v1/mastery/overview", "/internal/v1/learning/experiences/mastery/overview", LEARNING_B3, HttpMethod.GET),
                 rewrite("mistakes", "/api/v1/mastery/mistakes", "/internal/v1/learning/experiences/mastery/mistakes", LEARNING_B3, HttpMethod.GET),

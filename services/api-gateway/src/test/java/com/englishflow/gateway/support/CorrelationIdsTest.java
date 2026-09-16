@@ -17,6 +17,16 @@ class CorrelationIdsTest {
     }
 
     @Test
+    void mintedRequestIdSatisfiesThePlatformOwnerServicePattern() {
+        // P1-LIVE-004: owner services fail closed unless the id starts with a letter.
+        for (int i = 0; i < 25; i++) {
+            String generated = CorrelationIds.requestId(null, 128);
+            assertTrue(generated.matches("[A-Za-z][A-Za-z0-9._-]{7,127}"),
+                    "minted request id must satisfy the platform pattern: " + generated);
+        }
+    }
+
+    @Test
     void extractsTraceIdFromValidW3cTraceparent() {
         assertEquals(
                 "4bf92f3577b34da6a3ce929d0e0e4736",

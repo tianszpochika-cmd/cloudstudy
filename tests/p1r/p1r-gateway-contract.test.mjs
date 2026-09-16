@@ -14,6 +14,7 @@ import {
   buildM2001OpenApiExpectedProjection,
   compareContracts,
   compareM2001OpenApiDescriptors,
+  M2001_APPROVED_ADDITIVE_NODES,
   M2001_OPENAPI_EXPECTED_CHANGE_DESCRIPTORS,
   M2001_SOURCE_CONTRACT_BASELINE_REF,
 } from '../../scripts/contracts/compatibility-diff.mjs';
@@ -87,9 +88,9 @@ test('Gateway contract audit passes the dedicated fragment and exact canonical p
     coveredPublicOperationCount: 365,
     publicCoverageErrorCount: 0,
     executionPlanCount: 56,
-    executionProjectionCount: 152,
-    availableExecutionOperationCount: 169,
-    unavailableExecutionOperationCount: 196,
+    executionProjectionCount: 153,
+    availableExecutionOperationCount: 170,
+    unavailableExecutionOperationCount: 195,
     executionTargetPlanDigest: FROZEN_EXECUTION_TARGET_PLAN_SHA256,
     internalOperationCount: 62,
     externalDeniedInternalOperationCount: 62,
@@ -109,7 +110,7 @@ test('Gateway execution targets cannot drift to a different upstream owner or co
   }, /execution target plan digest drifted/);
 });
 
-test('M2-001 health identity is Gateway-owned and the compatibility projection permits exactly two scalar corrections plus the root', () => {
+test('M2-001 health identity is Gateway-owned and the compatibility projection permits exactly two scalar corrections plus the root plus reviewed additive nodes', () => {
   assert.equal(m2001Allowance.scope, 'OPENAPI_GATEWAY_ROOT_AND_HEALTH_IDENTITY_ONLY');
   assert.equal(canonical.paths['/api/v1/health'].get.operationId, 'getHealth');
   assert.equal(canonical.paths['/api/v1/health'].get.summary, '读取 API Gateway 健康状态');
@@ -119,6 +120,16 @@ test('M2-001 health identity is Gateway-owned and the compatibility projection p
   assert.deepEqual(
     compareM2001OpenApiDescriptors(m2001SourceCanonical, canonical).map((change) => [change.location, change.reason]),
     [...M2001_OPENAPI_EXPECTED_CHANGE_DESCRIPTORS],
+  );
+});
+
+test('M2-001 approved additive nodes are exactly the reviewed P1-LIVE entries', () => {
+  assert.deepEqual(
+    M2001_APPROVED_ADDITIVE_NODES.map((entry) => [entry.segments.join('/'), entry.append ?? null, entry.reason]),
+    [
+      ['x-b8-authentication/accessToken/eligibilityClaims', null, 'P1-LIVE-001 access-token eligibility claims documented'],
+      ['x-b8-authentication/accessToken/authorizationClaims', ['adult_gate', 'consent_state'], 'P1-LIVE-001 eligibility claims listed in the claim inventory'],
+    ],
   );
 });
 

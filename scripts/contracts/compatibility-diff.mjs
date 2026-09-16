@@ -4316,9 +4316,9 @@ function compareM1018B26Promotion(previous, current, allowance) {
 export const M2001_GATEWAY_EXECUTION_TARGET_PROMOTION_ID = 'P1R-M2-001';
 export const M2001_SOURCE_CONTRACT_BASELINE_REF = '66246d5b4a68a988a9af4ece68a446640b123812';
 export const M2001_OPENAPI_SOURCE_SEMANTIC_SHA256 = 'a154f2004f06e5da096abea630855152fac9e87224ad48565a38e6010ab9416b';
-export const M2001_GATEWAY_ROOT_SEMANTIC_SHA256 = '3c03d2bddba80d9e8c91e97a851062f12b3c7023848d53c88f8e00931e886302';
+export const M2001_GATEWAY_ROOT_SEMANTIC_SHA256 = '54bfc77c73bd32ae8cc3a2bb110a5971242ca39015a1bf836f30e2a28bbe1faa';
 export const M2001_EXECUTION_TARGET_POLICY_SEMANTIC_SHA256 = 'd5182f41d59ef89a4e4743db930eda8ab0e42eb1113d6d57b08b9e4af507c2f9';
-export const M2001_OPENAPI_EXPECTED_SEMANTIC_SHA256 = 'c394848f2b28a19272077d63512d4059d069860b01cb811c59f2da4437101635';
+export const M2001_OPENAPI_EXPECTED_SEMANTIC_SHA256 = '41efeb5a85a89086cd7a1e9e31f66a76a5dc62ae8216b4fc9b1c2b03c6ac1100';
 export const M2001_OPENAPI_ROOT_EXTENSION = 'x-p1r-gateway-boundary';
 const M2001_HEALTH_PATH = '/api/v1/health';
 const M2001_HEALTH_OPERATION_ID = 'getHealth';
@@ -4353,10 +4353,60 @@ export function isValidM2001PromotionAllowance(allowance) {
 }
 
 /**
+ * Post-M2-001 approved additive contract nodes. Each entry is a purely additive,
+ * reviewed evolution of the canonical OpenAPI that the M2-001 whole-document
+ * projection cannot otherwise admit: the node must be ABSENT from the M1-018
+ * source baseline and is copied verbatim from the approved current document.
+ * Any difference outside the M2-001 root extension, the two health scalars and
+ * these listed nodes still fails closed. Entries are append-only with a reason;
+ * removing or editing an entry changes the expected projection digest below.
+ */
+export const M2001_APPROVED_ADDITIVE_NODES = Object.freeze([
+  { reason: 'P1-LIVE-001 access-token eligibility claims documented', segments: ['x-b8-authentication', 'accessToken', 'eligibilityClaims'] },
+  { reason: 'P1-LIVE-001 eligibility claims listed in the claim inventory', segments: ['x-b8-authentication', 'accessToken', 'authorizationClaims'], append: ['adult_gate', 'consent_state'] },
+]);
+
+function resolveAdditiveParent(document, segments) {
+  if (!isRecord(document) || !Array.isArray(segments) || segments.length === 0) return undefined;
+  let node = document;
+  for (const segment of segments.slice(0, -1)) {
+    node = node?.[segment];
+    if (!isRecord(node)) return undefined;
+  }
+  return { parent: node, key: segments[segments.length - 1] };
+}
+
+function applyApprovedAdditiveNodes(expected, approved) {
+  for (const entry of M2001_APPROVED_ADDITIVE_NODES) {
+    const target = resolveAdditiveParent(expected, entry.segments);
+    const source = resolveAdditiveParent(approved, entry.segments);
+    if (target === undefined || source === undefined) return false;
+    if (entry.append !== undefined) {
+      // Array-append mode: every listed value must be absent from the baseline
+      // array, and the approved array must equal baseline plus exactly those
+      // values in order. Nothing existing may be reordered, removed or edited.
+      if (!Array.isArray(target.parent[target.key]) || !Array.isArray(source.parent[source.key])) return false;
+      const base = target.parent[target.key];
+      const current = source.parent[source.key];
+      if (entry.append.some((value) => base.includes(value))) return false;
+      const rebuilt = [...base, ...entry.append];
+      if (rebuilt.length !== current.length || rebuilt.some((value, index) => current[index] !== value)) return false;
+      target.parent[target.key] = structuredClone(rebuilt);
+      continue;
+    }
+    if (target.key in target.parent) return false;
+    if (!(source.key in source.parent)) return false;
+    target.parent[target.key] = structuredClone(source.parent[source.key]);
+  }
+  return true;
+}
+
+/**
  * Rebuild the one permitted M2-001 projection from the accepted M1-018
  * OpenAPI checkpoint. M2-001 owns the complete Gateway root and exactly two
  * health identity scalars; every other path, operation field, schema field,
- * tag and root extension remains equivalent under stable comparison.
+ * tag and root extension remains equivalent under stable comparison, except
+ * the reviewed purely-additive nodes in {@link M2001_APPROVED_ADDITIVE_NODES}.
  */
 export function buildM2001OpenApiExpectedProjection(previous, approved, allowance) {
   const approvedHealth = approved?.paths?.[M2001_HEALTH_PATH]?.get;
@@ -4377,6 +4427,7 @@ export function buildM2001OpenApiExpectedProjection(previous, approved, allowanc
   expected[M2001_OPENAPI_ROOT_EXTENSION] = structuredClone(approved[M2001_OPENAPI_ROOT_EXTENSION]);
   expected.paths[M2001_HEALTH_PATH].get.summary = M2001_HEALTH_SUMMARY;
   expected.components.schemas.HealthData.properties.service.const = M2001_HEALTH_SERVICE_CONST;
+  if (!applyApprovedAdditiveNodes(expected, approved)) return undefined;
   return expected;
 }
 

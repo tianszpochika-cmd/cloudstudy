@@ -348,14 +348,18 @@ public final class JdbcLearnerProfileStore implements LearnerProfileStore {
     }
 
     private void insertOutbox(LearnerOutboxEvent event) {
+        // P1-LIVE-002: the E2 outbox-shape migration added NOT NULL event_name /
+        // payload_json without defaults; the old 12-column write rolled back every
+        // learner mutation. Both JSON columns carry the same envelope payload.
         jdbc.update("""
                 INSERT INTO learner_outbox_event
                 (event_id, tenant_id, owner_id, aggregate_type, aggregate_id, event_type, schema_version,
-                 dedupe_key, payload, request_id, trace_id, occurred_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                 dedupe_key, payload, event_name, payload_json, request_id, trace_id, occurred_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """, event.eventId().toString(), event.scope().tenantId(), event.scope().ownerId(),
                 event.aggregateType(), event.aggregateId(), event.eventType(), event.schemaVersion(),
-                event.dedupeKey(), json(event.payload()), event.requestId(), event.traceId(),
+                event.dedupeKey(), json(event.payload()), event.eventName(), json(event.payload()),
+                event.requestId(), event.traceId(),
                 Timestamp.from(event.occurredAt()));
     }
 

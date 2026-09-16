@@ -11,8 +11,14 @@ public final class CorrelationIds {
     private CorrelationIds() {
     }
 
+    /**
+     * P1-LIVE-004: minted ids must satisfy the platform-wide owner-service pattern
+     * {@code [A-Za-z][A-Za-z0-9._-]{7,127}} (learner/learning/content/core-api all
+     * fail closed otherwise). A bare UUID starts with a digit ~62% of the time,
+     * which made every gateway-proxied learner mutation intermittently 400.
+     */
     public static String requestId(String candidate, int maxLength) {
-        return isSafe(candidate, maxLength) ? candidate : UUID.randomUUID().toString();
+        return isSafe(candidate, maxLength) ? candidate : "req-" + UUID.randomUUID().toString().replace("-", "");
     }
 
     public static String traceId(String candidate, String traceparent, int maxLength) {

@@ -16,11 +16,11 @@ const EXPECTED_ROUTE_RULE_COUNT = 56;
 // controller target today.  The latter must never turn a coarse PREFIX rule
 // into an arbitrary upstream proxy.
 const EXPECTED_EXECUTION_PLAN_COUNT = 56;
-const EXPECTED_AVAILABLE_EXECUTION_OPERATION_COUNT = 169;
+const EXPECTED_AVAILABLE_EXECUTION_OPERATION_COUNT = 170;
 // This is a reviewed semantic binding for the finite M2-001 target table. It
 // deliberately prevents a target from silently moving to a different, still
 // valid controller method without a corresponding Gateway parity change.
-export const FROZEN_EXECUTION_TARGET_PLAN_SHA256 = '4138acfad884448ecfb0250cb301c9af3c1994fe0c806af570dd067e66b3b8c3';
+export const FROZEN_EXECUTION_TARGET_PLAN_SHA256 = '0da3e568fac7394dda30eda71e0e1b23b4414ebf581208d23e9e82eb271cb4d7';
 const EXECUTION_POLICY_FIELDS = [
   'schemaVersion',
   'sourceOfTruth',

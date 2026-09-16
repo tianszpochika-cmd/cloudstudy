@@ -77502,6 +77502,23 @@
               "sourcePath": "services/learning-service/src/main/java/com/englishflow/learning/web/B3LearningJdbcController.java",
               "requestMapping": "/internal/v1/learning/experiences"
             }
+          },
+          {
+            "projectionId": "learning-domain.today-v2",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/learning/today",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learning-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learning",
+            "pathStrategy": "PRESERVE_PUBLIC_PATH",
+            "targetPathTemplate": "/api/v1/learning/today",
+            "controllerEvidence": {
+              "sourcePath": "services/learning-service/src/main/java/com/englishflow/learning/web/V2LearningController.java",
+              "requestMapping": "/api/v1/learning"
+            }
           }
         ]
       },

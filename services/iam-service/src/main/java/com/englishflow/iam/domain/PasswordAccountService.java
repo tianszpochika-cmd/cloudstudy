@@ -13,10 +13,23 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class PasswordAccountService {
     private static final String DUMMY_HASH = "$2a$12$.E3ViZlXxYqOQ1kI0hTnBOjUaLEQkvjLANReLduflGx9udo9iuOj.";
     private static final Set<String> LEARNER_ROLES = Set.of("learner");
+    /**
+     * Phase-1 learner permission allow-list, granted only after the adult-gate and all
+     * LEARNING-required consents are satisfied (see {@code tokenAccount} stripping).
+     *
+     * <p>P1-LIVE-002: the set was frozen before the learner v2 endpoints existed, so
+     * {@code PUT /learner/targets} ({@code learner.goal.write}), {@code GET /learner/first-day}
+     * ({@code learner.onboarding.read}) and the learning review/progress/mastery/task chains
+     * failed closed for every user. Each entry below is required by a service-side
+     * {@code authorize(...)} call or a canonical contract {@code requiredPermission}.
+     */
     private static final Set<String> LEARNER_PERMISSIONS = Set.of(
-            "learner.profile.read", "learner.profile.write", "learning.plan.read",
-            "learning.plan.write", "assessment.session.read", "assessment.session.write",
-            "content.read", "iam.self.read", "iam.self.write");
+            "learner.profile.read", "learner.profile.write", "learner.goal.write",
+            "learner.preference.write", "learner.onboarding.read", "learning.plan.read",
+            "learning.plan.write", "learning.review.read", "learning.review.write",
+            "learning.progress.read", "learning.progress.write", "learning.mastery.read",
+            "learning.mastery.write", "learning.task.write", "assessment.session.read",
+            "assessment.session.write", "content.read", "iam.self.read", "iam.self.write");
 
     private final AccountStore accounts;
     private final PasswordEncoder passwordEncoder;
