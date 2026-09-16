@@ -3,7 +3,7 @@
   "draftOnly": false,
   "canonicalTaskStatus": "DEV_DONE",
   "decision": "DEV_DONE",
-  "sourceCommit": "99e0e11bdee809a6c0d64672e725fb5c57ce4dcd",
+  "sourceCommit": "11117a3fd5a9bd0f4482de9c93db3db44b345b8a",
   "startedAt": "2026-09-15T17:25:00.000Z",
   "finishedAt": "2026-09-15T19:30:25.798Z",
   "environment": {
@@ -76,7 +76,7 @@
     {
       "path": "apps/learner-web/src/router/index.ts",
       "algorithm": "sha256",
-      "digest": "2285a0f707863020680b7a87c3ddbb706e3561cb1ea501514775e694265c8439"
+      "digest": "430aa4074e5cc67713684182e250c2715d6aadfcc17421fa51eb30496ae1621c"
     },
     {
       "path": "apps/mobile/src/auth/gateway-auth.ts",
@@ -125,9 +125,9 @@
     "currentSourceRevalidationTask": "P1R-M4-001",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-16T17:01:01.476Z",
-    "currentSourceRevalidationAuditedImplementationSource": "99e0e11bdee809a6c0d64672e725fb5c57ce4dcd",
-    "currentSourceRevalidationIntegrationCheckpoint": "99e0e11bdee809a6c0d64672e725fb5c57ce4dcd",
+    "currentSourceRevalidationFinishedAt": "2026-09-16T17:26:37.353Z",
+    "currentSourceRevalidationAuditedImplementationSource": "11117a3fd5a9bd0f4482de9c93db3db44b345b8a",
+    "currentSourceRevalidationIntegrationCheckpoint": "11117a3fd5a9bd0f4482de9c93db3db44b345b8a",
     "currentSourceRevalidationHistory": [
       {
         "taskId": "P1R-M4-001",
@@ -238,8 +238,18 @@
         "runtimeStatus": "RUNTIME_VERIFIED",
         "finishedAt": "2026-09-16T17:01:01.476Z",
         "details": "1A loop pages: router + AppShell nav entries."
+      },
+      {
+        "taskId": "P1R-M4-001",
+        "sourceCommit": "11117a3fd5a9bd0f4482de9c93db3db44b345b8a",
+        "auditedImplementationSource": "11117a3fd5a9bd0f4482de9c93db3db44b345b8a",
+        "integrationCheckpoint": "11117a3fd5a9bd0f4482de9c93db3db44b345b8a",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T17:26:37.353Z",
+        "details": "1A messages page: router + AppShell nav entries."
       }
     ],
-    "previousCurrentSourceCommit": "cb6179c39d5d57c13a81eea4066e75102b80f67b"
+    "previousCurrentSourceCommit": "99e0e11bdee809a6c0d64672e725fb5c57ce4dcd"
   }
 }

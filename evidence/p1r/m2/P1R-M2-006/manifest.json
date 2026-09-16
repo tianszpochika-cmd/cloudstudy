@@ -2,7 +2,7 @@
   "taskId": "P1R-M2-006",
   "draftOnly": false,
   "canonicalTaskStatus": "DEV_DONE",
-  "sourceCommit": "99e0e11bdee809a6c0d64672e725fb5c57ce4dcd",
+  "sourceCommit": "11117a3fd5a9bd0f4482de9c93db3db44b345b8a",
   "artifactDigests": [
     {
       "path": "services/workflow-service/src/main/java/com/englishflow/workflow/domain/SagaStateMachine.java",
@@ -111,10 +111,10 @@
     "currentSourceRevalidationTask": "P1R-M2-006",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-16T17:01:00.338Z",
-    "currentSourceRevalidationAuditedImplementationSource": "99e0e11bdee809a6c0d64672e725fb5c57ce4dcd",
-    "currentSourceRevalidationIntegrationCheckpoint": "99e0e11bdee809a6c0d64672e725fb5c57ce4dcd",
-    "previousCurrentSourceCommit": "cb6179c39d5d57c13a81eea4066e75102b80f67b",
+    "currentSourceRevalidationFinishedAt": "2026-09-16T17:26:36.222Z",
+    "currentSourceRevalidationAuditedImplementationSource": "11117a3fd5a9bd0f4482de9c93db3db44b345b8a",
+    "currentSourceRevalidationIntegrationCheckpoint": "11117a3fd5a9bd0f4482de9c93db3db44b345b8a",
+    "previousCurrentSourceCommit": "99e0e11bdee809a6c0d64672e725fb5c57ce4dcd",
     "currentSourceRevalidationHistory": [
       {
         "taskId": "P1R-M2-006",
@@ -275,6 +275,16 @@
         "runtimeStatus": "RUNTIME_VERIFIED",
         "finishedAt": "2026-09-16T17:01:00.338Z",
         "details": "1A loop pages: router + AppShell nav entries."
+      },
+      {
+        "taskId": "P1R-M2-006",
+        "sourceCommit": "11117a3fd5a9bd0f4482de9c93db3db44b345b8a",
+        "auditedImplementationSource": "11117a3fd5a9bd0f4482de9c93db3db44b345b8a",
+        "integrationCheckpoint": "11117a3fd5a9bd0f4482de9c93db3db44b345b8a",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T17:26:36.222Z",
+        "details": "1A messages page: router + AppShell nav entries."
       }
     ]
   },
