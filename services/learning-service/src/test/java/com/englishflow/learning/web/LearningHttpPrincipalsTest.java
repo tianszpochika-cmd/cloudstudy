@@ -24,7 +24,7 @@ class LearningHttpPrincipalsTest {
     void verifiedLearnerFactsAreReturnedFromTheJwtOnly() {
         LearningHttpPrincipals.VerifiedLearningPrincipal principal = LearningHttpPrincipals.require(
                 authentication(jwt("principal-1", "platform", List.of("learner"),
-                        List.of("learning.plan.read", "learning.task.write"))));
+                        List.of("learning.plan.read", "learning.task.write"), "GRANTED")));
 
         assertEquals("principal-1", principal.subject());
         assertEquals("platform", principal.tenantId());
@@ -49,12 +49,24 @@ class LearningHttpPrincipalsTest {
     @Test
     void missingLearnerRoleOrEmptyPermissionsIsForbidden() {
         assertEquals(HttpStatus.FORBIDDEN, status(() -> LearningHttpPrincipals.require(
-                authentication(jwt("principal-1", "platform", List.of("admin"), List.of("learning.plan.read"))))));
+                authentication(jwt("principal-1", "platform", List.of("admin"), List.of("learning.plan.read"), "GRANTED")))));
         assertEquals(HttpStatus.FORBIDDEN, status(() -> LearningHttpPrincipals.require(
-                authentication(jwt("principal-1", "platform", List.of("learner"), List.of())))));
+                authentication(jwt("principal-1", "platform", List.of("learner"), List.of(), "GRANTED")))));
     }
 
-    private static Jwt jwt(String subject, String tenant, List<String> roles, List<String> permissions) {
+    @Test
+    void ungrantedConsentIsForbidden() {
+        // P1-LIVE-009: gated-but-unconsented and withdrawn principals must not
+        // reach learning data even with an otherwise valid token.
+        assertEquals(HttpStatus.FORBIDDEN, status(() -> LearningHttpPrincipals.require(
+                authentication(jwt("principal-1", "platform", List.of("learner"), List.of("learning.plan.read"), "UNKNOWN")))));
+        assertEquals(HttpStatus.FORBIDDEN, status(() -> LearningHttpPrincipals.require(
+                authentication(jwt("principal-1", "platform", List.of("learner"), List.of("learning.plan.read"), "WITHDRAWN")))));
+        assertEquals(HttpStatus.FORBIDDEN, status(() -> LearningHttpPrincipals.require(
+                authentication(jwt("principal-1", "platform", List.of("learner"), List.of("learning.plan.read"), null)))));
+    }
+
+    private static Jwt jwt(String subject, String tenant, List<String> roles, List<String> permissions, String consentState) {
         Jwt.Builder builder = Jwt.withTokenValue("token")
                 .header("alg", "RS256")
                 .subject(subject)
@@ -63,7 +75,12 @@ class LearningHttpPrincipalsTest {
                 .claim("roles", roles)
                 .claim("permissions", permissions);
         if (tenant != null) builder.claim("tenant_id", tenant);
+        if (consentState != null) builder.claim("consent_state", consentState);
         return builder.build();
+    }
+
+    private static Jwt jwt(String subject, String tenant, List<String> roles, List<String> permissions) {
+        return jwt(subject, tenant, roles, permissions, "GRANTED");
     }
 
     private static JwtAuthenticationToken authentication(Jwt jwt) {

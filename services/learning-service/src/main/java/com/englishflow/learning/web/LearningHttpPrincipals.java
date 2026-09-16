@@ -45,7 +45,24 @@ public final class LearningHttpPrincipals {
         if (permissions.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "verified permissions are required");
         }
+        // P1-LIVE-009: learning data requires granted consent, evaluated from the
+        // issuance-time claim like the learner boundary does. Without this, gated
+        // but unconsented principals could write SRS state with a stripped token.
+        String consent = firstText(token, "consent_state", "consentState", "consent");
+        if (!"GRANTED".equalsIgnoreCase(consent)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "consent is required");
+        }
         return new VerifiedLearningPrincipal(subject, tenant, roles, permissions);
+    }
+
+    private static String firstText(Jwt token, String... names) {
+        for (String name : names) {
+            String value = token.getClaimAsString(name);
+            if (value != null && !value.isBlank()) {
+                return value.trim();
+            }
+        }
+        return null;
     }
 
     private static Set<String> strings(Object claim) {

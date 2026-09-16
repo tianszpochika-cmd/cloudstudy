@@ -62,10 +62,11 @@ public final class VerifiedLearnerPrincipalFactory {
         roles.addAll(claimValues(jwt, "roles"));
         permissions.addAll(claimValues(jwt, "permissions"));
         String consent = firstText(jwt, "consent_state", "consentState", "consent");
-        String adultGate = firstText(jwt, "adult_gate", "adultGate");
+        // P1-LIVE-009: consent is granted only by an explicit GRANTED issuance
+        // fact. A PASSED adult gate must never imply consent: the gate is a sticky
+        // age fact while consent is withdrawable, so the old OR-clause let every
+        // withdrawn principal straight through.
         ConsentState consentState = "GRANTED".equalsIgnoreCase(consent)
-                || "PASSED".equalsIgnoreCase(adultGate)
-                || Boolean.TRUE.equals(jwt.getClaim("adult_gate_passed"))
                 ? ConsentState.GRANTED
                 : "WITHDRAWN".equalsIgnoreCase(consent) ? ConsentState.WITHDRAWN : ConsentState.UNKNOWN;
         boolean revoked = Boolean.TRUE.equals(jwt.getClaim("revoked"))
