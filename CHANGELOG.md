@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1-LIVE-014-ONBOARDING-20260916] **纯 UI 从零开户打通：修五处 UI/服务端契约错位（ADR-0024）。** 门 policyVersion 旧名、门回包字段误读、缺 ADULT_LEARNING 同意、同意后未轮换 token、三写并行抢版本号——逐个活现形后修复。现注册→门→目标→保存直达 `/assessment` 首道真题，全部写操作 200。验证：`vue-tsc` 0 错误、新链 **6/6 PASS**。
+
 - [P1R-MATRIX-ADMIN-20260916] **矩阵加中台权限边界腿：学员凭证登录后台落 `/forbidden` 服务端事实面板。** 认证通过但无管理权限→无 dashboard、无崩溃、零 pageerror。矩阵 15 腿（12 洁 + 3 具名环境误差）。
 
 - [P1R-ACCEPT-M6-006-20260916] **翻牌 M6-006：工单 SLA/附件/跨用户浏览器实证 8/8（47 ACCEPTED / 61 DEV_DONE）。** 附件数/体积双负例、空态、UI 建单、列表 SLA、详情 due date、跨用户浏览器隔离。附带修 SupportPage（关联引用"可选"与服务端必填矛盾，UI 已收紧）。

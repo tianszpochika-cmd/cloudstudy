@@ -454,32 +454,70 @@ export const learnerContentPort: LearnerContentPort = {
         body: { type: 'TERMS', version: 'b30-consent-v1', decision: 'ACCEPTED' },
         ...withIdempotency(`${input.clientEventId}-terms`),
       }),
-      request<unknown>(READ_MODEL_PATHS.profile, {
-        method: 'PATCH',
-        body: {
-          expectedStateVersion: 0,
-          status: 'ACTIVE',
-          birthYear: input.profile.birthYear,
-          ageConfirmed: input.profile.ageConfirmed,
-          privacyConsent: input.profile.privacyConsent,
-          termsConsent: input.profile.termsConsent,
-          uiLocale: 'zh-CN',
-          contentLocale: 'en-US',
-          timezone: 'Asia/Shanghai',
-        },
-        ...withIdempotency(`${input.clientEventId}-profile`),
-      }),
-      request<unknown>(READ_MODEL_PATHS.target, {
+      // P1-LIVE-014: the server requires ADULT_LEARNING (LEARNING_REQUIRED) for
+      // learning access; without it every learner endpoint stays 403 after an
+      // otherwise complete UI onboarding.
+      request<unknown>('/iam/consents', {
         method: 'PUT',
-        body: { expectedStateVersion: 0, goalCode: input.profile.targetGoal, targetLevel, dailyQuotaMinutes: input.profile.dailyQuotaMinutes, status: 'ACTIVE' },
-        ...withIdempotency(`${input.clientEventId}-target`),
-      }),
-      request<unknown>(READ_MODEL_PATHS.preferences, {
-        method: 'PATCH',
-        body: { expectedStateVersion: 0, uiLocale: 'zh-CN', contentLocale: 'en-US', timezone: 'Asia/Shanghai', themeMode: 'SYSTEM', highContrast: false, motionMode: 'FULL' },
-        ...withIdempotency(`${input.clientEventId}-preferences`),
+        body: { type: 'ADULT_LEARNING', version: 'b30-consent-v1', decision: 'ACCEPTED' },
+        ...withIdempotency(`${input.clientEventId}-adult-learning`),
       }),
     ])
+    // P1-LIVE-014: access tokens freeze eligibility at issuance, so the token
+    // minted before these consents still carries UNKNOWN. Rotate once here so
+    // the profile/targets/preferences writes below are evaluated as granted.
+    // The browser sends the HttpOnly refresh cookie automatically.
+    const rotated = (await request<unknown>('/auth/token/refresh', {
+      method: 'POST',
+      ...withIdempotency(`${input.clientEventId}-refresh`),
+    })) as Record<string, unknown>
+    const freshAccess =
+      (rotated?.data as Record<string, unknown> | undefined)?.accessToken ?? rotated?.accessToken
+    if (typeof freshAccess === 'string' && freshAccess.trim()) {
+      const { setInMemoryAccessToken } = await import('../auth/access-token')
+      setInMemoryAccessToken(freshAccess)
+    }
+    // P1-LIVE-014: the profile PATCH bumps the profile to version 1, and the
+    // targets PUT is version-guarded against the PROFILE version, so it must
+    // use the PATCH response (not a hardcoded 0), or every first save 409s.
+    const patchedProfile = (await request<unknown>(READ_MODEL_PATHS.profile, {
+      method: 'PATCH',
+      body: {
+        expectedStateVersion: 0,
+        status: 'ACTIVE',
+        birthYear: input.profile.birthYear,
+        ageConfirmed: input.profile.ageConfirmed,
+        privacyConsent: input.profile.privacyConsent,
+        termsConsent: input.profile.termsConsent,
+        uiLocale: 'zh-CN',
+        contentLocale: 'en-US',
+        timezone: 'Asia/Shanghai',
+      },
+      ...withIdempotency(`${input.clientEventId}-profile`),
+    })) as Record<string, unknown>
+    const profileData = (patchedProfile as Record<string, unknown>)?.data as Record<string, unknown> | undefined
+    const profileVersion =
+      typeof profileData?.stateVersion === 'number' ? profileData.stateVersion : 1
+    // P1-LIVE-014: all learner writes share ONE profile version counter, so
+    // parallel writes race (each bumps it; losers 409). Chain sequentially,
+    // threading each response version into the next write.
+    const savedTarget = (await request<unknown>(READ_MODEL_PATHS.target, {
+      method: 'PUT',
+      body: { expectedStateVersion: profileVersion, goalCode: input.profile.targetGoal, targetLevel, dailyQuotaMinutes: input.profile.dailyQuotaMinutes, status: 'ACTIVE' },
+      ...withIdempotency(`${input.clientEventId}-target`),
+    })) as Record<string, unknown>
+    const targetData = (savedTarget as Record<string, unknown>)?.data as Record<string, unknown> | undefined
+    const afterTargetVersion =
+      typeof targetData?.stateVersion === 'number'
+        ? targetData.stateVersion
+        : typeof (savedTarget as Record<string, unknown>)?.stateVersion === 'number'
+          ? ((savedTarget as Record<string, unknown>).stateVersion as number)
+          : profileVersion + 1
+    await request<unknown>(READ_MODEL_PATHS.preferences, {
+      method: 'PATCH',
+      body: { expectedStateVersion: afterTargetVersion, uiLocale: 'zh-CN', contentLocale: 'en-US', timezone: 'Asia/Shanghai', themeMode: 'SYSTEM', highContrast: false, motionMode: 'FULL' },
+      ...withIdempotency(`${input.clientEventId}-preferences`),
+    })
     if (featuredContent) {
       await request<unknown>(READ_MODEL_PATHS.taskEnsureCommand, {
         method: 'POST',

@@ -198,10 +198,23 @@ export function createGatewayAuthAdapter(options: GatewayAuthAdapterOptions): Jw
       }
     },
     async confirmAdultGate(input) {
-      return parseSnapshot(await client.post('/iam/adult-gate', input, {
+      const raw = await client.post('/iam/adult-gate', input, {
         headers: { 'Idempotency-Key': authIdempotencyKey('adult-gate') },
         skipAuthRetry: true,
-      }))
+      })
+      const snapshot = parseSnapshot(raw)
+      // P1-LIVE-014: the adult-gate endpoint returns {status: 'PASSED'|...},
+      // not an adultGate field. Map it explicitly; parseSnapshot alone yields
+      // UNKNOWN and the onboarding flow stalls on step 1.
+      const gate = parseAdultGate(isRecord(unwrap(raw)) ? (unwrap(raw) as Record<string, unknown>).status : undefined)
+      if (gate === 'UNKNOWN') return snapshot
+      return {
+        principal: snapshot?.principal ? { ...snapshot.principal, adultGate: gate } : snapshot?.principal ?? null,
+        permissions: snapshot?.permissions ?? [],
+        roles: snapshot?.roles ?? [],
+        adultGate: gate,
+        tokenPair: snapshot?.tokenPair ?? null,
+      }
     },
     async logout(input) {
       await client.post('/auth/logout', input, {

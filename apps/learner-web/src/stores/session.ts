@@ -256,7 +256,9 @@ export const useSessionStore = defineStore('session', () => {
     }
   }
 
-  async function confirmAdultGate(birthYear: number, policyVersion = 'v2-phase1'): Promise<boolean> {
+  // P1-LIVE-014: the server only accepts b30-adult-v1; the old v2-phase1 default
+  // made every UI gate confirmation fail with policy_version_invalid.
+  async function confirmAdultGate(birthYear: number, policyVersion = 'b30-adult-v1'): Promise<boolean> {
     try {
       const snapshot = await adapter().confirmAdultGate({ confirmed: true, birthYear, policyVersion })
       applySnapshot(snapshot)

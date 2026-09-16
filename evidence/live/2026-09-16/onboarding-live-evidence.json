@@ -1,0 +1,46 @@
+{
+  "task": "ONBOARDING-UI-LIVE",
+  "capturedAt": "2026-09-16T10:08:53.005Z",
+  "identifier": "wuon-mu3xu24v@local.invalid",
+  "result": "PASS",
+  "passed": 6,
+  "total": 6,
+  "checks": [
+    {
+      "name": "ui-register",
+      "ok": true,
+      "observed": "http://127.0.0.1:18180/onboarding?redirect=/home",
+      "expected": "lands onboarding"
+    },
+    {
+      "name": "ui-gate-step2",
+      "ok": true,
+      "observed": "step 2/2 shown (gate 200, no policy alert)",
+      "expected": "gate advances"
+    },
+    {
+      "name": "ui-save-lands-assessment",
+      "ok": true,
+      "observed": "http://127.0.0.1:18180/assessment",
+      "expected": "lands /assessment"
+    },
+    {
+      "name": "ui-first-question",
+      "ok": true,
+      "observed": "first server question rendered",
+      "expected": "question visible"
+    },
+    {
+      "name": "ui-save-writes",
+      "ok": true,
+      "observed": "{\"/api/v1/auth/token/refresh\":200,\"/api/v1/auth/register\":201,\"/api/v1/iam/adult-gate\":200,\"/api/v1/iam/consents\":200,\"/api/v1/learner/profile\":200,\"/api/v1/learner/targets\":200,\"/api/v1/learner/preferences\":200,\"/api/v1/onboarding/daily-tasks/ensure\":200,\"/api/v1/assessment/placement/start\":200}",
+      "expected": "all save writes 200"
+    },
+    {
+      "name": "ui-no-errors",
+      "ok": true,
+      "observed": "0 errors",
+      "expected": "zero"
+    }
+  ]
+}
