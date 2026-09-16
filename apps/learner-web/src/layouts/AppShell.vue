@@ -22,7 +22,7 @@ const unsubscribeTheme = learnerThemeController.subscribe((state) => {
 })
 
 const navGroups: Array<{ label: string; items: Array<{ name: string; label: string; icon: AppIconName }> }> = [
-  { label: '学习', items: [{ name: 'home', label: '学习首页', icon: 'home' }, { name: 'today', label: '今日任务', icon: 'target' }, { name: 'learn', label: '学习流', icon: 'book' }] },
+  { label: '学习', items: [{ name: 'home', label: '学习首页', icon: 'home' }, { name: 'today', label: '今日任务', icon: 'target' }, { name: 'learn', label: '学习流', icon: 'book' }, { name: 'messages', label: '消息中心', icon: 'help' }] },
   { label: '练习', items: [{ name: 'b2-practice', label: '练习中心', icon: 'check' }, { name: 'vocabulary', label: '词汇与 SRS', icon: 'star' }, { name: 'mistakes', label: '错题本', icon: 'search' }, { name: 'mastery', label: '掌握度', icon: 'chart' }, { name: 'plan-map', label: '计划地图', icon: 'target' }, { name: 'b2-report', label: '学习报告', icon: 'chart' }, { name: 'b3-grammar', label: '语法 X 光机', icon: 'spark' }, { name: 'b3-writing', label: '规则写作', icon: 'pen' }, { name: 'b3-listening', label: '听力精练', icon: 'headphones' }, { name: 'b3-reading', label: '分级阅读', icon: 'book' }, { name: 'b3-speaking', label: '口语自练', icon: 'mic' }] },
   { label: '探索', items: [{ name: 'world', label: '世界', icon: 'globe' }, { name: 'courses', label: '课程', icon: 'book' }, { name: 'commerce', label: '学习权益', icon: 'wallet' }, { name: 'support', label: '客服与帮助', icon: 'help' }] },
 ]

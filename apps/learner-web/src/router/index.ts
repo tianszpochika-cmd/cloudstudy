@@ -107,6 +107,12 @@ const routes: RouteRecordRaw[] = [
     meta: { requiresAuth: true, shell: true, title: '错题本' },
   },
   {
+    path: '/messages',
+    name: 'messages',
+    component: () => import('../pages/MessagesPage.vue'),
+    meta: { requiresAuth: true, shell: true, title: '消息中心' },
+  },
+  {
     path: '/mastery',
     name: 'mastery',
     component: () => import('../pages/MasteryPage.vue'),

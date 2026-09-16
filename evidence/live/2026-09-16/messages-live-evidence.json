@@ -1,0 +1,52 @@
+{
+  "task": "MESSAGES-LIVE",
+  "capturedAt": "2026-09-16T17:17:21.189Z",
+  "identifier": "wmsg-mu4d587v@local.invalid",
+  "result": "PASS",
+  "passed": 7,
+  "total": 7,
+  "checks": [
+    {
+      "name": "setup",
+      "ok": true,
+      "observed": "learner ready",
+      "expected": "token"
+    },
+    {
+      "name": "seed-message",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200 + id"
+    },
+    {
+      "name": "messages-renders",
+      "ok": true,
+      "observed": "http://127.0.0.1:18180/messages",
+      "expected": "renders"
+    },
+    {
+      "name": "messages-shows",
+      "ok": true,
+      "observed": "message + pref visible",
+      "expected": "content visible"
+    },
+    {
+      "name": "message-read",
+      "ok": true,
+      "observed": "receipt shown",
+      "expected": "marked read"
+    },
+    {
+      "name": "pref-toggle",
+      "ok": true,
+      "observed": "toggle clicked, no error",
+      "expected": "toggles"
+    },
+    {
+      "name": "messages-no-errors",
+      "ok": true,
+      "observed": "0 pageerrors",
+      "expected": "zero"
+    }
+  ]
+}
