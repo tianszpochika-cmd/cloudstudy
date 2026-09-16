@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-007",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "cb6179c39d5d57c13a81eea4066e75102b80f67b",
+  "sourceCommit": "99e0e11bdee809a6c0d64672e725fb5c57ce4dcd",
   "artifactDigests": [
     {
       "path": ".github/workflows/ci.yml",
@@ -1011,9 +1011,19 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-16T16:34:46.826Z",
         "details": "5A emission: principalId widening re-merges event catalog."
+      },
+      {
+        "taskId": "P1R-M1-007",
+        "sourceCommit": "99e0e11bdee809a6c0d64672e725fb5c57ce4dcd",
+        "auditedImplementationSource": "99e0e11bdee809a6c0d64672e725fb5c57ce4dcd",
+        "integrationCheckpoint": "99e0e11bdee809a6c0d64672e725fb5c57ce4dcd",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T17:00:59.000Z",
+        "details": "1A loop pages: router + AppShell nav entries."
       }
     ],
-    "previousCurrentSourceCommit": "a97beb9a9c5e241648aa81aa127de570cff93ad4",
+    "previousCurrentSourceCommit": "cb6179c39d5d57c13a81eea4066e75102b80f67b",
     "previousCurrentSourceRevalidationTask": "P1R-M1-007",
     "currentSourceRevalidationTask": "P1R-M1-007",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
@@ -1021,8 +1031,8 @@
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
     "previousCurrentSourceRevalidationFinishedAt": "2026-09-13T02:30:07.343Z",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-16T16:34:46.826Z",
-    "currentSourceRevalidationAuditedImplementationSource": "cb6179c39d5d57c13a81eea4066e75102b80f67b",
-    "currentSourceRevalidationIntegrationCheckpoint": "cb6179c39d5d57c13a81eea4066e75102b80f67b"
+    "currentSourceRevalidationFinishedAt": "2026-09-16T17:00:59.000Z",
+    "currentSourceRevalidationAuditedImplementationSource": "99e0e11bdee809a6c0d64672e725fb5c57ce4dcd",
+    "currentSourceRevalidationIntegrationCheckpoint": "99e0e11bdee809a6c0d64672e725fb5c57ce4dcd"
   }
 }

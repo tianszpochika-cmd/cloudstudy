@@ -2,7 +2,7 @@
   "taskId": "P1R-M0-007",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "cb6179c39d5d57c13a81eea4066e75102b80f67b",
+  "sourceCommit": "99e0e11bdee809a6c0d64672e725fb5c57ce4dcd",
   "artifactDigests": [
     {
       "path": "config/p1r-fixtures.v1.json",
@@ -78,13 +78,13 @@
   "reviewer": "root-coordinator",
   "decision": "ACCEPTED",
   "provenance": {
-    "previousCurrentSourceCommit": "a97beb9a9c5e241648aa81aa127de570cff93ad4",
+    "previousCurrentSourceCommit": "cb6179c39d5d57c13a81eea4066e75102b80f67b",
     "currentSourceRevalidationTask": "P1R-M0-007",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-16T16:34:46.146Z",
-    "currentSourceRevalidationAuditedImplementationSource": "cb6179c39d5d57c13a81eea4066e75102b80f67b",
-    "currentSourceRevalidationIntegrationCheckpoint": "cb6179c39d5d57c13a81eea4066e75102b80f67b",
+    "currentSourceRevalidationFinishedAt": "2026-09-16T17:00:58.399Z",
+    "currentSourceRevalidationAuditedImplementationSource": "99e0e11bdee809a6c0d64672e725fb5c57ce4dcd",
+    "currentSourceRevalidationIntegrationCheckpoint": "99e0e11bdee809a6c0d64672e725fb5c57ce4dcd",
     "currentSourceRevalidationHistory": [
       {
         "taskId": "P1R-M0-007",
@@ -305,6 +305,16 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-16T16:34:46.146Z",
         "details": "5A emission: principalId widening re-merges event catalog."
+      },
+      {
+        "taskId": "P1R-M0-007",
+        "sourceCommit": "99e0e11bdee809a6c0d64672e725fb5c57ce4dcd",
+        "auditedImplementationSource": "99e0e11bdee809a6c0d64672e725fb5c57ce4dcd",
+        "integrationCheckpoint": "99e0e11bdee809a6c0d64672e725fb5c57ce4dcd",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T17:00:58.399Z",
+        "details": "1A loop pages: router + AppShell nav entries."
       }
     ]
   }
