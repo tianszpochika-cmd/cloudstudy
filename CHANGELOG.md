@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1R-ACCEPT-M4-009-20260916] **浏览器矩阵扩到 12 腿；`M4-009` 翻牌。** 新增 `?redirect=` 深链直达 `/today`（纠正：应用以 `redirect` 为准而非 `returnTo`）、刷新保持会话（启动恢复）、iPad/手机视口登录、离线 SPA 内导航优雅降级（vite dev 分片误差已具名；生产构建与真机留 M4-008 八态/M8-007）。M4-001 的 returnTo 残留同步关闭（仅剩密码轮换）。验证：矩阵 **11/12 洁 + 1 环境误差具名**。
+
 - [P1-LIVE-011-W1-SKIP-20260916] **定级 skip 入参错位 + W1 补到 12/12；`M4-004` 翻牌。** skip 的 INSERT 绑了 6 个参数而只有 5 个占位（复制粘贴多出一个 `idempotencyKey`），凡走 skip 必 500；删多余绑定。W1 新增：目标版本守卫（旧版 409）、定级恢复（同会话回读）、skip 快通（A2 报告）。`M4-004` 转 `ACCEPTED`（重复提交活闭 + 跨租户归 M2-004 门 + 静态 7/7）。有意不做：不给 B25 legacy 适配器加题（canonical 十题归 M1-012 冻结规则与 M4-005 引擎接线，保持边界）。验证：assessment 57/0/0、W1 **12/12**。
 
 - [P1-LIVE-007-CLOSED-W3-20260916] **P1-LIVE-007 结案：commerce 订单链 403 是 outbox 列漂移 + `/error` denyAll 假面（ADR-0021），W3 19/19。** TRACE 实证：`/**→authenticated()` 正常、handler 正常映射，`createOrder` 内 `INSERT commerce_outbox_event` 用旧 12 列致 `event_name` 回滚（与 P1-LIVE-005 同物种，commerce 写侧漏改），异常转 `/error` 被 denyAll 掩成 403；此前 CSRF/MvcRequestMatcher/`@ResponseStatus` 理论逐项证伪。修复写侧三列 + 全仓另 5 家核对无掉队；`/error` 保持 denyAll（不泄漏异常细节），诊断 recipe 入 ADR。终态：创单 201、支付意向 202、未支付退款 409 守卫；PAID→退款需 workload 回调凭证（本地未配给，M7 后续）。验证：commerce 92/0/0、W3 **19/19**。

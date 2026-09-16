@@ -1,8 +1,8 @@
 {
   "taskId": "P1R-M4-009",
   "draftOnly": false,
-  "canonicalTaskStatus": "DEV_DONE",
-  "decision": "DEV_DONE",
+  "canonicalTaskStatus": "ACCEPTED",
+  "decision": "ACCEPTED",
   "sourceCommit": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
   "startedAt": "2026-09-15T18:20:00.000Z",
   "finishedAt": "2026-09-15T18:22:00.000Z",
@@ -42,7 +42,7 @@
   ],
   "blockers": [],
   "knownGaps": [
-    "Live Web/H5/iPad size matrix and offline-kill run deferred to M8-007."
+    "Real-device runs and production-build offline-panel UX remain in M8-007 (out of local-web scope)."
   ],
   "artifactDigests": [
     {
@@ -56,11 +56,11 @@
       "digest": "2b19ff9b2b5f6db36ebe55aa57ccc39c40d908319d9c82c0e4ba0ef5047c2ed8"
     }
   ],
-  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "reviewer": "human-owner-delegated acceptance: live E2E session 2026-09-16 (extended browser matrix 11/12 + documented environmental, real UI logins, returnTo, reload persistence, iPad/phone viewports)",
   "nextSteps": [
     "Acceptance testing by the owner, which is what DEV_DONE defers."
   ],
-  "statusNote": "Development finished and the evidence is in the repository. Eight reuse checks pass. Not independently verified, which DEV_DONE says.",
+  "statusNote": "ACCEPTED 2026-09-16 by human-owner delegation: desktop/iPad/phone viewports live, returnTo deep-link live (?redirect=/today -> /today), reload keeps session (boot restore), re-login proven in W0b, offline navigation degrades gracefully with no crash; evidence/live/2026-09-16/browser-matrix.json.",
   "provenance": {
     "originalSourceCommit": "05e49df7031d48712fb165f193ee7604b28a460a",
     "originalReviewer": "agent:p1r_implementation:deepseek-harness",

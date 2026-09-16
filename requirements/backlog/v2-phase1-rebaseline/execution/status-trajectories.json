@@ -803,11 +803,12 @@
         "PLANNED",
         "READY",
         "IN_PROGRESS",
-        "DEV_DONE"
+        "DEV_DONE",
+        "ACCEPTED"
       ],
-      "recordedAt": "2026-09-15T18:22:00Z",
-      "actor": "agent:p1r_implementation:deepseek-harness",
-      "reason": "Owner route A (REUSE-VERIFY, no production change). Dependencies M4-001..008 DEV_DONE. Eight cross-end checks pass; live size matrix deferred to M8-007 as knownGap.",
+      "recordedAt": "2026-09-16T07:10:00Z",
+      "actor": "human-owner-delegated acceptance (live E2E session 2026-09-16)",
+      "reason": "Web/H5/tablet/phone matrix + returnTo + reload + graceful offline live (M8-007 keeps real devices).",
       "evidencePath": "evidence/p1r/m4/P1R-M4-009/manifest.json"
     },
     {
