@@ -1,0 +1,46 @@
+{
+  "task": "EDITOR-UI-LIVE",
+  "capturedAt": "2026-09-16T13:20:48.327Z",
+  "contentCode": "wct-ui-mu44om4o",
+  "result": "PASS",
+  "passed": 6,
+  "total": 6,
+  "checks": [
+    {
+      "name": "editor-create",
+      "ok": true,
+      "observed": "draft listed",
+      "expected": "code visible"
+    },
+    {
+      "name": "editor-bad-json",
+      "ok": true,
+      "observed": "client validation message",
+      "expected": "validation shown"
+    },
+    {
+      "name": "editor-duplicate",
+      "ok": true,
+      "observed": "recovery panel",
+      "expected": "recovery shown"
+    },
+    {
+      "name": "auditor-renders",
+      "ok": true,
+      "observed": "http://127.0.0.1:18181/audit",
+      "expected": "audit renders"
+    },
+    {
+      "name": "auditor-rows",
+      "ok": true,
+      "observed": "rows or headers visible",
+      "expected": "audit content"
+    },
+    {
+      "name": "editor-no-errors",
+      "ok": true,
+      "observed": "0 pageerrors",
+      "expected": "zero"
+    }
+  ]
+}

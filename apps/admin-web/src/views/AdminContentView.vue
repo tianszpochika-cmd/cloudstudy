@@ -242,12 +242,12 @@ onMounted(() => { void loadProjection() })
           <el-row :gutter="16">
             <el-col :xs="24" :sm="12" :md="8"><el-form-item label="内容编码"><el-input v-model="contentCode" :disabled="!canWrite" @input="markDirty" /></el-form-item></el-col>
             <el-col :xs="24" :sm="12" :md="8"><el-form-item label="内容类型"><el-input v-model="contentType" :disabled="!canWrite" @input="markDirty" /></el-form-item></el-col>
-            <el-col :xs="24" :sm="12" :md="8"><el-form-item label="标题"><el-input v-model="title" :disabled="!canEditSelected && Boolean(selectedContentId)" @input="markDirty" /></el-form-item></el-col>
+            <el-col :xs="24" :sm="12" :md="8"><el-form-item label="标题"><el-input v-model="title" :disabled="!canWrite" @input="markDirty" /></el-form-item></el-col>
             <el-col :xs="24" :sm="12" :md="8"><el-form-item label="内容 hash"><el-input v-model="contentHash" :disabled="!canWrite" @input="markDirty" /></el-form-item></el-col>
             <el-col :xs="24" :sm="12" :md="8"><el-form-item label="来源编码"><el-input v-model="sourceCode" :disabled="!canWrite" @input="markDirty" /></el-form-item></el-col>
             <el-col :xs="24" :sm="12" :md="8"><el-form-item label="版权编码"><el-input v-model="licenseCode" :disabled="!canWrite" @input="markDirty" /></el-form-item></el-col>
           </el-row>
-          <el-form-item label="内容 payload（仅提交给 content-service，不在页面写入事实表）"><el-input v-model="payloadText" type="textarea" :rows="5" :disabled="!canEditSelected && Boolean(selectedContentId)" @input="markDirty" /></el-form-item>
+          <el-form-item label="内容 payload（仅提交给 content-service，不在页面写入事实表）"><el-input v-model="payloadText" type="textarea" :rows="5" :disabled="!canWrite" @input="markDirty" /></el-form-item>
           <el-space wrap><el-button type="primary" :loading="isBusy('create')" :disabled="!canWrite" @click="createDraft">创建草稿命令</el-button><el-button :loading="isBusy('save')" :disabled="!selectedContentId || !canEditSelected" @click="saveDraft">保存草稿</el-button><el-button :loading="isBusy('validate')" :disabled="!canValidateSelected" @click="validateDraft">结构校验</el-button><el-button :loading="isBusy('submit')" :disabled="!canSubmitSelected" @click="submitReview">提交双审</el-button><el-button type="success" plain :loading="isBusy('publish')" :disabled="!canPublishSelected" @click="publish">发布</el-button></el-space>
           <el-text v-if="selectedContent" type="info" class="content-command-note">当前版本 {{ selectedContent.versionId || '待服务端分配' }} · 状态 {{ statusLabel(selectedStatus) }} · 服务端状态版本 {{ stateVersion || '待返回' }}</el-text><el-text v-else type="info" class="content-command-note">尚未选择服务端内容投影；创建草稿后继续。</el-text>
         </el-form>
