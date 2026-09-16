@@ -1,0 +1,65 @@
+{
+  "task": "M5005-LIVE-SPEAKING",
+  "capturedAt": "2026-09-16T22:29:06.877Z",
+  "gateway": "http://127.0.0.1:18070",
+  "direct": "http://127.0.0.1:18090",
+  "result": "PASS",
+  "passed": 9,
+  "total": 9,
+  "checks": [
+    {
+      "name": "setup-register",
+      "ok": true,
+      "observed": "HTTP 201",
+      "expected": "HTTP 201"
+    },
+    {
+      "name": "setup-login",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200 + token"
+    },
+    {
+      "name": "gw-still-failclosed",
+      "ok": true,
+      "observed": "HTTP 404",
+      "expected": "HTTP 404 owner conflict"
+    },
+    {
+      "name": "upload-failure",
+      "ok": true,
+      "observed": "HTTP 400 rows=0",
+      "expected": "HTTP 400 + no row"
+    },
+    {
+      "name": "recording-stored",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "STORED_LOCAL_ENCRYPTED"
+    },
+    {
+      "name": "self-rating",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "RECORDED"
+    },
+    {
+      "name": "retention-delete",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "DELETED"
+    },
+    {
+      "name": "retention-durable",
+      "ok": true,
+      "observed": "delete rows=1",
+      "expected": "delete fact durable"
+    },
+    {
+      "name": "principal-scoped",
+      "ok": true,
+      "observed": "B rows on A recording=0",
+      "expected": "B sees nothing"
+    }
+  ]
+}

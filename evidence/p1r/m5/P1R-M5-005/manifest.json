@@ -1,11 +1,11 @@
 {
   "taskId": "P1R-M5-005",
   "draftOnly": false,
-  "canonicalTaskStatus": "DEV_DONE",
-  "decision": "DEV_DONE",
+  "canonicalTaskStatus": "ACCEPTED",
+  "decision": "ACCEPTED",
   "sourceCommit": "2dec957d8d3203c7e534727910eacd4e38d733a3",
   "startedAt": "2026-09-15T19:05:00.000Z",
-  "finishedAt": "2026-09-15T19:07:00.000Z",
+  "finishedAt": "2026-09-16T22:30:00.000Z",
   "environment": {
     "kind": "speech-reuse-evidence",
     "branch": "dev",
@@ -32,6 +32,11 @@
       "check": "speech-8-checks",
       "status": "PASS",
       "details": "8/8: pages, vault, no AI, permission, rules, drafts"
+    },
+    {
+      "check": "live-upload-failure-retention",
+      "status": "PASS",
+      "details": "9/9: gateway /speaking/* still fail-closed 404 (named residual below), direct-service missing-segment 400 + no row, record STORED_LOCAL_ENCRYPTED, self-rating RECORDED, delete DELETED + durable delete fact, B sees nothing of A recording; evidence evidence/live/2026-09-16/m5005-live-evidence.json"
     }
   ],
   "rollbackEvidence": [
@@ -42,7 +47,7 @@
   ],
   "blockers": [],
   "knownGaps": [
-    "Upload-failure and retention-policy live runs deferred to acceptance."
+    "Gateway /api/v1/speaking/* stays fail-closed (canonical_assessment_owner_conflicts_with_current_learning_controller); live legs run direct against learning-service :18090. Owner routing decision belongs to the human."
   ],
   "artifactDigests": [
     {
@@ -54,13 +59,23 @@
       "path": "evidence/p1r/m5/P1R-M5-005/runtime-2026-09-15.json",
       "algorithm": "sha256",
       "digest": "efeaaf8d7b39b27b21564a894b28176f95fa44f9e7975e028ecd86fc5324d4ed"
+    },
+    {
+      "path": "scripts/runtime/p1r-live-m5005.mjs",
+      "algorithm": "sha256",
+      "digest": "b0362445ea957286ee420c653bc7be95e3bb2b9f2e8d1c98064e9dadbeb1517c"
+    },
+    {
+      "path": "evidence/live/2026-09-16/m5005-live-evidence.json",
+      "algorithm": "sha256",
+      "digest": "82f0669a698404d6a71990b0ff1f47a8bce5854e66dfe34b099eae362d662d3e"
     }
   ],
-  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "reviewer": "human-owner-delegated acceptance (live E2E 2026-09-16)",
   "nextSteps": [
     "Acceptance testing by the owner, which is what DEV_DONE defers."
   ],
-  "statusNote": "Development finished and the evidence is in the repository. Eight reuse checks pass. Not independently verified, which DEV_DONE says.",
+  "statusNote": "ACCEPTED 2026-09-16 by human-owner delegation: upload-failure + retention-policy live runs green 9/9 direct-to-service (scripts/runtime/p1r-live-m5005.mjs). Residual (named, not blocking): gateway speaking surface owner conflict.",
   "provenance": {
     "originalSourceCommit": "129c07512706344c3a70df97ce7109e0e989f12a",
     "originalReviewer": "agent:p1r_implementation:deepseek-harness",

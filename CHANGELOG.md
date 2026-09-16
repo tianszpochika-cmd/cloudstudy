@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1R-M5-005-SPEAKING-20260916] **翻牌 M5-005：上传失败 + 保留策略活跑（70 ACCEPTED / 38 DEV_DONE，工具待验）。** 新链 `p1r-live-m5005.mjs` 9/9：缺段 400 无落库 → 加密存储 → 自评 → 删除持久 → 跨用户隔离。残留：网关 speaking 属主冲突 fail-closed（具名，归人类定）。
+
 - [P1R-M3-004-ROUNDTRIP-20260916] **翻牌 M3-004：对象存储回环 + 浏览器工作台（69 ACCEPTED / 39 DEV_DONE，工具待验）。** 新链 `p1r-live-m3004.mjs` 15/15：注册/重放 → 授权 → MinIO PUT → 激活 → 读取授权 → MinIO GET sha 一致 → 任务/字幕/清单 → 重试 409 → 学员读 → 听力台零错。附带：media JDBC 端口×2、V5/V6 栏宽、上传授权门修正、空时间修正、网关 6 投影（412 routes）；media 71/0/0、gateway 94/0/0。
 
 - [P1R-M5-011-REBUILD-20260916] **翻牌 M5-011：迟到事件重建 + 跨 owner 对账（68 ACCEPTED / 40 DEV_DONE，工具待验）。** 新链 `p1r-live-m5011.mjs` 8/8：回填昨日行 → 昨日报告重建 → 今日不受影响 → 周报汇总 → B3 概览一致 → 水印稳定。

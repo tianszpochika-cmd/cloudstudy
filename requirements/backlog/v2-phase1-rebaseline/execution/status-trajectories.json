@@ -895,11 +895,12 @@
         "PLANNED",
         "READY",
         "IN_PROGRESS",
-        "DEV_DONE"
+        "DEV_DONE",
+        "ACCEPTED"
       ],
-      "recordedAt": "2026-09-15T19:07:00Z",
-      "actor": "agent:p1r_implementation:deepseek-harness",
-      "reason": "Owner route A (REUSE-VERIFY, no production change). Dependencies M1-009 + M5-002 DEV_DONE. Eight speaking/writing checks pass; upload/retention live run deferred as knownGap.",
+      "recordedAt": "2026-09-16T22:30:00Z",
+      "actor": "human-owner-delegated acceptance (live E2E 2026-09-16)",
+      "reason": "Upload-failure + retention green 9/9 direct-to-service (p1r-live-m5005.mjs); gateway speaking owner conflict named residual.",
       "evidencePath": "evidence/p1r/m5/P1R-M5-005/manifest.json"
     },
     {
