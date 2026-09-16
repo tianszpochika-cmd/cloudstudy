@@ -3,7 +3,7 @@
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
   "decision": "ACCEPTED",
-  "sourceCommit": "c3774a27eefd85b1269aa2a14934386190323b40",
+  "sourceCommit": "8051eb2a4530f7103ffa92df0b9b6749df7fc540",
   "startedAt": "2026-09-15T22:00:00.000Z",
   "finishedAt": "2026-09-15T22:02:00.000Z",
   "environment": {
@@ -65,9 +65,9 @@
     "currentSourceRevalidationTask": "P1R-M8-002",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-16T22:36:53.509Z",
-    "currentSourceRevalidationAuditedImplementationSource": "c3774a27eefd85b1269aa2a14934386190323b40",
-    "currentSourceRevalidationIntegrationCheckpoint": "c3774a27eefd85b1269aa2a14934386190323b40",
+    "currentSourceRevalidationFinishedAt": "2026-09-16T23:27:16.458Z",
+    "currentSourceRevalidationAuditedImplementationSource": "8051eb2a4530f7103ffa92df0b9b6749df7fc540",
+    "currentSourceRevalidationIntegrationCheckpoint": "8051eb2a4530f7103ffa92df0b9b6749df7fc540",
     "currentSourceRevalidationHistory": [
       {
         "taskId": "P1R-M8-002",
@@ -278,8 +278,18 @@
         "runtimeStatus": "RUNTIME_VERIFIED",
         "finishedAt": "2026-09-16T22:36:53.509Z",
         "details": "M5-005 live speaking chain + evidence"
+      },
+      {
+        "taskId": "P1R-M8-002",
+        "sourceCommit": "8051eb2a4530f7103ffa92df0b9b6749df7fc540",
+        "auditedImplementationSource": "8051eb2a4530f7103ffa92df0b9b6749df7fc540",
+        "integrationCheckpoint": "8051eb2a4530f7103ffa92df0b9b6749df7fc540",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T23:27:16.458Z",
+        "details": "M5-009 mistake endpoints + b10 ops re-merge openapi"
       }
     ],
-    "previousCurrentSourceCommit": "2dec957d8d3203c7e534727910eacd4e38d733a3"
+    "previousCurrentSourceCommit": "c3774a27eefd85b1269aa2a14934386190323b40"
   }
 }

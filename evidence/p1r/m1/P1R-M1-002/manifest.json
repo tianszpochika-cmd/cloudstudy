@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-002",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "c3774a27eefd85b1269aa2a14934386190323b40",
+  "sourceCommit": "8051eb2a4530f7103ffa92df0b9b6749df7fc540",
   "artifactDigests": [
     {
       "path": "packages/contracts/fragments/b8/b8-auth-iam.openapi.json",
@@ -12,7 +12,7 @@
     {
       "path": "packages/contracts/openapi/v1/openapi.json",
       "algorithm": "sha256",
-      "digest": "f125e5eb85acc1ace56f7e8f432d10c855c5e8024010048325ee37504684b9db"
+      "digest": "f122a120a22240d54ca8550d4032244830e04f83fb3e048ed25b799bde55a431"
     },
     {
       "path": "packages/contracts/generated/openapi.ts",
@@ -530,9 +530,19 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-16T22:36:47.776Z",
         "details": "M5-005 live speaking chain + evidence"
+      },
+      {
+        "taskId": "P1R-M1-002",
+        "sourceCommit": "8051eb2a4530f7103ffa92df0b9b6749df7fc540",
+        "auditedImplementationSource": "8051eb2a4530f7103ffa92df0b9b6749df7fc540",
+        "integrationCheckpoint": "8051eb2a4530f7103ffa92df0b9b6749df7fc540",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T23:27:10.544Z",
+        "details": "M5-009 mistake endpoints + b10 ops re-merge openapi"
       }
     ],
-    "previousCurrentSourceCommit": "2dec957d8d3203c7e534727910eacd4e38d733a3",
+    "previousCurrentSourceCommit": "c3774a27eefd85b1269aa2a14934386190323b40",
     "previousCurrentSourceRevalidationTask": "P1R-M1-018",
     "currentSourceRevalidationTask": "P1R-M1-002",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
@@ -540,9 +550,9 @@
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
     "previousCurrentSourceRevalidationFinishedAt": "2026-09-01T15:39:29+08:00",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-16T22:36:47.776Z",
-    "currentSourceRevalidationAuditedImplementationSource": "c3774a27eefd85b1269aa2a14934386190323b40",
-    "currentSourceRevalidationIntegrationCheckpoint": "c3774a27eefd85b1269aa2a14934386190323b40"
+    "currentSourceRevalidationFinishedAt": "2026-09-16T23:27:10.544Z",
+    "currentSourceRevalidationAuditedImplementationSource": "8051eb2a4530f7103ffa92df0b9b6749df7fc540",
+    "currentSourceRevalidationIntegrationCheckpoint": "8051eb2a4530f7103ffa92df0b9b6749df7fc540"
   },
   "startedAt": "2026-08-29T20:33:21+08:00",
   "finishedAt": "2026-09-01T15:39:29+08:00",
