@@ -1,0 +1,58 @@
+{
+  "task": "M5011-LIVE-REPORTS",
+  "capturedAt": "2026-09-16T20:35:22.798Z",
+  "gateway": "http://127.0.0.1:18070",
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "name": "setup-register",
+      "ok": true,
+      "observed": "HTTP 201",
+      "expected": "HTTP 201"
+    },
+    {
+      "name": "setup-login",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200 + token"
+    },
+    {
+      "name": "daily-today",
+      "ok": true,
+      "observed": "HTTP 200 reviewItems=3",
+      "expected": "reviewItems=3"
+    },
+    {
+      "name": "late-rebuild",
+      "ok": true,
+      "observed": "HTTP 200 date=2026-09-15 reviewItems=1 accuracy=100",
+      "expected": "yesterday rebuilt: 1 @ 100"
+    },
+    {
+      "name": "today-excludes-late",
+      "ok": true,
+      "observed": "HTTP 200 reviewItems=3",
+      "expected": "today still 3"
+    },
+    {
+      "name": "weekly-includes-late",
+      "ok": true,
+      "observed": "HTTP 200 reviewItems=4",
+      "expected": "weekly 3+1=4"
+    },
+    {
+      "name": "x-owner-reconcile",
+      "ok": true,
+      "observed": "HTTP 200 reviewFacts=4",
+      "expected": "reviewFacts=4 versioned"
+    },
+    {
+      "name": "watermark-stable",
+      "ok": true,
+      "observed": "stable=true calc=B25-SRS-REPORT-1",
+      "expected": "same id + watermark"
+    }
+  ]
+}

@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1R-M5-011-REBUILD-20260916] **翻牌 M5-011：迟到事件重建 + 跨 owner 对账（68 ACCEPTED / 40 DEV_DONE，工具待验）。** 新链 `p1r-live-m5011.mjs` 8/8：回填昨日行 → 昨日报告重建 → 今日不受影响 → 周报汇总 → B3 概览一致 → 水印稳定。
+
 - [P1R-M5-010-REPLAY-20260916] **翻牌 M5-010：错题史迁移回放 + 失败降级活跑（67 ACCEPTED / 41 DEV_DONE，工具待验）。** 新链 `p1r-live-m5010.mjs` 10/10：迁移史可见 → D0 验证 → 同 key 回放稳定 → 提交 PASSED → 概览对账 → 401/无 key fail-closed 形态。
 
 - [P1R-M3-005-TRAIL-20260916] **翻牌 M3-005：双审审计回放 + 跨租户活负例（66 ACCEPTED / 42 DEV_DONE，工具待验）。** 新链 `p1r-live-m3005.mjs` 10/10：双审全流 + outbox 回放有序 + 载荷对 + 评审人列一致 + 伪造租户头忽略。观察：reviewNote 进 API 不进 outbox（未立案）。

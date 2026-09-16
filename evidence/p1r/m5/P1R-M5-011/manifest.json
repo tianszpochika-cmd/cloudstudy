@@ -1,11 +1,11 @@
 {
   "taskId": "P1R-M5-011",
   "draftOnly": false,
-  "canonicalTaskStatus": "DEV_DONE",
-  "decision": "DEV_DONE",
+  "canonicalTaskStatus": "ACCEPTED",
+  "decision": "ACCEPTED",
   "sourceCommit": "1158c7e723fabffddde5ccda0f0332cd4bb97286",
   "startedAt": "2026-09-15T19:35:00.000Z",
-  "finishedAt": "2026-09-15T19:37:00.000Z",
+  "finishedAt": "2026-09-16T20:45:00.000Z",
   "environment": {
     "kind": "reports-reuse-evidence",
     "branch": "dev",
@@ -32,6 +32,11 @@
       "check": "reports-8-checks",
       "status": "PASS",
       "details": "8/8: daily, weekly, watermark, time, rebuild, page, trace"
+    },
+    {
+      "check": "live-late-rebuild-x-owner",
+      "status": "PASS",
+      "details": "8/8: today report 3, backdated row rebuilds yesterday report 1 @ 100, today still 3, weekly 3+1=4, B3 overview reviewFacts=4 versioned, deterministic reportId + watermark stable; evidence evidence/live/2026-09-16/m5011-live-evidence.json"
     }
   ],
   "rollbackEvidence": [
@@ -41,9 +46,7 @@
     }
   ],
   "blockers": [],
-  "knownGaps": [
-    "Late-event rebuild and cross-owner reconciliation live runs deferred to acceptance."
-  ],
+  "knownGaps": [],
   "artifactDigests": [
     {
       "path": "scripts/runtime/p1r-m5-011-runtime.mjs",
@@ -54,13 +57,23 @@
       "path": "evidence/p1r/m5/P1R-M5-011/runtime-2026-09-15.json",
       "algorithm": "sha256",
       "digest": "05045c9c52faf530316111559efd3f2aa4fcf86620a45b4884f7339bed2a0637"
+    },
+    {
+      "path": "scripts/runtime/p1r-live-m5011.mjs",
+      "algorithm": "sha256",
+      "digest": "d8bcbd8467e46f6ac0f3709233d2f69778ed679b26c7837f463dfc2fe3d7cf21"
+    },
+    {
+      "path": "evidence/live/2026-09-16/m5011-live-evidence.json",
+      "algorithm": "sha256",
+      "digest": "7c2cbe4a27a99b5c83e4921b69d37e50653cf599db773632cdee1cbd8b46a62c"
     }
   ],
-  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "reviewer": "human-owner-delegated acceptance (live E2E 2026-09-16)",
   "nextSteps": [
     "Acceptance testing by the owner, which is what DEV_DONE defers."
   ],
-  "statusNote": "Development finished and the evidence is in the repository. Eight reuse checks pass. Not independently verified, which DEV_DONE says.",
+  "statusNote": "ACCEPTED 2026-09-16 by human-owner delegation: named known-gap closed by live run scripts/runtime/p1r-live-m5011.mjs 8/8 (late-event rebuild across date partitions + B25/B3 cross-owner reconciliation + watermark stability, MySQL-backed). Residual: none.",
   "provenance": {
     "originalSourceCommit": "adb8412aa099b3f7dc53d44528753a285bfcd085",
     "originalReviewer": "agent:p1r_implementation:deepseek-harness",
