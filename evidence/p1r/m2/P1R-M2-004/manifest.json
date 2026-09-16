@@ -15,7 +15,7 @@
   "taskId": "P1R-M2-004",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "11117a3fd5a9bd0f4482de9c93db3db44b345b8a",
+  "sourceCommit": "253474f60efd625e863bb8b85e48f7fd806ea85b",
   "artifactDigests": [
     {
       "path": "config/p1r-data-ownership.v1.json",
@@ -563,13 +563,13 @@
         "summary": "Not submitted."
       }
     ],
-    "previousCurrentSourceCommit": "99e0e11bdee809a6c0d64672e725fb5c57ce4dcd",
+    "previousCurrentSourceCommit": "11117a3fd5a9bd0f4482de9c93db3db44b345b8a",
     "currentSourceRevalidationTask": "P1R-M2-004",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-16T17:26:36.063Z",
-    "currentSourceRevalidationAuditedImplementationSource": "11117a3fd5a9bd0f4482de9c93db3db44b345b8a",
-    "currentSourceRevalidationIntegrationCheckpoint": "11117a3fd5a9bd0f4482de9c93db3db44b345b8a",
+    "currentSourceRevalidationFinishedAt": "2026-09-16T18:33:00.389Z",
+    "currentSourceRevalidationAuditedImplementationSource": "253474f60efd625e863bb8b85e48f7fd806ea85b",
+    "currentSourceRevalidationIntegrationCheckpoint": "253474f60efd625e863bb8b85e48f7fd806ea85b",
     "currentSourceRevalidationHistory": [
       {
         "taskId": "P1R-M2-004",
@@ -830,6 +830,16 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-16T17:26:36.063Z",
         "details": "1A messages page: router + AppShell nav entries."
+      },
+      {
+        "taskId": "P1R-M2-004",
+        "sourceCommit": "253474f60efd625e863bb8b85e48f7fd806ea85b",
+        "auditedImplementationSource": "253474f60efd625e863bb8b85e48f7fd806ea85b",
+        "integrationCheckpoint": "253474f60efd625e863bb8b85e48f7fd806ea85b",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T18:33:00.389Z",
+        "details": "1A recovery console: admin-recovery projections + b26 ops re-merge openapi."
       }
     ]
   },

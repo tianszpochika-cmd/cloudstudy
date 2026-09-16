@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-002",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "11117a3fd5a9bd0f4482de9c93db3db44b345b8a",
+  "sourceCommit": "253474f60efd625e863bb8b85e48f7fd806ea85b",
   "artifactDigests": [
     {
       "path": "packages/contracts/fragments/b8/b8-auth-iam.openapi.json",
@@ -12,7 +12,7 @@
     {
       "path": "packages/contracts/openapi/v1/openapi.json",
       "algorithm": "sha256",
-      "digest": "5f209f5d18c40054b90ce23ed9270ed8bfdc5809d0584e21ab3157473e5723ef"
+      "digest": "8d36fe20054a177eb8522ceb4db8c29cf7bc1215fef02f32ae02ded9d597f0f5"
     },
     {
       "path": "packages/contracts/generated/openapi.ts",
@@ -430,9 +430,19 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-16T17:26:34.276Z",
         "details": "1A messages page: router + AppShell nav entries."
+      },
+      {
+        "taskId": "P1R-M1-002",
+        "sourceCommit": "253474f60efd625e863bb8b85e48f7fd806ea85b",
+        "auditedImplementationSource": "253474f60efd625e863bb8b85e48f7fd806ea85b",
+        "integrationCheckpoint": "253474f60efd625e863bb8b85e48f7fd806ea85b",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T18:32:58.902Z",
+        "details": "1A recovery console: admin-recovery projections + b26 ops re-merge openapi."
       }
     ],
-    "previousCurrentSourceCommit": "99e0e11bdee809a6c0d64672e725fb5c57ce4dcd",
+    "previousCurrentSourceCommit": "11117a3fd5a9bd0f4482de9c93db3db44b345b8a",
     "previousCurrentSourceRevalidationTask": "P1R-M1-018",
     "currentSourceRevalidationTask": "P1R-M1-002",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
@@ -440,9 +450,9 @@
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
     "previousCurrentSourceRevalidationFinishedAt": "2026-09-01T15:39:29+08:00",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-16T17:26:34.276Z",
-    "currentSourceRevalidationAuditedImplementationSource": "11117a3fd5a9bd0f4482de9c93db3db44b345b8a",
-    "currentSourceRevalidationIntegrationCheckpoint": "11117a3fd5a9bd0f4482de9c93db3db44b345b8a"
+    "currentSourceRevalidationFinishedAt": "2026-09-16T18:32:58.902Z",
+    "currentSourceRevalidationAuditedImplementationSource": "253474f60efd625e863bb8b85e48f7fd806ea85b",
+    "currentSourceRevalidationIntegrationCheckpoint": "253474f60efd625e863bb8b85e48f7fd806ea85b"
   },
   "startedAt": "2026-08-29T20:33:21+08:00",
   "finishedAt": "2026-09-01T15:39:29+08:00",

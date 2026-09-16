@@ -3,7 +3,7 @@
   "draftOnly": false,
   "canonicalTaskStatus": "DEV_DONE",
   "decision": "DEV_DONE",
-  "sourceCommit": "11117a3fd5a9bd0f4482de9c93db3db44b345b8a",
+  "sourceCommit": "253474f60efd625e863bb8b85e48f7fd806ea85b",
   "startedAt": "2026-09-15T20:35:00.000Z",
   "finishedAt": "2026-09-15T20:38:00.000Z",
   "environment": {
@@ -81,9 +81,9 @@
     "currentSourceRevalidationTask": "P1R-M6-008",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-16T17:26:39.719Z",
-    "currentSourceRevalidationAuditedImplementationSource": "11117a3fd5a9bd0f4482de9c93db3db44b345b8a",
-    "currentSourceRevalidationIntegrationCheckpoint": "11117a3fd5a9bd0f4482de9c93db3db44b345b8a",
+    "currentSourceRevalidationFinishedAt": "2026-09-16T18:33:03.629Z",
+    "currentSourceRevalidationAuditedImplementationSource": "253474f60efd625e863bb8b85e48f7fd806ea85b",
+    "currentSourceRevalidationIntegrationCheckpoint": "253474f60efd625e863bb8b85e48f7fd806ea85b",
     "currentSourceRevalidationHistory": [
       {
         "taskId": "P1R-M6-008",
@@ -194,8 +194,18 @@
         "runtimeStatus": "RUNTIME_VERIFIED",
         "finishedAt": "2026-09-16T17:26:39.719Z",
         "details": "1A messages page: router + AppShell nav entries."
+      },
+      {
+        "taskId": "P1R-M6-008",
+        "sourceCommit": "253474f60efd625e863bb8b85e48f7fd806ea85b",
+        "auditedImplementationSource": "253474f60efd625e863bb8b85e48f7fd806ea85b",
+        "integrationCheckpoint": "253474f60efd625e863bb8b85e48f7fd806ea85b",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T18:33:03.629Z",
+        "details": "1A recovery console: admin-recovery projections + b26 ops re-merge openapi."
       }
     ],
-    "previousCurrentSourceCommit": "99e0e11bdee809a6c0d64672e725fb5c57ce4dcd"
+    "previousCurrentSourceCommit": "11117a3fd5a9bd0f4482de9c93db3db44b345b8a"
   }
 }
