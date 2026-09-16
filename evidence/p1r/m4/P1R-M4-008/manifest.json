@@ -3,7 +3,7 @@
   "draftOnly": false,
   "canonicalTaskStatus": "DEV_DONE",
   "decision": "DEV_DONE",
-  "sourceCommit": "35a62a0ab878b4090caf36cb94b2658b990f1edb",
+  "sourceCommit": "2dec957d8d3203c7e534727910eacd4e38d733a3",
   "startedAt": "2026-09-15T18:10:00.000Z",
   "finishedAt": "2026-09-15T18:15:00.000Z",
   "environment": {
@@ -76,9 +76,9 @@
     "currentSourceRevalidationTask": "P1R-M4-008",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-16T20:41:48.452Z",
-    "currentSourceRevalidationAuditedImplementationSource": "35a62a0ab878b4090caf36cb94b2658b990f1edb",
-    "currentSourceRevalidationIntegrationCheckpoint": "35a62a0ab878b4090caf36cb94b2658b990f1edb",
+    "currentSourceRevalidationFinishedAt": "2026-09-16T22:23:44.069Z",
+    "currentSourceRevalidationAuditedImplementationSource": "2dec957d8d3203c7e534727910eacd4e38d733a3",
+    "currentSourceRevalidationIntegrationCheckpoint": "2dec957d8d3203c7e534727910eacd4e38d733a3",
     "currentSourceRevalidationHistory": [
       {
         "taskId": "P1R-M4-008",
@@ -269,8 +269,18 @@
         "runtimeStatus": "RUNTIME_VERIFIED",
         "finishedAt": "2026-09-16T20:41:48.452Z",
         "details": "M5-011 live rebuild chain + evidence"
+      },
+      {
+        "taskId": "P1R-M4-008",
+        "sourceCommit": "2dec957d8d3203c7e534727910eacd4e38d733a3",
+        "auditedImplementationSource": "2dec957d8d3203c7e534727910eacd4e38d733a3",
+        "integrationCheckpoint": "2dec957d8d3203c7e534727910eacd4e38d733a3",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T22:23:44.069Z",
+        "details": "M3-004 media workbench routes + V5/V6 migrations re-merge openapi"
       }
     ],
-    "previousCurrentSourceCommit": "1158c7e723fabffddde5ccda0f0332cd4bb97286"
+    "previousCurrentSourceCommit": "35a62a0ab878b4090caf36cb94b2658b990f1edb"
   }
 }

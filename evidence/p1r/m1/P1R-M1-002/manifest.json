@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-002",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "35a62a0ab878b4090caf36cb94b2658b990f1edb",
+  "sourceCommit": "2dec957d8d3203c7e534727910eacd4e38d733a3",
   "artifactDigests": [
     {
       "path": "packages/contracts/fragments/b8/b8-auth-iam.openapi.json",
@@ -12,7 +12,7 @@
     {
       "path": "packages/contracts/openapi/v1/openapi.json",
       "algorithm": "sha256",
-      "digest": "263e94303e3fcd145734d43d20f1716f42f2b2d66937fb9e7eeeed2a793b051e"
+      "digest": "f125e5eb85acc1ace56f7e8f432d10c855c5e8024010048325ee37504684b9db"
     },
     {
       "path": "packages/contracts/generated/openapi.ts",
@@ -510,9 +510,19 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-16T20:41:45.366Z",
         "details": "M5-011 live rebuild chain + evidence"
+      },
+      {
+        "taskId": "P1R-M1-002",
+        "sourceCommit": "2dec957d8d3203c7e534727910eacd4e38d733a3",
+        "auditedImplementationSource": "2dec957d8d3203c7e534727910eacd4e38d733a3",
+        "integrationCheckpoint": "2dec957d8d3203c7e534727910eacd4e38d733a3",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T22:23:41.065Z",
+        "details": "M3-004 media workbench routes + V5/V6 migrations re-merge openapi"
       }
     ],
-    "previousCurrentSourceCommit": "1158c7e723fabffddde5ccda0f0332cd4bb97286",
+    "previousCurrentSourceCommit": "35a62a0ab878b4090caf36cb94b2658b990f1edb",
     "previousCurrentSourceRevalidationTask": "P1R-M1-018",
     "currentSourceRevalidationTask": "P1R-M1-002",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
@@ -520,9 +530,9 @@
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
     "previousCurrentSourceRevalidationFinishedAt": "2026-09-01T15:39:29+08:00",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-16T20:41:45.366Z",
-    "currentSourceRevalidationAuditedImplementationSource": "35a62a0ab878b4090caf36cb94b2658b990f1edb",
-    "currentSourceRevalidationIntegrationCheckpoint": "35a62a0ab878b4090caf36cb94b2658b990f1edb"
+    "currentSourceRevalidationFinishedAt": "2026-09-16T22:23:41.065Z",
+    "currentSourceRevalidationAuditedImplementationSource": "2dec957d8d3203c7e534727910eacd4e38d733a3",
+    "currentSourceRevalidationIntegrationCheckpoint": "2dec957d8d3203c7e534727910eacd4e38d733a3"
   },
   "startedAt": "2026-08-29T20:33:21+08:00",
   "finishedAt": "2026-09-01T15:39:29+08:00",

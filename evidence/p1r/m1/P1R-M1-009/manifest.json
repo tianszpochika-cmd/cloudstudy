@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-009",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "35a62a0ab878b4090caf36cb94b2658b990f1edb",
+  "sourceCommit": "2dec957d8d3203c7e534727910eacd4e38d733a3",
   "artifactDigests": [
     {
       "path": "config/g1-contract-data.json",
@@ -57,7 +57,7 @@
     {
       "path": "packages/contracts/fragments/b11/p1r-media.openapi.json",
       "algorithm": "sha256",
-      "digest": "8a71e3a67fbe08bc0281643d2177c97a18355778c844d2c62b68b1b8d8fc1404"
+      "digest": "865c4eae42bb9f06822c89860b842f8e197c2dd19c5b412991e9f7cc6f1e9ea4"
     },
     {
       "path": "packages/contracts/fragments/b3-multimodal.openapi.json",
@@ -72,7 +72,7 @@
     {
       "path": "packages/contracts/fragments/p1r-gateway-boundary.openapi.json",
       "algorithm": "sha256",
-      "digest": "060dfae368c9a7c23e424ecab47f6a911b97a5ad956ddd1a1e4e2b2d0a05bcf7"
+      "digest": "006401469a8d9a53bf3925fa2f7a78f95aa44b8d62de619cad45b8c1c295a646"
     },
     {
       "path": "packages/contracts/generated/openapi.ts",
@@ -82,7 +82,7 @@
     {
       "path": "packages/contracts/openapi/v1/openapi.json",
       "algorithm": "sha256",
-      "digest": "263e94303e3fcd145734d43d20f1716f42f2b2d66937fb9e7eeeed2a793b051e"
+      "digest": "f125e5eb85acc1ace56f7e8f432d10c855c5e8024010048325ee37504684b9db"
     },
     {
       "path": "scripts/audit/p1r-gateway-contract-check.mjs",
@@ -158,7 +158,7 @@
     "originalFinishedAt": "2026-08-30T15:10:39+08:00",
     "originalReviewer": "agent:m1_009_contract_audit:gpt-5.6-luna:max",
     "originalAcceptedContractBaseline": "463c4b238caceb1592bff6c61327c00ab9bac922",
-    "previousCurrentSourceCommit": "1158c7e723fabffddde5ccda0f0332cd4bb97286",
+    "previousCurrentSourceCommit": "35a62a0ab878b4090caf36cb94b2658b990f1edb",
     "previousCurrentSourceRevalidationTask": "P1R-M2-005",
     "previousCurrentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
@@ -166,7 +166,7 @@
     "currentSourceRevalidationTask": "P1R-M1-009",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-16T20:41:45.883Z",
+    "currentSourceRevalidationFinishedAt": "2026-09-16T22:23:41.551Z",
     "currentSourceRevalidationHistory": [
       {
         "taskId": "P1R-M1-009",
@@ -666,10 +666,20 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-16T20:41:45.883Z",
         "details": "M5-011 live rebuild chain + evidence"
+      },
+      {
+        "taskId": "P1R-M1-009",
+        "sourceCommit": "2dec957d8d3203c7e534727910eacd4e38d733a3",
+        "auditedImplementationSource": "2dec957d8d3203c7e534727910eacd4e38d733a3",
+        "integrationCheckpoint": "2dec957d8d3203c7e534727910eacd4e38d733a3",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T22:23:41.551Z",
+        "details": "M3-004 media workbench routes + V5/V6 migrations re-merge openapi"
       }
     ],
-    "currentSourceRevalidationAuditedImplementationSource": "35a62a0ab878b4090caf36cb94b2658b990f1edb",
-    "currentSourceRevalidationIntegrationCheckpoint": "35a62a0ab878b4090caf36cb94b2658b990f1edb"
+    "currentSourceRevalidationAuditedImplementationSource": "2dec957d8d3203c7e534727910eacd4e38d733a3",
+    "currentSourceRevalidationIntegrationCheckpoint": "2dec957d8d3203c7e534727910eacd4e38d733a3"
   },
   "startedAt": "2026-08-30T13:26:50+08:00",
   "finishedAt": "2026-09-01T15:39:29+08:00",
