@@ -1,10 +1,10 @@
 {
   "task": "W4-LIVE-E2E",
-  "capturedAt": "2026-09-16T08:55:56.264Z",
+  "capturedAt": "2026-09-16T10:30:28.308Z",
   "gateway": "http://127.0.0.1:18070",
   "result": "PASS",
-  "passed": 22,
-  "total": 22,
+  "passed": 24,
+  "total": 24,
   "checks": [
     {
       "name": "setup-a",
@@ -27,7 +27,7 @@
     {
       "name": "notif-pref-put",
       "ok": true,
-      "observed": "HTTP 200 {\"channel\":\"PUSH\",\"enabled\":false,\"locale\":\"zh-CN\",\"notificationType\":\"REVIEW_DUE\",\"principalId\":\"6ea6f239-26b7-43e1-a29",
+      "observed": "HTTP 200 {\"channel\":\"PUSH\",\"enabled\":false,\"locale\":\"zh-CN\",\"notificationType\":\"REVIEW_DUE\",\"principalId\":\"d94759dc-c18d-4489-b5e",
       "expected": "HTTP 200"
     },
     {
@@ -51,7 +51,7 @@
     {
       "name": "notif-deliver-filtered",
       "ok": true,
-      "observed": "HTTP 200 {\"attempt\":{\"attemptId\":\"delivery-0ac862f4-c981-4f1c-98ed-3b7260e97173\",\"messageId\":\"msg-c092f586-7d78-42f9-ae43-c9cc9d654ee6\",\"channel\":\"PU",
+      "observed": "HTTP 200 {\"attempt\":{\"attemptId\":\"delivery-05fef974-c0c0-470c-b378-b95e1a312b2c\",\"messageId\":\"msg-abb90acf-3e1c-4ed0-a340-57a46239ccde\",\"channel\":\"PU",
       "expected": "CANCELLED/PREFERENCE_DISABLED"
     },
     {
@@ -63,7 +63,7 @@
     {
       "name": "sync-push",
       "ok": true,
-      "observed": "HTTP 200 {\"conflicts\":[],\"clientBatchId\":\"\",\"acceptedChangeIds\":[],\"serverVersion\":1789548955306,\"nextCursor\":\"1789548955306\",\"source\":\"mysql\"}",
+      "observed": "HTTP 200 {\"conflicts\":[],\"clientBatchId\":\"\",\"acceptedChangeIds\":[],\"serverVersion\":1789554627352,\"nextCursor\":\"1789554627352\",\"source\":\"mysql\"}",
       "expected": "HTTP 200"
     },
     {
@@ -71,6 +71,18 @@
       "ok": true,
       "observed": "HTTP 200",
       "expected": "HTTP 200"
+    },
+    {
+      "name": "sync-disorder",
+      "ok": true,
+      "observed": "HTTP 200 accepted=3",
+      "expected": "HTTP 200 x3 accepted"
+    },
+    {
+      "name": "sync-duplicate",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200 absorbed"
     },
     {
       "name": "revoke-two-sessions",

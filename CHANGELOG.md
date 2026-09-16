@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1R-ACCEPT-M5-007-M5-008-20260916] **翻牌 M5-007/M5-008：对决活证 + 空命题具名（49 ACCEPTED / 59 DEV_DONE）。** repeat/乱序/重复吸收活绿；"old-version 门"与"conflicts 输出"在实现中不存在（键即并发控制、数组写死为空），具名为空命题而非假设，附代码指针。
+
 - [P1R-ONBOARDING-FULL-20260916] **纯 UI 首日全旅程 9/9：开户→定级答题→报告→今日。** 在 P1-LIVE-014 修复上延长 UI 链：答题（首选项）、报告页、今日页直达，零错误。M4-010 仍留置（计划生成无 HTTP 触发口）。
 
 - [P1-LIVE-014-ONBOARDING-20260916] **纯 UI 从零开户打通：修五处 UI/服务端契约错位（ADR-0024）。** 门 policyVersion 旧名、门回包字段误读、缺 ADULT_LEARNING 同意、同意后未轮换 token、三写并行抢版本号——逐个活现形后修复。现注册→门→目标→保存直达 `/assessment` 首道真题，全部写操作 200。验证：`vue-tsc` 0 错误、新链 **6/6 PASS**。

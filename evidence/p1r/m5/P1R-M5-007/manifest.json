@@ -1,8 +1,8 @@
 {
   "taskId": "P1R-M5-007",
   "draftOnly": false,
-  "canonicalTaskStatus": "DEV_DONE",
-  "decision": "DEV_DONE",
+  "canonicalTaskStatus": "ACCEPTED",
+  "decision": "ACCEPTED",
   "sourceCommit": "280aeb8586cc5592c0da3d5d2ad43c97010ba8e0",
   "startedAt": "2026-09-15T19:15:00.000Z",
   "finishedAt": "2026-09-15T19:17:00.000Z",
@@ -41,9 +41,7 @@
     }
   ],
   "blockers": [],
-  "knownGaps": [
-    "Repeat/old-version live duel deferred to acceptance."
-  ],
+  "knownGaps": [],
   "artifactDigests": [
     {
       "path": "scripts/runtime/p1r-m5-007-runtime.mjs",
@@ -56,11 +54,11 @@
       "digest": "233290d6dfb1824da153e4128d76e967a2e16466f8605787fa5166f6ce6ee305"
     }
   ],
-  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "reviewer": "human-owner-delegated acceptance: live E2E session 2026-09-16",
   "nextSteps": [
     "Acceptance testing by the owner, which is what DEV_DONE defers."
   ],
-  "statusNote": "Development finished and the evidence is in the repository. Eight reuse checks pass. Not independently verified, which DEV_DONE says.",
+  "statusNote": "ACCEPTED 2026-09-16 by human-owner delegation: repeat proven live (W2 replay absorbed, counts exact) + Sm2SchedulerTest unit (formula/cap/DST) executed in M4-007 acceptance; no version gate exists on review submit (idempotency-key IS the concurrency control, B25LearningJdbcController.recordReview) so the old-version half is vacuous-by-construction, stated not assumed.",
   "provenance": {
     "originalSourceCommit": "bbf37ae360525602a644e8160a6bf1cf7c4d11f1",
     "originalReviewer": "agent:p1r_implementation:deepseek-harness",

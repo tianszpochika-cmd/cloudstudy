@@ -80,6 +80,19 @@ r = await call('POST', '/api/v1/offline/sync/push', { token: tokenA, body: { cha
 record('sync-push', r.status === 200, `HTTP ${r.status} ${JSON.stringify(r.json).slice(0, 140)}`, 'HTTP 200');
 r = await call('GET', '/api/v1/offline/sync/pull?limit=10', { token: tokenA });
 record('sync-pull', r.status === 200, `HTTP ${r.status}`, 'HTTP 200');
+// disorder + duplicate run (M5-008): out-of-order clientSeq accepted in any
+// order; same changeId twice absorbed. conflicts[] is always empty by
+// construction (server echoes acceptedChangeIds); documented, not asserted.
+r = await call('POST', '/api/v1/offline/sync/push', { token: tokenA, body: { changes: [
+  { clientSeq: 33, changeId: 'w4-dis-3', kind: 'REVIEW', itemId: 'w4-item-3', quality: 3 },
+  { clientSeq: 31, changeId: 'w4-dis-1', kind: 'REVIEW', itemId: 'w4-item-1b', quality: 5 },
+  { clientSeq: 32, changeId: 'w4-dis-2', kind: 'REVIEW', itemId: 'w4-item-2b', quality: 4 },
+] }, idemKey: idem('push-disorder') });
+const disAcc = r.json?.acceptedChangeIds ?? r.json?.data?.acceptedChangeIds ?? [];
+record('sync-disorder', r.status === 200 && disAcc.length === 3, `HTTP ${r.status} accepted=${disAcc.length}`, 'HTTP 200 x3 accepted');
+r = await call('POST', '/api/v1/offline/sync/push', { token: tokenA, body: { changes: [{ clientSeq: 31, changeId: 'w4-dis-1', kind: 'REVIEW', itemId: 'w4-item-1b', quality: 5 }] }, idemKey: idem('push-dupe') });
+const dupeAcc = r.json?.acceptedChangeIds ?? r.json?.data?.acceptedChangeIds ?? [];
+record('sync-duplicate', r.status === 200 && dupeAcc.includes('w4-dis-1'), `HTTP ${r.status}`, 'HTTP 200 absorbed');
 // post-refresh reconciliation (M6-003) + per-session revoke (M6-004).
 // node fetch has no cookie jar: capture the refresh cookie manually.
 async function loginWithCookie(identifier, pwd, tag) {
