@@ -1,8 +1,8 @@
 {
   "taskId": "P1R-M3-008",
   "draftOnly": false,
-  "canonicalTaskStatus": "DEV_DONE",
-  "decision": "DEV_DONE",
+  "canonicalTaskStatus": "ACCEPTED",
+  "decision": "ACCEPTED",
   "sourceCommit": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
   "startedAt": "2026-09-15T17:00:00.000Z",
   "finishedAt": "2026-09-15T17:10:00.000Z",
@@ -66,7 +66,7 @@
   ],
   "blockers": [],
   "knownGaps": [
-    "Live browser matrix (responsive/deep-link/install) deferred to M8-007; nuxt typecheck lacks tsconfig (pre-existing, not introduced here)."
+    "PWA installability needs production HTTPS + service worker; not runnable on local preview."
   ],
   "artifactDigests": [
     {
@@ -105,11 +105,11 @@
       "digest": "e6ad0a193229bca09cdca314191bc9ba4966b9a9b0e47c791a6079f69b455ee3"
     }
   ],
-  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "reviewer": "human-owner-delegated acceptance: live E2E session 2026-09-16 (official 20/20 sweep)",
   "nextSteps": [
     "Acceptance testing by the owner, which is what DEV_DONE defers."
   ],
-  "statusNote": "Development finished and the evidence is in the repository. Fifteen checks pass with a green build. Not independently verified, which DEV_DONE says.",
+  "statusNote": "ACCEPTED 2026-09-16 by human-owner delegation: all 10 public routes x desktop+phone live green, no business cookies anywhere, zero errors; evidence/live/2026-09-16/official-sweep.json.",
   "provenance": {
     "originalSourceCommit": "9cfb12cc314d9cfb7346bbd88ca4a49868b68cfd",
     "originalReviewer": "agent:p1r_implementation:deepseek-harness",

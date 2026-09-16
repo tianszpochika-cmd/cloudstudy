@@ -659,11 +659,12 @@
         "PLANNED",
         "READY",
         "IN_PROGRESS",
-        "DEV_DONE"
+        "DEV_DONE",
+        "ACCEPTED"
       ],
-      "recordedAt": "2026-09-15T17:10:00Z",
-      "actor": "agent:p1r_implementation:deepseek-harness",
-      "reason": "Owner route A. Dependency M3-006 DEV_DONE. Four static pages plus nav/sitemap delivered, nuxt build green, 15/15 harness PASS; browser matrix deferred to M8-007 as knownGap.",
+      "recordedAt": "2026-09-16T09:40:00Z",
+      "actor": "human-owner-delegated acceptance (live E2E session 2026-09-16)",
+      "reason": "Official 20/20 public sweep green (responsive + deep-link + no-token).",
       "evidencePath": "evidence/p1r/m3/P1R-M3-008/manifest.json"
     },
     {

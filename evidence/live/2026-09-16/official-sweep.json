@@ -1,0 +1,189 @@
+{
+  "task": "OFFICIAL-LIVE-SWEEP",
+  "capturedAt": "2026-09-16T09:02:09.853Z",
+  "result": "PASS",
+  "routes": 20,
+  "bad": 0,
+  "rows": [
+    {
+      "route": "/",
+      "viewport": "1440x900",
+      "status": 200,
+      "title": "语学星｜让每一次学习都走向下一步",
+      "headline": "把学习拆成下一步，每天都走得更远。",
+      "businessCookie": false,
+      "newErrors": 0
+    },
+    {
+      "route": "/about",
+      "viewport": "1440x900",
+      "status": 200,
+      "title": "关于我们｜语学星 EnglishFlow",
+      "headline": "让学习回到真实、可继续的节奏。",
+      "businessCookie": false,
+      "newErrors": 0
+    },
+    {
+      "route": "/announcements",
+      "viewport": "1440x900",
+      "status": 200,
+      "title": "服务公告｜语学星 EnglishFlow",
+      "headline": "公开版本与服务状态。",
+      "businessCookie": false,
+      "newErrors": 0
+    },
+    {
+      "route": "/compliance",
+      "viewport": "1440x900",
+      "status": 200,
+      "title": "合规公示｜语学星 EnglishFlow",
+      "headline": "把已经确定的边界，清楚地公示出来。",
+      "businessCookie": false,
+      "newErrors": 0
+    },
+    {
+      "route": "/download",
+      "viewport": "1440x900",
+      "status": 200,
+      "title": "下载与体验｜语学星 EnglishFlow",
+      "headline": "从浏览器开始，等准备好再安装。",
+      "businessCookie": false,
+      "newErrors": 0
+    },
+    {
+      "route": "/pricing",
+      "viewport": "1440x900",
+      "status": 200,
+      "title": "价格方案｜语学星 EnglishFlow",
+      "headline": "先看清权益，再决定是否开始。",
+      "businessCookie": false,
+      "newErrors": 0
+    },
+    {
+      "route": "/privacy",
+      "viewport": "1440x900",
+      "status": 200,
+      "title": "隐私与数据｜语学星 EnglishFlow",
+      "headline": "公开页面，只做公开的事。",
+      "businessCookie": false,
+      "newErrors": 0
+    },
+    {
+      "route": "/terms",
+      "viewport": "1440x900",
+      "status": 200,
+      "title": "用户协议｜语学星 EnglishFlow",
+      "headline": "先把边界说清楚，再谈使用。",
+      "businessCookie": false,
+      "newErrors": 0
+    },
+    {
+      "route": "/minors",
+      "viewport": "1440x900",
+      "status": 200,
+      "title": "未成年人保护声明｜语学星 EnglishFlow",
+      "headline": "没准备好的能力，不开放。",
+      "businessCookie": false,
+      "newErrors": 0
+    },
+    {
+      "route": "/status",
+      "viewport": "1440x900",
+      "status": 200,
+      "title": "服务状态｜语学星 EnglishFlow",
+      "headline": "可用不可用，都写清楚。",
+      "businessCookie": false,
+      "newErrors": 0
+    },
+    {
+      "route": "/",
+      "viewport": "390x844",
+      "status": 200,
+      "title": "语学星｜让每一次学习都走向下一步",
+      "headline": "把学习拆成下一步，每天都走得更远。",
+      "businessCookie": false,
+      "newErrors": 0
+    },
+    {
+      "route": "/about",
+      "viewport": "390x844",
+      "status": 200,
+      "title": "关于我们｜语学星 EnglishFlow",
+      "headline": "让学习回到真实、可继续的节奏。",
+      "businessCookie": false,
+      "newErrors": 0
+    },
+    {
+      "route": "/announcements",
+      "viewport": "390x844",
+      "status": 200,
+      "title": "服务公告｜语学星 EnglishFlow",
+      "headline": "公开版本与服务状态。",
+      "businessCookie": false,
+      "newErrors": 0
+    },
+    {
+      "route": "/compliance",
+      "viewport": "390x844",
+      "status": 200,
+      "title": "合规公示｜语学星 EnglishFlow",
+      "headline": "把已经确定的边界，清楚地公示出来。",
+      "businessCookie": false,
+      "newErrors": 0
+    },
+    {
+      "route": "/download",
+      "viewport": "390x844",
+      "status": 200,
+      "title": "下载与体验｜语学星 EnglishFlow",
+      "headline": "从浏览器开始，等准备好再安装。",
+      "businessCookie": false,
+      "newErrors": 0
+    },
+    {
+      "route": "/pricing",
+      "viewport": "390x844",
+      "status": 200,
+      "title": "价格方案｜语学星 EnglishFlow",
+      "headline": "先看清权益，再决定是否开始。",
+      "businessCookie": false,
+      "newErrors": 0
+    },
+    {
+      "route": "/privacy",
+      "viewport": "390x844",
+      "status": 200,
+      "title": "隐私与数据｜语学星 EnglishFlow",
+      "headline": "公开页面，只做公开的事。",
+      "businessCookie": false,
+      "newErrors": 0
+    },
+    {
+      "route": "/terms",
+      "viewport": "390x844",
+      "status": 200,
+      "title": "用户协议｜语学星 EnglishFlow",
+      "headline": "先把边界说清楚，再谈使用。",
+      "businessCookie": false,
+      "newErrors": 0
+    },
+    {
+      "route": "/minors",
+      "viewport": "390x844",
+      "status": 200,
+      "title": "未成年人保护声明｜语学星 EnglishFlow",
+      "headline": "没准备好的能力，不开放。",
+      "businessCookie": false,
+      "newErrors": 0
+    },
+    {
+      "route": "/status",
+      "viewport": "390x844",
+      "status": 200,
+      "title": "服务状态｜语学星 EnglishFlow",
+      "headline": "可用不可用，都写清楚。",
+      "businessCookie": false,
+      "newErrors": 0
+    }
+  ]
+}

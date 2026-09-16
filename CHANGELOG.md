@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1R-ACCEPT-M3-008-20260916] **翻牌 M3-008：官网 10 路由 × 双视口 20/20（45 ACCEPTED / 63 DEV_DONE）。** 直接 URL 深链、无业务 cookie、零错误。残留：PWA 安装需生产环境。
+
 - [P1R-ACCEPT-M6-003-M6-004-20260916] **翻牌 M6-003/M6-004：W4 22/22（44 ACCEPTED / 64 DEV_DONE）。** 刷新后同步连续性 + 单会话撤销（被撤销方 refresh 404、存活方 200；TTL 内旧 access 放行为 JWT 标准语义已断言）。
 
 - [P1R-W5-DUEL-20260916] **W5 补到 19/19：判分 repeat/duplicate/out-of-order 对决全绿；M5-002 留置（缺 pin 接线）。** 同幂等键重放同 attempt、submissionId 复用同答案同 attempt、换答案 409、检查点 v1→v2→v1 末写获胜、报告直读；均为活断言。M5-002 缺口另一半（`alternativeContentVersionId` 会话 pin）两边互指均未实现（content 注释称 M5-002 接线，assessment 无此代码），属产品工作未动手。
