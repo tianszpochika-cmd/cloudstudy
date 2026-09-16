@@ -3,7 +3,7 @@
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
   "decision": "ACCEPTED",
-  "sourceCommit": "a97beb9a9c5e241648aa81aa127de570cff93ad4",
+  "sourceCommit": "cb6179c39d5d57c13a81eea4066e75102b80f67b",
   "startedAt": "2026-09-15T22:00:00.000Z",
   "finishedAt": "2026-09-15T22:02:00.000Z",
   "environment": {
@@ -65,9 +65,9 @@
     "currentSourceRevalidationTask": "P1R-M8-002",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-16T15:46:10.978Z",
-    "currentSourceRevalidationAuditedImplementationSource": "a97beb9a9c5e241648aa81aa127de570cff93ad4",
-    "currentSourceRevalidationIntegrationCheckpoint": "a97beb9a9c5e241648aa81aa127de570cff93ad4",
+    "currentSourceRevalidationFinishedAt": "2026-09-16T16:34:53.816Z",
+    "currentSourceRevalidationAuditedImplementationSource": "cb6179c39d5d57c13a81eea4066e75102b80f67b",
+    "currentSourceRevalidationIntegrationCheckpoint": "cb6179c39d5d57c13a81eea4066e75102b80f67b",
     "currentSourceRevalidationHistory": [
       {
         "taskId": "P1R-M8-002",
@@ -148,8 +148,18 @@
         "runtimeStatus": "RUNTIME_VERIFIED",
         "finishedAt": "2026-09-16T15:46:10.978Z",
         "details": "5A shapes: report.ready.v1 canonical expansion regenerates merged/generated artifacts."
+      },
+      {
+        "taskId": "P1R-M8-002",
+        "sourceCommit": "cb6179c39d5d57c13a81eea4066e75102b80f67b",
+        "auditedImplementationSource": "cb6179c39d5d57c13a81eea4066e75102b80f67b",
+        "integrationCheckpoint": "cb6179c39d5d57c13a81eea4066e75102b80f67b",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T16:34:53.816Z",
+        "details": "5A emission: principalId widening re-merges event catalog."
       }
     ],
-    "previousCurrentSourceCommit": "1d982dc35a5150712b9b8c9dbc09994d3d1c14d2"
+    "previousCurrentSourceCommit": "a97beb9a9c5e241648aa81aa127de570cff93ad4"
   }
 }

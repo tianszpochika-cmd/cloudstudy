@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-008",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "a97beb9a9c5e241648aa81aa127de570cff93ad4",
+  "sourceCommit": "cb6179c39d5d57c13a81eea4066e75102b80f67b",
   "artifactDigests": [
     {
       "path": "config/b20-privacy-content-gates.json",
@@ -92,7 +92,7 @@
     {
       "path": "packages/contracts/events/v1/catalog.json",
       "algorithm": "sha256",
-      "digest": "ffa09bf3912f6487fd5a011b06bc2a0c81fedafa0441fe3e7998070c758c9400"
+      "digest": "8ccb3c6f2fe1fd1fd04b611da7d421503d5a0d2b533899bcdda7d4db8a04ce6b"
     },
     {
       "path": "packages/contracts/events/v1/fragments/b9-learner-content.events.json",
@@ -270,7 +270,7 @@
     "originalFinishedAt": "2026-08-30T12:32:26+08:00",
     "originalReviewer": "agent:m1_008_independent_review:gpt-5.6-luna:max",
     "originalAcceptedContractBaseline": "463c4b238caceb1592bff6c61327c00ab9bac922",
-    "previousCurrentSourceCommit": "1d982dc35a5150712b9b8c9dbc09994d3d1c14d2",
+    "previousCurrentSourceCommit": "a97beb9a9c5e241648aa81aa127de570cff93ad4",
     "previousCurrentSourceRevalidationTask": "P1R-M1-008",
     "currentSourceRevalidationTask": "P1R-M1-008",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
@@ -684,15 +684,25 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-16T15:46:03.676Z",
         "details": "5A shapes: report.ready.v1 canonical expansion regenerates merged/generated artifacts."
+      },
+      {
+        "taskId": "P1R-M1-008",
+        "sourceCommit": "cb6179c39d5d57c13a81eea4066e75102b80f67b",
+        "auditedImplementationSource": "cb6179c39d5d57c13a81eea4066e75102b80f67b",
+        "integrationCheckpoint": "cb6179c39d5d57c13a81eea4066e75102b80f67b",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T16:34:46.932Z",
+        "details": "5A emission: principalId widening re-merges event catalog."
       }
     ],
     "previousCurrentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
     "previousCurrentSourceRevalidationFinishedAt": "2026-09-12T23:35:27.174Z",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-16T15:46:03.676Z",
-    "currentSourceRevalidationAuditedImplementationSource": "a97beb9a9c5e241648aa81aa127de570cff93ad4",
-    "currentSourceRevalidationIntegrationCheckpoint": "a97beb9a9c5e241648aa81aa127de570cff93ad4"
+    "currentSourceRevalidationFinishedAt": "2026-09-16T16:34:46.932Z",
+    "currentSourceRevalidationAuditedImplementationSource": "cb6179c39d5d57c13a81eea4066e75102b80f67b",
+    "currentSourceRevalidationIntegrationCheckpoint": "cb6179c39d5d57c13a81eea4066e75102b80f67b"
   },
   "startedAt": "2026-08-30T09:15:05+08:00",
   "finishedAt": "2026-09-01T15:39:29+08:00",

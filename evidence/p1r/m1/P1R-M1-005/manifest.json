@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-005",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "a97beb9a9c5e241648aa81aa127de570cff93ad4",
+  "sourceCommit": "cb6179c39d5d57c13a81eea4066e75102b80f67b",
   "artifactDigests": [
     {
       "path": "package.json",
@@ -511,9 +511,19 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-16T15:46:03.410Z",
         "details": "5A shapes: report.ready.v1 canonical expansion regenerates merged/generated artifacts."
+      },
+      {
+        "taskId": "P1R-M1-005",
+        "sourceCommit": "cb6179c39d5d57c13a81eea4066e75102b80f67b",
+        "auditedImplementationSource": "cb6179c39d5d57c13a81eea4066e75102b80f67b",
+        "integrationCheckpoint": "cb6179c39d5d57c13a81eea4066e75102b80f67b",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T16:34:46.643Z",
+        "details": "5A emission: principalId widening re-merges event catalog."
       }
     ],
-    "previousCurrentSourceCommit": "1d982dc35a5150712b9b8c9dbc09994d3d1c14d2",
+    "previousCurrentSourceCommit": "a97beb9a9c5e241648aa81aa127de570cff93ad4",
     "previousCurrentSourceRevalidationTask": "P1R-M2-005",
     "currentSourceRevalidationTask": "P1R-M1-005",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
@@ -521,9 +531,9 @@
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
     "previousCurrentSourceRevalidationFinishedAt": "2026-09-12T22:07:09.012Z",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-16T15:46:03.410Z",
-    "currentSourceRevalidationAuditedImplementationSource": "a97beb9a9c5e241648aa81aa127de570cff93ad4",
-    "currentSourceRevalidationIntegrationCheckpoint": "a97beb9a9c5e241648aa81aa127de570cff93ad4"
+    "currentSourceRevalidationFinishedAt": "2026-09-16T16:34:46.643Z",
+    "currentSourceRevalidationAuditedImplementationSource": "cb6179c39d5d57c13a81eea4066e75102b80f67b",
+    "currentSourceRevalidationIntegrationCheckpoint": "cb6179c39d5d57c13a81eea4066e75102b80f67b"
   },
   "startedAt": "2026-08-30T00:53:14+08:00",
   "finishedAt": "2026-09-01T15:39:29+08:00",
