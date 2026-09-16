@@ -63,12 +63,33 @@ if (targetRoom) {
   record('room-join', j.status === 200, `HTTP ${j.status} room=${roomId}`, 'HTTP 200');
   const f = await call('POST', `/api/v1/social/rooms/${roomId}/focus`, { token, body: { durationMinutes: 25 }, idemKey: idem('focus') });
   record('room-focus', f.status === 200, `HTTP ${f.status}`, 'HTTP 200');
+  const focusId = f.json?.data?.session?.focusId ?? f.json?.session?.focusId ?? null;
+  if (focusId) {
+    const fin = await call('PATCH', `/api/v1/social/rooms/${roomId}/focus`, { token, body: { focusId, action: 'FINISH' }, idemKey: idem('finish') });
+    record('room-focus-finish', fin.status === 200, `HTTP ${fin.status}`, 'HTTP 200 COMPLETED');
+  } else {
+    record('room-focus-finish', false, 'no focus id', 'HTTP 200');
+  }
+  const otherRoom = rooms.find((x) => (x.roomId ?? x.id) !== roomId);
+  if (otherRoom) {
+    const oid = otherRoom.roomId ?? otherRoom.id;
+    const nf = await call('POST', `/api/v1/social/rooms/${oid}/focus`, { token, body: { durationMinutes: 25 }, idemKey: idem('focus-neg') });
+    const negBody = JSON.stringify(nf.json);
+    record('room-focus-nonmember-denied', nf.status === 409 && negBody.includes('SOCIAL_MEMBERSHIP_REQUIRED'), `HTTP ${nf.status}`, 'HTTP 409 membership guard');
+  } else {
+    record('room-focus-nonmember-denied', false, 'need 2+ rooms', 'HTTP 409');
+  }
 } else {
   record('room-join', false, 'no rooms seeded', 'HTTP 200');
   record('room-focus', false, 'no rooms seeded', 'HTTP 200');
+  record('room-focus-nonmember-denied', false, 'no rooms seeded', 'HTTP 409');
 }
 r = await call('GET', '/api/v1/social/leaderboards', { token });
-record('leaderboards', r.status === 200, `HTTP ${r.status}`, 'HTTP 200');
+{
+  const boards = data(r).boards ?? data(r).items ?? [];
+  const delayExplicit = boards.length === 0 || boards.some((b) => 'delayed' in b && 'dataFreshness' in b);
+  record('leaderboards', r.status === 200 && delayExplicit, `HTTP ${r.status} n=${boards.length} delayExplicit=${delayExplicit}`, 'HTTP 200 + freshness declared');
+}
 r = await call('POST', '/api/v1/social/moderation/reports', { token, body: { targetUserId: '00000000-0000-4000-8000-000000000001', reasonCode: 'SPAM', roomId: 'room-local-foundations' }, idemKey: idem('rep') });
 record('mod-report', [200, 201].includes(r.status), `HTTP ${r.status}`, 'HTTP 200/201');
 // commerce

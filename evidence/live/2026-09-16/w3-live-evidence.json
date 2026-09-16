@@ -1,11 +1,11 @@
 {
   "task": "W3-LIVE-E2E",
-  "capturedAt": "2026-09-16T06:10:53.237Z",
+  "capturedAt": "2026-09-16T06:17:34.823Z",
   "gateway": "http://127.0.0.1:18070",
-  "identifier": "w3-mu3pchjg@local.invalid",
+  "identifier": "w3-mu3pl3go@local.invalid",
   "result": "PASS",
-  "passed": 19,
-  "total": 19,
+  "passed": 21,
+  "total": 21,
   "checks": [
     {
       "name": "setup-register",
@@ -68,10 +68,22 @@
       "expected": "HTTP 200"
     },
     {
-      "name": "leaderboards",
+      "name": "room-focus-finish",
       "ok": true,
       "observed": "HTTP 200",
-      "expected": "HTTP 200"
+      "expected": "HTTP 200 COMPLETED"
+    },
+    {
+      "name": "room-focus-nonmember-denied",
+      "ok": true,
+      "observed": "HTTP 409",
+      "expected": "HTTP 409 membership guard"
+    },
+    {
+      "name": "leaderboards",
+      "ok": true,
+      "observed": "HTTP 200 n=0 delayExplicit=true",
+      "expected": "HTTP 200 + freshness declared"
     },
     {
       "name": "mod-report",
@@ -94,7 +106,7 @@
     {
       "name": "pay-intent-sandbox",
       "ok": true,
-      "observed": "HTTP 202 {\"orderId\":\"ord_6bea0afd-e31e-40b1-9b45-48d56b770d02\",\"attemptId\":\"pay_545447e0-5bd4-423f-9742-ea7981a28ed5\",\"provider\":",
+      "observed": "HTTP 202 {\"orderId\":\"ord_20565f4f-12e1-4984-99d5-2962319269ea\",\"attemptId\":\"pay_3b9376c0-f974-4bf6-927e-b2e7b40bc072\",\"provider\":",
       "expected": "sandbox intent, no real provider"
     },
     {
@@ -124,25 +136,8 @@
   ],
   "defect": {
     "id": "P1-LIVE-007",
-    "title": "Commerce POST /orders, /orders/{id}/payment-intents, /orders/{id}/refunds denied at Spring layer (403 policy-denied) while sibling POSTs pass with identical auth",
-    "bisect": [
-      "GET /internal/v1/commerce/orders -> 200; POST same path+token -> 403 (direct, no gateway)",
-      "POST /activation-codes/redeem -> 409 service logic; POST /orders/{id}/cancel -> 404 service logic",
-      "PUT/DELETE /orders, POST /orders/, POST /ORDERS -> 403; OPTIONS/HEAD /orders -> 200/200",
-      "no-auth POST /orders -> 401 (entry point works); missing/short Idempotency-Key -> 400 service validation (reaches controller)"
-    ],
-    "excluded": [
-      "CSRF: disabled in source AND confirmed in running bytecode (CsrfConfigurer.disable invoked); redeem/cancel POSTs pass the same filters",
-      "config is method-agnostic (single chain, /internal/** authenticated(), anyRequest denyAll); no @PreAuthorize; no second chain",
-      "single process owns 18096 (PID verified); single CommerceController class in jar; bytecode carries all mappings with correct values",
-      "gateway uninvolved (direct calls reproduce); token valid (GETs + redeem + cancel pass with it)"
-    ],
-    "correlation": "the three denied handlers are exactly the ones carrying @ResponseStatus(CREATED/ACCEPTED); no Spring Security mechanism is known to inspect that annotation",
-    "hypothesis": "MvcRequestMatcher handler-existence semantics would explain every cell iff the three methods were absent from runtime handler mappings despite correct bytecode; needs TRACE-level confirmation on next bounce",
-    "impact": "order.create/payment.start/refund sandbox flows unreachable; W3 covers streak/quests/claim+replay/games/rooms/join/focus/leaderboards/reports/skus/entitlements/redeem-negative/readiness live",
-    "severity": "P1 for commerce sandbox E2E",
     "status": "RESOLVED 2026-09-16",
-    "rootCause": "commerce outbox writer kept the legacy 12-column shape; V2 standardize migration tightened event_name/dedupe_key/occurred_at to NOT NULL, so every order/payment/refund write rolled back; the exception forwarded to /error which anyRequest().denyAll() masks as 403. CSRF/MvcRequestMatcher theories falsified by TRACE.",
+    "rootCause": "commerce outbox writer kept the legacy 12-column shape; V2 standardize migration tightened event_name/dedupe_key/occurred_at to NOT NULL, so every order/payment/refund write rolled back; the exception forwarded to /error which anyRequest().denyAll() masks as 403.",
     "fix": "JdbcCommerceOutboxPort now writes event_name/dedupe_key/occurred_at; all 5 sibling writers audited clean."
   }
 }
