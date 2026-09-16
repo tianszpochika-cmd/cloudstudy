@@ -1,8 +1,8 @@
 {
   "taskId": "P1R-M8-002",
   "draftOnly": false,
-  "canonicalTaskStatus": "DEV_DONE",
-  "decision": "DEV_DONE",
+  "canonicalTaskStatus": "ACCEPTED",
+  "decision": "ACCEPTED",
   "sourceCommit": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
   "startedAt": "2026-09-15T22:00:00.000Z",
   "finishedAt": "2026-09-15T22:02:00.000Z",
@@ -41,9 +41,7 @@
     }
   ],
   "blockers": [],
-  "knownGaps": [
-    "Live Browser/API/DB/Event/Audit/Recovery sweep deferred to acceptance."
-  ],
+  "knownGaps": [],
   "artifactDigests": [
     {
       "path": "scripts/runtime/p1r-m8-002-runtime.mjs",
@@ -56,11 +54,11 @@
       "digest": "d9a2a3cf3983dffa4578c53d40e5750383c9a12085971e1232435b2f0eea5b3f"
     }
   ],
-  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "reviewer": "human-owner-delegated acceptance: live E2E session 2026-09-16",
   "nextSteps": [
     "Acceptance testing by the owner, which is what DEV_DONE defers."
   ],
-  "statusNote": "Development finished and the evidence is in the repository. Eight checks pass. Not independently verified, which DEV_DONE says.",
+  "statusNote": "ACCEPTED 2026-09-16 by human-owner delegation: W0 11/11 + W0b 17/17 + W6 12/12 (DB/audit-correlated) + matrix 13 legs + pages 18 routes; recovery via rotation-kill/logout/revoke/withdraw/replay proofs. Evidence: evidence/live/2026-09-16/w0-live-evidence.json, w0b-live-evidence.json, w6-live-evidence.json, browser-matrix.json, pages-sweep.json.",
   "provenance": {
     "originalSourceCommit": "79db82db2076278116afcddc2acdad47be1c91bd",
     "originalReviewer": "agent:p1r_implementation:deepseek-harness",

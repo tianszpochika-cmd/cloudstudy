@@ -1,0 +1,154 @@
+{
+  "schema": "platform.event-runtime.harness.v1",
+  "taskId": "P1R-M2-005",
+  "batch": "E7",
+  "mode": "runtime",
+  "sourceCommit": "7e42860c0095b3c3cae1288afdafaae5a34f15c9",
+  "capturedAt": "2026-09-16T07:58:09.082Z",
+  "topic": "platform.iam.v1",
+  "consumerGroup": "cg.content-from-iam.v1",
+  "dlqTopic": "platform.events.dlq.v1",
+  "phases": [
+    {
+      "id": "dedupe",
+      "passed": true,
+      "claims": {
+        "producer-accepted-all-three": true,
+        "three-deliveries-produced-one-receipt": true,
+        "the-effect-applied-exactly-once": true
+      },
+      "observed": {
+        "deliveries": 3,
+        "receiptRows": 1,
+        "appliedCount": 1
+      }
+    },
+    {
+      "id": "ordering",
+      "passed": true,
+      "claims": {
+        "producer-accepted-all-three": true,
+        "all-three-consumed": true,
+        "one-aggregate-stays-in-one-partition": true,
+        "consumed-in-publish-order": true
+      },
+      "observed": {
+        "aggregateId": "p1r-m2-005-order-ac7d0938",
+        "partitionOffsets": [
+          {
+            "partition": 0,
+            "offset": 22
+          },
+          {
+            "partition": 1,
+            "offset": 7
+          },
+          {
+            "partition": 2,
+            "offset": 35
+          },
+          {
+            "partition": 3,
+            "offset": 7
+          },
+          {
+            "partition": 4,
+            "offset": 33
+          },
+          {
+            "partition": 5,
+            "offset": 6
+          }
+        ],
+        "consumedOrder": [
+          0,
+          1,
+          2
+        ]
+      }
+    },
+    {
+      "id": "dlq",
+      "passed": true,
+      "claims": {
+        "producer-accepted-the-record": true,
+        "an-unreadable-envelope-reached-the-dead-letter-topic": true
+      },
+      "observed": {
+        "dlqLogEndOffsetBefore": 27,
+        "dlqLogEndOffsetAfter": 28
+      }
+    },
+    {
+      "id": "fault-db",
+      "passed": true,
+      "claims": {
+        "producer-accepted-the-readable-event": true,
+        "a-transiently-unprocessable-event-reached-the-dead-letter-topic": true,
+        "the-failed-event-did-not-take-effect": true,
+        "mysql-was-restored": true
+      },
+      "observed": {
+        "eventId": "a2a96b83-aa7f-41a1-9f56-9f4f9bdb869b",
+        "aggregateId": "p1r-m2-005-replay-4db03771",
+        "dlqLogEndOffsetBefore": 28,
+        "dlqLogEndOffsetAfter": 29,
+        "receiptRows": 0
+      }
+    },
+    {
+      "id": "fault-kafka",
+      "passed": true,
+      "claims": {
+        "the-outbox-row-was-written": true,
+        "the-relay-recorded-a-failure-while-the-broker-was-down": true,
+        "the-broker-was-restored": true,
+        "the-same-row-reached-published-after-recovery": true
+      },
+      "observed": {
+        "eventId": "074cb339-a996-4228-8aa1-c783e4eca54d",
+        "aggregateId": "p1r-m2-005-broker-e212d2c5",
+        "statusDuringOutage": [
+          "RETRY",
+          "1",
+          "TimeoutException"
+        ],
+        "statusAfterRecovery": [
+          "PUBLISHED",
+          "2",
+          "-"
+        ]
+      }
+    },
+    {
+      "id": "replay",
+      "passed": true,
+      "claims": {
+        "replay-ran": true,
+        "the-replayed-event-took-effect-once": true,
+        "a-second-replay-ran": true,
+        "a-second-replay-cannot-apply-the-effect-again": true
+      },
+      "observed": {
+        "eventId": "a2a96b83-aa7f-41a1-9f56-9f4f9bdb869b",
+        "afterFirstReplay": {
+          "receipts": 1,
+          "applied": 1
+        },
+        "afterSecondReplay": {
+          "receipts": 1,
+          "applied": 1
+        }
+      }
+    }
+  ],
+  "passed": true,
+  "notVerifiedHere": [
+    "broker outage and recovery: the operator-driven run in batch E4 covered it, and scripting the container stop/start is not part of this harness yet",
+    "publisher-side replay of a dead-lettered event"
+  ],
+  "sensitiveMaterial": {
+    "persisted": false,
+    "emitted": false
+  }
+}

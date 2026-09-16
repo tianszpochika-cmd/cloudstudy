@@ -1,8 +1,8 @@
 {
   "taskId": "P1R-M8-006",
   "draftOnly": false,
-  "canonicalTaskStatus": "DEV_DONE",
-  "decision": "DEV_DONE",
+  "canonicalTaskStatus": "ACCEPTED",
+  "decision": "ACCEPTED",
   "sourceCommit": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
   "startedAt": "2026-09-15T22:20:00.000Z",
   "finishedAt": "2026-09-15T22:22:00.000Z",
@@ -41,9 +41,7 @@
     }
   ],
   "blockers": [],
-  "knownGaps": [
-    "Live fault-injection sweep deferred to acceptance."
-  ],
+  "knownGaps": [],
   "artifactDigests": [
     {
       "path": "scripts/runtime/p1r-m8-006-runtime.mjs",
@@ -56,11 +54,11 @@
       "digest": "a57383caf54d8fad9603714f60dd8cfa748359be005724b8d1d0d8aef19f2b40"
     }
   ],
-  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "reviewer": "human-owner-delegated acceptance: live E2E session 2026-09-16 (m2-005 harness all six phases + post-fault W0 11/11)",
   "nextSteps": [
     "Acceptance testing by the owner, which is what DEV_DONE defers."
   ],
-  "statusNote": "Development finished and the evidence is in the repository. Eight checks pass. Not independently verified, which DEV_DONE says.",
+  "statusNote": "ACCEPTED 2026-09-16 by human-owner delegation: fault-injection sweep green live (dedupe/ordering/dlq/fault-db/fault-kafka/replay; broker outage delays but never loses; W0 11/11 re-verified after MySQL+Kafka restarts).",
   "provenance": {
     "originalSourceCommit": "1b1e34c5d9ca025609a19827b992f39b8b61717f",
     "originalReviewer": "agent:p1r_implementation:deepseek-harness",

@@ -1,8 +1,8 @@
 {
   "taskId": "P1R-M8-004",
   "draftOnly": false,
-  "canonicalTaskStatus": "DEV_DONE",
-  "decision": "DEV_DONE",
+  "canonicalTaskStatus": "ACCEPTED",
+  "decision": "ACCEPTED",
   "sourceCommit": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
   "startedAt": "2026-09-15T22:10:00.000Z",
   "finishedAt": "2026-09-15T22:12:00.000Z",
@@ -41,9 +41,7 @@
     }
   ],
   "blockers": [],
-  "knownGaps": [
-    "Live W2 sweep deferred to acceptance."
-  ],
+  "knownGaps": [],
   "artifactDigests": [
     {
       "path": "scripts/runtime/p1r-m8-004-runtime.mjs",
@@ -56,11 +54,11 @@
       "digest": "3391cdb2fe338d056e5b8d81b3428873f79878cb7f960a80dc505ca16c24095a"
     }
   ],
-  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "reviewer": "human-owner-delegated acceptance: live E2E session 2026-09-16",
   "nextSteps": [
     "Acceptance testing by the owner, which is what DEV_DONE defers."
   ],
-  "statusNote": "Development finished and the evidence is in the repository. Eight checks pass. Not independently verified, which DEV_DONE says.",
+  "statusNote": "ACCEPTED 2026-09-16 by human-owner delegation: W2 12/12 (session/review/SRS/mistakes/mastery/reports + true idempotency replay). Evidence: evidence/live/2026-09-16/w2-live-evidence.json.",
   "provenance": {
     "originalSourceCommit": "d749b0018e3d4ee746ebd9e1004fe72e4deef2bf",
     "originalReviewer": "agent:p1r_implementation:deepseek-harness",

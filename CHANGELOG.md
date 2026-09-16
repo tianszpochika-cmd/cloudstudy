@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1R-ACCEPT-M8-BATCH-20260916] **翻牌 M8-002/003/004/005/006（40 ACCEPTED / 68 DEV_DONE）。** 前四项关闭各自具名的 deferred 活扫瞄缺口（W0/W0b/W6/矩阵/页面 + W1/W2/W3）。M8-006：实机故障注入六相全绿（去重/保序/DLQ/杀库/杀 broker/重放单效；broker 中断只延迟不丢），注入致 MySQL/Kafka 容器重启后 W0 11/11 复验恢复。证据：harness 自写 `evidence/p1r/m2/P1R-M2-005/*2026-09-16.json` 入库。
+
 - [P1R-ACCEPT-M2-010-20260916] **`M2-010` 翻牌：单 requestId 活穿九链（W6 12/12）。** 网关审计→IAM 决策→PEP→owner 行→outbox 行→持久审计 sink 逐链按 requestId 查库对证；直连故障链（401/403 伪造头——纠正：设计即 403）。残留：learner 侧 Kafka 中继（M2-005 结论）、staging（M8-013）。
 
 - [P1R-ACCEPT-M7-003-20260916] **`M7-003` 翻牌：世界五 tab 跨端浏览器跑 4/4。** 矩阵新增 `learner-world-tabs` 腿（世界/游戏大厅/自习室/Avatar/离线包零 pageerror；`/sync/offline-packages` 缺路由为 P1-LIVE-013 已立案项）。配套 avatar（W5）与 18 页扫描。残留：真机留 M8-007。验证：矩阵 11/13 洁 + 2 环境误差具名。

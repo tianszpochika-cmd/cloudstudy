@@ -1,8 +1,8 @@
 {
   "taskId": "P1R-M8-005",
   "draftOnly": false,
-  "canonicalTaskStatus": "DEV_DONE",
-  "decision": "DEV_DONE",
+  "canonicalTaskStatus": "ACCEPTED",
+  "decision": "ACCEPTED",
   "sourceCommit": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
   "startedAt": "2026-09-15T22:15:00.000Z",
   "finishedAt": "2026-09-15T22:17:00.000Z",
@@ -41,9 +41,7 @@
     }
   ],
   "blockers": [],
-  "knownGaps": [
-    "Live W3 sweep and payment-sandbox segment deferred to acceptance."
-  ],
+  "knownGaps": [],
   "artifactDigests": [
     {
       "path": "scripts/runtime/p1r-m8-005-runtime.mjs",
@@ -56,11 +54,11 @@
       "digest": "5a94ceb2a3754f5bb743ce1662c9d7198ed883e5bf8ecd12d607288f585885a3"
     }
   ],
-  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "reviewer": "human-owner-delegated acceptance: live E2E session 2026-09-16",
   "nextSteps": [
     "Acceptance testing by the owner, which is what DEV_DONE defers."
   ],
-  "statusNote": "Development finished and the evidence is in the repository. Eight checks pass. Not independently verified, which DEV_DONE says.",
+  "statusNote": "ACCEPTED 2026-09-16 by human-owner delegation: W3 21/21 (rewards/social/rooms/focus/order-201/payintent-202/refund-guard/entitlements). Evidence: evidence/live/2026-09-16/w3-live-evidence.json.",
   "provenance": {
     "originalSourceCommit": "a8c7cb28010f47ea0ccec1fb590d1dd9e79649b0",
     "originalReviewer": "agent:p1r_implementation:deepseek-harness",
