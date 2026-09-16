@@ -193,6 +193,37 @@ await visitAdminForbidden();
 await visit('mobile-h5-login', 'http://127.0.0.1:18183/#/pages/login/login', { waitMs: 8000 });
 await visit('mobile-h5-home', 'http://127.0.0.1:18183/#/pages/home/home', { waitMs: 8000 });
 await visit('mobile-h5-phone', 'http://127.0.0.1:18183/#/pages/login/login', { waitMs: 8000, viewport: { width: 390, height: 844 } });
+
+async function visitH5Login() {
+  // Dual-end auth: the same IAM account logs into the uni-app H5 build.
+  const out = { id: 'mobile-h5-login-flow', url: 'http://127.0.0.1:18183/#/pages/login/login', status: -1, title: '', errors: [], flow: null };
+  const browser = await chromium.launch();
+  const page = await (await browser.newContext({ viewport: { width: 390, height: 844 } })).newPage();
+  page.on('pageerror', (e) => out.errors.push('pageerror: ' + String(e).slice(0, 140)));
+  page.on('console', (m) => {
+    if (m.type() === 'error' && !/favicon|Failed to load resource/i.test(m.text())) out.errors.push('console.error: ' + m.text().slice(0, 140));
+  });
+  try {
+    const resp = await page.goto('http://127.0.0.1:18183/#/pages/login/login', { waitUntil: 'domcontentloaded', timeout: 60000 });
+    out.status = resp ? resp.status() : -1;
+    await page.waitForTimeout(10000);
+    out.title = await page.title();
+    await page.getByRole('textbox').first().fill(identifier);
+    await page.getByRole('textbox').nth(1).fill(password);
+    await page.getByText(/登录并继续/).first().click();
+    await page.waitForTimeout(8000);
+    const afterUrl = page.url();
+    const body = (await page.locator('body').first().textContent().catch(() => '')) ?? '';
+    out.flow = { afterUrl, home: /LEARNER HOME|今日闭环/.test(body) };
+  } catch (e) {
+    out.errors.push('goto-fail: ' + String(e).slice(0, 160));
+  }
+  results.push(out);
+  const ok = out.status === 200 && out.flow?.home && out.errors.length === 0;
+  console.log(`${ok ? 'ok  ' : 'FAIL'} mobile-h5-login-flow :: HTTP ${out.status} home=${out.flow?.home} errors=${out.errors.length}`);
+  await browser.close();
+}
+await visitH5Login();
 await visitWorldNotifications();
 
 async function visitWorldNotifications() {
