@@ -1,8 +1,8 @@
 {
   "task": "W5-LIVE-E2E",
-  "capturedAt": "2026-09-16T08:47:58.005Z",
+  "capturedAt": "2026-09-16T10:46:00.497Z",
   "gateway": "http://127.0.0.1:18070",
-  "identifier": "w5-mu3uyh6d@local.invalid",
+  "identifier": "w5-mu3z6asm@local.invalid",
   "result": "PASS",
   "passed": 19,
   "total": 19,
@@ -52,19 +52,19 @@
     {
       "name": "game-finish",
       "ok": true,
-      "observed": "HTTP 200 {\"seq\":1,\"status\":\"COMPLETED\",\"gameCode\":\"SENTENCE_TRAIN\",\"createdAt\":\"2026-09-16T08:47:56.655728200Z\",\"sessionId\":\"game-0d31e9ef-7559-4cb4-",
+      "observed": "HTTP 200 {\"seq\":1,\"status\":\"COMPLETED\",\"gameCode\":\"SENTENCE_TRAIN\",\"createdAt\":\"2026-09-16T10:45:59.963500400Z\",\"sessionId\":\"game-02f5d8c9-2315-4103-",
       "expected": "HTTP 200"
     },
     {
       "name": "b10-session",
       "ok": true,
-      "observed": "HTTP 200 items=2 sess=asess_269bebf1ae984bb6a80d6c00a86fdeda keys=sessionId,status,mode,pin,items,attemptCount,stateVersion,lastAttemptId,startedAt,expiresAt",
+      "observed": "HTTP 200 items=2 sess=asess_4214ba0016ca49d7b32c89828cd8de93 keys=sessionId,status,mode,pin,items,attemptCount,stateVersion,lastAttemptId,startedAt,expiresAt",
       "expected": "HTTP 200/201 + session"
     },
     {
       "name": "b10-attempt",
       "ok": true,
-      "observed": "HTTP 200 body={\"data\":{\"attemptId\":\"aatm_4669580aac88451484df56c6caf575ef\",\"sessionId\":\"asess_269bebf1ae984bb6a80d6c00a86fdeda\",\"attemptVersion\":1,\"status\":\"ASSESSED\",\"itemCount\":2,\"submissionDigest\":\"ec3b3cebccf3135f2e78d821114fe4e39e7fa073f3855fbbb75f06a414cd153b\",\"scoreBucket\":\"ZERO\",\"pin\":{\"contentCode\":\"cour sessKeys=attemptId,sessionId,attemptVersion,status,itemCount,submissionDigest,scoreBucket,pin,assessmentVersion,createdAt,assessedAt,reportId",
+      "observed": "HTTP 200 body={\"data\":{\"attemptId\":\"aatm_fd158d700e754fb7a2c65c710f36442e\",\"sessionId\":\"asess_4214ba0016ca49d7b32c89828cd8de93\",\"attemptVersion\":1,\"status\":\"ASSESSED\",\"itemCount\":2,\"submissionDigest\":\"ec3b3cebccf3135f2e78d821114fe4e39e7fa073f3855fbbb75f06a414cd153b\",\"scoreBucket\":\"ZERO\",\"pin\":{\"contentCode\":\"cour sessKeys=attemptId,sessionId,attemptVersion,status,itemCount,submissionDigest,scoreBucket,pin,assessmentVersion,createdAt,assessedAt,reportId",
       "expected": "HTTP 200/201 graded"
     },
     {
@@ -106,7 +106,7 @@
     {
       "name": "vocab-entry",
       "ok": true,
-      "observed": "HTTP 200 {\"data\":{\"entryId\":621167,\"item\":{\"itemType\":\"VOCAB\",\"vocabId\":\"w5-word-1\"},\"collectionStatus\":\"SAVED\",\"sourceType\":\"MANUAL\",\"createdAt\":\"20",
+      "observed": "HTTP 200 {\"data\":{\"entryId\":621168,\"item\":{\"itemType\":\"VOCAB\",\"vocabId\":\"w5-word-1\"},\"collectionStatus\":\"SAVED\",\"sourceType\":\"MANUAL\",\"createdAt\":\"20",
       "expected": "HTTP 200/201"
     },
     {

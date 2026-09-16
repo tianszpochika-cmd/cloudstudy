@@ -1,8 +1,8 @@
 {
   "task": "W3-LIVE-E2E",
-  "capturedAt": "2026-09-16T06:17:34.823Z",
+  "capturedAt": "2026-09-16T10:45:42.020Z",
   "gateway": "http://127.0.0.1:18070",
-  "identifier": "w3-mu3pl3go@local.invalid",
+  "identifier": "w3-mu3z5w5j@local.invalid",
   "result": "PASS",
   "passed": 21,
   "total": 21,
@@ -106,7 +106,7 @@
     {
       "name": "pay-intent-sandbox",
       "ok": true,
-      "observed": "HTTP 202 {\"orderId\":\"ord_20565f4f-12e1-4984-99d5-2962319269ea\",\"attemptId\":\"pay_3b9376c0-f974-4bf6-927e-b2e7b40bc072\",\"provider\":",
+      "observed": "HTTP 202 {\"orderId\":\"ord_b3daa91f-338e-4df3-a07b-94bb0495caf4\",\"attemptId\":\"pay_acd19d0b-a08b-46aa-9eb3-c6dfe3a82f6e\",\"provider\":",
       "expected": "sandbox intent, no real provider"
     },
     {
@@ -133,11 +133,5 @@
       "observed": "HTTP 200",
       "expected": "HTTP 200 (production off)"
     }
-  ],
-  "defect": {
-    "id": "P1-LIVE-007",
-    "status": "RESOLVED 2026-09-16",
-    "rootCause": "commerce outbox writer kept the legacy 12-column shape; V2 standardize migration tightened event_name/dedupe_key/occurred_at to NOT NULL, so every order/payment/refund write rolled back; the exception forwarded to /error which anyRequest().denyAll() masks as 403.",
-    "fix": "JdbcCommerceOutboxPort now writes event_name/dedupe_key/occurred_at; all 5 sibling writers audited clean."
-  }
+  ]
 }

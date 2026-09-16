@@ -1,10 +1,10 @@
 {
   "task": "W6-LIVE-TRACE",
-  "capturedAt": "2026-09-16T07:49:30.553Z",
+  "capturedAt": "2026-09-16T10:46:08.898Z",
   "gateway": "http://127.0.0.1:18070",
-  "identifier": "w6-mu3svbds@local.invalid",
-  "putRequestId": "req-a3ccfd6e72cd4b0da1f36a126402b336",
-  "targetId": 1026,
+  "identifier": "w6-mu3z6h32@local.invalid",
+  "putRequestId": "req-f8bcaa6835c3405aa0bd62551893e7b1",
+  "targetId": 1040,
   "result": "PASS",
   "passed": 12,
   "total": 12,
@@ -24,31 +24,31 @@
     {
       "name": "traced-put",
       "ok": true,
-      "observed": "HTTP 200 req=req-a3ccfd6e72cd4b0da1f36a126402b336 target=1026",
+      "observed": "HTTP 200 req=req-f8bcaa6835c3405aa0bd62551893e7b1 target=1040",
       "expected": "HTTP 200 + req + target"
     },
     {
       "name": "audit-register",
       "ok": true,
-      "observed": "register req=req-ddaa0bde16824dde8a429d9ffc0a3774 -> 1 row(s): gateway.iam-register\tALLOW",
+      "observed": "register req=req-14a7f3cabb2e46f0bc64f58054752763 -> 1 row(s): gateway.iam-register\tALLOW",
       "expected": "audit row present"
     },
     {
       "name": "audit-login",
       "ok": true,
-      "observed": "login req=req-e2f0233871e24d8cba8ae8a5be71d776 -> 1 row(s): gateway.iam-login\tALLOW",
+      "observed": "login req=req-25dd3041bf3f41e885c0a0c993118bc6 -> 1 row(s): gateway.iam-login\tALLOW",
       "expected": "audit row present"
     },
     {
       "name": "audit-targets-put",
       "ok": true,
-      "observed": "targets-put req=req-a3ccfd6e72cd4b0da1f36a126402b336 -> 1 row(s): gateway.learner-domain\tALLOW",
+      "observed": "targets-put req=req-f8bcaa6835c3405aa0bd62551893e7b1 -> 1 row(s): gateway.learner-domain\tALLOW",
       "expected": "audit row present"
     },
     {
       "name": "iam-register",
       "ok": true,
-      "observed": "account_registered\tALLOW",
+      "observed": "session_opened\tALLOW",
       "expected": "decision row present"
     },
     {
@@ -60,7 +60,7 @@
     {
       "name": "owner-db",
       "ok": true,
-      "observed": "1026\tCET_4_6",
+      "observed": "1040\tCET_4_6",
       "expected": "owner row present"
     },
     {

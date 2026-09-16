@@ -1,8 +1,8 @@
 {
   "task": "W2-LIVE-E2E",
-  "capturedAt": "2026-09-16T05:13:46.734Z",
+  "capturedAt": "2026-09-16T10:45:33.013Z",
   "gateway": "http://127.0.0.1:18070",
-  "identifier": "w2-mu3nb1x6@local.invalid",
+  "identifier": "w2-mu3z5psw@local.invalid",
   "result": "PASS",
   "passed": 12,
   "total": 12,
@@ -28,7 +28,7 @@
     {
       "name": "srs-review-4",
       "ok": true,
-      "observed": "HTTP 200 {\"itemId\":\"w2-item-1\",\"item\":{\"itemType\":\"VOCAB\",\"itemId\":\"w2-item-1\",\"vocabularyId\":\"w2-item-1\"},\"itemType\":\"VOCAB\",\"sn",
+      "observed": "HTTP 200 {\"itemId\":\"w2-item-1\",\"item\":{\"vocabularyId\":\"w2-item-1\",\"itemId\":\"w2-item-1\",\"itemType\":\"VOCAB\"},\"itemType\":\"VOCAB\",\"sn",
       "expected": "HTTP 200"
     },
     {

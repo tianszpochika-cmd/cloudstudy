@@ -1,5 +1,5 @@
 {
-  "capturedAt": "2026-09-16T09:38:39.375Z",
+  "capturedAt": "2026-09-16T10:48:07.395Z",
   "results": [
     {
       "id": "official-home",
@@ -98,7 +98,7 @@
       "status": 200,
       "title": "语学星",
       "errors": [
-        "console.error: TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:18180/src/pages/TodayPage.vue?t=1789549908043"
+        "console.error: TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:18180/src/pages/TodayPage.vue?t=1789553181291"
       ],
       "a11y": "- main:\n  - region \"登录后，马上开始学习\":\n    - text: 语学星\n    - heading \"登录后，马上开始学习\" [level=1]\n    - paragraph: 使用语学星账号登录；首次进入只需完成一个简短设置。\n    - text: 账号\n    - textbox \"账号\":\n      - /placeholder: 邮箱或账号\n    - text: 密码\n    - textbox \"密码\":\n      - /placeholder: 输入密码\n    - status:\n      - strong: 等待登录\n      - paragraph: 账号密码由语学星认证中心校验。\n    - button \"登录并继续\"\n    - paragraph: 登录完成后，你只需要确认年龄、同意必要说明并选择学习目标。",
       "flow": {
@@ -257,6 +257,5 @@
       },
       "seedStatus": 200
     }
-  ],
-  "notes": " admin-forbidden-flow: learner creds authenticate but land /forbidden with a server-fact permission panel (no dashboard, no crash)."
+  ]
 }

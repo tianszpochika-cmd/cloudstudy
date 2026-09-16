@@ -1,8 +1,8 @@
 {
   "task": "W0-LIVE-E2E",
-  "capturedAt": "2026-09-16T07:58:25.459Z",
+  "capturedAt": "2026-09-16T10:44:56.601Z",
   "gateway": "http://127.0.0.1:18070",
-  "identifier": "w0-mu3t6s4l@local.invalid",
+  "identifier": "w0-mu3z4xo4@local.invalid",
   "result": "PASS",
   "passed": 11,
   "total": 11,
@@ -52,7 +52,7 @@
     {
       "name": "adult-gate-pass",
       "ok": true,
-      "observed": "HTTP 200 {\"data\":{\"status\":\"PASSED\",\"learningAccess\":\"ELIGIBLE\",\"effectiveAt\":\"2026-09-16T07:58:24.907623Z\",\"policyVersion\":\"b30-adult-v1\",\"minimumAg",
+      "observed": "HTTP 200 {\"data\":{\"status\":\"PASSED\",\"learningAccess\":\"ELIGIBLE\",\"effectiveAt\":\"2026-09-16T10:44:56.149131Z\",\"policyVersion\":\"b30-adult-v1\",\"minimumAg",
       "expected": "HTTP 200 PASSED"
     },
     {
