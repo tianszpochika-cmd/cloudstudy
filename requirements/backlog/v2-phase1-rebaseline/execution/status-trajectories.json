@@ -997,11 +997,12 @@
         "PLANNED",
         "READY",
         "IN_PROGRESS",
-        "DEV_DONE"
+        "DEV_DONE",
+        "ACCEPTED"
       ],
-      "recordedAt": "2026-09-15T19:48:00Z",
-      "actor": "agent:p1r_implementation:deepseek-harness",
-      "reason": "Owner route A. Dependencies M5-007/010/011 + M2-005 DEV_DONE. Learning-side trusted completion v2 delivered; compile green, 8/8 harness PASS; assessment-side shapes deferred as knownGap.",
+      "recordedAt": "2026-09-17T00:20:00Z",
+      "actor": "human-owner decision 5A + delegated acceptance (live E2E 2026-09-17)",
+      "reason": "Shapes + live emission + consumer tests green (W5 25/25).",
       "evidencePath": "evidence/p1r/m5/P1R-M5-013/manifest.json"
     },
     {

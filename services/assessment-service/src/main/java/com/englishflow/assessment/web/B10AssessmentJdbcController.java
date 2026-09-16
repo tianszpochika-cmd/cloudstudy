@@ -9,6 +9,7 @@ import tools.jackson.databind.node.ObjectNode;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HexFormat;
@@ -227,6 +228,12 @@ public class B10AssessmentJdbcController {
                 """, reportId, attemptId, sessionId, principal.subject(), TENANT,
                 totalScoreBucket, json(allMistakes), allMistakes.isEmpty() ? "MASTERED" : "RETRY",
                 json(pin(sessionForPin)));
+        // P1R decision 5A: emit canonical learning facts atomically with grading.
+        // Per-item assessed events plus one report-ready event go to the durable
+        // outbox in the same transaction; no raw answers, keys or rule text leave.
+        emitAssessedEvents(principal.subject(), session, gradingCode, gradingVersion,
+                attemptId, reportId, submissionId, rules, mistakes, totalScoreBucket,
+                total, totalCorrect, allMistakes.size());
         String nextStatus = allMistakes.isEmpty() || answerMap.size() >= total ? "ASSESSED" : "IN_PROGRESS";
         jdbc.update("""
                 UPDATE b10_assessment_session
@@ -444,6 +451,114 @@ public class B10AssessmentJdbcController {
         } catch (Exception ignored) {
             return null;
         }
+    }
+
+    private void emitAssessedEvents(String subject, Map<String, Object> session, String gradingCode,
+            long gradingVersion, String attemptId, String reportId, String submissionId,
+            List<Map<String, Object>> rules, List<String> mistakes, String totalScoreBucket,
+            int total, int totalCorrect, int totalMistakes) {
+        Instant now = Instant.now();
+        String policyDigest = sha256("objective-assessment-v1");
+        Map<String, Object> contentPin = new LinkedHashMap<>();
+        contentPin.put("contentVersionId", gradingVersion);
+        contentPin.put("contentEpoch", number(session.get("content_epoch"), CONTENT_EPOCH));
+        // The contract snapshotId is a snap_-prefixed string; derive it
+        // deterministically from the numeric session snapshot.
+        contentPin.put("snapshotId", "snap_assessment_" + text(session.get("snapshot_id"), String.valueOf(SNAPSHOT_ID)));
+        contentPin.put("snapshotHash", text(session.get("snapshot_hash"), SNAPSHOT_HASH));
+        for (Map<String, Object> rule : rules) {
+            String ruleItemId = text(rule.get("item_id"));
+            boolean itemCorrect = !mistakes.contains(ruleItemId);
+            String itemAssessmentId = "aitm_" + compactUuid();
+            String logical = "li_" + ruleItemId.replaceAll("[^A-Za-z0-9._:-]", "_");
+            while (logical.length() < 11) logical = logical + "0";
+            Map<String, Object> rulePin = new LinkedHashMap<>();
+            rulePin.put("answerRuleSetVersion", "B10_RULES_2026_08_26");
+            rulePin.put("answerRuleVersion", "v1");
+            rulePin.put("ruleDigest", sha256(json(rule.get("answer_rule_json"))));
+            rulePin.put("completionRuleVersion", "v1");
+            rulePin.put("assessmentVersion", "B10_RULES_2026_08_26");
+            Map<String, Object> reportPin = new LinkedHashMap<>();
+            reportPin.put("reportId", reportId);
+            reportPin.put("reportVersion", 1);
+            reportPin.put("reportRuleVersion", "v1");
+            reportPin.put("reportStatus", "READY");
+            reportPin.put("reportDigest", sha256(reportId + totalScoreBucket));
+            reportPin.put("asOf", now.toString());
+            Map<String, Object> payload = new LinkedHashMap<>();
+            payload.put("tenantId", TENANT);
+            payload.put("principalId", subject);
+            payload.put("itemAssessmentId", itemAssessmentId);
+            payload.put("attemptId", attemptId);
+            payload.put("sessionId", text(session.get("session_id"), ""));
+            payload.put("logicalItemId", logical);
+            payload.put("contentPin", contentPin);
+            payload.put("rulePin", rulePin);
+            payload.put("reportPin", reportPin);
+            payload.put("objectivePolicyPin", Map.of("practiceType", "OBJECTIVE_ASSESSMENT",
+                    "objectiveExpected", true, "policyVersion", "v1", "policyDigest", policyDigest));
+            payload.put("objectiveOutcome", itemCorrect ? "CORRECT_VERIFIED" : "INCORRECT");
+            payload.put("objectiveNumerator", itemCorrect ? 1 : 0);
+            payload.put("objectiveDenominator", 1);
+            payload.put("objectiveCorrect", itemCorrect);
+            payload.put("guessSignal", false);
+            payload.put("semanticErrorCategory", "UNCLASSIFIED");
+            payload.put("mappingVersion", "v1");
+            payload.put("verificationStage", "NONE");
+            payload.put("reasonTrace", List.of(Map.of("ruleCode", "B10_SCORE", "ruleVersion", "v1",
+                    "category", "UNCLASSIFIED", "reasonCode", itemCorrect ? "FULL_MATCH" : "NO_MATCH",
+                    "evidenceRef", "attempt:" + attemptId)));
+            payload.put("outcomeDigest", sha256(itemAssessmentId + itemCorrect));
+            payload.put("assessmentFactWatermark", "b10." + text(session.get("session_id"), ""));
+            payload.put("assessedAt", now.toString());
+            appendOutbox("assessment.item.assessed.v2", "assessment.event.v2", 2,
+                    "assessment_item", itemAssessmentId, subject, submissionId, submissionId,
+                    attemptId + ":" + itemAssessmentId, payload, now);
+        }
+        Map<String, Object> reportPayload = new LinkedHashMap<>();
+        reportPayload.put("tenantId", TENANT);
+        reportPayload.put("principalId", subject);
+        reportPayload.put("reportId", reportId);
+        reportPayload.put("attemptId", attemptId);
+        reportPayload.put("sessionId", text(session.get("session_id"), ""));
+        reportPayload.put("contentCode", gradingCode);
+        reportPayload.put("contentVersionId", gradingVersion);
+        reportPayload.put("scoreBucket", totalScoreBucket);
+        reportPayload.put("totalItems", total);
+        reportPayload.put("totalCorrect", totalCorrect);
+        reportPayload.put("totalMistakes", totalMistakes);
+        reportPayload.put("completedAt", now.toString());
+        appendOutbox("learning.report.ready.v1", "learning.event.v1", 1,
+                "learning_report", reportId, subject, submissionId, submissionId,
+                reportId, reportPayload, now);
+    }
+
+    private void appendOutbox(String eventName, String schema, int version, String aggregateType,
+            String aggregateId, String subject, String requestId, String traceId,
+            String dedupeKey, Map<String, Object> payload, Instant now) {
+        Map<String, Object> envelope = new LinkedHashMap<>();
+        envelope.put("eventId", UUID.randomUUID().toString());
+        envelope.put("eventName", eventName);
+        envelope.put("schema", schema);
+        envelope.put("version", version);
+        envelope.put("occurredAt", now.toString());
+        envelope.put("aggregateType", aggregateType);
+        envelope.put("aggregateId", aggregateId);
+        envelope.put("actorId", subject);
+        envelope.put("tenantId", TENANT);
+        envelope.put("traceId", traceId);
+        envelope.put("requestId", requestId);
+        envelope.put("schemaVersion", schema);
+        envelope.put("dedupeKey", dedupeKey);
+        envelope.put("payload", payload);
+        jdbc.update("""
+                INSERT INTO assessment_outbox_event
+                    (event_id, aggregate_id, event_name, schema_version, dedupe_key, payload_json,
+                     status, attempt_count, available_at, created_at, occurred_at, request_id, trace_id)
+                VALUES (?, ?, ?, ?, ?, ?, 'PENDING', 0, ?, ?, ?, ?, ?)
+                ON DUPLICATE KEY UPDATE dedupe_key = VALUES(dedupe_key)
+                """, UUID.randomUUID().toString(), aggregateId, eventName, schema, dedupeKey,
+                json(envelope), Timestamp.from(now), Timestamp.from(now), Timestamp.from(now), requestId, traceId);
     }
 
     private Map<String, Object> ownerSession(String sessionId, String subject) {        Map<String, Object> row = one("""

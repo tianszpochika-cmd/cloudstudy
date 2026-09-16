@@ -155,6 +155,19 @@ if (subCode && subVersion) {
   record('pin-substituted', false, 'no resolution', 'HTTP 200 SUBSTITUTED');
   record('pin-graded', false, 'no resolution', 'HTTP 200 graded');
 }
+// emission legs (decision 5A): the B10 submit above must leave canonical
+// outbox rows (assessed per item + one report-ready). Kafka delivery itself
+// stays M2-005 territory; here we prove durable emission.
+{
+  const { execFileSync: exec3 } = await import('node:child_process');
+  const count = (name) => exec3('docker', ['exec', '-i', '-e', 'MYSQL_PWD=root-local-only', 'yuxuexing-local-mysql-1', 'mysql', '-uroot', '-N', '-e',
+    `SELECT COUNT(*) FROM assessment_service.assessment_outbox_event WHERE event_name = '${name}' AND payload_json LIKE '%w5-${stamp}-s1%'`], { encoding: 'utf8' }).trim();
+  // NOTE: main-flow submission id is w5-<stamp>-s1 (battKey leg).
+  const assessed = parseInt(count('assessment.item.assessed.v2') || '0', 10);
+  const reports = parseInt(count('learning.report.ready.v1') || '0', 10);
+  record('emit-assessed', assessed >= 2, `${assessed} item events`, '>=2 rows');
+  record('emit-report', reports >= 1, `${reports} report event`, '>=1 row');
+}
 const passed = checks.filter((c) => c.ok).length;
 const evidence = { task: 'W5-LIVE-E2E', capturedAt: new Date().toISOString(), gateway: GW, identifier, result: passed === checks.length ? 'PASS' : 'FAIL', passed, total: checks.length, checks };
 await (await import('node:fs')).promises.writeFile('evidence/live/2026-09-16/w5-live-evidence.json', JSON.stringify(evidence, null, 2) + '\n');

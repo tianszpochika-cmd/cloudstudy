@@ -40,10 +40,12 @@ public final class JdbcAssessmentOutbox implements AssessmentOutboxPort {
         } catch (JacksonException exception) {
             throw AssessmentDomainException.retryable("ASM_OUTBOX_SERIALIZATION", "outbox payload cannot be serialized");
         }
+        // occurred_at is NOT NULL without default since the V5 standardize
+        // migration; writers must supply it (outbox drift audit, 2026-09-16).
         jdbc.update("INSERT INTO `" + schema + "`.`assessment_outbox_event` "
-                        + "(event_id, aggregate_id, event_name, schema_version, dedupe_key, payload_json, status, attempt_count, available_at, created_at) "
-                        + "VALUES (?, ?, ?, ?, ?, ?, 'PENDING', 0, ?, ?) ON DUPLICATE KEY UPDATE dedupe_key=VALUES(dedupe_key)",
+                        + "(event_id, aggregate_id, event_name, schema_version, dedupe_key, payload_json, status, attempt_count, available_at, created_at, occurred_at) "
+                        + "VALUES (?, ?, ?, ?, ?, ?, 'PENDING', 0, ?, ?, ?) ON DUPLICATE KEY UPDATE dedupe_key=VALUES(dedupe_key)",
                 event.eventId().toString(), event.aggregateId(), event.eventName(), event.schemaVersion(), event.dedupeKey(),
-                json, Timestamp.from(event.occurredAt()), Timestamp.from(event.occurredAt()));
+                json, Timestamp.from(event.occurredAt()), Timestamp.from(event.occurredAt()), Timestamp.from(event.occurredAt()));
     }
 }
