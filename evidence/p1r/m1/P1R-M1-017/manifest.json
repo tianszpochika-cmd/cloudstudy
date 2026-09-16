@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-017",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "05999dbcd4e785ffef3b9a0772baedd935049365",
+  "sourceCommit": "1d982dc35a5150712b9b8c9dbc09994d3d1c14d2",
   "artifactDigests": [
     {
       "path": "config/b26-event-runtime.json",
@@ -107,7 +107,7 @@
     {
       "path": "packages/contracts/fragments/p1r-gateway-boundary.openapi.json",
       "algorithm": "sha256",
-      "digest": "f3ad92d351cb809d7a64f4a413a6d471b1d55698a52b00d26e259b5a57fb930b"
+      "digest": "76b864804b9ec61e37713a2ca412a0ca4136e9b24ef7807727c278c29f3faecf"
     },
     {
       "path": "packages/contracts/generated/events.ts",
@@ -122,7 +122,7 @@
     {
       "path": "packages/contracts/openapi/v1/openapi.json",
       "algorithm": "sha256",
-      "digest": "5f3df140bc024f4e37382f555c6400617e0f21e0e9d6640aef10d44455a2a8bc"
+      "digest": "5f209f5d18c40054b90ce23ed9270ed8bfdc5809d0584e21ab3157473e5723ef"
     },
     {
       "path": "scripts/audit/p1r-content-lifecycle-check.mjs",
@@ -442,7 +442,7 @@
     "originalFinishedAt": "2026-09-01T11:28:58+08:00",
     "originalReviewer": "agent:m1_017_final_review:gpt-5.6-luna:max",
     "originalAcceptedContractBaseline": "463c4b238caceb1592bff6c61327c00ab9bac922",
-    "previousCurrentSourceCommit": "f28885e487ec965a0b7b73067ddae7ca420c68c0",
+    "previousCurrentSourceCommit": "05999dbcd4e785ffef3b9a0772baedd935049365",
     "previousCurrentSourceRevalidationTask": "P1R-M2-005",
     "currentSourceRevalidationTask": "P1R-M1-017",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
@@ -746,14 +746,24 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-16T13:03:49.155Z",
         "details": "P1-LIVE-012 b8 fragment gains media_consent + content_rights; merged openapi regenerated."
+      },
+      {
+        "taskId": "P1R-M1-017",
+        "sourceCommit": "1d982dc35a5150712b9b8c9dbc09994d3d1c14d2",
+        "auditedImplementationSource": "1d982dc35a5150712b9b8c9dbc09994d3d1c14d2",
+        "integrationCheckpoint": "1d982dc35a5150712b9b8c9dbc09994d3d1c14d2",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T14:30:56.545Z",
+        "details": "7B pin part 1: substitute endpoint/route/contract/session columns."
       }
     ],
     "previousCurrentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
     "previousCurrentSourceRevalidationFinishedAt": "2026-09-12T22:07:09.012Z",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-16T13:03:49.155Z",
-    "currentSourceRevalidationAuditedImplementationSource": "05999dbcd4e785ffef3b9a0772baedd935049365",
-    "currentSourceRevalidationIntegrationCheckpoint": "05999dbcd4e785ffef3b9a0772baedd935049365"
+    "currentSourceRevalidationFinishedAt": "2026-09-16T14:30:56.545Z",
+    "currentSourceRevalidationAuditedImplementationSource": "1d982dc35a5150712b9b8c9dbc09994d3d1c14d2",
+    "currentSourceRevalidationIntegrationCheckpoint": "1d982dc35a5150712b9b8c9dbc09994d3d1c14d2"
   }
 }

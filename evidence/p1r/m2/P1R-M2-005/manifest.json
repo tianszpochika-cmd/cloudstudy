@@ -2,7 +2,7 @@
   "taskId": "P1R-M2-005",
   "draftOnly": false,
   "canonicalTaskStatus": "DEV_DONE",
-  "sourceCommit": "05999dbcd4e785ffef3b9a0772baedd935049365",
+  "sourceCommit": "1d982dc35a5150712b9b8c9dbc09994d3d1c14d2",
   "artifactDigests": [
     {
       "path": "config/b26-event-runtime.json",
@@ -12,7 +12,7 @@
     {
       "path": "config/p1r-data-ownership.v1.json",
       "algorithm": "sha256",
-      "digest": "89258da05f3f6fd2e1f0f98e40260ccc08ae8212c31dae4ef43ac390b61106a9"
+      "digest": "1a1a7ee69b63c7ca0017142a837c2daa99b59a17b71ffbea913d4b6a1827b933"
     },
     {
       "path": "scripts/runtime/provision-kafka-topics.mjs",
@@ -97,14 +97,14 @@
       "E7 to E8 the whole thing reduced to a repeatable harness with two fault phases and an operator replay entry"
     ],
     "reviewHistory": [],
-    "previousCurrentSourceCommit": "f28885e487ec965a0b7b73067ddae7ca420c68c0",
+    "previousCurrentSourceCommit": "05999dbcd4e785ffef3b9a0772baedd935049365",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
     "currentSourceRevalidationTask": "P1R-M2-005",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-16T13:03:49.659Z",
-    "currentSourceRevalidationAuditedImplementationSource": "05999dbcd4e785ffef3b9a0772baedd935049365",
-    "currentSourceRevalidationIntegrationCheckpoint": "05999dbcd4e785ffef3b9a0772baedd935049365",
+    "currentSourceRevalidationFinishedAt": "2026-09-16T14:30:58.897Z",
+    "currentSourceRevalidationAuditedImplementationSource": "1d982dc35a5150712b9b8c9dbc09994d3d1c14d2",
+    "currentSourceRevalidationIntegrationCheckpoint": "1d982dc35a5150712b9b8c9dbc09994d3d1c14d2",
     "originalSourceCommit": "10bc8e2dba06a800fd6bb014b0827d898b7c1b8b",
     "currentSourceRevalidationHistory": [
       {
@@ -326,6 +326,16 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-16T13:03:49.659Z",
         "details": "P1-LIVE-012 b8 fragment gains media_consent + content_rights; merged openapi regenerated."
+      },
+      {
+        "taskId": "P1R-M2-005",
+        "sourceCommit": "1d982dc35a5150712b9b8c9dbc09994d3d1c14d2",
+        "auditedImplementationSource": "1d982dc35a5150712b9b8c9dbc09994d3d1c14d2",
+        "integrationCheckpoint": "1d982dc35a5150712b9b8c9dbc09994d3d1c14d2",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T14:30:58.897Z",
+        "details": "7B pin part 1: substitute endpoint/route/contract/session columns."
       }
     ]
   },

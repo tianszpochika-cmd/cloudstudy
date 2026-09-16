@@ -2,7 +2,7 @@
   "taskId": "P1R-M2-001",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "05999dbcd4e785ffef3b9a0772baedd935049365",
+  "sourceCommit": "1d982dc35a5150712b9b8c9dbc09994d3d1c14d2",
   "artifactDigests": [
     {
       "path": "services/api-gateway/src/main/java/com/englishflow/gateway/policy/GatewayRoutePolicy.java",
@@ -12,7 +12,7 @@
     {
       "path": "services/api-gateway/src/main/java/com/englishflow/gateway/policy/GatewayRouteExecutionPolicy.java",
       "algorithm": "sha256",
-      "digest": "2632b20e6e3a98509c6b36e76ef4d29549186b6fb296cec62dd0eb19515a01e8"
+      "digest": "b39435ab4c5a84a4862212a57357ac6dfc7cfe5d5978ae944ec9ce03d65cee17"
     },
     {
       "path": "services/api-gateway/src/main/java/com/englishflow/gateway/config/GatewayConfiguration.java",
@@ -97,7 +97,7 @@
     {
       "path": "packages/contracts/openapi/v1/openapi.json",
       "algorithm": "sha256",
-      "digest": "5f3df140bc024f4e37382f555c6400617e0f21e0e9d6640aef10d44455a2a8bc"
+      "digest": "5f209f5d18c40054b90ce23ed9270ed8bfdc5809d0584e21ab3157473e5723ef"
     },
     {
       "path": "docs/10-decisions/0010-java25-microservices-gateway-iam.md",
@@ -166,9 +166,9 @@
     "currentSourceRevalidationTask": "P1R-M2-001",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-16T13:03:49.318Z",
-    "currentSourceRevalidationAuditedImplementationSource": "05999dbcd4e785ffef3b9a0772baedd935049365",
-    "currentSourceRevalidationIntegrationCheckpoint": "05999dbcd4e785ffef3b9a0772baedd935049365",
+    "currentSourceRevalidationFinishedAt": "2026-09-16T14:30:57.028Z",
+    "currentSourceRevalidationAuditedImplementationSource": "1d982dc35a5150712b9b8c9dbc09994d3d1c14d2",
+    "currentSourceRevalidationIntegrationCheckpoint": "1d982dc35a5150712b9b8c9dbc09994d3d1c14d2",
     "originalSourceCommit": "7ba4d33f820efae6756164a97dfd38f02c0e89c4",
     "currentSourceRevalidationHistory": [
       {
@@ -380,9 +380,19 @@
         "runtimeStatus": "RUNTIME_VERIFIED",
         "finishedAt": "2026-09-16T13:03:49.318Z",
         "details": "P1-LIVE-012 b8 fragment gains media_consent + content_rights; merged openapi regenerated."
+      },
+      {
+        "taskId": "P1R-M2-001",
+        "sourceCommit": "1d982dc35a5150712b9b8c9dbc09994d3d1c14d2",
+        "auditedImplementationSource": "1d982dc35a5150712b9b8c9dbc09994d3d1c14d2",
+        "integrationCheckpoint": "1d982dc35a5150712b9b8c9dbc09994d3d1c14d2",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T14:30:57.028Z",
+        "details": "7B pin part 1: substitute endpoint/route/contract/session columns."
       }
     ],
-    "previousCurrentSourceCommit": "f28885e487ec965a0b7b73067ddae7ca420c68c0",
+    "previousCurrentSourceCommit": "05999dbcd4e785ffef3b9a0772baedd935049365",
     "previousCurrentSourceRevalidationTask": "P1R-M2-004",
     "previousCurrentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "previousCurrentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",

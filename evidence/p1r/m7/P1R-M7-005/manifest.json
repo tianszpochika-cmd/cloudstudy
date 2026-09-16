@@ -3,7 +3,7 @@
   "draftOnly": false,
   "canonicalTaskStatus": "DEV_DONE",
   "decision": "DEV_DONE",
-  "sourceCommit": "05999dbcd4e785ffef3b9a0772baedd935049365",
+  "sourceCommit": "1d982dc35a5150712b9b8c9dbc09994d3d1c14d2",
   "startedAt": "2026-09-15T21:20:00.000Z",
   "finishedAt": "2026-09-15T21:22:00.000Z",
   "environment": {
@@ -67,9 +67,9 @@
     "currentSourceRevalidationTask": "P1R-M7-005",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-16T13:03:53.954Z",
-    "currentSourceRevalidationAuditedImplementationSource": "05999dbcd4e785ffef3b9a0772baedd935049365",
-    "currentSourceRevalidationIntegrationCheckpoint": "05999dbcd4e785ffef3b9a0772baedd935049365",
+    "currentSourceRevalidationFinishedAt": "2026-09-16T14:31:05.692Z",
+    "currentSourceRevalidationAuditedImplementationSource": "1d982dc35a5150712b9b8c9dbc09994d3d1c14d2",
+    "currentSourceRevalidationIntegrationCheckpoint": "1d982dc35a5150712b9b8c9dbc09994d3d1c14d2",
     "currentSourceRevalidationHistory": [
       {
         "taskId": "P1R-M7-005",
@@ -130,8 +130,18 @@
         "runtimeStatus": "RUNTIME_VERIFIED",
         "finishedAt": "2026-09-16T13:03:53.954Z",
         "details": "P1-LIVE-012 b8 fragment gains media_consent + content_rights; merged openapi regenerated."
+      },
+      {
+        "taskId": "P1R-M7-005",
+        "sourceCommit": "1d982dc35a5150712b9b8c9dbc09994d3d1c14d2",
+        "auditedImplementationSource": "1d982dc35a5150712b9b8c9dbc09994d3d1c14d2",
+        "integrationCheckpoint": "1d982dc35a5150712b9b8c9dbc09994d3d1c14d2",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T14:31:05.692Z",
+        "details": "7B pin part 1: substitute endpoint/route/contract/session columns."
       }
     ],
-    "previousCurrentSourceCommit": "f28885e487ec965a0b7b73067ddae7ca420c68c0"
+    "previousCurrentSourceCommit": "05999dbcd4e785ffef3b9a0772baedd935049365"
   }
 }

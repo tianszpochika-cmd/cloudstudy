@@ -2,7 +2,7 @@
   "taskId": "P1R-M0-003",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "05999dbcd4e785ffef3b9a0772baedd935049365",
+  "sourceCommit": "1d982dc35a5150712b9b8c9dbc09994d3d1c14d2",
   "artifactDigests": [
     {
       "path": "config/toolchain-baseline.json",
@@ -70,14 +70,14 @@
   "reviewer": "root-coordinator",
   "decision": "ACCEPTED",
   "provenance": {
-    "previousCurrentSourceCommit": "f28885e487ec965a0b7b73067ddae7ca420c68c0",
+    "previousCurrentSourceCommit": "05999dbcd4e785ffef3b9a0772baedd935049365",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
     "currentSourceRevalidationTask": "P1R-M0-003",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-16T13:03:47.051Z",
-    "currentSourceRevalidationAuditedImplementationSource": "05999dbcd4e785ffef3b9a0772baedd935049365",
-    "currentSourceRevalidationIntegrationCheckpoint": "05999dbcd4e785ffef3b9a0772baedd935049365",
+    "currentSourceRevalidationFinishedAt": "2026-09-16T14:30:52.949Z",
+    "currentSourceRevalidationAuditedImplementationSource": "1d982dc35a5150712b9b8c9dbc09994d3d1c14d2",
+    "currentSourceRevalidationIntegrationCheckpoint": "1d982dc35a5150712b9b8c9dbc09994d3d1c14d2",
     "originalSourceCommit": "0f8b60ae4e83d0f31d891eed8d9383c007485130",
     "currentSourceRevalidationHistory": [
       {
@@ -299,6 +299,16 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-16T13:03:47.051Z",
         "details": "P1-LIVE-012 b8 fragment gains media_consent + content_rights; merged openapi regenerated."
+      },
+      {
+        "taskId": "P1R-M0-003",
+        "sourceCommit": "1d982dc35a5150712b9b8c9dbc09994d3d1c14d2",
+        "auditedImplementationSource": "1d982dc35a5150712b9b8c9dbc09994d3d1c14d2",
+        "integrationCheckpoint": "1d982dc35a5150712b9b8c9dbc09994d3d1c14d2",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T14:30:52.949Z",
+        "details": "7B pin part 1: substitute endpoint/route/contract/session columns."
       }
     ],
     "previousCurrentSourceRevalidationTask": "P1R-M2-004",
