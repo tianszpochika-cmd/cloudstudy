@@ -35815,6 +35815,112 @@
           }
         }
       }
+    },
+    "/api/v1/content/learner/substitute": {
+      "get": {
+        "tags": [
+          "b9-content-learner"
+        ],
+        "summary": "Resolve a deterministic substitute for an unavailable content pin (P1R decision 7B)",
+        "operationId": "resolveB9LearnerContentSubstitute",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-contract": {
+          "owner": "content-service",
+          "projection": "cnt_public_projection",
+          "authorization": "verified principal, phase and content rights; resource owner is not client supplied",
+          "fieldFiltering": "LEARNER_V1 allow-list; no answer rules"
+        },
+        "parameters": [
+          {
+            "name": "code",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "reason",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Substitute resolution",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "unavailableCode",
+                        "reasonCode",
+                        "alternativeAction",
+                        "substitute"
+                      ],
+                      "properties": {
+                        "unavailableCode": {
+                          "type": "string"
+                        },
+                        "reasonCode": {
+                          "type": "string"
+                        },
+                        "alternativeAction": {
+                          "type": "string"
+                        },
+                        "substitute": {
+                          "type": "object",
+                          "required": [
+                            "contentCode",
+                            "contentVersionId"
+                          ],
+                          "properties": {
+                            "contentCode": {
+                              "type": "string"
+                            },
+                            "contentVersionId": {
+                              "type": "integer",
+                              "format": "int64"
+                            },
+                            "kind": {
+                              "type": "string"
+                            },
+                            "targetLevel": {
+                              "type": "string"
+                            },
+                            "title": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No substitute available"
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -77110,6 +77216,23 @@
             "controllerEvidence": {
               "sourcePath": "services/content-service/src/main/java/com/englishflow/content/web/ContentHttpController.java",
               "requestMapping": "/api/v1/content/learner/{contentCode}"
+            }
+          },
+          {
+            "projectionId": "content-domain.learner-substitute",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/content/learner/substitute",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "content-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.content",
+            "pathStrategy": "PRESERVE_PUBLIC_PATH",
+            "targetPathTemplate": "/api/v1/content/learner/substitute",
+            "controllerEvidence": {
+              "sourcePath": "services/content-service/src/main/java/com/englishflow/content/web/ContentHttpController.java",
+              "requestMapping": "/api/v1/content/learner/substitute"
             }
           },
           {

@@ -50,10 +50,13 @@ public class B10AssessmentJdbcController {
 
     private final JdbcTemplate jdbc;
     private final ObjectMapper mapper;
+    private final String contentBaseUrl;
 
-    public B10AssessmentJdbcController(JdbcTemplate jdbc, ObjectMapper mapper) {
+    public B10AssessmentJdbcController(JdbcTemplate jdbc, ObjectMapper mapper,
+            @org.springframework.beans.factory.annotation.Value("${assessment.content.base-url:http://127.0.0.1:18089}") String contentBaseUrl) {
         this.jdbc = jdbc;
         this.mapper = mapper;
+        this.contentBaseUrl = contentBaseUrl;
     }
 
     @PostMapping("/sessions")
@@ -61,7 +64,8 @@ public class B10AssessmentJdbcController {
     public Map<String, Object> createSession(
             Authentication authentication,
             @RequestBody Map<String, Object> body,
-            @RequestHeader("Idempotency-Key") String idempotencyKey) {
+            @RequestHeader("Idempotency-Key") String idempotencyKey,
+            @RequestHeader(value = "Authorization", required = false) String authorization) {
         Principal principal = principal(authentication);
         requireKey(idempotencyKey);
         long contentVersionId = positiveLong(body.get("contentVersionId"), DEFAULT_CONTENT_VERSION);
@@ -75,7 +79,26 @@ public class B10AssessmentJdbcController {
                 """, TENANT, principal.subject(), idempotencyKey);
         if (existing != null) return envelope(sessionView(existing));
 
-        List<Map<String, Object>> rules = rules(contentVersionId, body.get("itemIds"));
+        List<Map<String, Object>> rules = rules(CONTENT_CODE, contentVersionId, body.get("itemIds"));
+        // P1R decision 7B: assessment assembles the session pin. The requested pin
+        // stays in content_*; when it has no rules, ask content-service for the
+        // deterministic substitute and grade that instead of inventing content.
+        // Without a substitute the original 410 stands.
+        Long alternativeVersion = null;
+        String alternativeCode = null;
+        String alternativeReason = null;
+        if (rules.isEmpty()) {
+            SubstituteResolution substitute = resolveSubstitute(CONTENT_CODE, authorization);
+            if (substitute != null) {
+                List<Map<String, Object>> alt = rules(substitute.contentCode(), substitute.contentVersionId(), body.get("itemIds"));
+                if (!alt.isEmpty()) {
+                    rules = alt;
+                    alternativeVersion = substitute.contentVersionId();
+                    alternativeCode = substitute.contentCode();
+                    alternativeReason = substitute.reasonCode();
+                }
+            }
+        }
         if (rules.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.GONE, "assessment content is unavailable");
         }
@@ -84,12 +107,14 @@ public class B10AssessmentJdbcController {
         jdbc.update("""
                 INSERT INTO b10_assessment_session
                     (session_id, principal_id, tenant_id, mode, status, content_code,
-                     content_version_id, content_epoch, snapshot_id, snapshot_hash,
+                     content_version_id, alternative_content_version_id, alternative_content_code,
+                     alternative_reason_code, content_epoch, snapshot_id, snapshot_hash,
                      items_json, answers_json, state_version, attempt_count,
                      idempotency_key, started_at)
-                VALUES (?, ?, ?, ?, 'IN_PROGRESS', ?, ?, ?, ?, ?, ?, '{}', 1, 0, ?, CURRENT_TIMESTAMP(6))
+                VALUES (?, ?, ?, ?, 'IN_PROGRESS', ?, ?, ?, ?, ?, ?, ?, ?, ?, '{}', 1, 0, ?, CURRENT_TIMESTAMP(6))
                 """, sessionId, principal.subject(), TENANT, mode, CONTENT_CODE,
-                contentVersionId, CONTENT_EPOCH, SNAPSHOT_ID, SNAPSHOT_HASH,
+                contentVersionId, alternativeVersion, alternativeCode, alternativeReason,
+                CONTENT_EPOCH, SNAPSHOT_ID, SNAPSHOT_HASH,
                 json(items), idempotencyKey);
         return envelope(sessionView(one("SELECT * FROM b10_assessment_session WHERE session_id = ?", sessionId)));
     }
@@ -134,7 +159,15 @@ public class B10AssessmentJdbcController {
         if (expectedStateVersion != stateVersion) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "assessment state version is stale");
         }
-        List<Map<String, Object>> rules = rules(longValue(session.get("content_version_id"), DEFAULT_CONTENT_VERSION), null);
+        // Grading follows the fulfilled substitute when the requested pin was
+        // unavailable (P1R decision 7B); otherwise the requested pin itself.
+        Object altVersion = session.get("alternative_content_version_id");
+        Object altCode = session.get("alternative_content_code");
+        String gradingCode = altVersion == null ? text(session.get("content_code"), CONTENT_CODE) : text(altCode, CONTENT_CODE);
+        long gradingVersion = altVersion == null
+                ? longValue(session.get("content_version_id"), DEFAULT_CONTENT_VERSION)
+                : ((Number) altVersion).longValue();
+        List<Map<String, Object>> rules = rules(gradingCode, gradingVersion, null);
         Map<Long, Map<String, Object>> ruleById = new LinkedHashMap<>();
         for (Map<String, Object> rule : rules) ruleById.put(numericItemId(text(rule.get("item_id"))), rule);
         ObjectNode answers = objectAnswers(session.get("answers_json"));
@@ -310,14 +343,14 @@ public class B10AssessmentJdbcController {
         return data;
     }
 
-    private List<Map<String, Object>> rules(long contentVersionId, Object requestedItemIds) {
+    private List<Map<String, Object>> rules(String contentCode, long contentVersionId, Object requestedItemIds) {
         List<Map<String, Object>> rows = jdbc.queryForList("""
                 SELECT item_id, content_version_id, prompt, options_json, dimension,
                        difficulty, answer_rule_json
                   FROM b25_assessment_item_rule
                  WHERE content_code = ? AND content_version_id = ? AND active = TRUE
                  ORDER BY item_id
-                """, CONTENT_CODE, contentVersionId);
+                """, contentCode, contentVersionId);
         List<Object> requested = valueList(requestedItemIds);
         if (requested.isEmpty()) return rows;
         return rows.stream().filter(row -> {
@@ -360,11 +393,60 @@ public class B10AssessmentJdbcController {
         pin.put("snapshotHash", text(row == null ? null : row.get("snapshot_hash"), SNAPSHOT_HASH));
         pin.put("pinStatus", "PINNED");
         pin.put("pinnedAt", Instant.now().toString());
+        Object altVersion = row == null ? null : row.get("alternative_content_version_id");
+        if (altVersion != null) {
+            pin.put("pinStatus", "SUBSTITUTED");
+            pin.put("alternativeContentVersionId", ((Number) altVersion).longValue());
+            pin.put("alternativeContentCode", text(row.get("alternative_content_code"), CONTENT_CODE));
+            pin.put("alternativeReasonCode", text(row.get("alternative_reason_code"), "PIN_UNAVAILABLE"));
+        }
         return pin;
     }
 
-    private Map<String, Object> ownerSession(String sessionId, String subject) {
-        Map<String, Object> row = one("""
+    /**
+     * P1R decision 7B: assessment assembles the session pin by asking
+     * content-service for the deterministic substitute. The learner's own JWT is
+     * forwarded so content evaluates the same subject, tenant and rights. Any
+     * failure or empty resolution degrades to null and the caller keeps 410 —
+     * never invents content, never fails a healthy pin path.
+     */
+    private record SubstituteResolution(String contentCode, long contentVersionId, String reasonCode) {
+    }
+
+    private SubstituteResolution resolveSubstitute(String unavailableCode, String authorization) {
+        try {
+            if (authorization == null || authorization.isBlank()) return null;
+            String url = contentBaseUrl.replaceAll("/$", "")
+                    + "/api/v1/content/learner/substitute?code="
+                    + java.net.URLEncoder.encode(unavailableCode, java.nio.charset.StandardCharsets.UTF_8)
+                    + "&reason=PIN_UNAVAILABLE";
+            java.net.http.HttpRequest request = java.net.http.HttpRequest.newBuilder()
+                    .uri(java.net.URI.create(url))
+                    .header("Accept", "application/json")
+                    .header("Authorization", authorization.trim())
+                    .GET()
+                    .timeout(java.time.Duration.ofSeconds(5))
+                    .build();
+            java.net.http.HttpResponse<String> response = java.net.http.HttpClient.newHttpClient()
+                    .send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() != 200) return null;
+            Map<String, Object> body = mapper.readValue(response.body(), Map.class);
+            Object data = body.get("data");
+            if (!(data instanceof Map<?, ?> dataMap)) return null;
+            Object substitute = dataMap.get("substitute");
+            if (!(substitute instanceof Map<?, ?> sub)) return null;
+            Object code = sub.get("contentCode");
+            Object version = sub.get("contentVersionId");
+            if (code == null || !(version instanceof Number number)) return null;
+            Object reason = dataMap.get("reasonCode");
+            return new SubstituteResolution(String.valueOf(code), number.longValue(),
+                    reason == null ? "PIN_UNAVAILABLE" : String.valueOf(reason));
+        } catch (Exception ignored) {
+            return null;
+        }
+    }
+
+    private Map<String, Object> ownerSession(String sessionId, String subject) {        Map<String, Object> row = one("""
                 SELECT * FROM b10_assessment_session
                  WHERE session_id = ? AND principal_id = ? AND tenant_id = ?
                 """, sessionId, subject, TENANT);

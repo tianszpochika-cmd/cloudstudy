@@ -126,6 +126,39 @@ public final class ContentHttpController {
         return envelope(catalogData(projections), headers, false);
     }
 
+    /**
+     * P1R decision 7B: session-pin resolution for assessment. When a pinned content
+     * code is unavailable, assessment asks here for the deterministic substitute
+     * instead of inventing content; empty resolves to catalog/support actions.
+     */
+    @GetMapping("/api/v1/content/learner/substitute")
+    public Envelope<Map<String, Object>> learnerSubstitute(
+            @RequestParam String code,
+            @RequestParam(required = false) String reason,
+            Authentication authentication,
+            @RequestHeader HttpHeaders headers) {
+        ContentActor actor = principals.from(authentication);
+        String reasonCode = reason == null || reason.isBlank() ? "PIN_UNAVAILABLE" : reason.trim();
+        Map<String, Object> data = reads.resolveSubstitute(
+                        code.trim(), reasonCode, ContentAudience.LEARNER, ContentChannel.LEARNER, actor)
+                .map(resolution -> {
+                    Map<String, Object> substitute = new LinkedHashMap<>();
+                    substitute.put("contentCode", resolution.substitute().contentCode());
+                    substitute.put("contentVersionId", resolution.substitute().versionId().value());
+                    substitute.put("kind", resolution.substitute().kind().name());
+                    substitute.put("targetLevel", resolution.substitute().targetLevel());
+                    substitute.put("title", resolution.substitute().title());
+                    Map<String, Object> result = new LinkedHashMap<>();
+                    result.put("unavailableCode", code.trim());
+                    result.put("reasonCode", resolution.reasonCode());
+                    result.put("alternativeAction", resolution.alternativeAction());
+                    result.put("substitute", substitute);
+                    return result;
+                })
+                .orElseThrow(() -> com.englishflow.content.domain.ContentOperationException.notFound("CONTENT_SUBSTITUTE_UNAVAILABLE", "no substitute available"));
+        return envelope(data, headers, false);
+    }
+
     @GetMapping("/api/v1/content/learner/{contentCode}")
     public Envelope<Map<String, Object>> learnerContent(
             @PathVariable String contentCode,

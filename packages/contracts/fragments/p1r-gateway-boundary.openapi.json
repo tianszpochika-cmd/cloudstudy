@@ -36,80 +36,1041 @@
       "wireShapeExpansionAllowed": false
     },
     "serviceOwners": [
-      { "id": "api-gateway", "publicRouteEligible": true, "domainWritesAllowed": false },
-      { "id": "iam-service", "publicRouteEligible": true, "domainWritesAllowed": true },
-      { "id": "learner-service", "publicRouteEligible": true, "domainWritesAllowed": true },
-      { "id": "content-service", "publicRouteEligible": true, "domainWritesAllowed": true },
-      { "id": "learning-service", "publicRouteEligible": true, "domainWritesAllowed": true },
-      { "id": "assessment-service", "publicRouteEligible": true, "domainWritesAllowed": true },
-      { "id": "media-service", "publicRouteEligible": true, "domainWritesAllowed": true },
-      { "id": "gamification-service", "publicRouteEligible": true, "domainWritesAllowed": true },
-      { "id": "social-service", "publicRouteEligible": true, "domainWritesAllowed": true },
-      { "id": "commerce-service", "publicRouteEligible": true, "domainWritesAllowed": true },
-      { "id": "notification-service", "publicRouteEligible": true, "domainWritesAllowed": true },
-      { "id": "analytics-service", "publicRouteEligible": true, "domainWritesAllowed": false },
-      { "id": "admin-ops-service", "publicRouteEligible": true, "domainWritesAllowed": true },
-      { "id": "workflow-service", "publicRouteEligible": true, "domainWritesAllowed": false },
-      { "id": "audit-service", "publicRouteEligible": false, "domainWritesAllowed": false },
-      { "id": "core-api", "publicRouteEligible": false, "domainWritesAllowed": false, "compatibilityOnly": true }
+      {
+        "id": "api-gateway",
+        "publicRouteEligible": true,
+        "domainWritesAllowed": false
+      },
+      {
+        "id": "iam-service",
+        "publicRouteEligible": true,
+        "domainWritesAllowed": true
+      },
+      {
+        "id": "learner-service",
+        "publicRouteEligible": true,
+        "domainWritesAllowed": true
+      },
+      {
+        "id": "content-service",
+        "publicRouteEligible": true,
+        "domainWritesAllowed": true
+      },
+      {
+        "id": "learning-service",
+        "publicRouteEligible": true,
+        "domainWritesAllowed": true
+      },
+      {
+        "id": "assessment-service",
+        "publicRouteEligible": true,
+        "domainWritesAllowed": true
+      },
+      {
+        "id": "media-service",
+        "publicRouteEligible": true,
+        "domainWritesAllowed": true
+      },
+      {
+        "id": "gamification-service",
+        "publicRouteEligible": true,
+        "domainWritesAllowed": true
+      },
+      {
+        "id": "social-service",
+        "publicRouteEligible": true,
+        "domainWritesAllowed": true
+      },
+      {
+        "id": "commerce-service",
+        "publicRouteEligible": true,
+        "domainWritesAllowed": true
+      },
+      {
+        "id": "notification-service",
+        "publicRouteEligible": true,
+        "domainWritesAllowed": true
+      },
+      {
+        "id": "analytics-service",
+        "publicRouteEligible": true,
+        "domainWritesAllowed": false
+      },
+      {
+        "id": "admin-ops-service",
+        "publicRouteEligible": true,
+        "domainWritesAllowed": true
+      },
+      {
+        "id": "workflow-service",
+        "publicRouteEligible": true,
+        "domainWritesAllowed": false
+      },
+      {
+        "id": "audit-service",
+        "publicRouteEligible": false,
+        "domainWritesAllowed": false
+      },
+      {
+        "id": "core-api",
+        "publicRouteEligible": false,
+        "domainWritesAllowed": false,
+        "compatibilityOnly": true
+      }
     ],
     "routeRules": [
-      { "ruleId": "gateway-health", "priority": 1000, "match": { "type": "EXACT", "path": "/api/v1/health", "methods": ["GET"] }, "upstreamOwner": "api-gateway", "internalTargetClass": "GATEWAY_LOCAL", "visibility": "ANONYMOUS_PUBLIC", "authClass": "PUBLIC_READ", "compatibilityMode": "NONE" },
-      { "ruleId": "iam-jwks-public", "priority": 1000, "match": { "type": "EXACT", "path": "/api/v1/auth/jwks", "methods": ["GET"] }, "upstreamOwner": "iam-service", "internalTargetClass": "INTERNAL_V1", "visibility": "ANONYMOUS_PUBLIC", "authClass": "PUBLIC_READ", "compatibilityMode": "NONE" },
-      { "ruleId": "iam-register", "priority": 1000, "match": { "type": "EXACT", "path": "/api/v1/auth/register", "methods": ["POST"] }, "upstreamOwner": "iam-service", "internalTargetClass": "INTERNAL_V1", "visibility": "ANONYMOUS_PUBLIC", "authClass": "AUTH_REGISTER", "compatibilityMode": "NONE" },
-      { "ruleId": "iam-login", "priority": 1000, "match": { "type": "EXACT", "path": "/api/v1/auth/login", "methods": ["POST"] }, "upstreamOwner": "iam-service", "internalTargetClass": "INTERNAL_V1", "visibility": "ANONYMOUS_PUBLIC", "authClass": "AUTH_LOGIN", "compatibilityMode": "NONE" },
-      { "ruleId": "iam-refresh", "priority": 1000, "match": { "type": "EXACT", "path": "/api/v1/auth/token/refresh", "methods": ["POST"] }, "upstreamOwner": "iam-service", "internalTargetClass": "INTERNAL_V1", "visibility": "ANONYMOUS_PUBLIC", "authClass": "AUTH_REFRESH", "compatibilityMode": "NONE" },
-      { "ruleId": "iam-password-reset", "priority": 900, "match": { "type": "PREFIX", "path": "/api/v1/auth/password-reset", "methods": ["POST"] }, "upstreamOwner": "iam-service", "internalTargetClass": "INTERNAL_V1", "visibility": "ANONYMOUS_PUBLIC", "authClass": "PASSWORD_RESET", "compatibilityMode": "NONE" },
-      { "ruleId": "public-content", "priority": 900, "match": { "type": "PREFIX", "path": "/api/v1/public/content", "methods": ["GET"] }, "upstreamOwner": "content-service", "internalTargetClass": "INTERNAL_V1", "visibility": "ANONYMOUS_PUBLIC", "authClass": "PUBLIC_READ", "compatibilityMode": "NONE" },
-      { "ruleId": "public-commerce", "priority": 900, "match": { "type": "PREFIX", "path": "/api/v1/public/commerce", "methods": ["GET"] }, "upstreamOwner": "commerce-service", "internalTargetClass": "INTERNAL_V1", "visibility": "ANONYMOUS_PUBLIC", "authClass": "PUBLIC_READ", "compatibilityMode": "NONE" },
-      { "ruleId": "public-site", "priority": 900, "match": { "type": "PREFIX", "path": "/api/v1/public/site", "methods": ["GET"] }, "upstreamOwner": "content-service", "internalTargetClass": "INTERNAL_V1", "visibility": "ANONYMOUS_PUBLIC", "authClass": "PUBLIC_READ", "compatibilityMode": "NONE" },
-      { "ruleId": "wechat-callback", "priority": 1000, "match": { "type": "EXACT", "path": "/api/v1/commerce/wechat/callback", "methods": ["POST"] }, "upstreamOwner": "commerce-service", "internalTargetClass": "INTERNAL_V1", "visibility": "SIGNED_EXTERNAL_CALLBACK", "authClass": "PROVIDER_CALLBACK", "compatibilityMode": "NONE" },
-      { "ruleId": "alipay-callback", "priority": 1000, "match": { "type": "EXACT", "path": "/api/v1/commerce/alipay/notify", "methods": ["POST"] }, "upstreamOwner": "commerce-service", "internalTargetClass": "INTERNAL_V1", "visibility": "SIGNED_EXTERNAL_CALLBACK", "authClass": "PROVIDER_CALLBACK", "compatibilityMode": "NONE" },
-      { "ruleId": "apple-notification", "priority": 1000, "match": { "type": "EXACT", "path": "/api/v1/commerce/apple/notifications", "methods": ["POST"] }, "upstreamOwner": "commerce-service", "internalTargetClass": "INTERNAL_V1", "visibility": "SIGNED_EXTERNAL_CALLBACK", "authClass": "PROVIDER_CALLBACK", "compatibilityMode": "NONE" },
-      { "ruleId": "admin-content", "priority": 800, "match": { "type": "PREFIX", "path": "/api/v1/admin/content-commands", "methods": ["GET", "POST"] }, "upstreamOwner": "content-service", "internalTargetClass": "INTERNAL_V1", "visibility": "AUTHENTICATED", "authClass": "HIGH_RISK_ADMIN", "compatibilityMode": "NONE" },
-      { "ruleId": "admin-content-publish-tasks", "priority": 800, "match": { "type": "PREFIX", "path": "/api/v1/admin/content-publish-tasks", "methods": ["GET"] }, "upstreamOwner": "content-service", "internalTargetClass": "INTERNAL_V1", "visibility": "AUTHENTICATED", "authClass": "HIGH_RISK_ADMIN", "compatibilityMode": "NONE" },
-      { "ruleId": "admin-recovery", "priority": 800, "match": { "type": "PREFIX", "path": "/api/v1/admin/recovery", "methods": ["GET", "POST"] }, "upstreamOwner": "workflow-service", "internalTargetClass": "INTERNAL_V1", "visibility": "AUTHENTICATED", "authClass": "HIGH_RISK_ADMIN", "compatibilityMode": "NONE" },
-      { "ruleId": "admin-analytics", "priority": 800, "match": { "type": "EXACT", "path": "/api/v1/admin/ops/metrics", "methods": ["GET"] }, "upstreamOwner": "analytics-service", "internalTargetClass": "INTERNAL_V1", "visibility": "AUTHENTICATED", "authClass": "HIGH_RISK_ADMIN", "compatibilityMode": "NONE" },
-      { "ruleId": "analytics-telemetry", "priority": 800, "match": { "type": "EXACT", "path": "/api/v1/analytics/telemetry", "methods": ["POST"] }, "upstreamOwner": "analytics-service", "internalTargetClass": "INTERNAL_V1", "visibility": "AUTHENTICATED", "authClass": "AUTHENTICATED_WRITE", "compatibilityMode": "NONE" },
-      { "ruleId": "learning-content-snapshot", "priority": 800, "match": { "type": "PREFIX", "path": "/api/v1/learning/content-snapshots", "methods": ["GET"] }, "upstreamOwner": "content-service", "internalTargetClass": "INTERNAL_V1", "visibility": "AUTHENTICATED", "authClass": "AUTHENTICATED_READ", "compatibilityMode": "NONE" },
-      { "ruleId": "speaking-recordings", "priority": 800, "match": { "type": "PREFIX", "path": "/api/v1/speaking/recordings", "methods": ["GET", "POST", "DELETE"] }, "upstreamOwner": "media-service", "internalTargetClass": "INTERNAL_V1", "visibility": "AUTHENTICATED", "authClass": "AUTHENTICATED_WRITE", "compatibilityMode": "NONE" },
-      { "ruleId": "speaking-shadowing-completion", "priority": 900, "match": { "type": "EXACT", "path": "/api/v1/speaking/shadowing/completions", "methods": ["POST"] }, "upstreamOwner": "assessment-service", "internalTargetClass": "INTERNAL_V1", "visibility": "AUTHENTICATED", "authClass": "AUTHENTICATED_WRITE", "compatibilityMode": "NONE" },
-      { "ruleId": "auth-domain", "priority": 100, "match": { "type": "PREFIX", "path": "/api/v1/auth", "methods": ["GET", "POST"] }, "upstreamOwner": "iam-service", "internalTargetClass": "INTERNAL_V1", "visibility": "AUTHENTICATED", "authClass": "AUTHENTICATED_WRITE", "compatibilityMode": "NONE" },
-      { "ruleId": "iam-domain", "priority": 100, "match": { "type": "PREFIX", "path": "/api/v1/iam", "methods": ["GET", "POST", "PUT"] }, "upstreamOwner": "iam-service", "internalTargetClass": "INTERNAL_V1", "visibility": "AUTHENTICATED", "authClass": "HIGH_RISK_ADMIN", "compatibilityMode": "NONE" },
-      { "ruleId": "iam-account-deletions", "priority": 800, "match": { "type": "PREFIX", "path": "/api/v1/iam/account-deletions", "methods": ["GET", "POST"] }, "upstreamOwner": "iam-service", "internalTargetClass": "INTERNAL_V1", "visibility": "AUTHENTICATED", "authClass": "AUTHENTICATED_WRITE", "compatibilityMode": "NONE" },
-      { "ruleId": "learner-domain", "priority": 100, "match": { "type": "PREFIX", "path": "/api/v1/learner", "methods": ["GET", "PATCH", "PUT"] }, "upstreamOwner": "learner-service", "internalTargetClass": "INTERNAL_V1", "visibility": "AUTHENTICATED", "authClass": "AUTHENTICATED_WRITE", "compatibilityMode": "NONE" },
-      { "ruleId": "onboarding-domain", "priority": 100, "match": { "type": "PREFIX", "path": "/api/v1/onboarding", "methods": ["GET", "PATCH", "POST"] }, "upstreamOwner": "learner-service", "internalTargetClass": "INTERNAL_V1", "visibility": "AUTHENTICATED", "authClass": "AUTHENTICATED_WRITE", "compatibilityMode": "NONE" },
-      { "ruleId": "privacy-domain", "priority": 100, "match": { "type": "PREFIX", "path": "/api/v1/privacy", "methods": ["GET", "POST"] }, "upstreamOwner": "learner-service", "internalTargetClass": "INTERNAL_V1", "visibility": "AUTHENTICATED", "authClass": "HIGH_RISK_ADMIN", "compatibilityMode": "NONE" },
-      { "ruleId": "privacy-exports", "priority": 800, "match": { "type": "PREFIX", "path": "/api/v1/privacy/exports", "methods": ["GET", "POST"] }, "upstreamOwner": "learner-service", "internalTargetClass": "INTERNAL_V1", "visibility": "AUTHENTICATED", "authClass": "AUTHENTICATED_WRITE", "compatibilityMode": "NONE" },
-      { "ruleId": "content-domain", "priority": 100, "match": { "type": "PREFIX", "path": "/api/v1/content", "methods": ["GET", "POST"] }, "upstreamOwner": "content-service", "internalTargetClass": "INTERNAL_V1", "visibility": "AUTHENTICATED", "authClass": "AUTHENTICATED_WRITE", "compatibilityMode": "NONE" },
-      { "ruleId": "vocabulary-domain", "priority": 100, "match": { "type": "PREFIX", "path": "/api/v1/vocab", "methods": ["GET", "POST", "PUT", "PATCH", "DELETE"] }, "upstreamOwner": "learning-service", "internalTargetClass": "INTERNAL_V1", "visibility": "AUTHENTICATED", "authClass": "AUTHENTICATED_WRITE", "compatibilityMode": "NONE" },
-      { "ruleId": "learning-domain", "priority": 100, "match": { "type": "PREFIX", "path": "/api/v1/learning", "methods": ["GET", "POST", "PUT"] }, "upstreamOwner": "learning-service", "internalTargetClass": "INTERNAL_V1", "visibility": "AUTHENTICATED", "authClass": "AUTHENTICATED_WRITE", "compatibilityMode": "NONE" },
-      { "ruleId": "mastery-domain", "priority": 100, "match": { "type": "PREFIX", "path": "/api/v1/mastery", "methods": ["GET", "POST"] }, "upstreamOwner": "learning-service", "internalTargetClass": "INTERNAL_V1", "visibility": "AUTHENTICATED", "authClass": "AUTHENTICATED_WRITE", "compatibilityMode": "NONE" },
-      { "ruleId": "offline-domain", "priority": 100, "match": { "type": "PREFIX", "path": "/api/v1/offline", "methods": ["GET", "POST"] }, "upstreamOwner": "learning-service", "internalTargetClass": "INTERNAL_V1", "visibility": "AUTHENTICATED", "authClass": "AUTHENTICATED_WRITE", "compatibilityMode": "NONE" },
-      { "ruleId": "sync-domain", "priority": 100, "match": { "type": "PREFIX", "path": "/api/v1/sync", "methods": ["GET", "POST", "PUT", "PATCH"] }, "upstreamOwner": "learning-service", "internalTargetClass": "INTERNAL_V1", "visibility": "AUTHENTICATED", "authClass": "AUTHENTICATED_WRITE", "compatibilityMode": "NONE" },
-      { "ruleId": "assessment-domain", "priority": 100, "match": { "type": "PREFIX", "path": "/api/v1/assessment", "methods": ["GET", "POST", "PUT"] }, "upstreamOwner": "assessment-service", "internalTargetClass": "INTERNAL_V1", "visibility": "AUTHENTICATED", "authClass": "AUTHENTICATED_WRITE", "compatibilityMode": "NONE" },
-      { "ruleId": "exam-domain", "priority": 100, "match": { "type": "PREFIX", "path": "/api/v1/exam", "methods": ["GET", "POST", "PUT"] }, "upstreamOwner": "assessment-service", "internalTargetClass": "INTERNAL_V1", "visibility": "AUTHENTICATED", "authClass": "AUTHENTICATED_WRITE", "compatibilityMode": "NONE" },
-      { "ruleId": "grammar-domain", "priority": 100, "match": { "type": "PREFIX", "path": "/api/v1/grammar", "methods": ["GET", "POST"] }, "upstreamOwner": "assessment-service", "internalTargetClass": "INTERNAL_V1", "visibility": "AUTHENTICATED", "authClass": "AUTHENTICATED_WRITE", "compatibilityMode": "NONE" },
-      { "ruleId": "listening-domain", "priority": 100, "match": { "type": "PREFIX", "path": "/api/v1/listening", "methods": ["GET", "POST", "PUT"] }, "upstreamOwner": "assessment-service", "internalTargetClass": "INTERNAL_V1", "visibility": "AUTHENTICATED", "authClass": "AUTHENTICATED_WRITE", "compatibilityMode": "NONE" },
-      { "ruleId": "reading-domain", "priority": 100, "match": { "type": "PREFIX", "path": "/api/v1/reading", "methods": ["GET", "POST", "PUT"] }, "upstreamOwner": "assessment-service", "internalTargetClass": "INTERNAL_V1", "visibility": "AUTHENTICATED", "authClass": "AUTHENTICATED_WRITE", "compatibilityMode": "NONE" },
-      { "ruleId": "writing-domain", "priority": 100, "match": { "type": "PREFIX", "path": "/api/v1/writing", "methods": ["GET", "POST"] }, "upstreamOwner": "assessment-service", "internalTargetClass": "INTERNAL_V1", "visibility": "AUTHENTICATED", "authClass": "AUTHENTICATED_WRITE", "compatibilityMode": "NONE" },
-      { "ruleId": "phonetics-domain", "priority": 100, "match": { "type": "PREFIX", "path": "/api/v1/phonetics", "methods": ["GET"] }, "upstreamOwner": "assessment-service", "internalTargetClass": "INTERNAL_V1", "visibility": "AUTHENTICATED", "authClass": "AUTHENTICATED_READ", "compatibilityMode": "NONE" },
-      { "ruleId": "speaking-domain", "priority": 100, "match": { "type": "PREFIX", "path": "/api/v1/speaking", "methods": ["GET", "POST", "DELETE"] }, "upstreamOwner": "assessment-service", "internalTargetClass": "INTERNAL_V1", "visibility": "AUTHENTICATED", "authClass": "AUTHENTICATED_WRITE", "compatibilityMode": "NONE" },
-      { "ruleId": "media-domain", "priority": 100, "match": { "type": "PREFIX", "path": "/api/v1/media", "methods": ["GET", "POST"] }, "upstreamOwner": "media-service", "internalTargetClass": "INTERNAL_V1", "visibility": "AUTHENTICATED", "authClass": "AUTHENTICATED_WRITE", "compatibilityMode": "NONE" },
-      { "ruleId": "multimodal-domain", "priority": 100, "match": { "type": "PREFIX", "path": "/api/v1/multimodal", "methods": ["POST"] }, "upstreamOwner": "media-service", "internalTargetClass": "INTERNAL_V1", "visibility": "AUTHENTICATED", "authClass": "AUTHENTICATED_WRITE", "compatibilityMode": "NONE" },
-      { "ruleId": "gamification-domain", "priority": 100, "match": { "type": "PREFIX", "path": "/api/v1/gamification", "methods": ["GET", "POST", "PUT"] }, "upstreamOwner": "gamification-service", "internalTargetClass": "INTERNAL_V1", "visibility": "AUTHENTICATED", "authClass": "AUTHENTICATED_WRITE", "compatibilityMode": "NONE" },
-      { "ruleId": "games-domain", "priority": 100, "match": { "type": "PREFIX", "path": "/api/v1/games", "methods": ["GET", "POST"] }, "upstreamOwner": "gamification-service", "internalTargetClass": "INTERNAL_V1", "visibility": "AUTHENTICATED", "authClass": "AUTHENTICATED_WRITE", "compatibilityMode": "NONE" },
-      { "ruleId": "avatar-domain", "priority": 100, "match": { "type": "PREFIX", "path": "/api/v1/avatar", "methods": ["GET", "POST", "PUT"] }, "upstreamOwner": "gamification-service", "internalTargetClass": "INTERNAL_V1", "visibility": "AUTHENTICATED", "authClass": "AUTHENTICATED_WRITE", "compatibilityMode": "NONE" },
-      { "ruleId": "social-domain", "priority": 100, "match": { "type": "PREFIX", "path": "/api/v1/social", "methods": ["GET", "POST", "PATCH"] }, "upstreamOwner": "social-service", "internalTargetClass": "INTERNAL_V1", "visibility": "AUTHENTICATED", "authClass": "AUTHENTICATED_WRITE", "compatibilityMode": "NONE" },
-      { "ruleId": "commerce-domain", "priority": 100, "match": { "type": "PREFIX", "path": "/api/v1/commerce", "methods": ["GET", "POST", "DELETE"] }, "upstreamOwner": "commerce-service", "internalTargetClass": "INTERNAL_V1", "visibility": "AUTHENTICATED", "authClass": "AUTHENTICATED_WRITE", "compatibilityMode": "NONE" },
-      { "ruleId": "notifications-domain", "priority": 100, "match": { "type": "PREFIX", "path": "/api/v1/notifications", "methods": ["GET", "PUT"] }, "upstreamOwner": "notification-service", "internalTargetClass": "INTERNAL_V1", "visibility": "AUTHENTICATED", "authClass": "AUTHENTICATED_WRITE", "compatibilityMode": "NONE" },
-      { "ruleId": "messages-domain", "priority": 100, "match": { "type": "PREFIX", "path": "/api/v1/messages", "methods": ["GET", "POST"] }, "upstreamOwner": "notification-service", "internalTargetClass": "INTERNAL_V1", "visibility": "AUTHENTICATED", "authClass": "AUTHENTICATED_WRITE", "compatibilityMode": "NONE" },
-      { "ruleId": "settings-domain", "priority": 100, "match": { "type": "PREFIX", "path": "/api/v1/settings", "methods": ["GET", "PUT"] }, "upstreamOwner": "notification-service", "internalTargetClass": "INTERNAL_V1", "visibility": "AUTHENTICATED", "authClass": "AUTHENTICATED_WRITE", "compatibilityMode": "NONE" },
-      { "ruleId": "support-domain", "priority": 100, "match": { "type": "PREFIX", "path": "/api/v1/support", "methods": ["GET", "POST"] }, "upstreamOwner": "admin-ops-service", "internalTargetClass": "INTERNAL_V1", "visibility": "AUTHENTICATED", "authClass": "AUTHENTICATED_WRITE", "compatibilityMode": "NONE" },
-      { "ruleId": "admin-domain", "priority": 100, "match": { "type": "PREFIX", "path": "/api/v1/admin", "methods": ["GET", "POST"] }, "upstreamOwner": "admin-ops-service", "internalTargetClass": "INTERNAL_V1", "visibility": "AUTHENTICATED", "authClass": "HIGH_RISK_ADMIN", "compatibilityMode": "NONE" },
-      { "ruleId": "data-reliability-domain", "priority": 100, "match": { "type": "PREFIX", "path": "/api/v1/data-reliability", "methods": ["GET", "POST"] }, "upstreamOwner": "workflow-service", "internalTargetClass": "INTERNAL_V1", "visibility": "AUTHENTICATED", "authClass": "HIGH_RISK_ADMIN", "compatibilityMode": "NONE" },
-      { "ruleId": "release-domain", "priority": 100, "match": { "type": "PREFIX", "path": "/api/v1/release", "methods": ["GET", "POST"] }, "upstreamOwner": "workflow-service", "internalTargetClass": "INTERNAL_V1", "visibility": "AUTHENTICATED", "authClass": "HIGH_RISK_ADMIN", "compatibilityMode": "NONE" },
-      { "ruleId": "quality-domain", "priority": 100, "match": { "type": "PREFIX", "path": "/api/v1/quality", "methods": ["GET", "POST"] }, "upstreamOwner": "admin-ops-service", "internalTargetClass": "INTERNAL_V1", "visibility": "AUTHENTICATED", "authClass": "HIGH_RISK_ADMIN", "compatibilityMode": "NONE" }
+      {
+        "ruleId": "gateway-health",
+        "priority": 1000,
+        "match": {
+          "type": "EXACT",
+          "path": "/api/v1/health",
+          "methods": [
+            "GET"
+          ]
+        },
+        "upstreamOwner": "api-gateway",
+        "internalTargetClass": "GATEWAY_LOCAL",
+        "visibility": "ANONYMOUS_PUBLIC",
+        "authClass": "PUBLIC_READ",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "iam-jwks-public",
+        "priority": 1000,
+        "match": {
+          "type": "EXACT",
+          "path": "/api/v1/auth/jwks",
+          "methods": [
+            "GET"
+          ]
+        },
+        "upstreamOwner": "iam-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "ANONYMOUS_PUBLIC",
+        "authClass": "PUBLIC_READ",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "iam-register",
+        "priority": 1000,
+        "match": {
+          "type": "EXACT",
+          "path": "/api/v1/auth/register",
+          "methods": [
+            "POST"
+          ]
+        },
+        "upstreamOwner": "iam-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "ANONYMOUS_PUBLIC",
+        "authClass": "AUTH_REGISTER",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "iam-login",
+        "priority": 1000,
+        "match": {
+          "type": "EXACT",
+          "path": "/api/v1/auth/login",
+          "methods": [
+            "POST"
+          ]
+        },
+        "upstreamOwner": "iam-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "ANONYMOUS_PUBLIC",
+        "authClass": "AUTH_LOGIN",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "iam-refresh",
+        "priority": 1000,
+        "match": {
+          "type": "EXACT",
+          "path": "/api/v1/auth/token/refresh",
+          "methods": [
+            "POST"
+          ]
+        },
+        "upstreamOwner": "iam-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "ANONYMOUS_PUBLIC",
+        "authClass": "AUTH_REFRESH",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "iam-password-reset",
+        "priority": 900,
+        "match": {
+          "type": "PREFIX",
+          "path": "/api/v1/auth/password-reset",
+          "methods": [
+            "POST"
+          ]
+        },
+        "upstreamOwner": "iam-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "ANONYMOUS_PUBLIC",
+        "authClass": "PASSWORD_RESET",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "public-content",
+        "priority": 900,
+        "match": {
+          "type": "PREFIX",
+          "path": "/api/v1/public/content",
+          "methods": [
+            "GET"
+          ]
+        },
+        "upstreamOwner": "content-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "ANONYMOUS_PUBLIC",
+        "authClass": "PUBLIC_READ",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "public-commerce",
+        "priority": 900,
+        "match": {
+          "type": "PREFIX",
+          "path": "/api/v1/public/commerce",
+          "methods": [
+            "GET"
+          ]
+        },
+        "upstreamOwner": "commerce-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "ANONYMOUS_PUBLIC",
+        "authClass": "PUBLIC_READ",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "public-site",
+        "priority": 900,
+        "match": {
+          "type": "PREFIX",
+          "path": "/api/v1/public/site",
+          "methods": [
+            "GET"
+          ]
+        },
+        "upstreamOwner": "content-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "ANONYMOUS_PUBLIC",
+        "authClass": "PUBLIC_READ",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "wechat-callback",
+        "priority": 1000,
+        "match": {
+          "type": "EXACT",
+          "path": "/api/v1/commerce/wechat/callback",
+          "methods": [
+            "POST"
+          ]
+        },
+        "upstreamOwner": "commerce-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "SIGNED_EXTERNAL_CALLBACK",
+        "authClass": "PROVIDER_CALLBACK",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "alipay-callback",
+        "priority": 1000,
+        "match": {
+          "type": "EXACT",
+          "path": "/api/v1/commerce/alipay/notify",
+          "methods": [
+            "POST"
+          ]
+        },
+        "upstreamOwner": "commerce-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "SIGNED_EXTERNAL_CALLBACK",
+        "authClass": "PROVIDER_CALLBACK",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "apple-notification",
+        "priority": 1000,
+        "match": {
+          "type": "EXACT",
+          "path": "/api/v1/commerce/apple/notifications",
+          "methods": [
+            "POST"
+          ]
+        },
+        "upstreamOwner": "commerce-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "SIGNED_EXTERNAL_CALLBACK",
+        "authClass": "PROVIDER_CALLBACK",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "admin-content",
+        "priority": 800,
+        "match": {
+          "type": "PREFIX",
+          "path": "/api/v1/admin/content-commands",
+          "methods": [
+            "GET",
+            "POST"
+          ]
+        },
+        "upstreamOwner": "content-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "HIGH_RISK_ADMIN",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "admin-content-publish-tasks",
+        "priority": 800,
+        "match": {
+          "type": "PREFIX",
+          "path": "/api/v1/admin/content-publish-tasks",
+          "methods": [
+            "GET"
+          ]
+        },
+        "upstreamOwner": "content-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "HIGH_RISK_ADMIN",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "admin-recovery",
+        "priority": 800,
+        "match": {
+          "type": "PREFIX",
+          "path": "/api/v1/admin/recovery",
+          "methods": [
+            "GET",
+            "POST"
+          ]
+        },
+        "upstreamOwner": "workflow-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "HIGH_RISK_ADMIN",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "admin-analytics",
+        "priority": 800,
+        "match": {
+          "type": "EXACT",
+          "path": "/api/v1/admin/ops/metrics",
+          "methods": [
+            "GET"
+          ]
+        },
+        "upstreamOwner": "analytics-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "HIGH_RISK_ADMIN",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "analytics-telemetry",
+        "priority": 800,
+        "match": {
+          "type": "EXACT",
+          "path": "/api/v1/analytics/telemetry",
+          "methods": [
+            "POST"
+          ]
+        },
+        "upstreamOwner": "analytics-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "AUTHENTICATED_WRITE",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "learning-content-snapshot",
+        "priority": 800,
+        "match": {
+          "type": "PREFIX",
+          "path": "/api/v1/learning/content-snapshots",
+          "methods": [
+            "GET"
+          ]
+        },
+        "upstreamOwner": "content-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "AUTHENTICATED_READ",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "speaking-recordings",
+        "priority": 800,
+        "match": {
+          "type": "PREFIX",
+          "path": "/api/v1/speaking/recordings",
+          "methods": [
+            "GET",
+            "POST",
+            "DELETE"
+          ]
+        },
+        "upstreamOwner": "media-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "AUTHENTICATED_WRITE",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "speaking-shadowing-completion",
+        "priority": 900,
+        "match": {
+          "type": "EXACT",
+          "path": "/api/v1/speaking/shadowing/completions",
+          "methods": [
+            "POST"
+          ]
+        },
+        "upstreamOwner": "assessment-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "AUTHENTICATED_WRITE",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "auth-domain",
+        "priority": 100,
+        "match": {
+          "type": "PREFIX",
+          "path": "/api/v1/auth",
+          "methods": [
+            "GET",
+            "POST"
+          ]
+        },
+        "upstreamOwner": "iam-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "AUTHENTICATED_WRITE",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "iam-domain",
+        "priority": 100,
+        "match": {
+          "type": "PREFIX",
+          "path": "/api/v1/iam",
+          "methods": [
+            "GET",
+            "POST",
+            "PUT"
+          ]
+        },
+        "upstreamOwner": "iam-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "HIGH_RISK_ADMIN",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "iam-account-deletions",
+        "priority": 800,
+        "match": {
+          "type": "PREFIX",
+          "path": "/api/v1/iam/account-deletions",
+          "methods": [
+            "GET",
+            "POST"
+          ]
+        },
+        "upstreamOwner": "iam-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "AUTHENTICATED_WRITE",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "learner-domain",
+        "priority": 100,
+        "match": {
+          "type": "PREFIX",
+          "path": "/api/v1/learner",
+          "methods": [
+            "GET",
+            "PATCH",
+            "PUT"
+          ]
+        },
+        "upstreamOwner": "learner-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "AUTHENTICATED_WRITE",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "onboarding-domain",
+        "priority": 100,
+        "match": {
+          "type": "PREFIX",
+          "path": "/api/v1/onboarding",
+          "methods": [
+            "GET",
+            "PATCH",
+            "POST"
+          ]
+        },
+        "upstreamOwner": "learner-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "AUTHENTICATED_WRITE",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "privacy-domain",
+        "priority": 100,
+        "match": {
+          "type": "PREFIX",
+          "path": "/api/v1/privacy",
+          "methods": [
+            "GET",
+            "POST"
+          ]
+        },
+        "upstreamOwner": "learner-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "HIGH_RISK_ADMIN",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "privacy-exports",
+        "priority": 800,
+        "match": {
+          "type": "PREFIX",
+          "path": "/api/v1/privacy/exports",
+          "methods": [
+            "GET",
+            "POST"
+          ]
+        },
+        "upstreamOwner": "learner-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "AUTHENTICATED_WRITE",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "content-domain",
+        "priority": 100,
+        "match": {
+          "type": "PREFIX",
+          "path": "/api/v1/content",
+          "methods": [
+            "GET",
+            "POST"
+          ]
+        },
+        "upstreamOwner": "content-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "AUTHENTICATED_WRITE",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "vocabulary-domain",
+        "priority": 100,
+        "match": {
+          "type": "PREFIX",
+          "path": "/api/v1/vocab",
+          "methods": [
+            "GET",
+            "POST",
+            "PUT",
+            "PATCH",
+            "DELETE"
+          ]
+        },
+        "upstreamOwner": "learning-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "AUTHENTICATED_WRITE",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "learning-domain",
+        "priority": 100,
+        "match": {
+          "type": "PREFIX",
+          "path": "/api/v1/learning",
+          "methods": [
+            "GET",
+            "POST",
+            "PUT"
+          ]
+        },
+        "upstreamOwner": "learning-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "AUTHENTICATED_WRITE",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "mastery-domain",
+        "priority": 100,
+        "match": {
+          "type": "PREFIX",
+          "path": "/api/v1/mastery",
+          "methods": [
+            "GET",
+            "POST"
+          ]
+        },
+        "upstreamOwner": "learning-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "AUTHENTICATED_WRITE",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "offline-domain",
+        "priority": 100,
+        "match": {
+          "type": "PREFIX",
+          "path": "/api/v1/offline",
+          "methods": [
+            "GET",
+            "POST"
+          ]
+        },
+        "upstreamOwner": "learning-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "AUTHENTICATED_WRITE",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "sync-domain",
+        "priority": 100,
+        "match": {
+          "type": "PREFIX",
+          "path": "/api/v1/sync",
+          "methods": [
+            "GET",
+            "POST",
+            "PUT",
+            "PATCH"
+          ]
+        },
+        "upstreamOwner": "learning-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "AUTHENTICATED_WRITE",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "assessment-domain",
+        "priority": 100,
+        "match": {
+          "type": "PREFIX",
+          "path": "/api/v1/assessment",
+          "methods": [
+            "GET",
+            "POST",
+            "PUT"
+          ]
+        },
+        "upstreamOwner": "assessment-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "AUTHENTICATED_WRITE",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "exam-domain",
+        "priority": 100,
+        "match": {
+          "type": "PREFIX",
+          "path": "/api/v1/exam",
+          "methods": [
+            "GET",
+            "POST",
+            "PUT"
+          ]
+        },
+        "upstreamOwner": "assessment-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "AUTHENTICATED_WRITE",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "grammar-domain",
+        "priority": 100,
+        "match": {
+          "type": "PREFIX",
+          "path": "/api/v1/grammar",
+          "methods": [
+            "GET",
+            "POST"
+          ]
+        },
+        "upstreamOwner": "assessment-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "AUTHENTICATED_WRITE",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "listening-domain",
+        "priority": 100,
+        "match": {
+          "type": "PREFIX",
+          "path": "/api/v1/listening",
+          "methods": [
+            "GET",
+            "POST",
+            "PUT"
+          ]
+        },
+        "upstreamOwner": "assessment-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "AUTHENTICATED_WRITE",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "reading-domain",
+        "priority": 100,
+        "match": {
+          "type": "PREFIX",
+          "path": "/api/v1/reading",
+          "methods": [
+            "GET",
+            "POST",
+            "PUT"
+          ]
+        },
+        "upstreamOwner": "assessment-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "AUTHENTICATED_WRITE",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "writing-domain",
+        "priority": 100,
+        "match": {
+          "type": "PREFIX",
+          "path": "/api/v1/writing",
+          "methods": [
+            "GET",
+            "POST"
+          ]
+        },
+        "upstreamOwner": "assessment-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "AUTHENTICATED_WRITE",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "phonetics-domain",
+        "priority": 100,
+        "match": {
+          "type": "PREFIX",
+          "path": "/api/v1/phonetics",
+          "methods": [
+            "GET"
+          ]
+        },
+        "upstreamOwner": "assessment-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "AUTHENTICATED_READ",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "speaking-domain",
+        "priority": 100,
+        "match": {
+          "type": "PREFIX",
+          "path": "/api/v1/speaking",
+          "methods": [
+            "GET",
+            "POST",
+            "DELETE"
+          ]
+        },
+        "upstreamOwner": "assessment-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "AUTHENTICATED_WRITE",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "media-domain",
+        "priority": 100,
+        "match": {
+          "type": "PREFIX",
+          "path": "/api/v1/media",
+          "methods": [
+            "GET",
+            "POST"
+          ]
+        },
+        "upstreamOwner": "media-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "AUTHENTICATED_WRITE",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "multimodal-domain",
+        "priority": 100,
+        "match": {
+          "type": "PREFIX",
+          "path": "/api/v1/multimodal",
+          "methods": [
+            "POST"
+          ]
+        },
+        "upstreamOwner": "media-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "AUTHENTICATED_WRITE",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "gamification-domain",
+        "priority": 100,
+        "match": {
+          "type": "PREFIX",
+          "path": "/api/v1/gamification",
+          "methods": [
+            "GET",
+            "POST",
+            "PUT"
+          ]
+        },
+        "upstreamOwner": "gamification-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "AUTHENTICATED_WRITE",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "games-domain",
+        "priority": 100,
+        "match": {
+          "type": "PREFIX",
+          "path": "/api/v1/games",
+          "methods": [
+            "GET",
+            "POST"
+          ]
+        },
+        "upstreamOwner": "gamification-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "AUTHENTICATED_WRITE",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "avatar-domain",
+        "priority": 100,
+        "match": {
+          "type": "PREFIX",
+          "path": "/api/v1/avatar",
+          "methods": [
+            "GET",
+            "POST",
+            "PUT"
+          ]
+        },
+        "upstreamOwner": "gamification-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "AUTHENTICATED_WRITE",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "social-domain",
+        "priority": 100,
+        "match": {
+          "type": "PREFIX",
+          "path": "/api/v1/social",
+          "methods": [
+            "GET",
+            "POST",
+            "PATCH"
+          ]
+        },
+        "upstreamOwner": "social-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "AUTHENTICATED_WRITE",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "commerce-domain",
+        "priority": 100,
+        "match": {
+          "type": "PREFIX",
+          "path": "/api/v1/commerce",
+          "methods": [
+            "GET",
+            "POST",
+            "DELETE"
+          ]
+        },
+        "upstreamOwner": "commerce-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "AUTHENTICATED_WRITE",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "notifications-domain",
+        "priority": 100,
+        "match": {
+          "type": "PREFIX",
+          "path": "/api/v1/notifications",
+          "methods": [
+            "GET",
+            "PUT"
+          ]
+        },
+        "upstreamOwner": "notification-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "AUTHENTICATED_WRITE",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "messages-domain",
+        "priority": 100,
+        "match": {
+          "type": "PREFIX",
+          "path": "/api/v1/messages",
+          "methods": [
+            "GET",
+            "POST"
+          ]
+        },
+        "upstreamOwner": "notification-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "AUTHENTICATED_WRITE",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "settings-domain",
+        "priority": 100,
+        "match": {
+          "type": "PREFIX",
+          "path": "/api/v1/settings",
+          "methods": [
+            "GET",
+            "PUT"
+          ]
+        },
+        "upstreamOwner": "notification-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "AUTHENTICATED_WRITE",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "support-domain",
+        "priority": 100,
+        "match": {
+          "type": "PREFIX",
+          "path": "/api/v1/support",
+          "methods": [
+            "GET",
+            "POST"
+          ]
+        },
+        "upstreamOwner": "admin-ops-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "AUTHENTICATED_WRITE",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "admin-domain",
+        "priority": 100,
+        "match": {
+          "type": "PREFIX",
+          "path": "/api/v1/admin",
+          "methods": [
+            "GET",
+            "POST"
+          ]
+        },
+        "upstreamOwner": "admin-ops-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "HIGH_RISK_ADMIN",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "data-reliability-domain",
+        "priority": 100,
+        "match": {
+          "type": "PREFIX",
+          "path": "/api/v1/data-reliability",
+          "methods": [
+            "GET",
+            "POST"
+          ]
+        },
+        "upstreamOwner": "workflow-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "HIGH_RISK_ADMIN",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "release-domain",
+        "priority": 100,
+        "match": {
+          "type": "PREFIX",
+          "path": "/api/v1/release",
+          "methods": [
+            "GET",
+            "POST"
+          ]
+        },
+        "upstreamOwner": "workflow-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "HIGH_RISK_ADMIN",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "quality-domain",
+        "priority": 100,
+        "match": {
+          "type": "PREFIX",
+          "path": "/api/v1/quality",
+          "methods": [
+            "GET",
+            "POST"
+          ]
+        },
+        "upstreamOwner": "admin-ops-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "HIGH_RISK_ADMIN",
+        "compatibilityMode": "NONE"
+      }
     ],
     "executionTargetPolicy": {
       "schemaVersion": "1.0.0",
@@ -1019,6 +1980,23 @@
             "controllerEvidence": {
               "sourcePath": "services/content-service/src/main/java/com/englishflow/content/web/ContentHttpController.java",
               "requestMapping": "/api/v1/content/learner/{contentCode}"
+            }
+          },
+          {
+            "projectionId": "content-domain.learner-substitute",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/content/learner/substitute",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "content-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.content",
+            "pathStrategy": "PRESERVE_PUBLIC_PATH",
+            "targetPathTemplate": "/api/v1/content/learner/substitute",
+            "controllerEvidence": {
+              "sourcePath": "services/content-service/src/main/java/com/englishflow/content/web/ContentHttpController.java",
+              "requestMapping": "/api/v1/content/learner/substitute"
             }
           },
           {
@@ -3131,21 +4109,75 @@
       "applicationDenyIsSufficient": false
     },
     "originProfiles": {
-      "LEARNER_WEB": { "originMatch": "EXACT_ALLOWLIST", "originSource": "CORS_ALLOWED_ORIGIN_LEARNER_WEB", "credentials": true, "wildcardAllowed": false, "businessSession": true },
-      "ADMIN_WEB": { "originMatch": "EXACT_ALLOWLIST", "originSource": "CORS_ALLOWED_ORIGIN_ADMIN_WEB", "credentials": true, "wildcardAllowed": false, "businessSession": true },
-      "MOBILE_H5": { "originMatch": "EXACT_ALLOWLIST", "originSource": "CORS_ALLOWED_ORIGIN_MOBILE", "credentials": true, "wildcardAllowed": false, "businessSession": true },
-      "OFFICIAL_SITE": { "originMatch": "EXACT_ALLOWLIST", "originSource": "CORS_ALLOWED_ORIGIN_OFFICIAL_SITE", "credentials": false, "wildcardAllowed": false, "businessSession": false, "allowedAuthClasses": ["PUBLIC_READ"], "acceptsBusinessToken": false, "setCookieAllowed": false },
-      "NATIVE": { "originMatch": "NOT_APPLICABLE", "credentials": false, "wildcardAllowed": false, "businessSession": true, "authTransport": "NATIVE_SECURE_STORAGE", "cookieAllowed": false, "setCookieAllowed": false }
+      "LEARNER_WEB": {
+        "originMatch": "EXACT_ALLOWLIST",
+        "originSource": "CORS_ALLOWED_ORIGIN_LEARNER_WEB",
+        "credentials": true,
+        "wildcardAllowed": false,
+        "businessSession": true
+      },
+      "ADMIN_WEB": {
+        "originMatch": "EXACT_ALLOWLIST",
+        "originSource": "CORS_ALLOWED_ORIGIN_ADMIN_WEB",
+        "credentials": true,
+        "wildcardAllowed": false,
+        "businessSession": true
+      },
+      "MOBILE_H5": {
+        "originMatch": "EXACT_ALLOWLIST",
+        "originSource": "CORS_ALLOWED_ORIGIN_MOBILE",
+        "credentials": true,
+        "wildcardAllowed": false,
+        "businessSession": true
+      },
+      "OFFICIAL_SITE": {
+        "originMatch": "EXACT_ALLOWLIST",
+        "originSource": "CORS_ALLOWED_ORIGIN_OFFICIAL_SITE",
+        "credentials": false,
+        "wildcardAllowed": false,
+        "businessSession": false,
+        "allowedAuthClasses": [
+          "PUBLIC_READ"
+        ],
+        "acceptsBusinessToken": false,
+        "setCookieAllowed": false
+      },
+      "NATIVE": {
+        "originMatch": "NOT_APPLICABLE",
+        "credentials": false,
+        "wildcardAllowed": false,
+        "businessSession": true,
+        "authTransport": "NATIVE_SECURE_STORAGE",
+        "cookieAllowed": false,
+        "setCookieAllowed": false
+      }
     },
     "csrf": {
       "appliesToTransport": "WEB_COOKIE",
-      "unsafeMethods": ["POST", "PUT", "PATCH", "DELETE"],
-      "origin": { "required": true, "match": "EXACT_PROFILE_ALLOWLIST" },
-      "refererFallback": { "allowedOnlyWhenOriginAbsent": true, "match": "EXACT_ORIGIN_FROM_ABSOLUTE_URI" },
+      "unsafeMethods": [
+        "POST",
+        "PUT",
+        "PATCH",
+        "DELETE"
+      ],
+      "origin": {
+        "required": true,
+        "match": "EXACT_PROFILE_ALLOWLIST"
+      },
+      "refererFallback": {
+        "allowedOnlyWhenOriginAbsent": true,
+        "match": "EXACT_ORIGIN_FROM_ABSOLUTE_URI"
+      },
       "missingOrUntrustedSourceDecision": "DENY",
       "failureStatus": 403,
       "failureResponse": "#/components/responses/ApiForbidden",
-      "cookie": { "name": "yuxuexing_refresh", "httpOnly": true, "secure": true, "sameSite": "Lax", "path": "/api/v1/auth" },
+      "cookie": {
+        "name": "yuxuexing_refresh",
+        "httpOnly": true,
+        "secure": true,
+        "sameSite": "Lax",
+        "path": "/api/v1/auth"
+      },
       "synchronizerToken": "NOT_REQUIRED_WHILE_EXACT_SOURCE_POLICY_IS_ENFORCED"
     },
     "nativeTransport": {
@@ -3153,36 +4185,123 @@
       "trustedClientAndDeviceContextCrossCheck": true,
       "cookieRequestAllowed": false,
       "setCookieResponseAllowed": false,
-      "refreshStorage": ["KEYCHAIN", "KEYSTORE"],
-      "prohibitedStorage": ["LOCAL_STORAGE", "SESSION_STORAGE", "UNIAPP_STORAGE", "PLAINTEXT_FALLBACK"],
+      "refreshStorage": [
+        "KEYCHAIN",
+        "KEYSTORE"
+      ],
+      "prohibitedStorage": [
+        "LOCAL_STORAGE",
+        "SESSION_STORAGE",
+        "UNIAPP_STORAGE",
+        "PLAINTEXT_FALLBACK"
+      ],
       "csrf": "NOT_APPLICABLE_WITHOUT_COOKIE_CREDENTIALS"
     },
     "jwtPrecheck": {
-      "requiredForAuthClasses": ["AUTHENTICATED_READ", "AUTHENTICATED_WRITE", "HIGH_RISK_ADMIN"],
+      "requiredForAuthClasses": [
+        "AUTHENTICATED_READ",
+        "AUTHENTICATED_WRITE",
+        "HIGH_RISK_ADMIN"
+      ],
       "algorithm": "RS256",
       "jwksRequired": true,
       "issuerRequired": true,
       "audience": "yuxuexing-api",
-      "timeClaims": ["exp", "iat", "nbf"],
+      "timeClaims": [
+        "exp",
+        "iat",
+        "nbf"
+      ],
       "tokenType": "access",
-      "requiredClaims": ["iss", "sub", "aud", "exp", "iat", "nbf", "jti", "token_type", "scope"],
+      "requiredClaims": [
+        "iss",
+        "sub",
+        "aud",
+        "exp",
+        "iat",
+        "nbf",
+        "jti",
+        "token_type",
+        "scope"
+      ],
       "scopeOrPermissionRequired": true,
       "bearerHeaderPresenceIsAuthentication": false,
       "clientAuthorityHeadersTrusted": false,
-      "strippedAuthorityHeaders": ["X-B5-Role", "X-Role", "X-Tenant-Id", "X-Owner-Id", "X-Subject", "X-Permissions"],
+      "strippedAuthorityHeaders": [
+        "X-B5-Role",
+        "X-Role",
+        "X-Tenant-Id",
+        "X-Owner-Id",
+        "X-Subject",
+        "X-Permissions"
+      ],
       "gatewayReplacesServicePep": false,
       "failureMode": "FAIL_CLOSED_401"
     },
     "rateLimitPolicies": {
-      "PUBLIC_READ": { "key": "IP_AND_ROUTE", "backend": "DISTRIBUTED_REDIS", "exceededStatus": 429, "retryAfterRequired": true, "backendFailure": "FAIL_CLOSED_503" },
-      "AUTH_REGISTER": { "key": "IP_DEVICE_AND_ACCOUNT", "backend": "DISTRIBUTED_REDIS", "exceededStatus": 429, "retryAfterRequired": true, "backendFailure": "FAIL_CLOSED_503" },
-      "AUTH_LOGIN": { "key": "IP_DEVICE_AND_ACCOUNT", "backend": "DISTRIBUTED_REDIS", "exceededStatus": 429, "retryAfterRequired": true, "backendFailure": "FAIL_CLOSED_503" },
-      "AUTH_REFRESH": { "key": "IP_DEVICE_AND_SESSION", "backend": "DISTRIBUTED_REDIS", "exceededStatus": 429, "retryAfterRequired": true, "backendFailure": "FAIL_CLOSED_503" },
-      "PASSWORD_RESET": { "key": "IP_DEVICE_AND_ACCOUNT", "backend": "DISTRIBUTED_REDIS", "exceededStatus": 429, "retryAfterRequired": true, "backendFailure": "FAIL_CLOSED_503" },
-      "AUTHENTICATED_READ": { "key": "SUBJECT_AND_ROUTE", "backend": "DISTRIBUTED_REDIS", "exceededStatus": 429, "retryAfterRequired": true, "backendFailure": "FAIL_CLOSED_503" },
-      "AUTHENTICATED_WRITE": { "key": "SUBJECT_DEVICE_AND_ROUTE", "backend": "DISTRIBUTED_REDIS", "exceededStatus": 429, "retryAfterRequired": true, "backendFailure": "FAIL_CLOSED_503" },
-      "HIGH_RISK_ADMIN": { "key": "SUBJECT_DEVICE_TENANT_AND_ROUTE", "backend": "DISTRIBUTED_REDIS", "exceededStatus": 429, "retryAfterRequired": true, "backendFailure": "FAIL_CLOSED_503" },
-      "PROVIDER_CALLBACK": { "key": "VERIFIED_PROVIDER_AND_ROUTE", "backend": "DISTRIBUTED_REDIS", "exceededStatus": 429, "retryAfterRequired": true, "backendFailure": "FAIL_CLOSED_503" }
+      "PUBLIC_READ": {
+        "key": "IP_AND_ROUTE",
+        "backend": "DISTRIBUTED_REDIS",
+        "exceededStatus": 429,
+        "retryAfterRequired": true,
+        "backendFailure": "FAIL_CLOSED_503"
+      },
+      "AUTH_REGISTER": {
+        "key": "IP_DEVICE_AND_ACCOUNT",
+        "backend": "DISTRIBUTED_REDIS",
+        "exceededStatus": 429,
+        "retryAfterRequired": true,
+        "backendFailure": "FAIL_CLOSED_503"
+      },
+      "AUTH_LOGIN": {
+        "key": "IP_DEVICE_AND_ACCOUNT",
+        "backend": "DISTRIBUTED_REDIS",
+        "exceededStatus": 429,
+        "retryAfterRequired": true,
+        "backendFailure": "FAIL_CLOSED_503"
+      },
+      "AUTH_REFRESH": {
+        "key": "IP_DEVICE_AND_SESSION",
+        "backend": "DISTRIBUTED_REDIS",
+        "exceededStatus": 429,
+        "retryAfterRequired": true,
+        "backendFailure": "FAIL_CLOSED_503"
+      },
+      "PASSWORD_RESET": {
+        "key": "IP_DEVICE_AND_ACCOUNT",
+        "backend": "DISTRIBUTED_REDIS",
+        "exceededStatus": 429,
+        "retryAfterRequired": true,
+        "backendFailure": "FAIL_CLOSED_503"
+      },
+      "AUTHENTICATED_READ": {
+        "key": "SUBJECT_AND_ROUTE",
+        "backend": "DISTRIBUTED_REDIS",
+        "exceededStatus": 429,
+        "retryAfterRequired": true,
+        "backendFailure": "FAIL_CLOSED_503"
+      },
+      "AUTHENTICATED_WRITE": {
+        "key": "SUBJECT_DEVICE_AND_ROUTE",
+        "backend": "DISTRIBUTED_REDIS",
+        "exceededStatus": 429,
+        "retryAfterRequired": true,
+        "backendFailure": "FAIL_CLOSED_503"
+      },
+      "HIGH_RISK_ADMIN": {
+        "key": "SUBJECT_DEVICE_TENANT_AND_ROUTE",
+        "backend": "DISTRIBUTED_REDIS",
+        "exceededStatus": 429,
+        "retryAfterRequired": true,
+        "backendFailure": "FAIL_CLOSED_503"
+      },
+      "PROVIDER_CALLBACK": {
+        "key": "VERIFIED_PROVIDER_AND_ROUTE",
+        "backend": "DISTRIBUTED_REDIS",
+        "exceededStatus": 429,
+        "retryAfterRequired": true,
+        "backendFailure": "FAIL_CLOSED_503"
+      }
     },
     "routeClassBindings": {
       "source": "routeRules[].authClass",
@@ -3193,16 +4312,34 @@
       "unknownClassDecision": "DENY"
     },
     "correlation": {
-      "requestId": { "header": "X-Request-Id", "sanitizeAndBound": true, "generateWhenMissingOrInvalid": true },
-      "traceId": { "header": "X-Trace-Id", "sanitizeAndBound": true, "generateWhenMissingOrInvalid": true },
-      "traceparent": { "standard": "W3C", "clientValueTrustedAsSecurityContext": false },
-      "responseHeadersRequired": ["X-Request-Id", "X-Trace-Id"]
+      "requestId": {
+        "header": "X-Request-Id",
+        "sanitizeAndBound": true,
+        "generateWhenMissingOrInvalid": true
+      },
+      "traceId": {
+        "header": "X-Trace-Id",
+        "sanitizeAndBound": true,
+        "generateWhenMissingOrInvalid": true
+      },
+      "traceparent": {
+        "standard": "W3C",
+        "clientValueTrustedAsSecurityContext": false
+      },
+      "responseHeadersRequired": [
+        "X-Request-Id",
+        "X-Trace-Id"
+      ]
     },
     "idempotency": {
       "header": "Idempotency-Key",
       "persistentWritesRequired": true,
       "governanceSource": "#/x-p1r-api-governance/idempotency",
-      "safeException": { "method": "POST", "path": "/api/v1/content/media/{mediaAssetId}/signed-access", "createsPersistentDomainFact": false }
+      "safeException": {
+        "method": "POST",
+        "path": "/api/v1/content/media/{mediaAssetId}/signed-access",
+        "createsPersistentDomainFact": false
+      }
     },
     "errors": {
       "401": "#/components/responses/ApiUnauthorized",
@@ -3217,9 +4354,44 @@
     "audit": {
       "required": true,
       "sink": "audit-service",
-      "allowedFields": ["occurredAt", "routeId", "method", "status", "requestId", "traceId", "subjectHash", "tenantHash", "clientProfile", "decision", "reasonCode", "latencyBucket"],
+      "allowedFields": [
+        "occurredAt",
+        "routeId",
+        "method",
+        "status",
+        "requestId",
+        "traceId",
+        "subjectHash",
+        "tenantHash",
+        "clientProfile",
+        "decision",
+        "reasonCode",
+        "latencyBucket"
+      ],
       "boundedFields": true,
-      "redactedFields": ["Authorization", "Cookie", "Set-Cookie", "accessToken", "refreshToken", "password", "requestBody", "queryString", "rawAudio", "base64Audio", "uploadUrl", "accessUrl", "signedUrl", "objectUrl", "objectKey", "objectCredential", "transcript", "transcriptText", "subtitleText", "captionText", "paymentCredential"],
+      "redactedFields": [
+        "Authorization",
+        "Cookie",
+        "Set-Cookie",
+        "accessToken",
+        "refreshToken",
+        "password",
+        "requestBody",
+        "queryString",
+        "rawAudio",
+        "base64Audio",
+        "uploadUrl",
+        "accessUrl",
+        "signedUrl",
+        "objectUrl",
+        "objectKey",
+        "objectCredential",
+        "transcript",
+        "transcriptText",
+        "subtitleText",
+        "captionText",
+        "paymentCredential"
+      ],
       "clientAuthorityFactsPersisted": false,
       "durableRuntimeEvidenceRequired": true,
       "gatewayEnvelopeImplementationTask": "P1R-M2-001",
@@ -3247,7 +4419,10 @@
       "addendumPath": "requirements/backlog/v2-phase1-rebaseline/execution/M2-EVIDENCE-RESPONSIBILITY-ADDENDUM-2026-09-04.md",
       "effectiveDate": "2026-09-04",
       "taskCountChanged": false,
-      "m2003DependsOn": ["P1R-M2-001", "P1R-M2-002"],
+      "m2003DependsOn": [
+        "P1R-M2-001",
+        "P1R-M2-002"
+      ],
       "finalM2Standard": "UNCHANGED",
       "stagingRevalidationTask": "P1R-M8-013",
       "m2001AcceptanceBoundary": {
@@ -3271,18 +4446,68 @@
         ]
       },
       "gapLifecycle": {
-        "allowedStatuses": ["OPEN", "CLOSED"],
-        "closedRequires": ["evidenceManifestPath", "evidenceCommit", "reviewerDecision", "closedAt"],
+        "allowedStatuses": [
+          "OPEN",
+          "CLOSED"
+        ],
+        "closedRequires": [
+          "evidenceManifestPath",
+          "evidenceCommit",
+          "reviewerDecision",
+          "closedAt"
+        ],
         "requiredReviewerDecision": "ACCEPT"
       }
     },
     "m2RuntimeGaps": [
-      { "id": "M2-GW-CSRF", "status": "OPEN", "implementationOwnerTask": "P1R-M2-001", "evidenceOwnerTask": "P1R-M2-001", "finalGateTask": "P1R-M2-010", "description": "Close only after current-commit real-browser Cookie and exact Origin/Referer allow-and-deny evidence passes." },
-      { "id": "M2-GW-PUBLIC-PATH", "status": "OPEN", "implementationOwnerTask": "P1R-M2-001", "evidenceOwnerTask": "P1R-M2-001", "finalGateTask": "P1R-M2-010", "description": "Close only after a real Gateway process proves the anonymous route set equals the canonical policy and unknown paths fail closed." },
-      { "id": "M2-GW-RATE-LIMIT", "status": "OPEN", "implementationOwnerTask": "P1R-M2-001", "evidenceOwnerTask": "P1R-M2-001", "finalGateTask": "P1R-M2-010", "description": "Close only after real Redis, shared multi-process quota, Retry-After 429, backend-failure 503 and recovery evidence passes." },
-      { "id": "M2-GW-AUDIT", "status": "OPEN", "implementationOwnerTask": "P1R-M2-006", "evidenceOwnerTask": "P1R-M2-006", "finalGateTask": "P1R-M2-010", "description": "M2-001 supplies the bounded redacted Gateway envelope; M2-006 must implement and evidence canonical durable audit-service ingestion, append-only storage and replay." },
-      { "id": "M2-GW-DIRECT-CONNECT", "status": "OPEN", "implementationOwnerTask": "P1R-M2-008", "evidenceOwnerTask": "P1R-M2-008", "finalGateTask": "P1R-M2-010", "description": "M2-001 supplies application-layer internal-path denial; M2-008 must implement and probe real NetworkPolicy isolation, with staging revalidation in M8-013." },
-      { "id": "M2-GW-RUNTIME-EVIDENCE", "status": "OPEN", "implementationOwnerTask": "P1R-M2-010", "evidenceOwnerTask": "P1R-M2-010", "finalGateTask": "P1R-M2-010", "description": "M2-010 aggregates current-commit Gateway, IAM, owner, durable audit and network-isolation evidence; M8-013 revalidates the deployment boundary in staging." }
+      {
+        "id": "M2-GW-CSRF",
+        "status": "OPEN",
+        "implementationOwnerTask": "P1R-M2-001",
+        "evidenceOwnerTask": "P1R-M2-001",
+        "finalGateTask": "P1R-M2-010",
+        "description": "Close only after current-commit real-browser Cookie and exact Origin/Referer allow-and-deny evidence passes."
+      },
+      {
+        "id": "M2-GW-PUBLIC-PATH",
+        "status": "OPEN",
+        "implementationOwnerTask": "P1R-M2-001",
+        "evidenceOwnerTask": "P1R-M2-001",
+        "finalGateTask": "P1R-M2-010",
+        "description": "Close only after a real Gateway process proves the anonymous route set equals the canonical policy and unknown paths fail closed."
+      },
+      {
+        "id": "M2-GW-RATE-LIMIT",
+        "status": "OPEN",
+        "implementationOwnerTask": "P1R-M2-001",
+        "evidenceOwnerTask": "P1R-M2-001",
+        "finalGateTask": "P1R-M2-010",
+        "description": "Close only after real Redis, shared multi-process quota, Retry-After 429, backend-failure 503 and recovery evidence passes."
+      },
+      {
+        "id": "M2-GW-AUDIT",
+        "status": "OPEN",
+        "implementationOwnerTask": "P1R-M2-006",
+        "evidenceOwnerTask": "P1R-M2-006",
+        "finalGateTask": "P1R-M2-010",
+        "description": "M2-001 supplies the bounded redacted Gateway envelope; M2-006 must implement and evidence canonical durable audit-service ingestion, append-only storage and replay."
+      },
+      {
+        "id": "M2-GW-DIRECT-CONNECT",
+        "status": "OPEN",
+        "implementationOwnerTask": "P1R-M2-008",
+        "evidenceOwnerTask": "P1R-M2-008",
+        "finalGateTask": "P1R-M2-010",
+        "description": "M2-001 supplies application-layer internal-path denial; M2-008 must implement and probe real NetworkPolicy isolation, with staging revalidation in M8-013."
+      },
+      {
+        "id": "M2-GW-RUNTIME-EVIDENCE",
+        "status": "OPEN",
+        "implementationOwnerTask": "P1R-M2-010",
+        "evidenceOwnerTask": "P1R-M2-010",
+        "finalGateTask": "P1R-M2-010",
+        "description": "M2-010 aggregates current-commit Gateway, IAM, owner, durable audit and network-isolation evidence; M8-013 revalidates the deployment boundary in staging."
+      }
     ]
   }
 }

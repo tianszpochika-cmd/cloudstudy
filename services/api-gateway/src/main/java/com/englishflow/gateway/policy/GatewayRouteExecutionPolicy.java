@@ -68,6 +68,8 @@ public final class GatewayRouteExecutionPolicy {
             "services/content-service/src/main/java/com/englishflow/content/web/ContentHttpController.java", "/api/v1/content/learner/catalog");
     private static final ControllerEvidence CONTENT_LEARNER_DETAIL = evidence("content-service",
             "services/content-service/src/main/java/com/englishflow/content/web/ContentHttpController.java", "/api/v1/content/learner/{contentCode}");
+    private static final ControllerEvidence CONTENT_LEARNER_SUBSTITUTE = evidence("content-service",
+            "services/content-service/src/main/java/com/englishflow/content/web/ContentHttpController.java", "/api/v1/content/learner/substitute");
     private static final ControllerEvidence CONTENT_LEARNER = evidence("content-service",
             "services/content-service/src/main/java/com/englishflow/content/web/B25ContentJdbcController.java", "/internal/v1/content/learner");
     private static final ControllerEvidence CONTENT_ADMIN = evidence("content-service",
@@ -477,6 +479,8 @@ public final class GatewayRouteExecutionPolicy {
         add(definitions, "content-domain",
                 preserve("learner-catalog", "/api/v1/content/learner/catalog", CONTENT_LEARNER_CATALOG, HttpMethod.GET),
                 preserve("learner-content", "/api/v1/content/learner/{contentCode}", CONTENT_LEARNER_DETAIL, HttpMethod.GET),
+                // P1R decision 7B: session-pin substitute resolution for assessment.
+                preserve("learner-substitute", "/api/v1/content/learner/substitute", CONTENT_LEARNER_SUBSTITUTE, HttpMethod.GET),
                 rewrite("learner-vocabulary", "/api/v1/content/learner/vocabulary/{vocabularyId}", "/internal/v1/content/learner/vocabulary/{vocabularyId}", CONTENT_LEARNER, HttpMethod.GET));
         add(definitions, "vocabulary-domain",
                 rewrite("expressions", "/api/v1/vocab/expressions", "/internal/v1/learning/vocab/expressions", LEARNING_B25, HttpMethod.GET, HttpMethod.POST),

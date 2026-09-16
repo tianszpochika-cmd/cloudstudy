@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1R-PIN-WIRING-1-20260916] **7B pin 装配（半程）：content 替代决议口 + 网关路由 + 契约 + assessment 会话 pin 列。** `GET /api/v1/content/learner/substitute`（与 catalog 同守卫）；网关 preserve 路由；b9 操作 + boundary 投影 + merge（397 routes）；assessment `alternative_*` 三列（V6）+ 请求 pin 保留、履行另存、判分跟履行走。验证：content 148/0/0、gateway 94/0/0、assessment 57/0/0。待下轮：双服务构建重启 + 活对决 + 翻 M5-001/M5-002。
+
 - [P1R-DECISIONS-11-20260916] **人类负责人 11 项决策落地；翻牌 M3-007/M6-010/M7-001（55 ACCEPTED / 53 DEV_DONE，工具待验）。** 1A 建三页、2B 紧急块取消、3A 一退全退、4B 无 locked/编排口、5A 定 v2 形状、6B staging 再切、7B pin 归 assessment、8B 双题顶线、9C 不接支付、10B 分三次 D3、11A 风险接受。13 个 manifest 注记决策方向。
 
 - [P1R-CLOSEOUT-20260916] **终轮全链回归认证：19 条活链全绿，无衰退（52 ACCEPTED / 56 DEV_DONE 定格）。** 56 项残留均有具名阻塞（产品未建面/分期/时间/真机），本地 Web 范围无可推进项，依授权暂停，树干净。

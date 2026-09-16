@@ -790,7 +790,7 @@
       {
         "service": "assessment-service",
         "path": "services/assessment-service/src/main/resources/db/migration",
-        "fileCount": 5
+        "fileCount": 6
       },
       {
         "service": "media-service",
