@@ -23,9 +23,17 @@ public final class JdbcCommerceOutboxPort implements OutboxPort {
     public void append(Event event) {
         try {
             String payload = mapper.writeValueAsString(event.payload());
-            jdbc.update("INSERT INTO commerce_outbox_event (event_id, tenant_id, aggregate_type, aggregate_id, event_type, schema_version, payload_json, payload_hash, state, created_at) "
-                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'PENDING', ?)", event.eventId(), event.tenantId(), event.aggregateType(), event.aggregateId(), event.eventType(),
-                    event.schemaVersion(), payload, sha256(payload), Timestamp.from(event.occurredAt()));
+            // P1-LIVE-007: the V2 standardize migration tightened event_name /
+            // dedupe_key / occurred_at to NOT NULL; the writer still used the
+            // legacy 12-column shape, so every order/payment/refund write rolled
+            // back and surfaced as a 403 via the /error denyAll mask. event_name
+            // follows the migration backfill convention (event_type); dedupe_key
+            // follows SHA2(event_id).
+            jdbc.update("INSERT INTO commerce_outbox_event (event_id, tenant_id, aggregate_type, aggregate_id, event_type, schema_version, payload_json, payload_hash, state, created_at, "
+                    + "event_name, dedupe_key, occurred_at) "
+                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'PENDING', ?, ?, ?, ?)", event.eventId(), event.tenantId(), event.aggregateType(), event.aggregateId(), event.eventType(),
+                    event.schemaVersion(), payload, sha256(payload), Timestamp.from(event.occurredAt()),
+                    event.eventType(), sha256(event.eventId()), Timestamp.from(event.occurredAt()));
         } catch (JacksonException exception) {
             throw new IllegalStateException("commerce outbox payload cannot be serialized", exception);
         }

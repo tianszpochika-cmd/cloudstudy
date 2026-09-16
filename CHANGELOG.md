@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1-LIVE-007-CLOSED-W3-20260916] **P1-LIVE-007 结案：commerce 订单链 403 是 outbox 列漂移 + `/error` denyAll 假面（ADR-0021），W3 19/19。** TRACE 实证：`/**→authenticated()` 正常、handler 正常映射，`createOrder` 内 `INSERT commerce_outbox_event` 用旧 12 列致 `event_name` 回滚（与 P1-LIVE-005 同物种，commerce 写侧漏改），异常转 `/error` 被 denyAll 掩成 403；此前 CSRF/MvcRequestMatcher/`@ResponseStatus` 理论逐项证伪。修复写侧三列 + 全仓另 5 家核对无掉队；`/error` 保持 denyAll（不泄漏异常细节），诊断 recipe 入 ADR。终态：创单 201、支付意向 202、未支付退款 409 守卫；PAID→退款需 workload 回调凭证（本地未配给，M7 后续）。验证：commerce 92/0/0、W3 **19/19**。
+
 - [P1R-ACCEPT-M4-002-M4-003-20260916] **首批验收翻牌：`M4-002`/`M4-003` 由 `DEV_DONE` 转 `ACCEPTED`（人类负责人全权委托，活链路复验）。** 关闭各自 manifest 具名的 deferred 缺口（replay-then-revoke；consent-withdraw），证据 `evidence/live/2026-09-16/`（W0 11/11、W0b 17/17、矩阵 7/7 含真实 UI 登录）+ 九个活链路脚本入库 `scripts/runtime/p1r-live-*.mjs`。其余 78 项保持 `DEV_DONE` 并具名残留（台账当日日志列明每行缺口）。同期：全量 P1R **1445/1445**、网关/契约/归属门禁全绿。
 
 - [P1-LIVE-010-W5-GRADING-20260916] **判分链：部分提交 NPE 改计错，FNV-64 题 ID 加 `itemCode`  alternate（ADR-0020）。** ① 交 1/2 题直接 500：`allMistakes` 对未答题 `answerMap.get()` 取空 NPE；现按错题计（scoreBucket PARTIAL/ZERO 真判分，活验证）。② JS 转发 FNV-64（>2^53）精度丢失致 404：提交侧同时接受字符串 `itemCode`（仓内双匹配惯例）；W5 改传字符串 ID + `optionId`。另记缺口：契约富模型（digests/sequences）服务端尚未实现，当前为简化形；定级种子仅 2 题（十题 manifest 待补种）。验证：assessment 57/0/0、W5 **14/14**（P0 拼句小火车开局/事件/暂停/恢复/完赛全通、B10 判分、词汇、生词本、avatar）。

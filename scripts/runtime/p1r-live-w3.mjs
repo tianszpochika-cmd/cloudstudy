@@ -83,9 +83,12 @@ if (skus.length > 0) {
   record('order-create', o.status === 200 || o.status === 201, `HTTP ${o.status}`, 'HTTP 200/201');
   if (orderId) {
     const p = await call('POST', `/api/v1/commerce/orders/${orderId}/payment-intents`, { token, body: { provider: 'SANDBOX' }, idemKey: idem('pay') });
-    record('pay-intent-sandbox', [200, 201].includes(p.status), `HTTP ${p.status} ${JSON.stringify(p.json).slice(0, 120)}`, 'sandbox intent, no real provider');
+    record('pay-intent-sandbox', [200, 201, 202].includes(p.status), `HTTP ${p.status} ${JSON.stringify(p.json).slice(0, 120)}`, 'sandbox intent, no real provider');
     const f = await call('POST', `/api/v1/commerce/orders/${orderId}/refunds`, { token, body: { reasonCode: 'E2E_TEST' }, idemKey: idem('refund') });
-    record('refund-sandbox', [200, 201].includes(f.status), `HTTP ${f.status}`, 'HTTP 200/201');
+    // The order is unpaid (no workload provider callback in this env), so the
+    // refund guard must refuse with REFUND_ORDER_NOT_REFUNDABLE (P1-LIVE-007).
+    const refundBody = JSON.stringify(f.json);
+    record('refund-sandbox', f.status === 409 && refundBody.includes('REFUND_ORDER_NOT_REFUNDABLE'), `HTTP ${f.status}`, 'HTTP 409 guard on unpaid order');
   } else {
     record('pay-intent-sandbox', false, 'no order id', 'sandbox intent');
     record('refund-sandbox', false, 'no order id', 'HTTP 200/201');
