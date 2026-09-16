@@ -2,7 +2,7 @@
   "taskId": "P1R-M0-001",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "280aeb8586cc5592c0da3d5d2ad43c97010ba8e0",
+  "sourceCommit": "f28885e487ec965a0b7b73067ddae7ca420c68c0",
   "artifactDigests": [
     {
       "path": "config/p1r-current-asset-inventory.json",
@@ -239,14 +239,24 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-16T10:16:37.086Z",
         "details": "P1-LIVE-014 learner-web auth/onboarding fixes changed recorded artifacts."
+      },
+      {
+        "taskId": "P1R-M0-001",
+        "sourceCommit": "f28885e487ec965a0b7b73067ddae7ca420c68c0",
+        "auditedImplementationSource": "f28885e487ec965a0b7b73067ddae7ca420c68c0",
+        "integrationCheckpoint": "f28885e487ec965a0b7b73067ddae7ca420c68c0",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T11:59:46.153Z",
+        "details": "admin-ops fileCount 3->4 for V4 outbox event_id widening."
       }
     ],
-    "previousCurrentSourceCommit": "bf3137d465ae5b3369f1959043445ae4e8c0cb92",
+    "previousCurrentSourceCommit": "280aeb8586cc5592c0da3d5d2ad43c97010ba8e0",
     "currentSourceRevalidationTask": "P1R-M0-001",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-16T10:16:37.086Z",
-    "currentSourceRevalidationAuditedImplementationSource": "280aeb8586cc5592c0da3d5d2ad43c97010ba8e0",
-    "currentSourceRevalidationIntegrationCheckpoint": "280aeb8586cc5592c0da3d5d2ad43c97010ba8e0"
+    "currentSourceRevalidationFinishedAt": "2026-09-16T11:59:46.153Z",
+    "currentSourceRevalidationAuditedImplementationSource": "f28885e487ec965a0b7b73067ddae7ca420c68c0",
+    "currentSourceRevalidationIntegrationCheckpoint": "f28885e487ec965a0b7b73067ddae7ca420c68c0"
   }
 }

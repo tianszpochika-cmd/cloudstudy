@@ -3,7 +3,7 @@
   "draftOnly": false,
   "canonicalTaskStatus": "DEV_DONE",
   "decision": "DEV_DONE",
-  "sourceCommit": "280aeb8586cc5592c0da3d5d2ad43c97010ba8e0",
+  "sourceCommit": "f28885e487ec965a0b7b73067ddae7ca420c68c0",
   "startedAt": "2026-09-15T17:25:00.000Z",
   "finishedAt": "2026-09-15T19:30:25.798Z",
   "environment": {
@@ -125,9 +125,9 @@
     "currentSourceRevalidationTask": "P1R-M4-001",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-16T10:16:40.246Z",
-    "currentSourceRevalidationAuditedImplementationSource": "280aeb8586cc5592c0da3d5d2ad43c97010ba8e0",
-    "currentSourceRevalidationIntegrationCheckpoint": "280aeb8586cc5592c0da3d5d2ad43c97010ba8e0",
+    "currentSourceRevalidationFinishedAt": "2026-09-16T11:59:49.341Z",
+    "currentSourceRevalidationAuditedImplementationSource": "f28885e487ec965a0b7b73067ddae7ca420c68c0",
+    "currentSourceRevalidationIntegrationCheckpoint": "f28885e487ec965a0b7b73067ddae7ca420c68c0",
     "currentSourceRevalidationHistory": [
       {
         "taskId": "P1R-M4-001",
@@ -178,8 +178,18 @@
         "runtimeStatus": "RUNTIME_VERIFIED",
         "finishedAt": "2026-09-16T10:16:40.246Z",
         "details": "P1-LIVE-014 learner-web auth/onboarding fixes changed recorded artifacts."
+      },
+      {
+        "taskId": "P1R-M4-001",
+        "sourceCommit": "f28885e487ec965a0b7b73067ddae7ca420c68c0",
+        "auditedImplementationSource": "f28885e487ec965a0b7b73067ddae7ca420c68c0",
+        "integrationCheckpoint": "f28885e487ec965a0b7b73067ddae7ca420c68c0",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T11:59:49.341Z",
+        "details": "admin-ops fileCount 3->4 for V4 outbox event_id widening."
       }
     ],
-    "previousCurrentSourceCommit": "bf3137d465ae5b3369f1959043445ae4e8c0cb92"
+    "previousCurrentSourceCommit": "280aeb8586cc5592c0da3d5d2ad43c97010ba8e0"
   }
 }

@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-004",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "280aeb8586cc5592c0da3d5d2ad43c97010ba8e0",
+  "sourceCommit": "f28885e487ec965a0b7b73067ddae7ca420c68c0",
   "artifactDigests": [
     {
       "path": "package.json",
@@ -435,9 +435,19 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-16T10:16:37.821Z",
         "details": "P1-LIVE-014 learner-web auth/onboarding fixes changed recorded artifacts."
+      },
+      {
+        "taskId": "P1R-M1-004",
+        "sourceCommit": "f28885e487ec965a0b7b73067ddae7ca420c68c0",
+        "auditedImplementationSource": "f28885e487ec965a0b7b73067ddae7ca420c68c0",
+        "integrationCheckpoint": "f28885e487ec965a0b7b73067ddae7ca420c68c0",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T11:59:46.889Z",
+        "details": "admin-ops fileCount 3->4 for V4 outbox event_id widening."
       }
     ],
-    "previousCurrentSourceCommit": "bf3137d465ae5b3369f1959043445ae4e8c0cb92",
+    "previousCurrentSourceCommit": "280aeb8586cc5592c0da3d5d2ad43c97010ba8e0",
     "previousCurrentSourceRevalidationTask": "P1R-M2-005",
     "currentSourceRevalidationTask": "P1R-M1-004",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
@@ -445,9 +455,9 @@
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
     "previousCurrentSourceRevalidationFinishedAt": "2026-09-12T22:07:09.012Z",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-16T10:16:37.821Z",
-    "currentSourceRevalidationAuditedImplementationSource": "280aeb8586cc5592c0da3d5d2ad43c97010ba8e0",
-    "currentSourceRevalidationIntegrationCheckpoint": "280aeb8586cc5592c0da3d5d2ad43c97010ba8e0"
+    "currentSourceRevalidationFinishedAt": "2026-09-16T11:59:46.889Z",
+    "currentSourceRevalidationAuditedImplementationSource": "f28885e487ec965a0b7b73067ddae7ca420c68c0",
+    "currentSourceRevalidationIntegrationCheckpoint": "f28885e487ec965a0b7b73067ddae7ca420c68c0"
   },
   "startedAt": "2026-08-29T23:52:04+08:00",
   "finishedAt": "2026-09-01T15:39:29+08:00",
