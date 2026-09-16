@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-004",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "e44a3eec5012419f8207ef6c4e652f2b811b1f0c",
+  "sourceCommit": "1ae0e17bc49922e010d2b63a1b5ea4d502133039",
   "artifactDigests": [
     {
       "path": "package.json",
@@ -12,12 +12,12 @@
     {
       "path": "packages/contracts/fragments/p1r-gateway-boundary.openapi.json",
       "algorithm": "sha256",
-      "digest": "29237b475997017d0e5125362cf165f868a80d8963e7ed447478a0c78c270db5"
+      "digest": "060dfae368c9a7c23e424ecab47f6a911b97a5ad956ddd1a1e4e2b2d0a05bcf7"
     },
     {
       "path": "packages/contracts/openapi/v1/openapi.json",
       "algorithm": "sha256",
-      "digest": "98293621ab1827bb239a39f1ccbd83bf82014ef9d68570203c592aec3ab4a03a"
+      "digest": "263e94303e3fcd145734d43d20f1716f42f2b2d66937fb9e7eeeed2a793b051e"
     },
     {
       "path": "scripts/contracts/merge-b1-fragments.mjs",
@@ -545,9 +545,19 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-16T19:34:23.489Z",
         "details": "M5-006 live reconcile chain + evidence"
+      },
+      {
+        "taskId": "P1R-M1-004",
+        "sourceCommit": "1ae0e17bc49922e010d2b63a1b5ea4d502133039",
+        "auditedImplementationSource": "1ae0e17bc49922e010d2b63a1b5ea4d502133039",
+        "integrationCheckpoint": "1ae0e17bc49922e010d2b63a1b5ea4d502133039",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T20:07:49.393Z",
+        "details": "M3-003 validate-auto projection + b9 op re-merge openapi"
       }
     ],
-    "previousCurrentSourceCommit": "34ccffeafb1f4abb2b1974a0711cbf437b8befa7",
+    "previousCurrentSourceCommit": "e44a3eec5012419f8207ef6c4e652f2b811b1f0c",
     "previousCurrentSourceRevalidationTask": "P1R-M2-005",
     "currentSourceRevalidationTask": "P1R-M1-004",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
@@ -555,9 +565,9 @@
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
     "previousCurrentSourceRevalidationFinishedAt": "2026-09-12T22:07:09.012Z",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-16T19:34:23.489Z",
-    "currentSourceRevalidationAuditedImplementationSource": "e44a3eec5012419f8207ef6c4e652f2b811b1f0c",
-    "currentSourceRevalidationIntegrationCheckpoint": "e44a3eec5012419f8207ef6c4e652f2b811b1f0c"
+    "currentSourceRevalidationFinishedAt": "2026-09-16T20:07:49.393Z",
+    "currentSourceRevalidationAuditedImplementationSource": "1ae0e17bc49922e010d2b63a1b5ea4d502133039",
+    "currentSourceRevalidationIntegrationCheckpoint": "1ae0e17bc49922e010d2b63a1b5ea4d502133039"
   },
   "startedAt": "2026-08-29T23:52:04+08:00",
   "finishedAt": "2026-09-01T15:39:29+08:00",

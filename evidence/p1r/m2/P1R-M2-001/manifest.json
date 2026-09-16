@@ -2,7 +2,7 @@
   "taskId": "P1R-M2-001",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "e44a3eec5012419f8207ef6c4e652f2b811b1f0c",
+  "sourceCommit": "1ae0e17bc49922e010d2b63a1b5ea4d502133039",
   "artifactDigests": [
     {
       "path": "services/api-gateway/src/main/java/com/englishflow/gateway/policy/GatewayRoutePolicy.java",
@@ -12,7 +12,7 @@
     {
       "path": "services/api-gateway/src/main/java/com/englishflow/gateway/policy/GatewayRouteExecutionPolicy.java",
       "algorithm": "sha256",
-      "digest": "1a0acafeef6be660d80f1a89fc7cfb95135d2c8984684e5e60f84468a45dc09e"
+      "digest": "23d798313f1c0155343ea7957eedeadfe7f5b09c0b82a35e25dd5bab842c1349"
     },
     {
       "path": "services/api-gateway/src/main/java/com/englishflow/gateway/config/GatewayConfiguration.java",
@@ -97,7 +97,7 @@
     {
       "path": "packages/contracts/openapi/v1/openapi.json",
       "algorithm": "sha256",
-      "digest": "98293621ab1827bb239a39f1ccbd83bf82014ef9d68570203c592aec3ab4a03a"
+      "digest": "263e94303e3fcd145734d43d20f1716f42f2b2d66937fb9e7eeeed2a793b051e"
     },
     {
       "path": "docs/10-decisions/0010-java25-microservices-gateway-iam.md",
@@ -166,9 +166,9 @@
     "currentSourceRevalidationTask": "P1R-M2-001",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-16T19:34:24.592Z",
-    "currentSourceRevalidationAuditedImplementationSource": "e44a3eec5012419f8207ef6c4e652f2b811b1f0c",
-    "currentSourceRevalidationIntegrationCheckpoint": "e44a3eec5012419f8207ef6c4e652f2b811b1f0c",
+    "currentSourceRevalidationFinishedAt": "2026-09-16T20:07:50.463Z",
+    "currentSourceRevalidationAuditedImplementationSource": "1ae0e17bc49922e010d2b63a1b5ea4d502133039",
+    "currentSourceRevalidationIntegrationCheckpoint": "1ae0e17bc49922e010d2b63a1b5ea4d502133039",
     "originalSourceCommit": "7ba4d33f820efae6756164a97dfd38f02c0e89c4",
     "currentSourceRevalidationHistory": [
       {
@@ -470,9 +470,19 @@
         "runtimeStatus": "RUNTIME_VERIFIED",
         "finishedAt": "2026-09-16T19:34:24.592Z",
         "details": "M5-006 live reconcile chain + evidence"
+      },
+      {
+        "taskId": "P1R-M2-001",
+        "sourceCommit": "1ae0e17bc49922e010d2b63a1b5ea4d502133039",
+        "auditedImplementationSource": "1ae0e17bc49922e010d2b63a1b5ea4d502133039",
+        "integrationCheckpoint": "1ae0e17bc49922e010d2b63a1b5ea4d502133039",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T20:07:50.463Z",
+        "details": "M3-003 validate-auto projection + b9 op re-merge openapi"
       }
     ],
-    "previousCurrentSourceCommit": "34ccffeafb1f4abb2b1974a0711cbf437b8befa7",
+    "previousCurrentSourceCommit": "e44a3eec5012419f8207ef6c4e652f2b811b1f0c",
     "previousCurrentSourceRevalidationTask": "P1R-M2-004",
     "previousCurrentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "previousCurrentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",

@@ -3,7 +3,7 @@
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
   "decision": "ACCEPTED",
-  "sourceCommit": "e44a3eec5012419f8207ef6c4e652f2b811b1f0c",
+  "sourceCommit": "1ae0e17bc49922e010d2b63a1b5ea4d502133039",
   "startedAt": "2026-09-15T20:45:00.000Z",
   "finishedAt": "2026-09-15T20:48:00.000Z",
   "environment": {
@@ -94,9 +94,9 @@
     "currentSourceRevalidationTask": "P1R-M6-010",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-16T19:34:28.076Z",
-    "currentSourceRevalidationAuditedImplementationSource": "e44a3eec5012419f8207ef6c4e652f2b811b1f0c",
-    "currentSourceRevalidationIntegrationCheckpoint": "e44a3eec5012419f8207ef6c4e652f2b811b1f0c",
+    "currentSourceRevalidationFinishedAt": "2026-09-16T20:07:53.962Z",
+    "currentSourceRevalidationAuditedImplementationSource": "1ae0e17bc49922e010d2b63a1b5ea4d502133039",
+    "currentSourceRevalidationIntegrationCheckpoint": "1ae0e17bc49922e010d2b63a1b5ea4d502133039",
     "currentSourceRevalidationHistory": [
       {
         "taskId": "P1R-M6-010",
@@ -247,8 +247,18 @@
         "runtimeStatus": "RUNTIME_VERIFIED",
         "finishedAt": "2026-09-16T19:34:28.076Z",
         "details": "M5-006 live reconcile chain + evidence"
+      },
+      {
+        "taskId": "P1R-M6-010",
+        "sourceCommit": "1ae0e17bc49922e010d2b63a1b5ea4d502133039",
+        "auditedImplementationSource": "1ae0e17bc49922e010d2b63a1b5ea4d502133039",
+        "integrationCheckpoint": "1ae0e17bc49922e010d2b63a1b5ea4d502133039",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T20:07:53.962Z",
+        "details": "M3-003 validate-auto projection + b9 op re-merge openapi"
       }
     ],
-    "previousCurrentSourceCommit": "34ccffeafb1f4abb2b1974a0711cbf437b8befa7"
+    "previousCurrentSourceCommit": "e44a3eec5012419f8207ef6c4e652f2b811b1f0c"
   }
 }

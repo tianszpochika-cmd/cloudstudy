@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-008",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "e44a3eec5012419f8207ef6c4e652f2b811b1f0c",
+  "sourceCommit": "1ae0e17bc49922e010d2b63a1b5ea4d502133039",
   "artifactDigests": [
     {
       "path": "config/b20-privacy-content-gates.json",
@@ -117,7 +117,7 @@
     {
       "path": "packages/contracts/fragments/b9/b9-content.openapi.json",
       "algorithm": "sha256",
-      "digest": "862038c6b9546782744bcce6a671955441e2b69cc6344309689c0dc66fd6ba2c"
+      "digest": "8d1ea60d2a094b49b43226a0af0cdf0c6c8104022f9b2bbfd884efcd34312edb"
     },
     {
       "path": "packages/contracts/fragments/b9/b9-shared.openapi.json",
@@ -127,7 +127,7 @@
     {
       "path": "packages/contracts/fragments/p1r-gateway-boundary.openapi.json",
       "algorithm": "sha256",
-      "digest": "29237b475997017d0e5125362cf165f868a80d8963e7ed447478a0c78c270db5"
+      "digest": "060dfae368c9a7c23e424ecab47f6a911b97a5ad956ddd1a1e4e2b2d0a05bcf7"
     },
     {
       "path": "packages/contracts/generated/events.ts",
@@ -142,7 +142,7 @@
     {
       "path": "packages/contracts/openapi/v1/openapi.json",
       "algorithm": "sha256",
-      "digest": "98293621ab1827bb239a39f1ccbd83bf82014ef9d68570203c592aec3ab4a03a"
+      "digest": "263e94303e3fcd145734d43d20f1716f42f2b2d66937fb9e7eeeed2a793b051e"
     },
     {
       "path": "packages/contracts/src/generated-oneof-assertions.ts",
@@ -270,7 +270,7 @@
     "originalFinishedAt": "2026-08-30T12:32:26+08:00",
     "originalReviewer": "agent:m1_008_independent_review:gpt-5.6-luna:max",
     "originalAcceptedContractBaseline": "463c4b238caceb1592bff6c61327c00ab9bac922",
-    "previousCurrentSourceCommit": "34ccffeafb1f4abb2b1974a0711cbf437b8befa7",
+    "previousCurrentSourceCommit": "e44a3eec5012419f8207ef6c4e652f2b811b1f0c",
     "previousCurrentSourceRevalidationTask": "P1R-M1-008",
     "currentSourceRevalidationTask": "P1R-M1-008",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
@@ -754,15 +754,25 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-16T19:34:23.773Z",
         "details": "M5-006 live reconcile chain + evidence"
+      },
+      {
+        "taskId": "P1R-M1-008",
+        "sourceCommit": "1ae0e17bc49922e010d2b63a1b5ea4d502133039",
+        "auditedImplementationSource": "1ae0e17bc49922e010d2b63a1b5ea4d502133039",
+        "integrationCheckpoint": "1ae0e17bc49922e010d2b63a1b5ea4d502133039",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T20:07:49.664Z",
+        "details": "M3-003 validate-auto projection + b9 op re-merge openapi"
       }
     ],
     "previousCurrentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
     "previousCurrentSourceRevalidationFinishedAt": "2026-09-12T23:35:27.174Z",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-16T19:34:23.773Z",
-    "currentSourceRevalidationAuditedImplementationSource": "e44a3eec5012419f8207ef6c4e652f2b811b1f0c",
-    "currentSourceRevalidationIntegrationCheckpoint": "e44a3eec5012419f8207ef6c4e652f2b811b1f0c"
+    "currentSourceRevalidationFinishedAt": "2026-09-16T20:07:49.664Z",
+    "currentSourceRevalidationAuditedImplementationSource": "1ae0e17bc49922e010d2b63a1b5ea4d502133039",
+    "currentSourceRevalidationIntegrationCheckpoint": "1ae0e17bc49922e010d2b63a1b5ea4d502133039"
   },
   "startedAt": "2026-08-30T09:15:05+08:00",
   "finishedAt": "2026-09-01T15:39:29+08:00",
