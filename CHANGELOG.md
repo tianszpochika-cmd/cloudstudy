@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1R-ACCEPT-M6-002-20260916] **`M6-002` 翻牌：通道失败活跑通，W4 15/15。** 关偏好后 PUSH 送达被过滤（`CANCELLED/PREFERENCE_DISABLED`），投递尝试可查。排队/送达走直连（无网关执行，P1-LIVE-013 同类，已具名）。验证：W4 **15/15**。
+
 - [P1R-MATRIX-NOTIF-20260916] **矩阵加通知腿：world 未读 1 活验证；M6-001 缺口收窄（未翻）。** 学员 `POST /messages` 有实现无网关路由（P1-LIVE-013 同类，直连播种并具名），播种后 world 指标 `通知1/未读通知` 活现；此前空态已证。M6-001 留置：缺专用消息中心八态页（learner/mobile 均无通知列表页，仅 world 指标）。
 
 - [P1R-ACCEPT-M2-004-20260916] **`M2-004` 翻牌（专项复验轮；41 ACCEPTED / 67 DEV_DONE）。** reconcile 13/13 + owner 凭证探针全一致 + 门控 33 组 56 项 0 失败 + 活隔离 + 注册表对账 + 基线数已答（0）。附带修：learner 构建残留 V7（非 clean 构建静默打包 stale 迁移；此后迁移改动必须 clean 重建）。其余 observations 非阻塞保留。

@@ -1,8 +1,8 @@
 {
   "taskId": "P1R-M6-002",
   "draftOnly": false,
-  "canonicalTaskStatus": "DEV_DONE",
-  "decision": "DEV_DONE",
+  "canonicalTaskStatus": "ACCEPTED",
+  "decision": "ACCEPTED",
   "sourceCommit": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
   "startedAt": "2026-09-15T20:00:00.000Z",
   "finishedAt": "2026-09-15T20:02:00.000Z",
@@ -41,9 +41,7 @@
     }
   ],
   "blockers": [],
-  "knownGaps": [
-    "Channel-failure live run deferred to acceptance."
-  ],
+  "knownGaps": [],
   "artifactDigests": [
     {
       "path": "scripts/runtime/p1r-m6-002-runtime.mjs",
@@ -56,11 +54,11 @@
       "digest": "8096a76bb2511a9d92865bac9ce593a924ffa076979909df99ec76dc764b597c"
     }
   ],
-  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "reviewer": "human-owner-delegated acceptance: live E2E session 2026-09-16 (W4 15/15 channel-failure run)",
   "nextSteps": [
     "Acceptance testing by the owner, which is what DEV_DONE defers."
   ],
-  "statusNote": "Development finished and the evidence is in the repository. Eight reuse checks pass. Not independently verified, which DEV_DONE says.",
+  "statusNote": "ACCEPTED 2026-09-16 by human-owner delegation: channel-failure run green live (PUSH disabled -> delivery CANCELLED/PREFERENCE_DISABLED -> attempts recorded; evidence/live/2026-09-16/w4-live-evidence.json). Queue/deliver go direct-to-service: POST /messages has no gateway execution (P1-LIVE-013 family, recorded).",
   "provenance": {
     "originalSourceCommit": "acf7063cc1f15cde88ae8847eb8076ba6578c843",
     "originalReviewer": "agent:p1r_implementation:deepseek-harness",

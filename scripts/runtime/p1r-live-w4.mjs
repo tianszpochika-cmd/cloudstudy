@@ -48,6 +48,33 @@ const msgs = data(r).messages ?? data(r).items ?? (Array.isArray(data(r)) ? data
 record('notif-messages', r.status === 200 && Array.isArray(msgs), `HTTP ${r.status} n=${msgs.length}`, 'HTTP 200 + list');
 r = await call('PUT', '/api/v1/notifications/messages/read-all', { token: tokenA, idemKey: idem('readall') });
 record('notif-read-all', [200, 404].includes(r.status), `HTTP ${r.status}`, 'HTTP 200/404');
+// channel-failure run (M6-002): PUSH is disabled above, so a PUSH delivery must
+// filter CANCELLED with PREFERENCE_DISABLED instead of delivering. Queue/deliver
+// go direct-to-service: POST /messages has an implementation but no gateway
+// execution (P1-LIVE-013 family, recorded here).
+async function callDirect(method, path, { token, body, idemKey } = {}) {
+  const headers = { accept: 'application/json', 'x-client-platform': 'web', origin: 'http://127.0.0.1:18180' };
+  if (token) headers.authorization = `Bearer ${token}`;
+  if (idemKey) headers['idempotency-key'] = idemKey;
+  if (body !== undefined) headers['content-type'] = 'application/json';
+  const res = await fetch(`http://127.0.0.1:18093${path}`, { method, headers, body: body === undefined ? undefined : JSON.stringify(body), redirect: 'manual' });
+  let json = null;
+  try { json = await res.json(); } catch { /* ignore */ }
+  return { status: res.status, json };
+}
+r = await callDirect('POST', '/internal/v1/notifications/messages', { token: tokenA, body: { notificationType: 'REVIEW_DUE', channel: 'PUSH', templateKey: 'review-due-v1', templateVersion: 'v1', title: 'w4 failure probe', safeBody: 'filtered by design', contentVersion: 'notif-v1' }, idemKey: idem('qfail') });
+const failMsgId = r.json?.messageId ?? r.json?.data?.messageId ?? null;
+record('notif-queue-push', r.status === 200 && !!failMsgId, `HTTP ${r.status}`, 'HTTP 200 + id');
+if (failMsgId) {
+  r = await callDirect('POST', `/internal/v1/notifications/messages/${failMsgId}/delivery`, { token: tokenA, idemKey: idem('dfail') });
+  const dr = JSON.stringify(r.json);
+  record('notif-deliver-filtered', dr.includes('CANCELLED') && dr.includes('PREFERENCE_DISABLED'), `HTTP ${r.status} ${dr.slice(0, 140)}`, 'CANCELLED/PREFERENCE_DISABLED');
+  r = await callDirect('GET', `/internal/v1/notifications/messages/${failMsgId}/delivery-attempts`, { token: tokenA });
+  record('notif-attempts', r.status === 200 && Array.isArray(r.json) && r.json.length > 0, `HTTP ${r.status} attempts=${Array.isArray(r.json) ? r.json.length : '?'}`, 'HTTP 200 + attempts');
+} else {
+  record('notif-deliver-filtered', false, 'no message id', 'CANCELLED');
+  record('notif-attempts', false, 'no message id', 'HTTP 200');
+}
 // offline sync: push then pull sees it
 r = await call('POST', '/api/v1/offline/sync/push', { token: tokenA, body: { changes: [{ clientSeq: 1, kind: 'REVIEW', itemId: 'w4-item-1', quality: 4 }] }, idemKey: idem('push') });
 record('sync-push', r.status === 200, `HTTP ${r.status} ${JSON.stringify(r.json).slice(0, 140)}`, 'HTTP 200');
