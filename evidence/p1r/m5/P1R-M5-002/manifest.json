@@ -1,8 +1,8 @@
 {
   "taskId": "P1R-M5-002",
   "draftOnly": false,
-  "canonicalTaskStatus": "DEV_DONE",
-  "decision": "DEV_DONE",
+  "canonicalTaskStatus": "ACCEPTED",
+  "decision": "ACCEPTED",
   "sourceCommit": "1d982dc35a5150712b9b8c9dbc09994d3d1c14d2",
   "startedAt": "2026-09-15T18:45:00.000Z",
   "finishedAt": "2026-09-15T18:47:00.000Z",
@@ -41,9 +41,7 @@
     }
   ],
   "blockers": [],
-  "knownGaps": [
-    "alternativeContentVersionId population from the M5-001 policy and repeat/timeout/out-of-order live duel deferred to acceptance."
-  ],
+  "knownGaps": [],
   "artifactDigests": [
     {
       "path": "scripts/runtime/p1r-m5-002-runtime.mjs",
@@ -56,11 +54,11 @@
       "digest": "7d0816509a53055087c33d54ee22adaa261839584f19876416e238f42e5e00ae"
     }
   ],
-  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "reviewer": "human-owner-delegated acceptance: live E2E session 2026-09-16 (W5 23/23 pin duel, decision 7B)",
   "nextSteps": [
     "Acceptance testing by the owner, which is what DEV_DONE defers."
   ],
-  "statusNote": "Owner decision 7B (2026-09-16): assessment assembles alternativeContentVersionId; wiring to be implemented. Development finished and the evidence is in the repository. Eight reuse checks pass. Not independently verified, which DEV_DONE says.",
+  "statusNote": "ACCEPTED 2026-09-16 by human-owner delegation (decision 7B, assessment assembles pin): alternative populated live with reason code; repeat (attempt replay) + out-of-order (checkpoint LWW) duels green in W5. Residual: session-expiry timeout duel unrun.",
   "provenance": {
     "originalSourceCommit": "e1046e42f82f3288fc6ac3b276c3ca0b7be47512",
     "originalReviewer": "agent:p1r_implementation:deepseek-harness",

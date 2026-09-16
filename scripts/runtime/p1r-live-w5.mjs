@@ -112,6 +112,49 @@ record('media-asset', [200, 404].includes(r.status), `HTTP ${r.status}`, 'HTTP 2
 // avatar profile
 r = await call('GET', '/api/v1/avatar/profile', { token });
 record('avatar-profile', r.status === 200, `HTTP ${r.status} ${JSON.stringify(r.json).slice(0, 140)}`, 'HTTP 200');
+// session-pin duel (P1R decision 7B): bad pin without substitutable rules
+// keeps 410; with fixture-cloned rules under the resolved substitute the
+// session is created SUBSTITUTED and grades on the fulfillment.
+{
+  const { execFileSync } = await import('node:child_process');
+  // Pristine start: drop prior runs' cloned fixture rows so the 410 leg is
+  // deterministic; the positive leg re-clones below.
+  execFileSync('docker', ['exec', '-i', '-e', 'MYSQL_PWD=root-local-only', 'yuxuexing-local-mysql-1', 'mysql', '-uroot', '-N', '-e',
+    `DELETE FROM assessment_service.b25_assessment_item_rule WHERE item_id LIKE '%:pin'`], { stdio: 'ignore' });
+}
+r = await call('POST', '/api/v1/assessment/sessions', { token, body: { mode: 'PRACTICE', contentVersionId: 99999 }, idemKey: idem('pin-bad') });
+record('pin-unavailable-410', r.status === 410, `HTTP ${r.status}`, 'HTTP 410 no rules');
+r = await call('GET', '/api/v1/content/learner/substitute?code=course-b25-basics', { token });
+const sub = r.json?.data?.substitute ?? r.json?.substitute ?? null;
+const subCode = sub?.contentCode ?? null;
+const subVersion = sub?.contentVersionId ?? null;
+record('pin-substitute', r.status === 200 && !!subCode && !!subVersion, `HTTP ${r.status} sub=${subCode}@${subVersion}`, 'HTTP 200 resolution');
+if (subCode && subVersion) {
+  const { execFileSync: exec2 } = await import('node:child_process');
+  // Test fixture (documented): clone the 2 seed rules under the resolved
+  // substitute coordinates so the pin path has something to grade.
+  exec2('docker', ['exec', '-i', '-e', 'MYSQL_PWD=root-local-only', 'yuxuexing-local-mysql-1', 'mysql', '-uroot', '-N', '-e',
+    `INSERT IGNORE INTO assessment_service.b25_assessment_item_rule (item_id, content_code, content_version_id, prompt, options_json, dimension, difficulty, answer_rule_json, active) SELECT CONCAT(item_id, ':pin'), '${subCode}', ${subVersion}, prompt, options_json, dimension, difficulty, answer_rule_json, TRUE FROM assessment_service.b25_assessment_item_rule WHERE content_code = 'course-b25-basics' AND content_version_id = 25001 AND active = TRUE`], { stdio: 'ignore' });
+  r = await call('POST', '/api/v1/assessment/sessions', { token, body: { mode: 'PRACTICE', contentVersionId: 99999 }, idemKey: idem('pin-sub') });
+  const psess = r.json?.data?.sessionId ?? r.json?.sessionId ?? r.json?.data?.id ?? null;
+  const pin = r.json?.data?.pin ?? r.json?.pin ?? {};
+  record('pin-substituted', [200, 201].includes(r.status) && pin.pinStatus === 'SUBSTITUTED' && Number(pin.alternativeContentVersionId) === Number(subVersion), `HTTP ${r.status} pin=${pin.pinStatus} alt=${pin.alternativeContentVersionId}`, 'HTTP 200 SUBSTITUTED');
+  if (psess) {
+    const pitems = r.json?.data?.items ?? r.json?.items ?? [];
+    const subs = pitems.slice(0, 2).map((it) => {
+      const opts = it.options ?? [];
+      const key = opts.length > 0 ? (opts[0].optionId ?? opts[0].key ?? 'a') : 'a';
+      return { itemId: String(it.itemId ?? it.id), itemCode: it.itemCode, response: String(key) };
+    });
+    const pa = await call('POST', `/api/v1/assessment/sessions/${psess}/attempts`, { token, body: { submissionId: `w5-${stamp}-pin1`, items: subs }, idemKey: idem('pin-att') });
+    record('pin-graded', [200, 201].includes(pa.status), `HTTP ${pa.status}`, 'HTTP 200 graded on fulfillment');
+  } else {
+    record('pin-graded', false, 'no substituted session', 'HTTP 200 graded');
+  }
+} else {
+  record('pin-substituted', false, 'no resolution', 'HTTP 200 SUBSTITUTED');
+  record('pin-graded', false, 'no resolution', 'HTTP 200 graded');
+}
 const passed = checks.filter((c) => c.ok).length;
 const evidence = { task: 'W5-LIVE-E2E', capturedAt: new Date().toISOString(), gateway: GW, identifier, result: passed === checks.length ? 'PASS' : 'FAIL', passed, total: checks.length, checks };
 await (await import('node:fs')).promises.writeFile('evidence/live/2026-09-16/w5-live-evidence.json', JSON.stringify(evidence, null, 2) + '\n');

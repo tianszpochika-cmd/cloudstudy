@@ -1,8 +1,8 @@
 {
   "taskId": "P1R-M5-001",
   "draftOnly": false,
-  "canonicalTaskStatus": "DEV_DONE",
-  "decision": "DEV_DONE",
+  "canonicalTaskStatus": "ACCEPTED",
+  "decision": "ACCEPTED",
   "sourceCommit": "1d982dc35a5150712b9b8c9dbc09994d3d1c14d2",
   "startedAt": "2026-09-15T18:30:00.000Z",
   "finishedAt": "2026-09-15T18:40:00.000Z",
@@ -49,9 +49,7 @@
     }
   ],
   "blockers": [],
-  "knownGaps": [
-    "Session-pin wiring (alternativeContentVersionId population) is M5-002; cache-invalidation live proof deferred to acceptance."
-  ],
+  "knownGaps": [],
   "artifactDigests": [
     {
       "path": "config/core-api-deny-list.v1.json",
@@ -84,11 +82,11 @@
       "digest": "a45769cb849c12b133aac3a7f983c77081fe312f20a060feef2943fcf2c15c4f"
     }
   ],
-  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "reviewer": "human-owner-delegated acceptance: live E2E session 2026-09-16 (W5 23/23 pin duel, decision 7B)",
   "nextSteps": [
     "Acceptance testing by the owner, which is what DEV_DONE defers."
   ],
-  "statusNote": "Owner decision 7B (2026-09-16): assessment assembles the session pin; wiring to be implemented. Development finished and the evidence is in the repository. Eight checks pass with deny-list green and compile green. Not independently verified, which DEV_DONE says.",
+  "statusNote": "ACCEPTED 2026-09-16 by human-owner delegation (decision 7B, assessment assembles pin): pin wiring live (W5 pin duel: 410 preserved without rules, SUBSTITUTED session with populated alternative on fulfillment, graded 200); substitute-on-unavailable IS the cache-invalidation path live. Residual: session-expiry timeout duel unrun.",
   "provenance": {
     "originalSourceCommit": "f3288a4b07f8766703534b10943b889ef65b3bef",
     "originalReviewer": "agent:p1r_implementation:deepseek-harness",

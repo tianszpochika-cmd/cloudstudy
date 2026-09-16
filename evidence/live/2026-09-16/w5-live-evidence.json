@@ -1,11 +1,11 @@
 {
   "task": "W5-LIVE-E2E",
-  "capturedAt": "2026-09-16T13:28:15.036Z",
+  "capturedAt": "2026-09-16T14:59:41.657Z",
   "gateway": "http://127.0.0.1:18070",
-  "identifier": "w5-mu44yxtn@local.invalid",
+  "identifier": "w5-mu488j3y@local.invalid",
   "result": "PASS",
-  "passed": 19,
-  "total": 19,
+  "passed": 23,
+  "total": 23,
   "checks": [
     {
       "name": "setup-register",
@@ -52,19 +52,19 @@
     {
       "name": "game-finish",
       "ok": true,
-      "observed": "HTTP 200 {\"seq\":1,\"status\":\"COMPLETED\",\"gameCode\":\"SENTENCE_TRAIN\",\"createdAt\":\"2026-09-16T13:28:14.397885700Z\",\"sessionId\":\"game-9dda1eaf-ecb3-4600-",
+      "observed": "HTTP 200 {\"seq\":1,\"status\":\"COMPLETED\",\"gameCode\":\"SENTENCE_TRAIN\",\"createdAt\":\"2026-09-16T14:59:40.593056100Z\",\"sessionId\":\"game-ca54a76d-f90e-453f-",
       "expected": "HTTP 200"
     },
     {
       "name": "b10-session",
       "ok": true,
-      "observed": "HTTP 200 items=2 sess=asess_9c7de09ffab74c599e720f0059b9e589 keys=sessionId,status,mode,pin,items,attemptCount,stateVersion,lastAttemptId,startedAt,expiresAt",
+      "observed": "HTTP 200 items=2 sess=asess_eb8370d943664c0c860e9e9ce906b8c3 keys=sessionId,status,mode,pin,items,attemptCount,stateVersion,lastAttemptId,startedAt,expiresAt",
       "expected": "HTTP 200/201 + session"
     },
     {
       "name": "b10-attempt",
       "ok": true,
-      "observed": "HTTP 200 body={\"data\":{\"attemptId\":\"aatm_485a069b92c047caa24fb70ddcdf51cd\",\"sessionId\":\"asess_9c7de09ffab74c599e720f0059b9e589\",\"attemptVersion\":1,\"status\":\"ASSESSED\",\"itemCount\":2,\"submissionDigest\":\"ec3b3cebccf3135f2e78d821114fe4e39e7fa073f3855fbbb75f06a414cd153b\",\"scoreBucket\":\"ZERO\",\"pin\":{\"contentCode\":\"cour sessKeys=attemptId,sessionId,attemptVersion,status,itemCount,submissionDigest,scoreBucket,pin,assessmentVersion,createdAt,assessedAt,reportId",
+      "observed": "HTTP 200 body={\"data\":{\"attemptId\":\"aatm_16ea5b05a54b44889041c8860ee1039e\",\"sessionId\":\"asess_eb8370d943664c0c860e9e9ce906b8c3\",\"attemptVersion\":1,\"status\":\"ASSESSED\",\"itemCount\":2,\"submissionDigest\":\"ec3b3cebccf3135f2e78d821114fe4e39e7fa073f3855fbbb75f06a414cd153b\",\"scoreBucket\":\"ZERO\",\"pin\":{\"contentCode\":\"cour sessKeys=attemptId,sessionId,attemptVersion,status,itemCount,submissionDigest,scoreBucket,pin,assessmentVersion,createdAt,assessedAt,reportId",
       "expected": "HTTP 200/201 graded"
     },
     {
@@ -106,7 +106,7 @@
     {
       "name": "vocab-entry",
       "ok": true,
-      "observed": "HTTP 200 {\"data\":{\"entryId\":621169,\"item\":{\"itemType\":\"VOCAB\",\"vocabId\":\"w5-word-1\"},\"collectionStatus\":\"SAVED\",\"sourceType\":\"MANUAL\",\"createdAt\":\"20",
+      "observed": "HTTP 200 {\"data\":{\"entryId\":621173,\"item\":{\"itemType\":\"VOCAB\",\"vocabId\":\"w5-word-1\"},\"collectionStatus\":\"SAVED\",\"sourceType\":\"MANUAL\",\"createdAt\":\"20",
       "expected": "HTTP 200/201"
     },
     {
@@ -120,6 +120,30 @@
       "ok": true,
       "observed": "HTTP 200 {\"profile\":{\"avatarId\":\"learner-01\",\"resourceVersion\":\"avatar-2026.08.1\",\"loadoutId\":\"starter-loadout\",\"renderMode\":\"2D_FALLBACK\"}}",
       "expected": "HTTP 200"
+    },
+    {
+      "name": "pin-unavailable-410",
+      "ok": true,
+      "observed": "HTTP 410",
+      "expected": "HTTP 410 no rules"
+    },
+    {
+      "name": "pin-substitute",
+      "ok": true,
+      "observed": "HTTP 200 sub=b31-live-mt7xwl9i@25001",
+      "expected": "HTTP 200 resolution"
+    },
+    {
+      "name": "pin-substituted",
+      "ok": true,
+      "observed": "HTTP 200 pin=SUBSTITUTED alt=25001",
+      "expected": "HTTP 200 SUBSTITUTED"
+    },
+    {
+      "name": "pin-graded",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200 graded on fulfillment"
     }
   ]
 }
