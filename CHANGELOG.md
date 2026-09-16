@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1R-MATRIX-NOTIF-20260916] **矩阵加通知腿：world 未读 1 活验证；M6-001 缺口收窄（未翻）。** 学员 `POST /messages` 有实现无网关路由（P1-LIVE-013 同类，直连播种并具名），播种后 world 指标 `通知1/未读通知` 活现；此前空态已证。M6-001 留置：缺专用消息中心八态页（learner/mobile 均无通知列表页，仅 world 指标）。
+
 - [P1R-ACCEPT-M2-004-20260916] **`M2-004` 翻牌（专项复验轮；41 ACCEPTED / 67 DEV_DONE）。** reconcile 13/13 + owner 凭证探针全一致 + 门控 33 组 56 项 0 失败 + 活隔离 + 注册表对账 + 基线数已答（0）。附带修：learner 构建残留 V7（非 clean 构建静默打包 stale 迁移；此后迁移改动必须 clean 重建）。其余 observations 非阻塞保留。
 
 - [P1R-ACCEPT-M8-BATCH-20260916] **翻牌 M8-002/003/004/005/006（40 ACCEPTED / 68 DEV_DONE）。** 前四项关闭各自具名的 deferred 活扫瞄缺口（W0/W0b/W6/矩阵/页面 + W1/W2/W3）。M8-006：实机故障注入六相全绿（去重/保序/DLQ/杀库/杀 broker/重放单效；broker 中断只延迟不丢），注入致 MySQL/Kafka 容器重启后 W0 11/11 复验恢复。证据：harness 自写 `evidence/p1r/m2/P1R-M2-005/*2026-09-16.json` 入库。

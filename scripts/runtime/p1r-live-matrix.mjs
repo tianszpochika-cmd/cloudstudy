@@ -161,6 +161,54 @@ await visit('admin-login', 'http://127.0.0.1:18181/login');
 await visit('mobile-h5-login', 'http://127.0.0.1:18183/#/pages/login/login', { waitMs: 8000 });
 await visit('mobile-h5-home', 'http://127.0.0.1:18183/#/pages/home/home', { waitMs: 8000 });
 await visit('mobile-h5-phone', 'http://127.0.0.1:18183/#/pages/login/login', { waitMs: 8000, viewport: { width: 390, height: 844 } });
+await visitWorldNotifications();
+
+async function visitWorldNotifications() {
+  // M6-001 message-state browser run: seed one message, watch the world metric
+  // flip empty -> unread. Seeding goes direct-to-service: POST /messages has an
+  // implementation but no gateway execution (P1-LIVE-013 family, recorded).
+  const out = { id: 'learner-world-notifications', url: 'http://127.0.0.1:18180/world', status: -1, title: '', errors: [], metric: {} };
+  const browser = await chromium.launch();
+  const page = await (await browser.newContext()).newPage();
+  page.on('pageerror', (e) => out.errors.push('pageerror: ' + String(e).slice(0, 140)));
+  page.on('console', (m) => {
+    if (m.type() === 'error' && !/favicon|Failed to load resource/i.test(m.text())) out.errors.push('console.error: ' + m.text().slice(0, 140));
+  });
+  try {
+    // Login token carries the full allow-list (register token is pre-gate stripped).
+    const lg = await fetch('http://127.0.0.1:18070/api/v1/auth/login', {
+      method: 'POST',
+      headers: { accept: 'application/json', 'content-type': 'application/json', 'x-client-platform': 'web', origin: 'http://127.0.0.1:18180', 'idempotency-key': `wui-${stamp}-login-seed-01` },
+      body: JSON.stringify({ identifier, password, device }),
+    });
+    const loginToken = (await lg.json().catch(() => null))?.data?.accessToken ?? token;
+    const q = await fetch('http://127.0.0.1:18093/internal/v1/notifications/messages', {
+      method: 'POST',
+      headers: { accept: 'application/json', 'content-type': 'application/json', 'x-client-platform': 'web', origin: 'http://127.0.0.1:18180', 'idempotency-key': `wui-${stamp}-seedmsg-01`, authorization: `Bearer ${loginToken}` },
+      body: JSON.stringify({ notificationType: 'REVIEW_DUE', channel: 'IN_APP', templateKey: 'review-due-v1', templateVersion: 'v1', title: 'matrix probe', safeBody: 'live probe', contentVersion: 'notif-v1' }),
+    });
+    out.seedStatus = q.status;
+    await page.goto('http://127.0.0.1:18180/login', { waitUntil: 'domcontentloaded', timeout: 45000 });
+    await page.waitForTimeout(2000);
+    await page.getByLabel(/账号|邮箱/i).first().fill(identifier);
+    await page.getByLabel(/密码/i).first().fill(password);
+    await page.getByRole('button', { name: /登录/i }).first().click();
+    await page.waitForTimeout(4000);
+    const resp = await page.goto('http://127.0.0.1:18180/world', { waitUntil: 'domcontentloaded', timeout: 45000 });
+    out.status = resp ? resp.status() : -1;
+    await page.waitForTimeout(4000);
+    out.title = await page.title();
+    const text = (await page.locator('body').first().textContent().catch(() => '')) ?? '';
+    const i = text.indexOf('通知');
+    out.metric.snippet = text.slice(Math.max(0, i - 30), i + 30).replace(/\s+/g, ' ');
+    out.metric.unreadShown = /通知\s*1|未读通知/.test(text);
+  } catch (e) {
+    out.errors.push('goto-fail: ' + String(e).slice(0, 160));
+  }
+  results.push(out);
+  console.log(`${out.status === 200 && out.metric.unreadShown ? 'ok  ' : 'FAIL'} learner-world-notifications :: HTTP ${out.status} unread=${out.metric.unreadShown} seed=${out.seedStatus} errors=${out.errors.length}`);
+  await browser.close();
+}
 
 const fails = results.filter((x) => x.status !== 200 || x.errors.length > 0);
 fs.writeFileSync('evidence/live/2026-09-16/browser-matrix.json', JSON.stringify({ capturedAt: new Date().toISOString(), results }, null, 2) + '\n');

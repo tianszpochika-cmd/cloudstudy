@@ -1,5 +1,5 @@
 {
-  "capturedAt": "2026-09-16T07:41:22.110Z",
+  "capturedAt": "2026-09-16T08:35:12.332Z",
   "results": [
     {
       "id": "official-home",
@@ -230,7 +230,20 @@
         "width": 390,
         "height": 844
       }
+    },
+    {
+      "id": "learner-world-notifications",
+      "url": "http://127.0.0.1:18180/world",
+      "status": 200,
+      "title": "语学星",
+      "errors": [
+        "console.error: Access to fetch at 'http://127.0.0.1:18070/api/v1/sync/offline-packages' from origin 'http://127.0.0.1:18180' has been blocked by CORS polic"
+      ],
+      "metric": {
+        "snippet": "AR COIN0规则 未返回STREAK0 天UNKNOWN通知1未读通知GALAXY MAP成长世界服务端进度地图节点",
+        "unreadShown": true
+      },
+      "seedStatus": 200
     }
-  ],
-  "notes": " learner-world-tabs 4/4 with one environmental console.error (/sync/offline-packages has no gateway execution yet: P1-LIVE-013 family)."
+  ]
 }
