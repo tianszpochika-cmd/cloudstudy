@@ -60,7 +60,7 @@
   "nextSteps": [
     "Acceptance testing by the owner, which is what DEV_DONE defers."
   ],
-  "statusNote": "Development finished and the evidence is in the repository. Eight reuse checks pass. Not independently verified, which DEV_DONE says.",
+  "statusNote": "Owner decision 7B (2026-09-16): assessment assembles alternativeContentVersionId; wiring to be implemented. Development finished and the evidence is in the repository. Eight reuse checks pass. Not independently verified, which DEV_DONE says.",
   "provenance": {
     "originalSourceCommit": "e1046e42f82f3288fc6ac3b276c3ca0b7be47512",
     "originalReviewer": "agent:p1r_implementation:deepseek-harness",

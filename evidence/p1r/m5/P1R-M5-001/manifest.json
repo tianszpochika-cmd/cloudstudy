@@ -88,7 +88,7 @@
   "nextSteps": [
     "Acceptance testing by the owner, which is what DEV_DONE defers."
   ],
-  "statusNote": "Development finished and the evidence is in the repository. Eight checks pass with deny-list green and compile green. Not independently verified, which DEV_DONE says.",
+  "statusNote": "Owner decision 7B (2026-09-16): assessment assembles the session pin; wiring to be implemented. Development finished and the evidence is in the repository. Eight checks pass with deny-list green and compile green. Not independently verified, which DEV_DONE says.",
   "provenance": {
     "originalSourceCommit": "f3288a4b07f8766703534b10943b889ef65b3bef",
     "originalReviewer": "agent:p1r_implementation:deepseek-harness",

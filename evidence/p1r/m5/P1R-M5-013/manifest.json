@@ -74,7 +74,7 @@
   "nextSteps": [
     "Acceptance testing by the owner, which is what DEV_DONE defers."
   ],
-  "statusNote": "Development finished and the evidence is in the repository. Eight checks pass with a green compile. Not independently verified, which DEV_DONE says.",
+  "statusNote": "Owner decision 5A (2026-09-16): define trusted-completion v2 shapes now; consumer contract tests to follow. Development finished and the evidence is in the repository. Eight checks pass with a green compile. Not independently verified, which DEV_DONE says.",
   "provenance": {
     "originalSourceCommit": "86e36ebbe64c09d4c7569898946c3d4d50401e96",
     "originalReviewer": "agent:p1r_implementation:deepseek-harness",

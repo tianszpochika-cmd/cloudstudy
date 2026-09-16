@@ -60,7 +60,7 @@
   "nextSteps": [
     "Acceptance testing by the owner, which is what DEV_DONE defers."
   ],
-  "statusNote": "Development finished and the evidence is in the repository. Eight reuse checks pass. Not independently verified, which DEV_DONE says.",
+  "statusNote": "Owner decision 1A (2026-09-16): build the DLQ console. Gap now tracks the build. Development finished and the evidence is in the repository. Eight reuse checks pass. Not independently verified, which DEV_DONE says.",
   "provenance": {
     "originalSourceCommit": "f2b7b81d88a42752687a5f37178108647a1014a8",
     "originalReviewer": "agent:p1r_implementation:deepseek-harness",

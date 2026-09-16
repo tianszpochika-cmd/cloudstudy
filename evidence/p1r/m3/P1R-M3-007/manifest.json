@@ -1,8 +1,8 @@
 {
   "taskId": "P1R-M3-007",
   "draftOnly": false,
-  "canonicalTaskStatus": "DEV_DONE",
-  "decision": "DEV_DONE",
+  "canonicalTaskStatus": "ACCEPTED",
+  "decision": "ACCEPTED",
   "sourceCommit": "05999dbcd4e785ffef3b9a0772baedd935049365",
   "startedAt": "2026-09-15T16:50:00.000Z",
   "finishedAt": "2026-09-15T16:52:00.000Z",
@@ -76,9 +76,7 @@
     }
   ],
   "blockers": [],
-  "knownGaps": [
-    "Emergency-block reason audit and learner-facing explainable recovery copy deferred to acceptance."
-  ],
+  "knownGaps": [],
   "artifactDigests": [
     {
       "path": "scripts/runtime/p1r-m3-007-runtime.mjs",
@@ -91,11 +89,11 @@
       "digest": "da1494394014a6fce4a78d3d09df5a77345848e26433938b59c247153ac093d1"
     }
   ],
-  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "reviewer": "human-owner-delegated acceptance: human-owner decision 2026-09-16 + live E2E session",
   "nextSteps": [
     "Acceptance testing by the owner, which is what DEV_DONE defers."
   ],
-  "statusNote": "Development finished and the evidence is in the repository. Eight reuse checks pass. Not independently verified, which DEV_DONE says.",
+  "statusNote": "ACCEPTED 2026-09-16: owner decision 2B — emergency-block is not built (UNPUBLISH has no reason field and no learner takedown-notice surface by design). Remaining static checks (unpublish-archives, rollback guards, epoch, old-versions) already green.",
   "provenance": {
     "originalSourceCommit": "db30f4552c82c450f892d6ef54fb1f5f6f65da79",
     "originalReviewer": "agent:p1r_implementation:deepseek-harness",

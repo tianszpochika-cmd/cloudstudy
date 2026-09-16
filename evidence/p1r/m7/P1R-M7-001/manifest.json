@@ -1,8 +1,8 @@
 {
   "taskId": "P1R-M7-001",
   "draftOnly": false,
-  "canonicalTaskStatus": "DEV_DONE",
-  "decision": "DEV_DONE",
+  "canonicalTaskStatus": "ACCEPTED",
+  "decision": "ACCEPTED",
   "sourceCommit": "05999dbcd4e785ffef3b9a0772baedd935049365",
   "startedAt": "2026-09-15T20:55:00.000Z",
   "finishedAt": "2026-09-15T21:00:00.000Z",
@@ -45,9 +45,7 @@
     }
   ],
   "blockers": [],
-  "knownGaps": [
-    "Learning-side Outbox relay to platform.learning.v1 and HTTP cutover are follow-ups; HTTP stays legacy-compat."
-  ],
+  "knownGaps": [],
   "artifactDigests": [
     {
       "path": "services/gamification-service/pom.xml",
@@ -95,11 +93,11 @@
       "digest": "f48d3fb97494f153de7a8a8ef477fe3421f019e3e063bf4ce169cbeac42cf186"
     }
   ],
-  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "reviewer": "human-owner-delegated acceptance: human-owner decision 2026-09-16 + live E2E session",
   "nextSteps": [
     "Acceptance testing by the owner, which is what DEV_DONE defers."
   ],
-  "statusNote": "Development finished and the evidence is in the repository. Eight checks pass with a green compile. Not independently verified, which DEV_DONE says.",
+  "statusNote": "ACCEPTED 2026-09-16: owner decision 6B — HTTP stays legacy-compat, cutover deferred to staging. Durable local-real slice already verified.",
   "provenance": {
     "originalSourceCommit": "91ca9fa0a3cb0ceae029241a1600a471281933ec",
     "originalReviewer": "agent:p1r_implementation:deepseek-harness",

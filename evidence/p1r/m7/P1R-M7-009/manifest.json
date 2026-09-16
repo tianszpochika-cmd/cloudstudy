@@ -69,7 +69,7 @@
   "nextSteps": [
     "Acceptance testing by the owner, which is what DEV_DONE defers."
   ],
-  "statusNote": "Development finished and the evidence is in the repository. Eight checks pass with a green typecheck. Not independently verified, which DEV_DONE says.",
+  "statusNote": "Owner decision 9C (2026-09-16): refund browser runs deferred with payment; workbench render remains runnable. Development finished and the evidence is in the repository. Eight checks pass with a green typecheck. Not independently verified, which DEV_DONE says.",
   "provenance": {
     "originalSourceCommit": "c7c0b2e2fd5a085409c0243f99afe195418563d5",
     "originalReviewer": "agent:p1r_implementation:deepseek-harness",

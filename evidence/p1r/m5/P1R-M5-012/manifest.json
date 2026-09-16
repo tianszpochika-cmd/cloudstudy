@@ -60,7 +60,7 @@
   "nextSteps": [
     "Acceptance testing by the owner, which is what DEV_DONE defers."
   ],
-  "statusNote": "Development finished and the evidence is in the repository. Eight reuse checks pass. Not independently verified, which DEV_DONE says.",
+  "statusNote": "Owner decision 1A (2026-09-16): build mistakes/mastery/plan-map pages. Gap now tracks the build. Development finished and the evidence is in the repository. Eight reuse checks pass. Not independently verified, which DEV_DONE says.",
   "provenance": {
     "originalSourceCommit": "2894a6746dc01bbb71b0c37c64fad7efd38a42cb",
     "originalReviewer": "agent:p1r_implementation:deepseek-harness",

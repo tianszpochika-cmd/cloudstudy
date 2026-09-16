@@ -360,5 +360,6 @@
     "previousCurrentSourceRevalidationTask": "P1R-M0-006",
     "previousCurrentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "previousCurrentSourceRevalidationFinishedAt": "2026-09-12T15:59:44.043Z"
-  }
+  },
+  "statusNote": "Owner decision 11A (2026-09-16): intlify advisory accepted as known Phase 1 risk by human owner. "
 }

@@ -79,7 +79,7 @@
   "nextSteps": [
     "Acceptance testing by the owner, which is what DEV_DONE defers."
   ],
-  "statusNote": "Development finished and the evidence is in the repository. Eight checks pass with a green compile. Not independently verified, which DEV_DONE says.",
+  "statusNote": "Owner decision 1A (2026-09-16): build the message-center UI. Gap now tracks the build. Development finished and the evidence is in the repository. Eight checks pass with a green compile. Not independently verified, which DEV_DONE says.",
   "provenance": {
     "originalSourceCommit": "df84b59f6f3884400c6ae94e11d5d89cb5d3da55",
     "originalReviewer": "agent:p1r_implementation:deepseek-harness",

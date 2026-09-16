@@ -60,7 +60,7 @@
   "nextSteps": [
     "Acceptance testing by the owner, which is what DEV_DONE defers."
   ],
-  "statusNote": "Development finished and the evidence is in the repository. Eight checks pass with 48/48 green. Not independently verified, which DEV_DONE says.",
+  "statusNote": "Owner decision 9C (2026-09-16): no payment in Phase 1 (activation/free only); provider-callback runs deferred with payment. Development finished and the evidence is in the repository. Eight checks pass with 48/48 green. Not independently verified, which DEV_DONE says.",
   "provenance": {
     "originalSourceCommit": "1c99a7b975de4adda1858fb3e4bc8917bd7c7c66",
     "originalReviewer": "agent:p1r_implementation:deepseek-harness",

@@ -60,7 +60,7 @@
   "nextSteps": [
     "Acceptance testing by the owner, which is what DEV_DONE defers."
   ],
-  "statusNote": "Development finished and the evidence is in the repository. Eight reuse checks pass. Not independently verified, which DEV_DONE says.",
+  "statusNote": "Owner decision 9C (2026-09-16): activation-code/free-entitlement path stays; sandbox redeem runnable under M7-007 sandbox. Development finished and the evidence is in the repository. Eight reuse checks pass. Not independently verified, which DEV_DONE says.",
   "provenance": {
     "originalSourceCommit": "b601191f4f737dafdbe75bc5aef80ca406d4c0d5",
     "originalReviewer": "agent:p1r_implementation:deepseek-harness",

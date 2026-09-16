@@ -646,11 +646,12 @@
         "PLANNED",
         "READY",
         "IN_PROGRESS",
-        "DEV_DONE"
+        "DEV_DONE",
+        "ACCEPTED"
       ],
-      "recordedAt": "2026-09-15T16:52:00Z",
-      "actor": "agent:p1r_implementation:deepseek-harness",
-      "reason": "Owner route A (REUSE-VERIFY, no production change). Dependency M3-006 DEV_DONE. Eight takedown/rollback checks pass; emergency-reason audit and learner recovery copy deferred as knownGap.",
+      "recordedAt": "2026-09-16T13:00:00Z",
+      "actor": "human-owner decision 2026-09-16 (delegated acceptance)",
+      "reason": "Owner decision dissolved the named gap.",
       "evidencePath": "evidence/p1r/m3/P1R-M3-007/manifest.json"
     },
     {
@@ -1142,11 +1143,12 @@
         "PLANNED",
         "READY",
         "IN_PROGRESS",
-        "DEV_DONE"
+        "DEV_DONE",
+        "ACCEPTED"
       ],
-      "recordedAt": "2026-09-15T20:48:00Z",
-      "actor": "agent:p1r_implementation:deepseek-harness",
-      "reason": "Owner route A. Dependencies M1-017 + M6-007/008 DEV_DONE. Deletion-effect purge delivered across three adapters; compile green, 8/8 harness PASS; consent-off list deferred as knownGap.",
+      "recordedAt": "2026-09-16T13:00:00Z",
+      "actor": "human-owner decision 2026-09-16 (delegated acceptance)",
+      "reason": "Owner decision dissolved the named gap.",
       "evidencePath": "evidence/p1r/m6/P1R-M6-010/manifest.json"
     },
     {
@@ -1169,11 +1171,12 @@
         "PLANNED",
         "READY",
         "IN_PROGRESS",
-        "DEV_DONE"
+        "DEV_DONE",
+        "ACCEPTED"
       ],
-      "recordedAt": "2026-09-15T21:00:00Z",
-      "actor": "agent:p1r_implementation:deepseek-harness",
-      "reason": "Owner route A. Dependencies M2-005 + M5-013 DEV_DONE. Kafka consumer stack plus v2 acceptance delivered; compile green, 8/8 harness PASS; producer relay and HTTP cutover deferred as knownGap.",
+      "recordedAt": "2026-09-16T13:00:00Z",
+      "actor": "human-owner decision 2026-09-16 (delegated acceptance)",
+      "reason": "Owner decision dissolved the named gap.",
       "evidencePath": "evidence/p1r/m7/P1R-M7-001/manifest.json"
     },
     {

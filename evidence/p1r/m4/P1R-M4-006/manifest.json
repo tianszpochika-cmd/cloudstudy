@@ -60,7 +60,7 @@
   "nextSteps": [
     "Acceptance testing by the owner, which is what DEV_DONE defers."
   ],
-  "statusNote": "Development finished and the evidence is in the repository. Seven reuse checks pass. Not independently verified, which DEV_DONE says.",
+  "statusNote": "Owner decision 8B (2026-09-16): simplified report on 2 seeds; full CEFR mapping awaits bank. Development finished and the evidence is in the repository. Seven reuse checks pass. Not independently verified, which DEV_DONE says.",
   "provenance": {
     "originalSourceCommit": "ed516037acd5699cfbe3e94dfb4801b3e291e90b",
     "originalReviewer": "agent:p1r_implementation:deepseek-harness",

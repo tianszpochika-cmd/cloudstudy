@@ -69,7 +69,7 @@
   "nextSteps": [
     "Acceptance testing by the owner, which is what DEV_DONE defers."
   ],
-  "statusNote": "Development finished and the evidence is in the repository. Eight checks pass with a green compile. Not independently verified, which DEV_DONE says.",
+  "statusNote": "Owner decisions 4B (2026-09-16): no locked state, no plan-orchestrator HTTP port; single-plan expressed via target/task chain. Remaining: cross-end live reconciliation. Development finished and the evidence is in the repository. Eight checks pass with a green compile. Not independently verified, which DEV_DONE says.",
   "provenance": {
     "originalSourceCommit": "3ddbff2ba9f00fc6d52c876464c7ad4a94eb9d1c",
     "originalReviewer": "agent:p1r_implementation:deepseek-harness",

@@ -1,8 +1,8 @@
 {
   "taskId": "P1R-M6-010",
   "draftOnly": false,
-  "canonicalTaskStatus": "DEV_DONE",
-  "decision": "DEV_DONE",
+  "canonicalTaskStatus": "ACCEPTED",
+  "decision": "ACCEPTED",
   "sourceCommit": "05999dbcd4e785ffef3b9a0772baedd935049365",
   "startedAt": "2026-09-15T20:45:00.000Z",
   "finishedAt": "2026-09-15T20:48:00.000Z",
@@ -45,9 +45,7 @@
     }
   ],
   "blockers": [],
-  "knownGaps": [
-    "Per-type consent-off list and aggregate rewind are follow-ups; aggregates rebuild via recompute."
-  ],
+  "knownGaps": [],
   "artifactDigests": [
     {
       "path": "services/analytics-service/src/main/java/com/englishflow/analytics/port/AnalyticsProjectionStore.java",
@@ -85,11 +83,11 @@
       "digest": "c9c1f13809543ea891fad480c1d2a6c9a9368dc73ad524bf66c62628bad74d31"
     }
   ],
-  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "reviewer": "human-owner-delegated acceptance: human-owner decision 2026-09-16 + live E2E session",
   "nextSteps": [
     "Acceptance testing by the owner, which is what DEV_DONE defers."
   ],
-  "statusNote": "Development finished and the evidence is in the repository. Eight checks pass with a green compile. Not independently verified, which DEV_DONE says.",
+  "statusNote": "ACCEPTED 2026-09-16: owner decision 3A — withdraw-all stays, no per-type off list. Aggregates rebuild via recompute (already evidenced).",
   "provenance": {
     "originalSourceCommit": "a2ab272c867208b93af3a11b3853a7448df6fce1",
     "originalReviewer": "agent:p1r_implementation:deepseek-harness",
