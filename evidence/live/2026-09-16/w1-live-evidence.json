@@ -1,8 +1,8 @@
 {
   "task": "W1-LIVE-E2E",
-  "capturedAt": "2026-09-16T06:33:53.177Z",
+  "capturedAt": "2026-09-16T07:15:23.484Z",
   "gateway": "http://127.0.0.1:18070",
-  "identifier": "w1-mu3q612w@local.invalid",
+  "identifier": "w1-mu3rnfcb@local.invalid",
   "result": "PASS",
   "passed": 12,
   "total": 12,
@@ -28,7 +28,7 @@
     {
       "name": "targets-put",
       "ok": true,
-      "observed": "HTTP 200 {\"data\":{\"targetId\":1016,\"goalCode\":\"CET_4_6\",\"targetLevel\":\"A2\",\"examCode\":null,\"dailyQuotaMinutes\":30,\"targetDate\":null,\"status\":\"ACTIVE\",\"stateVersion\":1,\"up",
+      "observed": "HTTP 200 {\"data\":{\"targetId\":1019,\"goalCode\":\"CET_4_6\",\"targetLevel\":\"A2\",\"examCode\":null,\"dailyQuotaMinutes\":30,\"targetDate\":null,\"status\":\"ACTIVE\",\"stateVersion\":1,\"up",
       "expected": "HTTP 200"
     },
     {

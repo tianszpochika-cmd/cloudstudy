@@ -1,0 +1,188 @@
+{
+  "task": "PAGES-LIVE-SWEEP",
+  "capturedAt": "2026-09-16T07:26:25.721Z",
+  "identifier": "wpg-mu3s0ilo@local.invalid",
+  "result": "PASS",
+  "routes": 18,
+  "pageErrors": 0,
+  "rows": [
+    {
+      "route": "/home",
+      "status": 200,
+      "finalUrl": "http://127.0.0.1:18180/home",
+      "title": "语学星",
+      "headline": "学习首页",
+      "state": "rendered",
+      "newErrors": 0
+    },
+    {
+      "route": "/today",
+      "status": 200,
+      "finalUrl": "http://127.0.0.1:18180/today",
+      "title": "语学星",
+      "headline": "今日任务",
+      "state": "rendered",
+      "newErrors": 0
+    },
+    {
+      "route": "/assessment",
+      "status": 200,
+      "finalUrl": "http://127.0.0.1:18180/assessment",
+      "title": "语学星",
+      "headline": "用服务端题目找到今天的起点。",
+      "state": "rendered",
+      "newErrors": 0
+    },
+    {
+      "route": "/vocabulary",
+      "status": 200,
+      "finalUrl": "http://127.0.0.1:18180/vocabulary",
+      "title": "语学星",
+      "headline": "词汇与 SRS",
+      "state": "rendered",
+      "newErrors": 0
+    },
+    {
+      "route": "/learn",
+      "status": 200,
+      "finalUrl": "http://127.0.0.1:18180/learn",
+      "title": "语学星",
+      "headline": "学习",
+      "state": "rendered",
+      "newErrors": 0
+    },
+    {
+      "route": "/practice",
+      "status": 200,
+      "finalUrl": "http://127.0.0.1:18180/practice",
+      "title": "语学星",
+      "headline": "练习",
+      "state": "rendered",
+      "newErrors": 0
+    },
+    {
+      "route": "/b2/report",
+      "status": 200,
+      "finalUrl": "http://127.0.0.1:18180/b2/report",
+      "title": "语学星",
+      "headline": "学习报告",
+      "state": "rendered",
+      "newErrors": 0
+    },
+    {
+      "route": "/grammar",
+      "status": 200,
+      "finalUrl": "http://127.0.0.1:18180/grammar",
+      "title": "语学星",
+      "headline": "语法 X 光机",
+      "state": "offline-panel",
+      "newErrors": 3
+    },
+    {
+      "route": "/writing",
+      "status": 200,
+      "finalUrl": "http://127.0.0.1:18180/writing",
+      "title": "语学星",
+      "headline": "写作规则评测",
+      "state": "offline-panel",
+      "newErrors": 5
+    },
+    {
+      "route": "/listening",
+      "status": 200,
+      "finalUrl": "http://127.0.0.1:18180/listening",
+      "title": "语学星",
+      "headline": "听力精练",
+      "state": "offline-panel",
+      "newErrors": 1
+    },
+    {
+      "route": "/reading",
+      "status": 200,
+      "finalUrl": "http://127.0.0.1:18180/reading",
+      "title": "语学星",
+      "headline": "分级阅读",
+      "state": "offline-panel",
+      "newErrors": 1
+    },
+    {
+      "route": "/speaking",
+      "status": 200,
+      "finalUrl": "http://127.0.0.1:18180/speaking",
+      "title": "语学星",
+      "headline": "口语自练",
+      "state": "rendered",
+      "newErrors": 3
+    },
+    {
+      "route": "/world",
+      "status": 200,
+      "finalUrl": "http://127.0.0.1:18180/world",
+      "title": "语学星",
+      "headline": "世界",
+      "state": "rendered",
+      "newErrors": 1
+    },
+    {
+      "route": "/commerce",
+      "status": 200,
+      "finalUrl": "http://127.0.0.1:18180/commerce",
+      "title": "语学星",
+      "headline": "学习权益",
+      "state": "rendered",
+      "newErrors": 0
+    },
+    {
+      "route": "/support",
+      "status": 200,
+      "finalUrl": "http://127.0.0.1:18180/support",
+      "title": "语学星",
+      "headline": "客服与帮助",
+      "state": "rendered",
+      "newErrors": 0
+    },
+    {
+      "route": "/courses",
+      "status": 200,
+      "finalUrl": "http://127.0.0.1:18180/courses",
+      "title": "语学星",
+      "headline": "课程",
+      "state": "rendered",
+      "newErrors": 0
+    },
+    {
+      "route": "/me",
+      "status": 200,
+      "finalUrl": "http://127.0.0.1:18180/settings/profile",
+      "title": "语学星",
+      "headline": "设置",
+      "state": "rendered",
+      "newErrors": 0
+    },
+    {
+      "route": "/settings",
+      "status": 200,
+      "finalUrl": "http://127.0.0.1:18180/settings/profile",
+      "title": "语学星",
+      "headline": "设置",
+      "state": "rendered",
+      "newErrors": 0
+    }
+  ],
+  "errors": [
+    "console.error: Access to fetch at 'http://127.0.0.1:18070/api/v1/grammar/points?limit=50' from origin 'http://127.0.0.1:18180' has been blocked by CORS pol",
+    "console.error: Access to fetch at 'http://127.0.0.1:18070/api/v1/grammar/exercises?limit=20' from origin 'http://127.0.0.1:18180' has been blocked by CORS ",
+    "console.error: Access to fetch at 'http://127.0.0.1:18070/api/v1/grammar/mastery' from origin 'http://127.0.0.1:18180' has been blocked by CORS policy: Res",
+    "console.error: Access to fetch at 'http://127.0.0.1:18070/api/v1/writing/prompts?limit=20' from origin 'http://127.0.0.1:18180' has been blocked by CORS po",
+    "console.error: Access to fetch at 'http://127.0.0.1:18070/api/v1/writing/templates?limit=20' from origin 'http://127.0.0.1:18180' has been blocked by CORS ",
+    "console.error: Access to fetch at 'http://127.0.0.1:18070/api/v1/writing/materials?limit=20' from origin 'http://127.0.0.1:18180' has been blocked by CORS ",
+    "console.error: Access to fetch at 'http://127.0.0.1:18070/api/v1/writing/proofreading/exercises?limit=20' from origin 'http://127.0.0.1:18180' has been blo",
+    "console.error: Access to fetch at 'http://127.0.0.1:18070/api/v1/writing/history?limit=20' from origin 'http://127.0.0.1:18180' has been blocked by CORS po",
+    "console.error: Access to fetch at 'http://127.0.0.1:18070/api/v1/listening/materials?limit=20' from origin 'http://127.0.0.1:18180' has been blocked by COR",
+    "console.error: Access to fetch at 'http://127.0.0.1:18070/api/v1/reading/articles?limit=20' from origin 'http://127.0.0.1:18180' has been blocked by CORS p",
+    "console.error: Access to fetch at 'http://127.0.0.1:18070/api/v1/phonetics/catalog?setCode=EN_48_PHASE1' from origin 'http://127.0.0.1:18180' has been bloc",
+    "console.error: Access to fetch at 'http://127.0.0.1:18070/api/v1/phonetics/minimal-pairs?limit=20' from origin 'http://127.0.0.1:18180' has been blocked by",
+    "console.error: Access to fetch at 'http://127.0.0.1:18070/api/v1/listening/materials?limit=20' from origin 'http://127.0.0.1:18180' has been blocked by COR",
+    "console.error: Access to fetch at 'http://127.0.0.1:18070/api/v1/sync/offline-packages' from origin 'http://127.0.0.1:18180' has been blocked by CORS polic"
+  ]
+}
