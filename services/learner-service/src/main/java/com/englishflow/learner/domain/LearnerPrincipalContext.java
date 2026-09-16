@@ -39,6 +39,7 @@ public record LearnerPrincipalContext(
                 Set.of(
                         "learner.profile.read",
                         "learner.profile.write",
+                        "learner.target.write",
                         "learner.goal.write",
                         "learner.preference.write",
                         "learner.onboarding.read"),

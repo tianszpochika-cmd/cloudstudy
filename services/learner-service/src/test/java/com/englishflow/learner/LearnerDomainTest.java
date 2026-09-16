@@ -92,6 +92,39 @@ class LearnerDomainTest {
     }
 
     @Test
+    void goalWriteAcceptsCanonicalAndLegacyPermissionNames() {
+        // P1-LIVE-003: contract says learner.target.write, implementation era said
+        // learner.goal.write. Either must authorize; neither must not.
+        SetLearningGoalCommand command = new SetLearningGoalCommand(
+                GoalType.CET_4_6, DailyStudyMinutes.THIRTY, LocalDate.of(2026, 10, 1), CefrLevel.A2,
+                key("goal-dual-canonical-0001"));
+        var canonical = commands.setLearningGoal(contextWith("learner.target.write"), command, RequestMetadata.none());
+        assertEquals(1, canonical.version());
+        SetLearningGoalCommand legacyCommand = new SetLearningGoalCommand(
+                GoalType.CET_4_6, DailyStudyMinutes.THIRTY, LocalDate.of(2026, 10, 1), CefrLevel.A2,
+                key("goal-dual-legacy-0002"));
+        var legacy = commands.setLearningGoal(contextWith("learner.goal.write"), legacyCommand, RequestMetadata.none());
+        assertEquals(2, legacy.version());
+        SetLearningGoalCommand deniedCommand = new SetLearningGoalCommand(
+                GoalType.CET_4_6, DailyStudyMinutes.THIRTY, LocalDate.of(2026, 10, 1), CefrLevel.A2,
+                key("goal-dual-denied-0003"));
+        LearnerDomainException denied = assertThrows(LearnerDomainException.class,
+                () -> commands.setLearningGoal(contextWith("learner.profile.write"), deniedCommand, RequestMetadata.none()));
+        assertEquals(LearnerDecisionCode.PERMISSION_DENIED, denied.code());
+    }
+
+    private LearnerPrincipalContext contextWith(String... permissions) {
+        return new LearnerPrincipalContext(
+                LearnerTenantScope.forPhaseOne(SUBJECT),
+                "phase-1",
+                Set.of("learner"),
+                Set.of(permissions),
+                ConsentState.GRANTED,
+                false,
+                ClientAuthorityClaims.none());
+    }
+
+    @Test
     void preferencesKeepUiAndContentLocaleIndependent() {
         var result = commands.updatePreferences(context,
                 new UpdateLearnerPreferencesCommand(

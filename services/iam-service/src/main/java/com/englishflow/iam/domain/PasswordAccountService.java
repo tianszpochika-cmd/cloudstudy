@@ -18,7 +18,7 @@ public final class PasswordAccountService {
      * LEARNING-required consents are satisfied (see {@code tokenAccount} stripping).
      *
      * <p>P1-LIVE-002: the set was frozen before the learner v2 endpoints existed, so
-     * {@code PUT /learner/targets} ({@code learner.goal.write}), {@code GET /learner/first-day}
+     * {@code PUT /learner/targets} ({@code learner.target.write}), {@code GET /learner/first-day}
      * ({@code learner.onboarding.read}) and the learning review/progress/mastery/task chains
      * failed closed for every user. Each entry below is required by a service-side
      * {@code authorize(...)} call or a canonical contract {@code requiredPermission}.
@@ -27,9 +27,13 @@ public final class PasswordAccountService {
      * {@code require*} permission strings; staff-only capabilities
      * ({@code commerce:sku:write}, {@code commerce:activation:write},
      * {@code commerce:reconciliation:read}, {@code admin.*}) are deliberately absent.
+     * <p>P1-LIVE-003: the contract names the targets capability
+     * {@code learner.target.write}; {@code learner.goal.write} was the implementation-era
+     * alias. Issuance mints the canonical name; the learner PEP accepts either so
+     * outstanding tokens keep working.
      */
     private static final Set<String> LEARNER_PERMISSIONS = Set.of(
-            "learner.profile.read", "learner.profile.write", "learner.goal.write",
+            "learner.profile.read", "learner.profile.write", "learner.target.write",
             "learner.preference.write", "learner.onboarding.read", "learning.plan.read",
             "learning.plan.write", "learning.review.read", "learning.review.write",
             "learning.progress.read", "learning.progress.write", "learning.mastery.read",

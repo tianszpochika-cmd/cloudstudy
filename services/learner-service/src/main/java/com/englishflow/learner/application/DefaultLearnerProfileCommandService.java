@@ -81,7 +81,13 @@ public final class DefaultLearnerProfileCommandService implements LearnerProfile
             SetLearningGoalCommand command,
             RequestMetadata metadata) {
         Objects.requireNonNull(command, "command is required");
-        return mutate(context, metadata, "onboarding.goal", "learner.goal.write", command.idempotencyKey(),
+        // P1-LIVE-003: the contract names this capability learner.target.write;
+        // learner.goal.write was the implementation-era alias. Accept either so
+        // outstanding tokens keep working; issuance now mints the canonical name.
+        String permission = context != null && context.hasPermission("learner.target.write")
+                ? "learner.target.write"
+                : "learner.goal.write";
+        return mutate(context, metadata, "onboarding.goal", permission, command.idempotencyKey(),
                 command.expectedVersion(),
                 command.fingerprint(), "learner.target.updated.v1",
                 profile -> {

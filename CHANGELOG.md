@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1-LIVE-003-CLOSED-20260916] **P1-LIVE-003 结案：契约优先，签发切 `learner.target.write`、PEP 双收。** 契约（B9/B1 两处）一直是 `target.write`，实现侧误写 `goal.write`；按契约优先签发改正典，PEP 同时接受新旧（存量 token 无 flag day）。另：media 直读缺 `media_consent` 声明+权限+种子 owner 三重门，铸造同意属法律判断未擅动，立案 **P1-LIVE-012** 待决策（A/B/C 三选项）。验证：IAM 100/0/0、learner 50/0/0（含新增双收单测）、活 token 含正典且 PUT 200。
+
 - [P1R-ACCEPT-M4-009-20260916] **浏览器矩阵扩到 12 腿；`M4-009` 翻牌。** 新增 `?redirect=` 深链直达 `/today`（纠正：应用以 `redirect` 为准而非 `returnTo`）、刷新保持会话（启动恢复）、iPad/手机视口登录、离线 SPA 内导航优雅降级（vite dev 分片误差已具名；生产构建与真机留 M4-008 八态/M8-007）。M4-001 的 returnTo 残留同步关闭（仅剩密码轮换）。验证：矩阵 **11/12 洁 + 1 环境误差具名**。
 
 - [P1-LIVE-011-W1-SKIP-20260916] **定级 skip 入参错位 + W1 补到 12/12；`M4-004` 翻牌。** skip 的 INSERT 绑了 6 个参数而只有 5 个占位（复制粘贴多出一个 `idempotencyKey`），凡走 skip 必 500；删多余绑定。W1 新增：目标版本守卫（旧版 409）、定级恢复（同会话回读）、skip 快通（A2 报告）。`M4-004` 转 `ACCEPTED`（重复提交活闭 + 跨租户归 M2-004 门 + 静态 7/7）。有意不做：不给 B25 legacy 适配器加题（canonical 十题归 M1-012 冻结规则与 M4-005 引擎接线，保持边界）。验证：assessment 57/0/0、W1 **12/12**。
