@@ -85,7 +85,8 @@ public final class SocialLocalRealController {
                         + "WHERE tenant_id = ? AND room_id = ? AND state = 'AVAILABLE' ORDER BY seat_index LIMIT 1",
                 (rs, row) -> map("seatIndex", rs.getInt("seat_index"), "leaseId", rs.getString("lease_id"),
                         "leaseVersion", rs.getLong("lease_version")), principal.tenantId(), roomId)
-                .stream().findFirst().orElseThrow(() -> new IllegalStateException("no available study-room seat"));
+                .stream().findFirst().orElseThrow(() -> SocialException.conflict("SOCIAL_ROOM_FULL",
+                        "no available study-room seat", true));
         String membershipId = "membership-" + UUID.randomUUID();
         String leaseId = "lease-" + UUID.randomUUID();
         long leaseVersion = ((Number) seat.get("leaseVersion")).longValue() + 1;
@@ -123,7 +124,10 @@ public final class SocialLocalRealController {
             @RequestBody Map<String, Object> body, HttpServletRequest request) {
         SocialPrincipal principal = require("social.focus.write");
         Map<String, Object> member = member(principal, roomId);
-        if (!"ACTIVE".equals(member.get("state"))) throw new IllegalStateException("join the room before starting focus");
+        if (!"ACTIVE".equals(member.get("state"))) {
+            throw SocialException.conflict("SOCIAL_MEMBERSHIP_REQUIRED",
+                    "join the room before starting focus", false);
+        }
         int duration = ((Number) (body == null ? 25 : body.getOrDefault("durationMinutes", 25))).intValue();
         if (duration != 25 && duration != 45) throw new IllegalArgumentException("durationMinutes must be 25 or 45");
         String focusId = "focus-" + UUID.randomUUID();
@@ -379,10 +383,16 @@ public final class SocialLocalRealController {
     private SocialPrincipal require(String permission) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (!(authentication instanceof SocialAuthenticationToken token) || !token.isAuthenticated()) {
-            throw new IllegalStateException("verified social principal is required");
+            throw SocialException.unauthorized();
         }
         SocialPrincipal principal = token.socialPrincipal();
-        if (!principal.isUsablePhaseOne()) throw new IllegalStateException("social principal is not usable");
+        // P1-LIVE-006: an unusable principal (wrong phase, inactive, revoked or
+        // missing consent) is a 403, never a 500: raw IllegalStates here turned
+        // every misconfigured caller into INTERNAL_ERROR and hid the real cause.
+        if (!principal.isUsablePhaseOne()) {
+            throw SocialException.forbidden("SOCIAL_PRINCIPAL_UNUSABLE",
+                    "social principal is not usable in phase one");
+        }
         pep.requirePermission(principal, permission);
         return principal;
     }
@@ -390,7 +400,7 @@ public final class SocialLocalRealController {
     private SocialPrincipal requireAdmin(Set<String> permissions) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (!(authentication instanceof SocialAuthenticationToken token) || !token.isAuthenticated()) {
-            throw new IllegalStateException("verified social admin principal is required");
+            throw SocialException.unauthorized();
         }
         SocialPrincipal principal = token.socialPrincipal();
         pep.requireAnyPermission(principal, permissions);

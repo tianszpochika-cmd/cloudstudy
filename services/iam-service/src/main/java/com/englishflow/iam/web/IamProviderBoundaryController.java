@@ -617,8 +617,14 @@ class IamAuthenticationController {
     }
 
     private static boolean isLearningPermission(String permission) {
+        // P1-LIVE-006: every learner-journey capability prefix must be stripped pre-gate,
+        // because gamification/commerce PEPs enforce permission without a consent gate of
+        // their own. Post-gate tokens carry the full allow-list.
         return permission != null && (permission.startsWith("learning.")
-                || permission.startsWith("assessment.") || permission.startsWith("content."));
+                || permission.startsWith("assessment.") || permission.startsWith("content.")
+                || permission.startsWith("learner.") && !permission.startsWith("learner.profile.")
+                || permission.startsWith("gamification.") || permission.startsWith("social.")
+                || permission.startsWith("commerce:") || permission.startsWith("media."));
     }
 
     private ResponseEntity<ApiSuccessEnvelope<AuthTokenResponse>> replayAuth(IdempotencyRecord record,
@@ -971,7 +977,10 @@ class IamAuthenticationController {
     private JwtTokenService.EligibilityClaims eligibilityClaims(AccountRecord account) {
         AdultGateResponse gate = adultGateResponse(adultGateFacts.find(account.principalId(), account.createdAt()));
         ConsentState consent = consentState(account.principalId(), gate);
-        return new JwtTokenService.EligibilityClaims(gate.status(), consent.accepted() ? "GRANTED" : "UNKNOWN");
+        // phase comes from server configuration and account status is enforced ACTIVE
+        // before any issuance, so both are sound issuance-time facts (P1-LIVE-006).
+        return new JwtTokenService.EligibilityClaims(gate.status(), consent.accepted() ? "GRANTED" : "UNKNOWN",
+                properties.getPhase(), account.status().name());
     }
 
     private PrincipalResponse principalResponse(AccountRecord account, Jwt jwt) {

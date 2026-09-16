@@ -47,9 +47,9 @@ public final class JwtTokenService {
      * {@link #unknown()} is the fail-closed default: it emits explicit deny values, never an
      * over-privileged token.
      */
-    public record EligibilityClaims(String adultGate, String consentState) {
+    public record EligibilityClaims(String adultGate, String consentState, String phase, String accountStatus) {
         public static EligibilityClaims unknown() {
-            return new EligibilityClaims("NOT_EVALUATED", "UNKNOWN");
+            return new EligibilityClaims("NOT_EVALUATED", "UNKNOWN", "phase-1", "ACTIVE");
         }
     }
 
@@ -112,6 +112,12 @@ public final class JwtTokenService {
             }
             if (eligibility.consentState() != null) {
                 builder.claim("consent_state", eligibility.consentState());
+            }
+            if (eligibility.phase() != null) {
+                builder.claim("phase", eligibility.phase());
+            }
+            if (eligibility.accountStatus() != null) {
+                builder.claim("account_status", eligibility.accountStatus());
             }
         }
         JwtClaimsSet claims = builder.build();

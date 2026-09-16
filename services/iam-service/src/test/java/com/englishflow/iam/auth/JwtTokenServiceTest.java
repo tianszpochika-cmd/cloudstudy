@@ -72,9 +72,11 @@ class JwtTokenServiceTest {
     void evaluatedEligibilityIsCarriedAsExplicitClaims() {
         Fixture fixture = fixture();
         fixture.service().issue(fixture.account(), fixture.session(), null,
-                new JwtTokenService.EligibilityClaims("PASSED", "GRANTED"));
+                new JwtTokenService.EligibilityClaims("PASSED", "GRANTED", "phase-1", "ACTIVE"));
         assertEquals("PASSED", fixture.encoder().claims.getClaim("adult_gate"));
         assertEquals("GRANTED", fixture.encoder().claims.getClaim("consent_state"));
+        assertEquals("phase-1", fixture.encoder().claims.getClaim("phase"));
+        assertEquals("ACTIVE", fixture.encoder().claims.getClaim("account_status"));
     }
 
     @Test
@@ -84,6 +86,9 @@ class JwtTokenServiceTest {
         // Domain PEPs deny on absence; explicit deny values keep the refusal observable.
         assertEquals("NOT_EVALUATED", fixture.encoder().claims.getClaim("adult_gate"));
         assertEquals("UNKNOWN", fixture.encoder().claims.getClaim("consent_state"));
+        // Platform identity facts are issuance-time truths, not evaluated eligibility.
+        assertEquals("phase-1", fixture.encoder().claims.getClaim("phase"));
+        assertEquals("ACTIVE", fixture.encoder().claims.getClaim("account_status"));
     }
 
     @Test
@@ -92,5 +97,7 @@ class JwtTokenServiceTest {
         fixture.service().issue(fixture.account(), fixture.session(), null, null);
         assertNull(fixture.encoder().claims.getClaim("adult_gate"));
         assertNull(fixture.encoder().claims.getClaim("consent_state"));
+        assertNull(fixture.encoder().claims.getClaim("phase"));
+        assertNull(fixture.encoder().claims.getClaim("account_status"));
     }
 }

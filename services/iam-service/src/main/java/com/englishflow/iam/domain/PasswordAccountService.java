@@ -22,6 +22,11 @@ public final class PasswordAccountService {
      * ({@code learner.onboarding.read}) and the learning review/progress/mastery/task chains
      * failed closed for every user. Each entry below is required by a service-side
      * {@code authorize(...)} call or a canonical contract {@code requiredPermission}.
+     * <p>P1-LIVE-006: W3 (reward/social/entitlement) endpoints failed closed for the
+     * same reason. Gamification/social/commerce entries mirror the services' own
+     * {@code require*} permission strings; staff-only capabilities
+     * ({@code commerce:sku:write}, {@code commerce:activation:write},
+     * {@code commerce:reconciliation:read}, {@code admin.*}) are deliberately absent.
      */
     private static final Set<String> LEARNER_PERMISSIONS = Set.of(
             "learner.profile.read", "learner.profile.write", "learner.goal.write",
@@ -29,7 +34,13 @@ public final class PasswordAccountService {
             "learning.plan.write", "learning.review.read", "learning.review.write",
             "learning.progress.read", "learning.progress.write", "learning.mastery.read",
             "learning.mastery.write", "learning.task.write", "assessment.session.read",
-            "assessment.session.write", "content.read", "iam.self.read", "iam.self.write");
+            "assessment.session.write", "content.read", "iam.self.read", "iam.self.write",
+            "gamification.read", "gamification.rewards.claim",
+            "social.room.read", "social.room.join", "social.room.member.read", "social.room.write",
+            "social.focus.write", "social.interaction.send", "social.leaderboard.read",
+            "social.report.create", "social.report.read", "social.visibility.write",
+            "commerce:order:read", "commerce:order:write", "commerce:payment:write",
+            "commerce:entitlement:read", "commerce:refund:write", "commerce:activation:redeem");
 
     private final AccountStore accounts;
     private final PasswordEncoder passwordEncoder;

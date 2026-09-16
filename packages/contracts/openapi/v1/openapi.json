@@ -79659,7 +79659,9 @@
         "tenant_id",
         "session_id",
         "adult_gate",
-        "consent_state"
+        "consent_state",
+        "phase",
+        "account_status"
       ],
       "eligibilityClaims": {
         "adult_gate": {
@@ -79680,6 +79682,21 @@
         },
         "freshness": "Claims are frozen at issuance and bounded by maxLifetimeSeconds (900s). Consent withdrawal revokes sessions, so the next issuance re-evaluates; a withdrawn principal cannot ride an old token past its TTL.",
         "issuerChange": "P1-LIVE-001: iam-service previously minted access tokens without these claims while domain PEPs already required them, so every authenticated learner request failed closed at the learner/learning boundary. Issuance now always evaluates both facts; evaluation failure fails the issuance itself, never mints an over-privileged token."
+      },
+      "identityClaims": {
+        "phase": {
+          "values": [
+            "phase-1"
+          ],
+          "semantics": "Server deployment phase at issuance, from iam-service configuration. Social PEPs require phase-1; absence denies."
+        },
+        "account_status": {
+          "values": [
+            "ACTIVE"
+          ],
+          "semantics": "Issuance itself refuses non-ACTIVE accounts, so every minted token implies ACTIVE. Social PEPs require ACTIVE; absence denies."
+        },
+        "issuerChange": "P1-LIVE-006: no issued token carried phase/account_status while social PEPs already required them, so every social request failed closed (500 via the unmapped IllegalStateException path). Issuance now always mints both."
       },
       "jwksUri": "/api/v1/auth/jwks",
       "maxLifetimeSeconds": 900,

@@ -129,6 +129,8 @@ test('M2-001 approved additive nodes are exactly the reviewed P1-LIVE entries', 
     [
       ['x-b8-authentication/accessToken/eligibilityClaims', null, 'P1-LIVE-001 access-token eligibility claims documented'],
       ['x-b8-authentication/accessToken/authorizationClaims', ['adult_gate', 'consent_state'], 'P1-LIVE-001 eligibility claims listed in the claim inventory'],
+      ['x-b8-authentication/accessToken/identityClaims', null, 'P1-LIVE-006 access-token identity claims documented'],
+      ['x-b8-authentication/accessToken/authorizationClaims', ['phase', 'account_status'], 'P1-LIVE-006 identity claims listed in the claim inventory'],
     ],
   );
 });
