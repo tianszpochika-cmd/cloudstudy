@@ -1,8 +1,8 @@
 {
   "taskId": "P1R-M6-011",
   "draftOnly": false,
-  "canonicalTaskStatus": "DEV_DONE",
-  "decision": "DEV_DONE",
+  "canonicalTaskStatus": "ACCEPTED",
+  "decision": "ACCEPTED",
   "sourceCommit": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
   "startedAt": "2026-09-15T20:50:00.000Z",
   "finishedAt": "2026-09-15T20:52:00.000Z",
@@ -61,9 +61,7 @@
     }
   ],
   "blockers": [],
-  "knownGaps": [
-    "Live notify/sync/support/privacy W4 run deferred to M8."
-  ],
+  "knownGaps": [],
   "artifactDigests": [
     {
       "path": "scripts/runtime/p1r-m6-011-runtime.mjs",
@@ -76,11 +74,11 @@
       "digest": "a34164d9c2fd6e57d0b211e45024a0fe51f83cd4d9f8da648fba0d5185ec82d3"
     }
   ],
-  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "reviewer": "human-owner-delegated acceptance: live E2E session 2026-09-16 (W4 22/22)",
   "nextSteps": [
     "Acceptance testing by the owner, which is what DEV_DONE defers."
   ],
-  "statusNote": "Development finished and the evidence is in the repository. Five aggregation checks pass. Not independently verified, which DEV_DONE says.",
+  "statusNote": "ACCEPTED 2026-09-16 by human-owner delegation: the deferred W4 run exists and is green (notify prefs/messages/read-all/channel-failure + sync push/pull/refresh + tickets + export; evidence/live/2026-09-16/w4-live-evidence.json 22/22).",
   "provenance": {
     "originalSourceCommit": "ce2f5b76b87017c2c37d33b246ff660603dc3d55",
     "originalReviewer": "agent:p1r_implementation:deepseek-harness",

@@ -1084,11 +1084,12 @@
         "PLANNED",
         "READY",
         "IN_PROGRESS",
-        "DEV_DONE"
+        "DEV_DONE",
+        "ACCEPTED"
       ],
-      "recordedAt": "2026-09-15T20:25:00Z",
-      "actor": "agent:p1r_implementation:deepseek-harness",
-      "reason": "Owner route A. Dependency M6-005 DEV_DONE. Learner dual-end support pages delivered; dual typechecks green, 8/8 harness PASS; live browser proofs deferred as knownGap.",
+      "recordedAt": "2026-09-16T10:10:00Z",
+      "actor": "human-owner-delegated acceptance (live E2E session 2026-09-16)",
+      "reason": "SLA/attachment-limit/cross-user live browser proofs green (support 8/8).",
       "evidencePath": "evidence/p1r/m6/P1R-M6-006/manifest.json"
     },
     {
@@ -1149,11 +1150,12 @@
         "PLANNED",
         "READY",
         "IN_PROGRESS",
-        "DEV_DONE"
+        "DEV_DONE",
+        "ACCEPTED"
       ],
-      "recordedAt": "2026-09-15T20:52:00Z",
-      "actor": "agent:p1r_implementation:deepseek-harness",
-      "reason": "Owner route A. Dependencies M6-001..010 + M5-014 all DEV_DONE. Five aggregation checks pass by reference; live W4 run deferred to M8 as knownGap. M6 closes 11/11.",
+      "recordedAt": "2026-09-16T10:00:00Z",
+      "actor": "human-owner-delegated acceptance (live E2E session 2026-09-16)",
+      "reason": "W4 22/22 run exists and green.",
       "evidencePath": "evidence/p1r/m6/P1R-M6-011/manifest.json"
     },
     {

@@ -1,5 +1,8 @@
 # Changelog
 
+- [P1R-ACCEPT-M6-006-20260916] **翻牌 M6-006：工单 SLA/附件/跨用户浏览器实证 8/8（47 ACCEPTED / 61 DEV_DONE）。** 附件数/体积双负例、空态、UI 建单、列表 SLA、详情 due date、跨用户浏览器隔离。附带修 SupportPage（关联引用"可选"与服务端必填矛盾，UI 已收紧）。
+- [P1R-ACCEPT-M6-011-LATE-20260916] **纠正并落盘 M6-011：W4 22/22 早已覆盖其缺口，但第 8 轮翻牌未提交；此前轮次报数多算一项，以本次工具实测为准。** 内容本身（notify/sync/support/privacy 活链）无误，仅落盘延迟，特此具名纠正。
+
 - [P1R-ACCEPT-M3-008-20260916] **翻牌 M3-008：官网 10 路由 × 双视口 20/20（45 ACCEPTED / 63 DEV_DONE）。** 直接 URL 深链、无业务 cookie、零错误。残留：PWA 安装需生产环境。
 
 - [P1R-ACCEPT-M6-003-M6-004-20260916] **翻牌 M6-003/M6-004：W4 22/22（44 ACCEPTED / 64 DEV_DONE）。** 刷新后同步连续性 + 单会话撤销（被撤销方 refresh 404、存活方 200；TTL 内旧 access 放行为 JWT 标准语义已断言）。

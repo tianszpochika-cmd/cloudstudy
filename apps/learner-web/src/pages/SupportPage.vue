@@ -40,7 +40,7 @@ async function load(): Promise<void> {
 }
 
 async function create(): Promise<void> {
-  if (busy.value || !description.value.trim()) return
+  if (busy.value || !description.value.trim() || !resourceRef.value.trim()) return
   busy.value = true
   lastError.value = null
   try {
@@ -112,14 +112,14 @@ onMounted(() => { void load() })
           </select>
         </label>
         <label class="field">
-          <span>关联引用（可选）</span>
+          <span>关联引用（必填，服务端路由分派所需）</span>
           <input v-model="resourceRef" type="text" placeholder="内容/订单引用" :disabled="busy">
         </label>
         <label class="field">
           <span>问题描述（仅本地，发送指纹）</span>
           <textarea v-model="description" rows="4" placeholder="描述问题，原文不出端" :disabled="busy" />
         </label>
-        <button class="button button--primary" type="submit" :disabled="busy || !description.trim()">
+        <button class="button button--primary" type="submit" :disabled="busy || !description.trim() || !resourceRef.trim()">
           {{ busy ? '正在提交…' : '提交工单' }}
         </button>
       </form>

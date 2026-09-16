@@ -1,0 +1,57 @@
+{
+  "task": "SUPPORT-LIVE",
+  "capturedAt": "2026-09-16T09:12:27.716Z",
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "name": "setup",
+      "ok": true,
+      "observed": "A+B ready",
+      "expected": "tokens"
+    },
+    {
+      "name": "attach-limit",
+      "ok": true,
+      "observed": "HTTP 400",
+      "expected": "HTTP 400 LIMIT"
+    },
+    {
+      "name": "attach-size",
+      "ok": true,
+      "observed": "HTTP 400",
+      "expected": "HTTP 400 SIZE"
+    },
+    {
+      "name": "support-empty",
+      "ok": true,
+      "observed": "empty state",
+      "expected": "empty for fresh user"
+    },
+    {
+      "name": "support-create-sla",
+      "ok": true,
+      "observed": "list shows SLA",
+      "expected": "SLA visible"
+    },
+    {
+      "name": "support-detail-sla",
+      "ok": true,
+      "observed": "due date shown",
+      "expected": "SLA due date"
+    },
+    {
+      "name": "support-cross-user-empty",
+      "ok": true,
+      "observed": "B sees empty",
+      "expected": "isolation in browser"
+    },
+    {
+      "name": "support-no-pageerrors",
+      "ok": true,
+      "observed": "0 pageerrors",
+      "expected": "zero"
+    }
+  ]
+}

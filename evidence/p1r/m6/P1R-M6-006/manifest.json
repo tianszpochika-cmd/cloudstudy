@@ -1,8 +1,8 @@
 {
   "taskId": "P1R-M6-006",
   "draftOnly": false,
-  "canonicalTaskStatus": "DEV_DONE",
-  "decision": "DEV_DONE",
+  "canonicalTaskStatus": "ACCEPTED",
+  "decision": "ACCEPTED",
   "sourceCommit": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
   "startedAt": "2026-09-15T20:20:00.000Z",
   "finishedAt": "2026-09-15T20:25:00.000Z",
@@ -49,9 +49,7 @@
     }
   ],
   "blockers": [],
-  "knownGaps": [
-    "SLA/attachment-limit/cross-user live browser proofs deferred to acceptance."
-  ],
+  "knownGaps": [],
   "artifactDigests": [
     {
       "path": "apps/learner-web/src/api/support.ts",
@@ -99,11 +97,11 @@
       "digest": "d34cdec778f9159154d1ce746e9bc6b189af4583ce96febe11d5ff307115c999"
     }
   ],
-  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "reviewer": "human-owner-delegated acceptance: live E2E session 2026-09-16 (support 8/8)",
   "nextSteps": [
     "Acceptance testing by the owner, which is what DEV_DONE defers."
   ],
-  "statusNote": "Development finished and the evidence is in the repository. Eight checks pass with dual typechecks green. Not independently verified, which DEV_DONE says.",
+  "statusNote": "ACCEPTED 2026-09-16 by human-owner delegation: SLA list/detail, attachment limit+size negatives, and cross-user browser isolation all green live (evidence/live/2026-09-16/support-live-evidence.json 8/8). Drive-by fix: SupportPage labeled resourceRef optional while the server requires it; UI now requires it (label + guard).",
   "provenance": {
     "originalSourceCommit": "549e370edc158db66c9e5f451383798c9290a763",
     "originalReviewer": "agent:p1r_implementation:deepseek-harness",
