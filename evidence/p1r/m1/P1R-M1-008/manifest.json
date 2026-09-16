@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-008",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+  "sourceCommit": "bf3137d465ae5b3369f1959043445ae4e8c0cb92",
   "artifactDigests": [
     {
       "path": "config/b20-privacy-content-gates.json",
@@ -624,15 +624,25 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-16T05:37:12.661Z",
         "details": "Rebind after CRLF-to-LF normalization of python-written files; digests recomputed over canonical LF bytes."
+      },
+      {
+        "taskId": "P1R-M1-008",
+        "sourceCommit": "bf3137d465ae5b3369f1959043445ae4e8c0cb92",
+        "auditedImplementationSource": "bf3137d465ae5b3369f1959043445ae4e8c0cb92",
+        "integrationCheckpoint": "bf3137d465ae5b3369f1959043445ae4e8c0cb92",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T09:24:28.797Z",
+        "details": "M6-006 SupportPage resourceRef-required UI fix changed a recorded artifact."
       }
     ],
     "previousCurrentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
     "previousCurrentSourceRevalidationFinishedAt": "2026-09-12T23:35:27.174Z",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-16T05:37:12.661Z",
-    "currentSourceRevalidationAuditedImplementationSource": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
-    "currentSourceRevalidationIntegrationCheckpoint": "9a38b3b584346c601620b1b0e31dc8dd847a9047"
+    "currentSourceRevalidationFinishedAt": "2026-09-16T09:24:28.797Z",
+    "currentSourceRevalidationAuditedImplementationSource": "bf3137d465ae5b3369f1959043445ae4e8c0cb92",
+    "currentSourceRevalidationIntegrationCheckpoint": "bf3137d465ae5b3369f1959043445ae4e8c0cb92"
   },
   "startedAt": "2026-08-30T09:15:05+08:00",
   "finishedAt": "2026-09-01T15:39:29+08:00",

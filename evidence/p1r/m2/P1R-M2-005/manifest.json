@@ -2,7 +2,7 @@
   "taskId": "P1R-M2-005",
   "draftOnly": false,
   "canonicalTaskStatus": "DEV_DONE",
-  "sourceCommit": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+  "sourceCommit": "bf3137d465ae5b3369f1959043445ae4e8c0cb92",
   "artifactDigests": [
     {
       "path": "config/b26-event-runtime.json",
@@ -102,9 +102,9 @@
     "currentSourceRevalidationTask": "P1R-M2-005",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-16T05:37:13.394Z",
-    "currentSourceRevalidationAuditedImplementationSource": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
-    "currentSourceRevalidationIntegrationCheckpoint": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+    "currentSourceRevalidationFinishedAt": "2026-09-16T09:24:29.958Z",
+    "currentSourceRevalidationAuditedImplementationSource": "bf3137d465ae5b3369f1959043445ae4e8c0cb92",
+    "currentSourceRevalidationIntegrationCheckpoint": "bf3137d465ae5b3369f1959043445ae4e8c0cb92",
     "originalSourceCommit": "10bc8e2dba06a800fd6bb014b0827d898b7c1b8b",
     "currentSourceRevalidationHistory": [
       {
@@ -286,6 +286,16 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-16T05:37:13.394Z",
         "details": "Rebind after CRLF-to-LF normalization of python-written files; digests recomputed over canonical LF bytes."
+      },
+      {
+        "taskId": "P1R-M2-005",
+        "sourceCommit": "bf3137d465ae5b3369f1959043445ae4e8c0cb92",
+        "auditedImplementationSource": "bf3137d465ae5b3369f1959043445ae4e8c0cb92",
+        "integrationCheckpoint": "bf3137d465ae5b3369f1959043445ae4e8c0cb92",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T09:24:29.958Z",
+        "details": "M6-006 SupportPage resourceRef-required UI fix changed a recorded artifact."
       }
     ]
   },

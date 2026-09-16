@@ -3,7 +3,7 @@
   "draftOnly": false,
   "canonicalTaskStatus": "DEV_DONE",
   "decision": "DEV_DONE",
-  "sourceCommit": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+  "sourceCommit": "bf3137d465ae5b3369f1959043445ae4e8c0cb92",
   "startedAt": "2026-09-15T19:05:00.000Z",
   "finishedAt": "2026-09-15T19:07:00.000Z",
   "environment": {
@@ -67,9 +67,9 @@
     "currentSourceRevalidationTask": "P1R-M5-005",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-16T05:24:51.272Z",
-    "currentSourceRevalidationAuditedImplementationSource": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
-    "currentSourceRevalidationIntegrationCheckpoint": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+    "currentSourceRevalidationFinishedAt": "2026-09-16T09:24:32.204Z",
+    "currentSourceRevalidationAuditedImplementationSource": "bf3137d465ae5b3369f1959043445ae4e8c0cb92",
+    "currentSourceRevalidationIntegrationCheckpoint": "bf3137d465ae5b3369f1959043445ae4e8c0cb92",
     "currentSourceRevalidationHistory": [
       {
         "taskId": "P1R-M5-005",
@@ -90,8 +90,18 @@
         "runtimeStatus": "RUNTIME_VERIFIED",
         "finishedAt": "2026-09-16T05:24:51.272Z",
         "details": "P1R live-acceptance round 2026-09-16: contracts, checks, IAM/gateway/learner/learning/assessment/social/commerce/admin-ops sources and tests evolved under live E2E; rebind reviewed digests."
+      },
+      {
+        "taskId": "P1R-M5-005",
+        "sourceCommit": "bf3137d465ae5b3369f1959043445ae4e8c0cb92",
+        "auditedImplementationSource": "bf3137d465ae5b3369f1959043445ae4e8c0cb92",
+        "integrationCheckpoint": "bf3137d465ae5b3369f1959043445ae4e8c0cb92",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T09:24:32.204Z",
+        "details": "M6-006 SupportPage resourceRef-required UI fix changed a recorded artifact."
       }
     ],
-    "previousCurrentSourceCommit": "129c07512706344c3a70df97ce7109e0e989f12a"
+    "previousCurrentSourceCommit": "9a38b3b584346c601620b1b0e31dc8dd847a9047"
   }
 }
