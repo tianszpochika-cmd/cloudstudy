@@ -770,12 +770,12 @@
       {
         "service": "iam-service",
         "path": "services/iam-service/src/main/resources/db/migration",
-        "fileCount": 13
+        "fileCount": 14
       },
       {
         "service": "learner-service",
         "path": "services/learner-service/src/main/resources/db/migration",
-        "fileCount": 9
+        "fileCount": 10
       },
       {
         "service": "content-service",
@@ -815,7 +815,7 @@
       {
         "service": "notification-service",
         "path": "services/notification-service/src/main/resources/db/migration",
-        "fileCount": 6
+        "fileCount": 7
       },
       {
         "service": "analytics-service",

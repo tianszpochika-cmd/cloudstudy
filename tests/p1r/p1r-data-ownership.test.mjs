@@ -34,6 +34,29 @@ function assertMutationFails(mutate, expected) {
   if (expected) assert(report.errors.some((error) => expected.test(error)), `missing ${expected}; got ${report.errors.join('\n')}`);
 }
 
+test('owner source scan exempts authority constants but still catches cross-service SQL', () => {
+  // P1-LIVE-008: "TOKEN_TYPE_service".equals(...) is a Java call on an authority
+  // string, not a schema reference. Bare and quoted schema.table refs must fail.
+  const clean = validateOwnerSourceText({
+    service: 'iam-service',
+    relativePath: 'services/iam-service/src/main/java/com/englishflow/iam/web/IamAccountDeletionController.java',
+    content: 'if (a -> "TOKEN_TYPE_service".equals(a.getAuthority())) { return; }',
+  });
+  assert.deepEqual(clean, []);
+  const bare = validateOwnerSourceText({
+    service: 'learner-service',
+    relativePath: 'services/learner-service/src/main/java/com/englishflow/learner/adapter/jdbc/Sneaky.java',
+    content: 'jdbc.query("SELECT * FROM assessment_service.attempt WHERE id = ?", id);',
+  });
+  assert(bare.some((error) => /cross-service schema reference is forbidden in .*: assessment_service/.test(error)), bare.join('\n'));
+  const quotedTable = validateOwnerSourceText({
+    service: 'learner-service',
+    relativePath: 'services/learner-service/src/main/java/com/englishflow/learner/adapter/jdbc/Sneaky.java',
+    content: 'jdbc.query("SELECT * FROM "assessment_service".attempt WHERE id = ?", id);',
+  });
+  assert(quotedTable.some((error) => /cross-service schema reference is forbidden in .*: assessment_service/.test(error)), quotedTable.join('\n'));
+});
+
 test('canonical data ownership policy passes static audit and retains D2 runtime boundary', () => {
   const report = validateDataOwnership({ root });
   assert.equal(report.result, 'PASS', report.errors.join('\n'));

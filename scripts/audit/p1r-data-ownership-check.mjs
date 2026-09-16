@@ -343,7 +343,15 @@ function normalizeSqlForPolicyScan(sql, { backslashEscapes = false } = {}) {
 function foreignSchemaReferences(text, expectedSchema) {
   const references = new Set();
   const pattern = /(?:`([a-z][a-z0-9_]*(?:_service)|core_api)`|"([a-z][a-z0-9_]*(?:_service)|core_api)"|([a-z][a-z0-9_]*(?:_service)|core_api))\s*\./giu;
-  for (const match of String(text ?? '').matchAll(pattern)) {
+  const source = String(text ?? '');
+  for (const match of source.matchAll(pattern)) {
+    // A double-quoted "*_service" constant followed by `.identifier(` is a Java
+    // method call on an authority/constant string (e.g. "TOKEN_TYPE_service"
+    // .equals(...)), not a schema-qualified reference. Quoted schema.table
+    // without a call paren, backtick SQL and bare references still fail closed.
+    if (match[2] !== undefined && /^[A-Za-z_][A-Za-z0-9_]*\s*\(/u.test(source.slice(match[0].length + match.index))) {
+      continue;
+    }
     const schema = (match[1] ?? match[2] ?? match[3]).toLowerCase();
     if (schema !== expectedSchema.toLowerCase()) references.add(schema);
   }
