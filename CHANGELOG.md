@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1R-1A-RECOVERY-20260917] **1A 恢复台建成 + 翻 M6-009（61 ACCEPTED / 47 DEV_DONE，工具待验）。** 网关 7 路由 + workflow 资源服安全链（此前裸奔：无链 bean，Boot 默认链吞掉一切 Bearer）+ 中台恢复页；双人申请/自批 403/批准/执行 + Saga 扫 9/9。验证：gateway 94/0/0、workflow 51/0/0、vue-tsc 0 错误。DLQ 重放仍是脚本。
+
 - [P1R-1A-MESSAGES-20260917] **1A 消息中心建成 + 翻 M6-001（60 ACCEPTED / 48 DEV_DONE，工具待验）。** 站内消息 + 偏好开关 + 已读回执 + 八态，活跑 7/7，vue-tsc 0 错误。观察：偏好缺 locale 回 403 非 400（方向正确码形可议，未立案；UI 必带 locale）。
 
 - [P1R-1A-LOOP-20260917] **1A 闭环页建成 + 翻 M5-012（59 ACCEPTED / 49 DEV_DONE，工具待验）。** 错题本/掌握度/计划地图三新页（owner 投影直读 + 八态 + 互链 + 导航）；完整浏览器闭环 9/9；页面横扫扩到 21 路零错。验证：vue-tsc 0 错误。

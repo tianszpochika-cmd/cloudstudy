@@ -79,6 +79,11 @@ gateway:
     commerce-base-url: ${COMMERCE_SERVICE_BASE_URL:http://127.0.0.1:18096}
     admin-ops-base-url: ${ADMIN_OPS_SERVICE_BASE_URL:http://127.0.0.1:18097}
     analytics-base-url: ${ANALYTICS_SERVICE_BASE_URL:http://127.0.0.1:18098}
+  workflow:
+    # P1R decision 1A: recovery console route owner. Same loopback-default
+    # shape as B12/B13; enabled by the local stack runner.
+    enabled: ${WORKFLOW_SERVICES_ENABLED:false}
+    workflow-base-url: ${WORKFLOW_SERVICE_BASE_URL:http://127.0.0.1:18071}
   b14:
     enabled: ${B14_STRANGLER_ENABLED:false}
     # Reserved, and deliberately off. A domain in any mode other than TARGET resolves to no route at

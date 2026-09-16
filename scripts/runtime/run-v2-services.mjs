@@ -178,6 +178,9 @@ function runtimeEnvironment(service, port) {
     environment.GATEWAY_SECURITY_ISSUER_URI = jwtIssuer;
     environment.GATEWAY_SECURITY_JWK_SET_URI = jwtJwks;
     environment.GATEWAY_SECURITY_AUDIENCE = jwtAudience;
+    // P1R decision 1A: recovery console route owner. Explicit opt-in (the
+    // b12/b13 local enablement path is not legible in this file).
+    environment.WORKFLOW_SERVICES_ENABLED = process.env.WORKFLOW_SERVICES_ENABLED ?? 'true';
   }
   if (service.id === 'commerce-service') {
     environment.COMMERCE_SECURITY_ISSUER_URI = jwtIssuer;
@@ -335,6 +338,8 @@ function runtimeEnvironment(service, port) {
         'commerce-service': 'COMMERCE',
         'admin-ops-service': 'ADMIN_OPS',
         'analytics-service': 'ANALYTICS',
+        // P1R decision 1A: workflow resource server (recovery console).
+        'workflow-service': 'WORKFLOW',
       }[service.id];
       if (envPrefix) {
         environment[`${envPrefix}_RESOURCE_SERVER_ENABLED`] = 'true';

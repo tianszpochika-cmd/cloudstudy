@@ -15,6 +15,7 @@ const routes: RouteRecordRaw[] = [
   { path: '/release', name: 'admin-release', component: () => import('../views/AdminB6ReleaseView.vue'), meta: { requiresAuth: true, permission: 'admin.release.read' } },
   { path: '/governance', name: 'admin-b12-governance', component: () => import('../views/AdminB12GovernanceView.vue'), meta: { requiresAuth: true, permission: 'admin.moderation.read' } },
   { path: '/support', name: 'admin-support', component: () => import('../views/AdminSupportView.vue'), meta: { requiresAuth: true, permission: 'admin.support.read' } },
+  { path: '/recovery', name: 'admin-recovery', component: () => import('../views/AdminRecoveryView.vue'), meta: { requiresAuth: true, permission: 'admin.recovery.read' } },
 ]
 
 export const router = createRouter({ history: createWebHistory(), routes })

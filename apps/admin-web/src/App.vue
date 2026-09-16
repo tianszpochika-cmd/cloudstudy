@@ -19,7 +19,7 @@ const unsubscribeTheme = adminThemeController.subscribe((state) => {
 void router.isReady().finally(() => {
   booting.value = false
 })
-const pageTitle = computed(() => ({ '/dashboard': '运营总览', '/content': '教研内容与双审', '/commerce': '商业化与风险', '/audit': '审计与合规', '/release': '跨端发布与质量', '/governance': '社群治理与恢复', '/support': '客服工单与恢复' }[route.path] ?? '中台'))
+const pageTitle = computed(() => ({ '/dashboard': '运营总览', '/content': '教研内容与双审', '/commerce': '商业化与风险', '/audit': '审计与合规', '/release': '跨端发布与质量', '/governance': '社群治理与恢复', '/support': '客服工单与恢复', '/recovery': '人工恢复台' }[route.path] ?? '中台'))
 const menuItems: Array<{ path: string; label: string; icon: AdminIconName; permission: string }> = [
   { path: '/dashboard', label: '运营总览', icon: 'chart', permission: 'admin.dashboard.read' },
   { path: '/content', label: '内容与双审', icon: 'content', permission: 'admin.content.read' },
@@ -28,6 +28,7 @@ const menuItems: Array<{ path: string; label: string; icon: AdminIconName; permi
   { path: '/release', label: '跨端发布与质量', icon: 'release', permission: 'admin.release.read' },
   { path: '/governance', label: '社群治理与恢复', icon: 'flag', permission: 'admin.moderation.read' },
   { path: '/support', label: '客服工单', icon: 'support', permission: 'admin.support.read' },
+  { path: '/recovery', label: '人工恢复台', icon: 'help', permission: 'admin.recovery.read' },
 ]
 const visibleMenuItems = computed(() => menuItems.filter((item) => session.can(item.permission)))
 const themeLabel = computed(() => resolvedTheme.value === 'dark' ? '切换到浅色模式' : '切换到深色模式')

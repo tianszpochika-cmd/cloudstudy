@@ -1,0 +1,280 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "B26 workflow recovery console (P1R decision 1A)",
+    "version": "1.0.0"
+  },
+  "x-contract-status": "active",
+  "tags": [
+    {
+      "name": "b26-workflow-recovery"
+    }
+  ],
+  "paths": {
+    "/api/v1/admin/recovery/recoveries": {
+      "post": {
+        "tags": [
+          "b26-workflow-recovery"
+        ],
+        "summary": "Request a manual recovery (two-person rule)",
+        "operationId": "requestWorkflowRecovery",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "subjectType",
+                  "subjectId",
+                  "action"
+                ],
+                "properties": {
+                  "subjectType": {
+                    "type": "string"
+                  },
+                  "subjectId": {
+                    "type": "string"
+                  },
+                  "action": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Recovery requested",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/recovery/recoveries/{recoveryId}/approve": {
+      "post": {
+        "tags": [
+          "b26-workflow-recovery"
+        ],
+        "summary": "Approve a recovery as a second person",
+        "operationId": "approveWorkflowRecovery",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "recoveryId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/recovery/recoveries/{recoveryId}/reject": {
+      "post": {
+        "tags": [
+          "b26-workflow-recovery"
+        ],
+        "summary": "Reject a recovery",
+        "operationId": "rejectWorkflowRecovery",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "recoveryId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/recovery/recoveries/{recoveryId}/execute": {
+      "post": {
+        "tags": [
+          "b26-workflow-recovery"
+        ],
+        "summary": "Execute an approved recovery and record the receipt",
+        "operationId": "executeWorkflowRecovery",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "recoveryId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/recovery/sagas/unfinished": {
+      "get": {
+        "tags": [
+          "b26-workflow-recovery"
+        ],
+        "summary": "List unfinished sagas",
+        "operationId": "listUnfinishedSagas",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Unfinished saga ids",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/recovery/sagas/{sagaId}": {
+      "get": {
+        "tags": [
+          "b26-workflow-recovery"
+        ],
+        "summary": "Read a saga and its steps",
+        "operationId": "readWorkflowSaga",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "sagaId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/recovery/sagas/{sagaId}/compensate": {
+      "post": {
+        "tags": [
+          "b26-workflow-recovery"
+        ],
+        "summary": "Compensate a failed saga awaiting compensation",
+        "operationId": "compensateWorkflowSaga",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "sagaId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {}
+}

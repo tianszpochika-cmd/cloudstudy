@@ -1135,11 +1135,12 @@
         "PLANNED",
         "READY",
         "IN_PROGRESS",
-        "DEV_DONE"
+        "DEV_DONE",
+        "ACCEPTED"
       ],
-      "recordedAt": "2026-09-15T20:42:00Z",
-      "actor": "agent:p1r_implementation:deepseek-harness",
-      "reason": "Owner route A (REUSE-VERIFY, no production change). Dependencies M3-009 + M6-002/005/008 DEV_DONE. Eight governance checks pass; live recovery run deferred as knownGap.",
+      "recordedAt": "2026-09-17T02:20:00Z",
+      "actor": "human-owner decision 1A + delegated acceptance (live E2E 2026-09-17)",
+      "reason": "Recovery console built and run live (recovery 9/9).",
       "evidencePath": "evidence/p1r/m6/P1R-M6-009/manifest.json"
     },
     {

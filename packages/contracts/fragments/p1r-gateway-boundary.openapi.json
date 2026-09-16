@@ -1413,8 +1413,128 @@
       {
         "ruleId": "admin-recovery",
         "defaultStatus": "UNAVAILABLE",
-        "defaultReason": "workflow_owner_has_no_configured_gateway_target",
-        "projections": []
+        "projections": [
+          {
+            "projectionId": "admin-recovery.recovery-request",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/admin/recovery/recoveries",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "workflow-service",
+            "targetUriConfig": "gateway.workflow.workflow-base-url",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/workflow/recoveries",
+            "controllerEvidence": {
+              "sourcePath": "services/workflow-service/src/main/java/com/englishflow/workflow/adapter/http/ManualRecoveryController.java",
+              "requestMapping": "/internal/v1/workflow/recoveries"
+            }
+          },
+          {
+            "projectionId": "admin-recovery.recovery-approve",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/admin/recovery/recoveries/{recoveryId}/approve",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "workflow-service",
+            "targetUriConfig": "gateway.workflow.workflow-base-url",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/workflow/recoveries/{recoveryId}/approve",
+            "controllerEvidence": {
+              "sourcePath": "services/workflow-service/src/main/java/com/englishflow/workflow/adapter/http/ManualRecoveryController.java",
+              "requestMapping": "/internal/v1/workflow/recoveries"
+            }
+          },
+          {
+            "projectionId": "admin-recovery.recovery-reject",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/admin/recovery/recoveries/{recoveryId}/reject",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "workflow-service",
+            "targetUriConfig": "gateway.workflow.workflow-base-url",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/workflow/recoveries/{recoveryId}/reject",
+            "controllerEvidence": {
+              "sourcePath": "services/workflow-service/src/main/java/com/englishflow/workflow/adapter/http/ManualRecoveryController.java",
+              "requestMapping": "/internal/v1/workflow/recoveries"
+            }
+          },
+          {
+            "projectionId": "admin-recovery.recovery-execute",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/admin/recovery/recoveries/{recoveryId}/execute",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "workflow-service",
+            "targetUriConfig": "gateway.workflow.workflow-base-url",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/workflow/recoveries/{recoveryId}/execute",
+            "controllerEvidence": {
+              "sourcePath": "services/workflow-service/src/main/java/com/englishflow/workflow/adapter/http/ManualRecoveryController.java",
+              "requestMapping": "/internal/v1/workflow/recoveries"
+            }
+          },
+          {
+            "projectionId": "admin-recovery.sagas-unfinished",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/admin/recovery/sagas/unfinished",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "workflow-service",
+            "targetUriConfig": "gateway.workflow.workflow-base-url",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/workflow/sagas/unfinished",
+            "controllerEvidence": {
+              "sourcePath": "services/workflow-service/src/main/java/com/englishflow/workflow/adapter/http/SagaController.java",
+              "requestMapping": "/internal/v1/workflow/sagas"
+            }
+          },
+          {
+            "projectionId": "admin-recovery.saga-detail",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/admin/recovery/sagas/{sagaId}",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "workflow-service",
+            "targetUriConfig": "gateway.workflow.workflow-base-url",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/workflow/sagas/{sagaId}",
+            "controllerEvidence": {
+              "sourcePath": "services/workflow-service/src/main/java/com/englishflow/workflow/adapter/http/SagaController.java",
+              "requestMapping": "/internal/v1/workflow/sagas"
+            }
+          },
+          {
+            "projectionId": "admin-recovery.saga-compensate",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/admin/recovery/sagas/{sagaId}/compensate",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "workflow-service",
+            "targetUriConfig": "gateway.workflow.workflow-base-url",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/workflow/sagas/{sagaId}/compensate",
+            "controllerEvidence": {
+              "sourcePath": "services/workflow-service/src/main/java/com/englishflow/workflow/adapter/http/SagaController.java",
+              "requestMapping": "/internal/v1/workflow/sagas"
+            }
+          }
+        ],
+        "defaultReason": "no_exact_canonical_execution_target"
       },
       {
         "ruleId": "admin-analytics",

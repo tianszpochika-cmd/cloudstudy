@@ -459,6 +459,9 @@
     {
       "name": "M1-017-Analytics",
       "description": "P1R-M1-017 consent/delete-gated HTTP telemetry ingress; not a Kafka domain-event producer"
+    },
+    {
+      "name": "b26-workflow-recovery"
     }
   ],
   "paths": {
@@ -35918,6 +35921,270 @@
           },
           "503": {
             "$ref": "#/components/responses/ApiServiceUnavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/recovery/recoveries": {
+      "post": {
+        "tags": [
+          "b26-workflow-recovery"
+        ],
+        "summary": "Request a manual recovery (two-person rule)",
+        "operationId": "requestWorkflowRecovery",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "subjectType",
+                  "subjectId",
+                  "action"
+                ],
+                "properties": {
+                  "subjectType": {
+                    "type": "string"
+                  },
+                  "subjectId": {
+                    "type": "string"
+                  },
+                  "action": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Recovery requested",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/recovery/recoveries/{recoveryId}/approve": {
+      "post": {
+        "tags": [
+          "b26-workflow-recovery"
+        ],
+        "summary": "Approve a recovery as a second person",
+        "operationId": "approveWorkflowRecovery",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "recoveryId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/recovery/recoveries/{recoveryId}/reject": {
+      "post": {
+        "tags": [
+          "b26-workflow-recovery"
+        ],
+        "summary": "Reject a recovery",
+        "operationId": "rejectWorkflowRecovery",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "recoveryId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/recovery/recoveries/{recoveryId}/execute": {
+      "post": {
+        "tags": [
+          "b26-workflow-recovery"
+        ],
+        "summary": "Execute an approved recovery and record the receipt",
+        "operationId": "executeWorkflowRecovery",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "recoveryId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/recovery/sagas/unfinished": {
+      "get": {
+        "tags": [
+          "b26-workflow-recovery"
+        ],
+        "summary": "List unfinished sagas",
+        "operationId": "listUnfinishedSagas",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Unfinished saga ids",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/recovery/sagas/{sagaId}": {
+      "get": {
+        "tags": [
+          "b26-workflow-recovery"
+        ],
+        "summary": "Read a saga and its steps",
+        "operationId": "readWorkflowSaga",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "sagaId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/recovery/sagas/{sagaId}/compensate": {
+      "post": {
+        "tags": [
+          "b26-workflow-recovery"
+        ],
+        "summary": "Compensate a failed saga awaiting compensation",
+        "operationId": "compensateWorkflowSaga",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "sagaId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
           }
         }
       }
@@ -76649,8 +76916,128 @@
       {
         "ruleId": "admin-recovery",
         "defaultStatus": "UNAVAILABLE",
-        "defaultReason": "workflow_owner_has_no_configured_gateway_target",
-        "projections": []
+        "projections": [
+          {
+            "projectionId": "admin-recovery.recovery-request",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/admin/recovery/recoveries",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "workflow-service",
+            "targetUriConfig": "gateway.workflow.workflow-base-url",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/workflow/recoveries",
+            "controllerEvidence": {
+              "sourcePath": "services/workflow-service/src/main/java/com/englishflow/workflow/adapter/http/ManualRecoveryController.java",
+              "requestMapping": "/internal/v1/workflow/recoveries"
+            }
+          },
+          {
+            "projectionId": "admin-recovery.recovery-approve",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/admin/recovery/recoveries/{recoveryId}/approve",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "workflow-service",
+            "targetUriConfig": "gateway.workflow.workflow-base-url",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/workflow/recoveries/{recoveryId}/approve",
+            "controllerEvidence": {
+              "sourcePath": "services/workflow-service/src/main/java/com/englishflow/workflow/adapter/http/ManualRecoveryController.java",
+              "requestMapping": "/internal/v1/workflow/recoveries"
+            }
+          },
+          {
+            "projectionId": "admin-recovery.recovery-reject",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/admin/recovery/recoveries/{recoveryId}/reject",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "workflow-service",
+            "targetUriConfig": "gateway.workflow.workflow-base-url",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/workflow/recoveries/{recoveryId}/reject",
+            "controllerEvidence": {
+              "sourcePath": "services/workflow-service/src/main/java/com/englishflow/workflow/adapter/http/ManualRecoveryController.java",
+              "requestMapping": "/internal/v1/workflow/recoveries"
+            }
+          },
+          {
+            "projectionId": "admin-recovery.recovery-execute",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/admin/recovery/recoveries/{recoveryId}/execute",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "workflow-service",
+            "targetUriConfig": "gateway.workflow.workflow-base-url",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/workflow/recoveries/{recoveryId}/execute",
+            "controllerEvidence": {
+              "sourcePath": "services/workflow-service/src/main/java/com/englishflow/workflow/adapter/http/ManualRecoveryController.java",
+              "requestMapping": "/internal/v1/workflow/recoveries"
+            }
+          },
+          {
+            "projectionId": "admin-recovery.sagas-unfinished",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/admin/recovery/sagas/unfinished",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "workflow-service",
+            "targetUriConfig": "gateway.workflow.workflow-base-url",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/workflow/sagas/unfinished",
+            "controllerEvidence": {
+              "sourcePath": "services/workflow-service/src/main/java/com/englishflow/workflow/adapter/http/SagaController.java",
+              "requestMapping": "/internal/v1/workflow/sagas"
+            }
+          },
+          {
+            "projectionId": "admin-recovery.saga-detail",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/admin/recovery/sagas/{sagaId}",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "workflow-service",
+            "targetUriConfig": "gateway.workflow.workflow-base-url",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/workflow/sagas/{sagaId}",
+            "controllerEvidence": {
+              "sourcePath": "services/workflow-service/src/main/java/com/englishflow/workflow/adapter/http/SagaController.java",
+              "requestMapping": "/internal/v1/workflow/sagas"
+            }
+          },
+          {
+            "projectionId": "admin-recovery.saga-compensate",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/admin/recovery/sagas/{sagaId}/compensate",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "workflow-service",
+            "targetUriConfig": "gateway.workflow.workflow-base-url",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/workflow/sagas/{sagaId}/compensate",
+            "controllerEvidence": {
+              "sourcePath": "services/workflow-service/src/main/java/com/englishflow/workflow/adapter/http/SagaController.java",
+              "requestMapping": "/internal/v1/workflow/sagas"
+            }
+          }
+        ],
+        "defaultReason": "no_exact_canonical_execution_target"
       },
       {
         "ruleId": "admin-analytics",

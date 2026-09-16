@@ -1,0 +1,64 @@
+{
+  "task": "RECOVERY-LIVE",
+  "capturedAt": "2026-09-16T18:25:36.431Z",
+  "recoveryId": "63c08e28-9fc4-47b5-9079-1dd2d2bb5ab4",
+  "result": "PASS",
+  "passed": 9,
+  "total": 9,
+  "checks": [
+    {
+      "name": "staff-ready",
+      "ok": true,
+      "observed": "two staff tokens",
+      "expected": "tokens"
+    },
+    {
+      "name": "recovery-request",
+      "ok": true,
+      "observed": "HTTP 201",
+      "expected": "HTTP 201 + id"
+    },
+    {
+      "name": "self-approve-denied",
+      "ok": true,
+      "observed": "HTTP 403",
+      "expected": "HTTP 403 two-person"
+    },
+    {
+      "name": "recovery-approve",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200 APPROVED"
+    },
+    {
+      "name": "recovery-execute",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200 EXECUTED"
+    },
+    {
+      "name": "sagas-unfinished",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200 list"
+    },
+    {
+      "name": "recovery-renders",
+      "ok": true,
+      "observed": "http://127.0.0.1:18181/recovery",
+      "expected": "renders"
+    },
+    {
+      "name": "recovery-ui-request",
+      "ok": true,
+      "observed": "request via UI",
+      "expected": "submitted"
+    },
+    {
+      "name": "recovery-no-errors",
+      "ok": true,
+      "observed": "0 pageerrors",
+      "expected": "zero"
+    }
+  ]
+}

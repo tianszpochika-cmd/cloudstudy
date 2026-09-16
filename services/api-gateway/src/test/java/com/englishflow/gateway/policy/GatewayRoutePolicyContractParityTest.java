@@ -228,7 +228,8 @@ class GatewayRoutePolicyContractParityTest {
                 new GatewayProperties.B12Services(true, "http://127.0.0.1:28094", "http://127.0.0.1:28095", "http://127.0.0.1:28093"),
                 new GatewayProperties.B13Services(true, "http://127.0.0.1:28096", "http://127.0.0.1:28097", "http://127.0.0.1:28098"),
                 new GatewayProperties.B14Services(true, false, "2027-06-30T00:00:00Z", b14Targets, b14Modes),
-                new GatewayProperties.Cors(
+                // P1R decision 1A: recovery console route owner.
+                new GatewayProperties.WorkflowServices(true, "http://127.0.0.1:28071"),                new GatewayProperties.Cors(
                         "http://127.0.0.1:28180", "http://127.0.0.1:28181", "http://127.0.0.1:28183", "http://127.0.0.1:28182",
                         "GET,POST,PUT,PATCH,DELETE,OPTIONS", "Authorization", "Content-Type", "X-Request-Id", "refresh", "NATIVE_SECURE_STORAGE", Duration.ofMinutes(30)),
                 new GatewayProperties.RateLimit(false, "memory", 32, false, Duration.ofMillis(100), Map.of()),

@@ -61,6 +61,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
                 "gateway.compatibility.enabled=false",
                 "gateway.b12.enabled=true",
                 "gateway.b13.enabled=true",
+                // P1R decision 1A: recovery console routes resolve when enabled.
+                "gateway.workflow.enabled=true",
                 "gateway.b14.enabled=true",
                 "management.otlp.metrics.export.enabled=false",
                 "management.tracing.export.enabled=false",
@@ -464,6 +466,8 @@ class CanonicalRoutePolicyRouteLocatorIntegrationTest {
             case "notification-service" -> gatewayProperties.b12().notificationUri();
             case "analytics-service" -> gatewayProperties.b13().analyticsUri();
             case "admin-ops-service" -> gatewayProperties.b13().adminOpsUri();
+            // P1R decision 1A: recovery console route owner.
+            case "workflow-service" -> gatewayProperties.workflow().workflowUri();
             default -> throw new AssertionError("no configured upstream is allowed for owner " + owner);
         };
     }

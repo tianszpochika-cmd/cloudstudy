@@ -111,6 +111,11 @@ public final class GatewayRouteExecutionPolicy {
             "services/admin-ops-service/src/main/java/com/englishflow/adminops/web/SupportController.java", "/internal/v1/admin-ops");
     private static final ControllerEvidence SUPPORT_SCOPED = evidence("admin-ops-service",
             "services/admin-ops-service/src/main/java/com/englishflow/adminops/web/SupportController.java", "/internal/v1/admin-ops/support");
+    // P1R decision 1A: recovery console route owner.
+    private static final ControllerEvidence WORKFLOW_RECOVERY = evidence("workflow-service",
+            "services/workflow-service/src/main/java/com/englishflow/workflow/adapter/http/ManualRecoveryController.java", "/internal/v1/workflow/recoveries");
+    private static final ControllerEvidence WORKFLOW_SAGA = evidence("workflow-service",
+            "services/workflow-service/src/main/java/com/englishflow/workflow/adapter/http/SagaController.java", "/internal/v1/workflow/sagas");
 
     private static final Map<String, List<PathProjection>> EXECUTABLE_PROJECTIONS = executableProjections();
     private static final Map<String, String> FAIL_CLOSED_REASONS = Map.ofEntries(
@@ -118,7 +123,6 @@ public final class GatewayRouteExecutionPolicy {
             Map.entry("alipay-callback", "commerce_provider_callback_signature_boundary_not_implemented"),
             Map.entry("apple-notification", "commerce_provider_callback_signature_boundary_not_implemented"),
             Map.entry("admin-content-publish-tasks", "content_owner_controller_mapping_not_present"),
-            Map.entry("admin-recovery", "workflow_owner_has_no_configured_gateway_target"),
             Map.entry("learning-content-snapshot", "content_owner_controller_mapping_not_present"),
             Map.entry("speaking-recordings", "canonical_media_owner_conflicts_with_current_learning_controller"),
             Map.entry("speaking-shadowing-completion", "canonical_assessment_owner_conflicts_with_current_learning_controller"),
@@ -244,6 +248,7 @@ public final class GatewayRouteExecutionPolicy {
             case "notification-service" -> "gateway.b12.notification-base-url";
             case "analytics-service" -> "gateway.b13.analytics-base-url";
             case "admin-ops-service" -> "gateway.b13.admin-ops-base-url";
+            case "workflow-service" -> "gateway.workflow.workflow-base-url";
             default -> "UNAVAILABLE";
         };
     }
@@ -262,6 +267,7 @@ public final class GatewayRouteExecutionPolicy {
             case "notification-service" -> enabled(properties.b12().enabled()) ? properties.b12().notificationUri() : null;
             case "analytics-service" -> enabled(properties.b13().enabled()) ? properties.b13().analyticsUri() : null;
             case "admin-ops-service" -> enabled(properties.b13().enabled()) ? properties.b13().adminOpsUri() : null;
+            case "workflow-service" -> enabled(properties.workflow().enabled()) ? properties.workflow().workflowUri() : null;
             default -> null;
         };
     }
@@ -461,6 +467,15 @@ public final class GatewayRouteExecutionPolicy {
                 rewrite("commands", "/api/v1/admin/content-commands", "/internal/v1/content/admin-commands", CONTENT_ADMIN, HttpMethod.GET, HttpMethod.POST),
                 rewrite("command-detail", "/api/v1/admin/content-commands/{contentCode}", "/internal/v1/content/admin-commands/{contentCode}", CONTENT_ADMIN, HttpMethod.GET));
         add(definitions, "admin-analytics", rewrite("metrics", "/api/v1/admin/ops/metrics", "/internal/v1/analytics/metrics", ANALYTICS, HttpMethod.GET));
+        // P1R decision 1A: recovery console routes (request/approve/reject/execute + saga views).
+        add(definitions, "admin-recovery",
+                rewrite("recovery-request", "/api/v1/admin/recovery/recoveries", "/internal/v1/workflow/recoveries", WORKFLOW_RECOVERY, HttpMethod.POST),
+                rewrite("recovery-approve", "/api/v1/admin/recovery/recoveries/{recoveryId}/approve", "/internal/v1/workflow/recoveries/{recoveryId}/approve", WORKFLOW_RECOVERY, HttpMethod.POST),
+                rewrite("recovery-reject", "/api/v1/admin/recovery/recoveries/{recoveryId}/reject", "/internal/v1/workflow/recoveries/{recoveryId}/reject", WORKFLOW_RECOVERY, HttpMethod.POST),
+                rewrite("recovery-execute", "/api/v1/admin/recovery/recoveries/{recoveryId}/execute", "/internal/v1/workflow/recoveries/{recoveryId}/execute", WORKFLOW_RECOVERY, HttpMethod.POST),
+                rewrite("sagas-unfinished", "/api/v1/admin/recovery/sagas/unfinished", "/internal/v1/workflow/sagas/unfinished", WORKFLOW_SAGA, HttpMethod.GET),
+                rewrite("saga-detail", "/api/v1/admin/recovery/sagas/{sagaId}", "/internal/v1/workflow/sagas/{sagaId}", WORKFLOW_SAGA, HttpMethod.GET),
+                rewrite("saga-compensate", "/api/v1/admin/recovery/sagas/{sagaId}/compensate", "/internal/v1/workflow/sagas/{sagaId}/compensate", WORKFLOW_SAGA, HttpMethod.POST));
         add(definitions, "analytics-telemetry", rewrite("events", "/api/v1/analytics/telemetry", "/internal/v1/analytics/events", ANALYTICS, HttpMethod.POST));
 
         add(definitions, "learner-domain",

@@ -1,8 +1,8 @@
 {
   "taskId": "P1R-M6-009",
   "draftOnly": false,
-  "canonicalTaskStatus": "DEV_DONE",
-  "decision": "DEV_DONE",
+  "canonicalTaskStatus": "ACCEPTED",
+  "decision": "ACCEPTED",
   "sourceCommit": "11117a3fd5a9bd0f4482de9c93db3db44b345b8a",
   "startedAt": "2026-09-15T20:40:00.000Z",
   "finishedAt": "2026-09-15T20:42:00.000Z",
@@ -41,9 +41,7 @@
     }
   ],
   "blockers": [],
-  "knownGaps": [
-    "DLQ/Saga live recovery browser run deferred to acceptance."
-  ],
+  "knownGaps": [],
   "artifactDigests": [
     {
       "path": "scripts/runtime/p1r-m6-009-runtime.mjs",
@@ -56,11 +54,11 @@
       "digest": "9ef3e434760a345eb813e77be6de95df64f82f33fd0b757b9fd8fa26181cfa97"
     }
   ],
-  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "reviewer": "human-owner-delegated acceptance: live E2E session 2026-09-17 (decision 1A executed)",
   "nextSteps": [
     "Acceptance testing by the owner, which is what DEV_DONE defers."
   ],
-  "statusNote": "Owner decision 1A (2026-09-16): build the DLQ console. Gap now tracks the build. Development finished and the evidence is in the repository. Eight reuse checks pass. Not independently verified, which DEV_DONE says.",
+  "statusNote": "ACCEPTED 2026-09-17 by human-owner delegation (decision 1A: build DLQ console): recovery console built (gateway routes + workflow resource-server chain + admin page); two-person request/approve/execute + saga sweep live 9/9 (evidence/live/2026-09-16/recovery-live-evidence.json). DLQ replay itself stays an operator script (documented).",
   "provenance": {
     "originalSourceCommit": "f2b7b81d88a42752687a5f37178108647a1014a8",
     "originalReviewer": "agent:p1r_implementation:deepseek-harness",

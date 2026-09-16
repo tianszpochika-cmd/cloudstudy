@@ -27,6 +27,7 @@ public record GatewayProperties(
         @Valid @NotNull B12Services b12,
         @Valid @NotNull B13Services b13,
         @Valid @NotNull B14Services b14,
+        @Valid @NotNull WorkflowServices workflow,
         @Valid @NotNull Cors cors,
         @Valid @NotNull RateLimit rateLimit,
         @Valid @NotNull RequestContext requestContext,
@@ -88,6 +89,28 @@ public record GatewayProperties(
             }
             if (uri.getUserInfo() != null || uri.getPath() != null && !uri.getPath().isBlank()) {
                 throw new IllegalStateException("gateway.b13 " + service + " base URL must not contain credentials or a path");
+            }
+            return uri;
+        }
+    }
+
+    /**
+     * P1R decision 1A: workflow recovery console route owner. Same shape as the
+     * B12/B13 groups: an explicit enable flag plus a loopback-default base URL.
+     */
+    public record WorkflowServices(
+            @NotNull Boolean enabled,
+            @NotBlank String workflowBaseUrl
+    ) {
+        public URI workflowUri() { return baseUri(workflowBaseUrl, "workflow"); }
+
+        private static URI baseUri(String value, String service) {
+            URI uri = URI.create(value);
+            if (!"http".equalsIgnoreCase(uri.getScheme()) && !"https".equalsIgnoreCase(uri.getScheme())) {
+                throw new IllegalStateException("gateway.workflow." + service + "-base-url must use http or https");
+            }
+            if (uri.getUserInfo() != null || uri.getPath() != null && !uri.getPath().isBlank()) {
+                throw new IllegalStateException("gateway.workflow " + service + " base URL must not contain credentials or a path");
             }
             return uri;
         }
