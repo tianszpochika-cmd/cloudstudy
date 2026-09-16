@@ -1,10 +1,10 @@
 {
   "task": "ONBOARDING-UI-LIVE",
-  "capturedAt": "2026-09-16T10:08:53.005Z",
-  "identifier": "wuon-mu3xu24v@local.invalid",
+  "capturedAt": "2026-09-16T10:23:21.249Z",
+  "identifier": "wuon-mu3ycart@local.invalid",
   "result": "PASS",
-  "passed": 6,
-  "total": 6,
+  "passed": 9,
+  "total": 9,
   "checks": [
     {
       "name": "ui-register",
@@ -35,6 +35,24 @@
       "ok": true,
       "observed": "{\"/api/v1/auth/token/refresh\":200,\"/api/v1/auth/register\":201,\"/api/v1/iam/adult-gate\":200,\"/api/v1/iam/consents\":200,\"/api/v1/learner/profile\":200,\"/api/v1/learner/targets\":200,\"/api/v1/learner/preferences\":200,\"/api/v1/onboarding/daily-tasks/ensure\":200,\"/api/v1/assessment/placement/start\":200}",
       "expected": "all save writes 200"
+    },
+    {
+      "name": "ui-placement-answered",
+      "ok": true,
+      "observed": "4 answers submitted",
+      "expected": "both questions answered"
+    },
+    {
+      "name": "ui-placement-report",
+      "ok": true,
+      "observed": "http://127.0.0.1:18180/assessment",
+      "expected": "report shown"
+    },
+    {
+      "name": "ui-today-after-placement",
+      "ok": true,
+      "observed": "http://127.0.0.1:18180/today",
+      "expected": "today reachable"
     },
     {
       "name": "ui-no-errors",

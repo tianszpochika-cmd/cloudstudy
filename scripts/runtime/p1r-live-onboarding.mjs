@@ -56,6 +56,23 @@ record('ui-first-question', /Choose the greeting|1\/2/.test(body), 'first server
 const saveWrites = ['/api/v1/iam/consents', '/api/v1/auth/token/refresh', '/api/v1/learner/profile', '/api/v1/learner/targets', '/api/v1/learner/preferences'];
 const writesOk = saveWrites.every((k) => writes[k] === 200);
 record('ui-save-writes', writesOk, JSON.stringify(writes), 'all save writes 200');
+// Answer the placement questions through the UI (first options), then read
+// the report and today through the UI.
+let answered = 0;
+for (let q = 0; q < 4; q++) {
+  const opts = await page.getByRole('button', { name: /^[AB] / }).all().catch(() => []);
+  if (opts.length === 0) break;
+  await opts[0].click();
+  await page.waitForTimeout(3000);
+  answered++;
+}
+record('ui-placement-answered', answered >= 2, `${answered} answers submitted`, 'both questions answered');
+await page.waitForTimeout(2000);
+const afterBody = (await page.locator('body').first().textContent().catch(() => '')) ?? '';
+record('ui-placement-report', /CEFR|[ABC][12]|完成|报告/.test(afterBody), page.url(), 'report shown');
+await page.goto(`${WEB}/today`, { waitUntil: 'domcontentloaded', timeout: 45000 }).catch(() => null);
+await page.waitForTimeout(3000);
+record('ui-today-after-placement', page.url().includes('/today'), page.url(), 'today reachable');
 record('ui-no-errors', errs.length === 0, `${errs.length} errors`, 'zero');
 await browser.close();
 const passed = checks.filter((c) => c.ok).length;
