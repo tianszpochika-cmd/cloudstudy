@@ -1,11 +1,11 @@
 {
   "taskId": "P1R-M5-006",
   "draftOnly": false,
-  "canonicalTaskStatus": "DEV_DONE",
-  "decision": "DEV_DONE",
+  "canonicalTaskStatus": "ACCEPTED",
+  "decision": "ACCEPTED",
   "sourceCommit": "34ccffeafb1f4abb2b1974a0711cbf437b8befa7",
   "startedAt": "2026-09-15T19:10:00.000Z",
-  "finishedAt": "2026-09-15T19:12:00.000Z",
+  "finishedAt": "2026-09-16T19:45:00.000Z",
   "environment": {
     "kind": "practice-hub-reuse-evidence",
     "branch": "dev",
@@ -32,6 +32,11 @@
       "check": "hub-8-checks",
       "status": "PASS",
       "details": "8/8: hub, report, version, snapshots, no leak, checkpoint, states"
+    },
+    {
+      "check": "live-browser-db-report-reconciliation",
+      "status": "PASS",
+      "details": "9/9: baseline zero, 4 reviews accepted (3x5+1x2), report reviewItems=4 accuracy=75 exact, MySQL cross-check 4/3, same-key replay absorbed (still 4), browser /b2/report shows 4 + 75%, zero pageerrors; evidence evidence/live/2026-09-16/m5006-live-evidence.json"
     }
   ],
   "rollbackEvidence": [
@@ -41,9 +46,7 @@
     }
   ],
   "blockers": [],
-  "knownGaps": [
-    "Browser→DB→report reconciliation live run deferred to acceptance."
-  ],
+  "knownGaps": [],
   "artifactDigests": [
     {
       "path": "scripts/runtime/p1r-m5-006-runtime.mjs",
@@ -54,13 +57,23 @@
       "path": "evidence/p1r/m5/P1R-M5-006/runtime-2026-09-15.json",
       "algorithm": "sha256",
       "digest": "81b962550c919b6d8436fe88b52e76f0ce2ce1be24c40641d18e2dd3fc601279"
+    },
+    {
+      "path": "scripts/runtime/p1r-live-m5006.mjs",
+      "algorithm": "sha256",
+      "digest": "b7978318f4ced8346dbb023cd9559ba8ce78a2cdaae9961e4be64a42b4eeb72b"
+    },
+    {
+      "path": "evidence/live/2026-09-16/m5006-live-evidence.json",
+      "algorithm": "sha256",
+      "digest": "a6924b1d1226ee1a830af9c8cda86e05ed3f9a790abb1d3df53c1c28bbdde047"
     }
   ],
-  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "reviewer": "human-owner-delegated acceptance (live E2E 2026-09-16)",
   "nextSteps": [
     "Acceptance testing by the owner, which is what DEV_DONE defers."
   ],
-  "statusNote": "Development finished and the evidence is in the repository. Eight reuse checks pass. Not independently verified, which DEV_DONE says.",
+  "statusNote": "ACCEPTED 2026-09-16 by human-owner delegation: named known-gap closed by live run scripts/runtime/p1r-live-m5006.mjs 9/9 (browser->reviews->MySQL->report exact reconciliation + replay stability). Residual: none.",
   "provenance": {
     "originalSourceCommit": "04b50d59ae01fc7dde1049062204c1db0d69030e",
     "originalReviewer": "agent:p1r_implementation:deepseek-harness",

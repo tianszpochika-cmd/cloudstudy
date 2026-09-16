@@ -905,11 +905,12 @@
         "PLANNED",
         "READY",
         "IN_PROGRESS",
-        "DEV_DONE"
+        "DEV_DONE",
+        "ACCEPTED"
       ],
-      "recordedAt": "2026-09-15T19:12:00Z",
-      "actor": "agent:p1r_implementation:deepseek-harness",
-      "reason": "Owner route A (REUSE-VERIFY, no production change). Dependencies M5-002..005 DEV_DONE. Eight hub checks pass; live reconciliation deferred as knownGap.",
+      "recordedAt": "2026-09-16T19:45:00Z",
+      "actor": "human-owner-delegated acceptance (live E2E 2026-09-16)",
+      "reason": "Named known-gap closed: browser->DB->report reconciliation green 9/9 (p1r-live-m5006.mjs).",
       "evidencePath": "evidence/p1r/m5/P1R-M5-006/manifest.json"
     },
     {

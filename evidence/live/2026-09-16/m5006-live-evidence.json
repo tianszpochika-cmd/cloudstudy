@@ -1,0 +1,64 @@
+{
+  "task": "M5006-LIVE-RECONCILE",
+  "capturedAt": "2026-09-16T19:27:56.254Z",
+  "gateway": "http://127.0.0.1:18070",
+  "result": "PASS",
+  "passed": 9,
+  "total": 9,
+  "checks": [
+    {
+      "name": "setup-register",
+      "ok": true,
+      "observed": "HTTP 201",
+      "expected": "HTTP 201"
+    },
+    {
+      "name": "setup-login",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200 + token"
+    },
+    {
+      "name": "report-baseline",
+      "ok": true,
+      "observed": "HTTP 200 reviewItems=0",
+      "expected": "HTTP 200 fresh zero"
+    },
+    {
+      "name": "reviews-submit",
+      "ok": true,
+      "observed": "4/4 accepted",
+      "expected": "4/4 accepted"
+    },
+    {
+      "name": "report-reconciled",
+      "ok": true,
+      "observed": "HTTP 200 reviewItems=4 accuracy=75",
+      "expected": "reviewItems=4 accuracy=75"
+    },
+    {
+      "name": "db-crosscheck",
+      "ok": true,
+      "observed": "reviews=4 successful=3",
+      "expected": "reviews=4 successful=3"
+    },
+    {
+      "name": "replay-stable",
+      "ok": true,
+      "observed": "replay=? reviewItems=4",
+      "expected": "absorbed, still 4"
+    },
+    {
+      "name": "browser-report",
+      "ok": true,
+      "observed": "report page shows 4 + 75%",
+      "expected": "browser matches DB"
+    },
+    {
+      "name": "browser-no-errors",
+      "ok": true,
+      "observed": "0 pageerrors",
+      "expected": "zero"
+    }
+  ]
+}
