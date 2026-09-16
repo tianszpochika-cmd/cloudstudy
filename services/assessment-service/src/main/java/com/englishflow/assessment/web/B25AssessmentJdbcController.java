@@ -176,7 +176,7 @@ public class B25AssessmentJdbcController {
             return existing == null ? Map.of("status", "SKIPPED", "isCompleted", true) : sessionView(existing);
         }
         String sessionId = UUID.randomUUID().toString();
-        jdbc.update("INSERT INTO b25_assessment_session (session_id, principal_id, tenant_id, content_code, status, answers_json, idempotency_key, score) VALUES (?, ?, ?, ?, 'SKIPPED', '{}', ?, 0)", sessionId, principal.subject(), TENANT, DEFAULT_CONTENT, idempotencyKey, idempotencyKey);
+        jdbc.update("INSERT INTO b25_assessment_session (session_id, principal_id, tenant_id, content_code, status, answers_json, idempotency_key, score) VALUES (?, ?, ?, ?, 'SKIPPED', '{}', ?, 0)", sessionId, principal.subject(), TENANT, DEFAULT_CONTENT, idempotencyKey);
         String reportId = UUID.randomUUID().toString();
         jdbc.update("INSERT INTO b25_assessment_report (report_id, session_id, principal_id, tenant_id, cefr_level, score, radar_json, mistakes_json) VALUES (?, ?, ?, ?, ?, 0, ?, ?)", reportId, sessionId, principal.subject(), TENANT, level, "{}", "[]");
         jdbc.update("UPDATE b25_assessment_session SET report_id = ? WHERE session_id = ?", reportId, sessionId);

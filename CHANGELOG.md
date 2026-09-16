@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1-LIVE-011-W1-SKIP-20260916] **定级 skip 入参错位 + W1 补到 12/12；`M4-004` 翻牌。** skip 的 INSERT 绑了 6 个参数而只有 5 个占位（复制粘贴多出一个 `idempotencyKey`），凡走 skip 必 500；删多余绑定。W1 新增：目标版本守卫（旧版 409）、定级恢复（同会话回读）、skip 快通（A2 报告）。`M4-004` 转 `ACCEPTED`（重复提交活闭 + 跨租户归 M2-004 门 + 静态 7/7）。有意不做：不给 B25 legacy 适配器加题（canonical 十题归 M1-012 冻结规则与 M4-005 引擎接线，保持边界）。验证：assessment 57/0/0、W1 **12/12**。
+
 - [P1-LIVE-007-CLOSED-W3-20260916] **P1-LIVE-007 结案：commerce 订单链 403 是 outbox 列漂移 + `/error` denyAll 假面（ADR-0021），W3 19/19。** TRACE 实证：`/**→authenticated()` 正常、handler 正常映射，`createOrder` 内 `INSERT commerce_outbox_event` 用旧 12 列致 `event_name` 回滚（与 P1-LIVE-005 同物种，commerce 写侧漏改），异常转 `/error` 被 denyAll 掩成 403；此前 CSRF/MvcRequestMatcher/`@ResponseStatus` 理论逐项证伪。修复写侧三列 + 全仓另 5 家核对无掉队；`/error` 保持 denyAll（不泄漏异常细节），诊断 recipe 入 ADR。终态：创单 201、支付意向 202、未支付退款 409 守卫；PAID→退款需 workload 回调凭证（本地未配给，M7 后续）。验证：commerce 92/0/0、W3 **19/19**。
 
 - [P1R-ACCEPT-M4-002-M4-003-20260916] **首批验收翻牌：`M4-002`/`M4-003` 由 `DEV_DONE` 转 `ACCEPTED`（人类负责人全权委托，活链路复验）。** 关闭各自 manifest 具名的 deferred 缺口（replay-then-revoke；consent-withdraw），证据 `evidence/live/2026-09-16/`（W0 11/11、W0b 17/17、矩阵 7/7 含真实 UI 登录）+ 九个活链路脚本入库 `scripts/runtime/p1r-live-*.mjs`。其余 78 项保持 `DEV_DONE` 并具名残留（台账当日日志列明每行缺口）。同期：全量 P1R **1445/1445**、网关/契约/归属门禁全绿。

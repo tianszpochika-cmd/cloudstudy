@@ -36,6 +36,8 @@ record('setup-login', r.status === 200 && !!token, `HTTP ${r.status}`, 'HTTP 200
 // --- targets (goal 30min) ---
 r = await call('PUT', '/api/v1/learner/targets', { token, body: { expectedStateVersion: 0, goalCode: 'CET_4_6', targetLevel: 'A2', dailyQuotaMinutes: 30 }, idemKey: idem('tgt') });
 record('targets-put', r.status === 200, `HTTP ${r.status} ${JSON.stringify(r.json).slice(0, 160)}`, 'HTTP 200');
+r = await call('PUT', '/api/v1/learner/targets', { token, body: { expectedStateVersion: 0, goalCode: 'CET_4_6', targetLevel: 'B1', dailyQuotaMinutes: 30 }, idemKey: idem('tgt-stale') });
+record('targets-stale-version', r.status === 409, `HTTP ${r.status}`, 'HTTP 409 version guard');
 // --- placement start ---
 r = await call('POST', '/api/v1/assessment/placement/start', { token, body: {}, idemKey: idem('pstart') });
 const data0 = r.json?.data ?? r.json ?? {};
@@ -69,6 +71,19 @@ if (lastReport) console.log('  report-keys:', Object.keys(lastReport).join(','))
 if (completed) {
   const rep = await call('GET', `/api/v1/assessment/placement/report/${sessionId}`, { token });
   record('placement-report', rep.status === 200, `HTTP ${rep.status}`, 'HTTP 200');
+}
+// --- placement resume + skip (M4-005 residuals) ---
+if (sessionId) {
+  const res = await call('GET', `/api/v1/assessment/placement/start?sessionId=${sessionId}`, { token });
+  const rdata = res.json?.data ?? res.json ?? {};
+  record('placement-resume', res.status === 200 && (rdata.sessionId === sessionId || rdata.session_id === sessionId), `HTTP ${res.status}`, 'HTTP 200 same session');
+} else {
+  record('placement-resume', false, 'no session', 'HTTP 200');
+}
+{
+  const sk = await call('POST', '/api/v1/assessment/placement/skip', { token, body: { fastTrackLevel: 'A2' }, idemKey: idem('skip') });
+  const skdata = sk.json?.data ?? sk.json ?? {};
+  record('placement-skip', sk.status === 200 && (skdata.cefrLevel === 'A2' || skdata.cefr_level === 'A2'), `HTTP ${sk.status}`, 'HTTP 200 fast-track A2');
 }
 // --- learning first-day + today ---
 r = await call('GET', '/api/v1/learning/today', { token });

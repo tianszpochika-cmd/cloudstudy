@@ -1,11 +1,11 @@
 {
   "task": "W1-LIVE-E2E",
-  "capturedAt": "2026-09-16T05:13:45.520Z",
+  "capturedAt": "2026-09-16T06:33:53.177Z",
   "gateway": "http://127.0.0.1:18070",
-  "identifier": "w1-mu3nb0zv@local.invalid",
+  "identifier": "w1-mu3q612w@local.invalid",
   "result": "PASS",
-  "passed": 9,
-  "total": 9,
+  "passed": 12,
+  "total": 12,
   "checks": [
     {
       "name": "setup-register",
@@ -28,8 +28,14 @@
     {
       "name": "targets-put",
       "ok": true,
-      "observed": "HTTP 200 {\"data\":{\"targetId\":1012,\"goalCode\":\"CET_4_6\",\"targetLevel\":\"A2\",\"examCode\":null,\"dailyQuotaMinutes\":30,\"targetDate\":null,\"status\":\"ACTIVE\",\"stateVersion\":1,\"up",
+      "observed": "HTTP 200 {\"data\":{\"targetId\":1016,\"goalCode\":\"CET_4_6\",\"targetLevel\":\"A2\",\"examCode\":null,\"dailyQuotaMinutes\":30,\"targetDate\":null,\"status\":\"ACTIVE\",\"stateVersion\":1,\"up",
       "expected": "HTTP 200"
+    },
+    {
+      "name": "targets-stale-version",
+      "ok": true,
+      "observed": "HTTP 409",
+      "expected": "HTTP 409 version guard"
     },
     {
       "name": "placement-start",
@@ -48,6 +54,18 @@
       "ok": true,
       "observed": "HTTP 200",
       "expected": "HTTP 200"
+    },
+    {
+      "name": "placement-resume",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200 same session"
+    },
+    {
+      "name": "placement-skip",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200 fast-track A2"
     },
     {
       "name": "learning-today",

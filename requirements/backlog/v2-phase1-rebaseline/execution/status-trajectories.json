@@ -737,11 +737,12 @@
         "PLANNED",
         "READY",
         "IN_PROGRESS",
-        "DEV_DONE"
+        "DEV_DONE",
+        "ACCEPTED"
       ],
-      "recordedAt": "2026-09-15T17:52:00Z",
-      "actor": "agent:p1r_implementation:deepseek-harness",
-      "reason": "Owner route A (REUSE-VERIFY, no production change). Dependency M4-003 DEV_DONE. Seven onboarding checks pass; real-DB duplicate/cross-tenant run deferred as knownGap.",
+      "recordedAt": "2026-09-16T06:35:00Z",
+      "actor": "human-owner-delegated acceptance (live E2E session 2026-09-16)",
+      "reason": "Real-DB duplicate-submit closed live (W1 12/12); cross-tenant via M2-004 gates.",
       "evidencePath": "evidence/p1r/m4/P1R-M4-004/manifest.json"
     },
     {
