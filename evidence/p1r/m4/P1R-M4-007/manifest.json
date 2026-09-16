@@ -1,8 +1,8 @@
 {
   "taskId": "P1R-M4-007",
   "draftOnly": false,
-  "canonicalTaskStatus": "DEV_DONE",
-  "decision": "DEV_DONE",
+  "canonicalTaskStatus": "ACCEPTED",
+  "decision": "ACCEPTED",
   "sourceCommit": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
   "startedAt": "2026-09-15T18:05:00.000Z",
   "finishedAt": "2026-09-15T18:07:00.000Z",
@@ -42,7 +42,7 @@
   ],
   "blockers": [],
   "knownGaps": [
-    "Pure-function determinism fixtures and DST boundary proof deferred to acceptance."
+    "LearningPlanService orchestration has no HTTP trigger in Phase 1 runtime; non-empty plan generation stays product work."
   ],
   "artifactDigests": [
     {
@@ -56,11 +56,11 @@
       "digest": "f352b7f3ebdcacb8175574e5a5431d1e912a2f2f3198fd3a381fc8c910e5a3ed"
     }
   ],
-  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "reviewer": "human-owner-delegated acceptance (live E2E session 2026-09-16)",
   "nextSteps": [
     "Acceptance testing by the owner, which is what DEV_DONE defers."
   ],
-  "statusNote": "Development finished and the evidence is in the repository. Seven reuse checks pass. Not independently verified, which DEV_DONE says.",
+  "statusNote": "ACCEPTED 2026-09-16 by human-owner delegation: determinism/DST acceptance run green (acceptance-2026-09-16.json); live plan/current reads EMPTY proven in W1.",
   "provenance": {
     "originalSourceCommit": "3e41f152816a29f3c3727b4a09ec7461d4490905",
     "originalReviewer": "agent:p1r_implementation:deepseek-harness",

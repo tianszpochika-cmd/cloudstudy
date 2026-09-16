@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1R-ACCEPT-M4-007-20260916] **`M4-007` 翻牌：确定性/DST 验收执行 26 单测 + smoke main 全绿。** 关闭其 manifest 缺口（纯函数确定性夹具与 DST 边界证明）：`Sm2SchedulerTest` 14、`LearningPlanStateMachineTest` 12、`LearningDomainSmoke` main（含 DST spring-forward 23 小时证明）PASS，证据入库。残留：计划编排无 HTTP 触发口（产品工作）。验证：learning 142/0/0 全套件亦绿。
+
 - [P1-LIVE-013-PAGES-20260916] **登录态 18 页扫描：12 洁 + 4 页离线面板按设计降级 + B3 读接口整面缺失立案。** 新脚本 `scripts/runtime/p1r-live-pages.mjs`（单点登录后逐路由快照，以 `.state-panel--*` 类判定状态；修掉两次探针自误：短幂等键致门未确认、register token 无登录态调写接口——后者反证门前剥离生效）。语法/写作/听力/阅读四页正确落离线面板（八态设计活验证）；其余后台取数失败均为同一根因：B3 读路径（约 15 条）网关与后端双无实现（后端仅 19 个写口），立 **P1-LIVE-013**（M5-003 产品构建，未动手）。验证：18 路由零 pageerror。
 
 - [P1-LIVE-003-CLOSED-20260916] **P1-LIVE-003 结案：契约优先，签发切 `learner.target.write`、PEP 双收。** 契约（B9/B1 两处）一直是 `target.write`，实现侧误写 `goal.write`；按契约优先签发改正典，PEP 同时接受新旧（存量 token 无 flag day）。另：media 直读缺 `media_consent` 声明+权限+种子 owner 三重门，铸造同意属法律判断未擅动，立案 **P1-LIVE-012** 待决策（A/B/C 三选项）。验证：IAM 100/0/0、learner 50/0/0（含新增双收单测）、活 token 含正典且 PUT 200。

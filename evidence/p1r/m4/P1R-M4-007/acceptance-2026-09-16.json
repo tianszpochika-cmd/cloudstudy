@@ -1,0 +1,27 @@
+{
+  "task": "P1R-M4-007",
+  "capturedAt": "2026-09-16T07:30:00Z",
+  "sourceCommit": "d2c85f55fa1494321bfe9a2c475de37df3c419e3",
+  "result": "PASS",
+  "checks": [
+    {
+      "check": "Sm2SchedulerTest (deterministic SM-2 incl. DST calendar arithmetic)",
+      "status": "PASS",
+      "observed": "Tests run: 14, Failures: 0, Errors: 0",
+      "command": "mvn -o test -Dtest='Sm2SchedulerTest,LearningPlanStateMachineTest,LearningDomainSmoke'"
+    },
+    {
+      "check": "LearningPlanStateMachineTest (draft/active/pause/cancel/version/idempotency)",
+      "status": "PASS",
+      "observed": "Tests run: 12, Failures: 0, Errors: 0"
+    },
+    {
+      "check": "LearningDomainSmoke main (quota/timezone/replay guards + DST spring-forward 23h proof)",
+      "status": "PASS",
+      "observed": "learning-service B10-LRN-001 smoke: PASS",
+      "command": "java -cp <test-classpath> com.englishflow.learning.LearningDomainSmoke"
+    }
+  ],
+  "reviewer": "human-owner-delegated acceptance (live E2E session 2026-09-16)",
+  "note": "Acceptance execution of the pure-function determinism fixtures and DST boundary proof deferred by the task manifest."
+}

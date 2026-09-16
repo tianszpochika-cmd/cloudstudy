@@ -777,11 +777,12 @@
         "PLANNED",
         "READY",
         "IN_PROGRESS",
-        "DEV_DONE"
+        "DEV_DONE",
+        "ACCEPTED"
       ],
-      "recordedAt": "2026-09-15T18:07:00Z",
-      "actor": "agent:p1r_implementation:deepseek-harness",
-      "reason": "Owner route A (REUSE-VERIFY, no production change). Dependencies M4-004/006 + M2-006 DEV_DONE. Seven plan checks pass; determinism/DST proof deferred as knownGap.",
+      "recordedAt": "2026-09-16T07:30:00Z",
+      "actor": "human-owner-delegated acceptance (live E2E session 2026-09-16)",
+      "reason": "Determinism/DST acceptance execution green (26 unit + smoke main).",
       "evidencePath": "evidence/p1r/m4/P1R-M4-007/manifest.json"
     },
     {
