@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-001",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "1ae0e17bc49922e010d2b63a1b5ea4d502133039",
+  "sourceCommit": "fcf22a4fd8133c090100bf50b4848605652a30bd",
   "artifactDigests": [
     {
       "path": "scripts/audit/p1r-api-contract-check.mjs",
@@ -37,7 +37,7 @@
     "originalFinishedAt": "2026-08-29T20:28:20+08:00",
     "originalReviewer": "m1_001_final_review",
     "originalAcceptedContractBaseline": "4d7f73a867ff3e1db8582eab7593c173625bc8a3",
-    "previousCurrentSourceCommit": "e44a3eec5012419f8207ef6c4e652f2b811b1f0c",
+    "previousCurrentSourceCommit": "1ae0e17bc49922e010d2b63a1b5ea4d502133039",
     "previousCurrentSourceRevalidationTask": "P1R-M1-018",
     "currentSourceRevalidationTask": "P1R-M1-001",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
@@ -439,15 +439,25 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-16T20:07:49.195Z",
         "details": "M3-003 validate-auto projection + b9 op re-merge openapi"
+      },
+      {
+        "taskId": "P1R-M1-001",
+        "sourceCommit": "fcf22a4fd8133c090100bf50b4848605652a30bd",
+        "auditedImplementationSource": "fcf22a4fd8133c090100bf50b4848605652a30bd",
+        "integrationCheckpoint": "fcf22a4fd8133c090100bf50b4848605652a30bd",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T20:19:02.540Z",
+        "details": "M3-005 live trail chain + evidence"
       }
     ],
     "previousCurrentSourceRevalidationReviewer": "agent:m1_018_final_review:gpt-5.6-luna:max",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
     "previousCurrentSourceRevalidationFinishedAt": "2026-09-01T14:40:33+08:00",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-16T20:07:49.195Z",
-    "currentSourceRevalidationAuditedImplementationSource": "1ae0e17bc49922e010d2b63a1b5ea4d502133039",
-    "currentSourceRevalidationIntegrationCheckpoint": "1ae0e17bc49922e010d2b63a1b5ea4d502133039"
+    "currentSourceRevalidationFinishedAt": "2026-09-16T20:19:02.540Z",
+    "currentSourceRevalidationAuditedImplementationSource": "fcf22a4fd8133c090100bf50b4848605652a30bd",
+    "currentSourceRevalidationIntegrationCheckpoint": "fcf22a4fd8133c090100bf50b4848605652a30bd"
   },
   "startedAt": "2026-08-29T11:15:00+08:00",
   "finishedAt": "2026-09-01T15:39:29+08:00",
