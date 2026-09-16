@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1R-M7-005-NEG-20260916] **翻牌 M7-005：榜单延迟门查询过滤 + 跨租户/越权活负例（63 ACCEPTED / 45 DEV_DONE，工具待验）。** 新链 `p1r-live-m7005.mjs` 12/12：榜单 kind/period/roomId 过滤 + 去标识断言 + 租户伪造头/参被忽略 + 工单跨用户隔离（B-get 403）+ 越权 CREATE_DRAFT 403 + 自批 403 + 未认证 401。观察：local-real 榜单 kind 透传 SQL 无枚举门（未知 kind 回 200 空集，属实现原样）。
+
 - [P1R-M3-002-DUEL-20260917] **翻牌 M3-002：双写 stale 对决 + 批量往返（62 ACCEPTED / 46 DEV_DONE，工具待验）。** W8 30/30：stale SUBMIT → 409；批量经网关（2 建 1 跳）+ 重试稳定；批量口新开网关投影（此前 404）。
 
 - [P1R-1A-RECOVERY-20260917] **1A 恢复台建成 + 翻 M6-009（61 ACCEPTED / 47 DEV_DONE，工具待验）。** 网关 7 路由 + workflow 资源服安全链（此前裸奔：无链 bean，Boot 默认链吞掉一切 Bearer）+ 中台恢复页；双人申请/自批 403/批准/执行 + Saga 扫 9/9。验证：gateway 94/0/0、workflow 51/0/0、vue-tsc 0 错误。DLQ 重放仍是脚本。

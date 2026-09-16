@@ -1232,11 +1232,12 @@
         "PLANNED",
         "READY",
         "IN_PROGRESS",
-        "DEV_DONE"
+        "DEV_DONE",
+        "ACCEPTED"
       ],
-      "recordedAt": "2026-09-15T21:22:00Z",
-      "actor": "agent:p1r_implementation:deepseek-harness",
-      "reason": "Owner route A (durable-path verification, no production change). Dependency M7-004 DEV_DONE. Eight safety checks pass; delay filter and live negative run deferred as knownGap.",
+      "recordedAt": "2026-09-16T19:30:00Z",
+      "actor": "human-owner-delegated acceptance (live E2E 2026-09-16)",
+      "reason": "Named known-gap closed: delay-gate query filters + cross-tenant/over-privilege negatives green 12/12 (p1r-live-m7005.mjs).",
       "evidencePath": "evidence/p1r/m7/P1R-M7-005/manifest.json"
     },
     {

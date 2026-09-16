@@ -1,0 +1,82 @@
+{
+  "task": "M7005-LIVE-NEGATIVES",
+  "capturedAt": "2026-09-16T19:15:09.430Z",
+  "gateway": "http://127.0.0.1:18070",
+  "result": "PASS",
+  "passed": 12,
+  "total": 12,
+  "checks": [
+    {
+      "name": "setup",
+      "ok": true,
+      "observed": "two learners ready",
+      "expected": "tokens"
+    },
+    {
+      "name": "lb-default",
+      "ok": true,
+      "observed": "HTTP 200 n=50 deidentified=true",
+      "expected": "HTTP 200 de-identified"
+    },
+    {
+      "name": "lb-kind-period",
+      "ok": true,
+      "observed": "HTTP 200 kind=FOCUS_MINUTES period=DAY n=50",
+      "expected": "HTTP 200 seeded entries"
+    },
+    {
+      "name": "lb-room-scoped",
+      "ok": true,
+      "observed": "HTTP 200 room=room-local-foundations",
+      "expected": "HTTP 200 room filter"
+    },
+    {
+      "name": "lb-unknown-kind-empty",
+      "ok": true,
+      "observed": "HTTP 200 n=0",
+      "expected": "HTTP 200 empty (kind passes through, no enum gate)"
+    },
+    {
+      "name": "tenant-spoof-headers",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200 headers ignored"
+    },
+    {
+      "name": "tenant-spoof-param",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200 param ignored"
+    },
+    {
+      "name": "ticket-create",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200 + id"
+    },
+    {
+      "name": "ticket-isolation",
+      "ok": true,
+      "observed": "A-sees=true B-sees=false B-get=403",
+      "expected": "A-only + B denied"
+    },
+    {
+      "name": "neg-content-command",
+      "ok": true,
+      "observed": "HTTP 403",
+      "expected": "HTTP 403 editor perm required"
+    },
+    {
+      "name": "neg-self-approve",
+      "ok": true,
+      "observed": "HTTP 403",
+      "expected": "HTTP 403 two-person rule"
+    },
+    {
+      "name": "neg-no-auth",
+      "ok": true,
+      "observed": "HTTP 401",
+      "expected": "HTTP 401"
+    }
+  ]
+}

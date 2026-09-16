@@ -1,11 +1,11 @@
 {
   "taskId": "P1R-M7-005",
   "draftOnly": false,
-  "canonicalTaskStatus": "DEV_DONE",
-  "decision": "DEV_DONE",
+  "canonicalTaskStatus": "ACCEPTED",
+  "decision": "ACCEPTED",
   "sourceCommit": "2438e70e3979a74732bce30a2c7a0fb3d1ba3d5a",
   "startedAt": "2026-09-15T21:20:00.000Z",
-  "finishedAt": "2026-09-15T21:22:00.000Z",
+  "finishedAt": "2026-09-16T19:30:00.000Z",
   "environment": {
     "kind": "safety-reuse-evidence",
     "branch": "dev",
@@ -32,6 +32,11 @@
       "check": "safety-8-checks",
       "status": "PASS",
       "details": "8/8: anonymity, visibility, reports, scope, safety, delay, audit"
+    },
+    {
+      "check": "live-delay-filter-negatives",
+      "status": "PASS",
+      "details": "12/12: lb-default de-identified, lb-kind-period seeded, lb-room-scoped, lb-unknown-kind-empty, tenant-spoof-headers ignored, tenant-spoof-param ignored, ticket-create, ticket-isolation (B-get 403), neg-content-command 403, neg-self-approve 403, neg-no-auth 401; evidence evidence/live/2026-09-16/m7005-live-evidence.json"
     }
   ],
   "rollbackEvidence": [
@@ -41,9 +46,7 @@
     }
   ],
   "blockers": [],
-  "knownGaps": [
-    "Delay-gate query filter and live cross-tenant/over-privilege negative run deferred to acceptance."
-  ],
+  "knownGaps": [],
   "artifactDigests": [
     {
       "path": "scripts/runtime/p1r-m7-005-runtime.mjs",
@@ -54,13 +57,23 @@
       "path": "evidence/p1r/m7/P1R-M7-005/runtime-2026-09-15.json",
       "algorithm": "sha256",
       "digest": "aa2997e32ef8377def84ae913a2e269899e7f744c299b03222f601836b70a9d9"
+    },
+    {
+      "path": "scripts/runtime/p1r-live-m7005.mjs",
+      "algorithm": "sha256",
+      "digest": "481ef5e9472fe5cadb0920198db6a3fa6637ba9331e10aa8fb4480d909150d77"
+    },
+    {
+      "path": "evidence/live/2026-09-16/m7005-live-evidence.json",
+      "algorithm": "sha256",
+      "digest": "96c13b3654c24272d0c8f2fe07384df9b2a7ad13fc35c4afff2edb3153462412"
     }
   ],
-  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "reviewer": "human-owner-delegated acceptance (live E2E 2026-09-16, decision set 1A-11A)",
   "nextSteps": [
     "Acceptance testing by the owner, which is what DEV_DONE defers."
   ],
-  "statusNote": "Development finished and the evidence is in the repository. Eight reuse checks pass. Not independently verified, which DEV_DONE says.",
+  "statusNote": "ACCEPTED 2026-09-16 by human-owner delegation: named known-gap closed by live run scripts/runtime/p1r-live-m7005.mjs 12/12 (delay-gate query filters + cross-tenant spoof ignored + ticket isolation + over-privilege 403s + 401 baseline). Residual: none.",
   "provenance": {
     "originalSourceCommit": "c78aae66daee2bdb567ea6c84547365906c9aa28",
     "originalReviewer": "agent:p1r_implementation:deepseek-harness",
