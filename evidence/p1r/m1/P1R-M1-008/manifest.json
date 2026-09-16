@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-008",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "bf3137d465ae5b3369f1959043445ae4e8c0cb92",
+  "sourceCommit": "280aeb8586cc5592c0da3d5d2ad43c97010ba8e0",
   "artifactDigests": [
     {
       "path": "config/b20-privacy-content-gates.json",
@@ -270,7 +270,7 @@
     "originalFinishedAt": "2026-08-30T12:32:26+08:00",
     "originalReviewer": "agent:m1_008_independent_review:gpt-5.6-luna:max",
     "originalAcceptedContractBaseline": "463c4b238caceb1592bff6c61327c00ab9bac922",
-    "previousCurrentSourceCommit": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+    "previousCurrentSourceCommit": "bf3137d465ae5b3369f1959043445ae4e8c0cb92",
     "previousCurrentSourceRevalidationTask": "P1R-M1-008",
     "currentSourceRevalidationTask": "P1R-M1-008",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
@@ -634,15 +634,25 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-16T09:24:28.797Z",
         "details": "M6-006 SupportPage resourceRef-required UI fix changed a recorded artifact."
+      },
+      {
+        "taskId": "P1R-M1-008",
+        "sourceCommit": "280aeb8586cc5592c0da3d5d2ad43c97010ba8e0",
+        "auditedImplementationSource": "280aeb8586cc5592c0da3d5d2ad43c97010ba8e0",
+        "integrationCheckpoint": "280aeb8586cc5592c0da3d5d2ad43c97010ba8e0",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T10:16:38.098Z",
+        "details": "P1-LIVE-014 learner-web auth/onboarding fixes changed recorded artifacts."
       }
     ],
     "previousCurrentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
     "previousCurrentSourceRevalidationFinishedAt": "2026-09-12T23:35:27.174Z",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-16T09:24:28.797Z",
-    "currentSourceRevalidationAuditedImplementationSource": "bf3137d465ae5b3369f1959043445ae4e8c0cb92",
-    "currentSourceRevalidationIntegrationCheckpoint": "bf3137d465ae5b3369f1959043445ae4e8c0cb92"
+    "currentSourceRevalidationFinishedAt": "2026-09-16T10:16:38.098Z",
+    "currentSourceRevalidationAuditedImplementationSource": "280aeb8586cc5592c0da3d5d2ad43c97010ba8e0",
+    "currentSourceRevalidationIntegrationCheckpoint": "280aeb8586cc5592c0da3d5d2ad43c97010ba8e0"
   },
   "startedAt": "2026-08-30T09:15:05+08:00",
   "finishedAt": "2026-09-01T15:39:29+08:00",

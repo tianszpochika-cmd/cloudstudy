@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-012",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "bf3137d465ae5b3369f1959043445ae4e8c0cb92",
+  "sourceCommit": "280aeb8586cc5592c0da3d5d2ad43c97010ba8e0",
   "artifactDigests": [
     {
       "path": "config/b26-event-runtime.json",
@@ -819,9 +819,19 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-16T09:24:29.089Z",
         "details": "M6-006 SupportPage resourceRef-required UI fix changed a recorded artifact."
+      },
+      {
+        "taskId": "P1R-M1-012",
+        "sourceCommit": "280aeb8586cc5592c0da3d5d2ad43c97010ba8e0",
+        "auditedImplementationSource": "280aeb8586cc5592c0da3d5d2ad43c97010ba8e0",
+        "integrationCheckpoint": "280aeb8586cc5592c0da3d5d2ad43c97010ba8e0",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T10:16:38.384Z",
+        "details": "P1-LIVE-014 learner-web auth/onboarding fixes changed recorded artifacts."
       }
     ],
-    "previousCurrentSourceCommit": "9a38b3b584346c601620b1b0e31dc8dd847a9047",
+    "previousCurrentSourceCommit": "bf3137d465ae5b3369f1959043445ae4e8c0cb92",
     "previousCurrentSourceRevalidationTask": "P1R-M2-005",
     "previousCurrentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
@@ -829,8 +839,8 @@
     "currentSourceRevalidationTask": "P1R-M1-012",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-16T09:24:29.089Z",
-    "currentSourceRevalidationAuditedImplementationSource": "bf3137d465ae5b3369f1959043445ae4e8c0cb92",
-    "currentSourceRevalidationIntegrationCheckpoint": "bf3137d465ae5b3369f1959043445ae4e8c0cb92"
+    "currentSourceRevalidationFinishedAt": "2026-09-16T10:16:38.384Z",
+    "currentSourceRevalidationAuditedImplementationSource": "280aeb8586cc5592c0da3d5d2ad43c97010ba8e0",
+    "currentSourceRevalidationIntegrationCheckpoint": "280aeb8586cc5592c0da3d5d2ad43c97010ba8e0"
   }
 }

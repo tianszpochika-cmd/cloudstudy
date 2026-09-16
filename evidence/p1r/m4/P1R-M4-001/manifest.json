@@ -3,7 +3,7 @@
   "draftOnly": false,
   "canonicalTaskStatus": "DEV_DONE",
   "decision": "DEV_DONE",
-  "sourceCommit": "bf3137d465ae5b3369f1959043445ae4e8c0cb92",
+  "sourceCommit": "280aeb8586cc5592c0da3d5d2ad43c97010ba8e0",
   "startedAt": "2026-09-15T17:25:00.000Z",
   "finishedAt": "2026-09-15T19:30:25.798Z",
   "environment": {
@@ -56,12 +56,12 @@
     {
       "path": "apps/learner-web/src/auth/gateway-auth.ts",
       "algorithm": "sha256",
-      "digest": "fef1afa70bc66b9d9e053f93b68543375b6b82c749a48d44ea55de38ef4346c8"
+      "digest": "1d9ec73a7d1bee24e58eec1d009f2b0158ed3b5f63b38cd2111723c7d611e561"
     },
     {
       "path": "apps/learner-web/src/stores/session.ts",
       "algorithm": "sha256",
-      "digest": "a9875cb6da491a9175e757184034db3f226cdc2d94e6c4d5e87299b0b353d12b"
+      "digest": "322a4de4f90dfaa753c879c0fc7ec9f157142a01e3054ab10324519ecd3b5191"
     },
     {
       "path": "apps/learner-web/src/pages/RegisterPage.vue",
@@ -125,9 +125,9 @@
     "currentSourceRevalidationTask": "P1R-M4-001",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-16T09:24:31.085Z",
-    "currentSourceRevalidationAuditedImplementationSource": "bf3137d465ae5b3369f1959043445ae4e8c0cb92",
-    "currentSourceRevalidationIntegrationCheckpoint": "bf3137d465ae5b3369f1959043445ae4e8c0cb92",
+    "currentSourceRevalidationFinishedAt": "2026-09-16T10:16:40.246Z",
+    "currentSourceRevalidationAuditedImplementationSource": "280aeb8586cc5592c0da3d5d2ad43c97010ba8e0",
+    "currentSourceRevalidationIntegrationCheckpoint": "280aeb8586cc5592c0da3d5d2ad43c97010ba8e0",
     "currentSourceRevalidationHistory": [
       {
         "taskId": "P1R-M4-001",
@@ -168,8 +168,18 @@
         "runtimeStatus": "RUNTIME_VERIFIED",
         "finishedAt": "2026-09-16T09:24:31.085Z",
         "details": "M6-006 SupportPage resourceRef-required UI fix changed a recorded artifact."
+      },
+      {
+        "taskId": "P1R-M4-001",
+        "sourceCommit": "280aeb8586cc5592c0da3d5d2ad43c97010ba8e0",
+        "auditedImplementationSource": "280aeb8586cc5592c0da3d5d2ad43c97010ba8e0",
+        "integrationCheckpoint": "280aeb8586cc5592c0da3d5d2ad43c97010ba8e0",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T10:16:40.246Z",
+        "details": "P1-LIVE-014 learner-web auth/onboarding fixes changed recorded artifacts."
       }
     ],
-    "previousCurrentSourceCommit": "9a38b3b584346c601620b1b0e31dc8dd847a9047"
+    "previousCurrentSourceCommit": "bf3137d465ae5b3369f1959043445ae4e8c0cb92"
   }
 }

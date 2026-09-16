@@ -3,7 +3,7 @@
   "draftOnly": false,
   "canonicalTaskStatus": "DEV_DONE",
   "decision": "DEV_DONE",
-  "sourceCommit": "bf3137d465ae5b3369f1959043445ae4e8c0cb92",
+  "sourceCommit": "280aeb8586cc5592c0da3d5d2ad43c97010ba8e0",
   "startedAt": "2026-09-15T16:50:00.000Z",
   "finishedAt": "2026-09-15T16:52:00.000Z",
   "environment": {
@@ -102,9 +102,9 @@
     "currentSourceRevalidationTask": "P1R-M3-007",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-16T09:24:30.795Z",
-    "currentSourceRevalidationAuditedImplementationSource": "bf3137d465ae5b3369f1959043445ae4e8c0cb92",
-    "currentSourceRevalidationIntegrationCheckpoint": "bf3137d465ae5b3369f1959043445ae4e8c0cb92",
+    "currentSourceRevalidationFinishedAt": "2026-09-16T10:16:39.967Z",
+    "currentSourceRevalidationAuditedImplementationSource": "280aeb8586cc5592c0da3d5d2ad43c97010ba8e0",
+    "currentSourceRevalidationIntegrationCheckpoint": "280aeb8586cc5592c0da3d5d2ad43c97010ba8e0",
     "currentSourceRevalidationHistory": [
       {
         "taskId": "P1R-M3-007",
@@ -135,8 +135,18 @@
         "runtimeStatus": "RUNTIME_VERIFIED",
         "finishedAt": "2026-09-16T09:24:30.795Z",
         "details": "M6-006 SupportPage resourceRef-required UI fix changed a recorded artifact."
+      },
+      {
+        "taskId": "P1R-M3-007",
+        "sourceCommit": "280aeb8586cc5592c0da3d5d2ad43c97010ba8e0",
+        "auditedImplementationSource": "280aeb8586cc5592c0da3d5d2ad43c97010ba8e0",
+        "integrationCheckpoint": "280aeb8586cc5592c0da3d5d2ad43c97010ba8e0",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T10:16:39.967Z",
+        "details": "P1-LIVE-014 learner-web auth/onboarding fixes changed recorded artifacts."
       }
     ],
-    "previousCurrentSourceCommit": "9a38b3b584346c601620b1b0e31dc8dd847a9047"
+    "previousCurrentSourceCommit": "bf3137d465ae5b3369f1959043445ae4e8c0cb92"
   }
 }
