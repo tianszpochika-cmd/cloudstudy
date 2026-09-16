@@ -1,8 +1,8 @@
 {
   "task": "W3-LIVE-E2E",
-  "capturedAt": "2026-09-16T11:23:36.232Z",
+  "capturedAt": "2026-09-16T13:27:33.471Z",
   "gateway": "http://127.0.0.1:18070",
-  "identifier": "w3-mu40il8b@local.invalid",
+  "identifier": "w3-mu44y02c@local.invalid",
   "result": "PASS",
   "passed": 24,
   "total": 24,
@@ -124,7 +124,7 @@
     {
       "name": "pay-intent-sandbox",
       "ok": true,
-      "observed": "HTTP 202 {\"orderId\":\"ord_1519f465-f7f7-48b3-a63c-b8793b727e9e\",\"attemptId\":\"pay_3f4f4f90-7da5-4f8c-b6d5-4563d310a6df\",\"provider\":",
+      "observed": "HTTP 202 {\"orderId\":\"ord_ae4ea8ee-94af-4acb-a504-9562b2c98b4d\",\"attemptId\":\"pay_f8983fa0-c20c-4d2d-8d52-e2ed6c312820\",\"provider\":",
       "expected": "sandbox intent, no real provider"
     },
     {

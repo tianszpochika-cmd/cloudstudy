@@ -1,6 +1,6 @@
 {
   "task": "W4-LIVE-E2E",
-  "capturedAt": "2026-09-16T10:45:51.934Z",
+  "capturedAt": "2026-09-16T13:27:49.835Z",
   "gateway": "http://127.0.0.1:18070",
   "result": "PASS",
   "passed": 24,
@@ -27,7 +27,7 @@
     {
       "name": "notif-pref-put",
       "ok": true,
-      "observed": "HTTP 200 {\"channel\":\"PUSH\",\"enabled\":false,\"locale\":\"zh-CN\",\"notificationType\":\"REVIEW_DUE\",\"principalId\":\"1e2361f8-be55-4f6b-b00",
+      "observed": "HTTP 200 {\"channel\":\"PUSH\",\"enabled\":false,\"locale\":\"zh-CN\",\"notificationType\":\"REVIEW_DUE\",\"principalId\":\"0ab8c60a-f6d9-417f-892",
       "expected": "HTTP 200"
     },
     {
@@ -51,7 +51,7 @@
     {
       "name": "notif-deliver-filtered",
       "ok": true,
-      "observed": "HTTP 200 {\"attempt\":{\"attemptId\":\"delivery-21e64b9e-2eb1-4dc6-8ef6-30403e02d49b\",\"messageId\":\"msg-ecb6e319-fb54-4e12-9ca0-a4f145dded81\",\"channel\":\"PU",
+      "observed": "HTTP 200 {\"attempt\":{\"attemptId\":\"delivery-1ede5a2e-a423-43bd-9088-f7e89674af54\",\"messageId\":\"msg-646af494-bb32-41e0-a74c-c7f1fb03c943\",\"channel\":\"PU",
       "expected": "CANCELLED/PREFERENCE_DISABLED"
     },
     {
@@ -63,7 +63,7 @@
     {
       "name": "sync-push",
       "ok": true,
-      "observed": "HTTP 200 {\"conflicts\":[],\"clientBatchId\":\"\",\"acceptedChangeIds\":[],\"serverVersion\":1789555550998,\"nextCursor\":\"1789555550998\",\"source\":\"mysql\"}",
+      "observed": "HTTP 200 {\"source\":\"mysql\",\"nextCursor\":\"1789565268552\",\"serverVersion\":1789565268552,\"acceptedChangeIds\":[],\"clientBatchId\":\"\",\"conflicts\":[]}",
       "expected": "HTTP 200"
     },
     {

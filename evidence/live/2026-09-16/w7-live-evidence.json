@@ -1,7 +1,7 @@
 {
   "task": "W7-LIVE-STAFF",
-  "capturedAt": "2026-09-16T11:50:55.934Z",
-  "ticketId": "3fb69e2d-dae7-4290-a6f1-c23f0bbe97cf",
+  "capturedAt": "2026-09-16T13:28:48.092Z",
+  "ticketId": "d837dc66-b04e-469b-86af-0b86a1102ca7",
   "result": "PASS",
   "passed": 9,
   "total": 9,
@@ -27,7 +27,7 @@
     {
       "name": "admin-list",
       "ok": true,
-      "observed": "HTTP 200 n=31",
+      "observed": "HTTP 200 n=33",
       "expected": "HTTP 200 sees ticket"
     },
     {

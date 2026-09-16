@@ -1,8 +1,8 @@
 {
   "task": "W0B-LIVE-E2E",
-  "capturedAt": "2026-09-16T10:45:14.415Z",
+  "capturedAt": "2026-09-16T13:26:50.364Z",
   "gateway": "http://127.0.0.1:18070",
-  "identifier": "w0b-mu3z5amx@local.invalid",
+  "identifier": "w0b-mu44x3sy@local.invalid",
   "result": "PASS",
   "passed": 17,
   "total": 17,
