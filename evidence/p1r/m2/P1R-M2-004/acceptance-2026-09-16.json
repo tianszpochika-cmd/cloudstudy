@@ -1,0 +1,43 @@
+{
+  "task": "P1R-M2-004",
+  "capturedAt": "2026-09-16T08:50:00Z",
+  "sourceCommit": "ec17c8f5",
+  "result": "PASS",
+  "checks": [
+    {
+      "check": "reconcile 13/13 up-to-date",
+      "status": "PASS",
+      "observed": "13 owners migrationState up-to-date, failedVersions empty (3 runs this session)",
+      "command": "node scripts/database/reconcile-owner-schemas.mjs --apply"
+    },
+    {
+      "check": "grantVerification unanimous (probed AS owner credentials)",
+      "status": "PASS",
+      "observed": "13/13 {dml: true, ddlDenied: true, alterDenied: true}"
+    },
+    {
+      "check": "gated tenant-isolation + migration integration 33/33",
+      "status": "PASS",
+      "observed": "discovered=33 groups=26 tests=56 failing=0 uncovered=0 (stale V7 build residue purged via clean rebuild)",
+      "command": "node scripts/runtime/run-gated-db-tests.mjs --kind all"
+    },
+    {
+      "check": "live tenant isolation (cross-user, forged headers, general-log scoping)",
+      "status": "PASS",
+      "observed": "W4 ticket cross-user 403, learner forged-header 403 UNTRUSTED_SECURITY_FACT, MySQL general_log shows ROLLBACK-scoped writes",
+      "evidence": "evidence/live/2026-09-16/w4-live-evidence.json, w6-live-evidence.json"
+    },
+    {
+      "check": "ownership registry hygiene",
+      "status": "PASS",
+      "observed": "node scripts/audit/p1r-data-ownership-check.mjs PASS; fileCount registry matches disk"
+    },
+    {
+      "check": "baselined-owner count (was NOT VERIFIED)",
+      "status": "PASS",
+      "observed": "0 owners require baselining today: all 13 verify up-to-date from migration files; commerce/audit/workflow carry no flyway history because they never run Flyway at startup (reconcile is their migration runner)"
+    }
+  ],
+  "reviewer": "human-owner-delegated acceptance (live E2E session 2026-09-16)",
+  "note": "Non-blocking observations (migration narrowing, destructive-scan direction, Redis reserved-not-enforced, default user, outbox publishers, policy-change COI note) remain recorded in knownGaps."
+}

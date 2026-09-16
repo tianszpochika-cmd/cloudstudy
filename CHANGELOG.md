@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1R-ACCEPT-M2-004-20260916] **`M2-004` 翻牌（专项复验轮；41 ACCEPTED / 67 DEV_DONE）。** reconcile 13/13 + owner 凭证探针全一致 + 门控 33 组 56 项 0 失败 + 活隔离 + 注册表对账 + 基线数已答（0）。附带修：learner 构建残留 V7（非 clean 构建静默打包 stale 迁移；此后迁移改动必须 clean 重建）。其余 observations 非阻塞保留。
+
 - [P1R-ACCEPT-M8-BATCH-20260916] **翻牌 M8-002/003/004/005/006（40 ACCEPTED / 68 DEV_DONE）。** 前四项关闭各自具名的 deferred 活扫瞄缺口（W0/W0b/W6/矩阵/页面 + W1/W2/W3）。M8-006：实机故障注入六相全绿（去重/保序/DLQ/杀库/杀 broker/重放单效；broker 中断只延迟不丢），注入致 MySQL/Kafka 容器重启后 W0 11/11 复验恢复。证据：harness 自写 `evidence/p1r/m2/P1R-M2-005/*2026-09-16.json` 入库。
 
 - [P1R-ACCEPT-M2-010-20260916] **`M2-010` 翻牌：单 requestId 活穿九链（W6 12/12）。** 网关审计→IAM 决策→PEP→owner 行→outbox 行→持久审计 sink 逐链按 requestId 查库对证；直连故障链（401/403 伪造头——纠正：设计即 403）。残留：learner 侧 Kafka 中继（M2-005 结论）、staging（M8-013）。
