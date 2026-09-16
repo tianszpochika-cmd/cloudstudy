@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1R-MATRIX-ADMIN-20260916] **矩阵加中台权限边界腿：学员凭证登录后台落 `/forbidden` 服务端事实面板。** 认证通过但无管理权限→无 dashboard、无崩溃、零 pageerror。矩阵 15 腿（12 洁 + 3 具名环境误差）。
+
 - [P1R-ACCEPT-M6-006-20260916] **翻牌 M6-006：工单 SLA/附件/跨用户浏览器实证 8/8（47 ACCEPTED / 61 DEV_DONE）。** 附件数/体积双负例、空态、UI 建单、列表 SLA、详情 due date、跨用户浏览器隔离。附带修 SupportPage（关联引用"可选"与服务端必填矛盾，UI 已收紧）。
 - [P1R-ACCEPT-M6-011-LATE-20260916] **纠正并落盘 M6-011：W4 22/22 早已覆盖其缺口，但第 8 轮翻牌未提交；此前轮次报数多算一项，以本次工具实测为准。** 内容本身（notify/sync/support/privacy 活链）无误，仅落盘延迟，特此具名纠正。
 

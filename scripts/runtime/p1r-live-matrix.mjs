@@ -158,6 +158,38 @@ await visit('learner-ipad', 'http://127.0.0.1:18180/login', { loginFlow: { ident
 await visitWorldTabs();
 await visit('learner-today', 'http://127.0.0.1:18180/today');
 await visit('admin-login', 'http://127.0.0.1:18181/login');
+
+async function visitAdminForbidden() {
+  // Learner creds authenticate but hold no admin permissions: the back office
+  // must land /forbidden with a server-fact panel, never a dashboard or crash.
+  const out = { id: 'admin-forbidden-flow', url: 'http://127.0.0.1:18181/login', status: -1, title: '', errors: [], flow: null };
+  const browser = await chromium.launch();
+  const page = await (await browser.newContext()).newPage();
+  page.on('pageerror', (e) => out.errors.push('pageerror: ' + String(e).slice(0, 140)));
+  page.on('console', (m) => {
+    if (m.type() === 'error' && !/favicon|Failed to load resource/i.test(m.text())) out.errors.push('console.error: ' + m.text().slice(0, 140));
+  });
+  try {
+    const resp = await page.goto('http://127.0.0.1:18181/login', { waitUntil: 'domcontentloaded', timeout: 45000 });
+    out.status = resp ? resp.status() : -1;
+    await page.waitForTimeout(2000);
+    await page.getByLabel(/管理员账号|邮箱/i).first().fill(identifier);
+    await page.getByLabel(/密码/i).first().fill(password);
+    await page.getByRole('button', { name: /登录后台/ }).first().click();
+    await page.waitForTimeout(5000);
+    const afterUrl = page.url();
+    const body = (await page.locator('body').first().textContent().catch(() => '')) ?? '';
+    out.flow = { afterUrl, forbidden: /forbidden/i.test(afterUrl), panel: /无权访问|权限/.test(body) };
+    out.title = await page.title();
+  } catch (e) {
+    out.errors.push('goto-fail: ' + String(e).slice(0, 160));
+  }
+  results.push(out);
+  const ok = out.status === 200 && out.flow?.forbidden && out.flow?.panel && out.errors.length === 0;
+  console.log(`${ok ? 'ok  ' : 'FAIL'} admin-forbidden-flow :: HTTP ${out.status} forbidden=${out.flow?.forbidden} panel=${out.flow?.panel} errors=${out.errors.length}`);
+  await browser.close();
+}
+await visitAdminForbidden();
 await visit('mobile-h5-login', 'http://127.0.0.1:18183/#/pages/login/login', { waitMs: 8000 });
 await visit('mobile-h5-home', 'http://127.0.0.1:18183/#/pages/home/home', { waitMs: 8000 });
 await visit('mobile-h5-phone', 'http://127.0.0.1:18183/#/pages/login/login', { waitMs: 8000, viewport: { width: 390, height: 844 } });
