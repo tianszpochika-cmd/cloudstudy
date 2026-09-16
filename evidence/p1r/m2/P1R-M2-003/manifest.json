@@ -718,5 +718,6 @@
     "Overall phase remains D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED."
   ],
   "reviewer": "agent:m2_003_final_review:opencode-general",
-  "decision": "ACCEPTED"
+  "decision": "ACCEPTED",
+  "statusNote": "Post-acceptance re-confirmation 2026-09-16 (human-owner-delegated live session): consumer PEPs changed after acceptance (P1-LIVE-009 removed learner adult_gate OR-branch, added learning-funnel consent gate; P1-LIVE-003 dual-accept target/goal.write). Re-verified: learner 50/0/0, learning 142/0/0, W0b withdrawal-deny + pre-gate denials + W2 regression live. Status stays ACCEPTED."
 }

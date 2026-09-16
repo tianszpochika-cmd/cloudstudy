@@ -605,5 +605,6 @@
     "The adult gate birth-year validation was added after acceptance. Before it, an implausible birth year produced 500 iam.internal.error with retryable: true instead of a client error. The gate still failed closed, so no learner gained access, but the retryable flag was wrong and the unhandled exception was poor boundary hygiene. See the latest currentSourceRevalidationHistory entry."
   ],
   "reviewer": "agent:m2_002_final_review:opencode-general",
-  "decision": "ACCEPTED"
+  "decision": "ACCEPTED",
+  "statusNote": "Post-acceptance re-confirmation 2026-09-16 (human-owner-delegated live session): issuance changed after acceptance (P1-LIVE-001 adult_gate/consent_state, P1-LIVE-006 phase/account_status/device_id, P1-LIVE-003 canonical learner.target.write). Re-verified: iam 100/0/0, gateway-contract 38/38, W0 11/11 + W0b 17/17 live. Status stays ACCEPTED; this note records the post-change evidence."
 }
