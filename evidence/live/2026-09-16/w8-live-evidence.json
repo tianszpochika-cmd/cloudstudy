@@ -1,10 +1,10 @@
 {
   "task": "W8-LIVE-PUBLISH",
-  "capturedAt": "2026-09-16T12:09:43.315Z",
-  "contentCode": "wct-live-mu425wir",
+  "capturedAt": "2026-09-16T12:23:04.322Z",
+  "contentCode": "wct-live-mu42n24a",
   "result": "PASS",
-  "passed": 13,
-  "total": 13,
+  "passed": 25,
+  "total": 25,
   "checks": [
     {
       "name": "staff-ready",
@@ -83,6 +83,78 @@
       "ok": true,
       "observed": "HTTP 200",
       "expected": "catalog hides it"
+    },
+    {
+      "name": "rb-draft",
+      "ok": true,
+      "observed": "HTTP 202",
+      "expected": "HTTP 202"
+    },
+    {
+      "name": "rb-submit",
+      "ok": true,
+      "observed": "HTTP 202",
+      "expected": "HTTP 202"
+    },
+    {
+      "name": "rb-first",
+      "ok": true,
+      "observed": "HTTP 202",
+      "expected": "HTTP 202"
+    },
+    {
+      "name": "rb-final",
+      "ok": true,
+      "observed": "HTTP 202",
+      "expected": "HTTP 202"
+    },
+    {
+      "name": "rb-publish-v1",
+      "ok": true,
+      "observed": "HTTP 202",
+      "expected": "HTTP 202"
+    },
+    {
+      "name": "rb-v2",
+      "ok": true,
+      "observed": "HTTP 202",
+      "expected": "HTTP 202"
+    },
+    {
+      "name": "rb-submit-v2",
+      "ok": true,
+      "observed": "HTTP 202",
+      "expected": "HTTP 202"
+    },
+    {
+      "name": "rb-first-v2",
+      "ok": true,
+      "observed": "HTTP 202",
+      "expected": "HTTP 202"
+    },
+    {
+      "name": "rb-final-v2",
+      "ok": true,
+      "observed": "HTTP 202",
+      "expected": "HTTP 202"
+    },
+    {
+      "name": "rb-publish-v2",
+      "ok": true,
+      "observed": "HTTP 202",
+      "expected": "HTTP 202"
+    },
+    {
+      "name": "rollback",
+      "ok": true,
+      "observed": "HTTP 202",
+      "expected": "HTTP 202 back to v1"
+    },
+    {
+      "name": "rollback-state",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "content PUBLISHED again"
     }
   ]
 }

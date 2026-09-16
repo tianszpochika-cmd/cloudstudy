@@ -12,5 +12,5 @@
 
 ## 后果
 
-- M3-010 翻牌。ROLLBACK 命令存在但本轮未跑（同一服务同一机制，留作回归项，未声称）。
+- M3-010 翻牌。ROLLBACK 已补跑（v1 发布→v2 双审发布→回滚到 v1，仍为 PUBLISHED；W8 现 **25/25**），无残留。
 - 证据：`evidence/live/2026-09-16/w8-live-evidence.json`。
