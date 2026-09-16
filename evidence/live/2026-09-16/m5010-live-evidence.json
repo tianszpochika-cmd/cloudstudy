@@ -1,0 +1,70 @@
+{
+  "task": "M5010-LIVE-MASTERY",
+  "capturedAt": "2026-09-16T20:24:29.693Z",
+  "gateway": "http://127.0.0.1:18070",
+  "result": "PASS",
+  "passed": 10,
+  "total": 10,
+  "checks": [
+    {
+      "name": "setup-register",
+      "ok": true,
+      "observed": "HTTP 201",
+      "expected": "HTTP 201"
+    },
+    {
+      "name": "setup-login",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200 + token"
+    },
+    {
+      "name": "history-replayed",
+      "ok": true,
+      "observed": "HTTP 200 mistake=4265210289",
+      "expected": "migrated history visible OPEN"
+    },
+    {
+      "name": "mistake-retry",
+      "ok": true,
+      "observed": "HTTP 200 verification=311889516",
+      "expected": "D0 PENDING verification"
+    },
+    {
+      "name": "retry-replay-stable",
+      "ok": true,
+      "observed": "same verification=true rows=1->1",
+      "expected": "same key, no duplicate"
+    },
+    {
+      "name": "verifications-list",
+      "ok": true,
+      "observed": "HTTP 200 n=1",
+      "expected": "verification listed"
+    },
+    {
+      "name": "verification-submit",
+      "ok": true,
+      "observed": "HTTP 200 result=PASSED",
+      "expected": "PASSED"
+    },
+    {
+      "name": "overview-reconciled",
+      "ok": true,
+      "observed": "HTTP 200 mistakes=1",
+      "expected": "mistakes>=1 versioned"
+    },
+    {
+      "name": "degrade-no-auth",
+      "ok": true,
+      "observed": "HTTP 401",
+      "expected": "HTTP 401"
+    },
+    {
+      "name": "degrade-keyless",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "fail-closed shape, no leak"
+    }
+  ]
+}
