@@ -3,7 +3,7 @@
   "draftOnly": false,
   "canonicalTaskStatus": "DEV_DONE",
   "decision": "DEV_DONE",
-  "sourceCommit": "253474f60efd625e863bb8b85e48f7fd806ea85b",
+  "sourceCommit": "2438e70e3979a74732bce30a2c7a0fb3d1ba3d5a",
   "startedAt": "2026-09-15T18:55:00.000Z",
   "finishedAt": "2026-09-15T19:00:00.000Z",
   "environment": {
@@ -95,9 +95,9 @@
     "currentSourceRevalidationTask": "P1R-M5-004",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-16T18:33:02.374Z",
-    "currentSourceRevalidationAuditedImplementationSource": "253474f60efd625e863bb8b85e48f7fd806ea85b",
-    "currentSourceRevalidationIntegrationCheckpoint": "253474f60efd625e863bb8b85e48f7fd806ea85b",
+    "currentSourceRevalidationFinishedAt": "2026-09-16T19:07:24.534Z",
+    "currentSourceRevalidationAuditedImplementationSource": "2438e70e3979a74732bce30a2c7a0fb3d1ba3d5a",
+    "currentSourceRevalidationIntegrationCheckpoint": "2438e70e3979a74732bce30a2c7a0fb3d1ba3d5a",
     "currentSourceRevalidationHistory": [
       {
         "taskId": "P1R-M5-004",
@@ -218,8 +218,18 @@
         "runtimeStatus": "RUNTIME_VERIFIED",
         "finishedAt": "2026-09-16T18:33:02.374Z",
         "details": "1A recovery console: admin-recovery projections + b26 ops re-merge openapi."
+      },
+      {
+        "taskId": "P1R-M5-004",
+        "sourceCommit": "2438e70e3979a74732bce30a2c7a0fb3d1ba3d5a",
+        "auditedImplementationSource": "2438e70e3979a74732bce30a2c7a0fb3d1ba3d5a",
+        "integrationCheckpoint": "2438e70e3979a74732bce30a2c7a0fb3d1ba3d5a",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T19:07:24.534Z",
+        "details": "M3-002 batch import projection + b9 op re-merge openapi."
       }
     ],
-    "previousCurrentSourceCommit": "11117a3fd5a9bd0f4482de9c93db3db44b345b8a"
+    "previousCurrentSourceCommit": "253474f60efd625e863bb8b85e48f7fd806ea85b"
   }
 }

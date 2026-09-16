@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-005",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "253474f60efd625e863bb8b85e48f7fd806ea85b",
+  "sourceCommit": "2438e70e3979a74732bce30a2c7a0fb3d1ba3d5a",
   "artifactDigests": [
     {
       "path": "package.json",
@@ -551,9 +551,19 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-16T18:32:59.144Z",
         "details": "1A recovery console: admin-recovery projections + b26 ops re-merge openapi."
+      },
+      {
+        "taskId": "P1R-M1-005",
+        "sourceCommit": "2438e70e3979a74732bce30a2c7a0fb3d1ba3d5a",
+        "auditedImplementationSource": "2438e70e3979a74732bce30a2c7a0fb3d1ba3d5a",
+        "integrationCheckpoint": "2438e70e3979a74732bce30a2c7a0fb3d1ba3d5a",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-16T19:07:21.364Z",
+        "details": "M3-002 batch import projection + b9 op re-merge openapi."
       }
     ],
-    "previousCurrentSourceCommit": "11117a3fd5a9bd0f4482de9c93db3db44b345b8a",
+    "previousCurrentSourceCommit": "253474f60efd625e863bb8b85e48f7fd806ea85b",
     "previousCurrentSourceRevalidationTask": "P1R-M2-005",
     "currentSourceRevalidationTask": "P1R-M1-005",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
@@ -561,9 +571,9 @@
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
     "previousCurrentSourceRevalidationFinishedAt": "2026-09-12T22:07:09.012Z",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-16T18:32:59.144Z",
-    "currentSourceRevalidationAuditedImplementationSource": "253474f60efd625e863bb8b85e48f7fd806ea85b",
-    "currentSourceRevalidationIntegrationCheckpoint": "253474f60efd625e863bb8b85e48f7fd806ea85b"
+    "currentSourceRevalidationFinishedAt": "2026-09-16T19:07:21.364Z",
+    "currentSourceRevalidationAuditedImplementationSource": "2438e70e3979a74732bce30a2c7a0fb3d1ba3d5a",
+    "currentSourceRevalidationIntegrationCheckpoint": "2438e70e3979a74732bce30a2c7a0fb3d1ba3d5a"
   },
   "startedAt": "2026-08-30T00:53:14+08:00",
   "finishedAt": "2026-09-01T15:39:29+08:00",
