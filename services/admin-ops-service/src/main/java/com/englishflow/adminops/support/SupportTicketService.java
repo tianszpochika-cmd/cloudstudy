@@ -90,7 +90,9 @@ public final class SupportTicketService {
         draft.attachments().forEach(mediaObject -> mediaObjects.requireReadable(requester, mediaObject));
         Instant now = clock.instant();
         Ticket ticket = new Ticket(
-                "ticket_" + UUID.randomUUID(),
+                // P1-LIVE-006: ticket_id is char(36) and seeds use bare UUIDs;
+                // the "ticket_" prefix (43 chars) truncated every insert.
+                UUID.randomUUID().toString(),
                 requester.tenantId(),
                 requester.subjectId(),
                 draft,

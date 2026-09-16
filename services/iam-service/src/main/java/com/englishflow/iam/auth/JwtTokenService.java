@@ -105,6 +105,9 @@ public final class JwtTokenService {
                 .claim("tenant_id", session.scope().tenantId())
                 .claim("owner_id", session.scope().owner().toString())
                 .claim("session_id", session.sessionId().toString())
+                // P1-LIVE-006: notification PEPs require device_id; the session's
+                // verified device is always present, so issuance always carries it.
+                .claim("device_id", session.deviceId().value())
                 .claim("amr", List.of("pwd"));
         if (eligibility != null) {
             if (eligibility.adultGate() != null) {

@@ -40,7 +40,9 @@ public final class PasswordAccountService {
             "social.focus.write", "social.interaction.send", "social.leaderboard.read",
             "social.report.create", "social.report.read", "social.visibility.write",
             "commerce:order:read", "commerce:order:write", "commerce:payment:write",
-            "commerce:entitlement:read", "commerce:refund:write", "commerce:activation:redeem");
+            "commerce:entitlement:read", "commerce:refund:write", "commerce:activation:redeem",
+            "support.ticket.create",
+            "notification.read", "notification.write");
 
     private final AccountStore accounts;
     private final PasswordEncoder passwordEncoder;

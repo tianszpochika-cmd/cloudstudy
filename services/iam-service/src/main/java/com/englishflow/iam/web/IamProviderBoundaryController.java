@@ -624,7 +624,8 @@ class IamAuthenticationController {
                 || permission.startsWith("assessment.") || permission.startsWith("content.")
                 || permission.startsWith("learner.") && !permission.startsWith("learner.profile.")
                 || permission.startsWith("gamification.") || permission.startsWith("social.")
-                || permission.startsWith("commerce:") || permission.startsWith("media."));
+                || permission.startsWith("commerce:") || permission.startsWith("media.")
+                || permission.startsWith("support.") || permission.startsWith("notification."));
     }
 
     private ResponseEntity<ApiSuccessEnvelope<AuthTokenResponse>> replayAuth(IdempotencyRecord record,

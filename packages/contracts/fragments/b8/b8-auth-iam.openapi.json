@@ -60,6 +60,10 @@
           "values": ["ACTIVE"],
           "semantics": "Issuance itself refuses non-ACTIVE accounts, so every minted token implies ACTIVE. Social PEPs require ACTIVE; absence denies."
         },
+        "device_id": {
+          "values": ["<session device UUID>"],
+          "semantics": "Verified session device at issuance. Notification PEPs require device_id for push targeting; absence denies with UNAUTHORIZED."
+        },
         "issuerChange": "P1-LIVE-006: no issued token carried phase/account_status while social PEPs already required them, so every social request failed closed (500 via the unmapped IllegalStateException path). Issuance now always mints both."
       },
       "jwksUri": "/api/v1/auth/jwks",

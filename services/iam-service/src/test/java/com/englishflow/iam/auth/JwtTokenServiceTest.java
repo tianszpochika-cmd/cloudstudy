@@ -77,6 +77,7 @@ class JwtTokenServiceTest {
         assertEquals("GRANTED", fixture.encoder().claims.getClaim("consent_state"));
         assertEquals("phase-1", fixture.encoder().claims.getClaim("phase"));
         assertEquals("ACTIVE", fixture.encoder().claims.getClaim("account_status"));
+        assertEquals("device-claims-test", fixture.encoder().claims.getClaim("device_id"));
     }
 
     @Test
