@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1-LIVE-010-W5-GRADING-20260916] **判分链：部分提交 NPE 改计错，FNV-64 题 ID 加 `itemCode`  alternate（ADR-0020）。** ① 交 1/2 题直接 500：`allMistakes` 对未答题 `answerMap.get()` 取空 NPE；现按错题计（scoreBucket PARTIAL/ZERO 真判分，活验证）。② JS 转发 FNV-64（>2^53）精度丢失致 404：提交侧同时接受字符串 `itemCode`（仓内双匹配惯例）；W5 改传字符串 ID + `optionId`。另记缺口：契约富模型（digests/sequences）服务端尚未实现，当前为简化形；定级种子仅 2 题（十题 manifest 待补种）。验证：assessment 57/0/0、W5 **14/14**（P0 拼句小火车开局/事件/暂停/恢复/完赛全通、B10 判分、词汇、生词本、avatar）。
+
 - [P1-LIVE-009-W0B-CONSENT-20260916] **同意撤回的消费侧执行：删 learner 工厂或分支，learning funnel 单点加门（ADR-0019）。** ① 撤回后重登仍调通 profile（200）：`VerifiedLearnerPrincipalFactory` 把 `adult_gate=PASSED` 或进 GRANTED——门是粘性年龄事实，同意可撤回，或运算使撤回永不断开；现只认显式 GRANTED。② 门前用户 SRS 写 200 而 learner 侧正确 403：`LearningHttpPrincipals.require()`（B25/B3/V2 共用）从不求值 `consent_state`；现要求 GRANTED 否则 403。验证：learner 49/0/0、learning 142/0/0（含新增未授权三态）、W0b **17/17**（撤回后新签 403、旧 token TTL 内放行已显式断言）、W2 **12/12** 回归、门前写/读双 403。
 
 - [P1-LIVE-008-W4-CHAIN-20260916] **W4 活链路 5/12→12/12：`device_id` 签发、通知/工单权限、工单 ID 截断、越权收回。** ① notification 全端 401：`NotificationPrincipalResolver` 要 `device_id` 而签发侧没有 → 补签 session device（会话恒有，语义可靠），notification 零改动。② 权限集补 `notification.read/write` + `support.ticket.create`；`support.ticket.read` 先加上后发现它赋予跨用户全局读（B 活读 A 工单 200 实锤），立即收回——学员只保留自建与自读，跨用户读 403。③ 工单创建 500：`ticket_+UUID`（43 字符）装不进 `char(36)` 列（种子全是裸 UUID），改裸 UUID。验证：IAM 100/0/0、admin-ops 64/0/0、网关契约 38/38、W4 **12/12**（通知/同步/工单隔离/隐私导出）。

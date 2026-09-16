@@ -142,8 +142,21 @@ public class B10AssessmentJdbcController {
         int scored = 0;
         List<String> mistakes = new ArrayList<>();
         for (Map<String, Object> submission : submissions) {
+            // P1-LIVE-010: FNV-64 itemIds exceed the JS safe-integer range, so web
+            // clients cannot echo them back exactly. Accept the stable string
+            // itemCode as well (same dual-matching idiom as the rules filter).
             long itemId = positiveLong(submission.get("itemId"), 0L);
             Map<String, Object> rule = ruleById.get(itemId);
+            String itemCode = text(submission.get("itemCode"), "");
+            if (rule == null && !itemCode.isBlank()) {
+                for (Map<String, Object> candidate : rules) {
+                    if (text(candidate.get("item_id")).equals(itemCode)) {
+                        rule = candidate;
+                        itemId = numericItemId(itemCode);
+                        break;
+                    }
+                }
+            }
             if (rule == null) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "assessment item is unavailable");
             String selected = answerValue(submission.get("response"));
             answers.put(String.valueOf(itemId), selected);
@@ -427,7 +440,10 @@ public class B10AssessmentJdbcController {
     }
 
     private boolean isCorrect(Object rawRule, String selected) {
-        if (selected.isBlank()) return false;
+        // P1-LIVE-010: unanswered items (partial submissions) score as mistakes,
+        // never NullPointerException. The caller passes null when the answer map
+        // has no entry for a rule item.
+        if (selected == null || selected.isBlank()) return false;
         JsonNode rule = mapper.readTree(text(rawRule, "{}"));
         JsonNode accepted = rule.get("acceptedKeys");
         if (accepted != null && accepted.isArray()) for (JsonNode item : accepted) if (selected.equals(item.asText())) return true;
