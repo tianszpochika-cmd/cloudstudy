@@ -1,11 +1,11 @@
 {
   "taskId": "P1R-M7-008",
   "draftOnly": false,
-  "canonicalTaskStatus": "DEV_DONE",
-  "decision": "DEV_DONE",
+  "canonicalTaskStatus": "ACCEPTED",
+  "decision": "ACCEPTED",
   "sourceCommit": "90f11252bda975312d82d76dd46dd3c97fa283fc",
   "startedAt": "2026-09-15T21:35:00.000Z",
-  "finishedAt": "2026-09-15T21:37:00.000Z",
+  "finishedAt": "2026-09-17T03:25:00.000Z",
   "environment": {
     "kind": "entitlement-reuse-evidence",
     "branch": "dev",
@@ -32,6 +32,11 @@
       "check": "entitle-8-checks",
       "status": "PASS",
       "details": "8/8: refund-revoke, expiry, reconcile, no-double, 403, tenant, tables"
+    },
+    {
+      "check": "live-403-vs-empty-refund-revoke",
+      "status": "PASS",
+      "details": "9/9: order paid via sandbox callback, ACTIVE entitlement, B reads A order -> explicit 404 (no leak), B entitlements self-only, refund requested, refund callback ok, order REFUNDED + entitlement REVOKED in MySQL; evidence evidence/live/2026-09-16/m7008r-live-evidence.json"
     }
   ],
   "rollbackEvidence": [
@@ -41,9 +46,7 @@
     }
   ],
   "blockers": [],
-  "knownGaps": [
-    "Explicit 403-vs-empty negative test and refund-to-revoke live run deferred to acceptance."
-  ],
+  "knownGaps": [],
   "artifactDigests": [
     {
       "path": "scripts/runtime/p1r-m7-008-runtime.mjs",
@@ -54,13 +57,23 @@
       "path": "evidence/p1r/m7/P1R-M7-008/runtime-2026-09-15.json",
       "algorithm": "sha256",
       "digest": "839963d1026e078571ebb7ce98a42b73a62ccac3c0e63c76b8e0152d52fbaf0b"
+    },
+    {
+      "path": "scripts/runtime/p1r-live-m7008r.mjs",
+      "algorithm": "sha256",
+      "digest": "1e1a35a87f9c719fdc268bbec1a2ec45bd1176b420bebe3a776150cf9fa28a14"
+    },
+    {
+      "path": "evidence/live/2026-09-16/m7008r-live-evidence.json",
+      "algorithm": "sha256",
+      "digest": "d24847ac07fac06f40da68bf8e92bc54d194bebda22026ea6ef3169ea28b2d05"
     }
   ],
-  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "reviewer": "human-owner-delegated acceptance (live E2E 2026-09-17)",
   "nextSteps": [
     "Acceptance testing by the owner, which is what DEV_DONE defers."
   ],
-  "statusNote": "Development finished and the evidence is in the repository. Eight reuse checks pass. Not independently verified, which DEV_DONE says.",
+  "statusNote": "ACCEPTED 2026-09-17 by human-owner delegation: named known-gap closed by live run scripts/runtime/p1r-live-m7008r.mjs 9/9 (explicit cross-user denials + refund-to-revoke with MySQL proof). Residual: none.",
   "provenance": {
     "originalSourceCommit": "df634dd300bd0feaec3e665ea36474c7be7597ac",
     "originalReviewer": "agent:p1r_implementation:deepseek-harness",

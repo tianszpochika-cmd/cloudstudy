@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1R-M7-008-REFUND-20260917] **翻牌 M7-008：显式 403 负例 + 退款撤销（76 ACCEPTED / 32 DEV_DONE，工具待验）。** 新链 `p1r-live-m7008r.mjs` 9/9：付款上账 → 跨用户显式拒绝无泄漏 → 退款回调 → 库证 REFUNDED + REVOKED。
+
 - [P1R-M7-007-CALLBACKS-20260917] **翻牌 M7-007：沙盒回调乱序/金额冲突（75 ACCEPTED / 33 DEV_DONE，工具待验）。** 新链 `p1r-live-m7007.mjs` 13/13：学员回调 401 → 金额冲突/坏签 409 → APPLIED → 重绑冲突 → 迟到无待决 → 复重吸收。附带：沙盒门本地开、HMAC 适配器进 local-real、commerce 认 service token；commerce 92/0/0。
 
 - [P1R-M6-008-DELETION-20260917] **翻牌 M6-008：账号删除全周期（74 ACCEPTED / 34 DEV_DONE，工具待验）。** 新链 `p1r-live-m6008.mjs` 13/13：申请/重放/168h → 服务令牌 → 冷静 409 → 撤销 → 撤销后 409 → 回拨执行回执 → owner 回执 → 删后 401 且保持 DELETED → 他人 404。附带真修五连：服务令牌三缺（service_id/nbf/typ）+ `/error` 鉴权蒙态 + 冷却旁路（可提前删号）+ DELETED 枚举缺失 + 登录复活漏洞；iam 101/0/0、gateway 94/0/0。残留：跨域扇出。

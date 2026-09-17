@@ -1,0 +1,64 @@
+{
+  "task": "M7008-LIVE-REFUND",
+  "capturedAt": "2026-09-17T03:30:09.599Z",
+  "gateway": "http://127.0.0.1:18070",
+  "result": "PASS",
+  "passed": 9,
+  "total": 9,
+  "checks": [
+    {
+      "name": "setup",
+      "ok": true,
+      "observed": "two learners ready",
+      "expected": "tokens"
+    },
+    {
+      "name": "order-create",
+      "ok": true,
+      "observed": "HTTP 201",
+      "expected": "HTTP 201 + id"
+    },
+    {
+      "name": "order-paid",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "callback APPLIED"
+    },
+    {
+      "name": "entitlement-active",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "ACTIVE entitlement"
+    },
+    {
+      "name": "neg-order-scoped",
+      "ok": true,
+      "observed": "HTTP 404",
+      "expected": "explicit deny, no leak"
+    },
+    {
+      "name": "neg-entitlements-scoped",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "B sees only own"
+    },
+    {
+      "name": "refund-request",
+      "ok": true,
+      "observed": "HTTP 202",
+      "expected": "refund requested"
+    },
+    {
+      "name": "refund-callback",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "refund callback ok"
+    },
+    {
+      "name": "refunded-revoked",
+      "ok": true,
+      "observed": "order=REFUNDED entitlement=REVOKED",
+      "expected": "REFUNDED + REVOKED"
+    }
+  ]
+}
