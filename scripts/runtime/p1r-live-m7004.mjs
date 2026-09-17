@@ -78,6 +78,9 @@ r = await call('POST', '/api/v1/social/ws-ticket', { token: tokenA, body: {} });
 record('ws-ticket', r.status === 200 && !!(data(r).ticket ?? data(r).wsTicket), `HTTP ${r.status}`, 'ticket minted');
 r = await call('PATCH', '/api/v1/social/me/visibility', { token: tokenA, body: { leaderboardVisibility: 'NICKNAME' } });
 record('visibility', [200, 201].includes(r.status), `HTTP ${r.status}`, 'visibility updated');
+// final leave so regression runs do not leak seats.
+r = await call('POST', `/api/v1/social/rooms/${roomId}/leave`, { token: tokenA, body: {} });
+record('final-leave', r.status === 200 && data(r).state === 'LEFT', `HTTP ${r.status}`, 'LEFT, seat freed');
 const passed = checks.filter((c) => c.ok).length;
 const evidence = { task: 'M7004-LIVE-RECONNECT', capturedAt: new Date().toISOString(), gateway: GW, result: passed === checks.length ? 'PASS' : 'FAIL', passed, total: checks.length, checks };
 fs.mkdirSync('evidence/live/2026-09-16', { recursive: true });

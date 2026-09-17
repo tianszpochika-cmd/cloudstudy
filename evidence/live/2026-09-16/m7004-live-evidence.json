@@ -1,10 +1,10 @@
 {
   "task": "M7004-LIVE-RECONNECT",
-  "capturedAt": "2026-09-17T04:16:39.907Z",
+  "capturedAt": "2026-09-17T05:40:25.863Z",
   "gateway": "http://127.0.0.1:18070",
   "result": "PASS",
-  "passed": 12,
-  "total": 12,
+  "passed": 13,
+  "total": 13,
   "checks": [
     {
       "name": "setup",
@@ -77,6 +77,12 @@
       "ok": true,
       "observed": "HTTP 200",
       "expected": "visibility updated"
+    },
+    {
+      "name": "final-leave",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "LEFT, seat freed"
     }
   ]
 }

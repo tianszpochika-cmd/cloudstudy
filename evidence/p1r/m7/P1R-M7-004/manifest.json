@@ -37,6 +37,11 @@
       "check": "live-v2-reconnect",
       "status": "PASS",
       "details": "12/12: rooms, join + lease, join replay, focus RUNNING/HEARTBEAT/COMPLETED, cross-owner focus 404, leave, rejoin with fresh lease (reconnect), ws-ticket, visibility; evidence evidence/live/2026-09-16/m7004-live-evidence.json"
+    },
+    {
+      "check": "post-acceptance-lease-sweeper",
+      "status": "PASS",
+      "details": "13/13 chain re-green after SocialLocalRealLeaseSweeper (new @Component, 30s sweep: expired leases -> AVAILABLE/LEASE_TIMEOUT, members -> LEFT, running focus -> AUTO_RELEASED); probe seat planted expired and observed AVAILABLE/LEASE_TIMEOUT after restart; chain gained a final-leave leg so runs stop leaking seats; evidence evidence/live/2026-09-16/m7004-live-evidence.json"
     }
   ],
   "rollbackEvidence": [
@@ -69,13 +74,28 @@
       "path": "evidence/live/2026-09-16/m7004-live-evidence.json",
       "algorithm": "sha256",
       "digest": "c3a98924cd27374daf622d30f8acb343fe68003648c9b6c767e2aad65df15f8d"
+    },
+    {
+      "path": "services/social-service/src/main/java/com/englishflow/social/web/SocialLocalRealLeaseSweeper.java",
+      "algorithm": "sha256",
+      "digest": "6fe8451e87a60f547cacd6726bd9500432fe3b6efc7e8306c6c0b49f5e27a586"
+    },
+    {
+      "path": "scripts/runtime/p1r-live-m7004.mjs",
+      "algorithm": "sha256",
+      "digest": "01e60826b12b4bc9d8aea6144eddfcff9a259d6926ff2c05f24a0685af0e963f"
+    },
+    {
+      "path": "evidence/live/2026-09-16/m7004-live-evidence.json",
+      "algorithm": "sha256",
+      "digest": "bccbc22787fc67f009fcc05efbfaf0c27ae749e5eb89925bbcaa51e66fd99104"
     }
   ],
   "reviewer": "human-owner-delegated acceptance (live E2E 2026-09-17)",
   "nextSteps": [
     "Acceptance testing by the owner, which is what DEV_DONE defers."
   ],
-  "statusNote": "ACCEPTED 2026-09-17 by human-owner delegation: v2-verified reconnect run green 12/12 live (scripts/runtime/p1r-live-m7004.mjs). Code: visibility SQL fix (subject_id is not a room-table column). Residual (named): in-memory SocialService retirement.",
+  "statusNote": "ACCEPTED 2026-09-17 by human-owner delegation (v2 reconnect 12/12 live). Post-acceptance hardening 2026-09-17: lease sweeper component added after regression runs filled the room with dead leases; verified live (probe seat swept, chain 13/13). Residual (named): in-memory SocialService retirement.",
   "provenance": {
     "originalSourceCommit": "400299fa3089e25f93f1ce66f9adf644848b357c",
     "originalReviewer": "agent:p1r_implementation:deepseek-harness",

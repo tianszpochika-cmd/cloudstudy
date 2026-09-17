@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1R-M7-004-SWEEPER-20260917] **M7-004 回归后硬化（状态不变 ACCEPTED）。** 回归坐满房间暴露 local-real 无租约清扫：新增 `SocialLocalRealLeaseSweeper`（30s，过期 → AVAILABLE/LEASE_TIMEOUT + 成员 LEFT + 专注 AUTO_RELEASED），planted 探针座活证被扫；链补 final-leave（13/13）。注：`@Scheduled` 挂控制器方法不触发，独立组件生效。
+
 - [P1R-TRIAGE-20260917] **本地可翻队列清空（81 ACCEPTED / 27 DEV_DONE）。** 逐项复核剩余 27 项具名 gap：11 个 M8-* + 9 个 M8 波次 + 5 个基建（Kafka/补偿传输/集群策略/trace 采集/分支保护主机 API 实测调不通）+ M0-006 留独立验收 + M4-008 留 M4-009/M8-007。本轮未翻牌、无生产改动。
 
 - [P1R-M3-006-PUBLISH-20260917] **翻牌 M3-006：发布幂等 + UTC + 零延迟（81 ACCEPTED / 27 DEV_DONE，工具待验）。** 新链 `p1r-live-m3006.mjs` 12/12：五 staff 分权（真四眼 409）→ 发布 → 同 key 同版本 → UTC 落库 → 学员即时可见。残留：定时排期。

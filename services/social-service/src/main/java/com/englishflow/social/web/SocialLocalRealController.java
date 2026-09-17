@@ -127,6 +127,7 @@ public final class SocialLocalRealController {
         return envelope(map("roomId", roomId, "state", "LEFT"), request);
     }
 
+
     @PostMapping("/rooms/{roomId}/focus")
     public Map<String, Object> startFocus(@PathVariable String roomId,
             @RequestBody Map<String, Object> body, HttpServletRequest request) {
