@@ -1,11 +1,11 @@
 {
   "taskId": "P1R-M3-006",
   "draftOnly": false,
-  "canonicalTaskStatus": "DEV_DONE",
-  "decision": "DEV_DONE",
+  "canonicalTaskStatus": "ACCEPTED",
+  "decision": "ACCEPTED",
   "sourceCommit": "68a169ae4b7179a23243a734d474ac80fc8163ed",
   "startedAt": "2026-09-15T16:40:00.000Z",
-  "finishedAt": "2026-09-15T16:45:00.000Z",
+  "finishedAt": "2026-09-17T04:55:00.000Z",
   "environment": {
     "kind": "publish-projection-evidence",
     "branch": "dev",
@@ -71,6 +71,11 @@
       "check": "service-builds",
       "status": "PASS",
       "details": "mvn compile EXIT 0"
+    },
+    {
+      "check": "live-publish-idempotency-utc",
+      "status": "PASS",
+      "details": "12/12: draft->validate->submit with four-eyes 409 + editor 403, two reviews, publish 202, same-key replay same version, published_at UTC recorded, fresh learner sees version at once; evidence evidence/live/2026-09-16/m3006-live-evidence.json"
     }
   ],
   "rollbackEvidence": [
@@ -81,7 +86,7 @@
   ],
   "blockers": [],
   "knownGaps": [
-    "Timed/scheduled publish orchestration lives with workflow timers and is deferred; timezone/idempotency/delay live proof deferred to acceptance."
+    "Timed/scheduled publish orchestration via workflow timers stays deferred."
   ],
   "artifactDigests": [
     {
@@ -103,13 +108,23 @@
       "path": "evidence/p1r/m3/P1R-M3-006/runtime-2026-09-15.json",
       "algorithm": "sha256",
       "digest": "109c36c781eeaf52c28cab30b8b29ca88ae207e2f33598a065bbacff2d7139c7"
+    },
+    {
+      "path": "scripts/runtime/p1r-live-m3006.mjs",
+      "algorithm": "sha256",
+      "digest": "5716f22bdb45302b94399de9d58aa7d6e3c3f129457924340ec1970b0b74f16f"
+    },
+    {
+      "path": "evidence/live/2026-09-16/m3006-live-evidence.json",
+      "algorithm": "sha256",
+      "digest": "d0d819b05924721abb43d03bf36b157360edb2484113ca8f82a77d087ce9e006"
     }
   ],
-  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "reviewer": "human-owner-delegated acceptance (live E2E 2026-09-17)",
   "nextSteps": [
     "Acceptance testing by the owner, which is what DEV_DONE defers."
   ],
-  "statusNote": "Development finished and the evidence is in the repository. Eight checks pass with a green compile. Not independently verified, which DEV_DONE says.",
+  "statusNote": "ACCEPTED 2026-09-17 by human-owner delegation: publish idempotency/UTC/zero-delay green 12/12 live (scripts/runtime/p1r-live-m3006.mjs, five segregated staff incl. true four-eyes 409). Residual (named): timed/scheduled orchestration via workflow timers.",
   "provenance": {
     "originalSourceCommit": "b304d0deb860daa4ccf5c510e23bf44a656d2ead",
     "originalReviewer": "agent:p1r_implementation:deepseek-harness",

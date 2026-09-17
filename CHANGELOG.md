@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1R-M3-006-PUBLISH-20260917] **翻牌 M3-006：发布幂等 + UTC + 零延迟（81 ACCEPTED / 27 DEV_DONE，工具待验）。** 新链 `p1r-live-m3006.mjs` 12/12：五 staff 分权（真四眼 409）→ 发布 → 同 key 同版本 → UTC 落库 → 学员即时可见。残留：定时排期。
+
 - [P1R-M4-006-BOUNDARIES-20260917] **翻牌 M4-006：A1–C2 边界全扫（80 ACCEPTED / 28 DEV_DONE，工具待验）。** 新链 `p1r-live-m4006.mjs` 9/9：跳过钉全六级 → 未知 400 → 半对 0.5/A2 居中。
 
 - [P1R-M4-005-DETERMINISM-20260917] **翻牌 M4-005：定测确定性 + 边界（79 ACCEPTED / 29 DEV_DONE，工具待验）。** 新链 `p1r-live-m4005.mjs` 7/7：同答同分 C2 → 全错 A1 → 跳过钉 B1 → 他人 404。

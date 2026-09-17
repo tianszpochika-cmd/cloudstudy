@@ -1,0 +1,82 @@
+{
+  "task": "M3006-LIVE-PUBLISH",
+  "capturedAt": "2026-09-17T04:54:18.484Z",
+  "gateway": "http://127.0.0.1:18070",
+  "result": "PASS",
+  "passed": 12,
+  "total": 12,
+  "checks": [
+    {
+      "name": "staff-ready",
+      "ok": true,
+      "observed": "five staff ready",
+      "expected": "tokens"
+    },
+    {
+      "name": "create-draft",
+      "ok": true,
+      "observed": "HTTP 202",
+      "expected": "HTTP 202"
+    },
+    {
+      "name": "validate-draft",
+      "ok": true,
+      "observed": "HTTP 202",
+      "expected": "HTTP 202"
+    },
+    {
+      "name": "submit-review",
+      "ok": true,
+      "observed": "HTTP 202",
+      "expected": "HTTP 202"
+    },
+    {
+      "name": "four-eyes",
+      "ok": true,
+      "observed": "HTTP 409",
+      "expected": "HTTP 409 self-review denied"
+    },
+    {
+      "name": "editor-cannot-review",
+      "ok": true,
+      "observed": "HTTP 403",
+      "expected": "HTTP 403 segregation"
+    },
+    {
+      "name": "review-first",
+      "ok": true,
+      "observed": "HTTP 202",
+      "expected": "HTTP 202"
+    },
+    {
+      "name": "review-final",
+      "ok": true,
+      "observed": "HTTP 202",
+      "expected": "HTTP 202"
+    },
+    {
+      "name": "publish",
+      "ok": true,
+      "observed": "HTTP 202",
+      "expected": "HTTP 202 + version"
+    },
+    {
+      "name": "publish-idempotent",
+      "ok": true,
+      "observed": "HTTP 202 same version",
+      "expected": "idempotent replay"
+    },
+    {
+      "name": "published-at-utc",
+      "ok": true,
+      "observed": "2026-09-17 04:54:17.690846",
+      "expected": "UTC instant recorded"
+    },
+    {
+      "name": "projection-immediate",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "learner sees it now"
+    }
+  ]
+}

@@ -637,11 +637,12 @@
         "PLANNED",
         "READY",
         "IN_PROGRESS",
-        "DEV_DONE"
+        "DEV_DONE",
+        "ACCEPTED"
       ],
-      "recordedAt": "2026-09-15T16:45:00Z",
-      "actor": "agent:p1r_implementation:deepseek-harness",
-      "reason": "Owner route A. Dependencies M2-006 + M3-005 DEV_DONE. Publish gate plus owner-DB rebuild delivered (M2-004 reassignment); compile green, 8/8 harness PASS; timed scheduling deferred to workflow as knownGap.",
+      "recordedAt": "2026-09-17T04:55:00Z",
+      "actor": "human-owner-delegated acceptance (live E2E 2026-09-17)",
+      "reason": "Publish idempotency/UTC/zero-delay green 12/12 (p1r-live-m3006.mjs); timers named residual.",
       "evidencePath": "evidence/p1r/m3/P1R-M3-006/manifest.json"
     },
     {
