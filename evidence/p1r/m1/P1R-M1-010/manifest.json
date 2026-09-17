@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-010",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "9f34a0a5e6ef345bdb351bf63c6d7c221177a94e",
+  "sourceCommit": "4b47629f11890687004a19599b2477531c300fe4",
   "artifactDigests": [
     {
       "path": "config/g1-contract-data.json",
@@ -976,9 +976,19 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-17T04:23:09.994Z",
         "details": "M7-004 reconnect run chain + evidence"
+      },
+      {
+        "taskId": "P1R-M1-010",
+        "sourceCommit": "4b47629f11890687004a19599b2477531c300fe4",
+        "auditedImplementationSource": "4b47629f11890687004a19599b2477531c300fe4",
+        "integrationCheckpoint": "4b47629f11890687004a19599b2477531c300fe4",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-17T04:34:45.603Z",
+        "details": "M4-005 determinism chain + evidence"
       }
     ],
-    "previousCurrentSourceCommit": "639ae2f7187e1a2ae754ff0c8e7bec58487f89ac",
+    "previousCurrentSourceCommit": "9f34a0a5e6ef345bdb351bf63c6d7c221177a94e",
     "previousCurrentSourceRevalidationTask": "P1R-M2-005",
     "previousCurrentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
@@ -986,8 +996,8 @@
     "currentSourceRevalidationTask": "P1R-M1-010",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-17T04:23:09.994Z",
-    "currentSourceRevalidationAuditedImplementationSource": "9f34a0a5e6ef345bdb351bf63c6d7c221177a94e",
-    "currentSourceRevalidationIntegrationCheckpoint": "9f34a0a5e6ef345bdb351bf63c6d7c221177a94e"
+    "currentSourceRevalidationFinishedAt": "2026-09-17T04:34:45.603Z",
+    "currentSourceRevalidationAuditedImplementationSource": "4b47629f11890687004a19599b2477531c300fe4",
+    "currentSourceRevalidationIntegrationCheckpoint": "4b47629f11890687004a19599b2477531c300fe4"
   }
 }

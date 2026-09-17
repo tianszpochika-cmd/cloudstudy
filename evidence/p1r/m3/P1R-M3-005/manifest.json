@@ -3,7 +3,7 @@
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
   "decision": "ACCEPTED",
-  "sourceCommit": "9f34a0a5e6ef345bdb351bf63c6d7c221177a94e",
+  "sourceCommit": "4b47629f11890687004a19599b2477531c300fe4",
   "startedAt": "2026-09-15T16:35:00.000Z",
   "finishedAt": "2026-09-16T20:15:00.000Z",
   "environment": {
@@ -115,9 +115,9 @@
     "currentSourceRevalidationTask": "P1R-M3-005",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-17T04:23:11.785Z",
-    "currentSourceRevalidationAuditedImplementationSource": "9f34a0a5e6ef345bdb351bf63c6d7c221177a94e",
-    "currentSourceRevalidationIntegrationCheckpoint": "9f34a0a5e6ef345bdb351bf63c6d7c221177a94e",
+    "currentSourceRevalidationFinishedAt": "2026-09-17T04:34:47.343Z",
+    "currentSourceRevalidationAuditedImplementationSource": "4b47629f11890687004a19599b2477531c300fe4",
+    "currentSourceRevalidationIntegrationCheckpoint": "4b47629f11890687004a19599b2477531c300fe4",
     "currentSourceRevalidationHistory": [
       {
         "taskId": "P1R-M3-005",
@@ -408,8 +408,18 @@
         "runtimeStatus": "RUNTIME_VERIFIED",
         "finishedAt": "2026-09-17T04:23:11.785Z",
         "details": "M7-004 reconnect run chain + evidence"
+      },
+      {
+        "taskId": "P1R-M3-005",
+        "sourceCommit": "4b47629f11890687004a19599b2477531c300fe4",
+        "auditedImplementationSource": "4b47629f11890687004a19599b2477531c300fe4",
+        "integrationCheckpoint": "4b47629f11890687004a19599b2477531c300fe4",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-17T04:34:47.343Z",
+        "details": "M4-005 determinism chain + evidence"
       }
     ],
-    "previousCurrentSourceCommit": "639ae2f7187e1a2ae754ff0c8e7bec58487f89ac"
+    "previousCurrentSourceCommit": "9f34a0a5e6ef345bdb351bf63c6d7c221177a94e"
   }
 }
