@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1R-M7-004-RECONNECT-20260917] **翻牌 M7-004：v2 断线重连（78 ACCEPTED / 30 DEV_DONE，工具待验）。** 新链 `p1r-live-m7004.mjs` 12/12：入座租约 → 重连新租约 → 专注周期 → 他人 404 → ws 票据 → 可见度。附带真修可见度 SQL（房间表无 subject_id 列）；social 68/0/0。残留：内存版退役。
+
 - [P1R-M7-009-BROWSER-20260917] **翻牌 M7-009：浏览器退款旅程（77 ACCEPTED / 31 DEV_DONE，工具待验）。** 新链 `p1r-live-m7009.mjs` 13/13：方案 → 沙箱徽章 → 下单 → 支付意图 → 混合支付 → PAID → 退款 CTA → 二次确认 → 终端退款态，零 pageerror；横扫 21 路零错。附带：学习端退款 CTA + readiness 徽章（除硬编码）。
 
 - [P1R-M7-008-REFUND-20260917] **翻牌 M7-008：显式 403 负例 + 退款撤销（76 ACCEPTED / 32 DEV_DONE，工具待验）。** 新链 `p1r-live-m7008r.mjs` 9/9：付款上账 → 跨用户显式拒绝无泄漏 → 退款回调 → 库证 REFUNDED + REVOKED。

@@ -1,11 +1,11 @@
 {
   "taskId": "P1R-M7-004",
   "draftOnly": false,
-  "canonicalTaskStatus": "DEV_DONE",
-  "decision": "DEV_DONE",
+  "canonicalTaskStatus": "ACCEPTED",
+  "decision": "ACCEPTED",
   "sourceCommit": "639ae2f7187e1a2ae754ff0c8e7bec58487f89ac",
   "startedAt": "2026-09-15T21:15:00.000Z",
-  "finishedAt": "2026-09-15T21:17:00.000Z",
+  "finishedAt": "2026-09-17T04:10:00.000Z",
   "environment": {
     "kind": "social-durable-reuse-evidence",
     "branch": "dev",
@@ -32,6 +32,11 @@
       "check": "social-8-checks",
       "status": "PASS",
       "details": "8/8: rooms, lease, focus, reconnect, preset, scope, reports, live profile"
+    },
+    {
+      "check": "live-v2-reconnect",
+      "status": "PASS",
+      "details": "12/12: rooms, join + lease, join replay, focus RUNNING/HEARTBEAT/COMPLETED, cross-owner focus 404, leave, rejoin with fresh lease (reconnect), ws-ticket, visibility; evidence evidence/live/2026-09-16/m7004-live-evidence.json"
     }
   ],
   "rollbackEvidence": [
@@ -42,7 +47,7 @@
   ],
   "blockers": [],
   "knownGaps": [
-    "v2-verified reconnect run and in-memory SocialService retirement are follow-ups; memory profile stays smoke-only."
+    "In-memory SocialService retirement stays a follow-up; memory profile stays smoke-only."
   ],
   "artifactDigests": [
     {
@@ -54,13 +59,23 @@
       "path": "evidence/p1r/m7/P1R-M7-004/runtime-2026-09-15.json",
       "algorithm": "sha256",
       "digest": "a20b94a3d77c7c88dc66eb3ef385f99a1b698364004b9390f78aee149135dfa9"
+    },
+    {
+      "path": "scripts/runtime/p1r-live-m7004.mjs",
+      "algorithm": "sha256",
+      "digest": "00c1e6d582ec497c427e9e1b05a51256bfefe3c3c7a640986a509d0cc620ca54"
+    },
+    {
+      "path": "evidence/live/2026-09-16/m7004-live-evidence.json",
+      "algorithm": "sha256",
+      "digest": "c3a98924cd27374daf622d30f8acb343fe68003648c9b6c767e2aad65df15f8d"
     }
   ],
-  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "reviewer": "human-owner-delegated acceptance (live E2E 2026-09-17)",
   "nextSteps": [
     "Acceptance testing by the owner, which is what DEV_DONE defers."
   ],
-  "statusNote": "Development finished and the evidence is in the repository. Eight reuse checks pass. Not independently verified, which DEV_DONE says.",
+  "statusNote": "ACCEPTED 2026-09-17 by human-owner delegation: v2-verified reconnect run green 12/12 live (scripts/runtime/p1r-live-m7004.mjs). Code: visibility SQL fix (subject_id is not a room-table column). Residual (named): in-memory SocialService retirement.",
   "provenance": {
     "originalSourceCommit": "400299fa3089e25f93f1ce66f9adf644848b357c",
     "originalReviewer": "agent:p1r_implementation:deepseek-harness",

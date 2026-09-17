@@ -1,0 +1,82 @@
+{
+  "task": "M7004-LIVE-RECONNECT",
+  "capturedAt": "2026-09-17T04:16:39.907Z",
+  "gateway": "http://127.0.0.1:18070",
+  "result": "PASS",
+  "passed": 12,
+  "total": 12,
+  "checks": [
+    {
+      "name": "setup",
+      "ok": true,
+      "observed": "two learners ready",
+      "expected": "tokens"
+    },
+    {
+      "name": "rooms-list",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "rooms visible"
+    },
+    {
+      "name": "room-join",
+      "ok": true,
+      "observed": "HTTP 200 lease=true",
+      "expected": "ACTIVE + lease"
+    },
+    {
+      "name": "join-replay",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "replayed while active"
+    },
+    {
+      "name": "focus-start",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "RUNNING session"
+    },
+    {
+      "name": "focus-heartbeat",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "stays RUNNING"
+    },
+    {
+      "name": "focus-finish",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "COMPLETED"
+    },
+    {
+      "name": "focus-scoped",
+      "ok": true,
+      "observed": "HTTP 404",
+      "expected": "HTTP 404 other owner"
+    },
+    {
+      "name": "room-leave",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "LEFT"
+    },
+    {
+      "name": "reconnect",
+      "ok": true,
+      "observed": "HTTP 200 new lease=true",
+      "expected": "ACTIVE + fresh lease"
+    },
+    {
+      "name": "ws-ticket",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "ticket minted"
+    },
+    {
+      "name": "visibility",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "visibility updated"
+    }
+  ]
+}

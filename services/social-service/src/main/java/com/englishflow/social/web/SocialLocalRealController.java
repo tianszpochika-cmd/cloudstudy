@@ -217,9 +217,9 @@ public final class SocialLocalRealController {
         SocialPrincipal principal = require("social.visibility.write");
         String mode = String.valueOf(body.getOrDefault("leaderboardVisibility", "NICKNAME"));
         jdbc.update("INSERT INTO soc_room_member(membership_id, room_id, tenant_id, subject_id, state, presence_state, room_visibility, privacy_version) "
-                        + "SELECT CONCAT('visibility-', ?), room_id, tenant_id, subject_id, 'LEFT', 'OFFLINE', ?, 1 FROM soc_study_room WHERE tenant_id = ? LIMIT 1 "
+                        + "SELECT CONCAT('visibility-', ?), room_id, tenant_id, ?, 'LEFT', 'OFFLINE', ?, 1 FROM soc_study_room WHERE tenant_id = ? LIMIT 1 "
                         + "ON DUPLICATE KEY UPDATE room_visibility = VALUES(room_visibility), privacy_version = privacy_version + 1",
-                principal.subjectId(), mode, principal.tenantId());
+                principal.subjectId(), principal.subjectId(), mode, principal.tenantId());
         return envelope(map("leaderboardVisibility", mode, "updated", true), request);
     }
 

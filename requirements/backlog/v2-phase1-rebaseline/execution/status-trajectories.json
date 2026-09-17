@@ -1229,11 +1229,12 @@
         "PLANNED",
         "READY",
         "IN_PROGRESS",
-        "DEV_DONE"
+        "DEV_DONE",
+        "ACCEPTED"
       ],
-      "recordedAt": "2026-09-15T21:17:00Z",
-      "actor": "agent:p1r_implementation:deepseek-harness",
-      "reason": "Owner route A (durable-path verification, no production change). Dependencies M2-005/010 + M1-014 DEV_DONE. Eight durable-slice checks pass; v2 reconnect and memory retirement deferred as knownGap.",
+      "recordedAt": "2026-09-17T04:10:00Z",
+      "actor": "human-owner-delegated acceptance (live E2E 2026-09-17)",
+      "reason": "v2 reconnect green 12/12 live (p1r-live-m7004.mjs); memory retirement named residual.",
       "evidencePath": "evidence/p1r/m7/P1R-M7-004/manifest.json"
     },
     {
