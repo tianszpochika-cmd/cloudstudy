@@ -2,7 +2,7 @@
   "taskId": "P1R-M0-005",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "f630762702564436578e884dea8e6e548d1876c5",
+  "sourceCommit": "639ae2f7187e1a2ae754ff0c8e7bec58487f89ac",
   "artifactDigests": [
     {
       "path": ".github/workflows/ci.yml",
@@ -34,12 +34,12 @@
     "originalFinishedAt": "2026-08-29T10:13:18.541Z",
     "originalReviewer": "root-coordinator",
     "currentSourceRevalidationTask": "P1R-M0-005",
-    "previousCurrentSourceCommit": "90f11252bda975312d82d76dd46dd3c97fa283fc",
+    "previousCurrentSourceCommit": "f630762702564436578e884dea8e6e548d1876c5",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-17T03:37:07.153Z",
-    "currentSourceRevalidationAuditedImplementationSource": "f630762702564436578e884dea8e6e548d1876c5",
-    "currentSourceRevalidationIntegrationCheckpoint": "f630762702564436578e884dea8e6e548d1876c5",
+    "currentSourceRevalidationFinishedAt": "2026-09-17T03:53:27.696Z",
+    "currentSourceRevalidationAuditedImplementationSource": "639ae2f7187e1a2ae754ff0c8e7bec58487f89ac",
+    "currentSourceRevalidationIntegrationCheckpoint": "639ae2f7187e1a2ae754ff0c8e7bec58487f89ac",
     "currentSourceRevalidationHistory": [
       {
         "taskId": "P1R-M0-005",
@@ -440,6 +440,16 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-17T03:37:07.153Z",
         "details": "M7-008 refund-to-revoke chain + evidence"
+      },
+      {
+        "taskId": "P1R-M0-005",
+        "sourceCommit": "639ae2f7187e1a2ae754ff0c8e7bec58487f89ac",
+        "auditedImplementationSource": "639ae2f7187e1a2ae754ff0c8e7bec58487f89ac",
+        "integrationCheckpoint": "639ae2f7187e1a2ae754ff0c8e7bec58487f89ac",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-17T03:53:27.696Z",
+        "details": "M7-009 browser refund journey + evidence"
       }
     ]
   },

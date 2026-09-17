@@ -3,7 +3,7 @@
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
   "decision": "ACCEPTED",
-  "sourceCommit": "f630762702564436578e884dea8e6e548d1876c5",
+  "sourceCommit": "639ae2f7187e1a2ae754ff0c8e7bec58487f89ac",
   "startedAt": "2026-09-15T19:20:00.000Z",
   "finishedAt": "2026-09-15T19:22:00.000Z",
   "environment": {
@@ -65,9 +65,9 @@
     "currentSourceRevalidationTask": "P1R-M5-008",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-17T03:37:11.364Z",
-    "currentSourceRevalidationAuditedImplementationSource": "f630762702564436578e884dea8e6e548d1876c5",
-    "currentSourceRevalidationIntegrationCheckpoint": "f630762702564436578e884dea8e6e548d1876c5",
+    "currentSourceRevalidationFinishedAt": "2026-09-17T03:53:31.968Z",
+    "currentSourceRevalidationAuditedImplementationSource": "639ae2f7187e1a2ae754ff0c8e7bec58487f89ac",
+    "currentSourceRevalidationIntegrationCheckpoint": "639ae2f7187e1a2ae754ff0c8e7bec58487f89ac",
     "currentSourceRevalidationHistory": [
       {
         "taskId": "P1R-M5-008",
@@ -338,8 +338,18 @@
         "runtimeStatus": "RUNTIME_VERIFIED",
         "finishedAt": "2026-09-17T03:37:11.364Z",
         "details": "M7-008 refund-to-revoke chain + evidence"
+      },
+      {
+        "taskId": "P1R-M5-008",
+        "sourceCommit": "639ae2f7187e1a2ae754ff0c8e7bec58487f89ac",
+        "auditedImplementationSource": "639ae2f7187e1a2ae754ff0c8e7bec58487f89ac",
+        "integrationCheckpoint": "639ae2f7187e1a2ae754ff0c8e7bec58487f89ac",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-17T03:53:31.968Z",
+        "details": "M7-009 browser refund journey + evidence"
       }
     ],
-    "previousCurrentSourceCommit": "90f11252bda975312d82d76dd46dd3c97fa283fc"
+    "previousCurrentSourceCommit": "f630762702564436578e884dea8e6e548d1876c5"
   }
 }
