@@ -1,0 +1,88 @@
+{
+  "task": "M6008-LIVE-DELETION",
+  "capturedAt": "2026-09-17T02:11:54.660Z",
+  "gateway": "http://127.0.0.1:18070",
+  "result": "PASS",
+  "passed": 13,
+  "total": 13,
+  "checks": [
+    {
+      "name": "setup",
+      "ok": true,
+      "observed": "two learners ready",
+      "expected": "tokens"
+    },
+    {
+      "name": "deletion-request",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "REQUESTED + id"
+    },
+    {
+      "name": "deletion-replay",
+      "ok": true,
+      "observed": "HTTP 200 same id",
+      "expected": "same request"
+    },
+    {
+      "name": "deletion-status",
+      "ok": true,
+      "observed": "HTTP 200 cooling=168",
+      "expected": "REQUESTED 168h"
+    },
+    {
+      "name": "service-token",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "operator token"
+    },
+    {
+      "name": "execute-cooling-denied",
+      "ok": true,
+      "observed": "HTTP 409",
+      "expected": "HTTP 409 cooling"
+    },
+    {
+      "name": "deletion-cancel",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "CANCELLED"
+    },
+    {
+      "name": "execute-cancelled-denied",
+      "ok": true,
+      "observed": "HTTP 409",
+      "expected": "HTTP 409 not executable"
+    },
+    {
+      "name": "deletion-request-2",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "second request"
+    },
+    {
+      "name": "execute",
+      "ok": true,
+      "observed": "HTTP 200 receipted=true",
+      "expected": "EXECUTED + receipt"
+    },
+    {
+      "name": "owner-receipts",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200 receipts"
+    },
+    {
+      "name": "revocation-proof",
+      "ok": true,
+      "observed": "HTTP 401 post-execute login",
+      "expected": "login denied after execution"
+    },
+    {
+      "name": "deletion-scoped",
+      "ok": true,
+      "observed": "HTTP 404",
+      "expected": "HTTP 404 other owner"
+    }
+  ]
+}

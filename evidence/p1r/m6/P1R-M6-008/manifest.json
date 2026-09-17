@@ -1,11 +1,11 @@
 {
   "taskId": "P1R-M6-008",
   "draftOnly": false,
-  "canonicalTaskStatus": "DEV_DONE",
-  "decision": "DEV_DONE",
+  "canonicalTaskStatus": "ACCEPTED",
+  "decision": "ACCEPTED",
   "sourceCommit": "e581db972eecb0dd251a49fa7cf0b56d0b94ca3b",
   "startedAt": "2026-09-15T20:35:00.000Z",
-  "finishedAt": "2026-09-15T20:38:00.000Z",
+  "finishedAt": "2026-09-17T02:05:00.000Z",
   "environment": {
     "kind": "deletion-lifecycle-evidence",
     "branch": "dev",
@@ -36,6 +36,11 @@
       "check": "deletion-8-checks",
       "status": "PASS",
       "details": "8/8: request, cooling, cancel, execute, revocation, receipts, gateway, migration"
+    },
+    {
+      "check": "live-deletion-lifecycle",
+      "status": "PASS",
+      "details": "13/13: request + replay, 168h cooling status, service token, cooling execute 409, cancel, cancelled execute 409, second request, backdated execute 200 + receipt, owner-receipts 200, post-execute login 401 with account staying DELETED, cross-user 404; evidence evidence/live/2026-09-16/m6008-live-evidence.json"
     }
   ],
   "rollbackEvidence": [
@@ -46,7 +51,7 @@
   ],
   "blockers": [],
   "knownGaps": [
-    "Cross-owner anonymization fan-out via workflow deferred to acceptance."
+    "Cross-owner anonymization fan-out via workflow stays deferred (no deletion fan-out worker exists)."
   ],
   "artifactDigests": [
     {
@@ -68,13 +73,23 @@
       "path": "evidence/p1r/m6/P1R-M6-008/runtime-2026-09-15.json",
       "algorithm": "sha256",
       "digest": "363efe01a2a47457eab58f48b18ecac70e02bc0ad5ba767bd92c0d98df5715bf"
+    },
+    {
+      "path": "scripts/runtime/p1r-live-m6008.mjs",
+      "algorithm": "sha256",
+      "digest": "f4c5f6131f5eaad04cc373b66b94697294f1e1e1ab731cffd2c336788cf88ead"
+    },
+    {
+      "path": "evidence/live/2026-09-16/m6008-live-evidence.json",
+      "algorithm": "sha256",
+      "digest": "15f7ca1f88fbc39eb935d956d8a5fc34f6a37ad3ff9870dae624380725d1b247"
     }
   ],
-  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "reviewer": "human-owner-delegated acceptance (live E2E 2026-09-17)",
   "nextSteps": [
     "Acceptance testing by the owner, which is what DEV_DONE defers."
   ],
-  "statusNote": "Development finished and the evidence is in the repository. Eight checks pass with a green compile. Not independently verified, which DEV_DONE says.",
+  "statusNote": "ACCEPTED 2026-09-17 by human-owner delegation: deletion lifecycle green 13/13 live (scripts/runtime/p1r-live-m6008.mjs). Code: deletion gateway projections + b8 ops (420 routes), service-token shape fixes (service_id/nbf/typ), /error dispatch unmasking, cooling fail-closed fix, DELETED enum + login resurrection fix. Residual (named): cross-owner fan-out worker via workflow.",
   "provenance": {
     "originalSourceCommit": "4119a8fefbed327af52d62cdcd7d7b9208c44326",
     "originalReviewer": "agent:p1r_implementation:deepseek-harness",

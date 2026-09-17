@@ -1895,8 +1895,60 @@
       {
         "ruleId": "iam-account-deletions",
         "defaultStatus": "UNAVAILABLE",
-        "defaultReason": "iam_owner_controller_mapping_not_present",
-        "projections": []
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "iam-account-deletions.deletion-cancel",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/iam/account-deletions/{deletionRequestId}/cancel",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "iam-service",
+            "targetUriConfig": "gateway.identity.iam-base-url",
+            "pathStrategy": "PRESERVE_PUBLIC_PATH",
+            "targetPathTemplate": "/api/v1/iam/account-deletions/{deletionRequestId}/cancel",
+            "controllerEvidence": {
+              "sourcePath": "services/iam-service/src/main/java/com/englishflow/iam/web/IamAccountDeletionController.java",
+              "requestMapping": "/api/v1/iam/account-deletions"
+            }
+          },
+          {
+            "projectionId": "iam-account-deletions.deletion-request",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/iam/account-deletions",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "iam-service",
+            "targetUriConfig": "gateway.identity.iam-base-url",
+            "pathStrategy": "PRESERVE_PUBLIC_PATH",
+            "targetPathTemplate": "/api/v1/iam/account-deletions",
+            "controllerEvidence": {
+              "sourcePath": "services/iam-service/src/main/java/com/englishflow/iam/web/IamAccountDeletionController.java",
+              "requestMapping": "/api/v1/iam/account-deletions"
+            }
+          },
+          {
+            "projectionId": "iam-account-deletions.deletion-status",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/iam/account-deletions/{deletionRequestId}",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "iam-service",
+            "targetUriConfig": "gateway.identity.iam-base-url",
+            "pathStrategy": "PRESERVE_PUBLIC_PATH",
+            "targetPathTemplate": "/api/v1/iam/account-deletions/{deletionRequestId}",
+            "controllerEvidence": {
+              "sourcePath": "services/iam-service/src/main/java/com/englishflow/iam/web/IamAccountDeletionController.java",
+              "requestMapping": "/api/v1/iam/account-deletions"
+            }
+          }
+        ]
       },
       {
         "ruleId": "learner-domain",

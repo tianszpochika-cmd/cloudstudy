@@ -101,7 +101,12 @@ public final class IamAccountDeletionController {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "deletion is not executable");
         }
         Object executeAt = row.get("execute_at");
-        if (executeAt instanceof java.sql.Timestamp stamp && stamp.toInstant().isAfter(Instant.now())) {
+        java.time.Instant executableAt = executeAt instanceof java.sql.Timestamp stamp ? stamp.toInstant()
+                : executeAt instanceof java.time.LocalDateTime localDateTime
+                        ? localDateTime.toInstant(java.time.ZoneOffset.UTC)
+                        : null;
+        // An unreadable window must never read as elapsed: fail closed.
+        if (executableAt == null || executableAt.isAfter(Instant.now())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "cooling window has not elapsed");
         }
         String principalId = String.valueOf(row.get("principal_id"));

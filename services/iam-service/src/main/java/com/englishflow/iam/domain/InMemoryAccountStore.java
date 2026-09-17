@@ -77,7 +77,7 @@ public final class InMemoryAccountStore implements AccountStore {
         AccountRecord current = byPrincipal.get(observed.principalId());
         if (current == null) throw new IamPolicyException(IamDecisionCode.IAM_PERSISTENCE_UNAVAILABLE,
                 "iam.persistence.unavailable");
-        if (current.status() == AccountStatus.DISABLED) return current;
+        if (current.status() == AccountStatus.DISABLED || current.status() == AccountStatus.DELETED) return current;
         if (current.status() == AccountStatus.LOCKED) {
             if (current.lockedUntil() == null || current.lockedUntil().isAfter(at)) return current;
             current = current.unlocked(at);

@@ -21,7 +21,7 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.web.SecurityFilterChain;
-
+import jakarta.servlet.DispatcherType;
 import java.time.Duration;
 import java.util.UUID;
 import java.util.regex.Pattern;
@@ -37,6 +37,9 @@ public class IamSecurityConfiguration {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
+                        // Error dispatches must render the real controller status (404/409/...);
+                        // without this every controller exception behind auth masks as empty 403.
+                        .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
                         .requestMatchers("/actuator/health/**", "/actuator/info").permitAll()
                         .requestMatchers("/api/v1/auth/register", "/api/v1/auth/login",
                                 "/api/v1/auth/token/refresh", "/api/v1/auth/jwks",

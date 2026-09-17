@@ -35183,92 +35183,24 @@
     "/api/v1/iam/account-deletions": {
       "post": {
         "tags": [
-          "m1-017-privacy-lifecycle"
+          "b8-auth"
         ],
-        "summary": "Create a self-scoped account deletion request with a seven-day cooling-off period",
-        "operationId": "createM1017AccountDeletionRequest",
+        "summary": "Request self-scoped account deletion with a 168-hour cooling window (M6-008 live)",
+        "operationId": "requestAccountDeletion",
+        "x-contract": {
+          "domain": "iam",
+          "owner": "iam-service",
+          "phase": "P1",
+          "authentication": "self-owned-jwt"
+        },
         "security": [
           {
             "bearerAuth": []
           }
         ],
-        "x-owner": "iam-service",
-        "x-contract": {
-          "task": "P1R-M1-017",
-          "canonical": true,
-          "maturity": "D2_CONTRACT_READY",
-          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
-          "clientAuthority": "NONE"
-        },
-        "x-authorization": {
-          "requiredPermission": "iam.account.deletion.self",
-          "defaultDecision": "DENY",
-          "trustedFacts": [
-            "verifiedPrincipal",
-            "serverDerivedTenant",
-            "reauthentication",
-            "consent",
-            "resourceOwner",
-            "policyVersion"
-          ],
-          "resourceOwner": "server-derived authenticated subject",
-          "serviceSidePepRequired": true,
-          "clientAuthority": "NONE"
-        },
-        "x-idempotency": {
-          "required": true,
-          "keyHeader": "Idempotency-Key",
-          "strategy": "account-deletion-request",
-          "replayBehavior": "same authenticated subject and request digest return the pending deletion request; a different digest is a conflict"
-        },
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/B1IdempotencyKey"
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/M1017AccountDeletionRequest"
-              }
-            }
-          }
-        },
         "responses": {
-          "202": {
-            "description": "Deletion request accepted",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/M1017AccountDeletionEnvelope"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-Id": {
-                "$ref": "#/components/headers/XRequestId"
-              },
-              "X-Trace-Id": {
-                "$ref": "#/components/headers/XTraceId"
-              },
-              "X-API-Version": {
-                "$ref": "#/components/headers/XApiVersion"
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/ApiUnauthorized"
-          },
-          "403": {
-            "$ref": "#/components/responses/ApiForbidden"
-          },
-          "409": {
-            "$ref": "#/components/responses/ApiConflict"
-          },
-          "422": {
-            "$ref": "#/components/responses/ApiUnprocessableEntity"
+          "200": {
+            "description": "OK"
           }
         }
       }
@@ -35276,71 +35208,34 @@
     "/api/v1/iam/account-deletions/{deletionRequestId}": {
       "get": {
         "tags": [
-          "m1-017-privacy-lifecycle"
+          "b8-auth"
         ],
-        "summary": "Read the authenticated subject's account deletion status",
-        "operationId": "getM1017AccountDeletionStatus",
+        "summary": "Read own deletion request status (M6-008 live)",
+        "operationId": "readAccountDeletionStatus",
+        "x-contract": {
+          "domain": "iam",
+          "owner": "iam-service",
+          "phase": "P1",
+          "authentication": "self-owned-jwt"
+        },
         "security": [
           {
             "bearerAuth": []
           }
         ],
-        "x-owner": "iam-service",
-        "x-contract": {
-          "task": "P1R-M1-017",
-          "canonical": true,
-          "maturity": "D2_CONTRACT_READY",
-          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
-          "clientAuthority": "NONE"
-        },
-        "x-authorization": {
-          "requiredPermission": "iam.account.deletion.self.read",
-          "defaultDecision": "DENY",
-          "trustedFacts": [
-            "verifiedPrincipal",
-            "serverDerivedTenant",
-            "resourceOwner",
-            "policyVersion"
-          ],
-          "resourceOwner": "server-derived deletion request subject",
-          "serviceSidePepRequired": true,
-          "clientAuthority": "NONE"
-        },
         "parameters": [
           {
-            "$ref": "#/components/parameters/M1017DeletionRequestId"
+            "name": "deletionRequestId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
           "200": {
-            "description": "Current deletion status",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/M1017AccountDeletionEnvelope"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-Id": {
-                "$ref": "#/components/headers/XRequestId"
-              },
-              "X-Trace-Id": {
-                "$ref": "#/components/headers/XTraceId"
-              },
-              "X-API-Version": {
-                "$ref": "#/components/headers/XApiVersion"
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/ApiUnauthorized"
-          },
-          "403": {
-            "$ref": "#/components/responses/ApiForbidden"
-          },
-          "404": {
-            "$ref": "#/components/responses/ApiNotFound"
+            "description": "OK"
           }
         }
       }
@@ -35348,95 +35243,34 @@
     "/api/v1/iam/account-deletions/{deletionRequestId}/cancel": {
       "post": {
         "tags": [
-          "m1-017-privacy-lifecycle"
+          "b8-auth"
         ],
-        "summary": "Cancel an account deletion request during its cooling-off period",
-        "operationId": "cancelM1017AccountDeletionRequest",
+        "summary": "Cancel a cooling deletion request (M6-008 live)",
+        "operationId": "cancelAccountDeletion",
+        "x-contract": {
+          "domain": "iam",
+          "owner": "iam-service",
+          "phase": "P1",
+          "authentication": "self-owned-jwt"
+        },
         "security": [
           {
             "bearerAuth": []
           }
         ],
-        "x-owner": "iam-service",
-        "x-contract": {
-          "task": "P1R-M1-017",
-          "canonical": true,
-          "maturity": "D2_CONTRACT_READY",
-          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
-          "clientAuthority": "NONE"
-        },
-        "x-authorization": {
-          "requiredPermission": "iam.account.deletion.self.cancel",
-          "defaultDecision": "DENY",
-          "trustedFacts": [
-            "verifiedPrincipal",
-            "serverDerivedTenant",
-            "reauthentication",
-            "resourceOwner",
-            "coolingOffWindow",
-            "policyVersion"
-          ],
-          "resourceOwner": "server-derived deletion request subject",
-          "serviceSidePepRequired": true,
-          "clientAuthority": "NONE"
-        },
-        "x-idempotency": {
-          "required": true,
-          "keyHeader": "Idempotency-Key",
-          "strategy": "account-deletion-cancel",
-          "replayBehavior": "same deletion request and cancellation digest return the original cancellation acknowledgement"
-        },
         "parameters": [
           {
-            "$ref": "#/components/parameters/M1017DeletionRequestId"
-          },
-          {
-            "$ref": "#/components/parameters/B1IdempotencyKey"
+            "name": "deletionRequestId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
           }
         ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/M1017AccountDeletionCancelRequest"
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
-            "description": "Deletion request cancelled",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/M1017AccountDeletionEnvelope"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-Id": {
-                "$ref": "#/components/headers/XRequestId"
-              },
-              "X-Trace-Id": {
-                "$ref": "#/components/headers/XTraceId"
-              },
-              "X-API-Version": {
-                "$ref": "#/components/headers/XApiVersion"
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/ApiUnauthorized"
-          },
-          "403": {
-            "$ref": "#/components/responses/ApiForbidden"
-          },
-          "409": {
-            "$ref": "#/components/responses/ApiConflict"
-          },
-          "422": {
-            "$ref": "#/components/responses/ApiUnprocessableEntity"
+            "description": "OK"
           }
         }
       }
@@ -77954,8 +77788,60 @@
       {
         "ruleId": "iam-account-deletions",
         "defaultStatus": "UNAVAILABLE",
-        "defaultReason": "iam_owner_controller_mapping_not_present",
-        "projections": []
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "iam-account-deletions.deletion-cancel",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/iam/account-deletions/{deletionRequestId}/cancel",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "iam-service",
+            "targetUriConfig": "gateway.identity.iam-base-url",
+            "pathStrategy": "PRESERVE_PUBLIC_PATH",
+            "targetPathTemplate": "/api/v1/iam/account-deletions/{deletionRequestId}/cancel",
+            "controllerEvidence": {
+              "sourcePath": "services/iam-service/src/main/java/com/englishflow/iam/web/IamAccountDeletionController.java",
+              "requestMapping": "/api/v1/iam/account-deletions"
+            }
+          },
+          {
+            "projectionId": "iam-account-deletions.deletion-request",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/iam/account-deletions",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "iam-service",
+            "targetUriConfig": "gateway.identity.iam-base-url",
+            "pathStrategy": "PRESERVE_PUBLIC_PATH",
+            "targetPathTemplate": "/api/v1/iam/account-deletions",
+            "controllerEvidence": {
+              "sourcePath": "services/iam-service/src/main/java/com/englishflow/iam/web/IamAccountDeletionController.java",
+              "requestMapping": "/api/v1/iam/account-deletions"
+            }
+          },
+          {
+            "projectionId": "iam-account-deletions.deletion-status",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/iam/account-deletions/{deletionRequestId}",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "iam-service",
+            "targetUriConfig": "gateway.identity.iam-base-url",
+            "pathStrategy": "PRESERVE_PUBLIC_PATH",
+            "targetPathTemplate": "/api/v1/iam/account-deletions/{deletionRequestId}",
+            "controllerEvidence": {
+              "sourcePath": "services/iam-service/src/main/java/com/englishflow/iam/web/IamAccountDeletionController.java",
+              "requestMapping": "/api/v1/iam/account-deletions"
+            }
+          }
+        ]
       },
       {
         "ruleId": "learner-domain",

@@ -63,7 +63,11 @@ class ServiceTokenServiceTest {
 
         ServiceTokenService.IssuedServiceToken issued = service(properties, encoder).issue("api-gateway", "s3cret");
 
-        assertEquals("svc:api-gateway", encoder.claims.getSubject());
+        assertEquals("api-gateway", encoder.claims.getSubject());
+        // Subject-bound service identity (the IAM resource server requires
+        // service_id to equal the subject); token_type still keeps a service
+        // token unmistakable from a person's access token.
+        assertEquals("api-gateway", encoder.claims.getClaim("service_id"));
         // The claim name is the same one user tokens carry and the value is not, so every existing authority
         // mapping keeps working while a service token can never be mistaken for a person's.
         assertEquals("service", encoder.claims.getClaim("token_type"));

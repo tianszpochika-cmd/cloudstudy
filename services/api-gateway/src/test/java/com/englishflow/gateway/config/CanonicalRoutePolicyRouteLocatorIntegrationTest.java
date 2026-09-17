@@ -114,7 +114,8 @@ class CanonicalRoutePolicyRouteLocatorIntegrationTest {
     void validJwtCannotTurnAnUnavailableCanonicalTargetIntoBroadWrongOwnerForwarding() throws Exception {
         List<String> routeIds = routeLocator.getRoutes().map(route -> route.getId()).collectList().block();
         assertTrue(routeIds.contains("canonical-iam-login-login"));
-        assertFalse(routeIds.stream().anyMatch(routeId -> routeId.startsWith("canonical-iam-account-deletions-")));
+        // M6-008: account deletions are now an available canonical target.
+        assertTrue(routeIds.stream().anyMatch(routeId -> routeId.startsWith("canonical-iam-account-deletions-")));
         assertFalse(routeIds.stream().anyMatch(routeId -> routeId.startsWith("canonical-grammar-domain-")));
 
         String token = validAccessToken();

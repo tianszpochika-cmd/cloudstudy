@@ -47,7 +47,9 @@ public interface AccountStore {
             if (!credentialUnchanged) {
                 return new PasswordLoginResult(current, IamDecisionCode.INVALID_CREDENTIALS);
             }
-            if (current.status() == AccountStatus.DISABLED) {
+            if (current.status() == AccountStatus.DISABLED || current.status() == AccountStatus.DELETED) {
+                // Deleted accounts deny exactly like disabled ones: no state change,
+                // so a login can never resurrect a deleted account (M6-008).
                 return new PasswordLoginResult(current, IamDecisionCode.INVALID_CREDENTIALS);
             }
             if (current.status() == AccountStatus.LOCKED) {

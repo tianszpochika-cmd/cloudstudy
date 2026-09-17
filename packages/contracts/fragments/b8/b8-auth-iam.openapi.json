@@ -43,19 +43,31 @@
       ],
       "eligibilityClaims": {
         "adult_gate": {
-          "values": ["PASSED", "NOT_EVALUATED", "REJECTED"],
+          "values": [
+            "PASSED",
+            "NOT_EVALUATED",
+            "REJECTED"
+          ],
           "semantics": "Server-evaluated adult-gate fact at token issuance. Domain PEPs grant learning access only on PASSED; any other value or absence denies."
         },
         "consent_state": {
-          "values": ["GRANTED", "UNKNOWN", "WITHDRAWN"],
+          "values": [
+            "GRANTED",
+            "UNKNOWN",
+            "WITHDRAWN"
+          ],
           "semantics": "Server-evaluated learning-consent fact at token issuance: GRANTED only when every LEARNING-required consent matches the published document/policy digest. Domain PEPs deny on any other value or absence."
         },
         "media_consent": {
-          "values": ["granted"],
+          "values": [
+            "granted"
+          ],
           "semantics": "P1-LIVE-012 (decision A): ADULT_LEARNING consent covers learner media reads, so media_consent mirrors consent_state (present as granted only when GRANTED, absent otherwise). Media PEPs deny on absence; pre-consent tokens never carry it."
         },
         "content_rights": {
-          "values": ["<license code or rights id>"],
+          "values": [
+            "<license code or rights id>"
+          ],
           "semantics": "P1-LIVE-012 (decision A): configured license/rights grants minted for consent-granted learners only (iam.media.learner-content-rights, empty by default). Media owner checks accept a matching rights id or license code; absent pre-consent."
         },
         "freshness": "Claims are frozen at issuance and bounded by maxLifetimeSeconds (900s). Consent withdrawal revokes sessions, so the next issuance re-evaluates; a withdrawn principal cannot ride an old token past its TTL.",
@@ -63,15 +75,21 @@
       },
       "identityClaims": {
         "phase": {
-          "values": ["phase-1"],
+          "values": [
+            "phase-1"
+          ],
           "semantics": "Server deployment phase at issuance, from iam-service configuration. Social PEPs require phase-1; absence denies."
         },
         "account_status": {
-          "values": ["ACTIVE"],
+          "values": [
+            "ACTIVE"
+          ],
           "semantics": "Issuance itself refuses non-ACTIVE accounts, so every minted token implies ACTIVE. Social PEPs require ACTIVE; absence denies."
         },
         "device_id": {
-          "values": ["<session device UUID>"],
+          "values": [
+            "<session device UUID>"
+          ],
           "semantics": "Verified session device at issuance. Notification PEPs require device_id for push targeting; absence denies with UNAUTHORIZED."
         },
         "issuerChange": "P1-LIVE-006: no issued token carried phase/account_status while social PEPs already required them, so every social request failed closed (500 via the unmapped IllegalStateException path). Issuance now always mints both."
@@ -2455,6 +2473,101 @@
           },
           "504": {
             "$ref": "#/components/responses/ApiGatewayTimeout"
+          }
+        }
+      }
+    },
+    "/api/v1/iam/account-deletions": {
+      "post": {
+        "tags": [
+          "b8-auth"
+        ],
+        "summary": "Request self-scoped account deletion with a 168-hour cooling window (M6-008 live)",
+        "operationId": "requestAccountDeletion",
+        "x-contract": {
+          "domain": "iam",
+          "owner": "iam-service",
+          "phase": "P1",
+          "authentication": "self-owned-jwt"
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/iam/account-deletions/{deletionRequestId}": {
+      "get": {
+        "tags": [
+          "b8-auth"
+        ],
+        "summary": "Read own deletion request status (M6-008 live)",
+        "operationId": "readAccountDeletionStatus",
+        "x-contract": {
+          "domain": "iam",
+          "owner": "iam-service",
+          "phase": "P1",
+          "authentication": "self-owned-jwt"
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "deletionRequestId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/iam/account-deletions/{deletionRequestId}/cancel": {
+      "post": {
+        "tags": [
+          "b8-auth"
+        ],
+        "summary": "Cancel a cooling deletion request (M6-008 live)",
+        "operationId": "cancelAccountDeletion",
+        "x-contract": {
+          "domain": "iam",
+          "owner": "iam-service",
+          "phase": "P1",
+          "authentication": "self-owned-jwt"
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "deletionRequestId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
           }
         }
       }

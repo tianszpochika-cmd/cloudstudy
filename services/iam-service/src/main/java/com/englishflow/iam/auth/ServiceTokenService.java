@@ -79,9 +79,15 @@ public final class ServiceTokenService {
 
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer(properties.getJwt().getIssuer())
-                .subject("svc:" + clientId)
+                // Subject-bound service identity: the IAM resource server only
+                // accepts token_type=service when service_id equals the subject
+                // (pinned by IamJwtAuthenticationTest). token_type still keeps a
+                // service token unmistakable from a human access token.
+                .subject(clientId)
+                .claim("service_id", clientId)
                 .audience(List.of(properties.getJwt().getAudience()))
                 .issuedAt(issuedAt)
+                .notBefore(issuedAt)
                 .expiresAt(expiresAt)
                 .id(jti)
                 // The same claim names the user tokens carry, with a different value: every existing authority
@@ -100,6 +106,8 @@ public final class ServiceTokenService {
                 org.springframework.security.oauth2.jwt.JwsHeader
                         .with(org.springframework.security.oauth2.jose.jws.SignatureAlgorithm.RS256)
                         .keyId(properties.getJwt().getKeyId())
+                        // The resource-server typ gate requires "JWT", same as user tokens.
+                        .type("JWT")
                         .build(), claims)).getTokenValue();
         return new IssuedServiceToken(value, issuedAt, expiresAt, jti, clientId, client.getPermissions());
     }

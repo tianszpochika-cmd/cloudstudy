@@ -54,6 +54,9 @@ public final class GatewayRouteExecutionPolicy {
             "services/iam-service/src/main/java/com/englishflow/iam/web/IamProviderBoundaryController.java", "/api/v1");
     private static final ControllerEvidence IAM_POLICY_CONTROL = evidence("iam-service",
             "services/iam-service/src/main/java/com/englishflow/iam/web/IamPolicyControlController.java", "/api/v1/iam/policy-versions");
+    // M6-008 live: self-scoped account deletion lifecycle.
+    private static final ControllerEvidence IAM_DELETION = evidence("iam-service",
+            "services/iam-service/src/main/java/com/englishflow/iam/web/IamAccountDeletionController.java", "/api/v1/iam/account-deletions");
     private static final ControllerEvidence LEARNER_PUBLIC = evidence("learner-service",
             "services/learner-service/src/main/java/com/englishflow/learner/web/LearnerHttpController.java", "/api/v1/learner");
     private static final ControllerEvidence LEARNER_INTERNAL = evidence("learner-service",
@@ -126,7 +129,6 @@ public final class GatewayRouteExecutionPolicy {
             Map.entry("learning-content-snapshot", "content_owner_controller_mapping_not_present"),
             Map.entry("speaking-recordings", "canonical_media_owner_conflicts_with_current_learning_controller"),
             Map.entry("speaking-shadowing-completion", "canonical_assessment_owner_conflicts_with_current_learning_controller"),
-            Map.entry("iam-account-deletions", "iam_owner_controller_mapping_not_present"),
             Map.entry("privacy-exports", "learner_owner_plural_export_controller_mapping_not_present"),
             Map.entry("sync-domain", "canonical_learning_owner_conflicts_with_current_notification_controller"),
             Map.entry("exam-domain", "assessment_owner_controller_mapping_not_present"),
@@ -456,6 +458,11 @@ public final class GatewayRouteExecutionPolicy {
                 preserve("policy-approval", "/api/v1/iam/policy-versions/{policyVersionId}/approvals", IAM_POLICY_CONTROL, HttpMethod.POST),
                 preserve("policy-activate", "/api/v1/iam/policy-versions/{policyVersionId}/activate", IAM_POLICY_CONTROL, HttpMethod.POST),
                 preserve("policy-revoke", "/api/v1/iam/policy-versions/{policyVersionId}/revoke", IAM_POLICY_CONTROL, HttpMethod.POST));
+        // M6-008 live: self-scoped deletion lifecycle in projectionId order (parity sorts).
+        add(definitions, "iam-account-deletions",
+                preserve("deletion-cancel", "/api/v1/iam/account-deletions/{deletionRequestId}/cancel", IAM_DELETION, HttpMethod.POST),
+                preserve("deletion-request", "/api/v1/iam/account-deletions", IAM_DELETION, HttpMethod.POST),
+                preserve("deletion-status", "/api/v1/iam/account-deletions/{deletionRequestId}", IAM_DELETION, HttpMethod.GET));
 
         add(definitions, "public-content",
                 preserve("catalog", "/api/v1/public/content/catalog", CONTENT_PUBLIC_CATALOG, HttpMethod.GET),

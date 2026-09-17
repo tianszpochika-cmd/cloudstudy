@@ -118,9 +118,9 @@ public final class PasswordAccountService {
                 throw new IamPolicyException(IamDecisionCode.ACCOUNT_LOCKED, "iam.account.locked");
             }
             if (result.decisionCode() == IamDecisionCode.INVALID_CREDENTIALS) {
-                // Missing and disabled accounts remain non-enumerating. A normal failed login
+                // Missing, disabled and deleted accounts remain non-enumerating. A normal failed login
                 // retains its durable counter/audit fact from the store result.
-                if (account != null && account.status() != AccountStatus.DISABLED) {
+                if (account != null && account.status() != AccountStatus.DISABLED && account.status() != AccountStatus.DELETED) {
                     appendAudit(account, IamDecisionCode.INVALID_CREDENTIALS, "login_failed");
                 }
                 throw invalidCredentials();

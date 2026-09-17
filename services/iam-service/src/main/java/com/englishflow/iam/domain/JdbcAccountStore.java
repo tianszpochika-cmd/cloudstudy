@@ -98,7 +98,7 @@ public class JdbcAccountStore implements AccountStore {
             if (!credentialUnchanged) {
                 return new PasswordLoginResult(current, IamDecisionCode.INVALID_CREDENTIALS);
             }
-            if (current.status() == AccountStatus.DISABLED) {
+            if (current.status() == AccountStatus.DISABLED || current.status() == AccountStatus.DELETED) {
                 return new PasswordLoginResult(current, IamDecisionCode.INVALID_CREDENTIALS);
             }
             if (current.status() == AccountStatus.LOCKED) {
