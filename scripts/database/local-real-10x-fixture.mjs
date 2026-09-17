@@ -187,8 +187,8 @@ const iamSessionRows = each((index) => [
 ]);
 
 const iamConsentRows = each((index) => [
-  stableUuid('consent', index), SUBJECTS[index - 1], 'ADULT_GATE', 'b30-rbac-v1',
-  'GRANTED', now, null,
+  stableUuid('consent', index), SUBJECTS[index - 1], 'ADULT_LEARNING', 'ADULT_LEARNING_ELIGIBILITY', 'LEARNING_REQUIRED', 'b30-consent-v1', 'b30-rbac-v1',
+  'GRANTED', now, now, null,
 ]);
 
 const iamDecisionAuditRows = each((index) => [
@@ -871,8 +871,8 @@ function buildStatements() {
     ['session_id', 'principal_id', 'device_id', 'token_family_id', 'refresh_token_hash', 'status', 'issued_at', 'expires_at', 'rotated_at', 'revoked_at', 'revoke_reason', 'rotation'],
     iamSessionRows, ['principal_id', 'device_id', 'status', 'issued_at', 'expires_at', 'rotation']));
   statements.push(insert('iam_service', 'iam_consent',
-    ['consent_id', 'principal_id', 'consent_type', 'policy_version', 'status', 'granted_at', 'revoked_at'],
-    iamConsentRows, ['principal_id', 'consent_type', 'policy_version', 'status', 'granted_at', 'revoked_at']));
+    ['consent_id', 'principal_id', 'consent_type', 'purpose', 'required_scope', 'document_version', 'policy_version', 'status', 'granted_at', 'effective_at', 'revoked_at'],
+    iamConsentRows, ['principal_id', 'consent_type', 'purpose', 'required_scope', 'document_version', 'policy_version', 'status', 'granted_at', 'effective_at', 'revoked_at']));
   statements.push(insert('iam_service', 'iam_decision_audit',
     ['decision_id', 'request_id', 'trace_id', 'principal_id', 'tenant_id', 'action_code', 'resource_type', 'resource_id_hash', 'policy_version', 'decision', 'reason_code', 'created_at'],
     iamDecisionAuditRows, ['request_id', 'trace_id', 'principal_id', 'action_code', 'resource_type', 'resource_id_hash', 'policy_version', 'decision', 'reason_code']));
