@@ -494,7 +494,11 @@ public final class GatewayRouteExecutionPolicy {
                 rewrite("daily-tasks-today", "/api/v1/onboarding/daily-tasks/today", "/internal/v1/learner/onboarding/daily-tasks/today", LEARNER_INTERNAL, HttpMethod.GET),
                 rewrite("daily-tasks-ensure", "/api/v1/onboarding/daily-tasks/ensure", "/internal/v1/learner/onboarding/daily-tasks/ensure", LEARNER_INTERNAL, HttpMethod.POST),
                 rewrite("daily-task-complete", "/api/v1/onboarding/daily-tasks/{taskId}/complete", "/internal/v1/learner/onboarding/daily-tasks/{taskId}/complete", LEARNER_INTERNAL, HttpMethod.POST));
-        add(definitions, "privacy-domain", rewrite("export", "/api/v1/privacy/export", "/internal/v1/learner/privacy/export", LEARNER_INTERNAL, HttpMethod.POST));
+        add(definitions, "privacy-domain",
+                rewrite("export", "/api/v1/privacy/export", "/internal/v1/learner/privacy/export", LEARNER_INTERNAL, HttpMethod.POST),
+                // M6-007 live: status + download in projectionId order (parity sorts).
+                rewrite("export-download", "/api/v1/privacy/export/{exportId}/download", "/internal/v1/learner/privacy/export/{exportId}/download", LEARNER_INTERNAL, HttpMethod.GET),
+                rewrite("export-status", "/api/v1/privacy/export/{exportId}", "/internal/v1/learner/privacy/export/{exportId}", LEARNER_INTERNAL, HttpMethod.GET));
 
         add(definitions, "content-domain",
                 preserve("learner-catalog", "/api/v1/content/learner/catalog", CONTENT_LEARNER_CATALOG, HttpMethod.GET),

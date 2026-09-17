@@ -1,0 +1,82 @@
+{
+  "task": "M6007-LIVE-EXPORT",
+  "capturedAt": "2026-09-17T00:10:06.717Z",
+  "gateway": "http://127.0.0.1:18070",
+  "result": "PASS",
+  "passed": 12,
+  "total": 12,
+  "checks": [
+    {
+      "name": "setup",
+      "ok": true,
+      "observed": "two learners ready",
+      "expected": "tokens"
+    },
+    {
+      "name": "export-request",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "QUEUED + id"
+    },
+    {
+      "name": "export-replay",
+      "ok": true,
+      "observed": "HTTP 200 same id",
+      "expected": "same job"
+    },
+    {
+      "name": "export-status-queued",
+      "ok": true,
+      "observed": "HTTP 200 status=QUEUED",
+      "expected": "QUEUED"
+    },
+    {
+      "name": "download-refused-queued",
+      "ok": true,
+      "observed": "HTTP 409",
+      "expected": "HTTP 409 not downloadable"
+    },
+    {
+      "name": "export-status-ready",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "READY"
+    },
+    {
+      "name": "download-descriptor",
+      "ok": true,
+      "observed": "HTTP 200 receipted=true",
+      "expected": "descriptor + receipt"
+    },
+    {
+      "name": "download-stamped",
+      "ok": true,
+      "observed": "downloaded_at stamped",
+      "expected": "stamped once"
+    },
+    {
+      "name": "export-expired",
+      "ok": true,
+      "observed": "HTTP 200 status=EXPIRED",
+      "expected": "EXPIRED"
+    },
+    {
+      "name": "expired-no-download",
+      "ok": true,
+      "observed": "HTTP 409 row retained=true",
+      "expected": "HTTP 409 + audit row kept"
+    },
+    {
+      "name": "export-scoped",
+      "ok": true,
+      "observed": "HTTP 404",
+      "expected": "HTTP 404 other owner"
+    },
+    {
+      "name": "download-scoped",
+      "ok": true,
+      "observed": "HTTP 404",
+      "expected": "HTTP 404 other owner"
+    }
+  ]
+}

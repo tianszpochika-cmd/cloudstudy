@@ -342,14 +342,16 @@ public class B25LearnerJdbcController {
     private static String evaluateExportStatus(Map<String, Object> row) {
         Object expiresAt = row.get("expires_at");
         if (expiresAt != null) {
-            try {
-                java.time.Instant expiry = ((java.sql.Timestamp) expiresAt).toInstant();
-                if (!expiry.isAfter(java.time.Instant.now())) {
-                    return "EXPIRED";
-                }
-            } catch (ClassCastException ignored) {
-                // A non-timestamp expiry is treated as not expired; schema migration V7
-                // guarantees TIMESTAMP, so this branch only guards exotic drivers.
+            java.time.Instant expiry = null;
+            if (expiresAt instanceof java.sql.Timestamp timestamp) expiry = timestamp.toInstant();
+            else if (expiresAt instanceof java.time.LocalDateTime localDateTime) {
+                expiry = localDateTime.toInstant(java.time.ZoneOffset.UTC);
+            } else if (expiresAt instanceof java.time.Instant instant) expiry = instant;
+            // An unreadable expiry must not silently extend the window: the
+            // schema guarantees TIMESTAMP, anything else fails closed here.
+            if (expiry == null) return "EXPIRED";
+            if (!expiry.isAfter(java.time.Instant.now())) {
+                return "EXPIRED";
             }
         }
         return String.valueOf(row.get("export_status"));

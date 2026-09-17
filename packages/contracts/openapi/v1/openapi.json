@@ -36686,6 +36686,64 @@
           }
         }
       }
+    },
+    "/api/v1/privacy/export/{exportId}": {
+      "get": {
+        "tags": [
+          "b1-privacy"
+        ],
+        "summary": "Read own privacy export status with on-read expiry (M6-007 live)",
+        "operationId": "readPrivacyExportStatus",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "exportId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/privacy/export/{exportId}/download": {
+      "get": {
+        "tags": [
+          "b1-privacy"
+        ],
+        "summary": "Fetch the download descriptor of a READY export (M6-007 live)",
+        "operationId": "readPrivacyExportDownload",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "exportId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -78086,6 +78144,40 @@
             "targetUriConfig": "gateway.b14.service-base-urls.learner",
             "pathStrategy": "REWRITE_PATH",
             "targetPathTemplate": "/internal/v1/learner/privacy/export",
+            "controllerEvidence": {
+              "sourcePath": "services/learner-service/src/main/java/com/englishflow/learner/web/B25LearnerJdbcController.java",
+              "requestMapping": "/internal/v1/learner"
+            }
+          },
+          {
+            "projectionId": "privacy-domain.export-download",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/privacy/export/{exportId}/download",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learner-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learner",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/learner/privacy/export/{exportId}/download",
+            "controllerEvidence": {
+              "sourcePath": "services/learner-service/src/main/java/com/englishflow/learner/web/B25LearnerJdbcController.java",
+              "requestMapping": "/internal/v1/learner"
+            }
+          },
+          {
+            "projectionId": "privacy-domain.export-status",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/privacy/export/{exportId}",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learner-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learner",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/learner/privacy/export/{exportId}",
             "controllerEvidence": {
               "sourcePath": "services/learner-service/src/main/java/com/englishflow/learner/web/B25LearnerJdbcController.java",
               "requestMapping": "/internal/v1/learner"

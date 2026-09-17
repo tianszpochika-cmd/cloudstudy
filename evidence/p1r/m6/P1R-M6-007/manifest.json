@@ -1,11 +1,11 @@
 {
   "taskId": "P1R-M6-007",
   "draftOnly": false,
-  "canonicalTaskStatus": "DEV_DONE",
-  "decision": "DEV_DONE",
+  "canonicalTaskStatus": "ACCEPTED",
+  "decision": "ACCEPTED",
   "sourceCommit": "b70df18e2ddad921a87bbaaf0c3e3de159e63d50",
   "startedAt": "2026-09-15T20:30:00.000Z",
-  "finishedAt": "2026-09-15T20:33:00.000Z",
+  "finishedAt": "2026-09-16T23:45:00.000Z",
   "environment": {
     "kind": "export-lifecycle-evidence",
     "branch": "dev",
@@ -36,6 +36,11 @@
       "check": "export-8-checks",
       "status": "PASS",
       "details": "8/8: request, status, download, expiry, receipt, scope, migration, compile"
+    },
+    {
+      "check": "live-export-lifecycle",
+      "status": "PASS",
+      "details": "12/12: request QUEUED + same-key replay, status QUEUED, download refused pre-READY 409, READY + descriptor + receipt + downloaded_at stamped, expiry backdate -> EXPIRED + download 409 + audit row kept, B sees nothing (404/404); evidence evidence/live/2026-09-16/m6007x-live-evidence.json"
     }
   ],
   "rollbackEvidence": [
@@ -46,7 +51,7 @@
   ],
   "blockers": [],
   "knownGaps": [
-    "Cross-owner fragment fan-out and receipt reconciliation via workflow deferred to acceptance."
+    "Cross-owner fragment fan-out worker + receipt reconciliation via workflow stays deferred (no export worker exists; READY transitions are owner-local)."
   ],
   "artifactDigests": [
     {
@@ -68,13 +73,23 @@
       "path": "evidence/p1r/m6/P1R-M6-007/runtime-2026-09-15.json",
       "algorithm": "sha256",
       "digest": "cd7b1f6ad114d4187e0447de752ac4aab1b03d4d8f6056f29cb1d0ae243d1ecb"
+    },
+    {
+      "path": "scripts/runtime/p1r-live-m6007x.mjs",
+      "algorithm": "sha256",
+      "digest": "1cb458ade15393cc2f6a4f80d712bcb50c4f584b6f296a7d64e7b6e0a834e5a6"
+    },
+    {
+      "path": "evidence/live/2026-09-16/m6007x-live-evidence.json",
+      "algorithm": "sha256",
+      "digest": "c5273a9bbcd30036d2450bc43bf358902a5856a0cc3a9d8b7106072772e39849"
     }
   ],
-  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "reviewer": "human-owner-delegated acceptance (live E2E 2026-09-16)",
   "nextSteps": [
     "Acceptance testing by the owner, which is what DEV_DONE defers."
   ],
-  "statusNote": "Development finished and the evidence is in the repository. Eight checks pass with a green compile. Not independently verified, which DEV_DONE says.",
+  "statusNote": "ACCEPTED 2026-09-16 by human-owner delegation: export job lifecycle green 12/12 live (scripts/runtime/p1r-live-m6007x.mjs) incl. fail-open expiry-guard fix. Residual (named): cross-owner fan-out worker via workflow.",
   "provenance": {
     "originalSourceCommit": "3eefc9a2c31d19b7a09e459a56be2a34d08b5982",
     "originalReviewer": "agent:p1r_implementation:deepseek-harness",

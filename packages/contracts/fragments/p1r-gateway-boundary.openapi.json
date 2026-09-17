@@ -2089,6 +2089,40 @@
               "sourcePath": "services/learner-service/src/main/java/com/englishflow/learner/web/B25LearnerJdbcController.java",
               "requestMapping": "/internal/v1/learner"
             }
+          },
+          {
+            "projectionId": "privacy-domain.export-download",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/privacy/export/{exportId}/download",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learner-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learner",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/learner/privacy/export/{exportId}/download",
+            "controllerEvidence": {
+              "sourcePath": "services/learner-service/src/main/java/com/englishflow/learner/web/B25LearnerJdbcController.java",
+              "requestMapping": "/internal/v1/learner"
+            }
+          },
+          {
+            "projectionId": "privacy-domain.export-status",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/privacy/export/{exportId}",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learner-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learner",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/learner/privacy/export/{exportId}",
+            "controllerEvidence": {
+              "sourcePath": "services/learner-service/src/main/java/com/englishflow/learner/web/B25LearnerJdbcController.java",
+              "requestMapping": "/internal/v1/learner"
+            }
           }
         ]
       },

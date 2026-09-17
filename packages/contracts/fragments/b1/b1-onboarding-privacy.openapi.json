@@ -35,7 +35,16 @@
         "x-authorization": {
           "requiredPermission": "assessment.placement.session.read",
           "defaultDecision": "DENY",
-          "trustedFacts": ["subject", "tenant", "adultGate", "phase", "contentRights", "entitlement", "resourceOwner", "policyVersion"],
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "adultGate",
+            "phase",
+            "contentRights",
+            "entitlement",
+            "resourceOwner",
+            "policyVersion"
+          ],
           "resourceOwner": "server-derived placement session owner",
           "serviceSidePepRequired": true,
           "legacyAuthorizationBypass": "PROHIBITED"
@@ -129,7 +138,16 @@
         "x-authorization": {
           "requiredPermission": "assessment.placement.session.create",
           "defaultDecision": "DENY",
-          "trustedFacts": ["subject", "tenant", "adultGate", "phase", "contentRights", "entitlement", "resourceOwner", "policyVersion"],
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "adultGate",
+            "phase",
+            "contentRights",
+            "entitlement",
+            "resourceOwner",
+            "policyVersion"
+          ],
           "resourceOwner": "server-derived placement session owner",
           "serviceSidePepRequired": true,
           "legacyAuthorizationBypass": "PROHIBITED"
@@ -231,7 +249,16 @@
         "x-authorization": {
           "requiredPermission": "assessment.placement.response.submit",
           "defaultDecision": "DENY",
-          "trustedFacts": ["subject", "tenant", "adultGate", "phase", "contentRights", "entitlement", "resourceOwner", "policyVersion"],
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "adultGate",
+            "phase",
+            "contentRights",
+            "entitlement",
+            "resourceOwner",
+            "policyVersion"
+          ],
           "resourceOwner": "server-derived placement session owner",
           "serviceSidePepRequired": true,
           "legacyAuthorizationBypass": "PROHIBITED"
@@ -441,6 +468,64 @@
           },
           "409": {
             "$ref": "#/components/responses/ApiConflict"
+          }
+        }
+      }
+    },
+    "/api/v1/privacy/export/{exportId}": {
+      "get": {
+        "tags": [
+          "b1-privacy"
+        ],
+        "summary": "Read own privacy export status with on-read expiry (M6-007 live)",
+        "operationId": "readPrivacyExportStatus",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "exportId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/privacy/export/{exportId}/download": {
+      "get": {
+        "tags": [
+          "b1-privacy"
+        ],
+        "summary": "Fetch the download descriptor of a READY export (M6-007 live)",
+        "operationId": "readPrivacyExportDownload",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "exportId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
           }
         }
       }

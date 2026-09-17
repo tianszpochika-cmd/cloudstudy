@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1R-M6-007-EXPORT-20260916] **翻牌 M6-007：导出全周期活跑（73 ACCEPTED / 35 DEV_DONE，工具待验）。** 新链 `p1r-live-m6007x.mjs` 12/12：入队/重放 → 状态 → 未就绪 409 → 就绪描述回执 → 过期 EXPIRED + 审计行保留 → 他人 404。附带真修过期守卫 fail-open + 网关双投影（417 routes）；learner 50/0/0、gateway 94/0/0。残留：跨 owner worker 扇出。
+
 - [P1R-M7-006-REDEEM-20260916] **翻牌 M7-006：活 sandbox 兑换（72 ACCEPTED / 36 DEV_DONE，工具待验）。** 新链 `p1r-live-m6007.mjs` 8/8：签发 → 兑换上账 → 重放吸收 → 二兑 409 → 过期 409。注：中途曾误翻 M6-007（其 gap 系 workflow 扇出），已回滚，改翻 M7-006。
 
 - [P1R-M5-009-VARIANT-20260916] **翻牌 M5-009：变式签发装配 + D1/D7 时区活证（71 ACCEPTED / 37 DEV_DONE，工具待验）。** 新链 `p1r-live-m5009.mjs` 12/12：答错落行 → D0→D1（+24h 精确）→ 变式重挂链 → 同题 400 → D1→D7（+7d 精确）→ MASTERED → 终态 409 → 重开。附带：B10 错题行 + 3 端口 + 主体加宽 + 网关 3 投影（415 routes）；assessment 57/0/0、gateway 94/0/0。
