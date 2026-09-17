@@ -2,7 +2,7 @@
   "taskId": "P1R-M2-006",
   "draftOnly": false,
   "canonicalTaskStatus": "DEV_DONE",
-  "sourceCommit": "f5857c2554337b4ffec39cfde196c76b95851d8a",
+  "sourceCommit": "90f11252bda975312d82d76dd46dd3c97fa283fc",
   "artifactDigests": [
     {
       "path": "services/workflow-service/src/main/java/com/englishflow/workflow/domain/SagaStateMachine.java",
@@ -67,7 +67,7 @@
     {
       "path": "services/iam-service/src/main/java/com/englishflow/iam/auth/ServiceTokenService.java",
       "algorithm": "sha256",
-      "digest": "d61ee14314465b649976a8c315f41ebce5307c65ffd3b5a3706d99538dc15099"
+      "digest": "85085efde44e607335d18bdd154c789f20148dc0d6c4ea3fe989cf5be3fa118b"
     },
     {
       "path": "services/iam-service/src/main/java/com/englishflow/iam/web/IamServiceTokenController.java",
@@ -111,10 +111,10 @@
     "currentSourceRevalidationTask": "P1R-M2-006",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-17T02:19:31.023Z",
-    "currentSourceRevalidationAuditedImplementationSource": "f5857c2554337b4ffec39cfde196c76b95851d8a",
-    "currentSourceRevalidationIntegrationCheckpoint": "f5857c2554337b4ffec39cfde196c76b95851d8a",
-    "previousCurrentSourceCommit": "e581db972eecb0dd251a49fa7cf0b56d0b94ca3b",
+    "currentSourceRevalidationFinishedAt": "2026-09-17T03:24:51.870Z",
+    "currentSourceRevalidationAuditedImplementationSource": "90f11252bda975312d82d76dd46dd3c97fa283fc",
+    "currentSourceRevalidationIntegrationCheckpoint": "90f11252bda975312d82d76dd46dd3c97fa283fc",
+    "previousCurrentSourceCommit": "f5857c2554337b4ffec39cfde196c76b95851d8a",
     "currentSourceRevalidationHistory": [
       {
         "taskId": "P1R-M2-006",
@@ -425,6 +425,16 @@
         "runtimeStatus": "RUNTIME_VERIFIED",
         "finishedAt": "2026-09-17T02:19:31.023Z",
         "details": "M6-008 deletion projections + b8 ops re-merge openapi"
+      },
+      {
+        "taskId": "P1R-M2-006",
+        "sourceCommit": "90f11252bda975312d82d76dd46dd3c97fa283fc",
+        "auditedImplementationSource": "90f11252bda975312d82d76dd46dd3c97fa283fc",
+        "integrationCheckpoint": "90f11252bda975312d82d76dd46dd3c97fa283fc",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-17T03:24:51.870Z",
+        "details": "M7-007 live callbacks chain + evidence; service-token shape"
       }
     ]
   },
