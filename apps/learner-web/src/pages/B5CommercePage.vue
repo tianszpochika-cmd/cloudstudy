@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { ApiError } from '../api/client'
-import { createB5Order, listB5Entitlements, listB5Orders, listB5Skus, prepareB5Payment, redeemB5ActivationCode } from '../api/b5'
+import { createB5Order, listB5Entitlements, listB5Orders, listB5Skus, prepareB5Payment, readB5Readiness, redeemB5ActivationCode, requestB5Refund } from '../api/b5'
 import { formatMinorAmount, listRecords, toEntitlement, toOrder, toSku, type B5Entitlement, type B5Order, type B5Sku } from '../domain/b5'
 
 const skus = ref<B5Sku[]>([])
@@ -12,6 +12,8 @@ const loading = ref(true)
 const actionMessage = ref('')
 const errorMessage = ref('')
 const activationCode = ref('')
+const gateStatus = ref('UNKNOWN')
+const refundTarget = ref<B5Order | null>(null)
 
 const activeEntitlements = computed(() => entitlements.value.filter((item) => item.status === 'ACTIVE'))
 
@@ -19,10 +21,14 @@ async function load(): Promise<void> {
   loading.value = true
   errorMessage.value = ''
   try {
-    const [skuResponse, entitlementResponse, orderResponse] = await Promise.all([listB5Skus(), listB5Entitlements(), listB5Orders()])
+    const [skuResponse, entitlementResponse, orderResponse, readinessResponse] = await Promise.all([listB5Skus(), listB5Entitlements(), listB5Orders(), readB5Readiness().catch(() => null)])
     skus.value = listRecords(skuResponse).map(toSku).filter((item) => item.status === 'ACTIVE')
     entitlements.value = listRecords(entitlementResponse).map(toEntitlement)
     orders.value = listRecords(orderResponse).map(toOrder)
+    const ready = readinessResponse && typeof readinessResponse === 'object' && 'data' in (readinessResponse as Record<string, unknown>)
+      ? (readinessResponse as Record<string, unknown>).data as Record<string, unknown>
+      : (readinessResponse as Record<string, unknown> | null)
+    gateStatus.value = ready && (ready.paymentEnabled === true || ready.gateEnabled === true || ready.environment === 'SANDBOX' || ready.status === 'READY' || ready.reasonCode === 'READY') ? 'SANDBOX' : 'CLOSED'
   } catch (error) {
     errorMessage.value = error instanceof ApiError ? error.message : '商业化服务暂时不可用，请稍后重试。'
   } finally {
@@ -37,7 +43,7 @@ async function createOrder(sku: B5Sku): Promise<void> {
   try {
     const response = await createB5Order(sku.skuId)
     const created = listRecords({ items: [response] }).map(toOrder)[0]
-    actionMessage.value = created?.orderId ? `订单 ${created.orderId} 已创建，支付渠道仍处于沙箱关闭状态。` : '订单已创建，等待服务端返回状态。'
+    actionMessage.value = created?.orderId ? `订单 ${created.orderId} 已创建，可继续发起沙箱支付。` : '订单已创建，等待服务端返回状态。'
     await load()
   } catch (error) {
     errorMessage.value = error instanceof ApiError ? error.message : '订单创建失败。'
@@ -48,12 +54,37 @@ async function preparePayment(order: B5Order): Promise<void> {
   actionMessage.value = ''
   errorMessage.value = ''
   try {
-    const response = await prepareB5Payment(order.orderId, order.channelCode || 'WECHAT')
+    const response = await prepareB5Payment(order.orderId, order.channelCode || 'SANDBOX')
     const data = response && typeof response === 'object' && 'data' in response ? response.data : response
     const status = data && typeof data === 'object' && 'status' in data ? String(data.status) : 'UNKNOWN'
-    actionMessage.value = status === 'DISABLED' ? '支付通道已按发布闸门关闭；真实微信/支付宝/Apple 沙箱联调放在测试阶段。' : `支付准备状态：${status}`
+    actionMessage.value = status === 'DISABLED' ? '支付通道已按发布闸门关闭；沙箱联调需先打开沙箱门。' : `支付准备状态：${status}`
   } catch (error) {
     errorMessage.value = error instanceof ApiError ? error.message : '支付准备失败。'
+  }
+}
+
+function askRefund(order: B5Order): void {
+  refundTarget.value = order
+  actionMessage.value = ''
+  errorMessage.value = ''
+}
+
+function cancelRefund(): void {
+  refundTarget.value = null
+}
+
+async function confirmRefund(): Promise<void> {
+  const order = refundTarget.value
+  if (!order) return
+  refundTarget.value = null
+  actionMessage.value = ''
+  errorMessage.value = ''
+  try {
+    await requestB5Refund(order.orderId, 'USER_REQUEST')
+    actionMessage.value = `订单 ${order.orderId} 已申请退款，服务端确认后权益将撤销。`
+    await load()
+  } catch (error) {
+    errorMessage.value = error instanceof ApiError ? error.message : '退款申请失败。'
   }
 }
 
@@ -82,7 +113,7 @@ onMounted(() => { void load() })
         <h2>让学习权益，跟着目标一起成长。</h2>
         <p>价格、金额、订单和权益都由服务端事实驱动；客户端不自行判断支付成功。</p>
       </div>
-      <div class="commerce-hero__status"><span class="status-dot" aria-hidden="true"></span><span>支付通道：沙箱关闭</span></div>
+      <div class="commerce-hero__status"><span class="status-dot" aria-hidden="true"></span><span>{{ gateStatus === 'SANDBOX' ? '支付通道：沙箱开启' : gateStatus === 'CLOSED' ? '支付通道：沙箱关闭' : '支付通道：读取中' }}</span></div>
     </div>
 
     <div v-if="errorMessage" class="commerce-alert commerce-alert--error" role="alert">{{ errorMessage }} <button type="button" @click="load">重试</button></div>
@@ -112,8 +143,9 @@ onMounted(() => { void load() })
 
       <section class="commerce-panel commerce-panel--wide">
         <div class="panel-heading"><div><p class="panel-kicker">ORDERS</p><h3>订单与支付恢复</h3></div><span class="fact-tag">服务端状态</span></div>
-        <div v-if="orders.length" class="order-list"><div v-for="order in orders" :key="order.orderId" class="order-row"><div><strong>{{ order.orderId }}</strong><span>{{ order.skuId }} · {{ formatMinorAmount(order.amountMinor, order.currency) }}</span></div><div class="order-row__right"><span class="status-pill">{{ order.status }}</span><button v-if="order.status === 'CREATED'" class="button button--ghost" type="button" @click="preparePayment(order)">恢复支付</button></div></div></div>
+        <div v-if="orders.length" class="order-list"><div v-for="order in orders" :key="order.orderId" class="order-row"><div><strong>{{ order.orderId }}</strong><span>{{ order.skuId }} · {{ formatMinorAmount(order.amountMinor, order.currency) }}</span></div><div class="order-row__right"><span class="status-pill">{{ order.status }}</span><button v-if="order.status === 'CREATED'" class="button button--ghost" type="button" @click="preparePayment(order)">恢复支付</button><button v-if="order.status === 'PAID'" class="button button--ghost" type="button" @click="askRefund(order)">申请退款</button></div></div></div>
         <p v-else class="empty-copy">还没有订单。创建订单后，支付失败或通道关闭时可从这里恢复。</p>
+        <div v-if="refundTarget" class="activation-box" role="dialog" aria-label="退款二次确认"><label>确认退款 {{ refundTarget.orderId }}？</label><small>服务端确认后订单进入退款流程，对应权益将被撤销；该操作不可撤销。</small><div class="activation-box__row"><button class="button button--primary" type="button" @click="confirmRefund">确认退款</button><button class="button button--secondary" type="button" @click="cancelRefund">取消</button></div></div>
       </section>
     </div>
   </section>

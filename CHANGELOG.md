@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1R-M7-009-BROWSER-20260917] **翻牌 M7-009：浏览器退款旅程（77 ACCEPTED / 31 DEV_DONE，工具待验）。** 新链 `p1r-live-m7009.mjs` 13/13：方案 → 沙箱徽章 → 下单 → 支付意图 → 混合支付 → PAID → 退款 CTA → 二次确认 → 终端退款态，零 pageerror；横扫 21 路零错。附带：学习端退款 CTA + readiness 徽章（除硬编码）。
+
 - [P1R-M7-008-REFUND-20260917] **翻牌 M7-008：显式 403 负例 + 退款撤销（76 ACCEPTED / 32 DEV_DONE，工具待验）。** 新链 `p1r-live-m7008r.mjs` 9/9：付款上账 → 跨用户显式拒绝无泄漏 → 退款回调 → 库证 REFUNDED + REVOKED。
 
 - [P1R-M7-007-CALLBACKS-20260917] **翻牌 M7-007：沙盒回调乱序/金额冲突（75 ACCEPTED / 33 DEV_DONE，工具待验）。** 新链 `p1r-live-m7007.mjs` 13/13：学员回调 401 → 金额冲突/坏签 409 → APPLIED → 重绑冲突 → 迟到无待决 → 复重吸收。附带：沙盒门本地开、HMAC 适配器进 local-real、commerce 认 service token；commerce 92/0/0。

@@ -1,0 +1,90 @@
+{
+  "task": "M7009-LIVE-BROWSER",
+  "capturedAt": "2026-09-17T03:46:00.529Z",
+  "gateway": "http://127.0.0.1:18070",
+  "web": "http://127.0.0.1:18180",
+  "result": "PASS",
+  "passed": 13,
+  "total": 13,
+  "checks": [
+    {
+      "name": "setup",
+      "ok": true,
+      "observed": "user ready",
+      "expected": "token"
+    },
+    {
+      "name": "browser-login",
+      "ok": true,
+      "observed": "http://127.0.0.1:18180/home",
+      "expected": "away from login"
+    },
+    {
+      "name": "plans-render",
+      "ok": true,
+      "observed": "plans panel",
+      "expected": "plans visible"
+    },
+    {
+      "name": "gate-badge",
+      "ok": true,
+      "observed": "sandbox badge",
+      "expected": "gate open label"
+    },
+    {
+      "name": "ui-order-create",
+      "ok": true,
+      "observed": "ord_cb5d581e-aeb5-4473-8c7d-9fa0d0440f35",
+      "expected": "order row with id"
+    },
+    {
+      "name": "ui-pay-intent",
+      "ok": true,
+      "observed": "intent message",
+      "expected": "PENDING message"
+    },
+    {
+      "name": "hybrid-pay",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "paid"
+    },
+    {
+      "name": "ui-paid-state",
+      "ok": true,
+      "observed": "PAID visible",
+      "expected": "paid state renders"
+    },
+    {
+      "name": "ui-refund-button",
+      "ok": true,
+      "observed": "refund button",
+      "expected": "refund CTA present"
+    },
+    {
+      "name": "ui-refund-confirm",
+      "ok": true,
+      "observed": "confirm dialog",
+      "expected": "two-step dialog"
+    },
+    {
+      "name": "ui-refund-requested",
+      "ok": true,
+      "observed": "requested message",
+      "expected": "refund requested"
+    },
+    {
+      "name": "ui-refunded-state",
+      "ok": true,
+      "observed": "refund state",
+      "expected": "terminal refund state renders"
+    },
+    {
+      "name": "zero-pageerrors",
+      "ok": true,
+      "observed": "0 pageerrors",
+      "expected": "zero"
+    }
+  ],
+  "consoleErrors": []
+}

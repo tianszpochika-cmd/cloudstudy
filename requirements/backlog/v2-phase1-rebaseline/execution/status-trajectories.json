@@ -1298,11 +1298,12 @@
         "PLANNED",
         "READY",
         "IN_PROGRESS",
-        "DEV_DONE"
+        "DEV_DONE",
+        "ACCEPTED"
       ],
-      "recordedAt": "2026-09-15T21:43:00Z",
-      "actor": "agent:p1r_implementation:deepseek-harness",
-      "reason": "Owner route A. Dependencies M7-006..008 DEV_DONE. Refund ops workbench delivered; typecheck green, 8/8 harness PASS; live refund run deferred as knownGap.",
+      "recordedAt": "2026-09-17T03:40:00Z",
+      "actor": "human-owner-delegated acceptance (live E2E 2026-09-17)",
+      "reason": "Named known-gap closed: browser refund run 13/13 + sweep 21/21 (p1r-live-m7009.mjs).",
       "evidencePath": "evidence/p1r/m7/P1R-M7-009/manifest.json"
     },
     {

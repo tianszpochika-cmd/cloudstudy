@@ -1,11 +1,11 @@
 {
   "taskId": "P1R-M7-009",
   "draftOnly": false,
-  "canonicalTaskStatus": "DEV_DONE",
-  "decision": "DEV_DONE",
+  "canonicalTaskStatus": "ACCEPTED",
+  "decision": "ACCEPTED",
   "sourceCommit": "f630762702564436578e884dea8e6e548d1876c5",
   "startedAt": "2026-09-15T21:40:00.000Z",
-  "finishedAt": "2026-09-15T21:43:00.000Z",
+  "finishedAt": "2026-09-17T03:40:00.000Z",
   "environment": {
     "kind": "refund-workbench-evidence",
     "branch": "dev",
@@ -36,6 +36,11 @@
       "check": "ops-8-checks",
       "status": "PASS",
       "details": "8/8: learner page, refund card, two-step, reasons, backend, readonly, gate, typecheck"
+    },
+    {
+      "check": "live-refund-browser-eight-state",
+      "status": "PASS",
+      "details": "13/13 browser refund journey (plans -> sandbox badge -> UI order -> UI intent -> hybrid pay -> PAID -> refund CTA -> two-step confirm -> requested -> terminal refund state, zero pageerrors) + 21-route sweep PASS with /commerce rendered; evidence evidence/live/2026-09-16/m7009-live-evidence.json"
     }
   ],
   "rollbackEvidence": [
@@ -45,9 +50,7 @@
     }
   ],
   "blockers": [],
-  "knownGaps": [
-    "Live refund browser run and eight-state sweep deferred to acceptance."
-  ],
+  "knownGaps": [],
   "artifactDigests": [
     {
       "path": "apps/admin-web/src/views/AdminCommerceView.vue",
@@ -63,13 +66,23 @@
       "path": "evidence/p1r/m7/P1R-M7-009/runtime-2026-09-15.json",
       "algorithm": "sha256",
       "digest": "a49ffe916552a01afe91f79b45ff9d691b6225da72dd9ba93fd2544c2520f235"
+    },
+    {
+      "path": "scripts/runtime/p1r-live-m7009.mjs",
+      "algorithm": "sha256",
+      "digest": "eeb591cf07c40b498e5d55acb4fefa4ae77e601fc820f46bd81d9214a0cd8a45"
+    },
+    {
+      "path": "evidence/live/2026-09-16/m7009-live-evidence.json",
+      "algorithm": "sha256",
+      "digest": "ebe431d76b348314b644e92d476be1ad4deb218d455b3e27b4131e2ed732f5d1"
     }
   ],
-  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "reviewer": "human-owner-delegated acceptance (live E2E 2026-09-17)",
   "nextSteps": [
     "Acceptance testing by the owner, which is what DEV_DONE defers."
   ],
-  "statusNote": "Owner decision 9C (2026-09-16): refund browser runs deferred with payment; workbench render remains runnable. Development finished and the evidence is in the repository. Eight checks pass with a green typecheck. Not independently verified, which DEV_DONE says.",
+  "statusNote": "ACCEPTED 2026-09-17 by human-owner delegation: named known-gap closed by live browser run scripts/runtime/p1r-live-m7009.mjs 13/13 + pages sweep 21/21 zero errors. Code: learner refund CTA + two-step confirm, readiness-driven gate badge, b13/b5 refund+readiness client. Residual: none.",
   "provenance": {
     "originalSourceCommit": "c7c0b2e2fd5a085409c0243f99afe195418563d5",
     "originalReviewer": "agent:p1r_implementation:deepseek-harness",
