@@ -3,7 +3,7 @@
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
   "decision": "ACCEPTED",
-  "sourceCommit": "b1081aff6f82be1d0a4fdf58bf66c613b9da0b51",
+  "sourceCommit": "346534126f60ca22c3254ff54f405d2a77fb9894",
   "startedAt": "2026-09-15T20:20:00.000Z",
   "finishedAt": "2026-09-15T20:25:00.000Z",
   "environment": {
@@ -59,7 +59,7 @@
     {
       "path": "apps/learner-web/src/pages/SupportPage.vue",
       "algorithm": "sha256",
-      "digest": "66913dc94bde3a1d4a6d200f42574302e0d574573f1efd9ce7bfe85fc69742a1"
+      "digest": "1f52c57c5dd3689e19625ca9323f427740cd21e9e42a669512c89294e80e4862"
     },
     {
       "path": "apps/learner-web/src/router/index.ts",
@@ -69,7 +69,7 @@
     {
       "path": "apps/learner-web/src/layouts/AppShell.vue",
       "algorithm": "sha256",
-      "digest": "7cae2f6a04c8ce439a016b40bd5b7482c9d341ba11a968fb23ca9bbec842692b"
+      "digest": "049f2166cfcec7ca5477b82bff7635681da8778bab0a9d9c96a91308150873be"
     },
     {
       "path": "apps/mobile/src/api/support.ts",
@@ -108,9 +108,9 @@
     "currentSourceRevalidationTask": "P1R-M6-006",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-17T06:00:15.991Z",
-    "currentSourceRevalidationAuditedImplementationSource": "b1081aff6f82be1d0a4fdf58bf66c613b9da0b51",
-    "currentSourceRevalidationIntegrationCheckpoint": "b1081aff6f82be1d0a4fdf58bf66c613b9da0b51",
+    "currentSourceRevalidationFinishedAt": "2026-09-17T16:27:53.687Z",
+    "currentSourceRevalidationAuditedImplementationSource": "346534126f60ca22c3254ff54f405d2a77fb9894",
+    "currentSourceRevalidationIntegrationCheckpoint": "346534126f60ca22c3254ff54f405d2a77fb9894",
     "currentSourceRevalidationHistory": [
       {
         "taskId": "P1R-M6-006",
@@ -441,8 +441,18 @@
         "runtimeStatus": "RUNTIME_VERIFIED",
         "finishedAt": "2026-09-17T06:00:15.991Z",
         "details": "M7-004 sweeper hardening digests"
+      },
+      {
+        "taskId": "P1R-M6-006",
+        "sourceCommit": "346534126f60ca22c3254ff54f405d2a77fb9894",
+        "auditedImplementationSource": "346534126f60ca22c3254ff54f405d2a77fb9894",
+        "integrationCheckpoint": "346534126f60ca22c3254ff54f405d2a77fb9894",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-17T16:27:53.687Z",
+        "details": "UI revamp shared-pattern migration touched pinned pages"
       }
     ],
-    "previousCurrentSourceCommit": "7f3c68544b5c705c165f5e725dbe79ae71dd412f"
+    "previousCurrentSourceCommit": "b1081aff6f82be1d0a4fdf58bf66c613b9da0b51"
   }
 }

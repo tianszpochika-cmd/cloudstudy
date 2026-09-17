@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-009",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "b1081aff6f82be1d0a4fdf58bf66c613b9da0b51",
+  "sourceCommit": "346534126f60ca22c3254ff54f405d2a77fb9894",
   "artifactDigests": [
     {
       "path": "config/g1-contract-data.json",
@@ -158,7 +158,7 @@
     "originalFinishedAt": "2026-08-30T15:10:39+08:00",
     "originalReviewer": "agent:m1_009_contract_audit:gpt-5.6-luna:max",
     "originalAcceptedContractBaseline": "463c4b238caceb1592bff6c61327c00ab9bac922",
-    "previousCurrentSourceCommit": "7f3c68544b5c705c165f5e725dbe79ae71dd412f",
+    "previousCurrentSourceCommit": "b1081aff6f82be1d0a4fdf58bf66c613b9da0b51",
     "previousCurrentSourceRevalidationTask": "P1R-M2-005",
     "previousCurrentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
@@ -166,7 +166,7 @@
     "currentSourceRevalidationTask": "P1R-M1-009",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-17T06:00:11.635Z",
+    "currentSourceRevalidationFinishedAt": "2026-09-17T16:27:47.629Z",
     "currentSourceRevalidationHistory": [
       {
         "taskId": "P1R-M1-009",
@@ -806,10 +806,20 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-17T06:00:11.635Z",
         "details": "M7-004 sweeper hardening digests"
+      },
+      {
+        "taskId": "P1R-M1-009",
+        "sourceCommit": "346534126f60ca22c3254ff54f405d2a77fb9894",
+        "auditedImplementationSource": "346534126f60ca22c3254ff54f405d2a77fb9894",
+        "integrationCheckpoint": "346534126f60ca22c3254ff54f405d2a77fb9894",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-17T16:27:47.629Z",
+        "details": "UI revamp shared-pattern migration touched pinned pages"
       }
     ],
-    "currentSourceRevalidationAuditedImplementationSource": "b1081aff6f82be1d0a4fdf58bf66c613b9da0b51",
-    "currentSourceRevalidationIntegrationCheckpoint": "b1081aff6f82be1d0a4fdf58bf66c613b9da0b51"
+    "currentSourceRevalidationAuditedImplementationSource": "346534126f60ca22c3254ff54f405d2a77fb9894",
+    "currentSourceRevalidationIntegrationCheckpoint": "346534126f60ca22c3254ff54f405d2a77fb9894"
   },
   "startedAt": "2026-08-30T13:26:50+08:00",
   "finishedAt": "2026-09-01T15:39:29+08:00",

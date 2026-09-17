@@ -3,7 +3,7 @@
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
   "decision": "ACCEPTED",
-  "sourceCommit": "b1081aff6f82be1d0a4fdf58bf66c613b9da0b51",
+  "sourceCommit": "346534126f60ca22c3254ff54f405d2a77fb9894",
   "startedAt": "2026-09-15T21:40:00.000Z",
   "finishedAt": "2026-09-17T03:40:00.000Z",
   "environment": {
@@ -89,9 +89,9 @@
     "currentSourceRevalidationTask": "P1R-M7-009",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-17T06:00:16.996Z",
-    "currentSourceRevalidationAuditedImplementationSource": "b1081aff6f82be1d0a4fdf58bf66c613b9da0b51",
-    "currentSourceRevalidationIntegrationCheckpoint": "b1081aff6f82be1d0a4fdf58bf66c613b9da0b51",
+    "currentSourceRevalidationFinishedAt": "2026-09-17T16:27:55.003Z",
+    "currentSourceRevalidationAuditedImplementationSource": "346534126f60ca22c3254ff54f405d2a77fb9894",
+    "currentSourceRevalidationIntegrationCheckpoint": "346534126f60ca22c3254ff54f405d2a77fb9894",
     "currentSourceRevalidationHistory": [
       {
         "taskId": "P1R-M7-009",
@@ -422,8 +422,18 @@
         "runtimeStatus": "RUNTIME_VERIFIED",
         "finishedAt": "2026-09-17T06:00:16.996Z",
         "details": "M7-004 sweeper hardening digests"
+      },
+      {
+        "taskId": "P1R-M7-009",
+        "sourceCommit": "346534126f60ca22c3254ff54f405d2a77fb9894",
+        "auditedImplementationSource": "346534126f60ca22c3254ff54f405d2a77fb9894",
+        "integrationCheckpoint": "346534126f60ca22c3254ff54f405d2a77fb9894",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-17T16:27:55.003Z",
+        "details": "UI revamp shared-pattern migration touched pinned pages"
       }
     ],
-    "previousCurrentSourceCommit": "7f3c68544b5c705c165f5e725dbe79ae71dd412f"
+    "previousCurrentSourceCommit": "b1081aff6f82be1d0a4fdf58bf66c613b9da0b51"
   }
 }

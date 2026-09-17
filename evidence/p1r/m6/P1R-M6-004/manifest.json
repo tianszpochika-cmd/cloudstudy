@@ -3,7 +3,7 @@
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
   "decision": "ACCEPTED",
-  "sourceCommit": "b1081aff6f82be1d0a4fdf58bf66c613b9da0b51",
+  "sourceCommit": "346534126f60ca22c3254ff54f405d2a77fb9894",
   "startedAt": "2026-09-15T20:10:00.000Z",
   "finishedAt": "2026-09-15T20:12:00.000Z",
   "environment": {
@@ -50,7 +50,7 @@
     {
       "path": "apps/learner-web/src/pages/SettingsPage.vue",
       "algorithm": "sha256",
-      "digest": "632197d845c59ba076ef6ac8b81b33574f6c71ac0dd9a116cc116af44087393c"
+      "digest": "d2dcc8332f794abf1f3d9efdc350d5aca27946ea49b1493081314cf3a5a84031"
     },
     {
       "path": "scripts/runtime/p1r-m6-004-runtime.mjs",
@@ -74,9 +74,9 @@
     "currentSourceRevalidationTask": "P1R-M6-004",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-17T06:00:15.839Z",
-    "currentSourceRevalidationAuditedImplementationSource": "b1081aff6f82be1d0a4fdf58bf66c613b9da0b51",
-    "currentSourceRevalidationIntegrationCheckpoint": "b1081aff6f82be1d0a4fdf58bf66c613b9da0b51",
+    "currentSourceRevalidationFinishedAt": "2026-09-17T16:27:53.502Z",
+    "currentSourceRevalidationAuditedImplementationSource": "346534126f60ca22c3254ff54f405d2a77fb9894",
+    "currentSourceRevalidationIntegrationCheckpoint": "346534126f60ca22c3254ff54f405d2a77fb9894",
     "currentSourceRevalidationHistory": [
       {
         "taskId": "P1R-M6-004",
@@ -407,8 +407,18 @@
         "runtimeStatus": "RUNTIME_VERIFIED",
         "finishedAt": "2026-09-17T06:00:15.839Z",
         "details": "M7-004 sweeper hardening digests"
+      },
+      {
+        "taskId": "P1R-M6-004",
+        "sourceCommit": "346534126f60ca22c3254ff54f405d2a77fb9894",
+        "auditedImplementationSource": "346534126f60ca22c3254ff54f405d2a77fb9894",
+        "integrationCheckpoint": "346534126f60ca22c3254ff54f405d2a77fb9894",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-17T16:27:53.502Z",
+        "details": "UI revamp shared-pattern migration touched pinned pages"
       }
     ],
-    "previousCurrentSourceCommit": "7f3c68544b5c705c165f5e725dbe79ae71dd412f"
+    "previousCurrentSourceCommit": "b1081aff6f82be1d0a4fdf58bf66c613b9da0b51"
   }
 }
