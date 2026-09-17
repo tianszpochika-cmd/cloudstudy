@@ -3,7 +3,7 @@
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
   "decision": "ACCEPTED",
-  "sourceCommit": "68a169ae4b7179a23243a734d474ac80fc8163ed",
+  "sourceCommit": "7f3c68544b5c705c165f5e725dbe79ae71dd412f",
   "startedAt": "2026-09-15T15:40:00.000Z",
   "finishedAt": "2026-09-15T15:44:19.813Z",
   "environment": {
@@ -113,9 +113,9 @@
     "currentSourceRevalidationTask": "P1R-M2-010",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-17T04:45:35.554Z",
-    "currentSourceRevalidationAuditedImplementationSource": "68a169ae4b7179a23243a734d474ac80fc8163ed",
-    "currentSourceRevalidationIntegrationCheckpoint": "68a169ae4b7179a23243a734d474ac80fc8163ed",
+    "currentSourceRevalidationFinishedAt": "2026-09-17T05:01:20.077Z",
+    "currentSourceRevalidationAuditedImplementationSource": "7f3c68544b5c705c165f5e725dbe79ae71dd412f",
+    "currentSourceRevalidationIntegrationCheckpoint": "7f3c68544b5c705c165f5e725dbe79ae71dd412f",
     "currentSourceRevalidationHistory": [
       {
         "taskId": "P1R-M2-010",
@@ -426,8 +426,18 @@
         "runtimeStatus": "RUNTIME_VERIFIED",
         "finishedAt": "2026-09-17T04:45:35.554Z",
         "details": "M4-006 A1-C2 sweep chain + evidence"
+      },
+      {
+        "taskId": "P1R-M2-010",
+        "sourceCommit": "7f3c68544b5c705c165f5e725dbe79ae71dd412f",
+        "auditedImplementationSource": "7f3c68544b5c705c165f5e725dbe79ae71dd412f",
+        "integrationCheckpoint": "7f3c68544b5c705c165f5e725dbe79ae71dd412f",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-17T05:01:20.077Z",
+        "details": "M3-006 publish lifecycle chain + evidence"
       }
     ],
-    "previousCurrentSourceCommit": "4b47629f11890687004a19599b2477531c300fe4"
+    "previousCurrentSourceCommit": "68a169ae4b7179a23243a734d474ac80fc8163ed"
   }
 }

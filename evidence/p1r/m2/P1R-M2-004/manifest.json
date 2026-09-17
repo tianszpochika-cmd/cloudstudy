@@ -15,7 +15,7 @@
   "taskId": "P1R-M2-004",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "68a169ae4b7179a23243a734d474ac80fc8163ed",
+  "sourceCommit": "7f3c68544b5c705c165f5e725dbe79ae71dd412f",
   "artifactDigests": [
     {
       "path": "config/p1r-data-ownership.v1.json",
@@ -563,13 +563,13 @@
         "summary": "Not submitted."
       }
     ],
-    "previousCurrentSourceCommit": "4b47629f11890687004a19599b2477531c300fe4",
+    "previousCurrentSourceCommit": "68a169ae4b7179a23243a734d474ac80fc8163ed",
     "currentSourceRevalidationTask": "P1R-M2-004",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-17T04:45:35.140Z",
-    "currentSourceRevalidationAuditedImplementationSource": "68a169ae4b7179a23243a734d474ac80fc8163ed",
-    "currentSourceRevalidationIntegrationCheckpoint": "68a169ae4b7179a23243a734d474ac80fc8163ed",
+    "currentSourceRevalidationFinishedAt": "2026-09-17T05:01:19.670Z",
+    "currentSourceRevalidationAuditedImplementationSource": "7f3c68544b5c705c165f5e725dbe79ae71dd412f",
+    "currentSourceRevalidationIntegrationCheckpoint": "7f3c68544b5c705c165f5e725dbe79ae71dd412f",
     "currentSourceRevalidationHistory": [
       {
         "taskId": "P1R-M2-004",
@@ -1030,6 +1030,16 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-17T04:45:35.140Z",
         "details": "M4-006 A1-C2 sweep chain + evidence"
+      },
+      {
+        "taskId": "P1R-M2-004",
+        "sourceCommit": "7f3c68544b5c705c165f5e725dbe79ae71dd412f",
+        "auditedImplementationSource": "7f3c68544b5c705c165f5e725dbe79ae71dd412f",
+        "integrationCheckpoint": "7f3c68544b5c705c165f5e725dbe79ae71dd412f",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-17T05:01:19.670Z",
+        "details": "M3-006 publish lifecycle chain + evidence"
       }
     ]
   },

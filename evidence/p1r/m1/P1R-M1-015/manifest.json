@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-015",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "68a169ae4b7179a23243a734d474ac80fc8163ed",
+  "sourceCommit": "7f3c68544b5c705c165f5e725dbe79ae71dd412f",
   "artifactDigests": [
     {
       "path": "config/b20-commerce-dr-evidence.json",
@@ -994,9 +994,19 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-17T04:45:34.649Z",
         "details": "M4-006 A1-C2 sweep chain + evidence"
+      },
+      {
+        "taskId": "P1R-M1-015",
+        "sourceCommit": "7f3c68544b5c705c165f5e725dbe79ae71dd412f",
+        "auditedImplementationSource": "7f3c68544b5c705c165f5e725dbe79ae71dd412f",
+        "integrationCheckpoint": "7f3c68544b5c705c165f5e725dbe79ae71dd412f",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-17T05:01:19.160Z",
+        "details": "M3-006 publish lifecycle chain + evidence"
       }
     ],
-    "previousCurrentSourceCommit": "4b47629f11890687004a19599b2477531c300fe4",
+    "previousCurrentSourceCommit": "68a169ae4b7179a23243a734d474ac80fc8163ed",
     "previousCurrentSourceRevalidationTask": "P1R-M1-015",
     "previousCurrentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
@@ -1004,8 +1014,8 @@
     "currentSourceRevalidationTask": "P1R-M1-015",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-17T04:45:34.649Z",
-    "currentSourceRevalidationAuditedImplementationSource": "68a169ae4b7179a23243a734d474ac80fc8163ed",
-    "currentSourceRevalidationIntegrationCheckpoint": "68a169ae4b7179a23243a734d474ac80fc8163ed"
+    "currentSourceRevalidationFinishedAt": "2026-09-17T05:01:19.160Z",
+    "currentSourceRevalidationAuditedImplementationSource": "7f3c68544b5c705c165f5e725dbe79ae71dd412f",
+    "currentSourceRevalidationIntegrationCheckpoint": "7f3c68544b5c705c165f5e725dbe79ae71dd412f"
   }
 }
