@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1R-DOCS-20260917] **文档同步 + M4-005 异常建档（无翻牌）。** `.env.example` 补沙箱回调本地开关说明（默认仍全关）；台账记录回归待命机制；第 89 轮 `p1r-live-m4005.mjs` 3/7 FAIL 建档为 open 跟踪项（未定因，M4-005 状态不变）。
+
 - [P1R-M7-004-SWEEPER-20260917] **M7-004 回归后硬化（状态不变 ACCEPTED）。** 回归坐满房间暴露 local-real 无租约清扫：新增 `SocialLocalRealLeaseSweeper`（30s，过期 → AVAILABLE/LEASE_TIMEOUT + 成员 LEFT + 专注 AUTO_RELEASED），planted 探针座活证被扫；链补 final-leave（13/13）。注：`@Scheduled` 挂控制器方法不触发，独立组件生效。
 
 - [P1R-TRIAGE-20260917] **本地可翻队列清空（81 ACCEPTED / 27 DEV_DONE）。** 逐项复核剩余 27 项具名 gap：11 个 M8-* + 9 个 M8 波次 + 5 个基建（Kafka/补偿传输/集群策略/trace 采集/分支保护主机 API 实测调不通）+ M0-006 留独立验收 + M4-008 留 M4-009/M8-007。本轮未翻牌、无生产改动。
