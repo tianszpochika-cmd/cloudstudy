@@ -1,11 +1,11 @@
 {
   "taskId": "P1R-M4-006",
   "draftOnly": false,
-  "canonicalTaskStatus": "DEV_DONE",
-  "decision": "DEV_DONE",
+  "canonicalTaskStatus": "ACCEPTED",
+  "decision": "ACCEPTED",
   "sourceCommit": "4b47629f11890687004a19599b2477531c300fe4",
   "startedAt": "2026-09-15T18:00:00.000Z",
-  "finishedAt": "2026-09-15T18:02:00.000Z",
+  "finishedAt": "2026-09-17T04:35:00.000Z",
   "environment": {
     "kind": "placement-report-reuse-evidence",
     "branch": "dev",
@@ -32,6 +32,11 @@
       "check": "report-7-checks",
       "status": "PASS",
       "details": "7/7: CEFR, versioned, explanation, guards, server scoring, recovery"
+    },
+    {
+      "check": "live-a1-c2-boundaries",
+      "status": "PASS",
+      "details": "9/9: skip pins A1/A2/B1/B2/C1/C2 exactly, unknown level 400, half-correct lands at score=0.5/A2 strictly inside the poles; evidence evidence/live/2026-09-16/m4006-live-evidence.json"
     }
   ],
   "rollbackEvidence": [
@@ -41,9 +46,7 @@
     }
   ],
   "blockers": [],
-  "knownGaps": [
-    "A1–C2 boundary live fixtures run deferred to acceptance."
-  ],
+  "knownGaps": [],
   "artifactDigests": [
     {
       "path": "scripts/runtime/p1r-m4-006-runtime.mjs",
@@ -54,13 +57,23 @@
       "path": "evidence/p1r/m4/P1R-M4-006/runtime-2026-09-15.json",
       "algorithm": "sha256",
       "digest": "a273188e313fe87029b6e2b5dfcef2f1bd3d70bbaac3c58dc5a28a8a7b730fef"
+    },
+    {
+      "path": "scripts/runtime/p1r-live-m4006.mjs",
+      "algorithm": "sha256",
+      "digest": "d9da64be52781a2c75b50bacbb684947559be8e0735fab7aacb0473b61569582"
+    },
+    {
+      "path": "evidence/live/2026-09-16/m4006-live-evidence.json",
+      "algorithm": "sha256",
+      "digest": "7a9a0796f3f89464503c9517c2365d934f64cd3f6b8aeee2c781a65002de6a7d"
     }
   ],
-  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "reviewer": "human-owner-delegated acceptance (live E2E 2026-09-17)",
   "nextSteps": [
     "Acceptance testing by the owner, which is what DEV_DONE defers."
   ],
-  "statusNote": "Owner decision 8B (2026-09-16): simplified report on 2 seeds; full CEFR mapping awaits bank. Development finished and the evidence is in the repository. Seven reuse checks pass. Not independently verified, which DEV_DONE says.",
+  "statusNote": "ACCEPTED 2026-09-17 by human-owner delegation: named known-gap closed by live run scripts/runtime/p1r-live-m4006.mjs 9/9 (A1-C2 sweep + partial boundary). Residual: none.",
   "provenance": {
     "originalSourceCommit": "ed516037acd5699cfbe3e94dfb4801b3e291e90b",
     "originalReviewer": "agent:p1r_implementation:deepseek-harness",

@@ -1,0 +1,64 @@
+{
+  "task": "M4006-LIVE-BOUNDARIES",
+  "capturedAt": "2026-09-17T04:38:47.362Z",
+  "gateway": "http://127.0.0.1:18070",
+  "result": "PASS",
+  "passed": 9,
+  "total": 9,
+  "checks": [
+    {
+      "name": "setup",
+      "ok": true,
+      "observed": "learner ready",
+      "expected": "token"
+    },
+    {
+      "name": "skip-A1",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "A1 pinned"
+    },
+    {
+      "name": "skip-A2",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "A2 pinned"
+    },
+    {
+      "name": "skip-B1",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "B1 pinned"
+    },
+    {
+      "name": "skip-B2",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "B2 pinned"
+    },
+    {
+      "name": "skip-C1",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "C1 pinned"
+    },
+    {
+      "name": "skip-C2",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "C2 pinned"
+    },
+    {
+      "name": "skip-rejects-unknown",
+      "ok": true,
+      "observed": "HTTP 400",
+      "expected": "HTTP 400 unsupported"
+    },
+    {
+      "name": "partial-boundary",
+      "ok": true,
+      "observed": "score=0.5 level=A2",
+      "expected": "strictly inside (0,1)"
+    }
+  ]
+}

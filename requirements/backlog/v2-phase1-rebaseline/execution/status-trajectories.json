@@ -775,11 +775,12 @@
         "PLANNED",
         "READY",
         "IN_PROGRESS",
-        "DEV_DONE"
+        "DEV_DONE",
+        "ACCEPTED"
       ],
-      "recordedAt": "2026-09-15T18:02:00Z",
-      "actor": "agent:p1r_implementation:deepseek-harness",
-      "reason": "Owner route A (REUSE-VERIFY, no production change). Dependency M4-005 DEV_DONE. Seven report checks pass; boundary live fixtures deferred as knownGap.",
+      "recordedAt": "2026-09-17T04:35:00Z",
+      "actor": "human-owner-delegated acceptance (live E2E 2026-09-17)",
+      "reason": "Named known-gap closed: A1-C2 boundaries green 9/9 (p1r-live-m4006.mjs).",
       "evidencePath": "evidence/p1r/m4/P1R-M4-006/manifest.json"
     },
     {
