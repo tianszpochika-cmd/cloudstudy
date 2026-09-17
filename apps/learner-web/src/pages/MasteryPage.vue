@@ -65,22 +65,9 @@ onMounted(() => { void load() })
 
 <style scoped>
 .yx-stats {
-  display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 12px;
-  margin: 0 0 20px;
-  padding: 0;
 }
-.yx-stats div {
-  display: grid;
-  gap: 6px;
-  padding: 16px 12px;
-  border-radius: 12px;
-  background: var(--yx-color-surface-page);
-  text-align: center;
-}
-.yx-stats dt { color: var(--yx-color-text-secondary); font-size: 12px; }
-.yx-stats dd { margin: 0; color: var(--yx-color-brand-primary); font-size: 24px; font-weight: 800; }
+.yx-stats dd { color: var(--yx-color-brand-primary); font-size: 24px; }
 .actions { display: flex; gap: 12px; flex-wrap: wrap; }
 @media (max-width: 640px) { .yx-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 </style>

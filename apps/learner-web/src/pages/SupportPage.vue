@@ -8,6 +8,8 @@ import {
   reopenSupportTicket,
   type SupportTicket,
 } from '../api/support'
+import PageHeader from '../components/PageHeader.vue'
+import StatePanel from '../components/StatePanel.vue'
 
 type ViewState = 'loading' | 'ready' | 'empty' | 'permission' | 'recovery' | 'error'
 
@@ -96,47 +98,55 @@ onMounted(() => { void load() })
 </script>
 
 <template>
-  <main class="public-page">
-    <section class="login-card login-card--quiet" aria-labelledby="support-title">
-      <h1 id="support-title">客服与帮助</h1>
-      <p class="lead">工单只读投影来自客服 owner；原文不离端，分派与解决由服务端确认。</p>
-      <div v-if="state === 'loading'" role="status">正在读取工单…</div>
-      <div v-else-if="state === 'permission'" role="alert">当前会话没有客服权限。</div>
-      <div v-else-if="state === 'recovery'" role="alert">服务端要求先恢复，请刷新后重试。</div>
-      <div v-else-if="state === 'error'" role="alert">{{ lastError ?? '客服暂时不可用。' }}</div>
-      <form class="login-form" novalidate @submit.prevent="create">
-        <label class="field">
-          <span>问题分类</span>
-          <select v-model="category" :disabled="busy">
-            <option v-for="item in SUPPORT_CATEGORIES" :key="item" :value="item">{{ item }}</option>
-          </select>
-        </label>
-        <label class="field">
-          <span>关联引用（必填，服务端路由分派所需）</span>
-          <input v-model="resourceRef" type="text" placeholder="内容/订单引用" :disabled="busy">
-        </label>
-        <label class="field">
-          <span>问题描述（仅本地，发送指纹）</span>
-          <textarea v-model="description" rows="4" placeholder="描述问题，原文不出端" :disabled="busy" />
-        </label>
-        <button class="button button--primary" type="submit" :disabled="busy || !description.trim() || !resourceRef.trim()">
-          {{ busy ? '正在提交…' : '提交工单' }}
-        </button>
-      </form>
-      <section aria-label="我的工单">
-        <h2>我的工单</h2>
-        <p v-if="!tickets.length" class="muted">暂无可见工单。</p>
-        <ul v-else>
+  <main class="page-stack">
+    <PageHeader kicker="SUPPORT" title="客服与帮助" description="工单只读投影来自客服 owner；原文不离端，分派与解决由服务端确认。" />
+    <StatePanel
+      v-if="state === 'loading' || state === 'permission' || state === 'error' || state === 'recovery'"
+      :state="state === 'recovery' ? 'error' : state"
+      title="客服与帮助"
+      :description="state === 'permission' ? '当前会话没有客服权限。' : state === 'recovery' ? '服务端要求先恢复，请刷新后重试。' : (lastError ?? '客服暂时不可用。')"
+      :action-label="state === 'error' || state === 'recovery' ? '重试' : ''"
+      @action="load"
+    />
+    <template v-if="state === 'ready' || state === 'empty' || tickets.length">
+      <section class="info-card" aria-label="新建工单">
+        <div class="yx-section-heading"><div><p class="yx-kicker">NEW TICKET</p><h3>提交工单</h3></div></div>
+        <form class="yx-form" novalidate @submit.prevent="create">
+          <label class="field">
+            <span>问题分类</span>
+            <select v-model="category" :disabled="busy">
+              <option v-for="item in SUPPORT_CATEGORIES" :key="item" :value="item">{{ item }}</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>关联引用（必填，服务端路由分派所需）</span>
+            <input v-model="resourceRef" type="text" placeholder="内容/订单引用" :disabled="busy">
+          </label>
+          <label class="field">
+            <span>问题描述（仅本地，发送指纹）</span>
+            <textarea v-model="description" rows="4" placeholder="描述问题，原文不出端" :disabled="busy" />
+          </label>
+          <button class="button button--primary" type="submit" :disabled="busy || !description.trim() || !resourceRef.trim()">
+            {{ busy ? '正在提交…' : '提交工单' }}
+          </button>
+        </form>
+      </section>
+      <section class="info-card" aria-label="我的工单">
+        <div class="yx-section-heading"><div><p class="yx-kicker">MY TICKETS</p><h3>我的工单</h3></div><span class="yx-fact-tag">{{ tickets.length }} 张</span></div>
+        <p v-if="!tickets.length" class="yx-fact-tag">暂无可见工单。</p>
+        <ul v-else class="yx-ticket-list">
           <li v-for="ticket in tickets" :key="ticket.ticketId">
             <button type="button" @click="open(ticket.ticketId)">
-              {{ ticket.ticketId }} · {{ ticket.categoryCode }} · {{ ticket.state }} · SLA {{ ticket.slaState ?? '—' }}
+              <strong>{{ ticket.ticketId }}</strong>
+              <span class="yx-pill" :class="ticket.state === 'OPEN' ? 'yx-pill--warning' : ticket.state === 'CLOSED' ? 'yx-pill--muted' : ''">{{ ticket.state }}</span>
+              <small>{{ ticket.categoryCode }} · SLA {{ ticket.slaState ?? '—' }}</small>
             </button>
           </li>
         </ul>
       </section>
-      <section v-if="selected" aria-label="工单详情">
-        <h2>工单详情</h2>
-        <dl>
+      <section v-if="selected" class="info-card" aria-label="工单详情">
+        <div class="yx-section-heading"><div><p class="yx-kicker">DETAIL</p><h3>工单详情</h3></div></div>
+        <dl class="yx-stats yx-stats--kv">
           <div><dt>引用</dt><dd>{{ selected.ticketId }}</dd></div>
           <div><dt>分类</dt><dd>{{ selected.categoryCode }}</dd></div>
           <div><dt>状态</dt><dd>{{ selected.state }}</dd></div>
@@ -154,7 +164,43 @@ onMounted(() => { void load() })
           重开工单
         </button>
       </section>
-      <p class="micro-copy"><button class="button" type="button" @click="load">刷新</button></p>
-    </section>
+      <div class="actions">
+        <button class="button" type="button" @click="load">刷新</button>
+      </div>
+    </template>
   </main>
 </template>
+
+<style scoped>
+.yx-form { display: grid; gap: 14px; }
+.yx-form .field { display: grid; gap: 8px; font-size: 13px; font-weight: 600; color: var(--yx-color-text-secondary); }
+.yx-form input, .yx-form select, .yx-form textarea {
+  padding: 12px;
+  border: 1px solid var(--yx-color-border);
+  border-radius: 10px;
+  background: var(--yx-color-surface-card);
+  color: var(--yx-color-text-primary);
+  font: inherit;
+  font-weight: 400;
+}
+.yx-ticket-list { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.yx-ticket-list button {
+  display: grid;
+  gap: 6px;
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid var(--yx-color-border);
+  border-radius: 12px;
+  background: var(--yx-color-surface-card);
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.yx-ticket-list button:hover { border-color: var(--yx-color-brand-primary); }
+.yx-ticket-list .yx-pill { justify-self: start; }
+.yx-ticket-list small { color: var(--yx-color-text-secondary); font-size: 12px; }
+.yx-stats--kv { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+.yx-stats--kv dd { font-size: 14px !important; word-break: break-all; }
+.actions { display: flex; gap: 12px; }
+@media (max-width: 640px) { .yx-stats--kv { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; } }
+</style>

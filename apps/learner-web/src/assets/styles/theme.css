@@ -87,6 +87,26 @@
 .yx-pill--danger { background: rgb(233 86 104 / 14%); color: var(--yx-color-danger); }
 .yx-pill--muted { background: rgb(150 156 175 / 16%); color: var(--yx-color-text-secondary); }
 
+/* Shared pattern: stat grids (mastery/plan/ticket facts). */
+.yx-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0 0 20px;
+  padding: 0;
+}
+.yx-stats div {
+  display: grid;
+  gap: 6px;
+  padding: 16px 12px;
+  border-radius: 12px;
+  background: var(--yx-color-surface-page);
+  text-align: center;
+}
+.yx-stats dt { color: var(--yx-color-text-secondary); font-size: 12px; }
+.yx-stats dd { margin: 0; font-size: 18px; font-weight: 800; }
+@media (max-width: 640px) { .yx-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
 /* Shared pattern: skeleton shimmer for loading states. */
 @keyframes yx-shimmer {
   from { background-position: -400px 0; }

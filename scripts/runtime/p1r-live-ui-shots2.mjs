@@ -1,0 +1,18 @@
+import { chromium } from 'playwright';
+const WEB = 'http://127.0.0.1:18180';
+const browser = await chromium.launch();
+const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+await page.goto(`${WEB}/login`, { waitUntil: 'domcontentloaded' });
+await page.waitForTimeout(1500);
+await page.getByLabel(/账号|邮箱/i).first().fill('demo@local.invalid');
+await page.getByLabel(/密码/i).first().fill('DemoLocal123!xQ');
+await page.getByRole('button', { name: /登录/i }).first().click();
+await page.waitForTimeout(3000);
+await page.goto(`${WEB}/support`, { waitUntil: 'domcontentloaded' });
+await page.waitForTimeout(2500);
+await page.screenshot({ path: 'evidence/live/2026-09-16/ui-light-support.png' });
+await page.evaluate(() => document.documentElement.setAttribute('data-theme', 'dark'));
+await page.waitForTimeout(800);
+await page.screenshot({ path: 'evidence/live/2026-09-16/ui-dark-support.png' });
+await browser.close();
+console.log('support shots done');
