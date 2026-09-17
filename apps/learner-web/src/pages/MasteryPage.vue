@@ -2,6 +2,8 @@
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { fetchSrsOverview, type LoopMastery } from '../api/b2'
+import PageHeader from '../components/PageHeader.vue'
+import StatePanel from '../components/StatePanel.vue'
 
 type ViewState = 'loading' | 'ready' | 'empty' | 'permission' | 'error'
 
@@ -35,15 +37,18 @@ onMounted(() => { void load() })
 </script>
 
 <template>
-  <main class="public-page">
-    <section class="login-card login-card--quiet" aria-labelledby="mastery-title">
-      <h1 id="mastery-title">掌握度</h1>
-      <p class="lead">只读服务端 SRS 投影；阶段由服务端判定，页面不推算。</p>
-      <div v-if="state === 'loading'" role="status">正在读取掌握度…</div>
-      <div v-else-if="state === 'permission'" role="alert">当前会话没有掌握度读取权限。</div>
-      <div v-else-if="state === 'error'" role="alert">{{ lastError ?? '掌握度暂时不可用。' }}</div>
-      <p v-if="state === 'empty'" class="muted">还没有复习数据——去背几个词再回来。</p>
-      <dl v-else-if="mastery" class="stats">
+  <main class="page-stack">
+    <PageHeader kicker="SRS OVERVIEW" title="掌握度" description="只读服务端 SRS 投影；阶段由服务端判定，页面不推算。" />
+    <StatePanel
+      v-if="state !== 'ready'"
+      :state="state"
+      title="掌握度"
+      :description="state === 'empty' ? '还没有复习数据——去背几个词再回来。' : state === 'permission' ? '当前会话没有掌握度读取权限。' : (lastError ?? '掌握度暂时不可用。')"
+      :action-label="state === 'error' ? '重试' : ''"
+      @action="load"
+    />
+    <section v-else-if="mastery" class="info-card" aria-label="掌握度统计">
+      <dl class="yx-stats">
         <div><dt>全部</dt><dd>{{ mastery.total }}</dd></div>
         <div><dt>新词</dt><dd>{{ mastery.newCount }}</dd></div>
         <div><dt>学习中</dt><dd>{{ mastery.learningCount }}</dd></div>
@@ -57,3 +62,25 @@ onMounted(() => { void load() })
     </section>
   </main>
 </template>
+
+<style scoped>
+.yx-stats {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0 0 20px;
+  padding: 0;
+}
+.yx-stats div {
+  display: grid;
+  gap: 6px;
+  padding: 16px 12px;
+  border-radius: 12px;
+  background: var(--yx-color-surface-page);
+  text-align: center;
+}
+.yx-stats dt { color: var(--yx-color-text-secondary); font-size: 12px; }
+.yx-stats dd { margin: 0; color: var(--yx-color-brand-primary); font-size: 24px; font-weight: 800; }
+.actions { display: flex; gap: 12px; flex-wrap: wrap; }
+@media (max-width: 640px) { .yx-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+</style>

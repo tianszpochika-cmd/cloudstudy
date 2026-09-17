@@ -2,6 +2,8 @@
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { fetchPlanCurrent, type LoopPlan } from '../api/b2'
+import PageHeader from '../components/PageHeader.vue'
+import StatePanel from '../components/StatePanel.vue'
 
 type ViewState = 'loading' | 'ready' | 'empty' | 'permission' | 'error'
 
@@ -35,15 +37,18 @@ onMounted(() => { void load() })
 </script>
 
 <template>
-  <main class="public-page">
-    <section class="login-card login-card--quiet" aria-labelledby="plan-title">
-      <h1 id="plan-title">计划地图</h1>
-      <p class="lead">只读服务端当前计划；闭环从这里出发：计划 → 今日 → 练习 → 错题 → 报告。</p>
-      <div v-if="state === 'loading'" role="status">正在读取计划…</div>
-      <div v-else-if="state === 'permission'" role="alert">当前会话没有计划读取权限。</div>
-      <div v-else-if="state === 'error'" role="alert">{{ lastError ?? '计划暂时不可用。' }}</div>
-      <p v-if="state === 'empty'" class="muted">暂无生效计划——完成开户目标后自动生成。</p>
-      <dl v-else-if="plan" class="stats">
+  <main class="page-stack">
+    <PageHeader kicker="PLAN MAP" title="计划地图" description="只读服务端当前计划；闭环从这里出发：计划 → 今日 → 练习 → 错题 → 报告。" />
+    <StatePanel
+      v-if="state !== 'ready'"
+      :state="state"
+      title="计划地图"
+      :description="state === 'empty' ? '暂无生效计划——完成开户目标后自动生成。' : state === 'permission' ? '当前会话没有计划读取权限。' : (lastError ?? '计划暂时不可用。')"
+      :action-label="state === 'error' ? '重试' : ''"
+      @action="load"
+    />
+    <section v-else-if="plan" class="info-card" aria-label="当前计划">
+      <dl class="yx-stats">
         <div><dt>状态</dt><dd>{{ plan.status }}</dd></div>
         <div><dt>每日分钟</dt><dd>{{ plan.targetMinutes ?? '—' }}</dd></div>
         <div><dt>版本</dt><dd>{{ plan.planVersion ?? '—' }}</dd></div>
@@ -56,3 +61,25 @@ onMounted(() => { void load() })
     </section>
   </main>
 </template>
+
+<style scoped>
+.yx-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0 0 20px;
+  padding: 0;
+}
+.yx-stats div {
+  display: grid;
+  gap: 6px;
+  padding: 16px 12px;
+  border-radius: 12px;
+  background: var(--yx-color-surface-page);
+  text-align: center;
+}
+.yx-stats dt { color: var(--yx-color-text-secondary); font-size: 12px; }
+.yx-stats dd { margin: 0; font-size: 18px; font-weight: 800; }
+.actions { display: flex; gap: 12px; flex-wrap: wrap; }
+@media (max-width: 640px) { .yx-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+</style>

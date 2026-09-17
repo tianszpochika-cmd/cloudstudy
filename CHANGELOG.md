@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1R-UI-REVAMP-20260917] **学习端全系统 UI/UX 改造一期（无翻牌，应人类负责人要求）。** 深色主题真正生效（`theme.css` 映射 design-tokens dark 全量 + 60 余处硬编码底色/边框迁移到变量）；新共享组件 `PageHeader`/`StatePanel`（loading 骨架/空/错/离线/权限五态）并落地错题/掌握度/计划地图/消息四页；壳层搜索可用化（页面直达面板）+ 通知抽屉接真实消息 API（含未读计数）；价格等深色低对比修复。vue-tsc 干净，21 路横扫零 pageerror，深浅截图已留证。
+
 - [P1R-DEMO-SEED-20260917] **演示号全量拟真数据（无翻牌，应人类负责人人工测试要求）。** 新脚本 `scripts/database/seed-demo-manual.mjs`：`demo@local.invalid` 号下错题 15、问答交互 12、学习计划/复习 12/继续 1、SRS 10、订单多态 + 权益、激活兑换、4 房入座 + 专注、消息 12+8、工单 8、XP 10、自习室排行榜（空，待专注分钟聚合）——全部经读回验证可见。附带发现：工单枚举值写错曾致列表 500（种子问题非产品问题，已按枚举修正）。
 
 - [P1R-CORS-DENY-20260917] **网关拒绝带 ACAO 头（人工测试解噪，无翻牌）。** 预检/路由拒绝此前不带 `Access-Control-Allow-Origin`，浏览器把真实 403 掩盖成 CORS 报错（如 `/api/v1/grammar/*`）。新增 `CorsDenyHeaders`：仅对已知源回显精确 origin + `Vary: Origin`，未知源依旧无头；拒绝本身不变。gateway 94/0/0，活证预检 403 带头、未知源无头。

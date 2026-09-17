@@ -485,7 +485,7 @@ async function advanceRoleplay(choiceCode?: string): Promise<void> {
   min-width: 0;
   padding: 24px;
   border-radius: 22px;
-  background: #fff;
+  background:var(--yx-color-surface-card);
   box-shadow: 0 16px 40px #1f2b4b0d;
 }
 .panel-head {
@@ -664,12 +664,12 @@ async function advanceRoleplay(choiceCode?: string): Promise<void> {
   color: #4b3a83;
 }
 .roleplay-turn button {
-  background: #fff;
+  background:var(--yx-color-surface-card);
   color: #5b4b99;
   border: 1px solid #d9d0fb;
 }
 .rating button {
-  background: #fff;
+  background:var(--yx-color-surface-card);
   color: #5b4b99;
   border: 1px solid #d9d0fb;
 }

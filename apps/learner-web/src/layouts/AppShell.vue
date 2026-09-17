@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue'
-import { RouterLink, useRoute } from 'vue-router'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { createAdaptivePerformanceEngine, type PerformanceLevel } from '@englishflow/performance'
 import { useSessionStore } from '../stores/session'
 import { authT } from '../auth/i18n'
 import AppIcon, { type AppIconName } from '../components/AppIcon.vue'
 import { learnerThemeController } from '../platform/v2-foundation'
+import { listInboxMessages, type InboxMessage } from '../api/notifications'
 
 const route = useRoute()
+const router = useRouter()
 const session = useSessionStore()
 const engine = createAdaptivePerformanceEngine()
 const performanceLevel = ref<PerformanceLevel>(engine.level)
@@ -38,6 +40,36 @@ const mobileNavItems = [
 const pageTitle = computed(() => String(route.meta.title ?? navItems.find((item) => item.name === route.name)?.label ?? '学习'))
 const themeLabel = computed(() => resolvedTheme.value === 'dark' ? '切换到浅色' : '切换到深色')
 const themeIcon = computed<AppIconName>(() => resolvedTheme.value === 'dark' ? 'spark' : 'moon')
+
+// Search palette: filters in-shell destinations by label/pinyin-ish input.
+const searchQuery = ref('')
+const showPalette = ref(false)
+const paletteHits = computed(() => {
+  const q = searchQuery.value.trim().toLowerCase()
+  if (!q) return navItems.slice(0, 6)
+  return navItems.filter((item) => item.label.toLowerCase().includes(q) || item.name.toLowerCase().includes(q)).slice(0, 8)
+})
+function goPalette(name: string): void {
+  showPalette.value = false
+  searchQuery.value = ''
+  void router.push({ name })
+}
+
+// Notification drawer: live inbox preview wired to the messages API.
+const inbox = ref<InboxMessage[]>([])
+const inboxState = ref<'idle' | 'loading' | 'error'>('idle')
+const unreadCount = computed(() => inbox.value.filter((m) => !m.readAt).length)
+async function toggleNotifications(): Promise<void> {
+  showNotifications.value = !showNotifications.value
+  if (!showNotifications.value || inboxState.value === 'loading') return
+  inboxState.value = 'loading'
+  try {
+    inbox.value = (await listInboxMessages()).slice(0, 6)
+    inboxState.value = 'idle'
+  } catch {
+    inboxState.value = 'error'
+  }
+}
 
 function choosePerformance(level: PerformanceLevel): void {
   engine.setLevel(level, 'manual')
@@ -113,14 +145,39 @@ onUnmounted(() => {
         <div class="topbar__actions">
           <label class="topbar-search">
             <AppIcon name="search" :size="17" />
-            <input type="search" placeholder="搜索课程、练习或词汇" aria-label="搜索课程、练习或词汇" />
+            <input
+              type="search"
+              placeholder="搜索页面：试试 错题 / 计划 / 权益"
+              aria-label="搜索站内页面"
+              v-model="searchQuery"
+              @focus="showPalette = true"
+              @keydown.escape="showPalette = false"
+            />
           </label>
           <button class="icon-button" type="button" :aria-label="themeLabel" @click="toggleTheme"><AppIcon :name="themeIcon" :size="18" /></button>
-          <button class="icon-button icon-button--notification" type="button" aria-label="查看通知" :aria-expanded="showNotifications" @click="showNotifications = !showNotifications"><span class="notification-dot"></span><span class="icon-button__glyph"><AppIcon name="spark" :size="18" /></span></button>
+          <button class="icon-button icon-button--notification" type="button" aria-label="查看通知" :aria-expanded="showNotifications" @click="toggleNotifications"><span v-if="unreadCount" class="notification-dot" aria-hidden="true"></span><span class="icon-button__glyph"><AppIcon name="spark" :size="18" /></span></button>
           <RouterLink class="profile-chip" :to="{ name: 'settings', params: { section: 'profile' } }" aria-label="打开我的设置"><span class="profile-chip__avatar">语</span><span class="profile-chip__copy"><strong>学习者</strong><small>{{ session.status === 'authenticated' ? '状态正常' : '恢复中' }}</small></span></RouterLink>
         </div>
+        <div v-if="showPalette" class="search-palette" role="dialog" aria-label="页面搜索">
+          <button
+            v-for="hit in paletteHits"
+            :key="hit.name"
+            type="button"
+            class="search-palette__item"
+            @click="goPalette(hit.name)"
+          >
+            <span>{{ hit.label }}</span><small>{{ hit.name }}</small>
+          </button>
+          <p v-if="!paletteHits.length" class="search-palette__empty">没有匹配的页面，换个关键词试试。</p>
+        </div>
         <div v-if="showNotifications" class="notification-popover" role="status">
-          <div><strong>学习提醒</strong><span>你的下一次复习会在完成今日任务后出现。</span></div>
+          <div class="notification-popover__head"><strong>站内消息{{ unreadCount ? `（${unreadCount} 未读）` : '' }}</strong><RouterLink :to="{ name: 'messages' }" @click="showNotifications = false">全部消息</RouterLink></div>
+          <div v-if="inboxState === 'loading'" class="notification-popover__empty">正在读取…</div>
+          <div v-else-if="inboxState === 'error'" class="notification-popover__empty">暂时读不到，稍后去消息中心看。</div>
+          <div v-else-if="!inbox.length" class="notification-popover__empty">还没有消息，先去完成一个学习目标吧。</div>
+          <ul v-else class="notification-popover__list">
+            <li v-for="msg in inbox" :key="msg.messageId"><strong>{{ msg.title || '通知' }}</strong><span>{{ msg.safeBody || '' }}</span></li>
+          </ul>
           <button type="button" @click="showNotifications = false">知道了</button>
         </div>
       </header>

@@ -1,0 +1,172 @@
+/* YuXueXing learner-web theme: light defaults live in base.css :root.
+   This sheet maps the shared design-token dark palette onto the same
+   --yx-* variables and polishes motion/focus. Pages must use the variables
+   (never hardcoded #fff / light-only hex) so both themes work. */
+
+[data-theme='dark'] {
+  color-scheme: dark;
+  color: #f7f8fc;
+  background: #11131c;
+  --yx-color-brand-primary: #7e8cff;
+  --yx-color-brand-primary-hover: #a0aaff;
+  --yx-color-brand-primary-soft: rgb(126 140 255 / 14%);
+  --yx-color-brand-secondary: #a18bff;
+  --yx-color-success: #5dcc96;
+  --yx-color-warning: #f0b35a;
+  --yx-color-danger: #ff8585;
+  --yx-color-text-primary: #f7f8fc;
+  --yx-color-text-secondary: #c4cadb;
+  --yx-color-text-tertiary: #8a92a8;
+  --yx-color-surface-page: #11131c;
+  --yx-color-surface-card: #1b1f2b;
+  --yx-color-border: #4f566b;
+  --yx-color-focus: #6ea8ff;
+  --yx-radius-card: 16px;
+  --yx-radius-button: 14px;
+  --yx-shadow-card: 0 8px 24px rgb(0 0 0 / 45%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Page enter motion (skipped automatically under reduced-motion). */
+@keyframes yx-page-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+.app-shell__content > * {
+  animation: yx-page-in 220ms ease-out;
+}
+
+/* Shared pattern: section heading used by migrated pages. */
+.yx-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.yx-section-heading h3 {
+  margin: 6px 0 0;
+  font-size: 22px;
+  letter-spacing: -0.01em;
+}
+.yx-kicker {
+  margin: 0;
+  color: var(--yx-color-brand-primary);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+.yx-fact-tag {
+  color: var(--yx-color-text-tertiary);
+  font-size: 12px;
+}
+
+/* Shared pattern: status pill with tone variants (never color-only:
+   each tone pairs color with an explicit label text). */
+.yx-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 12px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  background: var(--yx-color-brand-primary-soft);
+  color: var(--yx-color-brand-primary);
+}
+.yx-pill--success { background: rgb(37 184 138 / 14%); color: var(--yx-color-success); }
+.yx-pill--warning { background: rgb(242 168 59 / 16%); color: var(--yx-color-warning); }
+.yx-pill--danger { background: rgb(233 86 104 / 14%); color: var(--yx-color-danger); }
+.yx-pill--muted { background: rgb(150 156 175 / 16%); color: var(--yx-color-text-secondary); }
+
+/* Shared pattern: skeleton shimmer for loading states. */
+@keyframes yx-shimmer {
+  from { background-position: -400px 0; }
+  to { background-position: 400px 0; }
+}
+.yx-skeleton {
+  border-radius: 12px;
+  background: linear-gradient(90deg, var(--yx-color-border) 25%, var(--yx-color-surface-card) 50%, var(--yx-color-border) 75%);
+  background-size: 800px 100%;
+  animation: yx-shimmer 1.4s ease infinite;
+  color: transparent !important;
+  user-select: none;
+}
+
+/* Dark-theme repairs for legacy hardcoded light surfaces that pages
+   still carry until their full migration. Scoped narrowly on purpose. */
+[data-theme='dark'] .topbar {
+  background: rgb(17 19 28 / 88%);
+}
+[data-theme='dark'] .empty-state {
+  background: rgb(27 31 43 / 70%);
+}
+[data-theme='dark'] .nav-item:hover,
+[data-theme='dark'] .nav-item.router-link-active {
+  background: var(--yx-color-brand-primary-soft);
+}
+
+/* Search palette + notification drawer (AppShell upgrades). */
+.topbar__actions { position: relative; }
+.search-palette {
+  position: absolute;
+  top: 48px;
+  left: 0;
+  z-index: 40;
+  display: grid;
+  gap: 4px;
+  width: min(320px, calc(100vw - 32px));
+  padding: 8px;
+  border: 1px solid var(--yx-color-border);
+  border-radius: 14px;
+  background: var(--yx-color-surface-card);
+  box-shadow: var(--yx-shadow-card);
+}
+.search-palette__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--yx-color-text-primary);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+.search-palette__item small { color: var(--yx-color-text-tertiary); font-weight: 400; }
+.search-palette__item:hover { background: var(--yx-color-brand-primary-soft); color: var(--yx-color-brand-primary); }
+.search-palette__empty { margin: 4px; color: var(--yx-color-text-tertiary); font-size: 12px; }
+.notification-popover__head {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.notification-popover__head a { color: var(--yx-color-brand-primary); font-size: 12px; font-weight: 700; }
+.notification-popover__list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.notification-popover__list li {
+  display: grid;
+  gap: 3px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--yx-color-surface-page);
+}
+.notification-popover__empty { color: var(--yx-color-text-tertiary); font-size: 12px; }

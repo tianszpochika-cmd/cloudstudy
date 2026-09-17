@@ -2,6 +2,8 @@
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { fetchMistakesQueue, type LoopMistake } from '../api/b2'
+import PageHeader from '../components/PageHeader.vue'
+import StatePanel from '../components/StatePanel.vue'
 
 type ViewState = 'loading' | 'ready' | 'empty' | 'permission' | 'error'
 
@@ -35,20 +37,23 @@ onMounted(() => { void load() })
 </script>
 
 <template>
-  <main class="public-page">
-    <section class="login-card login-card--quiet" aria-labelledby="mistakes-title">
-      <h1 id="mistakes-title">错题本</h1>
-      <p class="lead">只读服务端判分落下的错题；修复在练习页完成，本页不改分。</p>
-      <div v-if="state === 'loading'" role="status">正在读取错题…</div>
-      <div v-else-if="state === 'permission'" role="alert">当前会话没有错题读取权限。</div>
-      <div v-else-if="state === 'error'" role="alert">{{ lastError ?? '错题暂时不可用。' }}</div>
-      <p v-if="state === 'empty'" class="muted">暂无错题——答错的题目会自动出现在这里。</p>
-      <ul v-else-if="mistakes.length">
+  <main class="page-stack">
+    <PageHeader kicker="REVIEW LOOP" title="错题本" description="只读服务端判分落下的错题；修复在练习页完成，本页不改分。" />
+    <StatePanel
+      v-if="state !== 'ready'"
+      :state="state"
+      title="错题本"
+      :description="state === 'empty' ? '暂无错题——答错的题目会自动出现在这里。' : state === 'permission' ? '当前会话没有错题读取权限。' : (lastError ?? '错题暂时不可用。')"
+      :action-label="state === 'error' ? '重试' : ''"
+      @action="load"
+    />
+    <section v-else class="info-card" aria-label="错题列表">
+      <ul class="yx-mistake-list">
         <li v-for="item in mistakes" :key="String(item.interactionId ?? item.resourceKey)">
-          <strong>{{ item.resourceKey ?? '练习题' }}</strong>
-          <span>{{ item.domainCode ?? '' }} · {{ item.errorCategory ?? '' }} · {{ item.mistakeStatus }}</span>
-          <p v-if="item.message" class="muted">{{ item.message }}</p>
-          <p v-if="item.feedbackCode" class="muted">反馈：{{ item.feedbackCode }}</p>
+          <div><strong>{{ item.resourceKey ?? '练习题' }}</strong><span class="yx-pill yx-pill--warning">{{ item.mistakeStatus }}</span></div>
+          <span class="yx-fact-tag">{{ item.domainCode ?? '' }} · {{ item.errorCategory ?? '' }}</span>
+          <p v-if="item.message">{{ item.message }}</p>
+          <p v-if="item.feedbackCode" class="yx-fact-tag">反馈：{{ item.feedbackCode }}</p>
         </li>
       </ul>
       <div class="actions">
@@ -58,3 +63,24 @@ onMounted(() => { void load() })
     </section>
   </main>
 </template>
+
+<style scoped>
+.yx-mistake-list {
+  display: grid;
+  gap: 12px;
+  margin: 0 0 20px;
+  padding: 0;
+  list-style: none;
+}
+.yx-mistake-list li {
+  display: grid;
+  gap: 6px;
+  padding: 16px;
+  border: 1px solid var(--yx-color-border);
+  border-radius: 12px;
+  background: var(--yx-color-surface-card);
+}
+.yx-mistake-list li > div { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.yx-mistake-list p { margin: 0; color: var(--yx-color-text-secondary); font-size: 13px; line-height: 1.6; }
+.actions { display: flex; gap: 12px; flex-wrap: wrap; }
+</style>

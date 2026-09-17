@@ -3,6 +3,7 @@ import { router } from './router'
 import { pinia } from './stores/pinia'
 import App from './App.vue'
 import './assets/styles/base.css'
+import './assets/styles/theme.css'
 import { learnerI18nAdapter, learnerThemeAdapter, learnerThemeController } from './platform/v2-foundation'
 
 learnerI18nAdapter.restore()
