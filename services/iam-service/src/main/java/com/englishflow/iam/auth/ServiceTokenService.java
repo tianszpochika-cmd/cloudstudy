@@ -93,6 +93,11 @@ public final class ServiceTokenService {
                 // The same claim names the user tokens carry, with a different value: every existing authority
                 // mapping continues to work, and a service token can never be mistaken for a human one.
                 .claim("token_type", "service")
+                // The calling service IS the workload for provider-ingress style
+                // endpoints (e.g. commerce sandbox callbacks verify HMAC on the
+                // payload; transport identity comes from here). Additive claim:
+                // no existing validator constrains it.
+                .claim("client_id", clientId)
                 // A space-delimited String, which is what a scope claim is: audit validates it as a String, and a List here made
                 // an otherwise valid token fail validation with "authentication required". The permissions claim
                 // below keeps the list form, because the validators that read it accept either.

@@ -1270,11 +1270,12 @@
         "PLANNED",
         "READY",
         "IN_PROGRESS",
-        "DEV_DONE"
+        "DEV_DONE",
+        "ACCEPTED"
       ],
-      "recordedAt": "2026-09-15T21:32:00Z",
-      "actor": "agent:p1r_implementation:deepseek-harness",
-      "reason": "Owner route A (test-verified, no production change). Dependency M7-006 DEV_DONE. Five suites 48/48 green plus 8/8 harness PASS; ledger stale wording corrected; live callback run deferred as knownGap.",
+      "recordedAt": "2026-09-17T03:10:00Z",
+      "actor": "human-owner-delegated acceptance (live E2E 2026-09-17)",
+      "reason": "Named known-gap closed: callback machine green 13/13 (p1r-live-m7007.mjs).",
       "evidencePath": "evidence/p1r/m7/P1R-M7-007/manifest.json"
     },
     {

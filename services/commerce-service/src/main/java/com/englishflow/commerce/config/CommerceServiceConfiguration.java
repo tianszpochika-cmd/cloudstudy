@@ -66,29 +66,22 @@ public class CommerceServiceConfiguration {
     @Bean CommerceClock commerceClock() { return new SystemCommerceClock(); }
     @Bean CommerceAccessPolicy commerceAccessPolicy() { return new CommerceAccessPolicy(); }
 
+    // M7-007 live: the sandbox adapter is HMAC-only (no provider SDK or real
+    // credential), so it is safe in local-real too. Real providers stay off
+    // via PaymentGate; only SANDBOX verifies.
     @Bean
-    @Profile("!local-real")
     HmacPaymentSignatureVerifier paymentSignatureVerifier(CommerceProperties properties) {
         return new HmacPaymentSignatureVerifier(properties.payment().sandboxSecret());
     }
 
     @Bean
-    @Profile("!local-real")
     SandboxPaymentProvider sandboxPaymentProvider(HmacPaymentSignatureVerifier verifier) {
         return new SandboxPaymentProvider(verifier);
     }
 
     @Bean
-    @Profile("!local-real")
     PaymentProviderRegistry paymentProviderRegistry(SandboxPaymentProvider sandbox) {
         return new PaymentProviderRegistry(java.util.List.<PaymentProviderPort>of(sandbox));
-    }
-
-    @Bean
-    @Profile("local-real")
-    PaymentProviderRegistry localRealPaymentProviderRegistry() {
-        // No provider SDK/credential and no durable payment adapter is enabled in local-real.
-        return new PaymentProviderRegistry(java.util.List.of());
     }
 
     @Bean PaymentGate paymentGate(CommerceProperties properties) {

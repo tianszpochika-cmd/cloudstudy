@@ -116,7 +116,9 @@ public class CommerceSecurityConfiguration {
                 new JwtAudienceValidator(audience),
                 new JwtTimestampValidator(Duration.ofSeconds(60)),
                 algorithm,
-                new JwtClaimValidator<String>("token_type", "access"::equals),
+                // Audit precedent: service tokens authenticate provider-ingress
+                // style calls; endpoint PEPs (e.g. requireWorkload) still decide.
+                new JwtClaimValidator<String>("token_type", value -> "access".equals(value) || "service".equals(value)),
                 new JwtClaimValidator<String>("scope", value -> value != null && !value.isBlank()),
                 authorityClaims);
     }

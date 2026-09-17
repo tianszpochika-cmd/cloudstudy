@@ -1,0 +1,88 @@
+{
+  "task": "M7007-LIVE-CALLBACKS",
+  "capturedAt": "2026-09-17T03:17:28.376Z",
+  "gateway": "http://127.0.0.1:18070",
+  "result": "PASS",
+  "passed": 13,
+  "total": 13,
+  "checks": [
+    {
+      "name": "setup-register",
+      "ok": true,
+      "observed": "HTTP 201",
+      "expected": "HTTP 201"
+    },
+    {
+      "name": "setup-login",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "HTTP 200 + token"
+    },
+    {
+      "name": "order-create",
+      "ok": true,
+      "observed": "HTTP 201",
+      "expected": "HTTP 200/201 + id"
+    },
+    {
+      "name": "pay-intent",
+      "ok": true,
+      "observed": "HTTP 202",
+      "expected": "sandbox intent"
+    },
+    {
+      "name": "snapshot-read",
+      "ok": true,
+      "observed": "amount=10400 currency=CNY",
+      "expected": "price snapshot"
+    },
+    {
+      "name": "learner-callback-denied",
+      "ok": true,
+      "observed": "HTTP 401",
+      "expected": "HTTP 401 workload only"
+    },
+    {
+      "name": "service-token",
+      "ok": true,
+      "observed": "HTTP 200",
+      "expected": "workload token"
+    },
+    {
+      "name": "amount-conflict",
+      "ok": true,
+      "observed": "HTTP 409",
+      "expected": "HTTP 409 AMOUNT_MISMATCH"
+    },
+    {
+      "name": "bad-signature",
+      "ok": true,
+      "observed": "HTTP 409",
+      "expected": "HTTP 409 SIGNATURE_INVALID"
+    },
+    {
+      "name": "callback-applied",
+      "ok": true,
+      "observed": "HTTP 200 state=APPLIED",
+      "expected": "APPLIED"
+    },
+    {
+      "name": "replay-conflict",
+      "ok": true,
+      "observed": "HTTP 409",
+      "expected": "HTTP 409 REPLAY_CONFLICT"
+    },
+    {
+      "name": "late-no-pending",
+      "ok": true,
+      "observed": "HTTP 409",
+      "expected": "HTTP 409 no pending attempt"
+    },
+    {
+      "name": "duplicate-absorbed",
+      "ok": true,
+      "observed": "HTTP 200 state=DUPLICATE",
+      "expected": "DUPLICATE"
+    }
+  ]
+}
