@@ -3,7 +3,7 @@
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
   "decision": "ACCEPTED",
-  "sourceCommit": "7f3c68544b5c705c165f5e725dbe79ae71dd412f",
+  "sourceCommit": "b1081aff6f82be1d0a4fdf58bf66c613b9da0b51",
   "startedAt": "2026-09-15T17:55:00.000Z",
   "finishedAt": "2026-09-17T04:25:00.000Z",
   "environment": {
@@ -80,9 +80,9 @@
     "currentSourceRevalidationTask": "P1R-M4-005",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-17T05:01:21.075Z",
-    "currentSourceRevalidationAuditedImplementationSource": "7f3c68544b5c705c165f5e725dbe79ae71dd412f",
-    "currentSourceRevalidationIntegrationCheckpoint": "7f3c68544b5c705c165f5e725dbe79ae71dd412f",
+    "currentSourceRevalidationFinishedAt": "2026-09-17T06:00:14.157Z",
+    "currentSourceRevalidationAuditedImplementationSource": "b1081aff6f82be1d0a4fdf58bf66c613b9da0b51",
+    "currentSourceRevalidationIntegrationCheckpoint": "b1081aff6f82be1d0a4fdf58bf66c613b9da0b51",
     "currentSourceRevalidationHistory": [
       {
         "taskId": "P1R-M4-005",
@@ -403,8 +403,18 @@
         "runtimeStatus": "RUNTIME_VERIFIED",
         "finishedAt": "2026-09-17T05:01:21.075Z",
         "details": "M3-006 publish lifecycle chain + evidence"
+      },
+      {
+        "taskId": "P1R-M4-005",
+        "sourceCommit": "b1081aff6f82be1d0a4fdf58bf66c613b9da0b51",
+        "auditedImplementationSource": "b1081aff6f82be1d0a4fdf58bf66c613b9da0b51",
+        "integrationCheckpoint": "b1081aff6f82be1d0a4fdf58bf66c613b9da0b51",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-17T06:00:14.157Z",
+        "details": "M7-004 sweeper hardening digests"
       }
     ],
-    "previousCurrentSourceCommit": "68a169ae4b7179a23243a734d474ac80fc8163ed"
+    "previousCurrentSourceCommit": "7f3c68544b5c705c165f5e725dbe79ae71dd412f"
   }
 }

@@ -3,7 +3,7 @@
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
   "decision": "ACCEPTED",
-  "sourceCommit": "7f3c68544b5c705c165f5e725dbe79ae71dd412f",
+  "sourceCommit": "b1081aff6f82be1d0a4fdf58bf66c613b9da0b51",
   "startedAt": "2026-09-15T21:15:00.000Z",
   "finishedAt": "2026-09-17T04:10:00.000Z",
   "environment": {
@@ -68,12 +68,12 @@
     {
       "path": "scripts/runtime/p1r-live-m7004.mjs",
       "algorithm": "sha256",
-      "digest": "00c1e6d582ec497c427e9e1b05a51256bfefe3c3c7a640986a509d0cc620ca54"
+      "digest": "01e60826b12b4bc9d8aea6144eddfcff9a259d6926ff2c05f24a0685af0e963f"
     },
     {
       "path": "evidence/live/2026-09-16/m7004-live-evidence.json",
       "algorithm": "sha256",
-      "digest": "c3a98924cd27374daf622d30f8acb343fe68003648c9b6c767e2aad65df15f8d"
+      "digest": "bccbc22787fc67f009fcc05efbfaf0c27ae749e5eb89925bbcaa51e66fd99104"
     },
     {
       "path": "services/social-service/src/main/java/com/englishflow/social/web/SocialLocalRealLeaseSweeper.java",
@@ -102,9 +102,9 @@
     "currentSourceRevalidationTask": "P1R-M7-004",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-17T05:01:23.362Z",
-    "currentSourceRevalidationAuditedImplementationSource": "7f3c68544b5c705c165f5e725dbe79ae71dd412f",
-    "currentSourceRevalidationIntegrationCheckpoint": "7f3c68544b5c705c165f5e725dbe79ae71dd412f",
+    "currentSourceRevalidationFinishedAt": "2026-09-17T06:00:16.653Z",
+    "currentSourceRevalidationAuditedImplementationSource": "b1081aff6f82be1d0a4fdf58bf66c613b9da0b51",
+    "currentSourceRevalidationIntegrationCheckpoint": "b1081aff6f82be1d0a4fdf58bf66c613b9da0b51",
     "currentSourceRevalidationHistory": [
       {
         "taskId": "P1R-M7-004",
@@ -425,8 +425,18 @@
         "runtimeStatus": "RUNTIME_VERIFIED",
         "finishedAt": "2026-09-17T05:01:23.362Z",
         "details": "M3-006 publish lifecycle chain + evidence"
+      },
+      {
+        "taskId": "P1R-M7-004",
+        "sourceCommit": "b1081aff6f82be1d0a4fdf58bf66c613b9da0b51",
+        "auditedImplementationSource": "b1081aff6f82be1d0a4fdf58bf66c613b9da0b51",
+        "integrationCheckpoint": "b1081aff6f82be1d0a4fdf58bf66c613b9da0b51",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-17T06:00:16.653Z",
+        "details": "M7-004 sweeper hardening digests"
       }
     ],
-    "previousCurrentSourceCommit": "68a169ae4b7179a23243a734d474ac80fc8163ed"
+    "previousCurrentSourceCommit": "7f3c68544b5c705c165f5e725dbe79ae71dd412f"
   }
 }
