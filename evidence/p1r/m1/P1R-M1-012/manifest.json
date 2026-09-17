@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-012",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "e581db972eecb0dd251a49fa7cf0b56d0b94ca3b",
+  "sourceCommit": "f5857c2554337b4ffec39cfde196c76b95851d8a",
   "artifactDigests": [
     {
       "path": "config/b26-event-runtime.json",
@@ -152,7 +152,7 @@
     {
       "path": "packages/contracts/openapi/v1/openapi.json",
       "algorithm": "sha256",
-      "digest": "46647379a94fcaee8b857bb58b245a221047d1fa1844558aeec4004f0c77ba49"
+      "digest": "f0b1f215f06c1d7ad3a6012daa550b1ae83eddb9b215347913320f761cf28e9a"
     },
     {
       "path": "requirements/feature-matrix.md",
@@ -1029,9 +1029,19 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-17T00:17:29.456Z",
         "details": "M6-007 export status/download projections + b1 ops re-merge openapi"
+      },
+      {
+        "taskId": "P1R-M1-012",
+        "sourceCommit": "f5857c2554337b4ffec39cfde196c76b95851d8a",
+        "auditedImplementationSource": "f5857c2554337b4ffec39cfde196c76b95851d8a",
+        "integrationCheckpoint": "f5857c2554337b4ffec39cfde196c76b95851d8a",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-17T02:19:29.207Z",
+        "details": "M6-008 deletion projections + b8 ops re-merge openapi"
       }
     ],
-    "previousCurrentSourceCommit": "b70df18e2ddad921a87bbaaf0c3e3de159e63d50",
+    "previousCurrentSourceCommit": "e581db972eecb0dd251a49fa7cf0b56d0b94ca3b",
     "previousCurrentSourceRevalidationTask": "P1R-M2-005",
     "previousCurrentSourceRevalidationReviewer": "agent:p1r_current_source_revalidation:deepseek-harness",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
@@ -1039,8 +1049,8 @@
     "currentSourceRevalidationTask": "P1R-M1-012",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-17T00:17:29.456Z",
-    "currentSourceRevalidationAuditedImplementationSource": "e581db972eecb0dd251a49fa7cf0b56d0b94ca3b",
-    "currentSourceRevalidationIntegrationCheckpoint": "e581db972eecb0dd251a49fa7cf0b56d0b94ca3b"
+    "currentSourceRevalidationFinishedAt": "2026-09-17T02:19:29.207Z",
+    "currentSourceRevalidationAuditedImplementationSource": "f5857c2554337b4ffec39cfde196c76b95851d8a",
+    "currentSourceRevalidationIntegrationCheckpoint": "f5857c2554337b4ffec39cfde196c76b95851d8a"
   }
 }

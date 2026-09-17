@@ -3,7 +3,7 @@
   "draftOnly": false,
   "canonicalTaskStatus": "DEV_DONE",
   "decision": "DEV_DONE",
-  "sourceCommit": "e581db972eecb0dd251a49fa7cf0b56d0b94ca3b",
+  "sourceCommit": "f5857c2554337b4ffec39cfde196c76b95851d8a",
   "startedAt": "2026-09-15T16:40:00.000Z",
   "finishedAt": "2026-09-15T16:45:00.000Z",
   "environment": {
@@ -116,9 +116,9 @@
     "currentSourceRevalidationTask": "P1R-M3-006",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-17T00:17:31.128Z",
-    "currentSourceRevalidationAuditedImplementationSource": "e581db972eecb0dd251a49fa7cf0b56d0b94ca3b",
-    "currentSourceRevalidationIntegrationCheckpoint": "e581db972eecb0dd251a49fa7cf0b56d0b94ca3b",
+    "currentSourceRevalidationFinishedAt": "2026-09-17T02:19:31.957Z",
+    "currentSourceRevalidationAuditedImplementationSource": "f5857c2554337b4ffec39cfde196c76b95851d8a",
+    "currentSourceRevalidationIntegrationCheckpoint": "f5857c2554337b4ffec39cfde196c76b95851d8a",
     "currentSourceRevalidationHistory": [
       {
         "taskId": "P1R-M3-006",
@@ -359,8 +359,18 @@
         "runtimeStatus": "RUNTIME_VERIFIED",
         "finishedAt": "2026-09-17T00:17:31.128Z",
         "details": "M6-007 export status/download projections + b1 ops re-merge openapi"
+      },
+      {
+        "taskId": "P1R-M3-006",
+        "sourceCommit": "f5857c2554337b4ffec39cfde196c76b95851d8a",
+        "auditedImplementationSource": "f5857c2554337b4ffec39cfde196c76b95851d8a",
+        "integrationCheckpoint": "f5857c2554337b4ffec39cfde196c76b95851d8a",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-17T02:19:31.957Z",
+        "details": "M6-008 deletion projections + b8 ops re-merge openapi"
       }
     ],
-    "previousCurrentSourceCommit": "b70df18e2ddad921a87bbaaf0c3e3de159e63d50"
+    "previousCurrentSourceCommit": "e581db972eecb0dd251a49fa7cf0b56d0b94ca3b"
   }
 }

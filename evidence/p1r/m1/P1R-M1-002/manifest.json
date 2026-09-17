@@ -2,17 +2,17 @@
   "taskId": "P1R-M1-002",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "e581db972eecb0dd251a49fa7cf0b56d0b94ca3b",
+  "sourceCommit": "f5857c2554337b4ffec39cfde196c76b95851d8a",
   "artifactDigests": [
     {
       "path": "packages/contracts/fragments/b8/b8-auth-iam.openapi.json",
       "algorithm": "sha256",
-      "digest": "c702323a75f08da0a09db57172168a6c46adb3cd0662c440a292e013701adc60"
+      "digest": "ba8a08e6d4f23df6864cbc28b09474dd444f320309c5698c75f41c8794e4ba4f"
     },
     {
       "path": "packages/contracts/openapi/v1/openapi.json",
       "algorithm": "sha256",
-      "digest": "46647379a94fcaee8b857bb58b245a221047d1fa1844558aeec4004f0c77ba49"
+      "digest": "f0b1f215f06c1d7ad3a6012daa550b1ae83eddb9b215347913320f761cf28e9a"
     },
     {
       "path": "packages/contracts/generated/openapi.ts",
@@ -560,9 +560,19 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-17T00:17:28.679Z",
         "details": "M6-007 export status/download projections + b1 ops re-merge openapi"
+      },
+      {
+        "taskId": "P1R-M1-002",
+        "sourceCommit": "f5857c2554337b4ffec39cfde196c76b95851d8a",
+        "auditedImplementationSource": "f5857c2554337b4ffec39cfde196c76b95851d8a",
+        "integrationCheckpoint": "f5857c2554337b4ffec39cfde196c76b95851d8a",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-17T02:19:28.302Z",
+        "details": "M6-008 deletion projections + b8 ops re-merge openapi"
       }
     ],
-    "previousCurrentSourceCommit": "b70df18e2ddad921a87bbaaf0c3e3de159e63d50",
+    "previousCurrentSourceCommit": "e581db972eecb0dd251a49fa7cf0b56d0b94ca3b",
     "previousCurrentSourceRevalidationTask": "P1R-M1-018",
     "currentSourceRevalidationTask": "P1R-M1-002",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
@@ -570,9 +580,9 @@
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
     "previousCurrentSourceRevalidationFinishedAt": "2026-09-01T15:39:29+08:00",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-17T00:17:28.679Z",
-    "currentSourceRevalidationAuditedImplementationSource": "e581db972eecb0dd251a49fa7cf0b56d0b94ca3b",
-    "currentSourceRevalidationIntegrationCheckpoint": "e581db972eecb0dd251a49fa7cf0b56d0b94ca3b"
+    "currentSourceRevalidationFinishedAt": "2026-09-17T02:19:28.302Z",
+    "currentSourceRevalidationAuditedImplementationSource": "f5857c2554337b4ffec39cfde196c76b95851d8a",
+    "currentSourceRevalidationIntegrationCheckpoint": "f5857c2554337b4ffec39cfde196c76b95851d8a"
   },
   "startedAt": "2026-08-29T20:33:21+08:00",
   "finishedAt": "2026-09-01T15:39:29+08:00",

@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-005",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "e581db972eecb0dd251a49fa7cf0b56d0b94ca3b",
+  "sourceCommit": "f5857c2554337b4ffec39cfde196c76b95851d8a",
   "artifactDigests": [
     {
       "path": "package.json",
@@ -671,9 +671,19 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-17T00:17:28.889Z",
         "details": "M6-007 export status/download projections + b1 ops re-merge openapi"
+      },
+      {
+        "taskId": "P1R-M1-005",
+        "sourceCommit": "f5857c2554337b4ffec39cfde196c76b95851d8a",
+        "auditedImplementationSource": "f5857c2554337b4ffec39cfde196c76b95851d8a",
+        "integrationCheckpoint": "f5857c2554337b4ffec39cfde196c76b95851d8a",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-17T02:19:28.551Z",
+        "details": "M6-008 deletion projections + b8 ops re-merge openapi"
       }
     ],
-    "previousCurrentSourceCommit": "b70df18e2ddad921a87bbaaf0c3e3de159e63d50",
+    "previousCurrentSourceCommit": "e581db972eecb0dd251a49fa7cf0b56d0b94ca3b",
     "previousCurrentSourceRevalidationTask": "P1R-M2-005",
     "currentSourceRevalidationTask": "P1R-M1-005",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
@@ -681,9 +691,9 @@
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
     "previousCurrentSourceRevalidationFinishedAt": "2026-09-12T22:07:09.012Z",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-17T00:17:28.889Z",
-    "currentSourceRevalidationAuditedImplementationSource": "e581db972eecb0dd251a49fa7cf0b56d0b94ca3b",
-    "currentSourceRevalidationIntegrationCheckpoint": "e581db972eecb0dd251a49fa7cf0b56d0b94ca3b"
+    "currentSourceRevalidationFinishedAt": "2026-09-17T02:19:28.551Z",
+    "currentSourceRevalidationAuditedImplementationSource": "f5857c2554337b4ffec39cfde196c76b95851d8a",
+    "currentSourceRevalidationIntegrationCheckpoint": "f5857c2554337b4ffec39cfde196c76b95851d8a"
   },
   "startedAt": "2026-08-30T00:53:14+08:00",
   "finishedAt": "2026-09-01T15:39:29+08:00",
