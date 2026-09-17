@@ -1,0 +1,52 @@
+{
+  "task": "M4005-LIVE-DETERMINISM",
+  "capturedAt": "2026-09-17T04:28:14.667Z",
+  "gateway": "http://127.0.0.1:18070",
+  "result": "PASS",
+  "passed": 7,
+  "total": 7,
+  "checks": [
+    {
+      "name": "fixture-read",
+      "ok": true,
+      "observed": "2 items",
+      "expected": "rules with keys"
+    },
+    {
+      "name": "setup",
+      "ok": true,
+      "observed": "two learners ready",
+      "expected": "tokens"
+    },
+    {
+      "name": "all-correct",
+      "ok": true,
+      "observed": "score=1 level=C2",
+      "expected": "completed with score"
+    },
+    {
+      "name": "determinism",
+      "ok": true,
+      "observed": "score=1 level=C2",
+      "expected": "identical to run1"
+    },
+    {
+      "name": "all-wrong-boundary",
+      "ok": true,
+      "observed": "score=0 level=A1",
+      "expected": "strictly below all-correct"
+    },
+    {
+      "name": "skip-fast-track",
+      "ok": true,
+      "observed": "HTTP 200 level=B1",
+      "expected": "B1 pinned"
+    },
+    {
+      "name": "report-scoped",
+      "ok": true,
+      "observed": "HTTP 404",
+      "expected": "denied for other owner"
+    }
+  ]
+}

@@ -761,11 +761,12 @@
         "PLANNED",
         "READY",
         "IN_PROGRESS",
-        "DEV_DONE"
+        "DEV_DONE",
+        "ACCEPTED"
       ],
-      "recordedAt": "2026-09-15T17:57:00Z",
-      "actor": "agent:p1r_implementation:deepseek-harness",
-      "reason": "Owner route A (REUSE-VERIFY, no production change). Dependencies M3-010 + M4-004 DEV_DONE. Seven placement checks pass; determinism/boundary live run deferred as knownGap.",
+      "recordedAt": "2026-09-17T04:25:00Z",
+      "actor": "human-owner-delegated acceptance (live E2E 2026-09-17)",
+      "reason": "Named known-gap closed: determinism + boundaries green 7/7 (p1r-live-m4005.mjs).",
       "evidencePath": "evidence/p1r/m4/P1R-M4-005/manifest.json"
     },
     {

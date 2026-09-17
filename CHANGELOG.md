@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1R-M4-005-DETERMINISM-20260917] **翻牌 M4-005：定测确定性 + 边界（79 ACCEPTED / 29 DEV_DONE，工具待验）。** 新链 `p1r-live-m4005.mjs` 7/7：同答同分 C2 → 全错 A1 → 跳过钉 B1 → 他人 404。
+
 - [P1R-M7-004-RECONNECT-20260917] **翻牌 M7-004：v2 断线重连（78 ACCEPTED / 30 DEV_DONE，工具待验）。** 新链 `p1r-live-m7004.mjs` 12/12：入座租约 → 重连新租约 → 专注周期 → 他人 404 → ws 票据 → 可见度。附带真修可见度 SQL（房间表无 subject_id 列）；social 68/0/0。残留：内存版退役。
 
 - [P1R-M7-009-BROWSER-20260917] **翻牌 M7-009：浏览器退款旅程（77 ACCEPTED / 31 DEV_DONE，工具待验）。** 新链 `p1r-live-m7009.mjs` 13/13：方案 → 沙箱徽章 → 下单 → 支付意图 → 混合支付 → PAID → 退款 CTA → 二次确认 → 终端退款态，零 pageerror；横扫 21 路零错。附带：学习端退款 CTA + readiness 徽章（除硬编码）。

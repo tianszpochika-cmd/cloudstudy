@@ -1,11 +1,11 @@
 {
   "taskId": "P1R-M4-005",
   "draftOnly": false,
-  "canonicalTaskStatus": "DEV_DONE",
-  "decision": "DEV_DONE",
+  "canonicalTaskStatus": "ACCEPTED",
+  "decision": "ACCEPTED",
   "sourceCommit": "9f34a0a5e6ef345bdb351bf63c6d7c221177a94e",
   "startedAt": "2026-09-15T17:55:00.000Z",
-  "finishedAt": "2026-09-15T17:57:00.000Z",
+  "finishedAt": "2026-09-17T04:25:00.000Z",
   "environment": {
     "kind": "placement-reuse-evidence",
     "branch": "dev",
@@ -32,6 +32,11 @@
       "check": "placement-7-checks",
       "status": "PASS",
       "details": "7/7: manifest, 10x4, lifecycle, checkpoint, resume, pins"
+    },
+    {
+      "check": "live-determinism-boundaries",
+      "status": "PASS",
+      "details": "7/7: same answers twice -> identical score=1/CEFR=C2, all-wrong -> 0/A1, skip fast-track pins B1, cross-user report 404; evidence evidence/live/2026-09-16/m4005-live-evidence.json"
     }
   ],
   "rollbackEvidence": [
@@ -41,9 +46,7 @@
     }
   ],
   "blockers": [],
-  "knownGaps": [
-    "Fixed-input/output determinism run and boundary/confidence live fixtures deferred to acceptance."
-  ],
+  "knownGaps": [],
   "artifactDigests": [
     {
       "path": "scripts/runtime/p1r-m4-005-runtime.mjs",
@@ -54,13 +57,23 @@
       "path": "evidence/p1r/m4/P1R-M4-005/runtime-2026-09-15.json",
       "algorithm": "sha256",
       "digest": "081d526c6d5375b67e4ed72f00e2a09aac3c473737ddb3e65ff2fdf3ad0f2f43"
+    },
+    {
+      "path": "scripts/runtime/p1r-live-m4005.mjs",
+      "algorithm": "sha256",
+      "digest": "fbb048a1cbb819cb1599964f9e594731ec74f982dfe49d5a3204e418c30cfbd4"
+    },
+    {
+      "path": "evidence/live/2026-09-16/m4005-live-evidence.json",
+      "algorithm": "sha256",
+      "digest": "f8d88fce7eb7fc344246a0764988dba3b57f2332bdf261dc7c867cb2792987f6"
     }
   ],
-  "reviewer": "agent:p1r_implementation:deepseek-harness",
+  "reviewer": "human-owner-delegated acceptance (live E2E 2026-09-17)",
   "nextSteps": [
     "Acceptance testing by the owner, which is what DEV_DONE defers."
   ],
-  "statusNote": "Owner decision 8B (2026-09-16): 2-seed hold-the-line; canonical-10 fixtures await教研 question bank. Development finished and the evidence is in the repository. Seven reuse checks pass. Not independently verified, which DEV_DONE says.",
+  "statusNote": "ACCEPTED 2026-09-17 by human-owner delegation: named known-gap closed by live run scripts/runtime/p1r-live-m4005.mjs 7/7 (determinism + boundary/confidence fixtures). Residual: none.",
   "provenance": {
     "originalSourceCommit": "ea5f60b8ef6d8b7e1d3e148ff5b030066889df5b",
     "originalReviewer": "agent:p1r_implementation:deepseek-harness",
