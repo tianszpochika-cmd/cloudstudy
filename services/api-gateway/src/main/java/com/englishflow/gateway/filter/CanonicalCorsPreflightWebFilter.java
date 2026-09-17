@@ -115,6 +115,7 @@ public final class CanonicalCorsPreflightWebFilter implements WebFilter, Ordered
 
     private Mono<Void> deny(ServerWebExchange exchange, long startedAtNanos, String reasonCode, String message) {
         GatewayAuditAttributes.setReasonCode(exchange, reasonCode);
+        CorsDenyHeaders.addIfKnownOrigin(exchange, properties);
         return GatewayErrorResponseWriter.write(exchange, new GatewayError(
                         403,
                         "forbidden",

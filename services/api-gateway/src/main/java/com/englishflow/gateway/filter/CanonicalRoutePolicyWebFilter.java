@@ -85,6 +85,7 @@ public final class CanonicalRoutePolicyWebFilter implements WebFilter, Ordered {
     private Mono<Void> deny(ServerWebExchange exchange, String code, String message) {
         long startedAtNanos = System.nanoTime();
         GatewayAuditAttributes.setReasonCode(exchange, code);
+        CorsDenyHeaders.addIfKnownOrigin(exchange, properties);
         return GatewayErrorResponseWriter.write(exchange, new GatewayError(
                         404,
                         code,

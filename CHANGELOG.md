@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1R-CORS-DENY-20260917] **网关拒绝带 ACAO 头（人工测试解噪，无翻牌）。** 预检/路由拒绝此前不带 `Access-Control-Allow-Origin`，浏览器把真实 403 掩盖成 CORS 报错（如 `/api/v1/grammar/*`）。新增 `CorsDenyHeaders`：仅对已知源回显精确 origin + `Vary: Origin`，未知源依旧无头；拒绝本身不变。gateway 94/0/0，活证预检 403 带头、未知源无头。
+
 - [P1R-DOCS-20260917] **文档同步 + M4-005 异常建档（无翻牌）。** `.env.example` 补沙箱回调本地开关说明（默认仍全关）；台账记录回归待命机制；第 89 轮 `p1r-live-m4005.mjs` 3/7 FAIL 建档为 open 跟踪项（未定因，M4-005 状态不变）。
 
 - [P1R-M7-004-SWEEPER-20260917] **M7-004 回归后硬化（状态不变 ACCEPTED）。** 回归坐满房间暴露 local-real 无租约清扫：新增 `SocialLocalRealLeaseSweeper`（30s，过期 → AVAILABLE/LEASE_TIMEOUT + 成员 LEFT + 专注 AUTO_RELEASED），planted 探针座活证被扫；链补 final-leave（13/13）。注：`@Scheduled` 挂控制器方法不触发，独立组件生效。
