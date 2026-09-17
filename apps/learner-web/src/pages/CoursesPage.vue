@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import EmptyState from '../components/EmptyState.vue'
+import PageHeader from '../components/PageHeader.vue'
+import StatePanel from '../components/StatePanel.vue'
 import { useLearnerContentStore } from '../stores/learner-content'
 
 const router = useRouter()
@@ -16,13 +17,15 @@ function openCourse(contentId: string): void { void router.push({ name: 'learn-s
 
 <template>
   <section class="page-stack" aria-labelledby="courses-title">
-    <header class="page-heading"><div><p class="eyebrow">B18 · CONTENT PROJECTION</p><h2 id="courses-title">课程与学习内容</h2><p>仅展示当前主体有权访问且已发布的内容版本；下线、权限和服务故障都有明确恢复路径。</p></div><span class="locale-pill">内容语言：{{ store.home?.contentLocale ?? 'en-US' }}</span></header>
-    <div v-if="store.homeStatus === 'loading'" class="info-card"><h3>正在加载课程…</h3><p>正在读取 learner/content Gateway 投影。</p></div>
-    <div v-else-if="store.homeStatus === 'forbidden'" class="info-card state-card"><h3>暂无访问权限</h3><p>当前课程权限由服务端策略决定。</p><button class="button button--secondary" type="button" @click="router.push({ name: 'login' })">重新登录</button></div>
-    <div v-else-if="contentStatus === 'UNAVAILABLE' || store.homeStatus === 'offline'" class="info-card state-card"><h3>课程服务正在恢复</h3><p>已保留课程入口，不会把服务异常显示成空课程。</p><button class="button button--secondary" type="button" @click="retry">重试</button></div>
-    <EmptyState v-else-if="!content.length" title="暂无已发布课程" description="可能是内容尚未发布、权益尚未生效或当前筛选没有结果。" />
+    <PageHeader kicker="B18 · CONTENT PROJECTION" title="课程与学习内容" description="仅展示当前主体有权访问且已发布的内容版本；下线、权限和服务故障都有明确恢复路径。">
+      <template #actions><span class="locale-pill">内容语言：{{ store.home?.contentLocale ?? 'en-US' }}</span></template>
+    </PageHeader>
+    <StatePanel v-if="store.homeStatus === 'loading'" state="loading" title="课程与学习内容" description="正在读取 learner/content Gateway 投影。" />
+    <StatePanel v-else-if="store.homeStatus === 'forbidden'" state="permission" title="暂无访问权限" description="当前课程权限由服务端策略决定。" action-label="重新登录" @action="router.push({ name: 'login' })" />
+    <StatePanel v-else-if="contentStatus === 'UNAVAILABLE' || store.homeStatus === 'offline'" state="offline" title="课程服务正在恢复" description="已保留课程入口，不会把服务异常显示成空课程。" action-label="重试" @action="retry" />
+    <StatePanel v-else-if="!content.length" state="empty" title="暂无已发布课程" description="可能是内容尚未发布、权益尚未生效或当前筛选没有结果。" />
     <div v-else class="course-grid"><button v-for="item in content" :key="item.contentId" class="course-card" type="button" @click="openCourse(item.contentId)"><span class="card-kicker">{{ item.kind }}</span><h3>{{ item.title }}</h3><p>{{ item.description || '由服务端内容投影提供课程摘要。' }}</p><small>{{ item.contentLocale }} · {{ item.status }}</small></button></div>
-    <p v-if="store.lastError" class="error-text" role="alert">{{ store.lastError }}</p>
+    <StatePanel v-if="store.lastError" state="error" title="课程与学习内容" :description="store.lastError" action-label="重试" @action="retry" />
   </section>
 </template>
 

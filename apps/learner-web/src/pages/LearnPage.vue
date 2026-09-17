@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import StatePanel from '../components/StatePanel.vue'
 import { learnerContentPort } from '../api/learner-content'
 import type { LearnerContentDetail } from '../domain/learner-content'
 import { useB1Store } from '../stores/b1'
@@ -70,8 +71,8 @@ async function complete(): Promise<void> {
 
 <template>
   <section class="page-stack" aria-labelledby="learn-title">
-    <div v-if="loading" class="info-card"><h2 id="learn-title">正在读取课程内容…</h2><p>内容来自 content-service 的已发布 MySQL 投影。</p></div>
-    <div v-else-if="error || !content" class="info-card state-card"><h2 id="learn-title">课程暂时不可用</h2><p>{{ error ?? '服务端没有返回课程内容。' }}</p><button class="button button--secondary" type="button" @click="router.push({ name: 'courses' })">返回课程</button></div>
+    <StatePanel v-if="loading" state="loading" title="正在读取课程内容" description="内容来自 content-service 的已发布 MySQL 投影。" />
+    <StatePanel v-else-if="error || !content" state="error" title="课程暂时不可用" :description="error ?? '服务端没有返回课程内容。'" action-label="返回课程" @action="router.push({ name: 'courses' })" />
     <template v-else>
       <article class="lesson-card"><p class="eyebrow">{{ content.kind }} · {{ content.contentLocale }}</p><h2 id="learn-title">{{ content.title }}</h2><p class="lead">{{ content.description || '本节内容由服务端发布版本提供。' }}</p><div class="lesson-meta"><span>{{ content.items.length }} 个学习单元</span><span>本次 {{ elapsed }} 秒</span></div></article>
       <article v-for="(item, index) in content.items" :key="item.itemId" class="info-card"><span class="card-kicker">学习单元 {{ index + 1 }} · {{ item.itemType }}</span><h3>{{ item.text || '服务端内容单元' }}</h3><div v-if="item.options.length" class="option-list"><span v-for="option in item.options" :key="option.key" class="option">{{ option.key }} · {{ option.text }}</span></div></article>

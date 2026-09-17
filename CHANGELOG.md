@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1R-UI-FINAL-20260917] **学习端 UI 收尾 + M4-005 异常关闭（无翻牌）。** 课程/学习页迁入共享模式（StatePanel/PageHeader）；M4-005 复跑 7/7 PASS，第 89 轮 3/7 系后端全掉的环境问题，跟踪关闭。vue-tsc 干净，21 路横扫零错。
+
 - [P1R-UI-A11Y-20260917] **地标与无障碍横扫（无翻牌）。** 新 `p1r-live-ui-a11y.mjs`：壳内页根 `<main>` 改 `<section>`（与壳 main 去重，auth/无壳页保留 main）；support 路由无壳、根改回 main。6 路全过（单 main、零无名按钮、焦点可见）。附带修模板首尾失配导致的白屏。
 
 - [P1R-UI-REVAMP-20260917] **学习端全系统 UI/UX 改造一期（无翻牌，应人类负责人要求）。** 深色主题真正生效（`theme.css` 映射 design-tokens dark 全量 + 60 余处硬编码底色/边框迁移到变量）；新共享组件 `PageHeader`/`StatePanel`（loading 骨架/空/错/离线/权限五态）并落地错题/掌握度/计划地图/消息四页；壳层搜索可用化（页面直达面板）+ 通知抽屉接真实消息 API（含未读计数）；价格等深色低对比修复。vue-tsc 干净，21 路横扫零 pageerror，深浅截图已留证。
