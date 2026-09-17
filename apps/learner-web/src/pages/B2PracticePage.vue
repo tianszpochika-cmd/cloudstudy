@@ -41,7 +41,7 @@ onMounted(() => { void load() })
 </script>
 
 <template>
-  <main class="real-practice-page" aria-labelledby="practice-title">
+  <section class="real-practice-page" aria-labelledby="practice-title">
     <header class="page-heading">
       <div>
         <p class="eyebrow">B25 · REAL MYSQL PLACEMENT</p>
@@ -107,7 +107,7 @@ onMounted(() => { void load() })
     <p v-if="store.pendingAssessmentAnswers.length" class="pending-note" role="status">
       有 {{ store.pendingAssessmentAnswers.length }} 条答案等待服务端确认；未确认前不会显示为完成。
     </p>
-  </main>
+  </section>
 </template>
 
 <style scoped>

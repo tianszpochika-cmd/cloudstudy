@@ -87,7 +87,7 @@ onMounted(() => { void load() })
 </script>
 
 <template>
-  <main class="page-stack">
+  <section class="page-stack">
     <PageHeader kicker="MESSAGE CENTER" title="消息中心" description="只读服务端通知；已读回执与偏好开关实时写回，原文不出端。" />
     <StatePanel
       v-if="state !== 'ready'"
@@ -124,7 +124,7 @@ onMounted(() => { void load() })
     <div class="actions">
       <button class="button button--primary" type="button" @click="today">回今日任务</button>
     </div>
-  </main>
+  </section>
 </template>
 
 <style scoped>

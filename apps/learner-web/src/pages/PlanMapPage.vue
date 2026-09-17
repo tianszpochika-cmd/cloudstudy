@@ -37,7 +37,7 @@ onMounted(() => { void load() })
 </script>
 
 <template>
-  <main class="page-stack">
+  <section class="page-stack">
     <PageHeader kicker="PLAN MAP" title="计划地图" description="只读服务端当前计划；闭环从这里出发：计划 → 今日 → 练习 → 错题 → 报告。" />
     <StatePanel
       v-if="state !== 'ready'"
@@ -59,7 +59,7 @@ onMounted(() => { void load() })
         <button class="button" type="button" @click="mistakes">看错题本</button>
       </div>
     </section>
-  </main>
+  </section>
 </template>
 
 <style scoped>

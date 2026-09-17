@@ -37,7 +37,7 @@ onMounted(() => { void load() })
 </script>
 
 <template>
-  <main class="page-stack">
+  <section class="page-stack">
     <PageHeader kicker="REVIEW LOOP" title="错题本" description="只读服务端判分落下的错题；修复在练习页完成，本页不改分。" />
     <StatePanel
       v-if="state !== 'ready'"
@@ -61,7 +61,7 @@ onMounted(() => { void load() })
         <button class="button" type="button" @click="report">看学习报告</button>
       </div>
     </section>
-  </main>
+  </section>
 </template>
 
 <style scoped>

@@ -79,7 +79,7 @@ function cleanupOfflineDownload(downloadId: string): void { void b4.cleanupOffli
 </script>
 
 <template>
-  <main class="b4-page" :data-performance="b4.performanceLevel" :data-avatar-render="b4.effectiveAvatarRenderMode" aria-labelledby="b4-title">
+  <section class="b4-page" :data-performance="b4.performanceLevel" :data-avatar-render="b4.effectiveAvatarRenderMode" aria-labelledby="b4-title">
     <section class="b4-hero">
       <div>
         <p class="eyebrow">B4 · GROWTH & SOCIAL</p>
@@ -191,7 +191,7 @@ function cleanupOfflineDownload(downloadId: string): void { void b4.cleanupOffli
       <section class="b4-card"><div class="b4-card__heading"><div><p class="card-kicker">OFFLINE PACKAGES</p><h2>离线包与弱网状态</h2></div><span>{{ b4.online ? '在线' : '离线' }}</span></div><p class="b4-muted">下载状态只显示服务端返回的 manifest 状态。授权成功不等于资源已下载，浏览器端会等待真实清单、分片和校验结果。</p><div v-if="b4.offlinePackages.length" class="b4-package-list"><article v-for="item in b4.offlinePackages" :key="item.packageId" class="b4-package"><div><strong>{{ item.packageCode }}</strong><small>{{ item.packageId }} · v{{ item.version }}</small></div><span class="b4-package__state">{{ item.downloadState ?? item.state }}</span><span>{{ item.sizeBytes }} bytes · {{ item.completedPartCount }} / {{ item.partCount }} part · {{ item.downloadedBytes }} bytes</span><button v-if="item.state === 'PUBLISHED' && !item.downloadId" class="button button--secondary" type="button" @click="authorizePackage(item.packageId)">请求授权</button><button v-if="item.downloadId && ['AUTHORIZED', 'DOWNLOADING'].includes(item.downloadState ?? '')" class="button button--secondary" type="button" @click="updateOfflineDownload(item.downloadId, 'PAUSE')">暂停下载</button><button v-if="item.downloadId && item.downloadState === 'PAUSED'" class="button button--secondary" type="button" @click="updateOfflineDownload(item.downloadId, 'RESUME')">恢复下载</button><button v-if="item.downloadId && item.downloadState !== 'ACTIVE_LOCAL'" class="button button--ghost" type="button" @click="cleanupOfflineDownload(item.downloadId)">清理临时分片</button><small v-if="!item.downloadId">授权后才会生成下载任务。</small><small v-else>服务端状态：{{ item.downloadState ?? 'UNKNOWN' }}；完成后仍需服务端校验。</small></article></div><p v-else class="b4-inline-empty">服务端未返回离线包，未使用本地伪造包。</p></section>
       <section class="b4-card"><div class="b4-card__heading"><div><p class="card-kicker">LOCAL QUEUE</p><h2>待同步事件</h2></div><span>{{ b4.queueCount }} 条</span></div><div v-if="b4.offlineRecords.length" class="b4-queue-list"><article v-for="item in b4.offlineRecords" :key="item.id"><strong>{{ item.event.eventType }}</strong><span>{{ item.status }}</span><small>{{ item.event.entityId }} · {{ item.lastError ?? '等待服务端确认' }}</small></article></div><p v-else class="b4-inline-empty">暂无本地待同步事件。</p><button v-if="b4.queueCount" class="button button--primary" type="button" @click="b4.syncOffline">提交待同步事件</button></section>
     </template>
-  </main>
+  </section>
 </template>
 
 <style scoped>

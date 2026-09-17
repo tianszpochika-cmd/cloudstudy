@@ -37,7 +37,7 @@ onMounted(() => { void load() })
 </script>
 
 <template>
-  <main class="page-stack">
+  <section class="page-stack">
     <PageHeader kicker="SRS OVERVIEW" title="掌握度" description="只读服务端 SRS 投影；阶段由服务端判定，页面不推算。" />
     <StatePanel
       v-if="state !== 'ready'"
@@ -60,7 +60,7 @@ onMounted(() => { void load() })
         <button class="button" type="button" @click="plan">看计划地图</button>
       </div>
     </section>
-  </main>
+  </section>
 </template>
 
 <style scoped>

@@ -26,7 +26,7 @@ function rate(value: B10ReviewQuality): void { void store.rateCard(value) }
 </script>
 
 <template>
-  <main class="b10-page" :data-performance="store.performanceLevel" aria-labelledby="vocabulary-title">
+  <section class="b10-page" :data-performance="store.performanceLevel" aria-labelledby="vocabulary-title">
     <header class="page-heading">
       <div><p class="eyebrow">VOC · SRS LOOP</p><h2 id="vocabulary-title">{{ ui.t('b10.vocabulary.title') }}</h2><p>{{ ui.t('b10.common.noAnswerRule') }}</p></div>
       <span class="locale-pill">{{ ui.t('b10.common.ui') }} {{ ui.locale }} · {{ ui.t('b10.common.content') }} {{ ui.contentLocale }}</span>
@@ -48,7 +48,7 @@ function rate(value: B10ReviewQuality): void { void store.rateCard(value) }
       <aside class="side-panel"><h3>{{ ui.t('b10.vocabulary.title') }}</h3><p>{{ card.position + 1 }} / {{ card.total || store.cards.length }}</p><p v-if="card.srs?.dueLocalDate">到期：{{ card.srs.dueLocalDate }}</p><p v-if="card.srs?.nextReviewLocalDate">下次复习：{{ card.srs.nextReviewLocalDate }}</p><p>复习次数：{{ card.srs?.reviewCount ?? 0 }}</p><p>{{ ui.t('b10.common.version', { version: card.contentVersionId ?? '—' }) }}</p><button class="secondary-button" type="button" @click="sync">{{ ui.t('b10.common.sync') }}（{{ store.queueCount }}）</button></aside>
     </section>
     <section v-else-if="status === 'empty'" class="empty-panel"><strong>{{ ui.t('b10.vocabulary.empty') }}</strong><p>{{ ui.t('b10.state.empty') }}</p></section>
-  </main>
+  </section>
 </template>
 
 <style scoped>

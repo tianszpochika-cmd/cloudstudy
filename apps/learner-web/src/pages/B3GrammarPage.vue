@@ -48,7 +48,7 @@ function submitImitation(): void { void store.submitImitation(slotValues.value) 
 </script>
 
 <template>
-<main class="b10-page" :data-performance="store.performanceLevel" aria-labelledby="grammar-title">
+<section class="b10-page" :data-performance="store.performanceLevel" aria-labelledby="grammar-title">
     <header class="page-heading"><div><p class="eyebrow">GRM · EXPLAINABLE PATH</p><h2 id="grammar-title">{{ ui.t('b10.grammar.title') }}</h2><p>知识树、X 光结构、练习和弱点反馈共享题目版本；Performance 档位退回线性结构。</p></div><span class="locale-pill">{{ ui.t('b10.common.ui') }} {{ ui.locale }} · {{ ui.t('b10.common.content') }} {{ ui.contentLocale }}</span></header>
     <B10StatePanel v-if="store.grammarStatus !== 'ready' || store.grammarMessage" :status="store.grammarStatus" :message="store.grammarMessage" :queue-count="store.queueCount" module-label="GRM / GRAMMAR" :performance-level="store.performanceLevel" @retry="retry" @sync="sync" @performance="performance" />
     <section v-if="store.grammarPoints.length" class="grammar-layout">
@@ -61,7 +61,7 @@ function submitImitation(): void { void store.submitImitation(slotValues.value) 
       </article>
     </section>
     <section v-else-if="store.grammarStatus === 'empty'" class="empty-panel"><strong>{{ ui.t('b10.grammar.noTree') }}</strong><p>{{ ui.t('b10.state.empty') }}</p></section>
-  </main>
+  </section>
 </template>
 
 <style scoped>
