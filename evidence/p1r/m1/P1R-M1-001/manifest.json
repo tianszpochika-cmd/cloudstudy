@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-001",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "4b47629f11890687004a19599b2477531c300fe4",
+  "sourceCommit": "68a169ae4b7179a23243a734d474ac80fc8163ed",
   "artifactDigests": [
     {
       "path": "scripts/audit/p1r-api-contract-check.mjs",
@@ -37,7 +37,7 @@
     "originalFinishedAt": "2026-08-29T20:28:20+08:00",
     "originalReviewer": "m1_001_final_review",
     "originalAcceptedContractBaseline": "4d7f73a867ff3e1db8582eab7593c173625bc8a3",
-    "previousCurrentSourceCommit": "9f34a0a5e6ef345bdb351bf63c6d7c221177a94e",
+    "previousCurrentSourceCommit": "4b47629f11890687004a19599b2477531c300fe4",
     "previousCurrentSourceRevalidationTask": "P1R-M1-018",
     "currentSourceRevalidationTask": "P1R-M1-001",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
@@ -579,15 +579,25 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-17T04:34:44.951Z",
         "details": "M4-005 determinism chain + evidence"
+      },
+      {
+        "taskId": "P1R-M1-001",
+        "sourceCommit": "68a169ae4b7179a23243a734d474ac80fc8163ed",
+        "auditedImplementationSource": "68a169ae4b7179a23243a734d474ac80fc8163ed",
+        "integrationCheckpoint": "68a169ae4b7179a23243a734d474ac80fc8163ed",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-17T04:45:33.579Z",
+        "details": "M4-006 A1-C2 sweep chain + evidence"
       }
     ],
     "previousCurrentSourceRevalidationReviewer": "agent:m1_018_final_review:gpt-5.6-luna:max",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
     "previousCurrentSourceRevalidationFinishedAt": "2026-09-01T14:40:33+08:00",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-17T04:34:44.951Z",
-    "currentSourceRevalidationAuditedImplementationSource": "4b47629f11890687004a19599b2477531c300fe4",
-    "currentSourceRevalidationIntegrationCheckpoint": "4b47629f11890687004a19599b2477531c300fe4"
+    "currentSourceRevalidationFinishedAt": "2026-09-17T04:45:33.579Z",
+    "currentSourceRevalidationAuditedImplementationSource": "68a169ae4b7179a23243a734d474ac80fc8163ed",
+    "currentSourceRevalidationIntegrationCheckpoint": "68a169ae4b7179a23243a734d474ac80fc8163ed"
   },
   "startedAt": "2026-08-29T11:15:00+08:00",
   "finishedAt": "2026-09-01T15:39:29+08:00",
