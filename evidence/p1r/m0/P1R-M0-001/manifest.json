@@ -2,7 +2,7 @@
   "taskId": "P1R-M0-001",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "b70df18e2ddad921a87bbaaf0c3e3de159e63d50",
+  "sourceCommit": "e581db972eecb0dd251a49fa7cf0b56d0b94ca3b",
   "artifactDigests": [
     {
       "path": "config/p1r-current-asset-inventory.json",
@@ -429,14 +429,24 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-16T23:40:39.995Z",
         "details": "M7-006 live redeem chain + evidence"
+      },
+      {
+        "taskId": "P1R-M0-001",
+        "sourceCommit": "e581db972eecb0dd251a49fa7cf0b56d0b94ca3b",
+        "auditedImplementationSource": "e581db972eecb0dd251a49fa7cf0b56d0b94ca3b",
+        "integrationCheckpoint": "e581db972eecb0dd251a49fa7cf0b56d0b94ca3b",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-17T00:17:28.058Z",
+        "details": "M6-007 export status/download projections + b1 ops re-merge openapi"
       }
     ],
-    "previousCurrentSourceCommit": "8051eb2a4530f7103ffa92df0b9b6749df7fc540",
+    "previousCurrentSourceCommit": "b70df18e2ddad921a87bbaaf0c3e3de159e63d50",
     "currentSourceRevalidationTask": "P1R-M0-001",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-16T23:40:39.995Z",
-    "currentSourceRevalidationAuditedImplementationSource": "b70df18e2ddad921a87bbaaf0c3e3de159e63d50",
-    "currentSourceRevalidationIntegrationCheckpoint": "b70df18e2ddad921a87bbaaf0c3e3de159e63d50"
+    "currentSourceRevalidationFinishedAt": "2026-09-17T00:17:28.058Z",
+    "currentSourceRevalidationAuditedImplementationSource": "e581db972eecb0dd251a49fa7cf0b56d0b94ca3b",
+    "currentSourceRevalidationIntegrationCheckpoint": "e581db972eecb0dd251a49fa7cf0b56d0b94ca3b"
   }
 }

@@ -2,7 +2,7 @@
   "taskId": "P1R-M2-007",
   "draftOnly": false,
   "canonicalTaskStatus": "DEV_DONE",
-  "sourceCommit": "b70df18e2ddad921a87bbaaf0c3e3de159e63d50",
+  "sourceCommit": "e581db972eecb0dd251a49fa7cf0b56d0b94ca3b",
   "artifactDigests": [
     {
       "path": "scripts/runtime/p1r-m2-007-runtime.mjs",
@@ -55,14 +55,14 @@
       "E7 to E8 the whole thing reduced to a repeatable harness with two fault phases and an operator replay entry"
     ],
     "reviewHistory": [],
-    "previousCurrentSourceCommit": "8051eb2a4530f7103ffa92df0b9b6749df7fc540",
+    "previousCurrentSourceCommit": "b70df18e2ddad921a87bbaaf0c3e3de159e63d50",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
     "currentSourceRevalidationTask": "P1R-M2-007",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-16T23:40:42.225Z",
-    "currentSourceRevalidationAuditedImplementationSource": "b70df18e2ddad921a87bbaaf0c3e3de159e63d50",
-    "currentSourceRevalidationIntegrationCheckpoint": "b70df18e2ddad921a87bbaaf0c3e3de159e63d50",
+    "currentSourceRevalidationFinishedAt": "2026-09-17T00:17:30.512Z",
+    "currentSourceRevalidationAuditedImplementationSource": "e581db972eecb0dd251a49fa7cf0b56d0b94ca3b",
+    "currentSourceRevalidationIntegrationCheckpoint": "e581db972eecb0dd251a49fa7cf0b56d0b94ca3b",
     "originalSourceCommit": "61680c78b41325f002a7b1f4a72cd1c7fd780fe3",
     "currentSourceRevalidationHistory": [
       {
@@ -444,6 +444,16 @@
         "runtimeStatus": "RUNTIME_VERIFIED",
         "finishedAt": "2026-09-16T23:40:42.225Z",
         "details": "M7-006 live redeem chain + evidence"
+      },
+      {
+        "taskId": "P1R-M2-007",
+        "sourceCommit": "e581db972eecb0dd251a49fa7cf0b56d0b94ca3b",
+        "auditedImplementationSource": "e581db972eecb0dd251a49fa7cf0b56d0b94ca3b",
+        "integrationCheckpoint": "e581db972eecb0dd251a49fa7cf0b56d0b94ca3b",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-17T00:17:30.512Z",
+        "details": "M6-007 export status/download projections + b1 ops re-merge openapi"
       }
     ],
     "originalReviewer": "agent:p1r_implementation:deepseek-harness"

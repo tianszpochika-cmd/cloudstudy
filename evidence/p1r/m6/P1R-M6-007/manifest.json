@@ -3,7 +3,7 @@
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
   "decision": "ACCEPTED",
-  "sourceCommit": "b70df18e2ddad921a87bbaaf0c3e3de159e63d50",
+  "sourceCommit": "e581db972eecb0dd251a49fa7cf0b56d0b94ca3b",
   "startedAt": "2026-09-15T20:30:00.000Z",
   "finishedAt": "2026-09-16T23:45:00.000Z",
   "environment": {
@@ -62,7 +62,7 @@
     {
       "path": "services/learner-service/src/main/java/com/englishflow/learner/web/B25LearnerJdbcController.java",
       "algorithm": "sha256",
-      "digest": "47353377138a34f0a0b515de86e614318b53704ea6e6f6215a695a22cd22d335"
+      "digest": "14f6244cfbd26d78239a883463fe7ca1a9fd462a81e2bae8785bb4691d92eb3a"
     },
     {
       "path": "scripts/runtime/p1r-m6-007-runtime.mjs",
@@ -96,9 +96,9 @@
     "currentSourceRevalidationTask": "P1R-M6-007",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-16T23:40:45.222Z",
-    "currentSourceRevalidationAuditedImplementationSource": "b70df18e2ddad921a87bbaaf0c3e3de159e63d50",
-    "currentSourceRevalidationIntegrationCheckpoint": "b70df18e2ddad921a87bbaaf0c3e3de159e63d50",
+    "currentSourceRevalidationFinishedAt": "2026-09-17T00:17:33.500Z",
+    "currentSourceRevalidationAuditedImplementationSource": "e581db972eecb0dd251a49fa7cf0b56d0b94ca3b",
+    "currentSourceRevalidationIntegrationCheckpoint": "e581db972eecb0dd251a49fa7cf0b56d0b94ca3b",
     "currentSourceRevalidationHistory": [
       {
         "taskId": "P1R-M6-007",
@@ -329,8 +329,18 @@
         "runtimeStatus": "RUNTIME_VERIFIED",
         "finishedAt": "2026-09-16T23:40:45.222Z",
         "details": "M7-006 live redeem chain + evidence"
+      },
+      {
+        "taskId": "P1R-M6-007",
+        "sourceCommit": "e581db972eecb0dd251a49fa7cf0b56d0b94ca3b",
+        "auditedImplementationSource": "e581db972eecb0dd251a49fa7cf0b56d0b94ca3b",
+        "integrationCheckpoint": "e581db972eecb0dd251a49fa7cf0b56d0b94ca3b",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-17T00:17:33.500Z",
+        "details": "M6-007 export status/download projections + b1 ops re-merge openapi"
       }
     ],
-    "previousCurrentSourceCommit": "8051eb2a4530f7103ffa92df0b9b6749df7fc540"
+    "previousCurrentSourceCommit": "b70df18e2ddad921a87bbaaf0c3e3de159e63d50"
   }
 }

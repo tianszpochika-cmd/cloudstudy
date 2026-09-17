@@ -3,7 +3,7 @@
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
   "decision": "ACCEPTED",
-  "sourceCommit": "b70df18e2ddad921a87bbaaf0c3e3de159e63d50",
+  "sourceCommit": "e581db972eecb0dd251a49fa7cf0b56d0b94ca3b",
   "startedAt": "2026-09-15T16:25:00.000Z",
   "finishedAt": "2026-09-16T22:15:00.000Z",
   "environment": {
@@ -129,9 +129,9 @@
     "currentSourceRevalidationTask": "P1R-M3-004",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-16T23:40:42.688Z",
-    "currentSourceRevalidationAuditedImplementationSource": "b70df18e2ddad921a87bbaaf0c3e3de159e63d50",
-    "currentSourceRevalidationIntegrationCheckpoint": "b70df18e2ddad921a87bbaaf0c3e3de159e63d50",
+    "currentSourceRevalidationFinishedAt": "2026-09-17T00:17:30.993Z",
+    "currentSourceRevalidationAuditedImplementationSource": "e581db972eecb0dd251a49fa7cf0b56d0b94ca3b",
+    "currentSourceRevalidationIntegrationCheckpoint": "e581db972eecb0dd251a49fa7cf0b56d0b94ca3b",
     "currentSourceRevalidationHistory": [
       {
         "taskId": "P1R-M3-004",
@@ -372,8 +372,18 @@
         "runtimeStatus": "RUNTIME_VERIFIED",
         "finishedAt": "2026-09-16T23:40:42.688Z",
         "details": "M7-006 live redeem chain + evidence"
+      },
+      {
+        "taskId": "P1R-M3-004",
+        "sourceCommit": "e581db972eecb0dd251a49fa7cf0b56d0b94ca3b",
+        "auditedImplementationSource": "e581db972eecb0dd251a49fa7cf0b56d0b94ca3b",
+        "integrationCheckpoint": "e581db972eecb0dd251a49fa7cf0b56d0b94ca3b",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-17T00:17:30.993Z",
+        "details": "M6-007 export status/download projections + b1 ops re-merge openapi"
       }
     ],
-    "previousCurrentSourceCommit": "8051eb2a4530f7103ffa92df0b9b6749df7fc540"
+    "previousCurrentSourceCommit": "b70df18e2ddad921a87bbaaf0c3e3de159e63d50"
   }
 }
