@@ -15,7 +15,7 @@
   "taskId": "P1R-M2-004",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "90f11252bda975312d82d76dd46dd3c97fa283fc",
+  "sourceCommit": "f630762702564436578e884dea8e6e548d1876c5",
   "artifactDigests": [
     {
       "path": "config/p1r-data-ownership.v1.json",
@@ -563,13 +563,13 @@
         "summary": "Not submitted."
       }
     ],
-    "previousCurrentSourceCommit": "f5857c2554337b4ffec39cfde196c76b95851d8a",
+    "previousCurrentSourceCommit": "90f11252bda975312d82d76dd46dd3c97fa283fc",
     "currentSourceRevalidationTask": "P1R-M2-004",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-17T03:24:51.739Z",
-    "currentSourceRevalidationAuditedImplementationSource": "90f11252bda975312d82d76dd46dd3c97fa283fc",
-    "currentSourceRevalidationIntegrationCheckpoint": "90f11252bda975312d82d76dd46dd3c97fa283fc",
+    "currentSourceRevalidationFinishedAt": "2026-09-17T03:37:08.911Z",
+    "currentSourceRevalidationAuditedImplementationSource": "f630762702564436578e884dea8e6e548d1876c5",
+    "currentSourceRevalidationIntegrationCheckpoint": "f630762702564436578e884dea8e6e548d1876c5",
     "currentSourceRevalidationHistory": [
       {
         "taskId": "P1R-M2-004",
@@ -980,6 +980,16 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-17T03:24:51.739Z",
         "details": "M7-007 live callbacks chain + evidence; service-token shape"
+      },
+      {
+        "taskId": "P1R-M2-004",
+        "sourceCommit": "f630762702564436578e884dea8e6e548d1876c5",
+        "auditedImplementationSource": "f630762702564436578e884dea8e6e548d1876c5",
+        "integrationCheckpoint": "f630762702564436578e884dea8e6e548d1876c5",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-17T03:37:08.911Z",
+        "details": "M7-008 refund-to-revoke chain + evidence"
       }
     ]
   },

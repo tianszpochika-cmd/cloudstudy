@@ -2,7 +2,7 @@
   "taskId": "P1R-M2-007",
   "draftOnly": false,
   "canonicalTaskStatus": "DEV_DONE",
-  "sourceCommit": "90f11252bda975312d82d76dd46dd3c97fa283fc",
+  "sourceCommit": "f630762702564436578e884dea8e6e548d1876c5",
   "artifactDigests": [
     {
       "path": "scripts/runtime/p1r-m2-007-runtime.mjs",
@@ -55,14 +55,14 @@
       "E7 to E8 the whole thing reduced to a repeatable harness with two fault phases and an operator replay entry"
     ],
     "reviewHistory": [],
-    "previousCurrentSourceCommit": "f5857c2554337b4ffec39cfde196c76b95851d8a",
+    "previousCurrentSourceCommit": "90f11252bda975312d82d76dd46dd3c97fa283fc",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
     "currentSourceRevalidationTask": "P1R-M2-007",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-17T03:24:51.934Z",
-    "currentSourceRevalidationAuditedImplementationSource": "90f11252bda975312d82d76dd46dd3c97fa283fc",
-    "currentSourceRevalidationIntegrationCheckpoint": "90f11252bda975312d82d76dd46dd3c97fa283fc",
+    "currentSourceRevalidationFinishedAt": "2026-09-17T03:37:09.110Z",
+    "currentSourceRevalidationAuditedImplementationSource": "f630762702564436578e884dea8e6e548d1876c5",
+    "currentSourceRevalidationIntegrationCheckpoint": "f630762702564436578e884dea8e6e548d1876c5",
     "originalSourceCommit": "61680c78b41325f002a7b1f4a72cd1c7fd780fe3",
     "currentSourceRevalidationHistory": [
       {
@@ -474,6 +474,16 @@
         "runtimeStatus": "RUNTIME_VERIFIED",
         "finishedAt": "2026-09-17T03:24:51.934Z",
         "details": "M7-007 live callbacks chain + evidence; service-token shape"
+      },
+      {
+        "taskId": "P1R-M2-007",
+        "sourceCommit": "f630762702564436578e884dea8e6e548d1876c5",
+        "auditedImplementationSource": "f630762702564436578e884dea8e6e548d1876c5",
+        "integrationCheckpoint": "f630762702564436578e884dea8e6e548d1876c5",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-17T03:37:09.110Z",
+        "details": "M7-008 refund-to-revoke chain + evidence"
       }
     ],
     "originalReviewer": "agent:p1r_implementation:deepseek-harness"

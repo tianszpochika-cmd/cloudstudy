@@ -3,7 +3,7 @@
   "draftOnly": false,
   "canonicalTaskStatus": "DEV_DONE",
   "decision": "DEV_DONE",
-  "sourceCommit": "90f11252bda975312d82d76dd46dd3c97fa283fc",
+  "sourceCommit": "f630762702564436578e884dea8e6e548d1876c5",
   "startedAt": "2026-09-15T22:55:00.000Z",
   "finishedAt": "2026-09-15T22:57:00.000Z",
   "environment": {
@@ -71,9 +71,9 @@
     "currentSourceRevalidationTask": "P1R-M8-013",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-17T03:24:56.576Z",
-    "currentSourceRevalidationAuditedImplementationSource": "90f11252bda975312d82d76dd46dd3c97fa283fc",
-    "currentSourceRevalidationIntegrationCheckpoint": "90f11252bda975312d82d76dd46dd3c97fa283fc",
+    "currentSourceRevalidationFinishedAt": "2026-09-17T03:37:14.009Z",
+    "currentSourceRevalidationAuditedImplementationSource": "f630762702564436578e884dea8e6e548d1876c5",
+    "currentSourceRevalidationIntegrationCheckpoint": "f630762702564436578e884dea8e6e548d1876c5",
     "currentSourceRevalidationHistory": [
       {
         "taskId": "P1R-M8-013",
@@ -334,8 +334,18 @@
         "runtimeStatus": "RUNTIME_VERIFIED",
         "finishedAt": "2026-09-17T03:24:56.576Z",
         "details": "M7-007 live callbacks chain + evidence; service-token shape"
+      },
+      {
+        "taskId": "P1R-M8-013",
+        "sourceCommit": "f630762702564436578e884dea8e6e548d1876c5",
+        "auditedImplementationSource": "f630762702564436578e884dea8e6e548d1876c5",
+        "integrationCheckpoint": "f630762702564436578e884dea8e6e548d1876c5",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-17T03:37:14.009Z",
+        "details": "M7-008 refund-to-revoke chain + evidence"
       }
     ],
-    "previousCurrentSourceCommit": "f5857c2554337b4ffec39cfde196c76b95851d8a"
+    "previousCurrentSourceCommit": "90f11252bda975312d82d76dd46dd3c97fa283fc"
   }
 }

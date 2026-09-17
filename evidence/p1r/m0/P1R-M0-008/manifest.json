@@ -2,7 +2,7 @@
   "taskId": "P1R-M0-008",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "90f11252bda975312d82d76dd46dd3c97fa283fc",
+  "sourceCommit": "f630762702564436578e884dea8e6e548d1876c5",
   "artifactDigests": [
     {
       "path": "scripts/audit/p1r-evidence-gate.mjs",
@@ -586,14 +586,24 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-17T03:24:50.083Z",
         "details": "M7-007 live callbacks chain + evidence; service-token shape"
+      },
+      {
+        "taskId": "P1R-M0-008",
+        "sourceCommit": "f630762702564436578e884dea8e6e548d1876c5",
+        "auditedImplementationSource": "f630762702564436578e884dea8e6e548d1876c5",
+        "integrationCheckpoint": "f630762702564436578e884dea8e6e548d1876c5",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-17T03:37:07.345Z",
+        "details": "M7-008 refund-to-revoke chain + evidence"
       }
     ],
-    "previousCurrentSourceCommit": "f5857c2554337b4ffec39cfde196c76b95851d8a",
+    "previousCurrentSourceCommit": "90f11252bda975312d82d76dd46dd3c97fa283fc",
     "currentSourceRevalidationTask": "P1R-M0-008",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-17T03:24:50.083Z",
-    "currentSourceRevalidationAuditedImplementationSource": "90f11252bda975312d82d76dd46dd3c97fa283fc",
-    "currentSourceRevalidationIntegrationCheckpoint": "90f11252bda975312d82d76dd46dd3c97fa283fc"
+    "currentSourceRevalidationFinishedAt": "2026-09-17T03:37:07.345Z",
+    "currentSourceRevalidationAuditedImplementationSource": "f630762702564436578e884dea8e6e548d1876c5",
+    "currentSourceRevalidationIntegrationCheckpoint": "f630762702564436578e884dea8e6e548d1876c5"
   }
 }
