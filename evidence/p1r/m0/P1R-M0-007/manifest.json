@@ -2,7 +2,7 @@
   "taskId": "P1R-M0-007",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "639ae2f7187e1a2ae754ff0c8e7bec58487f89ac",
+  "sourceCommit": "9f34a0a5e6ef345bdb351bf63c6d7c221177a94e",
   "artifactDigests": [
     {
       "path": "config/p1r-fixtures.v1.json",
@@ -78,13 +78,13 @@
   "reviewer": "root-coordinator",
   "decision": "ACCEPTED",
   "provenance": {
-    "previousCurrentSourceCommit": "f630762702564436578e884dea8e6e548d1876c5",
+    "previousCurrentSourceCommit": "639ae2f7187e1a2ae754ff0c8e7bec58487f89ac",
     "currentSourceRevalidationTask": "P1R-M0-007",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-17T03:53:27.833Z",
-    "currentSourceRevalidationAuditedImplementationSource": "639ae2f7187e1a2ae754ff0c8e7bec58487f89ac",
-    "currentSourceRevalidationIntegrationCheckpoint": "639ae2f7187e1a2ae754ff0c8e7bec58487f89ac",
+    "currentSourceRevalidationFinishedAt": "2026-09-17T04:23:09.177Z",
+    "currentSourceRevalidationAuditedImplementationSource": "9f34a0a5e6ef345bdb351bf63c6d7c221177a94e",
+    "currentSourceRevalidationIntegrationCheckpoint": "9f34a0a5e6ef345bdb351bf63c6d7c221177a94e",
     "currentSourceRevalidationHistory": [
       {
         "taskId": "P1R-M0-007",
@@ -495,6 +495,16 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-17T03:53:27.833Z",
         "details": "M7-009 browser refund journey + evidence"
+      },
+      {
+        "taskId": "P1R-M0-007",
+        "sourceCommit": "9f34a0a5e6ef345bdb351bf63c6d7c221177a94e",
+        "auditedImplementationSource": "9f34a0a5e6ef345bdb351bf63c6d7c221177a94e",
+        "integrationCheckpoint": "9f34a0a5e6ef345bdb351bf63c6d7c221177a94e",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-17T04:23:09.177Z",
+        "details": "M7-004 reconnect run chain + evidence"
       }
     ]
   }

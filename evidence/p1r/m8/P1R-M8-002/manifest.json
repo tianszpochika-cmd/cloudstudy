@@ -3,7 +3,7 @@
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
   "decision": "ACCEPTED",
-  "sourceCommit": "639ae2f7187e1a2ae754ff0c8e7bec58487f89ac",
+  "sourceCommit": "9f34a0a5e6ef345bdb351bf63c6d7c221177a94e",
   "startedAt": "2026-09-15T22:00:00.000Z",
   "finishedAt": "2026-09-15T22:02:00.000Z",
   "environment": {
@@ -65,9 +65,9 @@
     "currentSourceRevalidationTask": "P1R-M8-002",
     "currentSourceRevalidationReviewer": "agent:p1r_implementation:deepseek-harness",
     "currentSourceRevalidationRuntimeStatus": "RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-17T03:53:34.034Z",
-    "currentSourceRevalidationAuditedImplementationSource": "639ae2f7187e1a2ae754ff0c8e7bec58487f89ac",
-    "currentSourceRevalidationIntegrationCheckpoint": "639ae2f7187e1a2ae754ff0c8e7bec58487f89ac",
+    "currentSourceRevalidationFinishedAt": "2026-09-17T04:23:15.384Z",
+    "currentSourceRevalidationAuditedImplementationSource": "9f34a0a5e6ef345bdb351bf63c6d7c221177a94e",
+    "currentSourceRevalidationIntegrationCheckpoint": "9f34a0a5e6ef345bdb351bf63c6d7c221177a94e",
     "currentSourceRevalidationHistory": [
       {
         "taskId": "P1R-M8-002",
@@ -348,8 +348,18 @@
         "runtimeStatus": "RUNTIME_VERIFIED",
         "finishedAt": "2026-09-17T03:53:34.034Z",
         "details": "M7-009 browser refund journey + evidence"
+      },
+      {
+        "taskId": "P1R-M8-002",
+        "sourceCommit": "9f34a0a5e6ef345bdb351bf63c6d7c221177a94e",
+        "auditedImplementationSource": "9f34a0a5e6ef345bdb351bf63c6d7c221177a94e",
+        "integrationCheckpoint": "9f34a0a5e6ef345bdb351bf63c6d7c221177a94e",
+        "reviewer": "agent:p1r_implementation:deepseek-harness",
+        "runtimeStatus": "RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-17T04:23:15.384Z",
+        "details": "M7-004 reconnect run chain + evidence"
       }
     ],
-    "previousCurrentSourceCommit": "f630762702564436578e884dea8e6e548d1876c5"
+    "previousCurrentSourceCommit": "639ae2f7187e1a2ae754ff0c8e7bec58487f89ac"
   }
 }
