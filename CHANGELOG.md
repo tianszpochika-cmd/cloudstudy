@@ -1,5 +1,7 @@
 # Changelog
 
+- [LOCAL-BULK-100X-20260918] **全库业务表百条级拟真数据（无翻牌）。** 14 个微服务 owner schema 共 170 张业务表，169 张达到每表至少 100 条（含此前 123 张不足表，已补齐并复核）；唯一例外 iam_policy_active_slot 为单例表（主键即 tenant_id，物理上限 1 行，已指向最新 ACTIVE 策略版本）。状态/类型类枚举列按库内真实分布清洗约 100 列（如 learner 首日/目标/偏好、sku ACTIVE、工单操作），单列主键序列键保持唯一原样。check-local-real-10x 118/118 PASS；新增 pnpm db:check:bulk-100x（scripts/database/check-bulk-100x.mjs）做全库计数门禁。海量种子仅落本地库，不进仓库。
+
 - [LOCAL-DATA-20260918] **本地大词量拟真数据 + Docker 源切换（无翻牌）。** MinIO 相关镜像切到 quay.io（docker.io 拉取不稳定）；新增 scripts/database/seed-large-vocabulary.mjs（pnpm db:seed:large-vocab）：核心词表 757 词 A1-C2（b25-course-core-720，版本 720001），释义例句原创；local-real-10x-fixture 的 iam_consent 列对齐新 schema；学习端 SRS 翻卡与评估重测浏览器链路活证零错，check-local-real-10x 118/118 PASS。
 
 - [P1R-UI-FINAL-20260917] **学习端 UI 收尾 + M4-005 异常关闭（无翻牌）。** 课程/学习页迁入共享模式（StatePanel/PageHeader）；M4-005 复跑 7/7 PASS，第 89 轮 3/7 系后端全掉的环境问题，跟踪关闭。vue-tsc 干净，21 路横扫零错。

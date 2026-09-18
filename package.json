@@ -166,7 +166,8 @@
     "p1r:m2-005:dedupe": "node scripts/runtime/verify-content-consumer-dedupe.mjs",
     "p1r:m2-005:events": "node scripts/runtime/p1r-m2-005-event-runtime.mjs",
     "p1r:m2-005:replay": "node scripts/runtime/replay-dlq.mjs",
-    "db:seed:large-vocab": "node scripts/database/seed-large-vocabulary.mjs"
+    "db:seed:large-vocab": "node scripts/database/seed-large-vocabulary.mjs",
+    "db:check:bulk-100x": "node scripts/database/check-bulk-100x.mjs"
   },
   "devDependencies": {
     "playwright": "^1.63.0",
