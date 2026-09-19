@@ -6,6 +6,26 @@ import { adminClient } from '../api/client'
 export const pinia = createPinia()
 
 const RETURN_TO_KEY = 'englishflow.admin.return-to'
+const ADMIN_SESSION_HINT_KEY = 'englishflow.admin.session-hint'
+
+function hasAdminSessionHint(): boolean {
+  try {
+    if (typeof window === 'undefined' || !window.localStorage) return false
+    return window.localStorage.getItem(ADMIN_SESSION_HINT_KEY) === '1'
+  } catch { return false }
+}
+
+function markAdminSessionHint(): void {
+  try {
+    if (typeof window !== 'undefined' && window.localStorage) window.localStorage.setItem(ADMIN_SESSION_HINT_KEY, '1')
+  } catch { /* ignore */ }
+}
+
+function clearAdminSessionHint(): void {
+  try {
+    if (typeof window !== 'undefined' && window.localStorage) window.localStorage.removeItem(ADMIN_SESSION_HINT_KEY)
+  } catch { /* ignore */ }
+}
 let memoryDeviceId = ''
 let memorySessionId = ''
 let activeAdapter: AdminAuthAdapter | null = null
@@ -44,6 +64,7 @@ export const useAdminStore = defineStore('admin-session', {
       restorePromise = (async () => {
         this.status = 'restoring'
         try {
+          if (!this.accessToken && !hasAdminSessionHint()) { this.clear(); this.status = 'unauthenticated'; return }
           if (!this.accessToken) this.setTokenPair(await adapter().refresh())
           const snapshot = await adapter().restoreSession()
           if (!snapshot) { this.markSessionExpired(); return }
@@ -99,12 +120,14 @@ export const useAdminStore = defineStore('admin-session', {
       memoryDeviceId = this.deviceId
       memorySessionId = this.sessionId
       setInMemoryAccessToken(access)
+      markAdminSessionHint()
       this.status = 'authenticated'
       this.lastError = null
     },
     async refreshSilently(): Promise<boolean> {
       if (refreshPromise) return refreshPromise
       refreshPromise = (async () => {
+        if (!this.accessToken && !hasAdminSessionHint()) return false
         this.status = 'refreshing'
         try {
           this.setTokenPair(await adapter().refresh())
@@ -162,6 +185,7 @@ export const useAdminStore = defineStore('admin-session', {
       memoryDeviceId = ''
       memorySessionId = ''
       setInMemoryAccessToken(null)
+      clearAdminSessionHint()
     },
   },
 })

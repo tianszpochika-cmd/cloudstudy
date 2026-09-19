@@ -6,6 +6,26 @@ import { getUniRuntime, isNativeAppRuntime, type UniSecureStorage, type UniRunti
 
 const REFRESH_TOKEN_KEY = 'yx.auth.mobile.refresh-token'
 const RETURN_TO_KEY = 'yx.auth.mobile.return-to'
+const MOBILE_SESSION_HINT_KEY = 'yx.auth.mobile.session-hint'
+
+function hasMobileSessionHint(): boolean {
+  try {
+    if (typeof window !== 'undefined' && window.localStorage) return window.localStorage.getItem(MOBILE_SESSION_HINT_KEY) === '1'
+  } catch { /* ignore */ }
+  return false
+}
+
+function markMobileSessionHint(): void {
+  try {
+    if (typeof window !== 'undefined' && window.localStorage) window.localStorage.setItem(MOBILE_SESSION_HINT_KEY, '1')
+  } catch { /* ignore */ }
+}
+
+function clearMobileSessionHint(): void {
+  try {
+    if (typeof window !== 'undefined' && window.localStorage) window.localStorage.removeItem(MOBILE_SESSION_HINT_KEY)
+  } catch { /* ignore */ }
+}
 
 /**
  * The consent policy version the adult gate attests against.
@@ -62,6 +82,7 @@ export const useSessionStore = defineStore('session', () => {
     sessionId.value = pair.sessionId?.trim() || sessionId.value
     adultGate.value = pair.adultGate ?? adultGate.value
     setInMemoryAccessToken(accessToken.value)
+    markMobileSessionHint()
     status.value = 'authenticated'
     lastError.value = null
   }
@@ -78,7 +99,7 @@ export const useSessionStore = defineStore('session', () => {
           const snapshot = await adapter().restoreSession()
           if (snapshot) { applySnapshot(snapshot); restoredSession = true }
         }
-        if (!restoredSession && (isNativeAppRuntime() ? Boolean(refreshToken.value) : true)) restoredSession = await refreshSilently()
+        if (!restoredSession && (isNativeAppRuntime() ? Boolean(refreshToken.value) : hasMobileSessionHint())) restoredSession = await refreshSilently()
         if (!restoredSession) clear()
         if (accessToken.value) applySnapshot(await adapter().getPermissions())
         status.value = accessToken.value ? 'authenticated' : 'unauthenticated'
@@ -152,6 +173,7 @@ export const useSessionStore = defineStore('session', () => {
       const native = isNativeAppRuntime()
       const nativeRefreshToken = native ? refreshToken.value : null
       if (native && !nativeRefreshToken) { clear(); return false }
+      if (!native && !hasMobileSessionHint() && !getInMemoryAccessToken()) { clear(); return false }
       status.value = 'refreshing'
       try {
         setTokenPair(await adapter().refresh(nativeRefreshToken ? { refreshToken: nativeRefreshToken } : undefined))
@@ -181,6 +203,7 @@ export const useSessionStore = defineStore('session', () => {
     adultGate.value = 'UNKNOWN'
     status.value = 'unauthenticated'
     setInMemoryAccessToken(null)
+    clearMobileSessionHint()
     try { secureStorage()?.removeItem(REFRESH_TOKEN_KEY) } catch { /* best effort */ }
   }
 

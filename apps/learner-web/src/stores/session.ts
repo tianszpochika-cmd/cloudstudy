@@ -8,6 +8,26 @@ import { getGatewayBaseUrl } from '../platform/gateway'
 export type AuthErrorCode = 'AUTH_FAILED' | 'SESSION_EXPIRED' | 'LOGOUT_FAILED' | 'REVOKE_FAILED'
 
 const RETURN_TO_KEY = 'yx.auth.return-to'
+const SESSION_HINT_KEY = 'yx.auth.session-hint'
+
+function hasSessionHint(): boolean {
+  try {
+    if (typeof window === 'undefined' || !window.localStorage) return false
+    return window.localStorage.getItem(SESSION_HINT_KEY) === '1'
+  } catch { return false }
+}
+
+function markSessionHint(): void {
+  try {
+    if (typeof window !== 'undefined' && window.localStorage) window.localStorage.setItem(SESSION_HINT_KEY, '1')
+  } catch { /* storage is best-effort; cookies remain authoritative */ }
+}
+
+function clearSessionHint(): void {
+  try {
+    if (typeof window !== 'undefined' && window.localStorage) window.localStorage.removeItem(SESSION_HINT_KEY)
+  } catch { /* ignore */ }
+}
 let memoryDeviceId: string | null = null
 
 export const useSessionStore = defineStore('session', () => {
@@ -82,6 +102,7 @@ export const useSessionStore = defineStore('session', () => {
     forbiddenReason.value = null
     lastError.value = null
     setInMemoryAccessToken(access)
+    markSessionHint()
   }
 
   async function restore(): Promise<void> {
@@ -90,6 +111,11 @@ export const useSessionStore = defineStore('session', () => {
     restorePromise = (async () => {
       status.value = 'restoring'
       try {
+        if (!accessToken.value && !hasSessionHint()) {
+          clear()
+          status.value = 'unauthenticated'
+          return
+        }
         if (!accessToken.value) {
           setTokenPair(await adapter().refresh())
         }
@@ -207,6 +233,7 @@ export const useSessionStore = defineStore('session', () => {
   async function refreshSilently(): Promise<boolean> {
     if (refreshPromise) return refreshPromise
     refreshPromise = (async () => {
+      if (!accessToken.value && !hasSessionHint()) return false
       status.value = 'refreshing'
       try {
         setTokenPair(await adapter().refresh())
@@ -346,6 +373,7 @@ export const useSessionStore = defineStore('session', () => {
     authErrorCode.value = null
     forbiddenReason.value = null
     setInMemoryAccessToken(null)
+    clearSessionHint()
   }
 
   return {

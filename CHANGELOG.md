@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1R-BROWSER-SMOKE-20260919] **浏览器实机复测：四端匿名零错 + 登录后零错 + 新号全链路通（无翻牌）。** 匿名四端（18180/18181/18182/18183）点击爬页零错；已完成号 /home /learn /vocabulary 零错；新号注册到测评页全 200，仅新号 onboard 前 3 个 CONSENT_REQUIRED 403 属业务预期；网关 localhost 跨域与登录预检 200；课程目录 200（此前 bulk 脏数据已修，行数不变）。遗留：网关契约检查基线漂移（与本轮改动无关，未动）。
+
 - [LOCAL-BULK-100X-20260918] **全库业务表百条级拟真数据（无翻牌）。** 14 个微服务 owner schema 共 170 张业务表，169 张达到每表至少 100 条（含此前 123 张不足表，已补齐并复核）；唯一例外 iam_policy_active_slot 为单例表（主键即 tenant_id，物理上限 1 行，已指向最新 ACTIVE 策略版本）。状态/类型类枚举列按库内真实分布清洗约 100 列（如 learner 首日/目标/偏好、sku ACTIVE、工单操作），单列主键序列键保持唯一原样。check-local-real-10x 118/118 PASS；新增 pnpm db:check:bulk-100x（scripts/database/check-bulk-100x.mjs）做全库计数门禁。海量种子仅落本地库，不进仓库。
 
 - [LOCAL-DATA-20260918] **本地大词量拟真数据 + Docker 源切换（无翻牌）。** MinIO 相关镜像切到 quay.io（docker.io 拉取不稳定）；新增 scripts/database/seed-large-vocabulary.mjs（pnpm db:seed:large-vocab）：核心词表 757 词 A1-C2（b25-course-core-720，版本 720001），释义例句原创；local-real-10x-fixture 的 iam_consent 列对齐新 schema；学习端 SRS 翻卡与评估重测浏览器链路活证零错，check-local-real-10x 118/118 PASS。

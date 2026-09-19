@@ -181,6 +181,9 @@ function runtimeEnvironment(service, port) {
     // P1R decision 1A: recovery console route owner. Explicit opt-in (the
     // b12/b13 local enablement path is not legible in this file).
     environment.WORKFLOW_SERVICES_ENABLED = process.env.WORKFLOW_SERVICES_ENABLED ?? 'true';
+    environment.B14_STRANGLER_ENABLED = process.env.B14_STRANGLER_ENABLED ?? 'true';
+    environment.B12_SERVICES_ENABLED = process.env.B12_SERVICES_ENABLED ?? 'true';
+    environment.B13_SERVICES_ENABLED = process.env.B13_SERVICES_ENABLED ?? 'true';
   }
   if (service.id === 'commerce-service') {
     environment.COMMERCE_SECURITY_ISSUER_URI = jwtIssuer;

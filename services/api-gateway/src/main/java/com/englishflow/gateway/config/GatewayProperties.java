@@ -216,11 +216,27 @@ public record GatewayProperties(
         }
 
         public OriginProfile profileFor(String origin) {
-            if (learnerWebOrigin.equals(origin)) return OriginProfile.LEARNER_WEB;
-            if (adminWebOrigin.equals(origin)) return OriginProfile.ADMIN_WEB;
-            if (mobileH5Origin.equals(origin)) return OriginProfile.MOBILE_H5;
-            if (officialSiteOrigin.equals(origin)) return OriginProfile.OFFICIAL_SITE;
+            String canonical = canonicalLoopbackOrigin(origin);
+            if (learnerWebOrigin.equals(canonical)) return OriginProfile.LEARNER_WEB;
+            if (adminWebOrigin.equals(canonical)) return OriginProfile.ADMIN_WEB;
+            if (mobileH5Origin.equals(canonical)) return OriginProfile.MOBILE_H5;
+            if (officialSiteOrigin.equals(canonical)) return OriginProfile.OFFICIAL_SITE;
             return OriginProfile.UNKNOWN;
+        }
+
+        private static String canonicalLoopbackOrigin(String origin) {
+            if (origin == null) return null;
+            try {
+                java.net.URI uri = java.net.URI.create(origin.trim());
+                String host = uri.getHost();
+                if (host != null && (host.equalsIgnoreCase("localhost") || host.equals("127.0.0.1"))) {
+                    int port = uri.getPort();
+                    String scheme = uri.getScheme() == null ? "http" : uri.getScheme().toLowerCase(java.util.Locale.ROOT);
+                    return scheme + "://127.0.0.1" + (port == -1 ? "" : ":" + port);
+                }
+            } catch (IllegalArgumentException ignored) {
+            }
+            return origin;
         }
 
         public boolean isCredentialedProfile(OriginProfile profile) {
