@@ -56,7 +56,7 @@ Phase 1 **有意设计为覆盖面较大的首发基座**，不是只做一条�
 | **B5** | SKU、订单、权益、激活码、渠道适配/验签沙盒、教研 CMS、运营中台、客服、审计和合规运营能力；真实支付与自动续费默认关闭 |
 | **B6** | 跨端发布、响应式与性能验收、关键路径 E2E、可靠性、观测和发布门禁 |
 
-批次任务数量、负责人、状态、依赖和解除条件的唯一事实源是 [`requirements/backlog/Agent开发状态总报表.md`](requirements/backlog/Agent开发状态总报表.md)，README 不重复维护易变的任务数字。
+批次任务数量、负责人、状态、依赖和解除条件的唯一事实源是 [`requirements/backlog/Agent开发状态总报表.md`](requirements/backlog/Agent开发状态总报表.md)，README 不重复维护易变的任务数字。**注意：B0–B6 已是历史批次（只保留现状审计与迁移语义）；当前 Phase 1 的唯一执行入口与状态事实源是 [`requirements/backlog/v2-phase1-rebaseline/02-编号任务台账.md`](requirements/backlog/v2-phase1-rebaseline/02-编号任务台账.md)（`P1R-*` 共 108 项），跨会话交接入口是根目录 [`CURRENT-HANDOFF.md`](CURRENT-HANDOFF.md)。**
 
 ### Phase 1 状态解释
 
@@ -118,14 +118,25 @@ Phase 1 不启用生成式 AI；AI 导师、生成式评测、RTC AI 对话和�
 - **MySQL**：`8.0+`
 - **Redis**：`7.0+`
 
-### 启动说明
+### 启动说明（v2 全栈）
+
+> 固定端口唯一事实源：`config/local-ports.json`；启动前先跑 `pnpm ports:check`。端口被占用时停止占用进程，不得自动改用其他端口。
+
 1. **安装前端依赖**：`pnpm install`
 2. **检查固定端口**：`pnpm ports:check`
-3. **启动本地 MySQL、Redis、MinIO**：`docker compose -f infra/docker/docker-compose.dev.yml up -d`
-4. **启动学员 Web 端**：`cd apps/learner-web && pnpm dev`，地址为 `http://127.0.0.1:18180`
-5. **启动管理后台**：`cd apps/admin-web && pnpm dev`，地址为 `http://127.0.0.1:18181`
-6. **启动官网**：`cd apps/official-site && pnpm dev`，地址为 `http://127.0.0.1:18182`
-7. **启动移动端 H5**：`cd apps/mobile && pnpm dev:h5`，地址为 `http://127.0.0.1:18183`
-8. **启动迁移期后端兼容入口**：`cd services/core-api && mvn spring-boot:run`，地址为 `http://127.0.0.1:18080/api/v1`。v2 Gateway/新服务的启动命令和固定端口必须在对应任务完成契约与端口登记后补充。
+3. **启动本地基础设施**（MySQL/Redis/MinIO/Kafka/RabbitMQ 一键）：`docker compose -f infra/docker/docker-compose.dev.yml up -d`
+4. **构建并启动 v2 后端全栈**（16 个服务：Gateway 18070、workflow 18071、core-api 18080、IAM 18087、11 个领域服务 18088–18098、audit 18099）：
+   - 首次或代码变更后：`pnpm services:build`
+   - 启动：`pnpm services:run -- --all`（自带逐服务 readiness 健康检查）
+5. **启动学员 Web 端**：`cd apps/learner-web && pnpm dev`，地址为 `http://127.0.0.1:18180`
+6. **启动管理后台**：`cd apps/admin-web && pnpm dev`，地址为 `http://127.0.0.1:18181`
+7. **启动官网**：`cd apps/official-site && pnpm dev`，地址为 `http://127.0.0.1:18182`
+8. **启动移动端 H5**：`cd apps/mobile && pnpm dev:h5`，地址为 `http://127.0.0.1:18183`
+
+补充：
+
+- 本地种子/拟真数据：`pnpm db:seed:local-real-all`（基础）、`pnpm db:seed:large-vocab`（词表）、`pnpm db:check:bulk-100x`（全库数据量门禁）。
+- 后端 jar 必须比源码新；改了 `services/**` Java 代码后需要重新 `pnpm services:build` 对应服务再启动。
+- v2 微服务只走 Gateway 入口（18070）访问业务 API；`core-api`（18080）仅为 v1 迁移兼容与回滚边界。
 
 端口规则见 `docs/02-architecture/local-development-port-allocation.md`。端口被占用时停止占用进程，不得自动改用其他端口。

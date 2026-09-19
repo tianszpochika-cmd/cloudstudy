@@ -1,7 +1,7 @@
 # CURRENT-HANDOFF —— 语学星 Phase 1 重基线（P1R）
 
 > 本文件是**跨会话交接**的入口，记录"当前在哪、下一步做什么、谁在等谁"。
-> 最后更新：**2026-09-14**。**本文档不写会随每次提交变化的值** —— 它此前写着 `HEAD`、轮次与测试数，三处都在几天内过期，而陈旧的交接文档会被当作现状读。需要当下值时跑 §0 的命令，或读那里指名的权威文件。
+> 最后更新：**2026-09-19**。**本文档不写会随每次提交变化的值** —— 它此前写着 `HEAD`、轮次与测试数，三处都在几天内过期，而陈旧的交接文档会被当作现状读。需要当下值时跑 §0 的命令，或读那里指名的权威文件。
 > **所有数字均为当日实测，命令附在括号内。**
 
 ---
@@ -18,13 +18,13 @@ git rev-list --count origin/dev..HEAD   # 领先 origin 多少（推送后应为
 
 | 项 | 值（缓慢变化，或附取得方式） |
 |---|---|
-| 计划进度 | **28/108 ACCEPTED = 26%**（M0 88% / M1 100% / M2 30% / **M3–M8 0%**） |
-| `P1R-M2-004` | **`REVIEW`** —— 已**连续多轮 REWORK**（轮数以 `review-history.json` 为准）；`P0` **每一轮均为 0** |
-| `P1R-M0-006` | `IN_PROGRESS`（首轮 REWORK；五项 P1 中四项已处置，一项需读者；8 项 P2 未系统核对） |
-| 可领取任务 | **0** —— M3–M8 共 72 项的依赖链首在 M2 |
-| M2-004 结果的权威来源 | `evidence/p1r/m2/P1R-M2-004/manifest.json` 与 `.../review-history.json`（**以它们为准，不要以本文档为准**） |
+| 计划进度 | **81/108 ACCEPTED = 75%**（M0 7/8、M1 18/18、M2 5/10、M3 9/10、M4 7/10、M5 11/14、M6 11/11、M7 8/11、M8 5/16；其余 27 项为 `DEV_DONE`，状态以 [02-编号任务台账](requirements/backlog/v2-phase1-rebaseline/02-编号任务台账.md) 为准） |
+| 27 项 DEV_DONE 的去向 | 已逐项分诊（2026-09-17，见 CHANGELOG `[P1R-TRIAGE-20260917]`）：11 个具名 M8-* + 9 个 M8 波次 + 5 个基建（Kafka/补偿传输/集群策略/trace 采集/分支保护主机 API 实测调不通）+ M0-006 留独立验收 + M4-008 留 M4-009/M8-007。**本地可翻队列已清空** |
+| `P1R-M0-006` | `DEV_DONE` —— 留独立验收（BOM/version catalog/依赖锁/SBOM；资产验证列已标 `已验-可用`） |
+| `P1R-M2-004` | **`ACCEPTED`**（2026-09-14 前后多轮 REWORK 后闭合；历史见 §2 与 `evidence/p1r/m2/P1R-M2-004/manifest.json`） |
+| 可领取任务 | 台账中已无 `PLANNED/READY` 任务 —— 剩余工作即上述 27 项 `DEV_DONE` 的验收/翻牌 |
 
-**一句话**：运行时交付是真的且每轮被评审在真实依赖上独立复现（`P0` 恒为 0），但 `M2-004` 因"**账实不符**"连续多轮被判 REWORK；**铁律 1 禁止实现者自批**，故 M3–M8 **无法启动**。
+**一句话**：M2 安全与可靠性骨架已闭合，M3–M7 主体任务已翻牌为 `ACCEPTED`（81/108），剩余 27 项 `DEV_DONE` 已完成分诊且**本地可翻队列清空**；下一步是 M8 波次、五项基建（依赖外部环境实测）与 M0-006 独立验收。
 
 ---
 
@@ -41,11 +41,15 @@ git rev-list --count origin/dev..HEAD   # 领先 origin 多少（推送后应为
 
 **工具链**：Node **20.19.5**（`C:\Users\Administrator\Tools\node-v20.19.5-win-x64`）；调用 pnpm 用 `& "$env:APPDATA\npm\pnpm.cmd" <script>`，**裸 `pnpm` 会跑 DSH 的 Electron Node 24**（错）。JDK 25：`C:\Program Files\Microsoft\jdk-25.0.4.101-hotspot`。
 
+> **2026-09-19 复测（文档对齐批次）**：`plan:p1r:check` PASS（`taskCount: 108`）；`doc-audit` PASS；`p1r-stale-claims-check` PASS（**1152 files**，文件数会随仓库增长）。⚠️ `p1r-evidence-gate` 全量校验在本次对齐中**未等完**（本机同时承载全栈人工测试负载，超过 30 分钟无输出，疑似环境挂起，已中止而非判 PASS）——最近一次全绿记录见 CHANGELOG 09-17/09-18 各批次；**下次空闲时段应补跑全量 evidence gate**。
+
 **PowerShell 陷阱（本会话反复踩）**：内联 `node -e` 会被吞掉 `$`、引号、反引号、`&&`、`[` ⇒ **一律写 `tmp/*.mjs` 文件再跑**。
 
 ---
 
-## 2. `P1R-M2-004`：同一种形态反复出现
+## 2. `P1R-M2-004`（已闭合 —— 本节保留为方法论历史）
+
+> **状态更新（2026-09-19）**：`P1R-M2-004` 已经历多轮 REWORK 后最终 **`ACCEPTED`**（资产验证 `已验-可用`，见台账与 `evidence/p1r/m2/P1R-M2-004/manifest.json`）。以下失分形态与结构性防护记录保留，作为后续独立验收工作的方法论参照。
 
 判定序列：`0/4/6 → 0/1/9 → 0/3/7 → 0/4/8 → 0/2/8 → 0/3/9 → 0/3/6 → 0/4/9 → 0/5/4 → 0/4/8 → 0/4/6`。
 
@@ -101,32 +105,35 @@ git rev-list --count origin/dev..HEAD   # 领先 origin 多少（推送后应为
 
 ---
 
-## 4. `P1R-M2-006`：已交付什么、缺什么
+## 4. `P1R-M2-006`（已交付 `DEV_DONE` —— 本节保留执行起点记录）
+
+> **状态更新（2026-09-19）**：`P1R-M2-006` 现为 `DEV_DONE`（台账为准）；下文"唯一缺口：装配"是当时的交接快照，后续批次已处理，以 `evidence/` 与台账为准。
 
 **已交付且有测试**（`services/workflow-service` **51+ 项**）：Saga 状态机／JDBC 存储（真库）／补偿执行器（**已 APPLIED 绝不重跑**）／双人审批（**申请人不能自审**）／人工恢复 HTTP（**身份取自 token**，请求体无 approver 字段）／任务 lease（**数据库仲裁**）／outbox（**`FOR UPDATE SKIP LOCKED`**）。
 
 **ADR-0016**（`docs/10-decisions/0016-service-identity-and-internal-token-issuance.md`）：IAM 签发侧（6 项测试）、网关获取侧 `ServiceTokenClient`（5 项测试）、sink **换证重试**（3 项真回环测试）。
 
-**唯一缺口**：**装配** —— 把 sink 装进 `SecurityAuditSinkConfiguration`，使 `scripts/runtime/verify-gateway-audit-ingest.mjs` 由 6 项失败转 **8 项通过**。
+**历史缺口快照**：**装配** —— 把 sink 装进 `SecurityAuditSinkConfiguration`，使 `scripts/runtime/verify-gateway-audit-ingest.mjs` 由 6 项失败转 **8 项通过**。
 
 **三次失败已完整记录在 `execution/P1R-M2-006.md` §4**：下一次**从 `GatewayYamlLoadingTest:39` 的 `Binder` 真实失败原因读起**，**不要再猜组件声明**。破坏判据：干净树 `93/0/0`；**失败即 `git checkout -- services/api-gateway/`**。
 
 ---
 
-## 5. 不在本环境能力内的阻塞
+## 5. 阻塞与边界（2026-09-19 更新）
 
 | 事项 | 状态 |
 |---|---|
-| `M2-004` 的 `ACCEPTED` | 需**独立评审**；**铁律 1 禁止自批** ⇒ M3–M8 全部阻塞 |
-| **评审期间冻结** | **多轮中多次违反**；**需 CI 强制**（如"存在 `PENDING` 评审轮即拒绝提交"）。判定序列与轮数以 `review-history.json` 为准 |
+| `M2-004` 的 `ACCEPTED` | ✅ **已解除** —— M2 闭合，M3–M7 主体已翻牌（81/108） |
+| **评审期间冻结** | 历史上多轮违反；**仍需 CI 强制**（如"存在 `PENDING` 评审轮即拒绝提交"）。判定序列与轮数以 `review-history.json` 为准 |
+| 5 项基建 DEV_DONE | Kafka/补偿传输/集群策略/trace 采集/分支保护主机 API **实测调不通**（本环境限制），留在 DEV_DONE（见 CHANGELOG `[P1R-TRIAGE-20260917]`） |
 | 真实设备／微信小程序真机／真实 staging／不可变 RC 签名／支付沙箱／独立 Go-No-Go | **本环境不可能** |
 
 ---
 
-## 6. 下一步（按优先级）
+## 6. 下一步（按优先级，2026-09-19 更新）
 
-1. **等在跑的评审** ⇒ 逐字写入台账与 manifest。**别忘记录判定** —— 第 8、10 轮都忘了，两次都留下一个占位符。
-2. 若判 REWORK：按其动作清单**逐条**闭合；**改动检查器时同步复核 `checkLimits`**。
-3. **M2-006 的装配**（从 §4 的起点读起）。
-4. **M2-007**：差距已量化 —— **14 服务无 connect/read 超时**、**14 服务无熔断**、**7 服务无 OpenTelemetry**、liveness 未显式声明；补丁脚本 `tmp/m2-007-config-prep.mjs`（dry-run，未接 pnpm 脚本，因为**改 `package.json` 会牵动 16 份 manifest**）。
-5. **M3** 链首 `M3-001` 依赖 `M2-010`；台账**已预标**缺失：`M3-002` 的 **批量导入 `import/batch`** 与**标准乐观锁**、`M3-008` 的官网 **privacy/terms/minors/status 四页**。
+1. **M8 波次**（9 项）与具名 `M8-*`（11 项）：台账 `P1R-M8-*` 逐项推进；`M3-002` 的**批量导入 `import/batch`** 与**标准乐观锁**、`M3-008` 的官网 **privacy/terms/minors/status 四页** 已预标缺失，随 M8 批次闭合。
+2. **M0-006 独立验收**（依赖锁/SBOM/许可证审计的独立复核）与 **M4-008**（留 M4-009/M8-007 承接）。
+3. **五项基建**需外部环境（Kafka 集群策略、trace 采集后端、分支保护等），在可真实连调的环境补运行证据。
+4. **评审期间冻结的 CI 强制**仍是方法论短板（见 §5）。
+5. 本地全栈运行与人工测试入口见仓库根 `README.md`「本地开发快速上手」（v2 全栈：`pnpm services:run -- --all` + 四个前端 Vite/Nuxt dev）。

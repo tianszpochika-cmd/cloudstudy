@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1R-DOCS-ALIGN-20260919] **交接与入口文档对齐（无翻牌、无生产改动）。** `CURRENT-HANDOFF.md` 从 09-14 快照更新至当前现实：81/108 ACCEPTED（75%，含逐里程碑分布）、27 项 DEV_DONE 按 `[P1R-TRIAGE-20260917]` 分诊、M2-004/M2-006 历史段落加"已闭合/已交付"状态标注、下一步改写为 M8 波次 + 基建 + M0-006 独立验收；`requirements/backlog/v2-phase1-rebaseline/README.md` 快照行同步（原写 28 ACCEPTED / M2-004 IN_PROGRESS 已过期）；根 `README.md` 启动说明升级为 v2 全栈流程（`pnpm services:build` + `pnpm services:run -- --all` + docker compose 五件套基础设施），并标注 P1R 台账为唯一执行事实源、B0–B6 为历史批次。
+
 - [P1R-BROWSER-SMOKE-20260919] **浏览器实机复测：四端匿名零错 + 登录后零错 + 新号全链路通（无翻牌）。** 匿名四端（18180/18181/18182/18183）点击爬页零错；已完成号 /home /learn /vocabulary 零错；新号注册到测评页全 200，仅新号 onboard 前 3 个 CONSENT_REQUIRED 403 属业务预期；网关 localhost 跨域与登录预检 200；课程目录 200（此前 bulk 脏数据已修，行数不变）。遗留：网关契约检查基线漂移（与本轮改动无关，未动）。
 
 - [LOCAL-BULK-100X-20260918] **全库业务表百条级拟真数据（无翻牌）。** 14 个微服务 owner schema 共 170 张业务表，169 张达到每表至少 100 条（含此前 123 张不足表，已补齐并复核）；唯一例外 iam_policy_active_slot 为单例表（主键即 tenant_id，物理上限 1 行，已指向最新 ACTIVE 策略版本）。状态/类型类枚举列按库内真实分布清洗约 100 列（如 learner 首日/目标/偏好、sku ACTIVE、工单操作），单列主键序列键保持唯一原样。check-local-real-10x 118/118 PASS；新增 pnpm db:check:bulk-100x（scripts/database/check-bulk-100x.mjs）做全库计数门禁。海量种子仅落本地库，不进仓库。
