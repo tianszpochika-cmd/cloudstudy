@@ -1,0 +1,84 @@
+{
+  "classification": "prototype-palette-reference-and-solid-color-contrast-only",
+  "sources": [
+    {
+      "file": "packages/design-tokens/src/index.ts",
+      "values": {
+        "brandPrimary": "#596BFF",
+        "brandSecondary": "#7C5CFC",
+        "purple700": "#5937D1",
+        "lightCanvas": "#F7F8FC",
+        "lightText": "#202332"
+      }
+    },
+    {
+      "file": "apps/mobile/src/uni.scss",
+      "selector": ".yx-app.b10-theme--dark",
+      "values": {
+        "canvas": "#161925",
+        "surface": "#222638",
+        "text": "#F4F6FF",
+        "secondaryText": "#C7CCDC",
+        "border": "#3D455E"
+      }
+    }
+  ],
+  "derived": {
+    "lightHero": [
+      "#3F2D83",
+      "#4D33AB",
+      "#5937D1"
+    ],
+    "darkHero": [
+      "#302657",
+      "#3E2B7D",
+      "#4D329F"
+    ],
+    "note": "Hero shadows are derived shades of existing purple700, not claimed as verbatim existing tokens."
+  },
+  "contrast": [
+    {
+      "role": "Primary action",
+      "foreground": "#FFFFFF",
+      "background": "#5937D1",
+      "ratio": 7.26
+    },
+    {
+      "role": "Light body",
+      "foreground": "#202332",
+      "background": "#F7F8FC",
+      "ratio": 14.68
+    },
+    {
+      "role": "Light secondary",
+      "foreground": "#666D80",
+      "background": "#F7F8FC",
+      "ratio": 4.87
+    },
+    {
+      "role": "Dark body",
+      "foreground": "#F4F6FF",
+      "background": "#161925",
+      "ratio": 16.23
+    },
+    {
+      "role": "Dark secondary",
+      "foreground": "#C7CCDC",
+      "background": "#222638",
+      "ratio": 9.34
+    },
+    {
+      "role": "Light hero endpoint",
+      "foreground": "#FFFFFF",
+      "background": "#5937D1",
+      "ratio": 7.26
+    },
+    {
+      "role": "Dark hero endpoint",
+      "foreground": "#FFFFFF",
+      "background": "#4D329F",
+      "ratio": 9.24
+    }
+  ],
+  "limitations": "Selected solid-color pair calculations only; not full accessibility or gradient-wide certification."
+}

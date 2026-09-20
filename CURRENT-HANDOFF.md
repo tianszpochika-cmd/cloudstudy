@@ -1,12 +1,14 @@
 # CURRENT-HANDOFF —— 语学星 Phase 1 重基线（P1R）
 
 > 本文件是**跨会话交接**的入口，记录"当前在哪、下一步做什么、谁在等谁"。
-> 最后更新：**2026-09-19**。**本文档不写会随每次提交变化的值** —— 它此前写着 `HEAD`、轮次与测试数，三处都在几天内过期，而陈旧的交接文档会被当作现状读。需要当下值时跑 §0 的命令，或读那里指名的权威文件。
-> **所有数字均为当日实测，命令附在括号内。**
+> 最后更新：**2026-09-20**。当前进度以任务台账和实际命令为准；本次源码检查绑定 `2c2cfa2e`，详见[完整度梳理日志](requirements/backlog/v2-phase1-rebaseline/execution/COMPLETENESS-AUDIT-2026-09-20.md)。后续文档修改不自动更新该审计基线。
+> **§0/§1/§5/§6 是当前交接；中间带日期的历史段落保留原验证范围，不作为最新全绿结论。**
 
 ---
 
 ## 0. 检查点
+
+**本轮 UI/UX 交付入口（2026-09-20）**：[设计、统计与恢复说明](docs/06-design/v2-980plus/mobile-experience-proposal-2026-09-20/DELIVERY-2026-09-20.md)。当前最新版是提案 03：十个手机界面、现有冷紫/深紫白字、浅/深双主题；四端规划估算 165 个主要界面。尚未开展正式前端重写，不改变下方 P1R 状态；旧紫红尝试不作为当前配色。
 
 > **本表不写会随每次提交变化的值。** 它此前写着 `HEAD` 与轮次，两处都在几天内过期，而**陈旧的交接文档会被当作现状读** —— 这正是它要防的毛病。要得到当下值，跑下面的命令；**不要把这些数字抄回本文档**。
 
@@ -19,27 +21,31 @@ git rev-list --count origin/dev..HEAD   # 领先 origin 多少（推送后应为
 | 项 | 值（缓慢变化，或附取得方式） |
 |---|---|
 | 计划进度 | **81/108 ACCEPTED = 75%**（M0 7/8、M1 18/18、M2 5/10、M3 9/10、M4 7/10、M5 11/14、M6 11/11、M7 8/11、M8 5/16；其余 27 项为 `DEV_DONE`，状态以 [02-编号任务台账](requirements/backlog/v2-phase1-rebaseline/02-编号任务台账.md) 为准） |
-| 27 项 DEV_DONE 的去向 | 已逐项分诊（2026-09-17，见 CHANGELOG `[P1R-TRIAGE-20260917]`）：11 个具名 M8-* + 9 个 M8 波次 + 5 个基建（Kafka/补偿传输/集群策略/trace 采集/分支保护主机 API 实测调不通）+ M0-006 留独立验收 + M4-008 留 M4-009/M8-007。**本地可翻队列已清空** |
+| 27 项 DEV_DONE 的去向 | 09-17 分诊按 11 个 M8-*、9 个 M8 波次、5 项基建、M0-006、M4-008 分类；09-20 审计确认仍包含实现和复验工作，不能概括为只差外部环境或本地队列清空。具体承接与关闭条件见梳理日志 §4 |
 | `P1R-M0-006` | `DEV_DONE` —— 留独立验收（BOM/version catalog/依赖锁/SBOM；资产验证列已标 `已验-可用`） |
 | `P1R-M2-004` | **`ACCEPTED`**（2026-09-14 前后多轮 REWORK 后闭合；历史见 §2 与 `evidence/p1r/m2/P1R-M2-004/manifest.json`） |
-| 可领取任务 | 台账中已无 `PLANNED/READY` 任务 —— 剩余工作即上述 27 项 `DEV_DONE` 的验收/翻牌 |
+| 后续工作入口 | 台账无 `PLANNED/READY` 不代表无工作可做；在既有 P1R owner 范围修复契约、跨服务链路与证据漂移，再推进未闭合的 M8 验收。部分 ACCEPTED 任务也保留具名残留，本次不改变状态 |
 
-**一句话**：M2 安全与可靠性骨架已闭合，M3–M7 主体任务已翻牌为 `ACCEPTED`（81/108），剩余 27 项 `DEV_DONE` 已完成分诊且**本地可翻队列清空**；下一步是 M8 波次、五项基建（依赖外部环境实测）与 M0-006 独立验收。
+**当前判断**：Phase 1 主体功能与服务基础已形成，任务验收比例为 75%；当前源码契约检查失败，补偿、口语入口与跨服务隐私处理等仍有实际缺口。尚未取得完整 D4/D5 证据，不能判定发布 GO；先修复当前基线与链路，再完成 M8 和独立验收。
 
 ---
 
-## 1. 必跑门禁（全部应为 PASS）
+## 1. 本次源码审计检查（2026-09-20，基线 `2c2cfa2e`）
 
-| 命令 | 期望 | 实测 |
+| 命令 | 期望 | 本次结果 |
 |---|---|---|
-| `node scripts/audit/p1r-evidence-gate.mjs --json` | `PASS`，`errors: []` | ✅ |
-| `node scripts/audit/verify-phase1-rebaseline-plan.mjs` | `PASS`，`taskCount: 108` | ✅ |
-| `node scripts/dev/run-node-tests.mjs tests/p1r` | 全部通过（**数字会变，以命令输出为准**） | ✅ |
-| `node scripts/audit/p1r-stale-claims-check.mjs` | `PASS (911 files)` | ✅ |
-| `node scripts/audit/doc-audit.mjs` | `PASS` | ✅ |
-| `mvn -f services/api-gateway/pom.xml -o test` | `93 / 0 / 0` | ✅ |
+| `node scripts/audit/p1r-evidence-gate.mjs --json` | PASS | 180 秒未完成后停止，无最终报告，不判 PASS |
+| `node scripts/audit/verify-phase1-rebaseline-plan.mjs` | PASS | PASS，108 项、81/27 |
+| `node scripts/dev/run-node-tests.mjs tests/p1r` | 全部通过 | 未完成，至少 2 项失败；最后输出到第 180 项，不是 180 项通过 |
+| `node scripts/audit/p1r-stale-claims-check.mjs` | PASS | PASS，1395 files；不保证语义一致 |
+| `node scripts/audit/doc-audit.mjs` | PASS | PASS，0 死链、52 孤儿文档提示 |
+| `node scripts/audit/p1r-gateway-contract-check.mjs` | PASS | FAIL，18 条错误 |
+| `node scripts/contracts/validate-contracts.mjs` | PASS | FAIL，账号删除接口缺少幂等声明 |
+| Java 25 Gateway 测试、全栈与浏览器 | 适用范围全部通过 | 本轮未执行，历史测试数不能继承 |
 
-**工具链**：Node **20.19.5**（`C:\Users\Administrator\Tools\node-v20.19.5-win-x64`）；调用 pnpm 用 `& "$env:APPDATA\npm\pnpm.cmd" <script>`，**裸 `pnpm` 会跑 DSH 的 Electron Node 24**（错）。JDK 25：`C:\Program Files\Microsoft\jdk-25.0.4.101-hotspot`。
+**工具链**：项目要求 Node 20.19.5、Java 25；本次当前会话 Node 为 20.19.5（nvm4w），默认 Java 为 21、Maven 为 3.9.12。Java 检查/启动前须选择实际存在的 Java 25 并运行工具链诊断。旧会话的 Administrator Node 路径、DSH pnpm 和 JDK 路径属于机器快照，不能直接当作本机配置。
+
+**证据绑定**：按 Git HEAD blob 复核确认 18 个任务的 19 条摘要引用漂移，涉及 3 个文件。修复源码并完成适用回归/复核后再更新绑定，不能仅刷新摘要。详细方法见梳理日志 §5。
 
 > **2026-09-19 复测（文档对齐批次）**：`plan:p1r:check` PASS（`taskCount: 108`）；`doc-audit` PASS；`p1r-stale-claims-check` PASS（**1152 files**，文件数会随仓库增长）。⚠️ `p1r-evidence-gate` 全量校验在本次对齐中**未等完**（本机同时承载全栈人工测试负载，超过 30 分钟无输出，疑似环境挂起，已中止而非判 PASS）——最近一次全绿记录见 CHANGELOG 09-17/09-18 各批次；**下次空闲时段应补跑全量 evidence gate**。
 
@@ -119,21 +125,24 @@ git rev-list --count origin/dev..HEAD   # 领先 origin 多少（推送后应为
 
 ---
 
-## 5. 阻塞与边界（2026-09-19 更新）
+## 5. 阻塞与边界（2026-09-20 更新）
 
 | 事项 | 状态 |
 |---|---|
-| `M2-004` 的 `ACCEPTED` | ✅ **已解除** —— M2 闭合，M3–M7 主体已翻牌（81/108） |
+| `M2-004` 的 `ACCEPTED` | 该任务已验收；不等于 M2 整体闭合，M2 尚有 5 项 DEV_DONE |
 | **评审期间冻结** | 历史上多轮违反；**仍需 CI 强制**（如"存在 `PENDING` 评审轮即拒绝提交"）。判定序列与轮数以 `review-history.json` 为准 |
-| 5 项基建 DEV_DONE | Kafka/补偿传输/集群策略/trace 采集/分支保护主机 API **实测调不通**（本环境限制），留在 DEV_DONE（见 CHANGELOG `[P1R-TRIAGE-20260917]`） |
-| 真实设备／微信小程序真机／真实 staging／不可变 RC 签名／支付沙箱／独立 Go-No-Go | **本环境不可能** |
+| 契约与证据基线 | 当前契约检查失败、摘要绑定有漂移；完整 P1R 与 Evidence Gate 未取得本次通过结论 |
+| 补偿与跨服务处理 | M2-006 缺真实 owner 补偿调用并有成功状态误记风险；M6-007/008 manifest 留有跨 owner 导出/匿名化 worker 缺口，不能统一归为环境限制 |
+| 口语入口 | M5-005 证据仍注明网关 owner 冲突与服务直连验证；需按架构确定 owner 并完成正常入口链路 |
+| 事件、集群、观测与 CI | 原分诊保留作线索；本轮未全面复验各 owner transport 或主机 API，需区分缺实现和缺外部运行证据 |
+| 真机、staging、容灾、制品与独立 Go/No-Go | 本轮未验证，需对应环境与独立验收；不能把某会话不可用写成永久不可能 |
 
 ---
 
-## 6. 下一步（按优先级，2026-09-19 更新）
+## 6. 下一步（按优先级，2026-09-20 更新）
 
-1. **M8 波次**（9 项）与具名 `M8-*`（11 项）：台账 `P1R-M8-*` 逐项推进；`M3-002` 的**批量导入 `import/batch`** 与**标准乐观锁**、`M3-008` 的官网 **privacy/terms/minors/status 四页** 已预标缺失，随 M8 批次闭合。
-2. **M0-006 独立验收**（依赖锁/SBOM/许可证审计的独立复核）与 **M4-008**（留 M4-009/M8-007 承接）。
-3. **五项基建**需外部环境（Kafka 集群策略、trace 采集后端、分支保护等），在可真实连调的环境补运行证据。
-4. **评审期间冻结的 CI 强制**仍是方法论短板（见 §5）。
-5. 本地全栈运行与人工测试入口见仓库根 `README.md`「本地开发快速上手」（v2 全栈：`pnpm services:run -- --all` + 四个前端 Vite/Nuxt dev）。
+1. 在现有任务范围修复契约/路由/生成物不一致，复跑失败用例及适用回归，再补完整 Evidence Gate；按验证结果更新证据绑定。
+2. 补齐真实补偿与结果判定、口语正常入口、跨服务导出/匿名化和事件处理；具体 owner 与关闭条件见梳理日志 §4。
+3. 完成当前源码跨端业务闭环及异常路径，再推进 M8 真机、性能、安全、staging、容灾、回滚、制品和独立 Go/No-Go；保留 M0-006 独立验收及 M4-008 具名残留。
+4. 官网 privacy/terms/minors/status 四页源码已存在，不再列为缺页；运行/内容验收另行验证。批量导入接口已出现在当前契约中，其行为和标准乐观锁需实际复核，不能仅沿用旧缺失描述。
+5. 评审期间源码冻结与真实 CI 阻断仍需验证。本地启动入口见根 README；启动前核对工具链、固定端口、进程和资源归属，保护既有工作与其他项目运行环境。

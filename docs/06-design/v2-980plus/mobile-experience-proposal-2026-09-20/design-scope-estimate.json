@@ -1,0 +1,522 @@
+{
+  "date": "2026-09-20",
+  "classification": "design-scope-planning-estimate-not-approved-page-baseline-or-completion",
+  "scope": "Phase 1 adult/rule-based; four applications; mobile phone only; desktop/tablet-browser web responsive; excludes Phase 2/3, native iPad layouts, miniapp differences and engineering implementation",
+  "observed": {
+    "canonicalFamilies": {
+      "official": 11,
+      "sharedLearner": 33,
+      "admin": 12
+    },
+    "code": {
+      "officialFiles": 11,
+      "webComponentRoutes": 32,
+      "webUniqueRouteComponents": 29,
+      "mobileDeclaredPages": 31,
+      "adminComponentRoutes": 10
+    }
+  },
+  "definitions": {
+    "page": "A separately designed main interface; may be implemented as route, tab or workbench. List and substantially distinct detail count separately. Shared dialogs and color modes do not each count as a page.",
+    "interactionGroup": "One complete user task from trigger through feedback and return/recovery; not every click, animation, endpoint or test case. Estimated per-platform, not globally unique business flows."
+  },
+  "demo": {
+    "mainPages": 10,
+    "detailTypes": "about 20 reusable detail/confirmation panel types; six planet content variants reuse one template",
+    "automatedChecks": 25,
+    "limitation": "Representative local success flows; many account operations are informational; no production API/complete error states."
+  },
+  "groups": {
+    "official": [
+      {
+        "name": "公开官网",
+        "pages": [
+          "首页",
+          "课程目录",
+          "课程详情",
+          "价格权益",
+          "下载",
+          "公告列表",
+          "公告详情",
+          "关于",
+          "合规公示",
+          "服务状态",
+          "隐私政策",
+          "服务条款",
+          "未成年人边界说明"
+        ],
+        "interactions": [
+          12,
+          18
+        ],
+        "source": "PAGE-P1-OFFICIAL-*（11 个族）；课程/公告详情为建议拆分"
+      }
+    ],
+    "web": [
+      {
+        "name": "账号与首次使用",
+        "pages": [
+          "登录",
+          "注册",
+          "密码重置",
+          "成人资格与同意",
+          "学习目标设置",
+          "定级测评",
+          "测评结果"
+        ],
+        "interactions": [
+          10,
+          13
+        ],
+        "source": "AUTH-LOGIN / AUTH-REGISTER-RESET / ADULT-CONSENT / ONB-GOAL / ASSESSMENT / ASSESSMENT-RESULT"
+      },
+      {
+        "name": "学习主线",
+        "pages": [
+          "学习首页",
+          "今日任务",
+          "学习地图",
+          "课程目录",
+          "课程详情与单元"
+        ],
+        "interactions": [
+          7,
+          9
+        ],
+        "source": "LEARN-HOME / TODAY / PLAN-MAP / COURSE-SHELF"
+      },
+      {
+        "name": "六类学习内容",
+        "pages": [
+          "词汇入口",
+          "个人词本",
+          "词条详情",
+          "语法目录",
+          "语法知识点",
+          "听力目录",
+          "精听播放器",
+          "听写练习",
+          "阅读目录",
+          "阅读器",
+          "音标目录",
+          "发音详解",
+          "录音跟读",
+          "写作题目",
+          "写作编辑",
+          "写作评价",
+          "写作历史"
+        ],
+        "interactions": [
+          25,
+          32
+        ],
+        "source": "VOCAB / GRAMMAR / LISTENING / READING / SPEAKING / WRITING"
+      },
+      {
+        "name": "练习与复盘",
+        "pages": [
+          "练习首页",
+          "通用答题",
+          "SRS 复习",
+          "错题列表",
+          "错题详情",
+          "掌握度",
+          "报告中心",
+          "报告详情"
+        ],
+        "interactions": [
+          10,
+          13
+        ],
+        "source": "PRACTICE-HUB / PRACTICE-SESSION / SRS / MISTAKES-MASTERY / REPORT；CHECKPOINT 为恢复交互"
+      },
+      {
+        "name": "世界与成长",
+        "pages": [
+          "世界地图",
+          "拼句小火车",
+          "自习室",
+          "本周榜单",
+          "个人形象",
+          "成就与奖励",
+          "成长流水"
+        ],
+        "interactions": [
+          10,
+          13
+        ],
+        "source": "WORLD / GAME / SOCIAL / AVATAR-REWARD"
+      },
+      {
+        "name": "我的与服务",
+        "pages": [
+          "个人中心",
+          "偏好设置",
+          "设备会话",
+          "隐私管理",
+          "学习权益",
+          "订单列表",
+          "订单详情",
+          "消息中心",
+          "离线同步",
+          "客服帮助"
+        ],
+        "interactions": [
+          13,
+          15
+        ],
+        "source": "COMMERCE / MESSAGES / SYNC-OFFLINE / SETTINGS / DEVICES / PRIVACY / SUPPORT；me 来自信息架构"
+      }
+    ],
+    "mobile": [
+      {
+        "name": "账号与首次使用",
+        "pages": [
+          "登录",
+          "注册",
+          "密码重置",
+          "成人资格与同意",
+          "学习目标设置",
+          "定级测评",
+          "测评结果"
+        ],
+        "interactions": [
+          11,
+          14
+        ],
+        "source": "与 Web 同业务；移动分步输入与安全区独立设计"
+      },
+      {
+        "name": "学习主线",
+        "pages": [
+          "学习首页",
+          "今日任务",
+          "学习地图",
+          "课程目录",
+          "课程详情与单元"
+        ],
+        "interactions": [
+          8,
+          10
+        ],
+        "source": "LEARN-HOME / TODAY / PLAN-MAP / COURSE-SHELF"
+      },
+      {
+        "name": "六类学习内容",
+        "pages": [
+          "词汇入口",
+          "个人词本",
+          "词条详情",
+          "语法目录",
+          "语法知识点",
+          "听力目录",
+          "精听播放器",
+          "听写练习",
+          "阅读目录",
+          "阅读器",
+          "音标目录",
+          "发音详解",
+          "录音跟读",
+          "写作题目",
+          "写作编辑",
+          "写作评价",
+          "写作历史"
+        ],
+        "interactions": [
+          26,
+          34
+        ],
+        "source": "六技能移动布局；录音授权/中断/字幕与软键盘均需设计"
+      },
+      {
+        "name": "练习与复盘",
+        "pages": [
+          "练习首页",
+          "通用答题",
+          "SRS 复习",
+          "错题列表",
+          "错题详情",
+          "掌握度",
+          "报告中心",
+          "报告详情"
+        ],
+        "interactions": [
+          10,
+          13
+        ],
+        "source": "练习、掌握与报告；断点/冲突为交互变体"
+      },
+      {
+        "name": "世界与成长",
+        "pages": [
+          "世界地图",
+          "拼句小火车",
+          "自习室列表",
+          "自习室",
+          "本周榜单",
+          "个人形象",
+          "成就列表",
+          "奖励与藏品",
+          "成长流水"
+        ],
+        "interactions": [
+          12,
+          16
+        ],
+        "source": "WORLD / GAME / SOCIAL / AVATAR-REWARD；移动列表与详情较 Web 多拆分"
+      },
+      {
+        "name": "我的与服务",
+        "pages": [
+          "个人中心",
+          "个人资料",
+          "偏好设置",
+          "设备会话",
+          "隐私管理",
+          "学习权益",
+          "订单列表",
+          "订单详情",
+          "消息中心",
+          "消息详情",
+          "下载内容",
+          "同步中心",
+          "客服帮助",
+          "工单详情"
+        ],
+        "interactions": [
+          13,
+          18
+        ],
+        "source": "USR / COMMERCE / MESSAGES / SYNC-OFFLINE；部分详情也可改 bottom sheet"
+      }
+    ],
+    "admin": [
+      {
+        "name": "入口与工作台",
+        "pages": [
+          "后台登录",
+          "访问受限",
+          "工作台"
+        ],
+        "interactions": [
+          4,
+          6
+        ],
+        "source": "ADMIN-LOGIN / ADMIN-DASHBOARD；forbidden 为当前入口"
+      },
+      {
+        "name": "内容与媒体",
+        "pages": [
+          "内容列表",
+          "内容编辑",
+          "版本对比",
+          "内容预览",
+          "批量导入",
+          "媒体库",
+          "上传工作台",
+          "媒体处理详情"
+        ],
+        "interactions": [
+          18,
+          23
+        ],
+        "source": "ADMIN-CONTENT / ADMIN-MEDIA"
+      },
+      {
+        "name": "审核",
+        "pages": [
+          "审核队列",
+          "审阅详情",
+          "审核记录"
+        ],
+        "interactions": [
+          7,
+          9
+        ],
+        "source": "ADMIN-REVIEW"
+      },
+      {
+        "name": "发布与回滚",
+        "pages": [
+          "发布列表",
+          "发布检查详情",
+          "排期管理",
+          "下线与回滚记录"
+        ],
+        "interactions": [
+          9,
+          12
+        ],
+        "source": "ADMIN-PUBLISH-ROLLBACK"
+      },
+      {
+        "name": "商业化",
+        "pages": [
+          "商品列表",
+          "商品编辑",
+          "订单列表",
+          "订单详情",
+          "权益与兑换管理",
+          "对账工作台",
+          "退款异常处理"
+        ],
+        "interactions": [
+          14,
+          19
+        ],
+        "source": "ADMIN-COMMERCE；上线操作服从实际 Gate"
+      },
+      {
+        "name": "客服",
+        "pages": [
+          "工单队列",
+          "工单详情",
+          "用户服务上下文"
+        ],
+        "interactions": [
+          6,
+          8
+        ],
+        "source": "ADMIN-SUPPORT"
+      },
+      {
+        "name": "治理风控与恢复",
+        "pages": [
+          "举报队列",
+          "举报处置",
+          "风险队列",
+          "风险详情",
+          "恢复任务列表",
+          "恢复任务详情"
+        ],
+        "interactions": [
+          11,
+          15
+        ],
+        "source": "ADMIN-GOVERNANCE / ADMIN-RISK；当前 /recovery"
+      },
+      {
+        "name": "审计与权限",
+        "pages": [
+          "审计检索",
+          "审计详情",
+          "角色权限工作台",
+          "策略与授权预览"
+        ],
+        "interactions": [
+          6,
+          8
+        ],
+        "source": "ADMIN-AUDIT / ADMIN-PERMISSIONS"
+      }
+    ]
+  },
+  "totals": {
+    "official": {
+      "pages": 13,
+      "pageRange": [
+        11,
+        14
+      ],
+      "interactionRange": [
+        12,
+        18
+      ],
+      "demoEquivalent": [
+        1,
+        1.5
+      ]
+    },
+    "web": {
+      "pages": 54,
+      "pageRange": [
+        48,
+        60
+      ],
+      "interactionRange": [
+        75,
+        95
+      ],
+      "demoEquivalent": [
+        4.5,
+        6
+      ]
+    },
+    "mobile": {
+      "pages": 60,
+      "pageRange": [
+        54,
+        68
+      ],
+      "interactionRange": [
+        80,
+        105
+      ],
+      "demoEquivalent": [
+        5,
+        6.5
+      ]
+    },
+    "admin": {
+      "pages": 38,
+      "pageRange": [
+        32,
+        44
+      ],
+      "interactionRange": [
+        75,
+        100
+      ],
+      "demoEquivalent": [
+        4.5,
+        6.5
+      ]
+    }
+  },
+  "aggregate": {
+    "mainPages": 165,
+    "pageRange": [
+      145,
+      186
+    ],
+    "interactionRange": [
+      242,
+      318
+    ],
+    "sameFidelityDemoEquivalent": [
+      16,
+      22
+    ],
+    "implementationReadyDesignEquivalent": [
+      25,
+      40
+    ]
+  },
+  "effortMethod": {
+    "perPlatformFactors": "Judgment ranges for same-fidelity clickable design; anchored on main page counts, dialog/flow density, existing visual reuse and heavier admin workflows. Not measured hours or model quotas.",
+    "sharedDesignAllowance": [
+      1,
+      1.5
+    ],
+    "sumOfPlatformAndShared": [
+      16,
+      22
+    ],
+    "handoffMultiplier": [
+      1.5,
+      1.8
+    ],
+    "handoffRoundedRange": [
+      25,
+      40
+    ]
+  },
+  "notIncluded": [
+    "Frontend rewrite and component integration",
+    "Real API/data/auth/session/media integration",
+    "Backend fixes",
+    "Real browser/device accessibility/performance and release acceptance",
+    "Phase 2 AI/RTC and Phase 3 K12",
+    "Independent iPad landscape and miniapp platform variants"
+  ]
+}

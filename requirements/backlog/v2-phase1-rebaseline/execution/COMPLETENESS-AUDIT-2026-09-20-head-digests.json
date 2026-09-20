@@ -1,0 +1,106 @@
+{
+  "method": "Compare HEAD Git blobs, excluding worktree line ending differences; rechecks candidates from working-tree digest audit",
+  "driftCount": 19,
+  "uniqueFiles": 3,
+  "taskCount": 18,
+  "drift": [
+    {
+      "task": "P1R-M1-003",
+      "path": "package.json",
+      "missing": false
+    },
+    {
+      "task": "P1R-M1-004",
+      "path": "package.json",
+      "missing": false
+    },
+    {
+      "task": "P1R-M1-005",
+      "path": "package.json",
+      "missing": false
+    },
+    {
+      "task": "P1R-M1-006",
+      "path": "package.json",
+      "missing": false
+    },
+    {
+      "task": "P1R-M1-007",
+      "path": "package.json",
+      "missing": false
+    },
+    {
+      "task": "P1R-M1-008",
+      "path": "package.json",
+      "missing": false
+    },
+    {
+      "task": "P1R-M1-009",
+      "path": "package.json",
+      "missing": false
+    },
+    {
+      "task": "P1R-M1-010",
+      "path": "package.json",
+      "missing": false
+    },
+    {
+      "task": "P1R-M1-011",
+      "path": "package.json",
+      "missing": false
+    },
+    {
+      "task": "P1R-M1-012",
+      "path": "package.json",
+      "missing": false
+    },
+    {
+      "task": "P1R-M1-013",
+      "path": "package.json",
+      "missing": false
+    },
+    {
+      "task": "P1R-M1-014",
+      "path": "package.json",
+      "missing": false
+    },
+    {
+      "task": "P1R-M1-015",
+      "path": "package.json",
+      "missing": false
+    },
+    {
+      "task": "P1R-M1-016",
+      "path": "package.json",
+      "missing": false
+    },
+    {
+      "task": "P1R-M1-017",
+      "path": "package.json",
+      "missing": false
+    },
+    {
+      "task": "P1R-M1-018",
+      "path": "package.json",
+      "missing": false
+    },
+    {
+      "task": "P1R-M2-009",
+      "path": "package.json",
+      "missing": false
+    },
+    {
+      "task": "P1R-M4-001",
+      "path": "apps/learner-web/src/stores/session.ts",
+      "missing": false
+    },
+    {
+      "task": "P1R-M4-001",
+      "path": "apps/mobile/src/stores/session.ts",
+      "missing": false
+    }
+  ],
+  "sourceCommit": "2c2cfa2eea2663c406f004ef549b9232a7d0f360",
+  "recordedAt": "2026-09-20",
+  "classification": "read-only-audit-snapshot-not-canonical-evidence"
+}
