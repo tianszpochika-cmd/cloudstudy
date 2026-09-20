@@ -1,5 +1,7 @@
 # Changelog
 
+- [CLYUNEDEV-SERVICE-BINDINGS-20260921] **修复单机预发布服务监听地址。** 对齐 Learner 与 Notification 的 Compose 环境变量名和应用配置，确保二者监听私有 Docker 网络地址而非容器内回环地址。
+
 - [CLYUNEDEV-MINIO-INIT-20260920] **修复单机预发布对象存储初始化。** 将当前 MinIO Client 不支持的匿名策略值 `none` 改为 `private`，并将多步初始化脚本置于显式 shell entrypoint，避免 Compose 将分号后的命令拆成参数；初始化任务可创建并保持私有对象存储桶。
 
 - [CLYUNEDEV-REDIS-HEALTHCHECK-20260920] **修复单机预发布 Redis 健康检查。** 将 `REDIS_PASSWORD` 注入 Redis 容器，使已有的认证 `PING` 健康检查与启动密码使用同一配置；不改变 Redis 数据卷、端口暴露或服务边界。

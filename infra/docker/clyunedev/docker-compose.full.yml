@@ -114,7 +114,7 @@ services:
       args: { SERVICE_PATH: services/learner-service }
     environment:
       <<: *iam-resource-server
-      LEARNER_SERVICE_SERVER_ADDRESS: 0.0.0.0
+      SERVER_ADDRESS: 0.0.0.0
       LEARNER_PERSISTENCE_MODE: jdbc
       LEARNER_FLYWAY_ENABLED: "true"
       LEARNER_JDBC_URL: jdbc:mysql://mysql:3306/learner_service?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&useSSL=true
@@ -194,7 +194,7 @@ services:
       args: { SERVICE_PATH: services/notification-service }
     environment:
       <<: *iam-resource-server
-      NOTIFICATION_SERVER_ADDRESS: 0.0.0.0
+      NOTIFICATION_SERVICE_SERVER_ADDRESS: 0.0.0.0
       NOTIFICATION_PERSISTENCE_MODE: jdbc
       NOTIFICATION_FLYWAY_ENABLED: "true"
       NOTIFICATION_JDBC_URL: jdbc:mysql://mysql:3306/notification_service?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&useSSL=true
