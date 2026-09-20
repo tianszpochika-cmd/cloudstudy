@@ -1,5 +1,7 @@
 # Changelog
 
+- [CLYUNEDEV-OFFICIAL-SITE-PORT-20260921] **修复官网单机预发布监听端口。** 为 Nuxt/Nitro 运行时显式设置 `0.0.0.0:18182`，与既有回环端口映射一致。
+
 - [CLYUNEDEV-SERVICE-BINDINGS-20260921] **修复单机预发布服务监听地址。** 对齐 Learner 与 Notification 的 Compose 环境变量名和应用配置，确保二者监听私有 Docker 网络地址而非容器内回环地址。
 
 - [CLYUNEDEV-MINIO-INIT-20260920] **修复单机预发布对象存储初始化。** 将当前 MinIO Client 不支持的匿名策略值 `none` 改为 `private`，并将多步初始化脚本置于显式 shell entrypoint，避免 Compose 将分号后的命令拆成参数；初始化任务可创建并保持私有对象存储桶。
