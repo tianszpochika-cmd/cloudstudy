@@ -31,6 +31,7 @@
 | `clyunedev.com` | 公开官网、SEO、下载和合规公示 | `official-site` |
 | `learn.clyunedev.com` | 学员 Web / PWA | `learner-web` |
 | `admin.clyunedev.com` | 教研、运营与客服后台 | `admin-web` |
+| `mobile.clyunedev.com` | uni-app 移动 H5 | `mobile-h5` |
 | `api.clyunedev.com` | Web、移动端和后续多端 API 基线 | `api-gateway` |
 
 Nginx 是唯一公网 HTTP 入口。MySQL、Redis、Kafka、MinIO、IAM、Gateway 以外的领域服务和管理端口均不得直接发布到公网。`api.clyunedev.com` 只转发到 Gateway；Nginx 不能绕过 Gateway 直接转发 IAM 或领域服务。
@@ -69,12 +70,12 @@ pnpm services:run -- --all
 
 ## 6. 后续执行顺序
 
-1. 已新增首个核心 Compose、Java 25/Vite/Nuxt 多阶段 Dockerfile、静态 Web 容器配置和不含秘密的环境样例；静态 `docker compose config --quiet` 已通过。核心切片是 MySQL、Redis、Kafka、MinIO、IAM、Gateway、官网、学习端和管理端。
-2. 在服务器生成真实 secrets、RSA 签名私钥和一次性 Kafka KRaft cluster ID；它们不进入 Git。
-3. 对核心镜像执行受限构建验证；不因构建成功声称业务验收通过。IAM 只有在真实密钥、独立数据库和完整 Flyway V13 前置条件存在时才允许启动。
-4. 记录镜像/容器/卷清单后，才启动受批准的核心服务集合；除 `127.0.0.1` 回环上游端口外不发布任何端口。
+1. 已新增核心 Compose、全量 Compose overlay、Java 25/Vite/Nuxt/uni-app H5 多阶段 Dockerfile、每 owner schema bootstrap 和不含秘密的环境样例；每次部署必须对两个 Compose 文件联合运行静态检查。
+2. 在服务器生成真实 secrets、RSA 签名私钥、一次性 Kafka KRaft cluster ID、每 owner MySQL 密码，以及 Gateway-to-Audit client secret 与其 IAM SHA-256 digest；它们不进入 Git。
+3. 对镜像按基础设施、平台服务、领域服务和前端分批受限构建验证；不因构建成功声称业务验收通过。IAM 只有在真实密钥、独立数据库和完整 Flyway V13 前置条件存在时才允许启动。
+4. 记录镜像/容器/卷清单后，才启动受批准的全量服务集合；仅 Gateway、IAM 和四个 Web 上游端口绑定 `127.0.0.1`，领域服务和数据基础设施不得发布任何宿主端口。
 5. 安装并验证 Nginx 的 `clyunedev` HTTP 虚拟主机；DNS 与 TLS 后置，且不影响 `clyune.com`。
-6. 在领域服务各自的 owner schema、PEP、事件与运行依赖经独立验证后，按相同 Compose 模式逐批接入，不用失败打开的占位实现替代。
+6. 逐项验证 Gateway/PEP、owner persistence、事件、审计与浏览器链路；失败关闭或开发适配器不能被健康检查掩盖。
 7. 域名解析完成后申请证书，切换 HTTPS、Secure Cookie 与 HSTS 策略，并从多地浏览器完成联调证据。
 
 ## 7. 回滚和磁盘保留

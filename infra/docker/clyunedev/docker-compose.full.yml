@@ -1,0 +1,298 @@
+# Full clyunedev overlay. Always load after docker-compose.core.yml:
+# docker compose --env-file /srv/cloudstudy/env/clyunedev.env \
+#   -f infra/docker/clyunedev/docker-compose.core.yml \
+#   -f infra/docker/clyunedev/docker-compose.full.yml <command>
+#
+# This starts every v2 server process on the private Compose network. It does
+# not publish a domain service port and it does not resurrect the v1 core-api.
+
+x-owner-service: &owner-service
+  restart: unless-stopped
+  depends_on:
+    mysql-init:
+      condition: service_completed_successfully
+    redis:
+      condition: service_healthy
+    iam-service:
+      condition: service_started
+  networks: [clyunedev]
+
+x-iam-resource-server: &iam-resource-server
+  IAM_JWT_ISSUER: https://api.clyunedev.com
+  IAM_JWT_JWKS_URI: http://iam-service:18087/api/v1/auth/jwks
+  IAM_JWT_AUDIENCE: yuxuexing-api
+
+services:
+  mysql-init:
+    entrypoint: ["/bin/sh", "/bootstrap/bootstrap-owner-schemas.sh"]
+    volumes:
+      - ./bootstrap-owner-schemas.sh:/bootstrap/bootstrap-owner-schemas.sh:ro
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?set in server env file}
+      IAM_DB_PASSWORD: ${IAM_DB_PASSWORD:?set in server env file}
+      LEARNER_DB_PASSWORD: ${LEARNER_DB_PASSWORD:?set in server env file}
+      CONTENT_DB_PASSWORD: ${CONTENT_DB_PASSWORD:?set in server env file}
+      LEARNING_DB_PASSWORD: ${LEARNING_DB_PASSWORD:?set in server env file}
+      ASSESSMENT_DB_PASSWORD: ${ASSESSMENT_DB_PASSWORD:?set in server env file}
+      MEDIA_DB_PASSWORD: ${MEDIA_DB_PASSWORD:?set in server env file}
+      NOTIFICATION_DB_PASSWORD: ${NOTIFICATION_DB_PASSWORD:?set in server env file}
+      GAMIFICATION_DB_PASSWORD: ${GAMIFICATION_DB_PASSWORD:?set in server env file}
+      SOCIAL_DB_PASSWORD: ${SOCIAL_DB_PASSWORD:?set in server env file}
+      COMMERCE_DB_PASSWORD: ${COMMERCE_DB_PASSWORD:?set in server env file}
+      ADMIN_OPS_DB_PASSWORD: ${ADMIN_OPS_DB_PASSWORD:?set in server env file}
+      ANALYTICS_DB_PASSWORD: ${ANALYTICS_DB_PASSWORD:?set in server env file}
+      AUDIT_DB_PASSWORD: ${AUDIT_DB_PASSWORD:?set in server env file}
+      WORKFLOW_DB_PASSWORD: ${WORKFLOW_DB_PASSWORD:?set in server env file}
+
+  api-gateway:
+    depends_on:
+      audit-service:
+        condition: service_started
+    environment:
+      CORS_ALLOWED_ORIGIN_MOBILE_H5: ${CORS_ALLOWED_ORIGIN_MOBILE_H5:?set in server env file}
+      B12_SERVICES_ENABLED: "true"
+      B13_SERVICES_ENABLED: "true"
+      B14_STRANGLER_ENABLED: "true"
+      WORKFLOW_SERVICES_ENABLED: "true"
+      LEARNER_SERVICE_BASE_URL: http://learner-service:18088
+      CONTENT_SERVICE_BASE_URL: http://content-service:18089
+      LEARNING_SERVICE_BASE_URL: http://learning-service:18090
+      ASSESSMENT_SERVICE_BASE_URL: http://assessment-service:18091
+      MEDIA_SERVICE_BASE_URL: http://media-service:18092
+      NOTIFICATION_SERVICE_BASE_URL: http://notification-service:18093
+      GAMIFICATION_SERVICE_BASE_URL: http://gamification-service:18094
+      SOCIAL_SERVICE_BASE_URL: http://social-service:18095
+      COMMERCE_SERVICE_BASE_URL: http://commerce-service:18096
+      ADMIN_OPS_SERVICE_BASE_URL: http://admin-ops-service:18097
+      ANALYTICS_SERVICE_BASE_URL: http://analytics-service:18098
+      WORKFLOW_SERVICE_BASE_URL: http://workflow-service:18071
+      GATEWAY_AUDIT_INGEST_URI: http://audit-service:18099/internal/v1/audit/events
+      GATEWAY_AUDIT_SERVICE_TOKEN_URI: http://iam-service:18087/internal/v1/iam/service-token
+      GATEWAY_AUDIT_SERVICE_CLIENT_ID: api-gateway
+      GATEWAY_AUDIT_SERVICE_CLIENT_SECRET: ${GATEWAY_AUDIT_SERVICE_CLIENT_SECRET:?set in server env file}
+
+  iam-service:
+    environment:
+      IAM_SERVICE_CLIENT_GATEWAY_SECRET_DIGEST: ${IAM_SERVICE_CLIENT_GATEWAY_SECRET_DIGEST:?set in server env file}
+
+  audit-service:
+    <<: *owner-service
+    image: cloudstudy-clyunedev/audit-service:${RELEASE_TAG:?set to current git short sha}
+    build:
+      context: ../../..
+      dockerfile: infra/docker/clyunedev/Dockerfile.java-service
+      args: { SERVICE_PATH: services/audit-service }
+    environment:
+      <<: *iam-resource-server
+      AUDIT_SERVICE_SERVER_ADDRESS: 0.0.0.0
+      AUDIT_PERSISTENCE_ENABLED: "true"
+      AUDIT_JDBC_URL: jdbc:mysql://mysql:3306/audit_service?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&useSSL=true
+      AUDIT_JDBC_USERNAME: svc_audit
+      AUDIT_JDBC_PASSWORD: ${AUDIT_DB_PASSWORD:?set in server env file}
+
+  workflow-service:
+    <<: *owner-service
+    image: cloudstudy-clyunedev/workflow-service:${RELEASE_TAG:?set to current git short sha}
+    build:
+      context: ../../..
+      dockerfile: infra/docker/clyunedev/Dockerfile.java-service
+      args: { SERVICE_PATH: services/workflow-service }
+    environment:
+      <<: *iam-resource-server
+      WORKFLOW_SERVICE_SERVER_ADDRESS: 0.0.0.0
+      WORKFLOW_PERSISTENCE_ENABLED: "true"
+      WORKFLOW_JDBC_URL: jdbc:mysql://mysql:3306/workflow_service?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&useSSL=true
+      WORKFLOW_JDBC_USERNAME: svc_workflow
+      WORKFLOW_JDBC_PASSWORD: ${WORKFLOW_DB_PASSWORD:?set in server env file}
+
+  learner-service:
+    <<: *owner-service
+    image: cloudstudy-clyunedev/learner-service:${RELEASE_TAG:?set to current git short sha}
+    build:
+      context: ../../..
+      dockerfile: infra/docker/clyunedev/Dockerfile.java-service
+      args: { SERVICE_PATH: services/learner-service }
+    environment:
+      <<: *iam-resource-server
+      LEARNER_SERVICE_SERVER_ADDRESS: 0.0.0.0
+      LEARNER_PERSISTENCE_MODE: jdbc
+      LEARNER_FLYWAY_ENABLED: "true"
+      LEARNER_JDBC_URL: jdbc:mysql://mysql:3306/learner_service?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&useSSL=true
+      LEARNER_JDBC_USERNAME: svc_learner
+      LEARNER_JDBC_PASSWORD: ${LEARNER_DB_PASSWORD:?set in server env file}
+
+  content-service:
+    <<: *owner-service
+    image: cloudstudy-clyunedev/content-service:${RELEASE_TAG:?set to current git short sha}
+    build:
+      context: ../../..
+      dockerfile: infra/docker/clyunedev/Dockerfile.java-service
+      args: { SERVICE_PATH: services/content-service }
+    environment:
+      <<: *iam-resource-server
+      CONTENT_SERVICE_SERVER_ADDRESS: 0.0.0.0
+      CONTENT_PERSISTENCE_MODE: jdbc
+      CONTENT_FLYWAY_ENABLED: "true"
+      CONTENT_JDBC_URL: jdbc:mysql://mysql:3306/content_service?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&useSSL=true
+      CONTENT_JDBC_USERNAME: svc_content
+      CONTENT_JDBC_PASSWORD: ${CONTENT_DB_PASSWORD:?set in server env file}
+      CONTENT_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+
+  learning-service:
+    <<: *owner-service
+    image: cloudstudy-clyunedev/learning-service:${RELEASE_TAG:?set to current git short sha}
+    build:
+      context: ../../..
+      dockerfile: infra/docker/clyunedev/Dockerfile.java-service
+      args: { SERVICE_PATH: services/learning-service }
+    environment:
+      <<: *iam-resource-server
+      LEARNING_SERVICE_SERVER_ADDRESS: 0.0.0.0
+      LEARNING_PERSISTENCE_MODE: jdbc
+      LEARNING_FLYWAY_ENABLED: "true"
+      LEARNING_JDBC_URL: jdbc:mysql://mysql:3306/learning_service?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&useSSL=true
+      LEARNING_JDBC_USERNAME: svc_learning
+      LEARNING_JDBC_PASSWORD: ${LEARNING_DB_PASSWORD:?set in server env file}
+
+  assessment-service:
+    <<: *owner-service
+    image: cloudstudy-clyunedev/assessment-service:${RELEASE_TAG:?set to current git short sha}
+    build:
+      context: ../../..
+      dockerfile: infra/docker/clyunedev/Dockerfile.java-service
+      args: { SERVICE_PATH: services/assessment-service }
+    environment:
+      <<: *iam-resource-server
+      ASSESSMENT_SERVICE_SERVER_ADDRESS: 0.0.0.0
+      ASSESSMENT_PERSISTENCE_ENABLED: "true"
+      ASSESSMENT_FLYWAY_ENABLED: "true"
+      ASSESSMENT_DB_URL: jdbc:mysql://mysql:3306/assessment_service?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&useSSL=true
+      ASSESSMENT_DB_USERNAME: svc_assessment
+      ASSESSMENT_DB_PASSWORD: ${ASSESSMENT_DB_PASSWORD:?set in server env file}
+
+  media-service:
+    <<: *owner-service
+    image: cloudstudy-clyunedev/media-service:${RELEASE_TAG:?set to current git short sha}
+    build:
+      context: ../../..
+      dockerfile: infra/docker/clyunedev/Dockerfile.java-service
+      args: { SERVICE_PATH: services/media-service }
+    environment:
+      <<: *iam-resource-server
+      MEDIA_SERVICE_SERVER_ADDRESS: 0.0.0.0
+      MEDIA_FLYWAY_ENABLED: "true"
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/media_service?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&useSSL=true
+      SPRING_DATASOURCE_USERNAME: svc_media
+      SPRING_DATASOURCE_PASSWORD: ${MEDIA_DB_PASSWORD:?set in server env file}
+
+  notification-service:
+    <<: *owner-service
+    image: cloudstudy-clyunedev/notification-service:${RELEASE_TAG:?set to current git short sha}
+    build:
+      context: ../../..
+      dockerfile: infra/docker/clyunedev/Dockerfile.java-service
+      args: { SERVICE_PATH: services/notification-service }
+    environment:
+      <<: *iam-resource-server
+      NOTIFICATION_SERVER_ADDRESS: 0.0.0.0
+      NOTIFICATION_PERSISTENCE_MODE: jdbc
+      NOTIFICATION_FLYWAY_ENABLED: "true"
+      NOTIFICATION_JDBC_URL: jdbc:mysql://mysql:3306/notification_service?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&useSSL=true
+      NOTIFICATION_JDBC_USERNAME: svc_notification
+      NOTIFICATION_JDBC_PASSWORD: ${NOTIFICATION_DB_PASSWORD:?set in server env file}
+
+  gamification-service:
+    <<: *owner-service
+    image: cloudstudy-clyunedev/gamification-service:${RELEASE_TAG:?set to current git short sha}
+    build:
+      context: ../../..
+      dockerfile: infra/docker/clyunedev/Dockerfile.java-service
+      args: { SERVICE_PATH: services/gamification-service }
+    environment:
+      <<: *iam-resource-server
+      GAMIFICATION_SERVER_ADDRESS: 0.0.0.0
+      GAMIFICATION_FLYWAY_ENABLED: "true"
+      GAMIFICATION_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/gamification_service?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&useSSL=true
+      SPRING_DATASOURCE_USERNAME: svc_gamification
+      SPRING_DATASOURCE_PASSWORD: ${GAMIFICATION_DB_PASSWORD:?set in server env file}
+
+  social-service:
+    <<: *owner-service
+    image: cloudstudy-clyunedev/social-service:${RELEASE_TAG:?set to current git short sha}
+    build:
+      context: ../../..
+      dockerfile: infra/docker/clyunedev/Dockerfile.java-service
+      args: { SERVICE_PATH: services/social-service }
+    environment:
+      <<: *iam-resource-server
+      SOCIAL_SERVICE_SERVER_ADDRESS: 0.0.0.0
+      SOCIAL_FLYWAY_ENABLED: "true"
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/social_service?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&useSSL=true
+      SPRING_DATASOURCE_USERNAME: svc_social
+      SPRING_DATASOURCE_PASSWORD: ${SOCIAL_DB_PASSWORD:?set in server env file}
+
+  commerce-service:
+    <<: *owner-service
+    image: cloudstudy-clyunedev/commerce-service:${RELEASE_TAG:?set to current git short sha}
+    build:
+      context: ../../..
+      dockerfile: infra/docker/clyunedev/Dockerfile.java-service
+      args: { SERVICE_PATH: services/commerce-service }
+    environment:
+      SERVER_ADDRESS: 0.0.0.0
+      SERVER_PORT: 18096
+      COMMERCE_SECURITY_RESOURCE_SERVER_ENABLED: "true"
+      COMMERCE_SECURITY_ISSUER_URI: https://api.clyunedev.com
+      COMMERCE_SECURITY_JWK_SET_URI: http://iam-service:18087/api/v1/auth/jwks
+      COMMERCE_SECURITY_AUDIENCE: yuxuexing-api
+      COMMERCE_PAYMENT_ENABLED: "false"
+      COMMERCE_PAYMENT_ENVIRONMENT: DISABLED
+      COMMERCE_PAYMENT_REAL_PROVIDERS_ENABLED: "false"
+      SPRING_FLYWAY_ENABLED: "true"
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/commerce_service?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&useSSL=true
+      SPRING_DATASOURCE_USERNAME: svc_commerce
+      SPRING_DATASOURCE_PASSWORD: ${COMMERCE_DB_PASSWORD:?set in server env file}
+    networks: [clyunedev]
+
+  admin-ops-service:
+    <<: *owner-service
+    image: cloudstudy-clyunedev/admin-ops-service:${RELEASE_TAG:?set to current git short sha}
+    build:
+      context: ../../..
+      dockerfile: infra/docker/clyunedev/Dockerfile.java-service
+      args: { SERVICE_PATH: services/admin-ops-service }
+    environment:
+      <<: *iam-resource-server
+      ADMIN_OPS_SERVER_ADDRESS: 0.0.0.0
+      SPRING_FLYWAY_ENABLED: "true"
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/admin_ops_service?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&useSSL=true
+      SPRING_DATASOURCE_USERNAME: svc_admin_ops
+      SPRING_DATASOURCE_PASSWORD: ${ADMIN_OPS_DB_PASSWORD:?set in server env file}
+
+  analytics-service:
+    <<: *owner-service
+    image: cloudstudy-clyunedev/analytics-service:${RELEASE_TAG:?set to current git short sha}
+    build:
+      context: ../../..
+      dockerfile: infra/docker/clyunedev/Dockerfile.java-service
+      args: { SERVICE_PATH: services/analytics-service }
+    environment:
+      <<: *iam-resource-server
+      ANALYTICS_SERVER_ADDRESS: 0.0.0.0
+      SPRING_FLYWAY_ENABLED: "true"
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/analytics_service?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&useSSL=true
+      SPRING_DATASOURCE_USERNAME: svc_analytics
+      SPRING_DATASOURCE_PASSWORD: ${ANALYTICS_DB_PASSWORD:?set in server env file}
+
+  mobile-h5:
+    restart: unless-stopped
+    image: cloudstudy-clyunedev/mobile-h5:${RELEASE_TAG:?set to current git short sha}
+    build:
+      context: ../../..
+      dockerfile: infra/docker/clyunedev/Dockerfile.mobile-h5
+      args:
+        VITE_GATEWAY_BASE_URL: https://api.clyunedev.com/api/v1
+    ports:
+      - "127.0.0.1:18183:8080"
+    networks: [clyunedev]

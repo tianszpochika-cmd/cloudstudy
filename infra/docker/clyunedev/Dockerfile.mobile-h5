@@ -1,0 +1,17 @@
+# syntax=docker/dockerfile:1
+# Build the uni-app project once for its H5 target. Native iOS/Android/iPad
+# artifacts are deliberately not built in the server image.
+ARG NODE_IMAGE=node:20.19.5-bookworm-slim
+FROM ${NODE_IMAGE} AS build
+
+ARG VITE_GATEWAY_BASE_URL
+WORKDIR /workspace
+RUN corepack enable && corepack prepare pnpm@10.19.0 --activate
+COPY . .
+RUN pnpm install --frozen-lockfile \
+  && VITE_GATEWAY_BASE_URL="${VITE_GATEWAY_BASE_URL}" pnpm --filter @englishflow/mobile build:h5
+
+FROM nginx:1.27-alpine
+COPY infra/docker/clyunedev/nginx-static.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /workspace/apps/mobile/dist/build/h5 /usr/share/nginx/html
+EXPOSE 8080

@@ -23,6 +23,7 @@
 | `clyunedev.com` | `official-site` |
 | `learn.clyunedev.com` | `learner-web` |
 | `admin.clyunedev.com` | `admin-web` |
+| `mobile.clyunedev.com` | `mobile-h5` |
 | `api.clyunedev.com` | `api-gateway` |
 
 宿主 Nginx 将是唯一公网 HTTP(S) 入口。数据库、Redis、Kafka、MinIO、IAM 与 Gateway 不得直接暴露公网端口；`api.clyunedev.com` 只能转发 Gateway，不能绕过它直连 IAM 或任何领域服务。
@@ -40,7 +41,7 @@
 
 ## 3. 仓库中已经提交、但仍须在服务器核验的部署资产
 
-本地 `dev` 当前提交为 `3ed8d9a70af93f052daaa9d26e5eea62a17d76d2`（`feat(deploy): add clyunedev core single-host stack`），并已推送到远程。它新增：
+`3ed8d9a70af93f052daaa9d26e5eea62a17d76d2`（`feat(deploy): add clyunedev core single-host stack`）新增了核心切片；后续全量部署提交必须以 `git rev-parse HEAD` 与 `git status --porcelain=v1` 为准，不能将本段固定 SHA 当作当前服务器事实。核心切片新增：
 
 - `infra/docker/clyunedev/docker-compose.core.yml`：首批核心切片，包括 MySQL、Redis、Kafka、MinIO、IAM、Gateway、官网、学习 Web 和管理 Web；仅四个 Web/Gateway/IAM 上游端口发布到 `127.0.0.1`。
 - Java 25、Vite、Nuxt 多阶段构建 Dockerfile 与静态 Web Nginx 配置。
@@ -48,13 +49,15 @@
 
 本地静态 Compose 配置检查已经通过。**这不等于服务器已拉取本提交、也不等于镜像已构建、容器已启动或业务已通过联调。**
 
+全量目标还需要 `docker-compose.full.yml` 叠加层、`Dockerfile.mobile-h5`、`bootstrap-owner-schemas.sh` 与 `clyunedev.full.env.example`：它们将移动 H5、Audit、Workflow 和 11 个领域服务加入私有 Compose 网络，并为 14 个 owner 创建独立 schema/账号。运行时必须联合加载 core 与 full 两个 Compose 文件；完成文件拉取、服务器环境变量补齐和静态检查前，不能说全量服务已在服务器上部署。
+
 ## 4. 当前未确认或刻意未执行的项目
 
 1. 尚未获得“服务器已拉取 `3ed8d9a…`”的回显。
 2. 尚未获得“`/srv/cloudstudy/env/clyunedev.env` 与 IAM RSA 私钥已生成、权限正确、Compose 静态预检通过”的回显。若文件已存在，后续命令必须先检查，绝不能覆盖或打印其内容。
-3. 尚未拉取/构建核心镜像，尚未创建任何 Compose 容器、网络或数据卷。
+3. 尚未拉取/构建任何可部署镜像，尚未创建任何 Compose 容器、网络或数据卷。
 4. 尚未安装宿主 Nginx 虚拟主机，未配置 DNS、TLS、HTTPS、HSTS 或正式域名。
-5. 尚未将未进入首批切片的领域服务接入。它们仍需分别确认 owner schema、最小权限、PEP、事件和运行依赖。
+5. 全量 overlay 的服务器拉取、每 owner secrets/schema、PEP、事件和运行依赖仍需逐项验证；容器健康不能代替这些证据。
 6. IAM 的真实策略/同意数据、完整运行链路、浏览器联调、恢复演练和 P1R 验收均未完成；不得因健康检查或容器启动成功而声称 Phase 1 已验收。
 
 ## 5. 在另一台电脑连接服务器
@@ -98,7 +101,7 @@ for file in /srv/cloudstudy/env/clyunedev.env /srv/cloudstudy/secrets/iam-rsa-pr
 done
 ```
 
-预期是本地提交与 `origin/dev` 相同，且至少包含 `3ed8d9a…`。若 `git status --short` 有输出，先停止，不要用 `git reset`、`git clean` 或覆盖文件；记录输出后再判断。
+预期是本地提交与 `origin/dev` 相同，且包含所需的 core/full Compose 文件。若 `git status --short` 有输出，先停止，不要用 `git reset`、`git clean` 或覆盖文件；记录输出后再判断。
 
 ## 6. 恢复执行顺序
 
@@ -106,11 +109,13 @@ done
 
 1. 拉取 `origin/dev` 并用第 5 节命令确认工作树干净、提交相等。
 2. 如果 secrets 文件不存在，按 [单机预发布运行记录](clyunedev-single-host-pre-release-runbook.md) 的环境文件规范生成一次性密码、Kafka KRaft ID 与 IAM RSA 私钥，设置为 root 可读的 `0600`；生成后只检查权限和 Compose 配置，绝不输出值。
-3. 使用 `--env-file /srv/cloudstudy/env/clyunedev.env` 对 `infra/docker/clyunedev/docker-compose.core.yml` 运行 `docker compose config --quiet`；失败时只修正缺失配置，不启动容器。
-4. 先做只读磁盘和 Docker 清单检查，再受控构建首批镜像。构建成功仅代表构建成功，不能作为业务验收。
-5. 记录目标 Git SHA、Compose 镜像、容器和卷清单后，启动首批核心服务并逐项获取健康与日志证据。不要公开发布非回环端口。
-6. 核心内部上游稳定后，再安装宿主 Nginx 的 HTTP 虚拟主机；只有 DNS 已指向本机且证书准备完成后才切换 HTTPS 与 Secure Cookie 对外联调。
-7. 每次确认可回退版本后，先预览执行 `scripts/deploy/prune-clyunedev-images.sh`；只有清单准确时才传 `--apply`。禁止 `docker system prune`、删除 Compose 卷或删除未知镜像。
+3. 将 `clyunedev.full.env.example` 中的每个变量用服务器侧随机值补齐到 `/srv/cloudstudy/env/clyunedev.env`，并保留 `0600`；Gateway audit 明文 client secret 只放在该文件，IAM 只放其 SHA-256 hex digest。
+4. 使用 `--env-file /srv/cloudstudy/env/clyunedev.env` 联合加载 `docker-compose.core.yml` 与 `docker-compose.full.yml` 运行 `docker compose config --quiet`；失败时只修正缺失配置，不启动容器。
+5. 先做只读磁盘和 Docker 清单检查，再分批受控构建基础设施、平台、领域与前端镜像。构建成功仅代表构建成功，不能作为业务验收。
+6. 记录目标 Git SHA、Compose 镜像、容器和卷清单后，启动全量服务集合并逐项获取健康与日志证据。不要公开发布非回环端口。
+7. 领域服务默认失败关闭、未接妥 adapter 或缺少 PEP/事件证据时必须记录为运行 GAP，不能因进程存活改写为业务可用。
+8. 核心内部上游稳定后，再安装宿主 Nginx 的 HTTP 虚拟主机；只有 DNS 已指向本机且证书准备完成后才切换 HTTPS 与 Secure Cookie 对外联调。
+9. 每次确认可回退版本后，先预览执行 `scripts/deploy/prune-clyunedev-images.sh`；只有清单准确时才传 `--apply`。禁止 `docker system prune`、删除 Compose 卷或删除未知镜像。
 
 ## 7. 继续前的硬性边界
 

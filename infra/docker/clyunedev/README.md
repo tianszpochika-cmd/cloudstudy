@@ -15,12 +15,16 @@
 
 ## 当前建设状态
 
-第一批核心编排与多阶段 Dockerfile 已覆盖 MySQL、Redis、Kafka、MinIO、IAM、Gateway、官网、学习端和管理端。除 IAM/Gateway 外的领域服务仍暂不加入首个可运行切片，必须先逐项确认 owner schema、PEP、事件和运行依赖。
+`docker-compose.core.yml` 是首次基础设施、IAM、Gateway 与三个 Web 前端的窄切片。全量预发布必须将它与 `docker-compose.full.yml` 一同加载；后者补齐移动 H5、Audit、Workflow 和 11 个领域服务，并由短生命周期 `mysql-init` 为每个 owner 创建独立 schema 与 MySQL 账号。
 
-后续文件按以下顺序继续加入并验证：
+```bash
+docker compose --env-file /srv/cloudstudy/env/clyunedev.env \
+  -f infra/docker/clyunedev/docker-compose.core.yml \
+  -f infra/docker/clyunedev/docker-compose.full.yml config --quiet
+```
 
-1. 多阶段 Java 25 与 Node 20.19.5 构建镜像；
-2. 仅对 `127.0.0.1` 发布 Nginx 上游端口的单机 Compose；
-3. 由宿主 Nginx 提供的四个 clyunedev HTTP/TLS 虚拟主机；
-4. 不含秘密的环境变量清单和服务器侧生成/校验步骤；
-5. 受控启动、健康检查、回滚和双版本清理脚本。
+先将 [`clyunedev.full.env.example`](clyunedev.full.env.example) 的变量以服务器生成的值追加到 `/srv/cloudstudy/env/clyunedev.env`。该文件的 Gateway audit client 明文 secret 只保留在服务器环境文件；IAM 使用其 SHA-256 hex digest。不得将任一文件或输出复制回 Git、聊天或日志。
+
+全量 Compose 仍只将 Gateway、IAM、官网、学习 Web、管理 Web 和移动 H5 绑定到 `127.0.0.1`。领域服务、MySQL、Redis、Kafka、MinIO 与 Audit/Workflow 均不发布宿主端口；宿主 Nginx 才是将来唯一的公网入口。移动 H5 预留 `mobile.clyunedev.com`，在 DNS/TLS 就绪前保持回环可达、不可公网访问。
+
+容器启动和 health endpoint 仅表示该进程与其已接入的 owner 依赖存活；它不替代 Gateway/PEP、跨服务事件、浏览器、备份恢复、安全或 Phase 1 发布验收。
