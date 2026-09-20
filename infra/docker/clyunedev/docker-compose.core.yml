@@ -1,0 +1,238 @@
+# Core clyunedev pre-release stack. This intentionally does not publish any
+# database/broker/object-storage ports. Only the four Nginx upstreams bind to
+# loopback; host Nginx is the later, sole public ingress.
+name: cloudstudy-clyunedev
+
+services:
+  mysql:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?set in server env file}
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - clyunedev-mysql:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping --protocol=socket --host=localhost --user=root --password=\"$${MYSQL_ROOT_PASSWORD}\" --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+    networks: [clyunedev]
+
+  mysql-init:
+    image: mysql:8.4
+    restart: "no"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?set in server env file}
+      IAM_DB_PASSWORD: ${IAM_DB_PASSWORD:?set in server env file}
+    command:
+      - /bin/sh
+      - -ec
+      - >-
+        mysql --host=mysql --user=root --password="$$MYSQL_ROOT_PASSWORD"
+        --execute="CREATE DATABASE IF NOT EXISTS iam_service CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+        CREATE USER IF NOT EXISTS 'svc_iam'@'%' IDENTIFIED BY '$$IAM_DB_PASSWORD';
+        ALTER USER 'svc_iam'@'%' IDENTIFIED BY '$$IAM_DB_PASSWORD';
+        GRANT ALL PRIVILEGES ON iam_service.* TO 'svc_iam'@'%'; FLUSH PRIVILEGES;"
+    networks: [clyunedev]
+
+  redis:
+    image: redis:7.4-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes", "--requirepass", "${REDIS_PASSWORD:?set in server env file}"]
+    volumes:
+      - clyunedev-redis:/data
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli --no-auth-warning -a \"$${REDIS_PASSWORD}\" ping | grep -q PONG"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
+    networks: [clyunedev]
+
+  minio:
+    image: quay.io/minio/minio:latest
+    restart: unless-stopped
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:?set in server env file}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?set in server env file}
+    command: ["server", "/data", "--console-address", ":9001"]
+    volumes:
+      - clyunedev-minio:/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail --silent http://127.0.0.1:9000/minio/health/live > /dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+    networks: [clyunedev]
+
+  minio-init:
+    image: quay.io/minio/mc:latest
+    restart: "no"
+    depends_on:
+      minio:
+        condition: service_healthy
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:?set in server env file}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?set in server env file}
+      OBJECT_STORAGE_BUCKET: ${OBJECT_STORAGE_BUCKET:?set in server env file}
+    entrypoint: ["/bin/sh", "-ec"]
+    command: >-
+      mc alias set local http://minio:9000 "$$MINIO_ROOT_USER" "$$MINIO_ROOT_PASSWORD";
+      mc mb --ignore-existing "local/$$OBJECT_STORAGE_BUCKET";
+      mc anonymous set none "local/$$OBJECT_STORAGE_BUCKET"
+    networks: [clyunedev]
+
+  kafka:
+    image: apache/kafka:3.9.2
+    restart: unless-stopped
+    environment:
+      CLUSTER_ID: ${KAFKA_CLUSTER_ID:?set once in server env file}
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
+      KAFKA_NUM_PARTITIONS: 3
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+    volumes:
+      - clyunedev-kafka:/tmp/kraft-combined-logs
+    networks: [clyunedev]
+
+  iam-service:
+    image: cloudstudy-clyunedev/iam-service:${RELEASE_TAG:?set to current git short sha}
+    build:
+      context: ../../..
+      dockerfile: infra/docker/clyunedev/Dockerfile.java-service
+      args:
+        SERVICE_PATH: services/iam-service
+    restart: unless-stopped
+    depends_on:
+      mysql-init:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+    environment:
+      IAM_SERVER_ADDRESS: 0.0.0.0
+      IAM_SERVICE_PORT: 18087
+      IAM_PERSISTENCE_ENABLED: "true"
+      IAM_FLYWAY_ENABLED: "true"
+      IAM_JDBC_URL: jdbc:mysql://mysql:3306/iam_service?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&useSSL=true
+      IAM_JDBC_USERNAME: svc_iam
+      IAM_JDBC_PASSWORD: ${IAM_DB_PASSWORD:?set in server env file}
+      IAM_JWT_ISSUER: https://api.clyunedev.com
+      IAM_JWT_AUDIENCE: yuxuexing-api
+      IAM_JWT_ALGORITHM: RS256
+      IAM_JWT_PRIVATE_KEY_FILE: /run/secrets/iam-rsa-private.pem
+      IAM_JWT_EPHEMERAL_KEYS_ALLOWED: "false"
+      IAM_REFRESH_COOKIE_SECURE: "true"
+      IAM_IDEMPOTENCY_REPLAY_SECRET: ${IAM_IDEMPOTENCY_REPLAY_SECRET:?set in server env file}
+      IAM_IDEMPOTENCY_FINGERPRINT_SECRET: ${IAM_IDEMPOTENCY_FINGERPRINT_SECRET:?set in server env file}
+      IAM_IDEMPOTENCY_V13_WRITERS_DRAINED: "true"
+      REDIS_URL: redis://:${REDIS_PASSWORD:?set in server env file}@redis:6379
+    volumes:
+      - ${IAM_JWT_PRIVATE_KEY_HOST_PATH:?set in server env file}:/run/secrets/iam-rsa-private.pem:ro
+    ports:
+      - "127.0.0.1:18087:18087"
+    networks: [clyunedev]
+
+  api-gateway:
+    image: cloudstudy-clyunedev/api-gateway:${RELEASE_TAG:?set to current git short sha}
+    build:
+      context: ../../..
+      dockerfile: infra/docker/clyunedev/Dockerfile.java-service
+      args:
+        SERVICE_PATH: services/api-gateway
+    restart: unless-stopped
+    depends_on:
+      iam-service:
+        condition: service_started
+      redis:
+        condition: service_healthy
+    environment:
+      SERVER_ADDRESS: 0.0.0.0
+      API_GATEWAY_PORT: 18070
+      IAM_SERVICE_BASE_URL: http://iam-service:18087
+      IAM_JWT_ISSUER: https://api.clyunedev.com
+      IAM_JWT_JWKS_URI: http://iam-service:18087/api/v1/auth/jwks
+      IAM_JWT_AUDIENCE: yuxuexing-api
+      REDIS_URL: redis://:${REDIS_PASSWORD:?set in server env file}@redis:6379
+      GATEWAY_RATE_LIMIT_ENABLED: "true"
+      GATEWAY_RATE_LIMIT_BACKEND: redis
+      CORS_ALLOWED_ORIGIN_LEARNER_WEB: ${CORS_ALLOWED_ORIGIN_LEARNER_WEB:?set in server env file}
+      CORS_ALLOWED_ORIGIN_ADMIN_WEB: ${CORS_ALLOWED_ORIGIN_ADMIN_WEB:?set in server env file}
+      CORS_ALLOWED_ORIGIN_OFFICIAL_SITE: ${CORS_ALLOWED_ORIGIN_OFFICIAL_SITE:?set in server env file}
+    ports:
+      - "127.0.0.1:18070:18070"
+    networks: [clyunedev]
+
+  official-site:
+    image: cloudstudy-clyunedev/official-site:${RELEASE_TAG:?set to current git short sha}
+    build:
+      context: ../../..
+      dockerfile: infra/docker/clyunedev/Dockerfile.official-site
+      args:
+        NUXT_PUBLIC_SITE_URL: https://clyunedev.com
+        NUXT_PUBLIC_LEARNER_WEB_URL: https://learn.clyunedev.com
+        NUXT_PUBLIC_GATEWAY_BASE_URL: https://api.clyunedev.com/api/v1
+        NUXT_PUBLIC_LINK_ORIGINS: https://clyunedev.com,https://learn.clyunedev.com,https://admin.clyunedev.com
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:18182:18182"
+    networks: [clyunedev]
+
+  learner-web:
+    image: cloudstudy-clyunedev/learner-web:${RELEASE_TAG:?set to current git short sha}
+    build:
+      context: ../../..
+      dockerfile: infra/docker/clyunedev/Dockerfile.vite-web
+      args:
+        APP_NAME: "@englishflow/learner-web"
+        APP_PATH: learner-web
+        VITE_GATEWAY_BASE_URL: https://api.clyunedev.com/api/v1
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:18180:8080"
+    networks: [clyunedev]
+
+  admin-web:
+    image: cloudstudy-clyunedev/admin-web:${RELEASE_TAG:?set to current git short sha}
+    build:
+      context: ../../..
+      dockerfile: infra/docker/clyunedev/Dockerfile.vite-web
+      args:
+        APP_NAME: "@englishflow/admin-web"
+        APP_PATH: admin-web
+        VITE_GATEWAY_BASE_URL: https://api.clyunedev.com/api/v1
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:18181:8080"
+    networks: [clyunedev]
+
+networks:
+  clyunedev:
+    name: cloudstudy-clyunedev
+    driver: bridge
+
+volumes:
+  clyunedev-mysql:
+    name: cloudstudy-clyunedev-mysql
+  clyunedev-redis:
+    name: cloudstudy-clyunedev-redis
+  clyunedev-minio:
+    name: cloudstudy-clyunedev-minio
+  clyunedev-kafka:
+    name: cloudstudy-clyunedev-kafka

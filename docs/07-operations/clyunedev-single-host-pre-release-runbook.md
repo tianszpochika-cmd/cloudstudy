@@ -67,12 +67,13 @@ pnpm services:run -- --all
 
 ## 6. 后续执行顺序
 
-1. 在 `dev` 中新增受版本控制的 `clyunedev` 单机预发布 Dockerfile、Compose、Nginx 模板、环境变量说明和双版本镜像清理脚本。
-2. 对这些资产运行静态 Compose/配置检查和受限构建验证；不因构建成功声称业务验收通过。
-3. 提交并推送部署资产；服务器以只读 Deploy Key 拉取固定提交。
-4. 在服务器生成真实 secrets、构建当前 Git 提交的镜像、仅启动受批准的服务集合，并记录镜像/容器/卷清单。
+1. 已新增首个核心 Compose、Java 25/Vite/Nuxt 多阶段 Dockerfile、静态 Web 容器配置和不含秘密的环境样例；静态 `docker compose config --quiet` 已通过。核心切片是 MySQL、Redis、Kafka、MinIO、IAM、Gateway、官网、学习端和管理端。
+2. 在服务器生成真实 secrets、RSA 签名私钥和一次性 Kafka KRaft cluster ID；它们不进入 Git。
+3. 对核心镜像执行受限构建验证；不因构建成功声称业务验收通过。IAM 只有在真实密钥、独立数据库和完整 Flyway V13 前置条件存在时才允许启动。
+4. 记录镜像/容器/卷清单后，才启动受批准的核心服务集合；除 `127.0.0.1` 回环上游端口外不发布任何端口。
 5. 安装并验证 Nginx 的 `clyunedev` HTTP 虚拟主机；DNS 与 TLS 后置，且不影响 `clyune.com`。
-6. 域名解析完成后申请证书，切换 HTTPS、Secure Cookie 与 HSTS 策略，并从多地浏览器完成联调证据。
+6. 在领域服务各自的 owner schema、PEP、事件与运行依赖经独立验证后，按相同 Compose 模式逐批接入，不用失败打开的占位实现替代。
+7. 域名解析完成后申请证书，切换 HTTPS、Secure Cookie 与 HSTS 策略，并从多地浏览器完成联调证据。
 
 ## 7. 回滚和磁盘保留
 

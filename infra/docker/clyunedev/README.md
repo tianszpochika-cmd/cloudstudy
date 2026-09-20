@@ -13,7 +13,9 @@
 
 ## 当前建设状态
 
-当前 `dev` 只含本地开发依赖编排，尚无适合公网预发布的 Dockerfile 或服务 Compose。后续文件会按以下顺序加入并验证：
+第一批核心编排与多阶段 Dockerfile 已覆盖 MySQL、Redis、Kafka、MinIO、IAM、Gateway、官网、学习端和管理端。除 IAM/Gateway 外的领域服务仍暂不加入首个可运行切片，必须先逐项确认 owner schema、PEP、事件和运行依赖。
+
+后续文件按以下顺序继续加入并验证：
 
 1. 多阶段 Java 25 与 Node 20.19.5 构建镜像；
 2. 仅对 `127.0.0.1` 发布 Nginx 上游端口的单机 Compose；

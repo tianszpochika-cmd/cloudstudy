@@ -1,0 +1,17 @@
+.git
+.github
+node_modules
+.pnpm-store
+**/node_modules
+**/target
+**/.nuxt
+**/.output
+**/dist
+.env
+.env.*
+!*.env.example
+secrets
+storage
+logs
+tmp
+evidence
