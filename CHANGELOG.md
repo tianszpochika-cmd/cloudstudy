@@ -1,5 +1,7 @@
 # Changelog
 
+- [CLYUNEDEV-SERVER-HANDOFF-20260921] **更新 clyunedev 单机预发布服务器交接快照。** 记录已回传的全量 Compose、14 个 owner schema、私有服务 readiness、Nginx 反代、五域名 Let’s Encrypt 证书、公开 `/actuator` 拒绝与续期 dry-run 证据；新增跨电脑只读核验步骤并同步入口文档。明确浏览器 E2E、首管理员、成人/同意数据、可观测性、备份恢复和 Phase 1 发布 Gate 仍未完成，未记录任何真实秘密。
+
 - [CLYUNEDEV-OFFICIAL-SITE-PORT-20260921] **修复官网单机预发布监听端口。** 为 Nuxt/Nitro 运行时显式设置 `0.0.0.0:18182`，与既有回环端口映射一致。
 
 - [CLYUNEDEV-SERVICE-BINDINGS-20260921] **修复单机预发布服务监听地址。** 对齐 Learner 与 Notification 的 Compose 环境变量名和应用配置，确保二者监听私有 Docker 网络地址而非容器内回环地址。

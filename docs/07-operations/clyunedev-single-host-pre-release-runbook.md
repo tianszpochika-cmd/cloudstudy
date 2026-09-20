@@ -4,7 +4,7 @@
 >
 > 本文记录 2026-09-20 起为 Cloudstudy 建设的 `dev` 单机预发布环境。它不改变正式生产域名、产品发布 Gate 或任何 P1R 验收状态。
 
-跨电脑继续操作时，先阅读 [2026-09-20 clyunedev 跨电脑交接](clyunedev-cross-device-handoff-2026-09-20.md)。交接文档以已回传的服务器证据为准，避免把本地已提交的部署资产误当作已经在服务器执行。
+跨电脑继续操作时，先阅读 [2026-09-21 clyunedev 跨电脑交接快照](clyunedev-cross-device-handoff-2026-09-21.md)。交接文档以已回传的服务器证据为准，避免把本地已提交的部署资产误当作已经在服务器执行。
 
 ## 1. 环境边界
 
@@ -24,7 +24,7 @@
 
 ## 2. 入口约定
 
-域名解析和 TLS 证书尚未配置时，Nginx 不应把任何入口公开映射为正式生产域名。待 DNS 指向该服务器且证书准备就绪后，入口固定如下：
+当前 `clyunedev.com` 的 DNS、Nginx 与 TLS 已取得部署证据；下表仍定义其固定入口。它不表示正式生产域名或 Phase 1 验收已完成。
 
 | clyunedev 域名 | 用途 | 唯一上游边界 |
 | --- | --- | --- |
@@ -74,9 +74,9 @@ pnpm services:run -- --all
 2. 在服务器生成真实 secrets、RSA 签名私钥、一次性 Kafka KRaft cluster ID、每 owner MySQL 密码，以及 Gateway-to-Audit client secret 与其 IAM SHA-256 digest；它们不进入 Git。
 3. 对镜像按基础设施、平台服务、领域服务和前端分批受限构建验证；不因构建成功声称业务验收通过。IAM 只有在真实密钥、独立数据库和完整 Flyway V13 前置条件存在时才允许启动。
 4. 记录镜像/容器/卷清单后，才启动受批准的全量服务集合；仅 Gateway、IAM 和四个 Web 上游端口绑定 `127.0.0.1`，领域服务和数据基础设施不得发布任何宿主端口。
-5. DNS 五个 A 记录均解析到服务器后，安装并验证 Nginx 的 `clyunedev` HTTP 虚拟主机，基线文件为 [`nginx-host.conf`](../../infra/docker/clyunedev/nginx-host.conf)。Nginx 只反代回环上游，必须拒绝公网 `/actuator`；随后由 Certbot 在服务器交互输入运维邮箱，为五个 `clyunedev.com` 名称联合签发证书。整个过程不得影响 `clyune.com`。
+5. 已安装并验证 Nginx 的 `clyunedev` HTTP 虚拟主机，基线文件为 [`nginx-host.conf`](../../infra/docker/clyunedev/nginx-host.conf)。Certbot 已为五个名称签发并部署 HTTPS；公开 `/actuator` 已被拒绝，续期 dry-run 已成功。宿主机实际站点文件含 Certbot TLS 段，后续修改不得以基线文件覆盖它。
 6. 逐项验证 Gateway/PEP、owner persistence、事件、审计与浏览器链路；失败关闭或开发适配器不能被健康检查掩盖。
-7. 域名解析完成后申请证书，切换 HTTPS、Secure Cookie 与 HSTS 策略，并从多地浏览器完成联调证据。
+7. 在浏览器实测、业务账户初始化、成人/同意数据、观测、备份恢复均取得证据后，才评估 HSTS 与更高发布 Gate；不能仅因 DNS/TLS 完成而宣称联调或验收通过。
 
 ## 7. 回滚和磁盘保留
 
