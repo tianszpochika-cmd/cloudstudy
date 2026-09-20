@@ -1,5 +1,7 @@
 # Changelog
 
+- [CLYUNEDEV-REDIS-HEALTHCHECK-20260920] **修复单机预发布 Redis 健康检查。** 将 `REDIS_PASSWORD` 注入 Redis 容器，使已有的认证 `PING` 健康检查与启动密码使用同一配置；不改变 Redis 数据卷、端口暴露或服务边界。
+
 - [CLYUNEDEV-FULL-STACK-20260920] **单机预发布全量部署编排（待服务器构建与运行验证）。** 新增 core Compose 叠加的 full overlay：移动 H5 镜像、Audit、Workflow 与 11 个领域服务均在私有 Docker 网络中运行；短生命周期 MySQL bootstrap 为 IAM、平台和每个领域 owner 创建独立 schema/账号；Gateway 取得最小 `api-gateway`→Audit 服务身份配置，四个 Web 上游与 IAM/Gateway 仍只绑定回环。新增服务器侧 full 环境变量样例和移动 H5 Dockerfile，同步单机运行与跨电脑交接文档。联合 Compose 静态预检和 schema bootstrap shell 语法通过；未构建镜像、未启动容器、未执行迁移/浏览器/E2E/恢复验收，不能称为生产或 Phase 1 发布完成。
 
 - [MOBILE-EXPERIENCE-V4-20260920] **移动端提案 04：按用户视角重排同十页操作与视觉。** 保留深紫白字双主题，重做首页/课程的下一步、世界一键入座开始、我的常用入口和设置就地选择；增加词卡撤销/收藏/续学、精听逐句定位、薄弱词子集巩固、自习暂停恢复、拼句选齐自动反馈与两题衔接。统一 SVG 图标与咖啡/书桌插画；同步[体验修订与后端承接清单](docs/06-design/v2-980plus/mobile-experience-proposal-2026-09-20/EXPERIENCE-V4-2026-09-20.md)、设计说明和当前截图。56 项原型检查通过，十页双主题及 320/390 布局无横向溢出、脚本错误 0。暂停/撤销等正式契约需后续对齐；未修改 apps、共享 Token 或 P1R 状态；四端倍数估算仍绑定提案 03。

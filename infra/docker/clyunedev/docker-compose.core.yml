@@ -45,6 +45,8 @@ services:
   redis:
     image: redis:7.4-alpine
     restart: unless-stopped
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?set in server env file}
     command: ["redis-server", "--appendonly", "yes", "--requirepass", "${REDIS_PASSWORD:?set in server env file}"]
     volumes:
       - clyunedev-redis:/data
