@@ -25,16 +25,16 @@
   ],
   "derived": {
     "lightHero": [
-      "#3F2D83",
-      "#4D33AB",
-      "#5937D1"
+      "#352759",
+      "#483186",
+      "#5837B4"
     ],
     "darkHero": [
-      "#302657",
-      "#3E2B7D",
-      "#4D329F"
+      "#29223F",
+      "#382962",
+      "#4A2F88"
     ],
-    "note": "Hero shadows are derived shades of existing purple700, not claimed as verbatim existing tokens."
+    "note": "Hero endpoints and adjusted text/border colors are prototype refinements derived around existing deep purple, not verbatim shared tokens."
   },
   "contrast": [
     {
@@ -45,15 +45,15 @@
     },
     {
       "role": "Light body",
-      "foreground": "#202332",
+      "foreground": "#242637",
       "background": "#F7F8FC",
-      "ratio": 14.68
+      "ratio": 14.06
     },
     {
       "role": "Light secondary",
-      "foreground": "#666D80",
+      "foreground": "#686D80",
       "background": "#F7F8FC",
-      "ratio": 4.87
+      "ratio": 4.84
     },
     {
       "role": "Dark body",
@@ -63,22 +63,42 @@
     },
     {
       "role": "Dark secondary",
-      "foreground": "#C7CCDC",
+      "foreground": "#B2B7CD",
       "background": "#222638",
-      "ratio": 9.34
+      "ratio": 7.52
     },
     {
-      "role": "Light hero endpoint",
+      "role": "Light hero brightest endpoint",
       "foreground": "#FFFFFF",
-      "background": "#5937D1",
-      "ratio": 7.26
+      "background": "#5837B4",
+      "ratio": 8.01
     },
     {
-      "role": "Dark hero endpoint",
+      "role": "Dark hero brightest endpoint",
       "foreground": "#FFFFFF",
-      "background": "#4D329F",
-      "ratio": 9.24
+      "background": "#4A2F88",
+      "ratio": 10.23
     }
   ],
-  "limitations": "Selected solid-color pair calculations only; not full accessibility or gradient-wide certification."
+  "limitations": "Selected solid-color pair calculations only; not full accessibility or gradient-wide certification.",
+  "revision": "experience-v4",
+  "prototype": {
+    "light": {
+      "canvas": "#F7F8FC",
+      "surface": "#FFFFFF",
+      "text": "#242637",
+      "secondaryText": "#686D80",
+      "border": "#E6E7F0",
+      "accent": "#5937D1"
+    },
+    "dark": {
+      "canvas": "#161925",
+      "surface": "#222638",
+      "text": "#F4F6FF",
+      "secondaryText": "#B2B7CD",
+      "border": "#363B50",
+      "accent": "#C3B5FA"
+    },
+    "cta": "#5937D1"
+  }
 }
