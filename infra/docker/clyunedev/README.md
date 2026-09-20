@@ -27,4 +27,8 @@ docker compose --env-file /srv/cloudstudy/env/clyunedev.env \
 
 全量 Compose 仍只将 Gateway、IAM、官网、学习 Web、管理 Web 和移动 H5 绑定到 `127.0.0.1`。领域服务、MySQL、Redis、Kafka、MinIO 与 Audit/Workflow 均不发布宿主端口；宿主 Nginx 才是将来唯一的公网入口。移动 H5 预留 `mobile.clyunedev.com`，在 DNS/TLS 就绪前保持回环可达、不可公网访问。
 
+## 公网入口与 TLS
+
+[`nginx-host.conf`](nginx-host.conf) 是宿主机 Nginx 的 HTTP 基线：它只将五个 `clyunedev.com` 域名转发到已绑定在 `127.0.0.1` 的上游，并明确拒绝公网访问 Gateway 的 `/actuator`。在 Debian 宿主机将其安装为 `/etc/nginx/sites-available/clyunedev`、启用站点并通过 `nginx -t` 后，使用 Certbot 为五个名称一起签发证书。证书申请的联系邮箱只在服务器的交互提示中输入，不写入此仓库或环境文件。
+
 容器启动和 health endpoint 仅表示该进程与其已接入的 owner 依赖存活；它不替代 Gateway/PEP、跨服务事件、浏览器、备份恢复、安全或 Phase 1 发布验收。

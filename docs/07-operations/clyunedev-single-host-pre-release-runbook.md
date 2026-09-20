@@ -74,7 +74,7 @@ pnpm services:run -- --all
 2. 在服务器生成真实 secrets、RSA 签名私钥、一次性 Kafka KRaft cluster ID、每 owner MySQL 密码，以及 Gateway-to-Audit client secret 与其 IAM SHA-256 digest；它们不进入 Git。
 3. 对镜像按基础设施、平台服务、领域服务和前端分批受限构建验证；不因构建成功声称业务验收通过。IAM 只有在真实密钥、独立数据库和完整 Flyway V13 前置条件存在时才允许启动。
 4. 记录镜像/容器/卷清单后，才启动受批准的全量服务集合；仅 Gateway、IAM 和四个 Web 上游端口绑定 `127.0.0.1`，领域服务和数据基础设施不得发布任何宿主端口。
-5. 安装并验证 Nginx 的 `clyunedev` HTTP 虚拟主机；DNS 与 TLS 后置，且不影响 `clyune.com`。
+5. DNS 五个 A 记录均解析到服务器后，安装并验证 Nginx 的 `clyunedev` HTTP 虚拟主机，基线文件为 [`nginx-host.conf`](../../infra/docker/clyunedev/nginx-host.conf)。Nginx 只反代回环上游，必须拒绝公网 `/actuator`；随后由 Certbot 在服务器交互输入运维邮箱，为五个 `clyunedev.com` 名称联合签发证书。整个过程不得影响 `clyune.com`。
 6. 逐项验证 Gateway/PEP、owner persistence、事件、审计与浏览器链路；失败关闭或开发适配器不能被健康检查掩盖。
 7. 域名解析完成后申请证书，切换 HTTPS、Secure Cookie 与 HSTS 策略，并从多地浏览器完成联调证据。
 
