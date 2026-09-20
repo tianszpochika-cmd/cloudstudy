@@ -1,5 +1,7 @@
 # Changelog
 
+- [CLYUNEDEV-MINIO-INIT-20260920] **修复单机预发布对象存储初始化。** 将当前 MinIO Client 不支持的匿名策略值 `none` 改为 `private`，使初始化任务能够创建并保持私有对象存储桶。
+
 - [CLYUNEDEV-REDIS-HEALTHCHECK-20260920] **修复单机预发布 Redis 健康检查。** 将 `REDIS_PASSWORD` 注入 Redis 容器，使已有的认证 `PING` 健康检查与启动密码使用同一配置；不改变 Redis 数据卷、端口暴露或服务边界。
 
 - [CLYUNEDEV-FULL-STACK-20260920] **单机预发布全量部署编排（待服务器构建与运行验证）。** 新增 core Compose 叠加的 full overlay：移动 H5 镜像、Audit、Workflow 与 11 个领域服务均在私有 Docker 网络中运行；短生命周期 MySQL bootstrap 为 IAM、平台和每个领域 owner 创建独立 schema/账号；Gateway 取得最小 `api-gateway`→Audit 服务身份配置，四个 Web 上游与 IAM/Gateway 仍只绑定回环。新增服务器侧 full 环境变量样例和移动 H5 Dockerfile，同步单机运行与跨电脑交接文档。联合 Compose 静态预检和 schema bootstrap shell 语法通过；未构建镜像、未启动容器、未执行迁移/浏览器/E2E/恢复验收，不能称为生产或 Phase 1 发布完成。
