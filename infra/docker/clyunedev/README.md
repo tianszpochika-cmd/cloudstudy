@@ -2,6 +2,8 @@
 
 本目录承载 `clyunedev` 的受版本控制单机预发布编排。它服务于 `dev` 分支联调，不替代 Kubernetes/GitOps 目标架构，也不构成正式 `clyune.com` 生产发布。
 
+跨电脑继续服务器操作时，先读 [clyunedev 单机预发布跨电脑交接](../../../docs/07-operations/clyunedev-cross-device-handoff-2026-09-20.md)。其中将“仓库已提交”与“服务器已回传验证”分开记录。
+
 ## 不变量
 
 - 仅一台服务器、一个 Docker Engine；不创建额外 VM。
