@@ -66,6 +66,7 @@ docker compose --env-file /srv/cloudstudy/env/clyunedev.env \
 - Let’s Encrypt 已为五个 `clyunedev.com` 名称签发并部署名为 `clyunedev` 的证书；证书位于 `/etc/letsencrypt/live/clyunedev/`，到期日为 **2026-12-19**。绝不读取、复制或提交证书私钥。
 - Certbot 的自动续期计划已安装，`certbot renew --dry-run` 已成功。
 - HTTPS 复核通过：五个站点握手成功，Gateway `/api/v1/health`、`/api/v1/auth/jwks` 通过，公开 `/actuator` 仍被拒绝。
+- 服务器外 Windows 客户端在同日独立确认官网、学习 Web、管理 Web 与 Gateway 健康接口均以 HTTPS `GET` 返回 `200`，并解析到 `37.120.160.36`；方法、响应特征和 HTTP `HEAD`/`GET` 差异见[公网入口独立复核](clyunedev-public-endpoint-check-2026-09-21.md)。
 
 `certbot --nginx --redirect` 已在宿主 `/etc/nginx/sites-enabled/clyunedev` 写入 TLS listener、证书路径和 HTTP 到 HTTPS 重定向。仓库里的 `nginx-host.conf` 是**HTTP 基线**，不是该 Certbot 管理文件的逐字镜像。后续修改 ingress 前先备份并检查已安装配置；不得用基线文件覆盖 TLS 段。若确需重新安装基线，之后必须重新运行 Certbot 并复核证书。
 
