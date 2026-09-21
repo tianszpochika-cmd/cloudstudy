@@ -1259,6 +1259,16 @@
               ],
               "default": "EN_48_PHASE1"
             }
+          },
+          {
+            "name": "language",
+            "in": "query",
+            "required": false,
+            "description": "BCP-47 content language selecting the phonetics domain; blank defaults to English (PHONETICS), other languages read PHONETICS-{PRIMARY} (e.g. fr-FR reads PHONETICS-FR). Invalid tags are 400.",
+            "schema": {
+              "type": "string",
+              "maxLength": 16
+            }
           }
         ],
         "responses": {
@@ -3531,6 +3541,16 @@
             "required": false,
             "schema": {
               "$ref": "#/components/schemas/B3Id"
+            }
+          },
+          {
+            "name": "language",
+            "in": "query",
+            "required": false,
+            "description": "BCP-47 content language selecting the minimal-pairs domain; blank defaults to English (PHONETICS), other languages read PHONETICS-{PRIMARY} (e.g. fr-FR reads PHONETICS-FR). Invalid tags are 400.",
+            "schema": {
+              "type": "string",
+              "maxLength": 16
             }
           },
           {
