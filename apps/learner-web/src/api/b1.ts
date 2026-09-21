@@ -352,8 +352,13 @@ export async function kickDevice(deviceId: string): Promise<void> {
   await apiClient.post(`/iam/devices/${encodeURIComponent(deviceId)}/kickout`, {}, withIdempotency())
 }
 
-export async function kickOtherDevices(): Promise<void> {
-  throw new Error('当前会话只能逐台撤销设备；批量撤销尚未进入 Phase 1 契约。')
+export async function kickOtherDevices(deviceIds: string[]): Promise<void> {
+  // The Phase 1 contract has no batch revoke endpoint: kick one device per request,
+  // each with its own idempotency key. Callers pass every non-current device id.
+  for (const deviceId of deviceIds) {
+    if (!deviceId) continue
+    await apiClient.post(`/iam/devices/${encodeURIComponent(deviceId)}/kickout`, {}, withIdempotency())
+  }
 }
 
 export async function fetchDeletion(): Promise<{ state: 'ACTIVE' | 'DELETION_PENDING'; executeAt: string | null } | null> {

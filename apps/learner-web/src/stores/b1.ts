@@ -390,7 +390,16 @@ export const useB1Store = defineStore('b1', () => {
   }
 
   async function removeOtherDevices(): Promise<void> {
-    try { await kickOtherDevices(); devices.value = devices.value.filter((item) => item.current); persist() } catch (error) { markSyncError(error, '其他设备尚未下线，请联网后重试。') }
+    const others = devices.value.filter((item) => !item.current).map((item) => item.deviceId)
+    if (!others.length) return
+    try {
+      await kickOtherDevices(others)
+      devices.value = devices.value.filter((item) => item.current)
+      persist()
+    } catch (error) {
+      markSyncError(error, '部分设备尚未下线，已重新同步列表。')
+      await refreshDevices()
+    }
   }
 
   async function exportData(): Promise<string | null> {
