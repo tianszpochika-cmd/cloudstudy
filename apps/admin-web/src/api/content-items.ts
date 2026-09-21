@@ -43,7 +43,10 @@ function isRecord(value: unknown): value is Row {
 }
 
 function unwrapList(value: unknown): Row[] {
+  // Canonical cursor envelope: data is the item array.
+  if (Array.isArray(value)) return value.filter(isRecord)
   const root = isRecord(value) && isRecord(value.data) ? value.data : value
+  if (Array.isArray(root)) return root.filter(isRecord)
   const items = isRecord(root) ? root.items : null
   return Array.isArray(items) ? items.filter(isRecord) : []
 }
@@ -96,15 +99,16 @@ export async function listItems(input: {
   cursor?: string
   limit?: number
 }): Promise<{ rows: ContentItemRow[]; nextCursor: string | null }> {
-  const params = new URLSearchParams({ kind: 'ITEM', limit: String(input.limit ?? 50) })
+  const params = new URLSearchParams({ kind: 'ITEM', pageSize: String(input.limit ?? 50) })
   if (input.kind) params.set('itemKind', input.kind)
   if (input.q?.trim()) params.set('q', input.q.trim())
   if (input.availability) params.set('availability', input.availability)
   if (input.cursor) params.set('cursor', input.cursor)
-  const response = await adminClient.request(`/admin/content-commands?${params.toString()}`)
-  const rows = unwrapList(response).map(asItemRow).filter((row): row is ContentItemRow => row !== null)
-  const root = isRecord(response) && isRecord(response.data) ? response.data : null
-  return { rows, nextCursor: root && typeof root.nextCursor === 'string' ? root.nextCursor : null }
+  const response: unknown = await adminClient.request(`/admin/content-commands?${params.toString()}`)
+  const rows = unwrapList(isRecord(response) ? response.data : response).map(asItemRow).filter((row): row is ContentItemRow => row !== null)
+  const root = isRecord(response) ? response : null
+  const meta = root && isRecord(root.meta) ? root.meta : null
+  return { rows, nextCursor: meta && typeof meta.nextCursor === 'string' ? meta.nextCursor : null }
 }
 
 export function upsertItem(

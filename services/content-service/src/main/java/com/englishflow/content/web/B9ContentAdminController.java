@@ -95,7 +95,8 @@ public final class B9ContentAdminController {
     public ResponseEntity<Map<String, Object>> list(
             Authentication authentication,
             @RequestParam(required = false) String cursor,
-            @RequestParam(defaultValue = "50") int limit,
+            @RequestParam(required = false) Integer pageSize,
+            @RequestParam(required = false) Integer limit,
             @RequestParam(required = false) String kind,
             @RequestParam(required = false) String q,
             @RequestParam(required = false) String cefr,
@@ -106,24 +107,17 @@ public final class B9ContentAdminController {
             @RequestHeader HttpHeaders headers) {
         ContentActor actor = adminActor(authentication);
         requireAdminRead(actor);
-        int pageSize = Math.max(1, Math.min(limit, 100));
+        // Canonical pageSize wins; the pre-contract limit alias stays for transition.
+        int requested = pageSize != null ? pageSize : (limit != null ? limit : 50);
+        int size = Math.max(1, Math.min(requested, 100));
+        ContentRequestContext context = context(headers);
         if ("LEXEME".equalsIgnoreCase(text(kind))) {
-            return lexemeList(actor, cursor, pageSize, packCode, q, cefr, availability, language, headers);
+            return lexemeList(actor, cursor, size, packCode, q, cefr, availability, language, context);
         }
         if ("ITEM".equalsIgnoreCase(text(kind))) {
-            return itemList(actor, cursor, pageSize, packCode, itemKind, q, availability, headers);
+            return itemList(actor, cursor, size, packCode, itemKind, q, availability, context);
         }
-        List<Map<String, Object>> items = repository.findAll().stream()
-                .filter(content -> TENANT.equals(content.tenantId()))
-                .limit(pageSize)
-                .map(content -> withScheduledTasks(state(content, actor), content.contentCode(), actor))
-                .toList();
-        Map<String, Object> data = new LinkedHashMap<>();
-        data.put("items", items);
-        if (cursor != null && !cursor.isBlank()) {
-            data.put("nextCursor", cursor.trim());
-        }
-        return ResponseEntity.ok(envelope(data, headers));
+        return packList(actor, cursor, size, context);
     }
 
     @GetMapping("/{contentCode}")
@@ -586,25 +580,24 @@ public final class B9ContentAdminController {
     private ResponseEntity<Map<String, Object>> lexemeList(
             ContentActor actor,
             String cursor,
-            int pageSize,
+            int size,
             String packCode,
             String query,
             String cefr,
             String availability,
             String language,
-            HttpHeaders headers) {
+            ContentRequestContext context) {
         String pack = packCode == null || packCode.isBlank() ? "VOCAB-PHASE1" : packCode.trim();
         LexemeAvailability status = availability == null || availability.isBlank()
                 ? null : LexemeAvailability.parse(availability);
         String after = cursor == null || cursor.isBlank() ? null : cursor.trim();
-        List<Lexeme> rows = lexemes.search(pack, query, cefr, status, language, pageSize, after, actor);
-        List<Map<String, Object>> items = rows.stream().map(row -> lexemeState(row, actor)).toList();
-        Map<String, Object> data = new LinkedHashMap<>();
-        data.put("items", items);
-        if (!rows.isEmpty() && rows.size() >= pageSize) {
-            data.put("nextCursor", rows.get(rows.size() - 1).lexemeId());
-        }
-        return ResponseEntity.ok(envelope(data, headers));
+        // One-row probe so hasMore/nextCursor agree instead of guessing at exact multiples.
+        List<Lexeme> rows = lexemes.search(pack, query, cefr, status, language, size + 1, after, actor);
+        boolean hasMore = rows.size() > size;
+        List<Map<String, Object>> items =
+                rows.stream().limit(size).map(row -> lexemeState(row, actor)).toList();
+        String nextCursor = hasMore ? rows.get(size - 1).lexemeId() : null;
+        return ResponseEntity.ok(cursorPage(items, hasMore, nextCursor, size, context));
     }
 
     private ResponseEntity<Map<String, Object>> lexemeAccepted(
@@ -735,24 +728,65 @@ public final class B9ContentAdminController {
     private ResponseEntity<Map<String, Object>> itemList(
             ContentActor actor,
             String cursor,
-            int pageSize,
+            int size,
             String packCode,
             String itemKind,
             String query,
             String availability,
-            HttpHeaders headers) {
+            ContentRequestContext context) {
         String pack = packCode == null || packCode.isBlank() ? "VOCAB-PHASE1" : packCode.trim();
         ItemAvailability status = availability == null || availability.isBlank()
                 ? null : ItemAvailability.parse(availability);
         String after = cursor == null || cursor.isBlank() ? null : cursor.trim();
-        List<ContentItem> rows = contentItems.search(pack, itemKind, query, status, pageSize, after, actor);
-        List<Map<String, Object>> items = rows.stream().map(B9ContentAdminController::itemState).toList();
-        Map<String, Object> data = new LinkedHashMap<>();
-        data.put("items", items);
-        if (!rows.isEmpty() && rows.size() >= pageSize) {
-            data.put("nextCursor", rows.get(rows.size() - 1).itemId());
-        }
-        return ResponseEntity.ok(envelope(data, headers));
+        List<ContentItem> rows = contentItems.search(pack, itemKind, query, status, size + 1, after, actor);
+        boolean hasMore = rows.size() > size;
+        List<Map<String, Object>> items =
+                rows.stream().limit(size).map(B9ContentAdminController::itemState).toList();
+        String nextCursor = hasMore ? rows.get(size - 1).itemId() : null;
+        return ResponseEntity.ok(cursorPage(items, hasMore, nextCursor, size, context));
+    }
+
+    private ResponseEntity<Map<String, Object>> packList(
+            ContentActor actor,
+            String cursor,
+            int size,
+            ContentRequestContext context) {
+        String after = cursor == null ? "" : cursor.trim();
+        // Pack rows are few and already in memory; keyset over contentCode so the
+        // cursor actually advances instead of echoing back the same page.
+        List<ContentDefinition> packs = repository.findAll().stream()
+                .filter(content -> TENANT.equals(content.tenantId()))
+                .sorted(java.util.Comparator.comparing(ContentDefinition::contentCode))
+                .filter(content -> after.isEmpty() || content.contentCode().compareTo(after) > 0)
+                .limit((long) size + 1)
+                .toList();
+        boolean hasMore = packs.size() > size;
+        List<Map<String, Object>> items = packs.stream().limit(size)
+                .map(content -> withScheduledTasks(state(content, actor), content.contentCode(), actor))
+                .toList();
+        String nextCursor = hasMore ? packs.get(size - 1).contentCode() : null;
+        return ResponseEntity.ok(cursorPage(items, hasMore, nextCursor, size, context));
+    }
+
+    private static Map<String, Object> cursorPage(
+            List<Map<String, Object>> items,
+            boolean hasMore,
+            String nextCursor,
+            int size,
+            ContentRequestContext context) {
+        Map<String, Object> meta = new LinkedHashMap<>();
+        meta.put("requestId", context.requestId());
+        meta.put("traceId", context.traceId());
+        meta.put("apiVersion", "v1");
+        meta.put("schemaVersion", "1.0.0");
+        meta.put("serverTime", Instant.now().toString());
+        meta.put("hasMore", hasMore);
+        meta.put("pageSize", size);
+        meta.put("nextCursor", nextCursor);
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("data", items);
+        body.put("meta", meta);
+        return body;
     }
 
     private ResponseEntity<Map<String, Object>> itemAccepted(

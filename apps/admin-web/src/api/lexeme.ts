@@ -102,7 +102,10 @@ function isRecord(value: unknown): value is Row {
 }
 
 function unwrapList(value: unknown): Row[] {
+  // Canonical cursor envelope: data is the item array.
+  if (Array.isArray(value)) return value.filter(isRecord)
   const root = isRecord(value) && isRecord(value.data) ? value.data : value
+  if (Array.isArray(root)) return root.filter(isRecord)
   const items = isRecord(root) ? root.items : null
   if (!Array.isArray(items)) return []
   return items.filter(isRecord)
@@ -151,18 +154,20 @@ export async function listLexemes(input: {
   cursor?: string
   limit?: number
 }): Promise<{ rows: LexemeRow[]; nextCursor: string | null }> {
-  const params = new URLSearchParams({ kind: 'LEXEME', limit: String(input.limit ?? 50) })
+  const params = new URLSearchParams({ kind: 'LEXEME', pageSize: String(input.limit ?? 50) })
   if (input.q?.trim()) params.set('q', input.q.trim())
   if (input.cefr) params.set('cefr', input.cefr)
   if (input.availability) params.set('availability', input.availability)
   if (input.packCode?.trim()) params.set('packCode', input.packCode.trim())
   if (input.language?.trim()) params.set('language', input.language.trim())
   if (input.cursor) params.set('cursor', input.cursor)
-  const response = await adminClient.request(`/admin/content-commands?${params.toString()}`)
-  const items = unwrapList(response)
+  const response: unknown = await adminClient.request(`/admin/content-commands?${params.toString()}`)
+  // Canonical cursor envelope: data is the item array, cursor state lives in meta.
+  const root = isRecord(response) ? response : {}
+  const items = unwrapList(root.data)
   const rows = items.map(asLexemeRow).filter((row): row is LexemeRow => row !== null)
-  const root = isRecord(response) && isRecord(response.data) ? response.data : null
-  const nextCursor = root && typeof root.nextCursor === 'string' ? root.nextCursor : null
+  const meta = isRecord(root.meta) ? root.meta : null
+  const nextCursor = meta && typeof meta.nextCursor === 'string' ? meta.nextCursor : null
   return { rows, nextCursor }
 }
 
