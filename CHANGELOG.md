@@ -2,6 +2,18 @@
 
 - [OFFICIAL-EXPERIENCE-V5-20260921] **官网提案 05：初期免费、第一阶段内容与移动访问优先。** 新增[独立官网 UI/UX 稿](docs/06-design/v2-980plus/official-site-experience-proposal-2026-09-21/README.md)，沿用移动提案 04 深紫/冷白与双主题，覆盖十三类页面和六种内容详情变体；重排首页、搜索筛选、公开练习示例、帮助、免费开始、公告与公开说明。取消稿内旧收费套餐和未开放下载推广，不编造 AI/真人能力、效果、用户量或备案。手机使用全屏菜单、当前设备主行动、首屏示例、滚动后固定开始入口；共享预览 18185 的 `/official/`，保留旧移动稿根路径。交互/182 组布局检查及截图见提案记录；不改正式 apps、共享 Token、商业规则和 P1R 状态。
 
+- [CLYUNEDEV-SERVER-HANDOFF-20260921] **更新 clyunedev 单机预发布服务器交接快照。** 记录已回传的全量 Compose、14 个 owner schema、私有服务 readiness、Nginx 反代、五域名 Let’s Encrypt 证书、公开 `/actuator` 拒绝与续期 dry-run 证据；新增跨电脑只读核验步骤并同步入口文档。明确浏览器 E2E、首管理员、成人/同意数据、可观测性、备份恢复和 Phase 1 发布 Gate 仍未完成，未记录任何真实秘密。
+
+- [CLYUNEDEV-OFFICIAL-SITE-PORT-20260921] **修复官网单机预发布监听端口。** 为 Nuxt/Nitro 运行时显式设置 `0.0.0.0:18182`，与既有回环端口映射一致。
+
+- [CLYUNEDEV-SERVICE-BINDINGS-20260921] **修复单机预发布服务监听地址。** 对齐 Learner 与 Notification 的 Compose 环境变量名和应用配置，确保二者监听私有 Docker 网络地址而非容器内回环地址。
+
+- [CLYUNEDEV-MINIO-INIT-20260920] **修复单机预发布对象存储初始化。** 将当前 MinIO Client 不支持的匿名策略值 `none` 改为 `private`，并将多步初始化脚本置于显式 shell entrypoint，避免 Compose 将分号后的命令拆成参数；初始化任务可创建并保持私有对象存储桶。
+
+- [CLYUNEDEV-REDIS-HEALTHCHECK-20260920] **修复单机预发布 Redis 健康检查。** 将 `REDIS_PASSWORD` 注入 Redis 容器，使已有的认证 `PING` 健康检查与启动密码使用同一配置；不改变 Redis 数据卷、端口暴露或服务边界。
+
+- [CLYUNEDEV-FULL-STACK-20260920] **单机预发布全量部署编排（待服务器构建与运行验证）。** 新增 core Compose 叠加的 full overlay：移动 H5 镜像、Audit、Workflow 与 11 个领域服务均在私有 Docker 网络中运行；短生命周期 MySQL bootstrap 为 IAM、平台和每个领域 owner 创建独立 schema/账号；Gateway 取得最小 `api-gateway`→Audit 服务身份配置，四个 Web 上游与 IAM/Gateway 仍只绑定回环。新增服务器侧 full 环境变量样例和移动 H5 Dockerfile，同步单机运行与跨电脑交接文档。联合 Compose 静态预检和 schema bootstrap shell 语法通过；未构建镜像、未启动容器、未执行迁移/浏览器/E2E/恢复验收，不能称为生产或 Phase 1 发布完成。
+
 - [MOBILE-EXPERIENCE-V4-20260920] **移动端提案 04：按用户视角重排同十页操作与视觉。** 保留深紫白字双主题，重做首页/课程的下一步、世界一键入座开始、我的常用入口和设置就地选择；增加词卡撤销/收藏/续学、精听逐句定位、薄弱词子集巩固、自习暂停恢复、拼句选齐自动反馈与两题衔接。统一 SVG 图标与咖啡/书桌插画；同步[体验修订与后端承接清单](docs/06-design/v2-980plus/mobile-experience-proposal-2026-09-20/EXPERIENCE-V4-2026-09-20.md)、设计说明和当前截图。56 项原型检查通过，十页双主题及 320/390 布局无横向溢出、脚本错误 0。暂停/撤销等正式契约需后续对齐；未修改 apps、共享 Token 或 P1R 状态；四端倍数估算仍绑定提案 03。
 
 - [DESIGN-DELIVERY-20260920] **本轮文档与最新版 UI/UX 交付整理。** 新增[统一交付入口](docs/06-design/v2-980plus/mobile-experience-proposal-2026-09-20/DELIVERY-2026-09-20.md)，汇总完整度审计、提案 01–03 演变、当前十页冷紫双主题可点击原型、十张最新版主题截图、配色依据、原型检查和四端页面/交互工作量估算；同步根 README 与交接入口。按用户要求准备提交到当前 dev 分支，保留原型/规划与正式实施验收边界。
