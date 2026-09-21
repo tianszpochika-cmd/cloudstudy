@@ -190,6 +190,9 @@ importers:
       '@englishflow/i18n':
         specifier: workspace:*
         version: link:../../packages/i18n
+      '@englishflow/performance':
+        specifier: workspace:*
+        version: link:../../packages/performance
       nuxt:
         specifier: ^3.11.0
         version: 3.21.11(@oxc-project/types@0.149.0)(@parcel/watcher@2.6.0)(@types/node@26.2.0)(@vue/compiler-sfc@3.5.41)(cac@6.7.14)(db0@0.3.4)(esbuild@0.28.2)(ioredis@5.11.1)(lightningcss@1.33.0)(magicast@0.5.4)(meow@13.2.0)(rolldown@1.2.8)(rollup-plugin-visualizer@7.1.1(rolldown@1.2.8)(rollup@4.62.4))(rollup@4.62.4)(sass@1.103.0)(srvx@0.11.22)(terser@5.50.0)(typescript@5.9.3)(vite@7.3.6(@types/node@26.2.0)(jiti@2.7.0)(lightningcss@1.33.0)(sass@1.103.0)(terser@5.50.0)(yaml@2.9.0))(vue-tsc@2.2.12(typescript@5.9.3))(yaml@2.9.0)

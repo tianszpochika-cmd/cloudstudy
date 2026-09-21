@@ -1,42 +1,57 @@
 <script setup lang="ts">
-import { useOfficialSeo } from '~/utils/seo'
-
+import { useOfficialSeo } from "~/utils/seo";
+const { t } = useSiteText();
 useOfficialSeo({
-  title: '关于我们｜语学星 EnglishFlow',
-  description: '了解语学星的产品使命、学习方法和面向成年用户与大学生的阶段边界。',
-  path: '/about',
-  breadcrumbs: [{ name: '首页', path: '/' }, { name: '关于我们', path: '/about' }],
-})
+  title: t("official.c3a9d26408"),
+  description: t("official.c464f12ed4"),
+  path: "/about",
+});
 </script>
-
 <template>
-  <section class="page-hero">
-    <div class="container">
-      <div class="breadcrumb"><NuxtLink to="/">首页</NuxtLink><span aria-hidden="true">/</span><span>关于我们</span></div>
-      <span class="eyebrow">About EnglishFlow</span>
-      <h1>让学习回到真实、可继续的节奏。</h1>
-      <p>我们相信，语言学习不应该只由一次分数定义，而应该由每一次理解、练习、反馈和复习共同构成。</p>
-    </div>
-  </section>
-
-  <section class="page-content">
-    <div class="container about-grid">
-      <article class="prose">
-        <h2>我们在解决什么问题？</h2>
-        <p>很多学习产品把目标、内容、练习和反馈分散在不同入口里，用户知道自己“学过”，却很难知道下一步该做什么。语学星用规则化的学习闭环把这些动作接起来。</p>
-        <h3>先做对 Phase 1</h3>
-        <p>当前阶段面向成年用户与大学生，优先把目标设定、内容版本、规则练习、复习队列、学习报告和跨端恢复做好。AI、实时语音与 K12 能力都有独立阶段，不会在基础边界尚未准备好时提前混入。</p>
-        <h3>公开与登录后的边界</h3>
-        <p>官网负责品牌、课程介绍、价格、下载和合规公示；登录后的学习数据、计划、作答、进度、权益和通知由独立服务负责。两者通过受控深链衔接，不在官网复制学习工作区。</p>
-      </article>
-      <aside class="side-note">
-        <h2>我们的三个坚持</h2>
-        <ul class="feature-list">
-          <li><span aria-hidden="true">✓</span>结果可解释：反馈告诉你为什么。</li>
-          <li><span aria-hidden="true">✓</span>事实有归属：学习、内容和权益各自有唯一 owner。</li>
-          <li><span aria-hidden="true">✓</span>边界可见：未开放能力不伪装成已上线。</li>
-        </ul>
-      </aside>
-    </div>
-  </section>
+  <div>
+    <PageHeading
+      :title="t('official.c9d4463ed0')"
+      :lead="t('official.c6c92bf054')"
+      :label="t('official.c3a9d26408')"
+    />
+    <section class="page-body">
+      <div class="container">
+        <div class="about-banner">
+          <div>
+            <h2>
+              {{ t("official.c4341b9672") }}<br />{{ t("official.cc7ff621c2") }}
+            </h2>
+            <p>
+              {{ t("official.c2591d3f06") }}<br />{{ t("official.cd51a0f39c")
+              }}<br />{{ t("official.c109933435") }}
+            </p>
+          </div>
+          <img
+            src="/illustrations/desk.svg"
+            width="340"
+            height="170"
+            :alt="t('official.ca0717f23e')"
+          />
+        </div>
+        <div class="principles">
+          <article
+            v-for="([title, text], i) in [
+              ['official.cf55d4f51f', 'official.c0d82eb17f'],
+              ['official.c709b2014e', 'official.cc5bd081f4'],
+              ['official.c9576078dc', 'official.c20944d434'],
+            ]"
+            :key="title"
+          >
+            <span>0{{ i + 1 }}</span>
+            <h3>{{ t(title!) }}</h3>
+            <p>{{ t(text!) }}</p>
+          </article>
+        </div>
+        <div class="about-end">
+          <p>{{ t("official.c63e42afa3") }}</p>
+          <SiteStartButton :label="t('official.cd3b2479fd')" data-primary />
+        </div>
+      </div>
+    </section>
+  </div>
 </template>

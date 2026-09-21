@@ -1,39 +1,61 @@
-# @englishflow/official-site (语学星官方网站)
+# 语学星官方网站
 
-面向游客、搜索引擎与移动端扫码用户的公开官网，采用 Vue 3 + Nuxt 3 SSR/SSG。官网只负责品牌、公开课程、价格、下载、SEO 和合规公示，不承载登录后的学习、订单或权益写入。官网只生成受控的自有登录入口，不保存、解析或转发业务 Access Token/Refresh Token。
+已按用户确认的官网提案 06 改造 `apps/official-site`，采用 Vue 3、TypeScript、Nuxt SSR。首页、学习内容、学习世界、练习示例、帮助、免费开始与公开说明共 14 类页面、19 个公开内容地址。详细交付与验证见[官网正式实现记录](../../docs/06-design/v2-980plus/official-site-experience-proposal-2026-09-21/implementation/README.md)。
 
-## 公开路由
+## 本地启动
 
-- `/`：品牌首屏、学习闭环和公开课程入口
-- `/courses`：公开课程目录与筛选
-- `/pricing`：公开价格与权益说明；不创建订单
-- `/download`：学习 Web 深链与 App/小程序发布状态
-- `/about`：产品使命与阶段边界
-- `/compliance`：主体、隐私、成人阶段和未成年人保护公示
-- `/robots.txt`、`/sitemap.xml`：搜索引擎抓取入口
+在仓库根目录运行：
 
-## 源码边界
-
-- `pages/`：公开页面
-- `components/`：`SiteHeader`、`SiteFooter`、`PublicStatus` 与卡片组件
-- `layouts/`：官网公共壳
-- `server/routes/`：robots 与 sitemap，只输出公开静态信息
-- `utils/`：公开内容、公开状态、受控学习端深链、SEO 和 design-token 适配
-- `assets/css/`：只消费语义 CSS 变量；变量由现有 `@englishflow/design-tokens` 注入
-- `public/`：仅放公开品牌资源
-
-## 本地运行
-
-```bash
+```text
 pnpm --filter @englishflow/official-site dev
+```
+
+访问 `http://127.0.0.1:18182/`。端口从 `config/local-ports.json` 读取并检查，冲突时退出。设计稿保留在 `18185/official/`。完整后端并非浏览官网、操作示例的前提。
+
+```text
 pnpm --filter @englishflow/official-site build
-node --test tests/b7/official-site.test.mjs
+pnpm --filter @englishflow/official-site test:website
+node apps/official-site/tests/browser/website-runtime.cjs
 ```
 
-可用环境变量：`NUXT_PUBLIC_SITE_URL`、`NUXT_PUBLIC_LEARNER_WEB_URL`、`NUXT_PUBLIC_DOWNLOAD_ENABLED`。官网源码不读取 `.nuxt/` 或 `.output/` 生成物；这些目录只可能由 Nuxt 构建过程产生，不能作为源码或测试输入。
+最后一条需要官网已在 18182 运行，使用仓库现有 Playwright Chromium；报告和截图写入设计目录的 `implementation/`。这里验证官网前端，不执行注册、成人资格校验、学习结算或真实资产写入。
 
-B13 公开商业投影只允许读取 Gateway 的公开投影接口。价格、SKU、权益、活动和下载状态都以服务端公开字段为准；官网只生成登录/结算意图的受控跳转，不创建订单、不调用支付或权益写接口。外部活动/下载地址必须配置在 `NUXT_PUBLIC_LINK_ORIGINS`（逗号分隔 allowlist）中，来源查询中的 `utm_source`、`utm_medium`、`utm_campaign`、`utm_content`、`utm_term` 会保留到受控深链。
+## 公开路由与内容
 
-```bash
-pnpm --filter @englishflow/official-site test:b13
-```
+| 路由 | 内容 |
+|---|---|
+| `/` | 首页、公开练习、学习世界、FAQ |
+| `/courses` | 六类学习方法、组合筛选、真实公开课程投影 |
+| `/courses/:id` | 六种静态学习结构介绍，不是课程详情 API 的替代实现 |
+| `/world` | 2D / CSS 立体空间、氛围、角色与装扮、两轮拼句 |
+| `/method` | 翻词卡、词句理解、复习与重置 |
+| `/start` | 当前设备注册 / 登录入口、换设备说明 |
+| `/help` | 八个常见问题、分类、搜索与分段回答；首页精选其中四个 |
+| `/about` | 产品与成人学习定位 |
+| `/announcements`、`/compliance` | 既有公开接口返回的公告、公示 |
+| `/privacy`、`/terms`、`/minors`、`/status` | 公开说明、成人范围、状态与恢复出口 |
+| `/pricing`、`/download` | 301 至 `/start`，保留查询参数 |
+| `/robots.txt`、`/sitemap.xml` | 抓取规则与 19 个 canonical 地址 |
+
+首发以初期免费、浏览器开始为主，不展示付费套餐或尚未开放的 App 下载。公开课程/公告/公示仍来自 Gateway；无法加载时显示可重试状态。原商业投影数据类型和未使用的旧卡片保留兼容，本轮不改变商业服务。
+
+## 配置
+
+| 环境变量 | 默认值 / 用途 |
+|---|---|
+| `NUXT_PUBLIC_SITE_URL` | `http://127.0.0.1:18182`，canonical 与换设备地址 |
+| `NUXT_PUBLIC_LEARNER_WEB_URL` | `http://127.0.0.1:18180`，电脑学习端 |
+| `NUXT_PUBLIC_MOBILE_H5_URL` | `http://127.0.0.1:18183`，手机学习端 |
+| `NUXT_PUBLIC_GATEWAY_BASE_URL` | `http://127.0.0.1:18070/api/v1` |
+| `NUXT_PUBLIC_PROJECTION_PATH` | `/public/site/projection` |
+| `NUXT_PUBLIC_LINK_ORIGINS` | 额外允许的公告/下载来源，逗号分隔 |
+
+官网不接收登录密码，不建立业务会话。学习入口只携带界面语言、主题、固定 returnTo 与白名单 UTM；公开接口只读，每次上游请求超时为 2.5 秒。备案与完整法律文件仍须以正式核实、公示版本为准。
+
+## 共享基础与维护
+
+- 原子色板：`packages/design-tokens/src/official-site.ts`；官网 CSS 适配语义，不影响其他三端。主题支持浅色、深色、跟随系统与高对比。
+- UI 文案：`packages/i18n/src/official-site.ts`；当前完整中文 UI，英文资源尚待翻译并回退中文，不在设置中承诺英文界面。英文学习例句保持内容语言；可用共享 i18n 的伪本地化检查。
+- 性能：`@englishflow/performance` 提供 Ultra / High / Medium / Performance。页面动效默认开启，顶部不再提供开关，也不继承旧按钮的暂停偏好；轻量减少装饰，省电采用静态 2D，继续尊重系统减少动态效果。
+- Nuxt 插件按请求创建主题/语言实例；公开 HTML 使用 SSR，不缓存个性化 HTML。仅 robots 与 sitemap 预渲染，避免不同访问者的主题/语言串用。
+- 学习示例是本页内存交互；角色为本地 SVG，空间为 CSS 透视分层。正式 Three.js 模型、账号装扮和游戏结算仍由学习端实现。

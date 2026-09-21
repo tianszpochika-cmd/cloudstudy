@@ -1,36 +1,63 @@
 <script setup lang="ts">
-import { footerNavigation } from '~/utils/site-content.mjs'
-
-const { learnerLink } = useOfficialSiteLinks()
+const { t } = useSiteText(),
+  preferences = useState("official:preferences", () => false);
+const groups = [
+  {
+    title: "official.cbd6578c0b",
+    links: [
+      ["/courses", "official.c36a0f1dc5"],
+      ["/method", "official.c831468464"],
+      ["/world", "official.cdf0fd9f57"],
+      ["/start", "official.cd28ebd1dd"],
+    ],
+  },
+  {
+    title: "official.cc0c78a429",
+    links: [
+      ["/help", "official.c0adb1147b"],
+      ["/about", "official.c3a9d26408"],
+      ["/announcements", "official.c941d9548f"],
+      ["/status", "official.cd42da9e2a"],
+    ],
+  },
+  {
+    title: "official.cfbcee5731",
+    links: [
+      ["/privacy", "official.c5c7d60537"],
+      ["/terms", "official.c15683f6cd"],
+      ["/minors", "official.c770693e4f"],
+      ["/compliance", "official.cfbcee5731"],
+    ],
+  },
+];
 </script>
-
 <template>
   <footer class="site-footer">
-    <div class="container footer-grid">
-      <div class="footer-brand">
-        <NuxtLink class="brand brand-footer" to="/">
-          <span class="brand-mark" aria-hidden="true">语</span>
-          <span class="brand-copy">
-            <strong>语学星</strong>
-            <small>ENGLISHFLOW</small>
-          </span>
-        </NuxtLink>
-        <p>让每一次学习都走向下一步。</p>
-        <a class="footer-learning-link" :href="learnerLink('/learn', { source: 'official-footer' })">打开学习 Web →</a>
+    <div class="container">
+      <div class="footer-main">
+        <div class="footer-brand">
+          <SiteBrand />
+          <p>
+            {{ t("official.c5af6c5d99") }}<br />{{ t("official.c1d29e2d17") }}
+          </p>
+          <span class="footer-caption">LEARN A LITTLE. EVERY DAY.</span>
+        </div>
+        <div v-for="group in groups" :key="group.title" class="footer-col">
+          <h3>{{ t(group.title) }}</h3>
+          <NuxtLink
+            v-for="[path, label] in group.links"
+            :key="path"
+            :to="path"
+            >{{ t(label) }}</NuxtLink
+          >
+        </div>
       </div>
-
-      <div v-for="group in footerNavigation" :key="group.title" class="footer-column">
-        <h2>{{ group.title }}</h2>
-        <ul>
-          <li v-for="link in group.links" :key="link.to">
-            <NuxtLink :to="link.to">{{ link.label }}</NuxtLink>
-          </li>
-        </ul>
+      <div class="footer-bottom">
+        <button class="footer-settings" @click="preferences = true">
+          <SiteIcon name="globe" />{{ t("official.cf3b9e99ed") }}</button
+        ><span>{{ t("official.cf7ce229f6") }}</span
+        ><span>{{ t("official.c594f92349") }}</span>
       </div>
-    </div>
-    <div class="container footer-bottom">
-      <span>© {{ new Date().getFullYear() }} 语学星 EnglishFlow</span>
-      <span>公开页面不承载登录后学习业务</span>
     </div>
   </footer>
 </template>

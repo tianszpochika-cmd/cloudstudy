@@ -1,20 +1,129 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { filterPublicCourses } from '~/utils/public-projection'
-import { resolvePublicPageState, resolvePublicState } from '~/utils/public-state.mjs'
-import { useOfficialSeo } from '~/utils/seo'
-
-const route = useRoute()
-const activeFilter = ref('all')
-const { loadState, load } = usePublicProjection('courses')
-const previewState = computed(() => resolvePublicState(route.query.state))
-const pageState = computed(() => resolvePublicPageState(previewState.value, loadState.value.state, loadState.value.projection.courses.length > 0))
-const visibleCourses = computed(() => pageState.value === 'ready' ? filterPublicCourses(loadState.value.projection.courses, activeFilter.value) : [])
-
-useOfficialSeo({ title: '课程体系｜语学星 EnglishFlow', description: '浏览语学星公开课程，了解语言学习闭环如何工作。', path: '/courses', breadcrumbs: [{ name: '首页', path: '/' }, { name: '课程体系', path: '/courses' }] })
+import { learningMethods } from "~/utils/experience-content";
+import { useOfficialSeo } from "~/utils/seo";
+const { t } = useSiteText(),
+  route = useRoute(),
+  router = useRouter(),
+  { authLink } = useOfficialSiteLinks();
+const group = computed(() => String(route.query.group || "all")),
+  query = computed(() => String(route.query.q || ""));
+const filtered = computed(() =>
+  learningMethods.filter(
+    (c) =>
+      (group.value === "all" || group.value === c.group) &&
+      [t(c.title), t(c.short), ...c.tags.map((tg) => t(tg))]
+        .join(" ")
+        .toLowerCase()
+        .includes(query.value.trim().toLowerCase()),
+  ),
+);
+function filter(groupValue: string, searchValue = query.value) {
+  void router.replace({
+    query: {
+      ...route.query,
+      group: groupValue === "all" ? undefined : groupValue,
+      q: searchValue || undefined,
+    },
+  });
+}
+const { loadState, load } = usePublicProjection("courses");
+useOfficialSeo({
+  title: t("official.c66fb6e8c0"),
+  description: t("official.c0978c4332"),
+  path: "/courses",
+});
 </script>
-
 <template>
-  <section class="page-hero"><div class="container"><div class="breadcrumb"><NuxtLink to="/">首页</NuxtLink><span aria-hidden="true">/</span><span>课程体系</span></div><span class="eyebrow">Course map</span><h1>先找到适合自己的那一条学习路径。</h1><p>课程字段来自 SSR-safe 公开投影；登录后的进度、复习队列和报告由学习服务负责。</p></div></section>
-  <section class="page-content"><div class="container"><div class="filter-bar" aria-label="课程筛选"><button class="filter-button" :class="{ 'is-active': activeFilter === 'all' }" type="button" @click="activeFilter = 'all'">全部课程</button><button class="filter-button" :class="{ 'is-active': activeFilter === '入门' }" type="button" @click="activeFilter = '入门'">入门阶段</button><button class="filter-button" :class="{ 'is-active': activeFilter === '进阶' }" type="button" @click="activeFilter = '进阶'">进阶阶段</button></div><PublicStatus v-if="pageState !== 'ready'" :state="pageState" action-href="/courses" action-label="回到课程目录" @retry="load" /><div v-else-if="visibleCourses.length" class="course-grid"><CourseCard v-for="course in visibleCourses" :key="course.id" :course="course" /></div><PublicStatus v-else state="empty" action-href="/courses" action-label="清除筛选" /></div></section>
+  <div>
+    <PageHeading
+      :title="t('official.c2ce2364ca')"
+      :lead="t('official.c297e08cd6')"
+      :label="t('official.c36a0f1dc5')"
+    />
+    <section class="page-body">
+      <div class="container">
+        <div class="catalog-toolbar">
+          <div
+            class="filters"
+            role="group"
+            :aria-label="t('official.c1e76eaf3e')"
+          >
+            <button
+              v-for="[value, label] in [
+                ['all', 'official.c778fc8f99'],
+                ['words', 'official.c51abd5661'],
+                ['understand', 'official.c211e55ac9'],
+                ['express', 'official.c9c7bdaf00'],
+              ]"
+              :key="value"
+              :aria-pressed="group === value"
+              @click="filter(value!)"
+            >
+              {{ t(label!) }}
+            </button>
+          </div>
+          <label class="search-field"
+            ><SiteIcon name="search" /><input
+              type="search"
+              :value="query"
+              :placeholder="t('official.c0636e53fd')"
+              :aria-label="t('official.ca7df47a9e')"
+              @input="
+                filter(group, ($event.target as HTMLInputElement).value)
+              " /><button
+              :aria-label="t('official.c2a73ffdf9')"
+              @click="filter(group, '')"
+            >
+              <SiteIcon name="close" /></button
+          ></label>
+        </div>
+        <p class="catalog-count" aria-live="polite">
+          {{ filtered.length }}{{ t("official.c818470248") }}
+        </p>
+        <div class="catalog-grid">
+          <LearningMethodCard
+            v-for="course in filtered"
+            :key="course.id"
+            :course="course"
+          />
+          <div v-if="!filtered.length" class="empty-state">
+            <SiteIcon name="search" />
+            <h2>{{ t("official.c7bdb79725") }}</h2>
+            <p>{{ t("official.c515c474f9") }}</p>
+            <button class="btn btn-outline" @click="filter('all', '')">
+              {{ t("official.cb6d26530e") }}
+            </button>
+          </div>
+        </div>
+        <p class="catalog-note">{{ t("official.cab2cf9e17") }}</p>
+        <section class="published-courses">
+          <h2>{{ t("official.c52c0deec0") }}</h2>
+          <div
+            v-if="
+              loadState.state === 'ready' && loadState.projection.courses.length
+            "
+            class="published-grid"
+          >
+            <article
+              v-for="course in loadState.projection.courses"
+              :key="course.id"
+              class="public-course-card"
+            >
+              <span class="pill">{{ course.level }}</span>
+              <h3>{{ course.title }}</h3>
+              <p>{{ course.description }}</p>
+              <a class="link-arrow" :href="authLink('/courses')"
+                >{{ t("official.caa236cbb2") }}<SiteIcon name="arrow"
+              /></a>
+            </article>
+          </div>
+          <PublicStatus
+            v-else
+            :state="loadState.state === 'ready' ? 'empty' : loadState.state"
+            @retry="load"
+          />
+        </section>
+      </div>
+    </section>
+  </div>
 </template>

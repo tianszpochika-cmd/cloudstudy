@@ -11,6 +11,10 @@
     "./adapters": {
       "types": "./src/adapters.ts",
       "import": "./src/adapters.ts"
+    },
+    "./official-site": {
+      "types": "./src/official-site.ts",
+      "import": "./src/official-site.ts"
     }
   },
   "scripts": {

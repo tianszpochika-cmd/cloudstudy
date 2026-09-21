@@ -1,91 +1,169 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { siteNavigation } from '~/utils/site-content.mjs'
-import { officialI18n, officialI18nAdapter, officialThemeController } from '~/utils/v2-foundation'
-
-const route = useRoute()
-const { authLink } = useOfficialSiteLinks()
-const isMenuOpen = ref(false)
-const uiLocale = ref(officialI18nAdapter.state.locale)
-// Keep the SSR first frame deterministic; the no-flash bootstrap and the
-// mounted hook then apply the user's stored/system theme without hydration
-// text or attribute mismatches.
-const resolvedTheme = ref<'light' | 'dark' | 'high-contrast'>('light')
-const isMounted = ref(false)
-const unsubscribeLocale = officialI18nAdapter.subscribe((state) => { uiLocale.value = state.locale })
-const unsubscribeTheme = officialThemeController.subscribe((state) => {
-  if (isMounted.value) resolvedTheme.value = state.resolvedTheme
-})
-
-const loginLink = computed(() => authLink('/home'))
-const loginLabel = computed(() => officialI18n.t('auth.login.start', undefined, { locale: uiLocale.value }))
-const loginTitle = computed(() => officialI18n.t('auth.login.publicOnly', undefined, { locale: uiLocale.value }))
-const themeLabel = computed(() => resolvedTheme.value === 'dark' ? '切换到浅色模式' : '切换到深色模式')
-
-function isActive(path: string): boolean {
-  if (path === '/') return route.path === '/'
-  return route.path === path || route.path.startsWith(`${path}/`)
-}
-
-function closeMenu() {
-  isMenuOpen.value = false
-}
-
-function toggleTheme() {
-  officialThemeController.setTheme(resolvedTheme.value === 'dark' ? 'light' : 'dark')
-}
-
-watch(() => route.fullPath, closeMenu)
+import type { ThemeMode } from "@englishflow/design-tokens";
+import { buildPublicLearningEntry } from "~/utils/public-links.mjs";
+const { t, locale } = useSiteText(),
+  { officialI18nAdapter, officialThemeController } = useNuxtApp().$foundation;
+const route = useRoute(),
+  menu = ref(false),
+  preferences = useState("official:preferences", () => false),
+  theme = ref(officialThemeController.theme),
+  resolved = useState(
+    "official:resolved-theme",
+    () => officialThemeController.resolvedTheme,
+  );
+let unsub: (() => void) | undefined;
 onMounted(() => {
-  isMounted.value = true
-  resolvedTheme.value = officialThemeController.resolvedTheme
-})
-onBeforeUnmount(unsubscribeLocale)
-onBeforeUnmount(unsubscribeTheme)
+  unsub = officialThemeController.subscribe((s) => {
+    theme.value = s.theme;
+    resolved.value = s.resolvedTheme;
+  });
+});
+const unsubLocale = officialI18nAdapter.subscribe(
+  (s) => (locale.value = s.locale),
+);
+onBeforeUnmount(() => {
+  unsub?.();
+  unsubLocale();
+});
+const { reduced, level } = useSiteMotion(),
+  loginLabel = computed(() => t("official.c21f1e8827"));
+const mobile = useLearningDevice(),
+  config = useRuntimeConfig();
+function authLink() {
+  return buildPublicLearningEntry({
+    base: String(
+      mobile.value ? config.public.mobileH5Url : config.public.learnerWebUrl,
+    ),
+    mobile: mobile.value,
+    login: true,
+    locale: locale.value,
+    theme: officialThemeController.theme,
+    campaign: route.query,
+  });
+}
+const links = [
+  ["/courses", "official.c36a0f1dc5"],
+  ["/world", "official.cdf0fd9f57"],
+  ["/method", "official.c831468464"],
+  ["/help", "official.c0adb1147b"],
+];
+function toggleTheme() {
+  officialThemeController.setTheme(
+    resolved.value === "dark" ? "light" : "dark",
+  );
+}
+function setTheme(event: Event) {
+  officialThemeController.setTheme(
+    (event.target as HTMLSelectElement).value as ThemeMode,
+  );
+}
+watch(
+  () => route.fullPath,
+  () => (menu.value = false),
+);
 </script>
-
 <template>
   <header class="site-header">
     <div class="container header-inner">
-      <NuxtLink class="brand" to="/" aria-label="语学星首页" @click="closeMenu">
-        <span class="brand-mark" aria-hidden="true">语</span>
-        <span class="brand-copy">
-          <strong>语学星</strong>
-          <small>ENGLISHFLOW</small>
-        </span>
-      </NuxtLink>
-
-      <button
-        class="mobile-nav-toggle"
-        type="button"
-        :aria-expanded="isMenuOpen"
-        aria-controls="official-site-nav"
-        aria-label="打开导航菜单"
-        @click="isMenuOpen = !isMenuOpen"
-      >
-        <span aria-hidden="true"></span>
-        <span aria-hidden="true"></span>
-        <span aria-hidden="true"></span>
-      </button>
-
-      <nav id="official-site-nav" class="site-nav" :class="{ 'is-open': isMenuOpen }" aria-label="官网主导航">
+      <SiteBrand />
+      <nav class="desktop-nav" :aria-label="t('official.cfb1c7dc70')">
         <NuxtLink
-          v-for="item in siteNavigation"
-          :key="item.to"
-          class="nav-link"
-          :class="{ 'is-active': isActive(item.to) }"
-          :to="item.to"
-          :aria-current="isActive(item.to) ? 'page' : undefined"
-          @click="closeMenu"
+          v-for="[path, label] in links"
+          :key="path"
+          :to="path"
+          :aria-current="route.path === path ? 'page' : undefined"
+          >{{ t(label) }}</NuxtLink
         >
-          {{ item.label }}
-        </NuxtLink>
-        <button class="header-control" type="button" :aria-label="themeLabel" :title="themeLabel" @click="toggleTheme">
-          <span class="header-control__icon" aria-hidden="true">{{ resolvedTheme === 'dark' ? '☀' : '◐' }}</span>
-          <span>{{ resolvedTheme === 'dark' ? '浅色' : '深色' }}</span>
-        </button>
-        <a class="button button-small button-primary nav-cta" :href="loginLink" :title="loginTitle" @click="closeMenu">{{ loginLabel }}</a>
       </nav>
+      <div class="header-actions">
+        <button
+          class="round-button"
+          :aria-label="
+            t(
+              resolved === 'dark'
+                ? 'official.c43268b927'
+                : 'official.c77d8a0cc2',
+            )
+          "
+          @click="toggleTheme"
+        >
+          <SiteIcon :name="resolved === 'dark' ? 'sun' : 'moon'" /></button
+        ><a class="login-link" :href="authLink()">{{ loginLabel }}</a
+        ><SiteStartButton :label="t('official.cd28ebd1dd')" /><button
+          class="round-button menu-toggle"
+          :aria-label="t('official.c356a35564')"
+          aria-haspopup="dialog"
+          :aria-expanded="menu"
+          @click="menu = true"
+        >
+          <SiteIcon name="menu" />
+        </button>
+      </div>
     </div>
   </header>
+  <SiteModal
+    :open="menu"
+    :title="t('official.c78c3d2787')"
+    menu
+    @close="menu = false"
+    ><nav class="mobile-nav-links" :aria-label="t('official.ca8e5ddc6a')">
+      <NuxtLink to="/"
+        >{{ t("official.cff93ad0e4") }}<SiteIcon name="arrow" /></NuxtLink
+      ><NuxtLink v-for="[path, label] in links" :key="path" :to="path"
+        >{{ t(label) }}<SiteIcon name="arrow" /></NuxtLink
+      ><button
+        class="menu-settings"
+        @click="
+          menu = false;
+          preferences = true;
+        "
+      >
+        {{ t("official.cf3b9e99ed") }}<SiteIcon name="right" />
+      </button>
+    </nav>
+    <div class="mobile-nav-bottom">
+      <SiteStartButton /><a :href="authLink()" class="menu-login">{{
+        t("official.c801530ee0")
+      }}</a>
+      <p>{{ t("official.c5efc58ae7") }}</p>
+    </div></SiteModal
+  >
+  <SiteModal
+    :open="preferences"
+    :title="t('official.cf3b9e99ed')"
+    @close="preferences = false"
+    ><div class="preferences-form">
+      <label
+        >{{ t("official.c09b58aa34")
+        }}<select :value="theme" @change="setTheme">
+          <option value="system">{{ t("official.cf4bbd91f7") }}</option>
+          <option value="light">{{ t("official.c80ec9e2b1") }}</option>
+          <option value="dark">{{ t("official.c30b2c979a") }}</option>
+          <option value="high-contrast">{{ t("official.cf7c782f33") }}</option>
+        </select></label
+      ><label
+        >{{ t("official.cd5d8edd12")
+        }}<select
+          :value="locale"
+          @change="
+            officialI18nAdapter.setLocale(
+              ($event.target as HTMLSelectElement).value,
+            )
+          "
+        >
+          <option value="zh-CN">{{ t("official.c93659150d") }}</option>
+        </select></label
+      ><label
+        >{{ t("official.cb0ed915ed")
+        }}<select v-model="level">
+          <option value="Ultra">{{ t("official.cf571e2cf7") }}</option>
+          <option value="High">{{ t("official.c8beedd9bb") }}</option>
+          <option value="Medium">{{ t("official.c68e09f351") }}</option>
+          <option value="Performance">{{ t("official.c238c87629") }}</option>
+        </select></label
+      >
+      <p>{{ t("official.c28f650e77") }}</p>
+      <p v-if="reduced">{{ t("official.cdd1478165") }}</p>
+    </div></SiteModal
+  >
 </template>

@@ -1,0 +1,82 @@
+{
+  "result": "PASS",
+  "at": "2026-09-21T03:32:17.720Z",
+  "scope": "Header animation default and expanded FAQs only",
+  "layouts": [
+    {
+      "width": 320,
+      "theme": "light",
+      "path": "/",
+      "expandedAnswers": 4
+    },
+    {
+      "width": 320,
+      "theme": "light",
+      "path": "/help",
+      "expandedAnswers": 8
+    },
+    {
+      "width": 320,
+      "theme": "dark",
+      "path": "/",
+      "expandedAnswers": 4
+    },
+    {
+      "width": 320,
+      "theme": "dark",
+      "path": "/help",
+      "expandedAnswers": 8
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "path": "/",
+      "expandedAnswers": 4
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "path": "/help",
+      "expandedAnswers": 8
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "path": "/",
+      "expandedAnswers": 4
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "path": "/help",
+      "expandedAnswers": 8
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "path": "/",
+      "expandedAnswers": 4
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "path": "/help",
+      "expandedAnswers": 8
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "path": "/",
+      "expandedAnswers": 4
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "path": "/help",
+      "expandedAnswers": 8
+    }
+  ],
+  "errors": [],
+  "runningAnimations": 1,
+  "systemReducedMotion": "respected"
+}

@@ -8,13 +8,15 @@
     "build": "nuxt build",
     "generate": "nuxt generate",
     "preview": "node ../../scripts/run-fixed-port.mjs official-site-preview -- nuxt preview --host 127.0.0.1 --port 18192",
-    "test:b13": "node --test tests/b13-official-site.test.mjs"
+    "test:b13": "node --test tests/b13-official-site.test.mjs",
+    "test:website": "node --test tests/b13-official-site.test.mjs tests/b14-fe-005.test.mjs tests/website-entry.test.mjs"
   },
   "dependencies": {
     "vue": "^3.4.0",
     "nuxt": "^3.11.0",
     "@englishflow/design-tokens": "workspace:*",
-    "@englishflow/i18n": "workspace:*"
+    "@englishflow/i18n": "workspace:*",
+    "@englishflow/performance": "workspace:*"
   },
   "devDependencies": {
     "tailwindcss": "^3.4.0",

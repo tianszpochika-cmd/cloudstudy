@@ -1,11 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
-  <title>语学星</title>
-  <defs>
-    <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
-      <stop offset="0" stop-color="#596BFF"/>
-      <stop offset="1" stop-color="#7C5CFC"/>
-    </linearGradient>
-  </defs>
-  <rect width="64" height="64" rx="20" fill="url(#g)"/>
-  <text x="32" y="43" fill="#fff" font-family="Arial, sans-serif" font-size="30" font-weight="700" text-anchor="middle">语</text>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><rect width="40" height="40" rx="12" fill="#5937d1"/><path d="m19 8 3 8 8 3-8 3-3 8-3-8-8-3 8-3Z" stroke="#fff" stroke-width="1.8" fill="none"/><path d="m30 6 1.2 3.8L35 11l-3.8 1.2L30 16l-1.2-3.8L25 11l3.8-1.2Z" fill="#d8cdf9"/></svg>

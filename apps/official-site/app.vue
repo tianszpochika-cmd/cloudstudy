@@ -1,52 +1,69 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { renderOfficialSiteTokenStyle } from '~/utils/design-system'
-import { resolvePublicThemeMode, resolvePublicUiLocale } from '~/utils/public-projection'
-import { officialI18nAdapter, officialThemeAdapter, officialThemeController } from '~/utils/v2-foundation'
-
-const route = useRoute()
-const uiLocale = ref(officialI18nAdapter.state.locale)
-const contentLocale = ref(officialI18nAdapter.state.contentLocale)
-const unsubscribeLocale = officialI18nAdapter.subscribe((state) => {
-  uiLocale.value = state.locale
-  contentLocale.value = state.contentLocale
-})
-
+import { renderOfficialSiteTokenStyle } from "~/utils/design-system";
+import { renderOfficialPalette } from "@englishflow/design-tokens/official-site";
+import {
+  resolvePublicThemeMode,
+  resolvePublicUiLocale,
+} from "~/utils/public-projection";
+const { officialI18nAdapter, officialThemeController, officialThemeAdapter } =
+  useNuxtApp().$foundation;
+const route = useRoute(),
+  { locale } = useSiteText();
+const localeCookie = useCookie("yx.public.locale", { sameSite: "lax" }),
+  themeCookie = useCookie("yx.public.theme", { sameSite: "lax" });
+const unsubLocale = officialI18nAdapter.subscribe((next) => {
+  locale.value = next.locale;
+  localeCookie.value = next.locale;
+});
+const unsubTheme = officialThemeController.subscribe(
+  (next) => (themeCookie.value = next.theme),
+);
 function syncUrlPreferences() {
-  if (route.query.locale !== undefined) officialI18nAdapter.setLocale(resolvePublicUiLocale(route.query.locale))
-  if (route.query.theme !== undefined) officialThemeController.setTheme(resolvePublicThemeMode(route.query.theme))
+  if (route.query.locale !== undefined)
+    officialI18nAdapter.setLocale(resolvePublicUiLocale(route.query.locale));
+  if (route.query.theme !== undefined)
+    officialThemeController.setTheme(resolvePublicThemeMode(route.query.theme));
 }
-
+syncUrlPreferences();
 onMounted(() => {
-  officialI18nAdapter.restore()
-  officialThemeController.restore()
-  syncUrlPreferences()
-})
-
-watch(() => [route.query.locale, route.query.theme], () => {
-  if (import.meta.client) syncUrlPreferences()
-})
-
-onBeforeUnmount(unsubscribeLocale)
-
+  officialI18nAdapter.restore();
+  officialThemeController.restore();
+  syncUrlPreferences();
+  officialThemeAdapter.sync();
+});
+watch(() => [route.query.locale, route.query.theme], syncUrlPreferences);
+onBeforeUnmount(() => {
+  unsubLocale();
+  unsubTheme();
+  officialI18nAdapter.dispose();
+  officialThemeAdapter.dispose();
+  officialThemeController.dispose();
+});
+installSiteMotion();
 useHead({
   htmlAttrs: {
-    lang: computed(() => uiLocale.value),
-    'data-ui-locale': computed(() => uiLocale.value),
-    'data-content-locale': computed(() => contentLocale.value),
+    lang: computed(() => locale.value),
+    "data-ui-locale": computed(() => locale.value),
+    "data-content-locale": "en-US",
   },
   style: [
     {
-      id: 'englishflow-official-site-tokens',
-      children: `:root{${renderOfficialSiteTokenStyle()}}`,
+      id: "englishflow-official-site-tokens",
+      textContent: `:root{${renderOfficialSiteTokenStyle()};${renderOfficialPalette()}}`,
     },
   ],
-  script: [{ id: 'englishflow-official-theme-bootstrap', children: officialThemeAdapter.noFlashScript }],
-})
+  script: [
+    {
+      id: "englishflow-official-theme-bootstrap",
+      textContent:
+        officialThemeAdapter.noFlashScript +
+        (officialThemeController.theme === "system"
+          ? ';document.documentElement.dataset.theme=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";'
+          : ""),
+    },
+  ],
+});
 </script>
-
 <template>
-  <NuxtLayout>
-    <NuxtPage />
-  </NuxtLayout>
+  <NuxtLayout><NuxtPage :page-key="(route) => route.path" /></NuxtLayout>
 </template>
