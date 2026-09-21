@@ -474,10 +474,11 @@ public final class B9ContentAdminController {
         String batchKey = requireIdempotencyKey(idempotencyKey);
         Map<String, Object> input = body == null ? Map.of() : body;
         Object rawItems = input.get("items");
-        List<Map<String, Object>> items = rawItems instanceof List<?> list
-                ? list.stream().filter(Map.class::isInstance).map(Map.class::cast)
-                        .map(B9ContentAdminController::record).toList()
-                : List.of();
+        List<?> rawEntries = rawItems instanceof List<?> list ? list : List.of();
+        // Non-object entries are counted as failed instead of silently shrinking the total.
+        int dropped = (int) rawEntries.stream().filter(entry -> !(entry instanceof Map)).count();
+        List<Map<String, Object>> items = rawEntries.stream().filter(Map.class::isInstance).map(Map.class::cast)
+                .map(B9ContentAdminController::record).toList();
         if (items.isEmpty()) {
             throw ContentOperationException.badRequest("CONTENT_BATCH_EMPTY", "items must contain at least one entry");
         }
@@ -504,6 +505,7 @@ public final class B9ContentAdminController {
                 if (item.containsKey("lexeme")) {
                     Map<String, Object> lexemeFields = record(item.get("lexeme"));
                     String headword = text(lexemeFields.get("headword"));
+                    checkLexemeVersion(contentCode, text(item.get("lexemeId")), item, actor);
                     LexemeCommandService.LexemeResult outcome;
                     if (!headword.isBlank() && !text(item.get("lexemeId")).isBlank()) {
                         outcome = lexemes.upsert(contentCode, lexemeFields, text(item.get("lexemeId")),
@@ -522,6 +524,7 @@ public final class B9ContentAdminController {
                     entry.put("stateVersion", outcome.stateVersion());
                 } else if (item.containsKey("item")) {
                     Map<String, Object> itemFields = record(item.get("item"));
+                    checkItemVersion(contentCode, text(item.get("itemId")), item, actor);
                     ContentItemCommandService.ItemResult outcome = contentItems.upsert(
                             contentCode, itemFields, text(item.get("itemId")),
                             actor, key(subKey + ":content-item"), context);
@@ -556,16 +559,21 @@ public final class B9ContentAdminController {
             } catch (ContentOperationException error) {
                 entry.put("status", "FAILED");
                 entry.put("errorCode", error.code());
+            } catch (RuntimeException error) {
+                // One poisoned entry must not abort the batch; the row is recorded
+                // and the remaining entries still run.
+                entry.put("status", "FAILED");
+                entry.put("errorCode", "CONTENT_BATCH_ENTRY_FAILED");
             }
             results.add(entry);
         }
         Map<String, Object> data = new LinkedHashMap<>();
         data.put("batchKey", batchKey);
         data.put("commandId", commandId(batchKey));
-        data.put("total", results.size());
+        data.put("total", results.size() + dropped);
         data.put("accepted", results.stream().filter(r -> "ACCEPTED".equals(r.get("status"))).count());
         data.put("skipped", results.stream().filter(r -> "SKIPPED".equals(r.get("status"))).count());
-        data.put("failed", results.stream().filter(r -> "FAILED".equals(r.get("status"))).count());
+        data.put("failed", results.stream().filter(r -> "FAILED".equals(r.get("status"))).count() + dropped);
         data.put("items", results);
         data.put("acceptedAt", Instant.now());
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(Map.of("data", data));
