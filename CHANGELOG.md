@@ -1,5 +1,6 @@
 # Changelog
 
+- [T18-20260921] **gamification Kafka 入账链路打通验证。** 台账“HTTP 直推”说法过期：`TrustedCompletionKafkaConsumer`（消费 `platform.learning.v1`、同幂等结算、重试+DLQ）已存在但零单测、无运行证据。补 6 项单测（映射/拒绝/退避/结算键/畸形进 DLQ/耗尽进 DLQ）；运行时灌合约记录→xp_ledger +15、重放不重复结算。遗留：learning 侧尚无 relay（v2 事件只在 outbox 表，见 T21），consumer 要的 subjectRef/completionId 与 learning 载荷字段名存在映射缺口，relay 设计时必须对齐。
 - [T17-20260921] **social 持久化实测（M7-004）。** 台账“内存实现”说法已过期：local-real 下 JDBC 控制器直写 9 张 soc_* 表。运行时证明：建房列表→join→DB 落 member+seat(OCCUPIED+lease)→重启服务→同一 membership 行仍 ACTIVE、重 join 无重复。默认 profile 的内存 SocialService 仍是 test-only。无代码变更。
 - [T16-20260921] **通知订阅/模板实体落地（M6-001）。** 表（V7）与 domain 早已存在但无读写：新增 port + JDBC/memory/failclosed 三件套 + deliver() 发送时门禁（显式退订→SUBSCRIPTION_OPTED_OUT、有模板消息缺 ACTIVE 行→TEMPLATE_NOT_ACTIVE；无订阅行默认订阅、consent 仍是发送门）。单测 102 全绿（新增 6）；运行时 queue→DELIVERED，插退订行后 queue→CANCELLED/SUBSCRIPTION_OPTED_OUT（DB 直查），行已清理。
 - [T12-20260921] **admin-web 中文全量抽取 + 抽取管线。** 新增 `scripts/i18n/extract-hardcoded.mjs`（四端度量：admin 473/learner 877/site 35/mobile 485 行；早期 2.4 万为 node_modules 污染，已纠正）。admin-web 30 文件 473 行清零（仅剩 bundle 源中文）：三批次 632 key（A 233/B 327/C 72，中英 parity 逐批核对），`adminT` + 按需 computed 保证切换响应式，bundle 注册（A/B 自注册、C 经 admin-i18n 集中注册，合并语义共存）。浏览器实测切英文整页渲染英文、零错误。learner-web/site/mobile 保持度量跟踪，不在本批。
