@@ -45,6 +45,12 @@ useHead({
     lang: computed(() => locale.value),
     "data-ui-locale": computed(() => locale.value),
     "data-content-locale": "en-US",
+    // SSR per-request theme from the cookie so crawlers/first paint agree with
+    // the client; 'system' stays unset for the no-flash script to resolve.
+    // Evaluated once per SSR request (fresh Nuxt app each time: no cross-visitor leak).
+    "data-theme": officialThemeController.theme === "system"
+      ? undefined
+      : officialThemeController.theme,
   },
   style: [
     {

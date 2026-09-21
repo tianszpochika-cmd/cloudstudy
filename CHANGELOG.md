@@ -1,5 +1,6 @@
 # Changelog
 
+- [T7-20260921] **官网运行验收。** 18182 上 12 页（privacy/terms/minors/status/compliance/about/announcements/download/method/world/start/courses）200 且零页面/控制台错误，单测 12/12；浏览器套件 19 检查 + 152 布局全绿。修掉 SSR 主题断言失败：`app.vue` 的 `htmlAttrs` 补按请求 cookie 输出 `data-theme`（system 仍交无闪烁脚本，逐请求隔离无串访）；/status 页已诚实声明不提供实时监测。
 - [T6-20260921] **admin-web 真实浏览器旅程。** Playwright chromium 登录（服务端权限 18 项）→dashboard→lexemes/items/learners/phonetics 全页快照断言：修掉两处接线 bug——SchedulePanel 对尚未建包的 404 改静默空（原来满屏“content does not exist”）、音标页对 withhold 路由的 CORS 阻断改诚实提示（待 M3/M4 路由裁决；加网关投影才是正解，不在本批）。learners 检索 50 条、“加载更多”到 100 条（T1/T3 游标端到端得证）。遗留：dashboard 指标 503（analytics 未绑持久化，页面已诚实降级）、404 无 CORS 头（M2-001 边界，需独立评审）。
 - [T5-20260921] **PACK 定时发布真实执行。** 三主体四眼（建→交→初审→终审 stateVersion=4）后排期 PACK 并 pin=4；relay 到期执行，任务 EXECUTED，包 latestStatus=PUBLISHED。pin 对最新 APPROVED 版本的修复在生产链路得证。无代码变更。
 - [T4-20260921] **Kafka 投递实测。** 本地 broker 主题齐备；今晚 relay 定时发布的词条在 `platform.content.v1` 落袋：headers 含 eventId/eventName=`content.lexeme.published.v1`/schemaVersion/dedupeKey/`requestId=sched-spt_*`（可关联排期任务）/traceId，key 为聚合 id（分区键），value 仅 lexemeId/packCode/headword/stateVersion（无答案/音频/PII）。outbox→relay→broker 整段打通，无代码变更。
