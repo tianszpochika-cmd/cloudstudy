@@ -71,10 +71,12 @@ public final class LexemeCommandService {
         Objects.requireNonNull(packCode, "packCode is required");
         Map<String, Object> validated = Lexeme.validatedFields(fields == null ? Map.of() : fields);
         String headword = headwordOf(validated);
+        // B4 language ribbon: blank/omitted input inherits en-US so pre-B4 payloads keep working.
+        String language = Lexeme.requireLanguage(text(validated.get("language")));
         return idempotency.execute(
-                scope(actor, "lexeme.upsert"), key, fingerprint(packCode, headword, validated),
+                scope(actor, "lexeme.upsert"), key, fingerprint(packCode, headword, language, validated),
                 () -> {
-                    ensurePack(packCode, actor);
+                    ensurePack(packCode, language, actor);
                     Instant now = clock.instant();
                     Lexeme existing = lexemes.findByPackHeadword(packCode, headword).orElse(null);
                     if (existing == null && lexemeId != null && !lexemeId.isBlank()) {
@@ -86,12 +88,14 @@ public final class LexemeCommandService {
                             throw ContentOperationException.conflict("LEXEME_DUPLICATE",
                                     "a lexeme with this id already exists");
                         }
-                        Lexeme created = Lexeme.create(id, TENANT, packCode, headword,
+                        Lexeme created = Lexeme.create(id, TENANT, packCode, headword, language,
                                 cefrOf(validated), validated, actor.subjectId(), now);
                         lexemes.save(created);
                         return new LexemeResult(created.lexemeId(), created.stateVersion(), created.availability());
                     }
                     assertExpectedPack(existing, packCode);
+                    // Language is create-time identity (like headword): re-upserts keep the
+                    // original ribbon instead of silently migrating the row across languages.
                     existing.applyUpsert(validated, actor.subjectId(), now);
                     lexemes.save(existing);
                     return new LexemeResult(existing.lexemeId(), existing.stateVersion(), existing.availability());
@@ -289,9 +293,9 @@ public final class LexemeCommandService {
     }
 
     public List<Lexeme> search(String packCode, String query, String cefr, LexemeAvailability availability,
-            int limit, String afterLexemeId, ContentActor actor) {
+            String language, int limit, String afterLexemeId, ContentActor actor) {
         requireRead(actor);
-        return lexemes.search(packCode, query, cefr, availability, limit, afterLexemeId);
+        return lexemes.search(packCode, query, cefr, availability, language, limit, afterLexemeId);
     }
 
     public List<LexemePronunciation> pronunciations(String packCode, String lexemeId, ContentActor actor) {
@@ -324,7 +328,7 @@ public final class LexemeCommandService {
         }
     }
 
-    private void ensurePack(String packCode, ContentActor actor) {
+    private void ensurePack(String packCode, String language, ContentActor actor) {
         if (packCode == null || packCode.isBlank()) {
             throw ContentOperationException.badRequest("LEXEME_FIELD_INVALID", "contentCode (vocabulary pack) is required");
         }
@@ -332,9 +336,11 @@ public final class LexemeCommandService {
         if (contents.findByCode(code).isPresent()) {
             return;
         }
+        // Vocabulary packs follow VOCAB-{LANG}-PHASE1; the pack locale follows the
+        // first lexeme language so French/German packs project under their own locale.
         ContentDefinition pack = ContentDefinition.create(
                 ContentId.of(code), TENANT, code, ContentKind.VOCABULARY,
-                code, "en-US", "A1", "PHASE1", actor.subjectId(), clock.instant());
+                code, language, "A1", "PHASE1", actor.subjectId(), clock.instant());
         contents.create(pack);
     }
 

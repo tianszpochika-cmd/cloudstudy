@@ -29,7 +29,7 @@ public final class FailClosedLexemeRepository implements LexemeRepository {
 
     @Override
     public List<Lexeme> search(String packCode, String query, String cefr, LexemeAvailability availability,
-            int limit, String afterLexemeId) {
+            String language, int limit, String afterLexemeId) {
         throw unavailable();
     }
 

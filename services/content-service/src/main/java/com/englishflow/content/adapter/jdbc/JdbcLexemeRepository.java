@@ -24,7 +24,7 @@ import tools.jackson.databind.ObjectMapper;
 public final class JdbcLexemeRepository implements LexemeRepository {
 
     private static final String LEXEME_COLUMNS = """
-            lexeme_id, tenant_id, pack_code, headword, cefr, availability, state_version,
+            lexeme_id, tenant_id, pack_code, headword, language, cefr, availability, state_version,
             content_version, created_by, updated_by, first_reviewer, final_reviewer,
             publisher, fields_json, published_fields_json, created_at, updated_at
             """;
@@ -60,7 +60,7 @@ public final class JdbcLexemeRepository implements LexemeRepository {
 
     @Override
     public List<Lexeme> search(String packCode, String query, String cefr, LexemeAvailability availability,
-            int limit, String afterLexemeId) {
+            String language, int limit, String afterLexemeId) {
         StringBuilder sql = new StringBuilder("SELECT ").append(LEXEME_COLUMNS)
                 .append(" FROM lexeme WHERE tenant_id = 'platform' AND pack_code = ?");
         List<Object> args = new ArrayList<>();
@@ -76,6 +76,10 @@ public final class JdbcLexemeRepository implements LexemeRepository {
         if (availability != null) {
             sql.append(" AND availability = ?");
             args.add(availability.name());
+        }
+        if (language != null && !language.isBlank()) {
+            sql.append(" AND language = ?");
+            args.add(language.trim());
         }
         if (afterLexemeId != null && !afterLexemeId.isBlank()) {
             sql.append(" AND lexeme_id > ?");
@@ -95,12 +99,12 @@ public final class JdbcLexemeRepository implements LexemeRepository {
         try {
             jdbc.update("""
                     INSERT INTO lexeme
-                        (lexeme_id, tenant_id, pack_code, headword, cefr, availability, state_version,
+                        (lexeme_id, tenant_id, pack_code, headword, language, cefr, availability, state_version,
                          content_version, created_by, updated_by, first_reviewer, final_reviewer,
                          publisher, fields_json, published_fields_json, created_at, updated_at)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     ON DUPLICATE KEY UPDATE tenant_id = VALUES(tenant_id), pack_code = VALUES(pack_code),
-                        headword = VALUES(headword), cefr = VALUES(cefr), availability = VALUES(availability),
+                        headword = VALUES(headword), language = VALUES(language), cefr = VALUES(cefr), availability = VALUES(availability),
                         state_version = VALUES(state_version), content_version = VALUES(content_version),
                         created_by = VALUES(created_by), updated_by = VALUES(updated_by),
                         first_reviewer = VALUES(first_reviewer), final_reviewer = VALUES(final_reviewer),
@@ -108,7 +112,7 @@ public final class JdbcLexemeRepository implements LexemeRepository {
                         published_fields_json = VALUES(published_fields_json),
                         created_at = VALUES(created_at), updated_at = VALUES(updated_at)
                     """,
-                    lexeme.lexemeId(), lexeme.tenantId(), lexeme.packCode(), lexeme.headword(), lexeme.cefr(),
+                    lexeme.lexemeId(), lexeme.tenantId(), lexeme.packCode(), lexeme.headword(), lexeme.language(), lexeme.cefr(),
                     lexeme.availability().name(), lexeme.stateVersion(), lexeme.contentVersion(),
                     lexeme.createdBy(), lexeme.updatedBy(), lexeme.firstReviewer(), lexeme.finalReviewer(),
                     lexeme.publisher(), fieldsJson, publishedJson,
@@ -151,9 +155,11 @@ public final class JdbcLexemeRepository implements LexemeRepository {
     private Lexeme mapLexeme(ResultSet resultSet) throws SQLException {
         Map<String, Object> fields = readFields(resultSet.getString("fields_json"));
         Map<String, Object> published = readNullableFields(resultSet.getString("published_fields_json"));
+        String language = resultSet.getString("language");
         return new Lexeme(
                 resultSet.getString("lexeme_id"), resultSet.getString("tenant_id"),
                 resultSet.getString("pack_code"), resultSet.getString("headword"),
+                language == null || language.isBlank() ? Lexeme.DEFAULT_LANGUAGE : language.trim(),
                 resultSet.getString("cefr"), LexemeAvailability.parse(resultSet.getString("availability")),
                 resultSet.getLong("state_version"), resultSet.getInt("content_version"),
                 resultSet.getString("created_by"), resultSet.getString("updated_by"),

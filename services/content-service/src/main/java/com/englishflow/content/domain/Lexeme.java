@@ -19,11 +19,18 @@ import java.util.regex.Pattern;
 public final class Lexeme {
 
     private static final Pattern SAFE_CODE = Pattern.compile("[A-Za-z0-9][A-Za-z0-9._:-]{0,127}");
+    /**
+     * BCP-47 language ribbon shared with the {@code B9Locale} contract pattern.
+     * {@code en-US} is the legacy default; French rows use {@code fr-FR}, German rows {@code de-DE}.
+     */
+    private static final Pattern LANGUAGE = Pattern.compile("[a-z]{2,3}(-[A-Z][a-z]{3})?(-[A-Z]{2})?");
+    public static final String DEFAULT_LANGUAGE = "en-US";
 
     private final String lexemeId;
     private final String tenantId;
     private final String packCode;
     private final String headword;
+    private final String language;
     private final String cefr;
     private LexemeAvailability availability;
     private long stateVersion;
@@ -43,6 +50,7 @@ public final class Lexeme {
             String tenantId,
             String packCode,
             String headword,
+            String language,
             String cefr,
             LexemeAvailability availability,
             long stateVersion,
@@ -55,7 +63,7 @@ public final class Lexeme {
             Map<String, Object> fields,
             Instant createdAt,
             Instant updatedAt) {
-        this(lexemeId, tenantId, packCode, headword, cefr, availability, stateVersion, contentVersion,
+        this(lexemeId, tenantId, packCode, headword, language, cefr, availability, stateVersion, contentVersion,
                 createdBy, updatedBy, firstReviewer, finalReviewer, publisher, fields, null, createdAt, updatedAt);
     }
 
@@ -64,6 +72,7 @@ public final class Lexeme {
             String tenantId,
             String packCode,
             String headword,
+            String language,
             String cefr,
             LexemeAvailability availability,
             long stateVersion,
@@ -81,6 +90,7 @@ public final class Lexeme {
         this.tenantId = requireCode(tenantId, "tenantId");
         this.packCode = requireCode(packCode, "packCode");
         this.headword = requireHeadword(headword);
+        this.language = requireLanguage(language);
         this.cefr = cefr == null ? null : cefr.trim().toUpperCase();
         this.availability = Objects.requireNonNull(availability, "availability is required");
         this.stateVersion = stateVersion;
@@ -101,12 +111,13 @@ public final class Lexeme {
             String tenantId,
             String packCode,
             String headword,
+            String language,
             String cefr,
             Map<String, Object> fields,
             String createdBy,
             Instant now) {
         return new Lexeme(
-                lexemeId, tenantId, packCode, headword, cefr,
+                lexemeId, tenantId, packCode, headword, language, cefr,
                 LexemeAvailability.DRAFT, 1L, 1,
                 createdBy, createdBy, null, null, null,
                 fields, now, now);
@@ -126,6 +137,11 @@ public final class Lexeme {
 
     public String headword() {
         return headword;
+    }
+
+    /** BCP-47 language ribbon; legacy rows without a language read as {@code en-US}. */
+    public String language() {
+        return language;
     }
 
     public String cefr() {
@@ -279,6 +295,23 @@ public final class Lexeme {
         return trimmed;
     }
 
+    /**
+     * Normalizes the language ribbon. Blank input inherits the legacy default
+     * {@code en-US} so pre-B4 payloads keep working; anything else must match
+     * the BCP-47 subset shared with the {@code B9Locale} contract pattern.
+     */
+    public static String requireLanguage(String value) {
+        if (value == null || value.isBlank()) {
+            return DEFAULT_LANGUAGE;
+        }
+        String trimmed = value.trim();
+        if (trimmed.length() > 16 || !LANGUAGE.matcher(trimmed).matches()) {
+            throw ContentOperationException.badRequest("LEXEME_LANGUAGE_INVALID",
+                    "language must be a BCP-47 tag such as en-US, fr-FR or de-DE");
+        }
+        return trimmed;
+    }
+
     /** Structural validation for the extensible fields map. Unknown keys are allowed (forward extensibility). */
     @SuppressWarnings("unchecked")
     public static Map<String, Object> validatedFields(Map<String, Object> raw) {
@@ -292,10 +325,13 @@ public final class Lexeme {
                 if (!(sense instanceof Map<?, ?> senseMap)) {
                     throw ContentOperationException.badRequest("LEXEME_FIELD_INVALID", "sense entries must be objects");
                 }
-                Object meaning = senseMap.get("meaningCn");
-                if (!(meaning instanceof String text) || text.isBlank() || text.length() > 512) {
+                // B4 language ribbon: the generic meaningLocal gloss carries non-Chinese
+                // senses; meaningCn stays as the legacy compatible slot. One of them is required.
+                Object meaningCn = senseMap.get("meaningCn");
+                Object meaningLocal = senseMap.get("meaningLocal");
+                if (!isGloss(meaningCn) && !isGloss(meaningLocal)) {
                     throw ContentOperationException.badRequest("LEXEME_FIELD_INVALID",
-                            "each sense requires meaningCn of 1..512 characters");
+                            "each sense requires meaningCn or meaningLocal of 1..512 characters");
                 }
             }
         }
@@ -318,6 +354,10 @@ public final class Lexeme {
             throw ContentOperationException.badRequest("LEXEME_FIELD_INVALID", "tags must contain at most 20 entries");
         }
         return Map.copyOf(raw);
+    }
+
+    private static boolean isGloss(Object value) {
+        return value instanceof String text && !text.isBlank() && text.length() <= 512;
     }
 
     private static int toInt(Object value, String field) {

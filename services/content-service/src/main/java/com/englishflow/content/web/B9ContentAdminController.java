@@ -101,13 +101,14 @@ public final class B9ContentAdminController {
             @RequestParam(required = false) String cefr,
             @RequestParam(required = false) String availability,
             @RequestParam(required = false) String packCode,
+            @RequestParam(required = false) String language,
             @RequestParam(required = false) String itemKind,
             @RequestHeader HttpHeaders headers) {
         ContentActor actor = adminActor(authentication);
         requireAdminRead(actor);
         int pageSize = Math.max(1, Math.min(limit, 100));
         if ("LEXEME".equalsIgnoreCase(text(kind))) {
-            return lexemeList(actor, cursor, pageSize, packCode, q, cefr, availability, headers);
+            return lexemeList(actor, cursor, pageSize, packCode, q, cefr, availability, language, headers);
         }
         if ("ITEM".equalsIgnoreCase(text(kind))) {
             return itemList(actor, cursor, pageSize, packCode, itemKind, q, availability, headers);
@@ -588,12 +589,13 @@ public final class B9ContentAdminController {
             String query,
             String cefr,
             String availability,
+            String language,
             HttpHeaders headers) {
         String pack = packCode == null || packCode.isBlank() ? "VOCAB-PHASE1" : packCode.trim();
         LexemeAvailability status = availability == null || availability.isBlank()
                 ? null : LexemeAvailability.parse(availability);
         String after = cursor == null || cursor.isBlank() ? null : cursor.trim();
-        List<Lexeme> rows = lexemes.search(pack, query, cefr, status, pageSize, after, actor);
+        List<Lexeme> rows = lexemes.search(pack, query, cefr, status, language, pageSize, after, actor);
         List<Map<String, Object>> items = rows.stream().map(row -> lexemeState(row, actor)).toList();
         Map<String, Object> data = new LinkedHashMap<>();
         data.put("items", items);
@@ -663,6 +665,7 @@ public final class B9ContentAdminController {
         Map<String, Object> record = new LinkedHashMap<>();
         record.put("lexemeId", lexeme.lexemeId());
         record.put("headword", lexeme.headword());
+        record.put("language", lexeme.language());
         record.put("packCode", lexeme.packCode());
         record.put("cefr", lexeme.cefr());
         record.put("availability", lexeme.availability().name());
@@ -883,7 +886,7 @@ public final class B9ContentAdminController {
     }
 
     private boolean lexemeExists(String packCode, String headword, ContentActor actor) {
-        return !lexemes.search(packCode, headword, null, null, 1, null, actor).stream()
+        return !lexemes.search(packCode, headword, null, null, null, 1, null, actor).stream()
                 .filter(candidate -> candidate.headword().equalsIgnoreCase(headword))
                 .toList()
                 .isEmpty();

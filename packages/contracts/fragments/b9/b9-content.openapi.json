@@ -609,7 +609,16 @@
               "maxLength": 128,
               "default": "VOCAB-PHASE1"
             },
-            "description": "Vocabulary pack scope; only applies with kind=LEXEME. Defaults to the single-tenant Phase 1 pack."
+            "description": "Vocabulary pack scope; only applies with kind=LEXEME. Defaults to the single-tenant Phase 1 pack. Naming convention VOCAB-{LANG}-PHASE1 (e.g. VOCAB-FR-PHASE1, VOCAB-DE-PHASE1)."
+          },
+          {
+            "name": "language",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/B9Locale"
+            },
+            "description": "Lexeme language ribbon filter (BCP-47, e.g. en-US, fr-FR); only applies with kind=LEXEME. Omit for all languages."
           },
           {
             "name": "itemKind",
@@ -4574,9 +4583,9 @@
         "type": "object",
         "additionalProperties": false,
         "required": [
-          "pos",
-          "meaningCn"
+          "pos"
         ],
+        "description": "One word sense. At least one of meaningCn (legacy Chinese gloss, retained for compatibility) or meaningLocal (generic local-language gloss) is required; server-side validation rejects a sense carrying neither.",
         "properties": {
           "pos": {
             "type": "string",
@@ -4597,7 +4606,14 @@
           "meaningCn": {
             "type": "string",
             "minLength": 1,
-            "maxLength": 512
+            "maxLength": 512,
+            "description": "Legacy Chinese gloss slot. Retained for compatibility; new non-Chinese languages use meaningLocal."
+          },
+          "meaningLocal": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512,
+            "description": "Generic local-language gloss slot (B4 multilingual ribbon). Carries the sense gloss in the lexeme language (e.g. French sens for fr-FR rows)."
           },
           "meaningEn": {
             "type": "string",
@@ -4656,11 +4672,9 @@
           },
           "accent": {
             "type": "string",
-            "enum": [
-              "US",
-              "UK",
-              "SLOW"
-            ]
+            "minLength": 1,
+            "maxLength": 16,
+            "description": "Open accent tag (BCP-47 style, uppercase-normalized server-side). US/UK/SLOW remain the conventional English values; other languages register their own tags (e.g. FR-PARIS)."
           },
           "ipa": {
             "type": "string",
@@ -4725,11 +4739,9 @@
           },
           "accent": {
             "type": "string",
-            "enum": [
-              "US",
-              "UK",
-              "SLOW"
-            ]
+            "minLength": 1,
+            "maxLength": 16,
+            "description": "Open accent tag (BCP-47 style, uppercase-normalized server-side). US/UK/SLOW remain the conventional English values."
           },
           "ipa": {
             "type": "string",
@@ -4801,6 +4813,10 @@
             "minLength": 1,
             "maxLength": 128
           },
+          "language": {
+            "$ref": "#/components/schemas/B9Locale",
+            "description": "Lexeme language ribbon (BCP-47, e.g. en-US, fr-FR, de-DE). Omit to inherit en-US; legacy rows without a language read back as en-US. Vocabulary packs follow VOCAB-{LANG}-PHASE1 (e.g. VOCAB-FR-PHASE1)."
+          },
           "lemma": {
             "type": "string",
             "maxLength": 128
@@ -4853,11 +4869,13 @@
           },
           "phoneticUS": {
             "type": "string",
-            "maxLength": 128
+            "maxLength": 128,
+            "description": "Legacy English-only phonetic slot. Retained for compatibility; new languages use pronunciation rows."
           },
           "phoneticUK": {
             "type": "string",
-            "maxLength": 128
+            "maxLength": 128,
+            "description": "Legacy English-only phonetic slot. Retained for compatibility; new languages use pronunciation rows."
           },
           "audioUsAssetId": {
             "type": "string",
@@ -4975,6 +4993,10 @@
             "type": "string",
             "maxLength": 128
           },
+          "language": {
+            "$ref": "#/components/schemas/B9Locale",
+            "description": "Lexeme language ribbon (BCP-47). Legacy rows without a language read back as en-US."
+          },
           "lemma": {
             "type": "string",
             "maxLength": 128
@@ -5015,11 +5037,13 @@
           },
           "phoneticUS": {
             "type": "string",
-            "maxLength": 128
+            "maxLength": 128,
+            "description": "Legacy English-only phonetic slot. Retained for compatibility; new languages use pronunciation rows."
           },
           "phoneticUK": {
             "type": "string",
-            "maxLength": 128
+            "maxLength": 128,
+            "description": "Legacy English-only phonetic slot. Retained for compatibility; new languages use pronunciation rows."
           },
           "audioUsAssetId": {
             "type": "string",

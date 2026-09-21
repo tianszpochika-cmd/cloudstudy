@@ -13,7 +13,10 @@ export const LEXEME_PACK = 'VOCAB-PHASE1'
 
 export interface LexemeSense {
   pos: string
-  meaningCn: string
+  /** Legacy Chinese gloss slot; retained for compatibility. */
+  meaningCn?: string
+  /** Generic local-language gloss slot (B4 ribbon); one of meaningCn/meaningLocal is required. */
+  meaningLocal?: string
   meaningEn?: string
   examples?: Array<{ en: string; cn: string; source?: string }>
   synonyms?: string[]
@@ -24,13 +27,17 @@ export interface LexemeSense {
 
 export interface LexemeFields {
   headword: string
+  /** BCP-47 language ribbon (en-US default, fr-FR, de-DE). Omit to inherit en-US. */
+  language?: string
   lemma?: string
   pos?: string[]
   cefr?: string
   difficulty?: number
   syllables?: string[]
   stressIndex?: number
+  /** Legacy English-only slot; new languages use pronunciation rows. */
   phoneticUS?: string
+  /** Legacy English-only slot; new languages use pronunciation rows. */
   phoneticUK?: string
   audioUsAssetId?: string
   audioUkAssetId?: string
@@ -48,7 +55,8 @@ export interface LexemeFields {
 
 export interface LexemePronunciation {
   pronunciationId: string
-  accent: 'US' | 'UK' | 'SLOW'
+  /** Open accent tag; US/UK/SLOW remain the conventional English values (e.g. FR-PARIS). */
+  accent: string
   ipa: string
   audioAssetId: string
   sourceType: 'HUMAN' | 'TTS'
@@ -65,6 +73,8 @@ export interface LexemePronunciation {
 export interface LexemeRow {
   lexemeId: string
   headword: string
+  /** BCP-47 language ribbon; legacy rows read as en-US. */
+  language: string
   packCode: string
   cefr: string | null
   availability: 'DRAFT' | 'IN_REVIEW' | 'APPROVED' | 'PUBLISHED' | 'ARCHIVED'
@@ -102,6 +112,7 @@ function asLexemeRow(item: Row): LexemeRow | null {
   return {
     lexemeId: text(lexeme.lexemeId),
     headword: text(lexeme.headword, text(item.title)),
+    language: text(lexeme.language, 'en-US'),
     packCode: text(lexeme.packCode, LEXEME_PACK),
     cefr: typeof lexeme.cefr === 'string' ? lexeme.cefr : null,
     availability: (lexeme.availability ?? item.latestStatus ?? 'DRAFT') as LexemeRow['availability'],
@@ -127,6 +138,8 @@ export async function listLexemes(input: {
   q?: string
   cefr?: string
   availability?: string
+  packCode?: string
+  language?: string
   cursor?: string
   limit?: number
 }): Promise<{ rows: LexemeRow[]; nextCursor: string | null }> {
@@ -134,6 +147,8 @@ export async function listLexemes(input: {
   if (input.q?.trim()) params.set('q', input.q.trim())
   if (input.cefr) params.set('cefr', input.cefr)
   if (input.availability) params.set('availability', input.availability)
+  if (input.packCode?.trim()) params.set('packCode', input.packCode.trim())
+  if (input.language?.trim()) params.set('language', input.language.trim())
   if (input.cursor) params.set('cursor', input.cursor)
   const response = await adminClient.request(`/admin/content-commands?${params.toString()}`)
   const items = unwrapList(response)
@@ -199,7 +214,7 @@ export function upsertPronunciation(
   lexeme: LexemeRow,
   pronunciation: {
     pronunciationId?: string
-    accent: 'US' | 'UK' | 'SLOW'
+    accent: string
     ipa: string
     audioAssetId: string
     sourceType: 'HUMAN' | 'TTS'

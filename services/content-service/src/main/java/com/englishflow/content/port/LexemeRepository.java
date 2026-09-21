@@ -16,10 +16,11 @@ public interface LexemeRepository {
 
     /**
      * Cursor-style search. {@code afterLexemeId} is the last seen id (lexicographic,
-     * headword-ordered page); empty means first page.
+     * headword-ordered page); empty means first page. A blank {@code language} matches
+     * every language; legacy rows without a language read as {@code en-US}.
      */
     List<Lexeme> search(String packCode, String query, String cefr, LexemeAvailability availability,
-            int limit, String afterLexemeId);
+            String language, int limit, String afterLexemeId);
 
     void save(Lexeme lexeme);
 

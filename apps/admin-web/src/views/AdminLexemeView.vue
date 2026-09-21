@@ -28,6 +28,8 @@ const loadingMore = ref(false)
 const q = ref('')
 const cefr = ref('')
 const availability = ref('')
+const packCode = ref(LEXEME_PACK)
+const language = ref('')
 
 const canRead = computed(() => session.can('admin.content.read'))
 const canWrite = computed(() => session.can('admin.content.write'))
@@ -102,6 +104,8 @@ const scheduleTargets = computed(() => [
 
 const CEFRS = ['', 'A1', 'A2', 'B1', 'B2', 'C1', 'C2']
 const STATES = ['', 'DRAFT', 'IN_REVIEW', 'APPROVED', 'PUBLISHED', 'ARCHIVED']
+const LANGUAGES = ['', 'en-US', 'fr-FR', 'de-DE']
+const PACKS = ['VOCAB-PHASE1', 'VOCAB-FR-PHASE1', 'VOCAB-DE-PHASE1']
 
 const tagsText = computed({
   get: () => (form.value.tags ?? []).join(','),
@@ -119,6 +123,20 @@ const meaningCnText = computed({
     const senses = [...(form.value.senses ?? [])]
     const first = { ...(senses[0] ?? { pos: 'NOUN', meaningCn: '' }) }
     first.meaningCn = value
+    senses[0] = first
+    form.value.senses = senses
+  },
+})
+
+const meaningLocalText = computed({
+  get: () => {
+    const senses = form.value.senses ?? []
+    return senses.length && typeof senses[0]?.meaningLocal === 'string' ? senses[0].meaningLocal : ''
+  },
+  set: (value: string) => {
+    const senses = [...(form.value.senses ?? [])]
+    const first = { ...(senses[0] ?? { pos: 'NOUN', meaningCn: '' }) }
+    first.meaningLocal = value
     senses[0] = first
     form.value.senses = senses
   },
@@ -143,7 +161,8 @@ async function load(reset = true): Promise<void> {
   try {
     const page = await listLexemes({
       q: q.value, cefr: cefr.value || undefined,
-      availability: availability.value || undefined, limit: 50,
+      availability: availability.value || undefined,
+      packCode: packCode.value || undefined, language: language.value || undefined, limit: 50,
     })
     rows.value = page.rows
     nextCursor.value = page.nextCursor
@@ -160,7 +179,9 @@ async function loadMore(): Promise<void> {
   try {
     const page = await listLexemes({
       q: q.value, cefr: cefr.value || undefined,
-      availability: availability.value || undefined, limit: 50, cursor: nextCursor.value,
+      availability: availability.value || undefined,
+      packCode: packCode.value || undefined, language: language.value || undefined,
+      limit: 50, cursor: nextCursor.value,
     })
     rows.value = [...rows.value, ...page.rows]
     nextCursor.value = page.nextCursor
@@ -174,13 +195,14 @@ async function loadMore(): Promise<void> {
 
 function openCreate(): void {
   editing.value = null
-  form.value = { headword: '', cefr: 'A1', difficulty: 1, senses: [{ pos: 'NOUN', meaningCn: '' }] }
+  form.value = { headword: '', language: 'en-US', cefr: 'A1', difficulty: 1, senses: [{ pos: 'NOUN', meaningCn: '' }] }
   dialogVisible.value = true
 }
 
 function openEdit(row: LexemeRow): void {
   editing.value = row
   form.value = JSON.parse(JSON.stringify(row.fields)) as LexemeFields
+  if (!form.value.language) form.value.language = row.language || 'en-US'
   dialogVisible.value = true
 }
 
@@ -240,7 +262,7 @@ async function addPronunciation(): Promise<void> {
   pronBusy.value = true
   try {
     await upsertPronunciation(pronTarget.value, {
-      accent: pronForm.value.accent as 'US' | 'UK' | 'SLOW',
+      accent: pronForm.value.accent.trim() || 'US',
       ipa: pronForm.value.ipa.trim(),
       audioAssetId: pronForm.value.audioAssetId.trim(),
       sourceType: pronForm.value.sourceType as 'HUMAN' | 'TTS',
@@ -291,6 +313,13 @@ onMounted(() => { void load() })
         <el-select v-model="availability" placeholder="状态" clearable style="width: 150px">
           <el-option v-for="item in STATES" :key="item" :label="item || '全部'" :value="item" />
         </el-select>
+        <el-select v-model="packCode" placeholder="词包" clearable style="width: 200px">
+          <el-option label="全部词包" value="" />
+          <el-option v-for="pack in PACKS" :key="pack" :label="pack" :value="pack" />
+        </el-select>
+        <el-select v-model="language" placeholder="语言" clearable style="width: 130px">
+          <el-option v-for="lang in LANGUAGES" :key="lang" :label="lang || '全部'" :value="lang" />
+        </el-select>
         <el-button :disabled="!canRead" @click="load()">查询</el-button>
         <el-button @click="load()">刷新</el-button>
       </el-space>
@@ -302,6 +331,8 @@ onMounted(() => { void load() })
     <el-card shadow="never">
       <el-table v-if="rows.length" :data="rows" stripe>
         <el-table-column prop="headword" label="单词" min-width="140" />
+        <el-table-column prop="language" label="语言" width="90" />
+        <el-table-column prop="packCode" label="词包" min-width="150" />
         <el-table-column prop="cefr" label="CEFR" width="80" />
         <el-table-column label="音标 US/UK" min-width="160">
           <template #default="scope">{{ scope.row.fields.phoneticUS ?? '—' }} / {{ scope.row.fields.phoneticUK ?? '—' }}</template>
@@ -339,6 +370,13 @@ onMounted(() => { void load() })
         <el-form-item label="单词">
           <el-input v-model="form.headword" :disabled="!!editing" placeholder="如 habit" />
         </el-form-item>
+        <el-form-item label="语言">
+          <el-select v-model="form.language" placeholder="选择">
+            <el-option label="en-US（英语默认）" value="en-US" />
+            <el-option label="fr-FR（法语）" value="fr-FR" />
+            <el-option label="de-DE（德语）" value="de-DE" />
+          </el-select>
+        </el-form-item>
         <el-form-item label="CEFR">
           <el-select v-model="form.cefr" placeholder="选择">
             <el-option v-for="level in CEFRS.slice(1)" :key="level" :label="level" :value="level" />
@@ -354,7 +392,10 @@ onMounted(() => { void load() })
           <el-input v-model="form.phoneticUK" placeholder="如 ˈhæbɪt" />
         </el-form-item>
         <el-form-item label="中文释义">
-          <el-input v-model="meaningCnText" placeholder="如 习惯" />
+          <el-input v-model="meaningCnText" placeholder="如 习惯（历史兼容位）" />
+        </el-form-item>
+        <el-form-item label="本地释义">
+          <el-input v-model="meaningLocalText" placeholder="如 habitude（法语等非中文语种用此位）" />
         </el-form-item>
         <el-form-item label="标签(逗号分隔)">
           <el-input v-model="tagsText" placeholder="如 daily-life,exam" />
@@ -390,8 +431,8 @@ onMounted(() => { void load() })
       <el-empty v-else description="暂无发音，先登记" />
       <el-divider>登记发音（引用 media 资产 ID）</el-divider>
       <el-space wrap>
-        <el-select v-model="pronForm.accent" style="width: 110px">
-          <el-option label="美音" value="US" /><el-option label="英音" value="UK" /><el-option label="慢速" value="SLOW" />
+        <el-select v-model="pronForm.accent" filterable allow-create default-first-option style="width: 130px">
+          <el-option label="美音" value="US" /><el-option label="英音" value="UK" /><el-option label="慢速" value="SLOW" /><el-option label="法标" value="FR-PARIS" />
         </el-select>
         <el-input v-model="pronForm.ipa" placeholder="音标" style="width: 150px" />
         <el-input v-model="pronForm.audioAssetId" placeholder="音频资产 ID" style="width: 200px" />

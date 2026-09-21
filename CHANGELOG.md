@@ -1,5 +1,7 @@
 # Changelog
 
+- [TENANT-B4-01-20260921] **单租户直营 B4-01：单词语言缎带。** `lexeme.language` 一等字段（BCP-47，缺省 `en-US`，V19 加列/索引/默认值；包命名规范 `VOCAB-{LANG}-PHASE1`，新建包 locale 跟首词语言），`accent` 开锁为开放 tag（美英慢速保留约定值，V19 扩列+DROP CHECK），`senses.meaningLocal` 通用释义位（`meaningCn` 保留兼容，`phoneticUS/UK` 标 legacy）。契约仅扩展 schema/描述/可选查询参数（OpenAPI 路径零新增）。content-service 168 测试全绿（含新增语言默认/过滤/非法语言/开放口音端到端 6 项）、learner/learning/assessment 全绿，admin-web 类型与构建通过、单词页新增语言列+语言/词包筛选。契约门禁 21 条与网关 22 条均与改造前逐条一致、无新增。详见[单租户直营 B4-01](docs/06-design/v2-980plus/single-tenant-direct-operation/B4-01-language-ribbon.md)。未做真实运行验收，不改变 P1R 状态。
+
 - [TENANT-B3-360-20260921] **单租户直营 B3：学员 360° 与排期执行。** 画像/学习/测评三事实主新增租户管理读写端点（目标/偏好代管、SRS 重置、测评摘要只读），网关新增 6 条学员路由并翻转排期任务路由（三方一致、parity 4/4），包定时发布执行与灰度标签落库。网关门禁 19→22 条（仅计数/冻结类，7 个新投影零实现错误，重冻包见交付文档，不自行改门禁数字）。gateway 94、content 161、learner/learning/assessment 全绿，管理端新增 `/learners` 页。详见[单租户直营 B3](docs/06-design/v2-980plus/single-tenant-direct-operation/B3-learner-360.md)。未做真实运行验收，不改变 P1R 状态。
 
 - [TENANT-B2-ITEMS-20260921] **单租户直营 B2：行级条目与内容生产。** 新增题目/例句/语法点/段落行级主数据（双审、幂等、409、发布 Outbox），批量导入支持单词/条目 JSONL（已存在跳过）并补上诚实的幂等声明（门禁 22→21 条），定时排期任务（创建/取消/到期执行+版本 pin 复核，PACK 执行递延），单词发布快照与草稿对比，管理端新增 `/items` 页与排期面板、发音行内试听（短时 URL+0.5x–2.0x+波形）。content-service 161 测试全绿、admin-web 类型与构建通过；网关 19 条无新增。详见[单租户直营 B2](docs/06-design/v2-980plus/single-tenant-direct-operation/B2-content-production.md)。未做真实运行验收，不改变 P1R 状态。

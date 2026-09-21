@@ -33,13 +33,15 @@ public final class InMemoryLexemeRepository implements LexemeRepository {
 
     @Override
     public List<Lexeme> search(String packCode, String query, String cefr, LexemeAvailability availability,
-            int limit, String afterLexemeId) {
+            String language, int limit, String afterLexemeId) {
         String needle = query == null ? "" : query.trim().toLowerCase();
+        String ribbon = language == null ? "" : language.trim();
         return lexemes.values().stream()
                 .filter(lexeme -> lexeme.packCode().equals(packCode))
                 .filter(lexeme -> needle.isEmpty() || lexeme.headword().toLowerCase().contains(needle))
                 .filter(lexeme -> cefr == null || cefr.equalsIgnoreCase(lexeme.cefr()))
                 .filter(lexeme -> availability == null || lexeme.availability() == availability)
+                .filter(lexeme -> ribbon.isEmpty() || lexeme.language().equalsIgnoreCase(ribbon))
                 .sorted(Comparator.comparing(Lexeme::headword, String.CASE_INSENSITIVE_ORDER)
                         .thenComparing(Lexeme::lexemeId))
                 .filter(lexeme -> afterLexemeId == null || afterLexemeId.isBlank()

@@ -28,7 +28,12 @@ public record LexemePronunciation(
         Instant createdAt) {
 
     private static final Pattern SAFE_ID = Pattern.compile("[A-Za-z0-9][A-Za-z0-9._:-]{0,127}");
-    private static final Set<String> ACCENTS = Set.of("US", "UK", "SLOW");
+    /**
+     * B4 language ribbon: accent is an open BCP-47-style tag (uppercase-normalized
+     * by the command service). US/UK/SLOW remain the conventional English values;
+     * other languages register their own tags such as FR-PARIS.
+     */
+    private static final Pattern ACCENT = Pattern.compile("[A-Za-z0-9][A-Za-z0-9._-]{0,15}");
     private static final Set<String> SOURCES = Set.of("HUMAN", "TTS");
     private static final Set<String> QC = Set.of("PENDING", "READY", "CLEAN", "FAILED");
 
@@ -36,8 +41,9 @@ public record LexemePronunciation(
         requireId(pronunciationId, "pronunciationId");
         requireId(lexemeId, "lexemeId");
         requireId(tenantId, "tenantId");
-        if (!ACCENTS.contains(accent)) {
-            throw ContentOperationException.badRequest("LEXEME_PRONUNCIATION_INVALID", "accent must be US, UK or SLOW");
+        if (accent == null || !ACCENT.matcher(accent).matches()) {
+            throw ContentOperationException.badRequest("LEXEME_PRONUNCIATION_INVALID",
+                    "accent must be a 1..16 character tag such as US, UK, SLOW or FR-PARIS");
         }
         if (ipa == null || ipa.isBlank() || ipa.length() > 128) {
             throw ContentOperationException.badRequest("LEXEME_PRONUNCIATION_INVALID", "ipa must be 1..128 characters");

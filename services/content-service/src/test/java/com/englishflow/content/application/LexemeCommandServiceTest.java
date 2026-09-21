@@ -130,17 +130,17 @@ class LexemeCommandServiceTest {
                 commands.upsert(PACK, fields(), "lx_fixed_001", editor(), replayKey, REQUEST);
         assertEquals(first.lexemeId(), replayed.lexemeId());
         LexemeAvailability anyStatus = null;
-        assertEquals(1, lexemes.search(PACK, "habit", (String) null, anyStatus, 100, (String) null).size());
+        assertEquals(1, lexemes.search(PACK, "habit", (String) null, anyStatus, (String) null, 100, (String) null).size());
     }
 
     @Test
     void searchFiltersByHeadwordAndCefr() {
         commands.upsert(PACK, fields(), null, editor(), key(), REQUEST);
         LexemeAvailability anyStatus = null;
-        assertEquals(1, lexemes.search(PACK, "hab", (String) null, anyStatus, 100, (String) null).size());
-        assertEquals(1, lexemes.search(PACK, (String) null, "A2", anyStatus, 100, (String) null).size());
-        assertEquals(0, lexemes.search(PACK, (String) null, "C2", anyStatus, 100, (String) null).size());
-        assertEquals(0, lexemes.search(PACK, "unknown-word", (String) null, anyStatus, 100, (String) null).size());
+        assertEquals(1, lexemes.search(PACK, "hab", (String) null, anyStatus, (String) null, 100, (String) null).size());
+        assertEquals(1, lexemes.search(PACK, (String) null, "A2", anyStatus, (String) null, 100, (String) null).size());
+        assertEquals(0, lexemes.search(PACK, (String) null, "C2", anyStatus, (String) null, 100, (String) null).size());
+        assertEquals(0, lexemes.search(PACK, "unknown-word", (String) null, anyStatus, (String) null, 100, (String) null).size());
     }
 
     @Test
@@ -166,5 +166,81 @@ class LexemeCommandServiceTest {
         assertThrows(ContentOperationException.class, () -> commands.upsert(
                 PACK, Map.of("headword", "habit", "senses", List.of(Map.of("pos", "NOUN"))),
                 null, editor(), key(), REQUEST));
+    }
+
+    @Test
+    void legacyUpsertWithoutLanguageDefaultsToEnUs() {
+        LexemeCommandService.LexemeResult created =
+                commands.upsert(PACK, fields(), null, editor(), key(), REQUEST);
+        assertEquals("en-US", commands.current(PACK, created.lexemeId(), editor()).language());
+    }
+
+    @Test
+    void frenchUpsertKeepsRibbonAndFiltersSearch() {
+        LexemeCommandService.LexemeResult bonjour = commands.upsert("VOCAB-FR-PHASE1",
+                frenchFields("bonjour", "bonjour (salut)"), null, editor(), key(), REQUEST);
+        assertEquals("fr-FR", commands.current("VOCAB-FR-PHASE1", bonjour.lexemeId(), editor()).language());
+        LexemeAvailability anyStatus = null;
+        assertEquals(1, lexemes.search("VOCAB-FR-PHASE1", (String) null, (String) null,
+                anyStatus, "fr-FR", 100, (String) null).size());
+        assertEquals(0, lexemes.search("VOCAB-FR-PHASE1", (String) null, (String) null,
+                anyStatus, "en-US", 100, (String) null).size());
+        assertEquals(1, lexemes.search("VOCAB-FR-PHASE1", (String) null, (String) null,
+                anyStatus, (String) null, 100, (String) null).size());
+    }
+
+    @Test
+    void invalidLanguageIsRejected() {
+        assertThrows(ContentOperationException.class, () -> commands.upsert(
+                PACK, withLanguage(fields(), "not-a-language!!"), null, editor(), key(), REQUEST));
+        assertThrows(ContentOperationException.class, () -> commands.upsert(
+                PACK, withLanguage(fields(), "e"), null, editor(), key(), REQUEST));
+    }
+
+    @Test
+    void senseWithOnlyMeaningLocalIsAccepted() {
+        commands.upsert(PACK, frenchFields("habit", "habitude"), null, editor(), key(), REQUEST);
+    }
+
+    @Test
+    void openAccentValueFlowsEndToEnd() {
+        LexemeCommandService.LexemeResult created = commands.upsert("VOCAB-FR-PHASE1",
+                frenchFields("merci", "merci (remerciement)"), null, editor(), key(), REQUEST);
+        LexemePronunciation pronunciation = commands.upsertPronunciation("VOCAB-FR-PHASE1", created.lexemeId(),
+                Map.of("accent", "FR-PARIS", "ipa", "mɛʁsi", "audioAssetId", "media-fr-0001",
+                        "sourceType", "TTS"),
+                editor(), key(), REQUEST);
+        assertEquals("FR-PARIS", pronunciation.accent());
+        List<LexemePronunciation> rows = commands.pronunciations("VOCAB-FR-PHASE1", created.lexemeId(), editor());
+        assertEquals(1, rows.size());
+        assertEquals("FR-PARIS", rows.get(0).accent());
+    }
+
+    @Test
+    void invalidAccentIsRejected() {
+        LexemeCommandService.LexemeResult created =
+                commands.upsert(PACK, fields(), null, editor(), key(), REQUEST);
+        assertThrows(ContentOperationException.class, () -> commands.upsertPronunciation(
+                PACK, created.lexemeId(),
+                Map.of("accent", "bad accent!!", "ipa", "x", "audioAssetId", "media-asset-1",
+                        "sourceType", "HUMAN"),
+                editor(), key(), REQUEST));
+    }
+
+    private static Map<String, Object> withLanguage(Map<String, Object> fields, String language) {
+        java.util.Map<String, Object> copy = new java.util.HashMap<>(fields);
+        copy.put("language", language);
+        return Map.copyOf(copy);
+    }
+
+    private static Map<String, Object> frenchFields(String headword, String gloss) {
+        return Map.of(
+                "headword", headword,
+                "language", "fr-FR",
+                "lemma", headword,
+                "pos", List.of("NOUN"),
+                "cefr", "A1",
+                "senses", List.of(Map.of("pos", "NOUN", "meaningLocal", gloss)),
+                "tags", List.of("fr-phase1"));
     }
 }
