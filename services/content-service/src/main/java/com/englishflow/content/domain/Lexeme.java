@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
@@ -315,6 +316,17 @@ public final class Lexeme {
     /** Structural validation for the extensible fields map. Unknown keys are allowed (forward extensibility). */
     @SuppressWarnings("unchecked")
     public static Map<String, Object> validatedFields(Map<String, Object> raw) {
+        return validatedFields(raw, null);
+    }
+
+    /**
+     * Structural validation with the B4 morphology ribbon. {@code language} is the
+     * already-normalized BCP-47 ribbon (null/blank skips language-conditional rules).
+     * French rows additionally require gender+number on nouns and a conjugation
+     * class on verbs; every other language keeps its historical shape.
+     */
+    @SuppressWarnings("unchecked")
+    public static Map<String, Object> validatedFields(Map<String, Object> raw, String language) {
         Objects.requireNonNull(raw, "lexeme fields are required");
         Object senses = raw.get("senses");
         if (senses != null) {
@@ -333,7 +345,34 @@ public final class Lexeme {
                     throw ContentOperationException.badRequest("LEXEME_FIELD_INVALID",
                             "each sense requires meaningCn or meaningLocal of 1..512 characters");
                 }
+                Object sensePos = senseMap.get("pos");
+                if (sensePos != null && !isPos(String.valueOf(sensePos))) {
+                    throw ContentOperationException.badRequest("LEXEME_FIELD_INVALID",
+                            "sense pos is outside the controlled vocabulary");
+                }
             }
+        }
+        Object pos = raw.get("pos");
+        if (pos != null) {
+            if (!(pos instanceof List<?> posList) || posList.size() > 5) {
+                throw ContentOperationException.badRequest("LEXEME_FIELD_INVALID", "pos must contain at most 5 entries");
+            }
+            for (Object entry : posList) {
+                if (!isPos(String.valueOf(entry))) {
+                    throw ContentOperationException.badRequest("LEXEME_FIELD_INVALID",
+                            "pos is outside the controlled vocabulary");
+                }
+            }
+        }
+        validateMorphologyOption(raw.get("gender"), "gender", GENDERS);
+        validateMorphologyOption(raw.get("number"), "number", NUMBERS);
+        validateMorphologyOption(raw.get("grammaticalCase"), "grammaticalCase", CASES);
+        Object conjugation = raw.get("conjugation");
+        if (conjugation != null && !(conjugation instanceof Map<?, ?>)) {
+            throw ContentOperationException.badRequest("LEXEME_FIELD_INVALID", "conjugation must be an object");
+        }
+        if (language != null && (language.equalsIgnoreCase("fr-FR") || language.equalsIgnoreCase("fr"))) {
+            requireFrenchMorphology(raw, pos, conjugation);
         }
         Object difficulty = raw.get("difficulty");
         if (difficulty != null) {
@@ -350,10 +389,78 @@ public final class Lexeme {
             }
         }
         Object tags = raw.get("tags");
-        if (tags != null && (!(tags instanceof List<?> tagList) || tagList.size() > 20)) {
-            throw ContentOperationException.badRequest("LEXEME_FIELD_INVALID", "tags must contain at most 20 entries");
+        if (tags != null) {
+            if (!(tags instanceof List<?> tagList) || tagList.size() > 20) {
+                throw ContentOperationException.badRequest("LEXEME_FIELD_INVALID", "tags must contain at most 20 entries");
+            }
+            for (Object tag : tagList) {
+                if (!(tag instanceof String text) || text.isBlank() || text.length() > 64) {
+                    throw ContentOperationException.badRequest("LEXEME_FIELD_INVALID",
+                            "tags must be 1..64 characters; language-scoped tags use the B4 taxonomy (fr:/de: prefix)");
+                }
+            }
         }
         return Map.copyOf(raw);
+    }
+
+    /**
+     * Controlled part-of-speech vocabulary (B4): the nine historical values plus
+     * the converged long forms. Historical abbreviations stay accepted; PREFIX and
+     * SUFFIX stay accepted at sense level per the contract.
+     */
+    private static final Set<String> POS = Set.of(
+            "NOUN", "VERB", "ADJ", "ADV", "PRON", "PREP", "CONJ", "INTERJ", "PHRASE",
+            "PREFIX", "SUFFIX",
+            "ARTICLE", "PRONOUN", "DETERMINER", "PREPOSITION", "CONJUNCTION",
+            "INTERJECTION", "NUMERAL", "PARTICLE");
+    private static final Set<String> GENDERS = Set.of("MASCULINE", "FEMININE", "NEUTER");
+    private static final Set<String> NUMBERS = Set.of("SINGULAR", "PLURAL");
+    private static final Set<String> CASES = Set.of(
+            "NOMINATIVE", "ACCUSATIVE", "DATIVE", "GENITIVE", "INSTRUMENTAL", "PREPOSITIONAL");
+
+    private static boolean isPos(String value) {
+        return value != null && POS.contains(value.trim().toUpperCase());
+    }
+
+    private static void validateMorphologyOption(Object value, String field, Set<String> allowed) {
+        if (value == null) {
+            return;
+        }
+        if (!(value instanceof String text) || !allowed.contains(text.trim().toUpperCase())) {
+            throw ContentOperationException.badRequest("LEXEME_FIELD_INVALID",
+                    field + " is outside the controlled morphology vocabulary");
+        }
+    }
+
+    /** French nouns file gender+number; French verbs file a conjugation class. */
+    @SuppressWarnings("unchecked")
+    private static void requireFrenchMorphology(Map<String, Object> raw, Object pos, Object conjugation) {
+        boolean noun = containsPos(pos, "NOUN");
+        boolean verb = containsPos(pos, "VERB");
+        if (noun) {
+            if (raw.get("gender") == null || raw.get("number") == null) {
+                throw ContentOperationException.badRequest("LEXEME_FIELD_INVALID",
+                        "French nouns require gender and number");
+            }
+        }
+        if (verb) {
+            if (!(conjugation instanceof Map<?, ?> conjugationMap) || conjugationMap.get("verbGroup") == null
+                    || String.valueOf(conjugationMap.get("verbGroup")).isBlank()) {
+                throw ContentOperationException.badRequest("LEXEME_FIELD_INVALID",
+                        "French verbs require conjugation.verbGroup");
+            }
+        }
+    }
+
+    private static boolean containsPos(Object pos, String wanted) {
+        if (pos instanceof List<?> posList) {
+            for (Object entry : posList) {
+                if (wanted.equalsIgnoreCase(String.valueOf(entry))) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private static boolean isGloss(Object value) {

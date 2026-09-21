@@ -69,10 +69,10 @@ public final class LexemeCommandService {
             ContentRequestContext context) {
         requireEditor(actor);
         Objects.requireNonNull(packCode, "packCode is required");
-        Map<String, Object> validated = Lexeme.validatedFields(fields == null ? Map.of() : fields);
-        String headword = headwordOf(validated);
         // B4 language ribbon: blank/omitted input inherits en-US so pre-B4 payloads keep working.
-        String language = Lexeme.requireLanguage(text(validated.get("language")));
+        String language = Lexeme.requireLanguage(text(fields == null ? null : fields.get("language")));
+        Map<String, Object> validated = Lexeme.validatedFields(fields == null ? Map.of() : fields, language);
+        String headword = headwordOf(validated);
         return idempotency.execute(
                 scope(actor, "lexeme.upsert"), key, fingerprint(packCode, headword, language, validated),
                 () -> {

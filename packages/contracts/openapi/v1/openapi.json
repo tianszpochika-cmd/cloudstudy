@@ -77539,8 +77539,17 @@
               "INTERJ",
               "PHRASE",
               "PREFIX",
-              "SUFFIX"
-            ]
+              "SUFFIX",
+              "ARTICLE",
+              "PRONOUN",
+              "DETERMINER",
+              "PREPOSITION",
+              "CONJUNCTION",
+              "INTERJECTION",
+              "NUMERAL",
+              "PARTICLE"
+            ],
+            "description": "Sense-level part of speech; B4 long forms accepted alongside historical abbreviations."
           },
           "meaningCn": {
             "type": "string",
@@ -77773,8 +77782,17 @@
                 "PREP",
                 "CONJ",
                 "INTERJ",
-                "PHRASE"
-              ]
+                "PHRASE",
+                "ARTICLE",
+                "PRONOUN",
+                "DETERMINER",
+                "PREPOSITION",
+                "CONJUNCTION",
+                "INTERJECTION",
+                "NUMERAL",
+                "PARTICLE"
+              ],
+              "description": "Word-level part of speech. PRON/PREP/CONJ/INTERJ are the historical abbreviations (retained for compatibility); PRONOUN/PREPOSITION/CONJUNCTION/INTERJECTION are the converged long forms (B4)."
             },
             "maxItems": 5
           },
@@ -77874,6 +77892,50 @@
                 "maxLength": 64
               }
             }
+          },
+          "gender": {
+            "type": "string",
+            "enum": [
+              "MASCULINE",
+              "FEMININE",
+              "NEUTER"
+            ],
+            "description": "Grammatical gender (B4 morphology ribbon). Required for fr-* NOUN rows; French uses MASCULINE/FEMININE."
+          },
+          "number": {
+            "type": "string",
+            "enum": [
+              "SINGULAR",
+              "PLURAL"
+            ],
+            "description": "Grammatical number (B4 morphology ribbon). Required for fr-* NOUN rows (citation SINGULAR unless the lemma is plural-only)."
+          },
+          "grammaticalCase": {
+            "type": "string",
+            "enum": [
+              "NOMINATIVE",
+              "ACCUSATIVE",
+              "DATIVE",
+              "GENITIVE",
+              "INSTRUMENTAL",
+              "PREPOSITIONAL"
+            ],
+            "description": "Grammatical case (B4 morphology ribbon). French rows omit it; German nouns carry it when declined."
+          },
+          "conjugation": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "verbGroup": {
+                "type": "string",
+                "maxLength": 32,
+                "description": "Conjugation class, e.g. FR-ER, FR-IR, FR-RE, FR-IRREGULAR."
+              },
+              "irregular": {
+                "type": "boolean"
+              }
+            },
+            "description": "Verb conjugation class (B4 morphology ribbon). Required for fr-* VERB rows."
           },
           "mnemonics": {
             "type": "object",
@@ -78010,6 +78072,39 @@
           },
           "morphology": {
             "type": "object"
+          },
+          "gender": {
+            "type": "string",
+            "enum": [
+              "MASCULINE",
+              "FEMININE",
+              "NEUTER"
+            ],
+            "description": "Grammatical gender (B4 morphology ribbon)."
+          },
+          "number": {
+            "type": "string",
+            "enum": [
+              "SINGULAR",
+              "PLURAL"
+            ],
+            "description": "Grammatical number (B4 morphology ribbon)."
+          },
+          "grammaticalCase": {
+            "type": "string",
+            "enum": [
+              "NOMINATIVE",
+              "ACCUSATIVE",
+              "DATIVE",
+              "GENITIVE",
+              "INSTRUMENTAL",
+              "PREPOSITIONAL"
+            ],
+            "description": "Grammatical case (B4 morphology ribbon)."
+          },
+          "conjugation": {
+            "type": "object",
+            "description": "Verb conjugation class (B4 morphology ribbon: verbGroup, irregular)."
           },
           "mnemonics": {
             "type": "object"

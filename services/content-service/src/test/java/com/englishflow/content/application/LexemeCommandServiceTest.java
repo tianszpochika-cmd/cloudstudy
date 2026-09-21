@@ -239,6 +239,8 @@ class LexemeCommandServiceTest {
                 "language", "fr-FR",
                 "lemma", headword,
                 "pos", List.of("NOUN"),
+                "gender", "MASCULINE",
+                "number", "SINGULAR",
                 "cefr", "A1",
                 "senses", List.of(Map.of("pos", "NOUN", "meaningLocal", gloss)),
                 "tags", List.of("fr-phase1"));

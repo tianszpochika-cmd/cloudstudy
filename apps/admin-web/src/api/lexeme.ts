@@ -31,6 +31,14 @@ export interface LexemeFields {
   language?: string
   lemma?: string
   pos?: string[]
+  /** B4 morphology ribbon: MASCULINE/FEMININE/NEUTER (fr-* nouns required). */
+  gender?: string
+  /** B4 morphology ribbon: SINGULAR/PLURAL (fr-* nouns required). */
+  number?: string
+  /** B4 morphology ribbon: six-case enum (French rows omit). */
+  grammaticalCase?: string
+  /** B4 morphology ribbon: verb conjugation class (fr-* verbs require verbGroup). */
+  conjugation?: { verbGroup?: string; irregular?: boolean }
   cefr?: string
   difficulty?: number
   syllables?: string[]

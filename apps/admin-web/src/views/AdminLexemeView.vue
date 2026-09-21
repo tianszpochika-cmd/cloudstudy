@@ -106,6 +106,10 @@ const CEFRS = ['', 'A1', 'A2', 'B1', 'B2', 'C1', 'C2']
 const STATES = ['', 'DRAFT', 'IN_REVIEW', 'APPROVED', 'PUBLISHED', 'ARCHIVED']
 const LANGUAGES = ['', 'en-US', 'fr-FR', 'de-DE']
 const PACKS = ['VOCAB-PHASE1', 'VOCAB-FR-PHASE1', 'VOCAB-DE-PHASE1']
+const POS_OPTIONS = ['NOUN', 'VERB', 'ADJ', 'ADV', 'PRON', 'PREP', 'CONJ', 'INTERJ', 'PHRASE', 'ARTICLE', 'PRONOUN', 'DETERMINER', 'PREPOSITION', 'CONJUNCTION', 'INTERJECTION', 'NUMERAL', 'PARTICLE']
+const GENDERS = ['', 'MASCULINE', 'FEMININE', 'NEUTER']
+const NUMBERS = ['', 'SINGULAR', 'PLURAL']
+const CASES = ['', 'NOMINATIVE', 'ACCUSATIVE', 'DATIVE', 'GENITIVE', 'INSTRUMENTAL', 'PREPOSITIONAL']
 
 const tagsText = computed({
   get: () => (form.value.tags ?? []).join(','),
@@ -139,6 +143,17 @@ const meaningLocalText = computed({
     first.meaningLocal = value
     senses[0] = first
     form.value.senses = senses
+  },
+})
+
+const verbGroupText = computed({
+  get: () => form.value.conjugation?.verbGroup ?? '',
+  set: (value: string) => {
+    if (!value.trim() && !form.value.conjugation?.irregular) {
+      form.value.conjugation = undefined
+      return
+    }
+    form.value.conjugation = { ...form.value.conjugation, verbGroup: value }
   },
 })
 
@@ -195,7 +210,7 @@ async function loadMore(): Promise<void> {
 
 function openCreate(): void {
   editing.value = null
-  form.value = { headword: '', language: 'en-US', cefr: 'A1', difficulty: 1, senses: [{ pos: 'NOUN', meaningCn: '' }] }
+  form.value = { headword: '', language: 'en-US', pos: ['NOUN'], cefr: 'A1', difficulty: 1, senses: [{ pos: 'NOUN', meaningCn: '' }] }
   dialogVisible.value = true
 }
 
@@ -210,7 +225,16 @@ async function save(): Promise<void> {
   if (!form.value.headword?.trim()) { ElMessage.error('请填写单词。'); return }
   formBusy.value = true
   try {
-    await upsertLexeme(form.value, editing.value?.lexemeId)
+    // B4 morphology: cleared selects submit '' — drop them so the server sees
+    // omitted (optional) rather than an illegal empty value.
+    const payload: LexemeFields = { ...form.value }
+    for (const key of ['gender', 'number', 'grammaticalCase'] as const) {
+      if (payload[key] === '') delete payload[key]
+    }
+    if (payload.conjugation && !payload.conjugation.verbGroup?.trim() && !payload.conjugation.irregular) {
+      delete payload.conjugation
+    }
+    await upsertLexeme(payload, editing.value?.lexemeId)
     ElMessage.success('单词已保存为草稿。')
     dialogVisible.value = false
     await load()
@@ -379,6 +403,27 @@ onMounted(() => { void load() })
             <el-option label="fr-FR（法语）" value="fr-FR" />
             <el-option label="de-DE（德语）" value="de-DE" />
           </el-select>
+        </el-form-item>
+        <el-form-item label="词性">
+          <el-select v-model="form.pos" multiple placeholder="选择（B4 含长式）" style="width: 100%">
+            <el-option v-for="pos in POS_OPTIONS" :key="pos" :label="pos" :value="pos" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="性/数/格">
+          <el-space wrap>
+            <el-select v-model="form.gender" placeholder="性" clearable style="width: 130px">
+              <el-option v-for="item in GENDERS" :key="item" :label="item || '—'" :value="item" />
+            </el-select>
+            <el-select v-model="form.number" placeholder="数" clearable style="width: 130px">
+              <el-option v-for="item in NUMBERS" :key="item" :label="item || '—'" :value="item" />
+            </el-select>
+            <el-select v-model="form.grammaticalCase" placeholder="格" clearable style="width: 150px">
+              <el-option v-for="item in CASES" :key="item" :label="item || '—'" :value="item" />
+            </el-select>
+          </el-space>
+        </el-form-item>
+        <el-form-item label="变位组">
+          <el-input v-model="verbGroupText" placeholder="如 FR-ER（法语动词必填）" />
         </el-form-item>
         <el-form-item label="CEFR">
           <el-select v-model="form.cefr" placeholder="选择">

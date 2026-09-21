@@ -1,5 +1,7 @@
 # Changelog
 
+- [TENANT-B4-04-20260921] **单租户直营 B4-04：词汇类别扩展机制。** 词性契约枚举加 8 个收敛长式（历史缩写保留），`Lexeme` 加受控词性/形态校验（法语名词要性数、动词要变位组，英语链零影响），tags 形状收紧；新增 `B4/tags-taxonomy.md`（语言前缀铁律）与 `B4/lexeme-fields-spec.md`（fields 规范）；单词页支持词性多选与性/数/格/变位组输入。content-service 186 测试全绿（含 12 名词+10 动词完整建档与三类负例）、其余三服务全绿，admin-web 类型与构建通过；门禁结论一致、无新增。详见[单租户直营 B4-04](docs/06-design/v2-980plus/single-tenant-direct-operation/B4-04-pos-morphology.md)。未做真实运行验收，不改变 P1R 状态。
+
 - [TENANT-B4-03-20260921] **单租户直营 B4-03：目标类型收敛。** `GoalType` 新增 `LANGUAGE_CERT`（考试名/语种走目标 fields，`CET_4_6` 标历史兼容零行为改动），配套 learner-admin 契约枚举/可选字段/策略、V11 `fields_json` 列与 `goal_type` 五值 CHECK、JDBC 读写与 360° 代管透传；学员自有目标通道保持历史四码。learner-service 59 测试全绿（含 CERT 建档/三类负例/新旧互操作）、其余三服务全绿，admin-web 类型与构建通过、360 页目标下拉同步。门禁结论与 B4-02 一致、无新增。详见[单租户直营 B4-03](docs/06-design/v2-980plus/single-tenant-direct-operation/B4-03-goal-convergence.md)。未做真实运行验收，不改变 P1R 状态。
 
 - [TENANT-B4-02-20260921] **单租户直营 B4-02：音标库分语言。** `b3_content_experience` 以 `PHONETICS-FR` 域新增 37 个法语音素（鼻化元音/半元音全覆盖）+ 4 组最小对立对（V20，英语 48 项不动），B3 控制器 `phonetics/minimal-pairs` 加可选 `language` 参数（缺省英语兼容，非法 400），管理端新增只读 `/phonetics` 音标页（英/法切换，走既有 learner 通道，网关零新增）。content-service 180 测试全绿（含新增域映射 12/12）、其余三服务全绿，admin-web 类型与构建通过；契约合并零漂移，门禁结论与 B4-01 一致、无新增。详见[单租户直营 B4-02](docs/06-design/v2-980plus/single-tenant-direct-operation/B4-02-phonetics-language.md)。未做真实运行验收，不改变 P1R 状态。
