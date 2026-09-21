@@ -1,5 +1,7 @@
 # Changelog
 
+- [TENANT-B4-07-20260921] **单租户直营 B4-07：法语种子包 + 德语管线。** 新增 `VOCAB-FR-PHASE1` 50 法语种子词（性数/变位/双语释义/例句/音标/发音占位资产全齐）与 `VOCAB-DE-PHASE1` 5 德语词（全形态建档），JSONL 可直接投喂批量导入；单测逐词跑通建→审→发→发音质检全链路（含自审/未批发布负例），断言语言过滤、出盒 50 条发布事实与包 locale。content-service 191 测试全绿、其余三服务全绿；无契约/网关变更，门禁结论一致。详见[单租户直营 B4-07](docs/06-design/v2-980plus/single-tenant-direct-operation/B4-07-seed-packs.md)。未做真实运行验收，不改变 P1R 状态。
+
 - [TENANT-B4-06-20260921] **单租户直营 B4-06：学习任务类型扩展。** `LearningTaskType` 新增听写/跟读两任务，`srsEligible` 改为 `SRS_ELIGIBLE` 配置集（含 `SENTENCE`，法语句子可进 SRS；历史三类逐项不断言不变），无 DB 迁移、无契约变更（内部域枚举，合并零漂移），计划 UI 与管理端泛型展示零改动。learning-service 146 测试全绿（含新任务建计划与句子进 SRS 用例）、其余三服务全绿；门禁结论一致、无新增。详见[单租户直营 B4-06](docs/06-design/v2-980plus/single-tenant-direct-operation/B4-06-learning-tasks.md)。未做真实运行验收，不改变 P1R 状态。
 
 - [TENANT-B4-05-20260921] **单租户直营 B4-05：句子/题目种类扩展。** 新增 `DICTATION`（听写）/`SHADOWING`（跟读）种类三件套（契约三枚举、`ContentItem.KINDS`+`dc_/sh_`前缀+投影映射、V21 七值 CHECK 重发），`QuestionType` 按需加值（听写走文本规则判分、跟读进人工复核），条目页类型下拉同步。content-service 188、assessment 60 测试全绿（含两新种全生命周期与判分用例），learner/learning 全绿，admin-web 类型与构建通过；门禁结论一致、无新增。详见[单租户直营 B4-05](docs/06-design/v2-980plus/single-tenant-direct-operation/B4-05-item-kinds.md)。未做真实运行验收，不改变 P1R 状态。
