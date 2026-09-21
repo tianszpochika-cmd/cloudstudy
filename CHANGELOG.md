@@ -1,5 +1,7 @@
 # Changelog
 
+- [TENANT-B4-06-20260921] **单租户直营 B4-06：学习任务类型扩展。** `LearningTaskType` 新增听写/跟读两任务，`srsEligible` 改为 `SRS_ELIGIBLE` 配置集（含 `SENTENCE`，法语句子可进 SRS；历史三类逐项不断言不变），无 DB 迁移、无契约变更（内部域枚举，合并零漂移），计划 UI 与管理端泛型展示零改动。learning-service 146 测试全绿（含新任务建计划与句子进 SRS 用例）、其余三服务全绿；门禁结论一致、无新增。详见[单租户直营 B4-06](docs/06-design/v2-980plus/single-tenant-direct-operation/B4-06-learning-tasks.md)。未做真实运行验收，不改变 P1R 状态。
+
 - [TENANT-B4-05-20260921] **单租户直营 B4-05：句子/题目种类扩展。** 新增 `DICTATION`（听写）/`SHADOWING`（跟读）种类三件套（契约三枚举、`ContentItem.KINDS`+`dc_/sh_`前缀+投影映射、V21 七值 CHECK 重发），`QuestionType` 按需加值（听写走文本规则判分、跟读进人工复核），条目页类型下拉同步。content-service 188、assessment 60 测试全绿（含两新种全生命周期与判分用例），learner/learning 全绿，admin-web 类型与构建通过；门禁结论一致、无新增。详见[单租户直营 B4-05](docs/06-design/v2-980plus/single-tenant-direct-operation/B4-05-item-kinds.md)。未做真实运行验收，不改变 P1R 状态。
 
 - [TENANT-B4-04-20260921] **单租户直营 B4-04：词汇类别扩展机制。** 词性契约枚举加 8 个收敛长式（历史缩写保留），`Lexeme` 加受控词性/形态校验（法语名词要性数、动词要变位组，英语链零影响），tags 形状收紧；新增 `B4/tags-taxonomy.md`（语言前缀铁律）与 `B4/lexeme-fields-spec.md`（fields 规范）；单词页支持词性多选与性/数/格/变位组输入。content-service 186 测试全绿（含 12 名词+10 动词完整建档与三类负例）、其余三服务全绿，admin-web 类型与构建通过；门禁结论一致、无新增。详见[单租户直营 B4-04](docs/06-design/v2-980plus/single-tenant-direct-operation/B4-04-pos-morphology.md)。未做真实运行验收，不改变 P1R 状态。
