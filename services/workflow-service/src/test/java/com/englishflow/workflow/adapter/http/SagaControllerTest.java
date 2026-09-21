@@ -120,7 +120,9 @@ class SagaControllerTest {
 
     private static SagaController controller(MinimalStore store, List<String> ran) {
         return new SagaController(new SagaService(store, new com.englishflow.workflow.application.SagaCompensationExecutor(store)),
-                ran::add);
+                ran::add, (compensationName) -> {
+                    throw new IllegalStateException("no compensation transport for '" + compensationName + "'");
+                });
     }
 
     @Test

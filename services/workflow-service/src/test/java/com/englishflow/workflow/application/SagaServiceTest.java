@@ -91,8 +91,7 @@ class SagaServiceTest {
     }
 
     @Test
-    void compensatingASagaThatIsNotAwaitingCompensationIsRefused() {
-        SagaService.SagaView completed = service.start("enrolment", "corr-5", List.of(
+    void compensatingASagaThatIsNotAwaitingCompensationIsRefused() {        SagaService.SagaView completed = service.start("enrolment", "corr-5", List.of(
                 new SagaService.Step("reserve-seat", "release-seat", () -> { })));
 
         IllegalStateException refusal = assertThrows(IllegalStateException.class,
@@ -119,6 +118,24 @@ class SagaServiceTest {
         // with no work to do.
         assertEquals(SagaStatus.COMPENSATED,
                 SagaService.statusAfterFailure(List.of(), Map.of("charge-card", "refund-card")));
+    }
+
+    @Test
+    void aFailingCompensationLeavesTheSagaFailedInsteadOfFakeSuccess() {
+        SagaService.SagaView started = service.start("enrolment", "corr-7", List.of(
+                new SagaService.Step("reserve-seat", "release-seat", () -> { }),
+                new SagaService.Step("charge-card", "refund-card", () -> {
+                    throw new IllegalStateException("card declined");
+                })));
+        assertEquals(SagaStatus.COMPENSATING.name(), started.status());
+
+        // The transport refuses: no owner was called, so the saga must surface
+        // COMPENSATION_FAILED for an operator rather than mis-record APPLIED.
+        SagaService.SagaView finished = service.compensate(started.sagaId(), (name) -> {
+            throw new IllegalStateException("no compensation transport for '" + name + "'");
+        });
+
+        assertEquals(SagaStatus.COMPENSATION_FAILED.name(), finished.status());
     }
 
     /** A store that records the order of every write, which is what the ordering test asserts. */

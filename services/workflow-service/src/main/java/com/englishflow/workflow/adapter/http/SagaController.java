@@ -1,5 +1,6 @@
 package com.englishflow.workflow.adapter.http;
 
+import com.englishflow.workflow.application.CompensationTransport;
 import com.englishflow.workflow.application.SagaService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,10 +27,13 @@ public class SagaController {
 
     private final SagaService service;
     private final SagaCompensationExecutorAdapter compensation;
+    private final CompensationTransport compensationTransport;
 
-    public SagaController(SagaService service, SagaCompensationExecutorAdapter compensation) {
+    public SagaController(SagaService service, SagaCompensationExecutorAdapter compensation,
+            CompensationTransport compensationTransport) {
         this.service = service;
         this.compensation = compensation;
+        this.compensationTransport = compensationTransport;
     }
 
     /** Starts a saga and reports where it got to. */
@@ -52,7 +56,7 @@ public class SagaController {
     /** Compensates a failed saga. Refused unless it is awaiting compensation. */
     @PostMapping("/{sagaId}/compensate")
     public ResponseEntity<Map<String, Object>> compensate(@PathVariable String sagaId) {
-        return ResponseEntity.ok(service.compensate(sagaId, compensation::run).toMap());
+        return ResponseEntity.ok(service.compensate(sagaId, compensationTransport::send).toMap());
     }
 
     /** Sagas still in flight, for the recovery sweep and for an operator looking at what is stuck. */

@@ -5,6 +5,7 @@ import com.englishflow.workflow.adapter.jdbc.JdbcJobLeaseStore;
 import com.englishflow.workflow.adapter.jdbc.JdbcRecoveryStore;
 import com.englishflow.workflow.adapter.jdbc.JdbcSagaStore;
 import com.englishflow.workflow.adapter.jdbc.JdbcWorkflowOutbox;
+import com.englishflow.workflow.application.CompensationTransport;
 import com.englishflow.workflow.application.ManualRecoveryService;
 import com.englishflow.workflow.application.SagaCompensationExecutor;
 import com.englishflow.workflow.application.SagaService;
@@ -58,12 +59,9 @@ public class WorkflowWiringConfiguration {
     }
 
     /**
-     * The compensation action, which is what the controller passes to SagaService.compensate.
-     *
-     * <p>It records a receipt for the compensation it was asked to run. It does not call the owning service, because
-     * there is no transport for that yet: a saga step belongs to whichever service owns the data, and undoing one means
-     * asking that service to undo it. Recording the attempt is what can honestly be done here, and the absence of the
-     * call is registered as a gap rather than hidden behind a method that returns successfully.
+     * Step execution stays receipt-recorded: saga steps are operator-driven and the
+     * receipt is their audit trail. Only compensations (the path that used to
+     * mis-record success) go through the refusing transport below.
      */
     @Bean
     SagaController.SagaCompensationExecutorAdapter sagaCompensationExecutorAdapter(JdbcTemplate jdbc) {
@@ -73,7 +71,30 @@ public class WorkflowWiringConfiguration {
                         (receipt_id, subject_type, subject_id, operation, outcome, detail_json, actor, occurred_at)
                     VALUES (UUID(), 'saga_step', ?, 'compensate', 'ATTEMPTED', NULL, 'workflow-service', UTC_TIMESTAMP(6))
                     """, stepName);
-            log.warn("compensation for step {} was recorded but not sent to its owner: no transport exists yet", stepName);
+            log.warn("step {} recorded as a receipt; owner work stays operator-driven (see compensation transport)", stepName);
+        };
+    }
+
+    /**
+     * The compensation transport: the only path from a failed saga to its owners.
+     *
+     * <p>No owner transport exists yet, so every compensation is refused loudly:
+     * the refusal is recorded as a receipt and the executor moves the saga to
+     * COMPENSATION_FAILED (operator-visible) instead of mis-recording APPLIED.
+     * Owner transports plug in here as M2-006 follow-up without touching the
+     * executor: replace the throw with the owner call for the names this
+     * service knows how to send.
+     */
+    @Bean
+    CompensationTransport sagaCompensationTransport(JdbcTemplate jdbc) {
+        return compensationName -> {
+            jdbc.update("""
+                    INSERT INTO workflow_service.workflow_receipt
+                        (receipt_id, subject_type, subject_id, operation, outcome, detail_json, actor, occurred_at)
+                    VALUES (UUID(), 'saga_step', ?, 'compensate', 'REFUSED_NO_TRANSPORT', NULL, 'workflow-service', UTC_TIMESTAMP(6))
+                    """, compensationName);
+            throw new IllegalStateException(
+                    "no compensation transport for '" + compensationName + "'");
         };
     }
 
