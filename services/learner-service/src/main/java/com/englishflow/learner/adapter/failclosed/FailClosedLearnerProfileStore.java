@@ -26,7 +26,7 @@ public final class FailClosedLearnerProfileStore implements LearnerProfileStore 
     }
 
     @Override
-    public java.util.List<LearnerTenantScope> search(String tenantId, String query, int limit) {
+    public java.util.List<LearnerTenantScope> search(String tenantId, String query, int limit, String afterSubjectId) {
         throw unavailable();
     }
 

@@ -82,13 +82,16 @@ public final class JdbcLearnerProfileStore implements LearnerProfileStore {
     }
 
     @Override
-    public List<LearnerTenantScope> search(String tenantId, String query, int limit) {
+    public List<LearnerTenantScope> search(String tenantId, String query, int limit, String afterSubjectId) {
         String needle = query == null ? "" : query.trim();
+        String after = afterSubjectId == null ? "" : afterSubjectId.trim();
         List<String> owners = jdbc.query(
                 "SELECT owner_id FROM learner_profile WHERE tenant_id = ? AND (? = '' OR owner_id LIKE ? ESCAPE '\\\\') "
+                        + "AND (? = '' OR owner_id > ?) "
                         + "ORDER BY owner_id LIMIT ?",
                 (resultSet, row) -> resultSet.getString("owner_id"),
                 tenantId, needle, needle.isEmpty() ? "" : "%" + escapeLike(needle) + "%",
+                after, after,
                 Math.max(1, Math.min(limit, 100)));
         return owners.stream().map(owner -> {
             try {

@@ -53,8 +53,8 @@ public final class LearnerAdminService {
     public record AdminMutationResult(LearnerProfileView view, boolean replayed, String adminSubject) {
     }
 
-    public List<LearnerTenantScope> search(String query, int limit) {
-        return store.search(LearnerTenantScope.PLATFORM_TENANT, query, limit);
+    public List<LearnerTenantScope> search(String query, int limit, String afterSubjectId) {
+        return store.search(LearnerTenantScope.PLATFORM_TENANT, query, limit, afterSubjectId);
     }
 
     public LearnerProfileView profile(String subjectId) {

@@ -33,16 +33,34 @@ export interface LearnerSubject {
   tenantId: string
 }
 
-export async function searchLearners(q?: string, limit = 50): Promise<LearnerSubject[]> {
-  const params = new URLSearchParams({ limit: String(limit) })
+export interface LearnerSubjectPage {
+  subjects: LearnerSubject[]
+  nextCursor: string | null
+  hasMore: boolean
+}
+
+export async function searchLearners(q?: string, limit = 50, cursor?: string): Promise<LearnerSubjectPage> {
+  const params = new URLSearchParams({ pageSize: String(limit) })
   if (q?.trim()) params.set('q', q.trim())
+  if (cursor) params.set('cursor', cursor)
+  const empty: LearnerSubjectPage = { subjects: [], nextCursor: null, hasMore: false }
   try {
-    const data = unwrapData(await adminClient.request(`/admin/learners/search?${params.toString()}`))
-    const items = Array.isArray(data.items) ? data.items : []
-    return items.filter(isRecord).map((item) => ({
+    const response: unknown = await adminClient.request(`/admin/learners/search?${params.toString()}`)
+    // Canonical contract shape: data is the item array, cursor state lives in meta.
+    // (unwrapData cannot be used here: it drops top-level arrays.)
+    const root = isRecord(response) ? response : {}
+    const data = root.data
+    const rows = Array.isArray(data) ? data : []
+    const meta = isRecord(root.meta) ? root.meta : {}
+    const subjects = rows.filter(isRecord).map((item) => ({
       subjectId: typeof item.subjectId === 'string' ? item.subjectId : '',
       tenantId: typeof item.tenantId === 'string' ? item.tenantId : 'platform',
     })).filter((s) => s.subjectId)
+    return {
+      subjects,
+      nextCursor: typeof meta.nextCursor === 'string' ? meta.nextCursor : null,
+      hasMore: meta.hasMore === true,
+    }
   } catch (error) {
     throw errorOf(error, '学员检索失败。')
   }

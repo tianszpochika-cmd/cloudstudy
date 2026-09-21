@@ -86,8 +86,31 @@ class LearnerAdminServiceTest {
     void searchFindsOwnedSubjects() {
         admin.setGoal(SUBJECT, "WORKPLACE", 30, null, "A2", null, null, null, key(),
                 "req-admin-1", "0123456789abcdef0123456789abcdef", "admin-1");
-        assertEquals(1, admin.search("admin_test", 50).size());
-        assertEquals(0, admin.search("nobody-here", 50).size());
+        assertEquals(1, admin.search("admin_test", 50, null).size());
+        assertEquals(0, admin.search("nobody-here", 50, null).size());
+    }
+
+    @Test
+    void searchCursorWalksEverySubjectExactlyOnce() {
+        for (int index = 1; index <= 5; index++) {
+            admin.setGoal("prn_page_subject_000" + index, "WORKPLACE", 30, null, "A2", null, null, null, key(),
+                    "req-admin-" + index, "0123456789abcdef0123456789abcdef", "admin-1");
+        }
+        java.util.List<String> seen = new java.util.ArrayList<>();
+        String cursor = null;
+        for (int page = 0; page < 5; page++) {
+            java.util.List<com.englishflow.learner.domain.LearnerTenantScope> batch =
+                    admin.search("prn_page_subject", 2, cursor);
+            if (batch.isEmpty()) {
+                break;
+            }
+            for (com.englishflow.learner.domain.LearnerTenantScope scope : batch) {
+                seen.add(scope.subjectId());
+            }
+            cursor = batch.get(batch.size() - 1).subjectId();
+        }
+        assertEquals(5, seen.size(), "every subject must appear exactly once across pages");
+        assertEquals(5, new java.util.LinkedHashSet<>(seen).size(), "no subject may repeat across pages");
     }
 
     @Test

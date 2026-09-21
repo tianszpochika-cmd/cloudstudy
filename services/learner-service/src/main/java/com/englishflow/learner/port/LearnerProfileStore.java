@@ -34,12 +34,11 @@ public interface LearnerProfileStore {
     /**
      * Admin-only subject listing for the single-tenant control plane.
      * Returns matching scopes ordered by subject; implementations must stay
-     * inside the learner-owned schema. Defaults to empty so legacy adapters
-     * keep compiling.
+     * inside the learner-owned schema. The cursor is an opaque subject id from
+     * a previous page (empty restarts from the first page). There is deliberately
+     * no lenient default: a silent empty page would masquerade outage as success.
      */
-    default java.util.List<LearnerTenantScope> search(String tenantId, String query, int limit) {
-        return java.util.List.of();
-    }
+    java.util.List<LearnerTenantScope> search(String tenantId, String query, int limit, String afterSubjectId);
 
     LearnerCommitResult commit(LearnerMutation mutation);
 }

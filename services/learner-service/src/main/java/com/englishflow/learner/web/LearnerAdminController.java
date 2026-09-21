@@ -44,16 +44,38 @@ public final class LearnerAdminController {
     public ResponseEntity<Map<String, Object>> search(
             Authentication authentication,
             @RequestParam(required = false) String q,
-            @RequestParam(defaultValue = "50") int limit,
+            @RequestParam(required = false) Integer pageSize,
+            @RequestParam(required = false) Integer limit,
+            @RequestParam(required = false) String cursor,
             @RequestHeader HttpHeaders headers) {
         LearnerAdminPrincipals.requireRead(authentication);
-        int pageSize = Math.max(1, Math.min(limit, 100));
-        List<Map<String, Object>> items = admin.search(q, pageSize).stream()
+        // Canonical pageSize wins; the pre-contract limit alias stays for transition.
+        int requested = pageSize != null ? pageSize : (limit != null ? limit : 20);
+        int size = Math.max(1, Math.min(requested, 100));
+        String after = cursor == null ? "" : cursor.trim();
+        // One-row probe so hasMore/nextCursor agree instead of guessing at exact multiples.
+        List<LearnerTenantScope> rows = admin.search(q, size + 1, after);
+        boolean hasMore = rows.size() > size;
+        List<Map<String, Object>> items = rows.stream().limit(size)
                 .map(scope -> Map.<String, Object>of(
                         "subjectId", scope.subjectId(),
                         "tenantId", scope.tenantId()))
                 .toList();
-        return ResponseEntity.ok(Map.of("data", Map.of("items", items)));
+        String nextCursor = hasMore ? rows.get(size - 1).subjectId() : null;
+        ContentIds ids = ids(headers);
+        Map<String, Object> meta = new LinkedHashMap<>();
+        meta.put("requestId", ids.requestId());
+        meta.put("traceId", ids.traceId());
+        meta.put("apiVersion", "v1");
+        meta.put("schemaVersion", "1.0.0");
+        meta.put("serverTime", java.time.Instant.now().toString());
+        meta.put("hasMore", hasMore);
+        meta.put("pageSize", size);
+        meta.put("nextCursor", nextCursor);
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("data", items);
+        body.put("meta", meta);
+        return ResponseEntity.ok(body);
     }
 
     @GetMapping("/subjects/{subjectId}/profile")
@@ -65,6 +87,7 @@ public final class LearnerAdminController {
         LearnerProfileView view = admin.profile(subjectId);
         Optional<FirstDayView> firstDay = admin.firstDay(subjectId);
         Map<String, Object> data = new LinkedHashMap<>();
+        data.put("subjectId", view.subjectId());
         data.put("profile", viewOf(view));
         firstDay.ifPresent(first -> data.put("firstDay", firstDayOf(first)));
         return ResponseEntity.ok(Map.of("data", data));
@@ -119,7 +142,7 @@ public final class LearnerAdminController {
         data.put("profileVersion", outcome.view().version());
         data.put("replayed", outcome.replayed());
         data.put("adminSubject", outcome.adminSubject());
-        data.put("profile", viewOf(outcome.view()));
+        data.put("status", "ACCEPTED");
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(Map.of("data", data));
     }
 
