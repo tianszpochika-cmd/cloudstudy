@@ -13,6 +13,8 @@ import {
   type LexemeRow,
 } from '../api/lexeme'
 import { useAdminStore } from '../stores/admin'
+import { adminT } from '../platform/admin-i18n'
+import '../platform/i18n-batch-a'
 import SchedulePanel from '../components/SchedulePanel.vue'
 import AudioPreview from '../components/AudioPreview.vue'
 
@@ -85,21 +87,21 @@ function openDiff(row: LexemeRow): void {
   diffTarget.value = row
   const lines: DiffLine[] = []
   if (!row.publishedFields) {
-    lines.push({ path: '(snapshot)', before: '从未发布', after: '当前草稿即首版' })
+    lines.push({ path: '(snapshot)', before: adminT('lexemeView.diffNeverPublished'), after: adminT('lexemeView.diffFirstVersion') })
   } else {
     buildDiff(row.publishedFields, row.fields, '', lines)
-    if (!lines.length) lines.push({ path: '(equal)', before: '与已发布一致', after: '无差异' })
+    if (!lines.length) lines.push({ path: '(equal)', before: adminT('lexemeView.diffEqual'), after: adminT('lexemeView.diffNoDiff') })
   }
   diffLines.value = lines.slice(0, 200)
   diffVisible.value = true
 }
 
 const scheduleTargets = computed(() => [
-  { type: 'PACK' as const, ref: LEXEME_PACK, label: `词包 ${LEXEME_PACK}` },
+  { type: 'PACK' as const, ref: LEXEME_PACK, label: adminT('lexemeView.packLabel', { pack: LEXEME_PACK }) },
   ...rows.value
     .filter((row) => row.availability === 'APPROVED')
     .slice(0, 50)
-    .map((row) => ({ type: 'LEXEME' as const, ref: row.lexemeId, label: `单词 ${row.headword}` })),
+    .map((row) => ({ type: 'LEXEME' as const, ref: row.lexemeId, label: adminT('lexemeView.lexemeLabel', { headword: row.headword }) })),
 ])
 
 const CEFRS = ['', 'A1', 'A2', 'B1', 'B2', 'C1', 'C2']
@@ -166,11 +168,11 @@ const stateTag = (value: string): 'success' | 'warning' | 'danger' | 'info' => {
 
 function pronSummary(row: LexemeRow): string {
   const clean = row.pronunciations.filter((item) => item.qcStatus === 'CLEAN').length
-  return `${row.pronunciations.length} 个 · ${clean} 已质检`
+  return adminT('lexemeView.pronSummary', { total: row.pronunciations.length, clean })
 }
 
 async function load(reset = true): Promise<void> {
-  if (!canRead.value) { state.value = 'permission'; lastError.value = '当前会话没有内容读取权限。'; return }
+  if (!canRead.value) { state.value = 'permission'; lastError.value = adminT('lexemeView.noReadPermission'); return }
   state.value = reset ? 'loading' : state.value
   lastError.value = null
   try {
@@ -184,7 +186,7 @@ async function load(reset = true): Promise<void> {
     state.value = page.rows.length ? 'ready' : 'empty'
   } catch (error) {
     state.value = 'error'
-    lastError.value = error instanceof Error ? error.message : '单词列表读取失败。'
+    lastError.value = error instanceof Error ? error.message : adminT('lexemeView.listFailed')
   }
 }
 
@@ -202,7 +204,7 @@ async function loadMore(): Promise<void> {
     nextCursor.value = page.nextCursor
     if (rows.value.length) state.value = 'ready'
   } catch (error) {
-    ElMessage.error(error instanceof Error ? error.message : '加载更多失败。')
+    ElMessage.error(error instanceof Error ? error.message : adminT('lexemeView.loadMoreFailed'))
   } finally {
     loadingMore.value = false
   }
@@ -222,7 +224,7 @@ function openEdit(row: LexemeRow): void {
 }
 
 async function save(): Promise<void> {
-  if (!form.value.headword?.trim()) { ElMessage.error('请填写单词。'); return }
+  if (!form.value.headword?.trim()) { ElMessage.error(adminT('lexemeView.requireHeadword')); return }
   formBusy.value = true
   try {
     // B4 morphology: cleared selects submit '' — drop them so the server sees
@@ -235,11 +237,11 @@ async function save(): Promise<void> {
       delete payload.conjugation
     }
     await upsertLexeme(payload, editing.value?.lexemeId)
-    ElMessage.success('单词已保存为草稿。')
+    ElMessage.success(adminT('lexemeView.savedDraft'))
     dialogVisible.value = false
     await load()
   } catch (error) {
-    ElMessage.error(error instanceof Error ? error.message : '保存失败。')
+    ElMessage.error(error instanceof Error ? error.message : adminT('lexemeView.saveFailed'))
   } finally {
     formBusy.value = false
   }
@@ -247,30 +249,30 @@ async function save(): Promise<void> {
 
 async function runLifecycle(row: LexemeRow, command: 'LEXEME_SUBMIT_REVIEW' | 'LEXEME_PUBLISH' | 'LEXEME_UNPUBLISH' | 'LEXEME_ARCHIVE'): Promise<void> {
   const labels: Record<string, string> = {
-    LEXEME_SUBMIT_REVIEW: '提交审核', LEXEME_PUBLISH: '发布', LEXEME_UNPUBLISH: '下线', LEXEME_ARCHIVE: '归档',
+    LEXEME_SUBMIT_REVIEW: adminT('lexemeView.lifecycleSubmitReview'), LEXEME_PUBLISH: adminT('lexemeView.lifecyclePublish'), LEXEME_UNPUBLISH: adminT('lexemeView.lifecycleUnpublish'), LEXEME_ARCHIVE: adminT('lexemeView.lifecycleArchive'),
   }
   try {
-    await ElMessageBox.confirm(`确认对「${row.headword}」执行${labels[command]}？该动作将写入服务端审计。`, '单词生命周期', { type: 'warning', confirmButtonText: '确认', cancelButtonText: '取消' })
+    await ElMessageBox.confirm(adminT('lexemeView.lifecycleConfirm', { headword: row.headword, action: labels[command] }), adminT('lexemeView.lifecycleTitle'), { type: 'warning', confirmButtonText: adminT('lexemeView.confirmOk'), cancelButtonText: adminT('lexemeView.cancel') })
   } catch { return }
   try {
     await lexemeLifecycle(row, command)
-    ElMessage.success(`${labels[command]}已提交。`)
+    ElMessage.success(adminT('lexemeView.lifecycleSubmitted', { action: labels[command] }))
     await load()
   } catch (error) {
-    ElMessage.error(error instanceof Error ? error.message : '命令提交失败。')
+    ElMessage.error(error instanceof Error ? error.message : adminT('lexemeView.lifecycleFailed'))
   }
 }
 
 async function runReview(row: LexemeRow, stage: 'FIRST' | 'FINAL'): Promise<void> {
   try {
-    await ElMessageBox.confirm(`以${stage === 'FIRST' ? '一级' : '二级'}审核身份批准「${row.headword}」？作者不能审核自己的版本。`, '双审确认', { type: 'warning', confirmButtonText: '批准', cancelButtonText: '取消' })
+    await ElMessageBox.confirm(adminT('lexemeView.reviewConfirm', { stage: stage === 'FIRST' ? adminT('lexemeView.reviewFirst') : adminT('lexemeView.reviewSecond'), headword: row.headword }), adminT('lexemeView.reviewTitle'), { type: 'warning', confirmButtonText: adminT('lexemeView.reviewApprove'), cancelButtonText: adminT('lexemeView.cancel') })
   } catch { return }
   try {
     await lexemeReview(row, stage)
-    ElMessage.success('审核已提交。')
+    ElMessage.success(adminT('lexemeView.reviewSubmitted'))
     await load()
   } catch (error) {
-    ElMessage.error(error instanceof Error ? error.message : '审核提交失败。')
+    ElMessage.error(error instanceof Error ? error.message : adminT('lexemeView.reviewFailed'))
   }
 }
 
@@ -282,7 +284,7 @@ function openPronunciations(row: LexemeRow): void {
 
 async function addPronunciation(): Promise<void> {
   if (!pronTarget.value) return
-  if (!pronForm.value.ipa.trim() || !pronForm.value.audioAssetId.trim()) { ElMessage.error('请填写音标与音频资产 ID。'); return }
+  if (!pronForm.value.ipa.trim() || !pronForm.value.audioAssetId.trim()) { ElMessage.error(adminT('lexemeView.requirePron')); return }
   pronBusy.value = true
   try {
     await upsertPronunciation(pronTarget.value, {
@@ -291,12 +293,12 @@ async function addPronunciation(): Promise<void> {
       audioAssetId: pronForm.value.audioAssetId.trim(),
       sourceType: pronForm.value.sourceType as 'HUMAN' | 'TTS',
     })
-    ElMessage.success('发音已登记，等待质检。')
+    ElMessage.success(adminT('lexemeView.pronSaved'))
     await load()
     const fresh = rows.value.find((row) => row.lexemeId === pronTarget.value?.lexemeId)
     if (fresh) pronTarget.value = fresh
   } catch (error) {
-    ElMessage.error(error instanceof Error ? error.message : '发音登记失败。')
+    ElMessage.error(error instanceof Error ? error.message : adminT('lexemeView.pronFailed'))
   } finally {
     pronBusy.value = false
   }
@@ -305,12 +307,12 @@ async function addPronunciation(): Promise<void> {
 async function qc(row: LexemeRow, pronunciationId: string, verdict: 'READY' | 'CLEAN' | 'FAILED'): Promise<void> {
   try {
     await qcPronunciation(row, pronunciationId, verdict)
-    ElMessage.success(`质检结论 ${verdict} 已提交。`)
+    ElMessage.success(adminT('lexemeView.qcSubmitted', { verdict }))
     await load()
     const fresh = rows.value.find((item) => item.lexemeId === row.lexemeId)
     if (fresh) pronTarget.value = fresh
   } catch (error) {
-    ElMessage.error(error instanceof Error ? error.message : '质检提交失败。')
+    ElMessage.error(error instanceof Error ? error.message : adminT('lexemeView.qcFailed'))
   }
 }
 
@@ -322,180 +324,180 @@ onMounted(() => { void load() })
     <div class="view-intro">
       <div>
         <span class="admin-header__eyebrow">B1 · WORD MASTER</span>
-        <h2>单词总控：每个单词、每个音标、每个播音</h2>
-        <p>行级单词主数据归 content-service 所有；发音只存 media 资产引用，音频字节不经过内容服务。全部写动作需幂等键与审计。</p>
+        <h2>{{ adminT('lexemeView.title') }}</h2>
+        <p>{{ adminT('lexemeView.description') }}</p>
       </div>
       <el-space>
-        <el-button @click="$router.push('/phonetics')">音标库浏览</el-button>
-        <el-button type="primary" :disabled="!canWrite" @click="openCreate">新建单词</el-button>
+        <el-button @click="$router.push('/phonetics')">{{ adminT('lexemeView.browsePhonetics') }}</el-button>
+        <el-button type="primary" :disabled="!canWrite" @click="openCreate">{{ adminT('lexemeView.createLexeme') }}</el-button>
       </el-space>
     </div>
 
     <el-card shadow="never">
       <el-space wrap>
-        <el-input v-model="q" placeholder="搜索单词" clearable style="width: 220px" @keyup.enter="load()" />
+        <el-input v-model="q" :placeholder="adminT('lexemeView.searchPlaceholder')" clearable style="width: 220px" @keyup.enter="load()" />
         <el-select v-model="cefr" placeholder="CEFR" clearable style="width: 130px">
-          <el-option v-for="level in CEFRS" :key="level" :label="level || '全部'" :value="level" />
+          <el-option v-for="level in CEFRS" :key="level" :label="level || adminT('lexemeView.all')" :value="level" />
         </el-select>
-        <el-select v-model="availability" placeholder="状态" clearable style="width: 150px">
-          <el-option v-for="item in STATES" :key="item" :label="item || '全部'" :value="item" />
+        <el-select v-model="availability" :placeholder="adminT('lexemeView.statusPlaceholder')" clearable style="width: 150px">
+          <el-option v-for="item in STATES" :key="item" :label="item || adminT('lexemeView.all')" :value="item" />
         </el-select>
-        <el-select v-model="packCode" placeholder="词包" clearable style="width: 200px">
-          <el-option label="全部词包" value="" />
+        <el-select v-model="packCode" :placeholder="adminT('lexemeView.packPlaceholder')" clearable style="width: 200px">
+          <el-option :label="adminT('lexemeView.allPacks')" value="" />
           <el-option v-for="pack in PACKS" :key="pack" :label="pack" :value="pack" />
         </el-select>
-        <el-select v-model="language" placeholder="语言" clearable style="width: 130px">
-          <el-option v-for="lang in LANGUAGES" :key="lang" :label="lang || '全部'" :value="lang" />
+        <el-select v-model="language" :placeholder="adminT('lexemeView.languagePlaceholder')" clearable style="width: 130px">
+          <el-option v-for="lang in LANGUAGES" :key="lang" :label="lang || adminT('lexemeView.all')" :value="lang" />
         </el-select>
-        <el-button :disabled="!canRead" @click="load()">查询</el-button>
-        <el-button @click="load()">刷新</el-button>
+        <el-button :disabled="!canRead" @click="load()">{{ adminT('lexemeView.query') }}</el-button>
+        <el-button @click="load()">{{ adminT('lexemeView.refresh') }}</el-button>
       </el-space>
     </el-card>
 
-    <el-alert v-if="state === 'permission'" title="当前会话没有内容读取权限" type="warning" :closable="false" show-icon />
-    <el-alert v-else-if="state === 'error'" :title="lastError ?? '单词数据暂时不可用'" type="error" :closable="false" show-icon />
+    <el-alert v-if="state === 'permission'" :title="adminT('lexemeView.noReadPermissionTitle')" type="warning" :closable="false" show-icon />
+    <el-alert v-else-if="state === 'error'" :title="lastError ?? adminT('lexemeView.listFallback')" type="error" :closable="false" show-icon />
 
     <el-card shadow="never">
       <el-table v-if="rows.length" :data="rows" stripe>
-        <el-table-column prop="headword" label="单词" min-width="140" />
-        <el-table-column prop="language" label="语言" width="90" />
-        <el-table-column prop="packCode" label="词包" min-width="150" />
+        <el-table-column prop="headword" :label="adminT('lexemeView.colHeadword')" min-width="140" />
+        <el-table-column prop="language" :label="adminT('lexemeView.colLanguage')" width="90" />
+        <el-table-column prop="packCode" :label="adminT('lexemeView.colPack')" min-width="150" />
         <el-table-column prop="cefr" label="CEFR" width="80" />
-        <el-table-column label="音标 US/UK" min-width="160">
+        <el-table-column :label="adminT('lexemeView.colPhonetics')" min-width="160">
           <template #default="scope">{{ scope.row.fields.phoneticUS ?? '—' }} / {{ scope.row.fields.phoneticUK ?? '—' }}</template>
         </el-table-column>
-        <el-table-column label="发音" width="110">
+        <el-table-column :label="adminT('lexemeView.colPron')" width="110">
           <template #default="scope">{{ pronSummary(scope.row) }}</template>
         </el-table-column>
-        <el-table-column prop="availability" label="状态" width="120">
+        <el-table-column prop="availability" :label="adminT('lexemeView.colStatus')" width="120">
           <template #default="scope"><el-tag :type="stateTag(scope.row.availability)" effect="plain">{{ scope.row.availability }}</el-tag></template>
         </el-table-column>
-        <el-table-column prop="stateVersion" label="版本" width="80" />
-        <el-table-column label="动作" width="330" fixed="right">
+        <el-table-column prop="stateVersion" :label="adminT('lexemeView.colVersion')" width="80" />
+        <el-table-column :label="adminT('lexemeView.colActions')" width="330" fixed="right">
           <template #default="scope">
             <el-space wrap>
-              <el-button size="small" :disabled="!canWrite" @click="openEdit(scope.row)">编辑</el-button>
-              <el-button size="small" :disabled="!canWrite" @click="openPronunciations(scope.row)">发音</el-button>
-              <el-button size="small" link @click="openDiff(scope.row)">对比</el-button>
-              <el-button v-if="scope.row.availability === 'DRAFT'" size="small" type="primary" link :disabled="!canWrite" @click="runLifecycle(scope.row, 'LEXEME_SUBMIT_REVIEW')">送审</el-button>
-              <el-button v-if="scope.row.availability === 'IN_REVIEW'" size="small" type="primary" link @click="runReview(scope.row, 'FIRST')">一审</el-button>
-              <el-button v-if="scope.row.availability === 'IN_REVIEW'" size="small" type="primary" link @click="runReview(scope.row, 'FINAL')">二审</el-button>
-              <el-button v-if="scope.row.availability === 'APPROVED'" size="small" type="success" link :disabled="!canPublish" @click="runLifecycle(scope.row, 'LEXEME_PUBLISH')">发布</el-button>
-              <el-button v-if="scope.row.availability === 'PUBLISHED'" size="small" type="warning" link :disabled="!canPublish" @click="runLifecycle(scope.row, 'LEXEME_UNPUBLISH')">下线</el-button>
+              <el-button size="small" :disabled="!canWrite" @click="openEdit(scope.row)">{{ adminT('lexemeView.actionEdit') }}</el-button>
+              <el-button size="small" :disabled="!canWrite" @click="openPronunciations(scope.row)">{{ adminT('lexemeView.actionPron') }}</el-button>
+              <el-button size="small" link @click="openDiff(scope.row)">{{ adminT('lexemeView.actionDiff') }}</el-button>
+              <el-button v-if="scope.row.availability === 'DRAFT'" size="small" type="primary" link :disabled="!canWrite" @click="runLifecycle(scope.row, 'LEXEME_SUBMIT_REVIEW')">{{ adminT('lexemeView.actionSubmit') }}</el-button>
+              <el-button v-if="scope.row.availability === 'IN_REVIEW'" size="small" type="primary" link @click="runReview(scope.row, 'FIRST')">{{ adminT('lexemeView.actionFirst') }}</el-button>
+              <el-button v-if="scope.row.availability === 'IN_REVIEW'" size="small" type="primary" link @click="runReview(scope.row, 'FINAL')">{{ adminT('lexemeView.actionFinal') }}</el-button>
+              <el-button v-if="scope.row.availability === 'APPROVED'" size="small" type="success" link :disabled="!canPublish" @click="runLifecycle(scope.row, 'LEXEME_PUBLISH')">{{ adminT('lexemeView.actionPublish') }}</el-button>
+              <el-button v-if="scope.row.availability === 'PUBLISHED'" size="small" type="warning" link :disabled="!canPublish" @click="runLifecycle(scope.row, 'LEXEME_UNPUBLISH')">{{ adminT('lexemeView.actionUnpublish') }}</el-button>
             </el-space>
           </template>
         </el-table-column>
       </el-table>
-      <el-empty v-else :description="state === 'empty' ? '暂无单词，从新建开始' : '正在等待服务端投影'" />
+      <el-empty v-else :description="state === 'empty' ? adminT('lexemeView.emptyCreate') : adminT('lexemeView.emptyWaiting')" />
       <div v-if="nextCursor" style="margin-top: 12px; text-align: center">
-        <el-button :loading="loadingMore" @click="loadMore()">加载更多</el-button>
+        <el-button :loading="loadingMore" @click="loadMore()">{{ adminT('lexemeView.loadMore') }}</el-button>
       </div>
     </el-card>
 
-    <el-dialog v-model="dialogVisible" :title="editing ? `编辑 ${editing.headword}` : '新建单词'" width="640px">
+    <el-dialog v-model="dialogVisible" :title="editing ? adminT('lexemeView.editTitle', { headword: editing.headword }) : adminT('lexemeView.createLexeme')" width="640px">
       <el-form label-width="110px">
-        <el-form-item label="单词">
-          <el-input v-model="form.headword" :disabled="!!editing" placeholder="如 habit" />
+        <el-form-item :label="adminT('lexemeView.formHeadword')">
+          <el-input v-model="form.headword" :disabled="!!editing" :placeholder="adminT('lexemeView.headwordPlaceholder')" />
         </el-form-item>
-        <el-form-item label="语言">
-          <el-select v-model="form.language" placeholder="选择">
-            <el-option label="en-US（英语默认）" value="en-US" />
-            <el-option label="fr-FR（法语）" value="fr-FR" />
-            <el-option label="de-DE（德语）" value="de-DE" />
+        <el-form-item :label="adminT('lexemeView.formLanguage')">
+          <el-select v-model="form.language" :placeholder="adminT('lexemeView.selectPlaceholder')">
+            <el-option :label="adminT('lexemeView.langEn')" value="en-US" />
+            <el-option :label="adminT('lexemeView.langFr')" value="fr-FR" />
+            <el-option :label="adminT('lexemeView.langDe')" value="de-DE" />
           </el-select>
         </el-form-item>
-        <el-form-item label="词性">
-          <el-select v-model="form.pos" multiple placeholder="选择（B4 含长式）" style="width: 100%">
+        <el-form-item :label="adminT('lexemeView.formPos')">
+          <el-select v-model="form.pos" multiple :placeholder="adminT('lexemeView.posPlaceholder')" style="width: 100%">
             <el-option v-for="pos in POS_OPTIONS" :key="pos" :label="pos" :value="pos" />
           </el-select>
         </el-form-item>
-        <el-form-item label="性/数/格">
+        <el-form-item :label="adminT('lexemeView.formMorphology')">
           <el-space wrap>
-            <el-select v-model="form.gender" placeholder="性" clearable style="width: 130px">
+            <el-select v-model="form.gender" :placeholder="adminT('lexemeView.genderPlaceholder')" clearable style="width: 130px">
               <el-option v-for="item in GENDERS" :key="item" :label="item || '—'" :value="item" />
             </el-select>
-            <el-select v-model="form.number" placeholder="数" clearable style="width: 130px">
+            <el-select v-model="form.number" :placeholder="adminT('lexemeView.numberPlaceholder')" clearable style="width: 130px">
               <el-option v-for="item in NUMBERS" :key="item" :label="item || '—'" :value="item" />
             </el-select>
-            <el-select v-model="form.grammaticalCase" placeholder="格" clearable style="width: 150px">
+            <el-select v-model="form.grammaticalCase" :placeholder="adminT('lexemeView.casePlaceholder')" clearable style="width: 150px">
               <el-option v-for="item in CASES" :key="item" :label="item || '—'" :value="item" />
             </el-select>
           </el-space>
         </el-form-item>
-        <el-form-item label="变位组">
-          <el-input v-model="verbGroupText" placeholder="如 FR-ER（法语动词必填）" />
+        <el-form-item :label="adminT('lexemeView.formVerbGroup')">
+          <el-input v-model="verbGroupText" :placeholder="adminT('lexemeView.verbGroupPlaceholder')" />
         </el-form-item>
         <el-form-item label="CEFR">
-          <el-select v-model="form.cefr" placeholder="选择">
+          <el-select v-model="form.cefr" :placeholder="adminT('lexemeView.selectPlaceholder')">
             <el-option v-for="level in CEFRS.slice(1)" :key="level" :label="level" :value="level" />
           </el-select>
         </el-form-item>
-        <el-form-item label="难度 1-5">
+        <el-form-item :label="adminT('lexemeView.formDifficulty')">
           <el-input-number v-model="form.difficulty" :min="1" :max="5" />
         </el-form-item>
-        <el-form-item label="美式音标">
-          <el-input v-model="form.phoneticUS" placeholder="如 ˈhæbɪt" />
+        <el-form-item :label="adminT('lexemeView.formPhoneticUS')">
+          <el-input v-model="form.phoneticUS" :placeholder="adminT('lexemeView.phoneticPlaceholder')" />
         </el-form-item>
-        <el-form-item label="英式音标">
-          <el-input v-model="form.phoneticUK" placeholder="如 ˈhæbɪt" />
+        <el-form-item :label="adminT('lexemeView.formPhoneticUK')">
+          <el-input v-model="form.phoneticUK" :placeholder="adminT('lexemeView.phoneticPlaceholder')" />
         </el-form-item>
-        <el-form-item label="中文释义">
-          <el-input v-model="meaningCnText" placeholder="如 习惯（历史兼容位）" />
+        <el-form-item :label="adminT('lexemeView.formMeaningCn')">
+          <el-input v-model="meaningCnText" :placeholder="adminT('lexemeView.meaningCnPlaceholder')" />
         </el-form-item>
-        <el-form-item label="本地释义">
-          <el-input v-model="meaningLocalText" placeholder="如 habitude（法语等非中文语种用此位）" />
+        <el-form-item :label="adminT('lexemeView.formMeaningLocal')">
+          <el-input v-model="meaningLocalText" :placeholder="adminT('lexemeView.meaningLocalPlaceholder')" />
         </el-form-item>
-        <el-form-item label="标签(逗号分隔)">
-          <el-input v-model="tagsText" placeholder="如 daily-life,exam" />
+        <el-form-item :label="adminT('lexemeView.formTags')">
+          <el-input v-model="tagsText" :placeholder="adminT('lexemeView.tagsPlaceholder')" />
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" :loading="formBusy" @click="save()">保存草稿</el-button>
+        <el-button @click="dialogVisible = false">{{ adminT('lexemeView.cancel') }}</el-button>
+        <el-button type="primary" :loading="formBusy" @click="save()">{{ adminT('lexemeView.saveDraft') }}</el-button>
       </template>
     </el-dialog>
 
-    <el-dialog v-model="pronVisible" :title="`发音管理 ${pronTarget?.headword ?? ''}`" width="720px">
+    <el-dialog v-model="pronVisible" :title="adminT('lexemeView.pronTitle', { headword: pronTarget?.headword ?? '' })" width="720px">
       <el-table v-if="pronTarget?.pronunciations.length" :data="pronTarget.pronunciations" size="small">
         <el-table-column type="expand">
           <template #default="scope">
             <AudioPreview :asset-id="scope.row.audioAssetId" />
           </template>
         </el-table-column>
-        <el-table-column prop="accent" label="口音" width="80" />
-        <el-table-column prop="ipa" label="音标" min-width="120" />
-        <el-table-column prop="audioAssetId" label="音频资产" min-width="160" />
-        <el-table-column prop="sourceType" label="来源" width="90" />
-        <el-table-column prop="qcStatus" label="质检" width="100" />
-        <el-table-column label="动作" width="200" fixed="right">
+        <el-table-column prop="accent" :label="adminT('lexemeView.pronAccent')" width="80" />
+        <el-table-column prop="ipa" :label="adminT('lexemeView.pronIpa')" min-width="120" />
+        <el-table-column prop="audioAssetId" :label="adminT('lexemeView.pronAsset')" min-width="160" />
+        <el-table-column prop="sourceType" :label="adminT('lexemeView.pronSource')" width="90" />
+        <el-table-column prop="qcStatus" :label="adminT('lexemeView.pronQc')" width="100" />
+        <el-table-column :label="adminT('lexemeView.colActions')" width="200" fixed="right">
           <template #default="scope">
             <el-space>
-              <el-button size="small" type="success" link @click="qc(pronTarget!, scope.row.pronunciationId, 'CLEAN')">通过</el-button>
-              <el-button size="small" type="warning" link @click="qc(pronTarget!, scope.row.pronunciationId, 'FAILED')">不通过</el-button>
+              <el-button size="small" type="success" link @click="qc(pronTarget!, scope.row.pronunciationId, 'CLEAN')">{{ adminT('lexemeView.pronPass') }}</el-button>
+              <el-button size="small" type="warning" link @click="qc(pronTarget!, scope.row.pronunciationId, 'FAILED')">{{ adminT('lexemeView.pronFail') }}</el-button>
             </el-space>
           </template>
         </el-table-column>
       </el-table>
-      <el-empty v-else description="暂无发音，先登记" />
-      <el-divider>登记发音（引用 media 资产 ID）</el-divider>
+      <el-empty v-else :description="adminT('lexemeView.pronEmpty')" />
+      <el-divider>{{ adminT('lexemeView.pronRegisterDivider') }}</el-divider>
       <el-space wrap>
         <el-select v-model="pronForm.accent" filterable allow-create default-first-option style="width: 130px">
-          <el-option label="美音" value="US" /><el-option label="英音" value="UK" /><el-option label="慢速" value="SLOW" /><el-option label="法标" value="FR-PARIS" />
+          <el-option :label="adminT('lexemeView.accentUS')" value="US" /><el-option :label="adminT('lexemeView.accentUK')" value="UK" /><el-option :label="adminT('lexemeView.accentSlow')" value="SLOW" /><el-option :label="adminT('lexemeView.accentFrParis')" value="FR-PARIS" />
         </el-select>
-        <el-input v-model="pronForm.ipa" placeholder="音标" style="width: 150px" />
-        <el-input v-model="pronForm.audioAssetId" placeholder="音频资产 ID" style="width: 200px" />
+        <el-input v-model="pronForm.ipa" :placeholder="adminT('lexemeView.ipaPlaceholder')" style="width: 150px" />
+        <el-input v-model="pronForm.audioAssetId" :placeholder="adminT('lexemeView.assetPlaceholder')" style="width: 200px" />
         <el-select v-model="pronForm.sourceType" style="width: 110px">
-          <el-option label="真人" value="HUMAN" /><el-option label="TTS" value="TTS" />
+          <el-option :label="adminT('lexemeView.sourceHuman')" value="HUMAN" /><el-option label="TTS" value="TTS" />
         </el-select>
-        <el-button type="primary" :loading="pronBusy" :disabled="!canWrite" @click="addPronunciation()">登记</el-button>
+        <el-button type="primary" :loading="pronBusy" :disabled="!canWrite" @click="addPronunciation()">{{ adminT('lexemeView.register') }}</el-button>
       </el-space>
     </el-dialog>
 
-    <el-dialog v-model="diffVisible" :title="`版本对比 ${diffTarget?.headword ?? ''}（草稿 vs 已发布快照）`" width="720px">
+    <el-dialog v-model="diffVisible" :title="adminT('lexemeView.diffTitle', { headword: diffTarget?.headword ?? '' })" width="720px">
       <el-table :data="diffLines" size="small">
-        <el-table-column prop="path" label="字段" min-width="180" />
-        <el-table-column prop="before" label="已发布" min-width="220" show-overflow-tooltip />
-        <el-table-column prop="after" label="当前草稿" min-width="220" show-overflow-tooltip />
+        <el-table-column prop="path" :label="adminT('lexemeView.diffField')" min-width="180" />
+        <el-table-column prop="before" :label="adminT('lexemeView.diffPublished')" min-width="220" show-overflow-tooltip />
+        <el-table-column prop="after" :label="adminT('lexemeView.diffDraft')" min-width="220" show-overflow-tooltip />
       </el-table>
     </el-dialog>
 

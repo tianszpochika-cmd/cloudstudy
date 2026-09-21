@@ -18,6 +18,7 @@ export class AdminApiError extends Error {
 }
 
 import { getGatewayBaseUrl, safeInternalReturnTo } from '../platform/gateway'
+import { adminT } from '../platform/admin-i18n'
 import { getInMemoryAccessToken } from '../auth/access-token'
 
 function joinUrl(baseUrl: string, path: string): string { const base = baseUrl.replace(/\/$/, ''); return path.startsWith('/') ? `${base}${path}` : `${base}/${path}` }
@@ -32,7 +33,7 @@ function errorMessage(status: number, details: unknown): string {
       if (typeof value === 'string' && value.trim()) return value.trim()
     }
   }
-  return `请求失败（HTTP ${status}）`
+  return adminT('apiClient.requestFailed', { status })
 }
 
 function errorReason(details: unknown): string | null {

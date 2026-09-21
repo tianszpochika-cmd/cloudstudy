@@ -1,5 +1,6 @@
 import { createPinia, defineStore } from 'pinia'
 import { createGatewayAdminAuthAdapter, safeAdminReturnTo, type AdminAuthAdapter, type AdminAuthSnapshot, type AdminTokenPair, type AdminPrincipalSnapshot } from '../auth/gateway-auth'
+import { adminT } from '../platform/admin-i18n'
 import { getInMemoryAccessToken, setInMemoryAccessToken } from '../auth/access-token'
 import { adminClient } from '../api/client'
 
@@ -90,7 +91,7 @@ export const useAdminStore = defineStore('admin-session', {
         this.setTokenPair(await adapter().login({
           identifier: identifier.trim(),
           password,
-          device: { deviceType: 'WEB', clientVersion: 'local-dev', deviceName: '管理后台浏览器' },
+          device: { deviceType: 'WEB', clientVersion: 'local-dev', deviceName: adminT('storeAdmin.deviceName') },
         }))
         const permissions = await adapter().getPermissions()
         if (!permissions) throw new Error('SESSION_EXPIRED')
@@ -113,7 +114,7 @@ export const useAdminStore = defineStore('admin-session', {
     },
     setTokenPair(pair: AdminTokenPair): void {
       const access = pair.accessToken.trim()
-      if (!access) throw new Error('认证服务没有返回访问凭证。')
+      if (!access) throw new Error(adminT('storeAdmin.missingCredential'))
       this.accessToken = access
       this.deviceId = pair.deviceId?.trim() || this.deviceId
       this.sessionId = pair.sessionId?.trim() || this.sessionId

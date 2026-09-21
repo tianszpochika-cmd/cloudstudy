@@ -1,4 +1,5 @@
 import { adminClient, AdminApiError } from './client'
+import { adminT } from '../platform/admin-i18n'
 
 /**
  * B1 word-master port for the tenant control plane.
@@ -181,7 +182,7 @@ async function sendLexemeCommand(body: Row): Promise<Row> {
     return isRecord(response) && isRecord(response.data) ? response.data : {}
   } catch (error) {
     if (error instanceof AdminApiError) throw new Error(error.message)
-    throw error instanceof Error ? error : new Error('单词命令提交失败。')
+    throw error instanceof Error ? error : new Error(adminT('apiLexeme.commandFailed'))
   }
 }
 

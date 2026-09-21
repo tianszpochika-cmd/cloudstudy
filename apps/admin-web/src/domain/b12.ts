@@ -1,3 +1,5 @@
+import { adminT } from '../platform/admin-i18n'
+
 export const B12_MODERATION_COMMANDS = ['START_REVIEW', 'RESOLVE', 'DISMISS', 'ESCALATE'] as const
 export type B12ModerationCommand = (typeof B12_MODERATION_COMMANDS)[number]
 export const B12_RECOVERY_COMMANDS = ['RETRY', 'REPLAY', 'CANCEL', 'MANUAL_REVIEW'] as const
@@ -38,7 +40,7 @@ export function recordList(value: unknown): Array<Record<string, unknown>> {
 export function parseModerationReport(value: Record<string, unknown>): B12ModerationReport | null {
   const reportId = text(value.reportId)
   if (!reportId) return null
-  return { reportId, status: firstText(value, ['status', 'reviewStatus'], 'UNKNOWN'), reasonCode: firstText(value, ['reasonCode', 'reason'], 'UNKNOWN'), reviewMode: firstText(value, ['reviewMode', 'handlingMode'], 'MANUAL'), targetRef: firstText(value, ['targetPublicRef', 'targetRef', 'targetDisplay'], '服务端脱敏引用'), roomRef: text(value.roomPublicRef) ?? text(value.roomRef), createdAt: text(value.createdAt) ?? text(value.updatedAt) }
+  return { reportId, status: firstText(value, ['status', 'reviewStatus'], 'UNKNOWN'), reasonCode: firstText(value, ['reasonCode', 'reason'], 'UNKNOWN'), reviewMode: firstText(value, ['reviewMode', 'handlingMode'], 'MANUAL'), targetRef: firstText(value, ['targetPublicRef', 'targetRef', 'targetDisplay'], adminT('domainB12.maskedTargetRef')), roomRef: text(value.roomPublicRef) ?? text(value.roomRef), createdAt: text(value.createdAt) ?? text(value.updatedAt) }
 }
 
 export function parseRecoveryTask(value: Record<string, unknown>): B12RecoveryTask | null {

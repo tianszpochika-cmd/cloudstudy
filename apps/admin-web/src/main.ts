@@ -6,6 +6,7 @@ import { pinia } from './stores/admin'
 import App from './App.vue'
 import './styles.css'
 import { adminI18nAdapter, adminThemeAdapter, adminThemeController } from './platform/v2-foundation'
+import { adminT } from './platform/admin-i18n'
 
 adminI18nAdapter.restore()
 adminThemeController.restore()
@@ -20,5 +21,5 @@ app.provide('theme', adminThemeAdapter)
 // startup state while the guarded initial navigation is restoring a session.
 app.mount('#app')
 void router.isReady().catch((error) => {
-  console.error('[语学星 Admin] 初始路由恢复失败。', error)
+  console.error(adminT('main.routerRestoreFailed'), error)
 })

@@ -1,4 +1,5 @@
 import { AdminApiError, type AdminApiClient } from '../api/client'
+import { adminT } from '../platform/admin-i18n'
 import { safeInternalReturnTo } from '../platform/gateway'
 
 export interface AdminTokenPair {
@@ -63,7 +64,7 @@ function authIdempotencyKey(prefix: string): string {
 }
 function parsePair(value: unknown): AdminTokenPair {
   const source = unwrap(value)
-  if (!record(source) || !text(source.accessToken)) throw new Error('认证服务没有返回有效管理员会话。')
+  if (!record(source) || !text(source.accessToken)) throw new Error(adminT('gatewayAuth.invalidSession'))
   return { accessToken: text(source.accessToken) as string, refreshToken: text(source.refreshToken), deviceId: text(source.deviceId), sessionId: text(source.sessionId) }
 }
 function parseSnapshot(value: unknown): AdminAuthSnapshot | null {

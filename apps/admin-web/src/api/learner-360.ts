@@ -1,4 +1,5 @@
 import { adminClient, AdminApiError } from './client'
+import { adminT } from '../platform/admin-i18n'
 
 /**
  * B3 learner 360° port for the tenant control plane.
@@ -62,7 +63,7 @@ export async function searchLearners(q?: string, limit = 50, cursor?: string): P
       hasMore: meta.hasMore === true,
     }
   } catch (error) {
-    throw errorOf(error, '学员检索失败。')
+    throw errorOf(error, adminT('apiLearner360.searchFailed'))
   }
 }
 
@@ -70,7 +71,7 @@ export async function getLearnerProfile(subjectId: string): Promise<Row> {
   try {
     return unwrapData(await adminClient.request(`/admin/learners/${encodeURIComponent(subjectId)}/profile`))
   } catch (error) {
-    throw errorOf(error, '学员画像读取失败。')
+    throw errorOf(error, adminT('apiLearner360.profileFailed'))
   }
 }
 
@@ -78,7 +79,7 @@ export async function getLearnerPlans(subjectId: string): Promise<Row> {
   try {
     return unwrapData(await adminClient.request(`/admin/learners/${encodeURIComponent(subjectId)}/plans`))
   } catch (error) {
-    throw errorOf(error, '学习计划读取失败。')
+    throw errorOf(error, adminT('apiLearner360.plansFailed'))
   }
 }
 
@@ -86,7 +87,7 @@ export async function getLearnerSrs(subjectId: string): Promise<Row> {
   try {
     return unwrapData(await adminClient.request(`/admin/learners/${encodeURIComponent(subjectId)}/srs`))
   } catch (error) {
-    throw errorOf(error, 'SRS 队列读取失败。')
+    throw errorOf(error, adminT('apiLearner360.srsFailed'))
   }
 }
 
@@ -94,7 +95,7 @@ export async function getLearnerAssessments(subjectId: string): Promise<Row> {
   try {
     return unwrapData(await adminClient.request(`/admin/learners/${encodeURIComponent(subjectId)}/assessments`))
   } catch (error) {
-    throw errorOf(error, '测评摘要读取失败。')
+    throw errorOf(error, adminT('apiLearner360.assessmentsFailed'))
   }
 }
 
@@ -107,7 +108,7 @@ async function sendCommand(path: string, body: Row): Promise<Row> {
     })
     return unwrapData(response)
   } catch (error) {
-    throw errorOf(error, '学员命令提交失败。')
+    throw errorOf(error, adminT('apiLearner360.commandFailed'))
   }
 }
 

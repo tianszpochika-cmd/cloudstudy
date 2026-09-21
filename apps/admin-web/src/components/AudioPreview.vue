@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onBeforeUnmount, ref, watch } from 'vue'
+import { adminT } from '../platform/admin-i18n'
 import { fetchPreviewUrl, decodePeaks } from '../api/media-preview'
 
 const props = defineProps<{ assetId: string }>()
@@ -27,7 +28,7 @@ async function load(): Promise<void> {
     }
   } catch (error) {
     status.value = 'error'
-    message.value = error instanceof Error ? error.message : '预览加载失败。'
+    message.value = error instanceof Error ? error.message : adminT('audioPreview.loadFailed')
   }
 }
 
@@ -60,7 +61,7 @@ onBeforeUnmount(() => { previewUrl.value = '' })
 <template>
   <div class="audio-preview">
     <el-space wrap>
-      <el-button size="small" :loading="status === 'loading'" @click="load()">加载预览</el-button>
+      <el-button size="small" :loading="status === 'loading'" @click="load()">{{ adminT('audioPreview.loadAction') }}</el-button>
       <el-button-group v-if="status === 'ready'">
         <el-button v-for="r in [0.5, 0.75, 1, 1.5, 2]" :key="r" size="small" :type="rate === r ? 'primary' : 'default'" @click="setRate(r)">{{ r }}x</el-button>
       </el-button-group>

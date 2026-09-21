@@ -4,6 +4,8 @@ import { useAdminStore } from '../stores/admin'
 import { useB12AdminStore } from '../stores/b12'
 import { B12_MODERATION_COMMANDS, B12_RECOVERY_COMMANDS, type B12ModerationCommand, type B12RecoveryCommand } from '../domain/b12'
 import { b12T } from '../platform/b12-i18n'
+import { adminT } from '../platform/admin-i18n'
+import '../platform/i18n-batch-b'
 
 const session = useAdminStore()
 const store = useB12AdminStore()
@@ -57,7 +59,7 @@ onMounted(async () => { await store.load(); if (!session.can('admin.moderation.r
             <el-table-column prop="status" label="Status" width="140" />
             <el-table-column prop="reasonCode" :label="b12T('reason')" min-width="170" />
             <el-table-column prop="updatedAt" :label="b12T('updated')" min-width="170" />
-            <el-table-column :label="b12T('retryable')" width="100"><template #default="scope"><el-tag :type="scope.row.retryable ? 'success' : 'info'" effect="plain">{{ scope.row.retryable ? '是' : '否' }}</el-tag></template></el-table-column>
+            <el-table-column :label="b12T('retryable')" width="100"><template #default="scope"><el-tag :type="scope.row.retryable ? 'success' : 'info'" effect="plain">{{ scope.row.retryable ? adminT('governanceView.yes') : adminT('governanceView.no') }}</el-tag></template></el-table-column>
             <el-table-column v-if="session.can('admin.recovery.command')" :label="b12T('command')" min-width="300" fixed="right">
               <template #default="scope"><el-space wrap><el-button v-for="command in recoveryCommands" :key="command" size="small" :disabled="command === 'RETRY' && !scope.row.retryable" :loading="store.busyKey === `recovery.${scope.row.taskId}.${command}`" @click="runRecovery(scope.row.taskId, command)">{{ recoveryLabel(command) }}</el-button></el-space></template>
             </el-table-column>

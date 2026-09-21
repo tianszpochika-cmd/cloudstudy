@@ -1,4 +1,5 @@
 import { adminClient, AdminApiError } from './client'
+import { adminT } from '../platform/admin-i18n'
 import { LEXEME_PACK } from './lexeme'
 
 /**
@@ -88,7 +89,7 @@ async function sendCommand(body: Row): Promise<Row> {
     return isRecord(response) && isRecord(response.data) ? response.data : {}
   } catch (error) {
     if (error instanceof AdminApiError) throw new Error(error.message)
-    throw error instanceof Error ? error : new Error('条目命令提交失败。')
+    throw error instanceof Error ? error : new Error(adminT('apiContentItems.commandFailed'))
   }
 }
 
@@ -166,7 +167,7 @@ export async function importBatch(entries: BatchEntry[]): Promise<Row> {
     return isRecord(response) && isRecord(response.data) ? response.data : {}
   } catch (error) {
     if (error instanceof AdminApiError) throw new Error(error.message)
-    throw error instanceof Error ? error : new Error('批量导入提交失败。')
+    throw error instanceof Error ? error : new Error(adminT('apiContentItems.importFailed'))
   }
 }
 

@@ -1,4 +1,5 @@
 import { adminClient, AdminApiError } from './client'
+import { adminT } from '../platform/admin-i18n'
 
 /**
  * B4-02 phonetics catalog browser for the tenant control plane.
@@ -50,13 +51,13 @@ function friendlyError(error: unknown): Error {
   // adjudication lands a gateway projection. Browsers surface that as a CORS-blocked
   // preflight (TypeError) rather than the gateway 404, so both map here.
   if (error instanceof AdminApiError && error.status === 404) {
-    return new Error('音标网关通道尚未开通（待 M3/M4 路由裁决），当前无法加载。')
+    return new Error(adminT('apiPhonetics.gatewayPending'))
   }
   if (error instanceof TypeError) {
-    return new Error('音标通道不可达：网关未放行 /phonetics/*（待 M3/M4 路由裁决）或后端未运行。')
+    return new Error(adminT('apiPhonetics.channelUnreachable'))
   }
   if (error instanceof AdminApiError) return new Error(error.message)
-  return error instanceof Error ? error : new Error('音标库读取失败。')
+  return error instanceof Error ? error : new Error(adminT('apiPhonetics.loadFailed'))
 }
 
 export async function listPhonemes(language?: string): Promise<PhonemeRow[]> {

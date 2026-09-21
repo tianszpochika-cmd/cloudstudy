@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { adminT } from '../platform/admin-i18n'
 import { AdminApiError } from '../api/client'
 import { listB12ModerationReports, listB12RecoveryTasks, runB12ModerationCommand, runB12RecoveryCommand } from '../api/b12'
 import { recordList, parseModerationReport, parseRecoveryTask, responseRequestId, type B12AdminViewState, type B12ModerationCommand, type B12ModerationReport, type B12RecoveryCommand, type B12RecoveryTask } from '../domain/b12'
@@ -24,7 +25,7 @@ export const useB12AdminStore = defineStore('b12-admin', {
     async load(): Promise<void> {
       const session = useAdminStore()
       const canReadAny = this.canReadModeration() || this.canReadRecovery()
-      if (!session.isAuthenticated || !canReadAny) { this.viewState = 'permission'; this.lastError = '当前会话没有治理读取权限。'; return }
+      if (!session.isAuthenticated || !canReadAny) { this.viewState = 'permission'; this.lastError = adminT('storeB12.noGovernanceRead'); return }
       this.viewState = 'loading'; this.lastError = null; this.lastSuccess = null
       const failures: unknown[] = []
       const requests: Array<Promise<void>> = []
@@ -35,23 +36,23 @@ export const useB12AdminStore = defineStore('b12-admin', {
         const forbidden = failures.some((error) => error instanceof AdminApiError && error.status === 403)
         const recovering = failures.some((error) => error instanceof AdminApiError && error.status === 409)
         this.viewState = forbidden ? 'permission' : recovering ? 'recovery' : 'error'
-        this.lastError = errorMessage(failures[0], '治理数据读取失败。')
+        this.lastError = errorMessage(failures[0], adminT('storeB12.loadFailed'))
       } else this.viewState = this.reports.length || this.recoveryTasks.length ? 'ready' : 'empty'
     },
     async runModerationCommand(reportId: string, commandCode: B12ModerationCommand): Promise<void> {
-      if (!this.canCommandModeration()) { this.viewState = 'permission'; this.lastError = '当前会话没有举报命令权限。'; return }
+      if (!this.canCommandModeration()) { this.viewState = 'permission'; this.lastError = adminT('storeB12.noModerationCommand'); return }
       if (this.busyKey || !reportId.trim()) return
       this.busyKey = `moderation.${reportId}.${commandCode}`; this.lastError = null; this.lastSuccess = null
-      try { const result = await runB12ModerationCommand(reportId, commandCode); this.lastRequestId = responseRequestId(result); await this.load(); this.lastSuccess = '服务端命令已确认。'; this.viewState = 'success' }
-      catch (error) { this.viewState = error instanceof AdminApiError && error.status === 403 ? 'permission' : error instanceof AdminApiError && error.status === 409 ? 'recovery' : 'error'; this.lastError = errorMessage(error, '举报命令未完成。') }
+      try { const result = await runB12ModerationCommand(reportId, commandCode); this.lastRequestId = responseRequestId(result); await this.load(); this.lastSuccess = adminT('storeB12.commandConfirmed'); this.viewState = 'success' }
+      catch (error) { this.viewState = error instanceof AdminApiError && error.status === 403 ? 'permission' : error instanceof AdminApiError && error.status === 409 ? 'recovery' : 'error'; this.lastError = errorMessage(error, adminT('storeB12.moderationCommandFailed')) }
       finally { this.busyKey = null }
     },
     async runRecoveryCommand(taskId: string, commandCode: B12RecoveryCommand): Promise<void> {
-      if (!this.canCommandRecovery()) { this.viewState = 'permission'; this.lastError = '当前会话没有恢复命令权限。'; return }
+      if (!this.canCommandRecovery()) { this.viewState = 'permission'; this.lastError = adminT('storeB12.noRecoveryCommand'); return }
       if (this.busyKey || !taskId.trim()) return
       this.busyKey = `recovery.${taskId}.${commandCode}`; this.lastError = null; this.lastSuccess = null
-      try { const result = await runB12RecoveryCommand(taskId, commandCode); this.lastRequestId = responseRequestId(result); await this.load(); this.lastSuccess = '服务端命令已确认。'; this.viewState = 'success' }
-      catch (error) { this.viewState = error instanceof AdminApiError && error.status === 403 ? 'permission' : error instanceof AdminApiError && error.status === 409 ? 'recovery' : 'error'; this.lastError = errorMessage(error, '恢复命令未完成。') }
+      try { const result = await runB12RecoveryCommand(taskId, commandCode); this.lastRequestId = responseRequestId(result); await this.load(); this.lastSuccess = adminT('storeB12.commandConfirmed'); this.viewState = 'success' }
+      catch (error) { this.viewState = error instanceof AdminApiError && error.status === 403 ? 'permission' : error instanceof AdminApiError && error.status === 409 ? 'recovery' : 'error'; this.lastError = errorMessage(error, adminT('storeB12.recoveryCommandFailed')) }
       finally { this.busyKey = null }
     },
   },

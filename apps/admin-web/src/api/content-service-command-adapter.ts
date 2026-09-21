@@ -1,4 +1,5 @@
 import { adminClient, AdminApiError, type AdminApiClient } from './client'
+import { adminT } from '../platform/admin-i18n'
 import { createClientId } from '../platform/client-id'
 import {
   toRequestId,
@@ -172,17 +173,17 @@ function toCommandError(error: unknown): ContentCommandError {
       requestId: toRequestId(error.details),
     })
   }
-  return new ContentCommandError(error instanceof Error ? error.message : '内容服务暂时不可用。', { code: 'NETWORK_OR_SERVICE_FAILURE', retryable: true })
+  return new ContentCommandError(error instanceof Error ? error.message : adminT('apiCommandAdapter.serviceUnavailable'), { code: 'NETWORK_OR_SERVICE_FAILURE', retryable: true })
 }
 
 function expectedStateVersion(value: string | undefined, fallback = 0): number {
   const parsed = value === undefined ? fallback : integer(value, -1)
-  if (parsed < 0) throw new ContentCommandError('缺少有效的服务端状态版本，请刷新内容投影后重试。', { code: 'CONTENT_STATE_VERSION_REQUIRED', status: 409, retryable: true })
+  if (parsed < 0) throw new ContentCommandError(adminT('apiCommandAdapter.stateVersionRequired'), { code: 'CONTENT_STATE_VERSION_REQUIRED', status: 409, retryable: true })
   return parsed
 }
 
 function requireSha256(value: string): string {
-  if (!/^[a-f0-9]{64}$/i.test(value.trim())) throw new ContentCommandError('内容 hash 必须是 64 位 SHA-256；不会由前端伪造版权事实。', { code: 'CONTENT_HASH_INVALID', status: 400 })
+  if (!/^[a-f0-9]{64}$/i.test(value.trim())) throw new ContentCommandError(adminT('apiCommandAdapter.hashInvalid'), { code: 'CONTENT_HASH_INVALID', status: 400 })
   return value.trim().toLowerCase()
 }
 
@@ -245,7 +246,7 @@ export function createContentServiceCommandAdapter(options: { readonly client: A
 
   function stateFor(contentId: string): B9AdminState {
     const state = stateByCode.get(contentId)
-    if (!state) throw new ContentCommandError('内容投影已过期，请刷新后重试。', { code: 'CONTENT_STATE_STALE', status: 409, retryable: true })
+    if (!state) throw new ContentCommandError(adminT('apiCommandAdapter.projectionStale'), { code: 'CONTENT_STATE_STALE', status: 409, retryable: true })
     return state
   }
 
@@ -271,7 +272,7 @@ export function createContentServiceCommandAdapter(options: { readonly client: A
       const latest = latestVersion(state)
       const sourceCode = text(latest.sourceCode)
       const licenseCode = text(latest.licenseCode)
-      if (!sourceCode || !licenseCode) throw new ContentCommandError('当前投影缺少版权来源，不能在前端补写或伪造；请回到内容导入流程。', { code: 'CONTENT_RIGHTS_CONTEXT_REQUIRED', status: 409, retryable: false })
+      if (!sourceCode || !licenseCode) throw new ContentCommandError(adminT('apiCommandAdapter.rightsContextRequired'), { code: 'CONTENT_RIGHTS_CONTEXT_REQUIRED', status: 409, retryable: false })
       return command({
         command: 'SAVE_DRAFT',
         contentCode: contentId,
@@ -292,7 +293,7 @@ export function createContentServiceCommandAdapter(options: { readonly client: A
     },
     async decideReview(taskId, stage, decision) {
       const context = reviewContexts.get(taskId)
-      if (!context) throw new ContentCommandError('审核任务投影已过期，请刷新后重试。', { code: 'REVIEW_TASK_STALE', status: 409, retryable: true })
+      if (!context) throw new ContentCommandError(adminT('apiCommandAdapter.reviewTaskStale'), { code: 'REVIEW_TASK_STALE', status: 409, retryable: true })
       return command({ command: stage === 'FINAL' ? 'REVIEW_FINAL' : 'REVIEW_FIRST', contentCode: context.contentCode, expectedStateVersion: context.expectedStateVersion, targetVersionNumber: context.targetVersionNumber, reviewDecision: decision }, `review-${taskId}`)
     },
     async publish(contentId) {
@@ -303,7 +304,7 @@ export function createContentServiceCommandAdapter(options: { readonly client: A
     async rollback(contentId, input) {
       const state = stateFor(contentId)
       const targetVersionNumber = integer(input.targetVersionId, -1)
-      if (targetVersionNumber < 1) throw new ContentCommandError('回滚目标必须是服务端返回的数字版本号。', { code: 'ROLLBACK_TARGET_INVALID', status: 400 })
+      if (targetVersionNumber < 1) throw new ContentCommandError(adminT('apiCommandAdapter.rollbackTargetInvalid'), { code: 'ROLLBACK_TARGET_INVALID', status: 400 })
       return command({ command: 'ROLLBACK', contentCode: contentId, expectedStateVersion: expectedStateVersion(input.baseStateVersion, integer(state.stateVersion, 1)), targetVersionNumber, reasonCode: input.reason.trim() }, `content-rollback-${contentId}`)
     },
   }

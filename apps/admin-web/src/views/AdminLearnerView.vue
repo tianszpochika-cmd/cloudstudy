@@ -13,6 +13,8 @@ import {
   type LearnerSubject,
 } from '../api/learner-360'
 import { useAdminStore } from '../stores/admin'
+import { adminT } from '../platform/admin-i18n'
+import '../platform/i18n-batch-a'
 
 type Row = Record<string, unknown>
 type ViewState = 'idle' | 'loading' | 'ready' | 'permission' | 'error'
@@ -52,10 +54,10 @@ async function search(): Promise<void> {
     nextCursor.value = page.nextCursor
     hasMore.value = page.hasMore
     state.value = 'idle'
-    if (!subjects.value.length) ElMessage.info('未找到学员。')
+    if (!subjects.value.length) ElMessage.info(adminT('learnerView.notFound'))
   } catch (error) {
     state.value = 'error'
-    lastError.value = error instanceof Error ? error.message : '检索失败。'
+    lastError.value = error instanceof Error ? error.message : adminT('learnerView.searchFailed')
   }
 }
 
@@ -70,7 +72,7 @@ async function loadMore(): Promise<void> {
     state.value = 'idle'
   } catch (error) {
     state.value = 'error'
-    lastError.value = error instanceof Error ? error.message : '检索失败。'
+    lastError.value = error instanceof Error ? error.message : adminT('learnerView.searchFailed')
   }
 }
 
@@ -107,7 +109,7 @@ async function open(subjectId: string): Promise<void> {
     state.value = 'ready'
   } catch (error) {
     state.value = 'error'
-    lastError.value = error instanceof Error ? error.message : '学员 360° 读取失败。'
+    lastError.value = error instanceof Error ? error.message : adminT('learnerView.profileFailed')
   }
 }
 
@@ -116,10 +118,10 @@ async function saveGoal(): Promise<void> {
   busy.value = true
   try {
     await setLearnerGoal(current.value, { ...goalForm.value, expectedVersion: profileVersion() })
-    ElMessage.success('学习目标已更新（含版本锁与审计）。')
+    ElMessage.success(adminT('learnerView.goalSaved'))
     await open(current.value)
   } catch (error) {
-    ElMessage.error(error instanceof Error ? error.message : '目标更新失败。')
+    ElMessage.error(error instanceof Error ? error.message : adminT('learnerView.goalFailed'))
   } finally {
     busy.value = false
   }
@@ -130,10 +132,10 @@ async function savePreferences(): Promise<void> {
   busy.value = true
   try {
     await updateLearnerPreferences(current.value, { ...prefForm.value, expectedVersion: profileVersion() })
-    ElMessage.success('偏好已更新。注意 UI 语言与内容语言相互独立。')
+    ElMessage.success(adminT('learnerView.prefSaved'))
     await open(current.value)
   } catch (error) {
-    ElMessage.error(error instanceof Error ? error.message : '偏好更新失败。')
+    ElMessage.error(error instanceof Error ? error.message : adminT('learnerView.prefFailed'))
   } finally {
     busy.value = false
   }
@@ -141,14 +143,14 @@ async function savePreferences(): Promise<void> {
 
 async function resetItem(itemId: string): Promise<void> {
   try {
-    await ElMessageBox.confirm(`将 SRS 条目 ${itemId} 重置为初始状态（NEW、到期即刻）？分数与掌握度不受影响。`, 'SRS 恢复', { type: 'warning', confirmButtonText: '确认', cancelButtonText: '取消' })
+    await ElMessageBox.confirm(adminT('learnerView.resetConfirm', { itemId }), adminT('learnerView.resetTitle'), { type: 'warning', confirmButtonText: adminT('learnerView.confirmOk'), cancelButtonText: adminT('learnerView.cancel') })
   } catch { return }
   try {
     await resetSrsItem(current.value, itemId)
-    ElMessage.success('SRS 条目已重置。')
+    ElMessage.success(adminT('learnerView.resetDone'))
     await open(current.value)
   } catch (error) {
-    ElMessage.error(error instanceof Error ? error.message : '重置失败。')
+    ElMessage.error(error instanceof Error ? error.message : adminT('learnerView.resetFailed'))
   }
 }
 
@@ -163,76 +165,76 @@ function dueItems(): Row[] {
     <div class="view-intro">
       <div>
         <span class="admin-header__eyebrow">B3 · LEARNER 360</span>
-        <h2>学员 360°：画像、计划、SRS、测评一览</h2>
-        <p>跨画像/学习/测评三事实主读投影；写动作仅限目标、偏好与 SRS 重置，全部带版本锁、幂等键与审计。身份归 IAM，此处无联系方式。</p>
+        <h2>{{ adminT('learnerView.title') }}</h2>
+        <p>{{ adminT('learnerView.description') }}</p>
       </div>
     </div>
 
     <el-card shadow="never">
       <el-space>
-        <el-input v-model="q" placeholder="按 subject 检索" clearable style="width: 260px" @keyup.enter="search()" />
-        <el-button :disabled="!canRead" @click="search()">检索</el-button>
+        <el-input v-model="q" :placeholder="adminT('learnerView.searchPlaceholder')" clearable style="width: 260px" @keyup.enter="search()" />
+        <el-button :disabled="!canRead" @click="search()">{{ adminT('learnerView.search') }}</el-button>
       </el-space>
       <el-table v-if="subjects.length" :data="subjects" size="small" style="margin-top: 12px" highlight-current-row @row-click="(row: LearnerSubject) => open(row.subjectId)">
         <el-table-column prop="subjectId" label="Subject" min-width="240" />
-        <el-table-column prop="tenantId" label="租户" width="120" />
+        <el-table-column prop="tenantId" :label="adminT('learnerView.colTenant')" width="120" />
       </el-table>
       <div v-if="hasMore" style="margin-top: 12px; text-align: center">
-        <el-button @click="loadMore()">加载更多</el-button>
+        <el-button @click="loadMore()">{{ adminT('learnerView.loadMore') }}</el-button>
       </div>
     </el-card>
 
-    <el-alert v-if="state === 'permission'" title="当前会话没有内容读取权限" type="warning" :closable="false" show-icon />
-    <el-alert v-else-if="state === 'error'" :title="lastError ?? '读取失败'" type="error" :closable="false" show-icon />
+    <el-alert v-if="state === 'permission'" :title="adminT('learnerView.noReadPermission')" type="warning" :closable="false" show-icon />
+    <el-alert v-else-if="state === 'error'" :title="lastError ?? adminT('learnerView.loadFailed')" type="error" :closable="false" show-icon />
 
     <el-card v-if="state === 'ready'" shadow="never">
-      <template #header><span>学员 {{ current }}</span></template>
+      <template #header><span>{{ adminT('learnerView.subjectTitle', { subjectId: current }) }}</span></template>
       <el-tabs v-model="activeTab">
-        <el-tab-pane label="画像与目标" name="profile">
+        <el-tab-pane :label="adminT('learnerView.tabProfile')" name="profile">
           <pre class="json">{{ JSON.stringify(profile, null, 2) }}</pre>
-          <el-divider>代设目标（版本锁）</el-divider>
+          <el-divider>{{ adminT('learnerView.goalDivider') }}</el-divider>
           <el-space wrap>
             <el-select v-model="goalForm.goalType" style="width: 200px">
-              <el-option label="基础" value="FOUNDATION" /><el-option label="四六级（历史兼容）" value="CET_4_6" />
-              <el-option label="考研" value="POSTGRADUATE" /><el-option label="职场" value="WORKPLACE" />
-              <el-option label="语言证书（收敛新值）" value="LANGUAGE_CERT" />
+              <el-option :label="adminT('learnerView.goalFoundation')" value="FOUNDATION" /><el-option :label="adminT('learnerView.goalCet')" value="CET_4_6" />
+              <el-option :label="adminT('learnerView.goalPostgraduate')" value="POSTGRADUATE" /><el-option :label="adminT('learnerView.goalWorkplace')" value="WORKPLACE" />
+              <el-option :label="adminT('learnerView.goalCert')" value="LANGUAGE_CERT" />
             </el-select>
-            <el-input v-if="goalForm.goalType === 'LANGUAGE_CERT'" v-model="goalForm.examName" placeholder="考试名，如 DELF-B2" style="width: 170px" />
-            <el-input v-if="goalForm.goalType === 'LANGUAGE_CERT'" v-model="goalForm.language" placeholder="语种，如 fr-FR" style="width: 140px" />
+            <el-input v-if="goalForm.goalType === 'LANGUAGE_CERT'" v-model="goalForm.examName" :placeholder="adminT('learnerView.examPlaceholder')" style="width: 170px" />
+            <el-input v-if="goalForm.goalType === 'LANGUAGE_CERT'" v-model="goalForm.language" :placeholder="adminT('learnerView.languagePlaceholder')" style="width: 140px" />
             <el-select v-model="goalForm.dailyMinutes" style="width: 120px">
-              <el-option v-for="m in [5, 15, 30, 45]" :key="m" :label="`${m} 分钟`" :value="m" />
+              <el-option v-for="m in [5, 15, 30, 45]" :key="m" :label="adminT('learnerView.dailyMinutes', { minutes: m })" :value="m" />
             </el-select>
-            <el-button type="primary" :loading="busy" @click="saveGoal()">更新目标</el-button>
+            <el-button type="primary" :loading="busy" @click="saveGoal()">{{ adminT('learnerView.updateGoal') }}</el-button>
           </el-space>
-          <el-divider>代改偏好</el-divider>
+          <el-divider>{{ adminT('learnerView.prefDivider') }}</el-divider>
           <el-space wrap>
-            <el-input v-model="prefForm.uiLocale" placeholder="UI 语言" style="width: 130px" />
-            <el-input v-model="prefForm.contentLocale" placeholder="内容语言" style="width: 130px" />
+            <el-input v-model="prefForm.uiLocale" :placeholder="adminT('learnerView.uiLocalePlaceholder')" style="width: 130px" />
+            <el-input v-model="prefForm.contentLocale" :placeholder="adminT('learnerView.contentLocalePlaceholder')" style="width: 130px" />
             <el-select v-model="prefForm.themeMode" style="width: 140px">
-              <el-option label="浅色" value="LIGHT" /><el-option label="深色" value="DARK" />
-              <el-option label="跟随系统" value="SYSTEM" /><el-option label="高对比" value="HIGH_CONTRAST" />
+              <el-option :label="adminT('learnerView.themeLight')" value="LIGHT" /><el-option :label="adminT('learnerView.themeDark')" value="DARK" />
+              <el-option :label="adminT('learnerView.themeSystem')" value="SYSTEM" /><el-option :label="adminT('learnerView.themeContrast')" value="HIGH_CONTRAST" />
             </el-select>
-            <el-button type="primary" :loading="busy" @click="savePreferences()">更新偏好</el-button>
+            <el-button type="primary" :loading="busy" @click="savePreferences()">{{ adminT('learnerView.updatePref') }}</el-button>
           </el-space>
         </el-tab-pane>
-        <el-tab-pane label="计划" name="plans">
+        <el-tab-pane :label="adminT('learnerView.tabPlans')" name="plans">
           <pre class="json">{{ JSON.stringify(plans, null, 2) }}</pre>
         </el-tab-pane>
-        <el-tab-pane label="SRS" name="srs">
+        <el-tab-pane :label="adminT('learnerView.tabSrs')" name="srs">
           <el-table v-if="dueItems().length" :data="dueItems()" size="small">
-            <el-table-column prop="item_id" label="条目" min-width="140" />
-            <el-table-column prop="stage" label="阶段" width="110" />
-            <el-table-column prop="due_at" label="到期" min-width="170" />
-            <el-table-column prop="review_count" label="复习次" width="90" />
-            <el-table-column label="动作" width="110" fixed="right">
+            <el-table-column prop="item_id" :label="adminT('learnerView.colItem')" min-width="140" />
+            <el-table-column prop="stage" :label="adminT('learnerView.colStage')" width="110" />
+            <el-table-column prop="due_at" :label="adminT('learnerView.colDue')" min-width="170" />
+            <el-table-column prop="review_count" :label="adminT('learnerView.colReviews')" width="90" />
+            <el-table-column :label="adminT('learnerView.colActions')" width="110" fixed="right">
               <template #default="scope">
-                <el-button size="small" link @click="resetItem(String(scope.row.item_id ?? ''))">重置</el-button>
+                <el-button size="small" link @click="resetItem(String(scope.row.item_id ?? ''))">{{ adminT('learnerView.actionReset') }}</el-button>
               </template>
             </el-table-column>
           </el-table>
-          <el-empty v-else description="无到期条目" />
+          <el-empty v-else :description="adminT('learnerView.noDue')" />
         </el-tab-pane>
-        <el-tab-pane label="测评" name="assessments">
+        <el-tab-pane :label="adminT('learnerView.tabAssessments')" name="assessments">
           <pre class="json">{{ JSON.stringify(assessments, null, 2) }}</pre>
         </el-tab-pane>
       </el-tabs>

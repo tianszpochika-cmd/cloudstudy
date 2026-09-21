@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { ElMessage } from 'element-plus'
+import { adminT } from '../platform/admin-i18n'
+import '../platform/i18n-batch-b'
 import { executeB13Command, listB13AdminOrders, listB13Metrics, listB13SupportTickets, prepareB13Command } from '../api/b13'
 import { recordList, text, num } from '../domain/b5'
 
@@ -44,7 +46,7 @@ async function load(): Promise<void> {
     tickets.value = unwrapRows(ticketResponse)
     metrics.value = unwrapRows(metricResponse)
   } catch (error) {
-    errorMessage.value = error instanceof Error ? error.message : 'B13 运营数据读取失败。'
+    errorMessage.value = error instanceof Error ? error.message : adminT('commerceView.loadFailed')
   } finally {
     loading.value = false
   }
@@ -57,10 +59,10 @@ async function resolveTicket(ticket: Row): Promise<void> {
     await executeB13Command({
       aggregateType: 'SUPPORT', aggregateRef: ticketId, actionCode: 'SUPPORT_RESOLVE', reasonCode: 'ADMIN_SUPPORT',
     })
-    ElMessage.success('工单命令已提交，等待服务端状态更新。')
+    ElMessage.success(adminT('commerceView.ticketResolved'))
     await load()
   } catch (error) {
-    ElMessage.error(error instanceof Error ? error.message : '工单命令提交失败。')
+    ElMessage.error(error instanceof Error ? error.message : adminT('commerceView.ticketResolveFailed'))
   }
 }
 
@@ -92,10 +94,10 @@ async function prepareRefund(): Promise<void> {
   refundChallenge.value = null
   try {
     refundChallenge.value = parseChallenge(await prepareB13Command(refundBody()))
-    if (!refundChallenge.value) throw new Error('服务端未返回确认挑战。')
-    ElMessage.info('退款已进入二次确认；请核对订单后确认执行。')
+    if (!refundChallenge.value) throw new Error(adminT('commerceView.challengeMissing'))
+    ElMessage.info(adminT('commerceView.refundChallengeReady'))
   } catch (error) {
-    ElMessage.error(error instanceof Error ? error.message : '退款预检失败。')
+    ElMessage.error(error instanceof Error ? error.message : adminT('commerceView.refundPrepareFailed'))
   } finally {
     refundBusy.value = false
   }
@@ -106,12 +108,12 @@ async function confirmRefund(): Promise<void> {
   refundBusy.value = true
   try {
     await executeB13Command(refundBody(), refundChallenge.value.token)
-    ElMessage.success('退款命令已提交，等待服务端状态更新。')
+    ElMessage.success(adminT('commerceView.refundSubmitted'))
     refundChallenge.value = null
     refundOrderRef.value = ''
     await load()
   } catch (error) {
-    ElMessage.error(error instanceof Error ? error.message : '退款命令提交失败。')
+    ElMessage.error(error instanceof Error ? error.message : adminT('commerceView.refundFailed'))
   } finally {
     refundBusy.value = false
   }
@@ -125,48 +127,48 @@ onMounted(() => { void load() })
     <div class="view-intro">
       <div>
         <span class="admin-header__eyebrow">B13 · COMMERCE / OPS / SUPPORT</span>
-        <h2>商业事实只读聚合，运营动作走审批命令。</h2>
-        <p>订单、指标和客服工单来自 Gateway 的脱敏投影；后台不直接写 commerce、analytics 或 learner 领域表。</p>
+        <h2>{{ adminT('commerceView.heading') }}</h2>
+        <p>{{ adminT('commerceView.intro') }}</p>
       </div>
-      <el-button :loading="loading" @click="load">刷新</el-button>
+      <el-button :loading="loading" @click="load">{{ adminT('commerceView.refresh') }}</el-button>
     </div>
 
-    <el-alert title="支付发布闸门：默认关闭" description="B13 当前只验证状态机、回调校验、幂等和恢复路径，不触发真实支付渠道。" type="warning" :closable="false" show-icon />
+    <el-alert :title="adminT('commerceView.payGateTitle')" :description="adminT('commerceView.payGateDesc')" type="warning" :closable="false" show-icon />
     <el-alert v-if="errorMessage" :title="errorMessage" type="error" :closable="false" show-icon />
 
     <el-row :gutter="16">
-      <el-col :span="8"><el-card shadow="never"><span class="b13-stat-label">指标投影</span><strong class="b13-stat-value">{{ metrics.length }}</strong><small>版本化、可回算</small></el-card></el-col>
-      <el-col :span="8"><el-card shadow="never"><span class="b13-stat-label">订单投影</span><strong class="b13-stat-value">{{ orders.length }}</strong><small>脱敏只读</small></el-card></el-col>
-      <el-col :span="8"><el-card shadow="never"><span class="b13-stat-label">待处理工单</span><strong class="b13-stat-value">{{ tickets.length }}</strong><small>SLA 状态由服务端计算</small></el-card></el-col>
+      <el-col :span="8"><el-card shadow="never"><span class="b13-stat-label">{{ adminT('commerceView.statMetrics') }}</span><strong class="b13-stat-value">{{ metrics.length }}</strong><small>{{ adminT('commerceView.statMetricsNote') }}</small></el-card></el-col>
+      <el-col :span="8"><el-card shadow="never"><span class="b13-stat-label">{{ adminT('commerceView.statOrders') }}</span><strong class="b13-stat-value">{{ orders.length }}</strong><small>{{ adminT('commerceView.statOrdersNote') }}</small></el-card></el-col>
+      <el-col :span="8"><el-card shadow="never"><span class="b13-stat-label">{{ adminT('commerceView.statTickets') }}</span><strong class="b13-stat-value">{{ tickets.length }}</strong><small>{{ adminT('commerceView.statTicketsNote') }}</small></el-card></el-col>
     </el-row>
 
     <el-card shadow="never">
-      <template #header><div class="card-header"><span>订单 / 对账投影</span><el-tag type="info">B13-ADM-003</el-tag></div></template>
+      <template #header><div class="card-header"><span>{{ adminT('commerceView.ordersTitle') }}</span><el-tag type="info">B13-ADM-003</el-tag></div></template>
       <el-table :data="orders" stripe>
-        <el-table-column prop="orderRef" label="订单引用" min-width="190" />
-        <el-table-column prop="state" label="状态" width="150" />
-        <el-table-column label="金额" width="150"><template #default="scope">{{ money(scope.row) }}</template></el-table-column>
-        <el-table-column prop="redactionVersion" label="脱敏版本" width="130" />
-        <el-table-column prop="createdAt" label="创建时间" min-width="190" />
+        <el-table-column prop="orderRef" :label="adminT('commerceView.colOrderRef')" min-width="190" />
+        <el-table-column prop="state" :label="adminT('commerceView.colState')" width="150" />
+        <el-table-column :label="adminT('commerceView.colAmount')" width="150"><template #default="scope">{{ money(scope.row) }}</template></el-table-column>
+        <el-table-column prop="redactionVersion" :label="adminT('commerceView.colRedaction')" width="130" />
+        <el-table-column prop="createdAt" :label="adminT('commerceView.colCreated')" min-width="190" />
       </el-table>
-      <el-empty v-if="!orders.length" description="暂无订单投影；这不等同于零订单事实。" />
+      <el-empty v-if="!orders.length" :description="adminT('commerceView.ordersEmpty')" />
     </el-card>
 
     <el-card shadow="never">
-      <template #header><div class="card-header"><span>退款操作</span><el-tag type="danger">二次确认</el-tag></div></template>
-      <p class="b13-refund-note">退款走 COMMERCE_REFUND 审批命令：先预检生成确认挑战，再二次确认执行；服务端幂等，重复提交不会重复退款。</p>
+      <template #header><div class="card-header"><span>{{ adminT('commerceView.refundTitle') }}</span><el-tag type="danger">{{ adminT('commerceView.refundTwoFactor') }}</el-tag></div></template>
+      <p class="b13-refund-note">{{ adminT('commerceView.refundNote') }}</p>
       <div class="b13-refund-form">
-        <el-input v-model="refundOrderRef" placeholder="订单引用（orderRef）" clearable style="max-width: 320px" />
-        <el-select v-model="refundReason" style="width: 220px" aria-label="退款原因">
+        <el-input v-model="refundOrderRef" :placeholder="adminT('commerceView.refundOrderPlaceholder')" clearable style="max-width: 320px" />
+        <el-select v-model="refundReason" style="width: 220px" :aria-label="adminT('commerceView.refundReasonLabel')">
           <el-option v-for="reason in REFUND_REASONS" :key="reason" :label="reason" :value="reason" />
         </el-select>
-        <el-button type="warning" :loading="refundBusy" :disabled="!refundOrderRef.trim()" @click="prepareRefund">预检退款</el-button>
+        <el-button type="warning" :loading="refundBusy" :disabled="!refundOrderRef.trim()" @click="prepareRefund">{{ adminT('commerceView.prepareRefund') }}</el-button>
       </div>
       <div v-if="refundChallenge" class="b13-refund-challenge" role="status">
-        <span>待确认退款：{{ refundChallenge.resourceRef }} · 决策 {{ refundChallenge.decisionId || '服务端已受理' }}</span>
+        <span>{{ adminT('commerceView.pendingRefund', { resourceRef: refundChallenge.resourceRef, decision: refundChallenge.decisionId || adminT('commerceView.challengeAcceptedFallback') }) }}</span>
         <div>
-          <el-button type="danger" :loading="refundBusy" @click="confirmRefund">确认执行退款</el-button>
-          <el-button :disabled="refundBusy" @click="refundChallenge = null">取消</el-button>
+          <el-button type="danger" :loading="refundBusy" @click="confirmRefund">{{ adminT('commerceView.confirmRefund') }}</el-button>
+          <el-button :disabled="refundBusy" @click="refundChallenge = null">{{ adminT('commerceView.cancel') }}</el-button>
         </div>
       </div>
     </el-card>
@@ -174,21 +176,21 @@ onMounted(() => { void load() })
     <el-row :gutter="16">
       <el-col :span="12">
         <el-card shadow="never">
-          <template #header><div class="card-header"><span>客服工单</span><el-tag type="warning">脱敏附件引用</el-tag></div></template>
+          <template #header><div class="card-header"><span>{{ adminT('commerceView.ticketsTitle') }}</span><el-tag type="warning">{{ adminT('commerceView.ticketsTag') }}</el-tag></div></template>
           <el-table :data="tickets" stripe>
-            <el-table-column prop="ticketId" label="工单" min-width="160" /><el-table-column prop="categoryCode" label="分类" width="120" /><el-table-column prop="priority" label="优先级" width="100" /><el-table-column prop="state" label="状态" width="110" />
-            <el-table-column label="动作" width="100"><template #default="scope"><el-button link type="primary" @click="resolveTicket(scope.row)">提交解决</el-button></template></el-table-column>
+            <el-table-column prop="ticketId" :label="adminT('commerceView.colTicket')" min-width="160" /><el-table-column prop="categoryCode" :label="adminT('commerceView.colCategory')" width="120" /><el-table-column prop="priority" :label="adminT('commerceView.colPriority')" width="100" /><el-table-column prop="state" :label="adminT('commerceView.colState')" width="110" />
+            <el-table-column :label="adminT('commerceView.colAction')" width="100"><template #default="scope"><el-button link type="primary" @click="resolveTicket(scope.row)">{{ adminT('commerceView.resolveTicket') }}</el-button></template></el-table-column>
           </el-table>
-          <el-empty v-if="!tickets.length" description="暂无可见工单" />
+          <el-empty v-if="!tickets.length" :description="adminT('commerceView.ticketsEmpty')" />
         </el-card>
       </el-col>
       <el-col :span="12">
         <el-card shadow="never">
-          <template #header><div class="card-header"><span>分析指标</span><el-tag type="success">不把空数据伪装成 0</el-tag></div></template>
+          <template #header><div class="card-header"><span>{{ adminT('commerceView.metricsTitle') }}</span><el-tag type="success">{{ adminT('commerceView.metricsTag') }}</el-tag></div></template>
           <el-table :data="metrics" stripe>
-            <el-table-column prop="metricId" label="指标" min-width="150" /><el-table-column prop="metricVersion" label="口径" width="120" /><el-table-column prop="state" label="状态" width="110" /><el-table-column label="值" width="100"><template #default="scope">{{ scope.row.totalValue ?? scope.row.value ?? '—' }}</template></el-table-column>
+            <el-table-column prop="metricId" :label="adminT('commerceView.colMetric')" min-width="150" /><el-table-column prop="metricVersion" :label="adminT('commerceView.colCaliber')" width="120" /><el-table-column prop="state" :label="adminT('commerceView.colState')" width="110" /><el-table-column :label="adminT('commerceView.colValue')" width="100"><template #default="scope">{{ scope.row.totalValue ?? scope.row.value ?? '—' }}</template></el-table-column>
           </el-table>
-          <el-empty v-if="!metrics.length" description="暂无指标投影" />
+          <el-empty v-if="!metrics.length" :description="adminT('commerceView.metricsEmpty')" />
         </el-card>
       </el-col>
     </el-row>

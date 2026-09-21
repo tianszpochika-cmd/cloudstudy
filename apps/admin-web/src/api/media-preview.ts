@@ -1,4 +1,5 @@
 import { adminClient, AdminApiError } from './client'
+import { adminT } from '../platform/admin-i18n'
 
 /**
  * B2 admin audio preview: short-lived signed URLs only.
@@ -24,17 +25,17 @@ export async function fetchPreviewUrl(assetId: string): Promise<{ url: string; e
     )
     const data = (isRecord(response) && isRecord(response.data) ? response.data : response) as SignedUrlResponse
     const url = typeof data.url === 'string' ? data.url : typeof data.signedUrl === 'string' ? data.signedUrl : ''
-    if (!url) throw new Error('预览地址为空，检查资产是否存在。')
+    if (!url) throw new Error(adminT('apiMediaPreview.emptyUrl'))
     return { url, expiresAt: typeof data.expiresAt === 'string' ? data.expiresAt : null }
   } catch (error) {
     if (error instanceof AdminApiError) throw new Error(error.message)
-    throw error instanceof Error ? error : new Error('预览地址获取失败。')
+    throw error instanceof Error ? error : new Error(adminT('apiMediaPreview.fetchFailed'))
   }
 }
 
 export async function decodePeaks(url: string, buckets = 96): Promise<number[]> {
   const response = await fetch(url)
-  if (!response.ok) throw new Error(`音频下载失败（HTTP ${response.status}）。`)
+  if (!response.ok) throw new Error(adminT('apiMediaPreview.downloadFailed', { status: response.status }))
   const bytes = await response.arrayBuffer()
   const context = new AudioContext()
   try {

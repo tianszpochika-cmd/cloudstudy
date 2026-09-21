@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onUnmounted, ref } from 'vue'
+import { adminT } from '../platform/admin-i18n'
 import { adminI18n, adminI18nAdapter } from '../platform/v2-foundation'
 
 /**
@@ -11,12 +12,12 @@ import { adminI18n, adminI18nAdapter } from '../platform/v2-foundation'
  * crashing (see @englishflow/i18n starter-locales).
  */
 
-const OPTIONS = [
-  { value: 'zh-CN', label: '中文' },
-  { value: 'en-US', label: 'English' },
-  { value: 'fr', label: 'Français（骨架）' },
-  { value: 'de', label: 'Deutsch（骨架）' },
-]
+const localeOptions = computed(() => [
+  { value: 'zh-CN', label: adminT('localeSwitcher.zh') },
+  { value: 'en-US', label: adminT('localeSwitcher.en') },
+  { value: 'fr', label: adminT('localeSwitcher.fr') },
+  { value: 'de', label: adminT('localeSwitcher.de') },
+])
 
 const current = ref(adminI18n.locale)
 const contentLocale = ref(adminI18n.contentLocale)
@@ -27,7 +28,7 @@ const unsubscribe = adminI18n.subscribe((state) => {
 onUnmounted(unsubscribe)
 
 const label = computed(() => {
-  const found = OPTIONS.find((option) => option.value === current.value)
+  const found = localeOptions.value.find((option) => option.value === current.value)
   return found ? found.label : current.value
 })
 
@@ -38,12 +39,12 @@ function switchLocale(value: string): void {
 
 <template>
   <el-dropdown trigger="click" @command="switchLocale">
-    <button class="admin-icon-button" type="button" :aria-label="`界面语言：${label}（内容语言 ${contentLocale} 不变）`">
-      <span aria-hidden="true">文</span><span class="admin-locale-tag">{{ current }}</span>
+    <button class="admin-icon-button" type="button" :aria-label="adminT('localeSwitcher.ariaLabel', { label: label, contentLocale: contentLocale })">
+      <span aria-hidden="true">{{ adminT('localeSwitcher.iconMark') }}</span><span class="admin-locale-tag">{{ current }}</span>
     </button>
     <template #dropdown>
       <el-dropdown-menu>
-        <el-dropdown-item v-for="option in OPTIONS" :key="option.value" :command="option.value" :disabled="option.value === current">
+        <el-dropdown-item v-for="option in localeOptions" :key="option.value" :command="option.value" :disabled="option.value === current">
           {{ option.label }}
         </el-dropdown-item>
       </el-dropdown-menu>
