@@ -1,4 +1,5 @@
 import { createI18n } from '@englishflow/i18n'
+import { adminStarterMessages } from '@englishflow/i18n/starter-locales'
 import { createElementPlusI18nAdapter } from '@englishflow/i18n/adapters'
 import { createThemeController } from '@englishflow/design-tokens'
 import { createElementPlusThemeAdapter } from '@englishflow/design-tokens/adapters'
@@ -31,5 +32,10 @@ export const adminI18n = createI18n({
   },
 })
 export const adminI18nAdapter = createElementPlusI18nAdapter(adminI18n, { localeStorage: browserStorage })
+// B4-09 skeleton: French/German UI messages (sparse by design; missing keys
+// fall back through en-US to zh-CN and never throw). UI locale only —
+// contentLocale is never touched by the switcher.
+adminI18n.registerMessages('fr', adminStarterMessages.fr ?? {})
+adminI18n.registerMessages('de', adminStarterMessages.de ?? {})
 export const adminThemeController = createThemeController({ storage: browserStorage })
 export const adminThemeAdapter = createElementPlusThemeAdapter(adminThemeController, root)

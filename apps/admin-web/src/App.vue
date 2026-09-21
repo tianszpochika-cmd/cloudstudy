@@ -5,6 +5,7 @@ import { ElMessage } from 'element-plus'
 import { useAdminStore } from './stores/admin'
 import { authT } from './auth/i18n'
 import AdminIcon, { type AdminIconName } from './components/AdminIcon.vue'
+import AdminLocaleSwitcher from './components/AdminLocaleSwitcher.vue'
 import { adminThemeController } from './platform/v2-foundation'
 
 const route = useRoute()
@@ -67,6 +68,7 @@ onUnmounted(unsubscribeTheme)
         <div class="admin-header__actions">
           <label class="admin-search"><AdminIcon name="search" :size="17" /><input type="search" placeholder="搜索内容、工单或发布批次" aria-label="搜索内容、工单或发布批次" /></label>
           <button class="admin-icon-button" type="button" :aria-label="themeLabel" @click="toggleTheme"><AdminIcon name="spark" :size="18" /></button>
+          <AdminLocaleSwitcher />
           <button class="admin-icon-button admin-icon-button--notification" type="button" aria-label="查看后台提醒" :aria-expanded="showNotifications" @click="showNotifications = !showNotifications"><span class="notification-dot"></span><AdminIcon name="support" :size="18" /></button>
           <span class="admin-role-chip"><span class="status-dot"></span>权限守卫已启用</span>
         </div>
