@@ -167,10 +167,23 @@ public final class RuleScoringEngine {
         return expected != null && actual.equals(normalizeText(expected));
     }
 
+    /**
+     * B4 localized normalization for free-text comparison. Lowercase-first (ROOT,
+     * pre-existing), then German sharp-s folding ({@code ß→ss}, including the
+     * capital {@code ẞ} via lowercasing), then NFD accent stripping so {@code é}
+     * matches {@code e} and {@code ü} matches {@code u}. Ligatures ({@code œ},
+     * {@code æ}) are intentionally NOT folded and still require exact match.
+     *
+     * <p>Note: database ordering stays on {@code utf8mb4_unicode_ci} (German
+     * phonebook sorting deviates; recorded in the B4-08 delivery doc, collation
+     * unchanged by design).</p>
+     */
     private static String normalizeText(Object value) {
         if (value == null) return "";
-        return Normalizer.normalize(String.valueOf(value), Normalizer.Form.NFC)
-                .trim().replaceAll("\\s+", " ").toLowerCase(Locale.ROOT);
+        String lowered = String.valueOf(value).toLowerCase(Locale.ROOT);
+        String folded = lowered.replace("ß", "ss");
+        String decomposed = Normalizer.normalize(folded, Normalizer.Form.NFD);
+        return decomposed.replaceAll("\\p{M}+", "").trim().replaceAll("\\s+", " ");
     }
 
     private static List<String> strings(Object value, String field) {

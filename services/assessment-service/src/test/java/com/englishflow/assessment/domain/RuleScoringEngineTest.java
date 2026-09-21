@@ -232,8 +232,41 @@ class RuleScoringEngineTest {
                 .containsExactly("DICTATION_WRONG");
     }
 
-    // --- SHADOWING (B4) ---
+    // --- B4-08 localized normalization ---
 
+    @Test
+    void frenchAccentsFoldToBaseLetters() {
+        ContentSnapshot snapshot = snapshot(QuestionType.DICTATION, Map.of("acceptedText", "café"), 10);
+
+        assertThat(engine.score(snapshot, Map.of("text", "cafe")).correct()).isTrue();
+        assertThat(engine.score(snapshot, Map.of("text", "CAFÉ")).correct()).isTrue();
+        assertThat(engine.score(snapshot, Map.of("text", "café")).correct()).isTrue();
+        assertThat(engine.score(snapshot, Map.of("text", "cofe")).correct()).isFalse();
+    }
+
+    @Test
+    void germanSharpSFoldsToDoubleS() {
+        ContentSnapshot snapshot = snapshot(QuestionType.DICTATION, Map.of("acceptedText", "Straße"), 10);
+
+        assertThat(engine.score(snapshot, Map.of("text", "strasse")).correct()).isTrue();
+        assertThat(engine.score(snapshot, Map.of("text", "STRASSE")).correct()).isTrue();
+        assertThat(engine.score(snapshot, Map.of("text", "Straße")).correct()).isTrue();
+        assertThat(engine.score(snapshot, Map.of("text", "strase")).correct()).isFalse();
+    }
+
+    @Test
+    void fillBlankFoldingAppliesToFrenchBlanks() {
+        ContentSnapshot snapshot = snapshot(QuestionType.FILL_BLANK,
+                Map.of("acceptedAnswers", Map.of("b1", List.of("élève"))), 10);
+
+        ScoringResult result = engine.score(snapshot,
+                Map.of("blanks", List.of(Map.of("blankId", "b1", "text", "ELEVE"))));
+
+        assertThat(result.correct()).isTrue();
+        assertThat(result.earnedScore()).isEqualTo(10);
+    }
+
+    // --- SHADOWING (B4) ---
     @Test
     void shadowingResolvesToPendingManualReview() {
         ContentSnapshot snapshot = snapshot(QuestionType.SHADOWING, Map.of("promptText", "Répétez : bonjour"), 10);
