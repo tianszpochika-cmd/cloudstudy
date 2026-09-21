@@ -2,6 +2,14 @@ package com.englishflow.notification.config;
 
 import tools.jackson.databind.ObjectMapper;
 import com.englishflow.notification.adapter.failclosed.FailClosedNotificationAuditEventStore;
+import com.englishflow.notification.adapter.failclosed.FailClosedNotificationSubscriptionStore;
+import com.englishflow.notification.adapter.failclosed.FailClosedNotificationTemplateStore;
+import com.englishflow.notification.adapter.jdbc.JdbcNotificationSubscriptionStore;
+import com.englishflow.notification.adapter.jdbc.JdbcNotificationTemplateStore;
+import com.englishflow.notification.adapter.memory.InMemoryNotificationSubscriptionStore;
+import com.englishflow.notification.adapter.memory.InMemoryNotificationTemplateStore;
+import com.englishflow.notification.port.NotificationSubscriptionStore;
+import com.englishflow.notification.port.NotificationTemplateStore;
 import com.englishflow.notification.adapter.failclosed.FailClosedNotificationConsentStore;
 import com.englishflow.notification.adapter.failclosed.FailClosedNotificationFactStore;
 import com.englishflow.notification.adapter.failclosed.FailClosedOfflineSyncStore;
@@ -137,6 +145,22 @@ public class NotificationPersistenceConfiguration {
         if (properties.isJdbc()) return new JdbcWorkflowPort(requiredJdbc(jdbc));
         if (properties.isMemory()) return new InMemoryWorkflowPort();
         return new FailClosedWorkflowPort();
+    }
+
+    @Bean
+    NotificationSubscriptionStore notificationSubscriptionStore(NotificationPersistenceProperties properties,
+            ObjectProvider<JdbcTemplate> jdbc) {
+        if (properties.isJdbc()) return new JdbcNotificationSubscriptionStore(requiredJdbc(jdbc));
+        if (properties.isMemory()) return new InMemoryNotificationSubscriptionStore();
+        return new FailClosedNotificationSubscriptionStore();
+    }
+
+    @Bean
+    NotificationTemplateStore notificationTemplateStore(NotificationPersistenceProperties properties,
+            ObjectProvider<JdbcTemplate> jdbc) {
+        if (properties.isJdbc()) return new JdbcNotificationTemplateStore(requiredJdbc(jdbc));
+        if (properties.isMemory()) return new InMemoryNotificationTemplateStore();
+        return new FailClosedNotificationTemplateStore();
     }
 
     @Bean

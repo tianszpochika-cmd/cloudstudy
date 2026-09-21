@@ -10,6 +10,8 @@ import com.englishflow.notification.domain.NotificationMessage;
 import com.englishflow.notification.domain.NotificationOutboxEvent;
 import com.englishflow.notification.domain.NotificationPreference;
 import com.englishflow.notification.domain.NotificationPrincipalContext;
+import com.englishflow.notification.domain.NotificationSubscription;
+import com.englishflow.notification.domain.NotificationTemplate;
 import com.englishflow.notification.domain.SafeEventAttributes;
 import com.englishflow.notification.domain.WorkflowState;
 import com.englishflow.notification.domain.WorkflowTask;
@@ -17,6 +19,8 @@ import com.englishflow.notification.port.DeliveryTransport;
 import com.englishflow.notification.port.NotificationAuditEventPort;
 import com.englishflow.notification.port.NotificationConsentPort;
 import com.englishflow.notification.port.NotificationFactStore;
+import com.englishflow.notification.port.NotificationSubscriptionStore;
+import com.englishflow.notification.port.NotificationTemplateStore;
 import com.englishflow.notification.port.NotificationIdGenerator;
 import com.englishflow.notification.port.OutboxEventPort;
 import com.englishflow.notification.port.StoredIdempotency;
@@ -42,12 +46,14 @@ public final class NotificationApplicationService {
     private final Duration retryBackoff;
     private final NotificationAuditEventPort audit;
     private final NotificationConsentPort consents;
+    private final NotificationSubscriptionStore subscriptions;
+    private final NotificationTemplateStore templates;
 
     public NotificationApplicationService(NotificationFactStore store, WorkflowPort workflow,
             DeliveryTransport transport, OutboxEventPort events, NotificationIdGenerator ids,
             NotificationAccessPolicy access, Clock clock, int maxDeliveryAttempts, Duration retryBackoff) {
         this(store, workflow, transport, events, ids, access, clock, maxDeliveryAttempts, retryBackoff,
-                noopAudit(), noopConsent());
+                noopAudit(), noopConsent(), noopSubscriptions(), noopTemplates());
     }
 
     public NotificationApplicationService(NotificationFactStore store, WorkflowPort workflow,
@@ -55,13 +61,22 @@ public final class NotificationApplicationService {
             NotificationAccessPolicy access, Clock clock, int maxDeliveryAttempts, Duration retryBackoff,
             NotificationAuditEventPort audit) {
         this(store, workflow, transport, events, ids, access, clock, maxDeliveryAttempts, retryBackoff,
-                audit, noopConsent());
+                audit, noopConsent(), noopSubscriptions(), noopTemplates());
     }
 
     public NotificationApplicationService(NotificationFactStore store, WorkflowPort workflow,
             DeliveryTransport transport, OutboxEventPort events, NotificationIdGenerator ids,
             NotificationAccessPolicy access, Clock clock, int maxDeliveryAttempts, Duration retryBackoff,
             NotificationAuditEventPort audit, NotificationConsentPort consents) {
+        this(store, workflow, transport, events, ids, access, clock, maxDeliveryAttempts, retryBackoff,
+                audit, consents, noopSubscriptions(), noopTemplates());
+    }
+
+    public NotificationApplicationService(NotificationFactStore store, WorkflowPort workflow,
+            DeliveryTransport transport, OutboxEventPort events, NotificationIdGenerator ids,
+            NotificationAccessPolicy access, Clock clock, int maxDeliveryAttempts, Duration retryBackoff,
+            NotificationAuditEventPort audit, NotificationConsentPort consents,
+            NotificationSubscriptionStore subscriptions, NotificationTemplateStore templates) {
         if (maxDeliveryAttempts < 1 || retryBackoff.isNegative() || retryBackoff.isZero()) {
             throw new IllegalArgumentException("delivery policy is invalid");
         }
@@ -76,6 +91,8 @@ public final class NotificationApplicationService {
         this.retryBackoff = retryBackoff;
         this.audit = java.util.Objects.requireNonNull(audit, "audit");
         this.consents = java.util.Objects.requireNonNull(consents, "consents");
+        this.subscriptions = java.util.Objects.requireNonNull(subscriptions, "subscriptions");
+        this.templates = java.util.Objects.requireNonNull(templates, "templates");
     }
 
     public List<NotificationPreference> preferences(NotificationPrincipalContext context) {
@@ -230,8 +247,21 @@ public final class NotificationApplicationService {
                 message.notificationType(), message.channel()).map(NotificationPreference::enabled).orElse(true);
         boolean consentGranted = !message.templateOnly()
                 || consents.findConsent(context.tenantId(), context.principalId(), message.channel()).orElse(false);
-        boolean enabled = preferenceEnabled && consentGranted;
-        String filterCode = !preferenceEnabled ? "PREFERENCE_DISABLED" : "CONSENT_NOT_GRANTED";
+        // M6-001 managed gates: an explicit opt-out row suppresses delivery, and a
+        // template-only message requires an ACTIVE template row (exact locale, else
+        // zh-CN). Absent subscription rows stay subscribed; consent remains the
+        // send-time gate and is never replaced by these tables.
+        boolean subscriptionOn = subscriptions.findSubscription(context.tenantId(), context.principalId(),
+                message.notificationType(), message.channel())
+                .map(NotificationSubscription::subscribed).orElse(true);
+        boolean templateOk = !message.templateOnly() || templates.findActive(message.templateKey(),
+                message.templateVersion(), message.locale())
+                .map(template -> template.status() == NotificationTemplate.TemplateStatus.ACTIVE)
+                .orElse(false);
+        boolean enabled = preferenceEnabled && consentGranted && subscriptionOn && templateOk;
+        String filterCode = !preferenceEnabled ? "PREFERENCE_DISABLED"
+                : !consentGranted ? "CONSENT_NOT_GRANTED"
+                : !subscriptionOn ? "SUBSCRIPTION_OPTED_OUT" : "TEMPLATE_NOT_ACTIVE";
         WorkflowTask task = existingWorkflow;
 
         DeliveryTransport.DeliveryOutcome outcome;
@@ -337,6 +367,37 @@ public final class NotificationApplicationService {
 
     private static NotificationConsentPort noopConsent() {
         return (tenantId, principalId, channel) -> java.util.Optional.of(true);
+    }
+
+    private static NotificationSubscriptionStore noopSubscriptions() {
+        return new NotificationSubscriptionStore() {
+            @Override
+            public java.util.Optional<com.englishflow.notification.domain.NotificationSubscription> findSubscription(
+                    String tenantId, String principalId, String notificationType,
+                    com.englishflow.notification.domain.NotificationChannel channel) {
+                return java.util.Optional.empty();
+            }
+
+            @Override
+            public com.englishflow.notification.domain.NotificationSubscription saveSubscription(
+                    com.englishflow.notification.domain.NotificationSubscription subscription) {
+                return subscription;
+            }
+        };
+    }
+
+    private static NotificationTemplateStore noopTemplates() {
+        return new NotificationTemplateStore() {
+            @Override
+            public java.util.Optional<com.englishflow.notification.domain.NotificationTemplate> findTemplate(
+                    String templateKey, String templateVersion, String locale) {
+                return java.util.Optional.empty();
+            }
+
+            @Override
+            public void saveTemplate(com.englishflow.notification.domain.NotificationTemplate template) {
+            }
+        };
     }
 
     private static void ensureSameFingerprint(StoredIdempotency stored, String fingerprint) {

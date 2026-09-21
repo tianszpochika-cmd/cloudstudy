@@ -14,6 +14,8 @@ import com.englishflow.notification.port.NotificationAuditEventPort;
 import com.englishflow.notification.port.NotificationConsentPort;
 import com.englishflow.notification.port.NotificationFactStore;
 import com.englishflow.notification.port.NotificationIdGenerator;
+import com.englishflow.notification.port.NotificationSubscriptionStore;
+import com.englishflow.notification.port.NotificationTemplateStore;
 import com.englishflow.notification.port.OfflineSyncStore;
 import com.englishflow.notification.port.OutboxEventPort;
 import com.englishflow.notification.port.TrustedEventReceiptPort;
@@ -66,9 +68,11 @@ public class NotificationServiceConfiguration {
             @Value("${notification.max-delivery-attempts:5}") int maxAttempts,
             @Value("${notification.retry-backoff:PT30S}") Duration retryBackoff,
             NotificationAuditEventPort audit,
-            NotificationConsentPort consents) {
+            NotificationConsentPort consents,
+            NotificationSubscriptionStore subscriptions,
+            NotificationTemplateStore templates) {
         return new NotificationApplicationService(store, workflow, transport, events, ids, access,
-                clock, maxAttempts, retryBackoff, audit, consents);
+                clock, maxAttempts, retryBackoff, audit, consents, subscriptions, templates);
     }
 
     @Bean
