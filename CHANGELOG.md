@@ -1,5 +1,6 @@
 # Changelog
 
+- [T15-20260921] **core-api 禁止引用清单复核（M5-001 前置）。** 清单与检查器已由 f3288a4b 交付（14 条），M5 台账说法过期：在含今晚全部修改的当前树上重跑 `check-core-api-deny-list`，PASS 零违反。无代码变更。
 - [T14-20260921] **import/batch 复核与加固。** 逐行隔离：非业务异常改单行 FAILED 不中断整批；批量 UPSERT 接入版本锁（stale pin 得 LEXEME_VERSION_CONFLICT）；非对象条目计入 total/failed 不再缩水。实测混合批次：total 对得上（accepted+skipped+failed）、坏行失败好行照收。乐观锁复核结论：learner 提交是真 CAS（`WHERE profile_version=?` + 内存同步比对），content 为“调用方观测值检查 + 存储盲写”（并发竞态仍在，属 M3-002 本体改造，不在本批）。content 单测 196 全绿。
 - [T13-20260921] **M2-004 取证两项（Batch C/D 相关）。** 跨 schema 写 DB 层拒绝实测：`svc_content` 写 `learner_service.learner_profile` 得 ERROR 1142，自 schema 读写正常；B1–B4 新表（lexeme/pronunciation/item/schedule/learner V11）逐表核验 `tenant_id` 列 + `CHECK(tenant='platform')` + 查询侧全 WHERE tenant（运行时 403 越界同步得证）。剩余 Batch C（media/gamification/notification 等旧表补 tenant 列）与 Batch D（独立口令/Redis ACL/证据升级）仍在 M2-004 名下，需按 P1R 流程独立评审，不在本批。
 - [T11-20260921] **听力真波形。** B11 页早已有真实提取（M5 台账说法过期），B3 页仍是 36 根装饰柱：给 B3 接入同一 `platform/waveform` 提取（授权字节→`data-source="extracted"`，失败回装饰），浏览器真解码验证（合成 1s 正弦：96 peaks/方差 0.6151/48 柱保持形态/canonical 格式合法）。新增 c10 锁单测。类型通过。服务端波形预计算与转码仍无（media 无实现），超出本地项。
