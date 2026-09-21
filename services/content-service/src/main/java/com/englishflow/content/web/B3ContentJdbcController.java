@@ -221,16 +221,39 @@ public final class B3ContentJdbcController {
 
     @GetMapping("/phonetics/catalog")
     public Map<String, Object> phonetics(Authentication authentication,
-            @RequestParam(required = false) String setCode) {
+            @RequestParam(required = false) String setCode,
+            @RequestParam(required = false) String language) {
         principal(authentication);
-        return list("PHONETICS", "PHONEME", 64, null, null);
+        return list(phoneticsDomain(language), "PHONEME", 64, null, null);
     }
 
     @GetMapping("/phonetics/minimal-pairs")
     public Map<String, Object> minimalPairs(Authentication authentication,
-            @RequestParam(defaultValue = "20") int limit) {
+            @RequestParam(defaultValue = "20") int limit,
+            @RequestParam(required = false) String language) {
         principal(authentication);
-        return list("PHONETICS", "MINIMAL_PAIR", limit, null, null);
+        return list(phoneticsDomain(language), "MINIMAL_PAIR", limit, null, null);
+    }
+
+    /**
+     * B4 language ribbon for the phonetics catalog. Blank or English input keeps
+     * reading the legacy {@code PHONETICS} domain (48 English rows); any other
+     * BCP-47 language reads its own {@code PHONETICS-{PRIMARY}} domain so French
+     * rows never leak into the English learner page.
+     */
+    static String phoneticsDomain(String language) {
+        if (language == null || language.isBlank()) {
+            return "PHONETICS";
+        }
+        String tag = language.trim();
+        String primary = tag.contains("-") ? tag.substring(0, tag.indexOf('-')) : tag;
+        if (!primary.matches("[A-Za-z]{2,3}")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "language must be a BCP-47 tag");
+        }
+        if (primary.equalsIgnoreCase("en")) {
+            return "PHONETICS";
+        }
+        return "PHONETICS-" + primary.toUpperCase(java.util.Locale.ROOT);
     }
 
     private Map<String, Object> list(String domain, String resourceType, int limit, String filter, String filterKey) {

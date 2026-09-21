@@ -301,7 +301,10 @@ onMounted(() => { void load() })
         <h2>单词总控：每个单词、每个音标、每个播音</h2>
         <p>行级单词主数据归 content-service 所有；发音只存 media 资产引用，音频字节不经过内容服务。全部写动作需幂等键与审计。</p>
       </div>
-      <el-button type="primary" :disabled="!canWrite" @click="openCreate">新建单词</el-button>
+      <el-space>
+        <el-button @click="$router.push('/phonetics')">音标库浏览</el-button>
+        <el-button type="primary" :disabled="!canWrite" @click="openCreate">新建单词</el-button>
+      </el-space>
     </div>
 
     <el-card shadow="never">

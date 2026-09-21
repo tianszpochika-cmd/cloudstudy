@@ -13,6 +13,7 @@ const routes: RouteRecordRaw[] = [
   { path: '/lexemes', name: 'admin-lexemes', component: () => import('../views/AdminLexemeView.vue'), meta: { requiresAuth: true, permission: 'admin.content.read' } },
   { path: '/items', name: 'admin-items', component: () => import('../views/AdminItemView.vue'), meta: { requiresAuth: true, permission: 'admin.content.read' } },
   { path: '/learners', name: 'admin-learners', component: () => import('../views/AdminLearnerView.vue'), meta: { requiresAuth: true, permission: 'admin.content.read' } },
+  { path: '/phonetics', name: 'admin-phonetics', component: () => import('../views/AdminPhoneticsView.vue'), meta: { requiresAuth: true, permission: 'admin.content.read' } },
   { path: '/commerce', name: 'admin-commerce', component: () => import('../views/AdminCommerceView.vue'), meta: { requiresAuth: true, permission: 'admin.commerce.read' } },
   { path: '/audit', name: 'admin-audit', component: () => import('../views/AdminAuditView.vue'), meta: { requiresAuth: true, permission: 'admin.audit.read' } },
   { path: '/release', name: 'admin-release', component: () => import('../views/AdminB6ReleaseView.vue'), meta: { requiresAuth: true, permission: 'admin.release.read' } },

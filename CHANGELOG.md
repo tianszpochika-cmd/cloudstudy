@@ -1,5 +1,7 @@
 # Changelog
 
+- [TENANT-B4-02-20260921] **单租户直营 B4-02：音标库分语言。** `b3_content_experience` 以 `PHONETICS-FR` 域新增 37 个法语音素（鼻化元音/半元音全覆盖）+ 4 组最小对立对（V20，英语 48 项不动），B3 控制器 `phonetics/minimal-pairs` 加可选 `language` 参数（缺省英语兼容，非法 400），管理端新增只读 `/phonetics` 音标页（英/法切换，走既有 learner 通道，网关零新增）。content-service 180 测试全绿（含新增域映射 12/12）、其余三服务全绿，admin-web 类型与构建通过；契约合并零漂移，门禁结论与 B4-01 一致、无新增。详见[单租户直营 B4-02](docs/06-design/v2-980plus/single-tenant-direct-operation/B4-02-phonetics-language.md)。未做真实运行验收，不改变 P1R 状态。
+
 - [TENANT-B4-01-20260921] **单租户直营 B4-01：单词语言缎带。** `lexeme.language` 一等字段（BCP-47，缺省 `en-US`，V19 加列/索引/默认值；包命名规范 `VOCAB-{LANG}-PHASE1`，新建包 locale 跟首词语言），`accent` 开锁为开放 tag（美英慢速保留约定值，V19 扩列+DROP CHECK），`senses.meaningLocal` 通用释义位（`meaningCn` 保留兼容，`phoneticUS/UK` 标 legacy）。契约仅扩展 schema/描述/可选查询参数（OpenAPI 路径零新增）。content-service 168 测试全绿（含新增语言默认/过滤/非法语言/开放口音端到端 6 项）、learner/learning/assessment 全绿，admin-web 类型与构建通过、单词页新增语言列+语言/词包筛选。契约门禁 21 条与网关 22 条均与改造前逐条一致、无新增。详见[单租户直营 B4-01](docs/06-design/v2-980plus/single-tenant-direct-operation/B4-01-language-ribbon.md)。未做真实运行验收，不改变 P1R 状态。
 
 - [TENANT-B3-360-20260921] **单租户直营 B3：学员 360° 与排期执行。** 画像/学习/测评三事实主新增租户管理读写端点（目标/偏好代管、SRS 重置、测评摘要只读），网关新增 6 条学员路由并翻转排期任务路由（三方一致、parity 4/4），包定时发布执行与灰度标签落库。网关门禁 19→22 条（仅计数/冻结类，7 个新投影零实现错误，重冻包见交付文档，不自行改门禁数字）。gateway 94、content 161、learner/learning/assessment 全绿，管理端新增 `/learners` 页。详见[单租户直营 B3](docs/06-design/v2-980plus/single-tenant-direct-operation/B3-learner-360.md)。未做真实运行验收，不改变 P1R 状态。
