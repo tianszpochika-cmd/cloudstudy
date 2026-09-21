@@ -1,5 +1,6 @@
 # Changelog
 
+- [T19-20260921] **audit-service 拉起与网关审计全链。** 18099 启动（schema/凭据就绪），`verify-gateway-audit-ingest --write` 8/8 通过：网关 401 拒绝→审计包络→canonical ingest→恰好一条 fact + 一条 receipt，requestId/traceId/auditId 可关联、无凭证 material。evidence 文件为本次通过的时间戳刷新。无代码变更。
 - [T18-20260921] **gamification Kafka 入账链路打通验证。** 台账“HTTP 直推”说法过期：`TrustedCompletionKafkaConsumer`（消费 `platform.learning.v1`、同幂等结算、重试+DLQ）已存在但零单测、无运行证据。补 6 项单测（映射/拒绝/退避/结算键/畸形进 DLQ/耗尽进 DLQ）；运行时灌合约记录→xp_ledger +15、重放不重复结算。遗留：learning 侧尚无 relay（v2 事件只在 outbox 表，见 T21），consumer 要的 subjectRef/completionId 与 learning 载荷字段名存在映射缺口，relay 设计时必须对齐。
 - [T17-20260921] **social 持久化实测（M7-004）。** 台账“内存实现”说法已过期：local-real 下 JDBC 控制器直写 9 张 soc_* 表。运行时证明：建房列表→join→DB 落 member+seat(OCCUPIED+lease)→重启服务→同一 membership 行仍 ACTIVE、重 join 无重复。默认 profile 的内存 SocialService 仍是 test-only。无代码变更。
 - [T16-20260921] **通知订阅/模板实体落地（M6-001）。** 表（V7）与 domain 早已存在但无读写：新增 port + JDBC/memory/failclosed 三件套 + deliver() 发送时门禁（显式退订→SUBSCRIPTION_OPTED_OUT、有模板消息缺 ACTIVE 行→TEMPLATE_NOT_ACTIVE；无订阅行默认订阅、consent 仍是发送门）。单测 102 全绿（新增 6）；运行时 queue→DELIVERED，插退订行后 queue→CANCELLED/SUBSCRIPTION_OPTED_OUT（DB 直查），行已清理。

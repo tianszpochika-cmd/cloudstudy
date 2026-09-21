@@ -1,9 +1,9 @@
 {
   "schema": "platform.gateway-audit-ingest-check.v1",
   "taskId": "P1R-M2-006",
-  "capturedAt": "2026-09-14T16:54:16.250Z",
+  "capturedAt": "2026-09-21T18:49:21.380Z",
   "gateway": "http://127.0.0.1:18070",
-  "requestId": "p1r-m2-006-1789404855043",
+  "requestId": "p1r-m2-006-1790016559288",
   "assertions": [
     {
       "name": "the gateway refused the request, so an event was produced",
@@ -14,8 +14,8 @@
     {
       "name": "the caller was given a request id to correlate with",
       "ok": true,
-      "observed": "p1r-m2-006-1789404855043",
-      "expected": "p1r-m2-006-1789404855043"
+      "observed": "p1r-m2-006-1790016559288",
+      "expected": "p1r-m2-006-1790016559288"
     },
     {
       "name": "exactly one audit fact was stored",
@@ -44,8 +44,8 @@
     {
       "name": "the stored request id matches the one the caller saw",
       "ok": true,
-      "observed": "p1r-m2-006-1789404855043",
-      "expected": "p1r-m2-006-1789404855043"
+      "observed": "p1r-m2-006-1790016559288",
+      "expected": "p1r-m2-006-1790016559288"
     },
     {
       "name": "the stored envelope carries no credential material",
