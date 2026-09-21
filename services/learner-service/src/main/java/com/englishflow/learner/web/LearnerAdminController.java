@@ -92,7 +92,7 @@ public final class LearnerAdminController {
                         textOrNull(input.get("startingLevel")),
                         textOrNull(input.get("examName")),
                         textOrNull(input.get("language")),
-                        version(input.get("expectedVersion")),
+                        version(input.get("expectedStateVersion"), input.get("expectedVersion")),
                         requireKey(idempotencyKey),
                         ids.requestId(), ids.traceId(), admin.subjectId());
             }
@@ -105,7 +105,7 @@ public final class LearnerAdminController {
                         text(input.get("themeMode")),
                         text(input.get("timezone")),
                         bool(input.get("reducedMotion")),
-                        version(input.get("expectedVersion")),
+                        version(input.get("expectedStateVersion"), input.get("expectedVersion")),
                         requireKey(idempotencyKey),
                         ids.requestId(), ids.traceId(), admin.subjectId());
             }
@@ -202,11 +202,22 @@ public final class LearnerAdminController {
                 "dailyMinutes must be a number");
     }
 
-    private static Long version(Object value) {
+    /**
+     * Contract field {@code expectedStateVersion}; the pre-contract {@code expectedVersion}
+     * alias is accepted for backward compatibility. A present-but-unparseable value is
+     * rejected instead of silently dropping the optimistic-concurrency guard.
+     */
+    private static Long version(Object primary, Object legacy) {
+        Object value = primary == null ? legacy : primary;
+        if (value == null) {
+            return null;
+        }
         if (value instanceof Number number && number.longValue() >= 0) {
             return number.longValue();
         }
-        return null;
+        throw new com.englishflow.learner.domain.LearnerDomainException(
+                com.englishflow.learner.domain.LearnerDecisionCode.INVALID_CONTEXT,
+                "expectedStateVersion must be a non-negative integer");
     }
 
     private static boolean bool(Object value) {

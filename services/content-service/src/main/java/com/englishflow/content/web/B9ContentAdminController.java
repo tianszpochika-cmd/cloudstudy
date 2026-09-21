@@ -242,6 +242,7 @@ public final class B9ContentAdminController {
             }
             case "LEXEME_UPSERT" -> {
                 requireEditor(actor);
+                checkLexemeVersion(contentCode, text(input.get("lexemeId")), input, actor);
                 LexemeCommandService.LexemeResult outcome = lexemes.upsert(
                         contentCode, record(input.get("lexeme")), text(input.get("lexemeId")),
                         actor, key(key + ":lexeme:upsert"), context);
@@ -309,6 +310,7 @@ public final class B9ContentAdminController {
             }
             case "ITEM_UPSERT" -> {
                 requireEditor(actor);
+                checkItemVersion(contentCode, text(input.get("itemId")), input, actor);
                 ContentItemCommandService.ItemResult outcome = contentItems.upsert(
                         contentCode, record(input.get("item")), text(input.get("itemId")),
                         actor, key(key + ":item:upsert"), context);
@@ -638,6 +640,9 @@ public final class B9ContentAdminController {
         if (!(expected instanceof Number number) || number.longValue() <= 0) {
             return;
         }
+        if (lexemeId == null || lexemeId.isBlank()) {
+            return;
+        }
         Lexeme current;
         try {
             current = lexemes.current(packCode, lexemeId, actor);
@@ -784,6 +789,9 @@ public final class B9ContentAdminController {
         if (!(expected instanceof Number number) || number.longValue() <= 0) {
             return;
         }
+        if (itemId == null || itemId.isBlank()) {
+            return;
+        }
         ContentItem current;
         try {
             current = contentItems.current(packCode, itemId, actor);
@@ -875,13 +883,11 @@ public final class B9ContentAdminController {
     }
 
     private Map<String, Object> withScheduledTasks(Map<String, Object> state, String packCode, ContentActor actor) {
-        try {
-            List<Map<String, Object>> tasks = schedules.listByPack(packCode, 20, actor).stream()
-                    .map(B9ContentAdminController::scheduleView).toList();
-            state.put("scheduledTasks", tasks);
-        } catch (ContentOperationException unavailable) {
-            state.put("scheduledTasks", List.of());
-        }
+        // Store failures propagate to the shared 503 mapping; an empty task list
+        // must mean "no tasks", never "the schedule store is down".
+        List<Map<String, Object>> tasks = schedules.listByPack(packCode, 20, actor).stream()
+                .map(B9ContentAdminController::scheduleView).toList();
+        state.put("scheduledTasks", tasks);
         return state;
     }
 

@@ -36,6 +36,10 @@ public final class InMemoryLexemeRepository implements LexemeRepository {
             String language, int limit, String afterLexemeId) {
         String needle = query == null ? "" : query.trim().toLowerCase();
         String ribbon = language == null ? "" : language.trim();
+        // Keyset anchor resolved to its (headword, lexemeId) position, mirroring
+        // the JDBC tuple predicate; an unknown cursor restarts from the first page.
+        Optional<Lexeme> anchor = afterLexemeId == null || afterLexemeId.isBlank()
+                ? Optional.empty() : findById(afterLexemeId.trim());
         return lexemes.values().stream()
                 .filter(lexeme -> lexeme.packCode().equals(packCode))
                 .filter(lexeme -> needle.isEmpty() || lexeme.headword().toLowerCase().contains(needle))
@@ -44,10 +48,14 @@ public final class InMemoryLexemeRepository implements LexemeRepository {
                 .filter(lexeme -> ribbon.isEmpty() || lexeme.language().equalsIgnoreCase(ribbon))
                 .sorted(Comparator.comparing(Lexeme::headword, String.CASE_INSENSITIVE_ORDER)
                         .thenComparing(Lexeme::lexemeId))
-                .filter(lexeme -> afterLexemeId == null || afterLexemeId.isBlank()
-                        || lexeme.lexemeId().compareTo(afterLexemeId) > 0)
+                .filter(lexeme -> anchor.isEmpty() || afterAnchor(lexeme, anchor.get()))
                 .limit(Math.max(1, Math.min(limit, 100)))
                 .toList();
+    }
+
+    private static boolean afterAnchor(Lexeme row, Lexeme anchor) {
+        int headwords = String.CASE_INSENSITIVE_ORDER.compare(row.headword(), anchor.headword());
+        return headwords > 0 || (headwords == 0 && row.lexemeId().compareTo(anchor.lexemeId()) > 0);
     }
 
     @Override

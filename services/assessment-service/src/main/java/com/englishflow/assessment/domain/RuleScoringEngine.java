@@ -82,6 +82,11 @@ public final class RuleScoringEngine {
     private ScoringResult text(ContentSnapshot snapshot, Map<String, Object> answer, String hash, String defaultCause) {
         String actual = normalizeText(answer.get("text"));
         Object expectedValue = first(snapshot.answerRules(), "acceptedAnswers", "acceptedText");
+        if (expectedValue == null) {
+            // A text-scored item without answer rules is a content misconfiguration:
+            // reject it like the other rule-driven branches instead of scoring 0.
+            return rejected(snapshot, hash, "acceptedAnswers rule is required");
+        }
         boolean correct = matchesText(actual, expectedValue);
         return result(snapshot, correct ? snapshot.maxScore() : 0, correct, hash,
                 correct ? List.of() : List.of(cause(snapshot, false, defaultCause)));

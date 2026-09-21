@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +36,7 @@ import org.springframework.web.server.ResponseStatusException;
  */
 @RestController
 @RequestMapping("/internal/v1/learning/admin")
-@ConditionalOnProperty(prefix = "learning.persistence", name = "mode", havingValue = "jdbc")
+@ConditionalOnExpression("'jdbc'.equals('${learning.persistence.mode:fail-closed}') || 'mysql'.equals('${learning.persistence.mode:fail-closed}')")
 public class LearningAdminController {
 
     private static final String TENANT = "platform";
@@ -55,7 +55,7 @@ public class LearningAdminController {
         requireRead(authentication);
         String subject = validSubject(subjectId);
         List<Map<String, Object>> rows = jdbc.queryForList(
-                "SELECT plan_id, status, target_minutes, plan_version, created_at, updated_at "
+                "SELECT plan_id, status, target_minutes, plan_version, updated_at "
                         + "FROM b25_learning_plan WHERE principal_id = ? AND tenant_id = ? ORDER BY plan_id DESC LIMIT 20",
                 subject, TENANT);
         Map<String, Object> counts = one(

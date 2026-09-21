@@ -232,6 +232,24 @@ class RuleScoringEngineTest {
                 .containsExactly("DICTATION_WRONG");
     }
 
+    @Test
+    void dictationWithoutAnswerRulesIsRejectedAsMisconfiguration() {
+        ContentSnapshot snapshot = snapshot(QuestionType.DICTATION, Map.of("errorCategory", "X"), 10);
+
+        ScoringResult result = engine.score(snapshot, Map.of("text", "bonjour"));
+
+        assertThat(result.status()).isEqualTo(ScoringStatus.REJECTED);
+    }
+
+    @Test
+    void spellInputWithoutAnswerRulesIsRejectedAsMisconfiguration() {
+        ContentSnapshot snapshot = snapshot(QuestionType.SPELL_INPUT, Map.of("errorCategory", "X"), 10);
+
+        ScoringResult result = engine.score(snapshot, Map.of("text", "apple"));
+
+        assertThat(result.status()).isEqualTo(ScoringStatus.REJECTED);
+    }
+
     // --- B4-08 localized normalization ---
 
     @Test

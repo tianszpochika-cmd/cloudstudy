@@ -85,10 +85,10 @@ public final class JdbcLearnerProfileStore implements LearnerProfileStore {
     public List<LearnerTenantScope> search(String tenantId, String query, int limit) {
         String needle = query == null ? "" : query.trim();
         List<String> owners = jdbc.query(
-                "SELECT owner_id FROM learner_profile WHERE tenant_id = ? AND (? = '' OR owner_id LIKE ?) "
+                "SELECT owner_id FROM learner_profile WHERE tenant_id = ? AND (? = '' OR owner_id LIKE ? ESCAPE '\\\\') "
                         + "ORDER BY owner_id LIMIT ?",
                 (resultSet, row) -> resultSet.getString("owner_id"),
-                tenantId, needle, needle.isEmpty() ? "" : "%" + needle + "%",
+                tenantId, needle, needle.isEmpty() ? "" : "%" + escapeLike(needle) + "%",
                 Math.max(1, Math.min(limit, 100)));
         return owners.stream().map(owner -> {
             try {
@@ -97,6 +97,10 @@ public final class JdbcLearnerProfileStore implements LearnerProfileStore {
                 return null;
             }
         }).filter(java.util.Objects::nonNull).toList();
+    }
+
+    private static String escapeLike(String value) {
+        return value.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_");
     }
 
     @Override

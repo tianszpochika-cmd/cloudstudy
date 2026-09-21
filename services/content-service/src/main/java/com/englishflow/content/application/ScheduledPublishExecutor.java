@@ -56,18 +56,41 @@ public final class ScheduledPublishExecutor {
         int executed = 0;
         int failed = 0;
         for (ScheduledPublishTask task : due) {
+            boolean succeeded;
             try {
                 execute(task, now);
                 task.markExecuted(now);
-                tasks.save(task);
-                executed += 1;
+                succeeded = true;
             } catch (ContentOperationException error) {
                 task.markFailed(error.code(), now);
-                tasks.save(task);
+                succeeded = false;
+            } catch (RuntimeException error) {
+                // A non-domain failure (JDBC outage, serialization, NPE) must fail
+                // only its own task; the rest of the batch still runs.
+                task.markFailed("SCHEDULE_EXECUTION_FAILED", now);
+                succeeded = false;
+            }
+            if (succeeded && persist(task)) {
+                executed += 1;
+            } else {
                 failed += 1;
             }
         }
         return new ExecutionReport(executed, failed, now);
+    }
+
+    /**
+     * Records the terminal task state. A store outage here still fails only this
+     * task: it stays SCHEDULED in the store and is retried on the next relay tick
+     * (execution itself is idempotent per task id).
+     */
+    private boolean persist(ScheduledPublishTask task) {
+        try {
+            tasks.save(task);
+            return true;
+        } catch (RuntimeException error) {
+            return false;
+        }
     }
 
     private void execute(ScheduledPublishTask task, Instant now) {
@@ -92,14 +115,15 @@ public final class ScheduledPublishExecutor {
                 ContentDefinition pack = contentsRepo.findByCode(task.packCode())
                         .orElseThrow(() -> ContentOperationException.notFound("CONTENT_NOT_FOUND",
                                 "scheduled pack does not exist"));
-                long packVersion = pack.versions().stream()
-                        .mapToLong(ContentVersion::stateVersion).max().orElse(0L);
-                checkPin(task, packVersion);
                 ContentVersion target = pack.versions().stream()
                         .filter(version -> version.status() == ContentVersionStatus.APPROVED)
                         .reduce((left, right) -> right)
                         .orElseThrow(() -> ContentOperationException.conflict("SCHEDULE_PACK_NOT_APPROVED",
                                 "scheduled pack has no APPROVED version to publish"));
+                // The pin guards the version that will actually be published. Comparing
+                // against the global max (which may be a newer DRAFT) would false-positive
+                // SCHEDULE_PIN_STALE after any draft revision.
+                checkPin(task, target.stateVersion());
                 contents.publish(
                         new ContentCommandService.VersionCommand(pack.contentId(), target.versionId()),
                         system, key, context);

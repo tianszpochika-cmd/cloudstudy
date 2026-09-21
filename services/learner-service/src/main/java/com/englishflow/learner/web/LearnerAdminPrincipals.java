@@ -1,7 +1,7 @@
 package com.englishflow.learner.web;
 
+import com.englishflow.learner.domain.LearnerAuthorizationException;
 import com.englishflow.learner.domain.LearnerDecisionCode;
-import com.englishflow.learner.domain.LearnerDomainException;
 import com.englishflow.learner.security.LearnerJwtAuthenticationConverter;
 
 import java.util.Set;
@@ -45,8 +45,7 @@ public final class LearnerAdminPrincipals {
         boolean admin = roles.contains("platform-admin") || roles.contains("tenant-admin")
                 || permissions.contains(permission);
         if (!admin) {
-            throw new LearnerDomainException(LearnerDecisionCode.PERMISSION_DENIED,
-                    "tenant admin permission is required");
+            throw new LearnerAuthorizationException(LearnerDecisionCode.PERMISSION_DENIED);
         }
         String subject = token.getSubject();
         if (subject == null || subject.isBlank()) {

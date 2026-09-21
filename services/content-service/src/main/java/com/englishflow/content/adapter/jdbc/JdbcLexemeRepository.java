@@ -66,8 +66,8 @@ public final class JdbcLexemeRepository implements LexemeRepository {
         List<Object> args = new ArrayList<>();
         args.add(packCode);
         if (query != null && !query.isBlank()) {
-            sql.append(" AND headword LIKE ?");
-            args.add("%" + query.trim() + "%");
+            sql.append(" AND headword LIKE ? ESCAPE '\\\\'");
+            args.add("%" + escapeLike(query.trim()) + "%");
         }
         if (cefr != null && !cefr.isBlank()) {
             sql.append(" AND cefr = ?");
@@ -82,12 +82,23 @@ public final class JdbcLexemeRepository implements LexemeRepository {
             args.add(language.trim());
         }
         if (afterLexemeId != null && !afterLexemeId.isBlank()) {
-            sql.append(" AND lexeme_id > ?");
-            args.add(afterLexemeId);
+            // Keyset anchor: rows are ordered by (headword, lexeme_id), so the
+            // cursor must resume from the anchor's position, not from a bare
+            // id comparison (which drops/misplaces rows across pages).
+            Optional<Lexeme> anchor = findById(afterLexemeId.trim());
+            if (anchor.isPresent()) {
+                sql.append(" AND (headword, lexeme_id) > (?, ?)");
+                args.add(anchor.get().headword());
+                args.add(anchor.get().lexemeId());
+            }
         }
         sql.append(" ORDER BY headword, lexeme_id LIMIT ?");
         args.add(Math.max(1, Math.min(limit, 100)));
         return jdbc.query(sql.toString(), (resultSet, row) -> mapLexeme(resultSet), args.toArray());
+    }
+
+    private static String escapeLike(String value) {
+        return value.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_");
     }
 
     @Override
@@ -96,6 +107,14 @@ public final class JdbcLexemeRepository implements LexemeRepository {
         String publishedJson = lexeme.publishedFields() == null
                 ? null
                 : JdbcContentJson.write(mapper, lexeme.publishedFields(), "lexeme snapshot cannot be serialized");
+        // Guard the (pack_code, headword) unique key before the upsert: without it a
+        // conflicting row would be rewritten under ON DUPLICATE KEY UPDATE, silently
+        // reassigning its primary key and orphaning its pronunciation rows.
+        Optional<Lexeme> conflicting = findByPackHeadword(lexeme.packCode(), lexeme.headword());
+        if (conflicting.isPresent() && !conflicting.get().lexemeId().equals(lexeme.lexemeId())) {
+            throw ContentOperationException.conflict("LEXEME_DUPLICATE",
+                    "a lexeme with this pack and headword already exists");
+        }
         try {
             jdbc.update("""
                     INSERT INTO lexeme
@@ -137,7 +156,7 @@ public final class JdbcLexemeRepository implements LexemeRepository {
                     (pronunciation_id, lexeme_id, tenant_id, accent, ipa, audio_asset_id, source_type,
                      voice_name, duration_ms, sample_rate, bitrate_kbps, qc_status, qc_by, qc_at, created_at)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                ON DUPLICATE KEY UPDATE lexeme_id = VALUES(lexeme_id), tenant_id = VALUES(tenant_id),
+                ON DUPLICATE KEY UPDATE tenant_id = VALUES(tenant_id),
                     accent = VALUES(accent), ipa = VALUES(ipa), audio_asset_id = VALUES(audio_asset_id),
                     source_type = VALUES(source_type), voice_name = VALUES(voice_name),
                     duration_ms = VALUES(duration_ms), sample_rate = VALUES(sample_rate),

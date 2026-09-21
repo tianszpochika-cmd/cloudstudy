@@ -54,8 +54,8 @@ public final class JdbcContentItemRepository implements ContentItemRepository {
             args.add(kind.trim().toUpperCase());
         }
         if (query != null && !query.isBlank()) {
-            sql.append(" AND stem LIKE ?");
-            args.add("%" + query.trim() + "%");
+            sql.append(" AND stem LIKE ? ESCAPE '\\\\'");
+            args.add("%" + escapeLike(query.trim()) + "%");
         }
         if (availability != null) {
             sql.append(" AND availability = ?");
@@ -68,6 +68,10 @@ public final class JdbcContentItemRepository implements ContentItemRepository {
         sql.append(" ORDER BY item_id LIMIT ?");
         args.add(Math.max(1, Math.min(limit, 100)));
         return jdbc.query(sql.toString(), (resultSet, row) -> mapItem(resultSet), args.toArray());
+    }
+
+    private static String escapeLike(String value) {
+        return value.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_");
     }
 
     @Override
