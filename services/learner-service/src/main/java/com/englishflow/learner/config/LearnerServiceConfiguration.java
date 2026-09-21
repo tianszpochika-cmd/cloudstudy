@@ -59,4 +59,12 @@ public class LearnerServiceConfiguration {
             Clock learnerClock) {
         return new DefaultLearnerProfileQueryService(store, shadowAdapter, accessPolicy, learnerClock);
     }
+
+    @Bean
+    com.englishflow.learner.application.LearnerAdminService learnerAdminService(
+            LearnerProfileStore store,
+            LearnerTargetIdGenerator targetIdGenerator,
+            Clock learnerClock) {
+        return new com.englishflow.learner.application.LearnerAdminService(store, targetIdGenerator, learnerClock);
+    }
 }

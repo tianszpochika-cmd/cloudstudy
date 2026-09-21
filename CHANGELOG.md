@@ -1,5 +1,11 @@
 # Changelog
 
+- [TENANT-B3-360-20260921] **单租户直营 B3：学员 360° 与排期执行。** 画像/学习/测评三事实主新增租户管理读写端点（目标/偏好代管、SRS 重置、测评摘要只读），网关新增 6 条学员路由并翻转排期任务路由（三方一致、parity 4/4），包定时发布执行与灰度标签落库。网关门禁 19→22 条（仅计数/冻结类，7 个新投影零实现错误，重冻包见交付文档，不自行改门禁数字）。gateway 94、content 161、learner/learning/assessment 全绿，管理端新增 `/learners` 页。详见[单租户直营 B3](docs/06-design/v2-980plus/single-tenant-direct-operation/B3-learner-360.md)。未做真实运行验收，不改变 P1R 状态。
+
+- [TENANT-B2-ITEMS-20260921] **单租户直营 B2：行级条目与内容生产。** 新增题目/例句/语法点/段落行级主数据（双审、幂等、409、发布 Outbox），批量导入支持单词/条目 JSONL（已存在跳过）并补上诚实的幂等声明（门禁 22→21 条），定时排期任务（创建/取消/到期执行+版本 pin 复核，PACK 执行递延），单词发布快照与草稿对比，管理端新增 `/items` 页与排期面板、发音行内试听（短时 URL+0.5x–2.0x+波形）。content-service 161 测试全绿、admin-web 类型与构建通过；网关 19 条无新增。详见[单租户直营 B2](docs/06-design/v2-980plus/single-tenant-direct-operation/B2-content-production.md)。未做真实运行验收，不改变 P1R 状态。
+
+- [TENANT-B1-LEXEME-20260921] **单租户直营 B1：单词行级总控。** 新增 content-service 单词主数据（`lexeme/lexeme_pronunciation` V16、DRAFT→IN_REVIEW→APPROVED→PUBLISHED/ARCHIVED 双审、作者禁自审、幂等+409 版本锁、发布写 Outbox），9 个 `LEXEME_*` 命令复用既有内容命令通道（网关零新增路径），管理端新增 `/lexemes` 单词/音标/发音登记与质检页。契约仅扩展 schema/枚举/可选查询参数（仍 417 路由）。content-service 155 测试全绿（含新增 7/7）、admin-web 类型与构建通过；契约/网关检查保持改造前结论、无新增失败。方向与缺口见[单租户直营](docs/06-design/v2-980plus/single-tenant-direct-operation/README.md)与 [B1 交付](docs/06-design/v2-980plus/single-tenant-direct-operation/B1-lexeme-master.md)。未做真实 DB/网关/浏览器运行验收，不改变 P1R 状态。
+
 - [OFFICIAL-FAQ-MOTION-20260921] **简化官网顶部并补充常见问题。** 按用户反馈移除顶部动画开关，动效默认开启并忽略旧按钮的暂停偏好，继续尊重系统减少动态效果及省电模式。首页四个 FAQ 补充免费范围、适用人群、浏览器/录音权限、每日学习与复习安排；两项重复问题合并，帮助页保留八项分段回答。构建、官网类型检查与首页/帮助页 12 组展开布局检查通过，无浏览器脚本或水合错误；旧暂停偏好下仍确认动效实际运行。见[微调记录](docs/06-design/v2-980plus/official-site-experience-proposal-2026-09-21/implementation/README.md)。本地仍为 18182，无后端或 P1R 状态变更。
 
 - [OFFICIAL-V6-IMPLEMENTATION-20260921] **将已批准的官网提案 06 实施到正式 Nuxt 应用。** 十四类模板、十九个内容地址；重构首页、内容/详情、帮助、免费开始与公开页面，价格/下载 301 至开始页；手机与电脑分别接入现有注册/登录入口。新增原生 Vue 词卡、空间视角/换装/角色墙/拼句交互，接入共享配色、中文文案、四级性能与四种主题模式；保留公开读接口、错误重试、SSR/SEO 和安全链接。构建与类型检查、12 项应用检查、11 组浏览器操作和 152 组布局检查通过；触摸为 Chromium 模拟，当前上游公开接口不可用，不代表后端或 P1R 验收。详见[实现日志](docs/06-design/v2-980plus/official-site-experience-proposal-2026-09-21/implementation/README.md)。本地 18182，原型保留在 18185，未部署公网。

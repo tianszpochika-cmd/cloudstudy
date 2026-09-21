@@ -387,7 +387,7 @@ class CanonicalRoutePolicyRouteLocatorIntegrationTest {
                 .orElseThrow();
         assertFalse(matches(route, deniedMethod, representativePath),
                 () -> binding.routeId() + " must not broaden methods beyond its execution projection");
-        assertFalse(matches(route, binding.methods().getFirst(), binding.rule().path() + "-outside"),
+        assertFalse(matches(route, binding.methods().getFirst(), materialize(binding.rule().path()) + "-outside"),
                 () -> binding.routeId() + " must not broaden its canonical path");
     }
 

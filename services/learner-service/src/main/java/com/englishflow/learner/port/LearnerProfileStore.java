@@ -31,5 +31,15 @@ public interface LearnerProfileStore {
             String operation,
             IdempotencyKey key);
 
+    /**
+     * Admin-only subject listing for the single-tenant control plane.
+     * Returns matching scopes ordered by subject; implementations must stay
+     * inside the learner-owned schema. Defaults to empty so legacy adapters
+     * keep compiling.
+     */
+    default java.util.List<LearnerTenantScope> search(String tenantId, String query, int limit) {
+        return java.util.List.of();
+    }
+
     LearnerCommitResult commit(LearnerMutation mutation);
 }

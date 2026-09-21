@@ -1,10 +1,14 @@
 package com.englishflow.content.web;
 
 import com.englishflow.content.application.ContentCommandService;
+import com.englishflow.content.application.ContentItemCommandService;
+import com.englishflow.content.application.LexemeCommandService;
+import com.englishflow.content.application.ScheduledPublishService;
 import com.englishflow.content.domain.ContentActor;
 import com.englishflow.content.domain.ContentDefinition;
 import com.englishflow.content.domain.ContentDefinitionSnapshot;
 import com.englishflow.content.domain.ContentId;
+import com.englishflow.content.domain.ContentItem;
 import com.englishflow.content.domain.ContentIdempotencyKey;
 import com.englishflow.content.domain.ContentKind;
 import com.englishflow.content.domain.ContentOperationException;
@@ -15,8 +19,13 @@ import com.englishflow.content.domain.ContentVersionId;
 import com.englishflow.content.domain.ContentVersionSnapshot;
 import com.englishflow.content.domain.ContentVersionStatus;
 import com.englishflow.content.domain.CopyrightStatus;
+import com.englishflow.content.domain.ItemAvailability;
+import com.englishflow.content.domain.Lexeme;
+import com.englishflow.content.domain.LexemeAvailability;
+import com.englishflow.content.domain.LexemePronunciation;
 import com.englishflow.content.domain.ReviewDecision;
 import com.englishflow.content.domain.ReviewStage;
+import com.englishflow.content.domain.ScheduledPublishTask;
 import com.englishflow.content.port.ContentRepository;
 
 import java.nio.charset.StandardCharsets;
@@ -61,14 +70,23 @@ public final class B9ContentAdminController {
 
     private static final String TENANT = "platform";
     private final ContentCommandService commands;
+    private final LexemeCommandService lexemes;
+    private final ContentItemCommandService contentItems;
+    private final ScheduledPublishService schedules;
     private final ContentRepository repository;
     private final VerifiedContentPrincipalFactory principals;
 
     public B9ContentAdminController(
             ContentCommandService commands,
+            LexemeCommandService lexemes,
+            ContentItemCommandService contentItems,
+            ScheduledPublishService schedules,
             ContentRepository repository,
             VerifiedContentPrincipalFactory principals) {
         this.commands = commands;
+        this.lexemes = lexemes;
+        this.contentItems = contentItems;
+        this.schedules = schedules;
         this.repository = repository;
         this.principals = principals;
     }
@@ -78,14 +96,26 @@ public final class B9ContentAdminController {
             Authentication authentication,
             @RequestParam(required = false) String cursor,
             @RequestParam(defaultValue = "50") int limit,
+            @RequestParam(required = false) String kind,
+            @RequestParam(required = false) String q,
+            @RequestParam(required = false) String cefr,
+            @RequestParam(required = false) String availability,
+            @RequestParam(required = false) String packCode,
+            @RequestParam(required = false) String itemKind,
             @RequestHeader HttpHeaders headers) {
         ContentActor actor = adminActor(authentication);
         requireAdminRead(actor);
         int pageSize = Math.max(1, Math.min(limit, 100));
+        if ("LEXEME".equalsIgnoreCase(text(kind))) {
+            return lexemeList(actor, cursor, pageSize, packCode, q, cefr, availability, headers);
+        }
+        if ("ITEM".equalsIgnoreCase(text(kind))) {
+            return itemList(actor, cursor, pageSize, packCode, itemKind, q, availability, headers);
+        }
         List<Map<String, Object>> items = repository.findAll().stream()
                 .filter(content -> TENANT.equals(content.tenantId()))
                 .limit(pageSize)
-                .map(content -> state(content, actor))
+                .map(content -> withScheduledTasks(state(content, actor), content.contentCode(), actor))
                 .toList();
         Map<String, Object> data = new LinkedHashMap<>();
         data.put("items", items);
@@ -104,7 +134,7 @@ public final class B9ContentAdminController {
         requireAdminRead(actor);
         ContentDefinition content = repository.findByCode(contentCode)
                 .orElseThrow(() -> ContentOperationException.notFound("CONTENT_NOT_FOUND", "content does not exist"));
-        return ResponseEntity.ok(envelope(state(content, actor), headers));
+        return ResponseEntity.ok(envelope(withScheduledTasks(state(content, actor), contentCode, actor), headers));
     }
 
     @PostMapping
@@ -208,6 +238,149 @@ public final class B9ContentAdminController {
                 versionSnapshot = commands.rollback(
                         new ContentCommandService.RollbackCommand(content.contentId(), version.versionId()),
                         actor, key(key + ":rollback"), context);
+            }
+            case "LEXEME_UPSERT" -> {
+                requireEditor(actor);
+                LexemeCommandService.LexemeResult outcome = lexemes.upsert(
+                        contentCode, record(input.get("lexeme")), text(input.get("lexemeId")),
+                        actor, key(key + ":lexeme:upsert"), context);
+                Map<String, Object> lexemeResult = new LinkedHashMap<>();
+                lexemeResult.put("commandId", commandId(key));
+                lexemeResult.put("command", command);
+                lexemeResult.put("contentCode", contentCode);
+                lexemeResult.put("lexemeId", outcome.lexemeId());
+                lexemeResult.put("lexemeStateVersion", outcome.stateVersion());
+                lexemeResult.put("stateVersion", outcome.stateVersion());
+                lexemeResult.put("lexemeStatus", outcome.availability().name());
+                lexemeResult.put("status", "ACCEPTED");
+                lexemeResult.put("acceptedAt", Instant.now());
+                return ResponseEntity.status(HttpStatus.ACCEPTED).body(Map.of("data", lexemeResult));
+            }
+            case "LEXEME_SUBMIT_REVIEW" -> {
+                requireEditor(actor);
+                String lexemeId = required(input, "lexemeId");
+                checkLexemeVersion(contentCode, lexemeId, input, actor);
+                LexemeCommandService.LexemeResult outcome = lexemes.submit(
+                        contentCode, lexemeId, actor, key(key + ":lexeme:submit"), context);
+                return lexemeAccepted(key, command, contentCode, outcome);
+            }
+            case "LEXEME_REVIEW_FIRST", "LEXEME_REVIEW_FINAL" -> {
+                String lexemeId = required(input, "lexemeId");
+                checkLexemeVersion(contentCode, lexemeId, input, actor);
+                ReviewDecision decision = reviewDecision(input.get("reviewDecision"));
+                LexemeCommandService.LexemeResult outcome = "LEXEME_REVIEW_FIRST".equals(command)
+                        ? lexemes.reviewFirst(contentCode, lexemeId, decision, actor,
+                                key(key + ":lexeme:review:first"), context)
+                        : lexemes.reviewFinal(contentCode, lexemeId, decision, actor,
+                                key(key + ":lexeme:review:final"), context);
+                return lexemeAccepted(key, command, contentCode, outcome);
+            }
+            case "LEXEME_PUBLISH", "LEXEME_UNPUBLISH", "LEXEME_ARCHIVE" -> {
+                String lexemeId = required(input, "lexemeId");
+                String reasonCode = required(input, "reasonCode");
+                checkLexemeVersion(contentCode, lexemeId, input, actor);
+                LexemeCommandService.LexemeResult outcome = switch (command) {
+                    case "LEXEME_PUBLISH" -> lexemes.publish(contentCode, lexemeId, reasonCode, actor,
+                            key(key + ":lexeme:publish"), context);
+                    case "LEXEME_UNPUBLISH" -> lexemes.unpublish(contentCode, lexemeId, reasonCode, actor,
+                            key(key + ":lexeme:unpublish"), context);
+                    default -> lexemes.archive(contentCode, lexemeId, reasonCode, actor,
+                            key(key + ":lexeme:archive"), context);
+                };
+                return lexemeAccepted(key, command, contentCode, outcome);
+            }
+            case "LEXEME_PRONUNCIATION_UPSERT" -> {
+                requireEditor(actor);
+                String lexemeId = required(input, "lexemeId");
+                LexemePronunciation pronunciation = lexemes.upsertPronunciation(
+                        contentCode, lexemeId, record(input.get("pronunciation")),
+                        actor, key(key + ":lexeme:pron:upsert"), context);
+                return pronunciationAccepted(key, command, contentCode, lexemeId, pronunciation);
+            }
+            case "LEXEME_PRONUNCIATION_QC" -> {
+                requireEditor(actor);
+                String lexemeId = required(input, "lexemeId");
+                LexemePronunciation pronunciation = lexemes.reviewPronunciation(
+                        contentCode, lexemeId, record(input.get("pronunciation")),
+                        textOr(input.get("reasonCode"), "LEXEME_PRON_QC"),
+                        actor, key(key + ":lexeme:pron:qc"), context);
+                return pronunciationAccepted(key, command, contentCode, lexemeId, pronunciation);
+            }
+            case "ITEM_UPSERT" -> {
+                requireEditor(actor);
+                ContentItemCommandService.ItemResult outcome = contentItems.upsert(
+                        contentCode, record(input.get("item")), text(input.get("itemId")),
+                        actor, key(key + ":item:upsert"), context);
+                Map<String, Object> itemResult = new LinkedHashMap<>();
+                itemResult.put("commandId", commandId(key));
+                itemResult.put("command", command);
+                itemResult.put("contentCode", contentCode);
+                itemResult.put("itemId", outcome.itemId());
+                itemResult.put("itemStateVersion", outcome.stateVersion());
+                itemResult.put("stateVersion", outcome.stateVersion());
+                itemResult.put("itemStatus", outcome.availability().name());
+                itemResult.put("status", "ACCEPTED");
+                itemResult.put("acceptedAt", Instant.now());
+                return ResponseEntity.status(HttpStatus.ACCEPTED).body(Map.of("data", itemResult));
+            }
+            case "ITEM_SUBMIT_REVIEW" -> {
+                requireEditor(actor);
+                String itemId = required(input, "itemId");
+                checkItemVersion(contentCode, itemId, input, actor);
+                ContentItemCommandService.ItemResult outcome = contentItems.submit(
+                        contentCode, itemId, actor, key(key + ":item:submit"), context);
+                return itemAccepted(key, command, contentCode, outcome);
+            }
+            case "ITEM_REVIEW_FIRST", "ITEM_REVIEW_FINAL" -> {
+                String itemId = required(input, "itemId");
+                checkItemVersion(contentCode, itemId, input, actor);
+                ReviewDecision decision = reviewDecision(input.get("reviewDecision"));
+                ContentItemCommandService.ItemResult outcome = "ITEM_REVIEW_FIRST".equals(command)
+                        ? contentItems.reviewFirst(contentCode, itemId, decision, actor,
+                                key(key + ":item:review:first"), context)
+                        : contentItems.reviewFinal(contentCode, itemId, decision, actor,
+                                key(key + ":item:review:final"), context);
+                return itemAccepted(key, command, contentCode, outcome);
+            }
+            case "ITEM_PUBLISH", "ITEM_UNPUBLISH", "ITEM_ARCHIVE" -> {
+                String itemId = required(input, "itemId");
+                String reasonCode = required(input, "reasonCode");
+                checkItemVersion(contentCode, itemId, input, actor);
+                ContentItemCommandService.ItemResult outcome = switch (command) {
+                    case "ITEM_PUBLISH" -> contentItems.publish(contentCode, itemId, reasonCode, actor,
+                            key(key + ":item:publish"), context);
+                    case "ITEM_UNPUBLISH" -> contentItems.unpublish(contentCode, itemId, reasonCode, actor,
+                            key(key + ":item:unpublish"), context);
+                    default -> contentItems.archive(contentCode, itemId, reasonCode, actor,
+                            key(key + ":item:archive"), context);
+                };
+                return itemAccepted(key, command, contentCode, outcome);
+            }
+            case "SCHEDULE_PUBLISH" -> {
+                Map<String, Object> schedule = record(input.get("schedule"));
+                Instant runAt = scheduledAt(schedule);
+                String targetType = textOr(input.get("targetType"), "PACK");
+                String targetRef = "PACK".equalsIgnoreCase(targetType)
+                        ? contentCode : textOr(input.get("targetRef"), contentCode);
+                Object expected = input.get("expectedStateVersion");
+                Long pin = expected instanceof Number number && number.longValue() > 0
+                        ? number.longValue() : null;
+                ScheduledPublishTask task = schedules.schedule(
+                        contentCode, targetType, targetRef, pin, runAt,
+                        textOr(input.get("reasonCode"), "SCHEDULED_PUBLISH"),
+                        textOrNull(input.get("cohort")),
+                        actor, key(key + ":schedule:publish"), context);
+                return scheduleAccepted(key, command, contentCode, task);
+            }
+            case "CANCEL_SCHEDULED_PUBLISH" -> {
+                String taskId = text(input.get("scheduledPublishTaskId"));
+                if (taskId.isBlank()) {
+                    throw ContentOperationException.badRequest("SCHEDULE_FIELD_INVALID",
+                            "scheduledPublishTaskId is required");
+                }
+                ScheduledPublishTask task = schedules.cancel(
+                        taskId, actor, key(key + ":schedule:cancel"), context);
+                return scheduleAccepted(key, command, contentCode, task);
             }
             default -> throw ContentOperationException.badRequest("CONTENT_COMMAND_INVALID", "unsupported content command");
         }
@@ -331,7 +504,34 @@ public final class B9ContentAdminController {
             }
             String subKey = batchKey + ":item:" + index + ":" + contentCode;
             try {
-                if (repository.findByCode(contentCode).isPresent()) {
+                if (item.containsKey("lexeme")) {
+                    Map<String, Object> lexemeFields = record(item.get("lexeme"));
+                    String headword = text(lexemeFields.get("headword"));
+                    LexemeCommandService.LexemeResult outcome;
+                    if (!headword.isBlank() && !text(item.get("lexemeId")).isBlank()) {
+                        outcome = lexemes.upsert(contentCode, lexemeFields, text(item.get("lexemeId")),
+                                actor, key(subKey + ":lexeme"), context);
+                    } else if (!headword.isBlank() && lexemeExists(contentCode, headword, actor)) {
+                        entry.put("status", "SKIPPED");
+                        entry.put("reason", "LEXEME_EXISTS");
+                        results.add(entry);
+                        continue;
+                    } else {
+                        outcome = lexemes.upsert(contentCode, lexemeFields, text(item.get("lexemeId")),
+                                actor, key(subKey + ":lexeme"), context);
+                    }
+                    entry.put("status", "ACCEPTED");
+                    entry.put("lexemeId", outcome.lexemeId());
+                    entry.put("stateVersion", outcome.stateVersion());
+                } else if (item.containsKey("item")) {
+                    Map<String, Object> itemFields = record(item.get("item"));
+                    ContentItemCommandService.ItemResult outcome = contentItems.upsert(
+                            contentCode, itemFields, text(item.get("itemId")),
+                            actor, key(subKey + ":content-item"), context);
+                    entry.put("status", "ACCEPTED");
+                    entry.put("itemId", outcome.itemId());
+                    entry.put("stateVersion", outcome.stateVersion());
+                } else if (repository.findByCode(contentCode).isPresent()) {
                     ContentDefinition existing = owned(contentCode, actor);
                     entry.put("status", "SKIPPED");
                     entry.put("reason", "CONTENT_EXISTS");
@@ -372,6 +572,321 @@ public final class B9ContentAdminController {
         data.put("items", results);
         data.put("acceptedAt", Instant.now());
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(Map.of("data", data));
+    }
+
+    /**
+     * Row-level word-master list. Items reuse the {@code B9AdminContentState}
+     * shape ({@code contentCode=lex:{lexemeId}, contentType=VOCABULARY,
+     * title=headword, latestStatus=availability}) and additionally carry the
+     * full {@code lexeme} record; cursor is the last seen lexeme id.
+     */
+    private ResponseEntity<Map<String, Object>> lexemeList(
+            ContentActor actor,
+            String cursor,
+            int pageSize,
+            String packCode,
+            String query,
+            String cefr,
+            String availability,
+            HttpHeaders headers) {
+        String pack = packCode == null || packCode.isBlank() ? "VOCAB-PHASE1" : packCode.trim();
+        LexemeAvailability status = availability == null || availability.isBlank()
+                ? null : LexemeAvailability.parse(availability);
+        String after = cursor == null || cursor.isBlank() ? null : cursor.trim();
+        List<Lexeme> rows = lexemes.search(pack, query, cefr, status, pageSize, after, actor);
+        List<Map<String, Object>> items = rows.stream().map(row -> lexemeState(row, actor)).toList();
+        Map<String, Object> data = new LinkedHashMap<>();
+        data.put("items", items);
+        if (!rows.isEmpty() && rows.size() >= pageSize) {
+            data.put("nextCursor", rows.get(rows.size() - 1).lexemeId());
+        }
+        return ResponseEntity.ok(envelope(data, headers));
+    }
+
+    private ResponseEntity<Map<String, Object>> lexemeAccepted(
+            String key, String command, String packCode, LexemeCommandService.LexemeResult outcome) {
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("commandId", commandId(key));
+        result.put("command", command);
+        result.put("contentCode", packCode);
+        result.put("lexemeId", outcome.lexemeId());
+        result.put("lexemeStateVersion", outcome.stateVersion());
+        result.put("stateVersion", outcome.stateVersion());
+        result.put("lexemeStatus", outcome.availability().name());
+        result.put("status", "ACCEPTED");
+        result.put("acceptedAt", Instant.now());
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(Map.of("data", result));
+    }
+
+    private ResponseEntity<Map<String, Object>> pronunciationAccepted(
+            String key, String command, String packCode, String lexemeId, LexemePronunciation pronunciation) {        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("commandId", commandId(key));
+        result.put("command", command);
+        result.put("contentCode", packCode);
+        result.put("lexemeId", lexemeId);
+        result.put("pronunciationId", pronunciation.pronunciationId());
+        result.put("pronunciationQc", pronunciation.qcStatus());
+        result.put("status", "ACCEPTED");
+        result.put("acceptedAt", Instant.now());
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(Map.of("data", result));
+    }
+
+    private void checkLexemeVersion(String packCode, String lexemeId, Map<String, Object> input, ContentActor actor) {
+        Object expected = input.get("expectedStateVersion");
+        if (!(expected instanceof Number number) || number.longValue() <= 0) {
+            return;
+        }
+        Lexeme current;
+        try {
+            current = lexemes.current(packCode, lexemeId, actor);
+        } catch (ContentOperationException missing) {
+            if ("LEXEME_NOT_FOUND".equals(missing.code())) {
+                return;
+            }
+            throw missing;
+        }
+        if (current.stateVersion() != number.longValue()) {
+            throw ContentOperationException.conflict("LEXEME_VERSION_CONFLICT",
+                    "stale stateVersion: expected " + number.longValue() + " but current is " + current.stateVersion());
+        }
+    }
+
+    private Map<String, Object> lexemeState(Lexeme lexeme, ContentActor actor) {
+        List<LexemePronunciation> pronunciations = lexemes.pronunciations(
+                lexeme.packCode(), lexeme.lexemeId(), actor);
+        Map<String, Object> projection = new LinkedHashMap<>();
+        projection.put("availability",
+                lexeme.availability() == LexemeAvailability.PUBLISHED ? "PUBLISHED" : "UNPUBLISHED");
+        projection.put("projectionVersion", Math.max(1, lexeme.contentVersion()));
+        projection.put("contentEpoch", 1L);
+        Map<String, Object> fields = lexeme.fields();
+        Map<String, Object> record = new LinkedHashMap<>();
+        record.put("lexemeId", lexeme.lexemeId());
+        record.put("headword", lexeme.headword());
+        record.put("packCode", lexeme.packCode());
+        record.put("cefr", lexeme.cefr());
+        record.put("availability", lexeme.availability().name());
+        record.put("stateVersion", lexeme.stateVersion());
+        record.put("contentVersion", lexeme.contentVersion());
+        record.put("fields", fields);
+        record.put("publishedFields", lexeme.publishedFields());
+        record.put("pronunciations", pronunciations.stream().map(B9ContentAdminController::pronunciationView).toList());
+        record.put("createdBy", lexeme.createdBy());
+        record.put("updatedBy", lexeme.updatedBy());
+        record.put("createdAt", lexeme.createdAt());
+        record.put("updatedAt", lexeme.updatedAt());
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("contentCode", "lex:" + lexeme.lexemeId());
+        result.put("contentType", "VOCABULARY");
+        result.put("title", lexeme.headword());
+        result.put("authorSubject", lexeme.createdBy());
+        result.put("stateVersion", lexeme.stateVersion());
+        result.put("latestStatus", lexeme.availability().name());
+        result.put("versions", List.of());
+        result.put("publicProjection", projection);
+        result.put("rightsStatus",
+                fields.containsKey("sourceCode") && fields.containsKey("licenseCode") ? "VALID" : "PENDING");
+        result.put("lexeme", record);
+        return result;
+    }
+
+    private static Map<String, Object> pronunciationView(LexemePronunciation pronunciation) {
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("pronunciationId", pronunciation.pronunciationId());
+        result.put("accent", pronunciation.accent());
+        result.put("ipa", pronunciation.ipa());
+        result.put("audioAssetId", pronunciation.audioAssetId());
+        result.put("sourceType", pronunciation.sourceType());
+        result.put("voiceName", pronunciation.voiceName());
+        result.put("durationMs", pronunciation.durationMs());
+        result.put("sampleRate", pronunciation.sampleRate());
+        result.put("bitrateKbps", pronunciation.bitrateKbps());
+        result.put("qcStatus", pronunciation.qcStatus());
+        result.put("qcBy", pronunciation.qcBy());
+        result.put("qcAt", pronunciation.qcAt());
+        result.put("createdAt", pronunciation.createdAt());
+        return result;
+    }
+
+    /**
+     * Owner-side scheduled-task read for the future gateway flip. The external
+     * {@code /api/v1/admin/content-publish-tasks} route stays fail-closed until
+     * B3; admin reads flow through the pack detail projection below.
+     */
+    @GetMapping("/publish-tasks/{taskId}")
+    public ResponseEntity<Map<String, Object>> getScheduledTask(
+            @PathVariable String taskId,
+            Authentication authentication,
+            @RequestHeader HttpHeaders headers) {
+        ContentActor actor = adminActor(authentication);
+        requireAdminRead(actor);
+        ScheduledPublishTask task = schedules.get(taskId, actor);
+        return ResponseEntity.ok(envelope(scheduleView(task), headers));
+    }
+
+    private ResponseEntity<Map<String, Object>> itemList(
+            ContentActor actor,
+            String cursor,
+            int pageSize,
+            String packCode,
+            String itemKind,
+            String query,
+            String availability,
+            HttpHeaders headers) {
+        String pack = packCode == null || packCode.isBlank() ? "VOCAB-PHASE1" : packCode.trim();
+        ItemAvailability status = availability == null || availability.isBlank()
+                ? null : ItemAvailability.parse(availability);
+        String after = cursor == null || cursor.isBlank() ? null : cursor.trim();
+        List<ContentItem> rows = contentItems.search(pack, itemKind, query, status, pageSize, after, actor);
+        List<Map<String, Object>> items = rows.stream().map(B9ContentAdminController::itemState).toList();
+        Map<String, Object> data = new LinkedHashMap<>();
+        data.put("items", items);
+        if (!rows.isEmpty() && rows.size() >= pageSize) {
+            data.put("nextCursor", rows.get(rows.size() - 1).itemId());
+        }
+        return ResponseEntity.ok(envelope(data, headers));
+    }
+
+    private ResponseEntity<Map<String, Object>> itemAccepted(
+            String key, String command, String packCode, ContentItemCommandService.ItemResult outcome) {
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("commandId", commandId(key));
+        result.put("command", command);
+        result.put("contentCode", packCode);
+        result.put("itemId", outcome.itemId());
+        result.put("itemStateVersion", outcome.stateVersion());
+        result.put("stateVersion", outcome.stateVersion());
+        result.put("itemStatus", outcome.availability().name());
+        result.put("status", "ACCEPTED");
+        result.put("acceptedAt", Instant.now());
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(Map.of("data", result));
+    }
+
+    private ResponseEntity<Map<String, Object>> scheduleAccepted(
+            String key, String command, String packCode, ScheduledPublishTask task) {
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("commandId", commandId(key));
+        result.put("command", command);
+        result.put("contentCode", packCode);
+        result.put("scheduledPublishTaskId", task.taskId());
+        result.put("scheduleStatus", task.status());
+        result.put("runAt", task.runAt());
+        result.put("status", "ACCEPTED");
+        result.put("acceptedAt", Instant.now());
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(Map.of("data", result));
+    }
+
+    private void checkItemVersion(String packCode, String itemId, Map<String, Object> input, ContentActor actor) {
+        Object expected = input.get("expectedStateVersion");
+        if (!(expected instanceof Number number) || number.longValue() <= 0) {
+            return;
+        }
+        ContentItem current;
+        try {
+            current = contentItems.current(packCode, itemId, actor);
+        } catch (ContentOperationException missing) {
+            if ("ITEM_NOT_FOUND".equals(missing.code())) {
+                return;
+            }
+            throw missing;
+        }
+        if (current.stateVersion() != number.longValue()) {
+            throw ContentOperationException.conflict("ITEM_VERSION_CONFLICT",
+                    "stale stateVersion: expected " + number.longValue() + " but current is " + current.stateVersion());
+        }
+    }
+
+    private static Instant scheduledAt(Map<String, Object> schedule) {
+        Object runAt = schedule.get("scheduledAt");
+        if (runAt instanceof String text && !text.isBlank()) {
+            try {
+                return Instant.parse(text.trim());
+            } catch (java.time.format.DateTimeParseException invalid) {
+                throw ContentOperationException.badRequest("SCHEDULE_TIME_INVALID",
+                        "scheduledAt must be RFC3339");
+            }
+        }
+        throw ContentOperationException.badRequest("SCHEDULE_TIME_INVALID", "schedule.scheduledAt is required");
+    }
+
+    private static Map<String, Object> itemState(ContentItem item) {
+        Map<String, Object> projection = new LinkedHashMap<>();
+        projection.put("availability",
+                item.availability() == ItemAvailability.PUBLISHED ? "PUBLISHED" : "UNPUBLISHED");
+        projection.put("projectionVersion", 1L);
+        projection.put("contentEpoch", 1L);
+        Map<String, Object> record = new LinkedHashMap<>();
+        record.put("itemId", item.itemId());
+        record.put("kind", item.kind());
+        record.put("stem", item.stem());
+        record.put("packCode", item.packCode());
+        record.put("availability", item.availability().name());
+        record.put("stateVersion", item.stateVersion());
+        record.put("fields", item.fields());
+        record.put("sourceCode", item.sourceCode());
+        record.put("licenseCode", item.licenseCode());
+        record.put("createdBy", item.createdBy());
+        record.put("updatedBy", item.updatedBy());
+        record.put("createdAt", item.createdAt());
+        record.put("updatedAt", item.updatedAt());
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("contentCode", "item:" + item.itemId());
+        result.put("contentType", itemContentType(item.kind()));
+        result.put("title", item.stem().isBlank() ? item.itemId() : item.stem());
+        result.put("authorSubject", item.createdBy());
+        result.put("stateVersion", item.stateVersion());
+        result.put("latestStatus", item.availability().name());
+        result.put("versions", List.of());
+        result.put("publicProjection", projection);
+        result.put("rightsStatus",
+                item.sourceCode() != null && item.licenseCode() != null ? "VALID" : "PENDING");
+        result.put("item", record);
+        return result;
+    }
+
+    private static String itemContentType(String kind) {
+        return switch (kind) {
+            case "QUESTION", "EXERCISE" -> "QUESTION";
+            case "EXAMPLE" -> "SENTENCE";
+            case "GRAMMAR_POINT" -> "GRAMMAR";
+            default -> "COURSE_UNIT";
+        };
+    }
+
+    private static Map<String, Object> scheduleView(ScheduledPublishTask task) {
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("taskId", task.taskId());
+        result.put("packCode", task.packCode());
+        result.put("targetType", task.targetType());
+        result.put("targetRef", task.targetRef());
+        result.put("expectedStateVersion", task.expectedStateVersion());
+        result.put("runAt", task.runAt());
+        result.put("status", task.status());
+        result.put("reasonCode", task.reasonCode());
+        result.put("cohort", task.cohort());
+        result.put("failureCode", task.failureCode());
+        result.put("createdBy", task.createdBy());
+        result.put("createdAt", task.createdAt());
+        result.put("updatedAt", task.updatedAt());
+        return result;
+    }
+
+    private Map<String, Object> withScheduledTasks(Map<String, Object> state, String packCode, ContentActor actor) {
+        try {
+            List<Map<String, Object>> tasks = schedules.listByPack(packCode, 20, actor).stream()
+                    .map(B9ContentAdminController::scheduleView).toList();
+            state.put("scheduledTasks", tasks);
+        } catch (ContentOperationException unavailable) {
+            state.put("scheduledTasks", List.of());
+        }
+        return state;
+    }
+
+    private boolean lexemeExists(String packCode, String headword, ContentActor actor) {
+        return !lexemes.search(packCode, headword, null, null, 1, null, actor).stream()
+                .filter(candidate -> candidate.headword().equalsIgnoreCase(headword))
+                .toList()
+                .isEmpty();
     }
 
     private ContentActor adminActor(Authentication authentication) {
@@ -590,5 +1105,10 @@ public final class B9ContentAdminController {
     private static String textOr(Object value, String fallback) {
         String text = text(value);
         return text.isBlank() ? fallback : text;
+    }
+
+    private static String textOrNull(Object value) {
+        String text = text(value);
+        return text.isBlank() ? null : text;
     }
 }

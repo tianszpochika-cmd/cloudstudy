@@ -1071,6 +1071,118 @@
         "visibility": "AUTHENTICATED",
         "authClass": "HIGH_RISK_ADMIN",
         "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "admin-learner-search",
+        "priority": 800,
+        "match": {
+          "type": "EXACT",
+          "path": "/api/v1/admin/learners/search",
+          "methods": [
+            "GET"
+          ]
+        },
+        "upstreamOwner": "learner-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "HIGH_RISK_ADMIN",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "admin-learner-profile",
+        "priority": 800,
+        "match": {
+          "type": "EXACT",
+          "path": "/api/v1/admin/learners/{subjectId}/profile",
+          "methods": [
+            "GET"
+          ]
+        },
+        "upstreamOwner": "learner-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "HIGH_RISK_ADMIN",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "admin-learner-commands",
+        "priority": 800,
+        "match": {
+          "type": "EXACT",
+          "path": "/api/v1/admin/learners/{subjectId}/commands",
+          "methods": [
+            "POST"
+          ]
+        },
+        "upstreamOwner": "learner-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "HIGH_RISK_ADMIN",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "admin-learner-plans",
+        "priority": 800,
+        "match": {
+          "type": "EXACT",
+          "path": "/api/v1/admin/learners/{subjectId}/plans",
+          "methods": [
+            "GET"
+          ]
+        },
+        "upstreamOwner": "learning-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "HIGH_RISK_ADMIN",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "admin-learner-srs",
+        "priority": 800,
+        "match": {
+          "type": "EXACT",
+          "path": "/api/v1/admin/learners/{subjectId}/srs",
+          "methods": [
+            "GET"
+          ]
+        },
+        "upstreamOwner": "learning-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "HIGH_RISK_ADMIN",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "admin-learner-learning-commands",
+        "priority": 800,
+        "match": {
+          "type": "EXACT",
+          "path": "/api/v1/admin/learners/{subjectId}/learning-commands",
+          "methods": [
+            "POST"
+          ]
+        },
+        "upstreamOwner": "learning-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "HIGH_RISK_ADMIN",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "admin-learner-assessments",
+        "priority": 800,
+        "match": {
+          "type": "EXACT",
+          "path": "/api/v1/admin/learners/{subjectId}/assessments",
+          "methods": [
+            "GET"
+          ]
+        },
+        "upstreamOwner": "assessment-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "HIGH_RISK_ADMIN",
+        "compatibilityMode": "NONE"
       }
     ],
     "executionTargetPolicy": {
@@ -1442,8 +1554,26 @@
       {
         "ruleId": "admin-content-publish-tasks",
         "defaultStatus": "UNAVAILABLE",
-        "defaultReason": "content_owner_controller_mapping_not_present",
-        "projections": []
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "admin-content-publish-tasks.task-detail",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/admin/content-publish-tasks/{taskId}",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "content-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.content",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/content/admin-commands/publish-tasks/{taskId}",
+            "controllerEvidence": {
+              "sourcePath": "services/content-service/src/main/java/com/englishflow/content/web/B9ContentAdminController.java",
+              "requestMapping": "/internal/v1/content/admin-commands"
+            }
+          }
+        ]
       },
       {
         "ruleId": "admin-recovery",
@@ -4491,6 +4621,174 @@
         "defaultStatus": "UNAVAILABLE",
         "defaultReason": "admin_ops_owner_controller_mapping_not_present",
         "projections": []
+      },
+      {
+        "ruleId": "admin-learner-search",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "admin-learner-search.search",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/admin/learners/search",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learner-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learner",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/learner/admin/search",
+            "controllerEvidence": {
+              "sourcePath": "services/learner-service/src/main/java/com/englishflow/learner/web/LearnerAdminController.java",
+              "requestMapping": "/internal/v1/learner/admin"
+            }
+          }
+        ]
+      },
+      {
+        "ruleId": "admin-learner-profile",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "admin-learner-profile.profile",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/admin/learners/{subjectId}/profile",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learner-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learner",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/learner/admin/subjects/{subjectId}/profile",
+            "controllerEvidence": {
+              "sourcePath": "services/learner-service/src/main/java/com/englishflow/learner/web/LearnerAdminController.java",
+              "requestMapping": "/internal/v1/learner/admin"
+            }
+          }
+        ]
+      },
+      {
+        "ruleId": "admin-learner-commands",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "admin-learner-commands.commands",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/admin/learners/{subjectId}/commands",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learner-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learner",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/learner/admin/subjects/{subjectId}/commands",
+            "controllerEvidence": {
+              "sourcePath": "services/learner-service/src/main/java/com/englishflow/learner/web/LearnerAdminController.java",
+              "requestMapping": "/internal/v1/learner/admin"
+            }
+          }
+        ]
+      },
+      {
+        "ruleId": "admin-learner-plans",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "admin-learner-plans.plans",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/admin/learners/{subjectId}/plans",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learning-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learning",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/learning/admin/subjects/{subjectId}/plans",
+            "controllerEvidence": {
+              "sourcePath": "services/learning-service/src/main/java/com/englishflow/learning/web/LearningAdminController.java",
+              "requestMapping": "/internal/v1/learning/admin"
+            }
+          }
+        ]
+      },
+      {
+        "ruleId": "admin-learner-srs",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "admin-learner-srs.srs",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/admin/learners/{subjectId}/srs",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learning-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learning",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/learning/admin/subjects/{subjectId}/srs",
+            "controllerEvidence": {
+              "sourcePath": "services/learning-service/src/main/java/com/englishflow/learning/web/LearningAdminController.java",
+              "requestMapping": "/internal/v1/learning/admin"
+            }
+          }
+        ]
+      },
+      {
+        "ruleId": "admin-learner-learning-commands",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "admin-learner-learning-commands.learning-commands",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/admin/learners/{subjectId}/learning-commands",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learning-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learning",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/learning/admin/subjects/{subjectId}/commands",
+            "controllerEvidence": {
+              "sourcePath": "services/learning-service/src/main/java/com/englishflow/learning/web/LearningAdminController.java",
+              "requestMapping": "/internal/v1/learning/admin"
+            }
+          }
+        ]
+      },
+      {
+        "ruleId": "admin-learner-assessments",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "admin-learner-assessments.assessments",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/admin/learners/{subjectId}/assessments",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "assessment-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.assessment",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/assessment/admin/subjects/{subjectId}/assessments",
+            "controllerEvidence": {
+              "sourcePath": "services/assessment-service/src/main/java/com/englishflow/assessment/web/AssessmentAdminController.java",
+              "requestMapping": "/internal/v1/assessment/admin"
+            }
+          }
+        ]
       }
     ],
     "internalOperationPolicy": {

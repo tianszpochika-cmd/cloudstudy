@@ -462,6 +462,10 @@
     },
     {
       "name": "b26-workflow-recovery"
+    },
+    {
+      "name": "b9-learner-admin",
+      "description": "Single-tenant control-plane reads and governed commands on learner-owned facts"
     }
   ],
   "paths": {
@@ -20911,6 +20915,91 @@
           },
           {
             "$ref": "#/components/parameters/PageSize"
+          },
+          {
+            "name": "kind",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "PACK",
+                "LEXEME",
+                "ITEM"
+              ],
+              "default": "PACK"
+            },
+            "description": "PACK lists content packs; LEXEME lists word-master rows; ITEM lists row-level question/example/grammar/passage rows (contentCode=item:{itemId}, full record in item)."
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 128
+            },
+            "description": "Headword substring match; only applies with kind=LEXEME."
+          },
+          {
+            "name": "cefr",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "A1",
+                "A2",
+                "B1",
+                "B2",
+                "C1",
+                "C2"
+              ]
+            },
+            "description": "CEFR filter; only applies with kind=LEXEME."
+          },
+          {
+            "name": "availability",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "DRAFT",
+                "IN_REVIEW",
+                "APPROVED",
+                "PUBLISHED",
+                "ARCHIVED"
+              ]
+            },
+            "description": "Lexeme lifecycle filter; only applies with kind=LEXEME."
+          },
+          {
+            "name": "packCode",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 128,
+              "default": "VOCAB-PHASE1"
+            },
+            "description": "Vocabulary pack scope; only applies with kind=LEXEME. Defaults to the single-tenant Phase 1 pack."
+          },
+          {
+            "name": "itemKind",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "QUESTION",
+                "EXAMPLE",
+                "GRAMMAR_POINT",
+                "PASSAGE",
+                "EXERCISE"
+              ]
+            },
+            "description": "Item kind filter; only applies with kind=ITEM."
           }
         ],
         "responses": {
@@ -21056,7 +21145,8 @@
           "409": {
             "$ref": "#/components/responses/ApiConflict"
           }
-        }
+        },
+        "description": "LEXEME_* commands manage row-level word master under a vocabulary pack (contentCode, kind VOCABULARY). The pack is auto-provisioned on first LEXEME_UPSERT. Author cannot self-review (FIRST/FINAL must differ); PUBLISH/UNPUBLISH/ARCHIVE require reasonCode for audit. Pronunciation rows reference media-service assets by id; audio bytes never flow through content-service."
       }
     },
     "/api/v1/admin/content-commands/{contentCode}": {
@@ -36073,7 +36163,19 @@
           "503": {
             "$ref": "#/components/responses/ApiServiceUnavailable"
           }
-        }
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "content-batch-import",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "same actor and batch key returns the original per-item results; existing codes report SKIPPED"
+        },
+        "description": "Each entry carries contentCode (pack) plus exactly one of content (pack draft), lexeme (word-master upsert) or item (row-level upsert). Entries are keyed {batchKey}:item:{index}:{code} so replay never duplicates.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B9IdempotencyKey"
+          }
+        ]
       }
     },
     "/api/v1/admin/content-commands/validate/auto": {
@@ -36575,6 +36677,610 @@
         "responses": {
           "200": {
             "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/learners/search": {
+      "get": {
+        "tags": [
+          "b9-learner-admin"
+        ],
+        "summary": "Search learner subjects (owned profiles only)",
+        "operationId": "listAdminLearnerSubjects",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-contract": {
+          "owner": "learner-service",
+          "caller": "admin-web",
+          "readOnly": true,
+          "fieldFiltering": "subject ids only; no contact PII crosses this boundary (identity lives in IAM)"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/PageSize"
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 128
+            },
+            "description": "Subject substring match; empty lists recent subjects."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Learner subject list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiCursorPageEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/AdminLearnerSubject"
+                          },
+                          "maxItems": 100
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          }
+        },
+        "x-pagination": {
+          "mode": "cursor",
+          "cursorParameter": "#/components/parameters/Cursor",
+          "pageSizeParameter": "#/components/parameters/PageSize",
+          "responseMeta": "#/components/schemas/ApiCursorPageMeta"
+        }
+      }
+    },
+    "/api/v1/admin/learners/{subjectId}/profile": {
+      "get": {
+        "tags": [
+          "b9-learner-admin"
+        ],
+        "summary": "Read one learner profile with goal, preferences and first-day projection",
+        "operationId": "getAdminLearnerProfile",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-contract": {
+          "owner": "learner-service",
+          "caller": "admin-web",
+          "readOnly": true,
+          "fieldFiltering": "owned profile facts; no IAM identity or contact data"
+        },
+        "parameters": [
+          {
+            "name": "subjectId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 128
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Learner profile detail",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/AdminLearnerProfile"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/learners/{subjectId}/commands": {
+      "post": {
+        "tags": [
+          "b9-learner-admin"
+        ],
+        "summary": "Governed learner commands (SET_GOAL, UPDATE_PREFERENCES)",
+        "operationId": "sendAdminLearnerCommand",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-contract": {
+          "owner": "learner-service",
+          "caller": "admin-web",
+          "readOnly": false,
+          "fieldFiltering": "subject from path; actor/tenant from verified JWT; same outbox facts as learner-owned writes"
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "learner-admin-command",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "same subject, command and request hash returns the original mutation result"
+        },
+        "parameters": [
+          {
+            "name": "subjectId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 128
+            }
+          },
+          {
+            "$ref": "#/components/parameters/B9IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminLearnerCommandRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Learner command accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/AdminLearnerCommandAccepted"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/learners/{subjectId}/plans": {
+      "get": {
+        "tags": [
+          "b9-learner-admin"
+        ],
+        "summary": "Read one learner plan with SRS overview",
+        "operationId": "getAdminLearnerPlans",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-contract": {
+          "owner": "learning-service",
+          "caller": "admin-web",
+          "readOnly": true,
+          "fieldFiltering": "plan rows and aggregate SRS counts; no score fabrication"
+        },
+        "parameters": [
+          {
+            "name": "subjectId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 128
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Learner plan detail",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "object"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/learners/{subjectId}/srs": {
+      "get": {
+        "tags": [
+          "b9-learner-admin"
+        ],
+        "summary": "Read one learner due SRS queue",
+        "operationId": "getAdminLearnerSrs",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-contract": {
+          "owner": "learning-service",
+          "caller": "admin-web",
+          "readOnly": true,
+          "fieldFiltering": "due SRS rows only; intervals and mastery stay server-computed"
+        },
+        "parameters": [
+          {
+            "name": "subjectId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 128
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Learner SRS detail",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "object"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/learners/{subjectId}/learning-commands": {
+      "post": {
+        "tags": [
+          "b9-learner-admin"
+        ],
+        "summary": "Governed learning recovery commands (RESET_SRS_ITEM)",
+        "operationId": "sendAdminLearningCommand",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-contract": {
+          "owner": "learning-service",
+          "caller": "admin-web",
+          "readOnly": false,
+          "fieldFiltering": "subject and item from path/body; SM2 reset values are server constants, never client input"
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "learning-admin-command",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "same subject, item and key returns the original reset result"
+        },
+        "parameters": [
+          {
+            "name": "subjectId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 128
+            }
+          },
+          {
+            "$ref": "#/components/parameters/B9IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminLearningCommandRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Learning command accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "object"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/learners/{subjectId}/assessments": {
+      "get": {
+        "tags": [
+          "b9-learner-admin"
+        ],
+        "summary": "Read one learner assessment summary (answers never cross this boundary)",
+        "operationId": "getAdminLearnerAssessments",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-contract": {
+          "owner": "assessment-service",
+          "caller": "admin-web",
+          "readOnly": true,
+          "fieldFiltering": "session/report/mistake summaries; answers, evidence payloads and hashes stay inside assessment-service"
+        },
+        "parameters": [
+          {
+            "name": "subjectId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 128
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Learner assessment summary",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "object"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
           }
         }
       }
@@ -49147,7 +49853,23 @@
               "SCHEDULE_PUBLISH",
               "CANCEL_SCHEDULED_PUBLISH",
               "UNPUBLISH",
-              "ROLLBACK"
+              "ROLLBACK",
+              "LEXEME_UPSERT",
+              "LEXEME_SUBMIT_REVIEW",
+              "LEXEME_REVIEW_FIRST",
+              "LEXEME_REVIEW_FINAL",
+              "LEXEME_PUBLISH",
+              "LEXEME_UNPUBLISH",
+              "LEXEME_ARCHIVE",
+              "LEXEME_PRONUNCIATION_UPSERT",
+              "LEXEME_PRONUNCIATION_QC",
+              "ITEM_UPSERT",
+              "ITEM_SUBMIT_REVIEW",
+              "ITEM_REVIEW_FIRST",
+              "ITEM_REVIEW_FINAL",
+              "ITEM_PUBLISH",
+              "ITEM_UNPUBLISH",
+              "ITEM_ARCHIVE"
             ]
           },
           "contentCode": {
@@ -49184,6 +49906,44 @@
           },
           "scheduledPublishTaskId": {
             "$ref": "#/components/schemas/B9ScheduledPublishTaskId"
+          },
+          "lexeme": {
+            "$ref": "#/components/schemas/LexemeUpsertInput"
+          },
+          "pronunciation": {
+            "$ref": "#/components/schemas/LexemePronunciationInput"
+          },
+          "lexemeId": {
+            "type": "string",
+            "maxLength": 128,
+            "description": "Target lexeme for LEXEME_* commands except LEXEME_UPSERT creation"
+          },
+          "item": {
+            "$ref": "#/components/schemas/ContentItemUpsertInput"
+          },
+          "itemId": {
+            "type": "string",
+            "maxLength": 128,
+            "description": "Target item for ITEM_* commands except creation"
+          },
+          "targetType": {
+            "type": "string",
+            "enum": [
+              "PACK",
+              "LEXEME",
+              "ITEM"
+            ],
+            "description": "Schedule target selector; PACK publishes the latest APPROVED pack version, LEXEME/ITEM publish the pinned row."
+          },
+          "targetRef": {
+            "type": "string",
+            "maxLength": 128,
+            "description": "Lexeme/item id for LEXEME/ITEM targets; defaults to contentCode for PACK."
+          },
+          "cohort": {
+            "type": "string",
+            "maxLength": 64,
+            "description": "Gray cohort label recorded on the schedule task and its execution receipt. Learner-side enforcement arrives in B4; until then the label is metadata, never a distribution Gate."
           }
         },
         "x-command-field-policy": {
@@ -49268,7 +50028,11 @@
               "command",
               "contentCode",
               "expectedStateVersion",
-              "schedule"
+              "schedule",
+              "targetType",
+              "targetRef",
+              "reasonCode",
+              "cohort"
             ]
           },
           "CANCEL_SCHEDULED_PUBLISH": {
@@ -49304,6 +50068,213 @@
               "contentCode",
               "expectedStateVersion",
               "targetVersionNumber",
+              "reasonCode"
+            ]
+          },
+          "LEXEME_UPSERT": {
+            "required": [
+              "lexeme"
+            ],
+            "allowed": [
+              "command",
+              "contentCode",
+              "expectedStateVersion",
+              "lexemeId",
+              "lexeme"
+            ]
+          },
+          "LEXEME_SUBMIT_REVIEW": {
+            "required": [
+              "lexemeId"
+            ],
+            "allowed": [
+              "command",
+              "contentCode",
+              "expectedStateVersion",
+              "lexemeId"
+            ]
+          },
+          "LEXEME_REVIEW_FIRST": {
+            "required": [
+              "lexemeId",
+              "reviewDecision"
+            ],
+            "allowed": [
+              "command",
+              "contentCode",
+              "expectedStateVersion",
+              "lexemeId",
+              "reviewDecision",
+              "reviewNote"
+            ]
+          },
+          "LEXEME_REVIEW_FINAL": {
+            "required": [
+              "lexemeId",
+              "reviewDecision"
+            ],
+            "allowed": [
+              "command",
+              "contentCode",
+              "expectedStateVersion",
+              "lexemeId",
+              "reviewDecision",
+              "reviewNote"
+            ]
+          },
+          "LEXEME_PUBLISH": {
+            "required": [
+              "lexemeId",
+              "reasonCode"
+            ],
+            "allowed": [
+              "command",
+              "contentCode",
+              "expectedStateVersion",
+              "lexemeId",
+              "reasonCode"
+            ]
+          },
+          "LEXEME_UNPUBLISH": {
+            "required": [
+              "lexemeId",
+              "reasonCode"
+            ],
+            "allowed": [
+              "command",
+              "contentCode",
+              "expectedStateVersion",
+              "lexemeId",
+              "reasonCode"
+            ]
+          },
+          "LEXEME_ARCHIVE": {
+            "required": [
+              "lexemeId",
+              "reasonCode"
+            ],
+            "allowed": [
+              "command",
+              "contentCode",
+              "expectedStateVersion",
+              "lexemeId",
+              "reasonCode"
+            ]
+          },
+          "LEXEME_PRONUNCIATION_UPSERT": {
+            "required": [
+              "lexemeId",
+              "pronunciation"
+            ],
+            "allowed": [
+              "command",
+              "contentCode",
+              "expectedStateVersion",
+              "lexemeId",
+              "pronunciation"
+            ]
+          },
+          "LEXEME_PRONUNCIATION_QC": {
+            "required": [
+              "lexemeId",
+              "pronunciation"
+            ],
+            "allowed": [
+              "command",
+              "contentCode",
+              "expectedStateVersion",
+              "lexemeId",
+              "pronunciation",
+              "reasonCode"
+            ]
+          },
+          "ITEM_UPSERT": {
+            "required": [
+              "item"
+            ],
+            "allowed": [
+              "command",
+              "contentCode",
+              "expectedStateVersion",
+              "itemId",
+              "item"
+            ]
+          },
+          "ITEM_SUBMIT_REVIEW": {
+            "required": [
+              "itemId"
+            ],
+            "allowed": [
+              "command",
+              "contentCode",
+              "expectedStateVersion",
+              "itemId"
+            ]
+          },
+          "ITEM_REVIEW_FIRST": {
+            "required": [
+              "itemId",
+              "reviewDecision"
+            ],
+            "allowed": [
+              "command",
+              "contentCode",
+              "expectedStateVersion",
+              "itemId",
+              "reviewDecision",
+              "reviewNote"
+            ]
+          },
+          "ITEM_REVIEW_FINAL": {
+            "required": [
+              "itemId",
+              "reviewDecision"
+            ],
+            "allowed": [
+              "command",
+              "contentCode",
+              "expectedStateVersion",
+              "itemId",
+              "reviewDecision",
+              "reviewNote"
+            ]
+          },
+          "ITEM_PUBLISH": {
+            "required": [
+              "itemId",
+              "reasonCode"
+            ],
+            "allowed": [
+              "command",
+              "contentCode",
+              "expectedStateVersion",
+              "itemId",
+              "reasonCode"
+            ]
+          },
+          "ITEM_UNPUBLISH": {
+            "required": [
+              "itemId",
+              "reasonCode"
+            ],
+            "allowed": [
+              "command",
+              "contentCode",
+              "expectedStateVersion",
+              "itemId",
+              "reasonCode"
+            ]
+          },
+          "ITEM_ARCHIVE": {
+            "required": [
+              "itemId",
+              "reasonCode"
+            ],
+            "allowed": [
+              "command",
+              "contentCode",
+              "expectedStateVersion",
+              "itemId",
               "reasonCode"
             ]
           }
@@ -49560,11 +50531,6 @@
                 },
                 {
                   "required": [
-                    "reasonCode"
-                  ]
-                },
-                {
-                  "required": [
                     "content"
                   ]
                 },
@@ -49714,6 +50680,526 @@
                 }
               ]
             }
+          },
+          {
+            "properties": {
+              "command": {
+                "enum": [
+                  "LEXEME_UPSERT"
+                ]
+              }
+            },
+            "required": [
+              "lexeme"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "targetVersionNumber"
+                  ]
+                },
+                {
+                  "required": [
+                    "reasonCode"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewDecision"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewNote"
+                  ]
+                },
+                {
+                  "required": [
+                    "schedule"
+                  ]
+                },
+                {
+                  "required": [
+                    "scheduledPublishTaskId"
+                  ]
+                },
+                {
+                  "required": [
+                    "content"
+                  ]
+                },
+                {
+                  "required": [
+                    "pronunciation"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "properties": {
+              "command": {
+                "enum": [
+                  "LEXEME_SUBMIT_REVIEW"
+                ]
+              }
+            },
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "targetVersionNumber"
+                  ]
+                },
+                {
+                  "required": [
+                    "reasonCode"
+                  ]
+                },
+                {
+                  "required": [
+                    "content"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewDecision"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewNote"
+                  ]
+                },
+                {
+                  "required": [
+                    "schedule"
+                  ]
+                },
+                {
+                  "required": [
+                    "scheduledPublishTaskId"
+                  ]
+                },
+                {
+                  "required": [
+                    "lexeme"
+                  ]
+                },
+                {
+                  "required": [
+                    "pronunciation"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "properties": {
+              "command": {
+                "enum": [
+                  "LEXEME_REVIEW_FIRST",
+                  "LEXEME_REVIEW_FINAL"
+                ]
+              }
+            },
+            "required": [
+              "reviewDecision"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "targetVersionNumber"
+                  ]
+                },
+                {
+                  "required": [
+                    "reasonCode"
+                  ]
+                },
+                {
+                  "required": [
+                    "content"
+                  ]
+                },
+                {
+                  "required": [
+                    "schedule"
+                  ]
+                },
+                {
+                  "required": [
+                    "scheduledPublishTaskId"
+                  ]
+                },
+                {
+                  "required": [
+                    "lexeme"
+                  ]
+                },
+                {
+                  "required": [
+                    "pronunciation"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "properties": {
+              "command": {
+                "enum": [
+                  "LEXEME_PUBLISH",
+                  "LEXEME_UNPUBLISH",
+                  "LEXEME_ARCHIVE"
+                ]
+              }
+            },
+            "required": [
+              "reasonCode"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "targetVersionNumber"
+                  ]
+                },
+                {
+                  "required": [
+                    "content"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewDecision"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewNote"
+                  ]
+                },
+                {
+                  "required": [
+                    "schedule"
+                  ]
+                },
+                {
+                  "required": [
+                    "scheduledPublishTaskId"
+                  ]
+                },
+                {
+                  "required": [
+                    "lexeme"
+                  ]
+                },
+                {
+                  "required": [
+                    "pronunciation"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "properties": {
+              "command": {
+                "enum": [
+                  "LEXEME_PRONUNCIATION_UPSERT",
+                  "LEXEME_PRONUNCIATION_QC"
+                ]
+              }
+            },
+            "required": [
+              "pronunciation"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "targetVersionNumber"
+                  ]
+                },
+                {
+                  "required": [
+                    "content"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewDecision"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewNote"
+                  ]
+                },
+                {
+                  "required": [
+                    "schedule"
+                  ]
+                },
+                {
+                  "required": [
+                    "scheduledPublishTaskId"
+                  ]
+                },
+                {
+                  "required": [
+                    "lexeme"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "properties": {
+              "command": {
+                "enum": [
+                  "ITEM_UPSERT"
+                ]
+              }
+            },
+            "required": [
+              "item"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "targetVersionNumber"
+                  ]
+                },
+                {
+                  "required": [
+                    "reasonCode"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewDecision"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewNote"
+                  ]
+                },
+                {
+                  "required": [
+                    "schedule"
+                  ]
+                },
+                {
+                  "required": [
+                    "scheduledPublishTaskId"
+                  ]
+                },
+                {
+                  "required": [
+                    "content"
+                  ]
+                },
+                {
+                  "required": [
+                    "lexeme"
+                  ]
+                },
+                {
+                  "required": [
+                    "pronunciation"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "properties": {
+              "command": {
+                "enum": [
+                  "ITEM_SUBMIT_REVIEW"
+                ]
+              }
+            },
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "targetVersionNumber"
+                  ]
+                },
+                {
+                  "required": [
+                    "reasonCode"
+                  ]
+                },
+                {
+                  "required": [
+                    "content"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewDecision"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewNote"
+                  ]
+                },
+                {
+                  "required": [
+                    "schedule"
+                  ]
+                },
+                {
+                  "required": [
+                    "scheduledPublishTaskId"
+                  ]
+                },
+                {
+                  "required": [
+                    "lexeme"
+                  ]
+                },
+                {
+                  "required": [
+                    "pronunciation"
+                  ]
+                },
+                {
+                  "required": [
+                    "item"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "properties": {
+              "command": {
+                "enum": [
+                  "ITEM_REVIEW_FIRST",
+                  "ITEM_REVIEW_FINAL"
+                ]
+              }
+            },
+            "required": [
+              "reviewDecision"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "targetVersionNumber"
+                  ]
+                },
+                {
+                  "required": [
+                    "reasonCode"
+                  ]
+                },
+                {
+                  "required": [
+                    "content"
+                  ]
+                },
+                {
+                  "required": [
+                    "schedule"
+                  ]
+                },
+                {
+                  "required": [
+                    "scheduledPublishTaskId"
+                  ]
+                },
+                {
+                  "required": [
+                    "lexeme"
+                  ]
+                },
+                {
+                  "required": [
+                    "pronunciation"
+                  ]
+                },
+                {
+                  "required": [
+                    "item"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "properties": {
+              "command": {
+                "enum": [
+                  "ITEM_PUBLISH",
+                  "ITEM_UNPUBLISH",
+                  "ITEM_ARCHIVE"
+                ]
+              }
+            },
+            "required": [
+              "reasonCode"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "targetVersionNumber"
+                  ]
+                },
+                {
+                  "required": [
+                    "content"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewDecision"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewNote"
+                  ]
+                },
+                {
+                  "required": [
+                    "schedule"
+                  ]
+                },
+                {
+                  "required": [
+                    "scheduledPublishTaskId"
+                  ]
+                },
+                {
+                  "required": [
+                    "lexeme"
+                  ]
+                },
+                {
+                  "required": [
+                    "pronunciation"
+                  ]
+                },
+                {
+                  "required": [
+                    "item"
+                  ]
+                }
+              ]
+            }
           }
         ]
       },
@@ -49754,7 +51240,23 @@
               "SCHEDULE_PUBLISH",
               "CANCEL_SCHEDULED_PUBLISH",
               "UNPUBLISH",
-              "ROLLBACK"
+              "ROLLBACK",
+              "LEXEME_UPSERT",
+              "LEXEME_SUBMIT_REVIEW",
+              "LEXEME_REVIEW_FIRST",
+              "LEXEME_REVIEW_FINAL",
+              "LEXEME_PUBLISH",
+              "LEXEME_UNPUBLISH",
+              "LEXEME_ARCHIVE",
+              "LEXEME_PRONUNCIATION_UPSERT",
+              "LEXEME_PRONUNCIATION_QC",
+              "ITEM_UPSERT",
+              "ITEM_SUBMIT_REVIEW",
+              "ITEM_REVIEW_FIRST",
+              "ITEM_REVIEW_FINAL",
+              "ITEM_PUBLISH",
+              "ITEM_UNPUBLISH",
+              "ITEM_ARCHIVE"
             ],
             "readOnly": true
           },
@@ -49782,6 +51284,20 @@
             "$ref": "#/components/schemas/B9ScheduledPublishTaskRef",
             "readOnly": true,
             "description": "仅 SCHEDULE_PUBLISH 或其幂等重放结果携带；CANCEL_SCHEDULED_PUBLISH 返回被取消任务的只读引用。"
+          },
+          "lexemeId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "lexemeStateVersion": {
+            "$ref": "#/components/schemas/B9StateVersion"
+          },
+          "itemId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "itemStateVersion": {
+            "$ref": "#/components/schemas/B9StateVersion"
           }
         }
       },
@@ -50669,6 +52185,81 @@
             "$ref": "#/components/schemas/B9ScheduledPublishTaskRef",
             "readOnly": true,
             "description": "若存在待执行排期则返回只读任务引用；不会改变 publicProjection.availability。"
+          },
+          "lexeme": {
+            "$ref": "#/components/schemas/LexemeRecord",
+            "description": "Present only on kind=LEXEME rows: the full word-master record with pronunciations."
+          },
+          "item": {
+            "$ref": "#/components/schemas/ContentItemRecord",
+            "description": "Present only on kind=ITEM rows: the full row-level item record."
+          },
+          "scheduledTasks": {
+            "type": "array",
+            "maxItems": 20,
+            "description": "Scheduled publish tasks for this pack (SCHEDULED/CANCELLED/EXECUTED/FAILED).",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "taskId",
+                "targetType",
+                "targetRef",
+                "runAt",
+                "status"
+              ],
+              "properties": {
+                "taskId": {
+                  "type": "string",
+                  "maxLength": 128
+                },
+                "targetType": {
+                  "type": "string",
+                  "enum": [
+                    "PACK",
+                    "LEXEME",
+                    "ITEM"
+                  ]
+                },
+                "targetRef": {
+                  "type": "string",
+                  "maxLength": 128
+                },
+                "expectedStateVersion": {
+                  "$ref": "#/components/schemas/B9StateVersion"
+                },
+                "runAt": {
+                  "$ref": "#/components/schemas/B9DateTime"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "SCHEDULED",
+                    "CANCELLED",
+                    "EXECUTED",
+                    "FAILED"
+                  ]
+                },
+                "reasonCode": {
+                  "type": "string",
+                  "maxLength": 96
+                },
+                "failureCode": {
+                  "type": "string",
+                  "maxLength": 128
+                },
+                "createdBy": {
+                  "type": "string",
+                  "maxLength": 128
+                },
+                "createdAt": {
+                  "$ref": "#/components/schemas/B9DateTime"
+                },
+                "updatedAt": {
+                  "$ref": "#/components/schemas/B9DateTime"
+                }
+              }
+            }
           }
         }
       },
@@ -75893,6 +77484,905 @@
         },
         "x-client-authority": "NONE",
         "x-telemetry-only": true
+      },
+      "LexemeExample": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "en",
+          "cn"
+        ],
+        "properties": {
+          "en": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "cn": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "source": {
+            "type": "string",
+            "maxLength": 128
+          }
+        }
+      },
+      "LexemeSense": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "pos",
+          "meaningCn"
+        ],
+        "properties": {
+          "pos": {
+            "type": "string",
+            "enum": [
+              "NOUN",
+              "VERB",
+              "ADJ",
+              "ADV",
+              "PRON",
+              "PREP",
+              "CONJ",
+              "INTERJ",
+              "PHRASE",
+              "PREFIX",
+              "SUFFIX"
+            ]
+          },
+          "meaningCn": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "meaningEn": {
+            "type": "string",
+            "maxLength": 512
+          },
+          "examples": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LexemeExample"
+            },
+            "maxItems": 10
+          },
+          "synonyms": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 64
+            },
+            "maxItems": 20
+          },
+          "antonyms": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 64
+            },
+            "maxItems": 20
+          },
+          "confusables": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 64
+            },
+            "maxItems": 20
+          },
+          "usageNote": {
+            "type": "string",
+            "maxLength": 1024
+          }
+        }
+      },
+      "LexemePronunciationInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "accent",
+          "ipa",
+          "audioAssetId",
+          "sourceType"
+        ],
+        "properties": {
+          "pronunciationId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "accent": {
+            "type": "string",
+            "enum": [
+              "US",
+              "UK",
+              "SLOW"
+            ]
+          },
+          "ipa": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "audioAssetId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "description": "media-service asset reference; bytes never flow through content-service"
+          },
+          "sourceType": {
+            "type": "string",
+            "enum": [
+              "HUMAN",
+              "TTS"
+            ]
+          },
+          "voiceName": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "durationMs": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "sampleRate": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "bitrateKbps": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "qcStatus": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "READY",
+              "CLEAN",
+              "FAILED"
+            ]
+          }
+        }
+      },
+      "LexemePronunciation": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "pronunciationId",
+          "accent",
+          "ipa",
+          "audioAssetId",
+          "sourceType",
+          "qcStatus"
+        ],
+        "properties": {
+          "pronunciationId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "accent": {
+            "type": "string",
+            "enum": [
+              "US",
+              "UK",
+              "SLOW"
+            ]
+          },
+          "ipa": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "audioAssetId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "sourceType": {
+            "type": "string",
+            "enum": [
+              "HUMAN",
+              "TTS"
+            ]
+          },
+          "voiceName": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "durationMs": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "sampleRate": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "bitrateKbps": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "qcStatus": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "READY",
+              "CLEAN",
+              "FAILED"
+            ]
+          },
+          "qcBy": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "qcAt": {
+            "$ref": "#/components/schemas/B9DateTime"
+          },
+          "createdAt": {
+            "$ref": "#/components/schemas/B9DateTime"
+          }
+        }
+      },
+      "LexemeUpsertInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "headword"
+        ],
+        "description": "Row-level word master. Lexemes live under a vocabulary pack (contentCode, kind VOCABULARY); the pack is auto-provisioned on first LEXEME_UPSERT.",
+        "properties": {
+          "lexemeId": {
+            "type": "string",
+            "maxLength": 128,
+            "description": "Omit to create; server derives lx_{headword} sequence"
+          },
+          "headword": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "lemma": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "pos": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "NOUN",
+                "VERB",
+                "ADJ",
+                "ADV",
+                "PRON",
+                "PREP",
+                "CONJ",
+                "INTERJ",
+                "PHRASE"
+              ]
+            },
+            "maxItems": 5
+          },
+          "cefr": {
+            "type": "string",
+            "enum": [
+              "A1",
+              "A2",
+              "B1",
+              "B2",
+              "C1",
+              "C2"
+            ]
+          },
+          "difficulty": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "syllables": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 32
+            },
+            "maxItems": 12
+          },
+          "stressIndex": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "phoneticUS": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "phoneticUK": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "audioUsAssetId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "audioUkAssetId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "audioSlowAssetId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "senses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LexemeSense"
+            },
+            "maxItems": 12
+          },
+          "collocations": {
+            "type": "array",
+            "maxItems": 20,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "text",
+                "meaningCn"
+              ],
+              "properties": {
+                "text": {
+                  "type": "string",
+                  "maxLength": 256
+                },
+                "meaningCn": {
+                  "type": "string",
+                  "maxLength": 512
+                }
+              }
+            }
+          },
+          "morphology": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "root": {
+                "type": "string",
+                "maxLength": 64
+              },
+              "prefix": {
+                "type": "string",
+                "maxLength": 64
+              },
+              "suffix": {
+                "type": "string",
+                "maxLength": 64
+              }
+            }
+          },
+          "mnemonics": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "keyword": {
+                "type": "string",
+                "maxLength": 64
+              },
+              "storyCn": {
+                "type": "string",
+                "maxLength": 1024
+              }
+            }
+          },
+          "examFreq": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 64
+            },
+            "maxItems": 20
+          },
+          "sourceCode": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "licenseCode": {
+            "type": "string",
+            "maxLength": 128
+          }
+        }
+      },
+      "LexemeRecord": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "lexemeId",
+          "headword",
+          "packCode",
+          "availability",
+          "stateVersion",
+          "contentVersion"
+        ],
+        "properties": {
+          "lexemeId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "headword": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "lemma": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "pos": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 5
+          },
+          "cefr": {
+            "type": "string",
+            "enum": [
+              "A1",
+              "A2",
+              "B1",
+              "B2",
+              "C1",
+              "C2"
+            ]
+          },
+          "difficulty": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "syllables": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 12
+          },
+          "stressIndex": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "phoneticUS": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "phoneticUK": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "audioUsAssetId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "audioUkAssetId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "audioSlowAssetId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "senses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LexemeSense"
+            }
+          },
+          "collocations": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "morphology": {
+            "type": "object"
+          },
+          "mnemonics": {
+            "type": "object"
+          },
+          "examFreq": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "sourceCode": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "licenseCode": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "packCode": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "availability": {
+            "type": "string",
+            "enum": [
+              "DRAFT",
+              "IN_REVIEW",
+              "APPROVED",
+              "PUBLISHED",
+              "ARCHIVED"
+            ]
+          },
+          "stateVersion": {
+            "$ref": "#/components/schemas/B9StateVersion"
+          },
+          "contentVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "pronunciations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LexemePronunciation"
+            }
+          },
+          "createdBy": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "updatedBy": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "createdAt": {
+            "$ref": "#/components/schemas/B9DateTime"
+          },
+          "updatedAt": {
+            "$ref": "#/components/schemas/B9DateTime"
+          },
+          "publishedFields": {
+            "type": "object",
+            "description": "Last published fields snapshot; null when never published. The admin diff compares fields against this snapshot."
+          }
+        }
+      },
+      "ContentItemUpsertInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "kind"
+        ],
+        "description": "Row-level content item (question/example/grammar/passage) under a pack. Rich configuration travels in fields and never requires DDL.",
+        "properties": {
+          "itemId": {
+            "type": "string",
+            "maxLength": 128,
+            "description": "Omit to create; server derives it: prefix by kind"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "QUESTION",
+              "EXAMPLE",
+              "GRAMMAR_POINT",
+              "PASSAGE",
+              "EXERCISE"
+            ]
+          },
+          "stem": {
+            "type": "string",
+            "maxLength": 2048,
+            "description": "Question stem / example sentence / grammar title / passage heading"
+          },
+          "fields": {
+            "type": "object",
+            "description": "Extensible item configuration: options, answerRuleVersion, explanation, cefr, difficulty, audioAssetId, subtitle lines, tags.",
+            "additionalProperties": true
+          },
+          "sourceCode": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "licenseCode": {
+            "type": "string",
+            "maxLength": 128
+          }
+        }
+      },
+      "ContentItemRecord": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "itemId",
+          "kind",
+          "packCode",
+          "availability",
+          "stateVersion"
+        ],
+        "properties": {
+          "itemId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "QUESTION",
+              "EXAMPLE",
+              "GRAMMAR_POINT",
+              "PASSAGE",
+              "EXERCISE"
+            ]
+          },
+          "stem": {
+            "type": "string",
+            "maxLength": 2048
+          },
+          "packCode": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "availability": {
+            "type": "string",
+            "enum": [
+              "DRAFT",
+              "IN_REVIEW",
+              "APPROVED",
+              "PUBLISHED",
+              "ARCHIVED"
+            ]
+          },
+          "stateVersion": {
+            "$ref": "#/components/schemas/B9StateVersion"
+          },
+          "fields": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "sourceCode": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "licenseCode": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "createdBy": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "updatedBy": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "createdAt": {
+            "$ref": "#/components/schemas/B9DateTime"
+          },
+          "updatedAt": {
+            "$ref": "#/components/schemas/B9DateTime"
+          }
+        }
+      },
+      "AdminLearnerSubject": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "subjectId",
+          "tenantId"
+        ],
+        "properties": {
+          "subjectId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "tenantId": {
+            "type": "string",
+            "maxLength": 128
+          }
+        }
+      },
+      "AdminLearnerProfile": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "profile",
+          "subjectId"
+        ],
+        "properties": {
+          "subjectId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "profile": {
+            "type": "object"
+          },
+          "firstDay": {
+            "type": "object"
+          }
+        }
+      },
+      "AdminLearnerCommandRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "command",
+          "expectedStateVersion"
+        ],
+        "properties": {
+          "command": {
+            "type": "string",
+            "enum": [
+              "SET_GOAL",
+              "UPDATE_PREFERENCES"
+            ]
+          },
+          "expectedStateVersion": {
+            "$ref": "#/components/schemas/B9StateVersion"
+          },
+          "goalType": {
+            "type": "string",
+            "enum": [
+              "FOUNDATION",
+              "CET_4_6",
+              "POSTGRADUATE",
+              "WORKPLACE"
+            ]
+          },
+          "dailyMinutes": {
+            "type": "integer",
+            "enum": [
+              5,
+              15,
+              30,
+              45
+            ]
+          },
+          "targetDate": {
+            "type": "string",
+            "maxLength": 32
+          },
+          "startingLevel": {
+            "type": "string",
+            "enum": [
+              "A1",
+              "A2",
+              "B1",
+              "B2",
+              "C1",
+              "C2"
+            ]
+          },
+          "uiLocale": {
+            "type": "string",
+            "maxLength": 16
+          },
+          "contentLocale": {
+            "type": "string",
+            "maxLength": 16
+          },
+          "themeMode": {
+            "type": "string",
+            "enum": [
+              "LIGHT",
+              "DARK",
+              "SYSTEM",
+              "HIGH_CONTRAST"
+            ]
+          },
+          "timezone": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "reducedMotion": {
+            "type": "boolean"
+          }
+        },
+        "x-command-field-policy": {
+          "SET_GOAL": {
+            "required": [
+              "goalType",
+              "dailyMinutes"
+            ],
+            "allowed": [
+              "command",
+              "expectedStateVersion",
+              "goalType",
+              "dailyMinutes",
+              "targetDate",
+              "startingLevel"
+            ]
+          },
+          "UPDATE_PREFERENCES": {
+            "required": [
+              "uiLocale",
+              "contentLocale",
+              "themeMode",
+              "timezone"
+            ],
+            "allowed": [
+              "command",
+              "expectedStateVersion",
+              "uiLocale",
+              "contentLocale",
+              "themeMode",
+              "timezone",
+              "reducedMotion"
+            ]
+          }
+        }
+      },
+      "AdminLearnerCommandAccepted": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "command",
+          "subjectId",
+          "profileVersion",
+          "status"
+        ],
+        "properties": {
+          "command": {
+            "type": "string",
+            "enum": [
+              "SET_GOAL",
+              "UPDATE_PREFERENCES"
+            ]
+          },
+          "subjectId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "profileVersion": {
+            "$ref": "#/components/schemas/B9StateVersion"
+          },
+          "replayed": {
+            "type": "boolean"
+          },
+          "adminSubject": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ACCEPTED"
+            ]
+          }
+        }
+      },
+      "AdminLearningCommandRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "command",
+          "itemId"
+        ],
+        "properties": {
+          "command": {
+            "type": "string",
+            "enum": [
+              "RESET_SRS_ITEM"
+            ]
+          },
+          "itemId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "reasonCode": {
+            "type": "string",
+            "maxLength": 96
+          }
+        }
       }
     },
     "requestBodies": {},
@@ -76964,6 +79454,118 @@
         "visibility": "AUTHENTICATED",
         "authClass": "HIGH_RISK_ADMIN",
         "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "admin-learner-search",
+        "priority": 800,
+        "match": {
+          "type": "EXACT",
+          "path": "/api/v1/admin/learners/search",
+          "methods": [
+            "GET"
+          ]
+        },
+        "upstreamOwner": "learner-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "HIGH_RISK_ADMIN",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "admin-learner-profile",
+        "priority": 800,
+        "match": {
+          "type": "EXACT",
+          "path": "/api/v1/admin/learners/{subjectId}/profile",
+          "methods": [
+            "GET"
+          ]
+        },
+        "upstreamOwner": "learner-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "HIGH_RISK_ADMIN",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "admin-learner-commands",
+        "priority": 800,
+        "match": {
+          "type": "EXACT",
+          "path": "/api/v1/admin/learners/{subjectId}/commands",
+          "methods": [
+            "POST"
+          ]
+        },
+        "upstreamOwner": "learner-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "HIGH_RISK_ADMIN",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "admin-learner-plans",
+        "priority": 800,
+        "match": {
+          "type": "EXACT",
+          "path": "/api/v1/admin/learners/{subjectId}/plans",
+          "methods": [
+            "GET"
+          ]
+        },
+        "upstreamOwner": "learning-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "HIGH_RISK_ADMIN",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "admin-learner-srs",
+        "priority": 800,
+        "match": {
+          "type": "EXACT",
+          "path": "/api/v1/admin/learners/{subjectId}/srs",
+          "methods": [
+            "GET"
+          ]
+        },
+        "upstreamOwner": "learning-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "HIGH_RISK_ADMIN",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "admin-learner-learning-commands",
+        "priority": 800,
+        "match": {
+          "type": "EXACT",
+          "path": "/api/v1/admin/learners/{subjectId}/learning-commands",
+          "methods": [
+            "POST"
+          ]
+        },
+        "upstreamOwner": "learning-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "HIGH_RISK_ADMIN",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "admin-learner-assessments",
+        "priority": 800,
+        "match": {
+          "type": "EXACT",
+          "path": "/api/v1/admin/learners/{subjectId}/assessments",
+          "methods": [
+            "GET"
+          ]
+        },
+        "upstreamOwner": "assessment-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "HIGH_RISK_ADMIN",
+        "compatibilityMode": "NONE"
       }
     ],
     "executionTargetPolicy": {
@@ -77335,8 +79937,26 @@
       {
         "ruleId": "admin-content-publish-tasks",
         "defaultStatus": "UNAVAILABLE",
-        "defaultReason": "content_owner_controller_mapping_not_present",
-        "projections": []
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "admin-content-publish-tasks.task-detail",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/admin/content-publish-tasks/{taskId}",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "content-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.content",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/content/admin-commands/publish-tasks/{taskId}",
+            "controllerEvidence": {
+              "sourcePath": "services/content-service/src/main/java/com/englishflow/content/web/B9ContentAdminController.java",
+              "requestMapping": "/internal/v1/content/admin-commands"
+            }
+          }
+        ]
       },
       {
         "ruleId": "admin-recovery",
@@ -80384,6 +83004,174 @@
         "defaultStatus": "UNAVAILABLE",
         "defaultReason": "admin_ops_owner_controller_mapping_not_present",
         "projections": []
+      },
+      {
+        "ruleId": "admin-learner-search",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "admin-learner-search.search",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/admin/learners/search",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learner-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learner",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/learner/admin/search",
+            "controllerEvidence": {
+              "sourcePath": "services/learner-service/src/main/java/com/englishflow/learner/web/LearnerAdminController.java",
+              "requestMapping": "/internal/v1/learner/admin"
+            }
+          }
+        ]
+      },
+      {
+        "ruleId": "admin-learner-profile",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "admin-learner-profile.profile",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/admin/learners/{subjectId}/profile",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learner-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learner",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/learner/admin/subjects/{subjectId}/profile",
+            "controllerEvidence": {
+              "sourcePath": "services/learner-service/src/main/java/com/englishflow/learner/web/LearnerAdminController.java",
+              "requestMapping": "/internal/v1/learner/admin"
+            }
+          }
+        ]
+      },
+      {
+        "ruleId": "admin-learner-commands",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "admin-learner-commands.commands",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/admin/learners/{subjectId}/commands",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learner-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learner",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/learner/admin/subjects/{subjectId}/commands",
+            "controllerEvidence": {
+              "sourcePath": "services/learner-service/src/main/java/com/englishflow/learner/web/LearnerAdminController.java",
+              "requestMapping": "/internal/v1/learner/admin"
+            }
+          }
+        ]
+      },
+      {
+        "ruleId": "admin-learner-plans",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "admin-learner-plans.plans",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/admin/learners/{subjectId}/plans",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learning-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learning",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/learning/admin/subjects/{subjectId}/plans",
+            "controllerEvidence": {
+              "sourcePath": "services/learning-service/src/main/java/com/englishflow/learning/web/LearningAdminController.java",
+              "requestMapping": "/internal/v1/learning/admin"
+            }
+          }
+        ]
+      },
+      {
+        "ruleId": "admin-learner-srs",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "admin-learner-srs.srs",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/admin/learners/{subjectId}/srs",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learning-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learning",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/learning/admin/subjects/{subjectId}/srs",
+            "controllerEvidence": {
+              "sourcePath": "services/learning-service/src/main/java/com/englishflow/learning/web/LearningAdminController.java",
+              "requestMapping": "/internal/v1/learning/admin"
+            }
+          }
+        ]
+      },
+      {
+        "ruleId": "admin-learner-learning-commands",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "admin-learner-learning-commands.learning-commands",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/admin/learners/{subjectId}/learning-commands",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learning-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learning",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/learning/admin/subjects/{subjectId}/commands",
+            "controllerEvidence": {
+              "sourcePath": "services/learning-service/src/main/java/com/englishflow/learning/web/LearningAdminController.java",
+              "requestMapping": "/internal/v1/learning/admin"
+            }
+          }
+        ]
+      },
+      {
+        "ruleId": "admin-learner-assessments",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "admin-learner-assessments.assessments",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/admin/learners/{subjectId}/assessments",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "assessment-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.assessment",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/assessment/admin/subjects/{subjectId}/assessments",
+            "controllerEvidence": {
+              "sourcePath": "services/assessment-service/src/main/java/com/englishflow/assessment/web/AssessmentAdminController.java",
+              "requestMapping": "/internal/v1/assessment/admin"
+            }
+          }
+        ]
       }
     ],
     "internalOperationPolicy": {

@@ -4,21 +4,34 @@ import com.englishflow.content.adapter.failclosed.FailClosedContentCacheInvalida
 import com.englishflow.content.adapter.failclosed.FailClosedContentIdempotency;
 import com.englishflow.content.adapter.failclosed.FailClosedContentOutbox;
 import com.englishflow.content.adapter.failclosed.FailClosedContentRepository;
+import com.englishflow.content.adapter.failclosed.FailClosedContentItemRepository;
+import com.englishflow.content.adapter.failclosed.FailClosedLexemeRepository;
+import com.englishflow.content.adapter.failclosed.FailClosedScheduledPublishRepository;
 import com.englishflow.content.adapter.failclosed.FailClosedPublishedContentReadProjectionPort;
 import com.englishflow.content.adapter.failclosed.FailClosedPublicProjectionStore;
 import com.englishflow.content.adapter.jdbc.JdbcContentCacheInvalidator;
 import com.englishflow.content.adapter.jdbc.JdbcContentIdempotency;
 import com.englishflow.content.adapter.jdbc.JdbcContentOutbox;
+import com.englishflow.content.adapter.jdbc.JdbcContentItemRepository;
 import com.englishflow.content.adapter.jdbc.JdbcContentRepository;
+import com.englishflow.content.adapter.jdbc.JdbcLexemeRepository;
+import com.englishflow.content.adapter.jdbc.JdbcScheduledPublishRepository;
 import com.englishflow.content.adapter.jdbc.JdbcPublishedContentReadProjectionPort;
 import com.englishflow.content.adapter.jdbc.JdbcPublicProjectionStore;
 import com.englishflow.content.application.ContentCommandService;
+import com.englishflow.content.application.ContentItemCommandService;
+import com.englishflow.content.application.LexemeCommandService;
+import com.englishflow.content.application.ScheduledPublishExecutor;
+import com.englishflow.content.application.ScheduledPublishService;
 import com.englishflow.content.application.ContentReadService;
 import com.englishflow.content.integration.PublishedContentReadProjectionPort;
 import com.englishflow.content.port.ContentCacheInvalidator;
 import com.englishflow.content.port.ContentIdempotencyPort;
 import com.englishflow.content.port.ContentOutboxPort;
+import com.englishflow.content.port.ContentItemRepository;
 import com.englishflow.content.port.ContentRepository;
+import com.englishflow.content.port.LexemeRepository;
+import com.englishflow.content.port.ScheduledPublishRepository;
 import com.englishflow.content.port.PublicProjectionStore;
 
 import java.time.Clock;
@@ -183,6 +196,89 @@ public class ContentServiceConfiguration {
             JdbcTemplate contentJdbcTemplate,
             Clock contentClock) {
         return new JdbcPublishedContentReadProjectionPort(contentJdbcTemplate, contentClock);
+    }
+
+    @Bean
+    @ConditionalOnProperty(prefix = "content.persistence", name = "mode", havingValue = "disabled", matchIfMissing = true)
+    LexemeRepository failClosedLexemeRepository() {
+        return new FailClosedLexemeRepository();
+    }
+
+    @Bean
+    @ConditionalOnProperty(prefix = "content.persistence", name = "mode", havingValue = "disabled", matchIfMissing = true)
+    ContentItemRepository failClosedContentItemRepository() {
+        return new FailClosedContentItemRepository();
+    }
+
+    @Bean
+    @ConditionalOnProperty(prefix = "content.persistence", name = "mode", havingValue = "disabled", matchIfMissing = true)
+    ScheduledPublishRepository failClosedScheduledPublishRepository() {
+        return new FailClosedScheduledPublishRepository();
+    }
+
+    @Bean
+    @ConditionalOnProperty(prefix = "content.persistence", name = "mode", havingValue = "jdbc")
+    LexemeRepository jdbcLexemeRepository(JdbcTemplate contentJdbcTemplate, ObjectMapper objectMapper) {
+        return new JdbcLexemeRepository(contentJdbcTemplate, objectMapper);
+    }
+
+    @Bean
+    @ConditionalOnProperty(prefix = "content.persistence", name = "mode", havingValue = "jdbc")
+    ContentItemRepository jdbcContentItemRepository(JdbcTemplate contentJdbcTemplate, ObjectMapper objectMapper) {
+        return new JdbcContentItemRepository(contentJdbcTemplate, objectMapper);
+    }
+
+    @Bean
+    @ConditionalOnProperty(prefix = "content.persistence", name = "mode", havingValue = "jdbc")
+    ScheduledPublishRepository jdbcScheduledPublishRepository(JdbcTemplate contentJdbcTemplate) {
+        return new JdbcScheduledPublishRepository(contentJdbcTemplate);
+    }
+
+    @Bean
+    LexemeCommandService lexemeCommandService(
+            ContentRepository repository,
+            LexemeRepository lexemeRepository,
+            ContentOutboxPort outbox,
+            ContentIdempotencyPort idempotency,
+            Clock contentClock) {
+        return new LexemeCommandService(repository, lexemeRepository, outbox, idempotency, contentClock);
+    }
+
+    @Bean
+    ContentItemCommandService contentItemCommandService(
+            ContentItemRepository contentItemRepository,
+            ContentOutboxPort outbox,
+            ContentIdempotencyPort idempotency,
+            Clock contentClock) {
+        return new ContentItemCommandService(contentItemRepository, outbox, idempotency, contentClock);
+    }
+
+    @Bean
+    ScheduledPublishService scheduledPublishService(
+            ScheduledPublishRepository scheduledPublishRepository,
+            ContentIdempotencyPort idempotency,
+            Clock contentClock) {
+        return new ScheduledPublishService(scheduledPublishRepository, idempotency, contentClock);
+    }
+
+    @Bean
+    ScheduledPublishExecutor scheduledPublishExecutor(
+            ScheduledPublishRepository scheduledPublishRepository,
+            ContentRepository contentRepository,
+            ContentCommandService contentCommandService,
+            LexemeCommandService lexemeCommandService,
+            ContentItemCommandService contentItemCommandService,
+            Clock contentClock) {
+        return new ScheduledPublishExecutor(scheduledPublishRepository, contentRepository, contentCommandService,
+                lexemeCommandService, contentItemCommandService, contentClock);
+    }
+
+    @Bean
+    @ConditionalOnProperty(prefix = "content.schedule", name = "enabled", havingValue = "true")
+    com.englishflow.content.integration.ScheduledPublishRelay scheduledPublishRelay(
+            ScheduledPublishExecutor scheduledPublishExecutor,
+            Clock contentClock) {
+        return new com.englishflow.content.integration.ScheduledPublishRelay(scheduledPublishExecutor, contentClock);
     }
 
     @Bean

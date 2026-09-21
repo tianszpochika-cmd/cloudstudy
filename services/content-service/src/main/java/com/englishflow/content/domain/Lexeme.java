@@ -1,0 +1,329 @@
+package com.englishflow.content.domain;
+
+import java.time.Instant;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.regex.Pattern;
+
+/**
+ * Row-level word master owned by content-service.
+ *
+ * <p>Fixed fields carry identity, lifecycle and query dimensions. All rich,
+ * extensible configuration (lemma, pos, senses, examples, collocations,
+ * morphology, mnemonics, tags, phonetic/audio references) travels inside the
+ * {@code fields} map and is persisted as {@code fields_json}, so new
+ * configuration fields never require DDL. Audio bytes never flow through this
+ * aggregate; pronunciations reference media-service assets by id.</p>
+ */
+public final class Lexeme {
+
+    private static final Pattern SAFE_CODE = Pattern.compile("[A-Za-z0-9][A-Za-z0-9._:-]{0,127}");
+
+    private final String lexemeId;
+    private final String tenantId;
+    private final String packCode;
+    private final String headword;
+    private final String cefr;
+    private LexemeAvailability availability;
+    private long stateVersion;
+    private int contentVersion;
+    private final String createdBy;
+    private String updatedBy;
+    private String firstReviewer;
+    private String finalReviewer;
+    private String publisher;
+    private Map<String, Object> fields;
+    private Map<String, Object> publishedFields;
+    private final Instant createdAt;
+    private Instant updatedAt;
+
+    public Lexeme(
+            String lexemeId,
+            String tenantId,
+            String packCode,
+            String headword,
+            String cefr,
+            LexemeAvailability availability,
+            long stateVersion,
+            int contentVersion,
+            String createdBy,
+            String updatedBy,
+            String firstReviewer,
+            String finalReviewer,
+            String publisher,
+            Map<String, Object> fields,
+            Instant createdAt,
+            Instant updatedAt) {
+        this(lexemeId, tenantId, packCode, headword, cefr, availability, stateVersion, contentVersion,
+                createdBy, updatedBy, firstReviewer, finalReviewer, publisher, fields, null, createdAt, updatedAt);
+    }
+
+    public Lexeme(
+            String lexemeId,
+            String tenantId,
+            String packCode,
+            String headword,
+            String cefr,
+            LexemeAvailability availability,
+            long stateVersion,
+            int contentVersion,
+            String createdBy,
+            String updatedBy,
+            String firstReviewer,
+            String finalReviewer,
+            String publisher,
+            Map<String, Object> fields,
+            Map<String, Object> publishedFields,
+            Instant createdAt,
+            Instant updatedAt) {
+        this.lexemeId = requireCode(lexemeId, "lexemeId");
+        this.tenantId = requireCode(tenantId, "tenantId");
+        this.packCode = requireCode(packCode, "packCode");
+        this.headword = requireHeadword(headword);
+        this.cefr = cefr == null ? null : cefr.trim().toUpperCase();
+        this.availability = Objects.requireNonNull(availability, "availability is required");
+        this.stateVersion = stateVersion;
+        this.contentVersion = contentVersion;
+        this.createdBy = requireCode(createdBy, "createdBy");
+        this.updatedBy = updatedBy;
+        this.firstReviewer = firstReviewer;
+        this.finalReviewer = finalReviewer;
+        this.publisher = publisher;
+        this.fields = fields == null ? Map.of() : Map.copyOf(fields);
+        this.publishedFields = publishedFields == null ? null : Map.copyOf(publishedFields);
+        this.createdAt = Objects.requireNonNull(createdAt, "createdAt is required");
+        this.updatedAt = Objects.requireNonNull(updatedAt, "updatedAt is required");
+    }
+
+    public static Lexeme create(
+            String lexemeId,
+            String tenantId,
+            String packCode,
+            String headword,
+            String cefr,
+            Map<String, Object> fields,
+            String createdBy,
+            Instant now) {
+        return new Lexeme(
+                lexemeId, tenantId, packCode, headword, cefr,
+                LexemeAvailability.DRAFT, 1L, 1,
+                createdBy, createdBy, null, null, null,
+                fields, now, now);
+    }
+
+    public String lexemeId() {
+        return lexemeId;
+    }
+
+    public String tenantId() {
+        return tenantId;
+    }
+
+    public String packCode() {
+        return packCode;
+    }
+
+    public String headword() {
+        return headword;
+    }
+
+    public String cefr() {
+        return cefr;
+    }
+
+    public LexemeAvailability availability() {
+        return availability;
+    }
+
+    public long stateVersion() {
+        return stateVersion;
+    }
+
+    public int contentVersion() {
+        return contentVersion;
+    }
+
+    public String createdBy() {
+        return createdBy;
+    }
+
+    public String updatedBy() {
+        return updatedBy;
+    }
+
+    public String firstReviewer() {
+        return firstReviewer;
+    }
+
+    public String finalReviewer() {
+        return finalReviewer;
+    }
+
+    public String publisher() {
+        return publisher;
+    }
+
+    public Map<String, Object> fields() {
+        return fields;
+    }
+
+    /** Last published snapshot; null when never published. Drives the version diff. */
+    public Map<String, Object> publishedFields() {
+        return publishedFields;
+    }
+
+    public Instant createdAt() {
+        return createdAt;
+    }
+
+    public Instant updatedAt() {
+        return updatedAt;
+    }
+
+    /** Applies an editor upsert. Only DRAFT rows accept field changes. */
+    public void applyUpsert(Map<String, Object> nextFields, String editor, Instant now) {
+        if (availability != LexemeAvailability.DRAFT) {
+            throw ContentOperationException.conflict("LEXEME_STATE_INVALID", "only a DRAFT lexeme can be edited");
+        }
+        this.fields = Map.copyOf(nextFields);
+        this.updatedBy = editor;
+        this.updatedAt = now;
+        this.stateVersion += 1;
+    }
+
+    public void submit(String editor, Instant now) {
+        requireTransition(availability.canSubmit(), "only a DRAFT lexeme can be submitted");
+        this.availability = LexemeAvailability.IN_REVIEW;
+        this.updatedBy = editor;
+        this.updatedAt = now;
+        this.stateVersion += 1;
+    }
+
+    public void reviewFirst(String reviewer, Instant now) {
+        requireTransition(availability.canReview(), "only an IN_REVIEW lexeme can be first-reviewed");
+        if (firstReviewer != null) {
+            throw ContentOperationException.conflict("LEXEME_REVIEW_DUPLICATE",
+                    "the FIRST review is already completed");
+        }
+        this.firstReviewer = reviewer;
+        this.updatedBy = reviewer;
+        this.updatedAt = now;
+        this.stateVersion += 1;
+    }
+
+    public void reviewFinal(String reviewer, Instant now) {
+        requireTransition(availability.canReview(), "only an IN_REVIEW lexeme can be final-reviewed");
+        if (firstReviewer == null) {
+            throw ContentOperationException.conflict("LEXEME_REVIEW_ORDER_INVALID",
+                    "FINAL review requires a completed FIRST review");
+        }
+        if (reviewer.equals(firstReviewer)) {
+            throw ContentOperationException.forbidden("LEXEME_SELF_REVIEW_DENIED",
+                    "the author of the first review cannot approve the final review");
+        }
+        this.finalReviewer = reviewer;
+        this.availability = LexemeAvailability.APPROVED;
+        this.updatedBy = reviewer;
+        this.updatedAt = now;
+        this.stateVersion += 1;
+    }
+
+    public void publish(String publisher, Instant now) {
+        requireTransition(availability.canPublish(), "only an APPROVED lexeme can be published");
+        this.availability = LexemeAvailability.PUBLISHED;
+        this.publisher = publisher;
+        this.publishedFields = Map.copyOf(fields);
+        this.updatedBy = publisher;
+        this.updatedAt = now;
+        this.stateVersion += 1;
+        this.contentVersion += 1;
+    }
+
+    public void unpublish(String publisher, Instant now) {
+        requireTransition(availability.canUnpublish(), "only a PUBLISHED lexeme can be unpublished");
+        this.availability = LexemeAvailability.APPROVED;
+        this.updatedBy = publisher;
+        this.updatedAt = now;
+        this.stateVersion += 1;
+    }
+
+    public void archive(String actor, Instant now) {
+        requireTransition(availability.canArchive(), "this lexeme state cannot be archived");
+        this.availability = LexemeAvailability.ARCHIVED;
+        this.updatedBy = actor;
+        this.updatedAt = now;
+        this.stateVersion += 1;
+    }
+
+    private static void requireTransition(boolean allowed, String message) {
+        if (!allowed) {
+            throw ContentOperationException.conflict("LEXEME_STATE_INVALID", message);
+        }
+    }
+
+    private static String requireCode(String value, String field) {
+        Objects.requireNonNull(value, field + " is required");
+        if (!SAFE_CODE.matcher(value).matches()) {
+            throw ContentOperationException.badRequest("LEXEME_FIELD_INVALID", field + " has an unsafe format");
+        }
+        return value;
+    }
+
+    private static String requireHeadword(String value) {
+        Objects.requireNonNull(value, "headword is required");
+        String trimmed = value.trim();
+        if (trimmed.isEmpty() || trimmed.length() > 128) {
+            throw ContentOperationException.badRequest("LEXEME_FIELD_INVALID", "headword must be 1..128 characters");
+        }
+        return trimmed;
+    }
+
+    /** Structural validation for the extensible fields map. Unknown keys are allowed (forward extensibility). */
+    @SuppressWarnings("unchecked")
+    public static Map<String, Object> validatedFields(Map<String, Object> raw) {
+        Objects.requireNonNull(raw, "lexeme fields are required");
+        Object senses = raw.get("senses");
+        if (senses != null) {
+            if (!(senses instanceof List<?> list) || list.isEmpty() || list.size() > 12) {
+                throw ContentOperationException.badRequest("LEXEME_FIELD_INVALID", "senses must contain 1..12 entries");
+            }
+            for (Object sense : list) {
+                if (!(sense instanceof Map<?, ?> senseMap)) {
+                    throw ContentOperationException.badRequest("LEXEME_FIELD_INVALID", "sense entries must be objects");
+                }
+                Object meaning = senseMap.get("meaningCn");
+                if (!(meaning instanceof String text) || text.isBlank() || text.length() > 512) {
+                    throw ContentOperationException.badRequest("LEXEME_FIELD_INVALID",
+                            "each sense requires meaningCn of 1..512 characters");
+                }
+            }
+        }
+        Object difficulty = raw.get("difficulty");
+        if (difficulty != null) {
+            int level = toInt(difficulty, "difficulty");
+            if (level < 1 || level > 5) {
+                throw ContentOperationException.badRequest("LEXEME_FIELD_INVALID", "difficulty must be 1..5");
+            }
+        }
+        Object examFreq = raw.get("examFreq");
+        if (examFreq != null) {
+            int freq = toInt(examFreq, "examFreq");
+            if (freq < 0 || freq > 100) {
+                throw ContentOperationException.badRequest("LEXEME_FIELD_INVALID", "examFreq must be 0..100");
+            }
+        }
+        Object tags = raw.get("tags");
+        if (tags != null && (!(tags instanceof List<?> tagList) || tagList.size() > 20)) {
+            throw ContentOperationException.badRequest("LEXEME_FIELD_INVALID", "tags must contain at most 20 entries");
+        }
+        return Map.copyOf(raw);
+    }
+
+    private static int toInt(Object value, String field) {
+        if (value instanceof Number number) {
+            return number.intValue();
+        }
+        throw ContentOperationException.badRequest("LEXEME_FIELD_INVALID", field + " must be a number");
+    }
+}

@@ -75,9 +75,34 @@ public final class GatewayRoutePolicy {
                 return false;
             }
             return switch (matchType) {
-                case EXACT -> path.equals(requestPath);
+                // Template segments ({subjectId}) each match exactly one concrete
+                // segment. Rules without templates behave exactly as before.
+                case EXACT -> exactMatches(path, requestPath);
                 case PREFIX -> path.equals(requestPath) || requestPath.startsWith(path + "/");
             };
+        }
+
+        private static boolean exactMatches(String template, String requestPath) {
+            if (!template.contains("{")) {
+                return template.equals(requestPath);
+            }
+            StringBuilder regex = new StringBuilder("^");
+            int cursor = 0;
+            while (cursor < template.length()) {
+                int open = template.indexOf('{', cursor);
+                if (open < 0) {
+                    regex.append(java.util.regex.Pattern.quote(template.substring(cursor)));
+                    break;
+                }
+                int close = template.indexOf('}', open);
+                if (close < 0) {
+                    return false;
+                }
+                regex.append(java.util.regex.Pattern.quote(template.substring(cursor, open)));
+                regex.append("[^/]+");
+                cursor = close + 1;
+            }
+            return requestPath.matches(regex.append("$").toString());
         }
 
         /**
@@ -159,7 +184,14 @@ public final class GatewayRoutePolicy {
             rule("admin-domain", 100, MatchType.PREFIX, "/api/v1/admin", "admin-ops-service", "INTERNAL_V1", "AUTHENTICATED", AuthClass.HIGH_RISK_ADMIN, "NONE", HttpMethod.GET, HttpMethod.POST),
             rule("data-reliability-domain", 100, MatchType.PREFIX, "/api/v1/data-reliability", "workflow-service", "INTERNAL_V1", "AUTHENTICATED", AuthClass.HIGH_RISK_ADMIN, "NONE", HttpMethod.GET, HttpMethod.POST),
             rule("release-domain", 100, MatchType.PREFIX, "/api/v1/release", "workflow-service", "INTERNAL_V1", "AUTHENTICATED", AuthClass.HIGH_RISK_ADMIN, "NONE", HttpMethod.GET, HttpMethod.POST),
-            rule("quality-domain", 100, MatchType.PREFIX, "/api/v1/quality", "admin-ops-service", "INTERNAL_V1", "AUTHENTICATED", AuthClass.HIGH_RISK_ADMIN, "NONE", HttpMethod.GET, HttpMethod.POST)
+            rule("quality-domain", 100, MatchType.PREFIX, "/api/v1/quality", "admin-ops-service", "INTERNAL_V1", "AUTHENTICATED", AuthClass.HIGH_RISK_ADMIN, "NONE", HttpMethod.GET, HttpMethod.POST),
+            rule("admin-learner-search", 800, MatchType.EXACT, "/api/v1/admin/learners/search", "learner-service", "INTERNAL_V1", "AUTHENTICATED", AuthClass.HIGH_RISK_ADMIN, "NONE", HttpMethod.GET),
+            rule("admin-learner-profile", 800, MatchType.EXACT, "/api/v1/admin/learners/{subjectId}/profile", "learner-service", "INTERNAL_V1", "AUTHENTICATED", AuthClass.HIGH_RISK_ADMIN, "NONE", HttpMethod.GET),
+            rule("admin-learner-commands", 800, MatchType.EXACT, "/api/v1/admin/learners/{subjectId}/commands", "learner-service", "INTERNAL_V1", "AUTHENTICATED", AuthClass.HIGH_RISK_ADMIN, "NONE", HttpMethod.POST),
+            rule("admin-learner-plans", 800, MatchType.EXACT, "/api/v1/admin/learners/{subjectId}/plans", "learning-service", "INTERNAL_V1", "AUTHENTICATED", AuthClass.HIGH_RISK_ADMIN, "NONE", HttpMethod.GET),
+            rule("admin-learner-srs", 800, MatchType.EXACT, "/api/v1/admin/learners/{subjectId}/srs", "learning-service", "INTERNAL_V1", "AUTHENTICATED", AuthClass.HIGH_RISK_ADMIN, "NONE", HttpMethod.GET),
+            rule("admin-learner-learning-commands", 800, MatchType.EXACT, "/api/v1/admin/learners/{subjectId}/learning-commands", "learning-service", "INTERNAL_V1", "AUTHENTICATED", AuthClass.HIGH_RISK_ADMIN, "NONE", HttpMethod.POST),
+            rule("admin-learner-assessments", 800, MatchType.EXACT, "/api/v1/admin/learners/{subjectId}/assessments", "assessment-service", "INTERNAL_V1", "AUTHENTICATED", AuthClass.HIGH_RISK_ADMIN, "NONE", HttpMethod.GET)
     );
 
     private final List<Rule> rules;

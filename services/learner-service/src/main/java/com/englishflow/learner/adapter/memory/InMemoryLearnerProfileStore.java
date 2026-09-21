@@ -29,6 +29,18 @@ public final class InMemoryLearnerProfileStore implements LearnerProfileStore {
     private final List<LearnerOutboxEvent> outboxEvents = new ArrayList<>();
 
     @Override
+    public List<LearnerTenantScope> search(String tenantId, String query, int limit) {
+        String needle = query == null ? "" : query.trim().toLowerCase();
+        return profiles.values().stream()
+                .map(LearnerProfile::scope)
+                .filter(scope -> scope.tenantId().equals(tenantId))
+                .filter(scope -> needle.isEmpty() || scope.subjectId().toLowerCase().contains(needle))
+                .sorted(java.util.Comparator.comparing(LearnerTenantScope::subjectId))
+                .limit(Math.max(1, Math.min(limit, 100)))
+                .toList();
+    }
+
+    @Override
     public Optional<LearnerProfile> find(LearnerTenantScope scope) {
         return Optional.ofNullable(profiles.get(scope.storageKey()));
     }

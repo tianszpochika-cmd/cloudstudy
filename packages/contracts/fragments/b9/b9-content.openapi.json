@@ -541,6 +541,91 @@
           },
           {
             "$ref": "#/components/parameters/PageSize"
+          },
+          {
+            "name": "kind",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "PACK",
+                "LEXEME",
+                "ITEM"
+              ],
+              "default": "PACK"
+            },
+            "description": "PACK lists content packs; LEXEME lists word-master rows; ITEM lists row-level question/example/grammar/passage rows (contentCode=item:{itemId}, full record in item)."
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 128
+            },
+            "description": "Headword substring match; only applies with kind=LEXEME."
+          },
+          {
+            "name": "cefr",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "A1",
+                "A2",
+                "B1",
+                "B2",
+                "C1",
+                "C2"
+              ]
+            },
+            "description": "CEFR filter; only applies with kind=LEXEME."
+          },
+          {
+            "name": "availability",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "DRAFT",
+                "IN_REVIEW",
+                "APPROVED",
+                "PUBLISHED",
+                "ARCHIVED"
+              ]
+            },
+            "description": "Lexeme lifecycle filter; only applies with kind=LEXEME."
+          },
+          {
+            "name": "packCode",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 128,
+              "default": "VOCAB-PHASE1"
+            },
+            "description": "Vocabulary pack scope; only applies with kind=LEXEME. Defaults to the single-tenant Phase 1 pack."
+          },
+          {
+            "name": "itemKind",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "QUESTION",
+                "EXAMPLE",
+                "GRAMMAR_POINT",
+                "PASSAGE",
+                "EXERCISE"
+              ]
+            },
+            "description": "Item kind filter; only applies with kind=ITEM."
           }
         ],
         "responses": {
@@ -686,7 +771,8 @@
           "409": {
             "$ref": "#/components/responses/ApiConflict"
           }
-        }
+        },
+        "description": "LEXEME_* commands manage row-level word master under a vocabulary pack (contentCode, kind VOCABULARY). The pack is auto-provisioned on first LEXEME_UPSERT. Author cannot self-review (FIRST/FINAL must differ); PUBLISH/UNPUBLISH/ARCHIVE require reasonCode for audit. Pronunciation rows reference media-service assets by id; audio bytes never flow through content-service."
       }
     },
     "/api/v1/admin/content-commands/{contentCode}": {
@@ -964,7 +1050,19 @@
           "503": {
             "$ref": "#/components/responses/ApiServiceUnavailable"
           }
-        }
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "content-batch-import",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "same actor and batch key returns the original per-item results; existing codes report SKIPPED"
+        },
+        "description": "Each entry carries contentCode (pack) plus exactly one of content (pack draft), lexeme (word-master upsert) or item (row-level upsert). Entries are keyed {batchKey}:item:{index}:{code} so replay never duplicates.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B9IdempotencyKey"
+          }
+        ]
       }
     },
     "/api/v1/admin/content-commands/validate/auto": {
@@ -1683,7 +1781,23 @@
               "SCHEDULE_PUBLISH",
               "CANCEL_SCHEDULED_PUBLISH",
               "UNPUBLISH",
-              "ROLLBACK"
+              "ROLLBACK",
+              "LEXEME_UPSERT",
+              "LEXEME_SUBMIT_REVIEW",
+              "LEXEME_REVIEW_FIRST",
+              "LEXEME_REVIEW_FINAL",
+              "LEXEME_PUBLISH",
+              "LEXEME_UNPUBLISH",
+              "LEXEME_ARCHIVE",
+              "LEXEME_PRONUNCIATION_UPSERT",
+              "LEXEME_PRONUNCIATION_QC",
+              "ITEM_UPSERT",
+              "ITEM_SUBMIT_REVIEW",
+              "ITEM_REVIEW_FIRST",
+              "ITEM_REVIEW_FINAL",
+              "ITEM_PUBLISH",
+              "ITEM_UNPUBLISH",
+              "ITEM_ARCHIVE"
             ]
           },
           "contentCode": {
@@ -1720,6 +1834,44 @@
           },
           "scheduledPublishTaskId": {
             "$ref": "#/components/schemas/B9ScheduledPublishTaskId"
+          },
+          "lexeme": {
+            "$ref": "#/components/schemas/LexemeUpsertInput"
+          },
+          "pronunciation": {
+            "$ref": "#/components/schemas/LexemePronunciationInput"
+          },
+          "lexemeId": {
+            "type": "string",
+            "maxLength": 128,
+            "description": "Target lexeme for LEXEME_* commands except LEXEME_UPSERT creation"
+          },
+          "item": {
+            "$ref": "#/components/schemas/ContentItemUpsertInput"
+          },
+          "itemId": {
+            "type": "string",
+            "maxLength": 128,
+            "description": "Target item for ITEM_* commands except creation"
+          },
+          "targetType": {
+            "type": "string",
+            "enum": [
+              "PACK",
+              "LEXEME",
+              "ITEM"
+            ],
+            "description": "Schedule target selector; PACK publishes the latest APPROVED pack version, LEXEME/ITEM publish the pinned row."
+          },
+          "targetRef": {
+            "type": "string",
+            "maxLength": 128,
+            "description": "Lexeme/item id for LEXEME/ITEM targets; defaults to contentCode for PACK."
+          },
+          "cohort": {
+            "type": "string",
+            "maxLength": 64,
+            "description": "Gray cohort label recorded on the schedule task and its execution receipt. Learner-side enforcement arrives in B4; until then the label is metadata, never a distribution Gate."
           }
         },
         "x-command-field-policy": {
@@ -1804,7 +1956,11 @@
               "command",
               "contentCode",
               "expectedStateVersion",
-              "schedule"
+              "schedule",
+              "targetType",
+              "targetRef",
+              "reasonCode",
+              "cohort"
             ]
           },
           "CANCEL_SCHEDULED_PUBLISH": {
@@ -1840,6 +1996,213 @@
               "contentCode",
               "expectedStateVersion",
               "targetVersionNumber",
+              "reasonCode"
+            ]
+          },
+          "LEXEME_UPSERT": {
+            "required": [
+              "lexeme"
+            ],
+            "allowed": [
+              "command",
+              "contentCode",
+              "expectedStateVersion",
+              "lexemeId",
+              "lexeme"
+            ]
+          },
+          "LEXEME_SUBMIT_REVIEW": {
+            "required": [
+              "lexemeId"
+            ],
+            "allowed": [
+              "command",
+              "contentCode",
+              "expectedStateVersion",
+              "lexemeId"
+            ]
+          },
+          "LEXEME_REVIEW_FIRST": {
+            "required": [
+              "lexemeId",
+              "reviewDecision"
+            ],
+            "allowed": [
+              "command",
+              "contentCode",
+              "expectedStateVersion",
+              "lexemeId",
+              "reviewDecision",
+              "reviewNote"
+            ]
+          },
+          "LEXEME_REVIEW_FINAL": {
+            "required": [
+              "lexemeId",
+              "reviewDecision"
+            ],
+            "allowed": [
+              "command",
+              "contentCode",
+              "expectedStateVersion",
+              "lexemeId",
+              "reviewDecision",
+              "reviewNote"
+            ]
+          },
+          "LEXEME_PUBLISH": {
+            "required": [
+              "lexemeId",
+              "reasonCode"
+            ],
+            "allowed": [
+              "command",
+              "contentCode",
+              "expectedStateVersion",
+              "lexemeId",
+              "reasonCode"
+            ]
+          },
+          "LEXEME_UNPUBLISH": {
+            "required": [
+              "lexemeId",
+              "reasonCode"
+            ],
+            "allowed": [
+              "command",
+              "contentCode",
+              "expectedStateVersion",
+              "lexemeId",
+              "reasonCode"
+            ]
+          },
+          "LEXEME_ARCHIVE": {
+            "required": [
+              "lexemeId",
+              "reasonCode"
+            ],
+            "allowed": [
+              "command",
+              "contentCode",
+              "expectedStateVersion",
+              "lexemeId",
+              "reasonCode"
+            ]
+          },
+          "LEXEME_PRONUNCIATION_UPSERT": {
+            "required": [
+              "lexemeId",
+              "pronunciation"
+            ],
+            "allowed": [
+              "command",
+              "contentCode",
+              "expectedStateVersion",
+              "lexemeId",
+              "pronunciation"
+            ]
+          },
+          "LEXEME_PRONUNCIATION_QC": {
+            "required": [
+              "lexemeId",
+              "pronunciation"
+            ],
+            "allowed": [
+              "command",
+              "contentCode",
+              "expectedStateVersion",
+              "lexemeId",
+              "pronunciation",
+              "reasonCode"
+            ]
+          },
+          "ITEM_UPSERT": {
+            "required": [
+              "item"
+            ],
+            "allowed": [
+              "command",
+              "contentCode",
+              "expectedStateVersion",
+              "itemId",
+              "item"
+            ]
+          },
+          "ITEM_SUBMIT_REVIEW": {
+            "required": [
+              "itemId"
+            ],
+            "allowed": [
+              "command",
+              "contentCode",
+              "expectedStateVersion",
+              "itemId"
+            ]
+          },
+          "ITEM_REVIEW_FIRST": {
+            "required": [
+              "itemId",
+              "reviewDecision"
+            ],
+            "allowed": [
+              "command",
+              "contentCode",
+              "expectedStateVersion",
+              "itemId",
+              "reviewDecision",
+              "reviewNote"
+            ]
+          },
+          "ITEM_REVIEW_FINAL": {
+            "required": [
+              "itemId",
+              "reviewDecision"
+            ],
+            "allowed": [
+              "command",
+              "contentCode",
+              "expectedStateVersion",
+              "itemId",
+              "reviewDecision",
+              "reviewNote"
+            ]
+          },
+          "ITEM_PUBLISH": {
+            "required": [
+              "itemId",
+              "reasonCode"
+            ],
+            "allowed": [
+              "command",
+              "contentCode",
+              "expectedStateVersion",
+              "itemId",
+              "reasonCode"
+            ]
+          },
+          "ITEM_UNPUBLISH": {
+            "required": [
+              "itemId",
+              "reasonCode"
+            ],
+            "allowed": [
+              "command",
+              "contentCode",
+              "expectedStateVersion",
+              "itemId",
+              "reasonCode"
+            ]
+          },
+          "ITEM_ARCHIVE": {
+            "required": [
+              "itemId",
+              "reasonCode"
+            ],
+            "allowed": [
+              "command",
+              "contentCode",
+              "expectedStateVersion",
+              "itemId",
               "reasonCode"
             ]
           }
@@ -2096,11 +2459,6 @@
                 },
                 {
                   "required": [
-                    "reasonCode"
-                  ]
-                },
-                {
-                  "required": [
                     "content"
                   ]
                 },
@@ -2250,6 +2608,526 @@
                 }
               ]
             }
+          },
+          {
+            "properties": {
+              "command": {
+                "enum": [
+                  "LEXEME_UPSERT"
+                ]
+              }
+            },
+            "required": [
+              "lexeme"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "targetVersionNumber"
+                  ]
+                },
+                {
+                  "required": [
+                    "reasonCode"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewDecision"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewNote"
+                  ]
+                },
+                {
+                  "required": [
+                    "schedule"
+                  ]
+                },
+                {
+                  "required": [
+                    "scheduledPublishTaskId"
+                  ]
+                },
+                {
+                  "required": [
+                    "content"
+                  ]
+                },
+                {
+                  "required": [
+                    "pronunciation"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "properties": {
+              "command": {
+                "enum": [
+                  "LEXEME_SUBMIT_REVIEW"
+                ]
+              }
+            },
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "targetVersionNumber"
+                  ]
+                },
+                {
+                  "required": [
+                    "reasonCode"
+                  ]
+                },
+                {
+                  "required": [
+                    "content"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewDecision"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewNote"
+                  ]
+                },
+                {
+                  "required": [
+                    "schedule"
+                  ]
+                },
+                {
+                  "required": [
+                    "scheduledPublishTaskId"
+                  ]
+                },
+                {
+                  "required": [
+                    "lexeme"
+                  ]
+                },
+                {
+                  "required": [
+                    "pronunciation"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "properties": {
+              "command": {
+                "enum": [
+                  "LEXEME_REVIEW_FIRST",
+                  "LEXEME_REVIEW_FINAL"
+                ]
+              }
+            },
+            "required": [
+              "reviewDecision"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "targetVersionNumber"
+                  ]
+                },
+                {
+                  "required": [
+                    "reasonCode"
+                  ]
+                },
+                {
+                  "required": [
+                    "content"
+                  ]
+                },
+                {
+                  "required": [
+                    "schedule"
+                  ]
+                },
+                {
+                  "required": [
+                    "scheduledPublishTaskId"
+                  ]
+                },
+                {
+                  "required": [
+                    "lexeme"
+                  ]
+                },
+                {
+                  "required": [
+                    "pronunciation"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "properties": {
+              "command": {
+                "enum": [
+                  "LEXEME_PUBLISH",
+                  "LEXEME_UNPUBLISH",
+                  "LEXEME_ARCHIVE"
+                ]
+              }
+            },
+            "required": [
+              "reasonCode"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "targetVersionNumber"
+                  ]
+                },
+                {
+                  "required": [
+                    "content"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewDecision"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewNote"
+                  ]
+                },
+                {
+                  "required": [
+                    "schedule"
+                  ]
+                },
+                {
+                  "required": [
+                    "scheduledPublishTaskId"
+                  ]
+                },
+                {
+                  "required": [
+                    "lexeme"
+                  ]
+                },
+                {
+                  "required": [
+                    "pronunciation"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "properties": {
+              "command": {
+                "enum": [
+                  "LEXEME_PRONUNCIATION_UPSERT",
+                  "LEXEME_PRONUNCIATION_QC"
+                ]
+              }
+            },
+            "required": [
+              "pronunciation"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "targetVersionNumber"
+                  ]
+                },
+                {
+                  "required": [
+                    "content"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewDecision"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewNote"
+                  ]
+                },
+                {
+                  "required": [
+                    "schedule"
+                  ]
+                },
+                {
+                  "required": [
+                    "scheduledPublishTaskId"
+                  ]
+                },
+                {
+                  "required": [
+                    "lexeme"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "properties": {
+              "command": {
+                "enum": [
+                  "ITEM_UPSERT"
+                ]
+              }
+            },
+            "required": [
+              "item"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "targetVersionNumber"
+                  ]
+                },
+                {
+                  "required": [
+                    "reasonCode"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewDecision"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewNote"
+                  ]
+                },
+                {
+                  "required": [
+                    "schedule"
+                  ]
+                },
+                {
+                  "required": [
+                    "scheduledPublishTaskId"
+                  ]
+                },
+                {
+                  "required": [
+                    "content"
+                  ]
+                },
+                {
+                  "required": [
+                    "lexeme"
+                  ]
+                },
+                {
+                  "required": [
+                    "pronunciation"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "properties": {
+              "command": {
+                "enum": [
+                  "ITEM_SUBMIT_REVIEW"
+                ]
+              }
+            },
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "targetVersionNumber"
+                  ]
+                },
+                {
+                  "required": [
+                    "reasonCode"
+                  ]
+                },
+                {
+                  "required": [
+                    "content"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewDecision"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewNote"
+                  ]
+                },
+                {
+                  "required": [
+                    "schedule"
+                  ]
+                },
+                {
+                  "required": [
+                    "scheduledPublishTaskId"
+                  ]
+                },
+                {
+                  "required": [
+                    "lexeme"
+                  ]
+                },
+                {
+                  "required": [
+                    "pronunciation"
+                  ]
+                },
+                {
+                  "required": [
+                    "item"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "properties": {
+              "command": {
+                "enum": [
+                  "ITEM_REVIEW_FIRST",
+                  "ITEM_REVIEW_FINAL"
+                ]
+              }
+            },
+            "required": [
+              "reviewDecision"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "targetVersionNumber"
+                  ]
+                },
+                {
+                  "required": [
+                    "reasonCode"
+                  ]
+                },
+                {
+                  "required": [
+                    "content"
+                  ]
+                },
+                {
+                  "required": [
+                    "schedule"
+                  ]
+                },
+                {
+                  "required": [
+                    "scheduledPublishTaskId"
+                  ]
+                },
+                {
+                  "required": [
+                    "lexeme"
+                  ]
+                },
+                {
+                  "required": [
+                    "pronunciation"
+                  ]
+                },
+                {
+                  "required": [
+                    "item"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "properties": {
+              "command": {
+                "enum": [
+                  "ITEM_PUBLISH",
+                  "ITEM_UNPUBLISH",
+                  "ITEM_ARCHIVE"
+                ]
+              }
+            },
+            "required": [
+              "reasonCode"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "targetVersionNumber"
+                  ]
+                },
+                {
+                  "required": [
+                    "content"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewDecision"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewNote"
+                  ]
+                },
+                {
+                  "required": [
+                    "schedule"
+                  ]
+                },
+                {
+                  "required": [
+                    "scheduledPublishTaskId"
+                  ]
+                },
+                {
+                  "required": [
+                    "lexeme"
+                  ]
+                },
+                {
+                  "required": [
+                    "pronunciation"
+                  ]
+                },
+                {
+                  "required": [
+                    "item"
+                  ]
+                }
+              ]
+            }
           }
         ]
       },
@@ -2290,7 +3168,23 @@
               "SCHEDULE_PUBLISH",
               "CANCEL_SCHEDULED_PUBLISH",
               "UNPUBLISH",
-              "ROLLBACK"
+              "ROLLBACK",
+              "LEXEME_UPSERT",
+              "LEXEME_SUBMIT_REVIEW",
+              "LEXEME_REVIEW_FIRST",
+              "LEXEME_REVIEW_FINAL",
+              "LEXEME_PUBLISH",
+              "LEXEME_UNPUBLISH",
+              "LEXEME_ARCHIVE",
+              "LEXEME_PRONUNCIATION_UPSERT",
+              "LEXEME_PRONUNCIATION_QC",
+              "ITEM_UPSERT",
+              "ITEM_SUBMIT_REVIEW",
+              "ITEM_REVIEW_FIRST",
+              "ITEM_REVIEW_FINAL",
+              "ITEM_PUBLISH",
+              "ITEM_UNPUBLISH",
+              "ITEM_ARCHIVE"
             ],
             "readOnly": true
           },
@@ -2318,6 +3212,20 @@
             "$ref": "#/components/schemas/B9ScheduledPublishTaskRef",
             "readOnly": true,
             "description": "仅 SCHEDULE_PUBLISH 或其幂等重放结果携带；CANCEL_SCHEDULED_PUBLISH 返回被取消任务的只读引用。"
+          },
+          "lexemeId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "lexemeStateVersion": {
+            "$ref": "#/components/schemas/B9StateVersion"
+          },
+          "itemId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "itemStateVersion": {
+            "$ref": "#/components/schemas/B9StateVersion"
           }
         }
       },
@@ -3305,6 +4213,81 @@
             "$ref": "#/components/schemas/B9ScheduledPublishTaskRef",
             "readOnly": true,
             "description": "若存在待执行排期则返回只读任务引用；不会改变 publicProjection.availability。"
+          },
+          "lexeme": {
+            "$ref": "#/components/schemas/LexemeRecord",
+            "description": "Present only on kind=LEXEME rows: the full word-master record with pronunciations."
+          },
+          "item": {
+            "$ref": "#/components/schemas/ContentItemRecord",
+            "description": "Present only on kind=ITEM rows: the full row-level item record."
+          },
+          "scheduledTasks": {
+            "type": "array",
+            "maxItems": 20,
+            "description": "Scheduled publish tasks for this pack (SCHEDULED/CANCELLED/EXECUTED/FAILED).",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "taskId",
+                "targetType",
+                "targetRef",
+                "runAt",
+                "status"
+              ],
+              "properties": {
+                "taskId": {
+                  "type": "string",
+                  "maxLength": 128
+                },
+                "targetType": {
+                  "type": "string",
+                  "enum": [
+                    "PACK",
+                    "LEXEME",
+                    "ITEM"
+                  ]
+                },
+                "targetRef": {
+                  "type": "string",
+                  "maxLength": 128
+                },
+                "expectedStateVersion": {
+                  "$ref": "#/components/schemas/B9StateVersion"
+                },
+                "runAt": {
+                  "$ref": "#/components/schemas/B9DateTime"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "SCHEDULED",
+                    "CANCELLED",
+                    "EXECUTED",
+                    "FAILED"
+                  ]
+                },
+                "reasonCode": {
+                  "type": "string",
+                  "maxLength": 96
+                },
+                "failureCode": {
+                  "type": "string",
+                  "maxLength": 128
+                },
+                "createdBy": {
+                  "type": "string",
+                  "maxLength": 128
+                },
+                "createdAt": {
+                  "$ref": "#/components/schemas/B9DateTime"
+                },
+                "updatedAt": {
+                  "$ref": "#/components/schemas/B9DateTime"
+                }
+              }
+            }
           }
         }
       },
@@ -3560,6 +4543,694 @@
         "properties": {
           "data": {
             "$ref": "#/components/schemas/B9AssessmentContentSnapshot"
+          }
+        }
+      },
+      "LexemeExample": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "en",
+          "cn"
+        ],
+        "properties": {
+          "en": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "cn": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "source": {
+            "type": "string",
+            "maxLength": 128
+          }
+        }
+      },
+      "LexemeSense": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "pos",
+          "meaningCn"
+        ],
+        "properties": {
+          "pos": {
+            "type": "string",
+            "enum": [
+              "NOUN",
+              "VERB",
+              "ADJ",
+              "ADV",
+              "PRON",
+              "PREP",
+              "CONJ",
+              "INTERJ",
+              "PHRASE",
+              "PREFIX",
+              "SUFFIX"
+            ]
+          },
+          "meaningCn": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "meaningEn": {
+            "type": "string",
+            "maxLength": 512
+          },
+          "examples": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LexemeExample"
+            },
+            "maxItems": 10
+          },
+          "synonyms": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 64
+            },
+            "maxItems": 20
+          },
+          "antonyms": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 64
+            },
+            "maxItems": 20
+          },
+          "confusables": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 64
+            },
+            "maxItems": 20
+          },
+          "usageNote": {
+            "type": "string",
+            "maxLength": 1024
+          }
+        }
+      },
+      "LexemePronunciationInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "accent",
+          "ipa",
+          "audioAssetId",
+          "sourceType"
+        ],
+        "properties": {
+          "pronunciationId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "accent": {
+            "type": "string",
+            "enum": [
+              "US",
+              "UK",
+              "SLOW"
+            ]
+          },
+          "ipa": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "audioAssetId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "description": "media-service asset reference; bytes never flow through content-service"
+          },
+          "sourceType": {
+            "type": "string",
+            "enum": [
+              "HUMAN",
+              "TTS"
+            ]
+          },
+          "voiceName": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "durationMs": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "sampleRate": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "bitrateKbps": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "qcStatus": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "READY",
+              "CLEAN",
+              "FAILED"
+            ]
+          }
+        }
+      },
+      "LexemePronunciation": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "pronunciationId",
+          "accent",
+          "ipa",
+          "audioAssetId",
+          "sourceType",
+          "qcStatus"
+        ],
+        "properties": {
+          "pronunciationId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "accent": {
+            "type": "string",
+            "enum": [
+              "US",
+              "UK",
+              "SLOW"
+            ]
+          },
+          "ipa": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "audioAssetId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "sourceType": {
+            "type": "string",
+            "enum": [
+              "HUMAN",
+              "TTS"
+            ]
+          },
+          "voiceName": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "durationMs": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "sampleRate": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "bitrateKbps": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "qcStatus": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "READY",
+              "CLEAN",
+              "FAILED"
+            ]
+          },
+          "qcBy": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "qcAt": {
+            "$ref": "#/components/schemas/B9DateTime"
+          },
+          "createdAt": {
+            "$ref": "#/components/schemas/B9DateTime"
+          }
+        }
+      },
+      "LexemeUpsertInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "headword"
+        ],
+        "description": "Row-level word master. Lexemes live under a vocabulary pack (contentCode, kind VOCABULARY); the pack is auto-provisioned on first LEXEME_UPSERT.",
+        "properties": {
+          "lexemeId": {
+            "type": "string",
+            "maxLength": 128,
+            "description": "Omit to create; server derives lx_{headword} sequence"
+          },
+          "headword": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "lemma": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "pos": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "NOUN",
+                "VERB",
+                "ADJ",
+                "ADV",
+                "PRON",
+                "PREP",
+                "CONJ",
+                "INTERJ",
+                "PHRASE"
+              ]
+            },
+            "maxItems": 5
+          },
+          "cefr": {
+            "type": "string",
+            "enum": [
+              "A1",
+              "A2",
+              "B1",
+              "B2",
+              "C1",
+              "C2"
+            ]
+          },
+          "difficulty": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "syllables": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 32
+            },
+            "maxItems": 12
+          },
+          "stressIndex": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "phoneticUS": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "phoneticUK": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "audioUsAssetId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "audioUkAssetId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "audioSlowAssetId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "senses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LexemeSense"
+            },
+            "maxItems": 12
+          },
+          "collocations": {
+            "type": "array",
+            "maxItems": 20,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "text",
+                "meaningCn"
+              ],
+              "properties": {
+                "text": {
+                  "type": "string",
+                  "maxLength": 256
+                },
+                "meaningCn": {
+                  "type": "string",
+                  "maxLength": 512
+                }
+              }
+            }
+          },
+          "morphology": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "root": {
+                "type": "string",
+                "maxLength": 64
+              },
+              "prefix": {
+                "type": "string",
+                "maxLength": 64
+              },
+              "suffix": {
+                "type": "string",
+                "maxLength": 64
+              }
+            }
+          },
+          "mnemonics": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "keyword": {
+                "type": "string",
+                "maxLength": 64
+              },
+              "storyCn": {
+                "type": "string",
+                "maxLength": 1024
+              }
+            }
+          },
+          "examFreq": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 64
+            },
+            "maxItems": 20
+          },
+          "sourceCode": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "licenseCode": {
+            "type": "string",
+            "maxLength": 128
+          }
+        }
+      },
+      "LexemeRecord": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "lexemeId",
+          "headword",
+          "packCode",
+          "availability",
+          "stateVersion",
+          "contentVersion"
+        ],
+        "properties": {
+          "lexemeId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "headword": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "lemma": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "pos": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 5
+          },
+          "cefr": {
+            "type": "string",
+            "enum": [
+              "A1",
+              "A2",
+              "B1",
+              "B2",
+              "C1",
+              "C2"
+            ]
+          },
+          "difficulty": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "syllables": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 12
+          },
+          "stressIndex": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "phoneticUS": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "phoneticUK": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "audioUsAssetId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "audioUkAssetId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "audioSlowAssetId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "senses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LexemeSense"
+            }
+          },
+          "collocations": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "morphology": {
+            "type": "object"
+          },
+          "mnemonics": {
+            "type": "object"
+          },
+          "examFreq": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "sourceCode": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "licenseCode": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "packCode": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "availability": {
+            "type": "string",
+            "enum": [
+              "DRAFT",
+              "IN_REVIEW",
+              "APPROVED",
+              "PUBLISHED",
+              "ARCHIVED"
+            ]
+          },
+          "stateVersion": {
+            "$ref": "#/components/schemas/B9StateVersion"
+          },
+          "contentVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "pronunciations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LexemePronunciation"
+            }
+          },
+          "createdBy": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "updatedBy": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "createdAt": {
+            "$ref": "#/components/schemas/B9DateTime"
+          },
+          "updatedAt": {
+            "$ref": "#/components/schemas/B9DateTime"
+          },
+          "publishedFields": {
+            "type": "object",
+            "description": "Last published fields snapshot; null when never published. The admin diff compares fields against this snapshot."
+          }
+        }
+      },
+      "ContentItemUpsertInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "kind"
+        ],
+        "description": "Row-level content item (question/example/grammar/passage) under a pack. Rich configuration travels in fields and never requires DDL.",
+        "properties": {
+          "itemId": {
+            "type": "string",
+            "maxLength": 128,
+            "description": "Omit to create; server derives it: prefix by kind"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "QUESTION",
+              "EXAMPLE",
+              "GRAMMAR_POINT",
+              "PASSAGE",
+              "EXERCISE"
+            ]
+          },
+          "stem": {
+            "type": "string",
+            "maxLength": 2048,
+            "description": "Question stem / example sentence / grammar title / passage heading"
+          },
+          "fields": {
+            "type": "object",
+            "description": "Extensible item configuration: options, answerRuleVersion, explanation, cefr, difficulty, audioAssetId, subtitle lines, tags.",
+            "additionalProperties": true
+          },
+          "sourceCode": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "licenseCode": {
+            "type": "string",
+            "maxLength": 128
+          }
+        }
+      },
+      "ContentItemRecord": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "itemId",
+          "kind",
+          "packCode",
+          "availability",
+          "stateVersion"
+        ],
+        "properties": {
+          "itemId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "QUESTION",
+              "EXAMPLE",
+              "GRAMMAR_POINT",
+              "PASSAGE",
+              "EXERCISE"
+            ]
+          },
+          "stem": {
+            "type": "string",
+            "maxLength": 2048
+          },
+          "packCode": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "availability": {
+            "type": "string",
+            "enum": [
+              "DRAFT",
+              "IN_REVIEW",
+              "APPROVED",
+              "PUBLISHED",
+              "ARCHIVED"
+            ]
+          },
+          "stateVersion": {
+            "$ref": "#/components/schemas/B9StateVersion"
+          },
+          "fields": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "sourceCode": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "licenseCode": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "createdBy": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "updatedBy": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "createdAt": {
+            "$ref": "#/components/schemas/B9DateTime"
+          },
+          "updatedAt": {
+            "$ref": "#/components/schemas/B9DateTime"
           }
         }
       }

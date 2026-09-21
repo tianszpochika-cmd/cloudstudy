@@ -61,6 +61,8 @@ public final class GatewayRouteExecutionPolicy {
             "services/learner-service/src/main/java/com/englishflow/learner/web/LearnerHttpController.java", "/api/v1/learner");
     private static final ControllerEvidence LEARNER_INTERNAL = evidence("learner-service",
             "services/learner-service/src/main/java/com/englishflow/learner/web/B25LearnerJdbcController.java", "/internal/v1/learner");
+    private static final ControllerEvidence LEARNER_ADMIN = evidence("learner-service",
+            "services/learner-service/src/main/java/com/englishflow/learner/web/LearnerAdminController.java", "/internal/v1/learner/admin");
     private static final ControllerEvidence CONTENT_PUBLIC_CATALOG = evidence("content-service",
             "services/content-service/src/main/java/com/englishflow/content/web/ContentHttpController.java", "/api/v1/public/content/catalog");
     private static final ControllerEvidence CONTENT_PUBLIC_DETAIL = evidence("content-service",
@@ -79,6 +81,8 @@ public final class GatewayRouteExecutionPolicy {
             "services/content-service/src/main/java/com/englishflow/content/web/B9ContentAdminController.java", "/internal/v1/content/admin-commands");
     private static final ControllerEvidence LEARNING_B25 = evidence("learning-service",
             "services/learning-service/src/main/java/com/englishflow/learning/web/B25LearningJdbcController.java", "/internal/v1/learning");
+    private static final ControllerEvidence LEARNING_ADMIN = evidence("learning-service",
+            "services/learning-service/src/main/java/com/englishflow/learning/web/LearningAdminController.java", "/internal/v1/learning/admin");
     private static final ControllerEvidence LEARNING_B3 = evidence("learning-service",
             "services/learning-service/src/main/java/com/englishflow/learning/web/B3LearningJdbcController.java", "/internal/v1/learning/experiences");
     /**
@@ -92,6 +96,8 @@ public final class GatewayRouteExecutionPolicy {
             "services/assessment-service/src/main/java/com/englishflow/assessment/web/B10AssessmentJdbcController.java", "/internal/v1/assessment");
     private static final ControllerEvidence ASSESSMENT_B25 = evidence("assessment-service",
             "services/assessment-service/src/main/java/com/englishflow/assessment/web/B25AssessmentJdbcController.java", "/internal/v1/assessment");
+    private static final ControllerEvidence ASSESSMENT_ADMIN = evidence("assessment-service",
+            "services/assessment-service/src/main/java/com/englishflow/assessment/web/AssessmentAdminController.java", "/internal/v1/assessment/admin");
     private static final ControllerEvidence MEDIA = evidence("media-service",
             "services/media-service/src/main/java/com/englishflow/media/web/MediaController.java", "/internal/v1/media");
     private static final ControllerEvidence GAMIFICATION_LOCAL = evidence("gamification-service",
@@ -125,7 +131,6 @@ public final class GatewayRouteExecutionPolicy {
             Map.entry("wechat-callback", "commerce_provider_callback_signature_boundary_not_implemented"),
             Map.entry("alipay-callback", "commerce_provider_callback_signature_boundary_not_implemented"),
             Map.entry("apple-notification", "commerce_provider_callback_signature_boundary_not_implemented"),
-            Map.entry("admin-content-publish-tasks", "content_owner_controller_mapping_not_present"),
             Map.entry("learning-content-snapshot", "content_owner_controller_mapping_not_present"),
             Map.entry("speaking-recordings", "canonical_media_owner_conflicts_with_current_learning_controller"),
             Map.entry("speaking-shadowing-completion", "canonical_assessment_owner_conflicts_with_current_learning_controller"),
@@ -653,6 +658,22 @@ public final class GatewayRouteExecutionPolicy {
                 rewrite("commands", "/api/v1/admin/ops/commands", "/internal/v1/admin-ops/commands", ADMIN_OPS, HttpMethod.POST),
                 rewrite("commands-prepare", "/api/v1/admin/ops/commands/prepare", "/internal/v1/admin-ops/commands/prepare", ADMIN_OPS, HttpMethod.POST),
                 rewrite("audit", "/api/v1/admin/ops/audit", "/internal/v1/admin-ops/audit", ADMIN_OPS, HttpMethod.GET));
+        add(definitions, "admin-learner-search",
+                rewrite("search", "/api/v1/admin/learners/search", "/internal/v1/learner/admin/search", LEARNER_ADMIN, HttpMethod.GET));
+        add(definitions, "admin-learner-profile",
+                rewrite("profile", "/api/v1/admin/learners/{subjectId}/profile", "/internal/v1/learner/admin/subjects/{subjectId}/profile", LEARNER_ADMIN, HttpMethod.GET));
+        add(definitions, "admin-learner-commands",
+                rewrite("commands", "/api/v1/admin/learners/{subjectId}/commands", "/internal/v1/learner/admin/subjects/{subjectId}/commands", LEARNER_ADMIN, HttpMethod.POST));
+        add(definitions, "admin-learner-plans",
+                rewrite("plans", "/api/v1/admin/learners/{subjectId}/plans", "/internal/v1/learning/admin/subjects/{subjectId}/plans", LEARNING_ADMIN, HttpMethod.GET));
+        add(definitions, "admin-learner-srs",
+                rewrite("srs", "/api/v1/admin/learners/{subjectId}/srs", "/internal/v1/learning/admin/subjects/{subjectId}/srs", LEARNING_ADMIN, HttpMethod.GET));
+        add(definitions, "admin-learner-learning-commands",
+                rewrite("learning-commands", "/api/v1/admin/learners/{subjectId}/learning-commands", "/internal/v1/learning/admin/subjects/{subjectId}/commands", LEARNING_ADMIN, HttpMethod.POST));
+        add(definitions, "admin-learner-assessments",
+                rewrite("assessments", "/api/v1/admin/learners/{subjectId}/assessments", "/internal/v1/assessment/admin/subjects/{subjectId}/assessments", ASSESSMENT_ADMIN, HttpMethod.GET));
+        add(definitions, "admin-content-publish-tasks",
+                rewrite("task-detail", "/api/v1/admin/content-publish-tasks/{taskId}", "/internal/v1/content/admin-commands/publish-tasks/{taskId}", CONTENT_ADMIN, HttpMethod.GET));
         return Map.copyOf(definitions);
     }
 

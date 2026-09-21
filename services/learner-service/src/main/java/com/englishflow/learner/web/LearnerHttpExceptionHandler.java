@@ -31,6 +31,7 @@ public final class LearnerHttpExceptionHandler {
             case STORE_FAILURE -> HttpStatus.SERVICE_UNAVAILABLE;
             case CONCURRENT_UPDATE, IDEMPOTENCY_CONFLICT -> HttpStatus.CONFLICT;
             case MISSING_PRINCIPAL -> HttpStatus.UNAUTHORIZED;
+            case PROFILE_NOT_FOUND -> HttpStatus.NOT_FOUND;
             default -> HttpStatus.BAD_REQUEST;
         };
         return response(status, exception.code(), exception.getMessage(), exception.retryable());

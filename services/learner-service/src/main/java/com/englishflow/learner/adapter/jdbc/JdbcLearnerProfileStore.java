@@ -23,6 +23,7 @@ import com.englishflow.learner.port.LearnerProfileStore;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -76,6 +77,24 @@ public final class JdbcLearnerProfileStore implements LearnerProfileStore {
         this.jdbc = Objects.requireNonNull(jdbc, "jdbc is required");
         this.transactionTemplate = Objects.requireNonNull(transactionTemplate, "transactionTemplate is required");
         this.objectMapper = Objects.requireNonNull(objectMapper, "objectMapper is required");
+    }
+
+    @Override
+    public List<LearnerTenantScope> search(String tenantId, String query, int limit) {
+        String needle = query == null ? "" : query.trim();
+        List<String> owners = jdbc.query(
+                "SELECT owner_id FROM learner_profile WHERE tenant_id = ? AND (? = '' OR owner_id LIKE ?) "
+                        + "ORDER BY owner_id LIMIT ?",
+                (resultSet, row) -> resultSet.getString("owner_id"),
+                tenantId, needle, needle.isEmpty() ? "" : "%" + needle + "%",
+                Math.max(1, Math.min(limit, 100)));
+        return owners.stream().map(owner -> {
+            try {
+                return new LearnerTenantScope(tenantId, owner);
+            } catch (IllegalArgumentException invalid) {
+                return null;
+            }
+        }).filter(java.util.Objects::nonNull).toList();
     }
 
     @Override
