@@ -1,5 +1,6 @@
 # Changelog
 
+- [T11-20260921] **听力真波形。** B11 页早已有真实提取（M5 台账说法过期），B3 页仍是 36 根装饰柱：给 B3 接入同一 `platform/waveform` 提取（授权字节→`data-source="extracted"`，失败回装饰），浏览器真解码验证（合成 1s 正弦：96 peaks/方差 0.6151/48 柱保持形态/canonical 格式合法）。新增 c10 锁单测。类型通过。服务端波形预计算与转码仍无（media 无实现），超出本地项。
 - [T10-20260921] **learner-web Home/Today 八态补齐。** 两页原来只有 loading/empty/error：补 offline 分支（store 已有映射，页面一直没消费），permission 分支经核查不可达（全局 403→forbidden 导航先赢，故不加，避免死代码）。浏览器实测：在线空态、500 错误态双页带重试；offline 分支模板+类型通过，真离线需 PWA 壳（M8-009）才能端到端。新增 c09 梯子锁单测。类型通过。
 - [T9-20260921] **learner-web“撤销其他设备”死按钮打通。** `kickOtherDevices()` 原来直接 throw（按钮永远失败），按契约改成逐台 `POST /iam/devices/{id}/kickout`（每台独立幂等键），store 失败后重拉列表对账。实测：踢后目标 Token 调 IAM 接口 401、本机 200。类型通过。（ onsetboarding 未完成导致设置页不可达是 M4 旅程范围，不在本项）
 - [T8-20260921] **learner-web 两处既有失败清零。** c04 钉的是已重构掉的网关 `publicPath` 拼接实现，改断言到现行投影式 `rewrite("placement-*")`（同文件改读 `GatewayRouteExecutionPolicy.java`）；b14 登出后无跳转是真 bug——`signOut` 调完 `session.logout()` 从不导航，用户滞留失权页，改由 store 在登出成功/失败后统一回 `/login`。两文件 9/9 通过，learner-web 类型通过。

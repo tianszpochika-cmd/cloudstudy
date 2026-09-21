@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { updateListeningProgress } from '../api/b3'
+import { extractPeaksFromArrayBuffer, peaksToBars } from '../platform/waveform'
 import { useB3Store } from '../stores/b3'
 
 const store = useB3Store()
@@ -18,6 +19,23 @@ const material = computed(() => store.materials[0] ?? null)
 const segment = computed(() => material.value?.segments[activeSegment.value] ?? null)
 const audioSrc = computed(() => material.value?.mediaRef?.availability === 'READY' ? material.value.mediaRef.signedUrl ?? null : null)
 const positionVersion = ref(0)
+// Real peaks from the authorized bytes; the decorative track stays as the fallback.
+const waveformPeaks = ref<readonly number[]>([])
+const waveBars = computed(() => waveformPeaks.value.length ? peaksToBars(waveformPeaks.value, 36) : null)
+
+async function loadWaveform(): Promise<void> {
+  const src = audioSrc.value
+  if (!src || waveformPeaks.value.length) return
+  try {
+    const response = await fetch(src)
+    if (!response.ok) return
+    const extracted = await extractPeaksFromArrayBuffer(await response.arrayBuffer(), 72)
+    waveformPeaks.value = extracted.peaks
+  } catch {
+    waveformPeaks.value = []
+  }
+}
+watch(audioSrc, () => { waveformPeaks.value = []; void loadWaveform() })
 
 type PitchAwareAudioElement = HTMLAudioElement & { preservesPitch?: boolean; mozPreservesPitch?: boolean; webkitPreservesPitch?: boolean }
 function preservePitch(element: HTMLAudioElement | null): void {
@@ -49,7 +67,7 @@ async function savePosition(): Promise<void> { if (!audio.value || !store.listen
     <div v-else-if="store.status === 'error' || store.status === 'offline'" class="panel error">{{ store.message }}<button type="button" @click="store.loadListening">重新读取</button></div>
     <div v-else-if="material" class="grid">
       <article class="panel player">
-        <div class="waveform" role="img" aria-label="轻量波形降级轨道"><i v-for="n in 36" :key="n" :style="{ height: `${20 + (n % 7) * 9}px` }"></i></div>
+        <div class="waveform" :data-source="waveBars ? 'extracted' : 'fallback'" role="img" :aria-label="waveBars ? '已解码波形' : '轻量波形降级轨道'"><template v-if="waveBars"><i v-for="(bar, index) in waveBars" :key="`peak-${index}`" :style="{ height: `${Math.round(8 + bar * 84)}px` }"></i></template><template v-else><i v-for="n in 36" :key="n" :style="{ height: `${20 + (n % 7) * 9}px` }"></i></template></div>
         <audio ref="audio" :src="audioSrc || undefined" controls preload="metadata" @timeupdate="onTimeUpdate" @pause="void savePosition"><track kind="captions" /></audio>
         <div class="player-controls"><label>速度 <select v-model.number="playbackRate" @change="setRate"><option v-for="rate in PLAYBACK_RATES" :key="rate" :value="rate">{{ rate }}x</option></select></label><button type="button" @click="toggleLoop">{{ loopEnabled ? '关闭循环' : '单段循环' }}</button><button type="button" @click="markA">设 A</button><button type="button" @click="markB">设 B</button><button type="button" @click="blindSubtitle = !blindSubtitle">{{ blindSubtitle ? '揭示字幕' : '隐藏字幕' }}</button></div>
         <p class="media-note">{{ audioSrc ? '已获得授权播放地址，播放位置会在暂停时保存。' : '当前内容版本未返回可播放授权地址；波形、时间轴和听写仍可检查，未伪造播放成功。' }}</p><small class="performance-note">性能档位：{{ store.performanceLevel }} · Performance 模式保留时间轴、字幕和听写</small>
