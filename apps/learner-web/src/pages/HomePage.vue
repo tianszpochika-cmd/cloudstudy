@@ -18,6 +18,7 @@ function complete(taskId: string): void { void store.completeTask(taskId) }
   <section class="page-stack" aria-labelledby="home-title">
     <div class="hero-panel"><div><p class="eyebrow">B9 · LEARNER HOME</p><h2 id="home-title">今天，从一个清晰的小任务开始。</h2><p>首页由 learner-service 与 content-service 的版本化 read model 组成；内容下线、无权和服务降级都会保留可恢复状态。</p></div><div class="hero-panel__orb" aria-hidden="true">✦</div></div>
     <StatePanel v-if="store.homeStatus === 'loading'" state="loading" title="学习首页" description="正在恢复目标、首日状态和内容版本。" />
+    <StatePanel v-else-if="store.homeStatus === 'offline'" state="offline" title="学习首页" description="网络不可用，已保留最近一次安全快照，恢复联网后可重试。" action-label="重试" @action="() => { void store.loadHome() }" />
     <StatePanel v-else-if="store.lastError" state="error" title="学习首页" :description="store.lastError" action-label="重试" @action="() => { void store.loadHome() }" />
     <template v-else>
       <div class="grid grid--two"><article class="info-card"><span class="card-kicker">今日进度</span><h3>{{ store.todayProgress }}%</h3><p>目标 {{ home?.today?.dailyStream.targetMinutes ?? home?.home?.dailyStream.targetMinutes ?? 15 }} 分钟，已完成 {{ home?.today?.dailyStream.completedMinutes ?? home?.home?.dailyStream.completedMinutes ?? 0 }} 分钟。</p></article><article class="info-card"><span class="card-kicker">内容版本</span><h3>{{ content.length }} 个可用投影</h3><p>{{ home?.contentStatus === 'UNAVAILABLE' ? '内容服务暂不可用，已保留学习入口。' : '学习端只读取已发布且有权利的内容。' }}</p></article></div>
