@@ -1,0 +1,1545 @@
+{
+  "classification": "official-site-design-prototype-not-production-evidence",
+  "revision": "official-v5",
+  "date": "2026-09-21",
+  "pageTemplates": 13,
+  "courseVariants": 6,
+  "themes": [
+    "light",
+    "dark"
+  ],
+  "checkedWidths": [
+    320,
+    360,
+    390,
+    430,
+    768,
+    1024,
+    1440
+  ],
+  "checks": [
+    "home-has-contextual-title",
+    "route-focus-does-not-outline-whole-page",
+    "home-primary-action-is-free-start",
+    "home-has-no-unsupported-pricing-results-or-download-claims",
+    "hero-word-opens-public-example",
+    "word-reveal-shows-meaning",
+    "reveal-preserves-keyboard-continuity",
+    "self-rating-has-feedback",
+    "sentence-expression-can-be-revealed",
+    "example-continues-to-review",
+    "example-can-reset",
+    "escape-closes-example",
+    "dialog-restores-opening-control-focus",
+    "catalog-lists-six-phase1-learning-types",
+    "catalog-filter-reduces-to-two-reading-listening-types",
+    "catalog-search-combines-with-filter",
+    "catalog-card-opens-corresponding-detail",
+    "detail-unit-expands",
+    "browser-back-restores-catalog-search-and-filter",
+    "catalog-empty-state-is-explained",
+    "catalog-empty-state-can-reset",
+    "search-text-is-not-injected-as-markup",
+    "example-tabs-support-arrow-keys",
+    "example-tabs-support-end-key",
+    "help-category-filter",
+    "help-search-combines-with-category",
+    "faq-expands-concrete-answer",
+    "help-has-empty-state",
+    "help-reset-restores-all-questions",
+    "desktop-start-recommends-browser-workspace",
+    "free-start-clearly-shows-learning-handoff",
+    "prototype-handoff-points-to-existing-mobile-proposal",
+    "official-prototype-does-not-collect-account-credentials",
+    "cross-device-preview-does-not-pretend-loopback-is-public",
+    "service-status-does-not-claim-live-health",
+    "free-opening-notice-opens",
+    "mobile-has-dedicated-navigation",
+    "mobile-menu-opens-full-screen",
+    "mobile-navigation-select-closes-menu-and-routes",
+    "mobile-menu-offers-direct-login",
+    "mobile-start-recommends-current-phone",
+    "mobile-start-puts-action-before-description",
+    "mobile-start-main-button-is-within-first-viewport",
+    "start-page-does-not-duplicate-sticky-start-button",
+    "mobile-method-example-action-is-within-first-viewport",
+    "mobile-sticky-start-appears-after-hero",
+    "mobile-sticky-start-routes-correctly",
+    "theme-switch-changes-entire-site",
+    "theme-preference-persists-after-reload",
+    "thirteen-page-templates-in-two-themes-at-seven-widths-no-overflow",
+    "all-layouts-have-one-main-heading-and-no-broken-images",
+    "detail-variant-daily-words",
+    "detail-variant-clear-grammar",
+    "detail-variant-reading",
+    "detail-variant-speaking",
+    "detail-variant-writing",
+    "unknown-route-has-recovery-page",
+    "reduced-motion-disables-smooth-scrolling",
+    "shared-server-preserves-existing-mobile-preview",
+    "no-browser-script-errors",
+    "no-failed-static-responses",
+    "no-external-requests-or-business-writes"
+  ],
+  "layouts": [
+    {
+      "route": "#/",
+      "theme": "light",
+      "width": 320,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/courses",
+      "theme": "light",
+      "width": 320,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/course/listening",
+      "theme": "light",
+      "width": 320,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/method",
+      "theme": "light",
+      "width": 320,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/start",
+      "theme": "light",
+      "width": 320,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/help",
+      "theme": "light",
+      "width": 320,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/about",
+      "theme": "light",
+      "width": 320,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/updates",
+      "theme": "light",
+      "width": 320,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/status",
+      "theme": "light",
+      "width": 320,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/privacy",
+      "theme": "light",
+      "width": 320,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/terms",
+      "theme": "light",
+      "width": 320,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/minors",
+      "theme": "light",
+      "width": 320,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/compliance",
+      "theme": "light",
+      "width": 320,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/",
+      "theme": "light",
+      "width": 360,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/courses",
+      "theme": "light",
+      "width": 360,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/course/listening",
+      "theme": "light",
+      "width": 360,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/method",
+      "theme": "light",
+      "width": 360,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/start",
+      "theme": "light",
+      "width": 360,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/help",
+      "theme": "light",
+      "width": 360,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/about",
+      "theme": "light",
+      "width": 360,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/updates",
+      "theme": "light",
+      "width": 360,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/status",
+      "theme": "light",
+      "width": 360,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/privacy",
+      "theme": "light",
+      "width": 360,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/terms",
+      "theme": "light",
+      "width": 360,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/minors",
+      "theme": "light",
+      "width": 360,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/compliance",
+      "theme": "light",
+      "width": 360,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/",
+      "theme": "light",
+      "width": 390,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/courses",
+      "theme": "light",
+      "width": 390,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/course/listening",
+      "theme": "light",
+      "width": 390,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/method",
+      "theme": "light",
+      "width": 390,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/start",
+      "theme": "light",
+      "width": 390,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/help",
+      "theme": "light",
+      "width": 390,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/about",
+      "theme": "light",
+      "width": 390,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/updates",
+      "theme": "light",
+      "width": 390,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/status",
+      "theme": "light",
+      "width": 390,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/privacy",
+      "theme": "light",
+      "width": 390,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/terms",
+      "theme": "light",
+      "width": 390,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/minors",
+      "theme": "light",
+      "width": 390,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/compliance",
+      "theme": "light",
+      "width": 390,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/",
+      "theme": "light",
+      "width": 430,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/courses",
+      "theme": "light",
+      "width": 430,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/course/listening",
+      "theme": "light",
+      "width": 430,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/method",
+      "theme": "light",
+      "width": 430,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/start",
+      "theme": "light",
+      "width": 430,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/help",
+      "theme": "light",
+      "width": 430,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/about",
+      "theme": "light",
+      "width": 430,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/updates",
+      "theme": "light",
+      "width": 430,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/status",
+      "theme": "light",
+      "width": 430,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/privacy",
+      "theme": "light",
+      "width": 430,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/terms",
+      "theme": "light",
+      "width": 430,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/minors",
+      "theme": "light",
+      "width": 430,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/compliance",
+      "theme": "light",
+      "width": 430,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/",
+      "theme": "light",
+      "width": 768,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/courses",
+      "theme": "light",
+      "width": 768,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/course/listening",
+      "theme": "light",
+      "width": 768,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/method",
+      "theme": "light",
+      "width": 768,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/start",
+      "theme": "light",
+      "width": 768,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/help",
+      "theme": "light",
+      "width": 768,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/about",
+      "theme": "light",
+      "width": 768,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/updates",
+      "theme": "light",
+      "width": 768,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/status",
+      "theme": "light",
+      "width": 768,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/privacy",
+      "theme": "light",
+      "width": 768,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/terms",
+      "theme": "light",
+      "width": 768,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/minors",
+      "theme": "light",
+      "width": 768,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/compliance",
+      "theme": "light",
+      "width": 768,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/",
+      "theme": "light",
+      "width": 1024,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/courses",
+      "theme": "light",
+      "width": 1024,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/course/listening",
+      "theme": "light",
+      "width": 1024,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/method",
+      "theme": "light",
+      "width": 1024,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/start",
+      "theme": "light",
+      "width": 1024,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/help",
+      "theme": "light",
+      "width": 1024,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/about",
+      "theme": "light",
+      "width": 1024,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/updates",
+      "theme": "light",
+      "width": 1024,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/status",
+      "theme": "light",
+      "width": 1024,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/privacy",
+      "theme": "light",
+      "width": 1024,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/terms",
+      "theme": "light",
+      "width": 1024,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/minors",
+      "theme": "light",
+      "width": 1024,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/compliance",
+      "theme": "light",
+      "width": 1024,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/",
+      "theme": "light",
+      "width": 1440,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/courses",
+      "theme": "light",
+      "width": 1440,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/course/listening",
+      "theme": "light",
+      "width": 1440,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/method",
+      "theme": "light",
+      "width": 1440,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/start",
+      "theme": "light",
+      "width": 1440,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/help",
+      "theme": "light",
+      "width": 1440,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/about",
+      "theme": "light",
+      "width": 1440,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/updates",
+      "theme": "light",
+      "width": 1440,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/status",
+      "theme": "light",
+      "width": 1440,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/privacy",
+      "theme": "light",
+      "width": 1440,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/terms",
+      "theme": "light",
+      "width": 1440,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/minors",
+      "theme": "light",
+      "width": 1440,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/compliance",
+      "theme": "light",
+      "width": 1440,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/",
+      "theme": "dark",
+      "width": 320,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/courses",
+      "theme": "dark",
+      "width": 320,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/course/listening",
+      "theme": "dark",
+      "width": 320,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/method",
+      "theme": "dark",
+      "width": 320,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/start",
+      "theme": "dark",
+      "width": 320,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/help",
+      "theme": "dark",
+      "width": 320,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/about",
+      "theme": "dark",
+      "width": 320,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/updates",
+      "theme": "dark",
+      "width": 320,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/status",
+      "theme": "dark",
+      "width": 320,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/privacy",
+      "theme": "dark",
+      "width": 320,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/terms",
+      "theme": "dark",
+      "width": 320,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/minors",
+      "theme": "dark",
+      "width": 320,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/compliance",
+      "theme": "dark",
+      "width": 320,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/",
+      "theme": "dark",
+      "width": 360,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/courses",
+      "theme": "dark",
+      "width": 360,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/course/listening",
+      "theme": "dark",
+      "width": 360,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/method",
+      "theme": "dark",
+      "width": 360,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/start",
+      "theme": "dark",
+      "width": 360,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/help",
+      "theme": "dark",
+      "width": 360,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/about",
+      "theme": "dark",
+      "width": 360,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/updates",
+      "theme": "dark",
+      "width": 360,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/status",
+      "theme": "dark",
+      "width": 360,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/privacy",
+      "theme": "dark",
+      "width": 360,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/terms",
+      "theme": "dark",
+      "width": 360,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/minors",
+      "theme": "dark",
+      "width": 360,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/compliance",
+      "theme": "dark",
+      "width": 360,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/",
+      "theme": "dark",
+      "width": 390,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/courses",
+      "theme": "dark",
+      "width": 390,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/course/listening",
+      "theme": "dark",
+      "width": 390,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/method",
+      "theme": "dark",
+      "width": 390,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/start",
+      "theme": "dark",
+      "width": 390,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/help",
+      "theme": "dark",
+      "width": 390,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/about",
+      "theme": "dark",
+      "width": 390,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/updates",
+      "theme": "dark",
+      "width": 390,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/status",
+      "theme": "dark",
+      "width": 390,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/privacy",
+      "theme": "dark",
+      "width": 390,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/terms",
+      "theme": "dark",
+      "width": 390,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/minors",
+      "theme": "dark",
+      "width": 390,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/compliance",
+      "theme": "dark",
+      "width": 390,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/",
+      "theme": "dark",
+      "width": 430,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/courses",
+      "theme": "dark",
+      "width": 430,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/course/listening",
+      "theme": "dark",
+      "width": 430,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/method",
+      "theme": "dark",
+      "width": 430,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/start",
+      "theme": "dark",
+      "width": 430,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/help",
+      "theme": "dark",
+      "width": 430,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/about",
+      "theme": "dark",
+      "width": 430,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/updates",
+      "theme": "dark",
+      "width": 430,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/status",
+      "theme": "dark",
+      "width": 430,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/privacy",
+      "theme": "dark",
+      "width": 430,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/terms",
+      "theme": "dark",
+      "width": 430,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/minors",
+      "theme": "dark",
+      "width": 430,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/compliance",
+      "theme": "dark",
+      "width": 430,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/",
+      "theme": "dark",
+      "width": 768,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/courses",
+      "theme": "dark",
+      "width": 768,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/course/listening",
+      "theme": "dark",
+      "width": 768,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/method",
+      "theme": "dark",
+      "width": 768,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/start",
+      "theme": "dark",
+      "width": 768,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/help",
+      "theme": "dark",
+      "width": 768,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/about",
+      "theme": "dark",
+      "width": 768,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/updates",
+      "theme": "dark",
+      "width": 768,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/status",
+      "theme": "dark",
+      "width": 768,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/privacy",
+      "theme": "dark",
+      "width": 768,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/terms",
+      "theme": "dark",
+      "width": 768,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/minors",
+      "theme": "dark",
+      "width": 768,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/compliance",
+      "theme": "dark",
+      "width": 768,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/",
+      "theme": "dark",
+      "width": 1024,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/courses",
+      "theme": "dark",
+      "width": 1024,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/course/listening",
+      "theme": "dark",
+      "width": 1024,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/method",
+      "theme": "dark",
+      "width": 1024,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/start",
+      "theme": "dark",
+      "width": 1024,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/help",
+      "theme": "dark",
+      "width": 1024,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/about",
+      "theme": "dark",
+      "width": 1024,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/updates",
+      "theme": "dark",
+      "width": 1024,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/status",
+      "theme": "dark",
+      "width": 1024,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/privacy",
+      "theme": "dark",
+      "width": 1024,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/terms",
+      "theme": "dark",
+      "width": 1024,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/minors",
+      "theme": "dark",
+      "width": 1024,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/compliance",
+      "theme": "dark",
+      "width": 1024,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/",
+      "theme": "dark",
+      "width": 1440,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/courses",
+      "theme": "dark",
+      "width": 1440,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/course/listening",
+      "theme": "dark",
+      "width": 1440,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/method",
+      "theme": "dark",
+      "width": 1440,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/start",
+      "theme": "dark",
+      "width": 1440,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/help",
+      "theme": "dark",
+      "width": 1440,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/about",
+      "theme": "dark",
+      "width": 1440,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/updates",
+      "theme": "dark",
+      "width": 1440,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/status",
+      "theme": "dark",
+      "width": 1440,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/privacy",
+      "theme": "dark",
+      "width": 1440,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/terms",
+      "theme": "dark",
+      "width": 1440,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/minors",
+      "theme": "dark",
+      "width": 1440,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
+      "route": "#/compliance",
+      "theme": "dark",
+      "width": 1440,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    }
+  ],
+  "errors": [],
+  "failedResponses": [],
+  "unexpectedRequests": []
+}
