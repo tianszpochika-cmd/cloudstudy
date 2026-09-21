@@ -277,6 +277,8 @@ public final class ContentItemCommandService {
             case "EXAMPLE" -> "ex_";
             case "GRAMMAR_POINT" -> "gr_";
             case "PASSAGE" -> "ps_";
+            case "DICTATION" -> "dc_";
+            case "SHADOWING" -> "sh_";
             default -> "ew_";
         };
     }

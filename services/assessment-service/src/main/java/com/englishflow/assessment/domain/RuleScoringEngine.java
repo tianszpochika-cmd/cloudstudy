@@ -25,6 +25,8 @@ public final class RuleScoringEngine {
             case FILL_BLANK -> fillBlank(snapshot, safeAnswer, answerHash);
             case DRAG_SORTER -> ordered(snapshot, safeAnswer, answerHash);
             case SPELL_INPUT -> text(snapshot, safeAnswer, answerHash, "SPELLING_WRONG");
+            case DICTATION -> text(snapshot, safeAnswer, answerHash, "DICTATION_WRONG");
+            case SHADOWING -> shadowing(snapshot, answerHash);
             case ERROR_CORRECTION -> correction(snapshot, safeAnswer, answerHash);
             case TRANSLATION_INPUT -> translation(snapshot, safeAnswer, answerHash);
             case CONNECT_LINE -> pairs(snapshot, safeAnswer, answerHash);
@@ -85,8 +87,17 @@ public final class RuleScoringEngine {
                 correct ? List.of() : List.of(cause(snapshot, false, defaultCause)));
     }
 
-    private ScoringResult correction(ContentSnapshot snapshot, Map<String, Object> answer, String hash) {
-        boolean selected = set(answer.get("selectedSpanIds")).equals(set(snapshot.answerRules().get("selectedSpanIds")));
+    /**
+     * B4 shadowing: Phase 1 has no ASR, so speaking attempts cannot be
+     * rule-scored. They resolve to pending manual review (same shape as the
+     * translation manual-review branch); audio bytes are never inspected here.
+     */
+    private ScoringResult shadowing(ContentSnapshot snapshot, String hash) {
+        return new ScoringResult(0, snapshot.maxScore(), null, ScoringStatus.PENDING_MANUAL, hash, List.of(),
+                snapshot.scoringVersion(), Map.of("manualReview", true));
+    }
+
+    private ScoringResult correction(ContentSnapshot snapshot, Map<String, Object> answer, String hash) {        boolean selected = set(answer.get("selectedSpanIds")).equals(set(snapshot.answerRules().get("selectedSpanIds")));
         boolean replacements = Objects.equals(answer.get("replacements"), snapshot.answerRules().get("replacements"));
         boolean correct = selected && replacements;
         return result(snapshot, correct ? snapshot.maxScore() : 0, correct, hash,

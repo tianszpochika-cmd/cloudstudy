@@ -6,7 +6,7 @@ import { LEXEME_PACK } from './lexeme'
  * Reuses the executable Gateway content-commands channel; no new paths.
  */
 
-export type ItemKind = 'QUESTION' | 'EXAMPLE' | 'GRAMMAR_POINT' | 'PASSAGE' | 'EXERCISE'
+export type ItemKind = 'QUESTION' | 'EXAMPLE' | 'GRAMMAR_POINT' | 'PASSAGE' | 'EXERCISE' | 'DICTATION' | 'SHADOWING'
 export type ItemAvailability = 'DRAFT' | 'IN_REVIEW' | 'APPROVED' | 'PUBLISHED' | 'ARCHIVED'
 
 export interface ContentItemRow {

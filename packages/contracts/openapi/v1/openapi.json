@@ -20929,7 +20929,7 @@
               ],
               "default": "PACK"
             },
-            "description": "PACK lists content packs; LEXEME lists word-master rows; ITEM lists row-level question/example/grammar/passage rows (contentCode=item:{itemId}, full record in item)."
+            "description": "PACK lists content packs; LEXEME lists word-master rows; ITEM lists row-level question/example/grammar/passage/exercise/dictation/shadowing rows (contentCode=item:{itemId}, full record in item)."
           },
           {
             "name": "q",
@@ -21005,7 +21005,9 @@
                 "EXAMPLE",
                 "GRAMMAR_POINT",
                 "PASSAGE",
-                "EXERCISE"
+                "EXERCISE",
+                "DICTATION",
+                "SHADOWING"
               ]
             },
             "description": "Item kind filter; only applies with kind=ITEM."
@@ -78181,7 +78183,7 @@
         "required": [
           "kind"
         ],
-        "description": "Row-level content item (question/example/grammar/passage) under a pack. Rich configuration travels in fields and never requires DDL.",
+        "description": "Row-level content item (question/example/grammar/passage/exercise/dictation/shadowing) under a pack. Rich configuration travels in fields and never requires DDL.",
         "properties": {
           "itemId": {
             "type": "string",
@@ -78195,8 +78197,11 @@
               "EXAMPLE",
               "GRAMMAR_POINT",
               "PASSAGE",
-              "EXERCISE"
-            ]
+              "EXERCISE",
+              "DICTATION",
+              "SHADOWING"
+            ],
+            "description": "DICTATION (listening dictation) and SHADOWING (speaking shadowing) are the B4 multilingual interaction kinds; both run the standard draft/review/publish lifecycle."
           },
           "stem": {
             "type": "string",
@@ -78240,8 +78245,11 @@
               "EXAMPLE",
               "GRAMMAR_POINT",
               "PASSAGE",
-              "EXERCISE"
-            ]
+              "EXERCISE",
+              "DICTATION",
+              "SHADOWING"
+            ],
+            "description": "Row kind; DICTATION/SHADOWING are the B4 interaction kinds."
           },
           "stem": {
             "type": "string",

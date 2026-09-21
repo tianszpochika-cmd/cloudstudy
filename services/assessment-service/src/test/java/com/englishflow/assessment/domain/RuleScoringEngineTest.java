@@ -213,6 +213,39 @@ class RuleScoringEngineTest {
                 .containsExactly("SPELLING_WRONG");
     }
 
+    // --- DICTATION (B4) ---
+
+    @Test
+    void dictationAcceptsAnyOfTheAcceptedAnswers() {
+        ContentSnapshot snapshot = snapshot(QuestionType.DICTATION,
+                Map.of("acceptedAnswers", List.of("Good habits help", "good habits help.")), 10);
+
+        assertThat(engine.score(snapshot, Map.of("text", "good habits help")).correct()).isTrue();
+        assertThat(engine.score(snapshot, Map.of("text", "good habits helped")).correct()).isFalse();
+    }
+
+    @Test
+    void dictationWrongReportsDictationCause() {
+        ContentSnapshot snapshot = snapshot(QuestionType.DICTATION, Map.of("acceptedText", "bonjour"), 10);
+
+        assertThat(engine.score(snapshot, Map.of("text", "bonjur")).errorCauseCandidates())
+                .containsExactly("DICTATION_WRONG");
+    }
+
+    // --- SHADOWING (B4) ---
+
+    @Test
+    void shadowingResolvesToPendingManualReview() {
+        ContentSnapshot snapshot = snapshot(QuestionType.SHADOWING, Map.of("promptText", "Répétez : bonjour"), 10);
+
+        ScoringResult result = engine.score(snapshot, Map.of("audioAssetId", "media-fr-shadow-1"));
+
+        assertThat(result.status()).isEqualTo(ScoringStatus.PENDING_MANUAL);
+        assertThat(result.correct()).isNull();
+        assertThat(result.earnedScore()).isZero();
+        assertThat(result.scoreBreakdown()).containsEntry("manualReview", true);
+    }
+
     // --- TRANSLATION_INPUT ---
 
     @Test

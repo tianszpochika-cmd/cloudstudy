@@ -17,7 +17,13 @@ import java.util.regex.Pattern;
  */
 public final class ContentItem {
 
-    public static final Set<String> KINDS = Set.of("QUESTION", "EXAMPLE", "GRAMMAR_POINT", "PASSAGE", "EXERCISE");
+    /**
+     * Row-level item kinds. DICTATION (listening dictation) and SHADOWING
+     * (speaking shadowing) are the B4 multilingual interaction kinds; they run
+     * the same draft/review/publish lifecycle as the five historical kinds.
+     */
+    public static final Set<String> KINDS = Set.of(
+            "QUESTION", "EXAMPLE", "GRAMMAR_POINT", "PASSAGE", "EXERCISE", "DICTATION", "SHADOWING");
 
     private static final Pattern SAFE_CODE = Pattern.compile("[A-Za-z0-9][A-Za-z0-9._:-]{0,127}");
 

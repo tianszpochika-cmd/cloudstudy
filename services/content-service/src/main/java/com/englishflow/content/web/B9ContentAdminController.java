@@ -849,7 +849,7 @@ public final class B9ContentAdminController {
 
     private static String itemContentType(String kind) {
         return switch (kind) {
-            case "QUESTION", "EXERCISE" -> "QUESTION";
+            case "QUESTION", "EXERCISE", "DICTATION", "SHADOWING" -> "QUESTION";
             case "EXAMPLE" -> "SENTENCE";
             case "GRAMMAR_POINT" -> "GRAMMAR";
             default -> "COURSE_UNIT";

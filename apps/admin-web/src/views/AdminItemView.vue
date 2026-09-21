@@ -50,6 +50,8 @@ const KINDS: Array<{ label: string; value: string }> = [
   { label: '语法点', value: 'GRAMMAR_POINT' },
   { label: '段落', value: 'PASSAGE' },
   { label: '练习', value: 'EXERCISE' },
+  { label: '听写', value: 'DICTATION' },
+  { label: '跟读', value: 'SHADOWING' },
 ]
 
 const scheduleTargets = computed(() =>
@@ -147,7 +149,7 @@ async function runReview(row: ContentItemRow, stage: 'FIRST' | 'FINAL'): Promise
 function batchTemplate(): string {
   return JSON.stringify(
     {
-      hint: '每行一个条目：{kind, stem, fields}；kind=题目/例句/语法点/段落/练习',
+      hint: '每行一个条目：{kind, stem, fields}；kind=题目/例句/语法点/段落/练习/听写/跟读',
       rows: [
         { kind: 'QUESTION', stem: 'Choose: I ___ a habit.', fields: { options: ['build', 'builds'], answerIndex: 0, explanation: '固定搭配', cefr: 'A2' } },
         { kind: 'EXAMPLE', stem: 'Build a habit.', fields: { translation: '养成一个习惯。', source: 'textbook-u1' } },
@@ -172,7 +174,7 @@ function parseBatch(): BatchEntry[] {
     if (typeof entry !== 'object' || entry === null || Array.isArray(entry)) throw new Error(`第 ${index + 1} 行必须是对象。`)
     const row = entry as Record<string, unknown>
     const kind = typeof row.kind === 'string' ? row.kind.trim().toUpperCase() : ''
-    if (!['QUESTION', 'EXAMPLE', 'GRAMMAR_POINT', 'PASSAGE', 'EXERCISE'].includes(kind)) {
+    if (!['QUESTION', 'EXAMPLE', 'GRAMMAR_POINT', 'PASSAGE', 'EXERCISE', 'DICTATION', 'SHADOWING'].includes(kind)) {
       throw new Error(`第 ${index + 1} 行 kind 非法。`)
     }
     return {
@@ -263,6 +265,7 @@ onMounted(() => { void load() })
             <el-option label="题目" value="QUESTION" /><el-option label="例句" value="EXAMPLE" />
             <el-option label="语法点" value="GRAMMAR_POINT" /><el-option label="段落" value="PASSAGE" />
             <el-option label="练习" value="EXERCISE" />
+            <el-option label="听写" value="DICTATION" /><el-option label="跟读" value="SHADOWING" />
           </el-select>
         </el-form-item>
         <el-form-item label="题干">

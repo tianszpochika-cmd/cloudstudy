@@ -114,4 +114,55 @@ class ContentItemCommandServiceTest {
                         "fields", Map.of("options", List.of(1, 2, 3, 4, 5, 6, 7, 8, 9))),
                 null, editor(), key(), REQUEST));
     }
+
+    @Test
+    void dictationFullLifecycleCreateReviewPublishUnpublish() {
+        Map<String, Object> input = Map.of(
+                "kind", "DICTATION",
+                "stem", "Écoutez et écrivez : bonjour",
+                "fields", Map.of(
+                        "acceptedAnswers", List.of("bonjour"),
+                        "mediaAssetId", "media-fr-dict-0001",
+                        "language", "fr-FR",
+                        "cefr", "A1"));
+        ContentItemCommandService.ItemResult created =
+                commands.upsert(PACK, input, null, editor(), key(), REQUEST);
+        assertEquals(ItemAvailability.DRAFT, created.availability());
+        assertTrue(created.itemId().startsWith("dc_"), "dictation rows use the dc_ id prefix");
+        assertEquals("DICTATION", items.findById(created.itemId()).orElseThrow().kind());
+
+        commands.submit(PACK, created.itemId(), editor(), key(), REQUEST);
+        commands.reviewFirst(PACK, created.itemId(), ReviewDecision.APPROVED, reviewerL1(), key(), REQUEST);
+        commands.reviewFinal(PACK, created.itemId(), ReviewDecision.APPROVED, reviewerL2(), key(), REQUEST);
+        ContentItemCommandService.ItemResult published = commands.publish(
+                PACK, created.itemId(), "PACK_RELEASE", publisher(), key(), REQUEST);
+        assertEquals(ItemAvailability.PUBLISHED, published.availability());
+        ContentItemCommandService.ItemResult unpublished = commands.unpublish(
+                PACK, created.itemId(), "PACK_REVOKE", publisher(), key(), REQUEST);
+        assertEquals(ItemAvailability.APPROVED, unpublished.availability());
+        assertTrue(outbox.events().size() >= 2, "publish and unpublish must emit outbox facts");
+    }
+
+    @Test
+    void shadowingFullLifecycle() {
+        Map<String, Object> input = Map.of(
+                "kind", "SHADOWING",
+                "stem", "Suivez et répétez : bonjour",
+                "fields", Map.of(
+                        "promptText", "bonjour",
+                        "mediaAssetId", "media-fr-shadow-0001",
+                        "language", "fr-FR",
+                        "cefr", "A1"));
+        ContentItemCommandService.ItemResult created =
+                commands.upsert(PACK, input, null, editor(), key(), REQUEST);
+        assertTrue(created.itemId().startsWith("sh_"), "shadowing rows use the sh_ id prefix");
+        assertEquals("SHADOWING", items.findById(created.itemId()).orElseThrow().kind());
+
+        commands.submit(PACK, created.itemId(), editor(), key(), REQUEST);
+        commands.reviewFirst(PACK, created.itemId(), ReviewDecision.APPROVED, reviewerL1(), key(), REQUEST);
+        commands.reviewFinal(PACK, created.itemId(), ReviewDecision.APPROVED, reviewerL2(), key(), REQUEST);
+        ContentItemCommandService.ItemResult published = commands.publish(
+                PACK, created.itemId(), "PACK_RELEASE", publisher(), key(), REQUEST);
+        assertEquals(ItemAvailability.PUBLISHED, published.availability());
+    }
 }
