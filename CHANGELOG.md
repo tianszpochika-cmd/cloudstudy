@@ -1,5 +1,7 @@
 # Changelog
 
+- [TENANT-B4-10-20260921] **单租户直营 B4-10：契约/门禁/文档收尾。** 全量回归实跑（四服务 59/191/146/63 零失败、合并 424 零漂移、契约 21 条与网关 22 条均与基线逐条一致、stale PASS），三件套 Bingo 总表与冻结核验（66 文件零冻结触碰、网关零新增）归档。P1R 状态不动，重冻与真实运行验收列为审批后事项。详见[单租户直营 B4-10](docs/06-design/v2-980plus/single-tenant-direct-operation/B4-10-closeout.md)。
+
 - [TENANT-B4-09-20260921] **单租户直营 B4-09：UI 语言包骨架。** `packages/i18n` 新增 `admin`/`learner` 命名空间 fr/de 骨架（中英全、法德稀疏+回退永不崩），配套 7 项单测（回退/伪本地化/缺 key 扫描/locale 分离）；管理端新增界面语言切换器（仅 UI，内容语言不动）。i18n 包类型与测试通过，admin-web 类型与构建通过，四服务复跑全绿；无契约/网关变更，门禁结论一致。详见[单租户直营 B4-09](docs/06-design/v2-980plus/single-tenant-direct-operation/B4-09-i18n-skeleton.md)。未做真实运行验收，不改变 P1R 状态。
 
 - [TENANT-B4-08-20260921] **单租户直营 B4-08：判分与排序本地化。** 判分归一化加法德折叠（`é=e`、`ß→ss`、ROOT 小写；连字有意不折叠），德语排序 `utf8mb4_unicode_ci` 已知偏差记档、不换 collation。assessment-service 63 测试全绿（含法德折叠与不过度合并用例）、其余三服务全绿；无契约/网关变更，门禁结论一致。详见[单租户直营 B4-08](docs/06-design/v2-980plus/single-tenant-direct-operation/B4-08-scoring-locale.md)。未做真实运行验收，不改变 P1R 状态。
