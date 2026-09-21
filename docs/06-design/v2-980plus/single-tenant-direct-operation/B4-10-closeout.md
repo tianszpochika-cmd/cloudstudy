@@ -5,6 +5,11 @@
 
 ## 1. 全量回归（§4 命令，2026-09-21 实跑）
 
+> 推送前复验（同日第二轮，结论一致）：四服务 59/191/146/63 零失败；合并 424 零漂移；
+> `validate-contracts` 唯一旧失败（IAM）；`p1r-api-contract` 7/2（失败明细含 B4 关键词零命中）；
+> 网关 63/393/202；`stale-claims` PASS（1431 files）；`diff --check` 干净；
+> admin-web `vue-tsc` + `vite build` 通过；i18n `test` 7/7 + `typecheck` 通过。
+
 | 门 | 结果 | 基线对照 |
 |---|---|---|
 | `mvn ... test`（四服务） | learner 59、content 191、learning 146、assessment 63，**零失败** | B4 前基线 content 161+，其余全绿；只增不减 |
