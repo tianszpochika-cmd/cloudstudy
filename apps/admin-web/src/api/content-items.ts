@@ -201,8 +201,15 @@ export async function cancelSchedule(packCode: string, scheduledPublishTaskId: s
 }
 
 export async function getPackDetail(packCode: string): Promise<Row> {
-  const response = await adminClient.request(`/admin/content-commands/${encodeURIComponent(packCode)}`)
-  return isRecord(response) && isRecord(response.data) ? response.data : {}
+  try {
+    const response = await adminClient.request(`/admin/content-commands/${encodeURIComponent(packCode)}`)
+    return isRecord(response) && isRecord(response.data) ? response.data : {}
+  } catch (error) {
+    // A pack that was never created has no schedule state: report empty instead
+    // of alarming. Any other failure still surfaces.
+    if (error instanceof AdminApiError && error.status === 404) return {}
+    throw error
+  }
 }
 
 export function readScheduledTasks(pack: Row): ScheduledTask[] {

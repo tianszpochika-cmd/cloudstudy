@@ -1,4 +1,4 @@
-import { adminClient } from './client'
+import { adminClient, AdminApiError } from './client'
 
 /**
  * B4-02 phonetics catalog browser for the tenant control plane.
@@ -45,25 +45,47 @@ function text(value: unknown, fallback = ''): string {
   return typeof value === 'string' && value ? value : fallback
 }
 
+function friendlyError(error: unknown): Error {
+  // /api/v1/phonetics/* is a fail-closed withheld route until the M3/M4 owner
+  // adjudication lands a gateway projection. Browsers surface that as a CORS-blocked
+  // preflight (TypeError) rather than the gateway 404, so both map here.
+  if (error instanceof AdminApiError && error.status === 404) {
+    return new Error('音标网关通道尚未开通（待 M3/M4 路由裁决），当前无法加载。')
+  }
+  if (error instanceof TypeError) {
+    return new Error('音标通道不可达：网关未放行 /phonetics/*（待 M3/M4 路由裁决）或后端未运行。')
+  }
+  if (error instanceof AdminApiError) return new Error(error.message)
+  return error instanceof Error ? error : new Error('音标库读取失败。')
+}
+
 export async function listPhonemes(language?: string): Promise<PhonemeRow[]> {
   const params = new URLSearchParams()
   if (language?.trim()) params.set('language', language.trim())
   const query = params.toString() ? `?${params.toString()}` : ''
-  const rows = unwrapItems(await adminClient.request(`/phonetics/catalog${query}`))
-  return rows.map((row) => ({
-    ...row,
-    phonemeId: (row.phonemeId ?? '') as number | string,
-    symbol: text(row.symbol, '—'),
-    group: text(row.group, '—'),
-  }))
+  try {
+    const rows = unwrapItems(await adminClient.request(`/phonetics/catalog${query}`))
+    return rows.map((row) => ({
+      ...row,
+      phonemeId: (row.phonemeId ?? '') as number | string,
+      symbol: text(row.symbol, '—'),
+      group: text(row.group, '—'),
+    }))
+  } catch (error) {
+    throw friendlyError(error)
+  }
 }
 
 export async function listPhoneticPairs(language?: string): Promise<MinimalPairRow[]> {
   const params = new URLSearchParams({ limit: '20' })
   if (language?.trim()) params.set('language', language.trim())
-  const rows = unwrapItems(await adminClient.request(`/phonetics/minimal-pairs?${params.toString()}`))
-  return rows.map((row) => ({
-    ...row,
-    pairId: (row.pairId ?? '') as number | string,
-  }))
+  try {
+    const rows = unwrapItems(await adminClient.request(`/phonetics/minimal-pairs?${params.toString()}`))
+    return rows.map((row) => ({
+      ...row,
+      pairId: (row.pairId ?? '') as number | string,
+    }))
+  } catch (error) {
+    throw friendlyError(error)
+  }
 }
