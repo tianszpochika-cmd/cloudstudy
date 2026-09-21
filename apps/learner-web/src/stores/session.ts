@@ -257,12 +257,16 @@ export const useSessionStore = defineStore('session', () => {
     try {
       await adapter().logout({ allDevices })
       clear()
+      // The session is dead from here on: never leave the user on a now-unauthorized
+      // page waiting for a guard that only runs on navigation.
+      await navigateToLogin('/home').catch(() => {})
       return true
     } catch (error) {
       clear()
       lastError.value = error instanceof Error ? error.message : 'LOGOUT_FAILED'
       authErrorCode.value = 'LOGOUT_FAILED'
       status.value = 'unauthenticated'
+      await navigateToLogin('/home').catch(() => {})
       return false
     }
   }

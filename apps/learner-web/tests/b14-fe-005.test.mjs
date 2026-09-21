@@ -57,9 +57,11 @@ test('learner-web protects the settings root before redirecting to the profile s
   assert.match(router, /redirect: \{ name: 'settings', params: \{ section: 'profile' \} \}/)
 })
 
-test('learner-web schedules a login redirect after a successful logout', async () => {
-  const auth = await read('apps/learner-web/src/auth/gateway-auth.ts')
-  assert.match(auth, /function scheduleWebLogoutRedirect\(\)/)
-  assert.match(auth, /client\.post\('\/iam\/session\/logout'[\s\S]*?scheduleWebLogoutRedirect\(\)/)
-  assert.match(auth, /window\.location\.assign\('\/login'\)/)
+test('learner-web navigates to login after logout instead of stranding the session', async () => {
+  const session = await read('apps/learner-web/src/stores/session.ts')
+  // The store owns the post-logout navigation (the retired scheduleWebLogoutRedirect
+  // helper in gateway-auth.ts is gone); both success and failure paths must leave login.
+  assert.match(session, /async function logout\(allDevices = false\)/)
+  assert.match(session, /await adapter\(\)\.logout\(\{ allDevices \}\)/)
+  assert.match(session, /await navigateToLogin\('\/home'\)/)
 })

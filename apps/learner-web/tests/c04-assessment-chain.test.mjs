@@ -10,11 +10,15 @@ test('learner-web assessment chain uses the real placement owner and idempotent 
   const api = await read('apps/learner-web/src/api/learner-content.ts')
   const store = await read('apps/learner-web/src/stores/learner-content.ts')
   const contract = await read('packages/contracts/fragments/b25/b25-phase1-real-data.openapi.json')
-  const gateway = await read('services/api-gateway/src/main/java/com/englishflow/gateway/config/GatewayConfiguration.java')
+  const gateway = await read('services/api-gateway/src/main/java/com/englishflow/gateway/policy/GatewayRouteExecutionPolicy.java')
   assert.match(contract, /\/internal\/v1\/assessment\/placement\/start/)
   assert.match(contract, /\/internal\/v1\/assessment\/placement\/submit-step/)
   assert.match(contract, /\/internal\/v1\/assessment\/placement\/skip/)
-  assert.match(gateway, /String publicPath = "\/api\/v1\/" \+ domain \+ "\/\*\*"/)
+  // Policy-driven gateway: explicit placement projections to the assessment owner
+  // (replaces the retired "/api/v1/" + domain + "/**" public-path builder).
+  assert.match(gateway, /rewrite\("placement-start", "\/api\/v1\/assessment\/placement\/start", "\/internal\/v1\/assessment\/placement\/start", ASSESSMENT_B25/)
+  assert.match(gateway, /rewrite\("placement-submit-step", "\/api\/v1\/assessment\/placement\/submit-step"/)
+  assert.match(gateway, /rewrite\("placement-skip", "\/api\/v1\/assessment\/placement\/skip"/)
   assert.match(api, /READ_MODEL_PATHS\.placementAnswerCommand/)
   assert.match(api, /READ_MODEL_PATHS\.placementSkipCommand/)
   assert.match(api, /withIdempotency\(`placement-answer-/)
