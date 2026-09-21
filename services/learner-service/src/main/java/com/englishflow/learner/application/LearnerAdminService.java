@@ -76,6 +76,8 @@ public final class LearnerAdminService {
             int dailyMinutes,
             String targetDate,
             String startingLevel,
+            String examName,
+            String language,
             Long expectedVersion,
             String idempotencyKey,
             String requestId,
@@ -87,13 +89,15 @@ public final class LearnerAdminService {
         LocalDate date = targetDate == null || targetDate.isBlank() ? null : LocalDate.parse(targetDate.trim());
         CefrLevel level = startingLevel == null || startingLevel.isBlank()
                 ? CefrLevel.A1 : CefrLevel.valueOf(startingLevel.trim().toUpperCase());
+        Map<String, Object> examFields = examFields(type, examName, language);
         String fingerprint = String.join("|", "admin-goal", type.name(), String.valueOf(minutes.minutes()),
-                String.valueOf(date), level.name(), String.valueOf(expectedVersion));
+                String.valueOf(date), level.name(), String.valueOf(examFields.get("examName")),
+                String.valueOf(examFields.get("language")), String.valueOf(expectedVersion));
         return mutate(scope, "admin.goal", idempotencyKey, expectedVersion, fingerprint,
                 "learner.target.updated.v1", requestId, traceId, adminSubject,
                 profile -> {
                     LearningGoal goal = LearningGoal.create(targetIds.nextId(scope), type, minutes,
-                            date, level, clock);
+                            date, level, examFields, clock);
                     return profile.withGoal(goal, clock.instant());
                 },
                 profile -> {
@@ -175,8 +179,7 @@ public final class LearnerAdminService {
         return new AdminMutationResult(LearnerProfileView.from(committed.profile()), committed.replayed(), adminSubject);
     }
 
-    private static LearnerTenantScope scopeOf(String subjectId) {
-        if (subjectId == null || subjectId.isBlank()) {
+    private static LearnerTenantScope scopeOf(String subjectId) {        if (subjectId == null || subjectId.isBlank()) {
             throw new LearnerDomainException(LearnerDecisionCode.INVALID_PROFILE, "subjectId is required");
         }
         try {
@@ -184,6 +187,28 @@ public final class LearnerAdminService {
         } catch (IllegalArgumentException invalid) {
             throw new LearnerDomainException(LearnerDecisionCode.INVALID_PROFILE, "subjectId has an unsafe format");
         }
+    }
+
+    /**
+     * B4 converged exam fields. LANGUAGE_CERT goals carry examName + language;
+     * every other goal type must arrive without exam inputs (LearningGoal
+     * rejects stray exam fields so historical rows cannot be blurred).
+     */
+    private static Map<String, Object> examFields(GoalType type, String examName, String language) {
+        boolean hasExamName = examName != null && !examName.isBlank();
+        boolean hasLanguage = language != null && !language.isBlank();
+        if (type != GoalType.LANGUAGE_CERT) {
+            if (hasExamName || hasLanguage) {
+                throw new LearnerDomainException(LearnerDecisionCode.INVALID_GOAL,
+                        "examName/language are only accepted with goalType=LANGUAGE_CERT");
+            }
+            return Map.of();
+        }
+        if (!hasExamName || !hasLanguage) {
+            throw new LearnerDomainException(LearnerDecisionCode.INVALID_GOAL,
+                    "LANGUAGE_CERT goals require examName and language");
+        }
+        return Map.of("examName", examName.trim(), "language", language.trim());
     }
 
     private static GoalType parseGoalType(String raw) {

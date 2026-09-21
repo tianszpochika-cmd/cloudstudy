@@ -95,7 +95,7 @@ async function sendCommand(path: string, body: Row): Promise<Row> {
 
 export function setLearnerGoal(
   subjectId: string,
-  input: { goalType: string; dailyMinutes: number; targetDate?: string; startingLevel?: string; expectedVersion: number },
+  input: { goalType: string; dailyMinutes: number; targetDate?: string; startingLevel?: string; examName?: string; language?: string; expectedVersion: number },
 ): Promise<Row> {
   return sendCommand(`/admin/learners/${encodeURIComponent(subjectId)}/commands`, {
     command: 'SET_GOAL',
@@ -104,6 +104,8 @@ export function setLearnerGoal(
     dailyMinutes: input.dailyMinutes,
     targetDate: input.targetDate ?? '',
     startingLevel: input.startingLevel ?? '',
+    examName: input.examName ?? '',
+    language: input.language ?? '',
   })
 }
 

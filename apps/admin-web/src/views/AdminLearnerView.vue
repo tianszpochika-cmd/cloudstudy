@@ -32,7 +32,7 @@ const assessments = ref<Row>({})
 
 const canRead = computed(() => session.can('admin.content.read'))
 
-const goalForm = ref({ goalType: 'WORKPLACE', dailyMinutes: 30, targetDate: '', startingLevel: 'A1' })
+const goalForm = ref({ goalType: 'WORKPLACE', dailyMinutes: 30, targetDate: '', startingLevel: 'A1', examName: '', language: '' })
 const prefForm = ref({ uiLocale: 'zh-CN', contentLocale: 'en-US', themeMode: 'SYSTEM', timezone: 'Asia/Shanghai', reducedMotion: false })
 const busy = ref(false)
 
@@ -73,6 +73,9 @@ async function open(subjectId: string): Promise<void> {
     if (goal) {
       goalForm.value.goalType = typeof goal.type === 'string' ? goal.type : 'WORKPLACE'
       goalForm.value.dailyMinutes = typeof goal.dailyMinutes === 'number' ? goal.dailyMinutes : 30
+      const fields = goal.fields as Row | undefined
+      goalForm.value.examName = typeof fields?.examName === 'string' ? fields.examName : ''
+      goalForm.value.language = typeof fields?.language === 'string' ? fields.language : ''
     }
     const prefs = (p.profile as Row | undefined)?.preferences as Row | undefined
     if (prefs) {
@@ -166,10 +169,13 @@ function dueItems(): Row[] {
           <pre class="json">{{ JSON.stringify(profile, null, 2) }}</pre>
           <el-divider>代设目标（版本锁）</el-divider>
           <el-space wrap>
-            <el-select v-model="goalForm.goalType" style="width: 160px">
-              <el-option label="基础" value="FOUNDATION" /><el-option label="四六级" value="CET_4_6" />
+            <el-select v-model="goalForm.goalType" style="width: 200px">
+              <el-option label="基础" value="FOUNDATION" /><el-option label="四六级（历史兼容）" value="CET_4_6" />
               <el-option label="考研" value="POSTGRADUATE" /><el-option label="职场" value="WORKPLACE" />
+              <el-option label="语言证书（收敛新值）" value="LANGUAGE_CERT" />
             </el-select>
+            <el-input v-if="goalForm.goalType === 'LANGUAGE_CERT'" v-model="goalForm.examName" placeholder="考试名，如 DELF-B2" style="width: 170px" />
+            <el-input v-if="goalForm.goalType === 'LANGUAGE_CERT'" v-model="goalForm.language" placeholder="语种，如 fr-FR" style="width: 140px" />
             <el-select v-model="goalForm.dailyMinutes" style="width: 120px">
               <el-option v-for="m in [5, 15, 30, 45]" :key="m" :label="`${m} 分钟`" :value="m" />
             </el-select>

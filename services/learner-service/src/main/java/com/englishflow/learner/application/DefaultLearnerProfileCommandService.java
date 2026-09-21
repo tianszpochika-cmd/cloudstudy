@@ -91,9 +91,12 @@ public final class DefaultLearnerProfileCommandService implements LearnerProfile
                 command.expectedVersion(),
                 command.fingerprint(), "learner.target.updated.v1",
                 profile -> {
+                    // Learner-owned writes keep the historical four goal types; LANGUAGE_CERT
+                    // exam goals are created through the tenant admin channel (see
+                    // LearnerAdminService.setGoal), so learner-owned goals carry no exam fields.
                     LearningGoal goal = LearningGoal.create(targetIdGenerator.nextId(context.scope()), command.goalType(),
                             command.dailyStudyMinutes(),
-                            command.targetDate(), command.startingLevel(), clock);
+                            command.targetDate(), command.startingLevel(), Map.of(), clock);
                     return profile.withGoal(goal, clock.instant());
                 },
                 profile -> {

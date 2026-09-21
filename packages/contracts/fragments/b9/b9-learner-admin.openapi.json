@@ -424,10 +424,12 @@
         "properties": {
           "command": { "type": "string", "enum": ["SET_GOAL", "UPDATE_PREFERENCES"] },
           "expectedStateVersion": { "$ref": "#/components/schemas/B9StateVersion" },
-          "goalType": { "type": "string", "enum": ["FOUNDATION", "CET_4_6", "POSTGRADUATE", "WORKPLACE"] },
+          "goalType": { "type": "string", "enum": ["FOUNDATION", "CET_4_6", "POSTGRADUATE", "WORKPLACE", "LANGUAGE_CERT"], "description": "Phase 1 adult goals. CET_4_6 is the historical English-exam goal (retained for compatibility); LANGUAGE_CERT is the converged language-exam goal carrying examName/language (B4)." },
           "dailyMinutes": { "type": "integer", "enum": [5, 15, 30, 45] },
           "targetDate": { "type": "string", "maxLength": 32 },
           "startingLevel": { "type": "string", "enum": ["A1", "A2", "B1", "B2", "C1", "C2"] },
+          "examName": { "type": "string", "minLength": 1, "maxLength": 128, "description": "Exam name for LANGUAGE_CERT goals (e.g. DELF-B2, JLPT-N2); required with goalType=LANGUAGE_CERT, rejected otherwise." },
+          "language": { "type": "string", "minLength": 2, "maxLength": 16, "description": "BCP-47 exam language for LANGUAGE_CERT goals (e.g. fr-FR, de-DE); required with goalType=LANGUAGE_CERT, rejected otherwise." },
           "uiLocale": { "type": "string", "maxLength": 16 },
           "contentLocale": { "type": "string", "maxLength": 16 },
           "themeMode": { "type": "string", "enum": ["LIGHT", "DARK", "SYSTEM", "HIGH_CONTRAST"] },
@@ -437,7 +439,7 @@
         "x-command-field-policy": {
           "SET_GOAL": {
             "required": ["goalType", "dailyMinutes"],
-            "allowed": ["command", "expectedStateVersion", "goalType", "dailyMinutes", "targetDate", "startingLevel"]
+            "allowed": ["command", "expectedStateVersion", "goalType", "dailyMinutes", "targetDate", "startingLevel", "examName", "language"]
           },
           "UPDATE_PREFERENCES": {
             "required": ["uiLocale", "contentLocale", "themeMode", "timezone"],

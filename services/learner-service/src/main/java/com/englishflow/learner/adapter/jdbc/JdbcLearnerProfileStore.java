@@ -23,7 +23,9 @@ import com.englishflow.learner.port.LearnerProfileStore;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -51,7 +53,7 @@ public final class JdbcLearnerProfileStore implements LearnerProfileStore {
     private static final String PROFILE_SELECT_FOR_UPDATE = PROFILE_SELECT + " FOR UPDATE";
 
     private static final String GOAL_SELECT = "SELECT target_id, goal_type, daily_study_minutes, "
-            + "target_date, starting_level, updated_at FROM learner_goal "
+            + "target_date, starting_level, fields_json, updated_at FROM learner_goal "
             + "WHERE profile_id = ? AND tenant_id = ? AND owner_id = ?";
     private static final String PREFERENCE_SELECT = "SELECT ui_locale, content_locale, theme_mode, timezone, "
             + "reduced_motion, updated_at FROM learner_preference "
@@ -278,26 +280,27 @@ public final class JdbcLearnerProfileStore implements LearnerProfileStore {
             return;
         }
         LearningGoal goal = profile.goal().orElseThrow();
+        String goalFields = writeGoalFields(goal.fields());
         if (existing.isPresent()) {
             requireStoredScope(profile.scope(), existing.get().tenantId(), existing.get().ownerId());
             jdbc.update("""
                     UPDATE learner_goal
                     SET target_id = ?, goal_type = ?, daily_study_minutes = ?, target_date = ?,
-                        starting_level = ?, updated_at = ?
+                        starting_level = ?, fields_json = ?, updated_at = ?
                     WHERE profile_id = ? AND tenant_id = ? AND owner_id = ?
                     """, storedTargetId(goal), goal.type().name(), goal.dailyStudyMinutes().minutes(),
-                    goal.targetDate(), goal.startingLevel().name(), Timestamp.from(goal.updatedAt()),
+                    goal.targetDate(), goal.startingLevel().name(), goalFields, Timestamp.from(goal.updatedAt()),
                     profile.profileId(), profile.scope().tenantId(), profile.scope().ownerId());
             return;
         }
         jdbc.update("""
                 INSERT INTO learner_goal
                 (profile_id, tenant_id, owner_id, target_id, goal_type, daily_study_minutes,
-                 target_date, starting_level, updated_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                 target_date, starting_level, fields_json, updated_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """, profile.profileId(), profile.scope().tenantId(), profile.scope().ownerId(),
                 storedTargetId(goal), goal.type().name(), goal.dailyStudyMinutes().minutes(), goal.targetDate(),
-                goal.startingLevel().name(), Timestamp.from(goal.updatedAt()));
+                goal.startingLevel().name(), goalFields, Timestamp.from(goal.updatedAt()));
     }
 
     private void writePreferences(LearnerProfile profile) {
@@ -407,6 +410,7 @@ public final class JdbcLearnerProfileStore implements LearnerProfileStore {
                         resultSet.getDate("target_date") == null
                                 ? null : resultSet.getDate("target_date").toLocalDate(),
                         resultSet.getString("starting_level"),
+                        resultSet.getString("fields_json"),
                         resultSet.getTimestamp("updated_at")),
                 profileId, scope.tenantId(), scope.ownerId()).stream().findFirst();
     }
@@ -465,6 +469,7 @@ public final class JdbcLearnerProfileStore implements LearnerProfileStore {
                     DailyStudyMinutes.from(value.dailyStudyMinutes()),
                     value.targetDate(),
                     CefrLevel.valueOf(value.startingLevel()),
+                    readGoalFields(value.goalFields()),
                     instant(value.updatedAt(), "goal.updated_at")));
             Optional<LearnerPreferences> preferences = preferenceRow.map(value -> new LearnerPreferences(
                     value.uiLocale(), value.contentLocale(), ThemeMode.valueOf(value.themeMode()),
@@ -536,6 +541,7 @@ public final class JdbcLearnerProfileStore implements LearnerProfileStore {
                     DailyStudyMinutes.from(stored.goal().dailyStudyMinutes()),
                     stored.goal().targetDate(),
                     CefrLevel.valueOf(stored.goal().startingLevel()),
+                    stored.goal().goalFields() == null ? Map.of() : stored.goal().goalFields(),
                     Instant.parse(stored.goal().updatedAt())));
             Optional<LearnerPreferences> preferences = stored.preferences() == null
                     ? Optional.empty()
@@ -583,7 +589,7 @@ public final class JdbcLearnerProfileStore implements LearnerProfileStore {
     private static StoredGoal toStoredGoal(LearningGoal goal) {
         return new StoredGoal(goal.targetId() == 0 ? null : goal.targetId(), goal.type().name(),
                 goal.dailyStudyMinutes().minutes(), goal.targetDate(), goal.startingLevel().name(),
-                goal.updatedAt().toString());
+                new java.util.LinkedHashMap<>(goal.fields()), goal.updatedAt().toString());
     }
 
     private static StoredPreferences toStoredPreferences(LearnerPreferences preferences) {
@@ -598,6 +604,33 @@ public final class JdbcLearnerProfileStore implements LearnerProfileStore {
 
     private static String enumName(Enum<?> value) {
         return value == null ? null : value.name();
+    }
+
+    /** B4 goal exam fields: NULL/blank reads as empty so pre-B4 rows keep working. */
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> readGoalFields(String json) {
+        if (json == null || json.isBlank()) {
+            return Map.of();
+        }
+        try {
+            Object value = objectMapper.readValue(json, Map.class);
+            if (value instanceof Map<?, ?> map) {
+                Map<String, Object> result = new LinkedHashMap<>();
+                for (Map.Entry<?, ?> entry : map.entrySet()) {
+                    result.put(String.valueOf(entry.getKey()), entry.getValue());
+                }
+                return result;
+            }
+            throw new IllegalArgumentException("goal fields JSON is not an object");
+        } catch (LearnerDomainException exception) {
+            throw exception;
+        } catch (Exception exception) {
+            throw storeFailure("learner goal fields could not be decoded", exception);
+        }
+    }
+
+    private String writeGoalFields(Map<String, Object> fields) {
+        return json(fields == null ? Map.of() : fields);
     }
 
     private static <E extends Enum<E>> E enumValue(Class<E> type, String value) {
@@ -648,6 +681,7 @@ public final class JdbcLearnerProfileStore implements LearnerProfileStore {
             int dailyStudyMinutes,
             java.time.LocalDate targetDate,
             String startingLevel,
+            String goalFields,
             Timestamp updatedAt) {
     }
 
@@ -709,6 +743,7 @@ public final class JdbcLearnerProfileStore implements LearnerProfileStore {
             int dailyStudyMinutes,
             java.time.LocalDate targetDate,
             String startingLevel,
+            Map<String, Object> goalFields,
             String updatedAt) {
     }
 

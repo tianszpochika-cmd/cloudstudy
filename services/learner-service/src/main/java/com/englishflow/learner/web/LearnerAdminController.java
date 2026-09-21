@@ -90,6 +90,8 @@ public final class LearnerAdminController {
                         number(input.get("dailyMinutes")),
                         textOrNull(input.get("targetDate")),
                         textOrNull(input.get("startingLevel")),
+                        textOrNull(input.get("examName")),
+                        textOrNull(input.get("language")),
                         version(input.get("expectedVersion")),
                         requireKey(idempotencyKey),
                         ids.requestId(), ids.traceId(), admin.subjectId());
@@ -130,11 +132,17 @@ public final class LearnerAdminController {
         result.put("onboardingState", view.onboardingState().name());
         result.put("assessmentState", view.assessmentState().name());
         view.currentLevel().ifPresent(level -> result.put("currentLevel", level.name()));
-        view.goal().ifPresent(goal -> result.put("goal", Map.of(
-                "targetId", goal.targetId(),
-                "type", goal.type().name(),
-                "dailyMinutes", goal.dailyStudyMinutes().minutes(),
-                "startingLevel", goal.startingLevel().name())));
+        view.goal().ifPresent(goal -> {
+            Map<String, Object> goalView = new LinkedHashMap<>();
+            goalView.put("targetId", goal.targetId());
+            goalView.put("type", goal.type().name());
+            goalView.put("dailyMinutes", goal.dailyStudyMinutes().minutes());
+            goalView.put("startingLevel", goal.startingLevel().name());
+            if (!goal.fields().isEmpty()) {
+                goalView.put("fields", new LinkedHashMap<>(goal.fields()));
+            }
+            result.put("goal", goalView);
+        });
         view.preferences().ifPresent(preferences -> result.put("preferences", Map.of(
                 "uiLocale", preferences.uiLocale(),
                 "contentLocale", preferences.contentLocale(),

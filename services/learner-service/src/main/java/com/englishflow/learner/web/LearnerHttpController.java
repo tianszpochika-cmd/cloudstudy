@@ -194,7 +194,11 @@ public final class LearnerHttpController {
             case "CET_4_6" -> GoalType.CET_4_6;
             case "POSTGRADUATE" -> GoalType.POSTGRADUATE;
             case "WORKPLACE" -> GoalType.WORKPLACE;
-            default -> throw boundary("GOAL_CODE_UNSUPPORTED", "goalCode is outside the Phase 1 learner goal set");
+            // B4: LANGUAGE_CERT exam goals are created through the tenant admin
+            // channel (examName/language required); the learner-owned endpoint
+            // keeps the historical four codes so old clients keep working.
+            default -> throw boundary("GOAL_CODE_UNSUPPORTED",
+                    "goalCode is outside the Phase 1 learner goal set; language-exam goals are managed through the tenant admin channel");
         };
     }
 
