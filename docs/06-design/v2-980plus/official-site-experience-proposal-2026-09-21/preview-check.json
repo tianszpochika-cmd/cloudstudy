@@ -1,8 +1,8 @@
 {
   "classification": "official-site-design-prototype-not-production-evidence",
-  "revision": "official-v5",
+  "revision": "official-v6",
   "date": "2026-09-21",
-  "pageTemplates": 13,
+  "pageTemplates": 14,
   "courseVariants": 6,
   "themes": [
     "light",
@@ -54,6 +54,35 @@
     "cross-device-preview-does-not-pretend-loopback-is-public",
     "service-status-does-not-claim-live-health",
     "free-opening-notice-opens",
+    "world-page-has-interactive-showcase",
+    "room-view-can-turn",
+    "room-view-can-reset",
+    "room-supports-direct-horizontal-drag",
+    "2d-removes-depth-and-rotation-controls",
+    "3d-adds-layered-depth",
+    "room-atmosphere-can-change",
+    "outfit-choice-changes-avatar",
+    "outfit-change-retains-keyboard-focus",
+    "character-wall-has-three-selectable-design-examples",
+    "character-selection-is-visible",
+    "badge-explains-sample-without-fake-award",
+    "avatar-and-outfit-follow-back-to-room",
+    "world-tabs-support-keyboard-arrows",
+    "world-tabs-support-end",
+    "train-hint-is-optional",
+    "train-wrong-order-offers-recovery",
+    "train-selected-word-can-be-withdrawn",
+    "train-can-restart-without-reloading",
+    "train-first-sentence-completes",
+    "completed-train-focuses-next-action",
+    "train-second-sentence-completes",
+    "train-finishes-back-in-personal-space",
+    "motion-can-be-paused",
+    "pause-stops-decorative-animation",
+    "motion-preference-survives-reload",
+    "motion-can-be-enabled-again",
+    "review-badge-is-in-footer-flow-and-does-not-overlap-copyright",
+    "footer-design-note-opens-current-revision",
     "mobile-has-dedicated-navigation",
     "mobile-menu-opens-full-screen",
     "mobile-navigation-select-closes-menu-and-routes",
@@ -67,7 +96,8 @@
     "mobile-sticky-start-routes-correctly",
     "theme-switch-changes-entire-site",
     "theme-preference-persists-after-reload",
-    "thirteen-page-templates-in-two-themes-at-seven-widths-no-overflow",
+    "fourteen-page-templates-in-two-themes-at-seven-widths-no-overflow",
+    "world-three-panels-two-presentations-two-themes-seven-widths-no-overflow",
     "all-layouts-have-one-main-heading-and-no-broken-images",
     "detail-variant-daily-words",
     "detail-variant-clear-grammar",
@@ -75,6 +105,12 @@
     "detail-variant-speaking",
     "detail-variant-writing",
     "unknown-route-has-recovery-page",
+    "world-page-keeps-mobile-controls-uncovered-light",
+    "world-page-keeps-mobile-controls-uncovered-dark",
+    "home-showcase-hides-sticky-cta-during-interaction",
+    "system-reduced-motion-overrides-animation-preference",
+    "system-reduced-motion-selects-lightweight-view",
+    "manual-toggle-does-not-override-system-reduced-motion",
     "reduced-motion-disables-smooth-scrolling",
     "shared-server-preserves-existing-mobile-preview",
     "no-browser-script-errors",
@@ -91,6 +127,14 @@
       "missingImages": 0
     },
     {
+      "route": "#/world",
+      "theme": "light",
+      "width": 320,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
       "route": "#/courses",
       "theme": "light",
       "width": 320,
@@ -195,6 +239,14 @@
       "missingImages": 0
     },
     {
+      "route": "#/world",
+      "theme": "light",
+      "width": 360,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
       "route": "#/courses",
       "theme": "light",
       "width": 360,
@@ -299,6 +351,14 @@
       "missingImages": 0
     },
     {
+      "route": "#/world",
+      "theme": "light",
+      "width": 390,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
       "route": "#/courses",
       "theme": "light",
       "width": 390,
@@ -403,6 +463,14 @@
       "missingImages": 0
     },
     {
+      "route": "#/world",
+      "theme": "light",
+      "width": 430,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
       "route": "#/courses",
       "theme": "light",
       "width": 430,
@@ -507,6 +575,14 @@
       "missingImages": 0
     },
     {
+      "route": "#/world",
+      "theme": "light",
+      "width": 768,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
       "route": "#/courses",
       "theme": "light",
       "width": 768,
@@ -611,6 +687,14 @@
       "missingImages": 0
     },
     {
+      "route": "#/world",
+      "theme": "light",
+      "width": 1024,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
       "route": "#/courses",
       "theme": "light",
       "width": 1024,
@@ -715,6 +799,14 @@
       "missingImages": 0
     },
     {
+      "route": "#/world",
+      "theme": "light",
+      "width": 1440,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
       "route": "#/courses",
       "theme": "light",
       "width": 1440,
@@ -819,6 +911,14 @@
       "missingImages": 0
     },
     {
+      "route": "#/world",
+      "theme": "dark",
+      "width": 320,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
       "route": "#/courses",
       "theme": "dark",
       "width": 320,
@@ -923,6 +1023,14 @@
       "missingImages": 0
     },
     {
+      "route": "#/world",
+      "theme": "dark",
+      "width": 360,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
       "route": "#/courses",
       "theme": "dark",
       "width": 360,
@@ -1027,6 +1135,14 @@
       "missingImages": 0
     },
     {
+      "route": "#/world",
+      "theme": "dark",
+      "width": 390,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
       "route": "#/courses",
       "theme": "dark",
       "width": 390,
@@ -1131,6 +1247,14 @@
       "missingImages": 0
     },
     {
+      "route": "#/world",
+      "theme": "dark",
+      "width": 430,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
       "route": "#/courses",
       "theme": "dark",
       "width": 430,
@@ -1235,6 +1359,14 @@
       "missingImages": 0
     },
     {
+      "route": "#/world",
+      "theme": "dark",
+      "width": 768,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
       "route": "#/courses",
       "theme": "dark",
       "width": 768,
@@ -1339,6 +1471,14 @@
       "missingImages": 0
     },
     {
+      "route": "#/world",
+      "theme": "dark",
+      "width": 1024,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
       "route": "#/courses",
       "theme": "dark",
       "width": 1024,
@@ -1443,6 +1583,14 @@
       "missingImages": 0
     },
     {
+      "route": "#/world",
+      "theme": "dark",
+      "width": 1440,
+      "overflow": false,
+      "h1": 1,
+      "missingImages": 0
+    },
+    {
       "route": "#/courses",
       "theme": "dark",
       "width": 1440,
@@ -1537,6 +1685,596 @@
       "overflow": false,
       "h1": 1,
       "missingImages": 0
+    }
+  ],
+  "worldLayouts": [
+    {
+      "tab": "room",
+      "view": "2d",
+      "theme": "light",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "tab": "room",
+      "view": "3d",
+      "theme": "light",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "tab": "game",
+      "view": "2d",
+      "theme": "light",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "tab": "game",
+      "view": "3d",
+      "theme": "light",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "tab": "wall",
+      "view": "2d",
+      "theme": "light",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "tab": "wall",
+      "view": "3d",
+      "theme": "light",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "tab": "room",
+      "view": "2d",
+      "theme": "light",
+      "width": 360,
+      "overflow": false
+    },
+    {
+      "tab": "room",
+      "view": "3d",
+      "theme": "light",
+      "width": 360,
+      "overflow": false
+    },
+    {
+      "tab": "game",
+      "view": "2d",
+      "theme": "light",
+      "width": 360,
+      "overflow": false
+    },
+    {
+      "tab": "game",
+      "view": "3d",
+      "theme": "light",
+      "width": 360,
+      "overflow": false
+    },
+    {
+      "tab": "wall",
+      "view": "2d",
+      "theme": "light",
+      "width": 360,
+      "overflow": false
+    },
+    {
+      "tab": "wall",
+      "view": "3d",
+      "theme": "light",
+      "width": 360,
+      "overflow": false
+    },
+    {
+      "tab": "room",
+      "view": "2d",
+      "theme": "light",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "tab": "room",
+      "view": "3d",
+      "theme": "light",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "tab": "game",
+      "view": "2d",
+      "theme": "light",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "tab": "game",
+      "view": "3d",
+      "theme": "light",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "tab": "wall",
+      "view": "2d",
+      "theme": "light",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "tab": "wall",
+      "view": "3d",
+      "theme": "light",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "tab": "room",
+      "view": "2d",
+      "theme": "light",
+      "width": 430,
+      "overflow": false
+    },
+    {
+      "tab": "room",
+      "view": "3d",
+      "theme": "light",
+      "width": 430,
+      "overflow": false
+    },
+    {
+      "tab": "game",
+      "view": "2d",
+      "theme": "light",
+      "width": 430,
+      "overflow": false
+    },
+    {
+      "tab": "game",
+      "view": "3d",
+      "theme": "light",
+      "width": 430,
+      "overflow": false
+    },
+    {
+      "tab": "wall",
+      "view": "2d",
+      "theme": "light",
+      "width": 430,
+      "overflow": false
+    },
+    {
+      "tab": "wall",
+      "view": "3d",
+      "theme": "light",
+      "width": 430,
+      "overflow": false
+    },
+    {
+      "tab": "room",
+      "view": "2d",
+      "theme": "light",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "tab": "room",
+      "view": "3d",
+      "theme": "light",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "tab": "game",
+      "view": "2d",
+      "theme": "light",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "tab": "game",
+      "view": "3d",
+      "theme": "light",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "tab": "wall",
+      "view": "2d",
+      "theme": "light",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "tab": "wall",
+      "view": "3d",
+      "theme": "light",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "tab": "room",
+      "view": "2d",
+      "theme": "light",
+      "width": 1024,
+      "overflow": false
+    },
+    {
+      "tab": "room",
+      "view": "3d",
+      "theme": "light",
+      "width": 1024,
+      "overflow": false
+    },
+    {
+      "tab": "game",
+      "view": "2d",
+      "theme": "light",
+      "width": 1024,
+      "overflow": false
+    },
+    {
+      "tab": "game",
+      "view": "3d",
+      "theme": "light",
+      "width": 1024,
+      "overflow": false
+    },
+    {
+      "tab": "wall",
+      "view": "2d",
+      "theme": "light",
+      "width": 1024,
+      "overflow": false
+    },
+    {
+      "tab": "wall",
+      "view": "3d",
+      "theme": "light",
+      "width": 1024,
+      "overflow": false
+    },
+    {
+      "tab": "room",
+      "view": "2d",
+      "theme": "light",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "tab": "room",
+      "view": "3d",
+      "theme": "light",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "tab": "game",
+      "view": "2d",
+      "theme": "light",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "tab": "game",
+      "view": "3d",
+      "theme": "light",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "tab": "wall",
+      "view": "2d",
+      "theme": "light",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "tab": "wall",
+      "view": "3d",
+      "theme": "light",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "tab": "room",
+      "view": "2d",
+      "theme": "dark",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "tab": "room",
+      "view": "3d",
+      "theme": "dark",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "tab": "game",
+      "view": "2d",
+      "theme": "dark",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "tab": "game",
+      "view": "3d",
+      "theme": "dark",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "tab": "wall",
+      "view": "2d",
+      "theme": "dark",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "tab": "wall",
+      "view": "3d",
+      "theme": "dark",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "tab": "room",
+      "view": "2d",
+      "theme": "dark",
+      "width": 360,
+      "overflow": false
+    },
+    {
+      "tab": "room",
+      "view": "3d",
+      "theme": "dark",
+      "width": 360,
+      "overflow": false
+    },
+    {
+      "tab": "game",
+      "view": "2d",
+      "theme": "dark",
+      "width": 360,
+      "overflow": false
+    },
+    {
+      "tab": "game",
+      "view": "3d",
+      "theme": "dark",
+      "width": 360,
+      "overflow": false
+    },
+    {
+      "tab": "wall",
+      "view": "2d",
+      "theme": "dark",
+      "width": 360,
+      "overflow": false
+    },
+    {
+      "tab": "wall",
+      "view": "3d",
+      "theme": "dark",
+      "width": 360,
+      "overflow": false
+    },
+    {
+      "tab": "room",
+      "view": "2d",
+      "theme": "dark",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "tab": "room",
+      "view": "3d",
+      "theme": "dark",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "tab": "game",
+      "view": "2d",
+      "theme": "dark",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "tab": "game",
+      "view": "3d",
+      "theme": "dark",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "tab": "wall",
+      "view": "2d",
+      "theme": "dark",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "tab": "wall",
+      "view": "3d",
+      "theme": "dark",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "tab": "room",
+      "view": "2d",
+      "theme": "dark",
+      "width": 430,
+      "overflow": false
+    },
+    {
+      "tab": "room",
+      "view": "3d",
+      "theme": "dark",
+      "width": 430,
+      "overflow": false
+    },
+    {
+      "tab": "game",
+      "view": "2d",
+      "theme": "dark",
+      "width": 430,
+      "overflow": false
+    },
+    {
+      "tab": "game",
+      "view": "3d",
+      "theme": "dark",
+      "width": 430,
+      "overflow": false
+    },
+    {
+      "tab": "wall",
+      "view": "2d",
+      "theme": "dark",
+      "width": 430,
+      "overflow": false
+    },
+    {
+      "tab": "wall",
+      "view": "3d",
+      "theme": "dark",
+      "width": 430,
+      "overflow": false
+    },
+    {
+      "tab": "room",
+      "view": "2d",
+      "theme": "dark",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "tab": "room",
+      "view": "3d",
+      "theme": "dark",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "tab": "game",
+      "view": "2d",
+      "theme": "dark",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "tab": "game",
+      "view": "3d",
+      "theme": "dark",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "tab": "wall",
+      "view": "2d",
+      "theme": "dark",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "tab": "wall",
+      "view": "3d",
+      "theme": "dark",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "tab": "room",
+      "view": "2d",
+      "theme": "dark",
+      "width": 1024,
+      "overflow": false
+    },
+    {
+      "tab": "room",
+      "view": "3d",
+      "theme": "dark",
+      "width": 1024,
+      "overflow": false
+    },
+    {
+      "tab": "game",
+      "view": "2d",
+      "theme": "dark",
+      "width": 1024,
+      "overflow": false
+    },
+    {
+      "tab": "game",
+      "view": "3d",
+      "theme": "dark",
+      "width": 1024,
+      "overflow": false
+    },
+    {
+      "tab": "wall",
+      "view": "2d",
+      "theme": "dark",
+      "width": 1024,
+      "overflow": false
+    },
+    {
+      "tab": "wall",
+      "view": "3d",
+      "theme": "dark",
+      "width": 1024,
+      "overflow": false
+    },
+    {
+      "tab": "room",
+      "view": "2d",
+      "theme": "dark",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "tab": "room",
+      "view": "3d",
+      "theme": "dark",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "tab": "game",
+      "view": "2d",
+      "theme": "dark",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "tab": "game",
+      "view": "3d",
+      "theme": "dark",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "tab": "wall",
+      "view": "2d",
+      "theme": "dark",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "tab": "wall",
+      "view": "3d",
+      "theme": "dark",
+      "width": 1440,
+      "overflow": false
     }
   ],
   "errors": [],
