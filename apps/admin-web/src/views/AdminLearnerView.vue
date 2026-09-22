@@ -23,6 +23,8 @@ type ViewState = "idle" | "loading" | "ready" | "permission" | "error";
 const session = useAdminStore();
 const q = ref("");
 const subjects = ref<LearnerSubject[]>([]);
+const nextCursor = ref<string | null>(null);
+const hasMore = ref(false);
 const current = ref<string>("");
 const state = ref<ViewState>("idle");
 const lastError = ref<string | null>(null);
@@ -64,9 +66,28 @@ async function search(): Promise<void> {
   }
   state.value = "loading";
   try {
-    subjects.value = await searchLearners(q.value);
+    // Contract-aligned envelope: data is the subject array, cursor state lives in meta.
+    const page = await searchLearners(q.value);
+    subjects.value = page.subjects;
+    nextCursor.value = page.nextCursor;
+    hasMore.value = page.hasMore;
     state.value = "idle";
-    if (!subjects.value.length) ElMessage.info("未找到学员。");
+    if (!subjects.value.length) ElMessage.info(ui("paging.noResults"));
+  } catch (error) {
+    state.value = "error";
+    lastError.value = error instanceof Error ? error.message : "检索失败。";
+  }
+}
+
+async function loadMore(): Promise<void> {
+  if (!nextCursor.value || state.value === "loading") return;
+  state.value = "loading";
+  try {
+    const page = await searchLearners(q.value, 50, nextCursor.value);
+    subjects.value = [...subjects.value, ...page.subjects];
+    nextCursor.value = page.nextCursor;
+    hasMore.value = page.hasMore;
+    state.value = "idle";
   } catch (error) {
     state.value = "error";
     lastError.value = error instanceof Error ? error.message : "检索失败。";
@@ -220,6 +241,11 @@ function dueItems(): Row[] {
           ></el-table-column
         >
       </el-table>
+      <div v-if="hasMore" style="margin-top: 12px; text-align: center">
+        <el-button :disabled="state === 'loading'" @click="loadMore()">{{
+          ui("paging.loadMore")
+        }}</el-button>
+      </div>
     </el-card>
 
     <el-alert
