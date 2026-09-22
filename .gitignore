@@ -35,6 +35,11 @@ Thumbs.db
 # local data and logs
 logs/*
 !logs/.gitkeep
+# Runtime/dev-server output lands at the repo root (fe-*.log, services-run*.log,
+# docker-build*.log) and would otherwise show up as untracked forever. No *.log is
+# currently tracked, so this only affects new runtime output; durable evidence goes
+# into docs/ as .md or .json, not raw logs.
+*.log
 tmp/*
 !tmp/.gitkeep
 storage/raw/*

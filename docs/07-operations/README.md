@@ -25,6 +25,7 @@
 
 - [local-runtime-smoke-2026-08-23.md](local-runtime-smoke-2026-08-23.md)：本机运行时冒烟记录。
 - [local-runtime-verification-2026-09-21.md](local-runtime-verification-2026-09-21.md)：本机真实运行验证快照（T1–T21：多服务真实链路、运行期抓出的 17 项缺陷、未闭合项清单）。
+- [browser-functional-test-2026-09-22.md](browser-functional-test-2026-09-22.md)：真实浏览器功能测试与全栈启动（4 前端 36 页；抓出权限命名前后端不一致与工单列表 500 两项缺陷；含 Docker 打包结果与测试账号说明）。
 - [local-real-data-browser-full-test-2026-08-26.md](local-real-data-browser-full-test-2026-08-26.md)：真实数据浏览器全量测试。
 - [web-h5-browser-test-report-2026-08-23.md](web-h5-browser-test-report-2026-08-23.md)：Web/H5 浏览器测试报告。
 - [test-phase-handoff-2026-08-22.md](test-phase-handoff-2026-08-22.md)：测试阶段交接记录。
