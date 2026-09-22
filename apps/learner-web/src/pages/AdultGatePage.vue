@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AuthLayout from '../layouts/AuthLayout.vue'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { authT } from '../auth/i18n'
@@ -40,7 +41,7 @@ async function cancel(): Promise<void> {
 </script>
 
 <template>
-  <main class="public-page">
+  <AuthLayout>
     <section class="login-card" aria-labelledby="adult-title">
       <h1 id="adult-title">{{ authT('adult.title') }}</h1>
       <p class="lead">{{ authT('adult.description') }}</p>
@@ -52,5 +53,5 @@ async function cancel(): Promise<void> {
         <button class="button button--ghost" type="button" :disabled="busy" @click="cancel">取消</button>
       </div>
     </section>
-  </main>
+  </AuthLayout>
 </template>

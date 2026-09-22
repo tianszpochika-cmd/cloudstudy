@@ -15,6 +15,18 @@
     "./official-site": {
       "types": "./src/official-site.ts",
       "import": "./src/official-site.ts"
+    },
+    "./admin": {
+      "types": "./src/admin.ts",
+      "import": "./src/admin.ts"
+    },
+    "./learner-web": {
+      "types": "./src/learner-web.ts",
+      "import": "./src/learner-web.ts"
+    },
+    "./mobile": {
+      "types": "./src/mobile.ts",
+      "import": "./src/mobile.ts"
     }
   },
   "scripts": {

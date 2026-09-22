@@ -1,0 +1,39 @@
+{
+  "scope": "UI only: synthetic browser fixtures",
+  "checks": [
+    {
+      "name": "Support failure does not block orders",
+      "pass": true
+    },
+    {
+      "name": "Commerce-only account does not request unauthorized side panels",
+      "pass": true
+    },
+    {
+      "name": "Ticket summary is bounded and completed tickets cannot be resolved again",
+      "pass": true
+    },
+    {
+      "name": "Changing refund order invalidates confirmation",
+      "pass": true
+    }
+  ],
+  "layouts": [
+    {
+      "width": 320,
+      "pass": true
+    },
+    {
+      "width": 390,
+      "pass": true
+    },
+    {
+      "width": 820,
+      "pass": true
+    },
+    {
+      "width": 1440,
+      "pass": true
+    }
+  ]
+}

@@ -5,10 +5,16 @@
 - 面向教研团队、课程审核员、运营人员与财务管理的一站式中台。
 
 ## 目录结构
-- `src/views/content/`: 课程体系、词汇库、语法库、题库录入与多维标签管理
-- `src/views/users/`: 学员档案、学习进度轨迹、未成年人家长关联管理
-- `src/views/orders/`: 订阅订单管理、退款处理、交易财务对账
-- `src/views/audit/`: 敏感词与学习日志合规审计
+- `src/views/`: 登录、工作台、内容/词汇/题目/音标、学员、订单、客服、治理、审计、发布与恢复页面
+- `src/components/`: 导航、偏好、记录展示、排期与音频等共享界面
+- `src/api/`、`src/stores/`: Gateway API 适配与业务状态
+- `src/platform/`: 主题、文案、权限入口、交互保护与性能适配
+
+## 官网风格 UI 与本地检查（2026-09-22）
+
+现有 14 页统一使用官网视觉风格，覆盖权限分组导航、功能搜索、登录、业务表单、列表、未保存保护、四种主题与手机抽屉布局。入口为 `http://127.0.0.1:18181/login`，启动 `pnpm --filter @englishflow/admin-web dev`，构建 `pnpm --filter @englishflow/admin-web build`。
+
+页面清单与浏览器结果见[管理端改造记录](../../docs/06-design/v2-980plus/admin-experience-2026-09-22/README.md)，三端提交及真实联调边界见[统一交付记录](../../docs/06-design/v2-980plus/frontend-ui-delivery-2026-09-22.md)。截图使用独立合成数据，不代表 IAM/领域服务联调；生产入口不内置演示会话。
 
 ## B8 认证边界
 

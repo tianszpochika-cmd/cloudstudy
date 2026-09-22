@@ -1,4 +1,9 @@
 <script setup lang="ts">
+import MobilePageHeader from '../../components/MobilePageHeader.vue'
+import { openUniPage } from '../../platform/uni-runtime'
+import { mobileT, useMobileExperience } from '../../platform/experience'
+const { experienceStyle, experienceMotion } = useMobileExperience()
+
 import { onLoad } from '@dcloudio/uni-app'
 import { ref } from 'vue'
 import { continueAfterLogin } from '../../auth/navigation'
@@ -52,35 +57,32 @@ async function submit(): Promise<void> {
 </script>
 
 <template>
-  <view class="yx-page yx-login-page">
-    <view class="yx-brand">
-      <text class="yx-brand__mark" aria-hidden="true">✦</text>
-      <text>语学星</text>
-    </view>
-    <text class="yx-eyebrow">ACCOUNT</text>
-    <text class="yx-title">创建账号，开始学习</text>
-    <text class="yx-description">仅面向 18 岁以上成人与大学生；密码至少 12 位。</text>
+  <view class="yx-page yx-login-page" :style="experienceStyle" :data-motion="experienceMotion">
+
+    <MobilePageHeader page="register" />
 
     <view class="yx-card yx-login-card">
       <form @submit="submit">
         <label class="yx-field">
           <text>账号</text>
-          <input v-model="identifier" type="text" autocomplete="username" placeholder="邮箱或账号" :disabled="submitting" />
+          <input aria-label="账号" v-model="identifier" type="text" autocomplete="username" placeholder="邮箱或账号" :disabled="submitting" />
         </label>
         <label class="yx-field">
           <text>密码（至少 12 位）</text>
-          <input v-model="password" type="password" autocomplete="new-password" placeholder="输入密码" :disabled="submitting" />
+          <input aria-label="密码" v-model="password" type="password" autocomplete="new-password" placeholder="输入密码" :disabled="submitting" />
         </label>
         <label class="yx-field">
           <text>确认密码</text>
-          <input v-model="confirm" type="password" autocomplete="new-password" placeholder="再输入一次" :disabled="submitting" />
+          <input aria-label="确认密码" v-model="confirm" type="password" autocomplete="new-password" placeholder="再输入一次" :disabled="submitting" />
         </label>
         <text v-if="error" class="yx-login-error" role="alert">{{ error }}</text>
-        <button class="yx-button" form-type="submit" :disabled="submitting">
+        <button tabindex="0" role="button" class="yx-button" form-type="submit" :disabled="submitting">
           {{ submitting ? '正在注册…' : '注册并继续' }}
         </button>
       </form>
     </view>
+    <button tabindex="0" role="button" class="mobile-text-button mobile-auth-return" @click="openUniPage('/pages/login/login')">{{ mobileT('toLogin') }}</button>
+    <text class="mobile-auth-note">{{ mobileT('adultNote') }}</text>
   </view>
 </template>
 

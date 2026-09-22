@@ -1,10 +1,14 @@
 <script setup lang="ts">
+import MobileFeatureGrid from '../../components/MobileFeatureGrid.vue'
+import MobilePageHeader from '../../components/MobilePageHeader.vue'
+import { useMobileExperience } from '../../platform/experience'
+const { experienceStyle, experienceMotion } = useMobileExperience()
+
 import { computed, onUnmounted, ref } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import { createAdaptivePerformanceEngine, type PerformanceLevel } from '@englishflow/performance'
 import B10ExerciseCard from '../../components/b10/B10ExerciseCard.vue'
 import B10StatusPanel from '../../components/b10/B10StatusPanel.vue'
-import B10ThemeBar from '../../components/b10/B10ThemeBar.vue'
 import type { B10AnswerInput, B10AnswerResult } from '../../domain/b10'
 import { b10ThemeMode, b10T } from '../../platform/b10-foundation'
 import { useB10LearningStore } from '../../stores/b10-learning'
@@ -29,23 +33,22 @@ onUnmounted(() => engine.dispose())
 </script>
 
 <template>
-  <view class="yx-page" :class="themeClass" :data-performance="performanceLevel">
-    <text class="yx-eyebrow">{{ b10T('practice.eyebrow') }}</text>
-    <text class="yx-title">{{ b10T('practice.title') }}</text>
-    <text class="yx-description">{{ b10T('practice.description') }}</text>
-    <B10ThemeBar />
+  <view class="yx-page" :class="themeClass" :data-performance="performanceLevel" :style="experienceStyle" :data-motion="experienceMotion">
+    <MobilePageHeader page="b2-practice" />
+
     <B10StatusPanel :status="store.practiceStatus" :message="store.practiceMessage" :performance-level="performanceLevel" @retry="load" @performance="setPerformance" />
 
     <view v-if="exercise" class="yx-card b10-practice-card">
       <view class="b10-practice-card__progress"><text>{{ answeredCount }} / {{ store.practice?.exercises.length ?? 0 }}</text><text>{{ exercise.questionType }}</text></view>
       <B10ExerciseCard :exercise="exercise" :disabled="store.practiceStatus === 'loading'" @answer="answer" />
-      <view class="b10-practice-card__actions"><button class="yx-button yx-button--secondary" type="button" @click="checkpoint">{{ b10T('practice.checkpoint') }}</button><button v-if="lastResult" class="yx-button yx-button--secondary" type="button" @click="lastResult = null">{{ b10T('practice.next') }}</button></view>
+      <view class="b10-practice-card__actions"><button tabindex="0" role="button" class="yx-button yx-button--secondary" type="button" @click="checkpoint">{{ b10T('practice.checkpoint') }}</button><button tabindex="0" role="button" v-if="lastResult" class="yx-button yx-button--secondary" type="button" @click="lastResult = null">{{ b10T('practice.next') }}</button></view>
       <view v-if="lastResult" class="b10-result" role="alert"><text class="b10-result__title">{{ lastResult.isCorrect === true ? '规则命中' : lastResult.isCorrect === false ? '需要复习' : '答案已接收' }}</text><text>{{ lastResult.scoringStatus }}<template v-if="lastResult.score !== null"> · {{ lastResult.score }} / {{ lastResult.maxScore ?? 0 }}</template></text><text v-for="cause in lastResult.errorCauseCandidates" :key="cause">{{ cause }}</text><text v-if="lastResult.contentVersionStale" class="b10-result__stale">{{ b10T('common.stale') }}</text></view>
     </view>
 
     <view v-else-if="store.practiceStatus === 'loading'" class="yx-card b10-empty"><text>{{ b10T('practice.loading') }}</text></view>
-    <view v-else class="yx-card b10-empty"><text class="b10-empty__title">{{ store.practiceStatus === 'empty' ? b10T('practice.empty') : b10T('status.error') }}</text><text>{{ store.practiceMessage ?? b10T('status.noSample') }}</text><button class="yx-button" type="button" @click="load">{{ b10T('status.retry') }}</button></view>
-    <button v-if="store.practice && !exercise" class="yx-button" type="button" @click="openReport">{{ b10T('practice.complete') }}</button>
+    <view v-else class="yx-card b10-empty"><text class="b10-empty__title">{{ store.practiceStatus === 'empty' ? b10T('practice.empty') : b10T('status.error') }}</text><text>{{ store.practiceMessage ?? b10T('status.noSample') }}</text><button tabindex="0" role="button" class="yx-button" type="button" @click="load">{{ b10T('status.retry') }}</button></view>
+    <button tabindex="0" role="button" v-if="store.practice && !exercise" class="yx-button" type="button" @click="openReport">{{ b10T('practice.complete') }}</button>
+    <MobileFeatureGrid />
   </view>
 </template>
 

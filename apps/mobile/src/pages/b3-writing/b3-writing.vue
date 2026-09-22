@@ -1,9 +1,12 @@
 <script setup lang="ts">
+import MobilePageHeader from '../../components/MobilePageHeader.vue'
+import { useMobileExperience } from '../../platform/experience'
+const { experienceStyle, experienceMotion } = useMobileExperience()
+
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { createAdaptivePerformanceEngine, type PerformanceLevel } from '@englishflow/performance'
 import B10FeedbackCard from '../../components/b10/B10FeedbackCard.vue'
 import B10StatusPanel from '../../components/b10/B10StatusPanel.vue'
-import B10ThemeBar from '../../components/b10/B10ThemeBar.vue'
 import type { B10RuleFeedback, B10WritingPrompt } from '../../domain/b10'
 import { b10LearningApi, b10ErrorInfo, createB10ClientEventId } from '../../api/b10'
 import { b10ContentLocale, b10ThemeMode, b10T, b10UiLocale } from '../../platform/b10-foundation'
@@ -43,15 +46,13 @@ onUnmounted(() => { clearTimeout(draftTimer); engine.dispose() })
 </script>
 
 <template>
-  <view class="yx-page" :class="themeClass">
-    <text class="yx-eyebrow">{{ b10T('writing.eyebrow') }}</text>
-    <text class="yx-title">{{ b10T('writing.title') }}</text>
-    <text class="yx-description">{{ b10T('writing.description') }}</text>
-    <B10ThemeBar />
+  <view class="yx-page" :class="themeClass" :style="experienceStyle" :data-motion="experienceMotion">
+    <MobilePageHeader page="b3-writing" />
+
     <B10StatusPanel :status="status" :message="message" :performance-level="performanceLevel" @retry="load" @performance="setPerformance" />
-    <view v-if="prompts.length" class="yx-card b10-writing-card"><picker :range="prompts.map((prompt) => `${prompt.promptType} · ${prompt.title}`)" :value="Math.max(0, prompts.findIndex((prompt) => prompt.promptId === selectedPrompt?.promptId))" @change="selectPrompt(Number($event.detail.value))"><view class="b10-prompt-picker">{{ selectedPrompt?.promptType }} · {{ selectedPrompt?.title }}</view></picker><text v-if="sourceText" class="b10-writing-card__source">{{ sourceText }}</text><text class="b10-writing-card__task">{{ selectedPrompt?.taskText }}</text><view v-if="selectedPrompt?.targetStructure?.length" class="b10-targets"><text v-for="target in selectedPrompt.targetStructure" :key="target" class="b10-target">{{ target }}</text></view><textarea v-model="answer" class="b10-textarea" maxlength="12000" placeholder="输入答案；提交后由服务端返回规则反馈。" /><view class="b10-draft-row"><text>{{ b10T('writing.draft') }}：{{ draftSavedAt ? '已保存' : '输入中' }}</text><button class="b10-draft-button" type="button" @click="persistDraft">{{ b10T('writing.save') }}</button></view><button class="yx-button" type="button" @click="submit">{{ selectedPrompt?.promptType === 'CORRECTION' ? b10T('writing.correction') : b10T('writing.submit') }}</button></view>
+    <view v-if="prompts.length" class="yx-card b10-writing-card"><picker :range="prompts.map((prompt) => `${prompt.promptType} · ${prompt.title}`)" :value="Math.max(0, prompts.findIndex((prompt) => prompt.promptId === selectedPrompt?.promptId))" @change="selectPrompt(Number($event.detail.value))"><view class="b10-prompt-picker">{{ selectedPrompt?.promptType }} · {{ selectedPrompt?.title }}</view></picker><text v-if="sourceText" class="b10-writing-card__source">{{ sourceText }}</text><text class="b10-writing-card__task">{{ selectedPrompt?.taskText }}</text><view v-if="selectedPrompt?.targetStructure?.length" class="b10-targets"><text v-for="target in selectedPrompt.targetStructure" :key="target" class="b10-target">{{ target }}</text></view><textarea v-model="answer" class="b10-textarea" maxlength="12000" placeholder="输入答案；提交后由服务端返回规则反馈。" /><view class="b10-draft-row"><text>{{ b10T('writing.draft') }}：{{ draftSavedAt ? '已保存' : '输入中' }}</text><button tabindex="0" role="button" class="b10-draft-button" type="button" @click="persistDraft">{{ b10T('writing.save') }}</button></view><button tabindex="0" role="button" class="yx-button" type="button" @click="submit">{{ selectedPrompt?.promptType === 'CORRECTION' ? b10T('writing.correction') : b10T('writing.submit') }}</button></view>
     <view v-else-if="status === 'loading'" class="yx-card b10-empty"><text>{{ b10T('status.loading') }}</text></view>
-    <view v-else class="yx-card b10-empty"><text>{{ b10T('writing.noPrompt') }}</text><button class="yx-button" type="button" @click="load">{{ b10T('status.retry') }}</button></view>
+    <view v-else class="yx-card b10-empty"><text>{{ b10T('writing.noPrompt') }}</text><button tabindex="0" role="button" class="yx-button" type="button" @click="load">{{ b10T('status.retry') }}</button></view>
     <B10FeedbackCard :feedback="feedback" />
   </view>
 </template>

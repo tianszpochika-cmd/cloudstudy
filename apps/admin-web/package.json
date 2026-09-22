@@ -18,7 +18,8 @@
     "@englishflow/api-client": "workspace:*",
     "@englishflow/contracts": "workspace:*",
     "@englishflow/design-tokens": "workspace:*",
-    "@englishflow/i18n": "workspace:*"
+    "@englishflow/i18n": "workspace:*",
+    "@englishflow/performance": "workspace:*"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.0",

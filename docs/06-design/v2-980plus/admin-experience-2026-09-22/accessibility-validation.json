@@ -1,0 +1,114 @@
+{
+  "date": "2026-09-22T07:58:18.259Z",
+  "scope": "Core text token contrast, system theme and login keyboard controls only; not a complete accessibility audit",
+  "results": [
+    {
+      "theme": "light",
+      "contrast": [
+        {
+          "foreground": "ink",
+          "background": "surface",
+          "ratio": 14.92,
+          "pass": true
+        },
+        {
+          "foreground": "muted",
+          "background": "surface",
+          "ratio": 5.14,
+          "pass": true
+        },
+        {
+          "foreground": "muted",
+          "background": "canvas",
+          "ratio": 4.84,
+          "pass": true
+        },
+        {
+          "foreground": "accent",
+          "background": "surface",
+          "ratio": 7.26,
+          "pass": true
+        },
+        {
+          "foreground": "on-brand",
+          "background": "brand",
+          "ratio": 7.26,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "theme": "dark",
+      "contrast": [
+        {
+          "foreground": "ink",
+          "background": "surface",
+          "ratio": 13.89,
+          "pass": true
+        },
+        {
+          "foreground": "muted",
+          "background": "surface",
+          "ratio": 7.52,
+          "pass": true
+        },
+        {
+          "foreground": "muted",
+          "background": "canvas",
+          "ratio": 8.79,
+          "pass": true
+        },
+        {
+          "foreground": "accent",
+          "background": "surface",
+          "ratio": 8.07,
+          "pass": true
+        },
+        {
+          "foreground": "on-brand",
+          "background": "brand",
+          "ratio": 7.26,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "theme": "high-contrast",
+      "contrast": [
+        {
+          "foreground": "ink",
+          "background": "surface",
+          "ratio": 19.01,
+          "pass": true
+        },
+        {
+          "foreground": "muted",
+          "background": "surface",
+          "ratio": 15.23,
+          "pass": true
+        },
+        {
+          "foreground": "muted",
+          "background": "canvas",
+          "ratio": 15.23,
+          "pass": true
+        },
+        {
+          "foreground": "accent",
+          "background": "surface",
+          "ratio": 10.24,
+          "pass": true
+        },
+        {
+          "foreground": "on-brand",
+          "background": "brand",
+          "ratio": 7.26,
+          "pass": true
+        }
+      ]
+    }
+  ],
+  "systemTheme": true,
+  "loginKeyboard": true,
+  "failed": []
+}

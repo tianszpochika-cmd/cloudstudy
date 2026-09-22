@@ -28,13 +28,13 @@ const emit = defineEmits<{ retry: []; sync: []; performance: [level: Performance
 </template>
 
 <style scoped>
-.status-banner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px; padding: 14px 16px; border: 1px solid #e6e8f0; border-radius: 14px; background: #fff; }
-.status-banner--offline, .status-banner--error { border-color: #f3c7ce; background: #fff8f9; }
-.status-banner--empty { border-style: dashed; background: #fbfbfd; }
+.status-banner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px; padding: 14px 16px; border: 1px solid var(--yx-color-border); border-radius: 14px; background: var(--yx-color-surface-card); }
+.status-banner--offline, .status-banner--error { border-color: var(--yx-color-danger-soft); background: var(--yx-color-danger-soft); }
+.status-banner--empty { border-style: dashed; background: var(--yx-color-surface-page); }
 .status-banner__copy { display: grid; gap: 4px; min-width: 220px; }
-.status-banner__copy span { color: #666d80; font-size: 13px; line-height: 1.5; }
+.status-banner__copy span { color: var(--yx-color-text-secondary); font-size: 13px; line-height: 1.5; }
 .status-banner__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-.status-banner__queue, .status-banner__checkpoint { color: #9b5b00; font-size: 12px; font-weight: 700; }
-.status-banner__button { min-height: 36px; padding: 0 12px; border: 1px solid #d9dce7; border-radius: 10px; color: #596bff; background: #fff; font-weight: 700; }
-select { min-height: 36px; padding: 0 8px; border: 1px solid #d9dce7; border-radius: 10px; color: #666d80; background: #fff; }
+.status-banner__queue, .status-banner__checkpoint { color: var(--yx-color-warning); font-size: 12px; font-weight: 700; }
+.status-banner__button { min-height: 36px; padding: 0 12px; border: 1px solid var(--yx-color-border); border-radius: 10px; color: var(--yx-color-brand-primary); background: var(--yx-color-surface-card); font-weight: 700; }
+select { min-height: 36px; padding: 0 8px; border: 1px solid var(--yx-color-border); border-radius: 10px; color: var(--yx-color-text-secondary); background: var(--yx-color-surface-card); }
 </style>

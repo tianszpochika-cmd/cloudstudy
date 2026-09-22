@@ -1,0 +1,715 @@
+{
+  "date": "2026-09-22",
+  "scope": "Development-only preview with synthetic data. Not business acceptance.",
+  "layout390": [
+    {
+      "path": "/home",
+      "crash": false,
+      "h1": 1,
+      "overflow": [
+        "study-artwork",
+        "study-artwork__orbit",
+        "study-artwork__desk"
+      ],
+      "scroll": 375,
+      "width": 390
+    },
+    {
+      "path": "/courses",
+      "crash": false,
+      "h1": 1,
+      "overflow": [],
+      "scroll": 375,
+      "width": 390
+    },
+    {
+      "path": "/today",
+      "crash": false,
+      "h1": 1,
+      "overflow": [],
+      "scroll": 375,
+      "width": 390
+    },
+    {
+      "path": "/learn",
+      "crash": false,
+      "h1": 1,
+      "overflow": [],
+      "scroll": 375,
+      "width": 390
+    },
+    {
+      "path": "/learn/session?contentId=cafe",
+      "crash": false,
+      "h1": 1,
+      "overflow": [],
+      "scroll": 375,
+      "width": 390
+    },
+    {
+      "path": "/practice",
+      "crash": false,
+      "h1": 1,
+      "overflow": [],
+      "scroll": 375,
+      "width": 390
+    },
+    {
+      "path": "/vocabulary",
+      "crash": false,
+      "h1": 1,
+      "overflow": [],
+      "scroll": 375,
+      "width": 390
+    },
+    {
+      "path": "/reading",
+      "crash": false,
+      "h1": 1,
+      "overflow": [],
+      "scroll": 375,
+      "width": 390
+    },
+    {
+      "path": "/listening",
+      "crash": false,
+      "h1": 1,
+      "overflow": [],
+      "scroll": 375,
+      "width": 390
+    },
+    {
+      "path": "/speaking",
+      "crash": false,
+      "h1": 1,
+      "overflow": [],
+      "scroll": 375,
+      "width": 390
+    },
+    {
+      "path": "/grammar",
+      "crash": false,
+      "h1": 1,
+      "overflow": [],
+      "scroll": 375,
+      "width": 390
+    },
+    {
+      "path": "/writing",
+      "crash": false,
+      "h1": 1,
+      "overflow": [],
+      "scroll": 375,
+      "width": 390
+    },
+    {
+      "path": "/b2/report",
+      "crash": false,
+      "h1": 1,
+      "overflow": [],
+      "scroll": 375,
+      "width": 390
+    },
+    {
+      "path": "/world",
+      "crash": false,
+      "h1": 1,
+      "overflow": [],
+      "scroll": 375,
+      "width": 390
+    },
+    {
+      "path": "/settings/profile",
+      "crash": false,
+      "h1": 1,
+      "overflow": [],
+      "scroll": 375,
+      "width": 390
+    },
+    {
+      "path": "/settings/privacy",
+      "crash": false,
+      "h1": 1,
+      "overflow": [],
+      "scroll": 375,
+      "width": 390
+    },
+    {
+      "path": "/settings/devices",
+      "crash": false,
+      "h1": 1,
+      "overflow": [],
+      "scroll": 375,
+      "width": 390
+    },
+    {
+      "path": "/mastery",
+      "crash": false,
+      "h1": 1,
+      "overflow": [],
+      "scroll": 375,
+      "width": 390
+    },
+    {
+      "path": "/mistakes",
+      "crash": false,
+      "h1": 1,
+      "overflow": [],
+      "scroll": 375,
+      "width": 390
+    },
+    {
+      "path": "/plan-map",
+      "crash": false,
+      "h1": 1,
+      "overflow": [],
+      "scroll": 375,
+      "width": 390
+    },
+    {
+      "path": "/messages",
+      "crash": false,
+      "h1": 1,
+      "overflow": [],
+      "scroll": 375,
+      "width": 390
+    },
+    {
+      "path": "/commerce",
+      "crash": false,
+      "h1": 1,
+      "overflow": [],
+      "scroll": 375,
+      "width": 390
+    },
+    {
+      "path": "/platform",
+      "crash": false,
+      "h1": 1,
+      "overflow": [],
+      "scroll": 375,
+      "width": 390
+    },
+    {
+      "path": "/support",
+      "crash": false,
+      "h1": 1,
+      "overflow": [],
+      "scroll": 375,
+      "width": 390
+    },
+    {
+      "path": "/assessment",
+      "crash": false,
+      "h1": 1,
+      "overflow": [],
+      "scroll": 375,
+      "width": 390
+    },
+    {
+      "path": "/onboarding",
+      "crash": false,
+      "h1": 1,
+      "overflow": [],
+      "scroll": 375,
+      "width": 390
+    },
+    {
+      "path": "/login",
+      "crash": false,
+      "h1": 1,
+      "overflow": [],
+      "scroll": 375,
+      "width": 390
+    },
+    {
+      "path": "/register",
+      "crash": false,
+      "h1": 1,
+      "overflow": [],
+      "scroll": 375,
+      "width": 390
+    },
+    {
+      "path": "/reset-password",
+      "crash": false,
+      "h1": 1,
+      "overflow": [],
+      "scroll": 375,
+      "width": 390
+    },
+    {
+      "path": "/forbidden",
+      "crash": false,
+      "h1": 1,
+      "overflow": [],
+      "scroll": 375,
+      "width": 390
+    },
+    {
+      "path": "/missing-page",
+      "crash": false,
+      "h1": 1,
+      "overflow": [],
+      "scroll": 375,
+      "width": 390
+    }
+  ],
+  "layoutDesktopAnd320": [
+    {
+      "path": "/home",
+      "crash": false,
+      "scroll": 1425,
+      "width": 1440
+    },
+    {
+      "path": "/courses",
+      "crash": false,
+      "scroll": 1425,
+      "width": 1440
+    },
+    {
+      "path": "/today",
+      "crash": false,
+      "scroll": 1425,
+      "width": 1440
+    },
+    {
+      "path": "/learn",
+      "crash": false,
+      "scroll": 1425,
+      "width": 1440
+    },
+    {
+      "path": "/learn/session?contentId=cafe",
+      "crash": false,
+      "scroll": 1425,
+      "width": 1440
+    },
+    {
+      "path": "/practice",
+      "crash": false,
+      "scroll": 1425,
+      "width": 1440
+    },
+    {
+      "path": "/vocabulary",
+      "crash": false,
+      "scroll": 1425,
+      "width": 1440
+    },
+    {
+      "path": "/reading",
+      "crash": false,
+      "scroll": 1425,
+      "width": 1440
+    },
+    {
+      "path": "/listening",
+      "crash": false,
+      "scroll": 1425,
+      "width": 1440
+    },
+    {
+      "path": "/speaking",
+      "crash": false,
+      "scroll": 1425,
+      "width": 1440
+    },
+    {
+      "path": "/grammar",
+      "crash": false,
+      "scroll": 1425,
+      "width": 1440
+    },
+    {
+      "path": "/writing",
+      "crash": false,
+      "scroll": 1425,
+      "width": 1440
+    },
+    {
+      "path": "/b2/report",
+      "crash": false,
+      "scroll": 1425,
+      "width": 1440
+    },
+    {
+      "path": "/world",
+      "crash": false,
+      "scroll": 1425,
+      "width": 1440
+    },
+    {
+      "path": "/settings/profile",
+      "crash": false,
+      "scroll": 1425,
+      "width": 1440
+    },
+    {
+      "path": "/settings/privacy",
+      "crash": false,
+      "scroll": 1425,
+      "width": 1440
+    },
+    {
+      "path": "/settings/devices",
+      "crash": false,
+      "scroll": 1425,
+      "width": 1440
+    },
+    {
+      "path": "/mastery",
+      "crash": false,
+      "scroll": 1425,
+      "width": 1440
+    },
+    {
+      "path": "/mistakes",
+      "crash": false,
+      "scroll": 1425,
+      "width": 1440
+    },
+    {
+      "path": "/plan-map",
+      "crash": false,
+      "scroll": 1425,
+      "width": 1440
+    },
+    {
+      "path": "/messages",
+      "crash": false,
+      "scroll": 1425,
+      "width": 1440
+    },
+    {
+      "path": "/commerce",
+      "crash": false,
+      "scroll": 1425,
+      "width": 1440
+    },
+    {
+      "path": "/platform",
+      "crash": false,
+      "scroll": 1425,
+      "width": 1440
+    },
+    {
+      "path": "/support",
+      "crash": false,
+      "scroll": 1425,
+      "width": 1440
+    },
+    {
+      "path": "/assessment",
+      "crash": false,
+      "scroll": 1425,
+      "width": 1440
+    },
+    {
+      "path": "/onboarding",
+      "crash": false,
+      "scroll": 1425,
+      "width": 1440
+    },
+    {
+      "path": "/login",
+      "crash": false,
+      "scroll": 1425,
+      "width": 1440
+    },
+    {
+      "path": "/register",
+      "crash": false,
+      "scroll": 1425,
+      "width": 1440
+    },
+    {
+      "path": "/reset-password",
+      "crash": false,
+      "scroll": 1425,
+      "width": 1440
+    },
+    {
+      "path": "/forbidden",
+      "crash": false,
+      "scroll": 1425,
+      "width": 1440
+    },
+    {
+      "path": "/missing-page",
+      "crash": false,
+      "scroll": 1425,
+      "width": 1440
+    },
+    {
+      "path": "/home",
+      "crash": false,
+      "scroll": 320,
+      "width": 320
+    },
+    {
+      "path": "/courses",
+      "crash": false,
+      "scroll": 320,
+      "width": 320
+    },
+    {
+      "path": "/today",
+      "crash": false,
+      "scroll": 320,
+      "width": 320
+    },
+    {
+      "path": "/learn",
+      "crash": false,
+      "scroll": 320,
+      "width": 320
+    },
+    {
+      "path": "/learn/session?contentId=cafe",
+      "crash": false,
+      "scroll": 320,
+      "width": 320
+    },
+    {
+      "path": "/practice",
+      "crash": false,
+      "scroll": 320,
+      "width": 320
+    },
+    {
+      "path": "/vocabulary",
+      "crash": false,
+      "scroll": 320,
+      "width": 320
+    },
+    {
+      "path": "/reading",
+      "crash": false,
+      "scroll": 320,
+      "width": 320
+    },
+    {
+      "path": "/listening",
+      "crash": false,
+      "scroll": 320,
+      "width": 320
+    },
+    {
+      "path": "/speaking",
+      "crash": false,
+      "scroll": 320,
+      "width": 320
+    },
+    {
+      "path": "/grammar",
+      "crash": false,
+      "scroll": 320,
+      "width": 320
+    },
+    {
+      "path": "/writing",
+      "crash": false,
+      "scroll": 320,
+      "width": 320
+    },
+    {
+      "path": "/b2/report",
+      "crash": false,
+      "scroll": 320,
+      "width": 320
+    },
+    {
+      "path": "/world",
+      "crash": false,
+      "scroll": 320,
+      "width": 320
+    },
+    {
+      "path": "/settings/profile",
+      "crash": false,
+      "scroll": 320,
+      "width": 320
+    },
+    {
+      "path": "/settings/privacy",
+      "crash": false,
+      "scroll": 320,
+      "width": 320
+    },
+    {
+      "path": "/settings/devices",
+      "crash": false,
+      "scroll": 320,
+      "width": 320
+    },
+    {
+      "path": "/mastery",
+      "crash": false,
+      "scroll": 320,
+      "width": 320
+    },
+    {
+      "path": "/mistakes",
+      "crash": false,
+      "scroll": 320,
+      "width": 320
+    },
+    {
+      "path": "/plan-map",
+      "crash": false,
+      "scroll": 320,
+      "width": 320
+    },
+    {
+      "path": "/messages",
+      "crash": false,
+      "scroll": 320,
+      "width": 320
+    },
+    {
+      "path": "/commerce",
+      "crash": false,
+      "scroll": 322,
+      "width": 320
+    },
+    {
+      "path": "/platform",
+      "crash": false,
+      "scroll": 320,
+      "width": 320
+    },
+    {
+      "path": "/support",
+      "crash": false,
+      "scroll": 320,
+      "width": 320
+    },
+    {
+      "path": "/assessment",
+      "crash": false,
+      "scroll": 320,
+      "width": 320
+    },
+    {
+      "path": "/onboarding",
+      "crash": false,
+      "scroll": 320,
+      "width": 320
+    },
+    {
+      "path": "/login",
+      "crash": false,
+      "scroll": 320,
+      "width": 320
+    },
+    {
+      "path": "/register",
+      "crash": false,
+      "scroll": 320,
+      "width": 320
+    },
+    {
+      "path": "/reset-password",
+      "crash": false,
+      "scroll": 320,
+      "width": 320
+    },
+    {
+      "path": "/forbidden",
+      "crash": false,
+      "scroll": 320,
+      "width": 320
+    },
+    {
+      "path": "/missing-page",
+      "crash": false,
+      "scroll": 320,
+      "width": 320
+    }
+  ],
+  "finalWorldAndDisplay": [
+    {
+      "path": "/platform",
+      "width": 320,
+      "h1": 1,
+      "scroll": 320,
+      "viewport": 320
+    },
+    {
+      "path": "/world",
+      "width": 320,
+      "h1": 1,
+      "scroll": 320,
+      "viewport": 320
+    },
+    {
+      "path": "/platform",
+      "width": 768,
+      "h1": 1,
+      "scroll": 753,
+      "viewport": 768
+    },
+    {
+      "path": "/world",
+      "width": 768,
+      "h1": 1,
+      "scroll": 753,
+      "viewport": 768
+    },
+    {
+      "path": "/platform",
+      "width": 1024,
+      "h1": 1,
+      "scroll": 1009,
+      "viewport": 1024
+    },
+    {
+      "path": "/world",
+      "width": 1024,
+      "h1": 1,
+      "scroll": 1009,
+      "viewport": 1024
+    },
+    {
+      "path": "/platform",
+      "width": 1440,
+      "h1": 1,
+      "scroll": 1425,
+      "viewport": 1440
+    },
+    {
+      "path": "/world",
+      "width": 1440,
+      "h1": 1,
+      "scroll": 1425,
+      "viewport": 1440
+    }
+  ],
+  "fixes": [
+    {
+      "path": "/commerce",
+      "width": 320,
+      "before": 322,
+      "after": 320,
+      "verified": true
+    }
+  ],
+  "interactions": [
+    "library search filters to one coffee item",
+    "reader translation toggle",
+    "light and dark theme",
+    "high contrast theme uses black background",
+    "UI locale zh/en heading",
+    "theme select reflects selected value",
+    "animation preference sets data-motion off",
+    "Performance sets data-motion off",
+    "world five panels switch",
+    "mobile menu navigates and closes",
+    "Escape closes search",
+    "search 设置 with Enter navigates to profile",
+    "library error distinct from empty state"
+  ],
+  "console": []
+}

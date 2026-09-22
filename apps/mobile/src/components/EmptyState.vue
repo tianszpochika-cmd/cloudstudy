@@ -17,6 +17,6 @@ defineEmits<{
     <view class="yx-empty__mark" aria-hidden="true">✦</view>
     <text class="yx-empty__title">{{ title }}</text>
     <text class="yx-empty__description">{{ description }}</text>
-    <button v-if="actionLabel" class="yx-button" type="button" @click="$emit('action')">{{ actionLabel }}</button>
+    <button tabindex="0" role="button" v-if="actionLabel" class="yx-button" type="button" @click="$emit('action')">{{ actionLabel }}</button>
   </view>
 </template>

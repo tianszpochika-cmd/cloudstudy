@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ExperienceHeader from '../components/ExperienceHeader.vue'
 import { computed, onMounted, onUnmounted, ref } from "vue";
 import {
   createRecording,
@@ -270,17 +271,7 @@ async function advanceRoleplay(choiceCode?: string): Promise<void> {
 </script>
 <template>
   <section class="b3-page">
-    <div class="hero">
-      <p class="eyebrow">B3 · SPEAKING SELF-PRACTICE</p>
-      <h2>练节奏，不伪造分数。</h2>
-      <p>
-        48 音标、口型参数、影子跟读和用户自评在 Phase 1
-        只提供可回放、可解释的规则边界。
-      </p>
-      <p class="performance-note">
-        性能档位：{{ store.performanceLevel }} · 口型渲染：SVG 2D fallback
-      </p>
-    </div>
+    <ExperienceHeader page="Speaking" icon="mic" title-id="speaking-title" />
     <div v-if="store.status === 'loading'" class="panel">
       正在读取 48 个音标条目…
     </div>
@@ -364,9 +355,9 @@ async function advanceRoleplay(choiceCode?: string): Promise<void> {
             @click="save"
           >
             加密并保存</button
-          ><button type="button" @click="void startShadowing">
+          ><button type="button" @click="void startShadowing()">
             开始影子跟读</button
-          ><button type="button" :disabled="!shadowing" @click="void saveShadowing">
+          ><button type="button" :disabled="!shadowing" @click="void saveShadowing()">
             保存跟读进度</button
           ><button v-if="recordingId" type="button" @click="replay">
             回放加密录音</button
@@ -450,8 +441,8 @@ async function advanceRoleplay(choiceCode?: string): Promise<void> {
 .hero {
   padding: 32px;
   border-radius: 28px;
-  background: linear-gradient(135deg, #20345d, #774bd2);
-  color: #fff;
+  background: linear-gradient(135deg, var(--yx-color-text-primary), var(--yx-color-brand-primary));
+  color: var(--yx-color-on-brand);
 }
 .hero h2 {
   margin: 8px 0;
@@ -460,21 +451,21 @@ async function advanceRoleplay(choiceCode?: string): Promise<void> {
 .hero p:last-child {
   max-width: 620px;
   line-height: 1.7;
-  color: #e8ddff;
+  color: var(--yx-color-brand-primary-soft);
 }
 .performance-note {
   margin: 12px 0 0;
-  color: #d6c8ff;
+  color: var(--yx-color-brand-primary-soft);
   font-size: 13px;
 }
 .eyebrow {
   font-size: 12px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: #7b83a1;
+  color: var(--yx-color-text-secondary);
 }
 .hero .eyebrow {
-  color: #d6c8ff;
+  color: var(--yx-color-brand-primary-soft);
 }
 .grid {
   display: grid;
@@ -486,7 +477,7 @@ async function advanceRoleplay(choiceCode?: string): Promise<void> {
   padding: 24px;
   border-radius: 22px;
   background:var(--yx-color-surface-card);
-  box-shadow: 0 16px 40px #1f2b4b0d;
+  box-shadow: 0 16px 40px color-mix(in srgb,var(--yx-color-text-primary) 5%, transparent);
 }
 .panel-head {
   display: flex;
@@ -499,8 +490,8 @@ async function advanceRoleplay(choiceCode?: string): Promise<void> {
 .fallback {
   padding: 6px 10px;
   border-radius: 99px;
-  background: #eee9ff;
-  color: #704bb2;
+  background: var(--yx-color-brand-primary-soft);
+  color: var(--yx-color-brand-primary);
   font-size: 12px;
 }
 .phonemes {
@@ -513,23 +504,23 @@ async function advanceRoleplay(choiceCode?: string): Promise<void> {
   display: grid;
   gap: 5px;
   padding: 14px;
-  border: 1px solid #e5e3f1;
+  border: 1px solid var(--yx-color-brand-primary-soft);
   border-radius: 14px;
-  background: #fbfaff;
+  background: var(--yx-color-brand-primary-soft);
   cursor: pointer;
 }
 .phonemes button.active {
-  border-color: #6450c7;
-  background: #eee9ff;
-  box-shadow: 0 0 0 2px #d8cdfb;
+  border-color: var(--yx-color-brand-primary);
+  background: var(--yx-color-brand-primary-soft);
+  box-shadow: 0 0 0 2px var(--yx-color-brand-primary-soft);
 }
 .phonemes strong {
   font-size: 28px;
-  color: #4b3a83;
+  color: var(--yx-color-brand-primary);
 }
 .phonemes small {
   overflow-wrap: anywhere;
-  color: #8a879a;
+  color: var(--yx-color-text-secondary);
   font-size: 10px;
 }
 .pairs {
@@ -544,8 +535,8 @@ async function advanceRoleplay(choiceCode?: string): Promise<void> {
 .pairs span {
   padding: 7px 10px;
   border-radius: 99px;
-  background: #f5f0ff;
-  color: #704bb2;
+  background: var(--yx-color-brand-primary-soft);
+  color: var(--yx-color-brand-primary);
 }
 .recorder {
   display: grid;
@@ -558,31 +549,31 @@ async function advanceRoleplay(choiceCode?: string): Promise<void> {
   gap: 12px;
   min-height: 160px;
   border-radius: 18px;
-  background: linear-gradient(145deg, #f0efff, #e5f6ff);
-  color: #6254a3;
+  background: linear-gradient(145deg, var(--yx-color-brand-primary-soft), var(--yx-color-brand-primary-soft));
+  color: var(--yx-color-brand-primary);
 }
 .mouth b {
   font-size: 13px;
-  color: #2b7891;
+  color: var(--yx-color-success);
 }
 .mouth small {
-  color: #7c7597;
+  color: var(--yx-color-text-secondary);
 }
 .demo-audio,
 .permission-banner {
   display: grid;
   gap: 8px;
   padding: 12px;
-  border: 1px solid #e5e3f1;
+  border: 1px solid var(--yx-color-brand-primary-soft);
   border-radius: 14px;
-  background: #fbfaff;
+  background: var(--yx-color-brand-primary-soft);
 }
 .demo-audio p {
   margin: 0;
 }
 .demo-audio span,
 .permission-banner span {
-  color: #625f73;
+  color: var(--yx-color-text-secondary);
   line-height: 1.5;
 }
 .demo-audio-player {
@@ -591,10 +582,10 @@ async function advanceRoleplay(choiceCode?: string): Promise<void> {
 }
 .permission-banner--denied,
 .permission-banner--unsupported {
-  border-color: #d86b89;
+  border-color: var(--yx-color-danger);
 }
 .permission-banner--granted {
-  border-color: #4e9f8a;
+  border-color: var(--yx-color-success);
 }
 .actions,
 .rating {
@@ -607,30 +598,30 @@ async function advanceRoleplay(choiceCode?: string): Promise<void> {
   padding: 11px 14px;
   border: 0;
   border-radius: 12px;
-  background: #6450c7;
-  color: #fff;
+  background: var(--yx-color-brand-primary);
+  color: var(--yx-color-on-brand);
   cursor: pointer;
 }
 .actions button:disabled {
   opacity: 0.45;
 }
 .actions button:nth-child(2) {
-  background: #df7094;
+  background: var(--yx-color-danger);
 }
 .actions button:nth-child(3) {
-  background: #4e9f8a;
+  background: var(--yx-color-success);
 }
 .saved {
   padding: 14px;
   border-radius: 14px;
-  background: #f1edff;
-  color: #57418d;
+  background: var(--yx-color-brand-primary-soft);
+  color: var(--yx-color-brand-primary);
   word-break: break-all;
 }
 .rating--disabled {
   display: grid;
   gap: 8px;
-  color: #8a879a;
+  color: var(--yx-color-text-secondary);
 }
 .rating--disabled button {
   cursor: not-allowed;
@@ -646,8 +637,8 @@ async function advanceRoleplay(choiceCode?: string): Promise<void> {
   padding: 11px 14px;
   border: 0;
   border-radius: 12px;
-  background: #6450c7;
-  color: #fff;
+  background: var(--yx-color-brand-primary);
+  color: var(--yx-color-on-brand);
   cursor: pointer;
 }
 .roleplay-panel > button:disabled,
@@ -660,18 +651,18 @@ async function advanceRoleplay(choiceCode?: string): Promise<void> {
   gap: 10px;
   padding: 16px;
   border-radius: 16px;
-  background: #f5f0ff;
-  color: #4b3a83;
+  background: var(--yx-color-brand-primary-soft);
+  color: var(--yx-color-brand-primary);
 }
 .roleplay-turn button {
   background:var(--yx-color-surface-card);
-  color: #5b4b99;
-  border: 1px solid #d9d0fb;
+  color: var(--yx-color-brand-primary);
+  border: 1px solid var(--yx-color-brand-primary-soft);
 }
 .rating button {
   background:var(--yx-color-surface-card);
-  color: #5b4b99;
-  border: 1px solid #d9d0fb;
+  color: var(--yx-color-brand-primary);
+  border: 1px solid var(--yx-color-brand-primary-soft);
 }
 @media (max-width: 760px) {
   .grid {

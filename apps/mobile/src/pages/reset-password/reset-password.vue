@@ -1,4 +1,9 @@
 <script setup lang="ts">
+import MobilePageHeader from '../../components/MobilePageHeader.vue'
+import { openUniPage } from '../../platform/uni-runtime'
+import { mobileT, useMobileExperience } from '../../platform/experience'
+const { experienceStyle, experienceMotion } = useMobileExperience()
+
 import { onLoad } from '@dcloudio/uni-app'
 import { ref } from 'vue'
 import { useSessionStore } from '../../stores/session'
@@ -10,6 +15,7 @@ const token = ref('')
 const newPassword = ref('')
 const submitting = ref(false)
 const done = ref(false)
+const resetCompleted = ref(false)
 const error = ref<string | null>(null)
 
 function initialize(options?: { token?: string }): void {
@@ -51,6 +57,7 @@ async function confirm(): Promise<void> {
   submitting.value = true
   try {
     done.value = await session.confirmPasswordReset(token.value, newPassword.value)
+    if (done.value) { resetCompleted.value = true; token.value = ''; newPassword.value = '' }
     if (!done.value) error.value = session.lastError || '重置没有完成，口令可能已过期。'
   } finally {
     submitting.value = false
@@ -59,39 +66,38 @@ async function confirm(): Promise<void> {
 </script>
 
 <template>
-  <view class="yx-page yx-login-page">
-    <view class="yx-brand">
-      <text class="yx-brand__mark" aria-hidden="true">✦</text>
-      <text>语学星</text>
-    </view>
-    <text class="yx-eyebrow">ACCOUNT</text>
-    <text class="yx-title">找回密码</text>
-    <text class="yx-description">{{ done ? '如果账号存在，重置指引已经发出。' : '无论账号是否存在，提示都一样。' }}</text>
+  <view class="yx-page yx-login-page" :style="experienceStyle" :data-motion="experienceMotion">
+
+    <MobilePageHeader page="reset-password" />
 
     <view class="yx-card yx-login-card">
-      <form v-if="step === 'request'" @submit="send">
+      <text v-if="resetCompleted" class="mobile-success-note" role="status">{{ mobileT('resetComplete') }}</text>
+      <text v-else-if="done && step === 'request'" class="mobile-success-note" role="status">{{ mobileT('resetSent') }}</text>
+      <form v-if="!resetCompleted && step === 'request'" @submit="send">
         <label class="yx-field">
           <text>账号</text>
-          <input v-model="identifier" type="text" autocomplete="username" placeholder="邮箱或账号" :disabled="submitting" />
+          <input aria-label="账号" v-model="identifier" type="text" autocomplete="username" placeholder="邮箱或账号" :disabled="submitting" />
         </label>
         <text v-if="error" class="yx-login-error" role="alert">{{ error }}</text>
-        <button class="yx-button" form-type="submit" :disabled="submitting">{{ submitting ? '正在发送…' : '发送重置指引' }}</button>
-        <button class="yx-button yx-button--ghost" type="button" @click="step = 'confirm'">我已收到口令</button>
+        <button tabindex="0" role="button" class="yx-button" form-type="submit" :disabled="submitting">{{ submitting ? '正在发送…' : '发送重置指引' }}</button>
+        <button tabindex="0" role="button" class="yx-button yx-button--ghost" type="button" @click="step = 'confirm'">我已收到口令</button>
       </form>
-      <form v-else @submit="confirm">
+      <form v-else-if="!resetCompleted" @submit="confirm">
         <label class="yx-field">
           <text>重置口令</text>
-          <input v-model="token" type="text" autocomplete="one-time-code" placeholder="邮件里的口令" :disabled="submitting" />
+          <input aria-label="重置口令" v-model="token" type="text" autocomplete="one-time-code" placeholder="邮件里的口令" :disabled="submitting" />
         </label>
         <label class="yx-field">
           <text>新密码（至少 12 位）</text>
-          <input v-model="newPassword" type="password" autocomplete="new-password" placeholder="输入新密码" :disabled="submitting" />
+          <input aria-label="新密码" v-model="newPassword" type="password" autocomplete="new-password" placeholder="输入新密码" :disabled="submitting" />
         </label>
         <text v-if="error" class="yx-login-error" role="alert">{{ error }}</text>
-        <button class="yx-button" form-type="submit" :disabled="submitting">{{ submitting ? '正在重置…' : '重置密码' }}</button>
-        <button class="yx-button yx-button--ghost" type="button" @click="step = 'request'">返回上一步</button>
+        <button tabindex="0" role="button" class="yx-button" form-type="submit" :disabled="submitting">{{ submitting ? '正在重置…' : '重置密码' }}</button>
+        <button tabindex="0" role="button" class="yx-button yx-button--ghost" type="button" @click="step = 'request'">返回上一步</button>
       </form>
     </view>
+    <button tabindex="0" role="button" class="mobile-text-button mobile-auth-return" @click="openUniPage('/pages/login/login')">{{ mobileT('toLogin') }}</button>
+    <text class="mobile-auth-note">{{ mobileT('adultNote') }}</text>
   </view>
 </template>
 

@@ -36,7 +36,8 @@ test('learner-web exposes canonical eight states, closed gates, and preference r
   const router = await read('apps/learner-web/src/router/index.ts')
   for (const value of ['loading', 'empty', 'error', 'permission', 'recovery', 'offline', 'success', 'partial']) assert.match(state, new RegExp(value))
   assert.match(gate, /=== true/)
-  assert.match(foundation, /common: .*state:/s)
+  assert.match(foundation, /messages: learnerBaseMessages/)
+  assert.match(await read('packages/i18n/src/learner-base.ts'), /common: .*state:/s)
   assert.match(main, /learnerI18nAdapter\.restore\(\)/)
   assert.match(main, /learnerThemeController\.restore\(\)/)
   assert.match(router, /isFeatureEnabled\('learner\.preview'\)/)
@@ -59,7 +60,9 @@ test('learner-web protects the settings root before redirecting to the profile s
 
 test('learner-web schedules a login redirect after a successful logout', async () => {
   const auth = await read('apps/learner-web/src/auth/gateway-auth.ts')
-  assert.match(auth, /function scheduleWebLogoutRedirect\(\)/)
-  assert.match(auth, /client\.post\('\/iam\/session\/logout'[\s\S]*?scheduleWebLogoutRedirect\(\)/)
-  assert.match(auth, /window\.location\.assign\('\/login'\)/)
+  const settings = await read('apps/learner-web/src/pages/SettingsPage.vue')
+  const session = await read('apps/learner-web/src/stores/session.ts')
+  assert.match(auth, /client\.post\('\/auth\/logout'/)
+  assert.match(session, /await adapter\(\)\.logout\(\{ allDevices \}\)[\s\S]*?clear\(\)/)
+  assert.match(settings, /await session\.logout\(\); await router\.replace\(\{ name: 'login' \}\)/)
 })

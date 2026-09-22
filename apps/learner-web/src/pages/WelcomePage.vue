@@ -1,10 +1,11 @@
 <script setup lang="ts">
+import AuthLayout from '../layouts/AuthLayout.vue'
 import { RouterLink } from 'vue-router'
 </script>
 
 <template>
-  <main class="public-page">
-    <section class="welcome-card" aria-labelledby="welcome-title">
+  <AuthLayout>
+    <section class="welcome-card login-card" aria-labelledby="welcome-title">
       <div class="brand brand--large">
         <span class="brand__mark" aria-hidden="true">✦</span>
         <span>语学星</span>
@@ -16,7 +17,7 @@ import { RouterLink } from 'vue-router'
         <RouterLink class="button button--primary" to="/login">开始学习</RouterLink>
         <RouterLink class="button button--secondary" to="/login">已有账号，登录</RouterLink>
       </div>
-      <p class="micro-copy">当前为工程基座预览，业务数据将在 API 契约接入后显示。</p>
+      <p class="micro-copy">一点一点，学得更从容。</p>
     </section>
-  </main>
+  </AuthLayout>
 </template>

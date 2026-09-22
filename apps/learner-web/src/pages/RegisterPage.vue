@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AuthLayout from '../layouts/AuthLayout.vue'
 import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { safeReturnTo } from '../auth/gateway-auth'
@@ -17,7 +18,7 @@ const redirectTarget = computed(() => safeReturnTo(route.query.redirect ?? sessi
 const hint = computed(() => {
   if (error.value) return error.value
   if (submitting.value) return '正在创建账号…'
-  return '账号密码由语学星认证中心校验；密码至少 12 位。'
+  return '使用至少 12 位的密码，让账号更安全。'
 })
 
 async function submit(): Promise<void> {
@@ -51,7 +52,7 @@ async function submit(): Promise<void> {
 </script>
 
 <template>
-  <main class="public-page">
+  <AuthLayout>
     <section class="login-card login-card--quiet" aria-labelledby="register-title">
       <div class="brand">
         <span class="brand__mark" aria-hidden="true">✦</span>
@@ -85,5 +86,5 @@ async function submit(): Promise<void> {
       </form>
       <p class="micro-copy">已有账号？<RouterLink :to="{ name: 'login', query: { redirect: redirectTarget } }">去登录</RouterLink> · <RouterLink :to="{ name: 'reset-password', query: { redirect: redirectTarget } }">忘记密码</RouterLink></p>
     </section>
-  </main>
+  </AuthLayout>
 </template>

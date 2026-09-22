@@ -1,0 +1,13 @@
+{
+  "scope": "UI-only browser fixtures",
+  "checks": [
+    {
+      "path": "/lexemes",
+      "pass": true
+    },
+    {
+      "path": "/items",
+      "pass": true
+    }
+  ]
+}

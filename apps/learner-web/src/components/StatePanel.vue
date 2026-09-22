@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AppIcon, { type AppIconName } from './AppIcon.vue'
 /**
  * Unified non-data panel: loading (skeleton), empty, error, offline and
  * permission states share one look, one wording pattern and one retry slot.
@@ -17,12 +18,12 @@ defineEmits<{
   action: []
 }>()
 
-const marks: Record<string, string> = {
-  loading: '◌',
-  empty: '✦',
-  error: '!',
-  offline: '⇄',
-  permission: '🔒',
+const marks: Record<string, AppIconName> = {
+  loading: 'target',
+  empty: 'book',
+  error: 'help',
+  offline: 'monitor',
+  permission: 'lock',
 }
 </script>
 
@@ -33,8 +34,8 @@ const marks: Record<string, string> = {
     :role="state === 'error' ? 'alert' : 'status'"
     aria-live="polite"
   >
-    <div class="empty-state__mark" aria-hidden="true">{{ marks[state] ?? '✦' }}</div>
-    <h1>{{ title }}</h1>
+    <div class="empty-state__mark" aria-hidden="true"><AppIcon :name="marks[state]" :size="24" /></div>
+    <h2>{{ title }}</h2>
     <p v-if="description">{{ description }}</p>
     <div v-if="state === 'loading'" class="yx-state-panel__skeletons" aria-hidden="true">
       <div class="yx-skeleton" style="height: 18px; width: 72%"></div>

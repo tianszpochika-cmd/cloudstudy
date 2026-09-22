@@ -15,10 +15,10 @@ function defaultMessage(): string { return props.status === 'offline' || props.s
     <view class="b11-status__copy"><text class="b11-status__title">{{ label() }}</text><text class="b11-status__message">{{ message ?? defaultMessage() }}</text></view>
     <view class="b11-status__actions">
       <text v-if="queueCount" class="b11-status__queue">{{ queueCount }} · {{ b11T('common.pending') }}</text>
-      <button v-if="status === 'offline' || status === 'error' || status === 'expired' || status === 'forbidden'" class="b11-mini-button" type="button" @click="emit('retry')">{{ b11T('status.retry') }}</button>
-      <button v-if="queueCount" class="b11-mini-button" type="button" @click="emit('sync')">{{ b11T('status.sync') }}</button>
+      <button tabindex="0" role="button" v-if="status === 'offline' || status === 'error' || status === 'expired' || status === 'forbidden'" class="b11-mini-button" type="button" @click="emit('retry')">{{ b11T('status.retry') }}</button>
+      <button tabindex="0" role="button" v-if="queueCount" class="b11-mini-button" type="button" @click="emit('sync')">{{ b11T('status.sync') }}</button>
       <picker :range="levels" :value="levels.indexOf(performanceLevel)" @change="emit('performance', levels[Number($event.detail.value)] ?? 'High')"><view class="b11-quality">{{ performanceLevel }}</view></picker>
-      <button class="b11-mini-button" type="button" @click="emit('motion', !motionDisabled)">{{ motionDisabled ? b11T('status.motionOn') : b11T('status.motionOff') }}</button>
+      <button tabindex="0" role="button" class="b11-mini-button" type="button" @click="emit('motion', !motionDisabled)">{{ motionDisabled ? b11T('status.motionOn') : b11T('status.motionOff') }}</button>
     </view>
   </view>
 </template>

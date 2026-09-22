@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ExperienceHeader from '../components/ExperienceHeader.vue'
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useLearnerContentStore } from '../stores/learner-content'
@@ -42,14 +43,7 @@ onMounted(() => { void load() })
 
 <template>
   <section class="real-practice-page" aria-labelledby="practice-title">
-    <header class="page-heading">
-      <div>
-        <p class="eyebrow">B25 · REAL MYSQL PLACEMENT</p>
-        <h2 id="practice-title">基础练习</h2>
-        <p>题面来自 content-service，答案规则只由 assessment-service 判定，页面不保存静态题目或本地答案。</p>
-      </div>
-      <span class="source-badge">Gateway → assessment-service → MySQL</span>
-    </header>
+    <ExperienceHeader page="Practice" icon="check" title-id="practice-title" />
 
     <section v-if="isCompleted && report" class="result-panel" aria-live="polite">
       <p class="card-kicker">练习已完成</p>

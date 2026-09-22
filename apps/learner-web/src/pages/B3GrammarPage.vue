@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ExperienceHeader from '../components/ExperienceHeader.vue'
 import { computed, onMounted, ref, watch } from 'vue'
 import B10PracticeQuestion from '../components/b10/B10PracticeQuestion.vue'
 import B10StatePanel from '../components/b10/B10StatePanel.vue'
@@ -49,7 +50,7 @@ function submitImitation(): void { void store.submitImitation(slotValues.value) 
 
 <template>
 <section class="b10-page" :data-performance="store.performanceLevel" aria-labelledby="grammar-title">
-    <header class="page-heading"><div><p class="eyebrow">GRM · EXPLAINABLE PATH</p><h2 id="grammar-title">{{ ui.t('b10.grammar.title') }}</h2><p>知识树、X 光结构、练习和弱点反馈共享题目版本；Performance 档位退回线性结构。</p></div><span class="locale-pill">{{ ui.t('b10.common.ui') }} {{ ui.locale }} · {{ ui.t('b10.common.content') }} {{ ui.contentLocale }}</span></header>
+    <ExperienceHeader page="Grammar" icon="spark" title-id="grammar-title" />
     <B10StatePanel v-if="store.grammarStatus !== 'ready' || store.grammarMessage" :status="store.grammarStatus" :message="store.grammarMessage" :queue-count="store.queueCount" module-label="GRM / GRAMMAR" :performance-level="store.performanceLevel" @retry="retry" @sync="sync" @performance="performance" />
     <section v-if="store.grammarPoints.length" class="grammar-layout">
       <aside class="points-panel"><h3>{{ ui.t('b10.grammar.tree') }}</h3><button v-for="point in store.grammarPoints" :key="point.grammarPointId" type="button" class="point" :class="{ active: point.grammarPointId === store.selectedGrammarPointId }" @click="store.selectGrammarPoint(point.grammarPointId)"><span>{{ point.code }}</span><strong>{{ point.title }}</strong><small>{{ store.grammarMastery.find((item) => item.grammarPointId === point.grammarPointId)?.level ?? 'REVIEW' }}</small></button></aside>

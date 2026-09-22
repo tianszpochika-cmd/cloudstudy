@@ -1,34 +1,35 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import PageHeader from '../components/PageHeader.vue'
+import ExperienceHeader from '../components/ExperienceHeader.vue'
 import StatePanel from '../components/StatePanel.vue'
+import AppIcon from '../components/AppIcon.vue'
 import { useLearnerContentStore } from '../stores/learner-content'
-
+import { useExperienceText } from '../platform/experience-ui'
 const router = useRouter()
 const store = useLearnerContentStore()
+const t = useExperienceText()
+const query = ref('')
+const kind = ref('')
 const content = computed(() => store.home?.content ?? [])
 const contentStatus = computed(() => store.home?.contentStatus ?? 'EMPTY')
-
+const kinds = computed(() => [...new Set(content.value.map(item => item.kind))])
+const labels: Record<string, string> = { VOCAB: 'vocabulary', VOCABULARY: 'vocabulary', VOCAB_PACK: 'vocabulary', LISTENING: 'listening', READING: 'reading', SPEAKING: 'speaking', GRAMMAR: 'grammar', WRITING: 'writing' }
+const kindLabel = (value: string) => labels[value] ? t(labels[value]) : t('availableContent')
+const results = computed(() => content.value.filter(item => (!kind.value || item.kind === kind.value) && (item.title + ' ' + (item.description ?? '')).toLowerCase().includes(query.value.trim().toLowerCase())))
 onMounted(() => { store.restore(); void store.loadHome() })
-function retry(): void { void store.retry('home') }
-function openCourse(contentId: string): void { void router.push({ name: 'learn-session', query: { contentId } }) }
+function retry() { void store.retry('home') }
+function openCourse(contentId: string) { void router.push({ name: 'learn-session', query: { contentId } }) }
 </script>
-
 <template>
-  <section class="page-stack" aria-labelledby="courses-title">
-    <PageHeader kicker="B18 · CONTENT PROJECTION" title="课程与学习内容" description="仅展示当前主体有权访问且已发布的内容版本；下线、权限和服务故障都有明确恢复路径。">
-      <template #actions><span class="locale-pill">内容语言：{{ store.home?.contentLocale ?? 'en-US' }}</span></template>
-    </PageHeader>
-    <StatePanel v-if="store.homeStatus === 'loading'" state="loading" title="课程与学习内容" description="正在读取 learner/content Gateway 投影。" />
-    <StatePanel v-else-if="store.homeStatus === 'forbidden'" state="permission" title="暂无访问权限" description="当前课程权限由服务端策略决定。" action-label="重新登录" @action="router.push({ name: 'login' })" />
-    <StatePanel v-else-if="contentStatus === 'UNAVAILABLE' || store.homeStatus === 'offline'" state="offline" title="课程服务正在恢复" description="已保留课程入口，不会把服务异常显示成空课程。" action-label="重试" @action="retry" />
-    <StatePanel v-else-if="!content.length" state="empty" title="暂无已发布课程" description="可能是内容尚未发布、权益尚未生效或当前筛选没有结果。" />
-    <div v-else class="course-grid"><button v-for="item in content" :key="item.contentId" class="course-card" type="button" @click="openCourse(item.contentId)"><span class="card-kicker">{{ item.kind }}</span><h3>{{ item.title }}</h3><p>{{ item.description || '由服务端内容投影提供课程摘要。' }}</p><small>{{ item.contentLocale }} · {{ item.status }}</small></button></div>
-    <StatePanel v-if="store.lastError" state="error" title="课程与学习内容" :description="store.lastError" action-label="重试" @action="retry" />
+  <section class="page-stack library-experience" aria-labelledby="courses-title">
+    <ExperienceHeader page="Courses" title-id="courses-title" icon="book" />
+    <div class="library-toolbar"><div class="filter-pills"><button type="button" :class="{ active: !kind }" :aria-pressed="!kind" @click="kind = ''">{{ t('all') }}</button><button v-for="value in kinds" :key="value" type="button" :class="{ active: kind === value }" :aria-pressed="kind === value" @click="kind = value">{{ kindLabel(value) }}</button></div><label class="search-field"><AppIcon name="search" :size="18" /><input v-model="query" type="search" :aria-label="t('searchCourses')" :placeholder="t('searchCourses')" /></label></div>
+    <StatePanel v-if="store.homeStatus === 'loading'" state="loading" :title="t('loading')" />
+    <StatePanel v-else-if="store.homeStatus === 'forbidden'" state="permission" title="暂时没有访问权限" description="请确认使用了正确的账号，或前往帮助页反馈。" action-label="帮助与反馈" @action="router.push({ name: 'support' })" />
+    <StatePanel v-else-if="store.lastError || contentStatus === 'UNAVAILABLE' || store.homeStatus === 'offline'" state="error" title="内容暂时没能加载" :description="store.lastError || '请检查网络后重试。'" action-label="重新加载" @action="retry" />
+    <StatePanel v-else-if="!content.length" state="empty" title="书架正在准备中" description="有可学习的内容时，会出现在这里。你也可以先调整学习目标。" :action-label="t('setGoal')" @action="router.push({ name: 'onboarding' })" />
+    <StatePanel v-else-if="!results.length" state="empty" :title="t('noResults')" :action-label="t('clearFilter')" @action="() => { query = ''; kind = '' }" />
+    <div v-else class="library-grid"><button v-for="(item, index) in results" :key="item.contentId" type="button" class="library-card" @click="openCourse(item.contentId)"><span class="library-card__art" :data-tone="index % 3"><span class="library-card__edition">{{ String(index + 1).padStart(2, '0') }}</span><AppIcon name="book" :size="62" /><span class="library-card__language">{{ item.contentLocale }}</span><i></i></span><span class="library-card__body"><small>{{ kindLabel(item.kind) }}</small><strong>{{ item.title }}</strong><span>{{ item.description || t('courseFallback') }}</span><span class="library-card__cta">{{ t('openCourse') }}<AppIcon name="arrow" :size="18" /></span></span></button></div>
   </section>
 </template>
-
-<style scoped>
-.page-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:20px}.page-heading h2{margin:8px 0;font-size:clamp(30px,5vw,48px);line-height:1.1}.page-heading p:not(.eyebrow){max-width:720px;margin:0;color:var(--yx-color-text-secondary);line-height:1.7}.locale-pill{padding:9px 12px;border:1px solid var(--yx-color-border);border-radius:999px;color:var(--yx-color-text-secondary);font-size:12px}.state-card{display:flex;align-items:center;justify-content:space-between;gap:18px;border-color:var(--yx-color-warning)}.course-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.course-card{display:grid;gap:8px;min-height:190px;padding:22px;border:1px solid var(--yx-color-border);border-radius:var(--yx-radius-card);color:inherit;background:var(--yx-color-surface-card);text-align:left;box-shadow:var(--yx-shadow-card);cursor:pointer}.course-card h3,.course-card p{margin:0}.course-card p{color:var(--yx-color-text-secondary);line-height:1.6}.course-card small{color:var(--yx-color-text-secondary)}.error-text{color:var(--yx-color-danger)}@media(max-width:900px){.course-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:640px){.page-heading,.state-card{display:grid;align-items:start}.course-grid{grid-template-columns:1fr}.course-card{min-height:0}}
-</style>

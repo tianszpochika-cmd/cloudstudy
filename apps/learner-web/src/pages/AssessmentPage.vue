@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ExperienceHeader from '../components/ExperienceHeader.vue'
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useLearnerContentStore } from '../stores/learner-content'
@@ -21,7 +22,7 @@ async function restart(): Promise<void> { selected.value = ''; startedAt.value =
 function retry(): void { void store.loadAssessment() }
 </script>
 <template>
-  <section class="page-stack" aria-labelledby="assessment-title"><div class="hero-panel"><div><p class="eyebrow">B9 · CONTENT VERSIONED PLACEMENT</p><h2 id="assessment-title">用服务端题目找到今天的起点。</h2><p>题目由内容 read model 版本化提供；答案规则只由 assessment 服务端判定，不进入页面模型。</p></div><div class="hero-panel__orb" aria-hidden="true">{{ progressLabel }}</div></div>
+  <section class="page-stack" aria-labelledby="assessment-title"><ExperienceHeader page="Assessment" icon="target" title-id="assessment-title" hero><span class="assessment-progress-label">{{ progressLabel }}</span></ExperienceHeader>
   <article v-if="isDone && report" class="result-card"><p class="card-kicker">测评完成</p><h3>{{ report.cefrLevel }} · {{ Math.round(report.score) }} 分</h3><p>{{ report.recommendedAdvice }}</p><div class="result-grid"><span><strong>{{ report.estimatedVocabulary }}</strong><small>估算词汇量</small></span><span><strong>{{ report.radarScores.vocab }}%</strong><small>词汇掌握</small></span><span><strong>{{ report.radarScores.listening }}%</strong><small>听力表现</small></span></div><div class="result-actions"><button class="button button--primary" type="button" @click="router.push({ name: 'today' })">查看今日任务</button><button class="button button--secondary" type="button" @click="restart">重新开始测评</button></div></article>
   <article v-else-if="question" class="question-card"><div class="question-meta"><span>{{ question.helperText }}</span><span>{{ question.stepIndex }}/{{ question.totalSteps }}</span></div><h3>{{ question.stemText }}</h3><div class="options"><button v-for="option in question.options" :key="option.key" class="option" :class="{ selected: selected === option.key }" type="button" @click="selected = option.key"><b>{{ option.key }}</b><span>{{ option.text }}</span></button></div><button class="button button--primary" type="button" :disabled="!selected || store.assessment.status === 'submitting'" @click="submit">{{ store.assessment.status === 'submitting' ? '正在记录…' : '提交答案' }}</button></article>
   <article v-else-if="isLoading" class="info-card" role="status"><h3>正在准备测评</h3><p>正在读取服务端内容投影，不会在页面推断答案或成绩。</p></article>

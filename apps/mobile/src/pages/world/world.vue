@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import MobilePageHeader from '../../components/MobilePageHeader.vue'
+import { useMobileExperience } from '../../platform/experience'
+const { experienceStyle, experienceMotion } = useMobileExperience()
+
 import { onShow } from '@dcloudio/uni-app'
 import { computed } from 'vue'
 import { B4_PERFORMANCE_LEVELS } from '../../domain/b4'
@@ -38,45 +42,44 @@ function choosePerformance(level: (typeof B4_PERFORMANCE_LEVELS)[number]): void 
 </script>
 
 <template>
-  <view class="yx-page b4-world" :class="`b4-world--${b4.performanceLevel}`">
-    <text class="yx-eyebrow">B4 · GROWTH & SOCIAL</text>
-    <text class="yx-title">把每一次真实学习，连成自己的星系。</text>
-    <text class="yx-description">XP、Streak、游戏、Avatar 和自习室均由服务端事实驱动；网络异常时保留明确的待同步状态。</text>
+  <view class="yx-page b4-world" :class="`b4-world--${b4.performanceLevel}`" :style="experienceStyle" :data-motion="experienceMotion">
+    <MobilePageHeader page="world" />
+
     <B4StatusPanel :status="b4.status" :online="b4.online" :message="b4.lastError" :queue-count="b4.queueCount" :performance-level="b4.performanceLevel" @retry="b4.loadWorld" @sync="b4.syncOffline" @performance="choosePerformance" />
 
     <view class="b4-metrics">
-      <view class="b4-metric"><text>XP</text><text class="b4-metric__value">{{ b4.profile?.xp ?? '—' }}</text><text>{{ b4.profile ? `Lv.${b4.profile.level} · ${b4.profile.rank}` : '等待服务端账户' }}</text></view>
-      <view class="b4-metric"><text>STAR COIN</text><text class="b4-metric__value">{{ b4.profile?.coins ?? '—' }}</text><text>服务端账本余额</text></view>
-      <view class="b4-metric"><text>STREAK</text><text class="b4-metric__value">{{ b4.streak ? `${b4.streak.currentStreak} 天` : '—' }}</text><text>{{ b4.streak?.status ?? '等待服务端状态' }}</text></view>
+      <view class="b4-metric"><text>XP</text><text class="b4-metric__value">{{ b4.profile?.xp ?? '—' }}</text><text>{{ b4.profile ? `Lv.${b4.profile.level} · ${b4.profile.rank}` : '暂未获取成长记录' }}</text></view>
+      <view class="b4-metric"><text>STAR COIN</text><text class="b4-metric__value">{{ b4.profile?.coins ?? '—' }}</text><text>可用星币</text></view>
+      <view class="b4-metric"><text>STREAK</text><text class="b4-metric__value">{{ b4.streak ? `${b4.streak.currentStreak} 天` : '—' }}</text><text>{{ b4.streak?.status ?? '暂未获取记录' }}</text></view>
     </view>
 
     <view class="yx-card galaxy-card">
-      <view class="card-heading"><view><text class="card-kicker">GALAXY MAP</text><text class="card-title">成长世界</text></view><text class="fact-tag">服务端进度</text></view>
-      <text class="muted">成长接口返回的 growth.nodes 驱动地图；未返回的节点保持 UNKNOWN，客户端不自行补算完成状态。</text>
+      <view class="card-heading"><view><text class="card-kicker">GALAXY MAP</text><text class="card-title">成长世界</text></view><text class="fact-tag">成长进度</text></view>
+      <text class="muted">每次练习，都为你的成长地图点亮一点星光。</text>
       <view class="galaxy-map"><view v-for="node in galaxyNodes" :key="node.code" class="galaxy-node"><view class="galaxy-node__dot">✦</view><text>{{ node.title }}</text><text class="muted">{{ node.description }}</text><text class="pending">{{ node.status }} · {{ node.progress }}/{{ node.requiredProgress }}（{{ node.progressPercent }}%）</text></view></view>
       <text v-if="b4.galaxy" class="muted">总成长 XP：{{ b4.galaxy.totalXp }} · 规则：{{ b4.galaxy.ruleVersion ?? '服务端未返回' }}</text>
       <view v-if="b4.season" class="season-row"><text>{{ b4.season.title }}</text><text>{{ b4.season.points }} 赛季点 · {{ b4.season.status }}</text></view>
-      <text v-else class="empty-copy">服务端未返回当前赛季数据。</text>
+      <text v-else class="empty-copy">当前暂无赛季活动。</text>
     </view>
 
     <view class="yx-card streak-card">
       <view class="card-heading"><view><text class="card-kicker">STREAK CALENDAR</text><text class="card-title">连续学习日历</text></view><text class="streak-fire">♨</text></view>
-      <template v-if="b4.streak"><text class="streak-number">{{ b4.streak.currentStreak }}<text> 天</text></text><text class="muted">上次有效日：{{ b4.streak.lastValidDate ?? '服务端暂无记录' }} · {{ b4.streak.timeZone }} · {{ b4.streak.status }}</text><button class="yx-button yx-button--secondary" type="button" @click="b4.rescueStreak('CHALLENGE')">请求破冰挑战</button></template>
-      <text v-else class="empty-copy">服务端未返回 Streak 日历，客户端不自行补算。</text>
+      <template v-if="b4.streak"><text class="streak-number">{{ b4.streak.currentStreak }}<text> 天</text></text><text class="muted">上次有效日：{{ b4.streak.lastValidDate ?? '暂无记录' }} · {{ b4.streak.timeZone }} · {{ b4.streak.status }}</text><button tabindex="0" role="button" class="yx-button yx-button--secondary" type="button" @click="b4.rescueStreak('CHALLENGE')">请求破冰挑战</button></template>
+      <text v-else class="empty-copy">还没有连续学习记录，从今天开始积累吧。</text>
     </view>
 
     <view class="b4-entry-grid">
-      <button class="yx-button entry-button" type="button" @click="navigate('/pages/b4-games/b4-games')"><text>游戏大厅</text><text>暂停 / 恢复 / 服务端判定</text></button>
-      <button class="yx-button entry-button" type="button" @click="navigate('/pages/b4-social/b4-social')"><text>虚拟自习室</text><text>番茄 / 预设鼓励 / 通知</text></button>
-      <button class="yx-button entry-button" type="button" @click="navigate('/pages/b4-avatar/b4-avatar')"><text>Avatar / 衣柜</text><text>四档性能与 2D fallback</text></button>
-      <button class="yx-button entry-button" type="button" @click="navigate('/pages/b4-offline/b4-offline')"><text>离线包</text><text>授权 / 弱网 / 待同步</text></button>
+      <button tabindex="0" role="button" class="yx-button entry-button" type="button" @click="navigate('/pages/b4-games/b4-games')"><text>游戏大厅</text><text>用小挑战巩固所学</text></button>
+      <button tabindex="0" role="button" class="yx-button entry-button" type="button" @click="navigate('/pages/b4-social/b4-social')"><text>虚拟自习室</text><text>专注一刻，一起进步</text></button>
+      <button tabindex="0" role="button" class="yx-button entry-button" type="button" @click="navigate('/pages/b4-avatar/b4-avatar')"><text>我的形象</text><text>装扮自己的成长空间</text></button>
+      <button tabindex="0" role="button" class="yx-button entry-button" type="button" @click="navigate('/pages/b4-offline/b4-offline')"><text>离线包</text><text>把学习带在身边</text></button>
     </view>
 
-    <view class="yx-card quest-card"><view class="card-heading"><view><text class="card-kicker">QUESTS</text><text class="card-title">成长任务</text></view><text>{{ b4.quests.length ? `${b4.quests.length} 个任务` : '未返回' }}</text></view><view v-if="b4.quests.length" class="quest-list"><view v-for="quest in b4.quests" :key="quest.questId" class="quest-row"><view><text>{{ quest.title }}</text><text class="muted">{{ quest.period }} · {{ quest.questId }}</text></view><text :class="quest.completed ? 'done' : 'pending'">{{ quest.claimed ? '已领取' : quest.completed ? '待领取' : `${quest.progress}/${quest.target}` }}</text></view></view><text v-else class="empty-copy">服务端未返回任务，未使用本地样例。</text></view>
+    <view class="yx-card quest-card"><view class="card-heading"><view><text class="card-kicker">QUESTS</text><text class="card-title">成长任务</text></view><text>{{ b4.quests.length ? `${b4.quests.length} 个任务` : '未返回' }}</text></view><view v-if="b4.quests.length" class="quest-list"><view v-for="quest in b4.quests" :key="quest.questId" class="quest-row"><view><text>{{ quest.title }}</text><text class="muted">{{ quest.period }} · {{ quest.questId }}</text></view><text :class="quest.completed ? 'done' : 'pending'">{{ quest.claimed ? '已领取' : quest.completed ? '待领取' : `${quest.progress}/${quest.target}` }}</text></view></view><text v-else class="empty-copy">当前暂无成长任务，稍后再来看看。</text></view>
     <B12RewardsCard />
   </view>
 </template>
 
 <style scoped lang="scss">
-.b4-world{padding-bottom:56rpx}.b4-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:16rpx;margin-top:28rpx}.b4-metric{display:grid;gap:8rpx;padding:22rpx;border:1rpx solid #e6e8f0;border-radius:16rpx;background:#fff}.b4-metric>text:first-child{color:#596bff;font-size:21rpx;font-weight:800;letter-spacing:2rpx}.b4-metric__value{font-size:40rpx;font-weight:800}.b4-metric>text:last-child{color:#666d80;font-size:21rpx}.card-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:16rpx}.card-kicker{display:block;color:#596bff;font-size:21rpx;font-weight:800;letter-spacing:2rpx}.card-title{display:block;margin-top:8rpx;font-size:34rpx;font-weight:750}.fact-tag{color:#666d80;font-size:22rpx}.muted{color:#666d80;font-size:23rpx;line-height:1.6}.galaxy-map{display:grid;grid-template-columns:repeat(2,1fr);gap:12rpx;margin-top:18rpx;padding:16rpx;border-radius:16rpx;background:#f7f8fc}.galaxy-node{display:grid;gap:8rpx;min-height:150rpx;padding:16rpx;border:1rpx solid #dfe3f7;border-radius:14rpx;background:#fff}.galaxy-node__dot{display:flex;width:46rpx;height:46rpx;align-items:center;justify-content:center;border-radius:50%;color:#fff;background:linear-gradient(135deg,#596bff,#7c5cfc)}.pending{color:#9b5b00;font-size:21rpx}.season-row{display:flex;justify-content:space-between;gap:12rpx;margin-top:18rpx;padding:16rpx;border-radius:12rpx;color:#596bff;background:#eef0ff;font-size:23rpx}.empty-copy{display:block;padding:18rpx;border:1rpx dashed #dfe3ee;border-radius:12rpx;color:#666d80;font-size:24rpx;line-height:1.6}.streak-card{margin-top:24rpx}.streak-fire{display:flex;width:56rpx;height:56rpx;align-items:center;justify-content:center;border-radius:16rpx;color:#fff;background:#f2a83b;font-size:28rpx}.streak-number{display:block;margin-top:12rpx;color:#596bff;font-size:72rpx;font-weight:800}.streak-number text{font-size:26rpx;font-weight:500;color:#666d80}.b4-entry-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16rpx;margin-top:24rpx}.entry-button{display:grid!important;height:150rpx!important;align-content:center;gap:8rpx;padding:20rpx!important;text-align:left}.entry-button text:first-child{font-size:30rpx}.entry-button text:last-child{color:rgba(255,255,255,.78);font-size:21rpx;font-weight:400}.quest-card{margin-top:24rpx}.quest-list{display:grid;gap:10rpx;margin-top:16rpx}.quest-row{display:flex;align-items:center;justify-content:space-between;gap:12rpx;padding:16rpx;border-radius:12rpx;background:#f7f8fc}.quest-row>view{display:grid;gap:5rpx}.done{color:#26745f;font-size:22rpx}.quest-row .pending{font-size:22rpx}@media(max-width:560px){.b4-metrics{gap:10rpx}.b4-metric{padding:16rpx}.b4-metric__value{font-size:30rpx}.b4-entry-grid{grid-template-columns:1fr}.season-row{display:grid}}
+.b4-world{padding-bottom:56rpx}.b4-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:16rpx;margin-top:28rpx}.b4-metric{display:grid;gap:8rpx;padding:22rpx;border:1rpx solid var(--yx-border);border-radius:16rpx;background:var(--yx-surface-card)}.b4-metric>text:first-child{color:var(--yx-brand);font-size:21rpx;font-weight:800;letter-spacing:2rpx}.b4-metric__value{font-size:40rpx;font-weight:800}.b4-metric>text:last-child{color:var(--yx-text-secondary);font-size:21rpx}.card-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:16rpx}.card-kicker{display:block;color:var(--yx-brand);font-size:21rpx;font-weight:800;letter-spacing:2rpx}.card-title{display:block;margin-top:8rpx;font-size:34rpx;font-weight:750}.fact-tag{color:var(--yx-text-secondary);font-size:22rpx}.muted{color:var(--yx-text-secondary);font-size:23rpx;line-height:1.6}.galaxy-map{display:grid;grid-template-columns:repeat(2,1fr);gap:12rpx;margin-top:18rpx;padding:16rpx;border-radius:16rpx;background:var(--yx-surface-page)}.galaxy-node{display:grid;gap:8rpx;min-height:150rpx;padding:16rpx;border:1rpx solid var(--yx-border);border-radius:14rpx;background:var(--yx-surface-card)}.galaxy-node__dot{display:flex;width:46rpx;height:46rpx;align-items:center;justify-content:center;border-radius:50%;color:var(--yx-on-brand);background:linear-gradient(135deg,var(--yx-action),var(--yx-action))}.pending{color:var(--yx-warning);font-size:21rpx}.season-row{display:flex;justify-content:space-between;gap:12rpx;margin-top:18rpx;padding:16rpx;border-radius:12rpx;color:var(--yx-brand);background:var(--yx-brand-soft);font-size:23rpx}.empty-copy{display:block;padding:18rpx;border:1rpx dashed var(--yx-border);border-radius:12rpx;color:var(--yx-text-secondary);font-size:24rpx;line-height:1.6}.streak-card{margin-top:24rpx}.streak-fire{display:flex;width:56rpx;height:56rpx;align-items:center;justify-content:center;border-radius:16rpx;color:var(--yx-on-brand);background:var(--yx-warning);font-size:28rpx}.streak-number{display:block;margin-top:12rpx;color:var(--yx-brand);font-size:72rpx;font-weight:800}.streak-number text{font-size:26rpx;font-weight:500;color:var(--yx-text-secondary)}.b4-entry-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16rpx;margin-top:24rpx}.entry-button{display:grid!important;height:150rpx!important;align-content:center;gap:8rpx;padding:20rpx!important;text-align:left}.entry-button text:first-child{font-size:30rpx}.entry-button text:last-child{color:var(--yx-brand-soft);font-size:21rpx;font-weight:400}.quest-card{margin-top:24rpx}.quest-list{display:grid;gap:10rpx;margin-top:16rpx}.quest-row{display:flex;align-items:center;justify-content:space-between;gap:12rpx;padding:16rpx;border-radius:12rpx;background:var(--yx-surface-page)}.quest-row>view{display:grid;gap:5rpx}.done{color:var(--yx-success);font-size:22rpx}.quest-row .pending{font-size:22rpx}@media(max-width:560px){.b4-metrics{gap:10rpx}.b4-metric{padding:16rpx}.b4-metric__value{font-size:30rpx}.b4-entry-grid{grid-template-columns:1fr}.season-row{display:grid}}
 </style>

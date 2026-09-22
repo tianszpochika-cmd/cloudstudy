@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import MobilePageHeader from '../../components/MobilePageHeader.vue'
+import { useMobileExperience } from '../../platform/experience'
+const { experienceStyle, experienceMotion } = useMobileExperience()
+
 import { computed, ref } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import { getUniRuntime, openUniPage } from '../../platform/uni-runtime'
@@ -95,14 +99,9 @@ async function cancel(): Promise<void> {
 </script>
 
 <template>
-  <view class="yx-page yx-onboarding" :aria-busy="saving || store.onboardingStatus === 'loading'">
-    <view class="yx-brand">
-      <text class="yx-brand__mark" aria-hidden="true">✦</text>
-      <text>语学星</text>
-    </view>
-    <text class="yx-eyebrow">FIRST DAY · {{ step }}/2</text>
-    <text class="yx-title">欢迎来到语学星</text>
-    <text class="yx-description">两步完成你的学习起点，之后每次登录都会直接回到学习空间。</text>
+  <view class="yx-page yx-onboarding" :aria-busy="saving || store.onboardingStatus === 'loading'" :style="experienceStyle" :data-motion="experienceMotion">
+
+    <MobilePageHeader page="onboarding" />
 
     <view class="yx-setup-progress" aria-label="首次设置进度">
       <view :class="['yx-setup-progress__item', { active: step === 1, done: step === 2 }]">
@@ -119,12 +118,12 @@ async function cancel(): Promise<void> {
       <view v-if="step === 1" class="yx-onboarding-step">
         <text class="section-kicker">确认身份与同意事项</text>
         <text class="section-title">先确认你可以安心开始</text>
-        <text class="section-description">语学星 Phase 1 面向 18 岁以上成人与大学生。确认信息只用于完成服务端访问 Gate。</text>
+        <text class="section-description">目前面向 18 岁及以上成人与大学生。请确认以下信息后继续。</text>
         <label class="birth-year"><text>出生年份</text><input v-model.number="birthYear" type="number" inputmode="numeric" placeholder="例如 1995" aria-label="出生年份" /></label>
         <label class="consent"><checkbox :checked="ageConfirmed" @click="ageConfirmed = !ageConfirmed" /><text>我确认自己已满 18 周岁</text></label>
         <label class="consent"><checkbox :checked="privacyConsent" @click="privacyConsent = !privacyConsent" /><text>我同意隐私说明</text></label>
         <label class="consent"><checkbox :checked="termsConsent" @click="termsConsent = !termsConsent" /><text>我同意学习服务条款</text></label>
-        <text class="flow-note">完成后继续选择目标；这些确认会由服务端分别记录。</text>
+        <text class="flow-note">完成确认后，就可以选择你的学习目标。</text>
       </view>
 
       <view v-else class="yx-onboarding-step">
@@ -133,11 +132,11 @@ async function cancel(): Promise<void> {
         <text class="section-description">选一个最重要的方向，我们会据此准备首日测评和学习任务。</text>
         <text class="field-title">学习目标</text>
         <view class="choice-list">
-          <button v-for="item in store.goals" :key="item.value" :class="['choice', { selected: goal === item.value }]" type="button" :aria-pressed="goal === item.value" @click="goal = item.value"><text>{{ item.label }}</text><text class="choice-description">{{ item.description }}</text></button>
+          <button tabindex="0" role="button" v-for="item in store.goals" :key="item.value" :class="['choice', { selected: goal === item.value }]" type="button" :aria-pressed="goal === item.value" @click="goal = item.value"><text>{{ item.label }}</text><text class="choice-description">{{ item.description }}</text></button>
         </view>
         <text class="field-title">每天愿意投入多久？</text>
         <view class="choice-list choice-list--quota">
-          <button v-for="item in store.quotas" :key="item" :class="['choice', 'quota-choice', { selected: quota === item }]" type="button" :aria-pressed="quota === item" @click="quota = item">{{ item }} 分钟</button>
+          <button tabindex="0" role="button" v-for="item in store.quotas" :key="item" :class="['choice', 'quota-choice', { selected: quota === item }]" type="button" :aria-pressed="quota === item" @click="quota = item">{{ item }} 分钟</button>
         </view>
         <text class="flow-note">目标和学习偏好之后都可以在设置中调整。</text>
       </view>
@@ -145,12 +144,12 @@ async function cancel(): Promise<void> {
       <text v-if="adultError" class="error" role="alert">{{ adultError }}</text>
       <text v-if="store.lastError" class="error" role="alert">{{ store.lastError }}；请稍后重试。</text>
       <view class="onboarding-actions">
-        <button v-if="step === 2" class="yx-button yx-button--secondary" type="button" :disabled="saving" @click="step = 1">上一步</button>
-        <button class="yx-button" type="button" :disabled="!canContinue || saving || store.onboardingStatus === 'loading'" @click="next">{{ saving ? (step === 1 ? '正在确认…' : '正在保存…') : step === 1 ? '继续' : '保存并开始测评' }}</button>
+        <button tabindex="0" role="button" v-if="step === 2" class="yx-button yx-button--secondary" type="button" :disabled="saving" @click="step = 1">上一步</button>
+        <button tabindex="0" role="button" class="yx-button" type="button" :disabled="!canContinue || saving || store.onboardingStatus === 'loading'" @click="next">{{ saving ? (step === 1 ? '正在确认…' : '正在保存…') : step === 1 ? '继续' : '保存并开始测评' }}</button>
       </view>
     </view>
 
-    <button class="yx-flow-cancel" type="button" :disabled="saving" @click="cancel">退出登录</button>
+    <button tabindex="0" role="button" class="yx-flow-cancel" type="button" :disabled="saving" @click="cancel">退出登录</button>
   </view>
 </template>
 
@@ -158,10 +157,10 @@ async function cancel(): Promise<void> {
 .yx-onboarding { padding-top: 24rpx; }
 .yx-onboarding .yx-eyebrow { margin-top: 48rpx; }
 .yx-setup-progress { display: flex; gap: 12rpx; margin-top: 32rpx; }
-.yx-setup-progress__item { display: flex; flex: 1; align-items: center; gap: 10rpx; min-width: 0; padding: 14rpx; border: 1rpx solid var(--yx-border); border-radius: 14rpx; color: var(--yx-text-tertiary); background: rgba(255, 255, 255, .66); font-size: 23rpx; font-weight: 600; }
+.yx-setup-progress__item { display: flex; flex: 1; align-items: center; gap: 10rpx; min-width: 0; padding: 14rpx; border: 1rpx solid var(--yx-border); border-radius: 14rpx; color: var(--yx-text-tertiary); background: var(--yx-brand-soft); font-size: 23rpx; font-weight: 600; }
 .yx-setup-progress__item.active, .yx-setup-progress__item.done { border-color: var(--yx-brand); color: var(--yx-brand); background: var(--yx-brand-soft); }
 .yx-setup-progress__number { display: flex; width: 34rpx; height: 34rpx; flex: 0 0 auto; align-items: center; justify-content: center; border-radius: 50%; color: var(--yx-text-secondary); background: var(--yx-surface-page); font-size: 21rpx; }
-.yx-setup-progress__item.active .yx-setup-progress__number, .yx-setup-progress__item.done .yx-setup-progress__number { color: #fff; background: var(--yx-brand); }
+.yx-setup-progress__item.active .yx-setup-progress__number, .yx-setup-progress__item.done .yx-setup-progress__number { color:var(--yx-on-brand); background: var(--yx-action); }
 .yx-onboarding-card { padding: 32rpx; }
 .yx-onboarding-step { display: flex; flex-direction: column; }
 .section-kicker { color: var(--yx-brand); font-size: 22rpx; font-weight: 700; letter-spacing: 2rpx; }

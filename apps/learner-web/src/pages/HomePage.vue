@@ -1,36 +1,57 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { RouterLink, useRouter } from 'vue-router'
 import StatePanel from '../components/StatePanel.vue'
+import AppIcon, { type AppIconName } from '../components/AppIcon.vue'
+import StudyArtwork from '../components/StudyArtwork.vue'
 import { useLearnerContentStore } from '../stores/learner-content'
-
+import { useExperienceText } from '../platform/experience-ui'
 const router = useRouter()
 const store = useLearnerContentStore()
+const t = useExperienceText()
 const home = computed(() => store.home)
-const tasks = computed(() => home.value?.today?.dailyStream.tasks ?? home.value?.home?.dailyStream.tasks ?? [])
+const stream = computed(() => home.value?.today?.dailyStream ?? home.value?.home?.dailyStream)
+const tasks = computed(() => stream.value?.tasks ?? [])
 const content = computed(() => home.value?.content ?? [])
-
+const completeCount = computed(() => tasks.value.filter(task => task.completed).length)
+const nextTask = computed(() => tasks.value.find(task => !task.completed))
+const activities: Array<{ name: string; key: string; hint: string; icon: AppIconName }> = [
+  { name: 'vocabulary', key: 'vocabulary', hint: 'vocabHint', icon: 'cards' },
+  { name: 'b3-listening', key: 'listening', hint: 'listeningHint', icon: 'headphones' },
+  { name: 'b3-reading', key: 'reading', hint: 'readingHint', icon: 'book' },
+  { name: 'b3-speaking', key: 'speaking', hint: 'speakingHint', icon: 'mic' },
+  { name: 'b3-grammar', key: 'grammar', hint: 'grammarHint', icon: 'spark' },
+  { name: 'b3-writing', key: 'writing', hint: 'writingHint', icon: 'pen' },
+]
+function start(task = nextTask.value) {
+  if (!task) { void router.push({ name: 'today' }); return }
+  void router.push({ name: 'learn-session', query: { taskId: task.id, ...(task.contentCode ? { contentCode: task.contentCode } : {}) } })
+}
 onMounted(() => { store.restore(); void store.loadHome() })
-function complete(taskId: string): void { void store.completeTask(taskId) }
 </script>
-
 <template>
-  <section class="page-stack" aria-labelledby="home-title">
-    <div class="hero-panel"><div><p class="eyebrow">B9 · LEARNER HOME</p><h2 id="home-title">今天，从一个清晰的小任务开始。</h2><p>首页由 learner-service 与 content-service 的版本化 read model 组成；内容下线、无权和服务降级都会保留可恢复状态。</p></div><div class="hero-panel__orb" aria-hidden="true">✦</div></div>
-    <StatePanel v-if="store.homeStatus === 'loading'" state="loading" title="学习首页" description="正在恢复目标、首日状态和内容版本。" />
-    <StatePanel v-else-if="store.lastError" state="error" title="学习首页" :description="store.lastError" action-label="重试" @action="() => { void store.loadHome() }" />
-    <template v-else>
-      <div class="grid grid--two"><article class="info-card"><span class="card-kicker">今日进度</span><h3>{{ store.todayProgress }}%</h3><p>目标 {{ home?.today?.dailyStream.targetMinutes ?? home?.home?.dailyStream.targetMinutes ?? 15 }} 分钟，已完成 {{ home?.today?.dailyStream.completedMinutes ?? home?.home?.dailyStream.completedMinutes ?? 0 }} 分钟。</p></article><article class="info-card"><span class="card-kicker">内容版本</span><h3>{{ content.length }} 个可用投影</h3><p>{{ home?.contentStatus === 'UNAVAILABLE' ? '内容服务暂不可用，已保留学习入口。' : '学习端只读取已发布且有权利的内容。' }}</p></article></div>
-      <article v-if="tasks.length" class="task-list"><div class="section-heading"><div><p class="card-kicker">DAILY STREAM</p><h3>今日任务</h3></div><button class="button button--secondary" type="button" @click="router.push({ name: 'today' })">打开今日任务</button></div><div v-for="task in tasks" :key="task.id" class="task-row"><span class="task-icon">{{ task.kind === 'NEW' ? '＋' : task.kind === 'REVIEW' ? '↻' : '!' }}</span><div><strong>{{ task.title }}</strong><p>{{ task.description }} · {{ task.minutes }} 分钟</p></div><button class="button button--ghost" type="button" :disabled="task.completed" @click="complete(task.id)">{{ task.completed ? '已完成' : '完成' }}</button></div></article>
-      <StatePanel v-else-if="!tasks.length" state="empty" title="今日任务为空" description="可能是目标尚未完成、内容版本下线或服务暂时降级；你可以进入 Onboarding 或稍后重试。" action-label="修改目标" @action="router.push({ name: 'onboarding' })" />
-      <article v-if="content.length" class="content-grid"><div class="section-heading"><div><p class="card-kicker">PUBLISHED CONTENT</p><h3>可继续的内容</h3></div><button class="button button--secondary" type="button" @click="router.push({ name: 'learn' })">打开课程</button></div><div v-for="item in content.slice(0, 6)" :key="item.contentId" class="content-card"><strong>{{ item.title }}</strong><span>{{ item.kind }} · {{ item.contentLocale }} · {{ item.status }}</span></div></article>
-    </template>
-    <div class="quick-actions"><button class="button button--primary" type="button" @click="router.push({ name: 'onboarding' })">修改目标</button><button class="button button--secondary" type="button" @click="router.push({ name: 'assessment' })">进入测评</button></div>
+  <section class="page-stack home-experience" aria-labelledby="home-title">
+    <div class="home-greeting"><div><p class="experience-eyebrow"><AppIcon name="spark" :size="15" />A LITTLE, EVERY DAY</p><h1 id="home-title">{{ t('homeTitle') }}</h1><p>{{ t('homeDescription') }}</p></div><RouterLink class="text-link" :to="{ name: 'onboarding' }">{{ t('setGoal') }}<AppIcon name="arrow" :size="16" /></RouterLink></div>
+    <div class="home-dashboard">
+      <div class="home-main">
+        <article class="home-hero">
+          <div class="home-hero__copy"><span class="hero-label">{{ t('myTasks') }}</span><h2>{{ nextTask?.title || t('continue') }}</h2><p>{{ nextTask?.description || t('tagline') }}</p><button class="button button--white" type="button" @click="start()">{{ t(nextTask ? 'continue' : 'start') }}<AppIcon name="arrow" :size="18" /></button><small v-if="nextTask">{{ nextTask.minutes }} {{ t('minutes') }} · {{ t('next') }}</small></div>
+          <StudyArtwork />
+        </article>
+        <article class="experience-card home-tasks">
+          <div class="section-heading"><div><span class="card-kicker">YOUR DAILY PLAN</span><h2>{{ t('myTasks') }}</h2></div><RouterLink class="text-link" :to="{ name: 'today' }">{{ t('viewAll') }}<AppIcon name="arrow" :size="16" /></RouterLink></div>
+          <StatePanel v-if="store.homeStatus === 'loading'" state="loading" :title="t('loading')" />
+          <StatePanel v-else-if="store.lastError" state="error" :title="t('myTasks')" :description="store.lastError" action-label="重试" @action="() => { void store.loadHome() }" />
+          <div v-else-if="tasks.length" class="daily-task-list"><button v-for="(task, index) in tasks.slice(0,4)" :key="task.id" type="button" class="daily-task" :class="{ 'daily-task--done': task.completed }" :disabled="task.completed" @click="start(task)"><span class="daily-task__number"><AppIcon v-if="task.completed" name="check" :size="18" /><template v-else>{{ String(index + 1).padStart(2, '0') }}</template></span><span class="daily-task__copy"><strong>{{ task.title }}</strong><small>{{ task.minutes }} {{ t('minutes') }} · {{ task.description }}</small></span><span class="daily-task__state">{{ t(task.completed ? 'completed' : 'start') }}</span><AppIcon v-if="!task.completed" name="arrow" :size="17" /></button></div>
+          <StatePanel v-else state="empty" :title="t('noTasks')" :description="t('noTasksDescription')" :action-label="t('setGoal')" @action="router.push({ name: 'onboarding' })" />
+        </article>
+      </div>
+      <aside class="home-aside">
+        <article class="experience-card daily-progress"><span class="card-kicker">LITTLE STEPS COUNT</span><h2>{{ t('progress') }}</h2><div class="daily-progress__ring" :style="{ '--progress': (stream ? store.todayProgress : 0) + '%' }"><div><strong>{{ stream ? store.todayProgress + '%' : '—' }}</strong><span>{{ t('completed') }}</span></div></div><div class="daily-progress__facts"><span>{{ t('target') }}<strong>{{ stream ? stream.targetMinutes : '—' }} <small>{{ t('minutes') }}</small></strong></span><span>{{ t('completed') }}<strong>{{ stream ? stream.completedMinutes : '—' }} <small>{{ t('minutes') }}</small></strong></span></div><p v-if="tasks.length" class="muted">{{ completeCount }} / {{ tasks.length }} {{ t('completed') }}</p></article>
+        <RouterLink class="world-invitation" :to="{ name: 'world' }"><div class="world-invitation__art" aria-hidden="true"><span>✦</span><i></i><b>✧</b></div><span class="card-kicker">YOUR LITTLE WORLD</span><h3>{{ t('worldTitle') }}</h3><p>{{ t('worldHint') }}</p><span class="text-link">{{ t('enterWorld') }}<AppIcon name="arrow" :size="17" /></span></RouterLink>
+      </aside>
+    </div>
+    <section class="home-explore"><div class="section-heading"><div><span class="card-kicker">FIND YOUR RHYTHM</span><h2>{{ t('explore') }}</h2></div><p>{{ t('exploreDescription') }}</p></div><div class="activity-grid"><RouterLink v-for="(activity, index) in activities" :key="activity.key" class="activity-card" :data-tone="index % 3" :to="{ name: activity.name }"><span class="activity-card__icon"><AppIcon :name="activity.icon" :size="25" /></span><span><strong>{{ t(activity.key) }}</strong><small>{{ t(activity.hint) }}</small></span><AppIcon name="arrow" :size="17" /></RouterLink></div></section>
+    <section v-if="content.length" class="home-books"><div class="section-heading"><h2>{{ t('bookshelf') }}</h2><RouterLink class="text-link" :to="{ name: 'courses' }">{{ t('viewAll') }}<AppIcon name="arrow" :size="16" /></RouterLink></div><div class="book-row"><RouterLink v-for="(item, index) in content.slice(0,3)" :key="item.contentId" class="book-card" :to="{ name: 'learn-session', query: { contentId: item.contentId } }"><span class="book-card__cover" :data-tone="index % 3"><AppIcon name="book" :size="32" /><small>{{ item.contentLocale }}</small></span><div><small>{{ t('availableContent') }}</small><h3>{{ item.title }}</h3><p>{{ item.description || t('courseFallback') }}</p></div><AppIcon name="arrow" :size="18" /></RouterLink></div></section>
   </section>
 </template>
-
-<style scoped>
-:global(.app-shell__sidebar){overflow-y:auto}
-:global(.nav-list){min-height:0;flex:1 1 auto;overflow-y:auto;overscroll-behavior-y:contain;scrollbar-gutter:stable}:global(.sidebar-footer){flex:0 0 auto;margin-top:12px}
-.task-list,.content-grid{padding:26px;border:1px solid var(--yx-color-border);border-radius:var(--yx-radius-card);background:var(--yx-color-surface-card)}.section-heading{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}.section-heading h3{margin:6px 0;font-size:24px}.task-row{display:flex;align-items:center;gap:14px;padding:16px 0;border-top:1px solid var(--yx-color-border)}.task-row>div{flex:1}.task-row p{margin:5px 0 0;color:var(--yx-color-text-secondary);font-size:13px}.task-icon{display:grid;width:38px;height:38px;place-items:center;border-radius:12px;color:var(--yx-color-brand-primary);background:var(--yx-color-brand-primary-soft);font-size:20px}.content-grid{margin-top:20px}.content-card{display:grid;gap:5px;padding:14px 0;border-top:1px solid var(--yx-color-border)}.content-card span{color:var(--yx-color-text-secondary);font-size:13px}.quick-actions{display:flex;gap:12px}.error-text{color:var(--yx-color-danger)}@media(max-width:640px){.task-list,.content-grid{padding:18px}.section-heading{align-items:flex-start;gap:10px}.task-row .button{padding-inline:8px}.quick-actions{display:grid}}
-</style>

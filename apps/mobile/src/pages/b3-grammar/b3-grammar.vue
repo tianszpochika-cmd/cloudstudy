@@ -1,10 +1,13 @@
 <script setup lang="ts">
+import MobilePageHeader from '../../components/MobilePageHeader.vue'
+import { useMobileExperience } from '../../platform/experience'
+const { experienceStyle, experienceMotion } = useMobileExperience()
+
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { createAdaptivePerformanceEngine, type PerformanceLevel } from '@englishflow/performance'
 import B10ExerciseCard from '../../components/b10/B10ExerciseCard.vue'
 import B10FeedbackCard from '../../components/b10/B10FeedbackCard.vue'
 import B10StatusPanel from '../../components/b10/B10StatusPanel.vue'
-import B10ThemeBar from '../../components/b10/B10ThemeBar.vue'
 import type { B10AnswerInput, B10AssessmentSession, B10GrammarPoint, B10RuleFeedback, B10SyntaxGraph, B10WritingPrompt } from '../../domain/b10'
 import { b10LearningApi, b10ErrorInfo, createB10ClientEventId } from '../../api/b10'
 import { b10ContentLocale, b10ThemeMode, b10T, b10UiLocale } from '../../platform/b10-foundation'
@@ -117,23 +120,22 @@ watch(slotValues, (value) => { if (graph.value) { grammarDraft.value.slotValues[
 </script>
 
 <template>
-  <view class="yx-page" :class="themeClass">
-    <text class="yx-eyebrow">{{ b10T('grammar.eyebrow') }}</text>
-    <text class="yx-title">{{ b10T('grammar.title') }}</text>
-    <B10ThemeBar />
+  <view class="yx-page" :class="themeClass" :style="experienceStyle" :data-motion="experienceMotion">
+    <MobilePageHeader page="b3-grammar" />
+
     <B10StatusPanel :status="status" :message="message" :performance-level="performanceLevel" @retry="load" @performance="setPerformance" />
 
-    <view v-if="points.length" class="yx-card b10-grammar-tree"><text class="b10-section-title">{{ b10T('grammar.tree') }}</text><scroll-view scroll-x class="b10-point-list"><button v-for="point in points" :key="point.grammarPointId" class="b10-point" :class="{ 'b10-point--active': activePoint?.grammarPointId === point.grammarPointId }" type="button" @click="loadPoint(point)">{{ point.code }} · {{ point.title }}</button></scroll-view><view v-if="activePoint" class="b10-rule"><text class="b10-kicker">{{ activePoint.cefrLevel }} · {{ activePoint.code }}</text><text class="b10-rule__title">{{ activePoint.title }}</text><text class="b10-rule__copy">{{ activePoint.meaningCn }}</text><text class="b10-rule__formula">{{ activePoint.ruleFormula }}</text><text v-if="activePoint.prerequisites.length" class="b10-rule__meta">前置知识点：{{ activePoint.prerequisites.join('、') }}</text><text v-if="activePoint.masteryPercent !== null" class="b10-rule__meta">掌握投影：{{ activePoint.masteryPercent }}%</text></view></view>
+    <view v-if="points.length" class="yx-card b10-grammar-tree"><text class="b10-section-title">{{ b10T('grammar.tree') }}</text><scroll-view scroll-x class="b10-point-list"><button tabindex="0" role="button" v-for="point in points" :key="point.grammarPointId" class="b10-point" :class="{ 'b10-point--active': activePoint?.grammarPointId === point.grammarPointId }" type="button" @click="loadPoint(point)">{{ point.code }} · {{ point.title }}</button></scroll-view><view v-if="activePoint" class="b10-rule"><text class="b10-kicker">{{ activePoint.cefrLevel }} · {{ activePoint.code }}</text><text class="b10-rule__title">{{ activePoint.title }}</text><text class="b10-rule__copy">{{ activePoint.meaningCn }}</text><text class="b10-rule__formula">{{ activePoint.ruleFormula }}</text><text v-if="activePoint.prerequisites.length" class="b10-rule__meta">前置知识点：{{ activePoint.prerequisites.join('、') }}</text><text v-if="activePoint.masteryPercent !== null" class="b10-rule__meta">掌握投影：{{ activePoint.masteryPercent }}%</text></view></view>
 
     <view v-if="graph" class="yx-card b10-graph-card"><view class="b10-graph-card__header"><view><text class="b10-kicker">{{ b10T('grammar.sentence') }} · {{ graph.sentenceId }}</text><text class="b10-graph-card__sentence">{{ graph.text }}</text></view><text class="b10-graph-card__mode">{{ linearMode ? '2D / Linear' : performanceLevel }}</text></view><text v-if="graph.translation" class="b10-graph-card__translation">{{ graph.translation }}</text><text v-if="graph.graphStatus === 'DEGRADED' || performanceLevel === 'Performance'" class="b10-graph-card__notice">{{ b10T('grammar.degraded') }}</text><view class="b10-node-list"><view v-for="node in graph.nodes" :key="node.nodeId" class="b10-node"><text class="b10-node__role">{{ node.role }}</text><text>{{ node.text }}</text></view></view><view v-if="!linearMode && graph.edges.length" class="b10-edge-list"><text>依存关系 {{ graph.edges.length }} 条</text><text v-for="edge in graph.edges" :key="`${edge.fromNodeId}-${edge.toNodeId}`">{{ edge.fromNodeId }} → {{ edge.toNodeId }} · {{ edge.relation }}</text></view><view v-if="linearMode" class="b10-linear-list"><text v-for="slice in graph.slices" :key="slice.sliceId">{{ slice.role }}：{{ slice.text }}</text></view>
-      <view v-if="blockOrder.length" class="b10-practice-section"><text class="b10-section-title">{{ b10T('grammar.order') }}</text><view v-for="(blockId, index) in blockOrder" :key="blockId" class="b10-block-row"><text>{{ index + 1 }}. {{ graph.slices.find((slice) => slice.sliceId === blockId)?.text ?? blockId }}</text><view><button class="b10-move" type="button" :disabled="index === 0" aria-label="上移" @click="moveBlock(index, -1)">↑</button><button class="b10-move" type="button" :disabled="index === blockOrder.length - 1" aria-label="下移" @click="moveBlock(index, 1)">↓</button></view></view><button class="yx-button" type="button" @click="submitBlocks">{{ b10T('grammar.submit') }}</button></view>
-      <view v-if="Object.keys(graph.imitationSlots).length" class="b10-practice-section"><text class="b10-section-title">{{ b10T('grammar.imitate') }}</text><view v-for="(value, key) in graph.imitationSlots" :key="key" class="b10-slot"><text>{{ key }}</text><input v-model="slotValues[key]" class="b10-input" :placeholder="value" /></view><button class="yx-button" type="button" @click="submitImitation">{{ b10T('grammar.submit') }}</button></view>
+      <view v-if="blockOrder.length" class="b10-practice-section"><text class="b10-section-title">{{ b10T('grammar.order') }}</text><view v-for="(blockId, index) in blockOrder" :key="blockId" class="b10-block-row"><text>{{ index + 1 }}. {{ graph.slices.find((slice) => slice.sliceId === blockId)?.text ?? blockId }}</text><view><button tabindex="0" role="button" class="b10-move" type="button" :disabled="index === 0" aria-label="上移" @click="moveBlock(index, -1)">↑</button><button tabindex="0" role="button" class="b10-move" type="button" :disabled="index === blockOrder.length - 1" aria-label="下移" @click="moveBlock(index, 1)">↓</button></view></view><button tabindex="0" role="button" class="yx-button" type="button" @click="submitBlocks">{{ b10T('grammar.submit') }}</button></view>
+      <view v-if="Object.keys(graph.imitationSlots).length" class="b10-practice-section"><text class="b10-section-title">{{ b10T('grammar.imitate') }}</text><view v-for="(value, key) in graph.imitationSlots" :key="key" class="b10-slot"><text>{{ key }}</text><input v-model="slotValues[key]" class="b10-input" :placeholder="value" /></view><button tabindex="0" role="button" class="yx-button" type="button" @click="submitImitation">{{ b10T('grammar.submit') }}</button></view>
     </view>
     <B10ExerciseCard v-if="exercise" :exercise="exercise" @answer="submitExerciseAnswer" />
     <B10FeedbackCard :feedback="feedback" />
 
-    <view v-if="correctionPrompt" class="yx-card b10-correction"><text class="b10-section-title">{{ b10T('grammar.correction') }}</text><text class="b10-kicker">{{ correctionPrompt.title }}</text><text>{{ correctionPrompt.taskText }}</text><textarea v-model="correctionAnswer" class="b10-textarea" maxlength="12000" placeholder="指出错误并给出规则依据。" /><button class="yx-button" type="button" @click="submitCorrection">{{ b10T('grammar.submit') }}</button></view>
-    <view v-if="status === 'empty'" class="yx-card b10-empty"><text>{{ b10T('grammar.noGraph') }}</text><button class="yx-button" type="button" @click="load">{{ b10T('status.retry') }}</button></view>
+    <view v-if="correctionPrompt" class="yx-card b10-correction"><text class="b10-section-title">{{ b10T('grammar.correction') }}</text><text class="b10-kicker">{{ correctionPrompt.title }}</text><text>{{ correctionPrompt.taskText }}</text><textarea v-model="correctionAnswer" class="b10-textarea" maxlength="12000" placeholder="指出错误并给出规则依据。" /><button tabindex="0" role="button" class="yx-button" type="button" @click="submitCorrection">{{ b10T('grammar.submit') }}</button></view>
+    <view v-if="status === 'empty'" class="yx-card b10-empty"><text>{{ b10T('grammar.noGraph') }}</text><button tabindex="0" role="button" class="yx-button" type="button" @click="load">{{ b10T('status.retry') }}</button></view>
   </view>
 </template>
 

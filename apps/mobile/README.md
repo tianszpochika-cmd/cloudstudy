@@ -24,7 +24,23 @@
 - H5 固定端口：`18183`；启动前执行根目录 `pnpm ports:check`。
 - H5 构建：`pnpm --filter @englishflow/mobile build:h5`。
 - TypeScript 检查：`pnpm exec tsc --noEmit -p apps/mobile/tsconfig.json`。
-- 当前基座固定使用 DCloud `3.0.0-alpha-4080720251125001`，并通过 `src/compat/vue.ts` 兼容 uni-app 运行时的生命周期注入差异；业务页面接入前不得移除该适配层。
+- DCloud 版本以本项目 `package.json` 与仓库锁文件为准；`src/compat/vue.ts` 兼容运行时导出差异，H5 的 `src/compat/page-lifecycle.ts` 补齐官方页面初始化调用，保证 `onLoad` 参数和 `onShow` 数据加载执行。业务页面接入前不得移除兼容层。
+
+## 官网风格移动端 UI（2026-09-22）
+
+现有 31 个注册页面统一使用官网紫色、薰衣草色与柔和卡片。共享颜色位于 `packages/design-tokens/src/mobile.ts`，页面标题和公共文案位于 `packages/i18n/src/mobile-experience.ts`。页面接入 `useMobileExperience` 和 `MobilePageHeader`，主题/动效设置可即时预览，底部导航同步明暗主题。
+
+启动：`pnpm --filter @englishflow/mobile dev:h5`，固定地址 `http://127.0.0.1:18183/`。登录入口 `/#/pages/login/login`；注册和找回密码无需登录即可进入。应用继续连接 Gateway，后端不可用时显示错误或重试入口，不向正式应用注入示例账号。
+
+```powershell
+pnpm --filter @englishflow/mobile typecheck
+pnpm --filter @englishflow/mobile build:h5
+node scripts/dev/run-node-tests.mjs apps/mobile/tests
+# 先启动 18183；浏览器测试在独立上下文拦截 API，不连接真实账号或业务服务。
+node apps/mobile/tests/mobile-experience.e2e.mjs
+```
+
+浏览器检查覆盖 31 页 × 5 个屏幕/主题组合与认证、表单、主题、动效交互，结果与截图输出至 `artifacts/mobile-experience-2026-09-22/`。详情和业务验收边界见 [移动端改造记录](../../docs/06-design/v2-980plus/mobile-experience-2026-09-22/README.md)。本轮没有原生真机/小程序验收，也不改变 P1R 状态。
 
 ## B10-FE-005 / B10-FE-006 移动端切片
 
@@ -57,3 +73,7 @@ pnpm --dir apps/mobile test:b11
 pnpm --dir apps/mobile exec tsc --noEmit -p tsconfig.json
 pnpm --dir apps/mobile build:h5
 ```
+
+## 三端统一交付
+
+本次源码、共享资源与验证记录纳入 [2026-09-22 三端 UI 统一交付](../../docs/06-design/v2-980plus/frontend-ui-delivery-2026-09-22.md)。该记录说明提交范围、本地入口及尚未完成的真实后端/真机验收。

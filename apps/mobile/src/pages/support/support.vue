@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import MobilePageHeader from '../../components/MobilePageHeader.vue'
+import { useMobileExperience } from '../../platform/experience'
+const { experienceStyle, experienceMotion } = useMobileExperience()
+
 import { onLoad } from '@dcloudio/uni-app'
 import { ref } from 'vue'
 import {
@@ -44,19 +48,14 @@ onLoad(() => { void load() })
 </script>
 
 <template>
-  <view class="yx-page">
-    <view class="yx-brand">
-      <text class="yx-brand__mark" aria-hidden="true">✦</text>
-      <text>语学星</text>
-    </view>
-    <text class="yx-eyebrow">SUPPORT</text>
-    <text class="yx-title">客服与帮助</text>
-    <text class="yx-description">原文不离端，分派与解决由服务端确认。</text>
+  <view class="yx-page" :style="experienceStyle" :data-motion="experienceMotion">
+
+    <MobilePageHeader page="support" />
 
     <view class="yx-card">
       <label class="yx-field">
         <text>问题分类</text>
-        <picker :value="category" :range="[...MOBILE_SUPPORT_CATEGORIES]" @change="category = $event.detail.value">
+        <picker :value="MOBILE_SUPPORT_CATEGORIES.indexOf(category as typeof MOBILE_SUPPORT_CATEGORIES[number])" :range="[...MOBILE_SUPPORT_CATEGORIES]" @change="category = MOBILE_SUPPORT_CATEGORIES[Number($event.detail.value)] ?? 'TECHNICAL'">
           <view>{{ category }}</view>
         </picker>
       </label>
@@ -65,7 +64,7 @@ onLoad(() => { void load() })
         <textarea v-model="description" placeholder="描述问题，原文不出端" :disabled="submitting" />
       </label>
       <text v-if="error" class="yx-login-error" role="alert">{{ error }}</text>
-      <button class="yx-button" type="button" :disabled="submitting || !description.trim()" @click="submit">
+      <button tabindex="0" role="button" class="yx-button" type="button" :disabled="submitting || !description.trim()" @click="submit">
         {{ submitting ? '正在提交…' : '提交工单' }}
       </button>
     </view>

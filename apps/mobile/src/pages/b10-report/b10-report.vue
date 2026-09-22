@@ -1,9 +1,12 @@
 <script setup lang="ts">
+import MobilePageHeader from '../../components/MobilePageHeader.vue'
+import { useMobileExperience } from '../../platform/experience'
+const { experienceStyle, experienceMotion } = useMobileExperience()
+
 import { computed, onUnmounted, ref } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import { createAdaptivePerformanceEngine, type PerformanceLevel } from '@englishflow/performance'
 import B10StatusPanel from '../../components/b10/B10StatusPanel.vue'
-import B10ThemeBar from '../../components/b10/B10ThemeBar.vue'
 import { b10ThemeMode, b10T } from '../../platform/b10-foundation'
 import { useB10LearningStore } from '../../stores/b10-learning'
 import { openUniPage, getUniRuntime } from '../../platform/uni-runtime'
@@ -26,17 +29,17 @@ onUnmounted(() => engine.dispose())
 </script>
 
 <template>
-  <view class="yx-page" :class="themeClass">
-    <text class="yx-eyebrow">{{ b10T('report.eyebrow') }}</text>
-    <text class="yx-title">{{ b10T('report.title') }}</text>
-    <view class="b10-report-period" role="tablist" aria-label="报告周期"><button class="b10-period-button" :class="{ active: reportPeriod === 'daily' }" type="button" role="tab" :aria-selected="reportPeriod === 'daily'" @click="selectReportPeriod('daily')">日报</button><button class="b10-period-button" :class="{ active: reportPeriod === 'weekly' }" type="button" role="tab" :aria-selected="reportPeriod === 'weekly'" @click="selectReportPeriod('weekly')">周报</button></view>
-    <B10ThemeBar />
+  <view class="yx-page" :class="themeClass" :style="experienceStyle" :data-motion="experienceMotion">
+    <MobilePageHeader page="b10-report" />
+
+    <view class="b10-report-period" role="tablist" aria-label="报告周期"><button tabindex="0" class="b10-period-button" :class="{ active: reportPeriod === 'daily' }" type="button" role="tab" :aria-selected="reportPeriod === 'daily'" @click="selectReportPeriod('daily')">日报</button><button tabindex="0" class="b10-period-button" :class="{ active: reportPeriod === 'weekly' }" type="button" role="tab" :aria-selected="reportPeriod === 'weekly'" @click="selectReportPeriod('weekly')">周报</button></view>
+
     <B10StatusPanel :status="status" :message="store.message" :performance-level="performanceLevel" @retry="load" @performance="setPerformance" />
-    <view v-if="store.mistakes.length" class="yx-card b10-mistakes"><text class="b10-section-title">{{ b10T('report.mistakes') }}</text><view v-for="mistake in store.mistakes" :key="mistake.mistakeId" class="b10-mistake"><view class="b10-mistake__copy"><text class="b10-mistake__title">{{ mistake.errorCategory }}</text><text>{{ mistake.prompt ?? `题目 ${mistake.itemId}` }}</text><text class="b10-mistake__meta">{{ mistake.mistakeStatus }} · {{ mistake.masteryStatus }}</text><text v-for="reason in mistake.reasonTrace" :key="reason.code" class="b10-mistake__reason">{{ reason.label }}<template v-if="reason.evidence"> · {{ reason.evidence }}</template></text></view><button class="b10-mini" type="button" :disabled="mistake.mistakeStatus === 'MASTERED'" @click="retry(mistake.mistakeId)">{{ b10T('report.retry') }}</button></view></view>
+    <view v-if="store.mistakes.length" class="yx-card b10-mistakes"><text class="b10-section-title">{{ b10T('report.mistakes') }}</text><view v-for="mistake in store.mistakes" :key="mistake.mistakeId" class="b10-mistake"><view class="b10-mistake__copy"><text class="b10-mistake__title">{{ mistake.errorCategory }}</text><text>{{ mistake.prompt ?? `题目 ${mistake.itemId}` }}</text><text class="b10-mistake__meta">{{ mistake.mistakeStatus }} · {{ mistake.masteryStatus }}</text><text v-for="reason in mistake.reasonTrace" :key="reason.code" class="b10-mistake__reason">{{ reason.label }}<template v-if="reason.evidence"> · {{ reason.evidence }}</template></text></view><button tabindex="0" role="button" class="b10-mini" type="button" :disabled="mistake.mistakeStatus === 'MASTERED'" @click="retry(mistake.mistakeId)">{{ b10T('report.retry') }}</button></view></view>
     <view v-else-if="store.status !== 'loading'" class="yx-card b10-empty"><text>{{ b10T('report.noMistakes') }}</text></view>
     <view v-if="store.report" class="yx-card b10-report"><view class="b10-report__header"><text class="b10-section-title">{{ b10T('report.report') }}</text><text class="b10-report__status">{{ store.report.status }}</text></view><view class="b10-report__score"><text v-if="store.report.score !== null">{{ store.report.score }}<text v-if="store.report.reportedMaxScore !== null"> / {{ store.report.reportedMaxScore }}</text></text><text v-else>{{ store.report.status === 'PARTIAL' ? b10T('report.partial') : b10T('report.noReport') }}</text></view><view v-if="store.report.metrics.length" class="b10-metrics"><view v-for="metric in store.report.metrics" :key="metric.code" class="b10-metric"><text>{{ metric.label }}</text><text>{{ metric.value }}<template v-if="metric.max !== undefined"> / {{ metric.max }}</template></text></view></view><view v-if="store.report.evidence.length" class="b10-evidence"><text class="b10-section-title">{{ b10T('report.reason') }}</text><view v-for="item in store.report.evidence" :key="`${item.label}-${item.detail}`"><text>{{ item.label }}</text><text>{{ item.detail }}</text></view></view></view>
     <view v-else-if="store.reportStatus === 'loading'" class="yx-card b10-empty"><text>{{ b10T('status.loading') }}</text></view>
-    <view class="b10-links"><button class="yx-button yx-button--secondary" type="button" @click="open('/pages/b2-vocabulary/b2-vocabulary')">词汇复习</button><button class="yx-button yx-button--secondary" type="button" @click="open('/pages/b2-practice/b2-practice')">继续练习</button></view>
+    <view class="b10-links"><button tabindex="0" role="button" class="yx-button yx-button--secondary" type="button" @click="open('/pages/b2-vocabulary/b2-vocabulary')">词汇复习</button><button tabindex="0" role="button" class="yx-button yx-button--secondary" type="button" @click="open('/pages/b2-practice/b2-practice')">继续练习</button></view>
   </view>
 </template>
 

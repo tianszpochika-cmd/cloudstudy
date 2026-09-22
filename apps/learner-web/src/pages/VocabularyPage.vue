@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ExperienceHeader from '../components/ExperienceHeader.vue'
 import { computed, onMounted } from 'vue'
 import B10StatePanel from '../components/b10/B10StatePanel.vue'
 import { useLearningUi } from '../platform/learning-ui'
@@ -27,10 +28,7 @@ function rate(value: B10ReviewQuality): void { void store.rateCard(value) }
 
 <template>
   <section class="b10-page" :data-performance="store.performanceLevel" aria-labelledby="vocabulary-title">
-    <header class="page-heading">
-      <div><p class="eyebrow">VOC · SRS LOOP</p><h2 id="vocabulary-title">{{ ui.t('b10.vocabulary.title') }}</h2><p>{{ ui.t('b10.common.noAnswerRule') }}</p></div>
-      <span class="locale-pill">{{ ui.t('b10.common.ui') }} {{ ui.locale }} · {{ ui.t('b10.common.content') }} {{ ui.contentLocale }}</span>
-    </header>
+    <ExperienceHeader page="Vocabulary" icon="cards" title-id="vocabulary-title" />
     <B10StatePanel v-if="status !== 'ready' || store.queueCount" :status="status" :message="store.vocabularyMessage" :queue-count="store.queueCount" :cached="store.vocabularyCached" module-label="VOC / SRS" :performance-level="store.performanceLevel" @retry="retry" @sync="sync" @performance="performance" />
     <section v-if="card" class="vocabulary-layout">
       <article class="vocabulary-card" :class="{ 'vocabulary-card--static': store.performanceLevel === 'Performance' }" aria-live="polite">

@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import MobilePageHeader from '../../components/MobilePageHeader.vue'
+import { useMobileExperience } from '../../platform/experience'
+const { experienceStyle, experienceMotion } = useMobileExperience()
+
 import { computed, onMounted } from 'vue'
 import type { PerformanceLevel } from '@englishflow/performance'
 import B11StatusPanel from '../../components/b11/B11StatusPanel.vue'
@@ -24,21 +28,20 @@ onMounted(() => { void load() })
 </script>
 
 <template>
-  <view class="yx-page b11-page" :class="themeClass">
-    <text class="yx-eyebrow">{{ b11T('reading.eyebrow') }}</text>
-    <text class="yx-title">{{ b11T('reading.title') }}</text>
-    <text class="yx-description">{{ b11T('reading.description') }}</text>
+  <view class="yx-page b11-page" :class="themeClass" :style="experienceStyle" :data-motion="store.motionDisabled || store.performanceLevel === 'Performance' ? 'off' : experienceMotion">
+    <MobilePageHeader page="b11-reading" />
+
     <B11StatusPanel :status="store.readingStatus" :message="store.readingMessage" :queue-count="store.queueCount" :performance-level="store.performanceLevel" :motion-disabled="store.motionDisabled" @retry="load" @sync="sync" @performance="setPerformance" @motion="setMotion" />
 
     <view v-if="store.reading" class="yx-card reader-card">
       <view class="reader-heading"><view><text class="kicker">{{ store.reading.article.cefrLevel }} · {{ store.reading.article.wordCount }} words</text><text class="card-title">{{ store.reading.article.title }}</text></view><text class="subtle">{{ b11T('common.contentVersion') }} {{ store.reading.contentVersion }}</text></view>
       <view class="progress-track"><view class="progress-value" :style="{ width: `${store.readingProgress}%` }"></view></view><text class="subtle">{{ store.readingProgress }}% · 第 {{ store.readingBlockIndex + 1 }} / {{ store.reading.article.blocks.length }} 段</text>
       <view class="reading-block"><text>{{ blockText }}</text><text v-if="blockTranslation" class="translation">{{ blockTranslation }}</text></view>
-      <view class="reader-actions"><button class="small-button" type="button" @click="store.setReadingBlock(store.readingBlockIndex - 1)">上一段</button><button class="small-button" type="button" @click="nextBlock">{{ b11T('reading.next') }}</button><button class="yx-button" type="button" @click="store.saveReadingPosition(true)">{{ b11T('reading.save') }}</button></view>
-      <view v-if="store.reading.questions.length" class="question-list"><text class="kicker">{{ b11T('reading.question') }}</text><view v-for="question in store.reading.questions" :key="question.questionId" class="question"><text class="question-stem">{{ question.stemText }}</text><radio-group @change="setAnswer(question, $event)"><label v-for="option in question.options" :key="option.optionCode" class="option"><radio :value="option.optionCode" :checked="store.readingAnswers[String(question.questionId)] === option.optionCode" /><text>{{ option.label }}</text></label></radio-group><button class="small-button" type="button" :disabled="Boolean(store.readingAttempts[String(question.questionId)])" @click="store.submitReadingAnswer(question)">{{ b11T('reading.submit') }}</button><view v-if="store.readingAttempts[String(question.questionId)]" class="feedback"><text>{{ store.readingAttempts[String(question.questionId)].correct ? '服务端规则判定正确' : '服务端已记录本次练习' }}</text><text>{{ store.readingAttempts[String(question.questionId)].feedbackCode }}</text></view></view></view>
+      <view class="reader-actions"><button tabindex="0" role="button" class="small-button" type="button" @click="store.setReadingBlock(store.readingBlockIndex - 1)">上一段</button><button tabindex="0" role="button" class="small-button" type="button" @click="nextBlock">{{ b11T('reading.next') }}</button><button tabindex="0" role="button" class="yx-button" type="button" @click="store.saveReadingPosition(true)">{{ b11T('reading.save') }}</button></view>
+      <view v-if="store.reading.questions.length" class="question-list"><text class="kicker">{{ b11T('reading.question') }}</text><view v-for="question in store.reading.questions" :key="question.questionId" class="question"><text class="question-stem">{{ question.stemText }}</text><radio-group @change="setAnswer(question, $event)"><label v-for="option in question.options" :key="option.optionCode" class="option"><radio :value="option.optionCode" :checked="store.readingAnswers[String(question.questionId)] === option.optionCode" /><text>{{ option.label }}</text></label></radio-group><button tabindex="0" role="button" class="small-button" type="button" :disabled="Boolean(store.readingAttempts[String(question.questionId)])" @click="store.submitReadingAnswer(question)">{{ b11T('reading.submit') }}</button><view v-if="store.readingAttempts[String(question.questionId)]" class="feedback"><text>{{ store.readingAttempts[String(question.questionId)].correct ? '回答正确' : '服务端已记录本次练习' }}</text><text>{{ store.readingAttempts[String(question.questionId)].feedbackCode }}</text></view></view></view>
     </view>
-    <view v-else-if="store.readingStatus === 'empty'" class="yx-card empty" role="status"><text>{{ b11T('reading.noArticle') }}</text><text class="subtle">{{ b11T('common.noSample') }}</text><button class="yx-button" type="button" @click="load">{{ b11T('status.retry') }}</button></view>
-    <view v-else-if="store.readingStatus !== 'loading'" class="yx-card empty" role="alert"><text>{{ b11T(`status.${store.readingStatus}`) }}</text><text class="subtle">{{ store.readingMessage ?? b11T('common.recovery') }}</text><button class="yx-button" type="button" @click="load">{{ b11T('status.retry') }}</button></view>
+    <view v-else-if="store.readingStatus === 'empty'" class="yx-card empty" role="status"><text>{{ b11T('reading.noArticle') }}</text><text class="subtle">{{ b11T('common.noSample') }}</text><button tabindex="0" role="button" class="yx-button" type="button" @click="load">{{ b11T('status.retry') }}</button></view>
+    <view v-else-if="store.readingStatus !== 'loading'" class="yx-card empty" role="alert"><text>{{ b11T(`status.${store.readingStatus}`) }}</text><text class="subtle">{{ store.readingMessage ?? b11T('common.recovery') }}</text><button tabindex="0" role="button" class="yx-button" type="button" @click="load">{{ b11T('status.retry') }}</button></view>
   </view>
 </template>
 

@@ -1,6 +1,7 @@
+import { experiencePerformance } from '../platform/experience-ui'
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
-import { createAdaptivePerformanceEngine, type PerformanceLevel, type PerformanceStrategy } from '@englishflow/performance'
+import { type PerformanceLevel, type PerformanceStrategy } from '@englishflow/performance'
 import {
   authorizeB4OfflinePackage,
   cleanupB4OfflineDownload,
@@ -327,7 +328,7 @@ function messageFor(error: unknown, fallback: string): string {
 }
 
 export const useB4Store = defineStore('b4', () => {
-  const engine = createAdaptivePerformanceEngine()
+  const engine = experiencePerformance
   const performanceLevel = ref<B4PerformanceLevel>(engine.level)
   const performanceStrategy = ref<PerformanceStrategy>(engine.state.strategy)
   const status = ref<B4Status>('idle')
@@ -411,7 +412,7 @@ export const useB4Store = defineStore('b4', () => {
     online.value = true
     status.value = 'ready'
     lastError.value = results.some((result) => result.status === 'rejected')
-      ? '网络连接正常；成长、社群、游戏和离线包中尚未启用的 owner 保持空状态，未使用快照数据。'
+      ? '部分内容暂时未能加载，已显示当前可用的内容。'
       : null
     refreshQueue()
   }
@@ -579,6 +580,6 @@ export const useB4Store = defineStore('b4', () => {
     status, online, lastError, profile, galaxy, streak, quests, season, avatarProfile, avatarItems, loadouts, avatarResources, games, activeGame, lastGameResult, rooms, activeFocus, notifications, notificationPreferences, offlinePackages, chests, chestProbability, lastChestResult, leaderboard, lastModerationReport, actionKey, featureFlags,
     performanceLevel, performanceStrategy, effectiveAvatarRenderMode, queueCount, offlineRecords,
     restore, setPerformance, loadWorld, loadChests, loadChestProbability, openChest, loadLeaderboard, reportUser, saveStreakSettings, rescueStreak, saveAvatarProfile, equipLoadout, startGame, refreshGame, submitGameEvent, pauseGame, resumeGame, finishGame, joinRoom, leaveRoom, startFocus, updateFocus, sendInteraction, readNotification, readAllNotifications, saveNotificationPreferences, authorizeOfflinePackage, updateOfflineDownload, cleanupOfflineDownload, syncOffline,
-    dispose: () => { unsubscribe(); engine.dispose() },
+    dispose: () => { unsubscribe(); /* Shared engine lives for the application lifetime. */ },
   }
 })

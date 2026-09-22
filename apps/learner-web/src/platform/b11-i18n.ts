@@ -3,18 +3,18 @@ import { learnerI18n } from './v2-foundation'
 learnerI18n.registerMessages('zh-CN', {
   b11: {
     common: {
-      retry: '重新读取', sync: '同步离线队列', performance: '画质：{{level}}', ui: '界面', content: '内容', phase1: 'Phase 1 不启用 ASR、数字人或 AI 评分。',
+      retry: '重新读取', sync: '同步离线队列', performance: '画质：{{level}}', ui: '界面', content: '内容', phase1: '练习反馈帮助你找到需要巩固的地方。',
       noMedia: '媒体授权地址不可用，仍可继续检查时间轴、字幕和题目。', revoked: '内容版权或媒体授权已撤回。', expired: '播放授权已过期，请重新读取。', offline: '当前离线，已保留本地安全状态。',
     },
-    state: { loading: '正在读取…', empty: '当前没有可用内容。', ready: '服务端数据已就绪。', error: '服务暂时不可用。', forbidden: '当前账号无权访问此资源。', offline: '网络暂时不可用，变更已保留。', revoked: '内容已撤回。', expired: '授权已过期。', recovering: '正在恢复本地学习状态…' },
+    state: { loading: '正在读取…', empty: '当前没有可用内容。', ready: '准备好了，开始吧。', error: '服务暂时不可用。', forbidden: '当前账号无权访问此资源。', offline: '网络暂时不可用，变更已保留。', revoked: '内容已撤回。', expired: '授权已过期。', recovering: '正在恢复本地学习状态…' },
     listening: {
-      title: '听力精练', description: '精听、听写、慢速、A-B 循环、字幕与 Language Clips 共享同一内容版本。', play: '播放', pause: '暂停', speed: '速度', subtitles: '显示字幕', hideSubtitles: '隐藏字幕', markA: '标记 A', markB: '标记 B', clearAB: '清除 A-B', loop: '循环片段', download: '缓存媒体', downloaded: '媒体已缓存', dictation: '听写', answerPlaceholder: '听后写下句子；规则判定只在服务端执行。', submit: '提交听写', noMaterial: '暂时没有可用听力材料。', noClips: '当前材料没有 Language Clips。', revoked: '这份材料的媒体权益已撤回。', expired: '媒体授权已过期。', mediaUnavailable: '没有可播放的短时授权地址。', positionSaved: '播放位置会按版本保存。',
+      title: '听力精练', description: '精听、听写、慢速、A-B 循环、字幕与 Language Clips 共享同一内容版本。', play: '播放', pause: '暂停', speed: '速度', subtitles: '显示字幕', hideSubtitles: '隐藏字幕', markA: '标记 A', markB: '标记 B', clearAB: '清除 A-B', loop: '循环片段', download: '缓存媒体', downloaded: '媒体已缓存', dictation: '听写', answerPlaceholder: '听一听，写下你听到的句子。', submit: '提交听写', noMaterial: '暂时没有可用听力材料。', noClips: '当前材料没有 Language Clips。', revoked: '这份材料的媒体权益已撤回。', expired: '媒体授权已过期。', mediaUnavailable: '音频暂时无法播放，请重新加载。', positionSaved: '播放位置会按版本保存。',
     },
     reading: {
-      title: '分级阅读', description: '文章、进度、理解题和内容版本保持一致；离线时保留文本快照并等待服务端确认。', fontSize: '字号', bilingual: '显示译文', hideTranslation: '隐藏译文', next: '下一段', save: '保存进度', quiz: '理解检查', submit: '提交答案', noArticle: '暂时没有可阅读内容。', noQuestions: '当前文章没有理解题。', ruleFeedback: '规则反馈来自服务端；不在客户端猜答案。',
+      title: '分级阅读', description: '文章、进度、理解题和内容版本保持一致；离线时保留文本快照并等待服务端确认。', fontSize: '字号', bilingual: '显示译文', hideTranslation: '隐藏译文', next: '下一段', save: '保存进度', quiz: '理解检查', submit: '提交答案', noArticle: '暂时没有可阅读内容。', noQuestions: '当前文章没有理解题。', ruleFeedback: '提交答案后，查看理解反馈。',
     },
     speaking: {
-      title: '音标与影子跟读', description: '音标、口型、录音回放、重录和自评在 Phase 1 只保留可解释的规则边界。', permission: '开始录音前才请求麦克风权限。', denied: '麦克风权限未开启，音标学习仍可继续。', start: '开始录音', stop: '停止录音', save: '加密并登记', replay: '回放本地副本', retake: '重录', delete: '删除录音', rating: '自我评价', needsPractice: '需要练习', basic: '基本可以', fluent: '很流畅', uncertain: '不确定', localOnly: '本地加密副本已保留，待网络恢复后登记。', saved: '录音元数据已登记。', missing: '本地副本已过期或被清理。', noPhonemes: '暂无音标内容。', noAi: '不生成 AI 分数、不调用 ASR、不启动数字人。', shadowing: '影子跟读', startShadowing: '开始影子跟读', shadowingSaved: '影子跟读进度已保存。',
+      title: '音标与影子跟读', description: '音标、口型、录音回放、重录和自评在 Phase 1 只保留可解释的规则边界。', permission: '开始录音前才请求麦克风权限。', denied: '麦克风权限未开启，音标学习仍可继续。', start: '开始录音', stop: '停止录音', save: '保存录音', replay: '回放本地副本', retake: '重录', delete: '删除录音', rating: '自我评价', needsPractice: '需要练习', basic: '基本可以', fluent: '很流畅', uncertain: '不确定', localOnly: '本地加密副本已保留，待网络恢复后登记。', saved: '录音已保存。', missing: '本地副本已过期或被清理。', noPhonemes: '暂无音标内容。', noAi: '回放自己的声音，对照示范做一次自我评价。', shadowing: '影子跟读', startShadowing: '开始影子跟读', shadowingSaved: '影子跟读进度已保存。',
     },
   },
 })
