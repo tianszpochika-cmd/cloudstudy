@@ -1,6 +1,6 @@
 # B4-04 词汇类别扩展机制交付（TENANT-B4-04）
 
-> 日期：2026-09-21。规划见 [B4-multilingual-plan](B4-multilingual-plan.md) §2 TENANT-B4-04。
+> 日期：2026-09-21。系列规划文档 `B4-multilingual-plan.md` 未随提交入库（缺失）；系列入口见 [README](README.md) §7/§10（原引用 TENANT-B4-04）。
 > 状态：实现 + 契约 + 单测 + 管理前端 + 规范文档完成；运行（真实 DB/网关/浏览器）与 P1R 验收未做，不改变任何 P1R 任务状态。
 
 ## 1. 做了什么

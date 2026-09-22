@@ -1,6 +1,6 @@
 # B4-10 契约/门禁/文档收尾交付（TENANT-B4-10）
 
-> 日期：2026-09-21。规划见 [B4-multilingual-plan](B4-multilingual-plan.md) §2 TENANT-B4-10。
+> 日期：2026-09-21。系列规划文档 `B4-multilingual-plan.md` 未随提交入库（缺失）；系列入口见 [README](README.md) §7/§10（原引用 TENANT-B4-10）。
 > 状态：全量回归 + 门禁 diff + 文档收尾完成；运行（真实 DB/网关/浏览器）与 P1R 验收未做，不改变任何 P1R 任务状态。
 
 ## 1. 全量回归（§4 命令，2026-09-21 实跑）

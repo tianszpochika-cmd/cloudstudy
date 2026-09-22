@@ -1,6 +1,6 @@
 # B4-06 学习任务类型扩展交付（TENANT-B4-06）
 
-> 日期：2026-09-21。规划见 [B4-multilingual-plan](B4-multilingual-plan.md) §2 TENANT-B4-06。
+> 日期：2026-09-21。系列规划文档 `B4-multilingual-plan.md` 未随提交入库（缺失）；系列入口见 [README](README.md) §7/§10（原引用 TENANT-B4-06）。
 > 状态：实现 + 单测完成；运行（真实 DB/网关/浏览器）与 P1R 验收未做，不改变任何 P1R 任务状态。
 
 ## 1. 做了什么

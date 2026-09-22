@@ -24,6 +24,7 @@
 ### 本机与浏览器运行记录
 
 - [local-runtime-smoke-2026-08-23.md](local-runtime-smoke-2026-08-23.md)：本机运行时冒烟记录。
+- [local-runtime-verification-2026-09-21.md](local-runtime-verification-2026-09-21.md)：本机真实运行验证快照（T1–T21：多服务真实链路、运行期抓出的 17 项缺陷、未闭合项清单）。
 - [local-real-data-browser-full-test-2026-08-26.md](local-real-data-browser-full-test-2026-08-26.md)：真实数据浏览器全量测试。
 - [web-h5-browser-test-report-2026-08-23.md](web-h5-browser-test-report-2026-08-23.md)：Web/H5 浏览器测试报告。
 - [test-phase-handoff-2026-08-22.md](test-phase-handoff-2026-08-22.md)：测试阶段交接记录。
