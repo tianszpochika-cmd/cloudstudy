@@ -61,6 +61,22 @@ learning:
     username: ${LEARNING_JDBC_USERNAME:}
     password: ${LEARNING_JDBC_PASSWORD:}
     driver-class-name: ${LEARNING_JDBC_DRIVER:com.mysql.cj.jdbc.Driver}
+  events:
+    relay:
+      # Off by default: an unconfigured broker must not silently change delivery semantics, and the
+      # deterministic suites keep running without a Kafka container.
+      enabled: ${LEARNING_EVENT_RELAY_ENABLED:false}
+      # Destination and broker come from the event runtime contract's topic table and the fixed
+      # local port registry; the application never creates a topic (adminClientInApplication: false).
+      topic: ${LEARNING_EVENT_TOPIC:platform.learning.v1}
+      bootstrap-servers: ${LEARNING_KAFKA_BOOTSTRAP_SERVERS:127.0.0.1:19092}
+      instance-id: ${LEARNING_EVENT_RELAY_INSTANCE_ID:learning-service}
+      batch-size: ${LEARNING_EVENT_RELAY_BATCH_SIZE:100}
+      lease: ${LEARNING_EVENT_RELAY_LEASE:30s}
+      poll-interval: ${LEARNING_EVENT_RELAY_POLL_INTERVAL:5s}
+      max-attempts: ${LEARNING_EVENT_RELAY_MAX_ATTEMPTS:5}
+      base-delay: ${LEARNING_EVENT_RELAY_BASE_DELAY:1s}
+      max-delay: ${LEARNING_EVENT_RELAY_MAX_DELAY:60s}
 
 security:
   resource-server:

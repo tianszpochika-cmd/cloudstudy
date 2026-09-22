@@ -424,11 +424,12 @@ public final class JdbcLearningFactStore implements LearningFactStore {
         jdbc.update("""
                 INSERT INTO learning_runtime_outbox_event
                     (event_id, tenant_id, principal_id, user_id, aggregate_type, aggregate_id,
-                     event_type, schema_version, event_version, actor_id, dedupe_key, payload_json,
+                     event_type, event_name, schema_version, event_version, actor_id, dedupe_key, payload_json,
                      request_id, trace_id, occurred_at, status, attempt_count, available_at, created_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'PENDING', 0, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'PENDING', 0, ?, ?)
                 """, event.eventId().toString(), scope.tenantId(), scope.principalId(), scope.userId(),
-                event.aggregateType(), event.aggregateId(), event.eventType(), event.schemaVersion(), event.version(),
+                event.aggregateType(), event.aggregateId(), event.eventType(), event.eventType(),
+                event.schemaVersion(), event.version(),
                 event.actorId(), event.dedupeKey(), serialize(event.payload()), event.requestId(), event.traceId(),
                 timestamp(event.occurredAt()), timestamp(event.occurredAt()), timestamp(event.occurredAt()));
     }

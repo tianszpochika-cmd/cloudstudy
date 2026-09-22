@@ -102,6 +102,12 @@ final class LearningEventFactory {
      * Only SERVER_SETTLED completions qualify; the payload carries pins and digests,
      * never raw answers, audio or free text. Dedupe key is stable per task version so
      * replays append once.
+     *
+     * <p>Consumer-facing identity follows the canonical M1014 payload: {@code subjectRef}
+     * and {@code completionId} travel explicitly and numeric ids are strings, because the
+     * relay forwards this payload verbatim. Fields the learning owner cannot know
+     * (rootEventId, contentPin snapshot refs, rule digests) stay a documented M5-013
+     * remainder for the content-snapshot handoff.
      */
     static final java.util.Set<String> TRUSTED_COMPLETION_SOURCES =
             java.util.Set.of("learning.task.completed.v2");
@@ -118,17 +124,19 @@ final class LearningEventFactory {
         return v2event(scope, "learning_task_completion", Long.toString(task.taskId()),
                 "learning.task.completed.v2",
                 "trusted-task-completed-" + task.taskId() + "-v" + task.completionVersion(),
-                Map.of(
-                        "producerService", "learning-service",
-                        "taskStatus", "COMPLETED",
-                        "completionFact", "SERVER_SETTLED",
-                        "taskId", task.taskId(),
-                        "completionVersion", task.completionVersion(),
-                        "contentVersionId", task.contentVersionId(),
-                        "contentEpoch", contentEpoch,
-                        "completionRuleVersion", completionRuleVersion,
-                        "outcomeDigest", outcomeDigest,
-                        "completedAt", occurredAt.toString()),
+                Map.<String, Object>ofEntries(
+                        Map.entry("producerService", "learning-service"),
+                        Map.entry("taskStatus", "COMPLETED"),
+                        Map.entry("completionFact", "SERVER_SETTLED"),
+                        Map.entry("taskId", Long.toString(task.taskId())),
+                        Map.entry("completionId", Long.toString(task.taskId())),
+                        Map.entry("subjectRef", scope.principalId()),
+                        Map.entry("completionVersion", String.valueOf(task.completionVersion())),
+                        Map.entry("contentVersionId", task.contentVersionId()),
+                        Map.entry("contentEpoch", contentEpoch),
+                        Map.entry("completionRuleVersion", completionRuleVersion),
+                        Map.entry("outcomeDigest", outcomeDigest),
+                        Map.entry("completedAt", occurredAt.toString())),
                 metadata, occurredAt);
     }
 
@@ -142,7 +150,7 @@ final class LearningEventFactory {
             LearningRequestMetadata metadata,
             Instant occurredAt) {
         return new LearningOutboxEvent(
-                UUID.randomUUID(), scope, aggregateType, aggregateId, eventType, "v2", 2,
+                UUID.randomUUID(), scope, aggregateType, aggregateId, eventType, "learning.event.v2", 2,
                 scope.principalId(), dedupeKey, payload,
                 metadata.requestId(), metadata.traceId(), occurredAt);
     }

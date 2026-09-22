@@ -201,6 +201,13 @@ function runtimeEnvironment(service, port) {
     // declared consumer group actually consumes its topic.
     environment.CONTENT_EVENT_CONSUMER_ENABLED = process.env.CONTENT_EVENT_CONSUMER_ENABLED ?? 'true';
   }
+  if (service.id === 'learning-service') {
+    // M5-013 outbound relay (same policy as content-service): off by default in the
+    // application, turned on by the local-real stack against the registered loopback broker.
+    environment.LEARNING_EVENT_RELAY_ENABLED = process.env.LEARNING_EVENT_RELAY_ENABLED ?? 'true';
+    environment.LEARNING_KAFKA_BOOTSTRAP_SERVERS = process.env.LEARNING_KAFKA_BOOTSTRAP_SERVERS
+      ?? `${process.env.KAFKA_HOST ?? '127.0.0.1'}:${process.env.KAFKA_PORT ?? '19092'}`;
+  }
   if (service.id === 'audit-service') {
     // audit-service is not in the owner manifest, so its persistence binding has to be supplied
     // here. It has no runtime Flyway: the audit_service schema and the DML-only svc_audit
