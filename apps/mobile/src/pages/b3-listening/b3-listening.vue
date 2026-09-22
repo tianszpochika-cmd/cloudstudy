@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import MobilePageHeader from '../../components/MobilePageHeader.vue'
+import { useMobileExperience } from '../../platform/experience'
+const { experienceStyle, experienceMotion } = useMobileExperience()
+
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { createAdaptivePerformanceEngine, type PerformanceLevel } from '@englishflow/performance'
 import B2StatusPanel from '../../components/b2/B2StatusPanel.vue'
@@ -22,26 +26,25 @@ onUnmounted(() => { audio.value?.destroy(); unsubscribe(); engine.dispose() })
 </script>
 
 <template>
-  <view class="yx-page">
-    <text class="yx-eyebrow">LISTENING · TIMELINE</text>
-    <text class="yx-title">听清时间线，再写下听到的句子。</text>
-    <text class="yx-description">波形、分段和音变标注由内容服务提供；Phase 1 不启用 ASR 或 AI 评分。</text>
+  <view class="yx-page" :style="experienceStyle" :data-motion="experienceMotion">
+    <MobilePageHeader page="b3-listening" />
+
     <B2StatusPanel :status="status" :message="message" :performance-level="performanceLevel" @retry="load" @performance="setPerformance" @sync="() => undefined" />
     <view v-if="material && segment" class="yx-card listening-card">
       <text class="card-kicker">{{ material.title }} · {{ Math.round(material.durationMs / 1000) }}s</text>
       <view class="waveform"><view v-for="bar in 24" :key="bar" class="bar" :style="{ height: `${24 + (bar % 7) * 7}rpx` }"></view></view>
       <text class="segment-time">{{ segment.startMs }}ms — {{ segment.endMs }}ms</text>
-      <view class="audio-controls"><button class="small-button" type="button" :disabled="!audioSource" @click="playAudio">播放</button><button class="small-button" type="button" :disabled="!audioSource" @click="pauseAudio">暂停</button><picker mode="selector" :range="PLAYBACK_RATES" @change="playbackRate = PLAYBACK_RATES[Number($event.detail.value)] ?? 1; changeRate()"><view class="small-button">{{ playbackRate }}x</view></picker></view>
+      <view class="audio-controls"><button tabindex="0" role="button" class="small-button" type="button" :disabled="!audioSource" @click="playAudio">播放</button><button tabindex="0" role="button" class="small-button" type="button" :disabled="!audioSource" @click="pauseAudio">暂停</button><picker mode="selector" :range="PLAYBACK_RATES" @change="playbackRate = PLAYBACK_RATES[Number($event.detail.value)] ?? 1; changeRate()"><view class="small-button">{{ playbackRate }}x</view></picker></view>
       <text class="hint">{{ audioSource ? '已获得授权播放地址；速度控制使用原生音频适配层。' : '当前内容没有授权播放地址；波形、时间轴和听写可检查，但不会伪造播放。' }}</text>
       <view class="token-list"><view v-for="token in segment.tokens" :key="token.tokenId" class="token"><text>{{ token.text }}</text><text class="token__time">{{ token.startMs }}–{{ token.endMs }}ms</text></view></view>
       <input v-model="answer" class="answer" placeholder="输入你听到的句子" confirm-type="done" />
-      <button class="yx-button" type="button" @click="submit">提交听写</button>
+      <button tabindex="0" role="button" class="yx-button" type="button" @click="submit">提交听写</button>
       <view v-if="result" class="result"><text>得分 {{ result.score }}</text><text>{{ result.feedbackCodes.join(' · ') || '已记录' }}</text></view>
     </view>
-    <view v-else-if="status !== 'loading'" class="yx-card empty"><text>暂时没有可用的授权听力材料。</text><button class="yx-button" type="button" @click="load">重新读取</button></view>
+    <view v-else-if="status !== 'loading'" class="yx-card empty"><text>暂时没有可用的授权听力材料。</text><button tabindex="0" role="button" class="yx-button" type="button" @click="load">重新读取</button></view>
   </view>
 </template>
 
 <style scoped lang="scss">
-.listening-card{display:grid;gap:16rpx}.card-kicker{color:#596bff;font-size:22rpx;font-weight:700}.waveform{display:flex;align-items:center;justify-content:space-between;height:90rpx;padding:0 14rpx;border-radius:14rpx;background:#f0f3ff}.bar{width:7rpx;border-radius:8rpx;background:#596bff}.segment-time,.hint{color:#666d80;font-size:23rpx}.audio-controls{display:flex;align-items:center;gap:10rpx}.small-button{min-height:58rpx;padding:0 16rpx;border:1rpx solid #d9dce7;border-radius:10rpx;color:#596bff;background:#fff;font-size:22rpx;line-height:58rpx}.small-button:disabled{opacity:.45}.token-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10rpx}.token{display:grid;gap:4rpx;padding:14rpx;border:1rpx solid #e6e8f0;border-radius:12rpx;font-size:24rpx}.token__time{color:#969caf;font-size:19rpx}.answer{height:84rpx;padding:0 20rpx;border:1rpx solid #d9dce7;border-radius:12rpx;font-size:27rpx}.result{display:grid;gap:6rpx;padding:18rpx;border-radius:12rpx;color:#246d58;background:#f2fcf8;font-size:24rpx}.empty{display:grid;gap:16rpx;color:#666d80;font-size:26rpx}
+.listening-card{display:grid;gap:16rpx}.card-kicker{color:var(--yx-brand);font-size:22rpx;font-weight:700}.waveform{display:flex;align-items:center;justify-content:space-between;height:90rpx;padding:0 14rpx;border-radius:14rpx;background:var(--yx-brand-soft)}.bar{width:7rpx;border-radius:8rpx;background:var(--yx-brand)}.segment-time,.hint{color:var(--yx-text-secondary);font-size:23rpx}.audio-controls{display:flex;align-items:center;gap:10rpx}.small-button{min-height:58rpx;padding:0 16rpx;border:1rpx solid var(--yx-border);border-radius:10rpx;color:var(--yx-brand);background:var(--yx-surface-card);font-size:22rpx;line-height:58rpx}.small-button:disabled{opacity:.45}.token-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10rpx}.token{display:grid;gap:4rpx;padding:14rpx;border:1rpx solid var(--yx-border);border-radius:12rpx;font-size:24rpx}.token__time{color:var(--yx-text-tertiary);font-size:19rpx}.answer{height:84rpx;padding:0 20rpx;border:1rpx solid var(--yx-border);border-radius:12rpx;font-size:27rpx}.result{display:grid;gap:6rpx;padding:18rpx;border-radius:12rpx;color:var(--yx-success);background:var(--yx-surface-page);font-size:24rpx}.empty{display:grid;gap:16rpx;color:var(--yx-text-secondary);font-size:26rpx}
 </style>

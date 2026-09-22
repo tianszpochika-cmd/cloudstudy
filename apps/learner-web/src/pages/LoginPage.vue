@@ -1,4 +1,9 @@
 <script setup lang="ts">
+import AppIcon from '../components/AppIcon.vue'
+import { useExperienceText } from '../platform/experience-ui'
+const t = useExperienceText()
+const showPassword = ref(false)
+import AuthLayout from '../layouts/AuthLayout.vue'
 import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { authT } from '../auth/i18n'
@@ -43,7 +48,7 @@ async function submit(): Promise<void> {
 </script>
 
 <template>
-  <main class="public-page">
+  <AuthLayout>
     <section class="login-card login-card--quiet" aria-labelledby="login-title">
       <div class="brand">
         <span class="brand__mark" aria-hidden="true">✦</span>
@@ -66,16 +71,17 @@ async function submit(): Promise<void> {
         </label>
         <label class="field">
           <span>{{ authT('login.password') }}</span>
-          <input
+          <div class="password-field"><input
             v-model="password"
             name="password"
-            type="password"
+            :type="showPassword ? 'text' : 'password'"
             autocomplete="current-password"
             :placeholder="authT('login.passwordPlaceholder')"
             :disabled="submitting"
-          >
+          ><button type="button" class="icon-button" :aria-label="t(showPassword ? 'hidePassword' : 'showPassword')" :aria-pressed="showPassword" @click="showPassword = !showPassword"><AppIcon name="eye" :size="19" /></button></div>
         </label>
-        <div class="login-status" :class="{ 'login-status--error': loginError }" :role="loginError ? 'alert' : 'status'" aria-live="polite" :aria-busy="submitting">
+        <div class="auth-links"><RouterLink :to="{ name: 'register', query: { redirect: redirectTarget } }">{{ t('createAccount') }}</RouterLink><RouterLink :to="{ name: 'reset-password', query: { redirect: redirectTarget } }">{{ t('forgot') }}</RouterLink></div>
+        <div v-if="loginError || submitting" class="login-status" :class="{ 'login-status--error': loginError }" :role="loginError ? 'alert' : 'status'" aria-live="polite" :aria-busy="submitting">
           <span class="login-status__mark" aria-hidden="true">{{ loginError ? '!' : '✦' }}</span>
           <div>
             <strong>{{ loginError ? authT('login.unavailable') : authT('login.ready') }}</strong>
@@ -88,5 +94,5 @@ async function submit(): Promise<void> {
       </form>
       <p class="micro-copy">{{ authT('login.afterLogin') }}</p>
     </section>
-  </main>
+  </AuthLayout>
 </template>

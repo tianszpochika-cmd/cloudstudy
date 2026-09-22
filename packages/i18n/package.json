@@ -19,6 +19,22 @@
     "./starter-locales": {
       "types": "./src/starter-locales.ts",
       "import": "./src/starter-locales.ts"
+    },
+    "./admin-experience": {
+      "types": "./src/admin-experience.ts",
+      "import": "./src/admin-experience.ts"
+    },
+    "./learner-experience": {
+      "types": "./src/learner-experience.ts",
+      "import": "./src/learner-experience.ts"
+    },
+    "./mobile-experience": {
+      "types": "./src/mobile-experience.ts",
+      "import": "./src/mobile-experience.ts"
+    },
+    "./learner-base": {
+      "types": "./src/learner-base.ts",
+      "import": "./src/learner-base.ts"
     }
   },
   "scripts": {

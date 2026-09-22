@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import ExperienceHeader from '../components/ExperienceHeader.vue'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { listInboxMessages, listNotificationPreferences, markAllMessagesRead, markMessageRead, setNotificationPreference, type InboxMessage, type NotificationPreference } from '../api/notifications'
-import PageHeader from '../components/PageHeader.vue'
 import StatePanel from '../components/StatePanel.vue'
 
 type ViewState = 'loading' | 'ready' | 'empty' | 'permission' | 'error'
@@ -88,7 +88,7 @@ onMounted(() => { void load() })
 
 <template>
   <section class="page-stack">
-    <PageHeader kicker="MESSAGE CENTER" title="消息中心" description="只读服务端通知；已读回执与偏好开关实时写回，原文不出端。" />
+    <ExperienceHeader page="Messages" icon="bell" />
     <StatePanel
       v-if="state !== 'ready'"
       :state="state"

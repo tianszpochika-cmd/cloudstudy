@@ -26,9 +26,9 @@ function openLogin(): void { openUniPage('/pages/login/login') }
     </view>
     <view class="b10-status__actions">
       <text v-if="queueCount" class="b10-status__queue">{{ queueCount }} · {{ b10T('status.pending') }}</text>
-      <button v-if="status === 'offline' || status === 'error' || status === 'stale'" class="b10-mini-button" type="button" @click="emit('retry')">{{ b10T('status.retry') }}</button>
-      <button v-if="status === 'forbidden'" class="b10-mini-button" type="button" @click="openLogin">{{ b10T('status.login') }}</button>
-      <button v-if="queueCount" class="b10-mini-button" type="button" @click="emit('sync')">{{ b10T('status.sync') }}</button>
+      <button tabindex="0" role="button" v-if="status === 'offline' || status === 'error' || status === 'stale'" class="b10-mini-button" type="button" @click="emit('retry')">{{ b10T('status.retry') }}</button>
+      <button tabindex="0" role="button" v-if="status === 'forbidden'" class="b10-mini-button" type="button" @click="openLogin">{{ b10T('status.login') }}</button>
+      <button tabindex="0" role="button" v-if="queueCount" class="b10-mini-button" type="button" @click="emit('sync')">{{ b10T('status.sync') }}</button>
       <picker :range="levels" :value="levels.indexOf(performanceLevel)" @change="emit('performance', levels[Number($event.detail.value)] ?? 'High')">
         <view class="b10-quality" :aria-label="`${b10T('common.performance')}: ${performanceLevel}`">{{ performanceLevel }}</view>
       </picker>

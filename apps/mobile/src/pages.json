@@ -32,7 +32,7 @@
       "path": "pages/b2-practice/b2-practice",
       "style": {
         "navigationStyle": "custom",
-        "navigationBarTitleText": "B2 练习"
+        "navigationBarTitleText": "练习"
       }
     },
     {
@@ -46,7 +46,7 @@
       "path": "pages/b3-writing/b3-writing",
       "style": {
         "navigationStyle": "custom",
-        "navigationBarTitleText": "写作规则评测"
+        "navigationBarTitleText": "写作练习"
       }
     },
     {
@@ -74,21 +74,21 @@
       "path": "pages/b11-listening/b11-listening",
       "style": {
         "navigationStyle": "custom",
-        "navigationBarTitleText": "B11 听力与 Language Clips"
+        "navigationBarTitleText": "听力与 Language Clips"
       }
     },
     {
       "path": "pages/b11-reading/b11-reading",
       "style": {
         "navigationStyle": "custom",
-        "navigationBarTitleText": "B11 分级阅读"
+        "navigationBarTitleText": "分级阅读"
       }
     },
     {
       "path": "pages/b11-speaking/b11-speaking",
       "style": {
         "navigationStyle": "custom",
-        "navigationBarTitleText": "B11 音标与影子跟读"
+        "navigationBarTitleText": "音标与影子跟读"
       }
     },
     {
@@ -109,7 +109,7 @@
       "path": "pages/b6-platform/b6-platform",
       "style": {
         "navigationStyle": "custom",
-        "navigationBarTitleText": "端与性能"
+        "navigationBarTitleText": "画质与设备"
       }
     },
     {
@@ -177,62 +177,90 @@
     },
     {
       "path": "pages/onboarding/onboarding",
-      "style": { "navigationStyle": "custom", "navigationBarTitleText": "新手引导" }
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "新手引导"
+      }
     },
     {
       "path": "pages/assessment/assessment",
-      "style": { "navigationStyle": "custom", "navigationBarTitleText": "规则化测评" }
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "规则化测评"
+      }
     },
     {
       "path": "pages/today/today",
-      "style": { "navigationStyle": "custom", "navigationBarTitleText": "今日任务" }
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "今日任务"
+      }
     },
     {
       "path": "pages/b10-report/b10-report",
-      "style": { "navigationStyle": "custom", "navigationBarTitleText": "错题与报告" }
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "错题与报告"
+      }
     },
     {
       "path": "pages/settings/settings",
-      "style": { "navigationStyle": "custom", "navigationBarTitleText": "设置" }
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "设置"
+      }
     },
     {
       "path": "pages/support/support",
-      "style": { "navigationStyle": "custom", "navigationBarTitleText": "客服与帮助" }
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "客服与帮助"
+      }
     }
   ],
   "tabBar": {
-    "color": "#8A92A8",
-    "selectedColor": "#596BFF",
-    "backgroundColor": "#FFFFFF",
-    "borderStyle": "black",
+    "color": "#686d80",
+    "selectedColor": "#5937d1",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "white",
     "list": [
       {
         "pagePath": "pages/home/home",
-        "text": "学习"
+        "text": "学习",
+        "iconPath": "static/navigation/home.png",
+        "selectedIconPath": "static/navigation/home-active.png"
       },
       {
         "pagePath": "pages/b2-practice/b2-practice",
-        "text": "练习"
+        "text": "练习",
+        "iconPath": "static/navigation/practice.png",
+        "selectedIconPath": "static/navigation/practice-active.png"
       },
       {
         "pagePath": "pages/world/world",
-        "text": "世界"
+        "text": "成长",
+        "iconPath": "static/navigation/world.png",
+        "selectedIconPath": "static/navigation/world-active.png"
       },
       {
         "pagePath": "pages/learn/learn",
-        "text": "课程"
+        "text": "课程",
+        "iconPath": "static/navigation/learn.png",
+        "selectedIconPath": "static/navigation/learn-active.png"
       },
       {
         "pagePath": "pages/profile/profile",
-        "text": "我的"
+        "text": "我的",
+        "iconPath": "static/navigation/profile.png",
+        "selectedIconPath": "static/navigation/profile-active.png"
       }
     ]
   },
   "globalStyle": {
     "navigationBarTextStyle": "black",
     "navigationBarTitleText": "语学星",
-    "navigationBarBackgroundColor": "#F5F7FF",
-    "backgroundColor": "#F5F7FF",
+    "navigationBarBackgroundColor": "#f7f8fc",
+    "backgroundColor": "#f7f8fc",
     "backgroundTextStyle": "light"
   }
 }

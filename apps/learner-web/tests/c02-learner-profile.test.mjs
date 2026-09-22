@@ -25,6 +25,8 @@ test('C02 Web profile writes preserve the canonical target row', () => {
   const settings = read('src/pages/SettingsPage.vue')
   assert.match(api, /const rawTargetGoal = \(isRecord\(targetSource\) \? readString\(targetSource\.goalCode\)/)
   assert.match(api, /targetLevel: targetGoal === ['"]ZERO_BASIS['"] \? ['"]A1['"]/)
-  assert.match(settings, /资料已保存到服务端/)
-  assert.match(settings, /偏好已保存到服务端/)
+  // The UI delivery shortened these confirmations from "…已保存到服务端" to "…已保存。";
+  // the assertions follow the shipped copy instead of pinning retired wording.
+  assert.match(settings, /资料已保存。/)
+  assert.match(settings, /偏好已保存。/)
 })

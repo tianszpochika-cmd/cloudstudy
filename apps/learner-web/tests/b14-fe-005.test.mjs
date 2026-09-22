@@ -36,7 +36,8 @@ test('learner-web exposes canonical eight states, closed gates, and preference r
   const router = await read('apps/learner-web/src/router/index.ts')
   for (const value of ['loading', 'empty', 'error', 'permission', 'recovery', 'offline', 'success', 'partial']) assert.match(state, new RegExp(value))
   assert.match(gate, /=== true/)
-  assert.match(foundation, /common: .*state:/s)
+  assert.match(foundation, /messages: learnerBaseMessages/)
+  assert.match(await read('packages/i18n/src/learner-base.ts'), /common: .*state:/s)
   assert.match(main, /learnerI18nAdapter\.restore\(\)/)
   assert.match(main, /learnerThemeController\.restore\(\)/)
   assert.match(router, /isFeatureEnabled\('learner\.preview'\)/)
@@ -58,10 +59,16 @@ test('learner-web protects the settings root before redirecting to the profile s
 })
 
 test('learner-web navigates to login after logout instead of stranding the session', async () => {
+  const auth = await read('apps/learner-web/src/auth/gateway-auth.ts')
+  const settings = await read('apps/learner-web/src/pages/SettingsPage.vue')
   const session = await read('apps/learner-web/src/stores/session.ts')
+  assert.match(auth, /client\.post\('\/auth\/logout'/)
   // The store owns the post-logout navigation (the retired scheduleWebLogoutRedirect
   // helper in gateway-auth.ts is gone); both success and failure paths must leave login.
   assert.match(session, /async function logout\(allDevices = false\)/)
   assert.match(session, /await adapter\(\)\.logout\(\{ allDevices \}\)/)
+  assert.match(session, /await adapter\(\)\.logout\(\{ allDevices \}\)[\s\S]*?clear\(\)/)
   assert.match(session, /await navigateToLogin\('\/home'\)/)
+  // The settings page additionally replaces the route itself once the store resolved.
+  assert.match(settings, /await session\.logout\(\); await router\.replace\(\{ name: 'login' \}\)/)
 })

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ExperienceHeader from '../components/ExperienceHeader.vue'
 import { computed, onMounted, ref } from 'vue'
 import B10StatePanel from '../components/b10/B10StatePanel.vue'
 import { useLearningUi } from '../platform/learning-ui'
@@ -31,7 +32,7 @@ function submitCorrection(): void { void store.submitCurrentProofreading(correct
 
 <template>
   <section class="b10-page" :data-performance="store.performanceLevel" aria-labelledby="writing-title">
-    <header class="page-heading"><div><p class="eyebrow">WRT · RULED FEEDBACK</p><h2 id="writing-title">{{ ui.t('b10.writing.title') }}</h2><p>{{ ui.t('b10.writing.noAi') }} {{ ui.t('b10.common.noAnswerRule') }}</p></div><span class="locale-pill">{{ ui.t('b10.common.ui') }} {{ ui.locale }} · {{ ui.t('b10.common.content') }} {{ ui.contentLocale }}</span></header>
+    <ExperienceHeader page="Writing" icon="pen" title-id="writing-title" />
     <B10StatePanel v-if="store.writingStatus !== 'ready' || store.writingMessage" :status="store.writingStatus" :message="store.writingMessage" module-label="WRT / WRITING" :performance-level="store.performanceLevel" @retry="retry" @performance="performance" />
     <section v-if="prompt" class="writing-layout">
       <article class="prompt-panel"><p class="eyebrow">{{ prompt.promptType }} · {{ prompt.contentVersionId }}</p><h3>{{ prompt.title }}</h3><p>{{ prompt.taskText }}</p><div class="tags"><span v-for="target in prompt.targetStructure" :key="target">{{ target }}</span></div><h4>可用模板</h4><button v-for="template in store.writingTemplates" :key="template.templateId" class="template" :class="{ active: selectedTemplateId === template.templateId }" type="button" @click="chooseTemplate(template.templateId)"><strong>{{ template.title }}</strong><small>{{ template.structure.map((slot) => slot.label).join(' → ') }}</small></button><h4>主题材料</h4><p v-for="material in store.writingMaterials" :key="material.materialId" class="material">{{ material.title }}：{{ material.bodyText }}</p></article>

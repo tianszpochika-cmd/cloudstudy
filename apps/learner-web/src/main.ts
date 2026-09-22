@@ -4,10 +4,19 @@ import { pinia } from './stores/pinia'
 import App from './App.vue'
 import './assets/styles/base.css'
 import './assets/styles/theme.css'
+import './assets/styles/experience.css'
+import { experiencePerformance } from './platform/experience-ui'
 import { learnerI18nAdapter, learnerThemeAdapter, learnerThemeController } from './platform/v2-foundation'
 
 learnerI18nAdapter.restore()
 learnerThemeController.restore()
+experiencePerformance.restore()
+const syncPerformance = () => {
+  document.documentElement.dataset.quality = experiencePerformance.level
+  document.documentElement.dataset.motion = experiencePerformance.state.motionDisabled || experiencePerformance.level === 'Performance' ? 'off' : 'on'
+}
+experiencePerformance.subscribe(syncPerformance)
+syncPerformance()
 
 const app = createApp(App)
 

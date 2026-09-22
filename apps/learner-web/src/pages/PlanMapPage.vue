@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import ExperienceHeader from '../components/ExperienceHeader.vue'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { fetchPlanCurrent, type LoopPlan } from '../api/b2'
-import PageHeader from '../components/PageHeader.vue'
 import StatePanel from '../components/StatePanel.vue'
 
 type ViewState = 'loading' | 'ready' | 'empty' | 'permission' | 'error'
@@ -38,7 +38,7 @@ onMounted(() => { void load() })
 
 <template>
   <section class="page-stack">
-    <PageHeader kicker="PLAN MAP" title="计划地图" description="只读服务端当前计划；闭环从这里出发：计划 → 今日 → 练习 → 错题 → 报告。" />
+    <ExperienceHeader page="Plan" icon="route" />
     <StatePanel
       v-if="state !== 'ready'"
       :state="state"

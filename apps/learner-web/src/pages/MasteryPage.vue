@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import ExperienceHeader from '../components/ExperienceHeader.vue'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { fetchSrsOverview, type LoopMastery } from '../api/b2'
-import PageHeader from '../components/PageHeader.vue'
 import StatePanel from '../components/StatePanel.vue'
 
 type ViewState = 'loading' | 'ready' | 'empty' | 'permission' | 'error'
@@ -38,7 +38,7 @@ onMounted(() => { void load() })
 
 <template>
   <section class="page-stack">
-    <PageHeader kicker="SRS OVERVIEW" title="掌握度" description="只读服务端 SRS 投影；阶段由服务端判定，页面不推算。" />
+    <ExperienceHeader page="Mastery" icon="star" />
     <StatePanel
       v-if="state !== 'ready'"
       :state="state"

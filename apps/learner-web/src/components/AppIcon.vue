@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 
 export type AppIconName =
+  | 'arrow' | 'chevron' | 'close' | 'menu' | 'bell' | 'sun' | 'route' | 'cards' | 'bookmark' | 'monitor' | 'eye' | 'lock'
   | 'book'
   | 'chart'
   | 'check'
@@ -23,6 +24,18 @@ export type AppIconName =
 const props = withDefaults(defineProps<{ name?: AppIconName; size?: number }>(), { name: 'spark', size: 18 })
 
 const iconPaths: Record<AppIconName, string[]> = {
+  arrow: ['M4 12h15', 'm13 5 7 7-7 7'],
+  chevron: ['m9 5 7 7-7 7'],
+  close: ['m6 6 12 12', 'M18 6 6 18'],
+  menu: ['M4 6h16', 'M4 12h16', 'M4 18h16'],
+  bell: ['M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9', 'M10 21h4'],
+  sun: ['M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z', 'M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5'],
+  route: ['M5 6a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z', 'M19 22a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z', 'M5 6v7a3 3 0 0 0 3 3h8a3 3 0 0 0 0-6H9', 'M19 16v2'],
+  cards: ['M5 6h14v15H5z', 'M8 2h13v15', 'M9 11h6', 'M9 15h4'],
+  bookmark: ['M6 3h12v18l-6-4-6 4V3Z'],
+  monitor: ['M3 4h18v13H3z', 'M12 17v4', 'M8 21h8'],
+  eye: ['M2 12s3-7 10-7 10 7 10 7-3 7-10 7S2 12 2 12Z', 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z'],
+  lock: ['M5 10h14v11H5z', 'M8 10V7a4 4 0 0 1 8 0v3', 'M12 14v3'],
   book: ['M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5v-15Z', 'M4 20.5A2.5 2.5 0 0 1 6.5 18H20', 'M8 7h8', 'M8 10h6'],
   chart: ['M4 19V5', 'M4 19h16', 'm7 15 3-4 3 2 4-6'],
   check: ['m5 12 4 4L19 6'],

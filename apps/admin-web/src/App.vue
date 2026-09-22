@@ -1,83 +1,185 @@
 <script setup lang="ts">
-import { computed, onUnmounted, ref } from 'vue'
-import { useRoute, useRouter, RouterLink, RouterView } from 'vue-router'
-import { ElMessage } from 'element-plus'
-import { useAdminStore } from './stores/admin'
-import { authT } from './auth/i18n'
-import { adminT } from './platform/admin-i18n'
-import './platform/i18n-batch-b'
-import AdminIcon, { type AdminIconName } from './components/AdminIcon.vue'
-import AdminLocaleSwitcher from './components/AdminLocaleSwitcher.vue'
-import { adminThemeController } from './platform/v2-foundation'
-
-const route = useRoute()
-const router = useRouter()
-const session = useAdminStore()
-const booting = ref(true)
-const showNotifications = ref(false)
-const resolvedTheme = ref(adminThemeController.resolvedTheme)
-const unsubscribeTheme = adminThemeController.subscribe((state) => {
-  resolvedTheme.value = state.resolvedTheme
-})
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
+import { useRoute, useRouter, RouterView } from "vue-router";
+import { ElMessage } from "element-plus";
+import { useAdminStore } from "./stores/admin";
+import { authT } from "./auth/i18n";
+import { adminPages, ui } from "./platform/experience";
+import AdminIcon from "./components/AdminIcon.vue";
+import AdminLocaleSwitcher from "./components/AdminLocaleSwitcher.vue";
+import AdminPreferences from "./components/AdminPreferences.vue";
+import AdminNavigation from "./components/AdminNavigation.vue";
+const route = useRoute();
+const router = useRouter();
+const session = useAdminStore();
+const booting = ref(true);
+const menuOpen = ref(false);
+const searchOpen = ref(false);
+const search = ref("");
+const searchInput = ref<HTMLInputElement | null>(null);
+const offline = ref(!navigator.onLine);
+const page = computed(() =>
+  adminPages.find((item) => item.path === route.path),
+);
+const results = computed(() =>
+  adminPages.filter(
+    (item) =>
+      session.can(item.permission) &&
+      `${ui(`nav.${item.key}.title`)} ${item.keywords}`
+        .toLowerCase()
+        .includes(search.value.trim().toLowerCase()),
+  ),
+);
 void router.isReady().finally(() => {
-  booting.value = false
-})
-const pageTitle = computed(() => ({ '/dashboard': adminT('app.pageDashboard'), '/content': adminT('app.pageContent'), '/commerce': adminT('app.pageCommerce'), '/audit': adminT('app.pageAudit'), '/release': adminT('app.pageRelease'), '/governance': adminT('app.pageGovernance'), '/support': adminT('app.pageSupport'), '/recovery': adminT('app.pageRecovery') }[route.path] ?? adminT('app.pageFallback')))
-const menuItems = computed<Array<{ path: string; label: string; icon: AdminIconName; permission: string }>>(() => [
-  { path: '/dashboard', label: adminT('app.menuDashboard'), icon: 'chart', permission: 'admin.dashboard.read' },
-  { path: '/content', label: adminT('app.menuContent'), icon: 'content', permission: 'admin.content.read' },
-  { path: '/commerce', label: adminT('app.menuCommerce'), icon: 'wallet', permission: 'admin.commerce.read' },
-  { path: '/audit', label: adminT('app.menuAudit'), icon: 'audit', permission: 'admin.audit.read' },
-  { path: '/release', label: adminT('app.menuRelease'), icon: 'release', permission: 'admin.release.read' },
-  { path: '/governance', label: adminT('app.menuGovernance'), icon: 'flag', permission: 'admin.moderation.read' },
-  { path: '/support', label: adminT('app.menuSupport'), icon: 'support', permission: 'admin.support.read' },
-  { path: '/recovery', label: adminT('app.menuRecovery'), icon: 'help', permission: 'admin.recovery.read' },
-])
-const visibleMenuItems = computed(() => menuItems.value.filter((item) => session.can(item.permission)))
-const themeLabel = computed(() => resolvedTheme.value === 'dark' ? adminT('app.themeToLight') : adminT('app.themeToDark'))
-
-function toggleTheme(): void {
-  adminThemeController.setTheme(resolvedTheme.value === 'dark' ? 'light' : 'dark')
+  booting.value = false;
+});
+watch(
+  () => route.fullPath,
+  async () => {
+    menuOpen.value = false;
+    searchOpen.value = false;
+    document.title = `${page.value ? ui(`nav.${page.value.key}.title`) : ui("workspace")} · ${ui("brand")}`;
+    await nextTick();
+    document
+      .querySelector<HTMLElement>("#admin-main")
+      ?.focus({ preventScroll: true });
+  },
+);
+function onNetwork() {
+  offline.value = !navigator.onLine;
 }
-
-async function signOut(): Promise<void> {
-  const ok = await session.logout()
-  await router.push({ name: 'admin-login', query: ok ? undefined : { reason: 'logout-failed' } })
-  ElMessage[ok ? 'info' : 'warning'](authT(ok ? 'session.logout' : 'session.logoutFailed'))
+function keyboard(event: KeyboardEvent) {
+  if (
+    (event.ctrlKey || event.metaKey) &&
+    event.key.toLowerCase() === "k" &&
+    session.isAuthenticated
+  ) {
+    event.preventDefault();
+    searchOpen.value = !searchOpen.value;
+  }
 }
-
-onUnmounted(unsubscribeTheme)
+async function signOut() {
+  const ok = await session.logout();
+  menuOpen.value = false;
+  await router.push({
+    name: "admin-login",
+    query: ok ? undefined : { reason: "logout-failed" },
+  });
+  ElMessage[ok ? "info" : "warning"](
+    authT(ok ? "session.logout" : "session.logoutFailed"),
+  );
+}
+onMounted(() => {
+  window.addEventListener("online", onNetwork);
+  window.addEventListener("offline", onNetwork);
+  window.addEventListener("keydown", keyboard);
+});
+onUnmounted(() => {
+  window.removeEventListener("online", onNetwork);
+  window.removeEventListener("offline", onNetwork);
+  window.removeEventListener("keydown", keyboard);
+});
 </script>
-
 <template>
   <main v-if="booting" class="admin-startup" role="status" aria-live="polite">
-    <span class="admin-brand__mark" aria-hidden="true"><AdminIcon name="spark" :size="22" /></span>
-    <h1>{{ adminT('app.brandTitle') }}</h1>
-    <p>{{ adminT('app.bootingNote') }}</p>
+    <span class="admin-brand__mark"><AdminIcon name="spark" :size="26" /></span>
+    <h1>{{ ui("workspace") }}</h1>
+    <p>{{ ui("loading") }}</p>
   </main>
-  <el-container v-else-if="session.isAuthenticated" class="admin-shell">
-    <el-aside width="248px" class="admin-aside">
-      <RouterLink class="admin-brand" to="/dashboard" :aria-label="adminT('app.brandHomeAria')"><span class="admin-brand__mark"><AdminIcon name="spark" :size="20" /></span><span><strong>{{ adminT('app.brandName') }}</strong><small>{{ adminT('app.brandSub') }}</small></span></RouterLink>
-      <div class="admin-context"><span class="status-dot"></span><span>{{ session.status === 'authenticated' ? authT('session.restored') : authT('session.restoring') }} · {{ authT('session.permissionSnapshot', { count: session.permissions.length }) }}</span></div>
-      <el-menu :default-active="route.path" router class="admin-menu">
-        <el-menu-item v-for="item in visibleMenuItems" :key="item.path" :index="item.path"><span class="admin-menu__icon"><AdminIcon :name="item.icon" :size="18" /></span><span>{{ item.label }}</span></el-menu-item>
-      </el-menu>
-      <div class="admin-aside__footer"><el-button text @click="signOut">{{ adminT('app.signOut') }}</el-button></div>
-    </el-aside>
-    <el-container>
-      <el-header class="admin-header">
-        <div class="admin-header__heading"><span class="admin-header__eyebrow">OPERATIONS CONTROL PLANE</span><h1>{{ pageTitle }}</h1></div>
-        <div class="admin-header__actions">
-          <label class="admin-search"><AdminIcon name="search" :size="17" /><input type="search" :placeholder="adminT('app.searchPlaceholder')" :aria-label="adminT('app.searchPlaceholder')" /></label>
-          <button class="admin-icon-button" type="button" :aria-label="themeLabel" @click="toggleTheme"><AdminIcon name="spark" :size="18" /></button>
-          <AdminLocaleSwitcher />
-          <button class="admin-icon-button admin-icon-button--notification" type="button" :aria-label="adminT('app.notificationsAria')" :aria-expanded="showNotifications" @click="showNotifications = !showNotifications"><span class="notification-dot"></span><AdminIcon name="support" :size="18" /></button>
-          <span class="admin-role-chip"><span class="status-dot"></span>{{ adminT('app.guardEnabled') }}</span>
+  <div v-else-if="session.isAuthenticated" class="admin-shell">
+    <a class="skip-link" href="#admin-main">{{ ui("skip") }}</a>
+    <aside class="admin-aside"><AdminNavigation @logout="signOut" /></aside>
+    <div class="admin-workspace">
+      <header class="admin-header">
+        <div class="admin-header__heading">
+          <button
+            class="admin-icon-button mobile-menu-trigger"
+            type="button"
+            :aria-label="ui('menu')"
+            :aria-expanded="menuOpen"
+            @click="menuOpen = true"
+          >
+            <AdminIcon name="menu" /></button
+          ><span class="admin-breadcrumb"
+            >{{ ui("workspace") }}<span aria-hidden="true">/</span
+            ><strong>{{
+              page ? ui(`nav.${page.key}.title`) : "—"
+            }}</strong></span
+          >
         </div>
-        <div v-if="showNotifications" class="admin-notification-popover" role="status"><strong>{{ adminT('app.notifTitle') }}</strong><span>{{ adminT('app.notifBody') }}</span><button type="button" @click="showNotifications = false">{{ adminT('app.notifDismiss') }}</button></div>
-      </el-header>
-      <el-main class="admin-main"><RouterView /></el-main>
-    </el-container>
-  </el-container>
+        <div class="admin-header__actions">
+          <button
+            class="admin-search-trigger"
+            type="button"
+            :aria-label="ui('search')"
+            @click="searchOpen = true"
+          >
+            <AdminIcon name="search" :size="17" /><span>{{ ui("search") }}</span
+            ><kbd>Ctrl K</kbd></button
+          ><AdminPreferences /><AdminLocaleSwitcher /><span
+            class="admin-avatar header-avatar"
+            ><AdminIcon name="people"
+          /></span>
+        </div>
+      </header>
+      <main id="admin-main" class="admin-main" tabindex="-1">
+        <el-alert
+          v-if="offline"
+          :title="ui('offline')"
+          type="warning"
+          :closable="false"
+          show-icon
+          class="offline-banner"
+        /><RouterView />
+      </main>
+      <footer class="workspace-footer">
+        <span>{{ ui("brand") }} · {{ ui("workspace") }}</span
+        ><span>{{ ui("currentAccess") }}</span>
+      </footer>
+    </div>
+    <el-drawer
+      v-model="menuOpen"
+      direction="ltr"
+      :size="280"
+      :title="ui('workspace')"
+      class="admin-mobile-nav"
+      ><AdminNavigation @navigate="menuOpen = false" @logout="signOut"
+    /></el-drawer>
+    <el-dialog
+      v-model="searchOpen"
+      :title="ui('search')"
+      width="560px"
+      class="feature-search"
+      @opened="searchInput?.focus()"
+      @closed="search = ''"
+    >
+      <label class="feature-search-input"
+        ><AdminIcon name="search" /><input
+          ref="searchInput"
+          v-model="search"
+          type="search"
+          :aria-label="ui('searchHint')"
+          :placeholder="ui('searchHint')"
+          @keydown.enter="results[0] && router.push(results[0].path)"
+      /></label>
+      <p class="muted">{{ ui("searchScope") }}</p>
+      <div class="feature-search-results">
+        <RouterLink
+          v-for="item in results"
+          :key="item.path"
+          :to="item.path"
+          class="feature-search-result"
+          ><AdminIcon :name="item.icon" /><span
+            >{{ ui(`nav.${item.key}.title`)
+            }}<small>{{ ui(`group.${item.group}`) }}</small></span
+          ><AdminIcon name="arrow" :size="16" /></RouterLink
+        ><el-empty
+          v-if="!results.length"
+          :description="ui('noResults')"
+          :image-size="70"
+        />
+      </div>
+    </el-dialog>
+  </div>
   <RouterView v-else />
 </template>

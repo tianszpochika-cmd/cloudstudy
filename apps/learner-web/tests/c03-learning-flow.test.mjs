@@ -14,7 +14,10 @@ test('learner-web C03 pages read real home/today/content projections and complet
   ])
   assert.match(home, /store\.loadHome\(\)/)
   assert.match(home, /home\.value\?\.content/)
-  assert.match(home, /store\.completeTask\(taskId\)/)
+  // Task cards open the lesson; only the lesson completion action writes progress.
+  assert.match(home, /name: 'learn-session'/)
+  assert.match(home, /taskId: task\.id/)
+  assert.doesNotMatch(home, /store\.completeTask\(/)
   assert.match(today, /store\.loadToday\(\)/)
   assert.match(today, /name: 'learn-session'/)
   assert.match(today, /taskId/)
@@ -32,14 +35,8 @@ test('learner-web preserves content projections when completion omits the catalo
 })
 
 test('learner-web C03 entry pages keep the fixed sidebar navigation reachable', async () => {
-  const pages = await Promise.all([
-    read('apps/learner-web/src/pages/HomePage.vue'),
-    read('apps/learner-web/src/pages/TodayPage.vue'),
-    read('apps/learner-web/src/pages/LearnPage.vue'),
-  ])
-  for (const page of pages) {
-    assert.match(page, /:global\(\.app-shell__sidebar\)\s*\{[^}]*overflow-y\s*:\s*auto/s)
-    assert.match(page, /:global\(\.nav-list\)\s*\{[^}]*flex\s*:\s*1 1 auto[^}]*overflow-y\s*:\s*auto/s)
-    assert.match(page, /:global\(\.sidebar-footer\)\s*\{[^}]*flex\s*:\s*0 0 auto/s)
-  }
+  const styles = await read('apps/learner-web/src/assets/styles/experience.css')
+  assert.match(styles, /\.experience-shell \.app-shell__sidebar\s*\{[^}]*overflow:\s*auto/s)
+  assert.match(styles, /\.experience-shell \.nav-list\s*\{[^}]*flex:\s*1;[^}]*overflow-y:\s*auto/s)
+  assert.match(styles, /\.experience-shell \.sidebar-footer\s*\{[^}]*flex-shrink:\s*0/s)
 })

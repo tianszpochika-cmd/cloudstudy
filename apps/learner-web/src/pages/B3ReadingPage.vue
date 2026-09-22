@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ExperienceHeader from '../components/ExperienceHeader.vue'
 import { computed, onMounted, ref } from 'vue'
 import B10StatePanel from '../components/b10/B10StatePanel.vue'
 import { useLearningUi } from '../platform/learning-ui'
@@ -30,7 +31,7 @@ function submitQuestion(question: B10ReadingQuestion): void { const answer = sto
 
 <template>
   <main class="b10-page" :data-performance="store.performanceLevel" aria-labelledby="reading-title">
-    <header class="page-heading"><div><p class="eyebrow">RDG · IMMERSIVE READING</p><h2 id="reading-title">{{ ui.t('b10.reading.title') }}</h2><p>内容、阅读进度和理解测验绑定同一 content version；查词失败不会丢失已保存的位置。</p></div><span class="locale-pill">{{ ui.t('b10.common.ui') }} {{ ui.locale }} · {{ ui.t('b10.common.content') }} {{ ui.contentLocale }}</span></header>
+    <ExperienceHeader page="Reading" icon="book" title-id="reading-title" />
     <B10StatePanel v-if="store.readingStatus !== 'ready' || store.queueCount" :status="store.readingStatus" :message="store.readingMessage" :queue-count="store.queueCount" :cached="store.readingCached" module-label="RDG / READING" :performance-level="store.performanceLevel" @retry="retry" @sync="sync" @performance="performance" />
     <section v-if="store.readingArticle" class="reading-layout">
       <aside class="side-panel"><p class="eyebrow">{{ store.readingArticle.cefrLevel }} · {{ store.readingArticle.estimatedMinutes }} min</p><h3>{{ store.readingArticle.title }}</h3><div class="progress"><span :style="{ width: `${progress}%` }"></span></div><small>{{ ui.t('b10.reading.progress', { percent: progress }) }}</small><label>字号 <input v-model.number="fontSize" type="range" min="14" max="32"><span>{{ fontSize }}px</span></label><button class="secondary-button" type="button" @click="bilingual = !bilingual">{{ bilingual ? '隐藏中文' : '显示中文' }}</button><button class="secondary-button" type="button" :disabled="!store.queueCount" @click="sync">{{ ui.t('b10.common.sync') }}（{{ store.queueCount }}）</button><div v-if="store.readingDictionary || store.readingDictionaryMessage" class="dictionary"><strong v-if="store.readingDictionary">{{ store.readingDictionary.lemma }}</strong><span v-if="store.readingDictionary">{{ store.readingDictionary.meaningCn }}</span><small v-if="store.readingDictionary?.exampleText">{{ store.readingDictionary.exampleText }}</small><small v-if="store.readingDictionaryMessage">{{ store.readingDictionaryMessage }}</small></div></aside>

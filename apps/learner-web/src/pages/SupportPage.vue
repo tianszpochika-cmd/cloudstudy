@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ExperienceHeader from '../components/ExperienceHeader.vue'
 import { onMounted, ref } from 'vue'
 import {
   SUPPORT_CATEGORIES,
@@ -8,7 +9,6 @@ import {
   reopenSupportTicket,
   type SupportTicket,
 } from '../api/support'
-import PageHeader from '../components/PageHeader.vue'
 import StatePanel from '../components/StatePanel.vue'
 
 type ViewState = 'loading' | 'ready' | 'empty' | 'permission' | 'recovery' | 'error'
@@ -99,7 +99,7 @@ onMounted(() => { void load() })
 
 <template>
   <main class="page-stack">
-    <PageHeader kicker="SUPPORT" title="客服与帮助" description="工单只读投影来自客服 owner；原文不离端，分派与解决由服务端确认。" />
+    <ExperienceHeader page="Support" icon="help" />
     <StatePanel
       v-if="state === 'loading' || state === 'permission' || state === 'error' || state === 'recovery'"
       :state="state === 'recovery' ? 'error' : state"

@@ -15,11 +15,11 @@ defineProps<{ srs: SrsSummary | null }>()
 </template>
 
 <style scoped>
-.srs-badge { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; color: #666d80; font-size: 12px; }
+.srs-badge { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; color: var(--yx-color-text-secondary); font-size: 12px; }
 .srs-badge__status, .srs-badge__risk, .srs-badge__verify { padding: 5px 9px; border-radius: 999px; font-weight: 700; }
-.srs-badge__status { color: #596bff; background: #eef0ff; }
-.srs-badge__risk { color: #9b5b00; background: #fff1d6; }
-.srs-badge__verify { color: #246d58; background: #e7f8f1; }
-.srs-badge__next { color: #666d80; }
-.srs-badge--unknown { display: inline-flex; padding: 5px 9px; border-radius: 999px; background: #f3f4f8; }
+.srs-badge__status { color: var(--yx-color-brand-primary); background: var(--yx-color-brand-primary-soft); }
+.srs-badge__risk { color: var(--yx-color-warning); background: var(--yx-color-warning-soft); }
+.srs-badge__verify { color: var(--yx-color-success); background: var(--yx-color-success-soft); }
+.srs-badge__next { color: var(--yx-color-text-secondary); }
+.srs-badge--unknown { display: inline-flex; padding: 5px 9px; border-radius: 999px; background: var(--yx-color-surface-muted); }
 </style>

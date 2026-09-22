@@ -82,5 +82,6 @@ test('B11 performance and interaction downgrade supports four levels and manual 
   assert.match(store, /enableWaveform/)
   assert.match(store, /fallbackMode/)
   assert.match(listening, /static timeline|2D \/ static/)
-  assert.match(speaking, /2D mouth fallback/)
+  assert.match(speaking, /class="mouth"/)
+  assert.match(speaking, /selectedPhoneme\?\.mouthProfile/)
 })

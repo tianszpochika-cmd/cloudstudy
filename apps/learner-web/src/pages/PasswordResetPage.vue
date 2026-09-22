@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AuthLayout from '../layouts/AuthLayout.vue'
 import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { safeReturnTo } from '../auth/gateway-auth'
@@ -19,7 +20,7 @@ const redirectTarget = computed(() => safeReturnTo(route.query.redirect ?? sessi
 const hint = computed(() => {
   if (error.value) return error.value
   if (done.value) return step.value === 'confirm' ? '密码已重置，请用新密码登录。' : '如果账号存在，重置指引已经发出；请查收后继续。'
-  return step.value === 'confirm' ? '请输入重置口令与新密码（至少 12 位）。' : '输入账号后发送重置指引；无论账号是否存在，提示都一样。'
+  return step.value === 'confirm' ? '请输入重置口令与新密码（至少 12 位）。' : '填写注册时使用的账号，然后查收重置指引。'
 })
 
 async function send(): Promise<void> {
@@ -66,14 +67,14 @@ async function confirm(): Promise<void> {
 </script>
 
 <template>
-  <main class="public-page">
+  <AuthLayout>
     <section class="login-card login-card--quiet" aria-labelledby="reset-title">
       <div class="brand">
         <span class="brand__mark" aria-hidden="true">✦</span>
         <span>语学星</span>
       </div>
       <h1 id="reset-title">找回密码</h1>
-      <p class="lead">深链可恢复：邮件里的链接会直接进入第二步；刷新不会丢失 returnTo。</p>
+      <p class="lead">输入注册时使用的账号，我们会发送重置指引。</p>
       <div class="login-status" :role="error ? 'alert' : 'status'" aria-live="polite">
         <span class="login-status__mark" aria-hidden="true">{{ error ? '!' : '✦' }}</span>
         <div>
@@ -103,5 +104,5 @@ async function confirm(): Promise<void> {
       </form>
       <p class="micro-copy"><RouterLink :to="{ name: 'login', query: { redirect: redirectTarget } }">返回登录</RouterLink></p>
     </section>
-  </main>
+  </AuthLayout>
 </template>

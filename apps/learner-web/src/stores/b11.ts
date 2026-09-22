@@ -1,11 +1,12 @@
+import { experiencePerformance } from '../platform/experience-ui'
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
-import { createAdaptivePerformanceEngine, type PerformanceLevel } from '@englishflow/performance'
+import { type PerformanceLevel } from '@englishflow/performance'
 import { getMediaManifest, getNotificationPreference, isB11ExpiredError, isB11OfflineError, isB11PermissionError, isB11RevokedError, issueMediaSignedUrl, progressChange, pullB11OfflineChanges, pushB11OfflineChanges, saveB11RecordingMetadata, updateNotificationPreference } from '../api/b11'
 import type { B11ListeningProgress, B11MediaManifest, B11NotificationPreference, B11OfflineChange, B11RecordingMetadata, B11SignedUrl, B11Status, B11SyncResult } from '../domain/b11'
 
 export const useB11Store = defineStore('b11', () => {
-  const engine = createAdaptivePerformanceEngine()
+  const engine = experiencePerformance
   const status = ref<B11Status>('idle')
   const message = ref('')
   const manifest = ref<B11MediaManifest | null>(null)
@@ -59,7 +60,7 @@ export const useB11Store = defineStore('b11', () => {
   async function saveRecording(metadata: Omit<B11RecordingMetadata, 'status' | 'aiScoringEnabled'>): Promise<void> { try { recording.value = await saveB11RecordingMetadata(metadata); message.value = '录音元数据已保存；Phase 1 不执行 AI 评分。' } catch (error) { status.value = isB11OfflineError(error) ? 'offline' : 'error'; message.value = error instanceof Error ? error.message : '录音元数据保存失败，本地加密副本仍保留。' } }
   function setPerformance(level: PerformanceLevel): void { engine.setLevel(level, 'manual'); performanceLevel.value = level }
   function setMotionDisabled(value: boolean): void { engine.setMotionDisabled(value, 'manual'); motionDisabled.value = value }
-  function dispose(): void { unsubscribe(); engine.dispose() }
+  function dispose(): void { unsubscribe(); /* Shared engine lives for the application lifetime. */ }
 
   return { status, message, manifest, signedUrl, progress, preference, recording, pending, cursor, performanceLevel, motionDisabled, lastSync, hasPending, renderPolicy, loadMedia, authorizePlayback, loadPreferences, savePreferences, queueProgress, sync, pull, saveRecording, setPerformance, setMotionDisabled, dispose }
 })

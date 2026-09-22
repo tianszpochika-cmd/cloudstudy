@@ -1,6 +1,7 @@
+import { experiencePerformance } from '../platform/experience-ui'
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
-import { createAdaptivePerformanceEngine, type PerformanceLevel } from '@englishflow/performance'
+import { type PerformanceLevel } from '@englishflow/performance'
 import { createPracticeSession, createSrsBatch, fetchLearningReport, fetchPracticeSession, fetchVocabDetail, isB2OfflineError, savePracticeCheckpoint, submitPracticeAnswer, submitReviewEvent, syncReviewEvents } from '../api/b2'
 import { B2_QUEUE_KEY, B2_STORAGE_KEY, type B2StateSnapshot, type CardPhase, type ContinueContext, type ImmediateFeedback, type LearningReport, type OfflineQueueItem, type PracticeSession, type ReviewEventInput, type ReviewQuality, type ReviewResult, type VocabularyCard, createClientEventId, createEmptyContinueContext } from '../domain/b2'
 
@@ -19,7 +20,7 @@ function readStoredQueue(): OfflineQueueItem[] {
 }
 
 export const useB2Store = defineStore('b2', () => {
-  const engine = createAdaptivePerformanceEngine()
+  const engine = experiencePerformance
   const restored = ref(false)
   const performanceLevel = ref<PerformanceLevel>(engine.level)
   const status = ref<B2Status>('idle')
@@ -170,7 +171,7 @@ export const useB2Store = defineStore('b2', () => {
 
   function setPerformanceLevel(level: PerformanceLevel): void { engine.setLevel(level, 'manual'); performanceLevel.value = level; persist() }
   function clearError(): void { lastError.value = null }
-  function dispose(): void { unsubscribePerformance(); engine.dispose() }
+  function dispose(): void { unsubscribePerformance(); /* Shared engine lives for the application lifetime. */ }
 
   return { restored, performanceLevel, status, lastError, cards, cardIndex, cardPhase, currentCard, queue, queueCount, continueContext, practice, currentQuestion, practiceFeedback, report, reportStatus, restore, persist, loadVocabulary, revealCard, rateCard, syncQueue, saveCheckpoint, startPractice, loadPractice, answerPractice, nextPractice, loadReport, setPerformanceLevel, clearError, dispose }
 })

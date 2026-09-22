@@ -1,12 +1,13 @@
+import { experiencePerformance } from '../platform/experience-ui'
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
-import { createAdaptivePerformanceEngine, type PerformanceLevel } from '@englishflow/performance'
+import { type PerformanceLevel } from '@englishflow/performance'
 import { createListeningSession, getPhonetics, getReadingArticle, getSentenceGraph, isB3OfflineError, listGrammarExercises, listGrammarPoints, listListeningMaterials, listReadingArticles, listWritingPrompts, pullOfflineChanges, pushOfflineChanges, saveReadingProgress, submitDictation, submitGrammarAttempt, submitSelfRating, submitWriting } from '../api/b3'
 import type { B3Status, DictationResult, GrammarExercise, GrammarPoint, ListeningMaterial, OfflineChange, Phoneme, ReadingArticle, SentenceGraph, SpeakingRecording, WritingEvaluation, WritingPrompt } from '../domain/b3'
 import { createB3OfflineQueue, isB3NetworkAvailable, sha256Text, type B3OfflineRecord } from '../platform/b3-offline'
 
 export const useB3Store = defineStore('b3', () => {
-  const engine = createAdaptivePerformanceEngine()
+  const engine = experiencePerformance
   const performanceLevel = ref<PerformanceLevel>(engine.level)
   const status = ref<B3Status>('idle')
   const message = ref<string | null>(null)

@@ -9,7 +9,7 @@ const FORBIDDEN_PATH = '/pages/forbidden/forbidden'
 const ONBOARDING_PATH = '/pages/onboarding/onboarding'
 const HOME_PATH = '/pages/home/home'
 
-const PUBLIC_PATHS = new Set([LOGIN_PATH, FORBIDDEN_PATH])
+const PUBLIC_PATHS = new Set([LOGIN_PATH, FORBIDDEN_PATH, '/pages/register/register', '/pages/reset-password/reset-password'])
 
 type RouteOptions = { url?: string; delta?: number }
 

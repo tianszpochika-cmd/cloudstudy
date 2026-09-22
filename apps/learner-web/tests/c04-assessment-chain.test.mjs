@@ -11,6 +11,9 @@ test('learner-web assessment chain uses the real placement owner and idempotent 
   const store = await read('apps/learner-web/src/stores/learner-content.ts')
   const contract = await read('packages/contracts/fragments/b25/b25-phase1-real-data.openapi.json')
   const gateway = await read('services/api-gateway/src/main/java/com/englishflow/gateway/policy/GatewayRouteExecutionPolicy.java')
+  // The gateway consumes the central route bindings in its configuration; the execution
+  // policy itself projects explicit rewrites per route instead of building domain wildcards.
+  const gatewayConfiguration = await read('services/api-gateway/src/main/java/com/englishflow/gateway/config/GatewayConfiguration.java')
   assert.match(contract, /\/internal\/v1\/assessment\/placement\/start/)
   assert.match(contract, /\/internal\/v1\/assessment\/placement\/submit-step/)
   assert.match(contract, /\/internal\/v1\/assessment\/placement\/skip/)
@@ -19,6 +22,7 @@ test('learner-web assessment chain uses the real placement owner and idempotent 
   assert.match(gateway, /rewrite\("placement-start", "\/api\/v1\/assessment\/placement\/start", "\/internal\/v1\/assessment\/placement\/start", ASSESSMENT_B25/)
   assert.match(gateway, /rewrite\("placement-submit-step", "\/api\/v1\/assessment\/placement\/submit-step"/)
   assert.match(gateway, /rewrite\("placement-skip", "\/api\/v1\/assessment\/placement\/skip"/)
+  assert.match(gatewayConfiguration, /\.path\(binding\.externalPathPatterns\(\)\.toArray\(String\[\]::new\)\)/)
   assert.match(api, /READ_MODEL_PATHS\.placementAnswerCommand/)
   assert.match(api, /READ_MODEL_PATHS\.placementSkipCommand/)
   assert.match(api, /withIdempotency\(`placement-answer-/)
@@ -42,7 +46,7 @@ test('learner-web exposes explicit loading, error, retry, and server daily/weekl
   assert.match(report, /useB10Store/)
   assert.match(report, /loadReport\(reportType\.value\)/)
   assert.match(report, /reportType === 'WEEKLY'/)
-  assert.match(report, /assessment\/learning 服务端生成的快照/)
+  assert.match(report, /store\.report\.calculationVersion/)
   assert.match(report, /已确认的学习结果/)
 })
 

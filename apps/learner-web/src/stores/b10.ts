@@ -1,6 +1,7 @@
+import { experiencePerformance } from '../platform/experience-ui'
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
-import { createAdaptivePerformanceEngine, type PerformanceLevel } from '@englishflow/performance'
+import { type PerformanceLevel } from '@englishflow/performance'
 import {
   createPracticeSession,
   createReadingMining,
@@ -142,7 +143,7 @@ function isConfirmedReviewStatus(status: string): boolean {
 }
 
 export const useB10Store = defineStore('b10-learning', () => {
-  const engine = createAdaptivePerformanceEngine()
+  const engine = experiencePerformance
   const performanceLevel = ref<B10PerformanceLevel>(engine.level)
   const online = ref(typeof navigator === 'undefined' ? true : navigator.onLine)
 
@@ -603,6 +604,6 @@ export const useB10Store = defineStore('b10-learning', () => {
     grammarStatus, grammarMessage, grammarPoints, grammarExercises, selectedGrammarPointId, selectedGrammarPoint, selectedGrammarExercises, grammarMastery, grammarSentence, grammarSentenceFallback, grammarFeedback, imitationFeedback, blockFeedback,
     writingStatus, writingMessage, writingPrompts, writingTemplates, writingMaterials, proofreadingExercises, writingHistory, writingFeedback, proofreadingFeedback, writingDraft, writingSubmitting,
     offlineQueue, queueCount, restore, setPerformanceLevel, loadVocabulary, revealCard, rateCard, syncOffline, startPractice, loadPractice, submitCurrentAnswer, saveCheckpoint, nextPractice, loadReport, loadReading, lookupReading, setReadingBlock, saveCurrentReadingProgress, submitReadingQuestion, mineReading, loadGrammar, selectGrammarPoint, grammarBlockOrder, saveGrammarBlockOrder, grammarImitationSlots, saveGrammarImitationSlots, grammarExerciseAnswer, saveGrammarExerciseAnswer, submitGrammarExercise, submitSentenceOrder, submitImitation, loadWriting, saveWritingDraft, submitCurrentWriting, submitCurrentProofreading,
-    dispose: () => { unsubscribePerformance(); engine.dispose() },
+    dispose: () => { unsubscribePerformance(); /* Shared engine lives for the application lifetime. */ },
   }
 })

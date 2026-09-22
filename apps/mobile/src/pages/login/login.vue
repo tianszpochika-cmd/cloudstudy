@@ -1,4 +1,9 @@
 <script setup lang="ts">
+import MobilePageHeader from '../../components/MobilePageHeader.vue'
+import { openUniPage } from '../../platform/uni-runtime'
+import { mobileT, useMobileExperience } from '../../platform/experience'
+const { experienceStyle, experienceMotion } = useMobileExperience()
+
 import { onLoad } from '@dcloudio/uni-app'
 import { onMounted, ref } from 'vue'
 import { authT } from '../../auth/i18n'
@@ -7,6 +12,7 @@ import { safeMobileReturnTo } from '../../auth/gateway-auth'
 import { useSessionStore } from '../../stores/session'
 
 const session = useSessionStore()
+const showPassword = ref(false)
 const identifier = ref('')
 const password = ref('')
 const returnTo = ref('/pages/home/home')
@@ -64,38 +70,35 @@ async function submit(): Promise<void> {
 </script>
 
 <template>
-  <view class="yx-page yx-login-page">
-    <view class="yx-brand">
-      <text class="yx-brand__mark" aria-hidden="true">✦</text>
-      <text>语学星</text>
-    </view>
-    <text class="yx-eyebrow">ACCOUNT</text>
-    <text class="yx-title">{{ authT('login.title') }}</text>
-    <text class="yx-description">{{ authT('login.description') }}</text>
+  <view class="yx-page yx-login-page" :style="experienceStyle" :data-motion="experienceMotion">
+
+    <MobilePageHeader page="login" />
 
     <view class="yx-card yx-login-card">
+      <view class="mobile-auth-heading"><text>{{ mobileT('account') }}</text><button tabindex="0" role="button" class="mobile-text-button" @click="openUniPage('/pages/register/register')">{{ mobileT('register') }} ↗</button></view>
       <!-- No .prevent here: uni emits submit as a component event whose payload has no
            preventDefault, and Vue skips a handler guarded by a modifier that does not apply to a
            non-DOM event. There is also no native default action left to cancel. -->
       <form @submit="submit">
         <label class="yx-field">
           <text>{{ authT('login.identifier') }}</text>
-          <input v-model="identifier" type="text" autocomplete="username" :placeholder="authT('login.identifierPlaceholder')" :disabled="submitting" />
+          <input :aria-label="authT('login.identifier')" v-model="identifier" type="text" autocomplete="username" :placeholder="authT('login.identifierPlaceholder')" :disabled="submitting" />
         </label>
         <label class="yx-field">
           <text>{{ authT('login.password') }}</text>
-          <input v-model="password" type="password" autocomplete="current-password" :placeholder="authT('login.passwordPlaceholder')" :disabled="submitting" />
+          <view class="mobile-password"><input :aria-label="authT('login.password')" v-model="password" :password="!showPassword" type="text" autocomplete="current-password" :placeholder="authT('login.passwordPlaceholder')" :disabled="submitting" @confirm="submit" /><button tabindex="0" role="button" class="mobile-text-button mobile-password-toggle" :aria-pressed="showPassword" @click="showPassword = !showPassword">{{ mobileT(showPassword ? 'hide' : 'show') }}</button></view>
         </label>
         <text v-if="error" class="yx-login-error" role="alert">{{ error }}</text>
         <!-- uni-app resolves form submission from the form-type prop, not from the HTML type
              attribute: its button component only calls form.submit() when props.formType is
              'submit'. A plain type="submit" therefore looks right on H5 but never submits. -->
-        <button class="yx-button" form-type="submit" :disabled="submitting">
+        <button tabindex="0" role="button" class="yx-button" form-type="submit" :disabled="submitting">
           {{ submitting ? authT('login.submitting') : authT('login.start') }}
         </button>
       </form>
-      <text class="yx-login-note">{{ authT('login.afterLogin') }}</text>
+      <view class="mobile-auth-links"><button tabindex="0" role="button" class="mobile-text-button" @click="openUniPage('/pages/reset-password/reset-password')">{{ mobileT('forgot') }}</button><text class="mobile-profile-caption">{{ mobileT('authTag') }}</text></view>
     </view>
+    <text class="mobile-auth-note">{{ mobileT('adultNote') }}</text>
   </view>
 </template>
 

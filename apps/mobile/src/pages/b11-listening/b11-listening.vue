@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import MobilePageHeader from '../../components/MobilePageHeader.vue'
+import { useMobileExperience } from '../../platform/experience'
+const { experienceStyle, experienceMotion } = useMobileExperience()
+
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import type { PerformanceLevel } from '@englishflow/performance'
 import B11StatusPanel from '../../components/b11/B11StatusPanel.vue'
@@ -67,25 +71,24 @@ onUnmounted(() => { if (timer.value) clearInterval(timer.value); audio.value?.de
 </script>
 
 <template>
-  <view class="yx-page b11-page" :class="themeClass">
-    <text class="yx-eyebrow">{{ b11T('listening.eyebrow') }}</text>
-    <text class="yx-title">{{ b11T('listening.title') }}</text>
-    <text class="yx-description">{{ b11T('listening.description') }}</text>
+  <view class="yx-page b11-page" :class="themeClass" :style="experienceStyle" :data-motion="store.motionDisabled || store.performanceLevel === 'Performance' ? 'off' : experienceMotion">
+    <MobilePageHeader page="b11-listening" />
+
     <B11StatusPanel :status="store.listeningStatus" :message="statusMessage" :queue-count="store.queueCount" :performance-level="store.performanceLevel" :motion-disabled="store.motionDisabled" @retry="load" @sync="sync" @performance="setPerformance" @motion="toggleMotion" />
 
     <view v-if="store.listening && segment" class="yx-card listening-card">
       <view class="card-heading"><view><text class="kicker">{{ store.listening.material.title }}</text><text class="subtle">{{ b11T('common.contentVersion') }} {{ store.listening.contentVersion }}</text></view><text class="rights" :class="`rights--${store.mediaRightsState.toLowerCase()}`">{{ store.mediaRightsState }}</text></view>
       <view class="timeline"><view v-if="store.canUseWaveform" class="waveform" aria-label="waveform"><view v-for="bar in 28" :key="bar" class="bar" :style="{ height: `${22 + (bar % 8) * 7}rpx` }"></view></view><view v-else class="static-waveform"><text>2D / static timeline</text><text>{{ b11T('common.noSample') }}</text></view><view class="timeline-track"><view class="timeline-progress" :style="{ width: `${store.mediaProgress}%` }"></view></view><text class="subtle">{{ b11T('listening.position') }} · {{ positionText }} · {{ Math.round(store.mediaProgress) }}%</text></view>
-      <view class="controls"><button class="small-button" type="button" @click="play">{{ b11T('listening.play') }}</button><button class="small-button" type="button" @click="pause">{{ b11T('listening.pause') }}</button><picker mode="selector" :range="PLAYBACK_RATES" :value="PLAYBACK_RATES.indexOf(store.playbackRate as (typeof PLAYBACK_RATES)[number])" @change="setRate"><view class="small-button">{{ store.playbackRate }}x</view></picker><button class="small-button" type="button" @click="setA">{{ b11T('listening.setA') }}</button><button class="small-button" type="button" @click="setB">{{ b11T('listening.setB') }}</button><button v-if="store.abStartMs !== null || store.abEndMs !== null" class="small-button secondary" type="button" @click="store.clearAB">{{ b11T('listening.clearAB') }}</button></view>
+      <view class="controls"><button tabindex="0" role="button" class="small-button" type="button" @click="play">{{ b11T('listening.play') }}</button><button tabindex="0" role="button" class="small-button" type="button" @click="pause">{{ b11T('listening.pause') }}</button><picker mode="selector" :range="PLAYBACK_RATES" :value="PLAYBACK_RATES.indexOf(store.playbackRate as (typeof PLAYBACK_RATES)[number])" @change="setRate"><view class="small-button">{{ store.playbackRate }}x</view></picker><button tabindex="0" role="button" class="small-button" type="button" @click="setA">{{ b11T('listening.setA') }}</button><button tabindex="0" role="button" class="small-button" type="button" @click="setB">{{ b11T('listening.setB') }}</button><button tabindex="0" role="button" v-if="store.abStartMs !== null || store.abEndMs !== null" class="small-button secondary" type="button" @click="store.clearAB">{{ b11T('listening.clearAB') }}</button></view>
       <text v-if="store.abStartMs !== null || store.abEndMs !== null" class="subtle">A {{ store.abStartMs === null ? '—' : `${Math.round(store.abStartMs / 1000)}s` }} · B {{ store.abEndMs === null ? '—' : `${Math.round(store.abEndMs / 1000)}s` }} · 仅在 A、B 都有效时循环。</text>
       <text class="subtle">{{ source ? '已获得短时播放地址；过期或撤销后自动停止授权。' : b11T('listening.noMedia') }}</text>
 
-      <view v-if="store.languageClips.length" class="clip-card"><text class="kicker">{{ b11T('listening.clip') }}</text><scroll-view scroll-x class="clip-list"><button v-for="item in store.languageClips" :key="item.clipId" class="clip" :class="{ active: item.clipId === store.languageClipId }" type="button" @click="selectClip(item.clipId)">{{ item.title }} · {{ Math.round(item.startMs / 1000) }}–{{ Math.round(item.endMs / 1000) }}s</button></scroll-view></view>
+      <view v-if="store.languageClips.length" class="clip-card"><text class="kicker">{{ b11T('listening.clip') }}</text><scroll-view scroll-x class="clip-list"><button tabindex="0" role="button" v-for="item in store.languageClips" :key="item.clipId" class="clip" :class="{ active: item.clipId === store.languageClipId }" type="button" @click="selectClip(item.clipId)">{{ item.title }} · {{ Math.round(item.startMs / 1000) }}–{{ Math.round(item.endMs / 1000) }}s</button></scroll-view></view>
       <view v-if="segment" class="subtitle-card"><text class="kicker">字幕 / 音变时间轴</text><view class="token-list"><view v-for="token in segment.tokens" :key="token.tokenId" class="token"><text>{{ token.text }}</text><text class="subtle">{{ token.startMs }}–{{ token.endMs }}ms</text></view></view></view>
-      <view class="dictation"><text class="kicker">{{ b11T('listening.dictation') }}</text><input v-model="store.dictationAnswer" class="answer" placeholder="输入你听到的句子" confirm-type="done" /><button class="yx-button" type="button" @click="store.submitDictationAnswer">{{ b11T('listening.submit') }}</button><view v-if="store.dictationResult" class="feedback"><text>{{ store.dictationResult.correct ? '规则判定正确' : '已记录错题' }}</text><text>{{ store.dictationResult.feedbackCodes.join(' · ') || '服务端已保存' }}</text></view></view>
-      <button class="yx-button yx-button--secondary" type="button" @click="store.saveMediaProgress(true)">保存播放进度</button>
+      <view class="dictation"><text class="kicker">{{ b11T('listening.dictation') }}</text><input v-model="store.dictationAnswer" class="answer" placeholder="输入你听到的句子" confirm-type="done" /><button tabindex="0" role="button" class="yx-button" type="button" @click="store.submitDictationAnswer">{{ b11T('listening.submit') }}</button><view v-if="store.dictationResult" class="feedback"><text>{{ store.dictationResult.correct ? '规则判定正确' : '已记录错题' }}</text><text>{{ store.dictationResult.feedbackCodes.join(' · ') || '已保存' }}</text></view></view>
+      <button tabindex="0" role="button" class="yx-button yx-button--secondary" type="button" @click="store.saveMediaProgress(true)">保存播放进度</button>
     </view>
-    <view v-else-if="store.listeningStatus !== 'loading'" class="yx-card empty"><text>{{ b11T('status.empty') }}</text><text class="subtle">{{ b11T('common.noSample') }}</text><button class="yx-button" type="button" @click="load">{{ b11T('status.retry') }}</button></view>
+    <view v-else-if="store.listeningStatus !== 'loading'" class="yx-card empty"><text>{{ b11T('status.empty') }}</text><text class="subtle">{{ b11T('common.noSample') }}</text><button tabindex="0" role="button" class="yx-button" type="button" @click="load">{{ b11T('status.retry') }}</button></view>
   </view>
 </template>
 

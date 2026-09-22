@@ -15,8 +15,14 @@ const vueRouterPublicEntryPlugin = {
 }
 
 export default defineConfig({
+  optimizeDeps: {
+    exclude: ['@englishflow/design-tokens/mobile', '@englishflow/i18n/mobile-experience'],
+  },
   resolve: {
     alias: {
+      // Resolve Pinia at its real package location so its transitive imports work
+      // with uni-app's preserved symlinks on Windows/pnpm.
+      pinia: require.resolve('pinia/dist/pinia.mjs'),
       // DCloud's current compiler references an internal Vue symbol that is
       // not part of the public Vue 3.5 runtime export surface. H5/App builds
       // use this narrow adapter; application code continues importing Vue normally.

@@ -1,0 +1,1423 @@
+{
+  "date": "2026-09-22T07:57:29.953Z",
+  "scope": "UI ONLY: synthetic browser-intercepted API data; no real authentication or owner writes",
+  "checks": [
+    {
+      "name": "login validation focuses missing account",
+      "pass": true
+    },
+    {
+      "name": "password visibility control",
+      "pass": true
+    },
+    {
+      "name": "login with fixture permissions",
+      "pass": true
+    },
+    {
+      "name": "functional feature search with keyboard shortcut",
+      "pass": true
+    },
+    {
+      "name": "lexeme editor opens and is readable",
+      "pass": true
+    },
+    {
+      "name": "item cursor pagination appends rows",
+      "pass": true
+    },
+    {
+      "name": "batch example is valid JSONL and executes once",
+      "pass": true
+    },
+    {
+      "name": "content dirty inputs survive refresh",
+      "pass": true
+    },
+    {
+      "name": "navigation protects unsaved content",
+      "pass": true
+    },
+    {
+      "name": "support loaded-list search and pagination",
+      "pass": true
+    },
+    {
+      "name": "refund challenge invalidates on changed order",
+      "pass": true
+    },
+    {
+      "name": "learner record detail replaces raw JSON",
+      "pass": true
+    },
+    {
+      "name": "API failure is recoverable and does not display false zero",
+      "pass": true
+    },
+    {
+      "name": "permission guard hides links and blocks direct route",
+      "pass": true
+    },
+    {
+      "name": "mobile menu opens, navigates, closes",
+      "pass": true
+    },
+    {
+      "name": "mobile table columns remain readable and actions can be scrolled into view",
+      "pass": true
+    },
+    {
+      "name": "dark theme persists on reload",
+      "pass": true
+    },
+    {
+      "name": "shared UI locale switches with fallback",
+      "pass": true
+    },
+    {
+      "name": "all authenticated routes across 4 widths and 3 themes",
+      "pass": true
+    },
+    {
+      "name": "reduced motion preference disables decoration",
+      "pass": true
+    },
+    {
+      "name": "four quality levels are selectable",
+      "pass": true
+    },
+    {
+      "name": "offline banner appears",
+      "pass": true
+    },
+    {
+      "name": "no browser runtime errors",
+      "pass": true
+    },
+    {
+      "name": "login at 4 widths and 3 themes without fixtures",
+      "pass": true
+    },
+    {
+      "name": "real unavailable login preserves account and shows retryable feedback",
+      "pass": true
+    }
+  ],
+  "layout": [
+    {
+      "theme": "light",
+      "width": 320,
+      "path": "/dashboard",
+      "pass": true,
+      "scroll": 320,
+      "body": 320
+    },
+    {
+      "theme": "light",
+      "width": 320,
+      "path": "/content",
+      "pass": true,
+      "scroll": 320,
+      "body": 320
+    },
+    {
+      "theme": "light",
+      "width": 320,
+      "path": "/lexemes",
+      "pass": true,
+      "scroll": 320,
+      "body": 320
+    },
+    {
+      "theme": "light",
+      "width": 320,
+      "path": "/items",
+      "pass": true,
+      "scroll": 320,
+      "body": 320
+    },
+    {
+      "theme": "light",
+      "width": 320,
+      "path": "/phonetics",
+      "pass": true,
+      "scroll": 320,
+      "body": 320
+    },
+    {
+      "theme": "light",
+      "width": 320,
+      "path": "/learners",
+      "pass": true,
+      "scroll": 320,
+      "body": 320
+    },
+    {
+      "theme": "light",
+      "width": 320,
+      "path": "/support",
+      "pass": true,
+      "scroll": 320,
+      "body": 320
+    },
+    {
+      "theme": "light",
+      "width": 320,
+      "path": "/commerce",
+      "pass": true,
+      "scroll": 320,
+      "body": 320
+    },
+    {
+      "theme": "light",
+      "width": 320,
+      "path": "/governance",
+      "pass": true,
+      "scroll": 320,
+      "body": 320
+    },
+    {
+      "theme": "light",
+      "width": 320,
+      "path": "/audit",
+      "pass": true,
+      "scroll": 320,
+      "body": 320
+    },
+    {
+      "theme": "light",
+      "width": 320,
+      "path": "/release",
+      "pass": true,
+      "scroll": 320,
+      "body": 320
+    },
+    {
+      "theme": "light",
+      "width": 320,
+      "path": "/recovery",
+      "pass": true,
+      "scroll": 320,
+      "body": 320
+    },
+    {
+      "theme": "light",
+      "width": 320,
+      "path": "/forbidden",
+      "pass": true,
+      "scroll": 320,
+      "body": 320
+    },
+    {
+      "theme": "light",
+      "width": 390,
+      "path": "/dashboard",
+      "pass": true,
+      "scroll": 390,
+      "body": 390
+    },
+    {
+      "theme": "light",
+      "width": 390,
+      "path": "/content",
+      "pass": true,
+      "scroll": 390,
+      "body": 390
+    },
+    {
+      "theme": "light",
+      "width": 390,
+      "path": "/lexemes",
+      "pass": true,
+      "scroll": 390,
+      "body": 390
+    },
+    {
+      "theme": "light",
+      "width": 390,
+      "path": "/items",
+      "pass": true,
+      "scroll": 390,
+      "body": 390
+    },
+    {
+      "theme": "light",
+      "width": 390,
+      "path": "/phonetics",
+      "pass": true,
+      "scroll": 390,
+      "body": 390
+    },
+    {
+      "theme": "light",
+      "width": 390,
+      "path": "/learners",
+      "pass": true,
+      "scroll": 390,
+      "body": 390
+    },
+    {
+      "theme": "light",
+      "width": 390,
+      "path": "/support",
+      "pass": true,
+      "scroll": 390,
+      "body": 390
+    },
+    {
+      "theme": "light",
+      "width": 390,
+      "path": "/commerce",
+      "pass": true,
+      "scroll": 390,
+      "body": 390
+    },
+    {
+      "theme": "light",
+      "width": 390,
+      "path": "/governance",
+      "pass": true,
+      "scroll": 390,
+      "body": 390
+    },
+    {
+      "theme": "light",
+      "width": 390,
+      "path": "/audit",
+      "pass": true,
+      "scroll": 390,
+      "body": 390
+    },
+    {
+      "theme": "light",
+      "width": 390,
+      "path": "/release",
+      "pass": true,
+      "scroll": 390,
+      "body": 390
+    },
+    {
+      "theme": "light",
+      "width": 390,
+      "path": "/recovery",
+      "pass": true,
+      "scroll": 390,
+      "body": 390
+    },
+    {
+      "theme": "light",
+      "width": 390,
+      "path": "/forbidden",
+      "pass": true,
+      "scroll": 390,
+      "body": 390
+    },
+    {
+      "theme": "light",
+      "width": 820,
+      "path": "/dashboard",
+      "pass": true,
+      "scroll": 820,
+      "body": 820
+    },
+    {
+      "theme": "light",
+      "width": 820,
+      "path": "/content",
+      "pass": true,
+      "scroll": 820,
+      "body": 820
+    },
+    {
+      "theme": "light",
+      "width": 820,
+      "path": "/lexemes",
+      "pass": true,
+      "scroll": 820,
+      "body": 820
+    },
+    {
+      "theme": "light",
+      "width": 820,
+      "path": "/items",
+      "pass": true,
+      "scroll": 820,
+      "body": 820
+    },
+    {
+      "theme": "light",
+      "width": 820,
+      "path": "/phonetics",
+      "pass": true,
+      "scroll": 820,
+      "body": 820
+    },
+    {
+      "theme": "light",
+      "width": 820,
+      "path": "/learners",
+      "pass": true,
+      "scroll": 820,
+      "body": 820
+    },
+    {
+      "theme": "light",
+      "width": 820,
+      "path": "/support",
+      "pass": true,
+      "scroll": 820,
+      "body": 820
+    },
+    {
+      "theme": "light",
+      "width": 820,
+      "path": "/commerce",
+      "pass": true,
+      "scroll": 820,
+      "body": 820
+    },
+    {
+      "theme": "light",
+      "width": 820,
+      "path": "/governance",
+      "pass": true,
+      "scroll": 820,
+      "body": 820
+    },
+    {
+      "theme": "light",
+      "width": 820,
+      "path": "/audit",
+      "pass": true,
+      "scroll": 820,
+      "body": 820
+    },
+    {
+      "theme": "light",
+      "width": 820,
+      "path": "/release",
+      "pass": true,
+      "scroll": 820,
+      "body": 820
+    },
+    {
+      "theme": "light",
+      "width": 820,
+      "path": "/recovery",
+      "pass": true,
+      "scroll": 820,
+      "body": 820
+    },
+    {
+      "theme": "light",
+      "width": 820,
+      "path": "/forbidden",
+      "pass": true,
+      "scroll": 820,
+      "body": 820
+    },
+    {
+      "theme": "light",
+      "width": 1440,
+      "path": "/dashboard",
+      "pass": true,
+      "scroll": 1440,
+      "body": 1440
+    },
+    {
+      "theme": "light",
+      "width": 1440,
+      "path": "/content",
+      "pass": true,
+      "scroll": 1440,
+      "body": 1440
+    },
+    {
+      "theme": "light",
+      "width": 1440,
+      "path": "/lexemes",
+      "pass": true,
+      "scroll": 1440,
+      "body": 1440
+    },
+    {
+      "theme": "light",
+      "width": 1440,
+      "path": "/items",
+      "pass": true,
+      "scroll": 1440,
+      "body": 1440
+    },
+    {
+      "theme": "light",
+      "width": 1440,
+      "path": "/phonetics",
+      "pass": true,
+      "scroll": 1440,
+      "body": 1440
+    },
+    {
+      "theme": "light",
+      "width": 1440,
+      "path": "/learners",
+      "pass": true,
+      "scroll": 1440,
+      "body": 1440
+    },
+    {
+      "theme": "light",
+      "width": 1440,
+      "path": "/support",
+      "pass": true,
+      "scroll": 1440,
+      "body": 1440
+    },
+    {
+      "theme": "light",
+      "width": 1440,
+      "path": "/commerce",
+      "pass": true,
+      "scroll": 1440,
+      "body": 1440
+    },
+    {
+      "theme": "light",
+      "width": 1440,
+      "path": "/governance",
+      "pass": true,
+      "scroll": 1440,
+      "body": 1440
+    },
+    {
+      "theme": "light",
+      "width": 1440,
+      "path": "/audit",
+      "pass": true,
+      "scroll": 1440,
+      "body": 1440
+    },
+    {
+      "theme": "light",
+      "width": 1440,
+      "path": "/release",
+      "pass": true,
+      "scroll": 1440,
+      "body": 1440
+    },
+    {
+      "theme": "light",
+      "width": 1440,
+      "path": "/recovery",
+      "pass": true,
+      "scroll": 1440,
+      "body": 1440
+    },
+    {
+      "theme": "light",
+      "width": 1440,
+      "path": "/forbidden",
+      "pass": true,
+      "scroll": 1440,
+      "body": 1440
+    },
+    {
+      "theme": "dark",
+      "width": 320,
+      "path": "/dashboard",
+      "pass": true,
+      "scroll": 320,
+      "body": 320
+    },
+    {
+      "theme": "dark",
+      "width": 320,
+      "path": "/content",
+      "pass": true,
+      "scroll": 320,
+      "body": 320
+    },
+    {
+      "theme": "dark",
+      "width": 320,
+      "path": "/lexemes",
+      "pass": true,
+      "scroll": 320,
+      "body": 320
+    },
+    {
+      "theme": "dark",
+      "width": 320,
+      "path": "/items",
+      "pass": true,
+      "scroll": 320,
+      "body": 320
+    },
+    {
+      "theme": "dark",
+      "width": 320,
+      "path": "/phonetics",
+      "pass": true,
+      "scroll": 320,
+      "body": 320
+    },
+    {
+      "theme": "dark",
+      "width": 320,
+      "path": "/learners",
+      "pass": true,
+      "scroll": 320,
+      "body": 320
+    },
+    {
+      "theme": "dark",
+      "width": 320,
+      "path": "/support",
+      "pass": true,
+      "scroll": 320,
+      "body": 320
+    },
+    {
+      "theme": "dark",
+      "width": 320,
+      "path": "/commerce",
+      "pass": true,
+      "scroll": 320,
+      "body": 320
+    },
+    {
+      "theme": "dark",
+      "width": 320,
+      "path": "/governance",
+      "pass": true,
+      "scroll": 320,
+      "body": 320
+    },
+    {
+      "theme": "dark",
+      "width": 320,
+      "path": "/audit",
+      "pass": true,
+      "scroll": 320,
+      "body": 320
+    },
+    {
+      "theme": "dark",
+      "width": 320,
+      "path": "/release",
+      "pass": true,
+      "scroll": 320,
+      "body": 320
+    },
+    {
+      "theme": "dark",
+      "width": 320,
+      "path": "/recovery",
+      "pass": true,
+      "scroll": 320,
+      "body": 320
+    },
+    {
+      "theme": "dark",
+      "width": 320,
+      "path": "/forbidden",
+      "pass": true,
+      "scroll": 320,
+      "body": 320
+    },
+    {
+      "theme": "dark",
+      "width": 390,
+      "path": "/dashboard",
+      "pass": true,
+      "scroll": 390,
+      "body": 390
+    },
+    {
+      "theme": "dark",
+      "width": 390,
+      "path": "/content",
+      "pass": true,
+      "scroll": 390,
+      "body": 390
+    },
+    {
+      "theme": "dark",
+      "width": 390,
+      "path": "/lexemes",
+      "pass": true,
+      "scroll": 390,
+      "body": 390
+    },
+    {
+      "theme": "dark",
+      "width": 390,
+      "path": "/items",
+      "pass": true,
+      "scroll": 390,
+      "body": 390
+    },
+    {
+      "theme": "dark",
+      "width": 390,
+      "path": "/phonetics",
+      "pass": true,
+      "scroll": 390,
+      "body": 390
+    },
+    {
+      "theme": "dark",
+      "width": 390,
+      "path": "/learners",
+      "pass": true,
+      "scroll": 390,
+      "body": 390
+    },
+    {
+      "theme": "dark",
+      "width": 390,
+      "path": "/support",
+      "pass": true,
+      "scroll": 390,
+      "body": 390
+    },
+    {
+      "theme": "dark",
+      "width": 390,
+      "path": "/commerce",
+      "pass": true,
+      "scroll": 390,
+      "body": 390
+    },
+    {
+      "theme": "dark",
+      "width": 390,
+      "path": "/governance",
+      "pass": true,
+      "scroll": 390,
+      "body": 390
+    },
+    {
+      "theme": "dark",
+      "width": 390,
+      "path": "/audit",
+      "pass": true,
+      "scroll": 390,
+      "body": 390
+    },
+    {
+      "theme": "dark",
+      "width": 390,
+      "path": "/release",
+      "pass": true,
+      "scroll": 390,
+      "body": 390
+    },
+    {
+      "theme": "dark",
+      "width": 390,
+      "path": "/recovery",
+      "pass": true,
+      "scroll": 390,
+      "body": 390
+    },
+    {
+      "theme": "dark",
+      "width": 390,
+      "path": "/forbidden",
+      "pass": true,
+      "scroll": 390,
+      "body": 390
+    },
+    {
+      "theme": "dark",
+      "width": 820,
+      "path": "/dashboard",
+      "pass": true,
+      "scroll": 820,
+      "body": 820
+    },
+    {
+      "theme": "dark",
+      "width": 820,
+      "path": "/content",
+      "pass": true,
+      "scroll": 820,
+      "body": 820
+    },
+    {
+      "theme": "dark",
+      "width": 820,
+      "path": "/lexemes",
+      "pass": true,
+      "scroll": 820,
+      "body": 820
+    },
+    {
+      "theme": "dark",
+      "width": 820,
+      "path": "/items",
+      "pass": true,
+      "scroll": 820,
+      "body": 820
+    },
+    {
+      "theme": "dark",
+      "width": 820,
+      "path": "/phonetics",
+      "pass": true,
+      "scroll": 820,
+      "body": 820
+    },
+    {
+      "theme": "dark",
+      "width": 820,
+      "path": "/learners",
+      "pass": true,
+      "scroll": 820,
+      "body": 820
+    },
+    {
+      "theme": "dark",
+      "width": 820,
+      "path": "/support",
+      "pass": true,
+      "scroll": 820,
+      "body": 820
+    },
+    {
+      "theme": "dark",
+      "width": 820,
+      "path": "/commerce",
+      "pass": true,
+      "scroll": 820,
+      "body": 820
+    },
+    {
+      "theme": "dark",
+      "width": 820,
+      "path": "/governance",
+      "pass": true,
+      "scroll": 820,
+      "body": 820
+    },
+    {
+      "theme": "dark",
+      "width": 820,
+      "path": "/audit",
+      "pass": true,
+      "scroll": 820,
+      "body": 820
+    },
+    {
+      "theme": "dark",
+      "width": 820,
+      "path": "/release",
+      "pass": true,
+      "scroll": 820,
+      "body": 820
+    },
+    {
+      "theme": "dark",
+      "width": 820,
+      "path": "/recovery",
+      "pass": true,
+      "scroll": 820,
+      "body": 820
+    },
+    {
+      "theme": "dark",
+      "width": 820,
+      "path": "/forbidden",
+      "pass": true,
+      "scroll": 820,
+      "body": 820
+    },
+    {
+      "theme": "dark",
+      "width": 1440,
+      "path": "/dashboard",
+      "pass": true,
+      "scroll": 1440,
+      "body": 1440
+    },
+    {
+      "theme": "dark",
+      "width": 1440,
+      "path": "/content",
+      "pass": true,
+      "scroll": 1440,
+      "body": 1440
+    },
+    {
+      "theme": "dark",
+      "width": 1440,
+      "path": "/lexemes",
+      "pass": true,
+      "scroll": 1440,
+      "body": 1440
+    },
+    {
+      "theme": "dark",
+      "width": 1440,
+      "path": "/items",
+      "pass": true,
+      "scroll": 1440,
+      "body": 1440
+    },
+    {
+      "theme": "dark",
+      "width": 1440,
+      "path": "/phonetics",
+      "pass": true,
+      "scroll": 1440,
+      "body": 1440
+    },
+    {
+      "theme": "dark",
+      "width": 1440,
+      "path": "/learners",
+      "pass": true,
+      "scroll": 1440,
+      "body": 1440
+    },
+    {
+      "theme": "dark",
+      "width": 1440,
+      "path": "/support",
+      "pass": true,
+      "scroll": 1440,
+      "body": 1440
+    },
+    {
+      "theme": "dark",
+      "width": 1440,
+      "path": "/commerce",
+      "pass": true,
+      "scroll": 1440,
+      "body": 1440
+    },
+    {
+      "theme": "dark",
+      "width": 1440,
+      "path": "/governance",
+      "pass": true,
+      "scroll": 1440,
+      "body": 1440
+    },
+    {
+      "theme": "dark",
+      "width": 1440,
+      "path": "/audit",
+      "pass": true,
+      "scroll": 1440,
+      "body": 1440
+    },
+    {
+      "theme": "dark",
+      "width": 1440,
+      "path": "/release",
+      "pass": true,
+      "scroll": 1440,
+      "body": 1440
+    },
+    {
+      "theme": "dark",
+      "width": 1440,
+      "path": "/recovery",
+      "pass": true,
+      "scroll": 1440,
+      "body": 1440
+    },
+    {
+      "theme": "dark",
+      "width": 1440,
+      "path": "/forbidden",
+      "pass": true,
+      "scroll": 1440,
+      "body": 1440
+    },
+    {
+      "theme": "high-contrast",
+      "width": 320,
+      "path": "/dashboard",
+      "pass": true,
+      "scroll": 320,
+      "body": 320
+    },
+    {
+      "theme": "high-contrast",
+      "width": 320,
+      "path": "/content",
+      "pass": true,
+      "scroll": 320,
+      "body": 320
+    },
+    {
+      "theme": "high-contrast",
+      "width": 320,
+      "path": "/lexemes",
+      "pass": true,
+      "scroll": 320,
+      "body": 320
+    },
+    {
+      "theme": "high-contrast",
+      "width": 320,
+      "path": "/items",
+      "pass": true,
+      "scroll": 320,
+      "body": 320
+    },
+    {
+      "theme": "high-contrast",
+      "width": 320,
+      "path": "/phonetics",
+      "pass": true,
+      "scroll": 320,
+      "body": 320
+    },
+    {
+      "theme": "high-contrast",
+      "width": 320,
+      "path": "/learners",
+      "pass": true,
+      "scroll": 320,
+      "body": 320
+    },
+    {
+      "theme": "high-contrast",
+      "width": 320,
+      "path": "/support",
+      "pass": true,
+      "scroll": 320,
+      "body": 320
+    },
+    {
+      "theme": "high-contrast",
+      "width": 320,
+      "path": "/commerce",
+      "pass": true,
+      "scroll": 320,
+      "body": 320
+    },
+    {
+      "theme": "high-contrast",
+      "width": 320,
+      "path": "/governance",
+      "pass": true,
+      "scroll": 320,
+      "body": 320
+    },
+    {
+      "theme": "high-contrast",
+      "width": 320,
+      "path": "/audit",
+      "pass": true,
+      "scroll": 320,
+      "body": 320
+    },
+    {
+      "theme": "high-contrast",
+      "width": 320,
+      "path": "/release",
+      "pass": true,
+      "scroll": 320,
+      "body": 320
+    },
+    {
+      "theme": "high-contrast",
+      "width": 320,
+      "path": "/recovery",
+      "pass": true,
+      "scroll": 320,
+      "body": 320
+    },
+    {
+      "theme": "high-contrast",
+      "width": 320,
+      "path": "/forbidden",
+      "pass": true,
+      "scroll": 320,
+      "body": 320
+    },
+    {
+      "theme": "high-contrast",
+      "width": 390,
+      "path": "/dashboard",
+      "pass": true,
+      "scroll": 390,
+      "body": 390
+    },
+    {
+      "theme": "high-contrast",
+      "width": 390,
+      "path": "/content",
+      "pass": true,
+      "scroll": 390,
+      "body": 390
+    },
+    {
+      "theme": "high-contrast",
+      "width": 390,
+      "path": "/lexemes",
+      "pass": true,
+      "scroll": 390,
+      "body": 390
+    },
+    {
+      "theme": "high-contrast",
+      "width": 390,
+      "path": "/items",
+      "pass": true,
+      "scroll": 390,
+      "body": 390
+    },
+    {
+      "theme": "high-contrast",
+      "width": 390,
+      "path": "/phonetics",
+      "pass": true,
+      "scroll": 390,
+      "body": 390
+    },
+    {
+      "theme": "high-contrast",
+      "width": 390,
+      "path": "/learners",
+      "pass": true,
+      "scroll": 390,
+      "body": 390
+    },
+    {
+      "theme": "high-contrast",
+      "width": 390,
+      "path": "/support",
+      "pass": true,
+      "scroll": 390,
+      "body": 390
+    },
+    {
+      "theme": "high-contrast",
+      "width": 390,
+      "path": "/commerce",
+      "pass": true,
+      "scroll": 390,
+      "body": 390
+    },
+    {
+      "theme": "high-contrast",
+      "width": 390,
+      "path": "/governance",
+      "pass": true,
+      "scroll": 390,
+      "body": 390
+    },
+    {
+      "theme": "high-contrast",
+      "width": 390,
+      "path": "/audit",
+      "pass": true,
+      "scroll": 390,
+      "body": 390
+    },
+    {
+      "theme": "high-contrast",
+      "width": 390,
+      "path": "/release",
+      "pass": true,
+      "scroll": 390,
+      "body": 390
+    },
+    {
+      "theme": "high-contrast",
+      "width": 390,
+      "path": "/recovery",
+      "pass": true,
+      "scroll": 390,
+      "body": 390
+    },
+    {
+      "theme": "high-contrast",
+      "width": 390,
+      "path": "/forbidden",
+      "pass": true,
+      "scroll": 390,
+      "body": 390
+    },
+    {
+      "theme": "high-contrast",
+      "width": 820,
+      "path": "/dashboard",
+      "pass": true,
+      "scroll": 820,
+      "body": 820
+    },
+    {
+      "theme": "high-contrast",
+      "width": 820,
+      "path": "/content",
+      "pass": true,
+      "scroll": 820,
+      "body": 820
+    },
+    {
+      "theme": "high-contrast",
+      "width": 820,
+      "path": "/lexemes",
+      "pass": true,
+      "scroll": 820,
+      "body": 820
+    },
+    {
+      "theme": "high-contrast",
+      "width": 820,
+      "path": "/items",
+      "pass": true,
+      "scroll": 820,
+      "body": 820
+    },
+    {
+      "theme": "high-contrast",
+      "width": 820,
+      "path": "/phonetics",
+      "pass": true,
+      "scroll": 820,
+      "body": 820
+    },
+    {
+      "theme": "high-contrast",
+      "width": 820,
+      "path": "/learners",
+      "pass": true,
+      "scroll": 820,
+      "body": 820
+    },
+    {
+      "theme": "high-contrast",
+      "width": 820,
+      "path": "/support",
+      "pass": true,
+      "scroll": 820,
+      "body": 820
+    },
+    {
+      "theme": "high-contrast",
+      "width": 820,
+      "path": "/commerce",
+      "pass": true,
+      "scroll": 820,
+      "body": 820
+    },
+    {
+      "theme": "high-contrast",
+      "width": 820,
+      "path": "/governance",
+      "pass": true,
+      "scroll": 820,
+      "body": 820
+    },
+    {
+      "theme": "high-contrast",
+      "width": 820,
+      "path": "/audit",
+      "pass": true,
+      "scroll": 820,
+      "body": 820
+    },
+    {
+      "theme": "high-contrast",
+      "width": 820,
+      "path": "/release",
+      "pass": true,
+      "scroll": 820,
+      "body": 820
+    },
+    {
+      "theme": "high-contrast",
+      "width": 820,
+      "path": "/recovery",
+      "pass": true,
+      "scroll": 820,
+      "body": 820
+    },
+    {
+      "theme": "high-contrast",
+      "width": 820,
+      "path": "/forbidden",
+      "pass": true,
+      "scroll": 820,
+      "body": 820
+    },
+    {
+      "theme": "high-contrast",
+      "width": 1440,
+      "path": "/dashboard",
+      "pass": true,
+      "scroll": 1440,
+      "body": 1440
+    },
+    {
+      "theme": "high-contrast",
+      "width": 1440,
+      "path": "/content",
+      "pass": true,
+      "scroll": 1440,
+      "body": 1440
+    },
+    {
+      "theme": "high-contrast",
+      "width": 1440,
+      "path": "/lexemes",
+      "pass": true,
+      "scroll": 1440,
+      "body": 1440
+    },
+    {
+      "theme": "high-contrast",
+      "width": 1440,
+      "path": "/items",
+      "pass": true,
+      "scroll": 1440,
+      "body": 1440
+    },
+    {
+      "theme": "high-contrast",
+      "width": 1440,
+      "path": "/phonetics",
+      "pass": true,
+      "scroll": 1440,
+      "body": 1440
+    },
+    {
+      "theme": "high-contrast",
+      "width": 1440,
+      "path": "/learners",
+      "pass": true,
+      "scroll": 1440,
+      "body": 1440
+    },
+    {
+      "theme": "high-contrast",
+      "width": 1440,
+      "path": "/support",
+      "pass": true,
+      "scroll": 1440,
+      "body": 1440
+    },
+    {
+      "theme": "high-contrast",
+      "width": 1440,
+      "path": "/commerce",
+      "pass": true,
+      "scroll": 1440,
+      "body": 1440
+    },
+    {
+      "theme": "high-contrast",
+      "width": 1440,
+      "path": "/governance",
+      "pass": true,
+      "scroll": 1440,
+      "body": 1440
+    },
+    {
+      "theme": "high-contrast",
+      "width": 1440,
+      "path": "/audit",
+      "pass": true,
+      "scroll": 1440,
+      "body": 1440
+    },
+    {
+      "theme": "high-contrast",
+      "width": 1440,
+      "path": "/release",
+      "pass": true,
+      "scroll": 1440,
+      "body": 1440
+    },
+    {
+      "theme": "high-contrast",
+      "width": 1440,
+      "path": "/recovery",
+      "pass": true,
+      "scroll": 1440,
+      "body": 1440
+    },
+    {
+      "theme": "high-contrast",
+      "width": 1440,
+      "path": "/forbidden",
+      "pass": true,
+      "scroll": 1440,
+      "body": 1440
+    }
+  ],
+  "loginLayouts": [
+    {
+      "theme": "light",
+      "width": 320,
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "width": 390,
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "width": 820,
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "width": 1440,
+      "pass": true
+    },
+    {
+      "theme": "dark",
+      "width": 320,
+      "pass": true
+    },
+    {
+      "theme": "dark",
+      "width": 390,
+      "pass": true
+    },
+    {
+      "theme": "dark",
+      "width": 820,
+      "pass": true
+    },
+    {
+      "theme": "dark",
+      "width": 1440,
+      "pass": true
+    },
+    {
+      "theme": "high-contrast",
+      "width": 320,
+      "pass": true
+    },
+    {
+      "theme": "high-contrast",
+      "width": 390,
+      "pass": true
+    },
+    {
+      "theme": "high-contrast",
+      "width": 820,
+      "pass": true
+    },
+    {
+      "theme": "high-contrast",
+      "width": 1440,
+      "pass": true
+    }
+  ],
+  "gateway": {
+    "reachable": false
+  },
+  "runtimeErrors": [],
+  "requestCount": 733
+}

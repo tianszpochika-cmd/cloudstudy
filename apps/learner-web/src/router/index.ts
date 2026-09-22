@@ -13,7 +13,7 @@ declare module 'vue-router' {
   }
 }
 
-const routes: RouteRecordRaw[] = [
+export const routes: RouteRecordRaw[] = [
   {
     path: '/',
     name: 'welcome',
@@ -38,7 +38,7 @@ const routes: RouteRecordRaw[] = [
     path: '/support',
     name: 'support',
     component: () => import('../pages/SupportPage.vue'),
-    meta: { requiresAuth: true, title: '客服与帮助' },
+    meta: { requiresAuth: true, shell: true, title: '帮助与反馈' },
   },
   {
     path: '/home',
@@ -56,7 +56,7 @@ const routes: RouteRecordRaw[] = [
     path: '/assessment',
     name: 'assessment',
     component: () => import('../pages/AssessmentPage.vue'),
-    meta: { requiresAuth: true, title: '规则化测评' },
+    meta: { requiresAuth: true, shell: true, title: '学习测评' },
   },
   {
     path: '/today',

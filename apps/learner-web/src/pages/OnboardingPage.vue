@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AppIcon from '../components/AppIcon.vue'
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { dailyQuotaOptions, subTags, targetGoals, type DailyQuotaMinutes, type SubTag, type TargetGoal } from '../domain/b1'
@@ -91,7 +92,7 @@ async function cancel(): Promise<void> {
     <section class="onboarding-flow" aria-labelledby="onboarding-title" :aria-busy="saving || store.onboardingStatus === 'loading'">
       <header class="onboarding-flow__header">
         <div class="brand">
-          <span class="brand__mark" aria-hidden="true">✦</span>
+          <AppIcon name="spark" :size="32" />
           <span>语学星</span>
         </div>
         <p class="eyebrow">FIRST DAY · {{ step }}/2</p>
@@ -162,7 +163,7 @@ async function cancel(): Promise<void> {
             </div>
           </fieldset>
 
-          <p class="policy-note">你的目标和学习偏好会保存到学习服务；以后可以随时调整。</p>
+          <p class="policy-note">目标不需要一次选对，以后可以随时调整。</p>
           <p v-if="store.lastError" class="setup-error" role="alert">{{ store.lastError }}</p>
           <div class="setup-actions">
             <button class="button button--ghost" type="button" :disabled="saving" @click="step = 1">上一步</button>
@@ -183,11 +184,11 @@ async function cancel(): Promise<void> {
 .onboarding-flow__header h1 { margin: 22px 0 10px; font-size: clamp(32px, 5vw, 48px); letter-spacing: -.04em; }
 .onboarding-flow__header .lead { max-width: 620px; margin: 0; }
 .setup-progress { display: flex; gap: 12px; margin: 28px 0 0; padding: 0; list-style: none; }
-.setup-progress li { display: flex; flex: 1; align-items: center; gap: 10px; min-width: 0; padding: 12px 14px; border: 1px solid var(--yx-color-border); border-radius: 14px; color: var(--yx-color-text-tertiary); background: rgb(255 255 255 / 66%); font-size: 13px; font-weight: 600; }
+.setup-progress li { display: flex; flex: 1; align-items: center; gap: 10px; min-width: 0; padding: 12px 14px; border: 1px solid var(--yx-color-border); border-radius: 14px; color: var(--yx-color-text-tertiary); background: color-mix(in srgb,var(--yx-color-surface-card) 66%, transparent); font-size: 13px; font-weight: 600; }
 .setup-progress li + li { opacity: .72; }
 .setup-progress li.setup-progress__item--active, .setup-progress li.setup-progress__item--done { border-color: var(--yx-color-brand-primary); color: var(--yx-color-brand-primary); background: var(--yx-color-brand-primary-soft); opacity: 1; }
 .setup-progress__number { display: inline-grid; width: 26px; height: 26px; flex: 0 0 auto; place-items: center; border-radius: 50%; color: var(--yx-color-text-secondary); background: var(--yx-color-surface-page); font-size: 12px; }
-.setup-progress__item--active .setup-progress__number, .setup-progress__item--done .setup-progress__number { color: #fff; background: var(--yx-color-brand-primary); }
+.setup-progress__item--active .setup-progress__number, .setup-progress__item--done .setup-progress__number { color: var(--yx-color-on-brand); background: var(--yx-color-brand-primary); }
 .setup-card { padding: clamp(24px, 5vw, 40px); border: 1px solid var(--yx-color-border); border-radius: 24px; background: var(--yx-color-surface-card); box-shadow: var(--yx-shadow-card); }
 .setup-card__kicker { margin: 0; color: var(--yx-color-brand-primary); font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
 .setup-card h2 { margin: 10px 0 8px; font-size: clamp(24px, 4vw, 32px); letter-spacing: -.03em; }

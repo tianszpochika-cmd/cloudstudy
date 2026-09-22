@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ExperienceHeader from '../components/ExperienceHeader.vue'
 import { onMounted, onUnmounted } from 'vue'
 import { useB11Store } from '../stores/b11'
 
@@ -9,7 +10,7 @@ function toggle(channel: 'IN_APP' | 'EMAIL' | 'PUSH'): void { if (!store.prefere
 </script>
 
 <template>
-  <section class="b11-page"><div class="b11-hero"><p class="eyebrow">B11 · SYNC / SUPPORT</p><h2>离线不是静默失败。</h2><p>同步队列、cursor、冲突和恢复状态都可解释；网络超时不会直接丢弃本地学习进度。</p></div><div class="b11-sync-grid"><article class="b11-panel"><p class="eyebrow">NOTIFICATION PREFERENCES</p><h3>通知偏好</h3><button v-for="channel in ['IN_APP', 'EMAIL', 'PUSH']" :key="channel" type="button" :class="{ active: store.preference?.enabledChannels.includes(channel as 'IN_APP' | 'EMAIL' | 'PUSH') }" @click="toggle(channel as 'IN_APP' | 'EMAIL' | 'PUSH')">{{ channel }} · {{ store.preference?.enabledChannels.includes(channel as 'IN_APP' | 'EMAIL' | 'PUSH') ? '已开启' : '已关闭' }}</button><p class="b11-note">版本 {{ store.preference?.version ?? '读取中' }} · UI locale 与 contentLocale 分离</p></article><article class="b11-panel"><p class="eyebrow">OFFLINE RECOVERY</p><h3>同步状态</h3><dl><div><dt>状态</dt><dd>{{ store.status }}</dd></div><div><dt>cursor</dt><dd>{{ store.cursor }}</dd></div><div><dt>待同步</dt><dd>{{ store.pending.length }}</dd></div><div><dt>冲突</dt><dd>{{ store.lastSync?.conflicts.length ?? 0 }}</dd></div></dl><button class="b11-primary" type="button" @click="void store.sync">重试同步</button><p role="status" class="b11-note">{{ store.message }}</p></article></div></section>
+  <section class="b11-page"><ExperienceHeader page="Sync" icon="monitor" title-id="b11-sync-title" /><div class="b11-sync-grid"><article class="b11-panel"><p class="eyebrow">NOTIFICATION PREFERENCES</p><h3>通知偏好</h3><button v-for="channel in ['IN_APP', 'EMAIL', 'PUSH']" :key="channel" type="button" :class="{ active: store.preference?.enabledChannels.includes(channel as 'IN_APP' | 'EMAIL' | 'PUSH') }" @click="toggle(channel as 'IN_APP' | 'EMAIL' | 'PUSH')">{{ channel }} · {{ store.preference?.enabledChannels.includes(channel as 'IN_APP' | 'EMAIL' | 'PUSH') ? '已开启' : '已关闭' }}</button><p class="b11-note">版本 {{ store.preference?.version ?? '读取中' }} · UI locale 与 contentLocale 分离</p></article><article class="b11-panel"><p class="eyebrow">OFFLINE RECOVERY</p><h3>同步状态</h3><dl><div><dt>状态</dt><dd>{{ store.status }}</dd></div><div><dt>cursor</dt><dd>{{ store.cursor }}</dd></div><div><dt>待同步</dt><dd>{{ store.pending.length }}</dd></div><div><dt>冲突</dt><dd>{{ store.lastSync?.conflicts.length ?? 0 }}</dd></div></dl><button class="b11-primary" type="button" @click="void store.sync()">重试同步</button><p role="status" class="b11-note">{{ store.message }}</p></article></div></section>
 </template>
 
 <style scoped>

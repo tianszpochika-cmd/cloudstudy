@@ -3,6 +3,7 @@ import type { ThemeMode } from '@englishflow/design-tokens'
 import { useLearningUi } from '../platform/learning-ui'
 
 const ui = useLearningUi()
+const { locale, contentLocale, theme: selectedTheme } = ui
 const themes: readonly ThemeMode[] = ['system', 'light', 'dark', 'high-contrast']
 
 function changeLocale(event: Event): void {
@@ -22,21 +23,21 @@ function changeTheme(event: Event): void {
   <div class="learning-preferences" aria-label="学习显示偏好">
     <label>
       <span>{{ ui.t('learning.preferences.uiLocale') }}</span>
-      <select :value="ui.locale" @change="changeLocale">
+      <select :value="locale" @change="changeLocale">
         <option value="zh-CN">{{ ui.t('learning.preferences.zh') }}</option>
         <option value="en-US">{{ ui.t('learning.preferences.en') }}</option>
       </select>
     </label>
     <label>
       <span>{{ ui.t('learning.preferences.contentLocale') }}</span>
-      <select :value="ui.contentLocale" @change="changeContentLocale">
+      <select :value="contentLocale" @change="changeContentLocale">
         <option value="en-US">English</option>
         <option value="zh-CN">中文</option>
       </select>
     </label>
     <label>
       <span>{{ ui.t('learning.preferences.theme') }}</span>
-      <select :value="ui.theme" @change="changeTheme">
+      <select :value="selectedTheme" @change="changeTheme">
         <option v-for="theme in themes" :key="theme" :value="theme">{{ ui.t(`learning.preferences.${theme}`) }}</option>
       </select>
     </label>

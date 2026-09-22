@@ -1,16 +1,26 @@
 # CURRENT-HANDOFF —— 语学星 Phase 1 重基线（P1R）
 
 > 本文件是**跨会话交接**的入口，记录"当前在哪、下一步做什么、谁在等谁"。
-> 最后更新：**2026-09-22**（本机真实运行验证 T1–T21）。当前进度以任务台账和实际命令为准；源码检查基线见 §1，本次运行验证快照见[本机真实运行验证](docs/07-operations/local-runtime-verification-2026-09-21.md)。
+> 最后更新：**2026-09-22**（本机真实运行验证 T1–T21 + 三端 UI 统一交付合并；保留既有完整度审计范围）。当前进度以任务台账和实际命令为准；历史完整度源码检查绑定 `2c2cfa2e`，详见[完整度梳理日志](requirements/backlog/v2-phase1-rebaseline/execution/COMPLETENESS-AUDIT-2026-09-20.md)。本次运行验证与 UI 提交都不自动更新该审计基线。
 > **§0/§1/§5/§6 是当前交接；中间带日期的历史段落保留原验证范围，不作为最新全绿结论。**
 
 ---
 
 ## 0. 检查点
 
-**本机真实运行验证（2026-09-22，T1–T21）**：在真实 MySQL/Redis/Kafka/MinIO + 固定端口服务上把 21 项本地可做任务逐项跑通并修复，共 22 个提交。**关键结论：运行测试抓出 17 项静态门禁与内存单测都抓不到的缺陷**（403 被伪装成 400、契约版本字段被忽略、分页跨页丢行、定时批次中断、假 APPLIED 补偿、真实 MySQL `event_name` 列缺失等），全部已修并复验。新打通两条此前没有运行证据的链路：**content outbox → Kafka**、**learning outbox → Kafka → gamification 结算**。P1R 台账状态、manifest、证据绑定**均未改动**；未闭合项（M1014 具名残留、content 入站消费者断言、learner-web 完整首日旅程、`contracts:validate` 的 IAM 旧失败）已逐条列在验证快照 §4，不得当作已完成。详见[本机真实运行验证](docs/07-operations/local-runtime-verification-2026-09-21.md)。
+**本机真实运行验证（2026-09-22，T1–T21）+ 与三端 UI 交付合并**：在真实 MySQL/Redis/Kafka/MinIO + 固定端口服务上把 21 项本地可做任务逐项跑通并修复。**关键结论：运行测试抓出 17 项静态门禁与内存单测都抓不到的缺陷**（403 被伪装成 400、契约版本字段被忽略、分页跨页丢行、定时批次中断、假 APPLIED 补偿、真实 MySQL `event_name` 列缺失等），全部已修并复验。新打通两条此前没有运行证据的链路：**content outbox → Kafka**、**learning outbox → Kafka → gamification 结算**。详见[本机真实运行验证](docs/07-operations/local-runtime-verification-2026-09-21.md)。**注意与下方 UI 记录的口径差异**：下方管理端记录写"真实 Gateway 本轮不可达"，那是 UI 那一轮的环境；本轮 6 个服务（IAM/网关/learner/content/learning/assessment）连同 audit/workflow/social/notification/gamification 都在本地起过并跑通真实链路。P1R 台账状态、manifest、证据绑定**均未改动**；未闭合项（M1014 具名残留、content 入站消费者断言、learner-web 完整首日旅程、`contracts:validate` 的 IAM 旧失败）逐条列在验证快照 §4。
 
-**官网正式前端实现（2026-09-21）**：用户已批准将提案 06 落入 `apps/official-site`。现已更新十四类页面、十九个公开内容地址、免费入口、手机导航、学习空间/角色墙/拼句、双主题与动效控制，本地固定 18182 运行。见[实现日志与验证](docs/06-design/v2-980plus/official-site-experience-proposal-2026-09-21/implementation/README.md)。18185 仍是原型；下方“未改正式应用”是之前原型轮次的范围，不描述当前官网。官网构建、类型与 UI 检查通过；**本轮已补做官网运行验收**（12 页 200、浏览器套件 19 检查 + 152 布局全绿），仍未执行注册/学习业务验收，P1R 状态不变。
+**本轮与 UI 交付的合并（2026-09-22）**：`origin/dev` 的前端统一交付（`2e373f96`）与本轮 T1–T21 在同一批前端文件上分叉，22 个冲突文件已全部解决——管理端 view/组件取新 UI，数据层 i18n（api/store/auth）保留，`AdminLearnerView` 重新接回契约包络；学习端保留本轮的 offline 分支与登出导航修复。**T12 的 admin-web 全量抽取被 UI 交付取代**（同一目标改走共享包 `@englishflow/i18n/admin-experience`）。合并后需 `pnpm install`（新 UI 新增 workspace 依赖 `@englishflow/performance`）。
+
+**三端 UI 统一提交（2026-09-22）**：用户已授权将工作区 `admin-web`、`learner-web`、`mobile` 及相关共享包、资源、测试与文档一并提交至 `origin/dev`。范围分别为管理端 14 页、Web 学习端 35 个页面组件、移动端 31 个注册页面。见[统一交付、验证和下一步](docs/06-design/v2-980plus/frontend-ui-delivery-2026-09-22.md)。共享类型检查、管理端与学习端构建、移动端类型检查及 28/5/40 项定向回归完成复核；此前共享 i18n 重复键阻断已关闭。原 UI 浏览器证据保留合成数据边界，不升级 P1R 状态或业务 UAT。语学星本地后端当前未启动，下一步应在独立环境联调，不影响启达容器；此次不部署。
+
+**移动端 UI（2026-09-22）**：官网风格覆盖当前 31 页、登录/注册/重置、学习练习、成长与个人服务；H5 固定 18183。类型、生产构建、40 项回归、155 组布局/主题与 14 类交互检查通过，详见[移动端记录](docs/06-design/v2-980plus/mobile-experience-2026-09-22/README.md)。浏览器使用受控接口数据，真实 IAM、领域写入与原生真机未验收。
+
+**Web 学习端 UI 改造（2026-09-22）**：按已批准官网风格更新 `apps/learner-web` 现有 35 个页面组件，覆盖当前 29 个路由组件及兼容页。真实入口固定 18180；开发环境的 `design-review.html?theme=dark#/home` 使用相同组件和明确标注的示例数据供视觉审阅。类型、构建、28 项定向测试通过，31 个入口三档宽度及主题/导航/世界分栏等局部交互完成检查。详见[页面清单、截图、验证与未关闭范围](docs/06-design/v2-980plus/learner-experience-2026-09-22/README.md)。并行期间出现的 learner-experience 文案重复键已修复，共享 design-tokens/i18n 类型检查重新通过；这不替代其他端自己的最终复核。后端业务未联验，不改变 P1R 状态；现已按用户授权纳入三端统一交付，范围见本节上方记录。
+
+**管理端 UI/UX（2026-09-22）**：官网风格已实施到 `apps/admin-web` 现有 14 页，覆盖登录、导航、业务表单与手机布局；正式入口 `http://127.0.0.1:18181/login`。构建、25 项浏览器检查、168 组布局、2 个编辑器保护场景、15 组文字对比度通过。真实 Gateway 本轮不可达，截图使用浏览器独立合成数据；当时并行学习端 i18n 文件的重复属性曾导致全包复核失败，统一提交前已确认修复并重新通过。详见[实现与剩余边界](docs/06-design/v2-980plus/admin-experience-2026-09-22/README.md)及[全页截图](docs/06-design/v2-980plus/admin-experience-2026-09-22/index.html)。不修改 P1R 状态，不覆盖并行 learner-web/mobile 源码，不自动部署。
+
+**官网正式前端实现（2026-09-21）**：用户已批准将提案 06 落入 `apps/official-site`。现已更新十四类页面、十九个公开内容地址、免费入口、手机导航、学习空间/角色墙/拼句、双主题与动效控制，本地固定 18182 运行。见[实现日志与验证](docs/06-design/v2-980plus/official-site-experience-proposal-2026-09-21/implementation/README.md)。18185 仍是原型；下方“未改正式应用”是之前原型轮次的范围，不描述当前官网。官网构建、类型与 UI 检查通过；公开后端当前不可用，未执行注册/学习业务验收，P1R 状态不变。
 
 **官网 UI/UX 提案（2026-09-21）**：[官网提案 06](docs/06-design/v2-980plus/official-site-experience-proposal-2026-09-21/README.md)。按用户要求，以初期免费、第一阶段功能、简短介绍和手机访问为重点，覆盖十四类公开页面；本轮修正页脚遮挡，新增规则拼句、2D/立体空间、角色墙与动效控制；共享预览 18185 的 `/official/`，原移动稿仍在根路径。设计与内容承接见提案说明；未改动正式应用、商业权益或 P1R 状态。
 
@@ -151,4 +161,4 @@ git rev-list --count origin/dev..HEAD   # 领先 origin 多少（推送后应为
 2. **（2026-09-22 收窄）** 真实补偿已改为「无 transport 即 `COMPENSATION_FAILED`」不再假成功，owner 真调用仍待接；事件处理已打通 content→Kafka 与 learning→Kafka→gamification 两条链路。**仍未闭合**：M1014 载荷缺 `rootEventId`/`contentPin`/`rulePin.ruleDigest`（需内容快照事实）、content 入站消费者 `cg.content-from-iam.v1` 无端到端断言、口语正常入口、跨服务导出/匿名化。
 3. 完成当前源码跨端业务闭环及异常路径，再推进 M8 真机、性能、安全、staging、容灾、回滚、制品和独立 Go/No-Go；保留 M0-006 独立验收及 M4-008 具名残留。
 4. **（2026-09-22 已复核，结论修正）** 官网 privacy/terms/minors/status 四页源码存在**且本轮已运行验收**（12 页 200、零控制台错误）。批量导入 `import/batch` 行为已实际复核：逐行隔离、非对象条目计入 failed、批量 UPSERT 已接版本锁；**但 content 写侧乐观锁仍是「调用方观测值检查 + 存储盲写」**，不是存储层 CAS，并发竞态属 M3-002 本体改造，不能沿用「已复核=已解决」的读法。
-5. 评审期间源码冻结与真实 CI 阻断仍需验证。本地启动入口见根 README；启动前核对工具链、固定端口、进程和资源归属，保护既有工作与其他项目运行环境。**本机 Maven 会吃掉带点号的 `-D` 键**（如 `-Dlearning.relay.integration=true` 会被当成生命周期阶段），opt-in 集成测试请改用 `JAVA_TOOL_OPTIONS` 或环境变量。
+5. 评审期间源码冻结与真实 CI 阻断仍需验证。本地启动入口见根 README；启动前核对工具链、固定端口、进程和资源归属，保护既有工作与其他项目运行环境。**本机 Maven 会吃掉带点号的 `-D` 键**（如 `-Dlearning.relay.integration=true` 会被当成生命周期阶段），opt-in 集成测试请改用 `JAVA_TOOL_OPTIONS` 或环境变量。**拉取新增依赖的提交后必须 `pnpm install`**（本次 UI 交付引入 `@englishflow/performance`，否则 admin-web 类型检查报 TS2307）。
