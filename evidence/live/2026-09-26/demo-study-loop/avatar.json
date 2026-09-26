@@ -1,6 +1,6 @@
 {
   "task": "DEMO-AVATAR-WRITE",
-  "capturedAt": "2026-09-26T18:33:15.995Z",
+  "capturedAt": "2026-09-26T18:40:06.311Z",
   "result": "PASS",
   "passed": 5,
   "total": 5,
@@ -18,7 +18,7 @@
     {
       "n": "avatar-save-closed",
       "ok": true,
-      "o": "503 {\"meta\":{\"schemaVersion\":\"1.0.0\",\"traceId\":\"7c38a56e010e4760af9577a5d62620ed\",\"apiVersion\":\"v1\",\"requestId\":\"req-24e1eaa"
+      "o": "503 {\"meta\":{\"schemaVersion\":\"1.0.0\",\"traceId\":\"1c30aef3a8e14d1fa173dd861b3acbfc\",\"apiVersion\":\"v1\",\"requestId\":\"req-d00a8f2"
     },
     {
       "n": "avatar-read",
