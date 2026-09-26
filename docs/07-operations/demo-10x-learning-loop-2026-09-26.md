@@ -135,3 +135,9 @@
 
 * `tmp/regression-check.mjs`2/2 PASS（job pwsh-65 exit 0）：移动设置页无5xx；管理策略页不再显示“暂不可用”。
 * 证据：`demo-e2e/regression/`（双截图+summary）。
+
+## 22. 空态复核（2026-09-26）
+
+* `tmp/empty-recheck.mjs`14项全对预期（exit 0）：B3五路诚实空、目录6条、今日/房间/工单诚实空、Avatar降级、消息空、home 200。
+* 附带发现：登录`device`建议带`deviceName`（缺时偶发无token，已在脚本中固定）。
+* 证据：`demo-e2e/empty-recheck/summary.json`。

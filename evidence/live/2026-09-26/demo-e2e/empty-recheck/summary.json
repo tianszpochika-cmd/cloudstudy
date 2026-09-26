@@ -1,0 +1,102 @@
+{
+  "capturedAt": "2026-09-26T15:32:08.112Z",
+  "rows": [
+    {
+      "page": "B3-reading",
+      "path": "/api/v1/reading/articles?limit=5",
+      "status": 200,
+      "items": 0,
+      "want": "empty",
+      "ok": true
+    },
+    {
+      "page": "B3-grammar-ex",
+      "path": "/api/v1/grammar/exercises?limit=5",
+      "status": 200,
+      "items": 0,
+      "want": "empty",
+      "ok": true
+    },
+    {
+      "page": "B3-grammar-mastery",
+      "path": "/api/v1/grammar/mastery",
+      "status": 200,
+      "items": 0,
+      "want": "empty",
+      "ok": true
+    },
+    {
+      "page": "B3-writing",
+      "path": "/api/v1/writing/prompts?limit=5",
+      "status": 200,
+      "items": 0,
+      "want": "empty",
+      "ok": true
+    },
+    {
+      "page": "B3-listening",
+      "path": "/api/v1/listening/materials?limit=5",
+      "status": 200,
+      "items": 0,
+      "want": "empty",
+      "ok": true
+    },
+    {
+      "page": "catalog",
+      "path": "/api/v1/content/learner/catalog?limit=50",
+      "status": 200,
+      "items": 6,
+      "want": "nonempty",
+      "ok": true
+    },
+    {
+      "page": "today",
+      "path": "/api/v1/learning/today",
+      "status": 200,
+      "items": 0,
+      "want": "empty",
+      "ok": true
+    },
+    {
+      "page": "social-rooms",
+      "path": "/api/v1/social/rooms",
+      "status": 200,
+      "items": 0,
+      "want": "empty",
+      "ok": true
+    },
+    {
+      "page": "world-avatar",
+      "path": "/api/v1/avatar/profile",
+      "status": 200,
+      "items": -1,
+      "want": "nonempty",
+      "ok": true
+    },
+    {
+      "page": "messages",
+      "path": "/api/v1/notifications/messages",
+      "status": 200,
+      "items": -1,
+      "want": "empty",
+      "ok": true
+    },
+    {
+      "page": "support-list",
+      "path": "/api/v1/support/tickets",
+      "status": 200,
+      "items": 0,
+      "want": "empty",
+      "ok": true
+    },
+    {
+      "page": "home",
+      "path": "/api/v1/learner/home",
+      "status": 200,
+      "items": -1,
+      "want": "notready",
+      "ok": true
+    }
+  ],
+  "result": "PASS"
+}
