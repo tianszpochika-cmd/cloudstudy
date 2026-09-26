@@ -1,0 +1,200 @@
+{
+  "capturedAt": "2026-09-26T13:20:38.924Z",
+  "loggedIn": true,
+  "pages": [
+    {
+      "page": "pages/home/home",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": []
+    },
+    {
+      "page": "pages/learn/learn",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": []
+    },
+    {
+      "page": "pages/practice/practice",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": []
+    },
+    {
+      "page": "pages/b2-vocabulary/b2-vocabulary",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": []
+    },
+    {
+      "page": "pages/b2-practice/b2-practice",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": []
+    },
+    {
+      "page": "pages/b3-grammar/b3-grammar",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": []
+    },
+    {
+      "page": "pages/b3-writing/b3-writing",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": []
+    },
+    {
+      "page": "pages/b3-listening/b3-listening",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": []
+    },
+    {
+      "page": "pages/b3-reading/b3-reading",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": []
+    },
+    {
+      "page": "pages/b3-speaking/b3-speaking",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": []
+    },
+    {
+      "page": "pages/b11-listening/b11-listening",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": []
+    },
+    {
+      "page": "pages/b11-reading/b11-reading",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": []
+    },
+    {
+      "page": "pages/b11-speaking/b11-speaking",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": []
+    },
+    {
+      "page": "pages/world/world",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": []
+    },
+    {
+      "page": "pages/b5-commerce/b5-commerce",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": []
+    },
+    {
+      "page": "pages/b6-platform/b6-platform",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": []
+    },
+    {
+      "page": "pages/b4-games/b4-games",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": []
+    },
+    {
+      "page": "pages/b4-social/b4-social",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": []
+    },
+    {
+      "page": "pages/b4-avatar/b4-avatar",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": []
+    },
+    {
+      "page": "pages/b4-offline/b4-offline",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": []
+    },
+    {
+      "page": "pages/profile/profile",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": []
+    },
+    {
+      "page": "pages/login/login",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": []
+    },
+    {
+      "page": "pages/register/register",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": []
+    },
+    {
+      "page": "pages/reset-password/reset-password",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": []
+    },
+    {
+      "page": "pages/forbidden/forbidden",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": []
+    },
+    {
+      "page": "pages/onboarding/onboarding",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": []
+    },
+    {
+      "page": "pages/assessment/assessment",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": []
+    },
+    {
+      "page": "pages/today/today",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": []
+    },
+    {
+      "page": "pages/b10-report/b10-report",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": []
+    },
+    {
+      "page": "pages/settings/settings",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": [
+        "503 /api/v1/notifications/preferences"
+      ]
+    },
+    {
+      "page": "pages/devices/devices",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": []
+    },
+    {
+      "page": "pages/support/support",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": []
+    }
+  ]
+}

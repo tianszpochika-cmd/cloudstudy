@@ -77,4 +77,10 @@
 
 * 只读管理员浏览器登录真，14路由全开零脚本错（`page-sweep/admin/summary.json`）。
 * audit/moderation的`CURSOR_UNAVAILABLE`系本地缺游标密钥：已在runner按“默认关+本地开”补本地键，重起复验audit 200真实脱敏行、moderation 200诚实空队列。
-* `iam/policy-versions`500根因：外部压测灌的100行`bulk-100x-fix-version-*`非法数据（`cache_invalidation_scope='global'`不在允许集），一行毒死整表列表组装（`IllegalArgumentException`，单测9/9因走mock不受影响）。修法：按仓库隔离惯例清掉该批无出处行（0条审计引用、0条非bulk行）；复验三处全200（policy空列表诚实）。另给该控制器补未处理异常正典包络+服务端堆栈日志（永久改进）。正典b30控制面行缺失列后续项（M1-003）。
+* `iam/policy-versions`500根因：外部压测灌的100行`bulk-100x-fix-version-*`非法数据（`cache_invalidation_scope='global'`不在允许集），一行毒死整表列表组装（`IllegalArgumentException`，单测走mock故9/9不受影响）。按隔离惯例清掉该批无出处行（0审计引用、0非bulk行）；复验三处全200（policy空列表诚实）。另给该控制器补未处理异常正典包络+服务端堆栈日志（永久改进）。正典b30控制面行缺失列后续项（M1-003）。
+
+## 12. 移动H5与通知偏好（2026-09-26）
+
+* 移动H5：API预置门+浏览器登录真，32页全开零脚本错（`page-sweep/mobile/summary.json`）；uni原生input无autocomplete，按type定位。
+* `/notifications/preferences`503根因：V8正典迁移未打到本机库（p1r到7、flyway到4），查询列不存在。跑官方`pnpm b28:owner-schemas`补上；853旧行原样归档，新表诚实空；复验200。
+* 剩余诚实空：B3技能列表、计划态home/today、D+1积累、口语/同步/支付/真机。
