@@ -76,4 +76,4 @@
 ## 11. 管理端扫查（2026-09-26）
 
 * 只读管理员浏览器登录真，14路由全开零脚本错（`page-sweep/admin/summary.json`）。
-* 3个5xx：audit/moderation的`CURSOR_UNAVAILABLE`系本地缺游标密钥（配置缺口，已在`run-v2-services.mjs`按既有“默认关+本地开”模式补本地键，待重起复验）；`iam/policy-versions`500为未处理异常（IAM单测9/9过，产品回归非本轮引入，待抓栈定位）。权限页以降级态诚实展示（截图）。
+* 3个5xx：audit/moderation的`CURSOR_UNAVAILABLE`系本地缺游标密钥（配置缺口，已在`run-v2-services.mjs`按既有“默认关+本地开”模式补本地键；重起后复验audit 200出真实脱敏行、moderation 200诚实空队列）；`iam/policy-versions`500为未处理异常（IAM单测9/9过，产品回归非本轮引入，静态排查至组装层，待抓栈定位；权限页以降级态诚实展示）。
