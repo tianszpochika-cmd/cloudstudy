@@ -1,0 +1,29 @@
+{
+  "task": "DEMO-PLACEMENT",
+  "capturedAt": "2026-09-26T11:28:00.174Z",
+  "result": "PASS",
+  "passed": 4,
+  "total": 4,
+  "checks": [
+    {
+      "n": "login",
+      "ok": true,
+      "o": 200
+    },
+    {
+      "n": "psubmit",
+      "ok": true,
+      "o": "2 steps accepted"
+    },
+    {
+      "n": "pstart",
+      "ok": true,
+      "o": "200 sid=61b29825-3d50-4da0-a881-51fe0f404beb"
+    },
+    {
+      "n": "preport",
+      "ok": true,
+      "o": "200 {\"reportId\":\"183c568c-3cd0-4a76-86a4-fb1ac2e01f7d\",\"sessionId\":\"61b29825-3d50-4da0-a881-51fe0f404beb\",\"resultKind\":\"ASSESSED\",\"canonical\":false,\"assessmentType\":\"B25_LEGACY\",\"completedAt\":\"2026-09-26T"
+    }
+  ]
+}

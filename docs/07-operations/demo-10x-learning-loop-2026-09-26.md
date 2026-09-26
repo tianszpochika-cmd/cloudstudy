@@ -56,6 +56,12 @@
 * 覆盖映射（56项台账对应行，状态变更权归QA，本轮仅供复核）：AUTH-LOGIN/REGISTER-RESET、ADULT-CONSENT、ONB-GOAL正向已复现；LEARN-HOME/TODAY由503转为诚实200；阅读/语法路由由403/404转为200；目录6条可学。
 * 未覆盖（诚实缺口）：有计划态home/today（plan引用跨owner未接线，M4-008残留）；B3技能列表内容（开关+权利门，迁正典为后续项）；定级提交→报告；口语/同步/支付/真机（M8）。
 
-## 8. 后续项
+## 8. P7证据（学习动作闭环）
+
+* `tmp/study-loop.mjs`：注册→登录→PRACTICE建单（含2题）→判分提交→检查点→报告READY→错题→SRS总览→日报，9/9 PASS（job pwsh-31 exit 0）。SRS为`UNVERIFIED_LEGACY`空态、日报PARTIAL，均系新号诚实形状（需D+1/D+7积累）。
+* `tmp/placement-check.mjs`：定级单题步进（start→逐题submit→report），4/4 PASS；报告`ASSESSED`但`canonical:false/B25_LEGACY`——正典十题定级仍为后续项。
+* 证据：`evidence/live/2026-09-26/demo-study-loop/summary.json` + `placement.json`。
+
+## 9. 后续项
 
 * B3技能页迁正典端点；发布流送审门修复（M3）；定级提交→报告闭环；M8发布件。
