@@ -1,8 +1,8 @@
-# 56 PAGE-P1 三态总表（2026-09-26 v2，本轮代理判定）
+# 56 PAGE-P1 三态总表（2026-09-26 v3，本轮代理判定）
 
 > 口径：`PASS`=关键动作+落库+恢复均有本轮证据；`HONEST-EMPTY`=渲染正确、空态系设计/门所致、无崩；
 > `BLOCKED`=需产品/代码缺口关闭。本表是代理侧复核记录；台账 canonical 状态变更权归QA。
-> 证据根：`evidence/live/2026-09-26/`。v1 差异：补课程书架点通、计划读侧、诚实门、回归确认四批证据； verdict 无翻转。
+> 证据根：`evidence/live/2026-09-26/`。v3 差异：并入移动答题、诚实门、回归确认、空态复核。
 
 ## 官网 11 项：全部 PASS（静态展示页，渲染+导航+双视口零错）
 
@@ -24,12 +24,12 @@
 
 | PAGE ID | 结论 | 证据/备注 |
 |---|---|---|
-| PAGE-P1-AUTH-LOGIN | PASS | demo-e2e（注册/登录/重登） |
+| PAGE-P1-AUTH-LOGIN | PASS | demo-e2e（注册/登录/重登；移动端同验） |
 | PAGE-P1-AUTH-REGISTER-RESET | PASS | demo-e2e（注册201；改密未验列缺口） |
-| PAGE-P1-ADULT-CONSENT | PASS | demo-e2e（门+三同意） |
+| PAGE-P1-ADULT-CONSENT | PASS | demo-e2e（门+三同意；双端） |
 | PAGE-P1-ONB-GOAL | PASS | demo-e2e（四轨道存目标） |
-| PAGE-P1-ASSESSMENT | PASS | deep-chain（界面答2题） |
-| PAGE-P1-ASSESSMENT-RESULT | PASS | deep-chain（报告卡）+ study-loop |
+| PAGE-P1-ASSESSMENT | PASS | deep-chain（Web答2题）+ mobile-assessment（触屏答2题） |
+| PAGE-P1-ASSESSMENT-RESULT | PASS | 双端报告卡 + study-loop |
 | PAGE-P1-PLAN-MAP | HONEST-EMPTY | 无计划数据；待计划接线 |
 | PAGE-P1-LEARN-HOME | HONEST-EMPTY | 200 NOT_READY诚实；待计划接线 |
 | PAGE-P1-TODAY | HONEST-EMPTY | 200诚实空；有行数据时3条可读（plan-reads） |
@@ -52,7 +52,7 @@
 | PAGE-P1-AVATAR-REWARD | PASS | Avatar profile 200降级渲染 |
 | PAGE-P1-MESSAGES | PASS | ops.json（列表+已读+落库） |
 | PAGE-P1-SYNC-OFFLINE | HONEST-EMPTY | 读通；下载404路由保留（r20） |
-| PAGE-P1-SETTINGS | PASS | ops.json（版本写DARK回读） |
+| PAGE-P1-SETTINGS | PASS | ops.json（版本写DARK回读）+ 移动设置无5xx |
 | PAGE-P1-DEVICES | PASS | r7-guards（双会话踢出+列表如实） |
 | PAGE-P1-PRIVACY | HONEST-EMPTY | 不可用说明页；导出删号M6后续 |
 | PAGE-P1-SUPPORT | HONEST-EMPTY | 列表200；创建诚实503（无原文不收） |
@@ -78,4 +78,5 @@
 ## 汇总
 
 * PASS 24 / HONEST-EMPTY 29 / BLOCKED 3（ADMIN-PUBLISH-ROLLBACK、ADMIN-RISK、通知偏好写）。
+* 四端复核：Web动作链（答题/判分/补救/读写）、移动答题、管理动作、官网静态。
 * BLOCKED 3项均有独立成因记录，不阻塞学习主链；B3迁移/计划接线/正典定级/M8为后续 epics（见 followup-epics）。
