@@ -1,0 +1,54 @@
+{
+  "task": "DEMO-REMEDY-LOOP",
+  "capturedAt": "2026-09-26T13:40:32.246Z",
+  "result": "PASS",
+  "passed": 9,
+  "total": 9,
+  "checks": [
+    {
+      "n": "register",
+      "ok": true,
+      "o": 201
+    },
+    {
+      "n": "login",
+      "ok": true,
+      "o": 200
+    },
+    {
+      "n": "session",
+      "ok": true,
+      "o": "items=2"
+    },
+    {
+      "n": "wrong-attempt",
+      "ok": true,
+      "o": "200 attempt=aatm_fd0c9a0740ce4c70ab28bad10dd245a0"
+    },
+    {
+      "n": "mistakes-list",
+      "ok": true,
+      "o": "200 n=2"
+    },
+    {
+      "n": "mastery-retry",
+      "ok": true,
+      "o": "200 {\"dueAt\":\"2026-09-26T13:40:32.121678900Z\",\"stage\":\"D0\",\"result\":\"PENDING\",\"source\":\"mysql\",\"status\":\"ACCEPTED\",\"mistakeId\":993021,\"interactionId\":\"88ca7368-003a"
+    },
+    {
+      "n": "mistake-variant",
+      "ok": true,
+      "o": "200 {\"data\":{\"mistakeId\":993021,\"questionId\":2058243695132892400,\"errorCategory\":\"UNCLASSIFIED\",\"reasonTrace\":[{\"errorCategory\":\"UNCLASSIFIED\",\"ruleVersion\":\"course-b25-basics:v25001\",\"occurredAt\":\"2026-0"
+    },
+    {
+      "n": "mastery-overview",
+      "ok": true,
+      "o": "200 {\"principalId\":\"8fe8c9d9-8a64-4460-a720-d9ac3d46e115\",\"srs\":{\"newCount\":0,\"masteredCount\":0,\"reviewCount\":0,\"learningCount\":0,\"total\":0},\"mistakes\":0,\"reviewFac"
+    },
+    {
+      "n": "weekly-report",
+      "ok": true,
+      "o": "200 {\"reportId\":\"c6aeb1b3-0483-3810-85e5-447be677d362\",\"reportType\":\"WEEKLY\",\"status\":\"PARTIAL\",\"generatedAt\":\"2026-09-26T13:40:32.243426500Z\",\"calculationVersion\":"
+    }
+  ]
+}

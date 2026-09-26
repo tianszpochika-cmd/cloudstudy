@@ -89,3 +89,8 @@
 
 * `tmp/deep-chain.mjs`：浏览器注册→成人→目标→定级页点选2题提交→报告卡“历史两题练习结果”→同号直调日报/SRS/错题全200，零异常（job pwsh-48 exit 0；首版跳出条件误伤常驻文案已收紧）。
 * 证据：`demo-e2e/deep-chain/assessment-done.png`（C2·100分旧版口径诚实标注）+ `summary.json`。
+
+## 14. 补救闭环（2026-09-26）
+
+* `tmp/remedy-loop.mjs`：故意答错→错题2条→`mastery-retry`（ACCEPTED/PENDING）→`variant`签发200→总览/周报200，9/9 PASS（job pwsh-50 exit 0）。
+* 顺序教训：变式需`variantItemId`且须在补救之后，先调序错得400；已修正。
