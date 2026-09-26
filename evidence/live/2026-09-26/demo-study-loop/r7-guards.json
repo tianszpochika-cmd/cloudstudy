@@ -1,6 +1,6 @@
 {
   "task": "DEMO-R7-GUARDS",
-  "capturedAt": "2026-09-26T18:39:36.755Z",
+  "capturedAt": "2026-09-26T18:46:54.739Z",
   "result": "PASS",
   "passed": 9,
   "total": 9,
@@ -23,22 +23,22 @@
     {
       "n": "devices-setup",
       "ok": true,
-      "o": "sid=04460e23-ff6d-4a2e-b670-509fa0b37e79"
+      "o": "sid=3a787f80-dab3-407f-a0a9-f63b2419e81e"
     },
     {
       "n": "second-session",
       "ok": true,
-      "o": "sid=f354c23d-9efa-49bc-8b63-7fb9ebd2a547"
+      "o": "sid=ed6f1e98-ea3a-4910-a8c5-6265c8998d57"
     },
     {
       "n": "revoke-other",
       "ok": true,
-      "o": "200 {\"data\":{\"sessionId\":\"f354c23d-9efa-49bc-8b63-7fb9ebd2a547\",\"status\":\"REVOKED\",\"revocationScope\":\"TARGET_SESSION_AND_TOK"
+      "o": "200 {\"data\":{\"sessionId\":\"ed6f1e98-ea3a-4910-a8c5-6265c8998d57\",\"status\":\"REVOKED\",\"revocationScope\":\"TARGET_SESSION_AND_TOK"
     },
     {
       "n": "devices-reflect",
       "ok": true,
-      "o": "200 {\"data\":{\"devices\":[{\"deviceId\":\"1911d5ab-0e32-40fc-86aa-de4666b5b19f\",\"deviceType\":\"WEB\",\"status\":\"ACTIVE\",\"lastActiveAt\":\"2026-09-26T18:39:35.080411Z\"},{\"deviceId\":\"83a88855-9f70-4347-bb24-767427763833\",\"deviceType\":\"WEB\",\"status\":\"ACTIVE\",\"lastActiveAt\":\"2026-09-26T18:39:34.766739Z\"},{\"deviceId\":\"7d1e8f80-4eb0-422a-bf64-80a3ec7b07d1\",\"deviceType\":\"WEB\",\"status\":\"ACTIVE\",\"lastActiveAt\":\"2026-09-"
+      "o": "200 {\"data\":{\"devices\":[{\"deviceId\":\"0622c948-d208-4c7d-af0a-39abfbeefc1f\",\"deviceType\":\"WEB\",\"status\":\"ACTIVE\",\"lastActiveAt\":\"2026-09-26T18:46:53.318870Z\"},{\"deviceId\":\"a89c537c-4598-49af-892f-7a9212ed1393\",\"deviceType\":\"WEB\",\"status\":\"ACTIVE\",\"lastActiveAt\":\"2026-09-26T18:46:53.006728Z\"},{\"deviceId\":\"3c149b1f-1046-456f-a385-1f17f07f9bf9\",\"deviceType\":\"WEB\",\"status\":\"ACTIVE\",\"lastActiveAt\":\"2026-09-"
     },
     {
       "n": "notif-pref-read",
