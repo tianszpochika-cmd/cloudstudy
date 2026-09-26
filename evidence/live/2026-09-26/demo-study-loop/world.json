@@ -1,6 +1,6 @@
 {
   "task": "DEMO-WORLD-LOOP",
-  "capturedAt": "2026-09-26T18:38:25.649Z",
+  "capturedAt": "2026-09-26T18:45:14.957Z",
   "result": "PASS",
   "passed": 8,
   "total": 8,
@@ -43,7 +43,7 @@
     {
       "n": "rooms-list",
       "ok": true,
-      "o": "200 {\"requestId\":\"req-0f70f78e77f1455ca581cf10adfdd8ec\",\"data\":{\"items\":[],\"limit\":20,\"hasMore\":false,\"serverTime\":\"2026-09-26T18:38:25.645411700Z\"},\"meta\":{\"servic"
+      "o": "200 {\"requestId\":\"req-8f2b738506334cf5aab7abbbdd99f674\",\"data\":{\"items\":[],\"limit\":20,\"hasMore\":false,\"serverTime\":\"2026-09-26T18:45:14.953695100Z\"},\"meta\":{\"servic"
     }
   ]
 }
