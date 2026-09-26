@@ -11,11 +11,15 @@ import com.englishflow.notification.application.NotificationApplicationService;
 import com.englishflow.notification.application.NotificationRetryApplicationService;
 import com.englishflow.notification.application.QueueNotificationCommand;
 import com.englishflow.notification.application.RequestMetadata;
+import com.englishflow.notification.application.UpdatePreferenceCommand;
 import com.englishflow.notification.domain.DeliveryStatus;
 import com.englishflow.notification.domain.IdempotencyKey;
 import com.englishflow.notification.domain.NotificationAccessPolicy;
 import com.englishflow.notification.domain.NotificationChannel;
+import com.englishflow.notification.domain.NotificationCategory;
+import com.englishflow.notification.domain.NotificationDndWindow;
 import com.englishflow.notification.domain.NotificationDomainException;
+import com.englishflow.notification.domain.NotificationFrequencyPolicy;
 import com.englishflow.notification.domain.NotificationPrincipalContext;
 import com.englishflow.notification.domain.RetryDispatchStatus;
 import com.englishflow.notification.domain.WorkflowState;
@@ -41,12 +45,22 @@ class NotificationRetryApplicationServiceTest {
         return new NotificationApplicationService(new InMemoryNotificationFactStore(), new InMemoryWorkflowPort(),
                 new InMemoryDeliveryTransport(), new InMemoryOutboxEventPort(), new InMemoryNotificationIdGenerator(),
                 new NotificationAccessPolicy(), clock, 3, Duration.ofSeconds(5),
-                new InMemoryNotificationAuditEventStore(), new InMemoryNotificationConsentStore());
+                new InMemoryNotificationAuditEventStore(), consentedChannel());
+    }
+
+    private static InMemoryNotificationConsentStore consentedChannel() {
+        var consents = new InMemoryNotificationConsentStore();
+        consents.setConsent("t", "p", NotificationChannel.IN_APP, true);
+        return consents;
     }
 
     private String queueMessage(NotificationApplicationService notifications, InMemoryWorkflowPort workflow) {
-        var msg = notifications.queue(NotificationPrincipalContext.authenticated("t", "p", "d"),
-                new QueueNotificationCommand("nt", NotificationChannel.IN_APP, "tmpl", "v1", "T", "B", "cv"),
+        var context = NotificationPrincipalContext.authenticated("t", "p", "d");
+        notifications.updatePreference(context, new UpdatePreferenceCommand("LEARNING", NotificationCategory.LEARNING,
+                NotificationChannel.IN_APP, true, "zh-CN", 1, NotificationDndWindow.parse("23:00", "08:00"),
+                NotificationFrequencyPolicy.IMMEDIATE, 0), new IdempotencyKey("pref-retry"), meta);
+        var msg = notifications.queue(context,
+                new QueueNotificationCommand("LEARNING", NotificationChannel.IN_APP, "tmpl", "v1", "T", "B", "cv"),
                 new IdempotencyKey("msg-" + NOW.getNano()), meta);
         return workflow.findByAggregate("notification-message", msg.messageId()).orElseThrow().taskId();
     }
@@ -58,7 +72,7 @@ class NotificationRetryApplicationServiceTest {
         var transport = new InMemoryDeliveryTransport();
         var notifications = new NotificationApplicationService(facts, workflow, transport,
                 new InMemoryOutboxEventPort(), new InMemoryNotificationIdGenerator(), new NotificationAccessPolicy(),
-                clock, 3, Duration.ofSeconds(5), new InMemoryNotificationAuditEventStore(), new InMemoryNotificationConsentStore());
+                clock, 3, Duration.ofSeconds(5), new InMemoryNotificationAuditEventStore(), consentedChannel());
         var svc = new NotificationRetryApplicationService(notifications, facts, workflow,
                 new NotificationAccessPolicy(), new InMemoryOutboxEventPort(), new InMemoryNotificationAuditEventStore(),
                 new InMemoryNotificationIdGenerator(), clock);
@@ -75,7 +89,7 @@ class NotificationRetryApplicationServiceTest {
         var transport = new InMemoryDeliveryTransport();
         var notifications = new NotificationApplicationService(facts, workflow, transport,
                 new InMemoryOutboxEventPort(), new InMemoryNotificationIdGenerator(), new NotificationAccessPolicy(),
-                clock, 3, Duration.ofSeconds(5), new InMemoryNotificationAuditEventStore(), new InMemoryNotificationConsentStore());
+                clock, 3, Duration.ofSeconds(5), new InMemoryNotificationAuditEventStore(), consentedChannel());
         var svc = new NotificationRetryApplicationService(notifications, facts, workflow,
                 new NotificationAccessPolicy(), new InMemoryOutboxEventPort(), new InMemoryNotificationAuditEventStore(),
                 new InMemoryNotificationIdGenerator(), clock);
@@ -95,7 +109,7 @@ class NotificationRetryApplicationServiceTest {
         var transport = new InMemoryDeliveryTransport();
         var notifications = new NotificationApplicationService(facts, workflow, transport,
                 new InMemoryOutboxEventPort(), new InMemoryNotificationIdGenerator(), new NotificationAccessPolicy(),
-                clock, 3, Duration.ofSeconds(5), new InMemoryNotificationAuditEventStore(), new InMemoryNotificationConsentStore());
+                clock, 3, Duration.ofSeconds(5), new InMemoryNotificationAuditEventStore(), consentedChannel());
         var svc = new NotificationRetryApplicationService(notifications, facts, workflow,
                 new NotificationAccessPolicy(), new InMemoryOutboxEventPort(), new InMemoryNotificationAuditEventStore(),
                 new InMemoryNotificationIdGenerator(), clock);
@@ -113,7 +127,7 @@ class NotificationRetryApplicationServiceTest {
         var transport = new InMemoryDeliveryTransport();
         var notifications = new NotificationApplicationService(facts, workflow, transport,
                 new InMemoryOutboxEventPort(), new InMemoryNotificationIdGenerator(), new NotificationAccessPolicy(),
-                clock, 3, Duration.ofSeconds(5), new InMemoryNotificationAuditEventStore(), new InMemoryNotificationConsentStore());
+                clock, 3, Duration.ofSeconds(5), new InMemoryNotificationAuditEventStore(), consentedChannel());
         var svc = new NotificationRetryApplicationService(notifications, facts, workflow,
                 new NotificationAccessPolicy(), new InMemoryOutboxEventPort(), new InMemoryNotificationAuditEventStore(),
                 new InMemoryNotificationIdGenerator(), clock);

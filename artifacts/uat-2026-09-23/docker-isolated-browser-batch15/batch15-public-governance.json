@@ -1,0 +1,150 @@
+{
+  "at": "2026-09-23T14:18:30.949Z",
+  "scope": "batch15 private Docker; anonymous only",
+  "projection": [
+    {
+      "locale": "zh-CN",
+      "status": 200,
+      "state": "empty",
+      "source": "gateway",
+      "stale": false,
+      "errorCode": null,
+      "courseCount": 0,
+      "headers": {
+        "source": "gateway",
+        "commerce": "gateway",
+        "cacheControl": "public, max-age=60, s-maxage=60"
+      }
+    },
+    {
+      "locale": "en-US",
+      "status": 200,
+      "state": "empty",
+      "source": "gateway",
+      "stale": false,
+      "errorCode": null,
+      "courseCount": 0,
+      "headers": {
+        "source": "gateway",
+        "commerce": "gateway",
+        "cacheControl": "public, max-age=60, s-maxage=60"
+      }
+    }
+  ],
+  "gateway": [
+    {
+      "name": "moderation-list",
+      "method": "GET",
+      "route": "/api/v1/admin/moderation/reports?status=OPEN&pageSize=20",
+      "target": "api-gateway",
+      "status": 401,
+      "errorCode": "AUTH_REQUIRED",
+      "itemCount": null
+    },
+    {
+      "name": "moderation-command",
+      "method": "POST",
+      "route": "/api/v1/admin/moderation/reports/synthetic-id/commands",
+      "target": "api-gateway",
+      "status": 404,
+      "errorCode": "NOT_FOUND",
+      "itemCount": null
+    },
+    {
+      "name": "owner-moderation-list",
+      "method": "GET",
+      "route": "/internal/v1/social/admin/moderation/reports?status=OPEN&pageSize=20",
+      "target": "social-owner",
+      "status": 401,
+      "errorCode": "UNAUTHENTICATED",
+      "itemCount": null
+    },
+    {
+      "name": "owner-moderation-command",
+      "method": "POST",
+      "route": "/internal/v1/social/admin/moderation/reports/synthetic-id/commands",
+      "target": "social-owner",
+      "status": 401,
+      "errorCode": "UNAUTHENTICATED",
+      "itemCount": null
+    }
+  ],
+  "browser": [
+    {
+      "name": "official-courses",
+      "width": 1280,
+      "initialStatus": 200,
+      "finalPath": "/courses",
+      "finalQueryKeys": [],
+      "loginRedirectTarget": null,
+      "protectedRequests": [],
+      "layout": {
+        "title": "学习内容 · 语学星",
+        "scrollWidth": 1280,
+        "viewportWidth": 1280,
+        "visibleTextLength": 865
+      },
+      "pageErrors": [],
+      "consoleErrors": [],
+      "screenshot": "official-courses-1280-batch15.png"
+    },
+    {
+      "name": "admin-governance-anonymous",
+      "width": 1280,
+      "initialStatus": 200,
+      "finalPath": "/login",
+      "finalQueryKeys": [
+        "redirect"
+      ],
+      "loginRedirectTarget": "/governance",
+      "protectedRequests": [],
+      "layout": {
+        "title": "教研与运营工作台 · 语学星",
+        "scrollWidth": 1280,
+        "viewportWidth": 1280,
+        "visibleTextLength": 280
+      },
+      "pageErrors": [],
+      "consoleErrors": [],
+      "screenshot": "admin-governance-anonymous-1280-batch15.png"
+    },
+    {
+      "name": "official-courses",
+      "width": 390,
+      "initialStatus": 200,
+      "finalPath": "/courses",
+      "finalQueryKeys": [],
+      "loginRedirectTarget": null,
+      "protectedRequests": [],
+      "layout": {
+        "title": "学习内容 · 语学星",
+        "scrollWidth": 390,
+        "viewportWidth": 390,
+        "visibleTextLength": 811
+      },
+      "pageErrors": [],
+      "consoleErrors": [],
+      "screenshot": "official-courses-390-batch15.png"
+    },
+    {
+      "name": "admin-governance-anonymous",
+      "width": 390,
+      "initialStatus": 200,
+      "finalPath": "/login",
+      "finalQueryKeys": [
+        "redirect"
+      ],
+      "loginRedirectTarget": "/governance",
+      "protectedRequests": [],
+      "layout": {
+        "title": "教研与运营工作台 · 语学星",
+        "scrollWidth": 390,
+        "viewportWidth": 390,
+        "visibleTextLength": 135
+      },
+      "pageErrors": [],
+      "consoleErrors": [],
+      "screenshot": "admin-governance-anonymous-390-batch15.png"
+    }
+  ]
+}

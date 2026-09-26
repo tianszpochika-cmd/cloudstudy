@@ -1,0 +1,17 @@
+{
+  "result": "FAIL",
+  "at": "2026-09-24T19:38:03.101Z",
+  "scope": "Real official-site UI on 18182; no learner/backend business acceptance",
+  "checks": [
+    "desktop homepage and modal word practice",
+    "course search, clear and route navigation",
+    "help search and FAQ expansion",
+    "world room, 2D/3D, role wall and two sentence rounds",
+    "theme persistence, high contrast and four quality levels",
+    "mobile navigation, start handoff and dialog",
+    "system reduced motion disables animation and depth"
+  ],
+  "layouts": [],
+  "errors": [],
+  "failure": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'https://clyunedev.com/'\n- 'http://official-site:18182/'\n       ^\n"
+}

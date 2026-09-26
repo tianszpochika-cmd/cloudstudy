@@ -297,7 +297,7 @@ function mergeOpenApi(
     const normalizedFilePath = normalizeRepoPath(filePath);
     const isCanonicalB1AdapterRoute = canonicalB1AdapterRouteAllowlist
       .get(normalizedFilePath)?.has(route) === true;
-    const isOverrideFragment = /[\\/]b(?:2|3|4|5|6|8|9|10|11|12|13)(?:[\\/]|-)/i.test(filePath)
+    const isOverrideFragment = /[\\/]b(?:2|3|4|5|6|8|9|10|11|12|13|26)(?:[\\/]|-)/i.test(filePath)
       || isCanonicalB1AdapterRoute
       || normalizedFilePath === 'packages/contracts/fragments/m1-017-privacy-lifecycle.openapi.json';
     const isB1LegacyAuthRoute = /[\\/]b1(?:[\\/]|-)/i.test(filePath) && route.startsWith('/api/v1/auth/');
@@ -309,7 +309,7 @@ function mergeOpenApi(
   }
 
   const normalizedFilePath = normalizeRepoPath(filePath);
-  const isOverrideFragment = /[\\/]b(?:2|3|4|5|6|8|9|10|11|12|13|25)(?:[\\/]|-)/i.test(filePath)
+  const isOverrideFragment = /[\\/]b(?:2|3|4|5|6|8|9|10|11|12|13|25|26)(?:[\\/]|-)/i.test(filePath)
     || normalizedFilePath === canonicalB1ContentFragment
     || normalizedFilePath === 'packages/contracts/fragments/m1-017-privacy-lifecycle.openapi.json';
   for (const componentGroup of ['schemas', 'parameters', 'responses', 'headers', 'securitySchemes', 'requestBodies', 'examples']) {

@@ -1,7 +1,7 @@
 import { apiClient } from './client'
 
 export const B13_COMMERCE_PATHS = {
-  skus: '/commerce/skus',
+  publicCatalog: '/public/commerce/catalog',
   orders: '/commerce/orders?limit=50',
   entitlements: '/commerce/entitlements/me',
   createOrder: '/commerce/orders',
@@ -24,7 +24,7 @@ function withKey(prefix: string): { headers: { 'Idempotency-Key': string } } {
   return { headers: { 'Idempotency-Key': idempotencyKey(prefix) } }
 }
 
-export function listB13Skus(): Promise<unknown> { return apiClient.get(B13_COMMERCE_PATHS.skus) }
+export function readB13PublicCatalog(): Promise<unknown> { return apiClient.get(B13_COMMERCE_PATHS.publicCatalog) }
 export function listB13Orders(): Promise<unknown> { return apiClient.get(B13_COMMERCE_PATHS.orders) }
 export function listB13Entitlements(): Promise<unknown> { return apiClient.get(B13_COMMERCE_PATHS.entitlements) }
 export function createB13Order(skuId: string): Promise<unknown> {

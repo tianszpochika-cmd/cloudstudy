@@ -1,0 +1,55 @@
+{
+  "mode": "LEADERBOARD_DRY_RUN_READ_ONLY",
+  "capturedAt": "2026-09-23T09:50:17.494959+00:00",
+  "candidateCounts": {
+    "foundation": 371,
+    "local10x": 10,
+    "total": 381
+  },
+  "allPlatformLeaderboardRows": 381,
+  "candidateFullRowSha256": "3e965184bafbffe83fc93ae3bd6764946c33ed730e864cc89ed7a08ae83e4b4e",
+  "seedFingerprintValid": true,
+  "snapshotHashMatchesApprovedDryRun": true,
+  "quarantineTenantExistingLeaderboardRows": 0,
+  "uniqueKeyCollisions": 0,
+  "identityGroups": [
+    {
+      "family": "foundation",
+      "n": 371,
+      "non_invalid_account_rows": 1,
+      "invalid_account_rows": 100,
+      "no_account_rows": 270,
+      "other_tenant_principal_rows": 0,
+      "earliest_period": "2026-08-25",
+      "latest_period": "2026-09-16",
+      "earliest_projection": "2026-08-25T23:38:53.619000",
+      "latest_projection": "2026-09-16T02:17:43.855000",
+      "min_snapshot_version": 1,
+      "max_snapshot_version": 1
+    },
+    {
+      "family": "local10x",
+      "n": 10,
+      "non_invalid_account_rows": 0,
+      "invalid_account_rows": 10,
+      "no_account_rows": 0,
+      "other_tenant_principal_rows": 0,
+      "earliest_period": "2026-08-26",
+      "latest_period": "2026-08-26",
+      "earliest_projection": "2026-09-18T00:12:44.295000",
+      "latest_projection": "2026-09-18T00:12:44.295000",
+      "min_snapshot_version": 1,
+      "max_snapshot_version": 1
+    }
+  ],
+  "foreignKeyConsumers": 0,
+  "structuredReferenceColumnsScanned": 0,
+  "structuredReferences": [],
+  "jsonColumnsScanned": 232,
+  "jsonReferences": [],
+  "blockers": [],
+  "reviewRequired": [
+    "One fixed-score fixture projection belongs to a non-.invalid account; move only the projection after independent review.",
+    "The old seed could have overwritten a score; no earlier snapshot exists to reconstruct an earlier value."
+  ]
+}

@@ -33,90 +33,125 @@ interface MobileGrammarDraft {
   selectedPointId: number | null
   blockOrders: Record<string, string[]>
   slotValues: Record<string, Record<string, string>>
+  contentVersions: Record<string, number | null>
 }
 const GRAMMAR_DRAFT_KEY = 'yx.b10.mobile.grammar-draft.v1'
-const grammarDraft = ref<MobileGrammarDraft>(readGrammarDraft())
+const grammarDraft = ref<MobileGrammarDraft>(emptyGrammarDraft())
 const themeClass = computed(() => `b10-theme--${b10ThemeMode.value}`)
 const exercise = computed(() => grammarSession.value?.exercises.find((item) => item.position === 0) ?? grammarSession.value?.exercises[0] ?? null)
 const linearMode = computed(() => performanceLevel.value === 'Performance' || graph.value?.graphStatus === 'DEGRADED')
 const context = computed(() => ({ uiLocale: b10UiLocale.value, contentLocale: b10ContentLocale.value }))
 function isRecord(value: unknown): value is Record<string, unknown> { return typeof value === 'object' && value !== null && !Array.isArray(value) }
-function emptyGrammarDraft(): MobileGrammarDraft { return { selectedPointId: null, blockOrders: {}, slotValues: {} } }
+function emptyGrammarDraft(): MobileGrammarDraft { return { selectedPointId: null, blockOrders: {}, slotValues: {}, contentVersions: {} } }
+type AccountScope = { subject: string; revision: number }
+function accountScope(): AccountScope | null {
+  return session.isAuthenticated && session.verifiedSubject
+    ? { subject: session.verifiedSubject, revision: session.identityRevision } : null
+}
+function isCurrent(scope: AccountScope | null): scope is AccountScope {
+  return Boolean(scope && session.isAuthenticated && session.verifiedSubject === scope.subject && session.identityRevision === scope.revision)
+}
+function clearPage(): void {
+  grammarSelectionRequest += 1
+  points.value = []; activePoint.value = null; graph.value = null; grammarSession.value = null
+  blockOrder.value = []; slotValues.value = {}; feedback.value = null
+  correctionPrompt.value = null; correctionAnswer.value = ''; grammarDraft.value = emptyGrammarDraft()
+  status.value = 'idle'; message.value = null
+}
 function readGrammarDraft(): MobileGrammarDraft {
   const draft = emptyGrammarDraft()
+  const scope = accountScope()
+  if (!isCurrent(scope)) return draft
   try {
     const raw = getUniRuntime().getStorageSync(GRAMMAR_DRAFT_KEY)
     if (typeof raw !== 'string') return draft
     const parsed: unknown = JSON.parse(raw)
     if (!isRecord(parsed)) return draft
+    if (parsed.subject !== scope.subject) { getUniRuntime().removeStorageSync(GRAMMAR_DRAFT_KEY); return draft }
     draft.selectedPointId = typeof parsed.selectedPointId === 'number' && Number.isInteger(parsed.selectedPointId) ? parsed.selectedPointId : null
     if (isRecord(parsed.blockOrders)) for (const [key, value] of Object.entries(parsed.blockOrders)) if (Array.isArray(value) && value.every((item): item is string => typeof item === 'string')) draft.blockOrders[key] = [...value]
     if (isRecord(parsed.slotValues)) for (const [sentenceId, value] of Object.entries(parsed.slotValues)) if (isRecord(value)) draft.slotValues[sentenceId] = Object.fromEntries(Object.entries(value).flatMap(([key, item]) => typeof item === 'string' ? [[key, item]] : []))
-  } catch { /* H5 storage is optional; the server remains the source of truth. */ }
+    if (isRecord(parsed.contentVersions)) for (const [sentenceId, value] of Object.entries(parsed.contentVersions)) if (value === null || (typeof value === 'number' && Number.isSafeInteger(value))) draft.contentVersions[sentenceId] = value as number | null
+  } catch { try { getUniRuntime().removeStorageSync(GRAMMAR_DRAFT_KEY) } catch { /* ignore */ } }
   return draft
 }
-function persistGrammarDraft(): void { try { getUniRuntime().setStorageSync(GRAMMAR_DRAFT_KEY, JSON.stringify(grammarDraft.value)) } catch { /* best effort local recovery */ } }
+function persistGrammarDraft(): void { const scope = accountScope(); if (!isCurrent(scope)) return; try { getUniRuntime().setStorageSync(GRAMMAR_DRAFT_KEY, JSON.stringify({ subject: scope.subject, ...grammarDraft.value })) } catch { /* best effort local recovery */ } }
 function setPerformance(level: PerformanceLevel): void { engine.setLevel(level, 'manual'); performanceLevel.value = level }
 function moveBlock(index: number, offset: number): void { const target = index + offset; if (target < 0 || target >= blockOrder.value.length) return; const next = [...blockOrder.value]; [next[index], next[target]] = [next[target], next[index]]; blockOrder.value = next }
 async function loadPoint(point: B10GrammarPoint): Promise<void> {
+  const scope = accountScope()
+  if (!isCurrent(scope)) return
   const requestId = ++grammarSelectionRequest
   activePoint.value = point; grammarDraft.value.selectedPointId = point.grammarPointId; persistGrammarDraft(); graph.value = null; grammarSession.value = null; feedback.value = null; blockOrder.value = []; slotValues.value = {}; status.value = 'loading'; message.value = null
   try {
     if (point.sentenceId) {
       const nextGraph = await b10LearningApi.getSentenceGraph(context.value, point.sentenceId)
-      if (requestId !== grammarSelectionRequest) return
+      if (requestId !== grammarSelectionRequest || !isCurrent(scope)) return
       graph.value = nextGraph
-      const savedOrder = grammarDraft.value.blockOrders[String(nextGraph.sentenceId)]
-      const savedSlots = grammarDraft.value.slotValues[String(nextGraph.sentenceId)]
+      const versionMatches = Object.hasOwn(grammarDraft.value.contentVersions, String(nextGraph.sentenceId))
+        && grammarDraft.value.contentVersions[String(nextGraph.sentenceId)] === nextGraph.contentVersionId
+      const savedOrder = versionMatches ? grammarDraft.value.blockOrders[String(nextGraph.sentenceId)] : undefined
+      const savedSlots = versionMatches ? grammarDraft.value.slotValues[String(nextGraph.sentenceId)] : undefined
       const allowedBlockIds = new Set(nextGraph.blockOrder)
       blockOrder.value = savedOrder?.length === nextGraph.blockOrder.length && savedOrder.every((item) => allowedBlockIds.has(item)) ? [...savedOrder] : [...nextGraph.blockOrder]
       slotValues.value = { ...nextGraph.imitationSlots }
       if (savedSlots) for (const [key, value] of Object.entries(savedSlots)) if (key in slotValues.value) slotValues.value[key] = value
     } else message.value = '当前知识点还没有发布可解析的长难句。'
     const nextSession = await b10LearningApi.createGrammarSession(context.value, point.grammarPointId, point.contentVersionId, createB10ClientEventId(`grammar-session-${point.grammarPointId}`))
-    if (requestId !== grammarSelectionRequest) return
+    if (requestId !== grammarSelectionRequest || !isCurrent(scope)) return
     grammarSession.value = nextSession
     status.value = graph.value || grammarSession.value.exercises.length ? 'ready' : 'empty'
-  } catch (error) { if (requestId !== grammarSelectionRequest) return; const info = b10ErrorInfo(error, '语法服务暂时不可用。'); status.value = info.kind; message.value = info.message }
+  } catch (error) { if (requestId !== grammarSelectionRequest || !isCurrent(scope)) return; const info = b10ErrorInfo(error, '语法服务暂时不可用。'); status.value = info.kind; message.value = info.message }
 }
 async function load(): Promise<void> {
+  const scope = accountScope()
+  if (!isCurrent(scope)) return
   const requestId = ++grammarSelectionRequest
   status.value = 'loading'; message.value = null
   try {
     const nextPoints = await b10LearningApi.listGrammarPoints(context.value)
-    if (requestId !== grammarSelectionRequest) return
+    if (requestId !== grammarSelectionRequest || !isCurrent(scope)) return
     const nextCorrectionPrompt = (await b10LearningApi.listWritingPrompts(context.value, 'CORRECTION'))[0] ?? null
-    if (requestId !== grammarSelectionRequest) return
+    if (requestId !== grammarSelectionRequest || !isCurrent(scope)) return
     points.value = nextPoints
     correctionPrompt.value = nextCorrectionPrompt
     if (!points.value.length) { status.value = 'empty'; return }
     await loadPoint(points.value.find((point) => point.grammarPointId === grammarDraft.value.selectedPointId) ?? points.value[0])
-  } catch (error) { if (requestId !== grammarSelectionRequest) return; const info = b10ErrorInfo(error, '语法知识树暂时不可用。'); status.value = info.kind; message.value = info.message }
+  } catch (error) { if (requestId !== grammarSelectionRequest || !isCurrent(scope)) return; const info = b10ErrorInfo(error, '语法知识树暂时不可用。'); status.value = info.kind; message.value = info.message }
 }
 async function submitBlocks(): Promise<void> {
-  if (!grammarSession.value || !exercise.value || !graph.value || !blockOrder.value.length) return
-  try { feedback.value = await b10LearningApi.submitGrammarAnswer(context.value, grammarSession.value.sessionId, exercise.value.exerciseId, { orderedTokenIds: blockOrder.value }, graph.value.contentVersionId, createB10ClientEventId(`grammar-blocks-${graph.value.sentenceId}`)); status.value = feedback.value.contentVersionStale ? 'stale' : 'ready' }
-  catch (error) { const info = b10ErrorInfo(error, '句子积木提交失败，当前顺序已保留。'); status.value = info.kind; message.value = info.message }
+  const scope = accountScope()
+  if (!isCurrent(scope) || !grammarSession.value || !exercise.value || !graph.value || !blockOrder.value.length) return
+  const requestId = grammarSelectionRequest
+  try { const result = await b10LearningApi.submitGrammarAnswer(context.value, grammarSession.value.sessionId, exercise.value.exerciseId, { orderedTokenIds: [...blockOrder.value] }, graph.value.contentVersionId, createB10ClientEventId(`grammar-blocks-${graph.value.sentenceId}`)); if (!isCurrent(scope) || requestId !== grammarSelectionRequest) return; feedback.value = result; status.value = result.contentVersionStale ? 'stale' : 'ready' }
+  catch (error) { if (!isCurrent(scope) || requestId !== grammarSelectionRequest) return; const info = b10ErrorInfo(error, '句子积木提交失败，当前顺序已保留。'); status.value = info.kind; message.value = info.message }
 }
 async function submitImitation(): Promise<void> {
-  if (!grammarSession.value || !exercise.value || !graph.value) return
-  try { feedback.value = await b10LearningApi.submitGrammarAnswer(context.value, grammarSession.value.sessionId, exercise.value.exerciseId, { text: JSON.stringify(slotValues.value) }, graph.value.contentVersionId, createB10ClientEventId(`grammar-imitation-${graph.value.sentenceId}`)); status.value = feedback.value.contentVersionStale ? 'stale' : 'ready' }
-  catch (error) { const info = b10ErrorInfo(error, '仿写提交失败，草稿仍保留。'); status.value = info.kind; message.value = info.message }
+  const scope = accountScope()
+  if (!isCurrent(scope) || !grammarSession.value || !exercise.value || !graph.value) return
+  const requestId = grammarSelectionRequest
+  try { const result = await b10LearningApi.submitGrammarAnswer(context.value, grammarSession.value.sessionId, exercise.value.exerciseId, { text: JSON.stringify(slotValues.value) }, graph.value.contentVersionId, createB10ClientEventId(`grammar-imitation-${graph.value.sentenceId}`)); if (!isCurrent(scope) || requestId !== grammarSelectionRequest) return; feedback.value = result; status.value = result.contentVersionStale ? 'stale' : 'ready' }
+  catch (error) { if (!isCurrent(scope) || requestId !== grammarSelectionRequest) return; const info = b10ErrorInfo(error, '仿写提交失败，草稿仍保留。'); status.value = info.kind; message.value = info.message }
 }
 async function submitExerciseAnswer(answer: B10AnswerInput): Promise<void> {
-  if (!grammarSession.value || !exercise.value) return
-  try { feedback.value = await b10LearningApi.submitGrammarAnswer(context.value, grammarSession.value.sessionId, exercise.value.exerciseId, answer, activePoint.value?.contentVersionId ?? null, createB10ClientEventId(`grammar-exercise-${exercise.value.exerciseId}`)); status.value = feedback.value.contentVersionStale ? 'stale' : 'ready' }
-  catch (error) { const info = b10ErrorInfo(error, '语法练习提交失败，答案仍保留。'); status.value = info.kind; message.value = info.message }
+  const scope = accountScope()
+  if (!isCurrent(scope) || !grammarSession.value || !exercise.value) return
+  const requestId = grammarSelectionRequest
+  try { const result = await b10LearningApi.submitGrammarAnswer(context.value, grammarSession.value.sessionId, exercise.value.exerciseId, answer, activePoint.value?.contentVersionId ?? null, createB10ClientEventId(`grammar-exercise-${exercise.value.exerciseId}`)); if (!isCurrent(scope) || requestId !== grammarSelectionRequest) return; feedback.value = result; status.value = result.contentVersionStale ? 'stale' : 'ready' }
+  catch (error) { if (!isCurrent(scope) || requestId !== grammarSelectionRequest) return; const info = b10ErrorInfo(error, '语法练习提交失败，答案仍保留。'); status.value = info.kind; message.value = info.message }
 }
 async function submitCorrection(): Promise<void> {
-  if (!correctionPrompt.value || !correctionAnswer.value.trim()) return
-  try { feedback.value = await b10LearningApi.submitCorrection(context.value, correctionPrompt.value, correctionAnswer.value, createB10ClientEventId(`correction-${correctionPrompt.value.promptId}`)); status.value = feedback.value.contentVersionStale ? 'stale' : 'ready' }
-  catch (error) { const info = b10ErrorInfo(error, '病句改错提交失败，答案仍保留。'); status.value = info.kind; message.value = info.message }
+  const scope = accountScope()
+  if (!isCurrent(scope) || !correctionPrompt.value || !correctionAnswer.value.trim()) return
+  const requestId = grammarSelectionRequest
+  try { const result = await b10LearningApi.submitCorrection(context.value, correctionPrompt.value, correctionAnswer.value, createB10ClientEventId(`correction-${correctionPrompt.value.promptId}`)); if (!isCurrent(scope) || requestId !== grammarSelectionRequest) return; feedback.value = result; status.value = result.contentVersionStale ? 'stale' : 'ready' }
+  catch (error) { if (!isCurrent(scope) || requestId !== grammarSelectionRequest) return; const info = b10ErrorInfo(error, '病句改错提交失败，答案仍保留。'); status.value = info.kind; message.value = info.message }
 }
-onMounted(async () => { await session.restore(); if (!session.isAuthenticated) { getUniRuntime().navigateTo({ url: '/pages/login/login' }); return } void load() })
+watch(() => session.identityRevision, clearPage, { flush: 'sync' })
+onMounted(async () => { await session.restore(); if (!session.isAuthenticated) { getUniRuntime().navigateTo({ url: '/pages/login/login' }); return } grammarDraft.value = readGrammarDraft(); void load() })
 onUnmounted(() => engine.dispose())
-watch(blockOrder, (value) => { if (graph.value) { grammarDraft.value.blockOrders[String(graph.value.sentenceId)] = [...value]; persistGrammarDraft() } }, { deep: true })
-watch(slotValues, (value) => { if (graph.value) { grammarDraft.value.slotValues[String(graph.value.sentenceId)] = { ...value }; persistGrammarDraft() } }, { deep: true })
+watch(blockOrder, (value) => { if (graph.value) { grammarDraft.value.blockOrders[String(graph.value.sentenceId)] = [...value]; grammarDraft.value.contentVersions[String(graph.value.sentenceId)] = graph.value.contentVersionId; persistGrammarDraft() } }, { deep: true })
+watch(slotValues, (value) => { if (graph.value) { grammarDraft.value.slotValues[String(graph.value.sentenceId)] = { ...value }; grammarDraft.value.contentVersions[String(graph.value.sentenceId)] = graph.value.contentVersionId; persistGrammarDraft() } }, { deep: true })
 </script>
 
 <template>

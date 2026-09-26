@@ -3726,7 +3726,7 @@
                               "type": "array",
                               "maxItems": 100,
                               "items": {
-                                "$ref": "#/components/schemas/B12Report"
+                                "$ref": "#/components/schemas/B12AdminReport"
                               }
                             }
                           }
@@ -3754,6 +3754,15 @@
           },
           "403": {
             "$ref": "#/components/responses/ApiForbidden"
+          },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
+          },
+          "500": {
+            "$ref": "#/components/responses/ApiInternalError"
           }
         },
         "x-pagination": {
@@ -8254,6 +8263,31 @@
           }
         }
       },
+      "B12AdminReport": {
+        "description": "管理审核队列的最小披露视图。房间和被举报人只返回稳定的不透明引用，原始主体标识留在 social-service。",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "reportId",
+          "targetRef",
+          "reasonCode",
+          "status",
+          "reviewMode",
+          "createdAt",
+          "updatedAt"
+        ],
+        "properties": {
+          "reportId": { "type": "string", "maxLength": 160 },
+          "roomRef": { "type": "string", "maxLength": 64, "nullable": true },
+          "targetRef": { "type": "string", "maxLength": 64 },
+          "targetSeatIndex": { "type": "integer", "minimum": 1 },
+          "reasonCode": { "type": "string", "maxLength": 64 },
+          "status": { "type": "string", "enum": ["RECEIVED", "TRIAGED", "ACTIONED", "REJECTED", "APPEALED", "CLOSED"] },
+          "reviewMode": { "type": "string", "enum": ["MANUAL"] },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
       "B12Report": {
         "type": "object",
         "additionalProperties": false,
@@ -8851,6 +8885,7 @@
       "M1016NotificationDndWindow": {
         "type": "object",
         "additionalProperties": false,
+        "description": "起止时间相同表示关闭免打扰；否则按当地时间左闭右开判断，跨午夜区间有效。",
         "required": [
           "startLocalTime",
           "endLocalTime",
@@ -9004,6 +9039,7 @@
           "dndWindow": {
             "type": "object",
             "additionalProperties": false,
+            "description": "起止时间相同表示关闭免打扰；否则按当地时间左闭右开判断，跨午夜区间有效。",
             "required": [
               "startLocalTime",
               "endLocalTime"

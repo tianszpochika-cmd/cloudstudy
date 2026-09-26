@@ -1,0 +1,32 @@
+{
+  "at": "2026-09-24T17:19:42.289Z",
+  "project": "cloudstudy-uat-isolated-3c94b27160",
+  "before": {
+    "syntheticAccounts": 8,
+    "sessions": 10
+  },
+  "api": {
+    "first": {
+      "status": 503,
+      "errorCode": "SERVICE_UNAVAILABLE",
+      "errorMessage": "iam.consent.version_unavailable",
+      "hasAccessToken": false
+    },
+    "retry": {
+      "status": 503,
+      "errorCode": "SERVICE_UNAVAILABLE",
+      "errorMessage": "iam.consent.version_unavailable",
+      "hasAccessToken": false
+    },
+    "login": {
+      "status": 503,
+      "errorCode": "SERVICE_UNAVAILABLE",
+      "errorMessage": "iam.consent.version_unavailable",
+      "hasAccessToken": false
+    }
+  },
+  "after": {
+    "syntheticAccounts": 8,
+    "sessions": 10
+  }
+}

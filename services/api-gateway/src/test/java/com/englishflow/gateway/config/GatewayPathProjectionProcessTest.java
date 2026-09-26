@@ -143,6 +143,21 @@ class GatewayPathProjectionProcessTest {
         assertForwarded(HttpMethod.POST,
                 "/api/v1/assessment/sessions",
                 "/internal/v1/assessment/sessions");
+        assertForwarded(HttpMethod.POST,
+                "/api/v1/assessment/placement/sessions",
+                "/internal/v1/assessment/placement/sessions");
+        assertForwarded(HttpMethod.GET,
+                "/api/v1/assessment/placement/sessions/asess_12345678",
+                "/internal/v1/assessment/placement/sessions/asess_12345678");
+        assertForwarded(HttpMethod.POST,
+                "/api/v1/assessment/placement/sessions/asess_12345678/responses",
+                "/internal/v1/assessment/placement/sessions/asess_12345678/responses");
+        assertForwarded(HttpMethod.POST,
+                "/api/v1/assessment/placement/baselines/skip",
+                "/internal/v1/assessment/placement/baselines/skip");
+        assertForwarded(HttpMethod.GET,
+                "/api/v1/assessment/placement/reports/rpt_12345678",
+                "/internal/v1/assessment/placement/reports/rpt_12345678");
         assertForwarded(HttpMethod.GET,
                 "/api/v1/mastery/overview",
                 "/internal/v1/learning/experiences/mastery/overview");
@@ -161,6 +176,40 @@ class GatewayPathProjectionProcessTest {
         assertForwarded(HttpMethod.GET,
                 "/api/v1/admin/ops/metrics",
                 "/internal/v1/analytics/metrics");
+        assertForwarded(HttpMethod.GET,
+                "/api/v1/admin/moderation/reports",
+                "/internal/v1/social/admin/moderation/reports");
+    }
+
+    @Test
+    void grammarPointsReadRewritesToContentOwnerAndPreservesCanonicalPaginationParameters() {
+        client.get()
+                .uri("/api/v1/grammar/points?cursor=MzEwMQ&pageSize=20&cefrLevel=B1")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .header("X-Request-Id", "grammar-points-route-test")
+                .exchange()
+                .expectStatus().isOk();
+
+        CapturedRequest received = UPSTREAM.next();
+        assertNotNull(received);
+        assertEquals("GET", received.method());
+        assertEquals("/internal/v1/content/learner/grammar/points", received.path());
+        assertEquals("cursor=MzEwMQ&pageSize=20&cefrLevel=B1", received.query());
+        assertEquals("canonical-grammar-points-read-list", received.routeId());
+    }
+
+    @Test
+    void moderationFiltersAndOpaqueCursorSurviveTheOwnerPathRewrite() {
+        client.get()
+                .uri("/api/v1/admin/moderation/reports?status=REVIEWING&pageSize=7&cursor=opaque_12345678")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .header("X-Request-Id", "projection-process-request")
+                .exchange()
+                .expectStatus().isOk();
+        CapturedRequest received = UPSTREAM.next();
+        assertNotNull(received);
+        assertEquals("/internal/v1/social/admin/moderation/reports", received.path());
+        assertEquals("status=REVIEWING&pageSize=7&cursor=opaque_12345678", received.query());
     }
 
     private void assertForwarded(HttpMethod method, String publicPath, String expectedTargetPath) {
@@ -284,7 +333,7 @@ class GatewayPathProjectionProcessTest {
         }
     }
 
-    private record CapturedRequest(String method, String path, String routeId) {
+    private record CapturedRequest(String method, String path, String query, String routeId) {
     }
 
     private static final class CapturingUpstream implements AutoCloseable {
@@ -415,8 +464,10 @@ class GatewayPathProjectionProcessTest {
                 if (parts.length < 2) {
                     throw new IOException("Invalid upstream request line: " + requestLine);
                 }
-                String path = parts[1].replaceFirst("\\?.*$", "");
-                requests.add(new CapturedRequest(parts[0], path, routeId));
+                int queryStart = parts[1].indexOf('?');
+                String path = queryStart < 0 ? parts[1] : parts[1].substring(0, queryStart);
+                String query = queryStart < 0 ? null : parts[1].substring(queryStart + 1);
+                requests.add(new CapturedRequest(parts[0], path, query, routeId));
                 byte[] response = "{\"ok\":true}".getBytes(StandardCharsets.UTF_8);
                 output.write(("HTTP/1.1 200 OK\r\n"
                         + "Content-Type: application/json\r\n"

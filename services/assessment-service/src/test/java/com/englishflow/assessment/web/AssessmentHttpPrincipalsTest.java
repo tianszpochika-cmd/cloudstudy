@@ -24,11 +24,13 @@ class AssessmentHttpPrincipalsTest {
     void verifiedLearnerFactsAreReturnedFromTheJwtOnly() {
         AssessmentHttpPrincipals.VerifiedAssessmentPrincipal principal = AssessmentHttpPrincipals.require(
                 authentication(jwt("principal-1", "platform", List.of("learner"),
-                        List.of("assessment.session.read", "assessment.answer.write"))));
+                        List.of("assessment.session.read", "assessment.session.write"))),
+                "assessment.session.read");
 
         assertEquals("principal-1", principal.subject());
         assertEquals("platform", principal.tenantId());
         assertTrue(principal.hasPermission("assessment.session.read"));
+        assertTrue(principal.hasPermission("assessment.session.write"));
     }
 
     @Test
@@ -55,7 +57,48 @@ class AssessmentHttpPrincipalsTest {
                 authentication(jwt("principal-1", "platform", List.of("learner"), List.of())))));
     }
 
+    @Test
+    void preGateProfileOnlyTokenCannotAccessAssessment() {
+        Jwt profileOnly = jwt("principal-1", "platform", List.of("learner"),
+                List.of("learner.profile.read", "learner.profile.write"), null, null);
+        assertEquals(HttpStatus.FORBIDDEN, status(() -> AssessmentHttpPrincipals.require(
+                authentication(profileOnly), "assessment.session.read")));
+        Jwt forgedAssessmentPermission = jwt("principal-1", "platform", List.of("learner"),
+                List.of("assessment.session.write"), null, null);
+        assertEquals(HttpStatus.FORBIDDEN, status(() -> AssessmentHttpPrincipals.require(
+                authentication(forgedAssessmentPermission), "assessment.session.write")));
+    }
+
+    @Test
+    void missingOrWithdrawnConsentCannotAccessAssessment() {
+        for (String consent : new String[] { null, "WITHDRAWN", "UNKNOWN" }) {
+            Jwt token = jwt("principal-1", "platform", List.of("learner"),
+                    List.of("assessment.session.read", "assessment.session.write"), "PASSED", consent);
+            assertEquals(HttpStatus.FORBIDDEN, status(() -> AssessmentHttpPrincipals.require(
+                    authentication(token), "assessment.session.read")));
+        }
+    }
+
+    @Test
+    void validGateAndConsentStillRequireTheSpecificPermission() {
+        Jwt readOnly = jwt("principal-1", "platform", List.of("learner"),
+                List.of("assessment.session.read"));
+        assertEquals(HttpStatus.FORBIDDEN, status(() -> AssessmentHttpPrincipals.require(
+                authentication(readOnly), "assessment.session.write")));
+        Jwt writeOnly = jwt("principal-1", "platform", List.of("learner"),
+                List.of("assessment.session.write"));
+        assertEquals(HttpStatus.FORBIDDEN, status(() -> AssessmentHttpPrincipals.require(
+                authentication(writeOnly), "assessment.session.read")));
+        assertEquals("principal-1", AssessmentHttpPrincipals.require(
+                authentication(writeOnly), "assessment.session.write").subject());
+    }
+
     private static Jwt jwt(String subject, String tenant, List<String> roles, List<String> permissions) {
+        return jwt(subject, tenant, roles, permissions, "PASSED", "GRANTED");
+    }
+
+    private static Jwt jwt(String subject, String tenant, List<String> roles, List<String> permissions,
+            String adultGate, String consentState) {
         Jwt.Builder builder = Jwt.withTokenValue("token")
                 .header("alg", "RS256")
                 .subject(subject)
@@ -64,6 +107,8 @@ class AssessmentHttpPrincipalsTest {
                 .claim("roles", roles)
                 .claim("permissions", permissions);
         if (tenant != null) builder.claim("tenant_id", tenant);
+        if (adultGate != null) builder.claim("adult_gate", adultGate);
+        if (consentState != null) builder.claim("consent_state", consentState);
         return builder.build();
     }
 

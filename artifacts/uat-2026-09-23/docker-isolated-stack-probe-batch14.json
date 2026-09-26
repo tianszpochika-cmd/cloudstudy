@@ -1,0 +1,149 @@
+{
+  "at": "2026-09-23T13:03:03.488Z",
+  "project": "cloudstudy-uat-isolated-3c94b27160",
+  "baseTag": "583ab627-uat-batch9-202609231740",
+  "replacementImages": {
+    "api-gateway": "cloudstudy-clyunedev/api-gateway:583ab627-uat-batch10-202609231841",
+    "iam-service": "cloudstudy-clyunedev/iam-service:583ab627-uat-batch10-202609231841",
+    "learner-web": "cloudstudy-clyunedev/learner-web:583ab627-uat-batch14-202609232058",
+    "mobile-h5": "cloudstudy-clyunedev/mobile-h5:583ab627-uat-batch14-202609232058",
+    "content-service": "cloudstudy-clyunedev/content-service:583ab627-uat-batch13-202609232012",
+    "admin-web": "cloudstudy-clyunedev/admin-web:583ab627-uat-batch14-202609232058",
+    "gamification-service": "cloudstudy-clyunedev/gamification-service:583ab627-uat-batch14-202609232058"
+  },
+  "result": [
+    {
+      "name": "official-site",
+      "port": 18182,
+      "route": "/",
+      "status": 200,
+      "error": ""
+    },
+    {
+      "name": "learner-web",
+      "port": 8080,
+      "route": "/",
+      "status": 200,
+      "error": ""
+    },
+    {
+      "name": "admin-web",
+      "port": 8080,
+      "route": "/",
+      "status": 200,
+      "error": ""
+    },
+    {
+      "name": "mobile-h5",
+      "port": 8080,
+      "route": "/",
+      "status": 200,
+      "error": ""
+    },
+    {
+      "name": "iam-service",
+      "port": 18087,
+      "route": "/actuator/health/readiness",
+      "status": 200,
+      "error": ""
+    },
+    {
+      "name": "api-gateway",
+      "port": 18070,
+      "route": "/actuator/health/readiness",
+      "status": 200,
+      "error": ""
+    },
+    {
+      "name": "audit-service",
+      "port": 18099,
+      "route": "/actuator/health/readiness",
+      "status": 200,
+      "error": ""
+    },
+    {
+      "name": "workflow-service",
+      "port": 18071,
+      "route": "/actuator/health/readiness",
+      "status": 200,
+      "error": ""
+    },
+    {
+      "name": "learner-service",
+      "port": 18088,
+      "route": "/actuator/health/readiness",
+      "status": 200,
+      "error": ""
+    },
+    {
+      "name": "content-service",
+      "port": 18089,
+      "route": "/actuator/health/readiness",
+      "status": 200,
+      "error": ""
+    },
+    {
+      "name": "learning-service",
+      "port": 18090,
+      "route": "/actuator/health/readiness",
+      "status": 200,
+      "error": ""
+    },
+    {
+      "name": "assessment-service",
+      "port": 18091,
+      "route": "/actuator/health/readiness",
+      "status": 200,
+      "error": ""
+    },
+    {
+      "name": "media-service",
+      "port": 18092,
+      "route": "/actuator/health/readiness",
+      "status": 200,
+      "error": ""
+    },
+    {
+      "name": "notification-service",
+      "port": 18093,
+      "route": "/actuator/health/readiness",
+      "status": 200,
+      "error": ""
+    },
+    {
+      "name": "gamification-service",
+      "port": 18094,
+      "route": "/actuator/health/readiness",
+      "status": 200,
+      "error": ""
+    },
+    {
+      "name": "social-service",
+      "port": 18095,
+      "route": "/actuator/health/readiness",
+      "status": 200,
+      "error": ""
+    },
+    {
+      "name": "commerce-service",
+      "port": 18096,
+      "route": "/actuator/health/readiness",
+      "status": 200,
+      "error": ""
+    },
+    {
+      "name": "admin-ops-service",
+      "port": 18097,
+      "route": "/actuator/health/readiness",
+      "status": 200,
+      "error": ""
+    },
+    {
+      "name": "analytics-service",
+      "port": 18098,
+      "route": "/actuator/health/readiness",
+      "status": 200,
+      "error": ""
+    }
+  ]
+}

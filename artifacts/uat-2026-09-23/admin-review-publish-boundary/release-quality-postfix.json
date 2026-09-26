@@ -1,0 +1,29 @@
+{
+  "runId": "uat-release-copy-mudwole6d66be4",
+  "page": {
+    "path": "/release",
+    "emptyTextPresent": true,
+    "statusTextPresent": true,
+    "englishNoDataPresent": false,
+    "rawEnumPresent": false,
+    "qualityCaveatPresent": true,
+    "layout": {
+      "width": 390,
+      "documentWidth": 390,
+      "overflow": false
+    }
+  },
+  "pageErrors": [],
+  "consoleErrors": [],
+  "cleanup": {
+    "accountFound": true,
+    "disabled": true,
+    "activeSessions": 0,
+    "activeDevices": 0,
+    "activeRoles": 0
+  },
+  "contentCommands": 0,
+  "secretsRecorded": false,
+  "result": "PASS",
+  "capturedAt": "2026-09-23T09:33:58.720Z"
+}

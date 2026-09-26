@@ -1,0 +1,14 @@
+{
+  "project": "cloudstudy-uat-isolated-3c94b27160",
+  "source": "private state event recorded at original batch13 run",
+  "at": "2026-09-23T12:24:36.717Z",
+  "summary": {
+    "widths": 2,
+    "loginRedirects": 2,
+    "submitReviewButtons": 0,
+    "contentApiRequests": 0,
+    "pageErrors": 0,
+    "consoleErrors": 0
+  },
+  "note": "Detailed per-width JSON and screenshots were overwritten by a later batch14 rerun; use batch14 files for current visual evidence."
+}

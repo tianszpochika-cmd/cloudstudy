@@ -1,0 +1,256 @@
+{
+  "generatedAt": "2026-09-25T18:16:01.769Z",
+  "scope": "Local learner-web only. One random @local.invalid account was generated and kept in process memory; its identifier and password are not written. Adult-gate and consent choices were synthetic UI actions only, not real identity or legal consent.",
+  "browser": "Playwright Chromium, headless, 1280x900",
+  "stages": {
+    "registration": {
+      "succeeded": true,
+      "view": {
+        "url": "/onboarding?redirect=/home",
+        "title": "语学星",
+        "headings": [
+          "欢迎来到语学星",
+          "确认成人身份"
+        ],
+        "alerts": [],
+        "visibleText": "语学星 FIRST DAY · 1/2 欢迎来到语学星 先确认身份，再选择学习目标。 1 确认身份 2 选择目标 确认身份与同意事项 确认成人身份 仅限已满 18 岁的学习者。 出生年份 我确认自己已满 18 周岁 我同意隐私说明 我同意学习服务条款 继续 退出登录"
+      },
+      "requests": [
+        {
+          "phase": "registration",
+          "method": "POST",
+          "path": "/api/v1/auth/register",
+          "status": 201,
+          "requestId": "req-aa8455bfa3a24d479a325965fa8b1ab1",
+          "traceId": "14cd61a15e314369b620fc573c546722"
+        },
+        {
+          "phase": "registration",
+          "method": "GET",
+          "path": "/api/v1/iam/permissions",
+          "status": 200,
+          "requestId": "req-0cf9fd95d95a4a67a26d0f5974c1e98f",
+          "traceId": "45b5c5d3869e49b0b310b3460213ee16"
+        },
+        {
+          "phase": "registration",
+          "method": "GET",
+          "path": "/api/v1/learner/profile",
+          "status": 403,
+          "requestId": "req-2b47007e81f14659a30d1d86903cb1c2",
+          "traceId": "77c07f1b2554406684c57e4390036cad",
+          "code": "CONSENT_REQUIRED",
+          "message": "learner operation denied: CONSENT_REQUIRED"
+        },
+        {
+          "phase": "registration",
+          "method": "GET",
+          "path": "/api/v1/learner/targets",
+          "status": 403,
+          "requestId": "req-cac3a8fdab054d1da19b396685ec2a22",
+          "traceId": "831ed2fd0f604d099fd18e63a5e1f4d9",
+          "code": "CONSENT_REQUIRED",
+          "message": "learner operation denied: CONSENT_REQUIRED"
+        },
+        {
+          "phase": "registration",
+          "method": "GET",
+          "path": "/api/v1/learner/preferences",
+          "status": 403,
+          "requestId": "req-7f4d409db77d457a9a7472a9d88668d9",
+          "traceId": "50998585ec0a40278bdd36dbea15b7a4",
+          "code": "CONSENT_REQUIRED",
+          "message": "learner operation denied: CONSENT_REQUIRED"
+        },
+        {
+          "phase": "registration",
+          "method": "GET",
+          "path": "/api/v1/onboarding/options",
+          "status": 403,
+          "requestId": "req-7f9a9be8732843659a589595caee8ea6",
+          "traceId": "fee6f5a1887442f98e1df4800b78a920"
+        }
+      ]
+    },
+    "adultGate": {
+      "reachedGoalSelection": true,
+      "syntheticChoices": {
+        "birthYearEntered": true,
+        "visibleCheckboxesChecked": 3
+      },
+      "view": {
+        "url": "/onboarding?redirect=/home",
+        "title": "语学星",
+        "headings": [
+          "欢迎来到语学星",
+          "你想先解决什么？"
+        ],
+        "alerts": [],
+        "visibleText": "语学星 FIRST DAY · 2/2 欢迎来到语学星 先确认身份，再选择学习目标。 1 确认身份 2 选择目标 选择学习目标 你想先解决什么？ 选一个最重要的方向，我们会据此准备首日测评和学习任务。 学习目标 成人零基础 从发音、核心词和短句开始建立基础。 四六级备考 围绕词汇、听力与真题节奏推进。 考研英语 强化长难句、阅读和高频表达。 职场与日常 优先处理会话、场景和邮件表达。 可选重点 最多 3 个 发音矫正 核心词汇 阅读提升 听力精听 口语自练 旅游出行 外企邮件 每天愿意投入多久？ 5 分钟 15 分钟 30 分钟 45 分钟 目标不需要一次选对，以后可以随时调整。 上一步 保存并开始测评 退出登录"
+      },
+      "requests": [
+        {
+          "phase": "adult-gate",
+          "method": "POST",
+          "path": "/api/v1/iam/adult-gate",
+          "status": 200,
+          "requestId": "req-c1dff776c76c42028e7feffe8d39ed4b",
+          "traceId": "74c49e8de2ae46299fa9c6d6454fba19"
+        }
+      ]
+    },
+    "goalSetup": {
+      "reachedAssessment": true,
+      "view": {
+        "url": "/assessment",
+        "title": "语学星",
+        "headings": [
+          "找到一个适合你的起点。",
+          "Choose the greeting.",
+          "搜索学习页面",
+          "我的学习空间",
+          "消息中心"
+        ],
+        "alerts": [],
+        "visibleText": "跳到学习内容 语学星 LEARN A LITTLE. EVERY DAY. 日常学习 学习首页 今日任务 内容书架 学习路径 专项练习 我的成长 学习世界 学习报告 错题本 掌握进度 计划地图 一点一点，学得更从容。 帮助与反馈 账户与偏好 我的学习空间 学习测评 想学什么？搜索页面 ⌘ K 我的学习空间 找到一个适合你的起点。 不必追求满分，按真实水平作答，帮助安排接下来的学习。 0/2 1/2 Choose the greeting. A Hello B Goodbye 提交答案 跳过测评，选择起点 © 2026 语学星 一点一点，学得更从容。 学习权益"
+      },
+      "requests": [
+        {
+          "phase": "goal-setup",
+          "method": "PUT",
+          "path": "/api/v1/iam/consents",
+          "status": 200,
+          "requestId": "req-fa9a9b92dab24cc59a26a761d4319f38",
+          "traceId": "8957c795dad74dcdacf101839e5d8642"
+        },
+        {
+          "phase": "goal-setup",
+          "method": "PUT",
+          "path": "/api/v1/iam/consents",
+          "status": 200,
+          "requestId": "req-ade48b55d4624bd38c14986faa64a6ff",
+          "traceId": "e611cea072ad429db9bde70b2f63c14d"
+        },
+        {
+          "phase": "goal-setup",
+          "method": "PUT",
+          "path": "/api/v1/iam/consents",
+          "status": 200,
+          "requestId": "req-ee9282cc0ef644318b060c08831c3b61",
+          "traceId": "a8237ff23cb04ed99447c98ae416e7e2"
+        },
+        {
+          "phase": "goal-setup",
+          "method": "POST",
+          "path": "/api/v1/auth/token/refresh",
+          "status": 200,
+          "requestId": "req-1f33d994b777439c80e59f7ed3feef0d",
+          "traceId": "6722cb609df14ca9916af100b4297d3c"
+        },
+        {
+          "phase": "goal-setup",
+          "method": "GET",
+          "path": "/api/v1/iam/permissions",
+          "status": 200,
+          "requestId": "req-75128b8709eb4717bd8bb943f07026d3",
+          "traceId": "9a6cbba2e93d4db1a8c8e14c53305683"
+        },
+        {
+          "phase": "goal-setup",
+          "method": "GET",
+          "path": "/api/v1/learner/targets",
+          "status": 404,
+          "requestId": "req-1360219214e741dfa6c4f99c174b4735",
+          "traceId": "67ae90d89f4c43a19c50777ea9fed50f"
+        },
+        {
+          "phase": "goal-setup",
+          "method": "GET",
+          "path": "/api/v1/learner/preferences",
+          "status": 200,
+          "requestId": "req-db591bfe9531400d9388900c91deba7e",
+          "traceId": "dc7b426fede34bd3a776350115a79716"
+        },
+        {
+          "phase": "goal-setup",
+          "method": "GET",
+          "path": "/api/v1/learner/profile",
+          "status": 200,
+          "requestId": "req-427b178aa1fd4d989fdf0406041e1324",
+          "traceId": "209845bba8ab431eba1862ef5c70e35d"
+        },
+        {
+          "phase": "goal-setup",
+          "method": "PATCH",
+          "path": "/api/v1/learner/profile",
+          "status": 200,
+          "requestId": "req-76444e2ccb174288b39cb9ded46e8f9b",
+          "traceId": "4598cf7c11ba4d039a417eefc0cb101f"
+        },
+        {
+          "phase": "goal-setup",
+          "method": "PUT",
+          "path": "/api/v1/learner/targets",
+          "status": 200,
+          "requestId": "req-332424d2b9e441d5888169d1bb32c880",
+          "traceId": "79d64abb435141e6b3d31aa4e3095ed5"
+        },
+        {
+          "phase": "goal-setup",
+          "method": "GET",
+          "path": "/api/v1/learner/profile",
+          "status": 200,
+          "requestId": "req-9276cdbcd8ec4ed5a8468ea972ee475b",
+          "traceId": "04598e6166964e17a98a154c5359cbc5"
+        },
+        {
+          "phase": "goal-setup",
+          "method": "GET",
+          "path": "/api/v1/learner/targets",
+          "status": 200,
+          "requestId": "req-0a99e5df065f4b37a4150c05faa81cf0",
+          "traceId": "afe34777301246b68adaff0d5d82830d"
+        },
+        {
+          "phase": "goal-setup",
+          "method": "GET",
+          "path": "/api/v1/learner/preferences",
+          "status": 200,
+          "requestId": "req-f687f6c5cdd944ccaf7eac12b0339b3c",
+          "traceId": "531e524abb5d4b02acf3077a42c5a6e3"
+        },
+        {
+          "phase": "goal-setup",
+          "method": "GET",
+          "path": "/api/v1/onboarding/options",
+          "status": 200,
+          "requestId": "req-c271914a3c59407ca4cd136ecd7346cb",
+          "traceId": "6299536c03de4f0c806b04fd6118c5f5"
+        },
+        {
+          "phase": "goal-setup",
+          "method": "GET",
+          "path": "/api/v1/assessment/placement/start",
+          "status": 200,
+          "requestId": "req-29523daf5df14792a1b15096bf5d2850",
+          "traceId": "138d9104d45f4cdbadfe2b1db88d2fdb"
+        },
+        {
+          "phase": "goal-setup",
+          "method": "POST",
+          "path": "/api/v1/assessment/placement/start",
+          "status": 200,
+          "requestId": "req-d7b9514478324664a520d46f6cad4442",
+          "traceId": "2b155877264a4eea8eb73ad3cdf80049"
+        }
+      ]
+    }
+  },
+  "reading": {},
+  "grammarSample": {},
+  "logout": {
+    "attempted": false,
+    "fallbackContextClose": "No normal UI logout button was available; context closure will clear browser-held session state."
+  },
+  "testError": "locator.waitFor: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('aside nav a').filter({ hasText: '分级阅读' }).first() to be visible\u001b[22m\n\u001b[2m    23 × locator resolved to hidden <a href=\"/reading\" class=\"nav-item\">…</a>\u001b[22m\n"
+}

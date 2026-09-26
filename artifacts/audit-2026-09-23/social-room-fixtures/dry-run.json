@@ -1,0 +1,429 @@
+{
+  "mode": "DRY_RUN_READ_ONLY",
+  "capturedAt": "2026-09-23T09:30:32.497999+00:00",
+  "scope": "local MySQL social_service; 100 visible platform fixture rooms and room-scoped rows",
+  "roomFamilies": {
+    "bulk100x": 89,
+    "local10x": 10,
+    "foundation": 1
+  },
+  "tables": {
+    "soc_study_room": {
+      "bulk100x": {
+        "count": 89,
+        "firstIndex": 12,
+        "lastIndex": 100,
+        "wrongTenantCount": 0,
+        "fullRowSha256": "e79d9b6b6520a0313e809c44f708424a7b5c4de7429cc46f18e95556f52bf165"
+      },
+      "local10x": {
+        "count": 10,
+        "wrongTenantCount": 0,
+        "fullRowSha256": "bcd5006b822d3facb4e2c089d4217f2c77c08e782b862af1887c244858a2b5e0"
+      },
+      "foundation": {
+        "count": 1,
+        "wrongTenantCount": 0,
+        "fullRowSha256": "e10b1e99c1c46a4357f47b46954d4e17939ccb4a30ea22cf620dd16431a43961"
+      }
+    },
+    "soc_room_member": {
+      "bulk100x": {
+        "count": 33,
+        "firstIndex": 68,
+        "lastIndex": 100,
+        "wrongTenantCount": 0,
+        "fullRowSha256": "4677a9a57ac96be95b2d08bdff1464cd455e0971cb5bcb367581116e98cedcd2"
+      },
+      "local10x": {
+        "count": 31,
+        "wrongTenantCount": 0,
+        "fullRowSha256": "5f2e57a5f03b129409ac2df62eb9434dcdb2692766fba830437898e12da1904b"
+      },
+      "foundation": {
+        "count": 37,
+        "wrongTenantCount": 0,
+        "fullRowSha256": "c46d7b8a534de844587f8eeed6647897a77b7b1a38ceb767c502c1d9a3202565"
+      }
+    },
+    "soc_seat_lease": {
+      "bulk100x": {
+        "count": 65,
+        "firstIndex": 36,
+        "lastIndex": 100,
+        "wrongTenantCount": 0,
+        "fullRowSha256": "73f54953ed4aae82071bc5e19dab06cf649c8658dff7f60bdf5d57616b7215ac"
+      },
+      "local10x": {
+        "count": 10,
+        "wrongTenantCount": 0,
+        "fullRowSha256": "efd6f6649dbbb86073af91492c5513b39370a4da03d11da0c3d2ccd841cad3da"
+      },
+      "foundation": {
+        "count": 25,
+        "wrongTenantCount": 0,
+        "fullRowSha256": "cdbc18155c1a260cb2d3665df5b2edecae3229f5c495f2974a8f634667831aa4"
+      }
+    },
+    "soc_focus_state": {
+      "bulk100x": {
+        "count": 31,
+        "firstIndex": 70,
+        "lastIndex": 100,
+        "wrongTenantCount": 0,
+        "fullRowSha256": "0ff72122b4e0c3e8c5cf640a09ec3cf3e85e28502d7a7d3099084c1852a20f87"
+      },
+      "local10x": {
+        "count": 34,
+        "wrongTenantCount": 0,
+        "fullRowSha256": "11e0fe038725c67ed4d5436bdf6cb4e22fa96f1cdc492b12d1f735a1410a9f15"
+      },
+      "foundation": {
+        "count": 35,
+        "wrongTenantCount": 0,
+        "fullRowSha256": "275e398d296e63c37627368742c361575bf90d2347d3afa7318d036fb5647835"
+      }
+    },
+    "soc_interaction": {
+      "bulk100x": {
+        "count": 84,
+        "firstIndex": 17,
+        "lastIndex": 100,
+        "wrongTenantCount": 0,
+        "fullRowSha256": "f77c9908992e43cb2c396380b1712a29a70e361be49c44829fc6fd69c60984f9"
+      },
+      "local10x": {
+        "count": 10,
+        "wrongTenantCount": 0,
+        "fullRowSha256": "7dd5b0010926e9dacc41e10a280610edca4d53fac1604c8746d4e7b8c6be5d39"
+      },
+      "foundation": {
+        "count": 6,
+        "wrongTenantCount": 0,
+        "fullRowSha256": "d9f09f78f9eb47ebc8e550b9e35f8a472f1c5caf81172306dff3f448e9c7705a"
+      }
+    },
+    "soc_report": {
+      "bulk100x": {
+        "count": 71,
+        "firstIndex": 30,
+        "lastIndex": 100,
+        "wrongTenantCount": 0,
+        "fullRowSha256": "fb9bcdb608b4a31cca39a91a4bbd9e98da95ee9a52700471200dc072494f2410"
+      },
+      "local10x": {
+        "count": 10,
+        "wrongTenantCount": 0,
+        "fullRowSha256": "2b1de1c04bfb2492d41be7c85274baafa433cc86a77699478816c10e9a64c972"
+      },
+      "foundation": {
+        "count": 19,
+        "wrongTenantCount": 0,
+        "fullRowSha256": "981080fff31e69fa4c4e82df15f9d4a78de8565cd5d6eedd5a575ee87f33d71f"
+      }
+    }
+  },
+  "directChildrenOfVisibleRooms": {
+    "soc_room_member": {
+      "bulk100x": 0,
+      "local10x": 31,
+      "foundation": 37
+    },
+    "soc_seat_lease": {
+      "bulk100x": 0,
+      "local10x": 10,
+      "foundation": 25
+    },
+    "soc_focus_state": {
+      "bulk100x": 0,
+      "local10x": 34,
+      "foundation": 35
+    },
+    "soc_interaction": {
+      "bulk100x": 0,
+      "local10x": 10,
+      "foundation": 6
+    },
+    "soc_report": {
+      "bulk100x": 0,
+      "local10x": 10,
+      "foundation": 19
+    }
+  },
+  "orphanedBulkChildRows": {
+    "soc_room_member": 33,
+    "soc_seat_lease": 65,
+    "soc_focus_state": 31,
+    "soc_interaction": 84,
+    "soc_report": 71
+  },
+  "subjectReferences": [
+    {
+      "family": "bulk100x",
+      "role_name": "focus",
+      "references_count": 31,
+      "unique_subjects": 31,
+      "invalid_accounts": 28,
+      "other_accounts": 0,
+      "missing_accounts": 3,
+      "principals": 31,
+      "other_tenant_principals": 0
+    },
+    {
+      "family": "bulk100x",
+      "role_name": "interaction_sender",
+      "references_count": 84,
+      "unique_subjects": 84,
+      "invalid_accounts": 0,
+      "other_accounts": 0,
+      "missing_accounts": 84,
+      "principals": 0,
+      "other_tenant_principals": 0
+    },
+    {
+      "family": "bulk100x",
+      "role_name": "interaction_target",
+      "references_count": 84,
+      "unique_subjects": 84,
+      "invalid_accounts": 0,
+      "other_accounts": 0,
+      "missing_accounts": 84,
+      "principals": 0,
+      "other_tenant_principals": 0
+    },
+    {
+      "family": "bulk100x",
+      "role_name": "member",
+      "references_count": 33,
+      "unique_subjects": 33,
+      "invalid_accounts": 30,
+      "other_accounts": 0,
+      "missing_accounts": 3,
+      "principals": 33,
+      "other_tenant_principals": 0
+    },
+    {
+      "family": "bulk100x",
+      "role_name": "report_reporter",
+      "references_count": 71,
+      "unique_subjects": 71,
+      "invalid_accounts": 0,
+      "other_accounts": 0,
+      "missing_accounts": 71,
+      "principals": 0,
+      "other_tenant_principals": 0
+    },
+    {
+      "family": "bulk100x",
+      "role_name": "report_target",
+      "references_count": 71,
+      "unique_subjects": 71,
+      "invalid_accounts": 0,
+      "other_accounts": 0,
+      "missing_accounts": 71,
+      "principals": 0,
+      "other_tenant_principals": 0
+    },
+    {
+      "family": "bulk100x",
+      "role_name": "room_owner",
+      "references_count": 89,
+      "unique_subjects": 89,
+      "invalid_accounts": 80,
+      "other_accounts": 0,
+      "missing_accounts": 9,
+      "principals": 89,
+      "other_tenant_principals": 0
+    },
+    {
+      "family": "bulk100x",
+      "role_name": "seat",
+      "references_count": 65,
+      "unique_subjects": 65,
+      "invalid_accounts": 56,
+      "other_accounts": 0,
+      "missing_accounts": 9,
+      "principals": 65,
+      "other_tenant_principals": 0
+    },
+    {
+      "family": "foundation",
+      "role_name": "focus",
+      "references_count": 35,
+      "unique_subjects": 35,
+      "invalid_accounts": 29,
+      "other_accounts": 0,
+      "missing_accounts": 6,
+      "principals": 29,
+      "other_tenant_principals": 0
+    },
+    {
+      "family": "foundation",
+      "role_name": "interaction_sender",
+      "references_count": 6,
+      "unique_subjects": 6,
+      "invalid_accounts": 0,
+      "other_accounts": 0,
+      "missing_accounts": 6,
+      "principals": 0,
+      "other_tenant_principals": 0
+    },
+    {
+      "family": "foundation",
+      "role_name": "member",
+      "references_count": 37,
+      "unique_subjects": 37,
+      "invalid_accounts": 31,
+      "other_accounts": 0,
+      "missing_accounts": 6,
+      "principals": 31,
+      "other_tenant_principals": 0
+    },
+    {
+      "family": "foundation",
+      "role_name": "report_reporter",
+      "references_count": 19,
+      "unique_subjects": 19,
+      "invalid_accounts": 13,
+      "other_accounts": 0,
+      "missing_accounts": 6,
+      "principals": 13,
+      "other_tenant_principals": 0
+    },
+    {
+      "family": "foundation",
+      "role_name": "report_target",
+      "references_count": 19,
+      "unique_subjects": 2,
+      "invalid_accounts": 0,
+      "other_accounts": 0,
+      "missing_accounts": 19,
+      "principals": 0,
+      "other_tenant_principals": 0
+    },
+    {
+      "family": "foundation",
+      "role_name": "room_owner",
+      "references_count": 1,
+      "unique_subjects": 1,
+      "invalid_accounts": 0,
+      "other_accounts": 0,
+      "missing_accounts": 1,
+      "principals": 0,
+      "other_tenant_principals": 0
+    },
+    {
+      "family": "foundation",
+      "role_name": "seat",
+      "references_count": 1,
+      "unique_subjects": 1,
+      "invalid_accounts": 0,
+      "other_accounts": 0,
+      "missing_accounts": 1,
+      "principals": 0,
+      "other_tenant_principals": 0
+    },
+    {
+      "family": "local10x",
+      "role_name": "focus",
+      "references_count": 34,
+      "unique_subjects": 11,
+      "invalid_accounts": 34,
+      "other_accounts": 0,
+      "missing_accounts": 0,
+      "principals": 34,
+      "other_tenant_principals": 0
+    },
+    {
+      "family": "local10x",
+      "role_name": "interaction_sender",
+      "references_count": 10,
+      "unique_subjects": 10,
+      "invalid_accounts": 10,
+      "other_accounts": 0,
+      "missing_accounts": 0,
+      "principals": 10,
+      "other_tenant_principals": 0
+    },
+    {
+      "family": "local10x",
+      "role_name": "interaction_target",
+      "references_count": 10,
+      "unique_subjects": 9,
+      "invalid_accounts": 10,
+      "other_accounts": 0,
+      "missing_accounts": 0,
+      "principals": 10,
+      "other_tenant_principals": 0
+    },
+    {
+      "family": "local10x",
+      "role_name": "member",
+      "references_count": 31,
+      "unique_subjects": 28,
+      "invalid_accounts": 31,
+      "other_accounts": 0,
+      "missing_accounts": 0,
+      "principals": 31,
+      "other_tenant_principals": 0
+    },
+    {
+      "family": "local10x",
+      "role_name": "report_reporter",
+      "references_count": 10,
+      "unique_subjects": 10,
+      "invalid_accounts": 10,
+      "other_accounts": 0,
+      "missing_accounts": 0,
+      "principals": 10,
+      "other_tenant_principals": 0
+    },
+    {
+      "family": "local10x",
+      "role_name": "report_target",
+      "references_count": 10,
+      "unique_subjects": 9,
+      "invalid_accounts": 10,
+      "other_accounts": 0,
+      "missing_accounts": 0,
+      "principals": 10,
+      "other_tenant_principals": 0
+    },
+    {
+      "family": "local10x",
+      "role_name": "room_owner",
+      "references_count": 10,
+      "unique_subjects": 10,
+      "invalid_accounts": 10,
+      "other_accounts": 0,
+      "missing_accounts": 0,
+      "principals": 10,
+      "other_tenant_principals": 0
+    }
+  ],
+  "roomOwnersWithoutIamAccount": {
+    "bulk100x": 9,
+    "foundation": 1,
+    "local10x": 0
+  },
+  "crossSchemaStructuredRoomReferences": [],
+  "jsonColumnsScanned": 232,
+  "jsonRoomReferences": [],
+  "foreignKeyConsumers": 0,
+  "auxiliaryFixtureRows": {
+    "bulkIdempotencyRecords": 100,
+    "bulkTrustedEventDedupes": 100,
+    "local10xIdempotencyRecords": 0,
+    "local10xTrustedEventDedupes": 0,
+    "idempotencyResponsesNamingActualRooms": 0,
+    "local10xLeaderboardRows": 10,
+    "foundationLeaderboardRows": 371
+  },
+  "reviewNeeded": [
+    "9 bulk room owners have no IAM account; verify provenance before applying",
+    "foundation has additional UAT member/focus/interaction/report facts; preserve every row in rollback backup",
+    "bulk-100x writer was not found in the repository; check external seed jobs before migration",
+    "local-10x and foundation seed commands still upsert platform rooms; guard them before applying"
+  ],
+  "blockers": []
+}

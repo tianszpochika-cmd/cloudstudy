@@ -1,5 +1,5 @@
 import { experiencePerformance } from '../platform/experience-ui'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { defineStore } from 'pinia'
 import { type PerformanceLevel, type PerformanceStrategy } from '@englishflow/performance'
 import {
@@ -44,6 +44,7 @@ import {
   updateB4OfflineDownload,
   updateB4Focus,
 } from '../api/b4'
+import type { UpdateNotificationPreferenceInput } from '../api/notifications'
 import { ApiError } from '../api/client'
 import {
   B4_PERFORMANCE_LEVELS,
@@ -89,6 +90,7 @@ import {
   type B4SyncEvent,
 } from '../domain/b4'
 import { createB4OfflineQueue, isB4NetworkAvailable } from '../platform/b4-offline'
+import { useSessionStore } from './session'
 
 const GAME_CODES: readonly B4GameCode[] = ['SENTENCE_TRAIN', 'WORD_MATCH', 'WORD_DEFENSE', 'WORD_PUZZLE', 'GRAMMAR_BLASTER', 'CATCH_MEANING']
 
@@ -248,9 +250,10 @@ function parseNotification(value: Record<string, unknown>): B4Notification | nul
 }
 
 function parsePreferences(value: unknown): B4NotificationPreferences | null {
-  const source = recordValue(unwrapB4(value), 'preferences') ?? unwrapB4(value)
-  if (!isRecord(source)) return null
-  return { roomInteractions: source.roomInteractions !== false, focusReminders: source.focusReminders !== false, system: source.system !== false, doNotDisturb: source.doNotDisturb === true, version: numberValue(source.version) ?? 0 }
+  const source = unwrapB4(value)
+  if (Array.isArray(source)) return source as B4NotificationPreferences
+  if (isRecord(source) && Array.isArray(source.data)) return source.data as B4NotificationPreferences
+  return null
 }
 
 function identifier(value: unknown): string | null { return stringValue(value) ?? (typeof value === 'number' && Number.isFinite(value) ? String(value) : null) }
@@ -328,6 +331,11 @@ function messageFor(error: unknown, fallback: string): string {
 }
 
 export const useB4Store = defineStore('b4', () => {
+  const session = useSessionStore()
+  const verifiedSubject = computed(() => {
+    const subject = session.principal?.subject?.trim()
+    return session.accessToken && subject && (!session.userId || session.userId === subject) ? subject : null
+  })
   const engine = experiencePerformance
   const performanceLevel = ref<B4PerformanceLevel>(engine.level)
   const performanceStrategy = ref<PerformanceStrategy>(engine.state.strategy)
@@ -359,37 +367,94 @@ export const useB4Store = defineStore('b4', () => {
   const actionKey = ref<string | null>(null)
   const featureFlags = ref<Record<string, boolean>>({})
   const offline = createB4OfflineQueue()
+  offline.bindSubject(verifiedSubject.value)
   const offlineRecords = ref(offline.records.slice())
-  const queueCount = computed(() => offlineRecords.value.length)
+  const queueCount = computed(() => currentOwner() ? offlineRecords.value.length : 0)
   const effectiveAvatarRenderMode = computed<'3D' | '2D_FALLBACK'>(() => performanceLevel.value === 'Performance' ? '2D_FALLBACK' : avatarProfile.value?.renderMode ?? '2D_FALLBACK')
   const unsubscribe = engine.subscribe((state) => { performanceLevel.value = state.level; performanceStrategy.value = state.strategy })
+  type Owner = { subject: string; generation: number }
+  const staleIdentity = Symbol('B4_STALE_IDENTITY')
+  let activeGeneration = session.authGeneration
+  let worldRequest = 0
+  function currentOwner(): Owner | null {
+    const subject = verifiedSubject.value
+    return subject && session.status === 'authenticated' && session.authGeneration === activeGeneration && offline.subject === subject
+      ? { subject, generation: session.authGeneration } : null
+  }
+  function sameOwner(owner: Owner | null): boolean {
+    const current = currentOwner()
+    return Boolean(owner && current && owner.subject === current.subject && owner.generation === current.generation)
+  }
+  async function owned<T>(request: () => Promise<T>, owner = currentOwner()): Promise<T> {
+    if (!sameOwner(owner)) throw staleIdentity
+    try { const result = await request(); if (!sameOwner(owner)) throw staleIdentity; return result }
+    catch (error) { if (!sameOwner(owner)) throw staleIdentity; throw error }
+  }
+  function resetPersonal(): void {
+    worldRequest += 1
+    profile.value = null; galaxy.value = null; streak.value = null; quests.value = []; season.value = null
+    avatarProfile.value = null; avatarItems.value = []; loadouts.value = []; avatarResources.value = null
+    games.value = []; activeGame.value = null; lastGameResult.value = null
+    rooms.value = []; activeFocus.value = null; notifications.value = []; notificationPreferences.value = null
+    offlinePackages.value = []; chests.value = []; chestProbability.value = null; lastChestResult.value = null
+    leaderboard.value = null; lastModerationReport.value = null; actionKey.value = null; featureFlags.value = {}
+    status.value = 'idle'; online.value = isB4NetworkAvailable(); lastError.value = null
+    refreshQueue()
+  }
+  watch([verifiedSubject, () => session.authGeneration], ([subject, generation], [previousSubject, previousGeneration]) => {
+    if (subject === previousSubject && generation === previousGeneration) return
+    activeGeneration = generation
+    // An auth generation change invalidates the old queue even if a subject value has not cleared yet.
+    offline.bindSubject(generation === previousGeneration ? subject : null)
+    resetPersonal()
+  }, { flush: 'sync' })
 
   if (typeof window !== 'undefined') {
-    window.addEventListener('online', () => { online.value = true; if (status.value === 'offline') lastError.value = '网络已恢复；待同步操作仍需服务端确认。' })
-    window.addEventListener('offline', () => { online.value = false; status.value = 'offline'; lastError.value = '当前处于离线状态；待同步操作会保留在本机，不会显示为已完成。' })
+    window.addEventListener('online', () => { online.value = true; if (currentOwner() && status.value === 'offline') lastError.value = '网络已恢复；待同步操作仍需服务端确认。' })
+    window.addEventListener('offline', () => { online.value = false; if (currentOwner()) { status.value = 'offline'; lastError.value = '当前处于离线状态；待同步操作会保留在本机，不会显示为已完成。' } })
   }
 
   function refreshQueue(): void { offlineRecords.value = offline.records.slice() }
   function setPerformance(level: B4PerformanceLevel): void { engine.setLevel(level, 'manual') }
   function captureError(error: unknown, fallback: string): void {
+    if (error === staleIdentity) return
     if (isOfflineError(error)) online.value = false
     const httpStatus = error instanceof ApiError ? error.status : 0
     status.value = isOfflineError(error) ? 'offline' : httpStatus === 403 ? 'permission' : httpStatus === 409 ? 'recovery' : 'error'
     lastError.value = messageFor(error, fallback)
   }
   async function guardedAction<T>(key: string, action: () => Promise<T>): Promise<T | undefined> {
-    if (actionKey.value) return undefined
+    const owner = currentOwner()
+    if (!owner || actionKey.value) return undefined
     actionKey.value = key
-    try { return await action() } finally { actionKey.value = null }
+    try { return await action() } finally { if (session.authGeneration === owner.generation && verifiedSubject.value === owner.subject && actionKey.value === key) actionKey.value = null }
   }
   function restore(): void { engine.restore() }
 
   async function loadWorld(): Promise<void> {
+    const owner = currentOwner()
+    if (!owner) return
+    const request = ++worldRequest
     status.value = 'loading'
     lastError.value = null
     const results = await Promise.allSettled([
       getB4Profile(), getB4Streak(), listB4Quests(), getB4Season(), getB4AvatarProfile(), listB4AvatarItems(), listB4Loadouts(), getB4AvatarResources(), listB4Games(), listB4Rooms(), listB4Notifications(), getB4NotificationPreferences(), listB4OfflinePackages(),
     ])
+    if (!sameOwner(owner) || request !== worldRequest) return
+    const rejected = results.filter((result): result is PromiseRejectedResult => result.status === 'rejected')
+    const denied = rejected.find((result) => result.reason instanceof ApiError && [401, 403].includes(result.reason.status))
+    if (denied) {
+      resetPersonal()
+      online.value = true
+      status.value = 'permission'
+      lastError.value = '当前没有读取学习世界的权限。'
+      return
+    }
+    if (rejected.length === results.length) {
+      resetPersonal()
+      captureError(rejected[0].reason, '学习世界暂时无法读取。')
+      return
+    }
     const value = (index: number, fallback: unknown): unknown => results[index]?.status === 'fulfilled' ? results[index].value : fallback
     const profileRaw = value(0, null)
     profile.value = parseProfile(profileRaw)
@@ -411,7 +476,7 @@ export const useB4Store = defineStore('b4', () => {
     featureFlags.value = flags ? Object.fromEntries(Object.entries(flags).filter(([, item]) => typeof item === 'boolean').map(([key, item]) => [key, item as boolean])) : {}
     online.value = true
     status.value = 'ready'
-    lastError.value = results.some((result) => result.status === 'rejected')
+    lastError.value = rejected.length
       ? '部分内容暂时未能加载，已显示当前可用的内容。'
       : null
     refreshQueue()
@@ -420,7 +485,7 @@ export const useB4Store = defineStore('b4', () => {
   async function loadChests(): Promise<void> {
     await guardedAction('chests.load', async () => {
       try {
-        chests.value = recordList(await listB4Chests()).map(parseChest).filter((item): item is B4RewardChest => Boolean(item))
+        chests.value = recordList(await owned(() => listB4Chests())).map(parseChest).filter((item): item is B4RewardChest => Boolean(item))
         status.value = chests.value.length ? 'ready' : 'empty'
         lastError.value = chests.value.length ? null : '服务端当前没有待开启奖励箱。'
       } catch (error) { captureError(error, '奖励箱读取失败，未使用本地奖励数据。') }
@@ -431,7 +496,7 @@ export const useB4Store = defineStore('b4', () => {
     if (!chestGrantId.trim()) return
     await guardedAction(`chest.probability.${chestGrantId}`, async () => {
       try {
-        chestProbability.value = parseChestProbability(await getB4ChestProbability(chestGrantId))
+        chestProbability.value = parseChestProbability(await owned(() => getB4ChestProbability(chestGrantId)))
         status.value = chestProbability.value ? 'ready' : 'error'
         lastError.value = chestProbability.value ? null : '服务端未返回概率快照。'
       } catch (error) { captureError(error, '奖励概率读取失败；未进行客户端抽取。') }
@@ -442,7 +507,7 @@ export const useB4Store = defineStore('b4', () => {
     if (!chestGrantId.trim()) return
     await guardedAction(`chest.open.${chestGrantId}`, async () => {
       try {
-        const result = parseChestOpen(await openB4Chest(chestGrantId))
+        const result = parseChestOpen(await owned(() => openB4Chest(chestGrantId)))
         if (!result) { status.value = 'error'; lastError.value = '服务端未返回奖励箱开启结果。'; return }
         lastChestResult.value = result
         chests.value = chests.value.map((item) => item.chestGrantId === chestGrantId && result.opened ? { ...item, status: 'OPENED', tierCode: result.tierCode, itemCode: result.itemCode, duplicateConverted: result.duplicateConverted, shardAmount: result.shardAmount, auditId: result.auditId, probabilityVersion: result.probabilityVersion } : item)
@@ -456,7 +521,7 @@ export const useB4Store = defineStore('b4', () => {
     if (!roomId.trim()) return
     await guardedAction(`leaderboard.${roomId}`, async () => {
       try {
-        leaderboard.value = parseLeaderboard(await getB4SocialLeaderboard(roomId))
+        leaderboard.value = parseLeaderboard(await owned(() => getB4SocialLeaderboard(roomId)))
         status.value = leaderboard.value?.items.length ? 'ready' : 'empty'
         lastError.value = leaderboard.value ? (leaderboard.value.items.length ? null : '当前房间暂无可展示的专注快照。') : '服务端未返回排行榜快照。'
       } catch (error) { captureError(error, '排行榜读取失败；未在本地计算或修改排名。') }
@@ -467,7 +532,7 @@ export const useB4Store = defineStore('b4', () => {
     if (!B4_REPORT_REASONS.includes(reasonCode) || !targetUserId.trim() || targetUserId === profile.value?.userId) { lastError.value = '举报对象或预设原因无效；未提交请求。'; return }
     await guardedAction(`report.${targetUserId}.${reasonCode}`, async () => {
       try {
-        const receipt = parseModerationReceipt(await createB4ModerationReport(reasonCode, targetUserId, roomId))
+        const receipt = parseModerationReceipt(await owned(() => createB4ModerationReport(reasonCode, targetUserId, roomId)))
         lastModerationReport.value = receipt
         status.value = receipt ? 'success' : 'error'
         lastError.value = receipt ? '举报已进入服务端审核队列。' : '服务端未返回举报回执。'
@@ -476,20 +541,20 @@ export const useB4Store = defineStore('b4', () => {
   }
 
   async function saveStreakSettings(timeZone: string, weekendProtectionEnabled: boolean): Promise<void> {
-    try { streak.value = parseStreak(await saveB4StreakSettings(timeZone, weekendProtectionEnabled)); status.value = 'ready'; lastError.value = 'Streak 设置已由服务端返回确认。' } catch (error) { captureError(error, 'Streak 设置保存失败，当前变更未标记为已同步。') }
+    try { streak.value = parseStreak(await owned(() => saveB4StreakSettings(timeZone, weekendProtectionEnabled))); status.value = 'ready'; lastError.value = 'Streak 设置已由服务端返回确认。' } catch (error) { captureError(error, 'Streak 设置保存失败，当前变更未标记为已同步。') }
   }
 
   async function rescueStreak(method: 'CARD' | 'CHALLENGE'): Promise<void> {
-    try { streak.value = parseStreak(await rescueB4Streak(method)); status.value = 'ready'; lastError.value = '破冰请求已由服务端返回结果。' } catch (error) { captureError(error, '破冰请求失败，Streak 状态未在本地自行修改。') }
+    try { streak.value = parseStreak(await owned(() => rescueB4Streak(method))); status.value = 'ready'; lastError.value = '破冰请求已由服务端返回结果。' } catch (error) { captureError(error, '破冰请求失败，Streak 状态未在本地自行修改。') }
   }
 
   async function saveAvatarProfile(renderMode: '3D' | '2D_FALLBACK', resourceVersion?: string): Promise<void> {
-    try { avatarProfile.value = parseAvatarProfile(await saveB4AvatarProfile(renderMode, resourceVersion)); status.value = avatarProfile.value ? 'ready' : 'error'; lastError.value = avatarProfile.value ? 'Avatar 渲染模式已由服务端返回确认。' : '服务端未返回 Avatar 配置。' } catch (error) { captureError(error, 'Avatar 渲染模式保存失败，未在本地标记为已同步。') }
+    try { avatarProfile.value = parseAvatarProfile(await owned(() => saveB4AvatarProfile(renderMode, resourceVersion))); status.value = avatarProfile.value ? 'ready' : 'error'; lastError.value = avatarProfile.value ? 'Avatar 渲染模式已由服务端返回确认。' : '服务端未返回 Avatar 配置。' } catch (error) { captureError(error, 'Avatar 渲染模式保存失败，未在本地标记为已同步。') }
   }
 
   async function equipLoadout(loadoutId: string): Promise<void> {
     try {
-      const source = unwrapB4(await equipB4Loadout(loadoutId))
+      const source = unwrapB4(await owned(() => equipB4Loadout(loadoutId)))
       if (isRecord(source) && source.equipped === true) {
         loadouts.value = loadouts.value.map((item) => ({ ...item, equipped: item.loadoutId === loadoutId }))
         if (avatarProfile.value) avatarProfile.value = { ...avatarProfile.value, loadoutId }
@@ -500,12 +565,12 @@ export const useB4Store = defineStore('b4', () => {
 
   async function startGame(code: B4GameCode): Promise<void> {
     lastGameResult.value = null
-    try { activeGame.value = parseGameSession(await createB4GameSession(code, performanceLevel.value)); status.value = activeGame.value ? 'ready' : 'error'; lastError.value = activeGame.value ? null : '服务端未返回游戏会话，无法开始。' } catch (error) { captureError(error, '游戏会话创建失败，未生成本地伪造会话。') }
+    try { activeGame.value = parseGameSession(await owned(() => createB4GameSession(code, performanceLevel.value))); status.value = activeGame.value ? 'ready' : 'error'; lastError.value = activeGame.value ? null : '服务端未返回游戏会话，无法开始。' } catch (error) { captureError(error, '游戏会话创建失败，未生成本地伪造会话。') }
   }
 
   async function refreshGame(): Promise<void> {
     if (!activeGame.value) return
-    try { activeGame.value = parseGameSession(await getB4GameSession(activeGame.value.sessionId)); status.value = 'ready' } catch (error) { captureError(error, '游戏会话刷新失败，当前回合未标记为已同步。') }
+    try { activeGame.value = parseGameSession(await owned(() => getB4GameSession(activeGame.value!.sessionId))); status.value = 'ready' } catch (error) { captureError(error, '游戏会话刷新失败，当前回合未标记为已同步。') }
   }
 
   async function submitGameEvent(responseToken: string, itemCode?: string): Promise<void> {
@@ -514,36 +579,38 @@ export const useB4Store = defineStore('b4', () => {
     const challenge = activeGame.value.challenges.find((item) => item.roundNo === activeGame.value!.attemptCount + 1)
     const resolvedItemCode = itemCode?.trim() || challenge?.itemCode
     if (!resolvedItemCode) { lastError.value = '当前回合没有服务端 itemCode；未提交不完整答案。'; return }
-    try { activeGame.value = parseGameSession(await submitB4GameEvent(activeGame.value.sessionId, activeGame.value.seq + 1, responseToken.trim(), resolvedItemCode)) ?? activeGame.value; status.value = 'ready'; lastError.value = '本回合已收到服务端响应。' } catch (error) { captureError(error, '游戏回合提交失败；答案没有被标记为已完成。') }
+    try { activeGame.value = parseGameSession(await owned(() => submitB4GameEvent(activeGame.value!.sessionId, activeGame.value!.seq + 1, responseToken.trim(), resolvedItemCode))) ?? activeGame.value; status.value = 'ready'; lastError.value = '本回合已收到服务端响应。' } catch (error) { captureError(error, '游戏回合提交失败；答案没有被标记为已完成。') }
   }
 
-  async function pauseGame(): Promise<void> { if (!activeGame.value) return; try { activeGame.value = parseGameSession(await pauseB4GameSession(activeGame.value.sessionId)) ?? activeGame.value; status.value = 'ready'; lastError.value = '暂停状态已由服务端返回确认。' } catch (error) { captureError(error, '游戏暂停未获服务端确认。') } }
-  async function resumeGame(): Promise<void> { if (!activeGame.value) return; try { activeGame.value = parseGameSession(await resumeB4GameSession(activeGame.value.sessionId)) ?? activeGame.value; status.value = 'ready'; lastError.value = '恢复状态已由服务端返回确认。' } catch (error) { captureError(error, '游戏恢复未获服务端确认。') } }
-  async function finishGame(): Promise<void> { if (!activeGame.value) return; try { lastGameResult.value = parseGameFinish(await finishB4GameSession(activeGame.value.sessionId)); activeGame.value = null; status.value = 'ready'; lastError.value = lastGameResult.value ? '游戏结束结果已由服务端返回。' : '服务端未返回最终游戏结果。' } catch (error) { captureError(error, '游戏结束未获服务端确认，未显示为完成。') } }
+  async function pauseGame(): Promise<void> { if (!activeGame.value) return; try { activeGame.value = parseGameSession(await owned(() => pauseB4GameSession(activeGame.value!.sessionId))) ?? activeGame.value; status.value = 'ready'; lastError.value = '暂停状态已由服务端返回确认。' } catch (error) { captureError(error, '游戏暂停未获服务端确认。') } }
+  async function resumeGame(): Promise<void> { if (!activeGame.value) return; try { activeGame.value = parseGameSession(await owned(() => resumeB4GameSession(activeGame.value!.sessionId))) ?? activeGame.value; status.value = 'ready'; lastError.value = '恢复状态已由服务端返回确认。' } catch (error) { captureError(error, '游戏恢复未获服务端确认。') } }
+  async function finishGame(): Promise<void> { if (!activeGame.value) return; try { lastGameResult.value = parseGameFinish(await owned(() => finishB4GameSession(activeGame.value!.sessionId))); activeGame.value = null; status.value = 'ready'; lastError.value = lastGameResult.value ? '游戏结束结果已由服务端返回。' : '服务端未返回最终游戏结果。' } catch (error) { captureError(error, '游戏结束未获服务端确认，未显示为完成。') } }
 
-  async function joinRoom(roomId: string): Promise<void> { try { const result = await joinB4Room(roomId); const room = recordValue(unwrapB4(result), 'room'); const parsed = room ? parseRoom(room) : null; if (parsed) rooms.value = rooms.value.map((item) => item.roomId === parsed.roomId ? parsed : item); status.value = 'ready'; lastError.value = parsed ? '入室状态已由服务端返回确认。' : '服务端未返回入室快照。' } catch (error) { captureError(error, '加入自习室失败，未在本地伪造入室状态。') } }
-  async function leaveRoom(roomId: string): Promise<void> { try { await leaveB4Room(roomId); rooms.value = rooms.value.map((item) => item.roomId === roomId ? { ...item, joined: false } : item); activeFocus.value = activeFocus.value?.roomId === roomId ? null : activeFocus.value; status.value = 'ready'; lastError.value = '离室状态已由服务端返回确认。' } catch (error) { captureError(error, '离开自习室失败，当前成员状态未自行修改。') } }
-  async function startFocus(roomId: string, durationMinutes: 25 | 45 = 25): Promise<void> { try { activeFocus.value = parseFocus(await startB4Focus(roomId, durationMinutes)); status.value = activeFocus.value ? 'ready' : 'error'; lastError.value = activeFocus.value ? '番茄专注已由服务端建立。' : '服务端未返回专注会话。' } catch (error) { captureError(error, '番茄专注启动失败，未创建本地伪造 session。') } }
-  async function updateFocus(action: B4FocusAction): Promise<void> { if (!activeFocus.value) return; try { activeFocus.value = parseFocus(await updateB4Focus(activeFocus.value.roomId, activeFocus.value.sessionId, action)); status.value = 'ready'; lastError.value = '专注状态已由服务端返回确认。' } catch (error) { captureError(error, '专注状态更新失败；服务端未确认本次操作。') } }
+  async function joinRoom(roomId: string): Promise<void> { try { const result = await owned(() => joinB4Room(roomId)); const room = recordValue(unwrapB4(result), 'room'); const parsed = room ? parseRoom(room) : null; if (parsed) rooms.value = rooms.value.map((item) => item.roomId === parsed.roomId ? parsed : item); status.value = 'ready'; lastError.value = parsed ? '入室状态已由服务端返回确认。' : '服务端未返回入室快照。' } catch (error) { captureError(error, '加入自习室失败，未在本地伪造入室状态。') } }
+  async function leaveRoom(roomId: string): Promise<void> { try { await owned(() => leaveB4Room(roomId)); rooms.value = rooms.value.map((item) => item.roomId === roomId ? { ...item, joined: false } : item); activeFocus.value = activeFocus.value?.roomId === roomId ? null : activeFocus.value; status.value = 'ready'; lastError.value = '离室状态已由服务端返回确认。' } catch (error) { captureError(error, '离开自习室失败，当前成员状态未自行修改。') } }
+  async function startFocus(roomId: string, durationMinutes: 25 | 45 = 25): Promise<void> { try { activeFocus.value = parseFocus(await owned(() => startB4Focus(roomId, durationMinutes))); status.value = activeFocus.value ? 'ready' : 'error'; lastError.value = activeFocus.value ? '番茄专注已由服务端建立。' : '服务端未返回专注会话。' } catch (error) { captureError(error, '番茄专注启动失败，未创建本地伪造 session。') } }
+  async function updateFocus(action: B4FocusAction): Promise<void> { if (!activeFocus.value) return; try { activeFocus.value = parseFocus(await owned(() => updateB4Focus(activeFocus.value!.roomId, activeFocus.value!.sessionId, action))); status.value = 'ready'; lastError.value = '专注状态已由服务端返回确认。' } catch (error) { captureError(error, '专注状态更新失败；服务端未确认本次操作。') } }
 
   async function sendInteraction(roomId: string, interactionCode: B4InteractionCode): Promise<void> {
     await guardedAction(`interaction.${roomId}.${interactionCode}`, async () => {
-      try { await sendB4Interaction(roomId, interactionCode); status.value = 'ready'; lastError.value = '预设鼓励已收到服务端确认。' }
+      try { await owned(() => sendB4Interaction(roomId, interactionCode)); status.value = 'ready'; lastError.value = '预设鼓励已收到服务端确认。' }
       catch (error) {
         if (!isOfflineError(error)) { captureError(error, '预设互动发送失败，未显示为已发送。'); return }
         const event: B4SyncEvent = { clientEventId: createB4ClientEventId('b4-interaction'), eventType: 'social.interaction.sent.v1', occurredAt: new Date().toISOString(), entityId: roomId, entityVersion: 0, payload: { roomId, interactionCode } }
-        offline.enqueue(event); refreshQueue(); online.value = false; status.value = 'offline'; lastError.value = '网络不可用；预设互动已进入待同步队列，服务端确认前不会显示为已发送。'
+        const saved = offline.enqueue(event)
+        refreshQueue(); online.value = false; status.value = 'offline'
+        lastError.value = saved ? '网络不可用，互动待同步。' : '离线保存失败，请重试。'
       }
     })
   }
 
-  async function readNotification(messageId: string): Promise<void> { await guardedAction(`notification.read.${messageId}`, async () => { try { await readB4Notification(messageId); notifications.value = notifications.value.map((item) => item.messageId === messageId ? { ...item, read: true } : item); status.value = 'ready' } catch (error) { captureError(error, '通知已读状态未获服务端确认。') } }) }
-  async function readAllNotifications(): Promise<void> { await guardedAction('notification.read-all', async () => { try { await readAllB4Notifications(); notifications.value = notifications.value.map((item) => ({ ...item, read: true })); status.value = 'ready'; lastError.value = '全部已读状态已由服务端确认。' } catch (error) { captureError(error, '全部已读操作未获服务端确认。') } }) }
-  async function saveNotificationPreferences(preferences: Record<string, boolean>): Promise<void> { await guardedAction('notification.preferences', async () => { try { notificationPreferences.value = parsePreferences(await saveB4NotificationPreferences(preferences)); status.value = 'success'; lastError.value = '通知偏好已由服务端返回确认。' } catch (error) { captureError(error, '通知偏好保存失败，当前变更未标记为已同步。') } }) }
+  async function readNotification(messageId: string): Promise<void> { await guardedAction(`notification.read.${messageId}`, async () => { try { await owned(() => readB4Notification(messageId)); notifications.value = notifications.value.map((item) => item.messageId === messageId ? { ...item, read: true } : item); status.value = 'ready' } catch (error) { captureError(error, '通知已读状态未获服务端确认。') } }) }
+  async function readAllNotifications(): Promise<void> { await guardedAction('notification.read-all', async () => { try { await owned(() => readAllB4Notifications()); notifications.value = notifications.value.map((item) => ({ ...item, read: true })); status.value = 'ready'; lastError.value = '全部已读状态已由服务端确认。' } catch (error) { captureError(error, '全部已读操作未获服务端确认。') } }) }
+  async function saveNotificationPreference(input: UpdateNotificationPreferenceInput): Promise<void> { await guardedAction(`notification.preference.${input.category}.${input.channel}`, async () => { try { const updated = await owned(() => saveB4NotificationPreferences(input)); const current = notificationPreferences.value ?? []; notificationPreferences.value = [...current.filter((item) => item.category !== updated.category || item.channel !== updated.channel), updated]; status.value = 'success'; lastError.value = '通知偏好已保存。' } catch (error) { captureError(error, '通知偏好保存失败。') } }) }
 
   async function authorizeOfflinePackage(packageId: string): Promise<void> {
     try {
-      const authorized = parseOfflineAuthorization(await authorizeB4OfflinePackage(packageId))
+      const authorized = parseOfflineAuthorization(await owned(() => authorizeB4OfflinePackage(packageId)))
       if (authorized) offlinePackages.value = offlinePackages.value.map((item) => item.packageId === authorized.packageId ? authorized : item)
       status.value = 'ready'; lastError.value = authorized ? '离线包授权状态已由服务端确认；资源传输仍以清单和校验结果为准。' : '服务端未返回离线包授权状态。'
     } catch (error) { captureError(error, '离线包授权失败，未显示为已下载。') }
@@ -551,35 +618,42 @@ export const useB4Store = defineStore('b4', () => {
 
   async function updateOfflineDownload(downloadId: string, action: 'PAUSE' | 'RESUME' | 'PART_RECEIVED', partIndex?: number, etag?: string): Promise<void> {
     try {
-      const source = recordValue(unwrapB4(await updateB4OfflineDownload(downloadId, action, partIndex, etag)), 'download')
+      const source = recordValue(unwrapB4(await owned(() => updateB4OfflineDownload(downloadId, action, partIndex, etag))), 'download')
       if (source) offlinePackages.value = offlinePackages.value.map((item) => item.downloadId === downloadId ? parseOfflinePackage({ ...item, ...source }) ?? item : item)
       status.value = 'ready'; lastError.value = '离线包下载状态已由服务端确认。'
     } catch (error) { captureError(error, '离线包下载状态更新失败，未在本地标记为成功。') }
   }
 
   async function cleanupOfflineDownload(downloadId: string): Promise<void> {
-    try { await cleanupB4OfflineDownload(downloadId); offlinePackages.value = offlinePackages.value.map((item) => item.downloadId === downloadId ? { ...item, downloadState: 'CLEANED', completedPartCount: 0, downloadedBytes: 0 } : item); status.value = 'ready'; lastError.value = '离线包临时分片已由服务端确认清理。' } catch (error) { captureError(error, '离线包清理失败，未在本地删除未确认资源。') }
+    try { await owned(() => cleanupB4OfflineDownload(downloadId)); offlinePackages.value = offlinePackages.value.map((item) => item.downloadId === downloadId ? { ...item, downloadState: 'CLEANED', completedPartCount: 0, downloadedBytes: 0 } : item); status.value = 'ready'; lastError.value = '离线包临时分片已由服务端确认清理。' } catch (error) { captureError(error, '离线包清理失败，未在本地删除未确认资源。') }
   }
 
   async function syncOffline(): Promise<void> {
+    const owner = currentOwner()
+    if (!owner) return
     const pending = offline.records.filter((item) => item.status === 'PENDING' || item.status === 'FAILED')
     if (!pending.length) { lastError.value = '当前没有待同步的 B4 客户端事件。'; return }
     if (!isB4NetworkAvailable()) { online.value = false; status.value = 'offline'; lastError.value = '网络不可用，待同步队列仍保留。'; return }
     pending.forEach((item) => offline.markSyncing(item.id)); refreshQueue()
     try {
-      const result = unwrapB4(await pushB4SyncEvents(pending.map((item) => item.event)))
+      const result = unwrapB4(await owned(() => pushB4SyncEvents(pending.map((item) => item.event)), owner))
       const accepted = isRecord(result) && result.accepted === true
       const acceptedIds = isRecord(result) && Array.isArray(result.acceptedEventIds) ? result.acceptedEventIds.filter((item): item is string => typeof item === 'string') : accepted ? pending.map((item) => item.id) : []
       if (acceptedIds.length) offline.remove(acceptedIds)
       pending.filter((item) => !acceptedIds.includes(item.id)).forEach((item) => offline.markFailed(item.id, '服务端未接受该事件，等待下一次重试。'))
       refreshQueue(); online.value = true; status.value = acceptedIds.length ? 'ready' : 'error'; lastError.value = acceptedIds.length ? `服务端已接受 ${acceptedIds.length} 条待同步事件。` : '服务端未接受待同步事件，队列已保留。'
-    } catch (error) { pending.forEach((item) => offline.markFailed(item.id, messageFor(error, '同步请求失败'))); refreshQueue(); captureError(error, 'B4 待同步事件提交失败，队列仍保留。') }
+    } catch (error) {
+      if (!sameOwner(owner)) return
+      pending.forEach((item) => offline.markFailed(item.id, messageFor(error, '同步请求失败')))
+      refreshQueue()
+      captureError(error, 'B4 待同步事件提交失败，队列仍保留。')
+    }
   }
 
   return {
     status, online, lastError, profile, galaxy, streak, quests, season, avatarProfile, avatarItems, loadouts, avatarResources, games, activeGame, lastGameResult, rooms, activeFocus, notifications, notificationPreferences, offlinePackages, chests, chestProbability, lastChestResult, leaderboard, lastModerationReport, actionKey, featureFlags,
     performanceLevel, performanceStrategy, effectiveAvatarRenderMode, queueCount, offlineRecords,
-    restore, setPerformance, loadWorld, loadChests, loadChestProbability, openChest, loadLeaderboard, reportUser, saveStreakSettings, rescueStreak, saveAvatarProfile, equipLoadout, startGame, refreshGame, submitGameEvent, pauseGame, resumeGame, finishGame, joinRoom, leaveRoom, startFocus, updateFocus, sendInteraction, readNotification, readAllNotifications, saveNotificationPreferences, authorizeOfflinePackage, updateOfflineDownload, cleanupOfflineDownload, syncOffline,
+    restore, setPerformance, loadWorld, loadChests, loadChestProbability, openChest, loadLeaderboard, reportUser, saveStreakSettings, rescueStreak, saveAvatarProfile, equipLoadout, startGame, refreshGame, submitGameEvent, pauseGame, resumeGame, finishGame, joinRoom, leaveRoom, startFocus, updateFocus, sendInteraction, readNotification, readAllNotifications, saveNotificationPreference, authorizeOfflinePackage, updateOfflineDownload, cleanupOfflineDownload, syncOffline,
     dispose: () => { unsubscribe(); /* Shared engine lives for the application lifetime. */ },
   }
 })

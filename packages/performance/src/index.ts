@@ -63,6 +63,7 @@ export interface AdaptivePerformanceEngine {
   readonly level: PerformanceLevel
   readonly state: PerformanceState
   setLevel(level: PerformanceLevel, source?: PerformanceSource): PerformanceState
+  resetLevelToAutomatic(): PerformanceState
   setMotionDisabled(disabled: boolean, source?: PerformanceSource): PerformanceState
   observe(signal: PerformanceSignal): PerformanceState
   getRenderPolicy(surface: RenderSurface): RenderPolicy
@@ -162,6 +163,12 @@ export function createAdaptivePerformanceEngine(options: AdaptivePerformanceEngi
     return { ...current, strategy: cloneStrategy(current.level, current.motionDisabled) }
   }
 
+  const resetLevelToAutomatic = (): PerformanceState => {
+    if (storage && !storage.removeItem) throw new Error('Performance storage cannot clear a saved level')
+    storage?.removeItem?.(storageKey)
+    return setLevel(detectAutomaticLevel(options, reducedMotion), 'auto')
+  }
+
   const setMotionDisabled = (disabled: boolean, source: PerformanceSource = 'manual'): PerformanceState => {
     motionDisabled = disabled
     current = { ...current, motionDisabled, source, updatedAt: now(), strategy: cloneStrategy(current.level, motionDisabled) }
@@ -192,6 +199,7 @@ export function createAdaptivePerformanceEngine(options: AdaptivePerformanceEngi
     get level() { return current.level },
     get state() { return { ...current, strategy: cloneStrategy(current.level, current.motionDisabled) } },
     setLevel,
+    resetLevelToAutomatic,
     setMotionDisabled,
     observe,
     getRenderPolicy: (surface) => getRenderPolicy(current.level, surface),

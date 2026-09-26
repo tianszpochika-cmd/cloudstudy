@@ -1,0 +1,72 @@
+{
+  "project": "cloudstudy-uat-isolated-3c94b27160",
+  "tag": "583ab627-uat-batch9-202609231740",
+  "at": "2026-09-24T18:22:01.962Z",
+  "checks": [
+    {
+      "name": "gateway-iam-jwks",
+      "status": 200,
+      "code": null,
+      "keys": 1
+    },
+    {
+      "name": "anonymous-social-read",
+      "status": 401,
+      "code": null,
+      "shape": {
+        "contentType": "application/json",
+        "keys": [
+          "error",
+          "meta"
+        ],
+        "errorType": "object",
+        "errorKeys": [
+          "errorCode",
+          "message",
+          "retryable"
+        ],
+        "errorMessage": "Authentication is required."
+      }
+    },
+    {
+      "name": "adult-register",
+      "status": 503,
+      "code": null,
+      "shape": {
+        "contentType": "application/json",
+        "keys": [
+          "error",
+          "meta"
+        ],
+        "errorType": "object",
+        "errorKeys": [
+          "errorCode",
+          "message",
+          "retryable"
+        ],
+        "errorMessage": "iam.consent.version_unavailable"
+      },
+      "hasAccessToken": false
+    },
+    {
+      "name": "direct-iam-register",
+      "status": 503,
+      "code": null,
+      "shape": {
+        "contentType": "application/json",
+        "keys": [
+          "error",
+          "meta"
+        ],
+        "errorType": "object",
+        "errorKeys": [
+          "errorCode",
+          "message",
+          "retryable"
+        ],
+        "errorMessage": "iam.consent.version_unavailable"
+      },
+      "hasAccessToken": false
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "mode": "APPLIED",
+  "packagesWithdrawn": 99,
+  "downloadsIsolated": 99,
+  "remainingPublished": 0,
+  "remainingRealPublished": 0,
+  "backupPath": "C:\\temp\\cloudstudy-offline-packages-before-20260923T102527274198Z.json",
+  "backupSha256": "13fb90d9011024cac21e05e7023f0196c92e703b26f17fe8718e9baadb3c88cc",
+  "tableSha256Before": {
+    "packages": "6b0bcdf47c9bf4b965b6427b28d784bb42255750b873f987394a05607d616676",
+    "downloads": "971878f03f07b2f44680335fb14b3bb2c351f420a6a2dbec6b45ceea2b3db689"
+  },
+  "candidateIdsSha256": "51646893e42606acda88ae701021b5a386ff0011350e8885f5d28513122be9a6",
+  "otherStructuredReferences": 0,
+  "offlineObjectBytes": 0
+}

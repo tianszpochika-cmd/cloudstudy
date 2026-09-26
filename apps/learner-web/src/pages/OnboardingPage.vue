@@ -5,12 +5,13 @@ import { useRouter } from 'vue-router'
 import { dailyQuotaOptions, subTags, targetGoals, type DailyQuotaMinutes, type SubTag, type TargetGoal } from '../domain/b1'
 import { useLearnerContentStore } from '../stores/learner-content'
 import { useSessionStore } from '../stores/session'
+import { userFacingError } from '../platform/user-facing-error'
 
 const router = useRouter()
 const store = useLearnerContentStore()
 const session = useSessionStore()
 const step = ref<1 | 2>(1)
-const birthYear = ref(new Date().getFullYear() - 18)
+const birthYear = ref<number | null>(null)
 const ageConfirmed = ref(false)
 const privacyConsent = ref(false)
 const termsConsent = ref(false)
@@ -21,11 +22,11 @@ const saving = ref(false)
 
 const goalOptions = computed(() => store.onboardingOptions.length ? store.onboardingOptions : targetGoals)
 const quotaOptions = computed(() => store.onboardingQuotas.length ? store.onboardingQuotas : dailyQuotaOptions)
-const adultBirthYearValid = computed(() => Number.isInteger(birthYear.value) && birthYear.value >= 1900 && birthYear.value <= new Date().getFullYear() - 18)
+const adultBirthYearValid = computed(() => typeof birthYear.value === 'number' && Number.isInteger(birthYear.value) && birthYear.value >= 1900 && birthYear.value <= new Date().getFullYear() - 18)
 const canContinue = computed(() => step.value === 1
   ? adultBirthYearValid.value && ageConfirmed.value && privacyConsent.value && termsConsent.value
   : Boolean(targetGoal.value && quota.value))
-const stepLabel = computed(() => step.value === 1 ? '确认身份与同意事项' : '定制你的学习计划')
+const stepLabel = computed(() => step.value === 1 ? '确认身份与同意事项' : '选择学习目标')
 
 onMounted(async () => {
   store.restore()
@@ -33,10 +34,6 @@ onMounted(async () => {
   targetGoal.value = store.onboarding.targetGoal
   quota.value = store.onboarding.dailyQuotaMinutes ?? 15
   selectedTags.value = [...store.onboarding.subTags]
-  birthYear.value = store.onboarding.birthYear ?? new Date().getFullYear() - 18
-  ageConfirmed.value = store.onboarding.ageConfirmed
-  privacyConsent.value = store.onboarding.privacyConsent
-  termsConsent.value = store.onboarding.termsConsent
 })
 
 function toggleTag(tag: SubTag): void {
@@ -60,8 +57,11 @@ async function next(): Promise<void> {
     try {
       // The server decision remains authoritative; this screen only keeps the
       // three explicit user acknowledgements together in one first-run step.
-      if (session.adultGate !== 'PASSED' && !(await session.confirmAdultGate(birthYear.value))) return
-      store.setConsent({ birthYear: birthYear.value, ageConfirmed: true, privacyConsent: true, termsConsent: true })
+      if (session.adultGate !== 'PASSED' && !(await session.confirmAdultGate(Number(birthYear.value)))) return
+      // Learner reads before consent can legitimately return 403. Do not carry
+      // that stale read error into the goal step after the adult gate succeeds.
+      store.lastError = null
+      store.setConsent({ birthYear: Number(birthYear.value), ageConfirmed: true, privacyConsent: true, termsConsent: true })
       step.value = 2
     } finally {
       saving.value = false
@@ -97,7 +97,7 @@ async function cancel(): Promise<void> {
         </div>
         <p class="eyebrow">FIRST DAY · {{ step }}/2</p>
         <h1 id="onboarding-title">欢迎来到语学星</h1>
-        <p class="lead">两步完成你的学习起点，之后每次登录都会直接回到学习空间。</p>
+        <p class="lead">先确认身份，再选择学习目标。</p>
 
         <ol class="setup-progress" aria-label="首次设置进度">
           <li :class="{ 'setup-progress__item--active': step === 1, 'setup-progress__item--done': step === 2 }" :aria-current="step === 1 ? 'step' : undefined">
@@ -106,7 +106,7 @@ async function cancel(): Promise<void> {
           </li>
           <li :class="{ 'setup-progress__item--active': step === 2 }" :aria-current="step === 2 ? 'step' : undefined">
             <span class="setup-progress__number">2</span>
-            <span>定制计划</span>
+            <span>选择目标</span>
           </li>
         </ol>
       </header>
@@ -114,8 +114,8 @@ async function cancel(): Promise<void> {
       <Transition name="setup-step" mode="out-in">
         <form v-if="step === 1" key="identity" class="setup-card" @submit.prevent="next">
           <p class="setup-card__kicker">{{ stepLabel }}</p>
-          <h2>先确认你可以安心开始</h2>
-          <p class="setup-card__description">语学星 Phase 1 面向 18 岁以上成人与大学生。确认信息只用于完成服务端访问 Gate。</p>
+          <h2>确认成人身份</h2>
+          <p class="setup-card__description">仅限已满 18 岁的学习者。</p>
 
           <label class="field-label" for="adult-birth-year">
             出生年份
@@ -126,9 +126,7 @@ async function cancel(): Promise<void> {
             <label class="check"><input v-model="privacyConsent" type="checkbox" required /> <span>我同意隐私说明</span></label>
             <label class="check"><input v-model="termsConsent" type="checkbox" required /> <span>我同意学习服务条款</span></label>
           </div>
-          <p class="policy-note">完成后即可继续设置目标；这些确认会由服务端分别记录，偏好之后可以在设置中修改。</p>
-
-          <p v-if="session.lastError" class="setup-error" role="alert">{{ session.lastError }}</p>
+          <p v-if="session.lastError" class="setup-error" role="alert">{{ userFacingError(session.lastError, '身份确认未完成，请重试。') }}</p>
           <div class="setup-actions">
             <button class="button button--primary" type="submit" :disabled="saving || !canContinue">{{ saving ? '正在确认…' : '继续' }}</button>
           </div>

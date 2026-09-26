@@ -57,7 +57,40 @@ class LearnerHttpPrincipalsTest {
                 authentication(jwt(UUID_SUBJECT, "platform", List.of("learner"), List.of())))));
     }
 
+    @Test
+    void learningAccessRequiresPassedAdultGateAndGrantedConsentEvenForProfilePermissions() {
+        List<String> profilePermissions = List.of("learner.profile.read", "learner.profile.write");
+        for (String adultGate : new String[]{null, "NOT_EVALUATED", "REJECTED", "APPROVED"}) {
+            assertEquals(HttpStatus.FORBIDDEN, status(() -> LearnerHttpPrincipals.requireLearningAccess(
+                    authentication(jwt(UUID_SUBJECT, "platform", List.of("learner"), profilePermissions,
+                            adultGate, "GRANTED")), "learner.profile.read")));
+        }
+        for (String consent : new String[]{null, "UNKNOWN", "WITHDRAWN", "ACCEPTED"}) {
+            assertEquals(HttpStatus.FORBIDDEN, status(() -> LearnerHttpPrincipals.requireLearningAccess(
+                    authentication(jwt(UUID_SUBJECT, "platform", List.of("learner"), profilePermissions,
+                            "PASSED", consent)), "learner.profile.read")));
+        }
+    }
+
+    @Test
+    void learningAccessRequiresTheEndpointPermissionFromAValidToken() {
+        JwtAuthenticationToken authentication = authentication(jwt(UUID_SUBJECT, "platform",
+                List.of("learner"), List.of("learner.profile.read"), "PASSED", "GRANTED"));
+
+        assertEquals(UUID_SUBJECT,
+                LearnerHttpPrincipals.requireLearningAccess(authentication, "learner.profile.read").subject());
+        assertEquals(HttpStatus.FORBIDDEN,
+                status(() -> LearnerHttpPrincipals.requireLearningAccess(authentication, "learner.profile.write")));
+        assertEquals(HttpStatus.FORBIDDEN,
+                status(() -> LearnerHttpPrincipals.requireLearningAccess(authentication, null)));
+    }
+
     private static Jwt jwt(String subject, String tenant, List<String> roles, List<String> permissions) {
+        return jwt(subject, tenant, roles, permissions, null, null);
+    }
+
+    private static Jwt jwt(String subject, String tenant, List<String> roles, List<String> permissions,
+            String adultGate, String consentState) {
         Jwt.Builder builder = Jwt.withTokenValue("token")
                 .header("alg", "RS256")
                 .subject(subject)
@@ -66,6 +99,8 @@ class LearnerHttpPrincipalsTest {
                 .claim("roles", roles)
                 .claim("permissions", permissions);
         if (tenant != null) builder.claim("tenant_id", tenant);
+        if (adultGate != null) builder.claim("adult_gate", adultGate);
+        if (consentState != null) builder.claim("consent_state", consentState);
         return builder.build();
     }
 

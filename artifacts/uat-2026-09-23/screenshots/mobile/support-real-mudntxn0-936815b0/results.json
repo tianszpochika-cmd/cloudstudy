@@ -1,0 +1,186 @@
+{
+  "scope": "Support page, real Gateway empty state plus labeled browser-only failure/list fixtures",
+  "accountTag": "5b5b07420732",
+  "stages": [
+    {
+      "name": "register",
+      "status": 201
+    },
+    {
+      "name": "adult-ui-ready",
+      "continueEnabled": true,
+      "checkboxCount": 3
+    },
+    {
+      "name": "adult-gate",
+      "status": 200
+    },
+    {
+      "name": "consent-and-target",
+      "consentStatuses": [
+        200,
+        200,
+        200
+      ]
+    },
+    {
+      "name": "fresh-login",
+      "status": 200
+    },
+    {
+      "name": "home-copy-observation",
+      "description": "从今天的小目标开始，让每一次练习都有收获。",
+      "currentShortCopy": false
+    },
+    {
+      "name": "profile-entry",
+      "menuRows": 8,
+      "entryIndex": 8,
+      "entryVisible": true
+    },
+    {
+      "name": "gateway-empty",
+      "status": 200,
+      "realItemCount": 0
+    },
+    {
+      "name": "gateway-retry",
+      "status": 200,
+      "recovered": true
+    },
+    {
+      "name": "browser-list-fixture",
+      "source": "browser-only fixture",
+      "visibleRows": 2
+    }
+  ],
+  "authNetwork": [
+    {
+      "stage": "register",
+      "method": "POST",
+      "path": "/api/v1/auth/register",
+      "status": 201
+    },
+    {
+      "stage": "adult-gate",
+      "method": "POST",
+      "path": "/api/v1/iam/adult-gate",
+      "status": 200
+    },
+    {
+      "stage": "consent-and-target",
+      "method": "PUT",
+      "path": "/api/v1/iam/consents",
+      "status": 200
+    },
+    {
+      "stage": "consent-and-target",
+      "method": "PUT",
+      "path": "/api/v1/iam/consents",
+      "status": 200
+    },
+    {
+      "stage": "consent-and-target",
+      "method": "PUT",
+      "path": "/api/v1/iam/consents",
+      "status": 200
+    },
+    {
+      "stage": "fresh-login",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    }
+  ],
+  "supportNetwork": [
+    {
+      "stage": "gateway-empty",
+      "method": "GET",
+      "status": 200,
+      "source": "gateway"
+    },
+    {
+      "stage": "controlled-failure",
+      "method": "GET",
+      "status": 503,
+      "source": "browser-fixture"
+    },
+    {
+      "stage": "gateway-retry",
+      "method": "GET",
+      "status": 200,
+      "source": "gateway"
+    },
+    {
+      "stage": "browser-list-fixture",
+      "method": "GET",
+      "status": 200,
+      "source": "browser-fixture"
+    }
+  ],
+  "supportRequests": [
+    {
+      "stage": "gateway-empty",
+      "method": "GET"
+    },
+    {
+      "stage": "controlled-failure",
+      "method": "GET"
+    },
+    {
+      "stage": "gateway-retry",
+      "method": "GET"
+    },
+    {
+      "stage": "browser-list-fixture",
+      "method": "GET"
+    }
+  ],
+  "requestFailures": [],
+  "pageErrors": [],
+  "screenshots": [
+    {
+      "name": "home-copy-observation-390.png",
+      "viewport": 390,
+      "scrollWidth": 390
+    },
+    {
+      "name": "gateway-empty-320.png",
+      "viewport": 320,
+      "scrollWidth": 320
+    },
+    {
+      "name": "gateway-empty-390.png",
+      "viewport": 390,
+      "scrollWidth": 390
+    },
+    {
+      "name": "controlled-failure-320.png",
+      "viewport": 320,
+      "scrollWidth": 320
+    },
+    {
+      "name": "controlled-failure-390.png",
+      "viewport": 390,
+      "scrollWidth": 390
+    },
+    {
+      "name": "browser-list-fixture-390.png",
+      "viewport": 390,
+      "scrollWidth": 390
+    }
+  ],
+  "cleanup": {
+    "accountCount": 1,
+    "status": "DISABLED",
+    "activeSessions": 0,
+    "verified": true
+  },
+  "summary": {
+    "registered": true,
+    "actualSupportGet": 200,
+    "noPageExceptions": true,
+    "cleanupVerified": true,
+    "verdict": "PASS"
+  }
+}

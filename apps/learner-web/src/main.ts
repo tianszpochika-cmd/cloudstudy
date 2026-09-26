@@ -1,15 +1,30 @@
 import { createApp } from 'vue'
 import { router } from './router'
 import { pinia } from './stores/pinia'
+import { useSessionStore } from './stores/session'
+import { safeReturnTo } from './auth/gateway-auth'
 import App from './App.vue'
 import './assets/styles/base.css'
 import './assets/styles/theme.css'
 import './assets/styles/experience.css'
 import { experiencePerformance } from './platform/experience-ui'
 import { learnerI18nAdapter, learnerThemeAdapter, learnerThemeController } from './platform/v2-foundation'
+import { applyPublicAuthHandoff, resolvePublicAuthHandoff } from './platform/public-auth-handoff.mjs'
 
 learnerI18nAdapter.restore()
 learnerThemeController.restore()
+if (typeof window !== 'undefined') {
+  const handoff = resolvePublicAuthHandoff(window.location.pathname, window.location.search)
+  applyPublicAuthHandoff(handoff, {
+    setUiLocale: (locale) => learnerI18nAdapter.setLocale(locale),
+    setTheme: (theme) => learnerThemeController.setTheme(theme),
+  })
+  const returnTo = safeReturnTo(handoff?.returnTo, '')
+  if (returnTo) useSessionStore(pinia).setReturnTo(returnTo)
+}
+learnerI18nAdapter.subscribe(({ locale }) => {
+  if (typeof document !== 'undefined') document.documentElement.lang = locale
+})
 experiencePerformance.restore()
 const syncPerformance = () => {
   document.documentElement.dataset.quality = experiencePerformance.level

@@ -14,6 +14,9 @@ import com.englishflow.notification.application.NotificationRetryApplicationServ
 import com.englishflow.notification.application.RequestMetadata;
 import com.englishflow.notification.domain.NotificationAccessPolicy;
 import com.englishflow.notification.domain.NotificationChannel;
+import com.englishflow.notification.domain.NotificationCategory;
+import com.englishflow.notification.domain.NotificationDndWindow;
+import com.englishflow.notification.domain.NotificationFrequencyPolicy;
 import com.englishflow.notification.domain.NotificationDomainException;
 import com.englishflow.notification.domain.NotificationPreference;
 import com.englishflow.notification.domain.NotificationPrincipalContext;
@@ -119,8 +122,11 @@ public final class NotificationB12TrustedEventSmoke {
         check(terminal.status() == RetryDispatchStatus.DEAD_LETTER
                 && !terminal.delivery().attempt().retryable(), "terminal failure bypasses retry backoff");
 
-        facts.savePreference(new NotificationPreference(TENANT, PRINCIPAL, "learning.review.due",
-                NotificationChannel.IN_APP, false, "zh-CN", 1, clock.instant()));
+        check(facts.compareAndSetPreference(new NotificationPreference(TENANT, PRINCIPAL,
+                NotificationCategory.REVIEW,
+                NotificationChannel.IN_APP, false, "zh-CN", 1, NotificationDndWindow.parse("23:00", "08:00"),
+                NotificationFrequencyPolicy.IMMEDIATE, 1, clock.instant()), 0),
+                "canonical preference can be created with expectedVersion zero");
         var preferenceFiltered = fixture.consumer.consume(consumer,
                 event("evt-b12-review-0002", "dedupe-b12-review-0002", PRINCIPAL, null), METADATA);
         check(preferenceFiltered.status() == TrustedEventProcessingStatus.FILTERED
@@ -132,8 +138,11 @@ public final class NotificationB12TrustedEventSmoke {
                 && "CONSENT_NOT_GRANTED".equals(consentFiltered.reasonCode()),
                 "missing channel consent fails closed");
 
-        facts.savePreference(new NotificationPreference(TENANT, PRINCIPAL, "learning.review.due",
-                NotificationChannel.IN_APP, true, "zh-CN", 2, clock.instant()));
+        check(facts.compareAndSetPreference(new NotificationPreference(TENANT, PRINCIPAL,
+                NotificationCategory.REVIEW,
+                NotificationChannel.IN_APP, true, "zh-CN", 1, NotificationDndWindow.parse("23:00", "08:00"),
+                NotificationFrequencyPolicy.IMMEDIATE, 2, clock.instant()), 1),
+                "canonical preference update requires the observed version");
         consents.setConsent(TENANT, PRINCIPAL, NotificationChannel.IN_APP, true);
         var dlqQueued = fixture.consumer.consume(consumer,
                 event("evt-b12-review-0004", "dedupe-b12-review-0004", PRINCIPAL, null), METADATA);

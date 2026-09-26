@@ -18,10 +18,29 @@
         ],
         "summary": "Request a manual recovery (two-person rule)",
         "operationId": "requestWorkflowRecovery",
+        "x-authorization": {
+          "requiredPermission": "admin.recovery.request",
+          "defaultDecision": "DENY",
+          "pep": "workflow-service-local",
+          "tokenType": "access",
+          "tenantId": "platform",
+          "trustedFacts": ["verifiedJwt.subject", "verifiedJwt.tenant_id", "verifiedJwt.permissions"]
+        },
+        "x-idempotency": {
+          "required": true,
+          "keyHeader": "Idempotency-Key",
+          "strategy": "workflow-service transactional claim scoped by platform tenant, verified actor and operation",
+          "digest": "SHA-256 of operation and canonical recovery request",
+          "replayBehavior": "same key and request returns the original recovery response",
+          "sameKeyDifferentDigest": "CONFLICT_409"
+        },
         "security": [
           {
             "bearerAuth": []
           }
+        ],
+        "parameters": [
+          {"$ref": "#/components/parameters/B26RecoveryIdempotencyKey"}
         ],
         "requestBody": {
           "required": true,
@@ -29,23 +48,33 @@
             "application/json": {
               "schema": {
                 "type": "object",
+                "additionalProperties": false,
                 "required": [
                   "subjectType",
                   "subjectId",
-                  "action"
+                  "action",
+                  "reason"
                 ],
                 "properties": {
                   "subjectType": {
-                    "type": "string"
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 60
                   },
                   "subjectId": {
-                    "type": "string"
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160
                   },
                   "action": {
-                    "type": "string"
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 60
                   },
                   "reason": {
-                    "type": "string"
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
                   }
                 }
               }
@@ -62,6 +91,12 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Invalid recovery request or Idempotency-Key"
+          },
+          "409": {
+            "description": "Key reused with a different recovery request"
           }
         }
       }
@@ -73,6 +108,22 @@
         ],
         "summary": "Approve a recovery as a second person",
         "operationId": "approveWorkflowRecovery",
+        "x-authorization": {
+          "requiredPermission": "admin.recovery.command",
+          "defaultDecision": "DENY",
+          "pep": "workflow-service-local",
+          "tokenType": "access",
+          "tenantId": "platform",
+          "trustedFacts": ["verifiedJwt.subject", "verifiedJwt.tenant_id", "verifiedJwt.permissions"]
+        },
+        "x-idempotency": {
+          "required": true,
+          "keyHeader": "Idempotency-Key",
+          "strategy": "workflow-service transactional claim scoped by platform tenant, verified actor and operation",
+          "digest": "SHA-256 of operation, recoveryId and canonical empty action body",
+          "replayBehavior": "same key and recoveryId returns the original approval response",
+          "sameKeyDifferentDigest": "CONFLICT_409"
+        },
         "security": [
           {
             "bearerAuth": []
@@ -86,8 +137,17 @@
             "schema": {
               "type": "string"
             }
-          }
+          },
+          {"$ref": "#/components/parameters/B26RecoveryIdempotencyKey"}
         ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {"type": "object", "additionalProperties": false, "maxProperties": 0}
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "OK",
@@ -98,6 +158,12 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Invalid Idempotency-Key"
+          },
+          "409": {
+            "description": "Recovery transition conflict or key reused with a different recoveryId"
           }
         }
       }
@@ -109,6 +175,22 @@
         ],
         "summary": "Reject a recovery",
         "operationId": "rejectWorkflowRecovery",
+        "x-authorization": {
+          "requiredPermission": "admin.recovery.command",
+          "defaultDecision": "DENY",
+          "pep": "workflow-service-local",
+          "tokenType": "access",
+          "tenantId": "platform",
+          "trustedFacts": ["verifiedJwt.subject", "verifiedJwt.tenant_id", "verifiedJwt.permissions"]
+        },
+        "x-idempotency": {
+          "required": true,
+          "keyHeader": "Idempotency-Key",
+          "strategy": "workflow-service transactional claim scoped by platform tenant, verified actor and operation",
+          "digest": "SHA-256 of operation, recoveryId and canonical rejection body",
+          "replayBehavior": "same key and request returns the original rejection response",
+          "sameKeyDifferentDigest": "CONFLICT_409"
+        },
         "security": [
           {
             "bearerAuth": []
@@ -122,8 +204,21 @@
             "schema": {
               "type": "string"
             }
-          }
+          },
+          {"$ref": "#/components/parameters/B26RecoveryIdempotencyKey"}
         ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {"reason": {"type": "string"}}
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "OK",
@@ -134,6 +229,12 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Invalid Idempotency-Key"
+          },
+          "409": {
+            "description": "Recovery transition conflict or key reused with a different rejection"
           }
         }
       }
@@ -145,6 +246,22 @@
         ],
         "summary": "Execute an approved recovery and record the receipt",
         "operationId": "executeWorkflowRecovery",
+        "x-authorization": {
+          "requiredPermission": "admin.recovery.command",
+          "defaultDecision": "DENY",
+          "pep": "workflow-service-local",
+          "tokenType": "access",
+          "tenantId": "platform",
+          "trustedFacts": ["verifiedJwt.subject", "verifiedJwt.tenant_id", "verifiedJwt.permissions"]
+        },
+        "x-idempotency": {
+          "required": true,
+          "keyHeader": "Idempotency-Key",
+          "strategy": "workflow-service transactional claim scoped by platform tenant, verified actor and operation",
+          "digest": "SHA-256 of operation, recoveryId and canonical empty action body",
+          "replayBehavior": "same key and recoveryId returns the original execution response without another receipt",
+          "sameKeyDifferentDigest": "CONFLICT_409"
+        },
         "security": [
           {
             "bearerAuth": []
@@ -158,8 +275,17 @@
             "schema": {
               "type": "string"
             }
-          }
+          },
+          {"$ref": "#/components/parameters/B26RecoveryIdempotencyKey"}
         ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {"type": "object", "additionalProperties": false, "maxProperties": 0}
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "OK",
@@ -170,6 +296,12 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Invalid Idempotency-Key"
+          },
+          "409": {
+            "description": "Recovery transition conflict or key reused with a different recoveryId"
           }
         }
       }
@@ -181,6 +313,14 @@
         ],
         "summary": "List unfinished sagas",
         "operationId": "listUnfinishedSagas",
+        "x-authorization": {
+          "requiredPermission": "admin.recovery.read",
+          "defaultDecision": "DENY",
+          "pep": "workflow-service-local",
+          "tokenType": "access",
+          "tenantId": "platform",
+          "trustedFacts": ["verifiedJwt.subject", "verifiedJwt.tenant_id", "verifiedJwt.permissions"]
+        },
         "security": [
           {
             "bearerAuth": []
@@ -210,6 +350,14 @@
         ],
         "summary": "Read a saga and its steps",
         "operationId": "readWorkflowSaga",
+        "x-authorization": {
+          "requiredPermission": "admin.recovery.read",
+          "defaultDecision": "DENY",
+          "pep": "workflow-service-local",
+          "tokenType": "access",
+          "tenantId": "platform",
+          "trustedFacts": ["verifiedJwt.subject", "verifiedJwt.tenant_id", "verifiedJwt.permissions"]
+        },
         "security": [
           {
             "bearerAuth": []
@@ -246,6 +394,22 @@
         ],
         "summary": "Compensate a failed saga awaiting compensation",
         "operationId": "compensateWorkflowSaga",
+        "x-authorization": {
+          "requiredPermission": "admin.recovery.command",
+          "defaultDecision": "DENY",
+          "pep": "workflow-service-local",
+          "tokenType": "access",
+          "tenantId": "platform",
+          "trustedFacts": ["verifiedJwt.subject", "verifiedJwt.tenant_id", "verifiedJwt.permissions"]
+        },
+        "x-idempotency": {
+          "required": true,
+          "keyHeader": "Idempotency-Key",
+          "strategy": "workflow-service transactional claim scoped by platform tenant, verified actor and SAGA_COMPENSATE; saga row locked before transition",
+          "digest": "SHA-256 of SAGA_COMPENSATE, sagaId and canonical empty body",
+          "replayBehavior": "same key and request returns the stored saga response without rerunning compensation",
+          "sameKeyDifferentDigest": "CONFLICT_409"
+        },
         "security": [
           {
             "bearerAuth": []
@@ -259,8 +423,17 @@
             "schema": {
               "type": "string"
             }
-          }
+          },
+          {"$ref": "#/components/parameters/B26RecoveryIdempotencyKey"}
         ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {"type": "object", "additionalProperties": false, "maxProperties": 0}
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "OK",
@@ -271,10 +444,26 @@
                 }
               }
             }
-          }
+          },
+          "400": {"description": "Invalid Idempotency-Key or nonempty compensation body"},
+          "409": {"description": "Key reused with a different saga request or saga transition conflict"}
         }
       }
     }
   },
-  "components": {}
+  "components": {
+    "parameters": {
+      "B26RecoveryIdempotencyKey": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9._:-]{8,128}$"
+        }
+      }
+    }
+  }
 }

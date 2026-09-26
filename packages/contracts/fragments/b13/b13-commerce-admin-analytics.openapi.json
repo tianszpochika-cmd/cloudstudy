@@ -129,7 +129,7 @@
         "security": [],
         "responses": {
           "200": {
-            "description": "已发布的公开价格投影",
+            "description": "仅包含服务端明确发布且支付闸门已开放的商品；未发布、测试商品和关闭支付闸门时返回空 plans",
             "content": {
               "application/json": {
                 "schema": {
@@ -2113,6 +2113,7 @@
           "B13-AdminOps"
         ],
         "operationId": "submitB13AdminCommand",
+        "x-support-command-runtime": "SUPPORT_RESOLVE and SUPPORT_CLOSE return 503 ADMIN_SUPPORT_COMMAND_UNAVAILABLE until the M1-016 support owner workflow is connected; FORWARDED is not a ticket resolution.",
         "security": [
           {
             "bearerAuth": []
@@ -2186,6 +2187,9 @@
           },
           "409": {
             "$ref": "#/components/responses/ApiConflict"
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
           }
         }
       }
@@ -2196,6 +2200,7 @@
           "B13-AdminOps"
         ],
         "operationId": "prepareB13AdminCommand",
+        "x-support-command-runtime": "SUPPORT_RESOLVE and SUPPORT_CLOSE return 503 ADMIN_SUPPORT_COMMAND_UNAVAILABLE until the M1-016 support owner workflow is connected.",
         "security": [
           {
             "bearerAuth": []
@@ -2269,6 +2274,9 @@
           },
           "409": {
             "$ref": "#/components/responses/ApiConflict"
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
           }
         }
       }
@@ -2337,6 +2345,12 @@
           },
           "403": {
             "$ref": "#/components/responses/ApiForbidden"
+          },
+          "422": {
+            "$ref": "#/components/responses/ApiUnprocessableEntity"
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
           }
         },
         "x-pagination": {
@@ -2384,7 +2398,7 @@
                           "properties": {
                             "items": {
                               "type": "array",
-                              "maxItems": 500,
+                              "maxItems": 100,
                               "items": {
                                 "$ref": "#/components/schemas/B13AuditRecord"
                               }
@@ -2418,6 +2432,12 @@
           },
           "403": {
             "$ref": "#/components/responses/ApiForbidden"
+          },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
           }
         },
         "parameters": [
@@ -6608,7 +6628,7 @@
         "properties": {
           "items": {
             "type": "array",
-            "maxItems": 500,
+            "maxItems": 100,
             "items": {
               "$ref": "#/components/schemas/B13AuditRecord"
             }

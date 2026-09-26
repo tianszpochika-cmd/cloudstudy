@@ -1,53 +1,48 @@
 <script setup lang="ts">
 import ExperienceHeader from '../components/ExperienceHeader.vue'
 import { computed, onMounted, ref } from 'vue'
-import { ApiError } from '../api/client'
-import { createB5Order, listB5Entitlements, listB5Orders, listB5Skus, prepareB5Payment, readB5Readiness, redeemB5ActivationCode, requestB5Refund } from '../api/b5'
-import { formatMinorAmount, listRecords, toEntitlement, toOrder, toSku, type B5Entitlement, type B5Order, type B5Sku } from '../domain/b5'
+import { createB5Order, listB5Entitlements, listB5Orders, prepareB5Payment, readB5PublicCatalog, redeemB5ActivationCode, requestB5Refund } from '../api/b5'
+import { formatMinorAmount, listRecords, toEntitlement, toOrder, toPublicPlan, type B5Entitlement, type B5Order, type B5PublicPlan } from '../domain/b5'
+import { userFacingError } from '../platform/user-facing-error'
 
-const skus = ref<B5Sku[]>([])
+const plans = ref<B5PublicPlan[]>([])
 const orders = ref<B5Order[]>([])
 const entitlements = ref<B5Entitlement[]>([])
-const selectedSku = ref<B5Sku | null>(null)
+const selectedPlan = ref<B5PublicPlan | null>(null)
 const loading = ref(true)
 const actionMessage = ref('')
 const errorMessage = ref('')
 const activationCode = ref('')
-const gateStatus = ref('UNKNOWN')
 const refundTarget = ref<B5Order | null>(null)
 
 const activeEntitlements = computed(() => entitlements.value.filter((item) => item.status === 'ACTIVE'))
+const periodLabel: Record<B5PublicPlan['billingPeriod'], string> = { FREE: '免费', MONTH: '每月', QUARTER: '每季', YEAR: '每年', PERPETUAL: '一次性' }
+const orderStatusLabel: Record<string, string> = { CREATED: '待支付', PAID: '已支付', REFUNDED: '已退款', REFUND_PENDING: '退款处理中', CANCELLED: '已取消', FAILED: '支付失败' }
 
 async function load(): Promise<void> {
   loading.value = true
   errorMessage.value = ''
-  try {
-    const [skuResponse, entitlementResponse, orderResponse, readinessResponse] = await Promise.all([listB5Skus(), listB5Entitlements(), listB5Orders(), readB5Readiness().catch(() => null)])
-    skus.value = listRecords(skuResponse).map(toSku).filter((item) => item.status === 'ACTIVE')
-    entitlements.value = listRecords(entitlementResponse).map(toEntitlement)
-    orders.value = listRecords(orderResponse).map(toOrder)
-    const ready = readinessResponse && typeof readinessResponse === 'object' && 'data' in (readinessResponse as Record<string, unknown>)
-      ? (readinessResponse as Record<string, unknown>).data as Record<string, unknown>
-      : (readinessResponse as Record<string, unknown> | null)
-    gateStatus.value = ready && (ready.paymentEnabled === true || ready.gateEnabled === true || ready.environment === 'SANDBOX' || ready.status === 'READY' || ready.reasonCode === 'READY') ? 'SANDBOX' : 'CLOSED'
-  } catch (error) {
-    errorMessage.value = error instanceof ApiError ? error.message : '商业化服务暂时不可用，请稍后重试。'
-  } finally {
-    loading.value = false
-  }
+  const [catalog, accountEntitlements, accountOrders] = await Promise.allSettled([readB5PublicCatalog(), listB5Entitlements(), listB5Orders()])
+  plans.value = catalog.status === 'fulfilled' ? listRecords(catalog.value, 'plans').map(toPublicPlan).filter((plan): plan is B5PublicPlan => plan !== null) : []
+  entitlements.value = accountEntitlements.status === 'fulfilled' ? listRecords(accountEntitlements.value).map(toEntitlement) : []
+  orders.value = accountOrders.status === 'fulfilled' ? listRecords(accountOrders.value).map(toOrder) : []
+  if (catalog.status === 'rejected') errorMessage.value = userFacingError(catalog.reason instanceof Error ? catalog.reason.message : null, '学习方案暂时无法读取，请稍后重试。')
+  else if (accountEntitlements.status === 'rejected' || accountOrders.status === 'rejected') errorMessage.value = '账户权益或订单暂时无法读取，请稍后重试。'
+  loading.value = false
 }
 
-async function createOrder(sku: B5Sku): Promise<void> {
-  selectedSku.value = sku
+async function createOrder(plan: B5PublicPlan): Promise<void> {
+  if (plan.availability !== 'PUBLISHED' || !plans.value.some((item) => item.planId === plan.planId)) return
+  selectedPlan.value = plan
   actionMessage.value = ''
   errorMessage.value = ''
   try {
-    const response = await createB5Order(sku.skuId)
+    const response = await createB5Order(plan.skuId)
     const created = listRecords({ items: [response] }).map(toOrder)[0]
-    actionMessage.value = created?.orderId ? `订单 ${created.orderId} 已创建，可继续发起沙箱支付。` : '订单已创建，等待服务端返回状态。'
+    actionMessage.value = created?.orderId ? '订单已创建，可在下方查看进度。' : '订单已创建，正在等待确认。'
     await load()
   } catch (error) {
-    errorMessage.value = error instanceof ApiError ? error.message : '订单创建失败。'
+    errorMessage.value = userFacingError(error instanceof Error ? error.message : null, '订单创建失败，请稍后重试。')
   }
 }
 
@@ -58,9 +53,9 @@ async function preparePayment(order: B5Order): Promise<void> {
     const response = await prepareB5Payment(order.orderId, order.channelCode || 'SANDBOX')
     const data = response && typeof response === 'object' && 'data' in response ? response.data : response
     const status = data && typeof data === 'object' && 'status' in data ? String(data.status) : 'UNKNOWN'
-    actionMessage.value = status === 'DISABLED' ? '支付通道已按发布闸门关闭；沙箱联调需先打开沙箱门。' : `支付准备状态：${status}`
+    actionMessage.value = status === 'DISABLED' ? '支付暂未开放，请稍后再试。' : '已更新支付状态。'
   } catch (error) {
-    errorMessage.value = error instanceof ApiError ? error.message : '支付准备失败。'
+    errorMessage.value = userFacingError(error instanceof Error ? error.message : null, '支付暂时无法继续，请稍后重试。')
   }
 }
 
@@ -82,10 +77,10 @@ async function confirmRefund(): Promise<void> {
   errorMessage.value = ''
   try {
     await requestB5Refund(order.orderId, 'USER_REQUEST')
-    actionMessage.value = `订单 ${order.orderId} 已申请退款，服务端确认后权益将撤销。`
+    actionMessage.value = '退款申请已提交，可在下方查看进度。'
     await load()
   } catch (error) {
-    errorMessage.value = error instanceof ApiError ? error.message : '退款申请失败。'
+    errorMessage.value = userFacingError(error instanceof Error ? error.message : null, '退款申请失败，请稍后重试。')
   }
 }
 
@@ -99,7 +94,7 @@ async function redeem(): Promise<void> {
     actionMessage.value = '激活码兑换成功，权益已写入账户。'
     await load()
   } catch (error) {
-    errorMessage.value = error instanceof ApiError ? error.message : '激活码兑换失败。'
+    errorMessage.value = userFacingError(error instanceof Error ? error.message : null, '激活码兑换失败，请核对后重试。')
   }
 }
 
@@ -108,37 +103,38 @@ onMounted(() => { void load() })
 
 <template>
   <section class="commerce-page">
-    <ExperienceHeader page="Commerce" icon="wallet" title-id="commerce-title"><div class="commerce-hero__status"><span class="status-dot" aria-hidden="true"></span><span>{{ gateStatus === 'SANDBOX' ? '支付通道：沙箱开启' : gateStatus === 'CLOSED' ? '支付通道：沙箱关闭' : loading ? '正在读取权益状态' : '权益状态暂不可用' }}</span></div></ExperienceHeader>
+    <ExperienceHeader page="Commerce" icon="wallet" title-id="commerce-title" />
 
     <div v-if="errorMessage" class="commerce-alert commerce-alert--error" role="alert">{{ errorMessage }} <button type="button" @click="load">重试</button></div>
     <div v-if="actionMessage" class="commerce-alert commerce-alert--success" role="status">{{ actionMessage }}</div>
 
     <div class="commerce-grid">
       <section class="commerce-panel commerce-panel--wide">
-        <div class="panel-heading"><div><p class="panel-kicker">PLANS</p><h3>选择学习方案</h3></div><span class="fact-tag">金额单位：分</span></div>
-        <div v-if="loading" class="empty-copy">正在读取服务端 SKU…</div>
+        <div class="panel-heading"><div><p class="panel-kicker">PLANS</p><h3>选择学习方案</h3></div></div>
+        <div v-if="loading" class="empty-copy">正在读取学习方案…</div>
+        <p v-else-if="!plans.length" class="empty-copy">暂无可购买的学习方案。</p>
         <div v-else class="plan-grid">
-          <article v-for="sku in skus" :key="sku.skuId" class="plan-card" :class="{ 'plan-card--selected': selectedSku?.skuId === sku.skuId }">
-            <span class="plan-card__period">{{ sku.billingPeriod }}</span>
-            <h4>{{ sku.title }}</h4>
-            <strong>{{ formatMinorAmount(sku.amountMinor, sku.currency) }}</strong>
-            <p>{{ sku.entitlementCode }} · {{ sku.status }}</p>
-            <button class="button button--primary" type="button" @click="createOrder(sku)">创建订单</button>
+          <article v-for="plan in plans" :key="plan.planId" class="plan-card" :class="{ 'plan-card--selected': selectedPlan?.planId === plan.planId }">
+            <span class="plan-card__period">{{ periodLabel[plan.billingPeriod] }}</span>
+            <h4>{{ plan.title }}</h4>
+            <strong>{{ formatMinorAmount(plan.amountMinor, plan.currency) }}</strong>
+            <p v-if="plan.availability !== 'PUBLISHED'">{{ plan.availability === 'COMING_SOON' ? '即将开放' : '暂不可购买' }}</p>
+            <button v-if="plan.availability === 'PUBLISHED'" class="button button--primary" type="button" @click="createOrder(plan)">创建订单</button>
           </article>
         </div>
       </section>
 
       <section class="commerce-panel">
         <div class="panel-heading"><div><p class="panel-kicker">ENTITLEMENTS</p><h3>我的权益</h3></div><span class="fact-tag">{{ activeEntitlements.length }} 项生效</span></div>
-        <div v-if="activeEntitlements.length" class="fact-list"><div v-for="item in activeEntitlements" :key="item.sourceRef" class="fact-row"><span>{{ item.entitlementCode }}</span><strong>{{ item.status }}</strong><small>有效至 {{ item.expiresAt.slice(0, 10) }}</small></div></div>
-        <p v-else class="empty-copy">暂未发现生效权益，先完成一个学习目标吧。</p>
+        <div v-if="activeEntitlements.length" class="fact-list"><div v-for="item in activeEntitlements" :key="item.sourceRef" class="fact-row"><span>学习权益</span><strong>使用中</strong><small v-if="item.expiresAt">有效至 {{ item.expiresAt.slice(0, 10) }}</small></div></div>
+        <p v-else class="empty-copy">暂未开通学习权益。</p>
         <div class="activation-box"><label for="activation-code">激活码兑换</label><div class="activation-box__row"><input id="activation-code" v-model="activationCode" placeholder="输入激活码" autocomplete="off"><button class="button button--secondary" type="button" :disabled="!activationCode.trim()" @click="redeem">兑换</button></div><small>兑换后可在上方查看已生效的学习权益。</small></div>
       </section>
 
       <section class="commerce-panel commerce-panel--wide">
-        <div class="panel-heading"><div><p class="panel-kicker">ORDERS</p><h3>订单与支付恢复</h3></div><span class="fact-tag">服务端状态</span></div>
-        <div v-if="orders.length" class="order-list"><div v-for="order in orders" :key="order.orderId" class="order-row"><div><strong>{{ order.orderId }}</strong><span>{{ order.skuId }} · {{ formatMinorAmount(order.amountMinor, order.currency) }}</span></div><div class="order-row__right"><span class="status-pill">{{ order.status }}</span><button v-if="order.status === 'CREATED'" class="button button--ghost" type="button" @click="preparePayment(order)">恢复支付</button><button v-if="order.status === 'PAID'" class="button button--ghost" type="button" @click="askRefund(order)">申请退款</button></div></div></div>
-        <p v-else class="empty-copy">还没有订单。创建订单后，支付失败或通道关闭时可从这里恢复。</p>
+        <div class="panel-heading"><div><p class="panel-kicker">ORDERS</p><h3>我的订单</h3></div></div>
+        <div v-if="orders.length" class="order-list"><div v-for="order in orders" :key="order.orderId" class="order-row"><div><strong>订单 {{ order.orderId }}</strong><span>{{ formatMinorAmount(order.amountMinor, order.currency) }}</span></div><div class="order-row__right"><span class="status-pill">{{ orderStatusLabel[order.status] ?? '处理中' }}</span><button v-if="order.status === 'CREATED'" class="button button--ghost" type="button" @click="preparePayment(order)">恢复支付</button><button v-if="order.status === 'PAID'" class="button button--ghost" type="button" @click="askRefund(order)">申请退款</button></div></div></div>
+        <p v-else class="empty-copy">还没有订单。</p>
         <div v-if="refundTarget" class="activation-box" role="dialog" aria-label="退款二次确认"><label>确认退款 {{ refundTarget.orderId }}？</label><small>服务端确认后订单进入退款流程，对应权益将被撤销；该操作不可撤销。</small><div class="activation-box__row"><button class="button button--primary" type="button" @click="confirmRefund">确认退款</button><button class="button button--secondary" type="button" @click="cancelRefund">取消</button></div></div>
       </section>
     </div>

@@ -1,0 +1,154 @@
+{
+  "capturedAt": "2026-09-23T07:50:02.658Z",
+  "statuses": {
+    "register": 201,
+    "adultGate": 200,
+    "consentTERMS": 200,
+    "consentPRIVACY": 200,
+    "consentADULT_LEARNING": 200
+  },
+  "browser": {
+    "desktop": {
+      "viewport": 1440,
+      "documentWidth": 1440,
+      "bodyWidth": 1440,
+      "tableRows": 10,
+      "alertTitles": [
+        "历史工单仅供查看，处理功能暂不可用。"
+      ],
+      "emptyVisible": false,
+      "detailActions": 10
+    },
+    "desktopDetail": {
+      "http": 200,
+      "dialogVisible": true,
+      "fieldCount": 6,
+      "documentWidth": 1440,
+      "dialogRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 900
+      },
+      "panelRect": {
+        "x": 480,
+        "y": 135,
+        "width": 480,
+        "height": 426.390625,
+        "opacity": "1"
+      }
+    },
+    "tablet": {
+      "viewport": 768,
+      "documentWidth": 768,
+      "bodyWidth": 768,
+      "tableRows": 10,
+      "alertTitles": [
+        "历史工单仅供查看，处理功能暂不可用。"
+      ],
+      "emptyVisible": false,
+      "detailActions": 10
+    },
+    "tabletDetail": {
+      "http": 200,
+      "dialogVisible": true,
+      "fieldCount": 6,
+      "documentWidth": 768,
+      "dialogRect": {
+        "x": 0,
+        "y": 0,
+        "width": 768,
+        "height": 1024
+      },
+      "panelRect": {
+        "x": 144,
+        "y": 153.59375,
+        "width": 480,
+        "height": 426.390625,
+        "opacity": "1"
+      }
+    },
+    "mobile": {
+      "viewport": 390,
+      "documentWidth": 390,
+      "bodyWidth": 390,
+      "tableRows": 10,
+      "alertTitles": [
+        "历史工单仅供查看，处理功能暂不可用。"
+      ],
+      "emptyVisible": false,
+      "detailActions": 10
+    },
+    "mobileDetail": {
+      "http": 200,
+      "dialogVisible": true,
+      "fieldCount": 6,
+      "documentWidth": 390,
+      "dialogRect": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 844
+      },
+      "panelRect": {
+        "x": 16,
+        "y": 42.1875,
+        "width": 358,
+        "height": 441.484375,
+        "opacity": "1"
+      }
+    },
+    "pageThree": {
+      "rows": 7,
+      "currentPage": "3"
+    },
+    "localizedFilter": {
+      "rows": 10,
+      "categoryMatched": true,
+      "pageReset": true
+    },
+    "noMatches": {
+      "emptyVisible": true
+    },
+    "detail404": {
+      "alertVisible": true
+    },
+    "empty390": {
+      "viewport": 390,
+      "documentWidth": 390,
+      "bodyWidth": 390,
+      "tableRows": 0,
+      "alertTitles": [
+        "历史工单仅供查看，处理功能暂不可用。"
+      ],
+      "emptyVisible": true,
+      "detailActions": 0
+    },
+    "error390": {
+      "viewport": 390,
+      "documentWidth": 390,
+      "bodyWidth": 390,
+      "tableRows": 0,
+      "alertTitles": [
+        "客服工单暂时不可用，请刷新重试。",
+        "历史工单仅供查看，处理功能暂不可用。"
+      ],
+      "emptyVisible": false,
+      "detailActions": 0
+    },
+    "pageErrors": []
+  },
+  "cleanup": {
+    "disabledAccounts": 1,
+    "activeSessions": 0
+  },
+  "ownerBefore": {
+    "local-support-fixture": 74,
+    "platform": 27
+  },
+  "ownerAfter": {
+    "local-support-fixture": 74,
+    "platform": 27
+  },
+  "result": "PASS"
+}

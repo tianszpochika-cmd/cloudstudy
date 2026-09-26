@@ -20,9 +20,9 @@ import tools.jackson.databind.ObjectMapper;
 /**
  * Content-owned idempotency reservation and response replay seam.
  *
- * <p>The database owns uniqueness and the transaction. The small process-local result map only
- * replays a response whose durable fact was committed in this JVM; an old row without a response
- * object is rejected rather than executing the command a second time.</p>
+ * <p>The database owns uniqueness and the transaction. JSON-object B9 draft receipts replay from
+ * the stored response across processes. Typed legacy responses still use the process-local map;
+ * a cold replay of those commands fails closed rather than executing the action again.</p>
  */
 public final class JdbcContentIdempotency implements ContentIdempotencyPort {
 
@@ -54,7 +54,20 @@ public final class JdbcContentIdempotency implements ContentIdempotencyPort {
         Objects.requireNonNull(key, "idempotency key is required");
         Objects.requireNonNull(requestFingerprint, "request fingerprint is required");
         Objects.requireNonNull(action, "idempotent action is required");
-        T result = transaction.execute(status -> executeInTransaction(scope, key, requestFingerprint, action));
+        T result = transaction.execute(status -> executeInTransaction(scope, key, requestFingerprint, action, false));
+        return Objects.requireNonNull(result, "idempotent action returned null");
+    }
+
+    @Override
+    public Map<String, Object> executeMap(
+            String scope, ContentIdempotencyKey key, String requestFingerprint,
+            Supplier<Map<String, Object>> action) {
+        Objects.requireNonNull(scope, "idempotency scope is required");
+        Objects.requireNonNull(key, "idempotency key is required");
+        Objects.requireNonNull(requestFingerprint, "request fingerprint is required");
+        Objects.requireNonNull(action, "idempotent action is required");
+        Map<String, Object> result = transaction.execute(
+                status -> executeInTransaction(scope, key, requestFingerprint, action, true));
         return Objects.requireNonNull(result, "idempotent action returned null");
     }
 
@@ -63,7 +76,8 @@ public final class JdbcContentIdempotency implements ContentIdempotencyPort {
             String scope,
             ContentIdempotencyKey key,
             String requestFingerprint,
-            Supplier<T> action) {
+            Supplier<T> action,
+            boolean durableMapReplay) {
         String storageKey = storageKey(scope, key);
         try {
             try {
@@ -75,16 +89,21 @@ public final class JdbcContentIdempotency implements ContentIdempotencyPort {
                         java.sql.Timestamp.from(clock.instant()));
             } catch (DuplicateKeyException duplicate) {
                 ExistingRecord existing = jdbc.query(
-                        "SELECT request_fingerprint, status FROM content_idempotency_record "
+                        "SELECT request_fingerprint, status, response_json FROM content_idempotency_record "
                                 + "WHERE scope = ? AND idempotency_key = ?",
                         (resultSet, rowNum) -> new ExistingRecord(
-                                resultSet.getString("request_fingerprint"), resultSet.getString("status")),
+                                resultSet.getString("request_fingerprint"), resultSet.getString("status"),
+                                resultSet.getString("response_json")),
                         scope, key.value()).stream().findFirst().orElseThrow(() ->
                         ContentOperationException.unavailable(
                                 "CONTENT_IDEMPOTENCY_UNAVAILABLE", "idempotency reservation could not be read"));
                 if (!requestFingerprint.equals(existing.requestFingerprint())) {
                     throw ContentOperationException.conflict(
                             "IDEMPOTENCY_KEY_REUSE", "Idempotency-Key cannot be reused for another command payload");
+                }
+                if (durableMapReplay && "COMPLETED".equals(existing.status())) {
+                    return (T) JdbcContentJson.readMap(objectMapper, existing.responseJson(),
+                            "stored idempotency response cannot be replayed");
                 }
                 Object replay = results.get(storageKey);
                 if (replay != null && "COMPLETED".equals(existing.status())) {
@@ -115,6 +134,6 @@ public final class JdbcContentIdempotency implements ContentIdempotencyPort {
         return scope + ":" + key.value();
     }
 
-    private record ExistingRecord(String requestFingerprint, String status) {
+    private record ExistingRecord(String requestFingerprint, String status, String responseJson) {
     }
 }

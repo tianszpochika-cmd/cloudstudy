@@ -270,7 +270,7 @@ public final class B25ContentJdbcController {
     }
 
     private static void principal(Authentication authentication) {
-        ContentHttpPrincipals.require(authentication);
+        ContentHttpPrincipals.requireLearnerRead(authentication);
     }
 
     private static boolean blank(String value) { return value == null || value.isBlank(); }

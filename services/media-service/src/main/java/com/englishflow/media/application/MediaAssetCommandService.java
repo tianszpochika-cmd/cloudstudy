@@ -105,6 +105,11 @@ public final class MediaAssetCommandService {
         return value;
     }
 
+    /** Recheck the current owner permission before returning a stored command response. */
+    public void authorizeMutation(String assetId, MediaAuthorizationContext context) {
+        MediaAccessPolicy.requireMutation(require(assetId), context);
+    }
+
     public MediaAsset markActive(
             String assetId,
             String verifiedChecksumSha256,
@@ -112,7 +117,11 @@ public final class MediaAssetCommandService {
             MediaAuthorizationContext context) {
         MediaAsset asset = require(assetId);
         MediaAccessPolicy.requireMutation(asset, context);
-        MediaAsset saved = repository.save(asset.markActive(verifiedChecksumSha256, verifiedSizeBytes, clock.instant()));
+        MediaAsset candidate = asset.markActive(verifiedChecksumSha256, verifiedSizeBytes, clock.instant());
+        // The request's checksum and size are assertions, not proof of uploaded bytes.
+        // The storage adapter must inspect the exact object version before ACTIVE is saved.
+        signedUrlPort.verifyObjectForActivation(asset);
+        MediaAsset saved = repository.save(candidate);
         publish("media.asset_activated.v1", saved, context, Map.of(
                 "checksumSha256", saved.checksumSha256(),
                 "sizeBytes", Long.toString(saved.sizeBytes()),

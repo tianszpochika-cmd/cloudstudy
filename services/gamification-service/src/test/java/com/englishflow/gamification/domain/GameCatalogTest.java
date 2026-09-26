@@ -20,9 +20,7 @@ class GameCatalogTest {
                 .filter(entry -> entry.releasePhase() != GameCatalog.ReleasePhase.LONG_TERM).count());
         assertEquals(2, GameCatalog.entries().stream()
                 .filter(entry -> entry.releasePhase() == GameCatalog.ReleasePhase.LONG_TERM).count());
-        assertTrue(GameCatalog.find("SENTENCE_TRAIN").orElseThrow().enabled());
-        assertTrue(GameCatalog.entries().stream().filter(entry -> entry.releasePhase() != GameCatalog.ReleasePhase.P0)
-                .noneMatch(GameCatalog.GameDefinition::enabled));
+        assertTrue(GameCatalog.entries().stream().noneMatch(GameCatalog.GameDefinition::enabled));
     }
 
     @Test
@@ -31,6 +29,11 @@ class GameCatalogTest {
                 GameCatalog.GameNotAvailableException.class,
                 () -> GameCatalog.requireEnabled("WORD_MATCH"));
         assertEquals(GameCatalog.ReleasePhase.P1, exception.definition().releasePhase());
+
+        GameCatalog.GameNotAvailableException unjudged = assertThrows(
+                GameCatalog.GameNotAvailableException.class,
+                () -> GameCatalog.requireEnabled("SENTENCE_TRAIN"));
+        assertEquals(GameCatalog.ReleasePhase.P0, unjudged.definition().releasePhase());
         assertFalse(exception.definition().enabled());
         assertThrows(GameCatalog.InvalidGameCodeException.class,
                 () -> GameCatalog.requireEnabled("UNKNOWN_GAME"));

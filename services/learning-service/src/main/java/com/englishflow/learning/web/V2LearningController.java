@@ -41,7 +41,7 @@ public class V2LearningController {
      */
     @GetMapping("/first-day")
     public Map<String, Object> firstDay(Authentication authentication) {
-        String subject = LearningHttpPrincipals.require(authentication).subject();
+        String subject = LearningHttpPrincipals.require(authentication, "learning.plan.read").subject();
         Map<String, Object> plan = currentPlanRow(subject);
         List<Map<String, Object>> today = todayItems(subject);
         Map<String, Object> data = new LinkedHashMap<>();
@@ -67,7 +67,7 @@ public class V2LearningController {
     /** Today queue for the verified owner: due SRS items, owner-scoped, due-ordered. */
     @GetMapping("/today")
     public Map<String, Object> today(Authentication authentication) {
-        String subject = LearningHttpPrincipals.require(authentication).subject();
+        String subject = LearningHttpPrincipals.require(authentication, "learning.review.read").subject();
         List<Map<String, Object>> items = todayItems(subject);
         Map<String, Object> plan = currentPlanRow(subject);
         return Map.of("data", Map.of(

@@ -17,6 +17,11 @@ B12-GAM-001 的独立 Java 25 / Spring Boot 4.1.1 游戏化事实服务。服务
   每次写入后校验 ledger sum == balance。重复 event 或 reward claim 不会重复记账。
 - reward 是免费的非现金学习奖励。claim 前可读取概率版本和完整概率表；服务端决定结果，
   不接入 AI、Phase 2 实时能力、现金随机奖励或支付。
+- `local-real` 的 Avatar/收藏道具目前没有可绑定到具体 `itemCode` 的可信发放流水。
+  旧 `gamification_feature_state` JSON 与宝箱 tier 不能证明持有；相关读取只给空资产状态，
+  兑换、Avatar profile、保存/装备套装和空间道具写入返回 503。Profile GET 只给
+  2D 展示建议；画质偏好由客户端本机管理。历史状态保留，后续须先补权属、扣账和
+  幂等契约。
 - 当前默认 adapter 是进程内 memory fact-store，用于本地运行和无外部基础设施 smoke；
   durable adapter 应只写本服务独占 schema，不跨服务读写表。
 

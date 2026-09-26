@@ -3,7 +3,7 @@ import MobilePageHeader from '../../components/MobilePageHeader.vue'
 import { useMobileExperience } from '../../platform/experience'
 const { experienceStyle, experienceMotion } = useMobileExperience()
 
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import type { PerformanceLevel } from '@englishflow/performance'
 import B11StatusPanel from '../../components/b11/B11StatusPanel.vue'
 import { b11T, b11ThemeMode } from '../../platform/b11-foundation'
@@ -19,6 +19,22 @@ const PLAYBACK_RATES = [0.5, 0.75, 1, 1.25, 1.5, 2] as const
 const pageMessage = ref<string | null>(null)
 const audio = ref<AudioControl | null>(null)
 const timer = ref<ReturnType<typeof setInterval> | null>(null)
+type AccountScope = { subject: string; revision: number }
+let playbackScope: AccountScope | null = null
+function accountScope(): AccountScope | null {
+  return session.isAuthenticated && session.verifiedSubject
+    ? { subject: session.verifiedSubject, revision: session.identityRevision } : null
+}
+function isCurrent(scope: AccountScope | null): scope is AccountScope {
+  return Boolean(scope && session.isAuthenticated && session.verifiedSubject === scope.subject && session.identityRevision === scope.revision)
+}
+function stopPlayback(): void {
+  if (timer.value) clearInterval(timer.value)
+  timer.value = null
+  audio.value?.destroy(); audio.value = null
+  playbackScope = null
+}
+watch(() => session.identityRevision, () => { stopPlayback(); pageMessage.value = null }, { flush: 'sync' })
 const themeClass = computed(() => `b10-theme--${b11ThemeMode.value}`)
 const segment = computed(() => store.listening?.material.segments[0] ?? null)
 const clip = computed(() => store.languageClips.find((item) => item.clipId === store.languageClipId) ?? null)
@@ -29,11 +45,14 @@ const positionText = computed(() => `${Math.round(store.mediaPositionMs / 1000)}
 async function load(): Promise<void> {
   pageMessage.value = null
   await session.restore()
-  if (!session.isAuthenticated) { getUniRuntime().navigateTo({ url: '/pages/login/login' }); return }
+  const scope = accountScope()
+  if (!isCurrent(scope)) { getUniRuntime().navigateTo({ url: '/pages/login/login' }); return }
   await store.loadListening()
+  if (!isCurrent(scope)) return
 }
 
 function tick(): void {
+  if (!isCurrent(playbackScope)) { stopPlayback(); return }
   const seconds = audio.value?.currentTime
   if (typeof seconds !== 'number' || !Number.isFinite(seconds)) return
   store.setPosition(seconds * 1000)
@@ -44,30 +63,32 @@ function tick(): void {
 }
 
 function play(): void {
+  const scope = accountScope()
+  if (!isCurrent(scope)) return
   if (store.mediaRightsState === 'REVOKED') { pageMessage.value = b11T('listening.revoked'); return }
   if (store.mediaRightsState === 'EXPIRED') { pageMessage.value = b11T('status.expired'); return }
   if (!source.value) { pageMessage.value = b11T('listening.noMedia'); return }
   const context = getUniRuntime().createInnerAudioContext?.()
   if (!context) { pageMessage.value = '当前平台没有音频适配器；字幕与练习仍可继续。'; return }
   const control = context as AudioControl
-  audio.value?.destroy(); audio.value = control
+  stopPlayback(); audio.value = control; playbackScope = scope
   enableUniAudioPitchPreservation(control, () => { pageMessage.value = '当前平台未声明音高保持能力；速度控制仍可用，已记录降级。' })
   control.src = source.value; control.playbackRate = store.playbackRate; control.play()
   if (timer.value) clearInterval(timer.value)
   timer.value = setInterval(tick, 500)
 }
 
-function pause(): void { audio.value?.pause(); tick(); void store.saveMediaProgress() }
-function setRate(event: { detail: { value: number } }): void { store.setPlaybackRate(PLAYBACK_RATES[Number(event.detail.value)] ?? 1); if (audio.value) audio.value.playbackRate = store.playbackRate }
+function pause(): void { if (!isCurrent(playbackScope)) return; audio.value?.pause(); tick(); void store.saveMediaProgress() }
+function setRate(event: { detail: { value: number } }): void { if (!accountScope()) return; store.setPlaybackRate(PLAYBACK_RATES[Number(event.detail.value)] ?? 1); if (audio.value) audio.value.playbackRate = store.playbackRate }
 function setPerformance(level: PerformanceLevel): void { store.setPerformance(level) }
 function sync(): void { void store.syncOffline() }
 function toggleMotion(disabled: boolean): void { store.setMotionDisabled(disabled) }
-function setA(): void { store.setABPoint('A'); pageMessage.value = `A 点：${Math.round(store.mediaPositionMs / 1000)}s` }
-function setB(): void { store.setABPoint('B'); pageMessage.value = `B 点：${Math.round(store.mediaPositionMs / 1000)}s` }
-function selectClip(clipId: string): void { store.selectLanguageClip(clipId); pageMessage.value = '已切换 Language Clip；播放地址仍需权益清单确认。' }
+function setA(): void { if (!accountScope()) return; store.setABPoint('A'); pageMessage.value = `A 点：${Math.round(store.mediaPositionMs / 1000)}s` }
+function setB(): void { if (!accountScope()) return; store.setABPoint('B'); pageMessage.value = `B 点：${Math.round(store.mediaPositionMs / 1000)}s` }
+function selectClip(clipId: string): void { if (!accountScope()) return; store.selectLanguageClip(clipId); pageMessage.value = '已切换 Language Clip；播放地址仍需权益清单确认。' }
 
 onMounted(() => { void load() })
-onUnmounted(() => { if (timer.value) clearInterval(timer.value); audio.value?.destroy() })
+onUnmounted(stopPlayback)
 </script>
 
 <template>
@@ -88,7 +109,6 @@ onUnmounted(() => { if (timer.value) clearInterval(timer.value); audio.value?.de
       <view class="dictation"><text class="kicker">{{ b11T('listening.dictation') }}</text><input v-model="store.dictationAnswer" class="answer" placeholder="输入你听到的句子" confirm-type="done" /><button tabindex="0" role="button" class="yx-button" type="button" @click="store.submitDictationAnswer">{{ b11T('listening.submit') }}</button><view v-if="store.dictationResult" class="feedback"><text>{{ store.dictationResult.correct ? '规则判定正确' : '已记录错题' }}</text><text>{{ store.dictationResult.feedbackCodes.join(' · ') || '已保存' }}</text></view></view>
       <button tabindex="0" role="button" class="yx-button yx-button--secondary" type="button" @click="store.saveMediaProgress(true)">保存播放进度</button>
     </view>
-    <view v-else-if="store.listeningStatus !== 'loading'" class="yx-card empty"><text>{{ b11T('status.empty') }}</text><text class="subtle">{{ b11T('common.noSample') }}</text><button tabindex="0" role="button" class="yx-button" type="button" @click="load">{{ b11T('status.retry') }}</button></view>
   </view>
 </template>
 

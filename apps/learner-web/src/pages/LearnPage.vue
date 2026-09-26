@@ -6,10 +6,9 @@ import StatePanel from '../components/StatePanel.vue'
 import { learnerContentPort } from '../api/learner-content'
 import type { LearnerContentDetail } from '../domain/learner-content'
 import { useB1Store } from '../stores/b1'
-import { useLearnerContentStore } from '../stores/learner-content'
+import { userFacingError } from '../platform/user-facing-error'
 
 const b1 = useB1Store()
-const learnerContent = useLearnerContentStore()
 const route = useRoute()
 const router = useRouter()
 const context = computed(() => b1.continueContext)
@@ -32,7 +31,7 @@ onMounted(async () => {
     return
   }
   try { content.value = await learnerContentPort.readContent(contentCode) }
-  catch (reason) { error.value = reason instanceof Error ? reason.message : '课程内容暂时无法读取。' }
+  catch (reason) { error.value = userFacingError(reason instanceof Error ? reason.message : null, '课程内容暂时无法读取。') }
   finally { loading.value = false }
 })
 
@@ -50,24 +49,12 @@ async function saveAndExit(): Promise<void> {
     elapsedTimeMs: (context.value?.elapsedTimeMs ?? 0) + elapsed.value * 1000,
   })
   if (b1.lastError) {
-    error.value = b1.lastError
+    error.value = userFacingError(b1.lastError, '保存阅读位置失败，请稍后重试。')
     return
   }
   await router.push({ name: 'today' })
 }
 
-async function complete(): Promise<void> {
-  const taskId = typeof route.query.taskId === 'string' ? route.query.taskId : ''
-  if (taskId) {
-    await learnerContent.completeTask(taskId)
-    if (learnerContent.lastError) {
-      error.value = learnerContent.lastError
-      return
-    }
-  }
-  b1.completeContinue()
-  await router.push({ name: 'today' })
-}
 </script>
 
 <template>
@@ -79,7 +66,7 @@ async function complete(): Promise<void> {
       <article class="lesson-card"><p class="eyebrow">{{ content.kind }} · {{ content.contentLocale }}</p><h2 id="learn-title">{{ content.title }}</h2><p class="lead">{{ content.description || '按自己的节奏，完成今天的一小步。' }}</p><div class="lesson-meta"><span>{{ content.items.length }} 个学习单元</span><span>本次 {{ elapsed }} 秒</span></div></article>
       <article v-for="(item, index) in content.items" :key="item.itemId" class="info-card"><span class="card-kicker">学习单元 {{ index + 1 }} · {{ item.itemType }}</span><h3>{{ item.text || '学习内容' }}</h3><div v-if="item.options.length" class="option-list"><span v-for="option in item.options" :key="option.key" class="option">{{ option.key }} · {{ option.text }}</span></div></article>
       <article v-if="!content.items.length" class="info-card"><h3>课程没有可学习单元</h3><p>这节课程的内容正在准备中，先看看其他课程吧。</p></article>
-      <div class="actions"><button class="button button--secondary" type="button" @click="saveAndExit">保存并稍后继续</button><button class="button button--primary" type="button" @click="complete">完成本步</button></div>
+      <div class="actions"><button class="button button--secondary" type="button" @click="saveAndExit">保存并返回今日任务</button></div>
     </template>
   </section>
 </template>

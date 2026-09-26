@@ -465,6 +465,9 @@ export async function listVocabularyBatch(input: { localDate?: string; dailyNewT
   const localDate = input.localDate ?? new Date().toISOString().slice(0, 10)
   const response = await apiClient.post<unknown>(B10_GATEWAY_ROUTES.learning.vocabularyBatch, { localDate, timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Shanghai', dailyNewTarget: input.dailyNewTarget ?? 20, maxDailyReview: input.maxDailyReview ?? 50, scheduleType: 'DAILY' }, withB10Headers(`b10-srs-batch-${localDate}`))
   const source = recordValue(unwrap(response))
+  if (source.status === 'RECOVERY_REQUIRED' && source.reasonCode === 'UNTRUSTED_REVIEW_EVIDENCE') {
+    throw new Error('复习记录待核验，暂不可结算。')
+  }
   const items = listFrom(source.items ?? source.cards, ['items', 'cards'])
   const cards = await Promise.all(items.map(async (item, index) => {
     const raw = recordValue(item)
@@ -622,7 +625,7 @@ export async function createReadingMining(articleId: number, blockId: string, se
 }
 
 export async function listGrammarPoints(): Promise<B10GrammarPoint[]> {
-  const response = await apiClient.get<unknown>(`${B10_GATEWAY_ROUTES.content.grammarPoints}${query({ limit: 50 })}`, withB10Headers())
+  const response = await apiClient.get<unknown>(`${B10_GATEWAY_ROUTES.content.grammarPoints}${query({ pageSize: 50 })}`, withB10Headers())
   return listFrom(response).flatMap((item) => { const point = parseGrammarPoint(item); return point ? [point] : [] })
 }
 

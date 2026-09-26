@@ -7,6 +7,9 @@ import com.englishflow.content.domain.ContentChannel;
 import com.englishflow.content.domain.ContentVersionId;
 import com.englishflow.content.domain.PublicContentProjection;
 
+import java.net.InetAddress;
+import java.net.URI;
+import java.net.UnknownHostException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -119,6 +122,7 @@ public final class ContentHttpController {
             @RequestParam(required = false) String contentLocale,
             Authentication authentication,
             @RequestHeader HttpHeaders headers) {
+        ContentHttpPrincipals.requireLearnerRead(authentication);
         ContentActor actor = principals.from(authentication);
         List<ContentReadService.CatalogEntry> projections = reads.catalogEntries(
                 ContentAudience.LEARNER, ContentChannel.LEARNER, actor,
@@ -137,6 +141,7 @@ public final class ContentHttpController {
             @RequestParam(required = false) String reason,
             Authentication authentication,
             @RequestHeader HttpHeaders headers) {
+        ContentHttpPrincipals.requireLearnerRead(authentication);
         ContentActor actor = principals.from(authentication);
         String reasonCode = reason == null || reason.isBlank() ? "PIN_UNAVAILABLE" : reason.trim();
         Map<String, Object> data = reads.resolveSubstitute(
@@ -165,6 +170,7 @@ public final class ContentHttpController {
             @RequestParam(required = false) Long versionPin,
             Authentication authentication,
             @RequestHeader HttpHeaders headers) {
+        ContentHttpPrincipals.requireLearnerRead(authentication);
         ContentActor actor = principals.from(authentication);
         ContentReadService.ReadResult read = reads.readByCodeResult(
                 contentCode, ContentAudience.LEARNER, ContentChannel.LEARNER,
@@ -237,46 +243,205 @@ public final class ContentHttpController {
     }
 
     /** Convert the durable facet payload to the B9 public allow-list. */
-    private static Map<String, Object> publicFacet(String facetType, Map<String, Object> payload) {
+    static Map<String, Object> publicFacet(String facetType, Map<String, Object> payload) {
         if (payload.isEmpty()) {
             return Map.of();
         }
         Map<String, Object> facet = new LinkedHashMap<>();
         switch (facetType) {
             case "DOWNLOAD" -> {
-                String platform = textOr(payload.get("platform"), "WEB").toUpperCase(Locale.ROOT);
+                String platform = text(payload.get("platform")).toUpperCase(Locale.ROOT);
                 if (!List.of("WEB", "IOS", "ANDROID", "IPAD", "WECHAT_MINI_PROGRAM", "WINDOWS")
                         .contains(platform)) {
                     return Map.of();
                 }
+                String channel = text(payload.get("channel"));
+                String status = text(payload.get("status")).toUpperCase(Locale.ROOT).replace('-', '_');
+                if (channel.isBlank() || !List.of("AVAILABLE", "UNAVAILABLE", "COMING_SOON").contains(status)) {
+                    return Map.of();
+                }
+                String downloadUrl = text(payload.get("downloadUrl"));
+                boolean usableDownloadUrl = publicHttpsUrl(downloadUrl);
+                if ("AVAILABLE".equals(status) && !usableDownloadUrl) {
+                    return Map.of();
+                }
                 facet.put("platform", platform);
-                facet.put("channel", textOr(payload.get("channel"), textOr(payload.get("name"), platform)));
-                facet.put("status", textOr(payload.get("status"), text(payload.get("availability")))
-                        .toUpperCase(Locale.ROOT).replace('-', '_'));
-                putIfText(facet, "downloadUrl", payload.get("downloadUrl"));
+                facet.put("channel", channel);
+                facet.put("status", status);
+                if (usableDownloadUrl) {
+                    facet.put("downloadUrl", downloadUrl);
+                }
                 putIfText(facet, "version", payload.get("version"));
             }
             case "ANNOUNCEMENT" -> {
-                facet.put("announcementCode", textOr(payload.get("announcementCode"), text(payload.get("id"))));
-                facet.put("title", text(payload.get("title")));
-                facet.put("summary", text(payload.get("summary")));
-                putIfText(facet, "publishedAt", payload.get("publishedAt"));
+                String code = text(payload.get("announcementCode"));
+                String title = text(payload.get("title"));
+                String summary = text(payload.get("summary"));
+                String publishedAt = text(payload.get("publishedAt"));
+                if (code.isBlank() || title.isBlank() || summary.isBlank() || !validInstant(publishedAt)) {
+                    return Map.of();
+                }
+                facet.put("announcementCode", code);
+                facet.put("title", title);
+                facet.put("summary", summary);
+                facet.put("publishedAt", publishedAt);
                 putIfText(facet, "expiresAt", payload.get("expiresAt"));
             }
             case "COMPLIANCE" -> {
-                facet.put("noticeCode", textOr(payload.get("noticeCode"), text(payload.get("id"))));
-                facet.put("title", text(payload.get("title")));
-                facet.put("body", textOr(payload.get("body"), text(payload.get("description"))));
-                facet.put("version", textOr(payload.get("version"), text(payload.get("status"))));
-                putIfText(facet, "effectiveAt", payload.get("effectiveAt"));
+                String code = text(payload.get("noticeCode"));
+                String title = text(payload.get("title"));
+                String body = text(payload.get("body"));
+                String version = text(payload.get("version"));
+                String effectiveAt = text(payload.get("effectiveAt"));
+                if (code.isBlank() || title.isBlank() || body.isBlank() || version.isBlank()
+                        || !validInstant(effectiveAt)) {
+                    return Map.of();
+                }
+                facet.put("noticeCode", code);
+                facet.put("title", title);
+                facet.put("body", body);
+                facet.put("version", version);
+                facet.put("effectiveAt", effectiveAt);
             }
             default -> {
                 return Map.of();
             }
         }
-        return facet.values().stream().anyMatch(value -> value instanceof String string && !string.isBlank())
-                ? Collections.unmodifiableMap(facet)
-                : Map.of();
+        return Collections.unmodifiableMap(facet);
+    }
+
+    private static boolean validInstant(String value) {
+        if (value.isBlank()) {
+            return false;
+        }
+        try {
+            Instant.parse(value);
+            return true;
+        } catch (RuntimeException ignored) {
+            return false;
+        }
+    }
+
+    /**
+     * Validate download links without making a network request from a public
+     * read. DNS names still require publisher-side verification to resolve to
+     * public addresses; literal local/private targets and local-only names are
+     * rejected here before they can be exposed to browsers.
+     */
+    private static boolean publicHttpsUrl(String value) {
+        if (value.isBlank()) {
+            return false;
+        }
+        try {
+            URI uri = URI.create(value);
+            if (!uri.isAbsolute() || !"https".equals(uri.getScheme())
+                    || uri.getRawAuthority() == null || uri.getRawUserInfo() != null
+                    || uri.getHost() == null || uri.getPort() == 0 || uri.getPort() > 65535) {
+                return false;
+            }
+
+            String host = uri.getHost().toLowerCase(Locale.ROOT);
+            if (host.startsWith("[") && host.endsWith("]")) {
+                host = host.substring(1, host.length() - 1);
+            }
+            if (host.contains(":")) {
+                return globallyRoutableAddress(InetAddress.getByName(host).getAddress());
+            }
+            if (host.matches("[0-9.]+")) {
+                if (!host.matches("(?:[0-9]{1,3}\\.){3}[0-9]{1,3}")) {
+                    return false;
+                }
+                String[] octets = host.split("\\.");
+                byte[] address = new byte[4];
+                for (int index = 0; index < octets.length; index++) {
+                    if (octets[index].length() > 1 && octets[index].startsWith("0")) {
+                        return false;
+                    }
+                    int octetValue = Integer.parseInt(octets[index]);
+                    if (octetValue > 255) {
+                        return false;
+                    }
+                    address[index] = (byte) octetValue;
+                }
+                return globallyRoutableAddress(address);
+            }
+            return publicDnsHostname(host);
+        } catch (IllegalArgumentException | UnknownHostException ignored) {
+            return false;
+        }
+    }
+
+    private static boolean publicDnsHostname(String host) {
+        if (host.endsWith(".")) {
+            host = host.substring(0, host.length() - 1);
+        }
+        if (host.length() > 253 || host.contains("..")) {
+            return false;
+        }
+        String normalized = host.toLowerCase(Locale.ROOT);
+        if (normalized.equals("localhost") || normalized.endsWith(".localhost")
+                || normalized.equals("local") || normalized.endsWith(".local")
+                || normalized.equals("internal") || normalized.endsWith(".internal")
+                || normalized.equals("lan") || normalized.endsWith(".lan")
+                || normalized.equals("home.arpa") || normalized.endsWith(".home.arpa")
+                || normalized.equals("test") || normalized.endsWith(".test")
+                || normalized.equals("example") || normalized.endsWith(".example")
+                || normalized.equals("invalid") || normalized.endsWith(".invalid")
+                || normalized.equals("alt") || normalized.endsWith(".alt")
+                || normalized.equals("onion") || normalized.endsWith(".onion")
+                || normalized.equals("corp") || normalized.endsWith(".corp")
+                || normalized.equals("private") || normalized.endsWith(".private")) {
+            return false;
+        }
+        String[] labels = normalized.split("\\.");
+        if (labels.length < 2 || labels[labels.length - 1].length() < 2
+                || !labels[labels.length - 1].matches("[a-z][a-z0-9-]*")) {
+            return false;
+        }
+        for (String label : labels) {
+            if (label.isBlank() || label.length() > 63
+                    || !label.matches("[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static boolean globallyRoutableAddress(byte[] address) {
+        if (address.length == 4) {
+            int first = Byte.toUnsignedInt(address[0]);
+            int second = Byte.toUnsignedInt(address[1]);
+            int third = Byte.toUnsignedInt(address[2]);
+            return first != 0 && first != 10 && first != 127 && first < 224
+                    && !(first == 100 && second >= 64 && second <= 127)
+                    && !(first == 169 && second == 254)
+                    && !(first == 172 && second >= 16 && second <= 31)
+                    && !(first == 192 && (second == 0 || second == 2 || second == 168))
+                    && !(first == 192 && second == 88 && third == 99)
+                    && !(first == 198 && (second == 18 || second == 19
+                            || (second == 51 && third == 100)))
+                    && !(first == 203 && second == 0 && third == 113);
+        }
+        if (address.length != 16) {
+            return false;
+        }
+        boolean ipv4Mapped = true;
+        for (int index = 0; index < 10; index++) {
+            ipv4Mapped &= address[index] == 0;
+        }
+        ipv4Mapped &= address[10] == (byte) 0xff && address[11] == (byte) 0xff;
+        if (ipv4Mapped) {
+            return globallyRoutableAddress(new byte[] { address[12], address[13], address[14], address[15] });
+        }
+
+        int first = Byte.toUnsignedInt(address[0]);
+        int second = Byte.toUnsignedInt(address[1]);
+        int third = Byte.toUnsignedInt(address[2]);
+        int fourth = Byte.toUnsignedInt(address[3]);
+        return (first & 0xe0) == 0x20 // globally assigned unicast range 2000::/3
+                && (first & 0xfe) != 0xfc // unique-local fc00::/7
+                && first != 0xff // multicast
+                && !(first == 0x20 && second == 0x01 && third == 0x0d && fourth == 0xb8); // documentation prefix
     }
 
     private static void putIfText(Map<String, Object> target, String key, Object value) {

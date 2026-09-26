@@ -33,6 +33,13 @@
           "legacyReadOnly": true,
           "runtimeStatus": "NOT_RUNTIME_VERIFIED"
         },
+        "x-current-runtime-divergence": {
+          "sourceVerified": true,
+          "owner": "assessment-service",
+          "requiredPermission": "assessment.session.write",
+          "writesAssessmentSessionOnFirstRead": true,
+          "resolution": "Align the running GET adapter with the frozen read-only learning projection before promoting runtime acceptance."
+        },
         "security": [
           {
             "bearerAuth": []
@@ -2304,6 +2311,7 @@
           "canonicalRoute": "/api/v1/learning/reports/{reportType}",
           "canonicalRouteExample": "/api/v1/learning/reports/DAILY",
           "legacyWirePreserved": true,
+          "legacyUnverifiedPolicy": "Client-rated b25 reviews cannot populate review count, accuracy, forgetting rate, mastery or weakness metrics; return PARTIAL with null metrics and UNVERIFIED_LEGACY_REVIEW provenance until trusted owner facts exist.",
           "noIndependentCalculation": true,
           "noDoubleWrite": true,
           "write": false,
@@ -2402,6 +2410,7 @@
           "canonicalRoute": "/api/v1/learning/reports/{reportType}",
           "canonicalRouteExample": "/api/v1/learning/reports/WEEKLY",
           "legacyWirePreserved": true,
+          "legacyUnverifiedPolicy": "Client-rated b25 reviews cannot populate review count, accuracy, forgetting rate, mastery or weakness metrics; return PARTIAL with null metrics and UNVERIFIED_LEGACY_REVIEW provenance until trusted owner facts exist.",
           "noIndependentCalculation": true,
           "noDoubleWrite": true,
           "write": false,

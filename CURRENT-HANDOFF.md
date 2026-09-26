@@ -1,12 +1,14 @@
 # CURRENT-HANDOFF —— 语学星 Phase 1 重基线（P1R）
 
 > 本文件是**跨会话交接**的入口，记录"当前在哪、下一步做什么、谁在等谁"。
-> 最后更新：**2026-09-22**（本机真实运行验证 T1–T21 + 三端 UI 统一交付合并；保留既有完整度审计范围）。当前进度以任务台账和实际命令为准；历史完整度源码检查绑定 `2c2cfa2e`，详见[完整度梳理日志](requirements/backlog/v2-phase1-rebaseline/execution/COMPLETENESS-AUDIT-2026-09-20.md)。本次运行验证与 UI 提交都不自动更新该审计基线。
-> **§0/§1/§5/§6 是当前交接；中间带日期的历史段落保留原验证范围，不作为最新全绿结论。**
+> 最后更新：**2026-09-26 14:46 CST**（四端测试接手快照）。当前测试结论以[9 月 26 日接手报告](artifacts/uat-2026-09-26/README.md)和[56 项覆盖台账](artifacts/uat-2026-09-23/coverage-ledger.md)为准；P1R 任务状态仍以编号任务台账为准。历史完整度源码检查绑定 `2c2cfa2e`，详见[完整度梳理日志](requirements/backlog/v2-phase1-rebaseline/execution/COMPLETENESS-AUDIT-2026-09-20.md)。
+> **§0 顶部与 §6 的 2026-09-26 接手顺序是当前交接；其余带日期的记录均保留原验证范围，不作为当前环境全绿结论。**
 
 ---
 
 ## 0. 检查点
+
+**2026-09-26 四端测试接手**：[完整接手报告](artifacts/uat-2026-09-26/README.md)已汇总环境、正向证据、失败和下一轮顺序。当前工作区源码在本机以 16 个 Java 主机进程和四个前端开发服务供测试；14:46 CST 只读复核确认 Gateway/IAM、四端固定入口在监听，5 个基础设施容器 healthy。旧私有 UAT 的 26 个容器已停止，不能沿用 9 月 25 日 Batch24 的 19/19 健康结论描述当前环境。Chromium 已实测合成成人账号 Web 注册/登录/首次设置与 Mobile H5 登录，但学习首页 `503 STORE_FAILURE`；登录态阅读列表遭 Gateway 预检 403、普通 GET 404，技能相关路由也有同类断路。管理端本轮只测登录页。最近完整 56 项 PAGE-P1 台账仍 **PASS 0 / PARTIAL 29 / BLOCKED 27 / NOT_TESTED 0**，整页验收完成 0/56；不能把检查覆盖 56/56 或局部登录成功折算为业务完成。证据见[本机交接](artifacts/uat-2026-09-26/local-latest-runtime/operational-handoff.md)、[登录冒烟](artifacts/uat-2026-09-26/local-latest-runtime/login-smoke/summary.md)和[阅读诊断](artifacts/uat-2026-09-26/local-latest-runtime/reading-diagnosis/summary.md)。
 
 **本机真实运行验证（2026-09-22，T1–T21）+ 与三端 UI 交付合并**：在真实 MySQL/Redis/Kafka/MinIO + 固定端口服务上把 21 项本地可做任务逐项跑通并修复。**关键结论：运行测试抓出 17 项静态门禁与内存单测都抓不到的缺陷**（403 被伪装成 400、契约版本字段被忽略、分页跨页丢行、定时批次中断、假 APPLIED 补偿、真实 MySQL `event_name` 列缺失等），全部已修并复验。新打通两条此前没有运行证据的链路：**content outbox → Kafka**、**learning outbox → Kafka → gamification 结算**。详见[本机真实运行验证](docs/07-operations/local-runtime-verification-2026-09-21.md)。**注意与下方 UI 记录的口径差异**：下方管理端记录写"真实 Gateway 本轮不可达"，那是 UI 那一轮的环境；本轮 6 个服务（IAM/网关/learner/content/learning/assessment）连同 audit/workflow/social/notification/gamification 都在本地起过并跑通真实链路。P1R 台账状态、manifest、证据绑定**均未改动**；未闭合项（M1014 具名残留、content 入站消费者断言、learner-web 完整首日旅程、`contracts:validate` 的 IAM 旧失败）逐条列在验证快照 §4。
 
@@ -141,7 +143,7 @@ git rev-list --count origin/dev..HEAD   # 领先 origin 多少（推送后应为
 
 ---
 
-## 5. 阻塞与边界（2026-09-20 更新）
+## 5. 阻塞与边界（2026-09-20 历史审计；最新测试见 §0 和 §6）
 
 | 事项 | 状态 |
 |---|---|
@@ -155,7 +157,15 @@ git rev-list --count origin/dev..HEAD   # 领先 origin 多少（推送后应为
 
 ---
 
-## 6. 下一步（按优先级，2026-09-22 更新）
+## 6. 测试接手顺序（2026-09-26）
+
+1. 从[9 月 26 日接手报告](artifacts/uat-2026-09-26/README.md)进入，先核对当前源码、固定端口、服务健康和数据源；保留工作区已有未提交改动与私有数据卷。9 月 25 日私有容器报告是历史环境证据，不代表当前源码已容器化复验。
+2. 在合法本地合成成人登录态复现首页 `503 STORE_FAILURE`，追踪确认目标、learning owner 的计划引用及 learner 首页投影；以真实任务事实复测，不能补假 READY/任务。
+3. 按契约与 owner 边界处理阅读、语法练习/掌握度、写作提示、听力素材的 Gateway 路由和预检拒绝；重建 Gateway 后在浏览器登录态复测 GET/OPTIONS、错误提示与服务侧鉴权。[阅读诊断](artifacts/uat-2026-09-26/local-latest-runtime/reading-diagnosis/summary.md)给出 9 条路径及源码定位。
+4. 继续首日目标→canonical 定级→计划/今日→可信内容/判分/复习/报告，并单独验证管理授权、双审发布、官网投影及跨端读回。正式文书、版权、审核员及题源缺事实时保持阻断；原生 App/iPad/小程序另列环境。
+5. 对每项修复记录页面、请求、Gateway、owner 持久化、失败恢复与跨端证据，再更新[PAGE-P1 台账](artifacts/uat-2026-09-23/coverage-ledger.md)的具体行和判定。构建、健康、HTTP 200 或局部测试不能直接升 PASS；P1R 状态另走任务台账与 Evidence Gate。
+
+### 2026-09-22 历史计划（保留当时范围）
 
 1. 在现有任务范围修复契约/路由/生成物不一致，复跑失败用例及适用回归，再补完整 Evidence Gate；按验证结果更新证据绑定。**已知剩余契约失败 1 条**：`POST /api/v1/iam/account-deletions` 缺 `x-idempotency` 声明（旧失败，非本轮引入）。
 2. **（2026-09-22 收窄）** 真实补偿已改为「无 transport 即 `COMPENSATION_FAILED`」不再假成功，owner 真调用仍待接；事件处理已打通 content→Kafka 与 learning→Kafka→gamification 两条链路。**仍未闭合**：M1014 载荷缺 `rootEventId`/`contentPin`/`rulePin.ruleDigest`（需内容快照事实）、content 入站消费者 `cg.content-from-iam.v1` 无端到端断言、口语正常入口、跨服务导出/匿名化。

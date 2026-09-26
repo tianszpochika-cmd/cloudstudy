@@ -10,6 +10,7 @@ public final class GamificationDomainException extends RuntimeException {
         UNAUTHORIZED,
         FORBIDDEN,
         NOT_FOUND,
+        ENTITLEMENT_UNAVAILABLE,
         IDEMPOTENCY_CONFLICT,
         EVENT_CONFLICT,
         LEDGER_INVARIANT
@@ -48,5 +49,10 @@ public final class GamificationDomainException extends RuntimeException {
 
     public static GamificationDomainException notFound() {
         return new GamificationDomainException(Code.NOT_FOUND, "resource was not found");
+    }
+
+    public static GamificationDomainException entitlementUnavailable() {
+        return new GamificationDomainException(Code.ENTITLEMENT_UNAVAILABLE,
+                "奖励与装扮暂不可用");
     }
 }

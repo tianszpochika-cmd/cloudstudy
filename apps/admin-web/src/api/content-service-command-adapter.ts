@@ -27,6 +27,7 @@ export interface ContentServiceCommandPort {
   createDraft(command: ContentDraftCommand): Promise<ContentCommandReceipt>
   saveDraft(contentId: string, command: ContentDraftSaveCommand): Promise<ContentCommandReceipt>
   validateDraft(contentId: string): Promise<ContentCommandReceipt>
+  verifyReviewSubmissionReady(contentId: string): Promise<boolean>
   submitReview(contentId: string): Promise<ContentCommandReceipt>
   decideReview(taskId: string, stage: ReviewStage, decision: ReviewDecision): Promise<ContentCommandReceipt>
   publish(contentId: string): Promise<ContentCommandReceipt>
@@ -53,7 +54,7 @@ type RecordValue = Record<string, unknown>
 type B9AdminState = RecordValue
 type B9Version = RecordValue
 
-const CONTENT_STATE_LIST_PATH = '/admin/content-commands?limit=50'
+const CONTENT_STATE_LIST_PATH = '/admin/content-commands?pageSize=100'
 const COMMAND_PATH = '/admin/content-commands'
 
 function isRecord(value: unknown): value is RecordValue {
@@ -110,31 +111,35 @@ function toSnapshot(state: B9AdminState): ContentSnapshot | null {
     .sort((left, right) => integer(right.versionNumber) - integer(left.versionNumber))
     .at(1)
   const latest = latestVersion(state)
+  const versionId = text(latest.contentVersionId ?? latest.versionNumber)
   return {
     contentId: contentCode,
     contentCode,
-    versionId: text(latest.contentVersionId ?? latest.versionNumber),
+    versionId,
     title: text(state.title, contentCode),
-    status: contentStatus(state.latestStatus),
+    // Some legacy definitions have no content_version. The owner currently
+    // reports latestStatus=DRAFT for them; never present that as an editable draft.
+    status: versionId ? contentStatus(state.latestStatus) : 'CONFLICT',
     stateVersion: text(state.stateVersion, '1'),
     authorSubject: nullableText(state.authorSubject),
     publishedVersionId: nullableText(previousPublished?.contentVersionId ?? previousPublished?.versionNumber),
     updatedAt: nullableText(latest.publishedAt),
+    reviewSubmissionReady: state.reviewSubmissionReady === true,
   }
 }
 
-function reviewTasks(state: B9AdminState, contexts: Map<string, { contentCode: string; expectedStateVersion: number; targetVersionNumber: number }>): ReviewTaskProjection[] {
+function reviewTasks(state: B9AdminState, contexts: Map<string, { contentCode: string; expectedStateVersion: number }>): ReviewTaskProjection[] {
   const contentCode = text(state.contentCode)
   const latest = latestVersion(state)
+  if (!text(latest.contentVersionId ?? latest.versionNumber)) return []
   const versionId = text(latest.contentVersionId ?? latest.versionNumber, '1')
-  const targetVersionNumber = integer(latest.versionNumber, 1)
   const expectedStateVersion = integer(state.stateVersion, 1)
   return list(state.reviewStages).flatMap((rawStage): ReviewTaskProjection[] => {
     const stageValue = text(rawStage).toUpperCase()
     const stage: ReviewStage | null = stageValue.startsWith('FIRST') ? 'FIRST' : stageValue.startsWith('FINAL') ? 'FINAL' : null
     if (!stage) return []
     const reviewTaskId = `b9-review:${encodeURIComponent(contentCode)}:${encodeURIComponent(versionId)}:${stage}`
-    contexts.set(reviewTaskId, { contentCode, expectedStateVersion, targetVersionNumber })
+    contexts.set(reviewTaskId, { contentCode, expectedStateVersion })
     return [{
       reviewTaskId,
       contentId: contentCode,
@@ -148,11 +153,39 @@ function reviewTasks(state: B9AdminState, contexts: Map<string, { contentCode: s
   })
 }
 
+function requireVersion(state: B9AdminState): B9Version {
+  const latest = latestVersion(state)
+  if (!text(latest.contentVersionId ?? latest.versionNumber)) {
+    throw new ContentCommandError('内容版本缺失，需修复后再操作。', { code: 'CONTENT_VERSION_MISSING', status: 409, retryable: false })
+  }
+  return latest
+}
+
+function sameSelectedVersion(selected: B9AdminState, fresh: B9AdminState, contentId: string): boolean {
+  const selectedVersion = latestVersion(selected)
+  const freshVersion = latestVersion(fresh)
+  const selectedStateVersion = integer(selected.stateVersion, -1)
+  const freshStateVersion = integer(fresh.stateVersion, -1)
+  return text(fresh.contentCode) === contentId
+    && text(freshVersion.contentVersionId ?? freshVersion.versionNumber) === text(selectedVersion.contentVersionId ?? selectedVersion.versionNumber)
+    && selectedStateVersion >= 1
+    && freshStateVersion === selectedStateVersion
+}
+
 function stateList(value: unknown): B9AdminState[] {
+  if (isRecord(value) && Array.isArray(value.data)) return value.data.filter(isRecord)
   const source = unwrap(value)
   const items = list(source.items)
   if (items.length) return items.filter(isRecord)
   return source.contentCode ? [source] : []
+}
+
+function nextStateCursor(value: unknown): string | null {
+  const meta = isRecord(value) && isRecord(value.meta) ? value.meta : {}
+  if (meta.hasMore !== true) return null
+  const cursor = text(meta.nextCursor)
+  if (!cursor) throw new ContentCommandError(adminT('apiCommandAdapter.projectionStale'), { code: 'CONTENT_CURSOR_INVALID', status: 502, retryable: true })
+  return cursor
 }
 
 function idempotencyKey(prefix: string): string {
@@ -226,7 +259,7 @@ function acceptedReceipt(value: unknown): ContentCommandReceipt {
 
 export function createContentServiceCommandAdapter(options: { readonly client: AdminApiClient } = { client: adminClient }): ContentServiceCommandPort {
   const stateByCode = new Map<string, B9AdminState>()
-  const reviewContexts = new Map<string, { contentCode: string; expectedStateVersion: number; targetVersionNumber: number }>()
+  const reviewContexts = new Map<string, { contentCode: string; expectedStateVersion: number }>()
 
   async function request(path: string, method: 'GET' | 'POST', body: unknown, key: string): Promise<unknown> {
     try {
@@ -253,15 +286,30 @@ export function createContentServiceCommandAdapter(options: { readonly client: A
   return {
     target: 'content-service',
     async getWorkspaceProjection() {
-      const response = await request(CONTENT_STATE_LIST_PATH, 'GET', undefined, 'content-state-read')
-      const states = stateList(response)
+      const states: B9AdminState[] = []
+      const seenCursors = new Set<string>()
+      let cursor: string | null = null
+      let requestId: string | null = null
+      for (let page = 0; page < 100; page += 1) {
+        const path = cursor ? `${CONTENT_STATE_LIST_PATH}&cursor=${encodeURIComponent(cursor)}` : CONTENT_STATE_LIST_PATH
+        const response = await request(path, 'GET', undefined, 'content-state-read')
+        if (page === 0) requestId = toRequestId(response)
+        states.push(...stateList(response))
+        const nextCursor = nextStateCursor(response)
+        if (!nextCursor) break
+        if (seenCursors.has(nextCursor) || page === 99) {
+          throw new ContentCommandError(adminT('apiCommandAdapter.projectionStale'), { code: 'CONTENT_CURSOR_INVALID', status: 502, retryable: true })
+        }
+        seenCursors.add(nextCursor)
+        cursor = nextCursor
+      }
       stateByCode.clear()
       reviewContexts.clear()
       states.forEach((state) => { const code = text(state.contentCode); if (code) stateByCode.set(code, state) })
       return {
         contents: states.map(toSnapshot).filter((item): item is ContentSnapshot => item !== null),
         reviewTasks: states.flatMap((state) => reviewTasks(state, reviewContexts)),
-        requestId: toRequestId(response),
+        requestId,
       }
     },
     async createDraft(input) {
@@ -269,7 +317,7 @@ export function createContentServiceCommandAdapter(options: { readonly client: A
     },
     async saveDraft(contentId, input) {
       const state = stateFor(contentId)
-      const latest = latestVersion(state)
+      const latest = requireVersion(state)
       const sourceCode = text(latest.sourceCode)
       const licenseCode = text(latest.licenseCode)
       if (!sourceCode || !licenseCode) throw new ContentCommandError(adminT('apiCommandAdapter.rightsContextRequired'), { code: 'CONTENT_RIGHTS_CONTEXT_REQUIRED', status: 409, retryable: false })
@@ -283,18 +331,41 @@ export function createContentServiceCommandAdapter(options: { readonly client: A
     },
     async validateDraft(contentId) {
       const state = stateFor(contentId)
-      const latest = latestVersion(state)
-      return command({ command: 'VALIDATE_DRAFT', contentCode: contentId, expectedStateVersion: integer(state.stateVersion, 1), targetVersionNumber: integer(latest.versionNumber, 1) }, `content-validate-${contentId}`)
+      requireVersion(state)
+      return command({ command: 'VALIDATE_DRAFT', contentCode: contentId, expectedStateVersion: integer(state.stateVersion, 1) }, `content-validate-${contentId}`)
+    },
+    async verifyReviewSubmissionReady(contentId) {
+      const selectedState = stateFor(contentId)
+      requireVersion(selectedState)
+      if (selectedState.reviewSubmissionReady !== true) return false
+      try {
+        const response = await request(`${COMMAND_PATH}/${encodeURIComponent(contentId)}`, 'GET', undefined, 'content-state-read')
+        const fresh = unwrap(response)
+        return sameSelectedVersion(selectedState, fresh, contentId)
+          && text(fresh.latestStatus).toUpperCase() === 'DRAFT'
+          && fresh.reviewSubmissionReady === true
+      } catch {
+        return false
+      }
     },
     async submitReview(contentId) {
-      const state = stateFor(contentId)
-      const latest = latestVersion(state)
-      return command({ command: 'SUBMIT_REVIEW', contentCode: contentId, expectedStateVersion: integer(state.stateVersion, 1), targetVersionNumber: integer(latest.versionNumber, 1) }, `content-submit-${contentId}`)
+      const selectedState = stateFor(contentId)
+      requireVersion(selectedState)
+      const response = await request(`${COMMAND_PATH}/${encodeURIComponent(contentId)}`, 'GET', undefined, 'content-state-read')
+      const state = unwrap(response)
+      requireVersion(state)
+      if (!sameSelectedVersion(selectedState, state, contentId)) {
+        throw new ContentCommandError(adminT('apiCommandAdapter.projectionStale'), { code: 'CONTENT_STATE_STALE', status: 409, retryable: true })
+      }
+      if (text(state.latestStatus).toUpperCase() !== 'DRAFT' || state.reviewSubmissionReady !== true) {
+        throw new ContentCommandError('版权、校验或媒体材料未就绪，暂不能提交。', { code: 'CONTENT_REVIEW_NOT_READY', status: 409, retryable: false })
+      }
+      return command({ command: 'SUBMIT_REVIEW', contentCode: contentId, expectedStateVersion: integer(state.stateVersion, 1) }, `content-submit-${contentId}`)
     },
     async decideReview(taskId, stage, decision) {
       const context = reviewContexts.get(taskId)
       if (!context) throw new ContentCommandError(adminT('apiCommandAdapter.reviewTaskStale'), { code: 'REVIEW_TASK_STALE', status: 409, retryable: true })
-      return command({ command: stage === 'FINAL' ? 'REVIEW_FINAL' : 'REVIEW_FIRST', contentCode: context.contentCode, expectedStateVersion: context.expectedStateVersion, targetVersionNumber: context.targetVersionNumber, reviewDecision: decision }, `review-${taskId}`)
+      return command({ command: stage === 'FINAL' ? 'REVIEW_FINAL' : 'REVIEW_FIRST', contentCode: context.contentCode, expectedStateVersion: context.expectedStateVersion, reviewDecision: decision }, `review-${taskId}`)
     },
     async publish(contentId) {
       const state = stateFor(contentId)

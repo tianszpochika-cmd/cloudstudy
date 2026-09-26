@@ -1,0 +1,44 @@
+{
+  "source": "browser-only fixtures; no real reward or avatar grant verified",
+  "results": [
+    {
+      "kind": "empty",
+      "width": 320,
+      "errors": []
+    },
+    {
+      "kind": "owner-empty",
+      "width": 320,
+      "errors": []
+    },
+    {
+      "kind": "default",
+      "width": 320,
+      "errors": []
+    },
+    {
+      "kind": "empty",
+      "width": 390,
+      "errors": []
+    },
+    {
+      "kind": "owner-empty",
+      "width": 390,
+      "errors": []
+    },
+    {
+      "kind": "default",
+      "width": 390,
+      "errors": []
+    },
+    {
+      "kind": "retry",
+      "width": 390,
+      "errors": []
+    },
+    {
+      "kind": "anonymous",
+      "returnTo": "/pages/b4-avatar/b4-avatar"
+    }
+  ]
+}

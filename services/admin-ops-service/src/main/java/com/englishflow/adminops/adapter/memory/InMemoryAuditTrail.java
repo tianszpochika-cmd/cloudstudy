@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.englishflow.adminops.domain.AuditEvent;
+import com.englishflow.adminops.domain.AuditPage;
 import com.englishflow.adminops.domain.AuditRecord;
 import com.englishflow.adminops.domain.AuditTrail;
 
@@ -24,5 +25,21 @@ public final class InMemoryAuditTrail implements AuditTrail {
     @Override
     public synchronized List<AuditRecord> snapshot() {
         return List.copyOf(records);
+    }
+
+    @Override
+    public synchronized AuditPage page(String tenantRef, Long beforeSequence, int pageSize) {
+        List<AuditRecord> items = new ArrayList<>();
+        Long lastSequence = null;
+        for (int index = records.size() - 1; index >= 0; index--) {
+            long sequence = index + 1L;
+            if (beforeSequence != null && sequence >= beforeSequence) continue;
+            AuditRecord record = records.get(index);
+            if (!tenantRef.equals(record.tenantRef())) continue;
+            if (items.size() == pageSize) return new AuditPage(items, lastSequence);
+            items.add(record);
+            lastSequence = sequence;
+        }
+        return new AuditPage(items, null);
     }
 }

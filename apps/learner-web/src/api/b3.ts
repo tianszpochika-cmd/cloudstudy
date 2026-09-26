@@ -5,7 +5,7 @@ import { isRecord, unwrap } from '../domain/b3'
 function withKey(key: string): { headers: Record<string, string> } { return { headers: { 'Idempotency-Key': key } } }
 function listData<T>(value: unknown): T[] { const source = unwrap(value); return isRecord(source) && Array.isArray(source.items) ? source.items as T[] : [] }
 
-export async function listGrammarPoints(): Promise<GrammarPoint[]> { return listData<GrammarPoint>(await apiClient.get('/grammar/points?limit=20')) }
+export async function listGrammarPoints(): Promise<GrammarPoint[]> { return listData<GrammarPoint>(await apiClient.get('/grammar/points?pageSize=20')) }
 export async function getSentenceGraph(sentenceId: number): Promise<SentenceGraph> { return unwrap(await apiClient.get(`/grammar/sentences/${sentenceId}`)) as SentenceGraph }
 export async function listGrammarExercises(grammarPointId?: number): Promise<GrammarExercise[]> { const suffix = grammarPointId ? `&grammarPointId=${grammarPointId}` : ''; return listData<GrammarExercise>(await apiClient.get(`/grammar/exercises?limit=20${suffix}`)) }
 export async function submitGrammarAttempt(exerciseId: number, answer: Record<string, unknown>): Promise<Record<string, unknown>> { const stableKey = `b3-answer-${exerciseId}-${Date.now()}`; return unwrap(await apiClient.post('/grammar/practice/attempts', { exerciseId, answer, clientAnswerId: stableKey, contentVersionId: 301 }, withKey(stableKey))) as Record<string, unknown> }

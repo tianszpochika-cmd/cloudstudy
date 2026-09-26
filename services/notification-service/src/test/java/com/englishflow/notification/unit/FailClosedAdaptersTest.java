@@ -8,6 +8,7 @@ import com.englishflow.notification.adapter.failclosed.FailClosedOutboxEventPort
 import com.englishflow.notification.adapter.failclosed.FailClosedTrustedEventReceiptStore;
 import com.englishflow.notification.adapter.failclosed.FailClosedWorkflowPort;
 import com.englishflow.notification.domain.NotificationChannel;
+import com.englishflow.notification.domain.NotificationCategory;
 import com.englishflow.notification.domain.NotificationDomainException;
 import com.englishflow.notification.domain.RecoveryCommand;
 import com.englishflow.notification.domain.RecoveryAction;
@@ -44,9 +45,10 @@ class FailClosedAdaptersTest {
     @Test
     void factStoreRefusesEveryMethod() {
         var store = new FailClosedNotificationFactStore();
-        assertCode(CODE, () -> store.findPreference("t", "p", "nt", NotificationChannel.IN_APP));
+        assertCode(CODE, () -> store.findPreference("t", "p", NotificationCategory.LEARNING,
+                NotificationChannel.IN_APP));
         assertCode(CODE, () -> store.findPreferences("t", "p"));
-        assertCode(CODE, () -> store.savePreference(null));
+        assertCode(CODE, () -> store.compareAndSetPreference(null, 0));
         assertCode(CODE, () -> store.saveMessage(null));
         assertCode(CODE, () -> store.findMessage("t", "p", "m"));
         assertCode(CODE, () -> store.findMessages("t", "p", 10));

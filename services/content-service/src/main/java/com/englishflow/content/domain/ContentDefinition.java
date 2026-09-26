@@ -28,6 +28,8 @@ public final class ContentDefinition {
     private ContentVersionId currentPublishedVersionId;
     private long contentEpoch;
     private long projectionVersion;
+    /** Revision seen when this aggregate was loaded; JDBC uses it for a conditional write. */
+    private long persistedStateVersion;
 
     private static final Pattern CONTENT_CODE = Pattern.compile("[A-Za-z0-9][A-Za-z0-9._:-]{1,127}");
 
@@ -85,7 +87,30 @@ public final class ContentDefinition {
             ContentVersionId currentPublishedVersionId,
             long contentEpoch,
             long projectionVersion) {
-        if (contentEpoch < 0 || projectionVersion < 0 || storedVersions == null) {
+        long revision = storedVersions == null ? 0 : storedVersions.stream()
+                .filter(Objects::nonNull).mapToLong(ContentVersion::stateVersion).sum();
+        return rehydrate(contentId, tenantId, contentCode, kind, title, locale, targetLevel,
+                goalCode, createdBy, createdAt, storedVersions, currentPublishedVersionId,
+                contentEpoch, projectionVersion, revision);
+    }
+
+    public static ContentDefinition rehydrate(
+            ContentId contentId,
+            String tenantId,
+            String contentCode,
+            ContentKind kind,
+            String title,
+            String locale,
+            String targetLevel,
+            String goalCode,
+            String createdBy,
+            Instant createdAt,
+            List<ContentVersion> storedVersions,
+            ContentVersionId currentPublishedVersionId,
+            long contentEpoch,
+            long projectionVersion,
+            long persistedStateVersion) {
+        if (contentEpoch < 0 || projectionVersion < 0 || persistedStateVersion < 0 || storedVersions == null) {
             throw ContentOperationException.unavailable(
                     "CONTENT_FACT_CORRUPT", "stored content definition state is invalid");
         }
@@ -109,6 +134,7 @@ public final class ContentDefinition {
         content.currentPublishedVersionId = currentPublishedVersionId;
         content.contentEpoch = contentEpoch;
         content.projectionVersion = projectionVersion;
+        content.persistedStateVersion = persistedStateVersion;
         return content;
     }
 
@@ -217,6 +243,19 @@ public final class ContentDefinition {
 
     public synchronized long projectionVersion() {
         return projectionVersion;
+    }
+
+    /** Monotone aggregate revision: each newly created version begins at one. */
+    public synchronized long stateVersion() {
+        return versions.values().stream().mapToLong(ContentVersion::stateVersion).sum();
+    }
+
+    public synchronized long persistedStateVersion() {
+        return persistedStateVersion;
+    }
+
+    public synchronized void markPersisted() {
+        persistedStateVersion = stateVersion();
     }
 
     private void requireKnownVersion(ContentVersion version) {

@@ -198,6 +198,7 @@
         ],
         "summary": "Start an assessment session pinned to an immutable content snapshot",
         "operationId": "createB10AssessmentSession",
+        "x-owner": "assessment-service",
         "security": [
           {
             "bearerAuth": []
@@ -205,11 +206,12 @@
         ],
         "x-contract": {
           "owner": "assessment-service",
+          "write": true,
           "contentSource": "content-service protected snapshot",
           "pinRule": "server resolves and persists the contentVersionId/contentEpoch/snapshotHash pin"
         },
         "x-authorization": {
-          "requiredPermission": "assessment.session.create",
+          "requiredPermission": "assessment.session.write",
           "defaultDecision": "DENY",
           "trustedFacts": [
             "subject",
@@ -333,6 +335,7 @@
         ],
         "summary": "Read an assessment session without exposing grading rules",
         "operationId": "getB10AssessmentSession",
+        "x-owner": "assessment-service",
         "security": [
           {
             "bearerAuth": []
@@ -340,6 +343,7 @@
         ],
         "x-contract": {
           "owner": "assessment-service",
+          "write": false,
           "resourceOwner": "authenticated principal",
           "answerProtection": "session state and learner-safe items only"
         },
@@ -440,6 +444,7 @@
         ],
         "summary": "Submit an attempt; the server owns scoring and emits attempt.submitted",
         "operationId": "submitB10AssessmentAttempt",
+        "x-owner": "assessment-service",
         "security": [
           {
             "bearerAuth": []
@@ -447,11 +452,12 @@
         ],
         "x-contract": {
           "owner": "assessment-service",
+          "write": true,
           "event": "assessment.attempt.submitted.v1",
           "rawResponse": "accepted only at the protected scoring boundary; never persisted in event payload or logs"
         },
         "x-authorization": {
-          "requiredPermission": "assessment.attempt.submit",
+          "requiredPermission": "assessment.session.write",
           "defaultDecision": "DENY",
           "trustedFacts": [
             "subject",
@@ -762,6 +768,7 @@
         ],
         "summary": "Deprecated compatibility adapter for the canonical session checkpoint",
         "operationId": "putB10AssessmentCheckpoint",
+        "x-owner": "assessment-service",
         "deprecated": true,
         "x-p1r-deprecation": {
           "deprecationAt": "2026-08-30T00:00:00Z",
@@ -775,6 +782,7 @@
         ],
         "x-contract": {
           "owner": "assessment-service",
+          "write": true,
           "compatibility": "ADAPTER_ONLY",
           "canonicalTarget": "putB10AssessmentSessionCheckpoint",
           "checkpoint": "Legacy attempt-scoped cursor is translated only when it can be bound to the same pre-submission session draft; it never mutates a final attempt/report result.",
@@ -783,6 +791,12 @@
         "x-p1r-assessment-legacy": {
           "adapterOnly": true,
           "replacementOperationId": "putB10AssessmentSessionCheckpoint"
+        },
+        "x-authorization": {
+          "requiredPermission": "assessment.session.write",
+          "defaultDecision": "DENY",
+          "trustedFacts": ["subject", "tenant", "roles", "permissions", "adultGate", "consent", "resourceOwner"],
+          "serviceSidePepRequired": true
         },
         "x-idempotency": {
           "required": true,
@@ -870,6 +884,7 @@
         ],
         "summary": "Read an immutable deterministic assessment report snapshot",
         "operationId": "getB10AssessmentReport",
+        "x-owner": "assessment-service",
         "security": [
           {
             "bearerAuth": []
@@ -877,11 +892,12 @@
         ],
         "x-contract": {
           "owner": "assessment-service",
+          "write": false,
           "report": "replayable from assessmentVersion and content snapshot pin",
           "answerProtection": "learner-safe outcome summary and mistake codes only; assessment does not return or own mastery"
         },
         "x-authorization": {
-          "requiredPermission": "assessment.report.read",
+          "requiredPermission": "assessment.session.read",
           "defaultDecision": "DENY",
           "trustedFacts": [
             "subject",
@@ -1093,6 +1109,7 @@
           "command": "learning.review.complete",
           "canonical": true,
           "singleWritePath": true,
+          "runtimeEvidenceGate": "Before accepting a review, learning-service must resolve a same-owner assessment outcome and a published content pin from their owners; missing or unverified evidence returns 409 UNTRUSTED_REVIEW_EVIDENCE without changing SRS or mastery.",
           "authority": "learning-service derives SRS scheduling, repair workflow and mastery projection",
           "assessment": "only assessment-service may produce assessment outcome facts; an assessment outcome never authorizes a mastery or SRS write",
           "clientAuthority": "observed review facts and concurrency/content pins only"
@@ -2100,6 +2117,17 @@
         ],
         "summary": "List learner mistake facts with D0/D1/D7 states (M5-009 live)",
         "operationId": "listAssessmentMistakes",
+        "x-owner": "assessment-service",
+        "x-contract": {
+          "owner": "assessment-service",
+          "write": false
+        },
+        "x-authorization": {
+          "requiredPermission": "assessment.session.read",
+          "defaultDecision": "DENY",
+          "trustedFacts": ["subject", "tenant", "roles", "permissions", "adultGate", "consent", "resourceOwner"],
+          "serviceSidePepRequired": true
+        },
         "security": [
           {
             "bearerAuth": []
@@ -2119,6 +2147,25 @@
         ],
         "summary": "Drive a mistake through D0/D1/D7 verification (M5-009 live)",
         "operationId": "verifyAssessmentMistake",
+        "x-owner": "assessment-service",
+        "x-contract": {
+          "owner": "assessment-service",
+          "write": true
+        },
+        "x-authorization": {
+          "requiredPermission": "assessment.session.write",
+          "defaultDecision": "DENY",
+          "trustedFacts": ["subject", "tenant", "roles", "permissions", "adultGate", "consent", "resourceOwner"],
+          "serviceSidePepRequired": true
+        },
+        "x-idempotency": {
+          "required": true,
+          "keyHeader": "Idempotency-Key",
+          "strategy": "assessment-service transactional idempotency claim and mistake response snapshot",
+          "digest": "sha256(mistakeId + canonical request JSON), scoped by tenant, subject and operation",
+          "replayBehavior": "same key and request returns the original response without repeating the transition",
+          "sameKeyDifferentDigest": "CONFLICT_409"
+        },
         "security": [
           {
             "bearerAuth": []
@@ -2131,6 +2178,16 @@
             "required": true,
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 192
             }
           }
         ],
@@ -2159,6 +2216,12 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "400": {
+            "description": "Invalid outcome or Idempotency-Key"
+          },
+          "409": {
+            "description": "Mistake state conflict or key reused with a different request"
           }
         }
       }
@@ -2170,6 +2233,25 @@
         ],
         "summary": "Issue a variant surface form for re-verification (M5-009 live)",
         "operationId": "issueAssessmentVariant",
+        "x-owner": "assessment-service",
+        "x-contract": {
+          "owner": "assessment-service",
+          "write": true
+        },
+        "x-authorization": {
+          "requiredPermission": "assessment.session.write",
+          "defaultDecision": "DENY",
+          "trustedFacts": ["subject", "tenant", "roles", "permissions", "adultGate", "consent", "resourceOwner"],
+          "serviceSidePepRequired": true
+        },
+        "x-idempotency": {
+          "required": true,
+          "keyHeader": "Idempotency-Key",
+          "strategy": "assessment-service transactional idempotency claim and mistake response snapshot",
+          "digest": "sha256(mistakeId + canonical request JSON), scoped by tenant, subject and operation",
+          "replayBehavior": "same key and request returns the original response without repeating the transition",
+          "sameKeyDifferentDigest": "CONFLICT_409"
+        },
         "security": [
           {
             "bearerAuth": []
@@ -2182,6 +2264,16 @@
             "required": true,
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 192
             }
           }
         ],
@@ -2207,6 +2299,12 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "400": {
+            "description": "Invalid variant or Idempotency-Key"
+          },
+          "409": {
+            "description": "Key reused with a different mistake request"
           }
         }
       }

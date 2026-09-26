@@ -1,0 +1,26 @@
+{
+  "results": [
+    {
+      "width": 390,
+      "status": 200,
+      "localeRoundTrip": true,
+      "pageErrors": [],
+      "layout": {
+        "scrollWidth": 390,
+        "viewportWidth": 390,
+        "buttonWidth": 72
+      }
+    },
+    {
+      "width": 1280,
+      "status": 200,
+      "localeRoundTrip": true,
+      "pageErrors": [],
+      "layout": {
+        "scrollWidth": 1280,
+        "viewportWidth": 1280,
+        "buttonWidth": 72
+      }
+    }
+  ]
+}

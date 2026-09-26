@@ -1,6 +1,5 @@
 import { apiClient, type ApiRequestOptions } from './client'
 import { learnerI18n } from '../platform/v2-foundation'
-import { createClientId } from '../platform/client-id'
 
 export interface B18ReviewQueueItem {
   queueItemId: string
@@ -10,6 +9,7 @@ export interface B18ReviewQueueItem {
   dueAt: string | null
   priority: number
   stateVersion: number
+  completable: boolean
 }
 
 function record(value: unknown): Record<string, unknown> {
@@ -58,6 +58,7 @@ function parseItem(value: unknown): B18ReviewQueueItem | null {
     dueAt: text(source.dueAt),
     priority: Math.max(0, number(source.priority)),
     stateVersion: Math.max(0, number(source.stateVersion)),
+    completable: source.completable === true,
   }
 }
 
@@ -67,14 +68,4 @@ export async function listB18ReviewQueue(): Promise<B18ReviewQueueItem[]> {
   const candidate = record(source).items
   const items: unknown[] = Array.isArray(source) ? source : Array.isArray(candidate) ? candidate : []
   return items.flatMap((item) => { const parsed = parseItem(item); return parsed ? [parsed] : [] })
-}
-
-export async function completeB18Review(item: B18ReviewQueueItem, result: 'PASS' | 'FAIL' | 'SKIPPED' = 'PASS'): Promise<unknown> {
-  const clientEventId = createClientId(`b18-review-${item.queueItemId}`)
-  return apiClient.post(`/learning/review-queue/${encodeURIComponent(item.queueItemId)}/complete`, {
-    expectedStateVersion: item.stateVersion,
-    verificationStage: 'D0',
-    result,
-    clientEventId,
-  }, requestOptions(clientEventId))
 }

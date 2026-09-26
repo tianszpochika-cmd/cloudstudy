@@ -195,10 +195,10 @@ public final class AdminOpsServiceSmoke {
                 TENANT_B, "other-operator", "OTHER_TENANT_OPERATION", "other-resource", null,
                 "trace-other", "decision-other", Map.of(), clock.instant()));
         AdminPrincipal auditReader = AdminPrincipal.user(
-                "auditor", TENANT_A, AdminPermission.AUDIT_EXPORT);
+                "auditor", TENANT_A, AdminPermission.AUDIT_READ);
         require(admin.audit(auditReader).stream()
                         .allMatch(record -> ReferenceRedactor.tenant(TENANT_A).equals(record.tenantRef())),
-                "audit export must remain tenant-scoped");
+                "audit read must remain tenant-scoped");
         require(auditTrail.snapshot().stream().allMatch(record -> record.integrityMatches()),
                 "audit chain records must remain integrity-valid");
         try {

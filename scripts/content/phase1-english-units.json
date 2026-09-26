@@ -1,0 +1,246 @@
+{
+  "packCode": "PHASE1_ENGLISH_EVERYDAY_20260923",
+  "editorialStatus": "ORIGINAL_DRAFT_PENDING_INDEPENDENT_REVIEW",
+  "units": [
+    {
+      "contentCode": "P1-EN-A1-INTRO-001",
+      "contentType": "COURSE_UNIT",
+      "title": "初次见面：介绍自己",
+      "summary": "用姓名、工作和一个礼貌追问完成短对话。学完后能说出两句自我介绍，并记住对方的一条信息。",
+      "contentLocale": "en-US",
+      "targetLevel": "A1",
+      "sourceCode": "P1_ENGLISH_ORIGINAL_20260923",
+      "licenseCode": "INTERNAL_ORIGINAL_PENDING_REVIEW",
+      "items": [
+        {
+          "itemCode": "P1-EN-A1-INTRO-001-01",
+          "itemType": "SENTENCE",
+          "displayOrder": 1,
+          "stimulusRef": "text:P1-EN-A1-INTRO-001:1",
+          "displayText": "目标：在一次初次见面中，说出姓名、工作，并礼貌地问对方叫什么。先读示例，再换成自己的真实信息。",
+          "definition": { "phase": "GOAL", "skill": "SPEAKING", "completionCheck": "两句介绍加一个追问" }
+        },
+        {
+          "itemCode": "P1-EN-A1-INTRO-001-02",
+          "itemType": "PHRASE",
+          "displayOrder": 2,
+          "stimulusRef": "text:P1-EN-A1-INTRO-001:2",
+          "displayText": "示例：Hi, I'm Lin. I work in customer support. What's your name?（你好，我是 Lin。我做客服工作。你叫什么名字？）",
+          "definition": { "phase": "MODEL", "skill": "SPEAKING" }
+        },
+        {
+          "itemCode": "P1-EN-A1-INTRO-001-03",
+          "itemType": "GRAMMAR",
+          "displayOrder": 3,
+          "stimulusRef": "text:P1-EN-A1-INTRO-001:3",
+          "displayText": "表达提示：I'm 是 I am 的缩写；I work in + 领域，可以说 I work in design / education / sales。不确定职业名称时，也可以只说 I'm a student.（我是学生。）",
+          "definition": { "phase": "EXPLAIN", "skill": "VOCABULARY" }
+        },
+        {
+          "itemCode": "P1-EN-A1-INTRO-001-04",
+          "itemType": "PHRASE",
+          "displayOrder": 4,
+          "stimulusRef": "text:P1-EN-A1-INTRO-001:4",
+          "displayText": "接话示例：Nice to meet you, Lin. I'm Maya. I work in design.（很高兴认识你，Lin。我是 Maya。我做设计工作。）第一次见面可用 Nice to meet you 表达礼貌。",
+          "definition": { "phase": "MODEL", "skill": "LISTENING" }
+        },
+        {
+          "itemCode": "P1-EN-A1-INTRO-001-05",
+          "itemType": "SENTENCE",
+          "displayOrder": 5,
+          "stimulusRef": "text:P1-EN-A1-INTRO-001:5",
+          "displayText": "练习：用自己的姓名和真实身份说一遍：Hi, I'm ____. I work in ____ / I'm a student. What's your name? 不愿透露真实信息时，可以用虚构姓名练习。",
+          "definition": { "phase": "PRACTICE", "skill": "SPEAKING", "privacyNote": "允许使用虚构姓名" }
+        },
+        {
+          "itemCode": "P1-EN-A1-INTRO-001-06",
+          "itemType": "SENTENCE",
+          "displayOrder": 6,
+          "stimulusRef": "text:P1-EN-A1-INTRO-001:6",
+          "displayText": "自检与复习：你是否说清了姓名和身份，并问了对方的名字？如果卡住，先只练 I'm ____ 和 What's your name? 明天再不用看示例说一次。这里是自检练习，不生成系统评分。",
+          "definition": { "phase": "REVIEW", "skill": "SPEAKING", "feedbackMode": "SELF_CHECK_NO_SCORE" }
+        }
+      ]
+    },
+    {
+      "contentCode": "P1-EN-A1-CAFE-002",
+      "contentType": "COURSE_UNIT",
+      "title": "咖啡店：礼貌点单",
+      "summary": "练习点一杯饮品、说明大小与堂食或外带。学完后能提出请求，并听懂一个常见的确认问题。",
+      "contentLocale": "en-US",
+      "targetLevel": "A1",
+      "sourceCode": "P1_ENGLISH_ORIGINAL_20260923",
+      "licenseCode": "INTERNAL_ORIGINAL_PENDING_REVIEW",
+      "items": [
+        {
+          "itemCode": "P1-EN-A1-CAFE-002-01",
+          "itemType": "SENTENCE",
+          "displayOrder": 1,
+          "stimulusRef": "text:P1-EN-A1-CAFE-002:1",
+          "displayText": "目标：在咖啡店点一杯饮品，说明大小，再回答堂食还是外带。只练习沟通表达；本单元不创建真实订单。",
+          "definition": { "phase": "GOAL", "skill": "SPEAKING" }
+        },
+        {
+          "itemCode": "P1-EN-A1-CAFE-002-02",
+          "itemType": "PHRASE",
+          "displayOrder": 2,
+          "stimulusRef": "text:P1-EN-A1-CAFE-002:2",
+          "displayText": "点单示例：Could I have a small coffee, please?（请给我一杯小杯咖啡，好吗？）也可以把 coffee 换成 tea 或 water。",
+          "definition": { "phase": "MODEL", "skill": "SPEAKING" }
+        },
+        {
+          "itemCode": "P1-EN-A1-CAFE-002-03",
+          "itemType": "PHRASE",
+          "displayOrder": 3,
+          "stimulusRef": "text:P1-EN-A1-CAFE-002:3",
+          "displayText": "店员可能会问：For here or to go?（堂食还是外带？）你可以回答 For here, please. 或 To go, please. 北美英语里 to go 很常见。",
+          "definition": { "phase": "MODEL", "skill": "LISTENING" }
+        },
+        {
+          "itemCode": "P1-EN-A1-CAFE-002-04",
+          "itemType": "GRAMMAR",
+          "displayOrder": 4,
+          "stimulusRef": "text:P1-EN-A1-CAFE-002:4",
+          "displayText": "表达提示：Could I have ...? 是礼貌请求。small / medium / large 通常放在饮品前：a medium tea。句末加 please 让请求更自然。",
+          "definition": { "phase": "EXPLAIN", "skill": "VOCABULARY" }
+        },
+        {
+          "itemCode": "P1-EN-A1-CAFE-002-05",
+          "itemType": "SENTENCE",
+          "displayOrder": 5,
+          "stimulusRef": "text:P1-EN-A1-CAFE-002:5",
+          "displayText": "练习：任选一种饮品和大小，说出完整请求，再分别练习堂食与外带的回答。示例：Could I have a medium tea, please? To go, please.",
+          "definition": { "phase": "PRACTICE", "skill": "SPEAKING" }
+        },
+        {
+          "itemCode": "P1-EN-A1-CAFE-002-06",
+          "itemType": "SENTENCE",
+          "displayOrder": 6,
+          "stimulusRef": "text:P1-EN-A1-CAFE-002:6",
+          "displayText": "自检与复习：你的句子是否包含饮品、大小和 please？能否不看示例回答 For here or to go? 明天换一种饮品重说一次。这里是自检练习，不生成系统评分。",
+          "definition": { "phase": "REVIEW", "skill": "SPEAKING", "feedbackMode": "SELF_CHECK_NO_SCORE" }
+        }
+      ]
+    },
+    {
+      "contentCode": "P1-EN-A2-MEETING-003",
+      "contentType": "COURSE_UNIT",
+      "title": "工作沟通：改约会议",
+      "summary": "用简短、礼貌的信息提出新时间并确认安排。学完后能写出一条包含原因、建议时间和确认请求的消息。",
+      "contentLocale": "en-US",
+      "targetLevel": "A2",
+      "sourceCode": "P1_ENGLISH_ORIGINAL_20260923",
+      "licenseCode": "INTERNAL_ORIGINAL_PENDING_REVIEW",
+      "items": [
+        {
+          "itemCode": "P1-EN-A2-MEETING-003-01",
+          "itemType": "SENTENCE",
+          "displayOrder": 1,
+          "stimulusRef": "text:P1-EN-A2-MEETING-003:1",
+          "displayText": "目标：当原定时间不合适时，礼貌说明情况、建议一个新时间，并请对方确认。时间要写明日期、时区或双方共同使用的本地时间。",
+          "definition": { "phase": "GOAL", "skill": "WRITING" }
+        },
+        {
+          "itemCode": "P1-EN-A2-MEETING-003-02",
+          "itemType": "PHRASE",
+          "displayOrder": 2,
+          "stimulusRef": "text:P1-EN-A2-MEETING-003:2",
+          "displayText": "提出改约：Could we move our call from Tuesday to Thursday at 3 p.m.?（我们能把周二的通话改到周四下午三点吗？）move ... from ... to ... 表示把安排从一个时间改到另一个时间。",
+          "definition": { "phase": "MODEL", "skill": "WRITING" }
+        },
+        {
+          "itemCode": "P1-EN-A2-MEETING-003-03",
+          "itemType": "PHRASE",
+          "displayOrder": 3,
+          "stimulusRef": "text:P1-EN-A2-MEETING-003:3",
+          "displayText": "给出原因和确认：I have another appointment on Tuesday. Please let me know if Thursday works for you.（我周二有别的安排。请告诉我周四是否方便。）不必解释私事细节。",
+          "definition": { "phase": "MODEL", "skill": "WRITING", "privacyNote": "不要求披露个人事务" }
+        },
+        {
+          "itemCode": "P1-EN-A2-MEETING-003-04",
+          "itemType": "GRAMMAR",
+          "displayOrder": 4,
+          "stimulusRef": "text:P1-EN-A2-MEETING-003:4",
+          "displayText": "表达提示：Could we ...? 比直接说 Move the meeting 更礼貌。works for you 意为“你方便”；答复可说 That works for me. 或 I'm not available then.",
+          "definition": { "phase": "EXPLAIN", "skill": "VOCABULARY" }
+        },
+        {
+          "itemCode": "P1-EN-A2-MEETING-003-05",
+          "itemType": "SENTENCE",
+          "displayOrder": 5,
+          "stimulusRef": "text:P1-EN-A2-MEETING-003:5",
+          "displayText": "练习：写一条三句消息。第 1 句说明原时间不方便；第 2 句建议新日期和时间；第 3 句请对方确认。可以用虚构安排练习，不要填写真实会议链接。",
+          "definition": { "phase": "PRACTICE", "skill": "WRITING" }
+        },
+        {
+          "itemCode": "P1-EN-A2-MEETING-003-06",
+          "itemType": "SENTENCE",
+          "displayOrder": 6,
+          "stimulusRef": "text:P1-EN-A2-MEETING-003:6",
+          "displayText": "自检与复习：消息里是否有原时间、新时间和确认请求？对方若说 I'm not available then，你能再提一个时间吗？明天用另一个日期重写一次。这里是自检练习，不生成系统评分。",
+          "definition": { "phase": "REVIEW", "skill": "WRITING", "feedbackMode": "SELF_CHECK_NO_SCORE" }
+        }
+      ]
+    },
+    {
+      "contentCode": "P1-EN-B1-CLARIFY-004",
+      "contentType": "COURSE_UNIT",
+      "title": "工作沟通：确认任务要求",
+      "summary": "在信息不够清楚时，先复述要求，再询问交付内容和截止时间。学完后能写出一条清晰的确认消息。",
+      "contentLocale": "en-US",
+      "targetLevel": "B1",
+      "sourceCode": "P1_ENGLISH_ORIGINAL_20260923",
+      "licenseCode": "INTERNAL_ORIGINAL_PENDING_REVIEW",
+      "items": [
+        {
+          "itemCode": "P1-EN-B1-CLARIFY-004-01",
+          "itemType": "SENTENCE",
+          "displayOrder": 1,
+          "stimulusRef": "text:P1-EN-B1-CLARIFY-004:1",
+          "displayText": "目标：收到含糊的工作请求时，不猜测交付标准；先复述自己的理解，再确认产出和截止时间。练习情境不含真实客户资料。",
+          "definition": { "phase": "GOAL", "skill": "WRITING" }
+        },
+        {
+          "itemCode": "P1-EN-B1-CLARIFY-004-02",
+          "itemType": "PHRASE",
+          "displayOrder": 2,
+          "stimulusRef": "text:P1-EN-B1-CLARIFY-004:2",
+          "displayText": "复述理解：To make sure I understand, you need the revised table by Friday, correct?（为了确认我理解无误，你需要我在周五前交修订表格，对吗？）",
+          "definition": { "phase": "MODEL", "skill": "WRITING" }
+        },
+        {
+          "itemCode": "P1-EN-B1-CLARIFY-004-03",
+          "itemType": "PHRASE",
+          "displayOrder": 3,
+          "stimulusRef": "text:P1-EN-B1-CLARIFY-004:3",
+          "displayText": "确认范围：Should I include the notes from last week's review?（我需要把上周评审的备注也放进去吗？）确认时间：Could you confirm whether Friday means before noon or by the end of the day?（能否确认周五是指中午前还是当天结束前？）",
+          "definition": { "phase": "MODEL", "skill": "WRITING" }
+        },
+        {
+          "itemCode": "P1-EN-B1-CLARIFY-004-04",
+          "itemType": "GRAMMAR",
+          "displayOrder": 4,
+          "stimulusRef": "text:P1-EN-B1-CLARIFY-004:4",
+          "displayText": "表达提示：To make sure I understand 用来引出复述；Should I include ...? 用来问是否需要包含某项内容；whether A or B 用来明确两个可能的解释。",
+          "definition": { "phase": "EXPLAIN", "skill": "VOCABULARY" }
+        },
+        {
+          "itemCode": "P1-EN-B1-CLARIFY-004-05",
+          "itemType": "SENTENCE",
+          "displayOrder": 5,
+          "stimulusRef": "text:P1-EN-B1-CLARIFY-004:5",
+          "displayText": "练习：假设同事说 Please send the updated report soon. 写一条回复：复述你认为要交什么，问清 updated 包括哪些内容，再问具体截止时间。不要编造对方已确认的事实。",
+          "definition": { "phase": "PRACTICE", "skill": "WRITING" }
+        },
+        {
+          "itemCode": "P1-EN-B1-CLARIFY-004-06",
+          "itemType": "SENTENCE",
+          "displayOrder": 6,
+          "stimulusRef": "text:P1-EN-B1-CLARIFY-004:6",
+          "displayText": "自检与复习：你的消息是否区分了“我理解的要求”和“等待对方确认的细节”？是否问清交付物与时间？明天换一个含糊请求再写一次。这里是自检练习，不生成系统评分。",
+          "definition": { "phase": "REVIEW", "skill": "WRITING", "feedbackMode": "SELF_CHECK_NO_SCORE" }
+        }
+      ]
+    }
+  ]
+}

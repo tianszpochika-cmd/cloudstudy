@@ -6,7 +6,7 @@ import { join } from 'node:path'
 const root = join(import.meta.dirname, '..', '..', '..')
 const read = (path) => readFile(join(root, path), 'utf8')
 
-test('learner-web C03 pages read real home/today/content projections and complete tasks', async () => {
+test('learner-web C03 pages read home/today/content and require learning evidence for completion', async () => {
   const [home, today, learn] = await Promise.all([
     read('apps/learner-web/src/pages/HomePage.vue'),
     read('apps/learner-web/src/pages/TodayPage.vue'),
@@ -23,7 +23,8 @@ test('learner-web C03 pages read real home/today/content projections and complet
   assert.match(today, /taskId/)
   assert.match(learn, /learnerContentPort\.readContent\(contentCode\)/)
   assert.match(learn, /updateContinueContext/)
-  assert.match(learn, /learnerContent\.completeTask\(taskId\)/)
+  assert.doesNotMatch(learn, /learnerContent\.completeTask\(taskId\)/)
+  assert.doesNotMatch(learn, /完成本步/)
 })
 
 test('learner-web preserves content projections when completion omits the catalog', async () => {

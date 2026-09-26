@@ -37,13 +37,6 @@ export interface B11SignedUrl {
   checksumSha256: string
 }
 
-export interface B11NotificationPreference {
-  enabledChannels: Array<'IN_APP' | 'EMAIL' | 'PUSH'>
-  learningReminders: boolean
-  marketing: boolean
-  version: number
-}
-
 export interface B11OfflineChange {
   clientEventId: string
   clientSeq: number

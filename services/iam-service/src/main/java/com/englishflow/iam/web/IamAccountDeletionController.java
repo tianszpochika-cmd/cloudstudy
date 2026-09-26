@@ -1,11 +1,9 @@
 package com.englishflow.iam.web;
 
-import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.http.HttpStatus;
@@ -23,17 +21,15 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 /**
- * M6-008 self-scoped account deletion: request with a 168-hour cooling window, status,
- * cancel inside the window, internal execute after it (revokes sessions, flips the
- * account to DELETED, writes the receipt), owner receipts and half-deleted recovery view.
+ * M6-008 historical self-scoped account deletion records. Existing requests remain
+ * readable and cancellable. New requests and execution fail closed until the IAM
+ * reauthentication and cross-owner receipt workflow meets the M1-017 contract.
  *
  * <p>Cross-owner anonymization fan-out rides the workflow Saga and is recorded as a
  * follow-up, not claimed here. The row is retained for audit either way.</p>
  */
 @RestController
 public final class IamAccountDeletionController {
-
-    private static final long COOLING_SECONDS = 7L * 24L * 60L * 60L;
 
     private final ObjectProvider<JdbcTemplate> jdbc;
 
@@ -46,22 +42,12 @@ public final class IamAccountDeletionController {
             @RequestBody(required = false) Map<String, Object> body,
             @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey,
             Authentication authentication) {
-        Principal principal = accessPrincipal(authentication);
-        JdbcTemplate template = requiredJdbc();
-        String key = requireKey(idempotencyKey);
-        List<Map<String, Object>> existing = template.queryForList(
-                "SELECT deletion_request_id, status FROM iam_account_deletion WHERE tenant_id = ? AND principal_id = ? AND idempotency_key = ?",
-                principal.tenantId(), principal.subject(), key);
-        if (!existing.isEmpty()) {
-            return envelope(deletionView(findRequest(template, principal,
-                    String.valueOf(existing.get(0).get("deletion_request_id")))));
-        }
-        String requestId = "del_" + UUID.randomUUID().toString().replace("-", "").substring(0, 24);
-        template.update(
-                "INSERT INTO iam_account_deletion (deletion_request_id, principal_id, tenant_id, status, execute_at, idempotency_key, receipt_json, created_at, decided_at)"
-                        + " VALUES (?, ?, ?, 'REQUESTED', DATE_ADD(CURRENT_TIMESTAMP(6), INTERVAL 168 HOUR), ?, NULL, CURRENT_TIMESTAMP(6), NULL)",
-                requestId, principal.subject(), principal.tenantId(), key);
-        return envelope(deletionView(findRequest(template, principal, requestId)));
+        accessPrincipal(authentication);
+        // The current owner cannot verify reauthentication or deliver a deletion
+        // receipt from every domain. Accepting a new request would promise a
+        // deletion that the available workflow cannot complete.
+        throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,
+                "account deletion requests are unavailable until owner receipt orchestration is verified");
     }
 
     @GetMapping("/api/v1/iam/account-deletions/{deletionRequestId}")
@@ -76,59 +62,36 @@ public final class IamAccountDeletionController {
             @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey,
             Authentication authentication) {
         Principal principal = accessPrincipal(authentication);
+        requireKey(idempotencyKey);
         JdbcTemplate template = requiredJdbc();
         Map<String, Object> row = findRequest(template, principal, deletionRequestId);
+        if ("CANCELLED".equals(String.valueOf(row.get("status")))) {
+            return envelope(deletionView(row));
+        }
         if (!"REQUESTED".equals(String.valueOf(row.get("status")))) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "only a cooling deletion can be cancelled");
         }
-        template.update(
+        int updated = template.update(
                 "UPDATE iam_account_deletion SET status = 'CANCELLED', decided_at = CURRENT_TIMESTAMP(6)"
-                        + " WHERE deletion_request_id = ? AND tenant_id = ? AND principal_id = ? AND status = 'REQUESTED'",
+                        + " WHERE deletion_request_id = ? AND tenant_id = ? AND principal_id = ?"
+                        + " AND status = 'REQUESTED' AND execute_at > CURRENT_TIMESTAMP(6)",
                 deletionRequestId, principal.tenantId(), principal.subject());
-        return envelope(deletionView(findRequest(template, principal, deletionRequestId)));
+        Map<String, Object> latest = findRequest(template, principal, deletionRequestId);
+        if (updated != 1 && !"CANCELLED".equals(String.valueOf(latest.get("status")))) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "cooling window has elapsed or deletion state changed");
+        }
+        return envelope(deletionView(latest));
     }
 
     @PostMapping("/internal/v1/iam/account-deletions/{deletionRequestId}/execute")
     public Map<String, Object> execute(@PathVariable String deletionRequestId,
             Authentication authentication) {
         servicePrincipal(authentication);
-        JdbcTemplate template = requiredJdbc();
-        Map<String, Object> row = template.queryForList(
-                "SELECT deletion_request_id, principal_id, tenant_id, status, execute_at FROM iam_account_deletion WHERE deletion_request_id = ?",
-                deletionRequestId).stream().findFirst()
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "deletion request does not exist"));
-        if (!"REQUESTED".equals(String.valueOf(row.get("status")))) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "deletion is not executable");
-        }
-        Object executeAt = row.get("execute_at");
-        java.time.Instant executableAt = executeAt instanceof java.sql.Timestamp stamp ? stamp.toInstant()
-                : executeAt instanceof java.time.LocalDateTime localDateTime
-                        ? localDateTime.toInstant(java.time.ZoneOffset.UTC)
-                        : null;
-        // An unreadable window must never read as elapsed: fail closed.
-        if (executableAt == null || executableAt.isAfter(Instant.now())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "cooling window has not elapsed");
-        }
-        String principalId = String.valueOf(row.get("principal_id"));
-        String tenantId = String.valueOf(row.get("tenant_id"));
-        int sessionsRevoked = template.update(
-                "UPDATE iam_session SET status = 'REVOKED', revoked_at = CURRENT_TIMESTAMP(6), revoke_reason = 'ACCOUNT_DELETED'"
-                        + " WHERE principal_id = ? AND status <> 'REVOKED'",
-                principalId);
-        template.update("UPDATE iam_account SET status = 'DELETED' WHERE principal_id = ?",
-                principalId);
-        String receipt = "{\"deletionRequestId\":\"" + deletionRequestId + "\",\"sessionsRevoked\":" + sessionsRevoked
-                + ",\"accountStatus\":\"DELETED\",\"executedAt\":\"" + Instant.now() + "\"}";
-        template.update(
-                "UPDATE iam_account_deletion SET status = 'EXECUTED', decided_at = CURRENT_TIMESTAMP(6), receipt_json = ?"
-                        + " WHERE deletion_request_id = ? AND status = 'REQUESTED'",
-                receipt, deletionRequestId);
-        Map<String, Object> data = new LinkedHashMap<>();
-        data.put("deletionRequestId", deletionRequestId);
-        data.put("status", "EXECUTED");
-        data.put("sessionsRevoked", sessionsRevoked);
-        data.put("receipt", receipt);
-        return envelope(data);
+        // Revoking only IAM sessions and marking the account DELETED would hide
+        // still-owned learning, media and commerce data. Historical requests stay
+        // readable/cancellable; execution resumes only with owner receipts.
+        throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,
+                "account deletion execution is unavailable until owner receipts are verified");
     }
 
     @GetMapping("/internal/v1/iam/account-deletions/{deletionRequestId}/owner-receipts")

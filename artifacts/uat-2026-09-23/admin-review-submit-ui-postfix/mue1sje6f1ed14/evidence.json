@@ -1,0 +1,68 @@
+{
+  "capturedAt": "2026-09-23T11:57:13.428Z",
+  "localCandidateOnly": true,
+  "checks": [
+    {
+      "name": "gateway ready",
+      "actual": 200,
+      "ok": true
+    },
+    {
+      "name": "admin ready",
+      "actual": 200,
+      "ok": true
+    },
+    {
+      "name": "unique synthetic code",
+      "actual": 0,
+      "ok": true
+    },
+    {
+      "name": "synthetic adult register",
+      "actual": 201,
+      "ok": true
+    },
+    {
+      "name": "synthetic staff login",
+      "actual": 200,
+      "ok": true
+    },
+    {
+      "name": "pending synthetic draft created",
+      "actual": 202,
+      "ok": true
+    },
+    {
+      "name": "owner draft pending",
+      "actual": {
+        "status": 200,
+        "state": "DRAFT",
+        "rights": "PENDING"
+      },
+      "ok": true
+    }
+  ],
+  "browser": {
+    "diagnostic": {
+      "path": "/login",
+      "headings": [
+        "内容与教研",
+        "把每一份用心，\n变成学习的进步。",
+        "欢迎回来."
+      ],
+      "alerts": []
+    }
+  },
+  "cleanup": {
+    "draftRemoved": true,
+    "accountDisabled": true,
+    "activeSessions": 0,
+    "activeDevices": 0,
+    "residualContent": 0
+  },
+  "pageErrors": [],
+  "secretsRecorded": false,
+  "ownerRuntimeReviewSubmissionReady": null,
+  "failure": "locator.waitFor: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('tab', { name: /内容库/ }) to be visible\u001b[22m\n",
+  "result": "FAIL"
+}

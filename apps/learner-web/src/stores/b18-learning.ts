@@ -1,7 +1,7 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 import { ApiError } from '../api/client'
-import { completeB18Review, listB18ReviewQueue, type B18ReviewQueueItem } from '../api/b18-learning'
+import { listB18ReviewQueue, type B18ReviewQueueItem } from '../api/b18-learning'
 import { getLearningReport } from '../api/b10'
 import type { B10Report } from '../domain/b10'
 
@@ -44,17 +44,13 @@ export const useB18LearningStore = defineStore('b18-learning', () => {
   }
 
   async function complete(item: B18ReviewQueueItem): Promise<void> {
-    if (busyItemId.value) return
-    busyItemId.value = item.queueItemId
-    lastError.value = null
-    try {
-      await completeB18Review(item)
-      queue.value = queue.value.filter((candidate) => candidate.queueItemId !== item.queueItemId)
-      state.value = 'success'
-    } catch (error) {
-      state.value = stateFor(error)
-      lastError.value = messageFor(error)
-    } finally { busyItemId.value = null }
+    if (!item.completable) {
+      state.value = 'recovery'
+      lastError.value = '复习记录暂不可结算。'
+      return
+    }
+    state.value = 'recovery'
+    lastError.value = '缺少可核验的答题结果，请从练习进入复习。'
   }
 
   return { state, queue, report, lastError, busyItemId, hasReview, load, complete }

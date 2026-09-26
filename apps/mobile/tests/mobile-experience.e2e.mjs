@@ -2,15 +2,17 @@
 import { chromium } from 'playwright'
 import fs from 'node:fs/promises'
 import path from 'node:path'
+import os from 'node:os'
 import assert from 'node:assert/strict'
 
 const root = path.resolve(import.meta.dirname, '../../..')
-const output = path.join(root, 'artifacts/mobile-experience-2026-09-22')
+const output = process.env.MOBILE_E2E_OUTPUT || path.join(os.tmpdir(), `cloudstudy-mobile-experience-${Date.now()}`)
 await fs.mkdir(output, { recursive: true })
 const pages = JSON.parse(await fs.readFile(path.join(root, 'apps/mobile/src/pages.json'), 'utf8')).pages
 const browser = await chromium.launch({ headless: true })
 const results = []
 const errors = []
+const resetConfirmationRequests = []
 const base = 'http://127.0.0.1:18183/#/'
 const account = { nickname: '小星', status: 'ACTIVE', ageConfirmed: true, privacyConsent: true, termsConsent: true, accentPref: 'US', stateVersion: 1, goal: { goalCode: 'WORKPLACE_DAILY', dailyQuotaMinutes: 15 }, preferences: { themeMode: 'LIGHT', motionMode: 'FULL', uiLocale: 'zh-CN', contentLocale: 'en-US' } }
 const token = { accessToken: 'ui-fixture-not-a-real-token', adultGate: 'PASSED', deviceId: 'ui-fixture-device', sessionId: 'ui-fixture-session' }
@@ -28,7 +30,7 @@ async function contextFor(theme, width, signedIn) {
     let data, status = 200
     if (route.request().method() === 'OPTIONS') return route.fulfill({ status: 204, headers: { 'Access-Control-Allow-Origin': 'http://127.0.0.1:18183', 'Access-Control-Allow-Headers': 'Content-Type, Authorization, Idempotency-Key, X-Request-Id, Accept-Language, X-Content-Locale', 'Access-Control-Allow-Credentials': 'true', 'Access-Control-Allow-Methods': 'GET, POST, PATCH, PUT, DELETE, OPTIONS' } })
     if (['/auth/token/refresh', '/auth/login', '/auth/register'].includes(suffix)) data = token
-    else if (suffix === '/iam/permissions' || suffix === '/iam/me') data = { adultGate: 'PASSED', subject: 'ui-fixture', permissions: [] }
+    else if (suffix === '/iam/permissions' || suffix === '/iam/me') data = { adultGate: 'PASSED', subject: 'ui-fixture', permissions: ['learning.plan.read'] }
     else if (suffix === '/learner/profile') data = { ...account, preferences: { ...account.preferences, themeMode: theme === 'dark' ? 'DARK' : 'LIGHT', highContrast: theme === 'high-contrast' } }
     else if (suffix === '/learner/home') data = home
     else if (suffix === '/learner/first-day') data = { state: 'READY', taskCount: 1 }
@@ -36,8 +38,11 @@ async function contextFor(theme, width, signedIn) {
     else if (suffix.startsWith('/content/learner/') && suffix.includes('ui-coffee')) data = { ...catalog.items[0], items: [{ itemId: 'ui-item', text: 'Could I have a latte, please?', options: [] }] }
     else if (suffix === '/onboarding/options') data = { goals: [{ value: 'WORKPLACE_DAILY', label: '日常交流', description: '在生活中自然表达' }], dailyQuotaMinutes: [5, 15, 30, 45] }
     else if (suffix === '/learner/targets') data = account.goal
-    else if (suffix === '/learner/preferences') data = account.preferences
-    else if (suffix === '/auth/password-reset/confirm') data = {}
+    else if (suffix === '/learner/preferences') data = { ...account.preferences, themeMode: theme === 'dark' ? 'DARK' : 'LIGHT', highContrast: theme === 'high-contrast' }
+    else if (suffix === '/auth/password-reset/confirm') {
+      resetConfirmationRequests.push(route.request().postDataJSON())
+      data = {}
+    }
     else if (suffix === '/auth/password-reset/request') data = { accepted: true }
     else { status = 503; data = { message: 'UI fixture: service unavailable' } }
     await route.fulfill({ status, contentType: 'application/json', body: JSON.stringify({ data }), headers: { 'Access-Control-Allow-Origin': 'http://127.0.0.1:18183', 'Access-Control-Allow-Credentials': 'true' } })
@@ -57,7 +62,18 @@ try {
       await page.locator('.mobile-page-title').waitFor()
       await page.waitForTimeout(200)
       if (name === 'home') await page.getByText('在咖啡馆，自信点一杯咖啡', { exact: true }).waitFor()
-      if (name === 'profile') await page.locator('.mobile-profile-name').filter({ hasText: '小星' }).waitFor()
+      if (name === 'profile') {
+        await page.locator('.mobile-profile-name').filter({ hasText: '我的学习' }).waitFor()
+        await page.getByText('职场与日常 · 15 分钟/天', { exact: true }).waitFor()
+        assert.equal(await page.getByRole('button', { name: '保存资料' }).count(), 0, 'profile does not offer an unsupported nickname save')
+      }
+      if (['b11-reading', 'b11-listening', 'b11-speaking'].includes(name)) {
+        await page.locator('.b11-status--error, .b11-status--offline, .b11-status--empty').waitFor()
+        assert.equal(await page.locator('.b11-status').count(), 1, `${name}: one status panel`)
+        assert.equal(await page.getByRole('button', { name: '重试', exact: true }).count(), 1, `${name}: one retry action`)
+        assert.equal(await page.getByText('Performance', { exact: true }).count(), 0, `${name}: no internal quality tier`)
+        if (name === 'b11-speaking') assert.equal(await page.locator('.phoneme-card, .recorder-card, .demo-audio').count(), 0, 'speaking: no empty practice controls')
+      }
       if (['home', 'learn', 'b2-practice', 'world', 'profile'].includes(name)) {
         await page.waitForFunction(() => {
           const icons = [...document.querySelectorAll('uni-tabbar img')]
@@ -77,10 +93,26 @@ try {
       assert.ok(page.url().includes(entry.path), `${name}: route changed to ${page.url()}`)
       assert.equal(rendered.background, theme === 'high-contrast' ? 'rgb(0, 0, 0)' : theme === 'dark' ? 'rgb(22, 25, 37)' : 'rgb(247, 248, 252)', `${name}: theme applied`)
       results.push({ name, theme, width, ...rendered, state: ['home', 'profile', 'settings', 'onboarding'].includes(name) ? 'synthetic fixture' : 'unavailable/empty fixture' })
-      if (width === 390 && ['home', 'learn', 'b2-practice', 'world', 'profile', 'settings', 'b11-reading'].includes(name)) await page.screenshot({ path: path.join(output, `${name}-${theme}.png`), fullPage: true })
+      if (width === 390 && ['home', 'learn', 'b2-practice', 'world', 'profile', 'settings', 'b11-reading', 'b11-listening', 'b11-speaking'].includes(name)) await page.screenshot({ path: path.join(output, `${name}-${theme}.png`), fullPage: true })
     }
     await context.close()
   }
+  const readingContext = await contextFor('light', 390, true)
+  const readyArticle = { articleId: 91, title: '界面测试文章（非真实课程）', cefrLevel: 'A2', wordCount: 12, estimatedMinutes: 1, blocks: [{ blockId: 'fixture-block', blockIndex: 0, text: 'A short test paragraph.', tokens: [] }], rightsStatus: 'AUTHORIZED', contentVersionId: 1 }
+  await readingContext.route('**/api/v1/reading/**', async route => {
+    const pathname = new URL(route.request().url()).pathname
+    const data = pathname.endsWith('/reading/articles') ? { items: [readyArticle] } : pathname.endsWith('/reading/articles/91') ? readyArticle : { items: [] }
+    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data }), headers: { 'Access-Control-Allow-Origin': 'http://127.0.0.1:18183', 'Access-Control-Allow-Credentials': 'true' } })
+  })
+  const readyPage = await readingContext.newPage()
+  await readyPage.goto(base + 'pages/b11-reading/b11-reading')
+  await readyPage.getByText('界面测试文章（非真实课程）', { exact: true }).waitFor()
+  assert.match(await readyPage.locator('.b11-quality').innerText(), /^画质：(精致|舒适|轻量|省资源) ▾$/)
+  await readyPage.getByRole('button', { name: '关闭动效', exact: true }).click()
+  await readyPage.getByRole('button', { name: '开启动效', exact: true }).waitFor()
+  assert.equal(await readyPage.locator('.yx-page').getAttribute('data-motion'), 'off')
+  await readyPage.screenshot({ path: path.join(output, 'b11-reading-ready-light.png'), fullPage: true })
+  await readingContext.close()
   // Public auth navigation, actual uni form submission and show-password behavior.
   const context = await contextFor('light', 390, false)
   const page = await context.newPage()
@@ -102,13 +134,15 @@ try {
   await page.getByText('发送重置指引', { exact: true }).waitFor()
   await page.locator('.yx-field input').fill('ui-fixture@example.invalid')
   await page.getByRole('button', { name: '发送重置指引', exact: true }).click()
-  await page.getByText('如果账号存在，重置指引已发出，请查看你的邮箱。', { exact: true }).waitFor()
+  await page.getByText('申请已受理。若收到重置邮件，请按邮件指引操作。', { exact: true }).waitFor()
   await page.goto(base + 'pages/reset-password/reset-password?token=synthetic-reset-token')
   await page.locator('.yx-field input').nth(0).waitFor()
-  assert.equal(await page.locator('.yx-field input').nth(0).inputValue(), 'synthetic-reset-token')
-  await page.locator('.yx-field input').nth(1).fill('synthetic-new-password')
+  await page.locator('.yx-field input').nth(0).fill('ui-fixture@example.invalid')
+  assert.equal(await page.locator('.yx-field input').nth(1).inputValue(), 'synthetic-reset-token')
+  await page.locator('.yx-field input').nth(2).fill('synthetic-new-password')
   await page.getByRole('button', { name: '重置密码', exact: true }).click()
   await page.getByText('密码已重置。请返回登录，使用新密码继续学习。', { exact: true }).waitFor()
+  assert.deepEqual(resetConfirmationRequests, [{ identifier: 'ui-fixture@example.invalid', resetToken: 'synthetic-reset-token', newPassword: 'synthetic-new-password' }])
   for (const [theme, width] of [['light', 320], ['light', 390], ['light', 768], ['dark', 390], ['high-contrast', 390]]) {
     const publicContext = await contextFor(theme, width, false)
     const publicPage = await publicContext.newPage()

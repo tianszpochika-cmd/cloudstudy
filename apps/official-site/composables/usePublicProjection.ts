@@ -6,7 +6,6 @@ import {
 } from "#imports";
 import {
   EMPTY_PUBLIC_PROJECTION,
-  hasPublicProjectionData,
   resolvePublicUiLocale,
   type PublicProjectionResponse,
   type PublicUiLocale,
@@ -40,21 +39,13 @@ export function usePublicProjection(
           { query: { locale } },
         );
         result.value = response;
-      } catch (error) {
+      } catch {
         result.value = {
-          projection: result.value.projection ?? EMPTY_PUBLIC_PROJECTION,
-          state: hasPublicProjectionData(result.value.projection)
-            ? "recovery"
-            : "error",
-          stale: hasPublicProjectionData(result.value.projection),
-          source:
-            result.value.source === "gateway"
-              ? "memory-cache"
-              : "empty-fallback",
-          errorCode:
-            error instanceof Error
-              ? error.message
-              : "PUBLIC_PROJECTION_UNAVAILABLE",
+          projection: EMPTY_PUBLIC_PROJECTION,
+          state: "error",
+          stale: false,
+          source: "empty-fallback",
+          errorCode: "PUBLIC_PROJECTION_UNAVAILABLE",
         };
       } finally {
         pending = null;

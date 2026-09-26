@@ -5,6 +5,7 @@ import {
   type B8LoginRequest,
   type B8LogoutRequest,
   type B8RefreshRequest,
+  type B8PasswordResetConfirmRequest,
 } from '@englishflow/contracts'
 import { MobileApiError, mobileApiClient } from '../api/client'
 import { safeInternalReturnTo } from '../platform/gateway'
@@ -44,7 +45,7 @@ export interface MobileAuthAdapter {
   login(input: MobileLoginCredentials): Promise<MobileTokenPair>
   register(input: MobileLoginCredentials): Promise<MobileTokenPair>
   requestPasswordReset(input: { identifier: string }): Promise<{ accepted: boolean }>
-  confirmPasswordReset(input: { token: string; newPassword: string }): Promise<void>
+  confirmPasswordReset(input: B8PasswordResetConfirmRequest): Promise<void>
   restoreSession(): Promise<MobileAuthSnapshot | null>
   refresh(input?: B8RefreshRequest): Promise<MobileTokenPair>
   getPermissions(): Promise<MobileAuthSnapshot | null>
@@ -54,7 +55,17 @@ export interface MobileAuthAdapter {
 }
 
 export function safeMobileReturnTo(value: unknown, fallback = '/pages/home/home'): string {
-  return safeInternalReturnTo(value, fallback)
+  const path = safeInternalReturnTo(value, fallback)
+  return /^\/pages\/[a-z0-9-]+\/[a-z0-9-]+(?:\?.*)?$/i.test(path) ? path : fallback
+}
+
+/** Uni H5 may encode a page query again when reLaunch serializes it. */
+export function safeMobileRouteReturnTo(value: unknown, fallback = '/pages/home/home'): string {
+  let candidate = value
+  for (let attempt = 0; attempt < 2 && typeof candidate === 'string' && candidate.startsWith('%'); attempt += 1) {
+    try { candidate = decodeURIComponent(candidate) } catch { return fallback }
+  }
+  return safeMobileReturnTo(candidate, fallback)
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -82,7 +93,7 @@ function parseAdultGate(value: unknown): MobileAdultGateStatus {
   if (value === 'PASSED' || value === 'REQUIRED' || value === 'REJECTED') return value
   if (!isRecord(value)) return 'UNKNOWN'
   if (value.status === 'PASSED' || value.status === 'APPROVED') return 'PASSED'
-  if (value.status === 'REQUIRED' || value.status === 'PENDING') return 'REQUIRED'
+  if (value.status === 'REQUIRED' || value.status === 'PENDING' || value.status === 'NOT_EVALUATED') return 'REQUIRED'
   if (value.status === 'REJECTED') return 'REJECTED'
   return 'UNKNOWN'
 }
@@ -108,7 +119,7 @@ function parseSnapshot(value: unknown): MobileAuthSnapshot | null {
   const subject = text(principalSource.subject ?? principalSource.sub ?? principalSource.principalId)
   const roles = list(source.roles ?? principalSource.roles)
   const permissions = list(source.permissions ?? principalSource.permissions)
-  const adultGate = parseAdultGate(source.adultGate ?? source.adultGateStatus ?? principalSource.adultGate ?? principalSource.adultGateStatus)
+  const adultGate = parseAdultGate(source.adultGate ?? source.adultGateStatus ?? principalSource.adultGate ?? principalSource.adultGateStatus ?? (source.learningAccess !== undefined ? source : undefined))
   return {
     principal: subject ? { subject, roles, permissions, adultGate } : null,
     roles,
@@ -164,7 +175,7 @@ export function createGatewayMobileAuthAdapter(): MobileAuthAdapter {
     },
     async restoreSession() {
       try {
-        return parseSnapshot(await mobileApiClient.request('/iam/principal/me', { skipAuthRetry: true }))
+        return parseSnapshot(await mobileApiClient.request('/iam/principal/me', { skipAuthRetry: true, authBootstrap: 'identity' }))
       } catch (error) {
         if (error instanceof MobileApiError && (error.status === 401 || error.status === 404)) return null
         throw error
@@ -176,11 +187,12 @@ export function createGatewayMobileAuthAdapter(): MobileAuthAdapter {
         data: input,
         header: { 'Idempotency-Key': authIdempotencyKey('refresh') },
         skipAuthRetry: true,
+        authBootstrap: 'refresh',
       }))
     },
     async getPermissions() {
       try {
-        return parseSnapshot(await mobileApiClient.request('/iam/permissions', { skipAuthRetry: true }))
+        return parseSnapshot(await mobileApiClient.request('/iam/permissions', { skipAuthRetry: true, authBootstrap: 'identity' }))
       } catch (error) {
         if (error instanceof MobileApiError && (error.status === 401 || error.status === 404)) return null
         throw error
@@ -200,6 +212,7 @@ export function createGatewayMobileAuthAdapter(): MobileAuthAdapter {
         data: input ?? {},
         header: { 'Idempotency-Key': authIdempotencyKey('logout') },
         skipAuthRetry: true,
+        authBootstrap: 'logout',
       })
     },
     async revoke(sessionId) {
@@ -208,6 +221,7 @@ export function createGatewayMobileAuthAdapter(): MobileAuthAdapter {
         data: {},
         header: { 'Idempotency-Key': authIdempotencyKey('revoke') },
         skipAuthRetry: true,
+        authBootstrap: 'revoke',
       })
     },
   }

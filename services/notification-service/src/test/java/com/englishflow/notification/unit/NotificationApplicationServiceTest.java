@@ -3,6 +3,7 @@ package com.englishflow.notification.unit;
 import com.englishflow.notification.adapter.failclosed.FailClosedNotificationFactStore;
 import com.englishflow.notification.adapter.memory.InMemoryDeliveryTransport;
 import com.englishflow.notification.adapter.memory.InMemoryNotificationAuditEventStore;
+import com.englishflow.notification.adapter.memory.InMemoryNotificationConsentStore;
 import com.englishflow.notification.adapter.memory.InMemoryNotificationFactStore;
 import com.englishflow.notification.adapter.memory.InMemoryNotificationIdGenerator;
 import com.englishflow.notification.adapter.memory.InMemoryOutboxEventPort;
@@ -15,7 +16,10 @@ import com.englishflow.notification.domain.DeliveryStatus;
 import com.englishflow.notification.domain.IdempotencyKey;
 import com.englishflow.notification.domain.NotificationAccessPolicy;
 import com.englishflow.notification.domain.NotificationChannel;
+import com.englishflow.notification.domain.NotificationCategory;
 import com.englishflow.notification.domain.NotificationDomainException;
+import com.englishflow.notification.domain.NotificationDndWindow;
+import com.englishflow.notification.domain.NotificationFrequencyPolicy;
 import com.englishflow.notification.domain.NotificationPrincipalContext;
 import com.englishflow.notification.domain.WorkflowState;
 import org.junit.jupiter.api.Test;
@@ -46,14 +50,14 @@ class NotificationApplicationServiceTest {
     @Test
     void updatePreferenceIsIdempotentAndDetectsConflict() {
         var svc = service();
-        var cmd = new UpdatePreferenceCommand("nt", NotificationChannel.IN_APP, true, "zh-CN", -1);
+        var cmd = preferenceCommand("LEARNING", NotificationCategory.LEARNING, true, 0);
         var first = svc.updatePreference(ctx, cmd, new IdempotencyKey("pref-1"), meta);
         var replay = svc.updatePreference(ctx, cmd, new IdempotencyKey("pref-1"), meta);
         assertEquals(1, first.version());
         assertEquals(1, replay.version());
 
         var conflict = assertThrows(NotificationDomainException.class, () -> svc.updatePreference(ctx,
-                new UpdatePreferenceCommand("nt", NotificationChannel.IN_APP, false, "zh-CN", -1),
+                preferenceCommand("LEARNING", NotificationCategory.LEARNING, false, 0),
                 new IdempotencyKey("pref-1"), meta));
         assertEquals(NotificationDomainException.Code.IDEMPOTENCY_CONFLICT, conflict.code());
     }
@@ -61,10 +65,10 @@ class NotificationApplicationServiceTest {
     @Test
     void updatePreferenceDetectsStaleVersion() {
         var svc = service();
-        svc.updatePreference(ctx, new UpdatePreferenceCommand("nt", NotificationChannel.IN_APP, true, "zh-CN", -1),
+        svc.updatePreference(ctx, preferenceCommand("LEARNING", NotificationCategory.LEARNING, true, 0),
                 new IdempotencyKey("pref-2"), meta);
         var stale = assertThrows(NotificationDomainException.class, () -> svc.updatePreference(ctx,
-                new UpdatePreferenceCommand("nt", NotificationChannel.IN_APP, true, "zh-CN", 0),
+                preferenceCommand("LEARNING", NotificationCategory.LEARNING, true, 0),
                 new IdempotencyKey("pref-3"), meta));
         assertEquals(NotificationDomainException.Code.VERSION_CONFLICT, stale.code());
     }
@@ -81,7 +85,9 @@ class NotificationApplicationServiceTest {
     @Test
     void deliverSucceedsAndCompletesWorkflow() {
         var svc = service();
-        var msg = svc.queue(ctx, new QueueNotificationCommand("nt", NotificationChannel.IN_APP, "tmpl", "v1", "T", "B", "cv"),
+        svc.updatePreference(ctx, preferenceCommand("LEARNING", NotificationCategory.LEARNING, true, 0),
+                new IdempotencyKey("pref-delivery"), meta);
+        var msg = svc.queue(ctx, new QueueNotificationCommand("LEARNING", NotificationChannel.IN_APP, "tmpl", "v1", "T", "B", "cv"),
                 new IdempotencyKey("msg-2"), meta);
         var result = svc.deliver(ctx, msg.messageId(), new IdempotencyKey("del-2"), meta);
         assertEquals(DeliveryStatus.DELIVERED, result.attempt().status());
@@ -91,12 +97,35 @@ class NotificationApplicationServiceTest {
     @Test
     void deliverHonorsDisabledPreferenceAsCancel() {
         var svc = service();
-        svc.updatePreference(ctx, new UpdatePreferenceCommand("nt", NotificationChannel.IN_APP, false, "zh-CN", -1),
+        svc.updatePreference(ctx, preferenceCommand("LEARNING", NotificationCategory.LEARNING, false, 0),
                 new IdempotencyKey("pref-dis"), meta);
-        var msg = svc.queue(ctx, new QueueNotificationCommand("nt", NotificationChannel.IN_APP, "tmpl", "v1", "T", "B", "cv"),
+        var msg = svc.queue(ctx, new QueueNotificationCommand("LEARNING", NotificationChannel.IN_APP, "tmpl", "v1", "T", "B", "cv"),
                 new IdempotencyKey("msg-dis"), meta);
         var result = svc.deliver(ctx, msg.messageId(), new IdempotencyKey("del-dis"), meta);
         assertEquals(DeliveryStatus.CANCELLED, result.attempt().status());
+    }
+
+    @Test
+    void rawBodyDeliveryRequiresIndependentChannelConsent() {
+        var consents = new InMemoryNotificationConsentStore();
+        var svc = new NotificationApplicationService(new InMemoryNotificationFactStore(),
+                new InMemoryWorkflowPort(), new InMemoryDeliveryTransport(), new InMemoryOutboxEventPort(),
+                new InMemoryNotificationIdGenerator(), new NotificationAccessPolicy(), clock, 3,
+                Duration.ofSeconds(30), new InMemoryNotificationAuditEventStore(), consents);
+        svc.updatePreference(ctx, preferenceCommand("LEARNING", NotificationCategory.LEARNING, true, 0),
+                new IdempotencyKey("pref-raw-consent"), meta);
+
+        var unconsented = svc.queue(ctx, new QueueNotificationCommand("LEARNING", NotificationChannel.IN_APP,
+                "tmpl", "v1", "T", "B", "cv"), new IdempotencyKey("msg-raw-no-consent"), meta);
+        var filtered = svc.deliver(ctx, unconsented.messageId(), new IdempotencyKey("del-raw-no-consent"), meta);
+        assertEquals(DeliveryStatus.CANCELLED, filtered.attempt().status());
+        assertEquals("CONSENT_NOT_GRANTED", filtered.attempt().failureCode());
+
+        consents.setConsent("t", "p", NotificationChannel.IN_APP, true);
+        var consented = svc.queue(ctx, new QueueNotificationCommand("LEARNING", NotificationChannel.IN_APP,
+                "tmpl", "v1", "T", "B", "cv"), new IdempotencyKey("msg-raw-consented"), meta);
+        var delivered = svc.deliver(ctx, consented.messageId(), new IdempotencyKey("del-raw-consented"), meta);
+        assertEquals(DeliveryStatus.DELIVERED, delivered.attempt().status());
     }
 
     @Test
@@ -125,5 +154,12 @@ class NotificationApplicationServiceTest {
                 new QueueNotificationCommand("nt", NotificationChannel.IN_APP, "tmpl", "v1", "T", "B", "cv"),
                 new IdempotencyKey("msg-fc"), meta));
         assertEquals(NotificationDomainException.Code.NETWORK_UNAVAILABLE, ex.code());
+    }
+
+    private static UpdatePreferenceCommand preferenceCommand(String pathType, NotificationCategory category,
+            boolean enabled, long expectedVersion) {
+        return new UpdatePreferenceCommand(pathType, category, NotificationChannel.IN_APP, enabled, "zh-CN", 1,
+                NotificationDndWindow.parse("23:00", "08:00"), NotificationFrequencyPolicy.IMMEDIATE,
+                expectedVersion);
     }
 }

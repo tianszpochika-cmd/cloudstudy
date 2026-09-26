@@ -127,11 +127,14 @@ class IamAuthenticationController {
         requireRequest(request, transport);
         String scope = "/api/v1/auth/register";
         String hash = fingerprint(scope, transport, request, request.password());
-        return idempotent(scope, key, hash, new TypeReference<ApiSuccessEnvelope<AuthTokenResponse>>() {}, () -> {
+        return credentialEstablishmentBoundary(() -> idempotent(scope, key, hash,
+                new TypeReference<ApiSuccessEnvelope<AuthTokenResponse>>() {}, () -> {
+                    requireDevice(request.device(), transport);
+                    consents.requirePublishedPoliciesForAuthentication();
                     AccountRecord account = passwords.register(request.identifier(), request.password(), ClientAuthorityClaims.none());
                     return establish(account, request.device(), transport, HttpStatus.CREATED,
                             replaySeed(scope, key, hash));
-                }, record -> replayAuth(record, request.identifier(), transport, scope, key, hash));
+                }, record -> replayAuth(record, request.identifier(), transport, scope, key, hash)));
     }
 
     @PostMapping("/auth/login")
@@ -143,11 +146,14 @@ class IamAuthenticationController {
         requireRequest(request, transport);
         String scope = "/api/v1/auth/login";
         String hash = fingerprint(scope, transport, request, request.password());
-        return idempotent(scope, key, hash, new TypeReference<ApiSuccessEnvelope<AuthTokenResponse>>() {}, () -> {
+        return credentialEstablishmentBoundary(() -> idempotent(scope, key, hash,
+                new TypeReference<ApiSuccessEnvelope<AuthTokenResponse>>() {}, () -> {
+                    requireDevice(request.device(), transport);
+                    consents.requirePublishedPoliciesForAuthentication();
                     AccountRecord account = passwords.authenticate(request.identifier(), request.password());
                     return establish(account, request.device(), transport, HttpStatus.OK,
                             replaySeed(scope, key, hash));
-                }, record -> replayAuth(record, request.identifier(), transport, scope, key, hash));
+                }, record -> replayAuth(record, request.identifier(), transport, scope, key, hash)));
     }
 
     @PostMapping("/auth/token/refresh")
@@ -164,12 +170,14 @@ class IamAuthenticationController {
         String presented = presentedRefresh(body, refreshCookie, transport);
         String scope = "/api/v1/auth/token/refresh";
         String hash = fingerprint(scope, transport, body, presented);
-        return idempotent(scope, key, hash, new TypeReference<ApiSuccessEnvelope<AuthTokenResponse>>() {}, () -> {
+        return credentialEstablishmentBoundary(() -> idempotent(scope, key, hash,
+                new TypeReference<ApiSuccessEnvelope<AuthTokenResponse>>() {}, () -> {
                     // Bind the selected transport and native device before CAS rotation. A
                     // post-rotation check below closes the device-revocation race.
                     SessionRecord candidate = sessions.findByRefreshToken(presented);
                     validateRefreshBinding(candidate, body, transport);
                     requireActiveCredentialAccount(passwords.find(candidate.principalId()));
+                    consents.requirePublishedPoliciesForAuthentication();
                     SessionRotationResult rotation = sessions.rotateByRefreshToken(presented, replaySeed(scope, key, hash));
                     SessionRecord session = sessions.find(rotation.sessionId());
                     try {
@@ -179,21 +187,25 @@ class IamAuthenticationController {
                         catch (RuntimeException ignored) { /* fail closed even if the compensating write is unavailable */ }
                         throw exception;
                     }
-                    AccountRecord account = passwords.find(rotation.principalId());
-                    requireActiveCredentialAccount(account);
-                    AccountRecord effectiveAccount = tokenAccount(account);
-                    JwtTokenService.IssuedAccessToken access = tokens.issue(effectiveAccount, session,
-                            replaySeed(scope, key, hash), eligibilityClaims(effectiveAccount));
-                    ApiResponseMeta meta = responseMeta();
-                    ResponseEntity.BodyBuilder builder = ResponseEntity.ok().cacheControl(CacheControl.noStore());
-                    addCorrelationHeaders(builder, meta);
-                    if (transport == AuthTransport.WEB_COOKIE) {
-                        builder.header(HttpHeaders.SET_COOKIE, refreshCookie(session, rotation.nextRefreshToken()).toString());
+                    try {
+                        AccountRecord account = passwords.find(rotation.principalId());
+                        requireActiveCredentialAccount(account);
+                        AccountRecord effectiveAccount = tokenAccount(account);
+                        JwtTokenService.IssuedAccessToken access = tokens.issue(effectiveAccount, session,
+                                replaySeed(scope, key, hash), eligibilityClaims(effectiveAccount));
+                        ApiResponseMeta meta = responseMeta();
+                        ResponseEntity.BodyBuilder builder = ResponseEntity.ok().cacheControl(CacheControl.noStore());
+                        addCorrelationHeaders(builder, meta);
+                        if (transport == AuthTransport.WEB_COOKIE) {
+                            builder.header(HttpHeaders.SET_COOKIE, refreshCookie(session, rotation.nextRefreshToken()).toString());
+                        }
+                        ResponseEntity<ApiSuccessEnvelope<AuthTokenResponse>> response = builder.body(new ApiSuccessEnvelope<>(
+                                tokenResponse(access, rotation.nextRefreshToken(), session, transport), meta));
+                        return executed(response, credentialReplayReference(effectiveAccount, session));
+                    } catch (IamPolicyException failure) {
+                        throw new CredentialEstablishmentFailure(failure);
                     }
-                    ResponseEntity<ApiSuccessEnvelope<AuthTokenResponse>> response = builder.body(new ApiSuccessEnvelope<>(
-                            tokenResponse(access, rotation.nextRefreshToken(), session, transport), meta));
-                    return executed(response, credentialReplayReference(effectiveAccount, session));
-                }, record -> replayRefresh(record, request, transport, scope, key, hash));
+                }, record -> replayRefresh(record, request, transport, scope, key, hash)));
     }
 
     @PostMapping("/auth/logout")
@@ -610,9 +622,15 @@ class IamAuthenticationController {
         AdultGateFact fact = adultGateFacts.find(account.principalId(), account.createdAt());
         boolean adultApproved = "APPROVED".equals(fact.status()) && "b30-adult-v1".equals(fact.policyVersion());
         boolean consentApproved = consents.hasAllRequiredConsent(account.principalId());
+        return applyLearningEligibilityGate(account, adultApproved, consentApproved);
+    }
+
+    static AccountRecord applyLearningEligibilityGate(AccountRecord account, boolean adultApproved,
+                                                       boolean consentApproved) {
         if (adultApproved && consentApproved) return account;
         Set<String> restricted = account.permissions().stream()
-                .filter(permission -> !isLearningPermission(permission)).collect(java.util.stream.Collectors.toUnmodifiableSet());
+                .filter(permission -> !isLearningPermission(permission))
+                .collect(java.util.stream.Collectors.toUnmodifiableSet());
         return account.withPermissions(restricted);
     }
 
@@ -809,16 +827,18 @@ class IamAuthenticationController {
     private IdempotencyService.Execution<ApiSuccessEnvelope<AuthTokenResponse>> establish(
             AccountRecord account, DeviceInput input, AuthTransport transport,
             HttpStatus status, String replaySeed) {
+      try {
         DeviceInput device = requireDevice(input, transport);
+        AccountRecord effectiveAccount = tokenAccount(account);
+        JwtTokenService.EligibilityClaims eligibility = eligibilityClaims(effectiveAccount);
         DeviceId deviceId = device.deviceId() == null || device.deviceId().isBlank()
                 ? new DeviceId(UUID.randomUUID().toString()) : parseDeviceId(device.deviceId());
         ServerPrincipalContext context = ServerPrincipalContext.forPlatform(account.principalId(), account.roles());
         devices.register(context, new DeviceRegistrationCommand(deviceId, normalizePlatform(device.deviceType()),
                 safeLabel(device.deviceName()), ClientAuthorityClaims.none()));
         SessionService.SessionCreation creation = sessions.open(context, deviceId, replaySeed);
-        AccountRecord effectiveAccount = tokenAccount(account);
         JwtTokenService.IssuedAccessToken access = tokens.issue(effectiveAccount, creation.session(), replaySeed,
-                eligibilityClaims(effectiveAccount));
+                eligibility);
         ApiResponseMeta meta = responseMeta();
         ResponseEntity.BodyBuilder builder = ResponseEntity.status(status).cacheControl(CacheControl.noStore());
         addCorrelationHeaders(builder, meta);
@@ -828,6 +848,28 @@ class IamAuthenticationController {
         ResponseEntity<ApiSuccessEnvelope<AuthTokenResponse>> response = builder.body(new ApiSuccessEnvelope<>(
                 tokenResponse(access, creation.refreshToken(), creation.session(), transport), meta));
         return executed(response, credentialReplayReference(effectiveAccount, creation.session()));
+      } catch (IamPolicyException failure) {
+        // Idempotency must see an unchecked failure until its JDBC transaction has rolled back.
+        // The public boundary then restores the original policy response for the client.
+        throw new CredentialEstablishmentFailure(failure);
+      }
+    }
+
+    private static <T> T credentialEstablishmentBoundary(Supplier<T> operation) {
+        try {
+            return operation.get();
+        } catch (CredentialEstablishmentFailure failure) {
+            throw failure.policyFailure;
+        }
+    }
+
+    private static final class CredentialEstablishmentFailure extends RuntimeException {
+        private final IamPolicyException policyFailure;
+
+        private CredentialEstablishmentFailure(IamPolicyException policyFailure) {
+            super(policyFailure);
+            this.policyFailure = policyFailure;
+        }
     }
 
     private AuthTokenResponse tokenResponse(JwtTokenService.IssuedAccessToken access, String refresh,
@@ -1010,10 +1052,7 @@ class IamAuthenticationController {
     }
 
     private ConsentState consentState(PrincipalId principal, AdultGateResponse adultGate) {
-        List<ConsentPolicyDescriptor> descriptors = Arrays.stream(ConsentType.values())
-                .map(consents::policyDescriptor).toList();
-        List<ConsentPolicyDescriptor> learningRequired = descriptors.stream()
-                .filter(descriptor -> descriptor.requiredFor("LEARNING")).toList();
+        List<ConsentPolicyDescriptor> learningRequired = consents.publishedRequiredPoliciesFor("LEARNING");
         List<String> required = learningRequired.stream().map(ConsentPolicyDescriptor::purpose).toList();
         List<String> unsatisfied = learningRequired.stream()
                 .filter(descriptor -> !consentStore.find(principal, descriptor.type())
@@ -1033,11 +1072,8 @@ class IamAuthenticationController {
                 .toList();
         boolean accepted = consents.policyEvaluationEnabled() && unsatisfied.isEmpty();
         Instant evaluatedAt = Instant.now();
-        String policyVersion = descriptors.stream().map(value -> value.policyVersion().value()).findFirst()
-                .orElseThrow(() -> new IamPolicyException(IamDecisionCode.POLICY_UNAVAILABLE,
-                        "iam.consent.policy_unavailable"));
-        String documentVersion = learningRequired.stream().map(value -> value.documentVersion().value()).findFirst()
-                .orElse(policyVersion);
+        String policyVersion = learningRequired.get(0).policyVersion().value();
+        String documentVersion = learningRequired.get(0).documentVersion().value();
         return new ConsentState(true, accepted, documentVersion,
                 adultGate.learningAccess().equals("ELIGIBLE") && accepted ? "ELIGIBLE" : "RESTRICTED",
                 required, unsatisfied, evaluatedAt, policyVersion,
@@ -1055,7 +1091,7 @@ class IamAuthenticationController {
                 evidenceStatus, fact.retryAllowed());
     }
     private DeviceResponse deviceResponse(PrincipalId principal, DeviceRegistration device) {
-        return new DeviceResponse(device.deviceId().value(), normalizePlatform(device.platform()), device.active() ? "ACTIVE" : "REVOKED", device.registeredAt());
+        return new DeviceResponse(device.deviceId().value(), normalizePlatform(device.platform()), device.active() ? "ACTIVE" : "REVOKED", device.lastAuthenticatedAt());
     }
     private SessionRevocationResponse revocationResponse(SessionRecord session, String scope, String reasonCode) {
         return new SessionRevocationResponse(session.sessionId().toString(), "REVOKED", scope,

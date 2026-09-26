@@ -14,6 +14,7 @@ import com.englishflow.adminops.domain.AdminPrincipal;
 import com.englishflow.adminops.domain.AuditEvent;
 import com.englishflow.adminops.domain.AuditRecord;
 import com.englishflow.adminops.domain.AuditTrail;
+import com.englishflow.adminops.domain.AuditPage;
 import com.englishflow.adminops.domain.CommandAction;
 import com.englishflow.adminops.domain.CommandForwardResult;
 import com.englishflow.adminops.domain.CommandRequest;
@@ -90,6 +91,8 @@ public final class AdminOpsService {
 
     public synchronized ConfirmationChallenge prepareCommand(AdminPrincipal principal, CommandRequest request) {
         pep.requirePermission(principal, request.action().permission());
+        requireAuditExportOwner(request.action());
+        requireSupportTicketOwner(request.action());
         if (!request.action().requiresConfirmation()) {
             throw AdminOpsException.invalid(
                     "ADMIN_CONFIRMATION_NOT_REQUIRED", "this command does not use second confirmation");
@@ -106,6 +109,8 @@ public final class AdminOpsService {
             String confirmationToken,
             String traceId) {
         pep.requirePermission(principal, request.action().permission());
+        requireAuditExportOwner(request.action());
+        requireSupportTicketOwner(request.action());
         requireIdempotencyKey(idempotencyKey);
         String scope = scope(principal, request);
         String fingerprint = request.fingerprint();
@@ -164,11 +169,23 @@ public final class AdminOpsService {
     }
 
     public List<AuditRecord> audit(AdminPrincipal principal) {
-        pep.requirePermission(principal, AdminPermission.AUDIT_EXPORT);
-        String tenantRef = ReferenceRedactor.tenant(principal.tenantId());
-        return auditTrail.snapshot().stream()
-                .filter(record -> tenantRef.equals(record.tenantRef()))
-                .toList();
+        return auditPage(principal, null, 100).items();
+    }
+
+    public void requireAuditRead(AdminPrincipal principal) {
+        pep.requirePermission(principal, AdminPermission.AUDIT_READ);
+    }
+
+    public AuditPage auditPage(AdminPrincipal principal, Long beforeSequence, int pageSize) {
+        requireAuditRead(principal);
+        if (pageSize < 1) {
+            throw AdminOpsException.invalid("ADMIN_AUDIT_PAGE_SIZE_INVALID", "pageSize must be positive");
+        }
+        if (beforeSequence != null && beforeSequence <= 0) {
+            throw AdminOpsException.invalid("ADMIN_AUDIT_CURSOR_INVALID", "invalid audit cursor");
+        }
+        return auditTrail.page(ReferenceRedactor.tenant(principal.tenantId()), beforeSequence,
+                Math.min(pageSize, 100));
     }
 
     private ProjectionRecord authorize(AdminPrincipal principal, CommandRequest request) {
@@ -253,6 +270,21 @@ public final class AdminOpsService {
         return action == CommandAction.CONTENT_REVIEW_FIRST
                 || action == CommandAction.CONTENT_REVIEW_FINAL
                 || action == CommandAction.CONTENT_PUBLISH;
+    }
+
+    private static void requireAuditExportOwner(CommandAction action) {
+        if (action == CommandAction.AUDIT_EXPORT) {
+            throw new AdminOpsException("ADMIN_AUDIT_EXPORT_UNAVAILABLE",
+                    "audit export is unavailable until audit-service owns the export job", 503, false);
+        }
+    }
+
+    private static void requireSupportTicketOwner(CommandAction action) {
+        if (action == CommandAction.SUPPORT_RESOLVE || action == CommandAction.SUPPORT_CLOSE) {
+            throw new AdminOpsException("ADMIN_SUPPORT_COMMAND_UNAVAILABLE",
+                    "support ticket commands are unavailable until the support owner workflow is connected",
+                    503, false);
+        }
     }
 
     private static CommandResult replay(IdempotencyLedger.Entry prior, String fingerprint) {

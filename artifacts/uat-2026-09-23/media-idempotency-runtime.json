@@ -1,0 +1,232 @@
+{
+  "scope": "local Gateway media metadata idempotency; no uploaded object bytes",
+  "assetId": "83fb9663-4a0b-4bd2-8a16-c2d44c2807cc",
+  "checks": [
+    {
+      "name": "register account",
+      "observed": 201,
+      "expected": 201,
+      "ok": true
+    },
+    {
+      "name": "adult Gate",
+      "observed": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "TERMS consent",
+      "observed": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "PRIVACY consent",
+      "observed": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "ADULT_LEARNING consent",
+      "observed": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "staff login",
+      "observed": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "Gateway recognizes the issued JWT",
+      "observed": {
+        "status": 403,
+        "code": "CONTENT_ADMIN_REQUIRED"
+      },
+      "expected": "not 401",
+      "ok": true
+    },
+    {
+      "name": "registration requires key",
+      "observed": {
+        "status": 400,
+        "code": null,
+        "response": {
+          "timestamp": "2026-09-23T07:12:49.407Z",
+          "status": 400,
+          "error": "Bad Request",
+          "path": "/internal/v1/media/assets"
+        }
+      },
+      "expected": {
+        "status": 400
+      },
+      "ok": true
+    },
+    {
+      "name": "asset registration",
+      "observed": {
+        "status": 201,
+        "version": 1
+      },
+      "expected": {
+        "status": 201,
+        "version": 1
+      },
+      "ok": true
+    },
+    {
+      "name": "registration exact replay",
+      "observed": {
+        "status": 201,
+        "same": true
+      },
+      "expected": {
+        "status": 201,
+        "same": true
+      },
+      "ok": true
+    },
+    {
+      "name": "registration changed body denied",
+      "observed": {
+        "status": 409,
+        "code": "MEDIA_IDEMPOTENCY_CONFLICT"
+      },
+      "expected": {
+        "status": 409,
+        "code": "MEDIA_IDEMPOTENCY_CONFLICT"
+      },
+      "ok": true
+    },
+    {
+      "name": "unuploaded object cannot activate",
+      "observed": {
+        "status": 503,
+        "code": "MEDIA_OBJECT_STORE_NOT_CONFIGURED"
+      },
+      "expected": {
+        "status": 503,
+        "code": "MEDIA_OBJECT_STORE_NOT_CONFIGURED"
+      },
+      "ok": true
+    },
+    {
+      "name": "subtitle metadata",
+      "observed": {
+        "status": 200,
+        "version": 2
+      },
+      "expected": {
+        "status": 200,
+        "version": 2
+      },
+      "ok": true
+    },
+    {
+      "name": "subtitle exact replay",
+      "observed": {
+        "status": 200,
+        "same": true
+      },
+      "expected": {
+        "status": 200,
+        "same": true
+      },
+      "ok": true
+    },
+    {
+      "name": "subtitle changed body denied",
+      "observed": {
+        "status": 409,
+        "code": "MEDIA_IDEMPOTENCY_CONFLICT"
+      },
+      "expected": {
+        "status": 409,
+        "code": "MEDIA_IDEMPOTENCY_CONFLICT"
+      },
+      "ok": true
+    },
+    {
+      "name": "processing failure recorded",
+      "observed": {
+        "status": 200,
+        "version": 3
+      },
+      "expected": {
+        "status": 200,
+        "version": 3
+      },
+      "ok": true
+    },
+    {
+      "name": "failed processing queued",
+      "observed": {
+        "status": 200,
+        "version": 4,
+        "transcodingStatus": "QUEUED"
+      },
+      "expected": {
+        "status": 200,
+        "version": 4,
+        "transcodingStatus": "QUEUED"
+      },
+      "ok": true
+    },
+    {
+      "name": "retry exact replay",
+      "observed": {
+        "status": 200,
+        "same": true
+      },
+      "expected": {
+        "status": 200,
+        "same": true
+      },
+      "ok": true
+    },
+    {
+      "name": "new retry without failure rejected",
+      "observed": {
+        "status": 409,
+        "code": "MEDIA_NOTHING_TO_RETRY"
+      },
+      "expected": {
+        "status": 409,
+        "code": "MEDIA_NOTHING_TO_RETRY"
+      },
+      "ok": true
+    },
+    {
+      "name": "owner stored version",
+      "observed": "4:UPLOADING",
+      "expected": "4:UPLOADING",
+      "ok": true
+    },
+    {
+      "name": "one receipt per successful write",
+      "observed": 3,
+      "expected": 3,
+      "ok": true
+    }
+  ],
+  "cleanup": {
+    "removed": {
+      "renditions": 1,
+      "outbox": 4,
+      "writeReceipts": 3,
+      "registrationReceipts": 1,
+      "asset": 1
+    },
+    "account": "1:DISABLED",
+    "activeSessions": 0
+  },
+  "directMissingKeyProbe": {
+    "status": 400,
+    "code": null
+  },
+  "retrySetup": "authenticated direct owner processing callback; no public Gateway transcoding route",
+  "result": "PASS",
+  "capturedAt": "2026-09-23T07:12:50.982Z"
+}

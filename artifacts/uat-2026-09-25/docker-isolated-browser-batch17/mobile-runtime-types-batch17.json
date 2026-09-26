@@ -1,0 +1,56 @@
+{
+  "at": "2026-09-24T18:22:50.332Z",
+  "mode": "private HTTPS + containerized Chromium; read-only capability types",
+  "results": [
+    {
+      "name": "root",
+      "requestedUrl": "https://mobile.clyunedev.com/",
+      "requestedHash": "",
+      "status": 200,
+      "finalUrl": "https://mobile.clyunedev.com/#/pages/login/login?returnTo=%252Fpages%252Fhome%252Fhome",
+      "runtime": {
+        "hash": "#/pages/login/login?returnTo=%252Fpages%252Fhome%252Fhome",
+        "hasPlus": false,
+        "uniType": "object",
+        "navigateTo": "function",
+        "reLaunch": "function",
+        "redirectTo": "function",
+        "switchTab": "function",
+        "addInterceptor": "function",
+        "getStorageSync": "function",
+        "request": "function",
+        "showToast": "function",
+        "getSystemInfoSync": "function",
+        "setTabBarStyle": "function",
+        "getLaunchOptionsSync": "function"
+      },
+      "pageErrors": [],
+      "consoleErrors": []
+    },
+    {
+      "name": "login",
+      "requestedUrl": "https://mobile.clyunedev.com/#/pages/login/login",
+      "requestedHash": "#/pages/login/login",
+      "status": 200,
+      "finalUrl": "https://mobile.clyunedev.com/#/pages/login/login",
+      "runtime": {
+        "hash": "#/pages/login/login",
+        "hasPlus": false,
+        "uniType": "object",
+        "navigateTo": "function",
+        "reLaunch": "function",
+        "redirectTo": "function",
+        "switchTab": "function",
+        "addInterceptor": "function",
+        "getStorageSync": "function",
+        "request": "function",
+        "showToast": "function",
+        "getSystemInfoSync": "function",
+        "setTabBarStyle": "function",
+        "getLaunchOptionsSync": "function"
+      },
+      "pageErrors": [],
+      "consoleErrors": []
+    }
+  ]
+}

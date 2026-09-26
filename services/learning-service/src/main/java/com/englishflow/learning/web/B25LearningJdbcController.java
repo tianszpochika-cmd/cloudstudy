@@ -1,6 +1,5 @@
 package com.englishflow.learning.web;
 
-import java.sql.Timestamp;
 import java.nio.charset.StandardCharsets;
 import java.time.DayOfWeek;
 import java.time.Instant;
@@ -30,7 +29,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-/** B25 durable SRS adapter. The server computes the next state and never accepts client mastery. */
+/** B25 compatibility reads. Legacy review writes are closed until trusted outcome evidence exists. */
 @RestController
 @RequestMapping("/internal/v1/learning")
 @ConditionalOnProperty(prefix = "learning.persistence", name = "mode", havingValue = "jdbc")
@@ -42,7 +41,7 @@ public class B25LearningJdbcController {
 
     @GetMapping("/plan/current")
     public Map<String, Object> currentPlan(Authentication authentication) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "learning.plan.read");
         Map<String, Object> row = one("SELECT * FROM b25_learning_plan WHERE principal_id = ? AND tenant_id = ?", principal.subject(), TENANT);
         if (row == null) return Map.of("status", "EMPTY", "principalId", principal.subject(), "targetMinutes", 0);
         return Map.of("planId", row.get("plan_id"), "principalId", principal.subject(), "status", row.get("status"),
@@ -51,7 +50,7 @@ public class B25LearningJdbcController {
 
     @GetMapping("/stream/today")
     public Map<String, Object> today(Authentication authentication) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "learning.review.read");
         List<Map<String, Object>> due = jdbc.queryForList("""
                 SELECT item_id, stage, due_at, interval_days, ease_factor, review_count
                 FROM b25_learning_srs_state
@@ -64,13 +63,14 @@ public class B25LearningJdbcController {
 
     @GetMapping("/srs/overview")
     public Map<String, Object> overview(Authentication authentication) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "learning.review.read");
         Map<String, Object> counts = jdbc.queryForMap("""
                 SELECT COUNT(*) total, SUM(stage = 'NEW') new_count, SUM(stage = 'LEARNING') learning_count,
                        SUM(stage = 'REVIEW') review_count, SUM(stage = 'MASTERED') mastered_count
                 FROM b25_learning_srs_state WHERE principal_id = ? AND tenant_id = ?
                 """, principal.subject(), TENANT);
-        return Map.of("principalId", principal.subject(), "total", number(counts.get("total")),
+        return Map.of("principalId", principal.subject(), "verificationStatus", "UNVERIFIED_LEGACY_REVIEW",
+                "total", number(counts.get("total")),
                 "newCount", number(counts.get("new_count")), "learningCount", number(counts.get("learning_count")),
                 "reviewCount", number(counts.get("review_count")), "masteredCount", number(counts.get("mastered_count")));
     }
@@ -82,7 +82,7 @@ public class B25LearningJdbcController {
             @RequestParam(required = false) String itemType,
             @RequestParam(required = false) String masteryStatus,
             @RequestParam(required = false) String dueRange) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "learning.review.read");
         int bounded = Math.max(1, Math.min(limit, 100));
         List<Map<String, Object>> rows = jdbc.queryForList("""
                 SELECT item_id, stage, due_at, interval_days, ease_factor, review_count
@@ -98,6 +98,7 @@ public class B25LearningJdbcController {
         Map<String, Object> data = new LinkedHashMap<>();
         data.put("items", items);
         data.put("source", "mysql");
+        data.put("verificationStatus", "UNVERIFIED_LEGACY_REVIEW");
         return pageEnvelope(data);
     }
 
@@ -106,6 +107,7 @@ public class B25LearningJdbcController {
 
     @GetMapping("/srs/batches/{snapshotId}")
     public Map<String, Object> batch(Authentication authentication, @PathVariable long snapshotId) {
+        LearningHttpPrincipals.require(authentication, "learning.review.read");
         if (snapshotId < 1) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "snapshotId must be positive");
         // Phase 1 uses one published local content snapshot.  The snapshot is
         // still checked at the owner boundary so a client cannot turn an
@@ -117,7 +119,10 @@ public class B25LearningJdbcController {
     }
 
     @PostMapping("/srs/batches")
-    public Map<String, Object> createBatch(Authentication authentication) { return batchFor(authentication); }
+    public Map<String, Object> createBatch(Authentication authentication) {
+        LearningHttpPrincipals.require(authentication, "learning.review.write");
+        return batchFor(authentication);
+    }
 
     /** B2 mined-expression list is scoped to the verified learner principal. */
     @GetMapping("/vocab/expressions")
@@ -126,7 +131,7 @@ public class B25LearningJdbcController {
             @RequestParam(required = false) String sourceType,
             @RequestParam(required = false) Boolean wantToSay,
             @RequestParam(defaultValue = "20") int limit) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "learning.review.read");
         int boundedLimit = Math.max(1, Math.min(limit, 100));
         String normalizedSource = sourceType == null ? "" : sourceType.trim().toUpperCase(java.util.Locale.ROOT);
         if (!normalizedSource.isBlank() && !expressionSource(normalizedSource)) {
@@ -166,7 +171,7 @@ public class B25LearningJdbcController {
             @RequestParam(required = false) String itemType,
             @RequestParam(required = false) String collectionStatus,
             @RequestParam(required = false) String sourceType) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "learning.review.read");
         int bounded = Math.max(1, Math.min(limit, 100));
         List<Map<String, Object>> rows = jdbc.queryForList("""
                 SELECT entry_id, item_type, item_id, source_type, collection_status, created_at, updated_at
@@ -190,7 +195,7 @@ public class B25LearningJdbcController {
     public Map<String, Object> addLibraryEntry(Authentication authentication,
             @RequestBody Map<String, Object> body,
             @RequestHeader("Idempotency-Key") String idempotencyKey) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "learning.review.write");
         String key = requiredHeader(idempotencyKey, "Idempotency-Key");
         String type = text(body.get("itemType")).toUpperCase(java.util.Locale.ROOT);
         if (!List.of("VOCAB", "CHUNK", "EXPRESSION").contains(type)) {
@@ -226,7 +231,7 @@ public class B25LearningJdbcController {
     public Map<String, Object> removeLibraryEntry(Authentication authentication,
             @PathVariable long entryId,
             @RequestHeader("Idempotency-Key") String idempotencyKey) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "learning.review.write");
         requiredHeader(idempotencyKey, "Idempotency-Key");
         jdbc.update("""
                 UPDATE b25_learning_library_entry SET collection_status = 'REMOVED', updated_at = CURRENT_TIMESTAMP(6)
@@ -238,7 +243,7 @@ public class B25LearningJdbcController {
     /** B2 expression detail is also the reveal projection used by the learner Web card. */
     @GetMapping("/vocab/expressions/{expressionId}")
     public Map<String, Object> expression(Authentication authentication, @PathVariable long expressionId) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "learning.review.read");
         return expressionResponse(expressionRow(principal.subject(), expressionId));
     }
 
@@ -248,7 +253,7 @@ public class B25LearningJdbcController {
             Authentication authentication,
             @RequestBody Map<String, Object> body,
             @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "learning.review.write");
         String key = requiredHeader(idempotencyKey, "Idempotency-Key");
         String sourceType = required(body, "sourceType", 32).toUpperCase(java.util.Locale.ROOT);
         if (!expressionSource(sourceType)) {
@@ -288,7 +293,7 @@ public class B25LearningJdbcController {
             @PathVariable long expressionId,
             @RequestBody Map<String, Object> body,
             @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "learning.review.write");
         String key = requiredHeader(idempotencyKey, "Idempotency-Key");
         Map<String, Object> current = expressionRow(principal.subject(), expressionId);
         boolean wantToSay = body.containsKey("wantToSay")
@@ -311,7 +316,7 @@ public class B25LearningJdbcController {
             Authentication authentication,
             @PathVariable long expressionId,
             @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "learning.review.write");
         String key = requiredHeader(idempotencyKey, "Idempotency-Key");
         int updated = jdbc.update("""
                 UPDATE b2_learner_expression
@@ -330,49 +335,34 @@ public class B25LearningJdbcController {
     }
 
     @PostMapping("/srs/reviews")
-    @Transactional
     public Map<String, Object> review(Authentication authentication, @RequestBody Map<String, Object> body,
             @RequestHeader("Idempotency-Key") String idempotencyKey) {
-        Principal principal = principal(authentication);
-        String itemId = itemId(body.get("itemId"));
-        int quality = normalizedQuality(body);
-        if (itemId.isBlank() || quality < 0 || quality > 5) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "itemId and quality[0..5] are required");
-        String key = idempotencyKey == null || idempotencyKey.isBlank() ? text(body.get("clientEventId")) : idempotencyKey;
-        if (key.isBlank()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Idempotency-Key is required");
-        return recordReview(principal.subject(), itemId, quality, key);
+        return rejectUntrustedReview(authentication);
     }
 
     @PostMapping("/srs/reviews:sync")
-    @Transactional
     public Map<String, Object> sync(Authentication authentication, @RequestBody Map<String, Object> body,
             @RequestHeader("Idempotency-Key") String idempotencyKey) {
-        Principal principal = principal(authentication);
-        Object raw = body.get("events");
-        if (!(raw instanceof List<?> events)) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "events must be an array");
-        List<Map<String, Object>> results = events.stream().filter(Map.class::isInstance).map(Map.class::cast).map(event -> {
-            String key = text(event.get("clientEventId"));
-            if (key.isBlank()) key = idempotencyKey == null ? "" : idempotencyKey + "-" + resultsIndex(event);
-            return recordReview(principal.subject(), itemId(event.get("itemId") == null ? event.get("item") : event.get("itemId")), normalizedQuality(event), key);
-        }).toList();
-        return Map.of("accepted", results.size(), "results", results);
+        return rejectUntrustedReview(authentication);
     }
 
     @GetMapping("/stats/daily-summary")
     public Map<String, Object> dailySummary(Authentication authentication) {
-        Principal principal = principal(authentication);
-        Map<String, Object> row = jdbc.queryForMap("SELECT COUNT(*) reviews, COALESCE(SUM(quality), 0) quality FROM b25_learning_review WHERE principal_id = ? AND tenant_id = ? AND created_at >= CURRENT_DATE", principal.subject(), TENANT);
-        return Map.of("principalId", principal.subject(), "reviewCount", number(row.get("reviews")), "qualityTotal", number(row.get("quality")), "source", "mysql");
+        Principal principal = principal(authentication, "learning.progress.read");
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("principalId", principal.subject());
+        result.put("reviewCount", null);
+        result.put("qualityTotal", null);
+        result.put("verificationStatus", "UNVERIFIED_LEGACY_REVIEW");
+        result.put("source", "learning-service");
+        return result;
     }
 
-    /**
-     * Canonical Phase 1 report read model.  The old learner-web report client
-     * used core-api's in-memory /mastery endpoint; this projection is owned by
-     * learning-service and is calculated only from durable SRS facts.
-     */
+    /** Compatibility report shape. Legacy client-rated rows are not verified learning facts. */
     @GetMapping("/stats/daily-report")
     public Map<String, Object> dailyReport(Authentication authentication,
             @RequestParam(required = false) String date) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "learning.progress.read");
         LocalDate day = parseDate(date, LocalDate.now(ZoneOffset.UTC));
         return report(principal.subject(), day, day.plusDays(1), "DAILY");
     }
@@ -380,7 +370,7 @@ public class B25LearningJdbcController {
     @GetMapping("/stats/weekly-report")
     public Map<String, Object> weeklyReport(Authentication authentication,
             @RequestParam(required = false) String weekStart) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "learning.progress.read");
         LocalDate requested = parseDate(weekStart, LocalDate.now(ZoneOffset.UTC));
         LocalDate start = requested.with(DayOfWeek.MONDAY);
         return report(principal.subject(), start, start.plusDays(7), "WEEKLY");
@@ -390,7 +380,7 @@ public class B25LearningJdbcController {
     @GetMapping("/review-queue")
     public Map<String, Object> reviewQueue(Authentication authentication,
             @RequestParam(defaultValue = "20") int limit) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "learning.review.read");
         int boundedLimit = Math.max(1, Math.min(limit, 100));
         List<Map<String, Object>> rows = jdbc.queryForList("""
                 SELECT item_id, stage, due_at, review_count
@@ -411,38 +401,25 @@ public class B25LearningJdbcController {
             item.put("dueAt", row.get("due_at"));
             item.put("priority", Math.max(1, 100 - index));
             item.put("stateVersion", number(row.get("review_count")));
+            item.put("completable", false);
+            item.put("unavailableReason", "UNTRUSTED_REVIEW_EVIDENCE");
             items.add(item);
         }
         return Map.of("principalId", principal.subject(), "items", items, "source", "mysql");
     }
 
     @PostMapping("/review-queue/{queueItemId}/complete")
-    @Transactional
     public Map<String, Object> completeReviewQueue(Authentication authentication,
             @PathVariable String queueItemId,
             @RequestBody Map<String, Object> body,
             @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey) {
-        Principal principal = principal(authentication);
-        String result = text(body.get("result")).toUpperCase(java.util.Locale.ROOT);
-        int quality = switch (result) {
-            case "PASS" -> 4;
-            case "FAIL" -> 1;
-            case "SKIPPED" -> 0;
-            default -> throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "result must be PASS, FAIL or SKIPPED");
-        };
-        String key = idempotencyKey == null || idempotencyKey.isBlank()
-                ? text(body.get("clientEventId")) : idempotencyKey.trim();
-        if (key.isBlank()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Idempotency-Key is required");
-        Map<String, Object> response = new LinkedHashMap<>(recordReview(principal.subject(), queueItemId, quality, key));
-        response.put("queueItemId", queueItemId);
-        response.put("result", result);
-        return response;
+        return rejectUntrustedReview(authentication);
     }
 
     @GetMapping("/mistakes/queue")
     public Map<String, Object> mistakes(Authentication authentication,
             @RequestParam(required = false) String status) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "learning.mastery.read");
         String requestedStatus = status == null ? "" : status.trim().toUpperCase(java.util.Locale.ROOT);
         if (requestedStatus.length() > 32) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "status is too long");
@@ -495,7 +472,7 @@ public class B25LearningJdbcController {
 
     @GetMapping("/continue-context")
     public Map<String, Object> continueContext(Authentication authentication) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "learning.progress.read");
         Map<String, Object> row = one("SELECT * FROM b25_learning_continue_context WHERE principal_id = ? AND tenant_id = ?",
                 principal.subject(), TENANT);
         if (row == null) return Map.of("hasContext", false, "empty", true, "source", "mysql");
@@ -507,7 +484,7 @@ public class B25LearningJdbcController {
     public Map<String, Object> saveContinueContext(Authentication authentication,
             @RequestBody Map<String, Object> body,
             @RequestHeader("Idempotency-Key") String idempotencyKey) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "learning.progress.write");
         String key = idempotencyKey == null || idempotencyKey.isBlank() ? text(body.get("clientEventId")) : idempotencyKey.trim();
         if (key.isBlank()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Idempotency-Key is required");
         Map<String, Object> current = one("SELECT * FROM b25_learning_continue_context WHERE principal_id = ? AND tenant_id = ?",
@@ -543,62 +520,37 @@ public class B25LearningJdbcController {
     }
 
     private Map<String, Object> batchFor(Authentication authentication) {
-        Principal principal = principal(authentication);
-        List<Map<String, Object>> rows = jdbc.queryForList("""
-                SELECT item_id, stage, due_at, interval_days, ease_factor, review_count
-                FROM b25_learning_srs_state WHERE principal_id = ? AND tenant_id = ?
-                ORDER BY due_at, item_id LIMIT 50
-                """, principal.subject(), TENANT);
-        List<Map<String, Object>> cards = rows.stream().map(B25LearningJdbcController::srsView).toList();
+        Principal principal = principal(authentication, "learning.review.read");
+        // b25 rows have neither a published content pin nor a trusted assessment
+        // outcome. Do not present fixture/legacy rows as a completable batch.
         return Map.of("snapshotId", B25_SRS_SNAPSHOT_ID, "principalId", principal.subject(),
-                "localDate", LocalDate.now(ZoneOffset.UTC).toString(), "contentEpoch", 1,
-                "cards", cards, "items", cards, "source", "mysql");
+                 "localDate", LocalDate.now(ZoneOffset.UTC).toString(), "contentEpoch", 1,
+                 "cards", List.of(), "items", List.of(), "status", "RECOVERY_REQUIRED",
+                 "reasonCode", "UNTRUSTED_REVIEW_EVIDENCE", "source", "learning-service");
     }
 
     private Map<String, Object> report(String subject, LocalDate start, LocalDate end, String reportType) {
-        Instant from = start.atStartOfDay(ZoneOffset.UTC).toInstant();
-        Instant until = end.atStartOfDay(ZoneOffset.UTC).toInstant();
-        Map<String, Object> totals = jdbc.queryForMap("""
-                SELECT COUNT(*) reviews,
-                       COALESCE(SUM(quality >= 3), 0) successful,
-                       COALESCE(SUM(quality < 3), 0) lapses
-                FROM b25_learning_review
-                WHERE principal_id = ? AND tenant_id = ?
-                  AND created_at >= ? AND created_at < ?
-                """, subject, TENANT, Timestamp.from(from), Timestamp.from(until));
-        int reviews = number(totals.get("reviews"));
-        int successful = number(totals.get("successful"));
-        List<Map<String, Object>> weakness = jdbc.queryForList("""
-                SELECT stage, COUNT(*) item_count
-                FROM b25_learning_srs_state
-                WHERE principal_id = ? AND tenant_id = ?
-                GROUP BY stage ORDER BY stage
-                """, subject, TENANT).stream().map(row -> {
-                    Map<String, Object> item = new LinkedHashMap<>();
-                    item.put("label", text(row.get("stage")));
-                    item.put("value", number(row.get("item_count")));
-                    item.put("evidence", "b25_learning_srs_state");
-                    item.put("nextAction", "按到期队列继续复习");
-                    return item;
-                }).toList();
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("reportId", UUID.nameUUIDFromBytes((subject + "|" + reportType + "|" + start)
                 .getBytes(StandardCharsets.UTF_8)).toString());
         result.put("reportType", reportType);
+        result.put("status", "PARTIAL");
         result.put("generatedAt", Instant.now().toString());
-        result.put("calculationVersion", "B25-SRS-REPORT-1");
-        // These values are intentionally null until a durable study-time/new-item
-        // fact exists.  A missing fact must not be represented as a guessed zero.
+        result.put("calculationVersion", "B25-LEGACY-UNVERIFIED-1");
+        // Historical b25 rows were accepted from client quality/PASS. Preserve
+        // them in storage, but never recast them as verified learning outcomes.
         result.put("studyMinutes", null);
         result.put("newItems", null);
-        result.put("reviewItems", reviews);
-        result.put("accuracy", reviews == 0 ? null : (successful * 100.0 / reviews));
+        result.put("reviewItems", null);
+        result.put("accuracy", null);
         result.put("masteredIncrement", null);
-        result.put("forgettingRate", reviews == 0 ? null : ((reviews - successful) * 100.0 / reviews));
+        result.put("forgettingRate", null);
         result.put("d1Pending", null);
         result.put("d7Pending", null);
-        result.put("weakness", weakness);
-        result.put("source", "mysql");
+        result.put("weakness", List.of());
+        result.put("verificationStatus", "UNVERIFIED_LEGACY_REVIEW");
+        result.put("reasonCode", "TRUSTED_REVIEW_FACTS_UNAVAILABLE");
+        result.put("source", "learning-service");
         result.put("periodStart", start.toString());
         result.put("periodEndExclusive", end.toString());
         return result;
@@ -612,23 +564,9 @@ public class B25LearningJdbcController {
         }
     }
 
-    private Map<String, Object> recordReview(String subject, String itemId, int quality, String key) {
-        if (itemId.isBlank() || key.isBlank() || quality < 0 || quality > 5) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "review payload is invalid");
-        int inserted = jdbc.update("INSERT IGNORE INTO b25_learning_review (review_id, principal_id, tenant_id, item_id, quality, idempotency_key) VALUES (?, ?, ?, ?, ?, ?)", UUID.randomUUID().toString(), subject, TENANT, itemId, quality, key);
-        Map<String, Object> current = one("SELECT * FROM b25_learning_srs_state WHERE principal_id = ? AND item_id = ? AND tenant_id = ?", subject, itemId, TENANT);
-        if (inserted == 0) return current == null ? Map.of("status", "DUPLICATE", "itemId", itemId) : srsView(current);
-        int oldInterval = current == null ? 0 : number(current.get("interval_days"));
-        int reviewCount = current == null ? 0 : number(current.get("review_count"));
-        String stage = quality < 3 ? "LEARNING" : quality >= 5 && reviewCount >= 2 ? "MASTERED" : "REVIEW";
-        int interval = quality < 3 ? 0 : Math.max(1, oldInterval == 0 ? 1 : oldInterval * (quality >= 4 ? 2 : 1));
-        Instant due = quality < 3 ? Instant.now().plus(10, ChronoUnit.MINUTES) : Instant.now().plus(interval, ChronoUnit.DAYS);
-        if (current == null) {
-            jdbc.update("INSERT INTO b25_learning_srs_state (principal_id, item_id, tenant_id, stage, due_at, interval_days, ease_factor, review_count, last_idempotency_key) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", subject, itemId, TENANT, stage, Timestamp.from(due), interval, 2.50, reviewCount + 1, key);
-        } else {
-            jdbc.update("UPDATE b25_learning_srs_state SET stage = ?, due_at = ?, interval_days = ?, ease_factor = LEAST(3.00, GREATEST(1.30, ease_factor + ?)), review_count = review_count + 1, last_idempotency_key = ? WHERE principal_id = ? AND item_id = ? AND tenant_id = ?", stage, Timestamp.from(due), interval, quality >= 4 ? 0.05 : -0.10, key, subject, itemId, TENANT);
-        }
-        Map<String, Object> updated = one("SELECT * FROM b25_learning_srs_state WHERE principal_id = ? AND item_id = ? AND tenant_id = ?", subject, itemId, TENANT);
-        Map<String, Object> result = srsView(updated); result.put("status", "ACCEPTED"); return result;
+    private static Map<String, Object> rejectUntrustedReview(Authentication authentication) {
+        LearningHttpPrincipals.require(authentication, "learning.review.write");
+        throw new ResponseStatusException(HttpStatus.CONFLICT, "UNTRUSTED_REVIEW_EVIDENCE");
     }
 
     private static Map<String, Object> srsView(Map<String, Object> row) {
@@ -644,6 +582,7 @@ public class B25LearningJdbcController {
         result.put("dueLocalDate", row.get("due_at"));
         result.put("delayedVerifyStage", "NONE");
         result.put("riskBand", "NEW".equals(row.get("stage")) ? "MEDIUM" : "LOW");
+        result.put("verificationStatus", "UNVERIFIED_LEGACY_REVIEW");
         return result;
     }
 
@@ -800,30 +739,6 @@ public class B25LearningJdbcController {
         return boundedInteger(value, minimum, maximum, name);
     }
 
-    private static String itemId(Object raw) {
-        if (raw instanceof Map<?, ?> map) {
-            Object value = map.get("itemId");
-            if (value == null) value = map.get("vocabularyId");
-            if (value == null) value = map.get("vocabId");
-            if (value == null) value = map.get("chunkId");
-            if (value == null) value = map.get("expressionId");
-            return text(value);
-        }
-        return text(raw);
-    }
-
-    private static int normalizedQuality(Map<String, Object> body) {
-        int quality = integer(body.get("quality"), integer(body.get("rating"), Integer.MIN_VALUE));
-        if (quality == Integer.MIN_VALUE) {
-            int rawQuality = integer(body.get("rawQuality"), -1);
-            // The public SRS contract uses 0..3; the local owner projection
-            // stores the legacy 0..5 scale. Preserve the ordering without
-            // accepting a client-provided mastery/status value.
-            quality = rawQuality < 0 ? -1 : rawQuality == 3 ? 5 : rawQuality;
-        }
-        return quality;
-    }
-
     private Map<String, Object> one(String sql, Object... args) { List<Map<String, Object>> rows = jdbc.queryForList(sql, args); return rows.isEmpty() ? null : rows.get(0); }
     private static Map<String, Object> continueView(Map<String, Object> row) {
         Map<String, Object> view = new LinkedHashMap<>();
@@ -841,15 +756,14 @@ public class B25LearningJdbcController {
         view.put("source", "mysql");
         return view;
     }
-    private Principal principal(Authentication authentication) {
-        return new Principal(LearningHttpPrincipals.require(authentication).subject());
+    private Principal principal(Authentication authentication, String permission) {
+        return new Principal(LearningHttpPrincipals.require(authentication, permission).subject());
     }
     private static final long B25_SRS_SNAPSHOT_ID = 25001L;
     private static final long B25_SRS_SNAPSHOT_ITEM_ID = 25001L;
     private static final long B25_CONTENT_VERSION_ID = 25001L;
 
     private static String text(Object value) { return value instanceof String s ? s.trim() : value == null ? "" : String.valueOf(value).trim(); }
-    private static int integer(Object value, int fallback) { return value instanceof Number n ? n.intValue() : fallback; }
     private static int number(Object value) { return value instanceof Number n ? n.intValue() : 0; }
     private static String required(Map<String, Object> body, String name, int maxLength) {
         String value = text(body.get(name));
@@ -870,6 +784,5 @@ public class B25LearningJdbcController {
         }
         return number.longValue();
     }
-    private static String resultsIndex(Map<String, Object> event) { return Integer.toHexString(event.hashCode()); }
     private record Principal(String subject) {}
 }

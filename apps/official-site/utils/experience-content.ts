@@ -242,7 +242,6 @@ export const publicDocuments = {
       ["official.c4be1a20fe", "official.cd7c63eef2"],
       ["official.c555af76e4", "official.c2efa99bea"],
     ],
-    note: "official.c9e30720c0",
   },
 } as const;
 export type LearningMethod = (typeof learningMethods)[number];

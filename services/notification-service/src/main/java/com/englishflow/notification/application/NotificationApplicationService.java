@@ -4,8 +4,10 @@ import com.englishflow.notification.domain.DeliveryAttempt;
 import com.englishflow.notification.domain.DeliveryStatus;
 import com.englishflow.notification.domain.IdempotencyKey;
 import com.englishflow.notification.domain.NotificationAccessPolicy;
+import com.englishflow.notification.domain.NotificationCategory;
 import com.englishflow.notification.domain.NotificationChannel;
 import com.englishflow.notification.domain.NotificationDomainException;
+import com.englishflow.notification.domain.NotificationFrequencyPolicy;
 import com.englishflow.notification.domain.NotificationMessage;
 import com.englishflow.notification.domain.NotificationOutboxEvent;
 import com.englishflow.notification.domain.NotificationPreference;
@@ -25,10 +27,12 @@ import com.englishflow.notification.port.NotificationIdGenerator;
 import com.englishflow.notification.port.OutboxEventPort;
 import com.englishflow.notification.port.StoredIdempotency;
 import com.englishflow.notification.port.WorkflowPort;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.util.List;
 
 /** Use cases for preferences, in-app messages, delivery and idempotent retry. */
@@ -48,6 +52,8 @@ public final class NotificationApplicationService {
     private final NotificationConsentPort consents;
     private final NotificationSubscriptionStore subscriptions;
     private final NotificationTemplateStore templates;
+    private final TransactionTemplate preferenceTransaction;
+    private final ZoneId preferenceTimeZone;
 
     public NotificationApplicationService(NotificationFactStore store, WorkflowPort workflow,
             DeliveryTransport transport, OutboxEventPort events, NotificationIdGenerator ids,
@@ -77,6 +83,26 @@ public final class NotificationApplicationService {
             NotificationAccessPolicy access, Clock clock, int maxDeliveryAttempts, Duration retryBackoff,
             NotificationAuditEventPort audit, NotificationConsentPort consents,
             NotificationSubscriptionStore subscriptions, NotificationTemplateStore templates) {
+        this(store, workflow, transport, events, ids, access, clock, maxDeliveryAttempts, retryBackoff,
+                audit, consents, subscriptions, templates, null, ZoneId.of("Asia/Shanghai"));
+    }
+
+    public NotificationApplicationService(NotificationFactStore store, WorkflowPort workflow,
+            DeliveryTransport transport, OutboxEventPort events, NotificationIdGenerator ids,
+            NotificationAccessPolicy access, Clock clock, int maxDeliveryAttempts, Duration retryBackoff,
+            NotificationAuditEventPort audit, NotificationConsentPort consents,
+            NotificationSubscriptionStore subscriptions, NotificationTemplateStore templates,
+            TransactionTemplate preferenceTransaction) {
+        this(store, workflow, transport, events, ids, access, clock, maxDeliveryAttempts, retryBackoff,
+                audit, consents, subscriptions, templates, preferenceTransaction, ZoneId.of("Asia/Shanghai"));
+    }
+
+    public NotificationApplicationService(NotificationFactStore store, WorkflowPort workflow,
+            DeliveryTransport transport, OutboxEventPort events, NotificationIdGenerator ids,
+            NotificationAccessPolicy access, Clock clock, int maxDeliveryAttempts, Duration retryBackoff,
+            NotificationAuditEventPort audit, NotificationConsentPort consents,
+            NotificationSubscriptionStore subscriptions, NotificationTemplateStore templates,
+            TransactionTemplate preferenceTransaction, ZoneId preferenceTimeZone) {
         if (maxDeliveryAttempts < 1 || retryBackoff.isNegative() || retryBackoff.isZero()) {
             throw new IllegalArgumentException("delivery policy is invalid");
         }
@@ -93,28 +119,54 @@ public final class NotificationApplicationService {
         this.consents = java.util.Objects.requireNonNull(consents, "consents");
         this.subscriptions = java.util.Objects.requireNonNull(subscriptions, "subscriptions");
         this.templates = java.util.Objects.requireNonNull(templates, "templates");
+        this.preferenceTransaction = preferenceTransaction;
+        this.preferenceTimeZone = java.util.Objects.requireNonNull(preferenceTimeZone, "preferenceTimeZone");
     }
 
     public List<NotificationPreference> preferences(NotificationPrincipalContext context) {
-        access.requirePermission(context, "notification.read");
+        access.requirePermission(context, "notification.preference.read.self");
         return store.findPreferences(context.tenantId(), context.principalId());
     }
 
     public NotificationPreference updatePreference(NotificationPrincipalContext context,
             UpdatePreferenceCommand command, IdempotencyKey key, RequestMetadata metadata) {
-        access.requirePermission(context, "notification.write");
+        access.requirePermission(context, "notification.preference.write.self");
+        if (command.expectedVersion() < 0) {
+            throw new NotificationDomainException(NotificationDomainException.Code.VERSION_CONFLICT,
+                    "notification preference expectedVersion is required");
+        }
         String scope = "preference:" + context.tenantId() + ':' + context.principalId();
         String fingerprint = command.fingerprint();
+        if (preferenceTransaction == null) {
+            return updatePreferenceFact(context, command, key, metadata, scope, fingerprint);
+        }
+        try {
+            return preferenceTransaction.execute(status ->
+                    updatePreferenceFact(context, command, key, metadata, scope, fingerprint));
+        } catch (NotificationDomainException exception) {
+            if (exception.code() != NotificationDomainException.Code.VERSION_CONFLICT) {
+                throw exception;
+            }
+            // A competing request with the same idempotency key may have committed
+            // after this transaction's snapshot was established. Recheck after the
+            // failed transaction has completed so the winner is visible.
+            return store.findIdempotency(scope, key.value())
+                    .map(value -> replayPreference(value, fingerprint))
+                    .orElseThrow(() -> exception);
+        }
+    }
+
+    private NotificationPreference updatePreferenceFact(NotificationPrincipalContext context,
+            UpdatePreferenceCommand command, IdempotencyKey key, RequestMetadata metadata,
+            String scope, String fingerprint) {
         var existingCommand = store.findIdempotency(scope, key.value());
         if (existingCommand.isPresent()) {
-            ensureSameFingerprint(existingCommand.get(), fingerprint);
-            return cast(existingCommand.get().value(), NotificationPreference.class);
+            return replayPreference(existingCommand.get(), fingerprint);
         }
 
         var current = store.findPreference(context.tenantId(), context.principalId(),
-                command.notificationType(), command.channel());
-        if (current.isPresent() && command.expectedVersion() >= 0
-                && current.get().version() != command.expectedVersion()) {
+                command.category(), command.channel());
+        if (current.isPresent() && current.get().version() != command.expectedVersion()) {
             throw new NotificationDomainException(NotificationDomainException.Code.VERSION_CONFLICT,
                     "notification preference version is stale");
         }
@@ -123,17 +175,28 @@ public final class NotificationApplicationService {
                     "notification preference does not exist at the requested version");
         }
         Instant now = clock.instant();
-        NotificationPreference next = current.map(value -> value.change(command.enabled(), command.locale(), now))
+        NotificationPreference next = current.map(value -> value.change(command.enabled(), command.locale(),
+                        command.consentVersion(), command.dndWindow(), command.frequencyPolicy(), now))
                 .orElseGet(() -> new NotificationPreference(context.tenantId(), context.principalId(),
-                        command.notificationType(), command.channel(), command.enabled(), command.locale(), 1, now));
-        store.savePreference(next);
+                        command.category(), command.channel(), command.enabled(), command.locale(),
+                        command.consentVersion(), command.dndWindow(), command.frequencyPolicy(), 1, now));
+        if (!store.compareAndSetPreference(next, command.expectedVersion())) {
+            throw new NotificationDomainException(NotificationDomainException.Code.VERSION_CONFLICT,
+                    "notification preference version is stale");
+        }
         store.saveIdempotency(scope, key.value(), new StoredIdempotency(fingerprint, next));
         appendAudit("notification.preference.updated", "APPLIED", context.principalId(), next.tenantId(),
                 next.principalId(), "notification-preference",
-                next.notificationType() + ':' + next.channel().name(), metadata,
-                java.util.Map.of("notificationType", next.notificationType(), "channel", next.channel().name(),
-                        "enabled", Boolean.toString(next.enabled()), "version", Long.toString(next.version())));
+                next.category().name() + ':' + next.channel().name(), metadata,
+                java.util.Map.of("category", next.category().name(), "channel", next.channel().name(),
+                        "enabled", Boolean.toString(next.enabled()), "consentVersion",
+                        Integer.toString(next.consentVersion()), "version", Long.toString(next.version())));
         return next;
+    }
+
+    private static NotificationPreference replayPreference(StoredIdempotency stored, String fingerprint) {
+        ensureSameFingerprint(stored, fingerprint);
+        return cast(stored.value(), NotificationPreference.class);
     }
 
     public NotificationMessage queue(NotificationPrincipalContext context, QueueNotificationCommand command,
@@ -243,10 +306,22 @@ public final class NotificationApplicationService {
                     "delivery requires workflow recovery before another attempt");
         }
         int attemptNumber = previous.size() + 1;
-        boolean preferenceEnabled = store.findPreference(context.tenantId(), context.principalId(),
-                message.notificationType(), message.channel()).map(NotificationPreference::enabled).orElse(true);
-        boolean consentGranted = !message.templateOnly()
-                || consents.findConsent(context.tenantId(), context.principalId(), message.channel()).orElse(false);
+        NotificationCategory preferenceCategory = NotificationCategory.fromMessageType(message.notificationType())
+                .orElse(null);
+        NotificationPreference preference = preferenceCategory == null ? null
+                : store.findPreference(context.tenantId(), context.principalId(), preferenceCategory,
+                        message.channel()).orElse(null);
+        boolean preferenceEnabled = preference != null && preference.enabled();
+        boolean frequencyAllowed = preference != null
+                && preference.frequencyPolicy() == NotificationFrequencyPolicy.IMMEDIATE;
+        boolean dndBypass = preferenceCategory == NotificationCategory.SECURITY
+                || preferenceCategory == NotificationCategory.ACCOUNT
+                || preferenceCategory == NotificationCategory.PAYMENT;
+        boolean inDndWindow = preference != null && !dndBypass
+                && preference.dndWindow().contains(now.atZone(preferenceTimeZone).toLocalTime());
+        // Legacy raw-body messages still require independent channel consent.
+        boolean consentGranted = consents.findConsent(context.tenantId(), context.principalId(),
+                message.channel()).orElse(false);
         // M6-001 managed gates: an explicit opt-out row suppresses delivery, and a
         // template-only message requires an ACTIVE template row (exact locale, else
         // zh-CN). Absent subscription rows stay subscribed; consent remains the
@@ -258,8 +333,13 @@ public final class NotificationApplicationService {
                 message.templateVersion(), message.locale())
                 .map(template -> template.status() == NotificationTemplate.TemplateStatus.ACTIVE)
                 .orElse(false);
-        boolean enabled = preferenceEnabled && consentGranted && subscriptionOn && templateOk;
-        String filterCode = !preferenceEnabled ? "PREFERENCE_DISABLED"
+        boolean enabled = preferenceEnabled && frequencyAllowed && !inDndWindow
+                && consentGranted && subscriptionOn && templateOk;
+        String filterCode = preferenceCategory == null ? "PREFERENCE_CATEGORY_UNMAPPED"
+                : preference == null ? "PREFERENCE_MISSING"
+                : !preferenceEnabled ? "PREFERENCE_DISABLED"
+                : !frequencyAllowed ? "FREQUENCY_POLICY_NOT_IMMEDIATE"
+                : inDndWindow ? "DO_NOT_DISTURB"
                 : !consentGranted ? "CONSENT_NOT_GRANTED"
                 : !subscriptionOn ? "SUBSCRIPTION_OPTED_OUT" : "TEMPLATE_NOT_ACTIVE";
         WorkflowTask task = existingWorkflow;

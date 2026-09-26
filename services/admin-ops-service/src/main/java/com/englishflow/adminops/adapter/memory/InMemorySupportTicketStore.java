@@ -2,6 +2,7 @@ package com.englishflow.adminops.adapter.memory;
 
 import com.englishflow.adminops.support.SupportTicketRecord;
 import com.englishflow.adminops.support.SupportTicketStore;
+import com.englishflow.adminops.domain.AdminOpsException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +34,12 @@ public final class InMemorySupportTicketStore implements SupportTicketStore {
     }
 
     @Override
-    public synchronized void update(SupportTicketRecord ticket) {
+    public synchronized void update(SupportTicketRecord ticket, long expectedVersion) {
+        SupportTicketRecord current = tickets.get(ticket.ticketId());
+        if (current == null || !ticket.tenantId().equals(current.tenantId())
+                || current.version() != expectedVersion) {
+            throw AdminOpsException.conflict("SUPPORT_VERSION_CONFLICT", "ticket changed; reload before retrying");
+        }
         tickets.put(ticket.ticketId(), ticket);
     }
 }

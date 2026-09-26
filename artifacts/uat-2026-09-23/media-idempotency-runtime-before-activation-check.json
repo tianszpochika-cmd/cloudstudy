@@ -1,0 +1,169 @@
+{
+  "scope": "local Gateway media metadata idempotency; no uploaded object bytes",
+  "assetId": "fd6d91ea-e59b-40bd-9ba7-ba9406b21524",
+  "checks": [
+    {
+      "name": "register account",
+      "observed": 201,
+      "expected": 201,
+      "ok": true
+    },
+    {
+      "name": "adult Gate",
+      "observed": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "TERMS consent",
+      "observed": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "PRIVACY consent",
+      "observed": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "ADULT_LEARNING consent",
+      "observed": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "staff login",
+      "observed": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "Gateway recognizes the issued JWT",
+      "observed": {
+        "status": 403,
+        "code": "CONTENT_ADMIN_REQUIRED"
+      },
+      "expected": "not 401",
+      "ok": true
+    },
+    {
+      "name": "registration requires key",
+      "observed": {
+        "status": 400,
+        "code": null,
+        "response": {
+          "timestamp": "2026-09-23T07:02:18.956Z",
+          "status": 400,
+          "error": "Bad Request",
+          "path": "/internal/v1/media/assets"
+        }
+      },
+      "expected": {
+        "status": 400
+      },
+      "ok": true
+    },
+    {
+      "name": "asset registration",
+      "observed": {
+        "status": 201,
+        "version": 1
+      },
+      "expected": {
+        "status": 201,
+        "version": 1
+      },
+      "ok": true
+    },
+    {
+      "name": "registration exact replay",
+      "observed": {
+        "status": 201,
+        "same": true
+      },
+      "expected": {
+        "status": 201,
+        "same": true
+      },
+      "ok": true
+    },
+    {
+      "name": "registration changed body denied",
+      "observed": {
+        "status": 409,
+        "code": "MEDIA_IDEMPOTENCY_CONFLICT"
+      },
+      "expected": {
+        "status": 409,
+        "code": "MEDIA_IDEMPOTENCY_CONFLICT"
+      },
+      "ok": true
+    },
+    {
+      "name": "subtitle metadata",
+      "observed": {
+        "status": 200,
+        "version": 2
+      },
+      "expected": {
+        "status": 200,
+        "version": 2
+      },
+      "ok": true
+    },
+    {
+      "name": "subtitle exact replay",
+      "observed": {
+        "status": 200,
+        "same": true
+      },
+      "expected": {
+        "status": 200,
+        "same": true
+      },
+      "ok": true
+    },
+    {
+      "name": "subtitle changed body denied",
+      "observed": {
+        "status": 409,
+        "code": "MEDIA_IDEMPOTENCY_CONFLICT"
+      },
+      "expected": {
+        "status": 409,
+        "code": "MEDIA_IDEMPOTENCY_CONFLICT"
+      },
+      "ok": true
+    },
+    {
+      "name": "owner stored version",
+      "observed": "2:UPLOADING",
+      "expected": "2:UPLOADING",
+      "ok": true
+    },
+    {
+      "name": "one receipt per successful write",
+      "observed": 2,
+      "expected": 2,
+      "ok": true
+    }
+  ],
+  "cleanup": {
+    "removed": {
+      "renditions": 1,
+      "outbox": 2,
+      "writeReceipts": 2,
+      "registrationReceipts": 1,
+      "asset": 1
+    },
+    "account": "1:DISABLED",
+    "activeSessions": 0
+  },
+  "directMissingKeyProbe": {
+    "status": 400,
+    "code": null
+  },
+  "result": "PASS",
+  "capturedAt": "2026-09-23T07:02:20.589Z"
+}

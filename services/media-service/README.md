@@ -8,7 +8,7 @@
 - 内容/版权引用：`MediaContentReference` 和 `MediaRightsReference` 保存 content version、许可渠道、有效窗口和授权证据引用；过期、撤销、缺失或渠道不允许时 fail closed。
 - 转码/rendition：资产级 `NOT_REQUIRED/QUEUED/PROCESSING/READY/FAILED` 与 rendition 级 `QUEUED/PROCESSING/READY/FAILED/REVOKED` 状态；失败状态不能签发可播放 URL。
 - manifest：只返回资产版本、校验和、大小、Range 能力、版权状态和 rendition metadata，不返回媒体 bytes，也不伪造 `206 Partial Content`。
-- signed URL：短时 opaque grant 绑定 `assetId + assetVersion + tenant + subject + channel + Range`；内存适配器只保留 token digest，生产适配器替换为 CDN/KMS signer。
+- signed URL：短时 opaque grant 绑定 `assetId + assetVersion + tenant + subject + channel + Range`；内存适配器只用于显式实例化的 smoke。所有运行 profile 默认拒发地址；显式启用对象存储后，必须先核实精确对象版本、大小、MIME 和存储端全对象 SHA-256，再由 MinIO/S3 签发可访问的 GET URL。显式 Range 请求会把 Range 头写入签名；普通浏览器播放请求完整对象授权，由播放器自行发 Range。
 - Range：支持单一 `bytes=start-end` 或开放尾部 `bytes=start-`；不支持多段、suffix 或越界请求时返回明确拒绝。Range 校验只操作 size metadata，不读取对象 bytes。
 - 撤销：资产撤销同时清除内存授权 grant，后续读取再次校验资产状态、版权窗口、租户、owner/content-right、同意和设备权限。
 - 安全：Resource Server 默认关闭时除 `/actuator/**` 外全部拒绝；启用后只接受已验证 JWT JWT。tenant、owner、phase、consent、role、permission 来自认证上下文，客户端请求体/authority header 不能覆盖。
@@ -25,12 +25,20 @@ MEDIA_SERVICE_SERVER_ADDRESS=127.0.0.1
 MEDIA_SERVICE_RESOURCE_SERVER_ENABLED=false
 MEDIA_SERVICE_SECURITY_ISSUER_URI=http://127.0.0.1:18087
 MEDIA_SERVICE_SECURITY_JWK_SET_URI=http://127.0.0.1:18087/api/v1/auth/jwks
-MEDIA_SERVICE_SIGNED_URL_BASE_URL=https://cdn.example.invalid/media
+MEDIA_SERVICE_OBJECT_STORE_ENABLED=false
+MEDIA_SERVICE_OBJECT_STORE_ENDPOINT=http://minio:9000
+MEDIA_SERVICE_OBJECT_STORE_PUBLIC_ENDPOINT=https://media.example.com
+MEDIA_SERVICE_OBJECT_STORE_BUCKET=private-media-bucket
+MEDIA_SERVICE_OBJECT_STORE_ACCESS_KEY=<secret-manager-injected-access-key>
+MEDIA_SERVICE_OBJECT_STORE_SECRET_KEY=<secret-manager-injected-secret-key>
+MEDIA_SERVICE_OBJECT_STORE_REGION=us-east-1
 MEDIA_SERVICE_SIGNED_URL_TTL=PT5M
 MEDIA_SERVICE_MAX_SIGNED_URL_TTL=PT15M
 ```
 
-`MEDIA_SERVICE_RESOURCE_SERVER_ENABLED=false` 时没有本地认证绕过；非 actuator 路由是默认拒绝。18092 的根配置登记、Gateway 路由和数据库迁移属于 B11 集成任务，不在本目录内修改。
+`MEDIA_SERVICE_RESOURCE_SERVER_ENABLED=false` 时没有本地认证绕过；非 actuator 路由是默认拒绝。对象存储开关保持关闭，直到已有私有桶、存储端 SHA-256、对象版本和浏览器可达的 HTTPS 公共端点均已配置。只允许本机 loopback HTTP 用于本地只读验证。服务会拒绝 bucket 不匹配、无版本、无存储端校验和、大小/MIME/校验和不符的对象。现行 rendition 元数据没有独立对象 key，不能把其 READY 状态当作可播放证明；录音上传需要独立的受控 PUT intent，现行 GET 签名器对此明确拒绝。
+
+MinIO 预签名 URL 由对象存储直接处理，在它到期前，撤销服务端 grant 不能即时使已签发 URL 失效。要求即时撤权的生产交付还需要受控代理/CDN 撤销能力及端到端验证。服务端不应把本地 206 探针当作真实课程或录音验收。18092 的根配置登记、Gateway 路由和数据库迁移属于 B11 集成任务，不在本目录内修改。
 
 ## 内部 API
 
@@ -63,7 +71,7 @@ web/          只返回 metadata/manifest/signed URL 的内部 HTTP API
 
 ## 验证
 
-本机当前只有 Java 24 且没有 Maven。纯 Java smoke 不依赖 Spring/Maven：
+可运行 Maven 测试；纯 Java smoke 仍可单独执行：
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\services\media-service\scripts\smoke.ps1
@@ -84,4 +92,4 @@ java -cp $out com.englishflow.media.MediaDomainSmoke
 
 ## 未完成项
 
-本切片不声称 Java 25/Maven/Spring 运行、JWT/JWKS、Gateway、MySQL/Flyway、Kafka/Outbox worker、S3/MinIO Range、CDN/KMS 签名或跨进程部署已经通过运行态验收。生产适配必须实现 `MediaRepository`/`SignedUrlPort` 的持久化与对象存储版本，同时保持默认拒绝和不记录原始媒体的边界。
+本切片不声称 Gateway→成人账号→已发布课程→浏览器/移动端播放、独立 rendition、录音上传、即时撤权或真实版权资产已经通过。已有 MinIO 只读探针只验证预签名 GET、单字节 206 和错误 Range 的 403；缺少对象版本/存储端 SHA-256 的旧对象保持不可签发。生产还需要内容/权利审核、对象版本与校验上传、可信处理 worker、CDN/代理撤销及设备端验收。

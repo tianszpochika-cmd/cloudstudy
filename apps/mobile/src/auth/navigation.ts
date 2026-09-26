@@ -2,6 +2,7 @@ import { setMobileApiErrorHandler } from '../api/client'
 import { safeMobileReturnTo } from './gateway-auth'
 import { getUniRuntime, openUniPage, type UniRuntime } from '../platform/uni-runtime'
 import { pinia } from '../stores/pinia'
+import { useLearnerContentStore } from '../stores/learner-content'
 import { useSessionStore } from '../stores/session'
 
 const LOGIN_PATH = '/pages/login/login'
@@ -10,6 +11,7 @@ const ONBOARDING_PATH = '/pages/onboarding/onboarding'
 const HOME_PATH = '/pages/home/home'
 
 const PUBLIC_PATHS = new Set([LOGIN_PATH, FORBIDDEN_PATH, '/pages/register/register', '/pages/reset-password/reset-password'])
+const AUTH_ONLY_PATHS = new Set([ONBOARDING_PATH, '/pages/devices/devices'])
 
 type RouteOptions = { url?: string; delta?: number }
 
@@ -19,6 +21,7 @@ export function normalizeMobilePagePath(value: unknown, fallback = HOME_PATH): s
   if (typeof value !== 'string' || !value.trim()) return fallback
   const raw = value.trim().replace(/^https?:\/\/[^/]+/i, '')
   const path = raw.split(/[?#]/, 1)[0] || fallback
+  if (path === '/') return fallback
   return path.startsWith('/') ? path : `/${path}`
 }
 
@@ -36,15 +39,33 @@ export function isMobilePublicPath(path: unknown): boolean { return PUBLIC_PATHS
 export function isMobileProtectedPath(path: unknown): boolean { return !isMobilePublicPath(path) }
 export function isMobileLearningPath(path: unknown): boolean {
   const normalized = normalizeMobilePagePath(path)
-  return isMobileProtectedPath(normalized) && normalized !== ONBOARDING_PATH
+  return isMobileProtectedPath(normalized) && !AUTH_ONLY_PATHS.has(normalized)
 }
 
 function loginUrl(returnTo: string): string { return `${LOGIN_PATH}?returnTo=${encodeURIComponent(safeMobileReturnTo(returnTo))}` }
 
+let pendingAuthNavigation: string | null = null
+
 function relaunchOrNavigate(target: string): void {
-  const app = runtime()
-  if (app.reLaunch) app.reLaunch({ url: target })
-  else app.navigateTo({ url: target })
+  if (pendingAuthNavigation === target) return
+  pendingAuthNavigation = target
+  let navigation: void | Promise<unknown>
+  try {
+    const app = runtime()
+    navigation = app.reLaunch ? app.reLaunch({ url: target }) : app.navigateTo({ url: target })
+  } catch (error) {
+    pendingAuthNavigation = null
+    throw error
+  }
+  void Promise.resolve(navigation).catch(() => {
+    // The app bootstrap and the page hook can both request the public route.
+    // If one navigation loses that race, keep the intended destination.
+    if (typeof window !== 'undefined' && currentMobilePagePath() !== normalizeMobilePagePath(target)) {
+      window.location.hash = `#${target}`
+    }
+  }).finally(() => {
+    if (pendingAuthNavigation === target) pendingAuthNavigation = null
+  })
 }
 
 function showLogin(returnTo: string): void {
@@ -62,14 +83,32 @@ function showOnboarding(returnTo: string): void {
   relaunchOrNavigate(ONBOARDING_PATH)
 }
 
+async function hydrateContentLocale(): Promise<boolean> {
+  const session = useSessionStore(pinia)
+  if (!session.isLearningReady) return false
+  const identity = session.getMobileApiIdentity()
+  if (!identity) return false
+  const content = useLearnerContentStore(pinia)
+  // The settings page deliberately performs a fresh GET whenever it opens.
+  // Other learning routes reuse the current identity's verified preference.
+  if (content.accountStatus === 'ready') {
+    const current = session.getMobileApiIdentity()
+    return Boolean(current && current.subject === identity.subject && current.revision === identity.revision)
+  }
+  await content.loadAccount()
+  const current = session.getMobileApiIdentity()
+  return Boolean(current && current.subject === identity.subject && current.revision === identity.revision)
+}
+
 /** Continue from the account-password login without making the navigation guard flash. */
-export function continueAfterLogin(returnTo: string): void {
+export async function continueAfterLogin(returnTo: string): Promise<void> {
   const session = useSessionStore(pinia)
   const safe = safeMobileReturnTo(returnTo)
-  if (!session.isLearningReady) {
+  if (isMobileLearningPath(safe) && !session.isLearningReady) {
     showOnboarding(safe)
     return
   }
+  if (isMobileLearningPath(safe) && !await hydrateContentLocale()) return
   openUniPage(safe)
 }
 
@@ -82,6 +121,10 @@ async function resolveBlockedNavigation(target: string): Promise<void> {
     try { await session.restore() } catch { /* the session store closes the gate on restore failure */ }
     if (!session.isAuthenticated) { showLogin(target); return }
     if (isMobileLearningPath(target) && !session.isLearningReady) { showOnboarding(target); return }
+    if (isMobileLearningPath(target) && !await hydrateContentLocale()) {
+      if (!session.isAuthenticated) showLogin(target)
+      return
+    }
     openUniPage(target)
   })().finally(() => { redirectPromise = null })
   return redirectPromise
@@ -98,7 +141,7 @@ function interceptNavigation(options: RouteOptions): false | RouteOptions {
 
 export function installMobileNavigationGuard(): void {
   const app = runtime()
-  setMobileApiErrorHandler((status) => handleMobileApiError(status))
+  setMobileApiErrorHandler((status, details) => handleMobileApiError(status, details))
   if (app.addInterceptor) {
     for (const method of ['navigateTo', 'redirectTo', 'switchTab', 'reLaunch']) {
       app.addInterceptor(method, { invoke: (options) => interceptNavigation(options) })
@@ -112,7 +155,8 @@ export async function bootstrapMobileAuth(initialPath: unknown): Promise<void> {
   try { await session.restore() } catch { /* restore has already cleared the local session */ }
   if (!isMobileProtectedPath(target)) return
   if (!session.isAuthenticated) { showLogin(target); return }
-  if (isMobileLearningPath(target) && !session.isLearningReady) showOnboarding(target)
+  if (isMobileLearningPath(target) && !session.isLearningReady) { showOnboarding(target); return }
+  if (isMobileLearningPath(target) && !await hydrateContentLocale()) return
 }
 
 /** Page-level fallback for direct deep links and first render on runtimes without route interception. */
@@ -122,15 +166,37 @@ export async function ensureMobilePageAccess(target: string): Promise<boolean> {
   try { await session.restore() } catch { /* restore has already closed the session */ }
   if (!session.isAuthenticated) { showLogin(normalized); return false }
   if (isMobileLearningPath(normalized) && !session.isLearningReady) { showOnboarding(normalized); return false }
+  if (isMobileLearningPath(normalized) && !await hydrateContentLocale()) {
+    if (!session.isAuthenticated) showLogin(normalized)
+    return false
+  }
+  if (!session.isAuthenticated) { showLogin(normalized); return false }
   return true
 }
 
-export function handleMobileApiError(status: 401 | 403): void {
+function decisionCode(details: unknown): string | null {
+  if (typeof details !== 'object' || details === null) return null
+  const envelope = (details as { error?: unknown }).error
+  const source = typeof envelope === 'object' && envelope !== null ? envelope : details
+  const code = (source as Record<string, unknown>).code
+  return typeof code === 'string' ? code.trim() : null
+}
+
+export function handleMobileApiError(status: 401 | 403, details?: unknown): void {
   const session = useSessionStore(pinia)
   const current = currentMobilePagePath()
   if (status === 401) {
     session.clear()
     if (isMobileProtectedPath(current)) showLogin(current)
+    return
+  }
+  // The onboarding page owns its permission and consent errors. A global
+  // redirect here strands a new account before the required consents exist.
+  if (current === ONBOARDING_PATH) return
+  // A new adult account can read IAM but cannot read learner facts until the
+  // onboarding consents have been recorded and its access token has rotated.
+  if (decisionCode(details) === 'CONSENT_REQUIRED') {
+    showOnboarding(current)
     return
   }
   if (current === FORBIDDEN_PATH) return

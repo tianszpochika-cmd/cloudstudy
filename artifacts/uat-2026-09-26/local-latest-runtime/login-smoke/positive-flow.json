@@ -1,0 +1,320 @@
+{
+  "generatedAt": "2026-09-25T17:56:00.940Z",
+  "scope": "Single random local synthetic account. Credentials omitted from all artifacts. Synthetic adult gate used year 1990 and local UI acknowledgements only; no formal legal acceptance is claimed.",
+  "registration": {
+    "succeeded": true,
+    "status": 201,
+    "view": {
+      "url": "/onboarding?redirect=/home",
+      "title": "语学星",
+      "headings": [
+        "欢迎来到语学星",
+        "确认成人身份"
+      ],
+      "alert": "",
+      "bodyText": "语学星 FIRST DAY · 1/2 欢迎来到语学星 先确认身份，再选择学习目标。 1 确认身份 2 选择目标 确认身份与同意事项 确认成人身份 仅限已满 18 岁的学习者。 出生年份 我确认自己已满 18 周岁 我同意隐私说明 我同意学习服务条款 继续 退出登录"
+    },
+    "apiResponses": [
+      {
+        "path": "/api/v1/auth/register",
+        "status": 201
+      },
+      {
+        "path": "/api/v1/iam/permissions",
+        "status": 200
+      },
+      {
+        "path": "/api/v1/learner/preferences",
+        "status": 403
+      },
+      {
+        "path": "/api/v1/learner/profile",
+        "status": 403
+      },
+      {
+        "path": "/api/v1/learner/targets",
+        "status": 403
+      },
+      {
+        "path": "/api/v1/onboarding/options",
+        "status": 403
+      },
+      {
+        "path": "/api/v1/iam/adult-gate",
+        "status": 200
+      },
+      {
+        "path": "/api/v1/iam/consents",
+        "status": 200
+      },
+      {
+        "path": "/api/v1/iam/consents",
+        "status": 200
+      },
+      {
+        "path": "/api/v1/iam/consents",
+        "status": 200
+      },
+      {
+        "path": "/api/v1/auth/token/refresh",
+        "status": 200
+      },
+      {
+        "path": "/api/v1/iam/permissions",
+        "status": 200
+      },
+      {
+        "path": "/api/v1/learner/targets",
+        "status": 404
+      },
+      {
+        "path": "/api/v1/learner/preferences",
+        "status": 200
+      },
+      {
+        "path": "/api/v1/learner/profile",
+        "status": 200
+      },
+      {
+        "path": "/api/v1/learner/profile",
+        "status": 200
+      },
+      {
+        "path": "/api/v1/learner/targets",
+        "status": 200
+      },
+      {
+        "path": "/api/v1/learner/targets",
+        "status": 200
+      },
+      {
+        "path": "/api/v1/onboarding/options",
+        "status": 200
+      },
+      {
+        "path": "/api/v1/learner/profile",
+        "status": 200
+      },
+      {
+        "path": "/api/v1/learner/preferences",
+        "status": 200
+      },
+      {
+        "path": "/api/v1/assessment/placement/start",
+        "status": 200
+      },
+      {
+        "path": "/api/v1/assessment/placement/start",
+        "status": 200
+      },
+      {
+        "path": "/api/v1/learner/home",
+        "status": 503
+      },
+      {
+        "path": "/api/v1/content/learner/catalog",
+        "status": 200
+      },
+      {
+        "path": "/api/v1/learner/targets",
+        "status": 200
+      },
+      {
+        "path": "/api/v1/learner/profile",
+        "status": 200
+      },
+      {
+        "path": "/api/v1/learner/preferences",
+        "status": 200
+      },
+      {
+        "path": "/api/v1/iam/devices",
+        "status": 200
+      },
+      {
+        "path": "/api/v1/auth/logout",
+        "status": 200
+      }
+    ],
+    "browserErrors": [
+      "Failed to load resource: the server responded with a status of 404 (Not Found) [/favicon.ico]",
+      "Failed to load resource: the server responded with a status of 403 (Forbidden) [/api/v1/learner/preferences]",
+      "Failed to load resource: the server responded with a status of 403 (Forbidden) [/api/v1/learner/profile]",
+      "Failed to load resource: the server responded with a status of 403 (Forbidden) [/api/v1/learner/targets]",
+      "Failed to load resource: the server responded with a status of 403 (Forbidden) [/api/v1/onboarding/options]",
+      "Failed to load resource: the server responded with a status of 404 (Not Found) [/api/v1/learner/targets]",
+      "Failed to load resource: the server responded with a status of 503 (Service Unavailable) [/api/v1/learner/home]"
+    ]
+  },
+  "webAdultGate": {
+    "reachedGoalStep": true,
+    "consentChoicesPresented": 3,
+    "view": {
+      "url": "/onboarding?redirect=/home",
+      "title": "语学星",
+      "headings": [
+        "欢迎来到语学星",
+        "你想先解决什么？"
+      ],
+      "alert": "",
+      "bodyText": "语学星 FIRST DAY · 2/2 欢迎来到语学星 先确认身份，再选择学习目标。 1 确认身份 2 选择目标 选择学习目标 你想先解决什么？ 选一个最重要的方向，我们会据此准备首日测评和学习任务。 学习目标 成人零基础 从发音、核心词和短句开始建立基础。 四六级备考 围绕词汇、听力与真题节奏推进。 考研英语 强化长难句、阅读和高频表达。 职场与日常 优先处理会话、场景和邮件表达。 可选重点 最多 3 个 发音矫正 核心词汇 阅读提升 听力精听 口语自练 旅游出行 外企邮件 每天愿意投入多久？ 5 分钟 15 分钟 30 分钟 45 分钟 目标不需要一次选对，以后可以随时调整。 上一步 保存并开始测评 退出登录"
+    },
+    "apiResponses": [
+      {
+        "path": "/api/v1/iam/consents",
+        "status": 200
+      },
+      {
+        "path": "/api/v1/iam/consents",
+        "status": 200
+      },
+      {
+        "path": "/api/v1/iam/consents",
+        "status": 200
+      },
+      {
+        "path": "/api/v1/auth/token/refresh",
+        "status": 200
+      },
+      {
+        "path": "/api/v1/iam/permissions",
+        "status": 200
+      },
+      {
+        "path": "/api/v1/learner/targets",
+        "status": 404
+      },
+      {
+        "path": "/api/v1/learner/preferences",
+        "status": 200
+      },
+      {
+        "path": "/api/v1/learner/profile",
+        "status": 200
+      },
+      {
+        "path": "/api/v1/learner/profile",
+        "status": 200
+      },
+      {
+        "path": "/api/v1/learner/targets",
+        "status": 200
+      },
+      {
+        "path": "/api/v1/learner/targets",
+        "status": 200
+      },
+      {
+        "path": "/api/v1/onboarding/options",
+        "status": 200
+      },
+      {
+        "path": "/api/v1/learner/profile",
+        "status": 200
+      },
+      {
+        "path": "/api/v1/learner/preferences",
+        "status": 200
+      },
+      {
+        "path": "/api/v1/assessment/placement/start",
+        "status": 200
+      },
+      {
+        "path": "/api/v1/assessment/placement/start",
+        "status": 200
+      },
+      {
+        "path": "/api/v1/learner/home",
+        "status": 503
+      },
+      {
+        "path": "/api/v1/content/learner/catalog",
+        "status": 200
+      }
+    ],
+    "browserErrors": [
+      "Failed to load resource: the server responded with a status of 404 (Not Found) [/favicon.ico]",
+      "Failed to load resource: the server responded with a status of 403 (Forbidden) [/api/v1/learner/preferences]",
+      "Failed to load resource: the server responded with a status of 403 (Forbidden) [/api/v1/learner/profile]",
+      "Failed to load resource: the server responded with a status of 403 (Forbidden) [/api/v1/learner/targets]",
+      "Failed to load resource: the server responded with a status of 403 (Forbidden) [/api/v1/onboarding/options]",
+      "Failed to load resource: the server responded with a status of 404 (Not Found) [/api/v1/learner/targets]",
+      "Failed to load resource: the server responded with a status of 503 (Service Unavailable) [/api/v1/learner/home]"
+    ],
+    "goalSetupView": {
+      "url": "/assessment",
+      "title": "语学星",
+      "headings": [
+        "找到一个适合你的起点。",
+        "搜索学习页面",
+        "我的学习空间",
+        "消息中心"
+      ],
+      "alert": "",
+      "bodyText": "跳到学习内容 语学星 LEARN A LITTLE. EVERY DAY. 日常学习 学习首页 今日任务 内容书架 学习路径 专项练习 我的成长 学习世界 学习报告 错题本 掌握进度 计划地图 一点一点，学得更从容。 帮助与反馈 账户与偏好 我的学习空间 学习测评 想学什么？搜索页面 ⌘ K 我的学习空间 找到一个适合你的起点。 不必追求满分，按真实水平作答，帮助安排接下来的学习。 0/2 1/2 Choose the greeting. A Hello B Goodbye 提交答案 跳过测评，选择起点 © 2026 语学星 一点一点，学得更从容。 学习权益"
+    },
+    "workspaceAttempt": {
+      "reachedHome": true,
+      "view": {
+        "url": "/home",
+        "title": "语学星",
+        "headings": [
+          "今天，也给自己一点进步。",
+          "今天的小目标",
+          "今天的小目标",
+          "今日进度",
+          "也可以，换一种方式学",
+          "搜索学习页面",
+          "我的学习空间",
+          "消息中心"
+        ],
+        "alert": "今天的小目标\n\n学习服务暂时不可用。\n\n重试",
+        "bodyText": "跳到学习内容 语学星 LEARN A LITTLE. EVERY DAY. 日常学习 学习首页 今日任务 内容书架 学习路径 专项练习 我的成长 学习世界 学习报告 错题本 掌握进度 计划地图 一点一点，学得更从容。 帮助与反馈 账户与偏好 我的学习空间 学习首页 想学什么？搜索页面 ⌘ K A LITTLE, EVERY DAY 今天，也给自己一点进步。 从一个小任务开始，把学过的慢慢变成自己的。 调整学习目标 YOUR DAILY PLAN 今天的小目标 查看全部 今天的小目标 学习服务暂时不可用。 重试 LITTLE STEPS COUNT 今日进度 — 已完成 每日目标 — 分钟 已完成 — 分钟 ✦ ✧ YOUR LITTLE WORLD 给进步，一个自己的空间 看看成长地图，或去自习室专注一会儿。 走进学习世界 FIND YOUR RHYTHM 也可以，换一种方式学 词汇、听读、表达，找到今天想练的那一项。 词汇复习 先回忆，再把它记牢 听力精练 慢一点，听清每一句 分级阅读 读一小段，理解多一点 口语自练 跟着读，再听听自己 语法与句子 拆开句子，看懂结构 写作练习 把想法，写成一句话 © 2026 语学星 一点一点，学得更从容。 学习权益"
+      }
+    },
+    "logout": {
+      "available": true,
+      "status": 200,
+      "finalPath": "/login"
+    }
+  },
+  "webRelogin": {
+    "loginStatus": 200,
+    "permissionsStatus": 200,
+    "landing": {
+      "url": "/home",
+      "title": "语学星",
+      "headings": [
+        "今天，也给自己一点进步。",
+        "今天的小目标",
+        "今天的小目标",
+        "今日进度",
+        "也可以，换一种方式学",
+        "搜索学习页面",
+        "我的学习空间",
+        "消息中心"
+      ],
+      "alert": "今天的小目标\n\n学习服务暂时不可用。\n\n重试",
+      "bodyText": "跳到学习内容 语学星 LEARN A LITTLE. EVERY DAY. 日常学习 学习首页 今日任务 内容书架 学习路径 专项练习 我的成长 学习世界 学习报告 错题本 掌握进度 计划地图 一点一点，学得更从容。 帮助与反馈 账户与偏好 我的学习空间 学习首页 想学什么？搜索页面 ⌘ K A LITTLE, EVERY DAY 今天，也给自己一点进步。 从一个小任务开始，把学过的慢慢变成自己的。 调整学习目标 YOUR DAILY PLAN 今天的小目标 查看全部 今天的小目标 学习服务暂时不可用。 重试 LITTLE STEPS COUNT 今日进度 — 已完成 每日目标 — 分钟 已完成 — 分钟 ✦ ✧ YOUR LITTLE WORLD 给进步，一个自己的空间 看看成长地图，或去自习室专注一会儿。 走进学习世界 FIND YOUR RHYTHM 也可以，换一种方式学 词汇、听读、表达，找到今天想练的那一项。 词汇复习 先回忆，再把它记牢 听力精练 慢一点，听清每一句 分级阅读 读一小段，理解多一点 口语自练 跟着读，再听听自己 语法与句子 拆开句子，看懂结构 写作练习 把想法，写成一句话 © 2026 语学星 一点一点，学得更从容。 学习权益"
+    },
+    "browserErrors": [
+      "Failed to load resource: the server responded with a status of 503 (Service Unavailable) [/api/v1/learner/home]"
+    ]
+  },
+  "mobileLogin": {
+    "inputCount": 2,
+    "loginStatus": 200,
+    "landing": {
+      "url": "/#/",
+      "title": "学习",
+      "headings": [],
+      "alert": "今日任务暂不可用\n服务暂时不可用，请稍后重试。\n重试",
+      "bodyText": "✦ 语学星 ☷ TODAY 今天学什么？ 查看任务，继续练习。 ✦ Aa 今日任务暂不可用 服务暂时不可用，请稍后重试。 重试 找到今天的练习灵感 听 · 说 · 读 · 写 Aa 单词复习 ◖◗ 听力精练 ▤ 分级阅读 ♫ 口语跟读 ⌘ 语法结构 ✎ 写作练习 更多练习与学习报告 → 修改目标 进入测评 今日任务 继续课程 学习 练习 成长 课程 我的"
+    },
+    "browserErrors": [
+      "Failed to load resource: the server responded with a status of 404 (Not Found) [/favicon.ico]",
+      "Failed to load resource: the server responded with a status of 503 (Service Unavailable) [/api/v1/learner/home]"
+    ]
+  }
+}

@@ -38,6 +38,38 @@
         "tags": [
           "b3-grammar"
         ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "content-service",
+        "x-permission": "content.read",
+        "x-contract": {
+          "owner": "content-service",
+          "canonical": true,
+          "readOnly": true,
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "legacyEligibility": "CLOSED_UNTIL_CANONICAL_VERSION_BINDING"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "content.read",
+          "pep": "content-service-local",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "roles",
+            "permissions",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
+          ],
+          "resourceOwner": "server-derived learner content scope",
+          "serviceSidePepRequired": true,
+          "legacyAuthorizationBypass": "PROHIBITED"
+        },
         "parameters": [
           {
             "name": "cefrLevel",

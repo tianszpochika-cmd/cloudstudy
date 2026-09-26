@@ -1,12 +1,11 @@
 import { ApiError, apiClient } from './client'
-import type { B11ListeningProgress, B11MediaManifest, B11NotificationPreference, B11OfflineChange, B11RecordingMetadata, B11SignedUrl, B11SyncResult } from '../domain/b11'
+import type { B11ListeningProgress, B11MediaManifest, B11OfflineChange, B11RecordingMetadata, B11SignedUrl, B11SyncResult } from '../domain/b11'
 
 type RecordValue = Record<string, unknown>
 
 export const B11_GATEWAY_ROUTES = {
   manifest: (assetId: string) => `/media/assets/${encodeURIComponent(assetId)}/manifest`,
   signedUrl: (assetId: string) => `/media/assets/${encodeURIComponent(assetId)}/signed-url`,
-  notificationPreferences: '/notifications/preferences',
   offlineChanges: '/sync/changes',
   recordings: '/speaking/recordings',
 } as const
@@ -73,43 +72,6 @@ export interface B11MediaProgressInput {
 
 export async function saveB11MediaProgress(input: B11MediaProgressInput): Promise<void> {
   await apiClient.put('/learning/media-progress', input, withB11Headers(input.clientEventId))
-}
-
-export async function getNotificationPreference(): Promise<B11NotificationPreference> {
-  const raw = await apiClient.get(B11_GATEWAY_ROUTES.notificationPreferences, withB11Headers())
-  const items = Array.isArray(raw) ? raw : []
-  const channels = new Set<B11NotificationPreference['enabledChannels'][number]>()
-  let learningReminders = true
-  let marketing = false
-  let version = 1
-  for (const value of items) {
-    const item = record(value)
-    const channel = stringValue(item.channel) as B11NotificationPreference['enabledChannels'][number]
-    if (item.enabled !== false && (channel === 'IN_APP' || channel === 'EMAIL' || channel === 'PUSH')) channels.add(channel)
-    const type = stringValue(item.notificationType).toUpperCase()
-    if (type.includes('REMINDER')) learningReminders = item.enabled !== false
-    if (type.includes('MARKETING')) marketing = item.enabled === true
-    version = Math.max(version, numberValue(item.version, 1))
-  }
-  return { enabledChannels: channels.size ? [...channels] : ['IN_APP'], learningReminders, marketing, version }
-}
-
-export async function updateNotificationPreference(preference: B11NotificationPreference): Promise<B11NotificationPreference> {
-  const enabled = new Set(preference.enabledChannels)
-  const updates = [
-    ['LEARNING_REMINDER', preference.learningReminders],
-    ['MARKETING', preference.marketing],
-    ['IN_APP', enabled.has('IN_APP')],
-    ['EMAIL', enabled.has('EMAIL')],
-    ['PUSH', enabled.has('PUSH')],
-  ] as const
-  const results = await Promise.all(updates.map(([type, value]) => apiClient.put(`/notifications/preferences/${type}/IN_APP`, {
-    enabled: value,
-    locale: 'zh-CN',
-    expectedVersion: preference.version,
-  }, withB11Headers(`b11-pref-${type}-${preference.version}`))))
-  const versions = results.map((value) => numberValue(record(unwrap(value)).version, preference.version + 1))
-  return { ...preference, version: Math.max(...versions, preference.version + 1) }
 }
 
 export async function pushB11OfflineChanges(changes: B11OfflineChange[], baseCursor: string): Promise<B11SyncResult> {

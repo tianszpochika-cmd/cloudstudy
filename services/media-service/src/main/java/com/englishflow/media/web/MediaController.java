@@ -1,6 +1,7 @@
 package com.englishflow.media.web;
 
 import com.englishflow.media.application.MediaAssetCommandService;
+import com.englishflow.media.application.MediaAccessPolicy;
 import com.englishflow.media.application.MediaReadService;
 import com.englishflow.media.domain.MediaAsset;
 import com.englishflow.media.domain.MediaAssetDraft;
@@ -16,6 +17,7 @@ import com.englishflow.media.domain.RenditionStatus;
 import com.englishflow.media.domain.SignedMediaUrl;
 import com.englishflow.media.domain.SignedUrlGrant;
 import com.englishflow.media.domain.TranscodingStatus;
+import com.englishflow.media.port.MediaWriteIdempotencyPort;
 
 import java.time.Duration;
 import java.util.Collection;
@@ -58,10 +60,13 @@ public class MediaController {
 
     private final MediaAssetCommandService commandService;
     private final MediaReadService readService;
+    private final MediaWriteIdempotencyPort writeIdempotency;
 
-    public MediaController(MediaAssetCommandService commandService, MediaReadService readService) {
+    public MediaController(MediaAssetCommandService commandService, MediaReadService readService,
+            MediaWriteIdempotencyPort writeIdempotency) {
         this.commandService = commandService;
         this.readService = readService;
+        this.writeIdempotency = writeIdempotency;
     }
 
     @PostMapping("/assets")
@@ -69,9 +74,13 @@ public class MediaController {
             @RequestHeader(name = "Idempotency-Key") String idempotencyKey,
             @Valid @RequestBody RegisterRequest request,
             Authentication authentication) {
-        MediaAsset asset = commandService.register(
-                request.toDraft(), context(authentication), idempotencyKey);
-        return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("asset", asset.safeView()));
+        MediaAuthorizationContext principal = context(authentication);
+        Map<String, Object> body = writeIdempotency.execute(
+                "register", request.assetId(), request, principal, idempotencyKey,
+                () -> MediaAccessPolicy.requireWrite(principal),
+                () -> Map.of("asset", commandService.register(
+                        request.toDraft(), principal, idempotencyKey).safeView()));
+        return ResponseEntity.status(HttpStatus.CREATED).body(body);
     }
 
     @GetMapping("/assets/{assetId}")
@@ -115,10 +124,15 @@ public class MediaController {
     @PutMapping("/assets/{assetId}/active")
     public Map<String, Object> activate(
             @PathVariable String assetId,
+            @RequestHeader(name = "Idempotency-Key") String idempotencyKey,
             @Valid @RequestBody ActivationRequest request,
             Authentication authentication) {
-        return Map.of("asset", commandService.markActive(
-                assetId, request.verifiedChecksumSha256(), request.verifiedSizeBytes(), context(authentication)).safeView());
+        MediaAuthorizationContext principal = context(authentication);
+        return writeIdempotency.execute(
+                "activate", assetId, request, principal, idempotencyKey,
+                () -> commandService.authorizeMutation(assetId, principal),
+                () -> Map.of("asset", commandService.markActive(
+                        assetId, request.verifiedChecksumSha256(), request.verifiedSizeBytes(), principal).safeView()));
     }
 
     @PutMapping("/assets/{assetId}/transcoding")
@@ -175,12 +189,13 @@ public class MediaController {
     @PostMapping("/assets/{assetId}/retry")
     public Map<String, Object> retry(
             @PathVariable String assetId,
-            @RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey,
+            @RequestHeader(name = "Idempotency-Key") String idempotencyKey,
             Authentication authentication) {
-        if (idempotencyKey == null || idempotencyKey.isBlank()) {
-            throw MediaOperationException.badRequest("MEDIA_IDEMPOTENCY_KEY_INVALID", "Idempotency-Key is required");
-        }
-        return Map.of("asset", commandService.retryFailed(assetId, context(authentication)).safeView());
+        MediaAuthorizationContext principal = context(authentication);
+        return writeIdempotency.execute(
+                "retry", assetId, Map.of(), principal, idempotencyKey,
+                () -> commandService.authorizeMutation(assetId, principal),
+                () -> Map.of("asset", commandService.retryFailed(assetId, principal).safeView()));
     }
 
     /**
@@ -189,11 +204,16 @@ public class MediaController {
     @PostMapping("/assets/{assetId}/subtitles")
     public Map<String, Object> subtitle(
             @PathVariable String assetId,
+            @RequestHeader(name = "Idempotency-Key") String idempotencyKey,
             @Valid @RequestBody SubtitleRequest request,
             Authentication authentication) {
-        return Map.of("asset", commandService.upsertSubtitle(
-                assetId, request.locale(), request.format(), request.checksumSha256(),
-                request.sizeBytes(), context(authentication)).safeView());
+        MediaAuthorizationContext principal = context(authentication);
+        return writeIdempotency.execute(
+                "subtitle", assetId, request, principal, idempotencyKey,
+                () -> commandService.authorizeMutation(assetId, principal),
+                () -> Map.of("asset", commandService.upsertSubtitle(
+                        assetId, request.locale(), request.format(), request.checksumSha256(),
+                        request.sizeBytes(), principal).safeView()));
     }
 
     /**

@@ -1981,8 +1981,13 @@
           "newCanonicalFactsFromLegacyPayload": "PROHIBITED",
           "runtimeStatus": "NOT_RUNTIME_VERIFIED"
         },
+        "x-owner": "assessment-service",
+        "x-contract": {
+          "owner": "assessment-service",
+          "write": false
+        },
         "x-authorization": {
-          "requiredPermission": "assessment.placement.session.read",
+          "requiredPermission": "assessment.session.read",
           "defaultDecision": "DENY",
           "trustedFacts": [
             "subject",
@@ -2084,8 +2089,13 @@
           "newCanonicalFactsFromLegacyPayload": "PROHIBITED",
           "runtimeStatus": "NOT_RUNTIME_VERIFIED"
         },
+        "x-owner": "assessment-service",
+        "x-contract": {
+          "owner": "assessment-service",
+          "write": true
+        },
         "x-authorization": {
-          "requiredPermission": "assessment.placement.session.create",
+          "requiredPermission": "assessment.session.write",
           "defaultDecision": "DENY",
           "trustedFacts": [
             "subject",
@@ -2195,8 +2205,13 @@
           "newCanonicalFactsFromLegacyPayload": "PROHIBITED",
           "runtimeStatus": "NOT_RUNTIME_VERIFIED"
         },
+        "x-owner": "assessment-service",
+        "x-contract": {
+          "owner": "assessment-service",
+          "write": true
+        },
         "x-authorization": {
-          "requiredPermission": "assessment.placement.response.submit",
+          "requiredPermission": "assessment.session.write",
           "defaultDecision": "DENY",
           "trustedFacts": [
             "subject",
@@ -3714,13 +3729,18 @@
           "newCanonicalFactsFromLegacyPayload": "PROHIBITED",
           "runtimeStatus": "NOT_RUNTIME_VERIFIED"
         },
+        "x-owner": "assessment-service",
+        "x-contract": {
+          "owner": "assessment-service",
+          "write": true
+        },
         "security": [
           {
             "bearerAuth": []
           }
         ],
         "x-authorization": {
-          "requiredPermission": "assessment.placement.baseline.skip",
+          "requiredPermission": "assessment.session.write",
           "defaultDecision": "DENY",
           "trustedFacts": [
             "subject",
@@ -3829,13 +3849,18 @@
           "newCanonicalFactsFromLegacyPayload": "PROHIBITED",
           "runtimeStatus": "NOT_RUNTIME_VERIFIED"
         },
+        "x-owner": "assessment-service",
+        "x-contract": {
+          "owner": "assessment-service",
+          "write": false
+        },
         "security": [
           {
             "bearerAuth": []
           }
         ],
         "x-authorization": {
-          "requiredPermission": "assessment.placement.report.read",
+          "requiredPermission": "assessment.session.read",
           "defaultDecision": "DENY",
           "trustedFacts": [
             "subject",
@@ -4117,6 +4142,13 @@
           "legacyReadOnly": true,
           "runtimeStatus": "NOT_RUNTIME_VERIFIED"
         },
+        "x-current-runtime-divergence": {
+          "sourceVerified": true,
+          "owner": "assessment-service",
+          "requiredPermission": "assessment.session.write",
+          "writesAssessmentSessionOnFirstRead": true,
+          "resolution": "Align the running GET adapter with the frozen read-only learning projection before promoting runtime acceptance."
+        },
         "security": [
           {
             "bearerAuth": []
@@ -4213,6 +4245,7 @@
         ],
         "summary": "Start an assessment session pinned to an immutable content snapshot",
         "operationId": "createB10AssessmentSession",
+        "x-owner": "assessment-service",
         "security": [
           {
             "bearerAuth": []
@@ -4220,11 +4253,12 @@
         ],
         "x-contract": {
           "owner": "assessment-service",
+          "write": true,
           "contentSource": "content-service protected snapshot",
           "pinRule": "server resolves and persists the contentVersionId/contentEpoch/snapshotHash pin"
         },
         "x-authorization": {
-          "requiredPermission": "assessment.session.create",
+          "requiredPermission": "assessment.session.write",
           "defaultDecision": "DENY",
           "trustedFacts": [
             "subject",
@@ -4348,6 +4382,7 @@
         ],
         "summary": "Read an assessment session without exposing grading rules",
         "operationId": "getB10AssessmentSession",
+        "x-owner": "assessment-service",
         "security": [
           {
             "bearerAuth": []
@@ -4355,6 +4390,7 @@
         ],
         "x-contract": {
           "owner": "assessment-service",
+          "write": false,
           "resourceOwner": "authenticated principal",
           "answerProtection": "session state and learner-safe items only"
         },
@@ -6555,6 +6591,7 @@
           "canonicalRoute": "/api/v1/learning/reports/{reportType}",
           "canonicalRouteExample": "/api/v1/learning/reports/DAILY",
           "legacyWirePreserved": true,
+          "legacyUnverifiedPolicy": "Client-rated b25 reviews cannot populate review count, accuracy, forgetting rate, mastery or weakness metrics; return PARTIAL with null metrics and UNVERIFIED_LEGACY_REVIEW provenance until trusted owner facts exist.",
           "noIndependentCalculation": true,
           "noDoubleWrite": true,
           "write": false,
@@ -6653,6 +6690,7 @@
           "canonicalRoute": "/api/v1/learning/reports/{reportType}",
           "canonicalRouteExample": "/api/v1/learning/reports/WEEKLY",
           "legacyWirePreserved": true,
+          "legacyUnverifiedPolicy": "Client-rated b25 reviews cannot populate review count, accuracy, forgetting rate, mastery or weakness metrics; return PARTIAL with null metrics and UNVERIFIED_LEGACY_REVIEW provenance until trusted owner facts exist.",
           "noIndependentCalculation": true,
           "noDoubleWrite": true,
           "write": false,
@@ -8248,6 +8286,7 @@
           "canonicalOperationId": "completeB10LearningReview",
           "canonicalRoute": "/api/v1/learning/review-queue/{queueItemId}/complete",
           "legacyWirePreserved": true,
+          "runtimeEvidenceGate": "Legacy payloads without independently verified assessment outcome, full published content pin and ordered command metadata return 409 UNTRUSTED_REVIEW_EVIDENCE without changing SRS or mastery.",
           "noIndependentCalculation": true,
           "noDoubleWrite": true,
           "write": true,
@@ -8366,6 +8405,7 @@
           "canonicalOperationId": "completeB10LearningReview",
           "canonicalRoute": "/api/v1/learning/review-queue/{queueItemId}/complete",
           "legacyWirePreserved": true,
+          "runtimeEvidenceGate": "Every event requires independently verified assessment outcome, full published content pin and ordered command metadata; otherwise return 409 UNTRUSTED_REVIEW_EVIDENCE without changing SRS or mastery.",
           "noIndependentCalculation": true,
           "noDoubleWrite": true,
           "write": true,
@@ -9564,6 +9604,38 @@
         "tags": [
           "b3-grammar"
         ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "content-service",
+        "x-permission": "content.read",
+        "x-contract": {
+          "owner": "content-service",
+          "canonical": true,
+          "readOnly": true,
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "legacyEligibility": "CLOSED_UNTIL_CANONICAL_VERSION_BINDING"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "content.read",
+          "pep": "content-service-local",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "roles",
+            "permissions",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
+          ],
+          "resourceOwner": "server-derived learner content scope",
+          "serviceSidePepRequired": true,
+          "legacyAuthorizationBypass": "PROHIBITED"
+        },
         "parameters": [
           {
             "name": "cefrLevel",
@@ -13787,6 +13859,7 @@
     "/api/v1/gamification/quests": {
       "get": {
         "operationId": "listB4Quests",
+        "description": "仅返回由可信学习事实计算的任务进度；旧本地 JSON 或固定默认任务不作为完成、奖励或可领取证明，缺来源时返回空列表。",
         "tags": [
           "b4-gamification"
         ],
@@ -13848,6 +13921,7 @@
     "/api/v1/gamification/quests/{questId}/claim": {
       "post": {
         "operationId": "claimB4QuestReward",
+        "description": "必须有可信任务完成、奖励账本和事务性幂等回放；未接通时返回 503 且不确认领取。",
         "tags": [
           "b4-gamification"
         ],
@@ -13905,6 +13979,9 @@
           },
           "409": {
             "$ref": "#/components/responses/ApiConflict"
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
           }
         }
       }
@@ -13912,6 +13989,7 @@
     "/api/v1/gamification/achievements": {
       "get": {
         "operationId": "listB4Achievements",
+        "description": "仅展示有可信达成事实的成就；旧本地 JSON 和固定默认解锁值不作为达成证明，缺来源时返回空列表。",
         "tags": [
           "b4-gamification"
         ],
@@ -13973,6 +14051,7 @@
     "/api/v1/gamification/achievements/{achievementCode}/showcase": {
       "put": {
         "operationId": "updateB4AchievementShowcase",
+        "description": "成就达成事实、版本校验和幂等回放未接通时返回 503，不保存展示位。",
         "tags": [
           "b4-gamification"
         ],
@@ -14037,6 +14116,9 @@
                 "$ref": "#/components/headers/XApiVersion"
               }
             }
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
           }
         }
       }
@@ -14329,6 +14411,7 @@
     "/api/v1/gamification/catalog/{catalogItemId}/redeem": {
       "post": {
         "operationId": "redeemB4CatalogItem",
+        "description": "必须先有服务端价格、星币扣账、幂等发放和 itemCode 权属证明；缺失时返回 503，不创建收藏事实。",
         "tags": [
           "b4-gamification"
         ],
@@ -14386,6 +14469,9 @@
           },
           "409": {
             "$ref": "#/components/responses/ApiConflict"
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
           }
         }
       }
@@ -14393,6 +14479,7 @@
     "/api/v1/gamification/seasons/{seasonId}/rewards": {
       "get": {
         "operationId": "listB4SeasonRewards",
+        "description": "仅展示经版本化规则发布的赛季奖励；固定本地示例与旧 JSON 不作为奖励承诺，缺可信目录时返回空列表。",
         "tags": [
           "b4-gamification"
         ],
@@ -14457,6 +14544,7 @@
     "/api/v1/avatar/profile": {
       "get": {
         "operationId": "getB4AvatarProfile",
+        "description": "无已核验装扮权益时只返回 2D 展示建议，不宣称 avatarId、resourceVersion 或 loadoutId，也不回显旧本地 JSON。",
         "tags": [
           "b4-avatar"
         ],
@@ -14502,6 +14590,7 @@
       },
       "put": {
         "operationId": "saveB4AvatarProfile",
+        "description": "权属与幂等保存尚未接通时返回 503，不保存 renderMode、resourceVersion、装扮或装备状态；本机画质偏好由客户端管理。",
         "tags": [
           "b4-avatar"
         ],
@@ -14563,6 +14652,9 @@
                 "$ref": "#/components/headers/XApiVersion"
               }
             }
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
           }
         }
       }
@@ -14692,6 +14784,7 @@
     "/api/v1/avatar/loadouts/{loadoutId}": {
       "put": {
         "operationId": "saveB4AvatarLoadout",
+        "description": "每个 itemCode 必须有主体绑定的服务端权属；权属证明尚未接入时返回 503，不写入套装。",
         "tags": [
           "b4-avatar"
         ],
@@ -14756,6 +14849,9 @@
                 "$ref": "#/components/headers/XApiVersion"
               }
             }
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
           }
         }
       }
@@ -14763,6 +14859,7 @@
     "/api/v1/avatar/loadouts/{loadoutId}/equip": {
       "post": {
         "operationId": "equipB4AvatarLoadout",
+        "description": "只可装备已核验持有道具组成的套装；权属证明尚未接入时返回 503，不写入装备状态。",
         "tags": [
           "b4-avatar"
         ],
@@ -14817,6 +14914,9 @@
                 "$ref": "#/components/headers/XApiVersion"
               }
             }
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
           }
         }
       }
@@ -14916,6 +15016,7 @@
       },
       "put": {
         "operationId": "saveB4StudySpace",
+        "description": "道具权属与空间版本尚未接通时返回 503，不写入摆放或显示配置；本机画质偏好由客户端管理。",
         "tags": [
           "b4-avatar"
         ],
@@ -14983,6 +15084,9 @@
           },
           "409": {
             "$ref": "#/components/responses/ApiConflict"
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
           }
         }
       }
@@ -22598,6 +22702,7 @@
         ],
         "summary": "Submit an attempt; the server owns scoring and emits attempt.submitted",
         "operationId": "submitB10AssessmentAttempt",
+        "x-owner": "assessment-service",
         "security": [
           {
             "bearerAuth": []
@@ -22605,11 +22710,12 @@
         ],
         "x-contract": {
           "owner": "assessment-service",
+          "write": true,
           "event": "assessment.attempt.submitted.v1",
           "rawResponse": "accepted only at the protected scoring boundary; never persisted in event payload or logs"
         },
         "x-authorization": {
-          "requiredPermission": "assessment.attempt.submit",
+          "requiredPermission": "assessment.session.write",
           "defaultDecision": "DENY",
           "trustedFacts": [
             "subject",
@@ -22744,6 +22850,7 @@
         ],
         "summary": "Deprecated compatibility adapter for the canonical session checkpoint",
         "operationId": "putB10AssessmentCheckpoint",
+        "x-owner": "assessment-service",
         "deprecated": true,
         "x-p1r-deprecation": {
           "deprecationAt": "2026-08-30T00:00:00Z",
@@ -22757,6 +22864,7 @@
         ],
         "x-contract": {
           "owner": "assessment-service",
+          "write": true,
           "compatibility": "ADAPTER_ONLY",
           "canonicalTarget": "putB10AssessmentSessionCheckpoint",
           "checkpoint": "Legacy attempt-scoped cursor is translated only when it can be bound to the same pre-submission session draft; it never mutates a final attempt/report result.",
@@ -22765,6 +22873,20 @@
         "x-p1r-assessment-legacy": {
           "adapterOnly": true,
           "replacementOperationId": "putB10AssessmentSessionCheckpoint"
+        },
+        "x-authorization": {
+          "requiredPermission": "assessment.session.write",
+          "defaultDecision": "DENY",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "roles",
+            "permissions",
+            "adultGate",
+            "consent",
+            "resourceOwner"
+          ],
+          "serviceSidePepRequired": true
         },
         "x-idempotency": {
           "required": true,
@@ -22852,6 +22974,7 @@
         ],
         "summary": "Read an immutable deterministic assessment report snapshot",
         "operationId": "getB10AssessmentReport",
+        "x-owner": "assessment-service",
         "security": [
           {
             "bearerAuth": []
@@ -22859,11 +22982,12 @@
         ],
         "x-contract": {
           "owner": "assessment-service",
+          "write": false,
           "report": "replayable from assessmentVersion and content snapshot pin",
           "answerProtection": "learner-safe outcome summary and mistake codes only; assessment does not return or own mastery"
         },
         "x-authorization": {
-          "requiredPermission": "assessment.report.read",
+          "requiredPermission": "assessment.session.read",
           "defaultDecision": "DENY",
           "trustedFacts": [
             "subject",
@@ -23075,6 +23199,7 @@
           "command": "learning.review.complete",
           "canonical": true,
           "singleWritePath": true,
+          "runtimeEvidenceGate": "Before accepting a review, learning-service must resolve a same-owner assessment outcome and a published content pin from their owners; missing or unverified evidence returns 409 UNTRUSTED_REVIEW_EVIDENCE without changing SRS or mastery.",
           "authority": "learning-service derives SRS scheduling, repair workflow and mastery projection",
           "assessment": "only assessment-service may produce assessment outcome facts; an assessment outcome never authorizes a mastery or SRS write",
           "clientAuthority": "observed review facts and concurrency/content pins only"
@@ -26243,7 +26368,7 @@
                               "type": "array",
                               "maxItems": 100,
                               "items": {
-                                "$ref": "#/components/schemas/B12Report"
+                                "$ref": "#/components/schemas/B12AdminReport"
                               }
                             }
                           }
@@ -26266,11 +26391,20 @@
               }
             }
           },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
           "401": {
             "$ref": "#/components/responses/ApiUnauthorized"
           },
           "403": {
             "$ref": "#/components/responses/ApiForbidden"
+          },
+          "500": {
+            "$ref": "#/components/responses/ApiInternalError"
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
           }
         },
         "x-pagination": {
@@ -27023,7 +27157,7 @@
         "security": [],
         "responses": {
           "200": {
-            "description": "已发布的公开价格投影",
+            "description": "仅包含服务端明确发布且支付闸门已开放的商品；未发布、测试商品和关闭支付闸门时返回空 plans",
             "content": {
               "application/json": {
                 "schema": {
@@ -27816,6 +27950,7 @@
           "B13-AdminOps"
         ],
         "operationId": "submitB13AdminCommand",
+        "x-support-command-runtime": "SUPPORT_RESOLVE and SUPPORT_CLOSE return 503 ADMIN_SUPPORT_COMMAND_UNAVAILABLE until the M1-016 support owner workflow is connected; FORWARDED is not a ticket resolution.",
         "security": [
           {
             "bearerAuth": []
@@ -27889,6 +28024,9 @@
           },
           "409": {
             "$ref": "#/components/responses/ApiConflict"
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
           }
         }
       }
@@ -27957,6 +28095,12 @@
           },
           "403": {
             "$ref": "#/components/responses/ApiForbidden"
+          },
+          "422": {
+            "$ref": "#/components/responses/ApiUnprocessableEntity"
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
           }
         },
         "x-pagination": {
@@ -29057,6 +29201,7 @@
           "B13-AdminOps"
         ],
         "operationId": "prepareB13AdminCommand",
+        "x-support-command-runtime": "SUPPORT_RESOLVE and SUPPORT_CLOSE return 503 ADMIN_SUPPORT_COMMAND_UNAVAILABLE until the M1-016 support owner workflow is connected.",
         "security": [
           {
             "bearerAuth": []
@@ -29130,6 +29275,9 @@
           },
           "409": {
             "$ref": "#/components/responses/ApiConflict"
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
           }
         }
       }
@@ -29171,7 +29319,7 @@
                           "properties": {
                             "items": {
                               "type": "array",
-                              "maxItems": 500,
+                              "maxItems": 100,
                               "items": {
                                 "$ref": "#/components/schemas/B13AuditRecord"
                               }
@@ -29200,11 +29348,17 @@
               }
             }
           },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
           "401": {
             "$ref": "#/components/responses/ApiUnauthorized"
           },
           "403": {
             "$ref": "#/components/responses/ApiForbidden"
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
           }
         },
         "parameters": [
@@ -31936,6 +32090,9 @@
           },
           "422": {
             "$ref": "#/components/responses/ApiUnprocessableEntity"
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
           }
         }
       }
@@ -32036,6 +32193,9 @@
           },
           "404": {
             "$ref": "#/components/responses/ApiNotFound"
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
           }
         }
       }
@@ -32203,11 +32363,17 @@
           "403": {
             "$ref": "#/components/responses/ApiForbidden"
           },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          },
           "409": {
             "$ref": "#/components/responses/ApiConflict"
           },
           "422": {
             "$ref": "#/components/responses/ApiUnprocessableEntity"
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
           }
         }
       }
@@ -32329,6 +32495,9 @@
           },
           "422": {
             "$ref": "#/components/responses/ApiUnprocessableEntity"
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
           }
         }
       }
@@ -32429,6 +32598,9 @@
           },
           "404": {
             "$ref": "#/components/responses/ApiNotFound"
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
           }
         }
       }
@@ -34472,6 +34644,9 @@
               }
             }
           },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
           "401": {
             "$ref": "#/components/responses/ApiUnauthorized"
           },
@@ -34480,6 +34655,9 @@
           },
           "404": {
             "$ref": "#/components/responses/ApiNotFound"
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
           }
         }
       }
@@ -34621,6 +34799,9 @@
               }
             }
           },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
           "401": {
             "$ref": "#/components/responses/ApiUnauthorized"
           },
@@ -34635,6 +34816,9 @@
           },
           "410": {
             "$ref": "#/components/responses/ApiConflict"
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
           }
         }
       }
@@ -34782,6 +34966,9 @@
               }
             }
           },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
           "401": {
             "$ref": "#/components/responses/ApiUnauthorized"
           },
@@ -34796,6 +34983,9 @@
           },
           "422": {
             "$ref": "#/components/responses/ApiUnprocessableEntity"
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
           }
         }
       }
@@ -35304,24 +35494,95 @@
     "/api/v1/iam/account-deletions": {
       "post": {
         "tags": [
-          "b8-auth"
+          "m1-017-privacy-lifecycle"
         ],
-        "summary": "Request self-scoped account deletion with a 168-hour cooling window (M6-008 live)",
-        "operationId": "requestAccountDeletion",
-        "x-contract": {
-          "domain": "iam",
-          "owner": "iam-service",
-          "phase": "P1",
-          "authentication": "self-owned-jwt"
-        },
+        "summary": "Create a self-scoped account deletion request with a seven-day cooling-off period",
+        "operationId": "createM1017AccountDeletionRequest",
         "security": [
           {
             "bearerAuth": []
           }
         ],
+        "x-owner": "iam-service",
+        "x-contract": {
+          "task": "P1R-M1-017",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "x-authorization": {
+          "requiredPermission": "iam.account.deletion.self",
+          "defaultDecision": "DENY",
+          "trustedFacts": [
+            "verifiedPrincipal",
+            "serverDerivedTenant",
+            "reauthentication",
+            "consent",
+            "resourceOwner",
+            "policyVersion"
+          ],
+          "resourceOwner": "server-derived authenticated subject",
+          "serviceSidePepRequired": true,
+          "clientAuthority": "NONE"
+        },
+        "x-idempotency": {
+          "required": true,
+          "keyHeader": "Idempotency-Key",
+          "strategy": "account-deletion-request",
+          "replayBehavior": "same authenticated subject and request digest return the pending deletion request; a different digest is a conflict"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B1IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/M1017AccountDeletionRequest"
+              }
+            }
+          }
+        },
         "responses": {
-          "200": {
-            "description": "OK"
+          "202": {
+            "description": "Deletion request accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/M1017AccountDeletionEnvelope"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ApiUnprocessableEntity"
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
           }
         }
       }
@@ -35329,34 +35590,71 @@
     "/api/v1/iam/account-deletions/{deletionRequestId}": {
       "get": {
         "tags": [
-          "b8-auth"
+          "m1-017-privacy-lifecycle"
         ],
-        "summary": "Read own deletion request status (M6-008 live)",
-        "operationId": "readAccountDeletionStatus",
-        "x-contract": {
-          "domain": "iam",
-          "owner": "iam-service",
-          "phase": "P1",
-          "authentication": "self-owned-jwt"
-        },
+        "summary": "Read the authenticated subject's account deletion status",
+        "operationId": "getM1017AccountDeletionStatus",
         "security": [
           {
             "bearerAuth": []
           }
         ],
+        "x-owner": "iam-service",
+        "x-contract": {
+          "task": "P1R-M1-017",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "x-authorization": {
+          "requiredPermission": "iam.account.deletion.self.read",
+          "defaultDecision": "DENY",
+          "trustedFacts": [
+            "verifiedPrincipal",
+            "serverDerivedTenant",
+            "resourceOwner",
+            "policyVersion"
+          ],
+          "resourceOwner": "server-derived deletion request subject",
+          "serviceSidePepRequired": true,
+          "clientAuthority": "NONE"
+        },
         "parameters": [
           {
-            "name": "deletionRequestId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/M1017DeletionRequestId"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Current deletion status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/M1017AccountDeletionEnvelope"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
           }
         }
       }
@@ -35364,34 +35662,95 @@
     "/api/v1/iam/account-deletions/{deletionRequestId}/cancel": {
       "post": {
         "tags": [
-          "b8-auth"
+          "m1-017-privacy-lifecycle"
         ],
-        "summary": "Cancel a cooling deletion request (M6-008 live)",
-        "operationId": "cancelAccountDeletion",
-        "x-contract": {
-          "domain": "iam",
-          "owner": "iam-service",
-          "phase": "P1",
-          "authentication": "self-owned-jwt"
-        },
+        "summary": "Cancel an account deletion request during its cooling-off period",
+        "operationId": "cancelM1017AccountDeletionRequest",
         "security": [
           {
             "bearerAuth": []
           }
         ],
+        "x-owner": "iam-service",
+        "x-contract": {
+          "task": "P1R-M1-017",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "x-authorization": {
+          "requiredPermission": "iam.account.deletion.self.cancel",
+          "defaultDecision": "DENY",
+          "trustedFacts": [
+            "verifiedPrincipal",
+            "serverDerivedTenant",
+            "reauthentication",
+            "resourceOwner",
+            "coolingOffWindow",
+            "policyVersion"
+          ],
+          "resourceOwner": "server-derived deletion request subject",
+          "serviceSidePepRequired": true,
+          "clientAuthority": "NONE"
+        },
+        "x-idempotency": {
+          "required": true,
+          "keyHeader": "Idempotency-Key",
+          "strategy": "account-deletion-cancel",
+          "replayBehavior": "same deletion request and cancellation digest return the original cancellation acknowledgement"
+        },
         "parameters": [
           {
-            "name": "deletionRequestId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/M1017DeletionRequestId"
+          },
+          {
+            "$ref": "#/components/parameters/B1IdempotencyKey"
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/M1017AccountDeletionCancelRequest"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Deletion request cancelled",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/M1017AccountDeletionEnvelope"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ApiUnprocessableEntity"
           }
         }
       }
@@ -35466,6 +35825,9 @@
           },
           "422": {
             "$ref": "#/components/responses/ApiUnprocessableEntity"
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
           }
         }
       }
@@ -35887,9 +36249,34 @@
         ],
         "summary": "Request a manual recovery (two-person rule)",
         "operationId": "requestWorkflowRecovery",
+        "x-authorization": {
+          "requiredPermission": "admin.recovery.request",
+          "defaultDecision": "DENY",
+          "pep": "workflow-service-local",
+          "tokenType": "access",
+          "tenantId": "platform",
+          "trustedFacts": [
+            "verifiedJwt.subject",
+            "verifiedJwt.tenant_id",
+            "verifiedJwt.permissions"
+          ]
+        },
+        "x-idempotency": {
+          "required": true,
+          "keyHeader": "Idempotency-Key",
+          "strategy": "workflow-service transactional claim scoped by platform tenant, verified actor and operation",
+          "digest": "SHA-256 of operation and canonical recovery request",
+          "replayBehavior": "same key and request returns the original recovery response",
+          "sameKeyDifferentDigest": "CONFLICT_409"
+        },
         "security": [
           {
             "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B26RecoveryIdempotencyKey"
           }
         ],
         "requestBody": {
@@ -35898,23 +36285,33 @@
             "application/json": {
               "schema": {
                 "type": "object",
+                "additionalProperties": false,
                 "required": [
                   "subjectType",
                   "subjectId",
-                  "action"
+                  "action",
+                  "reason"
                 ],
                 "properties": {
                   "subjectType": {
-                    "type": "string"
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 60
                   },
                   "subjectId": {
-                    "type": "string"
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160
                   },
                   "action": {
-                    "type": "string"
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 60
                   },
                   "reason": {
-                    "type": "string"
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
                   }
                 }
               }
@@ -35931,6 +36328,12 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Invalid recovery request or Idempotency-Key"
+          },
+          "409": {
+            "description": "Key reused with a different recovery request"
           }
         }
       }
@@ -35942,6 +36345,26 @@
         ],
         "summary": "Approve a recovery as a second person",
         "operationId": "approveWorkflowRecovery",
+        "x-authorization": {
+          "requiredPermission": "admin.recovery.command",
+          "defaultDecision": "DENY",
+          "pep": "workflow-service-local",
+          "tokenType": "access",
+          "tenantId": "platform",
+          "trustedFacts": [
+            "verifiedJwt.subject",
+            "verifiedJwt.tenant_id",
+            "verifiedJwt.permissions"
+          ]
+        },
+        "x-idempotency": {
+          "required": true,
+          "keyHeader": "Idempotency-Key",
+          "strategy": "workflow-service transactional claim scoped by platform tenant, verified actor and operation",
+          "digest": "SHA-256 of operation, recoveryId and canonical empty action body",
+          "replayBehavior": "same key and recoveryId returns the original approval response",
+          "sameKeyDifferentDigest": "CONFLICT_409"
+        },
         "security": [
           {
             "bearerAuth": []
@@ -35955,8 +36378,23 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "$ref": "#/components/parameters/B26RecoveryIdempotencyKey"
           }
         ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "maxProperties": 0
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "OK",
@@ -35967,6 +36405,12 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Invalid Idempotency-Key"
+          },
+          "409": {
+            "description": "Recovery transition conflict or key reused with a different recoveryId"
           }
         }
       }
@@ -35978,6 +36422,26 @@
         ],
         "summary": "Reject a recovery",
         "operationId": "rejectWorkflowRecovery",
+        "x-authorization": {
+          "requiredPermission": "admin.recovery.command",
+          "defaultDecision": "DENY",
+          "pep": "workflow-service-local",
+          "tokenType": "access",
+          "tenantId": "platform",
+          "trustedFacts": [
+            "verifiedJwt.subject",
+            "verifiedJwt.tenant_id",
+            "verifiedJwt.permissions"
+          ]
+        },
+        "x-idempotency": {
+          "required": true,
+          "keyHeader": "Idempotency-Key",
+          "strategy": "workflow-service transactional claim scoped by platform tenant, verified actor and operation",
+          "digest": "SHA-256 of operation, recoveryId and canonical rejection body",
+          "replayBehavior": "same key and request returns the original rejection response",
+          "sameKeyDifferentDigest": "CONFLICT_409"
+        },
         "security": [
           {
             "bearerAuth": []
@@ -35991,8 +36455,27 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "$ref": "#/components/parameters/B26RecoveryIdempotencyKey"
           }
         ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "reason": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "OK",
@@ -36003,6 +36486,12 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Invalid Idempotency-Key"
+          },
+          "409": {
+            "description": "Recovery transition conflict or key reused with a different rejection"
           }
         }
       }
@@ -36014,6 +36503,26 @@
         ],
         "summary": "Execute an approved recovery and record the receipt",
         "operationId": "executeWorkflowRecovery",
+        "x-authorization": {
+          "requiredPermission": "admin.recovery.command",
+          "defaultDecision": "DENY",
+          "pep": "workflow-service-local",
+          "tokenType": "access",
+          "tenantId": "platform",
+          "trustedFacts": [
+            "verifiedJwt.subject",
+            "verifiedJwt.tenant_id",
+            "verifiedJwt.permissions"
+          ]
+        },
+        "x-idempotency": {
+          "required": true,
+          "keyHeader": "Idempotency-Key",
+          "strategy": "workflow-service transactional claim scoped by platform tenant, verified actor and operation",
+          "digest": "SHA-256 of operation, recoveryId and canonical empty action body",
+          "replayBehavior": "same key and recoveryId returns the original execution response without another receipt",
+          "sameKeyDifferentDigest": "CONFLICT_409"
+        },
         "security": [
           {
             "bearerAuth": []
@@ -36027,8 +36536,23 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "$ref": "#/components/parameters/B26RecoveryIdempotencyKey"
           }
         ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "maxProperties": 0
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "OK",
@@ -36039,6 +36563,12 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Invalid Idempotency-Key"
+          },
+          "409": {
+            "description": "Recovery transition conflict or key reused with a different recoveryId"
           }
         }
       }
@@ -36050,6 +36580,18 @@
         ],
         "summary": "List unfinished sagas",
         "operationId": "listUnfinishedSagas",
+        "x-authorization": {
+          "requiredPermission": "admin.recovery.read",
+          "defaultDecision": "DENY",
+          "pep": "workflow-service-local",
+          "tokenType": "access",
+          "tenantId": "platform",
+          "trustedFacts": [
+            "verifiedJwt.subject",
+            "verifiedJwt.tenant_id",
+            "verifiedJwt.permissions"
+          ]
+        },
         "security": [
           {
             "bearerAuth": []
@@ -36079,6 +36621,18 @@
         ],
         "summary": "Read a saga and its steps",
         "operationId": "readWorkflowSaga",
+        "x-authorization": {
+          "requiredPermission": "admin.recovery.read",
+          "defaultDecision": "DENY",
+          "pep": "workflow-service-local",
+          "tokenType": "access",
+          "tenantId": "platform",
+          "trustedFacts": [
+            "verifiedJwt.subject",
+            "verifiedJwt.tenant_id",
+            "verifiedJwt.permissions"
+          ]
+        },
         "security": [
           {
             "bearerAuth": []
@@ -36115,6 +36669,26 @@
         ],
         "summary": "Compensate a failed saga awaiting compensation",
         "operationId": "compensateWorkflowSaga",
+        "x-authorization": {
+          "requiredPermission": "admin.recovery.command",
+          "defaultDecision": "DENY",
+          "pep": "workflow-service-local",
+          "tokenType": "access",
+          "tenantId": "platform",
+          "trustedFacts": [
+            "verifiedJwt.subject",
+            "verifiedJwt.tenant_id",
+            "verifiedJwt.permissions"
+          ]
+        },
+        "x-idempotency": {
+          "required": true,
+          "keyHeader": "Idempotency-Key",
+          "strategy": "workflow-service transactional claim scoped by platform tenant, verified actor and SAGA_COMPENSATE; saga row locked before transition",
+          "digest": "SHA-256 of SAGA_COMPENSATE, sagaId and canonical empty body",
+          "replayBehavior": "same key and request returns the stored saga response without rerunning compensation",
+          "sameKeyDifferentDigest": "CONFLICT_409"
+        },
         "security": [
           {
             "bearerAuth": []
@@ -36128,8 +36702,23 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "$ref": "#/components/parameters/B26RecoveryIdempotencyKey"
           }
         ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "maxProperties": 0
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "OK",
@@ -36140,6 +36729,12 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Invalid Idempotency-Key or nonempty compensation body"
+          },
+          "409": {
+            "description": "Key reused with a different saga request or saga transition conflict"
           }
         }
       }
@@ -36225,7 +36820,18 @@
           "owner": "content-service",
           "caller": "admin-ops-service/admin-web",
           "readOnly": true,
-          "fieldFiltering": "admin role-specific fields; never mutates content or emits projections"
+          "fieldFiltering": "admin role-specific fields; never mutates content or emits projections; records only an idempotency report receipt"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B9IdempotencyKey"
+          }
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "content-validation-report-receipt",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "same actor, key and request body return the original report and checkedAt; different body with the same key returns 409"
         },
         "requestBody": {
           "required": false,
@@ -36249,6 +36855,9 @@
           "200": {
             "description": "Validation report with ruleVersion + findings"
           },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          },
           "503": {
             "$ref": "#/components/responses/ApiServiceUnavailable"
           }
@@ -36266,13 +36875,24 @@
           "owner": "media-service",
           "phase": "P1",
           "maturity": "D2_CONTRACT_READY",
-          "runtimeStatus": "LIVE_VERIFIED_M3004"
+          "runtimeStatus": "SOURCE_VERIFIED_PENDING_V7_RUNTIME"
         },
         "security": [
           {
             "bearerAuth": []
           }
         ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKeyRequired"
+          }
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "media-asset-register",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return the first committed 201 response for the same tenant, subject, key and request digest; changed request conflicts"
+        },
         "requestBody": {
           "required": true,
           "content": {
@@ -36301,11 +36921,8 @@
           }
         },
         "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "202": {
-            "description": "Accepted"
+          "201": {
+            "description": "Registered media asset metadata"
           }
         }
       }
@@ -36359,7 +36976,7 @@
           "owner": "media-service",
           "phase": "P1",
           "maturity": "D2_CONTRACT_READY",
-          "runtimeStatus": "LIVE_VERIFIED_M3004"
+          "runtimeStatus": "SOURCE_VERIFIED_PENDING_V7_RUNTIME"
         },
         "security": [
           {
@@ -36374,14 +36991,20 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKeyRequired"
           }
         ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "media-asset-retry",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return the first committed retry response for the same tenant, subject, asset and key without another transition or event"
+        },
         "responses": {
           "200": {
             "description": "OK"
-          },
-          "202": {
-            "description": "Accepted"
           }
         }
       }
@@ -36397,7 +37020,7 @@
           "owner": "media-service",
           "phase": "P1",
           "maturity": "D2_CONTRACT_READY",
-          "runtimeStatus": "LIVE_VERIFIED_M3004"
+          "runtimeStatus": "SOURCE_VERIFIED_PENDING_V7_RUNTIME"
         },
         "security": [
           {
@@ -36412,8 +37035,17 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKeyRequired"
           }
         ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "media-subtitle-upsert",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return the first committed subtitle response for the same tenant, subject, asset, key and request digest"
+        },
         "requestBody": {
           "required": true,
           "content": {
@@ -36433,9 +37065,6 @@
         "responses": {
           "200": {
             "description": "OK"
-          },
-          "202": {
-            "description": "Accepted"
           }
         }
       }
@@ -36445,13 +37074,19 @@
         "tags": [
           "P1R-Media"
         ],
-        "summary": "Mint a short-lived RECORDING-channel upload grant (TTL capped 900s, metadata only)",
+        "summary": "Recording upload grant is unavailable until a verified PUT flow exists",
         "operationId": "mintMediaUploadUrl",
         "x-contract": {
           "owner": "media-service",
           "phase": "P1",
           "maturity": "D2_CONTRACT_READY",
-          "runtimeStatus": "LIVE_VERIFIED_M3004"
+          "runtimeStatus": "FAIL_CLOSED_UPLOAD_NOT_CONFIGURED"
+        },
+        "x-fail-closed": {
+          "mode": "NO_SUCCESS_PATH",
+          "sideEffects": false,
+          "eligibleRequestStatus": 503,
+          "reason": "MEDIA_UPLOAD_PUT_GRANT_UNAVAILABLE"
         },
         "security": [
           {
@@ -36469,11 +37104,17 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
+          "401": {
+            "description": "Authentication is required"
           },
-          "202": {
-            "description": "Accepted"
+          "403": {
+            "description": "Recording access is not allowed"
+          },
+          "404": {
+            "description": "Asset does not exist"
+          },
+          "503": {
+            "description": "No verified recording PUT grant is available; no upload URL or persistent receipt is created"
           }
         }
       }
@@ -36489,7 +37130,7 @@
           "owner": "media-service",
           "phase": "P1",
           "maturity": "D2_CONTRACT_READY",
-          "runtimeStatus": "LIVE_VERIFIED_M3004"
+          "runtimeStatus": "SOURCE_VERIFIED_PENDING_V7_RUNTIME"
         },
         "security": [
           {
@@ -36504,8 +37145,17 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKeyRequired"
           }
         ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "media-asset-activate",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return the first committed activation response for the same tenant, subject, asset, key and request digest"
+        },
         "requestBody": {
           "required": true,
           "content": {
@@ -36543,6 +37193,25 @@
         ],
         "summary": "List learner mistake facts with D0/D1/D7 states (M5-009 live)",
         "operationId": "listAssessmentMistakes",
+        "x-owner": "assessment-service",
+        "x-contract": {
+          "owner": "assessment-service",
+          "write": false
+        },
+        "x-authorization": {
+          "requiredPermission": "assessment.session.read",
+          "defaultDecision": "DENY",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "roles",
+            "permissions",
+            "adultGate",
+            "consent",
+            "resourceOwner"
+          ],
+          "serviceSidePepRequired": true
+        },
         "security": [
           {
             "bearerAuth": []
@@ -36562,6 +37231,33 @@
         ],
         "summary": "Drive a mistake through D0/D1/D7 verification (M5-009 live)",
         "operationId": "verifyAssessmentMistake",
+        "x-owner": "assessment-service",
+        "x-contract": {
+          "owner": "assessment-service",
+          "write": true
+        },
+        "x-authorization": {
+          "requiredPermission": "assessment.session.write",
+          "defaultDecision": "DENY",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "roles",
+            "permissions",
+            "adultGate",
+            "consent",
+            "resourceOwner"
+          ],
+          "serviceSidePepRequired": true
+        },
+        "x-idempotency": {
+          "required": true,
+          "keyHeader": "Idempotency-Key",
+          "strategy": "assessment-service transactional idempotency claim and mistake response snapshot",
+          "digest": "sha256(mistakeId + canonical request JSON), scoped by tenant, subject and operation",
+          "replayBehavior": "same key and request returns the original response without repeating the transition",
+          "sameKeyDifferentDigest": "CONFLICT_409"
+        },
         "security": [
           {
             "bearerAuth": []
@@ -36574,6 +37270,16 @@
             "required": true,
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 192
             }
           }
         ],
@@ -36602,6 +37308,12 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "400": {
+            "description": "Invalid outcome or Idempotency-Key"
+          },
+          "409": {
+            "description": "Mistake state conflict or key reused with a different request"
           }
         }
       }
@@ -36613,6 +37325,33 @@
         ],
         "summary": "Issue a variant surface form for re-verification (M5-009 live)",
         "operationId": "issueAssessmentVariant",
+        "x-owner": "assessment-service",
+        "x-contract": {
+          "owner": "assessment-service",
+          "write": true
+        },
+        "x-authorization": {
+          "requiredPermission": "assessment.session.write",
+          "defaultDecision": "DENY",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "roles",
+            "permissions",
+            "adultGate",
+            "consent",
+            "resourceOwner"
+          ],
+          "serviceSidePepRequired": true
+        },
+        "x-idempotency": {
+          "required": true,
+          "keyHeader": "Idempotency-Key",
+          "strategy": "assessment-service transactional idempotency claim and mistake response snapshot",
+          "digest": "sha256(mistakeId + canonical request JSON), scoped by tenant, subject and operation",
+          "replayBehavior": "same key and request returns the original response without repeating the transition",
+          "sameKeyDifferentDigest": "CONFLICT_409"
+        },
         "security": [
           {
             "bearerAuth": []
@@ -36625,6 +37364,16 @@
             "required": true,
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 192
             }
           }
         ],
@@ -36650,6 +37399,12 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "400": {
+            "description": "Invalid variant or Idempotency-Key"
+          },
+          "409": {
+            "description": "Key reused with a different mistake request"
           }
         }
       }
@@ -39181,6 +39936,17 @@
           "pattern": "^[A-Za-z0-9._:-]{16,200}$"
         },
         "x-client-authority": "NONE"
+      },
+      "B26RecoveryIdempotencyKey": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9._:-]{8,128}$"
+        }
       }
     },
     "headers": {
@@ -47631,7 +48397,7 @@
             {
               "gameCode": "SENTENCE_TRAIN",
               "releasePhase": "P0",
-              "enabled": true
+              "enabled": false
             },
             {
               "gameCode": "WORD_MATCH",
@@ -49037,7 +49803,8 @@
           },
           "lastActiveAt": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "Latest successful authentication on this device; this is not continuous activity tracking."
           }
         }
       },
@@ -49997,6 +50764,7 @@
               "command",
               "contentCode",
               "expectedStateVersion",
+              "targetVersionNumber",
               "content"
             ]
           },
@@ -50315,8 +51083,7 @@
             "properties": {
               "command": {
                 "enum": [
-                  "CREATE_DRAFT",
-                  "SAVE_DRAFT"
+                  "CREATE_DRAFT"
                 ]
               }
             },
@@ -50330,6 +51097,47 @@
                     "targetVersionNumber"
                   ]
                 },
+                {
+                  "required": [
+                    "reasonCode"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewDecision"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewNote"
+                  ]
+                },
+                {
+                  "required": [
+                    "schedule"
+                  ]
+                },
+                {
+                  "required": [
+                    "scheduledPublishTaskId"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "properties": {
+              "command": {
+                "enum": [
+                  "SAVE_DRAFT"
+                ]
+              }
+            },
+            "required": [
+              "content"
+            ],
+            "not": {
+              "anyOf": [
                 {
                   "required": [
                     "reasonCode"
@@ -51751,18 +52559,59 @@
               "AVAILABLE",
               "UNAVAILABLE",
               "COMING_SOON"
-            ]
+            ],
+            "description": "AVAILABLE requires a verified public HTTPS downloadUrl. UNAVAILABLE and COMING_SOON may omit the URL."
           },
           "downloadUrl": {
             "type": "string",
             "format": "uri",
+            "pattern": "^https://",
+            "description": "Absolute public HTTPS URL. When present, it must use a publicly reachable hostname or globally routable address; local, loopback, private, link-local, multicast, reserved and documentation targets are rejected.",
+            "x-public-target-validation": {
+              "scheme": "https",
+              "absolute": true,
+              "rejectUserInfo": true,
+              "rejectLocalOrPrivateTargets": true,
+              "publisherMustVerifyDnsResolvesOnlyToPublicAddresses": true,
+              "publicReadPerformsNetworkProbe": false
+            },
             "maxLength": 2048
           },
           "version": {
             "type": "string",
             "maxLength": 64
           }
-        }
+        },
+        "oneOf": [
+          {
+            "title": "AvailableDownloadChannel",
+            "required": [
+              "status",
+              "downloadUrl"
+            ],
+            "properties": {
+              "status": {
+                "enum": [
+                  "AVAILABLE"
+                ]
+              }
+            }
+          },
+          {
+            "title": "UnavailableDownloadChannel",
+            "required": [
+              "status"
+            ],
+            "properties": {
+              "status": {
+                "enum": [
+                  "UNAVAILABLE",
+                  "COMING_SOON"
+                ]
+              }
+            }
+          }
+        ]
       },
       "B9PublicAnnouncement": {
         "type": "object",
@@ -52012,6 +52861,24 @@
               "EXPIRED",
               "REVOKED"
             ]
+          },
+          "reviewSubmissionReady": {
+            "type": "boolean",
+            "readOnly": true,
+            "description": "仅内容 owner 根据当前版本、PASS 校验事实、有效授权及必需媒体 READY/CLEAN 事实计算；缺少任一可信事实必须为 false。客户端不得以 rightsStatus 或自行提交的校验结果替代。"
+          },
+          "reviewSubmissionReason": {
+            "type": "string",
+            "readOnly": true,
+            "enum": [
+              "READY",
+              "DRAFT_REQUIRED",
+              "RIGHTS_NOT_READY",
+              "VALIDATION_NOT_PASSED",
+              "VALIDATION_REPORT_UNAVAILABLE",
+              "MEDIA_ELIGIBILITY_UNAVAILABLE"
+            ],
+            "description": "当前版本提交双审的首个阻断原因；只读提示，提交命令仍由 owner 重新判定。"
           },
           "reviewRecords": {
             "type": "array",
@@ -59697,7 +60564,7 @@
         "properties": {
           "items": {
             "type": "array",
-            "maxItems": 500,
+            "maxItems": 100,
             "items": {
               "$ref": "#/components/schemas/B13AuditRecord"
             }
@@ -74278,6 +75145,7 @@
       "M1016NotificationDndWindow": {
         "type": "object",
         "additionalProperties": false,
+        "description": "起止时间相同表示关闭免打扰；否则按当地时间左闭右开判断，跨午夜区间有效。",
         "required": [
           "startLocalTime",
           "endLocalTime",
@@ -74431,6 +75299,7 @@
           "dndWindow": {
             "type": "object",
             "additionalProperties": false,
+            "description": "起止时间相同表示关闭免打扰；否则按当地时间左闭右开判断，跨午夜区间有效。",
             "required": [
               "startLocalTime",
               "endLocalTime"
@@ -78546,6 +79415,68 @@
             "maxLength": 96
           }
         }
+      },
+      "B12AdminReport": {
+        "description": "管理审核队列的最小披露视图。房间和被举报人只返回稳定的不透明引用，原始主体标识留在 social-service。",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "reportId",
+          "targetRef",
+          "reasonCode",
+          "status",
+          "reviewMode",
+          "createdAt",
+          "updatedAt"
+        ],
+        "properties": {
+          "reportId": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "roomRef": {
+            "type": "string",
+            "maxLength": 64,
+            "nullable": true
+          },
+          "targetRef": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "targetSeatIndex": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "reasonCode": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "RECEIVED",
+              "TRIAGED",
+              "ACTIONED",
+              "REJECTED",
+              "APPEALED",
+              "CLOSED"
+            ]
+          },
+          "reviewMode": {
+            "type": "string",
+            "enum": [
+              "MANUAL"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
       }
     },
     "requestBodies": {},
@@ -78924,6 +79855,22 @@
         "compatibilityMode": "NONE"
       },
       {
+        "ruleId": "admin-moderation-reports-read",
+        "priority": 800,
+        "match": {
+          "type": "EXACT",
+          "path": "/api/v1/admin/moderation/reports",
+          "methods": [
+            "GET"
+          ]
+        },
+        "upstreamOwner": "social-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "HIGH_RISK_ADMIN",
+        "compatibilityMode": "NONE"
+      },
+      {
         "ruleId": "analytics-telemetry",
         "priority": 800,
         "match": {
@@ -78945,6 +79892,22 @@
         "match": {
           "type": "PREFIX",
           "path": "/api/v1/learning/content-snapshots",
+          "methods": [
+            "GET"
+          ]
+        },
+        "upstreamOwner": "content-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "AUTHENTICATED_READ",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "grammar-points-read",
+        "priority": 850,
+        "match": {
+          "type": "EXACT",
+          "path": "/api/v1/grammar/points",
           "methods": [
             "GET"
           ]
@@ -79198,6 +80161,22 @@
         "internalTargetClass": "INTERNAL_V1",
         "visibility": "AUTHENTICATED",
         "authClass": "AUTHENTICATED_WRITE",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "sync-offline-packages-read",
+        "priority": 800,
+        "match": {
+          "type": "EXACT",
+          "path": "/api/v1/sync/offline-packages",
+          "methods": [
+            "GET"
+          ]
+        },
+        "upstreamOwner": "notification-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "AUTHENTICATED_READ",
         "compatibilityMode": "NONE"
       },
       {
@@ -80272,6 +81251,30 @@
         ]
       },
       {
+        "ruleId": "admin-moderation-reports-read",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "admin-moderation-reports-read.queue",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/admin/moderation/reports",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "social-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.social",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/social/admin/moderation/reports",
+            "controllerEvidence": {
+              "sourcePath": "services/social-service/src/main/java/com/englishflow/social/web/SocialLocalRealController.java",
+              "requestMapping": "/internal/v1/social"
+            }
+          }
+        ]
+      },
+      {
         "ruleId": "analytics-telemetry",
         "defaultStatus": "UNAVAILABLE",
         "defaultReason": "no_exact_canonical_execution_target",
@@ -80300,6 +81303,30 @@
         "defaultStatus": "UNAVAILABLE",
         "defaultReason": "content_owner_controller_mapping_not_present",
         "projections": []
+      },
+      {
+        "ruleId": "grammar-points-read",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "grammar-points-read.list",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/grammar/points",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "content-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.content",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/content/learner/grammar/points",
+            "controllerEvidence": {
+              "sourcePath": "services/content-service/src/main/java/com/englishflow/content/web/B3ContentJdbcController.java",
+              "requestMapping": "/internal/v1/content/learner"
+            }
+          }
+        ]
       },
       {
         "ruleId": "speaking-recordings",
@@ -81460,6 +82487,30 @@
         ]
       },
       {
+        "ruleId": "sync-offline-packages-read",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "sync-offline-packages-read.list",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/sync/offline-packages",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "notification-service",
+            "targetUriConfig": "gateway.b12.notification-base-url",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/sync/offline-packages",
+            "controllerEvidence": {
+              "sourcePath": "services/notification-service/src/main/java/com/englishflow/notification/adapter/http/NotificationLocalOfflineController.java",
+              "requestMapping": "/internal/v1/sync"
+            }
+          }
+        ]
+      },
+      {
         "ruleId": "sync-domain",
         "defaultStatus": "UNAVAILABLE",
         "defaultReason": "canonical_learning_owner_conflicts_with_current_notification_controller",
@@ -81470,6 +82521,91 @@
         "defaultStatus": "UNAVAILABLE",
         "defaultReason": "no_exact_canonical_execution_target",
         "projections": [
+          {
+            "projectionId": "assessment-domain.p1-placement-session-create",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/assessment/placement/sessions",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "assessment-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.assessment",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/assessment/placement/sessions",
+            "controllerEvidence": {
+              "sourcePath": "services/assessment-service/src/main/java/com/englishflow/assessment/web/P1PlacementJdbcController.java",
+              "requestMapping": "/internal/v1/assessment/placement"
+            }
+          },
+          {
+            "projectionId": "assessment-domain.p1-placement-session-read",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/assessment/placement/sessions/{sessionId}",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "assessment-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.assessment",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/assessment/placement/sessions/{sessionId}",
+            "controllerEvidence": {
+              "sourcePath": "services/assessment-service/src/main/java/com/englishflow/assessment/web/P1PlacementJdbcController.java",
+              "requestMapping": "/internal/v1/assessment/placement"
+            }
+          },
+          {
+            "projectionId": "assessment-domain.p1-placement-response",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/assessment/placement/sessions/{sessionId}/responses",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "assessment-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.assessment",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/assessment/placement/sessions/{sessionId}/responses",
+            "controllerEvidence": {
+              "sourcePath": "services/assessment-service/src/main/java/com/englishflow/assessment/web/P1PlacementJdbcController.java",
+              "requestMapping": "/internal/v1/assessment/placement"
+            }
+          },
+          {
+            "projectionId": "assessment-domain.p1-placement-skip",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/assessment/placement/baselines/skip",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "assessment-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.assessment",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/assessment/placement/baselines/skip",
+            "controllerEvidence": {
+              "sourcePath": "services/assessment-service/src/main/java/com/englishflow/assessment/web/P1PlacementJdbcController.java",
+              "requestMapping": "/internal/v1/assessment/placement"
+            }
+          },
+          {
+            "projectionId": "assessment-domain.p1-placement-report",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/assessment/placement/reports/{reportId}",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "assessment-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.assessment",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/assessment/placement/reports/{reportId}",
+            "controllerEvidence": {
+              "sourcePath": "services/assessment-service/src/main/java/com/englishflow/assessment/web/P1PlacementJdbcController.java",
+              "requestMapping": "/internal/v1/assessment/placement"
+            }
+          },
           {
             "projectionId": "assessment-domain.placement-start",
             "status": "AVAILABLE",

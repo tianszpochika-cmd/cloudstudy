@@ -169,13 +169,12 @@ const EXECUTION_URI_CONFIG_BY_OWNER = {
   'notification-service': 'gateway.b12.notification-base-url',
   'analytics-service': 'gateway.b13.analytics-base-url',
   'admin-ops-service': 'gateway.b13.admin-ops-base-url',
+  'workflow-service': 'gateway.workflow.workflow-base-url',
 };
 const EXPECTED_UNAVAILABLE_EXECUTION_REASONS = {
   'wechat-callback': 'commerce_provider_callback_signature_boundary_not_implemented',
   'alipay-callback': 'commerce_provider_callback_signature_boundary_not_implemented',
   'apple-notification': 'commerce_provider_callback_signature_boundary_not_implemented',
-  'admin-content-publish-tasks': 'content_owner_controller_mapping_not_present',
-  'admin-recovery': 'workflow_owner_has_no_configured_gateway_target',
   'learning-content-snapshot': 'content_owner_controller_mapping_not_present',
   'speaking-recordings': 'canonical_media_owner_conflicts_with_current_learning_controller',
   'speaking-shadowing-completion': 'canonical_assessment_owner_conflicts_with_current_learning_controller',

@@ -1,0 +1,262 @@
+{
+  "at": "2026-09-23T10:11:50.898Z",
+  "mode": "private Docker HTTPS proxy + containerized Chromium",
+  "results": [
+    {
+      "name": "official-site",
+      "width": 1280,
+      "url": "https://clyunedev.com/",
+      "status": 200,
+      "finalUrl": "https://clyunedev.com/",
+      "layout": {
+        "title": "语学星 · 让英语，回到你的日常",
+        "scrollWidth": 1280,
+        "viewportWidth": 1280,
+        "visibleTextLength": 1198
+      },
+      "gatewayCors": {
+        "status": 200,
+        "contentType": "application/json"
+      },
+      "pageErrors": [],
+      "failedRequests": []
+    },
+    {
+      "name": "official-site",
+      "width": 390,
+      "url": "https://clyunedev.com/",
+      "status": 200,
+      "finalUrl": "https://clyunedev.com/",
+      "layout": {
+        "title": "语学星 · 让英语，回到你的日常",
+        "scrollWidth": 390,
+        "viewportWidth": 390,
+        "visibleTextLength": 1114
+      },
+      "gatewayCors": {
+        "status": 200,
+        "contentType": "application/json"
+      },
+      "pageErrors": [],
+      "failedRequests": []
+    },
+    {
+      "name": "learner-web",
+      "width": 1280,
+      "url": "https://learn.clyunedev.com/",
+      "status": 200,
+      "finalUrl": "https://learn.clyunedev.com/login",
+      "layout": {
+        "title": "语学星",
+        "scrollWidth": 1280,
+        "viewportWidth": 1280,
+        "visibleTextLength": 241
+      },
+      "gatewayCors": {
+        "status": 200,
+        "contentType": "application/json"
+      },
+      "pageErrors": [],
+      "failedRequests": []
+    },
+    {
+      "name": "learner-web",
+      "width": 390,
+      "url": "https://learn.clyunedev.com/",
+      "status": 200,
+      "finalUrl": "https://learn.clyunedev.com/login",
+      "layout": {
+        "title": "语学星",
+        "scrollWidth": 390,
+        "viewportWidth": 390,
+        "visibleTextLength": 118
+      },
+      "gatewayCors": {
+        "status": 200,
+        "contentType": "application/json"
+      },
+      "pageErrors": [],
+      "failedRequests": []
+    },
+    {
+      "name": "admin-web",
+      "width": 1280,
+      "url": "https://admin.clyunedev.com/",
+      "status": 200,
+      "finalUrl": "https://admin.clyunedev.com/login?redirect=/dashboard",
+      "layout": {
+        "title": "教研与运营工作台 · 语学星",
+        "scrollWidth": 1280,
+        "viewportWidth": 1280,
+        "visibleTextLength": 280
+      },
+      "gatewayCors": {
+        "status": 200,
+        "contentType": "application/json"
+      },
+      "pageErrors": [],
+      "failedRequests": []
+    },
+    {
+      "name": "admin-web",
+      "width": 390,
+      "url": "https://admin.clyunedev.com/",
+      "status": 200,
+      "finalUrl": "https://admin.clyunedev.com/login?redirect=/dashboard",
+      "layout": {
+        "title": "教研与运营工作台 · 语学星",
+        "scrollWidth": 390,
+        "viewportWidth": 390,
+        "visibleTextLength": 135
+      },
+      "gatewayCors": {
+        "status": 200,
+        "contentType": "application/json"
+      },
+      "pageErrors": [],
+      "failedRequests": []
+    },
+    {
+      "name": "mobile-h5",
+      "width": 1280,
+      "url": "https://mobile.clyunedev.com/",
+      "status": 200,
+      "finalUrl": "https://mobile.clyunedev.com/#/",
+      "layout": {
+        "title": "学习",
+        "scrollWidth": 1280,
+        "viewportWidth": 1280,
+        "visibleTextLength": 183
+      },
+      "gatewayCors": {
+        "status": 200,
+        "contentType": "application/json"
+      },
+      "pageErrors": [
+        "TypeError: P(...)?.setStorageSync is not a function\n    at Proxy.setReturnTo (https://mobile.clyunedev.com/assets/session.5Mcj2KiO.js:1:8273)\n    at Proxy.o (https://mobile.clyunedev.com/assets/pinia.ygb8TPrx.js:1:4534)\n    at Bg (https://mobile.clyunedev.com/assets/index-CK68FPpd.js:2:221425)\n    at https://mobile.clyunedev.com/assets/index-CK68FPpd.js:2:245030",
+        "TypeError: P(...)?.setStorageSync is not a function\n    at Proxy.setReturnTo (https://mobile.clyunedev.com/assets/session.5Mcj2KiO.js:1:8273)\n    at Proxy.o (https://mobile.clyunedev.com/assets/pinia.ygb8TPrx.js:1:4534)\n    at Bg (https://mobile.clyunedev.com/assets/index-CK68FPpd.js:2:221425)\n    at Hg (https://mobile.clyunedev.com/assets/index-CK68FPpd.js:2:222785)\n    at async Array.<anonymous> (https://mobile.clyunedev.com/assets/pages-home-home.DWkTzOUd.js:1:1154)",
+        "Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+        "Failed to load resource: net::ERR_NAME_NOT_RESOLVED"
+      ],
+      "failedRequests": [
+        {
+          "hostname": "tongji-collector.dcloud.net.cn",
+          "pathname": "/WebTrack.gif",
+          "failure": "net::ERR_NAME_NOT_RESOLVED"
+        },
+        {
+          "hostname": "tongji-collector.dcloud.net.cn",
+          "pathname": "/WebTrack.gif",
+          "failure": "net::ERR_NAME_NOT_RESOLVED"
+        }
+      ]
+    },
+    {
+      "name": "mobile-h5",
+      "width": 390,
+      "url": "https://mobile.clyunedev.com/",
+      "status": 200,
+      "finalUrl": "https://mobile.clyunedev.com/#/",
+      "layout": {
+        "title": "学习",
+        "scrollWidth": 390,
+        "viewportWidth": 390,
+        "visibleTextLength": 183
+      },
+      "gatewayCors": {
+        "status": 200,
+        "contentType": "application/json"
+      },
+      "pageErrors": [
+        "TypeError: P(...)?.setStorageSync is not a function\n    at Proxy.setReturnTo (https://mobile.clyunedev.com/assets/session.5Mcj2KiO.js:1:8273)\n    at Proxy.o (https://mobile.clyunedev.com/assets/pinia.ygb8TPrx.js:1:4534)\n    at Bg (https://mobile.clyunedev.com/assets/index-CK68FPpd.js:2:221425)\n    at https://mobile.clyunedev.com/assets/index-CK68FPpd.js:2:245030",
+        "TypeError: P(...)?.setStorageSync is not a function\n    at Proxy.setReturnTo (https://mobile.clyunedev.com/assets/session.5Mcj2KiO.js:1:8273)\n    at Proxy.o (https://mobile.clyunedev.com/assets/pinia.ygb8TPrx.js:1:4534)\n    at Bg (https://mobile.clyunedev.com/assets/index-CK68FPpd.js:2:221425)\n    at Hg (https://mobile.clyunedev.com/assets/index-CK68FPpd.js:2:222785)\n    at async Array.<anonymous> (https://mobile.clyunedev.com/assets/pages-home-home.DWkTzOUd.js:1:1154)",
+        "Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+        "Failed to load resource: net::ERR_NAME_NOT_RESOLVED"
+      ],
+      "failedRequests": [
+        {
+          "hostname": "tongji-collector.dcloud.net.cn",
+          "pathname": "/WebTrack.gif",
+          "failure": "net::ERR_NAME_NOT_RESOLVED"
+        },
+        {
+          "hostname": "tongji-collector.dcloud.net.cn",
+          "pathname": "/WebTrack.gif",
+          "failure": "net::ERR_NAME_NOT_RESOLVED"
+        }
+      ]
+    },
+    {
+      "name": "learner-login",
+      "width": 1280,
+      "url": "https://learn.clyunedev.com/login",
+      "status": 200,
+      "finalUrl": "https://learn.clyunedev.com/login",
+      "layout": {
+        "title": "语学星",
+        "scrollWidth": 1280,
+        "viewportWidth": 1280,
+        "visibleTextLength": 241
+      },
+      "gatewayCors": {
+        "status": 200,
+        "contentType": "application/json"
+      },
+      "pageErrors": [],
+      "failedRequests": []
+    },
+    {
+      "name": "admin-login",
+      "width": 1280,
+      "url": "https://admin.clyunedev.com/login",
+      "status": 200,
+      "finalUrl": "https://admin.clyunedev.com/login",
+      "layout": {
+        "title": "教研与运营工作台 · 语学星",
+        "scrollWidth": 1280,
+        "viewportWidth": 1280,
+        "visibleTextLength": 280
+      },
+      "gatewayCors": {
+        "status": 200,
+        "contentType": "application/json"
+      },
+      "pageErrors": [],
+      "failedRequests": []
+    },
+    {
+      "name": "mobile-login",
+      "width": 390,
+      "url": "https://mobile.clyunedev.com/#/pages/login/login",
+      "status": 200,
+      "finalUrl": "https://mobile.clyunedev.com/#/pages/login/login",
+      "layout": {
+        "title": "登录",
+        "scrollWidth": 390,
+        "viewportWidth": 390,
+        "visibleTextLength": 114
+      },
+      "gatewayCors": {
+        "status": 200,
+        "contentType": "application/json"
+      },
+      "pageErrors": [
+        "TypeError: P(...)?.getStorageSync is not a function\n    at Proxy.C (https://mobile.clyunedev.com/assets/session.5Mcj2KiO.js:1:5502)\n    at Proxy.o (https://mobile.clyunedev.com/assets/pinia.ygb8TPrx.js:1:4534)\n    at H (https://mobile.clyunedev.com/assets/pages-login-login.1kehSwYP.js:1:771)\n    at Array.<anonymous> (https://mobile.clyunedev.com/assets/pages-login-login.1kehSwYP.js:1:1265)\n    at https://mobile.clyunedev.com/assets/index-CK68FPpd.js:2:57681\n    at Mi (https://mobile.clyunedev.com/assets/index-CK68FPpd.js:2:57695)\n    at Vd (https://mobile.clyunedev.com/assets/index-CK68FPpd.js:2:165608)\n    at Proxy.Hd (https://mobile.clyunedev.com/assets/index-CK68FPpd.js:2:165796)\n    at Proxy.beforeMount (https://mobile.clyunedev.com/assets/index-CK68FPpd.js:2:324794)\n    at https://mobile.clyunedev.com/assets/runtime-core.esm-bundler.BYp242pd.js:1:33286",
+        "Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+        "Failed to load resource: net::ERR_NAME_NOT_RESOLVED"
+      ],
+      "failedRequests": [
+        {
+          "hostname": "tongji-collector.dcloud.net.cn",
+          "pathname": "/WebTrack.gif",
+          "failure": "net::ERR_NAME_NOT_RESOLVED"
+        },
+        {
+          "hostname": "tongji-collector.dcloud.net.cn",
+          "pathname": "/WebTrack.gif",
+          "failure": "net::ERR_NAME_NOT_RESOLVED"
+        }
+      ]
+    }
+  ]
+}

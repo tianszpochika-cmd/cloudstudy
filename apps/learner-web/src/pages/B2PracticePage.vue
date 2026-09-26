@@ -13,7 +13,7 @@ const question = computed(() => store.assessment.currentQuestion)
 const report = computed(() => store.assessment.report)
 const isCompleted = computed(() => store.assessment.status === 'completed' || Boolean(report.value))
 const isLoading = computed(() => store.assessmentStatus === 'loading' || store.assessment.status === 'submitting')
-const scorePercent = computed(() => Math.round((report.value?.score ?? 0) * 100))
+const scorePercent = computed(() => Math.round(report.value?.score ?? 0))
 const progress = computed(() => {
   const current = question.value
   if (!current) return report.value ? 100 : 0
@@ -46,14 +46,9 @@ onMounted(() => { void load() })
     <ExperienceHeader page="Practice" icon="check" title-id="practice-title" />
 
     <section v-if="isCompleted && report" class="result-panel" aria-live="polite">
-      <p class="card-kicker">练习已完成</p>
+      <p class="card-kicker">历史两题练习结果</p>
       <h3>{{ report.cefrLevel }} · {{ scorePercent }} 分</h3>
-      <p>{{ report.recommendedAdvice || '结果来自服务端规则判分。' }}</p>
-      <div class="result-grid">
-        <span><strong>{{ report.estimatedVocabulary }}</strong><small>估算词汇量</small></span>
-        <span><strong>{{ report.radarScores.vocab }}%</strong><small>词汇掌握</small></span>
-        <span><strong>{{ report.radarScores.listening }}%</strong><small>听力表现</small></span>
-      </div>
+      <p>旧版练习仅供参考，不能代替四维定级。</p>
       <div class="actions">
         <button class="primary-button" type="button" @click="openToday">查看今日任务</button>
         <button class="secondary-button" type="button" @click="void load()">重新读取报告</button>
@@ -89,7 +84,7 @@ onMounted(() => { void load() })
 
     <section v-else-if="isLoading" class="state-panel" role="status" aria-live="polite">
       <strong>正在读取真实练习</strong>
-      <p>正在从 Gateway、assessment-service 和 MySQL 读取当前测评状态。</p>
+      <p>正在读取测评状态…</p>
     </section>
 
     <section v-else class="state-panel state-panel--error" role="alert">

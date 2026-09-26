@@ -12,7 +12,7 @@ test('admin-web uses one Gateway base URL seam and strips client authority heade
   const store = await read('apps/admin-web/src/stores/admin.ts')
   assert.match(gateway, /VITE_GATEWAY_BASE_URL/)
   assert.match(client, /getGatewayBaseUrl\(\)/)
-  assert.match(store, /getGatewayBaseUrl\(\)/)
+  assert.match(store, /createGatewayAdminAuthAdapter\(\{ client: adminClient \}\)/)
   assert.match(client, /forbiddenHeaderNames/)
   assert.doesNotMatch(`${gateway}\n${client}\n${store}`, /Math\.random/)
 })

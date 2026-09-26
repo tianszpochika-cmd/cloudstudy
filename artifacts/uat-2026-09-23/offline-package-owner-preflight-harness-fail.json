@@ -1,0 +1,32 @@
+{
+  "capturedAt": "2026-09-23T10:44:06.855Z",
+  "scope": "Local Gateway to notification owner after route deployment",
+  "accountTag": "ab0584b6c510",
+  "checks": [
+    {
+      "name": "anonymous owner",
+      "actual": 401,
+      "expected": 401,
+      "pass": true
+    },
+    {
+      "name": "anonymous gateway",
+      "actual": 401,
+      "expected": 401,
+      "pass": true
+    },
+    {
+      "name": "mobile preflight status",
+      "actual": 403,
+      "expected": 200,
+      "pass": false
+    }
+  ],
+  "cleanup": {
+    "verified": true,
+    "accountCount": 0
+  },
+  "conclusion": "The exact Gateway GET path returns a truthful empty offline catalog to an authorized adult.",
+  "failure": "mobile preflight status: expected 200, got 403",
+  "status": "FAIL"
+}

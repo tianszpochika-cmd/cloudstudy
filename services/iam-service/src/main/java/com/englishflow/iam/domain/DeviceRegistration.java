@@ -3,14 +3,14 @@ package com.englishflow.iam.domain;
 import java.time.Instant;
 import java.util.Objects;
 
-/** Immutable device fact. Kicking a device writes a new revoked snapshot, never mutates history. */
+/** Device fact. The timestamp is the latest successful device authentication, not request activity. */
 public record DeviceRegistration(
         DeviceId deviceId,
         PrincipalId principalId,
         TenantScope scope,
         String platform,
         String label,
-        Instant registeredAt,
+        Instant lastAuthenticatedAt,
         Instant revokedAt) {
 
     public DeviceRegistration {
@@ -22,7 +22,7 @@ public record DeviceRegistration(
         }
         Objects.requireNonNull(platform, "platform");
         Objects.requireNonNull(label, "label");
-        Objects.requireNonNull(registeredAt, "registeredAt");
+        Objects.requireNonNull(lastAuthenticatedAt, "lastAuthenticatedAt");
     }
 
     public boolean active() {
@@ -32,6 +32,6 @@ public record DeviceRegistration(
     public DeviceRegistration revoke(Instant at) {
         Objects.requireNonNull(at, "at");
         return active() ? new DeviceRegistration(
-                deviceId, principalId, scope, platform, label, registeredAt, at) : this;
+                deviceId, principalId, scope, platform, label, lastAuthenticatedAt, at) : this;
     }
 }

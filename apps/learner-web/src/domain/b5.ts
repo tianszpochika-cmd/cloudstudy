@@ -1,11 +1,12 @@
-export interface B5Sku {
+export interface B5PublicPlan {
+  planId: string
   skuId: string
   title: string
-  entitlementCode: string
-  billingPeriod: string
+  billingPeriod: 'FREE' | 'MONTH' | 'QUARTER' | 'YEAR' | 'PERPETUAL'
   amountMinor: number
   currency: string
-  status: string
+  priceSnapshotId: string
+  availability: 'PUBLISHED' | 'COMING_SOON' | 'UNAVAILABLE'
 }
 
 export interface B5Order {
@@ -54,15 +55,24 @@ export function numberValue(value: unknown, fallback = 0): number {
   return typeof value === 'number' && Number.isFinite(value) ? value : fallback
 }
 
-export function toSku(value: Record<string, unknown>): B5Sku {
+export function toPublicPlan(value: Record<string, unknown>): B5PublicPlan | null {
+  const periods = ['FREE', 'MONTH', 'QUARTER', 'YEAR', 'PERPETUAL']
+  const availability = ['PUBLISHED', 'COMING_SOON', 'UNAVAILABLE']
+  if (typeof value.planId !== 'string' || !value.planId || typeof value.skuId !== 'string' || !value.skuId
+    || typeof value.title !== 'string' || !value.title || typeof value.billingPeriod !== 'string' || !periods.includes(value.billingPeriod)
+    || typeof value.currency !== 'string' || !/^[A-Z]{3}$/.test(value.currency)
+    || typeof value.priceSnapshotId !== 'string' || !value.priceSnapshotId
+    || typeof value.amountMinor !== 'number' || !Number.isInteger(value.amountMinor) || value.amountMinor < 0
+    || typeof value.availability !== 'string' || !availability.includes(value.availability)) return null
   return {
-    skuId: stringValue(value.skuId),
-    title: stringValue(value.title, 'EnglishFlow Pro'),
-    entitlementCode: stringValue(value.entitlementCode),
-    billingPeriod: stringValue(value.billingPeriod),
-    amountMinor: numberValue(value.amountMinor),
-    currency: stringValue(value.currency, 'CNY'),
-    status: stringValue(value.status, 'ACTIVE'),
+    planId: value.planId,
+    skuId: value.skuId,
+    title: value.title,
+    billingPeriod: value.billingPeriod as B5PublicPlan['billingPeriod'],
+    amountMinor: value.amountMinor,
+    currency: value.currency,
+    priceSnapshotId: value.priceSnapshotId,
+    availability: value.availability as B5PublicPlan['availability'],
   }
 }
 

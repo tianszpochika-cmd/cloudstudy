@@ -1,0 +1,322 @@
+{
+  "probe": "learner-first-day-followup",
+  "localOnly": true,
+  "checks": [
+    {
+      "name": "register-to-onboarding",
+      "actual": "/onboarding",
+      "expected": "/onboarding",
+      "ok": true
+    },
+    {
+      "name": "01-onboarding-gate-390-layout",
+      "width": 390,
+      "overflowPixels": 0,
+      "ok": true
+    },
+    {
+      "name": "02-onboarding-gate-320-layout",
+      "width": 320,
+      "overflowPixels": 0,
+      "ok": true
+    },
+    {
+      "name": "adult-gate-to-goal",
+      "actual": 1,
+      "expected": 1,
+      "ok": true
+    },
+    {
+      "name": "03-onboarding-goal-390-layout",
+      "width": 390,
+      "overflowPixels": 0,
+      "ok": true
+    },
+    {
+      "name": "goal-to-assessment",
+      "actual": "/assessment",
+      "expected": "/assessment",
+      "ok": true
+    },
+    {
+      "name": "assessment-visible-state",
+      "text": "我的学习空间\n找到一个适合你的起点。\n\n不必追求满分，按真实水平作答，帮助安排接下来的学习。\n\n0/2\n1/2\nChoose the greeting.\nA\nHello\nB\nGoodbye\n提交答案\n跳过测评，选择起点"
+    },
+    {
+      "name": "04-assessment-390-layout",
+      "width": 390,
+      "overflowPixels": 0,
+      "ok": true
+    },
+    {
+      "name": "skip-visible-state",
+      "text": "我的学习空间\n找到一个适合你的起点。\n\n不必追求满分，按真实水平作答，帮助安排接下来的学习。\n\n已完成\n\n已跳过测评\n\n水平尚未验证\n\n你选择了 A1 作为起点；这不是测评等级。\n\n查看今日状态参加测评"
+    },
+    {
+      "name": "05-assessment-skip-390-layout",
+      "width": 390,
+      "overflowPixels": 0,
+      "ok": true
+    },
+    {
+      "name": "06-home-visible-state",
+      "route": "/home",
+      "text": "A LITTLE, EVERY DAY\n\n今天，也给自己一点进步。\n\n从一个小任务开始，把学过的慢慢变成自己的。\n\n调整学习目标\n今天的小目标\n从一节课开始\n\n看看书架上有哪些可用课程。\n\n浏览课程\n✦\n✧\nlittle by little\ngrow.\n✦\nYOUR DAILY PLAN\n今天的小目标\n查看全部\n今天的小目标\n\n学习服务暂时不可用。\n\n重试\nLITTLE STEPS COUNT\n今日进度\n—\n已完成\n每日目标\n— 分钟\n已完成\n— 分钟\n✦\n✧\nYOUR LITTLE WORLD\n给进步，一个自己的空间\n\n看看成长地图，或去自习室专注一会儿。\n\n走进学习世界\nFIND YOUR RHYTHM\n也可以，换一种方式学\n词汇复习\n先回忆，再把它记牢\n听力精练\n慢一点，听清每一句\n分级阅读\n读一小段，理解多一点\n口语自练\n跟着读，再听听自己\n语法与句子\n拆开句子，看懂结构\n写作练习\n把想法，写成一句话"
+    },
+    {
+      "name": "06-home-390-layout",
+      "width": 390,
+      "overflowPixels": 0,
+      "ok": true
+    },
+    {
+      "name": "06-home-320-layout",
+      "width": 320,
+      "overflowPixels": 0,
+      "ok": true
+    },
+    {
+      "name": "07-today-visible-state",
+      "route": "/today",
+      "text": "我的学习空间\n给今天，安排一点进步。\n\n先完成一件小事，再把学过的及时复习。\n\n今日任务\n\n学习服务暂时不可用。\n\n重试"
+    },
+    {
+      "name": "07-today-390-layout",
+      "width": 390,
+      "overflowPixels": 0,
+      "ok": true
+    },
+    {
+      "name": "07-today-320-layout",
+      "width": 320,
+      "overflowPixels": 0,
+      "ok": true
+    },
+    {
+      "name": "08-plan-map-visible-state",
+      "route": "/plan-map",
+      "text": "我的学习空间\n按自己的节奏，一步一步来。\n\n看看当前计划，从今天能完成的一步开始。\n\n计划地图\n\n暂无生效计划——完成开户目标后自动生成。"
+    },
+    {
+      "name": "08-plan-map-390-layout",
+      "width": 390,
+      "overflowPixels": 0,
+      "ok": true
+    },
+    {
+      "name": "08-plan-map-320-layout",
+      "width": 320,
+      "overflowPixels": 0,
+      "ok": true
+    },
+    {
+      "name": "owner-facts",
+      "profile": 1,
+      "goal": 1,
+      "firstDay": 1,
+      "plans": 0,
+      "tasks": 0
+    }
+  ],
+  "requests": [
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/register",
+      "status": 201
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/iam/permissions",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/learner/targets",
+      "status": 403
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/learner/preferences",
+      "status": 403
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/learner/profile",
+      "status": 403
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/onboarding/options",
+      "status": 403
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/iam/adult-gate",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/iam/consents",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/iam/consents",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/iam/consents",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/token/refresh",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/iam/permissions",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/learner/targets",
+      "status": 404
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/learner/preferences",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/learner/profile",
+      "status": 200
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/learner/profile",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/learner/targets",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/onboarding/options",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/learner/profile",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/learner/preferences",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/learner/targets",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/assessment/placement/start",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/assessment/placement/start",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/assessment/placement/skip",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/token/refresh",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/iam/permissions",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/learner/home",
+      "status": 503
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/content/learner/catalog",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/token/refresh",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/iam/permissions",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/learner/home",
+      "status": 503
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/content/learner/catalog",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/token/refresh",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/iam/permissions",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/learning/plan/current",
+      "status": 200
+    }
+  ],
+  "pageErrorCount": 0,
+  "cleanup": {
+    "account": [
+      "1",
+      "DISABLED"
+    ],
+    "activeSessions": 0
+  },
+  "secretsPrinted": false
+}

@@ -1,0 +1,50 @@
+{
+  "at": "2026-09-23T10:51:26.217Z",
+  "project": "cloudstudy-uat-isolated-3c94b27160",
+  "candidateImage": "cloudstudy-clyunedev/iam-service:583ab627-uat-batch10-202609231841",
+  "before": {
+    "accounts": 9,
+    "devices": 10,
+    "sessions": 10,
+    "idempotencyRecords": 11
+  },
+  "api": {
+    "first": {
+      "status": 503,
+      "errorCode": "SERVICE_UNAVAILABLE",
+      "message": "iam.consent.version_unavailable",
+      "hasAccessToken": false
+    },
+    "sameKeyRetry": {
+      "status": 503,
+      "errorCode": "SERVICE_UNAVAILABLE",
+      "message": "iam.consent.version_unavailable",
+      "hasAccessToken": false
+    },
+    "newKeyRetry": {
+      "status": 503,
+      "errorCode": "SERVICE_UNAVAILABLE",
+      "message": "iam.consent.version_unavailable",
+      "hasAccessToken": false
+    },
+    "login": {
+      "status": 503,
+      "errorCode": "SERVICE_UNAVAILABLE",
+      "message": "iam.consent.version_unavailable",
+      "hasAccessToken": false
+    },
+    "gateway": {
+      "status": 503,
+      "errorCode": "SERVICE_UNAVAILABLE",
+      "message": "iam.consent.version_unavailable",
+      "hasAccessToken": false
+    }
+  },
+  "after": {
+    "accounts": 9,
+    "devices": 10,
+    "sessions": 10,
+    "idempotencyRecords": 11
+  },
+  "pass": true
+}

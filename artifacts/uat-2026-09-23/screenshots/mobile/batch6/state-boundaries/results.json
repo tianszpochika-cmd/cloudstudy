@@ -1,0 +1,96 @@
+{
+  "scope": "synthetic UI failure and empty states only",
+  "checked": 10,
+  "results": [
+    {
+      "name": "home",
+      "width": 320,
+      "requests": {
+        "profile": 0,
+        "review": 0
+      },
+      "errors": []
+    },
+    {
+      "name": "learn",
+      "width": 320,
+      "requests": {
+        "profile": 0,
+        "review": 2
+      },
+      "errors": []
+    },
+    {
+      "name": "profile",
+      "width": 320,
+      "requests": {
+        "profile": 2,
+        "review": 0
+      },
+      "errors": []
+    },
+    {
+      "name": "home",
+      "width": 390,
+      "requests": {
+        "profile": 0,
+        "review": 0
+      },
+      "errors": []
+    },
+    {
+      "name": "learn",
+      "width": 390,
+      "requests": {
+        "profile": 0,
+        "review": 2
+      },
+      "errors": []
+    },
+    {
+      "name": "profile",
+      "width": 390,
+      "requests": {
+        "profile": 2,
+        "review": 0
+      },
+      "errors": []
+    },
+    {
+      "name": "home",
+      "width": 768,
+      "requests": {
+        "profile": 0,
+        "review": 0
+      },
+      "errors": []
+    },
+    {
+      "name": "learn",
+      "width": 768,
+      "requests": {
+        "profile": 0,
+        "review": 2
+      },
+      "errors": []
+    },
+    {
+      "name": "profile",
+      "width": 768,
+      "requests": {
+        "profile": 2,
+        "review": 0
+      },
+      "errors": []
+    },
+    {
+      "name": "learn-ready",
+      "width": 390,
+      "requests": {
+        "profile": 0,
+        "review": 1
+      },
+      "errors": []
+    }
+  ]
+}

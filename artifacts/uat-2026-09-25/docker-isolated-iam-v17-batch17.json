@@ -1,0 +1,39 @@
+{
+  "project": "cloudstudy-uat-isolated-3c94b27160",
+  "releaseTag": "583ab627-uat-batch17-202609250206",
+  "phase": "complete",
+  "migration": {
+    "service": "iam-service",
+    "version": 17,
+    "successful": true
+  },
+  "backup": {
+    "scope": "private all-database dump after writer drain",
+    "bytes": 4665283,
+    "sha256": "10fecbf84f996cda882e3bbd717ce72d035624f71200bc05cfe5327f98d69a45"
+  },
+  "permissions": {
+    "canonicalLearnerScopes": 14,
+    "learnerRoleBindingsAdded": 14,
+    "activeLearnerAccountsChecked": 9,
+    "missingScopes": 0,
+    "nonLearnerAndInactiveAccountsUnchanged": true,
+    "trustedEventScopesExcluded": [
+      "gamification.trusted-event.write",
+      "social.trusted-event.write"
+    ]
+  },
+  "isolation": {
+    "readinessPassed": 19,
+    "originalNonIamServicesRestored": 14,
+    "sharedDockerFingerprintUnchanged": true,
+    "hostPublishedPorts": 0
+  },
+  "verification": {
+    "privateDryRun": "passed",
+    "postRestoreVerify": "passed",
+    "focusedHelperTests": "13/13"
+  },
+  "completedAt": "2026-09-24T18:58:33.515Z",
+  "scopeNote": "Permission migration and private-stack health only; no positive login or learner business journey is claimed."
+}

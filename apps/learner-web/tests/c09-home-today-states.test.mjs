@@ -17,6 +17,14 @@ test('learner-web home renders the full state ladder without faking empty succes
   assert.match(page, /state="empty"/)
 })
 
+test('learner-web home shows one actionable error when the daily read returns 503', async () => {
+  const page = await read('apps/learner-web/src/pages/HomePage.vue')
+  const hero = page.split('<article v-if="!heroUnavailable" class="home-hero">')[1]?.split('</article>')[0] ?? ''
+  assert.match(page, /<article v-if="!heroUnavailable" class="home-hero">/)
+  assert.doesNotMatch(hero, /暂不可用|请稍后重试/)
+  assert.match(page, /v-else-if="store\.lastError"[\s\S]*?state="error"[\s\S]*?action-label="重试"/)
+})
+
 test('learner-web today renders loading/offline/error/empty without faking empty success', async () => {
   const page = await read('apps/learner-web/src/pages/TodayPage.vue')
   assert.match(page, /store\.todayStatus === 'loading'/)

@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import type { B10PerformanceLevel, B10Status } from '../../domain/b10'
 import { useLearningUi } from '../../platform/learning-ui'
+import { userFacingError } from '../../platform/user-facing-error'
 
 const props = withDefaults(defineProps<{
   status: B10Status
@@ -14,17 +15,15 @@ const props = withDefaults(defineProps<{
 const emit = defineEmits<{ retry: []; sync: []; performance: [level: B10PerformanceLevel] }>()
 const ui = useLearningUi()
 const title = computed(() => ui.t(`b10.state.${props.status}`))
-const description = computed(() => props.message ?? (props.cached ? ui.t('b10.state.cached') : props.status === 'offline' ? ui.t('b10.state.queued') : ui.t('b10.state.ready')))
+const description = computed(() => userFacingError(props.message, props.cached ? ui.t('b10.state.cached') : ui.t(`b10.state.${props.status}`)))
 const retryable = computed(() => ['offline', 'error', 'forbidden', 'stale'].includes(props.status))
 </script>
 
 <template>
   <section class="state-panel" :class="`state-panel--${status}`" role="status" aria-live="polite">
     <div class="state-panel__copy">
-      <span class="state-panel__module">{{ moduleLabel }}</span>
       <strong>{{ title }}</strong>
       <span>{{ description }}</span>
-      <small>{{ ui.t('b10.common.ui') }}: {{ ui.locale }} · {{ ui.t('b10.common.content') }}: {{ ui.contentLocale }}</small>
     </div>
     <div class="state-panel__actions">
       <span v-if="queueCount" class="state-panel__queue">{{ ui.t('b10.state.queued') }} · {{ queueCount }}</span>

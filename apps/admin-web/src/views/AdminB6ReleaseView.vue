@@ -25,6 +25,15 @@ const checklists = ref({
   performanceLevels: 0,
 });
 
+function evidenceStatus(value: string): string {
+  return {
+    READY_FOR_TEST_STAGE: "待实际验收",
+    PENDING_TEST_STAGE: "待实际验收",
+    READY: "代码就绪",
+    PENDING: "待检查",
+  }[value] ?? value;
+}
+
 async function load(): Promise<void> {
   loading.value = true;
   try {
@@ -109,7 +118,7 @@ onMounted(() => {
       ><el-col :span="6"
         ><el-card shadow="never" class="metric-card"
           ><span>目标平台</span><strong>{{ matrix.targets.length }}</strong
-          ><small>{{ matrix.codeLayerStatus }}</small></el-card
+          ><small>{{ evidenceStatus(matrix.codeLayerStatus) }}</small></el-card
         ></el-col
       ><el-col :span="6"
         ><el-card shadow="never" class="metric-card"
@@ -134,10 +143,10 @@ onMounted(() => {
         ><div class="card-header">
           <span>平台构建矩阵</span
           ><el-tag type="info" effect="plain">{{
-            matrix.realDeviceEvidenceStatus
+            evidenceStatus(matrix.realDeviceEvidenceStatus)
           }}</el-tag>
         </div></template
-      ><el-table :data="matrix.targets" stripe
+      ><el-table :data="matrix.targets" empty-text="暂无平台记录" stripe
         ><el-table-column
           prop="platformCode"
           label="平台"
@@ -155,7 +164,7 @@ onMounted(() => {
             ><el-tag
               :type="scope.row.buildStatus === 'READY' ? 'success' : 'warning'"
               effect="plain"
-              >{{ scope.row.buildStatus }}</el-tag
+              >{{ evidenceStatus(scope.row.buildStatus) }}</el-tag
             ></template
           ></el-table-column
         ><el-table-column

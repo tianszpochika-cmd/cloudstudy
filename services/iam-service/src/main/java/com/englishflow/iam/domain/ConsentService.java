@@ -2,6 +2,7 @@ package com.englishflow.iam.domain;
 
 import java.time.Clock;
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -281,6 +282,36 @@ public final class ConsentService {
             throw new IamPolicyException(IamDecisionCode.POLICY_UNAVAILABLE,
                     "iam.consent.policy_unavailable");
         }
+    }
+
+    /**
+     * Returns the complete, currently published required-document set for a capability.
+     * The canonical type set is authoritative: a partially published control plane cannot
+     * silently shrink the requirements, and unrelated optional/capability-specific documents
+     * are not pulled into this capability's gate.
+     */
+    public List<ConsentPolicyDescriptor> publishedRequiredPoliciesFor(String capability) {
+        Set<ConsentType> canonical = CANONICAL_REQUIRED_TYPES.get(capability);
+        if (canonical == null || canonical.isEmpty()) {
+            throw new IamPolicyException(IamDecisionCode.POLICY_UNAVAILABLE,
+                    "iam.consent.policy_unavailable");
+        }
+        Instant now = Instant.now(clock);
+        return canonical.stream().sorted()
+                .map(type -> {
+                    ConsentPolicyDescriptor descriptor = policyDescriptor(type);
+                    if (!descriptor.requiredFor(capability) || !descriptor.isPublishedAt(now)) {
+                        throw new IamPolicyException(IamDecisionCode.POLICY_UNAVAILABLE,
+                                "iam.consent.version_unavailable");
+                    }
+                    return descriptor;
+                })
+                .toList();
+    }
+
+    /** Fail before credential writes when a learning-required document is absent. */
+    public void requirePublishedPoliciesForAuthentication() {
+        publishedRequiredPoliciesFor("LEARNING");
     }
 
     public boolean policyEvaluationEnabled() {

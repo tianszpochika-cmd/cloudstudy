@@ -4,17 +4,20 @@ FROM ${NODE_IMAGE} AS build
 
 ARG NUXT_PUBLIC_SITE_URL
 ARG NUXT_PUBLIC_LEARNER_WEB_URL
+ARG NUXT_PUBLIC_MOBILE_H5_URL
 ARG NUXT_PUBLIC_GATEWAY_BASE_URL
 ARG NUXT_PUBLIC_LINK_ORIGINS
 WORKDIR /workspace
 RUN corepack enable && corepack prepare pnpm@10.19.0 --activate
 COPY . .
-RUN pnpm install --frozen-lockfile \
-  && NUXT_PUBLIC_SITE_URL="${NUXT_PUBLIC_SITE_URL}" \
-     NUXT_PUBLIC_LEARNER_WEB_URL="${NUXT_PUBLIC_LEARNER_WEB_URL}" \
-     NUXT_PUBLIC_GATEWAY_BASE_URL="${NUXT_PUBLIC_GATEWAY_BASE_URL}" \
-     NUXT_PUBLIC_LINK_ORIGINS="${NUXT_PUBLIC_LINK_ORIGINS}" \
-     pnpm --filter @englishflow/official-site build
+RUN --mount=type=cache,id=cloudstudy-pnpm-store,target=/pnpm/store,sharing=locked \
+  pnpm install --frozen-lockfile --filter "@englishflow/official-site..." --store-dir /pnpm/store
+RUN NUXT_PUBLIC_SITE_URL="${NUXT_PUBLIC_SITE_URL}" \
+    NUXT_PUBLIC_LEARNER_WEB_URL="${NUXT_PUBLIC_LEARNER_WEB_URL}" \
+    NUXT_PUBLIC_MOBILE_H5_URL="${NUXT_PUBLIC_MOBILE_H5_URL}" \
+    NUXT_PUBLIC_GATEWAY_BASE_URL="${NUXT_PUBLIC_GATEWAY_BASE_URL}" \
+    NUXT_PUBLIC_LINK_ORIGINS="${NUXT_PUBLIC_LINK_ORIGINS}" \
+    pnpm --filter @englishflow/official-site build
 
 FROM ${NODE_IMAGE}
 WORKDIR /app

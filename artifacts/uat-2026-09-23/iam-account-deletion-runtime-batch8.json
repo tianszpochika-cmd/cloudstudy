@@ -1,0 +1,252 @@
+{
+  "scope": "Local Gateway and IAM owner deletion safety and historical self-service boundary",
+  "capturedAt": "2026-09-23T09:09:21.026Z",
+  "result": "PASS",
+  "passed": 29,
+  "total": 29,
+  "checks": [
+    {
+      "name": "Gateway healthy",
+      "observed": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "IAM healthy",
+      "observed": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "synthetic account registration",
+      "observed": 201,
+      "expected": 201,
+      "ok": true
+    },
+    {
+      "name": "synthetic adult Gate",
+      "observed": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "TERMS consent",
+      "observed": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "PRIVACY consent",
+      "observed": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "ADULT_LEARNING consent",
+      "observed": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "synthetic account login",
+      "observed": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "no preexisting synthetic deletion request",
+      "observed": 0,
+      "expected": 0,
+      "ok": true
+    },
+    {
+      "name": "anonymous deletion request denied",
+      "observed": 401,
+      "expected": 401,
+      "ok": true
+    },
+    {
+      "name": "authenticated deletion request fails closed",
+      "observed": {
+        "status": 503,
+        "code": null
+      },
+      "expected": 503,
+      "ok": true
+    },
+    {
+      "name": "retry remains unavailable",
+      "observed": {
+        "status": 503,
+        "code": null
+      },
+      "expected": 503,
+      "ok": true
+    },
+    {
+      "name": "no deletion row or account/session mutation",
+      "observed": {
+        "deletionRequests": 0,
+        "activeAccounts": 1,
+        "activeSessions": 2
+      },
+      "expected": {
+        "deletionRequests": 0,
+        "activeAccounts": 1,
+        "activeSessions": 2
+      },
+      "ok": true
+    },
+    {
+      "name": "synthetic peer registration",
+      "observed": 201,
+      "expected": 201,
+      "ok": true
+    },
+    {
+      "name": "synthetic peer adult Gate",
+      "observed": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "peer TERMS consent",
+      "observed": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "peer PRIVACY consent",
+      "observed": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "peer ADULT_LEARNING consent",
+      "observed": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "synthetic peer login",
+      "observed": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "future historical row belongs only to synthetic owner",
+      "observed": "1:REQUESTED:1",
+      "expected": "1:REQUESTED:1",
+      "ok": true
+    },
+    {
+      "name": "historical own status read",
+      "observed": {
+        "status": 200,
+        "deletionStatus": "REQUESTED"
+      },
+      "expected": {
+        "status": 200,
+        "deletionStatus": "REQUESTED"
+      },
+      "ok": true
+    },
+    {
+      "name": "historical cross-subject status denied",
+      "observed": 404,
+      "expected": "403 or 404",
+      "ok": true
+    },
+    {
+      "name": "historical cross-subject cancel denied",
+      "observed": 404,
+      "expected": "403 or 404",
+      "ok": true
+    },
+    {
+      "name": "historical cancel requires idempotency key",
+      "observed": 400,
+      "expected": 400,
+      "ok": true
+    },
+    {
+      "name": "historical own cancel",
+      "observed": {
+        "status": 200,
+        "deletionStatus": "CANCELLED"
+      },
+      "expected": {
+        "status": 200,
+        "deletionStatus": "CANCELLED"
+      },
+      "ok": true
+    },
+    {
+      "name": "historical own cancel repeat",
+      "observed": {
+        "status": 200,
+        "deletionStatus": "CANCELLED"
+      },
+      "expected": {
+        "status": 200,
+        "deletionStatus": "CANCELLED"
+      },
+      "ok": true
+    },
+    {
+      "name": "historical own status after cancel",
+      "observed": {
+        "status": 200,
+        "deletionStatus": "CANCELLED"
+      },
+      "expected": {
+        "status": 200,
+        "deletionStatus": "CANCELLED"
+      },
+      "ok": true
+    },
+    {
+      "name": "historical owner row persisted cancelled",
+      "observed": "CANCELLED:1",
+      "expected": "CANCELLED:1",
+      "ok": true
+    },
+    {
+      "name": "historical cancel leaves account and sessions intact",
+      "observed": {
+        "deletionRequests": 1,
+        "activeAccounts": 1,
+        "activeSessions": 2
+      },
+      "expected": {
+        "deletionRequests": 1,
+        "activeAccounts": 1,
+        "activeSessions": 2
+      },
+      "ok": true
+    }
+  ],
+  "cleanup": {
+    "accounts": [
+      {
+        "account": "owner",
+        "accountRows": 0,
+        "keyRows": 0,
+        "principalRows": 0,
+        "historyRows": 0,
+        "verified": true
+      },
+      {
+        "account": "peer",
+        "accountRows": 0,
+        "keyRows": 0,
+        "principalRows": 0,
+        "historyRows": 0,
+        "verified": true
+      }
+    ],
+    "historicalRows": 0
+  },
+  "note": "The reauthentication reference is synthetic and historical cancel does not verify it. This does not establish a complete deletion flow.",
+  "failure": null
+}

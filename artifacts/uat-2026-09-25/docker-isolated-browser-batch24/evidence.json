@@ -1,0 +1,614 @@
+{
+  "batch": 24,
+  "mode": "private HTTPS, browser UI, synthetic auth failures intercepted before network",
+  "results": [
+    {
+      "name": "official-home",
+      "width": 1280,
+      "url": "https://clyunedev.com/",
+      "finalUrl": "https://clyunedev.com/",
+      "status": 200,
+      "layout": {
+        "title": "语学星 · 让英语，回到你的日常",
+        "lang": "zh-CN",
+        "theme": "light",
+        "viewportWidth": 1280,
+        "scrollWidth": 1280,
+        "horizontalOverflow": false,
+        "brokenImages": 0,
+        "visibleTextLength": 1195
+      },
+      "brandVisible": true,
+      "gatewayCors": {
+        "status": 200,
+        "allowOrigin": null
+      },
+      "accountUnavailableVisible": true,
+      "heroExampleMarker": true,
+      "directOfficialAuthLinks": 0,
+      "pageErrors": [],
+      "failedRequests": []
+    },
+    {
+      "name": "official-home",
+      "width": 390,
+      "url": "https://clyunedev.com/",
+      "finalUrl": "https://clyunedev.com/",
+      "status": 200,
+      "layout": {
+        "title": "语学星 · 让英语，回到你的日常",
+        "lang": "zh-CN",
+        "theme": "light",
+        "viewportWidth": 390,
+        "scrollWidth": 390,
+        "horizontalOverflow": false,
+        "brokenImages": 0,
+        "visibleTextLength": 1112
+      },
+      "brandVisible": true,
+      "gatewayCors": {
+        "status": 200,
+        "allowOrigin": null
+      },
+      "accountUnavailableVisible": true,
+      "heroExampleMarker": true,
+      "directOfficialAuthLinks": 0,
+      "pageErrors": [],
+      "failedRequests": []
+    },
+    {
+      "name": "official-start",
+      "width": 1280,
+      "url": "https://clyunedev.com/start",
+      "finalUrl": "https://clyunedev.com/start",
+      "status": 200,
+      "layout": {
+        "title": "开放情况 · 语学星",
+        "lang": "zh-CN",
+        "theme": "light",
+        "viewportWidth": 1280,
+        "scrollWidth": 1280,
+        "horizontalOverflow": false,
+        "brokenImages": 0,
+        "visibleTextLength": 467
+      },
+      "brandVisible": true,
+      "gatewayCors": {
+        "status": 200,
+        "allowOrigin": null
+      },
+      "accountUnavailableVisible": true,
+      "heroExampleMarker": null,
+      "directOfficialAuthLinks": 0,
+      "pageErrors": [],
+      "failedRequests": []
+    },
+    {
+      "name": "official-start",
+      "width": 390,
+      "url": "https://clyunedev.com/start",
+      "finalUrl": "https://clyunedev.com/start",
+      "status": 200,
+      "layout": {
+        "title": "开放情况 · 语学星",
+        "lang": "zh-CN",
+        "theme": "light",
+        "viewportWidth": 390,
+        "scrollWidth": 390,
+        "horizontalOverflow": false,
+        "brokenImages": 0,
+        "visibleTextLength": 415
+      },
+      "brandVisible": true,
+      "gatewayCors": {
+        "status": 200,
+        "allowOrigin": null
+      },
+      "accountUnavailableVisible": true,
+      "heroExampleMarker": null,
+      "directOfficialAuthLinks": 0,
+      "pageErrors": [],
+      "failedRequests": []
+    },
+    {
+      "name": "official-courses",
+      "width": 1280,
+      "url": "https://clyunedev.com/courses",
+      "finalUrl": "https://clyunedev.com/courses",
+      "status": 200,
+      "layout": {
+        "title": "学习内容 · 语学星",
+        "lang": "zh-CN",
+        "theme": "light",
+        "viewportWidth": 1280,
+        "scrollWidth": 1280,
+        "horizontalOverflow": false,
+        "brokenImages": 0,
+        "visibleTextLength": 858
+      },
+      "brandVisible": true,
+      "gatewayCors": {
+        "status": 200,
+        "allowOrigin": null
+      },
+      "accountUnavailableVisible": true,
+      "heroExampleMarker": null,
+      "directOfficialAuthLinks": 0,
+      "pageErrors": [],
+      "failedRequests": []
+    },
+    {
+      "name": "official-courses",
+      "width": 390,
+      "url": "https://clyunedev.com/courses",
+      "finalUrl": "https://clyunedev.com/courses",
+      "status": 200,
+      "layout": {
+        "title": "学习内容 · 语学星",
+        "lang": "zh-CN",
+        "theme": "light",
+        "viewportWidth": 390,
+        "scrollWidth": 390,
+        "horizontalOverflow": false,
+        "brokenImages": 0,
+        "visibleTextLength": 805
+      },
+      "brandVisible": true,
+      "gatewayCors": {
+        "status": 200,
+        "allowOrigin": null
+      },
+      "accountUnavailableVisible": true,
+      "heroExampleMarker": null,
+      "directOfficialAuthLinks": 0,
+      "pageErrors": [],
+      "failedRequests": []
+    },
+    {
+      "name": "official-help",
+      "width": 390,
+      "url": "https://clyunedev.com/help",
+      "finalUrl": "https://clyunedev.com/help",
+      "status": 200,
+      "layout": {
+        "title": "常见问题 · 语学星",
+        "lang": "zh-CN",
+        "theme": "light",
+        "viewportWidth": 390,
+        "scrollWidth": 390,
+        "horizontalOverflow": false,
+        "brokenImages": 0,
+        "visibleTextLength": 344
+      },
+      "brandVisible": true,
+      "gatewayCors": {
+        "status": 200,
+        "allowOrigin": null
+      },
+      "accountUnavailableVisible": true,
+      "heroExampleMarker": null,
+      "directOfficialAuthLinks": 0,
+      "pageErrors": [],
+      "failedRequests": []
+    },
+    {
+      "name": "official-status",
+      "width": 390,
+      "url": "https://clyunedev.com/status",
+      "finalUrl": "https://clyunedev.com/status",
+      "status": 200,
+      "layout": {
+        "title": "服务状态 · 语学星",
+        "lang": "zh-CN",
+        "theme": "light",
+        "viewportWidth": 390,
+        "scrollWidth": 390,
+        "horizontalOverflow": false,
+        "brokenImages": 0,
+        "visibleTextLength": 282
+      },
+      "brandVisible": true,
+      "gatewayCors": {
+        "status": 200,
+        "allowOrigin": null
+      },
+      "accountUnavailableVisible": true,
+      "heroExampleMarker": null,
+      "directOfficialAuthLinks": 0,
+      "pageErrors": [],
+      "failedRequests": []
+    },
+    {
+      "name": "learner-login",
+      "width": 1280,
+      "url": "https://learn.clyunedev.com/login",
+      "finalUrl": "https://learn.clyunedev.com/login",
+      "status": 200,
+      "layout": {
+        "title": "语学星",
+        "lang": "zh-CN",
+        "theme": "light",
+        "viewportWidth": 1280,
+        "scrollWidth": 1280,
+        "horizontalOverflow": false,
+        "brokenImages": 0,
+        "visibleTextLength": 241
+      },
+      "brandVisible": true,
+      "gatewayCors": {
+        "status": 200,
+        "allowOrigin": null
+      },
+      "accountUnavailableVisible": null,
+      "heroExampleMarker": null,
+      "directOfficialAuthLinks": null,
+      "pageErrors": [],
+      "failedRequests": []
+    },
+    {
+      "name": "learner-login",
+      "width": 390,
+      "url": "https://learn.clyunedev.com/login",
+      "finalUrl": "https://learn.clyunedev.com/login",
+      "status": 200,
+      "layout": {
+        "title": "语学星",
+        "lang": "zh-CN",
+        "theme": "light",
+        "viewportWidth": 390,
+        "scrollWidth": 390,
+        "horizontalOverflow": false,
+        "brokenImages": 0,
+        "visibleTextLength": 118
+      },
+      "brandVisible": true,
+      "gatewayCors": {
+        "status": 200,
+        "allowOrigin": null
+      },
+      "accountUnavailableVisible": null,
+      "heroExampleMarker": null,
+      "directOfficialAuthLinks": null,
+      "pageErrors": [],
+      "failedRequests": []
+    },
+    {
+      "name": "learner-register-en-dark",
+      "width": 1280,
+      "url": "https://learn.clyunedev.com/register?uiLocale=en-US&theme=dark",
+      "finalUrl": "https://learn.clyunedev.com/register?uiLocale=en-US&theme=dark",
+      "status": 200,
+      "layout": {
+        "title": "语学星",
+        "lang": "en-US",
+        "theme": "dark",
+        "viewportWidth": 1280,
+        "scrollWidth": 1280,
+        "horizontalOverflow": false,
+        "brokenImages": 0,
+        "visibleTextLength": 603
+      },
+      "brandVisible": true,
+      "gatewayCors": {
+        "status": 200,
+        "allowOrigin": null
+      },
+      "accountUnavailableVisible": null,
+      "heroExampleMarker": null,
+      "directOfficialAuthLinks": null,
+      "pageErrors": [],
+      "failedRequests": []
+    },
+    {
+      "name": "learner-register-en-dark",
+      "width": 390,
+      "url": "https://learn.clyunedev.com/register?uiLocale=en-US&theme=dark",
+      "finalUrl": "https://learn.clyunedev.com/register?uiLocale=en-US&theme=dark",
+      "status": 200,
+      "layout": {
+        "title": "语学星",
+        "lang": "en-US",
+        "theme": "dark",
+        "viewportWidth": 390,
+        "scrollWidth": 390,
+        "horizontalOverflow": false,
+        "brokenImages": 0,
+        "visibleTextLength": 421
+      },
+      "brandVisible": false,
+      "gatewayCors": {
+        "status": 200,
+        "allowOrigin": null
+      },
+      "accountUnavailableVisible": null,
+      "heroExampleMarker": null,
+      "directOfficialAuthLinks": null,
+      "pageErrors": [],
+      "failedRequests": []
+    },
+    {
+      "name": "learner-reset-en-dark",
+      "width": 1280,
+      "url": "https://learn.clyunedev.com/reset-password?uiLocale=en-US&theme=dark",
+      "finalUrl": "https://learn.clyunedev.com/reset-password?uiLocale=en-US&theme=dark",
+      "status": 200,
+      "layout": {
+        "title": "语学星",
+        "lang": "zh-CN",
+        "theme": "light",
+        "viewportWidth": 1280,
+        "scrollWidth": 1280,
+        "horizontalOverflow": false,
+        "brokenImages": 0,
+        "visibleTextLength": 223
+      },
+      "brandVisible": true,
+      "gatewayCors": {
+        "status": 200,
+        "allowOrigin": null
+      },
+      "accountUnavailableVisible": null,
+      "heroExampleMarker": null,
+      "directOfficialAuthLinks": null,
+      "pageErrors": [],
+      "failedRequests": []
+    },
+    {
+      "name": "admin-login",
+      "width": 1280,
+      "url": "https://admin.clyunedev.com/login",
+      "finalUrl": "https://admin.clyunedev.com/login",
+      "status": 200,
+      "layout": {
+        "title": "教研与运营工作台 · 语学星",
+        "lang": "zh-CN",
+        "theme": "light",
+        "viewportWidth": 1280,
+        "scrollWidth": 1280,
+        "horizontalOverflow": false,
+        "brokenImages": 0,
+        "visibleTextLength": 280
+      },
+      "brandVisible": true,
+      "gatewayCors": {
+        "status": 200,
+        "allowOrigin": null
+      },
+      "accountUnavailableVisible": null,
+      "heroExampleMarker": null,
+      "directOfficialAuthLinks": null,
+      "pageErrors": [],
+      "failedRequests": []
+    },
+    {
+      "name": "admin-login",
+      "width": 390,
+      "url": "https://admin.clyunedev.com/login",
+      "finalUrl": "https://admin.clyunedev.com/login",
+      "status": 200,
+      "layout": {
+        "title": "教研与运营工作台 · 语学星",
+        "lang": "zh-CN",
+        "theme": "light",
+        "viewportWidth": 390,
+        "scrollWidth": 390,
+        "horizontalOverflow": false,
+        "brokenImages": 0,
+        "visibleTextLength": 135
+      },
+      "brandVisible": true,
+      "gatewayCors": {
+        "status": 200,
+        "allowOrigin": null
+      },
+      "accountUnavailableVisible": null,
+      "heroExampleMarker": null,
+      "directOfficialAuthLinks": null,
+      "pageErrors": [],
+      "failedRequests": []
+    },
+    {
+      "name": "mobile-login",
+      "width": 390,
+      "url": "https://mobile.clyunedev.com/#/pages/login/login",
+      "finalUrl": "https://mobile.clyunedev.com/#/pages/login/login",
+      "status": 200,
+      "layout": {
+        "title": "登录",
+        "lang": "zh-CN",
+        "theme": "light",
+        "viewportWidth": 390,
+        "scrollWidth": 390,
+        "horizontalOverflow": false,
+        "brokenImages": 0,
+        "visibleTextLength": 106
+      },
+      "brandVisible": true,
+      "gatewayCors": {
+        "status": 200,
+        "allowOrigin": null
+      },
+      "accountUnavailableVisible": null,
+      "heroExampleMarker": null,
+      "directOfficialAuthLinks": null,
+      "pageErrors": [],
+      "failedRequests": []
+    },
+    {
+      "name": "mobile-register-en-dark",
+      "width": 390,
+      "url": "https://mobile.clyunedev.com/#/pages/register/register?uiLocale=en-US&theme=dark",
+      "finalUrl": "https://mobile.clyunedev.com/#/pages/register/register?uiLocale=en-US&theme=dark",
+      "status": 200,
+      "layout": {
+        "title": "注册",
+        "lang": "en-US",
+        "theme": "dark",
+        "viewportWidth": 390,
+        "scrollWidth": 390,
+        "horizontalOverflow": false,
+        "brokenImages": 0,
+        "visibleTextLength": 347
+      },
+      "brandVisible": true,
+      "gatewayCors": {
+        "status": 200,
+        "allowOrigin": null
+      },
+      "accountUnavailableVisible": null,
+      "heroExampleMarker": null,
+      "directOfficialAuthLinks": null,
+      "pageErrors": [],
+      "failedRequests": []
+    },
+    {
+      "name": "mobile-reset-en-dark",
+      "width": 390,
+      "url": "https://mobile.clyunedev.com/#/pages/reset-password/reset-password?uiLocale=en-US&theme=dark",
+      "finalUrl": "https://mobile.clyunedev.com/#/pages/reset-password/reset-password?uiLocale=en-US&theme=dark",
+      "status": 200,
+      "layout": {
+        "title": "找回密码",
+        "lang": "zh-CN",
+        "theme": "light",
+        "viewportWidth": 390,
+        "scrollWidth": 390,
+        "horizontalOverflow": false,
+        "brokenImages": 0,
+        "visibleTextLength": 130
+      },
+      "brandVisible": true,
+      "gatewayCors": {
+        "status": 200,
+        "allowOrigin": null
+      },
+      "accountUnavailableVisible": null,
+      "heroExampleMarker": null,
+      "directOfficialAuthLinks": null,
+      "pageErrors": [],
+      "failedRequests": []
+    },
+    {
+      "name": "official-start-to-example-1280",
+      "width": 1280,
+      "status": 200,
+      "finalUrl": "https://clyunedev.com/#practice-example",
+      "statusCopyVisible": true,
+      "sampleHref": "/#practice-example",
+      "reachedPublicExample": true,
+      "layout": {
+        "title": "语学星 · 让英语，回到你的日常",
+        "lang": "zh-CN",
+        "theme": "light",
+        "viewportWidth": 1280,
+        "scrollWidth": 1280,
+        "horizontalOverflow": false,
+        "brokenImages": 0,
+        "visibleTextLength": 1195
+      },
+      "pageErrors": [],
+      "failedRequests": []
+    },
+    {
+      "name": "official-start-to-example-390",
+      "width": 390,
+      "status": 200,
+      "finalUrl": "https://clyunedev.com/#practice-example",
+      "statusCopyVisible": true,
+      "sampleHref": "/#practice-example",
+      "reachedPublicExample": true,
+      "layout": {
+        "title": "语学星 · 让英语，回到你的日常",
+        "lang": "zh-CN",
+        "theme": "light",
+        "viewportWidth": 390,
+        "scrollWidth": 390,
+        "horizontalOverflow": false,
+        "brokenImages": 0,
+        "visibleTextLength": 1112
+      },
+      "pageErrors": [],
+      "failedRequests": []
+    },
+    {
+      "name": "learner-login-unavailable-copy",
+      "width": 1280,
+      "status": 200,
+      "intercepted": 1,
+      "conciseKnownFailure": true,
+      "alertText": "!\nSign-in not completed\n\nAccount access is temporarily unavailable. Check service announcements.",
+      "layout": {
+        "title": "语学星",
+        "lang": "en-US",
+        "theme": "dark",
+        "viewportWidth": 1280,
+        "scrollWidth": 1280,
+        "horizontalOverflow": false,
+        "brokenImages": 0,
+        "visibleTextLength": 600
+      },
+      "pageErrors": [],
+      "failedRequests": []
+    },
+    {
+      "name": "learner-register-unavailable-copy",
+      "width": 1280,
+      "status": 200,
+      "intercepted": 1,
+      "conciseKnownFailure": true,
+      "alertText": "!\nRegistration not completed\n\nRegistration is not available yet. Check service announcements.",
+      "layout": {
+        "title": "语学星",
+        "lang": "en-US",
+        "theme": "dark",
+        "viewportWidth": 1280,
+        "scrollWidth": 1280,
+        "horizontalOverflow": false,
+        "brokenImages": 0,
+        "visibleTextLength": 615
+      },
+      "pageErrors": [],
+      "failedRequests": []
+    },
+    {
+      "name": "mobile-login-unavailable-copy",
+      "width": 390,
+      "status": 200,
+      "intercepted": 1,
+      "conciseKnownFailure": true,
+      "alertText": "Account access is temporarily unavailable. Check service announcements.",
+      "layout": {
+        "title": "登录",
+        "lang": "en-US",
+        "theme": "dark",
+        "viewportWidth": 390,
+        "scrollWidth": 390,
+        "horizontalOverflow": false,
+        "brokenImages": 0,
+        "visibleTextLength": 279
+      },
+      "pageErrors": [],
+      "failedRequests": []
+    },
+    {
+      "name": "mobile-register-unavailable-copy",
+      "width": 390,
+      "status": 200,
+      "intercepted": 1,
+      "conciseKnownFailure": true,
+      "alertText": "Registration is not available yet. Check service announcements.",
+      "layout": {
+        "title": "注册",
+        "lang": "en-US",
+        "theme": "dark",
+        "viewportWidth": 390,
+        "scrollWidth": 390,
+        "horizontalOverflow": false,
+        "brokenImages": 0,
+        "visibleTextLength": 362
+      },
+      "pageErrors": [],
+      "failedRequests": []
+    }
+  ]
+}

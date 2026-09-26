@@ -15,3 +15,5 @@ storage
 logs
 tmp
 evidence
+artifacts/
+apps/learner-web/audit-evidence/

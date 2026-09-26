@@ -10,10 +10,12 @@ WORKDIR /workspace
 
 COPY pom.xml ./pom.xml
 COPY ${SERVICE_PATH}/pom.xml ${SERVICE_PATH}/pom.xml
-RUN mvn -f ${SERVICE_PATH}/pom.xml -DskipTests dependency:go-offline
+RUN --mount=type=cache,id=cloudstudy-maven25,target=/root/.m2/repository,sharing=locked \
+  mvn -f ${SERVICE_PATH}/pom.xml -DskipTests dependency:go-offline
 
 COPY ${SERVICE_PATH} ${SERVICE_PATH}
-RUN mvn -f ${SERVICE_PATH}/pom.xml -DskipTests package \
+RUN --mount=type=cache,id=cloudstudy-maven25,target=/root/.m2/repository,sharing=locked \
+  mvn -f ${SERVICE_PATH}/pom.xml -DskipTests package \
   && find ${SERVICE_PATH}/target -maxdepth 1 -type f -name '*.jar' ! -name '*.original' -print -quit \
      | xargs -r -I{} cp '{}' /workspace/application.jar \
   && test -s /workspace/application.jar

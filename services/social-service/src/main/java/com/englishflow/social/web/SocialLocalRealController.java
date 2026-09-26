@@ -5,6 +5,7 @@ import com.englishflow.social.security.SocialAuthenticationToken;
 import com.englishflow.social.security.SocialPep;
 import com.englishflow.social.security.SocialPrincipal;
 import jakarta.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.sql.Timestamp;
@@ -16,11 +17,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.regex.Pattern;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,6 +36,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Durable local-real social boundary. It implements the browser-facing room and focus slice
@@ -39,11 +46,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @Profile("local-real")
 @RequestMapping({"/api/v1/social", "/internal/v1/social"})
-public final class SocialLocalRealController {
+public class SocialLocalRealController {
 
     private static final Duration LEASE = Duration.ofSeconds(90);
+    private static final Pattern SAFE_REPORT_ID = Pattern.compile("[A-Za-z0-9._:-]{1,160}");
+    private static final Set<String> REPORT_REASON_CODES = Set.of(
+            "SPAM", "HARASSMENT", "SENSITIVE_CONTENT", "IMPERSONATION", "OTHER");
+    private static final ObjectMapper REPORT_JSON = new ObjectMapper();
     private final JdbcTemplate jdbc;
     private final SocialPep pep = new SocialPep();
+    @Value("${social.moderation.cursor-key:}")
+    private String moderationCursorKey;
 
     public SocialLocalRealController(JdbcTemplate jdbc) {
         this.jdbc = jdbc;
@@ -303,21 +316,298 @@ public final class SocialLocalRealController {
     }
 
     @PostMapping("/rooms/{roomId}/reports")
+    @Transactional
     public Map<String, Object> report(@PathVariable String roomId, @RequestBody Map<String, Object> body,
+            @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey,
             HttpServletRequest request) {
-        SocialPrincipal principal = require("social.report.create");
-        int seat = ((Number) body.getOrDefault("targetSeatIndex", 1)).intValue();
-        String target = jdbc.queryForObject("SELECT subject_id FROM soc_seat_lease WHERE tenant_id = ? AND room_id = ? AND seat_index = ?",
-                String.class, principal.tenantId(), roomId, seat);
-        String reportId = "report-" + UUID.randomUUID();
-        String reason = String.valueOf(body.getOrDefault("reasonCode", "OTHER"));
-        jdbc.update("INSERT INTO soc_report(report_id, tenant_id, room_id, reporter_subject_id, target_subject_id, target_seat_index, reason_code, state, client_event_id, created_at, updated_at) "
-                        + "VALUES (?, ?, ?, ?, ?, ?, ?, 'RECEIVED', ?, UTC_TIMESTAMP(3), UTC_TIMESTAMP(3))",
-                reportId, principal.tenantId(), roomId, principal.subjectId(), target, seat, reason,
-                String.valueOf(body.getOrDefault("clientEventId", reportId)));
-        return envelope(map("report", map("reportId", reportId, "roomId", roomId, "targetSeatIndex", seat,
-                "reasonCode", reason, "status", "RECEIVED", "reviewMode", "MANUAL", "createdAt", Instant.now().toString())), request);
+        // IAM grants this scope only after the verified adult and consent gates. Keep this exact
+        // learner permission here; the legacy moderation permission must never authorize reports.
+        SocialPrincipal principal = require("social.report.create.self");
+        validateRoomId(roomId);
+        ReportCommand command = reportCommand(body, idempotencyKey);
+        String operationScope = "social.report:" + roomId;
+        String keyHash = sha256(idempotencyKey);
+        String fingerprint = reportFingerprint(roomId, command);
+
+        Map<String, Object> priorKey = findReportIdempotency(principal, operationScope, keyHash, false);
+        if (priorKey != null) {
+            return envelope(map("report", replayReceipt(principal, priorKey, fingerprint)), request);
+        }
+
+        // The key reservation and report fact are committed together by @Transactional, so a crash
+        // cannot leave a report without its replay record.
+        try {
+            jdbc.update("INSERT INTO soc_idempotency_record(tenant_id, subject_id, operation_scope, idempotency_key, "
+                            + "request_fingerprint, response_status, response_json, created_at, expires_at) "
+                            + "VALUES (?, ?, ?, ?, ?, 200, '{\"pending\":true}', UTC_TIMESTAMP(3), "
+                            + "DATE_ADD(UTC_TIMESTAMP(3), INTERVAL 365 DAY))",
+                    principal.tenantId(), principal.subjectId(), operationScope, keyHash, fingerprint);
+        } catch (DuplicateKeyException concurrentReplay) {
+            Map<String, Object> winner = findReportIdempotency(principal, operationScope, keyHash, true);
+            if (winner == null) {
+                throw SocialException.conflict("SOC_REPORT_IDEMPOTENCY_RACE",
+                        "report request could not be safely replayed", true);
+            }
+            return envelope(map("report", replayReceipt(principal, winner, fingerprint)), request);
+        }
+
+        requireActiveReportMember(principal, roomId);
+        String targetSubject = visibleReportTarget(principal, roomId, command.targetSeatIndex());
+        if (targetSubject.equals(principal.subjectId())) {
+            throw SocialException.invalid("SOC_REPORT_TARGET_INVALID", "target must be another room member");
+        }
+
+        Map<String, Object> receipt;
+        Map<String, Object> existingEvent = findReportClientEvent(principal, command.clientEventId(), false);
+        if (existingEvent != null) {
+            if (!sameReportIntent(existingEvent, roomId, targetSubject, command)) {
+                throw SocialException.conflict("SOC_REPORT_CLIENT_EVENT_REUSED",
+                        "client event id was already used for another report", false);
+            }
+            receipt = reportReceipt(principal.tenantId(), String.valueOf(existingEvent.get("reportId")), true);
+        } else {
+            Map<String, Object> existingFingerprint = findReportFingerprint(principal, roomId, targetSubject,
+                    command.reasonCode(), false);
+            if (existingFingerprint != null) {
+                // soc_report deliberately dedupes target+reason. Preserve the original event identity
+                // when a token refresh causes the client to retry with a new key.
+                receipt = reportReceipt(principal.tenantId(), String.valueOf(existingFingerprint.get("reportId")), true);
+            } else {
+                String reportId = "report-" + UUID.randomUUID();
+                try {
+                    jdbc.update("INSERT INTO soc_report(report_id, tenant_id, room_id, reporter_subject_id, target_subject_id, "
+                                    + "target_seat_index, reason_code, state, client_event_id, created_at, updated_at) "
+                                    + "VALUES (?, ?, ?, ?, ?, ?, ?, 'RECEIVED', ?, UTC_TIMESTAMP(3), UTC_TIMESTAMP(3))",
+                            reportId, principal.tenantId(), roomId, principal.subjectId(), targetSubject,
+                            command.targetSeatIndex(), command.reasonCode(), command.clientEventId());
+                    receipt = reportReceipt(principal.tenantId(), reportId, false);
+                } catch (DuplicateKeyException uniqueReportConstraint) {
+                    // Current reads (FOR UPDATE) see committed unique-key winners under MySQL REPEATABLE READ.
+                    Map<String, Object> eventOwner = findReportClientEvent(principal,
+                            command.clientEventId(), true);
+                    if (eventOwner != null) {
+                        if (sameReportIntent(eventOwner, roomId, targetSubject, command)) {
+                            receipt = reportReceipt(principal.tenantId(),
+                                    String.valueOf(eventOwner.get("reportId")), true);
+                        } else {
+                            throw SocialException.conflict("SOC_REPORT_CLIENT_EVENT_REUSED",
+                                    "client event id was already used for another report", false);
+                        }
+                    } else {
+                        Map<String, Object> winner = findReportFingerprint(principal, roomId, targetSubject,
+                                command.reasonCode(), true);
+                        if (winner != null) {
+                            receipt = reportReceipt(principal.tenantId(), String.valueOf(winner.get("reportId")), true);
+                        } else {
+                            throw SocialException.conflict("SOC_REPORT_UNIQUE_CONFLICT",
+                                    "report could not be recorded safely; refresh before retrying", true);
+                        }
+                    }
+                }
+            }
+        }
+
+        String responseJson = reportJson(receipt);
+        jdbc.update("UPDATE soc_idempotency_record SET response_status = 200, response_json = ? "
+                        + "WHERE tenant_id = ? AND subject_id = ? AND operation_scope = ? AND idempotency_key = ?",
+                responseJson, principal.tenantId(), principal.subjectId(), operationScope, keyHash);
+        return envelope(map("report", receipt), request);
     }
+
+    private void requireActiveReportMember(SocialPrincipal principal, String roomId) {
+        try {
+            jdbc.queryForObject("SELECT m.id FROM soc_room_member m JOIN soc_study_room r "
+                            + "ON r.tenant_id = m.tenant_id AND r.room_id = m.room_id "
+                            + "WHERE m.tenant_id = ? AND m.room_id = ? AND m.subject_id = ? "
+                            + "AND m.state = 'ACTIVE' LIMIT 1 FOR UPDATE",
+                    Long.class, principal.tenantId(), roomId, principal.subjectId());
+        } catch (EmptyResultDataAccessException ignored) {
+            throw SocialException.forbidden("SOC_ROOM_MEMBER_REQUIRED", "active room membership is required");
+        }
+    }
+
+    private String visibleReportTarget(SocialPrincipal principal, String roomId, int seatIndex) {
+        try {
+            Map<String, Object> target = jdbc.queryForMap("SELECT s.subject_id AS subjectId "
+                            + "FROM soc_seat_lease s JOIN soc_room_member m ON m.tenant_id = s.tenant_id "
+                            + "AND m.room_id = s.room_id AND m.subject_id = s.subject_id "
+                            + "JOIN soc_study_room r ON r.tenant_id = s.tenant_id AND r.room_id = s.room_id "
+                            + "WHERE s.tenant_id = ? AND s.room_id = ? AND s.seat_index = ? "
+                            + "AND s.subject_id IS NOT NULL AND s.state IN ('OCCUPIED','DISCONNECTED') "
+                            + "AND s.lease_expires_at > UTC_TIMESTAMP(3) AND m.state = 'ACTIVE' "
+                            + "AND m.room_visibility <> 'HIDDEN' LIMIT 1 FOR UPDATE",
+                    principal.tenantId(), roomId, seatIndex);
+            return String.valueOf(target.get("subjectId"));
+        } catch (EmptyResultDataAccessException ignored) {
+            throw SocialException.forbidden("SOC_REPORT_TARGET_NOT_VISIBLE",
+                    "target is not an active visible room member");
+        }
+    }
+
+    private Map<String, Object> findReportIdempotency(SocialPrincipal principal, String operationScope,
+            String keyHash, boolean lockCurrentRead) {
+        try {
+            return jdbc.queryForMap("SELECT request_fingerprint AS requestFingerprint, response_json AS responseJson "
+                            + "FROM soc_idempotency_record WHERE tenant_id = ? AND subject_id = ? "
+                            + "AND operation_scope = ? AND idempotency_key = ?"
+                            + (lockCurrentRead ? " FOR UPDATE" : ""),
+                    principal.tenantId(), principal.subjectId(), operationScope, keyHash);
+        } catch (EmptyResultDataAccessException ignored) {
+            return null;
+        }
+    }
+
+    private Map<String, Object> replayReceipt(SocialPrincipal principal, Map<String, Object> idempotency,
+            String fingerprint) {
+        if (!fingerprint.equals(String.valueOf(idempotency.get("requestFingerprint")))) {
+            throw SocialException.conflict("IDEMPOTENCY_KEY_REUSED",
+                    "idempotency key was reused with another request", false);
+        }
+        String storedJson = String.valueOf(idempotency.get("responseJson"));
+        Map<String, Object> stored = reportFromJson(storedJson);
+        if (Boolean.TRUE.equals(stored.get("pending"))) {
+            throw new SocialException("SOC_REPORT_REPLAY_PENDING", "report receipt is not ready yet", 503, true);
+        }
+        Object rawReportId = stored.get("reportId");
+        if (!(rawReportId instanceof String reportId) || reportId.isBlank()) {
+            throw new SocialException("SOC_REPORT_RECEIPT_UNAVAILABLE", "report receipt is unavailable; refresh before retrying", 503, true);
+        }
+        // Require the durable owner fact to still exist before replaying the exact original receipt.
+        // The JSON cache alone is never proof that a report was committed.
+        try {
+            reportReceipt(principal.tenantId(), reportId, true);
+        } catch (EmptyResultDataAccessException ignored) {
+            throw new SocialException("SOC_REPORT_RECEIPT_UNAVAILABLE",
+                    "report receipt is unavailable; refresh before retrying", 503, true);
+        }
+        LinkedHashMap<String, Object> replay = new LinkedHashMap<>(stored);
+        replay.put("idempotentReplay", true);
+        return replay;
+    }
+
+    private Map<String, Object> findReportFingerprint(SocialPrincipal principal, String roomId,
+            String targetSubject, String reasonCode, boolean lockCurrentRead) {
+        try {
+            return jdbc.queryForMap("SELECT report_id AS reportId FROM soc_report WHERE tenant_id = ? "
+                            + "AND room_id = ? AND reporter_subject_id = ? AND target_subject_id = ? "
+                            + "AND reason_code = ?" + (lockCurrentRead ? " FOR UPDATE" : ""),
+                    principal.tenantId(), roomId, principal.subjectId(), targetSubject, reasonCode);
+        } catch (EmptyResultDataAccessException ignored) {
+            return null;
+        }
+    }
+
+    private Map<String, Object> findReportClientEvent(SocialPrincipal principal, String clientEventId,
+            boolean lockCurrentRead) {
+        try {
+            return jdbc.queryForMap("SELECT report_id AS reportId, room_id AS roomId, "
+                            + "target_subject_id AS targetSubjectId, target_seat_index AS targetSeatIndex, "
+                            + "reason_code AS reasonCode FROM soc_report WHERE tenant_id = ? "
+                            + "AND reporter_subject_id = ? AND client_event_id = ?"
+                            + (lockCurrentRead ? " FOR UPDATE" : ""),
+                    principal.tenantId(), principal.subjectId(), clientEventId);
+        } catch (EmptyResultDataAccessException ignored) {
+            return null;
+        }
+    }
+
+    private static boolean sameReportIntent(Map<String, Object> prior, String roomId, String targetSubject,
+            ReportCommand command) {
+        return roomId.equals(prior.get("roomId")) && targetSubject.equals(prior.get("targetSubjectId"))
+                && command.reasonCode().equals(prior.get("reasonCode"))
+                && prior.get("targetSeatIndex") instanceof Number priorSeat
+                && command.targetSeatIndex() == priorSeat.intValue();
+    }
+
+    private Map<String, Object> reportReceipt(String tenantId, String reportId, boolean replay) {
+        Map<String, Object> row = jdbc.queryForMap("SELECT report_id AS reportId, room_id AS roomId, "
+                        + "target_seat_index AS targetSeatIndex, reason_code AS reasonCode, state AS status, "
+                        + "client_event_id AS clientEventId, "
+                        + "DATE_FORMAT(created_at, '%Y-%m-%dT%H:%i:%s.%fZ') AS createdAt, "
+                        + "DATE_FORMAT(updated_at, '%Y-%m-%dT%H:%i:%s.%fZ') AS updatedAt "
+                        + "FROM soc_report WHERE tenant_id = ? AND report_id = ? FOR UPDATE",
+                tenantId, reportId);
+        return map("reportId", row.get("reportId"), "roomId", row.get("roomId"),
+                "targetSeatIndex", ((Number) row.get("targetSeatIndex")).intValue(),
+                "reasonCode", row.get("reasonCode"), "status", row.get("status"),
+                "reviewMode", "MANUAL", "createdAt", row.get("createdAt"),
+                "updatedAt", row.get("updatedAt"), "clientEventId", row.get("clientEventId"),
+                "idempotentReplay", replay);
+    }
+
+    private static ReportCommand reportCommand(Map<String, Object> body, String idempotencyKey) {
+        if (idempotencyKey == null || idempotencyKey.length() < 8 || idempotencyKey.length() > 192
+                || idempotencyKey.chars().anyMatch(Character::isISOControl)) {
+            throw SocialException.invalid("IDEMPOTENCY_KEY_REQUIRED", "Idempotency-Key must contain 8 to 192 visible characters");
+        }
+        if (body == null || !body.keySet().equals(Set.of("targetSeatIndex", "reasonCode", "clientEventId"))) {
+            throw SocialException.invalid("REQUEST_INVALID", "report request fields are invalid");
+        }
+        Object rawSeat = body.get("targetSeatIndex");
+        if (!(rawSeat instanceof Number number)) {
+            throw SocialException.invalid("REQUEST_INVALID", "targetSeatIndex must be a positive integer");
+        }
+        int seat;
+        try {
+            seat = new BigDecimal(number.toString()).intValueExact();
+        } catch (ArithmeticException | NumberFormatException invalid) {
+            throw SocialException.invalid("REQUEST_INVALID", "targetSeatIndex must be a positive integer");
+        }
+        if (seat < 1 || seat > 65535) {
+            throw SocialException.invalid("REQUEST_INVALID", "targetSeatIndex is outside the supported range");
+        }
+        Object rawReason = body.get("reasonCode");
+        if (!(rawReason instanceof String reason) || !REPORT_REASON_CODES.contains(reason)) {
+            throw SocialException.invalid("SOC_REPORT_REASON_INVALID", "reasonCode is not allowlisted");
+        }
+        Object rawEventId = body.get("clientEventId");
+        if (!(rawEventId instanceof String clientEventId) || clientEventId.length() > 160
+                || !SAFE_REPORT_ID.matcher(clientEventId).matches()) {
+            throw SocialException.invalid("REQUEST_INVALID", "clientEventId is invalid");
+        }
+        if (clientEventId.length() < 8 || !clientEventId.equals(idempotencyKey)) {
+            throw SocialException.invalid("IDEMPOTENCY_KEY_BODY_MISMATCH",
+                    "clientEventId must match Idempotency-Key and fit the supported length");
+        }
+        return new ReportCommand(seat, reason, clientEventId);
+    }
+
+    private static void validateRoomId(String roomId) {
+        if (roomId == null || roomId.length() > 64 || !SAFE_REPORT_ID.matcher(roomId).matches()) {
+            throw SocialException.invalid("REQUEST_INVALID", "room id is invalid");
+        }
+    }
+
+    private static String reportFingerprint(String roomId, ReportCommand command) {
+        return sha256(String.join("\n", roomId, Integer.toString(command.targetSeatIndex()),
+                command.reasonCode(), command.clientEventId()));
+    }
+
+    private static String reportJson(Map<String, Object> receipt) {
+        return REPORT_JSON.writeValueAsString(receipt);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Map<String, Object> reportFromJson(String json) {
+        Object value = REPORT_JSON.readValue(json, Map.class);
+        if (!(value instanceof Map<?, ?> fields)) {
+            throw new IllegalStateException("stored report receipt is invalid");
+        }
+        LinkedHashMap<String, Object> result = new LinkedHashMap<>();
+        fields.forEach((key, fieldValue) -> result.put(String.valueOf(key), fieldValue));
+        return result;
+    }
+
+    private static String sha256(String value) {
+        try {
+            return java.util.HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256")
+                    .digest(value.getBytes(StandardCharsets.UTF_8)));
+        } catch (java.security.NoSuchAlgorithmException impossible) {
+            throw new IllegalStateException("SHA-256 is unavailable", impossible);
+        }
+    }
+
+    private record ReportCommand(int targetSeatIndex, String reasonCode, String clientEventId) {}
 
     @GetMapping("/reports/{reportId}")
     public Map<String, Object> getReport(@PathVariable String reportId, HttpServletRequest request) {
@@ -325,25 +615,57 @@ public final class SocialLocalRealController {
         return envelope(map("report", jdbc.queryForMap("SELECT report_id, room_id, target_seat_index, reason_code, state, created_at, updated_at FROM soc_report WHERE tenant_id = ? AND report_id = ?", principal.tenantId(), reportId)), request);
     }
 
-    /** B12 admin queue.  Only safe opaque references leave the social owner schema. */
+    /** B12 admin queue. Only safe opaque references leave the social owner schema. */
     @GetMapping("/admin/moderation/reports")
-    public Map<String, Object> adminModerationReports(
+    public ResponseEntity<Map<String, Object>> adminModerationReports(
             @RequestParam(defaultValue = "OPEN") String status,
+            @RequestParam(defaultValue = "20") int pageSize,
+            @RequestParam(required = false) String cursor,
             HttpServletRequest request) {
-        SocialPrincipal principal = requireAdmin(Set.of("admin.moderation.read", "social.moderation.review"));
+        SocialPrincipal principal = requireAdmin(Set.of("admin.moderation.read"));
         String statePredicate = switch (status) {
             case "REVIEWING" -> "state = 'TRIAGED'";
             case "RESOLVED" -> "state IN ('ACTIONED', 'CLOSED')";
             case "DISMISSED" -> "state = 'REJECTED'";
-            default -> "state IN ('RECEIVED', 'TRIAGED', 'APPEALED')";
+            case "OPEN" -> "state IN ('RECEIVED', 'TRIAGED', 'APPEALED')";
+            default -> throw SocialException.invalid("MODERATION_STATUS_INVALID", "invalid report status");
         };
-        List<Map<String, Object>> items = jdbc.query(
-                "SELECT report_id, room_id, reporter_subject_id, target_subject_id, target_seat_index, "
+        ModerationCursorCodec codec = new ModerationCursorCodec(moderationCursorKey);
+        if (!codec.configured()) {
+            throw new SocialException("MODERATION_CURSOR_UNAVAILABLE", "report queue is temporarily unavailable", 503, true);
+        }
+        int size = Math.max(1, Math.min(pageSize, 100));
+        Long lastId = cursor == null ? null : codec.decode(cursor, principal.tenantId(), status);
+        List<Object> arguments = new ArrayList<>();
+        arguments.add(principal.tenantId());
+        if (lastId != null) arguments.add(lastId);
+        arguments.add(size + 1);
+        List<ModerationQueueRow> rows = jdbc.query(
+                "SELECT id, report_id, room_id, reporter_subject_id, target_subject_id, target_seat_index, "
                         + "reason_code, state, client_event_id, created_at, updated_at "
                         + "FROM soc_report WHERE tenant_id = ? AND " + statePredicate
-                        + " ORDER BY created_at DESC LIMIT 100",
-                (rs, row) -> adminReportRow(rs), principal.tenantId());
-        return envelope(map("items", items, "status", status, "source", "mysql"), request);
+                        + (lastId == null ? "" : " AND id < ?")
+                        + " ORDER BY id DESC LIMIT ?",
+                (rs, row) -> {
+                    Map<String, Object> view = new LinkedHashMap<>(adminReportRow(rs));
+                    view.remove("clientEventId");
+                    view.put("roomRef", codec.reference(principal.tenantId(), "room", rs.getString("room_id")));
+                    view.put("targetRef", codec.reference(principal.tenantId(), "subject", rs.getString("target_subject_id")));
+                    return new ModerationQueueRow(rs.getLong("id"), view);
+                }, arguments.toArray());
+        boolean hasMore = rows.size() > size;
+        List<ModerationQueueRow> visible = rows.stream().limit(size).toList();
+        String nextCursor = hasMore ? codec.encode(principal.tenantId(), status, visible.getLast().id()) : null;
+        String requestId = safeRequestId(request.getHeader("X-Request-Id"));
+        String traceId = safeTraceId(request.getHeader("X-Trace-Id"));
+        Map<String, Object> meta = map("requestId", requestId, "traceId", traceId,
+                "apiVersion", "v1", "schemaVersion", "1.0.0", "serverTime", Instant.now().toString(),
+                "hasMore", hasMore, "pageSize", size, "nextCursor", nextCursor);
+        return ResponseEntity.ok()
+                .header("X-Request-Id", requestId)
+                .header("X-Trace-Id", traceId)
+                .header("X-API-Version", "v1")
+                .body(map("data", map("items", visible.stream().map(ModerationQueueRow::view).toList()), "meta", meta));
     }
 
     @PostMapping("/admin/moderation/reports/{reportId}/commands")
@@ -498,6 +820,18 @@ public final class SocialLocalRealController {
         } catch (java.security.NoSuchAlgorithmException impossible) {
             throw new IllegalStateException("SHA-256 is unavailable", impossible);
         }
+    }
+
+    private record ModerationQueueRow(long id, Map<String, Object> view) {}
+
+    static String safeRequestId(String value) {
+        return value != null && value.matches("[A-Za-z][A-Za-z0-9._-]{7,127}")
+                ? value : "req_social_" + UUID.randomUUID();
+    }
+
+    static String safeTraceId(String value) {
+        return value != null && value.matches("[a-f0-9]{32}")
+                ? value : UUID.randomUUID().toString().replace("-", "");
     }
 
     private static String nullableText(Object value) {

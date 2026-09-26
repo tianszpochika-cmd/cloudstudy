@@ -7,6 +7,7 @@ import com.englishflow.analytics.domain.AnalyticsEventEnvelope;
 import com.englishflow.analytics.domain.AnalyticsIngestResult;
 import com.englishflow.analytics.domain.AnalyticsQuery;
 import com.englishflow.analytics.domain.AnalyticsQueryResult;
+import com.englishflow.analytics.domain.AnalyticsQueryState;
 import com.englishflow.analytics.domain.MetricProjection;
 import com.englishflow.analytics.domain.RecomputeRequest;
 import com.englishflow.analytics.domain.RecomputeResult;
@@ -80,6 +81,14 @@ public final class AnalyticsController {
                 : splitMetricIds(metricId);
         AnalyticsQueryResult result = queryService.query(new AnalyticsQuery(
                 caller.tenant(), metricIds, start, end, blankToNull(metricVersion)));
+        if (result.state() == AnalyticsQueryState.ERROR) {
+            if (result.errorCode() == AnalyticsErrorCode.METRIC_VERSION_UNSUPPORTED) {
+                throw AnalyticsDomainException.rejected(AnalyticsErrorCode.METRIC_VERSION_UNSUPPORTED,
+                        "metric version is unsupported");
+            }
+            throw AnalyticsDomainException.transientFailure(AnalyticsErrorCode.PROJECTION_READ_FAILED,
+                    "metric projection is temporarily unavailable");
+        }
         return envelope(queryView(result), request);
     }
 

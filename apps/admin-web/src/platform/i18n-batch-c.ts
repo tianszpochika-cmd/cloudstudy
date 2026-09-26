@@ -214,6 +214,6 @@ export const batchCEn: MessageTree = {
     missingCredential: 'The auth service did not return an access credential.',
   },
   main: {
-    routerRestoreFailed: '[Yuxuexing Admin] Failed to restore the initial route.',
+    routerRestoreFailed: '[语学星管理端] Failed to restore the initial route.',
   },
 }

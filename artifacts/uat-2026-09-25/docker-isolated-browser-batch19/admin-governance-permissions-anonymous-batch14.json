@@ -1,0 +1,66 @@
+{
+  "at": "2026-09-24T21:26:55.005Z",
+  "mode": "private HTTPS + containerized Chromium; fresh anonymous contexts",
+  "results": [
+    {
+      "route": "/governance",
+      "width": 1280,
+      "httpStatus": 200,
+      "redirectedToLogin": true,
+      "protectedViewCount": 0,
+      "protectedRequests": [],
+      "layout": {
+        "scrollWidth": 1280,
+        "viewportWidth": 1280
+      },
+      "pageErrors": [],
+      "consoleErrors": [],
+      "screenshot": "admin-governance-anonymous-1280-batch14.png"
+    },
+    {
+      "route": "/governance",
+      "width": 390,
+      "httpStatus": 200,
+      "redirectedToLogin": true,
+      "protectedViewCount": 0,
+      "protectedRequests": [],
+      "layout": {
+        "scrollWidth": 390,
+        "viewportWidth": 390
+      },
+      "pageErrors": [],
+      "consoleErrors": [],
+      "screenshot": "admin-governance-anonymous-390-batch14.png"
+    },
+    {
+      "route": "/permissions",
+      "width": 1280,
+      "httpStatus": 200,
+      "redirectedToLogin": true,
+      "protectedViewCount": 0,
+      "protectedRequests": [],
+      "layout": {
+        "scrollWidth": 1280,
+        "viewportWidth": 1280
+      },
+      "pageErrors": [],
+      "consoleErrors": [],
+      "screenshot": "admin-permissions-anonymous-1280-batch14.png"
+    },
+    {
+      "route": "/permissions",
+      "width": 390,
+      "httpStatus": 200,
+      "redirectedToLogin": true,
+      "protectedViewCount": 0,
+      "protectedRequests": [],
+      "layout": {
+        "scrollWidth": 390,
+        "viewportWidth": 390
+      },
+      "pageErrors": [],
+      "consoleErrors": [],
+      "screenshot": "admin-permissions-anonymous-390-batch14.png"
+    }
+  ]
+}

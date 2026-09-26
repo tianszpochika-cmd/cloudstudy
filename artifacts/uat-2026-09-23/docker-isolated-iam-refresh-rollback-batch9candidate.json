@@ -1,0 +1,13 @@
+{
+  "at": "2026-09-23T10:38:42.705Z",
+  "project": "cloudstudy-uat-isolated-3c94b27160",
+  "test": "consentOutageAfterRefreshRotationRollsBackTokenAndIdempotencyClaim",
+  "privateNetwork": true,
+  "hostPorts": 0,
+  "summary": {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  }
+}

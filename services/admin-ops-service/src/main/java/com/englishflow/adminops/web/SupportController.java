@@ -1,10 +1,9 @@
 package com.englishflow.adminops.web;
 
 import com.englishflow.adminops.domain.AdminPrincipal;
-import com.englishflow.adminops.domain.ConfirmationChallenge;
+import com.englishflow.adminops.domain.AdminOpsException;
 import com.englishflow.adminops.security.AdminOpsAuthenticationToken;
 import com.englishflow.adminops.support.SupportAction;
-import com.englishflow.adminops.support.SupportTicketResult;
 import com.englishflow.adminops.support.SupportTicketService;
 import com.englishflow.adminops.support.SupportTicketView;
 import jakarta.servlet.http.HttpServletRequest;
@@ -37,9 +36,9 @@ public final class SupportController {
             @RequestBody B13SupportTicketCreateRequest body,
             @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey,
             HttpServletRequest request) {
-        SupportTicketResult result = service.create(
-                principal(), body.toDraft(), idempotencyKey, AdminOpsHttpSupport.traceId(request));
-        return AdminOpsHttpSupport.envelope(ticketResult(result), request);
+        // The legacy payload has only a hash of the learner's description. Accepting it would
+        // report success while support staff have no issue text to read or answer.
+        throw workflowUnavailable();
     }
 
     @GetMapping("/tickets")
@@ -65,13 +64,7 @@ public final class SupportController {
             @PathVariable String ticketId,
             @RequestBody SupportAction action,
             HttpServletRequest request) {
-        ConfirmationChallenge challenge = service.prepareTransition(principal(), ticketId, action);
-        return AdminOpsHttpSupport.envelope(Map.of(
-                "token", challenge.token(),
-                "decisionId", challenge.decisionId(),
-                "action", challenge.action(),
-                "resourceRef", challenge.resourceRef(),
-                "expiresAt", challenge.expiresAt().toString()), request);
+        throw workflowUnavailable();
     }
 
     @PostMapping("/tickets/{ticketId}/transitions")
@@ -81,10 +74,12 @@ public final class SupportController {
             @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey,
             @RequestHeader(value = "X-Confirmation-Token", required = false) String confirmationToken,
             HttpServletRequest request) {
-        SupportTicketResult result = service.transition(
-                principal(), ticketId, action, idempotencyKey, confirmationToken,
-                AdminOpsHttpSupport.traceId(request));
-        return AdminOpsHttpSupport.envelope(ticketResult(result), request);
+        throw workflowUnavailable();
+    }
+
+    private static AdminOpsException workflowUnavailable() {
+        return new AdminOpsException("SUPPORT_CONTENT_REFERENCE_UNAVAILABLE",
+                "verified support content references are not available", 503, false);
     }
 
     private static AdminPrincipal principal() {
@@ -95,14 +90,6 @@ public final class SupportController {
         return null;
     }
 
-    private static Map<String, Object> ticketResult(SupportTicketResult result) {
-        Map<String, Object> data = new LinkedHashMap<>();
-        data.put("ticket", ticketView(result.ticket()));
-        data.put("replayed", result.replayed());
-        data.put("auditId", result.auditId());
-        return data;
-    }
-
     private static Map<String, Object> ticketView(SupportTicketView ticket) {
         Map<String, Object> view = new LinkedHashMap<>();
         view.put("ticketId", ticket.ticketId());
@@ -110,8 +97,10 @@ public final class SupportController {
         view.put("state", ticket.state().name());
         view.put("priority", ticket.priority().name());
         view.put("slaDueAt", ticket.slaDueAt());
-        view.put("redactionVersion", "admin-ops.redacted.v1");
+        view.put("redactionVersion", "legacy.metadata.v1");
         view.put("slaState", ticket.slaStatus().name());
+        view.put("workflowVersion", "LEGACY_HASH_ONLY");
+        view.put("actionable", false);
         return view;
     }
 }

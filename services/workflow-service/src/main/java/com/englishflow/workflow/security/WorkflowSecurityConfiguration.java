@@ -1,13 +1,17 @@
 package com.englishflow.workflow.security;
 
+import jakarta.servlet.DispatcherType;
 import java.time.Duration;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.authorization.AuthorizationDecision;
+import org.springframework.security.authorization.AuthorizationManager;
 import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
 import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;
@@ -18,6 +22,10 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtTimestampValidator;
 import org.springframework.security.oauth2.jwt.JwtValidators;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+import org.springframework.security.web.access.intercept.RequestAuthorizationContext;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
@@ -26,8 +34,9 @@ import org.springframework.security.web.access.AccessDeniedHandler;
  * P1R decision 1A: the recovery console needs an authenticated boundary, and the
  * service previously had none — Spring Boot's default chain rejected every
  * Bearer call before any controller ran. This wires the IAM enveloped-JWKS
- * resource server like every other domain service: verified JWTs authenticate,
- * the two-person rule and tenant scoping stay in the domain layer.
+ * resource server. Admin permissions are enforced here from verified JWT
+ * claims and platform tenant at the HTTP boundary; the two-person rule remains
+ * in the domain layer.
  */
 @Configuration(proxyBeanMethods = false)
 public class WorkflowSecurityConfiguration {
@@ -49,6 +58,11 @@ public class WorkflowSecurityConfiguration {
 
     @Bean
     SecurityFilterChain workflowSecurityFilterChain(HttpSecurity http, JwtDecoder decoder) throws Exception {
+        JwtGrantedAuthoritiesConverter permissions = new JwtGrantedAuthoritiesConverter();
+        permissions.setAuthoritiesClaimName("permissions");
+        permissions.setAuthorityPrefix("PERM_");
+        JwtAuthenticationConverter principal = new JwtAuthenticationConverter();
+        principal.setJwtGrantedAuthoritiesConverter(permissions);
         AuthenticationEntryPoint entryPoint = (request, response, exception) -> {
             response.setStatus(401);
             response.setContentType("application/json");
@@ -65,14 +79,38 @@ public class WorkflowSecurityConfiguration {
                         .authenticationEntryPoint(entryPoint)
                         .accessDeniedHandler(deniedHandler))
                 .authorizeHttpRequests(auth -> auth
+                        // The original REQUEST has already passed this chain. Let Spring
+                        // render its 400/404/409 response instead of masking it as 403.
+                        .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
                         .requestMatchers("/actuator/**").permitAll()
-                        .requestMatchers("/internal/v1/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/internal/v1/workflow/recoveries")
+                            .access(platformPermission("admin.recovery.request"))
+                        .requestMatchers(HttpMethod.POST, "/internal/v1/workflow/recoveries/*/approve",
+                                "/internal/v1/workflow/recoveries/*/reject",
+                                "/internal/v1/workflow/recoveries/*/execute",
+                                "/internal/v1/workflow/sagas/*/compensate")
+                            .access(platformPermission("admin.recovery.command"))
+                        .requestMatchers(HttpMethod.GET, "/internal/v1/workflow/sagas/unfinished",
+                                "/internal/v1/workflow/sagas/*")
+                            .access(platformPermission("admin.recovery.read"))
+                        .requestMatchers(HttpMethod.POST, "/internal/v1/workflow/sagas")
+                            .access(platformPermission("workflow.saga.start"))
                         .anyRequest().denyAll())
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .authenticationEntryPoint(entryPoint)
                         .accessDeniedHandler(deniedHandler)
-                        .jwt(jwt -> jwt.decoder(decoder)));
+                        .jwt(jwt -> jwt.decoder(decoder).jwtAuthenticationConverter(principal)));
         return http.build();
+    }
+
+    private static AuthorizationManager<RequestAuthorizationContext> platformPermission(String permission) {
+        return (authentication, context) -> {
+            boolean allowed = authentication.get() instanceof JwtAuthenticationToken jwt
+                    && "platform".equals(jwt.getToken().getClaimAsString("tenant_id"))
+                    && jwt.getAuthorities().stream()
+                            .anyMatch(authority -> ("PERM_" + permission).equals(authority.getAuthority()));
+            return new AuthorizationDecision(allowed);
+        };
     }
 
     private static final class JwtAudienceValidator implements OAuth2TokenValidator<Jwt> {

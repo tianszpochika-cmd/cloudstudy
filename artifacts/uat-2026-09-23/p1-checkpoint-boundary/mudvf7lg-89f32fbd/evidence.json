@@ -1,0 +1,223 @@
+{
+  "scope": "Current local Gateway, assessment owner and learner browser checkpoint boundary",
+  "capturedAt": "2026-09-23T08:58:38.260Z",
+  "run": "mudvf7lg-89f32fbd",
+  "checks": [
+    {
+      "name": "18070-health",
+      "pass": true,
+      "observed": 200,
+      "expected": 200
+    },
+    {
+      "name": "18091-health",
+      "pass": true,
+      "observed": 200,
+      "expected": 200
+    },
+    {
+      "name": "a-registration",
+      "pass": true,
+      "observed": 201,
+      "expected": 201
+    },
+    {
+      "name": "b-registration",
+      "pass": true,
+      "observed": 201,
+      "expected": 201
+    },
+    {
+      "name": "a-adult-gate",
+      "pass": true,
+      "observed": 200,
+      "expected": 200
+    },
+    {
+      "name": "b-adult-gate",
+      "pass": true,
+      "observed": 200,
+      "expected": 200
+    },
+    {
+      "name": "a-terms-consent",
+      "pass": true,
+      "observed": 200,
+      "expected": 200
+    },
+    {
+      "name": "b-terms-consent",
+      "pass": true,
+      "observed": 200,
+      "expected": 200
+    },
+    {
+      "name": "a-privacy-consent",
+      "pass": true,
+      "observed": 200,
+      "expected": 200
+    },
+    {
+      "name": "b-privacy-consent",
+      "pass": true,
+      "observed": 200,
+      "expected": 200
+    },
+    {
+      "name": "a-adult_learning-consent",
+      "pass": true,
+      "observed": 200,
+      "expected": 200
+    },
+    {
+      "name": "b-adult_learning-consent",
+      "pass": true,
+      "observed": 200,
+      "expected": 200
+    },
+    {
+      "name": "a-login",
+      "pass": true,
+      "observed": 200,
+      "expected": 200
+    },
+    {
+      "name": "b-login",
+      "pass": true,
+      "observed": 200,
+      "expected": 200
+    },
+    {
+      "name": "canonical-placement-gateway",
+      "pass": true,
+      "observed": {
+        "status": 503,
+        "code": null
+      },
+      "expected": "503 source unavailable"
+    },
+    {
+      "name": "canonical-placement-retry-blocked",
+      "pass": true,
+      "observed": {
+        "status": 503,
+        "code": null
+      },
+      "expected": "503 before session creation"
+    },
+    {
+      "name": "canonical-placement-owner",
+      "pass": true,
+      "observed": {
+        "status": 503,
+        "code": null
+      },
+      "expected": "503 source unavailable"
+    },
+    {
+      "name": "historical-fixture-session",
+      "pass": true,
+      "observed": {
+        "status": 200,
+        "sessionTag": "d5f887ef2fcb"
+      },
+      "expected": "200 fixture session"
+    },
+    {
+      "name": "historical-session-same-key",
+      "pass": true,
+      "observed": {
+        "status": 200,
+        "sameId": true
+      },
+      "expected": "same session"
+    },
+    {
+      "name": "historical-session-recovery",
+      "pass": true,
+      "observed": {
+        "status": 200,
+        "sameId": true
+      },
+      "expected": "200 same session"
+    },
+    {
+      "name": "historical-session-cross-subject",
+      "pass": true,
+      "observed": {
+        "status": 404,
+        "code": null
+      },
+      "expected": "403 or 404"
+    },
+    {
+      "name": "canonical-checkpoint-gateway-missing",
+      "pass": true,
+      "observed": {
+        "status": 404,
+        "code": null
+      },
+      "expected": "unavailable; no checkpoint saved"
+    },
+    {
+      "name": "canonical-checkpoint-owner-missing",
+      "pass": true,
+      "observed": {
+        "status": 404,
+        "code": null
+      },
+      "expected": "no owner implementation"
+    },
+    {
+      "name": "historical-session-different-body-observation",
+      "pass": true,
+      "observed": {
+        "status": 409,
+        "sameId": false
+      },
+      "expected": "record current behavior"
+    },
+    {
+      "name": "historical-missing-content",
+      "pass": true,
+      "observed": {
+        "status": 410,
+        "code": null
+      },
+      "expected": "410 or 503; no fabricated assessment"
+    },
+    {
+      "name": "browser-assessment-visible",
+      "pass": true,
+      "observed": {
+        "path": "/assessment",
+        "legacyPractice": true,
+        "unavailable": false
+      },
+      "expected": "/assessment current state"
+    }
+  ],
+  "browser": {
+    "path": "/assessment",
+    "legacyPractice": true,
+    "unavailable": false,
+    "browserErrors": [],
+    "screenshot": "learner-assessment.png"
+  },
+  "cleanup": [
+    {
+      "tag": "a",
+      "principalTag": "cfc08e7201c0",
+      "remaining": "0:0:0:0:1",
+      "verified": true
+    },
+    {
+      "tag": "b",
+      "principalTag": "0f1859899a7e",
+      "remaining": "0:0:0:0:1",
+      "verified": true
+    }
+  ],
+  "note": "Canonical session checkpoint and ten-item placement require live content source and an owner implementation.",
+  "result": "PARTIAL_BLOCKED"
+}

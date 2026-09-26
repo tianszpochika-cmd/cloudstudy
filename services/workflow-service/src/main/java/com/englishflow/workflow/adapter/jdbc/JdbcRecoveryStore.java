@@ -67,6 +67,7 @@ public class JdbcRecoveryStore implements ManualRecoveryService.RecoveryStore {
                 SELECT recovery_id, subject_type, subject_id, action, reason, status, requested_by, approved_by
                   FROM workflow_service.manual_recovery_request
                  WHERE recovery_id = ?
+                 FOR UPDATE
                 """, (resultSet, index) -> new ManualRecoveryService.StoredRecovery(
                 ManualRecoveryRequest.rehydrated(resultSet.getString("recovery_id"),
                         resultSet.getString("requested_by"),

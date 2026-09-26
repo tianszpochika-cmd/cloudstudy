@@ -27,7 +27,6 @@ export interface B4FocusSession { sessionId: string; roomId: string; status: str
 export interface B4GalaxyNode { nodeCode: string; status: string; progress: number; requiredProgress: number; progressPercent: number }
 export interface B4Galaxy { enabled: boolean; totalXp: number; nodes: B4GalaxyNode[]; trajectory: Array<{ sourceEventId: string | null; updatedAt: string | null }>; ruleVersion: string | null }
 export interface B4Notification { messageId: string; title: string; body: string; read: boolean; category: string | null; createdAt: string | null }
-export interface B4NotificationPreferences { roomInteractions: boolean; focusReminders: boolean; system: boolean; doNotDisturb: boolean; version: number }
 export interface B4RewardChest { chestGrantId: string; chestType: string; kind: string; status: string; probabilityVersion: string | null; auditId: string | null; tierCode: string | null; itemCode: string | null; duplicateConverted: boolean; shardAmount: number; freeOnly: boolean; createdAt: string | null }
 export interface B4ChestProbabilityTier { tierCode: string; weightBps: number; itemProbabilityMode: string }
 export interface B4ChestProbability { chestGrantId: string; chestType: string; probabilityVersion: string | null; algorithmVersion: string | null; tiers: B4ChestProbabilityTier[]; totalWeightBps: number; probabilitySnapshotHash: string | null; pityEnabled: boolean }

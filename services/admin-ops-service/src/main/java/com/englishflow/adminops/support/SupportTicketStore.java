@@ -12,5 +12,6 @@ public interface SupportTicketStore {
 
     Optional<SupportTicketRecord> find(String tenantId, String ticketId);
 
-    void update(SupportTicketRecord ticket);
+    /** Compare-and-swap prevents two operators from overwriting the same ticket version. */
+    void update(SupportTicketRecord ticket, long expectedVersion);
 }

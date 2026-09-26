@@ -23,6 +23,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpHeaders;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.web.server.MockServerWebExchange;
 import org.springframework.security.oauth2.jwt.NimbusReactiveJwtDecoder;
@@ -107,6 +108,8 @@ class CanonicalRoutePolicyRouteLocatorIntegrationTest {
     @BeforeEach
     void setUp() {
         client = WebTestClient.bindToApplicationContext(applicationContext)
+                .configureClient()
+                .baseUrl("http://127.0.0.1:18070")
                 .build();
     }
 
@@ -236,6 +239,38 @@ class CanonicalRoutePolicyRouteLocatorIntegrationTest {
     }
 
     @Test
+    void offlinePackageReadPreflightAllowsMobileCredentialsButSyncWritesRemainWithheld() {
+        String mobileOrigin = "http://127.0.0.1:18183";
+        client.options()
+                .uri("/api/v1/sync/offline-packages?limit=20")
+                .header(HttpHeaders.ORIGIN, mobileOrigin)
+                .header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET")
+                .header(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS, "Authorization,Content-Type,X-Device-Id")
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().valueEquals(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, mobileOrigin)
+                .expectHeader().valueEquals(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true")
+                .expectHeader().value(HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS,
+                        value -> assertTrue(value.contains("Authorization")));
+
+        client.get()
+                .uri("/api/v1/sync/offline-packages?limit=20")
+                .header(HttpHeaders.ORIGIN, mobileOrigin)
+                .exchange()
+                .expectStatus().isUnauthorized()
+                .expectHeader().valueEquals(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, mobileOrigin)
+                .expectHeader().valueEquals(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
+
+        client.options()
+                .uri("/api/v1/sync/offline-packages/package-1/authorize")
+                .header(HttpHeaders.ORIGIN, mobileOrigin)
+                .header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "POST")
+                .header(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS, "Authorization,Idempotency-Key")
+                .exchange()
+                .expectStatus().isForbidden();
+    }
+
+    @Test
     void pathProjectionUsesOnlyCurrentOwnerControllerMappingsAndRejectsCrossOwnerRules() throws IOException {
         Path repository = repositoryRoot();
         for (GatewayRouteExecutionPolicy.RouteBinding binding : routeExecutionPolicy.routeBindings()) {
@@ -256,6 +291,8 @@ class CanonicalRoutePolicyRouteLocatorIntegrationTest {
                 "/api/v1/admin/ops/commerce/orders", "/internal/v1/admin-ops/commerce/orders");
         assertProjected("notifications-domain", "preferences", HttpMethod.GET,
                 "/api/v1/notifications/preferences", "/internal/v1/notifications/preferences");
+        assertProjected("sync-offline-packages-read", "list", HttpMethod.GET,
+                "/api/v1/sync/offline-packages", "/internal/v1/sync/offline-packages");
         assertProjected("support-domain", "tickets", HttpMethod.POST,
                 "/api/v1/support/tickets", "/internal/v1/admin-ops/support/tickets");
         assertProjected("learning-domain", "stream-today", HttpMethod.GET,
@@ -270,6 +307,7 @@ class CanonicalRoutePolicyRouteLocatorIntegrationTest {
 
         assertUnavailable(HttpMethod.POST, "/api/v1/grammar/practice/attempts", "grammar-domain");
         assertUnavailable(HttpMethod.POST, "/api/v1/sync/changes", "sync-domain");
+        assertUnavailable(HttpMethod.POST, "/api/v1/sync/offline-packages/package-1/authorize", "sync-domain");
         assertUnavailable(HttpMethod.GET, "/api/v1/admin/recovery/tasks", "admin-recovery");
         assertUnavailable(HttpMethod.POST, "/api/v1/messages/message-1/read", "messages-domain");
         assertUnavailable(HttpMethod.POST, "/api/v1/social/rooms/room-1/disconnect", "social-domain");

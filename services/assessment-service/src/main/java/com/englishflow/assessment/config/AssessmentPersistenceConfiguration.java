@@ -1,12 +1,14 @@
 package com.englishflow.assessment.config;
 
 import com.englishflow.assessment.adapter.content.UnavailableContentSnapshotPort;
+import com.englishflow.assessment.adapter.content.UnavailableP1PlacementSourcePort;
 import com.englishflow.assessment.adapter.jdbc.JdbcAssessmentOutbox;
 import com.englishflow.assessment.adapter.jdbc.JdbcAssessmentStatePort;
 import com.englishflow.assessment.application.AssessmentCommandService;
 import com.englishflow.assessment.port.AssessmentOutboxPort;
 import com.englishflow.assessment.port.AssessmentStatePort;
 import com.englishflow.assessment.port.ContentSnapshotPort;
+import com.englishflow.assessment.port.P1PlacementSourcePort;
 import org.flywaydb.core.Flyway;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -89,6 +91,12 @@ public class AssessmentPersistenceConfiguration {
     @ConditionalOnMissingBean(ContentSnapshotPort.class)
     ContentSnapshotPort unavailableContentSnapshotPort() {
         return new UnavailableContentSnapshotPort();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(P1PlacementSourcePort.class)
+    P1PlacementSourcePort unavailableP1PlacementSourcePort() {
+        return new UnavailableP1PlacementSourcePort();
     }
 
     @Bean

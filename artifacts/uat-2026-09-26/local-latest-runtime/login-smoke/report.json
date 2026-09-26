@@ -1,0 +1,155 @@
+{
+  "generatedAt": "2026-09-25T17:42:31.299Z",
+  "scope": "Local browser smoke only. No positive authentication or business-flow acceptance claimed.",
+  "pages": [
+    {
+      "name": "learner-login",
+      "requestedUrl": "http://127.0.0.1:18180/login",
+      "navigationStatus": 200,
+      "navigationError": null,
+      "initial": {
+        "title": "语学星",
+        "url": "http://127.0.0.1:18180/login",
+        "h1": [
+          "登录后，马上开始学习"
+        ],
+        "buttons": [
+          "登录并继续"
+        ],
+        "bodyText": "语学星 A LITTLE, EVERY DAY 让英语， 回到你的日常。 记几个词，听一段对话。 一点一点，学得更从容。 ✦ ✧ little by little grow. ✦ LEARN A LITTLE. EVERY DAY. 语学星 初期免费开放 · 面向 18 岁以上成人与大学生 登录后，马上开始学习 使用语学星账号登录；首次进入只需完成一个简短设置。 账号 密码 免费创建账号 忘记密码 登录并继续 登录完成后，你只需要确认年龄、同意必要说明并选择学习目标。"
+      },
+      "loginAttempt": {
+        "submitted": true,
+        "response": {
+          "status": 401,
+          "url": "http://127.0.0.1:18070/api/v1/auth/login"
+        },
+        "visibleAlert": "!\n登录未完成\n\n账号或密码不正确，请重试。",
+        "finalUrl": "http://127.0.0.1:18180/login"
+      },
+      "pageErrors": [],
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+      ],
+      "failedRequests": []
+    },
+    {
+      "name": "admin-login",
+      "requestedUrl": "http://127.0.0.1:18181/login",
+      "navigationStatus": 200,
+      "navigationError": null,
+      "initial": {
+        "title": "教研与运营工作台 · 语学星",
+        "url": "http://127.0.0.1:18181/login",
+        "h1": [
+          "欢迎回来."
+        ],
+        "buttons": [
+          "文\nzh-CN",
+          "显示密码",
+          "登录后台"
+        ],
+        "bodyText": "语学星 教研与运营工作台 文 zh-CN 让学习发生，让成长可见 把每一份用心， 变成学习的进步。 连接内容、教研与服务， 一起创造更好的学习体验。 ✦ LEARN · GROW · CONNECT Every day, a little further. 语学星 协作审核 ✓ Aa 01精心编排 02协作审核 03陪伴成长 教研与运营工作台 欢迎回来. 登录语学星，开始今天的工作。 管理员账号 密码 显示密码 登录后台 使用已授权的管理账号登录。需要开通或重置账号，请联系平台管理员。 仅限授权工作人员访问 语学星 · 让学习发生，让成长可见"
+      },
+      "loginAttempt": null,
+      "pageErrors": [],
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ],
+      "failedRequests": []
+    },
+    {
+      "name": "official-home",
+      "requestedUrl": "http://127.0.0.1:18182/",
+      "navigationStatus": 200,
+      "navigationError": null,
+      "initial": {
+        "title": "语学星 · 让英语，回到你的日常",
+        "url": "http://127.0.0.1:18182/",
+        "h1": [
+          "让英语，\n回到你的日常。"
+        ],
+        "buttons": [
+          "显示与语言",
+          "翻开这张词卡",
+          "我的空间",
+          "拼句小火车",
+          "角色墙",
+          "2D",
+          "3D",
+          "星夜书房",
+          "晨光书房",
+          "去角色墙选一个",
+          "1\n回忆一个词",
+          "2\n读懂一句话",
+          "3\n再遇见它",
+          "翻开释义",
+          "1回忆一个词",
+          "2读懂一句话",
+          "3再遇见它",
+          "翻开释义",
+          "显示与语言"
+        ],
+        "bodyText": "跳到主要内容 语学星 学习内容 学习世界 怎么学 常见问题 查看开放情况 18 岁以上 · 可浏览官网示例 让英语， 回到你的日常。 记几个词，听一段对话。 练习、复习，按自己的节奏来。 查看开放情况 先看看怎么学 无需安装 · 手机、电脑浏览器都能打开 界面示意 一杯咖啡， 一段自然的对话。 从日常里的小事开始。 回忆几个词 先想一想，再看释义 听一段对话 听懂熟悉的日常 收下今天的进步 给下一次复习留个位置 今天遇见的词 latte /ˈlɑːteɪ/ · 一点日常英语 翻开这张词卡 词汇 · 听读 · 表达 从具体内容开始 学过的，及时复习 留给下一次的线索 学习游戏 · 个人空间 让进步，也有自己的样子 不止练习，也有自己的小天地 把进步，装进你的世界。 拼好一句话，选一个喜欢的角色。 从一小段学习，到一间有你风格的书房。 走进学习世界 我的空间 拼句小火车 角色墙 2D 3D ✦ ✧ · ✦ 今晚，也有自己的小天地 星夜书房 · 立体层次预览 我的学习空间 这里， 有一点你的样子。 选一个喜欢的角色，换一套装扮。 让每次回来，都像回到自己的书房。 空间氛围 星夜书房 晨光书房 试一套装扮 星夜紫 去角色墙选一个 外观体验示例 · 不保存账号装扮 玩法与外观体验示例。正式角色、空间与成长物品，以学习端实际开放内容为准。 查看开放情况 从这里开始 从你想学的开始。 全部内容 日常词汇 词卡、例句与到期复习，把熟悉变成记得。 了解怎么学 听力精练 字幕对照、慢速与循环，听清每一句。 了解怎么学 分级阅读 读短文、查词句，用检查点确认理解。 了解怎么学 语法与句子 拆开句子看结构，练习后查看规则与错因。 了解怎么学 无需注册，先试一小步 学一点， 也记得回来。 先回忆，再理解，最后回到复习。 把一次练习，接到下一次。 1 回忆一个词 2 读懂一句话 3 再遇见它 日常词卡 latte /ˈlɑːteɪ/ 先想一想，它是什么意思？ 翻开释义 交互示例 · 无需登录，不保存学习记录 学习账号暂不可用 先浏览官网示例， 查看当前开放情况。 词卡、拼句和空间示例无需登录，也不会保存学习记录。 查看开放情况 你可能想知道 开始之前，把这几件事说清楚。 更多问题 现在需要付费吗？ 适合什么人使用？ 手机上需要下载 App 吗？ 每天怎么安排学习和复习？ 语学星 让英语，回到你的日常。 一点一点，学得更从容。 LEARN A LITTLE. EVERY DAY. 学习方式 学习内容 怎么学 学习世界 查看开放情况 了解更多 常见问题 关于语学星 服务公告 服务状态 公开信息 隐私与数据 使用说明 成人使用范围 公开信息 显示与语言 © 2026 语学星 面向 18 岁以上成人与大学生 · 学习账号暂不可用"
+      },
+      "loginAttempt": null,
+      "pageErrors": [],
+      "consoleErrors": [],
+      "failedRequests": []
+    },
+    {
+      "name": "mobile-login",
+      "requestedUrl": "http://127.0.0.1:18183/#/pages/login/login",
+      "navigationStatus": 200,
+      "navigationError": null,
+      "initial": {
+        "title": "登录",
+        "url": "http://127.0.0.1:18183/#/pages/login/login",
+        "h1": [],
+        "buttons": [],
+        "bodyText": "✦ 语学星 为热爱学习的你 SIGN IN 登录语学星 登录后继续学习。 ✦ Aa 账号登录 创建账号 ↗ 账号 输入邮箱或账号 密码 输入密码 显示 登录并继续 忘记密码？ 目前面向 18 岁及以上成人与大学生"
+      },
+      "loginAttempt": null,
+      "pageErrors": [],
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ],
+      "failedRequests": []
+    }
+  ],
+  "summary": {
+    "pageCount": 4,
+    "navigation2xx": 4,
+    "realGatewayLoginResponseCount": 1,
+    "loginResponses": [
+      {
+        "status": 401,
+        "url": "http://127.0.0.1:18070/api/v1/auth/login"
+      }
+    ],
+    "browserErrorCount": 4
+  },
+  "browserErrors": [
+    {
+      "page": "learner-login",
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "page": "learner-login",
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+    },
+    {
+      "page": "admin-login",
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "page": "mobile-login",
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    }
+  ]
+}

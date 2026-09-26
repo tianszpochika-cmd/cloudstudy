@@ -72,15 +72,19 @@ export const adminExperienceMessages = {
       },
       support: {
         title: "客服工单",
-        description: "关注需要帮助的学员，让每一个问题都有回应。",
+        description: "查看历史工单的状态与时效。",
       },
       governance: {
         title: "社群治理",
-        description: "处理举报与异常任务，维护友善的学习环境。",
+        description: "查看举报记录；恢复任务请前往恢复台。",
       },
       audit: {
         title: "审计记录",
         description: "查找关键操作与处理结果，导出脱敏记录。",
+      },
+      permissions: {
+        title: "策略版本",
+        description: "查看 IAM 策略版本与角色绑定。",
       },
       release: {
         title: "发布与质量",
@@ -143,18 +147,18 @@ export const adminExperienceMessages = {
       passwordRequired: "请输入密码",
     },
     dashboard: {
-      welcome: "让每一份用心，都有回响。",
-      subtitle: "内容、教研与服务，在这里有序协作。",
+      welcome: "运营工作台",
+      subtitle: "按权限查看指标与工作入口。",
       metrics: "运营指标",
       metricHint: "以下数据来自最近一次成功读取。",
       unavailable: "运营数据暂时无法读取，可重试或先处理其他工作。",
       empty: "暂无可展示的运营指标",
       updated: "更新于 {{time}}",
-      journey: "一份内容的成长旅程",
+      journey: "内容发布流程",
       draft: "编写内容",
       review: "两级审核",
       publish: "发布学习",
-      journeyHint: "选择下方入口，继续你的工作。",
+      journeyHint: "从工作入口继续。",
       count: "可见指标",
       modules: "可用工作入口",
       session: "当前会话",
@@ -204,7 +208,7 @@ export const adminExperienceMessages = {
       completedAt: "Completed",
       total: "Total",
     },
-    brand: "Yuxuexing",
+    brand: "语学星",
     workspace: "Content & operations",
     group: {
       overview: "Workspace",
@@ -243,15 +247,19 @@ export const adminExperienceMessages = {
       },
       support: {
         title: "Support tickets",
-        description: "Help learners and follow their requests through.",
+        description: "Review historical ticket status and timing.",
       },
       governance: {
         title: "Community moderation",
-        description: "Review reports and recover interrupted tasks.",
+        description: "Review reports; use the recovery workspace for recovery tasks.",
       },
       audit: {
         title: "Audit records",
         description: "Find actions and outcomes; export redacted records.",
+      },
+      permissions: {
+        title: "Policy versions",
+        description: "View IAM policy versions and role bindings.",
       },
       release: {
         title: "Release & quality",
@@ -295,7 +303,7 @@ export const adminExperienceMessages = {
     login: {
       eyebrow: "Make learning happen",
       title: "Welcome back",
-      description: "Sign in to Yuxuexing and start your day.",
+      description: "Sign in to 语学星 and start your day.",
       story: "Thoughtful work.\nMeaningful progress.",
       storyBody:
         "Bring content, curriculum and service together\nfor a better learning experience.",
@@ -315,19 +323,19 @@ export const adminExperienceMessages = {
       passwordRequired: "Enter your password",
     },
     dashboard: {
-      welcome: "Make thoughtful work count.",
-      subtitle: "A shared space for content, curriculum and care.",
+      welcome: "Operations dashboard",
+      subtitle: "View metrics and tools available to your account.",
       metrics: "Operational metrics",
       metricHint: "Data from the most recent successful read.",
       unavailable:
         "Metrics are unavailable. Retry or continue with another task.",
       empty: "No metrics available yet",
       updated: "Updated {{time}}",
-      journey: "From an idea to learning",
+      journey: "Content publishing flow",
       draft: "Create content",
       review: "Dual review",
       publish: "Publish learning",
-      journeyHint: "Choose a shortcut to continue your work.",
+      journeyHint: "Continue from a work shortcut.",
       count: "Visible metrics",
       modules: "Available features",
       session: "Session",

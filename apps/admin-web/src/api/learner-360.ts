@@ -19,6 +19,9 @@ function unwrapData(value: unknown): Row {
 }
 
 function errorOf(error: unknown, fallback: string): Error {
+  if (error instanceof AdminApiError && error.status >= 500) {
+    return new Error('学员资料暂不可用，请稍后重试。')
+  }
   if (error instanceof AdminApiError) return new Error(error.message)
   return error instanceof Error ? error : new Error(fallback)
 }

@@ -53,8 +53,7 @@ onMounted(() => {
         <p>{{ ui("dashboard.subtitle") }}</p>
       </div>
       <div class="dashboard-hero-art" aria-hidden="true">
-        <span>Aa<span style="font-size: 28px">✦</span></span
-        ><small>EVERY DAY, A LITTLE FURTHER.</small>
+        <span>Aa<span style="font-size: 28px">✦</span></span>
       </div>
     </section>
     <div class="dashboard-metrics">
@@ -140,18 +139,20 @@ onMounted(() => {
       />
       <el-table v-else-if="metricRows.length" :data="metricRows"
         ><el-table-column
-          prop="metricId"
           label="指标"
-          min-width="200" /><el-table-column
+          min-width="200"
+          ><template #default="scope">{{ scope.row.metricCode ?? scope.row.metricId ?? "—" }}</template></el-table-column
+        ><el-table-column
           prop="metricVersion"
           label="统计口径"
           width="140" /><el-table-column
           prop="state"
           label="状态"
           width="130" /><el-table-column
-          prop="totalValue"
           label="数值"
-          width="140" /><el-table-column
+          width="140"
+          ><template #default="scope">{{ scope.row.value ?? scope.row.totalValue ?? "—" }}</template></el-table-column
+        ><el-table-column
           prop="periodStart"
           label="统计日期"
           min-width="160"

@@ -1,5 +1,6 @@
 import { apiClient } from './client'
 import { createClientId } from '../platform/client-id'
+import { listNotificationPreferences, setNotificationPreference, type NotificationPreference, type UpdateNotificationPreferenceInput } from './notifications'
 import type {
   B4FocusAction,
   B4GameCode,
@@ -152,34 +153,11 @@ export async function readB4Notification(messageId: string): Promise<unknown> {
 export async function readAllB4Notifications(): Promise<unknown> {
   return apiClient.put('/notifications/messages/read-all', {}, withKey('b4-notification-all'))
 }
-export async function getB4NotificationPreferences(): Promise<unknown> {
-  const raw = await apiClient.get<unknown>('/notifications/preferences')
-  const items = Array.isArray(raw) ? raw : []
-  const flags = { roomInteractions: true, focusReminders: true, system: true, doNotDisturb: false }
-  let version = 0
-  for (const value of items) {
-    if (typeof value !== 'object' || value === null || Array.isArray(value)) continue
-    const item = value as Record<string, unknown>
-    const type = typeof item.notificationType === 'string' ? item.notificationType : ''
-    if (type === 'ROOM_INTERACTIONS') flags.roomInteractions = item.enabled !== false
-    if (type === 'FOCUS_REMINDERS') flags.focusReminders = item.enabled !== false
-    if (type === 'SYSTEM') flags.system = item.enabled !== false
-    if (type === 'DO_NOT_DISTURB') flags.doNotDisturb = item.enabled === true
-    if (typeof item.version === 'number') version = Math.max(version, item.version)
-  }
-  return { preferences: { ...flags, version } }
+export async function getB4NotificationPreferences(): Promise<NotificationPreference[]> {
+  return listNotificationPreferences()
 }
-export async function saveB4NotificationPreferences(preferences: Record<string, boolean>): Promise<unknown> {
-  const mapping = [['roomInteractions', 'ROOM_INTERACTIONS'], ['focusReminders', 'FOCUS_REMINDERS'], ['system', 'SYSTEM'], ['doNotDisturb', 'DO_NOT_DISTURB']] as const
-  const results = await Promise.all(mapping.map(([key, type]) => apiClient.put(`/notifications/preferences/${type}/IN_APP`, { enabled: preferences[key] === true, locale: 'zh-CN' }, withKey(`b4-notification-preferences-${type}`))))
-  let version = 0
-  for (const value of results) {
-    if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
-      const candidate = (value as Record<string, unknown>).version
-      if (typeof candidate === 'number') version = Math.max(version, candidate)
-    }
-  }
-  return { preferences: { ...preferences, version } }
+export async function saveB4NotificationPreferences(input: UpdateNotificationPreferenceInput): Promise<NotificationPreference> {
+  return setNotificationPreference(input)
 }
 
 export async function listB4OfflinePackages(): Promise<unknown> { return apiClient.get('/sync/offline-packages') }

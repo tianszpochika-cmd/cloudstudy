@@ -4,28 +4,24 @@ import { useMobileExperience } from '../../platform/experience'
 const { experienceStyle, experienceMotion } = useMobileExperience()
 
 import { onShow } from '@dcloudio/uni-app'
-import { ref } from 'vue'
 import B4StatusPanel from '../../components/b4/B4StatusPanel.vue'
-import { B4_PERFORMANCE_LEVELS, gameLabel, type B4GameCode, type B4PerformanceLevel } from '../../domain/b4'
+import { B4_PERFORMANCE_LEVELS, gameLabel, type B4PerformanceLevel } from '../../domain/b4'
 import { getUniRuntime } from '../../platform/uni-runtime'
 import { useSessionStore } from '../../stores/session'
 import { useB4Store } from '../../stores/b4'
 
 const session = useSessionStore()
 const b4 = useB4Store()
-const responseToken = ref('')
-const itemCode = ref('')
 
 onShow(async () => {
   await session.restore()
   if (!session.isAuthenticated) { getUniRuntime().navigateTo({ url: '/pages/login/login' }); return }
   b4.restore()
-  if (!b4.games.length) void b4.loadWorld()
+  void b4.loadWorld()
 })
 
 function selectPerformance(level: B4PerformanceLevel): void { b4.setPerformance(level) }
-function start(code: B4GameCode): void { responseToken.value = ''; itemCode.value = ''; void b4.startGame(code) }
-function submit(): void { void b4.submitGameEvent(responseToken.value, itemCode.value || undefined) }
+function gameStatusLabel(value: string): string { return ({ READY: '准备中', IN_PROGRESS: '进行中', PAUSED: '已暂停', FINISHED: '已结束', COMPLETED: '已完成', EXPIRED: '已过期' } as Record<string, string>)[value] ?? '状态待确认' }
 </script>
 
 <template>
@@ -33,9 +29,9 @@ function submit(): void { void b4.submitGameEvent(responseToken.value, itemCode.
     <MobilePageHeader page="b4-games" />
 
     <B4StatusPanel :status="b4.status" :online="b4.online" :message="b4.lastError" :queue-count="b4.queueCount" :performance-level="b4.performanceLevel" @retry="b4.loadWorld" @sync="b4.syncOffline" @performance="selectPerformance" />
-    <view class="yx-card"><view class="heading"><view><text class="kicker">GAME LOBBY</text><text class="card-title">规则化学习游戏</text></view><text class="muted">{{ b4.games.length }} 个目录项</text></view><view v-if="b4.games.length" class="game-grid"><view v-for="game in b4.games" :key="game.gameCode" class="game-card" :class="{ 'game-card--disabled': !game.enabled }"><text class="game-icon">✦</text><text class="game-title">{{ gameLabel(game.gameCode) }}</text><text class="muted">{{ game.gameCode }}</text><text class="muted">发布阶段 {{ game.releasePhase }} · {{ game.enabled ? '当前可用' : '尚未开放' }}</text><text class="muted">{{ game.maxMinutes ?? '—' }} 分钟上限 · 暂停 {{ game.pauseLimitMinutes ?? '—' }} 分钟</text><button tabindex="0" role="button" class="yx-button" type="button" :disabled="!game.enabled" @click="start(game.gameCode)">{{ game.enabled ? '创建会话' : '阶段未开放' }}</button></view></view><text v-else class="empty-copy">暂时没有可用游戏，稍后再来看看。</text></view>
-    <view v-if="b4.activeGame" class="yx-card session-card"><view class="heading"><view><text class="kicker">GAME SESSION</text><text class="card-title">{{ gameLabel(b4.activeGame.gameCode) }}</text></view><text class="state">{{ b4.activeGame.status }}</text></view><text class="muted">{{ b4.activeGame.sessionId }} · seq {{ b4.activeGame.seq }} · 回合 {{ b4.activeGame.attemptCount }}</text><text class="warning">服务端题包返回后才能提交；客户端不会猜答案、题目或奖励。</text><view v-if="b4.activeGame.challenges.length" class="challenge-list"><text class="muted">服务端题包</text><button tabindex="0" role="button" v-for="challenge in b4.activeGame.challenges" :key="challenge.roundNo" class="small-button secondary" type="button" @click="responseToken = challenge.challengeToken; itemCode = challenge.itemCode">第 {{ challenge.roundNo }} 轮 · {{ challenge.itemCode }}</button></view><input v-model="responseToken" class="field" placeholder="服务端 responseToken" /><input v-model="itemCode" class="field" placeholder="服务端 itemCode（必填）" /><view class="actions"><button tabindex="0" role="button" class="small-button" type="button" :disabled="!responseToken.trim()" @click="submit">提交回合</button><button tabindex="0" role="button" v-if="b4.activeGame.status === 'IN_PROGRESS' || b4.activeGame.status === 'READY'" class="small-button secondary" type="button" @click="b4.pauseGame">暂停</button><button tabindex="0" role="button" v-if="b4.activeGame.status === 'PAUSED'" class="small-button secondary" type="button" @click="b4.resumeGame">恢复</button><button tabindex="0" role="button" class="small-button secondary" type="button" @click="b4.refreshGame">刷新</button><button tabindex="0" role="button" class="small-button danger" type="button" @click="b4.finishGame">结束并请求结果</button></view></view>
-    <view v-if="b4.lastGameResult" class="yx-card result-card"><text class="card-title">{{ b4.lastGameResult.passed ? '挑战通过' : '再练习一次' }}</text><text>正确率 {{ b4.lastGameResult.accuracyPercent }}% · 完成度 {{ b4.lastGameResult.completionPercent }}% · 得分 {{ b4.lastGameResult.serverScore }}</text><text class="muted">奖励资格：{{ b4.lastGameResult.rewardEligible ? '可以领取' : '暂不可领取' }}</text></view>
+    <view class="yx-card"><view class="heading"><view><text class="kicker">学习游戏</text><text class="card-title">小游戏</text></view><text class="muted">{{ b4.games.length }} 项</text></view><view v-if="b4.games.length" class="game-grid"><view v-for="game in b4.games" :key="game.gameCode" class="game-card game-card--disabled"><text class="game-icon">✦</text><text class="game-title">{{ gameLabel(game.gameCode) }}</text><text class="muted">{{ game.enabled ? '玩法准备中' : '暂未开放' }}</text><text v-if="game.maxMinutes" class="muted">每次最多 {{ game.maxMinutes }} 分钟</text><button tabindex="0" role="button" class="yx-button" type="button" disabled>暂未开放</button></view></view><text v-else class="empty-copy">暂无可用游戏。</text></view>
+    <view v-if="b4.activeGame" class="yx-card session-card"><view class="heading"><view><text class="kicker">游戏进度</text><text class="card-title">{{ gameLabel(b4.activeGame.gameCode) }}</text></view><text class="state">{{ gameStatusLabel(b4.activeGame.status) }}</text></view><text class="muted">已进行 {{ b4.activeGame.attemptCount }} 回合</text><text class="warning">当前还没有可操作的题目。</text><view class="actions"><button tabindex="0" role="button" v-if="b4.activeGame.status === 'IN_PROGRESS' || b4.activeGame.status === 'READY'" class="small-button secondary" type="button" @click="b4.pauseGame">暂停</button><button tabindex="0" role="button" v-if="b4.activeGame.status === 'PAUSED'" class="small-button secondary" type="button" @click="b4.resumeGame">恢复</button><button tabindex="0" role="button" class="small-button secondary" type="button" @click="b4.refreshGame">刷新</button><button tabindex="0" role="button" class="small-button danger" type="button" @click="b4.finishGame">结束</button></view></view>
+    <view v-if="b4.lastGameResult" class="yx-card result-card"><text class="card-title">{{ b4.lastGameResult.passed ? '挑战通过' : '再练习一次' }}</text><text>正确率 {{ b4.lastGameResult.accuracyPercent }}% · 完成度 {{ b4.lastGameResult.completionPercent }}% · 得分 {{ b4.lastGameResult.serverScore }}</text><text class="muted">{{ b4.lastGameResult.rewardEligible ? '符合奖励条件' : '暂不符合奖励条件' }}</text></view>
   </view>
 </template>
 

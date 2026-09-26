@@ -31,11 +31,28 @@ function contentVersion(value: unknown, fallback: string | number): string | num
 function parseManifest(value: unknown, fallbackAssetId: string): B11MediaManifest | null {
   const source = unwrap(value)
   if (!isRecord(source)) return null
-  const variants = Array.isArray(source.variants) ? source.variants.filter(isRecord).map((item) => ({ variant: text(item.variant ?? item.name) ?? 'default', mimeType: optionalText(item.mimeType), codec: optionalText(item.codec), bitrate: number(item.bitrate) ?? undefined, sizeBytes: number(item.sizeBytes) ?? undefined, checksum: optionalText(item.checksum ?? item.sha256), signedUrl: text(item.signedUrl ?? item.url), expiresAt: text(item.expiresAt) })) : text(source.signedUrl ?? source.url) ? [{ variant: text(source.variant) ?? 'default', signedUrl: text(source.signedUrl ?? source.url), expiresAt: text(source.expiresAt) }] : []
+  const ownerManifest = 'assetStatus' in source || 'transcodingStatus' in source || Array.isArray(source.items)
+  const variants = ownerManifest
+    ? (Array.isArray(source.items) ? source.items : []).filter(isRecord).flatMap((item) => {
+      const renditionKey = text(item.renditionKey)
+      if (!renditionKey || item.status !== 'READY') return []
+      return [{ variant: renditionKey === 'original' ? 'default' : renditionKey, mimeType: optionalText(item.mimeType), sizeBytes: number(item.sizeBytes) ?? undefined, checksum: optionalText(item.checksumSha256), signedUrl: null }]
+    })
+    : Array.isArray(source.variants)
+      ? source.variants.filter(isRecord).map((item) => ({ variant: text(item.variant ?? item.name) ?? 'default', mimeType: optionalText(item.mimeType), codec: optionalText(item.codec), bitrate: number(item.bitrate) ?? undefined, sizeBytes: number(item.sizeBytes) ?? undefined, checksum: optionalText(item.checksum ?? item.sha256), signedUrl: text(item.signedUrl ?? item.url), expiresAt: text(item.expiresAt) }))
+      : []
   const clips = Array.isArray(source.clips) ? source.clips.filter(isRecord).map((item, index) => ({ clipId: text(item.clipId ?? item.id) ?? `${fallbackAssetId}-clip-${index + 1}`, title: text(item.title ?? item.label) ?? `Clip ${index + 1}`, startMs: number(item.startMs) ?? 0, endMs: number(item.endMs) ?? 0, mediaAssetId: optionalText(item.mediaAssetId), signedUrl: text(item.signedUrl ?? item.url), expiresAt: text(item.expiresAt) })) : []
-  const rights = text(source.rightsStatus) as B11MediaManifest['rightsStatus'] | null
-  const availability = text(source.availability) as B11MediaManifest['availability'] | null
-  return { assetId: text(source.assetId) ?? fallbackAssetId, contentVersion: contentVersion(source.contentVersion ?? source.contentVersionId, 'unknown'), rightsStatus: rights && ['AUTHORIZED', 'REVOKED', 'EXPIRED', 'PENDING'].includes(rights) ? rights : 'PENDING', availability: availability && ['READY', 'NOT_READY', 'FAILED'].includes(availability) ? availability : 'NOT_READY', checksum: text(source.checksum ?? source.sha256), sizeBytes: number(source.sizeBytes), durationMs: number(source.durationMs), expiresAt: text(source.expiresAt), revokedAt: text(source.revokedAt), variants, clips }
+  const rights = text(source.rightsStatus)
+  const ownerRights = source.assetStatus === 'REVOKED' || source.assetStatus === 'DELETED' ? 'REVOKED' : rights === 'ACTIVE' ? 'AUTHORIZED' : rights === 'REVOKED' || rights === 'EXPIRED' ? rights : 'PENDING'
+  const legacyRights = rights && ['AUTHORIZED', 'REVOKED', 'EXPIRED', 'PENDING'].includes(rights) ? rights as B11MediaManifest['rightsStatus'] : 'PENDING'
+  const ownerReady = source.assetStatus === 'ACTIVE' && rights === 'ACTIVE' && (source.transcodingStatus === 'READY' || source.transcodingStatus === 'NOT_REQUIRED') && variants.length > 0
+  const ownerAvailability = ownerReady ? 'READY' : source.transcodingStatus === 'FAILED' ? 'FAILED' : 'NOT_READY'
+  const legacyAvailability = source.availability === 'READY' || source.availability === 'FAILED' ? source.availability : 'NOT_READY'
+  return { assetId: text(source.assetId) ?? fallbackAssetId, contentVersion: contentVersion(source.contentVersion ?? source.contentVersionId, 'unknown'), rightsStatus: ownerManifest ? ownerRights : legacyRights, availability: ownerManifest ? ownerAvailability : legacyAvailability, checksum: text(source.checksumSha256 ?? source.checksum ?? source.sha256), sizeBytes: number(source.sizeBytes), durationMs: number(source.durationMs), expiresAt: text(source.expiresAt), revokedAt: text(source.revokedAt), variants, clips }
+}
+
+function blockedPlayback(assetId: string, version: string | number): B11MediaManifest {
+  return { assetId, contentVersion: version, rightsStatus: 'PENDING', availability: 'NOT_READY', variants: [], clips: [] }
 }
 
 export async function loadB11ListeningMaterials(context: B11RequestContext): Promise<ListeningMaterial[]> {
@@ -49,13 +66,25 @@ export async function startB11ListeningSession(materialId: number, context: B11R
 
 export async function fetchB11MediaManifest(assetId: string, context: B11RequestContext, version?: string | number): Promise<B11MediaManifest | null> {
   const path = query(`${B11_GATEWAY_PATHS.media.manifest}/${encodeURIComponent(assetId)}/manifest`, { contentLocale: context.contentLocale, contentVersion: version })
-  try { return parseManifest(await mobileApiClient.request(path), assetId) } catch (error) { if (error instanceof MobileApiError && error.status === 404) return null; throw error }
+  const manifest = parseManifest(await mobileApiClient.request(path), assetId)
+  if (!manifest || manifest.assetId !== assetId) throw new Error('媒体清单无效。')
+  return manifest
 }
 
 export async function authorizeB11Playback(assetId: string, variant: string, context: B11RequestContext, clientEventId: string, version: string | number): Promise<B11MediaManifest | null> {
   const request = { method: 'POST' as const, data: { renditionId: variant, contentVersionId: version }, header: headers(context, clientEventId) }
-  const source = await mobileApiClient.request(`${B11_GATEWAY_PATHS.media.signedUrl}/${encodeURIComponent(assetId)}/signed-url`, request)
-  return parseManifest(source, assetId)
+  try {
+    const source = unwrap(await mobileApiClient.request(`${B11_GATEWAY_PATHS.media.signedUrl}/${encodeURIComponent(assetId)}/signed-url`, request))
+    if (!isRecord(source)) return blockedPlayback(assetId, version)
+    const url = text(source.url)
+    const expiresAt = text(source.expiresAt)
+    const expiry = expiresAt ? Date.parse(expiresAt) : NaN
+    if (text(source.assetId) !== assetId || !url || !/^https?:\/\//i.test(url) || !Number.isFinite(expiry) || expiry <= Date.now()) return blockedPlayback(assetId, version)
+    return { assetId, contentVersion: version, rightsStatus: 'AUTHORIZED', availability: 'READY', checksum: text(source.checksumSha256), sizeBytes: number(source.sizeBytes), expiresAt, variants: [{ variant, signedUrl: url, expiresAt }], clips: [] }
+  } catch {
+    // Do not fall back to a stale URL embedded in content when the media owner denies access.
+    return blockedPlayback(assetId, version)
+  }
 }
 
 export async function saveB11MediaProgress(input: { sessionId?: string | null; assetId: string; positionMs: number; durationMs: number; contentVersion: string | number; entityVersion: number; clientEventId: string }, context: B11RequestContext): Promise<void> {

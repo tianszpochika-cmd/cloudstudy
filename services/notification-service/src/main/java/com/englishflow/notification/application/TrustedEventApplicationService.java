@@ -2,6 +2,7 @@ package com.englishflow.notification.application;
 
 import com.englishflow.notification.domain.NotificationAccessPolicy;
 import com.englishflow.notification.domain.NotificationDomainException;
+import com.englishflow.notification.domain.NotificationCategory;
 import com.englishflow.notification.domain.NotificationMessage;
 import com.englishflow.notification.domain.NotificationOutboxEvent;
 import com.englishflow.notification.domain.NotificationPreference;
@@ -98,8 +99,10 @@ public final class TrustedEventApplicationService implements TrustedEventPort {
             return reject(consumer, event, candidate, reason(exception, "EVENT_ENVELOPE_REJECTED"));
         }
 
-        NotificationPreference preference = facts.findPreference(event.tenantId(), event.principalId(),
-                rule.notificationType(), rule.channel()).orElse(null);
+        NotificationPreference preference = NotificationCategory.fromMessageType(rule.notificationType())
+                .map(category -> facts.findPreference(event.tenantId(), event.principalId(), category,
+                        rule.channel()).orElse(null))
+                .orElse(null);
         if (preference != null && !preference.enabled()) {
             return filter(consumer, event, candidate, "PREFERENCE_DISABLED");
         }

@@ -1,0 +1,19 @@
+{
+  "at": "2026-09-23T10:54:43.353Z",
+  "project": "cloudstudy-uat-isolated-3c94b27160",
+  "test": "consentOutageAfterRefreshRotationRollsBackTokenAndIdempotencyClaim",
+  "releaseImages": {
+    "api-gateway": "cloudstudy-clyunedev/api-gateway:583ab627-uat-batch10-202609231841",
+    "iam-service": "cloudstudy-clyunedev/iam-service:583ab627-uat-batch10-202609231841",
+    "learner-web": "cloudstudy-clyunedev/learner-web:583ab627-uat-batch10-202609231841",
+    "mobile-h5": "cloudstudy-clyunedev/mobile-h5:583ab627-uat-batch10-202609231841"
+  },
+  "privateNetwork": true,
+  "hostPorts": 0,
+  "summary": {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "at": "2026-09-23T13:07:24.295Z",
+  "mode": "private HTTPS + containerized Chromium; fresh anonymous contexts",
+  "results": [
+    {
+      "width": 1280,
+      "httpStatus": 200,
+      "finalUrl": "https://admin.clyunedev.com/login?redirect=/content",
+      "redirectedToLogin": true,
+      "contentWorkspaceCount": 0,
+      "submitReviewButtonCount": 0,
+      "contentRequests": [],
+      "layout": {
+        "scrollWidth": 1280,
+        "viewportWidth": 1280,
+        "visibleTextLength": 280
+      },
+      "pageErrors": [],
+      "consoleErrors": [],
+      "screenshot": "admin-content-anonymous-1280-batch14.png"
+    },
+    {
+      "width": 390,
+      "httpStatus": 200,
+      "finalUrl": "https://admin.clyunedev.com/login?redirect=/content",
+      "redirectedToLogin": true,
+      "contentWorkspaceCount": 0,
+      "submitReviewButtonCount": 0,
+      "contentRequests": [],
+      "layout": {
+        "scrollWidth": 390,
+        "viewportWidth": 390,
+        "visibleTextLength": 135
+      },
+      "pageErrors": [],
+      "consoleErrors": [],
+      "screenshot": "admin-content-anonymous-390-batch14.png"
+    }
+  ]
+}

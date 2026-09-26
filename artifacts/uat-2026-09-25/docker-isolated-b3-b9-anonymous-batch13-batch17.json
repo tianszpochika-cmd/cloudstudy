@@ -1,0 +1,124 @@
+{
+  "project": "cloudstudy-uat-isolated-3c94b27160",
+  "releaseImages": {
+    "content-service": "cloudstudy-clyunedev/content-service:583ab627-uat-batch17-202609250206",
+    "admin-web": "cloudstudy-clyunedev/admin-web:583ab627-uat-batch16-202609250004",
+    "mobile-h5": "cloudstudy-clyunedev/mobile-h5:583ab627-uat-batch17-202609250206"
+  },
+  "authorizationState": "BLOCKED_NO_ACTIVE_CONSENT_DOCUMENTS",
+  "at": "2026-09-24T18:24:26.201Z",
+  "checks": [
+    {
+      "name": "content-owner-b3-grammar",
+      "method": "GET",
+      "path": "/internal/v1/content/learner/grammar/points",
+      "status": 401,
+      "code": "UNAUTHENTICATED",
+      "hasData": false
+    },
+    {
+      "name": "gateway-b3-grammar",
+      "method": "GET",
+      "path": "/api/v1/grammar/points",
+      "status": 404,
+      "code": null,
+      "hasData": false
+    },
+    {
+      "name": "content-owner-b3-listening",
+      "method": "GET",
+      "path": "/internal/v1/content/learner/listening/materials",
+      "status": 401,
+      "code": "UNAUTHENTICATED",
+      "hasData": false
+    },
+    {
+      "name": "gateway-b3-listening",
+      "method": "GET",
+      "path": "/api/v1/listening/materials",
+      "status": 404,
+      "code": null,
+      "hasData": false
+    },
+    {
+      "name": "content-owner-b3-reading",
+      "method": "GET",
+      "path": "/internal/v1/content/learner/reading/articles",
+      "status": 401,
+      "code": "UNAUTHENTICATED",
+      "hasData": false
+    },
+    {
+      "name": "gateway-b3-reading",
+      "method": "GET",
+      "path": "/api/v1/reading/articles",
+      "status": 404,
+      "code": null,
+      "hasData": false
+    },
+    {
+      "name": "content-owner-b3-writing",
+      "method": "GET",
+      "path": "/internal/v1/content/learner/writing/prompts",
+      "status": 401,
+      "code": "UNAUTHENTICATED",
+      "hasData": false
+    },
+    {
+      "name": "gateway-b3-writing",
+      "method": "GET",
+      "path": "/api/v1/writing/prompts",
+      "status": 404,
+      "code": null,
+      "hasData": false
+    },
+    {
+      "name": "content-owner-b3-phonetics",
+      "method": "GET",
+      "path": "/internal/v1/content/learner/phonetics/catalog",
+      "status": 401,
+      "code": "UNAUTHENTICATED",
+      "hasData": false
+    },
+    {
+      "name": "gateway-b3-phonetics",
+      "method": "GET",
+      "path": "/api/v1/phonetics/catalog",
+      "status": 404,
+      "code": null,
+      "hasData": false
+    },
+    {
+      "name": "content-owner-b9-admin-list",
+      "method": "GET",
+      "path": "/internal/v1/content/admin-commands",
+      "status": 401,
+      "code": "UNAUTHENTICATED",
+      "hasData": false
+    },
+    {
+      "name": "gateway-b9-admin-list",
+      "method": "GET",
+      "path": "/api/v1/admin/content-commands",
+      "status": 401,
+      "code": null,
+      "hasData": false
+    },
+    {
+      "name": "content-owner-b9-anonymous-submit",
+      "method": "POST",
+      "path": "/internal/v1/content/admin-commands",
+      "status": 401,
+      "code": "UNAUTHENTICATED",
+      "hasData": false
+    },
+    {
+      "name": "gateway-b9-anonymous-submit",
+      "method": "POST",
+      "path": "/api/v1/admin/content-commands",
+      "status": 401,
+      "code": null,
+      "hasData": false
+    }
+  ]
+}

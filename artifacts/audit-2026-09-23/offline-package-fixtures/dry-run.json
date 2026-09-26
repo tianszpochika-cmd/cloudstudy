@@ -1,0 +1,49 @@
+{
+  "capturedAt": "2026-09-23T18:47:27.295027+08:00",
+  "mode": "read-only",
+  "scope": "local 127.0.0.1:13306; notification offline packages and references; local MinIO bucket",
+  "packageCounts": {
+    "all": 100,
+    "published": 0,
+    "deleted": 100,
+    "groups": {
+      "bulk100x": 89,
+      "local10x": 10,
+      "other": 1
+    },
+    "exactFixtureCandidates": 0,
+    "publishedOutsideExactFixtureScope": [],
+    "candidateIds": [],
+    "candidateIdsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "candidateFullRowsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  },
+  "downloadReferences": {
+    "all": 100,
+    "candidateRows": 0,
+    "candidateDistinctPackages": 0,
+    "states": {},
+    "accountLinks": {
+      "invalid": 0,
+      "missing": 0,
+      "other": 0
+    },
+    "outsideCandidateRows": 100
+  },
+  "otherReferences": {
+    "examinedColumns": 381,
+    "matches": []
+  },
+  "media": {
+    "offlineNamedAssets": 0,
+    "offlineNamedRenditions": 0,
+    "minioObjectCount": 5,
+    "offlineNamedMinioObjects": 0
+  },
+  "quarantinePreconditions": {
+    "exact99": false,
+    "allPublishedAreExactCandidates": true,
+    "noNonTestDownloadAccounts": true,
+    "noOtherStructuredReferences": true,
+    "noOfflineObjectBytes": true
+  }
+}

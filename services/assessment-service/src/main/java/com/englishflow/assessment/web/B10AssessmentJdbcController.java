@@ -19,6 +19,8 @@ import java.util.HexFormat;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.UUID;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -47,6 +49,7 @@ import org.springframework.web.server.ResponseStatusException;
 public class B10AssessmentJdbcController {
     private static final String TENANT = "platform";
     private static final String CONTENT_CODE = "course-b25-basics";
+    private static final String SESSION_CREATE_OPERATION = "B10_SESSION_CREATE";
     private static final long DEFAULT_CONTENT_VERSION = 25001L;
     private static final long CONTENT_EPOCH = 1L;
     private static final long SNAPSHOT_ID = 25001L;
@@ -70,18 +73,40 @@ public class B10AssessmentJdbcController {
             @RequestBody Map<String, Object> body,
             @RequestHeader("Idempotency-Key") String idempotencyKey,
             @RequestHeader(value = "Authorization", required = false) String authorization) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "assessment.session.write");
         requireKey(idempotencyKey);
         long contentVersionId = positiveLong(body.get("contentVersionId"), DEFAULT_CONTENT_VERSION);
         String mode = upperText(body.get("mode"), "PRACTICE");
         if (!List.of("PRACTICE", "REVIEW", "PLACEMENT", "MOCK").contains(mode)) {
             bad("unsupported assessment mode");
         }
+        String requestDigest = sha256(json(canonicalValue(body)));
         Map<String, Object> existing = one("""
                 SELECT * FROM b10_assessment_session
                  WHERE tenant_id = ? AND principal_id = ? AND idempotency_key = ?
                 """, TENANT, principal.subject(), idempotencyKey);
-        if (existing != null) return envelope(sessionView(existing));
+        if (existing != null) {
+            return replaySessionCreation(principal.subject(), idempotencyKey, requestDigest,
+                    body, mode, contentVersionId, existing);
+        }
+        int claimed = jdbc.update("""
+                INSERT IGNORE INTO assessment_idempotency
+                    (tenant_id, subject_id, operation, idempotency_key, request_digest, response_json, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP(6))
+                """, TENANT, principal.subject(), SESSION_CREATE_OPERATION, idempotencyKey,
+                requestDigest, json(Map.of("status", "IN_PROGRESS")));
+        if (claimed == 0) {
+            Map<String, Object> raced = one("""
+                    SELECT * FROM b10_assessment_session
+                     WHERE tenant_id = ? AND principal_id = ? AND idempotency_key = ?
+                     FOR UPDATE
+                    """, TENANT, principal.subject(), idempotencyKey);
+            if (raced == null) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "assessment session creation is still processing");
+            }
+            return replaySessionCreation(principal.subject(), idempotencyKey, requestDigest,
+                    body, mode, contentVersionId, raced);
+        }
 
         List<Map<String, Object>> rules = rules(CONTENT_CODE, contentVersionId, body.get("itemIds"));
         // P1R decision 7B: assessment assembles the session pin. The requested pin
@@ -120,12 +145,63 @@ public class B10AssessmentJdbcController {
                 contentVersionId, alternativeVersion, alternativeCode, alternativeReason,
                 CONTENT_EPOCH, SNAPSHOT_ID, SNAPSHOT_HASH,
                 json(items), idempotencyKey);
-        return envelope(sessionView(one("SELECT * FROM b10_assessment_session WHERE session_id = ?", sessionId)));
+        Map<String, Object> response = envelope(sessionView(one(
+                "SELECT * FROM b10_assessment_session WHERE session_id = ?", sessionId)));
+        int saved = jdbc.update("""
+                UPDATE assessment_idempotency SET response_json = ?
+                 WHERE tenant_id = ? AND subject_id = ? AND operation = ? AND idempotency_key = ?
+                """, json(response), TENANT, principal.subject(), SESSION_CREATE_OPERATION, idempotencyKey);
+        if (saved != 1) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "assessment session creation response was not saved");
+        }
+        return response;
+    }
+
+    private Map<String, Object> replaySessionCreation(String subject, String key, String requestDigest,
+            Map<String, Object> body, String mode, long contentVersionId, Map<String, Object> session) {
+        // Duplicate INSERT IGNORE may hold a shared claim lock. Keep this a shared
+        // current read so concurrent replays do not deadlock on a lock upgrade.
+        Map<String, Object> claim = one("""
+                SELECT request_digest, response_json FROM assessment_idempotency
+                 WHERE tenant_id = ? AND subject_id = ? AND operation = ? AND idempotency_key = ?
+                 FOR SHARE
+                """, TENANT, subject, SESSION_CREATE_OPERATION, key);
+        if (claim == null) {
+            // V4 sessions have no request digest. Keep their normal replay path,
+            // but refuse fields that cannot be checked against their saved pin.
+            if (!Set.of("contentVersionId", "mode", "itemIds", "clientSessionRef")
+                    .containsAll(body.keySet())
+                    || !CONTENT_CODE.equals(text(session.get("content_code")))
+                    || !mode.equals(text(session.get("mode")))
+                    || contentVersionId != number(session.get("content_version_id"))
+                    || body.containsKey("itemIds")
+                    || body.containsKey("clientSessionRef")
+                        && !key.equals(text(body.get("clientSessionRef")))) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT,
+                        "Idempotency-Key was reused with a different assessment session request");
+            }
+            return envelope(sessionView(session));
+        }
+        if (!requestDigest.equals(text(claim.get("request_digest")))) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "Idempotency-Key was reused with a different assessment session request");
+        }
+        Object raw = claim.get("response_json");
+        Object parsed = parseJson(raw instanceof byte[] bytes ? new String(bytes, StandardCharsets.UTF_8) : raw,
+                Map.of());
+        if (!(parsed instanceof Map<?, ?> response) || !response.containsKey("data")) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "assessment session creation is still processing");
+        }
+        @SuppressWarnings("unchecked")
+        Map<String, Object> storedResponse = (Map<String, Object>) response;
+        return storedResponse;
     }
 
     @GetMapping("/sessions/{sessionId}")
     public Map<String, Object> readSession(Authentication authentication, @PathVariable String sessionId) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "assessment.session.read");
         return envelope(sessionView(ownerSession(sessionId, principal.subject())));
     }
 
@@ -136,7 +212,7 @@ public class B10AssessmentJdbcController {
             @PathVariable String sessionId,
             @RequestBody Map<String, Object> body,
             @RequestHeader("Idempotency-Key") String idempotencyKey) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "assessment.session.write");
         requireKey(idempotencyKey);
         Map<String, Object> session = ownerSession(sessionId, principal.subject());
         String submissionId = text(body.get("submissionId"));
@@ -264,7 +340,7 @@ public class B10AssessmentJdbcController {
      */
     @GetMapping("/mistakes")
     public Map<String, Object> listMistakes(Authentication authentication) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "assessment.session.read");
         List<Map<String, Object>> rows = jdbc.queryForList("""
                 SELECT * FROM assessment_mistake WHERE tenant_id = ? AND subject_id = ?
                  ORDER BY mistake_id
@@ -281,10 +357,14 @@ public class B10AssessmentJdbcController {
             @PathVariable long mistakeId,
             @RequestBody Map<String, Object> body,
             @RequestHeader("Idempotency-Key") String idempotencyKey) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "assessment.session.write");
         requireKey(idempotencyKey);
         boolean correct = "CORRECT".equals(upperText(body.get("outcome"), ""));
         if (!correct && !"WRONG".equals(upperText(body.get("outcome"), ""))) bad("outcome must be CORRECT or WRONG");
+        String requestDigest = mistakeRequestDigest(mistakeId, body);
+        Map<String, Object> replay = claimMistakeIdempotency(principal.subject(), "B10_MISTAKE_VERIFY",
+                idempotencyKey, requestDigest);
+        if (replay != null) return replay;
         AssessmentMistake mistake = ownedMistake(mistakeId, principal.subject());
         Instant now = Instant.now();
         try {
@@ -302,7 +382,9 @@ public class B10AssessmentJdbcController {
             throw new ResponseStatusException(HttpStatus.CONFLICT, state.getMessage());
         }
         saveMistake(mistake);
-        return envelope(mistakeView(mistake));
+        Map<String, Object> response = envelope(mistakeView(mistake));
+        saveMistakeIdempotency(principal.subject(), "B10_MISTAKE_VERIFY", idempotencyKey, response);
+        return response;
     }
 
     @PostMapping("/mistakes/{mistakeId}/variant")
@@ -312,9 +394,13 @@ public class B10AssessmentJdbcController {
             @PathVariable long mistakeId,
             @RequestBody Map<String, Object> body,
             @RequestHeader("Idempotency-Key") String idempotencyKey) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "assessment.session.write");
         requireKey(idempotencyKey);
         long variantItemId = positiveLong(body.get("variantItemId"), 0L);
+        String requestDigest = mistakeRequestDigest(mistakeId, body);
+        Map<String, Object> replay = claimMistakeIdempotency(principal.subject(), "B10_MISTAKE_VARIANT",
+                idempotencyKey, requestDigest);
+        if (replay != null) return replay;
         AssessmentMistake mistake = ownedMistake(mistakeId, principal.subject());
         try {
             mistake.registerVariant(variantItemId, Instant.now());
@@ -322,7 +408,9 @@ public class B10AssessmentJdbcController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, invalid.getMessage());
         }
         saveMistake(mistake);
-        return envelope(mistakeView(mistake));
+        Map<String, Object> response = envelope(mistakeView(mistake));
+        saveMistakeIdempotency(principal.subject(), "B10_MISTAKE_VARIANT", idempotencyKey, response);
+        return response;
     }
 
     private void recordMistakes(String subject, List<String> codes, Map<String, String> answerMap,
@@ -349,7 +437,7 @@ public class B10AssessmentJdbcController {
     }
 
     private AssessmentMistake ownedMistake(long mistakeId, String subject) {
-        Map<String, Object> row = one("SELECT * FROM assessment_mistake WHERE mistake_id = ? AND tenant_id = ? AND subject_id = ?",
+        Map<String, Object> row = one("SELECT * FROM assessment_mistake WHERE mistake_id = ? AND tenant_id = ? AND subject_id = ? FOR UPDATE",
                 mistakeId, TENANT, subject);
         if (row == null) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "assessment mistake is unavailable");
         return restoreMistake(row);
@@ -421,7 +509,7 @@ public class B10AssessmentJdbcController {
             @PathVariable String attemptId,
             @RequestBody Map<String, Object> body,
             @RequestHeader("Idempotency-Key") String idempotencyKey) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "assessment.session.write");
         requireKey(idempotencyKey);
         ownerSession(sessionId, principal.subject());
         Map<String, Object> attempt = one("""
@@ -454,7 +542,7 @@ public class B10AssessmentJdbcController {
 
     @GetMapping("/reports/{reportId}")
     public Map<String, Object> readReport(Authentication authentication, @PathVariable String reportId) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "assessment.session.read");
         Map<String, Object> row = one("""
                 SELECT * FROM b10_assessment_report
                  WHERE report_id = ? AND principal_id = ? AND tenant_id = ?
@@ -769,6 +857,57 @@ public class B10AssessmentJdbcController {
                 """, requestDigest, json(Map.of("attemptId", attemptId)), TENANT, subject, "B10_ATTEMPT_SUBMIT", key);
     }
 
+    /** Claim, state update, and response snapshot commit in the same local transaction. */
+    private Map<String, Object> claimMistakeIdempotency(String subject, String operation, String key,
+                                                        String requestDigest) {
+        int inserted = jdbc.update("""
+                INSERT IGNORE INTO assessment_idempotency
+                    (tenant_id, subject_id, operation, idempotency_key, request_digest, response_json, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP(6))
+                """, TENANT, subject, operation, key, requestDigest, json(Map.of("status", "IN_PROGRESS")));
+        if (inserted > 0) return null;
+        Map<String, Object> existing = one("""
+                SELECT request_digest, response_json FROM assessment_idempotency
+                 WHERE tenant_id = ? AND subject_id = ? AND operation = ? AND idempotency_key = ?
+                """, TENANT, subject, operation, key);
+        if (existing == null || !requestDigest.equals(text(existing.get("request_digest")))) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Idempotency-Key was reused with a different mistake request");
+        }
+        Object raw = existing.get("response_json");
+        Object parsed = parseJson(raw instanceof byte[] bytes ? new String(bytes, StandardCharsets.UTF_8) : raw, null);
+        if (!(parsed instanceof Map<?, ?> response) || !response.containsKey("data")) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "mistake request is still being processed");
+        }
+        @SuppressWarnings("unchecked")
+        Map<String, Object> storedResponse = (Map<String, Object>) response;
+        return storedResponse;
+    }
+
+    private void saveMistakeIdempotency(String subject, String operation, String key,
+                                        Map<String, Object> response) {
+        int updated = jdbc.update("""
+                UPDATE assessment_idempotency SET response_json = ?
+                 WHERE tenant_id = ? AND subject_id = ? AND operation = ? AND idempotency_key = ?
+                """, json(response), TENANT, subject, operation, key);
+        if (updated != 1) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "mistake idempotency response was not saved");
+        }
+    }
+
+    private String mistakeRequestDigest(long mistakeId, Map<String, Object> body) {
+        return sha256(mistakeId + "|" + json(canonicalValue(body)));
+    }
+
+    private Object canonicalValue(Object value) {
+        if (value instanceof Map<?, ?> map) {
+            Map<String, Object> ordered = new TreeMap<>();
+            map.forEach((key, child) -> ordered.put(String.valueOf(key), canonicalValue(child)));
+            return ordered;
+        }
+        if (value instanceof List<?> list) return list.stream().map(this::canonicalValue).toList();
+        return value;
+    }
+
     private String storedAttemptId(Object raw) {
         try {
             JsonNode node = mapper.readTree(raw instanceof byte[] bytes ? new String(bytes, StandardCharsets.UTF_8) : String.valueOf(raw));
@@ -877,8 +1016,8 @@ public class B10AssessmentJdbcController {
     private Map<String, Object> one(String sql, Object... args) { List<Map<String, Object>> rows = jdbc.queryForList(sql, args); return rows.isEmpty() ? null : rows.getFirst(); }
     private Object oneValue(String sql, Object... args) { List<Map<String, Object>> rows = jdbc.queryForList(sql, args); return rows.isEmpty() ? null : rows.getFirst().values().stream().findFirst().orElse(null); }
 
-    private Principal principal(Authentication authentication) {
-        return new Principal(AssessmentHttpPrincipals.require(authentication).subject());
+    private Principal principal(Authentication authentication, String permission) {
+        return new Principal(AssessmentHttpPrincipals.require(authentication, permission).subject());
     }
 
     private record Principal(String subject) {}

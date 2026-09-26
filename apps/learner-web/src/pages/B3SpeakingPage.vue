@@ -46,9 +46,7 @@ const demoAudioMessage = ref("正在检查示范音频资源…");
 const currentRoleplayTurn = computed(
   () => roleplay.value?.turns[roleplay.value.turnIndex] ?? null,
 );
-const message = ref(
-  "Phase 1 不提供 AI 发音评分；录音先在本地使用 AES-GCM-256 加密，再登记 SHA-256 元数据。",
-);
+const message = ref("跟读后可回放并自评。录音仅在当前页面保留。");
 
 onMounted(async () => {
   await store.loadPhonetics();
@@ -190,7 +188,7 @@ async function saveShadowing(): Promise<void> {
       positionMs: recordingDurationMs.value,
       attemptCount: shadowing.value.attemptCount + 1,
     };
-    message.value = "影子跟读进度已保存；Phase 1 不生成 AI 分数。";
+    message.value = "跟读进度已保存。";
   } catch (error) {
     message.value =
       error instanceof Error ? error.message : "影子跟读进度暂未同步。";
@@ -261,7 +259,7 @@ async function advanceRoleplay(choiceCode?: string): Promise<void> {
     };
     message.value =
       result.status === "COMPLETED"
-        ? "角色扮演完成；Phase 1 只记录回合和自评，不生成 AI 分数。"
+        ? "角色扮演已完成，可查看并调整自评。"
         : "回合已保存，继续下一步。";
   } catch (error) {
     message.value =
@@ -391,7 +389,7 @@ async function advanceRoleplay(choiceCode?: string): Promise<void> {
         <span class="fallback">服务端脚本校验</span>
       </div>
       <p>
-        分支选项、回合顺序和需要录音的回合由服务端控制；Phase 1 不生成 AI 评分。
+        按提示完成对话，结束后可以自评。
       </p>
       <button type="button" @click="openRoleplay">
         {{ roleplay ? "重新打开咖啡店场景" : "开始角色扮演" }}

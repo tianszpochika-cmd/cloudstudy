@@ -5,13 +5,13 @@ const { experienceStyle, experienceMotion } = useMobileExperience()
 
 import { onShow } from '@dcloudio/uni-app'
 import { computed, ref } from 'vue'
-import { createMobileB5Order, listMobileB5Entitlements, listMobileB5Orders, listMobileB5Skus, prepareMobileB5Payment } from '../../api/b5'
-import { listRecords, money, text, toEntitlement, toOrder, toSku, type MobileB5Entitlement, type MobileB5Order, type MobileB5Sku } from '../../domain/b5'
+import { createMobileB5Order, getMobileB5PublicCatalog, listMobileB5Entitlements, listMobileB5Orders, prepareMobileB5Payment } from '../../api/b5'
+import { listRecords, money, text, toEntitlement, toOrder, toPublicPlan, type MobileB5Entitlement, type MobileB5Order, type MobileB5PublicPlan } from '../../domain/b5'
 import { openUniPage, getUniRuntime } from '../../platform/uni-runtime'
 import { useSessionStore } from '../../stores/session'
 
 const session = useSessionStore()
-const skus = ref<MobileB5Sku[]>([])
+const plans = ref<MobileB5PublicPlan[]>([])
 const orders = ref<MobileB5Order[]>([])
 const entitlements = ref<MobileB5Entitlement[]>([])
 const status = ref<'idle' | 'loading' | 'ready' | 'error'>('idle')
@@ -22,15 +22,15 @@ async function load(): Promise<void> {
   status.value = 'loading'
   message.value = ''
   try {
-    const [skuResponse, orderResponse, entitlementResponse] = await Promise.all([listMobileB5Skus(), listMobileB5Orders(), listMobileB5Entitlements()])
-    skus.value = listRecords(skuResponse).map(toSku).filter((item) => item.status === 'ACTIVE')
+    const [catalogResponse, orderResponse, entitlementResponse] = await Promise.all([getMobileB5PublicCatalog(), listMobileB5Orders(), listMobileB5Entitlements()])
+    plans.value = listRecords(catalogResponse, 'plans').map(toPublicPlan).filter((item) => item.skuId && item.availability === 'PUBLISHED')
     orders.value = listRecords(orderResponse).map(toOrder)
     entitlements.value = listRecords(entitlementResponse).map(toEntitlement)
     status.value = 'ready'
   } catch (error) { status.value = 'error'; message.value = error instanceof Error ? error.message : '商业化服务暂时不可用。' }
 }
 
-async function createOrder(sku: MobileB5Sku): Promise<void> { try { await createMobileB5Order(sku.skuId); message.value = '订单已创建；支付通道按服务端发布闸门保持关闭。'; await load() } catch (error) { message.value = error instanceof Error ? error.message : '订单创建失败。' } }
+async function createOrder(plan: MobileB5PublicPlan): Promise<void> { try { await createMobileB5Order(plan.skuId); await load(); message.value = '订单已创建，请在订单中查看后续状态。' } catch (error) { message.value = error instanceof Error ? error.message : '订单创建失败。' } }
 async function recover(order: MobileB5Order): Promise<void> { try { const response = await prepareMobileB5Payment(order.orderId); const data = response && typeof response === 'object' && 'data' in response ? response.data : response; message.value = data && typeof data === 'object' && 'status' in data ? `支付恢复状态：${text(data.status)}` : '支付恢复请求已提交。' } catch (error) { message.value = error instanceof Error ? error.message : '支付恢复失败。' } }
 function goBack(): void { openUniPage('/pages/world/world') }
 
@@ -38,7 +38,7 @@ onShow(async () => { await session.restore(); if (!session.isAuthenticated) { ge
 </script>
 
 <template>
-  <view class="yx-page b5-page" :style="experienceStyle" :data-motion="experienceMotion"><MobilePageHeader page="b5-commerce" /><view class="b5-access-note">当前以已开放权益为准，支付是否可用请查看订单提示。</view><view v-if="message" class="b5-message">{{ message }}</view><view class="b5-section"><view class="b5-section__heading"><text>当前权益</text><text class="b5-muted">{{ active.length }} 项</text></view><view v-if="active.length" class="b5-list"><view v-for="item in active" :key="item.sourceRef" class="b5-row"><view><text>{{ item.entitlementCode }}</text><text class="b5-muted">有效至 {{ item.expiresAt.slice(0, 10) }}</text></view><text class="b5-status">{{ item.status }}</text></view></view><text v-else class="b5-empty">暂无生效权益</text></view><view class="b5-section"><view class="b5-section__heading"><text>学习方案</text><text class="b5-muted">课程与学习方案</text></view><view v-if="status === 'loading'" class="b5-empty">正在加载学习方案…</view><view v-else class="b5-plan-list"><view v-for="sku in skus" :key="sku.skuId" class="b5-plan"><view><text class="b5-plan__title">{{ sku.title }}</text><text class="b5-muted">{{ sku.billingPeriod }} · {{ sku.skuId }}</text></view><view class="b5-plan__action"><text class="b5-price">{{ money(sku.amountMinor, sku.currency) }}</text><button tabindex="0" role="button" class="b5-primary" type="button" @click="createOrder(sku)">创建订单</button></view></view></view></view><view class="b5-section"><view class="b5-section__heading"><text>订单恢复</text><text class="b5-muted">服务端状态</text></view><view v-if="orders.length" class="b5-list"><view v-for="order in orders" :key="order.orderId" class="b5-row"><view><text>{{ order.orderId }}</text><text class="b5-muted">{{ order.skuId }} · {{ money(order.amountMinor, order.currency) }}</text></view><view class="b5-row__right"><text class="b5-status">{{ order.status }}</text><button tabindex="0" role="button" v-if="order.status === 'CREATED'" class="b5-secondary" type="button" @click="recover(order)">恢复</button></view></view></view><text v-else class="b5-empty">还没有订单</text></view></view>
+  <view class="yx-page b5-page" :style="experienceStyle" :data-motion="experienceMotion"><MobilePageHeader page="b5-commerce" /><view v-if="message" class="b5-message">{{ message }}</view><view class="b5-section"><view class="b5-section__heading"><text>当前权益</text><text class="b5-muted">{{ active.length }} 项</text></view><view v-if="active.length" class="b5-list"><view v-for="item in active" :key="item.sourceRef" class="b5-row"><view><text>{{ item.entitlementCode }}</text><text class="b5-muted">有效至 {{ item.expiresAt.slice(0, 10) }}</text></view><text class="b5-status">{{ item.status }}</text></view></view><text v-else class="b5-empty">暂无生效权益</text></view><view class="b5-section"><view class="b5-section__heading"><text>学习方案</text></view><view v-if="status === 'loading'" class="b5-empty">正在加载学习方案…</view><view v-else-if="!plans.length" class="b5-empty">当前没有可购买的方案。</view><view v-else class="b5-plan-list"><view v-for="plan in plans" :key="plan.skuId" class="b5-plan"><view><text class="b5-plan__title">{{ plan.title }}</text></view><view class="b5-plan__action"><text class="b5-price">{{ money(plan.amountMinor, plan.currency) }}</text><button tabindex="0" role="button" class="b5-primary" type="button" @click="createOrder(plan)">选择方案</button></view></view></view></view><view class="b5-section"><view class="b5-section__heading"><text>订单恢复</text><text class="b5-muted">服务端状态</text></view><view v-if="orders.length" class="b5-list"><view v-for="order in orders" :key="order.orderId" class="b5-row"><view><text>{{ order.orderId }}</text><text class="b5-muted">{{ order.skuId }} · {{ money(order.amountMinor, order.currency) }}</text></view><view class="b5-row__right"><text class="b5-status">{{ order.status }}</text><button tabindex="0" role="button" v-if="order.status === 'CREATED'" class="b5-secondary" type="button" @click="recover(order)">恢复</button></view></view></view><text v-else class="b5-empty">还没有订单</text></view></view>
 </template>
 
 <style scoped lang="scss">

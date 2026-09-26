@@ -37,16 +37,16 @@ public class JdbcDeviceRegistry implements DeviceRegistryPort {
                     databaseDeviceId, registration.principalId().toString(),
                     databaseDeviceId, digest(databaseDeviceId),
                     registration.platform(), registration.active() ? "ACTIVE" : "REVOKED",
-                    Timestamp.from(registration.registeredAt()),
+                    Timestamp.from(registration.lastAuthenticatedAt()),
                     registration.revokedAt() == null ? null : Timestamp.from(registration.revokedAt()),
                     registration.revokedAt() == null ? null : "device_revoked",
-                    Timestamp.from(registration.registeredAt()));
+                    Timestamp.from(registration.lastAuthenticatedAt()));
             return registration;
         } catch (DuplicateKeyException exception) {
             int updated = jdbc.update("UPDATE iam_device SET device_type = ?, status = ?, last_seen_at = ?, "
                             + "revoked_at = ?, revoke_reason = ? WHERE device_id = ? AND principal_id = ?",
                     registration.platform(), registration.active() ? "ACTIVE" : "REVOKED",
-                    Timestamp.from(registration.registeredAt()),
+                    Timestamp.from(registration.lastAuthenticatedAt()),
                     registration.revokedAt() == null ? null : Timestamp.from(registration.revokedAt()),
                     registration.revokedAt() == null ? null : "device_revoked",
                     databaseDeviceId, registration.principalId().toString());

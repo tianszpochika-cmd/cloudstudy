@@ -1,0 +1,16 @@
+{
+  "checks": 16,
+  "pageSamples": 13,
+  "anonymousReturnToChecks": 3,
+  "officialLoginHandoffsPassed": 2,
+  "officialLoginHandoffChecks": 2,
+  "http200": 16,
+  "jwksCors200": 16,
+  "pageErrors": 1,
+  "failedRequests": 0,
+  "horizontalOverflow": 0,
+  "brokenImages": 0,
+  "returnToChecksPassed": 3,
+  "returnToChecks": 3,
+  "mobileB12ProtectedChecks": 1
+}

@@ -1,0 +1,88 @@
+{
+  "capturedAt": "2026-09-24T17:40:05.785Z",
+  "table": "content_service.content_public_site_facet",
+  "rows": [
+    {
+      "status": "PUBLISHED",
+      "facetId": "compliance-adult-phase-boundary",
+      "uiLocale": "en-US",
+      "facetType": "COMPLIANCE",
+      "updatedAt": "2026-09-16 02:17:43.186358",
+      "payloadJson": {
+        "body": "The current product targets adults and university students. K12, child accounts, guardian binding and minor payments remain closed until a dedicated compliance gate passes.",
+        "title": "Adult Phase 1 boundary",
+        "version": "Phase 1",
+        "noticeCode": "compliance-adult-phase-boundary",
+        "effectiveAt": "2026-09-16T02:17:43.000Z"
+      }
+    },
+    {
+      "status": "PUBLISHED",
+      "facetId": "compliance-adult-phase-boundary",
+      "uiLocale": "zh-CN",
+      "facetType": "COMPLIANCE",
+      "updatedAt": "2026-09-16 02:17:43.186358",
+      "payloadJson": {
+        "body": "当前产品面向成年用户与大学生；K12、儿童账号、监护绑定及未成年人支付能力在专项合规 Gate 前不会开放。",
+        "title": "成人阶段边界",
+        "version": "Phase 1",
+        "noticeCode": "compliance-adult-phase-boundary",
+        "effectiveAt": "2026-09-16T02:17:43.000Z"
+      }
+    },
+    {
+      "status": "PUBLISHED",
+      "facetId": "compliance-privacy-data",
+      "uiLocale": "en-US",
+      "facetType": "COMPLIANCE",
+      "updatedAt": "2026-09-16 02:17:43.186358",
+      "payloadJson": {
+        "body": "The official site exposes public information only. It does not submit learning data, passwords, tokens, recordings or payment credentials.",
+        "title": "Privacy and data processing",
+        "version": "Public notice",
+        "noticeCode": "compliance-privacy-data",
+        "effectiveAt": "2026-09-16T02:17:43.000Z"
+      }
+    },
+    {
+      "status": "PUBLISHED",
+      "facetId": "compliance-privacy-data",
+      "uiLocale": "zh-CN",
+      "facetType": "COMPLIANCE",
+      "updatedAt": "2026-09-16 02:17:43.186358",
+      "payloadJson": {
+        "body": "官网仅展示公开信息，不收集登录后学习数据，不在公开页面提交密码、Token、录音或支付凭证。",
+        "title": "隐私与数据处理",
+        "version": "公开说明",
+        "noticeCode": "compliance-privacy-data",
+        "effectiveAt": "2026-09-16T02:17:43.000Z"
+      }
+    },
+    {
+      "status": "PUBLISHED",
+      "facetId": "download-learner-web",
+      "uiLocale": "en-US",
+      "facetType": "DOWNLOAD",
+      "updatedAt": "2026-09-23 04:22:23.988908",
+      "payloadJson": {
+        "status": "AVAILABLE",
+        "channel": "Learner Web",
+        "platform": "WEB",
+        "downloadUrl": "http://127.0.0.1:18182/start"
+      }
+    },
+    {
+      "status": "PUBLISHED",
+      "facetId": "download-learner-web",
+      "uiLocale": "zh-CN",
+      "facetType": "DOWNLOAD",
+      "updatedAt": "2026-09-23 04:22:23.988908",
+      "payloadJson": {
+        "status": "AVAILABLE",
+        "channel": "学习 Web",
+        "platform": "WEB",
+        "downloadUrl": "http://127.0.0.1:18182/start"
+      }
+    }
+  ]
+}

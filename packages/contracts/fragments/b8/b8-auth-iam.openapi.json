@@ -2476,101 +2476,6 @@
           }
         }
       }
-    },
-    "/api/v1/iam/account-deletions": {
-      "post": {
-        "tags": [
-          "b8-auth"
-        ],
-        "summary": "Request self-scoped account deletion with a 168-hour cooling window (M6-008 live)",
-        "operationId": "requestAccountDeletion",
-        "x-contract": {
-          "domain": "iam",
-          "owner": "iam-service",
-          "phase": "P1",
-          "authentication": "self-owned-jwt"
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/v1/iam/account-deletions/{deletionRequestId}": {
-      "get": {
-        "tags": [
-          "b8-auth"
-        ],
-        "summary": "Read own deletion request status (M6-008 live)",
-        "operationId": "readAccountDeletionStatus",
-        "x-contract": {
-          "domain": "iam",
-          "owner": "iam-service",
-          "phase": "P1",
-          "authentication": "self-owned-jwt"
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "deletionRequestId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/v1/iam/account-deletions/{deletionRequestId}/cancel": {
-      "post": {
-        "tags": [
-          "b8-auth"
-        ],
-        "summary": "Cancel a cooling deletion request (M6-008 live)",
-        "operationId": "cancelAccountDeletion",
-        "x-contract": {
-          "domain": "iam",
-          "owner": "iam-service",
-          "phase": "P1",
-          "authentication": "self-owned-jwt"
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "deletionRequestId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
     }
   },
   "components": {
@@ -3972,7 +3877,8 @@
           },
           "lastActiveAt": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "Latest successful authentication on this device; this is not continuous activity tracking."
           }
         }
       },

@@ -39,7 +39,7 @@ function switchLocale(value: string): void {
 
 <template>
   <el-dropdown trigger="click" @command="switchLocale">
-    <button class="admin-icon-button" type="button" :aria-label="adminT('localeSwitcher.ariaLabel', { label: label, contentLocale: contentLocale })">
+    <button class="admin-icon-button admin-locale-button" type="button" :aria-label="adminT('localeSwitcher.ariaLabel', { label: label, contentLocale: contentLocale })">
       <span aria-hidden="true">{{ adminT('localeSwitcher.iconMark') }}</span><span class="admin-locale-tag">{{ current }}</span>
     </button>
     <template #dropdown>
@@ -53,5 +53,15 @@ function switchLocale(value: string): void {
 </template>
 
 <style scoped>
+.admin-locale-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: auto;
+  min-width: 72px;
+  padding: 0 10px;
+  white-space: nowrap;
+}
 .admin-locale-tag { font-size: 10px; opacity: 0.75; }
 </style>

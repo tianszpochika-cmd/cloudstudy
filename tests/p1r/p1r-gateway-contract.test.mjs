@@ -123,7 +123,7 @@ test('M2-001 health identity is Gateway-owned and the compatibility projection p
   );
 });
 
-test('M2-001 approved additive nodes are exactly the reviewed P1-LIVE entries', () => {
+test('M2-001 approved additive nodes are exactly the reviewed post-baseline additions', () => {
   assert.deepEqual(
     M2001_APPROVED_ADDITIVE_NODES.map((entry) => [entry.segments.join('/'), entry.append ?? null, entry.reason]),
     [
@@ -131,6 +131,11 @@ test('M2-001 approved additive nodes are exactly the reviewed P1-LIVE entries', 
       ['x-b8-authentication/accessToken/authorizationClaims', ['adult_gate', 'consent_state'], 'P1-LIVE-001 eligibility claims listed in the claim inventory'],
       ['x-b8-authentication/accessToken/identityClaims', null, 'P1-LIVE-006 access-token identity claims documented'],
       ['x-b8-authentication/accessToken/authorizationClaims', ['phase', 'account_status'], 'P1-LIVE-006 identity claims listed in the claim inventory'],
+      ['paths//api/v1/grammar/points/get/x-owner', null, 'B3 grammar points read owner-bound to content-service'],
+      ['paths//api/v1/grammar/points/get/x-permission', null, 'B3 grammar points read permission-bound to content.read'],
+      ['paths//api/v1/grammar/points/get/security', null, 'B3 grammar points read operation declares verified bearer authentication'],
+      ['paths//api/v1/grammar/points/get/x-contract', null, 'B3 grammar points read publishes its contract-first owner and closed legacy eligibility state'],
+      ['paths//api/v1/grammar/points/get/x-authorization', null, 'B3 grammar points read declares its fail-closed content-service PEP facts'],
     ],
   );
 });

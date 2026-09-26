@@ -2,6 +2,7 @@ package com.englishflow.notification.adapter.memory;
 
 import com.englishflow.notification.domain.DeliveryAttempt;
 import com.englishflow.notification.domain.NotificationChannel;
+import com.englishflow.notification.domain.NotificationCategory;
 import com.englishflow.notification.domain.NotificationMessage;
 import com.englishflow.notification.domain.NotificationPreference;
 import com.englishflow.notification.port.NotificationFactStore;
@@ -23,8 +24,8 @@ public final class InMemoryNotificationFactStore implements NotificationFactStor
 
     @Override
     public synchronized Optional<NotificationPreference> findPreference(String tenantId, String principalId,
-            String notificationType, NotificationChannel channel) {
-        return Optional.ofNullable(preferences.get(preferenceKey(tenantId, principalId, notificationType, channel)));
+            NotificationCategory category, NotificationChannel channel) {
+        return Optional.ofNullable(preferences.get(preferenceKey(tenantId, principalId, category, channel)));
     }
 
     @Override
@@ -35,9 +36,17 @@ public final class InMemoryNotificationFactStore implements NotificationFactStor
     }
 
     @Override
-    public synchronized void savePreference(NotificationPreference preference) {
-        preferences.put(preferenceKey(preference.tenantId(), preference.principalId(),
-                preference.notificationType(), preference.channel()), preference);
+    public synchronized boolean compareAndSetPreference(NotificationPreference preference, long expectedVersion) {
+        String key = preferenceKey(preference.tenantId(), preference.principalId(),
+                preference.category(), preference.channel());
+        NotificationPreference current = preferences.get(key);
+        long currentVersion = current == null ? 0 : current.version();
+        if (expectedVersion < 0 || currentVersion != expectedVersion
+                || preference.version() != expectedVersion + 1) {
+            return false;
+        }
+        preferences.put(key, preference);
+        return true;
     }
 
     @Override
@@ -81,9 +90,9 @@ public final class InMemoryNotificationFactStore implements NotificationFactStor
         idempotency.put(idempotencyKey(scope, key), value);
     }
 
-    private static String preferenceKey(String tenantId, String principalId, String notificationType,
+    private static String preferenceKey(String tenantId, String principalId, NotificationCategory category,
             NotificationChannel channel) {
-        return tenantId + '|' + principalId + '|' + notificationType + '|' + channel;
+        return tenantId + '|' + principalId + '|' + category + '|' + channel;
     }
 
     private static String messageKey(String tenantId, String principalId, String messageId) {

@@ -1,14 +1,17 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 import { createGatewayAuthAdapter, safeReturnTo, type AdultGateStatus, type AuthSessionSnapshot, type AuthStatus, type AuthTokenPair, type JwtAuthAdapter, type PrincipalSnapshot } from '../auth/gateway-auth'
-import { getInMemoryAccessToken, setInMemoryAccessToken } from '../auth/access-token'
-import { ApiError } from '../api/client'
+import { getInMemoryAccessToken, getInMemoryAuthSnapshot, setInMemoryAuthSnapshot } from '../auth/access-token'
+import { learnerAuthFailureMarker } from '../auth/auth-failure-copy'
+import { ApiError, type ApiAuthBinding } from '../api/client'
 import { getGatewayBaseUrl } from '../platform/gateway'
+import { B1_STORAGE_KEY } from '../domain/b1'
 
 export type AuthErrorCode = 'AUTH_FAILED' | 'SESSION_EXPIRED' | 'LOGOUT_FAILED' | 'REVOKE_FAILED'
 
 const RETURN_TO_KEY = 'yx.auth.return-to'
 const SESSION_HINT_KEY = 'yx.auth.session-hint'
+const B4_OFFLINE_STORAGE_KEY = 'yx.b4.learner-web.sync.v1'
 
 function hasSessionHint(): boolean {
   try {
@@ -28,6 +31,28 @@ function clearSessionHint(): void {
     if (typeof window !== 'undefined' && window.localStorage) window.localStorage.removeItem(SESSION_HINT_KEY)
   } catch { /* ignore */ }
 }
+function clearB1Snapshot(): void {
+  try {
+    if (typeof window !== 'undefined' && window.localStorage) window.localStorage.removeItem(B1_STORAGE_KEY)
+  } catch { /* the live B1 store also clears itself when identity changes */ }
+}
+function clearB4OfflineSnapshot(): void {
+  try {
+    if (typeof window !== 'undefined' && window.localStorage) window.localStorage.removeItem(B4_OFFLINE_STORAGE_KEY)
+  } catch { /* B4 also rejects unowned records when its store restores */ }
+}
+
+function getReturnToStorage(): Storage | null {
+  try {
+    if (typeof window === 'undefined') return null
+    return window.sessionStorage ?? null
+  } catch { return null }
+}
+
+function removePersistedReturnTo(storage: Storage | null): void {
+  try { storage?.removeItem(RETURN_TO_KEY) } catch { /* the in-memory target remains authoritative */ }
+}
+
 let memoryDeviceId: string | null = null
 
 export const useSessionStore = defineStore('session', () => {
@@ -43,10 +68,16 @@ export const useSessionStore = defineStore('session', () => {
   const authErrorCode = ref<AuthErrorCode | null>(null)
   const forbiddenReason = ref<string | null>(null)
   const restored = ref(false)
+  const authEpoch = ref(0)
+  const authGeneration = computed(() => authEpoch.value)
   const isAuthenticated = computed(() => Boolean(accessToken.value))
+  const isLearningReady = computed(() => isAuthenticated.value && adultGate.value === 'PASSED' && permissions.value.includes('learning.plan.read'))
   let activeAdapter: JwtAuthAdapter | null = null
   let restorePromise: Promise<void> | null = null
   let refreshPromise: Promise<boolean> | null = null
+  let memoryReturnTo: string | null = null
+  let preferMemoryReturnTo = false
+  let consumedPersistedReturnTo: string | null = null
 
   function currentInternalPath(): string {
     if (typeof window === 'undefined') return '/home'
@@ -75,6 +106,7 @@ export const useSessionStore = defineStore('session', () => {
       activeAdapter = createGatewayAuthAdapter({
         baseUrl: getGatewayBaseUrl(),
         getAccessToken: () => accessToken.value,
+        getAuthSnapshot: getInMemoryAuthSnapshot,
       })
     }
     return activeAdapter
@@ -83,25 +115,56 @@ export const useSessionStore = defineStore('session', () => {
   function applySnapshot(snapshot: AuthSessionSnapshot | null): void {
     if (!snapshot) return
     if (snapshot.tokenPair) setTokenPair(snapshot.tokenPair)
+    const verifiedSubject = snapshot.principal?.subject?.trim()
+    if (verifiedSubject && userId.value && verifiedSubject !== userId.value) {
+      clear()
+      lastError.value = '认证主体不一致，请重新登录。'
+      throw new Error(lastError.value)
+    }
+    if (verifiedSubject && principal.value?.subject && verifiedSubject !== principal.value.subject) clearB1Snapshot()
     principal.value = snapshot.principal ?? principal.value
+    if (verifiedSubject) userId.value = verifiedSubject
     permissions.value = snapshot.permissions ?? snapshot.principal?.permissions ?? permissions.value
     adultGate.value = snapshot.adultGate ?? snapshot.principal?.adultGate ?? adultGate.value
+    if (verifiedSubject && accessToken.value) {
+      const readyStatus = status.value === 'authenticated' || status.value === 'refreshing'
+      setInMemoryAuthSnapshot({
+        accessToken: accessToken.value,
+        subject: verifiedSubject,
+        generation: authEpoch.value,
+        authenticated: Boolean(readyStatus && (!userId.value || userId.value === verifiedSubject)),
+      })
+    }
   }
 
   function setTokenPair(tokens: AuthTokenPair): void {
     const access = tokens.accessToken.trim()
     if (!access) throw new Error('认证服务没有返回访问凭证。')
+    // Remove the previous verified owner before replacing its token. The new
+    // token remains bootstrap-only until IAM confirms the principal below.
+    setInMemoryAuthSnapshot({ accessToken: null, subject: null, generation: authEpoch.value, authenticated: false })
+    const nextSubject = tokens.userId?.trim() || null
+    const previousSubject = principal.value?.subject ?? userId.value
+    // IAM refresh returns no userId. Preserve the verified subject only while a
+    // refresh/restore is in flight; the subsequent principal read must match it.
+    const preserveUnknownSubject = !nextSubject && (status.value === 'refreshing' || status.value === 'restoring')
+    if (previousSubject && previousSubject !== nextSubject && !preserveUnknownSubject) {
+      clearB1Snapshot()
+      principal.value = null
+      permissions.value = []
+      adultGate.value = 'UNKNOWN'
+    }
     accessToken.value = access
     deviceId.value = tokens.deviceId?.trim() || deviceId.value
     memoryDeviceId = deviceId.value
     sessionId.value = tokens.sessionId?.trim() || sessionId.value
-    userId.value = tokens.userId?.trim() || userId.value
+    userId.value = nextSubject ?? (preserveUnknownSubject ? userId.value : null)
     adultGate.value = tokens.adultGate ?? adultGate.value
     status.value = 'authenticated'
     authErrorCode.value = null
     forbiddenReason.value = null
     lastError.value = null
-    setInMemoryAccessToken(access)
+    setInMemoryAuthSnapshot({ accessToken: access, subject: null, generation: authEpoch.value, authenticated: false })
     markSessionHint()
   }
 
@@ -109,6 +172,7 @@ export const useSessionStore = defineStore('session', () => {
     if (restored.value) return
     if (restorePromise) return restorePromise
     restorePromise = (async () => {
+      const generation = authEpoch.value
       status.value = 'restoring'
       try {
         if (!accessToken.value && !hasSessionHint()) {
@@ -117,10 +181,13 @@ export const useSessionStore = defineStore('session', () => {
           return
         }
         if (!accessToken.value) {
-          setTokenPair(await adapter().refresh())
+          const pair = await adapter().refresh()
+          if (generation !== authEpoch.value) return
+          setTokenPair(pair)
         }
         const snapshot = await adapter().restoreSession()
-        if (!snapshot) {
+        if (generation !== authEpoch.value) return
+        if (!snapshot?.principal) {
           clear()
           status.value = 'unauthenticated'
           return
@@ -128,11 +195,14 @@ export const useSessionStore = defineStore('session', () => {
         applySnapshot(snapshot)
         if (accessToken.value) {
           const permissionSnapshot = await adapter().getPermissions()
+          if (generation !== authEpoch.value) return
+          if (!permissionSnapshot?.principal) throw new Error('认证服务未确认当前主体。')
           applySnapshot(permissionSnapshot)
         }
         if (accessToken.value) status.value = 'authenticated'
         else status.value = 'unauthenticated'
       } catch (error) {
+        if (generation !== authEpoch.value) return
         clear()
         status.value = 'unauthenticated'
         if (error instanceof ApiError && (error.status === 401 || error.status === 404)) return
@@ -152,6 +222,8 @@ export const useSessionStore = defineStore('session', () => {
   }
 
   async function login(identifier: string, password: string): Promise<boolean> {
+    clear()
+    const generation = authEpoch.value
     status.value = 'restoring'
     authErrorCode.value = null
     lastError.value = null
@@ -161,25 +233,28 @@ export const useSessionStore = defineStore('session', () => {
         password,
         device: { deviceType: 'WEB', clientVersion: 'local-dev', deviceName: '浏览器' },
       })
+      if (generation !== authEpoch.value) return false
       setTokenPair(pair)
-      applySnapshot(await adapter().getPermissions())
+      const snapshot = await adapter().getPermissions()
+      if (generation !== authEpoch.value) return false
+      if (!snapshot?.principal) throw new Error('认证服务未确认当前主体。')
+      applySnapshot(snapshot)
       return true
     } catch (error) {
+      if (generation !== authEpoch.value) return false
       clear()
       status.value = 'error'
       authErrorCode.value = 'AUTH_FAILED'
       // Anti-enumeration + rate-limit surfacing: the message never says whether the
       // identifier exists; 429/423 keep their own recoverable wording from the server.
-      lastError.value = error instanceof ApiError && error.status === 429
-        ? '请求过于频繁，请稍后再试。'
-        : error instanceof ApiError && error.status === 423
-          ? '账号已被暂时锁定，请稍后再试或走密码重置。'
-          : error instanceof Error ? error.message : 'LOGIN_FAILED'
+      lastError.value = learnerAuthFailureMarker(error)
       return false
     }
   }
 
   async function register(identifier: string, password: string): Promise<boolean> {
+    clear()
+    const generation = authEpoch.value
     status.value = 'restoring'
     authErrorCode.value = null
     lastError.value = null
@@ -189,18 +264,19 @@ export const useSessionStore = defineStore('session', () => {
         password,
         device: { deviceType: 'WEB', clientVersion: 'local-dev', deviceName: '浏览器' },
       })
+      if (generation !== authEpoch.value) return false
       setTokenPair(pair)
-      applySnapshot(await adapter().getPermissions())
+      const snapshot = await adapter().getPermissions()
+      if (generation !== authEpoch.value) return false
+      if (!snapshot?.principal) throw new Error('认证服务未确认当前主体。')
+      applySnapshot(snapshot)
       return true
     } catch (error) {
+      if (generation !== authEpoch.value) return false
       clear()
       status.value = 'error'
       authErrorCode.value = 'AUTH_FAILED'
-      lastError.value = error instanceof ApiError && error.status === 429
-        ? '请求过于频繁，请稍后再试。'
-        : error instanceof ApiError && error.status === 409
-          ? '该账号已存在，请直接登录或走密码重置。'
-          : error instanceof Error ? error.message : 'REGISTER_FAILED'
+      lastError.value = learnerAuthFailureMarker(error)
       return false
     }
   }
@@ -219,10 +295,10 @@ export const useSessionStore = defineStore('session', () => {
     }
   }
 
-  async function confirmPasswordReset(token: string, newPassword: string): Promise<boolean> {
+  async function confirmPasswordReset(identifier: string, resetToken: string, newPassword: string): Promise<boolean> {
     lastError.value = null
     try {
-      await adapter().confirmPasswordReset({ token: token.trim(), newPassword })
+      await adapter().confirmPasswordReset({ identifier: identifier.trim(), resetToken: resetToken.trim(), newPassword })
       return true
     } catch (error) {
       lastError.value = error instanceof Error ? error.message : 'RESET_CONFIRM_FAILED'
@@ -234,12 +310,21 @@ export const useSessionStore = defineStore('session', () => {
     if (refreshPromise) return refreshPromise
     refreshPromise = (async () => {
       if (!accessToken.value && !hasSessionHint()) return false
+      const generation = authEpoch.value
       status.value = 'refreshing'
       try {
-        setTokenPair(await adapter().refresh())
-        applySnapshot(await adapter().getPermissions())
+        const pair = await adapter().refresh()
+        if (generation !== authEpoch.value) return false
+        setTokenPair(pair)
+        status.value = 'refreshing'
+        const snapshot = await adapter().getPermissions()
+        if (generation !== authEpoch.value) return false
+        if (!snapshot?.principal) throw new Error('认证服务未确认当前主体。')
+        applySnapshot(snapshot)
+        status.value = 'authenticated'
         return true
       } catch (error) {
+        if (generation !== authEpoch.value) return false
         clear()
         status.value = 'unauthenticated'
         authErrorCode.value = 'SESSION_EXPIRED'
@@ -253,15 +338,22 @@ export const useSessionStore = defineStore('session', () => {
   }
 
   async function logout(allDevices = false): Promise<boolean> {
+    const revokingToken = accessToken.value
+    authEpoch.value += 1
+    setInMemoryAuthSnapshot({ accessToken: revokingToken, subject: null, generation: authEpoch.value, authenticated: false })
+    clearB4OfflineSnapshot()
+    const generation = authEpoch.value
     status.value = 'revoking'
     try {
       await adapter().logout({ allDevices })
+      if (generation !== authEpoch.value) return false
       clear()
       // The session is dead from here on: never leave the user on a now-unauthorized
       // page waiting for a guard that only runs on navigation.
       await navigateToLogin('/home').catch(() => {})
       return true
     } catch (error) {
+      if (generation !== authEpoch.value) return false
       clear()
       lastError.value = error instanceof Error ? error.message : 'LOGOUT_FAILED'
       authErrorCode.value = 'LOGOUT_FAILED'
@@ -273,12 +365,20 @@ export const useSessionStore = defineStore('session', () => {
 
   async function revokeCurrentSession(): Promise<boolean> {
     if (!sessionId.value) { clear(); return false }
+    const revokingToken = accessToken.value
+    authEpoch.value += 1
+    setInMemoryAuthSnapshot({ accessToken: revokingToken, subject: null, generation: authEpoch.value, authenticated: false })
+    clearB4OfflineSnapshot()
+    const generation = authEpoch.value
+    const revokingSessionId = sessionId.value
     status.value = 'revoking'
     try {
-      await adapter().revoke(sessionId.value)
+      await adapter().revoke(revokingSessionId)
+      if (generation !== authEpoch.value) return false
       clear()
       return true
     } catch (error) {
+      if (generation !== authEpoch.value) return false
       clear()
       lastError.value = error instanceof Error ? error.message : 'REVOKE_FAILED'
       authErrorCode.value = 'REVOKE_FAILED'
@@ -290,12 +390,15 @@ export const useSessionStore = defineStore('session', () => {
   // P1-LIVE-014: the server only accepts b30-adult-v1; the old v2-phase1 default
   // made every UI gate confirmation fail with policy_version_invalid.
   async function confirmAdultGate(birthYear: number, policyVersion = 'b30-adult-v1'): Promise<boolean> {
+    const generation = authEpoch.value
     try {
       const snapshot = await adapter().confirmAdultGate({ confirmed: true, birthYear, policyVersion })
+      if (generation !== authEpoch.value) return false
       applySnapshot(snapshot)
       adultGate.value = snapshot?.adultGate === 'PASSED' ? 'PASSED' : 'REJECTED'
       return adultGate.value === 'PASSED'
     } catch (error) {
+      if (generation !== authEpoch.value) return false
       adultGate.value = 'REJECTED'
       lastError.value = error instanceof Error ? error.message : 'ADULT_GATE_FAILED'
       return false
@@ -303,36 +406,121 @@ export const useSessionStore = defineStore('session', () => {
   }
 
   function setReturnTo(value: unknown): void {
-    if (typeof window !== 'undefined') window.sessionStorage.setItem(RETURN_TO_KEY, safeReturnTo(value))
+    const returnTo = safeReturnTo(value)
+    memoryReturnTo = returnTo
+    preferMemoryReturnTo = false
+    consumedPersistedReturnTo = null
+
+    const storage = getReturnToStorage()
+    if (!storage) {
+      preferMemoryReturnTo = true
+      return
+    }
+    try {
+      storage.setItem(RETURN_TO_KEY, returnTo)
+    } catch {
+      // If a previous value cannot be replaced, ignore it until a later write
+      // succeeds so it cannot override this navigation's in-memory target.
+      preferMemoryReturnTo = true
+      removePersistedReturnTo(storage)
+    }
   }
 
   function consumeReturnTo(): string {
-    if (typeof window === 'undefined') return '/home'
-    const value = safeReturnTo(window.sessionStorage.getItem(RETURN_TO_KEY))
-    window.sessionStorage.removeItem(RETURN_TO_KEY)
-    return value
+    if (preferMemoryReturnTo) {
+      const value = safeReturnTo(memoryReturnTo ?? '/home')
+      memoryReturnTo = null
+      return value
+    }
+
+    const storage = getReturnToStorage()
+    if (!storage) {
+      preferMemoryReturnTo = true
+      const value = safeReturnTo(memoryReturnTo ?? '/home')
+      memoryReturnTo = null
+      return value
+    }
+
+    try {
+      const persistedReturnTo = storage.getItem(RETURN_TO_KEY)
+      if (persistedReturnTo !== null && persistedReturnTo !== consumedPersistedReturnTo) {
+        memoryReturnTo = null
+        try {
+          storage.removeItem(RETURN_TO_KEY)
+        } catch {
+          // Keep a one-shot marker when storage refuses removal.
+          consumedPersistedReturnTo = persistedReturnTo
+        }
+        return safeReturnTo(persistedReturnTo)
+      }
+      if (persistedReturnTo !== null) removePersistedReturnTo(storage)
+      const value = safeReturnTo(memoryReturnTo ?? '/home')
+      memoryReturnTo = null
+      return value
+    } catch {
+      preferMemoryReturnTo = true
+      removePersistedReturnTo(storage)
+      const value = safeReturnTo(memoryReturnTo ?? '/home')
+      memoryReturnTo = null
+      return value
+    }
   }
 
   function peekReturnTo(): string {
-    if (typeof window === 'undefined') return '/home'
-    return safeReturnTo(window.sessionStorage.getItem(RETURN_TO_KEY))
+    if (preferMemoryReturnTo) return safeReturnTo(memoryReturnTo ?? '/home')
+
+    const storage = getReturnToStorage()
+    if (!storage) {
+      preferMemoryReturnTo = true
+      return safeReturnTo(memoryReturnTo ?? '/home')
+    }
+
+    try {
+      const persistedReturnTo = storage.getItem(RETURN_TO_KEY)
+      if (persistedReturnTo !== null && persistedReturnTo !== consumedPersistedReturnTo) {
+        return safeReturnTo(persistedReturnTo)
+      }
+      if (persistedReturnTo !== null) removePersistedReturnTo(storage)
+      return safeReturnTo(memoryReturnTo ?? '/home')
+    } catch {
+      preferMemoryReturnTo = true
+      removePersistedReturnTo(storage)
+      return safeReturnTo(memoryReturnTo ?? '/home')
+    }
   }
 
-  async function handleUnauthorized(): Promise<void> {
+  async function handleUnauthorized(binding?: ApiAuthBinding | null): Promise<void> {
+    const stillBound = !binding || matchesAuthBinding(binding)
+    const alreadyExpired = Boolean(binding && authEpoch.value > binding.generation && !accessToken.value
+      && !principal.value && status.value === 'unauthenticated')
+    if (binding && !stillBound && !alreadyExpired) return
     const current = currentInternalPath()
     const returnTo = current === '/login' || current === '/forbidden' ? '/home' : current
     setReturnTo(returnTo)
-    clear()
+    if (stillBound) clear()
     status.value = 'unauthenticated'
     authErrorCode.value = 'SESSION_EXPIRED'
     lastError.value = 'SESSION_EXPIRED'
     await navigateToLogin(returnTo)
   }
 
-  async function handleForbidden(error: ApiError): Promise<void> {
+  function matchesAuthBinding(binding: ApiAuthBinding): boolean {
+    const subject = principal.value?.subject?.trim()
+    const readyStatus = status.value === 'authenticated' || status.value === 'refreshing'
+    return Boolean(readyStatus && accessToken.value && subject === binding.subject
+      && authEpoch.value === binding.generation && (!userId.value || userId.value === subject))
+  }
+
+  async function handleForbidden(error: ApiError, binding?: ApiAuthBinding | null): Promise<void> {
+    if (binding && !matchesAuthBinding(binding)) return
     forbiddenReason.value = forbiddenMessage(error)
     const attemptedPath = currentInternalPath()
     const { router } = await import('../router')
+    if (binding && !matchesAuthBinding(binding)) return
+    // Onboarding is the only place where an adult can grant the missing IAM
+    // consents. Owner PEPs may use a generic 403 before consent; keep the form
+    // available and let it show the local error instead of stranding the user.
+    if (router.currentRoute.value.name === 'onboarding') return
     // A learner who has not given consent yet is not forbidden: the learner service answers
     // CONSENT_REQUIRED for profile, targets and preferences until the onboarding consents are given,
     // and every other code in LearnerDecisionCode is a real denial. Treating this one as a denial
@@ -364,6 +552,10 @@ export const useSessionStore = defineStore('session', () => {
   }
 
   function clear(): void {
+    authEpoch.value += 1
+    setInMemoryAuthSnapshot({ accessToken: null, subject: null, generation: authEpoch.value, authenticated: false })
+    clearB1Snapshot()
+    clearB4OfflineSnapshot()
     accessToken.value = null
     deviceId.value = null
     memoryDeviceId = null
@@ -376,7 +568,6 @@ export const useSessionStore = defineStore('session', () => {
     lastError.value = null
     authErrorCode.value = null
     forbiddenReason.value = null
-    setInMemoryAccessToken(null)
     clearSessionHint()
   }
 
@@ -393,7 +584,9 @@ export const useSessionStore = defineStore('session', () => {
     authErrorCode,
     forbiddenReason,
     restored,
+    authGeneration,
     isAuthenticated,
+    isLearningReady,
     restore,
     prepareLogin,
     login,

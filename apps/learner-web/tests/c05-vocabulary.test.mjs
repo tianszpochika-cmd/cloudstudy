@@ -29,6 +29,6 @@ test('C05 Web keeps legitimate empty data distinct from offline/error states', a
   const statePanel = await read('src/components/b10/B10StatePanel.vue')
   assert.match(page, /status === 'empty'/)
   assert.match(page, /store\.vocabularyMessage/)
-  assert.match(statePanel, /props\.status === 'offline'/)
+  assert.match(statePanel, /'offline', 'error', 'forbidden', 'stale'/)
   assert.match(statePanel, /state-panel--\$\{status\}/)
 })

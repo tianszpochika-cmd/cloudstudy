@@ -1,39 +1,98 @@
 <script setup lang="ts">
-import MobilePageHeader from '../../components/MobilePageHeader.vue'
-import { useMobileExperience } from '../../platform/experience'
-const { experienceStyle, experienceMotion } = useMobileExperience()
-
+import { ref } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
+import MobilePageHeader from '../../components/MobilePageHeader.vue'
 import B4StatusPanel from '../../components/b4/B4StatusPanel.vue'
-import type { B4PerformanceLevel } from '../../domain/b4'
-import { getUniRuntime } from '../../platform/uni-runtime'
-import { useSessionStore } from '../../stores/session'
+import { ensureMobilePageAccess } from '../../auth/navigation'
+import type { B4AvatarItem, B4Loadout, B4PerformanceLevel } from '../../domain/b4'
+import { useMobileExperience } from '../../platform/experience'
+import { openUniPage } from '../../platform/uni-runtime'
 import { useB4Store } from '../../stores/b4'
 
-const session = useSessionStore()
+const { experienceStyle, experienceMotion } = useMobileExperience()
 const b4 = useB4Store()
+const accessGranted = ref(false)
+const pageLoading = ref(true)
+const pageReady = ref(false)
 
 onShow(async () => {
-  await session.restore()
-  if (!session.isAuthenticated) { getUniRuntime().navigateTo({ url: '/pages/login/login' }); return }
+  accessGranted.value = false
+  pageReady.value = false
+  pageLoading.value = true
+  if (!await ensureMobilePageAccess('/pages/b4-avatar/b4-avatar')) {
+    pageLoading.value = false
+    return
+  }
+  accessGranted.value = true
   b4.restore()
-  if (!b4.avatarProfile) void b4.loadWorld()
+  await loadAvatarPage()
 })
 
+async function loadAvatarPage(): Promise<void> {
+  pageReady.value = false
+  pageLoading.value = true
+  try {
+    await b4.loadWorld()
+    pageReady.value = b4.status === 'ready'
+  } finally {
+    pageLoading.value = false
+  }
+}
+
 function selectPerformance(level: B4PerformanceLevel): void { b4.setPerformance(level) }
+function loadoutTitle(loadout: B4Loadout, index: number): string {
+  return loadout.name !== loadout.loadoutId ? loadout.name : `套装 ${index + 1}`
+}
+function itemTitle(item: B4AvatarItem): string {
+  const slot: Record<string, string> = { HEAD: '头部装扮', FACE: '面部装扮', BODY: '服装', AURA: '光效装扮' }
+  return slot[item.slot] ?? '装扮素材'
+}
+function itemQuality(quality: string): string {
+  const labels: Record<string, string> = { COMMON: '普通款', RARE: '稀有款', EPIC: '珍藏款', LEGENDARY: '典藏款' }
+  return labels[quality] ?? '款式待补充'
+}
 </script>
 
 <template>
   <view class="yx-page b4-avatar" :style="experienceStyle" :data-motion="experienceMotion">
     <MobilePageHeader page="b4-avatar" />
 
-    <B4StatusPanel :status="b4.status" :online="b4.online" :message="b4.lastError" :queue-count="b4.queueCount" :performance-level="b4.performanceLevel" @retry="b4.loadWorld" @sync="b4.syncOffline" @performance="selectPerformance" />
-    <view class="yx-card preview-card"><view class="heading"><view><text class="kicker">MY LOOK</text><text class="card-title">{{ b4.effectiveAvatarRenderMode }}</text></view><text class="muted">{{ b4.avatarResources?.resourceVersion ?? '资源版本未返回' }}</text></view><view class="avatar-preview" :class="{ static: b4.effectiveAvatarRenderMode === '2D_FALLBACK' }"><text>✦</text><text>{{ b4.effectiveAvatarRenderMode === '3D' ? '3D 资源模式' : '静态展示' }}</text></view><text v-if="b4.avatarProfile" class="muted">{{ b4.avatarProfile.avatarId }} · 当前衣柜 {{ b4.avatarProfile.loadoutId }}</text><text v-else class="empty-copy">暂时没有可用形象，请稍后重试。</text><button tabindex="0" role="button" class="yx-button yx-button--secondary" type="button" :disabled="!b4.avatarProfile" @click="b4.saveAvatarProfile(b4.effectiveAvatarRenderMode)">保存当前渲染模式</button></view>
-    <view class="yx-card"><view class="heading"><view><text class="kicker">WARDROBE</text><text class="card-title">衣柜套装</text></view><text class="muted">{{ b4.loadouts.length }} 套</text></view><view v-if="b4.loadouts.length" class="loadout-list"><view v-for="loadout in b4.loadouts" :key="loadout.loadoutId" class="loadout"><view><text class="loadout-name">{{ loadout.name }}</text><text class="muted">{{ loadout.loadoutId }} · {{ loadout.items.length }} 件</text></view><text v-if="loadout.equipped" class="equipped">当前装备</text><button tabindex="0" role="button" v-else class="small-button secondary" type="button" @click="b4.equipLoadout(loadout.loadoutId)">装备</button></view></view><text v-else class="empty-copy">衣柜里暂时没有可用套装。</text></view>
-    <view class="yx-card"><view class="heading"><view><text class="kicker">ITEMS</text><text class="card-title">可见资源</text></view><text class="muted">{{ b4.avatarItems.length }} 项</text></view><view v-if="b4.avatarItems.length" class="item-grid"><view v-for="item in b4.avatarItems" :key="item.itemCode" class="item"><text>{{ item.quality }}</text><text class="item-code">{{ item.itemCode }}</text><text class="muted">{{ item.slot }} · {{ item.resourceVersion }}</text></view></view><text v-else class="empty-copy">暂时没有可用装扮。</text></view>
+    <template v-if="accessGranted">
+      <B4StatusPanel :status="b4.status" :online="b4.online" :message="b4.lastError" :queue-count="b4.queueCount" :performance-level="b4.performanceLevel" @retry="loadAvatarPage" @sync="b4.syncOffline" @performance="selectPerformance" />
+      <text v-if="pageLoading" class="empty-copy">正在加载角色信息…</text>
+      <text v-else-if="!pageReady" class="empty-copy">角色信息暂不可用。</text>
+      <template v-else>
+        <view class="yx-card preview-card">
+          <view class="heading"><view><text class="kicker">形象</text><text class="card-title">展示预览</text></view><text class="muted">本机画质</text></view>
+          <view class="avatar-preview" :class="{ static: b4.effectiveAvatarRenderMode === '2D_FALLBACK' }"><text>✦</text><text>形象示意</text></view>
+          <text class="muted">画质只影响本机显示；角色素材尚未就绪。</text>
+        </view>
+
+        <view class="yx-card">
+          <view class="heading"><view><text class="kicker">衣柜</text><text class="card-title">套装素材</text></view><text class="muted">{{ b4.loadouts.length }} 套</text></view>
+          <view v-if="b4.loadouts.length" class="loadout-list">
+            <view v-for="(loadout, index) in b4.loadouts" :key="loadout.loadoutId" class="loadout">
+              <view><text class="loadout-name">{{ loadoutTitle(loadout, index) }}</text><text class="muted">{{ loadout.items.length }} 件素材</text></view>
+              <text class="muted">预览</text>
+            </view>
+          </view>
+          <text v-else class="empty-copy">暂无可展示的套装素材。</text>
+        </view>
+
+        <view class="yx-card">
+          <view class="heading"><view><text class="kicker">装扮</text><text class="card-title">外观素材</text></view><text class="muted">{{ b4.avatarItems.length }} 款</text></view>
+          <view v-if="b4.avatarItems.length" class="item-grid">
+            <view v-for="item in b4.avatarItems" :key="item.itemCode" class="item"><text>{{ itemQuality(item.quality) }}</text><text class="item-title">{{ itemTitle(item) }}</text></view>
+          </view>
+          <text v-else class="empty-copy">暂无可展示的装扮素材。</text>
+          <text class="muted">素材展示不代表已获得奖励。</text>
+          <button tabindex="0" role="button" class="yx-button yx-button--secondary" type="button" @click="openUniPage('/pages/world/world')">查看奖励</button>
+        </view>
+      </template>
+    </template>
   </view>
 </template>
 
 <style scoped lang="scss">
-.b4-avatar{padding-bottom:56rpx}.heading{display:flex;align-items:flex-start;justify-content:space-between;gap:14rpx}.kicker{display:block;color:var(--yx-brand);font-size:21rpx;font-weight:800;letter-spacing:2rpx}.card-title{display:block;margin-top:8rpx;font-size:34rpx;font-weight:750}.muted{display:block;color:var(--yx-text-secondary);font-size:22rpx;line-height:1.55}.preview-card{display:grid;gap:14rpx}.avatar-preview{display:grid;min-height:260rpx;place-items:center;align-content:center;gap:10rpx;border-radius:18rpx;color:var(--yx-on-brand);background:radial-gradient(circle at 35% 25%,var(--yx-action),var(--yx-text-primary) 70%);font-size:84rpx}.avatar-preview text:last-child{font-size:22rpx;color:var(--yx-brand-soft)}.avatar-preview.static{color:var(--yx-brand);background:var(--yx-brand-soft)}.avatar-preview.static text:last-child{color:var(--yx-text-secondary)}.empty-copy{display:block;padding:18rpx;border:1rpx dashed var(--yx-border);border-radius:12rpx;color:var(--yx-text-secondary);font-size:24rpx;line-height:1.6}.loadout-list{display:grid;gap:10rpx;margin-top:18rpx}.loadout{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:10rpx;padding:16rpx;border-radius:12rpx;background:var(--yx-surface-page)}.loadout>view{display:grid;gap:6rpx}.loadout-name{font-size:27rpx;font-weight:700}.equipped{color:var(--yx-success);font-size:21rpx}.small-button{min-height:64rpx;padding:0 18rpx;border:0;border-radius:12rpx;color:var(--yx-on-brand);background:var(--yx-action);font-size:22rpx;line-height:64rpx}.small-button.secondary{border:1rpx solid var(--yx-border);color:var(--yx-brand);background:var(--yx-surface-card)}.item-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12rpx;margin-top:18rpx}.item{display:grid;gap:7rpx;padding:16rpx;border-radius:12rpx;background:var(--yx-surface-page)}.item>text:first-child{color:var(--yx-brand);font-size:21rpx;font-weight:800}.item-code{font-size:25rpx;font-weight:700}@media(max-width:480px){.item-grid{grid-template-columns:1fr}}
+.b4-avatar{padding-bottom:56rpx}.heading{display:flex;align-items:flex-start;justify-content:space-between;gap:14rpx}.kicker{display:block;color:var(--yx-brand);font-size:21rpx;font-weight:800;letter-spacing:2rpx}.card-title{display:block;margin-top:8rpx;font-size:34rpx;font-weight:750}.muted{display:block;color:var(--yx-text-secondary);font-size:22rpx;line-height:1.55}.preview-card{display:grid;gap:14rpx}.avatar-preview{display:grid;min-height:260rpx;place-items:center;align-content:center;gap:10rpx;border-radius:18rpx;color:var(--yx-on-brand);background:radial-gradient(circle at 35% 25%,var(--yx-action),var(--yx-text-primary) 70%);font-size:84rpx}.avatar-preview text:last-child{font-size:22rpx;color:var(--yx-brand-soft)}.avatar-preview.static{color:var(--yx-brand);background:var(--yx-brand-soft)}.avatar-preview.static text:last-child{color:var(--yx-text-secondary)}.empty-copy{display:block;padding:18rpx;border:1rpx dashed var(--yx-border);border-radius:12rpx;color:var(--yx-text-secondary);font-size:24rpx;line-height:1.6}.loadout-list{display:grid;gap:10rpx;margin-top:18rpx}.loadout{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:10rpx;padding:16rpx;border-radius:12rpx;background:var(--yx-surface-page)}.loadout>view{display:grid;gap:6rpx}.loadout-name{font-size:27rpx;font-weight:700}.item-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12rpx;margin-top:18rpx}.item{display:grid;gap:7rpx;padding:16rpx;border-radius:12rpx;background:var(--yx-surface-page)}.item>text:first-child{color:var(--yx-brand);font-size:21rpx;font-weight:800}.item-title{font-size:25rpx;font-weight:700}@media(max-width:480px){.item-grid{grid-template-columns:1fr}}
 </style>

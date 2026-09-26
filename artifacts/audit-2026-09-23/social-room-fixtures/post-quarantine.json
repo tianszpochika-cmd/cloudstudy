@@ -1,0 +1,43 @@
+{
+  "mode": "POST_QUARANTINE_READ_ONLY",
+  "capturedAt": "2026-09-23T09:33:56.412916+00:00",
+  "backupSha256": "609cc729d30b8ab14465aa6e5eeec58a7cedeb37842f41bd18fec2ceb1fb747a",
+  "sourceCounts": {
+    "soc_room_member": 0,
+    "soc_focus_state": 0,
+    "soc_seat_lease": 0,
+    "soc_interaction": 0,
+    "soc_report": 0,
+    "soc_study_room": 0
+  },
+  "quarantineCounts": {
+    "soc_room_member": 101,
+    "soc_focus_state": 100,
+    "soc_seat_lease": 100,
+    "soc_interaction": 100,
+    "soc_report": 100,
+    "soc_study_room": 100
+  },
+  "normalizedFullRowHashesMatchBackup": {
+    "soc_room_member": true,
+    "soc_focus_state": true,
+    "soc_seat_lease": true,
+    "soc_interaction": true,
+    "soc_report": true,
+    "soc_study_room": true
+  },
+  "platformVisibleRoomCount": 0,
+  "quarantineIamPrincipalCount": 0,
+  "untouchedLeaderboard": {
+    "foundationWatermarkRows": 371,
+    "local10xWatermarkRows": 10,
+    "foundationRowsWithNonInvalidAccount": 1,
+    "earliestPeriod": "2026-08-25",
+    "latestPeriod": "2026-09-16",
+    "earliestProjection": "2026-08-25 23:38:53.619000",
+    "latestProjection": "2026-09-16 02:17:43.855000",
+    "minSnapshotVersion": 1,
+    "maxSnapshotVersion": 1
+  },
+  "failures": []
+}

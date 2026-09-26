@@ -15,14 +15,16 @@ test('C08 mobile B3 reading keeps selected text and error recovery explicit', ()
   assert.match(api, /mineReadingExpression[\s\S]*selectedText, contentVersionId/)
 })
 
-test('C08 mobile B11 reading keeps empty and recoverable error states separate', () => {
+test('C08 mobile B11 reading keeps one recoverable status panel and reading progress', () => {
   const page = read('src/pages/b11-reading/b11-reading.vue')
+  const statusPanel = read('src/components/b11/B11StatusPanel.vue')
   const store = read('src/stores/b11-learning.ts')
-  assert.match(page, /readingStatus === 'empty'/)
-  assert.match(page, /role="alert"/)
+  assert.equal((page.match(/<B11StatusPanel\b/g) ?? []).length, 1)
+  assert.doesNotMatch(page, /readingStatus === 'empty'/)
+  assert.match(statusPanel, /role="status"/)
+  assert.match(statusPanel, /emit\('retry'\)/)
   assert.match(page, /saveReadingPosition/)
   assert.match(page, /readingBlockIndex/)
   assert.match(store, /readingBlockIndex/)
   assert.match(store, /readingProgress/)
 })
-

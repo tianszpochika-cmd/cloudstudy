@@ -1,0 +1,15 @@
+{
+  "result": "FAIL",
+  "at": "2026-09-24T18:38:55.266Z",
+  "scope": "Real official-site UI on 18182; no learner/backend business acceptance",
+  "checks": [
+    "desktop homepage and modal word practice",
+    "course search, clear and route navigation",
+    "help search and FAQ expansion",
+    "world room, 2D/3D, role wall and two sentence rounds",
+    "theme persistence, high contrast and four quality levels"
+  ],
+  "layouts": [],
+  "errors": [],
+  "failure": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'http://127.0.0.1:18183'\n- 'https://mobile.clyunedev.com'\n       ^\n"
+}

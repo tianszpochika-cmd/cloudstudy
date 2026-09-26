@@ -50,7 +50,7 @@ public class B3LearningJdbcController {
     public Map<String, Object> grammarAttempt(Authentication authentication,
             @RequestBody Map<String, Object> body,
             @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "learning.progress.write");
         String exerciseId = value(body, "exerciseId");
         if (exerciseId.isBlank()) throw bad("exerciseId is required");
         boolean correct = answerContains(body.get("answer"), "has") || answerContains(body.get("answer"), "good");
@@ -70,7 +70,7 @@ public class B3LearningJdbcController {
     @GetMapping("/grammar/mastery")
     public Map<String, Object> grammarMastery(Authentication authentication,
             @RequestParam(required = false) String grammarPointId) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "learning.mastery.read");
         Map<String, MasteryAccumulator> grouped = new LinkedHashMap<>();
         List<Map<String, Object>> rows = jdbc.queryForList("""
                 SELECT resource_key, result_json
@@ -118,7 +118,7 @@ public class B3LearningJdbcController {
     public Map<String, Object> sentenceBlocks(@PathVariable String sentenceId,
             Authentication authentication, @RequestBody Map<String, Object> body,
             @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "learning.progress.write");
         Map<String, Object> result = feedback(true, "句子结构已记录。", "SENTENCE_BLOCKS");
         result.put("sentenceId", integerOrString(sentenceId));
         result.put("blockOrder", body.getOrDefault("blockOrder", List.of()));
@@ -131,7 +131,7 @@ public class B3LearningJdbcController {
     public Map<String, Object> sentenceImitation(@PathVariable String sentenceId,
             Authentication authentication, @RequestBody Map<String, Object> body,
             @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "learning.progress.write");
         Map<String, Object> result = feedback(true, "仿写结果已记录。", "SENTENCE_IMITATION");
         result.put("sentenceId", integerOrString(sentenceId));
         result.put("attemptId", numericId(principal.subject(), idempotencyKey, sentenceId));
@@ -143,7 +143,7 @@ public class B3LearningJdbcController {
     public Map<String, Object> writingSubmission(Authentication authentication,
             @RequestBody Map<String, Object> body,
             @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "learning.progress.write");
         String promptId = required(body, "promptId");
         String answer = value(body, "answer");
         boolean answered = !answer.isBlank();
@@ -157,7 +157,7 @@ public class B3LearningJdbcController {
     public Map<String, Object> writingCorrection(Authentication authentication,
             @RequestBody Map<String, Object> body,
             @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "learning.progress.write");
         String promptId = required(body, "promptId");
         String answer = value(body, "answer");
         Map<String, Object> result = feedback(!answer.isBlank(), "病句改错已完成规则校验。", "PROOFREADING");
@@ -170,7 +170,7 @@ public class B3LearningJdbcController {
     @GetMapping("/writing/history")
     public Map<String, Object> writingHistory(Authentication authentication,
             @RequestParam(defaultValue = "20") int limit) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "learning.progress.read");
         int bounded = Math.max(1, Math.min(limit, 100));
         List<Map<String, Object>> items = jdbc.queryForList("""
                 SELECT result_json FROM b3_learning_interaction
@@ -187,7 +187,7 @@ public class B3LearningJdbcController {
     public Map<String, Object> listeningSession(Authentication authentication,
             @RequestBody Map<String, Object> body,
             @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "learning.progress.write");
         String materialId = required(body, "materialId");
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("sessionId", UUID.randomUUID().toString());
@@ -203,7 +203,7 @@ public class B3LearningJdbcController {
     public Map<String, Object> dictation(@PathVariable String sessionId, Authentication authentication,
             @RequestBody Map<String, Object> body,
             @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "learning.progress.write");
         String answer = value(body, "answer");
         boolean correct = answer.toLowerCase(java.util.Locale.ROOT).contains("good")
                 && answer.toLowerCase(java.util.Locale.ROOT).contains("help");
@@ -221,7 +221,7 @@ public class B3LearningJdbcController {
     public Map<String, Object> listeningProgress(@PathVariable String sessionId, Authentication authentication,
             @RequestBody Map<String, Object> body,
             @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "learning.progress.write");
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("sessionId", sessionId);
         result.put("status", "RECORDED");
@@ -234,7 +234,7 @@ public class B3LearningJdbcController {
     @Transactional
     public Map<String, Object> offlinePackage(Authentication authentication, @RequestBody Map<String, Object> body,
             @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "learning.progress.write");
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("packageId", numericId(principal.subject(), idempotencyKey, "offline"));
         result.put("packageCode", "LOCAL-PHASE1-NOT-READY");
@@ -252,7 +252,7 @@ public class B3LearningJdbcController {
     @Transactional
     public Map<String, Object> readingAttempt(Authentication authentication, @RequestBody Map<String, Object> body,
             @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "learning.progress.write");
         String questionId = required(body, "questionId");
         boolean correct = value(body, "answer").equalsIgnoreCase("A") || value(body, "answer").toLowerCase(java.util.Locale.ROOT).contains("small routines");
         Map<String, Object> result = feedback(correct, correct ? "阅读理解答案匹配。" : "请回到文章定位证据。", "READING_ATTEMPT");
@@ -267,7 +267,7 @@ public class B3LearningJdbcController {
     @Transactional
     public Map<String, Object> readingMining(Authentication authentication, @RequestBody Map<String, Object> body,
             @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "learning.progress.write");
         String articleId = required(body, "articleId");
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("expressionId", numericId(principal.subject(), idempotencyKey, value(body, "blockId")));
@@ -283,7 +283,7 @@ public class B3LearningJdbcController {
     @Transactional
     public Map<String, Object> readingProgress(Authentication authentication, @RequestBody Map<String, Object> body,
             @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "learning.progress.write");
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("articleId", integerOrString(value(body, "articleId")));
         result.put("blockId", value(body, "blockId"));
@@ -297,7 +297,7 @@ public class B3LearningJdbcController {
     @Transactional
     public Map<String, Object> recording(Authentication authentication, @RequestBody Map<String, Object> body,
             @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "learning.progress.write");
         String sourceSegmentId = required(body, "sourceSegmentId");
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("recordingId", UUID.randomUUID().toString());
@@ -314,7 +314,7 @@ public class B3LearningJdbcController {
     @Transactional
     public Map<String, Object> deleteRecording(@PathVariable String recordingId, Authentication authentication,
             @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "learning.progress.write");
         Map<String, Object> result = Map.of("recordingId", recordingId, "status", "DELETED", "source", "mysql");
         return store(principal, "SPEAKING", "RECORDING_DELETE", recordingId, Map.of("recordingId", recordingId), idempotencyKey, result);
     }
@@ -324,7 +324,7 @@ public class B3LearningJdbcController {
     public Map<String, Object> recordingRating(@PathVariable String recordingId, Authentication authentication,
             @RequestBody Map<String, Object> body,
             @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "learning.progress.write");
         Map<String, Object> result = Map.of("recordingId", recordingId, "selfRating", value(body, "rating"), "status", "RECORDED", "source", "mysql");
         return store(principal, "SPEAKING", "RECORDING_RATING", recordingId, body, idempotencyKey, result);
     }
@@ -333,7 +333,7 @@ public class B3LearningJdbcController {
     @Transactional
     public Map<String, Object> shadowingSession(Authentication authentication, @RequestBody Map<String, Object> body,
             @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "learning.progress.write");
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("shadowingSessionId", UUID.randomUUID().toString());
         result.put("sourceSegmentId", value(body, "sourceSegmentId"));
@@ -350,7 +350,7 @@ public class B3LearningJdbcController {
     public Map<String, Object> shadowingProgress(@PathVariable String sessionId, Authentication authentication,
             @RequestBody Map<String, Object> body,
             @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "learning.progress.write");
         Map<String, Object> result = Map.of("shadowingSessionId", sessionId, "positionMs", body.getOrDefault("positionMs", 0), "attemptCount", body.getOrDefault("attemptNo", 0), "status", "IN_PROGRESS", "source", "mysql");
         return store(principal, "SPEAKING", "SHADOWING_PROGRESS", sessionId, body, idempotencyKey, result);
     }
@@ -361,7 +361,7 @@ public class B3LearningJdbcController {
     public Map<String, Object> mediaProgress(Authentication authentication,
             @RequestBody Map<String, Object> body,
             @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "learning.progress.write");
         String assetId = required(body, "assetId");
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("assetId", assetId);
@@ -380,7 +380,7 @@ public class B3LearningJdbcController {
     public Map<String, Object> shadowingCompletion(Authentication authentication,
             @RequestBody Map<String, Object> body,
             @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "learning.progress.write");
         String sourceSegmentId = required(body, "sourceSegmentId");
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("recordingId", value(body, "recordingId"));
@@ -395,7 +395,7 @@ public class B3LearningJdbcController {
     /** B10 mobile mistake projection backed by the learner-owned interaction trail. */
     @GetMapping("/mastery/mistakes")
     public Map<String, Object> mistakes(Authentication authentication) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "learning.mastery.read");
         List<Map<String, Object>> items = jdbc.queryForList("""
                 SELECT resource_key, payload_json, result_json, created_at
                   FROM b3_learning_interaction
@@ -429,7 +429,7 @@ public class B3LearningJdbcController {
     /** Aggregate learner-owned review and interaction facts for the B2 mastery page. */
     @GetMapping("/mastery/overview")
     public Map<String, Object> masteryOverview(Authentication authentication) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "learning.mastery.read");
         Map<String, Object> counts = jdbc.queryForMap("""
                 SELECT COUNT(*) AS total,
                        COALESCE(SUM(stage = 'NEW'), 0) AS new_count,
@@ -465,7 +465,7 @@ public class B3LearningJdbcController {
     public Map<String, Object> retryMistake(@PathVariable String mistakeId,
             Authentication authentication,
             @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "learning.mastery.write");
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("verificationId", numericId(principal.subject(), "verification:" + mistakeId, mistakeId));
         result.put("mistakeId", integerOrString(mistakeId));
@@ -478,7 +478,7 @@ public class B3LearningJdbcController {
 
     @GetMapping("/mastery/verifications")
     public Map<String, Object> verifications(Authentication authentication) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "learning.mastery.read");
         List<Map<String, Object>> items = jdbc.queryForList("""
                 SELECT result_json FROM b3_learning_interaction
                  WHERE tenant_id = ? AND principal_id = ? AND domain_code = 'MASTERY'
@@ -495,7 +495,7 @@ public class B3LearningJdbcController {
             Authentication authentication,
             @RequestBody Map<String, Object> body,
             @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "learning.mastery.write");
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("verificationId", integerOrString(verificationId));
         result.put("mistakeId", body.getOrDefault("mistakeId", verificationId));
@@ -512,7 +512,7 @@ public class B3LearningJdbcController {
     @Transactional
     public Map<String, Object> roleplaySession(Authentication authentication, @RequestBody Map<String, Object> body,
             @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "learning.progress.write");
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("roleplaySessionId", UUID.randomUUID().toString());
         result.put("roleplayCode", value(body, "roleplayCode").isBlank() ? "COFFEE_SHOP_V1" : value(body, "roleplayCode"));
@@ -530,7 +530,7 @@ public class B3LearningJdbcController {
     public Map<String, Object> roleplayTurn(@PathVariable String sessionId, Authentication authentication,
             @RequestBody Map<String, Object> body,
             @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "learning.progress.write");
         int turnIndex = body.get("turnIndex") instanceof Number n ? n.intValue() : 0;
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("roleplaySessionId", sessionId);
@@ -547,7 +547,7 @@ public class B3LearningJdbcController {
     @Transactional
     public Map<String, Object> pushOffline(Authentication authentication, @RequestBody Map<String, Object> body,
             @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "learning.progress.write");
         Object rawChanges = body.get("changes");
         if (!(rawChanges instanceof List<?> changes)) throw bad("changes must be an array");
         List<String> accepted = new ArrayList<>();
@@ -571,7 +571,7 @@ public class B3LearningJdbcController {
     public Map<String, Object> pullOffline(Authentication authentication,
             @RequestParam(defaultValue = "0") String cursor,
             @RequestParam(defaultValue = "100") int limit) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "learning.progress.read");
         int bounded = Math.max(1, Math.min(limit, 100));
         List<Map<String, Object>> changes = jdbc.queryForList("""
                 SELECT payload_json FROM b3_learning_interaction
@@ -651,8 +651,8 @@ public class B3LearningJdbcController {
         return rows.isEmpty() ? null : rows.getFirst();
     }
 
-    private Principal principal(Authentication authentication) {
-        return new Principal(LearningHttpPrincipals.require(authentication).subject());
+    private Principal principal(Authentication authentication, String permission) {
+        return new Principal(LearningHttpPrincipals.require(authentication, permission).subject());
     }
 
     private static String required(Map<String, Object> body, String name) {

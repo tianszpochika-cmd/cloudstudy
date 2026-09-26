@@ -22,7 +22,7 @@ async function loadTypeScriptModule(relativePath) {
 }
 
 function routeSection(source, route) {
-  const index = source.indexOf(`path: '${route}'`)
+  const index = source.search(new RegExp(`path:\\s*["']${route.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}["']`))
   return index < 0 ? '' : source.slice(index, index + 900)
 }
 

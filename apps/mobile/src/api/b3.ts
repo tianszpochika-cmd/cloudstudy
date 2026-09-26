@@ -12,7 +12,7 @@ function listData<T>(value: unknown): T[] {
 }
 
 export async function listGrammarPoints(): Promise<GrammarPoint[]> {
-  return listData<GrammarPoint>(await mobileApiClient.request('/grammar/points?limit=20'))
+  return listData<GrammarPoint>(await mobileApiClient.request('/grammar/points?pageSize=20'))
 }
 
 export async function getSentenceGraph(sentenceId: number): Promise<SentenceGraph> {

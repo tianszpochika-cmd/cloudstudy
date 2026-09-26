@@ -240,6 +240,54 @@ class IamJdbcPersistenceContextTest {
     }
 
     @Test
+    void consentOutageAfterRefreshRotationRollsBackTokenAndIdempotencyClaim() {
+        PrincipalId principal = new PrincipalId(UUID.randomUUID());
+        SessionService.SessionCreation creation = sessions.open(
+                ServerPrincipalContext.forPlatform(principal, Set.of("learner")),
+                new DeviceId(UUID.randomUUID().toString()));
+        SessionRecord session = creation.session();
+        String scope = "/api/v1/auth/token/refresh";
+        String firstKey = "jdbc-consent-outage-" + UUID.randomUUID();
+        String retryKey = "jdbc-consent-retry-" + UUID.randomUUID();
+        String hash = idempotency.fingerprint("refresh-policy-race", session.sessionId());
+        TypeReference<String> type = new TypeReference<>() {};
+        try {
+            IamPolicyException failure = assertThrows(IamPolicyException.class, () ->
+                    idempotency.execute(scope, firstKey, hash, type,
+                            () -> {
+                                sessions.rotateByRefreshToken(creation.refreshToken());
+                                throw new IamPolicyException(IamDecisionCode.POLICY_UNAVAILABLE,
+                                        "iam.consent.version_unavailable");
+                            }, record -> ResponseEntity.ok("must-not-replay")));
+            assertEquals(IamDecisionCode.POLICY_UNAVAILABLE, failure.code());
+            SessionRecord afterFailure = sessions.find(session.sessionId());
+            assertEquals(session.rotation(), afterFailure.rotation(),
+                    "a failed policy evaluation must not consume the presented refresh token");
+            assertEquals(SessionStatus.ACTIVE, afterFailure.status());
+            assertEquals(session.sessionId(), sessions.findByRefreshToken(creation.refreshToken()).sessionId());
+            Integer claimCount = jdbc.queryForObject(
+                    "SELECT COUNT(*) FROM iam_idempotency_record WHERE scope_key = ? AND idempotency_key = ?",
+                    Integer.class, scope, firstKey);
+            assertEquals(0, claimCount, "policy outage must roll back the credential claim");
+
+            ResponseEntity<String> retry = idempotency.execute(scope, retryKey, hash, type,
+                    () -> {
+                        sessions.rotateByRefreshToken(creation.refreshToken());
+                        return new IdempotencyService.Execution<>(ResponseEntity.ok("rotated"),
+                                session.sessionId().toString());
+                    }, record -> ResponseEntity.ok("must-not-replay"));
+            assertEquals("rotated", retry.getBody());
+            assertEquals(session.rotation() + 1, sessions.find(session.sessionId()).rotation());
+        } finally {
+            jdbc.update("DELETE FROM iam_idempotency_record WHERE scope_key = ? AND idempotency_key IN (?, ?)",
+                    scope, firstKey, retryKey);
+            jdbc.update("DELETE FROM iam_decision_audit WHERE principal_id = ?", principal.toString());
+            jdbc.update("DELETE FROM iam_refresh_token_history WHERE session_id = ?", session.sessionId().toString());
+            jdbc.update("DELETE FROM iam_session WHERE session_id = ?", session.sessionId().toString());
+        }
+    }
+
+    @Test
     void accountFailedAttemptsAreRowLockedAndStaleSuccessCannotClearLock() {
         PrincipalId principal = new PrincipalId(UUID.randomUUID());
         Instant now = Instant.now();

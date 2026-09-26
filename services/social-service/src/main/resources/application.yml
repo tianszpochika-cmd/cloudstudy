@@ -66,6 +66,11 @@ service:
   redis-namespace: social
   port: 18095
 
+social:
+  moderation:
+    # Inject from a secret manager. The admin queue fails closed without a stable 32-byte key.
+    cursor-key: ${SOCIAL_MODERATION_CURSOR_KEY:}
+
 security:
   resource-server:
     # Every service independently verifies the IAM-owned JWT through JWKS.

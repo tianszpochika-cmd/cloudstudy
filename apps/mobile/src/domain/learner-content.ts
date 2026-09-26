@@ -25,12 +25,6 @@ export type MobileThemeMode = 'SYSTEM' | 'LIGHT' | 'DARK'
 export type MobileMotionMode = 'FULL' | 'REDUCED' | 'OFF'
 
 export interface MobileLearnerAccount {
-  nickname: string
-  accentPref: 'US' | 'UK'
-  birthYear: number | null
-  ageConfirmed: boolean
-  privacyConsent: boolean
-  termsConsent: boolean
   uiLocale: string
   contentLocale: string
   timezone: string
@@ -121,8 +115,10 @@ export interface MobilePlacementQuestion {
 export interface MobilePlacementReport {
   reportId: string
   sessionId: string
-  cefrLevel: string
-  score: number
+  resultKind: 'ASSESSED' | 'SKIPPED'
+  cefrLevel: string | null
+  score: number | null
+  requestedStartingLevel: string | null
   mistakes: string[]
 }
 

@@ -24,8 +24,14 @@ const mapNodes = [
 ]
 const galaxyNodes = computed(() => mapNodes.map((node) => {
   const serverNode = b4.galaxy?.nodes.find((item) => item.nodeCode === node.code)
-  return { ...node, status: serverNode?.status ?? 'UNKNOWN', progress: serverNode?.progress ?? 0, requiredProgress: serverNode?.requiredProgress ?? 0, progressPercent: serverNode?.progressPercent ?? 0 }
+  return { ...node, hasData: Boolean(serverNode), status: serverNode?.status ?? 'UNKNOWN', progress: serverNode?.progress ?? 0, requiredProgress: serverNode?.requiredProgress ?? 0, progressPercent: serverNode?.progressPercent ?? 0 }
 }))
+function stateLabel(value?: string): string {
+  return ({ ACTIVE: '进行中', AVAILABLE: '可用', UNLOCKED: '已解锁', COMPLETED: '已完成', LOCKED: '待解锁', AT_RISK: '即将中断', BROKEN: '已中断', FROZEN: '已保护', IN_PROGRESS: '进行中' } as Record<string, string>)[value ?? ''] ?? '待确认'
+}
+function questPeriod(value: string): string {
+  return ({ DAILY: '每日', WEEKLY: '每周', SEASON: '赛季' } as Record<string, string>)[value] ?? '成长'
+}
 
 onShow(async () => {
   await session.restore()
@@ -50,21 +56,21 @@ function choosePerformance(level: (typeof B4_PERFORMANCE_LEVELS)[number]): void 
     <view class="b4-metrics">
       <view class="b4-metric"><text>XP</text><text class="b4-metric__value">{{ b4.profile?.xp ?? '—' }}</text><text>{{ b4.profile ? `Lv.${b4.profile.level} · ${b4.profile.rank}` : '暂未获取成长记录' }}</text></view>
       <view class="b4-metric"><text>STAR COIN</text><text class="b4-metric__value">{{ b4.profile?.coins ?? '—' }}</text><text>可用星币</text></view>
-      <view class="b4-metric"><text>STREAK</text><text class="b4-metric__value">{{ b4.streak ? `${b4.streak.currentStreak} 天` : '—' }}</text><text>{{ b4.streak?.status ?? '暂未获取记录' }}</text></view>
+      <view class="b4-metric"><text>连续学习</text><text class="b4-metric__value">{{ b4.streak ? `${b4.streak.currentStreak} 天` : '—' }}</text><text>{{ b4.streak ? stateLabel(b4.streak.status) : '暂无记录' }}</text></view>
     </view>
 
     <view class="yx-card galaxy-card">
       <view class="card-heading"><view><text class="card-kicker">GALAXY MAP</text><text class="card-title">成长世界</text></view><text class="fact-tag">成长进度</text></view>
       <text class="muted">每次练习，都为你的成长地图点亮一点星光。</text>
-      <view class="galaxy-map"><view v-for="node in galaxyNodes" :key="node.code" class="galaxy-node"><view class="galaxy-node__dot">✦</view><text>{{ node.title }}</text><text class="muted">{{ node.description }}</text><text class="pending">{{ node.status }} · {{ node.progress }}/{{ node.requiredProgress }}（{{ node.progressPercent }}%）</text></view></view>
-      <text v-if="b4.galaxy" class="muted">总成长 XP：{{ b4.galaxy.totalXp }} · 规则：{{ b4.galaxy.ruleVersion ?? '服务端未返回' }}</text>
-      <view v-if="b4.season" class="season-row"><text>{{ b4.season.title }}</text><text>{{ b4.season.points }} 赛季点 · {{ b4.season.status }}</text></view>
+      <view class="galaxy-map"><view v-for="node in galaxyNodes" :key="node.code" class="galaxy-node"><view class="galaxy-node__dot">✦</view><text>{{ node.title }}</text><text class="muted">{{ node.description }}</text><text class="pending">{{ node.hasData ? `${stateLabel(node.status)} · ${node.progress}/${node.requiredProgress}（${node.progressPercent}%）` : '进度待确认' }}</text></view></view>
+      <text v-if="b4.galaxy" class="muted">总成长 XP：{{ b4.galaxy.totalXp }}</text>
+      <view v-if="b4.season" class="season-row"><text>{{ b4.season.title }}</text><text>{{ b4.season.points }} 赛季点 · {{ stateLabel(b4.season.status) }}</text></view>
       <text v-else class="empty-copy">当前暂无赛季活动。</text>
     </view>
 
     <view class="yx-card streak-card">
       <view class="card-heading"><view><text class="card-kicker">STREAK CALENDAR</text><text class="card-title">连续学习日历</text></view><text class="streak-fire">♨</text></view>
-      <template v-if="b4.streak"><text class="streak-number">{{ b4.streak.currentStreak }}<text> 天</text></text><text class="muted">上次有效日：{{ b4.streak.lastValidDate ?? '暂无记录' }} · {{ b4.streak.timeZone }} · {{ b4.streak.status }}</text><button tabindex="0" role="button" class="yx-button yx-button--secondary" type="button" @click="b4.rescueStreak('CHALLENGE')">请求破冰挑战</button></template>
+      <template v-if="b4.streak"><text class="streak-number">{{ b4.streak.currentStreak }}<text> 天</text></text><text class="muted">上次有效日：{{ b4.streak.lastValidDate ?? '暂无记录' }} · {{ b4.streak.timeZone }} · {{ stateLabel(b4.streak.status) }}</text><button v-if="['AT_RISK', 'BROKEN', 'FROZEN'].includes(b4.streak.status)" tabindex="0" role="button" class="yx-button yx-button--secondary" type="button" @click="b4.rescueStreak('CHALLENGE')">请求破冰挑战</button></template>
       <text v-else class="empty-copy">还没有连续学习记录，从今天开始积累吧。</text>
     </view>
 
@@ -75,7 +81,7 @@ function choosePerformance(level: (typeof B4_PERFORMANCE_LEVELS)[number]): void 
       <button tabindex="0" role="button" class="yx-button entry-button" type="button" @click="navigate('/pages/b4-offline/b4-offline')"><text>离线包</text><text>把学习带在身边</text></button>
     </view>
 
-    <view class="yx-card quest-card"><view class="card-heading"><view><text class="card-kicker">QUESTS</text><text class="card-title">成长任务</text></view><text>{{ b4.quests.length ? `${b4.quests.length} 个任务` : '未返回' }}</text></view><view v-if="b4.quests.length" class="quest-list"><view v-for="quest in b4.quests" :key="quest.questId" class="quest-row"><view><text>{{ quest.title }}</text><text class="muted">{{ quest.period }} · {{ quest.questId }}</text></view><text :class="quest.completed ? 'done' : 'pending'">{{ quest.claimed ? '已领取' : quest.completed ? '待领取' : `${quest.progress}/${quest.target}` }}</text></view></view><text v-else class="empty-copy">当前暂无成长任务，稍后再来看看。</text></view>
+    <view class="yx-card quest-card"><view class="card-heading"><view><text class="card-kicker">成长任务</text><text class="card-title">学习挑战</text></view><text>{{ b4.quests.length ? `${b4.quests.length} 个任务` : '暂无' }}</text></view><view v-if="b4.quests.length" class="quest-list"><view v-for="quest in b4.quests" :key="quest.questId" class="quest-row"><view><text>{{ quest.title }}</text><text class="muted">{{ questPeriod(quest.period) }}</text></view><text :class="quest.completed ? 'done' : 'pending'">{{ quest.claimed ? '已领取' : quest.completed ? '待领取' : `${quest.progress}/${quest.target}` }}</text></view></view><text v-else class="empty-copy">暂无成长任务。</text></view>
     <B12RewardsCard />
   </view>
 </template>

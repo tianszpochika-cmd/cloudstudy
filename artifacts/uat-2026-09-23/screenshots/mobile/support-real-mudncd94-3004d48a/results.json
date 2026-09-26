@@ -1,0 +1,30 @@
+{
+  "scope": "Support page, real Gateway empty state plus labeled browser-only failure/list fixtures",
+  "accountTag": "02f707fd8e4c",
+  "stages": [
+    {
+      "name": "register",
+      "status": 201
+    }
+  ],
+  "supportNetwork": [],
+  "pageErrors": [],
+  "screenshots": [],
+  "cleanup": {
+    "accountCount": 1,
+    "status": "DISABLED",
+    "activeSessions": 0,
+    "verified": true
+  },
+  "failure": {
+    "stage": "adult-gate",
+    "kind": "TimeoutError"
+  },
+  "summary": {
+    "registered": true,
+    "actualSupportGet": null,
+    "noPageExceptions": true,
+    "cleanupVerified": true,
+    "verdict": "FAIL"
+  }
+}

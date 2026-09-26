@@ -6,6 +6,7 @@ import com.englishflow.notification.domain.NotificationAuditEvent;
 import com.englishflow.notification.domain.NotificationChannel;
 import com.englishflow.notification.domain.NotificationDomainException;
 import com.englishflow.notification.domain.NotificationPreference;
+import com.englishflow.notification.domain.NotificationCategory;
 import com.englishflow.notification.domain.NotificationPrincipalContext;
 import com.englishflow.notification.domain.RecoveryAction;
 import com.englishflow.notification.domain.RecoveryCommand;
@@ -87,8 +88,10 @@ public final class NotificationRecoveryApplicationService implements Notificatio
 
     private void queueRecoveryNotice(NotificationPrincipalContext operator, WorkflowTask task,
             RecoveryCommand command, RequestMetadata metadata) {
-        NotificationPreference preference = facts.findPreference(task.tenantId(), task.principalId(),
-                "notification.recovery.completed", NotificationChannel.IN_APP).orElse(null);
+        NotificationPreference preference = NotificationCategory.fromMessageType("notification.recovery.completed")
+                .map(category -> facts.findPreference(task.tenantId(), task.principalId(), category,
+                        NotificationChannel.IN_APP).orElse(null))
+                .orElse(null);
         if (preference != null && !preference.enabled()) {
             auditFiltered(operator, task, "PREFERENCE_DISABLED", metadata);
             return;

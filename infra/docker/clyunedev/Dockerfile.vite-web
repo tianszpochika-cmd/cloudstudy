@@ -9,8 +9,9 @@ ARG VITE_GATEWAY_BASE_URL
 WORKDIR /workspace
 RUN corepack enable && corepack prepare pnpm@10.19.0 --activate
 COPY . .
-RUN pnpm install --frozen-lockfile \
-  && VITE_GATEWAY_BASE_URL="${VITE_GATEWAY_BASE_URL}" pnpm --filter "${APP_NAME}" build
+RUN --mount=type=cache,id=cloudstudy-pnpm-store,target=/pnpm/store,sharing=locked \
+  pnpm install --frozen-lockfile --filter "${APP_NAME}..." --store-dir /pnpm/store
+RUN VITE_GATEWAY_BASE_URL="${VITE_GATEWAY_BASE_URL}" pnpm --filter "${APP_NAME}" build
 
 FROM nginx:1.27-alpine
 ARG APP_PATH

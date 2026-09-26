@@ -4,6 +4,7 @@ import com.englishflow.adminops.domain.AdminOpsException;
 import com.englishflow.adminops.domain.AdminPrincipal;
 import com.englishflow.adminops.domain.AdminProjectionPort;
 import com.englishflow.adminops.domain.AuditEvent;
+import com.englishflow.adminops.domain.AuditPage;
 import com.englishflow.adminops.domain.AuditRecord;
 import com.englishflow.adminops.domain.AuditTrail;
 import com.englishflow.adminops.domain.CommandForwardResult;
@@ -46,6 +47,11 @@ public final class FailClosedAdminOpsAdapters {
 
         @Override
         public List<AuditRecord> snapshot() {
+            throw unavailable("ADMIN_AUDIT_UNAVAILABLE");
+        }
+
+        @Override
+        public AuditPage page(String tenantRef, Long beforeSequence, int pageSize) {
             throw unavailable("ADMIN_AUDIT_UNAVAILABLE");
         }
     }

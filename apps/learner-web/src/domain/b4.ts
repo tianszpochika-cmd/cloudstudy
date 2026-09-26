@@ -168,13 +168,7 @@ export interface B4Notification {
   createdAt: string | null
 }
 
-export interface B4NotificationPreferences {
-  roomInteractions: boolean
-  focusReminders: boolean
-  system: boolean
-  doNotDisturb: boolean
-  version: number
-}
+export type B4NotificationPreferences = import('@englishflow/contracts').M1016NotificationPreference[]
 
 export interface B4RewardChest {
   chestGrantId: string

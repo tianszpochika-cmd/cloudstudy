@@ -3662,7 +3662,7 @@ dialog::backdrop {
 .art-caption {
   display: none;
 }
-.mobile-nav-bottom .menu-login {
+.mobile-nav-bottom .menu-example {
   display: block;
   min-height: 44px;
   margin: 10px auto 0;

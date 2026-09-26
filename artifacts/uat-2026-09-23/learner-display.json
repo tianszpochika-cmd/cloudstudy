@@ -1,0 +1,120 @@
+{
+  "runId": "display-mudnyyg6-d0d856",
+  "capturedAt": "2026-09-23T05:30:02.598Z",
+  "localOnly": true,
+  "setup": {
+    "gatewayHealth": 200,
+    "iamHealth": 200,
+    "learnerWebHealth": 200,
+    "registrationStatus": 201,
+    "adultGateStatus": 200,
+    "termsConsentStatus": 200,
+    "privacyConsentStatus": 200,
+    "adult_learningConsentStatus": 200,
+    "apiLoginStatus": 200,
+    "profileWriteStatus": 200,
+    "targetWriteStatus": 200
+  },
+  "ui": {
+    "initial": {
+      "values": [
+        "zh-CN",
+        "en-US",
+        "system"
+      ],
+      "theme": "dark",
+      "quota": 30
+    },
+    "highContrast": {
+      "theme": "high-contrast",
+      "values": [
+        "en-US",
+        "zh-CN",
+        "high-contrast"
+      ],
+      "englishUiLabel": "UI\n中文\nEnglish"
+    },
+    "englishPageCopy": {
+      "profileHeading": "Learning profile",
+      "localOnly": true
+    },
+    "themeModes": {
+      "darkTheme": "dark",
+      "systemDark": "dark",
+      "systemLight": "light"
+    },
+    "motionBefore": {
+      "checked": true,
+      "dataMotion": "on"
+    },
+    "motionAfter": {
+      "checked": false,
+      "dataMotion": "off"
+    },
+    "afterReload": {
+      "path": "/platform",
+      "values": [
+        "en-US",
+        "zh-CN",
+        "high-contrast"
+      ],
+      "theme": "high-contrast",
+      "motionChecked": false,
+      "dataMotion": "off"
+    },
+    "settingsRootPath": "/settings/profile",
+    "at320": {
+      "width": 320,
+      "scrollWidth": 320,
+      "overflow": false,
+      "values": [
+        "en-US",
+        "zh-CN",
+        "high-contrast"
+      ]
+    },
+    "qualityAt320": {
+      "selected": "true",
+      "dataQuality": "Performance",
+      "overflow": false
+    },
+    "qualityAfterReload": {
+      "selected": "true",
+      "dataQuality": "Performance"
+    },
+    "injectedTargetFailure": {
+      "errorVisible": true,
+      "quotaSelectVisible": false,
+      "fakeSavedVisible": false,
+      "duplicateRawErrorVisible": false,
+      "visibleAfterScroll": true
+    },
+    "recoveredQuota": 30,
+    "pageErrors": []
+  },
+  "server": {
+    "before": {
+      "status": 200,
+      "uiLocale": "zh-CN",
+      "contentLocale": "en-US",
+      "themeMode": "SYSTEM",
+      "motionMode": "FULL"
+    },
+    "after": {
+      "status": 200,
+      "uiLocale": "zh-CN",
+      "contentLocale": "en-US",
+      "themeMode": "SYSTEM",
+      "motionMode": "FULL"
+    }
+  },
+  "browserWrites": [],
+  "cleanup": {
+    "accountDisabled": true,
+    "principalDisabled": true,
+    "activeSessions": 0,
+    "activeDevices": 0,
+    "ownerRows": 0
+  },
+  "secretsRecorded": false
+}

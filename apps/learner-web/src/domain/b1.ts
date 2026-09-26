@@ -89,12 +89,20 @@ export interface AssessmentReport {
   completedAt: string
 }
 
+export interface AssessmentSkipBaseline {
+  reportId: string
+  sessionId: string
+  requestedStartingLevel: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2' | null
+  confidence: 'UNVERIFIED'
+}
+
 export interface AssessmentSnapshot {
   status: AssessmentStatus
   sessionId: string | null
   currentQuestion: PlacementQuestion | null
   answers: AnswerRecord[]
   report: AssessmentReport | null
+  skipBaseline?: AssessmentSkipBaseline | null
   lastSavedAt: string | null
   resumed: boolean
 }

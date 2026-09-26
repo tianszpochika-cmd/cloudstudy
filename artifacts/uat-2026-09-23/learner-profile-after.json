@@ -1,0 +1,121 @@
+{
+  "runId": "profile-mudnemnj-8a2764",
+  "capturedAt": "2026-09-23T05:14:14.191Z",
+  "localOnly": true,
+  "setup": {
+    "gatewayHealth": 200,
+    "iamHealth": 200,
+    "learnerWebHealth": 200,
+    "registrationStatus": 201,
+    "adultGateStatus": 200,
+    "termsConsentStatus": 200,
+    "privacyConsentStatus": 200,
+    "adult_learningConsentStatus": 200,
+    "apiLoginStatus": 200,
+    "profileWriteStatus": 200,
+    "targetWriteStatus": 200
+  },
+  "owner": {
+    "profile": {
+      "status": 200,
+      "source": null,
+      "nickname": null,
+      "accentPref": null,
+      "stateVersion": 2,
+      "goalCode": null,
+      "dailyQuotaMinutes": null
+    },
+    "target": {
+      "status": 200,
+      "goalCode": "WORKPLACE_DAILY",
+      "targetLevel": "B2",
+      "dailyQuotaMinutes": 30
+    },
+    "afterSaveProfile": {
+      "status": 200,
+      "source": null,
+      "nickname": null,
+      "accentPref": null,
+      "stateVersion": 3,
+      "goalCode": null,
+      "dailyQuotaMinutes": null
+    },
+    "afterSaveTarget": {
+      "status": 200,
+      "goalCode": "WORKPLACE_DAILY",
+      "targetLevel": "B2",
+      "dailyQuotaMinutes": 45
+    }
+  },
+  "browser": {
+    "urlPath": "/settings/profile",
+    "nicknameEditable": false,
+    "accentEditable": false,
+    "dailyQuotaMinutes": 30,
+    "hasError": false,
+    "requests": [
+      {
+        "method": "GET",
+        "path": "/api/v1/learner/profile",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/learner/targets",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/learner/profile",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/learner/targets",
+        "status": 200
+      },
+      {
+        "method": "PUT",
+        "path": "/api/v1/learner/targets",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/learner/targets",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/learner/profile",
+        "status": 200
+      }
+    ],
+    "afterSave": {
+      "successShown": true,
+      "errorShown": false,
+      "inputQuota": 45
+    },
+    "screenshot": "artifacts/uat-2026-09-23/learner-profile-after.png",
+    "mobileViewport": {
+      "width": 390,
+      "scrollWidth": 390,
+      "overflow": false
+    },
+    "mobileScreenshot": "artifacts/uat-2026-09-23/learner-profile-after-mobile.png"
+  },
+  "cleanup": {
+    "accountDisabled": true,
+    "principalDisabled": true,
+    "activeSessions": 0,
+    "activeDevices": 0,
+    "learnerProfileRows": 0,
+    "learnerGoalRows": 0,
+    "b9ProfileRows": 0,
+    "b9GoalRows": 0,
+    "b9PreferenceRows": 0,
+    "b9FirstDayRows": 0,
+    "b9IdempotencyRows": 0,
+    "b9OutboxRows": 0
+  },
+  "secretsRecorded": false
+}

@@ -1,0 +1,105 @@
+{
+  "runId": "profile-mudmger3-c23aff",
+  "capturedAt": "2026-09-23T04:47:37.647Z",
+  "localOnly": true,
+  "setup": {
+    "gatewayHealth": 200,
+    "iamHealth": 200,
+    "learnerWebHealth": 200,
+    "registrationStatus": 201,
+    "adultGateStatus": 200,
+    "termsConsentStatus": 200,
+    "privacyConsentStatus": 200,
+    "adult_learningConsentStatus": 200,
+    "apiLoginStatus": 200,
+    "profileWriteStatus": 200,
+    "targetWriteStatus": 200
+  },
+  "owner": {
+    "profile": {
+      "status": 200,
+      "source": null,
+      "nickname": null,
+      "accentPref": null,
+      "stateVersion": 2,
+      "goalCode": null,
+      "dailyQuotaMinutes": null
+    },
+    "target": {
+      "status": 200,
+      "goalCode": "WORKPLACE",
+      "targetLevel": "B2",
+      "dailyQuotaMinutes": 30
+    },
+    "afterSaveProfile": {
+      "status": 200,
+      "source": null,
+      "nickname": null,
+      "accentPref": null,
+      "stateVersion": 3,
+      "goalCode": null,
+      "dailyQuotaMinutes": null
+    },
+    "afterSaveTarget": {
+      "status": 200,
+      "goalCode": "WORKPLACE",
+      "targetLevel": "B2",
+      "dailyQuotaMinutes": 30
+    }
+  },
+  "browser": {
+    "urlPath": "/settings/profile",
+    "nickname": "学习者",
+    "accentPref": "US",
+    "dailyQuotaMinutes": 30,
+    "hasError": false,
+    "requests": [
+      {
+        "method": "GET",
+        "path": "/api/v1/learner/targets",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/learner/profile",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/learner/targets",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/learner/profile",
+        "status": 200
+      },
+      {
+        "method": "PATCH",
+        "path": "/api/v1/learner/profile",
+        "status": 200
+      },
+      {
+        "method": "PUT",
+        "path": "/api/v1/learner/targets",
+        "status": 400
+      }
+    ],
+    "afterSave": {
+      "successShown": false,
+      "errorShown": true,
+      "inputNickname": "浏览器已改",
+      "inputAccent": "UK",
+      "inputQuota": 45
+    }
+  },
+  "cleanup": {
+    "accountDisabled": true,
+    "principalDisabled": true,
+    "activeSessions": 0,
+    "activeDevices": 0,
+    "learnerProfileRows": 0,
+    "learnerGoalRows": 0
+  },
+  "secretsRecorded": false
+}

@@ -37,6 +37,12 @@ public final class InMemorySignedUrlPort implements SignedUrlPort {
     }
 
     @Override
+    public void verifyObjectForActivation(MediaAsset asset) {
+        // The in-memory adapter is a domain-test fixture with no object bytes.
+        // Local-real always selects a fail-closed or inspecting storage adapter.
+    }
+
+    @Override
     public SignedMediaUrl issue(
             MediaAsset asset,
             MediaAuthorizationContext context,

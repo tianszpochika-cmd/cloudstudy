@@ -148,7 +148,7 @@ useOfficialSeo({
         </div>
       </div>
     </section>
-    <section class="section try-section">
+    <section id="practice-example" class="section try-section">
       <div class="container try-grid">
         <div class="try-copy">
           <span class="eyebrow">{{ t("official.c533ef5f2d") }}</span>

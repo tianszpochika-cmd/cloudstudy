@@ -77,6 +77,8 @@ public final class GatewayRouteExecutionPolicy {
             "services/content-service/src/main/java/com/englishflow/content/web/ContentHttpController.java", "/api/v1/content/learner/substitute");
     private static final ControllerEvidence CONTENT_LEARNER = evidence("content-service",
             "services/content-service/src/main/java/com/englishflow/content/web/B25ContentJdbcController.java", "/internal/v1/content/learner");
+    private static final ControllerEvidence CONTENT_B3_LEARNER = evidence("content-service",
+            "services/content-service/src/main/java/com/englishflow/content/web/B3ContentJdbcController.java", "/internal/v1/content/learner");
     private static final ControllerEvidence CONTENT_ADMIN = evidence("content-service",
             "services/content-service/src/main/java/com/englishflow/content/web/B9ContentAdminController.java", "/internal/v1/content/admin-commands");
     private static final ControllerEvidence LEARNING_B25 = evidence("learning-service",
@@ -94,6 +96,8 @@ public final class GatewayRouteExecutionPolicy {
             "services/learning-service/src/main/java/com/englishflow/learning/web/V2LearningController.java", "/api/v1/learning");
     private static final ControllerEvidence ASSESSMENT_B10 = evidence("assessment-service",
             "services/assessment-service/src/main/java/com/englishflow/assessment/web/B10AssessmentJdbcController.java", "/internal/v1/assessment");
+    private static final ControllerEvidence ASSESSMENT_P1 = evidence("assessment-service",
+            "services/assessment-service/src/main/java/com/englishflow/assessment/web/P1PlacementJdbcController.java", "/internal/v1/assessment/placement");
     private static final ControllerEvidence ASSESSMENT_B25 = evidence("assessment-service",
             "services/assessment-service/src/main/java/com/englishflow/assessment/web/B25AssessmentJdbcController.java", "/internal/v1/assessment");
     private static final ControllerEvidence ASSESSMENT_ADMIN = evidence("assessment-service",
@@ -106,12 +110,16 @@ public final class GatewayRouteExecutionPolicy {
             "services/gamification-service/src/main/java/com/englishflow/gamification/adapter/http/GamificationController.java", "/internal/v1/gamification");
     private static final ControllerEvidence SOCIAL_PUBLIC = evidence("social-service",
             "services/social-service/src/main/java/com/englishflow/social/web/SocialLocalRealController.java", "/api/v1/social");
+    private static final ControllerEvidence SOCIAL_INTERNAL = evidence("social-service",
+            "services/social-service/src/main/java/com/englishflow/social/web/SocialLocalRealController.java", "/internal/v1/social");
     private static final ControllerEvidence COMMERCE = evidence("commerce-service",
             "services/commerce-service/src/main/java/com/englishflow/commerce/adapter/http/CommerceController.java", "/internal/v1/commerce");
     private static final ControllerEvidence NOTIFICATION = evidence("notification-service",
             "services/notification-service/src/main/java/com/englishflow/notification/adapter/http/NotificationController.java", "/internal/v1/notifications");
     private static final ControllerEvidence NOTIFICATION_READ = evidence("notification-service",
             "services/notification-service/src/main/java/com/englishflow/notification/adapter/http/NotificationReadJdbcController.java", "/internal/v1/notifications");
+    private static final ControllerEvidence NOTIFICATION_OFFLINE_PACKAGES = evidence("notification-service",
+            "services/notification-service/src/main/java/com/englishflow/notification/adapter/http/NotificationLocalOfflineController.java", "/internal/v1/sync");
     private static final ControllerEvidence ANALYTICS = evidence("analytics-service",
             "services/analytics-service/src/main/java/com/englishflow/analytics/web/AnalyticsController.java", "/internal/v1/analytics");
     private static final ControllerEvidence ADMIN_OPS = evidence("admin-ops-service",
@@ -483,6 +491,7 @@ public final class GatewayRouteExecutionPolicy {
                 // M3-003 live: read-only auto validation report.
                 rewrite("validate-auto", "/api/v1/admin/content-commands/validate/auto", "/internal/v1/content/admin-commands/validate/auto", CONTENT_ADMIN, HttpMethod.POST));
         add(definitions, "admin-analytics", rewrite("metrics", "/api/v1/admin/ops/metrics", "/internal/v1/analytics/metrics", ANALYTICS, HttpMethod.GET));
+        add(definitions, "admin-moderation-reports-read", rewrite("queue", "/api/v1/admin/moderation/reports", "/internal/v1/social/admin/moderation/reports", SOCIAL_INTERNAL, HttpMethod.GET));
         // P1R decision 1A: recovery console routes (request/approve/reject/execute + saga views).
         // NOTE: projection order is significant — parity sorts by projectionId.
         add(definitions, "admin-recovery",
@@ -518,6 +527,8 @@ public final class GatewayRouteExecutionPolicy {
                 // P1R decision 7B: session-pin substitute resolution for assessment.
                 preserve("learner-substitute", "/api/v1/content/learner/substitute", CONTENT_LEARNER_SUBSTITUTE, HttpMethod.GET),
                 rewrite("learner-vocabulary", "/api/v1/content/learner/vocabulary/{vocabularyId}", "/internal/v1/content/learner/vocabulary/{vocabularyId}", CONTENT_LEARNER, HttpMethod.GET));
+        add(definitions, "grammar-points-read",
+                rewrite("list", "/api/v1/grammar/points", "/internal/v1/content/learner/grammar/points", CONTENT_B3_LEARNER, HttpMethod.GET));
         add(definitions, "vocabulary-domain",
                 rewrite("expressions", "/api/v1/vocab/expressions", "/internal/v1/learning/vocab/expressions", LEARNING_B25, HttpMethod.GET, HttpMethod.POST),
                 rewrite("expression", "/api/v1/vocab/expressions/{expressionId}", "/internal/v1/learning/vocab/expressions/{expressionId}", LEARNING_B25, HttpMethod.PATCH, HttpMethod.DELETE),
@@ -553,6 +564,11 @@ public final class GatewayRouteExecutionPolicy {
                 rewrite("sync-pull", "/api/v1/offline/sync/pull", "/internal/v1/learning/experiences/offline/sync/pull", LEARNING_B3, HttpMethod.GET));
 
         add(definitions, "assessment-domain",
+                rewrite("p1-placement-session-create", "/api/v1/assessment/placement/sessions", "/internal/v1/assessment/placement/sessions", ASSESSMENT_P1, HttpMethod.POST),
+                rewrite("p1-placement-session-read", "/api/v1/assessment/placement/sessions/{sessionId}", "/internal/v1/assessment/placement/sessions/{sessionId}", ASSESSMENT_P1, HttpMethod.GET),
+                rewrite("p1-placement-response", "/api/v1/assessment/placement/sessions/{sessionId}/responses", "/internal/v1/assessment/placement/sessions/{sessionId}/responses", ASSESSMENT_P1, HttpMethod.POST),
+                rewrite("p1-placement-skip", "/api/v1/assessment/placement/baselines/skip", "/internal/v1/assessment/placement/baselines/skip", ASSESSMENT_P1, HttpMethod.POST),
+                rewrite("p1-placement-report", "/api/v1/assessment/placement/reports/{reportId}", "/internal/v1/assessment/placement/reports/{reportId}", ASSESSMENT_P1, HttpMethod.GET),
                 rewrite("placement-start", "/api/v1/assessment/placement/start", "/internal/v1/assessment/placement/start", ASSESSMENT_B25, HttpMethod.GET, HttpMethod.POST),
                 rewrite("placement-submit-step", "/api/v1/assessment/placement/submit-step", "/internal/v1/assessment/placement/submit-step", ASSESSMENT_B25, HttpMethod.POST),
                 rewrite("placement-skip", "/api/v1/assessment/placement/skip", "/internal/v1/assessment/placement/skip", ASSESSMENT_B25, HttpMethod.POST),
@@ -644,6 +660,10 @@ public final class GatewayRouteExecutionPolicy {
                 rewrite("messages", "/api/v1/notifications/messages", "/internal/v1/notifications/messages", NOTIFICATION, HttpMethod.GET),
                 rewrite("message-read", "/api/v1/notifications/messages/{messageId}/read", "/internal/v1/notifications/messages/{messageId}/read", NOTIFICATION_READ, HttpMethod.PUT),
                 rewrite("messages-read-all", "/api/v1/notifications/messages/read-all", "/internal/v1/notifications/messages/read-all", NOTIFICATION_READ, HttpMethod.PUT));
+        // B4 has one notification-owned read path. The wider /sync family stays
+        // withheld until each write has an owner-consistent permission and asset boundary.
+        add(definitions, "sync-offline-packages-read",
+                rewrite("list", "/api/v1/sync/offline-packages", "/internal/v1/sync/offline-packages", NOTIFICATION_OFFLINE_PACKAGES, HttpMethod.GET));
         // The source owns GET /preferences but PUT is parameterized by
         // notificationType/channel. The coarse canonical settings PUT cannot
         // safely be guessed into that handler, so it remains unavailable.

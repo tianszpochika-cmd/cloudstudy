@@ -69,3 +69,4 @@ admin-ops:
   phase: ${ADMIN_OPS_PHASE:PHASE_1_ADULT}
   command-confirmation-ttl: ${ADMIN_OPS_COMMAND_CONFIRMATION_TTL:5m}
   support-default-sla: ${ADMIN_OPS_SUPPORT_DEFAULT_SLA:48h}
+  audit-cursor-key: ${ADMIN_OPS_AUDIT_CURSOR_KEY:}

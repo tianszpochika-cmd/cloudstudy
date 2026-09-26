@@ -1,0 +1,640 @@
+{
+  "scope": "Local social room read through authenticated Gateway and mobile H5 browser after fixture quarantine",
+  "capturedAt": "2026-09-23T10:05:20.022Z",
+  "stamp": "mudxszdi-6e80d6",
+  "accountTag": "4b9a0d736697",
+  "checks": [
+    {
+      "name": "platform owner has no published rooms",
+      "actual": 0,
+      "expected": 0,
+      "pass": true
+    },
+    {
+      "name": "gateway reachable",
+      "actual": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "name": "social-owner reachable",
+      "actual": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "name": "mobile-h5 reachable",
+      "actual": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "name": "new adult registration",
+      "actual": 201,
+      "expected": 201,
+      "pass": true
+    },
+    {
+      "name": "adult gate",
+      "actual": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "name": "TERMS consent",
+      "actual": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "name": "PRIVACY consent",
+      "actual": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "name": "ADULT_LEARNING consent",
+      "actual": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "name": "fresh authenticated login",
+      "actual": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "name": "Gateway rooms HTTP",
+      "actual": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "name": "Gateway rooms contains actual items array",
+      "actual": true,
+      "expected": true,
+      "pass": true
+    },
+    {
+      "name": "Gateway rooms actual empty array",
+      "actual": 0,
+      "expected": 0,
+      "pass": true
+    },
+    {
+      "name": "social owner rooms HTTP",
+      "actual": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "name": "social owner actual empty array",
+      "actual": 0,
+      "expected": 0,
+      "pass": true
+    },
+    {
+      "name": "mobile 320 login navigates",
+      "actual": true,
+      "expected": true,
+      "pass": true
+    },
+    {
+      "name": "mobile 320 browser rooms HTTP",
+      "actual": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "name": "mobile 320 browser rooms actual empty array",
+      "actual": 0,
+      "expected": 0,
+      "pass": true
+    },
+    {
+      "name": "mobile 320 visible empty state",
+      "actual": true,
+      "expected": true,
+      "pass": true
+    },
+    {
+      "name": "mobile 320 no rendered room",
+      "actual": 0,
+      "expected": 0,
+      "pass": true
+    },
+    {
+      "name": "mobile 320 no fixture name",
+      "actual": false,
+      "expected": false,
+      "pass": true
+    },
+    {
+      "name": "mobile 320 no horizontal overflow",
+      "actual": true,
+      "expected": true,
+      "pass": true
+    },
+    {
+      "name": "mobile 320 partial failure does not claim total network loss",
+      "actual": true,
+      "expected": true,
+      "pass": true
+    },
+    {
+      "name": "mobile 320 retains scoped unavailability hint",
+      "actual": true,
+      "expected": true,
+      "pass": true
+    },
+    {
+      "name": "mobile 390 login navigates",
+      "actual": true,
+      "expected": true,
+      "pass": true
+    },
+    {
+      "name": "mobile 390 browser rooms HTTP",
+      "actual": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "name": "mobile 390 browser rooms actual empty array",
+      "actual": 0,
+      "expected": 0,
+      "pass": true
+    },
+    {
+      "name": "mobile 390 visible empty state",
+      "actual": true,
+      "expected": true,
+      "pass": true
+    },
+    {
+      "name": "mobile 390 no rendered room",
+      "actual": 0,
+      "expected": 0,
+      "pass": true
+    },
+    {
+      "name": "mobile 390 no fixture name",
+      "actual": false,
+      "expected": false,
+      "pass": true
+    },
+    {
+      "name": "mobile 390 no horizontal overflow",
+      "actual": true,
+      "expected": true,
+      "pass": true
+    },
+    {
+      "name": "mobile 390 partial failure does not claim total network loss",
+      "actual": true,
+      "expected": true,
+      "pass": true
+    },
+    {
+      "name": "mobile 390 retains scoped unavailability hint",
+      "actual": true,
+      "expected": true,
+      "pass": true
+    },
+    {
+      "name": "platform room count unchanged",
+      "actual": 0,
+      "expected": 0,
+      "pass": true
+    },
+    {
+      "name": "quarantined fixture room count unchanged",
+      "actual": 100,
+      "expected": 100,
+      "pass": true
+    }
+  ],
+  "requests": [
+    {
+      "stage": "register",
+      "source": "gateway",
+      "method": "POST",
+      "path": "/api/v1/auth/register",
+      "status": 201,
+      "code": null
+    },
+    {
+      "stage": "adult-gate",
+      "source": "gateway",
+      "method": "POST",
+      "path": "/api/v1/iam/adult-gate",
+      "status": 200,
+      "code": null
+    },
+    {
+      "stage": "adult-gate",
+      "source": "gateway",
+      "method": "PUT",
+      "path": "/api/v1/iam/consents",
+      "status": 200,
+      "code": null
+    },
+    {
+      "stage": "adult-gate",
+      "source": "gateway",
+      "method": "PUT",
+      "path": "/api/v1/iam/consents",
+      "status": 200,
+      "code": null
+    },
+    {
+      "stage": "adult-gate",
+      "source": "gateway",
+      "method": "PUT",
+      "path": "/api/v1/iam/consents",
+      "status": 200,
+      "code": null
+    },
+    {
+      "stage": "fresh-login",
+      "source": "gateway",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200,
+      "code": null
+    },
+    {
+      "stage": "gateway-rooms",
+      "source": "gateway",
+      "method": "GET",
+      "path": "/api/v1/social/rooms?limit=20",
+      "status": 200,
+      "code": null
+    },
+    {
+      "stage": "owner-rooms",
+      "source": "social-owner",
+      "method": "GET",
+      "path": "/api/v1/social/rooms?limit=20",
+      "status": 200,
+      "code": null
+    },
+    {
+      "stage": "related-offline-package-boundary",
+      "source": "gateway",
+      "method": "GET",
+      "path": "/api/v1/sync/offline-packages?limit=20",
+      "status": 404,
+      "code": null
+    },
+    {
+      "stage": "mobile-320",
+      "source": "browser",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "stage": "mobile-320",
+      "source": "browser",
+      "method": "GET",
+      "path": "/api/v1/iam/permissions",
+      "status": 200
+    },
+    {
+      "stage": "mobile-320",
+      "source": "browser",
+      "method": "GET",
+      "path": "/api/v1/learner/home",
+      "status": 200
+    },
+    {
+      "stage": "mobile-320",
+      "source": "browser",
+      "method": "GET",
+      "path": "/api/v1/sync/offline-packages",
+      "failed": "net::ERR_FAILED"
+    },
+    {
+      "stage": "mobile-320",
+      "source": "browser",
+      "method": "GET",
+      "path": "/api/v1/notifications/preferences",
+      "status": 200
+    },
+    {
+      "stage": "mobile-320",
+      "source": "browser",
+      "method": "GET",
+      "path": "/api/v1/gamification/season",
+      "status": 200
+    },
+    {
+      "stage": "mobile-320",
+      "source": "browser",
+      "method": "GET",
+      "path": "/api/v1/content/learner/catalog",
+      "status": 200
+    },
+    {
+      "stage": "mobile-320",
+      "source": "browser",
+      "method": "GET",
+      "path": "/api/v1/gamification/me/summary",
+      "status": 200
+    },
+    {
+      "stage": "mobile-320",
+      "source": "browser",
+      "method": "GET",
+      "path": "/api/v1/gamification/quests",
+      "status": 200
+    },
+    {
+      "stage": "mobile-320",
+      "source": "browser",
+      "method": "GET",
+      "path": "/api/v1/avatar/profile",
+      "status": 200
+    },
+    {
+      "stage": "mobile-320",
+      "source": "browser",
+      "method": "GET",
+      "path": "/api/v1/gamification/streak",
+      "status": 200
+    },
+    {
+      "stage": "mobile-320",
+      "source": "browser",
+      "method": "GET",
+      "path": "/api/v1/avatar/items",
+      "status": 200
+    },
+    {
+      "stage": "mobile-320",
+      "source": "browser",
+      "method": "GET",
+      "path": "/api/v1/social/rooms",
+      "status": 200
+    },
+    {
+      "stage": "mobile-320",
+      "source": "browser",
+      "method": "GET",
+      "path": "/api/v1/avatar/loadouts",
+      "status": 200
+    },
+    {
+      "stage": "mobile-320-social",
+      "source": "mobile-browser",
+      "method": "GET",
+      "path": "/api/v1/social/rooms",
+      "status": 200,
+      "itemCount": 0
+    },
+    {
+      "stage": "mobile-320",
+      "source": "browser",
+      "method": "GET",
+      "path": "/api/v1/avatar/resources",
+      "status": 200
+    },
+    {
+      "stage": "mobile-320",
+      "source": "browser",
+      "method": "GET",
+      "path": "/api/v1/notifications/messages",
+      "status": 200
+    },
+    {
+      "stage": "mobile-320",
+      "source": "browser",
+      "method": "GET",
+      "path": "/api/v1/notifications/preferences",
+      "status": 200
+    },
+    {
+      "stage": "mobile-320",
+      "source": "browser",
+      "method": "GET",
+      "path": "/api/v1/games/catalog",
+      "status": 200
+    },
+    {
+      "stage": "mobile-320",
+      "source": "browser",
+      "method": "GET",
+      "path": "/api/v1/notifications/messages",
+      "status": 200
+    },
+    {
+      "stage": "mobile-390",
+      "source": "browser",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "stage": "mobile-390",
+      "source": "browser",
+      "method": "GET",
+      "path": "/api/v1/iam/permissions",
+      "status": 200
+    },
+    {
+      "stage": "mobile-390",
+      "source": "browser",
+      "method": "GET",
+      "path": "/api/v1/learner/home",
+      "status": 200
+    },
+    {
+      "stage": "mobile-390",
+      "source": "browser",
+      "method": "GET",
+      "path": "/api/v1/sync/offline-packages",
+      "failed": "net::ERR_FAILED"
+    },
+    {
+      "stage": "mobile-390",
+      "source": "browser",
+      "method": "GET",
+      "path": "/api/v1/gamification/quests",
+      "status": 200
+    },
+    {
+      "stage": "mobile-390",
+      "source": "browser",
+      "method": "GET",
+      "path": "/api/v1/notifications/preferences",
+      "status": 200
+    },
+    {
+      "stage": "mobile-390",
+      "source": "browser",
+      "method": "GET",
+      "path": "/api/v1/gamification/me/summary",
+      "status": 200
+    },
+    {
+      "stage": "mobile-390",
+      "source": "browser",
+      "method": "GET",
+      "path": "/api/v1/avatar/profile",
+      "status": 200
+    },
+    {
+      "stage": "mobile-390",
+      "source": "browser",
+      "method": "GET",
+      "path": "/api/v1/avatar/items",
+      "status": 200
+    },
+    {
+      "stage": "mobile-390",
+      "source": "browser",
+      "method": "GET",
+      "path": "/api/v1/avatar/loadouts",
+      "status": 200
+    },
+    {
+      "stage": "mobile-390",
+      "source": "browser",
+      "method": "GET",
+      "path": "/api/v1/gamification/streak",
+      "status": 200
+    },
+    {
+      "stage": "mobile-390",
+      "source": "browser",
+      "method": "GET",
+      "path": "/api/v1/avatar/resources",
+      "status": 200
+    },
+    {
+      "stage": "mobile-390",
+      "source": "browser",
+      "method": "GET",
+      "path": "/api/v1/games/catalog",
+      "status": 200
+    },
+    {
+      "stage": "mobile-390",
+      "source": "browser",
+      "method": "GET",
+      "path": "/api/v1/gamification/season",
+      "status": 200
+    },
+    {
+      "stage": "mobile-390",
+      "source": "browser",
+      "method": "GET",
+      "path": "/api/v1/social/rooms",
+      "status": 200
+    },
+    {
+      "stage": "mobile-390-social",
+      "source": "mobile-browser",
+      "method": "GET",
+      "path": "/api/v1/social/rooms",
+      "status": 200,
+      "itemCount": 0
+    },
+    {
+      "stage": "mobile-390",
+      "source": "browser",
+      "method": "GET",
+      "path": "/api/v1/notifications/messages",
+      "status": 200
+    },
+    {
+      "stage": "mobile-390",
+      "source": "browser",
+      "method": "GET",
+      "path": "/api/v1/notifications/preferences",
+      "status": 200
+    },
+    {
+      "stage": "mobile-390",
+      "source": "browser",
+      "method": "GET",
+      "path": "/api/v1/notifications/messages",
+      "status": 200
+    },
+    {
+      "stage": "mobile-390",
+      "source": "browser",
+      "method": "GET",
+      "path": "/api/v1/content/learner/catalog",
+      "status": 200
+    }
+  ],
+  "pages": [
+    {
+      "width": 320,
+      "viewport": 320,
+      "scrollWidth": 320,
+      "bodyScrollWidth": 320,
+      "emptyRoomVisible": true,
+      "renderedRooms": 0,
+      "containsFixtureRoomName": false,
+      "syncStatusTitle": "网络可用 · 学习同步状态",
+      "syncStatusMessage": "部分功能暂不可用，已显示可读取的内容。",
+      "screenshot": "artifacts/uat-2026-09-23/screenshots/social-empty-mudxszdi-6e80d6/mobile-social-empty-320.png"
+    },
+    {
+      "width": 390,
+      "viewport": 390,
+      "scrollWidth": 390,
+      "bodyScrollWidth": 390,
+      "emptyRoomVisible": true,
+      "renderedRooms": 0,
+      "containsFixtureRoomName": false,
+      "syncStatusTitle": "网络可用 · 学习同步状态",
+      "syncStatusMessage": "部分功能暂不可用，已显示可读取的内容。",
+      "screenshot": "artifacts/uat-2026-09-23/screenshots/social-empty-mudxszdi-6e80d6/mobile-social-empty-390.png"
+    }
+  ],
+  "browserErrors": [],
+  "browserConsoleErrors": [
+    {
+      "width": 320,
+      "message": "Access to XMLHttpRequest at 'http://127.0.0.1:18070/api/v1/sync/offline-packages?limit=20' from origin 'http://127.0.0.1:18183' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: The value of the 'Access-Control-Allow-Credentials' header in the response is '' which must be 'true' when the request's cre"
+    },
+    {
+      "width": 320,
+      "message": "Failed to load resource: net::ERR_FAILED"
+    },
+    {
+      "width": 390,
+      "message": "Access to XMLHttpRequest at 'http://127.0.0.1:18070/api/v1/sync/offline-packages?limit=20' from origin 'http://127.0.0.1:18183' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: The value of the 'Access-Control-Allow-Credentials' header in the response is '' which must be 'true' when the request's cre"
+    },
+    {
+      "width": 390,
+      "message": "Failed to load resource: net::ERR_FAILED"
+    }
+  ],
+  "cleanup": {
+    "found": true,
+    "verified": true,
+    "accountDisabled": true,
+    "activePrincipal": 0,
+    "activeSessions": 0,
+    "activeDevices": 0
+  },
+  "featureStatus": "PARTIAL",
+  "knownGaps": [
+    "No real approved rooms or join/focus interaction to test",
+    "Native iOS/Android/iPad not tested"
+  ],
+  "socialTenantCountsBefore": {
+    "local-social-fixture": 100
+  },
+  "relatedOfflinePackageStatus": 404,
+  "socialTenantCountsAfter": {
+    "local-social-fixture": 100
+  },
+  "result": "PASS"
+}

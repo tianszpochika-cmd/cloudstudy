@@ -58,7 +58,7 @@ public class B25AssessmentJdbcController {
     public Map<String, Object> dailyStream(Authentication authentication,
             @RequestParam(required = false) String date,
             @RequestParam(defaultValue = "15") int targetCount) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "assessment.session.write");
         String localDate = date == null || date.isBlank() ? LocalDate.now().toString() : date;
         int boundedTarget = Math.max(1, Math.min(targetCount, 20));
         String key = "b2-daily-stream:" + localDate + ":" + boundedTarget;
@@ -99,7 +99,7 @@ public class B25AssessmentJdbcController {
     @Transactional
     public Map<String, Object> start(Authentication authentication, @RequestBody(required = false) Map<String, Object> body,
             @RequestHeader("Idempotency-Key") String idempotencyKey) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "assessment.session.write");
         requireKey(idempotencyKey);
         String contentCode = text(body == null ? null : body.get("contentCode"), DEFAULT_CONTENT);
         Map<String, Object> session = one("SELECT * FROM b25_assessment_session WHERE principal_id = ? AND tenant_id = ? AND idempotency_key = ?", principal.subject(), TENANT, idempotencyKey);
@@ -116,7 +116,7 @@ public class B25AssessmentJdbcController {
     @GetMapping("/placement/start")
     public Map<String, Object> readPlacement(Authentication authentication,
             @RequestParam(required = false) String sessionId) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "assessment.session.read");
         Map<String, Object> session = sessionId == null || sessionId.isBlank()
                 ? one("SELECT * FROM b25_assessment_session WHERE principal_id = ? AND tenant_id = ? ORDER BY updated_at DESC LIMIT 1", principal.subject(), TENANT)
                 : one("SELECT * FROM b25_assessment_session WHERE session_id = ? AND principal_id = ? AND tenant_id = ?", sessionId, principal.subject(), TENANT);
@@ -127,7 +127,7 @@ public class B25AssessmentJdbcController {
     @Transactional
     public Map<String, Object> submitStep(Authentication authentication, @RequestBody Map<String, Object> body,
             @RequestHeader("Idempotency-Key") String idempotencyKey) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "assessment.session.write");
         requireKey(idempotencyKey);
         String sessionId = text(body.get("sessionId"), "");
         String questionId = text(body.get("questionId"), "");
@@ -167,25 +167,26 @@ public class B25AssessmentJdbcController {
     @Transactional
     public Map<String, Object> skip(Authentication authentication, @RequestBody Map<String, Object> body,
             @RequestHeader("Idempotency-Key") String idempotencyKey) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "assessment.session.write");
         requireKey(idempotencyKey);
         String level = fastTrackCefr(body == null ? null : body.get("fastTrackLevel"));
-        if (!List.of("A1", "A2", "B1", "B2", "C1", "C2").contains(level)) bad("unsupported fastTrackLevel");
+        if (!level.isBlank() && !List.of("A1", "A2", "B1", "B2", "C1", "C2").contains(level)) bad("unsupported fastTrackLevel");
         if (!claimOnce(principal.subject(), idempotencyKey, "PLACEMENT_SKIP", sha256(level))) {
-            Map<String, Object> existing = one("SELECT * FROM b25_assessment_session WHERE principal_id = ? AND tenant_id = ? ORDER BY updated_at DESC LIMIT 1", principal.subject(), TENANT);
-            return existing == null ? Map.of("status", "SKIPPED", "isCompleted", true) : sessionView(existing);
+            Map<String, Object> existing = one("SELECT * FROM b25_assessment_session WHERE principal_id = ? AND tenant_id = ? AND idempotency_key = ? AND status = 'SKIPPED'", principal.subject(), TENANT, idempotencyKey);
+            if (existing == null) throw new ResponseStatusException(HttpStatus.CONFLICT, "placement skip receipt is unavailable");
+            return sessionView(existing);
         }
         String sessionId = UUID.randomUUID().toString();
-        jdbc.update("INSERT INTO b25_assessment_session (session_id, principal_id, tenant_id, content_code, status, answers_json, idempotency_key, score) VALUES (?, ?, ?, ?, 'SKIPPED', '{}', ?, 0)", sessionId, principal.subject(), TENANT, DEFAULT_CONTENT, idempotencyKey);
+        jdbc.update("INSERT INTO b25_assessment_session (session_id, principal_id, tenant_id, content_code, status, answers_json, idempotency_key) VALUES (?, ?, ?, ?, 'SKIPPED', '{}', ?)", sessionId, principal.subject(), TENANT, DEFAULT_CONTENT, idempotencyKey);
         String reportId = UUID.randomUUID().toString();
-        jdbc.update("INSERT INTO b25_assessment_report (report_id, session_id, principal_id, tenant_id, cefr_level, score, radar_json, mistakes_json) VALUES (?, ?, ?, ?, ?, 0, ?, ?)", reportId, sessionId, principal.subject(), TENANT, level, "{}", "[]");
+        jdbc.update("INSERT INTO b25_assessment_report (report_id, session_id, principal_id, tenant_id, cefr_level, score, radar_json, mistakes_json, result_kind, requested_starting_level) VALUES (?, ?, ?, ?, NULL, NULL, ?, ?, 'SKIPPED', ?)", reportId, sessionId, principal.subject(), TENANT, "{}", "[]", level.isBlank() ? null : level);
         jdbc.update("UPDATE b25_assessment_session SET report_id = ? WHERE session_id = ?", reportId, sessionId);
         return reportView(one("SELECT * FROM b25_assessment_report WHERE report_id = ?", reportId));
     }
 
     @GetMapping("/placement/report/{sessionId}")
     public Map<String, Object> report(Authentication authentication, @PathVariable String sessionId) {
-        Principal principal = principal(authentication);
+        Principal principal = principal(authentication, "assessment.session.read");
         Map<String, Object> session = ownerSession(sessionId, principal.subject());
         String reportId = text(session.get("report_id"), "");
         if (reportId.isBlank()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "assessment report is not ready");
@@ -255,14 +256,35 @@ public class B25AssessmentJdbcController {
 
     private Map<String, Object> reportView(Map<String, Object> row) {
         if (row == null) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "assessment report is not ready");
+        boolean skipped = "SKIPPED".equals(text(row.get("result_kind"), "ASSESSED"));
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("reportId", row.get("report_id")); result.put("sessionId", row.get("session_id"));
+        result.put("resultKind", skipped ? "SKIPPED" : "ASSESSED");
+        result.put("canonical", false);
+        result.put("assessmentType", "B25_LEGACY");
+        result.put("completedAt", row.get("created_at"));
+        if (skipped) {
+            result.put("cefrLevel", null);
+            result.put("score", null);
+            result.put("confidence", "UNVERIFIED");
+            result.put("coverageRatio", 0);
+            String requestedLevel = text(row.get("requested_starting_level"), "");
+            if (List.of("A1", "A2", "B1", "B2", "C1", "C2").contains(requestedLevel)) {
+                result.put("requestedStartingLevel", Map.of(
+                        "level", requestedLevel,
+                        "authority", "USER_SELECTED_NON_AUTHORITATIVE"));
+            }
+            result.put("recommendedAdvice", "已跳过测评；自选起点不是测评等级。");
+            return result;
+        }
         double score = ((Number) row.get("score")).doubleValue();
         String cefrLevel = text(row.get("cefr_level"), "A1");
-        Map<String, Object> result = new LinkedHashMap<>(); result.put("reportId", row.get("report_id")); result.put("sessionId", row.get("session_id"));
         result.put("cefrLevel", cefrLevel); result.put("score", score);
         result.put("estimatedVocabulary", estimatedVocabulary(cefrLevel));
         result.put("recommendedAdvice", recommendedAdvice(cefrLevel));
-        result.put("radarScores", radarView(parseJson(row.get("radar_json"), Map.of()), score)); result.put("mistakes", parseJson(row.get("mistakes_json"), List.of()));
-        result.put("source", "PLACEMENT"); result.put("completedAt", row.get("created_at")); return result;
+        result.put("radarScores", radarView(parseJson(row.get("radar_json"), Map.of()), score));
+        result.put("mistakes", parseJson(row.get("mistakes_json"), List.of()));
+        result.put("source", "PLACEMENT"); return result;
     }
 
     private static int questionIndex(List<Map<String, Object>> rules, Map<String, Object> row) {
@@ -275,7 +297,7 @@ public class B25AssessmentJdbcController {
     }
 
     private static String fastTrackCefr(Object value) {
-        String raw = text(value, "A1").toUpperCase(java.util.Locale.ROOT);
+        String raw = text(value, "").toUpperCase(java.util.Locale.ROOT);
         return switch (raw) {
             case "ZERO_A1" -> "A1";
             case "CET4_B1" -> "B1";
@@ -355,6 +377,8 @@ public class B25AssessmentJdbcController {
     private static void bad(String message) { throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message); }
     private Map<String, Object> one(String sql, Object... args) { List<Map<String, Object>> rows = jdbc.queryForList(sql, args); return rows.isEmpty() ? null : rows.get(0); }
     private Object oneValue(String sql, Object... args) { Map<String, Object> row = one(sql, args); return row == null ? null : row.values().stream().findFirst().orElse(null); }
-    private Principal principal(Authentication authentication) { return new Principal(AssessmentHttpPrincipals.require(authentication).subject()); }
+    private Principal principal(Authentication authentication, String permission) {
+        return new Principal(AssessmentHttpPrincipals.require(authentication, permission).subject());
+    }
     private record Principal(String subject) {}
 }

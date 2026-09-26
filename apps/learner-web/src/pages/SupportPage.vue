@@ -2,14 +2,12 @@
 import ExperienceHeader from '../components/ExperienceHeader.vue'
 import { onMounted, ref } from 'vue'
 import {
-  SUPPORT_CATEGORIES,
-  createSupportTicket,
   getSupportTicket,
   listSupportTickets,
-  reopenSupportTicket,
   type SupportTicket,
 } from '../api/support'
 import StatePanel from '../components/StatePanel.vue'
+import { userFacingError } from '../platform/user-facing-error'
 
 type ViewState = 'loading' | 'ready' | 'empty' | 'permission' | 'recovery' | 'error'
 
@@ -17,10 +15,19 @@ const state = ref<ViewState>('loading')
 const lastError = ref<string | null>(null)
 const tickets = ref<SupportTicket[]>([])
 const selected = ref<SupportTicket | null>(null)
-const category = ref<string>('TECHNICAL')
-const resourceRef = ref('')
-const description = ref('')
-const busy = ref(false)
+const categoryNames: Record<string, string> = {
+  CONTENT_CORRECTION: '内容有误', ACCOUNT_ACCESS: '账号登录', BILLING: '订单与权益',
+  LEARNING_DATA: '学习记录', PRIVACY_REQUEST: '隐私与数据', TECHNICAL: '使用问题',
+}
+const stateNames: Record<string, string> = {
+  OPEN: '已提交', ACKNOWLEDGED: '已受理', IN_PROGRESS: '处理中',
+  WAITING_CUSTOMER: '等待补充信息', RESOLVED: '已解决', CLOSED: '已关闭',
+}
+function dueDate(value: string | null): string {
+  if (!value) return '待确认'
+  const date = new Date(value)
+  return Number.isNaN(date.getTime()) ? '待确认' : new Intl.DateTimeFormat('zh-CN', { month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }).format(date)
+}
 
 function stateFrom(error: unknown): ViewState {
   const status = (error as { status?: number })?.status
@@ -36,34 +43,10 @@ async function load(): Promise<void> {
     tickets.value = await listSupportTickets()
     state.value = tickets.value.length ? 'ready' : 'empty'
   } catch (error) {
+    tickets.value = []
+    selected.value = null
     state.value = stateFrom(error)
     lastError.value = error instanceof Error ? error.message : '客服工单暂时不可用。'
-  }
-}
-
-async function create(): Promise<void> {
-  if (busy.value || !description.value.trim() || !resourceRef.value.trim()) return
-  busy.value = true
-  lastError.value = null
-  try {
-    // 指纹代原文：页面不发送联系方式与原文，附件仅引用、分派由服务端决定。
-    const ticket = await createSupportTicket({
-      categoryCode: category.value,
-      resourceRef: resourceRef.value,
-      description: description.value,
-    })
-    if (ticket) {
-      tickets.value = [ticket, ...tickets.value]
-      selected.value = ticket
-      description.value = ''
-      resourceRef.value = ''
-      state.value = 'ready'
-    }
-  } catch (error) {
-    state.value = stateFrom(error)
-    lastError.value = error instanceof Error ? error.message : '工单创建未完成。'
-  } finally {
-    busy.value = false
   }
 }
 
@@ -77,23 +60,6 @@ async function open(ticketId: string): Promise<void> {
   }
 }
 
-async function reopen(ticketId: string): Promise<void> {
-  if (busy.value) return
-  busy.value = true
-  try {
-    const ticket = await reopenSupportTicket(ticketId)
-    if (ticket) {
-      selected.value = ticket
-      tickets.value = tickets.value.map((item) => (item.ticketId === ticket.ticketId ? ticket : item))
-    }
-  } catch (error) {
-    state.value = stateFrom(error)
-    lastError.value = error instanceof Error ? error.message : '重开未完成。'
-  } finally {
-    busy.value = false
-  }
-}
-
 onMounted(() => { void load() })
 </script>
 
@@ -104,65 +70,37 @@ onMounted(() => { void load() })
       v-if="state === 'loading' || state === 'permission' || state === 'error' || state === 'recovery'"
       :state="state === 'recovery' ? 'error' : state"
       title="客服与帮助"
-      :description="state === 'permission' ? '当前会话没有客服权限。' : state === 'recovery' ? '服务端要求先恢复，请刷新后重试。' : (lastError ?? '客服暂时不可用。')"
+      :description="state === 'permission' ? '当前账号暂时不能查看工单。' : state === 'recovery' ? '请刷新后重试。' : userFacingError(lastError, '暂时无法读取工单，请稍后重试。')"
       :action-label="state === 'error' || state === 'recovery' ? '重试' : ''"
       @action="load"
     />
     <template v-if="state === 'ready' || state === 'empty' || tickets.length">
-      <section class="info-card" aria-label="新建工单">
-        <div class="yx-section-heading"><div><p class="yx-kicker">NEW TICKET</p><h3>提交工单</h3></div></div>
-        <form class="yx-form" novalidate @submit.prevent="create">
-          <label class="field">
-            <span>问题分类</span>
-            <select v-model="category" :disabled="busy">
-              <option v-for="item in SUPPORT_CATEGORIES" :key="item" :value="item">{{ item }}</option>
-            </select>
-          </label>
-          <label class="field">
-            <span>关联引用（必填，服务端路由分派所需）</span>
-            <input v-model="resourceRef" type="text" placeholder="内容/订单引用" :disabled="busy">
-          </label>
-          <label class="field">
-            <span>问题描述（仅本地，发送指纹）</span>
-            <textarea v-model="description" rows="4" placeholder="描述问题，原文不出端" :disabled="busy" />
-          </label>
-          <button class="button button--primary" type="submit" :disabled="busy || !description.trim() || !resourceRef.trim()">
-            {{ busy ? '正在提交…' : '提交工单' }}
-          </button>
-        </form>
+      <section class="info-card" aria-label="客服提交状态">
+        <div class="yx-section-heading"><div><h3>提交问题</h3></div></div>
+        <p>工单提交暂不可用。现有工单可在下方查看。</p>
       </section>
       <section class="info-card" aria-label="我的工单">
-        <div class="yx-section-heading"><div><p class="yx-kicker">MY TICKETS</p><h3>我的工单</h3></div><span class="yx-fact-tag">{{ tickets.length }} 张</span></div>
+        <div class="yx-section-heading"><div><h3>我的工单</h3></div><span class="yx-fact-tag">{{ tickets.length }} 张</span></div>
         <p v-if="!tickets.length" class="yx-fact-tag">暂无可见工单。</p>
         <ul v-else class="yx-ticket-list">
           <li v-for="ticket in tickets" :key="ticket.ticketId">
             <button type="button" @click="open(ticket.ticketId)">
-              <strong>{{ ticket.ticketId }}</strong>
-              <span class="yx-pill" :class="ticket.state === 'OPEN' ? 'yx-pill--warning' : ticket.state === 'CLOSED' ? 'yx-pill--muted' : ''">{{ ticket.state }}</span>
-              <small>{{ ticket.categoryCode }} · SLA {{ ticket.slaState ?? '—' }}</small>
+              <strong>工单 {{ ticket.ticketId }}</strong>
+              <span class="yx-pill" :class="ticket.state === 'OPEN' ? 'yx-pill--warning' : ticket.state === 'CLOSED' ? 'yx-pill--muted' : ''">{{ stateNames[ticket.state] ?? '处理中' }}</span>
+              <small>{{ categoryNames[ticket.categoryCode] ?? '历史分类' }}</small>
             </button>
           </li>
         </ul>
       </section>
       <section v-if="selected" class="info-card" aria-label="工单详情">
-        <div class="yx-section-heading"><div><p class="yx-kicker">DETAIL</p><h3>工单详情</h3></div></div>
+        <div class="yx-section-heading"><div><h3>工单详情</h3></div></div>
         <dl class="yx-stats yx-stats--kv">
           <div><dt>引用</dt><dd>{{ selected.ticketId }}</dd></div>
-          <div><dt>分类</dt><dd>{{ selected.categoryCode }}</dd></div>
-          <div><dt>状态</dt><dd>{{ selected.state }}</dd></div>
-          <div><dt>优先级</dt><dd>{{ selected.priority }}</dd></div>
-          <div><dt>SLA</dt><dd>{{ selected.slaState ?? '—' }} · {{ selected.slaDueAt ?? '—' }}</dd></div>
-          <div><dt>脱敏版本</dt><dd>{{ selected.redactionVersion ?? '—' }}</dd></div>
+          <div><dt>分类</dt><dd>{{ categoryNames[selected.categoryCode] ?? '历史分类' }}</dd></div>
+          <div><dt>状态</dt><dd>{{ stateNames[selected.state] ?? '处理中' }}</dd></div>
+          <div><dt>预计处理时间</dt><dd>{{ dueDate(selected.slaDueAt) }}</dd></div>
         </dl>
-        <button
-          v-if="selected.state === 'RESOLVED' || selected.state === 'CLOSED'"
-          class="button button--secondary"
-          type="button"
-          :disabled="busy"
-          @click="reopen(selected.ticketId)"
-        >
-          重开工单
-        </button>
+        <p v-if="selected.state === 'RESOLVED' || selected.state === 'CLOSED'">确认与重开暂不可用。</p>
       </section>
       <div class="actions">
         <button class="button" type="button" @click="load">刷新</button>

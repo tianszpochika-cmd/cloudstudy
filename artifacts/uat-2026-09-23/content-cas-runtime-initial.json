@@ -1,0 +1,57 @@
+{
+  "scope": "Local Gateway B9 content draft CAS, synthetic staff",
+  "contentCode": "uat-cas-mudpw98a95e8ba",
+  "checks": [
+    {
+      "name": "register",
+      "observed": 201,
+      "expected": 201,
+      "ok": true
+    },
+    {
+      "name": "staff login",
+      "observed": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "list page 1",
+      "observed": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "create draft",
+      "observed": 202,
+      "expected": 202,
+      "ok": true
+    },
+    {
+      "name": "same-key replay",
+      "observed": {
+        "status": 202,
+        "sameReceipt": false
+      },
+      "expected": {
+        "status": 202,
+        "sameReceipt": true
+      },
+      "ok": false
+    }
+  ],
+  "cleanup": {
+    "removed": {
+      "receipts": 3,
+      "versions": 1,
+      "definition": 1
+    },
+    "account": "1:DISABLED",
+    "activeSessions": 0
+  },
+  "result": "FAIL",
+  "failure": {
+    "name": "Error",
+    "message": "same-key replay: observed {\"status\":202,\"sameReceipt\":false}, expected {\"status\":202,\"sameReceipt\":true}"
+  },
+  "capturedAt": "2026-09-23T06:23:58.952Z"
+}

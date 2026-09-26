@@ -1,4 +1,4 @@
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { defineStore } from 'pinia'
 import { learnerI18n } from '../platform/v2-foundation'
 import { readAccessToken, useSessionStore } from './session'
@@ -41,6 +41,7 @@ const LOCAL_REAL_RUNTIME = import.meta.env.VITE_RUNTIME_MODE !== 'preview'
 type ContentStatus = 'idle' | 'ready' | 'empty' | 'unavailable'
 
 interface LearnerContentPersistedEnvelope extends LearnerContentPersistedState {
+  subject: string
   onboardingOptions?: LearnerGoalOption[]
   onboardingQuotas?: DailyQuotaMinutes[]
 }
@@ -54,14 +55,17 @@ function isAdultBirthYear(value: number | null): boolean {
   return Number.isInteger(value) && (value as number) >= 1900 && (value as number) <= currentYear - 18
 }
 
-function readPersisted(): LearnerContentPersistedEnvelope | null {
+function readPersisted(subject: string): LearnerContentPersistedEnvelope | null {
   if (typeof window === 'undefined') return null
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY)
     if (!raw) return null
     const parsed: unknown = JSON.parse(raw)
-    return typeof parsed === 'object' && parsed !== null ? parsed as LearnerContentPersistedEnvelope : null
+    if (typeof parsed === 'object' && parsed !== null && (parsed as LearnerContentPersistedEnvelope).subject === subject) return parsed as LearnerContentPersistedEnvelope
+    window.localStorage.removeItem(STORAGE_KEY)
+    return null
   } catch {
+    try { window.localStorage.removeItem(STORAGE_KEY) } catch { /* ignore */ }
     return null
   }
 }
@@ -84,6 +88,12 @@ function mergeAssessmentReport(current: AssessmentReport | null, next: Assessmen
 }
 
 export const useLearnerContentStore = defineStore('learner-content', () => {
+  const session = useSessionStore()
+  const verifiedSubject = computed(() => {
+    const subject = session.principal?.subject?.trim()
+    return session.accessToken && subject && (!session.userId || session.userId === subject) ? subject : null
+  })
+  let activeIdentity = { subject: verifiedSubject.value, generation: session.authGeneration }
   const restored = ref(false)
   const syncState = ref<ReadModelSource>('local')
   const lastError = ref<string | null>(null)
@@ -100,6 +110,47 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
   const contentStatus = ref<ContentStatus>('idle')
   const pendingAssessmentAnswers = ref<PlacementAnswerInput[]>([])
   const pendingTaskIds = ref<string[]>([])
+
+  function resetForIdentity(subject: string | null, generation: number): void {
+    activeIdentity = { subject, generation }
+    restored.value = false
+    syncState.value = 'local'
+    lastError.value = null
+    onboarding.value = createDefaultOnboarding()
+    onboardingOptions.value = []
+    onboardingQuotas.value = []
+    onboardingStatus.value = 'idle'
+    assessment.value = createDefaultAssessment()
+    assessmentStatus.value = 'idle'
+    home.value = null
+    homeStatus.value = 'idle'
+    today.value = null
+    todayStatus.value = 'idle'
+    contentStatus.value = 'idle'
+    pendingAssessmentAnswers.value = []
+    pendingTaskIds.value = []
+  }
+
+  watch([verifiedSubject, () => session.authGeneration], ([subject, generation]) => {
+    if (subject === activeIdentity.subject && generation === activeIdentity.generation) return
+    if (activeIdentity.subject && typeof window !== 'undefined') {
+      try { window.localStorage.removeItem(STORAGE_KEY) } catch { /* restore still validates ownership */ }
+    }
+    resetForIdentity(subject, generation)
+  }, { flush: 'sync' })
+
+  function identity(): { subject: string; generation: number } | null {
+    const subject = verifiedSubject.value
+    return subject && session.status === 'authenticated'
+      ? { subject, generation: session.authGeneration } : null
+  }
+  function stillCurrent(expected: { subject: string; generation: number } | null): boolean {
+    return Boolean(expected && session.status === 'authenticated'
+      && expected.subject === verifiedSubject.value
+      && expected.subject === activeIdentity.subject
+      && expected.generation === session.authGeneration
+      && expected.generation === activeIdentity.generation)
+  }
 
   const hasOnboardingConsent = computed(() => onboarding.value.ageConfirmed && isAdultBirthYear(onboarding.value.birthYear) && onboarding.value.privacyConsent && onboarding.value.termsConsent)
   const hasPreferences = computed(() => Boolean(onboarding.value.targetGoal && onboarding.value.dailyQuotaMinutes))
@@ -126,9 +177,11 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
   }
 
   function persist(): void {
-    if (typeof window === 'undefined') return
+    const owner = identity()
+    if (typeof window === 'undefined' || !owner || !stillCurrent(owner)) return
     const payload: LearnerContentPersistedEnvelope = {
       ...snapshot(),
+      subject: owner.subject,
       pendingAssessmentAnswers: [...pendingAssessmentAnswers.value],
       pendingTaskIds: [...pendingTaskIds.value],
       onboardingOptions: onboardingOptions.value,
@@ -142,8 +195,11 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
   }
 
   function restore(): void {
+    const owner = identity()
+    if (!owner) return
+    if (owner.subject !== activeIdentity.subject || owner.generation !== activeIdentity.generation) resetForIdentity(owner.subject, owner.generation)
     if (restored.value) return
-    const saved = readPersisted()
+    const saved = readPersisted(owner.subject)
     if (saved?.onboarding) onboarding.value = { ...createDefaultOnboarding(), ...saved.onboarding }
     // On a real local run, browser storage may retain a draft or an old cache but
     // it is never promoted to an authoritative assessment/home fact after reload.
@@ -175,21 +231,28 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
   }
 
   function setConsent(input: { birthYear: number; ageConfirmed: boolean; privacyConsent: boolean; termsConsent: boolean }): void {
+    restore()
+    if (!stillCurrent(identity())) return
     onboarding.value = { ...onboarding.value, ...input, updatedAt: new Date().toISOString() }
     persist()
   }
 
   function setPreferences(targetGoal: TargetGoal, selectedSubTags: SubTag[], dailyQuotaMinutes: DailyQuotaMinutes): void {
+    restore()
+    if (!stillCurrent(identity())) return
     onboarding.value = { ...onboarding.value, targetGoal, subTags: selectedSubTags.slice(0, 3), dailyQuotaMinutes, updatedAt: new Date().toISOString() }
     persist()
   }
 
   async function loadOnboarding(): Promise<void> {
     restore()
+    const owner = identity()
+    if (!stillCurrent(owner)) return
     onboardingStatus.value = 'loading'
     lastError.value = null
     try {
       const remote = await learnerContentPort.readOnboarding(learnerI18n.contentLocale)
+      if (!stillCurrent(owner)) return
       onboarding.value = { ...onboarding.value, ...remote.profile }
       onboardingOptions.value = [...remote.goals]
       onboardingQuotas.value = [...remote.quotas]
@@ -197,6 +260,7 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
       syncState.value = 'remote'
       persist()
     } catch (error) {
+      if (!stillCurrent(owner)) return
       onboardingStatus.value = setError(error, '目标选项暂时无法加载，已保留本地草稿。')
       if (!onboardingOptions.value.length) onboardingStatus.value = onboardingStatus.value === 'forbidden' ? 'forbidden' : 'offline'
       persist()
@@ -204,7 +268,9 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
   }
 
   async function saveOnboarding(): Promise<boolean> {
-    const session = useSessionStore()
+    restore()
+    const owner = identity()
+    if (!stillCurrent(owner)) return false
     if (session.adultGate !== 'PASSED' || !hasOnboardingConsent.value || !hasPreferences.value) {
       onboardingStatus.value = 'error'
       lastError.value = session.adultGate === 'PASSED' ? '请先完成成人确认、隐私/条款同意和学习目标。' : '请先完成服务端成人 Gate。'
@@ -221,6 +287,7 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
     }
     try {
       const remote = await learnerContentPort.saveOnboarding({ profile: onboarding.value, clientEventId: eventId('onboarding') })
+      if (!stillCurrent(owner)) return false
       if (remote) {
         onboarding.value = { ...onboarding.value, ...remote.profile }
         onboardingOptions.value = [...remote.goals]
@@ -231,6 +298,7 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
       persist()
       return true
     } catch (error) {
+      if (!stillCurrent(owner)) return false
       onboardingStatus.value = setError(error, '目标草稿已保存在本地，恢复联网后可继续同步。')
       persist()
       return false
@@ -239,6 +307,8 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
 
   async function loadAssessment(): Promise<void> {
     restore()
+    const owner = identity()
+    if (!stillCurrent(owner)) return
     if (!LOCAL_REAL_RUNTIME && assessment.value.status === 'completed') {
       assessmentStatus.value = 'ready'
       return
@@ -247,26 +317,30 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
     lastError.value = null
     try {
       let remote = await learnerContentPort.readPlacement({ contentLocale: learnerI18n.contentLocale, sessionId: assessment.value.sessionId })
+      if (!stillCurrent(owner)) return
       if (remote.status === 'EMPTY') {
         remote = await learnerContentPort.startPlacement({
           contentLocale: learnerI18n.contentLocale,
           clientEventId: eventId('placement-start'),
         })
+        if (!stillCurrent(owner)) return
       }
       assessment.value = {
         ...assessment.value,
         sessionId: remote.sessionId ?? assessment.value.sessionId,
         currentQuestion: remote.currentQuestion,
-        report: remote.report ?? assessment.value.report,
+        report: remote.report,
+        skipBaseline: remote.skipBaseline,
         resumed: Boolean(assessment.value.answers.length),
-        status: remote.report ? 'completed' : remote.currentQuestion ? 'ready' : 'error',
+        status: remote.report || remote.skipBaseline ? 'completed' : remote.currentQuestion ? 'ready' : 'error',
         lastSavedAt: new Date().toISOString(),
       }
-      assessmentStatus.value = remote.report ? 'ready' : remote.currentQuestion ? 'ready' : 'empty'
-      contentStatus.value = remote.currentQuestion || remote.report ? 'ready' : 'empty'
+      assessmentStatus.value = remote.report || remote.skipBaseline || remote.currentQuestion ? 'ready' : 'empty'
+      contentStatus.value = remote.currentQuestion || remote.report || remote.skipBaseline ? 'ready' : 'empty'
       syncState.value = 'remote'
       persist()
     } catch (error) {
+      if (!stillCurrent(owner)) return
       assessmentStatus.value = setError(error, '测评入口暂时不可用，已保留可恢复草稿。')
       if (LOCAL_REAL_RUNTIME) {
         // A failed read is an unavailable server fact, not a permission to invent
@@ -293,6 +367,8 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
 
   async function restartAssessment(): Promise<void> {
     restore()
+    const owner = identity()
+    if (!stillCurrent(owner)) return
     if (!LOCAL_REAL_RUNTIME) {
       assessment.value = { ...createDefaultAssessment(), status: 'ready', currentQuestion: getLocalQuestion(0, 'offline-placement') }
       assessmentStatus.value = 'ready'
@@ -303,10 +379,12 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
     lastError.value = null
     try {
       const remote = await learnerContentPort.startPlacement({ contentLocale: learnerI18n.contentLocale, clientEventId: eventId('placement-restart') })
+      if (!stillCurrent(owner)) return
       assessment.value = { ...createDefaultAssessment(), sessionId: remote.sessionId, currentQuestion: remote.currentQuestion, report: null, status: remote.currentQuestion ? 'ready' : 'error', lastSavedAt: new Date().toISOString() }
       assessmentStatus.value = remote.currentQuestion ? 'ready' : 'empty'
       syncState.value = 'remote'
     } catch (error) {
+      if (!stillCurrent(owner)) return
       assessmentStatus.value = setError(error, '新的服务端测评会话暂时无法创建。')
       assessment.value = { ...assessment.value, status: 'error', currentQuestion: null, report: null }
     }
@@ -314,6 +392,8 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
   }
 
   async function submitAnswerAgainstServer(selectedKey: string, timeSpentSec: number): Promise<void> {
+    const owner = identity()
+    if (!stillCurrent(owner)) return
     const current = assessment.value.currentQuestion
     const sessionId = assessment.value.sessionId
     if (!current || !sessionId || assessment.value.status === 'submitting' || assessment.value.status === 'completed') return
@@ -334,6 +414,7 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
         timeSpentSec: boundedTime,
         contentLocale: learnerI18n.contentLocale,
       })
+      if (!stillCurrent(owner)) return
       const answer = {
         questionId: current.questionId,
         stepIndex: current.stepIndex,
@@ -357,6 +438,7 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
       syncState.value = 'remote'
       if (completed) onboarding.value = { ...onboarding.value, completed: true, updatedAt: new Date().toISOString() }
     } catch (error) {
+      if (!stillCurrent(owner)) return
       pendingAssessmentAnswers.value = [...pendingAssessmentAnswers.value, {
         sessionId,
         questionId: current.questionId,
@@ -374,6 +456,8 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
 
   async function submitAnswer(selectedKey: string, timeSpentSec: number): Promise<void> {
     if (LOCAL_REAL_RUNTIME) return submitAnswerAgainstServer(selectedKey, timeSpentSec)
+    const owner = identity()
+    if (!stillCurrent(owner)) return
     const current = assessment.value.currentQuestion
     const sessionId = assessment.value.sessionId ?? 'offline-placement'
     if (!current || assessment.value.status === 'submitting' || assessment.value.status === 'completed') return
@@ -395,11 +479,13 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
     try {
       if (!readAccessToken()) throw new LearnerContentReadModelError({ code: 'NETWORK', status: 0, retryable: true, message: '当前为离线测评，答案已保存在本地。' })
       const response = await learnerContentPort.submitPlacementAnswer({ sessionId, questionId: current.questionId, selectedKey, timeSpentSec: answer.timeSpentSec, contentLocale: learnerI18n.contentLocale })
+      if (!stillCurrent(owner)) return
       remoteCompleted = response.isCompleted
       assessment.value.report = mergeAssessmentReport(assessment.value.report, response.report)
       assessment.value.currentQuestion = response.nextQuestion
       syncState.value = 'remote'
     } catch (error) {
+      if (!stillCurrent(owner)) return
       const nextStatus = setError(error, '本题已保存在本地，恢复联网后可继续同步。')
       if (nextStatus !== 'forbidden' && nextStatus !== 'content-unavailable') {
         pendingAssessmentAnswers.value = [...pendingAssessmentAnswers.value, { sessionId, questionId: current.questionId, selectedKey, timeSpentSec: answer.timeSpentSec, contentLocale: learnerI18n.contentLocale }]
@@ -426,6 +512,8 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
   }
 
   async function applyFastTrackAgainstServer(fastTrackLevel: 'ZERO_A1' | 'CET4_B1' | 'CET6_B2' | 'POSTGRAD_B2_PLUS'): Promise<void> {
+    const owner = identity()
+    if (!stillCurrent(owner)) return
     if (!readAccessToken()) {
       assessmentStatus.value = 'offline'
       lastError.value = '当前会话已失效，未生成本地定级结果；请重新登录后重试。'
@@ -438,21 +526,22 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
         contentLocale: learnerI18n.contentLocale,
         clientEventId: eventId('placement-skip'),
       })
-      if (!remote?.report) {
+      if (!stillCurrent(owner)) return
+      if (!remote?.skipBaseline) {
         assessmentStatus.value = 'empty'
-        lastError.value = '服务端尚未返回定级报告，未在本地生成替代结果。'
+        lastError.value = '服务端尚未返回跳过记录，请稍后重试。'
         return
       }
       assessment.value = {
         ...createDefaultAssessment(),
         status: 'completed',
-        report: remote.report,
+        skipBaseline: remote.skipBaseline,
         lastSavedAt: new Date().toISOString(),
       }
-      onboarding.value = { ...onboarding.value, completed: true, updatedAt: new Date().toISOString() }
       assessmentStatus.value = 'ready'
       syncState.value = 'remote'
     } catch (error) {
+      if (!stillCurrent(owner)) return
       assessmentStatus.value = setError(error, '快速定级服务暂时不可用，未生成本地替代报告。')
     }
     persist()
@@ -460,6 +549,8 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
 
   async function applyFastTrack(fastTrackLevel: 'ZERO_A1' | 'CET4_B1' | 'CET6_B2' | 'POSTGRAD_B2_PLUS'): Promise<void> {
     if (LOCAL_REAL_RUNTIME) return applyFastTrackAgainstServer(fastTrackLevel)
+    const owner = identity()
+    if (!stillCurrent(owner)) return
     const levelMap = { ZERO_A1: { level: 1, cefrLevel: 'A1' }, CET4_B1: { level: 3, cefrLevel: 'B1' }, CET6_B2: { level: 4, cefrLevel: 'B2' }, POSTGRAD_B2_PLUS: { level: 4, cefrLevel: 'B2' } } as const
     const selected = levelMap[fastTrackLevel]
     const report: AssessmentReport = {
@@ -481,9 +572,11 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
     }
     try {
       const remote = await learnerContentPort.skipPlacement({ fastTrackLevel, contentLocale: learnerI18n.contentLocale, clientEventId: eventId('placement-skip') })
+      if (!stillCurrent(owner)) return
       if (remote?.report) assessment.value.report = remote.report
       syncState.value = 'remote'
     } catch (error) {
+      if (!stillCurrent(owner)) return
       assessmentStatus.value = setError(error, '快速定级已保存在本地，服务端同步稍后重试。')
     }
     persist()
@@ -508,12 +601,17 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
 
   async function loadHome(): Promise<void> {
     restore()
+    const owner = identity()
+    if (!stillCurrent(owner)) return
     homeStatus.value = 'loading'
     lastError.value = null
     try {
-      applyHomeModel(await learnerContentPort.readHome(learnerI18n.contentLocale))
+      const remote = await learnerContentPort.readHome(learnerI18n.contentLocale)
+      if (!stillCurrent(owner)) return
+      applyHomeModel(remote)
       syncState.value = 'remote'
     } catch (error) {
+      if (!stillCurrent(owner)) return
       homeStatus.value = setError(error, '学习首页暂时无法同步，已保留最近一次安全快照。')
       if (home.value) {
         today.value = today.value ?? home.value.today ?? home.value.home
@@ -525,12 +623,17 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
 
   async function loadToday(): Promise<void> {
     restore()
+    const owner = identity()
+    if (!stillCurrent(owner)) return
     todayStatus.value = 'loading'
     lastError.value = null
     try {
-      applyHomeModel(await learnerContentPort.readToday(learnerI18n.contentLocale))
+      const remote = await learnerContentPort.readToday(learnerI18n.contentLocale)
+      if (!stillCurrent(owner)) return
+      applyHomeModel(remote)
       syncState.value = 'remote'
     } catch (error) {
+      if (!stillCurrent(owner)) return
       todayStatus.value = setError(error, '今日任务暂时无法同步，已保留最近一次安全快照。')
       if (!today.value && home.value) today.value = home.value.today ?? home.value.home
     }
@@ -538,6 +641,8 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
   }
 
   async function completeTaskAgainstServer(taskId: string): Promise<void> {
+    const owner = identity()
+    if (!stillCurrent(owner)) return
     const target = today.value ?? home.value?.today ?? home.value?.home
     if (!target) return
     if (!readAccessToken()) {
@@ -553,11 +658,13 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
         contentLocale: learnerI18n.contentLocale,
         clientEventId: eventId(`task-${taskId}`),
       })
+      if (!stillCurrent(owner)) return
       if (!remote) throw new LearnerContentReadModelError({ code: 'NETWORK', status: 0, retryable: true, message: '服务端没有确认任务完成。' })
       applyHomeModel(preserveContentProjectionAfterCompletion(remote))
       pendingTaskIds.value = pendingTaskIds.value.filter((item) => item !== taskId)
       syncState.value = 'remote'
     } catch (error) {
+      if (!stillCurrent(owner)) return
       todayStatus.value = setError(error, '任务尚未完成，服务恢复后请重试。')
     }
     persist()
@@ -565,6 +672,8 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
 
   async function completeTask(taskId: string): Promise<void> {
     if (LOCAL_REAL_RUNTIME) return completeTaskAgainstServer(taskId)
+    const owner = identity()
+    if (!stillCurrent(owner)) return
     const target = today.value ?? home.value?.today ?? home.value?.home
     if (!target) return
     const update = (snapshot: HomeSnapshot): HomeSnapshot => ({
@@ -583,10 +692,12 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
     try {
       if (!readAccessToken()) throw new LearnerContentReadModelError({ code: 'NETWORK', status: 0, retryable: true, message: '任务已保存在本地，联网后同步。' })
       const remote = await learnerContentPort.completeTask({ taskId, contentLocale: learnerI18n.contentLocale, clientEventId: eventId(`task-${taskId}`) })
+      if (!stillCurrent(owner)) return
       if (remote) applyHomeModel(preserveContentProjectionAfterCompletion(remote))
       pendingTaskIds.value = pendingTaskIds.value.filter((item) => item !== taskId)
       syncState.value = 'remote'
     } catch (error) {
+      if (!stillCurrent(owner)) return
       todayStatus.value = setError(error, '任务完成状态已保存在本地，恢复联网后可重试。')
     }
     persist()

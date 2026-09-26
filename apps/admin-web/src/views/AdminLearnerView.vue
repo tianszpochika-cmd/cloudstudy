@@ -2,7 +2,7 @@
 import AdminRecordDetails from "../components/AdminRecordDetails.vue";
 import { ui } from "../platform/experience";
 import AdminPageIntro from "../components/AdminPageIntro.vue";
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import {
   searchLearners,
@@ -26,6 +26,7 @@ const subjects = ref<LearnerSubject[]>([]);
 const nextCursor = ref<string | null>(null);
 const hasMore = ref(false);
 const current = ref<string>("");
+const loadedSubject = ref("");
 const state = ref<ViewState>("idle");
 const lastError = ref<string | null>(null);
 const activeTab = ref("profile");
@@ -35,24 +36,68 @@ const plans = ref<Row>({});
 const srs = ref<Row>({});
 const assessments = ref<Row>({});
 
-const canRead = computed(() => session.can("admin.content.read"));
+const canRead = computed(() => session.can("admin.learner.read"));
+const canWrite = computed(() => session.can("admin.learner.write"));
+const canReadLearning = computed(() => session.can("admin.learning.read"));
+const canWriteLearning = computed(() => session.can("admin.learning.write"));
+const canReadAssessment = computed(() => session.can("admin.assessment.read"));
 
-const goalForm = ref({
+function defaultGoalForm() { return {
   goalType: "WORKPLACE",
   dailyMinutes: 30,
   targetDate: "",
   startingLevel: "A1",
   examName: "",
   language: "",
-});
-const prefForm = ref({
+} }
+function defaultPrefForm() { return {
   uiLocale: "zh-CN",
   contentLocale: "en-US",
   themeMode: "SYSTEM",
   timezone: "Asia/Shanghai",
   reducedMotion: false,
-});
+} }
+const goalForm = ref(defaultGoalForm());
+const prefForm = ref(defaultPrefForm());
 const busy = ref(false);
+let detailRequest = 0;
+let listRequest = 0;
+
+function clearDetail(): void {
+  current.value = "";
+  loadedSubject.value = "";
+  profile.value = {};
+  plans.value = {};
+  srs.value = {};
+  assessments.value = {};
+  goalForm.value = defaultGoalForm();
+  prefForm.value = defaultPrefForm();
+}
+
+function selectedSubject(): string | null {
+  return state.value === "ready" && current.value && current.value === loadedSubject.value
+    && session.isAuthenticated && canRead.value ? current.value : null;
+}
+
+watch(
+  [() => session.sessionId, () => session.principal?.subject, () => session.permissions.join("\u0000")],
+  () => {
+    detailRequest += 1;
+    listRequest += 1;
+    clearDetail();
+    subjects.value = [];
+    nextCursor.value = null;
+    hasMore.value = false;
+    state.value = canRead.value ? "idle" : "permission";
+  },
+);
+watch(q, () => {
+  listRequest += 1;
+  subjects.value = [];
+  nextCursor.value = null;
+  hasMore.value = false;
+  if (!current.value && state.value === "loading") state.value = "idle";
+}, { flush: "sync" });
 
 function profileVersion(): number {
   const inner = profile.value.profile as Row | undefined;
@@ -60,51 +105,86 @@ function profileVersion(): number {
 }
 
 async function search(): Promise<void> {
+  const request = ++listRequest;
+  detailRequest += 1;
+  clearDetail();
+  subjects.value = [];
+  nextCursor.value = null;
+  hasMore.value = false;
   if (!canRead.value) {
     state.value = "permission";
     return;
   }
+  const actor = session.principal?.subject;
+  const sessionId = session.sessionId;
+  const query = q.value;
   state.value = "loading";
   try {
     // Contract-aligned envelope: data is the subject array, cursor state lives in meta.
-    const page = await searchLearners(q.value);
+    const page = await searchLearners(query);
+    if (request !== listRequest || q.value !== query || session.principal?.subject !== actor
+      || session.sessionId !== sessionId || !session.isAuthenticated || !canRead.value) return;
     subjects.value = page.subjects;
     nextCursor.value = page.nextCursor;
     hasMore.value = page.hasMore;
     state.value = "idle";
     if (!subjects.value.length) ElMessage.info(ui("paging.noResults"));
   } catch (error) {
+    if (request !== listRequest || q.value !== query || session.principal?.subject !== actor
+      || session.sessionId !== sessionId || !session.isAuthenticated || !canRead.value) return;
     state.value = "error";
     lastError.value = error instanceof Error ? error.message : "检索失败。";
   }
 }
 
 async function loadMore(): Promise<void> {
-  if (!nextCursor.value || state.value === "loading") return;
+  if (!nextCursor.value || state.value === "loading" || current.value || !canRead.value) return;
+  const request = ++listRequest;
+  const actor = session.principal?.subject;
+  const sessionId = session.sessionId;
+  const query = q.value;
+  const cursor = nextCursor.value;
   state.value = "loading";
   try {
-    const page = await searchLearners(q.value, 50, nextCursor.value);
+    const page = await searchLearners(query, 50, cursor);
+    if (request !== listRequest || q.value !== query || session.principal?.subject !== actor
+      || session.sessionId !== sessionId || !session.isAuthenticated || !canRead.value) return;
     subjects.value = [...subjects.value, ...page.subjects];
     nextCursor.value = page.nextCursor;
     hasMore.value = page.hasMore;
     state.value = "idle";
   } catch (error) {
+    if (request !== listRequest || q.value !== query || session.principal?.subject !== actor
+      || session.sessionId !== sessionId || !session.isAuthenticated || !canRead.value) return;
     state.value = "error";
     lastError.value = error instanceof Error ? error.message : "检索失败。";
   }
 }
 
 async function open(subjectId: string): Promise<void> {
+  listRequest += 1;
+  const request = ++detailRequest;
+  clearDetail();
+  if (!canRead.value) {
+    state.value = "permission";
+    return;
+  }
+  if (!subjectId.trim()) return;
+  const actor = session.principal?.subject;
+  const sessionId = session.sessionId;
   current.value = subjectId;
   state.value = "loading";
   lastError.value = null;
   try {
     const [p, pl, s, a] = await Promise.all([
       getLearnerProfile(subjectId),
-      getLearnerPlans(subjectId),
-      getLearnerSrs(subjectId),
-      getLearnerAssessments(subjectId),
+      canReadLearning.value ? getLearnerPlans(subjectId) : Promise.resolve({}),
+      canReadLearning.value ? getLearnerSrs(subjectId) : Promise.resolve({}),
+      canReadAssessment.value ? getLearnerAssessments(subjectId) : Promise.resolve({}),
     ]);
+    if (request !== detailRequest || current.value !== subjectId
+      || session.principal?.subject !== actor || session.sessionId !== sessionId
+      || !session.isAuthenticated || !canRead.value) return;
     profile.value = p;
     plans.value = pl;
     srs.value = s;
@@ -133,8 +213,11 @@ async function open(subjectId: string): Promise<void> {
       if (typeof prefs.timezone === "string")
         prefForm.value.timezone = prefs.timezone;
     }
+    loadedSubject.value = subjectId;
     state.value = "ready";
   } catch (error) {
+    if (request !== detailRequest || current.value !== subjectId
+      || session.principal?.subject !== actor || session.sessionId !== sessionId) return;
     state.value = "error";
     lastError.value =
       error instanceof Error ? error.message : "学员 360° 读取失败。";
@@ -142,55 +225,65 @@ async function open(subjectId: string): Promise<void> {
 }
 
 async function saveGoal(): Promise<void> {
-  if (!current.value || busy.value) return;
+  const subjectId = selectedSubject();
+  if (!canWrite.value || !subjectId || busy.value) return;
+  const input = { ...goalForm.value, expectedVersion: profileVersion() };
   busy.value = true;
   try {
-    await setLearnerGoal(current.value, {
-      ...goalForm.value,
-      expectedVersion: profileVersion(),
-    });
-    ElMessage.success("学习目标已更新（含版本锁与审计）。");
-    await open(current.value);
+    await setLearnerGoal(subjectId, input);
+    if (selectedSubject() !== subjectId) return;
+    ElMessage.success("学习目标已更新。");
+    await open(subjectId);
   } catch (error) {
-    ElMessage.error(error instanceof Error ? error.message : "目标更新失败。");
+    if (selectedSubject() === subjectId)
+      ElMessage.error(error instanceof Error ? error.message : "目标更新失败。");
   } finally {
     busy.value = false;
   }
 }
 
 async function savePreferences(): Promise<void> {
-  if (!current.value || busy.value) return;
+  const subjectId = selectedSubject();
+  if (!canWrite.value || !subjectId || busy.value) return;
+  const input = { ...prefForm.value, expectedVersion: profileVersion() };
   busy.value = true;
   try {
-    await updateLearnerPreferences(current.value, {
-      ...prefForm.value,
-      expectedVersion: profileVersion(),
-    });
-    ElMessage.success("偏好已更新。注意 UI 语言与内容语言相互独立。");
-    await open(current.value);
+    await updateLearnerPreferences(subjectId, input);
+    if (selectedSubject() !== subjectId) return;
+    ElMessage.success("学习偏好已更新。");
+    await open(subjectId);
   } catch (error) {
-    ElMessage.error(error instanceof Error ? error.message : "偏好更新失败。");
+    if (selectedSubject() === subjectId)
+      ElMessage.error(error instanceof Error ? error.message : "偏好更新失败。");
   } finally {
     busy.value = false;
   }
 }
 
 async function resetItem(itemId: string): Promise<void> {
+  const subjectId = selectedSubject();
+  if (!canWriteLearning.value || !subjectId || !itemId || busy.value) return;
   try {
     await ElMessageBox.confirm(
-      `将 SRS 条目 ${itemId} 重置为初始状态（NEW、到期即刻）？分数与掌握度不受影响。`,
-      "SRS 恢复",
+      "重置此复习条目？分数与掌握度不受影响。",
+      "重置复习进度",
       { type: "warning", confirmButtonText: "确认", cancelButtonText: "取消" },
     );
   } catch {
     return;
   }
+  if (!canWriteLearning.value || selectedSubject() !== subjectId || busy.value) return;
+  busy.value = true;
   try {
-    await resetSrsItem(current.value, itemId);
+    await resetSrsItem(subjectId, itemId);
+    if (selectedSubject() !== subjectId) return;
     ElMessage.success("SRS 条目已重置。");
-    await open(current.value);
+    await open(subjectId);
   } catch (error) {
-    ElMessage.error(error instanceof Error ? error.message : "重置失败。");
+    if (selectedSubject() === subjectId)
+      ElMessage.error(error instanceof Error ? error.message : "重置失败。");
+  } finally {
+    busy.value = false;
   }
 }
 
@@ -250,7 +343,7 @@ function dueItems(): Row[] {
 
     <el-alert
       v-if="state === 'permission'"
-      title="当前会话没有内容读取权限"
+      title="当前会话没有学员读取权限"
       type="warning"
       :closable="false"
       show-icon
@@ -303,7 +396,7 @@ function dueItems(): Row[] {
                 :value="m"
               />
             </el-select>
-            <el-button type="primary" :loading="busy" @click="saveGoal()"
+            <el-button type="primary" :loading="busy" :disabled="!canWrite" @click="saveGoal()"
               >更新目标</el-button
             >
           </el-space>
@@ -329,16 +422,18 @@ function dueItems(): Row[] {
                 value="HIGH_CONTRAST"
               />
             </el-select>
-            <el-button type="primary" :loading="busy" @click="savePreferences()"
+            <el-button type="primary" :loading="busy" :disabled="!canWrite" @click="savePreferences()"
               >更新偏好</el-button
             >
           </el-space>
         </el-tab-pane>
         <el-tab-pane label="计划" name="plans">
-          <AdminRecordDetails :value="plans" />
+          <AdminRecordDetails v-if="canReadLearning" :value="plans" />
+          <el-alert v-else title="需要学习记录读取权限" type="info" :closable="false" />
         </el-tab-pane>
         <el-tab-pane label="复习队列" name="srs">
-          <el-table v-if="dueItems().length" :data="dueItems()" size="small">
+          <el-alert v-if="!canReadLearning" title="需要学习记录读取权限" type="info" :closable="false" />
+          <el-table v-else-if="dueItems().length" :data="dueItems()" size="small">
             <el-table-column prop="item_id" label="条目" min-width="140" />
             <el-table-column prop="stage" label="阶段" width="110" />
             <el-table-column prop="due_at" label="到期" min-width="170" />
@@ -348,6 +443,7 @@ function dueItems(): Row[] {
                 <el-button
                   size="small"
                   link
+                  :disabled="!canWriteLearning"
                   @click="resetItem(String(scope.row.item_id ?? ''))"
                   >重置</el-button
                 >
@@ -357,7 +453,8 @@ function dueItems(): Row[] {
           <el-empty v-else description="无到期条目" />
         </el-tab-pane>
         <el-tab-pane label="测评" name="assessments">
-          <AdminRecordDetails :value="assessments" />
+          <AdminRecordDetails v-if="canReadAssessment" :value="assessments" />
+          <el-alert v-else title="需要测评记录读取权限" type="info" :closable="false" />
         </el-tab-pane>
       </el-tabs>
     </el-card>

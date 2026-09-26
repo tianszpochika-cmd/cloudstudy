@@ -9,24 +9,43 @@ const args = [
   '--default-character-set=utf8mb4', '--batch', '--skip-column-names', '--raw'
 ];
 
-const roomId = 'room-local-foundations';
-const seatValues = Array.from({ length: 25 }, (_, index) =>
-  `('${roomId}', 'platform', ${index + 1}, 'AVAILABLE')`).join(',\n');
 const localTestSubject = (process.env.LOCAL_TEST_SUBJECT ?? '').trim();
-if (localTestSubject && !/^[A-Za-z0-9][A-Za-z0-9._:-]{1,127}$/.test(localTestSubject)) {
-  throw new Error('LOCAL_TEST_SUBJECT contains unsupported characters');
+if (!localTestSubject || !/^[A-Za-z0-9][A-Za-z0-9._:-]{1,127}$/.test(localTestSubject)) {
+  throw new Error('LOCAL_TEST_SUBJECT must identify one synthetic local account');
 }
-const principalSource = localTestSubject
-  ? `(SELECT principal_id, tenant_id, status
-       FROM iam_service.iam_principal
-      WHERE tenant_id = 'platform' AND status = 'ACTIVE'
-      UNION
-     SELECT '${localTestSubject}', 'platform', 'ACTIVE') AS local_fixture_principal`
-  : 'iam_service.iam_principal';
+if (host !== '127.0.0.1' || String(port) !== '13306') {
+  throw new Error('local learning-world fixture requires MySQL on 127.0.0.1:13306');
+}
+const eligiblePrincipal = `FROM iam_service.iam_principal p
+  JOIN iam_service.iam_account a ON a.principal_id = p.principal_id
+ WHERE p.principal_id = '${localTestSubject}' AND p.tenant_id = 'platform'
+   AND p.status = 'ACTIVE' AND a.status = 'ACTIVE'
+   AND a.identifier LIKE '%@local.invalid'`;
+const eligibleCount = Number(runMysql({
+  mysqlBin, mysqlArgs: args, password, cwd: process.cwd(),
+  input: `SELECT COUNT(*) ${eligiblePrincipal};\n`,
+}));
+if (eligibleCount !== 1) {
+  throw new Error('LOCAL_TEST_SUBJECT must be an active @local.invalid fixture account');
+}
+const scopedPrincipalTable = `USE iam_service;
+CREATE TEMPORARY TABLE local_fixture_principal AS
+SELECT p.principal_id, p.tenant_id, p.status ${eligiblePrincipal};`;
+if (process.argv.includes('--scope-check')) {
+  const scopedCount = Number(runMysql({
+    mysqlBin, mysqlArgs: args, password, cwd: process.cwd(),
+    input: `${scopedPrincipalTable}\nSELECT COUNT(*) FROM local_fixture_principal;\n`,
+  }));
+  if (scopedCount !== 1) {
+    throw new Error('local fixture principal scope must contain exactly one account');
+  }
+  console.log('local learning-world fixture scope verified: one synthetic account; no seed writes');
+  process.exit(0);
+}
 
 // This fixture is intentionally written into each service's own schema. The
-// runtime services never perform the cross-schema SELECT used here to fan out
-// data for all local test principals.
+// runtime services never perform the cross-schema SELECT used here to select
+// the one explicitly named local fixture principal.
 const sql = `
 SET NAMES utf8mb4;
 
@@ -57,9 +76,8 @@ ON DUPLICATE KEY UPDATE
   label = VALUES(label), description = VALUES(description), numeric_value = VALUES(numeric_value),
   display_order = VALUES(display_order), enabled = VALUES(enabled);
 
--- Core learner, learning and assessment reads are also fanned out for every
--- active local principal. These rows belong to the corresponding owner
--- schemas; the cross-schema principal read exists only in this local fixture.
+-- Core learner, learning and assessment reads are scoped to the selected
+-- synthetic principal. These rows belong to the corresponding owner schemas.
 INSERT INTO learner_service.b25_learner_profile
   (principal_id, tenant_id, status, nickname, accent_pref, birth_year, age_confirmed,
    privacy_consent, terms_consent, ui_locale, content_locale, timezone, theme_mode, state_version)
@@ -276,14 +294,14 @@ ON DUPLICATE KEY UPDATE
   object_version = VALUES(object_version);
 
 -- The official site consumes published platform facets from the content
--- service's read projection. These are local, idempotent rows so pricing can
--- remain commerce-owned while download, announcement and compliance pages
--- still read durable data instead of front-end constants.
+-- service's read projection. Pricing remains commerce-owned. The local
+-- runtime announcement and unapproved compliance notices are never publicly
+-- published. Web remains unavailable until an approved public HTTPS URL exists.
 INSERT INTO content_service.content_public_site_facet
   (facet_id, ui_locale, facet_type, status, payload_json, projection_version, published_at, expires_at)
 VALUES
   ('download-learner-web', 'zh-CN', 'DOWNLOAD', 'PUBLISHED',
-   JSON_OBJECT('platform', 'WEB', 'channel', '学习 Web', 'status', 'AVAILABLE'),
+   JSON_OBJECT('platform', 'WEB', 'channel', '学习 Web', 'status', 'UNAVAILABLE'),
    1, UTC_TIMESTAMP(6), NULL),
   ('download-mobile-app', 'zh-CN', 'DOWNLOAD', 'PUBLISHED',
    JSON_OBJECT('platform', 'IOS', 'channel', '移动 App（iOS / Android / iPad）', 'status', 'COMING_SOON'),
@@ -291,23 +309,23 @@ VALUES
   ('download-wechat-mini-program', 'zh-CN', 'DOWNLOAD', 'PUBLISHED',
    JSON_OBJECT('platform', 'WECHAT_MINI_PROGRAM', 'channel', '微信小程序（条件编译目标）', 'status', 'COMING_SOON'),
    1, UTC_TIMESTAMP(6), NULL),
-  ('announcement-local-phase1-runtime', 'zh-CN', 'ANNOUNCEMENT', 'PUBLISHED',
+  ('announcement-local-phase1-runtime', 'zh-CN', 'ANNOUNCEMENT', 'UNPUBLISHED',
    JSON_OBJECT('announcementCode', 'announcement-local-phase1-runtime', 'title', '本地 Phase 1 真实运行态已就绪',
      'summary', '学习端、内容、评测、成长、社群和商业服务使用本地数据库进行联调。',
      'publishedAt', DATE_FORMAT(UTC_TIMESTAMP(6), '%Y-%m-%dT%H:%i:%s.000Z'), 'href', '/announcements'),
    1, UTC_TIMESTAMP(6), NULL),
-  ('compliance-privacy-data', 'zh-CN', 'COMPLIANCE', 'PUBLISHED',
+  ('compliance-privacy-data', 'zh-CN', 'COMPLIANCE', 'UNPUBLISHED',
    JSON_OBJECT('noticeCode', 'compliance-privacy-data', 'title', '隐私与数据处理', 'version', '公开说明',
      'body', '官网仅展示公开信息，不收集登录后学习数据，不在公开页面提交密码、Token、录音或支付凭证。',
      'effectiveAt', DATE_FORMAT(UTC_TIMESTAMP(6), '%Y-%m-%dT%H:%i:%s.000Z')),
    1, UTC_TIMESTAMP(6), NULL),
-  ('compliance-adult-phase-boundary', 'zh-CN', 'COMPLIANCE', 'PUBLISHED',
+  ('compliance-adult-phase-boundary', 'zh-CN', 'COMPLIANCE', 'UNPUBLISHED',
    JSON_OBJECT('noticeCode', 'compliance-adult-phase-boundary', 'title', '成人阶段边界', 'version', 'Phase 1',
      'body', '当前产品面向成年用户与大学生；K12、儿童账号、监护绑定及未成年人支付能力在专项合规 Gate 前不会开放。',
      'effectiveAt', DATE_FORMAT(UTC_TIMESTAMP(6), '%Y-%m-%dT%H:%i:%s.000Z')),
    1, UTC_TIMESTAMP(6), NULL),
   ('download-learner-web', 'en-US', 'DOWNLOAD', 'PUBLISHED',
-   JSON_OBJECT('platform', 'WEB', 'channel', 'Learner Web', 'status', 'AVAILABLE'),
+   JSON_OBJECT('platform', 'WEB', 'channel', 'Learner Web', 'status', 'UNAVAILABLE'),
    1, UTC_TIMESTAMP(6), NULL),
   ('download-mobile-app', 'en-US', 'DOWNLOAD', 'PUBLISHED',
    JSON_OBJECT('platform', 'IOS', 'channel', 'Mobile app (iOS / Android / iPad)', 'status', 'COMING_SOON'),
@@ -315,17 +333,17 @@ VALUES
   ('download-wechat-mini-program', 'en-US', 'DOWNLOAD', 'PUBLISHED',
    JSON_OBJECT('platform', 'WECHAT_MINI_PROGRAM', 'channel', 'WeChat mini program (conditional target)', 'status', 'COMING_SOON'),
    1, UTC_TIMESTAMP(6), NULL),
-  ('announcement-local-phase1-runtime', 'en-US', 'ANNOUNCEMENT', 'PUBLISHED',
+  ('announcement-local-phase1-runtime', 'en-US', 'ANNOUNCEMENT', 'UNPUBLISHED',
    JSON_OBJECT('announcementCode', 'announcement-local-phase1-runtime', 'title', 'Local Phase 1 runtime is ready',
      'summary', 'The learning, content, assessment, growth, social and commerce services are connected to local database fixtures for integration testing.',
      'publishedAt', DATE_FORMAT(UTC_TIMESTAMP(6), '%Y-%m-%dT%H:%i:%s.000Z'), 'href', '/announcements'),
    1, UTC_TIMESTAMP(6), NULL),
-  ('compliance-privacy-data', 'en-US', 'COMPLIANCE', 'PUBLISHED',
+  ('compliance-privacy-data', 'en-US', 'COMPLIANCE', 'UNPUBLISHED',
    JSON_OBJECT('noticeCode', 'compliance-privacy-data', 'title', 'Privacy and data processing', 'version', 'Public notice',
      'body', 'The official site exposes public information only. It does not submit learning data, passwords, tokens, recordings or payment credentials.',
      'effectiveAt', DATE_FORMAT(UTC_TIMESTAMP(6), '%Y-%m-%dT%H:%i:%s.000Z')),
    1, UTC_TIMESTAMP(6), NULL),
-  ('compliance-adult-phase-boundary', 'en-US', 'COMPLIANCE', 'PUBLISHED',
+  ('compliance-adult-phase-boundary', 'en-US', 'COMPLIANCE', 'UNPUBLISHED',
    JSON_OBJECT('noticeCode', 'compliance-adult-phase-boundary', 'title', 'Adult Phase 1 boundary', 'version', 'Phase 1',
      'body', 'The current product targets adults and university students. K12, child accounts, guardian binding and minor payments remain closed until a dedicated compliance gate passes.',
      'effectiveAt', DATE_FORMAT(UTC_TIMESTAMP(6), '%Y-%m-%dT%H:%i:%s.000Z')),
@@ -527,7 +545,7 @@ ON DUPLICATE KEY UPDATE enabled = VALUES(enabled), locale = VALUES(locale), vers
 INSERT INTO notification_service.notification_offline_package
   (package_id, package_code, version_code, state, size_bytes, part_count, sha256, signature,
    min_client_version, expires_at, signed_part_urls_json, created_at)
-VALUES ('OFFLINE-B4-FOUNDATION', 'FOUNDATION', '1.0.0', 'PUBLISHED', 4096, 4,
+VALUES ('OFFLINE-B4-FOUNDATION', 'FOUNDATION', '1.0.0', 'DELETED', 4096, 4,
   'b4-offline-foundation-sha256', 'b4-offline-signature-v1', '0.1.0',
   DATE_ADD(UTC_TIMESTAMP(6), INTERVAL 30 DAY), JSON_ARRAY(), UTC_TIMESTAMP(6))
 ON DUPLICATE KEY UPDATE state = VALUES(state), expires_at = VALUES(expires_at),
@@ -543,34 +561,18 @@ ON DUPLICATE KEY UPDATE state = VALUES(state), attempt = VALUES(attempt),
   max_attempts = VALUES(max_attempts), reason_code = VALUES(reason_code),
   next_run_at = VALUES(next_run_at), updated_at = VALUES(updated_at);
 
-INSERT INTO social_service.soc_study_room(room_id, tenant_id, owner_subject, theme_code, display_name_key, capacity, state, room_version)
-VALUES ('${roomId}', 'platform', 'local-fixture', 'CET4_SPRINT', 'CET4 冲刺自习室', 25, 'OPEN', 1)
-ON DUPLICATE KEY UPDATE display_name_key = VALUES(display_name_key), state = VALUES(state), capacity = VALUES(capacity);
-INSERT IGNORE INTO social_service.soc_seat_lease(room_id, tenant_id, seat_index, state)
-VALUES ${seatValues};
-UPDATE social_service.soc_seat_lease
-   SET subject_id = 'local-fixture-target', state = 'OCCUPIED', lease_version = 1,
-       last_activity_at = UTC_TIMESTAMP(3)
- WHERE tenant_id = 'platform' AND room_id = '${roomId}' AND seat_index = 1;
-INSERT INTO social_service.soc_report
-  (report_id, tenant_id, room_id, reporter_subject_id, target_subject_id, target_seat_index,
-   reason_code, state, client_event_id, created_at, updated_at)
-VALUES ('report-local-fixture', 'platform', '${roomId}', 'local-fixture-reporter',
-        'local-fixture-target', 1, 'OTHER', 'RECEIVED', 'local-fixture-report',
-        UTC_TIMESTAMP(3), UTC_TIMESTAMP(3))
-ON DUPLICATE KEY UPDATE state = VALUES(state), updated_at = VALUES(updated_at);
-
-INSERT INTO social_service.soc_leaderboard_projection(tenant_id, leaderboard_kind, period_type, period_start, subject_id, score, qualified_units, source_watermark, projection_state, snapshot_version, last_projected_at)
-SELECT 'platform', 'FOCUS_MINUTES', 'DAY', CURRENT_DATE(), principal_id, 20, 20, 'local-fixture', 'PUBLISHED', 1, UTC_TIMESTAMP(3)
-FROM iam_service.iam_principal WHERE tenant_id = 'platform' AND status = 'ACTIVE'
-ON DUPLICATE KEY UPDATE score = VALUES(score), qualified_units = VALUES(qualified_units), projection_state = VALUES(projection_state), last_projected_at = VALUES(last_projected_at);
+ -- Social fixtures are excluded from the shared platform seed. Their room,
+ -- seat, report and all-active-principal leaderboard rows caused live data
+ -- to appear in the learner community view.
 
 SELECT (SELECT COUNT(*) FROM gamification_service.xp_ledger x
         JOIN iam_service.iam_principal p ON p.principal_id = x.subject_id
         WHERE p.tenant_id = 'platform' AND p.status = 'ACTIVE' AND x.delta = 45),
        (SELECT COUNT(*) FROM gamification_service.gamification_feature_state),
-       (SELECT COUNT(*) FROM social_service.soc_study_room),
-       (SELECT COUNT(*) FROM social_service.soc_seat_lease),
+       (SELECT COUNT(*) FROM social_service.soc_study_room
+        WHERE tenant_id = 'platform' AND room_id = 'room-local-foundations'),
+       (SELECT COUNT(*) FROM social_service.soc_seat_lease
+        WHERE tenant_id = 'platform' AND room_id = 'room-local-foundations'),
        (SELECT COUNT(*) FROM notification_service.notification_offline_package WHERE state = 'PUBLISHED'),
        (SELECT COUNT(*) FROM notification_service.notification_message n
         JOIN iam_service.iam_principal p ON p.principal_id = n.subject_id
@@ -592,12 +594,15 @@ SELECT (SELECT COUNT(*) FROM gamification_service.xp_ledger x
         WHERE status = 'PUBLISHED');
 `;
 
-const renderedSql = localTestSubject
-  ? sql.replaceAll('FROM iam_service.iam_principal', `FROM ${principalSource}`)
-  : sql;
+// A temporary one-row source makes every owner write and final check operate
+// on the same explicitly chosen fixture principal. Never fan out to all active
+// accounts or invent a principal missing from IAM.
+const renderedSql = `${scopedPrincipalTable}
+${sql.replaceAll('iam_service.iam_principal', 'local_fixture_principal')}`;
 const output = runMysql({ mysqlBin, mysqlArgs: args, password, cwd: process.cwd(), input: `${renderedSql.trim()}\n` });
 const last = output.split(/\r?\n/).filter(Boolean).at(-1)?.split('\t').map(Number) ?? [];
-if (last.length !== 14 || last.some(value => !Number.isFinite(value) || value < 1)) {
+if (last.length !== 14 || last.some((value, index) =>
+  !Number.isFinite(value) || ((index === 2 || index === 3) ? value !== 0 : value < 1))) {
   throw new Error(`local learning-world fixture was not persisted: ${last.join(',')}`);
 }
 console.log(`local learning-world fixture ready: ${last[0]} gamification ledger(s), ${last[1]} feature-state row(s), ${last[2]} room(s), ${last[3]} seat(s), ${last[4]} offline package(s), ${last[5]} notification(s), ${last[6]} learner profile(s), ${last[7]} learning plan(s), ${last[8]} review fact(s), ${last[9]} assessment session(s), ${last[10]} media asset(s), ${last[11]} learning interaction(s), ${last[12]} expression(s), ${last[13]} public-site facet(s)`);
@@ -622,7 +627,8 @@ if (localTestSubject) {
         WHERE principal_id = '${localTestSubject}' AND status = 'ACTIVE');\n`,
   });
   const subjectLast = subjectOutput.split(/\r?\n/).filter(Boolean).at(-1)?.split('\t').map(Number) ?? [];
-  if (subjectLast.length !== 9 || subjectLast.some(value => !Number.isFinite(value) || value < 1)) {
+  if (subjectLast.length !== 9 || subjectLast.some((value, index) =>
+    !Number.isFinite(value) || value < (index === 6 ? 0 : 1))) {
     throw new Error(`local IAM JWT subject fixture was not persisted for ${localTestSubject}: ${subjectLast.join(',')}`);
   }
   console.log(`local IAM JWT subject fixture ready: ${subjectLast[0]} learner profile, ${subjectLast[1]} learning plan, ${subjectLast[2]} review fact(s), ${subjectLast[3]} assessment session, ${subjectLast[4]} feature-state row(s), ${subjectLast[5]} notification(s), ${subjectLast[6]} leaderboard row(s), ${subjectLast[7]} learning interaction(s), ${subjectLast[8]} expression(s)`);

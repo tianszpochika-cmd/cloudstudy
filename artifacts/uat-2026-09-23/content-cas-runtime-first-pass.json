@@ -1,0 +1,131 @@
+{
+  "scope": "Local Gateway B9 content draft CAS, synthetic staff",
+  "contentCode": "uat-cas-mudpx5egc4fc3c",
+  "checks": [
+    {
+      "name": "register",
+      "observed": 201,
+      "expected": 201,
+      "ok": true
+    },
+    {
+      "name": "staff login",
+      "observed": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "list page 1",
+      "observed": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "create draft",
+      "observed": 202,
+      "expected": 202,
+      "ok": true
+    },
+    {
+      "name": "same-key replay",
+      "observed": {
+        "status": 202,
+        "sameReceipt": true,
+        "firstReceipt": {
+          "commandId": "cmd_3f9b2e94-e81a-3613-8042-093549007096",
+          "command": "CREATE_DRAFT",
+          "contentCode": "uat-cas-mudpx5egc4fc3c",
+          "contentVersionId": 261086,
+          "stateVersion": 1,
+          "status": "ACCEPTED",
+          "acceptedAt": "2026-09-23T06:24:38.664608400Z"
+        },
+        "replayReceipt": {
+          "commandId": "cmd_3f9b2e94-e81a-3613-8042-093549007096",
+          "command": "CREATE_DRAFT",
+          "contentCode": "uat-cas-mudpx5egc4fc3c",
+          "contentVersionId": 261086,
+          "stateVersion": 1,
+          "status": "ACCEPTED",
+          "acceptedAt": "2026-09-23T06:24:38.664608400Z"
+        }
+      },
+      "expected": {
+        "status": 202,
+        "sameReceipt": true
+      },
+      "ok": true
+    },
+    {
+      "name": "different-body same-key conflict",
+      "observed": {
+        "status": 409,
+        "code": "IDEMPOTENCY_KEY_REUSE"
+      },
+      "expected": {
+        "status": 409,
+        "code": "IDEMPOTENCY_KEY_REUSE"
+      },
+      "ok": true
+    },
+    {
+      "name": "save version 2",
+      "observed": 202,
+      "expected": 202,
+      "ok": true
+    },
+    {
+      "name": "stale save denied",
+      "observed": {
+        "status": 409,
+        "code": "VERSION_CONFLICT"
+      },
+      "expected": {
+        "status": 409,
+        "code": "VERSION_CONFLICT"
+      },
+      "ok": true
+    },
+    {
+      "name": "detail after conflict",
+      "observed": {
+        "status": 200,
+        "stateVersion": 2
+      },
+      "expected": {
+        "status": 200,
+        "stateVersion": 2
+      },
+      "ok": true
+    },
+    {
+      "name": "two immutable versions",
+      "observed": "2:1,2:2:2",
+      "expected": "2:1,2:2:2",
+      "ok": true
+    },
+    {
+      "name": "definition revision unpublished",
+      "observed": "2:NONE",
+      "expected": "2:NONE",
+      "ok": true
+    },
+    {
+      "name": "list remains available",
+      "observed": 200,
+      "expected": 200,
+      "ok": true
+    }
+  ],
+  "cleanup": {
+    "removed": {
+      "receipts": 5,
+      "versions": 2,
+      "definition": 1
+    },
+    "account": "1:DISABLED",
+    "activeSessions": 0
+  },
+  "result": "PASS",
+  "capturedAt": "2026-09-23T06:24:40.663Z"
+}

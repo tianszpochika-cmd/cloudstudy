@@ -1,0 +1,130 @@
+{
+  "at": "2026-09-23T14:14:45.2584588Z",
+  "reusedCount": 16,
+  "count": 20,
+  "tag": "583ab627-uat-batch15-202609232208",
+  "rebuiltCount": 4,
+  "sourceTag": "583ab627-uat-batch14-202609232058",
+  "images": [
+    {
+      "rebuilt": false,
+      "batch15Id": "sha256:ae03d0743e76f30d831723a63183b8daf7f03f7ece8f8494ad6e45d9c91769b0",
+      "service": "owner-migrator",
+      "sourceId": "sha256:ae03d0743e76f30d831723a63183b8daf7f03f7ece8f8494ad6e45d9c91769b0"
+    },
+    {
+      "rebuilt": false,
+      "batch15Id": "sha256:3a18c582ed3ba0786bbff2c062b516bdaf7876069f5ca60b1d82a24b92eab9a1",
+      "service": "iam-service",
+      "sourceId": "sha256:3a18c582ed3ba0786bbff2c062b516bdaf7876069f5ca60b1d82a24b92eab9a1"
+    },
+    {
+      "rebuilt": true,
+      "batch15Id": "sha256:974dc77fae68b16f05c412b1f28907f0855c982b10ac50b5b57e620eded80af5",
+      "service": "api-gateway",
+      "sourceId": "sha256:1a43f075be37d571ceb8d2d1a883415273d89509f0350c29fb7abcce4829d9e7"
+    },
+    {
+      "rebuilt": true,
+      "batch15Id": "sha256:ea1a5b57672780c29a490085a9d165a88d7c44e7b424c03ee0152e7e65177227",
+      "service": "official-site",
+      "sourceId": "sha256:2e8b561c5f3148445c17c0ce8a23bbb9a9fbce7bb6c7cfc6e44be42029be00f7"
+    },
+    {
+      "rebuilt": false,
+      "batch15Id": "sha256:db67f657bc37f2b261fd08eff6dedcadb7fa048bae32bafe461dd37e5a96572a",
+      "service": "learner-web",
+      "sourceId": "sha256:db67f657bc37f2b261fd08eff6dedcadb7fa048bae32bafe461dd37e5a96572a"
+    },
+    {
+      "rebuilt": true,
+      "batch15Id": "sha256:c8d8528fe6a63982bb0d37a1839c06cf36dcf06e778b17b9ef47f2da0096657d",
+      "service": "admin-web",
+      "sourceId": "sha256:963e5dddf558fe15f7a33d835b3609d77c38c4bfa83d05ab5076fac6e9883c21"
+    },
+    {
+      "rebuilt": false,
+      "batch15Id": "sha256:2cb26b20eaea0279cb6bc66bc2c26442314fd0828b474c7c7a0f386c6e44af98",
+      "service": "mobile-h5",
+      "sourceId": "sha256:2cb26b20eaea0279cb6bc66bc2c26442314fd0828b474c7c7a0f386c6e44af98"
+    },
+    {
+      "rebuilt": false,
+      "batch15Id": "sha256:29fb5157cfde698add43f878cebc72544072f5f315a3eaad466e069f7ecc0f65",
+      "service": "audit-service",
+      "sourceId": "sha256:29fb5157cfde698add43f878cebc72544072f5f315a3eaad466e069f7ecc0f65"
+    },
+    {
+      "rebuilt": false,
+      "batch15Id": "sha256:56737a32a02304b4cf472e85ffdc17df32e99667aacd5530fd377e1c26361eac",
+      "service": "workflow-service",
+      "sourceId": "sha256:56737a32a02304b4cf472e85ffdc17df32e99667aacd5530fd377e1c26361eac"
+    },
+    {
+      "rebuilt": false,
+      "batch15Id": "sha256:fa6b22a86225c8f1be3240a40ff255e8492b4cdcc0a1dd824e4942468d31add7",
+      "service": "learner-service",
+      "sourceId": "sha256:fa6b22a86225c8f1be3240a40ff255e8492b4cdcc0a1dd824e4942468d31add7"
+    },
+    {
+      "rebuilt": false,
+      "batch15Id": "sha256:f4ccf798d40abfcd02090b4ac85e33d06dc8e255c3ead701f5ae3ad2fa8f58a7",
+      "service": "content-service",
+      "sourceId": "sha256:f4ccf798d40abfcd02090b4ac85e33d06dc8e255c3ead701f5ae3ad2fa8f58a7"
+    },
+    {
+      "rebuilt": false,
+      "batch15Id": "sha256:39c0292181f587e08ec71b19917f7e25565c53d193c8e36efe83065538570b11",
+      "service": "learning-service",
+      "sourceId": "sha256:39c0292181f587e08ec71b19917f7e25565c53d193c8e36efe83065538570b11"
+    },
+    {
+      "rebuilt": false,
+      "batch15Id": "sha256:6bdc3aa635739de288730bbf968868eb774c9c1cc3b2268bd9dd979d955290dd",
+      "service": "assessment-service",
+      "sourceId": "sha256:6bdc3aa635739de288730bbf968868eb774c9c1cc3b2268bd9dd979d955290dd"
+    },
+    {
+      "rebuilt": false,
+      "batch15Id": "sha256:db323cd50d7422e968fe2647bca8fedb5782012fce0be11aec144a4dc8b93eab",
+      "service": "media-service",
+      "sourceId": "sha256:db323cd50d7422e968fe2647bca8fedb5782012fce0be11aec144a4dc8b93eab"
+    },
+    {
+      "rebuilt": false,
+      "batch15Id": "sha256:dc308be6897e6dad458cbfbd5638f1c9b2df47b357712ea14c73cfe8ab310698",
+      "service": "notification-service",
+      "sourceId": "sha256:dc308be6897e6dad458cbfbd5638f1c9b2df47b357712ea14c73cfe8ab310698"
+    },
+    {
+      "rebuilt": false,
+      "batch15Id": "sha256:36be406409f33964c0db3b87839e5d68e2dc6fa4c21bf15a84ae315f2ceedfda",
+      "service": "gamification-service",
+      "sourceId": "sha256:36be406409f33964c0db3b87839e5d68e2dc6fa4c21bf15a84ae315f2ceedfda"
+    },
+    {
+      "rebuilt": true,
+      "batch15Id": "sha256:971140346225f7a160f58627cbe782708bde80dd55347b321dfacda9e72df64d",
+      "service": "social-service",
+      "sourceId": "sha256:b8c50cc9943fa6e3840ba41cecdcc49b1a68d717b42ef6baf9fd25b79b0c95c8"
+    },
+    {
+      "rebuilt": false,
+      "batch15Id": "sha256:0ac0fd77520e5613bb16edfffb524a417dfb8f5de5ba12cfd64672384b16d309",
+      "service": "commerce-service",
+      "sourceId": "sha256:0ac0fd77520e5613bb16edfffb524a417dfb8f5de5ba12cfd64672384b16d309"
+    },
+    {
+      "rebuilt": false,
+      "batch15Id": "sha256:cda8f458bc8310e7c0bb06d6b0432377295dc91ce8189519a5cbe425ea5e4447",
+      "service": "admin-ops-service",
+      "sourceId": "sha256:cda8f458bc8310e7c0bb06d6b0432377295dc91ce8189519a5cbe425ea5e4447"
+    },
+    {
+      "rebuilt": false,
+      "batch15Id": "sha256:d42ae17684722bf213916fcfa2316a7321d2cd17634722d5e3249da5f0e354b5",
+      "service": "analytics-service",
+      "sourceId": "sha256:d42ae17684722bf213916fcfa2316a7321d2cd17634722d5e3249da5f0e354b5"
+    }
+  ]
+}

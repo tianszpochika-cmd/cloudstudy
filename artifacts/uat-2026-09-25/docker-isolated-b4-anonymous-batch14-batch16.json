@@ -1,0 +1,106 @@
+{
+  "project": "cloudstudy-uat-isolated-3c94b27160",
+  "gamificationImage": "cloudstudy-clyunedev/gamification-service:583ab627-uat-batch14-202609232058",
+  "authorizationState": "BLOCKED_NO_ACTIVE_CONSENT_DOCUMENTS",
+  "at": "2026-09-24T17:19:39.137Z",
+  "checks": [
+    {
+      "name": "owner-quests",
+      "method": "GET",
+      "status": 401,
+      "errorCode": "UNAUTHORIZED",
+      "exposedItems": false
+    },
+    {
+      "name": "gateway-quests",
+      "method": "GET",
+      "status": 401,
+      "errorCode": "AUTH_REQUIRED",
+      "exposedItems": false
+    },
+    {
+      "name": "owner-achievements",
+      "method": "GET",
+      "status": 401,
+      "errorCode": "UNAUTHORIZED",
+      "exposedItems": false
+    },
+    {
+      "name": "gateway-achievements",
+      "method": "GET",
+      "status": 401,
+      "errorCode": "AUTH_REQUIRED",
+      "exposedItems": false
+    },
+    {
+      "name": "owner-collection",
+      "method": "GET",
+      "status": 401,
+      "errorCode": "UNAUTHORIZED",
+      "exposedItems": false
+    },
+    {
+      "name": "gateway-collection",
+      "method": "GET",
+      "status": 401,
+      "errorCode": "AUTH_REQUIRED",
+      "exposedItems": false
+    },
+    {
+      "name": "owner-avatar-items",
+      "method": "GET",
+      "status": 401,
+      "errorCode": "UNAUTHORIZED",
+      "exposedItems": false
+    },
+    {
+      "name": "gateway-avatar-items",
+      "method": "GET",
+      "status": 401,
+      "errorCode": "AUTH_REQUIRED",
+      "exposedItems": false
+    },
+    {
+      "name": "owner-avatar-profile",
+      "method": "GET",
+      "status": 401,
+      "errorCode": "UNAUTHORIZED",
+      "exposedItems": false
+    },
+    {
+      "name": "gateway-avatar-profile",
+      "method": "GET",
+      "status": 401,
+      "errorCode": "AUTH_REQUIRED",
+      "exposedItems": false
+    },
+    {
+      "name": "owner-quest-claim",
+      "method": "POST",
+      "status": 401,
+      "errorCode": "UNAUTHORIZED",
+      "exposedItems": false
+    },
+    {
+      "name": "gateway-quest-claim",
+      "method": "POST",
+      "status": 401,
+      "errorCode": "AUTH_REQUIRED",
+      "exposedItems": false
+    },
+    {
+      "name": "owner-avatar-profile-write",
+      "method": "PUT",
+      "status": 401,
+      "errorCode": "UNAUTHORIZED",
+      "exposedItems": false
+    },
+    {
+      "name": "gateway-avatar-profile-write",
+      "method": "PUT",
+      "status": 401,
+      "errorCode": "AUTH_REQUIRED",
+      "exposedItems": false
+    }
+  ]
+}

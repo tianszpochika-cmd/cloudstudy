@@ -1,0 +1,13 @@
+{
+  "checks": 13,
+  "pageSamples": 11,
+  "anonymousReturnToChecks": 2,
+  "http200": 13,
+  "jwksCors200": 13,
+  "pageErrors": 0,
+  "failedRequests": 0,
+  "horizontalOverflow": 0,
+  "brokenImages": 0,
+  "returnToChecksPassed": 2,
+  "returnToChecks": 2
+}

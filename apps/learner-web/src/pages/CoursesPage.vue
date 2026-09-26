@@ -6,6 +6,7 @@ import StatePanel from '../components/StatePanel.vue'
 import AppIcon from '../components/AppIcon.vue'
 import { useLearnerContentStore } from '../stores/learner-content'
 import { useExperienceText } from '../platform/experience-ui'
+import { userFacingError } from '../platform/user-facing-error'
 const router = useRouter()
 const store = useLearnerContentStore()
 const t = useExperienceText()
@@ -27,7 +28,7 @@ function openCourse(contentId: string) { void router.push({ name: 'learn-session
     <div class="library-toolbar"><div class="filter-pills"><button type="button" :class="{ active: !kind }" :aria-pressed="!kind" @click="kind = ''">{{ t('all') }}</button><button v-for="value in kinds" :key="value" type="button" :class="{ active: kind === value }" :aria-pressed="kind === value" @click="kind = value">{{ kindLabel(value) }}</button></div><label class="search-field"><AppIcon name="search" :size="18" /><input v-model="query" type="search" :aria-label="t('searchCourses')" :placeholder="t('searchCourses')" /></label></div>
     <StatePanel v-if="store.homeStatus === 'loading'" state="loading" :title="t('loading')" />
     <StatePanel v-else-if="store.homeStatus === 'forbidden'" state="permission" title="暂时没有访问权限" description="请确认使用了正确的账号，或前往帮助页反馈。" action-label="帮助与反馈" @action="router.push({ name: 'support' })" />
-    <StatePanel v-else-if="store.lastError || contentStatus === 'UNAVAILABLE' || store.homeStatus === 'offline'" state="error" title="内容暂时没能加载" :description="store.lastError || '请检查网络后重试。'" action-label="重新加载" @action="retry" />
+    <StatePanel v-else-if="store.lastError || contentStatus === 'UNAVAILABLE' || store.homeStatus === 'offline'" state="error" title="内容暂时没能加载" :description="userFacingError(store.lastError, '请检查网络后重试。')" action-label="重新加载" @action="retry" />
     <StatePanel v-else-if="!content.length" state="empty" title="书架正在准备中" description="有可学习的内容时，会出现在这里。你也可以先调整学习目标。" :action-label="t('setGoal')" @action="router.push({ name: 'onboarding' })" />
     <StatePanel v-else-if="!results.length" state="empty" :title="t('noResults')" :action-label="t('clearFilter')" @action="() => { query = ''; kind = '' }" />
     <div v-else class="library-grid"><button v-for="(item, index) in results" :key="item.contentId" type="button" class="library-card" @click="openCourse(item.contentId)"><span class="library-card__art" :data-tone="index % 3"><span class="library-card__edition">{{ String(index + 1).padStart(2, '0') }}</span><AppIcon name="book" :size="62" /><span class="library-card__language">{{ item.contentLocale }}</span><i></i></span><span class="library-card__body"><small>{{ kindLabel(item.kind) }}</small><strong>{{ item.title }}</strong><span>{{ item.description || t('courseFallback') }}</span><span class="library-card__cta">{{ t('openCourse') }}<AppIcon name="arrow" :size="18" /></span></span></button></div>

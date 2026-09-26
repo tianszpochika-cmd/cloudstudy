@@ -40,14 +40,14 @@ public class B25LearnerJdbcController {
 
     @GetMapping("/profile")
     public Map<String, Object> profile(Authentication authentication) {
-        Principal p = principal(authentication);
+        Principal p = principal(authentication, "learner.profile.read");
         return envelope(profileData(p));
     }
 
     @PatchMapping("/profile")
     public Map<String, Object> patchProfile(@RequestBody(required = false) Map<String, Object> request,
             Authentication authentication, @RequestHeader("Idempotency-Key") String idempotencyKey) {
-        Principal p = principal(authentication);
+        Principal p = principal(authentication, "learner.profile.write");
         Map<String, Object> current = profileRow(p);
         Map<String, Object> body = request == null ? Map.of() : request;
         jdbc.update("""
@@ -72,24 +72,19 @@ public class B25LearnerJdbcController {
                 text(body, "contentLocale", text(current, "content_locale", "en-US")),
                 text(body, "timezone", text(current, "timezone", "Asia/Shanghai")),
                 text(body, "themeMode", text(current, "theme_mode", "SYSTEM")));
-        return profile(authentication);
+        return envelope(profileData(p));
     }
 
     @GetMapping("/targets")
     public Map<String, Object> target(Authentication authentication) {
-        Principal p = principal(authentication);
-        Map<String, Object> row = one("""
-                SELECT principal_id, goal_code, target_level, daily_quota_minutes, status, updated_at
-                  FROM b25_learner_goal WHERE principal_id = ? AND tenant_id = ?
-                """, p.subject(), TENANT);
-        if (row == null) throw notFound("learner goal is not initialized");
-        return envelope(row);
+        Principal p = principal(authentication, "learner.profile.read");
+        return envelope(targetData(p));
     }
 
     @PutMapping("/targets")
     public Map<String, Object> putTarget(@RequestBody Map<String, Object> request,
             Authentication authentication, @RequestHeader("Idempotency-Key") String idempotencyKey) {
-        Principal p = principal(authentication);
+        Principal p = principal(authentication, "learner.target.write");
         String goalCode = required(request, "goalCode");
         String targetLevel = required(request, "targetLevel");
         int dailyQuotaMinutes = integer(request, "dailyQuotaMinutes", 15);
@@ -106,7 +101,7 @@ public class B25LearnerJdbcController {
                     idempotency_key = VALUES(idempotency_key)
                 """, p.subject(), TENANT, goalCode, targetLevel,
                 dailyQuotaMinutes, idempotencyKey);
-        return target(authentication);
+        return envelope(targetData(p));
     }
 
     /**
@@ -116,7 +111,7 @@ public class B25LearnerJdbcController {
      */
     @GetMapping("/onboarding/options")
     public Map<String, Object> onboardingOptions(Authentication authentication) {
-        principal(authentication);
+        principal(authentication, "learner.onboarding.read");
         List<Map<String, Object>> rows = jdbc.queryForList("""
                 SELECT option_type, option_code, label, description, numeric_value
                   FROM b25_onboarding_option
@@ -139,7 +134,7 @@ public class B25LearnerJdbcController {
     /** Stable B1 read path backed by the learner-owned daily task projection. */
     @GetMapping("/onboarding/daily-tasks/today")
     public Map<String, Object> dailyTasksToday(Authentication authentication) {
-        Principal p = principal(authentication);
+        Principal p = principal(authentication, "learning.plan.read");
         Map<String, Object> data = new LinkedHashMap<>(dailyStreamData(p));
         data.put("localDate", java.time.LocalDate.now(java.time.ZoneId.of("Asia/Shanghai")).toString());
         data.put("planVersion", 1L);
@@ -158,7 +153,7 @@ public class B25LearnerJdbcController {
     @PostMapping("/onboarding/daily-tasks/ensure")
     public Map<String, Object> ensureDailyTask(@RequestBody Map<String, Object> request,
             Authentication authentication, @RequestHeader("Idempotency-Key") String idempotencyKey) {
-        Principal p = principal(authentication);
+        Principal p = principal(authentication, "learning.task.write");
         String contentCode = boundedRequired(request, "contentCode", 128);
         String title = boundedRequired(request, "title", 255);
         int minutes = integer(request, "minutes", 5);
@@ -215,16 +210,14 @@ public class B25LearnerJdbcController {
 
     @GetMapping("/preferences")
     public Map<String, Object> preferences(Authentication authentication) {
-        Principal p = principal(authentication);
-        Map<String, Object> row = preferenceRow(p);
-        if (row.isEmpty()) throw notFound("learner preferences are not initialized");
-        return envelope(row);
+        Principal p = principal(authentication, "learner.profile.read");
+        return envelope(preferenceData(p));
     }
 
     @PatchMapping("/preferences")
     public Map<String, Object> patchPreferences(@RequestBody Map<String, Object> request,
             Authentication authentication, @RequestHeader("Idempotency-Key") String idempotencyKey) {
-        Principal p = principal(authentication);
+        Principal p = principal(authentication, "learner.preference.write");
         Map<String, Object> current = preferenceRow(p);
         jdbc.update("""
                 INSERT INTO b25_learner_preferences
@@ -242,7 +235,7 @@ public class B25LearnerJdbcController {
                 text(request, "themeMode", text(current, "theme_mode", "SYSTEM")),
                 bool(request, "highContrast", current, false),
                 text(request, "motionMode", text(current, "motion_mode", "FULL")), idempotencyKey);
-        return preferences(authentication);
+        return envelope(preferenceData(p));
     }
 
     /**
@@ -254,7 +247,7 @@ public class B25LearnerJdbcController {
     @Transactional(transactionManager = "learnerTransactionManager")
     public Map<String, Object> createPrivacyExport(@RequestBody(required = false) Map<String, Object> request,
             Authentication authentication, @RequestHeader("Idempotency-Key") String idempotencyKey) {
-        Principal p = principal(authentication);
+        Principal p = principal(authentication, "iam.self.write");
         if (idempotencyKey == null || idempotencyKey.isBlank()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Idempotency-Key is required");
         }
@@ -288,7 +281,7 @@ public class B25LearnerJdbcController {
     @GetMapping("/privacy/export/{exportId}")
     public Map<String, Object> privacyExportStatus(@PathVariable String exportId,
             Authentication authentication) {
-        Principal p = principal(authentication);
+        Principal p = principal(authentication, "iam.self.read");
         Map<String, Object> row = one("""
                 SELECT export_id, export_status, policy_name, created_at, expires_at, downloaded_at
                   FROM b25_learner_privacy_export
@@ -311,7 +304,7 @@ public class B25LearnerJdbcController {
     @Transactional(transactionManager = "learnerTransactionManager")
     public Map<String, Object> privacyExportDownload(@PathVariable String exportId,
             Authentication authentication) {
-        Principal p = principal(authentication);
+        Principal p = principal(authentication, "iam.self.read");
         Map<String, Object> row = one("""
                 SELECT export_id, export_status, policy_name, created_at, expires_at, downloaded_at
                   FROM b25_learner_privacy_export
@@ -369,13 +362,13 @@ public class B25LearnerJdbcController {
 
     @GetMapping("/first-day")
     public Map<String, Object> firstDay(Authentication authentication) {
-        Principal p = principal(authentication);
+        Principal p = principal(authentication, "learner.onboarding.read");
         return envelope(firstDayData(p));
     }
 
     @GetMapping("/home")
     public Map<String, Object> home(Authentication authentication) {
-        Principal p = principal(authentication);
+        Principal p = principal(authentication, "learner.onboarding.read");
         Map<String, Object> data = new LinkedHashMap<>();
         data.put("profile", profileData(p));
         data.put("firstDay", firstDayData(p));
@@ -388,7 +381,7 @@ public class B25LearnerJdbcController {
     @PostMapping("/onboarding/daily-tasks/{taskId}/complete")
     public Map<String, Object> completeTask(@PathVariable String taskId, Authentication authentication,
             @RequestHeader("Idempotency-Key") String idempotencyKey) {
-        Principal p = principal(authentication);
+        Principal p = principal(authentication, "learning.task.write");
         int updated = jdbc.update("""
                 UPDATE b25_learner_daily_task
                    SET task_status = 'COMPLETED', completed_at = CURRENT_TIMESTAMP(6), idempotency_key = ?
@@ -497,9 +490,21 @@ public class B25LearnerJdbcController {
         return row == null ? new LinkedHashMap<>() : row;
     }
 
+    private Map<String, Object> targetData(Principal p) {
+        Map<String, Object> row = goalRow(p);
+        if (row.isEmpty()) throw notFound("learner goal is not initialized");
+        return row;
+    }
+
     private Map<String, Object> preferenceRow(Principal p) {
         Map<String, Object> row = one("SELECT principal_id, ui_locale, content_locale, timezone, theme_mode, high_contrast, motion_mode, updated_at FROM b25_learner_preferences WHERE principal_id = ? AND tenant_id = ?", p.subject(), TENANT);
         return row == null ? new LinkedHashMap<>() : row;
+    }
+
+    private Map<String, Object> preferenceData(Principal p) {
+        Map<String, Object> row = preferenceRow(p);
+        if (row.isEmpty()) throw notFound("learner preferences are not initialized");
+        return row;
     }
 
     private static List<Map<String, Object>> optionViews(List<Map<String, Object>> rows, String type) {
@@ -525,8 +530,8 @@ public class B25LearnerJdbcController {
                 "redactionPolicy", String.valueOf(policyName));
     }
 
-    private static Principal principal(Authentication authentication) {
-        return new Principal(LearnerHttpPrincipals.require(authentication).subject());
+    private static Principal principal(Authentication authentication, String permission) {
+        return new Principal(LearnerHttpPrincipals.requireLearningAccess(authentication, permission).subject());
     }
 
     private static String required(Map<String, Object> values, String key) {

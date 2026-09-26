@@ -7,16 +7,19 @@ import StudyArtwork from '../components/StudyArtwork.vue'
 import { useLearnerContentStore } from '../stores/learner-content'
 import { useExperienceText } from '../platform/experience-ui'
 import { useLearningUi } from '../platform/learning-ui'
+import { userFacingError } from '../platform/user-facing-error'
 const router = useRouter()
 const store = useLearnerContentStore()
 const t = useExperienceText()
 const ui = useLearningUi()
-const home = computed(() => store.home)
+const home = computed(() => ['ready', 'empty', 'unavailable'].includes(store.homeStatus) ? store.home : null)
 const stream = computed(() => home.value?.today?.dailyStream ?? home.value?.home?.dailyStream)
 const tasks = computed(() => stream.value?.tasks ?? [])
 const content = computed(() => home.value?.content ?? [])
 const completeCount = computed(() => tasks.value.filter(task => task.completed).length)
-const nextTask = computed(() => tasks.value.find(task => !task.completed))
+const nextTask = computed(() => tasks.value.find(task => !task.completed && task.contentCode))
+const heroUnavailable = computed(() => store.homeStatus === 'error' || store.homeStatus === 'offline')
+const heroLoading = computed(() => store.homeStatus === 'idle' || store.homeStatus === 'loading')
 const activities: Array<{ name: string; key: string; hint: string; icon: AppIconName }> = [
   { name: 'vocabulary', key: 'vocabulary', hint: 'vocabHint', icon: 'cards' },
   { name: 'b3-listening', key: 'listening', hint: 'listeningHint', icon: 'headphones' },
@@ -26,8 +29,8 @@ const activities: Array<{ name: string; key: string; hint: string; icon: AppIcon
   { name: 'b3-writing', key: 'writing', hint: 'writingHint', icon: 'pen' },
 ]
 function start(task = nextTask.value) {
-  if (!task) { void router.push({ name: 'today' }); return }
-  void router.push({ name: 'learn-session', query: { taskId: task.id, ...(task.contentCode ? { contentCode: task.contentCode } : {}) } })
+  if (!task?.contentCode) { void router.push({ name: 'courses' }); return }
+  void router.push({ name: 'learn-session', query: { taskId: task.id, contentCode: task.contentCode } })
 }
 onMounted(() => { store.restore(); void store.loadHome() })
 </script>
@@ -36,17 +39,17 @@ onMounted(() => { store.restore(); void store.loadHome() })
     <div class="home-greeting"><div><p class="experience-eyebrow"><AppIcon name="spark" :size="15" />A LITTLE, EVERY DAY</p><h1 id="home-title">{{ t('homeTitle') }}</h1><p>{{ t('homeDescription') }}</p></div><RouterLink class="text-link" :to="{ name: 'onboarding' }">{{ t('setGoal') }}<AppIcon name="arrow" :size="16" /></RouterLink></div>
     <div class="home-dashboard">
       <div class="home-main">
-        <article class="home-hero">
-          <div class="home-hero__copy"><span class="hero-label">{{ t('myTasks') }}</span><h2>{{ nextTask?.title || t('continue') }}</h2><p>{{ nextTask?.description || t('tagline') }}</p><button class="button button--white" type="button" @click="start()">{{ t(nextTask ? 'continue' : 'start') }}<AppIcon name="arrow" :size="18" /></button><small v-if="nextTask">{{ nextTask.minutes }} {{ t('minutes') }} · {{ t('next') }}</small></div>
-          <StudyArtwork />
+        <article v-if="!heroUnavailable" class="home-hero">
+          <div class="home-hero__copy"><span class="hero-label">{{ t('myTasks') }}</span><h2>{{ heroLoading ? '正在读取今日安排' : nextTask?.title || '从一节课开始' }}</h2><p>{{ heroLoading ? '请稍候。' : nextTask?.description || '看看书架上有哪些可用课程。' }}</p><button v-if="!heroLoading" class="button button--white" type="button" @click="start()">{{ nextTask ? t('continue') : '浏览课程' }}<AppIcon name="arrow" :size="18" /></button><small v-if="nextTask">{{ nextTask.minutes }} {{ t('minutes') }} · {{ t('next') }}</small></div>
+          <StudyArtwork v-if="!heroLoading" />
         </article>
         <article class="experience-card home-tasks">
           <div class="section-heading"><div><span class="card-kicker">YOUR DAILY PLAN</span><h2>{{ t('myTasks') }}</h2></div><RouterLink class="text-link" :to="{ name: 'today' }">{{ t('viewAll') }}<AppIcon name="arrow" :size="16" /></RouterLink></div>
           <StatePanel v-if="store.homeStatus === 'loading'" state="loading" :title="t('loading')" />
           <StatePanel v-else-if="store.homeStatus === 'offline'" state="offline" :title="ui.t('common.state.offline')" :description="ui.t('learning.state.offline')" :action-label="ui.t('common.retry')" @action="() => { void store.loadHome() }" />
-          <StatePanel v-else-if="store.lastError" state="error" :title="t('myTasks')" :description="store.lastError" action-label="重试" @action="() => { void store.loadHome() }" />
-          <div v-else-if="tasks.length" class="daily-task-list"><button v-for="(task, index) in tasks.slice(0,4)" :key="task.id" type="button" class="daily-task" :class="{ 'daily-task--done': task.completed }" :disabled="task.completed" @click="start(task)"><span class="daily-task__number"><AppIcon v-if="task.completed" name="check" :size="18" /><template v-else>{{ String(index + 1).padStart(2, '0') }}</template></span><span class="daily-task__copy"><strong>{{ task.title }}</strong><small>{{ task.minutes }} {{ t('minutes') }} · {{ task.description }}</small></span><span class="daily-task__state">{{ t(task.completed ? 'completed' : 'start') }}</span><AppIcon v-if="!task.completed" name="arrow" :size="17" /></button></div>
-          <StatePanel v-else state="empty" :title="t('noTasks')" :description="t('noTasksDescription')" :action-label="t('setGoal')" @action="router.push({ name: 'onboarding' })" />
+          <StatePanel v-else-if="store.lastError" state="error" :title="t('myTasks')" :description="userFacingError(store.lastError, '暂时无法读取今日任务，请稍后重试。')" action-label="重试" @action="() => { void store.loadHome() }" />
+          <div v-else-if="tasks.length" class="daily-task-list"><button v-for="(task, index) in tasks.slice(0,4)" :key="task.id" type="button" class="daily-task" :class="{ 'daily-task--done': task.completed }" :disabled="task.completed" @click="start(task)"><span class="daily-task__number"><AppIcon v-if="task.completed" name="check" :size="18" /><template v-else>{{ String(index + 1).padStart(2, '0') }}</template></span><span class="daily-task__copy"><strong>{{ task.title }}</strong><small>{{ task.minutes }} {{ t('minutes') }} · {{ task.description }}</small></span><span class="daily-task__state">{{ task.completed ? t('completed') : task.contentCode ? t('start') : '浏览课程' }}</span><AppIcon v-if="!task.completed" name="arrow" :size="17" /></button></div>
+          <StatePanel v-else state="empty" title="今天还没有安排任务" description="可以先从书架选择一节课。" action-label="浏览课程" @action="router.push({ name: 'courses' })" />
         </article>
       </div>
       <aside class="home-aside">

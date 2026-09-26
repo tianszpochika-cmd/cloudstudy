@@ -151,8 +151,74 @@ class GatewayRoutePolicyContractParityTest {
         assertTrue(preflight.matched());
         assertEquals(GatewayRoutePolicy.AuthClass.PUBLIC_READ, preflight.rule().authClass());
 
+        GatewayRoutePolicy.Resolution offlineRead = routePolicy.resolve(
+                HttpMethod.GET, "/api/v1/sync/offline-packages");
+        assertTrue(offlineRead.matched());
+        assertEquals("sync-offline-packages-read", offlineRead.rule().ruleId());
+        assertEquals("notification-service", offlineRead.rule().upstreamOwner());
+        assertEquals(GatewayRoutePolicy.AuthClass.AUTHENTICATED_READ, offlineRead.rule().authClass());
+        GatewayRoutePolicy.Resolution offlinePreflight = routePolicy.resolvePreflight(
+                MockServerHttpRequest.options("/api/v1/sync/offline-packages")
+                        .header("Access-Control-Request-Method", "GET")
+                        .build());
+        assertEquals("sync-offline-packages-read", offlinePreflight.rule().ruleId());
+        assertEquals("sync-domain", routePolicy.resolve(
+                HttpMethod.POST, "/api/v1/sync/offline-packages/package-1/authorize").rule().ruleId());
+
+        GatewayRoutePolicy.Resolution moderationRead = routePolicy.resolve(
+                HttpMethod.GET, "/api/v1/admin/moderation/reports");
+        assertEquals("admin-moderation-reports-read", moderationRead.rule().ruleId());
+        assertEquals("social-service", moderationRead.rule().upstreamOwner());
+        GatewayRouteExecutionPolicy executionPolicy = new GatewayRouteExecutionPolicy(
+                executableGatewayProperties(), routePolicy);
+        assertTrue(executionPolicy.canExecute(moderationRead.rule(), HttpMethod.GET,
+                "/api/v1/admin/moderation/reports"));
+        assertFalse(executionPolicy.canExecute(routePolicy.resolve(HttpMethod.POST,
+                "/api/v1/admin/moderation/reports/any/commands").rule(), HttpMethod.POST,
+                "/api/v1/admin/moderation/reports/any/commands"),
+                "moderation write commands remain denied without an audited owner boundary");
+
         assertFalse(routePolicy.resolve(HttpMethod.HEAD, "/api/v1/public/content/lesson-1").matched(),
                 "HEAD must not inherit a GET operation that the canonical contract does not declare");
+    }
+
+    @Test
+    void grammarPointsReadUsesTheExactContentOwnerProjectionWhileOtherGrammarRoutesStayWithheld() {
+        GatewayRouteExecutionPolicy executionPolicy = new GatewayRouteExecutionPolicy(
+                executableGatewayProperties(), routePolicy);
+        GatewayRoutePolicy.Resolution points = routePolicy.resolve(HttpMethod.GET, "/api/v1/grammar/points");
+        assertTrue(points.matched());
+        assertEquals("grammar-points-read", points.rule().ruleId());
+        assertEquals(GatewayRoutePolicy.MatchType.EXACT, points.rule().matchType());
+        assertEquals("content-service", points.rule().upstreamOwner());
+        assertEquals(GatewayRoutePolicy.AuthClass.AUTHENTICATED_READ, points.rule().authClass());
+        assertTrue(executionPolicy.canExecute(points.rule(), HttpMethod.GET, "/api/v1/grammar/points"));
+
+        GatewayRouteExecutionPolicy.RouteBinding projection = executionPolicy.routeBindings().stream()
+                .filter(binding -> binding.rule().ruleId().equals("grammar-points-read"))
+                .findFirst().orElseThrow();
+        assertEquals("/internal/v1/content/learner/grammar/points",
+                projection.pathProjection().targetPathTemplate());
+        assertEquals("services/content-service/src/main/java/com/englishflow/content/web/B3ContentJdbcController.java",
+                projection.pathProjection().controllerEvidence().sourceRelativePath());
+
+        GatewayRoutePolicy.Rule broadGrammar = routePolicy.rules().stream()
+                .filter(rule -> rule.ruleId().equals("grammar-domain"))
+                .findFirst().orElseThrow();
+        assertEquals("assessment-service", broadGrammar.upstreamOwner());
+        assertEquals(GatewayRoutePolicy.MatchType.PREFIX, broadGrammar.matchType());
+        assertEquals(List.of(HttpMethod.GET, HttpMethod.POST), broadGrammar.methods());
+
+        for (var request : List.of(
+                Map.entry(HttpMethod.GET, "/api/v1/grammar/points/3101"),
+                Map.entry(HttpMethod.GET, "/api/v1/grammar/tree"),
+                Map.entry(HttpMethod.POST, "/api/v1/grammar/points"),
+                Map.entry(HttpMethod.POST, "/api/v1/grammar/practice/attempts"))) {
+            GatewayRoutePolicy.Resolution withheld = routePolicy.resolve(request.getKey(), request.getValue());
+            assertEquals("grammar-domain", withheld.rule().ruleId(), request.getValue());
+            assertFalse(executionPolicy.canExecute(withheld.rule(), request.getKey(), request.getValue()),
+                    request.getValue() + " must remain withheld");
+        }
     }
 
     @Test

@@ -66,6 +66,13 @@ media:
   signed-url-base-url: ${MEDIA_SERVICE_SIGNED_URL_BASE_URL:https://media.example.invalid/objects}
   signed-url-ttl: ${MEDIA_SERVICE_SIGNED_URL_TTL:PT5M}
   max-signed-url-ttl: ${MEDIA_SERVICE_MAX_SIGNED_URL_TTL:PT15M}
+  object-store-enabled: ${MEDIA_SERVICE_OBJECT_STORE_ENABLED:false}
+  object-store-endpoint: ${MEDIA_SERVICE_OBJECT_STORE_ENDPOINT:}
+  object-store-public-endpoint: ${MEDIA_SERVICE_OBJECT_STORE_PUBLIC_ENDPOINT:}
+  object-store-bucket: ${MEDIA_SERVICE_OBJECT_STORE_BUCKET:}
+  object-store-access-key: ${MEDIA_SERVICE_OBJECT_STORE_ACCESS_KEY:}
+  object-store-secret-key: ${MEDIA_SERVICE_OBJECT_STORE_SECRET_KEY:}
+  object-store-region: ${MEDIA_SERVICE_OBJECT_STORE_REGION:us-east-1}
 
 security:
   resource-server:

@@ -1,0 +1,236 @@
+{
+  "scope": "local Gateway and workflow owner permission/idempotency; synthetic data removed",
+  "capturedAt": "2026-09-23T07:58:03.294Z",
+  "result": "PASS",
+  "passed": 22,
+  "total": 22,
+  "checks": [
+    {
+      "name": "synthetic registration",
+      "observed": {
+        "status": 201,
+        "code": null
+      },
+      "expected": 201,
+      "ok": true
+    },
+    {
+      "name": "adult Gate",
+      "observed": {
+        "status": 200,
+        "code": null
+      },
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "TERMS consent",
+      "observed": {
+        "status": 200,
+        "code": null
+      },
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "PRIVACY consent",
+      "observed": {
+        "status": 200,
+        "code": null
+      },
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "ADULT_LEARNING consent",
+      "observed": {
+        "status": 200,
+        "code": null
+      },
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "owner denies staff without recovery read",
+      "observed": {
+        "status": 403,
+        "code": "FORBIDDEN"
+      },
+      "expected": 403,
+      "ok": true
+    },
+    {
+      "name": "Gateway denies staff without recovery read",
+      "observed": {
+        "status": 403,
+        "code": "FORBIDDEN"
+      },
+      "expected": 403,
+      "ok": true
+    },
+    {
+      "name": "read permission opens saga list",
+      "observed": {
+        "status": 200,
+        "code": null
+      },
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "owner denies read-only recovery creation",
+      "observed": {
+        "status": 403,
+        "code": "FORBIDDEN"
+      },
+      "expected": 403,
+      "ok": true
+    },
+    {
+      "name": "read permission cannot execute",
+      "observed": {
+        "status": 403,
+        "code": "FORBIDDEN"
+      },
+      "expected": 403,
+      "ok": true
+    },
+    {
+      "name": "command permission cannot read",
+      "observed": {
+        "status": 403,
+        "code": "FORBIDDEN"
+      },
+      "expected": 403,
+      "ok": true
+    },
+    {
+      "name": "command permission cannot create request",
+      "observed": {
+        "status": 403,
+        "code": "FORBIDDEN"
+      },
+      "expected": 403,
+      "ok": true
+    },
+    {
+      "name": "anonymous compensation denied",
+      "observed": {
+        "status": 401,
+        "code": null
+      },
+      "expected": 401,
+      "ok": true
+    },
+    {
+      "name": "missing compensation key is 400",
+      "observed": {
+        "status": 400,
+        "code": null
+      },
+      "expected": 400,
+      "ok": true
+    },
+    {
+      "name": "unknown saga is 404",
+      "observed": {
+        "status": 404,
+        "code": null
+      },
+      "expected": 404,
+      "ok": true
+    },
+    {
+      "name": "no transport stays failed",
+      "observed": {
+        "status": 200,
+        "code": null
+      },
+      "expected": {
+        "status": 200,
+        "sagaStatus": "COMPENSATION_FAILED"
+      },
+      "ok": true
+    },
+    {
+      "name": "same key replays saved response",
+      "observed": {
+        "status": 200,
+        "code": null
+      },
+      "expected": {
+        "status": 200,
+        "same": true
+      },
+      "ok": true
+    },
+    {
+      "name": "owner same-key changed-body status",
+      "observed": {
+        "status": 409,
+        "data": {
+          "timestamp": "2026-09-23T07:58:02.250Z",
+          "status": 409,
+          "error": "Conflict",
+          "path": "/internal/v1/workflow/sagas/ad415078-2b86-402d-8f33-251d7eb0ed06/compensate"
+        }
+      },
+      "expected": 409,
+      "ok": true
+    },
+    {
+      "name": "Gateway same-key changed-body status",
+      "observed": {
+        "status": 409,
+        "data": {
+          "timestamp": "2026-09-23T07:58:02.268Z",
+          "status": 409,
+          "error": "Conflict",
+          "path": "/internal/v1/workflow/sagas/ad415078-2b86-402d-8f33-251d7eb0ed06/compensate"
+        }
+      },
+      "expected": 409,
+      "ok": true
+    },
+    {
+      "name": "owner same-key different saga status",
+      "observed": {
+        "status": 409,
+        "data": {
+          "timestamp": "2026-09-23T07:58:02.278Z",
+          "status": 409,
+          "error": "Conflict",
+          "path": "/internal/v1/workflow/sagas/edc6e7c9-7ce5-4260-851d-5b628479cae5/compensate"
+        }
+      },
+      "expected": 409,
+      "ok": true
+    },
+    {
+      "name": "Gateway same-key different saga status",
+      "observed": {
+        "status": 409,
+        "data": {
+          "timestamp": "2026-09-23T07:58:02.292Z",
+          "status": 409,
+          "error": "Conflict",
+          "path": "/internal/v1/workflow/sagas/edc6e7c9-7ce5-4260-851d-5b628479cae5/compensate"
+        }
+      },
+      "expected": 409,
+      "ok": true
+    },
+    {
+      "name": "owner state remains failed",
+      "observed": "COMPENSATION_FAILED:FAILED",
+      "expected": "COMPENSATION_FAILED:FAILED",
+      "ok": true
+    }
+  ],
+  "cleanup": {
+    "removed": "receipts:1\nsteps:1\nsagas:1",
+    "account": "1:DISABLED",
+    "activeSessions": 0
+  },
+  "failure": null
+}

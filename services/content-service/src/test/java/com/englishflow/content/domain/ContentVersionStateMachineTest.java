@@ -119,6 +119,49 @@ class ContentVersionStateMachineTest {
     }
 
     @Test
+    @DisplayName("publication requires a publisher distinct from both reviewers")
+    void publisherCannotBeEitherReviewer() {
+        ContentVersion version = draft("editor-1");
+        version.submitForReview("editor-1");
+        version.review(ReviewStage.FIRST_REVIEW, ReviewDecision.APPROVED, "reviewer-1", NOW);
+        version.review(ReviewStage.FINAL_REVIEW, ReviewDecision.APPROVED, "reviewer-2", NOW);
+        long before = version.stateVersion();
+
+        for (String reviewer : new String[] { "reviewer-1", "reviewer-2" }) {
+            ContentOperationException ex = assertThrows(ContentOperationException.class,
+                    () -> version.publish(reviewer, NOW));
+            assertEquals("FOUR_EYES_REQUIRED", ex.code());
+            assertEquals(ContentVersionStatus.APPROVED, version.status());
+            assertEquals(before, version.stateVersion());
+            assertTrue(version.publisher().isEmpty());
+        }
+
+        version.publish("publisher-1", NOW);
+        assertEquals(ContentVersionStatus.PUBLISHED, version.status());
+    }
+
+    @Test
+    @DisplayName("rollback publication also requires an independent publisher")
+    void rollbackPublisherCannotBeEitherReviewer() {
+        ContentVersion version = draft("editor-1");
+        approveAndPublish(version, "editor-1", "reviewer-1", "reviewer-2", "publisher-1");
+        version.unpublish("publisher-1", NOW.plusSeconds(1));
+        long before = version.stateVersion();
+
+        for (String reviewer : new String[] { "reviewer-1", "reviewer-2" }) {
+            ContentOperationException ex = assertThrows(ContentOperationException.class,
+                    () -> version.publishRollback(ContentVersionId.of(2L), reviewer, NOW.plusSeconds(2)));
+            assertEquals("FOUR_EYES_REQUIRED", ex.code());
+            assertEquals(ContentVersionStatus.ARCHIVED, version.status());
+            assertEquals(before, version.stateVersion());
+        }
+
+        version.publishRollback(ContentVersionId.of(2L), "publisher-2", NOW.plusSeconds(2));
+        assertEquals(ContentVersionStatus.PUBLISHED, version.status());
+        assertEquals("publisher-2", version.publisher().orElseThrow());
+    }
+
+    @Test
     @DisplayName("distinct first and final reviewers are required for publication")
     void dualReviewRequiredWhenFinalReviewerEqualsFirst() {
         ContentVersion version = draft("editor-1");

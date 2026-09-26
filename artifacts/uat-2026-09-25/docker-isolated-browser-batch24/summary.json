@@ -1,0 +1,15 @@
+{
+  "checks": 24,
+  "http200": 24,
+  "jwksCors200": 18,
+  "pageErrors": 0,
+  "failedRequests": 0,
+  "overflow": 0,
+  "brokenImages": 0,
+  "officialUnavailableCopy": 8,
+  "officialDirectAuthLinks": 0,
+  "officialHeroExampleMarkers": 2,
+  "officialJourneyPassed": 2,
+  "simulatedAuthCopyPassed": 4,
+  "simulatedAuthCopyChecks": 4
+}

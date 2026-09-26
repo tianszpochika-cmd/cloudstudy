@@ -1,15 +1,22 @@
 package com.englishflow.content.web;
 
+import java.nio.charset.StandardCharsets;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Base64;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpHeaders;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,6 +34,45 @@ import tools.jackson.databind.ObjectMapper;
 public final class B3ContentJdbcController {
 
     private static final String TENANT = "platform";
+    private static final int DEFAULT_PAGE_SIZE = 20;
+    private static final int MAX_PAGE_SIZE = 100;
+    private static final int MAX_CURSOR_LENGTH = 512;
+    private static final Base64.Encoder CURSOR_ENCODER = Base64.getUrlEncoder().withoutPadding();
+    private static final Base64.Decoder CURSOR_DECODER = Base64.getUrlDecoder();
+    private static final List<String> CEFR_LEVELS = List.of("A1", "A2", "B1", "B2", "C1", "C2");
+    /**
+     * The legacy B3 table has no content_id or payload digest tying a row to the canonical
+     * content_version payload. Its PUBLISHED flag and numeric version_id, including the seeded 301,
+     * cannot establish that provenance. Keep every legacy row unavailable until an owner-owned,
+     * versioned binding is designed, migrated, populated and verified at read time. The remaining
+     * predicates describe necessary publication and rights facts; they are not sufficient alone.
+     */
+    private static final String ELIGIBLE_CONTENT = """
+            FROM b3_content_experience b
+            JOIN content_version v ON v.content_version_id = b.content_version_id
+            JOIN content_definition c ON c.content_id = v.content_id
+             AND c.tenant_id = b.tenant_id
+             AND c.current_published_version_id = v.content_version_id
+            WHERE b.tenant_id = ? AND b.availability = 'PUBLISHED'
+              AND 1 = 0
+              AND v.status = 'PUBLISHED' AND v.published_at IS NOT NULL
+              AND v.copyright_status = 'ACTIVE' AND v.rights_allows_learning = TRUE
+              AND NULLIF(TRIM(v.rights_source_code), '') IS NOT NULL
+              AND NULLIF(TRIM(v.rights_license_code), '') IS NOT NULL
+              AND NULLIF(TRIM(v.authorization_evidence_ref), '') IS NOT NULL
+              AND NULLIF(TRIM(v.editor), '') IS NOT NULL
+              AND NULLIF(TRIM(v.first_reviewer), '') IS NOT NULL
+              AND NULLIF(TRIM(v.final_reviewer), '') IS NOT NULL
+              AND NULLIF(TRIM(v.publisher), '') IS NOT NULL
+              AND v.editor <> v.first_reviewer AND v.editor <> v.final_reviewer
+              AND v.editor <> v.publisher AND v.first_reviewer <> v.final_reviewer
+              AND v.first_reviewer <> v.publisher AND v.final_reviewer <> v.publisher
+              AND (v.rights_starts_at IS NULL OR v.rights_starts_at <= CURRENT_TIMESTAMP(6))
+              AND (v.rights_expires_at IS NULL OR v.rights_expires_at > CURRENT_TIMESTAMP(6))
+              AND v.rights_permitted_channels IS NOT NULL
+              AND (JSON_CONTAINS(v.rights_permitted_channels, '"LEARNER"')
+                   OR JSON_CONTAINS(v.rights_permitted_channels, '"*"'))
+            """;
 
     private final JdbcTemplate jdbc;
     private final ObjectMapper objectMapper;
@@ -38,10 +84,117 @@ public final class B3ContentJdbcController {
 
     @GetMapping("/grammar/points")
     public Map<String, Object> grammarPoints(Authentication authentication,
-            @RequestParam(defaultValue = "20") int limit,
-            @RequestParam(required = false) String cefrLevel) {
+            @RequestParam(required = false) String cursor,
+            @RequestParam(required = false) Integer pageSize,
+            @RequestParam(required = false) String cefrLevel,
+            @RequestHeader HttpHeaders headers) {
         principal(authentication);
-        return list("GRAMMAR", "GRAMMAR_POINT", limit, cefrLevel, "cefrLevel");
+        int size = pageSize == null ? DEFAULT_PAGE_SIZE : pageSize;
+        if (size < 1 || size > MAX_PAGE_SIZE) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "pageSize must be between 1 and 100");
+        }
+        CursorPosition after = decodeCursor(cursor);
+        if (cefrLevel != null && !CEFR_LEVELS.contains(cefrLevel)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "cefrLevel is not supported");
+        }
+
+        StringBuilder sql = new StringBuilder("SELECT b.experience_id, b.resource_key, b.payload_json, b.content_version_id ")
+                .append(ELIGIBLE_CONTENT)
+                .append(" AND b.domain_code = ? AND b.resource_type = ?");
+        List<Object> parameters = new ArrayList<>(List.of(TENANT, "GRAMMAR", "GRAMMAR_POINT"));
+        if (after != null) {
+            sql.append(" AND (b.resource_key > ? OR (b.resource_key = ? AND b.experience_id > ?))");
+            parameters.add(after.resourceKey());
+            parameters.add(after.resourceKey());
+            parameters.add(after.experienceId());
+        }
+        if (cefrLevel != null) {
+            sql.append(" AND JSON_UNQUOTE(JSON_EXTRACT(b.payload_json, '$.cefrLevel')) = ?");
+            parameters.add(cefrLevel);
+        }
+        sql.append(" ORDER BY b.resource_key, b.experience_id LIMIT ?");
+        parameters.add(size + 1);
+
+        List<Map<String, Object>> rows = jdbc.queryForList(sql.toString(), parameters.toArray());
+        boolean hasMore = rows.size() > size;
+        List<Map<String, Object>> items = rows.stream().limit(size).map(this::publishedRow).toList();
+        Map<String, Object> last = hasMore ? rows.get(size - 1) : Map.of();
+        String nextCursor = hasMore
+                ? encodeCursor(String.valueOf(last.get("resource_key")), String.valueOf(last.get("experience_id")))
+                : null;
+        Map<String, Object> data = new LinkedHashMap<>();
+        data.put("items", items);
+        data.put("source", "mysql");
+        return cursorPage(data, hasMore, nextCursor, size, requestContext(headers));
+    }
+
+    static String encodeCursor(String resourceKey, String experienceId) {
+        String position = resourceKey + "\u0000" + experienceId;
+        return CURSOR_ENCODER.encodeToString(position.getBytes(StandardCharsets.UTF_8));
+    }
+
+    private static CursorPosition decodeCursor(String cursor) {
+        if (cursor == null) return null;
+        if (cursor.isBlank() || cursor.length() > MAX_CURSOR_LENGTH
+                || !cursor.matches("[A-Za-z0-9_-]+")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "cursor is invalid");
+        }
+        try {
+            byte[] bytes = CURSOR_DECODER.decode(cursor);
+            String position = new String(bytes, StandardCharsets.UTF_8);
+            int separator = position.indexOf('\u0000');
+            if (bytes.length == 0 || bytes.length > 193 || separator <= 0
+                    || separator != position.lastIndexOf('\u0000')
+                    || !CURSOR_ENCODER.encodeToString(position.getBytes(StandardCharsets.UTF_8)).equals(cursor)) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "cursor is invalid");
+            }
+            String resourceKey = position.substring(0, separator);
+            String experienceId = position.substring(separator + 1);
+            if (resourceKey.length() > 96 || experienceId.isBlank() || experienceId.length() > 96
+                    || resourceKey.codePoints().anyMatch(Character::isISOControl)
+                    || experienceId.codePoints().anyMatch(Character::isISOControl)) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "cursor is invalid");
+            }
+            return new CursorPosition(resourceKey, experienceId);
+        } catch (IllegalArgumentException invalid) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "cursor is invalid");
+        }
+    }
+
+    private static Map<String, Object> cursorPage(
+            Map<String, Object> data,
+            boolean hasMore,
+            String nextCursor,
+            int size,
+            B3RequestContext context) {
+        Map<String, Object> meta = new LinkedHashMap<>();
+        meta.put("requestId", context.requestId());
+        meta.put("traceId", context.traceId());
+        meta.put("apiVersion", "v1");
+        meta.put("schemaVersion", "1.0.0");
+        meta.put("serverTime", Instant.now().toString());
+        meta.put("hasMore", hasMore);
+        meta.put("pageSize", size);
+        meta.put("nextCursor", nextCursor);
+        return Map.of("data", data, "meta", meta);
+    }
+
+    private static B3RequestContext requestContext(HttpHeaders headers) {
+        String requestId = headers.getFirst("X-Request-Id");
+        String traceId = headers.getFirst("X-Trace-Id");
+        if (requestId == null || !requestId.matches("[A-Za-z][A-Za-z0-9._-]{7,127}")) {
+            requestId = "local-" + UUID.randomUUID();
+        }
+        if (traceId == null || !traceId.matches("[a-f0-9]{32}")) {
+            traceId = UUID.randomUUID().toString().replace("-", "");
+        }
+        return new B3RequestContext(requestId, traceId);
+    }
+
+    private record B3RequestContext(String requestId, String traceId) {
+    }
+
+    private record CursorPosition(String resourceKey, String experienceId) {
     }
 
     @GetMapping("/grammar/points/{grammarPointId}")
@@ -59,7 +212,12 @@ public final class B3ContentJdbcController {
                     node.put("prerequisites", List.of());
                     return node;
                 }).toList();
-        return envelope(Map.of("contentVersionId", 301, "nodes", items, "edges", List.of(), "ruleVersion", "b3-rule-v1"));
+        Map<String, Object> data = new LinkedHashMap<>();
+        data.put("nodes", items);
+        data.put("edges", List.of());
+        data.put("ruleVersion", "b3-rule-v1");
+        versionIfPresent(items, data);
+        return envelope(data);
     }
 
     @GetMapping("/grammar/exercises")
@@ -71,7 +229,7 @@ public final class B3ContentJdbcController {
                 .filter(item -> grammarPointId == null || grammarPointId.isBlank()
                         || String.valueOf(item.get("grammarPointId")).equals(grammarPointId))
                 .toList();
-        return envelope(Map.of("items", items, "source", "mysql", "contentVersionId", 301));
+        return itemEnvelope(items);
     }
 
     @GetMapping("/grammar/sentences/{sentenceId}")
@@ -92,7 +250,8 @@ public final class B3ContentJdbcController {
     public Map<String, Object> sentenceBlocks(@PathVariable String sentenceId, Authentication authentication) {
         Map<String, Object> data = payload("GRAMMAR", "SENTENCE", sentenceId, authentication);
         return envelope(Map.of("sentenceId", sentenceId, "blocks", data.getOrDefault("slices", List.of()),
-                "blockOrder", data.getOrDefault("blockOrder", List.of()), "contentVersionId", 301));
+                "blockOrder", data.getOrDefault("blockOrder", List.of()),
+                "contentVersionId", data.get("contentVersionId")));
     }
 
     @GetMapping("/grammar/mastery")
@@ -201,7 +360,7 @@ public final class B3ContentJdbcController {
         story.put("branching", !nodes.isEmpty());
         story.put("nodes", nodes);
         story.put("startNodeId", nodes.isEmpty() ? null : nodes.getFirst().get("nodeId"));
-        story.put("contentVersionId", article.getOrDefault("contentVersionId", 301));
+        story.put("contentVersionId", article.get("contentVersionId"));
         story.put("source", "mysql");
         return envelope(story);
     }
@@ -261,16 +420,14 @@ public final class B3ContentJdbcController {
         if (filter != null && filterKey != null) {
             items = items.stream().filter(item -> filter.equals(String.valueOf(item.get(filterKey)))).toList();
         }
-        return envelope(Map.of("items", items, "source", "mysql", "contentVersionId", 301));
+        return itemEnvelope(items);
     }
 
     private List<Map<String, Object>> rows(String domain, String resourceType, int limit, String ignored) {
         int bounded = Math.max(1, Math.min(limit <= 0 ? 20 : limit, 100));
-        return jdbc.queryForList("""
-                SELECT payload_json FROM b3_content_experience
-                 WHERE tenant_id = ? AND domain_code = ? AND resource_type = ? AND availability = 'PUBLISHED'
-                 ORDER BY resource_key LIMIT ?
-                """, TENANT, domain, resourceType, bounded).stream().map(row -> parse(String.valueOf(row.get("payload_json")))).toList();
+        return jdbc.queryForList("SELECT b.payload_json, b.content_version_id " + ELIGIBLE_CONTENT
+                + " AND b.domain_code = ? AND b.resource_type = ? ORDER BY b.resource_key LIMIT ?",
+                TENANT, domain, resourceType, bounded).stream().map(this::publishedRow).toList();
     }
 
     private Map<String, Object> one(String domain, String resourceType, String resourceKey, Authentication authentication) {
@@ -280,13 +437,37 @@ public final class B3ContentJdbcController {
     private Map<String, Object> payload(String domain, String resourceType, String resourceKey,
             Authentication authentication) {
         principal(authentication);
-        return jdbc.queryForList("""
-                SELECT payload_json FROM b3_content_experience
-                 WHERE tenant_id = ? AND domain_code = ? AND resource_type = ? AND resource_key = ?
-                   AND availability = 'PUBLISHED'
-                """, TENANT, domain, resourceType, resourceKey).stream().findFirst()
-                .map(row -> parse(String.valueOf(row.get("payload_json"))))
+        return jdbc.queryForList("SELECT b.payload_json, b.content_version_id " + ELIGIBLE_CONTENT
+                + " AND b.domain_code = ? AND b.resource_type = ? AND b.resource_key = ?",
+                TENANT, domain, resourceType, resourceKey).stream().findFirst()
+                .map(this::publishedRow)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "published learner content not found"));
+    }
+
+    private Map<String, Object> publishedRow(Map<String, Object> row) {
+        long version = ((Number) row.get("content_version_id")).longValue();
+        Map<String, Object> payload = new LinkedHashMap<>(parse(String.valueOf(row.get("payload_json"))));
+        Object declared = payload.get("contentVersionId");
+        if (declared != null && !String.valueOf(version).equals(String.valueOf(declared))) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "published content version does not match its projection");
+        }
+        payload.put("contentVersionId", version);
+        return payload;
+    }
+
+    private Map<String, Object> itemEnvelope(List<Map<String, Object>> items) {
+        Map<String, Object> data = new LinkedHashMap<>();
+        data.put("items", items);
+        data.put("source", "mysql");
+        versionIfPresent(items, data);
+        return envelope(data);
+    }
+
+    private static void versionIfPresent(List<Map<String, Object>> items, Map<String, Object> data) {
+        if (!items.isEmpty()) {
+            data.put("contentVersionId", items.getFirst().get("contentVersionId"));
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -308,6 +489,6 @@ public final class B3ContentJdbcController {
     }
 
     private static void principal(Authentication authentication) {
-        ContentHttpPrincipals.require(authentication);
+        ContentHttpPrincipals.requireLearnerRead(authentication);
     }
 }

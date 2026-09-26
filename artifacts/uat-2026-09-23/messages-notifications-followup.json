@@ -1,0 +1,1219 @@
+{
+  "scope": "Local Gateway, notification owner, learner Web, mobile H5; queue messages are synthetic fixtures, not domain events",
+  "capturedAt": "2026-09-23T08:48:31.333Z",
+  "accountTags": [
+    "f0deec7b9afb",
+    "8f3d63beba76"
+  ],
+  "checks": [
+    {
+      "name": "health 18070",
+      "actual": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "name": "health 18093",
+      "actual": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "name": "health 18180",
+      "actual": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "name": "health 18183",
+      "actual": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "name": "anonymous inbox denied",
+      "actual": 401,
+      "expected": 401,
+      "pass": true
+    },
+    {
+      "name": "anonymous preferences denied",
+      "actual": 401,
+      "expected": 401,
+      "pass": true
+    },
+    {
+      "name": "account 0 register",
+      "actual": 201,
+      "expected": 201,
+      "pass": true
+    },
+    {
+      "name": "account 0 pre-gate inbox denied",
+      "actual": 403,
+      "expected": 403,
+      "pass": true
+    },
+    {
+      "name": "account 0 adult gate",
+      "actual": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "name": "account 0 TERMS consent",
+      "actual": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "name": "account 0 PRIVACY consent",
+      "actual": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "name": "account 0 ADULT_LEARNING consent",
+      "actual": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "name": "account 0 fresh login",
+      "actual": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "name": "account 1 register",
+      "actual": 201,
+      "expected": 201,
+      "pass": true
+    },
+    {
+      "name": "account 1 pre-gate inbox denied",
+      "actual": 403,
+      "expected": 403,
+      "pass": true
+    },
+    {
+      "name": "account 1 adult gate",
+      "actual": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "name": "account 1 TERMS consent",
+      "actual": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "name": "account 1 PRIVACY consent",
+      "actual": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "name": "account 1 ADULT_LEARNING consent",
+      "actual": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "name": "account 1 fresh login",
+      "actual": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "name": "new account inbox GET",
+      "actual": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "name": "new account inbox empty",
+      "actual": 0,
+      "expected": 0,
+      "pass": true
+    },
+    {
+      "name": "new account preferences GET",
+      "actual": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "name": "preference create",
+      "actual": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "name": "preference version 1",
+      "actual": 1,
+      "expected": 1,
+      "pass": true
+    },
+    {
+      "name": "preference same-key replay",
+      "actual": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "name": "preference replay version stable",
+      "actual": 1,
+      "expected": 1,
+      "pass": true
+    },
+    {
+      "name": "preference same-key changed body conflicts",
+      "actual": 409,
+      "expected": 409,
+      "pass": true
+    },
+    {
+      "name": "preference stale version conflicts",
+      "actual": 409,
+      "expected": 409,
+      "pass": true
+    },
+    {
+      "name": "preference readback count",
+      "actual": 1,
+      "expected": 1,
+      "pass": true
+    },
+    {
+      "name": "preference readback enabled",
+      "actual": true,
+      "expected": true,
+      "pass": true
+    },
+    {
+      "name": "other account preferences isolated",
+      "actual": 0,
+      "expected": 0,
+      "pass": true
+    },
+    {
+      "name": "fixture message 0 queued",
+      "actual": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "name": "fixture message 1 queued",
+      "actual": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "name": "two fixture messages visible through Gateway",
+      "actual": 2,
+      "expected": 2,
+      "pass": true
+    },
+    {
+      "name": "two fixture messages unread",
+      "actual": 2,
+      "expected": 2,
+      "pass": true
+    },
+    {
+      "name": "other account inbox isolated",
+      "actual": 0,
+      "expected": 0,
+      "pass": true
+    },
+    {
+      "name": "other account cannot mark owner message",
+      "actual": 404,
+      "expected": 404,
+      "pass": true
+    },
+    {
+      "name": "web shows two unread count",
+      "actual": true,
+      "expected": true,
+      "pass": true
+    },
+    {
+      "name": "web shows saved preference",
+      "actual": true,
+      "expected": true,
+      "pass": true
+    },
+    {
+      "name": "web-messages 1280px no overflow",
+      "actual": false,
+      "expected": false,
+      "pass": true
+    },
+    {
+      "name": "web-messages 390px no overflow",
+      "actual": false,
+      "expected": false,
+      "pass": true
+    },
+    {
+      "name": "web-messages 320px no overflow",
+      "actual": false,
+      "expected": false,
+      "pass": true
+    },
+    {
+      "name": "web single-read persisted",
+      "actual": 1,
+      "expected": 1,
+      "pass": true
+    },
+    {
+      "name": "web all-read persisted",
+      "actual": 2,
+      "expected": 2,
+      "pass": true
+    },
+    {
+      "name": "Web preference save HTTP",
+      "actual": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "name": "Web preference save carries expectedVersion",
+      "actual": 1,
+      "expected": 1,
+      "pass": true
+    },
+    {
+      "name": "web preference write persisted",
+      "actual": false,
+      "expected": false,
+      "pass": true
+    },
+    {
+      "name": "web preference restored after reload",
+      "actual": 1,
+      "expected": 1,
+      "pass": true
+    },
+    {
+      "name": "mobile fixture message queued",
+      "actual": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "name": "mobile browser reads saved Web preference",
+      "actual": false,
+      "expected": false,
+      "pass": true
+    },
+    {
+      "name": "mobile renders server safeBody",
+      "actual": true,
+      "expected": true,
+      "pass": true
+    },
+    {
+      "name": "mobile labels server notificationType",
+      "actual": true,
+      "expected": true,
+      "pass": true
+    },
+    {
+      "name": "mobile unread count",
+      "actual": true,
+      "expected": true,
+      "pass": true
+    },
+    {
+      "name": "mobile-notifications 390px no overflow",
+      "actual": false,
+      "expected": false,
+      "pass": true
+    },
+    {
+      "name": "mobile-notifications 320px no overflow",
+      "actual": false,
+      "expected": false,
+      "pass": true
+    },
+    {
+      "name": "mobile unread count updates",
+      "actual": 1,
+      "expected": 1,
+      "pass": true
+    },
+    {
+      "name": "mobile read persisted",
+      "actual": true,
+      "expected": true,
+      "pass": true
+    },
+    {
+      "name": "mobile settings has notification preference entry",
+      "actual": true,
+      "expected": true,
+      "pass": true
+    },
+    {
+      "name": "mobile restores Web preference off",
+      "actual": 1,
+      "expected": 1,
+      "pass": true
+    },
+    {
+      "name": "mobile preference write persisted",
+      "actual": true,
+      "expected": true,
+      "pass": true
+    },
+    {
+      "name": "mobile preference restored after reload",
+      "actual": 1,
+      "expected": 1,
+      "pass": true
+    },
+    {
+      "name": "mobile-settings 390px no overflow",
+      "actual": false,
+      "expected": false,
+      "pass": true
+    },
+    {
+      "name": "mobile-settings 320px no overflow",
+      "actual": false,
+      "expected": false,
+      "pass": true
+    },
+    {
+      "name": "mobile preference failure hides stale toggles",
+      "actual": 0,
+      "expected": 0,
+      "pass": true
+    },
+    {
+      "name": "mobile preference retry recovers",
+      "actual": 5,
+      "expected": 5,
+      "pass": true
+    },
+    {
+      "name": "settings message entry leads above rooms",
+      "actual": true,
+      "expected": true,
+      "pass": true
+    },
+    {
+      "name": "web error has retry",
+      "actual": true,
+      "expected": true,
+      "pass": true
+    },
+    {
+      "name": "web retry sees mobile preference change",
+      "actual": 1,
+      "expected": 1,
+      "pass": true
+    },
+    {
+      "name": "Web stale scenario starts enabled",
+      "actual": true,
+      "expected": true,
+      "pass": true
+    },
+    {
+      "name": "external version advance",
+      "actual": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "name": "external version increment",
+      "actual": 4,
+      "expected": 4,
+      "pass": true
+    },
+    {
+      "name": "Web stale write sends old version",
+      "actual": 3,
+      "expected": 3,
+      "pass": true
+    },
+    {
+      "name": "Web stale write rejected",
+      "actual": 409,
+      "expected": 409,
+      "pass": true
+    },
+    {
+      "name": "Web conflict leaves external state intact",
+      "actual": false,
+      "expected": false,
+      "pass": true
+    },
+    {
+      "name": "Web retry uses refreshed version",
+      "actual": 4,
+      "expected": 4,
+      "pass": true
+    },
+    {
+      "name": "Web retry save HTTP",
+      "actual": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "name": "Web CAS state persists after reload",
+      "actual": 1,
+      "expected": 1,
+      "pass": true
+    },
+    {
+      "name": "Web empty inbox shown as empty",
+      "actual": 1,
+      "expected": 1,
+      "pass": true
+    },
+    {
+      "name": "mobile empty inbox shown as empty",
+      "actual": 1,
+      "expected": 1,
+      "pass": true
+    },
+    {
+      "name": "mobile message failure not presented as empty",
+      "actual": 0,
+      "expected": 0,
+      "pass": true
+    },
+    {
+      "name": "mobile notification retry recovers",
+      "actual": 1,
+      "expected": 1,
+      "pass": true
+    }
+  ],
+  "network": [
+    {
+      "stage": "anonymous",
+      "method": "GET",
+      "path": "/api/v1/notifications/messages",
+      "status": 401,
+      "code": null
+    },
+    {
+      "stage": "anonymous",
+      "method": "GET",
+      "path": "/api/v1/notifications/preferences",
+      "status": 401,
+      "code": null
+    },
+    {
+      "stage": "account-0-register",
+      "method": "POST",
+      "path": "/api/v1/auth/register",
+      "status": 201,
+      "code": null
+    },
+    {
+      "stage": "account-0-register",
+      "method": "GET",
+      "path": "/api/v1/notifications/messages",
+      "status": 403,
+      "code": "FORBIDDEN"
+    },
+    {
+      "stage": "account-0-register",
+      "method": "POST",
+      "path": "/api/v1/iam/adult-gate",
+      "status": 200,
+      "code": null
+    },
+    {
+      "stage": "account-0-register",
+      "method": "PUT",
+      "path": "/api/v1/iam/consents",
+      "status": 200,
+      "code": null
+    },
+    {
+      "stage": "account-0-register",
+      "method": "PUT",
+      "path": "/api/v1/iam/consents",
+      "status": 200,
+      "code": null
+    },
+    {
+      "stage": "account-0-register",
+      "method": "PUT",
+      "path": "/api/v1/iam/consents",
+      "status": 200,
+      "code": null
+    },
+    {
+      "stage": "account-0-register",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200,
+      "code": null
+    },
+    {
+      "stage": "account-1-register",
+      "method": "POST",
+      "path": "/api/v1/auth/register",
+      "status": 201,
+      "code": null
+    },
+    {
+      "stage": "account-1-register",
+      "method": "GET",
+      "path": "/api/v1/notifications/messages",
+      "status": 403,
+      "code": "FORBIDDEN"
+    },
+    {
+      "stage": "account-1-register",
+      "method": "POST",
+      "path": "/api/v1/iam/adult-gate",
+      "status": 200,
+      "code": null
+    },
+    {
+      "stage": "account-1-register",
+      "method": "PUT",
+      "path": "/api/v1/iam/consents",
+      "status": 200,
+      "code": null
+    },
+    {
+      "stage": "account-1-register",
+      "method": "PUT",
+      "path": "/api/v1/iam/consents",
+      "status": 200,
+      "code": null
+    },
+    {
+      "stage": "account-1-register",
+      "method": "PUT",
+      "path": "/api/v1/iam/consents",
+      "status": 200,
+      "code": null
+    },
+    {
+      "stage": "account-1-register",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200,
+      "code": null
+    },
+    {
+      "stage": "empty-owner",
+      "method": "GET",
+      "path": "/api/v1/notifications/messages",
+      "status": 200,
+      "code": null
+    },
+    {
+      "stage": "empty-owner",
+      "method": "GET",
+      "path": "/api/v1/notifications/preferences",
+      "status": 200,
+      "code": null
+    },
+    {
+      "stage": "preference-cas",
+      "method": "PUT",
+      "path": "/api/v1/notifications/preferences/REVIEW_DUE/IN_APP",
+      "status": 200,
+      "code": null
+    },
+    {
+      "stage": "preference-cas",
+      "method": "PUT",
+      "path": "/api/v1/notifications/preferences/REVIEW_DUE/IN_APP",
+      "status": 200,
+      "code": null
+    },
+    {
+      "stage": "preference-cas",
+      "method": "PUT",
+      "path": "/api/v1/notifications/preferences/REVIEW_DUE/IN_APP",
+      "status": 409,
+      "code": "IDEMPOTENCY_CONFLICT"
+    },
+    {
+      "stage": "preference-cas",
+      "method": "PUT",
+      "path": "/api/v1/notifications/preferences/REVIEW_DUE/IN_APP",
+      "status": 409,
+      "code": "VERSION_CONFLICT"
+    },
+    {
+      "stage": "preference-cas",
+      "method": "GET",
+      "path": "/api/v1/notifications/preferences",
+      "status": 200,
+      "code": null
+    },
+    {
+      "stage": "preference-cas",
+      "method": "GET",
+      "path": "/api/v1/notifications/preferences",
+      "status": 200,
+      "code": null
+    },
+    {
+      "stage": "synthetic-owner-message-fixture",
+      "method": "POST",
+      "path": "/internal/v1/notifications/messages",
+      "status": 200,
+      "code": null
+    },
+    {
+      "stage": "synthetic-owner-message-fixture",
+      "method": "POST",
+      "path": "/internal/v1/notifications/messages",
+      "status": 200,
+      "code": null
+    },
+    {
+      "stage": "synthetic-owner-message-fixture",
+      "method": "GET",
+      "path": "/api/v1/notifications/messages",
+      "status": 200,
+      "code": null
+    },
+    {
+      "stage": "synthetic-owner-message-fixture",
+      "method": "GET",
+      "path": "/api/v1/notifications/messages",
+      "status": 200,
+      "code": null
+    },
+    {
+      "stage": "synthetic-owner-message-fixture",
+      "method": "PUT",
+      "path": "/api/v1/notifications/messages/:messageId/read",
+      "status": 404,
+      "code": "NOT_FOUND"
+    },
+    {
+      "stage": "web-browser-login",
+      "surface": "web",
+      "method": "GET",
+      "path": "/api/v1/notifications/messages",
+      "status": 200
+    },
+    {
+      "stage": "web-browser-login",
+      "surface": "web",
+      "method": "GET",
+      "path": "/api/v1/notifications/preferences",
+      "status": 200
+    },
+    {
+      "stage": "web-browser-login",
+      "surface": "web",
+      "method": "PUT",
+      "path": "/api/v1/notifications/messages/:messageId/read",
+      "status": 200
+    },
+    {
+      "stage": "web-browser-login",
+      "surface": "web",
+      "method": "GET",
+      "path": "/api/v1/notifications/messages",
+      "status": 200
+    },
+    {
+      "stage": "web-browser-login",
+      "surface": "web",
+      "method": "GET",
+      "path": "/api/v1/notifications/preferences",
+      "status": 200
+    },
+    {
+      "stage": "web-browser-login",
+      "method": "GET",
+      "path": "/api/v1/notifications/messages",
+      "status": 200,
+      "code": null
+    },
+    {
+      "stage": "web-browser-login",
+      "surface": "web",
+      "method": "PUT",
+      "path": "/api/v1/notifications/messages/read-all",
+      "status": 200
+    },
+    {
+      "stage": "web-browser-login",
+      "surface": "web",
+      "method": "GET",
+      "path": "/api/v1/notifications/preferences",
+      "status": 200
+    },
+    {
+      "stage": "web-browser-login",
+      "surface": "web",
+      "method": "GET",
+      "path": "/api/v1/notifications/messages",
+      "status": 200
+    },
+    {
+      "stage": "web-browser-login",
+      "method": "GET",
+      "path": "/api/v1/notifications/messages",
+      "status": 200,
+      "code": null
+    },
+    {
+      "stage": "web-browser-login",
+      "surface": "web",
+      "method": "PUT",
+      "path": "/api/v1/notifications/preferences/REVIEW_DUE/IN_APP",
+      "status": 200
+    },
+    {
+      "stage": "web-browser-login",
+      "surface": "web",
+      "method": "GET",
+      "path": "/api/v1/notifications/messages",
+      "status": 200
+    },
+    {
+      "stage": "web-browser-login",
+      "surface": "web",
+      "method": "GET",
+      "path": "/api/v1/notifications/preferences",
+      "status": 200
+    },
+    {
+      "stage": "web-browser-login",
+      "method": "GET",
+      "path": "/api/v1/notifications/preferences",
+      "status": 200,
+      "code": null
+    },
+    {
+      "stage": "web-browser-login",
+      "surface": "web",
+      "method": "GET",
+      "path": "/api/v1/notifications/messages",
+      "status": 200
+    },
+    {
+      "stage": "web-browser-login",
+      "surface": "web",
+      "method": "GET",
+      "path": "/api/v1/notifications/preferences",
+      "status": 200
+    },
+    {
+      "stage": "mobile-message-fixture",
+      "method": "POST",
+      "path": "/internal/v1/notifications/messages",
+      "status": 200,
+      "code": null
+    },
+    {
+      "stage": "mobile-browser-login",
+      "surface": "mobile",
+      "method": "GET",
+      "path": "/api/v1/notifications/preferences",
+      "status": 200
+    },
+    {
+      "stage": "mobile-browser-login",
+      "surface": "mobile",
+      "method": "GET",
+      "path": "/api/v1/notifications/messages",
+      "status": 200
+    },
+    {
+      "stage": "mobile-browser-login",
+      "surface": "mobile",
+      "method": "GET",
+      "path": "/api/v1/notifications/preferences",
+      "status": 200
+    },
+    {
+      "stage": "mobile-browser-login",
+      "surface": "mobile",
+      "method": "GET",
+      "path": "/api/v1/notifications/messages",
+      "status": 200
+    },
+    {
+      "stage": "mobile-browser-login",
+      "surface": "mobile",
+      "method": "PUT",
+      "path": "/api/v1/notifications/messages/:messageId/read",
+      "status": 200
+    },
+    {
+      "stage": "mobile-browser-login",
+      "method": "GET",
+      "path": "/api/v1/notifications/messages",
+      "status": 200,
+      "code": null
+    },
+    {
+      "stage": "mobile-browser-login",
+      "surface": "mobile",
+      "method": "GET",
+      "path": "/api/v1/notifications/preferences",
+      "status": 200
+    },
+    {
+      "stage": "mobile-browser-login",
+      "surface": "mobile",
+      "method": "PUT",
+      "path": "/api/v1/notifications/preferences/REVIEW_DUE/IN_APP",
+      "status": 200
+    },
+    {
+      "stage": "mobile-browser-login",
+      "surface": "mobile",
+      "method": "GET",
+      "path": "/api/v1/notifications/preferences",
+      "status": 200
+    },
+    {
+      "stage": "mobile-browser-login",
+      "method": "GET",
+      "path": "/api/v1/notifications/preferences",
+      "status": 200,
+      "code": null
+    },
+    {
+      "stage": "mobile-browser-login",
+      "surface": "mobile",
+      "method": "GET",
+      "path": "/api/v1/notifications/preferences",
+      "status": 200
+    },
+    {
+      "stage": "mobile-preference-controlled-error",
+      "surface": "mobile",
+      "method": "GET",
+      "path": "/api/v1/notifications/preferences",
+      "status": 503
+    },
+    {
+      "stage": "mobile-preference-controlled-error",
+      "surface": "mobile",
+      "method": "GET",
+      "path": "/api/v1/notifications/preferences",
+      "status": 200
+    },
+    {
+      "stage": "mobile-preference-controlled-error",
+      "surface": "mobile",
+      "method": "GET",
+      "path": "/api/v1/notifications/preferences",
+      "status": 200
+    },
+    {
+      "stage": "mobile-preference-controlled-error",
+      "surface": "mobile",
+      "method": "GET",
+      "path": "/api/v1/notifications/messages",
+      "status": 200
+    },
+    {
+      "stage": "mobile-preference-controlled-error",
+      "surface": "mobile",
+      "method": "GET",
+      "path": "/api/v1/notifications/preferences",
+      "status": 200
+    },
+    {
+      "stage": "mobile-preference-controlled-error",
+      "surface": "mobile",
+      "method": "GET",
+      "path": "/api/v1/notifications/messages",
+      "status": 200
+    },
+    {
+      "stage": "controlled-error",
+      "surface": "web",
+      "method": "GET",
+      "path": "/api/v1/notifications/preferences",
+      "status": 503
+    },
+    {
+      "stage": "controlled-error",
+      "surface": "web",
+      "method": "GET",
+      "path": "/api/v1/notifications/messages",
+      "status": 200
+    },
+    {
+      "stage": "controlled-error",
+      "surface": "web",
+      "method": "GET",
+      "path": "/api/v1/notifications/preferences",
+      "status": 200
+    },
+    {
+      "stage": "controlled-error",
+      "surface": "web",
+      "method": "GET",
+      "path": "/api/v1/notifications/messages",
+      "status": 200
+    },
+    {
+      "stage": "web-preference-stale-conflict",
+      "method": "GET",
+      "path": "/api/v1/notifications/preferences",
+      "status": 200,
+      "code": null
+    },
+    {
+      "stage": "web-preference-stale-conflict",
+      "method": "PUT",
+      "path": "/api/v1/notifications/preferences/REVIEW_DUE/IN_APP",
+      "status": 200,
+      "code": null
+    },
+    {
+      "stage": "web-preference-stale-conflict",
+      "surface": "web",
+      "method": "PUT",
+      "path": "/api/v1/notifications/preferences/REVIEW_DUE/IN_APP",
+      "status": 409
+    },
+    {
+      "stage": "web-preference-stale-conflict",
+      "surface": "web",
+      "method": "GET",
+      "path": "/api/v1/notifications/messages",
+      "status": 200
+    },
+    {
+      "stage": "web-preference-stale-conflict",
+      "surface": "web",
+      "method": "GET",
+      "path": "/api/v1/notifications/preferences",
+      "status": 200
+    },
+    {
+      "stage": "web-preference-stale-conflict",
+      "method": "GET",
+      "path": "/api/v1/notifications/preferences",
+      "status": 200,
+      "code": null
+    },
+    {
+      "stage": "web-preference-stale-conflict",
+      "surface": "web",
+      "method": "PUT",
+      "path": "/api/v1/notifications/preferences/REVIEW_DUE/IN_APP",
+      "status": 200
+    },
+    {
+      "stage": "web-preference-stale-conflict",
+      "surface": "web",
+      "method": "GET",
+      "path": "/api/v1/notifications/preferences",
+      "status": 200
+    },
+    {
+      "stage": "web-preference-stale-conflict",
+      "surface": "web",
+      "method": "GET",
+      "path": "/api/v1/notifications/messages",
+      "status": 200
+    },
+    {
+      "stage": "web-preference-stale-conflict",
+      "surface": "web",
+      "method": "GET",
+      "path": "/api/v1/notifications/preferences",
+      "status": 200
+    },
+    {
+      "stage": "web-preference-stale-conflict",
+      "surface": "web",
+      "method": "GET",
+      "path": "/api/v1/notifications/messages",
+      "status": 200
+    },
+    {
+      "stage": "web-empty",
+      "surface": "web-empty",
+      "method": "GET",
+      "path": "/api/v1/notifications/messages",
+      "status": 200
+    },
+    {
+      "stage": "web-empty",
+      "surface": "web-empty",
+      "method": "GET",
+      "path": "/api/v1/notifications/preferences",
+      "status": 200
+    },
+    {
+      "stage": "mobile-empty",
+      "surface": "mobile-empty",
+      "method": "GET",
+      "path": "/api/v1/notifications/preferences",
+      "status": 200
+    },
+    {
+      "stage": "mobile-empty",
+      "surface": "mobile-empty",
+      "method": "GET",
+      "path": "/api/v1/notifications/messages",
+      "status": 200
+    },
+    {
+      "stage": "mobile-empty",
+      "surface": "mobile-empty",
+      "method": "GET",
+      "path": "/api/v1/notifications/preferences",
+      "status": 200
+    },
+    {
+      "stage": "mobile-empty",
+      "surface": "mobile-empty",
+      "method": "GET",
+      "path": "/api/v1/notifications/messages",
+      "status": 200
+    },
+    {
+      "stage": "mobile-controlled-error",
+      "surface": "mobile",
+      "method": "GET",
+      "path": "/api/v1/notifications/preferences",
+      "status": 401
+    },
+    {
+      "stage": "mobile-controlled-error",
+      "surface": "mobile",
+      "method": "GET",
+      "path": "/api/v1/notifications/preferences",
+      "status": 200
+    },
+    {
+      "stage": "mobile-controlled-error",
+      "surface": "mobile",
+      "method": "GET",
+      "path": "/api/v1/notifications/messages",
+      "status": 503
+    },
+    {
+      "stage": "mobile-controlled-error",
+      "surface": "mobile",
+      "method": "GET",
+      "path": "/api/v1/notifications/messages",
+      "status": 503
+    },
+    {
+      "stage": "mobile-controlled-error",
+      "surface": "mobile",
+      "method": "GET",
+      "path": "/api/v1/notifications/preferences",
+      "status": 200
+    },
+    {
+      "stage": "mobile-controlled-error",
+      "surface": "mobile",
+      "method": "GET",
+      "path": "/api/v1/notifications/preferences",
+      "status": 200
+    },
+    {
+      "stage": "mobile-controlled-error",
+      "surface": "mobile",
+      "method": "GET",
+      "path": "/api/v1/notifications/messages",
+      "status": 200
+    }
+  ],
+  "pages": [
+    {
+      "stage": "web-browser-login",
+      "surface": "web-messages",
+      "width": 1280,
+      "viewport": 1280,
+      "scrollWidth": 1280,
+      "overflow": false
+    },
+    {
+      "stage": "web-browser-login",
+      "surface": "web-messages",
+      "width": 390,
+      "viewport": 390,
+      "scrollWidth": 390,
+      "overflow": false
+    },
+    {
+      "stage": "web-browser-login",
+      "surface": "web-messages",
+      "width": 320,
+      "viewport": 320,
+      "scrollWidth": 320,
+      "overflow": false
+    },
+    {
+      "stage": "mobile-browser-login",
+      "surface": "mobile-notifications",
+      "width": 390,
+      "viewport": 390,
+      "scrollWidth": 390,
+      "overflow": false
+    },
+    {
+      "stage": "mobile-browser-login",
+      "surface": "mobile-notifications",
+      "width": 320,
+      "viewport": 320,
+      "scrollWidth": 320,
+      "overflow": false
+    },
+    {
+      "stage": "mobile-browser-login",
+      "surface": "mobile-settings",
+      "width": 390,
+      "viewport": 390,
+      "scrollWidth": 390,
+      "overflow": false
+    },
+    {
+      "stage": "mobile-browser-login",
+      "surface": "mobile-settings",
+      "width": 320,
+      "viewport": 320,
+      "scrollWidth": 320,
+      "overflow": false
+    }
+  ],
+  "browserErrors": [],
+  "cleanup": [
+    {
+      "before": "3:1:8:3:3:8",
+      "after": "0:0:0:0:0:0:0:0:0:1:1",
+      "verified": true
+    },
+    {
+      "before": "0:0:0:0:0:0",
+      "after": "0:0:0:0:0:0:0:0:0:1:1",
+      "verified": true
+    }
+  ],
+  "featureStatus": "PARTIAL",
+  "knownGaps": [
+    "mobile messages remain in the social page below fixture rooms",
+    "no trusted domain event or deep link verified",
+    "native app and iPad not verified"
+  ],
+  "result": "PASS"
+}

@@ -1,0 +1,266 @@
+{
+  "stamp": "mudxalysd42b85",
+  "contentCode": "uat-review-mudxalysd42b85",
+  "localOnly": true,
+  "checks": [
+    {
+      "name": "gateway ready",
+      "actual": 200,
+      "ok": true
+    },
+    {
+      "name": "admin ready",
+      "actual": 200,
+      "ok": true
+    },
+    {
+      "name": "owner ready",
+      "actual": 200,
+      "ok": true
+    },
+    {
+      "name": "no contentCode collision",
+      "actual": 0,
+      "ok": true
+    },
+    {
+      "name": "anonymous admin read",
+      "actual": {
+        "status": 401,
+        "code": null
+      },
+      "ok": true
+    },
+    {
+      "name": "register editor",
+      "actual": {
+        "status": 201,
+        "code": null
+      },
+      "ok": true
+    },
+    {
+      "name": "learner admin read",
+      "actual": {
+        "status": 403,
+        "code": "CONTENT_ADMIN_REQUIRED"
+      },
+      "ok": true
+    },
+    {
+      "name": "learner forged role headers do not create missing content",
+      "actual": {
+        "status": 403,
+        "code": "CONTENT_PUBLISHER_REQUIRED"
+      },
+      "ok": true
+    },
+    {
+      "name": "login editor",
+      "actual": {
+        "status": 200,
+        "code": null
+      },
+      "ok": true
+    },
+    {
+      "name": "register reviewer",
+      "actual": {
+        "status": 201,
+        "code": null
+      },
+      "ok": true
+    },
+    {
+      "name": "login reviewer",
+      "actual": {
+        "status": 200,
+        "code": null
+      },
+      "ok": true
+    },
+    {
+      "name": "new isolated draft",
+      "actual": {
+        "status": 202,
+        "code": null
+      },
+      "ok": true
+    },
+    {
+      "name": "owner readback",
+      "actual": {
+        "status": 200,
+        "statusField": "DRAFT",
+        "rightsStatus": "PENDING",
+        "stages": []
+      },
+      "ok": true
+    },
+    {
+      "name": "unpublished pending rights DB",
+      "actual": {
+        "definition": "f790bf57-16f1-45d6-8956-9f61d2562837|NONE",
+        "versions": [
+          "1|DRAFT|PENDING|NONE|NONE|NONE|0|NONE"
+        ],
+        "refs": "0:0:0:0:0"
+      },
+      "ok": true
+    },
+    {
+      "name": "learner forged role headers cannot publish existing draft",
+      "actual": {
+        "status": 403,
+        "code": "CONTENT_PUBLISHER_REQUIRED"
+      },
+      "ok": true
+    },
+    {
+      "name": "author self review blocked",
+      "actual": {
+        "status": 409,
+        "code": "FOUR_EYES_REQUIRED"
+      },
+      "ok": true
+    },
+    {
+      "name": "independent final review before first blocked",
+      "actual": {
+        "status": 409,
+        "code": "CONTENT_STATE_INVALID"
+      },
+      "ok": true
+    },
+    {
+      "name": "publish without dual approval blocked",
+      "actual": {
+        "status": 409,
+        "code": "CONTENT_STATE_INVALID"
+      },
+      "ok": true
+    },
+    {
+      "name": "rollback without current publication blocked",
+      "actual": {
+        "status": 409,
+        "code": "ROLLBACK_SOURCE_MISSING"
+      },
+      "ok": true
+    },
+    {
+      "name": "negative commands made no owner mutation",
+      "actual": {
+        "definition": "f790bf57-16f1-45d6-8956-9f61d2562837|NONE",
+        "versions": [
+          "1|DRAFT|PENDING|NONE|NONE|NONE|0|NONE"
+        ],
+        "refs": "0:0:0:0:0"
+      },
+      "ok": true
+    },
+    {
+      "name": "browser draft action guards",
+      "actual": {
+        "path": "/content",
+        "draftVisible": true,
+        "publishDisabled": true,
+        "layout1280": {
+          "width": 1280,
+          "documentWidth": 1280,
+          "overflow": false
+        },
+        "rollbackDisabled": true,
+        "layout390": {
+          "width": 390,
+          "documentWidth": 390,
+          "overflow": false
+        }
+      },
+      "ok": true
+    },
+    {
+      "name": "release page is quality evidence, not content publishing",
+      "actual": {
+        "path": "/release",
+        "qualityWarningVisible": true,
+        "contentPublishControls": 0,
+        "layout390": {
+          "width": 390,
+          "documentWidth": 390,
+          "overflow": false
+        }
+      },
+      "ok": true
+    },
+    {
+      "name": "no browser page errors",
+      "actual": 0,
+      "ok": true
+    }
+  ],
+  "browser": {
+    "loginRedirect": true,
+    "content": {
+      "path": "/content",
+      "draftVisible": true,
+      "publishDisabled": true,
+      "layout1280": {
+        "width": 1280,
+        "documentWidth": 1280,
+        "overflow": false
+      },
+      "rollbackDisabled": true,
+      "layout390": {
+        "width": 390,
+        "documentWidth": 390,
+        "overflow": false
+      }
+    },
+    "release": {
+      "path": "/release",
+      "qualityWarningVisible": true,
+      "contentPublishControls": 0,
+      "layout390": {
+        "width": 390,
+        "documentWidth": 390,
+        "overflow": false
+      }
+    }
+  },
+  "ownerFacts": {
+    "initial": {
+      "definition": "f790bf57-16f1-45d6-8956-9f61d2562837|NONE",
+      "versions": [
+        "1|DRAFT|PENDING|NONE|NONE|NONE|0|NONE"
+      ],
+      "refs": "0:0:0:0:0"
+    },
+    "afterNegativeCommands": {
+      "definition": "f790bf57-16f1-45d6-8956-9f61d2562837|NONE",
+      "versions": [
+        "1|DRAFT|PENDING|NONE|NONE|NONE|0|NONE"
+      ],
+      "refs": "0:0:0:0:0"
+    }
+  },
+  "cleanup": {
+    "definitionRemoved": 1,
+    "versionRowsRemoved": 1,
+    "receiptsRemoved": 3,
+    "accountsDisabled": [
+      "uat-review-mudxalysd42b85-editor@local.invalid",
+      "uat-review-mudxalysd42b85-reviewer@local.invalid"
+    ],
+    "refsBefore": "0:0:0:0:0",
+    "residual": {
+      "definition": 0,
+      "versions": 0,
+      "activeAccounts": 0
+    }
+  },
+  "pageErrors": [],
+  "secretsRecorded": false,
+  "result": "NEGATIVE_BOUNDARIES_PASS_FULL_PUBLISH_UNVERIFIED",
+  "capturedAt": "2026-09-23T09:51:16.210Z"
+}

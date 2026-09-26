@@ -121,7 +121,8 @@ public final class IdempotencyService {
                 // An expected replay failure (for example a legacy fact that needs re-consent)
                 // must surface through the outcome instead of escaping inside the transaction
                 // callback, where a reused outer transaction would become rollback-only.
-                if (infrastructureFailure(exception.code())) throw exception;
+                if (rollbackCredentialPolicyFailure(normalizedScope, exception.code())
+                        || infrastructureFailure(exception.code())) throw exception;
                 return Outcome.failure(exception);
             }
         }
@@ -133,7 +134,8 @@ public final class IdempotencyService {
             // Expected security/policy failures must commit their audit, lock or revoke side
             // effects. Persist a safe rejection while the transaction is still clean, then throw
             // only after the transaction callback has returned and committed.
-            if (infrastructureFailure(exception.code())) throw exception;
+            if (rollbackCredentialPolicyFailure(normalizedScope, exception.code())
+                    || infrastructureFailure(exception.code())) throw exception;
             store.reject(normalizedScope, normalizedKey, requestHash, exception, rejectionStatus(exception.code()));
             return Outcome.failure(exception);
         } catch (RuntimeException exception) {
@@ -202,6 +204,13 @@ public final class IdempotencyService {
                     IDEMPOTENCY_RESULT_UNAVAILABLE -> true;
             default -> false;
         };
+    }
+
+    private static boolean rollbackCredentialPolicyFailure(String scope, IamDecisionCode code) {
+        return code == IamDecisionCode.POLICY_UNAVAILABLE
+                && ("/api/v1/auth/register".equals(scope)
+                || "/api/v1/auth/login".equals(scope)
+                || "/api/v1/auth/token/refresh".equals(scope));
     }
 
     private static String normalize(String value, int maxLength, String field) {

@@ -3,7 +3,7 @@ import AvatarArtwork from '../components/AvatarArtwork.vue'
 import StudyArtwork from '../components/StudyArtwork.vue'
 import ExperienceHeader from '../components/ExperienceHeader.vue'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
-import { B4_PERFORMANCE_LEVELS, formatSeconds, gameLabel, interactionLabel, type B4GameCode, type B4InteractionCode } from '../domain/b4'
+import { B4_PERFORMANCE_LEVELS, formatSeconds, gameLabel, interactionLabel, type B4InteractionCode } from '../domain/b4'
 import B12RewardsCard from '../components/b12/B12RewardsCard.vue'
 import B12SocialExtensions from '../components/b12/B12SocialExtensions.vue'
 import { useB4Store } from '../stores/b4'
@@ -14,9 +14,10 @@ type B4Panel = 'world' | 'games' | 'social' | 'avatar' | 'offline'
 const b4 = useB4Store()
 const t = useExperienceText()
 function stateLabel(value?: string) { return t(({ ACTIVE: 'stateActive', AVAILABLE: 'stateAvailable', UNLOCKED: 'stateAvailable', COMPLETED: 'stateCompleted', LOCKED: 'stateLocked', AT_RISK: 'stateAtRisk', BROKEN: 'stateBroken', FROZEN: 'stateFrozen', IN_PROGRESS: 'stateActive' } as Record<string, string>)[value ?? ''] ?? 'stateUnknown') }
+function avatarSlotLabel(slot: string): string { return ({ HEAD: '头部装扮', FACE: '面部装扮', BODY: '服装', AURA: '光效装扮' } as Record<string, string>)[slot] ?? '装扮素材' }
+function avatarQualityLabel(quality: string): string { return ({ COMMON: '普通款', RARE: '稀有款', EPIC: '珍藏款', LEGENDARY: '典藏款' } as Record<string, string>)[quality] ?? '素材' }
+function questPeriod(value: string): string { return ({ DAILY: '每日', WEEKLY: '每周', SEASON: '赛季' } as Record<string, string>)[value] ?? '成长' }
 const activePanel = ref<B4Panel>('world')
-const gameResponseToken = ref('')
-const gameItemCode = ref('')
 const focusMinutes = ref<25 | 45>(25)
 const interactionCode = ref<B4InteractionCode>('CHEER_UP')
 const weekendProtection = ref(false)
@@ -76,8 +77,12 @@ function choosePerformance(level: string): void {
 
 function retry(): void { void b4.loadWorld() }
 function saveStreakSettings(): void { void b4.saveStreakSettings(timeZone.value, weekendProtection.value) }
-function startGame(code: B4GameCode): void { gameResponseToken.value = ''; gameItemCode.value = ''; void b4.startGame(code) }
-function sendGameEvent(): void { void b4.submitGameEvent(gameResponseToken.value, gameItemCode.value || undefined) }
+function gameStatusLabel(value: string): string { return ({ READY: '准备中', IN_PROGRESS: '进行中', PAUSED: '已暂停', FINISHED: '已结束', COMPLETED: '已完成', EXPIRED: '已过期' } as Record<string, string>)[value] ?? '状态待确认' }
+function packageStatus(value?: string | null): string { return ({ PUBLISHED: '可获取', AUTHORIZED: '已授权', DOWNLOADING: '下载中', PAUSED: '已暂停', ACTIVE_LOCAL: '可离线使用', CLEANED: '已清理', DELETED: '已下线' } as Record<string, string>)[value ?? ''] ?? '状态待确认' }
+function queueStatus(value: string): string { return ({ PENDING: '待同步', SYNCING: '同步中', FAILED: '同步失败' } as Record<string, string>)[value] ?? '待确认' }
+function fileSize(bytes: number): string { return bytes >= 1048576 ? `${(bytes / 1048576).toFixed(1)} MB` : `${Math.ceil(bytes / 1024)} KB` }
+function notificationCategory(value: string | null): string { return ({ SYSTEM: '系统', ROOM_INTERACTION: '自习室', FOCUS_REMINDER: '专注提醒', LEARNING: '学习提醒' } as Record<string, string>)[value ?? ''] ?? '通知' }
+function notificationTime(value: string | null): string { const timestamp = value ? Date.parse(value) : NaN; return Number.isFinite(timestamp) ? new Intl.DateTimeFormat(undefined, { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }).format(timestamp) : '' }
 function joinOrLeave(roomId: string, joined: boolean): void { void (joined ? b4.leaveRoom(roomId) : b4.joinRoom(roomId)) }
 function sendInteraction(roomId: string): void { void b4.sendInteraction(roomId, interactionCode.value) }
 function authorizePackage(packageId: string): void { void b4.authorizeOfflinePackage(packageId) }
@@ -126,7 +131,7 @@ function cleanupOfflineDownload(downloadId: string): void { void b4.cleanupOffli
             <article v-for="node in galaxyNodes" :key="node.code" class="b4-map__node"><span class="b4-map__dot" aria-hidden="true"></span><strong>{{ node.title }}</strong><small>{{ node.description }}</small><em v-if="node.hasData">{{ stateLabel(node.status) }} · {{ node.progress }} / {{ node.requiredProgress }}（{{ node.progressPercent }}%）</em><em v-else>{{ t('stateUnknown') }}</em></article>
           </div>
           <small v-if="b4.galaxy" class="b4-muted">总成长 XP：{{ b4.galaxy.totalXp }}</small>
-          <div class="b4-season" v-if="b4.season"><span>{{ b4.season.title }}</span><strong>{{ b4.season.points }} 赛季点</strong><small>{{ b4.season.status }} · {{ b4.season.seasonId }}</small></div>
+          <div class="b4-season" v-if="b4.season"><span>{{ b4.season.title }}</span><strong>{{ b4.season.points }} 赛季点</strong><small>{{ stateLabel(b4.season.status) }}</small></div>
           <div v-else class="b4-inline-empty">新的成长活动正在准备中。</div>
         </article>
 
@@ -146,7 +151,7 @@ function cleanupOfflineDownload(downloadId: string): void { void b4.cleanupOffli
 
       <section class="b4-card">
         <div class="b4-card__heading"><div><p class="card-kicker">QUESTS</p><h2>今日成长任务</h2></div><span>{{ b4.quests.length ? `${b4.quests.length} 个成长任务` : '未返回任务' }}</span></div>
-        <div v-if="b4.quests.length" class="b4-quest-list"><article v-for="quest in b4.quests" :key="quest.questId" class="b4-quest"><div><strong>{{ quest.title }}</strong><small>{{ quest.period }} · {{ quest.questId }}</small></div><div class="b4-quest__progress"><span>{{ quest.progress }} / {{ quest.target }}</span><progress :value="quest.progress" :max="Math.max(quest.target, 1)"></progress></div><span class="b4-quest__state">{{ quest.claimed ? '已领取' : quest.completed ? '待领取' : '进行中' }}</span></article></div>
+        <div v-if="b4.quests.length" class="b4-quest-list"><article v-for="quest in b4.quests" :key="quest.questId" class="b4-quest"><div><strong>{{ quest.title }}</strong><small>{{ questPeriod(quest.period) }}</small></div><div class="b4-quest__progress"><span>{{ quest.progress }} / {{ quest.target }}</span><progress :value="quest.progress" :max="Math.max(quest.target, 1)"></progress></div><span class="b4-quest__state">{{ quest.claimed ? '已领取' : quest.completed ? '待领取' : '进行中' }}</span></article></div>
         <p v-else class="b4-inline-empty">今天还没有新的成长任务。</p>
       </section>
       <B12RewardsCard />
@@ -154,20 +159,17 @@ function cleanupOfflineDownload(downloadId: string): void { void b4.cleanupOffli
 
     <template v-else-if="activePanel === 'games'">
       <section class="b4-card">
-        <div class="b4-card__heading"><div><p class="card-kicker">GAME LOBBY</p><h2>规则化学习游戏</h2></div><span>选择一项，边玩边巩固</span></div>
-        <p class="b4-muted">用短小的游戏，复习熟悉的词汇和句子。未开放的玩法会在准备好后与你见面。</p>
-        <div v-if="b4.games.length" class="b4-game-grid"><article v-for="game in b4.games" :key="game.gameCode" class="b4-game" :class="{ 'b4-game--disabled': !game.enabled }"><span class="b4-game__icon" aria-hidden="true">✦</span><strong>{{ gameLabel(game.gameCode) }}</strong><span>{{ game.enabled ? '当前可用' : '尚未开放' }}</span><span>{{ game.maxMinutes ?? '—' }} 分钟上限 · 暂停 {{ game.pauseLimitMinutes ?? '—' }} 分钟</span><button class="button button--primary" type="button" :disabled="!game.enabled" @click="startGame(game.gameCode)">{{ game.enabled ? '开始游戏' : '尚未开放' }}</button></article></div>
-        <p v-else class="b4-inline-empty">游戏内容暂时未能加载，请稍后再试。</p>
+        <div class="b4-card__heading"><div><p class="card-kicker">学习游戏</p><h2>小游戏</h2></div><span>玩法准备中</span></div>
+        <div v-if="b4.games.length" class="b4-game-grid"><article v-for="game in b4.games" :key="game.gameCode" class="b4-game b4-game--disabled"><span class="b4-game__icon" aria-hidden="true">✦</span><strong>{{ gameLabel(game.gameCode) }}</strong><span>{{ game.enabled ? '玩法准备中' : '暂未开放' }}</span><span v-if="game.maxMinutes">每次最多 {{ game.maxMinutes }} 分钟</span><button class="button button--primary" type="button" disabled>暂未开放</button></article></div>
+        <p v-else class="b4-inline-empty">暂无可用游戏。</p>
       </section>
       <section v-if="b4.activeGame" class="b4-card b4-game-session">
-        <div class="b4-card__heading"><div><p class="card-kicker">GAME SESSION</p><h2>{{ gameLabel(b4.activeGame.gameCode) }}</h2></div><span class="b4-session-state">{{ b4.activeGame.status }}</span></div>
-        <div class="b4-session-meta"><span>sessionId：{{ b4.activeGame.sessionId }}</span><span>seq：{{ b4.activeGame.seq }}</span><span>回合：{{ b4.activeGame.attemptCount }}</span></div>
-        <p v-if="!gameResponseToken" class="b4-warning">当前会话快照没有返回题目或 responseToken，因此提交按钮不会替你猜答案；暂停/恢复仍可调用服务端状态机。</p>
-        <div v-if="b4.activeGame.challenges.length" class="b4-challenge-list"><strong>服务端题包</strong><button v-for="challenge in b4.activeGame.challenges" :key="challenge.roundNo" class="button button--ghost" type="button" @click="gameResponseToken = challenge.challengeToken; gameItemCode = challenge.itemCode">第 {{ challenge.roundNo }} 轮 · {{ challenge.itemCode }}</button></div>
-        <div class="b4-form-grid"><label class="b4-field">服务端 responseToken<input v-model="gameResponseToken" type="text" autocomplete="off" placeholder="点击服务端题包，或等待题包下发"></label><label class="b4-field">题目 itemCode（服务端必填）<input v-model="gameItemCode" type="text" autocomplete="off"></label></div>
-        <div class="b4-button-row"><button class="button button--secondary" type="button" :disabled="!gameResponseToken.trim()" @click="sendGameEvent">提交服务端回合</button><button v-if="b4.activeGame.status === 'IN_PROGRESS' || b4.activeGame.status === 'READY'" class="button button--ghost" type="button" @click="b4.pauseGame">暂停</button><button v-if="b4.activeGame.status === 'PAUSED'" class="button button--ghost" type="button" @click="b4.resumeGame">恢复</button><button class="button button--ghost" type="button" @click="b4.refreshGame">刷新会话</button><button class="button button--danger" type="button" @click="b4.finishGame">结束并请求服务端结果</button></div>
+        <div class="b4-card__heading"><div><p class="card-kicker">游戏进度</p><h2>{{ gameLabel(b4.activeGame.gameCode) }}</h2></div><span class="b4-session-state">{{ gameStatusLabel(b4.activeGame.status) }}</span></div>
+        <div class="b4-session-meta"><span>已进行 {{ b4.activeGame.attemptCount }} 回合</span></div>
+        <p class="b4-warning">当前还没有可操作的题目。</p>
+        <div class="b4-button-row"><button v-if="b4.activeGame.status === 'IN_PROGRESS' || b4.activeGame.status === 'READY'" class="button button--ghost" type="button" @click="b4.pauseGame">暂停</button><button v-if="b4.activeGame.status === 'PAUSED'" class="button button--ghost" type="button" @click="b4.resumeGame">恢复</button><button class="button button--ghost" type="button" @click="b4.refreshGame">刷新</button><button class="button button--danger" type="button" @click="b4.finishGame">结束</button></div>
       </section>
-      <section v-if="b4.lastGameResult" class="b4-card b4-result"><strong>服务端最终结果：{{ b4.lastGameResult.passed ? '通过' : '未通过' }}</strong><span>正确率 {{ b4.lastGameResult.accuracyPercent }}% · 完成度 {{ b4.lastGameResult.completionPercent }}% · 得分 {{ b4.lastGameResult.serverScore }}</span><small>奖励资格：{{ b4.lastGameResult.rewardEligible ? '服务端允许' : '服务端未授予' }}</small></section>
+      <section v-if="b4.lastGameResult" class="b4-card b4-result"><strong>{{ b4.lastGameResult.passed ? '挑战通过' : '再练习一次' }}</strong><span>正确率 {{ b4.lastGameResult.accuracyPercent }}% · 完成度 {{ b4.lastGameResult.completionPercent }}% · 得分 {{ b4.lastGameResult.serverScore }}</span><small>{{ b4.lastGameResult.rewardEligible ? '符合奖励条件' : '暂不符合奖励条件' }}</small></section>
     </template>
 
     <template v-else-if="activePanel === 'social'">
@@ -175,21 +177,34 @@ function cleanupOfflineDownload(downloadId: string): void { void b4.cleanupOffli
         <article class="b4-card b4-card--wide"><div class="b4-card__heading"><div><p class="card-kicker">STUDY ROOMS</p><h2>虚拟自习室</h2></div><span>仅预设互动</span></div><div v-if="b4.rooms.length" class="b4-room-list"><article v-for="room in b4.rooms" :key="room.roomId" class="b4-room"><div><strong>{{ room.name }}</strong><small>安静自习 · 互相鼓励</small></div><span>{{ room.memberCount }} / {{ room.capacity }} 人</span><button class="button button--secondary" type="button" @click="joinOrLeave(room.roomId, room.joined)">{{ room.joined ? '离开' : '加入' }}</button><div v-if="room.joined" class="b4-room__actions"><button class="button button--primary" type="button" @click="b4.startFocus(room.roomId, focusMinutes)">开始 {{ focusMinutes }} 分钟专注</button><select v-model="interactionCode" aria-label="预设互动"><option v-for="code in (['CHEER_UP', 'STUDY_TOGETHER', 'CONGRATS', 'TRY_AGAIN', 'TONIGHT_20_MIN'] as B4InteractionCode[])" :key="code" :value="code">{{ interactionLabel(code) }}</option></select><button class="button button--ghost" type="button" @click="sendInteraction(room.roomId)">发送预设鼓励</button></div></article></div><p v-else class="b4-inline-empty">自习室暂时未能加载，请稍后再试。</p></article>
         <article class="b4-card"><div class="b4-card__heading"><div><p class="card-kicker">POMODORO</p><h2>番茄专注</h2></div><span v-if="b4.activeFocus">{{ b4.activeFocus.status }}</span></div><template v-if="b4.activeFocus"><strong class="b4-timer">{{ formatSeconds(activeFocusSeconds) }}</strong><p class="b4-muted">暂停时休息一下，准备好后再继续。</p><div class="b4-button-row"><button v-if="b4.activeFocus.status === 'RUNNING'" class="button button--secondary" type="button" @click="b4.updateFocus('PAUSE')">暂停</button><button v-if="b4.activeFocus.status === 'PAUSED'" class="button button--secondary" type="button" @click="b4.updateFocus('RESUME')">恢复</button><button v-if="['RUNNING', 'PAUSED'].includes(b4.activeFocus.status)" class="button button--danger" type="button" @click="b4.updateFocus('COMPLETE')">完成专注</button></div></template><template v-else><p class="b4-muted">找一个喜欢的房间，安静地学一会儿。</p><label class="b4-field">计划专注时长<select v-model="focusMinutes"><option :value="25">25 分钟</option><option :value="45">45 分钟</option></select></label><small class="b4-muted">完成一次专注后，可以回到这里查看记录。</small></template></article>
       </section>
-      <section class="b4-card"><div class="b4-card__heading"><div><p class="card-kicker">NOTIFICATIONS</p><h2>通知</h2></div><button v-if="b4.notifications.length" class="button button--ghost" type="button" @click="b4.readAllNotifications">全部标记已读</button></div><div v-if="b4.notifications.length" class="b4-notification-list"><article v-for="item in b4.notifications" :key="item.messageId" class="b4-notification" :class="{ 'b4-notification--unread': !item.read }"><div><strong>{{ item.title }}</strong><p>{{ item.body || '服务端未提供正文。' }}</p><small>{{ item.category ?? 'SYSTEM' }} · {{ item.createdAt ?? '时间未返回' }}</small></div><button v-if="!item.read" class="button button--secondary" type="button" @click="b4.readNotification(item.messageId)">标记已读</button></article></div><p v-else class="b4-inline-empty">暂时没有新通知。</p></section>
+      <section class="b4-card"><div class="b4-card__heading"><div><p class="card-kicker">消息</p><h2>通知</h2></div><button v-if="b4.notifications.length" class="button button--ghost" type="button" @click="b4.readAllNotifications">全部标记已读</button></div><div v-if="b4.notifications.length" class="b4-notification-list"><article v-for="item in b4.notifications" :key="item.messageId" class="b4-notification" :class="{ 'b4-notification--unread': !item.read }"><div><strong>{{ item.title }}</strong><p v-if="item.body">{{ item.body }}</p><small>{{ notificationCategory(item.category) }}<template v-if="notificationTime(item.createdAt)"> · {{ notificationTime(item.createdAt) }}</template></small></div><button v-if="!item.read" class="button button--secondary" type="button" @click="b4.readNotification(item.messageId)">标记已读</button></article></div><p v-else class="b4-inline-empty">暂无新通知。</p></section>
       <B12SocialExtensions />
     </template>
 
     <template v-else-if="activePanel === 'avatar'">
       <section class="b4-grid b4-grid--avatar">
-        <article class="b4-card b4-avatar-card"><div class="b4-card__heading"><div><p class="card-kicker">AVATAR</p><h2>我的角色空间</h2></div><span>角色空间</span></div><div class="b4-avatar-preview" :class="{ 'b4-avatar-preview--static': b4.effectiveAvatarRenderMode === '2D_FALLBACK' }" aria-label="角色空间示意"><AvatarArtwork /><small>角色展示 · 2D 示意</small></div><p v-if="b4.avatarProfile" class="b4-muted">资源版本：{{ b4.avatarProfile.resourceVersion }} · 当前衣柜：{{ b4.avatarProfile.loadoutId }}</p><p v-else class="b4-inline-empty">角色信息暂时未能加载，请稍后重试。</p><button class="button button--secondary" type="button" :disabled="!b4.avatarProfile" @click="b4.saveAvatarProfile(b4.effectiveAvatarRenderMode, b4.avatarProfile?.resourceVersion)">保存当前渲染模式</button></article>
-        <article class="b4-card"><div class="b4-card__heading"><div><p class="card-kicker">WARDROBE</p><h2>衣柜</h2></div><span>{{ b4.loadouts.length ? `${b4.loadouts.length} 套` : '未返回' }}</span></div><div v-if="b4.loadouts.length" class="b4-loadout-list"><article v-for="loadout in b4.loadouts" :key="loadout.loadoutId" class="b4-loadout"><div><strong>{{ loadout.name }}</strong><small>{{ loadout.loadoutId }} · {{ loadout.items.length }} 件</small></div><span v-if="loadout.equipped" class="b4-equipped">当前装备</span><button v-else class="button button--secondary" type="button" @click="b4.equipLoadout(loadout.loadoutId)">装备</button></article></div><p v-else class="b4-inline-empty">衣柜还没有可展示的装扮。</p></article>
+        <article class="b4-card b4-avatar-card">
+          <div class="b4-card__heading"><div><p class="card-kicker">形象</p><h2>展示预览</h2></div><span>本机画质</span></div>
+          <div class="b4-avatar-preview" :class="{ 'b4-avatar-preview--static': b4.effectiveAvatarRenderMode === '2D_FALLBACK' }" aria-label="角色形象示意"><AvatarArtwork /><small>形象示意</small></div>
+          <p class="b4-muted">画质只影响本机显示；角色素材尚未就绪。</p>
+        </article>
+        <article class="b4-card">
+          <div class="b4-card__heading"><div><p class="card-kicker">衣柜</p><h2>套装素材</h2></div><span>{{ b4.loadouts.length }} 套</span></div>
+          <div v-if="b4.loadouts.length" class="b4-loadout-list"><article v-for="loadout in b4.loadouts" :key="loadout.loadoutId" class="b4-loadout"><div><strong>{{ loadout.name }}</strong><small>{{ loadout.items.length }} 件素材</small></div><span>预览</span></article></div>
+          <p v-else class="b4-inline-empty">暂无可展示的套装素材。</p>
+        </article>
       </section>
-      <section class="b4-card"><div class="b4-card__heading"><div><p class="card-kicker">ITEMS</p><h2>角色收藏</h2></div><span>{{ b4.avatarResources?.resourceVersion ?? '资源版本未返回' }}</span></div><div v-if="b4.avatarItems.length" class="b4-item-grid"><article v-for="item in b4.avatarItems" :key="item.itemCode" class="b4-item"><span>{{ item.quality }}</span><strong>{{ item.itemCode }}</strong><small>{{ item.slot }} · {{ item.resourceVersion }}</small></article></div><p v-else class="b4-inline-empty">还没有可展示的角色物品。</p><p class="b4-muted">节能模式会使用轻量的 2D 展示，学习和成长记录不受影响。</p></section>
+      <section class="b4-card">
+        <div class="b4-card__heading"><div><p class="card-kicker">装扮</p><h2>外观素材</h2></div><span>{{ b4.avatarItems.length }} 款</span></div>
+        <div v-if="b4.avatarItems.length" class="b4-item-grid"><article v-for="item in b4.avatarItems" :key="item.itemCode" class="b4-item"><span>{{ avatarQualityLabel(item.quality) }}</span><strong>{{ avatarSlotLabel(item.slot) }}</strong></article></div>
+        <p v-else class="b4-inline-empty">暂无可展示的装扮素材。</p>
+        <p class="b4-muted">素材预览不代表已获得奖励。</p>
+      </section>
     </template>
 
     <template v-else>
-      <section class="b4-card"><div class="b4-card__heading"><div><p class="card-kicker">OFFLINE PACKAGES</p><h2>离线包与弱网状态</h2></div><span>{{ b4.online ? '在线' : '离线' }}</span></div><p class="b4-muted">提前保存学习内容，网络不稳定时也能从容安排。下载完成后可查看可用状态。</p><div v-if="b4.offlinePackages.length" class="b4-package-list"><article v-for="item in b4.offlinePackages" :key="item.packageId" class="b4-package"><div><strong>{{ item.packageCode }}</strong><small>{{ item.packageId }} · v{{ item.version }}</small></div><span class="b4-package__state">{{ item.downloadState ?? item.state }}</span><span>{{ item.sizeBytes }} bytes · {{ item.completedPartCount }} / {{ item.partCount }} part · {{ item.downloadedBytes }} bytes</span><button v-if="item.state === 'PUBLISHED' && !item.downloadId" class="button button--secondary" type="button" @click="authorizePackage(item.packageId)">请求授权</button><button v-if="item.downloadId && ['AUTHORIZED', 'DOWNLOADING'].includes(item.downloadState ?? '')" class="button button--secondary" type="button" @click="updateOfflineDownload(item.downloadId, 'PAUSE')">暂停下载</button><button v-if="item.downloadId && item.downloadState === 'PAUSED'" class="button button--secondary" type="button" @click="updateOfflineDownload(item.downloadId, 'RESUME')">恢复下载</button><button v-if="item.downloadId && item.downloadState !== 'ACTIVE_LOCAL'" class="button button--ghost" type="button" @click="cleanupOfflineDownload(item.downloadId)">清理临时分片</button><small v-if="!item.downloadId">授权后才会生成下载任务。</small><small v-else>服务端状态：{{ item.downloadState ?? 'UNKNOWN' }}；完成后仍需服务端校验。</small></article></div><p v-else class="b4-inline-empty">还没有可下载的离线内容。</p></section>
-      <section class="b4-card"><div class="b4-card__heading"><div><p class="card-kicker">LOCAL QUEUE</p><h2>待同步记录</h2></div><span>{{ b4.queueCount }} 条</span></div><div v-if="b4.offlineRecords.length" class="b4-queue-list"><article v-for="item in b4.offlineRecords" :key="item.id"><strong>{{ item.event.eventType }}</strong><span>{{ item.status }}</span><small>{{ item.event.entityId }} · {{ item.lastError ?? '等待服务端确认' }}</small></article></div><p v-else class="b4-inline-empty">暂无本地待同步记录。</p><button v-if="b4.queueCount" class="button button--primary" type="button" @click="b4.syncOffline">提交待同步记录</button></section>
+      <section class="b4-card"><div class="b4-card__heading"><div><p class="card-kicker">离线学习</p><h2>内容包</h2></div><span>{{ b4.online ? '在线' : '离线' }}</span></div><div v-if="b4.offlinePackages.length" class="b4-package-list"><article v-for="item in b4.offlinePackages" :key="item.packageId" class="b4-package"><div><strong>{{ item.packageCode }}</strong><small>{{ fileSize(item.sizeBytes) }} · {{ item.completedPartCount }}/{{ item.partCount }} 部分</small></div><span class="b4-package__state">{{ packageStatus(item.downloadState ?? item.state) }}</span><button v-if="item.state === 'PUBLISHED' && !item.downloadId" class="button button--secondary" type="button" @click="authorizePackage(item.packageId)">请求授权</button><button v-if="item.downloadId && ['AUTHORIZED', 'DOWNLOADING'].includes(item.downloadState ?? '')" class="button button--secondary" type="button" @click="updateOfflineDownload(item.downloadId, 'PAUSE')">暂停</button><button v-if="item.downloadId && item.downloadState === 'PAUSED'" class="button button--secondary" type="button" @click="updateOfflineDownload(item.downloadId, 'RESUME')">继续</button><button v-if="item.downloadId && item.downloadState !== 'ACTIVE_LOCAL'" class="button button--ghost" type="button" @click="cleanupOfflineDownload(item.downloadId)">清理</button></article></div><p v-else class="b4-inline-empty">暂无可下载的内容包。</p></section>
+      <section class="b4-card"><div class="b4-card__heading"><div><p class="card-kicker">离线操作</p><h2>待同步</h2></div><span>{{ b4.queueCount }} 条</span></div><div v-if="b4.offlineRecords.length" class="b4-queue-list"><article v-for="item in b4.offlineRecords" :key="item.id"><strong>自习室互动</strong><span>{{ queueStatus(item.status) }}</span><small v-if="item.lastError">{{ item.lastError }}</small></article></div><p v-else class="b4-inline-empty">没有待同步操作。</p><button v-if="b4.queueCount" class="button button--primary" type="button" @click="b4.syncOffline">立即同步</button></section>
     </template>
   </section>
 </template>

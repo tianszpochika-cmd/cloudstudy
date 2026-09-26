@@ -4366,6 +4366,11 @@ export const M2001_APPROVED_ADDITIVE_NODES = Object.freeze([
   { reason: 'P1-LIVE-001 eligibility claims listed in the claim inventory', segments: ['x-b8-authentication', 'accessToken', 'authorizationClaims'], append: ['adult_gate', 'consent_state'] },
   { reason: 'P1-LIVE-006 access-token identity claims documented', segments: ['x-b8-authentication', 'accessToken', 'identityClaims'] },
   { reason: 'P1-LIVE-006 identity claims listed in the claim inventory', segments: ['x-b8-authentication', 'accessToken', 'authorizationClaims'], append: ['phase', 'account_status'] },
+  { reason: 'B3 grammar points read owner-bound to content-service', segments: ['paths', '/api/v1/grammar/points', 'get', 'x-owner'] },
+  { reason: 'B3 grammar points read permission-bound to content.read', segments: ['paths', '/api/v1/grammar/points', 'get', 'x-permission'] },
+  { reason: 'B3 grammar points read operation declares verified bearer authentication', segments: ['paths', '/api/v1/grammar/points', 'get', 'security'] },
+  { reason: 'B3 grammar points read publishes its contract-first owner and closed legacy eligibility state', segments: ['paths', '/api/v1/grammar/points', 'get', 'x-contract'] },
+  { reason: 'B3 grammar points read declares its fail-closed content-service PEP facts', segments: ['paths', '/api/v1/grammar/points', 'get', 'x-authorization'] },
 ]);
 
 function resolveAdditiveParent(document, segments) {

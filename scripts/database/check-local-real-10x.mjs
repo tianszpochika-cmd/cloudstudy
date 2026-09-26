@@ -48,12 +48,33 @@ for (let index = 0; index < TABLE_CHECKS.length; index += 1) {
   }
 }
 
+const platformSocialRows = Number(runMysql({
+  mysqlBin, mysqlArgs: args, password, cwd: root,
+  input: `SELECT
+    (SELECT COUNT(*) FROM social_service.soc_study_room WHERE tenant_id='platform'
+      AND (room_id LIKE 'bulk-100x-%' OR room_id LIKE 'local-10x-%' OR room_id='room-local-foundations')) +
+    (SELECT COUNT(*) FROM social_service.soc_room_member WHERE tenant_id='platform'
+      AND (room_id LIKE 'bulk-100x-%' OR room_id LIKE 'local-10x-%' OR room_id='room-local-foundations')) +
+    (SELECT COUNT(*) FROM social_service.soc_seat_lease WHERE tenant_id='platform'
+      AND (room_id LIKE 'bulk-100x-%' OR room_id LIKE 'local-10x-%' OR room_id='room-local-foundations')) +
+    (SELECT COUNT(*) FROM social_service.soc_focus_state WHERE tenant_id='platform'
+      AND (room_id LIKE 'bulk-100x-%' OR room_id LIKE 'local-10x-%' OR room_id='room-local-foundations')) +
+    (SELECT COUNT(*) FROM social_service.soc_interaction WHERE tenant_id='platform'
+      AND (room_id LIKE 'bulk-100x-%' OR room_id LIKE 'local-10x-%' OR room_id='room-local-foundations')) +
+    (SELECT COUNT(*) FROM social_service.soc_report WHERE tenant_id='platform'
+      AND (room_id LIKE 'bulk-100x-%' OR room_id LIKE 'local-10x-%' OR room_id='room-local-foundations'));\n`,
+}));
+if (!Number.isFinite(platformSocialRows) || platformSocialRows !== 0) {
+  failures.push(`platform-social-fixture-rows=${platformSocialRows} != 0`);
+}
+
 const result = {
   status: failures.length ? 'FAIL' : 'PASS',
   fixtureId: FIXTURE_ID,
   fixtureDate: FIXTURE_DATE,
   checks: TABLE_CHECKS.length,
   counts,
+  platformSocialRows,
 };
 
 if (failures.length) {

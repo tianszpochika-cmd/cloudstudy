@@ -69,6 +69,8 @@ service:
 
 commerce:
   public-tenant-id: ${COMMERCE_PUBLIC_TENANT_ID:platform}
+  # Only explicitly approved SKU ids are visible to guests. Order/test fixtures stay private.
+  public-published-sku-ids: ${COMMERCE_PUBLIC_PUBLISHED_SKU_IDS:}
   security:
     resource-server-enabled: ${COMMERCE_RESOURCE_SERVER_ENABLED:true}
     issuer-uri: ${COMMERCE_SECURITY_ISSUER_URI:${IAM_JWT_ISSUER:http://127.0.0.1:18087}}

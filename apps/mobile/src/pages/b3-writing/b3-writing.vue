@@ -32,15 +32,64 @@ const sourceText = computed(() => {
 })
 const storageKey = 'yx.b10.mobile.writing.draft.v1'
 let draftTimer: ReturnType<typeof setTimeout> | undefined
+let loadRequest = 0
+type AccountScope = { subject: string; revision: number }
+function accountScope(): AccountScope | null {
+  return session.isAuthenticated && session.verifiedSubject
+    ? { subject: session.verifiedSubject, revision: session.identityRevision } : null
+}
+function isCurrent(scope: AccountScope | null): scope is AccountScope {
+  return Boolean(scope && session.isAuthenticated && session.verifiedSubject === scope.subject && session.identityRevision === scope.revision)
+}
+function clearPage(): void {
+  loadRequest += 1
+  clearTimeout(draftTimer)
+  prompts.value = []
+  selectedPrompt.value = null
+  answer.value = ''
+  feedback.value = null
+  draftSavedAt.value = null
+  status.value = 'idle'
+  message.value = null
+}
 
 function setPerformance(level: PerformanceLevel): void { engine.setLevel(level, 'manual'); performanceLevel.value = level }
-function persistDraft(): void { if (!selectedPrompt.value) return; draftSavedAt.value = new Date().toISOString(); getUniRuntime().setStorageSync(storageKey, JSON.stringify({ promptId: selectedPrompt.value.promptId, text: answer.value, savedAt: draftSavedAt.value })) }
-function restoreDraft(): void { const raw = getUniRuntime().getStorageSync(storageKey); if (typeof raw !== 'string') return; try { const value = JSON.parse(raw) as Record<string, unknown>; const promptId = typeof value.promptId === 'number' ? value.promptId : 0; const prompt = prompts.value.find((item) => item.promptId === promptId); if (prompt) { selectedPrompt.value = prompt; answer.value = typeof value.text === 'string' ? value.text : ''; draftSavedAt.value = typeof value.savedAt === 'string' ? value.savedAt : null } } catch { /* ignore corrupt draft */ } }
-async function load(): Promise<void> { status.value = 'loading'; message.value = null; try { prompts.value = await b10LearningApi.listWritingPrompts(context.value); if (!prompts.value.length) { status.value = 'empty'; return } selectedPrompt.value ??= prompts.value[0]; restoreDraft(); status.value = 'ready' } catch (error) { const info = b10ErrorInfo(error, '写作服务暂时不可用。'); status.value = info.kind; message.value = info.message } }
-function selectPrompt(index: number): void { selectedPrompt.value = prompts.value[index] ?? null; feedback.value = null; answer.value = ''; restoreDraft() }
+function discardDraft(): void { try { getUniRuntime().removeStorageSync(storageKey) } catch { /* storage unavailable */ } }
+function persistDraft(): void {
+  const scope = accountScope()
+  const prompt = selectedPrompt.value
+  if (!isCurrent(scope) || !prompt) return
+  const savedAt = new Date().toISOString()
+  try {
+    getUniRuntime().setStorageSync(storageKey, JSON.stringify({ subject: scope.subject, promptId: prompt.promptId, contentVersionId: prompt.contentVersionId, ruleVersion: prompt.ruleVersion, text: answer.value, savedAt }))
+    draftSavedAt.value = savedAt
+  } catch {
+    draftSavedAt.value = null
+    message.value = '草稿未能保存。'
+  }
+}
+function restoreDraft(): void {
+  const scope = accountScope()
+  if (!isCurrent(scope)) return
+  try {
+    const raw = getUniRuntime().getStorageSync(storageKey)
+    if (typeof raw !== 'string') return
+    const value = JSON.parse(raw) as Record<string, unknown>
+    if (value.subject !== scope.subject) { discardDraft(); return }
+    const promptId = typeof value.promptId === 'number' ? value.promptId : 0
+    const prompt = prompts.value.find((item) => item.promptId === promptId)
+    if (!prompt || value.contentVersionId !== prompt.contentVersionId || value.ruleVersion !== prompt.ruleVersion) { discardDraft(); return }
+    selectedPrompt.value = prompt
+    answer.value = typeof value.text === 'string' ? value.text : ''
+    draftSavedAt.value = typeof value.savedAt === 'string' ? value.savedAt : null
+  } catch { discardDraft() }
+}
+async function load(): Promise<void> { const scope = accountScope(); if (!isCurrent(scope)) return; const requestId = ++loadRequest; status.value = 'loading'; message.value = null; try { const next = await b10LearningApi.listWritingPrompts(context.value); if (!isCurrent(scope) || requestId !== loadRequest) return; prompts.value = next; if (!prompts.value.length) { status.value = 'empty'; return } selectedPrompt.value ??= prompts.value[0]; restoreDraft(); status.value = 'ready' } catch (error) { if (!isCurrent(scope) || requestId !== loadRequest) return; const info = b10ErrorInfo(error, '写作服务暂时不可用。'); status.value = info.kind; message.value = info.message } }
+function selectPrompt(index: number): void { selectedPrompt.value = prompts.value[index] ?? null; feedback.value = null; answer.value = ''; status.value = selectedPrompt.value ? 'ready' : 'empty'; restoreDraft() }
 function onInput(): void { clearTimeout(draftTimer); draftTimer = setTimeout(persistDraft, 250) }
-async function submit(): Promise<void> { if (!selectedPrompt.value || !answer.value.trim()) { message.value = '请先读取服务端题目并填写答案。'; return } status.value = 'loading'; message.value = null; const clientEventId = createB10ClientEventId(`writing-${selectedPrompt.value.promptId}`); try { feedback.value = selectedPrompt.value.promptType === 'CORRECTION' ? await b10LearningApi.submitCorrection(context.value, selectedPrompt.value, answer.value, clientEventId) : await b10LearningApi.submitWriting(context.value, selectedPrompt.value, answer.value, selectedPrompt.value.promptType === 'TRANSLATION' ? 'TRANSLATION' : 'WRITING', clientEventId); status.value = feedback.value.contentVersionStale ? 'stale' : 'ready'; message.value = feedback.value.contentVersionStale ? b10T('common.stale') : null; persistDraft() } catch (error) { const info = b10ErrorInfo(error, '写作提交失败，草稿仍保留。'); status.value = info.kind; message.value = info.message; persistDraft() } }
+async function submit(): Promise<void> { const scope = accountScope(); if (!isCurrent(scope)) return; const prompt = selectedPrompt.value; const text = answer.value; if (!prompt || !text.trim()) { message.value = '请先读取题目并填写答案。'; return } status.value = 'loading'; message.value = null; const clientEventId = createB10ClientEventId(`writing-${prompt.promptId}`); try { const result = prompt.promptType === 'CORRECTION' ? await b10LearningApi.submitCorrection(context.value, prompt, text, clientEventId) : await b10LearningApi.submitWriting(context.value, prompt, text, prompt.promptType === 'TRANSLATION' ? 'TRANSLATION' : 'WRITING', clientEventId); if (!isCurrent(scope)) return; if (selectedPrompt.value !== prompt || answer.value !== text) { status.value = 'ready'; return } feedback.value = result; status.value = result.contentVersionStale ? 'stale' : 'ready'; message.value = result.contentVersionStale ? b10T('common.stale') : null; persistDraft() } catch (error) { if (!isCurrent(scope)) return; if (selectedPrompt.value !== prompt || answer.value !== text) { status.value = 'ready'; return } const info = b10ErrorInfo(error, '写作提交失败，草稿仍保留。'); status.value = info.kind; message.value = info.message; persistDraft() } }
 watch(answer, onInput)
+watch(() => session.identityRevision, clearPage, { flush: 'sync' })
 onMounted(async () => { await session.restore(); if (!session.isAuthenticated) { getUniRuntime().navigateTo({ url: '/pages/login/login' }); return } void load() })
 onUnmounted(() => { clearTimeout(draftTimer); engine.dispose() })
 </script>

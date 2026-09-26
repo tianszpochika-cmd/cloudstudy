@@ -192,6 +192,7 @@ services:
       args:
         NUXT_PUBLIC_SITE_URL: https://clyunedev.com
         NUXT_PUBLIC_LEARNER_WEB_URL: https://learn.clyunedev.com
+        NUXT_PUBLIC_MOBILE_H5_URL: https://mobile.clyunedev.com
         NUXT_PUBLIC_GATEWAY_BASE_URL: https://api.clyunedev.com/api/v1
         NUXT_PUBLIC_LINK_ORIGINS: https://clyunedev.com,https://learn.clyunedev.com,https://admin.clyunedev.com
     restart: unless-stopped

@@ -5,7 +5,7 @@
   "fixtureDate": "2026-08-26",
   "subjects": 10,
   "rowsPerFunction": 10,
-  "functionalCheckItems": 118,
+  "functionalCheckItems": 106,
   "b3ResourceTypes": [
     "GRAMMAR_POINT",
     "GRAMMAR_EXERCISE",
@@ -57,6 +57,7 @@
     "analytics-worker",
     "job-runner",
     "core-api",
+    "legacy assessment compatibility tables without frozen scoring facts",
     "outbox tables",
     "idempotency tables",
     "event dedupe and receipt tables"

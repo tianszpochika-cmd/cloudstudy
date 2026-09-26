@@ -97,7 +97,7 @@ export const adminI18n = createI18n({
           start: "Sign in to admin",
           submitting: "Signing in…",
           formHint:
-            "Your account and password are checked by the Yuxuexing authentication center.",
+            "Your account and password are checked by the 语学星 authentication center.",
           required: "Enter your account and password.",
           failed: "Sign-in did not complete. Check your account and password.",
           ready: "Ready to sign in",

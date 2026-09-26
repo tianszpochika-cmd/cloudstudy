@@ -9,7 +9,7 @@
 x-owner-service: &owner-service
   restart: unless-stopped
   depends_on:
-    mysql-init:
+    mysql-migrate:
       condition: service_completed_successfully
     redis:
       condition: service_healthy
@@ -27,8 +27,10 @@ services:
     entrypoint: ["/bin/sh", "/bootstrap/bootstrap-owner-schemas.sh"]
     volumes:
       - ./bootstrap-owner-schemas.sh:/bootstrap/bootstrap-owner-schemas.sh:ro
-    environment:
+    environment: &owner-admin-env
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?set in server env file}
+      P1R_EXTERNAL_MIGRATION_WRITERS_DRAINED: ${P1R_EXTERNAL_MIGRATION_WRITERS_DRAINED:-false}
+      P1R_EXTERNAL_MIGRATION_BACKUP_READY: ${P1R_EXTERNAL_MIGRATION_BACKUP_READY:-false}
       IAM_DB_PASSWORD: ${IAM_DB_PASSWORD:?set in server env file}
       LEARNER_DB_PASSWORD: ${LEARNER_DB_PASSWORD:?set in server env file}
       CONTENT_DB_PASSWORD: ${CONTENT_DB_PASSWORD:?set in server env file}
@@ -43,6 +45,27 @@ services:
       ANALYTICS_DB_PASSWORD: ${ANALYTICS_DB_PASSWORD:?set in server env file}
       AUDIT_DB_PASSWORD: ${AUDIT_DB_PASSWORD:?set in server env file}
       WORKFLOW_DB_PASSWORD: ${WORKFLOW_DB_PASSWORD:?set in server env file}
+
+  # The admin credential exists only in this one-shot migration process. Every
+  # external runtime owner starts after its authoritative history is verified.
+  mysql-migrate:
+    image: cloudstudy-clyunedev/owner-migrator:${RELEASE_TAG:?set to current git short sha}
+    build:
+      context: ../../..
+      dockerfile: infra/docker/clyunedev/Dockerfile.owner-migrator
+    restart: "no"
+    depends_on:
+      mysql-init:
+        condition: service_completed_successfully
+    read_only: true
+    tmpfs: [/tmp]
+    environment:
+      <<: *owner-admin-env
+      MYSQL_RUNTIME_MODE: host
+      MYSQL_HOST: mysql
+      MYSQL_PORT: "3306"
+      MYSQL_ADMIN_USER: root
+    networks: [clyunedev]
 
   api-gateway:
     depends_on:
@@ -71,6 +94,10 @@ services:
       GATEWAY_AUDIT_SERVICE_CLIENT_ID: api-gateway
       GATEWAY_AUDIT_SERVICE_CLIENT_SECRET: ${GATEWAY_AUDIT_SERVICE_CLIENT_SECRET:?set in server env file}
 
+  official-site:
+    environment:
+      NUXT_GATEWAY_INTERNAL_BASE_URL: ${NUXT_GATEWAY_INTERNAL_BASE_URL:-http://api-gateway:18070/api/v1}
+
   iam-service:
     environment:
       IAM_SERVICE_CLIENT_GATEWAY_SECRET_DIGEST: ${IAM_SERVICE_CLIENT_GATEWAY_SECRET_DIGEST:?set in server env file}
@@ -86,6 +113,7 @@ services:
       <<: *iam-resource-server
       AUDIT_SERVICE_SERVER_ADDRESS: 0.0.0.0
       AUDIT_PERSISTENCE_ENABLED: "true"
+      SPRING_FLYWAY_ENABLED: "false"
       AUDIT_JDBC_URL: jdbc:mysql://mysql:3306/audit_service?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&useSSL=true
       AUDIT_JDBC_USERNAME: svc_audit
       AUDIT_JDBC_PASSWORD: ${AUDIT_DB_PASSWORD:?set in server env file}
@@ -101,6 +129,7 @@ services:
       <<: *iam-resource-server
       WORKFLOW_SERVICE_SERVER_ADDRESS: 0.0.0.0
       WORKFLOW_PERSISTENCE_ENABLED: "true"
+      SPRING_FLYWAY_ENABLED: "false"
       WORKFLOW_JDBC_URL: jdbc:mysql://mysql:3306/workflow_service?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&useSSL=true
       WORKFLOW_JDBC_USERNAME: svc_workflow
       WORKFLOW_JDBC_PASSWORD: ${WORKFLOW_DB_PASSWORD:?set in server env file}
@@ -116,7 +145,8 @@ services:
       <<: *iam-resource-server
       SERVER_ADDRESS: 0.0.0.0
       LEARNER_PERSISTENCE_MODE: jdbc
-      LEARNER_FLYWAY_ENABLED: "true"
+      LEARNER_FLYWAY_ENABLED: "false"
+      SPRING_FLYWAY_ENABLED: "false"
       LEARNER_JDBC_URL: jdbc:mysql://mysql:3306/learner_service?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&useSSL=true
       LEARNER_JDBC_USERNAME: svc_learner
       LEARNER_JDBC_PASSWORD: ${LEARNER_DB_PASSWORD:?set in server env file}
@@ -132,7 +162,8 @@ services:
       <<: *iam-resource-server
       CONTENT_SERVICE_SERVER_ADDRESS: 0.0.0.0
       CONTENT_PERSISTENCE_MODE: jdbc
-      CONTENT_FLYWAY_ENABLED: "true"
+      CONTENT_FLYWAY_ENABLED: "false"
+      SPRING_FLYWAY_ENABLED: "false"
       CONTENT_JDBC_URL: jdbc:mysql://mysql:3306/content_service?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&useSSL=true
       CONTENT_JDBC_USERNAME: svc_content
       CONTENT_JDBC_PASSWORD: ${CONTENT_DB_PASSWORD:?set in server env file}
@@ -149,7 +180,8 @@ services:
       <<: *iam-resource-server
       LEARNING_SERVICE_SERVER_ADDRESS: 0.0.0.0
       LEARNING_PERSISTENCE_MODE: jdbc
-      LEARNING_FLYWAY_ENABLED: "true"
+      LEARNING_FLYWAY_ENABLED: "false"
+      SPRING_FLYWAY_ENABLED: "false"
       LEARNING_JDBC_URL: jdbc:mysql://mysql:3306/learning_service?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&useSSL=true
       LEARNING_JDBC_USERNAME: svc_learning
       LEARNING_JDBC_PASSWORD: ${LEARNING_DB_PASSWORD:?set in server env file}
@@ -165,7 +197,8 @@ services:
       <<: *iam-resource-server
       ASSESSMENT_SERVICE_SERVER_ADDRESS: 0.0.0.0
       ASSESSMENT_PERSISTENCE_ENABLED: "true"
-      ASSESSMENT_FLYWAY_ENABLED: "true"
+      ASSESSMENT_FLYWAY_ENABLED: "false"
+      SPRING_FLYWAY_ENABLED: "false"
       ASSESSMENT_DB_URL: jdbc:mysql://mysql:3306/assessment_service?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&useSSL=true
       ASSESSMENT_DB_USERNAME: svc_assessment
       ASSESSMENT_DB_PASSWORD: ${ASSESSMENT_DB_PASSWORD:?set in server env file}
@@ -179,8 +212,10 @@ services:
       args: { SERVICE_PATH: services/media-service }
     environment:
       <<: *iam-resource-server
+      SPRING_PROFILES_ACTIVE: v2,local-real
       MEDIA_SERVICE_SERVER_ADDRESS: 0.0.0.0
-      MEDIA_FLYWAY_ENABLED: "true"
+      MEDIA_FLYWAY_ENABLED: "false"
+      SPRING_FLYWAY_ENABLED: "false"
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/media_service?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&useSSL=true
       SPRING_DATASOURCE_USERNAME: svc_media
       SPRING_DATASOURCE_PASSWORD: ${MEDIA_DB_PASSWORD:?set in server env file}
@@ -194,9 +229,11 @@ services:
       args: { SERVICE_PATH: services/notification-service }
     environment:
       <<: *iam-resource-server
+      SPRING_PROFILES_ACTIVE: v2,local-real
       NOTIFICATION_SERVICE_SERVER_ADDRESS: 0.0.0.0
       NOTIFICATION_PERSISTENCE_MODE: jdbc
-      NOTIFICATION_FLYWAY_ENABLED: "true"
+      NOTIFICATION_FLYWAY_ENABLED: "false"
+      SPRING_FLYWAY_ENABLED: "false"
       NOTIFICATION_JDBC_URL: jdbc:mysql://mysql:3306/notification_service?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&useSSL=true
       NOTIFICATION_JDBC_USERNAME: svc_notification
       NOTIFICATION_JDBC_PASSWORD: ${NOTIFICATION_DB_PASSWORD:?set in server env file}
@@ -210,8 +247,10 @@ services:
       args: { SERVICE_PATH: services/gamification-service }
     environment:
       <<: *iam-resource-server
+      SPRING_PROFILES_ACTIVE: v2,local-real
       GAMIFICATION_SERVER_ADDRESS: 0.0.0.0
-      GAMIFICATION_FLYWAY_ENABLED: "true"
+      GAMIFICATION_FLYWAY_ENABLED: "false"
+      SPRING_FLYWAY_ENABLED: "false"
       GAMIFICATION_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/gamification_service?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&useSSL=true
       SPRING_DATASOURCE_USERNAME: svc_gamification
@@ -226,8 +265,11 @@ services:
       args: { SERVICE_PATH: services/social-service }
     environment:
       <<: *iam-resource-server
+      SPRING_PROFILES_ACTIVE: v2,local-real
       SOCIAL_SERVICE_SERVER_ADDRESS: 0.0.0.0
-      SOCIAL_FLYWAY_ENABLED: "true"
+      SOCIAL_MODERATION_CURSOR_KEY: ${SOCIAL_MODERATION_CURSOR_KEY:?set in server env file}
+      SOCIAL_FLYWAY_ENABLED: "false"
+      SPRING_FLYWAY_ENABLED: "false"
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/social_service?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&useSSL=true
       SPRING_DATASOURCE_USERNAME: svc_social
       SPRING_DATASOURCE_PASSWORD: ${SOCIAL_DB_PASSWORD:?set in server env file}
@@ -240,6 +282,7 @@ services:
       dockerfile: infra/docker/clyunedev/Dockerfile.java-service
       args: { SERVICE_PATH: services/commerce-service }
     environment:
+      SPRING_PROFILES_ACTIVE: v2,local-real
       SERVER_ADDRESS: 0.0.0.0
       SERVER_PORT: 18096
       COMMERCE_SECURITY_RESOURCE_SERVER_ENABLED: "true"
@@ -249,7 +292,8 @@ services:
       COMMERCE_PAYMENT_ENABLED: "false"
       COMMERCE_PAYMENT_ENVIRONMENT: DISABLED
       COMMERCE_PAYMENT_REAL_PROVIDERS_ENABLED: "false"
-      SPRING_FLYWAY_ENABLED: "true"
+      COMMERCE_FLYWAY_ENABLED: "false"
+      SPRING_FLYWAY_ENABLED: "false"
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/commerce_service?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&useSSL=true
       SPRING_DATASOURCE_USERNAME: svc_commerce
       SPRING_DATASOURCE_PASSWORD: ${COMMERCE_DB_PASSWORD:?set in server env file}
@@ -264,8 +308,10 @@ services:
       args: { SERVICE_PATH: services/admin-ops-service }
     environment:
       <<: *iam-resource-server
+      SPRING_PROFILES_ACTIVE: v2,local-real
       ADMIN_OPS_SERVER_ADDRESS: 0.0.0.0
-      SPRING_FLYWAY_ENABLED: "true"
+      ADMIN_OPS_AUDIT_CURSOR_KEY: ${ADMIN_OPS_AUDIT_CURSOR_KEY:-}
+      SPRING_FLYWAY_ENABLED: "false"
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/admin_ops_service?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&useSSL=true
       SPRING_DATASOURCE_USERNAME: svc_admin_ops
       SPRING_DATASOURCE_PASSWORD: ${ADMIN_OPS_DB_PASSWORD:?set in server env file}
@@ -279,8 +325,9 @@ services:
       args: { SERVICE_PATH: services/analytics-service }
     environment:
       <<: *iam-resource-server
+      SPRING_PROFILES_ACTIVE: v2,local-real
       ANALYTICS_SERVER_ADDRESS: 0.0.0.0
-      SPRING_FLYWAY_ENABLED: "true"
+      SPRING_FLYWAY_ENABLED: "false"
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/analytics_service?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&useSSL=true
       SPRING_DATASOURCE_USERNAME: svc_analytics
       SPRING_DATASOURCE_PASSWORD: ${ANALYTICS_DB_PASSWORD:?set in server env file}

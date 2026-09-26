@@ -12,6 +12,13 @@ function unwrap(value: unknown): unknown {
 }
 function text(value: unknown, fallback = ''): string { return typeof value === 'string' && value.trim() ? value.trim() : fallback }
 function number(value: unknown, fallback = 0): number { return typeof value === 'number' && Number.isFinite(value) ? value : fallback }
+function requireStateVersion(value: unknown): number {
+  const source = unwrap(value)
+  if (isRecord(source) && typeof source.stateVersion === 'number' && Number.isSafeInteger(source.stateVersion) && source.stateVersion >= 0) {
+    return source.stateVersion
+  }
+  throw new Error('学习设置版本暂时无法读取，请重试。')
+}
 type QueryParams = string | Record<string, string | null | undefined>
 
 function query(path: string, params: QueryParams): string {
@@ -25,7 +32,17 @@ function query(path: string, params: QueryParams): string {
 
 async function requestOptional(path: string): Promise<unknown | null> {
   try { return await mobileApiClient.request<unknown>(path) }
-  catch (error) { if (error instanceof MobileApiError && error.status === 404) return null; throw error }
+  catch (error) {
+    if (error instanceof MobileApiError && error.status === 404) return null
+    if (error instanceof MobileApiError && error.status === 403 && isConsentRequired(error.details)) return null
+    throw error
+  }
+}
+
+function isConsentRequired(details: unknown): boolean {
+  if (!isRecord(details)) return false
+  const source = isRecord(details.error) ? details.error : details
+  return source.code === 'CONSENT_REQUIRED'
 }
 
 function mapError(error: unknown): MobileApiError {
@@ -69,20 +86,16 @@ function parseOnboarding(profileValue: unknown, targetValue: unknown, preference
   }
 }
 
-function parseAccount(value: unknown): MobileLearnerAccount {
-  const source = isRecord(unwrap(value)) ? unwrap(value) as RecordValue : {}
+function parseAccount(profileValue: unknown, targetValue: unknown, preferencesValue: unknown): MobileLearnerAccount {
+  const source = isRecord(unwrap(profileValue)) ? unwrap(profileValue) as RecordValue : {}
   const profile = isRecord(source.profile) ? source.profile : source
-  const goal = isRecord(source.goal) ? source.goal : {}
-  const preferences = isRecord(source.preferences) ? source.preferences : {}
+  const target = unwrap(targetValue)
+  const goal = isRecord(target) ? target : isRecord(source.goal) ? source.goal : {}
+  const remotePreferences = unwrap(preferencesValue)
+  const preferences = isRecord(remotePreferences) ? remotePreferences : isRecord(source.preferences) ? source.preferences : {}
   const themeMode = text(preferences.themeMode ?? preferences.theme_mode ?? profile.themeMode ?? profile.theme_mode, 'SYSTEM')
   const motionMode = text(preferences.motionMode ?? preferences.motion_mode, 'FULL')
   return {
-    nickname: text(profile.nickname, '学习者'),
-    accentPref: text(profile.accentPref ?? profile.accent_pref, 'US') === 'UK' ? 'UK' : 'US',
-    birthYear: number(profile.birthYear ?? profile.birth_year, 0) || null,
-    ageConfirmed: profile.ageConfirmed === true || profile.age_confirmed === true,
-    privacyConsent: profile.privacyConsent === true || profile.privacy_consent === true,
-    termsConsent: profile.termsConsent === true || profile.terms_consent === true,
     uiLocale: text(preferences.uiLocale ?? preferences.ui_locale ?? profile.uiLocale ?? profile.ui_locale, 'zh-CN'),
     contentLocale: text(preferences.contentLocale ?? preferences.content_locale ?? profile.contentLocale ?? profile.content_locale, 'en-US'),
     timezone: text(preferences.timezone ?? preferences.timezone ?? profile.timezone, 'Asia/Shanghai'),
@@ -91,7 +104,9 @@ function parseAccount(value: unknown): MobileLearnerAccount {
     motionMode: ['FULL', 'REDUCED', 'OFF'].includes(motionMode) ? motionMode as MobileMotionMode : 'FULL',
     goal: text(goal.goalCode ?? goal.goal_code) || null,
     quota: number(goal.dailyQuotaMinutes ?? goal.daily_quota_minutes, 0) || null,
-    stateVersion: number(profile.stateVersion ?? profile.state_version, 0),
+    // The preferences aggregate owns this version. The profile version may
+    // have changed independently (for example, after an onboarding update).
+    stateVersion: requireStateVersion(preferencesValue),
   }
 }
 
@@ -184,8 +199,16 @@ function parsePlacementReport(value: unknown): MobilePlacementReport | null {
   const reportId = text(value.reportId)
   const sessionId = text(value.sessionId)
   if (!reportId || !sessionId) return null
+  const skipped = value.resultKind === 'SKIPPED'
+  const requestedStartingLevel = isRecord(value.requestedStartingLevel) ? text(value.requestedStartingLevel.level) : null
   const mistakes = Array.isArray(value.mistakes) ? value.mistakes.filter((item): item is string => typeof item === 'string') : []
-  return { reportId, sessionId, cefrLevel: text(value.cefrLevel, 'A1'), score: number(value.score, 0), mistakes }
+  return {
+    reportId, sessionId, resultKind: skipped ? 'SKIPPED' : 'ASSESSED',
+    cefrLevel: skipped ? null : text(value.cefrLevel) || null,
+    score: skipped ? null : typeof value.score === 'number' ? value.score : null,
+    requestedStartingLevel: skipped ? requestedStartingLevel : null,
+    mistakes,
+  }
 }
 
 function parsePlacement(value: unknown): MobilePlacementModel {
@@ -219,57 +242,130 @@ function parseHome(learnerValue: unknown, contentValue: unknown): MobileHomeMode
   }
 }
 
+function requireSameIdentity(isCurrent?: () => boolean): void {
+  if (isCurrent && !isCurrent()) throw new Error('账号已变化，请重新打开页面后操作。')
+}
+
 export const mobileLearnerContentApi = {
-  async readOnboarding(contentLocale = 'en-US'): Promise<MobileOnboardingModel> {
-    const [profile, target, preferences, options] = await Promise.all([
+  async readOnboarding(): Promise<MobileOnboardingModel> {
+    // Preferences are the canonical source for content locale. Resolve them
+    // before requesting locale-specific onboarding options so a cached or
+    // former account locale cannot leak into this learning read.
+    const preferences = await requestOptional('/learner/preferences')
+    const preferenceData = unwrap(preferences)
+    const contentLocale = isRecord(preferenceData)
+      ? text(preferenceData.contentLocale ?? preferenceData.content_locale, 'en-US')
+      : 'en-US'
+    const [profile, target, options] = await Promise.all([
       requestOptional(query('/learner/profile', contentLocale)),
       requestOptional(query('/learner/targets', contentLocale)),
-      requestOptional(query('/learner/preferences', contentLocale)),
       requestOptional(query('/onboarding/options', contentLocale)),
     ])
     return parseOnboarding(profile, target, preferences, options)
   },
 
-  async saveOnboarding(input: { goal: string; quota: number; clientEventId: string; birthYear?: number; ageConfirmed?: boolean; privacyConsent?: boolean; termsConsent?: boolean }): Promise<MobileOnboardingModel> {
-    const targetLevel = input.goal === 'ZERO_BASIS' ? 'A1' : input.goal === 'CET_4_6' ? 'B1' : 'B2'
-    let featuredContent: MobileContentCard | null = null
-    try {
-      featuredContent = parseContent(await mobileApiClient.request<unknown>(query('/content/learner/catalog', 'en-US')))
-        .find((item) => item.availability === 'PUBLISHED') ?? null
-    } catch {
-      // Onboarding remains authoritative even when the optional content projection is temporarily unavailable.
+  async saveOnboarding(input: { goal: string; quota: number; clientEventId: string; birthYear?: number; ageConfirmed?: boolean; privacyConsent?: boolean; termsConsent?: boolean }, isCurrent?: () => boolean): Promise<MobileOnboardingModel> {
+    requireSameIdentity(isCurrent)
+    if (!input.birthYear || !input.ageConfirmed || !input.privacyConsent || !input.termsConsent || !input.goal || !input.quota) {
+      throw new Error('请先完成成人确认、同意事项和学习目标。')
     }
+    const targetLevel = input.goal === 'ZERO_BASIS' ? 'A1' : input.goal === 'CET_4_6' ? 'B1' : 'B2'
+    // Consent is an IAM fact. Learner writes require a freshly issued access
+    // token carrying that fact, and each write advances one profile version.
     await Promise.all([
       mobileApiClient.request('/iam/consents', { method: 'PUT', data: { type: 'PRIVACY', version: 'b30-consent-v1', decision: 'ACCEPTED' }, header: { 'Idempotency-Key': `${input.clientEventId}-privacy` } }),
       mobileApiClient.request('/iam/consents', { method: 'PUT', data: { type: 'TERMS', version: 'b30-consent-v1', decision: 'ACCEPTED' }, header: { 'Idempotency-Key': `${input.clientEventId}-terms` } }),
-      mobileApiClient.request('/learner/profile', { method: 'PATCH', data: { expectedStateVersion: 0, status: 'ACTIVE', ...(input.birthYear ? { birthYear: input.birthYear, ageConfirmed: input.ageConfirmed ?? true, privacyConsent: input.privacyConsent ?? true, termsConsent: input.termsConsent ?? true } : {}), uiLocale: 'zh-CN', contentLocale: 'en-US', timezone: 'Asia/Shanghai' }, header: { 'Idempotency-Key': `${input.clientEventId}-profile` } }),
-      mobileApiClient.request('/learner/targets', { method: 'PUT', data: { expectedStateVersion: 0, goalCode: input.goal, targetLevel, dailyQuotaMinutes: input.quota, status: 'ACTIVE' }, header: { 'Idempotency-Key': `${input.clientEventId}-target` } }),
-      mobileApiClient.request('/learner/preferences', { method: 'PATCH', data: { expectedStateVersion: 0, uiLocale: 'zh-CN', contentLocale: 'en-US', timezone: 'Asia/Shanghai', themeMode: 'SYSTEM', highContrast: false, motionMode: 'FULL' }, header: { 'Idempotency-Key': `${input.clientEventId}-preferences` } }),
+      mobileApiClient.request('/iam/consents', { method: 'PUT', data: { type: 'ADULT_LEARNING', version: 'b30-consent-v1', decision: 'ACCEPTED' }, header: { 'Idempotency-Key': `${input.clientEventId}-adult-learning` } }),
     ])
-    if (featuredContent) {
-      await mobileApiClient.request('/onboarding/daily-tasks/ensure', {
-        method: 'POST',
-        data: { contentCode: featuredContent.contentCode, title: featuredContent.title, minutes: input.quota },
-        header: { 'Idempotency-Key': `${input.clientEventId}-daily-task` },
+    requireSameIdentity(isCurrent)
+    const [{ useSessionStore }, { pinia }] = await Promise.all([import('../stores/session'), import('../stores/pinia')])
+    requireSameIdentity(isCurrent)
+    const session = useSessionStore(pinia)
+    if (!await session.refreshSilently()) throw new Error(session.lastError || '会话更新失败，请重新登录。')
+    requireSameIdentity(isCurrent)
+
+    // Re-read the owner after IAM refresh. A previous attempt may have saved
+    // only some steps before the network failed; its new retry key must not
+    // start again at version zero or invent a daily task from client content.
+    const [profile, existingTarget, existingPreferences] = await Promise.all([
+      mobileApiClient.request<unknown>('/learner/profile'),
+      mobileApiClient.request<unknown>('/learner/targets').catch((error: unknown) => {
+        if (error instanceof MobileApiError && error.status === 404) return null
+        throw error
+      }),
+      mobileApiClient.request<unknown>('/learner/preferences'),
+    ])
+    requireSameIdentity(isCurrent)
+    let currentVersion = requireStateVersion(profile)
+    const targetData = unwrap(existingTarget)
+    const targetMatches = isRecord(targetData)
+      && text(targetData.goalCode) === input.goal
+      && number(targetData.dailyQuotaMinutes, -1) === input.quota
+      && text(targetData.targetLevel) === targetLevel
+      && text(targetData.status) === 'ACTIVE'
+    if (!targetMatches) {
+      const target = await mobileApiClient.request<unknown>('/learner/targets', {
+        method: 'PUT',
+        data: { expectedStateVersion: currentVersion, goalCode: input.goal, targetLevel, dailyQuotaMinutes: input.quota, status: 'ACTIVE' },
+        header: { 'Idempotency-Key': `${input.clientEventId}-target` },
       })
+      requireSameIdentity(isCurrent)
+      currentVersion = requireStateVersion(target)
     }
-    return mobileLearnerContentApi.readOnboarding()
+    requireSameIdentity(isCurrent)
+    const preferences = unwrap(existingPreferences)
+    const preferencesMatch = isRecord(preferences)
+      && text(preferences.uiLocale) === 'zh-CN'
+      && text(preferences.contentLocale) === 'en-US'
+      && text(preferences.timezone) === 'Asia/Shanghai'
+      && text(preferences.themeMode) === 'SYSTEM'
+      && preferences.highContrast === false
+      && text(preferences.motionMode) === 'FULL'
+    if (!preferencesMatch) {
+      await mobileApiClient.request('/learner/preferences', {
+        method: 'PATCH',
+        data: { expectedStateVersion: currentVersion, uiLocale: 'zh-CN', contentLocale: 'en-US', timezone: 'Asia/Shanghai', themeMode: 'SYSTEM', highContrast: false, motionMode: 'FULL' },
+        header: { 'Idempotency-Key': `${input.clientEventId}-preferences` },
+      })
+      requireSameIdentity(isCurrent)
+    }
+    const result = await mobileLearnerContentApi.readOnboarding()
+    requireSameIdentity(isCurrent)
+    return result
   },
 
   async readAccount(): Promise<MobileLearnerAccount> {
-    return parseAccount(await mobileApiClient.request<unknown>('/learner/profile'))
+    const [profile, target, preferences] = await Promise.all([
+      mobileApiClient.request<unknown>('/learner/profile'),
+      requestOptional('/learner/targets'),
+      requestOptional('/learner/preferences'),
+    ])
+    return parseAccount(profile, target, preferences)
   },
 
-  async saveProfile(input: { nickname: string; accentPref: 'US' | 'UK'; clientEventId: string }): Promise<MobileLearnerAccount> {
+  async savePreferences(input: { themeMode?: MobileThemeMode; highContrast?: boolean; motionMode?: MobileMotionMode; contentLocale?: string; clientEventId: string }, isCurrent?: () => boolean): Promise<MobileLearnerAccount> {
+    requireSameIdentity(isCurrent)
     const current = await mobileLearnerContentApi.readAccount()
-    await mobileApiClient.request('/learner/profile', { method: 'PATCH', data: { expectedStateVersion: current.stateVersion, nickname: input.nickname, accentPref: input.accentPref }, header: { 'Idempotency-Key': input.clientEventId } })
-    return mobileLearnerContentApi.readAccount()
-  },
-
-  async savePreferences(input: { themeMode: MobileThemeMode; highContrast: boolean; motionMode: MobileMotionMode; clientEventId: string }): Promise<MobileLearnerAccount> {
-    const current = await mobileLearnerContentApi.readAccount()
-    await mobileApiClient.request('/learner/preferences', { method: 'PATCH', data: { expectedStateVersion: current.stateVersion, uiLocale: current.uiLocale, contentLocale: current.contentLocale, timezone: current.timezone, themeMode: input.themeMode, highContrast: input.highContrast, motionMode: input.motionMode }, header: { 'Idempotency-Key': input.clientEventId } })
-    return mobileLearnerContentApi.readAccount()
+    requireSameIdentity(isCurrent)
+    const data: Record<string, unknown> = { expectedStateVersion: current.stateVersion }
+    if (input.contentLocale !== undefined) data.contentLocale = input.contentLocale
+    if (input.themeMode !== undefined || input.highContrast !== undefined || input.motionMode !== undefined) {
+      data.uiLocale = current.uiLocale
+      data.contentLocale = input.contentLocale ?? current.contentLocale
+      data.timezone = current.timezone
+      data.themeMode = input.themeMode ?? current.themeMode
+      data.highContrast = input.highContrast ?? current.highContrast
+      data.motionMode = input.motionMode ?? current.motionMode
+    }
+    if (Object.keys(data).length === 1) throw new Error('没有可保存的学习偏好。')
+    await mobileApiClient.request('/learner/preferences', { method: 'PATCH', data, header: { 'Idempotency-Key': input.clientEventId } })
+    requireSameIdentity(isCurrent)
+    const result = await mobileLearnerContentApi.readAccount()
+    requireSameIdentity(isCurrent)
+    if (input.contentLocale !== undefined && result.contentLocale !== input.contentLocale) {
+      throw new Error('学习内容语言尚未由账户确认，请重试。')
+    }
+    return result
   },
 
   async readFirstDay(contentLocale = 'en-US'): Promise<MobileFirstDayModel> {

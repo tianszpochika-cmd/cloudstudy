@@ -378,6 +378,20 @@
         "compatibilityMode": "NONE"
       },
       {
+        "ruleId": "admin-moderation-reports-read",
+        "priority": 800,
+        "match": {
+          "type": "EXACT",
+          "path": "/api/v1/admin/moderation/reports",
+          "methods": ["GET"]
+        },
+        "upstreamOwner": "social-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "HIGH_RISK_ADMIN",
+        "compatibilityMode": "NONE"
+      },
+      {
         "ruleId": "analytics-telemetry",
         "priority": 800,
         "match": {
@@ -399,6 +413,22 @@
         "match": {
           "type": "PREFIX",
           "path": "/api/v1/learning/content-snapshots",
+          "methods": [
+            "GET"
+          ]
+        },
+        "upstreamOwner": "content-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "AUTHENTICATED_READ",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "grammar-points-read",
+        "priority": 850,
+        "match": {
+          "type": "EXACT",
+          "path": "/api/v1/grammar/points",
           "methods": [
             "GET"
           ]
@@ -652,6 +682,22 @@
         "internalTargetClass": "INTERNAL_V1",
         "visibility": "AUTHENTICATED",
         "authClass": "AUTHENTICATED_WRITE",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "sync-offline-packages-read",
+        "priority": 800,
+        "match": {
+          "type": "EXACT",
+          "path": "/api/v1/sync/offline-packages",
+          "methods": [
+            "GET"
+          ]
+        },
+        "upstreamOwner": "notification-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "AUTHENTICATED_READ",
         "compatibilityMode": "NONE"
       },
       {
@@ -1726,6 +1772,28 @@
         ]
       },
       {
+        "ruleId": "admin-moderation-reports-read",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "admin-moderation-reports-read.queue",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/admin/moderation/reports",
+            "methods": ["GET"],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "social-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.social",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/social/admin/moderation/reports",
+            "controllerEvidence": {
+              "sourcePath": "services/social-service/src/main/java/com/englishflow/social/web/SocialLocalRealController.java",
+              "requestMapping": "/internal/v1/social"
+            }
+          }
+        ]
+      },
+      {
         "ruleId": "analytics-telemetry",
         "defaultStatus": "UNAVAILABLE",
         "defaultReason": "no_exact_canonical_execution_target",
@@ -1754,6 +1822,30 @@
         "defaultStatus": "UNAVAILABLE",
         "defaultReason": "content_owner_controller_mapping_not_present",
         "projections": []
+      },
+      {
+        "ruleId": "grammar-points-read",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "grammar-points-read.list",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/grammar/points",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "content-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.content",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/content/learner/grammar/points",
+            "controllerEvidence": {
+              "sourcePath": "services/content-service/src/main/java/com/englishflow/content/web/B3ContentJdbcController.java",
+              "requestMapping": "/internal/v1/content/learner"
+            }
+          }
+        ]
       },
       {
         "ruleId": "speaking-recordings",
@@ -2914,6 +3006,30 @@
         ]
       },
       {
+        "ruleId": "sync-offline-packages-read",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "sync-offline-packages-read.list",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/sync/offline-packages",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "notification-service",
+            "targetUriConfig": "gateway.b12.notification-base-url",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/sync/offline-packages",
+            "controllerEvidence": {
+              "sourcePath": "services/notification-service/src/main/java/com/englishflow/notification/adapter/http/NotificationLocalOfflineController.java",
+              "requestMapping": "/internal/v1/sync"
+            }
+          }
+        ]
+      },
+      {
         "ruleId": "sync-domain",
         "defaultStatus": "UNAVAILABLE",
         "defaultReason": "canonical_learning_owner_conflicts_with_current_notification_controller",
@@ -2924,6 +3040,91 @@
         "defaultStatus": "UNAVAILABLE",
         "defaultReason": "no_exact_canonical_execution_target",
         "projections": [
+          {
+            "projectionId": "assessment-domain.p1-placement-session-create",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/assessment/placement/sessions",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "assessment-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.assessment",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/assessment/placement/sessions",
+            "controllerEvidence": {
+              "sourcePath": "services/assessment-service/src/main/java/com/englishflow/assessment/web/P1PlacementJdbcController.java",
+              "requestMapping": "/internal/v1/assessment/placement"
+            }
+          },
+          {
+            "projectionId": "assessment-domain.p1-placement-session-read",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/assessment/placement/sessions/{sessionId}",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "assessment-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.assessment",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/assessment/placement/sessions/{sessionId}",
+            "controllerEvidence": {
+              "sourcePath": "services/assessment-service/src/main/java/com/englishflow/assessment/web/P1PlacementJdbcController.java",
+              "requestMapping": "/internal/v1/assessment/placement"
+            }
+          },
+          {
+            "projectionId": "assessment-domain.p1-placement-response",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/assessment/placement/sessions/{sessionId}/responses",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "assessment-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.assessment",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/assessment/placement/sessions/{sessionId}/responses",
+            "controllerEvidence": {
+              "sourcePath": "services/assessment-service/src/main/java/com/englishflow/assessment/web/P1PlacementJdbcController.java",
+              "requestMapping": "/internal/v1/assessment/placement"
+            }
+          },
+          {
+            "projectionId": "assessment-domain.p1-placement-skip",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/assessment/placement/baselines/skip",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "assessment-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.assessment",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/assessment/placement/baselines/skip",
+            "controllerEvidence": {
+              "sourcePath": "services/assessment-service/src/main/java/com/englishflow/assessment/web/P1PlacementJdbcController.java",
+              "requestMapping": "/internal/v1/assessment/placement"
+            }
+          },
+          {
+            "projectionId": "assessment-domain.p1-placement-report",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/assessment/placement/reports/{reportId}",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "assessment-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.assessment",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/assessment/placement/reports/{reportId}",
+            "controllerEvidence": {
+              "sourcePath": "services/assessment-service/src/main/java/com/englishflow/assessment/web/P1PlacementJdbcController.java",
+              "requestMapping": "/internal/v1/assessment/placement"
+            }
+          },
           {
             "projectionId": "assessment-domain.placement-start",
             "status": "AVAILABLE",

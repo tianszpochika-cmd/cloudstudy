@@ -303,6 +303,18 @@ test('M1-014 exact OpenAPI, event, source-file, authority, and D2 mappings fail 
     ['canonical route list emptied', (inputs) => { inputs.policy.compatibilityPromotion.canonicalRoutes = []; }],
     ['canonical event list emptied', (inputs) => { inputs.policy.compatibilityPromotion.approvedCanonicalEvents = []; }],
     ['canonical OpenAPI route removed', (inputs) => { delete inputs.canonicalOpenApi.paths['/api/v1/games/catalog']; }],
+    ['gamification permission drifts from the frozen route', (inputs) => {
+      inputs.canonicalOpenApi.paths['/api/v1/gamification/me/summary'].get
+        ['x-authorization'].requiredPermission = 'gamification.read.any';
+    }],
+    ['social permission is omitted from the canonical route', (inputs) => {
+      delete inputs.canonicalOpenApi.paths['/api/v1/social/rooms'].get
+        ['x-authorization'].requiredPermission;
+    }],
+    ['secondary permission declaration conflicts with the frozen route', (inputs) => {
+      inputs.canonicalOpenApi.paths['/api/v1/gamification/me/summary'].get
+        ['x-permission'] = 'gamification.read.any';
+    }],
     ['unapproved tagged OpenAPI route added', (inputs) => {
       const operation = structuredClone(inputs.canonicalOpenApi.paths['/api/v1/games/catalog'].get);
       operation.operationId = 'unapprovedM1014Route';

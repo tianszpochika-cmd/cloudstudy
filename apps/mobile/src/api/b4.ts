@@ -46,13 +46,6 @@ export async function appealB4ModerationReport(reportId: string, appealCode: 'FA
 export async function listB4Notifications(): Promise<unknown> { return request('/notifications/messages?limit=20') }
 export async function readB4Notification(messageId: string): Promise<unknown> { return request(`/notifications/messages/${encodeURIComponent(messageId)}/read`, { method: 'PUT', data: {}, ...withKey(`b4-notification-${messageId}`) }) }
 export async function readAllB4Notifications(): Promise<unknown> { return request('/notifications/messages/read-all', { method: 'PUT', data: {}, ...withKey('b4-notification-all') }) }
-export async function getB4NotificationPreferences(): Promise<unknown> { return request('/notifications/preferences') }
-export async function saveB4NotificationPreferences(preferences: Record<string, boolean>): Promise<unknown> {
-  const mapping = [['roomInteractions', 'ROOM_INTERACTIONS'], ['focusReminders', 'FOCUS_REMINDERS'], ['system', 'SYSTEM'], ['doNotDisturb', 'DO_NOT_DISTURB']] as const
-  const results = await Promise.all(mapping.map(([name, type]) => request(`/notifications/preferences/${type}/IN_APP`, { method: 'PUT', data: { enabled: preferences[name] === true, locale: 'zh-CN' }, ...withKey(`b4-notification-preferences-${type}`) })))
-  return { preferences, results }
-}
-
 export async function listB4OfflinePackages(): Promise<unknown> { return request('/sync/offline-packages?limit=20') }
 export async function authorizeB4OfflinePackage(packageId: string): Promise<unknown> { return request(`/sync/offline-packages/${encodeURIComponent(packageId)}/authorize`, { method: 'POST', ...withKey(`b4-offline-authorize-${packageId}`) }) }
 export async function updateB4OfflineDownload(downloadId: string, action: 'PAUSE' | 'RESUME' | 'PART_RECEIVED', partIndex?: number, etag?: string): Promise<unknown> { return request(`/sync/offline-downloads/${encodeURIComponent(downloadId)}`, { method: 'PATCH', data: { action, ...(partIndex === undefined ? {} : { partIndex }), ...(etag ? { etag } : {}) }, ...withKey(`b4-offline-download-${downloadId}-${action}-${partIndex ?? 'none'}`) }) }

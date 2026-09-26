@@ -1,0 +1,350 @@
+{
+  "generatedAt": "2026-09-25T18:17:30.343Z",
+  "scope": "Local learner-web only. One random @local.invalid account was generated and kept in process memory; its identifier and password are not written. Adult-gate and consent choices were synthetic UI actions only, not real identity or legal consent.",
+  "browser": "Playwright Chromium, headless, 1280x900",
+  "stages": {
+    "registration": {
+      "succeeded": true,
+      "view": {
+        "url": "/onboarding?redirect=/home",
+        "title": "语学星",
+        "headings": [
+          "欢迎来到语学星",
+          "确认成人身份"
+        ],
+        "alerts": [],
+        "visibleText": "语学星 FIRST DAY · 1/2 欢迎来到语学星 先确认身份，再选择学习目标。 1 确认身份 2 选择目标 确认身份与同意事项 确认成人身份 仅限已满 18 岁的学习者。 出生年份 我确认自己已满 18 周岁 我同意隐私说明 我同意学习服务条款 继续 退出登录"
+      },
+      "requests": [
+        {
+          "phase": "registration",
+          "method": "POST",
+          "path": "/api/v1/auth/register",
+          "status": 201,
+          "requestId": "req-002a8cba6c9d4970b7cb04715c783439",
+          "traceId": "fe7692d3235f43e5bca6dd437d021f7e"
+        },
+        {
+          "phase": "registration",
+          "method": "GET",
+          "path": "/api/v1/iam/permissions",
+          "status": 200,
+          "requestId": "req-66a3301015ae469491c61e40520b0def",
+          "traceId": "f262802c11ac4373badd4c11419b6018"
+        },
+        {
+          "phase": "registration",
+          "method": "GET",
+          "path": "/api/v1/learner/profile",
+          "status": 403,
+          "requestId": "req-70854a07ec274bc793afa39868df5ec6",
+          "traceId": "bef1d7f0f6634033a5518a09c9f78654",
+          "code": "CONSENT_REQUIRED",
+          "message": "learner operation denied: CONSENT_REQUIRED"
+        },
+        {
+          "phase": "registration",
+          "method": "GET",
+          "path": "/api/v1/learner/targets",
+          "status": 403,
+          "requestId": "req-47b48ee872c448b4b7cbfd3f38e58952",
+          "traceId": "16e881a0be9b425cbfc668afb7f545ae",
+          "code": "CONSENT_REQUIRED",
+          "message": "learner operation denied: CONSENT_REQUIRED"
+        },
+        {
+          "phase": "registration",
+          "method": "GET",
+          "path": "/api/v1/learner/preferences",
+          "status": 403,
+          "requestId": "req-f43ba008f8b54de794a1b4f5fd912c40",
+          "traceId": "18221ebfbb0b4245bf58e234fc36d56a",
+          "code": "CONSENT_REQUIRED",
+          "message": "learner operation denied: CONSENT_REQUIRED"
+        },
+        {
+          "phase": "registration",
+          "method": "GET",
+          "path": "/api/v1/onboarding/options",
+          "status": 403,
+          "requestId": "req-3a5ad0629f064994a7e73c6d0ae3113c",
+          "traceId": "4a81445a7a6743c9aa30a17987293d11"
+        }
+      ]
+    },
+    "adultGate": {
+      "reachedGoalSelection": true,
+      "syntheticChoices": {
+        "birthYearEntered": true,
+        "visibleCheckboxesChecked": 3
+      },
+      "view": {
+        "url": "/onboarding?redirect=/home",
+        "title": "语学星",
+        "headings": [
+          "欢迎来到语学星",
+          "你想先解决什么？"
+        ],
+        "alerts": [],
+        "visibleText": "语学星 FIRST DAY · 2/2 欢迎来到语学星 先确认身份，再选择学习目标。 1 确认身份 2 选择目标 选择学习目标 你想先解决什么？ 选一个最重要的方向，我们会据此准备首日测评和学习任务。 学习目标 成人零基础 从发音、核心词和短句开始建立基础。 四六级备考 围绕词汇、听力与真题节奏推进。 考研英语 强化长难句、阅读和高频表达。 职场与日常 优先处理会话、场景和邮件表达。 可选重点 最多 3 个 发音矫正 核心词汇 阅读提升 听力精听 口语自练 旅游出行 外企邮件 每天愿意投入多久？ 5 分钟 15 分钟 30 分钟 45 分钟 目标不需要一次选对，以后可以随时调整。 上一步 保存并开始测评 退出登录"
+      },
+      "requests": [
+        {
+          "phase": "adult-gate",
+          "method": "POST",
+          "path": "/api/v1/iam/adult-gate",
+          "status": 200,
+          "requestId": "req-11cd4a5a5136456cb20e87ab555051cc",
+          "traceId": "858de935079c4203903fdcbaaadf95b0"
+        }
+      ]
+    },
+    "goalSetup": {
+      "reachedAssessment": true,
+      "view": {
+        "url": "/assessment",
+        "title": "语学星",
+        "headings": [
+          "找到一个适合你的起点。",
+          "Choose the greeting.",
+          "搜索学习页面",
+          "我的学习空间",
+          "消息中心"
+        ],
+        "alerts": [],
+        "visibleText": "跳到学习内容 语学星 LEARN A LITTLE. EVERY DAY. 日常学习 学习首页 今日任务 内容书架 学习路径 专项练习 我的成长 学习世界 学习报告 错题本 掌握进度 计划地图 一点一点，学得更从容。 帮助与反馈 账户与偏好 我的学习空间 学习测评 想学什么？搜索页面 ⌘ K 我的学习空间 找到一个适合你的起点。 不必追求满分，按真实水平作答，帮助安排接下来的学习。 0/2 1/2 Choose the greeting. A Hello B Goodbye 提交答案 跳过测评，选择起点 © 2026 语学星 一点一点，学得更从容。 学习权益"
+      },
+      "requests": [
+        {
+          "phase": "goal-setup",
+          "method": "PUT",
+          "path": "/api/v1/iam/consents",
+          "status": 200,
+          "requestId": "req-05883921be79439192029ce9fc500223",
+          "traceId": "0de7c710663c473c986dc2e97bb94fe5"
+        },
+        {
+          "phase": "goal-setup",
+          "method": "PUT",
+          "path": "/api/v1/iam/consents",
+          "status": 200,
+          "requestId": "req-9c1a86f307194fd1931524e4789eb5ab",
+          "traceId": "46ac7116a33147d08d5453bd4a4f10ee"
+        },
+        {
+          "phase": "goal-setup",
+          "method": "PUT",
+          "path": "/api/v1/iam/consents",
+          "status": 200,
+          "requestId": "req-73dc0c3f16c04394bc7061f573bf3ba9",
+          "traceId": "3b080a4d3dde4f5486747dcc6438440e"
+        },
+        {
+          "phase": "goal-setup",
+          "method": "POST",
+          "path": "/api/v1/auth/token/refresh",
+          "status": 200,
+          "requestId": "req-3744ce1522c14366b4de6bd5ba4edad6",
+          "traceId": "7fe7539959a44c8399eb64ed00c4f13b"
+        },
+        {
+          "phase": "goal-setup",
+          "method": "GET",
+          "path": "/api/v1/iam/permissions",
+          "status": 200,
+          "requestId": "req-12468fa57c564fe89cd8e1ff945fbfd2",
+          "traceId": "bf7e58012d4440ba8aff5644c647db06"
+        },
+        {
+          "phase": "goal-setup",
+          "method": "GET",
+          "path": "/api/v1/learner/targets",
+          "status": 404,
+          "requestId": "req-9fdbcecc97cd420f9602f9c940816a5b",
+          "traceId": "4032efb7b02d46f09e09ea3bb1c1a82a"
+        },
+        {
+          "phase": "goal-setup",
+          "method": "GET",
+          "path": "/api/v1/learner/preferences",
+          "status": 200,
+          "requestId": "req-6a41b17bd6d842fe8f207f0db2a8a922",
+          "traceId": "86f1bc3ff506448e9b0134d8f3e6deb5"
+        },
+        {
+          "phase": "goal-setup",
+          "method": "GET",
+          "path": "/api/v1/learner/profile",
+          "status": 200,
+          "requestId": "req-18b0c2be10844bc8a9d13dd9303418fc",
+          "traceId": "4ee73a6f5a59480b9f0e7bd30a53eda1"
+        },
+        {
+          "phase": "goal-setup",
+          "method": "PATCH",
+          "path": "/api/v1/learner/profile",
+          "status": 200,
+          "requestId": "req-6e4828c8535347f8bac307aa952ec19e",
+          "traceId": "c639c861d1114d818eba4f980932a82c"
+        },
+        {
+          "phase": "goal-setup",
+          "method": "PUT",
+          "path": "/api/v1/learner/targets",
+          "status": 200,
+          "requestId": "req-84a9e9f3f98346799ad29a4832fa8155",
+          "traceId": "62b19b15459a44e3ad47189c9dc16b83"
+        },
+        {
+          "phase": "goal-setup",
+          "method": "GET",
+          "path": "/api/v1/learner/profile",
+          "status": 200,
+          "requestId": "req-8b9f7403aa134e608d2257000c964d68",
+          "traceId": "869f0f000bf84654aeebb94ab20299b3"
+        },
+        {
+          "phase": "goal-setup",
+          "method": "GET",
+          "path": "/api/v1/learner/targets",
+          "status": 200,
+          "requestId": "req-bf7a29d718694d2ea76da147f27895ad",
+          "traceId": "50b6bd6322d64b02b72493bb45c631c6"
+        },
+        {
+          "phase": "goal-setup",
+          "method": "GET",
+          "path": "/api/v1/learner/preferences",
+          "status": 200,
+          "requestId": "req-3d7b49abafda49b59d07132455ccc0c9",
+          "traceId": "05d2ec8602484e31bf4180446f2bc56b"
+        },
+        {
+          "phase": "goal-setup",
+          "method": "GET",
+          "path": "/api/v1/onboarding/options",
+          "status": 200,
+          "requestId": "req-82c21d0d0deb4578a5916cc4fc3e2ada",
+          "traceId": "64e4994a90954c9b9a7a73d8b58bd8a5"
+        },
+        {
+          "phase": "goal-setup",
+          "method": "GET",
+          "path": "/api/v1/assessment/placement/start",
+          "status": 200,
+          "requestId": "req-3adcc272cb4d4621b05b435350343f4c",
+          "traceId": "77f0f496e2334933a28de72d5fecb5b8"
+        },
+        {
+          "phase": "goal-setup",
+          "method": "POST",
+          "path": "/api/v1/assessment/placement/start",
+          "status": 200,
+          "requestId": "req-5a2427ac9d4d4129ae6b3a4ac8934b05",
+          "traceId": "e438c2ea86ae4dacbba7b18db9f60c9b"
+        }
+      ]
+    }
+  },
+  "reading": {
+    "openedThroughSidebar": true,
+    "view": {
+      "url": "/reading",
+      "title": "语学星",
+      "headings": [
+        "读一小段，看见更大的世界。",
+        "搜索学习页面",
+        "我的学习空间",
+        "消息中心"
+      ],
+      "alerts": [
+        "RDG / READING\n网络暂时不可用，变更已保留。\n网络暂时不可用，变更已保留。\n画质：High\n重新读取\nUltra\nHigh\nMedium\nPerformance",
+        "网络暂时不可用，变更已保留。\n\n网络暂时不可用，变更已保留。"
+      ],
+      "visibleText": "跳到学习内容 语学星 LEARN A LITTLE. EVERY DAY. 日常学习 学习首页 今日任务 内容书架 学习路径 专项练习 词汇复习 听力精练 分级阅读 口语自练 语法与句子 写作练习 综合练习 我的成长 学习世界 学习报告 错题本 掌握进度 计划地图 一点一点，学得更从容。 帮助与反馈 账户与偏好 我的学习空间 分级阅读 想学什么？搜索页面 ⌘ K 我的学习空间 读一小段，看见更大的世界。 按自己的节奏阅读，调整字号和译文，再检查一下理解。 RDG / READING 网络暂时不可用，变更已保留。 网络暂时不可用，变更已保留。 画质：High 重新读取 Ultra High Medium Performance 网络暂时不可用，变更已保留。 网络暂时不可用，变更已保留。 © 2026 语学星 一点一点，学得更从容。 学习权益"
+    },
+    "requests": [
+      {
+        "phase": "reading",
+        "method": "GET",
+        "path": "/api/v1/reading/articles",
+        "status": null,
+        "failure": "net::ERR_FAILED"
+      }
+    ],
+    "browserErrors": [],
+    "retryButtonVisible": true,
+    "retryView": {
+      "url": "/reading",
+      "title": "语学星",
+      "headings": [
+        "读一小段，看见更大的世界。",
+        "搜索学习页面",
+        "我的学习空间",
+        "消息中心"
+      ],
+      "alerts": [
+        "RDG / READING\n网络暂时不可用，变更已保留。\n网络暂时不可用，变更已保留。\n画质：High\n重新读取\nUltra\nHigh\nMedium\nPerformance",
+        "网络暂时不可用，变更已保留。\n\n网络暂时不可用，变更已保留。"
+      ],
+      "visibleText": "跳到学习内容 语学星 LEARN A LITTLE. EVERY DAY. 日常学习 学习首页 今日任务 内容书架 学习路径 专项练习 词汇复习 听力精练 分级阅读 口语自练 语法与句子 写作练习 综合练习 我的成长 学习世界 学习报告 错题本 掌握进度 计划地图 一点一点，学得更从容。 帮助与反馈 账户与偏好 我的学习空间 分级阅读 想学什么？搜索页面 ⌘ K 我的学习空间 读一小段，看见更大的世界。 按自己的节奏阅读，调整字号和译文，再检查一下理解。 RDG / READING 网络暂时不可用，变更已保留。 网络暂时不可用，变更已保留。 画质：High 重新读取 Ultra High Medium Performance 网络暂时不可用，变更已保留。 网络暂时不可用，变更已保留。 © 2026 语学星 一点一点，学得更从容。 学习权益"
+    },
+    "retryRequests": [
+      {
+        "phase": "reading-retry",
+        "method": "GET",
+        "path": "/api/v1/reading/articles",
+        "status": null,
+        "failure": "net::ERR_FAILED"
+      }
+    ]
+  },
+  "grammarSample": {
+    "openedThroughSidebar": true,
+    "view": {
+      "url": "/grammar",
+      "title": "语学星",
+      "headings": [
+        "拆开一句话，读懂它的结构。",
+        "搜索学习页面",
+        "我的学习空间",
+        "消息中心"
+      ],
+      "alerts": [
+        "网络暂时不可用，已保留最近一次安全快照。\n网络暂时不可用，已保留最近一次安全快照。\n重新读取\nUltra\nHigh\nMedium\nPerformance"
+      ],
+      "visibleText": "跳到学习内容 语学星 LEARN A LITTLE. EVERY DAY. 日常学习 学习首页 今日任务 内容书架 学习路径 专项练习 词汇复习 听力精练 分级阅读 口语自练 语法与句子 写作练习 综合练习 我的成长 学习世界 学习报告 错题本 掌握进度 计划地图 一点一点，学得更从容。 帮助与反馈 账户与偏好 我的学习空间 语法与句子 想学什么？搜索页面 ⌘ K 我的学习空间 拆开一句话，读懂它的结构。 从知识地图出发，理解规则，再用练习巩固。 网络暂时不可用，已保留最近一次安全快照。 网络暂时不可用，已保留最近一次安全快照。 重新读取 Ultra High Medium Performance © 2026 语学星 一点一点，学得更从容。 学习权益"
+    },
+    "requests": [
+      {
+        "phase": "grammar-sample",
+        "method": "GET",
+        "path": "/api/v1/grammar/points",
+        "status": 200,
+        "requestId": "req-4c4a7ff1e86a4c39b13cf0747ab11f06",
+        "traceId": "60c63b9052674f678a34b72fe8acef9d"
+      },
+      {
+        "phase": "grammar-sample",
+        "method": "GET",
+        "path": "/api/v1/grammar/exercises",
+        "status": null,
+        "failure": "net::ERR_FAILED"
+      },
+      {
+        "phase": "grammar-sample",
+        "method": "GET",
+        "path": "/api/v1/grammar/mastery",
+        "status": null,
+        "failure": "net::ERR_FAILED"
+      }
+    ]
+  },
+  "logout": {
+    "attempted": true,
+    "buttonAvailable": false,
+    "finalPath": "/grammar",
+    "requests": [],
+    "fallbackContextClose": "No normal UI logout button was available; context closure will clear browser-held session state."
+  }
+}

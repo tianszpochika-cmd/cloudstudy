@@ -124,7 +124,7 @@ mysql(`DELETE FROM assessment_service.assessment_mistake WHERE subject_id = '${S
   const vals = [];
   for (let i = 0; i < 15; i++) {
     const k = i % 5;
-    vals.push(`(${9100 + i}, ${Q(SUB)}, 'platform', ${8100 + i}, ${7100 + i}, ${Q(cats[k])}, 'v1', '${sha256('demo-mistake-' + i)}', ${(i % 4) + 1}, ${Q(mst[k])}, ${Q(msv[k])}, DATE_SUB(${NOW}, INTERVAL ${20 - i} DAY), DATE_SUB(${NOW}, INTERVAL ${i} HOUR), DATE_ADD(${NOW}, INTERVAL ${i + 1} DAY), '{}')`);
+    vals.push(`(${9100 + i}, ${Q(SUB)}, 'platform', ${8100 + i}, ${7100 + i}, ${Q(cats[k])}, 'v1', '${sha256('demo-mistake-' + i)}', ${(i % 4) + 1}, ${Q(mst[k])}, ${Q(msv[k])}, DATE_SUB(${NOW}, INTERVAL ${20 - i} DAY), DATE_SUB(${NOW}, INTERVAL ${i} HOUR), DATE_ADD(${NOW}, INTERVAL ${i + 1} DAY), '[]')`);
   }
   mysql(`INSERT INTO assessment_service.assessment_mistake (mistake_id, subject_id, tenant_id, item_id, question_id, error_category, rule_version, answer_hash, wrong_count, mistake_status, mastery_status, first_error_at, last_error_at, next_action_at, reason_trace_json) VALUES ${vals.join(',')}`);
   console.log('mistakes: 15');
@@ -165,7 +165,7 @@ mysql(`DELETE FROM admin_ops_service.support_ticket WHERE requester_subject = '$
   const sts = ['OPEN', 'OPEN', 'ACKNOWLEDGED', 'WAITING_CUSTOMER', 'RESOLVED', 'CLOSED'];
   const vals = [];
   for (let i = 0; i < 8; i++) {
-    vals.push(`('${randomUUID()}', 'platform', ${Q(SUB)}, ${Q(sts[i % 6])}, ${i % 2 ? Q('HIGH') : Q('NORMAL')}, ${Q('演示工单 ' + (i + 1) + '：人工测试用，' + cats[i % 4])}, ${NOW}, ${NOW}, ${Q(cats[i % 4])}, 'local-fixture', '${sha256('demo-ticket-' + stamp + i)}', '[]')`);
+    vals.push(`('${randomUUID()}', 'local-support-fixture', ${Q(SUB)}, ${Q(sts[i % 6])}, ${i % 2 ? Q('HIGH') : Q('NORMAL')}, ${Q('演示工单 ' + (i + 1) + '：人工测试用，' + cats[i % 4])}, ${NOW}, ${NOW}, ${Q(cats[i % 4])}, 'local-fixture', '${sha256('demo-ticket-' + stamp + i)}', '[]')`);
   }
   mysql(`INSERT INTO admin_ops_service.support_ticket (ticket_id, tenant_id, requester_subject, ticket_status, priority, redacted_summary, created_at, updated_at, category, resource_ref, description_fingerprint, attachments_json) VALUES ${vals.join(',')}`);
   console.log('tickets: 8');

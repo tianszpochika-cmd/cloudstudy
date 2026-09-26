@@ -1,0 +1,57 @@
+{
+  "at": "2026-09-23T10:53:30.073Z",
+  "mode": "private HTTPS + containerized Chromium; read-only capability types",
+  "results": [
+    {
+      "name": "root",
+      "requestedUrl": "https://mobile.clyunedev.com/",
+      "requestedHash": "",
+      "status": 200,
+      "finalUrl": "https://mobile.clyunedev.com/#/",
+      "runtime": {
+        "hash": "#/",
+        "hasPlus": false,
+        "uniType": "object",
+        "navigateTo": "undefined",
+        "reLaunch": "undefined",
+        "redirectTo": "undefined",
+        "switchTab": "undefined",
+        "addInterceptor": "undefined",
+        "getStorageSync": "undefined"
+      },
+      "pageErrors": [
+        {
+          "at": "2026-09-23T10:53:26.294Z",
+          "action": "settle https://mobile.clyunedev.com/ after DOMContentLoaded; no click",
+          "stack": "TypeError: t.navigateTo is not a function\n    at cg (https://mobile.clyunedev.com/assets/index-BDbXKfp3.js:2:219069)\n    at ug (https://mobile.clyunedev.com/assets/index-BDbXKfp3.js:2:219173)\n    at https://mobile.clyunedev.com/assets/index-BDbXKfp3.js:2:242751"
+        },
+        {
+          "at": "2026-09-23T10:53:26.324Z",
+          "action": "settle https://mobile.clyunedev.com/ after DOMContentLoaded; no click",
+          "stack": "TypeError: t.navigateTo is not a function\n    at cg (https://mobile.clyunedev.com/assets/index-BDbXKfp3.js:2:219069)\n    at ug (https://mobile.clyunedev.com/assets/index-BDbXKfp3.js:2:219173)\n    at mg (https://mobile.clyunedev.com/assets/index-BDbXKfp3.js:2:220489)\n    at async Array.<anonymous> (https://mobile.clyunedev.com/assets/pages-home-home.C4ukY-1B.js:1:1154)"
+        }
+      ],
+      "consoleErrors": []
+    },
+    {
+      "name": "login",
+      "requestedUrl": "https://mobile.clyunedev.com/#/pages/login/login",
+      "requestedHash": "#/pages/login/login",
+      "status": 200,
+      "finalUrl": "https://mobile.clyunedev.com/#/pages/login/login",
+      "runtime": {
+        "hash": "#/pages/login/login",
+        "hasPlus": false,
+        "uniType": "object",
+        "navigateTo": "undefined",
+        "reLaunch": "undefined",
+        "redirectTo": "undefined",
+        "switchTab": "undefined",
+        "addInterceptor": "undefined",
+        "getStorageSync": "undefined"
+      },
+      "pageErrors": [],
+      "consoleErrors": []
+    }
+  ]
+}

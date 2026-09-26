@@ -1,0 +1,29 @@
+{
+  "input": "packages\\contracts\\fragments\\p1r-gateway-boundary.openapi.json",
+  "canonicalInput": "packages\\contracts\\openapi\\v1\\openapi.json",
+  "result": "FAIL",
+  "errors": [
+    "Gateway routeRule count must be 56",
+    "public operation baseline drift: expected 365, got 393",
+    "Gateway route execution plan count must be 56",
+    "Gateway unavailable execution rule is not frozen: admin-content-publish-tasks",
+    "Gateway unavailable execution rule is not frozen: admin-recovery",
+    "Gateway unavailable execution rule is not frozen: iam-account-deletions",
+    "Gateway available execution operation count must be 170, got 207",
+    "Gateway execution target plan digest drifted from the frozen M2-001 source binding"
+  ],
+  "summary": {
+    "routeRuleCount": 63,
+    "publicOperationCount": 393,
+    "coveredPublicOperationCount": 393,
+    "publicCoverageErrorCount": 0,
+    "executionPlanCount": 63,
+    "executionProjectionCount": 190,
+    "availableExecutionOperationCount": 207,
+    "unavailableExecutionOperationCount": 186,
+    "executionTargetPlanDigest": "60e83e099706ce98215c0b67117ca5383b5013a071278237b513c95dd390f1c2",
+    "internalOperationCount": 62,
+    "externalDeniedInternalOperationCount": 62,
+    "canonicalProjectionMatches": true
+  }
+}

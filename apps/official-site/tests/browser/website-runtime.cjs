@@ -3,8 +3,10 @@ const { chromium } = require("playwright"),
   fs = require("fs");
 process.chdir(require("path").resolve(__dirname, "../../../.."));
 const origin = process.env.OFFICIAL_SITE_URL || "http://127.0.0.1:18182",
-  dir =
+  dir = process.env.OFFICIAL_SITE_EVIDENCE_DIR ||
     "docs/06-design/v2-980plus/official-site-experience-proposal-2026-09-21/implementation";
+const canonicalOrigin = (process.env.OFFICIAL_CANONICAL_ORIGIN || origin).replace(/\/$/, "");
+const ignoreHTTPSErrors = process.env.OFFICIAL_IGNORE_HTTPS_ERRORS === "1";
 fs.mkdirSync(dir, { recursive: true });
 const report = {
   result: "FAIL",
@@ -14,6 +16,7 @@ const report = {
   checks: [],
   layouts: [],
   errors: [],
+  failure: null,
 };
 async function check(name, fn) {
   await fn();
@@ -23,7 +26,7 @@ async function check(name, fn) {
 (async () => {
   const browser = await chromium.launch({ headless: true });
   try {
-    const context = await browser.newContext(),
+    const context = await browser.newContext({ ignoreHTTPSErrors }),
       p = await context.newPage();
     p.on("pageerror", (e) => report.errors.push(e.message));
     p.on("console", (m) => {
@@ -171,14 +174,17 @@ async function check(name, fn) {
         await p.keyboard.press("Escape");
       },
     );
-    await check("mobile navigation, start handoff and dialog", async () => {
+    await check("mobile navigation, availability and sample entry", async () => {
       await p.setViewportSize({ width: 390, height: 844 });
       await go("/");
       await p.getByRole("button", { name: "打开导航菜单" }).click();
-      assert.match(
-        await p.locator("dialog[open] .menu-login").getAttribute("href"),
-        /18183\/#\/pages\/login\/login/,
+      const menu = p.locator("dialog[open]");
+      assert.equal(await menu.locator(".menu-login").count(), 0);
+      assert.equal(
+        await menu.locator(".menu-example").getAttribute("href"),
+        "/#practice-example",
       );
+      assert.match(await menu.innerText(), /官网示例不保存学习记录/);
       await p
         .locator("dialog[open]")
         .getByRole("link", { name: "学习世界" })
@@ -186,18 +192,27 @@ async function check(name, fn) {
       await p.waitForURL("**/world");
       assert.equal(await p.locator("dialog[open]").count(), 0);
       await go("/start");
-      assert.match(
-        await p.locator("[data-learning-entry]").getAttribute("href"),
-        /18183\/#\/pages\/register\/register/,
+      assert.equal(
+        await p.locator("[data-sample-entry]").getAttribute("href"),
+        "/#practice-example",
       );
+      assert.match(
+        await p.locator("main").innerText(),
+        /学习账号注册与登录暂不可用/,
+      );
+      assert.equal(
+        await p.locator("main .start-action a[href='/announcements']").count(),
+        1,
+      );
+      assert.equal(await p.locator("a[href*='/login'], a[href*='login/login']").count(), 0);
       await p.getByRole("button", { name: "查看方式" }).click();
       assert.ok(await p.locator("dialog[open] .copy-field").isVisible());
       await p.keyboard.press("Escape");
       await p.setViewportSize({ width: 1440, height: 1000 });
       await p.waitForTimeout(80);
-      assert.match(
-        await p.locator("[data-learning-entry]").getAttribute("href"),
-        /18180\/register/,
+      assert.equal(
+        await p.locator("[data-sample-entry]").getAttribute("href"),
+        "/#practice-example",
       );
     });
     await check(
@@ -260,7 +275,7 @@ async function check(name, fn) {
           );
           assert.equal(layout.h1, 1, route + " h1");
           assert.equal(layout.missing, false, route + " missing translation");
-          assert.equal(layout.canonical, origin + route);
+          assert.equal(layout.canonical, canonicalOrigin + route);
           report.layouts.push({ route, width, theme });
         }
         console.log("PASS layout", width, theme);
@@ -328,6 +343,7 @@ async function check(name, fn) {
       "system theme changes and default motion ignore a retired pause preference",
       async () => {
         const c = await browser.newContext({
+            ignoreHTTPSErrors,
             colorScheme: "dark",
             viewport: { width: 390, height: 844 },
           }),
@@ -362,6 +378,7 @@ async function check(name, fn) {
       "touch viewport permits vertical scrolling and horizontal room rotation",
       async () => {
         const c = await browser.newContext({
+            ignoreHTTPSErrors,
             viewport: { width: 390, height: 844 },
             isMobile: true,
             hasTouch: true,
@@ -423,6 +440,9 @@ async function check(name, fn) {
         errors: report.errors,
       }),
     );
+  } catch (error) {
+    report.failure = String(error?.message || error).slice(0, 500);
+    throw error;
   } finally {
     fs.writeFileSync(
       dir + "/browser-checks.json",

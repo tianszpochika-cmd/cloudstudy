@@ -22,7 +22,9 @@ export interface AuditEntry {
   resourceType: string
   resourceRef: string
   resultCode: string
-  redacted: boolean
+  commandId: string
+  traceId: string
+  redacted: boolean | null
   occurredAt: string
 }
 
@@ -35,13 +37,17 @@ export function num(value: unknown, fallback = 0): number { return typeof value 
 export function toFlag(value: Record<string, unknown>): AdminFlag { return { flagKey: text(value.flagKey), enabled: bool(value.enabled), rolloutPercent: num(value.rolloutPercent), ruleVersion: text(value.ruleVersion), allowedPlatforms: Array.isArray(value.allowedPlatforms) ? value.allowedPlatforms.filter((item): item is string => typeof item === 'string') : [], defaultOff: bool(value.defaultOff, !bool(value.enabled)) } }
 export function toReview(value: Record<string, unknown>): ReviewTask { return { reviewTaskId: text(value.reviewTaskId), contentId: text(value.contentId), versionId: text(value.versionId), stage: text(value.stage), requiredRole: text(value.requiredRole), status: text(value.status) } }
 export function toAudit(value: Record<string, unknown>): AuditEntry {
+  const redacted = typeof value.redacted === 'boolean' ? value.redacted : null
+  const safe = redacted === true
   return {
     auditId: text(value.auditId),
-    actionCode: text(value.actionCode ?? value.operation),
-    resourceType: text(value.resourceType ?? value.domain),
-    resourceRef: text(value.resourceRef),
-    resultCode: text(value.resultCode ?? value.commandId ?? 'RECORDED'),
-    redacted: bool(value.redacted, true),
+    actionCode: safe ? text(value.actionCode ?? value.operation) : '',
+    resourceType: safe ? text(value.resourceType ?? value.domain) : '',
+    resourceRef: safe ? text(value.resourceRef) : '',
+    resultCode: safe ? text(value.resultCode ?? value.status) : '',
+    commandId: safe ? text(value.commandId) : '',
+    traceId: safe ? text(value.traceId) : '',
+    redacted,
     occurredAt: text(value.occurredAt),
   }
 }

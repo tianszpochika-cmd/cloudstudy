@@ -29,7 +29,9 @@ public final class GameCatalog {
     }
 
     private static final List<GameDefinition> ENTRIES = List.of(
-            new GameDefinition("SENTENCE_TRAIN", ReleasePhase.P0, true, 10, 2, 60, 60),
+            // No server-verified challenge manifest or scoring fact exists yet.
+            // Keep the registry entry for compatibility, but do not publish it.
+            new GameDefinition("SENTENCE_TRAIN", ReleasePhase.P0, false, 10, 2, 60, 60),
             new GameDefinition("WORD_MATCH", ReleasePhase.P1, false, 10, 2, 60, 60),
             new GameDefinition("WORD_DEFENSE", ReleasePhase.P1, false, 10, 2, 60, 60),
             new GameDefinition("WORD_PUZZLE", ReleasePhase.P1, false, 10, 2, 60, 60),

@@ -1,4 +1,4 @@
-import { ApiError, createApiClient, type ApiClient } from '../api/client'
+import { ApiError, createApiClient, type ApiAuthSnapshot, type ApiClient, type ApiMethod } from '../api/client'
 import { safeInternalReturnTo } from '../platform/gateway'
 
 export type AuthStatus = 'unknown' | 'restoring' | 'unauthenticated' | 'authenticated' | 'refreshing' | 'revoking' | 'error'
@@ -45,7 +45,7 @@ export interface JwtAuthAdapter {
   login(input: LoginCredentials): Promise<AuthTokenPair>
   register(input: LoginCredentials): Promise<AuthTokenPair>
   requestPasswordReset(input: { identifier: string }): Promise<{ accepted: boolean }>
-  confirmPasswordReset(input: { token: string; newPassword: string }): Promise<void>
+  confirmPasswordReset(input: { identifier: string; resetToken: string; newPassword: string }): Promise<void>
   restoreSession(): Promise<AuthSessionSnapshot | null>
   refresh(input?: { refreshToken?: string }): Promise<AuthTokenPair>
   getPermissions(): Promise<AuthSessionSnapshot | null>
@@ -136,6 +136,7 @@ function parseSnapshot(value: unknown): AuthSessionSnapshot | null {
 export interface GatewayAuthAdapterOptions {
   readonly baseUrl: string
   readonly getAccessToken?: () => string | null
+  readonly getAuthSnapshot?: () => ApiAuthSnapshot | null
   readonly fetchImpl?: typeof fetch
 }
 
@@ -143,6 +144,11 @@ export function createGatewayAuthAdapter(options: GatewayAuthAdapterOptions): Jw
   const client: ApiClient = createApiClient({
     baseUrl: options.baseUrl,
     getAccessToken: options.getAccessToken,
+    getAuthSnapshot: options.getAuthSnapshot,
+    isBootstrapAuthPath: (path: string, method: ApiMethod) =>
+      (method === 'GET' && (path === '/iam/principal/me' || path === '/iam/permissions'))
+      || (method === 'POST' && (path === '/auth/token/refresh' || path === '/auth/logout'
+        || /^\/auth\/sessions\/[^/]+\/revoke$/.test(path))),
     fetchImpl: options.fetchImpl,
     credentials: 'include',
   })

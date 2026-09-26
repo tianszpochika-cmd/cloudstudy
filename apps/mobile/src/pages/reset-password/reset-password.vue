@@ -6,6 +6,7 @@ const { experienceStyle, experienceMotion } = useMobileExperience()
 
 import { onLoad } from '@dcloudio/uni-app'
 import { ref } from 'vue'
+import { mobileAuthFailureCopy } from '../../auth/auth-failure-copy'
 import { useSessionStore } from '../../stores/session'
 
 const session = useSessionStore()
@@ -31,13 +32,13 @@ async function send(): Promise<void> {
   if (submitting.value) return
   error.value = null
   if (!identifier.value.trim()) {
-    error.value = '请输入账号。'
+    error.value = mobileT('auth.resetPassword.requiredIdentifier')
     return
   }
   submitting.value = true
   try {
     done.value = await session.requestPasswordReset(identifier.value)
-    if (!done.value) error.value = session.lastError || '发送没有完成，请稍后再试。'
+    if (!done.value) error.value = mobileAuthFailureCopy('resetRequest', session.lastError, mobileT)
   } finally {
     submitting.value = false
   }
@@ -46,19 +47,19 @@ async function send(): Promise<void> {
 async function confirm(): Promise<void> {
   if (submitting.value) return
   error.value = null
-  if (!token.value.trim() || !newPassword.value) {
-    error.value = '请输入重置口令与新密码。'
+  if (!identifier.value.trim() || !token.value.trim() || !newPassword.value) {
+    error.value = mobileT('auth.resetPassword.requiredFields')
     return
   }
   if (newPassword.value.length < 12) {
-    error.value = '新密码至少 12 位。'
+    error.value = mobileT('auth.resetPassword.shortPassword')
     return
   }
   submitting.value = true
   try {
-    done.value = await session.confirmPasswordReset(token.value, newPassword.value)
-    if (done.value) { resetCompleted.value = true; token.value = ''; newPassword.value = '' }
-    if (!done.value) error.value = session.lastError || '重置没有完成，口令可能已过期。'
+    done.value = await session.confirmPasswordReset(identifier.value, token.value, newPassword.value)
+    if (done.value) { resetCompleted.value = true; identifier.value = ''; token.value = ''; newPassword.value = '' }
+    if (!done.value) error.value = mobileAuthFailureCopy('resetConfirm', session.lastError, mobileT)
   } finally {
     submitting.value = false
   }
@@ -70,30 +71,35 @@ async function confirm(): Promise<void> {
 
     <MobilePageHeader page="reset-password" />
 
-    <view class="yx-card yx-login-card">
-      <text v-if="resetCompleted" class="mobile-success-note" role="status">{{ mobileT('resetComplete') }}</text>
-      <text v-else-if="done && step === 'request'" class="mobile-success-note" role="status">{{ mobileT('resetSent') }}</text>
-      <form v-if="!resetCompleted && step === 'request'" @submit="send">
+    <view class="yx-card yx-login-card" :aria-busy="submitting">
+      <text v-if="resetCompleted" class="mobile-success-note" role="status" aria-live="polite">{{ mobileT('resetComplete') }}</text>
+      <text v-else-if="done && step === 'request'" class="mobile-success-note" role="status" aria-live="polite">{{ mobileT('resetSent') }}</text>
+      <text v-if="!resetCompleted && !(done && step === 'request')" class="mobile-auth-note">{{ mobileT(step === 'request' ? 'auth.resetPassword.requestHint' : 'auth.resetPassword.confirmHint') }}</text>
+      <form v-if="!resetCompleted && step === 'request'" @submit="send" :aria-busy="submitting">
         <label class="yx-field">
-          <text>账号</text>
-          <input aria-label="账号" v-model="identifier" type="text" autocomplete="username" placeholder="邮箱或账号" :disabled="submitting" />
+          <text>{{ mobileT('auth.resetPassword.identifier') }}</text>
+          <input :aria-label="mobileT('auth.resetPassword.identifier')" v-model="identifier" type="text" autocomplete="username" :placeholder="mobileT('auth.resetPassword.requestIdentifierPlaceholder')" :disabled="submitting" />
         </label>
-        <text v-if="error" class="yx-login-error" role="alert">{{ error }}</text>
-        <button tabindex="0" role="button" class="yx-button" form-type="submit" :disabled="submitting">{{ submitting ? '正在发送…' : '发送重置指引' }}</button>
-        <button tabindex="0" role="button" class="yx-button yx-button--ghost" type="button" @click="step = 'confirm'">我已收到口令</button>
+        <text v-if="error" class="yx-login-error" role="alert" aria-live="polite">{{ error }}</text>
+        <button tabindex="0" role="button" class="yx-button" form-type="submit" :disabled="submitting">{{ submitting ? mobileT('auth.resetPassword.sending') : mobileT('auth.resetPassword.sendInstructions') }}</button>
+        <button tabindex="0" role="button" class="yx-button yx-button--ghost" type="button" @click="step = 'confirm'">{{ mobileT('auth.resetPassword.receivedCode') }}</button>
       </form>
-      <form v-else-if="!resetCompleted" @submit="confirm">
+      <form v-else-if="!resetCompleted" @submit="confirm" :aria-busy="submitting">
         <label class="yx-field">
-          <text>重置口令</text>
-          <input aria-label="重置口令" v-model="token" type="text" autocomplete="one-time-code" placeholder="邮件里的口令" :disabled="submitting" />
+          <text>{{ mobileT('auth.resetPassword.identifier') }}</text>
+          <input :aria-label="mobileT('auth.resetPassword.identifier')" v-model="identifier" type="text" autocomplete="username" :placeholder="mobileT('auth.resetPassword.confirmIdentifierPlaceholder')" :disabled="submitting" />
         </label>
         <label class="yx-field">
-          <text>新密码（至少 12 位）</text>
-          <input aria-label="新密码" v-model="newPassword" type="password" autocomplete="new-password" placeholder="输入新密码" :disabled="submitting" />
+          <text>{{ mobileT('auth.resetPassword.token') }}</text>
+          <input :aria-label="mobileT('auth.resetPassword.token')" v-model="token" type="text" autocomplete="one-time-code" :placeholder="mobileT('auth.resetPassword.tokenPlaceholder')" :disabled="submitting" />
         </label>
-        <text v-if="error" class="yx-login-error" role="alert">{{ error }}</text>
-        <button tabindex="0" role="button" class="yx-button" form-type="submit" :disabled="submitting">{{ submitting ? '正在重置…' : '重置密码' }}</button>
-        <button tabindex="0" role="button" class="yx-button yx-button--ghost" type="button" @click="step = 'request'">返回上一步</button>
+        <label class="yx-field">
+          <text>{{ mobileT('auth.resetPassword.newPassword') }}</text>
+          <input :aria-label="mobileT('auth.resetPassword.newPassword')" v-model="newPassword" type="password" autocomplete="new-password" :placeholder="mobileT('auth.resetPassword.newPasswordPlaceholder')" :disabled="submitting" />
+        </label>
+        <text v-if="error" class="yx-login-error" role="alert" aria-live="polite">{{ error }}</text>
+        <button tabindex="0" role="button" class="yx-button" form-type="submit" :disabled="submitting">{{ submitting ? mobileT('auth.resetPassword.resetting') : mobileT('auth.resetPassword.resetAction') }}</button>
+        <button tabindex="0" role="button" class="yx-button yx-button--ghost" type="button" @click="step = 'request'">{{ mobileT('auth.resetPassword.back') }}</button>
       </form>
     </view>
     <button tabindex="0" role="button" class="mobile-text-button mobile-auth-return" @click="openUniPage('/pages/login/login')">{{ mobileT('toLogin') }}</button>

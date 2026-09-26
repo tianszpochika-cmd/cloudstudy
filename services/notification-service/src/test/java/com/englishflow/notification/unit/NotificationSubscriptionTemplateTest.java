@@ -25,11 +25,15 @@ import com.englishflow.notification.application.NotificationApplicationService;
 import com.englishflow.notification.application.QueueNotificationCommand;
 import com.englishflow.notification.application.RequestMetadata;
 import com.englishflow.notification.application.TemplateNotificationCommand;
+import com.englishflow.notification.application.UpdatePreferenceCommand;
 import com.englishflow.notification.domain.DeliveryStatus;
 import com.englishflow.notification.domain.IdempotencyKey;
 import com.englishflow.notification.domain.NotificationAccessPolicy;
 import com.englishflow.notification.domain.NotificationChannel;
+import com.englishflow.notification.domain.NotificationCategory;
+import com.englishflow.notification.domain.NotificationDndWindow;
 import com.englishflow.notification.domain.NotificationDomainException;
+import com.englishflow.notification.domain.NotificationFrequencyPolicy;
 import com.englishflow.notification.domain.NotificationPrincipalContext;
 import com.englishflow.notification.domain.NotificationSubscription;
 import com.englishflow.notification.domain.NotificationTemplate;
@@ -50,16 +54,21 @@ class NotificationSubscriptionTemplateTest {
 
     private NotificationApplicationService service() {
         consents.setConsent("t", "p", NotificationChannel.IN_APP, true);
-        return new NotificationApplicationService(
+        NotificationApplicationService service = new NotificationApplicationService(
                 new InMemoryNotificationFactStore(), new InMemoryWorkflowPort(),
                 new InMemoryDeliveryTransport(), new InMemoryOutboxEventPort(),
                 new InMemoryNotificationIdGenerator(), new NotificationAccessPolicy(), clock, 3,
                 Duration.ofSeconds(30),
                 new InMemoryNotificationAuditEventStore(), consents, subscriptions, templates);
+        service.updatePreference(ctx, new UpdatePreferenceCommand("LEARNING", NotificationCategory.LEARNING,
+                NotificationChannel.IN_APP, true, "zh-CN", 1, NotificationDndWindow.parse("23:00", "08:00"),
+                NotificationFrequencyPolicy.IMMEDIATE, 0), new IdempotencyKey("pref-template"), meta);
+        return service;
     }
 
     private static NotificationSubscription subscription(boolean subscribed, long version) {
-        return new NotificationSubscription("t", "p", "nt", NotificationChannel.IN_APP, subscribed, version, NOW);
+        return new NotificationSubscription("t", "p", "LEARNING", NotificationChannel.IN_APP,
+                subscribed, version, NOW);
     }
 
     private static NotificationTemplate template(String locale,
@@ -70,7 +79,7 @@ class NotificationSubscriptionTemplateTest {
     @Test
     void absentSubscriptionStaysSubscribed() {
         var svc = service();
-        var msg = svc.queue(ctx, new QueueNotificationCommand("nt", NotificationChannel.IN_APP,
+        var msg = svc.queue(ctx, new QueueNotificationCommand("LEARNING", NotificationChannel.IN_APP,
                 "tmpl", "v1", "T", "B", "cv"), new IdempotencyKey("sub-1"), meta);
         var result = svc.deliver(ctx, msg.messageId(), new IdempotencyKey("sub-2"), meta);
         assertEquals(DeliveryStatus.DELIVERED, result.attempt().status());
@@ -80,9 +89,9 @@ class NotificationSubscriptionTemplateTest {
     void explicitOptOutFiltersDelivery() {
         subscriptions.saveSubscription(subscription(true, 1));
         subscriptions.saveSubscription(
-                new NotificationSubscription("t", "p", "nt", NotificationChannel.IN_APP, false, 2, NOW));
+                new NotificationSubscription("t", "p", "LEARNING", NotificationChannel.IN_APP, false, 2, NOW));
         var svc = service();
-        var msg = svc.queue(ctx, new QueueNotificationCommand("nt", NotificationChannel.IN_APP,
+        var msg = svc.queue(ctx, new QueueNotificationCommand("LEARNING", NotificationChannel.IN_APP,
                 "tmpl", "v1", "T", "B", "cv"), new IdempotencyKey("sub-3"), meta);
         var result = svc.deliver(ctx, msg.messageId(), new IdempotencyKey("sub-4"), meta);
         assertEquals(DeliveryStatus.CANCELLED, result.attempt().status());
@@ -92,9 +101,9 @@ class NotificationSubscriptionTemplateTest {
     void staleSubscriptionVersionIsRejected() {
         subscriptions.saveSubscription(subscription(true, 1));
         subscriptions.saveSubscription(
-                new NotificationSubscription("t", "p", "nt", NotificationChannel.IN_APP, false, 2, NOW));
+                new NotificationSubscription("t", "p", "LEARNING", NotificationChannel.IN_APP, false, 2, NOW));
         var stale = assertThrows(NotificationDomainException.class, () -> subscriptions.saveSubscription(
-                new NotificationSubscription("t", "p", "nt", NotificationChannel.IN_APP, true, 1, NOW)));
+                new NotificationSubscription("t", "p", "LEARNING", NotificationChannel.IN_APP, true, 1, NOW)));
         assertEquals(NotificationDomainException.Code.VERSION_CONFLICT, stale.code());
     }
 
@@ -103,7 +112,7 @@ class NotificationSubscriptionTemplateTest {
         templates.saveTemplate(template("zh-CN", NotificationTemplate.TemplateStatus.ACTIVE));
         var svc = service();
         var msg = svc.queueTrusted(trusted, "t", "p",
-                new TemplateNotificationCommand("nt", NotificationChannel.IN_APP, "tmpl", "v1", "zh-CN",
+                new TemplateNotificationCommand("LEARNING", NotificationChannel.IN_APP, "tmpl", "v1", "zh-CN",
                         java.util.Map.of(), "cv", NOW),
                 new IdempotencyKey("tpl-1"), meta);
         var result = svc.deliver(ctx, msg.messageId(), new IdempotencyKey("tpl-2"), meta);
@@ -115,7 +124,7 @@ class NotificationSubscriptionTemplateTest {
         templates.saveTemplate(template("zh-CN", NotificationTemplate.TemplateStatus.RETIRED));
         var svc = service();
         var msg = svc.queueTrusted(trusted, "t", "p",
-                new TemplateNotificationCommand("nt", NotificationChannel.IN_APP, "tmpl", "v1", "zh-CN",
+                new TemplateNotificationCommand("LEARNING", NotificationChannel.IN_APP, "tmpl", "v1", "zh-CN",
                         java.util.Map.of(), "cv", NOW),
                 new IdempotencyKey("tpl-3"), meta);
         var result = svc.deliver(ctx, msg.messageId(), new IdempotencyKey("tpl-4"), meta);

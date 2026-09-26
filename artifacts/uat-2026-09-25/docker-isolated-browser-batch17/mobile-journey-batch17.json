@@ -1,0 +1,110 @@
+{
+  "at": "2026-09-24T18:23:08.269Z",
+  "mode": "private HTTPS + containerized Chromium; dummy .invalid login only",
+  "steps": [
+    {
+      "at": "2026-09-24T18:22:59.451Z",
+      "action": "root automatic redirect, no click",
+      "url": "https://mobile.clyunedev.com/#/pages/login/login?returnTo=%252Fpages%252Fhome%252Fhome",
+      "heading": "登录语学星",
+      "rootHttpStatus": 200
+    },
+    {
+      "at": "2026-09-24T18:23:01.096Z",
+      "action": "click login to register",
+      "url": "https://mobile.clyunedev.com/#/pages/register/register",
+      "heading": "创建账号"
+    },
+    {
+      "at": "2026-09-24T18:23:01.535Z",
+      "action": "click register back to login",
+      "url": "https://mobile.clyunedev.com/#/pages/login/login",
+      "heading": "登录语学星"
+    },
+    {
+      "at": "2026-09-24T18:23:01.978Z",
+      "action": "click login to password reset",
+      "url": "https://mobile.clyunedev.com/#/pages/reset-password/reset-password",
+      "heading": "重设密码，继续学习。"
+    },
+    {
+      "at": "2026-09-24T18:23:02.415Z",
+      "action": "click password reset back to login",
+      "url": "https://mobile.clyunedev.com/#/pages/login/login",
+      "heading": "登录语学星"
+    },
+    {
+      "at": "2026-09-24T18:23:04.276Z",
+      "action": "submit nonexistent .invalid account to Gateway",
+      "url": "https://mobile.clyunedev.com/#/pages/login/login",
+      "visibleErrors": [
+        "服务暂时不可用，请稍后重试。"
+      ],
+      "submittedToGateway": true
+    }
+  ],
+  "deepLink": {
+    "at": "2026-09-24T18:23:05.608Z",
+    "requestedPath": "/pages/today/today",
+    "httpStatus": 200,
+    "finalUrl": "https://mobile.clyunedev.com/#/pages/login/login?returnTo=%252Fpages%252Ftoday%252Ftoday",
+    "returnToParam": "%2Fpages%2Ftoday%2Ftoday",
+    "restoredPath": "/pages/today/today",
+    "decodingDepth": 2,
+    "matchesRequestedPath": true
+  },
+  "deepLinks": [
+    {
+      "at": "2026-09-24T18:23:05.608Z",
+      "requestedPath": "/pages/today/today",
+      "httpStatus": 200,
+      "finalUrl": "https://mobile.clyunedev.com/#/pages/login/login?returnTo=%252Fpages%252Ftoday%252Ftoday",
+      "returnToParam": "%2Fpages%2Ftoday%2Ftoday",
+      "restoredPath": "/pages/today/today",
+      "decodingDepth": 2,
+      "matchesRequestedPath": true
+    },
+    {
+      "at": "2026-09-24T18:23:06.944Z",
+      "requestedPath": "/pages/settings/settings",
+      "httpStatus": 200,
+      "finalUrl": "https://mobile.clyunedev.com/#/pages/login/login?returnTo=%252Fpages%252Fsettings%252Fsettings",
+      "returnToParam": "%2Fpages%2Fsettings%2Fsettings",
+      "restoredPath": "/pages/settings/settings",
+      "decodingDepth": 2,
+      "matchesRequestedPath": true
+    },
+    {
+      "at": "2026-09-24T18:23:08.263Z",
+      "requestedPath": "/pages/devices/devices",
+      "httpStatus": 200,
+      "finalUrl": "https://mobile.clyunedev.com/#/pages/login/login?returnTo=%252Fpages%252Fdevices%252Fdevices",
+      "returnToParam": "%2Fpages%2Fdevices%2Fdevices",
+      "restoredPath": "/pages/devices/devices",
+      "decodingDepth": 2,
+      "matchesRequestedPath": true
+    }
+  ],
+  "rootIssues": [],
+  "pageErrors": [],
+  "consoleErrors": [
+    {
+      "at": "2026-09-24T18:23:02.508Z",
+      "action": "submit nonexistent .invalid account to Gateway",
+      "url": "https://mobile.clyunedev.com/#/pages/login/login",
+      "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+    }
+  ],
+  "authResponses": [
+    {
+      "at": "2026-09-24T18:23:02.508Z",
+      "action": "submit nonexistent .invalid account to Gateway",
+      "method": "POST",
+      "hostname": "api.clyunedev.com",
+      "pathname": "/api/v1/auth/login",
+      "status": 503
+    }
+  ],
+  "failedRequests": [],
+  "externalRequests": []
+}

@@ -170,7 +170,8 @@
           "401": {"$ref": "#/components/responses/ApiUnauthorized"},
           "403": {"$ref": "#/components/responses/ApiForbidden"},
           "409": {"$ref": "#/components/responses/ApiConflict"},
-          "422": {"$ref": "#/components/responses/ApiUnprocessableEntity"}
+          "422": {"$ref": "#/components/responses/ApiUnprocessableEntity"},
+          "503": {"$ref": "#/components/responses/ApiServiceUnavailable"}
         }
       }
     },
@@ -229,7 +230,8 @@
           "401": {"$ref": "#/components/responses/ApiUnauthorized"},
           "403": {"$ref": "#/components/responses/ApiForbidden"},
           "409": {"$ref": "#/components/responses/ApiConflict"},
-          "422": {"$ref": "#/components/responses/ApiUnprocessableEntity"}
+          "422": {"$ref": "#/components/responses/ApiUnprocessableEntity"},
+          "503": {"$ref": "#/components/responses/ApiServiceUnavailable"}
         }
       }
     },

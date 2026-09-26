@@ -71,6 +71,16 @@ class ContentRightsValidationTest {
     }
 
     @Test
+    @DisplayName("an unverified draft can record source and license without granting any channel")
+    void pendingRightsGrantNoChannels() {
+        ContentRights rights = rights(CopyrightStatus.PENDING, false, Set.of(), null, null, null);
+        assertEquals(Set.of(), rights.permittedChannels());
+        assertFalse(rights.allows(ContentChannel.LEARNER, NOW));
+        assertFalse(rights.allows(ContentChannel.PUBLIC, NOW));
+        assertFalse(rights.isActive(NOW));
+    }
+
+    @Test
     @DisplayName("channels that are not granted deny the request")
     void ungrantedChannelDenies() {
         ContentRights rights = rights(CopyrightStatus.ACTIVE, true,

@@ -113,9 +113,14 @@ class InMemoryAdaptersTest {
     @Test
     void factStorePersistsPreferencesAndMessages() {
         var store = new InMemoryNotificationFactStore();
-        var pref = NotificationPreference.defaults("t", "p");
-        store.savePreference(pref);
-        assertEquals(pref, store.findPreference("t", "p", "general", NotificationChannel.IN_APP).orElseThrow());
+        var pref = new NotificationPreference("t", "p",
+                com.englishflow.notification.domain.NotificationCategory.SYSTEM, NotificationChannel.IN_APP,
+                true, "zh-CN", 1,
+                com.englishflow.notification.domain.NotificationDndWindow.parse("23:00", "08:00"),
+                com.englishflow.notification.domain.NotificationFrequencyPolicy.IMMEDIATE, 1, NOW);
+        assertTrue(store.compareAndSetPreference(pref, 0));
+        assertEquals(pref, store.findPreference("t", "p",
+                com.englishflow.notification.domain.NotificationCategory.SYSTEM, NotificationChannel.IN_APP).orElseThrow());
         assertEquals(1, store.findPreferences("t", "p").size());
 
         var m1 = message("m1", NOW);

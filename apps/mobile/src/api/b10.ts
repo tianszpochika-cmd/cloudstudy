@@ -605,7 +605,7 @@ export const b10LearningApi = {
   },
 
   async listGrammarPoints(context: B10RequestContext): Promise<B10GrammarPoint[]> {
-    const response = await mobileApiClient.request<unknown>(query(B10_GATEWAY_PATHS.content.grammarPoints, { contentLocale: context.contentLocale, limit: 50 }), { header: headers(context) })
+    const response = await mobileApiClient.request<unknown>(query(B10_GATEWAY_PATHS.content.grammarPoints, { pageSize: 50 }), { header: headers(context) })
     return listFrom(response).flatMap((item) => { const point = parseGrammarPoint(item); return point ? [point] : [] })
   },
 

@@ -3,6 +3,7 @@ package com.englishflow.gamification.adapter.http;
 import com.englishflow.gamification.application.GamificationApplicationService;
 import com.englishflow.gamification.domain.GameCatalog;
 import com.englishflow.gamification.domain.GameCatalog.GameDefinition;
+import com.englishflow.gamification.domain.GamificationDomainException;
 import com.englishflow.gamification.domain.RewardClaimReceipt;
 import com.englishflow.gamification.domain.RewardGrantView;
 import com.englishflow.gamification.domain.RewardListView;
@@ -32,9 +33,8 @@ import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
 
 /**
- * Local-real endpoints for the B4 feature surfaces that are not part of the XP aggregate.
- * State is JSON in gamification-service's own schema, so the UI never falls back to a process
- * local catalog or a fabricated success response after a restart.
+ * Local-real endpoints for B4 feature surfaces outside the XP aggregate. Historical JSON
+ * snapshots remain in this service's schema, but they are not item entitlement facts.
  */
 @RestController
 @Profile("local-real")
@@ -56,39 +56,30 @@ public final class GamificationLocalFeatureController {
 
     @GetMapping("/quests")
     public Map<String, Object> quests(Authentication authentication) {
-        return state(principals.requireUser(authentication), "quests", defaultQuests());
+        principals.requireUser(authentication);
+        // A static task counter or legacy JSON cannot establish a trusted learning fact.
+        return map("items", List.of());
     }
 
     @PostMapping("/quests/{questId}/claim")
     public Map<String, Object> claimQuest(Authentication authentication, @PathVariable String questId,
             @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey) {
-        String subject = principals.requireRewardClaimer(authentication);
-        Map<String, Object> current = state(subject, "quests", defaultQuests());
-        List<Map<String, Object>> items = listMaps(current.get("items"));
-        for (Map<String, Object> item : items) {
-            if (questId.equals(String.valueOf(item.get("questId")))) {
-                item.put("claimed", true);
-                current.put("items", items);
-                saveState(subject, "quests", current);
-                return map("questId", questId, "claimed", true, "replayed", idempotencyKey == null);
-            }
-        }
-        return map("questId", questId, "claimed", false, "replayed", false, "reasonCode", "QUEST_NOT_FOUND");
+        principals.requireRewardClaimer(authentication);
+        // No verified completion -> reward ledger transaction or idempotent replay exists.
+        throw GamificationDomainException.entitlementUnavailable();
     }
 
     @GetMapping("/achievements")
     public Map<String, Object> achievements(Authentication authentication) {
-        return state(principals.requireUser(authentication), "achievements", defaultAchievements());
+        principals.requireUser(authentication);
+        return map("items", List.of());
     }
 
     @PutMapping("/achievements/{achievementCode}/showcase")
     public Map<String, Object> showcase(Authentication authentication, @PathVariable String achievementCode,
             @RequestBody(required = false) Map<String, Object> body) {
-        String subject = principals.requireUser(authentication);
-        Map<String, Object> current = state(subject, "achievements", defaultAchievements());
-        current.put("showcase", achievementCode);
-        saveState(subject, "achievements", current);
-        return map("achievementCode", achievementCode, "showcased", true, "version", stateVersion(subject, "achievements"));
+        principals.requireUser(authentication);
+        throw GamificationDomainException.entitlementUnavailable();
     }
 
     @GetMapping("/chests")
@@ -127,30 +118,29 @@ public final class GamificationLocalFeatureController {
 
     @GetMapping("/collection")
     public Map<String, Object> collection(Authentication authentication) {
-        return state(principals.requireUser(authentication), "collection", defaultCollection());
+        principals.requireUser(authentication);
+        // Legacy feature JSON and a reward tier are not item ownership facts.
+        return map("items", List.of());
     }
 
     @GetMapping("/catalog")
     public Map<String, Object> catalog(Authentication authentication) {
-        return state(principals.requireUser(authentication), "catalog", defaultCatalog());
+        principals.requireUser(authentication);
+        return map("items", List.of());
     }
 
     @PostMapping("/catalog/{catalogItemId}/redeem")
     public Map<String, Object> redeem(Authentication authentication, @PathVariable String catalogItemId,
             @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey) {
-        String subject = principals.requireUser(authentication);
-        Map<String, Object> current = state(subject, "collection", defaultCollection());
-        List<Map<String, Object>> items = listMaps(current.get("items"));
-        items.add(map("itemCode", catalogItemId, "source", "CATALOG", "redeemedAt", Instant.now().toString()));
-        current.put("items", items);
-        saveState(subject, "collection", current);
-        return map("catalogItemId", catalogItemId, "redeemed", true, "replayed", false);
+        principals.requireRewardClaimer(authentication);
+        // There is no versioned price or atomic coin-debit -> item-grant binding yet.
+        throw GamificationDomainException.entitlementUnavailable();
     }
 
     @GetMapping("/seasons/{seasonId}/rewards")
     public Map<String, Object> seasonRewards(Authentication authentication, @PathVariable String seasonId) {
-        String subject = principals.requireUser(authentication);
-        return map("seasonId", seasonId, "items", listMaps(state(subject, "season-rewards", defaultSeasonRewards()).get("items")));
+        principals.requireUser(authentication);
+        return map("seasonId", seasonId, "items", List.of());
     }
 
     @PutMapping("/streak/settings")
@@ -173,86 +163,64 @@ public final class GamificationLocalFeatureController {
 
     @GetMapping("/avatar/profile")
     public Map<String, Object> avatarProfile(Authentication authentication) {
-        return state(principals.requireUser(authentication), "avatar-profile", defaultAvatarProfile());
+        principals.requireUser(authentication);
+        // Historical profile JSON is display data, not an owned avatar or loadout.
+        return map("profile", map("renderMode", "2D_FALLBACK"));
     }
 
     @PutMapping("/avatar/profile")
-    public Map<String, Object> saveAvatarProfile(Authentication authentication, @RequestBody Map<String, Object> body) {
-        String subject = principals.requireUser(authentication);
-        Map<String, Object> profile = state(subject, "avatar-profile", defaultAvatarProfile());
-        Map<String, Object> nested = map("avatarId", profile.get("profile") instanceof Map<?, ?> source ? source.get("avatarId") : "learner-01",
-                "resourceVersion", body.getOrDefault("resourceVersion", "avatar-2026.08.1"),
-                "loadoutId", profile.get("profile") instanceof Map<?, ?> source ? source.get("loadoutId") : "starter-loadout",
-                "renderMode", body.getOrDefault("renderMode", "2D_FALLBACK"));
-        Map<String, Object> result = map("profile", nested);
-        saveState(subject, "avatar-profile", result);
-        return result;
+    public Map<String, Object> saveAvatarProfile(Authentication authentication, @RequestBody Map<String, Object> body,
+            @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey) {
+        principals.requireUser(authentication);
+        // This path has no transactionally bound Idempotency-Key replay or
+        // verified resource ownership. Keep old JSON untouched; device quality
+        // remains a client-side preference until that owner chain is complete.
+        throw GamificationDomainException.entitlementUnavailable();
     }
 
     @GetMapping("/avatar/items")
     public Map<String, Object> avatarItems(Authentication authentication) {
-        return state(principals.requireUser(authentication), "avatar-items", defaultAvatarItems());
+        principals.requireUser(authentication);
+        return map("items", List.of());
     }
 
     @GetMapping("/avatar/loadouts")
     public Map<String, Object> avatarLoadouts(Authentication authentication) {
-        return state(principals.requireUser(authentication), "avatar-loadouts", defaultAvatarLoadouts());
+        principals.requireUser(authentication);
+        return map("items", List.of());
     }
 
     @PutMapping("/avatar/loadouts/{loadoutId}")
     public Map<String, Object> saveLoadout(Authentication authentication, @PathVariable String loadoutId,
             @RequestBody(required = false) Map<String, Object> body) {
-        String subject = principals.requireUser(authentication);
-        Map<String, Object> current = state(subject, "avatar-loadouts", defaultAvatarLoadouts());
-        List<Map<String, Object>> items = listMaps(current.get("items"));
-        items.removeIf(item -> loadoutId.equals(String.valueOf(item.get("loadoutId"))));
-        items.add(map("loadoutId", loadoutId, "name", body == null ? loadoutId : body.getOrDefault("name", loadoutId),
-                "equipped", false, "items", body == null ? List.of("ITEM_STARTER") : body.getOrDefault("items", List.of("ITEM_STARTER"))));
-        current.put("items", items);
-        saveState(subject, "avatar-loadouts", current);
-        return map("loadout", items.get(items.size() - 1));
+        principals.requireUser(authentication);
+        throw GamificationDomainException.entitlementUnavailable();
     }
 
     @PostMapping("/avatar/loadouts/{loadoutId}/equip")
     public Map<String, Object> equipLoadout(Authentication authentication, @PathVariable String loadoutId) {
-        String subject = principals.requireUser(authentication);
-        Map<String, Object> current = state(subject, "avatar-loadouts", defaultAvatarLoadouts());
-        List<Map<String, Object>> items = listMaps(current.get("items"));
-        boolean found = false;
-        for (Map<String, Object> item : items) {
-            boolean selected = loadoutId.equals(String.valueOf(item.get("loadoutId")));
-            item.put("equipped", selected);
-            found |= selected;
-        }
-        if (!found) return map("equipped", false, "reasonCode", "LOADOUT_NOT_FOUND");
-        current.put("items", items);
-        saveState(subject, "avatar-loadouts", current);
-        Map<String, Object> profile = state(subject, "avatar-profile", defaultAvatarProfile());
-        Map<String, Object> original = profile.get("profile") instanceof Map<?, ?> source ? castMap(source) : new LinkedHashMap<>();
-        original.put("loadoutId", loadoutId);
-        profile.put("profile", original);
-        saveState(subject, "avatar-profile", profile);
-        return map("equipped", true, "loadoutId", loadoutId);
+        principals.requireUser(authentication);
+        throw GamificationDomainException.entitlementUnavailable();
     }
 
     @GetMapping("/avatar/resources")
     public Map<String, Object> avatarResources(Authentication authentication) {
-        return state(principals.requireUser(authentication), "avatar-resources", defaultAvatarResources());
+        principals.requireUser(authentication);
+        // No verified resource manifest is attached to the current local catalog.
+        return map("fallbackMode", "2D_FALLBACK", "performanceTiers",
+                List.of("Ultra", "High", "Medium", "Performance"));
     }
 
     @GetMapping("/avatar/study-space")
     public Map<String, Object> studySpace(Authentication authentication) {
-        return state(principals.requireUser(authentication), "study-space", defaultStudySpace());
+        principals.requireUser(authentication);
+        return map("items", List.of(), "placements", List.of());
     }
 
     @PutMapping("/avatar/study-space")
     public Map<String, Object> saveStudySpace(Authentication authentication, @RequestBody Map<String, Object> body) {
-        String subject = principals.requireUser(authentication);
-        Map<String, Object> current = state(subject, "study-space", defaultStudySpace());
-        current.putAll(body == null ? Map.of() : body);
-        current.put("version", ((Number) current.getOrDefault("version", 1)).longValue() + 1);
-        saveState(subject, "study-space", current);
-        return current;
+        principals.requireUser(authentication);
+        throw GamificationDomainException.entitlementUnavailable();
     }
 
     @GetMapping("/games/catalog")
@@ -328,15 +296,20 @@ public final class GamificationLocalFeatureController {
     public Map<String, Object> finishGame(Authentication authentication, @PathVariable String sessionId) {
         String subject = principals.requireUser(authentication);
         Map<String, Object> session = loadGame(subject, sessionId);
-        int attempts = ((Number) session.getOrDefault("attemptCount", 0)).intValue();
-        session.put("status", "COMPLETED");
-        session.put("accuracyPercent", attempts > 0 ? 100 : 0);
-        session.put("completionPercent", Math.min(100, attempts * 20));
-        session.put("serverScore", attempts * 10);
-        session.put("passed", attempts > 0);
-        session.put("rewardEligible", attempts > 0);
+        // Legacy sessions may contain client-submitted events, but no verified
+        // answer fact. A counter cannot establish accuracy or reward eligibility.
+        markUnverifiedGameFinish(session);
         saveGame(subject, sessionId, String.valueOf(session.get("gameCode")), "COMPLETED", session);
         return session;
+    }
+
+    static void markUnverifiedGameFinish(Map<String, Object> session) {
+        session.put("status", "COMPLETED");
+        session.put("accuracyPercent", 0);
+        session.put("completionPercent", 0);
+        session.put("serverScore", 0);
+        session.put("passed", false);
+        session.put("rewardEligible", false);
     }
 
     private Map<String, Object> changeGame(String subject, String sessionId, String state) {
@@ -377,12 +350,6 @@ public final class GamificationLocalFeatureController {
             saveState(subject, feature, fallback);
             return fallback;
         }
-    }
-
-    private long stateVersion(String subject, String feature) {
-        Long version = jdbc.queryForObject("SELECT version FROM gamification_feature_state WHERE subject_id = ? AND feature_key = ?",
-                Long.class, subject, feature);
-        return version == null ? 1 : version;
     }
 
     private void saveState(String subject, String feature, Map<String, Object> value) {
@@ -435,21 +402,6 @@ public final class GamificationLocalFeatureController {
                 "createdAt", grant.grantedAt());
     }
 
-    private static Map<String, Object> defaultQuests() {
-        return map("items", new ArrayList<>(List.of(
-                map("questId", "daily-practice", "period", "DAILY", "title", "完成一次今日练习", "target", 1, "progress", 1, "completed", true, "claimed", false, "xpReward", 15, "coinReward", 1),
-                map("questId", "daily-vocabulary", "period", "DAILY", "title", "复习十个词汇", "target", 10, "progress", 6, "completed", false, "claimed", false, "xpReward", 20, "coinReward", 2))));
-    }
-
-    private static Map<String, Object> defaultAchievements() { return map("items", List.of(map("achievementCode", "FIRST_REVIEW", "title", "第一次复习", "unlocked", true), map("achievementCode", "SEVEN_DAY_STREAK", "title", "连续七天", "unlocked", false)), "showcase", "FIRST_REVIEW"); }
-    private static Map<String, Object> defaultCollection() { return map("items", List.of(map("itemCode", "ITEM_STARTER", "quality", "COMMON", "owned", true))); }
-    private static Map<String, Object> defaultCatalog() { return map("items", List.of(map("catalogItemId", "ITEM_FOCUS_AURA", "title", "专注光环", "priceCoins", 20, "available", true))); }
-    private static Map<String, Object> defaultSeasonRewards() { return map("items", List.of(map("tier", 1, "requiredPoints", 0, "rewardCode", "ITEM_STARTER"), map("tier", 2, "requiredPoints", 100, "rewardCode", "ITEM_FOCUS_AURA"))); }
-    private static Map<String, Object> defaultAvatarProfile() { return map("profile", map("avatarId", "learner-01", "resourceVersion", "avatar-2026.08.1", "loadoutId", "starter-loadout", "renderMode", "2D_FALLBACK")); }
-    private static Map<String, Object> defaultAvatarItems() { return map("items", List.of(map("itemCode", "ITEM_STARTER", "quality", "COMMON", "slot", "HEAD", "resourceVersion", "avatar-2026.08.1", "owned", true), map("itemCode", "ITEM_FOCUS_AURA", "quality", "RARE", "slot", "AURA", "resourceVersion", "avatar-2026.08.1", "owned", false))); }
-    private static Map<String, Object> defaultAvatarLoadouts() { return map("items", new ArrayList<>(List.of(map("loadoutId", "starter-loadout", "name", "晨间学习", "equipped", true, "items", List.of("ITEM_STARTER"))))); }
-    private static Map<String, Object> defaultAvatarResources() { return map("resourceVersion", "avatar-2026.08.1", "manifestHash", "local-real-avatar-manifest", "fallbackMode", "2D_FALLBACK", "performanceTiers", List.of("Ultra", "High", "Medium", "Performance")); }
-    private static Map<String, Object> defaultStudySpace() { return map("spaceId", "study-space-default", "themeCode", "CALM_BLUE", "version", 1, "items", List.of("DESK_STARTER", "LAMP_WARM")); }
     private static Map<String, Object> defaultGameCatalog() {
         return map("items", GameCatalog.entries().stream().map(entry -> map(
                 "gameCode", entry.gameCode(), "releasePhase", entry.releasePhase().name(),

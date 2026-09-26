@@ -9,7 +9,9 @@ const read = (relative) => fs.readFileSync(path.join(root, relative), 'utf8')
 
 test('B11 learner API keeps Gateway/idempotency/content-version seams', () => {
   const source = read('src/api/b11.ts')
-  for (const marker of ['/media/assets/', '/speaking/recordings', '/sync/changes', '/notifications/preferences', '/learning/media-progress', 'Idempotency-Key', 'clientEventId', 'contentVersionId']) assert.match(source, new RegExp(marker.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')))
+  for (const marker of ['/media/assets/', '/speaking/recordings', '/sync/changes', '/learning/media-progress', 'Idempotency-Key', 'clientEventId', 'contentVersionId']) assert.match(source, new RegExp(marker.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')))
+  assert.doesNotMatch(source, /\/notifications\/preferences/)
+  assert.match(read('src/pages/B11SyncPage.vue'), /to="\/settings\/notifications"/)
   assert.match(source, /source\.items/)
   assert.match(source, /item\.renditionKey/)
   assert.match(source, /aiScoringEnabled:\s*false/)

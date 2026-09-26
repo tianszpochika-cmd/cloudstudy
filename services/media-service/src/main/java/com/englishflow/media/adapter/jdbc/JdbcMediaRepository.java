@@ -21,6 +21,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.dao.DuplicateKeyException;
 
 /** Media-owned JDBC repository used by the local-real profile. */
 public final class JdbcMediaRepository implements MediaRepository {
@@ -57,7 +58,7 @@ public final class JdbcMediaRepository implements MediaRepository {
 
     @Override
     public MediaAsset save(MediaAsset asset) {
-        jdbc.update("""
+        String insertSql = """
                 INSERT INTO media_asset (
                     asset_id, tenant_id, owner_subject, asset_key, kind, mime_type,
                     storage_provider, bucket_name, object_key, object_version, checksum_sha256,
@@ -67,6 +68,8 @@ public final class JdbcMediaRepository implements MediaRepository {
                     rights_expires_at, allow_offline, authorization_evidence_ref, asset_version,
                     created_at, updated_at)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """;
+        String updateSql = """
                 ON DUPLICATE KEY UPDATE
                     tenant_id = VALUES(tenant_id), owner_subject = VALUES(owner_subject),
                     asset_key = VALUES(asset_key), kind = VALUES(kind), mime_type = VALUES(mime_type),
@@ -82,7 +85,11 @@ public final class JdbcMediaRepository implements MediaRepository {
                     rights_starts_at = VALUES(rights_starts_at), rights_expires_at = VALUES(rights_expires_at),
                     allow_offline = VALUES(allow_offline), authorization_evidence_ref = VALUES(authorization_evidence_ref),
                     asset_version = VALUES(asset_version), updated_at = VALUES(updated_at)
-                """,
+                """;
+        try {
+            // A new asset must never turn a simultaneous registration with a different
+            // key into an overwrite. MySQL's PK arbitrates that race across instances.
+            jdbc.update(asset.assetVersion() == 1 ? insertSql : insertSql + updateSql,
                 asset.assetId(), asset.tenantId(), asset.ownerId(), asset.assetKey(), asset.kind().name(),
                 asset.mimeType(), asset.storageProvider(), asset.bucketName(), asset.objectKey(), asset.objectVersion(),
                 asset.checksumSha256(), asset.sizeBytes(), asset.supportsRange(), asset.chunkSizeBytes(), asset.partCount(),
@@ -93,6 +100,13 @@ public final class JdbcMediaRepository implements MediaRepository {
                 timestamp(asset.rightsReference().startsAt()), timestamp(asset.rightsReference().expiresAt()),
                 asset.rightsReference().allowOffline(), asset.rightsReference().authorizationEvidenceRef(),
                 asset.assetVersion(), timestamp(asset.createdAt()), timestamp(asset.updatedAt()));
+        } catch (DuplicateKeyException duplicate) {
+            if (asset.assetVersion() == 1) {
+                throw com.englishflow.media.domain.MediaOperationException.conflict(
+                        "MEDIA_ASSET_EXISTS", "media asset already exists");
+            }
+            throw duplicate;
+        }
 
         jdbc.update("DELETE FROM media_rendition WHERE asset_id = ?", asset.assetId());
         for (MediaRendition rendition : asset.renditions()) {

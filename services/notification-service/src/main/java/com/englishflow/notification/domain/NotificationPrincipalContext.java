@@ -41,12 +41,14 @@ public final class NotificationPrincipalContext {
 
     public static NotificationPrincipalContext phaseOne(String principalId, String deviceId) {
         return new NotificationPrincipalContext("phase1", principalId, deviceId,
-                Set.of("learner"), Set.of("notification.read", "notification.write", "sync.write"));
+                Set.of("learner"), Set.of("notification.read", "notification.write", "sync.write",
+                        "notification.preference.read.self", "notification.preference.write.self"));
     }
 
     public static NotificationPrincipalContext authenticated(String tenantId, String principalId, String deviceId) {
         return new NotificationPrincipalContext(tenantId, principalId, deviceId,
-                Set.of("learner"), Set.of("notification.read", "notification.write", "sync.write"));
+                Set.of("learner"), Set.of("notification.read", "notification.write", "sync.write",
+                        "notification.preference.read.self", "notification.preference.write.self"));
     }
 
     public static NotificationPrincipalContext trustedService(String tenantId, String servicePrincipalId) {

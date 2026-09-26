@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { ThemeMode } from "@englishflow/design-tokens";
-import { buildPublicLearningEntry } from "~/utils/public-links.mjs";
 const { t, locale } = useSiteText(),
   { officialI18nAdapter, officialThemeController } = useNuxtApp().$foundation;
 const route = useRoute(),
@@ -25,22 +24,7 @@ onBeforeUnmount(() => {
   unsub?.();
   unsubLocale();
 });
-const { reduced, level } = useSiteMotion(),
-  loginLabel = computed(() => t("official.c21f1e8827"));
-const mobile = useLearningDevice(),
-  config = useRuntimeConfig();
-function authLink() {
-  return buildPublicLearningEntry({
-    base: String(
-      mobile.value ? config.public.mobileH5Url : config.public.learnerWebUrl,
-    ),
-    mobile: mobile.value,
-    login: true,
-    locale: locale.value,
-    theme: officialThemeController.theme,
-    campaign: route.query,
-  });
-}
+const { reduced, level } = useSiteMotion();
 const links = [
   ["/courses", "official.c36a0f1dc5"],
   ["/world", "official.cdf0fd9f57"],
@@ -88,7 +72,6 @@ watch(
           @click="toggleTheme"
         >
           <SiteIcon :name="resolved === 'dark' ? 'sun' : 'moon'" /></button
-        ><a class="login-link" :href="authLink()">{{ loginLabel }}</a
         ><SiteStartButton :label="t('official.cd28ebd1dd')" /><button
           class="round-button menu-toggle"
           :aria-label="t('official.c356a35564')"
@@ -122,9 +105,11 @@ watch(
       </button>
     </nav>
     <div class="mobile-nav-bottom">
-      <SiteStartButton /><a :href="authLink()" class="menu-login">{{
-        t("official.c801530ee0")
-      }}</a>
+      <SiteStartButton :label="t('official.cd28ebd1dd')" /><NuxtLink
+        class="menu-example"
+        to="/#practice-example"
+        >{{ t("official.c742e91d0b") }}</NuxtLink
+      >
       <p>{{ t("official.c5efc58ae7") }}</p>
     </div></SiteModal
   >

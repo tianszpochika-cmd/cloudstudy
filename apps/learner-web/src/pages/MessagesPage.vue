@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import ExperienceHeader from '../components/ExperienceHeader.vue'
 import { onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { listInboxMessages, listNotificationPreferences, markAllMessagesRead, markMessageRead, setNotificationPreference, type InboxMessage, type NotificationPreference } from '../api/notifications'
+import { RouterLink, useRouter } from 'vue-router'
+import { listInboxMessages, markAllMessagesRead, markMessageRead, type InboxMessage } from '../api/notifications'
 import StatePanel from '../components/StatePanel.vue'
 
 type ViewState = 'loading' | 'ready' | 'empty' | 'permission' | 'error'
@@ -11,8 +11,13 @@ const router = useRouter()
 const state = ref<ViewState>('loading')
 const lastError = ref<string | null>(null)
 const messages = ref<InboxMessage[]>([])
-const preferences = ref<NotificationPreference[]>([])
 const busy = ref(false)
+const channelLabels: Record<string, string> = { IN_APP: '站内', PUSH: '推送', EMAIL: '邮件', SMS: '短信' }
+function channelLabel(value: string | null): string { return channelLabels[value ?? ''] ?? '站内' }
+function messageTime(value: string | null): string {
+  const time = value ? Date.parse(value) : NaN
+  return Number.isFinite(time) ? new Intl.DateTimeFormat(undefined, { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }).format(time) : ''
+}
 
 function stateFrom(error: unknown): ViewState {
   const status = (error as { status?: number })?.status
@@ -23,13 +28,12 @@ async function load(): Promise<void> {
   state.value = 'loading'
   lastError.value = null
   try {
-    const [msgs, prefs] = await Promise.all([listInboxMessages(), listNotificationPreferences()])
+    const msgs = await listInboxMessages()
     messages.value = msgs
-    preferences.value = prefs
-    state.value = msgs.length || prefs.length ? 'ready' : 'empty'
+    state.value = msgs.length ? 'ready' : 'empty'
   } catch (error) {
     state.value = stateFrom(error)
-    lastError.value = error instanceof Error ? error.message : '消息暂时不可用。'
+    lastError.value = '消息暂时不可用，请重试。'
   }
 }
 
@@ -61,24 +65,6 @@ async function readAll(): Promise<void> {
   }
 }
 
-async function toggle(pref: NotificationPreference): Promise<void> {
-  if (busy.value) return
-  busy.value = true
-  try {
-    await setNotificationPreference({
-      notificationType: pref.notificationType,
-      channel: pref.channel,
-      enabled: !pref.enabled,
-    })
-    await load()
-  } catch (error) {
-    state.value = stateFrom(error)
-    lastError.value = error instanceof Error ? error.message : '偏好保存未完成。'
-  } finally {
-    busy.value = false
-  }
-}
-
 function today(): void {
   void router.push({ name: 'today' })
 }
@@ -97,30 +83,22 @@ onMounted(() => { void load() })
       :action-label="state === 'error' ? '重试' : ''"
       @action="load"
     />
-    <template v-if="messages.length || preferences.length">
+    <template v-if="state === 'ready'">
       <section class="info-card" aria-label="站内消息">
-        <div class="yx-section-heading"><div><p class="yx-kicker">INBOX</p><h3>站内消息</h3></div><span class="yx-fact-tag">{{ messages.filter((m) => !m.readAt).length }} 未读</span></div>
-        <p v-if="!messages.length" class="yx-fact-tag">暂无未读之外的消息。</p>
+        <div class="yx-section-heading"><div><p class="yx-kicker">INBOX</p><h3>站内消息</h3></div><span class="yx-fact-tag">{{ messages.filter((m) => !m.read).length }} 未读</span></div>
+        <p v-if="!messages.length" class="yx-fact-tag">暂无消息。</p>
         <ul v-else class="yx-msg-list">
-          <li v-for="msg in messages" :key="msg.messageId" :class="{ 'yx-msg-list__unread': !msg.readAt }">
-            <div><strong>{{ msg.title ?? '通知' }}</strong><span class="yx-pill" :class="msg.readAt ? 'yx-pill--muted' : 'yx-pill--warning'">{{ msg.readAt ? '已读' : '未读' }}</span></div>
-            <span class="yx-fact-tag">{{ msg.channel ?? '' }}</span>
+          <li v-for="msg in messages" :key="msg.messageId" :class="{ 'yx-msg-list__unread': !msg.read }">
+            <div><strong>{{ msg.title ?? '通知' }}</strong><span class="yx-pill" :class="msg.read ? 'yx-pill--muted' : 'yx-pill--warning'">{{ msg.read ? '已读' : '未读' }}</span></div>
+            <span class="yx-fact-tag">{{ channelLabel(msg.channel) }}<template v-if="messageTime(msg.createdAt)"> · {{ messageTime(msg.createdAt) }}</template></span>
             <p v-if="msg.safeBody">{{ msg.safeBody }}</p>
-            <button v-if="!msg.readAt" class="button button--ghost" type="button" :disabled="busy" @click="read(msg.messageId)">标为已读</button>
+            <button v-if="!msg.read" class="button button--ghost" type="button" :disabled="busy" @click="read(msg.messageId)">标为已读</button>
           </li>
         </ul>
-        <button v-if="messages.some((m) => !m.readAt)" class="button" type="button" :disabled="busy" @click="readAll">全部标为已读</button>
-      </section>
-      <section class="info-card" aria-label="通知偏好">
-        <div class="yx-section-heading"><div><p class="yx-kicker">PREFERENCES</p><h3>通知偏好</h3></div></div>
-        <ul class="yx-pref-list">
-          <li v-for="pref in preferences" :key="`${pref.notificationType}:${pref.channel}`">
-            <span>{{ pref.notificationType }} · {{ pref.channel }}</span>
-            <button class="button button--ghost" type="button" :disabled="busy" @click="toggle(pref)">{{ pref.enabled ? '关闭' : '打开' }}</button>
-          </li>
-        </ul>
+        <button v-if="messages.some((m) => !m.read)" class="button" type="button" :disabled="busy" @click="readAll">全部标为已读</button>
       </section>
     </template>
+    <RouterLink class="settings-link" to="/settings/notifications">通知设置</RouterLink>
     <div class="actions">
       <button class="button button--primary" type="button" @click="today">回今日任务</button>
     </div>
@@ -128,12 +106,12 @@ onMounted(() => { void load() })
 </template>
 
 <style scoped>
-.yx-msg-list, .yx-pref-list { display: grid; gap: 10px; margin: 0 0 16px; padding: 0; list-style: none; }
+.yx-msg-list { display: grid; gap: 10px; margin: 0 0 16px; padding: 0; list-style: none; }
 .yx-msg-list li { display: grid; gap: 6px; padding: 14px 16px; border: 1px solid var(--yx-color-border); border-radius: 12px; }
 .yx-msg-list__unread { border-color: var(--yx-color-warning); }
 .yx-msg-list li > div { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .yx-msg-list p { margin: 0; color: var(--yx-color-text-secondary); font-size: 13px; line-height: 1.6; }
-.yx-pref-list li { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 0; border-top: 1px solid var(--yx-color-border); font-size: 13px; }
+.settings-link { width: fit-content; padding: 8px 0; color: var(--yx-color-brand-primary); font-size: 14px; }
 .actions { display: flex; gap: 12px; }
 .button--ghost { border: 1px solid var(--yx-color-border); background: transparent; color: var(--yx-color-brand-primary); }
 </style>

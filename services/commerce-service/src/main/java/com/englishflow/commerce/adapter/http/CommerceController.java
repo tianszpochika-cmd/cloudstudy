@@ -16,6 +16,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.Instant;
 import java.util.List;
+import java.util.Set;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -34,16 +37,20 @@ public final class CommerceController {
     private final CommerceApplicationService service;
     private final CommercePrincipalResolver principals;
     private final String publicTenantId;
+    private final Set<String> publicPublishedSkuIds;
 
     public CommerceController(CommerceApplicationService service, CommercePrincipalResolver principals,
-            @Value("${commerce.public-tenant-id:platform}") String publicTenantId) {
+            @Value("${commerce.public-tenant-id:platform}") String publicTenantId,
+            @Value("${commerce.public-published-sku-ids:}") String publicPublishedSkuIds) {
         this.service = service;
         this.principals = principals;
         this.publicTenantId = publicTenantId;
+        this.publicPublishedSkuIds = Arrays.stream(publicPublishedSkuIds.split(","))
+                .map(String::trim).filter(value -> !value.isBlank()).collect(Collectors.toUnmodifiableSet());
     }
     @GetMapping("/readiness") public CommerceViews.ReadinessView readiness() { return service.readiness(); }
     @GetMapping("/public/catalog") public java.util.Map<String, Object> publicCatalog() {
-        return service.publicCatalog(publicTenantId);
+        return service.publicCatalog(publicTenantId, publicPublishedSkuIds);
     }
     @GetMapping("/skus") public List<CommerceViews.SkuView> skus(Authentication authentication) { return service.listSkus(user(authentication)); }
     @GetMapping("/orders") public List<CommerceViews.OrderView> orders(Authentication authentication) { return service.listOrders(user(authentication)); }

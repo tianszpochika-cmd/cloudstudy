@@ -44,7 +44,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import tools.jackson.databind.ObjectMapper;
@@ -100,10 +101,10 @@ public class ContentServiceConfiguration {
         return new FailClosedPublishedContentReadProjectionPort();
     }
 
-    @Bean
+    @Bean(destroyMethod = "close")
     @ConditionalOnProperty(prefix = "content.persistence", name = "mode", havingValue = "jdbc")
     @ConditionalOnMissingBean(DataSource.class)
-    DataSource contentDataSource(ContentPersistenceProperties properties) {
+    HikariDataSource contentDataSource(ContentPersistenceProperties properties) {
         ContentPersistenceProperties persistence = properties;
         if (isBlank(persistence.getJdbcUrl()) || isBlank(persistence.getUsername())
                 || persistence.getPassword() == null || isBlank(persistence.getDriverClassName())) {
@@ -111,12 +112,16 @@ public class ContentServiceConfiguration {
                     "CONTENT_PERSISTENCE_MODE=jdbc requires CONTENT_JDBC_URL, CONTENT_JDBC_USERNAME, "
                             + "CONTENT_JDBC_PASSWORD and CONTENT_JDBC_DRIVER");
         }
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName(persistence.getDriverClassName());
-        dataSource.setUrl(persistence.getJdbcUrl());
-        dataSource.setUsername(persistence.getUsername());
-        dataSource.setPassword(persistence.getPassword());
-        return dataSource;
+        HikariConfig pool = new HikariConfig();
+        pool.setPoolName("content-owner-jdbc");
+        pool.setDriverClassName(persistence.getDriverClassName());
+        pool.setJdbcUrl(persistence.getJdbcUrl());
+        pool.setUsername(persistence.getUsername());
+        pool.setPassword(persistence.getPassword());
+        pool.setMinimumIdle(persistence.getPoolMinIdle());
+        pool.setMaximumPoolSize(persistence.getPoolMaxSize());
+        pool.setConnectionTimeout(10_000L);
+        return new HikariDataSource(pool);
     }
 
     @Bean
@@ -152,8 +157,10 @@ public class ContentServiceConfiguration {
 
     @Bean
     @ConditionalOnProperty(prefix = "content.persistence", name = "mode", havingValue = "jdbc")
-    ContentRepository jdbcContentRepository(JdbcTemplate contentJdbcTemplate, ObjectMapper objectMapper) {
-        return new JdbcContentRepository(contentJdbcTemplate, objectMapper);
+    ContentRepository jdbcContentRepository(
+            JdbcTemplate contentJdbcTemplate, ObjectMapper objectMapper,
+            TransactionTemplate contentTransactionTemplate) {
+        return new JdbcContentRepository(contentJdbcTemplate, objectMapper, contentTransactionTemplate);
     }
 
     @Bean

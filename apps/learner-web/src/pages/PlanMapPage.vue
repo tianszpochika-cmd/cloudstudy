@@ -4,6 +4,7 @@ import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { fetchPlanCurrent, type LoopPlan } from '../api/b2'
 import StatePanel from '../components/StatePanel.vue'
+import { userFacingError } from '../platform/user-facing-error'
 
 type ViewState = 'loading' | 'ready' | 'empty' | 'permission' | 'error'
 
@@ -43,8 +44,8 @@ onMounted(() => { void load() })
       v-if="state !== 'ready'"
       :state="state"
       title="计划地图"
-      :description="state === 'empty' ? '暂无生效计划——完成开户目标后自动生成。' : state === 'permission' ? '当前会话没有计划读取权限。' : (lastError ?? '计划暂时不可用。')"
-      :action-label="state === 'error' ? '重试' : ''"
+      :description="state === 'loading' ? '正在读取计划。' : state === 'empty' ? '目前没有可用的学习计划。请稍后再试。' : state === 'permission' ? '当前账号暂不能查看计划。' : userFacingError(lastError, '计划暂时不可用，请稍后重试。')"
+      :action-label="state === 'error' || state === 'empty' ? '重试' : ''"
       @action="load"
     />
     <section v-else-if="plan" class="info-card" aria-label="当前计划">

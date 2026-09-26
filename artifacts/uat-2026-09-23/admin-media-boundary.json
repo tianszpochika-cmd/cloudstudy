@@ -1,0 +1,220 @@
+{
+  "scope": "PAGE-P1-ADMIN-MEDIA, local browser and Gateway/media owner; no object upload, mutation or rights change",
+  "designRoute": "/admin/content/media",
+  "actualContentRoute": "/content",
+  "checks": [
+    {
+      "name": "fixed Gateway and admin frontend healthy",
+      "observed": [
+        200,
+        200
+      ],
+      "expected": [
+        200,
+        200
+      ],
+      "ok": true
+    },
+    {
+      "name": "synthetic account registered",
+      "observed": 201,
+      "expected": 201,
+      "ok": true
+    },
+    {
+      "name": "adult Gate",
+      "observed": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "TERMS consent",
+      "observed": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "PRIVACY consent",
+      "observed": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "ADULT_LEARNING consent",
+      "observed": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "staff login",
+      "observed": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "anonymous media metadata denied",
+      "observed": 401,
+      "expected": 401,
+      "ok": true
+    },
+    {
+      "name": "unknown media metadata is not disclosed",
+      "observed": 404,
+      "expected": 404,
+      "ok": true
+    },
+    {
+      "name": "existing media denied without media permission",
+      "observed": 403,
+      "expected": "403 or 404",
+      "ok": true
+    },
+    {
+      "name": "content shell has no media workbench controls",
+      "observed": {
+        "uploadInputs": 0,
+        "mediaTabs": 0,
+        "uploadButtons": 0
+      },
+      "expected": {
+        "uploadInputs": 0,
+        "mediaTabs": 0,
+        "uploadButtons": 0
+      },
+      "ok": true
+    },
+    {
+      "name": "content shell no document overflow at 1280/390",
+      "observed": [
+        false,
+        false
+      ],
+      "expected": [
+        false,
+        false
+      ],
+      "ok": true
+    },
+    {
+      "name": "media staff login",
+      "observed": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "authorized missing metadata is not fabricated",
+      "observed": 404,
+      "expected": 404,
+      "ok": true
+    },
+    {
+      "name": "authorized missing processing task is not fabricated",
+      "observed": 404,
+      "expected": 404,
+      "ok": true
+    },
+    {
+      "name": "authorized missing upload intent cannot issue grant",
+      "observed": 404,
+      "expected": 404,
+      "ok": true
+    }
+  ],
+  "browser": {
+    "anonymousRoute": "/login",
+    "contentLoaded": true,
+    "contentError": false,
+    "mediaControls": {
+      "uploadInputs": 0,
+      "mediaTabs": 0,
+      "uploadButtons": 0
+    },
+    "desktopOverflow": false,
+    "mobileOverflow": false,
+    "editorShowsLicenseCode": true,
+    "editorUploadInputs": 0,
+    "canonicalRouteResult": "/dashboard",
+    "errorStateVisible": true,
+    "simulatedErrorHits": 1,
+    "errorStateRecovered": true,
+    "emptyStateVisible": true,
+    "pageErrors": [],
+    "permissionRoute": "/forbidden"
+  },
+  "gateway": {
+    "anonymousAsset": {
+      "status": 401,
+      "code": null,
+      "data": {
+        "error": {
+          "errorCode": "AUTH_REQUIRED",
+          "message": "Authentication is required.",
+          "retryable": false
+        },
+        "meta": {
+          "requestId": "req-9b8372659b844f64a71817fb2fb400a3",
+          "traceId": "bdee09a02e484a008cdaced6545dda66",
+          "apiVersion": "v1",
+          "schemaVersion": "1.0.0",
+          "serverTime": "2026-09-23T09:27:17.443413200Z"
+        }
+      }
+    },
+    "contentStaffAsset": {
+      "status": 404,
+      "code": "MEDIA_ASSET_NOT_FOUND",
+      "data": {
+        "code": "MEDIA_ASSET_NOT_FOUND",
+        "message": "media asset does not exist",
+        "retryable": false
+      }
+    },
+    "contentStaffExistingAsset": {
+      "status": 403,
+      "code": "MEDIA_READ_FORBIDDEN"
+    },
+    "authorizedMissingAsset": {
+      "status": 404,
+      "code": "MEDIA_ASSET_NOT_FOUND",
+      "data": {
+        "code": "MEDIA_ASSET_NOT_FOUND",
+        "message": "media asset does not exist",
+        "retryable": false
+      }
+    },
+    "authorizedMissingTasks": {
+      "status": 404,
+      "code": "MEDIA_ASSET_NOT_FOUND",
+      "data": {
+        "code": "MEDIA_ASSET_NOT_FOUND",
+        "message": "media asset does not exist",
+        "retryable": false
+      }
+    },
+    "authorizedMissingUploadIntent": {
+      "status": 404,
+      "code": "MEDIA_ASSET_NOT_FOUND",
+      "data": {
+        "code": "MEDIA_ASSET_NOT_FOUND",
+        "message": "media asset does not exist",
+        "retryable": false
+      }
+    }
+  },
+  "cleanup": {
+    "account": "1:DISABLED",
+    "activeSessions": 0,
+    "syntheticAssetRows": 0,
+    "syntheticWriteReceipts": 0
+  },
+  "mediaMetadataAggregate": {
+    "total": 100,
+    "active": 56,
+    "uploading": 44,
+    "sha256FormatValid": 22,
+    "activeSha256FormatValid": 15,
+    "nonemptyObjectVersion": 89
+  },
+  "result": "BLOCKED",
+  "capturedAt": "2026-09-23T09:27:28.596Z"
+}

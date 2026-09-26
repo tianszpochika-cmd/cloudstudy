@@ -7,8 +7,9 @@ const { experienceStyle, experienceMotion } = useMobileExperience()
 import { onLoad } from '@dcloudio/uni-app'
 import { onMounted, ref } from 'vue'
 import { authT } from '../../auth/i18n'
+import { mobileAuthFailureCopy } from '../../auth/auth-failure-copy'
 import { continueAfterLogin } from '../../auth/navigation'
-import { safeMobileReturnTo } from '../../auth/gateway-auth'
+import { safeMobileRouteReturnTo } from '../../auth/gateway-auth'
 import { useSessionStore } from '../../stores/session'
 
 const session = useSessionStore()
@@ -30,12 +31,13 @@ function timeout<T>(promise: Promise<T>, milliseconds: number, message: string):
 async function initialize(options?: { returnTo?: string; redirect?: string }): Promise<void> {
   if (initialized.value) return
   initialized.value = true
-  returnTo.value = safeMobileReturnTo(options?.returnTo ?? options?.redirect ?? session.peekReturnTo())
+  const requested = safeMobileRouteReturnTo(options?.returnTo ?? options?.redirect, '')
+  returnTo.value = requested || safeMobileRouteReturnTo(session.peekReturnTo())
   session.setReturnTo(returnTo.value)
   try {
     await timeout(session.restore(), 1500, '会话恢复超时')
     if (session.isAuthenticated) {
-      continueAfterLogin(session.consumeReturnTo())
+      await continueAfterLogin(session.consumeReturnTo())
     }
   } catch {
     // The form remains available when an existing cookie/session cannot be restored.
@@ -56,13 +58,13 @@ async function submit(): Promise<void> {
   try {
     const success = await timeout(session.login(identifier.value, password.value), 10000, '登录服务响应超时，请稍后重试。')
     if (!success) {
-      error.value = session.lastError || authT('login.failed')
+      error.value = mobileAuthFailureCopy('login', session.lastError, mobileT)
       return
     }
     password.value = ''
-    continueAfterLogin(session.consumeReturnTo())
+    await continueAfterLogin(session.consumeReturnTo())
   } catch (cause) {
-    error.value = cause instanceof Error ? cause.message : authT('login.failed')
+    error.value = mobileAuthFailureCopy('login', cause, mobileT)
   } finally {
     submitting.value = false
   }
@@ -96,7 +98,7 @@ async function submit(): Promise<void> {
           {{ submitting ? authT('login.submitting') : authT('login.start') }}
         </button>
       </form>
-      <view class="mobile-auth-links"><button tabindex="0" role="button" class="mobile-text-button" @click="openUniPage('/pages/reset-password/reset-password')">{{ mobileT('forgot') }}</button><text class="mobile-profile-caption">{{ mobileT('authTag') }}</text></view>
+      <view class="mobile-auth-links"><button tabindex="0" role="button" class="mobile-text-button" @click="openUniPage('/pages/reset-password/reset-password')">{{ mobileT('forgot') }}</button></view>
     </view>
     <text class="mobile-auth-note">{{ mobileT('adultNote') }}</text>
   </view>

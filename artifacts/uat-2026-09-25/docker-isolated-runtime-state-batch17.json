@@ -1,0 +1,256 @@
+{
+  "at": "2026-09-24T18:24:36.369Z",
+  "project": "cloudstudy-uat-isolated-3c94b27160",
+  "privateNetwork": "cloudstudy-uat-isolated-3c94b27160",
+  "publishedHostPorts": 0,
+  "volumes": [
+    "cloudstudy-uat-isolated-3c94b27160-mysql",
+    "cloudstudy-uat-isolated-3c94b27160-redis",
+    "cloudstudy-uat-isolated-3c94b27160-minio",
+    "cloudstudy-uat-isolated-3c94b27160-kafka"
+  ],
+  "sharedFingerprintSha256": "569d30013daff715f02546488d6dfbb449e81b4b009de0154bdbb22ed1545b2b",
+  "containers": [
+    {
+      "name": "cloudstudy-uat-isolated-3c94b27160-admin-ops-service-1",
+      "service": "admin-ops-service",
+      "id": "9d4f32d45e093c0f9c5fba04d27865a6a0d3f77a3b50bd7600f32ae17214e85c",
+      "imageId": "sha256:4a7778a5f584e0d615828cfc212cbd1aea7c5a2469c3a43169b966dd4c5ee33d",
+      "status": "running",
+      "exitCode": 0,
+      "health": null
+    },
+    {
+      "name": "cloudstudy-uat-isolated-3c94b27160-admin-web-1",
+      "service": "admin-web",
+      "id": "92019a86c8d64d3d019ee67515d147699b386a4f0fd26f0b57b377296f4d6af6",
+      "imageId": "sha256:c62854f9e2d582fb83658bd47b7290a35482a0d5c2a78840e1e5095ddbbcc4cc",
+      "status": "running",
+      "exitCode": 0,
+      "health": null
+    },
+    {
+      "name": "cloudstudy-uat-isolated-3c94b27160-analytics-service-1",
+      "service": "analytics-service",
+      "id": "b71fd0c6af42b551d4d7756bbbcf6dab791fe38ae104206c93a79ed1053b19a3",
+      "imageId": "sha256:d42ae17684722bf213916fcfa2316a7321d2cd17634722d5e3249da5f0e354b5",
+      "status": "running",
+      "exitCode": 0,
+      "health": null
+    },
+    {
+      "name": "cloudstudy-uat-isolated-3c94b27160-api-gateway-1",
+      "service": "api-gateway",
+      "id": "6a0067e565a0985541fce7c460af5b15587308d4240c50e07aebe8a4f5eef6c9",
+      "imageId": "sha256:974dc77fae68b16f05c412b1f28907f0855c982b10ac50b5b57e620eded80af5",
+      "status": "running",
+      "exitCode": 0,
+      "health": null
+    },
+    {
+      "name": "cloudstudy-uat-isolated-3c94b27160-assessment-service-1",
+      "service": "assessment-service",
+      "id": "170e8df66d8e9c2b9da27401d14e3207fca995882109ebf3304d1ac03b4aae19",
+      "imageId": "sha256:6bdc3aa635739de288730bbf968868eb774c9c1cc3b2268bd9dd979d955290dd",
+      "status": "running",
+      "exitCode": 0,
+      "health": null
+    },
+    {
+      "name": "cloudstudy-uat-isolated-3c94b27160-audit-service-1",
+      "service": "audit-service",
+      "id": "46eb16392b8d5b88ac52e9535dce39859395bba644791c65409e3c2ae8299ef3",
+      "imageId": "sha256:29fb5157cfde698add43f878cebc72544072f5f315a3eaad466e069f7ecc0f65",
+      "status": "running",
+      "exitCode": 0,
+      "health": null
+    },
+    {
+      "name": "cloudstudy-uat-isolated-3c94b27160-commerce-service-1",
+      "service": "commerce-service",
+      "id": "b807a842572e084cf6e663c84c1c6f8f6eb17f59676995f8b521baf2f6bb8565",
+      "imageId": "sha256:0ac0fd77520e5613bb16edfffb524a417dfb8f5de5ba12cfd64672384b16d309",
+      "status": "running",
+      "exitCode": 0,
+      "health": null
+    },
+    {
+      "name": "cloudstudy-uat-isolated-3c94b27160-content-service-1",
+      "service": "content-service",
+      "id": "2ce3e1597296c339e79948672f0880ee576759dc089ddd91d1f138920c7d5336",
+      "imageId": "sha256:7b05f336dd2e519a0c31439e42763201c7ec14ae8c7b808ccb99d53ce5411b76",
+      "status": "running",
+      "exitCode": 0,
+      "health": null
+    },
+    {
+      "name": "cloudstudy-uat-isolated-3c94b27160-gamification-service-1",
+      "service": "gamification-service",
+      "id": "b7b3732881d29193bc0226f43c7d7833767c8575cc473ff3a0f413cdd5ff2d12",
+      "imageId": "sha256:36be406409f33964c0db3b87839e5d68e2dc6fa4c21bf15a84ae315f2ceedfda",
+      "status": "running",
+      "exitCode": 0,
+      "health": null
+    },
+    {
+      "name": "cloudstudy-uat-isolated-3c94b27160-iam-service-1",
+      "service": "iam-service",
+      "id": "a07ab3e12d5ad35458228778a113aeaf30f7cd694f4ad8eb5b8a560f64604916",
+      "imageId": "sha256:3a18c582ed3ba0786bbff2c062b516bdaf7876069f5ca60b1d82a24b92eab9a1",
+      "status": "running",
+      "exitCode": 0,
+      "health": null
+    },
+    {
+      "name": "cloudstudy-uat-isolated-3c94b27160-kafka-1",
+      "service": "kafka",
+      "id": "d3b0d157003ef78254c13ee71fb5e981243effcbc07e5076c013791a24b4e279",
+      "imageId": "sha256:05b4616e0702ef2729327705d54ad6b50ea70b271c4b730fabd2320789fb7b02",
+      "status": "running",
+      "exitCode": 0,
+      "health": null
+    },
+    {
+      "name": "cloudstudy-uat-isolated-3c94b27160-learner-service-1",
+      "service": "learner-service",
+      "id": "31086a40e186b49a3dd1b4ab7189ce8e65fc750ae6e207a716f2b074c179c80e",
+      "imageId": "sha256:fa6b22a86225c8f1be3240a40ff255e8492b4cdcc0a1dd824e4942468d31add7",
+      "status": "running",
+      "exitCode": 0,
+      "health": null
+    },
+    {
+      "name": "cloudstudy-uat-isolated-3c94b27160-learner-web-1",
+      "service": "learner-web",
+      "id": "1ebdb0bea7bbd5f344090fbdda1c12d760c0ac38e4320879dc3698733d52e5c2",
+      "imageId": "sha256:d9b054f0849d27a7cc97f42de03461758b54d842f6485f3956626f6244b69a71",
+      "status": "running",
+      "exitCode": 0,
+      "health": null
+    },
+    {
+      "name": "cloudstudy-uat-isolated-3c94b27160-learning-service-1",
+      "service": "learning-service",
+      "id": "865ef7badc69a86e9f7f14f60d0dd8c1e3d25f3d731b3a6380eb2076d365fb42",
+      "imageId": "sha256:39c0292181f587e08ec71b19917f7e25565c53d193c8e36efe83065538570b11",
+      "status": "running",
+      "exitCode": 0,
+      "health": null
+    },
+    {
+      "name": "cloudstudy-uat-isolated-3c94b27160-media-service-1",
+      "service": "media-service",
+      "id": "4d5d6baac7eddf00b006ac58fa97f98aacc5d71c5f585e43d562cead34d92492",
+      "imageId": "sha256:db323cd50d7422e968fe2647bca8fedb5782012fce0be11aec144a4dc8b93eab",
+      "status": "running",
+      "exitCode": 0,
+      "health": null
+    },
+    {
+      "name": "cloudstudy-uat-isolated-3c94b27160-minio-1",
+      "service": "minio",
+      "id": "4e1d0d8e0ba6b1afc79d156c1db57787d9a5c9f3bdd1c32544dae66779f886d4",
+      "imageId": "sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e",
+      "status": "running",
+      "exitCode": 0,
+      "health": "healthy"
+    },
+    {
+      "name": "cloudstudy-uat-isolated-3c94b27160-minio-init-1",
+      "service": "minio-init",
+      "id": "e5531383e769acf1df26f754af841497da53047b7bfc70a9deeeb99fea3ed4bf",
+      "imageId": "sha256:a7fe349ef4bd8521fb8497f55c6042871b2ae640607cf99d9bede5e9bdf11727",
+      "status": "exited",
+      "exitCode": 0,
+      "health": null
+    },
+    {
+      "name": "cloudstudy-uat-isolated-3c94b27160-mobile-h5-1",
+      "service": "mobile-h5",
+      "id": "84080a4b06c35e4a3243e1e8f373cf5819d7dcffd82ed944329550ad6b74715d",
+      "imageId": "sha256:41a9f62449dc8cd26f6c256f7db2a6aa39195d25d42412ff059d997ba5456b89",
+      "status": "running",
+      "exitCode": 0,
+      "health": null
+    },
+    {
+      "name": "cloudstudy-uat-isolated-3c94b27160-mysql-1",
+      "service": "mysql",
+      "id": "27e22c21e0976802dc8aaf5a7852f02019acecf3dfdb6a5bfd5c968c92bf6e47",
+      "imageId": "sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d",
+      "status": "running",
+      "exitCode": 0,
+      "health": "healthy"
+    },
+    {
+      "name": "cloudstudy-uat-isolated-3c94b27160-mysql-init-1",
+      "service": "mysql-init",
+      "id": "3d1c478e14c1182716e2aad25fcc1c09f1fb0c5c218adc218be9f11ab3dbb740",
+      "imageId": "sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d",
+      "status": "exited",
+      "exitCode": 0,
+      "health": null
+    },
+    {
+      "name": "cloudstudy-uat-isolated-3c94b27160-mysql-migrate-1",
+      "service": "mysql-migrate",
+      "id": "9c3998f958bf2f42f76283a33be9de0ed5d5aa4065699c7e15d771661f9ad1d4",
+      "imageId": "sha256:ae03d0743e76f30d831723a63183b8daf7f03f7ece8f8494ad6e45d9c91769b0",
+      "status": "exited",
+      "exitCode": 2,
+      "health": null
+    },
+    {
+      "name": "cloudstudy-uat-isolated-3c94b27160-notification-service-1",
+      "service": "notification-service",
+      "id": "145fb3ba62fe30a7c44cb629d8104e48d382091f595662eb3f54671052a4a80b",
+      "imageId": "sha256:dc308be6897e6dad458cbfbd5638f1c9b2df47b357712ea14c73cfe8ab310698",
+      "status": "running",
+      "exitCode": 0,
+      "health": null
+    },
+    {
+      "name": "cloudstudy-uat-isolated-3c94b27160-official-site-1",
+      "service": "official-site",
+      "id": "44996dd3947e75a6740e3f1602ba2123d67a0e1d4eb60c428bb30aaee1dfec19",
+      "imageId": "sha256:39b4c7a7bec3ea53692a889c4b103a6c4082b1e74ab0f47dda2cb09f6dccd48d",
+      "status": "running",
+      "exitCode": 0,
+      "health": null
+    },
+    {
+      "name": "cloudstudy-uat-isolated-3c94b27160-redis-1",
+      "service": "redis",
+      "id": "3912aec9c9957d434f35488297d81ab9d69c5082e16b4c2bf8828b2e0f813fd4",
+      "imageId": "sha256:858f009f9709ce576febc734aa78b8f6d624b82571f9ddb6bda4377c833b3499",
+      "status": "running",
+      "exitCode": 0,
+      "health": "healthy"
+    },
+    {
+      "name": "cloudstudy-uat-isolated-3c94b27160-social-service-1",
+      "service": "social-service",
+      "id": "f5c4717a2a6956a5f59b5cd19921c1e422a5912e754a79f385750c12e4010bda",
+      "imageId": "sha256:971140346225f7a160f58627cbe782708bde80dd55347b321dfacda9e72df64d",
+      "status": "running",
+      "exitCode": 0,
+      "health": null
+    },
+    {
+      "name": "cloudstudy-uat-isolated-3c94b27160-workflow-service-1",
+      "service": "workflow-service",
+      "id": "f261a39586a8dae7847b40abf7a0c20fd1ca3ae1f77a150a921ebd90ed36e923",
+      "imageId": "sha256:56737a32a02304b4cf472e85ffdc17df32e99667aacd5530fd377e1c26361eac",
+      "status": "running",
+      "exitCode": 0,
+      "health": null
+    }
+  ],
+  "proxy": {
+    "name": "cloudstudy-uat-isolated-3c94b27160-https-proxy",
+    "id": "54b2bfa2c2a9bc12d9b495bda0f45ac054bd25fd790080e3b52e6bb5f4e9d41f",
+    "imageId": "sha256:65645c7bb6a0661892a8b03b89d0743208a18dd2f3f17a54ef4b76fb8e2f2a10",
+    "status": "running"
+  },
+  "sharedUnchanged": true
+}

@@ -6,7 +6,7 @@ import { join } from 'node:path'
 const root = join(import.meta.dirname, '..', '..', '..')
 const read = (path) => readFile(join(root, path), 'utf8')
 
-test('listening pages render decoded peaks with a decorative fallback, never fake data', async () => {
+test('listening pages render waveforms only with an authorized playable URL', async () => {
   for (const page of [
     'apps/learner-web/src/pages/B11ListeningPage.vue',
     'apps/learner-web/src/pages/B3ListeningPage.vue',
@@ -15,6 +15,7 @@ test('listening pages render decoded peaks with a decorative fallback, never fak
     // Real extraction from authorized bytes via the shared Web Audio module.
     assert.match(source, /extractPeaksFromArrayBuffer/)
     assert.match(source, /peaksToBars\(waveformPeaks\.value/)
+    assert.match(source, /v-if="audioSrc" class="waveform"/, `${page}: unavailable audio must not show decorative waveform bars`)
     // Explicit data-source marker so tests and reviewers can tell peaks from fallback.
     assert.match(source, /data-source="waveBars \? 'extracted' : 'fallback'"/)
     // The fallback stays strictly decorative: deterministic heights, no claims.

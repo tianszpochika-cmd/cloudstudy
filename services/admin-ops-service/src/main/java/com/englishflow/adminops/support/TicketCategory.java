@@ -6,5 +6,7 @@ public enum TicketCategory {
     BILLING,
     LEARNING_DATA,
     PRIVACY_REQUEST,
-    TECHNICAL
+    TECHNICAL,
+    /** Existing fixture value outside the Phase 1 category catalog; read only. */
+    LEGACY_UNMAPPED
 }

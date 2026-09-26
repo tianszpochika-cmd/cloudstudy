@@ -2,7 +2,7 @@
 import { confirmDiscard, useUnsavedChanges } from "../platform/unsaved";
 import { ui } from "../platform/experience";
 import AdminPageIntro from "../components/AdminPageIntro.vue";
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import {
   ContentCommandError,
@@ -24,13 +24,19 @@ const activeTab = ref("library");
 const contentQuery = ref("");
 const filteredContents = computed(() =>
   contents.value.filter((item) =>
-    `${item.contentCode} ${item.title} ${statusLabel(item.status)}`
+    `${item.contentCode} ${item.title} ${contentStatusLabel(item)}`
       .toLowerCase()
       .includes(contentQuery.value.trim().toLowerCase()),
   ),
 );
 const viewState = ref<ContentViewState>("loading");
 const contents = ref<ContentSnapshot[]>([]);
+const currentPage = ref(1);
+const pageSize = 20;
+const pagedContents = computed(() =>
+  filteredContents.value.slice((currentPage.value - 1) * pageSize, currentPage.value * pageSize),
+);
+watch(contentQuery, () => { currentPage.value = 1; });
 const reviewTasks = ref<ReviewTaskProjection[]>([]);
 const selectedContentId = ref("");
 const contentCode = ref("");
@@ -59,17 +65,13 @@ const selectedContent = computed(
 const selectedStatus = computed<ContentStatus | null>(
   () => selectedContent.value?.status ?? null,
 );
+const selectedVersionMissing = computed(
+  () => Boolean(selectedContent.value && !selectedContent.value.versionId),
+);
+const selectedReviewReady = ref(false);
 const canWrite = computed(() => session.can("admin.content.write"));
 const canPublish = computed(() => session.can("admin.content.publish"));
 const canRollback = computed(() => session.can("admin.content.rollback"));
-const firstApproval = computed(() =>
-  reviewTasks.value.some(
-    (task) =>
-      task.contentId === selectedContentId.value &&
-      task.stage === "FIRST" &&
-      task.status === "APPROVED",
-  ),
-);
 const finalApproval = computed(() =>
   reviewTasks.value.some(
     (task) =>
@@ -78,26 +80,28 @@ const finalApproval = computed(() =>
       task.status === "APPROVED",
   ),
 );
-const dualApprovalReady = computed(
-  () => firstApproval.value && finalApproval.value,
-);
+// The owner exposes FINAL_APPROVED only after both distinct review stages pass.
+const dualApprovalReady = computed(() => finalApproval.value);
 const canEditSelected = computed(
   () =>
     canWrite.value &&
+    !selectedVersionMissing.value &&
     (!selectedStatus.value ||
       selectedStatus.value === "DRAFT" ||
       selectedStatus.value === "REJECTED"),
 );
 const canValidateSelected = computed(
-  () => canWrite.value && Boolean(selectedContentId.value),
+  () => canWrite.value && Boolean(selectedContentId.value) && !selectedVersionMissing.value,
 );
 const canSubmitSelected = computed(
   () =>
     canWrite.value &&
     Boolean(selectedContentId.value) &&
-    (!selectedStatus.value ||
-      selectedStatus.value === "DRAFT" ||
-      selectedStatus.value === "REJECTED"),
+    !selectedVersionMissing.value &&
+    !dirty.value &&
+    selectedStatus.value === "DRAFT" &&
+    selectedContent.value?.reviewSubmissionReady === true &&
+    selectedReviewReady.value,
 );
 const canPublishSelected = computed(
   () =>
@@ -125,6 +129,10 @@ function statusLabel(status: ContentStatus | string | null): string {
     CONFLICT: "版本冲突",
   };
   return status ? (labels[status] ?? status) : "尚未选择内容";
+}
+
+function contentStatusLabel(content: ContentSnapshot): string {
+  return content.versionId ? statusLabel(content.status) : "版本缺失/需修复";
 }
 
 function statusTagType(
@@ -179,6 +187,7 @@ function parsePayload(): Record<string, unknown> | null {
 
 function applyContent(content: ContentSnapshot | null): void {
   if (!content) return;
+  selectedReviewReady.value = false;
   selectedContentId.value = content.contentId;
   contentCode.value = content.contentCode;
   title.value = content.title;
@@ -187,6 +196,19 @@ function applyContent(content: ContentSnapshot | null): void {
   if (!rollbackTargetVersion.value && content.publishedVersionId)
     rollbackTargetVersion.value = content.publishedVersionId;
   dirty.value = false;
+}
+
+async function verifySelectedReviewReadiness(content: ContentSnapshot): Promise<void> {
+  selectedReviewReady.value = false;
+  if (content.status !== "DRAFT" || content.reviewSubmissionReady !== true) return;
+  const ready = await contentServiceCommandAdapter
+    .verifyReviewSubmissionReady(content.contentId)
+    .catch(() => false);
+  if (selectedContentId.value === content.contentId &&
+      selectedContent.value?.versionId === content.versionId &&
+      selectedContent.value?.stateVersion === content.stateVersion) {
+    selectedReviewReady.value = ready;
+  }
 }
 
 async function selectContent(content: ContentSnapshot): Promise<void> {
@@ -201,6 +223,7 @@ async function selectContent(content: ContentSnapshot): Promise<void> {
   activeTab.value = "editor";
   lastError.value = null;
   viewState.value = "ready";
+  await verifySelectedReviewReadiness(content);
 }
 
 function handleError(error: unknown): void {
@@ -226,6 +249,7 @@ function handleError(error: unknown): void {
 async function loadProjection(): Promise<void> {
   viewState.value = "loading";
   lastError.value = null;
+  selectedReviewReady.value = false;
   try {
     const projection =
       await contentServiceCommandAdapter.getWorkspaceProjection();
@@ -240,6 +264,9 @@ async function loadProjection(): Promise<void> {
     }
     viewState.value =
       contents.value.length || reviewTasks.value.length ? "ready" : "empty";
+    if (selectedContent.value && !dirty.value) {
+      await verifySelectedReviewReadiness(selectedContent.value);
+    }
   } catch (error) {
     handleError(error);
   }
@@ -284,6 +311,7 @@ async function createDraft(): Promise<void> {
     });
     lastRequestId.value = receipt.requestId;
     if (receipt.content) applyContent(receipt.content);
+    dirty.value = false;
     ElMessage.success("草稿命令已提交，内容事实由 content-service 返回确认。");
     await loadProjection();
   });
@@ -332,7 +360,7 @@ async function validateDraft(): Promise<void> {
 
 async function submitReview(): Promise<void> {
   if (!selectedContentId.value || !canSubmitSelected.value) {
-    viewState.value = "permission";
+    ElMessage.warning("版权、校验或媒体材料未就绪，暂不能提交。");
     return;
   }
   await runCommand("submit", async () => {
@@ -340,7 +368,7 @@ async function submitReview(): Promise<void> {
       selectedContentId.value,
     );
     lastRequestId.value = receipt.requestId;
-    ElMessage.success("内容已提交双审队列，等待服务端分配审核节点。");
+    ElMessage.success("已提交双审。");
     await loadProjection();
   });
 }
@@ -522,11 +550,11 @@ onMounted(() => {
               />
             </div>
             <el-empty
-              v-if="!filteredContents.length"
-              description="暂时没有可展示的内容投影；权限拒绝与服务错误已单独呈现。"
+              v-if="!filteredContents.length && (viewState === 'ready' || viewState === 'empty')"
+              :description="contents.length ? '没有匹配的内容' : '暂无内容'"
             /><el-table
-              v-else
-              :data="filteredContents"
+              v-else-if="filteredContents.length"
+              :data="pagedContents"
               stripe
               @row-click="selectContent"
               ><el-table-column
@@ -540,7 +568,7 @@ onMounted(() => {
               /><el-table-column label="状态" width="120"
                 ><template #default="scope"
                   ><el-tag :type="statusTagType(scope.row.status)">{{
-                    statusLabel(scope.row.status)
+                    contentStatusLabel(scope.row)
                   }}</el-tag></template
                 ></el-table-column
               ><el-table-column
@@ -557,7 +585,15 @@ onMounted(() => {
                   ></template
                 ></el-table-column
               ></el-table
-            ></el-card
+            ><el-pagination
+              v-if="filteredContents.length > pageSize"
+              v-model:current-page="currentPage"
+              :page-size="pageSize"
+              :total="filteredContents.length"
+              :pager-count="5"
+              layout="prev, pager, next"
+              class="content-pagination"
+            /></el-card
           ></el-tab-pane
         >
         <el-tab-pane name="editor" label="内容编辑"
@@ -569,7 +605,7 @@ onMounted(() => {
                   ><el-tag
                     v-if="selectedContent"
                     :type="statusTagType(selectedStatus)"
-                    >{{ statusLabel(selectedStatus) }}</el-tag
+                    >{{ contentStatusLabel(selectedContent) }}</el-tag
                   ><el-tag v-if="dirty" type="warning">本地有未保存编辑</el-tag
                   ><el-tag v-if="lastRequestId" type="info" effect="plain"
                     >操作可追溯</el-tag
@@ -583,42 +619,42 @@ onMounted(() => {
                   ><el-form-item label="内容编码"
                     ><el-input
                       v-model="contentCode"
-                      :disabled="!canWrite || !!busyAction"
+                      :disabled="!canWrite || !!busyAction || selectedVersionMissing"
                       @input="markDirty" /></el-form-item
                 ></el-col>
                 <el-col :xs="24" :sm="12" :md="8"
                   ><el-form-item label="内容类型"
                     ><el-input
                       v-model="contentType"
-                      :disabled="!canWrite || !!busyAction"
+                      :disabled="!canWrite || !!busyAction || selectedVersionMissing"
                       @input="markDirty" /></el-form-item
                 ></el-col>
                 <el-col :xs="24" :sm="12" :md="8"
                   ><el-form-item label="标题"
                     ><el-input
                       v-model="title"
-                      :disabled="!canWrite || !!busyAction"
+                      :disabled="!canWrite || !!busyAction || selectedVersionMissing"
                       @input="markDirty" /></el-form-item
                 ></el-col>
                 <el-col :xs="24" :sm="12" :md="8"
                   ><el-form-item label="内容校验值（SHA-256）"
                     ><el-input
                       v-model="contentHash"
-                      :disabled="!canWrite || !!busyAction"
+                      :disabled="!canWrite || !!busyAction || selectedVersionMissing"
                       @input="markDirty" /></el-form-item
                 ></el-col>
                 <el-col :xs="24" :sm="12" :md="8"
                   ><el-form-item label="来源编码"
                     ><el-input
                       v-model="sourceCode"
-                      :disabled="!canWrite || !!busyAction"
+                      :disabled="!canWrite || !!busyAction || selectedVersionMissing"
                       @input="markDirty" /></el-form-item
                 ></el-col>
                 <el-col :xs="24" :sm="12" :md="8"
                   ><el-form-item label="版权编码"
                     ><el-input
                       v-model="licenseCode"
-                      :disabled="!canWrite || !!busyAction"
+                      :disabled="!canWrite || !!busyAction || selectedVersionMissing"
                       @input="markDirty" /></el-form-item
                 ></el-col>
               </el-row>
@@ -627,14 +663,14 @@ onMounted(() => {
                   v-model="payloadText"
                   type="textarea"
                   :rows="5"
-                  :disabled="!canWrite || !!busyAction"
+                  :disabled="!canWrite || !!busyAction || selectedVersionMissing"
                   @input="markDirty"
               /></el-form-item>
               <el-space wrap
                 ><el-button
                   type="primary"
                   :loading="isBusy('create')"
-                  :disabled="!canWrite || !!busyAction"
+                  :disabled="!canWrite || !!busyAction || !!selectedContentId"
                   @click="createDraft"
                   >创建草稿</el-button
                 ><el-button
@@ -651,7 +687,7 @@ onMounted(() => {
                   >结构校验</el-button
                 ><el-button
                   :loading="isBusy('submit')"
-                  :disabled="!canSubmitSelected"
+                  :disabled="!canSubmitSelected || !!busyAction"
                   @click="submitReview"
                   >提交双审</el-button
                 ><el-button
@@ -664,15 +700,23 @@ onMounted(() => {
                 ></el-space
               >
               <el-text
-                v-if="selectedContent"
+                v-if="selectedVersionMissing"
+                type="danger"
+                class="content-command-note"
+                >内容版本缺失，需修复后再编辑或提交。</el-text
+              ><el-text
+                v-else-if="selectedContent"
                 type="info"
                 class="content-command-note"
-                >当前列表不包含内容正文；编辑配置前请核对原稿。当前版本
-                {{ selectedContent.versionId || "待服务端分配" }} · 状态
-                {{ statusLabel(selectedStatus) }} · 服务端状态版本
-                {{ stateVersion || "待返回" }}</el-text
+                >当前版本：{{ contentStatusLabel(selectedContent) }}。编辑前请核对原稿。</el-text
               ><el-text v-else type="info" class="content-command-note"
-                >填写内容并创建草稿，之后可提交审核。</el-text
+                >请先填写内容并创建草稿。</el-text
+              >
+              <el-text
+                v-if="selectedContent && selectedStatus === 'DRAFT' && !selectedReviewReady"
+                type="warning"
+                class="content-command-note"
+                >版权、校验或媒体材料未就绪，暂不能提交。</el-text
               >
             </el-form>
           </el-card></el-tab-pane
@@ -778,12 +822,6 @@ onMounted(() => {
         title="版本冲突已保留"
         description="请使用刷新读取最新状态，确认基线版本后再保存；本地输入不会被自动覆盖。"
         type="error"
-        show-icon
-      /><el-alert
-        v-if="viewState === 'empty'"
-        title="暂无内容工作项"
-        description="当前服务端没有返回可展示的内容或审核投影。若你预期应有数据，请检查权限或稍后重试。"
-        type="info"
         show-icon
       />
     </template>

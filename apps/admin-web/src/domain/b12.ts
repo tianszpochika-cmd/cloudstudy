@@ -40,7 +40,7 @@ export function recordList(value: unknown): Array<Record<string, unknown>> {
 export function parseModerationReport(value: Record<string, unknown>): B12ModerationReport | null {
   const reportId = text(value.reportId)
   if (!reportId) return null
-  return { reportId, status: firstText(value, ['status', 'reviewStatus'], 'UNKNOWN'), reasonCode: firstText(value, ['reasonCode', 'reason'], 'UNKNOWN'), reviewMode: firstText(value, ['reviewMode', 'handlingMode'], 'MANUAL'), targetRef: firstText(value, ['targetPublicRef', 'targetRef', 'targetDisplay'], adminT('domainB12.maskedTargetRef')), roomRef: text(value.roomPublicRef) ?? text(value.roomRef), createdAt: text(value.createdAt) ?? text(value.updatedAt) }
+  return { reportId, status: firstText(value, ['status', 'reviewStatus'], 'UNKNOWN'), reasonCode: firstText(value, ['reasonCode', 'reason'], 'UNKNOWN'), reviewMode: firstText(value, ['reviewMode', 'handlingMode'], 'UNKNOWN'), targetRef: firstText(value, ['targetPublicRef', 'targetRef', 'targetDisplay'], adminT('domainB12.maskedTargetRef')), roomRef: text(value.roomPublicRef) ?? text(value.roomRef), createdAt: text(value.createdAt) }
 }
 
 export function parseRecoveryTask(value: Record<string, unknown>): B12RecoveryTask | null {

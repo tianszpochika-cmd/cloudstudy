@@ -32,8 +32,13 @@
           "newCanonicalFactsFromLegacyPayload": "PROHIBITED",
           "runtimeStatus": "NOT_RUNTIME_VERIFIED"
         },
+        "x-owner": "assessment-service",
+        "x-contract": {
+          "owner": "assessment-service",
+          "write": false
+        },
         "x-authorization": {
-          "requiredPermission": "assessment.placement.session.read",
+          "requiredPermission": "assessment.session.read",
           "defaultDecision": "DENY",
           "trustedFacts": [
             "subject",
@@ -135,8 +140,13 @@
           "newCanonicalFactsFromLegacyPayload": "PROHIBITED",
           "runtimeStatus": "NOT_RUNTIME_VERIFIED"
         },
+        "x-owner": "assessment-service",
+        "x-contract": {
+          "owner": "assessment-service",
+          "write": true
+        },
         "x-authorization": {
-          "requiredPermission": "assessment.placement.session.create",
+          "requiredPermission": "assessment.session.write",
           "defaultDecision": "DENY",
           "trustedFacts": [
             "subject",
@@ -246,8 +256,13 @@
           "newCanonicalFactsFromLegacyPayload": "PROHIBITED",
           "runtimeStatus": "NOT_RUNTIME_VERIFIED"
         },
+        "x-owner": "assessment-service",
+        "x-contract": {
+          "owner": "assessment-service",
+          "write": true
+        },
         "x-authorization": {
-          "requiredPermission": "assessment.placement.response.submit",
+          "requiredPermission": "assessment.session.write",
           "defaultDecision": "DENY",
           "trustedFacts": [
             "subject",

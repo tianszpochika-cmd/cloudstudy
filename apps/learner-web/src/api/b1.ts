@@ -10,7 +10,6 @@ import type {
   OnboardingProfile,
   PlacementQuestion,
   PrivacySettings,
-  ProfileSnapshot,
   SubTag,
   TargetGoal,
 } from '../domain/b1'
@@ -38,6 +37,17 @@ export interface DataExportResponse {
   exportId: string
   status: 'QUEUED' | 'READY' | 'FAILED'
   redactionPolicy: 'learner-self'
+}
+
+export interface ProfileTargetSnapshot {
+  targetGoal: TargetGoal
+  dailyQuotaMinutes: DailyQuotaMinutes
+  profileVersion: string
+  stateVersion: number
+  goalCode: 'FOUNDATION' | 'COLLEGE_CET' | 'POSTGRADUATE_ENGLISH' | 'WORKPLACE_DAILY'
+  targetLevel: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2'
+  targetDate?: string
+  examCode?: string
 }
 
 function isRecord(value: unknown): value is RecordValue {
@@ -243,61 +253,84 @@ export async function saveContinueContext(context: ContinueContext): Promise<voi
   await apiClient.put('/learning/continue-context', context, withIdempotency())
 }
 
-export async function fetchProfile(): Promise<ProfileSnapshot | null> {
-  const [profileResponse, targetResponse] = await Promise.all([
-    apiClient.get<unknown>('/learner/profile'),
-    apiClient.get<unknown>('/learner/targets').catch(() => null),
-  ])
-  const profileSource = unwrap(profileResponse)
-  const source = isRecord(profileSource) && isRecord(profileSource.data) ? profileSource.data : profileSource
-  const targetEnvelope = targetResponse === null ? null : unwrap(targetResponse)
-  const targetSource = isRecord(targetEnvelope) && isRecord(targetEnvelope.data) ? targetEnvelope.data : targetEnvelope
-  if (!isRecord(source)) return null
-  const targetGoal = (isRecord(targetSource) ? readString(targetSource.goalCode) : null)
-    ?? readString(source.targetGoal) ?? readString(source.target_goal)
-    ?? (isRecord(source) && isRecord(source.goal) ? readString(source.goal.goalCode) : null)
-  const normalizedGoal = targetGoal === 'FOUNDATION' || targetGoal === 'WORKPLACE' ? (targetGoal === 'WORKPLACE' ? 'WORKPLACE_DAILY' : 'ZERO_BASIS') : targetGoal
-  if (!['ZERO_BASIS', 'CET_4_6', 'POSTGRADUATE', 'WORKPLACE_DAILY'].includes(String(normalizedGoal))) return null
-  const quota = (isRecord(targetSource) ? readNumber(targetSource.dailyQuotaMinutes) : null)
-    ?? readNumber(source.dailyQuotaMinutes)
-    ?? readNumber(source.daily_quota_minutes)
-  if (![5, 15, 30, 45].includes(quota ?? 0)) return null
-  return {
-    nickname: readString(source.nickname) ?? '学习者',
-    accentPref: source.accentPref === 'UK' || source.accent_pref === 'UK' ? 'UK' : 'US',
-    dailyQuotaMinutes: quota as DailyQuotaMinutes,
-    targetGoal: normalizedGoal as TargetGoal,
-    profileVersion: readString(source.profileVersion) ?? (typeof source.stateVersion === 'number' ? String(source.stateVersion) : 'server'),
+function canonicalGoal(value: string | null): Pick<ProfileTargetSnapshot, 'targetGoal' | 'goalCode'> | null {
+  switch (value) {
+    case 'FOUNDATION': case 'ZERO_BASIS':
+      return { targetGoal: 'ZERO_BASIS', goalCode: 'FOUNDATION' }
+    case 'COLLEGE_CET': case 'CET_4_6':
+      return { targetGoal: 'CET_4_6', goalCode: 'COLLEGE_CET' }
+    case 'POSTGRADUATE_ENGLISH': case 'POSTGRADUATE':
+      return { targetGoal: 'POSTGRADUATE', goalCode: 'POSTGRADUATE_ENGLISH' }
+    case 'WORKPLACE_DAILY': case 'WORKPLACE':
+      return { targetGoal: 'WORKPLACE_DAILY', goalCode: 'WORKPLACE_DAILY' }
+    default: return null
   }
 }
 
-export async function patchProfile(input: { nickname: string; accentPref: 'US' | 'UK'; dailyQuotaMinutes: DailyQuotaMinutes }): Promise<void> {
-  const [current, target] = await Promise.all([
+function responseData(value: unknown): unknown {
+  const envelope = unwrap(value)
+  return isRecord(envelope) && isRecord(envelope.data) ? envelope.data : envelope
+}
+
+export async function fetchProfile(): Promise<ProfileTargetSnapshot> {
+  const [profileResponse, targetResponse] = await Promise.all([
     apiClient.get<unknown>('/learner/profile'),
-    apiClient.get<unknown>('/learner/targets').catch(() => null),
+    apiClient.get<unknown>('/learner/targets'),
   ])
-  const currentEnvelope = unwrap(current)
-  const currentSource = isRecord(currentEnvelope) && isRecord(currentEnvelope.data) ? currentEnvelope.data : currentEnvelope
-  const targetEnvelope = target === null ? null : unwrap(target)
-  const targetSource = isRecord(targetEnvelope) && isRecord(targetEnvelope.data) ? targetEnvelope.data : targetEnvelope
-  const stateVersion = isRecord(currentSource) && typeof currentSource.stateVersion === 'number' ? currentSource.stateVersion : 0
-  const rawTargetGoal = (isRecord(targetSource) ? readString(targetSource.goalCode) : null)
-    ?? (isRecord(currentSource) ? readString(currentSource.targetGoal) ?? readString(currentSource.target_goal) : null)
-    ?? (isRecord(currentSource) && isRecord(currentSource.goal) ? readString(currentSource.goal.goalCode) : null)
-    ?? 'ZERO_BASIS'
-  const targetGoal = rawTargetGoal === 'FOUNDATION' || rawTargetGoal === 'WORKPLACE' ? (rawTargetGoal === 'WORKPLACE' ? 'WORKPLACE_DAILY' : 'ZERO_BASIS') : rawTargetGoal
-  await apiClient.patch('/learner/profile', {
-    expectedStateVersion: stateVersion,
-    nickname: input.nickname,
-    accentPref: input.accentPref,
-  }, withIdempotency())
+  const source = responseData(profileResponse)
+  const target = responseData(targetResponse)
+  if (!isRecord(source) || !isRecord(target)) throw new Error('学习资料读取失败，请重试。')
+
+  const goal = canonicalGoal(readString(target.goalCode) ?? readString(target.goal_code))
+  const quota = readNumber(target.dailyQuotaMinutes) ?? readNumber(target.daily_quota_minutes)
+  const level = readString(target.targetLevel) ?? readString(target.target_level)
+  const stateVersion = readNumber(source.stateVersion) ?? readNumber(source.state_version)
+  const targetVersion = readNumber(target.stateVersion) ?? readNumber(target.state_version)
+  if (!goal || ![5, 15, 30, 45].includes(quota ?? 0)
+    || !['A1', 'A2', 'B1', 'B2', 'C1', 'C2'].includes(level ?? '')
+    || stateVersion === null || !Number.isSafeInteger(stateVersion) || stateVersion < 0
+    || (targetVersion !== null && targetVersion !== stateVersion)
+    || (target.status !== undefined && target.status !== 'ACTIVE')) {
+    throw new Error('学习目标数据不完整，请刷新后重试。')
+  }
+  // B25 embeds the same owner goal in profile. Refuse conflicting owner facts.
+  if (isRecord(source.goal)) {
+    const embedded = canonicalGoal(readString(source.goal.goalCode) ?? readString(source.goal.goal_code))
+    const embeddedQuota = readNumber(source.goal.dailyQuotaMinutes) ?? readNumber(source.goal.daily_quota_minutes)
+    if (embedded && (embedded.goalCode !== goal.goalCode || embeddedQuota !== quota)) {
+      throw new Error('学习目标数据不一致，请刷新后重试。')
+    }
+  }
+  const targetDate = readString(target.targetDate) ?? readString(target.target_date)
+  const examCode = readString(target.examCode) ?? readString(target.exam_code)
+  return {
+    ...goal,
+    dailyQuotaMinutes: quota as DailyQuotaMinutes,
+    targetLevel: level as ProfileTargetSnapshot['targetLevel'],
+    stateVersion,
+    profileVersion: String(stateVersion),
+    ...(targetDate ? { targetDate } : {}),
+    ...(examCode ? { examCode } : {}),
+  }
+}
+
+export async function putDailyQuota(minutes: DailyQuotaMinutes): Promise<ProfileTargetSnapshot> {
+  if (![5, 15, 30, 45].includes(minutes)) throw new Error('请选择有效的每日目标。')
+  const current = await fetchProfile()
   await apiClient.put('/learner/targets', {
-    expectedStateVersion: stateVersion,
-    goalCode: targetGoal,
-    targetLevel: targetGoal === 'ZERO_BASIS' ? 'A1' : targetGoal === 'CET_4_6' ? 'B1' : 'B2',
-    dailyQuotaMinutes: input.dailyQuotaMinutes,
-    status: 'ACTIVE',
+    expectedStateVersion: current.stateVersion,
+    goalCode: current.goalCode,
+    targetLevel: current.targetLevel,
+    dailyQuotaMinutes: minutes,
+    ...(current.targetDate ? { targetDate: current.targetDate } : {}),
+    ...(current.examCode ? { examCode: current.examCode } : {}),
   }, withIdempotency())
+  const verified = await fetchProfile()
+  if (verified.goalCode !== current.goalCode || verified.targetLevel !== current.targetLevel
+    || verified.dailyQuotaMinutes !== minutes) {
+    throw new Error('每日目标保存结果未确认，请刷新后重试。')
+  }
+  return verified
 }
 
 export async function fetchPrivacy(): Promise<PrivacySettings | null> {
@@ -327,23 +360,26 @@ export async function patchPrivacy(settings: PrivacySettings): Promise<void> {
   }, withIdempotency())
 }
 
-export async function fetchDevices(): Promise<DeviceSession[]> {
+export async function fetchDevices(currentDeviceId: string | null): Promise<DeviceSession[]> {
   const response = await apiClient.get<unknown>('/iam/devices')
   const source = unwrap(response)
-  if (!isRecord(source) || !Array.isArray(source.items)) return []
-  return source.items.flatMap((item): DeviceSession[] => {
+  // IAM's cursor envelope carries DeviceListResponse.devices, not items.
+  if (!isRecord(source) || !Array.isArray(source.devices)) {
+    throw new Error('设备列表响应不完整，请重试。')
+  }
+  return source.devices.flatMap((item): DeviceSession[] => {
     if (!isRecord(item)) return []
     const deviceId = readString(item.deviceId)
     if (!deviceId) return []
     return [{
       deviceId,
-      deviceName: readString(item.deviceName) ?? '本地登录设备',
-      deviceType: item.platform === 'IOS' || item.platform === 'ANDROID' || item.platform === 'H5' ? item.platform : 'WEB',
-      clientVersion: readString(item.clientVersion) ?? 'unknown',
-      lastActiveAt: readString(item.lastActiveAt) ?? new Date().toISOString(),
-      region: readString(item.region) ?? '本地',
-      current: item.current === true,
-      status: item.status === 'KICKED' || item.status === 'REVOKED' ? 'KICKED' : 'ACTIVE',
+      deviceName: readString(item.deviceName) ?? (item.deviceType === 'WEB' ? '浏览器设备' : '移动设备'),
+      deviceType: item.deviceType === 'IOS' || item.deviceType === 'ANDROID' || item.deviceType === 'H5' ? item.deviceType : 'WEB',
+      clientVersion: readString(item.clientVersion) ?? '',
+      lastActiveAt: readString(item.lastActiveAt) ?? '',
+      region: readString(item.region) ?? '',
+      current: Boolean(currentDeviceId) && deviceId === currentDeviceId,
+      status: item.status === 'ACTIVE' ? 'ACTIVE' : 'KICKED',
     }]
   })
 }

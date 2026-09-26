@@ -1,0 +1,184 @@
+import test from 'node:test'
+import assert from 'node:assert/strict'
+import { createRequire } from 'node:module'
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
+import ts from 'typescript'
+
+const requirePackage = createRequire(import.meta.url)
+const { computed, ref } = requirePackage('vue')
+const { createPinia, defineStore, setActivePinia } = requirePackage('pinia')
+const appRoot = resolve(import.meta.dirname, '..')
+const returnToKey = 'yx.auth.return-to'
+
+function safeReturnTo(value, fallback = '/home') {
+  if (typeof value !== 'string') return fallback
+  const candidate = value.trim()
+  if (!candidate || candidate.includes('\\') || /%(?:2f|5c)/i.test(candidate)
+    || /[\u0000-\u001f]/.test(candidate) || !candidate.startsWith('/') || candidate.startsWith('//')) return fallback
+  try {
+    const origin = 'https://learner.invalid'
+    const url = new URL(candidate, origin)
+    return url.origin === origin ? `${url.pathname}${url.search}${url.hash}` : fallback
+  } catch {
+    return fallback
+  }
+}
+
+function loadSessionStore() {
+  const source = readFileSync(resolve(appRoot, 'src/stores/session.ts'), 'utf8')
+  const compiled = ts.transpileModule(source, {
+    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
+  }).outputText
+  const module = { exports: {} }
+  const dependencies = {
+    vue: { computed, ref },
+    pinia: { defineStore },
+    '../auth/gateway-auth': {
+      createGatewayAuthAdapter: () => { throw new Error('unexpected auth adapter use') },
+      safeReturnTo,
+    },
+    '../auth/access-token': {
+      getInMemoryAccessToken: () => null,
+      getInMemoryAuthSnapshot: () => null,
+      setInMemoryAuthSnapshot: () => {},
+    },
+    '../api/client': { ApiError: class ApiError extends Error {} },
+    '../platform/gateway': { getGatewayBaseUrl: () => 'https://gateway.example.test' },
+    '../domain/b1': { B1_STORAGE_KEY: 'yx.b1.learner-web.v1' },
+  }
+  new Function('require', 'module', 'exports', compiled)((name) => {
+    if (Object.hasOwn(dependencies, name)) return dependencies[name]
+    throw new Error(`unexpected dependency: ${name}`)
+  }, module, module.exports)
+  return module.exports.useSessionStore
+}
+
+const useSessionStore = loadSessionStore()
+
+function withSessionStorage(storageDescriptor, run) {
+  const previousWindow = Object.getOwnPropertyDescriptor(globalThis, 'window')
+  const windowValue = { localStorage: { getItem: () => null, setItem() {}, removeItem() {} } }
+  if (storageDescriptor) Object.defineProperty(windowValue, 'sessionStorage', storageDescriptor)
+  Object.defineProperty(globalThis, 'window', {
+    configurable: true,
+    writable: true,
+    value: windowValue,
+  })
+  setActivePinia(createPinia())
+  const session = useSessionStore()
+  try {
+    return run(session)
+  } finally {
+    if (previousWindow) Object.defineProperty(globalThis, 'window', previousWindow)
+    else delete globalThis.window
+  }
+}
+
+function memoryStorage(initial = {}) {
+  const entries = new Map(Object.entries(initial))
+  return {
+    entries,
+    getItem: (key) => entries.get(key) ?? null,
+    setItem: (key, value) => entries.set(key, String(value)),
+    removeItem: (key) => entries.delete(key),
+  }
+}
+
+test('returnTo stays usable when the sessionStorage getter is blocked', () => {
+  withSessionStorage({ get() { throw new Error('SecurityError') } }, (session) => {
+    assert.doesNotThrow(() => session.setReturnTo('/settings/notifications?tab=in-app'))
+    session.clear()
+    assert.equal(session.peekReturnTo(), '/settings/notifications?tab=in-app')
+    assert.equal(session.consumeReturnTo(), '/settings/notifications?tab=in-app')
+    assert.equal(session.consumeReturnTo(), '/home')
+  })
+})
+
+test('returnTo uses memory and ignores an old persisted target when a write and cleanup fail', () => {
+  let cleanupCalls = 0
+  const storage = {
+    getItem: () => '/settings/old-account',
+    setItem: () => { throw new Error('QuotaExceededError') },
+    removeItem: () => { cleanupCalls += 1; throw new Error('SecurityError') },
+  }
+  withSessionStorage({ value: storage }, (session) => {
+    assert.doesNotThrow(() => session.setReturnTo('/settings/notifications?tab=in-app'))
+    assert.equal(cleanupCalls, 1)
+    assert.equal(session.peekReturnTo(), '/settings/notifications?tab=in-app')
+    assert.equal(session.consumeReturnTo(), '/settings/notifications?tab=in-app')
+    assert.equal(session.peekReturnTo(), '/home')
+    assert.equal(session.consumeReturnTo(), '/home')
+  })
+})
+
+test('returnTo falls back to memory when getItem and cleanup throw', () => {
+  const storage = {
+    getItem: () => { throw new Error('SecurityError') },
+    setItem: () => {},
+    removeItem: () => { throw new Error('SecurityError') },
+  }
+  withSessionStorage({ value: storage }, (session) => {
+    session.setReturnTo('/assessment?step=placement')
+    assert.equal(session.peekReturnTo(), '/assessment?step=placement')
+    assert.equal(session.consumeReturnTo(), '/assessment?step=placement')
+    assert.equal(session.consumeReturnTo(), '/home')
+  })
+})
+
+test('returnTo is consumed once even when removeItem keeps a persisted value', () => {
+  const storage = {
+    getItem: () => '/today?source=notification',
+    setItem() {},
+    removeItem: () => { throw new Error('SecurityError') },
+  }
+  withSessionStorage({ value: storage }, (session) => {
+    assert.equal(session.peekReturnTo(), '/today?source=notification')
+    assert.equal(session.consumeReturnTo(), '/today?source=notification')
+    assert.equal(session.peekReturnTo(), '/home')
+    assert.equal(session.consumeReturnTo(), '/home')
+  })
+})
+
+test('returnTo persists, peeks, and removes normally when sessionStorage works', () => {
+  const storage = memoryStorage()
+  withSessionStorage({ value: storage }, (session) => {
+    session.setReturnTo('/today?source=notification')
+    assert.equal(storage.getItem(returnToKey), '/today?source=notification')
+    assert.equal(session.peekReturnTo(), '/today?source=notification')
+    assert.equal(session.consumeReturnTo(), '/today?source=notification')
+    assert.equal(storage.getItem(returnToKey), null)
+    assert.equal(session.peekReturnTo(), '/home')
+  })
+})
+
+test('returnTo uses memory when sessionStorage is unavailable and keeps safeReturnTo behavior', () => {
+  withSessionStorage(null, (session) => {
+    session.setReturnTo('/grammar?point=present-perfect#practice')
+    assert.equal(session.peekReturnTo(), '/grammar?point=present-perfect#practice')
+    assert.equal(session.consumeReturnTo(), '/grammar?point=present-perfect#practice')
+    session.setReturnTo('https://outside.example.test/login')
+    assert.equal(session.peekReturnTo(), '/home')
+    assert.equal(session.consumeReturnTo(), '/home')
+  })
+})
+
+test('returnTo uses memory if getItem starts throwing after a successful write', () => {
+  let stored = null
+  let failReads = false
+  const storage = {
+    getItem: () => {
+      if (failReads) throw new Error('SecurityError')
+      return stored
+    },
+    setItem: (_key, value) => { stored = String(value) },
+    removeItem: () => { throw new Error('SecurityError') },
+  }
+  withSessionStorage({ value: storage }, (session) => {
+    session.setReturnTo('/courses?course=business-english')
+    failReads = true
+    assert.equal(session.peekReturnTo(), '/courses?course=business-english')
+    assert.equal(session.consumeReturnTo(), '/courses?course=business-english')
+    assert.equal(session.peekReturnTo(), '/home')
+  })
+})

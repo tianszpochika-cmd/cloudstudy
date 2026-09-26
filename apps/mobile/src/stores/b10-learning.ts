@@ -1,14 +1,17 @@
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { defineStore } from 'pinia'
 import type { B10AnswerInput, B10AnswerResult, B10AssessmentSession, B10Mistake, B10Report, B10RequestContext, B10SrsBatch, B10SrsCard } from '../domain/b10'
 import { b10LearningApi, b10ErrorInfo, createB10ClientEventId } from '../api/b10'
 import { b10ContentLocale, b10UiLocale } from '../platform/b10-foundation'
 import { getUniRuntime } from '../platform/uni-runtime'
+import { useSessionStore } from './session'
+import { B10_LEARNING_STORAGE_KEY, removeLearningCache } from './learning-cache'
 
-const STORAGE_KEY = 'yx.b10.mobile.learning.v1'
+const STORAGE_KEY = B10_LEARNING_STORAGE_KEY
 
 interface QueuedReview { clientEventId: string; payload: Record<string, unknown>; cardId: string }
 interface PersistedState {
+  subject: string
   batch?: B10SrsBatch | null
   currentIndex?: number
   queuedReviews?: QueuedReview[]
@@ -75,6 +78,7 @@ async function hashState(value: unknown): Promise<string> {
 }
 
 export const useB10LearningStore = defineStore('mobile-b10-learning', () => {
+  const session = useSessionStore()
   const restored = ref(false)
   const status = ref<'idle' | 'loading' | 'ready' | 'empty' | 'offline' | 'forbidden' | 'stale' | 'error'>('idle')
   const message = ref<string | null>(null)
@@ -93,16 +97,38 @@ export const useB10LearningStore = defineStore('mobile-b10-learning', () => {
   const currentCard = computed(() => batch.value?.items[currentIndex.value] ?? null)
   const currentExercise = computed(() => practice.value?.exercises.find((exercise) => !answerResults.value[String(exercise.exerciseId)]) ?? practice.value?.exercises[0] ?? null)
 
+  type Scope = { subject: string; revision: number }
+  function scope(): Scope | null {
+    return session.isAuthenticated && session.verifiedSubject
+      ? { subject: session.verifiedSubject, revision: session.identityRevision } : null
+  }
+  function stillCurrent(value: Scope | null): boolean {
+    return Boolean(value && session.isAuthenticated && session.verifiedSubject === value.subject && session.identityRevision === value.revision)
+  }
+  function reset(): void {
+    restored.value = false
+    status.value = 'idle'; message.value = null
+    batch.value = null; currentIndex.value = 0; queuedReviews.value = []
+    practice.value = null; answers.value = {}; answerResults.value = {}; mistakes.value = []; report.value = null
+    reportStatus.value = 'idle'; practiceStatus.value = 'idle'; practiceMessage.value = null
+  }
+  watch(() => session.identityRevision, reset, { flush: 'sync' })
+
   function persist(): void {
-    getUniRuntime().setStorageSync(STORAGE_KEY, JSON.stringify({ batch: batch.value, currentIndex: currentIndex.value, queuedReviews: queuedReviews.value, practice: practice.value, answers: answers.value, answerResults: answerResults.value, mistakes: mistakes.value, report: report.value } satisfies PersistedState))
+    const owner = scope()
+    if (!owner) return
+    getUniRuntime().setStorageSync(STORAGE_KEY, JSON.stringify({ subject: owner.subject, batch: batch.value, currentIndex: currentIndex.value, queuedReviews: queuedReviews.value, practice: practice.value, answers: answers.value, answerResults: answerResults.value, mistakes: mistakes.value, report: report.value } satisfies PersistedState))
   }
 
   function restore(): void {
+    const owner = scope()
+    if (!owner) return
     if (restored.value) return
     const raw = getUniRuntime().getStorageSync(STORAGE_KEY)
     if (typeof raw === 'string') {
       try {
         const saved = JSON.parse(raw) as PersistedState
+        if (saved.subject !== owner.subject) { removeLearningCache(STORAGE_KEY); restored.value = true; return }
         if (saved.batch) batch.value = saved.batch
         if (typeof saved.currentIndex === 'number') currentIndex.value = Math.max(0, saved.currentIndex)
         if (Array.isArray(saved.queuedReviews)) queuedReviews.value = saved.queuedReviews.filter((item): item is QueuedReview => isRecord(item) && typeof item.clientEventId === 'string' && typeof item.cardId === 'string' && isRecord(item.payload))
@@ -111,32 +137,43 @@ export const useB10LearningStore = defineStore('mobile-b10-learning', () => {
         if (isRecord(saved.answerResults)) answerResults.value = saved.answerResults as Record<string, B10AnswerResult>
         if (Array.isArray(saved.mistakes)) mistakes.value = saved.mistakes
         if (saved.report) report.value = saved.report
-      } catch { /* corrupt local state is ignored; server remains authoritative */ }
+      } catch { removeLearningCache(STORAGE_KEY) }
     }
     restored.value = true
   }
 
   async function loadSrs(): Promise<void> {
+    const owner = scope()
+    if (!owner) { reset(); status.value = 'forbidden'; return }
     restore(); status.value = 'loading'; message.value = null
     try {
-      batch.value = await b10LearningApi.createSrsBatch(context(), nowId('srs-batch'))
+      const remote = await b10LearningApi.createSrsBatch(context(), nowId('srs-batch'))
+      if (!stillCurrent(owner)) return
+      batch.value = remote
+      if (batch.value.status === 'RECOVERY_REQUIRED') {
+        status.value = 'stale'; message.value = '复习记录待核验，暂不可结算。'; persist(); return
+      }
       currentIndex.value = Math.min(currentIndex.value, batch.value.items.length)
       status.value = batch.value.items.length ? 'ready' : 'empty'
       persist()
     } catch (error) {
+      if (!stillCurrent(owner)) return
       const info = b10ErrorInfo(error, '词汇批次暂时无法加载。')
       status.value = info.kind; message.value = info.message; persist()
     }
   }
 
   async function revealCard(card = currentCard.value): Promise<void> {
-    if (!card || card.revealed || card.reviewStatus === 'SUBMITTING') return
+    const owner = scope()
+    if (!owner || !card || !batch.value?.items.includes(card) || card.revealed || card.reviewStatus === 'SUBMITTING') return
     status.value = 'loading'; message.value = null
     try {
       const detail = await b10LearningApi.getVocabularyDetail(context(), card.itemId, card.contentVersion)
+      if (!stillCurrent(owner)) return
       Object.assign(card, detail, { revealed: true, reviewStatus: 'PENDING' as const })
       status.value = 'ready'; persist()
     } catch (error) {
+      if (!stillCurrent(owner)) return
       const info = b10ErrorInfo(error, '词卡背面暂时无法加载，答案未被伪造。')
       status.value = info.kind; message.value = info.message
       if (info.kind === 'stale') card.reviewStatus = 'STALE'
@@ -150,13 +187,15 @@ export const useB10LearningStore = defineStore('mobile-b10-learning', () => {
   }
 
   async function rateCard(quality: 0 | 1 | 2 | 3, card = currentCard.value): Promise<void> {
-    if (!card || !card.revealed || card.reviewStatus === 'SUBMITTING' || card.reviewStatus === 'ACCEPTED' || card.reviewStatus === 'QUEUED') return
+    const owner = scope()
+    if (!owner || !card || !batch.value?.items.includes(card) || !card.revealed || card.reviewStatus === 'SUBMITTING' || card.reviewStatus === 'ACCEPTED' || card.reviewStatus === 'QUEUED') return
     if (!card.snapshotId || !card.snapshotItemId) { status.value = 'error'; message.value = '当前卡片缺少服务端批次标识，不能提交复习事件。'; return }
     const clientEventId = nowId(`srs-review-${card.id}`)
     const payload = reviewPayload(card, quality, clientEventId)
     card.reviewStatus = 'SUBMITTING'; status.value = 'loading'; message.value = null
     try {
       const response = await b10LearningApi.submitSrsReview(context(), card, quality, clientEventId)
+      if (!stillCurrent(owner)) return
       const remoteStatus = responseStatus(response)
       if (remoteStatus === 'PENDING_SYNC') {
         if (!queuedReviews.value.some((item) => item.clientEventId === clientEventId)) queuedReviews.value.push({ clientEventId, payload, cardId: card.id })
@@ -172,6 +211,7 @@ export const useB10LearningStore = defineStore('mobile-b10-learning', () => {
       applyRemoteSrsView(card, response)
       card.reviewStatus = 'ACCEPTED'; status.value = 'ready'; message.value = '复习已记录。'; currentIndex.value = Math.min(currentIndex.value + 1, batch.value?.items.length ?? currentIndex.value + 1); persist()
     } catch (error) {
+      if (!stillCurrent(owner)) return
       const info = b10ErrorInfo(error, '复习提交失败。')
       if (info.kind === 'offline') {
         if (!queuedReviews.value.some((item) => item.clientEventId === clientEventId)) queuedReviews.value.push({ clientEventId, payload, cardId: card.id })
@@ -182,11 +222,13 @@ export const useB10LearningStore = defineStore('mobile-b10-learning', () => {
   }
 
   async function syncSrs(): Promise<void> {
-    if (!queuedReviews.value.length) return
+    const owner = scope()
+    if (!owner || !queuedReviews.value.length) return
     status.value = 'loading'; message.value = null
     try {
       const queued = [...queuedReviews.value]
       const response = await b10LearningApi.syncSrsReviews(context(), queued.map((item) => item.payload), nowId('srs-sync'))
+      if (!stillCurrent(owner)) return
       const results = responseItems(response)
       const remaining: QueuedReview[] = []
       for (const [index, item] of queued.entries()) {
@@ -201,69 +243,96 @@ export const useB10LearningStore = defineStore('mobile-b10-learning', () => {
       else { status.value = 'ready'; message.value = '待同步复习已提交。' }
       persist()
     } catch (error) {
+      if (!stillCurrent(owner)) return
       const info = b10ErrorInfo(error, '同步失败，队列仍保留。'); status.value = info.kind; message.value = info.message; persist()
     }
   }
 
   async function loadPractice(): Promise<void> {
+    const owner = scope()
+    if (!owner) { reset(); practiceStatus.value = 'forbidden'; return }
     restore(); practiceStatus.value = 'loading'; practiceMessage.value = null
     try {
-      if (practice.value?.sessionId && ['IN_PROGRESS', 'INTERRUPTED', 'CREATED'].includes(practice.value.status)) practice.value = await b10LearningApi.readAssessmentSession(context(), practice.value.sessionId)
-      else practice.value = await b10LearningApi.createAssessmentSession(context(), { sessionType: 'DAILY_STREAM', targetCount: 15 }, nowId('assessment-session'))
+      const remote = practice.value?.sessionId && ['IN_PROGRESS', 'INTERRUPTED', 'CREATED'].includes(practice.value.status)
+        ? await b10LearningApi.readAssessmentSession(context(), practice.value.sessionId)
+        : await b10LearningApi.createAssessmentSession(context(), { sessionType: 'DAILY_STREAM', targetCount: 15 }, nowId('assessment-session'))
+      if (!stillCurrent(owner)) return
+      practice.value = remote
       practiceStatus.value = practice.value.exercises.length ? 'ready' : 'empty'; persist()
     } catch (error) {
+      if (!stillCurrent(owner)) return
       const info = b10ErrorInfo(error, '练习会话暂时无法创建。'); practiceStatus.value = info.kind; practiceMessage.value = info.message; persist()
     }
   }
 
   async function submitAnswer(exerciseId: number, answer: B10AnswerInput): Promise<B10AnswerResult | null> {
+    const owner = scope()
+    if (!owner) return null
     if (!practice.value || answerResults.value[String(exerciseId)]) return answerResults.value[String(exerciseId)] ?? null
+    const selectedPractice = practice.value
     answers.value[String(exerciseId)] = answer; practiceStatus.value = 'loading'; practiceMessage.value = null
     const revision = (practice.value.answerSheet.find((item) => item.exerciseId === exerciseId)?.revision ?? 0) + 1
     const clientEventId = nowId(`assessment-answer-${exerciseId}`)
     try {
       const result = await b10LearningApi.submitAssessmentAnswer(context(), practice.value.sessionId, exerciseId, answer, revision, practice.value.lastCheckpointSeq, clientEventId, practice.value.stateVersion)
+      if (!stillCurrent(owner) || practice.value !== selectedPractice) return null
       answerResults.value[String(exerciseId)] = result
       if (result.attemptId) practice.value.lastAttemptId = result.attemptId
       if (result.reportId) practice.value.reportId = result.reportId
       practice.value.stateVersion += 1
       practiceStatus.value = result.contentVersionStale ? 'stale' : 'ready'; practiceMessage.value = result.contentVersionStale ? '题目版本已失效，请重新读取会话。' : null; persist(); return result
     } catch (error) {
+      if (!stillCurrent(owner) || practice.value !== selectedPractice) return null
       const info = b10ErrorInfo(error, '答案提交失败，当前答案已保留。'); practiceStatus.value = info.kind; practiceMessage.value = info.message; persist(); return null
     }
   }
 
   async function saveCheckpoint(exerciseId: number | null): Promise<void> {
-    if (!practice.value) return
+    const owner = scope()
+    if (!owner || !practice.value) return
+    const selectedPractice = practice.value
     practice.value.lastCheckpointSeq += 1; const clientEventId = nowId(`assessment-checkpoint-${practice.value.lastCheckpointSeq}`)
     if (!practice.value.lastAttemptId) return
-    try { await b10LearningApi.saveAssessmentCheckpoint(context(), practice.value.sessionId, practice.value.lastAttemptId, practice.value.lastCheckpointSeq, exerciseId, await hashState({ exerciseId, answeredExerciseIds: Object.keys(answers.value).map(Number).sort() }), clientEventId); persist() }
-    catch (error) { const info = b10ErrorInfo(error, '断点保存失败，当前作答仍保留在本机。'); practiceStatus.value = info.kind; practiceMessage.value = info.message; persist() }
+    try {
+      const digest = await hashState({ exerciseId, answeredExerciseIds: Object.keys(answers.value).map(Number).sort() })
+      if (!stillCurrent(owner) || practice.value !== selectedPractice) return
+      await b10LearningApi.saveAssessmentCheckpoint(context(), selectedPractice.sessionId, selectedPractice.lastAttemptId!, selectedPractice.lastCheckpointSeq, exerciseId, digest, clientEventId)
+      if (stillCurrent(owner) && practice.value === selectedPractice) persist()
+    }
+    catch (error) { if (!stillCurrent(owner) || practice.value !== selectedPractice) return; const info = b10ErrorInfo(error, '断点保存失败，当前作答仍保留在本机。'); practiceStatus.value = info.kind; practiceMessage.value = info.message; persist() }
   }
 
   async function completePractice(): Promise<void> {
-    if (!practice.value) return
+    const owner = scope()
+    if (!owner || !practice.value) return
+    const selectedPractice = practice.value
     practiceStatus.value = 'loading'; practiceMessage.value = null
-    try { report.value = await b10LearningApi.completeAssessmentSession(context(), practice.value.sessionId, nowId('assessment-complete')); practiceStatus.value = 'ready'; persist() }
-    catch (error) { const info = b10ErrorInfo(error, '提交结算失败，未伪造报告。'); practiceStatus.value = info.kind; practiceMessage.value = info.message; persist() }
+    try { const remote = await b10LearningApi.completeAssessmentSession(context(), selectedPractice.sessionId, nowId('assessment-complete')); if (!stillCurrent(owner) || practice.value !== selectedPractice) return; report.value = remote; practiceStatus.value = 'ready'; persist() }
+    catch (error) { if (!stillCurrent(owner) || practice.value !== selectedPractice) return; const info = b10ErrorInfo(error, '提交结算失败，未伪造报告。'); practiceStatus.value = info.kind; practiceMessage.value = info.message; persist() }
   }
 
   async function loadMistakes(): Promise<void> {
+    const owner = scope()
+    if (!owner) { reset(); status.value = 'forbidden'; return }
     status.value = 'loading'; message.value = null
-    try { mistakes.value = await b10LearningApi.listMistakes(context()); status.value = mistakes.value.length ? 'ready' : 'empty'; persist() }
-    catch (error) { const info = b10ErrorInfo(error, '错题服务暂时不可用。'); status.value = info.kind; message.value = info.message; persist() }
+    try { const remote = await b10LearningApi.listMistakes(context()); if (!stillCurrent(owner)) return; mistakes.value = remote; status.value = mistakes.value.length ? 'ready' : 'empty'; persist() }
+    catch (error) { if (!stillCurrent(owner)) return; const info = b10ErrorInfo(error, '错题服务暂时不可用。'); status.value = info.kind; message.value = info.message; persist() }
   }
 
   async function startMistakeRetry(mistakeId: number): Promise<void> {
+    const owner = scope()
+    if (!owner || !mistakes.value.some((item) => item.mistakeId === mistakeId)) return
     status.value = 'loading'; message.value = null
-    try { await b10LearningApi.startMistakeRetry(context(), mistakeId, nowId(`mistake-retry-${mistakeId}`)); status.value = 'ready'; message.value = '订正会话已创建。'; await loadMistakes() }
-    catch (error) { const info = b10ErrorInfo(error, '错题订正暂时不可用。'); status.value = info.kind; message.value = info.message }
+    try { await b10LearningApi.startMistakeRetry(context(), mistakeId, nowId(`mistake-retry-${mistakeId}`)); if (!stillCurrent(owner)) return; status.value = 'ready'; message.value = '订正会话已创建。'; await loadMistakes() }
+    catch (error) { if (!stillCurrent(owner)) return; const info = b10ErrorInfo(error, '错题订正暂时不可用。'); status.value = info.kind; message.value = info.message }
   }
 
   async function loadReport(period: 'daily' | 'weekly' = 'daily'): Promise<void> {
+    const owner = scope()
+    if (!owner) { reset(); reportStatus.value = 'forbidden'; return }
     reportStatus.value = 'loading'
-    try { report.value = await b10LearningApi.readReport(context(), period); reportStatus.value = report.value.status === 'FAILED' ? 'error' : report.value.status === 'GENERATING' ? 'loading' : 'ready'; persist() }
-    catch (error) { const info = b10ErrorInfo(error, '报告暂时不可用。'); reportStatus.value = info.kind; message.value = info.message; persist() }
+    try { const remote = await b10LearningApi.readReport(context(), period); if (!stillCurrent(owner)) return; report.value = remote; reportStatus.value = report.value.status === 'FAILED' ? 'error' : report.value.status === 'GENERATING' ? 'loading' : 'ready'; persist() }
+    catch (error) { if (!stillCurrent(owner)) return; const info = b10ErrorInfo(error, '报告暂时不可用。'); reportStatus.value = info.kind; message.value = info.message; persist() }
   }
 
   return { restored, status, message, batch, currentIndex, queuedReviews, practice, answers, answerResults, mistakes, report, reportStatus, practiceStatus, practiceMessage, srsQueueCount, currentCard, currentExercise, restore, persist, loadSrs, revealCard, rateCard, syncSrs, loadPractice, submitAnswer, saveCheckpoint, completePractice, loadMistakes, startMistakeRetry, loadReport }

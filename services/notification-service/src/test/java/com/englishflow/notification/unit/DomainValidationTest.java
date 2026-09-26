@@ -2,7 +2,10 @@ package com.englishflow.notification.unit;
 
 import com.englishflow.notification.domain.IdempotencyKey;
 import com.englishflow.notification.domain.NotificationChannel;
+import com.englishflow.notification.domain.NotificationCategory;
+import com.englishflow.notification.domain.NotificationDndWindow;
 import com.englishflow.notification.domain.NotificationDomainException;
+import com.englishflow.notification.domain.NotificationFrequencyPolicy;
 import com.englishflow.notification.domain.NotificationPreference;
 import com.englishflow.notification.domain.OfflineSyncReceipt;
 import com.englishflow.notification.domain.OfflineVector;
@@ -55,22 +58,28 @@ class DomainValidationTest {
     @Test
     void preferenceRequiresMandatoryFields() {
         assertThrows(NotificationDomainException.class, () -> new NotificationPreference(
-                "", "p", "general", NotificationChannel.IN_APP, true, "zh-CN", 1, NOW));
+                "", "p", NotificationCategory.SYSTEM, NotificationChannel.IN_APP, true, "zh-CN", 1,
+                NotificationDndWindow.parse("23:00", "08:00"), NotificationFrequencyPolicy.IMMEDIATE, 1, NOW));
         assertThrows(NotificationDomainException.class, () -> new NotificationPreference(
-                "t", "p", "general", NotificationChannel.IN_APP, true, "zh-CN", 0, NOW));
+                "t", "p", NotificationCategory.SYSTEM, NotificationChannel.IN_APP, true, "zh-CN", 0,
+                NotificationDndWindow.parse("23:00", "08:00"), NotificationFrequencyPolicy.IMMEDIATE, 1, NOW));
         assertThrows(NotificationDomainException.class, () -> new NotificationPreference(
-                "t", "p", "general", NotificationChannel.IN_APP, true, "zh-CN", 1, null));
+                "t", "p", NotificationCategory.SYSTEM, NotificationChannel.IN_APP, true, "zh-CN", 1,
+                NotificationDndWindow.parse("23:00", "08:00"), NotificationFrequencyPolicy.IMMEDIATE, 1, null));
     }
 
     @Test
-    void preferenceDefaultsAndChangeBumpsVersion() {
-        var base = NotificationPreference.defaults("t", "p");
-        assertEquals(1, base.version());
-        assertEquals(true, base.enabled());
-        var next = base.change(false, "en-US", NOW);
+    void preferenceChangeBumpsVersionWithoutChangingOwnerFields() {
+        var base = new NotificationPreference("t", "p", NotificationCategory.LEARNING,
+                NotificationChannel.IN_APP, true, "zh-CN", 1, NotificationDndWindow.parse("23:00", "08:00"),
+                NotificationFrequencyPolicy.IMMEDIATE, 1, NOW);
+        var next = base.change(false, "zh-CN", 1, NotificationDndWindow.parse("22:00", "07:00"),
+                NotificationFrequencyPolicy.DAILY_DIGEST, NOW);
         assertEquals(2, next.version());
         assertEquals(false, next.enabled());
-        assertEquals("en-US", next.locale());
+        assertEquals("zh-CN", next.locale());
+        assertEquals(1, next.consentVersion());
+        assertEquals(NotificationFrequencyPolicy.DAILY_DIGEST, next.frequencyPolicy());
     }
 
     // --- TrustedEventAllowlist ---

@@ -9,7 +9,7 @@
     "generate": "nuxt generate",
     "preview": "node ../../scripts/run-fixed-port.mjs official-site-preview -- nuxt preview --host 127.0.0.1 --port 18192",
     "test:b13": "node --test tests/b13-official-site.test.mjs",
-    "test:website": "node --test tests/b13-official-site.test.mjs tests/b14-fe-005.test.mjs tests/website-entry.test.mjs"
+    "test:website": "node --test tests/b13-official-site.test.mjs tests/b14-fe-005.test.mjs tests/website-entry.test.mjs tests/public-projection-bff.test.mjs"
   },
   "dependencies": {
     "vue": "^3.4.0",

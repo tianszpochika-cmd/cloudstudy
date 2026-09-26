@@ -1,0 +1,32 @@
+{
+  "at": "2026-09-23T10:45:45.524Z",
+  "project": "cloudstudy-uat-isolated-3c94b27160",
+  "releaseImages": null,
+  "authorizationState": "BLOCKED_NO_ACTIVE_CONSENT_DOCUMENTS",
+  "checks": [
+    {
+      "name": "anonymous-gateway",
+      "status": 404,
+      "errorCode": "NOT_FOUND",
+      "message": "The API route is not available.",
+      "allowOrigin": null,
+      "allowMethods": null
+    },
+    {
+      "name": "anonymous-owner",
+      "status": 401,
+      "errorCode": null,
+      "message": null,
+      "allowOrigin": null,
+      "allowMethods": null
+    },
+    {
+      "name": "mobile-get-preflight",
+      "status": 403,
+      "errorCode": "FORBIDDEN",
+      "message": "The CORS route is not available.",
+      "allowOrigin": "https://mobile.clyunedev.com",
+      "allowMethods": null
+    }
+  ]
+}

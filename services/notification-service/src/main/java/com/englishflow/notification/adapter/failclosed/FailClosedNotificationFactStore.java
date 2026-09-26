@@ -2,6 +2,7 @@ package com.englishflow.notification.adapter.failclosed;
 
 import com.englishflow.notification.domain.DeliveryAttempt;
 import com.englishflow.notification.domain.NotificationChannel;
+import com.englishflow.notification.domain.NotificationCategory;
 import com.englishflow.notification.domain.NotificationDomainException;
 import com.englishflow.notification.domain.NotificationMessage;
 import com.englishflow.notification.domain.NotificationPreference;
@@ -16,7 +17,7 @@ public final class FailClosedNotificationFactStore implements NotificationFactSt
 
     @Override
     public Optional<NotificationPreference> findPreference(String tenantId, String principalId,
-            String notificationType, NotificationChannel channel) {
+            NotificationCategory category, NotificationChannel channel) {
         throw unavailable();
     }
 
@@ -26,7 +27,7 @@ public final class FailClosedNotificationFactStore implements NotificationFactSt
     }
 
     @Override
-    public void savePreference(NotificationPreference preference) {
+    public boolean compareAndSetPreference(NotificationPreference preference, long expectedVersion) {
         throw unavailable();
     }
 

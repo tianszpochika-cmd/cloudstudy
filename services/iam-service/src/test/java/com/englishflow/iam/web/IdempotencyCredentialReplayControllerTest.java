@@ -3,14 +3,20 @@ package com.englishflow.iam.web;
 import com.englishflow.iam.auth.JwtSigningKeyProvider;
 import com.englishflow.iam.auth.JwtTokenService;
 import com.englishflow.iam.config.IamServiceProperties;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.englishflow.iam.domain.AccountRecord;
 import com.englishflow.iam.domain.AccountStatus;
 import com.englishflow.iam.domain.AdultGateService;
 import com.englishflow.iam.domain.ClientAuthorityClaims;
 import com.englishflow.iam.domain.ConsentCommand;
+import com.englishflow.iam.domain.ConsentPolicyDescriptor;
+import com.englishflow.iam.domain.ConsentPolicyPort;
 import com.englishflow.iam.domain.ConsentService;
 import com.englishflow.iam.domain.ConsentType;
 import com.englishflow.iam.domain.DeviceId;
+import com.englishflow.iam.domain.DeviceRegistration;
+import com.englishflow.iam.domain.DeviceRegistryPort;
 import com.englishflow.iam.domain.DeviceService;
 import com.englishflow.iam.domain.IamDecisionCode;
 import com.englishflow.iam.domain.IamPolicyException;
@@ -29,22 +35,35 @@ import com.englishflow.iam.domain.InMemoryRateLimitStore;
 import com.englishflow.iam.domain.InMemorySessionStore;
 import com.englishflow.iam.domain.PasswordAccountService;
 import com.englishflow.iam.domain.PasswordResetService;
+import com.englishflow.iam.domain.PrincipalId;
 import com.englishflow.iam.domain.ServerPrincipalContext;
 import com.englishflow.iam.domain.SessionId;
+import com.englishflow.iam.domain.SessionRecord;
 import com.englishflow.iam.domain.SessionService;
+import com.englishflow.iam.domain.SessionStatus;
 import com.englishflow.iam.domain.StaticConsentPolicy;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.core.OAuth2TokenValidatorResult;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -55,12 +74,205 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /** Verifies the real controller callbacks selected by the credential replay policy. */
 class IdempotencyCredentialReplayControllerTest {
     private static final String PASSWORD = "correct horse battery staple!";
     private static final String NATIVE = "NATIVE_SECURE_STORAGE";
     private static final String WEB = "WEB_COOKIE";
+
+    @Test
+    void unavailablePublishedConsentLeavesNoRegistrationOrLoginFacts() {
+        Fixture fixture = fixture(Duration.ofMinutes(15), Duration.ofDays(30),
+                "local-unverified", false);
+        String identifier = "consent-outage@example.com";
+        var registration = new IamAuthenticationController.RegisterRequest(identifier, PASSWORD,
+                new IamAuthenticationController.DeviceInput(UUID.randomUUID().toString(),
+                        "IOS", "registration-device", "1", "1"));
+
+        for (String key : List.of("consent-outage-register-first", "consent-outage-register-retry")) {
+            IamPolicyException failure = assertThrows(IamPolicyException.class,
+                    () -> fixture.controller().register(registration, NATIVE, key));
+            assertEquals(IamDecisionCode.POLICY_UNAVAILABLE, failure.code());
+            assertTrue(fixture.accounts().findByIdentifier(identifier).isEmpty());
+            assertEquals(0, fixture.deviceRegistry().saveCount());
+            assertTrue(fixture.sessions().findByPrincipal(fixture.account().principalId()).isEmpty());
+        }
+
+        IamPolicyException loginFailure = assertThrows(IamPolicyException.class,
+                () -> fixture.controller().login(nativeLogin(UUID.randomUUID().toString()),
+                        NATIVE, "consent-outage-login"));
+        assertEquals(IamDecisionCode.POLICY_UNAVAILABLE, loginFailure.code());
+        assertEquals(0, fixture.deviceRegistry().saveCount());
+        assertTrue(fixture.sessions().findByPrincipal(fixture.account().principalId()).isEmpty());
+    }
+
+    @Test
+    void optionalPoliciesDoNotBlockRestrictedCredentialLifecycleOrPrincipalRead() {
+        MutableConsentPolicy policy = publishedPolicy(ConsentType.TERMS_OF_SERVICE,
+                ConsentType.PRIVACY_NOTICE, ConsentType.ADULT_LEARNING);
+        Fixture fixture = fixture(Duration.ofMinutes(15), Duration.ofDays(30),
+                "local-unverified", policy);
+
+        String registeredIdentifier = "learning-only-register@example.com";
+        String registerDevice = UUID.randomUUID().toString();
+        var registration = new IamAuthenticationController.RegisterRequest(registeredIdentifier, PASSWORD,
+                new IamAuthenticationController.DeviceInput(registerDevice,
+                        "IOS", "learning-only-registration", "1", "1"));
+        var registered = fixture.controller().register(registration, NATIVE,
+                "learning-only-register-key-1234");
+        assertEquals(201, registered.getStatusCode().value());
+        assertEquals("UNKNOWN", decodeAccessToken(fixture, registered.getBody().data().accessToken())
+                .getClaimAsString("consent_state"));
+
+        String loginDevice = UUID.randomUUID().toString();
+        var login = fixture.controller().login(nativeLogin(loginDevice), NATIVE,
+                "learning-only-login-key-123456");
+        assertEquals(200, login.getStatusCode().value());
+        assertEquals("UNKNOWN", decodeAccessToken(fixture, login.getBody().data().accessToken())
+                .getClaimAsString("consent_state"));
+
+        ServerPrincipalContext consentContext = ServerPrincipalContext.forPlatform(
+                fixture.account().principalId(), fixture.account().roles());
+        for (ConsentType type : List.of(ConsentType.TERMS_OF_SERVICE, ConsentType.PRIVACY_NOTICE)) {
+            ConsentPolicyDescriptor descriptor = fixture.consents().policyDescriptor(type);
+            fixture.consents().record(consentContext, new ConsentCommand(type,
+                    descriptor.documentVersion(), true, ClientAuthorityClaims.none(),
+                    descriptor.documentDigest()));
+        }
+        assertTrue(fixture.consents().hasRequiredConsentFor(fixture.account().principalId(), "ANALYTICS"),
+                "the absent optional PRODUCT_ANALYTICS document must not become a global capability gate");
+
+        var refreshRequest = new IamAuthenticationController.RefreshRequest(
+                login.getBody().data().refreshToken(), loginDevice);
+        var refreshed = fixture.controller().refresh(refreshRequest, new MockHttpServletRequest(), NATIVE,
+                "learning-only-refresh-key-1234");
+        assertEquals(200, refreshed.getStatusCode().value());
+        Jwt refreshedJwt = decodeAccessToken(fixture, refreshed.getBody().data().accessToken());
+        assertEquals("UNKNOWN", refreshedJwt.getClaimAsString("consent_state"));
+
+        var principal = fixture.controller().principalMe(new JwtAuthenticationToken(refreshedJwt))
+                .getBody().data();
+        assertEquals("RESTRICTED", principal.status());
+        assertFalse(principal.consentState().accepted(), "missing adult-learning consent must not grant learning access");
+        assertEquals(Set.of("ACCOUNT_TERMS", "PRIVACY_NOTICE", "ADULT_LEARNING_ELIGIBILITY"),
+                Set.copyOf(principal.consentState().requiredPurposes()));
+        assertEquals(Set.of("ADULT_LEARNING_ELIGIBILITY"),
+                Set.copyOf(principal.consentState().unsatisfiedPurposes()));
+        assertFalse(principal.consentState().requiredPurposes().contains("PRODUCT_ANALYTICS"));
+        assertFalse(principal.consentState().requiredPurposes()
+                .contains("ADULT_VOICE_RECORDING_REMOTE_STORAGE_AND_REPLAY"));
+        assertFalse(fixture.consents().hasRequiredConsentFor(fixture.account().principalId(), "VOICE_REMOTE_RECORD"),
+                "a missing voice policy must keep voice capability denied");
+    }
+
+    @Test
+    void acceptedLearningConsentAndAdultGateMatchLoginRefreshTokensAndPrincipalState() {
+        MutableConsentPolicy policy = publishedPolicy(ConsentType.TERMS_OF_SERVICE,
+                ConsentType.PRIVACY_NOTICE, ConsentType.ADULT_LEARNING);
+        Fixture fixture = fixture(Duration.ofMinutes(15), Duration.ofDays(30),
+                "local-unverified", policy);
+        fixture.adultGateFacts().approve(fixture.account().principalId(),
+                "b30-adult-v1", fixture.clock().instant());
+
+        ServerPrincipalContext context = ServerPrincipalContext.forPlatform(
+                fixture.account().principalId(), fixture.account().roles());
+        for (ConsentType type : List.of(ConsentType.TERMS_OF_SERVICE,
+                ConsentType.PRIVACY_NOTICE, ConsentType.ADULT_LEARNING)) {
+            ConsentPolicyDescriptor descriptor = fixture.consents().policyDescriptor(type);
+            fixture.consents().record(context, new ConsentCommand(type,
+                    descriptor.documentVersion(), true, ClientAuthorityClaims.none(),
+                    descriptor.documentDigest()));
+        }
+
+        String deviceId = UUID.randomUUID().toString();
+        var login = fixture.controller().login(nativeLogin(deviceId), NATIVE,
+                "accepted-learning-login-key-1234");
+        assertEquals(200, login.getStatusCode().value());
+        Jwt loginJwt = decodeAccessToken(fixture, login.getBody().data().accessToken());
+        assertEquals("PASSED", loginJwt.getClaimAsString("adult_gate"));
+        assertEquals("GRANTED", loginJwt.getClaimAsString("consent_state"));
+        assertEquals("granted", loginJwt.getClaimAsString("media_consent"));
+
+        var loginPrincipal = fixture.controller().principalMe(new JwtAuthenticationToken(loginJwt))
+                .getBody().data();
+        assertEquals("ACTIVE", loginPrincipal.status());
+        assertEquals("PASSED", loginPrincipal.adultGate().status());
+        assertEquals("ELIGIBLE", loginPrincipal.adultGate().learningAccess());
+        assertTrue(loginPrincipal.consentState().accepted());
+        assertEquals("ELIGIBLE", loginPrincipal.consentState().learningAccess());
+        assertEquals(Set.of("ACCOUNT_TERMS", "PRIVACY_NOTICE", "ADULT_LEARNING_ELIGIBILITY"),
+                Set.copyOf(loginPrincipal.consentState().requiredPurposes()));
+        assertTrue(loginPrincipal.consentState().unsatisfiedPurposes().isEmpty());
+        assertFalse(loginPrincipal.consentState().requiredPurposes().contains("PRODUCT_ANALYTICS"));
+        assertFalse(loginPrincipal.consentState().requiredPurposes()
+                .contains("ADULT_VOICE_RECORDING_REMOTE_STORAGE_AND_REPLAY"));
+        assertTrue(fixture.consents().hasRequiredConsentFor(fixture.account().principalId(), "ANALYTICS"),
+                "optional analytics consent must not block its base authenticated capability");
+        assertFalse(fixture.consents().hasRequiredConsentFor(fixture.account().principalId(), "VOICE_REMOTE_RECORD"),
+                "missing voice consent must remain scoped to remote voice capabilities");
+
+        var refreshed = fixture.controller().refresh(new IamAuthenticationController.RefreshRequest(
+                        login.getBody().data().refreshToken(), deviceId),
+                new MockHttpServletRequest(), NATIVE, "accepted-learning-refresh-key-1234");
+        assertEquals(200, refreshed.getStatusCode().value());
+        Jwt refreshedJwt = decodeAccessToken(fixture, refreshed.getBody().data().accessToken());
+        assertEquals("PASSED", refreshedJwt.getClaimAsString("adult_gate"));
+        assertEquals("GRANTED", refreshedJwt.getClaimAsString("consent_state"));
+        assertEquals("granted", refreshedJwt.getClaimAsString("media_consent"));
+
+        var refreshedPrincipal = fixture.controller().principalMe(new JwtAuthenticationToken(refreshedJwt))
+                .getBody().data();
+        assertEquals("ACTIVE", refreshedPrincipal.status());
+        assertEquals("PASSED", refreshedPrincipal.adultGate().status());
+        assertEquals("ELIGIBLE", refreshedPrincipal.adultGate().learningAccess());
+        assertTrue(refreshedPrincipal.consentState().accepted());
+        assertEquals("ELIGIBLE", refreshedPrincipal.consentState().learningAccess());
+        assertTrue(refreshedPrincipal.consentState().unsatisfiedPurposes().isEmpty());
+    }
+
+    @Test
+    void missingLearningRequiredPolicyStillBlocksRegisterLoginAndRefresh() {
+        MutableConsentPolicy policy = publishedPolicy(ConsentType.TERMS_OF_SERVICE,
+                ConsentType.PRIVACY_NOTICE, ConsentType.ADULT_LEARNING);
+        Fixture fixture = fixture(Duration.ofMinutes(15), Duration.ofDays(30),
+                "local-unverified", policy);
+        String loginDevice = UUID.randomUUID().toString();
+        var initialLogin = fixture.controller().login(nativeLogin(loginDevice), NATIVE,
+                "required-policy-login-key-1234");
+        SessionId sessionId = new SessionId(UUID.fromString(initialLogin.getBody().data().sessionId()));
+        SessionRecord before = fixture.sessions().find(sessionId);
+
+        policy.remove(ConsentType.ADULT_LEARNING);
+        String rejectedIdentifier = "missing-adult-policy@example.com";
+        var registration = new IamAuthenticationController.RegisterRequest(rejectedIdentifier, PASSWORD,
+                new IamAuthenticationController.DeviceInput(UUID.randomUUID().toString(),
+                        "IOS", "missing-required-registration", "1", "1"));
+        IamPolicyException registerFailure = assertThrows(IamPolicyException.class,
+                () -> fixture.controller().register(registration, NATIVE,
+                        "required-policy-register-key-1234"));
+        assertEquals(IamDecisionCode.POLICY_UNAVAILABLE, registerFailure.code());
+        assertTrue(fixture.accounts().findByIdentifier(rejectedIdentifier).isEmpty());
+
+        IamPolicyException loginFailure = assertThrows(IamPolicyException.class,
+                () -> fixture.controller().login(nativeLogin(UUID.randomUUID().toString()), NATIVE,
+                        "required-policy-second-login-key-1234"));
+        assertEquals(IamDecisionCode.POLICY_UNAVAILABLE, loginFailure.code());
+
+        IamPolicyException refreshFailure = assertThrows(IamPolicyException.class,
+                () -> fixture.controller().refresh(new IamAuthenticationController.RefreshRequest(
+                                initialLogin.getBody().data().refreshToken(), loginDevice),
+                        new MockHttpServletRequest(), NATIVE, "required-policy-refresh-key-1234"));
+        assertEquals(IamDecisionCode.POLICY_UNAVAILABLE, refreshFailure.code());
+        SessionRecord after = fixture.sessions().find(sessionId);
+        assertEquals(before.rotation(), after.rotation(), "a rejected refresh must not rotate the session");
+        assertEquals(before.refreshTokenDigest(), after.refreshTokenDigest());
+        assertEquals(1, fixture.deviceRegistry().saveCount(),
+                "failed registration/login must not register additional devices");
+    }
 
     @Test
     void revokedSessionMakesCompletedLoginKeyUnavailableInsteadOfReturningOldCredentials() {
@@ -153,6 +365,97 @@ class IdempotencyCredentialReplayControllerTest {
     }
 
     @Test
+    void passwordResetHttpFlowChangesPasswordRevokesSessionsAndDoesNotEnumerateAccounts() throws Exception {
+        Fixture fixture = fixture();
+        MockMvc http = MockMvcBuilders.standaloneSetup(fixture.controller()).build();
+        ObjectMapper json = new ObjectMapper().findAndRegisterModules();
+        String identifier = fixture.account().identifier();
+        String oldPassword = PASSWORD;
+        String newPassword = "new correct horse battery staple!";
+
+        var priorSession = fixture.sessions().open(
+                ServerPrincipalContext.forPlatform(fixture.account().principalId(), fixture.account().roles()),
+                new DeviceId("reset-http-old-session")).session();
+        assertEquals(SessionStatus.ACTIVE, priorSession.status());
+
+        String unknownIdentifier = "missing-reset-" + UUID.randomUUID() + "@example.com";
+        MvcResult unknownRequest = http.perform(post("/api/v1/auth/password-reset/request")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Idempotency-Key", "reset-unknown-" + UUID.randomUUID())
+                        .header("X-Auth-Transport", NATIVE)
+                        .content(json.writeValueAsString(java.util.Map.of("identifier", unknownIdentifier))))
+                .andExpect(status().isAccepted())
+                .andExpect(jsonPath("$.data.accepted").value(true))
+                .andReturn();
+        assertEquals(0, fixture.resetDelivery().deliveredCount(),
+                "an unknown identifier must not receive a reset challenge");
+
+        MvcResult knownRequest = http.perform(post("/api/v1/auth/password-reset/request")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Idempotency-Key", "reset-known-" + UUID.randomUUID())
+                        .header("X-Auth-Transport", NATIVE)
+                        .content(json.writeValueAsString(java.util.Map.of("identifier", identifier))))
+                .andExpect(status().isAccepted())
+                .andExpect(jsonPath("$.data.accepted").value(true))
+                .andReturn();
+        JsonNode unknownData = json.readTree(unknownRequest.getResponse().getContentAsString()).path("data");
+        JsonNode knownData = json.readTree(knownRequest.getResponse().getContentAsString()).path("data");
+        assertEquals(unknownData, knownData, "known and unknown identifiers must have the same public data");
+        assertEquals(1, fixture.resetDelivery().deliveredCount());
+
+        // The raw token stays inside this in-memory test handoff and is never emitted in an HTTP response.
+        String resetToken = fixture.resetDelivery().deliveries().get(0).rawToken();
+        assertFalse(knownRequest.getResponse().getContentAsString().contains(resetToken));
+        assertFalse(unknownRequest.getResponse().getContentAsString().contains(resetToken));
+        assertFalse(knownRequest.getResponse().getContentAsString().contains(identifier));
+        assertFalse(unknownRequest.getResponse().getContentAsString().contains(unknownIdentifier));
+
+        String confirmBody = json.writeValueAsString(java.util.Map.of(
+                "identifier", identifier,
+                "resetToken", resetToken,
+                "newPassword", newPassword));
+        http.perform(post("/api/v1/auth/password-reset/confirm")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Idempotency-Key", "reset-confirm-" + UUID.randomUUID())
+                        .header("X-Auth-Transport", NATIVE)
+                        .content(confirmBody))
+                .andExpect(status().isNoContent());
+        assertEquals(SessionStatus.REVOKED,
+                fixture.sessions().find(priorSession.sessionId()).status());
+
+        String replayBody = json.writeValueAsString(java.util.Map.of(
+                "identifier", identifier,
+                "resetToken", resetToken,
+                "newPassword", "another correct horse battery staple!"));
+        http.perform(post("/api/v1/auth/password-reset/confirm")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Idempotency-Key", "reset-replay-" + UUID.randomUUID())
+                        .header("X-Auth-Transport", NATIVE)
+                        .content(replayBody))
+                .andExpect(status().isUnauthorized());
+
+        String loginDevice = UUID.randomUUID().toString();
+        var newPasswordLogin = new IamAuthenticationController.LoginRequest(identifier, newPassword,
+                new IamAuthenticationController.DeviceInput(loginDevice, "IOS", "reset-http-test", "1", "1"));
+        http.perform(post("/api/v1/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Idempotency-Key", "reset-new-login-" + UUID.randomUUID())
+                        .header("X-Auth-Transport", NATIVE)
+                        .content(json.writeValueAsString(newPasswordLogin)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.accessToken").isNotEmpty());
+
+        var oldPasswordLogin = new IamAuthenticationController.LoginRequest(identifier, oldPassword,
+                new IamAuthenticationController.DeviceInput(UUID.randomUUID().toString(), "IOS", "reset-http-test", "1", "1"));
+        http.perform(post("/api/v1/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Idempotency-Key", "reset-old-login-" + UUID.randomUUID())
+                        .header("X-Auth-Transport", NATIVE)
+                        .content(json.writeValueAsString(oldPasswordLogin)))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
     void lockedOrDisabledAccountMakesCompletedLoginReplayUnavailable() {
         for (AccountStatus status : List.of(AccountStatus.LOCKED, AccountStatus.DISABLED)) {
             Fixture fixture = fixture();
@@ -209,6 +512,39 @@ class IdempotencyCredentialReplayControllerTest {
         }
         assertUnavailable(() -> eligibilityFixture.controller()
                 .login(eligibilityRequest, NATIVE, eligibilityKey));
+    }
+
+    @Test
+    void notificationPreferenceScopesAreIssuedOnlyAfterAdultGateAndRequiredConsentPass() {
+        Fixture fixture = fixture();
+        Set<String> preferenceScopes = Set.of(
+                "notification.preference.read.self", "notification.preference.write.self");
+
+        String beforeGateToken = fixture.controller().login(
+                nativeLogin(UUID.randomUUID().toString()), NATIVE,
+                "notification-pref-pre-gate-key-1234").getBody().data().accessToken();
+        Jwt beforeGate = decodeAccessToken(fixture, beforeGateToken);
+        assertTrue(java.util.Collections.disjoint(
+                beforeGate.getClaimAsStringList("permissions"), preferenceScopes));
+
+        AccountRecord account = currentAccount(fixture);
+        fixture.adultGateFacts().approve(account.principalId(), "b30-adult-v1", fixture.clock().instant());
+        ServerPrincipalContext context = ServerPrincipalContext.forPlatform(account.principalId(), account.roles());
+        for (ConsentType type : ConsentType.values()) {
+            var descriptor = fixture.consents().policyDescriptor(type);
+            if (descriptor.requiredFor("LEARNING")) {
+                fixture.consents().record(context, new ConsentCommand(type,
+                        descriptor.documentVersion(), true, ClientAuthorityClaims.none(),
+                        descriptor.documentDigest()));
+            }
+        }
+
+        String afterGateToken = fixture.controller().login(
+                nativeLogin(UUID.randomUUID().toString()), NATIVE,
+                "notification-pref-post-gate-key-1234").getBody().data().accessToken();
+        Jwt afterGate = decodeAccessToken(fixture, afterGateToken);
+        assertTrue(afterGate.getClaimAsStringList("permissions").containsAll(preferenceScopes));
+        assertFalse(afterGate.getClaimAsStringList("permissions").contains("notification.trusted-event.write"));
     }
 
     @Test
@@ -388,6 +724,12 @@ class IdempotencyCredentialReplayControllerTest {
         return fixture.accounts().findByPrincipalId(fixture.account().principalId()).orElseThrow();
     }
 
+    private static Jwt decodeAccessToken(Fixture fixture, String token) {
+        NimbusJwtDecoder decoder = NimbusJwtDecoder.withPublicKey(fixture.keys().publicKey()).build();
+        decoder.setJwtValidator(jwt -> OAuth2TokenValidatorResult.success());
+        return decoder.decode(token);
+    }
+
     private static void setAccountStatus(Fixture fixture, AccountStatus status) {
         AccountRecord current = currentAccount(fixture);
         fixture.accounts().replace(new AccountRecord(current.principalId(), current.identifier(),
@@ -400,6 +742,10 @@ class IdempotencyCredentialReplayControllerTest {
     private static void assertUnavailable(org.junit.jupiter.api.function.Executable operation) {
         IamPolicyException failure = assertThrows(IamPolicyException.class, operation);
         assertEquals(IamDecisionCode.IDEMPOTENCY_RESULT_UNAVAILABLE, failure.code());
+    }
+
+    private static MutableConsentPolicy publishedPolicy(ConsentType... types) {
+        return new MutableConsentPolicy(Set.of(types));
     }
 
     private static Fixture fixture() {
@@ -415,6 +761,17 @@ class IdempotencyCredentialReplayControllerTest {
     }
 
     private static Fixture fixture(Duration accessTtl, Duration refreshTtl, String nativeTransportPolicy) {
+        return fixture(accessTtl, refreshTtl, nativeTransportPolicy, true);
+    }
+
+    private static Fixture fixture(Duration accessTtl, Duration refreshTtl,
+                                   String nativeTransportPolicy, boolean publishedConsentAvailable) {
+        return fixture(accessTtl, refreshTtl, nativeTransportPolicy,
+                StaticConsentPolicy.localCandidate(publishedConsentAvailable));
+    }
+
+    private static Fixture fixture(Duration accessTtl, Duration refreshTtl,
+                                   String nativeTransportPolicy, ConsentPolicyPort consentPolicy) {
         MutableClock clock = new MutableClock(Instant.parse("2026-09-04T00:00:00Z"));
         IamServiceProperties properties = new IamServiceProperties();
         properties.getJwt().setEphemeralKeysAllowed(true);
@@ -434,18 +791,20 @@ class IdempotencyCredentialReplayControllerTest {
                 ClientAuthorityClaims.none());
 
         SessionService sessions = new SessionService(new InMemorySessionStore(), audit, clock, properties);
-        InMemoryDeviceRegistry deviceRegistry = new InMemoryDeviceRegistry();
+        TrackingDeviceRegistry deviceRegistry = new TrackingDeviceRegistry();
         DeviceService devices = new DeviceService(deviceRegistry, audit, clock);
         InMemoryAdultGateFactStore adultGateFacts = new InMemoryAdultGateFactStore();
         AdultGateService adultGates = new AdultGateService(audit, clock, adultGateFacts, sessions,
                 IamTransactionRunner.direct());
         InMemoryConsentStore consentStore = new InMemoryConsentStore();
-        ConsentService consents = new ConsentService(consentStore, StaticConsentPolicy.localCandidate(true),
+        ConsentService consents = new ConsentService(consentStore,
+                consentPolicy,
                 audit, clock, sessions, IamTransactionRunner.direct());
+        InMemoryPasswordResetDelivery resetDelivery = new InMemoryPasswordResetDelivery();
         PasswordResetService passwordResets = new PasswordResetService(accounts,
                 new InMemoryPasswordResetChallengeStore(), passwords, audit, clock, properties,
                 sessions, IamTransactionRunner.direct(), rateLimits,
-                new InMemoryPasswordResetDelivery(), properties.getIdempotency().getFingerprintSecret());
+                resetDelivery, properties.getIdempotency().getFingerprintSecret());
 
         JwtSigningKeyProvider keys = new JwtSigningKeyProvider(properties);
         JWKSource<SecurityContext> source = (selector, context) -> List.of(keys.signingKey());
@@ -460,7 +819,8 @@ class IdempotencyCredentialReplayControllerTest {
                 passwordResets, tokens, keys, sessions, devices, adultGates, adultGateFacts,
                 consents, consentStore, idempotency, clock);
         return new Fixture(controller, sessions, idempotency, idempotencyStore, accounts,
-                passwords, devices, adultGateFacts, consents, account, clock, properties);
+                passwords, devices, deviceRegistry, adultGateFacts, consents, account, clock, properties, keys,
+                resetDelivery);
     }
 
     private record Fixture(IamAuthenticationController controller, SessionService sessions,
@@ -469,11 +829,68 @@ class IdempotencyCredentialReplayControllerTest {
                            InMemoryAccountStore accounts,
                            PasswordAccountService passwords,
                            DeviceService devices,
+                           TrackingDeviceRegistry deviceRegistry,
                            InMemoryAdultGateFactStore adultGateFacts,
                            ConsentService consents,
                            AccountRecord account,
                            MutableClock clock,
-                           IamServiceProperties properties) {}
+                           IamServiceProperties properties,
+                           JwtSigningKeyProvider keys,
+                           InMemoryPasswordResetDelivery resetDelivery) {}
+
+    private static final class TrackingDeviceRegistry implements DeviceRegistryPort {
+        private final InMemoryDeviceRegistry delegate = new InMemoryDeviceRegistry();
+        private int saves;
+
+        int saveCount() { return saves; }
+        @Override public DeviceRegistration save(DeviceRegistration registration) {
+            saves++;
+            return delegate.save(registration);
+        }
+        @Override public Optional<DeviceRegistration> find(PrincipalId principalId, DeviceId deviceId) {
+            return delegate.find(principalId, deviceId);
+        }
+        @Override public List<DeviceRegistration> findByPrincipal(PrincipalId principalId) {
+            return delegate.findByPrincipal(principalId);
+        }
+        @Override public List<DeviceRegistration> history(PrincipalId principalId, DeviceId deviceId) {
+            return delegate.history(principalId, deviceId);
+        }
+        @Override public Optional<DeviceRegistration> revoke(PrincipalId principalId, DeviceId deviceId, Instant at) {
+            return delegate.revoke(principalId, deviceId, at);
+        }
+    }
+
+    private static final class MutableConsentPolicy implements ConsentPolicyPort {
+        private final EnumMap<ConsentType, ConsentPolicyDescriptor> descriptors =
+                new EnumMap<>(ConsentType.class);
+
+        private MutableConsentPolicy(Set<ConsentType> types) {
+            for (ConsentType type : types) {
+                descriptors.put(type, ConsentPolicyDescriptor.localCandidate(type));
+            }
+        }
+
+        @Override public ConsentPolicyDescriptor descriptor(ConsentType type) {
+            ConsentPolicyDescriptor descriptor = descriptors.get(type);
+            if (descriptor == null) {
+                throw new IamPolicyException(IamDecisionCode.POLICY_UNAVAILABLE,
+                        "iam.consent.version_unavailable");
+            }
+            return descriptor;
+        }
+
+        @Override public Set<ConsentPolicyDescriptor> descriptors() {
+            return Set.copyOf(descriptors.values());
+        }
+
+        @Override public boolean evaluationEnabled() { return true; }
+        @Override public boolean writesEnabled() { return true; }
+
+        private void remove(ConsentType type) {
+            descriptors.remove(type);
+        }
+    }
 
     private static final class MutableClock extends Clock {
         private Instant current;

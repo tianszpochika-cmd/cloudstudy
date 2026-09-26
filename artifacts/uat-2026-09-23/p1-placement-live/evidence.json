@@ -1,0 +1,261 @@
+{
+  "probe": "p1-placement-owner-live",
+  "localOnly": true,
+  "passed": true,
+  "stages": [
+    {
+      "stage": "anonymous",
+      "results": [
+        {
+          "route": "create",
+          "method": "POST",
+          "status": 401,
+          "code": null
+        },
+        {
+          "route": "read",
+          "method": "GET",
+          "status": 401,
+          "code": null
+        },
+        {
+          "route": "respond",
+          "method": "POST",
+          "status": 401,
+          "code": null
+        },
+        {
+          "route": "skip",
+          "method": "POST",
+          "status": 401,
+          "code": null
+        },
+        {
+          "route": "report",
+          "method": "GET",
+          "status": 401,
+          "code": null
+        }
+      ]
+    },
+    {
+      "stage": "register",
+      "status": 201,
+      "code": null
+    },
+    {
+      "stage": "owner-before",
+      "counts": {
+        "session": 0,
+        "response": 0,
+        "checkpoint": 0,
+        "result": 0,
+        "idempotency": 0,
+        "outbox": 0
+      }
+    },
+    {
+      "stage": "before-adult-gate-with-forged-headers",
+      "results": [
+        {
+          "route": "create",
+          "method": "POST",
+          "status": 403,
+          "code": null
+        },
+        {
+          "route": "read",
+          "method": "GET",
+          "status": 403,
+          "code": null
+        },
+        {
+          "route": "respond",
+          "method": "POST",
+          "status": 403,
+          "code": null
+        },
+        {
+          "route": "skip",
+          "method": "POST",
+          "status": 403,
+          "code": null
+        },
+        {
+          "route": "report",
+          "method": "GET",
+          "status": 403,
+          "code": null
+        }
+      ]
+    },
+    {
+      "stage": "adult-gate",
+      "status": 200,
+      "code": null
+    },
+    {
+      "stage": "adult-gate-without-consents",
+      "results": [
+        {
+          "route": "create",
+          "method": "POST",
+          "status": 403,
+          "code": null
+        },
+        {
+          "route": "read",
+          "method": "GET",
+          "status": 403,
+          "code": null
+        },
+        {
+          "route": "respond",
+          "method": "POST",
+          "status": 403,
+          "code": null
+        },
+        {
+          "route": "skip",
+          "method": "POST",
+          "status": 403,
+          "code": null
+        },
+        {
+          "route": "report",
+          "method": "GET",
+          "status": 403,
+          "code": null
+        }
+      ]
+    },
+    {
+      "stage": "consent-TERMS",
+      "status": 200,
+      "code": null
+    },
+    {
+      "stage": "consent-PRIVACY",
+      "status": 200,
+      "code": null
+    },
+    {
+      "stage": "consent-ADULT_LEARNING",
+      "status": 200,
+      "code": null
+    },
+    {
+      "stage": "ready-fresh-login",
+      "status": 200,
+      "code": null
+    },
+    {
+      "stage": "ready-no-approved-source-with-forged-tenant",
+      "results": [
+        {
+          "route": "create",
+          "method": "POST",
+          "status": 503,
+          "code": null
+        },
+        {
+          "route": "read",
+          "method": "GET",
+          "status": 404,
+          "code": null
+        },
+        {
+          "route": "respond",
+          "method": "POST",
+          "status": 404,
+          "code": null
+        },
+        {
+          "route": "skip",
+          "method": "POST",
+          "status": 503,
+          "code": null
+        },
+        {
+          "route": "report",
+          "method": "GET",
+          "status": 404,
+          "code": null
+        }
+      ]
+    },
+    {
+      "stage": "owner-after-ready",
+      "counts": {
+        "session": 0,
+        "response": 0,
+        "checkpoint": 0,
+        "result": 0,
+        "idempotency": 0,
+        "outbox": 0
+      }
+    },
+    {
+      "stage": "no-permission-fresh-login",
+      "status": 200,
+      "code": null
+    },
+    {
+      "stage": "no-canonical-permissions",
+      "results": [
+        {
+          "route": "create",
+          "method": "POST",
+          "status": 403,
+          "code": null
+        },
+        {
+          "route": "read",
+          "method": "GET",
+          "status": 403,
+          "code": null
+        },
+        {
+          "route": "respond",
+          "method": "POST",
+          "status": 403,
+          "code": null
+        },
+        {
+          "route": "skip",
+          "method": "POST",
+          "status": 403,
+          "code": null
+        },
+        {
+          "route": "report",
+          "method": "GET",
+          "status": 403,
+          "code": null
+        }
+      ]
+    },
+    {
+      "stage": "owner-final",
+      "counts": {
+        "session": 0,
+        "response": 0,
+        "checkpoint": 0,
+        "result": 0,
+        "idempotency": 0,
+        "outbox": 0
+      }
+    }
+  ],
+  "cleanup": {
+    "accountCount": 1,
+    "accountStatus": "DISABLED",
+    "activeSessions": 0,
+    "postCleanupLoginStatus": 401
+  },
+  "secretsPrinted": false,
+  "limits": [
+    "No approved ten-item source exists, so session/result creation remains untested.",
+    "Cross-owner access to a real session/report cannot be tested without creating trusted source facts."
+  ]
+}

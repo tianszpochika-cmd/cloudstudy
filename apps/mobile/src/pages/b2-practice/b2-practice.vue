@@ -4,7 +4,7 @@ import MobilePageHeader from '../../components/MobilePageHeader.vue'
 import { useMobileExperience } from '../../platform/experience'
 const { experienceStyle, experienceMotion } = useMobileExperience()
 
-import { computed, onUnmounted, ref } from 'vue'
+import { computed, onUnmounted, ref, watch } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import { createAdaptivePerformanceEngine, type PerformanceLevel } from '@englishflow/performance'
 import B10ExerciseCard from '../../components/b10/B10ExerciseCard.vue'
@@ -20,6 +20,7 @@ const store = useB10LearningStore()
 const engine = createAdaptivePerformanceEngine()
 const performanceLevel = ref<PerformanceLevel>(engine.level)
 const lastResult = ref<B10AnswerResult | null>(null)
+watch(() => session.identityRevision, () => { lastResult.value = null }, { flush: 'sync' })
 const themeClass = computed(() => `b10-theme--${b10ThemeMode.value}`)
 const exercise = computed(() => store.practice?.exercises.find((item) => !store.answerResults[String(item.exerciseId)]) ?? null)
 const answeredCount = computed(() => Object.keys(store.answerResults).length)

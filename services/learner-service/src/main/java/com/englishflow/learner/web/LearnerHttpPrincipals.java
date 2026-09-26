@@ -52,6 +52,25 @@ public final class LearnerHttpPrincipals {
         return new VerifiedLearnerPrincipal(subject, tenant, roles, permissions);
     }
 
+    /**
+     * B25 learner data is available only after IAM has issued both learning-eligibility
+     * facts. Checking a permission alone is insufficient: pre-gate access tokens may
+     * legitimately retain profile permissions for the IAM consent journey.
+     */
+    public static VerifiedLearnerPrincipal requireLearningAccess(
+            Authentication authentication, String permission) {
+        VerifiedLearnerPrincipal principal = require(authentication);
+        Jwt token = ((JwtAuthenticationToken) authentication).getToken();
+        if (!"PASSED".equals(token.getClaim("adult_gate"))
+                || !"GRANTED".equals(token.getClaim("consent_state"))) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "learning access is not granted");
+        }
+        if (permission == null || !principal.permissions().contains(permission)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "learner permission is required");
+        }
+        return principal;
+    }
+
     /** Verified identity and authority facts for one request. */
     public record VerifiedLearnerPrincipal(
             String subject,

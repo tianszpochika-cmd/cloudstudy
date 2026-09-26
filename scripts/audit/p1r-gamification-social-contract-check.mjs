@@ -1211,6 +1211,12 @@ function assertCanonicalRouteProjection(errors, policy, canonicalOpenApi) {
     const securityName = Object.keys(operation.security?.[0] ?? {})[0];
     addError(errors, securityName === route.security,
       `${route.id} security must be ${route.security}`);
+    addError(errors, operation['x-authorization']?.requiredPermission === route.requiredPermission,
+      `${route.id} requiredPermission must be ${route.requiredPermission}`);
+    if (Object.hasOwn(operation, 'x-permission')) {
+      addError(errors, operation['x-permission'] === route.requiredPermission,
+        `${route.id} x-permission must be ${route.requiredPermission}`);
+    }
     const requestRef = operation.requestBody?.content?.['application/json']?.schema?.$ref;
     if (route.requestSchema === 'NONE') {
       addError(errors, !operation.requestBody, `${route.id} must not declare a request body`);

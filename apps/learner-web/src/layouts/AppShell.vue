@@ -44,7 +44,7 @@ const hits = computed(() => links.filter(i => (t(i.key) + ' ' + i.name + ' ' + i
 const current = computed(() => links.find(i => i.name === route.name)?.key)
 const inbox = ref<InboxMessage[]>([])
 const inboxState = ref<'idle' | 'loading' | 'error'>('idle')
-const unread = computed(() => inbox.value.filter(m => !m.readAt).length)
+const unread = computed(() => inbox.value.filter(m => !m.read).length)
 function active(item: Link) {
   if (item.name === 'b2-report') return ['b2-report', 'weakness-report'].includes(String(route.name))
   if (item.name === 'b3-writing') return ['b3-writing', 'writing-practice'].includes(String(route.name))

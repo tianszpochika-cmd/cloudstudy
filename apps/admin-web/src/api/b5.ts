@@ -1,5 +1,5 @@
 import { adminClient } from './client'
-import { executeB13Command, listB13Audit, listB13Metrics as listCanonicalB13Metrics } from './b13'
+import { executeB13Command, listB13Audit, listB13Metrics as listCanonicalB13Metrics, type B13AuditPage } from './b13'
 
 /**
  * B5 pages are kept as compatibility imports, but they now use the B13 owner contract.
@@ -7,9 +7,8 @@ import { executeB13Command, listB13Audit, listB13Metrics as listCanonicalB13Metr
  * in the canonical adapter and payment-intents is the only payment command seam.
  */
 export async function getDashboardMetrics(): Promise<unknown> { return listCanonicalB13Metrics() }
-export async function searchAuditLogs(): Promise<unknown> { return listB13Audit() }
-export async function exportAuditReport(): Promise<unknown> {
-  return executeB13Command({ aggregateType: 'SUPPORT', aggregateRef: 'audit-export', actionCode: 'AUDIT_EXPORT', reasonCode: 'ADMIN_AUDIT_EXPORT' })
+export async function searchAuditLogs(cursor?: string, pageSize = 20): Promise<B13AuditPage> {
+  return listB13Audit(cursor, pageSize)
 }
 
 // B13 admin-ops Gateway routes. The compatibility page consumes these read projections and

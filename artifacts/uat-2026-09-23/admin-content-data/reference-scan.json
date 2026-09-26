@@ -1,0 +1,350 @@
+{
+  "capturedAt": "2026-09-23T05:51:49.165Z",
+  "ownerSchemas": [
+    "admin_ops_service",
+    "analytics_service",
+    "assessment_service",
+    "audit_service",
+    "commerce_service",
+    "content_service",
+    "gamification_service",
+    "iam_service",
+    "learner_service",
+    "learning_service",
+    "media_service",
+    "notification_service",
+    "social_service",
+    "workflow_service"
+  ],
+  "scannedTables": 173,
+  "requestedCodes": [
+    "bulk-course-0085",
+    "bulk-course-0086",
+    "bulk-course-0087",
+    "bulk-course-0088",
+    "bulk-course-0089",
+    "bulk-course-0090",
+    "E2E-PACK-MUBBMMMQ",
+    "E2E-PACK-MUBBNORG",
+    "REPRO-PACK-MUBA8O9Q",
+    "REPRO-PACK-MUBBRQQR",
+    "T14-PACK-MUBIT0T8"
+  ],
+  "missingCodes": [
+    "REPRO-PACK-MUBA8O9Q",
+    "REPRO-PACK-MUBBRQQR",
+    "T14-PACK-MUBIT0T8"
+  ],
+  "candidates": [
+    {
+      "code": "bulk-course-0085",
+      "id": "bulk-course-0085",
+      "kind": "COURSE_UNIT",
+      "title": "日常口语第85课·本地拟真",
+      "creator": "bulk-100x-created_by-0085",
+      "createdAt": "2026-10-13 09:40:00.000000",
+      "publishedVersionId": "NULL",
+      "epoch": 85,
+      "projectionVersion": 85,
+      "versionCount": 0
+    },
+    {
+      "code": "bulk-course-0086",
+      "id": "bulk-course-0086",
+      "kind": "COURSE_UNIT",
+      "title": "听力强化第86课·本地拟真",
+      "creator": "bulk-100x-created_by-0086",
+      "createdAt": "2026-10-14 10:41:00.000000",
+      "publishedVersionId": "NULL",
+      "epoch": 86,
+      "projectionVersion": 86,
+      "versionCount": 0
+    },
+    {
+      "code": "bulk-course-0087",
+      "id": "bulk-course-0087",
+      "kind": "COURSE_UNIT",
+      "title": "阅读理解第87课·本地拟真",
+      "creator": "bulk-100x-created_by-0087",
+      "createdAt": "2026-10-15 11:42:00.000000",
+      "publishedVersionId": "NULL",
+      "epoch": 87,
+      "projectionVersion": 87,
+      "versionCount": 0
+    },
+    {
+      "code": "bulk-course-0088",
+      "id": "bulk-course-0088",
+      "kind": "COURSE",
+      "title": "语法精讲第88课·本地拟真",
+      "creator": "bulk-100x-created_by-0088",
+      "createdAt": "2026-10-16 12:43:00.000000",
+      "publishedVersionId": "NULL",
+      "epoch": 88,
+      "projectionVersion": 88,
+      "versionCount": 0
+    },
+    {
+      "code": "bulk-course-0089",
+      "id": "bulk-course-0089",
+      "kind": "COURSE",
+      "title": "发音训练第89课·本地拟真",
+      "creator": "bulk-100x-created_by-0089",
+      "createdAt": "2026-10-17 13:44:00.000000",
+      "publishedVersionId": "NULL",
+      "epoch": 89,
+      "projectionVersion": 89,
+      "versionCount": 0
+    },
+    {
+      "code": "bulk-course-0090",
+      "id": "bulk-course-0090",
+      "kind": "COURSE_UNIT",
+      "title": "写作提升第90课·本地拟真",
+      "creator": "bulk-100x-created_by-0090",
+      "createdAt": "2026-10-18 14:45:00.000000",
+      "publishedVersionId": "NULL",
+      "epoch": 90,
+      "projectionVersion": 90,
+      "versionCount": 0
+    },
+    {
+      "code": "E2E-PACK-MUBBMMMQ",
+      "id": "E2E-PACK-MUBBMMMQ",
+      "kind": "VOCABULARY",
+      "title": "E2E-PACK-MUBBMMMQ",
+      "creator": "fae4ed5e-f1de-4adf-8423-a2c91a457f83",
+      "createdAt": "2026-09-21 14:08:59.945212",
+      "publishedVersionId": "NULL",
+      "epoch": 0,
+      "projectionVersion": 0,
+      "versionCount": 0
+    },
+    {
+      "code": "E2E-PACK-MUBBNORG",
+      "id": "E2E-PACK-MUBBNORG",
+      "kind": "VOCABULARY",
+      "title": "E2E-PACK-MUBBNORG",
+      "creator": "fae4ed5e-f1de-4adf-8423-a2c91a457f83",
+      "createdAt": "2026-09-21 14:09:49.102759",
+      "publishedVersionId": "NULL",
+      "epoch": 0,
+      "projectionVersion": 0,
+      "versionCount": 0
+    }
+  ],
+  "childIds": [
+    {
+      "kind": "lexeme",
+      "code": "E2E-PACK-MUBBMMMQ",
+      "id": "lx_83247255c2a6"
+    },
+    {
+      "kind": "lexeme",
+      "code": "E2E-PACK-MUBBNORG",
+      "id": "lx_9155090f40a1"
+    }
+  ],
+  "hits": [
+    {
+      "source": "assessment_service.b10_assessment_session",
+      "code": "bulk-course-0085",
+      "count": 1
+    },
+    {
+      "source": "assessment_service.b25_assessment_item_rule",
+      "code": "bulk-course-0085",
+      "count": 1
+    },
+    {
+      "source": "content_service.b25_content_course",
+      "code": "bulk-course-0085",
+      "count": 1
+    },
+    {
+      "source": "content_service.b25_content_item",
+      "code": "bulk-course-0085",
+      "count": 1
+    },
+    {
+      "source": "content_service.content_public_projection",
+      "code": "bulk-course-0085",
+      "count": 1
+    },
+    {
+      "source": "assessment_service.b10_assessment_session",
+      "code": "bulk-course-0086",
+      "count": 1
+    },
+    {
+      "source": "assessment_service.b25_assessment_item_rule",
+      "code": "bulk-course-0086",
+      "count": 1
+    },
+    {
+      "source": "content_service.b25_content_course",
+      "code": "bulk-course-0086",
+      "count": 1
+    },
+    {
+      "source": "content_service.b25_content_item",
+      "code": "bulk-course-0086",
+      "count": 1
+    },
+    {
+      "source": "content_service.content_public_projection",
+      "code": "bulk-course-0086",
+      "count": 1
+    },
+    {
+      "source": "assessment_service.b10_assessment_session",
+      "code": "bulk-course-0087",
+      "count": 1
+    },
+    {
+      "source": "assessment_service.b25_assessment_item_rule",
+      "code": "bulk-course-0087",
+      "count": 1
+    },
+    {
+      "source": "content_service.b25_content_course",
+      "code": "bulk-course-0087",
+      "count": 1
+    },
+    {
+      "source": "content_service.b25_content_item",
+      "code": "bulk-course-0087",
+      "count": 1
+    },
+    {
+      "source": "content_service.content_public_projection",
+      "code": "bulk-course-0087",
+      "count": 1
+    },
+    {
+      "source": "assessment_service.b10_assessment_session",
+      "code": "bulk-course-0088",
+      "count": 1
+    },
+    {
+      "source": "assessment_service.b25_assessment_item_rule",
+      "code": "bulk-course-0088",
+      "count": 1
+    },
+    {
+      "source": "content_service.b25_content_course",
+      "code": "bulk-course-0088",
+      "count": 1
+    },
+    {
+      "source": "content_service.b25_content_item",
+      "code": "bulk-course-0088",
+      "count": 1
+    },
+    {
+      "source": "content_service.content_public_projection",
+      "code": "bulk-course-0088",
+      "count": 1
+    },
+    {
+      "source": "assessment_service.b10_assessment_session",
+      "code": "bulk-course-0089",
+      "count": 1
+    },
+    {
+      "source": "assessment_service.b25_assessment_item_rule",
+      "code": "bulk-course-0089",
+      "count": 1
+    },
+    {
+      "source": "content_service.b25_content_course",
+      "code": "bulk-course-0089",
+      "count": 1
+    },
+    {
+      "source": "content_service.b25_content_item",
+      "code": "bulk-course-0089",
+      "count": 1
+    },
+    {
+      "source": "content_service.content_public_projection",
+      "code": "bulk-course-0089",
+      "count": 1
+    },
+    {
+      "source": "assessment_service.b10_assessment_session",
+      "code": "bulk-course-0090",
+      "count": 1
+    },
+    {
+      "source": "assessment_service.b25_assessment_item_rule",
+      "code": "bulk-course-0090",
+      "count": 1
+    },
+    {
+      "source": "content_service.b25_content_course",
+      "code": "bulk-course-0090",
+      "count": 1
+    },
+    {
+      "source": "content_service.b25_content_item",
+      "code": "bulk-course-0090",
+      "count": 1
+    },
+    {
+      "source": "content_service.content_public_projection",
+      "code": "bulk-course-0090",
+      "count": 1
+    },
+    {
+      "source": "content_service.lexeme",
+      "code": "E2E-PACK-MUBBMMMQ",
+      "count": 1
+    },
+    {
+      "source": "content_service.content_outbox_event",
+      "code": "E2E-PACK-MUBBNORG",
+      "count": 1
+    },
+    {
+      "source": "content_service.lexeme",
+      "code": "E2E-PACK-MUBBNORG",
+      "count": 1
+    },
+    {
+      "source": "content_service.scheduled_publish_task",
+      "code": "E2E-PACK-MUBBNORG",
+      "count": 1
+    },
+    {
+      "source": "content_service.content_idempotency_record",
+      "code": "lx_83247255c2a6",
+      "count": 2
+    },
+    {
+      "source": "content_service.lexeme",
+      "code": "lx_83247255c2a6",
+      "count": 1
+    },
+    {
+      "source": "content_service.content_idempotency_record",
+      "code": "lx_9155090f40a1",
+      "count": 5
+    },
+    {
+      "source": "content_service.content_outbox_event",
+      "code": "lx_9155090f40a1",
+      "count": 1
+    },
+    {
+      "source": "content_service.lexeme",
+      "code": "lx_9155090f40a1",
+      "count": 1
+    },
+    {
+      "source": "content_service.scheduled_publish_task",
+      "code": "lx_9155090f40a1",
+      "count": 1
+    }
+  ]
+}

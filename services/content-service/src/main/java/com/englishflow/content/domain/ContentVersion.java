@@ -194,10 +194,7 @@ public final class ContentVersion {
         requireStatus(ContentVersionStatus.APPROVED);
         requireDualApproval();
         requirePublishableRights(publishedAt);
-        if (publisherActor.equals(editor)) {
-            throw ContentOperationException.conflict(
-                    "FOUR_EYES_REQUIRED", "content editor cannot publish the same version");
-        }
+        requireIndependentPublisher(publisherActor);
         this.publisher = publisherActor;
         this.publishedAt = Objects.requireNonNull(publishedAt, "publication time is required");
         this.archivedAt = null;
@@ -223,10 +220,7 @@ public final class ContentVersion {
         }
         requireDualApproval();
         requirePublishableRights(publishedAt);
-        if (publisherActor.equals(editor)) {
-            throw ContentOperationException.conflict(
-                    "FOUR_EYES_REQUIRED", "content editor cannot publish a rollback");
-        }
+        requireIndependentPublisher(publisherActor);
         this.rollbackOfVersionId = Objects.requireNonNull(rolledBackFrom, "rolled back version is required");
         this.publisher = requireActor(publisherActor, "publisher");
         this.publishedAt = Objects.requireNonNull(publishedAt, "publication time is required");
@@ -245,6 +239,16 @@ public final class ContentVersion {
                 && !firstReviewer.equals(finalReviewer)
                 && !firstReviewer.equals(editor)
                 && !finalReviewer.equals(editor);
+    }
+
+    private void requireIndependentPublisher(String publisherActor) {
+        requireActor(publisherActor, "publisher");
+        if (publisherActor.equals(editor)
+                || publisherActor.equals(firstReviewer)
+                || publisherActor.equals(finalReviewer)) {
+            throw ContentOperationException.conflict(
+                    "FOUR_EYES_REQUIRED", "publisher must be distinct from editor and both reviewers");
+        }
     }
 
     public ContentVersionId versionId() {

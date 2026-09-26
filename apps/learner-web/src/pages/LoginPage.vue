@@ -7,6 +7,7 @@ import AuthLayout from '../layouts/AuthLayout.vue'
 import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { authT } from '../auth/i18n'
+import { learnerAuthFailureCopy } from '../auth/auth-failure-copy'
 import { safeReturnTo } from '../auth/gateway-auth'
 import { useSessionStore } from '../stores/session'
 
@@ -37,7 +38,7 @@ async function submit(): Promise<void> {
   try {
     const ok = await session.login(identifier.value, password.value)
     if (!ok) {
-      loginError.value = session.lastError || authT('login.failed')
+      loginError.value = learnerAuthFailureCopy('login', session.lastError, authT)
       return
     }
     await router.replace(session.adultGate === 'REQUIRED' ? { name: 'onboarding' } : session.consumeReturnTo())
@@ -84,7 +85,7 @@ async function submit(): Promise<void> {
         <div v-if="loginError || submitting" class="login-status" :class="{ 'login-status--error': loginError }" :role="loginError ? 'alert' : 'status'" aria-live="polite" :aria-busy="submitting">
           <span class="login-status__mark" aria-hidden="true">{{ loginError ? '!' : '✦' }}</span>
           <div>
-            <strong>{{ loginError ? authT('login.unavailable') : authT('login.ready') }}</strong>
+            <strong>{{ loginError ? authT('login.errorTitle') : authT('login.ready') }}</strong>
             <p>{{ statusDescription }}</p>
           </div>
         </div>

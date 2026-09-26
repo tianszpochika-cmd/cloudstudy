@@ -1,0 +1,211 @@
+{
+  "scope": "Local Gateway B9 content draft CAS and auto-validation idempotency, synthetic staff",
+  "contentCode": "uat-cas-mudr1ard935951",
+  "checks": [
+    {
+      "name": "register",
+      "observed": 201,
+      "expected": 201,
+      "ok": true
+    },
+    {
+      "name": "staff login",
+      "observed": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "list page 1",
+      "observed": {
+        "status": 200,
+        "rows": 100
+      },
+      "expected": {
+        "status": 200,
+        "rows": 100
+      },
+      "ok": true
+    },
+    {
+      "name": "list cursor",
+      "observed": {
+        "hasMore": true,
+        "present": true
+      },
+      "expected": {
+        "hasMore": true,
+        "present": true
+      },
+      "ok": true
+    },
+    {
+      "name": "list page 2",
+      "observed": {
+        "status": 200,
+        "rows": 3
+      },
+      "expected": {
+        "status": 200,
+        "rows": 3
+      },
+      "ok": true
+    },
+    {
+      "name": "create draft",
+      "observed": 202,
+      "expected": 202,
+      "ok": true
+    },
+    {
+      "name": "same-key replay",
+      "observed": {
+        "status": 202,
+        "sameReceipt": true,
+        "firstReceipt": {
+          "commandId": "cmd_f0b38227-d6fe-3fbf-b230-179644335132",
+          "command": "CREATE_DRAFT",
+          "contentCode": "uat-cas-mudr1ard935951",
+          "contentVersionId": 261090,
+          "stateVersion": 1,
+          "status": "ACCEPTED",
+          "acceptedAt": "2026-09-23T06:55:52.645979100Z"
+        },
+        "replayReceipt": {
+          "commandId": "cmd_f0b38227-d6fe-3fbf-b230-179644335132",
+          "command": "CREATE_DRAFT",
+          "contentCode": "uat-cas-mudr1ard935951",
+          "contentVersionId": 261090,
+          "stateVersion": 1,
+          "status": "ACCEPTED",
+          "acceptedAt": "2026-09-23T06:55:52.645979100Z"
+        }
+      },
+      "expected": {
+        "status": 202,
+        "sameReceipt": true
+      },
+      "ok": true
+    },
+    {
+      "name": "different-body same-key conflict",
+      "observed": {
+        "status": 409,
+        "code": "IDEMPOTENCY_KEY_REUSE"
+      },
+      "expected": {
+        "status": 409,
+        "code": "IDEMPOTENCY_KEY_REUSE"
+      },
+      "ok": true
+    },
+    {
+      "name": "save version 2",
+      "observed": 202,
+      "expected": 202,
+      "ok": true
+    },
+    {
+      "name": "stale save denied",
+      "observed": {
+        "status": 409,
+        "code": "VERSION_CONFLICT"
+      },
+      "expected": {
+        "status": 409,
+        "code": "VERSION_CONFLICT"
+      },
+      "ok": true
+    },
+    {
+      "name": "detail after conflict",
+      "observed": {
+        "status": 200,
+        "stateVersion": 2
+      },
+      "expected": {
+        "status": 200,
+        "stateVersion": 2
+      },
+      "ok": true
+    },
+    {
+      "name": "validation requires idempotency key",
+      "observed": 400,
+      "expected": 400,
+      "ok": true
+    },
+    {
+      "name": "auto-validation report",
+      "observed": {
+        "status": 200,
+        "ruleVersion": "string",
+        "checkedAt": "string"
+      },
+      "expected": {
+        "status": 200,
+        "ruleVersion": "string",
+        "checkedAt": "string"
+      },
+      "ok": true
+    },
+    {
+      "name": "auto-validation same-key report replay",
+      "observed": {
+        "status": 200,
+        "sameReport": true
+      },
+      "expected": {
+        "status": 200,
+        "sameReport": true
+      },
+      "ok": true
+    },
+    {
+      "name": "auto-validation changed-body conflict",
+      "observed": {
+        "status": 409,
+        "code": "IDEMPOTENCY_KEY_REUSE"
+      },
+      "expected": {
+        "status": 409,
+        "code": "IDEMPOTENCY_KEY_REUSE"
+      },
+      "ok": true
+    },
+    {
+      "name": "one durable validation receipt",
+      "observed": 1,
+      "expected": 1,
+      "ok": true
+    },
+    {
+      "name": "two immutable versions",
+      "observed": "2:1,2:2:2",
+      "expected": "2:1,2:2:2",
+      "ok": true
+    },
+    {
+      "name": "definition revision unpublished",
+      "observed": "2:NONE",
+      "expected": "2:NONE",
+      "ok": true
+    },
+    {
+      "name": "list remains available",
+      "observed": 200,
+      "expected": 200,
+      "ok": true
+    }
+  ],
+  "cleanup": {
+    "removed": {
+      "receipts": 6,
+      "versions": 2,
+      "definition": 1
+    },
+    "account": "1:DISABLED",
+    "activeSessions": 0
+  },
+  "result": "PASS",
+  "capturedAt": "2026-09-23T06:55:54.848Z"
+}

@@ -14,12 +14,16 @@ import com.englishflow.content.port.ContentRepository;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Instant;
+import java.sql.Statement;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +36,8 @@ public final class JdbcContentRepository implements ContentRepository {
 
     private static final String DEFINITION_SELECT = """
             SELECT content_id, tenant_id, content_code, kind, title, locale, target_level, goal_code,
-                   created_by, created_at, current_published_version_id, content_epoch, projection_version
+                   created_by, created_at, current_published_version_id, content_epoch, projection_version,
+                   state_version
               FROM content_definition
              WHERE content_id = ?
             """;
@@ -49,32 +54,22 @@ public final class JdbcContentRepository implements ContentRepository {
              ORDER BY version_no, content_version_id
             """;
 
-    private static final String NEXT_VERSION_ID = """
-            SELECT COALESCE(MAX(content_version_id), 25000) + 1
-              FROM content_version
-            """;
-
-    private static final String DEFINITION_UPSERT = """
-            INSERT INTO content_definition
-                (content_id, tenant_id, content_code, kind, title, locale, target_level, goal_code,
-                 created_by, created_at, current_published_version_id, content_epoch, projection_version)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            ON DUPLICATE KEY UPDATE tenant_id = VALUES(tenant_id), content_code = VALUES(content_code),
-                kind = VALUES(kind), title = VALUES(title), locale = VALUES(locale),
-                target_level = VALUES(target_level), goal_code = VALUES(goal_code),
-                created_by = VALUES(created_by), created_at = VALUES(created_at),
-                current_published_version_id = VALUES(current_published_version_id),
-                content_epoch = VALUES(content_epoch), projection_version = VALUES(projection_version)
+    private static final String DEFINITION_CAS = """
+            UPDATE content_definition
+               SET current_published_version_id = ?, content_epoch = ?, projection_version = ?,
+                   state_version = ?
+             WHERE content_id = ? AND state_version = ?
             """;
 
     private static final String DEFINITION_INSERT = """
             INSERT INTO content_definition
                 (content_id, tenant_id, content_code, kind, title, locale, target_level, goal_code,
-                 created_by, created_at, current_published_version_id, content_epoch, projection_version)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                 created_by, created_at, current_published_version_id, content_epoch, projection_version,
+                 state_version)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """;
 
-    private static final String VERSION_UPSERT = """
+    private static final String VERSION_INSERT = """
             INSERT INTO content_version
                 (content_version_id, content_id, version_no, kind, status, payload_json, payload_hash,
                  rights_source_code, rights_license_code, copyright_status, rights_allows_learning,
@@ -82,46 +77,38 @@ public final class JdbcContentRepository implements ContentRepository {
                  editor, release_note, first_reviewer, final_reviewer, publisher, published_at, archived_at,
                  rollback_of_version_id, first_review_version, final_review_version, state_version, created_at)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            ON DUPLICATE KEY UPDATE version_no = VALUES(version_no), kind = VALUES(kind),
-                status = VALUES(status), payload_json = VALUES(payload_json), payload_hash = VALUES(payload_hash),
-                rights_source_code = VALUES(rights_source_code), rights_license_code = VALUES(rights_license_code),
-                copyright_status = VALUES(copyright_status), rights_allows_learning = VALUES(rights_allows_learning),
-                rights_permitted_channels = VALUES(rights_permitted_channels), rights_starts_at = VALUES(rights_starts_at),
-                rights_expires_at = VALUES(rights_expires_at), authorization_evidence_ref = VALUES(authorization_evidence_ref),
-                editor = VALUES(editor), release_note = VALUES(release_note), first_reviewer = VALUES(first_reviewer),
-                final_reviewer = VALUES(final_reviewer), publisher = VALUES(publisher), published_at = VALUES(published_at),
-                archived_at = VALUES(archived_at), rollback_of_version_id = VALUES(rollback_of_version_id),
-                first_review_version = VALUES(first_review_version), final_review_version = VALUES(final_review_version),
-                state_version = VALUES(state_version), created_at = VALUES(created_at)
+            """;
+
+    private static final String VERSION_STATE_UPDATE = """
+            UPDATE content_version
+               SET status = ?, first_reviewer = ?, final_reviewer = ?, publisher = ?,
+                   published_at = ?, archived_at = ?, rollback_of_version_id = ?,
+                   first_review_version = ?, final_review_version = ?, state_version = ?
+             WHERE content_version_id = ? AND content_id = ? AND version_no = ? AND state_version = ?
             """;
 
     private final JdbcTemplate jdbc;
     private final ObjectMapper objectMapper;
+    private final TransactionTemplate transaction;
 
     public JdbcContentRepository(JdbcTemplate jdbc, ObjectMapper objectMapper) {
+        this(jdbc, objectMapper, new TransactionTemplate(
+                new DataSourceTransactionManager(java.util.Objects.requireNonNull(jdbc.getDataSource()))));
+    }
+
+    public JdbcContentRepository(JdbcTemplate jdbc, ObjectMapper objectMapper, TransactionTemplate transaction) {
         this.jdbc = java.util.Objects.requireNonNull(jdbc, "jdbc is required");
         this.objectMapper = java.util.Objects.requireNonNull(objectMapper, "object mapper is required");
+        this.transaction = java.util.Objects.requireNonNull(transaction, "transaction is required");
     }
 
     @Override
     public Optional<ContentDefinition> find(ContentId contentId) {
         java.util.Objects.requireNonNull(contentId, "content id is required");
         try {
-            return jdbc.query(DEFINITION_SELECT, resultSet -> {
-                if (!resultSet.next()) {
-                    return Optional.empty();
-                }
-                DefinitionRow definition = mapDefinition(resultSet);
-                List<ContentVersion> versions = jdbc.query(
-                        VERSION_SELECT, (versionResultSet, rowNum) -> mapVersion(versionResultSet),
-                        contentId.value());
-                return Optional.of(ContentDefinition.rehydrate(
-                        definition.contentId(), definition.tenantId(), definition.contentCode(),
-                        definition.kind(), definition.title(), definition.locale(), definition.targetLevel(),
-                        definition.goalCode(), definition.createdBy(), definition.createdAt(), versions,
-                        definition.currentPublishedVersionId(), definition.contentEpoch(),
-                        definition.projectionVersion()));
-            }, contentId.value());
+            List<DefinitionRow> rows = jdbc.query(DEFINITION_SELECT,
+                    (resultSet, rowNum) -> mapDefinition(resultSet), contentId.value());
+            return rows.isEmpty() ? Optional.empty() : Optional.of(rehydrate(rows.getFirst()));
         } catch (DataAccessException exception) {
             LOG.warn("content facts could not be read for contentId={}", contentId.value(), exception);
             throw ContentOperationException.unavailable(
@@ -131,27 +118,24 @@ public final class JdbcContentRepository implements ContentRepository {
 
     @Override
     public Optional<ContentDefinition> findByCode(String contentCode) {
+        return findByCode(contentCode, false);
+    }
+
+    @Override
+    public Optional<ContentDefinition> findByCodeForUpdate(String contentCode) {
+        return findByCode(contentCode, true);
+    }
+
+    private Optional<ContentDefinition> findByCode(String contentCode, boolean forUpdate) {
         if (contentCode == null || contentCode.isBlank()) {
             throw ContentOperationException.badRequest("CONTENT_CODE_INVALID", "content code is required");
         }
         try {
-            return jdbc.query(
-                    DEFINITION_SELECT.replace("WHERE content_id = ?", "WHERE content_code = ?"),
-                    resultSet -> {
-                        if (!resultSet.next()) {
-                            return Optional.empty();
-                        }
-                        DefinitionRow definition = mapDefinition(resultSet);
-                        List<ContentVersion> versions = jdbc.query(
-                                VERSION_SELECT, (versionResultSet, rowNum) -> mapVersion(versionResultSet),
-                                definition.contentId().value());
-                        return Optional.of(ContentDefinition.rehydrate(
-                                definition.contentId(), definition.tenantId(), definition.contentCode(),
-                                definition.kind(), definition.title(), definition.locale(), definition.targetLevel(),
-                                definition.goalCode(), definition.createdBy(), definition.createdAt(), versions,
-                                definition.currentPublishedVersionId(), definition.contentEpoch(),
-                                definition.projectionVersion()));
-                    }, contentCode);
+            List<DefinitionRow> rows = jdbc.query(
+                    DEFINITION_SELECT.replace("WHERE content_id = ?", "WHERE content_code = ?")
+                            + (forUpdate ? " FOR UPDATE" : ""),
+                    (resultSet, rowNum) -> mapDefinition(resultSet), contentCode);
+            return rows.isEmpty() ? Optional.empty() : Optional.of(rehydrate(rows.getFirst()));
         } catch (DataAccessException exception) {
             LOG.warn("content facts could not be read for contentCode={}", contentCode, exception);
             throw ContentOperationException.unavailable(
@@ -162,20 +146,10 @@ public final class JdbcContentRepository implements ContentRepository {
     @Override
     public List<ContentDefinition> findAll() {
         try {
-            return jdbc.query(
+            List<DefinitionRow> rows = jdbc.query(
                     DEFINITION_SELECT.replace("WHERE content_id = ?", "ORDER BY content_code"),
-                    (resultSet, rowNum) -> {
-                        DefinitionRow definition = mapDefinition(resultSet);
-                        List<ContentVersion> versions = jdbc.query(
-                                VERSION_SELECT, (versionResultSet, versionRow) -> mapVersion(versionResultSet),
-                                definition.contentId().value());
-                        return ContentDefinition.rehydrate(
-                                definition.contentId(), definition.tenantId(), definition.contentCode(),
-                                definition.kind(), definition.title(), definition.locale(), definition.targetLevel(),
-                                definition.goalCode(), definition.createdBy(), definition.createdAt(), versions,
-                                definition.currentPublishedVersionId(), definition.contentEpoch(),
-                                definition.projectionVersion());
-                    });
+                    (resultSet, rowNum) -> mapDefinition(resultSet));
+            return rows.stream().map(this::rehydrate).toList();
         } catch (DataAccessException exception) {
             LOG.warn("content facts could not be listed", exception);
             throw ContentOperationException.unavailable(
@@ -183,11 +157,30 @@ public final class JdbcContentRepository implements ContentRepository {
         }
     }
 
+    private ContentDefinition rehydrate(DefinitionRow definition) {
+        List<ContentVersion> versions = jdbc.query(
+                VERSION_SELECT, (resultSet, rowNum) -> mapVersion(resultSet),
+                definition.contentId().value());
+        return ContentDefinition.rehydrate(
+                definition.contentId(), definition.tenantId(), definition.contentCode(),
+                definition.kind(), definition.title(), definition.locale(), definition.targetLevel(),
+                definition.goalCode(), definition.createdBy(), definition.createdAt(), versions,
+                definition.currentPublishedVersionId(), definition.contentEpoch(),
+                definition.projectionVersion(), definition.stateVersion());
+    }
+
     @Override
     public ContentVersionId nextVersionId() {
         try {
-            Long next = jdbc.queryForObject(NEXT_VERSION_ID, Long.class);
-            return ContentVersionId.of(next == null ? 25001L : next);
+            GeneratedKeyHolder key = new GeneratedKeyHolder();
+            jdbc.update(connection -> connection.prepareStatement(
+                    "INSERT INTO content_version_id_sequence (id) VALUES (NULL)", Statement.RETURN_GENERATED_KEYS), key);
+            Number value = key.getKey();
+            if (value == null) {
+                throw ContentOperationException.unavailable(
+                        "CONTENT_PERSISTENCE_UNAVAILABLE", "version id allocator returned no id");
+            }
+            return ContentVersionId.of(value.longValue());
         } catch (DataAccessException exception) {
             LOG.warn("next content version id could not be allocated", exception);
             throw ContentOperationException.unavailable(
@@ -212,14 +205,58 @@ public final class JdbcContentRepository implements ContentRepository {
     public void save(ContentDefinition content) {
         java.util.Objects.requireNonNull(content, "content is required");
         try {
-            jdbc.update(DEFINITION_UPSERT, definitionArguments(content));
-            for (ContentVersion version : content.versions()) {
-                jdbc.update(VERSION_UPSERT, versionArguments(content, version));
-            }
+            transaction.executeWithoutResult(status -> saveInTransaction(content));
+        } catch (DuplicateKeyException exception) {
+            throw ContentOperationException.conflict("VERSION_CONFLICT", "content version already exists");
         } catch (DataAccessException exception) {
             throw ContentOperationException.unavailable(
                     "CONTENT_PERSISTENCE_UNAVAILABLE", "content facts could not be saved");
         }
+    }
+
+    private void saveInTransaction(ContentDefinition content) {
+        int updated = jdbc.update(DEFINITION_CAS,
+                content.currentPublishedVersionId().map(ContentVersionId::value).orElse(null),
+                content.contentEpoch(), content.projectionVersion(), content.stateVersion(),
+                content.contentId().value(), content.persistedStateVersion());
+        if (updated != 1) {
+            throw ContentOperationException.conflict("VERSION_CONFLICT", "content was changed by another command");
+        }
+        for (ContentVersion version : content.versions()) {
+            List<StoredVersion> rows = jdbc.query(
+                    "SELECT version_no, state_version, payload_hash FROM content_version "
+                            + "WHERE content_version_id = ? AND content_id = ?",
+                    (resultSet, rowNum) -> new StoredVersion(resultSet.getInt("version_no"),
+                            resultSet.getLong("state_version"), resultSet.getString("payload_hash")),
+                    version.versionId().value(), content.contentId().value());
+            if (rows.isEmpty()) {
+                jdbc.update(VERSION_INSERT, versionArguments(content, version));
+                continue;
+            }
+            StoredVersion stored = rows.getFirst();
+            if (stored.versionNumber() != version.versionNumber()
+                    || !java.util.Objects.equals(stored.payloadHash(), version.contentHash())
+                    || version.stateVersion() < stored.stateVersion()) {
+                throw ContentOperationException.conflict("VERSION_CONFLICT", "stored version identity changed");
+            }
+            if (version.stateVersion() == stored.stateVersion()) {
+                continue;
+            }
+            int stateUpdated = jdbc.update(VERSION_STATE_UPDATE,
+                    version.status().name(), version.firstReviewer().orElse(null),
+                    version.finalReviewer().orElse(null), version.publisher().orElse(null),
+                    JdbcContentJson.timestamp(version.publishedAt().orElse(null)),
+                    JdbcContentJson.timestamp(version.archivedAt().orElse(null)),
+                    version.rollbackOfVersionId().map(ContentVersionId::value).orElse(null),
+                    version.reviewVersion(com.englishflow.content.domain.ReviewStage.FIRST_REVIEW),
+                    version.reviewVersion(com.englishflow.content.domain.ReviewStage.FINAL_REVIEW),
+                    version.stateVersion(), version.versionId().value(), content.contentId().value(),
+                    version.versionNumber(), stored.stateVersion());
+            if (stateUpdated != 1) {
+                throw ContentOperationException.conflict("VERSION_CONFLICT", "content version changed by another command");
+            }
+        }
+        content.markPersisted();
     }
 
     private Object[] definitionArguments(ContentDefinition content) {
@@ -228,7 +265,7 @@ public final class JdbcContentRepository implements ContentRepository {
                 content.title(), content.locale(), content.targetLevel(), content.goalCode(), content.createdBy(),
                 JdbcContentJson.timestamp(content.createdAt()),
                 content.currentPublishedVersionId().map(ContentVersionId::value).orElse(null),
-                content.contentEpoch(), content.projectionVersion()};
+                content.contentEpoch(), content.projectionVersion(), content.stateVersion()};
     }
 
     private Object[] versionArguments(ContentDefinition content, ContentVersion version) {
@@ -264,7 +301,8 @@ public final class JdbcContentRepository implements ContentRepository {
                 resultSet.getString("goal_code"), resultSet.getString("created_by"),
                 JdbcContentJson.instant(resultSet, "created_at"),
                 current == null ? null : new ContentVersionId(((Number) current).longValue()),
-                resultSet.getLong("content_epoch"), resultSet.getLong("projection_version"));
+                resultSet.getLong("content_epoch"), resultSet.getLong("projection_version"),
+                resultSet.getLong("state_version"));
     }
 
     private ContentVersion mapVersion(ResultSet resultSet) throws SQLException {
@@ -324,6 +362,10 @@ public final class JdbcContentRepository implements ContentRepository {
             Instant createdAt,
             ContentVersionId currentPublishedVersionId,
             long contentEpoch,
-            long projectionVersion) {
+            long projectionVersion,
+            long stateVersion) {
+    }
+
+    private record StoredVersion(int versionNumber, long stateVersion, String payloadHash) {
     }
 }

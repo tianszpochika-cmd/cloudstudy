@@ -145,8 +145,12 @@ public final class GatewayRoutePolicy {
             rule("admin-content-publish-tasks", 800, MatchType.PREFIX, "/api/v1/admin/content-publish-tasks", "content-service", "INTERNAL_V1", "AUTHENTICATED", AuthClass.HIGH_RISK_ADMIN, "NONE", HttpMethod.GET),
             rule("admin-recovery", 800, MatchType.PREFIX, "/api/v1/admin/recovery", "workflow-service", "INTERNAL_V1", "AUTHENTICATED", AuthClass.HIGH_RISK_ADMIN, "NONE", HttpMethod.GET, HttpMethod.POST),
             rule("admin-analytics", 800, MatchType.EXACT, "/api/v1/admin/ops/metrics", "analytics-service", "INTERNAL_V1", "AUTHENTICATED", AuthClass.HIGH_RISK_ADMIN, "NONE", HttpMethod.GET),
+            rule("admin-moderation-reports-read", 800, MatchType.EXACT, "/api/v1/admin/moderation/reports", "social-service", "INTERNAL_V1", "AUTHENTICATED", AuthClass.HIGH_RISK_ADMIN, "NONE", HttpMethod.GET),
             rule("analytics-telemetry", 800, MatchType.EXACT, "/api/v1/analytics/telemetry", "analytics-service", "INTERNAL_V1", "AUTHENTICATED", AuthClass.AUTHENTICATED_WRITE, "NONE", HttpMethod.POST),
             rule("learning-content-snapshot", 800, MatchType.PREFIX, "/api/v1/learning/content-snapshots", "content-service", "INTERNAL_V1", "AUTHENTICATED", AuthClass.AUTHENTICATED_READ, "NONE", HttpMethod.GET),
+            // One owner-verified B3 read is narrower than the assessment-owned legacy grammar prefix.
+            // Keep the broad grammar route unchanged so attempts and every other B3 path remain closed.
+            rule("grammar-points-read", 850, MatchType.EXACT, "/api/v1/grammar/points", "content-service", "INTERNAL_V1", "AUTHENTICATED", AuthClass.AUTHENTICATED_READ, "NONE", HttpMethod.GET),
             rule("speaking-recordings", 800, MatchType.PREFIX, "/api/v1/speaking/recordings", "media-service", "INTERNAL_V1", "AUTHENTICATED", AuthClass.AUTHENTICATED_WRITE, "NONE", HttpMethod.GET, HttpMethod.POST, HttpMethod.DELETE),
             rule("speaking-shadowing-completion", 900, MatchType.EXACT, "/api/v1/speaking/shadowing/completions", "assessment-service", "INTERNAL_V1", "AUTHENTICATED", AuthClass.AUTHENTICATED_WRITE, "NONE", HttpMethod.POST),
             rule("auth-domain", 100, MatchType.PREFIX, "/api/v1/auth", "iam-service", "INTERNAL_V1", "AUTHENTICATED", AuthClass.AUTHENTICATED_WRITE, "NONE", HttpMethod.GET, HttpMethod.POST),
@@ -161,6 +165,7 @@ public final class GatewayRoutePolicy {
             rule("learning-domain", 100, MatchType.PREFIX, "/api/v1/learning", "learning-service", "INTERNAL_V1", "AUTHENTICATED", AuthClass.AUTHENTICATED_WRITE, "NONE", HttpMethod.GET, HttpMethod.POST, HttpMethod.PUT),
             rule("mastery-domain", 100, MatchType.PREFIX, "/api/v1/mastery", "learning-service", "INTERNAL_V1", "AUTHENTICATED", AuthClass.AUTHENTICATED_WRITE, "NONE", HttpMethod.GET, HttpMethod.POST),
             rule("offline-domain", 100, MatchType.PREFIX, "/api/v1/offline", "learning-service", "INTERNAL_V1", "AUTHENTICATED", AuthClass.AUTHENTICATED_WRITE, "NONE", HttpMethod.GET, HttpMethod.POST),
+            rule("sync-offline-packages-read", 800, MatchType.EXACT, "/api/v1/sync/offline-packages", "notification-service", "INTERNAL_V1", "AUTHENTICATED", AuthClass.AUTHENTICATED_READ, "NONE", HttpMethod.GET),
             rule("sync-domain", 100, MatchType.PREFIX, "/api/v1/sync", "learning-service", "INTERNAL_V1", "AUTHENTICATED", AuthClass.AUTHENTICATED_WRITE, "NONE", HttpMethod.GET, HttpMethod.POST, HttpMethod.PUT, HttpMethod.PATCH),
             rule("assessment-domain", 100, MatchType.PREFIX, "/api/v1/assessment", "assessment-service", "INTERNAL_V1", "AUTHENTICATED", AuthClass.AUTHENTICATED_WRITE, "NONE", HttpMethod.GET, HttpMethod.POST, HttpMethod.PUT),
             rule("exam-domain", 100, MatchType.PREFIX, "/api/v1/exam", "assessment-service", "INTERNAL_V1", "AUTHENTICATED", AuthClass.AUTHENTICATED_WRITE, "NONE", HttpMethod.GET, HttpMethod.POST, HttpMethod.PUT),

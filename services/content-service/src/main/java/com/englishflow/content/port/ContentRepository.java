@@ -14,6 +14,11 @@ public interface ContentRepository {
 
     Optional<ContentDefinition> findByCode(String contentCode);
 
+    /** Lock the definition row inside the caller's transaction before editing its versions. */
+    default Optional<ContentDefinition> findByCodeForUpdate(String contentCode) {
+        return findByCode(contentCode);
+    }
+
     List<ContentDefinition> findAll();
 
     /**

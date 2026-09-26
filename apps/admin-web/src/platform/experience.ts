@@ -63,7 +63,7 @@ export const adminPages: Array<{
     path: "/learners",
     group: "operations",
     icon: "people",
-    permission: "admin.content.read",
+    permission: "admin.learner.read",
     keywords: "学员 用户 目标 计划 SRS learners",
   },
   {
@@ -97,6 +97,14 @@ export const adminPages: Array<{
     icon: "shield",
     permission: "admin.audit.read",
     keywords: "审计 合规 audit",
+  },
+  {
+    key: "permissions",
+    path: "/permissions",
+    group: "assurance",
+    icon: "settings",
+    permission: "iam.policy.read",
+    keywords: "策略版本 IAM 权限 policy permissions",
   },
   {
     key: "release",

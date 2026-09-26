@@ -55,7 +55,7 @@ const routes: RouteRecordRaw[] = [
     path: "/learners",
     name: "admin-learners",
     component: () => import("../views/AdminLearnerView.vue"),
-    meta: { requiresAuth: true, permission: "admin.content.read" },
+    meta: { requiresAuth: true, permission: "admin.learner.read" },
   },
   {
     path: "/phonetics",
@@ -74,6 +74,12 @@ const routes: RouteRecordRaw[] = [
     name: "admin-audit",
     component: () => import("../views/AdminAuditView.vue"),
     meta: { requiresAuth: true, permission: "admin.audit.read" },
+  },
+  {
+    path: "/permissions",
+    name: "admin-permissions-read",
+    component: () => import("../views/AdminPermissionsView.vue"),
+    meta: { requiresAuth: true, permission: "iam.policy.read" },
   },
   {
     path: "/release",

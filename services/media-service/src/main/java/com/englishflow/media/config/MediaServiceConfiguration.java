@@ -3,20 +3,27 @@ package com.englishflow.media.config;
 import com.englishflow.media.adapter.jdbc.JdbcMediaEventOutbox;
 import com.englishflow.media.adapter.jdbc.JdbcMediaRegistrationIdempotencyStore;
 import com.englishflow.media.adapter.jdbc.JdbcMediaRepository;
+import com.englishflow.media.adapter.jdbc.JdbcMediaWriteIdempotency;
 import com.englishflow.media.adapter.memory.InMemoryMediaEventOutbox;
 import com.englishflow.media.adapter.memory.InMemoryMediaRepository;
 import com.englishflow.media.adapter.memory.InMemoryMediaRegistrationIdempotencyStore;
-import com.englishflow.media.adapter.memory.InMemorySignedUrlPort;
+import com.englishflow.media.adapter.memory.InMemoryMediaWriteIdempotency;
+import com.englishflow.media.adapter.failclosed.FailClosedSignedUrlPort;
+import com.englishflow.media.adapter.objectstore.MinioObjectStorePort;
+import com.englishflow.media.adapter.objectstore.VerifiedObjectSignedUrlPort;
 import com.englishflow.media.application.MediaAssetCommandService;
 import com.englishflow.media.application.MediaReadService;
 import com.englishflow.media.port.MediaEventPort;
 import com.englishflow.media.port.MediaRepository;
 import com.englishflow.media.port.MediaRegistrationIdempotencyPort;
+import com.englishflow.media.port.MediaWriteIdempotencyPort;
 import com.englishflow.media.port.SignedUrlPort;
 
 import java.time.Clock;
 
 import javax.sql.DataSource;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.flywaydb.core.Flyway;
 import org.springframework.beans.factory.annotation.Value;
@@ -98,16 +105,25 @@ public class MediaServiceConfiguration {
     @Bean
     @Profile("!local-real")
     SignedUrlPort signedUrlPort(MediaServiceProperties properties) {
-        return new InMemorySignedUrlPort(properties.getSignedUrlBaseUrl());
+        return configuredSignedUrlPort(properties);
     }
 
     @Bean
     @Profile("local-real")
     SignedUrlPort localRealSignedUrlPort(MediaServiceProperties properties) {
-        // Local-real signs metadata-only grants against the configured local
-        // object-store base. The media owner remains the source of truth for
-        // rights and asset state; no object bytes enter this service.
-        return new InMemorySignedUrlPort(properties.getSignedUrlBaseUrl());
+        return configuredSignedUrlPort(properties);
+    }
+
+    private SignedUrlPort configuredSignedUrlPort(MediaServiceProperties properties) {
+        if (!properties.isObjectStoreEnabled()) {
+            return new FailClosedSignedUrlPort();
+        }
+        return new VerifiedObjectSignedUrlPort(
+                new MinioObjectStorePort(properties.getObjectStoreEndpoint(),
+                        properties.getObjectStorePublicEndpoint(),
+                        properties.getObjectStoreAccessKey(), properties.getObjectStoreSecretKey(),
+                        properties.getObjectStoreRegion()),
+                properties.getObjectStoreBucket());
     }
 
     @Bean
@@ -137,6 +153,21 @@ public class MediaServiceConfiguration {
             JdbcTemplate localRealMediaJdbcTemplate, MediaServiceProperties properties) {
         // M3-004: durable idempotency so a restart cannot change a key's meaning.
         return new JdbcMediaRegistrationIdempotencyStore(localRealMediaJdbcTemplate, properties.getSchema());
+    }
+
+    @Bean
+    @Profile("!local-real")
+    MediaWriteIdempotencyPort mediaWriteIdempotencyPort() {
+        return new InMemoryMediaWriteIdempotency();
+    }
+
+    @Bean
+    @Profile("local-real")
+    MediaWriteIdempotencyPort localRealMediaWriteIdempotencyPort(
+            JdbcTemplate localRealMediaJdbcTemplate, DataSource dataSource,
+            MediaServiceProperties properties) {
+        return new JdbcMediaWriteIdempotency(
+                localRealMediaJdbcTemplate, dataSource, properties.getSchema(), new ObjectMapper());
     }
 
     @Bean

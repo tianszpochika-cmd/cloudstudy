@@ -6,6 +6,7 @@ const learnerWebUrl =
   process.env.NUXT_PUBLIC_LEARNER_WEB_URL || "http://127.0.0.1:18180";
 const gatewayBaseUrl =
   process.env.NUXT_PUBLIC_GATEWAY_BASE_URL || "http://127.0.0.1:18070/api/v1";
+const gatewayInternalBaseUrl = process.env.NUXT_GATEWAY_INTERNAL_BASE_URL || "";
 const publicProjectionPath =
   process.env.NUXT_PUBLIC_PROJECTION_PATH || "/public/site/projection";
 const publicLinkOrigins = (process.env.NUXT_PUBLIC_LINK_ORIGINS || "")
@@ -23,6 +24,7 @@ export default defineNuxtConfig({
     "~/assets/css/production.css",
   ],
   runtimeConfig: {
+    gatewayInternalBaseUrl,
     public: {
       siteUrl: publicSiteUrl,
       learnerWebUrl,

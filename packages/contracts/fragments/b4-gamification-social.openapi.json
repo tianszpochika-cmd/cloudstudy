@@ -3,7 +3,7 @@
   "info": {
     "title": "EnglishFlow B4 gamification and social API",
     "version": "4.0.0",
-    "description": "B4 经验成长、长期游戏 registry、Avatar、免费奖励箱、自习室、预设互动、通知和离线同步契约。Phase 1 只使用成人规则化学习事实；游戏是否可用由 gamification-service 的 releasePhase/enabled Gate 决定，当前仅开放 SENTENCE_TRAIN，不启用 AI 判定或付费随机箱。"
+    "description": "B4 经验成长、长期游戏 registry、Avatar、免费奖励箱、自习室、预设互动、通知和离线同步契约。Phase 1 只使用成人规则化学习事实；游戏是否可用由 gamification-service 的 releasePhase/enabled Gate 决定。SENTENCE_TRAIN 仍在 P0 登记册中，但因没有服务端可核验题包与判分事实，当前全部游戏均关闭；不启用 AI 判定或付费随机箱。Avatar 和收藏道具必须由可追溯到具体 itemCode 的服务端权益事实授权；奖励箱的 tier 结果、客户端配置和旧本地 JSON 均不能证明持有或装备。"
   },
   "tags": [
     {
@@ -214,6 +214,7 @@
     "/api/v1/gamification/quests": {
       "get": {
         "operationId": "listB4Quests",
+        "description": "仅返回由可信学习事实计算的任务进度；旧本地 JSON 或固定默认任务不作为完成、奖励或可领取证明，缺来源时返回空列表。",
         "tags": [
           "b4-gamification"
         ],
@@ -275,6 +276,7 @@
     "/api/v1/gamification/quests/{questId}/claim": {
       "post": {
         "operationId": "claimB4QuestReward",
+        "description": "必须有可信任务完成、奖励账本和事务性幂等回放；未接通时返回 503 且不确认领取。",
         "tags": [
           "b4-gamification"
         ],
@@ -332,6 +334,9 @@
           },
           "409": {
             "$ref": "#/components/responses/ApiConflict"
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
           }
         }
       }
@@ -339,6 +344,7 @@
     "/api/v1/gamification/achievements": {
       "get": {
         "operationId": "listB4Achievements",
+        "description": "仅展示有可信达成事实的成就；旧本地 JSON 和固定默认解锁值不作为达成证明，缺来源时返回空列表。",
         "tags": [
           "b4-gamification"
         ],
@@ -400,6 +406,7 @@
     "/api/v1/gamification/achievements/{achievementCode}/showcase": {
       "put": {
         "operationId": "updateB4AchievementShowcase",
+        "description": "成就达成事实、版本校验和幂等回放未接通时返回 503，不保存展示位。",
         "tags": [
           "b4-gamification"
         ],
@@ -464,6 +471,9 @@
                 "$ref": "#/components/headers/XApiVersion"
               }
             }
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
           }
         }
       }
@@ -756,6 +766,7 @@
     "/api/v1/gamification/catalog/{catalogItemId}/redeem": {
       "post": {
         "operationId": "redeemB4CatalogItem",
+        "description": "必须先有服务端价格、星币扣账、幂等发放和 itemCode 权属证明；缺失时返回 503，不创建收藏事实。",
         "tags": [
           "b4-gamification"
         ],
@@ -813,6 +824,9 @@
           },
           "409": {
             "$ref": "#/components/responses/ApiConflict"
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
           }
         }
       }
@@ -867,6 +881,7 @@
     "/api/v1/gamification/seasons/{seasonId}/rewards": {
       "get": {
         "operationId": "listB4SeasonRewards",
+        "description": "仅展示经版本化规则发布的赛季奖励；固定本地示例与旧 JSON 不作为奖励承诺，缺可信目录时返回空列表。",
         "tags": [
           "b4-gamification"
         ],
@@ -931,6 +946,7 @@
     "/api/v1/avatar/profile": {
       "get": {
         "operationId": "getB4AvatarProfile",
+        "description": "无已核验装扮权益时只返回 2D 展示建议，不宣称 avatarId、resourceVersion 或 loadoutId，也不回显旧本地 JSON。",
         "tags": [
           "b4-avatar"
         ],
@@ -976,6 +992,7 @@
       },
       "put": {
         "operationId": "saveB4AvatarProfile",
+        "description": "权属与幂等保存尚未接通时返回 503，不保存 renderMode、resourceVersion、装扮或装备状态；本机画质偏好由客户端管理。",
         "tags": [
           "b4-avatar"
         ],
@@ -1037,6 +1054,9 @@
                 "$ref": "#/components/headers/XApiVersion"
               }
             }
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
           }
         }
       }
@@ -1166,6 +1186,7 @@
     "/api/v1/avatar/loadouts/{loadoutId}": {
       "put": {
         "operationId": "saveB4AvatarLoadout",
+        "description": "每个 itemCode 必须有主体绑定的服务端权属；权属证明尚未接入时返回 503，不写入套装。",
         "tags": [
           "b4-avatar"
         ],
@@ -1230,6 +1251,9 @@
                 "$ref": "#/components/headers/XApiVersion"
               }
             }
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
           }
         }
       }
@@ -1237,6 +1261,7 @@
     "/api/v1/avatar/loadouts/{loadoutId}/equip": {
       "post": {
         "operationId": "equipB4AvatarLoadout",
+        "description": "只可装备已核验持有道具组成的套装；权属证明尚未接入时返回 503，不写入装备状态。",
         "tags": [
           "b4-avatar"
         ],
@@ -1291,6 +1316,9 @@
                 "$ref": "#/components/headers/XApiVersion"
               }
             }
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
           }
         }
       }
@@ -1390,6 +1418,7 @@
       },
       "put": {
         "operationId": "saveB4StudySpace",
+        "description": "道具权属与空间版本尚未接通时返回 503，不写入摆放或显示配置；本机画质偏好由客户端管理。",
         "tags": [
           "b4-avatar"
         ],
@@ -1457,6 +1486,9 @@
           },
           "409": {
             "$ref": "#/components/responses/ApiConflict"
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
           }
         }
       }
@@ -1483,9 +1515,7 @@
               "CATCH_MEANING"
             ]
           },
-          "enabledByDefault": [
-            "SENTENCE_TRAIN"
-          ],
+          "enabledByDefault": [],
           "enumIsRegistryOnly": true,
           "disabledSessionResponse": {
             "status": 409,
@@ -3706,7 +3736,7 @@
             {
               "gameCode": "SENTENCE_TRAIN",
               "releasePhase": "P0",
-              "enabled": true
+              "enabled": false
             },
             {
               "gameCode": "WORD_MATCH",

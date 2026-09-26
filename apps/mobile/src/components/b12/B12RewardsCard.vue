@@ -1,31 +1,104 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { MobileApiError } from '../../api/client'
 import { claimB12Reward, getB12RewardProbability, listB12RewardGrants, type B12RewardClaim, type B12RewardGrant, type B12RewardProbability } from '../../api/b12'
 import { b12T } from '../../platform/b12-i18n'
 import { openUniPage } from '../../platform/uni-runtime'
+import { useSessionStore } from '../../stores/session'
 
-type B12ViewStatus = 'idle' | 'loading' | 'success' | 'empty' | 'permission' | 'offline' | 'recovery' | 'error'
+type B12ViewStatus = 'idle' | 'loading' | 'success' | 'empty' | 'unauthenticated' | 'permission' | 'offline' | 'recovery' | 'error'
 const chests = ref<B12RewardGrant[]>([]); const chestProbability = ref<B12RewardProbability | null>(null); const lastChestResult = ref<B12RewardClaim | null>(null); const status = ref<B12ViewStatus>('idle'); const actionKey = ref<string | null>(null); const lastError = ref<string | null>(null); const online = ref(true)
+const session = useSessionStore()
+type Owner = { subject: string; revision: number }
+let requestGeneration = 0
+function currentOwner(): Owner | null { return session.isAuthenticated && session.verifiedSubject ? { subject: session.verifiedSubject, revision: session.identityRevision } : null }
+function stillCurrent(owner: Owner | null, generation: number): boolean { return Boolean(owner && session.isAuthenticated && session.verifiedSubject === owner.subject && session.identityRevision === owner.revision && generation === requestGeneration) }
+function clearRewards(): void { chests.value = []; chestProbability.value = null; lastChestResult.value = null }
+function fail(error: unknown, fallback: string): void {
+  const next = errorStatus(error)
+  clearRewards()
+  status.value = next
+  online.value = next !== 'offline'
+  lastError.value = errorMessage(error, fallback)
+}
+watch([() => session.verifiedSubject, () => session.identityRevision, () => session.isAuthenticated], ([subject, revision, authenticated], [previousSubject, previousRevision, previousAuthenticated]) => {
+  if (subject === previousSubject && revision === previousRevision && authenticated === previousAuthenticated) return
+  requestGeneration += 1
+  clearRewards(); actionKey.value = null; status.value = authenticated && subject ? 'loading' : authenticated ? 'permission' : 'unauthenticated'; lastError.value = authenticated && !subject ? b12T('status.permission') : authenticated ? null : '请先登录后查看奖励数据。'; online.value = true
+  if (authenticated && subject) void loadRewards()
+}, { flush: 'sync' })
 function isRecord(value: unknown): value is Record<string, unknown> { return typeof value === 'object' && value !== null && !Array.isArray(value) }
 function sourceOf(value: unknown): Record<string, unknown> { const root = isRecord(value) && isRecord(value.data) ? value.data : value; return isRecord(root) ? root : {} }
 function text(value: unknown, fallback: string): string { return typeof value === 'string' && value.trim() ? value : fallback }
 function number(value: unknown, fallback = 0): number { return typeof value === 'number' && Number.isFinite(value) ? value : fallback }
-function errorStatus(error: unknown): B12ViewStatus { if (error instanceof MobileApiError) return error.status === 0 ? 'offline' : error.status === 401 || error.status === 403 ? 'permission' : error.status === 409 ? 'recovery' : 'error'; return 'error' }
+function errorStatus(error: unknown): B12ViewStatus { if (error instanceof MobileApiError) return error.status === 0 ? 'offline' : error.status === 401 ? 'unauthenticated' : error.status === 403 ? 'permission' : error.status === 409 ? 'recovery' : 'error'; return 'error' }
 function errorMessage(error: unknown, fallback: string): string { if (error instanceof MobileApiError && error.status === 401) return '请先登录后查看奖励数据。'; return error instanceof Error && error.message ? error.message : fallback }
 function parseGrants(value: unknown): B12RewardGrant[] { const root = sourceOf(value); const raw = Array.isArray(root.grants) ? root.grants : Array.isArray(root.items) ? root.items : []; return raw.filter(isRecord).map((item): B12RewardGrant => ({ grantId: text(item.grantId, ''), rewardCode: text(item.rewardCode, 'LEARNING_REWARD'), status: (item.status ?? item.state) === 'CLAIMED' ? 'CLAIMED' : 'GRANTED', probabilityVersion: text(item.probabilityVersion, 'SERVER_RULE'), outcomeCode: typeof item.outcomeCode === 'string' ? item.outcomeCode : undefined, grantedAt: typeof item.grantedAt === 'string' ? item.grantedAt : undefined, claimedAt: typeof item.claimedAt === 'string' ? item.claimedAt : undefined })).filter((item) => Boolean(item.grantId)) }
 function parseProbability(value: unknown): B12RewardProbability | null { const root = sourceOf(value); const rawOutcomes = Array.isArray(root.outcomes) ? root.outcomes : Array.isArray(root.tiers) ? root.tiers : []; if (!root.grantId || !rawOutcomes.length) return null; return { grantId: text(root.grantId, ''), rewardCode: text(root.rewardCode, 'LEARNING_REWARD'), probabilityVersion: text(root.probabilityVersion, 'SERVER_RULE'), outcomes: rawOutcomes.filter(isRecord).map((item) => ({ outcomeCode: text(item.outcomeCode ?? item.tierCode, 'UNKNOWN'), probability: typeof item.probability === 'number' ? item.probability : number(item.basisPoints) / 10000 })), totalProbability: number(root.totalProbability, 1), disclosedBeforeClaim: root.disclosedBeforeClaim !== false, probabilitySnapshotHash: typeof root.probabilitySnapshotHash === 'string' ? root.probabilitySnapshotHash : undefined } }
 function parseClaim(value: unknown): B12RewardClaim | null { const root = sourceOf(value); if (!root.grantId || (root.claimed !== true && root.state !== 'CLAIMED' && root.state !== 'ALREADY_CLAIMED')) return null; return { grantId: text(root.grantId, ''), claimed: true, replayed: root.replayed === true || root.state === 'ALREADY_CLAIMED', outcomeCode: typeof root.outcomeCode === 'string' ? root.outcomeCode : undefined, probabilityVersion: typeof root.probabilityVersion === 'string' ? root.probabilityVersion : undefined, claimedAt: typeof root.claimedAt === 'string' ? root.claimedAt : undefined } }
-async function loadRewards(): Promise<void> { status.value = 'loading'; actionKey.value = 'rewards.load'; try { chests.value = parseGrants(await listB12RewardGrants()); status.value = chests.value.length ? 'success' : 'empty'; const first = chests.value.find((item) => item.status === 'GRANTED'); if (first) await loadProbability(first.grantId) } catch (error) { status.value = errorStatus(error); online.value = status.value !== 'offline'; lastError.value = errorMessage(error, '奖励读取失败；未使用本地奖励数据。') } finally { actionKey.value = null } }
-async function loadProbability(grantId: string): Promise<void> { actionKey.value = `probability.${grantId}`; try { chestProbability.value = parseProbability(await getB12RewardProbability(grantId)); if (!chestProbability.value) throw new Error('服务端未返回概率快照。'); status.value = 'success'; lastError.value = null } catch (error) { status.value = errorStatus(error); online.value = status.value !== 'offline'; lastError.value = errorMessage(error, '概率读取失败；未进行客户端抽取。') } finally { actionKey.value = null } }
-async function openChest(grantId: string): Promise<void> { actionKey.value = `claim.${grantId}`; try { lastChestResult.value = parseClaim(await claimB12Reward(grantId)); if (!lastChestResult.value) throw new Error('服务端未返回奖励领取结果。'); chests.value = chests.value.map((item) => item.grantId === grantId ? { ...item, status: 'CLAIMED', outcomeCode: lastChestResult.value?.outcomeCode, claimedAt: lastChestResult.value?.claimedAt } : item); status.value = 'success'; lastError.value = null } catch (error) { status.value = errorStatus(error); online.value = status.value !== 'offline'; lastError.value = errorMessage(error, '奖励领取失败；未在本地增加任何分数或奖励。') } finally { actionKey.value = null } }
+async function loadRewards(): Promise<void> {
+  const owner = currentOwner()
+  if (!owner) { clearRewards(); status.value = session.isAuthenticated ? 'permission' : 'unauthenticated'; lastError.value = session.isAuthenticated ? b12T('status.permission') : '请先登录后查看奖励数据。'; return }
+  if (actionKey.value) return
+  const generation = ++requestGeneration
+  clearRewards(); status.value = 'loading'; actionKey.value = 'rewards.load'; lastError.value = null
+  try {
+    const result = await listB12RewardGrants()
+    if (!stillCurrent(owner, generation)) return
+    chests.value = parseGrants(result)
+    status.value = chests.value.length ? 'success' : 'empty'
+    const first = chests.value.find((item) => item.status === 'GRANTED')
+    if (first) await loadProbability(first.grantId)
+  } catch (error) { if (stillCurrent(owner, generation)) { clearRewards(); fail(error, '奖励读取失败。') } }
+  finally { if (stillCurrent(owner, generation) && actionKey.value === 'rewards.load') actionKey.value = null }
+}
+async function loadProbability(grantId: string): Promise<void> {
+  const owner = currentOwner()
+  if (!owner || (actionKey.value && actionKey.value !== 'rewards.load')) return
+  const generation = requestGeneration
+  const key = `probability.${grantId}`
+  actionKey.value = key; chestProbability.value = null
+  try {
+    const result = await getB12RewardProbability(grantId)
+    if (!stillCurrent(owner, generation)) return
+    chestProbability.value = parseProbability(result)
+    if (!chestProbability.value) throw new Error('服务端未返回概率快照。')
+    status.value = 'success'; lastError.value = null
+  } catch (error) { if (stillCurrent(owner, generation)) fail(error, '概率读取失败。') }
+  finally { if (stillCurrent(owner, generation) && actionKey.value === key) actionKey.value = null }
+}
+async function openChest(grantId: string): Promise<void> {
+  const owner = currentOwner()
+  if (!owner || actionKey.value) return
+  const generation = requestGeneration
+  const key = `claim.${grantId}`
+  actionKey.value = key; lastChestResult.value = null
+  try {
+    const result = await claimB12Reward(grantId)
+    if (!stillCurrent(owner, generation)) return
+    lastChestResult.value = parseClaim(result)
+    if (!lastChestResult.value) throw new Error('服务端未返回奖励领取结果。')
+    chests.value = chests.value.map((item) => item.grantId === grantId ? { ...item, status: 'CLAIMED', outcomeCode: lastChestResult.value?.outcomeCode, claimedAt: lastChestResult.value?.claimedAt } : item)
+    status.value = 'success'; lastError.value = null
+  } catch (error) { if (stillCurrent(owner, generation)) fail(error, '奖励领取失败。') }
+  finally { if (stillCurrent(owner, generation) && actionKey.value === key) actionKey.value = null }
+}
+function summary(): string | number {
+  if (status.value === 'unauthenticated') return lastError.value ?? '请先登录后查看奖励数据。'
+  if (status.value === 'permission') return b12T('status.permission')
+  if (status.value === 'loading') return b12T('status.loading')
+  if (status.value === 'offline') return b12T('status.offline')
+  if (status.value === 'recovery') return b12T('status.recovery')
+  if (status.value === 'error') return b12T('status.error')
+  return chests.value.length || b12T('status.empty')
+}
 function openLogin(): void { openUniPage('/pages/login/login') }
 function percent(probability: number, total: number): string { return `${((probability / (total > 0 ? total : 1)) * 100).toFixed(2)}%` }
 onMounted(() => { void loadRewards() })
 </script>
 
 <template>
-  <view class="b12-card"><view class="b12-heading"><view><text class="b12-kicker">REWARD GRANT</text><text class="b12-title">{{ b12T('rewards.title') }}</text></view><text class="b12-state">{{ actionKey === 'rewards.load' ? b12T('status.loading') : chests.length || b12T('status.empty') }}</text></view><text class="b12-muted">{{ b12T('rewards.freeNotice') }}</text><view v-if="actionKey === 'rewards.load'" class="b12-state-box">{{ b12T('status.loading') }}</view><view v-else-if="chests.length" class="b12-list"><view v-for="chest in chests" :key="chest.grantId" class="b12-chest"><view class="b12-chest-main"><text class="b12-strong">{{ chest.rewardCode }}</text><text class="b12-muted">{{ chest.status === 'CLAIMED' ? b12T('rewards.opened') : b12T('rewards.granted') }} · {{ chest.probabilityVersion }}</text></view><text class="b12-kind">FREE</text><view class="b12-actions"><button tabindex="0" role="button" class="b12-button secondary" type="button" :disabled="Boolean(actionKey) || !online" @click="loadProbability(chest.grantId)">{{ actionKey === `probability.${chest.grantId}` ? b12T('status.loading') : b12T('rewards.probability') }}</button><button tabindex="0" role="button" class="b12-button" type="button" :disabled="chest.status !== 'GRANTED' || Boolean(actionKey) || !online" @click="openChest(chest.grantId)">{{ actionKey === `claim.${chest.grantId}` ? b12T('rewards.opening') : chest.status === 'CLAIMED' ? b12T('rewards.opened') : b12T('rewards.open') }}</button></view></view></view><text v-else class="b12-state-box">{{ b12T('rewards.empty') }}</text><view v-if="chestProbability" class="b12-probability"><text class="b12-strong">{{ b12T('rewards.probability') }} · {{ chestProbability.probabilityVersion }}</text><text v-for="outcome in chestProbability.outcomes" :key="outcome.outcomeCode" class="b12-muted">{{ b12T('rewards.tier') }} {{ outcome.outcomeCode }}：{{ percent(outcome.probability, chestProbability.totalProbability) }}</text><text class="b12-muted">{{ chestProbability.disclosedBeforeClaim ? '服务端已在领取前披露规则' : '服务端规则未披露' }} · {{ chestProbability.probabilitySnapshotHash ?? '服务端快照' }}</text></view><view v-if="lastChestResult" class="b12-result"><text class="b12-strong">{{ b12T('rewards.confirmed') }}</text><text class="b12-muted">{{ lastChestResult.outcomeCode ?? '结果未返回' }} · {{ lastChestResult.replayed ? '幂等重放' : '首次返回' }}</text><text class="b12-muted">{{ b12T('rewards.audit') }}：{{ lastChestResult.grantId }} · {{ b12T('rewards.rule') }}：{{ lastChestResult.probabilityVersion ?? '未返回' }}</text></view><text v-if="status === 'permission'" class="b12-state-box">{{ b12T('status.permission') }}</text><button tabindex="0" role="button" v-if="status === 'permission'" class="b12-button secondary" type="button" @click="openLogin">去登录</button><text v-else-if="status === 'offline'" class="b12-state-box">{{ b12T('status.offline') }}</text><text v-else-if="status === 'recovery'" class="b12-state-box">{{ b12T('status.recovery') }}</text><text v-else-if="lastError" class="b12-state-box">{{ lastError }}</text></view>
+  <view class="b12-card"><view class="b12-heading"><view><text class="b12-kicker">REWARD GRANT</text><text class="b12-title">{{ b12T('rewards.title') }}</text></view><text class="b12-state">{{ summary() }}</text></view><text class="b12-muted">{{ b12T('rewards.freeNotice') }}</text><view v-if="actionKey === 'rewards.load'" class="b12-state-box">{{ b12T('status.loading') }}</view><view v-else-if="chests.length && status !== 'permission' && status !== 'unauthenticated'" class="b12-list"><view v-for="chest in chests" :key="chest.grantId" class="b12-chest"><view class="b12-chest-main"><text class="b12-strong">{{ chest.rewardCode }}</text><text class="b12-muted">{{ chest.status === 'CLAIMED' ? b12T('rewards.opened') : b12T('rewards.granted') }} · {{ chest.probabilityVersion }}</text></view><text class="b12-kind">FREE</text><view class="b12-actions"><button tabindex="0" role="button" class="b12-button secondary" type="button" :disabled="Boolean(actionKey) || !online" @click="loadProbability(chest.grantId)">{{ actionKey === `probability.${chest.grantId}` ? b12T('status.loading') : b12T('rewards.probability') }}</button><button tabindex="0" role="button" class="b12-button" type="button" :disabled="chest.status !== 'GRANTED' || Boolean(actionKey) || !online" @click="openChest(chest.grantId)">{{ actionKey === `claim.${chest.grantId}` ? b12T('rewards.opening') : chest.status === 'CLAIMED' ? b12T('rewards.opened') : b12T('rewards.open') }}</button></view></view></view><text v-else-if="status === 'empty'" class="b12-state-box">{{ b12T('rewards.empty') }}</text><view v-if="chestProbability" class="b12-probability"><text class="b12-strong">{{ b12T('rewards.probability') }} · {{ chestProbability.probabilityVersion }}</text><text v-for="outcome in chestProbability.outcomes" :key="outcome.outcomeCode" class="b12-muted">{{ b12T('rewards.tier') }} {{ outcome.outcomeCode }}：{{ percent(outcome.probability, chestProbability.totalProbability) }}</text><text class="b12-muted">{{ chestProbability.disclosedBeforeClaim ? '服务端已在领取前披露规则' : '服务端规则未披露' }} · {{ chestProbability.probabilitySnapshotHash ?? '服务端快照' }}</text></view><view v-if="lastChestResult" class="b12-result"><text class="b12-strong">{{ b12T('rewards.confirmed') }}</text><text class="b12-muted">{{ lastChestResult.outcomeCode ?? '结果未返回' }} · {{ lastChestResult.replayed ? '幂等重放' : '首次返回' }}</text><text class="b12-muted">{{ b12T('rewards.audit') }}：{{ lastChestResult.grantId }} · {{ b12T('rewards.rule') }}：{{ lastChestResult.probabilityVersion ?? '未返回' }}</text></view><text v-if="status === 'unauthenticated'" class="b12-state-box">{{ lastError ?? '请先登录后查看奖励数据。' }}</text><button tabindex="0" role="button" v-if="status === 'unauthenticated'" class="b12-button secondary" type="button" @click="openLogin">去登录</button><text v-else-if="status === 'permission'" class="b12-state-box">{{ lastError ?? b12T('status.permission') }}</text><text v-else-if="status === 'offline'" class="b12-state-box">{{ b12T('status.offline') }}</text><text v-else-if="status === 'recovery'" class="b12-state-box">{{ b12T('status.recovery') }}</text><text v-else-if="lastError" class="b12-state-box">{{ lastError }}</text></view>
 </template>
 
 <style scoped lang="scss">

@@ -1,6 +1,6 @@
 # 语学星官方网站
 
-已按用户确认的官网提案 06 改造 `apps/official-site`，采用 Vue 3、TypeScript、Nuxt SSR。首页、学习内容、学习世界、练习示例、帮助、免费开始与公开说明共 14 类页面、19 个公开内容地址。详细交付与验证见[官网正式实现记录](../../docs/06-design/v2-980plus/official-site-experience-proposal-2026-09-21/implementation/README.md)。
+已按用户确认的官网提案 06 改造 `apps/official-site`，采用 Vue 3、TypeScript、Nuxt SSR。首页、学习内容、学习世界、练习示例、帮助、开放情况与公开说明共 14 类页面、19 个公开内容地址。详细交付与验证见[官网正式实现记录](../../docs/06-design/v2-980plus/official-site-experience-proposal-2026-09-21/implementation/README.md)。
 
 ## 本地启动
 
@@ -14,6 +14,7 @@ pnpm --filter @englishflow/official-site dev
 
 ```text
 pnpm --filter @englishflow/official-site build
+pnpm --filter @englishflow/official-site exec nuxi typecheck
 pnpm --filter @englishflow/official-site test:website
 node apps/official-site/tests/browser/website-runtime.cjs
 ```
@@ -25,11 +26,11 @@ node apps/official-site/tests/browser/website-runtime.cjs
 | 路由 | 内容 |
 |---|---|
 | `/` | 首页、公开练习、学习世界、FAQ |
-| `/courses` | 六类学习方法、组合筛选、真实公开课程投影 |
+| `/courses` | 六类学习方法与组合筛选；展示公开投影中实际存在的课程，并提供空状态与失败重试 |
 | `/courses/:id` | 六种静态学习结构介绍，不是课程详情 API 的替代实现 |
 | `/world` | 2D / CSS 立体空间、氛围、角色与装扮、两轮拼句 |
 | `/method` | 翻词卡、词句理解、复习与重置 |
-| `/start` | 当前设备注册 / 登录入口、换设备说明 |
+| `/start` | 学习账号注册与登录状态、公开示例入口及换设备浏览说明 |
 | `/help` | 八个常见问题、分类、搜索与分段回答；首页精选其中四个 |
 | `/about` | 产品与成人学习定位 |
 | `/announcements`、`/compliance` | 既有公开接口返回的公告、公示 |
@@ -37,7 +38,7 @@ node apps/official-site/tests/browser/website-runtime.cjs
 | `/pricing`、`/download` | 301 至 `/start`，保留查询参数 |
 | `/robots.txt`、`/sitemap.xml` | 抓取规则与 19 个 canonical 地址 |
 
-首发以初期免费、浏览器开始为主，不展示付费套餐或尚未开放的 App 下载。公开课程/公告/公示仍来自 Gateway；无法加载时显示可重试状态。原商业投影数据类型和未使用的旧卡片保留兼容，本轮不改变商业服务。
+当前官网提供无需登录的浏览示例；学习账号注册与登录暂不可用。首期免费为计划安排，开放时间与范围以公告为准；当前不展示未获批的付费套餐或尚未开放的 App 下载。公开课程/公告/公示仍来自 Gateway；无法加载时显示可重试状态。
 
 ## 配置
 
@@ -50,7 +51,7 @@ node apps/official-site/tests/browser/website-runtime.cjs
 | `NUXT_PUBLIC_PROJECTION_PATH` | `/public/site/projection` |
 | `NUXT_PUBLIC_LINK_ORIGINS` | 额外允许的公告/下载来源，逗号分隔 |
 
-官网不接收登录密码，不建立业务会话。学习入口只携带界面语言、主题、固定 returnTo 与白名单 UTM；公开接口只读，每次上游请求超时为 2.5 秒。备案与完整法律文件仍须以正式核实、公示版本为准。
+官网不接收登录密码，不建立业务会话。`utils/public-links.mjs` 保留学习端注册/登录链接的安全构造，但当前页面不展示这些不可用入口；公开接口只读，每次上游请求超时为 2.5 秒。备案与完整法律文件仍须以正式核实、公示版本为准。
 
 ## 共享基础与维护
 

@@ -1,0 +1,34 @@
+{
+  "capturedAt": "2026-09-23T07:15:28.848Z",
+  "statuses": {
+    "anonymous": 401,
+    "register": 201,
+    "beforeGrant": 403,
+    "adultGate": 200,
+    "consentTERMS": 200,
+    "consentPRIVACY": 200,
+    "consentADULT_LEARNING": 200,
+    "login": 200,
+    "all": 200,
+    "own": 200,
+    "platformDetail": 200,
+    "fixtureDetail": 404
+  },
+  "counts": {
+    "ownerBefore": {
+      "local-support-fixture": 74,
+      "platform": 27
+    },
+    "visibleAll": 27,
+    "visibleOwn": 0,
+    "ownerAfter": {
+      "local-support-fixture": 74,
+      "platform": 27
+    }
+  },
+  "cleanup": {
+    "disabledAccounts": 1,
+    "activeSessions": 0
+  },
+  "result": "PASS"
+}

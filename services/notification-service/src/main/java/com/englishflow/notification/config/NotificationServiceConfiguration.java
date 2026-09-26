@@ -20,12 +20,15 @@ import com.englishflow.notification.port.OfflineSyncStore;
 import com.englishflow.notification.port.OutboxEventPort;
 import com.englishflow.notification.port.TrustedEventReceiptPort;
 import com.englishflow.notification.port.WorkflowPort;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.time.Clock;
 import java.time.Duration;
+import java.time.ZoneId;
 
 /** Wiring keeps the memory adapters replaceable by durable service-owned adapters. */
 @Configuration
@@ -59,6 +62,8 @@ public class NotificationServiceConfiguration {
     @Bean
     NotificationApplicationService notificationApplicationService(
             NotificationFactStore store,
+            NotificationPersistenceProperties persistenceProperties,
+            ObjectProvider<TransactionTemplate> transactions,
             WorkflowPort workflow,
             DeliveryTransport transport,
             OutboxEventPort events,
@@ -70,9 +75,18 @@ public class NotificationServiceConfiguration {
             NotificationAuditEventPort audit,
             NotificationConsentPort consents,
             NotificationSubscriptionStore subscriptions,
-            NotificationTemplateStore templates) {
+            NotificationTemplateStore templates,
+            @Value("${notification.preference.timezone:Asia/Shanghai}") String preferenceTimeZoneName) {
+        TransactionTemplate preferenceTransaction = null;
+        if (persistenceProperties.isJdbc()) {
+            preferenceTransaction = transactions.getIfAvailable();
+            if (preferenceTransaction == null) {
+                throw new IllegalStateException("notification JDBC preference writes require a transaction manager");
+            }
+        }
         return new NotificationApplicationService(store, workflow, transport, events, ids, access,
-                clock, maxAttempts, retryBackoff, audit, consents, subscriptions, templates);
+                clock, maxAttempts, retryBackoff, audit, consents, subscriptions, templates,
+                preferenceTransaction, ZoneId.of(preferenceTimeZoneName));
     }
 
     @Bean

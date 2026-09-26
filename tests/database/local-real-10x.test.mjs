@@ -38,7 +38,8 @@ test('local-real-10x manifest is synthetic and matches the generator', () => {
 test('local-real-10x generator covers the expected expanded features', () => {
   assert.equal(B3_EXPERIENCE_ROW_COUNT, B3_RESOURCE_TYPES.length * ROWS_PER_FUNCTION);
   assert.equal(FEATURE_STATE_ROW_COUNT, GAMIFICATION_FEATURE_KEYS.length * ROWS_PER_FUNCTION);
-  assert.ok(TABLE_CHECKS.every(([, , , minimum]) => minimum >= ROWS_PER_FUNCTION));
+  assert.ok(TABLE_CHECKS.every(([name, , , minimum]) =>
+    name.startsWith('social.') ? minimum === 0 : minimum >= ROWS_PER_FUNCTION));
   assert.equal(new Set(SUBJECTS).size, ROWS_PER_FUNCTION);
 });
 
@@ -71,11 +72,50 @@ test('local-real-10x SQL uses only frozen Phase 1 quota choices', () => {
   }
 });
 
+test('local-real-10x does not publish invented legacy assessment scores', () => {
+  const sql = buildFixtureSql();
+  assert.doesNotMatch(sql, /INSERT INTO assessment_service\.assessment_(?:session|report|mistake)\s*\(/);
+  assert.ok(TABLE_CHECKS.every(([name]) => !name.startsWith('assessment.legacy-')));
+});
+
+test('local-real-10x cannot republish social fixtures into platform', () => {
+  const sql = buildFixtureSql();
+  assert.doesNotMatch(sql, /INSERT INTO social_service\./);
+  assert.ok(TABLE_CHECKS.filter(([name]) => name.startsWith('social.'))
+    .every(([, , , minimum]) => minimum === 0));
+});
+
+test('local-real-10x cannot advertise synthetic offline packages or downloads', () => {
+  const sql = buildFixtureSql();
+  assert.doesNotMatch(sql, /INSERT INTO notification_service\.notification_offline_(?:package|download)\b/);
+  assert.ok(TABLE_CHECKS.every(([name]) => !['notification.offline-package', 'notification.offline-download'].includes(name)));
+});
+
+test('synthetic content and site cards stay unpublished', () => {
+  const sql = buildFixtureSql();
+  for (const table of [
+    'content_service.b3_content_experience',
+    'content_service.b2_content_chunk',
+    'content_service.content_public_site_facet',
+  ]) {
+    const statement = sql.match(new RegExp(`INSERT INTO ${table}[\\s\\S]*?ON DUPLICATE KEY UPDATE[\\s\\S]*?;`))?.[0];
+    assert.ok(statement, `${table} fixture statement exists`);
+    assert.match(statement, /'UNPUBLISHED'/);
+    assert.doesNotMatch(statement, /'PUBLISHED'/);
+  }
+});
+
 test('each declared check is tied to a local fixture marker', () => {
   for (const [name, table, predicate, minimum] of TABLE_CHECKS) {
     assert.ok(name.length > 0);
     assert.match(table, /^[a-z0-9_]+\.[a-z0-9_]+$/);
     assert.ok(predicate.length > 0);
-    assert.ok(minimum >= ROWS_PER_FUNCTION);
+    assert.ok(name.startsWith('social.') ? minimum === 0 : minimum >= ROWS_PER_FUNCTION);
   }
+});
+
+test('seat coverage remains valid after a lease expires', () => {
+  const [, , predicate] = TABLE_CHECKS.find(([name]) => name === 'social.seat') ?? [];
+  assert.match(predicate, /room_id LIKE 'local-10x-%'/);
+  assert.doesNotMatch(predicate, /lease_id/);
 });

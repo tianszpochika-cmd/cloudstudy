@@ -140,20 +140,34 @@
   color: var(--sage-ink);
 }
 .published-courses {
-  margin-top: 65px;
-  padding-top: 30px;
+  margin-top: 44px;
+  padding-top: 24px;
   border-top: 1px solid var(--line);
 }
-.published-courses > h2 {
+.published-courses-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: 12px 24px;
+}
+.published-courses-header h2 {
   font-size: 24px;
-  margin-bottom: 24px;
+  margin-bottom: 8px;
+}
+.published-courses .catalog-note {
+  margin: 0;
+  text-align: left;
+  font-size: 13px;
 }
 .published-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 20px;
+  margin-top: 24px;
 }
 .public-course-card {
+  min-width: 0;
   padding: 25px;
   border: 1px solid var(--line);
   border-radius: 20px;
@@ -162,12 +176,16 @@
 .public-course-card h3 {
   margin: 16px 0;
   font-size: 21px;
+  overflow-wrap: anywhere;
 }
 .public-course-card p {
   font-size: 13px;
 }
 .public-course-card .link-arrow {
   margin-top: 17px;
+}
+.published-courses .public-status {
+  margin-top: 24px;
 }
 .public-status {
   border: 1px solid var(--line);
@@ -245,14 +263,18 @@
   .preferences-shortcut {
     display: none;
   }
+  .published-courses {
+    margin-top: 32px;
+  }
+  .published-courses-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .published-courses-header h2 {
+    font-size: 22px;
+  }
   .published-grid {
     grid-template-columns: 1fr;
-  }
-  .published-courses {
-    margin-top: 38px;
-  }
-  .published-courses > h2 {
-    font-size: 22px;
   }
   .practice-sample .step-tabs {
     gap: 5px;

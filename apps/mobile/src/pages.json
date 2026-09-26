@@ -211,6 +211,13 @@
       }
     },
     {
+      "path": "pages/devices/devices",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "设备与会话"
+      }
+    },
+    {
       "path": "pages/support/support",
       "style": {
         "navigationStyle": "custom",

@@ -2,8 +2,8 @@ import { experiencePerformance } from '../platform/experience-ui'
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 import { type PerformanceLevel } from '@englishflow/performance'
-import { getMediaManifest, getNotificationPreference, isB11ExpiredError, isB11OfflineError, isB11PermissionError, isB11RevokedError, issueMediaSignedUrl, progressChange, pullB11OfflineChanges, pushB11OfflineChanges, saveB11RecordingMetadata, updateNotificationPreference } from '../api/b11'
-import type { B11ListeningProgress, B11MediaManifest, B11NotificationPreference, B11OfflineChange, B11RecordingMetadata, B11SignedUrl, B11Status, B11SyncResult } from '../domain/b11'
+import { getMediaManifest, isB11ExpiredError, isB11OfflineError, isB11PermissionError, isB11RevokedError, issueMediaSignedUrl, progressChange, pullB11OfflineChanges, pushB11OfflineChanges, saveB11RecordingMetadata } from '../api/b11'
+import type { B11ListeningProgress, B11MediaManifest, B11OfflineChange, B11RecordingMetadata, B11SignedUrl, B11Status, B11SyncResult } from '../domain/b11'
 
 export const useB11Store = defineStore('b11', () => {
   const engine = experiencePerformance
@@ -12,7 +12,6 @@ export const useB11Store = defineStore('b11', () => {
   const manifest = ref<B11MediaManifest | null>(null)
   const signedUrl = ref<B11SignedUrl | null>(null)
   const progress = ref<B11ListeningProgress | null>(null)
-  const preference = ref<B11NotificationPreference | null>(null)
   const recording = ref<B11RecordingMetadata | null>(null)
   const pending = ref<B11OfflineChange[]>([])
   const cursor = ref('0')
@@ -25,12 +24,15 @@ export const useB11Store = defineStore('b11', () => {
   const renderPolicy = computed(() => engine.getMediaPolicy('waveform'))
 
   async function loadMedia(assetId: string): Promise<void> {
+    signedUrl.value = null
+    manifest.value = null
     status.value = 'loading'; message.value = ''
     try { manifest.value = await getMediaManifest(assetId); status.value = manifest.value.renditions.some((item) => item.status === 'READY') ? 'ready' : 'empty' }
     catch (error) { status.value = isB11PermissionError(error) ? 'permission' : isB11RevokedError(error) ? 'revoked' : isB11ExpiredError(error) ? 'expired' : isB11OfflineError(error) ? 'offline' : 'error'; message.value = error instanceof Error ? error.message : '媒体 manifest 暂时不可用。' }
   }
 
   async function authorizePlayback(): Promise<void> {
+    signedUrl.value = null
     if (!manifest.value) return
     const rendition = manifest.value.renditions.find((item) => item.status === 'READY')
     if (!rendition) { message.value = '当前版本没有可播放 rendition，已降级为时间轴和文本练习。'; return }
@@ -38,8 +40,6 @@ export const useB11Store = defineStore('b11', () => {
     catch (error) { status.value = isB11RevokedError(error) ? 'revoked' : isB11ExpiredError(error) ? 'expired' : isB11OfflineError(error) ? 'offline' : 'error'; message.value = error instanceof Error ? error.message : '播放授权失败。' }
   }
 
-  async function loadPreferences(): Promise<void> { try { preference.value = await getNotificationPreference() } catch (error) { status.value = isB11OfflineError(error) ? 'offline' : 'error'; message.value = error instanceof Error ? error.message : '通知偏好读取失败。' } }
-  async function savePreferences(next: B11NotificationPreference): Promise<void> { try { preference.value = await updateNotificationPreference(next); message.value = '通知偏好已保存。' } catch (error) { status.value = error instanceof Error && error.message.includes('409') ? 'recovering' : isB11OfflineError(error) ? 'offline' : 'error'; message.value = error instanceof Error ? error.message : '通知偏好保存失败。' } }
 
   function queueProgress(next: B11ListeningProgress, payloadHash: string): void {
     progress.value = next
@@ -62,5 +62,5 @@ export const useB11Store = defineStore('b11', () => {
   function setMotionDisabled(value: boolean): void { engine.setMotionDisabled(value, 'manual'); motionDisabled.value = value }
   function dispose(): void { unsubscribe(); /* Shared engine lives for the application lifetime. */ }
 
-  return { status, message, manifest, signedUrl, progress, preference, recording, pending, cursor, performanceLevel, motionDisabled, lastSync, hasPending, renderPolicy, loadMedia, authorizePlayback, loadPreferences, savePreferences, queueProgress, sync, pull, saveRecording, setPerformance, setMotionDisabled, dispose }
+  return { status, message, manifest, signedUrl, progress, recording, pending, cursor, performanceLevel, motionDisabled, lastSync, hasPending, renderPolicy, loadMedia, authorizePlayback, queueProgress, sync, pull, saveRecording, setPerformance, setMotionDisabled, dispose }
 })

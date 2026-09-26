@@ -1092,7 +1092,18 @@
           "owner": "content-service",
           "caller": "admin-ops-service/admin-web",
           "readOnly": true,
-          "fieldFiltering": "admin role-specific fields; never mutates content or emits projections"
+          "fieldFiltering": "admin role-specific fields; never mutates content or emits projections; records only an idempotency report receipt"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B9IdempotencyKey"
+          }
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "content-validation-report-receipt",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "same actor, key and request body return the original report and checkedAt; different body with the same key returns 409"
         },
         "requestBody": {
           "required": false,
@@ -1115,6 +1126,9 @@
         "responses": {
           "200": {
             "description": "Validation report with ruleVersion + findings"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
           },
           "503": {
             "$ref": "#/components/responses/ApiServiceUnavailable"
@@ -1905,6 +1919,7 @@
               "command",
               "contentCode",
               "expectedStateVersion",
+              "targetVersionNumber",
               "content"
             ]
           },
@@ -2223,8 +2238,7 @@
             "properties": {
               "command": {
                 "enum": [
-                  "CREATE_DRAFT",
-                  "SAVE_DRAFT"
+                  "CREATE_DRAFT"
                 ]
               }
             },
@@ -2263,6 +2277,27 @@
                     "scheduledPublishTaskId"
                   ]
                 }
+              ]
+            }
+          },
+          {
+            "properties": {
+              "command": {
+                "enum": [
+                  "SAVE_DRAFT"
+                ]
+              }
+            },
+            "required": [
+              "content"
+            ],
+            "not": {
+              "anyOf": [
+                { "required": ["reasonCode"] },
+                { "required": ["reviewDecision"] },
+                { "required": ["reviewNote"] },
+                { "required": ["schedule"] },
+                { "required": ["scheduledPublishTaskId"] }
               ]
             }
           },
@@ -3759,18 +3794,59 @@
               "AVAILABLE",
               "UNAVAILABLE",
               "COMING_SOON"
-            ]
+            ],
+            "description": "AVAILABLE requires a verified public HTTPS downloadUrl. UNAVAILABLE and COMING_SOON may omit the URL."
           },
           "downloadUrl": {
             "type": "string",
             "format": "uri",
+            "pattern": "^https://",
+            "description": "Absolute public HTTPS URL. When present, it must use a publicly reachable hostname or globally routable address; local, loopback, private, link-local, multicast, reserved and documentation targets are rejected.",
+            "x-public-target-validation": {
+              "scheme": "https",
+              "absolute": true,
+              "rejectUserInfo": true,
+              "rejectLocalOrPrivateTargets": true,
+              "publisherMustVerifyDnsResolvesOnlyToPublicAddresses": true,
+              "publicReadPerformsNetworkProbe": false
+            },
             "maxLength": 2048
           },
           "version": {
             "type": "string",
             "maxLength": 64
           }
-        }
+        },
+        "oneOf": [
+          {
+            "title": "AvailableDownloadChannel",
+            "required": [
+              "status",
+              "downloadUrl"
+            ],
+            "properties": {
+              "status": {
+                "enum": [
+                  "AVAILABLE"
+                ]
+              }
+            }
+          },
+          {
+            "title": "UnavailableDownloadChannel",
+            "required": [
+              "status"
+            ],
+            "properties": {
+              "status": {
+                "enum": [
+                  "UNAVAILABLE",
+                  "COMING_SOON"
+                ]
+              }
+            }
+          }
+        ]
       },
       "B9PublicAnnouncement": {
         "type": "object",
@@ -4020,6 +4096,24 @@
               "EXPIRED",
               "REVOKED"
             ]
+          },
+          "reviewSubmissionReady": {
+            "type": "boolean",
+            "readOnly": true,
+            "description": "仅内容 owner 根据当前版本、PASS 校验事实、有效授权及必需媒体 READY/CLEAN 事实计算；缺少任一可信事实必须为 false。客户端不得以 rightsStatus 或自行提交的校验结果替代。"
+          },
+          "reviewSubmissionReason": {
+            "type": "string",
+            "readOnly": true,
+            "enum": [
+              "READY",
+              "DRAFT_REQUIRED",
+              "RIGHTS_NOT_READY",
+              "VALIDATION_NOT_PASSED",
+              "VALIDATION_REPORT_UNAVAILABLE",
+              "MEDIA_ELIGIBILITY_UNAVAILABLE"
+            ],
+            "description": "当前版本提交双审的首个阻断原因；只读提示，提交命令仍由 owner 重新判定。"
           },
           "reviewRecords": {
             "type": "array",

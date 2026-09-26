@@ -2,6 +2,7 @@ package com.englishflow.adminops.web;
 
 import com.englishflow.adminops.application.AdminOpsService;
 import com.englishflow.adminops.domain.AdminPrincipal;
+import com.englishflow.adminops.domain.AuditPage;
 import com.englishflow.adminops.domain.CommandAction;
 import com.englishflow.adminops.domain.CommandRequest;
 import com.englishflow.adminops.domain.CommandResult;
@@ -15,6 +16,7 @@ import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,9 +32,11 @@ import org.springframework.web.bind.annotation.RestController;
 public final class AdminOpsController {
 
     private final AdminOpsService service;
+    private final AuditCursorCodec auditCursorCodec;
 
-    public AdminOpsController(AdminOpsService service) {
+    public AdminOpsController(AdminOpsService service, AuditCursorCodec auditCursorCodec) {
         this.service = service;
+        this.auditCursorCodec = auditCursorCodec;
     }
 
     @GetMapping("/projections")
@@ -89,8 +93,22 @@ public final class AdminOpsController {
     }
 
     @GetMapping("/audit")
-    public Map<String, Object> audit(HttpServletRequest request) {
-        List<Map<String, Object>> items = service.audit(principal()).stream()
+    public ResponseEntity<Map<String, Object>> audit(
+            @RequestParam(required = false) String cursor,
+            @RequestParam(defaultValue = "20") int pageSize,
+            HttpServletRequest request) {
+        AdminPrincipal principal = principal();
+        service.requireAuditRead(principal);
+        auditCursorCodec.requireConfigured();
+        if (pageSize < 1) {
+            throw com.englishflow.adminops.domain.AdminOpsException.invalid(
+                    "ADMIN_AUDIT_PAGE_SIZE_INVALID", "pageSize must be positive");
+        }
+        int boundedSize = Math.min(pageSize, 100);
+        String tenantRef = com.englishflow.adminops.domain.ReferenceRedactor.tenant(principal.tenantId());
+        Long beforeSequence = cursor == null ? null : auditCursorCodec.decode(cursor, tenantRef);
+        AuditPage page = service.auditPage(principal, beforeSequence, boundedSize);
+        List<Map<String, Object>> items = page.items().stream()
                 .map(record -> Map.<String, Object>of(
                         "auditId", record.auditId(),
                         "operation", record.operation(),
@@ -101,7 +119,23 @@ public final class AdminOpsController {
                         "occurredAt", record.occurredAt().toString(),
                         "redacted", true))
                 .toList();
-        return AdminOpsHttpSupport.envelope(Map.of("items", items, "redacted", true), request);
+        String requestId = AdminOpsHttpSupport.requestId(request);
+        String traceId = AdminOpsHttpSupport.traceId(request);
+        Map<String, Object> meta = new LinkedHashMap<>();
+        meta.put("requestId", requestId);
+        meta.put("traceId", traceId);
+        meta.put("apiVersion", "v1");
+        meta.put("schemaVersion", "1.0.0");
+        meta.put("serverTime", Instant.now().toString());
+        meta.put("hasMore", page.hasMore());
+        meta.put("pageSize", boundedSize);
+        meta.put("nextCursor", page.hasMore() ? auditCursorCodec.encode(tenantRef, page.nextSequence()) : null);
+        Map<String, Object> body = Map.of("data", Map.of("items", items, "redacted", true), "meta", meta);
+        return ResponseEntity.ok()
+                .header("X-Request-Id", requestId)
+                .header("X-Trace-Id", traceId)
+                .header("X-API-Version", "v1")
+                .body(body);
     }
 
     static AdminPrincipal principal() {

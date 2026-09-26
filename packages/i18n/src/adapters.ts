@@ -65,7 +65,16 @@ function createBaseAdapter(
     safeWrite(options.localeStorage, localeKey, instance.locale)
     safeWrite(options.localeStorage, contentLocaleKey, instance.contentLocale)
   }
-  const unsubscribePersistence = instance.subscribe(persist)
+  // subscribe emits the current state immediately. Do not replace a saved
+  // preference with constructor defaults before restore has read it.
+  let initialEmission = true
+  const unsubscribePersistence = instance.subscribe(() => {
+    if (initialEmission) {
+      initialEmission = false
+      return
+    }
+    persist()
+  })
 
   return {
     kind,

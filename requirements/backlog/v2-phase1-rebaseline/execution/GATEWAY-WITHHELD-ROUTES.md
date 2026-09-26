@@ -1,5 +1,7 @@
 # 网关 withhold 路由分析（2026-09-13）
 
+> **2026-09-25 复测更新**：下文“没有活调用者”只描述 9 月 13 日的历史快照，已不适用于当前源码。重新运行 `tests/p1r/p1r-gateway-withheld-routes.test.mjs` 时，该绊线 1/3 失败，报告 33 个手写 API 模块与 withheld 规则的调用碰撞，涉及 speaking、sync、grammar、listening、reading、writing、phonetics 等路径。隔离 Docker 实测五个 B3 目录请求在 content owner 为 401，在 Gateway 为 404。调用者已经出现，需逐条完成 owner 与精确路径投影后复测；不得再以本文件旧结论说明这些 404 无损。
+
 > 结论：**这 23 条被网关拒绝注册的路由不是缺陷**，而是 **M3/M4 的计划内工作**。本文件记录判定依据，避免重复排查，并为各域任务提供"契约 owner vs 实际控制器"对照表。
 
 ## 1. 背景

@@ -5,13 +5,14 @@ import com.englishflow.content.application.ContentItemCommandService;
 import com.englishflow.content.application.LexemeCommandService;
 import com.englishflow.content.application.ScheduledPublishService;
 import com.englishflow.content.domain.ContentActor;
+import com.englishflow.content.domain.ContentAutoValidation;
 import com.englishflow.content.domain.ContentDefinition;
-import com.englishflow.content.domain.ContentDefinitionSnapshot;
 import com.englishflow.content.domain.ContentId;
 import com.englishflow.content.domain.ContentItem;
 import com.englishflow.content.domain.ContentIdempotencyKey;
 import com.englishflow.content.domain.ContentKind;
 import com.englishflow.content.domain.ContentOperationException;
+import com.englishflow.content.domain.ContentPayloadHash;
 import com.englishflow.content.domain.ContentRequestContext;
 import com.englishflow.content.domain.ContentRights;
 import com.englishflow.content.domain.ContentVersion;
@@ -27,11 +28,11 @@ import com.englishflow.content.domain.ReviewDecision;
 import com.englishflow.content.domain.ReviewStage;
 import com.englishflow.content.domain.ScheduledPublishTask;
 import com.englishflow.content.port.ContentRepository;
+import com.englishflow.content.port.ContentIdempotencyPort;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collection;
@@ -42,6 +43,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -74,21 +76,25 @@ public final class B9ContentAdminController {
     private final ContentItemCommandService contentItems;
     private final ScheduledPublishService schedules;
     private final ContentRepository repository;
+    private final ContentIdempotencyPort idempotency;
     private final VerifiedContentPrincipalFactory principals;
 
+    @Autowired
     public B9ContentAdminController(
             ContentCommandService commands,
             LexemeCommandService lexemes,
             ContentItemCommandService contentItems,
             ScheduledPublishService schedules,
             ContentRepository repository,
-            VerifiedContentPrincipalFactory principals) {
+            VerifiedContentPrincipalFactory principals,
+            ContentIdempotencyPort idempotency) {
         this.commands = commands;
         this.lexemes = lexemes;
         this.contentItems = contentItems;
         this.schedules = schedules;
         this.repository = repository;
         this.principals = principals;
+        this.idempotency = idempotency;
     }
 
     @GetMapping
@@ -147,45 +153,12 @@ public final class B9ContentAdminController {
             throw ContentOperationException.badRequest("CONTENT_COMMAND_INVALID", "command and contentCode are required");
         }
         ContentRequestContext context = context(headers);
+        if ("CREATE_DRAFT".equals(command) || "SAVE_DRAFT".equals(command)) {
+            requireEditor(actor);
+            return draftCommand(input, command, contentCode, actor, key, context);
+        }
         ContentVersionSnapshot versionSnapshot = null;
-        ContentDefinitionSnapshot definitionSnapshot = null;
         switch (command) {
-            case "CREATE_DRAFT" -> {
-                requireEditor(actor);
-                if (repository.findByCode(contentCode).isPresent()) {
-                    throw ContentOperationException.conflict("CONTENT_EXISTS", "content code already exists");
-                }
-                Map<String, Object> draft = record(input.get("content"));
-                ContentId contentId = ContentId.of(contentCode);
-                definitionSnapshot = commands.createContent(
-                        new ContentCommandService.CreateContent(
-                                contentId,
-                                contentCode,
-                                kind(draft.get("contentType")),
-                                required(draft, "title"),
-                                textOr(draft.get("contentLocale"), "en-US"),
-                                textOr(draft.get("targetLevel"), "A1"),
-                                "PHASE1"),
-                        actor, key(key + ":definition"), context);
-                versionSnapshot = commands.createVersion(
-                        new ContentCommandService.CreateVersion(
-                                contentId,
-                                repository.nextVersionId(),
-                                payload(draft),
-                                rights(draft),
-                                textOr(draft.get("releaseNote"), "local B31 draft")),
-                        actor, key(key + ":version"), context);
-            }
-            case "SAVE_DRAFT" -> {
-                requireEditor(actor);
-                ContentDefinition content = owned(contentCode, actor);
-                Map<String, Object> draft = record(input.get("content"));
-                versionSnapshot = commands.createVersion(
-                        new ContentCommandService.CreateVersion(
-                                content.contentId(), repository.nextVersionId(), payload(draft), rights(draft),
-                                textOr(draft.get("releaseNote"), "local B31 draft revision")),
-                        actor, key(key + ":version"), context);
-            }
             case "VALIDATE_DRAFT" -> {
                 requireEditor(actor);
                 ContentDefinition content = owned(contentCode, actor);
@@ -198,11 +171,21 @@ public final class B9ContentAdminController {
                 requireEditor(actor);
                 ContentDefinition content = owned(contentCode, actor);
                 ContentVersion version = targetVersion(content, input);
+                ReviewSubmissionReadiness readiness = reviewSubmissionReadiness(version, Instant.now());
+                if (!readiness.ready()) {
+                    throw ContentOperationException.conflict(readiness.errorCode(),
+                            "content version is not ready for review: " + readiness.reason());
+                }
                 versionSnapshot = commands.submitForReview(
                         new ContentCommandService.VersionCommand(content.contentId(), version.versionId()),
                         actor, key(key + ":submit"), context);
             }
             case "REVIEW_FIRST", "REVIEW_FINAL" -> {
+                if ("REVIEW_FIRST".equals(command)) {
+                    requireReviewerFirst(actor);
+                } else {
+                    requireReviewerFinal(actor);
+                }
                 ContentDefinition content = owned(contentCode, actor);
                 ContentVersion version = targetVersion(content, input);
                 ReviewStage stage = "REVIEW_FIRST".equals(command) ? ReviewStage.FIRST_REVIEW : ReviewStage.FINAL_REVIEW;
@@ -214,6 +197,7 @@ public final class B9ContentAdminController {
                         actor, key(key + ":review:" + stage.name()), context);
             }
             case "PUBLISH" -> {
+                requirePublisher(actor);
                 ContentDefinition content = owned(contentCode, actor);
                 ContentVersion version = targetVersion(content, input);
                 versionSnapshot = commands.publish(
@@ -221,13 +205,18 @@ public final class B9ContentAdminController {
                         actor, key(key + ":publish"), context);
             }
             case "UNPUBLISH" -> {
+                requirePublisher(actor);
                 ContentDefinition content = owned(contentCode, actor);
-                ContentVersion version = targetVersion(content, input);
+                // After a rollback the current published version can be older
+                // than the latest draft/version. Default to the published
+                // pointer; explicit targetVersionNumber still gets validated.
+                ContentVersion version = targetVersion(content, input, true);
                 versionSnapshot = commands.unpublish(
                         new ContentCommandService.VersionCommand(content.contentId(), version.versionId()),
                         actor, key(key + ":unpublish"), context);
             }
             case "ROLLBACK" -> {
+                requirePublisher(actor);
                 ContentDefinition content = owned(contentCode, actor);
                 ContentVersion version = targetVersion(content, input);
                 versionSnapshot = commands.rollback(
@@ -387,15 +376,91 @@ public final class B9ContentAdminController {
         result.put("contentCode", contentCode);
         if (versionSnapshot != null) {
             result.put("contentVersionId", versionSnapshot.versionId().value());
-            result.put("stateVersion", versionSnapshot.stateVersion());
-        } else if (definitionSnapshot != null) {
-            result.put("stateVersion", definitionSnapshot.versionCount());
+            result.put("stateVersion", stateVersion(owned(contentCode, actor)));
         } else {
             result.put("stateVersion", stateVersion(owned(contentCode, actor)));
         }
         result.put("status", "ACCEPTED");
         result.put("acceptedAt", Instant.now());
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(Map.of("data", result));
+    }
+
+    private ResponseEntity<Map<String, Object>> draftCommand(
+            Map<String, Object> input, String command, String contentCode,
+            ContentActor actor, String requestKey, ContentRequestContext context) {
+        String scope = actor.tenantId() + ":" + actor.subjectId() + ":content.b9.draft";
+        Map<String, Object> result = idempotency.executeMap(
+                scope, key(requestKey), ContentPayloadHash.sha256(input), () -> {
+                    Map<String, Object> draft = record(input.get("content"));
+                    ContentRights draftRights = rights(draft);
+                    ContentId contentId;
+                    if ("CREATE_DRAFT".equals(command)) {
+                        requireExpectedRevision(input, 0L);
+                        if (repository.findByCode(contentCode).isPresent()) {
+                            throw ContentOperationException.conflict("CONTENT_EXISTS", "content code already exists");
+                        }
+                        contentId = ContentId.of(contentCode);
+                        commands.createContent(new ContentCommandService.CreateContent(
+                                contentId, contentCode, kind(draft.get("contentType")),
+                                required(draft, "title"), textOr(draft.get("contentLocale"), "en-US"),
+                                textOr(draft.get("targetLevel"), "A1"), "PHASE1"),
+                                actor, key(requestKey + ":definition"), context);
+                    } else {
+                        ContentDefinition current = ownedForUpdate(contentCode, actor);
+                        requireExpectedRevision(input, current.stateVersion());
+                        Object target = input.get("targetVersionNumber");
+                        if (target != null) {
+                            int latestNumber = current.versions().stream()
+                                    .mapToInt(ContentVersion::versionNumber).max().orElse(0);
+                            if (!(target instanceof Number number) || number.intValue() != latestNumber) {
+                                throw ContentOperationException.conflict(
+                                        "VERSION_CONFLICT", "target draft is no longer the latest version");
+                            }
+                        }
+                        contentId = current.contentId();
+                    }
+                    ContentVersionSnapshot created = commands.createVersion(
+                            new ContentCommandService.CreateVersion(
+                                    contentId, repository.nextVersionId(), payload(draft), draftRights,
+                                    textOr(draft.get("releaseNote"), "draft revision")),
+                            actor, key(requestKey + ":version"), context);
+                    long revision = repository.find(contentId)
+                            .orElseThrow(() -> ContentOperationException.unavailable(
+                                    "CONTENT_PERSISTENCE_UNAVAILABLE", "saved content could not be read"))
+                            .stateVersion();
+                    Map<String, Object> receipt = new LinkedHashMap<>();
+                    receipt.put("commandId", commandId(requestKey));
+                    receipt.put("command", command);
+                    receipt.put("contentCode", contentCode);
+                    receipt.put("contentVersionId", created.versionId().value());
+                    receipt.put("stateVersion", revision);
+                    receipt.put("status", "ACCEPTED");
+                    receipt.put("acceptedAt", Instant.now());
+                    return receipt;
+                });
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(Map.of("data", result));
+    }
+
+    private ContentDefinition ownedForUpdate(String code, ContentActor actor) {
+        ContentDefinition content = repository.findByCodeForUpdate(code)
+                .orElseThrow(() -> ContentOperationException.notFound(
+                        "CONTENT_NOT_FOUND", "content does not exist"));
+        if (!TENANT.equals(content.tenantId()) || !TENANT.equals(actor.tenantId())) {
+            throw ContentOperationException.forbidden("CONTENT_TENANT_DENIED", "content tenant scope denied");
+        }
+        return content;
+    }
+
+    private static void requireExpectedRevision(Map<String, Object> input, long current) {
+        Object expected = input.get("expectedStateVersion");
+        if (!(expected instanceof Number number) || number.longValue() < 0) {
+            throw ContentOperationException.badRequest(
+                    "EXPECTED_STATE_VERSION_REQUIRED", "expectedStateVersion is required");
+        }
+        if (number.longValue() != current) {
+            throw ContentOperationException.conflict("VERSION_CONFLICT",
+                    "stale stateVersion: expected " + number.longValue() + " but current is " + current);
+        }
     }
 
     /**
@@ -429,32 +494,40 @@ public final class B9ContentAdminController {
     public ResponseEntity<Map<String, Object>> validateAuto(
             @RequestBody(required = false) Map<String, Object> body,
             Authentication authentication,
+            @RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey,
             @RequestHeader HttpHeaders headers) {
         ContentActor actor = adminActor(authentication);
         requireAdminRead(actor);
+        String requestKey = requireIdempotencyKey(idempotencyKey);
         Map<String, Object> input = body == null ? Map.of() : body;
-        String contentCode = text(input.get("contentCode"));
-        Map<String, Object> draft = record(input.get("content"));
-        ContentRights rights;
-        if (!contentCode.isBlank() && repository.findByCode(contentCode).isPresent()) {
-            ContentDefinition existing = owned(contentCode, actor);
-            ContentVersion latest = existing.versions().stream().reduce((left, right) -> right).orElse(null);
-            rights = latest == null || latest.rights().isEmpty() ? rights(draft) : latest.rights().get();
-            if (draft.isEmpty() && latest != null) {
-                draft = latest.payload().raw();
-            }
-        } else {
-            rights = rights(draft);
-        }
-        com.englishflow.content.domain.ContentAutoValidation.Report report =
-                com.englishflow.content.domain.ContentAutoValidation.validate(draft, rights, Instant.now());
-        Map<String, Object> data = new LinkedHashMap<>();
-        data.put("passed", report.passed());
-        data.put("ruleVersion", report.ruleVersion());
-        data.put("findings", report.findings().stream().map(f -> Map.of(
-                "code", f.code(), "severity", f.severity(), "detail", f.detail())).toList());
-        data.put("summary", report.summary());
-        data.put("checkedAt", Instant.now());
+        String scope = actor.tenantId() + ":" + actor.subjectId() + ":content.b9.validate";
+        Map<String, Object> data = idempotency.executeMap(
+                scope, key(requestKey), ContentPayloadHash.sha256(input), () -> {
+                    String contentCode = text(input.get("contentCode"));
+                    Map<String, Object> draft = record(input.get("content"));
+                    ContentRights rights;
+                    if (!contentCode.isBlank() && repository.findByCode(contentCode).isPresent()) {
+                        ContentDefinition existing = owned(contentCode, actor);
+                        ContentVersion latest = existing.versions().stream().reduce((left, right) -> right).orElse(null);
+                        rights = latest == null || latest.rights().isEmpty() ? validationRights(draft) : latest.rights().get();
+                        if (draft.isEmpty() && latest != null) {
+                            draft = latest.payload().raw();
+                        }
+                    } else {
+                        rights = validationRights(draft);
+                    }
+                    Instant checkedAt = Instant.now();
+                    com.englishflow.content.domain.ContentAutoValidation.Report report =
+                            com.englishflow.content.domain.ContentAutoValidation.validate(draft, rights, checkedAt);
+                    Map<String, Object> receipt = new LinkedHashMap<>();
+                    receipt.put("passed", report.passed());
+                    receipt.put("ruleVersion", report.ruleVersion());
+                    receipt.put("findings", report.findings().stream().map(f -> Map.of(
+                            "code", f.code(), "severity", f.severity(), "detail", f.detail())).toList());
+                    receipt.put("summary", report.summary());
+                    receipt.put("checkedAt", checkedAt);
+                    return receipt;
+                });
         return ResponseEntity.ok(Map.of("data", data));
     }
 
@@ -500,7 +573,8 @@ public final class B9ContentAdminController {
                 results.add(entry);
                 continue;
             }
-            String subKey = batchKey + ":item:" + index + ":" + contentCode;
+            String subKey = "batch-" + ContentPayloadHash.sha256(Map.of(
+                    "batchKey", batchKey, "index", index, "contentCode", contentCode));
             try {
                 if (item.containsKey("lexeme")) {
                     Map<String, Object> lexemeFields = record(item.get("lexeme"));
@@ -531,30 +605,34 @@ public final class B9ContentAdminController {
                     entry.put("status", "ACCEPTED");
                     entry.put("itemId", outcome.itemId());
                     entry.put("stateVersion", outcome.stateVersion());
-                } else if (repository.findByCode(contentCode).isPresent()) {
-                    ContentDefinition existing = owned(contentCode, actor);
-                    entry.put("status", "SKIPPED");
-                    entry.put("reason", "CONTENT_EXISTS");
-                    entry.put("stateVersion", stateVersion(existing));
                 } else {
-                    Map<String, Object> merged = new LinkedHashMap<>(draft);
-                    merged.putIfAbsent("title", contentCode);
-                    ContentId contentId = ContentId.of(contentCode);
-                    commands.createContent(
-                            new ContentCommandService.CreateContent(
-                                    contentId, contentCode, kind(merged.get("contentType")),
-                                    required(merged, "title"),
-                                    textOr(merged.get("contentLocale"), "en-US"),
-                                    textOr(merged.get("targetLevel"), "A1"), "PHASE1"),
-                            actor, key(subKey + ":definition"), context);
-                    ContentVersionSnapshot created = commands.createVersion(
-                            new ContentCommandService.CreateVersion(
-                                    contentId, repository.nextVersionId(), payload(merged), rights(merged),
-                                    textOr(merged.get("releaseNote"), "batch import")),
-                            actor, key(subKey + ":version"), context);
-                    entry.put("status", "ACCEPTED");
-                    entry.put("contentVersionId", created.versionId().value());
-                    entry.put("stateVersion", created.stateVersion());
+                    String scope = actor.tenantId() + ":" + actor.subjectId() + ":content.b9.batch.draft";
+                    entry.putAll(idempotency.executeMap(scope, key(subKey),
+                            ContentPayloadHash.sha256(item), () -> {
+                                if (repository.findByCode(contentCode).isPresent()) {
+                                    ContentDefinition existing = owned(contentCode, actor);
+                                    return Map.of("status", "SKIPPED", "reason", "CONTENT_EXISTS",
+                                            "stateVersion", stateVersion(existing));
+                                }
+                                Map<String, Object> merged = new LinkedHashMap<>(draft);
+                                merged.putIfAbsent("title", contentCode);
+                                ContentRights draftRights = rights(merged);
+                                ContentId contentId = ContentId.of(contentCode);
+                                commands.createContent(new ContentCommandService.CreateContent(
+                                        contentId, contentCode, kind(merged.get("contentType")),
+                                        required(merged, "title"),
+                                        textOr(merged.get("contentLocale"), "en-US"),
+                                        textOr(merged.get("targetLevel"), "A1"), "PHASE1"),
+                                        actor, key(subKey + ":definition"), context);
+                                ContentVersionSnapshot created = commands.createVersion(
+                                        new ContentCommandService.CreateVersion(
+                                                contentId, repository.nextVersionId(), payload(merged), draftRights,
+                                                textOr(merged.get("releaseNote"), "batch import")),
+                                        actor, key(subKey + ":version"), context);
+                                return Map.of("status", "ACCEPTED",
+                                        "contentVersionId", created.versionId().value(),
+                                        "stateVersion", repository.find(contentId).orElseThrow().stateVersion());
+                            }));
                 }
             } catch (ContentOperationException error) {
                 entry.put("status", "FAILED");
@@ -717,11 +795,7 @@ public final class B9ContentAdminController {
         return result;
     }
 
-    /**
-     * Owner-side scheduled-task read for the future gateway flip. The external
-     * {@code /api/v1/admin/content-publish-tasks} route stays fail-closed until
-     * B3; admin reads flow through the pack detail projection below.
-     */
+    /** Owner-side scheduled-task read for the exact admin Gateway projection. */
     @GetMapping("/publish-tasks/{taskId}")
     public ResponseEntity<Map<String, Object>> getScheduledTask(
             @PathVariable String taskId,
@@ -956,6 +1030,24 @@ public final class B9ContentAdminController {
         }
     }
 
+    private static void requireReviewerFirst(ContentActor actor) {
+        if (!actor.canReviewFirst()) {
+            throw ContentOperationException.forbidden("CONTENT_REVIEW_L1_REQUIRED", "first review permission is required");
+        }
+    }
+
+    private static void requireReviewerFinal(ContentActor actor) {
+        if (!actor.canReviewFinal()) {
+            throw ContentOperationException.forbidden("CONTENT_REVIEW_L2_REQUIRED", "final review permission is required");
+        }
+    }
+
+    private static void requirePublisher(ContentActor actor) {
+        if (!actor.canPublish()) {
+            throw ContentOperationException.forbidden("CONTENT_PUBLISHER_REQUIRED", "content publisher permission is required");
+        }
+    }
+
     private ContentDefinition owned(String code, ContentActor actor, boolean ignored) {
         ContentDefinition content = repository.findByCode(code)
                 .orElseThrow(() -> ContentOperationException.notFound("CONTENT_NOT_FOUND", "content does not exist"));
@@ -970,12 +1062,15 @@ public final class B9ContentAdminController {
     }
 
     private static ContentVersion targetVersion(ContentDefinition content, Map<String, Object> input) {
-        // Standard optimistic locking: callers pass the stateVersion they read; a stale
-        // writer gets 409 VERSION_CONFLICT instead of silently overwriting. The version
-        // column is ContentVersion.stateVersion (persisted as content_version.state_version).
+        return targetVersion(content, input, false);
+    }
+
+    private static ContentVersion targetVersion(ContentDefinition content, Map<String, Object> input,
+                                                boolean preferCurrentPublished) {
+        // The API stateVersion is the whole content aggregate revision, not one version's status.
         Object expected = input.get("expectedStateVersion");
         if (expected instanceof Number number && number.longValue() > 0) {
-            long current = content.versions().stream().mapToLong(ContentVersion::stateVersion).max().orElse(0L);
+            long current = content.stateVersion();
             if (current != number.longValue()) {
                 throw ContentOperationException.conflict("VERSION_CONFLICT",
                         "stale stateVersion: expected " + number.longValue() + " but current is " + current);
@@ -987,6 +1082,10 @@ public final class B9ContentAdminController {
                     .filter(version -> version.versionNumber() == number.intValue())
                     .findFirst()
                     .orElseThrow(() -> ContentOperationException.notFound("CONTENT_VERSION_NOT_FOUND", "target version does not exist"));
+        }
+        if (preferCurrentPublished) {
+            return content.currentPublishedVersion().orElseThrow(() ->
+                    ContentOperationException.conflict("CONTENT_NOT_PUBLISHED", "content has no published version"));
         }
         return content.versions().stream().reduce((left, right) -> right)
                 .orElseThrow(() -> ContentOperationException.notFound("CONTENT_VERSION_NOT_FOUND", "content has no version"));
@@ -1019,20 +1118,29 @@ public final class B9ContentAdminController {
     }
 
     private static ContentRights rights(Map<String, Object> draft) {
-        Instant now = Instant.now();
         return new ContentRights(
-                textOr(draft.get("sourceCode"), "LOCAL_B31_SOURCE"),
-                textOr(draft.get("licenseCode"), "LOCAL_DEV_LICENSE"),
-                CopyrightStatus.ACTIVE,
-                true,
-                Set.of("LEARNER", "PUBLIC"),
-                now.minus(1, ChronoUnit.MINUTES),
+                required(draft, "sourceCode"),
+                required(draft, "licenseCode"),
+                CopyrightStatus.PENDING,
+                false,
+                Set.of(),
                 null,
-                "local-b31-rights-evidence");
+                null,
+                null);
+    }
+
+    private static ContentRights validationRights(Map<String, Object> draft) {
+        // The report endpoint must describe an incomplete draft, not reject it
+        // before the validator can return actionable findings.
+        return text(draft.get("sourceCode")).isBlank() || text(draft.get("licenseCode")).isBlank()
+                ? null : rights(draft);
     }
 
     private static ReviewDecision reviewDecision(Object raw) {
-        String value = textOr(raw, "APPROVED").toUpperCase();
+        String value = text(raw).toUpperCase();
+        if (value.isBlank()) {
+            throw ContentOperationException.badRequest("REVIEW_DECISION_REQUIRED", "reviewDecision is required");
+        }
         try {
             return ReviewDecision.valueOf(value);
         } catch (IllegalArgumentException error) {
@@ -1088,8 +1196,35 @@ public final class B9ContentAdminController {
         result.put("publicProjection", projection);
         result.put("rightsStatus", latest == null || latest.rights().isEmpty()
                 ? "PENDING" : rightsStatus(latest.rights().get().status()));
+        ReviewSubmissionReadiness readiness = reviewSubmissionReadiness(latest, Instant.now());
+        result.put("reviewSubmissionReady", readiness.ready());
+        result.put("reviewSubmissionReason", readiness.reason());
         result.put("reviewStages", reviewStages(latest));
         return result;
+    }
+
+    private record ReviewSubmissionReadiness(boolean ready, String reason, String errorCode) {
+    }
+
+    private static ReviewSubmissionReadiness reviewSubmissionReadiness(ContentVersion version, Instant now) {
+        if (version == null || version.status() != ContentVersionStatus.DRAFT) {
+            return new ReviewSubmissionReadiness(false, "DRAFT_REQUIRED", "CONTENT_STATE_INVALID");
+        }
+        ContentRights rights = version.rights().orElse(null);
+        if (rights == null
+                || !rights.allows(com.englishflow.content.domain.ContentChannel.LEARNER, now)
+                || !rights.allows(com.englishflow.content.domain.ContentChannel.PUBLIC, now)) {
+            return new ReviewSubmissionReadiness(false, "RIGHTS_NOT_READY", "CONTENT_RIGHTS_NOT_READY");
+        }
+        ContentAutoValidation.Report report = ContentAutoValidation.validate(version.payload().raw(), rights, now);
+        if (!report.passed()) {
+            return new ReviewSubmissionReadiness(false, "VALIDATION_NOT_PASSED", "CONTENT_VALIDATION_NOT_PASSED");
+        }
+        // The current auto-validation endpoint returns an ephemeral receipt. No PASS report
+        // bound to this immutable version/hash, or media-service READY/CLEAN fact, is stored.
+        // A live calculation or client-provided status cannot stand in for those owner facts.
+        return new ReviewSubmissionReadiness(false, "VALIDATION_REPORT_UNAVAILABLE",
+                "CONTENT_REVIEW_EVIDENCE_UNAVAILABLE");
     }
 
     private static Map<String, Object> versionView(ContentVersion version) {
@@ -1121,7 +1256,7 @@ public final class B9ContentAdminController {
     }
 
     private static long stateVersion(ContentDefinition content) {
-        return content.versions().stream().mapToLong(ContentVersion::stateVersion).max().orElse(0L);
+        return content.stateVersion();
     }
 
     private static java.util.Optional<ContentVersion> latestOptional(ContentVersion value) {

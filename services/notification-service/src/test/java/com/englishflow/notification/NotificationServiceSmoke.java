@@ -14,7 +14,10 @@ import com.englishflow.notification.application.UpdatePreferenceCommand;
 import com.englishflow.notification.domain.IdempotencyKey;
 import com.englishflow.notification.domain.NotificationAccessPolicy;
 import com.englishflow.notification.domain.NotificationChannel;
+import com.englishflow.notification.domain.NotificationCategory;
 import com.englishflow.notification.domain.NotificationDomainException;
+import com.englishflow.notification.domain.NotificationDndWindow;
+import com.englishflow.notification.domain.NotificationFrequencyPolicy;
 import com.englishflow.notification.domain.NotificationOutboxEvent;
 import com.englishflow.notification.domain.NotificationPrincipalContext;
 import com.englishflow.notification.domain.OfflineChange;
@@ -73,16 +76,19 @@ public final class NotificationServiceSmoke {
     private static void testPreferenceIdempotency(NotificationApplicationService service,
             NotificationPrincipalContext context, RequestMetadata metadata) {
         UpdatePreferenceCommand command = new UpdatePreferenceCommand(
-                "learning.review.due", NotificationChannel.IN_APP, true, "zh-CN", -1);
+                "REVIEW", NotificationCategory.REVIEW, NotificationChannel.IN_APP, true, "zh-CN", 1,
+                NotificationDndWindow.parse("23:00", "08:00"), NotificationFrequencyPolicy.IMMEDIATE, 0);
         var first = service.updatePreference(context, command, new IdempotencyKey("pref-b11-1"), metadata);
         var replay = service.updatePreference(context, command, new IdempotencyKey("pref-b11-1"), metadata);
         check(first.version() == 1 && replay.version() == 1, "preference idempotency replays one fact");
         expect(NotificationDomainException.Code.IDEMPOTENCY_CONFLICT, () -> service.updatePreference(context,
-                new UpdatePreferenceCommand("learning.review.due", NotificationChannel.IN_APP, false,
-                        "zh-CN", -1), new IdempotencyKey("pref-b11-1"), metadata));
+                new UpdatePreferenceCommand("REVIEW", NotificationCategory.REVIEW, NotificationChannel.IN_APP,
+                        false, "zh-CN", 1, NotificationDndWindow.parse("23:00", "08:00"),
+                        NotificationFrequencyPolicy.IMMEDIATE, 0), new IdempotencyKey("pref-b11-1"), metadata));
         expect(NotificationDomainException.Code.VERSION_CONFLICT, () -> service.updatePreference(context,
-                new UpdatePreferenceCommand("learning.review.due", NotificationChannel.IN_APP, false,
-                        "zh-CN", 0), new IdempotencyKey("pref-b11-2"), metadata));
+                new UpdatePreferenceCommand("REVIEW", NotificationCategory.REVIEW, NotificationChannel.IN_APP,
+                        false, "zh-CN", 1, NotificationDndWindow.parse("23:00", "08:00"),
+                        NotificationFrequencyPolicy.IMMEDIATE, 0), new IdempotencyKey("pref-b11-2"), metadata));
     }
 
     private static String testDeliveryRetry(NotificationApplicationService service,
@@ -114,10 +120,11 @@ public final class NotificationServiceSmoke {
     private static void testDisabledDelivery(NotificationApplicationService service,
             NotificationPrincipalContext context, RequestMetadata metadata) {
         service.updatePreference(context, new UpdatePreferenceCommand(
-                "learning.disabled", NotificationChannel.PUSH, false, "zh-CN", -1),
+                "LEARNING", NotificationCategory.LEARNING, NotificationChannel.PUSH, false, "zh-CN", 1,
+                NotificationDndWindow.parse("23:00", "08:00"), NotificationFrequencyPolicy.IMMEDIATE, 0),
                 new IdempotencyKey("pref-b11-disabled"), metadata);
         var message = service.queue(context, new QueueNotificationCommand(
-                "learning.disabled", NotificationChannel.PUSH, "disabled", "v1",
+                "LEARNING", NotificationChannel.PUSH, "disabled", "v1",
                 "Disabled", "Safe body", "content-v1"),
                 new IdempotencyKey("message-b11-disabled"), metadata);
         var delivery = service.deliver(context, message.messageId(),

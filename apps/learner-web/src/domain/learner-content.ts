@@ -1,5 +1,6 @@
 import type {
   AssessmentReport,
+  AssessmentSkipBaseline,
   AssessmentSnapshot,
   ContinueContext,
   DailyQuotaMinutes,
@@ -64,10 +65,11 @@ export interface LearnerOnboardingReadModel {
 }
 
 export interface PlacementReadModel {
-  status: 'AVAILABLE' | 'IN_PROGRESS' | 'COMPLETED' | 'EMPTY'
+  status: 'AVAILABLE' | 'IN_PROGRESS' | 'COMPLETED' | 'SKIPPED' | 'EMPTY'
   sessionId: string | null
   currentQuestion: PlacementQuestion | null
   report: AssessmentReport | null
+  skipBaseline: AssessmentSkipBaseline | null
   contentVersionId: string | null
   contentLocale: string
 }
@@ -94,6 +96,7 @@ export interface PlacementSubmitResult {
   isCompleted: boolean
   nextQuestion: PlacementQuestion | null
   report: AssessmentReport | null
+  skipBaseline?: AssessmentSkipBaseline | null
 }
 
 export interface SaveOnboardingInput {

@@ -1,0 +1,25 @@
+{
+  "at": "2026-09-24T17:14:58.783Z",
+  "project": "cloudstudy-uat-isolated-3c94b27160",
+  "counts": {
+    "active_consent_documents": 0,
+    "iam_accounts": 9,
+    "uat_docker_accounts": 8,
+    "active_iam_accounts": 9,
+    "iam_sessions": 10,
+    "iam_flyway_success": 15,
+    "learner_service": 11,
+    "content_service": 21,
+    "learning_service": 9,
+    "assessment_service": 8,
+    "media_service": 7,
+    "notification_service": 7,
+    "gamification_service": 4,
+    "social_service": 2,
+    "commerce_service": 2,
+    "admin_ops_service": 5,
+    "analytics_service": 1,
+    "audit_service": 2,
+    "workflow_service": 2
+  }
+}

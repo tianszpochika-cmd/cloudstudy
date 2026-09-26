@@ -38,7 +38,18 @@ public final class PasswordAccountService {
             "learning.plan.write", "learning.review.read", "learning.review.write",
             "learning.progress.read", "learning.progress.write", "learning.mastery.read",
             "learning.mastery.write", "learning.task.write", "assessment.session.read",
-            "assessment.session.write", "content.read", "iam.self.read", "iam.self.write",
+            "assessment.session.write", "assessment.placement.session.create",
+            "assessment.placement.session.read", "assessment.placement.response.submit",
+            "assessment.placement.skip", "assessment.placement.report.read",
+            "content.read", "iam.self.read", "iam.self.write",
+            // P1R-M1-014 canonical learner-facing B12 scopes. The two trusted-event
+            // scopes belong to workload identities and are intentionally excluded.
+            "gamification.read.self", "gamification.ledger.read.self",
+            "gamification.reward.read.self", "gamification.reward.claim.self",
+            "gamification.game.read.self", "gamification.game.play.self",
+            "social.focus.write.self", "social.interaction.write.self",
+            "social.room.write.self", "social.visibility.write.self",
+            "social.report.create.self", "social.report.read.self",
             "gamification.read", "gamification.rewards.claim",
             "social.room.read", "social.room.join", "social.room.member.read", "social.room.write",
             "social.focus.write", "social.interaction.send", "social.leaderboard.read",
@@ -46,6 +57,8 @@ public final class PasswordAccountService {
             "commerce:order:read", "commerce:order:write", "commerce:payment:write",
             "commerce:entitlement:read", "commerce:refund:write", "commerce:activation:redeem",
             "support.ticket.create",
+            // P1R-M1-016 canonical learner-owned notification preference scopes.
+            "notification.preference.read.self", "notification.preference.write.self",
             "notification.read", "notification.write",
             // P1-LIVE-012 (decision A): consented learners may stream licensed media.
             // Pre-gate tokens are stripped of it (see isLearningPermission media: cover).

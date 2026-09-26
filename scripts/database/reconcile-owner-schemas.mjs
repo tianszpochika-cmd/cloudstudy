@@ -11,6 +11,19 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '.
 // owners, lives in ./lib/owner-manifest.mjs so the runtime harness verifies the same set.
 const owners = readOwnerManifest(root);
 const apply = process.argv.includes('--apply');
+const migrationsOnly = process.argv.includes('--migrations-only');
+const serviceArgIndex = process.argv.indexOf('--service');
+const serviceId = serviceArgIndex < 0 ? null : process.argv[serviceArgIndex + 1];
+if (serviceArgIndex >= 0 && (!serviceId || serviceId.startsWith('--'))) {
+  throw new Error('--service requires an owner service id');
+}
+if (migrationsOnly && !serviceId) {
+  throw new Error('--migrations-only requires --service to prevent changing every owner');
+}
+const selectedOwners = serviceId
+  ? owners.services.filter((owner) => owner.id === serviceId)
+  : owners.services;
+if (selectedOwners.length === 0) throw new Error(`unknown owner service: ${serviceId}`);
 const mysqlBin = process.env.MYSQL_BIN || 'mysql';
 const host = process.env.MYSQL_HOST || '127.0.0.1';
 const port = process.env.MYSQL_PORT || '13306';
@@ -173,18 +186,27 @@ function provisionOwner(owner) {
   const schema = identifier(owner.schema);
   const user = quote(owner.dbCredential);
   const { password, source } = ownerPasswordFor(owner);
-  query(`
-    CREATE DATABASE IF NOT EXISTS ${schema} CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-    DROP USER IF EXISTS ${user}@'%';
-    CREATE USER ${user}@'%' IDENTIFIED BY ${quote(password)};
-    GRANT SELECT, INSERT, UPDATE, DELETE ON ${schema}.* TO ${user}@'%';
-  `);
+  if (migrationsOnly) {
+    if (!existingTables(owner.schema).includes('p1r_schema_history')) {
+      throw new Error(`${owner.id} migrations-only requires existing p1r_schema_history; refusing to baseline`);
+    }
+  } else {
+    query(`
+      CREATE DATABASE IF NOT EXISTS ${schema} CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+      DROP USER IF EXISTS ${user}@'%';
+      CREATE USER ${user}@'%' IDENTIFIED BY ${quote(password)};
+      GRANT SELECT, INSERT, UPDATE, DELETE ON ${schema}.* TO ${user}@'%';
+    `);
+  }
 
   const files = migrationFiles(owner);
   const expectedTables = expectedTablesFor(files);
   const historyTable = 'p1r_schema_history';
   const beforeTables = existingTables(owner.schema).filter((table) => table !== historyTable);
   const applied = readSchemaHistory(owner.schema, historyTable);
+  if (migrationsOnly && applied.size === 0) {
+    throw new Error(`${owner.id} migrations-only requires recorded migrations; refusing to baseline`);
+  }
   let migrationState;
 
   if (applied.size === 0 && beforeTables.length > 0) {
@@ -222,39 +244,68 @@ function provisionOwner(owner) {
     }
   }
 
-  const grantVerification = verifyOwnerGrants(owner, password);
+  const grantVerification = migrationsOnly ? null : verifyOwnerGrants(owner, password);
   const tableCount = existingTables(owner.schema).length;
   const history = migrationHistory(owner.schema, files);
-  const accessCheck = query(
+  const externalHistory = readSchemaHistory(owner.schema, historyTable);
+  const accessCheck = migrationsOnly ? null : query(
     `SELECT COUNT(*) FROM mysql.user WHERE User = ${quote(owner.dbCredential)} AND Host = '%';`
   );
   return {
     id: owner.id,
     schema: owner.schema,
     credential: owner.dbCredential,
-    credentialSource: source,
+    credentialSource: migrationsOnly ? 'unchanged' : source,
     migrationFiles: files.map((file) => file.name),
     tableCount,
     expectedTableCount: expectedTables.length,
     migrationState,
+    migrationAuthority: historyTable,
+    authoritativeHistory: {
+      state: files.every((file) => externalHistory.get(Number(file.version)) === file.checksum)
+        ? 'verified' : 'mismatch',
+      appliedVersions: [...externalHistory.keys()],
+      pendingVersions: files.filter((file) => !externalHistory.has(Number(file.version)))
+        .map((file) => Number(file.version))
+    },
     history,
     grantVerification,
-    access: Number(accessCheck) === 1
+    access: migrationsOnly ? null : Number(accessCheck) === 1
   };
 }
 
 if (!apply) {
-  console.log(JSON.stringify({ mode: 'plan', owners: owners.services.map(({ id, schema, dbCredential, migrationPath }) => ({ id, schema, dbCredential, migrationPath, passwordEnv: passwordEnvName({ id }) })) }, null, 2));
+  const plans = selectedOwners.map(({ id, schema, dbCredential, migrationPath }) => {
+    const plan = { id, schema, dbCredential, migrationPath, passwordEnv: passwordEnvName({ id }) };
+    if (!serviceId) return plan;
+    const files = migrationFiles({ id, schema, migrationPath });
+    const tables = existingTables(schema);
+    const history = tables.includes('p1r_schema_history')
+      ? new Map(query(`SELECT version, checksum FROM ${identifier(schema)}.p1r_schema_history ORDER BY version;`)
+        .split(/\r?\n/).filter(Boolean).map((line) => line.split('\t'))
+        .map(([version, checksum]) => [Number(version), String(checksum).trim()]))
+      : new Map();
+    return {
+      ...plan,
+      migrationFiles: files.map((file) => file.name),
+      recordedVersions: [...history.keys()],
+      pendingVersions: files.filter((file) => !history.has(Number(file.version))).map((file) => Number(file.version)),
+      checksumDrift: files.filter((file) => history.has(Number(file.version))
+        && history.get(Number(file.version)) !== file.checksum).map((file) => Number(file.version)),
+      migrationsOnlySafe: tables.includes('p1r_schema_history') && history.size > 0
+    };
+  });
+  console.log(JSON.stringify({ mode: 'plan', migrationsOnly, owners: plans }, null, 2));
   process.exit(0);
 }
 
 try {
-  const results = owners.services.map(provisionOwner);
-  if (results.some((item) => item.tableCount < 1 || !item.access
-    || !item.grantVerification.dml || !item.grantVerification.ddlDenied || !item.grantVerification.alterDenied)) {
+  const results = selectedOwners.map(provisionOwner);
+  if (results.some((item) => item.tableCount < 1 || (!migrationsOnly && (!item.access
+    || !item.grantVerification.dml || !item.grantVerification.ddlDenied || !item.grantVerification.alterDenied)))) {
     throw new Error('owner schema/credential reconciliation returned an invalid result');
   }
-  console.log(JSON.stringify({ mode: 'applied', ownerCount: results.length, results }, null, 2));
+  console.log(JSON.stringify({ mode: 'applied', migrationsOnly, ownerCount: results.length, results }, null, 2));
 } catch (error) {
   console.error(`owner schema reconciliation failed: ${error.message}`);
   process.exitCode = 2;

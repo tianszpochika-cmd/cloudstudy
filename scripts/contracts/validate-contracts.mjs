@@ -200,7 +200,7 @@ export function validateAsyncApiProjection(catalog) {
   return { channelCount: channelEntries.length, operationCount: operationEntries.length };
 }
 
-function validateOpenApi(document) {
+export function validateOpenApi(document) {
   assert(document.openapi === '3.0.3', 'OpenAPI source must be version 3.0.3');
   assert(isRecord(document.info) && typeof document.info.version === 'string', 'OpenAPI info.version is required');
   assert(isRecord(document.paths) && Object.keys(document.paths).length > 0, 'OpenAPI must define at least one path');
@@ -247,9 +247,30 @@ function validateOpenApi(document) {
         }
       }
       if (isWriteMethod(method)) {
-        assert(isRecord(operation['x-idempotency']), `${method.toUpperCase()} ${route} needs x-idempotency declaration`);
-        assert(typeof operation['x-idempotency'].strategy === 'string', `${operation.operationId} x-idempotency.strategy is required`);
-        assert(typeof operation['x-idempotency'].replayBehavior === 'string', `${operation.operationId} x-idempotency.replayBehavior is required`);
+        const failClosed = operation['x-fail-closed'];
+        if (isRecord(failClosed)) {
+          // This endpoint cannot mint a verified PUT grant. A fabricated replay
+          // contract would imply a success path and hide the missing owner flow.
+          assert(method === 'post' && route === '/api/v1/media/assets/{assetId}/upload-url',
+            `${method.toUpperCase()} ${route} cannot claim a fail-closed write exception`);
+          assertExactKeys(failClosed, ['mode', 'sideEffects', 'eligibleRequestStatus', 'reason'],
+            `${operation.operationId} x-fail-closed`);
+          assert(failClosed.mode === 'NO_SUCCESS_PATH' && failClosed.sideEffects === false
+            && failClosed.eligibleRequestStatus === 503
+            && failClosed.reason === 'MEDIA_UPLOAD_PUT_GRANT_UNAVAILABLE',
+          `${operation.operationId} must declare the exact no-side-effect upload failure`);
+          assert(operation['x-contract']?.runtimeStatus === 'FAIL_CLOSED_UPLOAD_NOT_CONFIGURED',
+            `${operation.operationId} must remain marked fail closed`);
+          assert(!Object.hasOwn(operation, 'x-idempotency'),
+            `${operation.operationId} cannot claim durable idempotency while disabled`);
+          assert(isRecord(operation.responses?.['503'])
+            && !Object.keys(operation.responses).some((status) => /^2\d\d$/.test(status)),
+          `${operation.operationId} must expose 503 without a success response`);
+        } else {
+          assert(isRecord(operation['x-idempotency']), `${method.toUpperCase()} ${route} needs x-idempotency declaration`);
+          assert(typeof operation['x-idempotency'].strategy === 'string', `${operation.operationId} x-idempotency.strategy is required`);
+          assert(typeof operation['x-idempotency'].replayBehavior === 'string', `${operation.operationId} x-idempotency.replayBehavior is required`);
+        }
       }
     }
   }

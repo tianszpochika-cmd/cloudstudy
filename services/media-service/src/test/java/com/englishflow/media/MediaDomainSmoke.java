@@ -1,5 +1,6 @@
 package com.englishflow.media;
 
+import com.englishflow.media.adapter.failclosed.FailClosedSignedUrlPort;
 import com.englishflow.media.adapter.memory.InMemoryMediaEventOutbox;
 import com.englishflow.media.adapter.memory.InMemoryMediaRepository;
 import com.englishflow.media.adapter.memory.InMemorySignedUrlPort;
@@ -61,6 +62,16 @@ public final class MediaDomainSmoke {
         expect(MediaOperationException.class,
                 () -> commands.markActive(assetId, "b".repeat(64), 1024, owner),
                 "checksum mismatch must deny activation");
+        var unconfiguredCommands = new MediaAssetCommandService(
+                repository, new FailClosedSignedUrlPort(), outbox, clock);
+        MediaOperationException unavailable = expect(MediaOperationException.class,
+                () -> unconfiguredCommands.markActive(assetId, HASH, 1024, owner),
+                "unverified bytes must deny activation");
+        check("MEDIA_OBJECT_STORE_NOT_CONFIGURED".equals(unavailable.code()),
+                "missing object store must explain the denied activation");
+        check(repository.findById(assetId).orElseThrow().assetVersion() == 1
+                        && outbox.snapshot().size() == 1,
+                "denied activation must not advance asset or outbox");
 
         asset = commands.markActive(assetId, HASH, 1024, owner);
         asset = commands.upsertRendition(assetId, new MediaRenditionDraft(
@@ -129,12 +140,12 @@ public final class MediaDomainSmoke {
         }
     }
 
-    private static void expect(Class<? extends Throwable> type, Runnable action, String message) {
+    private static <T extends Throwable> T expect(Class<T> type, Runnable action, String message) {
         try {
             action.run();
         } catch (Throwable error) {
             if (type.isInstance(error)) {
-                return;
+                return type.cast(error);
             }
             throw new AssertionError(message + ": wrong exception", error);
         }

@@ -8,18 +8,22 @@ import com.nimbusds.jose.crypto.RSASSASigner;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.gen.RSAKeyGenerator;
+import com.nimbusds.jose.proc.JWSVerificationKeySelector;
+import com.nimbusds.jose.proc.SecurityContext;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-import com.sun.net.httpserver.HttpServer;
+import com.nimbusds.jwt.proc.DefaultJWTProcessor;
 
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.oauth2.core.OAuth2TokenValidator;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtException;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 
-import java.net.InetSocketAddress;
-import java.nio.charset.StandardCharsets;
+import java.lang.reflect.Method;
+import java.time.Clock;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
@@ -37,31 +41,13 @@ class SocialJwtDecoderNegativeTest {
     private static final String AUDIENCE = "yuxuexing-api";
     private static final String KEY_ID = "iam-test-key";
 
-    private static HttpServer server;
     private static RSAKey signingKey;
     private static RSAKey attackerKey;
 
     @BeforeAll
-    static void startJwksEndpoint() throws Exception {
+    static void prepareKeys() throws Exception {
         signingKey = new RSAKeyGenerator(2048).keyID(KEY_ID).generate();
         attackerKey = new RSAKeyGenerator(2048).keyID(KEY_ID).generate();
-        String envelope = "{\"data\":" + new JWKSet(signingKey.toPublicJWK()) + "}";
-        server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
-        server.createContext("/jwks", exchange -> {
-            byte[] body = envelope.getBytes(StandardCharsets.UTF_8);
-            exchange.getResponseHeaders().add("Content-Type", "application/json");
-            exchange.sendResponseHeaders(200, body.length);
-            exchange.getResponseBody().write(body);
-            exchange.close();
-        });
-        server.start();
-    }
-
-    @AfterAll
-    static void stopJwksEndpoint() {
-        if (server != null) {
-            server.stop(0);
-        }
     }
 
     @Test
@@ -100,13 +86,25 @@ class SocialJwtDecoderNegativeTest {
                 Instant.now().plusSeconds(300), JWSAlgorithm.HS256)));
     }
 
-    private JwtDecoder decoder() {
-        SocialResourceServerProperties properties = new SocialResourceServerProperties();
-        properties.setEnabled(true);
-        properties.setIssuerUri(ISSUER);
-        properties.setJwkSetUri("http://127.0.0.1:" + server.getAddress().getPort() + "/jwks");
-        properties.setAudience(AUDIENCE);
-        return new SocialSecurityConfiguration().socialJwtDecoder(properties);
+    @SuppressWarnings("unchecked")
+    private JwtDecoder decoder() throws Exception {
+        String envelope = "{\"data\":" + new JWKSet(signingKey.toPublicJWK()) + "}";
+        IamEnvelopedJwkSource jwkSource = new IamEnvelopedJwkSource(
+                () -> envelope, Clock.systemUTC());
+        DefaultJWTProcessor<SecurityContext> processor = new DefaultJWTProcessor<>();
+        processor.setJWSKeySelector(
+                new JWSVerificationKeySelector<>(JWSAlgorithm.Family.RSA, jwkSource));
+        NimbusJwtDecoder decoder = new NimbusJwtDecoder(processor);
+
+        // Keep the production validator under test while injecting JWKS in memory. Reflection is
+        // limited to the private validator factory so this test does not duplicate its rules.
+        Method validatorFactory = SocialSecurityConfiguration.class.getDeclaredMethod(
+                "jwtValidator", String.class, String.class);
+        validatorFactory.setAccessible(true);
+        OAuth2TokenValidator<Jwt> validator = (OAuth2TokenValidator<Jwt>) validatorFactory.invoke(
+                null, ISSUER, AUDIENCE);
+        decoder.setJwtValidator(validator);
+        return decoder;
     }
 
     private static String token(RSAKey key, String issuer, String audience, Instant expiresAt, JWSAlgorithm algorithm)

@@ -1,0 +1,235 @@
+{
+  "scope": "Real local Gateway and Mobile H5, independent synthetic adult account",
+  "accountTag": "45f624105d6f",
+  "stages": [
+    {
+      "name": "register",
+      "status": 201
+    },
+    {
+      "name": "adult-gate",
+      "status": 200
+    },
+    {
+      "name": "three-consents-and-onboarding",
+      "consentStatuses": [
+        200,
+        200,
+        200
+      ],
+      "targetWrite": 200
+    },
+    {
+      "name": "fresh-browser-login",
+      "status": 200
+    }
+  ],
+  "pages": [],
+  "consentCommands": [
+    {
+      "stage": "three-consents-and-onboarding",
+      "type": "PRIVACY",
+      "decision": "ACCEPTED"
+    },
+    {
+      "stage": "three-consents-and-onboarding",
+      "type": "TERMS",
+      "decision": "ACCEPTED"
+    },
+    {
+      "stage": "three-consents-and-onboarding",
+      "type": "ADULT_LEARNING",
+      "decision": "ACCEPTED"
+    }
+  ],
+  "network": [
+    {
+      "stage": "register",
+      "method": "POST",
+      "path": "/api/v1/auth/register",
+      "status": 201
+    },
+    {
+      "stage": "register",
+      "method": "GET",
+      "path": "/api/v1/iam/permissions",
+      "status": 200
+    },
+    {
+      "stage": "adult-gate",
+      "method": "GET",
+      "path": "/api/v1/learner/preferences",
+      "status": 403
+    },
+    {
+      "stage": "adult-gate",
+      "method": "GET",
+      "path": "/api/v1/learner/targets",
+      "status": 403
+    },
+    {
+      "stage": "adult-gate",
+      "method": "GET",
+      "path": "/api/v1/learner/profile",
+      "status": 403
+    },
+    {
+      "stage": "adult-gate",
+      "method": "GET",
+      "path": "/api/v1/onboarding/options",
+      "status": 403
+    },
+    {
+      "stage": "adult-gate",
+      "method": "POST",
+      "path": "/api/v1/iam/adult-gate",
+      "status": 200
+    },
+    {
+      "stage": "three-consents-and-onboarding",
+      "method": "PUT",
+      "path": "/api/v1/iam/consents",
+      "status": 200
+    },
+    {
+      "stage": "three-consents-and-onboarding",
+      "method": "PUT",
+      "path": "/api/v1/iam/consents",
+      "status": 200
+    },
+    {
+      "stage": "three-consents-and-onboarding",
+      "method": "PUT",
+      "path": "/api/v1/iam/consents",
+      "status": 200
+    },
+    {
+      "stage": "three-consents-and-onboarding",
+      "method": "POST",
+      "path": "/api/v1/auth/token/refresh",
+      "status": 200
+    },
+    {
+      "stage": "three-consents-and-onboarding",
+      "method": "GET",
+      "path": "/api/v1/iam/permissions",
+      "status": 200
+    },
+    {
+      "stage": "three-consents-and-onboarding",
+      "method": "GET",
+      "path": "/api/v1/learner/targets",
+      "status": 404
+    },
+    {
+      "stage": "three-consents-and-onboarding",
+      "method": "GET",
+      "path": "/api/v1/learner/profile",
+      "status": 200
+    },
+    {
+      "stage": "three-consents-and-onboarding",
+      "method": "GET",
+      "path": "/api/v1/learner/preferences",
+      "status": 200
+    },
+    {
+      "stage": "three-consents-and-onboarding",
+      "method": "PUT",
+      "path": "/api/v1/learner/targets",
+      "status": 200
+    },
+    {
+      "stage": "three-consents-and-onboarding",
+      "method": "GET",
+      "path": "/api/v1/onboarding/options",
+      "status": 200
+    },
+    {
+      "stage": "three-consents-and-onboarding",
+      "method": "GET",
+      "path": "/api/v1/learner/targets",
+      "status": 200
+    },
+    {
+      "stage": "three-consents-and-onboarding",
+      "method": "GET",
+      "path": "/api/v1/learner/profile",
+      "status": 200
+    },
+    {
+      "stage": "three-consents-and-onboarding",
+      "method": "GET",
+      "path": "/api/v1/learner/preferences",
+      "status": 200
+    },
+    {
+      "stage": "fresh-browser-login",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "stage": "fresh-browser-login",
+      "method": "GET",
+      "path": "/api/v1/iam/permissions",
+      "status": 200
+    },
+    {
+      "stage": "fresh-browser-login",
+      "method": "GET",
+      "path": "/api/v1/learner/home",
+      "status": 503
+    },
+    {
+      "stage": "fresh-browser-login",
+      "method": "GET",
+      "path": "/api/v1/content/learner/:contentCode",
+      "status": 200
+    }
+  ],
+  "requestFailures": [],
+  "browserErrors": [
+    {
+      "stage": "adult-gate",
+      "kind": "console.error"
+    },
+    {
+      "stage": "adult-gate",
+      "kind": "console.error"
+    },
+    {
+      "stage": "adult-gate",
+      "kind": "console.error"
+    },
+    {
+      "stage": "adult-gate",
+      "kind": "console.error"
+    },
+    {
+      "stage": "three-consents-and-onboarding",
+      "kind": "console.error"
+    },
+    {
+      "stage": "fresh-browser-login",
+      "kind": "console.error"
+    }
+  ],
+  "cleanup": {
+    "accountCount": 1,
+    "status": "DISABLED",
+    "activeSessions": 0,
+    "verified": true
+  },
+  "failure": {
+    "stage": "fresh-browser-login",
+    "kind": "TimeoutError"
+  },
+  "summary": {
+    "registered": true,
+    "pages": 0,
+    "unexpectedHttpErrors": 6,
+    "browserErrors": 6,
+    "unexpectedRequestFailures": 0
+  }
+}

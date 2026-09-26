@@ -1,0 +1,105 @@
+{
+  "capturedAt": "2026-09-23T11:59:07.904Z",
+  "localCandidateOnly": true,
+  "checks": [
+    {
+      "name": "gateway ready",
+      "actual": 200,
+      "ok": true
+    },
+    {
+      "name": "admin ready",
+      "actual": 200,
+      "ok": true
+    },
+    {
+      "name": "unique synthetic code",
+      "actual": 0,
+      "ok": true
+    },
+    {
+      "name": "synthetic adult register",
+      "actual": 201,
+      "ok": true
+    },
+    {
+      "name": "synthetic staff login",
+      "actual": 200,
+      "ok": true
+    },
+    {
+      "name": "pending synthetic draft created",
+      "actual": 202,
+      "ok": true
+    },
+    {
+      "name": "owner draft pending",
+      "actual": {
+        "status": 200,
+        "state": "DRAFT",
+        "rights": "PENDING"
+      },
+      "ok": true
+    },
+    {
+      "name": "PENDING draft review button disabled at both widths",
+      "actual": {
+        "width1280": {
+          "submitDisabled": true,
+          "warningVisible": true,
+          "layout": {
+            "width": 1280,
+            "documentWidth": 1280,
+            "overflow": false
+          }
+        },
+        "width390": {
+          "submitDisabled": true,
+          "warningVisible": true,
+          "layout": {
+            "width": 390,
+            "documentWidth": 390,
+            "overflow": false
+          }
+        }
+      },
+      "ok": true
+    },
+    {
+      "name": "browser page errors",
+      "actual": 0,
+      "ok": true
+    }
+  ],
+  "browser": {
+    "width1280": {
+      "submitDisabled": true,
+      "warningVisible": true,
+      "layout": {
+        "width": 1280,
+        "documentWidth": 1280,
+        "overflow": false
+      }
+    },
+    "width390": {
+      "submitDisabled": true,
+      "warningVisible": true,
+      "layout": {
+        "width": 390,
+        "documentWidth": 390,
+        "overflow": false
+      }
+    }
+  },
+  "cleanup": {
+    "draftRemoved": true,
+    "accountDisabled": true,
+    "activeSessions": 0,
+    "activeDevices": 0,
+    "residualContent": 0
+  },
+  "pageErrors": [],
+  "secretsRecorded": false,
+  "ownerRuntimeReviewSubmissionReady": null,
+  "result": "CANDIDATE_UI_NEGATIVE_BOUNDARY_PASS"
+}

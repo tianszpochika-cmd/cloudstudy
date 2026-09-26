@@ -45,7 +45,21 @@ public final class AssessmentHttpPrincipals {
         if (permissions.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "verified permissions are required");
         }
+        if (!"PASSED".equals(token.getClaimAsString("adult_gate"))) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "adult gate is required");
+        }
+        if (!"GRANTED".equals(token.getClaimAsString("consent_state"))) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "learning consent is required");
+        }
         return new VerifiedAssessmentPrincipal(subject, tenant, roles, permissions);
+    }
+
+    public static VerifiedAssessmentPrincipal require(Authentication authentication, String permission) {
+        VerifiedAssessmentPrincipal principal = require(authentication);
+        if (permission == null || !principal.hasPermission(permission)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "assessment permission is required");
+        }
+        return principal;
     }
 
     private static Set<String> strings(Object claim) {

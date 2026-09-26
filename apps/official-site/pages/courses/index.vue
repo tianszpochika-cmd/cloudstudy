@@ -3,8 +3,7 @@ import { learningMethods } from "~/utils/experience-content";
 import { useOfficialSeo } from "~/utils/seo";
 const { t } = useSiteText(),
   route = useRoute(),
-  router = useRouter(),
-  { authLink } = useOfficialSiteLinks();
+  router = useRouter();
 const group = computed(() => String(route.query.group || "all")),
   query = computed(() => String(route.query.q || ""));
 const filtered = computed(() =>
@@ -95,12 +94,20 @@ useOfficialSeo({
             </button>
           </div>
         </div>
-        <p class="catalog-note">{{ t("official.cab2cf9e17") }}</p>
-        <section class="published-courses">
-          <h2>{{ t("official.c52c0deec0") }}</h2>
+        <section class="published-courses" aria-labelledby="published-courses-title">
+          <div class="published-courses-header">
+            <div>
+              <h2 id="published-courses-title">{{ t("official.c52c0deec0") }}</h2>
+              <p class="catalog-note">{{ t("official.cab2cf9e17") }}</p>
+            </div>
+            <NuxtLink class="link-arrow" to="/start"
+              >{{ t("official.caa236cbb2") }}<SiteIcon name="arrow"
+            /></NuxtLink>
+          </div>
           <div
             v-if="
-              loadState.state === 'ready' && loadState.projection.courses.length
+              ['ready', 'recovery'].includes(loadState.state) &&
+              loadState.projection.courses.length
             "
             class="published-grid"
           >
@@ -109,16 +116,16 @@ useOfficialSeo({
               :key="course.id"
               class="public-course-card"
             >
-              <span class="pill">{{ course.level }}</span>
+              <span v-if="course.level" class="pill">{{ course.level }}</span>
               <h3>{{ course.title }}</h3>
-              <p>{{ course.description }}</p>
-              <a class="link-arrow" :href="authLink('/courses')"
+              <p v-if="course.description">{{ course.description }}</p>
+              <NuxtLink class="link-arrow" to="/start"
                 >{{ t("official.caa236cbb2") }}<SiteIcon name="arrow"
-              /></a>
+              /></NuxtLink>
             </article>
           </div>
           <PublicStatus
-            v-else
+            v-if="loadState.state !== 'ready' || !loadState.projection.courses.length"
             :state="loadState.state === 'ready' ? 'empty' : loadState.state"
             @retry="load"
           />

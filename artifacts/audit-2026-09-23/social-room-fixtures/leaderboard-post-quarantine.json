@@ -1,0 +1,43 @@
+{
+  "mode": "LEADERBOARD_POST_QUARANTINE_READ_ONLY",
+  "capturedAt": "2026-09-23T09:53:15.466795+00:00",
+  "backupSha256": "57f4b37e54eda161423f618bfa1efd0c02a5b580dcece9d0cceb04a4cb3e6445",
+  "backupSourceFullRowSha256": "3e965184bafbffe83fc93ae3bd6764946c33ed730e864cc89ed7a08ae83e4b4e",
+  "normalizedTargetFullRowSha256": "3e965184bafbffe83fc93ae3bd6764946c33ed730e864cc89ed7a08ae83e4b4e",
+  "platformLeaderboardCandidateCount": 0,
+  "platformLeaderboardTotalCount": 0,
+  "quarantineLeaderboardCount": 381,
+  "quarantineBackedUpIdCount": 381,
+  "roomFixtureCounts": {
+    "soc_room_member": {
+      "platform": 0,
+      "quarantine": 101
+    },
+    "soc_focus_state": {
+      "platform": 0,
+      "quarantine": 100
+    },
+    "soc_seat_lease": {
+      "platform": 0,
+      "quarantine": 100
+    },
+    "soc_interaction": {
+      "platform": 0,
+      "quarantine": 100
+    },
+    "soc_report": {
+      "platform": 0,
+      "quarantine": 100
+    },
+    "soc_study_room": {
+      "platform": 0,
+      "quarantine": 100
+    }
+  },
+  "auxiliaryFixtureCounts": {
+    "bulkIdempotencyRecords": 100,
+    "bulkTrustedEventDedupes": 100,
+    "quarantineIamPrincipals": 0
+  },
+  "failures": []
+}

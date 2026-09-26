@@ -46,9 +46,9 @@ import java.time.Instant;
 import java.util.HexFormat;
 import java.util.List;
 import java.util.LinkedHashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Supplier;
 
@@ -118,20 +118,30 @@ public final class CommerceApplicationService {
      * Public, published-only projection. The tenant is supplied by server configuration; no
      * request header, query parameter, or client body can choose the commerce tenant.
      */
-    public Map<String, Object> publicCatalog(String serverTenantId) {
+    public Map<String, Object> publicCatalog(String serverTenantId, Set<String> publishedSkuIds) {
         if (serverTenantId == null || serverTenantId.isBlank()) {
             throw CommerceException.unavailable("PUBLIC_CATALOG_UNAVAILABLE", "public catalog tenant is not configured");
         }
+        // An orderable SKU is not automatically a public offer. Publication is an
+        // explicit server-side release decision, and a closed payment gate must
+        // never advertise a purchasable plan.
+        Set<String> released = publishedSkuIds == null ? Set.of() : publishedSkuIds;
         List<Map<String, Object>> plans = store.listSkus(serverTenantId).stream()
+                .filter(sku -> paymentGate.enabled() && released.contains(sku.skuId()))
                 .filter(sku -> sku.status() == SkuStatus.ACTIVE)
+                .limit(50)
                 .map(sku -> {
                     Map<String, Object> plan = new LinkedHashMap<>();
                     plan.put("planId", sku.skuId());
-                    plan.put("name", sku.title());
-                    plan.put("displayPrice", String.format(Locale.ROOT, "%s %.2f", sku.currency(), sku.amountMinor() / 100.0));
-                    plan.put("unit", "ONE_TIME");
-                    plan.put("features", List.of(sku.entitlementCode()));
-                    plan.put("availability", "available");
+                    plan.put("skuId", sku.skuId());
+                    plan.put("title", sku.title());
+                    // The legacy SKU model has no recurring billing term. The
+                    // canonical public contract permits perpetual offers only
+                    // as coming soon until the commerce offer model is built.
+                    plan.put("billingPeriod", "PERPETUAL");
+                    plan.put("currency", sku.currency());
+                    plan.put("amountMinor", sku.amountMinor());
+                    plan.put("availability", "COMING_SOON");
                     plan.put("entitlementCode", sku.entitlementCode());
                     plan.put("priceSnapshotId", sku.skuId() + "-v" + sku.version());
                     return plan;
@@ -143,6 +153,8 @@ public final class CommerceApplicationService {
         result.put("plans", plans);
         result.put("publishedAt", clock.now().toString());
         result.put("checkoutPath", "/pricing");
+        result.put("productionPaymentEnabled", false);
+        result.put("autoRenewalEnabled", false);
         return result;
     }
 

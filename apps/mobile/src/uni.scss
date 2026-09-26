@@ -1,4 +1,6 @@
 /* Shared mobile visual system. All colors are supplied by the mobile token adapter. */
+/* Uni H5's generated preload animation requests an external decorative shadow. */
+body::after { animation: none !important; background-image: none !important; }
 page, uni-page-body { background: var(--yx-surface-page); color: var(--yx-text-primary); font-family: Inter, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; }
 .yx-page, .yx-page view, .yx-page button, .yx-page input, .yx-page textarea { box-sizing: border-box; }
 .yx-page.yx-page { max-width: 860px; min-height: 100vh; margin: 0 auto; padding: calc(18px + env(safe-area-inset-top)) 22px calc(38px + env(safe-area-inset-bottom)); background: var(--yx-surface-page); color: var(--yx-text-primary); font-size: 14px; line-height: 1.65; overflow-wrap: anywhere; }
@@ -89,6 +91,8 @@ page, uni-page-body { background: var(--yx-surface-page); color: var(--yx-text-p
 .yx-page .setting-option.selected, .yx-page .choice.selected { border-color: var(--yx-brand); color: var(--yx-brand); background: var(--yx-brand-soft); }
 .yx-page .progress { color: var(--yx-brand); font-family: var(--yx-font-serif); }
 .yx-page[data-motion="on"] .mobile-intro { animation: mobile-enter var(--yx-motion-enter) ease both; }
+.yx-page[data-motion="reduced"] .mobile-intro { animation: none !important; }
+.yx-page[data-motion="reduced"] * { transition-duration: .1s !important; scroll-behavior: auto !important; }
 @keyframes mobile-enter { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 .yx-page[data-motion="off"] *, .yx-page[data-performance="Performance"] *, .yx-page.b4-world--Performance * { animation: none !important; transition: none !important; }
 @media (prefers-reduced-motion: reduce) { .yx-page *, .yx-page *::before, .yx-page *::after { animation: none !important; transition: none !important; } }

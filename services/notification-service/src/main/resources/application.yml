@@ -75,6 +75,9 @@ offline:
 
 notification:
   phase: ${NOTIFICATION_PHASE:phase-1}
+  preference:
+    # API DND timezone is server-derived. Per-learner timezone integration is a separate owner contract gap.
+    timezone: ${NOTIFICATION_PREFERENCE_TIMEZONE:Asia/Shanghai}
   max-delivery-attempts: ${NOTIFICATION_MAX_DELIVERY_ATTEMPTS:5}
   retry-backoff: ${NOTIFICATION_RETRY_BACKOFF:PT30S}
   persistence:

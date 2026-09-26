@@ -1,0 +1,264 @@
+{
+  "capturedAt": "2026-09-23T10:47:52.563Z",
+  "scope": "Local Gateway to notification owner after route deployment",
+  "accountTag": "2f0aa72852f5",
+  "checks": [
+    {
+      "name": "anonymous owner",
+      "actual": 401,
+      "expected": 401,
+      "pass": true
+    },
+    {
+      "name": "anonymous gateway",
+      "actual": 401,
+      "expected": 401,
+      "pass": true
+    },
+    {
+      "name": "mobile preflight status",
+      "actual": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "name": "mobile preflight origin",
+      "actual": "http://127.0.0.1:18183",
+      "expected": "http://127.0.0.1:18183",
+      "pass": true
+    },
+    {
+      "name": "mobile preflight credentials",
+      "actual": "true",
+      "expected": "true",
+      "pass": true
+    },
+    {
+      "name": "register",
+      "actual": 201,
+      "expected": 201,
+      "pass": true
+    },
+    {
+      "name": "pre-gate owner permission",
+      "actual": 403,
+      "expected": 403,
+      "pass": true
+    },
+    {
+      "name": "pre-gate gateway permission",
+      "actual": 403,
+      "expected": 403,
+      "pass": true
+    },
+    {
+      "name": "adult gate",
+      "actual": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "name": "TERMS consent",
+      "actual": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "name": "PRIVACY consent",
+      "actual": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "name": "ADULT_LEARNING consent",
+      "actual": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "name": "post-gate login",
+      "actual": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "name": "adult owner list",
+      "actual": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "name": "owner truthful empty list",
+      "actual": 0,
+      "expected": 0,
+      "pass": true
+    },
+    {
+      "name": "published row count unchanged by read",
+      "actual": 0,
+      "expected": 0,
+      "pass": true
+    },
+    {
+      "name": "download row count unchanged by read",
+      "actual": 100,
+      "expected": 100,
+      "pass": true
+    },
+    {
+      "name": "gateway deployment state",
+      "actual": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "name": "gateway truthful empty list",
+      "actual": 0,
+      "expected": 0,
+      "pass": true
+    },
+    {
+      "name": "mobile GET CORS origin",
+      "actual": "http://127.0.0.1:18183",
+      "expected": "http://127.0.0.1:18183",
+      "pass": true
+    },
+    {
+      "name": "mobile GET CORS credentials",
+      "actual": "true",
+      "expected": "true",
+      "pass": true
+    },
+    {
+      "name": "POST /api/v1/sync/offline-packages/no-real-package/authorize remains withheld",
+      "actual": 404,
+      "expected": 404,
+      "pass": true
+    },
+    {
+      "name": "PATCH /api/v1/sync/offline-downloads/no-real-download remains withheld",
+      "actual": 404,
+      "expected": 404,
+      "pass": true
+    },
+    {
+      "name": "POST /api/v1/sync/offline-downloads/no-real-download/cleanup remains withheld",
+      "actual": 404,
+      "expected": 404,
+      "pass": true
+    },
+    {
+      "name": "POST /api/v1/sync/events remains withheld",
+      "actual": 404,
+      "expected": 404,
+      "pass": true
+    },
+    {
+      "name": "PUT /api/v1/sync/checkpoints/no-real-entity remains withheld",
+      "actual": 404,
+      "expected": 404,
+      "pass": true
+    },
+    {
+      "name": "mobile write preflight remains withheld",
+      "actual": 403,
+      "expected": 403,
+      "pass": true
+    },
+    {
+      "name": "second adult register",
+      "actual": 201,
+      "expected": 201,
+      "pass": true
+    },
+    {
+      "name": "second adult gate",
+      "actual": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "name": "second TERMS consent",
+      "actual": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "name": "second PRIVACY consent",
+      "actual": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "name": "second ADULT_LEARNING consent",
+      "actual": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "name": "second adult login",
+      "actual": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "name": "distinct adult principals",
+      "actual": true,
+      "expected": true,
+      "pass": true
+    },
+    {
+      "name": "second adult with forged owner headers",
+      "actual": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "name": "second adult cannot see withdrawn packages",
+      "actual": 0,
+      "expected": 0,
+      "pass": true
+    },
+    {
+      "name": "cross-subject probe created no download",
+      "actual": 0,
+      "expected": 0,
+      "pass": true
+    },
+    {
+      "name": "withheld writes created no offline event",
+      "actual": 0,
+      "expected": 0,
+      "pass": true
+    }
+  ],
+  "cleanup": {
+    "verified": true,
+    "primary": {
+      "verified": true,
+      "remaining": "0:0:0:1:0"
+    },
+    "secondary": {
+      "verified": true,
+      "remaining": "0:0:0:1:0"
+    }
+  },
+  "conclusion": "The exact Gateway GET path returns a truthful empty offline catalog to an authorized adult.",
+  "ownerList": {
+    "count": 0,
+    "fixtureCount": 0,
+    "realCount": 0,
+    "signedUrlsReturned": 0
+  },
+  "gatewayList": {
+    "status": 200,
+    "count": 0
+  },
+  "crossSubject": {
+    "distinctPrincipals": true,
+    "forgedAuthorityHeadersIgnored": true,
+    "catalogCount": 0,
+    "note": "No real published package exists, so positive download ownership cannot be exercised."
+  },
+  "status": "PASS"
+}

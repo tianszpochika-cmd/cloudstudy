@@ -1,0 +1,211 @@
+{
+  "runId": "adm2-mudqgywo-6dca9d",
+  "capturedAt": "2026-09-23T06:40:02.232Z",
+  "localOnly": true,
+  "permissions": [
+    "admin.dashboard.read",
+    "admin.commerce.read",
+    "admin.projection.read",
+    "analytics.read"
+  ],
+  "health": {
+    "gateway": 200,
+    "iam": 200,
+    "adminOps": 200,
+    "analytics": 200,
+    "adminWeb": 200
+  },
+  "setup": {
+    "registrationStatus": 201,
+    "adultGateStatus": 200,
+    "termsConsentStatus": 200,
+    "privacyConsentStatus": 200,
+    "adult_learningConsentStatus": 200,
+    "grantVerified": true,
+    "apiLoginStatus": 200,
+    "unauthenticatedRedirect": true
+  },
+  "pages": {
+    "dashboard": {
+      "loadingSkeletonSeen": true,
+      "url": "/dashboard",
+      "headingVisible": true,
+      "state": {
+        "skeletonVisible": false,
+        "hasUnavailable": false,
+        "hasEmpty": true,
+        "hasRefund": false
+      },
+      "layout1280": {
+        "viewport": 1280,
+        "documentWidth": 1280,
+        "overflow": false
+      },
+      "metricTableRows": 0,
+      "refreshRequested": true,
+      "layout390": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "overflow": false
+      },
+      "networkErrorVisible": true
+    },
+    "commerce": {
+      "loadingSkeletonSeen": true,
+      "url": "/commerce",
+      "state": {
+        "skeletonVisible": false,
+        "hasUnavailable": false,
+        "hasEmpty": true,
+        "hasRefund": false
+      },
+      "layout1280": {
+        "viewport": 1280,
+        "documentWidth": 1280,
+        "overflow": false
+      },
+      "tableRows": 0,
+      "refundSectionVisible": false,
+      "refundActionVisible": false,
+      "supportStatVisible": false,
+      "emptyMetricsTableVisible": false,
+      "filter": {
+        "exercised": true,
+        "sourceHasRows": false,
+        "shownRows": 0,
+        "emptyVisible": true
+      },
+      "layout390": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "overflow": false
+      },
+      "networkErrorVisible": true,
+      "uiCommandRequests": []
+    }
+  },
+  "requests": [
+    {
+      "path": "/api/v1/admin/ops/metrics",
+      "method": "GET",
+      "status": 200,
+      "owner": "analytics-service",
+      "rowCount": 0,
+      "hasMeta": true
+    },
+    {
+      "path": "/api/v1/admin/ops/metrics",
+      "method": "GET",
+      "status": 200,
+      "owner": "analytics-service",
+      "rowCount": 0,
+      "hasMeta": true
+    },
+    {
+      "path": "/api/v1/admin/ops/metrics",
+      "method": "GET",
+      "status": 200,
+      "owner": "analytics-service",
+      "rowCount": 0,
+      "hasMeta": true
+    },
+    {
+      "path": "/api/v1/admin/ops/commerce/orders",
+      "method": "GET",
+      "status": 200,
+      "owner": "admin-ops-service",
+      "rowCount": 0,
+      "hasMeta": true
+    },
+    {
+      "path": "/api/v1/admin/ops/metrics",
+      "method": "GET",
+      "status": 200,
+      "owner": "analytics-service",
+      "rowCount": 0,
+      "hasMeta": true
+    },
+    {
+      "path": "/api/v1/admin/ops/metrics",
+      "method": "GET",
+      "status": 200,
+      "owner": "analytics-service",
+      "rowCount": 0,
+      "hasMeta": true
+    },
+    {
+      "path": "/api/v1/admin/ops/commerce/orders",
+      "method": "GET",
+      "status": 200,
+      "owner": "admin-ops-service",
+      "rowCount": 0,
+      "hasMeta": true
+    },
+    {
+      "path": "/api/v1/admin/ops/metrics",
+      "method": "GET",
+      "status": 200,
+      "owner": "analytics-service",
+      "rowCount": 0,
+      "hasMeta": true
+    }
+  ],
+  "pageErrors": [],
+  "consoleErrors": [
+    {
+      "phase": "dashboard-network-error",
+      "message": "Failed to load resource: net::ERR_FAILED"
+    },
+    {
+      "phase": "commerce-network-error",
+      "message": "Failed to load resource: net::ERR_FAILED"
+    }
+  ],
+  "cleanup": {
+    "accountFound": true,
+    "disabled": true,
+    "permissionsCleared": true,
+    "activeSessions": 0,
+    "activeDevices": 0,
+    "activeRoles": 0
+  },
+  "secretsRecorded": false,
+  "ownerRanges": [
+    {
+      "from": "2026-08-26",
+      "to": "2026-08-27",
+      "filteredMetric": false,
+      "status": 200,
+      "owner": "analytics-service",
+      "rowCount": 0,
+      "errorCode": null
+    },
+    {
+      "from": "2026-09-18",
+      "to": "2026-09-23",
+      "filteredMetric": false,
+      "status": 200,
+      "owner": "analytics-service",
+      "rowCount": 0,
+      "errorCode": null
+    },
+    {
+      "from": "2026-08-26",
+      "to": "2026-08-27",
+      "filteredMetric": true,
+      "status": 200,
+      "owner": "analytics-service",
+      "rowCount": 0,
+      "errorCode": null
+    },
+    {
+      "from": "2026-09-18",
+      "to": "2026-09-23",
+      "filteredMetric": true,
+      "status": 200,
+      "owner": "analytics-service",
+      "rowCount": 0,
+      "errorCode": null
+    }
+  ]
+}

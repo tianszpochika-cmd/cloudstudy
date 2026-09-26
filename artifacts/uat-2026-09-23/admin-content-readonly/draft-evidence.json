@@ -1,0 +1,245 @@
+{
+  "page": "PAGE-P1-ADMIN-CONTENT",
+  "run": "synthetic-draft-write",
+  "contentCode": "uat-content-mudnrp7992c023b7",
+  "accountTag": "416ccc15f81b",
+  "result": "CREATE_EDIT_PASS_STALE_CONFLICT_FAIL",
+  "stages": [
+    {
+      "stage": "preflight",
+      "gateway": 200,
+      "admin": 200,
+      "codeCollision": false
+    },
+    {
+      "stage": "register",
+      "status": 201
+    },
+    {
+      "stage": "grant",
+      "minimalEditorGrant": true
+    },
+    {
+      "stage": "browser-login",
+      "landedOnContent": true
+    },
+    {
+      "stage": "create-ui",
+      "status": 202,
+      "created": true
+    },
+    {
+      "stage": "create-readback",
+      "listRowCount": 1,
+      "facts": {
+        "definitionCount": 1,
+        "publishedPointers": 0,
+        "versions": [
+          {
+            "versionNo": 1,
+            "status": "DRAFT",
+            "rights": "PENDING",
+            "allowsLearning": false,
+            "hasEvidence": false,
+            "hasReview": false,
+            "hasPublisher": false
+          }
+        ]
+      }
+    },
+    {
+      "stage": "edit-ui",
+      "status": 202
+    },
+    {
+      "stage": "edit-readback",
+      "facts": {
+        "definitionCount": 1,
+        "publishedPointers": 0,
+        "versions": [
+          {
+            "versionNo": 1,
+            "status": "DRAFT",
+            "rights": "PENDING",
+            "allowsLearning": false,
+            "hasEvidence": false,
+            "hasReview": false,
+            "hasPublisher": false
+          },
+          {
+            "versionNo": 2,
+            "status": "DRAFT",
+            "rights": "PENDING",
+            "allowsLearning": false,
+            "hasEvidence": false,
+            "hasReview": false,
+            "hasPublisher": false
+          }
+        ]
+      }
+    },
+    {
+      "stage": "publish-boundary",
+      "editorPublishButtonDisabled": true,
+      "publicProjectionCount": 0
+    },
+    {
+      "stage": "stale-save",
+      "status": 202,
+      "conflictProtected": false,
+      "facts": {
+        "definitionCount": 1,
+        "publishedPointers": 0,
+        "versions": [
+          {
+            "versionNo": 1,
+            "status": "DRAFT",
+            "rights": "PENDING",
+            "allowsLearning": false,
+            "hasEvidence": false,
+            "hasReview": false,
+            "hasPublisher": false
+          },
+          {
+            "versionNo": 2,
+            "status": "DRAFT",
+            "rights": "PENDING",
+            "allowsLearning": false,
+            "hasEvidence": false,
+            "hasReview": false,
+            "hasPublisher": false
+          },
+          {
+            "versionNo": 3,
+            "status": "DRAFT",
+            "rights": "PENDING",
+            "allowsLearning": false,
+            "hasEvidence": false,
+            "hasReview": false,
+            "hasPublisher": false
+          }
+        ]
+      }
+    }
+  ],
+  "network": [
+    {
+      "stage": "browser-login",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "search": "",
+      "status": 200
+    },
+    {
+      "stage": "browser-login",
+      "method": "GET",
+      "path": "/api/v1/iam/permissions",
+      "search": "",
+      "status": 200
+    },
+    {
+      "stage": "browser-login",
+      "method": "GET",
+      "path": "/api/v1/admin/content-commands",
+      "search": "?pageSize=100",
+      "status": 200
+    },
+    {
+      "stage": "browser-login",
+      "method": "GET",
+      "path": "/api/v1/admin/content-commands",
+      "search": "?pageSize=100&cursor=wct-super-mu425wir",
+      "status": 200
+    },
+    {
+      "stage": "create-ui",
+      "method": "POST",
+      "path": "/api/v1/admin/content-commands",
+      "search": "",
+      "status": 202
+    },
+    {
+      "stage": "create-ui",
+      "method": "GET",
+      "path": "/api/v1/admin/content-commands",
+      "search": "?pageSize=100",
+      "status": 200
+    },
+    {
+      "stage": "create-ui",
+      "method": "GET",
+      "path": "/api/v1/admin/content-commands",
+      "search": "?pageSize=100&cursor=wct-super-60556256",
+      "status": 200
+    },
+    {
+      "stage": "edit-ui",
+      "method": "POST",
+      "path": "/api/v1/admin/content-commands",
+      "search": "",
+      "status": 202
+    },
+    {
+      "stage": "edit-ui",
+      "method": "GET",
+      "path": "/api/v1/admin/content-commands",
+      "search": "?pageSize=100",
+      "status": 200
+    },
+    {
+      "stage": "edit-ui",
+      "method": "GET",
+      "path": "/api/v1/admin/content-commands",
+      "search": "?pageSize=100&cursor=wct-super-60556256",
+      "status": 200
+    }
+  ],
+  "browserErrors": [],
+  "cleanup": {
+    "attempted": true,
+    "safe": true,
+    "versionCount": 3,
+    "referenceCounts": {
+      "publicProjection": 0,
+      "cacheInvalidation": 0,
+      "schedule": 0,
+      "outbox": 0,
+      "learningPin": 0,
+      "assessmentPin": 0,
+      "mediaPin": 0
+    },
+    "definitionCount": 1,
+    "statuses": [
+      {
+        "versionNo": 1,
+        "status": "DRAFT",
+        "rights": "PENDING",
+        "allowsLearning": "0",
+        "hasEvidence": false
+      },
+      {
+        "versionNo": 2,
+        "status": "DRAFT",
+        "rights": "PENDING",
+        "allowsLearning": "0",
+        "hasEvidence": false
+      },
+      {
+        "versionNo": 3,
+        "status": "DRAFT",
+        "rights": "PENDING",
+        "allowsLearning": "0",
+        "hasEvidence": false
+      }
+    ],
+    "backup": "synthetic-draft-backup.sql",
+    "removed": true,
+    "verified": true
+  },
+  "accountCleanup": {
+    "verified": true,
+    "accountCount": 1,
+    "status": "DISABLED",
+    "activeSessions": 0
+  }
+}

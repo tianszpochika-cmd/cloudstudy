@@ -42,6 +42,20 @@ public final class ContentHttpPrincipals {
         return new VerifiedContentPrincipal(subject, tenant, roles, permissions);
     }
 
+    /** Learner-only content reads require IAM's explicit Phase 1 eligibility facts. */
+    public static VerifiedContentPrincipal requireLearnerRead(Authentication authentication) {
+        VerifiedContentPrincipal principal = require(authentication);
+        JwtAuthenticationToken jwt = (JwtAuthenticationToken) authentication;
+        if (!principal.roles().contains("learner")
+                || !principal.permissions().contains("content.read")
+                || !"PASSED".equals(jwt.getToken().getClaimAsString("adult_gate"))
+                || !"GRANTED".equals(jwt.getToken().getClaimAsString("consent_state"))) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "learner content access requires adult gate, consent and content.read");
+        }
+        return principal;
+    }
+
     /** Verified identity and authority facts for one request. */
     public record VerifiedContentPrincipal(
             String subject,

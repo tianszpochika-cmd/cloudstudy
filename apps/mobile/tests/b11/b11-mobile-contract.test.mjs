@@ -74,14 +74,30 @@ test('speaking pages expose demo-media fallback and no-microphone learning path'
 
 test('B11 performance and interaction downgrade supports four levels and manual motion disable', () => {
   const component = read('src/components/b11/B11StatusPanel.vue')
+  const translations = read('src/platform/b11-foundation.ts')
   const store = read('src/stores/b11-learning.ts')
   const listening = read('src/pages/b11-listening/b11-listening.vue')
   const speaking = read('src/pages/b11-speaking/b11-speaking.vue')
   for (const level of ['Ultra', 'High', 'Medium', 'Performance']) assert.match(component, new RegExp(level))
+  for (const label of ['精致', '舒适', '轻量', '省资源']) assert.match(translations, new RegExp(label))
+  assert.match(component, /:range="qualityLabels"/)
+  assert.doesNotMatch(component, /\{\{ performanceLevel \}\}/)
   assert.match(store, /motionDisabled/)
   assert.match(store, /enableWaveform/)
   assert.match(store, /fallbackMode/)
   assert.match(listening, /static timeline|2D \/ static/)
   assert.match(speaking, /class="mouth"/)
   assert.match(speaking, /selectedPhoneme\?\.mouthProfile/)
+})
+
+test('B11 reading and listening share a single retry state panel', () => {
+  const panel = read('src/components/b11/B11StatusPanel.vue')
+  const reading = read('src/pages/b11-reading/b11-reading.vue')
+  const listening = read('src/pages/b11-listening/b11-listening.vue')
+  assert.match(panel, /'empty', 'offline', 'error', 'expired', 'forbidden'/)
+  for (const page of [reading, listening]) {
+    assert.match(page, /<B11StatusPanel/)
+    assert.doesNotMatch(page, /class="yx-card empty"/)
+    assert.doesNotMatch(page, /v-else-if="store\.(?:reading|listening)Status/)
+  }
 })

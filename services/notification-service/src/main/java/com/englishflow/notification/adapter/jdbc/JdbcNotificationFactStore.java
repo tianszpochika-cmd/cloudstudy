@@ -7,7 +7,10 @@ import com.englishflow.notification.application.DeliveryResult;
 import com.englishflow.notification.domain.DeliveryAttempt;
 import com.englishflow.notification.domain.DeliveryStatus;
 import com.englishflow.notification.domain.NotificationChannel;
+import com.englishflow.notification.domain.NotificationCategory;
+import com.englishflow.notification.domain.NotificationDndWindow;
 import com.englishflow.notification.domain.NotificationDomainException;
+import com.englishflow.notification.domain.NotificationFrequencyPolicy;
 import com.englishflow.notification.domain.NotificationMessage;
 import com.englishflow.notification.domain.NotificationPreference;
 import com.englishflow.notification.domain.WorkflowState;
@@ -46,14 +49,14 @@ public final class JdbcNotificationFactStore implements NotificationFactStore {
 
     @Override
     public Optional<NotificationPreference> findPreference(String tenantId, String principalId,
-            String notificationType, NotificationChannel channel) {
+            NotificationCategory category, NotificationChannel channel) {
         try {
             return jdbc.query("""
-                    SELECT tenant_id, principal_id, notification_type, channel, enabled, locale,
-                           version_no, updated_at
+                    SELECT tenant_id, principal_id, category, channel, enabled, locale, consent_version,
+                           dnd_start_local_time, dnd_end_local_time, frequency_policy, version_no, updated_at
                     FROM notification_preference
-                    WHERE tenant_id = ? AND principal_id = ? AND notification_type = ? AND channel = ?
-                    """, (rs, row) -> preferenceRow(rs), tenantId, principalId, notificationType, channel.name())
+                    WHERE tenant_id = ? AND principal_id = ? AND category = ? AND channel = ?
+                    """, (rs, row) -> preferenceRow(rs), tenantId, principalId, category.name(), channel.name())
                     .stream().findFirst();
         } catch (DataAccessException exception) {
             throw unavailable();
@@ -64,11 +67,11 @@ public final class JdbcNotificationFactStore implements NotificationFactStore {
     public List<NotificationPreference> findPreferences(String tenantId, String principalId) {
         try {
             return jdbc.query("""
-                    SELECT tenant_id, principal_id, notification_type, channel, enabled, locale,
-                           version_no, updated_at
+                    SELECT tenant_id, principal_id, category, channel, enabled, locale, consent_version,
+                           dnd_start_local_time, dnd_end_local_time, frequency_policy, version_no, updated_at
                     FROM notification_preference
                     WHERE tenant_id = ? AND principal_id = ?
-                    ORDER BY notification_type, channel
+                    ORDER BY category, channel
                     """, (rs, row) -> preferenceRow(rs), tenantId, principalId);
         } catch (DataAccessException exception) {
             throw unavailable();
@@ -76,19 +79,40 @@ public final class JdbcNotificationFactStore implements NotificationFactStore {
     }
 
     @Override
-    public void savePreference(NotificationPreference preference) {
+    public boolean compareAndSetPreference(NotificationPreference preference, long expectedVersion) {
         Objects.requireNonNull(preference, "preference");
+        if (expectedVersion < 0 || preference.version() != expectedVersion + 1) {
+            return false;
+        }
         try {
-            jdbc.update("""
-                    INSERT INTO notification_preference
-                        (tenant_id, principal_id, notification_type, channel, enabled, locale, version_no, updated_at)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                    ON DUPLICATE KEY UPDATE
-                        enabled = VALUES(enabled), locale = VALUES(locale),
-                        version_no = VALUES(version_no), updated_at = VALUES(updated_at)
-                    """, preference.tenantId(), preference.principalId(), preference.notificationType(),
-                    preference.channel().name(), preference.enabled(), preference.locale(), preference.version(),
-                    timestamp(preference.updatedAt()));
+            int changed;
+            if (expectedVersion == 0) {
+                changed = jdbc.update("""
+                        INSERT INTO notification_preference
+                            (tenant_id, principal_id, category, channel, enabled, locale, consent_version,
+                             dnd_start_local_time, dnd_end_local_time, frequency_policy, version_no, updated_at)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        """, preference.tenantId(), preference.principalId(), preference.category().name(),
+                        preference.channel().name(), preference.enabled(), preference.locale(), preference.consentVersion(),
+                        preference.dndWindow().startLocalTime(), preference.dndWindow().endLocalTime(),
+                        preference.frequencyPolicy().name(),
+                        preference.version(), timestamp(preference.updatedAt()));
+            } else {
+                changed = jdbc.update("""
+                        UPDATE notification_preference
+                           SET enabled = ?, locale = ?, consent_version = ?, dnd_start_local_time = ?,
+                               dnd_end_local_time = ?, frequency_policy = ?, version_no = ?, updated_at = ?
+                         WHERE tenant_id = ? AND principal_id = ? AND category = ? AND channel = ?
+                           AND version_no = ?
+                        """, preference.enabled(), preference.locale(), preference.consentVersion(),
+                        preference.dndWindow().startLocalTime(), preference.dndWindow().endLocalTime(),
+                        preference.frequencyPolicy().name(),
+                        preference.version(), timestamp(preference.updatedAt()), preference.tenantId(),
+                        preference.principalId(), preference.category().name(), preference.channel().name(), expectedVersion);
+            }
+            return changed == 1;
+        } catch (DuplicateKeyException exception) {
+            return false;
         } catch (DataAccessException exception) {
             throw unavailable();
         }
@@ -230,9 +254,13 @@ public final class JdbcNotificationFactStore implements NotificationFactStore {
 
     private NotificationPreference preferenceRow(ResultSet rs) throws java.sql.SQLException {
         return new NotificationPreference(rs.getString("tenant_id"), rs.getString("principal_id"),
-                rs.getString("notification_type"), NotificationChannel.valueOf(rs.getString("channel")),
-                rs.getBoolean("enabled"), rs.getString("locale"), rs.getLong("version_no"),
-                instant(rs, "updated_at"));
+                NotificationCategory.valueOf(rs.getString("category")),
+                NotificationChannel.valueOf(rs.getString("channel")), rs.getBoolean("enabled"),
+                rs.getString("locale"), rs.getInt("consent_version"),
+                new NotificationDndWindow(rs.getObject("dnd_start_local_time", java.time.LocalTime.class),
+                        rs.getObject("dnd_end_local_time", java.time.LocalTime.class)),
+                NotificationFrequencyPolicy.valueOf(rs.getString("frequency_policy")),
+                rs.getLong("version_no"), instant(rs, "updated_at"));
     }
 
     private NotificationMessage message(ResultSet rs) throws java.sql.SQLException {
@@ -285,10 +313,14 @@ public final class JdbcNotificationFactStore implements NotificationFactStore {
     }
 
     private NotificationPreference preferenceNode(JsonNode value) {
+        JsonNode dndWindow = value.path("dndWindow");
         return new NotificationPreference(text(value, "tenantId"), text(value, "principalId"),
-                text(value, "notificationType"), NotificationChannel.valueOf(text(value, "channel")),
-                value.path("enabled").asBoolean(), text(value, "locale"), value.path("version").asLong(),
-                Instant.parse(text(value, "updatedAt")));
+                NotificationCategory.valueOf(text(value, "category")),
+                NotificationChannel.valueOf(text(value, "channel")), value.path("enabled").asBoolean(),
+                text(value, "locale"), value.path("consentVersion").asInt(),
+                NotificationDndWindow.parse(text(dndWindow, "startLocalTime"), text(dndWindow, "endLocalTime")),
+                NotificationFrequencyPolicy.valueOf(text(value, "frequencyPolicy")),
+                value.path("version").asLong(), Instant.parse(text(value, "updatedAt")));
     }
 
     private NotificationMessage messageNode(JsonNode value) {

@@ -1,6 +1,9 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { B4_PERFORMANCE_LEVELS, type B4PerformanceLevel, type B4Status } from '../../domain/b4'
+import { mobileT } from '../../platform/experience'
 import { openUniPage } from '../../platform/uni-runtime'
+import { mobileI18n } from '../../platform/v2-foundation'
 
 const props = withDefaults(defineProps<{
   status: B4Status
@@ -15,6 +18,20 @@ const emit = defineEmits<{
   sync: []
   performance: [level: B4PerformanceLevel]
 }>()
+
+const qualityKeys: Record<B4PerformanceLevel, string> = {
+  Ultra: 'qualityUltra', High: 'qualityHigh', Medium: 'qualityMedium', Performance: 'qualityPerformance',
+}
+const qualityFallbacks: Record<'zh-CN' | 'en-US', Record<B4PerformanceLevel, string>> = {
+  'zh-CN': { Ultra: '精致', High: '舒适', Medium: '轻量', Performance: '省资源' },
+  'en-US': { Ultra: 'Detailed', High: 'Balanced', Medium: 'Light', Performance: 'Efficient' },
+}
+function qualityLabel(level: B4PerformanceLevel): string {
+  const key = `mobile.${qualityKeys[level]}`
+  const translated = mobileT(qualityKeys[level])
+  return translated === key ? qualityFallbacks[mobileI18n.locale.startsWith('en') ? 'en-US' : 'zh-CN'][level] : translated
+}
+const qualityLabels = computed(() => B4_PERFORMANCE_LEVELS.map(qualityLabel))
 
 function selectPerformance(event: { detail: { value: number } }): void {
   const level = B4_PERFORMANCE_LEVELS[event.detail.value]
@@ -35,8 +52,8 @@ function openLogin(): void { openUniPage('/pages/login/login') }
       <button tabindex="0" role="button" v-if="status === 'offline' || status === 'error'" class="b4-mini-button" type="button" @click="emit('retry')">重试</button>
       <button tabindex="0" role="button" v-if="status === 'permission'" class="b4-mini-button" type="button" @click="openLogin">去登录</button>
       <button tabindex="0" role="button" v-if="queueCount" class="b4-mini-button" type="button" @click="emit('sync')">同步</button>
-      <picker :range="B4_PERFORMANCE_LEVELS" :value="B4_PERFORMANCE_LEVELS.indexOf(props.performanceLevel)" @change="selectPerformance">
-        <view class="b4-quality-picker">{{ performanceLevel }}</view>
+      <picker :range="qualityLabels" :value="B4_PERFORMANCE_LEVELS.indexOf(props.performanceLevel)" @change="selectPerformance">
+        <view class="b4-quality-picker">{{ qualityLabel(performanceLevel) }}</view>
       </picker>
     </view>
   </view>

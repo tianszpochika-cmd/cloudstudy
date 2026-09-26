@@ -58,6 +58,25 @@ class IamJwtAuthenticationTest {
         PasswordAccountService accounts = new PasswordAccountService(new InMemoryAccountStore(),
                 new BCryptPasswordEncoder(12), audit, CLOCK, properties);
         AccountRecord account = accounts.register("learner@example.com", "correct horse battery staple!", ClientAuthorityClaims.none());
+        assertTrue(account.permissions().containsAll(Set.of(
+                "assessment.placement.session.create", "assessment.placement.session.read",
+                "assessment.placement.response.submit", "assessment.placement.skip",
+                "assessment.placement.report.read",
+                "gamification.read.self", "gamification.ledger.read.self",
+                "gamification.reward.read.self", "gamification.reward.claim.self",
+                "gamification.game.read.self", "gamification.game.play.self",
+                "social.room.read", "social.room.write.self", "social.focus.write.self",
+                "social.interaction.write.self", "social.leaderboard.read",
+                "social.visibility.write.self", "social.report.create.self", "social.report.read.self",
+                "notification.preference.read.self", "notification.preference.write.self")));
+        assertTrue(account.permissions().containsAll(Set.of(
+                "gamification.read", "gamification.rewards.claim", "social.room.write",
+                "social.interaction.send", "social.report.create", "social.report.read",
+                "social.visibility.write")), "legacy coarse learner scopes remain available for compatibility");
+        assertFalse(account.permissions().contains("gamification.trusted-event.write"));
+        assertFalse(account.permissions().contains("social.trusted-event.write"));
+        assertFalse(account.permissions().contains("notification.trusted-event.write"));
+        assertFalse(account.permissions().stream().anyMatch(permission -> permission.startsWith("admin.")));
         AccountRecord authenticated = accounts.authenticate("LEARNER@EXAMPLE.COM", "correct horse battery staple!");
         assertEquals(account.principalId(), authenticated.principalId());
 
@@ -80,6 +99,10 @@ class IamJwtAuthenticationTest {
         assertEquals("access", jwt.getClaimAsString("token_type"));
         assertEquals(creation.session().sessionId().toString(), jwt.getClaimAsString("session_id"));
         assertTrue(jwt.getClaimAsString("scope").contains("learner.profile.read"));
+        assertTrue(jwt.getClaimAsString("scope").contains("notification.preference.read.self"));
+        assertTrue(jwt.getClaimAsString("scope").contains("notification.preference.write.self"));
+        assertTrue(jwt.getClaimAsStringList("permissions").containsAll(Set.of(
+                "notification.preference.read.self", "notification.preference.write.self")));
         assertTrue(jwt.getId() != null && !jwt.getId().isBlank());
     }
 

@@ -1,0 +1,137 @@
+{
+  "page": "PAGE-P1-ADMIN-CONTENT",
+  "accountTag": "f1cbae225966",
+  "result": "READ_ONLY_COMPLETE_CREATE_BLOCKED_BY_OWNER_RIGHTS",
+  "stages": [
+    {
+      "stage": "preflight",
+      "gateway": 200,
+      "admin": 200,
+      "ownerDefinitions": 106
+    },
+    {
+      "stage": "register",
+      "status": 201
+    },
+    {
+      "stage": "grant",
+      "granted": true
+    },
+    {
+      "stage": "owner-read",
+      "gatewayStatus": 200,
+      "ownerStatus": 200,
+      "gatewayCount": 50,
+      "ownerCount": 50,
+      "sameFirstPage": true
+    },
+    {
+      "stage": "page-load",
+      "url": "/content",
+      "hasLibrary": true,
+      "hasEditor": true,
+      "rowCount": 20,
+      "shownCount": "106 条",
+      "loadMs": 1344,
+      "hasError": false
+    },
+    {
+      "stage": "layout",
+      "widths": [
+        {
+          "width": 1280,
+          "scrollWidth": 1280,
+          "overflow": false
+        },
+        {
+          "width": 390,
+          "scrollWidth": 390,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "stage": "read-detail",
+      "editorVisible": true,
+      "selectedStatus": true
+    },
+    {
+      "stage": "pagination",
+      "pageCount": 6,
+      "lastPageRows": 6,
+      "expectedRows": 6
+    },
+    {
+      "stage": "filter-empty",
+      "emptyVisible": true,
+      "matchedRows": 0
+    },
+    {
+      "stage": "simulated-owner-error",
+      "hasRecovery": true,
+      "hasFalseEmpty": false
+    },
+    {
+      "stage": "recover",
+      "hasLibrary": true,
+      "hasRecovery": false
+    }
+  ],
+  "network": [
+    {
+      "stage": "browser",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "stage": "browser",
+      "method": "GET",
+      "path": "/api/v1/iam/permissions",
+      "status": 200
+    },
+    {
+      "stage": "browser",
+      "method": "GET",
+      "path": "/api/v1/admin/content-commands",
+      "status": 200
+    },
+    {
+      "stage": "browser",
+      "method": "GET",
+      "path": "/api/v1/admin/content-commands",
+      "status": 200
+    },
+    {
+      "stage": "simulated-owner-error",
+      "method": "GET",
+      "path": "/api/v1/admin/content-commands",
+      "status": 503
+    },
+    {
+      "stage": "simulated-owner-error",
+      "method": "GET",
+      "path": "/api/v1/admin/content-commands",
+      "status": 200
+    },
+    {
+      "stage": "simulated-owner-error",
+      "method": "GET",
+      "path": "/api/v1/admin/content-commands",
+      "status": 200
+    }
+  ],
+  "consoleErrors": [
+    {
+      "stage": "simulated-owner-error",
+      "kind": "console.error"
+    }
+  ],
+  "cleanup": {
+    "accountCount": 1,
+    "status": "DISABLED",
+    "activeSessions": 0,
+    "verified": true
+  },
+  "draftCreated": false
+}

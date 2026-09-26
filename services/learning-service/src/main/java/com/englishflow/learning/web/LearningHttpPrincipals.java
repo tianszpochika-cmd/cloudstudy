@@ -45,24 +45,23 @@ public final class LearningHttpPrincipals {
         if (permissions.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "verified permissions are required");
         }
-        // P1-LIVE-009: learning data requires granted consent, evaluated from the
-        // issuance-time claim like the learner boundary does. Without this, gated
-        // but unconsented principals could write SRS state with a stripped token.
-        String consent = firstText(token, "consent_state", "consentState", "consent");
-        if (!"GRANTED".equalsIgnoreCase(consent)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "consent is required");
+        // IAM signs these eligibility facts after checking the adult gate, required
+        // consents, account status and current rollout phase. Missing facts deny.
+        if (!"PASSED".equals(token.getClaimAsString("adult_gate"))
+                || !"GRANTED".equals(token.getClaimAsString("consent_state"))
+                || !"phase-1".equals(token.getClaimAsString("phase"))
+                || !"ACTIVE".equals(token.getClaimAsString("account_status"))) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "learning access is not granted");
         }
         return new VerifiedLearningPrincipal(subject, tenant, roles, permissions);
     }
 
-    private static String firstText(Jwt token, String... names) {
-        for (String name : names) {
-            String value = token.getClaimAsString(name);
-            if (value != null && !value.isBlank()) {
-                return value.trim();
-            }
+    public static VerifiedLearningPrincipal require(Authentication authentication, String permission) {
+        VerifiedLearningPrincipal principal = require(authentication);
+        if (!principal.hasPermission(permission)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "learning permission is required");
         }
-        return null;
+        return principal;
     }
 
     private static Set<String> strings(Object claim) {

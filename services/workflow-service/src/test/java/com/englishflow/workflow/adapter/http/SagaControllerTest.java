@@ -1,19 +1,26 @@
 package com.englishflow.workflow.adapter.http;
 
 import com.englishflow.workflow.application.SagaService;
+import com.englishflow.workflow.application.WorkflowRequestIdempotency;
 import com.englishflow.workflow.domain.SagaStatus;
 import com.englishflow.workflow.domain.SagaStore;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * The HTTP boundary, exercised through the controller rather than through a running server.
@@ -119,10 +126,18 @@ class SagaControllerTest {
     }
 
     private static SagaController controller(MinimalStore store, List<String> ran) {
+        WorkflowRequestIdempotency idempotency = mock(WorkflowRequestIdempotency.class);
+        when(idempotency.executeSagaCompensation(any(), any(), any(), any(), any(), any()))
+                .thenAnswer(invocation -> ((Supplier<?>) invocation.getArgument(5)).get());
         return new SagaController(new SagaService(store, new com.englishflow.workflow.application.SagaCompensationExecutor(store)),
                 ran::add, (compensationName) -> {
                     throw new IllegalStateException("no compensation transport for '" + compensationName + "'");
-                });
+                }, idempotency);
+    }
+
+    private static Jwt jwt() {
+        return Jwt.withTokenValue("synthetic-test-token").header("alg", "RS256")
+                .subject("admin-a").claim("tenant_id", "platform").build();
     }
 
     @Test
@@ -149,7 +164,18 @@ class SagaControllerTest {
 
         // The saga completed, so there is nothing to compensate and the boundary must say so rather than
         // silently doing nothing.
-        assertThrows(IllegalStateException.class, () -> controller.compensate(sagaId));
+        ResponseStatusException conflict = assertThrows(ResponseStatusException.class,
+                () -> controller.compensate(jwt(), sagaId, Map.of(), "saga-key-123"));
+        assertEquals(409, conflict.getStatusCode().value());
+    }
+
+    @Test
+    void compensationBodyMustBeEmpty() {
+        MinimalStore store = new MinimalStore();
+        SagaController controller = controller(store, new ArrayList<>());
+        ResponseStatusException failure = assertThrows(ResponseStatusException.class,
+                () -> controller.compensate(jwt(), "saga-1", Map.of("unexpected", true), "saga-key-124"));
+        assertEquals(400, failure.getStatusCode().value());
     }
 
     @Test

@@ -50,5 +50,5 @@ test('production bootstrap does not import the design-review entry or fixtures',
   assert.doesNotMatch(entry + main + router, /review-fixtures|design-review|installReviewTransport/)
   assert.match(router, /await session\.restore\(\)/)
   assert.match(router, /to\.meta\.requiresAuth && !session\.isAuthenticated/)
-  assert.match(router, /session\.adultGate !== 'PASSED'/)
+  assert.match(router, /!session\.isLearningReady/)
 })

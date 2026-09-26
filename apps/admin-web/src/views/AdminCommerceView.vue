@@ -4,7 +4,7 @@ import { ui } from "../platform/experience";
 import AdminPageIntro from "../components/AdminPageIntro.vue";
 import { computed, onMounted, ref, watch } from "vue";
 import { useAdminStore } from "../stores/admin";
-import { ElMessage, ElMessageBox } from "element-plus";
+import { ElMessage } from "element-plus";
 import {
   executeB13Command,
   listB13AdminOrders,
@@ -18,9 +18,9 @@ type Row = Record<string, unknown>;
 const session = useAdminStore();
 const canReadTickets = computed(() => session.can("admin.support.read"));
 const canReadMetrics = computed(() => session.can("admin.dashboard.read"));
+const canRefund = computed(() => session.can("commerce.refund"));
 const ticketError = ref("");
 const metricError = ref("");
-const ticketBusy = ref(false);
 const orders = ref<Row[]>([]);
 const tickets = ref<Row[]>([]);
 const metrics = ref<Row[]>([]);
@@ -105,43 +105,6 @@ async function load(): Promise<void> {
     metricError.value = "指标暂时不可用，可刷新重试。";
   }
   loading.value = false;
-}
-
-async function resolveTicket(ticket: Row): Promise<void> {
-  if (
-    ticketBusy.value ||
-    !session.can("admin.support.command") ||
-    ["RESOLVED", "CLOSED"].includes(text(ticket.state))
-  )
-    return;
-  const ticketId = text(ticket.ticketId);
-  if (!ticketId) return;
-  try {
-    await ElMessageBox.confirm("确认将该工单提交为已解决？", "确认处理工单", {
-      confirmButtonText: "确认",
-      cancelButtonText: "取消",
-      type: "warning",
-    });
-  } catch {
-    return;
-  }
-  ticketBusy.value = true;
-  try {
-    await executeB13Command({
-      aggregateType: "SUPPORT",
-      aggregateRef: ticketId,
-      actionCode: "SUPPORT_RESOLVE",
-      reasonCode: "ADMIN_SUPPORT",
-    });
-    ElMessage.success("工单命令已提交，等待服务端状态更新。");
-    await load();
-  } catch (error) {
-    ElMessage.error(
-      error instanceof Error ? error.message : "工单命令提交失败。",
-    );
-  } finally {
-    ticketBusy.value = false;
-  }
 }
 
 const REFUND_REASONS = [
@@ -237,7 +200,6 @@ onMounted(() => {
 
     <el-alert
       title="真实支付尚未开放"
-      description="当前不触发真实支付渠道，操作结果以已接入环境返回为准。"
       type="warning"
       :closable="false"
       show-icon
@@ -251,7 +213,7 @@ onMounted(() => {
     />
 
     <el-row :gutter="16">
-      <el-col :span="8"
+      <el-col :span="canReadTickets ? 8 : 12" :xs="24"
         ><el-card shadow="never"
           ><span class="b13-stat-label">可见指标</span
           ><strong class="b13-stat-value">{{
@@ -260,7 +222,7 @@ onMounted(() => {
           ><small>版本化、可回算</small></el-card
         ></el-col
       >
-      <el-col :span="8"
+      <el-col :span="canReadTickets ? 8 : 12" :xs="24"
         ><el-card shadow="never"
           ><span class="b13-stat-label">已加载订单</span
           ><strong class="b13-stat-value">{{
@@ -269,7 +231,7 @@ onMounted(() => {
           ><small>脱敏只读</small></el-card
         ></el-col
       >
-      <el-col :span="8"
+      <el-col v-if="canReadTickets" :span="8" :xs="24"
         ><el-card shadow="never"
           ><span class="b13-stat-label">已加载工单</span
           ><strong class="b13-stat-value">{{
@@ -313,7 +275,7 @@ onMounted(() => {
           prop="createdAt"
           label="创建时间"
           min-width="190"
-        /><el-table-column label="操作" width="110"
+        /><el-table-column v-if="canRefund" label="操作" width="110"
           ><template #default="scope"
             ><el-button
               link
@@ -345,14 +307,14 @@ onMounted(() => {
       </div>
     </el-card>
 
-    <el-card shadow="never">
+    <el-card v-if="canRefund" shadow="never">
       <template #header
         ><div class="card-header">
           <span>退款操作</span><el-tag type="danger">二次确认</el-tag>
         </div></template
       >
       <p class="b13-refund-note">
-        先选择订单并填写退款原因，核对确认信息后再提交。修改订单或原因后，需要重新核对。
+        核对订单和原因后提交；修改后须重新确认。
       </p>
       <div ref="refundForm" class="b13-refund-form">
         <el-input
@@ -404,7 +366,7 @@ onMounted(() => {
         <el-card shadow="never">
           <template #header
             ><div class="card-header">
-              <span>客服工单</span><el-tag type="warning">脱敏附件引用</el-tag>
+              <span>客服工单</span><el-tag type="warning">只读</el-tag>
             </div></template
           >
           <el-alert
@@ -413,7 +375,7 @@ onMounted(() => {
             type="warning"
             :closable="false"
           />
-          <el-table v-else :data="tickets.slice(0, 5)" stripe>
+          <el-table v-else-if="tickets.length" :data="tickets.slice(0, 5)" stripe>
             <el-table-column
               prop="ticketId"
               label="工单"
@@ -427,21 +389,6 @@ onMounted(() => {
               label="优先级"
               width="100"
             /><el-table-column prop="state" label="状态" width="110" />
-            <el-table-column label="动作" width="100"
-              ><template #default="scope"
-                ><el-button
-                  link
-                  type="primary"
-                  :disabled="
-                    ticketBusy ||
-                    !session.can('admin.support.command') ||
-                    ['RESOLVED', 'CLOSED'].includes(String(scope.row.state))
-                  "
-                  @click="resolveTicket(scope.row)"
-                  >提交解决</el-button
-                ></template
-              ></el-table-column
-            >
           </el-table>
           <el-empty
             v-if="!ticketError && !tickets.length"
@@ -456,7 +403,7 @@ onMounted(() => {
         <el-card shadow="never">
           <template #header
             ><div class="card-header">
-              <span>分析指标</span><el-tag type="success">可见数据</el-tag>
+              <span>分析指标</span><el-tag type="info">只读</el-tag>
             </div></template
           >
           <el-alert
@@ -465,12 +412,12 @@ onMounted(() => {
             type="warning"
             :closable="false"
           />
-          <el-table v-else :data="metrics" stripe>
+          <el-table v-else-if="metrics.length" :data="metrics" stripe>
             <el-table-column
-              prop="metricId"
               label="指标"
               min-width="150"
-            /><el-table-column
+              ><template #default="scope">{{ scope.row.metricCode ?? scope.row.metricId ?? "—" }}</template></el-table-column
+            ><el-table-column
               prop="metricVersion"
               label="口径"
               width="120"

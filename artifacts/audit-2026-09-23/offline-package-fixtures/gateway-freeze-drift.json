@@ -1,0 +1,648 @@
+{
+  "source": "frozen committed 56/170 Gateway baseline vs current shared worktree; read only",
+  "frozenRef": "86fbd8307199714727a3bceed51e983f401460b6",
+  "routeRuleCounts": {
+    "frozen": 56,
+    "worktree": 64,
+    "added": 8,
+    "removed": 0
+  },
+  "addedRoutes": [
+    {
+      "ruleId": "admin-learner-assessments",
+      "priority": 800,
+      "match": {
+        "type": "EXACT",
+        "path": "/api/v1/admin/learners/{subjectId}/assessments",
+        "methods": [
+          "GET"
+        ]
+      },
+      "upstreamOwner": "assessment-service",
+      "internalTargetClass": "INTERNAL_V1",
+      "visibility": "AUTHENTICATED",
+      "authClass": "HIGH_RISK_ADMIN",
+      "compatibilityMode": "NONE"
+    },
+    {
+      "ruleId": "admin-learner-commands",
+      "priority": 800,
+      "match": {
+        "type": "EXACT",
+        "path": "/api/v1/admin/learners/{subjectId}/commands",
+        "methods": [
+          "POST"
+        ]
+      },
+      "upstreamOwner": "learner-service",
+      "internalTargetClass": "INTERNAL_V1",
+      "visibility": "AUTHENTICATED",
+      "authClass": "HIGH_RISK_ADMIN",
+      "compatibilityMode": "NONE"
+    },
+    {
+      "ruleId": "admin-learner-learning-commands",
+      "priority": 800,
+      "match": {
+        "type": "EXACT",
+        "path": "/api/v1/admin/learners/{subjectId}/learning-commands",
+        "methods": [
+          "POST"
+        ]
+      },
+      "upstreamOwner": "learning-service",
+      "internalTargetClass": "INTERNAL_V1",
+      "visibility": "AUTHENTICATED",
+      "authClass": "HIGH_RISK_ADMIN",
+      "compatibilityMode": "NONE"
+    },
+    {
+      "ruleId": "admin-learner-plans",
+      "priority": 800,
+      "match": {
+        "type": "EXACT",
+        "path": "/api/v1/admin/learners/{subjectId}/plans",
+        "methods": [
+          "GET"
+        ]
+      },
+      "upstreamOwner": "learning-service",
+      "internalTargetClass": "INTERNAL_V1",
+      "visibility": "AUTHENTICATED",
+      "authClass": "HIGH_RISK_ADMIN",
+      "compatibilityMode": "NONE"
+    },
+    {
+      "ruleId": "admin-learner-profile",
+      "priority": 800,
+      "match": {
+        "type": "EXACT",
+        "path": "/api/v1/admin/learners/{subjectId}/profile",
+        "methods": [
+          "GET"
+        ]
+      },
+      "upstreamOwner": "learner-service",
+      "internalTargetClass": "INTERNAL_V1",
+      "visibility": "AUTHENTICATED",
+      "authClass": "HIGH_RISK_ADMIN",
+      "compatibilityMode": "NONE"
+    },
+    {
+      "ruleId": "admin-learner-search",
+      "priority": 800,
+      "match": {
+        "type": "EXACT",
+        "path": "/api/v1/admin/learners/search",
+        "methods": [
+          "GET"
+        ]
+      },
+      "upstreamOwner": "learner-service",
+      "internalTargetClass": "INTERNAL_V1",
+      "visibility": "AUTHENTICATED",
+      "authClass": "HIGH_RISK_ADMIN",
+      "compatibilityMode": "NONE"
+    },
+    {
+      "ruleId": "admin-learner-srs",
+      "priority": 800,
+      "match": {
+        "type": "EXACT",
+        "path": "/api/v1/admin/learners/{subjectId}/srs",
+        "methods": [
+          "GET"
+        ]
+      },
+      "upstreamOwner": "learning-service",
+      "internalTargetClass": "INTERNAL_V1",
+      "visibility": "AUTHENTICATED",
+      "authClass": "HIGH_RISK_ADMIN",
+      "compatibilityMode": "NONE"
+    },
+    {
+      "ruleId": "sync-offline-packages-read",
+      "priority": 800,
+      "match": {
+        "type": "EXACT",
+        "path": "/api/v1/sync/offline-packages",
+        "methods": [
+          "GET"
+        ]
+      },
+      "upstreamOwner": "notification-service",
+      "internalTargetClass": "INTERNAL_V1",
+      "visibility": "AUTHENTICATED",
+      "authClass": "AUTHENTICATED_READ",
+      "compatibilityMode": "NONE"
+    }
+  ],
+  "removedRoutes": [],
+  "publicOperationCounts": {
+    "frozen": 365,
+    "worktree": 393,
+    "added": 28,
+    "removed": 0
+  },
+  "executionPlanCounts": {
+    "frozen": 56,
+    "worktree": 64
+  },
+  "availableOperationCounts": {
+    "frozen": 170,
+    "worktree": 208,
+    "added": 38,
+    "removed": 0
+  },
+  "newlyAvailableByRule": {
+    "admin-content": [
+      {
+        "projection": "admin-content.import-batch",
+        "method": "POST",
+        "path": "/api/v1/admin/content-commands/import/batch",
+        "status": "AVAILABLE",
+        "owner": "content-service",
+        "controller": "services/content-service/src/main/java/com/englishflow/content/web/B9ContentAdminController.java",
+        "target": "/internal/v1/content/admin-commands/import/batch"
+      },
+      {
+        "projection": "admin-content.validate-auto",
+        "method": "POST",
+        "path": "/api/v1/admin/content-commands/validate/auto",
+        "status": "AVAILABLE",
+        "owner": "content-service",
+        "controller": "services/content-service/src/main/java/com/englishflow/content/web/B9ContentAdminController.java",
+        "target": "/internal/v1/content/admin-commands/validate/auto"
+      }
+    ],
+    "admin-content-publish-tasks": [
+      {
+        "projection": "admin-content-publish-tasks.task-detail",
+        "method": "GET",
+        "path": "/api/v1/admin/content-publish-tasks/{taskId}",
+        "status": "AVAILABLE",
+        "owner": "content-service",
+        "controller": "services/content-service/src/main/java/com/englishflow/content/web/B9ContentAdminController.java",
+        "target": "/internal/v1/content/admin-commands/publish-tasks/{taskId}"
+      }
+    ],
+    "admin-learner-assessments": [
+      {
+        "projection": "admin-learner-assessments.assessments",
+        "method": "GET",
+        "path": "/api/v1/admin/learners/{subjectId}/assessments",
+        "status": "AVAILABLE",
+        "owner": "assessment-service",
+        "controller": "services/assessment-service/src/main/java/com/englishflow/assessment/web/AssessmentAdminController.java",
+        "target": "/internal/v1/assessment/admin/subjects/{subjectId}/assessments"
+      }
+    ],
+    "admin-learner-commands": [
+      {
+        "projection": "admin-learner-commands.commands",
+        "method": "POST",
+        "path": "/api/v1/admin/learners/{subjectId}/commands",
+        "status": "AVAILABLE",
+        "owner": "learner-service",
+        "controller": "services/learner-service/src/main/java/com/englishflow/learner/web/LearnerAdminController.java",
+        "target": "/internal/v1/learner/admin/subjects/{subjectId}/commands"
+      }
+    ],
+    "admin-learner-learning-commands": [
+      {
+        "projection": "admin-learner-learning-commands.learning-commands",
+        "method": "POST",
+        "path": "/api/v1/admin/learners/{subjectId}/learning-commands",
+        "status": "AVAILABLE",
+        "owner": "learning-service",
+        "controller": "services/learning-service/src/main/java/com/englishflow/learning/web/LearningAdminController.java",
+        "target": "/internal/v1/learning/admin/subjects/{subjectId}/commands"
+      }
+    ],
+    "admin-learner-plans": [
+      {
+        "projection": "admin-learner-plans.plans",
+        "method": "GET",
+        "path": "/api/v1/admin/learners/{subjectId}/plans",
+        "status": "AVAILABLE",
+        "owner": "learning-service",
+        "controller": "services/learning-service/src/main/java/com/englishflow/learning/web/LearningAdminController.java",
+        "target": "/internal/v1/learning/admin/subjects/{subjectId}/plans"
+      }
+    ],
+    "admin-learner-profile": [
+      {
+        "projection": "admin-learner-profile.profile",
+        "method": "GET",
+        "path": "/api/v1/admin/learners/{subjectId}/profile",
+        "status": "AVAILABLE",
+        "owner": "learner-service",
+        "controller": "services/learner-service/src/main/java/com/englishflow/learner/web/LearnerAdminController.java",
+        "target": "/internal/v1/learner/admin/subjects/{subjectId}/profile"
+      }
+    ],
+    "admin-learner-search": [
+      {
+        "projection": "admin-learner-search.search",
+        "method": "GET",
+        "path": "/api/v1/admin/learners/search",
+        "status": "AVAILABLE",
+        "owner": "learner-service",
+        "controller": "services/learner-service/src/main/java/com/englishflow/learner/web/LearnerAdminController.java",
+        "target": "/internal/v1/learner/admin/search"
+      }
+    ],
+    "admin-learner-srs": [
+      {
+        "projection": "admin-learner-srs.srs",
+        "method": "GET",
+        "path": "/api/v1/admin/learners/{subjectId}/srs",
+        "status": "AVAILABLE",
+        "owner": "learning-service",
+        "controller": "services/learning-service/src/main/java/com/englishflow/learning/web/LearningAdminController.java",
+        "target": "/internal/v1/learning/admin/subjects/{subjectId}/srs"
+      }
+    ],
+    "admin-recovery": [
+      {
+        "projection": "admin-recovery.recovery-approve",
+        "method": "POST",
+        "path": "/api/v1/admin/recovery/recoveries/{recoveryId}/approve",
+        "status": "AVAILABLE",
+        "owner": "workflow-service",
+        "controller": "services/workflow-service/src/main/java/com/englishflow/workflow/adapter/http/ManualRecoveryController.java",
+        "target": "/internal/v1/workflow/recoveries/{recoveryId}/approve"
+      },
+      {
+        "projection": "admin-recovery.recovery-execute",
+        "method": "POST",
+        "path": "/api/v1/admin/recovery/recoveries/{recoveryId}/execute",
+        "status": "AVAILABLE",
+        "owner": "workflow-service",
+        "controller": "services/workflow-service/src/main/java/com/englishflow/workflow/adapter/http/ManualRecoveryController.java",
+        "target": "/internal/v1/workflow/recoveries/{recoveryId}/execute"
+      },
+      {
+        "projection": "admin-recovery.recovery-reject",
+        "method": "POST",
+        "path": "/api/v1/admin/recovery/recoveries/{recoveryId}/reject",
+        "status": "AVAILABLE",
+        "owner": "workflow-service",
+        "controller": "services/workflow-service/src/main/java/com/englishflow/workflow/adapter/http/ManualRecoveryController.java",
+        "target": "/internal/v1/workflow/recoveries/{recoveryId}/reject"
+      },
+      {
+        "projection": "admin-recovery.recovery-request",
+        "method": "POST",
+        "path": "/api/v1/admin/recovery/recoveries",
+        "status": "AVAILABLE",
+        "owner": "workflow-service",
+        "controller": "services/workflow-service/src/main/java/com/englishflow/workflow/adapter/http/ManualRecoveryController.java",
+        "target": "/internal/v1/workflow/recoveries"
+      },
+      {
+        "projection": "admin-recovery.saga-compensate",
+        "method": "POST",
+        "path": "/api/v1/admin/recovery/sagas/{sagaId}/compensate",
+        "status": "AVAILABLE",
+        "owner": "workflow-service",
+        "controller": "services/workflow-service/src/main/java/com/englishflow/workflow/adapter/http/SagaController.java",
+        "target": "/internal/v1/workflow/sagas/{sagaId}/compensate"
+      },
+      {
+        "projection": "admin-recovery.saga-detail",
+        "method": "GET",
+        "path": "/api/v1/admin/recovery/sagas/{sagaId}",
+        "status": "AVAILABLE",
+        "owner": "workflow-service",
+        "controller": "services/workflow-service/src/main/java/com/englishflow/workflow/adapter/http/SagaController.java",
+        "target": "/internal/v1/workflow/sagas/{sagaId}"
+      },
+      {
+        "projection": "admin-recovery.sagas-unfinished",
+        "method": "GET",
+        "path": "/api/v1/admin/recovery/sagas/unfinished",
+        "status": "AVAILABLE",
+        "owner": "workflow-service",
+        "controller": "services/workflow-service/src/main/java/com/englishflow/workflow/adapter/http/SagaController.java",
+        "target": "/internal/v1/workflow/sagas/unfinished"
+      }
+    ],
+    "assessment-domain": [
+      {
+        "projection": "assessment-domain.mistake-queue",
+        "method": "GET",
+        "path": "/api/v1/assessment/mistakes",
+        "status": "AVAILABLE",
+        "owner": "assessment-service",
+        "controller": "services/assessment-service/src/main/java/com/englishflow/assessment/web/B10AssessmentJdbcController.java",
+        "target": "/internal/v1/assessment/mistakes"
+      },
+      {
+        "projection": "assessment-domain.mistake-variant",
+        "method": "POST",
+        "path": "/api/v1/assessment/mistakes/{mistakeId}/variant",
+        "status": "AVAILABLE",
+        "owner": "assessment-service",
+        "controller": "services/assessment-service/src/main/java/com/englishflow/assessment/web/B10AssessmentJdbcController.java",
+        "target": "/internal/v1/assessment/mistakes/{mistakeId}/variant"
+      },
+      {
+        "projection": "assessment-domain.mistake-verify",
+        "method": "POST",
+        "path": "/api/v1/assessment/mistakes/{mistakeId}/verify",
+        "status": "AVAILABLE",
+        "owner": "assessment-service",
+        "controller": "services/assessment-service/src/main/java/com/englishflow/assessment/web/B10AssessmentJdbcController.java",
+        "target": "/internal/v1/assessment/mistakes/{mistakeId}/verify"
+      },
+      {
+        "projection": "assessment-domain.p1-placement-report",
+        "method": "GET",
+        "path": "/api/v1/assessment/placement/reports/{reportId}",
+        "status": "AVAILABLE",
+        "owner": "assessment-service",
+        "controller": "services/assessment-service/src/main/java/com/englishflow/assessment/web/P1PlacementJdbcController.java",
+        "target": "/internal/v1/assessment/placement/reports/{reportId}"
+      },
+      {
+        "projection": "assessment-domain.p1-placement-response",
+        "method": "POST",
+        "path": "/api/v1/assessment/placement/sessions/{sessionId}/responses",
+        "status": "AVAILABLE",
+        "owner": "assessment-service",
+        "controller": "services/assessment-service/src/main/java/com/englishflow/assessment/web/P1PlacementJdbcController.java",
+        "target": "/internal/v1/assessment/placement/sessions/{sessionId}/responses"
+      },
+      {
+        "projection": "assessment-domain.p1-placement-session-create",
+        "method": "POST",
+        "path": "/api/v1/assessment/placement/sessions",
+        "status": "AVAILABLE",
+        "owner": "assessment-service",
+        "controller": "services/assessment-service/src/main/java/com/englishflow/assessment/web/P1PlacementJdbcController.java",
+        "target": "/internal/v1/assessment/placement/sessions"
+      },
+      {
+        "projection": "assessment-domain.p1-placement-session-read",
+        "method": "GET",
+        "path": "/api/v1/assessment/placement/sessions/{sessionId}",
+        "status": "AVAILABLE",
+        "owner": "assessment-service",
+        "controller": "services/assessment-service/src/main/java/com/englishflow/assessment/web/P1PlacementJdbcController.java",
+        "target": "/internal/v1/assessment/placement/sessions/{sessionId}"
+      },
+      {
+        "projection": "assessment-domain.p1-placement-skip",
+        "method": "POST",
+        "path": "/api/v1/assessment/placement/baselines/skip",
+        "status": "AVAILABLE",
+        "owner": "assessment-service",
+        "controller": "services/assessment-service/src/main/java/com/englishflow/assessment/web/P1PlacementJdbcController.java",
+        "target": "/internal/v1/assessment/placement/baselines/skip"
+      }
+    ],
+    "content-domain": [
+      {
+        "projection": "content-domain.learner-substitute",
+        "method": "GET",
+        "path": "/api/v1/content/learner/substitute",
+        "status": "AVAILABLE",
+        "owner": "content-service",
+        "controller": "services/content-service/src/main/java/com/englishflow/content/web/ContentHttpController.java",
+        "target": "/api/v1/content/learner/substitute"
+      }
+    ],
+    "iam-account-deletions": [
+      {
+        "projection": "iam-account-deletions.deletion-cancel",
+        "method": "POST",
+        "path": "/api/v1/iam/account-deletions/{deletionRequestId}/cancel",
+        "status": "AVAILABLE",
+        "owner": "iam-service",
+        "controller": "services/iam-service/src/main/java/com/englishflow/iam/web/IamAccountDeletionController.java",
+        "target": "/api/v1/iam/account-deletions/{deletionRequestId}/cancel"
+      },
+      {
+        "projection": "iam-account-deletions.deletion-request",
+        "method": "POST",
+        "path": "/api/v1/iam/account-deletions",
+        "status": "AVAILABLE",
+        "owner": "iam-service",
+        "controller": "services/iam-service/src/main/java/com/englishflow/iam/web/IamAccountDeletionController.java",
+        "target": "/api/v1/iam/account-deletions"
+      },
+      {
+        "projection": "iam-account-deletions.deletion-status",
+        "method": "GET",
+        "path": "/api/v1/iam/account-deletions/{deletionRequestId}",
+        "status": "AVAILABLE",
+        "owner": "iam-service",
+        "controller": "services/iam-service/src/main/java/com/englishflow/iam/web/IamAccountDeletionController.java",
+        "target": "/api/v1/iam/account-deletions/{deletionRequestId}"
+      }
+    ],
+    "media-domain": [
+      {
+        "projection": "media-domain.asset-activate",
+        "method": "PUT",
+        "path": "/api/v1/media/assets/{assetId}/active",
+        "status": "AVAILABLE",
+        "owner": "media-service",
+        "controller": "services/media-service/src/main/java/com/englishflow/media/web/MediaController.java",
+        "target": "/internal/v1/media/assets/{assetId}/active"
+      },
+      {
+        "projection": "media-domain.asset-register",
+        "method": "POST",
+        "path": "/api/v1/media/assets",
+        "status": "AVAILABLE",
+        "owner": "media-service",
+        "controller": "services/media-service/src/main/java/com/englishflow/media/web/MediaController.java",
+        "target": "/internal/v1/media/assets"
+      },
+      {
+        "projection": "media-domain.asset-retry",
+        "method": "POST",
+        "path": "/api/v1/media/assets/{assetId}/retry",
+        "status": "AVAILABLE",
+        "owner": "media-service",
+        "controller": "services/media-service/src/main/java/com/englishflow/media/web/MediaController.java",
+        "target": "/internal/v1/media/assets/{assetId}/retry"
+      },
+      {
+        "projection": "media-domain.asset-subtitles",
+        "method": "POST",
+        "path": "/api/v1/media/assets/{assetId}/subtitles",
+        "status": "AVAILABLE",
+        "owner": "media-service",
+        "controller": "services/media-service/src/main/java/com/englishflow/media/web/MediaController.java",
+        "target": "/internal/v1/media/assets/{assetId}/subtitles"
+      },
+      {
+        "projection": "media-domain.asset-tasks",
+        "method": "GET",
+        "path": "/api/v1/media/assets/{assetId}/tasks",
+        "status": "AVAILABLE",
+        "owner": "media-service",
+        "controller": "services/media-service/src/main/java/com/englishflow/media/web/MediaController.java",
+        "target": "/internal/v1/media/assets/{assetId}/tasks"
+      },
+      {
+        "projection": "media-domain.asset-upload-url",
+        "method": "POST",
+        "path": "/api/v1/media/assets/{assetId}/upload-url",
+        "status": "AVAILABLE",
+        "owner": "media-service",
+        "controller": "services/media-service/src/main/java/com/englishflow/media/web/MediaController.java",
+        "target": "/internal/v1/media/assets/{assetId}/upload-url"
+      }
+    ],
+    "privacy-domain": [
+      {
+        "projection": "privacy-domain.export-download",
+        "method": "GET",
+        "path": "/api/v1/privacy/export/{exportId}/download",
+        "status": "AVAILABLE",
+        "owner": "learner-service",
+        "controller": "services/learner-service/src/main/java/com/englishflow/learner/web/B25LearnerJdbcController.java",
+        "target": "/internal/v1/learner/privacy/export/{exportId}/download"
+      },
+      {
+        "projection": "privacy-domain.export-status",
+        "method": "GET",
+        "path": "/api/v1/privacy/export/{exportId}",
+        "status": "AVAILABLE",
+        "owner": "learner-service",
+        "controller": "services/learner-service/src/main/java/com/englishflow/learner/web/B25LearnerJdbcController.java",
+        "target": "/internal/v1/learner/privacy/export/{exportId}"
+      }
+    ],
+    "sync-offline-packages-read": [
+      {
+        "projection": "sync-offline-packages-read.list",
+        "method": "GET",
+        "path": "/api/v1/sync/offline-packages",
+        "status": "AVAILABLE",
+        "owner": "notification-service",
+        "controller": "services/notification-service/src/main/java/com/englishflow/notification/adapter/http/NotificationLocalOfflineController.java",
+        "target": "/internal/v1/sync/offline-packages"
+      }
+    ]
+  },
+  "noLongerAvailableByRule": {},
+  "addedPublicOperations": [
+    {
+      "path": "/api/v1/admin/content-commands/import/batch",
+      "method": "POST"
+    },
+    {
+      "path": "/api/v1/admin/content-commands/validate/auto",
+      "method": "POST"
+    },
+    {
+      "path": "/api/v1/admin/learners/search",
+      "method": "GET"
+    },
+    {
+      "path": "/api/v1/admin/learners/{subjectId}/assessments",
+      "method": "GET"
+    },
+    {
+      "path": "/api/v1/admin/learners/{subjectId}/commands",
+      "method": "POST"
+    },
+    {
+      "path": "/api/v1/admin/learners/{subjectId}/learning-commands",
+      "method": "POST"
+    },
+    {
+      "path": "/api/v1/admin/learners/{subjectId}/plans",
+      "method": "GET"
+    },
+    {
+      "path": "/api/v1/admin/learners/{subjectId}/profile",
+      "method": "GET"
+    },
+    {
+      "path": "/api/v1/admin/learners/{subjectId}/srs",
+      "method": "GET"
+    },
+    {
+      "path": "/api/v1/admin/recovery/recoveries",
+      "method": "POST"
+    },
+    {
+      "path": "/api/v1/admin/recovery/recoveries/{recoveryId}/approve",
+      "method": "POST"
+    },
+    {
+      "path": "/api/v1/admin/recovery/recoveries/{recoveryId}/execute",
+      "method": "POST"
+    },
+    {
+      "path": "/api/v1/admin/recovery/recoveries/{recoveryId}/reject",
+      "method": "POST"
+    },
+    {
+      "path": "/api/v1/admin/recovery/sagas/unfinished",
+      "method": "GET"
+    },
+    {
+      "path": "/api/v1/admin/recovery/sagas/{sagaId}",
+      "method": "GET"
+    },
+    {
+      "path": "/api/v1/admin/recovery/sagas/{sagaId}/compensate",
+      "method": "POST"
+    },
+    {
+      "path": "/api/v1/assessment/mistakes",
+      "method": "GET"
+    },
+    {
+      "path": "/api/v1/assessment/mistakes/{mistakeId}/variant",
+      "method": "POST"
+    },
+    {
+      "path": "/api/v1/assessment/mistakes/{mistakeId}/verify",
+      "method": "POST"
+    },
+    {
+      "path": "/api/v1/content/learner/substitute",
+      "method": "GET"
+    },
+    {
+      "path": "/api/v1/media/assets",
+      "method": "POST"
+    },
+    {
+      "path": "/api/v1/media/assets/{assetId}/active",
+      "method": "PUT"
+    },
+    {
+      "path": "/api/v1/media/assets/{assetId}/retry",
+      "method": "POST"
+    },
+    {
+      "path": "/api/v1/media/assets/{assetId}/subtitles",
+      "method": "POST"
+    },
+    {
+      "path": "/api/v1/media/assets/{assetId}/tasks",
+      "method": "GET"
+    },
+    {
+      "path": "/api/v1/media/assets/{assetId}/upload-url",
+      "method": "POST"
+    },
+    {
+      "path": "/api/v1/privacy/export/{exportId}",
+      "method": "GET"
+    },
+    {
+      "path": "/api/v1/privacy/export/{exportId}/download",
+      "method": "GET"
+    }
+  ]
+}

@@ -1,6 +1,7 @@
 import { mobileApiClient } from './client'
 
 export const B13_COMMERCE_PATHS = {
+  publicCatalog: '/public/commerce/catalog',
   skus: '/commerce/skus',
   orders: '/commerce/orders?limit=50',
   entitlements: '/commerce/entitlements/me',
@@ -23,6 +24,7 @@ function withKey(prefix: string): { header: { 'Idempotency-Key': string } } {
 }
 
 export function listB13Skus(): Promise<unknown> { return mobileApiClient.request(B13_COMMERCE_PATHS.skus) }
+export function getB13PublicCatalog(): Promise<unknown> { return mobileApiClient.request(B13_COMMERCE_PATHS.publicCatalog) }
 export function listB13Orders(): Promise<unknown> { return mobileApiClient.request(B13_COMMERCE_PATHS.orders) }
 export function listB13Entitlements(): Promise<unknown> { return mobileApiClient.request(B13_COMMERCE_PATHS.entitlements) }
 export function createB13Order(skuId: string): Promise<unknown> {

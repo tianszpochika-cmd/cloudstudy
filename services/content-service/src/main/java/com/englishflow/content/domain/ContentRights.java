@@ -27,7 +27,7 @@ public record ContentRights(
         sourceCode = requireText(sourceCode, "sourceCode");
         licenseCode = requireText(licenseCode, "licenseCode");
         Objects.requireNonNull(status, "copyright status is required");
-        permittedChannels = normalizeChannels(permittedChannels);
+        permittedChannels = normalizeChannels(permittedChannels, status, allowsLearning);
         if (expiresAt != null && startsAt != null && !expiresAt.isAfter(startsAt)) {
             throw ContentOperationException.badRequest(
                     "CONTENT_RIGHTS_WINDOW_INVALID", "copyright expiry must be after its start");
@@ -68,8 +68,14 @@ public record ContentRights(
         return value.trim();
     }
 
-    private static Set<String> normalizeChannels(Set<String> channels) {
+    private static Set<String> normalizeChannels(
+            Set<String> channels, CopyrightStatus status, boolean allowsLearning) {
         if (channels == null || channels.isEmpty()) {
+            // An unverified draft grants no distribution channel. Active rights still
+            // require an explicit channel list before they can be used.
+            if (status == CopyrightStatus.PENDING && !allowsLearning && channels != null) {
+                return Set.of();
+            }
             throw ContentOperationException.badRequest(
                     "CONTENT_RIGHTS_CHANNELS_REQUIRED", "copyright permitted channels are required");
         }

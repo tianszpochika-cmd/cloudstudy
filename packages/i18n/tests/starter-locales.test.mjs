@@ -6,6 +6,7 @@ import {
   findMissingKeys,
   pseudoLocalize,
 } from '../src/index.ts'
+import { createElementPlusI18nAdapter, createNuxtI18nAdapter, createUniAppI18nAdapter, createVueWebI18nAdapter } from '../src/adapters.ts'
 import { adminStarterMessages, learnerStarterMessages } from '../src/starter-locales.ts'
 
 const ADMIN_SOURCE_KEYS = collectMessageKeys(adminStarterMessages['zh-CN'])
@@ -70,3 +71,25 @@ test('UI locale switches without touching contentLocale', () => {
   assert.equal(i18n.contentLocale, 'en-US')
   assert.equal(i18n.t('admin.common.loading'), 'Chargement')
 })
+
+for (const createAdapter of [createVueWebI18nAdapter, createNuxtI18nAdapter, createUniAppI18nAdapter, createElementPlusI18nAdapter]) {
+  test(`${createAdapter.name} restores UI and content locales without overwriting saved values on construction`, () => {
+    const values = new Map([['ef.ui-locale', 'en-US'], ['ef.content-locale', 'zh-CN']])
+    const storage = {
+      getItem: key => values.get(key) ?? null,
+      setItem: (key, value) => values.set(key, value),
+    }
+    const i18n = createI18n({ locale: 'zh-CN', contentLocale: 'en-US' })
+    const adapter = createAdapter(i18n, { localeStorage: storage })
+    assert.equal(values.get('ef.ui-locale'), 'en-US')
+    assert.equal(values.get('ef.content-locale'), 'zh-CN')
+    assert.deepEqual(adapter.restore(), { locale: 'en-US', contentLocale: 'zh-CN' })
+    adapter.setLocale('zh-CN')
+    assert.equal(values.get('ef.ui-locale'), 'zh-CN')
+    assert.equal(values.get('ef.content-locale'), 'zh-CN')
+    adapter.setContentLocale('en-US')
+    assert.equal(values.get('ef.ui-locale'), 'zh-CN')
+    assert.equal(values.get('ef.content-locale'), 'en-US')
+    adapter.dispose()
+  })
+}

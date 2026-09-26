@@ -60,6 +60,8 @@ Phase 1 **有意设计为覆盖面较大的首发基座**，不是只做一条�
 
 ### Phase 1 状态解释
 
+**2026-09-26 四端测试接手**：[当前接手报告](artifacts/uat-2026-09-26/README.md)汇总本机当前源码的运行与浏览器证据、9 月 25 日私有容器的历史边界、已知首页 503 和阅读/技能 Gateway 路由断路，以及接手测试顺序。[56 项 PAGE-P1 台账](artifacts/uat-2026-09-23/coverage-ledger.md)最近完整判定为 **PASS 0 / PARTIAL 29 / BLOCKED 27 / NOT_TESTED 0**；整页业务验收完成 **0/56**，检查覆盖 **56/56**。此口径与下方 2026-09-20 的 P1R 开发任务审计不同，均不能替代发布验收。
+
 **2026-09-21 官网正式实现**：已按用户批准的提案 06 更新 `apps/official-site`，本地访问 `http://127.0.0.1:18182/`。包含深浅色、手机导航、空间/角色墙/拼句、学习内容与免费入口；详见[实现日志与本地验证](docs/06-design/v2-980plus/official-site-experience-proposal-2026-09-21/implementation/README.md)。未部署公网，不改变 P1R 验收状态。
 
 **2026-09-21 官网重设计（此前原型轮次）**：[官网体验提案 06](docs/06-design/v2-980plus/official-site-experience-proposal-2026-09-21/README.md)沿用移动稿深紫双主题，以初期免费和第一阶段具体学习功能为内容，覆盖十四类官网页面、移动导航、搜索筛选与开始入口，并补充规则拼句、2D/立体个人空间、角色墙和可暂停动效。包含可点击原型、手机/电脑截图、内容依据和正式重构承接；当前不替换生产官网或修改免费权益规则。
@@ -143,7 +145,7 @@ Phase 1 不启用生成式 AI；AI 导师、生成式评测、RTC AI 对话和�
 
 补充：
 
-- 本地种子/拟真数据：`pnpm db:seed:local-real-all`（基础）、`pnpm db:seed:large-vocab`（词表）、`pnpm db:check:bulk-100x`（全库数据量门禁）。
+- 本地种子/拟真数据：先明确设置 `LOCAL_TEST_SUBJECT` 为一个已注册、活跃且以 `@local.invalid` 结尾的合成账号 principal ID，再运行 `pnpm db:seed:local-real-all`（基础）；`pnpm db:seed:large-vocab`（词表）、`pnpm db:check:bulk-100x`（全库数据量门禁）。该基础种子只写入指定合成账号，不能向所有活跃学习者批量播种奖励或权益。
 - 后端 jar 必须比源码新；改了 `services/**` Java 代码后需要重新 `pnpm services:build` 对应服务再启动。
 - v2 微服务只走 Gateway 入口（18070）访问业务 API；`core-api`（18080）仅为 v1 迁移兼容与回滚边界。
 

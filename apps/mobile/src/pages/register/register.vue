@@ -5,9 +5,10 @@ import { mobileT, useMobileExperience } from '../../platform/experience'
 const { experienceStyle, experienceMotion } = useMobileExperience()
 
 import { onLoad } from '@dcloudio/uni-app'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { continueAfterLogin } from '../../auth/navigation'
 import { safeMobileReturnTo } from '../../auth/gateway-auth'
+import { mobileAuthFailureCopy } from '../../auth/auth-failure-copy'
 import { useSessionStore } from '../../stores/session'
 
 const session = useSessionStore()
@@ -17,6 +18,11 @@ const confirm = ref('')
 const returnTo = ref('/pages/home/home')
 const submitting = ref(false)
 const error = ref<string | null>(null)
+const hint = computed(() => {
+  if (error.value) return error.value
+  if (submitting.value) return mobileT('auth.register.submitting')
+  return mobileT('auth.register.passwordHint')
+})
 
 function initialize(options?: { returnTo?: string; redirect?: string }): void {
   returnTo.value = safeMobileReturnTo(options?.returnTo ?? options?.redirect ?? session.peekReturnTo())
@@ -29,22 +35,22 @@ async function submit(): Promise<void> {
   if (submitting.value) return
   error.value = null
   if (!identifier.value.trim() || !password.value) {
-    error.value = '请输入账号和密码。'
+    error.value = mobileT('auth.register.required')
     return
   }
   if (password.value.length < 12) {
-    error.value = '密码至少 12 位，请换一个更长的密码。'
+    error.value = mobileT('auth.register.shortPassword')
     return
   }
   if (password.value !== confirm.value) {
-    error.value = '两次输入的密码不一致。'
+    error.value = mobileT('auth.register.mismatch')
     return
   }
   submitting.value = true
   try {
     const ok = await session.register(identifier.value, password.value)
     if (!ok) {
-      error.value = session.lastError || '注册没有完成，请稍后再试。'
+      error.value = mobileAuthFailureCopy('register', session.lastError, mobileT)
       return
     }
     password.value = ''
@@ -61,23 +67,25 @@ async function submit(): Promise<void> {
 
     <MobilePageHeader page="register" />
 
-    <view class="yx-card yx-login-card">
-      <form @submit="submit">
+    <view class="yx-card yx-login-card" :aria-busy="submitting">
+      <text class="mobile-auth-note">{{ mobileT('auth.register.passwordHint') }}</text>
+      <form @submit="submit" :aria-busy="submitting">
         <label class="yx-field">
-          <text>账号</text>
-          <input aria-label="账号" v-model="identifier" type="text" autocomplete="username" placeholder="邮箱或账号" :disabled="submitting" />
+          <text>{{ mobileT('auth.register.identifier') }}</text>
+          <input :aria-label="mobileT('auth.register.identifier')" v-model="identifier" type="text" autocomplete="username" :placeholder="mobileT('auth.register.identifierPlaceholder')" :disabled="submitting" />
         </label>
         <label class="yx-field">
-          <text>密码（至少 12 位）</text>
-          <input aria-label="密码" v-model="password" type="password" autocomplete="new-password" placeholder="输入密码" :disabled="submitting" />
+          <text>{{ mobileT('auth.register.password') }}</text>
+          <input :aria-label="mobileT('auth.register.password')" v-model="password" type="password" autocomplete="new-password" :placeholder="mobileT('auth.register.passwordPlaceholder')" :disabled="submitting" />
         </label>
         <label class="yx-field">
-          <text>确认密码</text>
-          <input aria-label="确认密码" v-model="confirm" type="password" autocomplete="new-password" placeholder="再输入一次" :disabled="submitting" />
+          <text>{{ mobileT('auth.register.confirmPassword') }}</text>
+          <input :aria-label="mobileT('auth.register.confirmPassword')" v-model="confirm" type="password" autocomplete="new-password" :placeholder="mobileT('auth.register.confirmPasswordPlaceholder')" :disabled="submitting" />
         </label>
-        <text v-if="error" class="yx-login-error" role="alert">{{ error }}</text>
+        <text v-if="error" class="yx-login-error" role="alert" aria-live="polite">{{ hint }}</text>
+        <text v-else-if="submitting" class="mobile-auth-note" role="status" aria-live="polite">{{ hint }}</text>
         <button tabindex="0" role="button" class="yx-button" form-type="submit" :disabled="submitting">
-          {{ submitting ? '正在注册…' : '注册并继续' }}
+          {{ submitting ? mobileT('auth.register.submitting') : mobileT('auth.register.start') }}
         </button>
       </form>
     </view>

@@ -10,6 +10,7 @@ public final class AdminPermission {
     public static final String CONTENT_PUBLISH = "content.publish";
     public static final String COMMERCE_REFUND = "commerce.refund";
     public static final String LEARNER_RISK_WRITE = "learner.risk.write";
+    public static final String AUDIT_READ = "admin.audit.read";
     public static final String AUDIT_EXPORT = "audit.export";
     public static final String SUPPORT_TICKET_CREATE = "support.ticket.create";
     public static final String SUPPORT_TICKET_READ = "support.ticket.read";

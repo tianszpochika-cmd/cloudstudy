@@ -1,5 +1,4 @@
 import { apiClient } from './client'
-import { createClientId } from '../platform/client-id'
 
 export type SupportTicketState =
   | 'OPEN'
@@ -18,15 +17,6 @@ export interface SupportTicket {
   slaDueAt: string | null
   redactionVersion: string | null
 }
-
-export const SUPPORT_CATEGORIES = [
-  'CONTENT_CORRECTION',
-  'ACCOUNT_ACCESS',
-  'BILLING',
-  'LEARNING_DATA',
-  'PRIVACY_REQUEST',
-  'TECHNICAL',
-] as const
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null
@@ -57,38 +47,6 @@ function ticketOf(value: unknown): SupportTicket | null {
   }
 }
 
-async function sha256Hex(value: string): Promise<string> {
-  const digest = await globalThis.crypto.subtle.digest('SHA-256', new TextEncoder().encode(value))
-  return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, '0')).join('')
-}
-
-function key(): string {
-  return createClientId('support')
-}
-
-/** Raw text never crosses this boundary: only its SHA-256 fingerprint is sent. */
-export async function createSupportTicket(input: {
-  categoryCode: string
-  resourceRef?: string
-  description: string
-  priority?: string
-}): Promise<SupportTicket | null> {
-  const raw = await apiClient.post<unknown>(
-    '/support/tickets',
-    {
-      categoryCode: input.categoryCode,
-      resourceRef: input.resourceRef?.trim() || undefined,
-      descriptionFingerprint: await sha256Hex(input.description),
-      priority: input.priority ?? 'NORMAL',
-      attachments: [],
-    },
-    { headers: { 'Idempotency-Key': key() } },
-  )
-  const data = unwrap(raw)
-  const ticket = isRecord(data) && 'ticket' in data ? ticketOf(data.ticket) : ticketOf(data)
-  return ticket
-}
-
 export async function listSupportTickets(): Promise<SupportTicket[]> {
   const raw = await apiClient.get<unknown>('/support/tickets')
   const data = unwrap(raw)
@@ -101,27 +59,4 @@ export async function listSupportTickets(): Promise<SupportTicket[]> {
 
 export async function getSupportTicket(ticketId: string): Promise<SupportTicket | null> {
   return ticketOf(await apiClient.get<unknown>(`/support/tickets/${encodeURIComponent(ticketId)}`))
-}
-
-export async function reopenSupportTicket(ticketId: string): Promise<SupportTicket | null> {
-  const prepared = unwrap(
-    await apiClient.post<unknown>(
-      `/support/tickets/${encodeURIComponent(ticketId)}/transitions/prepare`,
-      'REOPEN',
-      { headers: { 'Idempotency-Key': key() } },
-    ),
-  )
-  const token = isRecord(prepared) && typeof prepared.token === 'string' ? prepared.token : null
-  const raw = await apiClient.post<unknown>(
-    `/support/tickets/${encodeURIComponent(ticketId)}/transitions`,
-    'REOPEN',
-    {
-      headers: {
-        'Idempotency-Key': key(),
-        ...(token ? { 'X-Confirmation-Token': token } : {}),
-      },
-    },
-  )
-  const data = unwrap(raw)
-  return isRecord(data) && 'ticket' in data ? ticketOf(data.ticket) : ticketOf(data)
 }

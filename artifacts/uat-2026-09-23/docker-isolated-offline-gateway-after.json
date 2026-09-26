@@ -1,0 +1,37 @@
+{
+  "at": "2026-09-23T10:49:13.697Z",
+  "project": "cloudstudy-uat-isolated-3c94b27160",
+  "releaseImages": {
+    "api-gateway": "cloudstudy-clyunedev/api-gateway:583ab627-uat-batch10-202609231841",
+    "iam-service": "cloudstudy-clyunedev/iam-service:583ab627-uat-batch10-202609231841",
+    "learner-web": "cloudstudy-clyunedev/learner-web:583ab627-uat-batch10-202609231841",
+    "mobile-h5": "cloudstudy-clyunedev/mobile-h5:583ab627-uat-batch10-202609231841"
+  },
+  "authorizationState": "BLOCKED_NO_ACTIVE_CONSENT_DOCUMENTS",
+  "checks": [
+    {
+      "name": "anonymous-gateway",
+      "status": 401,
+      "errorCode": "AUTH_REQUIRED",
+      "message": "Authentication is required.",
+      "allowOrigin": null,
+      "allowMethods": null
+    },
+    {
+      "name": "anonymous-owner",
+      "status": 401,
+      "errorCode": null,
+      "message": null,
+      "allowOrigin": null,
+      "allowMethods": null
+    },
+    {
+      "name": "mobile-get-preflight",
+      "status": 200,
+      "errorCode": null,
+      "message": null,
+      "allowOrigin": "https://mobile.clyunedev.com",
+      "allowMethods": "GET,POST,PUT,PATCH,DELETE,OPTIONS"
+    }
+  ]
+}

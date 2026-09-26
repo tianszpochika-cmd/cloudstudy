@@ -43,7 +43,7 @@ public final class JdbcMediaRegistrationIdempotencyStore implements MediaRegistr
         Objects.requireNonNull(receipt, "receipt is required");
         jdbc.update("INSERT INTO `" + schema + "`.`media_idempotency_record` "
                         + "(tenant_id, subject_id, idempotency_key, request_fingerprint, asset_id, created_at) "
-                        + "VALUES (?, ?, ?, ?, ?, UTC_TIMESTAMP(6)) ON DUPLICATE KEY UPDATE request_fingerprint=VALUES(request_fingerprint)",
+                        + "VALUES (?, ?, ?, ?, ?, UTC_TIMESTAMP(6))",
                 tenantId, subjectId, idempotencyKey, receipt.fingerprint(), receipt.assetId());
     }
 }

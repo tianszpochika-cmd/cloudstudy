@@ -1,0 +1,137 @@
+{
+  "scope": "local Gateway media metadata idempotency; no uploaded object bytes",
+  "assetId": "cac5f04f-e3c1-44be-a997-f6efb2ef3344",
+  "checks": [
+    {
+      "name": "register account",
+      "observed": 201,
+      "expected": 201,
+      "ok": true
+    },
+    {
+      "name": "adult Gate",
+      "observed": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "TERMS consent",
+      "observed": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "PRIVACY consent",
+      "observed": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "ADULT_LEARNING consent",
+      "observed": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "staff login",
+      "observed": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "Gateway recognizes the issued JWT",
+      "observed": {
+        "status": 403,
+        "code": "CONTENT_ADMIN_REQUIRED"
+      },
+      "expected": "not 401",
+      "ok": true
+    },
+    {
+      "name": "registration requires key",
+      "observed": {
+        "status": 400,
+        "code": null,
+        "response": {
+          "timestamp": "2026-09-23T07:04:17.581Z",
+          "status": 400,
+          "error": "Bad Request",
+          "path": "/internal/v1/media/assets"
+        }
+      },
+      "expected": {
+        "status": 400
+      },
+      "ok": true
+    },
+    {
+      "name": "asset registration",
+      "observed": {
+        "status": 201,
+        "version": 1
+      },
+      "expected": {
+        "status": 201,
+        "version": 1
+      },
+      "ok": true
+    },
+    {
+      "name": "registration exact replay",
+      "observed": {
+        "status": 201,
+        "same": true
+      },
+      "expected": {
+        "status": 201,
+        "same": true
+      },
+      "ok": true
+    },
+    {
+      "name": "registration changed body denied",
+      "observed": {
+        "status": 409,
+        "code": "MEDIA_IDEMPOTENCY_CONFLICT"
+      },
+      "expected": {
+        "status": 409,
+        "code": "MEDIA_IDEMPOTENCY_CONFLICT"
+      },
+      "ok": true
+    },
+    {
+      "name": "unuploaded object cannot activate",
+      "observed": {
+        "status": 200,
+        "code": null
+      },
+      "expected": {
+        "status": 503,
+        "code": "MEDIA_OBJECT_STORE_NOT_CONFIGURED"
+      },
+      "ok": false
+    }
+  ],
+  "cleanup": {
+    "removed": {
+      "renditions": 0,
+      "outbox": 2,
+      "writeReceipts": 2,
+      "registrationReceipts": 1,
+      "asset": 1
+    },
+    "account": "1:DISABLED",
+    "activeSessions": 0
+  },
+  "directMissingKeyProbe": {
+    "status": 400,
+    "code": null
+  },
+  "result": "FAIL",
+  "failure": {
+    "name": "Error",
+    "message": "unuploaded object cannot activate: observed {\"status\":200,\"code\":null}, expected {\"status\":503,\"code\":\"MEDIA_OBJECT_STORE_NOT_CONFIGURED\"}"
+  },
+  "capturedAt": "2026-09-23T07:04:18.546Z"
+}

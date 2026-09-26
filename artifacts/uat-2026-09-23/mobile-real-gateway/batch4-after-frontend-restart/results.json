@@ -1,0 +1,493 @@
+{
+  "scope": "Real local Gateway and Mobile H5, independent synthetic adult account",
+  "accountTag": "6d0b2b1ad1d6",
+  "stages": [
+    {
+      "name": "register",
+      "status": 201
+    },
+    {
+      "name": "adult-gate",
+      "status": 200
+    },
+    {
+      "name": "three-consents-and-onboarding",
+      "consentStatuses": [
+        200,
+        200,
+        200
+      ],
+      "targetWrite": 200
+    },
+    {
+      "name": "fresh-browser-login",
+      "status": 200
+    },
+    {
+      "name": "home-course-entry",
+      "route": "learn",
+      "source": "course-tab"
+    },
+    {
+      "name": "learn-practice-entry",
+      "route": "b11-listening"
+    },
+    {
+      "name": "profile-goal-entry",
+      "route": "onboarding"
+    },
+    {
+      "name": "profile-menu-entry",
+      "route": "settings"
+    },
+    {
+      "name": "learn-retry-real",
+      "recovered": true
+    },
+    {
+      "name": "profile-retry-real",
+      "recovered": true
+    }
+  ],
+  "pages": [
+    {
+      "name": "home",
+      "state": "error",
+      "taskRows": 0,
+      "contentRows": 0,
+      "progressShown": false,
+      "widths": [
+        {
+          "width": 320,
+          "scrollWidth": 320,
+          "overflow": false
+        },
+        {
+          "width": 390,
+          "scrollWidth": 390,
+          "overflow": false
+        },
+        {
+          "width": 768,
+          "scrollWidth": 768,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "name": "learn",
+      "reviewAlertCount": 0,
+      "reviewRows": 0,
+      "contentTitle": 0,
+      "widths": [
+        {
+          "width": 320,
+          "scrollWidth": 320,
+          "overflow": false
+        },
+        {
+          "width": 390,
+          "scrollWidth": 390,
+          "overflow": false
+        },
+        {
+          "width": 768,
+          "scrollWidth": 768,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "name": "profile",
+      "state": "ready",
+      "unsupportedSaveVisible": false,
+      "widths": [
+        {
+          "width": 320,
+          "scrollWidth": 320,
+          "overflow": false
+        },
+        {
+          "width": 390,
+          "scrollWidth": 390,
+          "overflow": false
+        },
+        {
+          "width": 768,
+          "scrollWidth": 768,
+          "overflow": false
+        }
+      ]
+    }
+  ],
+  "consentCommands": [
+    {
+      "stage": "three-consents-and-onboarding",
+      "type": "PRIVACY",
+      "decision": "ACCEPTED"
+    },
+    {
+      "stage": "three-consents-and-onboarding",
+      "type": "TERMS",
+      "decision": "ACCEPTED"
+    },
+    {
+      "stage": "three-consents-and-onboarding",
+      "type": "ADULT_LEARNING",
+      "decision": "ACCEPTED"
+    }
+  ],
+  "network": [
+    {
+      "stage": "register",
+      "method": "POST",
+      "path": "/api/v1/auth/register",
+      "status": 201
+    },
+    {
+      "stage": "register",
+      "method": "GET",
+      "path": "/api/v1/iam/permissions",
+      "status": 200
+    },
+    {
+      "stage": "adult-gate",
+      "method": "GET",
+      "path": "/api/v1/learner/preferences",
+      "status": 403,
+      "code": "CONSENT_REQUIRED"
+    },
+    {
+      "stage": "adult-gate",
+      "method": "GET",
+      "path": "/api/v1/learner/profile",
+      "status": 403,
+      "code": "CONSENT_REQUIRED"
+    },
+    {
+      "stage": "adult-gate",
+      "method": "GET",
+      "path": "/api/v1/learner/targets",
+      "status": 403,
+      "code": "CONSENT_REQUIRED"
+    },
+    {
+      "stage": "adult-gate",
+      "method": "GET",
+      "path": "/api/v1/onboarding/options",
+      "status": 403
+    },
+    {
+      "stage": "adult-gate",
+      "method": "POST",
+      "path": "/api/v1/iam/adult-gate",
+      "status": 200
+    },
+    {
+      "stage": "three-consents-and-onboarding",
+      "method": "PUT",
+      "path": "/api/v1/iam/consents",
+      "status": 200
+    },
+    {
+      "stage": "three-consents-and-onboarding",
+      "method": "PUT",
+      "path": "/api/v1/iam/consents",
+      "status": 200
+    },
+    {
+      "stage": "three-consents-and-onboarding",
+      "method": "PUT",
+      "path": "/api/v1/iam/consents",
+      "status": 200
+    },
+    {
+      "stage": "three-consents-and-onboarding",
+      "method": "POST",
+      "path": "/api/v1/auth/token/refresh",
+      "status": 200
+    },
+    {
+      "stage": "three-consents-and-onboarding",
+      "method": "GET",
+      "path": "/api/v1/iam/permissions",
+      "status": 200
+    },
+    {
+      "stage": "three-consents-and-onboarding",
+      "method": "GET",
+      "path": "/api/v1/learner/profile",
+      "status": 200
+    },
+    {
+      "stage": "three-consents-and-onboarding",
+      "method": "GET",
+      "path": "/api/v1/learner/preferences",
+      "status": 200
+    },
+    {
+      "stage": "three-consents-and-onboarding",
+      "method": "GET",
+      "path": "/api/v1/learner/targets",
+      "status": 404
+    },
+    {
+      "stage": "three-consents-and-onboarding",
+      "method": "PUT",
+      "path": "/api/v1/learner/targets",
+      "status": 200
+    },
+    {
+      "stage": "three-consents-and-onboarding",
+      "method": "GET",
+      "path": "/api/v1/onboarding/options",
+      "status": 200
+    },
+    {
+      "stage": "three-consents-and-onboarding",
+      "method": "GET",
+      "path": "/api/v1/learner/profile",
+      "status": 200
+    },
+    {
+      "stage": "three-consents-and-onboarding",
+      "method": "GET",
+      "path": "/api/v1/learner/targets",
+      "status": 200
+    },
+    {
+      "stage": "three-consents-and-onboarding",
+      "method": "GET",
+      "path": "/api/v1/learner/preferences",
+      "status": 200
+    },
+    {
+      "stage": "fresh-browser-login",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "stage": "fresh-browser-login",
+      "method": "GET",
+      "path": "/api/v1/iam/permissions",
+      "status": 200
+    },
+    {
+      "stage": "home-real",
+      "method": "GET",
+      "path": "/api/v1/learner/home",
+      "status": 503,
+      "code": "STORE_FAILURE"
+    },
+    {
+      "stage": "home-real",
+      "method": "GET",
+      "path": "/api/v1/content/learner/catalog",
+      "status": 200
+    },
+    {
+      "stage": "learn-real",
+      "method": "GET",
+      "path": "/api/v1/learning/review-queue",
+      "status": 200
+    },
+    {
+      "stage": "profile-real",
+      "method": "GET",
+      "path": "/api/v1/learner/preferences",
+      "status": 200
+    },
+    {
+      "stage": "profile-real",
+      "method": "GET",
+      "path": "/api/v1/learner/targets",
+      "status": 200
+    },
+    {
+      "stage": "profile-real",
+      "method": "GET",
+      "path": "/api/v1/learner/profile",
+      "status": 200
+    },
+    {
+      "stage": "profile-goal-entry",
+      "method": "GET",
+      "path": "/api/v1/learner/profile",
+      "status": 200
+    },
+    {
+      "stage": "profile-goal-entry",
+      "method": "GET",
+      "path": "/api/v1/learner/preferences",
+      "status": 200
+    },
+    {
+      "stage": "profile-goal-entry",
+      "method": "GET",
+      "path": "/api/v1/learner/targets",
+      "status": 200
+    },
+    {
+      "stage": "profile-goal-entry",
+      "method": "GET",
+      "path": "/api/v1/onboarding/options",
+      "status": 200
+    },
+    {
+      "stage": "profile-goal-entry",
+      "method": "GET",
+      "path": "/api/v1/learner/profile",
+      "status": 200
+    },
+    {
+      "stage": "profile-goal-entry",
+      "method": "GET",
+      "path": "/api/v1/learner/targets",
+      "status": 200
+    },
+    {
+      "stage": "profile-goal-entry",
+      "method": "GET",
+      "path": "/api/v1/learner/preferences",
+      "status": 200
+    },
+    {
+      "stage": "learn-controlled-failure",
+      "method": "GET",
+      "path": "/api/v1/learner/preferences",
+      "status": 200
+    },
+    {
+      "stage": "learn-controlled-failure",
+      "method": "GET",
+      "path": "/api/v1/learner/profile",
+      "status": 200
+    },
+    {
+      "stage": "learn-controlled-failure",
+      "method": "GET",
+      "path": "/api/v1/learner/targets",
+      "status": 200
+    },
+    {
+      "stage": "profile-controlled-failure",
+      "method": "GET",
+      "path": "/api/v1/learning/review-queue",
+      "status": 200
+    },
+    {
+      "stage": "profile-controlled-failure",
+      "method": "GET",
+      "path": "/api/v1/learner/targets",
+      "status": 200
+    },
+    {
+      "stage": "profile-controlled-failure",
+      "method": "GET",
+      "path": "/api/v1/learner/preferences",
+      "status": 200
+    },
+    {
+      "stage": "profile-retry-real",
+      "method": "GET",
+      "path": "/api/v1/learner/profile",
+      "status": 200
+    },
+    {
+      "stage": "profile-retry-real",
+      "method": "GET",
+      "path": "/api/v1/learner/targets",
+      "status": 200
+    },
+    {
+      "stage": "profile-retry-real",
+      "method": "GET",
+      "path": "/api/v1/learner/preferences",
+      "status": 200
+    }
+  ],
+  "requestFailures": [
+    {
+      "stage": "profile-real",
+      "method": "GET",
+      "path": "/api/v1/listening/materials",
+      "scope": "adjacent-route",
+      "reason": "network-failed",
+      "expected": false
+    },
+    {
+      "stage": "learn-controlled-failure",
+      "method": "GET",
+      "path": "/api/v1/learning/review-queue",
+      "scope": "three-page-uat",
+      "reason": "network-failed",
+      "expected": true
+    },
+    {
+      "stage": "profile-controlled-failure",
+      "method": "GET",
+      "path": "/api/v1/learner/profile",
+      "scope": "three-page-uat",
+      "reason": "network-failed",
+      "expected": true
+    }
+  ],
+  "browserErrors": [
+    {
+      "stage": "adult-gate",
+      "kind": "console.error"
+    },
+    {
+      "stage": "adult-gate",
+      "kind": "console.error"
+    },
+    {
+      "stage": "adult-gate",
+      "kind": "console.error"
+    },
+    {
+      "stage": "adult-gate",
+      "kind": "console.error"
+    },
+    {
+      "stage": "three-consents-and-onboarding",
+      "kind": "console.error"
+    },
+    {
+      "stage": "home-real",
+      "kind": "console.error"
+    },
+    {
+      "stage": "profile-real",
+      "kind": "console.error"
+    },
+    {
+      "stage": "profile-real",
+      "kind": "console.error"
+    },
+    {
+      "stage": "learn-controlled-failure",
+      "kind": "console.error"
+    },
+    {
+      "stage": "profile-controlled-failure",
+      "kind": "console.error"
+    }
+  ],
+  "cleanup": {
+    "accountCount": 1,
+    "status": "DISABLED",
+    "activeSessions": 0,
+    "verified": true
+  },
+  "summary": {
+    "registered": true,
+    "pages": 3,
+    "unexpectedHttpErrors": 1,
+    "pageExceptions": 0,
+    "consoleErrors": 10,
+    "unexpectedRequestFailures": 0,
+    "verdict": "BLOCKED_BY_OWNER"
+  }
+}

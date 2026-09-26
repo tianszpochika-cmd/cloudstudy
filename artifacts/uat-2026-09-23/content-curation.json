@@ -1,0 +1,38 @@
+{
+  "scope": "local Phase 1 English course candidates",
+  "capturedOn": "2026-09-23",
+  "candidatePack": "PHASE1_ENGLISH_EVERYDAY_20260923",
+  "candidateUnits": 4,
+  "candidateItems": 24,
+  "levels": { "A1": 2, "A2": 1, "B1": 1 },
+  "tests": {
+    "command": "node --test tests/content/phase1-english-units.test.mjs",
+    "passed": 4,
+    "failed": 0
+  },
+  "runtime": {
+    "command": "node scripts/content/prepare-phase1-english-units.mjs --check-public",
+    "gateway": "http://127.0.0.1:18070",
+    "publicCatalogHttpStatus": 200,
+    "publicCatalogItems": 0,
+    "candidateUnitsPublished": 0,
+    "dockerApplicationArtifactVerified": false
+  },
+  "publication": {
+    "status": "PENDING_RIGHTS_AND_INDEPENDENT_REVIEW",
+    "draftsCreated": 0,
+    "temporaryAccountsCreated": 0,
+    "blockers": [
+      "B9ContentAdminController.rights() currently assigns fixed local-b31-rights-evidence and ACTIVE rights to every draft",
+      "Phase 1 requires independently verified source/rights and separate L1, L2, publisher decisions"
+    ]
+  },
+  "domainFix": {
+    "change": "ContentVersion.publish and publishRollback reject editor, L1 reviewer, or L2 reviewer as publisher",
+    "targetedTest": "ContentVersionStateMachineTest: 20 passed, 0 failed",
+    "initialFullServiceTests": "193 run, 0 failures, 1 error, 2 skipped; ContentJwtDecoderNegativeTest could not establish a Windows JDK loopback connection",
+    "rerunWithTempAndTmpCColonTemp": "198 run, 0 failures, 0 errors, 2 skipped across 30 suites",
+    "runtimeServiceRestarted": true,
+    "runtimeVerification": "Grouped local service restart passed 16/16 health checks; public content catalog returned HTTP 200 with 0 items. No reviewed unit was published."
+  }
+}

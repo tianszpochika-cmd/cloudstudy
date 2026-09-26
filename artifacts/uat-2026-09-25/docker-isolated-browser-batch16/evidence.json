@@ -1,0 +1,215 @@
+{
+  "at": "2026-09-24T17:15:29.169Z",
+  "mode": "private Docker HTTPS proxy + containerized Chromium",
+  "results": [
+    {
+      "name": "official-site",
+      "width": 1280,
+      "url": "https://clyunedev.com/",
+      "status": 200,
+      "finalUrl": "https://clyunedev.com/",
+      "layout": {
+        "title": "语学星 · 让英语，回到你的日常",
+        "scrollWidth": 1280,
+        "viewportWidth": 1280,
+        "visibleTextLength": 1198
+      },
+      "gatewayCors": {
+        "status": 200,
+        "contentType": "application/json"
+      },
+      "pageErrors": [],
+      "failedRequests": []
+    },
+    {
+      "name": "official-site",
+      "width": 390,
+      "url": "https://clyunedev.com/",
+      "status": 200,
+      "finalUrl": "https://clyunedev.com/",
+      "layout": {
+        "title": "语学星 · 让英语，回到你的日常",
+        "scrollWidth": 390,
+        "viewportWidth": 390,
+        "visibleTextLength": 1114
+      },
+      "gatewayCors": {
+        "status": 200,
+        "contentType": "application/json"
+      },
+      "pageErrors": [],
+      "failedRequests": []
+    },
+    {
+      "name": "learner-web",
+      "width": 1280,
+      "url": "https://learn.clyunedev.com/",
+      "status": 200,
+      "finalUrl": "https://learn.clyunedev.com/login",
+      "layout": {
+        "title": "语学星",
+        "scrollWidth": 1280,
+        "viewportWidth": 1280,
+        "visibleTextLength": 241
+      },
+      "gatewayCors": {
+        "status": 200,
+        "contentType": "application/json"
+      },
+      "pageErrors": [],
+      "failedRequests": []
+    },
+    {
+      "name": "learner-web",
+      "width": 390,
+      "url": "https://learn.clyunedev.com/",
+      "status": 200,
+      "finalUrl": "https://learn.clyunedev.com/login",
+      "layout": {
+        "title": "语学星",
+        "scrollWidth": 390,
+        "viewportWidth": 390,
+        "visibleTextLength": 118
+      },
+      "gatewayCors": {
+        "status": 200,
+        "contentType": "application/json"
+      },
+      "pageErrors": [],
+      "failedRequests": []
+    },
+    {
+      "name": "admin-web",
+      "width": 1280,
+      "url": "https://admin.clyunedev.com/",
+      "status": 200,
+      "finalUrl": "https://admin.clyunedev.com/login?redirect=/dashboard",
+      "layout": {
+        "title": "教研与运营工作台 · 语学星",
+        "scrollWidth": 1280,
+        "viewportWidth": 1280,
+        "visibleTextLength": 280
+      },
+      "gatewayCors": {
+        "status": 200,
+        "contentType": "application/json"
+      },
+      "pageErrors": [],
+      "failedRequests": []
+    },
+    {
+      "name": "admin-web",
+      "width": 390,
+      "url": "https://admin.clyunedev.com/",
+      "status": 200,
+      "finalUrl": "https://admin.clyunedev.com/login?redirect=/dashboard",
+      "layout": {
+        "title": "教研与运营工作台 · 语学星",
+        "scrollWidth": 390,
+        "viewportWidth": 390,
+        "visibleTextLength": 135
+      },
+      "gatewayCors": {
+        "status": 200,
+        "contentType": "application/json"
+      },
+      "pageErrors": [],
+      "failedRequests": []
+    },
+    {
+      "name": "mobile-h5",
+      "width": 1280,
+      "url": "https://mobile.clyunedev.com/",
+      "status": 200,
+      "finalUrl": "https://mobile.clyunedev.com/#/pages/login/login?returnTo=%252Fpages%252Fhome%252Fhome",
+      "layout": {
+        "title": "登录",
+        "scrollWidth": 1280,
+        "viewportWidth": 1280,
+        "visibleTextLength": 114
+      },
+      "gatewayCors": {
+        "status": 200,
+        "contentType": "application/json"
+      },
+      "pageErrors": [],
+      "failedRequests": []
+    },
+    {
+      "name": "mobile-h5",
+      "width": 390,
+      "url": "https://mobile.clyunedev.com/",
+      "status": 200,
+      "finalUrl": "https://mobile.clyunedev.com/#/pages/login/login?returnTo=%252Fpages%252Fhome%252Fhome",
+      "layout": {
+        "title": "登录",
+        "scrollWidth": 390,
+        "viewportWidth": 390,
+        "visibleTextLength": 114
+      },
+      "gatewayCors": {
+        "status": 200,
+        "contentType": "application/json"
+      },
+      "pageErrors": [],
+      "failedRequests": []
+    },
+    {
+      "name": "learner-login",
+      "width": 1280,
+      "url": "https://learn.clyunedev.com/login",
+      "status": 200,
+      "finalUrl": "https://learn.clyunedev.com/login",
+      "layout": {
+        "title": "语学星",
+        "scrollWidth": 1280,
+        "viewportWidth": 1280,
+        "visibleTextLength": 241
+      },
+      "gatewayCors": {
+        "status": 200,
+        "contentType": "application/json"
+      },
+      "pageErrors": [],
+      "failedRequests": []
+    },
+    {
+      "name": "admin-login",
+      "width": 1280,
+      "url": "https://admin.clyunedev.com/login",
+      "status": 200,
+      "finalUrl": "https://admin.clyunedev.com/login",
+      "layout": {
+        "title": "教研与运营工作台 · 语学星",
+        "scrollWidth": 1280,
+        "viewportWidth": 1280,
+        "visibleTextLength": 280
+      },
+      "gatewayCors": {
+        "status": 200,
+        "contentType": "application/json"
+      },
+      "pageErrors": [],
+      "failedRequests": []
+    },
+    {
+      "name": "mobile-login",
+      "width": 390,
+      "url": "https://mobile.clyunedev.com/#/pages/login/login",
+      "status": 200,
+      "finalUrl": "https://mobile.clyunedev.com/#/pages/login/login",
+      "layout": {
+        "title": "登录",
+        "scrollWidth": 390,
+        "viewportWidth": 390,
+        "visibleTextLength": 114
+      },
+      "gatewayCors": {
+        "status": 200,
+        "contentType": "application/json"
+      },
+      "pageErrors": [],
+      "failedRequests": []
+    }
+  ]
+}

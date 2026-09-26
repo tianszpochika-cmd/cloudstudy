@@ -51,6 +51,7 @@ public final class JdbcAssessmentStatePort implements AssessmentStatePort {
     private final ObjectMapper objectMapper;
     private final String schema;
     private final boolean tolerateCorruptLegacyRows;
+    private final Map<String, Integer> skippedLegacyRows = new LinkedHashMap<>();
 
     public JdbcAssessmentStatePort(JdbcTemplate jdbc, ObjectMapper objectMapper, String schema) {
         this(jdbc, objectMapper, schema, false);
@@ -65,7 +66,8 @@ public final class JdbcAssessmentStatePort implements AssessmentStatePort {
     }
 
     @Override
-    public RestoredState load() {
+    public synchronized RestoredState load() {
+        skippedLegacyRows.clear();
         Map<String, SessionBuilder> builders = new LinkedHashMap<>();
         jdbc.query("SELECT session_id, subject_id, tenant_id, session_type, session_status, created_at, "
                         + "deadline_at, started_at, closed_at FROM " + table("assessment_session"),
@@ -178,6 +180,12 @@ public final class JdbcAssessmentStatePort implements AssessmentStatePort {
                         skipCorruptLegacyRow("mistake", exception);
                     }
                 });
+        if (!skippedLegacyRows.isEmpty()) {
+            int skipped = skippedLegacyRows.values().stream().mapToInt(Integer::intValue).sum();
+            log.warn("Skipped {} invalid persisted assessment rows in local compatibility mode: {}. "
+                    + "Persisted rows remain unchanged and are not included in live assessment state.",
+                    skipped, Map.copyOf(skippedLegacyRows));
+        }
         return new RestoredState(sessions, reports, mistakes);
     }
 
@@ -340,6 +348,10 @@ public final class JdbcAssessmentStatePort implements AssessmentStatePort {
     }
 
     private List<Map<String, Object>> readMapList(String value) {
+        // Older local demo rows used {} for an empty reason trace. It contains no
+        // entries to lose, so it is safe to restore as an empty list. Non-empty
+        // objects still fail closed instead of being invented into assessment facts.
+        if (value != null && value.trim().equals("{}")) return List.of();
         try {
             return objectMapper.readValue(value == null ? "[]" : value, MAP_LIST_TYPE);
         } catch (Exception exception) {
@@ -408,8 +420,7 @@ public final class JdbcAssessmentStatePort implements AssessmentStatePort {
 
     private void skipCorruptLegacyRow(String entity, RuntimeException exception) {
         if (!tolerateCorruptLegacyRows) throw exception;
-        log.warn("Skipping corrupt persisted assessment {} row in local compatibility mode: {}",
-                entity, exception.getMessage());
+        skippedLegacyRows.merge(entity, 1, Integer::sum);
     }
 
     private static final class SessionBuilder {

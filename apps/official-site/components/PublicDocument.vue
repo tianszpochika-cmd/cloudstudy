@@ -44,7 +44,7 @@ const links = [
             ><h2>{{ t(title) }}</h2>
             <p>{{ t(text) }}</p></template
           >
-          <div class="notice-box">{{ t(document.note) }}</div>
+          <div v-if="'note' in document" class="notice-box">{{ t(document.note) }}</div>
           <NuxtLink class="link-arrow" to="/announcements"
             >{{ t("official.c2bb18da4e") }}<SiteIcon name="arrow"
           /></NuxtLink>

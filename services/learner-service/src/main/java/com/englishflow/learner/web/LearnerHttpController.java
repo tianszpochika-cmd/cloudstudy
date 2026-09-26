@@ -15,6 +15,7 @@ import com.englishflow.learner.domain.DailyStudyMinutes;
 import com.englishflow.learner.domain.GoalType;
 import com.englishflow.learner.domain.IdempotencyKey;
 import com.englishflow.learner.domain.LearnerDomainException;
+import com.englishflow.learner.domain.LearnerDecisionCode;
 import com.englishflow.learner.domain.LearnerPrincipalContext;
 import com.englishflow.learner.domain.LearnerPreferences;
 import com.englishflow.learner.domain.OnboardingState;
@@ -188,15 +189,17 @@ public final class LearnerHttpController {
         return new RequestMetadata(headers.getFirst("X-Request-Id"), headers.getFirst("X-Trace-Id"));
     }
 
-    private static GoalType goalType(String value) {
+    static GoalType goalType(String value) {
+        if (value == null) {
+            throw boundary("GOAL_CODE_UNSUPPORTED", "goalCode is required");
+        }
         return switch (value) {
             case "ZERO_BASIS", "FOUNDATION" -> GoalType.FOUNDATION;
-            case "CET_4_6" -> GoalType.CET_4_6;
-            case "POSTGRADUATE" -> GoalType.POSTGRADUATE;
-            case "WORKPLACE" -> GoalType.WORKPLACE;
-            // B4: LANGUAGE_CERT exam goals are created through the tenant admin
-            // channel (examName/language required); the learner-owned endpoint
-            // keeps the historical four codes so old clients keep working.
+            case "CET_4_6", "COLLEGE_CET" -> GoalType.CET_4_6;
+            case "POSTGRADUATE", "POSTGRADUATE_ENGLISH" -> GoalType.POSTGRADUATE;
+            case "WORKPLACE", "WORKPLACE_DAILY" -> GoalType.WORKPLACE;
+            // The older input codes remain readable for clients already deployed.
+            // LANGUAGE_CERT belongs to the tenant admin contract, not B9 targets.
             default -> throw boundary("GOAL_CODE_UNSUPPORTED",
                     "goalCode is outside the Phase 1 learner goal set; language-exam goals are managed through the tenant admin channel");
         };
@@ -215,10 +218,21 @@ public final class LearnerHttpController {
                 value.currentLevel().map(Enum::name).orElse("UNKNOWN"), value.version(), value.updatedAt());
     }
 
-    private static TargetData toTarget(com.englishflow.learner.domain.LearningGoal goal, long version) {
-        return new TargetData(goal.targetId(), goal.type() == GoalType.FOUNDATION ? "ZERO_BASIS" : goal.type().name(),
+    static TargetData toTarget(com.englishflow.learner.domain.LearningGoal goal, long version) {
+        return new TargetData(goal.targetId(), targetGoalCode(goal.type()),
                 goal.startingLevel().name(), null, goal.dailyStudyMinutes().minutes(), goal.targetDate(), "ACTIVE",
                 version, goal.updatedAt());
+    }
+
+    private static String targetGoalCode(GoalType type) {
+        return switch (type) {
+            case FOUNDATION -> "FOUNDATION";
+            case CET_4_6 -> "COLLEGE_CET";
+            case POSTGRADUATE -> "POSTGRADUATE_ENGLISH";
+            case WORKPLACE -> "WORKPLACE_DAILY";
+            case LANGUAGE_CERT -> throw boundary("GOAL_CODE_UNSUPPORTED",
+                    "admin-managed language-exam goals are outside the Phase 1 learner target contract");
+        };
     }
 
     private static PreferencesData toPreferences(LearnerPreferences value, long version) {
@@ -228,18 +242,25 @@ public final class LearnerHttpController {
                 version, value.updatedAt());
     }
 
-    private static FirstDayEnvelope toFirstDay(FirstDayView value) {
+    static FirstDayEnvelope toFirstDay(FirstDayView value) {
         boolean profileReady = value.source() == com.englishflow.learner.domain.ProfileSource.OWNED;
         boolean targetReady = value.goal().isPresent();
-        String state = profileReady && targetReady ? "READY" : "NOT_READY";
+        // A saved target is not a plan. Until the learning owner has supplied pinned
+        // planning input, a plan reference and at least one task, the B9 READY shape
+        // cannot be produced. Fail explicitly instead of returning READY with no tasks.
+        if (profileReady && targetReady) {
+            throw new LearnerDomainException(LearnerDecisionCode.STORE_FAILURE,
+                    "first-day planning projection is not available for the confirmed target", true);
+        }
         String placement = switch (value.assessmentState()) {
             case NOT_STARTED -> "NOT_STARTED";
             case IN_PROGRESS, INTERRUPTED -> "IN_PROGRESS";
             case COMPLETED -> "COMPLETED";
         };
-        FirstDayData data = new FirstDayData(state, profileReady, targetReady, placement, 0, List.of(),
-                1L, Math.max(1L, value.profileVersion()), value.generatedAt(),
-                state.equals("READY") ? "NONE" : "DEPENDENCY_UNAVAILABLE");
+        long version = Math.max(1L, value.profileVersion());
+        FirstDayData data = new FirstDayData("NOT_READY", profileReady, targetReady, placement, 0, List.of(),
+                1L, version, "learner-profile:" + version, value.generatedAt(),
+                profileReady ? "TARGET_INCOMPLETE" : "PROFILE_INCOMPLETE");
         return new FirstDayEnvelope(data);
     }
 
@@ -344,8 +365,9 @@ public final class LearnerHttpController {
             List<Object> tasks,
             long contentEpoch,
             long projectionVersion,
+            String projectionWatermark,
             Instant generatedAt,
-            String degradedReason) {
+            String blocker) {
     }
 
     public record HomeData(

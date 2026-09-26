@@ -1,59 +1,126 @@
 import { defineStore } from 'pinia'
-import { adminT } from '../platform/admin-i18n'
 import { AdminApiError } from '../api/client'
-import { listB12ModerationReports, listB12RecoveryTasks, runB12ModerationCommand, runB12RecoveryCommand } from '../api/b12'
-import { recordList, parseModerationReport, parseRecoveryTask, responseRequestId, type B12AdminViewState, type B12ModerationCommand, type B12ModerationReport, type B12RecoveryCommand, type B12RecoveryTask } from '../domain/b12'
+import { listB12ModerationReports, type B12ModerationReportPage } from '../api/b12'
+import { parseModerationReport, type B12ModerationReport } from '../domain/b12'
+import { b12T } from '../platform/b12-i18n'
 import { useAdminStore } from './admin'
 
-function errorMessage(error: unknown, fallback: string): string { return error instanceof Error && error.message ? error.message : fallback }
+type GovernanceReadState = 'idle' | 'loading' | 'ready' | 'empty' | 'permission' | 'error'
+export const B12_MODERATION_STATUSES = ['OPEN', 'REVIEWING', 'RESOLVED', 'DISMISSED'] as const
+type ModerationStatus = (typeof B12_MODERATION_STATUSES)[number]
+
+function isModerationStatus(value: string): value is ModerationStatus {
+  return B12_MODERATION_STATUSES.some((status) => status === value)
+}
+
+function reportRows(page: B12ModerationReportPage): B12ModerationReport[] {
+  const reports = page.items.map(parseModerationReport)
+  if (reports.some((report) => report === null)) throw new Error('B12_REPORT_PAGE_INVALID')
+  return reports.filter((report): report is B12ModerationReport => report !== null)
+}
 
 export const useB12AdminStore = defineStore('b12-admin', {
   state: () => ({
-    viewState: 'idle' as B12AdminViewState,
+    viewState: 'idle' as GovernanceReadState,
+    status: 'OPEN' as ModerationStatus,
     reports: [] as B12ModerationReport[],
-    recoveryTasks: [] as B12RecoveryTask[],
-    busyKey: null as string | null,
+    nextCursor: null as string | null,
+    usedCursors: [] as string[],
+    loadingMore: false,
     lastError: null as string | null,
-    lastSuccess: null as string | null,
-    lastRequestId: null as string | null,
+    moreError: null as string | null,
+    requestVersion: 0,
   }),
   actions: {
-    canReadModeration(): boolean { return useAdminStore().can('admin.moderation.read') },
-    canCommandModeration(): boolean { return useAdminStore().can('admin.moderation.command') },
-    canReadRecovery(): boolean { return useAdminStore().can('admin.recovery.read') },
-    canCommandRecovery(): boolean { return useAdminStore().can('admin.recovery.command') },
+    clearPages(): void {
+      ++this.requestVersion
+      this.reports = []
+      this.nextCursor = null
+      this.usedCursors = []
+      this.loadingMore = false
+      this.lastError = null
+      this.moreError = null
+      this.viewState = 'idle'
+    },
+    denyAccess(): void {
+      this.clearPages()
+      this.viewState = 'permission'
+      this.lastError = b12T('permission')
+    },
+    async setStatus(status: string): Promise<void> {
+      if (!isModerationStatus(status) || status === this.status) return
+      this.status = status
+      await this.load()
+    },
     async load(): Promise<void> {
       const session = useAdminStore()
-      const canReadAny = this.canReadModeration() || this.canReadRecovery()
-      if (!session.isAuthenticated || !canReadAny) { this.viewState = 'permission'; this.lastError = adminT('storeB12.noGovernanceRead'); return }
-      this.viewState = 'loading'; this.lastError = null; this.lastSuccess = null
-      const failures: unknown[] = []
-      const requests: Array<Promise<void>> = []
-      if (this.canReadModeration()) requests.push(listB12ModerationReports().then((value) => { this.reports = recordList(value).map(parseModerationReport).filter((item): item is B12ModerationReport => Boolean(item)) }).catch((error) => { failures.push(error) }))
-      if (this.canReadRecovery()) requests.push(listB12RecoveryTasks().then((value) => { this.recoveryTasks = recordList(value).map(parseRecoveryTask).filter((item): item is B12RecoveryTask => Boolean(item)) }).catch((error) => { failures.push(error) }))
-      await Promise.all(requests)
-      if (failures.length) {
-        const forbidden = failures.some((error) => error instanceof AdminApiError && error.status === 403)
-        const recovering = failures.some((error) => error instanceof AdminApiError && error.status === 409)
-        this.viewState = forbidden ? 'permission' : recovering ? 'recovery' : 'error'
-        this.lastError = errorMessage(failures[0], adminT('storeB12.loadFailed'))
-      } else this.viewState = this.reports.length || this.recoveryTasks.length ? 'ready' : 'empty'
+      this.clearPages()
+      const requestVersion = this.requestVersion
+      if (!session.isAuthenticated || !session.can('admin.moderation.read')) {
+        this.denyAccess()
+        return
+      }
+
+      this.viewState = 'loading'
+      try {
+        const page = await listB12ModerationReports(this.status)
+        if (requestVersion !== this.requestVersion) return
+        if (!session.isAuthenticated || !session.can('admin.moderation.read')) {
+          this.denyAccess()
+          return
+        }
+        this.reports = reportRows(page)
+        this.nextCursor = page.nextCursor
+        this.viewState = this.reports.length ? 'ready' : 'empty'
+      } catch (error) {
+        if (requestVersion !== this.requestVersion) return
+        if (error instanceof AdminApiError && (error.status === 401 || error.status === 403)) {
+          this.denyAccess()
+        } else {
+          this.clearPages()
+          this.viewState = 'error'
+          this.lastError = b12T('error')
+        }
+      }
     },
-    async runModerationCommand(reportId: string, commandCode: B12ModerationCommand): Promise<void> {
-      if (!this.canCommandModeration()) { this.viewState = 'permission'; this.lastError = adminT('storeB12.noModerationCommand'); return }
-      if (this.busyKey || !reportId.trim()) return
-      this.busyKey = `moderation.${reportId}.${commandCode}`; this.lastError = null; this.lastSuccess = null
-      try { const result = await runB12ModerationCommand(reportId, commandCode); this.lastRequestId = responseRequestId(result); await this.load(); this.lastSuccess = adminT('storeB12.commandConfirmed'); this.viewState = 'success' }
-      catch (error) { this.viewState = error instanceof AdminApiError && error.status === 403 ? 'permission' : error instanceof AdminApiError && error.status === 409 ? 'recovery' : 'error'; this.lastError = errorMessage(error, adminT('storeB12.moderationCommandFailed')) }
-      finally { this.busyKey = null }
-    },
-    async runRecoveryCommand(taskId: string, commandCode: B12RecoveryCommand): Promise<void> {
-      if (!this.canCommandRecovery()) { this.viewState = 'permission'; this.lastError = adminT('storeB12.noRecoveryCommand'); return }
-      if (this.busyKey || !taskId.trim()) return
-      this.busyKey = `recovery.${taskId}.${commandCode}`; this.lastError = null; this.lastSuccess = null
-      try { const result = await runB12RecoveryCommand(taskId, commandCode); this.lastRequestId = responseRequestId(result); await this.load(); this.lastSuccess = adminT('storeB12.commandConfirmed'); this.viewState = 'success' }
-      catch (error) { this.viewState = error instanceof AdminApiError && error.status === 403 ? 'permission' : error instanceof AdminApiError && error.status === 409 ? 'recovery' : 'error'; this.lastError = errorMessage(error, adminT('storeB12.recoveryCommandFailed')) }
-      finally { this.busyKey = null }
+    async loadMore(): Promise<void> {
+      const session = useAdminStore()
+      if (!session.isAuthenticated || !session.can('admin.moderation.read')) {
+        this.denyAccess()
+        return
+      }
+      const cursor = this.nextCursor
+      if (this.viewState !== 'ready' || cursor === null || this.loadingMore) return
+      const requestVersion = this.requestVersion
+      this.loadingMore = true
+      this.moreError = null
+      try {
+        const page = await listB12ModerationReports(this.status, cursor)
+        if (requestVersion !== this.requestVersion) return
+        if (!session.isAuthenticated || !session.can('admin.moderation.read')) {
+          this.denyAccess()
+          return
+        }
+        const reports = reportRows(page)
+        if (page.nextCursor !== null
+          && (page.nextCursor === cursor || this.usedCursors.includes(page.nextCursor))) {
+          throw new Error('B12_REPORT_CURSOR_REPEATED')
+        }
+        const existing = new Set(this.reports.map((report) => report.reportId))
+        this.reports = [...this.reports, ...reports.filter((report) => !existing.has(report.reportId))]
+        this.usedCursors.push(cursor)
+        this.nextCursor = page.nextCursor
+      } catch (error) {
+        if (requestVersion !== this.requestVersion) return
+        if (!session.isAuthenticated || !session.can('admin.moderation.read')
+          || error instanceof AdminApiError && (error.status === 401 || error.status === 403)) {
+          this.denyAccess()
+        } else {
+          this.moreError = b12T('moreError')
+        }
+      } finally {
+        if (requestVersion === this.requestVersion) this.loadingMore = false
+      }
     },
   },
 })

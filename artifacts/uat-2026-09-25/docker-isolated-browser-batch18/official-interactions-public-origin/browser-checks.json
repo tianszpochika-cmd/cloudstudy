@@ -1,0 +1,787 @@
+{
+  "result": "PASS",
+  "at": "2026-09-24T19:40:01.718Z",
+  "scope": "Real official-site UI on 18182; no learner/backend business acceptance",
+  "checks": [
+    "desktop homepage and modal word practice",
+    "course search, clear and route navigation",
+    "help search and FAQ expansion",
+    "world room, 2D/3D, role wall and two sentence rounds",
+    "theme persistence, high contrast and four quality levels",
+    "mobile navigation, start handoff and dialog",
+    "system reduced motion disables animation and depth",
+    "public projection reports its actual source and retry stays usable",
+    "legacy redirect, 404 and SSR preferences do not leak across visitors",
+    "system theme changes and default motion ignore a retired pause preference",
+    "touch viewport permits vertical scrolling and horizontal room rotation"
+  ],
+  "layouts": [
+    {
+      "route": "/",
+      "width": 320,
+      "theme": "light"
+    },
+    {
+      "route": "/world",
+      "width": 320,
+      "theme": "light"
+    },
+    {
+      "route": "/courses",
+      "width": 320,
+      "theme": "light"
+    },
+    {
+      "route": "/courses/daily-words",
+      "width": 320,
+      "theme": "light"
+    },
+    {
+      "route": "/courses/clear-grammar",
+      "width": 320,
+      "theme": "light"
+    },
+    {
+      "route": "/courses/listening",
+      "width": 320,
+      "theme": "light"
+    },
+    {
+      "route": "/courses/reading",
+      "width": 320,
+      "theme": "light"
+    },
+    {
+      "route": "/courses/speaking",
+      "width": 320,
+      "theme": "light"
+    },
+    {
+      "route": "/courses/writing",
+      "width": 320,
+      "theme": "light"
+    },
+    {
+      "route": "/method",
+      "width": 320,
+      "theme": "light"
+    },
+    {
+      "route": "/start",
+      "width": 320,
+      "theme": "light"
+    },
+    {
+      "route": "/help",
+      "width": 320,
+      "theme": "light"
+    },
+    {
+      "route": "/about",
+      "width": 320,
+      "theme": "light"
+    },
+    {
+      "route": "/announcements",
+      "width": 320,
+      "theme": "light"
+    },
+    {
+      "route": "/privacy",
+      "width": 320,
+      "theme": "light"
+    },
+    {
+      "route": "/terms",
+      "width": 320,
+      "theme": "light"
+    },
+    {
+      "route": "/minors",
+      "width": 320,
+      "theme": "light"
+    },
+    {
+      "route": "/status",
+      "width": 320,
+      "theme": "light"
+    },
+    {
+      "route": "/compliance",
+      "width": 320,
+      "theme": "light"
+    },
+    {
+      "route": "/",
+      "width": 320,
+      "theme": "dark"
+    },
+    {
+      "route": "/world",
+      "width": 320,
+      "theme": "dark"
+    },
+    {
+      "route": "/courses",
+      "width": 320,
+      "theme": "dark"
+    },
+    {
+      "route": "/courses/daily-words",
+      "width": 320,
+      "theme": "dark"
+    },
+    {
+      "route": "/courses/clear-grammar",
+      "width": 320,
+      "theme": "dark"
+    },
+    {
+      "route": "/courses/listening",
+      "width": 320,
+      "theme": "dark"
+    },
+    {
+      "route": "/courses/reading",
+      "width": 320,
+      "theme": "dark"
+    },
+    {
+      "route": "/courses/speaking",
+      "width": 320,
+      "theme": "dark"
+    },
+    {
+      "route": "/courses/writing",
+      "width": 320,
+      "theme": "dark"
+    },
+    {
+      "route": "/method",
+      "width": 320,
+      "theme": "dark"
+    },
+    {
+      "route": "/start",
+      "width": 320,
+      "theme": "dark"
+    },
+    {
+      "route": "/help",
+      "width": 320,
+      "theme": "dark"
+    },
+    {
+      "route": "/about",
+      "width": 320,
+      "theme": "dark"
+    },
+    {
+      "route": "/announcements",
+      "width": 320,
+      "theme": "dark"
+    },
+    {
+      "route": "/privacy",
+      "width": 320,
+      "theme": "dark"
+    },
+    {
+      "route": "/terms",
+      "width": 320,
+      "theme": "dark"
+    },
+    {
+      "route": "/minors",
+      "width": 320,
+      "theme": "dark"
+    },
+    {
+      "route": "/status",
+      "width": 320,
+      "theme": "dark"
+    },
+    {
+      "route": "/compliance",
+      "width": 320,
+      "theme": "dark"
+    },
+    {
+      "route": "/",
+      "width": 390,
+      "theme": "light"
+    },
+    {
+      "route": "/world",
+      "width": 390,
+      "theme": "light"
+    },
+    {
+      "route": "/courses",
+      "width": 390,
+      "theme": "light"
+    },
+    {
+      "route": "/courses/daily-words",
+      "width": 390,
+      "theme": "light"
+    },
+    {
+      "route": "/courses/clear-grammar",
+      "width": 390,
+      "theme": "light"
+    },
+    {
+      "route": "/courses/listening",
+      "width": 390,
+      "theme": "light"
+    },
+    {
+      "route": "/courses/reading",
+      "width": 390,
+      "theme": "light"
+    },
+    {
+      "route": "/courses/speaking",
+      "width": 390,
+      "theme": "light"
+    },
+    {
+      "route": "/courses/writing",
+      "width": 390,
+      "theme": "light"
+    },
+    {
+      "route": "/method",
+      "width": 390,
+      "theme": "light"
+    },
+    {
+      "route": "/start",
+      "width": 390,
+      "theme": "light"
+    },
+    {
+      "route": "/help",
+      "width": 390,
+      "theme": "light"
+    },
+    {
+      "route": "/about",
+      "width": 390,
+      "theme": "light"
+    },
+    {
+      "route": "/announcements",
+      "width": 390,
+      "theme": "light"
+    },
+    {
+      "route": "/privacy",
+      "width": 390,
+      "theme": "light"
+    },
+    {
+      "route": "/terms",
+      "width": 390,
+      "theme": "light"
+    },
+    {
+      "route": "/minors",
+      "width": 390,
+      "theme": "light"
+    },
+    {
+      "route": "/status",
+      "width": 390,
+      "theme": "light"
+    },
+    {
+      "route": "/compliance",
+      "width": 390,
+      "theme": "light"
+    },
+    {
+      "route": "/",
+      "width": 390,
+      "theme": "dark"
+    },
+    {
+      "route": "/world",
+      "width": 390,
+      "theme": "dark"
+    },
+    {
+      "route": "/courses",
+      "width": 390,
+      "theme": "dark"
+    },
+    {
+      "route": "/courses/daily-words",
+      "width": 390,
+      "theme": "dark"
+    },
+    {
+      "route": "/courses/clear-grammar",
+      "width": 390,
+      "theme": "dark"
+    },
+    {
+      "route": "/courses/listening",
+      "width": 390,
+      "theme": "dark"
+    },
+    {
+      "route": "/courses/reading",
+      "width": 390,
+      "theme": "dark"
+    },
+    {
+      "route": "/courses/speaking",
+      "width": 390,
+      "theme": "dark"
+    },
+    {
+      "route": "/courses/writing",
+      "width": 390,
+      "theme": "dark"
+    },
+    {
+      "route": "/method",
+      "width": 390,
+      "theme": "dark"
+    },
+    {
+      "route": "/start",
+      "width": 390,
+      "theme": "dark"
+    },
+    {
+      "route": "/help",
+      "width": 390,
+      "theme": "dark"
+    },
+    {
+      "route": "/about",
+      "width": 390,
+      "theme": "dark"
+    },
+    {
+      "route": "/announcements",
+      "width": 390,
+      "theme": "dark"
+    },
+    {
+      "route": "/privacy",
+      "width": 390,
+      "theme": "dark"
+    },
+    {
+      "route": "/terms",
+      "width": 390,
+      "theme": "dark"
+    },
+    {
+      "route": "/minors",
+      "width": 390,
+      "theme": "dark"
+    },
+    {
+      "route": "/status",
+      "width": 390,
+      "theme": "dark"
+    },
+    {
+      "route": "/compliance",
+      "width": 390,
+      "theme": "dark"
+    },
+    {
+      "route": "/",
+      "width": 768,
+      "theme": "light"
+    },
+    {
+      "route": "/world",
+      "width": 768,
+      "theme": "light"
+    },
+    {
+      "route": "/courses",
+      "width": 768,
+      "theme": "light"
+    },
+    {
+      "route": "/courses/daily-words",
+      "width": 768,
+      "theme": "light"
+    },
+    {
+      "route": "/courses/clear-grammar",
+      "width": 768,
+      "theme": "light"
+    },
+    {
+      "route": "/courses/listening",
+      "width": 768,
+      "theme": "light"
+    },
+    {
+      "route": "/courses/reading",
+      "width": 768,
+      "theme": "light"
+    },
+    {
+      "route": "/courses/speaking",
+      "width": 768,
+      "theme": "light"
+    },
+    {
+      "route": "/courses/writing",
+      "width": 768,
+      "theme": "light"
+    },
+    {
+      "route": "/method",
+      "width": 768,
+      "theme": "light"
+    },
+    {
+      "route": "/start",
+      "width": 768,
+      "theme": "light"
+    },
+    {
+      "route": "/help",
+      "width": 768,
+      "theme": "light"
+    },
+    {
+      "route": "/about",
+      "width": 768,
+      "theme": "light"
+    },
+    {
+      "route": "/announcements",
+      "width": 768,
+      "theme": "light"
+    },
+    {
+      "route": "/privacy",
+      "width": 768,
+      "theme": "light"
+    },
+    {
+      "route": "/terms",
+      "width": 768,
+      "theme": "light"
+    },
+    {
+      "route": "/minors",
+      "width": 768,
+      "theme": "light"
+    },
+    {
+      "route": "/status",
+      "width": 768,
+      "theme": "light"
+    },
+    {
+      "route": "/compliance",
+      "width": 768,
+      "theme": "light"
+    },
+    {
+      "route": "/",
+      "width": 768,
+      "theme": "dark"
+    },
+    {
+      "route": "/world",
+      "width": 768,
+      "theme": "dark"
+    },
+    {
+      "route": "/courses",
+      "width": 768,
+      "theme": "dark"
+    },
+    {
+      "route": "/courses/daily-words",
+      "width": 768,
+      "theme": "dark"
+    },
+    {
+      "route": "/courses/clear-grammar",
+      "width": 768,
+      "theme": "dark"
+    },
+    {
+      "route": "/courses/listening",
+      "width": 768,
+      "theme": "dark"
+    },
+    {
+      "route": "/courses/reading",
+      "width": 768,
+      "theme": "dark"
+    },
+    {
+      "route": "/courses/speaking",
+      "width": 768,
+      "theme": "dark"
+    },
+    {
+      "route": "/courses/writing",
+      "width": 768,
+      "theme": "dark"
+    },
+    {
+      "route": "/method",
+      "width": 768,
+      "theme": "dark"
+    },
+    {
+      "route": "/start",
+      "width": 768,
+      "theme": "dark"
+    },
+    {
+      "route": "/help",
+      "width": 768,
+      "theme": "dark"
+    },
+    {
+      "route": "/about",
+      "width": 768,
+      "theme": "dark"
+    },
+    {
+      "route": "/announcements",
+      "width": 768,
+      "theme": "dark"
+    },
+    {
+      "route": "/privacy",
+      "width": 768,
+      "theme": "dark"
+    },
+    {
+      "route": "/terms",
+      "width": 768,
+      "theme": "dark"
+    },
+    {
+      "route": "/minors",
+      "width": 768,
+      "theme": "dark"
+    },
+    {
+      "route": "/status",
+      "width": 768,
+      "theme": "dark"
+    },
+    {
+      "route": "/compliance",
+      "width": 768,
+      "theme": "dark"
+    },
+    {
+      "route": "/",
+      "width": 1440,
+      "theme": "light"
+    },
+    {
+      "route": "/world",
+      "width": 1440,
+      "theme": "light"
+    },
+    {
+      "route": "/courses",
+      "width": 1440,
+      "theme": "light"
+    },
+    {
+      "route": "/courses/daily-words",
+      "width": 1440,
+      "theme": "light"
+    },
+    {
+      "route": "/courses/clear-grammar",
+      "width": 1440,
+      "theme": "light"
+    },
+    {
+      "route": "/courses/listening",
+      "width": 1440,
+      "theme": "light"
+    },
+    {
+      "route": "/courses/reading",
+      "width": 1440,
+      "theme": "light"
+    },
+    {
+      "route": "/courses/speaking",
+      "width": 1440,
+      "theme": "light"
+    },
+    {
+      "route": "/courses/writing",
+      "width": 1440,
+      "theme": "light"
+    },
+    {
+      "route": "/method",
+      "width": 1440,
+      "theme": "light"
+    },
+    {
+      "route": "/start",
+      "width": 1440,
+      "theme": "light"
+    },
+    {
+      "route": "/help",
+      "width": 1440,
+      "theme": "light"
+    },
+    {
+      "route": "/about",
+      "width": 1440,
+      "theme": "light"
+    },
+    {
+      "route": "/announcements",
+      "width": 1440,
+      "theme": "light"
+    },
+    {
+      "route": "/privacy",
+      "width": 1440,
+      "theme": "light"
+    },
+    {
+      "route": "/terms",
+      "width": 1440,
+      "theme": "light"
+    },
+    {
+      "route": "/minors",
+      "width": 1440,
+      "theme": "light"
+    },
+    {
+      "route": "/status",
+      "width": 1440,
+      "theme": "light"
+    },
+    {
+      "route": "/compliance",
+      "width": 1440,
+      "theme": "light"
+    },
+    {
+      "route": "/",
+      "width": 1440,
+      "theme": "dark"
+    },
+    {
+      "route": "/world",
+      "width": 1440,
+      "theme": "dark"
+    },
+    {
+      "route": "/courses",
+      "width": 1440,
+      "theme": "dark"
+    },
+    {
+      "route": "/courses/daily-words",
+      "width": 1440,
+      "theme": "dark"
+    },
+    {
+      "route": "/courses/clear-grammar",
+      "width": 1440,
+      "theme": "dark"
+    },
+    {
+      "route": "/courses/listening",
+      "width": 1440,
+      "theme": "dark"
+    },
+    {
+      "route": "/courses/reading",
+      "width": 1440,
+      "theme": "dark"
+    },
+    {
+      "route": "/courses/speaking",
+      "width": 1440,
+      "theme": "dark"
+    },
+    {
+      "route": "/courses/writing",
+      "width": 1440,
+      "theme": "dark"
+    },
+    {
+      "route": "/method",
+      "width": 1440,
+      "theme": "dark"
+    },
+    {
+      "route": "/start",
+      "width": 1440,
+      "theme": "dark"
+    },
+    {
+      "route": "/help",
+      "width": 1440,
+      "theme": "dark"
+    },
+    {
+      "route": "/about",
+      "width": 1440,
+      "theme": "dark"
+    },
+    {
+      "route": "/announcements",
+      "width": 1440,
+      "theme": "dark"
+    },
+    {
+      "route": "/privacy",
+      "width": 1440,
+      "theme": "dark"
+    },
+    {
+      "route": "/terms",
+      "width": 1440,
+      "theme": "dark"
+    },
+    {
+      "route": "/minors",
+      "width": 1440,
+      "theme": "dark"
+    },
+    {
+      "route": "/status",
+      "width": 1440,
+      "theme": "dark"
+    },
+    {
+      "route": "/compliance",
+      "width": 1440,
+      "theme": "dark"
+    }
+  ],
+  "errors": [],
+  "failure": null,
+  "publicProjection": {
+    "source": "gateway",
+    "state": "empty",
+    "errorCode": null
+  }
+}

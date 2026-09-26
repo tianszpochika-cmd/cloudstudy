@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import ExperienceHeader from '../components/ExperienceHeader.vue'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import type { PerformanceLevel } from '@englishflow/performance'
 import { updateListeningProgress } from '../api/b3'
 import { extractPeaksFromArrayBuffer, peaksToBars } from '../platform/waveform'
 import { useB3Store } from '../stores/b3'
 
 const store = useB3Store()
+const performanceNames: Record<PerformanceLevel, string> = { Ultra: '极致', High: '高清', Medium: '标准', Performance: '省流畅' }
 const answer = ref('')
 const activeSegment = ref(0)
 const submitted = ref(false)
@@ -61,23 +63,22 @@ async function savePosition(): Promise<void> { if (!audio.value || !store.listen
 </script>
 
 <template>
-  <p class="performance-note">性能档位：{{ store.performanceLevel }} · Performance 模式保留时间轴、字幕和听写</p>
   <section class="b3-page">
     <ExperienceHeader page="Listening" icon="headphones" title-id="listening-title" />
-    <div v-if="store.status === 'loading'" class="panel">正在读取授权听力素材…</div>
+    <div v-if="store.status === 'loading'" class="panel">正在读取听力素材…</div>
     <div v-else-if="store.status === 'error' || store.status === 'offline'" class="panel error">{{ store.message }}<button type="button" @click="store.loadListening">重新读取</button></div>
     <div v-else-if="material" class="grid">
       <article class="panel player">
-        <div class="waveform" :data-source="waveBars ? 'extracted' : 'fallback'" role="img" :aria-label="waveBars ? '已解码波形' : '轻量波形降级轨道'"><template v-if="waveBars"><i v-for="(bar, index) in waveBars" :key="`peak-${index}`" :style="{ height: `${Math.round(8 + bar * 84)}px` }"></i></template><template v-else><i v-for="n in 36" :key="n" :style="{ height: `${20 + (n % 7) * 9}px` }"></i></template></div>
-        <audio ref="audio" :src="audioSrc || undefined" controls preload="metadata" @timeupdate="onTimeUpdate" @pause="void savePosition"><track kind="captions" /></audio>
-        <div class="player-controls"><label>速度 <select v-model.number="playbackRate" @change="setRate"><option v-for="rate in PLAYBACK_RATES" :key="rate" :value="rate">{{ rate }}x</option></select></label><button type="button" @click="toggleLoop">{{ loopEnabled ? '关闭循环' : '单段循环' }}</button><button type="button" @click="markA">设 A</button><button type="button" @click="markB">设 B</button><button type="button" @click="blindSubtitle = !blindSubtitle">{{ blindSubtitle ? '揭示字幕' : '隐藏字幕' }}</button></div>
-        <p class="media-note">{{ audioSrc ? '已获得授权播放地址，播放位置会在暂停时保存。' : '当前内容版本未返回可播放授权地址；波形、时间轴和听写仍可检查，未伪造播放成功。' }}</p><small class="performance-note">性能档位：{{ store.performanceLevel }} · Performance 模式保留时间轴、字幕和听写</small>
+        <div v-if="audioSrc" class="waveform" :data-source="waveBars ? 'extracted' : 'fallback'" role="img" :aria-label="waveBars ? '已解码波形' : '波形预览'"><template v-if="waveBars"><i v-for="(bar, index) in waveBars" :key="`peak-${index}`" :style="{ height: `${Math.round(8 + bar * 84)}px` }"></i></template><template v-else><i v-for="n in 36" :key="n" :style="{ height: `${20 + (n % 7) * 9}px` }"></i></template></div>
+        <audio v-if="audioSrc" ref="audio" :src="audioSrc" controls preload="metadata" @timeupdate="onTimeUpdate" @pause="void savePosition"><track kind="captions" /></audio>
+        <div v-if="audioSrc" class="player-controls"><label>速度 <select v-model.number="playbackRate" @change="setRate"><option v-for="rate in PLAYBACK_RATES" :key="rate" :value="rate">{{ rate }}x</option></select></label><button type="button" @click="toggleLoop">{{ loopEnabled ? '关闭循环' : '单段循环' }}</button><button type="button" @click="markA">设 A</button><button type="button" @click="markB">设 B</button><button type="button" @click="blindSubtitle = !blindSubtitle">{{ blindSubtitle ? '揭示字幕' : '隐藏字幕' }}</button></div>
+        <p class="media-note">{{ audioSrc ? '音频已就绪，暂停时会保存播放位置。' : '音频暂不可用，仍可查看时间轴和听写。' }}</p><small class="performance-note">性能模式：{{ performanceNames[store.performanceLevel] }}</small>
         <div class="player-head"><div><p class="eyebrow">{{ material.cefrLevel }} · {{ material.durationMs }}ms</p><h3>{{ material.title }}</h3></div><span class="rights">{{ material.rightsStatus }}</span></div>
         <div class="segments"><button v-for="(item, index) in material.segments" :key="item.segmentId" type="button" :class="{ active: activeSegment === index }" @click="selectSegment(index)"><span>{{ item.startMs }}–{{ item.endMs }}ms</span>{{ blindSubtitle ? '字幕已隐藏' : item.text }}</button></div>
       </article>
-      <article v-if="segment" class="panel dictation"><p class="eyebrow">听写 · {{ segment.segmentId }}</p><h3>先听，再写下来</h3><div class="token-row"><span v-for="token in segment.tokens" :key="token.tokenId" :title="`${token.startMs}–${token.endMs}ms`">{{ token.text }}</span></div><textarea v-model="answer" rows="4" placeholder="答案提交到服务端规则判定，不使用本地猜测"></textarea><button type="button" :disabled="!answer.trim()" @click="submit">提交听写</button><div v-if="submitted && store.dictationResult" class="result"><strong>{{ store.dictationResult.correct ? '听写完成' : '继续修复' }}</strong><span>得分 {{ Math.round(store.dictationResult.score * 100) }} · {{ store.dictationResult.feedbackCodes.join(' / ') }}</span></div><small>音变标注：{{ segment.annotations.map((item) => item.label).join('、') || '暂无教研标注' }}；不做 AI 语音评分。</small></article>
+      <article v-if="segment" class="panel dictation"><p class="eyebrow">听写 · {{ segment.segmentId }}</p><h3>先听，再写下来</h3><div class="token-row"><span v-for="token in segment.tokens" :key="token.tokenId" :title="`${token.startMs}–${token.endMs}ms`">{{ token.text }}</span></div><textarea v-model="answer" rows="4" placeholder="听到什么就写下来"></textarea><button type="button" :disabled="!answer.trim()" @click="submit">提交听写</button><div v-if="submitted && store.dictationResult" class="result"><strong>{{ store.dictationResult.correct ? '听写完成' : '继续修复' }}</strong><span>得分 {{ Math.round(store.dictationResult.score * 100) }} · {{ store.dictationResult.feedbackCodes.join(' / ') }}</span></div><small>音变标注：{{ segment.annotations.map((item) => item.label).join('、') || '暂无' }}</small></article>
     </div>
-    <div v-else class="panel">服务端没有返回素材，未使用本地样例填充。</div>
+    <div v-else class="panel">暂无可用的听力素材。</div>
   </section>
 </template>
 

@@ -20,6 +20,7 @@ const checks = [
   ['content.multimodal-experiences', 'content_service.b3_content_experience', " WHERE availability = 'PUBLISHED'", 12],
   ['content.phonemes', 'content_service.b3_content_experience', " WHERE availability = 'PUBLISHED' AND resource_type = 'PHONEME'", 48],
   ['content.public-site-facets', 'content_service.content_public_site_facet', " WHERE status = 'PUBLISHED'", 6],
+  ['content.public-site-web-unavailable', 'content_service.content_public_site_facet', " WHERE facet_id = 'download-learner-web' AND ui_locale IN ('zh-CN', 'en-US') AND facet_type = 'DOWNLOAD' AND status = 'PUBLISHED' AND JSON_UNQUOTE(JSON_EXTRACT(payload_json, '$.platform')) = 'WEB' AND JSON_UNQUOTE(JSON_EXTRACT(payload_json, '$.status')) = 'UNAVAILABLE' AND JSON_EXTRACT(payload_json, '$.downloadUrl') IS NULL", 2],
   ['learner.profile', 'learner_service.b25_learner_profile', " WHERE status = 'ACTIVE'", 1],
   ['learner.goal', 'learner_service.b25_learner_goal', " WHERE status = 'ACTIVE'", 1],
   ['learner.preferences', 'learner_service.b25_learner_preferences', '', 1],
@@ -43,7 +44,6 @@ const checks = [
   ['social.report', 'social_service.soc_report', " WHERE state IN ('RECEIVED', 'TRIAGED', 'APPEALED')", 1],
   ['social.leaderboard', 'social_service.soc_leaderboard_projection', " WHERE projection_state = 'PUBLISHED'", 1],
   ['notification.message', 'notification_service.notification_message', '', 1],
-  ['notification.offline-package', 'notification_service.notification_offline_package', " WHERE state = 'PUBLISHED'", 1],
   ['notification.recovery-task', 'notification_service.notification_workflow_task', " WHERE state IN ('QUEUED', 'RETRY_SCHEDULED', 'DEAD_LETTER', 'MANUAL_RECOVERY')", 1],
   ['admin.projection', 'admin_ops_service.admin_projection', '', 1],
   ['admin.ticket', 'admin_ops_service.support_ticket', '', 1],
@@ -98,6 +98,27 @@ for (const [name, sql, minimum] of customChecks) {
   if (!Number.isFinite(value) || value < minimum) failures.push(`${name}=${value} < ${minimum}`);
 }
 
+const syntheticOfflinePublished = scalar(`SELECT COUNT(*)
+  FROM notification_service.notification_offline_package
+ WHERE state = 'PUBLISHED'
+   AND (package_id LIKE 'bulk-100x-notification_offli-package-%'
+     OR package_id LIKE 'local-10x-offline-package-%')`);
+counts['notification.synthetic-offline-published'] = syntheticOfflinePublished;
+if (syntheticOfflinePublished !== 0) {
+  failures.push(`notification.synthetic-offline-published=${syntheticOfflinePublished} > 0`);
+}
+
+const unapprovedPublicSiteFacts = scalar(`SELECT COUNT(*)
+  FROM content_service.content_public_site_facet
+ WHERE status = 'PUBLISHED'
+   AND ((facet_type = 'COMPLIANCE'
+         AND facet_id IN ('compliance-privacy-data', 'compliance-adult-phase-boundary'))
+     OR (facet_type = 'ANNOUNCEMENT' AND facet_id = 'announcement-local-phase1-runtime'))`);
+counts['content.public-site-unapproved-facts'] = unapprovedPublicSiteFacts;
+if (unapprovedPublicSiteFacts !== 0) {
+  failures.push(`content.public-site-unapproved-facts=${unapprovedPublicSiteFacts} > 0`);
+}
+
 const subjectChecks = [
   ['learner.profile', 'learner_service.b25_learner_profile', " WHERE status = 'ACTIVE'", 'principal_id'],
   ['learner.goal', 'learner_service.b25_learner_goal', " WHERE status = 'ACTIVE'", 'principal_id'],
@@ -118,7 +139,7 @@ if (subject) {
   }
 }
 
-const result = { status: failures.length ? 'FAIL' : 'PASS', checks: checks.length + customChecks.length, counts };
+const result = { status: failures.length ? 'FAIL' : 'PASS', checks: checks.length + customChecks.length + 2, counts };
 if (subject) {
   result.subject = subject;
   result.subjectCounts = subjectCounts;

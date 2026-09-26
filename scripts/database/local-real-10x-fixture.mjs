@@ -127,8 +127,6 @@ const b25AssessmentReportIds = each((index) => stableUuid('b25-assessment-report
 const b10SessionIds = each((index) => fixtureText('b10-session', index));
 const b10AttemptIds = each((index) => fixtureText('b10-attempt', index));
 const b10ReportIds = each((index) => fixtureText('b10-report', index));
-const legacyAssessmentSessionIds = each((index) => stableUuid('legacy-assessment-session', index));
-const legacyAssessmentAttemptIds = each((index) => stableUuid('legacy-assessment-attempt', index));
 const mediaAssetIds = each((index) => stableUuid('media-asset', index));
 const mediaRenditionIds = each((index) => stableUuid('media-rendition', index));
 const socialRoomIds = each((index) => fixtureText('room', index));
@@ -345,21 +343,23 @@ const b3ExperienceRows = B3_RESOURCE_TYPES.flatMap((resourceType, typeIndex) => 
   const resourceKey = fixtureText(resourceType.toLowerCase(), index);
   return [
     fixtureText(`experience-${resourceType.toLowerCase()}`, index), TENANT_ID,
-    experienceDomain(resourceType), resourceType, resourceKey, 301 + index, 'PUBLISHED',
+    experienceDomain(resourceType), resourceType, resourceKey, 301 + index, 'UNPUBLISHED',
     jsonValue(experiencePayload(resourceType, index, resourceKey)),
   ];
 }));
 
+// Keep coverage fixtures in the owner schema without presenting placeholder
+// cards as published public announcements, downloads, or legal notices.
 const publicFacetRows = each((index) => [
   fixtureText('facet', index), 'zh-CN', ['DOWNLOAD', 'ANNOUNCEMENT', 'COMPLIANCE', 'CAMPAIGN'][(index - 1) % 4],
-  'PUBLISHED', jsonValue({ fixtureId: FIXTURE_ID, title: `本地站点信息 ${index}`, order: index }), 1, now, null, now,
+  'UNPUBLISHED', jsonValue({ fixtureId: FIXTURE_ID, title: `本地站点信息 ${index}`, order: index }), 1, now, null, now,
 ]);
 
 const b2ChunkRows = each((index) => [
   321000 + index, TENANT_ID, `build a habit ${index}`, 'COLLOCATION', `养成一个习惯 ${index}`,
   'Local fixture chunk for vocabulary detail.', 'DAILY_ROUTINE',
   jsonValue([{ sentence: `It takes time to build a habit ${index}.`, translation: `养成习惯需要时间 ${index}。` }]),
-  FIXTURE_ID, 'PUBLISHED',
+  FIXTURE_ID, 'UNPUBLISHED',
 ]);
 
 // Learning owner facts ----------------------------------------------------
@@ -513,62 +513,6 @@ const b10ReportRows = each((index) => [
   TENANT_ID, 1, 'READY', index % 4 === 0 ? 'PARTIAL' : 'FULL',
   jsonValue(index % 4 === 0 ? ['SUBJECT_VERB_AGREEMENT'] : []), index % 4 === 0 ? 'WEAK' : 'STABLE',
   jsonValue({ contentVersionId: contentVersionIds[index - 1], snapshotId: 980000 + index }), now,
-]);
-
-const legacyAssessmentSessionRows = each((index) => [
-  legacyAssessmentSessionIds[index - 1], SUBJECTS[index - 1], TENANT_ID, 'PRACTICE', 'CLOSED',
-  now, raw('DATE_ADD(UTC_TIMESTAMP(6), INTERVAL 1 DAY)'), now, now,
-]);
-
-const legacyAssessmentSessionExerciseRows = each((index) => [
-  legacyAssessmentSessionIds[index - 1], 990000 + index, 1, 'CONTENT', 'VERIFIED',
-  jsonValue({ fixtureId: FIXTURE_ID, contentCode: contentCodes[index - 1], itemId: b25ItemIds[index - 1] }),
-]);
-
-const legacyAssessmentAttemptFactRows = each((index) => [
-  legacyAssessmentAttemptIds[index - 1], legacyAssessmentSessionIds[index - 1], 990000 + index,
-  991000 + index, SUBJECTS[index - 1], TENANT_ID, fixtureText('legacy-submission', index), 1,
-  sha256(`${FIXTURE_ID}:legacy-answer:${index}`), now,
-]);
-
-const legacyAssessmentAnswerRows = each((index) => [
-  legacyAssessmentAttemptIds[index - 1], jsonValue({ optionCode: 'A', fixtureId: FIXTURE_ID }), now,
-]);
-
-const legacyAssessmentScoreRows = each((index) => [
-  legacyAssessmentAttemptIds[index - 1], 'ASSESSED', 70 + index, 100, index % 4 !== 0,
-  jsonValue(index % 4 === 0 ? ['SUBJECT_VERB_AGREEMENT'] : []), 'local-rule-v1',
-  jsonValue({ earned: 70 + index, max: 100 }), now,
-]);
-
-const legacyAssessmentCheckpointRows = each((index) => [
-  stableUuid('legacy-assessment-checkpoint', index), legacyAssessmentSessionIds[index - 1], 1,
-  990000 + index, sha256(`${FIXTURE_ID}:legacy-state:${index}`), 120000 + index, now,
-]);
-
-const legacyAssessmentReportRows = each((index) => [
-  992000 + index, legacyAssessmentSessionIds[index - 1], SUBJECTS[index - 1], TENANT_ID, 'PRACTICE',
-  'READY', 70 + index, 100, 1, 1, 'local-calculation-v1', 'local-score-policy-v1', now,
-  jsonValue({ score: 70 + index }), jsonValue({ evidence: [`local-evidence-${index}`] }),
-  jsonValue(index % 4 === 0 ? ['SUBJECT_VERB_AGREEMENT'] : []),
-]);
-
-const legacyAssessmentMistakeRows = each((index) => [
-  993000 + index, SUBJECTS[index - 1], TENANT_ID, 990000 + index, 994000 + index,
-  'SUBJECT_VERB_AGREEMENT', FIXTURE_ID, sha256(`${FIXTURE_ID}:mistake:${index}`), 1,
-  'OPEN', 'WEAK', now, now, raw('DATE_ADD(UTC_TIMESTAMP(6), INTERVAL 1 DAY)'),
-  jsonValue({ fixtureId: FIXTURE_ID, reason: 'synthetic failed answer' }),
-]);
-
-const legacyAssessmentAttemptRows = each((index) => [
-  legacyAssessmentAttemptIds[index - 1], SUBJECTS[index - 1], TENANT_ID, 1,
-  'ASSESSED', sha256(`${FIXTURE_ID}:legacy-answer:${index}`), index % 4 === 0 ? 'PARTIAL' : 'FULL',
-  fixtureText('legacy-attempt-idem', index), now, now,
-]);
-
-const legacyAssessmentCheckpointRowsV1 = each((index) => [
-  stableUuid('legacy-checkpoint', index), legacyAssessmentAttemptIds[index - 1], 1,
-  sha256(`${FIXTURE_ID}:legacy-checkpoint:${index}`), now,
 ]);
 
 // Media owner facts -------------------------------------------------------
@@ -786,17 +730,6 @@ const offlineReceiptRows = each((index) => [
   sha256(`${FIXTURE_ID}:offline-receipt:${index}`), index, 'ACCEPTED', 1, now,
 ]);
 
-const offlinePackageRows = each((index) => [
-  fixtureText('offline-package', index), 'ENGLISH_PHASE1', `10x-${index}`, 'PUBLISHED', 4096 + index,
-  2, sha256(`${FIXTURE_ID}:offline-package:${index}`), `local-signature-${index}`, '1.0.0',
-  raw('DATE_ADD(UTC_TIMESTAMP(6), INTERVAL 365 DAY)'), jsonValue([fixtureText('offline-part-1', index), fixtureText('offline-part-2', index)]), now,
-]);
-
-const offlineDownloadRows = each((index) => [
-  fixtureText('offline-download', index), fixtureText('offline-package', index), TENANT_ID,
-  SUBJECTS[index - 1], deviceIds[index - 1], 'COMPLETED', jsonValue([0, 1]), 4096 + index, now, now,
-]);
-
 const offlineEventRows = each((index) => [
   910000 + index, TENANT_ID, SUBJECTS[index - 1], deviceIds[index - 1], fixtureText('offline-batch', index),
   fixtureText('offline-event', index), 'LEARNING_PROGRESS_REPLAY', fixtureText('learning-task', index), 1, now,
@@ -810,11 +743,11 @@ const adminProjectionRows = each((index) => [
 ]);
 
 const supportTicketRows = each((index) => [
-  stableUuid('support-ticket', index), TENANT_ID, SUBJECTS[index - 1],
+  stableUuid('support-ticket', index), 'local-support-fixture', SUBJECTS[index - 1],
   index % 3 === 0 ? 'RESOLVED' : 'OPEN', index % 2 ? 'NORMAL' : 'HIGH',
   `本地测试工单摘要 ${index}`, now, now, 'TECHNICAL', fixtureText('ticket-resource', index),
   sha256(`${FIXTURE_ID}:ticket:${index}`), raw('DATE_ADD(UTC_TIMESTAMP(6), INTERVAL 2 DAY)'),
-  null, fixtureText('admin-audit', index), 1, jsonValue([]),
+  null, null, 1, jsonValue([]),
 ]);
 
 const adminAuditRows = each((index) => [
@@ -833,25 +766,27 @@ const adminReviewStateRows = each((index) => [
 ]);
 
 // Analytics owner facts ---------------------------------------------------
+// Keep volume-test analytics apart from the platform tenant shown in the admin dashboard.
+const ANALYTICS_FIXTURE_TENANT_ID = 'local-analytics-fixture';
 const analyticsEventReceiptRows = each((index) => [
-  TENANT_ID, fixtureText('analytics-event', index), 'learning.review.recorded', 'v1',
+  ANALYTICS_FIXTURE_TENANT_ID, fixtureText('analytics-event', index), 'learning.review.recorded', 'v1',
   fixtureText('analytics-dedupe', index), sha256(`${FIXTURE_ID}:analytics:${index}`), 'metric-v1',
   'ACCEPTED', null, now,
 ]);
 
 const analyticsEventJournalRows = each((index) => [
-  TENANT_ID, fixtureText('analytics-event', index), 'learning.review.recorded', 'v1',
+  ANALYTICS_FIXTURE_TENANT_ID, fixtureText('analytics-event', index), 'learning.review.recorded', 'v1',
   fixtureText('analytics-dedupe', index), sha256(`${FIXTURE_ID}:analytics:${index}`), now,
   jsonValue({ fixtureId: FIXTURE_ID, domain: 'learning', value: 1 }),
 ]);
 
 const analyticsMetricRows = each((index) => [
-  TENANT_ID, fixtureText('metric', index), 'metric-v1', dateValue, `local-dimension-${index}`,
+  ANALYTICS_FIXTURE_TENANT_ID, fixtureText('metric', index), 'metric-v1', dateValue, `local-dimension-${index}`,
   'READY', index, index * 10, now, sha256(`${FIXTURE_ID}:metric:${index}`), 1, null, now,
 ]);
 
 const analyticsRecomputeRows = each((index) => [
-  fixtureText('recompute-job', index), TENANT_ID, 'metric-v1', dateValue, dateValue, 'COMPLETED',
+  fixtureText('recompute-job', index), ANALYTICS_FIXTURE_TENANT_ID, 'metric-v1', dateValue, dateValue, 'COMPLETED',
   1, 1, 'LOCAL_FIXTURE_REPLAY', now, now,
 ]);
 
@@ -962,27 +897,6 @@ function buildStatements() {
     ['attempt_id', 'session_id', 'principal_id', 'tenant_id', 'checkpoint_version', 'item_cursor', 'completed_item_ids_json', 'checkpoint_digest', 'saved_at'], b10CheckpointRows));
   statements.push(insert('assessment_service', 'b10_assessment_report',
     ['report_id', 'attempt_id', 'session_id', 'principal_id', 'tenant_id', 'report_version', 'status', 'score_bucket', 'mistake_codes_json', 'mastery_signal', 'pin_json', 'generated_at'], b10ReportRows));
-  statements.push(insert('assessment_service', 'assessment_session',
-    ['session_id', 'subject_id', 'tenant_id', 'session_type', 'session_status', 'created_at', 'deadline_at', 'started_at', 'closed_at'], legacyAssessmentSessionRows));
-  statements.push(insert('assessment_service', 'assessment_session_exercise',
-    ['session_id', 'exercise_id', 'position_no', 'source_bucket', 'verification_stage', 'snapshot_json'], legacyAssessmentSessionExerciseRows));
-  statements.push(insert('assessment_service', 'assessment_attempt_fact',
-    ['attempt_id', 'session_id', 'exercise_id', 'submission_id', 'subject_id', 'tenant_id', 'client_submission_id', 'revision', 'answer_hash', 'submitted_at'], legacyAssessmentAttemptFactRows));
-  statements.push(insert('assessment_service', 'assessment_answer',
-    ['attempt_id', 'answer_json', 'created_at'], legacyAssessmentAnswerRows));
-  statements.push(insert('assessment_service', 'assessment_score_fact',
-    ['attempt_id', 'scoring_status', 'earned_score', 'max_score', 'correct', 'error_causes_json', 'rule_version', 'score_breakdown_json', 'updated_at'], legacyAssessmentScoreRows));
-  statements.push(insert('assessment_service', 'assessment_checkpoint_fact',
-    ['checkpoint_id', 'session_id', 'checkpoint_seq', 'current_exercise_id', 'client_state_hash', 'monotonic_elapsed_ms', 'saved_at'], legacyAssessmentCheckpointRows));
-  statements.push(insert('assessment_service', 'assessment_report',
-    ['report_id', 'session_id', 'subject_id', 'tenant_id', 'report_type', 'report_status', 'score', 'max_score', 'completed_count', 'total_count', 'calculation_version', 'score_policy_version', 'generated_at', 'metrics_json', 'evidence_json', 'mistakes_json'], legacyAssessmentReportRows));
-  statements.push(insert('assessment_service', 'assessment_mistake',
-    ['mistake_id', 'subject_id', 'tenant_id', 'item_id', 'question_id', 'error_category', 'rule_version', 'answer_hash', 'wrong_count', 'mistake_status', 'mastery_status', 'first_error_at', 'last_error_at', 'next_action_at', 'reason_trace_json'], legacyAssessmentMistakeRows));
-  statements.push(insert('assessment_service', 'assessment_attempt',
-    ['attempt_id', 'subject_id', 'tenant_id', 'assessment_version', 'attempt_status', 'answer_digest', 'score_bucket', 'idempotency_key', 'created_at', 'updated_at'], legacyAssessmentAttemptRows));
-  statements.push(insert('assessment_service', 'assessment_checkpoint',
-    ['checkpoint_id', 'attempt_id', 'checkpoint_seq', 'payload_hash', 'created_at'], legacyAssessmentCheckpointRowsV1));
-
   statements.push(insert('media_service', 'media_asset',
     ['asset_id', 'tenant_id', 'owner_subject', 'content_version_id', 'asset_version', 'checksum_sha256', 'size_bytes', 'rights_status', 'asset_status', 'created_at', 'updated_at', 'asset_key', 'kind', 'mime_type', 'storage_provider', 'bucket_name', 'object_key', 'object_version', 'supports_range', 'chunk_size_bytes', 'part_count', 'transcoding_status', 'content_role', 'segment_id', 'rights_id', 'license_code', 'permitted_channels', 'rights_starts_at', 'rights_expires_at', 'allow_offline', 'authorization_evidence_ref'], mediaAssetRows));
   statements.push(insert('media_service', 'media_rendition',
@@ -1007,20 +921,9 @@ function buildStatements() {
   statements.push(insert('gamification_service', 'gamification_game_session',
     ['session_id', 'subject_id', 'game_code', 'state', 'session_json', 'created_at', 'updated_at'], gameSessionRows));
 
-  statements.push(insert('social_service', 'soc_study_room',
-    ['id', 'room_id', 'tenant_id', 'owner_subject', 'theme_code', 'display_name_key', 'capacity', 'state', 'room_version', 'created_at', 'updated_at'], socialRoomRows));
-  statements.push(insert('social_service', 'soc_room_member',
-    ['id', 'membership_id', 'room_id', 'tenant_id', 'subject_id', 'state', 'presence_state', 'room_visibility', 'privacy_version', 'joined_at', 'left_at', 'last_activity_at'], socialMemberRows));
-  statements.push(insert('social_service', 'soc_seat_lease',
-    ['id', 'room_id', 'tenant_id', 'seat_index', 'subject_id', 'state', 'lease_id', 'lease_version', 'lease_expires_at', 'disconnected_at', 'last_activity_at', 'release_reason', 'released_at'], socialSeatRows));
-  statements.push(insert('social_service', 'soc_focus_state',
-    ['id', 'focus_id', 'tenant_id', 'room_id', 'subject_id', 'seat_index', 'lease_id', 'duration_minutes', 'focus_tag_code', 'state', 'started_at', 'ended_at', 'server_elapsed_seconds', 'qualified_seconds'], socialFocusRows));
-  statements.push(insert('social_service', 'soc_interaction',
-    ['id', 'event_id', 'client_event_id', 'tenant_id', 'room_id', 'sender_subject_id', 'target_subject_id', 'target_seat_index', 'preset_code', 'state', 'created_at', 'delivered_at'], socialInteractionRows));
-  statements.push(insert('social_service', 'soc_leaderboard_projection',
-    ['id', 'tenant_id', 'leaderboard_kind', 'period_type', 'period_start', 'subject_id', 'score', 'qualified_units', 'source_watermark', 'projection_state', 'snapshot_version', 'last_projected_at'], socialLeaderboardRows));
-  statements.push(insert('social_service', 'soc_report',
-    ['id', 'report_id', 'tenant_id', 'room_id', 'reporter_subject_id', 'target_subject_id', 'target_seat_index', 'reason_code', 'state', 'client_event_id', 'created_at', 'updated_at'], socialReportRows));
+  // Social fixtures are intentionally excluded from the shared platform seed.
+  // They belong in an isolated database so re-running other domain fixtures
+  // cannot make synthetic rooms or projections visible to platform learners.
 
   statements.push(insert('commerce_service', 'commerce_sku',
     ['tenant_id', 'sku_id', 'version', 'title', 'entitlement_code', 'currency', 'amount_minor', 'status', 'effective_from', 'created_at'], commerceSkuRows));
@@ -1067,10 +970,6 @@ function buildStatements() {
     ['task_id', 'tenant_id', 'principal_id', 'action', 'aggregate_type', 'aggregate_id', 'state', 'attempt', 'max_attempts', 'reason_code', 'next_run_at', 'updated_at'], notificationWorkflowRows));
   statements.push(insert('notification_service', 'offline_sync_receipt',
     ['tenant_id', 'subject_id', 'device_id', 'client_event_id', 'fingerprint', 'client_seq', 'status', 'server_version', 'accepted_at'], offlineReceiptRows));
-  statements.push(insert('notification_service', 'notification_offline_package',
-    ['package_id', 'package_code', 'version_code', 'state', 'size_bytes', 'part_count', 'sha256', 'signature', 'min_client_version', 'expires_at', 'signed_part_urls_json', 'created_at'], offlinePackageRows));
-  statements.push(insert('notification_service', 'notification_offline_download',
-    ['download_id', 'package_id', 'tenant_id', 'principal_id', 'device_id', 'state', 'completed_parts_json', 'downloaded_bytes', 'created_at', 'updated_at'], offlineDownloadRows));
   statements.push(insert('notification_service', 'notification_offline_event',
     ['event_seq', 'tenant_id', 'principal_id', 'device_id', 'client_batch_id', 'client_event_id', 'event_type', 'entity_id', 'entity_version', 'occurred_at', 'payload_json', 'created_at'], offlineEventRows));
 
@@ -1152,16 +1051,6 @@ export const TABLE_CHECKS = [
   ['assessment.b10-attempt', 'assessment_service.b10_assessment_attempt', ownerPredicate('principal_id'), 10],
   ['assessment.b10-checkpoint', 'assessment_service.b10_assessment_checkpoint', ownerPredicate('principal_id'), 10],
   ['assessment.b10-report', 'assessment_service.b10_assessment_report', ownerPredicate('principal_id'), 10],
-  ['assessment.legacy-session', 'assessment_service.assessment_session', ownerPredicate('subject_id'), 10],
-  ['assessment.legacy-session-exercise', 'assessment_service.assessment_session_exercise', `session_id IN (${listSql(legacyAssessmentSessionIds)})`, 10],
-  ['assessment.legacy-attempt-fact', 'assessment_service.assessment_attempt_fact', ownerPredicate('subject_id'), 10],
-  ['assessment.legacy-answer', 'assessment_service.assessment_answer', `attempt_id IN (${listSql(legacyAssessmentAttemptIds)})`, 10],
-  ['assessment.legacy-score', 'assessment_service.assessment_score_fact', `attempt_id IN (${listSql(legacyAssessmentAttemptIds)})`, 10],
-  ['assessment.legacy-checkpoint-fact', 'assessment_service.assessment_checkpoint_fact', `session_id IN (${listSql(legacyAssessmentSessionIds)})`, 10],
-  ['assessment.legacy-report', 'assessment_service.assessment_report', ownerPredicate('subject_id'), 10],
-  ['assessment.legacy-mistake', 'assessment_service.assessment_mistake', `rule_version = '${FIXTURE_ID}'`, 10],
-  ['assessment.legacy-attempt', 'assessment_service.assessment_attempt', ownerPredicate('subject_id'), 10],
-  ['assessment.legacy-checkpoint', 'assessment_service.assessment_checkpoint', `attempt_id IN (${listSql(legacyAssessmentAttemptIds)})`, 10],
   ['media.asset', 'media_service.media_asset', prefixPredicate('asset_key'), 10],
   ['media.rendition', 'media_service.media_rendition', prefixPredicate('rendition_key'), 10],
   ['gamification.xp', 'gamification_service.xp_ledger', ownerPredicate('subject_id'), 10],
@@ -1178,13 +1067,17 @@ export const TABLE_CHECKS = [
     10,
   ]),
   ['gamification.game-session', 'gamification_service.gamification_game_session', prefixPredicate('session_id'), 10],
-  ['social.room', 'social_service.soc_study_room', prefixPredicate('room_id'), 10],
-  ['social.member', 'social_service.soc_room_member', prefixPredicate('membership_id'), 10],
-  ['social.seat', 'social_service.soc_seat_lease', prefixPredicate('lease_id'), 10],
-  ['social.focus', 'social_service.soc_focus_state', prefixPredicate('focus_id'), 10],
-  ['social.interaction', 'social_service.soc_interaction', prefixPredicate('event_id'), 10],
-  ['social.leaderboard', 'social_service.soc_leaderboard_projection', prefixPredicate('source_watermark'), 10],
-  ['social.report', 'social_service.soc_report', prefixPredicate('report_id'), 10],
+  // Social fixtures are excluded from the shared platform seed. The live
+  // checker separately requires zero platform rows for every fixture room ID.
+  ['social.room', 'social_service.soc_study_room', prefixPredicate('room_id'), 0],
+  ['social.member', 'social_service.soc_room_member', prefixPredicate('membership_id'), 0],
+  // A real lease expires and clears lease_id while the seat remains. Count the
+  // fixture's rooms so the coverage check survives normal timeout recovery.
+  ['social.seat', 'social_service.soc_seat_lease', prefixPredicate('room_id'), 0],
+  ['social.focus', 'social_service.soc_focus_state', prefixPredicate('focus_id'), 0],
+  ['social.interaction', 'social_service.soc_interaction', prefixPredicate('event_id'), 0],
+  ['social.leaderboard', 'social_service.soc_leaderboard_projection', prefixPredicate('source_watermark'), 0],
+  ['social.report', 'social_service.soc_report', prefixPredicate('report_id'), 0],
   ['commerce.sku', 'commerce_service.commerce_sku', prefixPredicate('sku_id'), 10],
   ['commerce.price-snapshot', 'commerce_service.commerce_price_snapshot', prefixPredicate('sku_id'), 10],
   ['commerce.order', 'commerce_service.commerce_order', prefixPredicate('order_id'), 10],
@@ -1207,18 +1100,16 @@ export const TABLE_CHECKS = [
   ['notification.trusted-receipt', 'notification_service.notification_trusted_event_receipt', prefixPredicate('event_id'), 10],
   ['notification.workflow', 'notification_service.notification_workflow_task', ownerPredicate('principal_id'), 10],
   ['notification.offline-receipt', 'notification_service.offline_sync_receipt', ownerPredicate('subject_id'), 10],
-  ['notification.offline-package', 'notification_service.notification_offline_package', prefixPredicate('package_id'), 10],
-  ['notification.offline-download', 'notification_service.notification_offline_download', ownerPredicate('principal_id'), 10],
   ['notification.offline-event', 'notification_service.notification_offline_event', ownerPredicate('principal_id'), 10],
   ['admin.projection', 'admin_ops_service.admin_projection', prefixPredicate('resource_ref'), 10],
   ['admin.ticket', 'admin_ops_service.support_ticket', ownerPredicate('requester_subject'), 10],
   ['admin.audit', 'admin_ops_service.admin_audit_record', prefixPredicate('audit_id'), 10],
   ['admin.media-authorization', 'admin_ops_service.admin_media_authorization', ownerPredicate('subject_id'), 10],
   ['admin.review-state', 'admin_ops_service.admin_review_state', prefixPredicate('resource_ref'), 10],
-  ['analytics.event-receipt', 'analytics_service.analytics_event_receipt', prefixPredicate('event_id'), 10],
-  ['analytics.event-journal', 'analytics_service.analytics_event_journal', prefixPredicate('event_id'), 10],
-  ['analytics.metric', 'analytics_service.analytics_metric_projection', prefixPredicate('metric_id'), 10],
-  ['analytics.recompute-job', 'analytics_service.analytics_recompute_job', prefixPredicate('job_id'), 10],
+  ['analytics.event-receipt', 'analytics_service.analytics_event_receipt', `${prefixPredicate('event_id')} AND tenant_id = '${ANALYTICS_FIXTURE_TENANT_ID}'`, 10],
+  ['analytics.event-journal', 'analytics_service.analytics_event_journal', `${prefixPredicate('event_id')} AND tenant_id = '${ANALYTICS_FIXTURE_TENANT_ID}'`, 10],
+  ['analytics.metric', 'analytics_service.analytics_metric_projection', `${prefixPredicate('metric_id')} AND tenant_id = '${ANALYTICS_FIXTURE_TENANT_ID}'`, 10],
+  ['analytics.recompute-job', 'analytics_service.analytics_recompute_job', `${prefixPredicate('job_id')} AND tenant_id = '${ANALYTICS_FIXTURE_TENANT_ID}'`, 10],
 ];
 
 export const FUNCTION_CHECK_COUNT = TABLE_CHECKS.length;

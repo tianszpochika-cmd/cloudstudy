@@ -3,7 +3,7 @@ import MobilePageHeader from '../../components/MobilePageHeader.vue'
 import { useMobileExperience } from '../../platform/experience'
 const { experienceStyle, experienceMotion } = useMobileExperience()
 
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import { getUniRuntime, openUniPage } from '../../platform/uni-runtime'
 import { useLearnerContentStore } from '../../stores/learner-content'
@@ -15,13 +15,26 @@ const session = useSessionStore()
 const step = ref<1 | 2>(1)
 const goal = ref<string | null>(store.onboarding.goal)
 const quota = ref<number>(store.onboarding.quota ?? 15)
-const birthYear = ref<number | null>(store.onboarding.birthYear ?? new Date().getFullYear() - 18)
+const birthYear = ref<number | null>(null)
 const ageConfirmed = ref(false)
 const privacyConsent = ref(false)
 const termsConsent = ref(false)
 const saving = ref(false)
+const saveAttempted = ref(false)
 const adultError = ref<string | null>(null)
 let loaded = false
+watch(() => session.identityRevision, () => {
+  loaded = false
+  step.value = 1
+  goal.value = null
+  quota.value = 15
+  birthYear.value = null
+  ageConfirmed.value = false
+  privacyConsent.value = false
+  termsConsent.value = false
+  saveAttempted.value = false
+  adultError.value = null
+}, { flush: 'sync' })
 
 const adultBirthYearValid = computed(() => Boolean(birthYear.value && birthYear.value >= 1900 && birthYear.value <= new Date().getFullYear() - 18))
 const canContinue = computed(() => step.value === 1
@@ -45,14 +58,18 @@ onShow(async () => {
   await session.restore()
   if (!session.isAuthenticated) { goLogin('/pages/login/login?returnTo=%2Fpages%2Fonboarding%2Fonboarding'); return }
   if (loaded) return
-  store.restore()
-  await store.loadOnboarding()
-  goal.value = store.onboarding.goal
-  quota.value = store.onboarding.quota ?? 15
-  birthYear.value = store.onboarding.birthYear ?? new Date().getFullYear() - 18
-  ageConfirmed.value = store.onboarding.ageConfirmed
-  privacyConsent.value = store.onboarding.privacyConsent
-  termsConsent.value = store.onboarding.termsConsent
+  const revision = session.identityRevision
+  // Learner reads are protected until the adult gate and consents are complete.
+  // The bounded goal choices are available locally for first-time onboarding.
+  if (session.isLearningReady) {
+    await store.loadOnboarding()
+    if (revision !== session.identityRevision || !session.isAuthenticated) return
+    goal.value = store.onboarding.goal
+    quota.value = store.onboarding.quota ?? 15
+  } else {
+    goal.value = null
+    quota.value = 15
+  }
   loaded = true
 })
 
@@ -76,6 +93,7 @@ async function next(): Promise<void> {
 
   saving.value = true
   adultError.value = null
+  saveAttempted.value = true
   try {
     await store.saveOnboarding(goal.value as string, quota.value, {
       birthYear: Number(birthYear.value),
@@ -110,24 +128,23 @@ async function cancel(): Promise<void> {
       </view>
       <view :class="['yx-setup-progress__item', { active: step === 2 }]">
         <text class="yx-setup-progress__number">2</text>
-        <text>定制计划</text>
+        <text>选择目标</text>
       </view>
     </view>
 
     <view class="yx-card yx-onboarding-card">
       <view v-if="step === 1" class="yx-onboarding-step">
         <text class="section-kicker">确认身份与同意事项</text>
-        <text class="section-title">先确认你可以安心开始</text>
-        <text class="section-description">目前面向 18 岁及以上成人与大学生。请确认以下信息后继续。</text>
+        <text class="section-title">确认成人身份</text>
+        <text class="section-description">仅限已满 18 岁的学习者。</text>
         <label class="birth-year"><text>出生年份</text><input v-model.number="birthYear" type="number" inputmode="numeric" placeholder="例如 1995" aria-label="出生年份" /></label>
         <label class="consent"><checkbox :checked="ageConfirmed" @click="ageConfirmed = !ageConfirmed" /><text>我确认自己已满 18 周岁</text></label>
         <label class="consent"><checkbox :checked="privacyConsent" @click="privacyConsent = !privacyConsent" /><text>我同意隐私说明</text></label>
         <label class="consent"><checkbox :checked="termsConsent" @click="termsConsent = !termsConsent" /><text>我同意学习服务条款</text></label>
-        <text class="flow-note">完成确认后，就可以选择你的学习目标。</text>
       </view>
 
       <view v-else class="yx-onboarding-step">
-        <text class="section-kicker">定制你的学习计划</text>
+        <text class="section-kicker">选择学习目标</text>
         <text class="section-title">你想先解决什么？</text>
         <text class="section-description">选一个最重要的方向，我们会据此准备首日测评和学习任务。</text>
         <text class="field-title">学习目标</text>
@@ -142,7 +159,7 @@ async function cancel(): Promise<void> {
       </view>
 
       <text v-if="adultError" class="error" role="alert">{{ adultError }}</text>
-      <text v-if="store.lastError" class="error" role="alert">{{ store.lastError }}；请稍后重试。</text>
+      <text v-if="step === 2 && saveAttempted && store.onboardingStatus === 'offline'" class="error" role="alert">学习目标尚未保存，请重试。</text>
       <view class="onboarding-actions">
         <button tabindex="0" role="button" v-if="step === 2" class="yx-button yx-button--secondary" type="button" :disabled="saving" @click="step = 1">上一步</button>
         <button tabindex="0" role="button" class="yx-button" type="button" :disabled="!canContinue || saving || store.onboardingStatus === 'loading'" @click="next">{{ saving ? (step === 1 ? '正在确认…' : '正在保存…') : step === 1 ? '继续' : '保存并开始测评' }}</button>

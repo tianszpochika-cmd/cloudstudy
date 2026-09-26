@@ -1,24 +1,10 @@
 <script setup lang="ts">
 import { useOfficialSeo } from "~/utils/seo";
-import { buildPublicLearningEntry } from "~/utils/public-links.mjs";
-const { t, locale } = useSiteText(),
+const { t } = useSiteText(),
   config = useRuntimeConfig(),
-  route = useRoute(),
-  { officialThemeController } = useNuxtApp().$foundation;
-const mobile = useLearningDevice(),
+  mobile = useLearningDevice(),
   other = ref(false),
   copyState = ref("");
-const entry = (login = false) =>
-  buildPublicLearningEntry({
-    base: mobile.value
-      ? String(config.public.mobileH5Url)
-      : String(config.public.learnerWebUrl),
-    mobile: mobile.value,
-    login,
-    locale: locale.value,
-    theme: officialThemeController.theme,
-    campaign: route.query,
-  });
 const siteAddress = computed(
   () => String(config.public.siteUrl).replace(/\/$/, "") + "/start",
 );
@@ -54,14 +40,21 @@ useOfficialSeo({
               {{ t(mobile ? "official.c89f868063" : "official.c5973f1b79") }}
             </h2>
             <p>{{ t("official.cf5629c6ae") }}</p>
-            <a
+            <p class="start-footnote" role="status">
+              {{ t("official.c8a7b34f12") }}
+            </p>
+            <NuxtLink
+              class="start-footnote link-arrow"
+              to="/announcements"
+              >{{ t("official.c584d952d2") }}<SiteIcon name="arrow"
+            /></NuxtLink>
+            <NuxtLink
               class="btn btn-primary btn-wide"
-              :href="entry()"
-              data-learning-entry
-              >{{ t(mobile ? "official.c2573715f8" : "official.c8c7a38714")
+              to="/#practice-example"
+              data-sample-entry
+              >{{ t("official.c742e91d0b")
               }}<SiteIcon name="arrow"
-            /></a>
-            <p class="start-footnote">{{ t("official.c584d952d2") }}</p>
+            /></NuxtLink>
             <div class="switch-device">
               <SiteIcon :name="mobile ? 'monitor' : 'phone'" /><span>{{
                 t(mobile ? "official.ce6604926b" : "official.c0c4437e91")
@@ -70,13 +63,9 @@ useOfficialSeo({
                 {{ t("official.c7197b208b") }}<SiteIcon name="right" />
               </button>
             </div>
-            <div class="text-login">
-              {{ t("official.c605fd9419")
-              }}<a :href="entry(true)">{{ t("official.cfcc98f81f") }}</a>
-            </div>
           </div>
           <div class="start-benefits">
-            <span class="eyebrow">{{ t("official.cfc20bd937") }}</span>
+            <span class="eyebrow">{{ t("official.c4d8b2e671") }}</span>
             <h2>
               {{ t("official.c0f921987a") }}<br />{{ t("official.ce62733459") }}
             </h2>

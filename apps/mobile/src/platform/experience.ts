@@ -5,6 +5,7 @@ import { mobileExperienceMessages } from '@englishflow/i18n/mobile-experience'
 import { createAdaptivePerformanceEngine, type PerformanceLevel } from '@englishflow/performance'
 import { mobileI18n, mobileThemeController } from './v2-foundation'
 import { getUniRuntime, openUniPage } from './uni-runtime'
+import { resolveMobileMotion } from '../domain/experience'
 
 for (const [locale, messages] of Object.entries(mobileExperienceMessages)) mobileI18n.registerMessages(locale, messages)
 const uiLocale = ref(mobileI18n.locale)
@@ -14,16 +15,22 @@ export function mobileT(key: string): string { uiLocale.value; return mobileI18n
 const storage = {
   getItem(key: string): string | null { try { return String(getUniRuntime().getStorageSync(key) || '') || null } catch { return null } },
   setItem(key: string, value: string): void { try { getUniRuntime().setStorageSync(key, value) } catch { /* Runtime not mounted yet. */ } },
+  removeItem(key: string): void { getUniRuntime().removeStorageSync(key) },
 }
 export const mobileExperienceEngine = createAdaptivePerformanceEngine({ storage })
 mobileExperienceEngine.restore()
 export const mobileMotionMode = ref(storage.getItem('yx.mobile.motion') || 'FULL')
 export function setMobileMotion(mode: string): void {
-  mobileMotionMode.value = mode
-  storage.setItem('yx.mobile.motion', mode)
-  mobileExperienceEngine.setMotionDisabled(mode !== 'FULL')
+  const normalized = mode === 'REDUCED' || mode === 'OFF' ? mode : 'FULL'
+  mobileMotionMode.value = normalized
+  storage.setItem('yx.mobile.motion', normalized)
+  mobileExperienceEngine.setMotionDisabled(normalized === 'OFF' || mobileExperienceEngine.state.reducedMotion)
 }
 export function setMobileQuality(level: PerformanceLevel): void { mobileExperienceEngine.setLevel(level, 'manual') }
+export function restoreMobileQualityDefault(): PerformanceLevel {
+  return mobileExperienceEngine.resetLevelToAutomatic().level
+}
+setMobileMotion(mobileMotionMode.value)
 
 function syncMobileTabBar(): void {
   const theme = mobileThemeController.resolvedTheme
@@ -43,7 +50,7 @@ export function useMobileExperience() {
   onBeforeUnmount(() => { unsubscribeTheme(); unsubscribePerformance() })
   onShow(syncMobileTabBar)
   const experienceStyle = computed(() => mobileExperienceVariables(theme.value))
-  const experienceMotion = computed(() => mobileMotionMode.value !== 'FULL' || performance.value.motionDisabled || performance.value.level === 'Performance' ? 'off' : 'on')
+  const experienceMotion = computed(() => resolveMobileMotion(mobileMotionMode.value as 'FULL' | 'REDUCED' | 'OFF', performance.value))
   return { experienceStyle, experienceMotion }
 }
 

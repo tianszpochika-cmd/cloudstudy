@@ -1,0 +1,175 @@
+{
+  "scope": "GET /api/v1/admin/content-publish-tasks/{taskId}",
+  "account": "uat-publish-muduqg75aa24d7@local.invalid",
+  "contentCode": "uat-publish-muduqg75aa24d7",
+  "missingTaskId": "spt_uat_missing_muduqg75aa24d7",
+  "capturedAt": "2026-09-23T08:39:26.048Z",
+  "checks": [
+    {
+      "name": "gateway readiness",
+      "observed": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "content owner readiness",
+      "observed": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "anonymous exact route",
+      "observed": {
+        "status": 401,
+        "code": null
+      },
+      "expected": {
+        "status": 401
+      },
+      "ok": true
+    },
+    {
+      "name": "register isolated adult account",
+      "observed": 201,
+      "expected": 201,
+      "ok": true
+    },
+    {
+      "name": "learner lacks content-admin permission",
+      "observed": {
+        "status": 403,
+        "code": "CONTENT_ADMIN_REQUIRED"
+      },
+      "expected": {
+        "status": 403
+      },
+      "ok": true
+    },
+    {
+      "name": "synthetic content staff login",
+      "observed": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "authorized nonexistent task via gateway",
+      "observed": {
+        "status": 404,
+        "code": "SCHEDULE_NOT_FOUND"
+      },
+      "expected": {
+        "status": 404,
+        "code": "SCHEDULE_NOT_FOUND"
+      },
+      "ok": true
+    },
+    {
+      "name": "same nonexistent task at content owner",
+      "observed": {
+        "status": 404,
+        "code": "SCHEDULE_NOT_FOUND"
+      },
+      "expected": {
+        "status": 404,
+        "code": "SCHEDULE_NOT_FOUND"
+      },
+      "ok": true
+    },
+    {
+      "name": "create isolated unpublished draft",
+      "observed": 202,
+      "expected": 202,
+      "ok": true
+    },
+    {
+      "name": "draft owner and unpublished state",
+      "observed": "390e6536-2460-47ee-8dba-7b3d948dd8da|NONE",
+      "expected": "390e6536-2460-47ee-8dba-7b3d948dd8da|NONE",
+      "ok": true
+    },
+    {
+      "name": "schedule synthetic far-future task",
+      "observed": {
+        "status": 202,
+        "taskId": "spt_73e0dadc7656",
+        "statusField": "SCHEDULED"
+      },
+      "expected": {
+        "status": 202,
+        "statusField": "SCHEDULED"
+      },
+      "ok": true
+    },
+    {
+      "name": "content owner durable task facts",
+      "observed": "platform|uat-publish-muduqg75aa24d7|PACK|uat-publish-muduqg75aa24d7|SCHEDULED|390e6536-2460-47ee-8dba-7b3d948dd8da",
+      "expected": "platform|uat-publish-muduqg75aa24d7|PACK|uat-publish-muduqg75aa24d7|SCHEDULED|390e6536-2460-47ee-8dba-7b3d948dd8da",
+      "ok": true
+    },
+    {
+      "name": "positive GET through Gateway",
+      "observed": {
+        "status": 200,
+        "fields": {
+          "taskId": "spt_73e0dadc7656",
+          "packCode": "uat-publish-muduqg75aa24d7",
+          "targetType": "PACK",
+          "targetRef": "uat-publish-muduqg75aa24d7",
+          "status": "SCHEDULED",
+          "createdBy": "390e6536-2460-47ee-8dba-7b3d948dd8da"
+        },
+        "requestIdPresent": true,
+        "traceIdPresent": true
+      },
+      "expected": {
+        "status": 200,
+        "fields": {
+          "taskId": "spt_73e0dadc7656",
+          "packCode": "uat-publish-muduqg75aa24d7",
+          "targetType": "PACK",
+          "targetRef": "uat-publish-muduqg75aa24d7",
+          "status": "SCHEDULED",
+          "createdBy": "390e6536-2460-47ee-8dba-7b3d948dd8da"
+        }
+      },
+      "ok": true
+    },
+    {
+      "name": "Gateway response matches content owner",
+      "observed": {
+        "status": 200,
+        "fields": {
+          "taskId": "spt_73e0dadc7656",
+          "packCode": "uat-publish-muduqg75aa24d7",
+          "targetType": "PACK",
+          "targetRef": "uat-publish-muduqg75aa24d7",
+          "status": "SCHEDULED",
+          "createdBy": "390e6536-2460-47ee-8dba-7b3d948dd8da"
+        }
+      },
+      "expected": {
+        "status": 200,
+        "fields": {
+          "taskId": "spt_73e0dadc7656",
+          "packCode": "uat-publish-muduqg75aa24d7",
+          "targetType": "PACK",
+          "targetRef": "uat-publish-muduqg75aa24d7",
+          "status": "SCHEDULED",
+          "createdBy": "390e6536-2460-47ee-8dba-7b3d948dd8da"
+        }
+      },
+      "ok": true
+    }
+  ],
+  "cleanup": {
+    "taskRowsRemoved": 1,
+    "draftVersionsRemoved": 1,
+    "draftDefinitionsRemoved": 1,
+    "idempotencyRowsRemoved": 4,
+    "accountDisabled": true,
+    "activeSessions": 0,
+    "residualTaskRows": 0,
+    "errors": []
+  },
+  "result": "PASS"
+}

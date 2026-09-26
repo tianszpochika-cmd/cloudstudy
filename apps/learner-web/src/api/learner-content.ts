@@ -6,6 +6,7 @@ import {
   dailyQuotaOptions,
   targetGoals,
   type AssessmentReport,
+  type AssessmentSkipBaseline,
   type AssessmentSnapshot,
   type ContinueContext,
   type DailyQuotaMinutes,
@@ -40,7 +41,6 @@ const READ_MODEL_PATHS = {
   firstDay: '/learner/first-day',
   home: '/learner/home',
   contentCatalog: '/content/learner/catalog',
-  taskEnsureCommand: '/onboarding/daily-tasks/ensure',
   placement: '/assessment/placement/start',
   placementAnswerCommand: '/assessment/placement/submit-step',
   placementSkipCommand: '/assessment/placement/skip',
@@ -64,6 +64,18 @@ function readString(value: unknown): string | null {
 
 function readNumber(value: unknown): number | null {
   return typeof value === 'number' && Number.isFinite(value) ? value : null
+}
+
+interface OwnerSnapshot { data: RecordValue; version: number }
+
+function ownerSnapshot(value: unknown, owner: string): OwnerSnapshot | null {
+  if (value === null) return null
+  const data = unwrap(value)
+  const version = isRecord(data) ? data.stateVersion ?? data.state_version : null
+  if (!isRecord(data) || typeof version !== 'number' || !Number.isSafeInteger(version) || version < 0) {
+    throw new Error(`${owner} 服务端版本无效，请刷新后重试。`)
+  }
+  return { data, version }
 }
 
 function readBoolean(value: unknown): boolean | null {
@@ -190,6 +202,23 @@ function parseReport(value: unknown): AssessmentReport | null {
     recommendedAdvice: readString(reportSource.recommendedAdvice) ?? '',
     source: reportSource.source === 'FAST_TRACK' ? 'FAST_TRACK' : 'PLACEMENT',
     completedAt: readString(reportSource.completedAt) ?? new Date().toISOString(),
+  }
+}
+
+function parseSkipBaseline(value: unknown): AssessmentSkipBaseline | null {
+  const source = unwrap(value)
+  if (!isRecord(source)) return null
+  const result = isRecord(source.report) ? source.report : source
+  if (result.resultKind !== 'SKIPPED' && source.status !== 'SKIPPED') return null
+  const reportId = readString(result.reportId)
+  const sessionId = readString(result.sessionId) ?? readString(source.sessionId)
+  if (!reportId || !sessionId) return null
+  const hint = isRecord(result.requestedStartingLevel) ? readString(result.requestedStartingLevel.level) : null
+  return {
+    reportId,
+    sessionId,
+    requestedStartingLevel: hint && ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'].includes(hint) ? hint as AssessmentSkipBaseline['requestedStartingLevel'] : null,
+    confidence: 'UNVERIFIED',
   }
 }
 
@@ -379,13 +408,15 @@ function parseOnboardingModel(value: unknown, contentLocale: string, allowOption
 function parsePlacementModel(value: unknown, contentLocale: string): PlacementReadModel {
   const source = isRecord(unwrap(value)) ? unwrap(value) as RecordValue : {}
   const report = parseReport(source.report ?? source.finalReport)
+  const skipBaseline = parseSkipBaseline(source)
   const question = parseQuestion(source.currentQuestion ?? source.nextQuestion ?? source.question, readString(source.sessionId) ?? readString(source.sessionUuid))
   const rawStatus = readString(source.status)
   return {
-    status: report ? 'COMPLETED' : question ? rawStatus === 'IN_PROGRESS' ? 'IN_PROGRESS' : 'AVAILABLE' : 'EMPTY',
+    status: skipBaseline ? 'SKIPPED' : report ? 'COMPLETED' : question ? rawStatus === 'IN_PROGRESS' ? 'IN_PROGRESS' : 'AVAILABLE' : 'EMPTY',
     sessionId: readString(source.sessionId) ?? readString(source.sessionUuid) ?? question?.sessionId ?? null,
     currentQuestion: question,
     report,
+    skipBaseline,
     contentVersionId: readString(source.contentVersionId),
     contentLocale: readString(source.contentLocale) ?? contentLocale,
   }
@@ -436,13 +467,6 @@ export const learnerContentPort: LearnerContentPort = {
       throw new Error('成人 Gate、隐私/条款同意和学习目标必须全部完成后才能保存。')
     }
     const targetLevel = input.profile.targetGoal === 'ZERO_BASIS' ? 'A1' : input.profile.targetGoal === 'CET_4_6' ? 'B1' : 'B2'
-    let featuredContent: ContentProjection | null = null
-    try {
-      featuredContent = parseContent(await request(query(READ_MODEL_PATHS.contentCatalog, 'en-US'))).find((item) => item.status === 'PUBLISHED') ?? null
-    } catch {
-      // Onboarding remains valid when content publication is temporarily unavailable;
-      // the task projection is created on the next explicit save/retry.
-    }
     await Promise.all([
       request<unknown>('/iam/consents', {
         method: 'PUT',
@@ -463,66 +487,74 @@ export const learnerContentPort: LearnerContentPort = {
         ...withIdempotency(`${input.clientEventId}-adult-learning`),
       }),
     ])
-    // P1-LIVE-014: access tokens freeze eligibility at issuance, so the token
-    // minted before these consents still carries UNKNOWN. Rotate once here so
-    // the profile/targets/preferences writes below are evaluated as granted.
-    // The browser sends the HttpOnly refresh cookie automatically.
-    const rotated = (await request<unknown>('/auth/token/refresh', {
-      method: 'POST',
-      ...withIdempotency(`${input.clientEventId}-refresh`),
-    })) as Record<string, unknown>
-    const freshAccess =
-      (rotated?.data as Record<string, unknown> | undefined)?.accessToken ?? rotated?.accessToken
-    if (typeof freshAccess === 'string' && freshAccess.trim()) {
-      const { setInMemoryAccessToken } = await import('../auth/access-token')
-      setInMemoryAccessToken(freshAccess)
+    // Access tokens freeze eligibility at issuance. Refresh through the session
+    // store so its permission snapshot and the token used by owner writes agree.
+    const [{ useSessionStore }, { pinia }] = await Promise.all([
+      import('../stores/session'),
+      import('../stores/pinia'),
+    ])
+    const session = useSessionStore(pinia)
+    if (!await session.refreshSilently() || !session.isLearningReady) {
+      throw new Error('学习资格尚未生效，请重新登录后继续。')
     }
-    // P1-LIVE-014: the profile PATCH bumps the profile to version 1, and the
-    // targets PUT is version-guarded against the PROFILE version, so it must
-    // use the PATCH response (not a hardcoded 0), or every first save 409s.
-    const patchedProfile = (await request<unknown>(READ_MODEL_PATHS.profile, {
-      method: 'PATCH',
-      body: {
-        expectedStateVersion: 0,
-        status: 'ACTIVE',
-        birthYear: input.profile.birthYear,
-        ageConfirmed: input.profile.ageConfirmed,
-        privacyConsent: input.profile.privacyConsent,
-        termsConsent: input.profile.termsConsent,
-        uiLocale: 'zh-CN',
-        contentLocale: 'en-US',
-        timezone: 'Asia/Shanghai',
-      },
-      ...withIdempotency(`${input.clientEventId}-profile`),
-    })) as Record<string, unknown>
-    const profileData = (patchedProfile as Record<string, unknown>)?.data as Record<string, unknown> | undefined
-    const profileVersion =
-      typeof profileData?.stateVersion === 'number' ? profileData.stateVersion : 1
-    // P1-LIVE-014: all learner writes share ONE profile version counter, so
-    // parallel writes race (each bumps it; losers 409). Chain sequentially,
-    // threading each response version into the next write.
-    const savedTarget = (await request<unknown>(READ_MODEL_PATHS.target, {
-      method: 'PUT',
-      body: { expectedStateVersion: profileVersion, goalCode: input.profile.targetGoal, targetLevel, dailyQuotaMinutes: input.profile.dailyQuotaMinutes, status: 'ACTIVE' },
-      ...withIdempotency(`${input.clientEventId}-target`),
-    })) as Record<string, unknown>
-    const targetData = (savedTarget as Record<string, unknown>)?.data as Record<string, unknown> | undefined
-    const afterTargetVersion =
-      typeof targetData?.stateVersion === 'number'
-        ? targetData.stateVersion
-        : typeof (savedTarget as Record<string, unknown>)?.stateVersion === 'number'
-          ? ((savedTarget as Record<string, unknown>).stateVersion as number)
-          : profileVersion + 1
-    await request<unknown>(READ_MODEL_PATHS.preferences, {
-      method: 'PATCH',
-      body: { expectedStateVersion: afterTargetVersion, uiLocale: 'zh-CN', contentLocale: 'en-US', timezone: 'Asia/Shanghai', themeMode: 'SYSTEM', highContrast: false, motionMode: 'FULL' },
-      ...withIdempotency(`${input.clientEventId}-preferences`),
-    })
-    if (featuredContent) {
-      await request<unknown>(READ_MODEL_PATHS.taskEnsureCommand, {
-        method: 'POST',
-        body: { contentCode: featuredContent.contentId, title: featuredContent.title, minutes: input.profile.dailyQuotaMinutes },
-        ...withIdempotency(`${input.clientEventId}-daily-task`),
+    // Target and preferences carry the same learner-owned profile version.
+    // Read the profile last so its version is the latest owner checkpoint.
+    const [targetValue, preferencesValue] = await Promise.all([
+      requestOptional<unknown>(READ_MODEL_PATHS.target),
+      requestOptional<unknown>(READ_MODEL_PATHS.preferences),
+    ])
+    const profileValue = await requestOptional<unknown>(READ_MODEL_PATHS.profile)
+    const target = ownerSnapshot(targetValue, '学习目标')
+    const preferences = ownerSnapshot(preferencesValue, '学习偏好')
+    const profile = ownerSnapshot(profileValue, '学员资料')
+    let version = profile?.version ?? 0
+    if ((target?.version ?? 0) > version || (preferences?.version ?? 0) > version) {
+      throw new Error('学员资料版本已更新，请刷新后重试。')
+    }
+
+    // The first write establishes an owned row. On retry, skip it when the
+    // owner already confirms the requested locale and timezone.
+    const profileReady = profile !== null && profile.version > 0
+      && profile.data.uiLocale === 'zh-CN' && profile.data.contentLocale === 'en-US'
+      && profile.data.timezone === 'Asia/Shanghai'
+    if (!profileReady) {
+      const patched = ownerSnapshot(await request<unknown>(READ_MODEL_PATHS.profile, {
+        method: 'PATCH',
+        body: {
+          expectedStateVersion: version,
+          uiLocale: 'zh-CN',
+          contentLocale: 'en-US',
+          timezone: 'Asia/Shanghai',
+        },
+        ...withIdempotency(`${input.clientEventId}-profile`),
+      }), '学员资料')
+      if (!patched) throw new Error('学员资料写入未返回服务端版本。')
+      version = patched.version
+    }
+
+    const targetReady = target !== null && target.data.goalCode === input.profile.targetGoal
+      && target.data.targetLevel === targetLevel
+      && target.data.dailyQuotaMinutes === input.profile.dailyQuotaMinutes
+      && target.data.status === 'ACTIVE'
+    if (!targetReady) {
+      const saved = ownerSnapshot(await request<unknown>(READ_MODEL_PATHS.target, {
+        method: 'PUT',
+        body: { expectedStateVersion: version, goalCode: input.profile.targetGoal, targetLevel, dailyQuotaMinutes: input.profile.dailyQuotaMinutes, status: 'ACTIVE' },
+        ...withIdempotency(`${input.clientEventId}-target`),
+      }), '学习目标')
+      if (!saved) throw new Error('学习目标写入未返回服务端版本。')
+      version = saved.version
+    }
+
+    const preferencesReady = preferences !== null
+      && preferences.data.uiLocale === 'zh-CN' && preferences.data.contentLocale === 'en-US'
+      && preferences.data.timezone === 'Asia/Shanghai' && preferences.data.themeMode === 'SYSTEM'
+      && preferences.data.highContrast === false && preferences.data.motionMode === 'FULL'
+    if (!preferencesReady) {
+      await request<unknown>(READ_MODEL_PATHS.preferences, {
+        method: 'PATCH',
+        body: { expectedStateVersion: version, uiLocale: 'zh-CN', contentLocale: 'en-US', timezone: 'Asia/Shanghai', themeMode: 'SYSTEM', highContrast: false, motionMode: 'FULL' },
+        ...withIdempotency(`${input.clientEventId}-preferences`),
       })
     }
     // Read the owner rows back after every write. The UI must continue from the
@@ -572,6 +604,7 @@ export const learnerContentPort: LearnerContentPort = {
       isCompleted: true,
       nextQuestion: null,
       report: parseReport(source.report ?? source.finalReport),
+      skipBaseline: parseSkipBaseline(source.report ?? source.finalReport ?? source),
     }
   },
 
@@ -625,6 +658,7 @@ export function createLocalPlacementSnapshot(sessionId: string | null, answers: 
     sessionId: sessionId ?? 'offline-placement',
     currentQuestion: question ? { ...question, sessionId: sessionId ?? 'offline-placement' } : null,
     report: null,
+    skipBaseline: null,
     contentVersionId: null,
     contentLocale: 'en-US',
   }

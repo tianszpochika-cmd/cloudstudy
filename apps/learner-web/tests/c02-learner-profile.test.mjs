@@ -20,13 +20,16 @@ test('C02 Web onboarding reads learner-owned options and verifies the remote wri
   assert.match(page, /await store\.loadOnboarding\(\)/)
 })
 
-test('C02 Web profile writes preserve the canonical target row', () => {
+test('C02 Web settings writes only the contracted daily target and verifies readback', () => {
   const api = read('src/api/b1.ts')
   const settings = read('src/pages/SettingsPage.vue')
-  assert.match(api, /const rawTargetGoal = \(isRecord\(targetSource\) \? readString\(targetSource\.goalCode\)/)
-  assert.match(api, /targetLevel: targetGoal === ['"]ZERO_BASIS['"] \? ['"]A1['"]/)
-  // The UI delivery shortened these confirmations from "…已保存到服务端" to "…已保存。";
-  // the assertions follow the shipped copy instead of pinning retired wording.
-  assert.match(settings, /资料已保存。/)
-  assert.match(settings, /偏好已保存。/)
+  const experience = read('../../packages/i18n/src/learner-experience.ts')
+  assert.match(api, /goalCode: current\.goalCode/)
+  assert.match(api, /targetLevel: current\.targetLevel/)
+  assert.match(api, /const verified = await fetchProfile\(\)/)
+  assert.doesNotMatch(settings, /v-model="nickname"|v-model="accent"/)
+  assert.match(settings, /et\('settingsNicknameUnavailable'\)/)
+  assert.match(experience, /settingsNicknameUnavailable: '昵称与发音偏好暂不可修改。'/)
+  assert.match(settings, /et\('settingsGoalSaved'\)/)
+  assert.match(experience, /settingsGoalSaved: '每日目标已保存。'/)
 })

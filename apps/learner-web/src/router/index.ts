@@ -246,7 +246,7 @@ router.beforeEach(async (to) => {
   }
 
   const adultGateExempt = new Set(['adult-gate', 'onboarding', 'forbidden'])
-  if (to.meta.requiresAuth && !adultGateExempt.has(String(to.name)) && session.adultGate !== 'PASSED') {
+  if (to.meta.requiresAuth && !adultGateExempt.has(String(to.name)) && !session.isLearningReady) {
     session.setReturnTo(to.fullPath)
     return { name: 'onboarding', query: { redirect: safeReturnTo(to.fullPath) } }
   }

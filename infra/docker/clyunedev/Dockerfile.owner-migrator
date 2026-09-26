@@ -1,0 +1,26 @@
+# syntax=docker/dockerfile:1
+# One-shot schema job. Copy only the manifest, runner and versioned SQL, so a
+# release migrates the schema files built with that release. No secrets enter it.
+FROM node:20.19.5-bookworm-slim
+RUN apt-get -o Acquire::Retries=3 update \
+    && apt-get -o Acquire::Retries=3 install -y --no-install-recommends default-mysql-client ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+WORKDIR /workspace
+COPY config/b17-runtime-services.json config/b17-runtime-services.json
+COPY scripts/database/lib/owner-manifest.mjs scripts/database/lib/owner-manifest.mjs
+COPY infra/docker/clyunedev/owner-migration-plan.mjs infra/docker/clyunedev/owner-migration-plan.mjs
+COPY infra/docker/clyunedev/run-owner-migrations.mjs infra/docker/clyunedev/run-owner-migrations.mjs
+COPY services/learner-service/src/main/resources/db/migration/ services/learner-service/src/main/resources/db/migration/
+COPY services/content-service/src/main/resources/db/migration/ services/content-service/src/main/resources/db/migration/
+COPY services/learning-service/src/main/resources/db/migration/ services/learning-service/src/main/resources/db/migration/
+COPY services/assessment-service/src/main/resources/db/migration/ services/assessment-service/src/main/resources/db/migration/
+COPY services/media-service/src/main/resources/db/migration/ services/media-service/src/main/resources/db/migration/
+COPY services/notification-service/src/main/resources/db/migration/ services/notification-service/src/main/resources/db/migration/
+COPY services/gamification-service/src/main/resources/db/migration/ services/gamification-service/src/main/resources/db/migration/
+COPY services/social-service/src/main/resources/db/migration/ services/social-service/src/main/resources/db/migration/
+COPY services/commerce-service/src/main/resources/db/migration/ services/commerce-service/src/main/resources/db/migration/
+COPY services/admin-ops-service/src/main/resources/db/migration/ services/admin-ops-service/src/main/resources/db/migration/
+COPY services/analytics-service/src/main/resources/db/migration/ services/analytics-service/src/main/resources/db/migration/
+COPY services/audit-service/src/main/resources/db/migration/ services/audit-service/src/main/resources/db/migration/
+COPY services/workflow-service/src/main/resources/db/migration/ services/workflow-service/src/main/resources/db/migration/
+ENTRYPOINT ["node", "infra/docker/clyunedev/run-owner-migrations.mjs"]

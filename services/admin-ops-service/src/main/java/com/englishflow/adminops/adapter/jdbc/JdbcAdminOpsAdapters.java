@@ -8,6 +8,7 @@ import com.englishflow.adminops.domain.AdminPep;
 import com.englishflow.adminops.domain.AdminPrincipal;
 import com.englishflow.adminops.domain.AdminProjectionPort;
 import com.englishflow.adminops.domain.AuditEvent;
+import com.englishflow.adminops.domain.AuditPage;
 import com.englishflow.adminops.domain.AuditRecord;
 import com.englishflow.adminops.domain.AuditTrail;
 import com.englishflow.adminops.domain.CommandForwardResult;
@@ -177,6 +178,31 @@ public final class JdbcAdminOpsAdapters {
                             stringMap(rs.getString("safe_context")), rs.getTimestamp("occurred_at").toInstant(),
                             rs.getString("previous_hash"), rs.getString("record_hash")));
         }
+
+        @Override
+        public AuditPage page(String tenantRef, Long beforeSequence, int pageSize) {
+            String sql = "SELECT sequence_id,audit_id,tenant_ref,actor_ref,operation,resource_ref,command_id,trace_id,"
+                    + "decision_id,safe_context,occurred_at,previous_hash,record_hash "
+                    + "FROM admin_audit_record WHERE tenant_ref = ?"
+                    + (beforeSequence == null ? "" : " AND sequence_id < ?")
+                    + " ORDER BY sequence_id DESC LIMIT ?";
+            Object[] arguments = beforeSequence == null
+                    ? new Object[] {tenantRef, pageSize + 1}
+                    : new Object[] {tenantRef, beforeSequence, pageSize + 1};
+            List<AuditRow> rows = jdbc.query(sql, (rs, rowNum) -> new AuditRow(
+                    rs.getLong("sequence_id"),
+                    new AuditRecord(rs.getString("audit_id"), rs.getString("tenant_ref"),
+                            rs.getString("actor_ref"), rs.getString("operation"), rs.getString("resource_ref"),
+                            rs.getString("command_id"), rs.getString("trace_id"), rs.getString("decision_id"),
+                            stringMap(rs.getString("safe_context")), rs.getTimestamp("occurred_at").toInstant(),
+                            rs.getString("previous_hash"), rs.getString("record_hash"))), arguments);
+            boolean hasMore = rows.size() > pageSize;
+            List<AuditRow> visible = rows.subList(0, Math.min(pageSize, rows.size()));
+            Long nextSequence = hasMore ? visible.getLast().sequence() : null;
+            return new AuditPage(visible.stream().map(AuditRow::record).toList(), nextSequence);
+        }
+
+        private record AuditRow(long sequence, AuditRecord record) { }
 
         private String json(Map<String, String> values) {
             try {
@@ -370,27 +396,35 @@ public final class JdbcAdminOpsAdapters {
 
         @Override
         @Transactional
-        public void update(SupportTicketRecord ticket) {
+        public void update(SupportTicketRecord ticket, long expectedVersion) {
             int updated = jdbc.update("UPDATE support_ticket SET ticket_status=?,priority=?,updated_at=?,category=?,"
                             + "resource_ref=?,description_fingerprint=?,sla_due_at=?,assignee_subject=?,last_audit_id=?,"
-                            + "ticket_version=?,attachments_json=? WHERE tenant_id=? AND ticket_id=?",
+                            + "ticket_version=?,attachments_json=? WHERE tenant_id=? AND ticket_id=? AND ticket_version=?",
                     ticket.state().name(), ticket.priority().name(), Timestamp.from(Instant.now()),
                     ticket.category().name(), ticket.resourceRef(), ticket.descriptionFingerprint(),
                     Timestamp.from(ticket.slaDueAt()), ticket.assigneeSubjectId(), ticket.lastAuditId(), ticket.version(),
-                    json(ticket.attachments()), ticket.tenantId(), ticket.ticketId());
+                    json(ticket.attachments()), ticket.tenantId(), ticket.ticketId(), expectedVersion);
             if (updated != 1) {
-                throw new IllegalStateException("support ticket update lost its owner row");
+                throw AdminOpsException.conflict("SUPPORT_VERSION_CONFLICT", "ticket changed; reload before retrying");
             }
         }
 
         private SupportTicketRecord map(ResultSet rs) throws SQLException {
             return new SupportTicketRecord(rs.getString("ticket_id"), rs.getString("tenant_id"),
-                    rs.getString("requester_subject"), TicketCategory.valueOf(rs.getString("category")),
+                    rs.getString("requester_subject"), legacySafeCategory(rs.getString("category")),
                     rs.getString("resource_ref"), rs.getString("description_fingerprint"),
                     TicketPriority.valueOf(rs.getString("priority")), media(rs.getString("attachments_json")),
                     rs.getTimestamp("created_at").toInstant(), rs.getTimestamp("sla_due_at").toInstant(),
                     TicketState.valueOf(rs.getString("ticket_status")), rs.getString("assignee_subject"),
                     rs.getString("last_audit_id"), rs.getLong("ticket_version"));
+        }
+
+        static TicketCategory legacySafeCategory(String value) {
+            try {
+                return TicketCategory.valueOf(value);
+            } catch (IllegalArgumentException | NullPointerException invalidLegacyCategory) {
+                return TicketCategory.LEGACY_UNMAPPED;
+            }
         }
 
         private List<MediaObjectRef> media(String value) {

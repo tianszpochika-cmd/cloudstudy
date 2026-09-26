@@ -1648,13 +1648,24 @@
           "owner": "media-service",
           "phase": "P1",
           "maturity": "D2_CONTRACT_READY",
-          "runtimeStatus": "LIVE_VERIFIED_M3004"
+          "runtimeStatus": "SOURCE_VERIFIED_PENDING_V7_RUNTIME"
         },
         "security": [
           {
             "bearerAuth": []
           }
         ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKeyRequired"
+          }
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "media-asset-register",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return the first committed 201 response for the same tenant, subject, key and request digest; changed request conflicts"
+        },
         "requestBody": {
           "required": true,
           "content": {
@@ -1683,11 +1694,8 @@
           }
         },
         "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "202": {
-            "description": "Accepted"
+          "201": {
+            "description": "Registered media asset metadata"
           }
         }
       }
@@ -1741,7 +1749,7 @@
           "owner": "media-service",
           "phase": "P1",
           "maturity": "D2_CONTRACT_READY",
-          "runtimeStatus": "LIVE_VERIFIED_M3004"
+          "runtimeStatus": "SOURCE_VERIFIED_PENDING_V7_RUNTIME"
         },
         "security": [
           {
@@ -1756,14 +1764,20 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKeyRequired"
           }
         ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "media-asset-retry",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return the first committed retry response for the same tenant, subject, asset and key without another transition or event"
+        },
         "responses": {
           "200": {
             "description": "OK"
-          },
-          "202": {
-            "description": "Accepted"
           }
         }
       }
@@ -1779,7 +1793,7 @@
           "owner": "media-service",
           "phase": "P1",
           "maturity": "D2_CONTRACT_READY",
-          "runtimeStatus": "LIVE_VERIFIED_M3004"
+          "runtimeStatus": "SOURCE_VERIFIED_PENDING_V7_RUNTIME"
         },
         "security": [
           {
@@ -1794,8 +1808,17 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKeyRequired"
           }
         ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "media-subtitle-upsert",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return the first committed subtitle response for the same tenant, subject, asset, key and request digest"
+        },
         "requestBody": {
           "required": true,
           "content": {
@@ -1815,9 +1838,6 @@
         "responses": {
           "200": {
             "description": "OK"
-          },
-          "202": {
-            "description": "Accepted"
           }
         }
       }
@@ -1827,13 +1847,19 @@
         "tags": [
           "P1R-Media"
         ],
-        "summary": "Mint a short-lived RECORDING-channel upload grant (TTL capped 900s, metadata only)",
+        "summary": "Recording upload grant is unavailable until a verified PUT flow exists",
         "operationId": "mintMediaUploadUrl",
         "x-contract": {
           "owner": "media-service",
           "phase": "P1",
           "maturity": "D2_CONTRACT_READY",
-          "runtimeStatus": "LIVE_VERIFIED_M3004"
+          "runtimeStatus": "FAIL_CLOSED_UPLOAD_NOT_CONFIGURED"
+        },
+        "x-fail-closed": {
+          "mode": "NO_SUCCESS_PATH",
+          "sideEffects": false,
+          "eligibleRequestStatus": 503,
+          "reason": "MEDIA_UPLOAD_PUT_GRANT_UNAVAILABLE"
         },
         "security": [
           {
@@ -1851,11 +1877,17 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
+          "401": {
+            "description": "Authentication is required"
           },
-          "202": {
-            "description": "Accepted"
+          "403": {
+            "description": "Recording access is not allowed"
+          },
+          "404": {
+            "description": "Asset does not exist"
+          },
+          "503": {
+            "description": "No verified recording PUT grant is available; no upload URL or persistent receipt is created"
           }
         }
       }
@@ -1871,7 +1903,7 @@
           "owner": "media-service",
           "phase": "P1",
           "maturity": "D2_CONTRACT_READY",
-          "runtimeStatus": "LIVE_VERIFIED_M3004"
+          "runtimeStatus": "SOURCE_VERIFIED_PENDING_V7_RUNTIME"
         },
         "security": [
           {
@@ -1886,8 +1918,17 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKeyRequired"
           }
         ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "media-asset-activate",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return the first committed activation response for the same tenant, subject, asset, key and request digest"
+        },
         "requestBody": {
           "required": true,
           "content": {

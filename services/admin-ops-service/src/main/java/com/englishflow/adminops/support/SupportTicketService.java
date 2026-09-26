@@ -111,7 +111,7 @@ public final class SupportTicketService {
                 Map.of("category", ticket.category.name(), "idempotencyKeyHash", ReferenceRedactor.sha256(idempotencyKey)),
                 now));
         ticket.lastAuditId = audit.auditId();
-        ticketStore.update(ticket.snapshot());
+        ticketStore.update(ticket.snapshot(), ticket.version);
         SupportTicketResult result = new SupportTicketResult(view(ticket, now), false, audit.auditId());
         idempotency.put(scope, idempotencyKey, fingerprint, result);
         return result;
@@ -201,14 +201,14 @@ public final class SupportTicketService {
                 Map.of("state", ticket.state.name(), "idempotencyKeyHash", ReferenceRedactor.sha256(idempotencyKey)),
                 now));
         ticket.lastAuditId = audit.auditId();
-        ticketStore.update(ticket.snapshot());
+        ticketStore.update(ticket.snapshot(), ticket.version - 1);
         SupportTicketResult result = new SupportTicketResult(view(ticket, now), false, audit.auditId());
         idempotency.put(scope, idempotencyKey, fingerprint, result);
         return result;
     }
 
     public synchronized List<AuditRecord> auditSnapshot(AdminPrincipal principal) {
-        pep.requirePermission(principal, AdminPermission.AUDIT_EXPORT);
+        pep.requirePermission(principal, AdminPermission.AUDIT_READ);
         String tenantRef = ReferenceRedactor.tenant(principal.tenantId());
         return auditTrail.snapshot().stream()
                 .filter(record -> tenantRef.equals(record.tenantRef()))

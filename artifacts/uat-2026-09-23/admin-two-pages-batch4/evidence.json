@@ -1,0 +1,235 @@
+{
+  "runId": "adm2-mudneirs-71c0b5",
+  "capturedAt": "2026-09-23T05:14:09.160Z",
+  "localOnly": true,
+  "permissions": [
+    "admin.dashboard.read",
+    "admin.commerce.read",
+    "admin.projection.read",
+    "analytics.read"
+  ],
+  "health": {
+    "gateway": 200,
+    "iam": 200,
+    "adminOps": 200,
+    "analytics": 200,
+    "adminWeb": 200
+  },
+  "setup": {
+    "registrationStatus": 201,
+    "adultGateStatus": 200,
+    "termsConsentStatus": 200,
+    "privacyConsentStatus": 200,
+    "adult_learningConsentStatus": 200,
+    "grantVerified": true,
+    "apiLoginStatus": 200,
+    "unauthenticatedRedirect": true
+  },
+  "pages": {
+    "dashboard": {
+      "loadingSkeletonSeen": true,
+      "url": "/dashboard",
+      "headingVisible": true,
+      "state": {
+        "skeletonVisible": false,
+        "hasUnavailable": false,
+        "hasEmpty": false,
+        "hasRefund": false
+      },
+      "layout1280": {
+        "viewport": 1280,
+        "documentWidth": 1280,
+        "overflow": false
+      },
+      "metricTableRows": 0,
+      "refreshRequested": true,
+      "layout390": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "overflow": false
+      },
+      "networkErrorVisible": true
+    },
+    "commerce": {
+      "loadingSkeletonSeen": true,
+      "url": "/commerce",
+      "state": {
+        "skeletonVisible": false,
+        "hasUnavailable": true,
+        "hasEmpty": false,
+        "hasRefund": false
+      },
+      "layout1280": {
+        "viewport": 1280,
+        "documentWidth": 1280,
+        "overflow": false
+      },
+      "tableRows": 1,
+      "refundSectionVisible": false,
+      "refundActionVisible": false,
+      "supportStatVisible": false,
+      "emptyMetricsTableVisible": false,
+      "filter": {
+        "exercised": true,
+        "sourceHasRows": true,
+        "shownRows": 1,
+        "emptyVisible": false
+      },
+      "layout390": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "overflow": false
+      },
+      "networkErrorVisible": true,
+      "uiCommandRequests": []
+    }
+  },
+  "requests": [
+    {
+      "path": "/api/v1/admin/ops/metrics",
+      "method": "GET",
+      "status": 503,
+      "owner": null,
+      "rowCount": 0,
+      "hasMeta": false
+    },
+    {
+      "path": "/api/v1/admin/ops/metrics",
+      "method": "GET",
+      "status": 503,
+      "owner": null,
+      "rowCount": 0,
+      "hasMeta": false
+    },
+    {
+      "path": "/api/v1/admin/ops/metrics",
+      "method": "GET",
+      "status": 503,
+      "owner": null,
+      "rowCount": 0,
+      "hasMeta": false
+    },
+    {
+      "path": "/api/v1/admin/ops/commerce/orders",
+      "method": "GET",
+      "status": 200,
+      "owner": "admin-ops-service",
+      "rowCount": 1,
+      "hasMeta": true
+    },
+    {
+      "path": "/api/v1/admin/ops/metrics",
+      "method": "GET",
+      "status": 503,
+      "owner": null,
+      "rowCount": 0,
+      "hasMeta": false
+    },
+    {
+      "path": "/api/v1/admin/ops/metrics",
+      "method": "GET",
+      "status": 503,
+      "owner": null,
+      "rowCount": 0,
+      "hasMeta": false
+    },
+    {
+      "path": "/api/v1/admin/ops/commerce/orders",
+      "method": "GET",
+      "status": 200,
+      "owner": "admin-ops-service",
+      "rowCount": 1,
+      "hasMeta": true
+    },
+    {
+      "path": "/api/v1/admin/ops/metrics",
+      "method": "GET",
+      "status": 503,
+      "owner": null,
+      "rowCount": 0,
+      "hasMeta": false
+    }
+  ],
+  "pageErrors": [],
+  "consoleErrors": [
+    {
+      "phase": "dashboard",
+      "message": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+    },
+    {
+      "phase": "dashboard",
+      "message": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+    },
+    {
+      "phase": "commerce",
+      "message": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+    },
+    {
+      "phase": "dashboard-390",
+      "message": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+    },
+    {
+      "phase": "dashboard-network-error",
+      "message": "Failed to load resource: net::ERR_FAILED"
+    },
+    {
+      "phase": "commerce-network-error",
+      "message": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+    },
+    {
+      "phase": "commerce-network-error",
+      "message": "Failed to load resource: net::ERR_FAILED"
+    },
+    {
+      "phase": "commerce-network-error",
+      "message": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+    }
+  ],
+  "cleanup": {
+    "accountFound": true,
+    "disabled": true,
+    "permissionsCleared": true,
+    "activeSessions": 0,
+    "activeDevices": 0,
+    "activeRoles": 0
+  },
+  "secretsRecorded": false,
+  "ownerRanges": [
+    {
+      "from": "2026-08-26",
+      "to": "2026-08-27",
+      "filteredMetric": false,
+      "status": 200,
+      "owner": "analytics-service",
+      "rowCount": 24,
+      "errorCode": null
+    },
+    {
+      "from": "2026-09-18",
+      "to": "2026-09-23",
+      "filteredMetric": false,
+      "status": 503,
+      "owner": null,
+      "rowCount": null,
+      "errorCode": "PROJECTION_READ_FAILED"
+    },
+    {
+      "from": "2026-08-26",
+      "to": "2026-08-27",
+      "filteredMetric": true,
+      "status": 200,
+      "owner": "analytics-service",
+      "rowCount": 2,
+      "errorCode": null
+    },
+    {
+      "from": "2026-09-18",
+      "to": "2026-09-23",
+      "filteredMetric": true,
+      "status": 503,
+      "owner": null,
+      "rowCount": null,
+      "errorCode": "PROJECTION_READ_FAILED"
+    }
+  ]
+}

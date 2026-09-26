@@ -1045,13 +1045,18 @@
           "newCanonicalFactsFromLegacyPayload": "PROHIBITED",
           "runtimeStatus": "NOT_RUNTIME_VERIFIED"
         },
+        "x-owner": "assessment-service",
+        "x-contract": {
+          "owner": "assessment-service",
+          "write": true
+        },
         "security": [
           {
             "bearerAuth": []
           }
         ],
         "x-authorization": {
-          "requiredPermission": "assessment.placement.baseline.skip",
+          "requiredPermission": "assessment.session.write",
           "defaultDecision": "DENY",
           "trustedFacts": ["subject", "tenant", "adultGate", "phase", "contentRights", "entitlement", "resourceOwner", "policyVersion"],
           "resourceOwner": "server-derived placement baseline owner",
@@ -1151,13 +1156,18 @@
           "newCanonicalFactsFromLegacyPayload": "PROHIBITED",
           "runtimeStatus": "NOT_RUNTIME_VERIFIED"
         },
+        "x-owner": "assessment-service",
+        "x-contract": {
+          "owner": "assessment-service",
+          "write": false
+        },
         "security": [
           {
             "bearerAuth": []
           }
         ],
         "x-authorization": {
-          "requiredPermission": "assessment.placement.report.read",
+          "requiredPermission": "assessment.session.read",
           "defaultDecision": "DENY",
           "trustedFacts": ["subject", "tenant", "adultGate", "phase", "contentRights", "entitlement", "resourceOwner", "policyVersion"],
           "resourceOwner": "server-derived placement report owner",

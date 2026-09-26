@@ -1,0 +1,101 @@
+{
+  "capturedAt": "2026-09-23T10:28:02.399Z",
+  "scope": "Notification owner after fixture quarantine; Gateway deployment pending",
+  "accountTag": "6e4fc282a72e",
+  "checks": [
+    {
+      "name": "anonymous owner",
+      "actual": 401,
+      "expected": 401,
+      "pass": true
+    },
+    {
+      "name": "register",
+      "actual": 201,
+      "expected": 201,
+      "pass": true
+    },
+    {
+      "name": "pre-gate owner permission",
+      "actual": 403,
+      "expected": 403,
+      "pass": true
+    },
+    {
+      "name": "adult gate",
+      "actual": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "name": "TERMS consent",
+      "actual": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "name": "PRIVACY consent",
+      "actual": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "name": "ADULT_LEARNING consent",
+      "actual": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "name": "post-gate login",
+      "actual": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "name": "adult owner list",
+      "actual": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "name": "owner truthful empty list",
+      "actual": 0,
+      "expected": 0,
+      "pass": true
+    },
+    {
+      "name": "published row count unchanged by read",
+      "actual": 0,
+      "expected": 0,
+      "pass": true
+    },
+    {
+      "name": "download row count unchanged by read",
+      "actual": 100,
+      "expected": 100,
+      "pass": true
+    },
+    {
+      "name": "gateway deployment state",
+      "actual": 404,
+      "expected": 404,
+      "pass": true
+    }
+  ],
+  "cleanup": {
+    "verified": true,
+    "remaining": "0:0:0:1:0"
+  },
+  "conclusion": "Owner returns a truthful empty offline catalog; current Gateway still needs the route deployment.",
+  "ownerList": {
+    "count": 0,
+    "fixtureCount": 0,
+    "realCount": 0,
+    "signedUrlsReturned": 0
+  },
+  "gatewayList": {
+    "status": 404,
+    "count": null
+  },
+  "status": "GATEWAY_DEPLOY_PENDING"
+}

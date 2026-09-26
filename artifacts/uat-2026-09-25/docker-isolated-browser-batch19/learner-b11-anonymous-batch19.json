@@ -1,0 +1,179 @@
+{
+  "at": "2026-09-24T21:26:46.745Z",
+  "mode": "private HTTPS + containerized Chromium; fresh anonymous browser contexts",
+  "results": [
+    {
+      "route": "/listening",
+      "width": 1280,
+      "httpStatus": 200,
+      "finalUrl": "https://learn.clyunedev.com/login?redirect=/listening",
+      "redirectParam": "/listening",
+      "onLogin": true,
+      "loginFormVisible": true,
+      "b11PageCount": 0,
+      "protectedControlsCount": 0,
+      "layout": {
+        "scrollWidth": 1280,
+        "viewportWidth": 1280,
+        "visibleTextLength": 241
+      },
+      "apiRequests": [],
+      "pageErrors": [],
+      "consoleErrors": [],
+      "screenshot": "learner-b11-anonymous-1280-batch19.png"
+    },
+    {
+      "route": "/reading",
+      "width": 1280,
+      "httpStatus": 200,
+      "finalUrl": "https://learn.clyunedev.com/login?redirect=/reading",
+      "redirectParam": "/reading",
+      "onLogin": true,
+      "loginFormVisible": true,
+      "b11PageCount": 0,
+      "protectedControlsCount": 0,
+      "layout": {
+        "scrollWidth": 1280,
+        "viewportWidth": 1280,
+        "visibleTextLength": 241
+      },
+      "apiRequests": [],
+      "pageErrors": [],
+      "consoleErrors": []
+    },
+    {
+      "route": "/reader",
+      "width": 1280,
+      "httpStatus": 200,
+      "finalUrl": "https://learn.clyunedev.com/login?redirect=/reader",
+      "redirectParam": "/reader",
+      "onLogin": true,
+      "loginFormVisible": true,
+      "b11PageCount": 0,
+      "protectedControlsCount": 0,
+      "layout": {
+        "scrollWidth": 1280,
+        "viewportWidth": 1280,
+        "visibleTextLength": 241
+      },
+      "apiRequests": [],
+      "pageErrors": [],
+      "consoleErrors": []
+    },
+    {
+      "route": "/speaking",
+      "width": 1280,
+      "httpStatus": 200,
+      "finalUrl": "https://learn.clyunedev.com/login?redirect=/speaking",
+      "redirectParam": "/speaking",
+      "onLogin": true,
+      "loginFormVisible": true,
+      "b11PageCount": 0,
+      "protectedControlsCount": 0,
+      "layout": {
+        "scrollWidth": 1280,
+        "viewportWidth": 1280,
+        "visibleTextLength": 241
+      },
+      "apiRequests": [],
+      "pageErrors": [],
+      "consoleErrors": []
+    },
+    {
+      "route": "/clips",
+      "width": 1280,
+      "httpStatus": 200,
+      "finalUrl": "https://learn.clyunedev.com/login?redirect=/clips",
+      "redirectParam": "/clips",
+      "onLogin": true,
+      "loginFormVisible": true,
+      "b11PageCount": 0,
+      "protectedControlsCount": 0,
+      "layout": {
+        "scrollWidth": 1280,
+        "viewportWidth": 1280,
+        "visibleTextLength": 241
+      },
+      "apiRequests": [],
+      "pageErrors": [],
+      "consoleErrors": []
+    },
+    {
+      "route": "/recording",
+      "width": 1280,
+      "httpStatus": 200,
+      "finalUrl": "https://learn.clyunedev.com/login?redirect=/recording",
+      "redirectParam": "/recording",
+      "onLogin": true,
+      "loginFormVisible": true,
+      "b11PageCount": 0,
+      "protectedControlsCount": 0,
+      "layout": {
+        "scrollWidth": 1280,
+        "viewportWidth": 1280,
+        "visibleTextLength": 241
+      },
+      "apiRequests": [],
+      "pageErrors": [],
+      "consoleErrors": []
+    },
+    {
+      "route": "/listening",
+      "width": 390,
+      "httpStatus": 200,
+      "finalUrl": "https://learn.clyunedev.com/login?redirect=/listening",
+      "redirectParam": "/listening",
+      "onLogin": true,
+      "loginFormVisible": true,
+      "b11PageCount": 0,
+      "protectedControlsCount": 0,
+      "layout": {
+        "scrollWidth": 390,
+        "viewportWidth": 390,
+        "visibleTextLength": 118
+      },
+      "apiRequests": [],
+      "pageErrors": [],
+      "consoleErrors": [],
+      "screenshot": "learner-b11-anonymous-390-batch19.png"
+    },
+    {
+      "route": "/reading",
+      "width": 390,
+      "httpStatus": 200,
+      "finalUrl": "https://learn.clyunedev.com/login?redirect=/reading",
+      "redirectParam": "/reading",
+      "onLogin": true,
+      "loginFormVisible": true,
+      "b11PageCount": 0,
+      "protectedControlsCount": 0,
+      "layout": {
+        "scrollWidth": 390,
+        "viewportWidth": 390,
+        "visibleTextLength": 118
+      },
+      "apiRequests": [],
+      "pageErrors": [],
+      "consoleErrors": []
+    },
+    {
+      "route": "/speaking",
+      "width": 390,
+      "httpStatus": 200,
+      "finalUrl": "https://learn.clyunedev.com/login?redirect=/speaking",
+      "redirectParam": "/speaking",
+      "onLogin": true,
+      "loginFormVisible": true,
+      "b11PageCount": 0,
+      "protectedControlsCount": 0,
+      "layout": {
+        "scrollWidth": 390,
+        "viewportWidth": 390,
+        "visibleTextLength": 118
+      },
+      "apiRequests": [],
+      "pageErrors": [],
+      "consoleErrors": []
+    }
+  ]
+}

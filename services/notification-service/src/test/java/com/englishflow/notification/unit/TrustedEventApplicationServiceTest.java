@@ -13,6 +13,9 @@ import com.englishflow.notification.application.RequestMetadata;
 import com.englishflow.notification.application.TrustedEventApplicationService;
 import com.englishflow.notification.domain.NotificationAccessPolicy;
 import com.englishflow.notification.domain.NotificationChannel;
+import com.englishflow.notification.domain.NotificationCategory;
+import com.englishflow.notification.domain.NotificationDndWindow;
+import com.englishflow.notification.domain.NotificationFrequencyPolicy;
 import com.englishflow.notification.domain.NotificationPreference;
 import com.englishflow.notification.domain.NotificationPrincipalContext;
 import com.englishflow.notification.domain.TrustedEventAllowlist;
@@ -30,6 +33,7 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /** Trusted event consumer boundary: dedupe, allowlist, fail-closed filter/reject. */
 class TrustedEventApplicationServiceTest {
@@ -96,8 +100,9 @@ class TrustedEventApplicationServiceTest {
     @Test
     void disabledPreferenceProducesNoMessage() {
         var svc = consumer();
-        facts.savePreference(new NotificationPreference("t", "p", "learning.review.due",
-                NotificationChannel.IN_APP, false, "zh-CN", 1, NOW));
+        assertTrue(facts.compareAndSetPreference(new NotificationPreference("t", "p", NotificationCategory.REVIEW,
+                NotificationChannel.IN_APP, false, "zh-CN", 1, NotificationDndWindow.parse("23:00", "08:00"),
+                NotificationFrequencyPolicy.IMMEDIATE, 1, NOW), 0));
         var result = svc.consume(consumer, reviewEvent("e3", "dk-3", "p", allowedAttrs(), "zh-CN"), meta);
         assertEquals(TrustedEventProcessingStatus.FILTERED, result.status());
         assertEquals("PREFERENCE_DISABLED", result.reasonCode());

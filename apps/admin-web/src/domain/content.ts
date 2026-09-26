@@ -47,6 +47,8 @@ export interface ContentSnapshot {
   readonly authorSubject: string | null
   readonly publishedVersionId: string | null
   readonly updatedAt: string | null
+  /** Content owner decision for this exact latest version; absent means closed. */
+  readonly reviewSubmissionReady: boolean
 }
 
 export interface ReviewTaskProjection {
@@ -119,6 +121,7 @@ export function toContentSnapshot(value: unknown): ContentSnapshot | null {
     authorSubject: nullableText(content.authorSubject ?? content.createdBySubject ?? content.ownerSubject),
     publishedVersionId: nullableText(content.publishedVersionId),
     updatedAt: nullableText(content.updatedAt),
+    reviewSubmissionReady: content.reviewSubmissionReady === true,
   }
 }
 

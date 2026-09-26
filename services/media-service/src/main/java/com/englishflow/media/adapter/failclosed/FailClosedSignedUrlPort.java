@@ -4,6 +4,7 @@ import com.englishflow.media.domain.ByteRange;
 import com.englishflow.media.domain.MediaAsset;
 import com.englishflow.media.domain.MediaAuthorizationContext;
 import com.englishflow.media.domain.MediaDeliveryChannel;
+import com.englishflow.media.domain.MediaOperationException;
 import com.englishflow.media.domain.SignedMediaUrl;
 import com.englishflow.media.domain.SignedUrlGrant;
 import com.englishflow.media.port.SignedUrlPort;
@@ -16,6 +17,11 @@ import java.time.Instant;
 public final class FailClosedSignedUrlPort implements SignedUrlPort {
 
     @Override
+    public void verifyObjectForActivation(MediaAsset asset) {
+        throw unconfigured();
+    }
+
+    @Override
     public SignedMediaUrl issue(
             MediaAsset asset,
             MediaAuthorizationContext context,
@@ -23,7 +29,7 @@ public final class FailClosedSignedUrlPort implements SignedUrlPort {
             ByteRange range,
             Instant issuedAt,
             Instant expiresAt) {
-        throw MediaPersistenceNotEnabled.exception();
+        throw unconfigured();
     }
 
     @Override
@@ -33,11 +39,16 @@ public final class FailClosedSignedUrlPort implements SignedUrlPort {
             MediaAuthorizationContext context,
             ByteRange requestedRange,
             Instant now) {
-        throw MediaPersistenceNotEnabled.exception();
+        throw unconfigured();
     }
 
     @Override
     public void revokeAsset(String assetId) {
-        throw MediaPersistenceNotEnabled.exception();
+        throw unconfigured();
+    }
+
+    private static MediaOperationException unconfigured() {
+        return MediaOperationException.unavailable(
+                "MEDIA_OBJECT_STORE_NOT_CONFIGURED", "media object storage is not configured");
     }
 }

@@ -21,7 +21,11 @@ onMounted(() => {
 function retry(): void { void Promise.all([contentStore.retry('home'), loopStore.load()]) }
 function openPractice(): void { void router.push({ name: 'b2-practice' }) }
 function openCourse(contentId?: string): void { void router.push({ name: 'learn-session', query: contentId ? { contentId } : undefined }) }
-function completeTask(taskId: string): void { void contentStore.completeTask(taskId) }
+function startTask(taskId: string): void {
+  const task = tasks.value.find((item) => item.id === taskId)
+  if (!task?.contentCode) { void router.push({ name: 'courses' }); return }
+  void router.push({ name: 'learn-session', query: { taskId, contentCode: task.contentCode } })
+}
 </script>
 
 <template>
@@ -29,12 +33,12 @@ function completeTask(taskId: string): void { void contentStore.completeTask(tas
     <ExperienceHeader page="Learn" icon="route" title-id="learning-loop-title"><button class="button button--primary" type="button" @click="openPractice">开始练习</button></ExperienceHeader>
 
     <div v-if="contentStore.homeStatus === 'loading' || loopStore.state === 'loading'" class="info-card"><h3>正在恢复学习投影…</h3><p>正在读取今日任务、课程、复习队列和报告。</p></div>
-    <div v-else-if="contentStore.homeStatus === 'forbidden' || loopStore.state === 'permission'" class="info-card state-card state-card--warning"><h3>当前会话没有访问权限</h3><p>权限由 Gateway 和领域服务共同决定，客户端不会使用角色字段绕过限制。</p><button class="button button--secondary" type="button" @click="router.push({ name: 'login' })">重新登录</button></div>
+    <div v-else-if="contentStore.homeStatus === 'forbidden' || loopStore.state === 'permission'" class="info-card state-card state-card--warning"><h3>当前账号没有访问权限</h3><p>请重新登录；若仍无法访问，请联系管理员。</p><button class="button button--secondary" type="button" @click="router.push({ name: 'login' })">重新登录</button></div>
     <div v-else-if="contentStore.homeStatus === 'offline' || loopStore.state === 'offline'" class="info-card state-card state-card--warning"><h3>服务暂时不可用</h3><p>已保留本地页面和已知断点；网络恢复后可以继续同步。</p><button class="button button--secondary" type="button" @click="retry">重试恢复</button></div>
     <div v-else-if="contentStore.homeStatus === 'error' || loopStore.state === 'error'" class="info-card state-card state-card--danger"><h3>学习数据读取失败</h3><p>{{ contentStore.lastError ?? loopStore.lastError ?? '请稍后重试。' }}</p><button class="button button--secondary" type="button" @click="retry">重试</button></div>
 
     <div class="grid grid--two">
-      <article class="info-card"><span class="card-kicker">TODAY</span><h3>{{ tasks.length }} 个今日任务</h3><p>已完成 {{ contentStore.todayProgress }}%，内容语言 {{ contentStore.home?.contentLocale ?? 'en-US' }}。</p><div v-if="tasks.length" class="task-list task-list--compact"><div v-for="task in tasks.slice(0, 4)" :key="task.id" class="task-row"><div><strong>{{ task.title }}</strong><p>{{ task.description }} · {{ task.minutes }} 分钟</p></div><button class="button button--ghost" type="button" :disabled="task.completed" @click="completeTask(task.id)">{{ task.completed ? '已完成' : '完成' }}</button></div></div><EmptyState v-else title="今日暂无任务" description="目标或内容投影可能尚未准备好。" /></article>
+      <article class="info-card"><span class="card-kicker">TODAY</span><h3>{{ tasks.length }} 个今日任务</h3><p>已完成 {{ contentStore.todayProgress }}%，内容语言 {{ contentStore.home?.contentLocale ?? 'en-US' }}。</p><div v-if="tasks.length" class="task-list task-list--compact"><div v-for="task in tasks.slice(0, 4)" :key="task.id" class="task-row"><div><strong>{{ task.title }}</strong><p>{{ task.description }} · {{ task.minutes }} 分钟</p></div><button class="button button--ghost" type="button" :disabled="task.completed" @click="startTask(task.id)">{{ task.completed ? '已完成' : '开始学习' }}</button></div></div><EmptyState v-else title="今日暂无任务" description="可以先从课程书架选择内容。" /></article>
       <article class="info-card"><span class="card-kicker">REVIEW / REPORT</span><h3>{{ loopStore.queue.length }} 个待复习</h3><p v-if="loopStore.report">今日准确率 {{ loopStore.report.accuracy === null ? '—' : `${Math.round(loopStore.report.accuracy * 100)}%` }}，报告版本由服务端提供。</p><p v-else>报告暂时没有可展示的数据，不把空值伪装成零。</p><div class="actions"><button class="button button--secondary" type="button" @click="router.push({ name: 'vocabulary' })">打开 SRS</button><button class="button button--secondary" type="button" @click="router.push({ name: 'weakness-report' })">查看报告</button></div></article>
     </div>
 
