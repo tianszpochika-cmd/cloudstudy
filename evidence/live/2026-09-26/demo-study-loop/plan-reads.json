@@ -1,6 +1,6 @@
 {
   "task": "DEMO-PLAN-READS",
-  "capturedAt": "2026-09-26T18:32:10.971Z",
+  "capturedAt": "2026-09-26T18:39:00.192Z",
   "result": "PASS",
   "passed": 6,
   "total": 6,
@@ -23,17 +23,17 @@
     {
       "n": "plan-current",
       "ok": true,
-      "o": "200 {\"planVersion\":2,\"targetMinutes\":15,\"planId\":\"7c5c0fc8-a628-49c9-a217-4fc39bfaccdb\",\"updatedAt\":\"2026-09-26T18:32:09.820905\",\"status\":\"ACTIVE\",\"principalId\":\"f5"
+      "o": "200 {\"planVersion\":2,\"targetMinutes\":15,\"planId\":\"69892c16-e1a3-44d0-8ccb-9e990dabfd2f\",\"updatedAt\":\"2026-09-26T18:38:59.146232\",\"status\":\"ACTIVE\",\"principalId\":\"ab"
     },
     {
       "n": "srs-overview",
       "ok": true,
-      "o": "200 {\"principalId\":\"f5975af9-871d-4dd5-bec6-4d0d1f736663\",\"masteredCount\":0,\"reviewCount\":3,\"learningCount\":0,\"newCount\":0,\"verificationStatus\":\"UNVERIFIED_LEGACY_R"
+      "o": "200 {\"principalId\":\"ab79e972-15bb-4ea5-adb2-1805bb7cf993\",\"masteredCount\":0,\"reviewCount\":3,\"learningCount\":0,\"newCount\":0,\"verificationStatus\":\"UNVERIFIED_LEGACY_R"
     },
     {
       "n": "review-queue",
       "ok": true,
-      "o": "200 {\"items\":[{\"queueItemId\":\"demo-p5-word-3\",\"itemId\":\"demo-p5-word-3\",\"source\":\"REVIEW\",\"state\":\"REVIEW\",\"dueAt\":\"2026-09-26T15:32:10.809988\",\"priority\":100,\"stat"
+      "o": "200 {\"items\":[{\"queueItemId\":\"demo-p5-word-3\",\"itemId\":\"demo-p5-word-3\",\"source\":\"REVIEW\",\"state\":\"REVIEW\",\"dueAt\":\"2026-09-26T15:39:00.057864\",\"priority\":100,\"stat"
     }
   ]
 }
