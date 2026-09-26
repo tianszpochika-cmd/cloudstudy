@@ -1,0 +1,94 @@
+{
+  "capturedAt": "2026-09-26T11:21:50.986Z",
+  "tracks": [
+    {
+      "track": "zero",
+      "identifier": "e2e-zero-muiauxsa@local.invalid",
+      "steps": {
+        "register": true,
+        "adult": true,
+        "target": true,
+        "page-home": true,
+        "page-today": true,
+        "page-courses": true,
+        "page-learn": true,
+        "login": true,
+        "home": 200,
+        "firstDay": 200,
+        "today": 200,
+        "catalog": 200,
+        "vocab": 200,
+        "reading": 200,
+        "grammar": 200
+      },
+      "errors": []
+    },
+    {
+      "track": "cet",
+      "identifier": "e2e-cet-muiauxsa@local.invalid",
+      "steps": {
+        "register": true,
+        "adult": true,
+        "target": true,
+        "page-home": true,
+        "page-today": true,
+        "page-courses": true,
+        "page-learn": true,
+        "login": true,
+        "home": 200,
+        "firstDay": 200,
+        "today": 200,
+        "catalog": 200,
+        "vocab": 200,
+        "reading": 200,
+        "grammar": 200
+      },
+      "errors": []
+    },
+    {
+      "track": "kaoyan",
+      "identifier": "e2e-kaoyan-muiauxsa@local.invalid",
+      "steps": {
+        "register": true,
+        "adult": true,
+        "target": true,
+        "page-home": true,
+        "page-today": true,
+        "page-courses": true,
+        "page-learn": true,
+        "login": true,
+        "home": 200,
+        "firstDay": 200,
+        "today": 200,
+        "catalog": 200,
+        "vocab": 200,
+        "reading": 200,
+        "grammar": 200
+      },
+      "errors": []
+    },
+    {
+      "track": "work",
+      "identifier": "e2e-work-muiauxsa@local.invalid",
+      "steps": {
+        "register": true,
+        "adult": true,
+        "target": true,
+        "page-home": true,
+        "page-today": true,
+        "page-courses": true,
+        "page-learn": true,
+        "login": true,
+        "home": 200,
+        "firstDay": 200,
+        "today": 200,
+        "catalog": 200,
+        "vocab": 200,
+        "reading": 200,
+        "grammar": 200
+      },
+      "errors": []
+    }
+  ],
+  "result": "PASS"
+}

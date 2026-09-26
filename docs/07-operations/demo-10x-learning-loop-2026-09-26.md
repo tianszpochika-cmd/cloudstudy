@@ -48,7 +48,14 @@
 * 运行验证：`catalog 200（6/6 DEMO-P5）`，3抽查`detail 200`（job verify-p5-catalog exit 0）。
 * B3旧世界保持开关与权利门不动；B3技能页的正典迁移列后续项。
 
-## 7. 待办（P6）
+## 7. P6证据（四轨道浏览器E2E PASS）
 
-* 全目标浏览器E2E：注册→成人→目标→目录→单词详情→今日→home，每号截图+证据，回填56项台账。
-* B3技能页迁正典端点；发布流送审门修复（M3）；M8发布件。
+* 脚本：`tmp/demo-e2e-4tracks.mjs`（浏览器注册→成人→分轨道目标→4页面到达→网关直调7接口；密码仅内存，不入库）。
+* 4轨道（zero/cet/kaoyan/work）全部：注册/成人/目标/登录真，`home/firstDay/today/catalog/vocab/reading/grammar`全200，零页面异常零5xx（job pwsh-30 exit 0）。
+* 证据：`evidence/live/2026-09-26/demo-e2e/summary.json` + 每轨道assessment/learn截图。
+* 覆盖映射（56项台账对应行，状态变更权归QA，本轮仅供复核）：AUTH-LOGIN/REGISTER-RESET、ADULT-CONSENT、ONB-GOAL正向已复现；LEARN-HOME/TODAY由503转为诚实200；阅读/语法路由由403/404转为200；目录6条可学。
+* 未覆盖（诚实缺口）：有计划态home/today（plan引用跨owner未接线，M4-008残留）；B3技能列表内容（开关+权利门，迁正典为后续项）；定级提交→报告；口语/同步/支付/真机（M8）。
+
+## 8. 后续项
+
+* B3技能页迁正典端点；发布流送审门修复（M3）；定级提交→报告闭环；M8发布件。
