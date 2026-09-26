@@ -1,0 +1,232 @@
+{
+  "capturedAt": "2026-09-26T12:34:35.993Z",
+  "subject": "sweep-muidgg2c@local.invalid",
+  "pages": [
+    {
+      "route": "/",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": [],
+      "body": "跳到学习内容 语学星 LEARN A LITTLE. EVERY DAY.  日常学习  学习首页 今日任务 内容书架 学习路径 专项练习  我的成长  学习世界 学习报告 错题本 掌握进度 计划地图 一点一点，学得更从容。 帮助与反馈 账"
+    },
+    {
+      "route": "/login",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": [],
+      "body": "跳到学习内容 语学星 LEARN A LITTLE. EVERY DAY.  日常学习  学习首页 今日任务 内容书架 学习路径 专项练习  我的成长  学习世界 学习报告 错题本 掌握进度 计划地图 一点一点，学得更从容。 帮助与反馈 账"
+    },
+    {
+      "route": "/register",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": [],
+      "body": "跳到学习内容 语学星 LEARN A LITTLE. EVERY DAY.  日常学习  学习首页 今日任务 内容书架 学习路径 专项练习  我的成长  学习世界 学习报告 错题本 掌握进度 计划地图 一点一点，学得更从容。 帮助与反馈 账"
+    },
+    {
+      "route": "/reset-password",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": [],
+      "body": "跳到学习内容 语学星 LEARN A LITTLE. EVERY DAY.  日常学习  学习首页 今日任务 内容书架 学习路径 专项练习  我的成长  学习世界 学习报告 错题本 掌握进度 计划地图 一点一点，学得更从容。 帮助与反馈 账"
+    },
+    {
+      "route": "/support",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": [],
+      "body": "跳到学习内容 语学星 LEARN A LITTLE. EVERY DAY.  日常学习  学习首页 今日任务 内容书架 学习路径 专项练习  我的成长  学习世界 学习报告 错题本 掌握进度 计划地图 一点一点，学得更从容。 帮助与反馈 账"
+    },
+    {
+      "route": "/home",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": [],
+      "body": "跳到学习内容 语学星 LEARN A LITTLE. EVERY DAY.  日常学习  学习首页 今日任务 内容书架 学习路径 专项练习  我的成长  学习世界 学习报告 错题本 掌握进度 计划地图 一点一点，学得更从容。 帮助与反馈 账"
+    },
+    {
+      "route": "/onboarding",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": [],
+      "body": "语学星  FIRST DAY · 1/2  欢迎来到语学星  先确认身份，再选择学习目标。  1 确认身份 2 选择目标  确认身份与同意事项  确认成人身份  仅限已满 18 岁的学习者。  出生年份 我确认自己已满 18 周岁 我同意隐"
+    },
+    {
+      "route": "/assessment",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": [],
+      "body": "跳到学习内容 语学星 LEARN A LITTLE. EVERY DAY.  日常学习  学习首页 今日任务 内容书架 学习路径 专项练习  我的成长  学习世界 学习报告 错题本 掌握进度 计划地图 一点一点，学得更从容。 帮助与反馈 账"
+    },
+    {
+      "route": "/today",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": [],
+      "body": "跳到学习内容 语学星 LEARN A LITTLE. EVERY DAY.  日常学习  学习首页 今日任务 内容书架 学习路径 专项练习  我的成长  学习世界 学习报告 错题本 掌握进度 计划地图 一点一点，学得更从容。 帮助与反馈 账"
+    },
+    {
+      "route": "/vocabulary",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": [],
+      "body": "跳到学习内容 语学星 LEARN A LITTLE. EVERY DAY.  日常学习  学习首页 今日任务 内容书架 学习路径 专项练习 词汇复习 听力精练 分级阅读 口语自练 语法与句子 写作练习 综合练习  我的成长  学习世界 学习"
+    },
+    {
+      "route": "/learn/session?contentCode=DEMO-P5-READ-A2",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": [],
+      "body": "跳到学习内容 语学星 LEARN A LITTLE. EVERY DAY.  日常学习  学习首页 今日任务 内容书架 学习路径 专项练习  我的成长  学习世界 学习报告 错题本 掌握进度 计划地图 一点一点，学得更从容。 帮助与反馈 账"
+    },
+    {
+      "route": "/learn",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": [],
+      "body": "跳到学习内容 语学星 LEARN A LITTLE. EVERY DAY.  日常学习  学习首页 今日任务 内容书架 学习路径 专项练习  我的成长  学习世界 学习报告 错题本 掌握进度 计划地图 一点一点，学得更从容。 帮助与反馈 账"
+    },
+    {
+      "route": "/practice",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": [
+        "429 /api/v1/iam/principal/me"
+      ],
+      "body": "语学星 A LITTLE, EVERY DAY 让英语， 回到你的日常。  记几个词，听一段对话。 一点一点，学得更从容。  ✦ ✧ little by little grow. ✦ LEARN A LITTLE. EVERY DAY. 语"
+    },
+    {
+      "route": "/b2/report",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": [],
+      "body": "语学星 A LITTLE, EVERY DAY 让英语， 回到你的日常。  记几个词，听一段对话。 一点一点，学得更从容。  ✦ ✧ little by little grow. ✦ LEARN A LITTLE. EVERY DAY. 语"
+    },
+    {
+      "route": "/reports/weakness",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": [],
+      "body": "语学星 A LITTLE, EVERY DAY 让英语， 回到你的日常。  记几个词，听一段对话。 一点一点，学得更从容。  ✦ ✧ little by little grow. ✦ LEARN A LITTLE. EVERY DAY. 语"
+    },
+    {
+      "route": "/mistakes",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": [],
+      "body": "语学星 A LITTLE, EVERY DAY 让英语， 回到你的日常。  记几个词，听一段对话。 一点一点，学得更从容。  ✦ ✧ little by little grow. ✦ LEARN A LITTLE. EVERY DAY. 语"
+    },
+    {
+      "route": "/messages",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": [],
+      "body": "语学星 A LITTLE, EVERY DAY 让英语， 回到你的日常。  记几个词，听一段对话。 一点一点，学得更从容。  ✦ ✧ little by little grow. ✦ LEARN A LITTLE. EVERY DAY. 语"
+    },
+    {
+      "route": "/mastery",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": [],
+      "body": "语学星 A LITTLE, EVERY DAY 让英语， 回到你的日常。  记几个词，听一段对话。 一点一点，学得更从容。  ✦ ✧ little by little grow. ✦ LEARN A LITTLE. EVERY DAY. 语"
+    },
+    {
+      "route": "/plan-map",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": [],
+      "body": "语学星 A LITTLE, EVERY DAY 让英语， 回到你的日常。  记几个词，听一段对话。 一点一点，学得更从容。  ✦ ✧ little by little grow. ✦ LEARN A LITTLE. EVERY DAY. 语"
+    },
+    {
+      "route": "/grammar",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": [],
+      "body": "语学星 A LITTLE, EVERY DAY 让英语， 回到你的日常。  记几个词，听一段对话。 一点一点，学得更从容。  ✦ ✧ little by little grow. ✦ LEARN A LITTLE. EVERY DAY. 语"
+    },
+    {
+      "route": "/writing",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": [],
+      "body": "语学星 A LITTLE, EVERY DAY 让英语， 回到你的日常。  记几个词，听一段对话。 一点一点，学得更从容。  ✦ ✧ little by little grow. ✦ LEARN A LITTLE. EVERY DAY. 语"
+    },
+    {
+      "route": "/writing/practice",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": [],
+      "body": "语学星 A LITTLE, EVERY DAY 让英语， 回到你的日常。  记几个词，听一段对话。 一点一点，学得更从容。  ✦ ✧ little by little grow. ✦ LEARN A LITTLE. EVERY DAY. 语"
+    },
+    {
+      "route": "/listening",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": [],
+      "body": "语学星 A LITTLE, EVERY DAY 让英语， 回到你的日常。  记几个词，听一段对话。 一点一点，学得更从容。  ✦ ✧ little by little grow. ✦ LEARN A LITTLE. EVERY DAY. 语"
+    },
+    {
+      "route": "/reading",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": [],
+      "body": "语学星 A LITTLE, EVERY DAY 让英语， 回到你的日常。  记几个词，听一段对话。 一点一点，学得更从容。  ✦ ✧ little by little grow. ✦ LEARN A LITTLE. EVERY DAY. 语"
+    },
+    {
+      "route": "/reader",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": [],
+      "body": "语学星 A LITTLE, EVERY DAY 让英语， 回到你的日常。  记几个词，听一段对话。 一点一点，学得更从容。  ✦ ✧ little by little grow. ✦ LEARN A LITTLE. EVERY DAY. 语"
+    },
+    {
+      "route": "/speaking",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": [],
+      "body": "语学星 A LITTLE, EVERY DAY 让英语， 回到你的日常。  记几个词，听一段对话。 一点一点，学得更从容。  ✦ ✧ little by little grow. ✦ LEARN A LITTLE. EVERY DAY. 语"
+    },
+    {
+      "route": "/world",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": [],
+      "body": "语学星 A LITTLE, EVERY DAY 让英语， 回到你的日常。  记几个词，听一段对话。 一点一点，学得更从容。  ✦ ✧ little by little grow. ✦ LEARN A LITTLE. EVERY DAY. 语"
+    },
+    {
+      "route": "/forbidden",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": [],
+      "body": "语学星 A LITTLE, EVERY DAY 让英语， 回到你的日常。  记几个词，听一段对话。 一点一点，学得更从容。  ✦ ✧ little by little grow. ✦ LEARN A LITTLE. EVERY DAY. 语"
+    },
+    {
+      "route": "/commerce",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": [],
+      "body": "语学星 A LITTLE, EVERY DAY 让英语， 回到你的日常。  记几个词，听一段对话。 一点一点，学得更从容。  ✦ ✧ little by little grow. ✦ LEARN A LITTLE. EVERY DAY. 语"
+    },
+    {
+      "route": "/platform",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": [],
+      "body": "语学星 A LITTLE, EVERY DAY 让英语， 回到你的日常。  记几个词，听一段对话。 一点一点，学得更从容。  ✦ ✧ little by little grow. ✦ LEARN A LITTLE. EVERY DAY. 语"
+    },
+    {
+      "route": "/courses",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": [],
+      "body": "语学星 A LITTLE, EVERY DAY 让英语， 回到你的日常。  记几个词，听一段对话。 一点一点，学得更从容。  ✦ ✧ little by little grow. ✦ LEARN A LITTLE. EVERY DAY. 语"
+    },
+    {
+      "route": "/settings",
+      "status": 200,
+      "pageerrors": [],
+      "failedApi": [],
+      "body": "语学星 A LITTLE, EVERY DAY 让英语， 回到你的日常。  记几个词，听一段对话。 一点一点，学得更从容。  ✦ ✧ little by little grow. ✦ LEARN A LITTLE. EVERY DAY. 语"
+    }
+  ]
+}
