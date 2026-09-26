@@ -1,9 +1,9 @@
 {
   "task": "DEMO-STUDY-LOOP",
-  "capturedAt": "2026-09-26T16:05:19.082Z",
-  "subject": "study-muikzg7b@local.invalid",
-  "attemptId": "aatm_b639e2192a12432db027b243b61c6325",
-  "reportId": "rpt_9394da1d78484cf3b65846fe8f6302fb",
+  "capturedAt": "2026-09-26T16:45:47.042Z",
+  "subject": "study-muimfhwq@local.invalid",
+  "attemptId": "aatm_122bfdc7624b4508bcd45aa18724ac91",
+  "reportId": "rpt_c6337d04198441e8b7d9cccbb36b3e80",
   "result": "PASS",
   "passed": 9,
   "total": 9,
@@ -26,7 +26,7 @@
     {
       "name": "attempt",
       "ok": true,
-      "observed": "HTTP 200 attempt=aatm_b639e2192a12432db027b243b61c6325 report=rpt_9394da1d78484cf3b65846fe8f6302fb"
+      "observed": "HTTP 200 attempt=aatm_122bfdc7624b4508bcd45aa18724ac91 report=rpt_c6337d04198441e8b7d9cccbb36b3e80"
     },
     {
       "name": "checkpoint",
@@ -36,22 +36,22 @@
     {
       "name": "report",
       "ok": true,
-      "observed": "HTTP 200 {\"data\":{\"reportId\":\"rpt_9394da1d78484cf3b65846fe8f6302fb\",\"attemptId\":\"aatm_b639e2192a12432db027b243b61c6325\",\"reportVersion\":1,\"status\":\"READY\",\"scoreBucket\":"
+      "observed": "HTTP 200 {\"data\":{\"reportId\":\"rpt_c6337d04198441e8b7d9cccbb36b3e80\",\"attemptId\":\"aatm_122bfdc7624b4508bcd45aa18724ac91\",\"reportVersion\":1,\"status\":\"READY\",\"scoreBucket\":"
     },
     {
       "name": "mistakes",
       "ok": true,
-      "observed": "HTTP 200 {\"data\":{\"items\":[{\"mistakeId\":993025,\"questionId\":2058243695132892400,\"errorCategory\":\"UNCLASSIFIED\",\"reasonTrace\":[{\"errorCategory\":\"UNCLASSIFIED\",\"ruleVersio"
+      "observed": "HTTP 200 {\"data\":{\"items\":[{\"mistakeId\":993029,\"questionId\":2058243695132892400,\"errorCategory\":\"UNCLASSIFIED\",\"reasonTrace\":[{\"errorCategory\":\"UNCLASSIFIED\",\"ruleVersio"
     },
     {
       "name": "srs-overview",
       "ok": true,
-      "observed": "HTTP 200 {\"learningCount\":0,\"newCount\":0,\"verificationStatus\":\"UNVERIFIED_LEGACY_REVIEW\",\"total\":0,\"principalId\":\"c658857f-923e-4f8b-8045-1e416f5d4bf2\",\"masteredCount\":0"
+      "observed": "HTTP 200 {\"learningCount\":0,\"newCount\":0,\"verificationStatus\":\"UNVERIFIED_LEGACY_REVIEW\",\"total\":0,\"principalId\":\"3aeda393-cc0d-40cb-a08c-5b6fa4c90221\",\"masteredCount\":0"
     },
     {
       "name": "daily-report",
       "ok": true,
-      "observed": "HTTP 200 {\"reportId\":\"abfc21ec-db13-3af4-be22-c05fe6620ef1\",\"reportType\":\"DAILY\",\"status\":\"PARTIAL\",\"generatedAt\":\"2026-09-26T16:05:19.077775200Z\",\"calculationVersion\":\"B25-LEGACY-UNVERIFIED-1\",\"studyMinutes\":"
+      "observed": "HTTP 200 {\"reportId\":\"fc312679-9875-3987-a7fa-8a12adb3fde1\",\"reportType\":\"DAILY\",\"status\":\"PARTIAL\",\"generatedAt\":\"2026-09-26T16:45:47.041345800Z\",\"calculationVersion\":\"B25-LEGACY-UNVERIFIED-1\",\"studyMinutes\":"
     }
   ]
 }
