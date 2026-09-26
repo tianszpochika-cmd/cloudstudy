@@ -94,3 +94,8 @@
 
 * `tmp/remedy-loop.mjs`：故意答错→错题2条→`mastery-retry`（ACCEPTED/PENDING）→`variant`签发200→总览/周报200，9/9 PASS（job pwsh-50 exit 0）。
 * 顺序教训：变式需`variantItemId`且须在补救之后，先调序错得400；已修正。
+
+## 15. 消息工单偏好三链（2026-09-26）
+
+* `tmp/ops-loop.mjs`10/10 PASS（job pwsh-54 exit 0）：消息列表见 scaffolding 行→已读回执200→库`READ`；工单列表200、创建以正典形状得诚实503（`SUPPORT_CONTENT_REFERENCE_UNAVAILABLE`，无原文不收）；偏好`stateVersion`版本写DARK→回读一致。
+* 形状教训：工单正典字段是`categoryCode/descriptionFingerprint/priority`；偏好版本用`stateVersion`（非`version`）。
