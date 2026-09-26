@@ -136,6 +136,13 @@
 * `tmp/regression-check.mjs`2/2 PASS（job pwsh-65 exit 0）：移动设置页无5xx；管理策略页不再显示“暂不可用”。
 * 证据：`demo-e2e/regression/`（双截图+summary）。
 
+## 22. 门禁健康（2026-09-26）
+
+* `contracts:validate` PASS；planning门禁 PASS；stale-claims PASS（1612文件）；doc-audit PASS。
+* 网关check仅3项历史漂移（365→393、iam-deletions冻结语、M2-001摘要），无新增。
+* `p1r-api-contract`仍挂2项历史项（恢复分页/媒体幂等/错题分页），与本轮改动无关。
+* 证据：本轮命令输出（未入库大日志，按需重跑）。
+
 ## 22. 空态复核（2026-09-26）
 
 * `tmp/empty-recheck.mjs`14项全对预期（exit 0）：B3五路诚实空、目录6条、今日/房间/工单诚实空、Avatar降级、消息空、home 200。
