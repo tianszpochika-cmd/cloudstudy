@@ -168,3 +168,8 @@
 
 * `p1r-api-contract`挂的2项（恢复分页/媒体幂等/错题分页）逐项核过：`upload-url`契约自声明`FAIL_CLOSED/NO_SUCCESS_PATH`（D2未成熟），硬加`x-idempotency`声明等于撒谎——实现侧确无幂等 enforcement；恢复分页同理归属 M2-006。
 * 结论：两处均为契约不成熟区，需 owner 补实现+提 maturity，不是声明问题，不动。
+
+## 28. 读全部与离线清单（2026-09-26）
+
+* `tmp/ra-check.mjs`：已读全部200（无消息时诚实空操作）、离线包清单200（状态机描述符+空列表），零异常。
+* 证据：本轮命令输出（小项，未单独入库，按需重跑 `node tmp/ra-check.mjs`，tmp 不进仓）。
