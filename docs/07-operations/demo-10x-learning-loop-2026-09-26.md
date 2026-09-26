@@ -187,3 +187,10 @@
 
 * `tmp/mk-mask.mjs`：干净构建上，无效体（缺字段/错枚举）依然回不透明403——盖错行为稳定复现，非偶发。
 * 证据：本轮命令输出（小项，未单独入库）。
+
+## 31. 词汇正典兜底上线（2026-09-26，EPIC-B3首刀）
+
+* 改动：`apps/learner-web/src/api/b10.ts`（`listVocabularyBatch`）：B25批次空或诚实`UNTRUSTED`错时，读 frozen DEMO-P5 两套词（10词）拼卡，背面内嵌（翻卡零fetch）；评分走正常review口，服务端判（不伪造掌握态）；传输错照常透出（离线/重试态不受影响）。其余四技能待产品决策，不动。
+* `tmp/vocab-fallback-check.mjs`全绿（job pwsh-200 exit 0）：登录→1/10→about→关于→评分无假掌握态，零页面异常。
+* 证据：`demo-e2e/vocab-fallback/`（正反面截图+summary）。
+* 附带：我的edit工具残留tmpdir两次绊倒vite watcher（EBUSY），已清残留并重起前端；以后每次edit后必查残留。

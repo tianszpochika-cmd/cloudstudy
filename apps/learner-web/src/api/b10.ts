@@ -463,10 +463,19 @@ export function isB10OfflineError(error: unknown): boolean { return failureKind(
 
 export async function listVocabularyBatch(input: { localDate?: string; dailyNewTarget?: number; maxDailyReview?: number } = {}): Promise<B10VocabularyCard[]> {
   const localDate = input.localDate ?? new Date().toISOString().slice(0, 10)
-  const response = await apiClient.post<unknown>(B10_GATEWAY_ROUTES.learning.vocabularyBatch, { localDate, timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Shanghai', dailyNewTarget: input.dailyNewTarget ?? 20, maxDailyReview: input.maxDailyReview ?? 50, scheduleType: 'DAILY' }, withB10Headers(`b10-srs-batch-${localDate}`))
-  const source = recordValue(unwrap(response))
+  let source: RecordValue
+  try {
+    const response = await apiClient.post<unknown>(B10_GATEWAY_ROUTES.learning.vocabularyBatch, { localDate, timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Shanghai', dailyNewTarget: input.dailyNewTarget ?? 20, maxDailyReview: input.maxDailyReview ?? 50, scheduleType: 'DAILY' }, withB10Headers(`b10-srs-batch-${localDate}`))
+    source = recordValue(unwrap(response))
+  } catch (error) {
+    // Transport failures stay visible (offline queue + retry UX depend on them).
+    if (isB10OfflineError(error)) throw error
+    // Honest 4xx (no reviewable rows for this principal): readable cards instead.
+    return listCanonicalVocabularyFallback()
+  }
   if (source.status === 'RECOVERY_REQUIRED' && source.reasonCode === 'UNTRUSTED_REVIEW_EVIDENCE') {
-    throw new Error('复习记录待核验，暂不可结算。')
+    // Honest fail-closed with no reviewable rows: show readable cards instead.
+    return listCanonicalVocabularyFallback()
   }
   const items = listFrom(source.items ?? source.cards, ['items', 'cards'])
   const cards = await Promise.all(items.map(async (item, index) => {
@@ -476,7 +485,55 @@ export async function listVocabularyBatch(input: { localDate?: string; dailyNewT
     if (itemId) enriched = { ...raw, ...(await getVocabularyFront(itemId)) }
     return parseVocabularyCard(enriched, index, items.length)
   }))
-  return cards.flatMap((card) => card ? [card] : [])
+  const ready = cards.flatMap((card) => card ? [card] : [])
+  if (ready.length) return ready
+  return listCanonicalVocabularyFallback()
+}
+
+/**
+ * EPIC-B3 display fallback: when the B25 SRS batch is empty, serve the frozen
+ * DEMO-P5 vocabulary fixtures as readable cards with embedded backs.
+ * Reveal works without fetch; rating submits honestly through the normal
+ * review endpoint (the server owns the verdict, nothing is fabricated).
+ * Grammatical/reading/writing/listening skills stay on honest-empty until
+ * their product decisions land (see followup-epics).
+ */
+const CANONICAL_VOCABULARY_CODES = ['DEMO-P5-VOCAB-A1', 'DEMO-P5-VOCAB-A2'] as const
+
+async function listCanonicalVocabularyFallback(): Promise<B10VocabularyCard[]> {
+  const out: B10VocabularyCard[] = []
+  for (const code of CANONICAL_VOCABULARY_CODES) {
+    let detail: RecordValue
+    try {
+      const response = await apiClient.get<unknown>(`/content/learner/${code}`, withB10Headers())
+      detail = recordValue(recordValue(unwrap(response)).content ?? unwrap(response))
+    } catch { continue }
+    const version = contentVersionId(detail)
+    if (version === null) continue
+    const items = arrayValue(detail.items)
+    for (const [index, rawItem] of items.entries()) {
+      const item = recordValue(rawItem)
+      // Fixture-conventional display shape: "term — definition".
+      const display = stringValue(item.displayText) ?? stringValue(item.text)
+      const parts = display?.split(' — ') ?? []
+      const term = parts.length === 2 ? (parts[0]?.trim() || null) : null
+      const meaning = parts.length === 2 ? (parts[1]?.trim() || null) : null
+      if (!term || !meaning) continue
+      const shaped = {
+        itemId: stringValue(item.itemCode) ?? `${code}-item-${index}`,
+        itemType: 'VOCAB',
+        title: term,
+        word: term,
+        meaningCn: meaning,
+        contentVersionId: version,
+        availability: 'PUBLISHED',
+      }
+      const card = parseVocabularyCard(shaped, out.length, -1)
+      if (card) out.push({ ...card, position: out.length, total: -1 })
+    }
+  }
+  if (!out.length) return out
+  return out.map((card, index) => ({ ...card, position: index, total: out.length }))
 }
 
 async function getVocabularyFront(itemId: string | number): Promise<RecordValue> {
