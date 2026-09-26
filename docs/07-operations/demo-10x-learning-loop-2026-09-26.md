@@ -100,12 +100,13 @@
 * `tmp/ops-loop.mjs`10/10 PASS（job pwsh-54 exit 0）：消息列表见 scaffolding 行→已读回执200→库`READ`；工单列表200、创建以正典形状得诚实503（`SUPPORT_CONTENT_REFERENCE_UNAVAILABLE`，无原文不收）；偏好`stateVersion`版本写DARK→回读一致。
 * 形状教训：工单正典字段是`categoryCode/descriptionFingerprint/priority`；偏好版本用`stateVersion`（非`version`）。
 
-## 16. 通知偏好写阻塞项（2026-09-26，多轮未解→阻塞）
+## 16. 通知偏好写——已破案（2026-09-26，R102根因定位并转绿）
 
-* 现象：同token GET偏好200，任何PUT偏好一律403`{"code":"FORBIDDEN","message":"access denied"}`；R6发现，R8深挖，R9矩阵二分，R15审计追踪仍现。
-* **更正上一轮结论**：审计行（`gateway.notifications-domain DENY/forbidden`）记录的是转发的上游403回执（reason按状态派生），不是网关拒转——网关确有转发。
-* R15排除项追加：直调/网关同错；审计载荷`clientProfile`从`NO_BROWSER_PROFILE`补到`LEARNER_WEB`仍拒；CSRF过滤器只管带cookie请求（本例无）；安全链单条；执行投影含PUT模板；控制器无方法注解；MockMvc复现走不通（模块缺starter-test依赖，不为此加依赖）。
-* 结论不变：需owner带trace/调试器跟`AuthorizationFilter`后链路。读侧与设置页渲染不受影响。
+* **纠错**：我此前“服务坏了”的结论是错的。真相：我的请求体一直无效（缺`category/consentVersion/dndWindow/frequencyPolicy`，或`category`误填`REVIEW_DUE`、路径误用`REVIEW_DUE`）——`UpdatePreferenceRequest`要求正典枚举+`fromPathType`允许的路径类型。
+* **真发现（产品级）**：无效请求抛出的框架异常被转发到`/error`，而安全链对`/error`走`denyAll`，于是真错误（400绑定失败/域403）被盖成不透明403`access denied`。诊断handler回显`method=GET uri=/error`+完整已认证principal为证（临时代码已删，构建已还原，工作区无残留）。
+* 有效形状：`PUT /api/v1/notifications/preferences/REVIEW/PUSH` + `{category:'REVIEW',enabled,locale:'zh-CN',consentVersion:1,dndWindow:{startLocalTime,endLocalTime},frequencyPolicy:'IMMEDIATE',expectedVersion:0}` → 200且回读持久（`tmp/ok-valid.mjs`，job实测；干净构建复验一致）。
+* 后续（owner）：① `/error`转发被denyAll盖掉真错误，建议按标准做法放行error转发或返回RFC9450；② 历史W4用`REVIEW_DUE`曾200，与现行`fromPathType`允许集矛盾，待考古（不影响现行契约）。
+* 证据：`demo-study-loop/r7-guards.json`（R7 9/9，job pwsh-127 exit 0）。
 
 ## 17. 课程书架点通（2026-09-26）
 

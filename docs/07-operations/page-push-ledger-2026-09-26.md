@@ -1,8 +1,8 @@
-# 56 PAGE-P1 三态总表（2026-09-26 v4，本轮代理判定）
+# 56 PAGE-P1 三态总表（2026-09-26 v5，本轮代理判定）
 
 > 口径：`PASS`=关键动作+落库+恢复均有本轮证据；`HONEST-EMPTY`=渲染正确、空态系设计/门所致、无崩；
 > `BLOCKED`=需产品/代码缺口关闭。本表是代理侧复核记录；台账 canonical 状态变更权归QA。
-> 证据根：`evidence/live/2026-09-26/`。v4 差异：并入移动答题、诚实门、回归确认、空态复核、重置不枚举、门禁健康。
+> 证据根：`evidence/live/2026-09-26/`。v5 差异：通知偏好写根因定位（请求体无效+`/error`盖错），转绿，BLOCKED 3→2。
 
 ## 官网 11 项：全部 PASS（静态展示页，渲染+导航+双视口零错）
 
@@ -49,10 +49,10 @@
 | PAGE-P1-WORLD | PASS | world.json（目录+Avatar+空房间诚实） |
 | PAGE-P1-GAME | HONEST-EMPTY | 目录展示+释放门诚实拒（防刷分） |
 | PAGE-P1-SOCIAL | HONEST-EMPTY | 空房间诚实（已隔离） |
-| PAGE-P1-AVATAR-REWARD | PASS | Avatar profile 200降级渲染 |
+| PAGE-P1-AVATAR-REWARD | PASS | Avatar读200 + 写503关闭（entitlement门） |
 | PAGE-P1-MESSAGES | PASS | ops.json（列表+已读+落库） |
 | PAGE-P1-SYNC-OFFLINE | HONEST-EMPTY | 读通；下载404路由保留（r20） |
-| PAGE-P1-SETTINGS | PASS | ops.json（版本写DARK回读）+ 移动设置无5xx |
+| PAGE-P1-SETTINGS | PASS | 学习偏好版本写回读 + 通知偏好正典体写200回读（r7 9/9） |
 | PAGE-P1-DEVICES | PASS | r7-guards（双会话踢出+列表如实） |
 | PAGE-P1-PRIVACY | HONEST-EMPTY | 不可用说明页；导出删号M6后续 |
 | PAGE-P1-SUPPORT | HONEST-EMPTY | 列表200；创建诚实503（无原文不收） |
@@ -77,6 +77,6 @@
 
 ## 汇总
 
-* PASS 24 / HONEST-EMPTY 29 / BLOCKED 3（ADMIN-PUBLISH-ROLLBACK、ADMIN-RISK、通知偏好写）。
-* 四端复核：Web动作链、移动答题、管理动作、官网静态；回归确认（§21）+空态复核（§22）+门禁健康（§23）持续全绿。
-* BLOCKED 3项均有独立成因记录，不阻塞学习主链；B3迁移/计划接线/正典定级/M8为后续 epics（见 followup-epics）。
+* PASS 24 / HONEST-EMPTY 29 / BLOCKED 2（ADMIN-PUBLISH-ROLLBACK、ADMIN-RISK）。
+* 通知偏好写：R102 根因定位（无效请求体 + `/error`转发被denyAll盖错），有效体200持久，阻塞摘除；遗留owner项：`/error`盖错真错误、W4-`REVIEW_DUE`考古。
+* BLOCKED 2项均有独立成因记录；B3迁移/计划接线/正典定级/M8为后续 epics（见 followup-epics）。

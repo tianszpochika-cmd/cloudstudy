@@ -1,8 +1,8 @@
 {
   "task": "DEMO-R7-GUARDS",
-  "capturedAt": "2026-09-26T17:10:24.032Z",
-  "result": "FAIL",
-  "passed": 8,
+  "capturedAt": "2026-09-26T17:56:42.365Z",
+  "result": "PASS",
+  "passed": 9,
   "total": 9,
   "checks": [
     {
@@ -13,32 +13,32 @@
     {
       "n": "editor-cannot-review",
       "ok": true,
-      "o": "403 {\"error\":{\"code\":\"CONTENT_REVIEW_L1_REQUIRED\",\"message\":\"first review permission is required\",\"retryable\":false}}"
+      "o": "403 {\"error\":{\"retryable\":false,\"code\":\"CONTENT_REVIEW_L1_REQUIRED\",\"message\":\"first review permission is required\"}}"
     },
     {
       "n": "self-review-denied",
       "ok": true,
-      "o": "409 {\"error\":{\"code\":\"FOUR_EYES_REQUIRED\",\"message\":\"content editor cannot review or approve the same version\",\"retryable\":false}}"
+      "o": "409 {\"error\":{\"retryable\":false,\"code\":\"FOUR_EYES_REQUIRED\",\"message\":\"content editor cannot review or approve the same version\"}}"
     },
     {
       "n": "devices-setup",
       "ok": true,
-      "o": "sid=ee170405-6130-49bd-9c9b-f0707e95ab6b"
+      "o": "sid=6cbfec5f-2351-4fdf-9979-fbfa1159fb59"
     },
     {
       "n": "second-session",
       "ok": true,
-      "o": "sid=1cec5317-a848-4108-825d-8bb2836d6ec5"
+      "o": "sid=2bc84d49-a87e-4095-9b11-9a71795f7bde"
     },
     {
       "n": "revoke-other",
       "ok": true,
-      "o": "200 {\"data\":{\"sessionId\":\"1cec5317-a848-4108-825d-8bb2836d6ec5\",\"status\":\"REVOKED\",\"revocationScope\":\"TARGET_SESSION_AND_TOK"
+      "o": "200 {\"data\":{\"sessionId\":\"2bc84d49-a87e-4095-9b11-9a71795f7bde\",\"status\":\"REVOKED\",\"revocationScope\":\"TARGET_SESSION_AND_TOK"
     },
     {
       "n": "devices-reflect",
       "ok": true,
-      "o": "200 {\"data\":{\"devices\":[{\"deviceId\":\"1616274a-a7f0-40a0-ad84-0b1c44836e77\",\"deviceType\":\"WEB\",\"status\":\"ACTIVE\",\"lastActiveAt\":\"2026-09-26T17:10:23.015300Z\"},{\"deviceId\":\"089520a3-88fa-47e5-a6be-3a1f9ac8ed1e\",\"deviceType\":\"WEB\",\"status\":\"ACTIVE\",\"lastActiveAt\":\"2026-09-26T17:10:22.732536Z\"},{\"deviceId\":\"a5ff9f95-b065-4b4e-b33d-103eae04b4d9\",\"deviceType\":\"WEB\",\"status\":\"ACTIVE\",\"lastActiveAt\":\"2026-09-"
+      "o": "200 {\"data\":{\"devices\":[{\"deviceId\":\"32f7e97e-f429-4f38-997c-3e9970d071b6\",\"deviceType\":\"WEB\",\"status\":\"ACTIVE\",\"lastActiveAt\":\"2026-09-26T17:56:40.905788Z\"},{\"deviceId\":\"2fa413c3-b0df-4917-8268-fa6a7decad6a\",\"deviceType\":\"WEB\",\"status\":\"ACTIVE\",\"lastActiveAt\":\"2026-09-26T17:56:40.592715Z\"},{\"deviceId\":\"fb38fad8-8659-4077-910a-466030fd42cc\",\"deviceType\":\"WEB\",\"status\":\"ACTIVE\",\"lastActiveAt\":\"2026-09-"
     },
     {
       "n": "notif-pref-read",
@@ -47,8 +47,8 @@
     },
     {
       "n": "notif-pref-write",
-      "ok": false,
-      "o": "403 {\"code\":\"FORBIDDEN\",\"message\":\"access denied\"}"
+      "ok": true,
+      "o": "200 {\"data\":{\"category\":\"REVIEW\",\"channel\":\"PUSH\",\"enabled\":false,\"locale\":\"zh-CN\",\"consentVersion\":1,\"dndWindow\":{\"startLocalTime\":\"22:00\",\"endLocalTime\":\"07:00\",\""
     }
   ]
 }
