@@ -1,6 +1,6 @@
 {
   "task": "DEMO-GUARDRAILS-R20",
-  "capturedAt": "2026-09-26T17:12:59.452Z",
+  "capturedAt": "2026-09-26T18:07:32.789Z",
   "result": "PASS",
   "passed": 5,
   "total": 5,
@@ -18,17 +18,17 @@
     {
       "n": "srs-write-closed",
       "ok": true,
-      "o": "409 {\"timestamp\":\"2026-09-26T17:12:59.418Z\",\"status\":409,\"error\":\"Conflict\",\"path\":\"/internal/v1/learning/srs/reviews\"}"
+      "o": "409 {\"timestamp\":\"2026-09-26T18:07:32.159Z\",\"status\":409,\"error\":\"Conflict\",\"path\":\"/internal/v1/learning/srs/reviews\"}"
     },
     {
       "n": "offline-list",
       "ok": true,
-      "o": "404 {\"error\":{\"errorCode\":\"NOT_FOUND\",\"message\":\"The API route is not available.\",\"retryable\":false},\"meta\":{\"requestId\":\"req-4be0f14473fb44a28c"
+      "o": "404 {\"error\":{\"errorCode\":\"NOT_FOUND\",\"message\":\"The API route is not available.\",\"retryable\":false},\"meta\":{\"requestId\":\"req-fe6b35ec3ca4440cb8"
     },
     {
       "n": "commerce-catalog",
       "ok": true,
-      "o": "200 {\"catalogVersion\":\"commerce-public-v1\",\"uiLocale\":\"zh-CN\",\"contentLocale\":\"en-US\",\"plans\":[],\"publishedAt\":\"2026-09-26T17:12:59.447406500Z\",\"checkoutPath\":\"/pri"
+      "o": "200 {\"catalogVersion\":\"commerce-public-v1\",\"uiLocale\":\"zh-CN\",\"contentLocale\":\"en-US\",\"plans\":[],\"publishedAt\":\"2026-09-26T18:07:32.770616200Z\",\"checkoutPath\":\"/pri"
     }
   ]
 }
