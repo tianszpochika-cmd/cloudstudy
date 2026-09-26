@@ -112,3 +112,9 @@
 * `tmp/shelf-check.mjs`：书架渲染6/6演示课零异常（截图）；`tmp/shelf-click.mjs`点“开始这一课”进`/learn/session`且见单元，零异常（job pwsh-61 exit 0）。
 * B3迁移结论：正典目录/详情可承载学习，B3旧读保持关闭；技能页迁正典需产品决策（投影归属+答案隔离），列后续项不硬迁。
 * 证据：`demo-e2e/course-shelf/`（书架截图+点通记录）。
+
+## 18. 成长线诚实门（2026-09-26）
+
+* `tmp/world-loop.mjs`8/8 PASS（job pwsh-63 exit 0）：注册登录→游戏目录6款→开局诚实409（`GAME_NOT_AVAILABLE/P0`）→Avatar`2D_FALLBACK`→自习室诚实空。
+* 依据：`GameCatalog`6款全`enabled=false`（注释：无验证过的题包/判分依据，不发布）。防刷分门，不硬开；要开需先备挑战题包+判分事实。
+* 证据：`demo-study-loop/world.json`。

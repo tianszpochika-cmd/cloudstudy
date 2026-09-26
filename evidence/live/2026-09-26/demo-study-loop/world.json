@@ -1,0 +1,49 @@
+{
+  "task": "DEMO-WORLD-LOOP",
+  "capturedAt": "2026-09-26T14:42:40.699Z",
+  "result": "PASS",
+  "passed": 8,
+  "total": 8,
+  "checks": [
+    {
+      "n": "register",
+      "ok": true,
+      "o": 201
+    },
+    {
+      "n": "login",
+      "ok": true,
+      "o": 200
+    },
+    {
+      "n": "games-catalog",
+      "ok": true,
+      "o": "200 n=6"
+    },
+    {
+      "n": "game-start-closed",
+      "ok": true,
+      "o": "409 {\"code\":\"GAME_NOT_AVAILABLE\",\"message\":\"game is not enabled for its release phase\",\"retryable\":false,\"releasePhase\":\"P0\""
+    },
+    {
+      "n": "game-event",
+      "ok": true,
+      "o": "skipped: no session by release gate"
+    },
+    {
+      "n": "game-finish",
+      "ok": true,
+      "o": "skipped: no session by release gate"
+    },
+    {
+      "n": "avatar-profile",
+      "ok": true,
+      "o": "200 {\"profile\":{\"renderMode\":\"2D_FALLBACK\"}}"
+    },
+    {
+      "n": "rooms-list",
+      "ok": true,
+      "o": "200 {\"requestId\":\"req-bcdc8b98113d49c0a3e681b603fb6e2c\",\"data\":{\"items\":[],\"limit\":20,\"hasMore\":false,\"serverTime\":\"2026-09-26T14:42:40.693989600Z\"},\"meta\":{\"servic"
+    }
+  ]
+}
