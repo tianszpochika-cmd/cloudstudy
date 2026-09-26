@@ -180,3 +180,8 @@
 * `tmp/avatar-write.mjs`5/5 PASS（job pwsh-72 exit 0）：装扮/空间保存诚实503（`ENTITLEMENT_UNAVAILABLE`，防刷/商业边界）；读取200降级。
 * 结论：装扮写需配给 entitlement，不伪造；AVATAR-REWARD 行动作深验至此（读通+写关）。
 * 证据：`demo-study-loop/avatar.json`。
+
+## 30. 盖错复现（2026-09-26）
+
+* `tmp/mk-mask.mjs`：干净构建上，无效体（缺字段/错枚举）依然回不透明403——盖错行为稳定复现，非偶发。
+* 证据：本轮命令输出（小项，未单独入库）。
