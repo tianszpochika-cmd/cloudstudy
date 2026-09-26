@@ -62,6 +62,13 @@
 * `tmp/placement-check.mjs`：定级单题步进（start→逐题submit→report），4/4 PASS；报告`ASSESSED`但`canonical:false/B25_LEGACY`——正典十题定级仍为后续项。
 * 证据：`evidence/live/2026-09-26/demo-study-loop/summary.json` + `placement.json`。
 
-## 9. 后续项
+## 9. P8证据（课程单元可学）
 
-* B3技能页迁正典端点；发布流送审门修复（M3）；定级提交→报告闭环；M8发布件。
+* 报障：`LearnPage`“课程没有可学习单元”——`parseContentDetail`取`items[].text/options`，而除词汇外演示载荷缺`items`键。
+* 修法（数据侧）：演示载荷全量补`items`（阅读按段、语法按规则+例句、听力按句、造句单条），并配`b25_content_unit/item`行（展示用，无答案规则）；重跑`pnpm db:seed:demo-p5`，6项哈希全对。
+* 运行验证：`/learn/session?contentCode=DEMO-P5-READ-A2`渲染“2 个学习单元”+双语文本（截图`demo-e2e/learn-read-units.png`，`has-units=true`）。
+* tester-learner核对（`13eddde1…`）：ACTIVE、无目标行（其onboarding旅程不动）、0计划；已有39 review + 10 srs + 2 session，报告有数。B3技能列表保持诚实空（开关+权利门，后续迁正典）。
+
+## 10. 后续项
+
+* B3技能页迁正典端点；发布流送审门修复（M3）；正典十题定级；有计划态home/today接线（M4-008残留）；M8发布件。
