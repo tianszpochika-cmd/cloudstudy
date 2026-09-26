@@ -100,8 +100,9 @@
 * `tmp/ops-loop.mjs`10/10 PASS（job pwsh-54 exit 0）：消息列表见 scaffolding 行→已读回执200→库`READ`；工单列表200、创建以正典形状得诚实503（`SUPPORT_CONTENT_REFERENCE_UNAVAILABLE`，无原文不收）；偏好`stateVersion`版本写DARK→回读一致。
 * 形状教训：工单正典字段是`categoryCode/descriptionFingerprint/priority`；偏好版本用`stateVersion`（非`version`）。
 
-## 16. 通知偏好写阻塞项（2026-09-26）
+## 16. 通知偏好写阻塞项（2026-09-26，三轮未解→阻塞）
 
-* 现象：同token GET偏好200，任何PUT偏好（含W4用过的最小体）一律403`{"code":"FORBIDDEN","message":"access denied"}`；绕过网关直调服务亦然，排除网关。
-* 排除项：token权限声明齐全、形状无关（最小体同错）、无方法级注解、无CSRF、converter与token无关。
-* 定性：回归（W4在9月曾PUT 200）或环境相关，非本轮引入；读侧与页面渲染不受影响。待owner带trace/调试器定位，暂列阻塞项（首轮记录，未达3轮上限）。
+* 现象：同token GET偏好200，任何PUT偏好（含空体/无体/W4最小体/双类目）一律403`{"code":"FORBIDDEN","message":"access denied"}`；绕过网关直调亦然；R6发现，R8深挖，R9矩阵二分仍现。
+* 已排除（实测）：网关（直调同错）、包体（空/无/全同错）、token权限声明（解码齐全）、转换器/链/控制器/命令/策略/解析器/过滤器/方法注解（逐项读码，均无方法分支）、类注解、双链（单链确认）、CSRF（已关）、Origin头（加了同错）、Idempotency-Key（直调无键同错）。
+* 反证：同服务同token下PUT消息已读200、GET偏好200；PUT不存在路径亦403（方法级），POST同路径404（路由正常）。
+* 结论：服务内对偏好PUT路径的拒绝无可见配置对应，需owner带trace/调试器跟`AuthorizationFilter`后链路。读侧与设置页渲染不受影响；W4在9月曾PUT成功，属回归窗口。
