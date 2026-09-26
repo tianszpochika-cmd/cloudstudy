@@ -1,0 +1,16 @@
+{
+  "capturedAt": "2026-09-26T15:23:30.438Z",
+  "checks": [
+    {
+      "n": "mobile-settings-no5xx",
+      "ok": true,
+      "o": "[]"
+    },
+    {
+      "n": "admin-permissions-renders",
+      "ok": true,
+      "o": "跳到主要内容 语学星 教研与运营工作台 工作空间 工作台 质量与安全 策略版本 教研与运营工作台 退出登录 ↗ 教研与运营工作台 / 策略版本 查找功能 Ctr"
+    }
+  ],
+  "result": "PASS"
+}

@@ -130,3 +130,8 @@
 * `tmp/world-loop.mjs`8/8 PASS（job pwsh-63 exit 0）：注册登录→游戏目录6款→开局诚实409（`GAME_NOT_AVAILABLE/P0`）→Avatar`2D_FALLBACK`→自习室诚实空。
 * 依据：`GameCatalog`6款全`enabled=false`（注释：无验证过的题包/判分依据，不发布）。防刷分门，不硬开；要开需先备挑战题包+判分事实。
 * 证据：`demo-study-loop/world.json`。
+
+## 21. 回归确认（2026-09-26）
+
+* `tmp/regression-check.mjs`2/2 PASS（job pwsh-65 exit 0）：移动设置页无5xx；管理策略页不再显示“暂不可用”。
+* 证据：`demo-e2e/regression/`（双截图+summary）。
