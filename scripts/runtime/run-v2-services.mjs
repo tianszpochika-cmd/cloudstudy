@@ -253,6 +253,18 @@ function runtimeEnvironment(service, port) {
     environment.WORKFLOW_SCHEDULING_ENABLED = process.env.WORKFLOW_SCHEDULING_ENABLED ?? 'true';
     environment.WORKFLOW_RECOVERY_REQUIRES_APPROVER = 'true';
   }
+  if (service.id === 'admin-ops-service') {
+    // Audit list paging seals opaque cursors with this key. Off by default so an
+    // unconfigured deployment fails closed with 503 instead of unsigned cursors;
+    // the local-real stack supplies a local-only dev key (never production).
+    environment.ADMIN_OPS_AUDIT_CURSOR_KEY = process.env.ADMIN_OPS_AUDIT_CURSOR_KEY
+      ?? 'local-dev-only-audit-cursor-key-32b-minimum!';
+  }
+  if (service.id === 'social-service') {
+    // Same pattern for the moderation report-queue cursor codec.
+    environment.SOCIAL_MODERATION_CURSOR_KEY = process.env.SOCIAL_MODERATION_CURSOR_KEY
+      ?? 'local-dev-only-moderation-cursor-key!';
+  }
   const owner = ownerManifest.services.find((item) => item.id === service.id);
   const ownerUser = owner?.dbCredential;
   const ownerSchema = owner?.schema;
