@@ -163,3 +163,8 @@
 
 * `tmp/mob-assess.mjs`：移动H5登录真→定级页点选2题→报告卡→同号日报/错题200，零异常（job pwsh-69 exit 0）。
 * 证据：`demo-e2e/mobile-assessment/`（报告截图+summary）。
+
+## 26. 契约失败项定性（2026-09-26）
+
+* `p1r-api-contract`挂的2项（恢复分页/媒体幂等/错题分页）逐项核过：`upload-url`契约自声明`FAIL_CLOSED/NO_SUCCESS_PATH`（D2未成熟），硬加`x-idempotency`声明等于撒谎——实现侧确无幂等 enforcement；恢复分页同理归属 M2-006。
+* 结论：两处均为契约不成熟区，需 owner 补实现+提 maturity，不是声明问题，不动。
