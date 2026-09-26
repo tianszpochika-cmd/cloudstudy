@@ -1,6 +1,6 @@
 {
   "task": "DEMO-AVATAR-WRITE",
-  "capturedAt": "2026-09-26T17:11:46.736Z",
+  "capturedAt": "2026-09-26T18:06:28.639Z",
   "result": "PASS",
   "passed": 5,
   "total": 5,
@@ -18,7 +18,7 @@
     {
       "n": "avatar-save-closed",
       "ok": true,
-      "o": "503 {\"error\":{\"message\":\"奖励与装扮暂不可用\",\"retryable\":false,\"details\":{\"reasonCode\":\"ENTITLEMENT_UNAVAILABLE\"},\"errorCode\":\"SERVIC"
+      "o": "503 {\"meta\":{\"schemaVersion\":\"1.0.0\",\"traceId\":\"ab1a7fbc717a4fcabc0b5fa118c36d8c\",\"apiVersion\":\"v1\",\"requestId\":\"req-81e5ebd"
     },
     {
       "n": "avatar-read",
