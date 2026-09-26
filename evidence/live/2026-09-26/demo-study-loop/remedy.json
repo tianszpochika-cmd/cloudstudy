@@ -1,6 +1,6 @@
 {
   "task": "DEMO-REMEDY-LOOP",
-  "capturedAt": "2026-09-26T16:55:11.905Z",
+  "capturedAt": "2026-09-26T17:01:55.177Z",
   "result": "PASS",
   "passed": 9,
   "total": 9,
@@ -23,7 +23,7 @@
     {
       "n": "wrong-attempt",
       "ok": true,
-      "o": "200 attempt=aatm_6afcaea76bf840a6a60e5eb82d932efc"
+      "o": "200 attempt=aatm_30c50b57a73b4f8d9f8af53bcca690ce"
     },
     {
       "n": "mistakes-list",
@@ -33,22 +33,22 @@
     {
       "n": "mastery-retry",
       "ok": true,
-      "o": "200 {\"dueAt\":\"2026-09-26T16:55:11.811756200Z\",\"stage\":\"D0\",\"result\":\"PENDING\",\"source\":\"mysql\",\"status\":\"ACCEPTED\",\"mistakeId\":993035,\"interactionId\":\"ca9d7f1e-ab77"
+      "o": "200 {\"dueAt\":\"2026-09-26T17:01:55.077044700Z\",\"stage\":\"D0\",\"result\":\"PENDING\",\"source\":\"mysql\",\"status\":\"ACCEPTED\",\"mistakeId\":993039,\"interactionId\":\"a876ab0b-e0c5"
     },
     {
       "n": "mistake-variant",
       "ok": true,
-      "o": "200 {\"data\":{\"mistakeId\":993035,\"questionId\":2058243695132892400,\"errorCategory\":\"UNCLASSIFIED\",\"reasonTrace\":[{\"errorCategory\":\"UNCLASSIFIED\",\"ruleVersion\":\"course-b25-basics:v25001\",\"occurredAt\":\"2026-0"
+      "o": "200 {\"data\":{\"mistakeId\":993039,\"questionId\":2058243695132892400,\"errorCategory\":\"UNCLASSIFIED\",\"reasonTrace\":[{\"errorCategory\":\"UNCLASSIFIED\",\"ruleVersion\":\"course-b25-basics:v25001\",\"occurredAt\":\"2026-0"
     },
     {
       "n": "mastery-overview",
       "ok": true,
-      "o": "200 {\"principalId\":\"29a62922-d380-4d42-b6be-58c4604d4991\",\"srs\":{\"newCount\":0,\"masteredCount\":0,\"reviewCount\":0,\"learningCount\":0,\"total\":0},\"mistakes\":0,\"reviewFac"
+      "o": "200 {\"principalId\":\"16b0ad51-12d7-4259-86ca-8b8dec108b3a\",\"srs\":{\"newCount\":0,\"masteredCount\":0,\"reviewCount\":0,\"learningCount\":0,\"total\":0},\"mistakes\":0,\"reviewFac"
     },
     {
       "n": "weekly-report",
       "ok": true,
-      "o": "200 {\"reportId\":\"9ab64cd2-ac4c-3213-ba43-109cc1dd1f94\",\"reportType\":\"WEEKLY\",\"status\":\"PARTIAL\",\"generatedAt\":\"2026-09-26T16:55:11.901462200Z\",\"calculationVersion\":"
+      "o": "200 {\"reportId\":\"79076d0a-ed87-3505-8f16-c94ff018b9a4\",\"reportType\":\"WEEKLY\",\"status\":\"PARTIAL\",\"generatedAt\":\"2026-09-26T17:01:55.175362700Z\",\"calculationVersion\":"
     }
   ]
 }
