@@ -107,6 +107,8 @@
 * 有效形状：`PUT /api/v1/notifications/preferences/REVIEW/PUSH` + `{category:'REVIEW',enabled,locale:'zh-CN',consentVersion:1,dndWindow:{startLocalTime,endLocalTime},frequencyPolicy:'IMMEDIATE',expectedVersion:0}` → 200且回读持久（`tmp/ok-valid.mjs`，job实测；干净构建复验一致）。
 * 后续（owner）：① `/error`转发被denyAll盖掉真错误，建议按标准做法放行error转发或返回RFC9450；② 历史W4用`REVIEW_DUE`曾200，与现行`fromPathType`允许集矛盾，待考古（不影响现行契约）。
 * 证据：`demo-study-loop/r7-guards.json`（R7 9/9，job pwsh-127 exit 0）。
+* 机制（R104 对比实测）：learner链兜底是`anyRequest().authenticated()`（error转发带已认证上下文→放行→诚实400）；notification链兜底是`denyAll()`（error转发必死→403盖错）。网关在同形缺键下回网关自有400，同样不盖。
+* owner修法（二选一，需安全评审）：`dispatcherTypeMatchers(ERROR).permitAll()` 仅放行error转发，或兜底改`authenticated()`与learner对齐；14个服务同一写法，建议逐个过。
 
 ## 17. 课程书架点通（2026-09-26）
 
