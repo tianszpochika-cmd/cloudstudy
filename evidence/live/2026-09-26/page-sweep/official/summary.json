@@ -1,0 +1,138 @@
+{
+  "capturedAt": "2026-09-26T12:32:32.502Z",
+  "pages": [
+    {
+      "route": "/",
+      "viewport": "desk",
+      "status": 200,
+      "errors": []
+    },
+    {
+      "route": "/courses",
+      "viewport": "desk",
+      "status": 200,
+      "errors": []
+    },
+    {
+      "route": "/pricing",
+      "viewport": "desk",
+      "status": 200,
+      "errors": []
+    },
+    {
+      "route": "/download",
+      "viewport": "desk",
+      "status": 200,
+      "errors": []
+    },
+    {
+      "route": "/announcements",
+      "viewport": "desk",
+      "status": 200,
+      "errors": []
+    },
+    {
+      "route": "/about",
+      "viewport": "desk",
+      "status": 200,
+      "errors": []
+    },
+    {
+      "route": "/compliance",
+      "viewport": "desk",
+      "status": 200,
+      "errors": []
+    },
+    {
+      "route": "/status",
+      "viewport": "desk",
+      "status": 200,
+      "errors": []
+    },
+    {
+      "route": "/privacy",
+      "viewport": "desk",
+      "status": 200,
+      "errors": []
+    },
+    {
+      "route": "/terms",
+      "viewport": "desk",
+      "status": 200,
+      "errors": []
+    },
+    {
+      "route": "/minors",
+      "viewport": "desk",
+      "status": 200,
+      "errors": []
+    },
+    {
+      "route": "/",
+      "viewport": "mob",
+      "status": 200,
+      "errors": []
+    },
+    {
+      "route": "/courses",
+      "viewport": "mob",
+      "status": 200,
+      "errors": []
+    },
+    {
+      "route": "/pricing",
+      "viewport": "mob",
+      "status": 200,
+      "errors": []
+    },
+    {
+      "route": "/download",
+      "viewport": "mob",
+      "status": 200,
+      "errors": []
+    },
+    {
+      "route": "/announcements",
+      "viewport": "mob",
+      "status": 200,
+      "errors": []
+    },
+    {
+      "route": "/about",
+      "viewport": "mob",
+      "status": 200,
+      "errors": []
+    },
+    {
+      "route": "/compliance",
+      "viewport": "mob",
+      "status": 200,
+      "errors": []
+    },
+    {
+      "route": "/status",
+      "viewport": "mob",
+      "status": 200,
+      "errors": []
+    },
+    {
+      "route": "/privacy",
+      "viewport": "mob",
+      "status": 200,
+      "errors": []
+    },
+    {
+      "route": "/terms",
+      "viewport": "mob",
+      "status": 200,
+      "errors": []
+    },
+    {
+      "route": "/minors",
+      "viewport": "mob",
+      "status": 200,
+      "errors": []
+    }
+  ],
+  "result": "PASS"
+}
