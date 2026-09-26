@@ -76,4 +76,5 @@
 ## 11. 管理端扫查（2026-09-26）
 
 * 只读管理员浏览器登录真，14路由全开零脚本错（`page-sweep/admin/summary.json`）。
-* 3个5xx：audit/moderation的`CURSOR_UNAVAILABLE`系本地缺游标密钥（配置缺口，已在`run-v2-services.mjs`按既有“默认关+本地开”模式补本地键；重起后复验audit 200出真实脱敏行、moderation 200诚实空队列）；`iam/policy-versions`500为未处理异常（IAM单测9/9过，产品回归非本轮引入，静态排查至组装层，待抓栈定位；权限页以降级态诚实展示）。
+* audit/moderation的`CURSOR_UNAVAILABLE`系本地缺游标密钥：已在runner按“默认关+本地开”补本地键，重起复验audit 200真实脱敏行、moderation 200诚实空队列。
+* `iam/policy-versions`500：包络改进后定为`INTERNAL_ERROR/IllegalArgumentException`（此前为Spring默认体）。排除项：JWT claims齐全、单测9/9、行非空约束合规、状态枚举齐全、非本轮回归（最后改动`127fe44e`）；连`pageSize=1`（首行为bulk固件行）都炸，锁定在列表组装链；待现场堆栈做最终定位（runner管道缓冲看不到实时日志）。权限页以降级态展示，不影响学习环。

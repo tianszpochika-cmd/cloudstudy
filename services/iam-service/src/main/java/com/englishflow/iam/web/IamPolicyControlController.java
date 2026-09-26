@@ -21,6 +21,8 @@ import com.englishflow.iam.domain.VerifiedServiceIdentity;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
 import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -57,6 +59,7 @@ import java.util.function.Supplier;
 @RestController
 @RequestMapping("/api/v1/iam/policy-versions")
 public final class IamPolicyControlController {
+    private static final Logger LOGGER = LoggerFactory.getLogger(IamPolicyControlController.class);
     private static final TypeReference<SuccessEnvelope<PolicyMutationResponse>> MUTATION_TYPE = new TypeReference<>() {};
     private final PolicyControlService policies;
     private final IdempotencyService idempotency;
@@ -308,6 +311,21 @@ public final class IamPolicyControlController {
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorEnvelope> invalidBody(HttpServletRequest request) { return errorResponse(invalid()); }
+
+    /**
+     * Unhandled failures must stay observable: log the stack server-side and keep
+     * the canonical envelope instead of Spring's default error body.
+     */
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorEnvelope> unexpected(Exception exception, HttpServletRequest request) {
+        LOGGER.error("iam policy control-plane request failed: {} {}", request.getMethod(), request.getRequestURI(), exception);
+        Meta meta = meta();
+        ErrorEnvelope body = new ErrorEnvelope(new ApiError("INTERNAL_ERROR", "iam.policy.control_plane_unavailable",
+                true, Map.of("exception", exception.getClass().getSimpleName())), meta);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).cacheControl(CacheControl.noStore())
+                .header("X-Request-Id", meta.requestId()).header("X-Trace-Id", meta.traceId())
+                .header("X-API-Version", meta.apiVersion()).body(body);
+    }
 
     private static String errorCode(IamDecisionCode code) {
         return switch (code) {
