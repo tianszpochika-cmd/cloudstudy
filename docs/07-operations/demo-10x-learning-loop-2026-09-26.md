@@ -117,9 +117,15 @@
 
 * `tmp/plan-reads.mjs`6/6 PASS（job pwsh-64 exit 0）：新号种B25计划+3条到期复习→today 3条、plan/current ACTIVE、srs total 3、review-queue有数。
 * 写侧结论：`LearningPlanService.createPlan`域逻辑完整，但`LearnerTargetPort/PublishedContentPort`仅接fail-closed实现，无HTTP触发口（M4-007残留）；计划写链列后续epic，本轮只证读侧。
-* 证据：`demo-study-loop/plan-reads.json`。
+* 证据：`demo-study-loop/plan-reads.json`.
 
-## 19. 成长线诚实门（2026-09-26）
+## 19. 正典定级Spike结论（2026-09-26）
+
+* 契约侧齐全：`P1_PLACEMENT_V1`十题四维（3/3/2/2）+ 事件schema已冻结；B25旧链（2题）可用但报告标`B25_LEGACY`。
+* 缺口：`P1PlacementSourcePort`仅接`Unavailable`实现——学员目标pin、内容快照pin、答案规则pin三处跨owner接线全空；10x规则行（4维恰3/3/2/2）是候选题库，但pin语义与entitlement需产品定。
+* 结论：接真题源=跨三服务epic（2–4轮+产品决策），不硬接；B25旧链保持可用并诚实标注。
+
+## 20. 成长线诚实门（2026-09-26）
 
 * `tmp/world-loop.mjs`8/8 PASS（job pwsh-63 exit 0）：注册登录→游戏目录6款→开局诚实409（`GAME_NOT_AVAILABLE/P0`）→Avatar`2D_FALLBACK`→自习室诚实空。
 * 依据：`GameCatalog`6款全`enabled=false`（注释：无验证过的题包/判分依据，不发布）。防刷分门，不硬开；要开需先备挑战题包+判分事实。
