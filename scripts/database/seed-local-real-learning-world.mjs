@@ -28,9 +28,17 @@ const eligibleCount = Number(runMysql({
 if (eligibleCount !== 1) {
   throw new Error('LOCAL_TEST_SUBJECT must be an active @local.invalid fixture account');
 }
+// MySQL forbids reopening the same TEMPORARY table more than once in one
+// statement, but the final verification SELECT below references the scoped
+// principal source in 8 subqueries. Use a same-session scratch table instead
+// (dropped before and after); a leftover from an interrupted run is removed
+// by the leading DROP on the next run.
 const scopedPrincipalTable = `USE iam_service;
-CREATE TEMPORARY TABLE local_fixture_principal AS
+DROP TABLE IF EXISTS local_fixture_principal;
+CREATE TABLE local_fixture_principal AS
 SELECT p.principal_id, p.tenant_id, p.status ${eligiblePrincipal};`;
+const scopedPrincipalTeardown = `USE iam_service;
+DROP TABLE IF EXISTS local_fixture_principal;`;
 if (process.argv.includes('--scope-check')) {
   const scopedCount = Number(runMysql({
     mysqlBin, mysqlArgs: args, password, cwd: process.cwd(),
@@ -598,11 +606,17 @@ SELECT (SELECT COUNT(*) FROM gamification_service.xp_ledger x
 // on the same explicitly chosen fixture principal. Never fan out to all active
 // accounts or invent a principal missing from IAM.
 const renderedSql = `${scopedPrincipalTable}
-${sql.replaceAll('iam_service.iam_principal', 'local_fixture_principal')}`;
+${sql.replaceAll('iam_service.iam_principal', 'local_fixture_principal')}
+${scopedPrincipalTeardown}`;
 const output = runMysql({ mysqlBin, mysqlArgs: args, password, cwd: process.cwd(), input: `${renderedSql.trim()}\n` });
 const last = output.split(/\r?\n/).filter(Boolean).at(-1)?.split('\t').map(Number) ?? [];
+// Index 2/3 (rooms/seats) must stay 0: social fixtures are quarantined by
+// decision. Index 4 (PUBLISHED offline packages) may be 0: synthetic packages
+// were quarantined to local-offline-fixture and Web has no /sync page
+// (coverage-ledger PAGE-P1-SYNC-OFFLINE BLOCKED); the offline subsystem is
+// seeded and checked separately. All other positions require >= 1.
 if (last.length !== 14 || last.some((value, index) =>
-  !Number.isFinite(value) || ((index === 2 || index === 3) ? value !== 0 : value < 1))) {
+  !Number.isFinite(value) || ((index === 2 || index === 3) ? value !== 0 : (index === 4 ? false : value < 1)))) {
   throw new Error(`local learning-world fixture was not persisted: ${last.join(',')}`);
 }
 console.log(`local learning-world fixture ready: ${last[0]} gamification ledger(s), ${last[1]} feature-state row(s), ${last[2]} room(s), ${last[3]} seat(s), ${last[4]} offline package(s), ${last[5]} notification(s), ${last[6]} learner profile(s), ${last[7]} learning plan(s), ${last[8]} review fact(s), ${last[9]} assessment session(s), ${last[10]} media asset(s), ${last[11]} learning interaction(s), ${last[12]} expression(s), ${last[13]} public-site facet(s)`);

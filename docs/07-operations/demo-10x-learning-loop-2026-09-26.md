@@ -39,7 +39,10 @@
 
 * `pnpm db:seed:local-10x` → `SEEDED`，`pnpm db:check:local-10x`通过，各函数位10行，`platformSocialRows 0`（job pwsh-7 exit 0）。
 * `pnpm db:seed:large-vocab` → `inserted 747 / total 757`，分层A1 135/A2 130/B1 130/B2 120/C1 112/C2 130（job pwsh-8 exit 0）。
-* 下一步：注册4演示号并逐号跑`seed-local-real-learning-world.mjs`，再做内容发布。
+* 4演示号经浏览器注册（201）→成人1990+三同意（200）→分轨道存目标→`placement/start 200`（job pwsh-9 exit 0）。
+* 种子脚本修两处：临时表`ERROR 1137`→scratch表用完即删；PUBLISHED离线包过期断言→允许0（已隔离，Web无/sync页）。
+* 逐号`seed-local-real-learning-world.mjs`全过（pwsh-10修后重跑1号、pwsh-11跑余下3号，均exit 0）；逐号校验`1 profile/1 plan/1 review/1 session`；库内4号各`1 ACTIVE plan + 1 ACTIVE profile`。
+* 已知：`home`仍503——`LearnerHttpController.toFirstDay`在profile+target齐时必抛，plan引用跨owner未接线，P3修代码。
 
 ## 7. 提交节奏
 
