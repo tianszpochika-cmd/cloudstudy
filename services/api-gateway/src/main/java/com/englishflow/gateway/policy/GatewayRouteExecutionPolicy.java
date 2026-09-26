@@ -529,6 +529,22 @@ public final class GatewayRouteExecutionPolicy {
                 rewrite("learner-vocabulary", "/api/v1/content/learner/vocabulary/{vocabularyId}", "/internal/v1/content/learner/vocabulary/{vocabularyId}", CONTENT_LEARNER, HttpMethod.GET));
         add(definitions, "grammar-points-read",
                 rewrite("list", "/api/v1/grammar/points", "/internal/v1/content/learner/grammar/points", CONTENT_B3_LEARNER, HttpMethod.GET));
+        // P4 demo loop: the seven skill reads learner-web calls, each bound to the
+        // B3 content controller that implements it. Writes and unlisted reads stay closed.
+        add(definitions, "reading-articles-read",
+                rewrite("list", "/api/v1/reading/articles", "/internal/v1/content/learner/reading/articles", CONTENT_B3_LEARNER, HttpMethod.GET));
+        add(definitions, "reading-article-read",
+                rewrite("detail", "/api/v1/reading/articles/{articleId}", "/internal/v1/content/learner/reading/articles/{articleId}", CONTENT_B3_LEARNER, HttpMethod.GET));
+        add(definitions, "reading-dictionary-read",
+                rewrite("dictionary", "/api/v1/reading/articles/{articleId}/dictionary", "/internal/v1/content/learner/reading/articles/{articleId}/dictionary", CONTENT_B3_LEARNER, HttpMethod.GET));
+        add(definitions, "grammar-exercises-read",
+                rewrite("list", "/api/v1/grammar/exercises", "/internal/v1/content/learner/grammar/exercises", CONTENT_B3_LEARNER, HttpMethod.GET));
+        add(definitions, "grammar-mastery-read",
+                rewrite("mastery", "/api/v1/grammar/mastery", "/internal/v1/content/learner/grammar/mastery", CONTENT_B3_LEARNER, HttpMethod.GET));
+        add(definitions, "writing-prompts-read",
+                rewrite("list", "/api/v1/writing/prompts", "/internal/v1/content/learner/writing/prompts", CONTENT_B3_LEARNER, HttpMethod.GET));
+        add(definitions, "listening-materials-read",
+                rewrite("list", "/api/v1/listening/materials", "/internal/v1/content/learner/listening/materials", CONTENT_B3_LEARNER, HttpMethod.GET));
         add(definitions, "vocabulary-domain",
                 rewrite("expressions", "/api/v1/vocab/expressions", "/internal/v1/learning/vocab/expressions", LEARNING_B25, HttpMethod.GET, HttpMethod.POST),
                 rewrite("expression", "/api/v1/vocab/expressions/{expressionId}", "/internal/v1/learning/vocab/expressions/{expressionId}", LEARNING_B25, HttpMethod.PATCH, HttpMethod.DELETE),

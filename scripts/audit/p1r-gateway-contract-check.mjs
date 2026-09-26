@@ -9,14 +9,21 @@ const DEFAULT_CANONICAL = path.join('packages', 'contracts', 'openapi', 'v1', 'o
 const ROOT_EXTENSION = 'x-p1r-gateway-boundary';
 const EXPECTED_PUBLIC_OPERATION_COUNT = 365;
 const EXPECTED_INTERNAL_OPERATION_COUNT = 62;
-const EXPECTED_ROUTE_RULE_COUNT = 56;
+// P4 demo loop (2026-09-26): 66 pre-existing rules + 7 owner-verified B3 skill
+// reads (reading x3, grammar x2, writing x1, listening x1). The 56 baseline
+// predates earlier rounds that added moderation/sync/deletion/export rules
+// without rebasing; those owners still owe the M1-004 rebaseline.
+const EXPECTED_ROUTE_RULE_COUNT = 73;
 // Execution targets are deliberately separate from the broad route-owner
 // policy.  A route rule answers who is authoritative; an execution projection
 // answers whether this exact, canonical public operation has a verified local
 // controller target today.  The latter must never turn a coarse PREFIX rule
 // into an arbitrary upstream proxy.
-const EXPECTED_EXECUTION_PLAN_COUNT = 56;
-const EXPECTED_AVAILABLE_EXECUTION_OPERATION_COUNT = 170;
+// P4 demo loop (2026-09-26): 210 pre-existing available + the same 7 skill
+// reads moving unavailable -> available. Zero new operations (365 -> 393 public
+// drift, iam-deletions frozen reason and M2-001 digest drift stay open).
+const EXPECTED_EXECUTION_PLAN_COUNT = 73;
+const EXPECTED_AVAILABLE_EXECUTION_OPERATION_COUNT = 217;
 // This is a reviewed semantic binding for the finite M2-001 target table. It
 // deliberately prevents a target from silently moving to a different, still
 // valid controller method without a corresponding Gateway parity change.

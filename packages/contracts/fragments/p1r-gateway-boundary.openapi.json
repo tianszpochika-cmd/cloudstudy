@@ -440,6 +440,118 @@
         "compatibilityMode": "NONE"
       },
       {
+        "ruleId": "reading-articles-read",
+        "priority": 850,
+        "match": {
+          "type": "EXACT",
+          "path": "/api/v1/reading/articles",
+          "methods": [
+            "GET"
+          ]
+        },
+        "upstreamOwner": "content-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "AUTHENTICATED_READ",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "reading-article-read",
+        "priority": 850,
+        "match": {
+          "type": "EXACT",
+          "path": "/api/v1/reading/articles/{articleId}",
+          "methods": [
+            "GET"
+          ]
+        },
+        "upstreamOwner": "content-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "AUTHENTICATED_READ",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "reading-dictionary-read",
+        "priority": 850,
+        "match": {
+          "type": "EXACT",
+          "path": "/api/v1/reading/articles/{articleId}/dictionary",
+          "methods": [
+            "GET"
+          ]
+        },
+        "upstreamOwner": "content-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "AUTHENTICATED_READ",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "grammar-exercises-read",
+        "priority": 850,
+        "match": {
+          "type": "EXACT",
+          "path": "/api/v1/grammar/exercises",
+          "methods": [
+            "GET"
+          ]
+        },
+        "upstreamOwner": "content-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "AUTHENTICATED_READ",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "grammar-mastery-read",
+        "priority": 850,
+        "match": {
+          "type": "EXACT",
+          "path": "/api/v1/grammar/mastery",
+          "methods": [
+            "GET"
+          ]
+        },
+        "upstreamOwner": "content-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "AUTHENTICATED_READ",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "writing-prompts-read",
+        "priority": 850,
+        "match": {
+          "type": "EXACT",
+          "path": "/api/v1/writing/prompts",
+          "methods": [
+            "GET"
+          ]
+        },
+        "upstreamOwner": "content-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "AUTHENTICATED_READ",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "listening-materials-read",
+        "priority": 850,
+        "match": {
+          "type": "EXACT",
+          "path": "/api/v1/listening/materials",
+          "methods": [
+            "GET"
+          ]
+        },
+        "upstreamOwner": "content-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "AUTHENTICATED_READ",
+        "compatibilityMode": "NONE"
+      },
+      {
         "ruleId": "speaking-recordings",
         "priority": 800,
         "match": {
@@ -1840,6 +1952,174 @@
             "targetUriConfig": "gateway.b14.service-base-urls.content",
             "pathStrategy": "REWRITE_PATH",
             "targetPathTemplate": "/internal/v1/content/learner/grammar/points",
+            "controllerEvidence": {
+              "sourcePath": "services/content-service/src/main/java/com/englishflow/content/web/B3ContentJdbcController.java",
+              "requestMapping": "/internal/v1/content/learner"
+            }
+          }
+        ]
+      },
+      {
+        "ruleId": "reading-articles-read",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "reading-articles-read.list",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/reading/articles",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "content-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.content",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/content/learner/reading/articles",
+            "controllerEvidence": {
+              "sourcePath": "services/content-service/src/main/java/com/englishflow/content/web/B3ContentJdbcController.java",
+              "requestMapping": "/internal/v1/content/learner"
+            }
+          }
+        ]
+      },
+      {
+        "ruleId": "reading-article-read",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "reading-article-read.detail",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/reading/articles/{articleId}",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "content-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.content",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/content/learner/reading/articles/{articleId}",
+            "controllerEvidence": {
+              "sourcePath": "services/content-service/src/main/java/com/englishflow/content/web/B3ContentJdbcController.java",
+              "requestMapping": "/internal/v1/content/learner"
+            }
+          }
+        ]
+      },
+      {
+        "ruleId": "reading-dictionary-read",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "reading-dictionary-read.dictionary",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/reading/articles/{articleId}/dictionary",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "content-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.content",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/content/learner/reading/articles/{articleId}/dictionary",
+            "controllerEvidence": {
+              "sourcePath": "services/content-service/src/main/java/com/englishflow/content/web/B3ContentJdbcController.java",
+              "requestMapping": "/internal/v1/content/learner"
+            }
+          }
+        ]
+      },
+      {
+        "ruleId": "grammar-exercises-read",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "grammar-exercises-read.list",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/grammar/exercises",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "content-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.content",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/content/learner/grammar/exercises",
+            "controllerEvidence": {
+              "sourcePath": "services/content-service/src/main/java/com/englishflow/content/web/B3ContentJdbcController.java",
+              "requestMapping": "/internal/v1/content/learner"
+            }
+          }
+        ]
+      },
+      {
+        "ruleId": "grammar-mastery-read",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "grammar-mastery-read.mastery",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/grammar/mastery",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "content-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.content",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/content/learner/grammar/mastery",
+            "controllerEvidence": {
+              "sourcePath": "services/content-service/src/main/java/com/englishflow/content/web/B3ContentJdbcController.java",
+              "requestMapping": "/internal/v1/content/learner"
+            }
+          }
+        ]
+      },
+      {
+        "ruleId": "writing-prompts-read",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "writing-prompts-read.list",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/writing/prompts",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "content-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.content",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/content/learner/writing/prompts",
+            "controllerEvidence": {
+              "sourcePath": "services/content-service/src/main/java/com/englishflow/content/web/B3ContentJdbcController.java",
+              "requestMapping": "/internal/v1/content/learner"
+            }
+          }
+        ]
+      },
+      {
+        "ruleId": "listening-materials-read",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "listening-materials-read.list",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/listening/materials",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "content-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.content",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/content/learner/listening/materials",
             "controllerEvidence": {
               "sourcePath": "services/content-service/src/main/java/com/englishflow/content/web/B3ContentJdbcController.java",
               "requestMapping": "/internal/v1/content/learner"
