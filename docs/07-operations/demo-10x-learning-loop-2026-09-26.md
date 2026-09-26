@@ -35,6 +35,12 @@
 
 每号走：注册→成人→目标→定级十题→计划→今日→词汇/语法/阅读/听力→SRS→错题→报告→世界。证据：浏览器截图+requestId/traceId+库行，回填56项台账对应行；失败保留，不断言通过。
 
-## 5. 提交节奏
+## 6. P2证据（2026-09-26已执行）
+
+* `pnpm db:seed:local-10x` → `SEEDED`，`pnpm db:check:local-10x`通过，各函数位10行，`platformSocialRows 0`（job pwsh-7 exit 0）。
+* `pnpm db:seed:large-vocab` → `inserted 747 / total 757`，分层A1 135/A2 130/B1 130/B2 120/C1 112/C2 130（job pwsh-8 exit 0）。
+* 下一步：注册4演示号并逐号跑`seed-local-real-learning-world.mjs`，再做内容发布。
+
+## 7. 提交节奏
 
 P1本文 → P2灌库（含数量核对）→ P3 home → P4网关 → P5定级发布 → P6全目标E2E。每步独立commit推送。
