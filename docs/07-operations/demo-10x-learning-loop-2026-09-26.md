@@ -153,3 +153,8 @@
 
 * `tmp/r20-guards.mjs`5/5 PASS（job pwsh-67 exit 0）：SRS直写409关闭、离线列表404（路由保留）、商城目录200空plans。
 * 证据：`demo-study-loop/r20-guards.json`。
+
+## 25. 移动答题深链（2026-09-26）
+
+* `tmp/mob-assess.mjs`：移动H5登录真→定级页点选2题→报告卡→同号日报/错题200，零异常（job pwsh-69 exit 0）。
+* 证据：`demo-e2e/mobile-assessment/`（报告截图+summary）。
