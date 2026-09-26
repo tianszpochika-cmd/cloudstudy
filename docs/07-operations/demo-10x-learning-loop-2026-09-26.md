@@ -149,6 +149,11 @@
 * 附带发现：登录`device`建议带`deviceName`（缺时偶发无token，已在脚本中固定）。
 * 证据：`demo-e2e/empty-recheck/summary.json`。
 
+## 25. 重置不枚举（2026-09-26）
+
+* `tmp/reset-nonenum.mjs` PASS：真实账号与虚构账号的重置请求同为202、同形`{accepted:true}`，不泄露账号存在性；投递未配给系设计（审计留痕）。
+* 证据：`demo-e2e/reset/summary.json`。
+
 ## 24. 诚实门复核（2026-09-26）
 
 * `tmp/r20-guards.mjs`5/5 PASS（job pwsh-67 exit 0）：SRS直写409关闭、离线列表404（路由保留）、商城目录200空plans。
