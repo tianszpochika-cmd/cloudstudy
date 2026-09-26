@@ -113,7 +113,13 @@
 * B3迁移结论：正典目录/详情可承载学习，B3旧读保持关闭；技能页迁正典需产品决策（投影归属+答案隔离），列后续项不硬迁。
 * 证据：`demo-e2e/course-shelf/`（书架截图+点通记录）。
 
-## 18. 成长线诚实门（2026-09-26）
+## 18. 计划读侧实证（2026-09-26）
+
+* `tmp/plan-reads.mjs`6/6 PASS（job pwsh-64 exit 0）：新号种B25计划+3条到期复习→today 3条、plan/current ACTIVE、srs total 3、review-queue有数。
+* 写侧结论：`LearningPlanService.createPlan`域逻辑完整，但`LearnerTargetPort/PublishedContentPort`仅接fail-closed实现，无HTTP触发口（M4-007残留）；计划写链列后续epic，本轮只证读侧。
+* 证据：`demo-study-loop/plan-reads.json`。
+
+## 19. 成长线诚实门（2026-09-26）
 
 * `tmp/world-loop.mjs`8/8 PASS（job pwsh-63 exit 0）：注册登录→游戏目录6款→开局诚实409（`GAME_NOT_AVAILABLE/P0`）→Avatar`2D_FALLBACK`→自习室诚实空。
 * 依据：`GameCatalog`6款全`enabled=false`（注释：无验证过的题包/判分依据，不发布）。防刷分门，不硬开；要开需先备挑战题包+判分事实。

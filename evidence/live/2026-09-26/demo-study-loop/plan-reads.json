@@ -1,0 +1,39 @@
+{
+  "task": "DEMO-PLAN-READS",
+  "capturedAt": "2026-09-26T14:51:47.556Z",
+  "result": "PASS",
+  "passed": 6,
+  "total": 6,
+  "checks": [
+    {
+      "n": "register",
+      "ok": true,
+      "o": 201
+    },
+    {
+      "n": "login",
+      "ok": true,
+      "o": 200
+    },
+    {
+      "n": "today-items",
+      "ok": true,
+      "o": "200 n=3"
+    },
+    {
+      "n": "plan-current",
+      "ok": true,
+      "o": "200 {\"planId\":\"1a31024f-9df6-4390-ae4b-ea32cbff37f3\",\"updatedAt\":\"2026-09-26T14:51:46.412766\",\"status\":\"ACTIVE\",\"principalId\":\"0eb2374f-f35e-4f2a-ac78-0837f5666896\""
+    },
+    {
+      "n": "srs-overview",
+      "ok": true,
+      "o": "200 {\"learningCount\":0,\"newCount\":0,\"verificationStatus\":\"UNVERIFIED_LEGACY_REVIEW\",\"total\":3,\"principalId\":\"0eb2374f-f35e-4f2a-ac78-0837f5666896\",\"masteredCount\":0"
+    },
+    {
+      "n": "review-queue",
+      "ok": true,
+      "o": "200 {\"source\":\"mysql\",\"items\":[{\"queueItemId\":\"demo-p5-word-3\",\"itemId\":\"demo-p5-word-3\",\"source\":\"REVIEW\",\"state\":\"REVIEW\",\"dueAt\":\"2026-09-26T11:51:47.380681\",\"pr"
+    }
+  ]
+}
