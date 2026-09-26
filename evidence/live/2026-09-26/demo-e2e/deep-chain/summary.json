@@ -1,0 +1,18 @@
+{
+  "capturedAt": "2026-09-26T13:35:37.717Z",
+  "steps": {
+    "setup": true,
+    "answered": 2,
+    "reportVisible": true,
+    "login": true,
+    "dailyReport": 200,
+    "srs": 200,
+    "mistakes": 200
+  },
+  "errors": [],
+  "bodies": {
+    "rep": "{\"reportId\":\"0197273a-d901-3e0c-a59f-bcb40ab39678\",\"reportType\":\"DAILY\",\"status\":\"PARTIAL\",\"generatedAt\":\"2026-09-26T13:35:37.655938Z\",\"calculationVersion\":\"B25-LEGACY-UNVERIFIED-1\",\"studyMinutes\":nul",
+    "srs": "{\"learningCount\":0,\"newCount\":0,\"verificationStatus\":\"UNVERIFIED_LEGACY_REVIEW\",\"total\":0,\"principalId\":\"b65f5c16-eb25-43da-9c3d-ff03e9a3526a\",\"masteredCount\":0,\"reviewCount\":0}",
+    "mk": "{\"data\":{\"items\":[],\"count\":0}}"
+  }
+}

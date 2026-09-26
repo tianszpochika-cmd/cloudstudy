@@ -84,3 +84,8 @@
 * 移动H5：API预置门+浏览器登录真，32页全开零脚本错（`page-sweep/mobile/summary.json`）；uni原生input无autocomplete，按type定位。
 * `/notifications/preferences`503根因：V8正典迁移未打到本机库（p1r到7、flyway到4），查询列不存在。跑官方`pnpm b28:owner-schemas`补上；853旧行原样归档，新表诚实空；复验200。
 * 剩余诚实空：B3技能列表、计划态home/today、D+1积累、口语/同步/支付/真机。
+
+## 13. 界面答题深链（2026-09-26）
+
+* `tmp/deep-chain.mjs`：浏览器注册→成人→目标→定级页点选2题提交→报告卡“历史两题练习结果”→同号直调日报/SRS/错题全200，零异常（job pwsh-48 exit 0；首版跳出条件误伤常驻文案已收紧）。
+* 证据：`demo-e2e/deep-chain/assessment-done.png`（C2·100分旧版口径诚实标注）+ `summary.json`。
