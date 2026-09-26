@@ -6,53 +6,49 @@
 
 ## 1. 演示号（4个轨道，各1个）
 
-| 轨道 | goalCode | 用途 |
+| 轨道 | goalCode | 演示账号 |
 |---|---|---|
-| 成人零基础 | `ZERO_BASIS` | 发音+核心词+短句起步 |
-| 四六级备考 | `CET_4_6` | 词汇听力节奏 |
-| 考研英语 | `POSTGRADUATE` | 长难句阅读 |
-| 职场日常 | `WORKPLACE_DAILY` | 会话场景邮件 |
+| 成人零基础 | `ZERO_BASIS` | `demo-zero-0926@local.invalid` |
+| 四六级备考 | `CET_4_6` | `demo-cet-0926@local.invalid` |
+| 考研英语 | `POSTGRADUATE` | `demo-kaoyan-0926@local.invalid` |
+| 职场日常 | `WORKPLACE_DAILY` | `demo-work-0926@local.invalid` |
 
-创建方式：经`learner-web`真实注册`@local.invalid`合成账号 → 成人Gate → 三项同意 → 存目标。
-命名建议：`demo-zero@local.invalid` / `demo-cet@local.invalid` / `demo-kaoyan@local.invalid` / `demo-work@local.invalid`（密码不入库、不进文档）。
+创建方式：经`learner-web`真实注册 → 成人Gate（1990）→ 三项同意 → 分轨道存目标（密码不入库、不进文档）。
 
 ## 2. 10x数据构成
 
-* 全局10x：`scripts/database/seed-local-real-10x.mjs`（`FIXTURE_ID=local-real-10x-v1`，`ROWS_PER_FUNCTION=10`，10个内部subject，A1–C2分层）。覆盖内容版本/投影/课程/单元/词表、plan/task/srs/review/mastery、题规则/session/attempt/report、媒体asset、XP/ledger/grant、房间/席位、订单/回调/权益/退款、通知/离线包/工单。只写本机`127.0.0.1:13306`。
-* 全量套件：`seed-local-real-all.mjs` = learning-world + commerce + admin-analytics。
-* 大词表：`seed-large-vocabulary.mjs`（Core Frequency 720，PUBLISHED/VALID）。
-* 逐号种子：`seed-local-real-learning-world.mjs`要求`LOCAL_TEST_SUBJECT`为单个`ACTIVE @local.invalid`账号，每演示号各跑一次（含onboarding选项、profile/goal/preferences/daily-task/plan/library/review/continue-context）。
+* 全局10x：`seed-local-real-10x.mjs`（`local-real-10x-v1`，每函数位10行，10个内部subject，A1–C2）。只写本机`127.0.0.1:13306`。
+* 大词表：`seed-large-vocabulary.mjs`（Core Frequency 720，`inserted 747/total 757`）。
+* 逐号种子：`seed-local-real-learning-world.mjs`（`LOCAL_TEST_SUBJECT`一次一号）。
+* 演示目录：`seed-demo-p5-catalog.mjs`（`pnpm db:seed:demo-p5`，6条LEARNER正典条目，见P5）。
 
-顺序：全局10x → 大词表 → 全量套件 → 逐号×4 → 内容发布（草稿→双审→发布，下线回滚抽测）。
+## 3. P2证据（数据已入库）
 
-## 3. 主链堵点与修法（fail-closed，不造假）
-
-1. `home 503 STORE_FAILURE`：有目标无计划时抛（`LearnerHttpController.toFirstDay`）。修法定级→计划产出，或契约改诚实空态。
-2. 技能路预检403/GET404（阅读/语法练习/写作/听力）：网关owner冲突（`reading-domain`不可执行）。按契约拆到content/learning/assessment真实owner，重建网关复测。
-3. 定级题源503：用种子题规则+版本化快照闭环`start→submit→报告`。
-
-## 4. 验收（learner-web）
-
-每号走：注册→成人→目标→定级十题→计划→今日→词汇/语法/阅读/听力→SRS→错题→报告→世界。证据：浏览器截图+requestId/traceId+库行，回填56项台账对应行；失败保留，不断言通过。
-
-## 6. P2证据（2026-09-26已执行）
-
-* `pnpm db:seed:local-10x` → `SEEDED`，`pnpm db:check:local-10x`通过，各函数位10行，`platformSocialRows 0`（job pwsh-7 exit 0）。
-* `pnpm db:seed:large-vocab` → `inserted 747 / total 757`，分层A1 135/A2 130/B1 130/B2 120/C1 112/C2 130（job pwsh-8 exit 0）。
-* 4演示号经浏览器注册（201）→成人1990+三同意（200）→分轨道存目标→`placement/start 200`（job pwsh-9 exit 0）。
+* 10x `SEEDED` + check通过；大词表747行；4演示号注册/成人/目标/`placement/start 200`全绿。
 * 种子脚本修两处：临时表`ERROR 1137`→scratch表用完即删；PUBLISHED离线包过期断言→允许0（已隔离，Web无/sync页）。
-* 逐号`seed-local-real-learning-world.mjs`全过（pwsh-10修后重跑1号、pwsh-11跑余下3号，均exit 0）；逐号校验`1 profile/1 plan/1 review/1 session`；库内4号各`1 ACTIVE plan + 1 ACTIVE profile`。
-* 已知：`home`仍503——`LearnerHttpController.toFirstDay`在profile+target齐时必抛，plan引用跨owner未接线，P3修代码。
+* 逐号种子全过，各`1 profile/1 plan/1 review/1 session`，库内核对4号各`1 ACTIVE plan + 1 ACTIVE profile`。
 
-## P3. home首日投影诚实化（代码+契约先行）
+## 4. P3证据（home诚实化）
 
-* `LearnerHttpController.toFirstDay`：删`STORE_FAILURE`误抛；无planning事实时回200 `NOT_READY`，blocker按`PROFILE_INCOMPLETE / TARGET_INCOMPLETE / PLACEMENT_REQUIRED`三档（契约`B9FirstDayProjection`允许）。
-* 真正的库故障仍走`DataAccessException→503`边界，不变。
-* 契约：`b9-learner`的`/first-day`与`/home`补`503 ApiServiceUnavailable`声明（b9-content已有先例）；`contracts:merge`重合入。
-* 单测`LearnerFirstDayHttpMappingTest`同步改断言（2/2绿）。
-* 门禁：`contracts:validate` PASS；`p1r:learner-planning-contract:check` PASS；网关check仅剩`365→393`操作数基线漂移（本次零新增接口，沿用AUDIT-0920-01，不改预期数）。
-* 运行验证（2026-09-26）：learner重建重启后16服务全亮；新合成号浏览器走完注册→成人→目标，网关直调`first-day 200`、`home?contentLocale=en-US 200 NOT_READY/profileReady/targetReady/blocker=PLACEMENT_REQUIRED`（job pwsh-18 exit 0）。503误报关闭。
+* `LearnerHttpController.toFirstDay`：删`STORE_FAILURE`误抛；无planning事实回200 `NOT_READY`，blocker三档（`PROFILE_INCOMPLETE/TARGET_INCOMPLETE/PLACEMENT_REQUIRED`，契约允许）。真库故障仍`DataAccessException→503`。
+* 契约：`b9-learner`的`/first-day`与`/home`补`503`声明并重合入；单测改断言2/2绿；`contracts:validate`与planning门禁PASS。
+* 运行验证：新合成号`first-day 200`、`home 200 NOT_READY/PLACEMENT_REQUIRED`（job pwsh-18 exit 0）。
 
-## 7. 提交节奏
+## 5. P4证据（技能读接口接通）
 
-P1本文 → P2灌库（含数量核对）→ P3 home → P4网关 → P5定级发布 → P6全目标E2E。每步独立commit推送。
+* 前端7个GET（`b3.ts`）对应实现全在`B3ContentJdbcController`，而网关宽PREFIX判给assessment且无投影→预检403/GET404。
+* 修法（仿`grammar-points-read`）：7条EXACT@850→content-service（路由表+执行投影+边界契约三处镜像），宽PREFIX不动；门禁数`56→73/170→217`（66/210系此前漂移基数，本次+7/+7；`365→393`等3项历史漂移仍开放）。
+* `GatewayRoutePolicyContractParityTest` 5/5；tripwire中7条下线（残留口语/同步系范围外）。
+* 运行验证：门控账号6路GET全200+预检200含凭据头（job pwsh-25 exit 0）；B3列表诚实空（LEARNER许可内容为0，见P5）。
+
+## 6. P5证据（演示目录上线）
+
+* 发布流送审门双死（权利永PENDING且无激活命令；报告绑定缺失），属M3产品级缺口，已立后续项，本次不碰。
+* 按fixture惯例直插满足全部谓词的正典行（PUBLISHED + ACTIVE + LEARNER/PUBLIC + 四眼 + 正典哈希）：`seed-demo-p5-catalog.mjs`，删后插保证确定重跑；`pnpm db:seed:demo-p5` → 6条。
+* 运行验证：`catalog 200（6/6 DEMO-P5）`，3抽查`detail 200`（job verify-p5-catalog exit 0）。
+* B3旧世界保持开关与权利门不动；B3技能页的正典迁移列后续项。
+
+## 7. 待办（P6）
+
+* 全目标浏览器E2E：注册→成人→目标→目录→单词详情→今日→home，每号截图+证据，回填56项台账。
+* B3技能页迁正典端点；发布流送审门修复（M3）；M8发布件。

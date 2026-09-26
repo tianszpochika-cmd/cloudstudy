@@ -1,0 +1,41 @@
+{
+  "capturedAt": "2026-09-26T10:58:36.703Z",
+  "published": [],
+  "checks": [
+    {
+      "name": "staff-ready",
+      "ok": true,
+      "observed": "editor+L1+L2+publisher"
+    },
+    {
+      "name": "publish-VOCABULARY-A1",
+      "ok": false,
+      "observed": "HTTP 409 v=null"
+    },
+    {
+      "name": "publish-VOCABULARY-A2",
+      "ok": false,
+      "observed": "HTTP 409 v=null"
+    },
+    {
+      "name": "publish-GRAMMAR-A1",
+      "ok": false,
+      "observed": "HTTP 409 v=null"
+    },
+    {
+      "name": "publish-COURSE_UNIT-A2",
+      "ok": false,
+      "observed": "HTTP 409 v=null"
+    },
+    {
+      "name": "publish-SENTENCE-B1",
+      "ok": false,
+      "observed": "HTTP 409 v=null"
+    },
+    {
+      "name": "publish-QUESTION-A1",
+      "ok": false,
+      "observed": "HTTP 404 v=null"
+    }
+  ]
+}

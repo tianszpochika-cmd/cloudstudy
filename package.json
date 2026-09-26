@@ -113,6 +113,7 @@
     "db:seed:local-real": "node scripts/database/seed-local-real-learning-world.mjs",
     "db:seed:local-real-admin-analytics": "node scripts/database/seed-local-real-admin-analytics.mjs",
     "db:seed:local-real-all": "node scripts/database/seed-local-real-all.mjs",
+    "db:seed:demo-p5": "node scripts/database/seed-demo-p5-catalog.mjs",
     "db:seed:local-10x": "node scripts/database/seed-local-real-10x.mjs && node scripts/database/check-local-real-10x.mjs",
     "db:check:local-10x": "node scripts/database/check-local-real-10x.mjs",
     "db:check:local-real-coverage": "node scripts/database/check-local-real-data-coverage.mjs",
