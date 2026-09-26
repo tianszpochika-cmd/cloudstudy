@@ -1,6 +1,6 @@
 {
   "task": "DEMO-OPS-LOOP",
-  "capturedAt": "2026-09-26T18:16:27.062Z",
+  "capturedAt": "2026-09-26T18:23:30.965Z",
   "result": "PASS",
   "passed": 10,
   "total": 10,
@@ -23,7 +23,7 @@
     {
       "n": "msg-read",
       "ok": true,
-      "o": "200 {\"messageId\":\"ops-msg-muipo2rc\",\"updated\":true,\"replayed\":false,\"source\":\"mysql\"}"
+      "o": "200 {\"messageId\":\"ops-msg-muipx5qf\",\"updated\":true,\"replayed\":false,\"source\":\"mysql\"}"
     },
     {
       "n": "msg-persisted",
