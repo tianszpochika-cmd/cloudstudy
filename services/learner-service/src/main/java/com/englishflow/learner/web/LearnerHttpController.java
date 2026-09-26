@@ -247,10 +247,17 @@ public final class LearnerHttpController {
         boolean targetReady = value.goal().isPresent();
         // A saved target is not a plan. Until the learning owner has supplied pinned
         // planning input, a plan reference and at least one task, the B9 READY shape
-        // cannot be produced. Fail explicitly instead of returning READY with no tasks.
-        if (profileReady && targetReady) {
-            throw new LearnerDomainException(LearnerDecisionCode.STORE_FAILURE,
-                    "first-day planning projection is not available for the confirmed target", true);
+        // cannot be produced. Stay honest: report NOT_READY with the contract
+        // PLACEMENT_REQUIRED blocker (HTTP 200) instead of failing with 503.
+        // Genuine owner-store outages still surface as 503 via the
+        // DataAccessException boundary in LearnerHttpExceptionHandler.
+        String blocker;
+        if (!profileReady) {
+            blocker = "PROFILE_INCOMPLETE";
+        } else if (!targetReady) {
+            blocker = "TARGET_INCOMPLETE";
+        } else {
+            blocker = "PLACEMENT_REQUIRED";
         }
         String placement = switch (value.assessmentState()) {
             case NOT_STARTED -> "NOT_STARTED";
@@ -259,8 +266,7 @@ public final class LearnerHttpController {
         };
         long version = Math.max(1L, value.profileVersion());
         FirstDayData data = new FirstDayData("NOT_READY", profileReady, targetReady, placement, 0, List.of(),
-                1L, version, "learner-profile:" + version, value.generatedAt(),
-                profileReady ? "TARGET_INCOMPLETE" : "PROFILE_INCOMPLETE");
+                1L, version, "learner-profile:" + version, value.generatedAt(), blocker);
         return new FirstDayEnvelope(data);
     }
 

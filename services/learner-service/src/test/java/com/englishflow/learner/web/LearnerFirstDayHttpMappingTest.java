@@ -5,20 +5,16 @@ import com.englishflow.learner.domain.AssessmentState;
 import com.englishflow.learner.domain.CefrLevel;
 import com.englishflow.learner.domain.DailyStudyMinutes;
 import com.englishflow.learner.domain.GoalType;
-import com.englishflow.learner.domain.LearnerDecisionCode;
-import com.englishflow.learner.domain.LearnerDomainException;
 import com.englishflow.learner.domain.LearningGoal;
 import com.englishflow.learner.domain.OnboardingState;
 import com.englishflow.learner.domain.ProfileSource;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
 
 import java.time.Instant;
 import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class LearnerFirstDayHttpMappingTest {
@@ -36,17 +32,17 @@ class LearnerFirstDayHttpMappingTest {
     }
 
     @Test
-    void confirmedTargetWithoutPlanningFactsCannotClaimReady() {
+    void confirmedTargetWithoutPlanningFactsStaysNotReady() {
         LearningGoal goal = new LearningGoal(7L, GoalType.FOUNDATION, DailyStudyMinutes.FIFTEEN,
                 null, CefrLevel.A1, Map.of(), NOW);
 
-        LearnerDomainException failure = assertThrows(LearnerDomainException.class,
-                () -> LearnerHttpController.toFirstDay(view(Optional.of(goal))));
+        LearnerHttpController.FirstDayData data =
+                LearnerHttpController.toFirstDay(view(Optional.of(goal))).data();
 
-        assertEquals(LearnerDecisionCode.STORE_FAILURE, failure.code());
-        assertTrue(failure.retryable());
-        assertEquals(HttpStatus.SERVICE_UNAVAILABLE,
-                new LearnerHttpExceptionHandler().domain(failure).getStatusCode());
+        assertEquals("NOT_READY", data.state());
+        assertEquals("PLACEMENT_REQUIRED", data.blocker());
+        assertEquals(0, data.taskCount());
+        assertTrue(data.tasks().isEmpty());
     }
 
     private static FirstDayView view(Optional<LearningGoal> goal) {

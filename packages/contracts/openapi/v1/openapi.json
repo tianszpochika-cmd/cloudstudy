@@ -22136,6 +22136,9 @@
           },
           "409": {
             "$ref": "#/components/responses/ApiConflict"
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
           }
         }
       }
@@ -22220,6 +22223,9 @@
           },
           "409": {
             "$ref": "#/components/responses/ApiConflict"
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
           }
         }
       }

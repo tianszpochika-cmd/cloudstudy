@@ -44,6 +44,15 @@
 * 逐号`seed-local-real-learning-world.mjs`全过（pwsh-10修后重跑1号、pwsh-11跑余下3号，均exit 0）；逐号校验`1 profile/1 plan/1 review/1 session`；库内4号各`1 ACTIVE plan + 1 ACTIVE profile`。
 * 已知：`home`仍503——`LearnerHttpController.toFirstDay`在profile+target齐时必抛，plan引用跨owner未接线，P3修代码。
 
+## P3. home首日投影诚实化（代码+契约先行）
+
+* `LearnerHttpController.toFirstDay`：删`STORE_FAILURE`误抛；无planning事实时回200 `NOT_READY`，blocker按`PROFILE_INCOMPLETE / TARGET_INCOMPLETE / PLACEMENT_REQUIRED`三档（契约`B9FirstDayProjection`允许）。
+* 真正的库故障仍走`DataAccessException→503`边界，不变。
+* 契约：`b9-learner`的`/first-day`与`/home`补`503 ApiServiceUnavailable`声明（b9-content已有先例）；`contracts:merge`重合入。
+* 单测`LearnerFirstDayHttpMappingTest`同步改断言（2/2绿）。
+* 门禁：`contracts:validate` PASS；`p1r:learner-planning-contract:check` PASS；网关check仅剩`365→393`操作数基线漂移（本次零新增接口，沿用AUDIT-0920-01，不改预期数）。
+* 运行验证（2026-09-26）：learner重建重启后16服务全亮；新合成号浏览器走完注册→成人→目标，网关直调`first-day 200`、`home?contentLocale=en-US 200 NOT_READY/profileReady/targetReady/blocker=PLACEMENT_REQUIRED`（job pwsh-18 exit 0）。503误报关闭。
+
 ## 7. 提交节奏
 
 P1本文 → P2灌库（含数量核对）→ P3 home → P4网关 → P5定级发布 → P6全目标E2E。每步独立commit推送。
