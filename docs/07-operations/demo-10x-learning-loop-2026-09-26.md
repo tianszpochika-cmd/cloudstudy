@@ -136,35 +136,35 @@
 * `tmp/regression-check.mjs`2/2 PASS（job pwsh-65 exit 0）：移动设置页无5xx；管理策略页不再显示“暂不可用”。
 * 证据：`demo-e2e/regression/`（双截图+summary）。
 
-## 23. 门禁健康（2026-09-26）
+## 22. 门禁健康（2026-09-26）
 
 * `contracts:validate` PASS；planning门禁 PASS；stale-claims PASS（1612文件）；doc-audit PASS。
 * 网关check仅3项历史漂移（365→393、iam-deletions冻结语、M2-001摘要），无新增。
 * `p1r-api-contract`仍挂2项历史项（恢复分页/媒体幂等/错题分页），与本轮改动无关。
 * 证据：本轮命令输出（未入库大日志，按需重跑）。
 
-## 22. 空态复核（2026-09-26）
+## 23. 空态复核（2026-09-26）
 
 * `tmp/empty-recheck.mjs`14项全对预期（exit 0）：B3五路诚实空、目录6条、今日/房间/工单诚实空、Avatar降级、消息空、home 200。
 * 附带发现：登录`device`建议带`deviceName`（缺时偶发无token，已在脚本中固定）。
 * 证据：`demo-e2e/empty-recheck/summary.json`。
 
-## 25. 重置不枚举（2026-09-26）
+## 24. 重置不枚举（2026-09-26）
 
 * `tmp/reset-nonenum.mjs` PASS：真实账号与虚构账号的重置请求同为202、同形`{accepted:true}`，不泄露账号存在性；投递未配给系设计（审计留痕）。
 * 证据：`demo-e2e/reset/summary.json`。
 
-## 24. 诚实门复核（2026-09-26）
+## 25. 诚实门复核（2026-09-26）
 
 * `tmp/r20-guards.mjs`5/5 PASS（job pwsh-67 exit 0）：SRS直写409关闭、离线列表404（路由保留）、商城目录200空plans。
 * 证据：`demo-study-loop/r20-guards.json`。
 
-## 25. 移动答题深链（2026-09-26）
+## 26. 移动答题深链（2026-09-26）
 
 * `tmp/mob-assess.mjs`：移动H5登录真→定级页点选2题→报告卡→同号日报/错题200，零异常（job pwsh-69 exit 0）。
 * 证据：`demo-e2e/mobile-assessment/`（报告截图+summary）。
 
-## 26. 契约失败项定性（2026-09-26）
+## 27. 契约失败项定性（2026-09-26）
 
 * `p1r-api-contract`挂的2项（恢复分页/媒体幂等/错题分页）逐项核过：`upload-url`契约自声明`FAIL_CLOSED/NO_SUCCESS_PATH`（D2未成熟），硬加`x-idempotency`声明等于撒谎——实现侧确无幂等 enforcement；恢复分页同理归属 M2-006。
 * 结论：两处均为契约不成熟区，需 owner 补实现+提 maturity，不是声明问题，不动。
