@@ -148,3 +148,8 @@
 * `tmp/empty-recheck.mjs`14项全对预期（exit 0）：B3五路诚实空、目录6条、今日/房间/工单诚实空、Avatar降级、消息空、home 200。
 * 附带发现：登录`device`建议带`deviceName`（缺时偶发无token，已在脚本中固定）。
 * 证据：`demo-e2e/empty-recheck/summary.json`。
+
+## 24. 诚实门复核（2026-09-26）
+
+* `tmp/r20-guards.mjs`5/5 PASS（job pwsh-67 exit 0）：SRS直写409关闭、离线列表404（路由保留）、商城目录200空plans。
+* 证据：`demo-study-loop/r20-guards.json`。
