@@ -82,6 +82,11 @@ export interface LearnerHomeReadModel {
   contentStatus: 'READY' | 'EMPTY' | 'UNAVAILABLE'
   contentLocale: string
   revision: string | null
+  plan?: {
+    planId: string
+    taskCount: number
+    tasks: { itemId: string; taskType: string; status: string }[]
+  } | null
 }
 
 export interface PlacementAnswerInput {

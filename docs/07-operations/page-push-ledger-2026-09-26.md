@@ -1,6 +1,8 @@
 # 56 PAGE-P1 三态总表（2026-09-26 v5，本轮代理判定）
 
 > v6 增补（2026-09-27，B3交互环）：PAGE-P1-GRAMMAR 与 PAGE-P1-READING 由 HONEST-EMPTY 转 PASS——bank题干经绑定下发（3语法+2阅读，逐项验无答案物）、提交走B10判分（FULL/ZERO/错题/variant/READY全链）、浏览器真机判分截图；其余 verdict 不变。BLOCKED 仍 2 项（送审门、RISK），后续项逐个清。
+>
+> v7 增补（2026-09-27，计划接线）：PAGE-P1-LEARN-HOME 由 HONEST-EMPTY 转 PASS——定级完成→ensure落库→home READY（planningInput+plan内嵌，浏览器见计划横幅）；PAGE-P1-TODAY 保持 HONEST-EMPTY（today API有任务，页面缺V2任务标题映射，列后续）；PAGE-P1-PLAN-MAP 保持 HONEST-EMPTY（未验UI）。BLOCKED 仍 2 项。
 
 > 口径：`PASS`=关键动作+落库+恢复均有本轮证据；`HONEST-EMPTY`=渲染正确、空态系设计/门所致、无崩；
 > `BLOCKED`=需产品/代码缺口关闭。本表是代理侧复核记录；台账 canonical 状态变更权归QA。
@@ -33,8 +35,8 @@
 | PAGE-P1-ASSESSMENT | PASS | deep-chain（Web答2题）+ mobile-assessment（触屏答2题） |
 | PAGE-P1-ASSESSMENT-RESULT | PASS | 双端报告卡 + study-loop |
 | PAGE-P1-PLAN-MAP | HONEST-EMPTY | 无计划数据；待计划接线 |
-| PAGE-P1-LEARN-HOME | HONEST-EMPTY | 200 NOT_READY诚实；待计划接线 |
-| PAGE-P1-TODAY | HONEST-EMPTY | 200诚实空；有行数据时3条可读（plan-reads） |
+| PAGE-P1-LEARN-HOME | PASS | 计划接线：定级→ensure→home READY见计划横幅（plan-wiring-e2e） |
+| PAGE-P1-TODAY | HONEST-EMPTY | API today有任务；页面缺V2任务标题映射（后续） |
 | PAGE-P1-COURSE-SHELF | PASS | course-shelf（6/6+点进会话） |
 | PAGE-P1-VOCAB | HONEST-EMPTY | 详情可读（large-vocab）；列表迁正典待办 |
 | PAGE-P1-GRAMMAR | PASS | B3交互环：绑定题干3条可练，UI答题B10判分FULL（b3-practice-e2e 18/18） |

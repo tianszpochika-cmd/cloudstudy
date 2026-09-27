@@ -434,7 +434,24 @@ function parseHomeModel(learnerValue: unknown, contentValue: unknown, contentLoc
     contentStatus,
     contentLocale: readString(learnerSource.contentLocale) ?? readString(contentSource.contentLocale) ?? contentLocale,
     revision: readString(learnerSource.revision) ?? readString(contentSource.revision),
+    plan: parsePlan(learnerSource.firstDay),
   }
+}
+
+function parsePlan(value: unknown): LearnerHomeReadModel['plan'] {
+  // B9 READY first-day envelope embeds the owner-assembled plan facts; anything
+  // else means no plan is ensured yet (honest null, not an empty plan).
+  const source = isRecord(value) ? value : null
+  if (!source || source.state !== 'READY') return null
+  const plan = isRecord(source.plan) ? source.plan : null
+  const planId = readString(plan?.planId)
+  const tasks = Array.isArray(source.tasks) ? source.tasks.flatMap((entry) => {
+    const item = isRecord(entry) ? entry : null
+    const itemId = readString(item?.itemId)
+    return itemId ? [{ itemId, taskType: readString(item?.taskType) ?? '', status: readString(item?.status) ?? '' }] : []
+  }) : []
+  if (!planId || !tasks.length) return null
+  return { planId, taskCount: tasks.length, tasks }
 }
 
 export const learnerContentPort: LearnerContentPort = {

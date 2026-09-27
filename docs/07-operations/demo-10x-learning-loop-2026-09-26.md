@@ -240,6 +240,16 @@
 * 运行备注：本轮发现`services:run`退出会SIGTERM其子进程并曾引发全栈抖动；新增`tmp/launch-detached.mjs`（完整复刻runner env，分离拉起+日志落`logs/`）。网关全量套件`CanonicalRoutePolicyRouteLocatorIntegrationTest`1挂经stash验证为基线预置（与本轮无关）；mobile端B3旧提交路径未动（列后续）。
 * 口径：写作（无规则可判）/听力（无练题投影端点）/口语（M8）本轮不动，均为诚实空；三态总表 verdict 变更见ledger v6。
 
+## 38. 计划接线：pin语义 + ensure + home投影（2026-09-27，ADR-0027）
+
+* 契约先行 [实测]：公共`POST /api/v1/learning/plans:ensure`（`ensureB10LearningPlan`，body仅报告指针）+ 内部`GET plans/current-view`、`GET placement-bank/plan-items`、`PUT learner/targets/pin`；canonical 456→460；网关内部基线63→66、available 218→219（ensure并入learning-domain规则，规则数74不动）；三门禁（validate/网关3漂移/stale-claims）与assessment门禁全绿。
+* learner侧 [实测]：V12（目标pin列+偏好study-days列，out-of-band幂等应用）；`TargetPinService`（咨询式pin，不 bump 版本，改目标清pin）；偏好周天（domain字段+owner默认每日）；TargetData/pin内端点；home/first-day嵌learning视图（READY要planningInput+plan+tasks齐全，否则诚实NOT_READY；learning故障不炸home）。
+* content侧 [实测]：sealed加`contentStateVersion`；新plan-items端点（仅id+序，无题干选项答案）。
+* learning侧 [实测]：三HTTP适配（目标/计划内容/报告核验）+ `PlanningInputAssembler`（23键精确对契约）+ `V2PlansController`（验报告→写pin→建单→resume→组装→落输入快照→B25投影，单事务）+ B25 current-view；域`LearningTenantScope`接受IAM UUID（与learner侧先例对齐）+ `stableUserIdFor`；`learning.ports.mode`默认fail-closed（runner开http）。
+* E2E [实测]：`tmp/plan-e2e.mjs` 11/11——定级完成→ensure 200（plan-100012 ACTIVE，tasks 3，幂等重放）→today 3→home READY（planningInput+plan内嵌）；落库（domain计划+输入快照+B25行+目标pin）；浏览器home见“学习计划 plan-100013·3今日任务”零错；today页仍空态（V2任务缺标题映射，列后续，截图为证）。证据：`evidence/live/2026-09-27/plan-wiring-e2e/`。
+* 修了2个拦路bug [实测]：① `learning_id_sequence`停在V2种子值而fixture行已占区间（domain建单500，5个序列前向修复，数据无损）；② B10 `snapshot_id` BIGINT装不下`snap_`（沿用B3轮“版号carry+hash全量”规矩）。
+* 口径：P1定级本期无dedicated UI页，ensure由API消费方在定级后自动调（E2E即消费方）；Kafka saga待中继落地；mobile旧路径不动。
+
 ## 35. runner树崩与孤儿进程（2026-09-26，运维教训）
 
 * 现象：runner树先后死两次（iam/assessment报`exited: code=4294967295`整树归零）；另发现树死后有子进程变孤儿继续占端口（如assessment PID 40664持18091且readiness 200），导致后续重起报端口占用再死，形成连环。

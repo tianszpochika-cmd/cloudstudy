@@ -1,0 +1,64 @@
+{
+  "task": "PLAN-WIRING-E2E",
+  "capturedAt": "2026-09-27T14:50:01.296Z",
+  "result": "PASS",
+  "passed": 11,
+  "total": 11,
+  "checks": [
+    {
+      "n": "login",
+      "ok": true,
+      "o": 200
+    },
+    {
+      "n": "target",
+      "ok": true,
+      "o": "200 targetId=1166"
+    },
+    {
+      "n": "home-before",
+      "ok": true,
+      "o": "200 NOT_READY"
+    },
+    {
+      "n": "placement-create",
+      "ok": true,
+      "o": "201"
+    },
+    {
+      "n": "placement-done",
+      "ok": true,
+      "o": "report=rpt_5b36335b9072482aa6aba2d8e92ec818"
+    },
+    {
+      "n": "ensure",
+      "ok": true,
+      "o": "200 plan=plan-100012 replayed=false"
+    },
+    {
+      "n": "ensure-pins",
+      "ok": true,
+      "o": "tasks=3"
+    },
+    {
+      "n": "ensure-replay",
+      "ok": true,
+      "o": "same key replays"
+    },
+    {
+      "n": "today",
+      "ok": true,
+      "o": "200 count=3"
+    },
+    {
+      "n": "home-ready",
+      "ok": true,
+      "o": "200 READY tasks=3"
+    },
+    {
+      "n": "home-pins",
+      "ok": true,
+      "o": "planningInput+plan embedded"
+    }
+  ]
+}
