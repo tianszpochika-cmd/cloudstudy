@@ -41,11 +41,17 @@ public final class B3ContentJdbcController {
     private static final Base64.Decoder CURSOR_DECODER = Base64.getUrlDecoder();
     private static final List<String> CEFR_LEVELS = List.of("A1", "A2", "B1", "B2", "C1", "C2");
     /**
-     * The legacy B3 table has no content_id or payload digest tying a row to the canonical
-     * content_version payload. Its PUBLISHED flag and numeric version_id, including the seeded 301,
-     * cannot establish that provenance. Keep every legacy row unavailable until an owner-owned,
-     * versioned binding is designed, migrated, populated and verified at read time. The remaining
-     * predicates describe necessary publication and rights facts; they are not sufficient alone.
+     * A legacy B3 row becomes servable only through an ACTIVE owner binding
+     * ({@code content_b3_item_binding}) that pins the exact gradable
+     * coordinates; the predicates below stay necessary but never sufficient
+     * alone. Rows without provenance stay honestly empty: no binding is
+     * invented for them.
+     *
+     * <p>Channel note: {@code SEALED} marks items whose only outlet is an
+     * answer-stripped projection (B3 stems, placement sealed bank). Full
+     * learner catalog/detail projections still require {@code LEARNER}, so
+     * sealed banks never leak into the catalog. Every served B3 payload is
+     * stripped of answer material at the boundary (see {@link #publishedRow}).
      */
     private static final String ELIGIBLE_CONTENT = """
             FROM b3_content_experience b
@@ -53,8 +59,24 @@ public final class B3ContentJdbcController {
             JOIN content_definition c ON c.content_id = v.content_id
              AND c.tenant_id = b.tenant_id
              AND c.current_published_version_id = v.content_version_id
+            LEFT JOIN content_b3_item_binding g
+              ON g.tenant_id = b.tenant_id
+             AND g.b3_domain = b.domain_code
+             AND g.b3_resource_type = b.resource_type
+             AND g.b3_resource_key = b.resource_key
+             AND g.b3_experience_id = b.experience_id
+             AND g.status = 'ACTIVE'
+             AND g.content_version_id = b.content_version_id
             WHERE b.tenant_id = ? AND b.availability = 'PUBLISHED'
-              AND 1 = 0
+              AND EXISTS (
+                    SELECT 1 FROM content_b3_item_binding g
+                     WHERE g.tenant_id = b.tenant_id
+                       AND g.b3_domain = b.domain_code
+                       AND g.b3_resource_type = b.resource_type
+                       AND g.b3_resource_key = b.resource_key
+                       AND g.b3_experience_id = b.experience_id
+                       AND g.status = 'ACTIVE'
+                       AND g.content_version_id = b.content_version_id)
               AND v.status = 'PUBLISHED' AND v.published_at IS NOT NULL
               AND v.copyright_status = 'ACTIVE' AND v.rights_allows_learning = TRUE
               AND NULLIF(TRIM(v.rights_source_code), '') IS NOT NULL
@@ -71,7 +93,8 @@ public final class B3ContentJdbcController {
               AND (v.rights_expires_at IS NULL OR v.rights_expires_at > CURRENT_TIMESTAMP(6))
               AND v.rights_permitted_channels IS NOT NULL
               AND (JSON_CONTAINS(v.rights_permitted_channels, '"LEARNER"')
-                   OR JSON_CONTAINS(v.rights_permitted_channels, '"*"'))
+                   OR JSON_CONTAINS(v.rights_permitted_channels, '"*"')
+                   OR JSON_CONTAINS(v.rights_permitted_channels, '"SEALED"'))
             """;
 
     private final JdbcTemplate jdbc;
@@ -425,7 +448,9 @@ public final class B3ContentJdbcController {
 
     private List<Map<String, Object>> rows(String domain, String resourceType, int limit, String ignored) {
         int bounded = Math.max(1, Math.min(limit <= 0 ? 20 : limit, 100));
-        return jdbc.queryForList("SELECT b.payload_json, b.content_version_id " + ELIGIBLE_CONTENT
+        return jdbc.queryForList("SELECT b.payload_json, b.content_version_id, "
+                + "g.content_code AS binding_content_code, g.question_item_id AS binding_question_item_id "
+                + ELIGIBLE_CONTENT
                 + " AND b.domain_code = ? AND b.resource_type = ? ORDER BY b.resource_key LIMIT ?",
                 TENANT, domain, resourceType, bounded).stream().map(this::publishedRow).toList();
     }
@@ -437,23 +462,77 @@ public final class B3ContentJdbcController {
     private Map<String, Object> payload(String domain, String resourceType, String resourceKey,
             Authentication authentication) {
         principal(authentication);
-        return jdbc.queryForList("SELECT b.payload_json, b.content_version_id " + ELIGIBLE_CONTENT
+        return jdbc.queryForList("SELECT b.payload_json, b.content_version_id, "
+                + "g.content_code AS binding_content_code, g.question_item_id AS binding_question_item_id "
+                + ELIGIBLE_CONTENT
                 + " AND b.domain_code = ? AND b.resource_type = ? AND b.resource_key = ?",
                 TENANT, domain, resourceType, resourceKey).stream().findFirst()
                 .map(this::publishedRow)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "published learner content not found"));
     }
 
+    /**
+     * B3 serves stems only. Answer material is stripped recursively at this
+     * boundary (deny-list over the shared projection policy plus the bank
+     * rule key shapes), so a bound row can never leak its grading rule; the
+     * practiceRef carries only routing coordinates for the B10 loop.
+     */
+    private static final java.util.Set<String> STRIPPED_ANSWER_KEYS = java.util.Set.of(
+            "correctoption", "correctoptions", "acceptedkeys", "correctkey", "answerkey");
+
     private Map<String, Object> publishedRow(Map<String, Object> row) {
         long version = ((Number) row.get("content_version_id")).longValue();
-        Map<String, Object> payload = new LinkedHashMap<>(parse(String.valueOf(row.get("payload_json"))));
+        Map<String, Object> payload = new LinkedHashMap<>(stemOnly(parse(String.valueOf(row.get("payload_json")))));
         Object declared = payload.get("contentVersionId");
         if (declared != null && !String.valueOf(version).equals(String.valueOf(declared))) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
                     "published content version does not match its projection");
         }
         payload.put("contentVersionId", version);
+        Object bindingCode = row.get("binding_content_code");
+        Object bindingItem = row.get("binding_question_item_id");
+        if (bindingCode instanceof String code && !code.isBlank()
+                && bindingItem != null && !String.valueOf(bindingItem).isBlank()) {
+            Map<String, Object> practiceRef = new LinkedHashMap<>();
+            practiceRef.put("contentCode", code);
+            practiceRef.put("contentVersionId", version);
+            practiceRef.put("questionItemId", String.valueOf(bindingItem));
+            payload.put("practiceRef", practiceRef);
+        }
         return payload;
+    }
+
+    private static Map<String, Object> stemOnly(Map<String, Object> payload) {
+        Map<String, Object> stem = new LinkedHashMap<>();
+        payload.forEach((key, value) -> {
+            if (key == null || isAnswerKey(key)) return;
+            stem.put(key, stemValue(value));
+        });
+        return stem;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Object stemValue(Object value) {
+        if (value instanceof Map<?, ?> map) {
+            Map<String, Object> kept = new LinkedHashMap<>();
+            map.forEach((key, nested) -> {
+                if (key == null || isAnswerKey(String.valueOf(key))) return;
+                kept.put(String.valueOf(key), stemValue(nested));
+            });
+            return kept;
+        }
+        if (value instanceof List<?> list) {
+            List<Object> kept = new java.util.ArrayList<>();
+            for (Object item : list) kept.add(stemValue(item));
+            return kept;
+        }
+        return value;
+    }
+
+    private static boolean isAnswerKey(String key) {
+        String normalized = key.trim().toLowerCase(java.util.Locale.ROOT);
+        return STRIPPED_ANSWER_KEYS.contains(normalized)
+                || com.englishflow.content.domain.ContentProjectionPolicy.isAnswerRuleKey(key);
     }
 
     private Map<String, Object> itemEnvelope(List<Map<String, Object>> items) {

@@ -59,6 +59,14 @@ public class B3PublishedContentGateJdbcTest {
                     editor VARCHAR(128), first_reviewer VARCHAR(128), final_reviewer VARCHAR(128),
                     publisher VARCHAR(128))
                 """);
+        jdbc.execute("""
+                CREATE TABLE content_b3_item_binding (
+                    binding_id BIGINT AUTO_INCREMENT PRIMARY KEY, tenant_id VARCHAR(64),
+                    b3_domain VARCHAR(32), b3_resource_type VARCHAR(64), b3_resource_key VARCHAR(96),
+                    b3_experience_id VARCHAR(96), content_code VARCHAR(128),
+                    content_version_id BIGINT, question_item_id VARCHAR(128),
+                    status VARCHAR(16) DEFAULT 'ACTIVE', created_at TIMESTAMP)
+                """);
         jdbc.update("""
                 INSERT INTO b3_content_experience VALUES
                 ('legacy-grammar', 'platform', 'GRAMMAR', 'GRAMMAR_POINT', '3101', 301,
