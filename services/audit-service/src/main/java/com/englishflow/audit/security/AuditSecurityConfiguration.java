@@ -83,6 +83,11 @@ public class AuditSecurityConfiguration {
                         .authenticationEntryPoint(entryPoint)
                         .accessDeniedHandler(deniedHandler))
                 .authorizeHttpRequests(auth -> auth
+                        // Error forwards must render the honest framework error (400/404/405):
+                        // denying them here masks every binding failure as opaque 403.
+                        // Error bodies carry no secrets (domain messages exclude payloads;
+                        // Boot sanitizes the rest), so permitting the forward is safe.
+                        .dispatcherTypeMatchers(jakarta.servlet.DispatcherType.ERROR).permitAll()
                         .requestMatchers("/actuator/health", "/actuator/health/**").permitAll()
                         .requestMatchers("/internal/v1/audit/**").authenticated()
                         .anyRequest().denyAll())

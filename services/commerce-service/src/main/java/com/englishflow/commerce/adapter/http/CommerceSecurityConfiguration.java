@@ -87,6 +87,11 @@ public class CommerceSecurityConfiguration {
                 .exceptionHandling(exceptions -> exceptions.authenticationEntryPoint(entryPoint).accessDeniedHandler(denied))
                 .addFilterBefore(untrusted, AuthorizationFilter.class)
                 .authorizeHttpRequests(auth -> auth
+                        // Error forwards must render the honest framework error (400/404/405):
+                        // denying them here masks every binding failure as opaque 403.
+                        // Error bodies carry no secrets (domain messages exclude payloads;
+                        // Boot sanitizes the rest), so permitting the forward is safe.
+                        .dispatcherTypeMatchers(jakarta.servlet.DispatcherType.ERROR).permitAll()
                         .requestMatchers("/internal/v1/commerce/public/catalog").permitAll()
                         .requestMatchers("/actuator/health", "/actuator/health/**", "/internal/v1/commerce/readiness").permitAll()
                         .requestMatchers("/internal/v1/commerce/providers/*/callbacks", "/internal/v1/commerce/refunds/callbacks").authenticated()
