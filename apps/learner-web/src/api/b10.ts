@@ -7,6 +7,7 @@ import type {
   B10GrammarMastery,
   B10GrammarPoint,
   B10PracticeQuestion,
+  B10PracticeRef,
   B10PracticeSession,
   B10ProofreadingIssue,
   B10ReadingArticle,
@@ -347,18 +348,29 @@ function parseGrammarPoint(value: unknown): B10GrammarPoint | null {
   }
 }
 
+function parsePracticeRef(value: unknown): B10PracticeRef | undefined {
+  const source = recordValue(value)
+  const contentCode = stringValue(source.contentCode)
+  const contentVersionId = numberValue(source.contentVersionId)
+  const questionItemId = stringValue(source.questionItemId)
+  if (!contentCode || contentVersionId === null || !questionItemId) return undefined
+  return { contentCode, contentVersionId, questionItemId }
+}
+
 function parseGrammarExercise(value: unknown): B10GrammarExercise | null {
   const source = recordValue(value)
   assertPublished(source)
   const exerciseId = numberValue(source.exerciseId) ?? numberValue(source.id)
+  // Bank drills carry no grammar point: null survives here and the store only
+  // groups point-free drills when no knowledge point is selected.
   const grammarPointId = numberValue(source.grammarPointId)
   const version = contentVersionId(source)
   const promptText = stringValue(source.promptText) ?? stringValue(source.prompt)
   const type = stringValue(source.type)?.toUpperCase()
-  if (exerciseId === null || grammarPointId === null || version === null || !promptText || !['FILL_BLANK', 'CHOICE', 'SENTENCE_BUILD', 'PARAPHRASE', 'CORRECTION'].includes(type ?? '')) return null
+  if (exerciseId === null || version === null || !promptText || !['FILL_BLANK', 'CHOICE', 'SENTENCE_BUILD', 'PARAPHRASE', 'CORRECTION'].includes(type ?? '')) return null
   const options = arrayValue(source.options).flatMap((entry) => { const item = recordValue(entry); const key = stringValue(item.optionCode) ?? stringValue(item.key); const text = stringValue(item.label) ?? stringValue(item.text); return key && text ? [{ key, text }] : [] })
   const tokens = arrayValue(source.tokens).flatMap((entry) => { const item = recordValue(entry); const tokenId = stringValue(item.tokenId) ?? stringValue(item.id); const text = stringValue(item.text); return tokenId && text ? [{ tokenId, text }] : [] })
-  return { exerciseId, grammarPointId, type: type as B10GrammarExercise['type'], promptText, options, tokens, contentVersionId: version, contentLocale: contentLocale(source) }
+  return { exerciseId, grammarPointId, type: type as B10GrammarExercise['type'], promptText, options, tokens, contentVersionId: version, contentLocale: contentLocale(source), practiceRef: parsePracticeRef(source.practiceRef) }
 }
 
 function parseGrammarMastery(value: unknown): B10GrammarMastery | null {
@@ -573,10 +585,15 @@ export async function syncVocabularyReviews(events: B10ReviewEvent[]): Promise<B
   })
 }
 
-export async function createPracticeSession(sessionType: 'DAILY' | 'QUICK' | 'CHECKPOINT', targetCount = 15): Promise<B10PracticeSession> {
+export async function createPracticeSession(sessionType: 'DAILY' | 'QUICK' | 'CHECKPOINT', targetCount = 15, practice?: { contentCode?: string; contentVersionId?: number; itemIds?: string[] }): Promise<B10PracticeSession> {
   const mode = sessionType === 'QUICK' ? 'REVIEW' : sessionType === 'CHECKPOINT' ? 'MOCK' : 'PRACTICE'
-  const stableKey = `b10-practice-session-${sessionType}`
-  const response = await apiClient.post<unknown>(B10_GATEWAY_ROUTES.assessment.sessions, { contentVersionId: 25001, mode, clientSessionRef: stableKey, ...(targetCount > 0 ? { itemIds: undefined } : {}) }, withB10Headers(stableKey))
+  const practiceItemIds = (practice?.itemIds ?? []).map((id) => Number(id)).filter((id) => Number.isSafeInteger(id) && id > 0)
+  const stableKey = practiceItemIds.length ? `b10-practice-${practice?.contentCode ?? 'b25'}-${practiceItemIds.join('-').slice(0, 80)}` : `b10-practice-session-${sessionType}`
+  const body: Record<string, unknown> = { contentVersionId: practice?.contentVersionId ?? 25001, mode, clientSessionRef: stableKey }
+  if (practice?.contentCode) body.contentCode = practice.contentCode
+  if (practiceItemIds.length) body.itemIds = practiceItemIds
+  else if (targetCount > 0) body.itemIds = undefined
+  const response = await apiClient.post<unknown>(B10_GATEWAY_ROUTES.assessment.sessions, body, withB10Headers(stableKey))
   const session = parseSession(response)
   if (!session) throw new Error('练习服务返回了无法识别的会话。')
   return session
@@ -664,13 +681,16 @@ export async function listReadingQuestions(articleId: number): Promise<B10Readin
     if (questionId === null || version === null || !stemText) return []
     const questionType = stringValue(source.questionType)?.toUpperCase()
     const options = arrayValue(source.options).flatMap((item) => { const option = recordValue(item); const optionCode = stringValue(option.optionCode) ?? stringValue(option.key); const label = stringValue(option.label) ?? stringValue(option.text); return optionCode && label ? [{ key: optionCode, text: label }] : [] })
-    return [{ questionId, articleId: numberValue(source.articleId) ?? articleId, questionType: ['DETAIL', 'INFERENCE', 'VOCABULARY'].includes(questionType ?? '') ? questionType as B10ReadingQuestion['questionType'] : 'MAIN_IDEA', stemText, options, contentVersionId: version }]
+    return [{ questionId, articleId: numberValue(source.articleId) ?? articleId, questionType: ['DETAIL', 'INFERENCE', 'VOCABULARY'].includes(questionType ?? '') ? questionType as B10ReadingQuestion['questionType'] : 'MAIN_IDEA', stemText, options, contentVersionId: version, practiceRef: parsePracticeRef(source.practiceRef) }]
   })
 }
 
-export async function submitReadingQuiz(questionId: number, answer: string, contentVersionId: number, stableKey: string): Promise<B10ReadingAttemptResult> {
-  const source = recordValue(unwrap(await apiClient.post<unknown>(B10_GATEWAY_ROUTES.assessment.readingAttempts, { questionId, answer, contentVersionId, clientEventId: stableKey }, withB10Headers(stableKey))))
-  return { ...parseFeedback(source), attemptId: numberValue(source.attemptId) ?? 0, questionId, score: numberValue(source.score), reviewSignal: stringValue(source.reviewSignal) }
+export async function submitReadingQuiz(question: B10ReadingQuestion, answer: string, stableKey: string): Promise<B10ReadingAttemptResult> {
+  const ref = question.practiceRef
+  if (!ref) throw new Error('该阅读题暂无可判分的服务端版本，已保留你的选择。')
+  const session = await createPracticeSession('DAILY', 15, { contentCode: ref.contentCode, contentVersionId: ref.contentVersionId, itemIds: [ref.questionItemId] })
+  const attempt = await submitPracticeAnswer(session.sessionId, { exerciseId: ref.questionItemId, answer: { selectedOptionKeys: [answer] }, clientAnswerId: stableKey, contentVersionId: ref.contentVersionId, stateVersion: session.stateVersion }, stableKey)
+  return { ...attempt, attemptId: Number(attempt.attemptId) || 0, questionId: question.questionId, score: null, reviewSignal: null }
 }
 
 export async function saveReadingProgress(payload: { articleId: number; blockId: string; progressPercent: number; positionVersion: number; contentVersionId: number }, stableKey: string): Promise<void> {
@@ -702,8 +722,15 @@ export async function getSentenceGraph(sentenceId: number): Promise<B10SentenceG
   return graph
 }
 
-export async function submitGrammarAttempt(exerciseId: number, answer: unknown, contentVersionId: number, stableKey: string): Promise<B10Feedback> {
-  return parseFeedback(await apiClient.post<unknown>(B10_GATEWAY_ROUTES.assessment.grammarAttempts, { exerciseId, answer, contentVersionId, clientAnswerId: stableKey }, withB10Headers(stableKey)))
+export async function submitGrammarAttempt(exercise: B10GrammarExercise, answer: unknown, stableKey: string): Promise<B10Feedback> {
+  // B3 interaction loop: B3 serves stems only; grading always goes through a
+  // B10 session bound to the stem's practiceRef. No practiceRef means the
+  // stem has no gradable server version: fail honestly instead of grading
+  // locally or hitting the retired B3 attempt path.
+  const ref = exercise.practiceRef
+  if (!ref) throw new Error('该练习暂无可判分的服务端版本，已保留你的答案。')
+  const session = await createPracticeSession('DAILY', 15, { contentCode: ref.contentCode, contentVersionId: ref.contentVersionId, itemIds: [ref.questionItemId] })
+  return submitPracticeAnswer(session.sessionId, { exerciseId: ref.questionItemId, answer, clientAnswerId: stableKey, contentVersionId: ref.contentVersionId, stateVersion: session.stateVersion }, stableKey)
 }
 
 export async function submitSentenceBlocks(sentenceId: number, blockOrder: string[], contentVersionId: number, stableKey: string): Promise<B10Feedback> {

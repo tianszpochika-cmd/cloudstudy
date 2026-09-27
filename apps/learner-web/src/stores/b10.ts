@@ -249,7 +249,9 @@ export const useB10Store = defineStore('b10-learning', () => {
   const currentCard = computed(() => cards.value[cardIndex.value] ?? null)
   const currentQuestion = computed(() => practice.value?.questions[practice.value.currentIndex] ?? null)
   const selectedGrammarPoint = computed(() => grammarPoints.value.find((item) => item.grammarPointId === selectedGrammarPointId.value) ?? null)
-  const selectedGrammarExercises = computed(() => grammarExercises.value.filter((item) => item.grammarPointId === selectedGrammarPointId.value))
+  // Bank drills carry no knowledge point: they surface exactly when no point
+  // is selected, so legacy point-grouped drills keep their grouping.
+  const selectedGrammarExercises = computed(() => grammarExercises.value.filter((item) => item.grammarPointId === selectedGrammarPointId.value || (item.grammarPointId == null && selectedGrammarPointId.value == null)))
   const reportWeaknesses = computed(() => report.value?.weakness ?? [])
 
   const unsubscribePerformance = engine.subscribe((state) => { performanceLevel.value = state.level })
@@ -706,7 +708,7 @@ export const useB10Store = defineStore('b10-learning', () => {
     readingAnswers.value[question.questionId] = answer
     const key = createB10StableKey('reading-quiz', question.questionId, question.contentVersionId, answer)
     try {
-      const result = await submitReadingQuiz(question.questionId, answer, question.contentVersionId, key)
+      const result = await submitReadingQuiz(question, answer, key)
       if (!stillCurrent(owner)) return
       readingResults.value[question.questionId] = result
     } catch (error) { if (stillCurrent(owner)) setFailure(readingStatus, readingMessage, error, '阅读理解提交失败，已保留你的选择。') }
@@ -739,7 +741,7 @@ export const useB10Store = defineStore('b10-learning', () => {
       selectedGrammarPointId.value = savedPoint?.grammarPointId ?? grammarPoints.value[0]?.grammarPointId ?? null
       grammarDraft.value.selectedGrammarPointId = selectedGrammarPointId.value
       persistGrammarDraft()
-      grammarStatus.value = grammarPoints.value.length ? 'ready' : 'empty'
+      grammarStatus.value = (grammarPoints.value.length || grammarExercises.value.length) ? 'ready' : 'empty'
       if (selectedGrammarPoint.value) await selectGrammarPoint(selectedGrammarPoint.value.grammarPointId)
     }
     catch (error) { if (stillCurrent(owner)) setFailure(grammarStatus, grammarMessage, error, '语法知识树暂时无法加载。') }
@@ -767,7 +769,7 @@ export const useB10Store = defineStore('b10-learning', () => {
     if (!stillCurrent(owner)) return
     const key = createB10StableKey('grammar-attempt', exercise.exerciseId, exercise.contentVersionId, JSON.stringify(answer))
     try {
-      const feedback = await submitGrammarAttempt(exercise.exerciseId, answer, exercise.contentVersionId, key)
+      const feedback = await submitGrammarAttempt(exercise, answer, key)
       if (stillCurrent(owner)) grammarFeedback.value = feedback
     } catch (error) { if (stillCurrent(owner)) setFailure(grammarStatus, grammarMessage, error, '语法练习提交失败，已保留当前答案。') }
   }

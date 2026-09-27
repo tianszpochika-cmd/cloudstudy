@@ -165,6 +165,12 @@ export interface B10DictionaryEntry {
   contentVersionId: number | null
 }
 
+export interface B10PracticeRef {
+  contentCode: string
+  contentVersionId: number
+  questionItemId: string
+}
+
 export interface B10ReadingQuestion {
   questionId: number
   articleId: number
@@ -172,6 +178,7 @@ export interface B10ReadingQuestion {
   stemText: string
   options: B10PracticeOption[]
   contentVersionId: number
+  practiceRef?: B10PracticeRef
 }
 
 export interface B10ReadingAttemptResult extends B10Feedback {
@@ -195,13 +202,14 @@ export interface B10GrammarPoint {
 
 export interface B10GrammarExercise {
   exerciseId: number
-  grammarPointId: number
+  grammarPointId: number | null
   type: 'FILL_BLANK' | 'CHOICE' | 'SENTENCE_BUILD' | 'PARAPHRASE' | 'CORRECTION'
   promptText: string
   options: B10PracticeOption[]
   tokens: B10PracticeToken[]
   contentVersionId: number
   contentLocale: string
+  practiceRef?: B10PracticeRef
 }
 
 export interface B10GrammarMastery {
