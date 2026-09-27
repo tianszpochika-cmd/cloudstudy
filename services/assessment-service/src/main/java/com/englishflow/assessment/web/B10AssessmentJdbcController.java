@@ -6,6 +6,7 @@ import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.ArrayNode;
 import tools.jackson.databind.node.ObjectNode;
 
+import com.englishflow.assessment.adapter.content.BankPracticeRuleProvider;
 import com.englishflow.assessment.domain.AssessmentMistake;
 import com.englishflow.assessment.domain.AssessmentPrincipal;
 
@@ -58,12 +59,14 @@ public class B10AssessmentJdbcController {
     private final JdbcTemplate jdbc;
     private final ObjectMapper mapper;
     private final String contentBaseUrl;
+    private final BankPracticeRuleProvider bankRules;
 
     public B10AssessmentJdbcController(JdbcTemplate jdbc, ObjectMapper mapper,
             @org.springframework.beans.factory.annotation.Value("${assessment.content.base-url:http://127.0.0.1:18089}") String contentBaseUrl) {
         this.jdbc = jdbc;
         this.mapper = mapper;
         this.contentBaseUrl = contentBaseUrl;
+        this.bankRules = new BankPracticeRuleProvider(mapper, contentBaseUrl);
     }
 
     @PostMapping("/sessions")
@@ -75,6 +78,12 @@ public class B10AssessmentJdbcController {
             @RequestHeader(value = "Authorization", required = false) String authorization) {
         Principal principal = principal(authentication, "assessment.session.write");
         requireKey(idempotencyKey);
+        // B3 interaction loop: the client may name the gradable content it just
+        // read (B3 stems carry a practiceRef). The name is validated against
+        // the contract code pattern and resolved server-side; unknown or
+        // rule-less content keeps the existing 410 behavior.
+        String requestedCode = text(body.get("contentCode"), CONTENT_CODE);
+        if (!requestedCode.matches("[a-z][a-z0-9._:-]{1,127}")) bad("contentCode is invalid");
         long contentVersionId = positiveLong(body.get("contentVersionId"), DEFAULT_CONTENT_VERSION);
         String mode = upperText(body.get("mode"), "PRACTICE");
         if (!List.of("PRACTICE", "REVIEW", "PLACEMENT", "MOCK").contains(mode)) {
@@ -87,7 +96,7 @@ public class B10AssessmentJdbcController {
                 """, TENANT, principal.subject(), idempotencyKey);
         if (existing != null) {
             return replaySessionCreation(principal.subject(), idempotencyKey, requestDigest,
-                    body, mode, contentVersionId, existing);
+                    body, mode, requestedCode, contentVersionId, existing);
         }
         int claimed = jdbc.update("""
                 INSERT IGNORE INTO assessment_idempotency
@@ -105,10 +114,18 @@ public class B10AssessmentJdbcController {
                 throw new ResponseStatusException(HttpStatus.CONFLICT, "assessment session creation is still processing");
             }
             return replaySessionCreation(principal.subject(), idempotencyKey, requestDigest,
-                    body, mode, contentVersionId, raced);
+                    body, mode, requestedCode, contentVersionId, raced);
         }
 
-        List<Map<String, Object>> rules = rules(CONTENT_CODE, contentVersionId, body.get("itemIds"));
+        List<Map<String, Object>> rules = rules(requestedCode, contentVersionId, body.get("itemIds"));
+        BankPracticeRuleProvider.BankRules bank = null;
+        if (rules.isEmpty() && BankPracticeRuleProvider.BANK_CONTENT_CODE.equals(requestedCode)) {
+            bank = bankRules(requestedCode, contentVersionId, authorization);
+            // The same requested-item filter as local rules: unknown item ids
+            // fall through to the substitute/410 path instead of grading the
+            // whole bank.
+            if (bank != null) rules = filterByItemIds(bank.rows(), body.get("itemIds"));
+        }
         // P1R decision 7B: assessment assembles the session pin. The requested pin
         // stays in content_*; when it has no rules, ask content-service for the
         // deterministic substitute and grade that instead of inventing content.
@@ -117,7 +134,7 @@ public class B10AssessmentJdbcController {
         String alternativeCode = null;
         String alternativeReason = null;
         if (rules.isEmpty()) {
-            SubstituteResolution substitute = resolveSubstitute(CONTENT_CODE, authorization);
+            SubstituteResolution substitute = resolveSubstitute(requestedCode, authorization);
             if (substitute != null) {
                 List<Map<String, Object>> alt = rules(substitute.contentCode(), substitute.contentVersionId(), body.get("itemIds"));
                 if (!alt.isEmpty()) {
@@ -133,6 +150,13 @@ public class B10AssessmentJdbcController {
         }
         String sessionId = "asess_" + compactUuid();
         List<Map<String, Object>> items = rules.stream().map(this::learnerItem).toList();
+        // Bank sessions pin the sealed bank facts: the numeric snapshot_id
+        // carries the bank content version (BIGINT cannot hold snap_ strings)
+        // while snapshot_hash carries the full bank digest, so no pin identity
+        // is lost. Default sessions keep the frozen B25 constants.
+        long pinEpoch = bank == null ? CONTENT_EPOCH : bank.contentEpoch();
+        long pinSnapshotId = bank == null ? SNAPSHOT_ID : bank.contentVersionId();
+        String pinSnapshotHash = bank == null ? SNAPSHOT_HASH : bank.snapshotHash();
         jdbc.update("""
                 INSERT INTO b10_assessment_session
                     (session_id, principal_id, tenant_id, mode, status, content_code,
@@ -141,9 +165,9 @@ public class B10AssessmentJdbcController {
                      items_json, answers_json, state_version, attempt_count,
                      idempotency_key, started_at)
                 VALUES (?, ?, ?, ?, 'IN_PROGRESS', ?, ?, ?, ?, ?, ?, ?, ?, ?, '{}', 1, 0, ?, CURRENT_TIMESTAMP(6))
-                """, sessionId, principal.subject(), TENANT, mode, CONTENT_CODE,
+                """, sessionId, principal.subject(), TENANT, mode, requestedCode,
                 contentVersionId, alternativeVersion, alternativeCode, alternativeReason,
-                CONTENT_EPOCH, SNAPSHOT_ID, SNAPSHOT_HASH,
+                pinEpoch, pinSnapshotId, pinSnapshotHash,
                 json(items), idempotencyKey);
         Map<String, Object> response = envelope(sessionView(one(
                 "SELECT * FROM b10_assessment_session WHERE session_id = ?", sessionId)));
@@ -159,7 +183,7 @@ public class B10AssessmentJdbcController {
     }
 
     private Map<String, Object> replaySessionCreation(String subject, String key, String requestDigest,
-            Map<String, Object> body, String mode, long contentVersionId, Map<String, Object> session) {
+            Map<String, Object> body, String mode, String requestedCode, long contentVersionId, Map<String, Object> session) {
         // Duplicate INSERT IGNORE may hold a shared claim lock. Keep this a shared
         // current read so concurrent replays do not deadlock on a lock upgrade.
         Map<String, Object> claim = one("""
@@ -170,9 +194,9 @@ public class B10AssessmentJdbcController {
         if (claim == null) {
             // V4 sessions have no request digest. Keep their normal replay path,
             // but refuse fields that cannot be checked against their saved pin.
-            if (!Set.of("contentVersionId", "mode", "itemIds", "clientSessionRef")
+            if (!Set.of("contentCode", "contentVersionId", "mode", "itemIds", "clientSessionRef")
                     .containsAll(body.keySet())
-                    || !CONTENT_CODE.equals(text(session.get("content_code")))
+                    || !requestedCode.equals(text(session.get("content_code")))
                     || !mode.equals(text(session.get("mode")))
                     || contentVersionId != number(session.get("content_version_id"))
                     || body.containsKey("itemIds")
@@ -248,6 +272,10 @@ public class B10AssessmentJdbcController {
                 ? longValue(session.get("content_version_id"), DEFAULT_CONTENT_VERSION)
                 : ((Number) altVersion).longValue();
         List<Map<String, Object>> rules = rules(gradingCode, gradingVersion, null);
+        if (rules.isEmpty() && BankPracticeRuleProvider.BANK_CONTENT_CODE.equals(gradingCode)) {
+            BankPracticeRuleProvider.BankRules bank = bankRules(gradingCode, gradingVersion, contextBearer());
+            if (bank != null) rules = bank.rows();
+        }
         Map<Long, Map<String, Object>> ruleById = new LinkedHashMap<>();
         for (Map<String, Object> rule : rules) ruleById.put(numericItemId(text(rule.get("item_id"))), rule);
         ObjectNode answers = objectAnswers(session.get("answers_json"));
@@ -283,10 +311,14 @@ public class B10AssessmentJdbcController {
         String scoreBucket = correct == scored ? "FULL" : correct == 0 ? "ZERO" : "PARTIAL";
         String reportId = "rpt_" + compactUuid();
         Map<String, String> answerMap = readAnswers(answers);
-        List<String> allMistakes = rules.stream()
+        // Mistake and score totals cover the session's own items: unanswered
+        // session items count as mistakes, but rules outside this session
+        // (e.g. the rest of the bank for a subset practice) never do.
+        List<Map<String, Object>> sessionRules = sessionRules(session, rules);
+        List<String> allMistakes = sessionRules.stream()
                 .filter(rule -> !isCorrect(rule.get("answer_rule_json"), answerMap.get(String.valueOf(numericItemId(text(rule.get("item_id")))))))
                 .map(rule -> text(rule.get("item_id"))).toList();
-        int total = rules.size();
+        int total = sessionRules.size();
         int totalCorrect = total - allMistakes.size();
         String totalScoreBucket = totalCorrect == total ? "FULL" : totalCorrect == 0 ? "ZERO" : "PARTIAL";
         jdbc.update("""
@@ -311,7 +343,7 @@ public class B10AssessmentJdbcController {
         // Per-item assessed events plus one report-ready event go to the durable
         // outbox in the same transaction; no raw answers, keys or rule text leave.
         emitAssessedEvents(principal.subject(), session, gradingCode, gradingVersion,
-                attemptId, reportId, submissionId, rules, mistakes, totalScoreBucket,
+                attemptId, reportId, submissionId, sessionRules, mistakes, totalScoreBucket,
                 total, totalCorrect, allMistakes.size());
         // M5-009: persist wrong-answer mistake facts so the D0/D1/D7 delay
         // machine and variant repair have durable state to drive. B10 items
@@ -604,6 +636,26 @@ public class B10AssessmentJdbcController {
         return data;
     }
 
+    /**
+     * Bank rules seam for the B3 practice loop. Overridable in tests; the
+     * production path re-reads the sealed bank on every call and returns null
+     * (keeping the caller's 410/404 behavior) on any failure.
+     */
+    BankPracticeRuleProvider.BankRules bankRules(String contentCode, long contentVersionId,
+                                                 String authorization) {
+        return bankRules.fetch(contentCode, contentVersionId, authorization);
+    }
+
+    private static String contextBearer() {
+        org.springframework.security.core.Authentication authentication =
+                org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        if (authentication instanceof org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken jwt
+                && jwt.isAuthenticated() && jwt.getToken().getTokenValue() != null) {
+            return "Bearer " + jwt.getToken().getTokenValue();
+        }
+        return null;
+    }
+
     private List<Map<String, Object>> rules(String contentCode, long contentVersionId, Object requestedItemIds) {
         List<Map<String, Object>> rows = jdbc.queryForList("""
                 SELECT item_id, content_version_id, prompt, options_json, dimension,
@@ -612,6 +664,36 @@ public class B10AssessmentJdbcController {
                  WHERE content_code = ? AND content_version_id = ? AND active = TRUE
                  ORDER BY item_id
                 """, contentCode, contentVersionId);
+        return filterByItemIds(rows, requestedItemIds);
+    }
+
+    private List<Map<String, Object>> sessionRules(Map<String, Object> session,
+                                                     List<Map<String, Object>> rules) {
+        Object raw = parseJson(session.get("items_json"), List.of());
+        if (!(raw instanceof List<?> items) || items.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "assessment session items are unreadable");
+        }
+        java.util.Set<String> keys = new java.util.HashSet<>();
+        for (Object entry : items) {
+            if (entry instanceof Map<?, ?> item) {
+                keys.add(String.valueOf(item.get("itemId")));
+                if (item.get("itemCode") != null) keys.add(String.valueOf(item.get("itemCode")));
+            }
+        }
+        List<Map<String, Object>> scoped = rules.stream()
+                .filter(rule -> keys.contains(String.valueOf(numericItemId(text(rule.get("item_id")))))
+                        || keys.contains(text(rule.get("item_id"))))
+                .toList();
+        if (scoped.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "assessment session items do not match their grading rules");
+        }
+        return scoped;
+    }
+
+    private static List<Map<String, Object>> filterByItemIds(List<Map<String, Object>> rows,
+                                                             Object requestedItemIds) {
         List<Object> requested = valueList(requestedItemIds);
         if (requested.isEmpty()) return rows;
         return rows.stream().filter(row -> {
@@ -960,7 +1042,7 @@ public class B10AssessmentJdbcController {
         }).toList();
     }
 
-    private List<Object> valueList(Object value) { return value instanceof List<?> list ? new ArrayList<>(list) : List.of(); }
+    private static List<Object> valueList(Object value) { return value instanceof List<?> list ? new ArrayList<>(list) : List.of(); }
 
     private Object parseJson(Object raw, Object fallback) {
         try { return raw == null ? fallback : mapper.readValue(String.valueOf(raw), Object.class); }
