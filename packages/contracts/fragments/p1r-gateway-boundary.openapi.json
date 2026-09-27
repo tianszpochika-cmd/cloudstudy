@@ -383,7 +383,9 @@
         "match": {
           "type": "EXACT",
           "path": "/api/v1/admin/moderation/reports",
-          "methods": ["GET"]
+          "methods": [
+            "GET"
+          ]
         },
         "upstreamOwner": "social-service",
         "internalTargetClass": "INTERNAL_V1",
@@ -1908,7 +1910,9 @@
             "projectionId": "admin-moderation-reports-read.queue",
             "status": "AVAILABLE",
             "publicPathTemplate": "/api/v1/admin/moderation/reports",
-            "methods": ["GET"],
+            "methods": [
+              "GET"
+            ],
             "executionKind": "UPSTREAM",
             "upstreamOwner": "social-service",
             "targetUriConfig": "gateway.b14.service-base-urls.social",
@@ -2430,6 +2434,23 @@
             "controllerEvidence": {
               "sourcePath": "services/iam-service/src/main/java/com/englishflow/iam/web/IamPolicyControlController.java",
               "requestMapping": "/api/v1/iam/policy-versions"
+            }
+          },
+          {
+            "projectionId": "iam-domain.accounts-locked",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/iam/accounts/locked",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "iam-service",
+            "targetUriConfig": "gateway.identity.iam-base-url",
+            "pathStrategy": "PRESERVE_PUBLIC_PATH",
+            "targetPathTemplate": "/api/v1/iam/accounts/locked",
+            "controllerEvidence": {
+              "sourcePath": "services/iam-service/src/main/java/com/englishflow/iam/web/IamAccountSecurityController.java",
+              "requestMapping": "/api/v1/iam/accounts"
             }
           }
         ]
@@ -5139,6 +5160,58 @@
               "sourcePath": "services/admin-ops-service/src/main/java/com/englishflow/adminops/web/AdminOpsController.java",
               "requestMapping": "/internal/v1/admin-ops"
             }
+          },
+          {
+            "status": "AVAILABLE",
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "admin-ops-service",
+            "targetUriConfig": "gateway.b13.admin-ops-base-url",
+            "pathStrategy": "REWRITE_PATH",
+            "controllerEvidence": {
+              "sourcePath": "services/admin-ops-service/src/main/java/com/englishflow/adminops/web/RiskController.java",
+              "requestMapping": "/internal/v1/admin-ops/risk"
+            },
+            "projectionId": "admin-domain.risk-cases",
+            "publicPathTemplate": "/api/v1/admin/ops/risk/cases",
+            "methods": [
+              "GET",
+              "POST"
+            ],
+            "targetPathTemplate": "/internal/v1/admin-ops/risk/cases"
+          },
+          {
+            "status": "AVAILABLE",
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "admin-ops-service",
+            "targetUriConfig": "gateway.b13.admin-ops-base-url",
+            "pathStrategy": "REWRITE_PATH",
+            "controllerEvidence": {
+              "sourcePath": "services/admin-ops-service/src/main/java/com/englishflow/adminops/web/RiskController.java",
+              "requestMapping": "/internal/v1/admin-ops/risk"
+            },
+            "projectionId": "admin-domain.risk-case-commands",
+            "publicPathTemplate": "/api/v1/admin/ops/risk/cases/{caseId}/commands",
+            "methods": [
+              "POST"
+            ],
+            "targetPathTemplate": "/internal/v1/admin-ops/risk/cases/{caseId}/commands"
+          },
+          {
+            "status": "AVAILABLE",
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "admin-ops-service",
+            "targetUriConfig": "gateway.b13.admin-ops-base-url",
+            "pathStrategy": "REWRITE_PATH",
+            "controllerEvidence": {
+              "sourcePath": "services/admin-ops-service/src/main/java/com/englishflow/adminops/web/RiskController.java",
+              "requestMapping": "/internal/v1/admin-ops/risk"
+            },
+            "projectionId": "admin-domain.risk-rules-evaluate",
+            "publicPathTemplate": "/api/v1/admin/ops/risk/rules:evaluate",
+            "methods": [
+              "POST"
+            ],
+            "targetPathTemplate": "/internal/v1/admin-ops/risk/rules:evaluate"
           }
         ]
       },

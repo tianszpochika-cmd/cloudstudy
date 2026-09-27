@@ -34,8 +34,11 @@ const EXPECTED_ROUTE_RULE_COUNT = 74;
 // items); plan and execution counts move together, no new operation.
 // Plan wiring (2026-09-27): +1 available (learning plans:ensure inside the
 // learning-domain rule; rules/plans counts unchanged).
+// P1R-ADMIN-RISK (2026-09-28): +5 available (4 risk ops inside the existing
+// admin-domain PREFIX rule + IAM locked-accounts inside iam-domain; rules/plans
+// counts unchanged; target-plan digest line stays on its frozen drift).
 const EXPECTED_EXECUTION_PLAN_COUNT = 74;
-const EXPECTED_AVAILABLE_EXECUTION_OPERATION_COUNT = 219;
+const EXPECTED_AVAILABLE_EXECUTION_OPERATION_COUNT = 224;
 // This is a reviewed semantic binding for the finite M2-001 target table. It
 // deliberately prevents a target from silently moving to a different, still
 // valid controller method without a corresponding Gateway parity change.

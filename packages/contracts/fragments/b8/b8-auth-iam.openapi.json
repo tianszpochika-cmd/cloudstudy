@@ -2476,6 +2476,91 @@
           }
         }
       }
+    },
+    "/api/v1/iam/accounts/locked": {
+      "get": {
+        "tags": [
+          "b8-auth"
+        ],
+        "operationId": "listB8LockedAccounts",
+        "summary": "List currently locked IAM accounts for authorized risk staff (minimal disclosure)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-contract": {
+          "domain": "iam",
+          "owner": "iam-service",
+          "phase": "P1",
+          "authentication": "self-owned-jwt"
+        },
+        "x-authorization": {
+          "requiredPermission": "admin.risk.read",
+          "defaultDecision": "DENY",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "permission"
+          ]
+        },
+        "x-audit": {
+          "required": true,
+          "event": "iam.account.locked.listed.v1",
+          "correlation": "canonical-request-and-trace-ids"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/PageSize"
+          }
+        ],
+        "x-pagination": {
+          "mode": "cursor",
+          "cursorParameter": "#/components/parameters/Cursor",
+          "pageSizeParameter": "#/components/parameters/PageSize",
+          "responseMeta": "#/components/schemas/ApiCursorPageMeta"
+        },
+        "responses": {
+          "200": {
+            "description": "Locked accounts (minimal disclosure)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiCursorPageEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "maxItems": 100,
+                          "items": {
+                            "$ref": "#/components/schemas/B8LockedAccount"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -5894,6 +5979,38 @@
           },
           "auditLink": {
             "$ref": "#/components/schemas/B8AuditLink"
+          }
+        }
+      },
+      "B8LockedAccount": {
+        "type": "object",
+        "additionalProperties": false,
+        "readOnly": true,
+        "required": [
+          "subjectRef",
+          "failedAttempts",
+          "lockedUntil",
+          "updatedAt"
+        ],
+        "description": "Minimal-disclosure lockout fact. Raw identity stays in IAM; callers receive only the opaque stable subject reference plus lockout state.",
+        "properties": {
+          "subjectRef": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "description": "Opaque stable account reference (sha256 hex prefix binding); not the principal id."
+          },
+          "failedAttempts": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "lockedUntil": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
           }
         }
       }

@@ -466,6 +466,10 @@
     {
       "name": "b9-learner-admin",
       "description": "Single-tenant control-plane reads and governed commands on learner-owned facts"
+    },
+    {
+      "name": "P1R-AdminRisk",
+      "description": "Risk cases merged into the governance surface (no standalone /risk route)"
     }
   ],
   "paths": {
@@ -38411,6 +38415,530 @@
           },
           "503": {
             "$ref": "#/components/responses/ApiServiceUnavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/iam/accounts/locked": {
+      "get": {
+        "tags": [
+          "b8-auth"
+        ],
+        "operationId": "listB8LockedAccounts",
+        "summary": "List currently locked IAM accounts for authorized risk staff (minimal disclosure)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-contract": {
+          "domain": "iam",
+          "owner": "iam-service",
+          "phase": "P1",
+          "authentication": "self-owned-jwt"
+        },
+        "x-authorization": {
+          "requiredPermission": "admin.risk.read",
+          "defaultDecision": "DENY",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "permission"
+          ]
+        },
+        "x-audit": {
+          "required": true,
+          "event": "iam.account.locked.listed.v1",
+          "correlation": "canonical-request-and-trace-ids"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/PageSize"
+          }
+        ],
+        "x-pagination": {
+          "mode": "cursor",
+          "cursorParameter": "#/components/parameters/Cursor",
+          "pageSizeParameter": "#/components/parameters/PageSize",
+          "responseMeta": "#/components/schemas/ApiCursorPageMeta"
+        },
+        "responses": {
+          "200": {
+            "description": "Locked accounts (minimal disclosure)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiCursorPageEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "maxItems": 100,
+                          "items": {
+                            "$ref": "#/components/schemas/B8LockedAccount"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/ops/risk/cases": {
+      "get": {
+        "tags": [
+          "P1R-AdminRisk"
+        ],
+        "summary": "List tenant-scoped risk cases for authorized risk staff",
+        "operationId": "listAdminRiskCases",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "admin-ops-service",
+        "x-data-owner": "admin-ops-service.risk",
+        "x-permission": "admin.risk.read",
+        "x-contract": {
+          "task": "P1R-ADMIN-RISK",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE; tenant, subject, severity assessment, assignment, escalation and state are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "admin.risk.read",
+          "pep": "admin-ops-service-local",
+          "allowedActors": [
+            "RISK_ANALYST",
+            "RISK_MANAGER"
+          ],
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "roles",
+            "permissions",
+            "policyVersion"
+          ],
+          "clientAuthority": "NONE for tenant, subject, severity, assignment, escalation or state"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/PageSize"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "风险案件列表",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiCursorPageEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "maxItems": 100,
+                          "items": {
+                            "$ref": "#/components/schemas/AdminRiskCase"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          }
+        },
+        "x-pagination": {
+          "mode": "cursor",
+          "cursorParameter": "#/components/parameters/Cursor",
+          "pageSizeParameter": "#/components/parameters/PageSize",
+          "responseMeta": "#/components/schemas/ApiCursorPageMeta"
+        }
+      },
+      "post": {
+        "tags": [
+          "P1R-AdminRisk"
+        ],
+        "summary": "File an analyst risk case",
+        "operationId": "fileAdminRiskCase",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "admin-ops-service",
+        "x-data-owner": "admin-ops-service.risk",
+        "x-permission": "admin.risk.write",
+        "x-contract": {
+          "task": "P1R-ADMIN-RISK",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE; tenant, subject, severity assessment, assignment, escalation and state are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "admin.risk.write",
+          "pep": "admin-ops-service-local",
+          "allowedActors": [
+            "RISK_ANALYST",
+            "RISK_MANAGER"
+          ],
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "roles",
+            "permissions",
+            "policyVersion"
+          ],
+          "clientAuthority": "NONE for tenant, subject, severity, assignment, escalation or state"
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "analyst-case-key",
+          "replayBehavior": "return-original-case"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B13IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminRiskFileRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "风险案件操作结果",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/AdminRiskCase"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "201": {
+            "description": "风险案件操作结果",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/AdminRiskCase"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/ops/risk/cases/{caseId}/commands": {
+      "post": {
+        "tags": [
+          "P1R-AdminRisk"
+        ],
+        "summary": "Record a risk case decision",
+        "operationId": "decideAdminRiskCase",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "admin-ops-service",
+        "x-data-owner": "admin-ops-service.risk",
+        "x-permission": "admin.risk.write",
+        "x-contract": {
+          "task": "P1R-ADMIN-RISK",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE; tenant, subject, severity assessment, assignment, escalation and state are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "admin.risk.write",
+          "pep": "admin-ops-service-local",
+          "allowedActors": [
+            "RISK_ANALYST",
+            "RISK_MANAGER"
+          ],
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "roles",
+            "permissions",
+            "policyVersion"
+          ],
+          "clientAuthority": "NONE for tenant, subject, severity, assignment, escalation or state"
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "case-decision-key",
+          "replayBehavior": "return-original-decision"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B13IdempotencyKey"
+          },
+          {
+            "name": "caseId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 128,
+              "pattern": "^rsk_[A-Za-z0-9._:-]{6,120}$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminRiskDecisionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "风险案件操作结果",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/AdminRiskCase"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/ops/risk/rules:evaluate": {
+      "post": {
+        "tags": [
+          "P1R-AdminRisk"
+        ],
+        "summary": "Evaluate risk detection rules and file cases for hits",
+        "operationId": "evaluateAdminRiskRules",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "admin-ops-service",
+        "x-data-owner": "admin-ops-service.risk",
+        "x-permission": "admin.risk.write",
+        "x-contract": {
+          "task": "P1R-ADMIN-RISK",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE; tenant, subject, severity assessment, assignment, escalation and state are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "admin.risk.write",
+          "pep": "admin-ops-service-local",
+          "allowedActors": [
+            "RISK_ANALYST",
+            "RISK_MANAGER"
+          ],
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "roles",
+            "permissions",
+            "policyVersion"
+          ],
+          "clientAuthority": "NONE for tenant, subject, severity, assignment, escalation or state"
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "rule-evaluation-key",
+          "replayBehavior": "return-original-evaluation"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B13IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminRiskEvaluateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "风险案件操作结果",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/AdminRiskEvaluateResult"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
           }
         }
       }
@@ -80307,6 +80835,358 @@
           },
           "checkedAt": {
             "$ref": "#/components/schemas/B9DateTime"
+          }
+        }
+      },
+      "B8LockedAccount": {
+        "type": "object",
+        "additionalProperties": false,
+        "readOnly": true,
+        "required": [
+          "subjectRef",
+          "failedAttempts",
+          "lockedUntil",
+          "updatedAt"
+        ],
+        "description": "Minimal-disclosure lockout fact. Raw identity stays in IAM; callers receive only the opaque stable subject reference plus lockout state.",
+        "properties": {
+          "subjectRef": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "description": "Opaque stable account reference (sha256 hex prefix binding); not the principal id."
+          },
+          "failedAttempts": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "lockedUntil": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "AdminRiskCase": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "caseId",
+          "category",
+          "severity",
+          "status",
+          "source",
+          "title",
+          "stateVersion",
+          "decisions",
+          "createdAt",
+          "updatedAt"
+        ],
+        "description": "Ops-owned risk coordination fact. Containment and escalation are recorded here; domain actions stay in their owner flows and are referenced, never executed by this object.",
+        "properties": {
+          "caseId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "pattern": "^rsk_[A-Za-z0-9._:-]{6,120}$"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "ACCOUNT_SECURITY",
+              "DEVICE_ANOMALY",
+              "PAYMENT_ANOMALY",
+              "ACTIVATION_ABUSE",
+              "EXPORT_ANOMALY",
+              "CONTENT_RIGHTS"
+            ]
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "LOW",
+              "MEDIUM",
+              "HIGH",
+              "CRITICAL"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "OPEN",
+              "TRIAGED",
+              "ACTIONED",
+              "ESCALATED",
+              "CLOSED"
+            ]
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "ANALYST_FILED",
+              "RULE_HIT"
+            ]
+          },
+          "ruleId": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "ruleVersion": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255
+          },
+          "subjectRef": {
+            "type": "string",
+            "maxLength": 128,
+            "description": "Opaque stable subject reference; raw identity stays in the owning service."
+          },
+          "evidenceRefs": {
+            "type": "array",
+            "maxItems": 8,
+            "items": {
+              "type": "string",
+              "maxLength": 160
+            }
+          },
+          "assigneeNote": {
+            "type": "string",
+            "maxLength": 512
+          },
+          "containmentRef": {
+            "type": "string",
+            "maxLength": 256,
+            "description": "Reference to the owner-flow containment receipt (e.g. content UNPUBLISH commandId); the action itself lives there."
+          },
+          "escalationTarget": {
+            "type": "string",
+            "enum": [
+              "SUPPORT",
+              "AUDIT"
+            ]
+          },
+          "escalationRef": {
+            "type": "string",
+            "maxLength": 256
+          },
+          "closedReason": {
+            "type": "string",
+            "maxLength": 512
+          },
+          "stateVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "decisions": {
+            "type": "array",
+            "maxItems": 32,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "decisionId",
+                "command",
+                "reason",
+                "decidedBy",
+                "decidedAt"
+              ],
+              "properties": {
+                "decisionId": {
+                  "type": "string",
+                  "minLength": 8,
+                  "maxLength": 128,
+                  "pattern": "^rskd_[A-Za-z0-9._:-]{6,120}$"
+                },
+                "command": {
+                  "type": "string",
+                  "enum": [
+                    "TRIAGE",
+                    "ISOLATE",
+                    "UNISOLATE",
+                    "ESCALATE",
+                    "CLOSE"
+                  ]
+                },
+                "reason": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "decidedBy": {
+                  "type": "string",
+                  "maxLength": 128
+                },
+                "decidedAt": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              }
+            }
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "AdminRiskFileRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "category",
+          "severity",
+          "title"
+        ],
+        "properties": {
+          "category": {
+            "type": "string",
+            "enum": [
+              "ACCOUNT_SECURITY",
+              "DEVICE_ANOMALY",
+              "PAYMENT_ANOMALY",
+              "ACTIVATION_ABUSE",
+              "EXPORT_ANOMALY",
+              "CONTENT_RIGHTS"
+            ]
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "LOW",
+              "MEDIUM",
+              "HIGH",
+              "CRITICAL"
+            ]
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255
+          },
+          "subjectRef": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "evidenceRefs": {
+            "type": "array",
+            "maxItems": 8,
+            "items": {
+              "type": "string",
+              "maxLength": 160
+            }
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 512
+          }
+        }
+      },
+      "AdminRiskDecisionRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "command",
+          "reason"
+        ],
+        "properties": {
+          "command": {
+            "type": "string",
+            "enum": [
+              "TRIAGE",
+              "ISOLATE",
+              "UNISOLATE",
+              "ESCALATE",
+              "CLOSE"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "assigneeNote": {
+            "type": "string",
+            "maxLength": 512
+          },
+          "containmentRef": {
+            "type": "string",
+            "maxLength": 256
+          },
+          "escalationTarget": {
+            "type": "string",
+            "enum": [
+              "SUPPORT",
+              "AUDIT"
+            ]
+          },
+          "escalationRef": {
+            "type": "string",
+            "maxLength": 256
+          }
+        }
+      },
+      "AdminRiskEvaluateRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "rules": {
+            "type": "array",
+            "maxItems": 8,
+            "items": {
+              "type": "string",
+              "enum": [
+                "ACCOUNT_LOCKOUT"
+              ]
+            }
+          },
+          "since": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "AdminRiskEvaluateResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "readOnly": true,
+        "required": [
+          "evaluatedAt",
+          "rulesChecked",
+          "casesFiled",
+          "caseIds"
+        ],
+        "properties": {
+          "evaluatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "rulesChecked": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "casesFiled": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "caseIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 128,
+              "pattern": "^rsk_[A-Za-z0-9._:-]{6,120}$"
+            }
           }
         }
       }
