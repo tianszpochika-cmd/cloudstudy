@@ -13,6 +13,8 @@ import com.englishflow.adminops.domain.DomainCommandPort;
 import com.englishflow.adminops.domain.IdempotencyLedger;
 import com.englishflow.adminops.domain.ProjectionQuery;
 import com.englishflow.adminops.domain.ProjectionRecord;
+import com.englishflow.adminops.risk.RiskCaseRecord;
+import com.englishflow.adminops.risk.RiskCaseStore;
 import com.englishflow.adminops.support.MediaObjectAuthorizationPort;
 import com.englishflow.adminops.support.MediaObjectRef;
 import java.util.List;
@@ -65,6 +67,34 @@ public final class FailClosedAdminOpsAdapters {
         @Override
         public void put(String scope, String key, String fingerprint, Object result) {
             throw unavailable("ADMIN_IDEMPOTENCY_UNAVAILABLE");
+        }
+    }
+
+    public static final class RiskCases implements RiskCaseStore {
+        @Override
+        public void create(RiskCaseRecord kase) {
+            throw unavailable("ADMIN_RISK_UNAVAILABLE");
+        }
+
+        @Override
+        public List<RiskCaseRecord> list(String tenantId) {
+            throw unavailable("ADMIN_RISK_UNAVAILABLE");
+        }
+
+        @Override
+        public Optional<RiskCaseRecord> find(String tenantId, String caseId) {
+            throw unavailable("ADMIN_RISK_UNAVAILABLE");
+        }
+
+        @Override
+        public void update(RiskCaseRecord kase, long expectedVersion) {
+            throw unavailable("ADMIN_RISK_UNAVAILABLE");
+        }
+
+        @Override
+        public List<RiskCaseRecord> findOpenByRuleSubject(
+                String tenantId, String ruleId, String subjectRef) {
+            throw unavailable("ADMIN_RISK_UNAVAILABLE");
         }
     }
 

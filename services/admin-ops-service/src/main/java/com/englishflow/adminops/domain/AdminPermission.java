@@ -15,6 +15,8 @@ public final class AdminPermission {
     public static final String SUPPORT_TICKET_CREATE = "support.ticket.create";
     public static final String SUPPORT_TICKET_READ = "support.ticket.read";
     public static final String SUPPORT_TICKET_MANAGE = "support.ticket.manage";
+    public static final String RISK_CASE_READ = "admin.risk.read";
+    public static final String RISK_CASE_WRITE = "admin.risk.write";
 
     private AdminPermission() {
     }

@@ -9,6 +9,7 @@ import com.englishflow.adminops.adapter.memory.InMemoryDomainCommandPort;
 import com.englishflow.adminops.adapter.memory.InMemoryIdempotencyLedger;
 import com.englishflow.adminops.adapter.memory.InMemoryMediaObjectAuthorization;
 import com.englishflow.adminops.adapter.memory.InMemoryReviewStateStore;
+import com.englishflow.adminops.adapter.memory.InMemoryRiskCaseStore;
 import com.englishflow.adminops.adapter.memory.InMemorySupportTicketStore;
 import com.englishflow.adminops.application.AdminOpsService;
 import com.englishflow.adminops.domain.AdminProjectionPort;
@@ -17,6 +18,10 @@ import com.englishflow.adminops.domain.ConfirmationService;
 import com.englishflow.adminops.domain.DomainCommandPort;
 import com.englishflow.adminops.domain.IdempotencyLedger;
 import com.englishflow.adminops.domain.ReviewStateStore;
+import com.englishflow.adminops.risk.HttpIamLockoutPort;
+import com.englishflow.adminops.risk.IamLockoutPort;
+import com.englishflow.adminops.risk.RiskCaseService;
+import com.englishflow.adminops.risk.RiskCaseStore;
 import com.englishflow.adminops.support.SupportTicketService;
 import com.englishflow.adminops.support.SupportTicketStore;
 import com.englishflow.adminops.support.MediaObjectAuthorizationPort;
@@ -123,6 +128,25 @@ public class AdminOpsConfiguration {
     }
 
     @Bean
+    @Profile("!local-real")
+    RiskCaseStore riskCaseStore() {
+        return new InMemoryRiskCaseStore();
+    }
+
+    @Bean
+    @Profile("local-real")
+    RiskCaseStore localRealRiskCaseStore(JdbcTemplate jdbc, ObjectMapper mapper) {
+        return new JdbcAdminOpsAdapters.RiskCases(jdbc, mapper);
+    }
+
+    @Bean
+    IamLockoutPort iamLockoutPort(ObjectMapper mapper,
+            @org.springframework.beans.factory.annotation.Value(
+                    "${admin-ops.risk.iam-base-url:http://127.0.0.1:18087}") String iamBaseUrl) {
+        return new HttpIamLockoutPort(mapper, iamBaseUrl);
+    }
+
+    @Bean
     ConfirmationService confirmationService(Clock clock, AdminOpsProperties properties) {
         return new ConfirmationService(clock, properties.commandConfirmationTtl());
     }
@@ -153,5 +177,15 @@ public class AdminOpsConfiguration {
         return new SupportTicketService(
                 clock, properties.supportDefaultSla(), commandPort, auditTrail, idempotency, confirmations,
                 mediaObjects, ticketStore);
+    }
+
+    @Bean
+    RiskCaseService riskCaseService(
+            Clock clock,
+            AuditTrail auditTrail,
+            IdempotencyLedger idempotency,
+            RiskCaseStore caseStore,
+            IamLockoutPort lockouts) {
+        return new RiskCaseService(clock, auditTrail, idempotency, caseStore, lockouts);
     }
 }

@@ -21,6 +21,14 @@ import com.englishflow.adminops.domain.ProjectionRecord;
 import com.englishflow.adminops.domain.ReferenceRedactor;
 import com.englishflow.adminops.domain.ReviewStateRecord;
 import com.englishflow.adminops.domain.ReviewStateStore;
+import com.englishflow.adminops.risk.RiskCaseRecord;
+import com.englishflow.adminops.risk.RiskCaseStore;
+import com.englishflow.adminops.risk.RiskCategory;
+import com.englishflow.adminops.risk.RiskCommand;
+import com.englishflow.adminops.risk.RiskDecisionRecord;
+import com.englishflow.adminops.risk.RiskSeverity;
+import com.englishflow.adminops.risk.RiskSource;
+import com.englishflow.adminops.risk.RiskStatus;
 import com.englishflow.adminops.support.MediaObjectAuthorizationPort;
 import com.englishflow.adminops.support.MediaObjectRef;
 import com.englishflow.adminops.support.SupportTicketRecord;
@@ -265,6 +273,10 @@ public final class JdbcAdminOpsAdapters {
                 return switch (stored.resultType()) {
                     case "COMMAND" -> mapper.readValue(stored.resultJson(), CommandResult.class);
                     case "SUPPORT_TICKET" -> mapper.readValue(stored.resultJson(), SupportTicketResult.class);
+                    case "RISK_DECISION" -> mapper.readValue(stored.resultJson(),
+                            com.englishflow.adminops.risk.RiskDecisionResult.class);
+                    case "RISK_EVALUATE" -> mapper.readValue(stored.resultJson(),
+                            com.englishflow.adminops.risk.RiskCaseService.RiskEvaluateResult.class);
                     default -> throw new IllegalStateException("unknown admin idempotency result type");
                 };
             } catch (JacksonException exception) {
@@ -278,6 +290,12 @@ public final class JdbcAdminOpsAdapters {
             }
             if (result instanceof SupportTicketResult) {
                 return "SUPPORT_TICKET";
+            }
+            if (result instanceof com.englishflow.adminops.risk.RiskDecisionResult) {
+                return "RISK_DECISION";
+            }
+            if (result instanceof com.englishflow.adminops.risk.RiskCaseService.RiskEvaluateResult) {
+                return "RISK_EVALUATE";
             }
             throw new IllegalArgumentException("unsupported admin idempotency result type");
         }
@@ -451,6 +469,155 @@ public final class JdbcAdminOpsAdapters {
     private static String text(Map<String, Object> map, String key, String fallback) {
         Object value = map.get(key);
         return value == null || String.valueOf(value).isBlank() ? fallback : String.valueOf(value);
+    }
+
+    public static class RiskCases implements RiskCaseStore {
+        private final JdbcTemplate jdbc;
+        private final ObjectMapper mapper;
+
+        public RiskCases(JdbcTemplate jdbc, ObjectMapper mapper) {
+            this.jdbc = jdbc;
+            this.mapper = mapper;
+        }
+
+        @Override
+        @Transactional
+        public void create(RiskCaseRecord kase) {
+            jdbc.update("INSERT INTO risk_case "
+                            + "(case_id,tenant_id,category,severity,status,source,rule_id,rule_version,"
+                            + "title,subject_ref,evidence_refs_json,assignee_note,containment_ref,"
+                            + "escalation_target,escalation_ref,closed_reason,decisions_json,last_audit_id,"
+                            + "case_version,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                    kase.caseId(), kase.tenantId(), kase.category().name(), kase.severity().name(),
+                    kase.status().name(), kase.source().name(), kase.ruleId(), kase.ruleVersion(),
+                    kase.title(), kase.subjectRef(), json(kase.evidenceRefs()), kase.assigneeNote(),
+                    kase.containmentRef(), kase.escalationTarget(), kase.escalationRef(), kase.closedReason(),
+                    json(decisionRows(kase.decisions())), kase.lastAuditId(), kase.version(),
+                    Timestamp.from(kase.createdAt()), Timestamp.from(kase.updatedAt()));
+        }
+
+        @Override
+        public List<RiskCaseRecord> list(String tenantId) {
+            return jdbc.query("SELECT case_id,tenant_id,category,severity,status,source,rule_id,rule_version,"
+                            + "title,subject_ref,evidence_refs_json,assignee_note,containment_ref,"
+                            + "escalation_target,escalation_ref,closed_reason,decisions_json,last_audit_id,"
+                            + "case_version,created_at,updated_at FROM risk_case WHERE tenant_id=? "
+                            + "ORDER BY updated_at DESC",
+                    (rs, rowNum) -> map(rs), tenantId);
+        }
+
+        @Override
+        public Optional<RiskCaseRecord> find(String tenantId, String caseId) {
+            return jdbc.query("SELECT case_id,tenant_id,category,severity,status,source,rule_id,rule_version,"
+                            + "title,subject_ref,evidence_refs_json,assignee_note,containment_ref,"
+                            + "escalation_target,escalation_ref,closed_reason,decisions_json,last_audit_id,"
+                            + "case_version,created_at,updated_at FROM risk_case WHERE tenant_id=? AND case_id=?",
+                    (rs, rowNum) -> map(rs), tenantId, caseId).stream().findFirst();
+        }
+
+        @Override
+        @Transactional
+        public void update(RiskCaseRecord kase, long expectedVersion) {
+            int updated = jdbc.update("UPDATE risk_case SET status=?,severity=?,assignee_note=?,"
+                            + "containment_ref=?,escalation_target=?,escalation_ref=?,closed_reason=?,"
+                            + "decisions_json=?,last_audit_id=?,case_version=?,updated_at=? "
+                            + "WHERE tenant_id=? AND case_id=? AND case_version=?",
+                    kase.status().name(), kase.severity().name(), kase.assigneeNote(),
+                    kase.containmentRef(), kase.escalationTarget(), kase.escalationRef(), kase.closedReason(),
+                    json(decisionRows(kase.decisions())), kase.lastAuditId(), kase.version(),
+                    Timestamp.from(kase.updatedAt()), kase.tenantId(), kase.caseId(), expectedVersion);
+            if (updated != 1) {
+                throw AdminOpsException.conflict("RISK_VERSION_CONFLICT", "case changed; reload before retrying");
+            }
+        }
+
+        @Override
+        public List<RiskCaseRecord> findOpenByRuleSubject(String tenantId, String ruleId, String subjectRef) {
+            return jdbc.query("SELECT case_id,tenant_id,category,severity,status,source,rule_id,rule_version,"
+                            + "title,subject_ref,evidence_refs_json,assignee_note,containment_ref,"
+                            + "escalation_target,escalation_ref,closed_reason,decisions_json,last_audit_id,"
+                            + "case_version,created_at,updated_at FROM risk_case "
+                            + "WHERE tenant_id=? AND rule_id=? AND subject_ref=? AND status<>'CLOSED'",
+                    (rs, rowNum) -> map(rs), tenantId, ruleId, subjectRef);
+        }
+
+        private RiskCaseRecord map(ResultSet rs) throws SQLException {
+            return new RiskCaseRecord(rs.getString("case_id"), rs.getString("tenant_id"),
+                    RiskCategory.valueOf(rs.getString("category")),
+                    RiskSeverity.valueOf(rs.getString("severity")),
+                    RiskStatus.valueOf(rs.getString("status")),
+                    RiskSource.valueOf(rs.getString("source")),
+                    rs.getString("rule_id"), rs.getString("rule_version"), rs.getString("title"),
+                    rs.getString("subject_ref"), strings(rs.getString("evidence_refs_json")),
+                    rs.getString("assignee_note"), rs.getString("containment_ref"),
+                    rs.getString("escalation_target"), rs.getString("escalation_ref"),
+                    rs.getString("closed_reason"), decisions(rs.getString("decisions_json")),
+                    rs.getString("last_audit_id"), rs.getLong("case_version"),
+                    rs.getTimestamp("created_at").toInstant(), rs.getTimestamp("updated_at").toInstant());
+        }
+
+        private List<String> strings(String value) {
+            try {
+                List<String> rows = mapper.readValue(value, new TypeReference<List<String>>() { });
+                List<String> result = new ArrayList<>();
+                for (String row : rows) {
+                    if (row != null) {
+                        result.add(row);
+                    }
+                }
+                return result;
+            } catch (RuntimeException exception) {
+                throw new IllegalStateException("risk evidence metadata is invalid", exception);
+            }
+        }
+
+        private List<RiskDecisionRecord> decisions(String value) {
+            try {
+                List<Map<String, Object>> rows = mapper.readValue(value, MEDIA_LIST);
+                List<RiskDecisionRecord> result = new ArrayList<>();
+                for (Map<String, Object> row : rows) {
+                    result.add(new RiskDecisionRecord(
+                            String.valueOf(row.get("decisionId")),
+                            RiskCommand.valueOf(String.valueOf(row.get("command"))),
+                            String.valueOf(row.get("reason")),
+                            String.valueOf(row.get("decidedBy")),
+                            Instant.parse(String.valueOf(row.get("decidedAt"))),
+                            row.get("containmentRef") == null ? null : String.valueOf(row.get("containmentRef")),
+                            row.get("escalationTarget") == null ? null : String.valueOf(row.get("escalationTarget")),
+                            row.get("escalationRef") == null ? null : String.valueOf(row.get("escalationRef")),
+                            row.get("assigneeNote") == null ? null : String.valueOf(row.get("assigneeNote"))));
+                }
+                return result;
+            } catch (RuntimeException exception) {
+                throw new IllegalStateException("risk decision metadata is invalid", exception);
+            }
+        }
+
+        private String json(Object value) {
+            try {
+                return mapper.writeValueAsString(value);
+            } catch (JacksonException exception) {
+                throw new IllegalStateException("risk case metadata serialization failed", exception);
+            }
+        }
+
+        private List<Map<String, Object>> decisionRows(List<RiskDecisionRecord> decisions) {
+            List<Map<String, Object>> rows = new ArrayList<>();
+            for (RiskDecisionRecord decision : decisions) {
+                Map<String, Object> row = new LinkedHashMap<>();
+                row.put("decisionId", decision.decisionId());
+                row.put("command", decision.command().name());
+                row.put("reason", decision.reason());
+                row.put("decidedBy", decision.decidedBy());
+                row.put("decidedAt", decision.decidedAt().toString());
+                row.put("containmentRef", decision.containmentRef());
+                row.put("escalationTarget", decision.escalationTarget());
+                row.put("escalationRef", decision.escalationRef());
+                row.put("assigneeNote", decision.assigneeNote());
+                rows.add(row);
+            }
+            return rows;
+        }
     }
 
     private static String nullableText(Map<String, Object> map, String key) {
