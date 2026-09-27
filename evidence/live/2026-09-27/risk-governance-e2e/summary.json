@@ -1,0 +1,74 @@
+{
+  "task": "RISK-GOVERNANCE-E2E",
+  "capturedAt": "2026-09-27T18:11:33.628Z",
+  "result": "PASS",
+  "passed": 13,
+  "total": 13,
+  "checks": [
+    {
+      "n": "staff-ready",
+      "ok": true,
+      "o": "analyst token"
+    },
+    {
+      "n": "genuine-lockout",
+      "ok": true,
+      "o": "wrong passwords -> locked"
+    },
+    {
+      "n": "evaluate-files",
+      "ok": true,
+      "o": "200 filed=1"
+    },
+    {
+      "n": "evaluate-dedupe",
+      "ok": true,
+      "o": "no duplicates"
+    },
+    {
+      "n": "queue-shows",
+      "ok": true,
+      "o": "200"
+    },
+    {
+      "n": "triage",
+      "ok": true,
+      "o": "200"
+    },
+    {
+      "n": "isolate",
+      "ok": true,
+      "o": "200"
+    },
+    {
+      "n": "escalate",
+      "ok": true,
+      "o": "200"
+    },
+    {
+      "n": "close",
+      "ok": true,
+      "o": "200"
+    },
+    {
+      "n": "closed-terminal",
+      "ok": true,
+      "o": "409"
+    },
+    {
+      "n": "analyst-file",
+      "ok": true,
+      "o": "200 rsk_ab91c62023094f9db6036410921192ac"
+    },
+    {
+      "n": "replay",
+      "ok": true,
+      "o": "same key replays"
+    },
+    {
+      "n": "learner-denied",
+      "ok": true,
+      "o": "403"
+    }
+  ]
+}

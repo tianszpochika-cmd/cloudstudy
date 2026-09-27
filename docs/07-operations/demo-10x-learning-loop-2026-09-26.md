@@ -266,6 +266,13 @@
 * 修了2个拦路bug [实测]：① 激活只持久化status导致ACTIVE空壳不可rehydrate（state-update补全4列；2行调试残留数据已修回PENDING）；② 旧行proposal列NULL致目录503（读容忍空=无申报）。
 * 口径：媒体事实管道列后续（ fail closed，非假过）；schedule排期沿用既有命令。
 
+## 41. RISK 并入治理页（2026-09-28，ADR-0028）
+
+* 契约先行 [实测]：b13风险4操作（list/file/decide/evaluate）+ b8 IAM锁定1操作 + 网关5投影（挂既有admin-domain/iam-domain规则，rules/plans不动）；460→465 ops；validate绿；网关2漂移/stale-claims与基线一致（available 219→224已同步）。
+* 语义 [实测]：B12不复用（事实/决定集不相交，混用会污染审计）；数据归属admin-ops（`risk_case` V6），隔离/升级只记owner凭据引用；首个实时规则ACCOUNT_LOCKOUT吃IAM最小披露锁定读（opaque subjectRef，staff经“已验证JWT+现行权限重查”）；IAM不可达则整轮评估fail closed；升级AUDIT写本地审计（可查），升级SUPPORT只记意图（transition通道未通，不伪造工单）。
+* E2E [实测]：`tmp/risk-e2e.mjs` 13/13——真锁定→评估建档→去重→队列→分诊→隔离→升级→关闭→终端态409＋分析师建档＋重放＋学员403；落库（案件行＋决策史＋锁定行）；浏览器治理页风险区建档零错。证据：`evidence/live/2026-09-27/risk-governance-e2e/`。
+* 单测 [实测]：IAM 121、admin-ops 82全绿（含新增锁定5＋风险5）；网关parity仅预置reading单失败（与本轮无关，扫描确认）。
+
 ## 35. runner树崩与孤儿进程（2026-09-26，运维教训）
 
 * 现象：runner树先后死两次（iam/assessment报`exited: code=4294967295`整树归零）；另发现树死后有子进程变孤儿继续占端口（如assessment PID 40664持18091且readiness 200），导致后续重起报端口占用再死，形成连环。
