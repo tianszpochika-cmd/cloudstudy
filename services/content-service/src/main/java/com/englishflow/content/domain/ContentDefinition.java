@@ -145,13 +145,24 @@ public final class ContentDefinition {
             String editor,
             String releaseNote,
             Instant createdAt) {
+        return addDraft(versionId, payload, rights, RightsProposal.empty(), editor, releaseNote, createdAt);
+    }
+
+    public synchronized ContentVersion addDraft(
+            ContentVersionId versionId,
+            Map<String, Object> payload,
+            ContentRights rights,
+            RightsProposal proposal,
+            String editor,
+            String releaseNote,
+            Instant createdAt) {
         ContentPayload validated = ContentSchemaValidator.validate(kind, payload);
         int nextNumber = versions.values().stream()
                 .mapToInt(ContentVersion::versionNumber)
                 .max()
                 .orElse(0) + 1;
         ContentVersion version = ContentVersion.draft(
-                versionId, nextNumber, kind, validated, rights, editor, releaseNote, createdAt);
+                versionId, nextNumber, kind, validated, rights, proposal, editor, releaseNote, createdAt);
         versions.put(versionId, version);
         return version;
     }

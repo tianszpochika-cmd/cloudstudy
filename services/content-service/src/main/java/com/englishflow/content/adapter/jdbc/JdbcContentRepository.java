@@ -46,7 +46,10 @@ public final class JdbcContentRepository implements ContentRepository {
             SELECT content_version_id, version_no, kind, status, payload_json, payload_hash,
                    rights_source_code, rights_license_code, copyright_status, rights_allows_learning,
                    rights_permitted_channels, rights_starts_at, rights_expires_at,
-                   authorization_evidence_ref, editor, release_note, first_reviewer, final_reviewer,
+                   authorization_evidence_ref,
+                   rights_proposed_channels, rights_proposed_evidence_ref,
+                   rights_proposed_allows_learning,
+                   editor, release_note, first_reviewer, final_reviewer,
                    publisher, published_at, archived_at, rollback_of_version_id, first_review_version,
                    final_review_version, state_version, created_at
               FROM content_version
@@ -74,16 +77,19 @@ public final class JdbcContentRepository implements ContentRepository {
                 (content_version_id, content_id, version_no, kind, status, payload_json, payload_hash,
                  rights_source_code, rights_license_code, copyright_status, rights_allows_learning,
                  rights_permitted_channels, rights_starts_at, rights_expires_at, authorization_evidence_ref,
+                 rights_proposed_channels, rights_proposed_evidence_ref, rights_proposed_allows_learning,
                  editor, release_note, first_reviewer, final_reviewer, publisher, published_at, archived_at,
                  rollback_of_version_id, first_review_version, final_review_version, state_version, created_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """;
 
     private static final String VERSION_STATE_UPDATE = """
             UPDATE content_version
                SET status = ?, first_reviewer = ?, final_reviewer = ?, publisher = ?,
                    published_at = ?, archived_at = ?, rollback_of_version_id = ?,
-                   first_review_version = ?, final_review_version = ?, state_version = ?
+                   first_review_version = ?, final_review_version = ?, state_version = ?,
+                   copyright_status = ?, rights_allows_learning = ?,
+                   rights_permitted_channels = ?, authorization_evidence_ref = ?
              WHERE content_version_id = ? AND content_id = ? AND version_no = ? AND state_version = ?
             """;
 
@@ -250,7 +256,14 @@ public final class JdbcContentRepository implements ContentRepository {
                     version.rollbackOfVersionId().map(ContentVersionId::value).orElse(null),
                     version.reviewVersion(com.englishflow.content.domain.ReviewStage.FIRST_REVIEW),
                     version.reviewVersion(com.englishflow.content.domain.ReviewStage.FINAL_REVIEW),
-                    version.stateVersion(), version.versionId().value(), content.contentId().value(),
+                    version.stateVersion(),
+                    version.rights().map(rights -> rights.status().name()).orElse(null),
+                    version.rights().map(com.englishflow.content.domain.ContentRights::allowsLearning).orElse(null),
+                    version.rights().map(rights -> JdbcContentJson.write(
+                            objectMapper, rights.permittedChannels(),
+                            "content rights could not be encoded")).orElse(null),
+                    version.rights().map(com.englishflow.content.domain.ContentRights::authorizationEvidenceRef).orElse(null),
+                    version.versionId().value(), content.contentId().value(),
                     version.versionNumber(), stored.stateVersion());
             if (stateUpdated != 1) {
                 throw ContentOperationException.conflict("VERSION_CONFLICT", "content version changed by another command");
@@ -282,7 +295,12 @@ public final class JdbcContentRepository implements ContentRepository {
                 rights == null ? null : rights.allowsLearning(),
                 channels, rights == null ? null : JdbcContentJson.timestamp(rights.startsAt()),
                 rights == null ? null : JdbcContentJson.timestamp(rights.expiresAt()),
-                rights == null ? null : rights.authorizationEvidenceRef(), version.editor(), version.releaseNote(),
+                rights == null ? null : rights.authorizationEvidenceRef(),
+                JdbcContentJson.write(objectMapper, version.proposal().channelList(),
+                        "content rights proposal could not be encoded"),
+                version.proposal().proposedEvidenceRef(),
+                version.proposal().proposedAllowsLearning(),
+                version.editor(), version.releaseNote(),
                 version.firstReviewer().orElse(null), version.finalReviewer().orElse(null), version.publisher().orElse(null),
                 JdbcContentJson.timestamp(version.publishedAt().orElse(null)),
                 JdbcContentJson.timestamp(version.archivedAt().orElse(null)),
@@ -324,12 +342,29 @@ public final class JdbcContentRepository implements ContentRepository {
                         resultSet.getString("authorization_evidence_ref"));
             }
             Object rollback = resultSet.getObject("rollback_of_version_id");
+            // Proposal columns postdate older rows: NULL means "no dossier
+            // ever submitted", i.e. an empty proposal — never corruption.
+            String proposedChannels = resultSet.getString("rights_proposed_channels");
+            java.util.Set<String> proposedSet;
+            if (proposedChannels == null || proposedChannels.isBlank()) {
+                proposedSet = java.util.Set.of();
+            } else {
+                proposedSet = JdbcContentJson.readStringSet(
+                        objectMapper, proposedChannels,
+                        "stored rights proposal channels are unreadable");
+            }
+            com.englishflow.content.domain.RightsProposal proposal =
+                    new com.englishflow.content.domain.RightsProposal(
+                            proposedSet,
+                            resultSet.getString("rights_proposed_evidence_ref"),
+                            resultSet.getBoolean("rights_proposed_allows_learning"));
             return ContentVersion.rehydrate(
                     new ContentVersionId(resultSet.getLong("content_version_id")),
                     resultSet.getInt("version_no"), ContentKind.valueOf(resultSet.getString("kind")),
                     JdbcContentJson.readMap(
                             objectMapper, resultSet.getString("payload_json"),
                             "stored content payload is unreadable"), resultSet.getString("payload_hash"), rights,
+                    proposal,
                     resultSet.getString("editor"), resultSet.getString("release_note"),
                     JdbcContentJson.instant(resultSet, "created_at"),
                     ContentVersionStatus.valueOf(resultSet.getString("status")),

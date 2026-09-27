@@ -2,6 +2,7 @@ package com.englishflow.content.application;
 
 import com.englishflow.content.domain.ContentActor;
 import com.englishflow.content.domain.ContentAudience;
+import com.englishflow.content.domain.ContentAutoValidation;
 import com.englishflow.content.domain.ContentDefinition;
 import com.englishflow.content.domain.ContentDefinitionSnapshot;
 import com.englishflow.content.domain.ContentId;
@@ -13,16 +14,21 @@ import com.englishflow.content.domain.ContentRequestContext;
 import com.englishflow.content.domain.ContentVersion;
 import com.englishflow.content.domain.ContentVersionId;
 import com.englishflow.content.domain.ContentVersionSnapshot;
+import com.englishflow.content.domain.ContentVersionStatus;
 import com.englishflow.content.domain.ContentPayloadHash;
 import com.englishflow.content.domain.ContentProjectionPolicy;
 import com.englishflow.content.domain.ContentRights;
+import com.englishflow.content.domain.MediaRefs;
 import com.englishflow.content.domain.ReviewDecision;
 import com.englishflow.content.domain.ReviewStage;
+import com.englishflow.content.domain.RightsProposal;
+import com.englishflow.content.domain.ValidationReport;
 import com.englishflow.content.port.ContentCacheInvalidator;
 import com.englishflow.content.port.ContentIdempotencyPort;
 import com.englishflow.content.port.ContentOutboxPort;
 import com.englishflow.content.port.ContentRepository;
 import com.englishflow.content.port.PublicProjectionStore;
+import com.englishflow.content.port.ValidationReportStore;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -44,6 +50,7 @@ public final class ContentCommandService {
     private final ContentIdempotencyPort idempotency;
     private final PublicProjectionStore projectionStore;
     private final ContentCacheInvalidator cacheInvalidator;
+    private final ValidationReportStore reports;
     private final Clock clock;
 
     public ContentCommandService(
@@ -52,12 +59,14 @@ public final class ContentCommandService {
             ContentIdempotencyPort idempotency,
             PublicProjectionStore projectionStore,
             ContentCacheInvalidator cacheInvalidator,
+            ValidationReportStore reports,
             Clock clock) {
         this.repository = Objects.requireNonNull(repository, "repository is required");
         this.outbox = Objects.requireNonNull(outbox, "outbox is required");
         this.idempotency = Objects.requireNonNull(idempotency, "idempotency port is required");
         this.projectionStore = Objects.requireNonNull(projectionStore, "projection store is required");
         this.cacheInvalidator = Objects.requireNonNull(cacheInvalidator, "cache invalidator is required");
+        this.reports = Objects.requireNonNull(reports, "validation report store is required");
         this.clock = Objects.requireNonNull(clock, "clock is required");
     }
 
@@ -94,8 +103,8 @@ public final class ContentCommandService {
                 scope(actor, "content.version.create"), key, fingerprint(command),
                 () -> {
                     ContentVersion version = content.addDraft(
-                            command.versionId(), command.payload(), command.rights(), actor.subjectId(),
-                            command.releaseNote(), clock.instant());
+                            command.versionId(), command.payload(), command.rights(), command.proposal(),
+                            actor.subjectId(), command.releaseNote(), clock.instant());
                     repository.save(content);
                     return ContentVersionSnapshot.from(content.contentId(), version);
                 });
@@ -143,6 +152,14 @@ public final class ContentCommandService {
                     ContentVersion version = ownedVersion(content, command.versionId());
                     Instant reviewedAt = clock.instant();
                     version.review(command.stage(), command.decision(), actor.subjectId(), reviewedAt);
+                    if (command.stage() == ReviewStage.FINAL_REVIEW
+                            && command.decision() == ReviewDecision.APPROVED) {
+                        // L2 终审自动 ACTIVE: activation verifies the bound PASS
+                        // report and the editor dossier but never invents terms.
+                        // When preconditions are unmet the version stays PENDING
+                        // and the publish gate fails closed.
+                        activateRights(content, version, actor, reviewedAt);
+                    }
                     repository.save(content);
                     appendVersion(content, version, "content.version.reviewed.v1",
                             version.versionId().value() + ":review:" + command.stage() + ":"
@@ -404,7 +421,18 @@ public final class ContentCommandService {
             ContentVersionId versionId,
             Map<String, Object> payload,
             ContentRights rights,
+            RightsProposal proposal,
             String releaseNote) {
+
+        /** Versions without an editor dossier carry an empty proposal. */
+        public CreateVersion(
+                ContentId contentId,
+                ContentVersionId versionId,
+                Map<String, Object> payload,
+                ContentRights rights,
+                String releaseNote) {
+            this(contentId, versionId, payload, rights, RightsProposal.empty(), releaseNote);
+        }
     }
 
     public record VersionCommand(ContentId contentId, ContentVersionId versionId) {
@@ -417,6 +445,78 @@ public final class ContentCommandService {
             ReviewDecision decision,
             String reasonCode,
             String note) {
+    }
+
+    /**
+     * Computes and persists the version-bound validation report for a draft.
+     * Idempotent by the (version, hash, rule) binding: replaying validation of
+     * unchanged content returns the stored fact instead of minting a new one.
+     */
+    public ValidationReport validateDraft(
+            VersionCommand command,
+            ContentActor actor,
+            ContentIdempotencyKey key,
+            ContentRequestContext context) {
+        requireEditor(actor);
+        Objects.requireNonNull(command, "version command is required");
+        ContentDefinition content = ownedContent(command.contentId(), actor);
+        return idempotency.execute(
+                scope(actor, "content.validate"), key, fingerprint(command),
+                () -> {
+                    ContentVersion version = ownedVersion(content, command.versionId());
+                    if (version.status() != ContentVersionStatus.DRAFT) {
+                        throw ContentOperationException.conflict(
+                                "CONTENT_STATE_INVALID", "only a draft can be validated");
+                    }
+                    Instant checkedAt = clock.instant();
+                    ContentRights rights = version.effectiveRights();
+                    ContentAutoValidation.Report computed = ContentAutoValidation.validate(
+                            version.payload().raw(), rights, checkedAt);
+                    java.util.List<String> mediaRefs = MediaRefs.extract(version.payload().raw());
+                    ValidationReport report = new ValidationReport(
+                            reportId(content, version),
+                            reports.nextReportVersion(version.versionId().value()),
+                            version.versionId().value(),
+                            version.contentHash(),
+                            computed.ruleVersion(),
+                            computed.passed(),
+                            computed.findings(),
+                            mediaRefs,
+                            actor.subjectId(),
+                            checkedAt);
+                    return reports.save(report);
+                });
+    }
+
+    private static String reportId(ContentDefinition content, ContentVersion version) {        String binding = content.contentId().value() + ":" + version.versionId().value()
+                + ":" + version.contentHash() + ":P1_AUTO_VALIDATE_V1";
+        try {
+            java.security.MessageDigest digest = java.security.MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(binding.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            StringBuilder hex = new StringBuilder("vr_");
+            for (int index = 0; index < 16 && index < hash.length; index++) {
+                hex.append(String.format("%02x", hash[index]));
+            }
+            return hex.toString();
+        } catch (java.security.NoSuchAlgorithmException impossible) {
+            throw new IllegalStateException(impossible);
+        }
+    }
+
+    private void activateRights(ContentDefinition content, ContentVersion version,
+            ContentActor actor, Instant reviewedAt) {
+        // The bound PASS report and a clean media set are verified BEFORE the
+        // flip: activation verifies the editor dossier but never invents terms.
+        // When preconditions are unmet the version stays PENDING and the
+        // publish gate fails closed. No separate event is emitted: activation
+        // rides the already-recorded FINAL/APPROVED reviewed event, and the
+        // state read exposes the resulting rightsStatus.
+        java.util.Optional<ValidationReport> bound = reports.findLatest(
+                version.versionId().value(), version.contentHash());
+        if (bound.isEmpty() || !bound.get().passed() || !bound.get().mediaRefs().isEmpty()) {
+            return;
+        }
+        version.activateRights(actor.subjectId(), reviewedAt);
     }
 
     public record RollbackCommand(ContentId contentId, ContentVersionId targetVersionId) {

@@ -61,6 +61,28 @@ public record ContentRights(
                 && (expiresAt == null || now.isBefore(expiresAt));
     }
 
+    /**
+     * Whether this rights fact carries a complete submission dossier, regardless
+     * of verification state. PENDING means "editor-claimed, L2-unverified"; the
+     * dossier (evidence, learning grant, LEARNER+PUBLIC channels, valid window)
+     * is what the submit gate checks, and L2 final approval verifies it before
+     * activation. Client-supplied ACTIVE is never honored at the boundary.
+     */
+    public boolean isAttestedForReview(Instant now) {
+        Objects.requireNonNull(now, "current time is required");
+        if (sourceCode == null || sourceCode.isBlank()
+                || licenseCode == null || licenseCode.isBlank()
+                || authorizationEvidenceRef == null || authorizationEvidenceRef.isBlank()
+                || !allowsLearning
+                || (!permittedChannels.contains("*")
+                        && !(permittedChannels.contains("LEARNER") && permittedChannels.contains("PUBLIC")))
+                || (startsAt != null && now.isBefore(startsAt))
+                || (expiresAt != null && !now.isBefore(expiresAt))) {
+            return false;
+        }
+        return true;
+    }
+
     private static String requireText(String value, String field) {
         if (value == null || value.isBlank() || value.length() > 128) {
             throw ContentOperationException.badRequest("CONTENT_RIGHTS_INVALID", field + " is required");

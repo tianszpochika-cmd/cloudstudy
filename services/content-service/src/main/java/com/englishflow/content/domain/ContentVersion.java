@@ -17,7 +17,8 @@ public final class ContentVersion {
     private final ContentKind kind;
     private final ContentPayload payload;
     private final String contentHash;
-    private final ContentRights rights;
+    private ContentRights rights;
+    private RightsProposal proposal;
     private final String editor;
     private final Instant createdAt;
     private final String releaseNote;
@@ -39,6 +40,7 @@ public final class ContentVersion {
             ContentKind kind,
             ContentPayload payload,
             ContentRights rights,
+            RightsProposal proposal,
             String editor,
             String releaseNote,
             Instant createdAt) {
@@ -51,6 +53,7 @@ public final class ContentVersion {
         this.payload = Objects.requireNonNull(payload, "content payload is required");
         this.contentHash = ContentPayloadHash.sha256(payload.raw());
         this.rights = rights;
+        this.proposal = proposal == null ? RightsProposal.empty() : proposal;
         this.editor = requireActor(editor, "editor");
         this.releaseNote = releaseNote == null ? "" : releaseNote.trim();
         this.createdAt = Objects.requireNonNull(createdAt, "created time is required");
@@ -65,7 +68,22 @@ public final class ContentVersion {
             String editor,
             String releaseNote,
             Instant createdAt) {
-        return new ContentVersion(versionId, versionNumber, kind, payload, rights, editor, releaseNote, createdAt);
+        return new ContentVersion(versionId, versionNumber, kind, payload, rights,
+                RightsProposal.empty(), editor, releaseNote, createdAt);
+    }
+
+    public static ContentVersion draft(
+            ContentVersionId versionId,
+            int versionNumber,
+            ContentKind kind,
+            ContentPayload payload,
+            ContentRights rights,
+            RightsProposal proposal,
+            String editor,
+            String releaseNote,
+            Instant createdAt) {
+        return new ContentVersion(versionId, versionNumber, kind, payload, rights, proposal,
+                editor, releaseNote, createdAt);
     }
 
     /**
@@ -81,6 +99,7 @@ public final class ContentVersion {
             java.util.Map<String, Object> payload,
             String persistedHash,
             ContentRights rights,
+            RightsProposal proposal,
             String editor,
             String releaseNote,
             Instant createdAt,
@@ -100,7 +119,8 @@ public final class ContentVersion {
         }
         ContentPayload validatedPayload = ContentSchemaValidator.validate(kind, payload);
         ContentVersion version = new ContentVersion(
-                versionId, versionNumber, kind, validatedPayload, rights, editor, releaseNote, createdAt);
+                versionId, versionNumber, kind, validatedPayload, rights, proposal,
+                editor, releaseNote, createdAt);
         if (persistedHash == null || !persistedHash.equals(version.contentHash)) {
             throw ContentOperationException.unavailable(
                     "CONTENT_FACT_CORRUPT", "stored content payload hash does not match its payload");
@@ -187,6 +207,61 @@ public final class ContentVersion {
         incrementReviewVersion(stage);
         finalReviewer = reviewer;
         stateVersion++;
+    }
+
+    /**
+     * L2 final-approval rights activation ("L2 终审自动 ACTIVE").
+     *
+     * <p>Flips a PENDING rights fact to ACTIVE only when the version-bound
+     * editor proposal is complete and current; every activated term comes from
+     * that proposal, so activation verifies but never invents. Returns false
+     * (leaving PENDING) when the proposal is incomplete — the publish gate
+     * then fails closed. Only the service calls this, immediately after
+     * recording a FINAL APPROVED decision and re-verifying the bound
+     * validation report.
+     */
+    public synchronized boolean activateRights(String reviewer, Instant now) {
+        Objects.requireNonNull(now, "activation time is required");
+        requireActor(reviewer, "reviewer");
+        if (status != ContentVersionStatus.APPROVED
+                || firstReviewer == null
+                || finalReviewer == null
+                || !finalReviewer.equals(reviewer)) {
+            return false;
+        }
+        if (rights == null || rights.status() != CopyrightStatus.PENDING) {
+            return rights != null && rights.status() == CopyrightStatus.ACTIVE;
+        }
+        java.util.Optional<ContentRights> verified = proposal.activatedCopy(
+                rights.sourceCode(), rights.licenseCode(), now);
+        if (verified.isEmpty()) {
+            return false;
+        }
+        this.rights = verified.get();
+        stateVersion++;
+        return true;
+    }
+
+    public RightsProposal proposal() {
+        return proposal;
+    }
+
+    /**
+     * Rights view for validation and gating: the stored fact enriched with the
+     * version-bound editor proposal. Validation checks the CLAIMED dossier
+     * (still PENDING — it grants nothing); L2 activation verifies it. Without
+     * a complete proposal the stored fact is checked as-is so gaps surface as
+     * actionable findings.
+     */
+    public ContentRights effectiveRights() {
+        ContentRights stored = rights().orElse(null);
+        if (stored == null || !proposal.isComplete()) {
+            return stored;
+        }
+        return new ContentRights(stored.sourceCode(), stored.licenseCode(), stored.status(),
+                proposal.proposedAllowsLearning(),
+                new java.util.LinkedHashSet<>(proposal.channelList()),
+                null, null, proposal.proposedEvidenceRef());
     }
 
     public synchronized void publish(String publisherActor, Instant publishedAt) {

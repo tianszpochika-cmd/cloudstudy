@@ -4,6 +4,7 @@ import com.englishflow.content.adapter.failclosed.FailClosedContentCacheInvalida
 import com.englishflow.content.adapter.failclosed.FailClosedContentIdempotency;
 import com.englishflow.content.adapter.failclosed.FailClosedContentOutbox;
 import com.englishflow.content.adapter.failclosed.FailClosedContentRepository;
+import com.englishflow.content.adapter.failclosed.FailClosedValidationReportStore;
 import com.englishflow.content.adapter.failclosed.FailClosedContentItemRepository;
 import com.englishflow.content.adapter.failclosed.FailClosedLexemeRepository;
 import com.englishflow.content.adapter.failclosed.FailClosedScheduledPublishRepository;
@@ -14,6 +15,7 @@ import com.englishflow.content.adapter.jdbc.JdbcContentIdempotency;
 import com.englishflow.content.adapter.jdbc.JdbcContentOutbox;
 import com.englishflow.content.adapter.jdbc.JdbcContentItemRepository;
 import com.englishflow.content.adapter.jdbc.JdbcContentRepository;
+import com.englishflow.content.adapter.jdbc.JdbcValidationReportStore;
 import com.englishflow.content.adapter.jdbc.JdbcLexemeRepository;
 import com.englishflow.content.adapter.jdbc.JdbcScheduledPublishRepository;
 import com.englishflow.content.adapter.jdbc.JdbcPublishedContentReadProjectionPort;
@@ -30,6 +32,7 @@ import com.englishflow.content.port.ContentIdempotencyPort;
 import com.englishflow.content.port.ContentOutboxPort;
 import com.englishflow.content.port.ContentItemRepository;
 import com.englishflow.content.port.ContentRepository;
+import com.englishflow.content.port.ValidationReportStore;
 import com.englishflow.content.port.LexemeRepository;
 import com.englishflow.content.port.ScheduledPublishRepository;
 import com.englishflow.content.port.PublicProjectionStore;
@@ -69,6 +72,19 @@ public class ContentServiceConfiguration {
     @ConditionalOnProperty(prefix = "content.persistence", name = "mode", havingValue = "disabled", matchIfMissing = true)
     ContentRepository failClosedContentRepository() {
         return new FailClosedContentRepository();
+    }
+
+    @Bean
+    @ConditionalOnProperty(prefix = "content.persistence", name = "mode", havingValue = "disabled", matchIfMissing = true)
+    ValidationReportStore failClosedValidationReportStore() {
+        return new FailClosedValidationReportStore();
+    }
+
+    @Bean
+    @ConditionalOnProperty(prefix = "content.persistence", name = "mode", havingValue = "jdbc")
+    ValidationReportStore jdbcValidationReportStore(
+            JdbcTemplate contentJdbcTemplate, ObjectMapper objectMapper) {
+        return new JdbcValidationReportStore(contentJdbcTemplate, objectMapper);
     }
 
     @Bean
@@ -295,9 +311,10 @@ public class ContentServiceConfiguration {
             ContentIdempotencyPort idempotency,
             PublicProjectionStore projectionStore,
             ContentCacheInvalidator cacheInvalidator,
+            ValidationReportStore reports,
             Clock contentClock) {
         return new ContentCommandService(
-                repository, outbox, idempotency, projectionStore, cacheInvalidator, contentClock);
+                repository, outbox, idempotency, projectionStore, cacheInvalidator, reports, contentClock);
     }
 
     @Bean

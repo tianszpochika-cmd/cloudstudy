@@ -24,11 +24,15 @@ import com.englishflow.content.domain.ItemAvailability;
 import com.englishflow.content.domain.Lexeme;
 import com.englishflow.content.domain.LexemeAvailability;
 import com.englishflow.content.domain.LexemePronunciation;
+import com.englishflow.content.domain.MediaRefs;
 import com.englishflow.content.domain.ReviewDecision;
 import com.englishflow.content.domain.ReviewStage;
+import com.englishflow.content.domain.RightsProposal;
 import com.englishflow.content.domain.ScheduledPublishTask;
+import com.englishflow.content.domain.ValidationReport;
 import com.englishflow.content.port.ContentRepository;
 import com.englishflow.content.port.ContentIdempotencyPort;
+import com.englishflow.content.port.ValidationReportStore;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -78,6 +82,7 @@ public final class B9ContentAdminController {
     private final ContentRepository repository;
     private final ContentIdempotencyPort idempotency;
     private final VerifiedContentPrincipalFactory principals;
+    private final ValidationReportStore reports;
 
     @Autowired
     public B9ContentAdminController(
@@ -87,7 +92,8 @@ public final class B9ContentAdminController {
             ScheduledPublishService schedules,
             ContentRepository repository,
             VerifiedContentPrincipalFactory principals,
-            ContentIdempotencyPort idempotency) {
+            ContentIdempotencyPort idempotency,
+            ValidationReportStore reports) {
         this.commands = commands;
         this.lexemes = lexemes;
         this.contentItems = contentItems;
@@ -95,6 +101,7 @@ public final class B9ContentAdminController {
         this.repository = repository;
         this.principals = principals;
         this.idempotency = idempotency;
+        this.reports = reports;
     }
 
     @GetMapping
@@ -158,14 +165,16 @@ public final class B9ContentAdminController {
             return draftCommand(input, command, contentCode, actor, key, context);
         }
         ContentVersionSnapshot versionSnapshot = null;
+        ValidationReport validatedReport = null;
         switch (command) {
             case "VALIDATE_DRAFT" -> {
                 requireEditor(actor);
                 ContentDefinition content = owned(contentCode, actor);
-                versionSnapshot = latest(content);
-                if (versionSnapshot.status() != ContentVersionStatus.DRAFT) {
-                    throw ContentOperationException.conflict("CONTENT_STATE_INVALID", "only a draft can be validated");
-                }
+                ContentVersion version = latestVersion(content);
+                validatedReport = commands.validateDraft(
+                        new ContentCommandService.VersionCommand(content.contentId(), version.versionId()),
+                        actor, key(key + ":validate"), context);
+                versionSnapshot = ContentVersionSnapshot.from(content.contentId(), version);
             }
             case "SUBMIT_REVIEW" -> {
                 requireEditor(actor);
@@ -200,6 +209,14 @@ public final class B9ContentAdminController {
                 requirePublisher(actor);
                 ContentDefinition content = owned(contentCode, actor);
                 ContentVersion version = targetVersion(content, input);
+                // Publish re-verifies the submission gate facts (ACTIVE rights,
+                // bound PASS report, clean media) before delegating; the domain
+                // additionally enforces dual approval and publishable rights.
+                ReviewSubmissionReadiness publishable = publicationReadiness(version, Instant.now());
+                if (!publishable.ready()) {
+                    throw ContentOperationException.conflict(publishable.errorCode(),
+                            "content version is not publishable: " + publishable.reason());
+                }
                 versionSnapshot = commands.publish(
                         new ContentCommandService.VersionCommand(content.contentId(), version.versionId()),
                         actor, key(key + ":publish"), context);
@@ -380,9 +397,28 @@ public final class B9ContentAdminController {
         } else {
             result.put("stateVersion", stateVersion(owned(contentCode, actor)));
         }
+        if (validatedReport != null) {
+            result.put("validationReport", reportView(validatedReport));
+        }
         result.put("status", "ACCEPTED");
         result.put("acceptedAt", Instant.now());
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(Map.of("data", result));
+    }
+
+    private static Map<String, Object> reportView(ValidationReport report) {
+        Map<String, Object> view = new LinkedHashMap<>();
+        view.put("reportId", report.reportId());
+        view.put("reportVersion", report.reportVersion());
+        view.put("contentVersionId", report.contentVersionId());
+        view.put("contentHash", report.payloadHash());
+        view.put("ruleVersion", report.ruleVersion());
+        view.put("passed", report.passed());
+        view.put("findingCount", report.findings().size());
+        view.put("blockers", report.blockerCount());
+        view.put("mediaRefs", List.copyOf(report.mediaRefs()));
+        view.put("checkedBy", report.checkedBy());
+        view.put("checkedAt", report.checkedAt().toString());
+        return view;
     }
 
     private ResponseEntity<Map<String, Object>> draftCommand(
@@ -422,6 +458,7 @@ public final class B9ContentAdminController {
                     ContentVersionSnapshot created = commands.createVersion(
                             new ContentCommandService.CreateVersion(
                                     contentId, repository.nextVersionId(), payload(draft), draftRights,
+                                    proposal(draft).validated(),
                                     textOr(draft.get("releaseNote"), "draft revision")),
                             actor, key(requestKey + ":version"), context);
                     long revision = repository.find(contentId)
@@ -1091,10 +1128,9 @@ public final class B9ContentAdminController {
                 .orElseThrow(() -> ContentOperationException.notFound("CONTENT_VERSION_NOT_FOUND", "content has no version"));
     }
 
-    private static ContentVersionSnapshot latest(ContentDefinition content) {
-        ContentVersion version = content.versions().stream().reduce((left, right) -> right)
+    private static ContentVersion latestVersion(ContentDefinition content) {
+        return content.versions().stream().reduce((left, right) -> right)
                 .orElseThrow(() -> ContentOperationException.notFound("CONTENT_VERSION_NOT_FOUND", "content has no version"));
-        return ContentVersionSnapshot.from(content.contentId(), version);
     }
 
     private static ContentKind kind(Object raw) {
@@ -1118,6 +1154,11 @@ public final class B9ContentAdminController {
     }
 
     private static ContentRights rights(Map<String, Object> draft) {
+        // The version rights fact stays PENDING with no granted channels here:
+        // editor input never establishes copyright authority (locked boundary).
+        // The submission dossier (channels/evidence/learning grant) travels as
+        // a separate version-bound proposal that only L2 final approval can
+        // verify into ACTIVE rights.
         return new ContentRights(
                 required(draft, "sourceCode"),
                 required(draft, "licenseCode"),
@@ -1127,6 +1168,25 @@ public final class B9ContentAdminController {
                 null,
                 null,
                 null);
+    }
+
+    private static RightsProposal proposal(Map<String, Object> draft) {
+        return RightsProposal.proposed(channels(draft.get("permittedChannels")),
+                textOrNull(draft.get("authorizationEvidenceRef")),
+                Boolean.TRUE.equals(draft.get("allowsLearning")));
+    }
+
+    private static java.util.Set<String> channels(Object raw) {
+        if (!(raw instanceof java.util.List<?> list) || list.isEmpty()) {
+            return java.util.Set.of();
+        }
+        java.util.LinkedHashSet<String> result = new java.util.LinkedHashSet<>();
+        for (Object item : list) {
+            if (item instanceof String text && !text.isBlank() && result.size() < 16) {
+                result.add(text.trim().toUpperCase(java.util.Locale.ROOT));
+            }
+        }
+        return java.util.Set.copyOf(result);
     }
 
     private static ContentRights validationRights(Map<String, Object> draft) {
@@ -1176,7 +1236,7 @@ public final class B9ContentAdminController {
         return value.length() >= 32 ? value.substring(0, 32) : String.format("%-32s", value).replace(' ', '0');
     }
 
-    private static Map<String, Object> state(ContentDefinition content, ContentActor actor) {
+    private Map<String, Object> state(ContentDefinition content, ContentActor actor) {
         List<Map<String, Object>> versions = content.versions().stream().map(B9ContentAdminController::versionView).toList();
         ContentVersion latest = content.versions().stream().reduce((left, right) -> right).orElse(null);
         String latestStatus = latest == null ? "DRAFT" : latest.status().name();
@@ -1199,6 +1259,10 @@ public final class B9ContentAdminController {
         ReviewSubmissionReadiness readiness = reviewSubmissionReadiness(latest, Instant.now());
         result.put("reviewSubmissionReady", readiness.ready());
         result.put("reviewSubmissionReason", readiness.reason());
+        if (latest != null) {
+            reports.findLatest(latest.versionId().value(), latest.contentHash())
+                    .ifPresent(report -> result.put("validationReport", reportView(report)));
+        }
         result.put("reviewStages", reviewStages(latest));
         return result;
     }
@@ -1206,25 +1270,74 @@ public final class B9ContentAdminController {
     private record ReviewSubmissionReadiness(boolean ready, String reason, String errorCode) {
     }
 
-    private static ReviewSubmissionReadiness reviewSubmissionReadiness(ContentVersion version, Instant now) {
+    /**
+     * Submit/publish gate over owner facts only.
+     *
+     * <p>A version is submittable with a PENDING rights fact provided the
+     * editor dossier is complete (evidence, learning grant, LEARNER+PUBLIC
+     * channels); L2 final approval verifies that dossier into ACTIVE rights.
+     * Beyond attestation the gate requires a live validation PASS, a stored
+     * PASS report bound to the exact (version, hash), and a clean media set
+     * (text-only versions pass vacuously; media-bearing versions without
+     * stored media-eligibility facts fail closed). Publish additionally
+     * requires ACTIVE rights (checked by {@link #publicationReadiness}).
+     */
+    private ReviewSubmissionReadiness reviewSubmissionReadiness(ContentVersion version, Instant now) {
         if (version == null || version.status() != ContentVersionStatus.DRAFT) {
             return new ReviewSubmissionReadiness(false, "DRAFT_REQUIRED", "CONTENT_STATE_INVALID");
         }
+        if (!isAttested(version, now)) {
+            return new ReviewSubmissionReadiness(false, "RIGHTS_NOT_READY", "CONTENT_RIGHTS_NOT_READY");
+        }
+        return gateFacts(version, now);
+    }
+
+    private ReviewSubmissionReadiness publicationReadiness(ContentVersion version, Instant now) {
+        if (version == null) {
+            return new ReviewSubmissionReadiness(false, "DRAFT_REQUIRED", "CONTENT_STATE_INVALID");
+        }
         ContentRights rights = version.rights().orElse(null);
-        if (rights == null
+        if (rights == null || !rights.isActive(now)
                 || !rights.allows(com.englishflow.content.domain.ContentChannel.LEARNER, now)
                 || !rights.allows(com.englishflow.content.domain.ContentChannel.PUBLIC, now)) {
             return new ReviewSubmissionReadiness(false, "RIGHTS_NOT_READY", "CONTENT_RIGHTS_NOT_READY");
         }
-        ContentAutoValidation.Report report = ContentAutoValidation.validate(version.payload().raw(), rights, now);
+        return gateFacts(version, now);
+    }
+
+    private ReviewSubmissionReadiness gateFacts(ContentVersion version, Instant now) {
+        ContentAutoValidation.Report report = ContentAutoValidation.validate(
+                version.payload().raw(), version.effectiveRights(), now);
         if (!report.passed()) {
             return new ReviewSubmissionReadiness(false, "VALIDATION_NOT_PASSED", "CONTENT_VALIDATION_NOT_PASSED");
         }
-        // The current auto-validation endpoint returns an ephemeral receipt. No PASS report
-        // bound to this immutable version/hash, or media-service READY/CLEAN fact, is stored.
-        // A live calculation or client-provided status cannot stand in for those owner facts.
-        return new ReviewSubmissionReadiness(false, "VALIDATION_REPORT_UNAVAILABLE",
-                "CONTENT_REVIEW_EVIDENCE_UNAVAILABLE");
+        java.util.Optional<ValidationReport> bound = reports.findLatest(
+                version.versionId().value(), version.contentHash());
+        if (bound.isEmpty() || !bound.get().passed()) {
+            // No PASS report bound to this immutable version/hash is stored.
+            // A live calculation or client-provided status cannot stand in for
+            // that owner fact: run VALIDATE_DRAFT first.
+            return new ReviewSubmissionReadiness(false, "VALIDATION_REPORT_UNAVAILABLE",
+                    "CONTENT_REVIEW_EVIDENCE_UNAVAILABLE");
+        }
+        if (!bound.get().mediaRefs().isEmpty()) {
+            return new ReviewSubmissionReadiness(false, "MEDIA_ELIGIBILITY_UNAVAILABLE",
+                    "CONTENT_REVIEW_EVIDENCE_UNAVAILABLE");
+        }
+        return new ReviewSubmissionReadiness(true, "READY", null);
+    }
+
+    private static boolean isAttested(ContentVersion version, Instant now) {
+        if (version.rights().isEmpty()) {
+            return false;
+        }
+        ContentRights rights = version.rights().get();
+        if (rights.status() == CopyrightStatus.ACTIVE) {
+            return rights.isAttestedForReview(now);
+        }
+        return version.proposal().isComplete()
+                && rights.sourceCode() != null && !rights.sourceCode().isBlank()
+                && rights.licenseCode() != null && !rights.licenseCode().isBlank();
     }
 
     private static Map<String, Object> versionView(ContentVersion version) {
