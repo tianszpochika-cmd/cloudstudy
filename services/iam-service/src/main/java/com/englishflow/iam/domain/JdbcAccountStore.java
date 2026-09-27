@@ -192,6 +192,22 @@ public class JdbcAccountStore implements AccountStore {
     }
 
     @Override
+    @Transactional(transactionManager = "iamTransactionManager", readOnly = true)
+    public java.util.List<AccountRecord> findLocked(java.time.Instant at, int limit) {
+        java.util.Objects.requireNonNull(at, "instant is required");
+        int bound = Math.max(1, Math.min(limit <= 0 ? 50 : limit, 100));
+        try {
+            return jdbc.query("SELECT principal_id, identifier, password_hash, roles, permissions, status, failed_attempts, "
+                            + "locked_until, created_at, updated_at FROM iam_account "
+                            + "WHERE status = 'LOCKED' AND locked_until IS NOT NULL AND locked_until > ? "
+                            + "ORDER BY updated_at LIMIT " + bound,
+                    (ResultSet rs, int rowNum) -> map(rs), java.sql.Timestamp.from(at));
+        } catch (DataAccessException | IllegalArgumentException exception) {
+            throw unavailable(exception);
+        }
+    }
+
+    @Override
     @Transactional(transactionManager = "iamTransactionManager")
     public AccountRecord replace(AccountRecord account) {
         try {

@@ -15,6 +15,18 @@ public interface AccountStore {
     AccountRecord replace(AccountRecord account);
 
     /**
+     * Currently locked accounts for the risk rule scan. Only rows whose lock
+     * has not yet expired count; expired locks are released lazily on next
+     * login and must not file risk cases.
+     *
+     * <p>Fail-closed default: a store that does not explicitly implement the
+     * scan must refuse it rather than silently reporting an empty lockout set.
+     */
+    default java.util.List<AccountRecord> findLocked(java.time.Instant at, int limit) {
+        throw new IamPolicyException(IamDecisionCode.IAM_PERSISTENCE_UNAVAILABLE, "iam.persistence.unavailable");
+    }
+
+    /**
      * Verifies one observed password hash without a store lock, then applies the result against the
      * current account state under the store lock. A changed principal/hash fails closed without
      * mutating the new credential epoch's counter or lock state. The dummy hash keeps a missing

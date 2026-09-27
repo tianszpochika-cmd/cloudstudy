@@ -44,6 +44,18 @@ public final class InMemoryAccountStore implements AccountStore {
     }
 
     @Override
+    public synchronized java.util.List<AccountRecord> findLocked(Instant at, int limit) {
+        java.util.Objects.requireNonNull(at, "instant is required");
+        int bound = Math.max(1, Math.min(limit <= 0 ? 50 : limit, 100));
+        return byPrincipal.values().stream()
+                .filter(account -> account.status() == AccountStatus.LOCKED
+                        && account.lockedUntil() != null && account.lockedUntil().isAfter(at))
+                .sorted(java.util.Comparator.comparing(AccountRecord::updatedAt))
+                .limit(bound)
+                .toList();
+    }
+
+    @Override
     public synchronized AccountRecord changePassword(PrincipalId principalId, String passwordHash, Instant at) {
         AccountRecord current = byPrincipal.get(principalId);
         if (current == null) throw new IamPolicyException(IamDecisionCode.PRINCIPAL_NOT_FOUND,
