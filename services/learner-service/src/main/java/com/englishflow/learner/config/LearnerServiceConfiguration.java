@@ -67,4 +67,19 @@ public class LearnerServiceConfiguration {
             Clock learnerClock) {
         return new com.englishflow.learner.application.LearnerAdminService(store, targetIdGenerator, learnerClock);
     }
+
+    @Bean
+    com.englishflow.learner.application.TargetPinService learnerTargetPinService(
+            org.springframework.jdbc.core.JdbcTemplate jdbcTemplate,
+            Clock learnerClock) {
+        return new com.englishflow.learner.application.TargetPinService(jdbcTemplate, learnerClock);
+    }
+
+    @Bean
+    com.englishflow.learner.web.LearningPlanViewClient learningPlanViewClient(
+            @org.springframework.beans.factory.annotation.Value(
+                    "${learner.plan-view.learning-base-url:http://127.0.0.1:18090}")
+            String learningBaseUrl) {
+        return new com.englishflow.learner.web.LearningPlanViewClient(learningBaseUrl);
+    }
 }

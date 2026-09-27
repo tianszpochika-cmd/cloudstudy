@@ -46,14 +46,20 @@ public final class LearnerHttpController {
     private final DefaultLearnerProfileCommandService commands;
     private final DefaultLearnerProfileQueryService queries;
     private final VerifiedLearnerPrincipalFactory principalFactory;
+    private final com.englishflow.learner.application.TargetPinService targetPins;
+    private final LearningPlanViewClient planViews;
 
     public LearnerHttpController(
             DefaultLearnerProfileCommandService commands,
             DefaultLearnerProfileQueryService queries,
-            VerifiedLearnerPrincipalFactory principalFactory) {
+            VerifiedLearnerPrincipalFactory principalFactory,
+            com.englishflow.learner.application.TargetPinService targetPins,
+            LearningPlanViewClient planViews) {
         this.commands = commands;
         this.queries = queries;
         this.principalFactory = principalFactory;
+        this.targetPins = targetPins;
+        this.planViews = planViews;
     }
 
     @GetMapping("/profile")
@@ -86,7 +92,8 @@ public final class LearnerHttpController {
                             Optional.ofNullable(request.contentLocale()).orElse(preferences.contentLocale()),
                             preferences.themeMode(),
                             Optional.ofNullable(request.timezone()).orElse(preferences.timezone()),
-                            preferences.reducedMotion(), new IdempotencyKey(idempotencyKey), expected),
+                            preferences.reducedMotion(), preferences.weeklyStudyDays(),
+                            new IdempotencyKey(idempotencyKey), expected),
                     metadata(headers));
             return envelope(toProfile(result.data()), headers, result.replayed());
         }
@@ -109,8 +116,10 @@ public final class LearnerHttpController {
             Authentication authentication,
             @RequestHeader HttpHeaders headers) {
         LearnerProfileView profile = queries.getProfile(context(authentication));
+        java.util.Optional<com.englishflow.learner.application.TargetPinService.TargetPin> pin =
+                targetPins.findPin(context(authentication).scope().subjectId());
         return profile.goal()
-                .map(goal -> ResponseEntity.ok(envelope(toTarget(goal, profile.version()), headers, false)))
+                .map(goal -> ResponseEntity.ok(envelope(toTarget(goal, profile.version(), pin), headers, false)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
@@ -127,7 +136,12 @@ public final class LearnerHttpController {
                         request.targetDate(), CefrLevel.valueOf(request.targetLevel()),
                         new IdempotencyKey(idempotencyKey), request.expectedStateVersion()),
                 metadata(headers));
-        return envelope(toTarget(result.data().goal().orElseThrow(), result.data().version()), headers, result.replayed());
+        // Goal content edits invalidate the placement pin (the measurement no
+        // longer describes the edited target); the pin columns are cleared by
+        // the profile store on every goal write.
+        java.util.Optional<com.englishflow.learner.application.TargetPinService.TargetPin> pin =
+                targetPins.findPin(context(authentication).scope().subjectId());
+        return envelope(toTarget(result.data().goal().orElseThrow(), result.data().version(), pin), headers, result.replayed());
     }
 
     @GetMapping("/preferences")
@@ -158,6 +172,7 @@ public final class LearnerHttpController {
                         Optional.ofNullable(request.uiLocale()).orElse(existing.uiLocale()),
                         Optional.ofNullable(request.contentLocale()).orElse(existing.contentLocale()), theme,
                         Optional.ofNullable(request.timezone()).orElse(existing.timezone()), reducedMotion,
+                        request.weeklyStudyDays() == null ? existing.weeklyStudyDays() : request.weeklyStudyDays(),
                         new IdempotencyKey(idempotencyKey), request.expectedStateVersion()),
                 metadata(headers));
         return envelope(toPreferences(result.data().preferences().orElseThrow(), result.data().version()), headers,
@@ -169,7 +184,7 @@ public final class LearnerHttpController {
             Authentication authentication,
             @RequestHeader HttpHeaders headers) {
         FirstDayView value = queries.getFirstDay(context(authentication));
-        return envelope(toFirstDay(value).data(), headers, false);
+        return envelope(firstDayData(authentication, value).data(), headers, false);
     }
 
     @GetMapping("/home")
@@ -177,8 +192,58 @@ public final class LearnerHttpController {
             Authentication authentication,
             @RequestHeader HttpHeaders headers) {
         FirstDayView firstDay = queries.getFirstDay(context(authentication));
-        return envelope(new HomeData(toFirstDay(firstDay).data(), List.of(),
-                Math.max(1L, firstDay.profileVersion()), 1L, firstDay.generatedAt()), headers, false);
+        FirstDayData data = firstDayData(authentication, firstDay).data();
+        return envelope(new HomeData(data, data.tasks(),
+                Math.max(1L, firstDay.profileVersion()), data.contentEpoch(), data.generatedAt()), headers, false);
+    }
+
+    /**
+     * Home projection composer (ADR: home reads learning projection). The
+     * learner-local view stays the NOT_READY baseline; a verified ACTIVE plan
+     * view from learning-service (immutable planningInput + plan + at least
+     * one task) promotes the page to READY with the owner facts embedded
+     * verbatim. Anything else keeps the honest NOT_READY state: learning
+     * outages degrade to the placement blocker instead of failing the home.
+     */
+    FirstDayEnvelope firstDayData(Authentication authentication, FirstDayView value) {
+        FirstDayEnvelope baseline = toFirstDay(value);
+        if (!baseline.data().profileReady() || !baseline.data().targetReady()) return baseline;
+        String subject = context(authentication).scope().subjectId();
+        var pin = targetPins.findPin(subject);
+        boolean pinned = pin.isPresent() && value.goal().isPresent()
+                && pin.get().targetId() == value.goal().get().targetId();
+        if (!pinned) return baseline;
+        var view = planViews.fetchView(authentication);
+        if (view.isEmpty()) {
+            // Placement verified (pin present) but no plan view yet: the plan
+            // is pending ensure, so the page stays NOT_READY with the
+            // placement blocker while honestly reporting COMPLETED placement.
+            FirstDayData base = baseline.data();
+            return new FirstDayEnvelope(new FirstDayData("NOT_READY", base.profileReady(),
+                    base.targetReady(), "COMPLETED", 0, List.of(), base.contentEpoch(),
+                    base.projectionVersion(), base.projectionWatermark(), base.generatedAt(),
+                    "PLACEMENT_REQUIRED", null, null));
+        }
+        Map<String, Object> plan = view.get();
+        if (!"ACTIVE".equals(plan.get("status")) || !(plan.get("planningInput") instanceof Map<?, ?> input)
+                || !(plan.get("plan") instanceof Map<?, ?> planRef)
+                || !(plan.get("tasks") instanceof java.util.List<?> tasks) || tasks.isEmpty()) {
+            return baseline;
+        }
+        long epoch = plan.get("contentEpoch") instanceof Number number ? number.longValue() : 1L;
+        long projectionVersion = plan.get("projectionVersion") instanceof Number number
+                ? number.longValue() : 1L;
+        String watermark = plan.get("projectionWatermark") instanceof String text ? text
+                : "plan-view:" + plan.get("planId");
+        FirstDayData data = new FirstDayData("READY", true, true, "COMPLETED", tasks.size(),
+                java.util.List.copyOf(tasks), Math.max(1L, epoch), Math.max(1L, projectionVersion),
+                watermark, Instant.now(), null, copyMap(input), copyMap(planRef));
+        return new FirstDayEnvelope(data);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Map<String, Object> copyMap(Map<?, ?> source) {
+        return Map.copyOf((Map<String, Object>) source);
     }
 
     private LearnerPrincipalContext context(Authentication authentication) {
@@ -218,9 +283,16 @@ public final class LearnerHttpController {
                 value.currentLevel().map(Enum::name).orElse("UNKNOWN"), value.version(), value.updatedAt());
     }
 
-    static TargetData toTarget(com.englishflow.learner.domain.LearningGoal goal, long version) {
+    static TargetData toTarget(com.englishflow.learner.domain.LearningGoal goal, long version,
+            java.util.Optional<com.englishflow.learner.application.TargetPinService.TargetPin> pin) {
+        java.util.Optional<com.englishflow.learner.application.TargetPinService.TargetPin> matching =
+                pin.filter(candidate -> candidate.targetId() == goal.targetId());
         return new TargetData(goal.targetId(), targetGoalCode(goal.type()),
                 goal.startingLevel().name(), null, goal.dailyStudyMinutes().minutes(), goal.targetDate(), "ACTIVE",
+                matching.map(com.englishflow.learner.application.TargetPinService.TargetPin::contentVersionId)
+                        .orElse(null),
+                matching.map(com.englishflow.learner.application.TargetPinService.TargetPin::contentEpoch)
+                        .orElse(null),
                 version, goal.updatedAt());
     }
 
@@ -239,7 +311,7 @@ public final class LearnerHttpController {
         return new PreferencesData(value.uiLocale(), value.contentLocale(), value.timezone(),
                 value.themeMode() == ThemeMode.HIGH_CONTRAST ? "SYSTEM" : value.themeMode().name(),
                 value.themeMode() == ThemeMode.HIGH_CONTRAST, value.reducedMotion() ? "REDUCED" : "FULL",
-                version, value.updatedAt());
+                value.effectiveStudyDays(), version, value.updatedAt());
     }
 
     static FirstDayEnvelope toFirstDay(FirstDayView value) {
@@ -266,7 +338,7 @@ public final class LearnerHttpController {
         };
         long version = Math.max(1L, value.profileVersion());
         FirstDayData data = new FirstDayData("NOT_READY", profileReady, targetReady, placement, 0, List.of(),
-                1L, version, "learner-profile:" + version, value.generatedAt(), blocker);
+                1L, version, "learner-profile:" + version, value.generatedAt(), blocker, null, null);
         return new FirstDayEnvelope(data);
     }
 
@@ -314,7 +386,8 @@ public final class LearnerHttpController {
             String timezone,
             String themeMode,
             boolean highContrast,
-            String motionMode) {
+            String motionMode,
+            java.util.List<Integer> weeklyStudyDays) {
     }
 
     public record Envelope<T>(T data, Meta meta) {
@@ -344,6 +417,8 @@ public final class LearnerHttpController {
             int dailyQuotaMinutes,
             java.time.LocalDate targetDate,
             String status,
+            Long pinnedContentVersionId,
+            Long pinnedContentEpoch,
             long stateVersion,
             Instant updatedAt) {
     }
@@ -355,6 +430,7 @@ public final class LearnerHttpController {
             String themeMode,
             boolean highContrast,
             String motionMode,
+            java.util.List<Integer> weeklyStudyDays,
             long stateVersion,
             Instant updatedAt) {
     }
@@ -362,6 +438,8 @@ public final class LearnerHttpController {
     public record FirstDayEnvelope(FirstDayData data) {
     }
 
+    @com.fasterxml.jackson.annotation.JsonInclude(
+            com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL)
     public record FirstDayData(
             String state,
             boolean profileReady,
@@ -373,7 +451,9 @@ public final class LearnerHttpController {
             long projectionVersion,
             String projectionWatermark,
             Instant generatedAt,
-            String blocker) {
+            String blocker,
+            Map<String, Object> planningInput,
+            Map<String, Object> plan) {
     }
 
     public record HomeData(

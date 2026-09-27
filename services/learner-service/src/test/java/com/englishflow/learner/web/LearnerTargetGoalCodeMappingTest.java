@@ -26,7 +26,7 @@ class LearnerTargetGoalCodeMappingTest {
 
         codes.forEach((code, type) -> {
             assertEquals(type, LearnerHttpController.goalType(code));
-            assertEquals(code, LearnerHttpController.toTarget(goal(type, Map.of()), 3).goalCode());
+            assertEquals(code, LearnerHttpController.toTarget(goal(type, Map.of()), 3, java.util.Optional.empty()).goalCode());
         });
     }
 
@@ -40,7 +40,7 @@ class LearnerTargetGoalCodeMappingTest {
 
         aliases.forEach((legacy, b9) -> {
             GoalType type = LearnerHttpController.goalType(legacy);
-            assertEquals(b9, LearnerHttpController.toTarget(goal(type, Map.of()), 3).goalCode());
+            assertEquals(b9, LearnerHttpController.toTarget(goal(type, Map.of()), 3, java.util.Optional.empty()).goalCode());
         });
     }
 
@@ -51,7 +51,8 @@ class LearnerTargetGoalCodeMappingTest {
         assertThrows(LearnerDomainException.class, () -> LearnerHttpController.goalType("OTHER"));
         assertThrows(LearnerDomainException.class,
                 () -> LearnerHttpController.toTarget(
-                        goal(GoalType.LANGUAGE_CERT, Map.of("examName", "DELF", "language", "fr-FR")), 3));
+                        goal(GoalType.LANGUAGE_CERT, Map.of("examName", "DELF", "language", "fr-FR")), 3,
+                        java.util.Optional.empty()));
     }
 
     private static LearningGoal goal(GoalType type, Map<String, Object> fields) {

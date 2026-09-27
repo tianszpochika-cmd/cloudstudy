@@ -14,6 +14,7 @@ public record UpdateLearnerPreferencesCommand(
         ThemeMode themeMode,
         String timezone,
         boolean reducedMotion,
+        java.util.List<Integer> weeklyStudyDays,
         IdempotencyKey idempotencyKey,
         Long expectedVersion) {
 
@@ -35,15 +36,17 @@ public record UpdateLearnerPreferencesCommand(
             String timezone,
             boolean reducedMotion,
             IdempotencyKey idempotencyKey) {
-        this(uiLocale, contentLocale, themeMode, timezone, reducedMotion, idempotencyKey, null);
+        this(uiLocale, contentLocale, themeMode, timezone, reducedMotion, null, idempotencyKey, null);
     }
 
     public LearnerPreferences toPreferences(Instant now) {
-        return new LearnerPreferences(uiLocale, contentLocale, themeMode, timezone, reducedMotion, now);
+        return new LearnerPreferences(uiLocale, contentLocale, themeMode, timezone, reducedMotion,
+                weeklyStudyDays, now);
     }
 
     public String fingerprint() {
         return String.join("|", "preferences", uiLocale, contentLocale, themeMode.name(), timezone,
-                Boolean.toString(reducedMotion), String.valueOf(expectedVersion));
+                Boolean.toString(reducedMotion), String.valueOf(weeklyStudyDays),
+                String.valueOf(expectedVersion));
     }
 }

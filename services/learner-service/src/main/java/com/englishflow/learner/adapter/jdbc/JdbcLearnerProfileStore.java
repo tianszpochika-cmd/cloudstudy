@@ -56,7 +56,7 @@ public final class JdbcLearnerProfileStore implements LearnerProfileStore {
             + "target_date, starting_level, fields_json, updated_at FROM learner_goal "
             + "WHERE profile_id = ? AND tenant_id = ? AND owner_id = ?";
     private static final String PREFERENCE_SELECT = "SELECT ui_locale, content_locale, theme_mode, timezone, "
-            + "reduced_motion, updated_at FROM learner_preference "
+            + "reduced_motion, weekly_study_days, updated_at FROM learner_preference "
             + "WHERE profile_id = ? AND tenant_id = ? AND owner_id = ?";
     private static final String FIRST_DAY_SELECT = "SELECT profile_id, tenant_id, owner_id, today_new_items, "
             + "due_review_items, weak_items, completion_percent, next_action, resume_target, "
@@ -293,7 +293,8 @@ public final class JdbcLearnerProfileStore implements LearnerProfileStore {
             jdbc.update("""
                     UPDATE learner_goal
                     SET target_id = ?, goal_type = ?, daily_study_minutes = ?, target_date = ?,
-                        starting_level = ?, fields_json = ?, updated_at = ?
+                        starting_level = ?, fields_json = ?, updated_at = ?,
+                        pinned_content_version_id = NULL, pinned_content_epoch = NULL, pinned_at = NULL
                     WHERE profile_id = ? AND tenant_id = ? AND owner_id = ?
                     """, storedTargetId(goal), goal.type().name(), goal.dailyStudyMinutes().minutes(),
                     goal.targetDate(), goal.startingLevel().name(), goalFields, Timestamp.from(goal.updatedAt()),
@@ -322,21 +323,23 @@ public final class JdbcLearnerProfileStore implements LearnerProfileStore {
             jdbc.update("""
                     UPDATE learner_preference
                     SET ui_locale = ?, content_locale = ?, theme_mode = ?, timezone = ?,
-                        reduced_motion = ?, updated_at = ?
+                        reduced_motion = ?, weekly_study_days = ?, updated_at = ?
                     WHERE profile_id = ? AND tenant_id = ? AND owner_id = ?
                     """, preferences.uiLocale(), preferences.contentLocale(), preferences.themeMode().name(),
-                    preferences.timezone(), preferences.reducedMotion(), Timestamp.from(preferences.updatedAt()),
+                    preferences.timezone(), preferences.reducedMotion(), studyDaysJson(preferences),
+                    Timestamp.from(preferences.updatedAt()),
                     profile.profileId(), profile.scope().tenantId(), profile.scope().ownerId());
             return;
         }
         jdbc.update("""
                 INSERT INTO learner_preference
                 (profile_id, tenant_id, owner_id, ui_locale, content_locale, theme_mode, timezone,
-                 reduced_motion, updated_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                 reduced_motion, weekly_study_days, updated_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """, profile.profileId(), profile.scope().tenantId(), profile.scope().ownerId(),
                 preferences.uiLocale(), preferences.contentLocale(), preferences.themeMode().name(),
-                preferences.timezone(), preferences.reducedMotion(), Timestamp.from(preferences.updatedAt()));
+                preferences.timezone(), preferences.reducedMotion(), studyDaysJson(preferences),
+                Timestamp.from(preferences.updatedAt()));
     }
 
     private void writeFirstDay(FirstDayProjection projection) {
@@ -430,6 +433,7 @@ public final class JdbcLearnerProfileStore implements LearnerProfileStore {
                         resultSet.getString("theme_mode"),
                         resultSet.getString("timezone"),
                         resultSet.getBoolean("reduced_motion"),
+                        resultSet.getString("weekly_study_days"),
                         resultSet.getTimestamp("updated_at")),
                 profileId, scope.tenantId(), scope.ownerId()).stream().findFirst();
     }
@@ -480,7 +484,8 @@ public final class JdbcLearnerProfileStore implements LearnerProfileStore {
                     instant(value.updatedAt(), "goal.updated_at")));
             Optional<LearnerPreferences> preferences = preferenceRow.map(value -> new LearnerPreferences(
                     value.uiLocale(), value.contentLocale(), ThemeMode.valueOf(value.themeMode()),
-                    value.timezone(), value.reducedMotion(), instant(value.updatedAt(), "preference.updated_at")));
+                    value.timezone(), value.reducedMotion(), readStudyDays(value.weeklyStudyDays()),
+                    instant(value.updatedAt(), "preference.updated_at")));
             return new LearnerProfile(
                     scope,
                     profile.profileId(),
@@ -534,6 +539,27 @@ public final class JdbcLearnerProfileStore implements LearnerProfileStore {
         }
     }
 
+    private static String studyDaysJson(LearnerPreferences preferences) {
+        if (preferences.weeklyStudyDays() == null) return null;
+        return "[" + preferences.weeklyStudyDays().stream()
+                .map(String::valueOf).collect(java.util.stream.Collectors.joining(",")) + "]";
+    }
+
+    private java.util.List<Integer> readStudyDays(String raw) {
+        if (raw == null || raw.isBlank()) return null;
+        try {
+            Object decoded = objectMapper.readValue(raw, Object.class);
+            if (decoded instanceof java.util.List<?> days && !days.isEmpty()
+                    && days.stream().allMatch(Number.class::isInstance)) {
+                return java.util.List.copyOf(days.stream()
+                        .map(day -> ((Number) day).intValue()).toList());
+            }
+        } catch (Exception invalid) {
+            throw storeFailure("learner preference study days are unreadable", invalid);
+        }
+        throw storeFailure("learner preference study days are unreadable", null);
+    }
+
     private LearnerProfile fromStoredProfile(LearnerTenantScope expectedScope, String value) {
         try {
             StoredProfile stored = objectMapper.readValue(value, StoredProfile.class);
@@ -555,7 +581,8 @@ public final class JdbcLearnerProfileStore implements LearnerProfileStore {
                     : Optional.of(new LearnerPreferences(
                             stored.preferences().uiLocale(), stored.preferences().contentLocale(),
                             ThemeMode.valueOf(stored.preferences().themeMode()), stored.preferences().timezone(),
-                            stored.preferences().reducedMotion(), Instant.parse(stored.preferences().updatedAt())));
+                            stored.preferences().reducedMotion(), stored.preferences().weeklyStudyDays(),
+                            Instant.parse(stored.preferences().updatedAt())));
             return new LearnerProfile(
                     expectedScope,
                     stored.profileId(),
@@ -602,7 +629,7 @@ public final class JdbcLearnerProfileStore implements LearnerProfileStore {
     private static StoredPreferences toStoredPreferences(LearnerPreferences preferences) {
         return new StoredPreferences(preferences.uiLocale(), preferences.contentLocale(),
                 preferences.themeMode().name(), preferences.timezone(), preferences.reducedMotion(),
-                preferences.updatedAt().toString());
+                preferences.weeklyStudyDays(), preferences.updatedAt().toString());
     }
 
     private static Long storedTargetId(LearningGoal goal) {
@@ -698,6 +725,7 @@ public final class JdbcLearnerProfileStore implements LearnerProfileStore {
             String themeMode,
             String timezone,
             boolean reducedMotion,
+            String weeklyStudyDays,
             Timestamp updatedAt) {
     }
 
@@ -760,6 +788,7 @@ public final class JdbcLearnerProfileStore implements LearnerProfileStore {
             String themeMode,
             String timezone,
             boolean reducedMotion,
+            java.util.List<Integer> weeklyStudyDays,
             String updatedAt) {
     }
 }

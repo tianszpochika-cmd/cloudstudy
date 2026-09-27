@@ -41,7 +41,7 @@ public final class LearnerProfileShadowAdapter {
             var preferences = snapshot.uiLocale() == null
                     ? Optional.<LearnerPreferences>empty()
                     : Optional.of(new LearnerPreferences(snapshot.uiLocale(), snapshot.contentLocale(),
-                            snapshot.themeMode(), snapshot.timezone(), snapshot.reducedMotion(),
+                            snapshot.themeMode(), snapshot.timezone(), snapshot.reducedMotion(), null,
                             snapshot.updatedAt()));
             return new LearnerProfile(scope, snapshot.profileId(), ProfileSource.LEGACY_SHADOW,
                     snapshot.onboardingState(), snapshot.assessmentState(),

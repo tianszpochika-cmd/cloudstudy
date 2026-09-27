@@ -131,7 +131,7 @@ public final class LearnerAdminService {
         return mutate(scope, "admin.preference", idempotencyKey, expectedVersion, fingerprint,
                 "learner.profile.updated.v1", requestId, traceId, adminSubject,
                 profile -> profile.withPreferences(
-                        new LearnerPreferences(uiLocale, contentLocale, mode, timezone, reducedMotion,
+                        new LearnerPreferences(uiLocale, contentLocale, mode, timezone, reducedMotion, null,
                                 clock.instant()),
                         clock.instant()),
                 profile -> Map.of(
