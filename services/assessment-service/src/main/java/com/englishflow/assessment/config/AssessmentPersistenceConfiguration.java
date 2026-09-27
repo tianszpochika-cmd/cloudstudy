@@ -1,5 +1,6 @@
 package com.englishflow.assessment.config;
 
+import com.englishflow.assessment.adapter.content.HttpPlacementBankPort;
 import com.englishflow.assessment.adapter.content.UnavailableContentSnapshotPort;
 import com.englishflow.assessment.adapter.content.UnavailableP1PlacementSourcePort;
 import com.englishflow.assessment.adapter.jdbc.JdbcAssessmentOutbox;
@@ -94,9 +95,32 @@ public class AssessmentPersistenceConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(P1PlacementSourcePort.class)
+    @ConditionalOnProperty(prefix = "assessment.placement.bank", name = "enabled",
+            havingValue = "false", matchIfMissing = false)
     P1PlacementSourcePort unavailableP1PlacementSourcePort() {
         return new UnavailableP1PlacementSourcePort();
+    }
+
+    /**
+     * HTTP placement source. Enabled by default so the canonical ten-item bank
+     * replaces the fail-closed placeholder wherever content-service and
+     * learner-service are reachable; every upstream problem still fails closed
+     * with 503 and never substitutes legacy questions. Set
+     * {@code assessment.placement.bank.enabled=false} to restore the explicit
+     * unavailable port (independent rollback).
+     */
+    @Bean
+    @ConditionalOnProperty(prefix = "assessment.placement.bank", name = "enabled",
+            havingValue = "true", matchIfMissing = true)
+    P1PlacementSourcePort httpPlacementBankPort(tools.jackson.databind.ObjectMapper objectMapper,
+            @org.springframework.beans.factory.annotation.Value(
+                    "${assessment.placement.bank.content-base-url:http://127.0.0.1:18089}")
+            String contentBaseUrl,
+            @org.springframework.beans.factory.annotation.Value(
+                    "${assessment.placement.bank.learner-base-url:http://127.0.0.1:18088}")
+            String learnerBaseUrl) {
+        return new HttpPlacementBankPort(objectMapper, contentBaseUrl, learnerBaseUrl,
+                java.time.Duration.ofSeconds(5));
     }
 
     @Bean

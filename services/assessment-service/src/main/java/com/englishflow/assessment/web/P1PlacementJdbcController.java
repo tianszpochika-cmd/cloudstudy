@@ -381,10 +381,14 @@ public class P1PlacementJdbcController {
             throw unavailable("placement completion event contains protected answer material");
         }
         String sessionId = String.valueOf(result.get("sessionId"));
+        // The outbox schema slot carries the envelope schema family (VARCHAR(32)),
+        // exactly like every B10 event ("assessment.event.v1"). The full event name
+        // stays in the event_name column; putting the 33-char event name here
+        // overflows strict MySQL and turns every placement completion into a 500.
         outbox.append(new AssessmentOutboxPort.AssessmentOutboxEvent(UUID.randomUUID(),
                 "assessment.placement.completed.v1", "placement_session", sessionId,
                 TENANT, principal.subject(), "placement-" + sessionId, "placement-" + sessionId,
-                "assessment.placement.completed.v1", 1, "placement-complete:" + sessionId,
+                "assessment.event.v1", 1, "placement-complete:" + sessionId,
                 event, now));
     }
 
