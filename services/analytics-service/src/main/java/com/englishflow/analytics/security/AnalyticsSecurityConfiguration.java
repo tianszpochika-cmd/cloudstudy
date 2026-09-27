@@ -110,6 +110,11 @@ public class AnalyticsSecurityConfiguration {
                 .exceptionHandling(errors -> errors.authenticationEntryPoint(entryPoint).accessDeniedHandler(deniedHandler))
                 .addFilterBefore(untrustedHeaders, AuthorizationFilter.class)
                 .authorizeHttpRequests(auth -> {
+                    // Error forwards must render the honest framework error (400/404/405):
+                    // denying them here masks every binding failure as opaque 403.
+                    // Error bodies carry no secrets (domain messages exclude payloads;
+                    // Boot sanitizes the rest), so permitting the forward is safe.
+                    auth.dispatcherTypeMatchers(jakarta.servlet.DispatcherType.ERROR).permitAll();
                     auth.requestMatchers("/health", "/actuator/health", "/actuator/health/**").permitAll();
                     if (resourceServerEnabled) {
                         auth.anyRequest().authenticated();
