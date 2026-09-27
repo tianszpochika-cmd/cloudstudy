@@ -4,6 +4,7 @@ import com.englishflow.content.adapter.memory.InMemoryContentIdempotency;
 import com.englishflow.content.adapter.memory.InMemoryContentOutbox;
 import com.englishflow.content.adapter.memory.InMemoryContentRepository;
 import com.englishflow.content.adapter.memory.InMemoryPublicProjectionStore;
+import com.englishflow.content.adapter.memory.InMemoryValidationReportStore;
 import com.englishflow.content.adapter.memory.RecordingContentCacheInvalidator;
 import com.englishflow.content.application.ContentCommandService;
 import com.englishflow.content.application.ContentItemCommandService;
@@ -46,19 +47,22 @@ class B9ContentAdminRightsBoundaryTest {
 
     private InMemoryContentRepository repository;
     private InMemoryContentOutbox outbox;
+    private InMemoryValidationReportStore reports;
     private B9ContentAdminController controller;
 
     @BeforeEach
     void setUp() {
         repository = new InMemoryContentRepository();
         outbox = new InMemoryContentOutbox();
+        reports = new InMemoryValidationReportStore();
         InMemoryContentIdempotency idempotency = new InMemoryContentIdempotency();
         ContentCommandService commands = new ContentCommandService(
                 repository, outbox, idempotency,
-                new InMemoryPublicProjectionStore(), new RecordingContentCacheInvalidator(), Clock.systemUTC());
+                new InMemoryPublicProjectionStore(), new RecordingContentCacheInvalidator(),
+                reports, Clock.systemUTC());
         controller = new B9ContentAdminController(commands, mock(LexemeCommandService.class),
                 mock(ContentItemCommandService.class), mock(ScheduledPublishService.class),
-                repository, new VerifiedContentPrincipalFactory(), idempotency);
+                repository, new VerifiedContentPrincipalFactory(), idempotency, reports);
     }
 
     @Test

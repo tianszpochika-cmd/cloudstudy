@@ -4,6 +4,7 @@ import com.englishflow.content.adapter.memory.InMemoryContentIdempotency;
 import com.englishflow.content.adapter.memory.InMemoryContentOutbox;
 import com.englishflow.content.adapter.memory.InMemoryContentRepository;
 import com.englishflow.content.adapter.memory.InMemoryPublicProjectionStore;
+import com.englishflow.content.adapter.memory.InMemoryValidationReportStore;
 import com.englishflow.content.adapter.memory.RecordingContentCacheInvalidator;
 import com.englishflow.content.application.ContentCommandService;
 import com.englishflow.content.application.ContentReadService;
@@ -53,7 +54,7 @@ public final class ContentDomainSmoke {
         RecordingContentCacheInvalidator invalidator = new RecordingContentCacheInvalidator();
         ContentCommandService commands = new ContentCommandService(
                 repository, outbox, new InMemoryContentIdempotency(), projections, invalidator,
-                Clock.fixed(NOW, ZoneOffset.UTC));
+                new InMemoryValidationReportStore(), Clock.fixed(NOW, ZoneOffset.UTC));
         ContentReadService reads = new ContentReadService(repository, projections, Clock.fixed(NOW, ZoneOffset.UTC));
 
         ContentActor editor = actor("editor-b9", "content-editor", "content:write");

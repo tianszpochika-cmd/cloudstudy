@@ -32,7 +32,7 @@ class ContentDefinitionTest {
 
     private static ContentVersion draft(ContentVersionId id, int number) {
         return ContentVersion.draft(id, number, ContentKind.VOCABULARY,
-                new ContentPayload(Map.of("term", "cat")), null, "editor-1", "note", NOW);
+                new ContentPayload(Map.of("term", "cat")), null, null, "editor-1", "note", NOW);
     }
 
     @Test
@@ -104,7 +104,7 @@ class ContentDefinitionTest {
     void rehydrateHappyPath() {
         ContentVersion version = ContentVersion.rehydrate(
                 ContentVersionId.of(1L), 1, ContentKind.VOCABULARY, Map.of("term", "cat"),
-                ContentPayloadHash.sha256(Map.of("term", "cat")), null, "editor-1", "note", NOW,
+                ContentPayloadHash.sha256(Map.of("term", "cat")), null, null, "editor-1", "note", NOW,
                 ContentVersionStatus.PUBLISHED, null, null, null, NOW, null, null, 0, 0, 1L);
         ContentDefinition content = ContentDefinition.rehydrate(
                 ContentId.of("cnt_def_1"), "platform", "vocab-def-1", ContentKind.VOCABULARY,
@@ -120,7 +120,7 @@ class ContentDefinitionTest {
     void rehydrateCorruptPointer() {
         ContentVersion draft = ContentVersion.rehydrate(
                 ContentVersionId.of(1L), 1, ContentKind.VOCABULARY, Map.of("term", "cat"),
-                ContentPayloadHash.sha256(Map.of("term", "cat")), null, "editor-1", "note", NOW,
+                ContentPayloadHash.sha256(Map.of("term", "cat")), null, null, "editor-1", "note", NOW,
                 ContentVersionStatus.DRAFT, null, null, null, null, null, null, 0, 0, 1L);
         ContentOperationException ex = assertThrows(ContentOperationException.class,
                 () -> ContentDefinition.rehydrate(
@@ -135,7 +135,7 @@ class ContentDefinitionTest {
     void rehydrateNegativeCounters() {
         ContentVersion version = ContentVersion.rehydrate(
                 ContentVersionId.of(1L), 1, ContentKind.VOCABULARY, Map.of("term", "cat"),
-                ContentPayloadHash.sha256(Map.of("term", "cat")), null, "editor-1", "note", NOW,
+                ContentPayloadHash.sha256(Map.of("term", "cat")), null, null, "editor-1", "note", NOW,
                 ContentVersionStatus.PUBLISHED, null, null, null, NOW, null, null, 0, 0, 1L);
         ContentOperationException ex = assertThrows(ContentOperationException.class,
                 () -> ContentDefinition.rehydrate(
@@ -161,7 +161,7 @@ class ContentDefinitionTest {
         ContentOperationException ex = assertThrows(ContentOperationException.class,
                 () -> ContentVersion.rehydrate(
                         ContentVersionId.of(1L), 1, ContentKind.VOCABULARY, Map.of("term", "cat"),
-                        "deadbeef", null, "editor-1", "note", NOW,
+                        "deadbeef", null, null, "editor-1", "note", NOW,
                         ContentVersionStatus.PUBLISHED, null, null, null, NOW, null, null, 0, 0, 1L));
         assertEquals("CONTENT_FACT_CORRUPT", ex.code());
     }

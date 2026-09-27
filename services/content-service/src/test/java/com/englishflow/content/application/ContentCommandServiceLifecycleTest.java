@@ -4,6 +4,7 @@ import com.englishflow.content.adapter.memory.InMemoryContentIdempotency;
 import com.englishflow.content.adapter.memory.InMemoryContentOutbox;
 import com.englishflow.content.adapter.memory.InMemoryContentRepository;
 import com.englishflow.content.adapter.memory.InMemoryPublicProjectionStore;
+import com.englishflow.content.adapter.memory.InMemoryValidationReportStore;
 import com.englishflow.content.adapter.memory.RecordingContentCacheInvalidator;
 import com.englishflow.content.domain.ContentActor;
 import com.englishflow.content.domain.ContentOperationException;
@@ -52,7 +53,7 @@ class ContentCommandServiceLifecycleTest {
         projections = new InMemoryPublicProjectionStore();
         invalidator = new RecordingContentCacheInvalidator();
         commands = new ContentCommandService(repository, outbox, new InMemoryContentIdempotency(),
-                projections, invalidator, CLOCK);
+                projections, invalidator, new InMemoryValidationReportStore(), CLOCK);
         contentId = new ContentId("cnt_cmd_1");
     }
 

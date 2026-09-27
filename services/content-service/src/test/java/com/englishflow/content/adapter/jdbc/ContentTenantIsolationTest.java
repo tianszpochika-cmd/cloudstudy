@@ -79,7 +79,8 @@ class ContentTenantIsolationTest {
             JdbcContentRepository repository = new JdbcContentRepository(jdbc, new ObjectMapper());
             ContentCommandService commands = new ContentCommandService(repository, new InMemoryContentOutbox(),
                     new InMemoryContentIdempotency(), new InMemoryPublicProjectionStore(),
-                    new RecordingContentCacheInvalidator(), CLOCK);
+                    new RecordingContentCacheInvalidator(),
+                    new com.englishflow.content.adapter.memory.InMemoryValidationReportStore(), CLOCK);
             ContentReadService reads = new ContentReadService(repository, new InMemoryPublicProjectionStore(), CLOCK);
 
             ContentActor editor = new ContentActor("editor-real-1", "platform", Set.of("content-editor"),

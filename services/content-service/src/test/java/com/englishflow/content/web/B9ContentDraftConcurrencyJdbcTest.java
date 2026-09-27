@@ -263,10 +263,13 @@ class B9ContentDraftConcurrencyJdbcTest {
                 mapper, Clock.systemUTC());
         ContentCommandService commands = new ContentCommandService(repository,
                 new InMemoryContentOutbox(), idempotency, new InMemoryPublicProjectionStore(),
-                new RecordingContentCacheInvalidator(), Clock.systemUTC());
+                new RecordingContentCacheInvalidator(),
+                new com.englishflow.content.adapter.memory.InMemoryValidationReportStore(),
+                Clock.systemUTC());
         return new B9ContentAdminController(commands, mock(LexemeCommandService.class),
                 mock(ContentItemCommandService.class), mock(ScheduledPublishService.class),
-                repository, new VerifiedContentPrincipalFactory(), idempotency);
+                repository, new VerifiedContentPrincipalFactory(), idempotency,
+                new com.englishflow.content.adapter.memory.InMemoryValidationReportStore());
     }
 
     @SuppressWarnings("unchecked")
@@ -346,12 +349,22 @@ class B9ContentDraftConcurrencyJdbcTest {
                     rights_allows_learning BOOLEAN, rights_permitted_channels CLOB,
                     rights_starts_at TIMESTAMP, rights_expires_at TIMESTAMP,
                     authorization_evidence_ref VARCHAR(128), editor VARCHAR(128),
+                    rights_proposed_channels CLOB, rights_proposed_evidence_ref VARCHAR(128),
+                    rights_proposed_allows_learning BOOLEAN,
                     release_note VARCHAR(255), first_reviewer VARCHAR(128),
                     final_reviewer VARCHAR(128), publisher VARCHAR(128), published_at TIMESTAMP,
                     archived_at TIMESTAMP, rollback_of_version_id BIGINT,
                     first_review_version INT, final_review_version INT,
                     state_version BIGINT, created_at TIMESTAMP,
                     UNIQUE (content_id, version_no))
+                """);
+        jdbc.execute("""
+                CREATE TABLE content_validation_report (
+                    report_id VARCHAR(128) PRIMARY KEY, report_version BIGINT,
+                    content_version_id BIGINT, payload_hash VARCHAR(64), rule_version VARCHAR(64),
+                    passed BOOLEAN, finding_count INT, blocker_count INT,
+                    findings_json CLOB, media_refs_json CLOB,
+                    checked_by VARCHAR(128), checked_at TIMESTAMP, created_at TIMESTAMP)
                 """);
         jdbc.execute("CREATE TABLE content_version_id_sequence (id BIGINT AUTO_INCREMENT PRIMARY KEY)");
         jdbc.update("INSERT INTO content_version_id_sequence (id) VALUES (25000)");

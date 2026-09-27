@@ -24,6 +24,7 @@ import com.englishflow.content.adapter.memory.InMemoryContentRepository;
 import com.englishflow.content.adapter.memory.InMemoryLexemeRepository;
 import com.englishflow.content.adapter.memory.InMemoryPublicProjectionStore;
 import com.englishflow.content.adapter.memory.InMemoryScheduledPublishRepository;
+import com.englishflow.content.adapter.memory.InMemoryValidationReportStore;
 import com.englishflow.content.adapter.memory.RecordingContentCacheInvalidator;
 import com.englishflow.content.domain.ContentActor;
 import com.englishflow.content.domain.ContentId;
@@ -72,7 +73,8 @@ class ScheduledPublishExecutorResilienceTest {
         ContentItemCommandService items = new ContentItemCommandService(
                 new InMemoryContentItemRepository(), outbox, idempotency, CLOCK);
         contents = new ContentCommandService(contentRows, outbox, idempotency,
-                new InMemoryPublicProjectionStore(), new RecordingContentCacheInvalidator(), CLOCK);
+                new InMemoryPublicProjectionStore(), new RecordingContentCacheInvalidator(),
+                new InMemoryValidationReportStore(), CLOCK);
         executor = new ScheduledPublishExecutor(store, contentRows, contents, lexemes, items, CLOCK);
     }
 

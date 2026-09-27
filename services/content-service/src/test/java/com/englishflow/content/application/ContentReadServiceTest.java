@@ -4,6 +4,7 @@ import com.englishflow.content.adapter.memory.InMemoryContentIdempotency;
 import com.englishflow.content.adapter.memory.InMemoryContentOutbox;
 import com.englishflow.content.adapter.memory.InMemoryContentRepository;
 import com.englishflow.content.adapter.memory.InMemoryPublicProjectionStore;
+import com.englishflow.content.adapter.memory.InMemoryValidationReportStore;
 import com.englishflow.content.adapter.memory.RecordingContentCacheInvalidator;
 import com.englishflow.content.domain.AssessmentContentSnapshot;
 import com.englishflow.content.domain.ContentActor;
@@ -97,7 +98,7 @@ class ContentReadServiceTest {
 
     private ContentCommandService commands() {
         return new ContentCommandService(repository, new InMemoryContentOutbox(), new InMemoryContentIdempotency(),
-                projections, new RecordingContentCacheInvalidator(), CLOCK);
+                projections, new RecordingContentCacheInvalidator(), new InMemoryValidationReportStore(), CLOCK);
     }
 
     private void publishQuestion() {

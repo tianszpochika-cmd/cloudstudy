@@ -7,6 +7,7 @@ import com.englishflow.content.adapter.memory.InMemoryContentRepository;
 import com.englishflow.content.adapter.memory.InMemoryLexemeRepository;
 import com.englishflow.content.adapter.memory.InMemoryScheduledPublishRepository;
 import com.englishflow.content.adapter.memory.InMemoryPublicProjectionStore;
+import com.englishflow.content.adapter.memory.InMemoryValidationReportStore;
 import com.englishflow.content.adapter.memory.RecordingContentCacheInvalidator;
 import com.englishflow.content.domain.ContentActor;
 import com.englishflow.content.domain.ContentIdempotencyKey;
@@ -56,7 +57,8 @@ class ScheduledPublishServiceTest {
                 new InMemoryContentItemRepository(), outbox, idempotency, CLOCK);
         executor = new ScheduledPublishExecutor(tasks, contents,
                 new ContentCommandService(contents, outbox, idempotency,
-                        new InMemoryPublicProjectionStore(), new RecordingContentCacheInvalidator(), CLOCK),
+                        new InMemoryPublicProjectionStore(), new RecordingContentCacheInvalidator(),
+                        new InMemoryValidationReportStore(), CLOCK),
                 lexemes, items, CLOCK);
     }
 

@@ -29,7 +29,7 @@ class ContentProjectionPolicyTest {
         String hash = ContentPayloadHash.sha256(fields);
         return ContentVersion.rehydrate(
                 ContentVersionId.of(1L), 1, ContentKind.VOCABULARY, fields, hash,
-                rights, "editor-1", "note", NOW, status, null, null, null,
+                rights, null, "editor-1", "note", NOW, status, null, null, null,
                 status == ContentVersionStatus.PUBLISHED ? NOW : null, null, null, 0, 0, 1L);
     }
 
