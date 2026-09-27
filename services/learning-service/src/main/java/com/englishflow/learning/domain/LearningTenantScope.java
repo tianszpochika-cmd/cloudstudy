@@ -8,12 +8,15 @@ public record LearningTenantScope(String tenantId, String principalId, long user
 
     public static final String PLATFORM_TENANT = "platform";
     private static final Pattern SAFE_ID = Pattern.compile("[A-Za-z0-9][A-Za-z0-9._:-]{0,127}");
-    private static final Pattern PRINCIPAL_ID = Pattern.compile("prn_[A-Za-z0-9._:-]{15,127}");
+    private static final Pattern PRINCIPAL_ID = Pattern.compile(
+            "prn_[A-Za-z0-9._:-]{15,127}|[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}");
 
     public LearningTenantScope {
         requireId(tenantId, "tenantId");
         requireId(principalId, "principalId");
         if (!PRINCIPAL_ID.matcher(principalId).matches()) {
+            // prn_ service identities and IAM-minted UUID subjects are both
+            // verified unforgeable caller identities; anything else is denied.
             throw new IllegalArgumentException("principalId must be an IAM principal id");
         }
         if (userId < 1) {
@@ -23,6 +26,28 @@ public record LearningTenantScope(String tenantId, String principalId, long user
 
     public static LearningTenantScope forPhaseOne(String principalId, long userId) {
         return new LearningTenantScope(PLATFORM_TENANT, principalId, userId);
+    }
+
+    /**
+     * Stable numeric user key for IAM-minted UUID subjects, which carry no
+     * numeric user id. Deterministic key function (first 63 bits of the
+     * subject digest), never an invented identity; used only for the numeric
+     * user_id columns alongside the string principal id.
+     */
+    public static long stableUserIdFor(String subject) {
+        if (subject == null || subject.isBlank()) {
+            throw new IllegalArgumentException("subject is required");
+        }
+        try {
+            byte[] hash = java.security.MessageDigest.getInstance("SHA-256")
+                    .digest(subject.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            long value = 0;
+            for (int index = 0; index < 8; index++) value = (value << 8) | (hash[index] & 0xFFL);
+            value &= Long.MAX_VALUE;
+            return value == 0 ? 1L : value;
+        } catch (java.security.NoSuchAlgorithmException impossible) {
+            throw new IllegalStateException(impossible);
+        }
     }
 
     public String ownerId() {

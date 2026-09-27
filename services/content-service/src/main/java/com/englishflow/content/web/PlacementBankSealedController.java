@@ -54,15 +54,7 @@ public final class PlacementBankSealedController {
     @GetMapping("/sealed")
     public Map<String, Object> sealed(Authentication authentication) {
         ContentHttpPrincipals.requireLearnerRead(authentication);
-        List<Map<String, Object>> rows = jdbc.queryForList("""
-                SELECT placement_item_id, dimension, display_order, item_code, item_type,
-                       stem, options_json, answer_rule_json, question_type, scoring_version,
-                       max_score, content_version_id, content_code
-                  FROM content_placement_item
-                 WHERE tenant_id = ? AND bank_code = ? AND status = 'PUBLISHED'
-                   AND copyright_status = 'ACTIVE' AND rights_allows_learning = TRUE
-                 ORDER BY display_order, placement_item_id
-                """, TENANT, BANK);
+        List<Map<String, Object>> rows = bankRows();
         List<Map<String, Object>> items = sealedItems(rows);
         long contentVersionId = contentVersion(rows);
         String scoringVersion = scoringVersion(rows);
@@ -79,8 +71,53 @@ public final class PlacementBankSealedController {
         snapshot.put("answerRuleSetVersion", ANSWER_RULE_SET_VERSION);
         snapshot.put("answerRuleVersion", scoringVersion);
         snapshot.put("ruleDigest", ruleDigest);
+        snapshot.put("contentStateVersion", contentStateVersion(contentVersionId));
         snapshot.put("items", items);
         return Map.of("data", snapshot);
+    }
+
+    /**
+     * Answer-free plan task seeds for learning-service plan assembly. Only
+     * identifiers and display order cross this boundary: no stems, options or
+     * answer rules. The bank shape validation is shared with the sealed
+     * endpoint, so a drifted bank fails closed here as well.
+     */
+    @GetMapping("/plan-items")
+    public Map<String, Object> planItems(Authentication authentication) {
+        ContentHttpPrincipals.requireLearnerRead(authentication);
+        List<Map<String, Object>> rows = bankRows();
+        List<Map<String, Object>> items = sealedItems(rows);
+        long contentVersionId = contentVersion(rows);
+        long contentEpoch = contentEpoch();
+        List<Map<String, Object>> seeds = new ArrayList<>(items.size());
+        for (Map<String, Object> item : items) {
+            Map<String, Object> seed = new LinkedHashMap<>();
+            seed.put("itemId", item.get("itemId"));
+            seed.put("itemCode", item.get("itemCode"));
+            seed.put("itemType", item.get("itemType"));
+            seed.put("dimension", item.get("dimension"));
+            seed.put("displayOrder", item.get("displayOrder"));
+            seeds.add(Map.copyOf(seed));
+        }
+        Map<String, Object> data = new LinkedHashMap<>();
+        data.put("bankCode", BANK);
+        data.put("contentVersionId", contentVersionId);
+        data.put("contentEpoch", contentEpoch);
+        data.put("contentStateVersion", contentStateVersion(contentVersionId));
+        data.put("items", List.copyOf(seeds));
+        return Map.of("data", data);
+    }
+
+    private List<Map<String, Object>> bankRows() {
+        return jdbc.queryForList("""
+                SELECT placement_item_id, dimension, display_order, item_code, item_type,
+                       stem, options_json, answer_rule_json, question_type, scoring_version,
+                       max_score, content_version_id, content_code
+                  FROM content_placement_item
+                 WHERE tenant_id = ? AND bank_code = ? AND status = 'PUBLISHED'
+                   AND copyright_status = 'ACTIVE' AND rights_allows_learning = TRUE
+                 ORDER BY display_order, placement_item_id
+                """, TENANT, BANK);
     }
 
     private List<Map<String, Object>> sealedItems(List<Map<String, Object>> rows) {
@@ -165,6 +202,20 @@ public final class PlacementBankSealedController {
             throw unavailable("placement bank content epoch is invalid");
         }
         return epoch;
+    }
+
+    private long contentStateVersion(long contentVersionId) {
+        List<Map<String, Object>> rows = jdbc.queryForList(
+                "SELECT state_version FROM content_version WHERE content_version_id = ?",
+                contentVersionId);
+        if (rows.isEmpty()) {
+            throw unavailable("placement bank content version is missing");
+        }
+        long stateVersion = number(rows.getFirst().get("state_version"), -1);
+        if (stateVersion < 1) {
+            throw unavailable("placement bank content state version is invalid");
+        }
+        return stateVersion;
     }
 
     @SuppressWarnings("unchecked")

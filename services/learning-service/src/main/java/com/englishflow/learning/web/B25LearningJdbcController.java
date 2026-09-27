@@ -48,6 +48,60 @@ public class B25LearningJdbcController {
                 "targetMinutes", number(row.get("target_minutes")), "planVersion", number(row.get("plan_version")), "updatedAt", row.get("updated_at"));
     }
 
+    /**
+     * Owner-assembled plan view for learner home projection (ADR: home reads
+     * learning projection). Serves the immutable planning input verbatim plus
+     * today's tasks; honest EMPTY when no plan was ever ensured.
+     */
+    @GetMapping("/plans/current-view")
+    public Map<String, Object> currentView(Authentication authentication) {
+        Principal principal = principal(authentication, "learning.plan.read");
+        List<Map<String, Object>> inputs = jdbc.queryForList(
+                "SELECT pin_id, pin_version, pin_digest, input_fact_watermark, input_json,"
+                + " target_id, content_version_id, content_epoch, plan_id"
+                + " FROM learning_plan_input_snapshot WHERE tenant_id = ? AND principal_id = ?",
+                TENANT, principal.subject());
+        Map<String, Object> plan = one(
+                "SELECT * FROM b25_learning_plan WHERE principal_id = ? AND tenant_id = ?",
+                principal.subject(), TENANT);
+        if (inputs.isEmpty() || plan == null || !"ACTIVE".equals(String.valueOf(plan.get("status")))) {
+            return Map.of("data", Map.of("planId", "", "status", "EMPTY",
+                    "targetMinutes", 0, "planVersion", 0, "replayed", false,
+                    "tasks", List.of()));
+        }
+        Map<String, Object> input = inputs.getFirst();
+        List<Map<String, Object>> due = jdbc.queryForList("""
+                SELECT item_id, stage, due_at
+                  FROM b25_learning_srs_state
+                 WHERE principal_id = ? AND tenant_id = ? AND due_at <= CURRENT_TIMESTAMP(6)
+                 ORDER BY due_at, item_id LIMIT 50
+                """, principal.subject(), TENANT).stream().map(row -> Map.<String, Object>of(
+                        "itemId", String.valueOf(row.get("item_id")),
+                        "stage", String.valueOf(row.get("stage")),
+                        "dueAt", String.valueOf(row.get("due_at")))).toList();
+        Map<String, Object> data = new LinkedHashMap<>();
+        data.put("planId", plan.get("plan_id"));
+        data.put("status", "ACTIVE");
+        data.put("targetMinutes", number(plan.get("target_minutes")));
+        data.put("planVersion", number(plan.get("plan_version")));
+        data.put("replayed", false);
+        data.put("planningInput", object(input.get("input_json")));        data.put("plan", Map.of(
+                "planId", plan.get("plan_id"),
+                "planVersion", number(plan.get("plan_version")),
+                "planningInputPinId", input.get("pin_id"),
+                "planningInputPinVersion", number(input.get("pin_version")),
+                "planningInputDigest", input.get("pin_digest"),
+                "inputFactWatermark", input.get("input_fact_watermark"),
+                "contentEpoch", number(input.get("content_epoch")),
+                "projectionVersion", 1,
+                "generatedAt", String.valueOf(input.get("created_at"))));
+        data.put("tasks", due);
+        data.put("contentEpoch", number(input.get("content_epoch")));
+        data.put("projectionVersion", 1);
+        data.put("projectionWatermark", String.valueOf(input.get("pin_digest")));
+        return Map.of("data", data);
+    }
+
     @GetMapping("/stream/today")
     public Map<String, Object> today(Authentication authentication) {
         Principal principal = principal(authentication, "learning.review.read");
@@ -765,6 +819,24 @@ public class B25LearningJdbcController {
 
     private static String text(Object value) { return value instanceof String s ? s.trim() : value == null ? "" : String.valueOf(value).trim(); }
     private static int number(Object value) { return value instanceof Number n ? n.intValue() : 0; }
+
+    private static final tools.jackson.databind.ObjectMapper JSON_READER = new tools.jackson.databind.ObjectMapper();
+
+    @SuppressWarnings("unchecked")
+    private static Map<String, Object> object(Object raw) {
+        if (raw instanceof Map<?, ?> map) return (Map<String, Object>) map;
+        if (raw == null) throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,
+                "stored plan input is missing");
+        try {
+            Object decoded = JSON_READER.readValue(String.valueOf(raw), Object.class);
+            if (decoded instanceof Map<?, ?> map) return (Map<String, Object>) map;
+        } catch (Exception ignored) {
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,
+                    "stored plan input is unreadable");
+        }
+        throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,
+                "stored plan input is unreadable");
+    }
     private static String required(Map<String, Object> body, String name, int maxLength) {
         String value = text(body.get(name));
         if (value.isBlank() || value.length() > maxLength) {

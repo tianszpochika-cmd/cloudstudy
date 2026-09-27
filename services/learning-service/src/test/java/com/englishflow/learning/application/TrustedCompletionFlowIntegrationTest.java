@@ -68,7 +68,7 @@ class TrustedCompletionFlowIntegrationTest {
                 new PublishedContentPort.PublishedContentSnapshot(versionId, 11, "t21-content", Set.of("LEARNER"),
                         List.of(new PublishedContentPort.LearningSeedItem(LearningItemType.SENTENCE,
                                 72001, LearningTaskType.LISTENING_DICTATION,
-                                LocalDate.of(2026, 9, 21)))));
+                                LocalDate.of(2026, 9, 21))), 1L));
         LearningPlanService plans = new LearningPlanService(store, targetPort, contentPort,
                 new InMemoryLearningIdGenerator(), new LearningAccessPolicy(CLOCK), CLOCK);
         LearningPrincipalContext context = LearningTestPrincipals.phaseOne(PRINCIPAL, 7001);

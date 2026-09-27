@@ -50,7 +50,12 @@ public class PlacementBankSealedJdbcTest {
                     content_id VARCHAR(128) PRIMARY KEY, tenant_id VARCHAR(64),
                     content_epoch BIGINT)
                 """);
+        jdbc.execute("""
+                CREATE TABLE content_version (
+                    content_version_id BIGINT PRIMARY KEY, state_version BIGINT)
+                """);
         jdbc.update("INSERT INTO content_definition VALUES ('p1-placement-bank-v1', 'platform', 1)");
+        jdbc.update("INSERT INTO content_version VALUES (266100, 1)");
         seedBank();
         controller = new PlacementBankSealedController(jdbc, new ObjectMapper());
         Jwt jwt = Jwt.withTokenValue("test-token").header("alg", "RS256")
@@ -68,6 +73,7 @@ public class PlacementBankSealedJdbcTest {
         Map<String, Object> data = (Map<String, Object>) controller.sealed(learner).get("data");
         assertEquals("P1_PLACEMENT_V1", data.get("bankCode"));
         assertEquals(266100L, ((Number) data.get("contentVersionId")).longValue());
+        assertEquals(1L, ((Number) data.get("contentStateVersion")).longValue());
         assertTrue(String.valueOf(data.get("snapshotId")).startsWith("snap_"));
         assertTrue(String.valueOf(data.get("snapshotHash")).matches("[a-f0-9]{64}"));
         assertTrue(String.valueOf(data.get("ruleDigest")).matches("[a-f0-9]{64}"));
@@ -81,6 +87,20 @@ public class PlacementBankSealedJdbcTest {
             Map<String, Object> rule = (Map<String, Object>) item.get("answerRule");
             List<Map<String, Object>> options = (List<Map<String, Object>>) item.get("options");
             assertTrue(options.stream().anyMatch(option -> rule.get("correctOption").equals(option.get("optionId"))));
+        }
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void planItemsServeIdentifiersOnlyWithoutStemsOptionsOrAnswers() {
+        Map<String, Object> data = (Map<String, Object>) controller.planItems(learner).get("data");
+        assertEquals("P1_PLACEMENT_V1", data.get("bankCode"));
+        assertEquals(266100L, ((Number) data.get("contentVersionId")).longValue());
+        List<Map<String, Object>> items = (List<Map<String, Object>>) data.get("items");
+        assertEquals(10, items.size());
+        for (Map<String, Object> item : items) {
+            assertEquals(java.util.Set.of("itemId", "itemCode", "itemType", "dimension", "displayOrder"),
+                    item.keySet());
         }
     }
 

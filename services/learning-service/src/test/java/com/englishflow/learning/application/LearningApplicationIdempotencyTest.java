@@ -63,7 +63,7 @@ class LearningApplicationIdempotencyTest {
                                             LocalDate.of(2026, 8, 22)),
                                     new PublishedContentPort.LearningSeedItem(LearningItemType.GRAMMAR,
                                             71001, LearningTaskType.GRAMMAR_PRACTICE,
-                                            LocalDate.of(2026, 8, 22)))));
+                                            LocalDate.of(2026, 8, 22))), 1L));
             LearningAccessPolicy policy = new LearningAccessPolicy(CLOCK);
             InMemoryLearningIdGenerator ids = new InMemoryLearningIdGenerator();
             plans = new LearningPlanService(store, targetPort, contentPort, ids, policy, CLOCK);

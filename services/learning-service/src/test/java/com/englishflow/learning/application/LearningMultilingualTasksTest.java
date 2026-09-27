@@ -56,7 +56,7 @@ class LearningMultilingualTasksTest {
                                             LocalDate.of(2026, 8, 22)),
                                     new PublishedContentPort.LearningSeedItem(LearningItemType.SENTENCE,
                                             72002, LearningTaskType.SPEAKING_SHADOW,
-                                            LocalDate.of(2026, 8, 22)))));
+                                            LocalDate.of(2026, 8, 22))), 1L));
             LearningAccessPolicy policy = new LearningAccessPolicy(CLOCK);
             InMemoryLearningIdGenerator ids = new InMemoryLearningIdGenerator();
             plans = new LearningPlanService(store, targetPort, contentPort, ids, policy, CLOCK);

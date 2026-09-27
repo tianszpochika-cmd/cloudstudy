@@ -54,6 +54,13 @@ service:
 learning:
   phase: ${LEARNING_PHASE:phase-1}
   srs-rules-version: ${LEARNING_SRS_RULES_VERSION:SM2_Q03_V1}
+  ports:
+    # Allowed values: http, fail-closed. Default is deliberately fail-closed:
+    # cross-service owner reads stay off until explicitly enabled.
+    mode: ${LEARNING_PORTS_MODE:fail-closed}
+    learner-base-url: ${LEARNING_PORTS_LEARNER_BASE_URL:http://127.0.0.1:18088}
+    content-base-url: ${LEARNING_PORTS_CONTENT_BASE_URL:http://127.0.0.1:18089}
+    assessment-base-url: ${LEARNING_PORTS_ASSESSMENT_BASE_URL:http://127.0.0.1:18091}
   persistence:
     # Allowed values: jdbc, memory-fixture, fail-closed. Default is deliberately fail-closed.
     mode: ${LEARNING_PERSISTENCE_MODE:fail-closed}

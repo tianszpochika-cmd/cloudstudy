@@ -192,13 +192,72 @@ public class LearningRuntimeConfiguration {
     }
 
     @Bean
+    @ConditionalOnProperty(prefix = "learning.ports", name = "mode", havingValue = "fail-closed",
+            matchIfMissing = true)
     LearnerTargetPort failClosedLearnerTargetPort() {
         return new FailClosedLearnerTargetPort();
     }
 
     @Bean
+    @ConditionalOnProperty(prefix = "learning.ports", name = "mode", havingValue = "fail-closed",
+            matchIfMissing = true)
     PublishedContentPort failClosedPublishedContentPort() {
         return new FailClosedPublishedContentPort();
+    }
+
+    /**
+     * HTTP owner ports for the plan wiring (default off so production stays
+     * fail-closed; local-real enables them explicitly). Singletons: the only
+     * per-request state (caller JWT) travels in the SecurityContext, never in
+     * these beans.
+     */
+    @Bean
+    @ConditionalOnProperty(prefix = "learning.ports", name = "mode", havingValue = "http")
+    LearnerTargetPort httpLearnerTargetPort(tools.jackson.databind.ObjectMapper objectMapper,
+            @org.springframework.beans.factory.annotation.Value(
+                    "${learning.ports.learner-base-url:http://127.0.0.1:18088}")
+            String learnerBaseUrl) {
+        return new com.englishflow.learning.adapter.http.HttpLearnerTargetPort(objectMapper, learnerBaseUrl);
+    }
+
+    @Bean
+    @ConditionalOnProperty(prefix = "learning.ports", name = "mode", havingValue = "http")
+    PublishedContentPort httpPlanContentPort(tools.jackson.databind.ObjectMapper objectMapper,
+            @org.springframework.beans.factory.annotation.Value(
+                    "${learning.ports.content-base-url:http://127.0.0.1:18089}")
+            String contentBaseUrl,
+            @org.springframework.beans.factory.annotation.Value(
+                    "${learning.ports.learner-base-url:http://127.0.0.1:18088}")
+            String learnerBaseUrl) {
+        return new com.englishflow.learning.adapter.http.HttpPlanContentPort(objectMapper,
+                contentBaseUrl, learnerBaseUrl);
+    }
+
+    @Bean
+    com.englishflow.learning.adapter.http.VerifiedPlacementReport placementReportVerifier(
+            tools.jackson.databind.ObjectMapper objectMapper,
+            @org.springframework.beans.factory.annotation.Value(
+                    "${learning.ports.assessment-base-url:http://127.0.0.1:18091}")
+            String assessmentBaseUrl) {
+        return new com.englishflow.learning.adapter.http.VerifiedPlacementReport(objectMapper, assessmentBaseUrl);
+    }
+
+    @Bean
+    com.englishflow.learning.adapter.http.LearnerProfileReads learnerProfileReads(
+            tools.jackson.databind.ObjectMapper objectMapper,
+            @org.springframework.beans.factory.annotation.Value(
+                    "${learning.ports.learner-base-url:http://127.0.0.1:18088}")
+            String learnerBaseUrl) {
+        return new com.englishflow.learning.adapter.http.LearnerProfileReads(objectMapper, learnerBaseUrl);
+    }
+
+    @Bean
+    com.englishflow.learning.adapter.http.LearnerTargetPinWriter learnerTargetPinWriter(
+            tools.jackson.databind.ObjectMapper objectMapper,
+            @org.springframework.beans.factory.annotation.Value(
+                    "${learning.ports.learner-base-url:http://127.0.0.1:18088}")
+            String learnerBaseUrl) {
+        return new com.englishflow.learning.adapter.http.LearnerTargetPinWriter(objectMapper, learnerBaseUrl);
     }
 
     @Bean

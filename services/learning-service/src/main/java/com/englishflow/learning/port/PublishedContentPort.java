@@ -22,7 +22,8 @@ public interface PublishedContentPort {
             long contentEpoch,
             String contentCode,
             Set<String> rights,
-            List<LearningSeedItem> items) {
+            List<LearningSeedItem> items,
+            long rightsStateVersion) {
 
         public PublishedContentSnapshot {
             if (contentVersionId < 1 || contentEpoch < 1) {
@@ -33,6 +34,9 @@ public interface PublishedContentPort {
             }
             rights = rights == null ? Set.of() : Set.copyOf(rights);
             items = items == null ? List.of() : List.copyOf(items);
+            if (rightsStateVersion < 1) {
+                throw new IllegalArgumentException("rights snapshot version must be positive");
+            }
         }
 
         public boolean learnerReadable() {

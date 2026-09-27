@@ -207,6 +207,9 @@ function runtimeEnvironment(service, port) {
     environment.LEARNING_EVENT_RELAY_ENABLED = process.env.LEARNING_EVENT_RELAY_ENABLED ?? 'true';
     environment.LEARNING_KAFKA_BOOTSTRAP_SERVERS = process.env.LEARNING_KAFKA_BOOTSTRAP_SERVERS
       ?? `${process.env.KAFKA_HOST ?? '127.0.0.1'}:${process.env.KAFKA_PORT ?? '19092'}`;
+    // Plan wiring: owner HTTP ports stay fail-closed unless the local-real
+    // stack explicitly enables them (application default is fail-closed).
+    environment.LEARNING_PORTS_MODE = process.env.LEARNING_PORTS_MODE ?? 'http';
   }
   if (service.id === 'audit-service') {
     // audit-service is not in the owner manifest, so its persistence binding has to be supplied
