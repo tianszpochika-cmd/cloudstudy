@@ -191,6 +191,96 @@
         }
       }
     },
+    "/internal/v1/learning/plans/current-view": {
+      "get": {
+        "tags": [
+          "b10-learning-plan"
+        ],
+        "summary": "Read the owner-assembled plan view for home projection",
+        "operationId": "getB10LearningPlanView",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-contract": {
+          "owner": "learning-service",
+          "consumer": "learner-service",
+          "access": "forwarded verified learner JWT only; never projected by the Gateway",
+          "transportInterim": "learner-service forwards the incoming verified learner JWT until validated workload identity lands; the route stays internal-only (127.0.0.1, Gateway DENY)",
+          "answerProtection": "plan tasks carry no answer material; grading rules never cross this boundary",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+        },
+        "responses": {
+          "200": {
+            "description": "Plan view with immutable planning input (or honest EMPTY)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/B10EnsurePlanResult"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/B10Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/B10Forbidden"
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
+          }
+        }
+      }
+    },
+    "/internal/v1/content/placement-bank/plan-items": {
+      "get": {
+        "tags": [
+          "b10-content-snapshot"
+        ],
+        "summary": "Read answer-free plan task seeds for the placement bank",
+        "operationId": "getPlacementBankPlanItems",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-contract": {
+          "owner": "content-service",
+          "consumer": "learning-service",
+          "access": "forwarded verified learner JWT only; never projected by the Gateway",
+          "transportInterim": "learning-service forwards the incoming verified learner JWT until validated workload identity lands; the route stays internal-only (127.0.0.1, Gateway DENY)",
+          "answerProtection": "task seeds carry identifiers and display order only; stems, options and answer rules never cross this boundary",
+          "bankRule": "P1_PLACEMENT_V1",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+        },
+        "responses": {
+          "200": {
+            "description": "Answer-free plan task seeds",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlacementBankPlanItemsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/B10Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/B10Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/B10NotFound"
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
+          }
+        }
+      }
+    },
     "/internal/v1/content/placement-bank/sealed": {
       "get": {
         "tags": [
@@ -1652,6 +1742,129 @@
           },
           "409": {
             "$ref": "#/components/responses/ApiConflict"
+          }
+        }
+      }
+    },
+    "/api/v1/learning/plans:ensure": {
+      "post": {
+        "tags": [
+          "b10-learning-plan"
+        ],
+        "summary": "Ensure the learner's plan from a completed placement (idempotent)",
+        "operationId": "ensureB10LearningPlan",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "learning-service",
+        "x-contract": {
+          "owner": "learning-service",
+          "canonical": true,
+          "command": "learning.plan.ensure",
+          "authority": "target pin, placement verification, content snapshot and plan assembly are all server-derived; the client supplies only a placement report pointer"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "learning.plan.write",
+          "pep": "learning-service-local",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
+          ],
+          "clientAuthority": "none; target, placement, content and plan versions are server-derived"
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "b10-learning-plan-ensure",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "same placement report and pin set returns the original plan",
+          "conflicts": {
+            "staleTargetPin": {
+              "status": 409,
+              "errorCode": "LRN_PLAN_TARGET_PIN_CONFLICT"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B10IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B10EnsurePlanRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ensured plan (created or replayed)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B10EnsurePlanResult"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ApiUnprocessableEntity"
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
           }
         }
       }
@@ -3716,6 +3929,7 @@
           "bankCode",
           "contentVersionId",
           "contentEpoch",
+          "contentStateVersion",
           "snapshotId",
           "snapshotHash",
           "answerRuleSetVersion",
@@ -3736,6 +3950,11 @@
           },
           "contentEpoch": {
             "$ref": "#/components/schemas/B10ContentEpoch"
+          },
+          "contentStateVersion": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Owner content_version.state_version: the rights-snapshot version pinned by planners."
           },
           "snapshotId": {
             "$ref": "#/components/schemas/B10SnapshotId"
@@ -3859,6 +4078,161 @@
                 "maxLength": 64
               }
             }
+          }
+        }
+      },
+      "PlacementBankPlanItemsResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/PlacementBankPlanItems"
+          }
+        }
+      },
+      "PlacementBankPlanItems": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "bankCode",
+          "contentVersionId",
+          "contentEpoch",
+          "contentStateVersion",
+          "items"
+        ],
+        "description": "Answer-free plan task seeds. Identifiers and display order only; no stems, options or answer rules.",
+        "properties": {
+          "bankCode": {
+            "type": "string",
+            "enum": [
+              "P1_PLACEMENT_V1"
+            ]
+          },
+          "contentVersionId": {
+            "$ref": "#/components/schemas/B10Int64Id"
+          },
+          "contentEpoch": {
+            "$ref": "#/components/schemas/B10ContentEpoch"
+          },
+          "contentStateVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "items": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/PlacementBankPlanSeed"
+            }
+          }
+        }
+      },
+      "PlacementBankPlanSeed": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "itemId",
+          "itemCode",
+          "itemType",
+          "dimension",
+          "displayOrder"
+        ],
+        "properties": {
+          "itemId": {
+            "$ref": "#/components/schemas/B10Int64Id"
+          },
+          "itemCode": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 128
+          },
+          "itemType": {
+            "type": "string",
+            "enum": [
+              "VOCABULARY",
+              "GRAMMAR",
+              "READING",
+              "LISTENING"
+            ]
+          },
+          "dimension": {
+            "type": "string",
+            "enum": [
+              "VOCABULARY",
+              "BASIC_GRAMMAR",
+              "READING",
+              "LISTENING"
+            ]
+          },
+          "displayOrder": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      },
+      "B10EnsurePlanRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "placementReportId"
+        ],
+        "description": "The client supplies only a placement report pointer; target, placement, content and plan facts are all server-derived and verified.",
+        "properties": {
+          "placementReportId": {
+            "type": "string",
+            "minLength": 4,
+            "maxLength": 128
+          }
+        }
+      },
+      "B10EnsurePlanResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "planId",
+          "status",
+          "targetMinutes",
+          "planVersion",
+          "replayed",
+          "tasks"
+        ],
+        "description": "Ensured plan with its immutable planning input. planningInput/plan are present exactly when status is ACTIVE; EMPTY carries neither (honest empty, not a plan).",
+        "properties": {
+          "planId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ACTIVE",
+              "EMPTY"
+            ]
+          },
+          "targetMinutes": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "planVersion": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "replayed": {
+            "type": "boolean"
+          },
+          "planningInput": {
+            "$ref": "#/components/schemas/B9PlanningInputSnapshot"
+          },
+          "plan": {
+            "$ref": "#/components/schemas/B9PlanReference"
+          },
+          "tasks": {
+            "type": "array"
           }
         }
       },

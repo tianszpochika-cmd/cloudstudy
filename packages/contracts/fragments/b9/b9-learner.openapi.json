@@ -292,6 +292,84 @@
         }
       }
     },
+    "/internal/v1/learner/targets/pin": {
+      "put": {
+        "tags": [
+          "b9-learner"
+        ],
+        "summary": "Pin verified placement content onto the learner target (idempotent)",
+        "operationId": "pinB9LearnerTargetContent",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-contract": {
+          "owner": "learner-service",
+          "consumer": "learning-service",
+          "access": "forwarded verified learner JWT only; never projected by the Gateway",
+          "transportInterim": "learning-service forwards the incoming verified learner JWT until validated workload identity lands; the route stays internal-only (127.0.0.1, Gateway DENY)",
+          "pinRule": "only values verified by learning-service against the placement report are accepted; learner never self-pins content",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+        },
+        "x-authorization": {
+          "requiredPermission": "learner.target.write",
+          "defaultDecision": "DENY",
+          "serviceSidePepRequired": true
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "b9-learner-target-pin",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "same target and pin set returns the pinned target"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B9IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B9TargetPinRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Pinned target",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/B9TargetPinResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
+          }
+        }
+      }
+    },
     "/api/v1/learner/targets": {
       "get": {
         "tags": [
@@ -1020,6 +1098,67 @@
   },
   "components": {
     "schemas": {
+      "B9TargetPinRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "targetId",
+          "contentVersionId",
+          "contentEpoch",
+          "placementReportId"
+        ],
+        "description": "Server-verified placement pin. Only learning-service calls this after verifying the placement report; learners never self-pin content.",
+        "properties": {
+          "targetId": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "contentVersionId": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "contentEpoch": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "placementReportId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        }
+      },
+      "B9TargetPinResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "targetId",
+          "contentVersionId",
+          "contentEpoch",
+          "pinned",
+          "replayed"
+        ],
+        "properties": {
+          "targetId": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "contentVersionId": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "contentEpoch": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "pinned": {
+            "type": "boolean"
+          },
+          "replayed": {
+            "type": "boolean"
+          }
+        }
+      },
       "B9LearnerProfile": {
         "type": "object",
         "additionalProperties": false,

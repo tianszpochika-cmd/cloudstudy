@@ -8,7 +8,10 @@ const DEFAULT_INPUT = path.join('packages', 'contracts', 'fragments', 'p1r-gatew
 const DEFAULT_CANONICAL = path.join('packages', 'contracts', 'openapi', 'v1', 'openapi.json');
 const ROOT_EXTENSION = 'x-p1r-gateway-boundary';
 const EXPECTED_PUBLIC_OPERATION_COUNT = 365;
-const EXPECTED_INTERNAL_OPERATION_COUNT = 63;
+const EXPECTED_INTERNAL_OPERATION_COUNT = 66;
+// Plan wiring (2026-09-27): +3 internal reads (learner targets/pin,
+// content placement-bank plan-items, learning plans current-view). The ensure
+// op itself is public (same 365->394 drift line, no new failure).
 // Ph2 placement bank (2026-09-27): +1 internal sealed-bank read
 // (GET /internal/v1/content/placement-bank/sealed, owner content-service,
 // consumer assessment-service, Gateway DENY). Route/execution counts unchanged.
@@ -29,8 +32,10 @@ const EXPECTED_ROUTE_RULE_COUNT = 74;
 // drift, iam-deletions frozen reason and M2-001 digest drift stay open).
 // B3 interaction (2026-09-27): +1 available (reading/questions, bound bank
 // items); plan and execution counts move together, no new operation.
+// Plan wiring (2026-09-27): +1 available (learning plans:ensure inside the
+// learning-domain rule; rules/plans counts unchanged).
 const EXPECTED_EXECUTION_PLAN_COUNT = 74;
-const EXPECTED_AVAILABLE_EXECUTION_OPERATION_COUNT = 218;
+const EXPECTED_AVAILABLE_EXECUTION_OPERATION_COUNT = 219;
 // This is a reviewed semantic binding for the finite M2-001 target table. It
 // deliberately prevents a target from silently moving to a different, still
 // valid controller method without a corresponding Gateway parity change.
