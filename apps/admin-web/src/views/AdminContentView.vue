@@ -45,6 +45,9 @@ const title = ref("");
 const contentHash = ref("");
 const sourceCode = ref("");
 const licenseCode = ref("");
+const authorizationEvidenceRef = ref("");
+const permittedChannels = ref<string[]>([]);
+const allowsLearning = ref(false);
 const payloadText = ref("{}");
 const versionId = ref("");
 const stateVersion = ref("");
@@ -217,6 +220,9 @@ async function selectContent(content: ContentSnapshot): Promise<void> {
   contentHash.value = "";
   sourceCode.value = "";
   licenseCode.value = "";
+  authorizationEvidenceRef.value = "";
+  permittedChannels.value = [];
+  allowsLearning.value = false;
   rollbackReason.value = "";
   rollbackTargetVersion.value = "";
   applyContent(content);
@@ -307,6 +313,9 @@ async function createDraft(): Promise<void> {
       contentHash: contentHash.value.trim(),
       sourceCode: sourceCode.value.trim(),
       licenseCode: licenseCode.value.trim(),
+      permittedChannels: permittedChannels.value.length ? [...permittedChannels.value] : undefined,
+      authorizationEvidenceRef: authorizationEvidenceRef.value.trim() || undefined,
+      allowsLearning: allowsLearning.value || undefined,
       payload,
     });
     lastRequestId.value = receipt.requestId;
@@ -332,6 +341,9 @@ async function saveDraft(): Promise<void> {
         baseStateVersion: stateVersion.value || undefined,
         title: title.value.trim(),
         contentHash: contentHash.value.trim(),
+        permittedChannels: permittedChannels.value.length ? [...permittedChannels.value] : undefined,
+        authorizationEvidenceRef: authorizationEvidenceRef.value.trim() || undefined,
+        allowsLearning: allowsLearning.value || undefined,
         payload,
       },
     );
@@ -656,6 +668,32 @@ onMounted(() => {
                       v-model="licenseCode"
                       :disabled="!canWrite || !!busyAction || selectedVersionMissing"
                       @input="markDirty" /></el-form-item
+                ></el-col>
+                <el-col :xs="24" :sm="12" :md="8"
+                  ><el-form-item label="授权证据引用"
+                    ><el-input
+                      v-model="authorizationEvidenceRef"
+                      placeholder="自有声明/许可文本/授权编号"
+                      :disabled="!canWrite || !!busyAction || selectedVersionMissing"
+                      @input="markDirty" /></el-form-item
+                ></el-col>
+                <el-col :xs="24" :sm="12" :md="8"
+                  ><el-form-item label="申报发行渠道"
+                    ><el-checkbox-group
+                      v-model="permittedChannels"
+                      :disabled="!canWrite || !!busyAction || selectedVersionMissing"
+                      @change="markDirty"
+                      ><el-checkbox label="LEARNER">LEARNER</el-checkbox
+                      ><el-checkbox label="PUBLIC">PUBLIC</el-checkbox></el-checkbox-group
+                  ></el-form-item
+                ></el-col>
+                <el-col :xs="24" :sm="12" :md="8"
+                  ><el-form-item label="申报学习使用许可"
+                    ><el-switch
+                      v-model="allowsLearning"
+                      :disabled="!canWrite || !!busyAction || selectedVersionMissing"
+                      @change="markDirty"
+                  /></el-form-item
                 ></el-col>
               </el-row>
               <el-form-item label="内容配置（JSON）"

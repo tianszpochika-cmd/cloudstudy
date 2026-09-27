@@ -20,6 +20,10 @@ export interface ContentDraftCommand {
   readonly contentHash: string
   readonly sourceCode: string
   readonly licenseCode: string
+  /** Editor-submitted rights dossier (claim only; L2 verifies into ACTIVE). */
+  readonly permittedChannels?: readonly string[]
+  readonly authorizationEvidenceRef?: string
+  readonly allowsLearning?: boolean
   readonly payload: Readonly<Record<string, unknown>>
 }
 
@@ -28,6 +32,10 @@ export interface ContentDraftSaveCommand {
   readonly baseStateVersion?: string
   readonly title: string
   readonly contentHash: string
+  /** Editor-submitted rights dossier (claim only; L2 verifies into ACTIVE). */
+  readonly permittedChannels?: readonly string[]
+  readonly authorizationEvidenceRef?: string
+  readonly allowsLearning?: boolean
   readonly payload: Readonly<Record<string, unknown>>
 }
 

@@ -247,6 +247,9 @@ function draftInput(command: ContentDraftCommand): RecordValue {
     targetLevel: ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'].includes(text(payload.targetLevel)) ? text(payload.targetLevel) : 'A1',
     sourceCode: command.sourceCode.trim(),
     licenseCode: command.licenseCode.trim(),
+    permittedChannels: Array.isArray(command.permittedChannels) ? command.permittedChannels.filter((c): c is string => typeof c === 'string' && c.trim().length > 0).map((c) => c.trim().toUpperCase()).slice(0, 16) : undefined,
+    authorizationEvidenceRef: typeof command.authorizationEvidenceRef === 'string' && command.authorizationEvidenceRef.trim() ? command.authorizationEvidenceRef.trim() : undefined,
+    allowsLearning: command.allowsLearning === true ? true : undefined,
     contentHash: requireSha256(command.contentHash),
     items,
   }
