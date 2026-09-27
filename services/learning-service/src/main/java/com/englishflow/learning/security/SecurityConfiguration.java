@@ -93,6 +93,11 @@ public class SecurityConfiguration {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(errors -> errors.authenticationEntryPoint(entryPoint).accessDeniedHandler(deniedHandler))
                 .authorizeHttpRequests(auth -> {
+                    // Error forwards must render the honest framework error (400/404/405):
+                    // denying them here masks every binding failure as opaque 403.
+                    // Error bodies carry no secrets (domain messages exclude payloads;
+                    // Boot sanitizes the rest), so permitting the forward is safe.
+                    auth.dispatcherTypeMatchers(jakarta.servlet.DispatcherType.ERROR).permitAll();
                     auth.requestMatchers("/actuator/**").permitAll();
                     if (properties.isEnabled()) auth.anyRequest().authenticated();
                     else auth.anyRequest().denyAll();

@@ -30,6 +30,18 @@ public final class ApiExceptionHandler {
         return ResponseEntity.badRequest().body(errorEnvelope(error, request));
     }
 
+    /**
+     * Framework routing errors must stay visible as 404/405: the generic
+     * {@code Exception} handler below would otherwise mask every unknown path
+     * or method as opaque 500. Rethrowing lets Boot's /error dispatch render
+     * the honest framework status (which the security chain permits).
+     */
+    @ExceptionHandler({org.springframework.web.servlet.resource.NoResourceFoundException.class,
+            org.springframework.web.HttpRequestMethodNotSupportedException.class})
+    public void frameworkRouting(Exception exception) throws Exception {
+        throw exception;
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> unexpected(Exception exception, HttpServletRequest request) {
         SocialException error = new SocialException("INTERNAL_ERROR", "request could not be completed", 500, false);
