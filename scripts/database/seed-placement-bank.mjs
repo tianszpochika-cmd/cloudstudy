@@ -1,7 +1,13 @@
 // P1 placement bank seed: ten sealed items (3V/3G/2R/2L) with ACTIVE rights.
+// kind='QUESTION' (parseable by ContentKind; the bank IS a question bank) and
+// rights channels='["SEALED"]' (the sealed internal endpoint is the only
+// outlet: LEARNER/PUBLIC projections 403-skip instead of leaking a bogus
+// catalog card; a bogus 'PLACEMENT_BANK' kind used here before 2026-09-27
+// broke ContentKind.valueOf and turned /content/learner/catalog into a 500).
 // Local MySQL only, stable ids, UTC timestamps, delete-then-insert (deterministic).
 // Run: node scripts/database/seed-placement-bank.mjs
 import { runMysql } from './lib/mysql-client.mjs';
+import { contentPayloadHash } from './local-real-10x-fixture.mjs';
 
 const TENANT_ID = 'platform';
 const host = process.env.MYSQL_HOST || '127.0.0.1';
@@ -39,8 +45,25 @@ const statements = ['START TRANSACTION;'];
 statements.push(`DELETE FROM content_service.content_placement_item WHERE tenant_id = '${TENANT_ID}' AND bank_code = 'P1_PLACEMENT_V1';`);
 statements.push(`DELETE FROM content_service.content_version WHERE content_version_id = ${BANK_VERSION_ID};`);
 statements.push(`DELETE FROM content_service.content_definition WHERE content_id = 'p1-placement-bank-v1';`);
-statements.push(`INSERT INTO content_service.content_definition (content_id, tenant_id, content_code, kind, title, locale, target_level, goal_code, created_by, created_at, current_published_version_id, content_epoch, projection_version) VALUES ('p1-placement-bank-v1', '${TENANT_ID}', '${BANK_CODE}', 'PLACEMENT_BANK', 'P1 placement bank v1', 'en-US', 'A1', 'DAILY_ENGLISH', 'placement-bank-fixture', ${NOW}, ${BANK_VERSION_ID}, 1, 1);`);
-statements.push(`INSERT INTO content_service.content_version (content_version_id, content_id, version_no, status, copyright_status, payload_hash, published_at, created_at, kind, payload_json, rights_source_code, rights_license_code, rights_allows_learning, rights_permitted_channels, rights_starts_at, rights_expires_at, authorization_evidence_ref, editor, release_note, first_reviewer, final_reviewer, publisher, archived_at, rollback_of_version_id, first_review_version, final_review_version, state_version) VALUES (${BANK_VERSION_ID}, 'p1-placement-bank-v1', 1, 'PUBLISHED', 'ACTIVE', 'placement-bank-v1', ${NOW}, ${NOW}, 'PLACEMENT_BANK', '{}', 'LOCAL_FIXTURE', 'LOCAL_FIXTURE', TRUE, ${q(JSON.stringify(['LEARNER']))}, ${NOW}, NULL, 'placement-bank-authorization', 'placement-bank-editor', 'p1 bank release', 'placement-bank-reviewer-1', 'placement-bank-reviewer-2', 'placement-bank-publisher', NULL, NULL, 1, 1, 1);`);
+// The version row must satisfy the same rehydrate contract as every stored
+// version (parseable kind, non-empty payload, matching payload_hash): it is a
+// real version fact whose items live in content_placement_item, not a dummy.
+// kinds: 'QUESTION' would demand embedded answer rules; 'COURSE' carries only
+// honest pointer metadata. Channels 'SEALED' keep it out of LEARNER/PUBLIC
+// projections (403-skip) since the sealed endpoint is the only outlet.
+const BANK_PAYLOAD = {
+  title: 'P1 placement bank v1',
+  summary: 'Sealed ten-item P1 placement bank (3/3/2/2). Items live in content_placement_item; served only via /internal/v1/content/placement-bank/sealed.',
+  locale: 'en-US',
+  targetLevel: 'A1',
+  bank: 'P1_PLACEMENT_V1',
+  sealedItems: 'content_placement_item',
+  servedBy: '/internal/v1/content/placement-bank/sealed',
+  items: ITEMS.map(([id, dim, type, code], n) => ({ itemId: id, itemCode: code, dimension: dim, displayOrder: n + 1 })),
+};
+const BANK_HASH = contentPayloadHash(BANK_PAYLOAD);
+statements.push(`INSERT INTO content_service.content_definition (content_id, tenant_id, content_code, kind, title, locale, target_level, goal_code, created_by, created_at, current_published_version_id, content_epoch, projection_version) VALUES ('p1-placement-bank-v1', '${TENANT_ID}', '${BANK_CODE}', 'COURSE', 'P1 placement bank v1', 'en-US', 'A1', 'DAILY_ENGLISH', 'placement-bank-fixture', ${NOW}, ${BANK_VERSION_ID}, 1, 1);`);
+statements.push(`INSERT INTO content_service.content_version (content_version_id, content_id, version_no, status, copyright_status, payload_hash, published_at, created_at, kind, payload_json, rights_source_code, rights_license_code, rights_allows_learning, rights_permitted_channels, rights_starts_at, rights_expires_at, authorization_evidence_ref, editor, release_note, first_reviewer, final_reviewer, publisher, archived_at, rollback_of_version_id, first_review_version, final_review_version, state_version) VALUES (${BANK_VERSION_ID}, 'p1-placement-bank-v1', 1, 'PUBLISHED', 'ACTIVE', '${BANK_HASH}', ${NOW}, ${NOW}, 'COURSE', ${j(BANK_PAYLOAD)}, 'LOCAL_FIXTURE', 'LOCAL_FIXTURE', TRUE, ${q(JSON.stringify(['SEALED']))}, ${NOW}, NULL, 'placement-bank-authorization', 'placement-bank-editor', 'p1 bank release', 'placement-bank-reviewer-1', 'placement-bank-reviewer-2', 'placement-bank-publisher', NULL, NULL, 1, 1, 1);`);
 ITEMS.forEach(([id, dim, type, code, stem, options, correct], n) => {
   statements.push(`INSERT INTO content_service.content_placement_item (placement_item_id, tenant_id, bank_code, dimension, display_order, item_code, item_type, stem, options_json, answer_rule_json, question_type, scoring_version, max_score, content_version_id, content_code, copyright_status, rights_allows_learning, status, created_at) VALUES (${id}, '${TENANT_ID}', 'P1_PLACEMENT_V1', '${dim}', ${n + 1}, ${q(code)}, '${type}', ${q(stem)}, ${j(options)}, ${j({ correctOption: correct })}, 'CHOICE', 'p1-choice-v1', 10, ${BANK_VERSION_ID}, '${BANK_CODE}', 'ACTIVE', TRUE, 'PUBLISHED', ${NOW});`);
 });
