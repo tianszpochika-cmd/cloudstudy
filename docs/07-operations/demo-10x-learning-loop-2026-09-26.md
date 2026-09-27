@@ -194,3 +194,10 @@
 * `tmp/vocab-fallback-check.mjs`全绿（job pwsh-200 exit 0）：登录→1/10→about→关于→评分无假掌握态，零页面异常。
 * 证据：`demo-e2e/vocab-fallback/`（正反面截图+summary）。
 * 附带：我的edit工具残留tmpdir两次绊倒vite watcher（EBUSY），已清残留并重起前端；以后每次edit后必查残留。
+
+## 32. 四技能桥接上线（2026-09-26，EPIC-B3次刀）
+
+* 新增 `CanonicalBridge.vue`（共享课程卡→`learn-session?contentId=`）；语法/阅读/听力挂空态，写作挂空+错+离线三态（其4个读口无网关投影，浏览器预检403是设计使然）。
+* `tmp/bridge-check.mjs` + `tmp/writing-check.mjs`：4页桥渲染+点通会话，零页面异常（job pwsh-204部分、pwsh-209全绿）。
+* 口语无正典课，保持诚实空（不硬凑）。
+* 证据：`demo-e2e/skill-bridges/`（四页截图+点通记录+summary）。

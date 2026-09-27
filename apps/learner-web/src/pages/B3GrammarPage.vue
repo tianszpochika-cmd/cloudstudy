@@ -3,6 +3,7 @@ import ExperienceHeader from '../components/ExperienceHeader.vue'
 import { computed, onMounted, ref, watch } from 'vue'
 import B10PracticeQuestion from '../components/b10/B10PracticeQuestion.vue'
 import B10StatePanel from '../components/b10/B10StatePanel.vue'
+import CanonicalBridge from '../components/CanonicalBridge.vue'
 import { useLearningUi } from '../platform/learning-ui'
 import { useB10Store } from '../stores/b10'
 import type { B10GrammarExercise, B10PerformanceLevel } from '../domain/b10'
@@ -61,7 +62,7 @@ function submitImitation(): void { void store.submitImitation(slotValues.value) 
         <section v-if="selectedExercise" class="exercise"><div class="section-heading"><div><p class="eyebrow">ASM · RULE PRACTICE</p><h4>{{ ui.t('b10.grammar.practice') }}</h4></div><button class="secondary-button" type="button" :disabled="!exerciseCanSubmit" @click="submitExercise(selectedExercise)">{{ ui.t('b10.grammar.submit') }}</button></div><B10PracticeQuestion :question="{ id: String(selectedExercise.exerciseId), type: selectedExercise.type === 'CHOICE' ? 'CHOICE' : selectedExercise.type === 'FILL_BLANK' && selectedExercise.options.length > 0 ? 'FILL_BLANK' : selectedExercise.type === 'SENTENCE_BUILD' ? 'DRAG_SORTER' : 'TRANSLATION', prompt: selectedExercise.promptText, helperText: selectedExercise.type === 'FILL_BLANK' && selectedExercise.options.length === 0 ? '填写空格后提交，由服务端规则判定。' : null, sentence: null, sourceText: null, placeholder: '输入规则答案', options: selectedExercise.options, tokens: selectedExercise.tokens, contentVersionId: selectedExercise.contentVersionId, contentLocale: selectedExercise.contentLocale }" :disabled="false" :performance-level="store.performanceLevel" :initial-answer="exerciseAnswer" @answer="setExerciseAnswer" /><p v-if="store.grammarFeedback" class="feedback">{{ store.grammarFeedback.message ?? store.grammarFeedback.feedbackCode }} <small v-if="store.grammarFeedback.ruleVersion">· {{ store.grammarFeedback.ruleVersion }}</small></p></section>
       </article>
     </section>
-    <section v-else-if="store.grammarStatus === 'empty'" class="empty-panel"><strong>{{ ui.t('b10.grammar.noTree') }}</strong><p>{{ ui.t('b10.state.empty') }}</p></section>
+    <section v-else-if="store.grammarStatus === 'empty'" class="empty-panel"><strong>{{ ui.t('b10.grammar.noTree') }}</strong><p>{{ ui.t('b10.state.empty') }}</p><CanonicalBridge :courses="[{ code: 'DEMO-P5-GRAMMAR-A1', title: 'Demo present simple', summary: 'Subject plus base verb for habits.', level: 'A1' }]" /></section>
   </section>
 </template>
 

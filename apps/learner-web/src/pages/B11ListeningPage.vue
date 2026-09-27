@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import ExperienceHeader from '../components/ExperienceHeader.vue'
+import CanonicalBridge from '../components/CanonicalBridge.vue'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { downloadB3Asset } from '../platform/b3-media-download'
 import { sha256Text } from '../platform/b3-offline'
@@ -263,6 +264,7 @@ function feedbackText(result: { feedbackCodes?: string[]; feedbackCode?: string;
     <section v-else-if="!material" class="empty-panel" role="status">
       <strong>{{ ['ready', 'empty'].includes(effectiveStatus) ? ui.t('b11.listening.noMaterial') : statusTitle }}</strong>
       <p>{{ ['ready', 'empty'].includes(effectiveStatus) ? ui.t('b11.state.empty') : effectiveMessage }}</p>
+      <CanonicalBridge v-if="['ready', 'empty'].includes(effectiveStatus)" :courses="[{ code: 'DEMO-P5-LISTEN-A2', title: 'Demo listening minute', summary: 'One minute of scripted audio text.', level: 'A2' }]" />
       <button
         v-if="['offline', 'error', 'permission', 'revoked', 'expired', 'recovering'].includes(effectiveStatus)"
         class="secondary-button"
