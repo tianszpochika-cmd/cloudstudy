@@ -250,6 +250,14 @@
 * 修了2个拦路bug [实测]：① `learning_id_sequence`停在V2种子值而fixture行已占区间（domain建单500，5个序列前向修复，数据无损）；② B10 `snapshot_id` BIGINT装不下`snap_`（沿用B3轮“版号carry+hash全量”规矩）。
 * 口径：P1定级本期无dedicated UI页，ensure由API消费方在定级后自动调（E2E即消费方）；Kafka saga待中继落地；mobile旧路径不动。
 
+## 39. 盖错推广：11服务 + 模板（2026-09-27）
+
+* 改动 [实测]：`audit/commerce/gamification/learner/content/admin-ops/analytics/social/media/learning/assessment` 11个服务 + `service-template`，逐个加 `.dispatcherTypeMatchers(ERROR).permitAll()`（5行：1行放行+4行安全依据注释，与notification修法同构）。网关（WebFlux另一模型）与已修3个（iam/workflow/notification）不动。
+* 验证 [实测]：11服务全量单测绿（gamification 69/commerce 93/admin-ops 77/audit 27/media 82/social 86/analytics 51/learner 76/content 240/learning 170/assessment 105）；`tmp/err-probe.mjs` 14/14——11服务框架404见光（不再是403）+ 2处400见光；浏览器零错页1张。证据：`evidence/live/2026-09-27/error-masking/`。
+* 挖出1个同类掩盖 [实测]：social自带`@ExceptionHandler(Exception.class)`兜底把框架404吞成500（与denyAll异构同症）。修法：404/405异常rethrow归Boot `/error`诚实渲染；social-404复验通过。iam两处同写法属已验范围，不动。
+* 探针误报纠正：learner-400首轮FAIL系探针用POST打了只认GET/PUT的口（405本就是见光），改PUT复验400通过。
+* 三态总表：本轮不翻页verdict（鲁棒性修复，无页面行为变更）。
+
 ## 35. runner树崩与孤儿进程（2026-09-26，运维教训）
 
 * 现象：runner树先后死两次（iam/assessment报`exited: code=4294967295`整树归零）；另发现树死后有子进程变孤儿继续占端口（如assessment PID 40664持18091且readiness 200），导致后续重起报端口占用再死，形成连环。

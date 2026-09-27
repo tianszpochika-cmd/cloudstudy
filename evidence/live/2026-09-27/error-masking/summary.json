@@ -1,0 +1,79 @@
+{
+  "task": "ERROR-MASKING-11",
+  "capturedAt": "2026-09-27T15:24:41.060Z",
+  "result": "PASS",
+  "passed": 14,
+  "total": 14,
+  "checks": [
+    {
+      "n": "login",
+      "ok": true,
+      "o": 200
+    },
+    {
+      "n": "audit-service-404",
+      "ok": true,
+      "o": "404"
+    },
+    {
+      "n": "commerce-service-404",
+      "ok": true,
+      "o": "404"
+    },
+    {
+      "n": "gamification-service-404",
+      "ok": true,
+      "o": "404"
+    },
+    {
+      "n": "learner-service-404",
+      "ok": true,
+      "o": "404"
+    },
+    {
+      "n": "content-service-404",
+      "ok": true,
+      "o": "404"
+    },
+    {
+      "n": "admin-ops-service-404",
+      "ok": true,
+      "o": "404"
+    },
+    {
+      "n": "analytics-service-404",
+      "ok": true,
+      "o": "404"
+    },
+    {
+      "n": "social-service-404",
+      "ok": true,
+      "o": "404"
+    },
+    {
+      "n": "media-service-404",
+      "ok": true,
+      "o": "404"
+    },
+    {
+      "n": "learning-service-404",
+      "ok": true,
+      "o": "404"
+    },
+    {
+      "n": "assessment-service-404",
+      "ok": true,
+      "o": "404"
+    },
+    {
+      "n": "learner-400",
+      "ok": true,
+      "o": "malformed body"
+    },
+    {
+      "n": "assessment-400",
+      "ok": true,
+      "o": "malformed body"
+    }
+  ]
+}
