@@ -38,7 +38,7 @@
 | PAGE-P1-ONB-GOAL | PASS | demo-e2e（四轨道存目标） |
 | PAGE-P1-ASSESSMENT | PASS | deep-chain（Web答2题）+ mobile-assessment（触屏答2题） |
 | PAGE-P1-ASSESSMENT-RESULT | PASS | 双端报告卡 + study-loop |
-| PAGE-P1-PLAN-MAP | HONEST-EMPTY | 计划数据已接通（plans:ensure落库）；页面映射未验UI |
+| PAGE-P1-PLAN-MAP | PASS | 确保计划用户浏览见ACTIVE计划（15分钟/v2，零错） |
 | PAGE-P1-LEARN-HOME | PASS | 计划接线：定级→ensure→home READY见计划横幅（plan-wiring-e2e） |
 | PAGE-P1-TODAY | HONEST-EMPTY | API today有任务；页面缺V2任务标题映射（后续） |
 | PAGE-P1-COURSE-SHELF | PASS | course-shelf（6/6+点进会话） |
@@ -85,6 +85,6 @@
 
 ## 汇总
 
-* PASS 38 / HONEST-EMPTY 18 / BLOCKED 0（HONEST-EMPTY均为M8冻结项、r20设计关闭、已登记后续或天然空态，逐行见表）。
+* PASS 39 / HONEST-EMPTY 17 / BLOCKED 0（HONEST-EMPTY均为M8冻结项、r20设计关闭、已登记后续或天然空态，逐行见表）。
 * 通知偏好写：R102 根因定位（无效请求体 + `/error`转发被denyAll盖错），有效体200持久，阻塞摘除；遗留owner项：`/error`盖错真错误、W4-`REVIEW_DUE`考古。
 * BLOCKED 剩1项（ADMIN-RISK）；正典题库Ph2/B3交互/计划接线/盖错推广/送审门已闭环（见 demo 文档§34-40）；M8冻结、W4考古不做。
