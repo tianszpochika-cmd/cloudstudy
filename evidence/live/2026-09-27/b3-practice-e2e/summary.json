@@ -1,0 +1,99 @@
+{
+  "task": "B3-PRACTICE-E2E",
+  "capturedAt": "2026-09-27T12:41:21.347Z",
+  "result": "PASS",
+  "passed": 18,
+  "total": 18,
+  "checks": [
+    {
+      "n": "login",
+      "ok": true,
+      "o": 200
+    },
+    {
+      "n": "b3-grammar-stems",
+      "ok": true,
+      "o": "200 n=3"
+    },
+    {
+      "n": "b3-grammar-sealed",
+      "ok": true,
+      "o": "no answer material"
+    },
+    {
+      "n": "b3-grammar-practiceref",
+      "ok": true,
+      "o": "{\"contentCode\":\"p1.placement.v1\",\"contentVersionId\":266100,\"questionItemId\":\"266004\"}"
+    },
+    {
+      "n": "b3-reading-stems",
+      "ok": true,
+      "o": "200 n=2"
+    },
+    {
+      "n": "b3-reading-sealed",
+      "ok": true,
+      "o": "no answer material"
+    },
+    {
+      "n": "b3-legacy-still-empty",
+      "ok": true,
+      "o": "200 legacy unbound stays empty"
+    },
+    {
+      "n": "b10-bank-session",
+      "ok": true,
+      "o": "200 pin=p1.placement.v1/266100"
+    },
+    {
+      "n": "b10-bank-session-replay",
+      "ok": true,
+      "o": "same key same session"
+    },
+    {
+      "n": "b10-correct-FULL",
+      "ok": true,
+      "o": "200 bucket=FULL"
+    },
+    {
+      "n": "b10-wrong-attempt",
+      "ok": true,
+      "o": "200 bucket=ZERO"
+    },
+    {
+      "n": "b10-mistakes",
+      "ok": true,
+      "o": "200 n=1"
+    },
+    {
+      "n": "mistake-retry",
+      "ok": true,
+      "o": "200"
+    },
+    {
+      "n": "mistake-variant",
+      "ok": true,
+      "o": "200"
+    },
+    {
+      "n": "b10-report",
+      "ok": true,
+      "o": "200"
+    },
+    {
+      "n": "b10-recovery",
+      "ok": true,
+      "o": "200 session reread"
+    },
+    {
+      "n": "b10-reading-session",
+      "ok": true,
+      "o": "200"
+    },
+    {
+      "n": "b10-reading-FULL",
+      "ok": true,
+      "o": "200 bucket=FULL"
+    }
+  ]
+}

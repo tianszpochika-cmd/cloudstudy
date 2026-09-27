@@ -1,0 +1,12 @@
+{
+  "capturedAt": "2026-09-27T12:35:02.000Z",
+  "steps": {
+    "register": true,
+    "target": true,
+    "drillsListed": true,
+    "answered": true,
+    "feedbackShown": true
+  },
+  "errors": [],
+  "note": "answering is best-effort across widget variants; grading truth is the API E2E summary.json"
+}

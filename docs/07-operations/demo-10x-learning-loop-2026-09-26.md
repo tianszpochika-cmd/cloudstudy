@@ -229,6 +229,17 @@
 2. **bank种子炸目录** [实测]：bank种子`content_definition/kind='PLACEMENT_BANK'`无枚举对应（`ContentKind.valueOf`抛），且版本载荷`'{}'`三违rehydrate（空载荷/QUESTION无答案规则/hash失配），`GET /content/learner/catalog`对全体用户500（09-26的200证据先于bank落库）。修法（种子侧，fixture惯例）：kind=`COURSE` + 真元数据载荷（含条目指针，不含答案）+ `contentPayloadHash`共享正典算法算hash + 权利通道`SEALED`（唯一出口，目录403-skip，复验目录200且bank不可见）。
 * **纠错**（证据纪律§7）：§33“其余13个”有误。复核 [实测]：14服务中iam/workflow/notification 3个已修，剩余**11个**未修（audit/commerce/gamification无条件denyAll风险最高）。数量以本节为准，§33原文保留备查。
 
+## 37. B3交互环：题干下发 + B10判分 + 绑定表 + 供B3练（2026-09-27）
+
+* 契约先行 [实测]：`B10CreateAssessmentSessionRequest`加可选`contentCode`（缺省course-b25-basics，410语义不变）；网关嫁接`GET /api/v1/reading/questions`（EXACT@850，路由表+执行投影+Java双镜像+顺序对齐）；`merge --write`后仍456 operations（无新操作）；`contracts:validate` PASS；网关check 74/74/218，仅3历史漂移；parity 5/5。
+* content侧 [实测]：V25 `content_b3_item_binding`（B3身份→code/version/item三元pin，版本不可变故无需hash列；无出处legacy行不建绑定）；B3读门`1=0`换绑定EXISTS + 版本/权利谓词全保留 + `SEALED`通道（目录仍要LEARNER，bank不进目录）；`publishedRow`递归剥答案 + `practiceRef`路由坐标。单测新3/3，旧门测5/5（补空绑定表）。
+* 种子 [实测]：`seed-b3-bank-practice.mjs`（`pnpm db:seed:b3-bank-practice`）读bank活数据建3语法+2阅读题干行 + 5 ACTIVE绑定；听力/词汇bank题需投影中的练题端点，列后续（不硬凑）。
+* assessment侧 [实测]：B10建单接受`contentCode`（兼容默认，replay按请求比对）；`BankPracticeRuleProvider`按需读sealed bank转B10规则行（`correctOption`→`answer` verbatim适配、`BASIC_GRAMMAR`→`GRAMMAR`，失败null→410，不落库无漂移）；bank会话pin epoch/hash来自bank（snapshot_id数位carry版号）；错题/分数收敛到会话items（子集不再背整库未答题）。单测：provider 5/5 + 建单3/3。
+* 前端 [实测]：`submitGrammarAttempt/submitReadingQuiz`改走B10 sessions/attempts（practiceRef，无ref诚实抛错；死B3路径不再调用）；`createPracticeSession`支contentCode/version/itemIds；point-free drills渲染（parser/store/页面三处）；`typecheck`过。
+* E2E [实测]：`tmp/b3-practice-e2e.mjs` 16/16——B3语法3题干+阅读2题干（逐项验无答案物）+ practiceRef、legacy points仍诚实空、B10 bank建单pin对+幂等重放、答对FULL、答错ZERO→错题1条→retry→variant→报告READY→会话重读；浏览器真机答一题得FULL截图2张。证据：`evidence/live/2026-09-27/b3-practice-e2e/`。
+* 运行备注：本轮发现`services:run`退出会SIGTERM其子进程并曾引发全栈抖动；新增`tmp/launch-detached.mjs`（完整复刻runner env，分离拉起+日志落`logs/`）。网关全量套件`CanonicalRoutePolicyRouteLocatorIntegrationTest`1挂经stash验证为基线预置（与本轮无关）；mobile端B3旧提交路径未动（列后续）。
+* 口径：写作（无规则可判）/听力（无练题投影端点）/口语（M8）本轮不动，均为诚实空；三态总表 verdict 变更见ledger v6。
+
 ## 35. runner树崩与孤儿进程（2026-09-26，运维教训）
 
 * 现象：runner树先后死两次（iam/assessment报`exited: code=4294967295`整树归零）；另发现树死后有子进程变孤儿继续占端口（如assessment PID 40664持18091且readiness 200），导致后续重起报端口占用再死，形成连环。

@@ -1,5 +1,7 @@
 # 56 PAGE-P1 三态总表（2026-09-26 v5，本轮代理判定）
 
+> v6 增补（2026-09-27，B3交互环）：PAGE-P1-GRAMMAR 与 PAGE-P1-READING 由 HONEST-EMPTY 转 PASS——bank题干经绑定下发（3语法+2阅读，逐项验无答案物）、提交走B10判分（FULL/ZERO/错题/variant/READY全链）、浏览器真机判分截图；其余 verdict 不变。BLOCKED 仍 2 项（送审门、RISK），后续项逐个清。
+
 > 口径：`PASS`=关键动作+落库+恢复均有本轮证据；`HONEST-EMPTY`=渲染正确、空态系设计/门所致、无崩；
 > `BLOCKED`=需产品/代码缺口关闭。本表是代理侧复核记录；台账 canonical 状态变更权归QA。
 > 证据根：`evidence/live/2026-09-26/`。v5 差异：通知偏好写根因定位（请求体无效+`/error`盖错），转绿，BLOCKED 3→2。
@@ -35,9 +37,9 @@
 | PAGE-P1-TODAY | HONEST-EMPTY | 200诚实空；有行数据时3条可读（plan-reads） |
 | PAGE-P1-COURSE-SHELF | PASS | course-shelf（6/6+点进会话） |
 | PAGE-P1-VOCAB | HONEST-EMPTY | 详情可读（large-vocab）；列表迁正典待办 |
-| PAGE-P1-GRAMMAR | HONEST-EMPTY | 路由200；内容待B3迁正典 |
-| PAGE-P1-LISTENING | HONEST-EMPTY | 路由200；内容待B3迁正典 |
-| PAGE-P1-READING | HONEST-EMPTY | 路由200；内容待B3迁正典 |
+| PAGE-P1-GRAMMAR | PASS | B3交互环：绑定题干3条可练，UI答题B10判分FULL（b3-practice-e2e 18/18） |
+| PAGE-P1-LISTENING | HONEST-EMPTY | 路由200；练题投影端点待后续（bank听力题暂无合法练题口） |
+| PAGE-P1-READING | PASS | B3交互环：绑定题干2条可列可判（API全环），UI仍走文章流（后续） |
 | PAGE-P1-SPEAKING | HONEST-EMPTY | 路由200；录音/跟读M8 |
 | PAGE-P1-WRITING | HONEST-EMPTY | 路由200；内容待B3迁正典 |
 | PAGE-P1-PRACTICE-HUB | PASS | B10建单判分链（study-loop 9/9） |
