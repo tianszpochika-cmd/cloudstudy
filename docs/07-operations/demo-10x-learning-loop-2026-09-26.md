@@ -213,3 +213,9 @@
 * 新增 `content-service` V24 `content_placement_item`（数字ID、维度、题干、选项、答案规则、ACTIVE权利约束）+ `seed-placement-bank.mjs`（10题真题，3/3/2/2与`P1PlacementScorer.requireManifest`对齐，已实测计数）。
 * bank版本266100、题目266001–266010，fixture惯例（LOCAL_FIXTURE、可重跑）。
 * 下步Phase 2：content内部sealed端点 + assessment HTTP适配 + 契约内操作+1 + E2E真判分。
+
+## 35. runner树崩与孤儿进程（2026-09-26，运维教训）
+
+* 现象：runner树先后死两次（iam/assessment报`exited: code=4294967295`整树归零）；另发现树死后有子进程变孤儿继续占端口（如assessment PID 40664持18091且readiness 200），导致后续重起报端口占用再死，形成连环。
+* 处置：重起前必查孤儿（`netstat`对`java.exe`进程启动时间），先`Stop-Process`清场再起；`16端口+gw200+16java三对`才算健康。
+* 未解：子进程-1退出的根因（无hs_err、内存充足67G/37G空闲）；下次复现时加堆转储再查，不阻塞业务验证。
