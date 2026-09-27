@@ -4028,8 +4028,11 @@
           "contentVersionId",
           "mode"
         ],
-        "description": "The client may request a content version but cannot provide tenant, owner, role, score or grading rule facts.",
+        "description": "The client may request a content version but cannot provide tenant, owner, role, score or grading rule facts. An optional contentCode names the gradable content (default course-b25-basics); the server resolves rules for the named (contentCode, contentVersionId) pair and answers 410 when it is unavailable.",
         "properties": {
+          "contentCode": {
+            "$ref": "#/components/schemas/B10ContentCode"
+          },
           "contentVersionId": {
             "$ref": "#/components/schemas/B10Int64Id"
           },

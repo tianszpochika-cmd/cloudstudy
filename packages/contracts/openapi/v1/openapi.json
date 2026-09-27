@@ -55639,8 +55639,11 @@
           "contentVersionId",
           "mode"
         ],
-        "description": "The client may request a content version but cannot provide tenant, owner, role, score or grading rule facts.",
+        "description": "The client may request a content version but cannot provide tenant, owner, role, score or grading rule facts. An optional contentCode names the gradable content (default course-b25-basics); the server resolves rules for the named (contentCode, contentVersionId) pair and answers 410 when it is unavailable.",
         "properties": {
+          "contentCode": {
+            "$ref": "#/components/schemas/B10ContentCode"
+          },
           "contentVersionId": {
             "$ref": "#/components/schemas/B10Int64Id"
           },
@@ -80217,6 +80220,22 @@
         "compatibilityMode": "NONE"
       },
       {
+        "ruleId": "reading-questions-read",
+        "priority": 850,
+        "match": {
+          "type": "EXACT",
+          "path": "/api/v1/reading/questions",
+          "methods": [
+            "GET"
+          ]
+        },
+        "upstreamOwner": "content-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "AUTHENTICATED_READ",
+        "compatibilityMode": "NONE"
+      },
+      {
         "ruleId": "writing-prompts-read",
         "priority": 850,
         "match": {
@@ -81771,6 +81790,30 @@
             "targetUriConfig": "gateway.b14.service-base-urls.content",
             "pathStrategy": "REWRITE_PATH",
             "targetPathTemplate": "/internal/v1/content/learner/grammar/mastery",
+            "controllerEvidence": {
+              "sourcePath": "services/content-service/src/main/java/com/englishflow/content/web/B3ContentJdbcController.java",
+              "requestMapping": "/internal/v1/content/learner"
+            }
+          }
+        ]
+      },
+      {
+        "ruleId": "reading-questions-read",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "reading-questions-read.list",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/reading/questions",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "content-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.content",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/content/learner/reading/questions",
             "controllerEvidence": {
               "sourcePath": "services/content-service/src/main/java/com/englishflow/content/web/B3ContentJdbcController.java",
               "requestMapping": "/internal/v1/content/learner"

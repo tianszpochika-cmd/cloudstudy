@@ -539,6 +539,9 @@ public final class GatewayRouteExecutionPolicy {
                 rewrite("dictionary", "/api/v1/reading/articles/{articleId}/dictionary", "/internal/v1/content/learner/reading/articles/{articleId}/dictionary", CONTENT_B3_LEARNER, HttpMethod.GET));
         add(definitions, "grammar-exercises-read",
                 rewrite("list", "/api/v1/grammar/exercises", "/internal/v1/content/learner/grammar/exercises", CONTENT_B3_LEARNER, HttpMethod.GET));
+        // B3 interaction loop: bound bank reading questions (stems only).
+        add(definitions, "reading-questions-read",
+                rewrite("list", "/api/v1/reading/questions", "/internal/v1/content/learner/reading/questions", CONTENT_B3_LEARNER, HttpMethod.GET));
         add(definitions, "grammar-mastery-read",
                 rewrite("mastery", "/api/v1/grammar/mastery", "/internal/v1/content/learner/grammar/mastery", CONTENT_B3_LEARNER, HttpMethod.GET));
         add(definitions, "writing-prompts-read",

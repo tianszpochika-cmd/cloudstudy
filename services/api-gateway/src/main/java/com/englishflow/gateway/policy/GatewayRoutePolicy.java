@@ -159,6 +159,9 @@ public final class GatewayRoutePolicy {
             rule("reading-dictionary-read", 850, MatchType.EXACT, "/api/v1/reading/articles/{articleId}/dictionary", "content-service", "INTERNAL_V1", "AUTHENTICATED", AuthClass.AUTHENTICATED_READ, "NONE", HttpMethod.GET),
             rule("grammar-exercises-read", 850, MatchType.EXACT, "/api/v1/grammar/exercises", "content-service", "INTERNAL_V1", "AUTHENTICATED", AuthClass.AUTHENTICATED_READ, "NONE", HttpMethod.GET),
             rule("grammar-mastery-read", 850, MatchType.EXACT, "/api/v1/grammar/mastery", "content-service", "INTERNAL_V1", "AUTHENTICATED", AuthClass.AUTHENTICATED_READ, "NONE", HttpMethod.GET),
+            // B3 interaction loop: bound bank reading questions served as stems;
+            // every other reading path stays under the assessment-owned prefix.
+            rule("reading-questions-read", 850, MatchType.EXACT, "/api/v1/reading/questions", "content-service", "INTERNAL_V1", "AUTHENTICATED", AuthClass.AUTHENTICATED_READ, "NONE", HttpMethod.GET),
             rule("writing-prompts-read", 850, MatchType.EXACT, "/api/v1/writing/prompts", "content-service", "INTERNAL_V1", "AUTHENTICATED", AuthClass.AUTHENTICATED_READ, "NONE", HttpMethod.GET),
             rule("listening-materials-read", 850, MatchType.EXACT, "/api/v1/listening/materials", "content-service", "INTERNAL_V1", "AUTHENTICATED", AuthClass.AUTHENTICATED_READ, "NONE", HttpMethod.GET),
             rule("speaking-recordings", 800, MatchType.PREFIX, "/api/v1/speaking/recordings", "media-service", "INTERNAL_V1", "AUTHENTICATED", AuthClass.AUTHENTICATED_WRITE, "NONE", HttpMethod.GET, HttpMethod.POST, HttpMethod.DELETE),

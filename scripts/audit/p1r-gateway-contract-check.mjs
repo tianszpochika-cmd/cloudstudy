@@ -16,7 +16,9 @@ const EXPECTED_INTERNAL_OPERATION_COUNT = 63;
 // reads (reading x3, grammar x2, writing x1, listening x1). The 56 baseline
 // predates earlier rounds that added moderation/sync/deletion/export rules
 // without rebasing; those owners still owe the M1-004 rebaseline.
-const EXPECTED_ROUTE_RULE_COUNT = 73;
+// B3 interaction (2026-09-27): +1 reading/questions EXACT@850 (bound bank
+// items become listable; route/execution counts move together, no new operation).
+const EXPECTED_ROUTE_RULE_COUNT = 74;
 // Execution targets are deliberately separate from the broad route-owner
 // policy.  A route rule answers who is authoritative; an execution projection
 // answers whether this exact, canonical public operation has a verified local
@@ -25,8 +27,10 @@ const EXPECTED_ROUTE_RULE_COUNT = 73;
 // P4 demo loop (2026-09-26): 210 pre-existing available + the same 7 skill
 // reads moving unavailable -> available. Zero new operations (365 -> 393 public
 // drift, iam-deletions frozen reason and M2-001 digest drift stay open).
-const EXPECTED_EXECUTION_PLAN_COUNT = 73;
-const EXPECTED_AVAILABLE_EXECUTION_OPERATION_COUNT = 217;
+// B3 interaction (2026-09-27): +1 available (reading/questions, bound bank
+// items); plan and execution counts move together, no new operation.
+const EXPECTED_EXECUTION_PLAN_COUNT = 74;
+const EXPECTED_AVAILABLE_EXECUTION_OPERATION_COUNT = 218;
 // This is a reviewed semantic binding for the finite M2-001 target table. It
 // deliberately prevents a target from silently moving to a different, still
 // valid controller method without a corresponding Gateway parity change.
