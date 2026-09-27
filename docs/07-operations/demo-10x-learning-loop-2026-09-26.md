@@ -207,3 +207,9 @@
 * 改动：`NotificationSecurityConfiguration` 加 `.dispatcherTypeMatchers(ERROR).permitAll()`（5行，注释写明安全依据）。
 * 验证：无效体回诚实400、有效体200持久、study 9/9 + r7 9/9、单测12/12；其余13个同写法服务列后续（不动）。
 * 证据：本轮命令输出 + `demo-study-loop/r7-guards.json`。
+
+## 34. 正典题库Phase 1：bank落库（2026-09-26，EPIC-正典定级）
+
+* 新增 `content-service` V24 `content_placement_item`（数字ID、维度、题干、选项、答案规则、ACTIVE权利约束）+ `seed-placement-bank.mjs`（10题真题，3/3/2/2与`P1PlacementScorer.requireManifest`对齐，已实测计数）。
+* bank版本266100、题目266001–266010，fixture惯例（LOCAL_FIXTURE、可重跑）。
+* 下步Phase 2：content内部sealed端点 + assessment HTTP适配 + 契约内操作+1 + E2E真判分。
