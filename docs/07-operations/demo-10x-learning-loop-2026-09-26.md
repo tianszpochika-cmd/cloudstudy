@@ -201,3 +201,9 @@
 * `tmp/bridge-check.mjs` + `tmp/writing-check.mjs`：4页桥渲染+点通会话，零页面异常（job pwsh-204部分、pwsh-209全绿）。
 * 口语无正典课，保持诚实空（不硬凑）。
 * 证据：`demo-e2e/skill-bridges/`（四页截图+点通记录+summary）。
+
+## 33. 盖错修复落地（2026-09-26）
+
+* 改动：`NotificationSecurityConfiguration` 加 `.dispatcherTypeMatchers(ERROR).permitAll()`（5行，注释写明安全依据）。
+* 验证：无效体回诚实400、有效体200持久、study 9/9 + r7 9/9、单测12/12；其余13个同写法服务列后续（不动）。
+* 证据：本轮命令输出 + `demo-study-loop/r7-guards.json`。

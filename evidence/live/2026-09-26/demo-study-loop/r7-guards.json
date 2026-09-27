@@ -1,6 +1,6 @@
 {
   "task": "DEMO-R7-GUARDS",
-  "capturedAt": "2026-09-26T18:46:54.739Z",
+  "capturedAt": "2026-09-27T08:02:05.987Z",
   "result": "PASS",
   "passed": 9,
   "total": 9,
@@ -23,22 +23,22 @@
     {
       "n": "devices-setup",
       "ok": true,
-      "o": "sid=3a787f80-dab3-407f-a0a9-f63b2419e81e"
+      "o": "sid=c929e2a4-e9b4-430d-9f1f-5a8bf0565aed"
     },
     {
       "n": "second-session",
       "ok": true,
-      "o": "sid=ed6f1e98-ea3a-4910-a8c5-6265c8998d57"
+      "o": "sid=890e6f61-4b1f-4bb6-9bfe-29b03852cdb1"
     },
     {
       "n": "revoke-other",
       "ok": true,
-      "o": "200 {\"data\":{\"sessionId\":\"ed6f1e98-ea3a-4910-a8c5-6265c8998d57\",\"status\":\"REVOKED\",\"revocationScope\":\"TARGET_SESSION_AND_TOK"
+      "o": "200 {\"data\":{\"sessionId\":\"890e6f61-4b1f-4bb6-9bfe-29b03852cdb1\",\"status\":\"REVOKED\",\"revocationScope\":\"TARGET_SESSION_AND_TOK"
     },
     {
       "n": "devices-reflect",
       "ok": true,
-      "o": "200 {\"data\":{\"devices\":[{\"deviceId\":\"0622c948-d208-4c7d-af0a-39abfbeefc1f\",\"deviceType\":\"WEB\",\"status\":\"ACTIVE\",\"lastActiveAt\":\"2026-09-26T18:46:53.318870Z\"},{\"deviceId\":\"a89c537c-4598-49af-892f-7a9212ed1393\",\"deviceType\":\"WEB\",\"status\":\"ACTIVE\",\"lastActiveAt\":\"2026-09-26T18:46:53.006728Z\"},{\"deviceId\":\"3c149b1f-1046-456f-a385-1f17f07f9bf9\",\"deviceType\":\"WEB\",\"status\":\"ACTIVE\",\"lastActiveAt\":\"2026-09-"
+      "o": "200 {\"data\":{\"devices\":[{\"deviceId\":\"39df0f77-37a5-418d-ad63-285c36fd8d96\",\"deviceType\":\"WEB\",\"status\":\"ACTIVE\",\"lastActiveAt\":\"2026-09-27T08:02:04.743119Z\"},{\"deviceId\":\"c160628c-848b-4cbf-8633-be6e66686ff0\",\"deviceType\":\"WEB\",\"status\":\"ACTIVE\",\"lastActiveAt\":\"2026-09-27T08:02:04.451046Z\"},{\"deviceId\":\"b97bdec3-c2a5-431a-ad6d-38ec9e9a8759\",\"deviceType\":\"WEB\",\"status\":\"ACTIVE\",\"lastActiveAt\":\"2026-09-"
     },
     {
       "n": "notif-pref-read",
@@ -48,7 +48,7 @@
     {
       "n": "notif-pref-write",
       "ok": true,
-      "o": "200 {\"data\":{\"category\":\"REVIEW\",\"channel\":\"PUSH\",\"enabled\":false,\"locale\":\"zh-CN\",\"consentVersion\":1,\"dndWindow\":{\"startLocalTime\":\"22:00\",\"endLocalTime\":\"07:00\",\""
+      "o": "200 {\"data\":{\"category\":\"REVIEW\",\"channel\":\"PUSH\",\"enabled\":false,\"locale\":\"zh-CN\",\"consentVersion\":1,\"dndWindow\":{\"startLocalTime\":\"22:00\",\"timezone\":\"Asia/Shangha"
     }
   ]
 }
