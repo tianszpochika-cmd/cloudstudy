@@ -5277,7 +5277,7 @@
       "externalExposure": "DENY",
       "externalCors": "DENY",
       "requiredCallerIdentity": "VALIDATED_WORKLOAD_IDENTITY",
-      "baselineOperationCount": 62,
+      "baselineOperationCount": 63,
       "networkIsolationRequired": true,
       "applicationDenyIsSufficient": false
     },

@@ -38076,6 +38076,53 @@
           }
         }
       }
+    },
+    "/internal/v1/content/placement-bank/sealed": {
+      "get": {
+        "tags": [
+          "b10-content-snapshot"
+        ],
+        "summary": "Read the sealed P1 placement bank owned by content-service",
+        "operationId": "getPlacementBankSealedSnapshot",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-contract": {
+          "owner": "content-service",
+          "consumer": "assessment-service",
+          "access": "forwarded verified learner JWT only; never projected by the Gateway",
+          "transportInterim": "assessment-service forwards the incoming verified learner JWT until validated workload identity lands; the route stays internal-only (127.0.0.1, Gateway DENY)",
+          "answerProtection": "answer rules cross this internal boundary only and never reach the browser; assessment splits learner items from sealed scoring input",
+          "bankRule": "P1_PLACEMENT_V1",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+        },
+        "responses": {
+          "200": {
+            "description": "Sealed placement bank snapshot",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlacementBankSealedSnapshotResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/B10Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/B10Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/B10NotFound"
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -79483,6 +79530,171 @@
             "format": "date-time"
           }
         }
+      },
+      "PlacementBankSealedSnapshotResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/PlacementBankSealedSnapshot"
+          }
+        }
+      },
+      "PlacementBankSealedSnapshot": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "bankCode",
+          "contentVersionId",
+          "contentEpoch",
+          "snapshotId",
+          "snapshotHash",
+          "answerRuleSetVersion",
+          "answerRuleVersion",
+          "ruleDigest",
+          "items"
+        ],
+        "description": "Sealed P1 placement bank. Answer rules cross the internal boundary only; the browser only ever sees itemId/itemCode/itemType/stem/options/displayOrder.",
+        "properties": {
+          "bankCode": {
+            "type": "string",
+            "enum": [
+              "P1_PLACEMENT_V1"
+            ]
+          },
+          "contentVersionId": {
+            "$ref": "#/components/schemas/B10Int64Id"
+          },
+          "contentEpoch": {
+            "$ref": "#/components/schemas/B10ContentEpoch"
+          },
+          "snapshotId": {
+            "$ref": "#/components/schemas/B10SnapshotId"
+          },
+          "snapshotHash": {
+            "$ref": "#/components/schemas/B10Sha256"
+          },
+          "answerRuleSetVersion": {
+            "$ref": "#/components/schemas/B10RuleVersion"
+          },
+          "answerRuleVersion": {
+            "$ref": "#/components/schemas/B10RuleVersion"
+          },
+          "ruleDigest": {
+            "$ref": "#/components/schemas/B10Sha256"
+          },
+          "items": {
+            "type": "array",
+            "minItems": 10,
+            "maxItems": 10,
+            "items": {
+              "$ref": "#/components/schemas/PlacementBankSealedItem"
+            }
+          }
+        }
+      },
+      "PlacementBankSealedItem": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "itemId",
+          "itemCode",
+          "itemType",
+          "dimension",
+          "displayOrder",
+          "stem",
+          "options",
+          "questionType",
+          "scoringVersion",
+          "maxScore",
+          "contentCode",
+          "contentVersionId",
+          "answerRule"
+        ],
+        "properties": {
+          "itemId": {
+            "$ref": "#/components/schemas/B10Int64Id"
+          },
+          "itemCode": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 128
+          },
+          "itemType": {
+            "type": "string",
+            "enum": [
+              "VOCABULARY",
+              "GRAMMAR",
+              "READING",
+              "LISTENING"
+            ]
+          },
+          "dimension": {
+            "type": "string",
+            "enum": [
+              "VOCABULARY",
+              "BASIC_GRAMMAR",
+              "READING",
+              "LISTENING"
+            ]
+          },
+          "displayOrder": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10
+          },
+          "stem": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          },
+          "options": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 32,
+            "items": {
+              "$ref": "#/components/schemas/B10ContentItemOption"
+            }
+          },
+          "questionType": {
+            "type": "string",
+            "enum": [
+              "CHOICE"
+            ]
+          },
+          "scoringVersion": {
+            "$ref": "#/components/schemas/B10RuleVersion"
+          },
+          "maxScore": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "contentCode": {
+            "$ref": "#/components/schemas/B10ContentCode"
+          },
+          "contentVersionId": {
+            "$ref": "#/components/schemas/B10Int64Id"
+          },
+          "answerRule": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "correctOption"
+            ],
+            "description": "Internal-only scoring input. Never projected to the browser.",
+            "properties": {
+              "correctOption": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64
+              }
+            }
+          }
+        }
       }
     },
     "requestBodies": {},
@@ -84764,7 +84976,7 @@
       "externalExposure": "DENY",
       "externalCors": "DENY",
       "requiredCallerIdentity": "VALIDATED_WORKLOAD_IDENTITY",
-      "baselineOperationCount": 62,
+      "baselineOperationCount": 63,
       "networkIsolationRequired": true,
       "applicationDenyIsSufficient": false
     },

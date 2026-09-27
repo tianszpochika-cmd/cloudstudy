@@ -8,7 +8,10 @@ const DEFAULT_INPUT = path.join('packages', 'contracts', 'fragments', 'p1r-gatew
 const DEFAULT_CANONICAL = path.join('packages', 'contracts', 'openapi', 'v1', 'openapi.json');
 const ROOT_EXTENSION = 'x-p1r-gateway-boundary';
 const EXPECTED_PUBLIC_OPERATION_COUNT = 365;
-const EXPECTED_INTERNAL_OPERATION_COUNT = 62;
+const EXPECTED_INTERNAL_OPERATION_COUNT = 63;
+// Ph2 placement bank (2026-09-27): +1 internal sealed-bank read
+// (GET /internal/v1/content/placement-bank/sealed, owner content-service,
+// consumer assessment-service, Gateway DENY). Route/execution counts unchanged.
 // P4 demo loop (2026-09-26): 66 pre-existing rules + 7 owner-verified B3 skill
 // reads (reading x3, grammar x2, writing x1, listening x1). The 56 baseline
 // predates earlier rounds that added moderation/sync/deletion/export rules
