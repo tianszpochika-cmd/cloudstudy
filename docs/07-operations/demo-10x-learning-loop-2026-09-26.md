@@ -214,6 +214,21 @@
 * bank版本266100、题目266001–266010，fixture惯例（LOCAL_FIXTURE、可重跑）。
 * 下步Phase 2：content内部sealed端点 + assessment HTTP适配 + 契约内操作+1 + E2E真判分。
 
+## 35. 正典题库Phase 2：sealed内端点 + HTTP适配 + 真判分（2026-09-27）
+
+* 契约先行 [实测]：`b10-learning-assessment-content` fragment 新增 `GET /internal/v1/content/placement-bank/sealed`（`getPlacementBankSealedSnapshot`，bearerAuth转发已验JWT、网关永不投影）+ 3个schema；`merge --write`后canonical 455→456 operations；网关内部基线62→63（fragment与check脚本同步，无新增漂移）；`contracts:validate` PASS；网关check仍仅3项历史漂移；stale-claims PASS。
+* content侧 [实测]：新建 `PlacementBankSealedController`（`/internal/v1/content/placement-bank/sealed`，learner读门，10题3/3/2/2 + 单一contentVersion/scoringVersion + 答案指针对上 served 选项，任一漂移503）；单测`PlacementBankSealedJdbcTest` 5/5。
+* assessment侧 [实测]：新建 `HttpPlacementBankPort`（JDK HttpClient零新依赖，转发调用方JWT，bank + 正典`GET /api/v1/learner/targets`真targetId/stateVersion组pin，无ACTIVE目标503；默认启用，`enabled=false`独立回滚）；单测`HttpPlacementBankPortTest` 5/5；既有placement单测15/15全绿。
+* 真判分E2E [实测]：`tmp/p1-placement-e2e.mjs` 15/15 PASS——全对100分/C2/HIGH/ASSESSED、全错0分/A1、报告200、会话/报告重读恢复、幂等重放同会话、client题面逐项验无答案物；落库4 COMPLETED会话 + 4 ASSESSED结果 + 4 outbox事件；浏览器UI onboarding（注册→成人→存目标）零错截图2张。证据：`evidence/live/2026-09-27/p1-placement-e2e/`。
+* 口径说明：P1答错进“报告维度失分”（dimensionSummaries + 0/A1），不写错题队列——错题→补救→变式链已由remedy-loop覆盖（MISTAKES-MASTERY PASS）；P1正典会话本期无dedicated UI页（learner-web沿用B25两题入口，不动），截图为UI目标保存到达 + 零错证明。
+* 挖出并修复2个历史首次执行bug（见§36）。
+
+## 36. Ph2挖出的两个历史bug（2026-09-27，均已修，均有回归单测）
+
+1. **P1完成必500** [实测]：`P1PlacementJdbcController.appendCompletion`往outbox `schema_version VARCHAR(32)`塞了33字符事件名（严格MySQL 1406）。P1完成路径历史上从未被执行过（此前Unavailable占位），FlowTest用mock故不暴露。修法：schema槽改与B10一致的envelope名`assessment.event.v1`（事件名仍在event_name列）；新增`P1PlacementCompletionJdbcTest`（H2真SQL，VARCHAR(32)与生产同宽，永久回归）。
+2. **bank种子炸目录** [实测]：bank种子`content_definition/kind='PLACEMENT_BANK'`无枚举对应（`ContentKind.valueOf`抛），且版本载荷`'{}'`三违rehydrate（空载荷/QUESTION无答案规则/hash失配），`GET /content/learner/catalog`对全体用户500（09-26的200证据先于bank落库）。修法（种子侧，fixture惯例）：kind=`COURSE` + 真元数据载荷（含条目指针，不含答案）+ `contentPayloadHash`共享正典算法算hash + 权利通道`SEALED`（唯一出口，目录403-skip，复验目录200且bank不可见）。
+* **纠错**（证据纪律§7）：§33“其余13个”有误。复核 [实测]：14服务中iam/workflow/notification 3个已修，剩余**11个**未修（audit/commerce/gamification无条件denyAll风险最高）。数量以本节为准，§33原文保留备查。
+
 ## 35. runner树崩与孤儿进程（2026-09-26，运维教训）
 
 * 现象：runner树先后死两次（iam/assessment报`exited: code=4294967295`整树归零）；另发现树死后有子进程变孤儿继续占端口（如assessment PID 40664持18091且readiness 200），导致后续重起报端口占用再死，形成连环。

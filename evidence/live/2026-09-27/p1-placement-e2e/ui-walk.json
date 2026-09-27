@@ -1,0 +1,10 @@
+{
+  "capturedAt": "2026-09-27T11:08:59.458Z",
+  "steps": {
+    "register": true,
+    "adult": true,
+    "target": true
+  },
+  "errors": [],
+  "result": "PASS"
+}

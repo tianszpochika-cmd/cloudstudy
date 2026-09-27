@@ -1,0 +1,84 @@
+{
+  "task": "P1-PLACEMENT-PH2-E2E",
+  "capturedAt": "2026-09-27T11:08:55.546Z",
+  "result": "PASS",
+  "passed": 15,
+  "total": 15,
+  "checks": [
+    {
+      "n": "userA-onboard",
+      "ok": true,
+      "o": "targetId=1153"
+    },
+    {
+      "n": "userB-onboard",
+      "ok": true,
+      "o": "targetId=1154"
+    },
+    {
+      "n": "all-correct:create",
+      "ok": true,
+      "o": "sid=asess_0c2dc06112774e2ab8e0b6b607f433f2 target=1153"
+    },
+    {
+      "n": "all-correct:sealed-client-item",
+      "ok": true,
+      "o": "currentItem carries no answer material"
+    },
+    {
+      "n": "all-correct:create-replay",
+      "ok": true,
+      "o": "same key replays same session"
+    },
+    {
+      "n": "all-wrong:create",
+      "ok": true,
+      "o": "sid=asess_f790810b51f9476b9ff7869f8e6299af target=1154"
+    },
+    {
+      "n": "all-wrong:sealed-client-item",
+      "ok": true,
+      "o": "currentItem carries no answer material"
+    },
+    {
+      "n": "all-wrong:create-replay",
+      "ok": true,
+      "o": "same key replays same session"
+    },
+    {
+      "n": "all-correct:score-100",
+      "ok": true,
+      "o": "score=100"
+    },
+    {
+      "n": "all-correct:cefr-C2",
+      "ok": true,
+      "o": "level=C2"
+    },
+    {
+      "n": "all-correct:confidence",
+      "ok": true,
+      "o": "HIGH/ASSESSED"
+    },
+    {
+      "n": "all-correct:report",
+      "ok": true,
+      "o": "200"
+    },
+    {
+      "n": "all-correct:recovery",
+      "ok": true,
+      "o": "200 session reread with result"
+    },
+    {
+      "n": "all-wrong:score-0",
+      "ok": true,
+      "o": "score=0"
+    },
+    {
+      "n": "all-wrong:cefr-A1",
+      "ok": true,
+      "o": "level=A1"
+    }
+  ]
+}
