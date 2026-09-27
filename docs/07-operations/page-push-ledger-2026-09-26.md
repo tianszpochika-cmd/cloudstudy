@@ -3,6 +3,8 @@
 > v6 增补（2026-09-27，B3交互环）：PAGE-P1-GRAMMAR 与 PAGE-P1-READING 由 HONEST-EMPTY 转 PASS——bank题干经绑定下发（3语法+2阅读，逐项验无答案物）、提交走B10判分（FULL/ZERO/错题/variant/READY全链）、浏览器真机判分截图；其余 verdict 不变。BLOCKED 仍 2 项（送审门、RISK），后续项逐个清。
 >
 > v7 增补（2026-09-27，计划接线）：PAGE-P1-LEARN-HOME 由 HONEST-EMPTY 转 PASS——定级完成→ensure落库→home READY（planningInput+plan内嵌，浏览器见计划横幅）；PAGE-P1-TODAY 保持 HONEST-EMPTY（today API有任务，页面缺V2任务标题映射，列后续）；PAGE-P1-PLAN-MAP 保持 HONEST-EMPTY（未验UI）。BLOCKED 仍 2 项。
+>
+> v8 增补（2026-09-28，送审门）：PAGE-P1-ADMIN-REVIEW 由 HONEST-EMPTY 转 PASS——送审→双签→发布全链22/22（含L2终审自动ACTIVE、报告绑定、裸稿409），浏览器admin建稿零错；PAGE-P1-ADMIN-PUBLISH-ROLLBACK 由 BLOCKED 转 PASS——发布→下架→v2→回滚v1→目录回到v1全链实证。BLOCKED 剩 1 项（RISK）。
 
 > 口径：`PASS`=关键动作+落库+恢复均有本轮证据；`HONEST-EMPTY`=渲染正确、空态系设计/门所致、无崩；
 > `BLOCKED`=需产品/代码缺口关闭。本表是代理侧复核记录；台账 canonical 状态变更权归QA。
@@ -70,8 +72,8 @@
 | PAGE-P1-ADMIN-DASHBOARD | HONEST-EMPTY | 渲染零错；指标正确性未闭环 |
 | PAGE-P1-ADMIN-CONTENT | PASS | 草稿202+分权403/409 |
 | PAGE-P1-ADMIN-MEDIA | HONEST-EMPTY | 边界检查；上传正链待办 |
-| PAGE-P1-ADMIN-REVIEW | HONEST-EMPTY | guardrails绿；正向双签待送审门修复 |
-| PAGE-P1-ADMIN-PUBLISH-ROLLBACK | BLOCKED | 送审门双死（M3产品缺口） |
+| PAGE-P1-ADMIN-REVIEW | PASS | 送审→双签→发布22/22，L2终审自动ACTIVE，浏览器建稿零错（submission-gate-e2e） |
+| PAGE-P1-ADMIN-PUBLISH-ROLLBACK | PASS | 发布→下架→v2→回滚v1→目录回到v1全链实证（submission-gate-e2e） |
 | PAGE-P1-ADMIN-COMMERCE | HONEST-EMPTY | 空读；回调对账M8 |
 | PAGE-P1-ADMIN-SUPPORT | HONEST-EMPTY | 渲染零错；27条为历史证据 |
 | PAGE-P1-ADMIN-GOVERNANCE | HONEST-EMPTY | 队列诚实空（游标密钥已补） |
@@ -81,6 +83,6 @@
 
 ## 汇总
 
-* PASS 24 / HONEST-EMPTY 29 / BLOCKED 2（ADMIN-PUBLISH-ROLLBACK、ADMIN-RISK）。
+* PASS 26 / HONEST-EMPTY 28 / BLOCKED 1（ADMIN-RISK）。
 * 通知偏好写：R102 根因定位（无效请求体 + `/error`转发被denyAll盖错），有效体200持久，阻塞摘除；遗留owner项：`/error`盖错真错误、W4-`REVIEW_DUE`考古。
-* BLOCKED 2项均有独立成因记录；B3迁移/计划接线/正典定级/M8为后续 epics（见 followup-epics）。
+* BLOCKED 剩1项（ADMIN-RISK）；正典题库Ph2/B3交互/计划接线/盖错推广/送审门已闭环（见 demo 文档§34-40）；M8冻结、W4考古不做。

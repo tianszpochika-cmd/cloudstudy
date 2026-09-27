@@ -258,6 +258,14 @@
 * 探针误报纠正：learner-400首轮FAIL系探针用POST打了只认GET/PUT的口（405本就是见光），改PUT复验400通过。
 * 三态总表：本轮不翻页verdict（鲁棒性修复，无页面行为变更）。
 
+## 40. 送审门：L2终审自动ACTIVE + 报告绑定（2026-09-28）
+
+* 契约先行 [实测]：`B9ContentDraftInput` +3可选（申报渠道/证据/学习许可）；新 `B9ValidationReport`（`vr_` ID沿用schedule已定格式）+ accepted/state只读引用；无新操作（460）无新事件；validate 460 ops/808 schemas绿；网关2漂移/stale-claims与基线一致；lifecycle与HEAD逐行一致（14行全预置，无新增）。
+* 语义 [实测]：申报（claim）与授权（authority）永不同列——版本权利保持PENDING空授权（锁死测试逐字通过），申报走新proposal列（V27）；VALIDATE_DRAFT持久化版本+哈希绑定的PASS报告（V26，`vr_`确定性ID支持重放同一事实）；SUBMIT要申报完整+活体PASS+绑定报告+媒体干净（文本版vacuous过，媒体版无事实即MEDIA_ELIGIBILITY_UNAVAILABLE）；REVIEW_FINAL APPROVED自动ACTIVE（先验报告+媒体再翻转，无新事件，沿用reviewed事件）；PUBLISH复验（域双签+ACTIVE双重 enforcement）。
+* E2E [实测]：`tmp/songshenmen-e2e.mjs` 22/22——建稿→校验（vr_）→送审→双签→终审ACTIVE→发布→目录可见→下架→v2循环→回滚v1→目录回到v1＋裸稿409；浏览器admin建稿（dossier表单）零错。证据：`evidence/live/2026-09-27/submission-gate-e2e/`。
+* 修了2个拦路bug [实测]：① 激活只持久化status导致ACTIVE空壳不可rehydrate（state-update补全4列；2行调试残留数据已修回PENDING）；② 旧行proposal列NULL致目录503（读容忍空=无申报）。
+* 口径：媒体事实管道列后续（ fail closed，非假过）；schedule排期沿用既有命令。
+
 ## 35. runner树崩与孤儿进程（2026-09-26，运维教训）
 
 * 现象：runner树先后死两次（iam/assessment报`exited: code=4294967295`整树归零）；另发现树死后有子进程变孤儿继续占端口（如assessment PID 40664持18091且readiness 200），导致后续重起报端口占用再死，形成连环。

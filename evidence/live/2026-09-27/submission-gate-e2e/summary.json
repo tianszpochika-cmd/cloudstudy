@@ -1,0 +1,119 @@
+{
+  "task": "SUBMISSION-GATE-E2E",
+  "capturedAt": "2026-09-27T17:05:36.863Z",
+  "result": "PASS",
+  "passed": 22,
+  "total": 22,
+  "checks": [
+    {
+      "n": "staff-ready",
+      "ok": true,
+      "o": "4 staff tokens"
+    },
+    {
+      "n": "create-draft",
+      "ok": true,
+      "o": "202"
+    },
+    {
+      "n": "validate",
+      "ok": true,
+      "o": "202 passed=true vr_f8b442342b926d05548475b5a210ac7c"
+    },
+    {
+      "n": "validate-replay",
+      "ok": true,
+      "o": "same vr_f8b442342b926d05548475b5a210ac7c"
+    },
+    {
+      "n": "submit",
+      "ok": true,
+      "o": "202"
+    },
+    {
+      "n": "review-first",
+      "ok": true,
+      "o": "202"
+    },
+    {
+      "n": "review-final",
+      "ok": true,
+      "o": "202"
+    },
+    {
+      "n": "rights-active",
+      "ok": true,
+      "o": "rightsStatus=VALID"
+    },
+    {
+      "n": "publish",
+      "ok": true,
+      "o": "202 {\"data\":{\"commandId\":\"cmd_08f4f0ea-3f1f-3ecd-b67d-651786dceadf\",\"command\":\"PUBLISH\",\"contentCode\":\"sg-live-muk2ku9a\",\"contentVersionId\":261160,\"stateVersion\":6,\"status\":\"ACCEPTED\",\"acceptedAt\":\"2026-0"
+    },
+    {
+      "n": "projection-shows",
+      "ok": true,
+      "o": "200"
+    },
+    {
+      "n": "unpublish",
+      "ok": true,
+      "o": "202"
+    },
+    {
+      "n": "projection-gone",
+      "ok": true,
+      "o": "200"
+    },
+    {
+      "n": "save-v2",
+      "ok": true,
+      "o": "202"
+    },
+    {
+      "n": "validate-v2",
+      "ok": true,
+      "o": "202"
+    },
+    {
+      "n": "submit-v2",
+      "ok": true,
+      "o": "202"
+    },
+    {
+      "n": "first-v2",
+      "ok": true,
+      "o": "202"
+    },
+    {
+      "n": "final-v2",
+      "ok": true,
+      "o": "202"
+    },
+    {
+      "n": "publish-v2",
+      "ok": true,
+      "o": "202"
+    },
+    {
+      "n": "rollback-v1",
+      "ok": true,
+      "o": "202 current=261160"
+    },
+    {
+      "n": "projection-v1",
+      "ok": true,
+      "o": "200"
+    },
+    {
+      "n": "bare-create",
+      "ok": true,
+      "o": "202"
+    },
+    {
+      "n": "bare-submit-blocked",
+      "ok": true,
+      "o": "409"
+    }
+  ]
+}
