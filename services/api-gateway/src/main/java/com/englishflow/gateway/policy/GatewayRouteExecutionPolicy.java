@@ -57,6 +57,9 @@ public final class GatewayRouteExecutionPolicy {
     // M6-008 live: self-scoped account deletion lifecycle.
     private static final ControllerEvidence IAM_DELETION = evidence("iam-service",
             "services/iam-service/src/main/java/com/englishflow/iam/web/IamAccountDeletionController.java", "/api/v1/iam/account-deletions");
+    // P1R-ADMIN-RISK: staff lockout reads for the governance risk section (minimal disclosure).
+    private static final ControllerEvidence IAM_ACCOUNT_SECURITY = evidence("iam-service",
+            "services/iam-service/src/main/java/com/englishflow/iam/web/IamAccountSecurityController.java", "/api/v1/iam/accounts");
     private static final ControllerEvidence LEARNER_PUBLIC = evidence("learner-service",
             "services/learner-service/src/main/java/com/englishflow/learner/web/LearnerHttpController.java", "/api/v1/learner");
     private static final ControllerEvidence LEARNER_INTERNAL = evidence("learner-service",
@@ -128,6 +131,9 @@ public final class GatewayRouteExecutionPolicy {
             "services/admin-ops-service/src/main/java/com/englishflow/adminops/web/SupportController.java", "/internal/v1/admin-ops");
     private static final ControllerEvidence SUPPORT_SCOPED = evidence("admin-ops-service",
             "services/admin-ops-service/src/main/java/com/englishflow/adminops/web/SupportController.java", "/internal/v1/admin-ops/support");
+    // P1R-ADMIN-RISK: risk cases merged into the governance surface (no standalone /risk route).
+    private static final ControllerEvidence ADMIN_RISK = evidence("admin-ops-service",
+            "services/admin-ops-service/src/main/java/com/englishflow/adminops/web/RiskController.java", "/internal/v1/admin-ops/risk");
     // P1R decision 1A: recovery console route owner.
     private static final ControllerEvidence WORKFLOW_RECOVERY = evidence("workflow-service",
             "services/workflow-service/src/main/java/com/englishflow/workflow/adapter/http/ManualRecoveryController.java", "/internal/v1/workflow/recoveries");
@@ -470,7 +476,8 @@ public final class GatewayRouteExecutionPolicy {
                 preserve("policy-submit", "/api/v1/iam/policy-versions/{policyVersionId}/submit", IAM_POLICY_CONTROL, HttpMethod.POST),
                 preserve("policy-approval", "/api/v1/iam/policy-versions/{policyVersionId}/approvals", IAM_POLICY_CONTROL, HttpMethod.POST),
                 preserve("policy-activate", "/api/v1/iam/policy-versions/{policyVersionId}/activate", IAM_POLICY_CONTROL, HttpMethod.POST),
-                preserve("policy-revoke", "/api/v1/iam/policy-versions/{policyVersionId}/revoke", IAM_POLICY_CONTROL, HttpMethod.POST));
+                preserve("policy-revoke", "/api/v1/iam/policy-versions/{policyVersionId}/revoke", IAM_POLICY_CONTROL, HttpMethod.POST),
+                preserve("accounts-locked", "/api/v1/iam/accounts/locked", IAM_ACCOUNT_SECURITY, HttpMethod.GET));
         // M6-008 live: self-scoped deletion lifecycle in projectionId order (parity sorts).
         add(definitions, "iam-account-deletions",
                 preserve("deletion-cancel", "/api/v1/iam/account-deletions/{deletionRequestId}/cancel", IAM_DELETION, HttpMethod.POST),
@@ -697,7 +704,11 @@ public final class GatewayRouteExecutionPolicy {
                 rewrite("ticket", "/api/v1/admin/ops/tickets/{ticketId}", "/internal/v1/admin-ops/tickets/{ticketId}", SUPPORT_ADMIN, HttpMethod.GET),
                 rewrite("commands", "/api/v1/admin/ops/commands", "/internal/v1/admin-ops/commands", ADMIN_OPS, HttpMethod.POST),
                 rewrite("commands-prepare", "/api/v1/admin/ops/commands/prepare", "/internal/v1/admin-ops/commands/prepare", ADMIN_OPS, HttpMethod.POST),
-                rewrite("audit", "/api/v1/admin/ops/audit", "/internal/v1/admin-ops/audit", ADMIN_OPS, HttpMethod.GET));
+                rewrite("audit", "/api/v1/admin/ops/audit", "/internal/v1/admin-ops/audit", ADMIN_OPS, HttpMethod.GET),
+                // P1R-ADMIN-RISK: risk queue merged into governance (no standalone route).
+                rewrite("risk-cases", "/api/v1/admin/ops/risk/cases", "/internal/v1/admin-ops/risk/cases", ADMIN_RISK, HttpMethod.GET, HttpMethod.POST),
+                rewrite("risk-case-commands", "/api/v1/admin/ops/risk/cases/{caseId}/commands", "/internal/v1/admin-ops/risk/cases/{caseId}/commands", ADMIN_RISK, HttpMethod.POST),
+                rewrite("risk-rules-evaluate", "/api/v1/admin/ops/risk/rules:evaluate", "/internal/v1/admin-ops/risk/rules:evaluate", ADMIN_RISK, HttpMethod.POST));
         add(definitions, "admin-learner-search",
                 rewrite("search", "/api/v1/admin/learners/search", "/internal/v1/learner/admin/search", LEARNER_ADMIN, HttpMethod.GET));
         add(definitions, "admin-learner-profile",
