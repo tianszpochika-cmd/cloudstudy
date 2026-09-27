@@ -1348,6 +1348,27 @@
             "minLength": 1,
             "maxLength": 96
           },
+          "permittedChannels": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 16,
+            "description": "编辑提交的待核验发行渠道申报；仅 L2 终审 APPROVED 才能将其激活为版权事实，客户端永远不能直接写入 ACTIVE 状态。",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64
+            }
+          },
+          "authorizationEvidenceRef": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "description": "授权证据引用（自有版权声明、开放许可文本或合法授权凭证编号）；终审激活时服务端核对非空，证据原文不出投影。"
+          },
+          "allowsLearning": {
+            "type": "boolean",
+            "description": "编辑申报的学习使用许可；仅为待核验申报，终审前不产生任何授权效力。"
+          },
           "contentHash": {
             "type": "string",
             "pattern": "^[a-fA-F0-9]{64}$"
@@ -3177,6 +3198,73 @@
           }
         ]
       },
+      "B9ValidationReport": {
+        "type": "object",
+        "additionalProperties": false,
+        "readOnly": true,
+        "required": [
+          "reportId",
+          "reportVersion",
+          "contentVersionId",
+          "contentHash",
+          "ruleVersion",
+          "passed",
+          "findingCount",
+          "blockers",
+          "mediaRefs",
+          "checkedBy",
+          "checkedAt"
+        ],
+        "description": "绑定不可变版本与哈希的服务端校验事实；客户端只能引用其 ID 做乐观绑定，重放与发布时服务端按版本+哈希重查，旧报告不能为新版本背书。",
+        "properties": {
+          "reportId": {
+            "$ref": "#/components/schemas/B9ContentValidationReportId"
+          },
+          "reportVersion": {
+            "$ref": "#/components/schemas/B9EvidenceVersion"
+          },
+          "contentVersionId": {
+            "$ref": "#/components/schemas/B9ContentVersionId"
+          },
+          "contentHash": {
+            "type": "string",
+            "pattern": "^[a-fA-F0-9]{64}$"
+          },
+          "ruleVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "passed": {
+            "type": "boolean"
+          },
+          "findingCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "blockers": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "mediaRefs": {
+            "type": "array",
+            "maxItems": 256,
+            "description": "版本载荷中声明的媒体资产引用；为空表示纯文本版本，媒体门 vacuous 通过且可审计。",
+            "items": {
+              "type": "string",
+              "maxLength": 128
+            }
+          },
+          "checkedBy": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "checkedAt": {
+            "$ref": "#/components/schemas/B9DateTime"
+          }
+        }
+      },
       "B9ContentCommandAccepted": {
         "type": "object",
         "additionalProperties": false,
@@ -3272,6 +3360,11 @@
           },
           "itemStateVersion": {
             "$ref": "#/components/schemas/B9StateVersion"
+          },
+          "validationReport": {
+            "$ref": "#/components/schemas/B9ValidationReport",
+            "readOnly": true,
+            "description": "仅 VALIDATE_DRAFT 或其幂等重放结果携带；绑定不可变 contentVersionId/contentHash 的服务端校验事实。"
           }
         }
       },
@@ -4114,6 +4207,11 @@
               "MEDIA_ELIGIBILITY_UNAVAILABLE"
             ],
             "description": "当前版本提交双审的首个阻断原因；只读提示，提交命令仍由 owner 重新判定。"
+          },
+          "validationReport": {
+            "$ref": "#/components/schemas/B9ValidationReport",
+            "readOnly": true,
+            "description": "当前版本与哈希绑定的最新服务端校验事实；无报告时缺席，客户端不得自造。"
           },
           "reviewRecords": {
             "type": "array",
