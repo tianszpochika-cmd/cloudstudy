@@ -36,7 +36,7 @@ R3 不在本包展开，只登记入口与前置手续清单。
 
 ## 2. 文档导航
 
-* `business-chains.md`：12 条业务链，116 步（BC-001…BC-116），每步有 owner 与验收。
+* `business-chains.md`：20 条业务链，196 步（BC-001…BC-196），每步有 owner 与验收。
 * `interaction-chains.md`：8 条动线，76 幕（IC-001…IC-076），每幕有状态与文案规则。
 * 两份文档互相索引：每个 BC 步指向 IC 幕，每个 IC 幕指回 BC 步；D1–D5 设计债逐条落到对应幕。
 
