@@ -184,3 +184,14 @@ git rev-list --count origin/dev..HEAD   # 领先 origin 多少（推送后应为
 * **门禁快照**：`doc-audit` PASS（死链 0、孤儿 58 为信息项）；`p1r-stale-claims-check` PASS（1860 files）。两套台账数字仍并列：严格口径 `PASS 0 / PARTIAL 29 / BLOCKED 27`，代理侧 v10 `PASS 40 / HONEST-EMPTY 16 / BLOCKED 0`，不可互换。
 * **用户决策**：第一步（修首页 503 + 阅读/写作 403/404）与第二步（本地可闭环收口：词汇正典、听力练题口、离线下载、客服原文等）可立即执行；第三步（线上环境 + 第三方法务/版权/支付/推送资源）暂时无法提供，先冻结。计划是**本地能测的全验收通过 → 发线上 → 再补需线上环境的功能**。用户曾选“直接覆盖老判定”，**本次未执行**（canonical 变更权归 QA，直接翻 PASS 会造假账并触发门禁告警）；合规做法是加注对照 + 逐行重跑取证 + QA 签字，已留待下轮。
 * **换电脑接手**：切到 `dev` 并 `git pull`；`nvm use 20.19.5`、`JAVA_HOME` 指到 `jdk-25`；启动 Docker Desktop 等 infra healthy；`pnpm install`（有 `@englishflow/performance` 新增依赖）；`pnpm ports:check` 全 FREE 才能起 16 后端 + 4 前端；按 §6 顺序先复现首页 503 与阅读诊断 9 条路径。
+
+---
+
+## 8. test 发版成功（2026-09-28，clyunedev，`af4ea883`）
+
+> 服务器实测：旧版 `5c5dc319`（9-21）→ 本轮 `af4ea883`；只记事实，不改行级判定。
+
+* **基线**：23 容器 Up 7 天但 tag 混杂（`7b754b74`/`193567ff`/`5c5dc3191a48`）；14 个 owner schema 全在但**无一有 `p1r_schema_history`**（Flyway 时代库）；全库约 170 行测试数；`RELEASE_TAG=5c5dc3191a48`；备份 `/srv/cloudstudy/backup-2026-09-28-0539.sql.gz`（874K）+ 运行留底已存。
+* **执行**：`git fetch/checkout af4ea883` → `RELEASE_TAG=af4ea883` → 补 `SOCIAL_MODERATION_CURSOR_KEY`/`ADMIN_OPS_AUDIT_CURSOR_KEY`（各 32 字节，只存服务器 env）→ `config --quiet` OK → `--verify` 被拦（learner 无 p1r 账本，符合预期）→ 确认 170 行可丢 → 开双门 → **删 14 个业务库重建** → 装 Node 20.19.2（脚本 prerequisite）→ `deploy-full.sh` 全自动重建成功 → 双门关回 false。
+* **验收**：19 个应用容器全 `af4ea883`；13 个外部 owner `p1r_schema_history` 齐（content 27 / learning 11 / learner 12 / notif 8 / adminops 6，IAM Flyway 18）；网关 UP、JWKS 出 RSA key、官网 200。
+* **待办（Phase 4）**：种子脚本全锁 `127.0.0.1:13306`，需 `--target=test` 适配补丁（待备）；5 个 test 号（2 学员 + 1 只读 + 2 审核）待建，注册保持关闭走服务端直写；旧镜像 7 个 tag 暂不清，等新版跑稳按“最多留两个”清理。
