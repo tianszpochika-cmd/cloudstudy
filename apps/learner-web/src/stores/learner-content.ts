@@ -22,6 +22,11 @@ import {
   learnerContentPort,
 } from '../api/learner-content'
 import {
+  readPracticeToday,
+  submitPracticeTodayTask as submitPracticeTodayAnswer,
+  type PracticeTodayTask,
+} from '../api/practice-today'
+import {
   LearnerContentReadModelError,
   type LearnerContentPersistedState,
   type LearnerContentSnapshot,
@@ -110,6 +115,11 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
   const contentStatus = ref<ContentStatus>('idle')
   const pendingAssessmentAnswers = ref<PlacementAnswerInput[]>([])
   const pendingTaskIds = ref<string[]>([])
+  const practiceTasks = ref<PracticeTodayTask[]>([])
+  const practiceStatus = ref<ReadModelStatus>('idle')
+  const practiceAnswers = ref<Record<string, string>>({})
+  const practiceResults = ref<Record<string, { correct: boolean; feedbackCode: string | null }>>({})
+  const practiceError = ref<string | null>(null)
 
   function resetForIdentity(subject: string | null, generation: number): void {
     activeIdentity = { subject, generation }
@@ -129,6 +139,11 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
     contentStatus.value = 'idle'
     pendingAssessmentAnswers.value = []
     pendingTaskIds.value = []
+    practiceTasks.value = []
+    practiceStatus.value = 'idle'
+    practiceAnswers.value = {}
+    practiceResults.value = {}
+    practiceError.value = null
   }
 
   watch([verifiedSubject, () => session.authGeneration], ([subject, generation]) => {
@@ -638,6 +653,50 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
       if (!today.value && home.value) today.value = home.value.today ?? home.value.home
     }
     persist()
+    await loadPracticeToday(owner)
+  }
+
+  /**
+   * Practice-bound today tasks. V2 today items carry answer-free practice
+   * refs; one B10 session per content group resolves real stems, so titles
+   * are server facts. A practice outage degrades to the local section error
+   * without touching the legacy snapshot or its error state.
+   */
+  async function loadPracticeToday(owner: { subject: string; generation: number } | null = identity()): Promise<void> {
+    if (!stillCurrent(owner)) return
+    practiceStatus.value = 'loading'
+    practiceError.value = null
+    try {
+      const tasks = await readPracticeToday()
+      if (!stillCurrent(owner)) return
+      practiceTasks.value = tasks
+      practiceStatus.value = tasks.length ? 'ready' : 'empty'
+    } catch (error) {
+      if (!stillCurrent(owner)) return
+      practiceStatus.value = 'error'
+      practiceError.value = error instanceof Error ? error.message : '今日练习暂时无法读取。'
+    }
+  }
+
+  async function submitPracticeTodayTask(taskId: string, optionKey: string): Promise<void> {
+    const owner = identity()
+    if (!stillCurrent(owner)) return
+    const task = practiceTasks.value.find((item) => item.id === taskId)
+    if (!task || !optionKey) return
+    practiceAnswers.value = { ...practiceAnswers.value, [taskId]: optionKey }
+    practiceError.value = null
+    try {
+      const key = `practice-today-${task.id}-${optionKey}`
+      const feedback = await submitPracticeTodayAnswer(task, optionKey, key)
+      if (!stillCurrent(owner)) return
+      practiceResults.value = {
+        ...practiceResults.value,
+        [taskId]: { correct: feedback.correct === true, feedbackCode: feedback.feedbackCode },
+      }
+    } catch (error) {
+      if (!stillCurrent(owner)) return
+      practiceError.value = error instanceof Error ? error.message : '作答提交失败，已保留你的选项。'
+    }
   }
 
   async function completeTaskAgainstServer(taskId: string): Promise<void> {
@@ -727,6 +786,11 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
     contentStatus,
     pendingAssessmentAnswers,
     pendingTaskIds,
+    practiceTasks,
+    practiceStatus,
+    practiceAnswers,
+    practiceResults,
+    practiceError,
     hasOnboardingConsent,
     hasPreferences,
     assessmentProgress,
@@ -744,6 +808,8 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
     applyFastTrack,
     loadHome,
     loadToday,
+    loadPracticeToday,
+    submitPracticeTodayTask,
     completeTask,
     retry,
   }

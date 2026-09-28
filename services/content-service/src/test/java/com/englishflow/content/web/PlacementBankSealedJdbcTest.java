@@ -99,8 +99,12 @@ public class PlacementBankSealedJdbcTest {
         List<Map<String, Object>> items = (List<Map<String, Object>>) data.get("items");
         assertEquals(10, items.size());
         for (Map<String, Object> item : items) {
-            assertEquals(java.util.Set.of("itemId", "itemCode", "itemType", "dimension", "displayOrder"),
-                    item.keySet());
+            assertEquals(java.util.Set.of("itemId", "itemCode", "itemType", "dimension", "displayOrder",
+                    "practiceRef"), item.keySet());
+            Map<String, Object> ref = (Map<String, Object>) item.get("practiceRef");
+            assertEquals("p1.placement.v1", ref.get("contentCode"));
+            assertEquals(266100L, ((Number) ref.get("contentVersionId")).longValue());
+            assertEquals(String.valueOf(item.get("itemId")), ref.get("questionItemId"));
         }
     }
 

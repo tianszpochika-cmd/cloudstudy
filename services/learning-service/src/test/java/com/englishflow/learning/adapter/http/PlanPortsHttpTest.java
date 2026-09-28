@@ -47,9 +47,13 @@ class PlanPortsHttpTest {
                 "contentStateVersion", 1,
                 "items", List.of(
                         Map.of("itemId", 266001, "itemCode", "p1.place.vocab.01",
-                                "itemType", "VOCABULARY", "dimension", "VOCABULARY", "displayOrder", 1),
+                                "itemType", "VOCABULARY", "dimension", "VOCABULARY", "displayOrder", 1,
+                                "practiceRef", Map.of("contentCode", "p1.placement.v1",
+                                        "contentVersionId", 266100, "questionItemId", "266001")),
                         Map.of("itemId", 266004, "itemCode", "p1.place.grammar.01",
-                                "itemType", "GRAMMAR", "dimension", "BASIC_GRAMMAR", "displayOrder", 4)))));
+                                "itemType", "GRAMMAR", "dimension", "BASIC_GRAMMAR", "displayOrder", 4,
+                                "practiceRef", Map.of("contentCode", "p1.placement.v1",
+                                        "contentVersionId", 266100, "questionItemId", "266004"))))));
         server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
         server.createContext("/", exchange -> {
             String path = exchange.getRequestURI().getPath();
@@ -134,6 +138,18 @@ class PlanPortsHttpTest {
                 snapshot.items().getFirst().plannedLocalDate());
         assertEquals(com.englishflow.learning.domain.LearningItemType.GRAMMAR,
                 snapshot.items().get(1).itemType());
+    }
+
+    @Test
+    void planSeedsExposeAnswerFreePracticeRefs() {
+        HttpPlanContentPort port = new HttpPlanContentPort(mapper, baseUrl, baseUrl);
+        Map<String, Map<String, Object>> seeds = port.planSeeds(266100L);
+        assertEquals(2, seeds.size());
+        assertEquals("p1.placement.v1", seeds.get("266001").get("contentCode"));
+        assertEquals(266100L, ((Number) seeds.get("266001").get("contentVersionId")).longValue());
+        assertEquals("266001", seeds.get("266001").get("questionItemId"));
+        assertEquals("266004", seeds.get("266004").get("questionItemId"));
+        assertTrue(port.planSeeds(25001L).isEmpty());
     }
 
     @Test
