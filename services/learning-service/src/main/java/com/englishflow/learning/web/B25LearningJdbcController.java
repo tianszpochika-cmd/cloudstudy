@@ -71,14 +71,19 @@ public class B25LearningJdbcController {
         }
         Map<String, Object> input = inputs.getFirst();
         List<Map<String, Object>> due = jdbc.queryForList("""
-                SELECT item_id, stage, due_at
+                SELECT item_id, stage, due_at, practice_ref_json
                   FROM b25_learning_srs_state
                  WHERE principal_id = ? AND tenant_id = ? AND due_at <= CURRENT_TIMESTAMP(6)
                  ORDER BY due_at, item_id LIMIT 50
-                """, principal.subject(), TENANT).stream().map(row -> Map.<String, Object>of(
-                        "itemId", String.valueOf(row.get("item_id")),
-                        "stage", String.valueOf(row.get("stage")),
-                        "dueAt", String.valueOf(row.get("due_at")))).toList();
+                """, principal.subject(), TENANT).stream().map(row -> {
+                    Map<String, Object> task = new LinkedHashMap<>();
+                    task.put("itemId", String.valueOf(row.get("item_id")));
+                    task.put("stage", String.valueOf(row.get("stage")));
+                    task.put("dueAt", String.valueOf(row.get("due_at")));
+                    Map<String, Object> ref = practiceRef(row.get("practice_ref_json"));
+                    if (ref != null) task.put("practiceRef", ref);
+                    return Map.copyOf(task);
+                }).toList();
         Map<String, Object> data = new LinkedHashMap<>();
         data.put("planId", plan.get("plan_id"));
         data.put("status", "ACTIVE");
@@ -821,6 +826,28 @@ public class B25LearningJdbcController {
     private static int number(Object value) { return value instanceof Number n ? n.intValue() : 0; }
 
     private static final tools.jackson.databind.ObjectMapper JSON_READER = new tools.jackson.databind.ObjectMapper();
+
+    /** Stored practice pointer, or null when the row predates refs or is unreadable. */
+    private static Map<String, Object> practiceRef(Object raw) {
+        if (!(raw instanceof String json) || json.isBlank()) return null;
+        try {
+            Object decoded = JSON_READER.readValue(json, Object.class);
+            if (!(decoded instanceof Map<?, ?> map)) return null;
+            if (!(map.get("contentCode") instanceof String code) || code.isBlank()
+                    || !(map.get("contentVersionId") instanceof Number version)
+                    || !(map.get("questionItemId") instanceof String question)
+                    || question.isBlank()) {
+                return null;
+            }
+            Map<String, Object> ref = new LinkedHashMap<>();
+            ref.put("contentCode", code);
+            ref.put("contentVersionId", version.longValue());
+            ref.put("questionItemId", question);
+            return Map.copyOf(ref);
+        } catch (Exception ignored) {
+            return null;
+        }
+    }
 
     @SuppressWarnings("unchecked")
     private static Map<String, Object> object(Object raw) {

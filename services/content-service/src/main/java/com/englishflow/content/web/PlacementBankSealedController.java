@@ -42,6 +42,12 @@ public final class PlacementBankSealedController {
     private static final String BANK = "P1_PLACEMENT_V1";
     private static final String BANK_CONTENT_ID = "p1-placement-bank-v1";
     private static final String ANSWER_RULE_SET_VERSION = "p1-placement-bank-v1";
+    /**
+     * B10 content code for this bank. Assessment resolves practice sessions by
+     * contentCode; the plan-items practiceRef carries this code so learning
+     * tasks stay gradable without ever touching stems or answer rules here.
+     */
+    private static final String B10_CONTENT_CODE = "p1.placement.v1";
 
     private final JdbcTemplate jdbc;
     private final ObjectMapper objectMapper;
@@ -78,9 +84,9 @@ public final class PlacementBankSealedController {
 
     /**
      * Answer-free plan task seeds for learning-service plan assembly. Only
-     * identifiers and display order cross this boundary: no stems, options or
-     * answer rules. The bank shape validation is shared with the sealed
-     * endpoint, so a drifted bank fails closed here as well.
+     * identifiers, display order and the practice pointer cross this boundary:
+     * no stems, options or answer rules. The bank shape validation is shared
+     * with the sealed endpoint, so a drifted bank fails closed here as well.
      */
     @GetMapping("/plan-items")
     public Map<String, Object> planItems(Authentication authentication) {
@@ -97,6 +103,10 @@ public final class PlacementBankSealedController {
             seed.put("itemType", item.get("itemType"));
             seed.put("dimension", item.get("dimension"));
             seed.put("displayOrder", item.get("displayOrder"));
+            seed.put("practiceRef", Map.of(
+                    "contentCode", B10_CONTENT_CODE,
+                    "contentVersionId", contentVersionId,
+                    "questionItemId", String.valueOf(item.get("itemId"))));
             seeds.add(Map.copyOf(seed));
         }
         Map<String, Object> data = new LinkedHashMap<>();

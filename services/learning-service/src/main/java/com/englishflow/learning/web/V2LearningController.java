@@ -96,14 +96,43 @@ public class V2LearningController {
 
     private List<Map<String, Object>> todayItems(String subject) {
         return jdbc.queryForList("""
-                SELECT item_id, stage, due_at
+                SELECT item_id, stage, due_at, practice_ref_json
                   FROM b25_learning_srs_state
                  WHERE principal_id = ? AND tenant_id = ? AND due_at <= CURRENT_TIMESTAMP(6)
                  ORDER BY due_at, item_id
                  LIMIT 100
-                """, subject, TENANT).stream().map(row -> Map.<String, Object>of(
-                        "itemId", String.valueOf(row.get("item_id")),
-                        "stage", String.valueOf(row.get("stage")),
-                        "dueAt", String.valueOf(row.get("due_at")))).toList();
+                """, subject, TENANT).stream().map(row -> {
+                    Map<String, Object> item = new LinkedHashMap<>();
+                    item.put("itemId", String.valueOf(row.get("item_id")));
+                    item.put("stage", String.valueOf(row.get("stage")));
+                    item.put("dueAt", String.valueOf(row.get("due_at")));
+                    Map<String, Object> ref = practiceRef(row.get("practice_ref_json"));
+                    if (ref != null) item.put("practiceRef", ref);
+                    return Map.copyOf(item);
+                }).toList();
+    }
+
+    private static final tools.jackson.databind.ObjectMapper REF_READER =
+            new tools.jackson.databind.ObjectMapper();
+
+    private static Map<String, Object> practiceRef(Object raw) {
+        if (!(raw instanceof String json) || json.isBlank()) return null;
+        try {
+            Object decoded = REF_READER.readValue(json, Object.class);
+            if (!(decoded instanceof Map<?, ?> map)) return null;
+            if (!(map.get("contentCode") instanceof String code) || code.isBlank()
+                    || !(map.get("contentVersionId") instanceof Number version)
+                    || !(map.get("questionItemId") instanceof String question)
+                    || question.isBlank()) {
+                return null;
+            }
+            Map<String, Object> ref = new LinkedHashMap<>();
+            ref.put("contentCode", code);
+            ref.put("contentVersionId", version.longValue());
+            ref.put("questionItemId", question);
+            return Map.copyOf(ref);
+        } catch (Exception invalid) {
+            return null;
+        }
     }
 }

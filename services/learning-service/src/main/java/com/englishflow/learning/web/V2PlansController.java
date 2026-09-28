@@ -157,7 +157,8 @@ public class V2PlansController {
                 facts.weeklyStudyDays(), plan, rightsStateVersion, verified.subject(),
                 TENANT, adultGate(authentication), consentState(authentication), Instant.now());
         boolean inputExisted = saveInputSnapshot(principal.scope().ownerId(), target, plan, assembled);
-        projectB25(principal.scope().ownerId(), target, plan);
+        Map<String, Map<String, Object>> refs = contents.planSeeds(plan.contentVersionId());
+        projectB25(principal.scope().ownerId(), target, plan, refs);
         boolean replayed = created.replayed() && inputExisted && !resumed;
 
         Map<String, Object> data = new LinkedHashMap<>();
@@ -168,7 +169,7 @@ public class V2PlansController {
         data.put("replayed", replayed);
         data.put("planningInput", assembled.planningInput());
         data.put("plan", assembled.planRef());
-        data.put("tasks", planTasks(plan));
+        data.put("tasks", planTasks(plan, refs));
         return ResponseEntity.ok(Map.of("data", data));
     }
 
@@ -195,7 +196,8 @@ public class V2PlansController {
         return false;
     }
 
-    private void projectB25(String subject, LearnerTargetSnapshot target, LearningPlan plan) {
+    private void projectB25(String subject, LearnerTargetSnapshot target, LearningPlan plan,
+                            Map<String, Map<String, Object>> refs) {
         if (plan.status() != LearningPlanStatus.ACTIVE && plan.status() != LearningPlanStatus.PAUSED) {
             return;
         }
@@ -206,12 +208,27 @@ public class V2PlansController {
                     plan_version = VALUES(plan_version)
                 """, "plan-" + plan.planId(), subject, TENANT, plan.status().name(),
                 plan.dailyQuotaMinutes(), plan.version());
+        // Practice refs are pinned from the same bank version the plan was
+        // assembled from (one extra read at ensure, never per today-read).
+        // Rows keep their seeded refs when the bank later moves; progress
+        // columns are never touched by the ref fill.
         for (String seed : dayZeroSeeds(plan)) {
+            String refJson = null;
+            Map<String, Object> ref = refs.get(seed);
+            if (ref != null) {
+                try {
+                    refJson = mapper.writeValueAsString(ref);
+                } catch (Exception ignored) {
+                    refJson = null;
+                }
+            }
             jdbc.update("""
-                    INSERT IGNORE INTO b25_learning_srs_state
-                        (principal_id, item_id, tenant_id, stage, due_at, interval_days, ease_factor, review_count)
-                    VALUES (?, ?, ?, 'NEW', CURRENT_TIMESTAMP(6), 0, 2.50, 0)
-                    """, subject, seed, TENANT);
+                    INSERT INTO b25_learning_srs_state
+                        (principal_id, item_id, tenant_id, stage, due_at, interval_days, ease_factor,
+                         review_count, practice_ref_json)
+                    VALUES (?, ?, ?, 'NEW', CURRENT_TIMESTAMP(6), 0, 2.50, 0, ?)
+                    ON DUPLICATE KEY UPDATE practice_ref_json = VALUES(practice_ref_json)
+                    """, subject, seed, TENANT, refJson);
         }
     }
 
@@ -227,7 +244,8 @@ public class V2PlansController {
         return seeds;
     }
 
-    private List<Map<String, Object>> planTasks(LearningPlan plan) {
+    private List<Map<String, Object>> planTasks(LearningPlan plan,
+                                                  Map<String, Map<String, Object>> refs) {
         java.time.LocalDate today = java.time.LocalDate.now(
                 java.time.ZoneId.of(plan.timeZoneId()));
         List<Map<String, Object>> tasks = new ArrayList<>();
@@ -239,6 +257,8 @@ public class V2PlansController {
             view.put("taskType", task.taskType().name());
             view.put("status", task.status().name());
             view.put("plannedLocalDate", task.plannedLocalDate().toString());
+            Map<String, Object> ref = refs.get(String.valueOf(task.contentItemId()));
+            if (ref != null) view.put("practiceRef", ref);
             tasks.add(view);
         }
         return tasks;

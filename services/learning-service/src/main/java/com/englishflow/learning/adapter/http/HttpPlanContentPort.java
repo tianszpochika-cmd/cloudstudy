@@ -25,8 +25,9 @@ import java.util.Set;
 
 /**
  * Plan task seeds over HTTP from content-service's placement-bank plan-items
- * endpoint. Only identifiers and display order cross the boundary (no stems,
- * options or answer rules); learning assigns task types and planned dates.
+ * endpoint. Only identifiers, display order and the answer-free practice
+ * pointer cross this boundary (no stems, options or answer rules); learning
+ * assigns task types and planned dates.
  *
  * <p>Date rule (documented Phase-1 placement-plan rule): three seeds per day
  * starting today in the learner's zone, so a 15-minute quota (≈3 items) lands
@@ -86,6 +87,53 @@ public final class HttpPlanContentPort implements PublishedContentPort {
         } catch (IllegalArgumentException invalid) {
             return Optional.empty();
         }
+    }
+
+    /**
+     * Practice pointers for one bank version, keyed by item id (as string).
+     * Used by the B25 projection to pin gradable refs onto seeded SRS rows at
+     * ensure time, so today reads never fan out to content-service per request
+     * and rows keep the refs they were seeded with when the bank later moves.
+     * Empty when the bank is unreachable or version-mismatched; the caller
+     * stores rows without refs instead of failing the plan.
+     */
+    public Map<String, Map<String, Object>> planSeeds(long contentVersionId) {
+        String bearer = BearerTokens.current();
+        if (contentVersionId < 1 || bearer == null) return Map.of();
+        Map<String, Object> bank;
+        try {
+            bank = get(planItemsUri, bearer);
+        } catch (ResponseStatusException unavailable) {
+            return Map.of();
+        }
+        if (bank == null || !"P1_PLACEMENT_V1".equals(bank.get("bankCode"))) return Map.of();
+        if (!(bank.get("contentVersionId") instanceof Number version)
+                || version.longValue() != contentVersionId) {
+            return Map.of();
+        }
+        if (!(bank.get("items") instanceof List<?> values)) return Map.of();
+        Map<String, Map<String, Object>> seeds = new java.util.LinkedHashMap<>();
+        for (Object rawItem : values) {
+            if (!(rawItem instanceof Map<?, ?> raw)) return Map.of();
+            @SuppressWarnings("unchecked")
+            Map<String, Object> item = (Map<String, Object>) raw;
+            if (!(item.get("itemId") instanceof Number itemId) || itemId.longValue() < 1) return Map.of();
+            if (!(item.get("practiceRef") instanceof Map<?, ?> rawRef)) continue;
+            @SuppressWarnings("unchecked")
+            Map<String, Object> ref = (Map<String, Object>) rawRef;
+            if (!(ref.get("contentCode") instanceof String code) || code.isBlank()
+                    || !(ref.get("contentVersionId") instanceof Number refVersion)
+                    || !(ref.get("questionItemId") instanceof String question)
+                    || question.isBlank()) {
+                continue;
+            }
+            Map<String, Object> copy = new java.util.LinkedHashMap<>();
+            copy.put("contentCode", code);
+            copy.put("contentVersionId", refVersion.longValue());
+            copy.put("questionItemId", question);
+            seeds.put(String.valueOf(itemId.longValue()), Map.copyOf(copy));
+        }
+        return Map.copyOf(seeds);
     }
 
     private LearningSeedItem seed(Map<String, Object> item, LocalDate today) {
