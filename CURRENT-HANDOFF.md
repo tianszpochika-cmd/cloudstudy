@@ -1,14 +1,14 @@
 # CURRENT-HANDOFF —— 语学星 Phase 1 重基线（P1R）
 
 > 本文件是**跨会话交接**的入口，记录"当前在哪、下一步做什么、谁在等谁"。
-> 最后更新：**2026-09-26 14:46 CST**（四端测试接手快照）。当前测试结论以[9 月 26 日接手报告](artifacts/uat-2026-09-26/README.md)和[56 项覆盖台账](artifacts/uat-2026-09-23/coverage-ledger.md)为准；P1R 任务状态仍以编号任务台账为准。历史完整度源码检查绑定 `2c2cfa2e`，详见[完整度梳理日志](requirements/backlog/v2-phase1-rebaseline/execution/COMPLETENESS-AUDIT-2026-09-20.md)。
+> 最后更新：**2026-09-28（口径同步）**：补入两套 56 页台账的并列说明，不改变任何行级判定；测试结论本身仍以 2026-09-26 14:46 CST 的[接手报告](artifacts/uat-2026-09-26/README.md)和[56 项覆盖台账](artifacts/uat-2026-09-23/coverage-ledger.md)为准，代理侧三态复核另见[56 PAGE-P1 三态总表](docs/07-operations/page-push-ledger-2026-09-26.md)；P1R 任务状态仍以编号任务台账为准。历史完整度源码检查绑定 `2c2cfa2e`，详见[完整度梳理日志](requirements/backlog/v2-phase1-rebaseline/execution/COMPLETENESS-AUDIT-2026-09-20.md)。
 > **§0 顶部与 §6 的 2026-09-26 接手顺序是当前交接；其余带日期的记录均保留原验证范围，不作为当前环境全绿结论。**
 
 ---
 
 ## 0. 检查点
 
-**2026-09-26 四端测试接手**：[完整接手报告](artifacts/uat-2026-09-26/README.md)已汇总环境、正向证据、失败和下一轮顺序。当前工作区源码在本机以 16 个 Java 主机进程和四个前端开发服务供测试；14:46 CST 只读复核确认 Gateway/IAM、四端固定入口在监听，5 个基础设施容器 healthy。旧私有 UAT 的 26 个容器已停止，不能沿用 9 月 25 日 Batch24 的 19/19 健康结论描述当前环境。Chromium 已实测合成成人账号 Web 注册/登录/首次设置与 Mobile H5 登录，但学习首页 `503 STORE_FAILURE`；登录态阅读列表遭 Gateway 预检 403、普通 GET 404，技能相关路由也有同类断路。管理端本轮只测登录页。最近完整 56 项 PAGE-P1 台账仍 **PASS 0 / PARTIAL 29 / BLOCKED 27 / NOT_TESTED 0**，整页验收完成 0/56；不能把检查覆盖 56/56 或局部登录成功折算为业务完成。证据见[本机交接](artifacts/uat-2026-09-26/local-latest-runtime/operational-handoff.md)、[登录冒烟](artifacts/uat-2026-09-26/local-latest-runtime/login-smoke/summary.md)和[阅读诊断](artifacts/uat-2026-09-26/local-latest-runtime/reading-diagnosis/summary.md)。
+**2026-09-26 四端测试接手**：[完整接手报告](artifacts/uat-2026-09-26/README.md)已汇总环境、正向证据、失败和下一轮顺序。当前工作区源码在本机以 16 个 Java 主机进程和四个前端开发服务供测试；14:46 CST 只读复核确认 Gateway/IAM、四端固定入口在监听，5 个基础设施容器 healthy。旧私有 UAT 的 26 个容器已停止，不能沿用 9 月 25 日 Batch24 的 19/19 健康结论描述当前环境。Chromium 已实测合成成人账号 Web 注册/登录/首次设置与 Mobile H5 登录，但学习首页 `503 STORE_FAILURE`；登录态阅读列表遭 Gateway 预检 403、普通 GET 404，技能相关路由也有同类断路。管理端本轮只测登录页。本报告（严格整页业务验收）口径下，最近完整 56 项 PAGE-P1 台账仍 **PASS 0 / PARTIAL 29 / BLOCKED 27 / NOT_TESTED 0**，整页验收完成 0/56；不能把检查覆盖 56/56 或局部登录成功折算为业务完成。**并列口径（2026-09-28 同步）**：另一套[56 PAGE-P1 三态总表](docs/07-operations/page-push-ledger-2026-09-26.md)（代理侧复核，v10，证据根 `evidence/live/2026-09-26` 至 `2026-09-28`）为 **PASS 40 / HONEST-EMPTY 16 / BLOCKED 0**，其 PASS 判据是"关键动作+落库+恢复均有本轮证据"、设计性空态可判 HONEST-EMPTY，与本报告的隔离环境整页闭环不是同一判定规则，**两组数字不可互相换算、互不替代，也不得单方面引用其中一组代表整体页面状态**；行级 canonical 状态变更权归 QA。证据见[本机交接](artifacts/uat-2026-09-26/local-latest-runtime/operational-handoff.md)、[登录冒烟](artifacts/uat-2026-09-26/local-latest-runtime/login-smoke/summary.md)和[阅读诊断](artifacts/uat-2026-09-26/local-latest-runtime/reading-diagnosis/summary.md)。
 
 **本机真实运行验证（2026-09-22，T1–T21）+ 与三端 UI 交付合并**：在真实 MySQL/Redis/Kafka/MinIO + 固定端口服务上把 21 项本地可做任务逐项跑通并修复。**关键结论：运行测试抓出 17 项静态门禁与内存单测都抓不到的缺陷**（403 被伪装成 400、契约版本字段被忽略、分页跨页丢行、定时批次中断、假 APPLIED 补偿、真实 MySQL `event_name` 列缺失等），全部已修并复验。新打通两条此前没有运行证据的链路：**content outbox → Kafka**、**learning outbox → Kafka → gamification 结算**。详见[本机真实运行验证](docs/07-operations/local-runtime-verification-2026-09-21.md)。**注意与下方 UI 记录的口径差异**：下方管理端记录写"真实 Gateway 本轮不可达"，那是 UI 那一轮的环境；本轮 6 个服务（IAM/网关/learner/content/learning/assessment）连同 audit/workflow/social/notification/gamification 都在本地起过并跑通真实链路。P1R 台账状态、manifest、证据绑定**均未改动**；未闭合项（M1014 具名残留、content 入站消费者断言、learner-web 完整首日旅程、`contracts:validate` 的 IAM 旧失败）逐条列在验证快照 §4。
 
@@ -172,3 +172,15 @@ git rev-list --count origin/dev..HEAD   # 领先 origin 多少（推送后应为
 3. 完成当前源码跨端业务闭环及异常路径，再推进 M8 真机、性能、安全、staging、容灾、回滚、制品和独立 Go/No-Go；保留 M0-006 独立验收及 M4-008 具名残留。
 4. **（2026-09-22 已复核，结论修正）** 官网 privacy/terms/minors/status 四页源码存在**且本轮已运行验收**（12 页 200、零控制台错误）。批量导入 `import/batch` 行为已实际复核：逐行隔离、非对象条目计入 failed、批量 UPSERT 已接版本锁；**但 content 写侧乐观锁仍是「调用方观测值检查 + 存储盲写」**，不是存储层 CAS，并发竞态属 M3-002 本体改造，不能沿用「已复核=已解决」的读法。
 5. 评审期间源码冻结与真实 CI 阻断仍需验证。本地启动入口见根 README；启动前核对工具链、固定端口、进程和资源归属，保护既有工作与其他项目运行环境。**本机 Maven 会吃掉带点号的 `-D` 键**（如 `-Dlearning.relay.integration=true` 会被当成生命周期阶段），opt-in 集成测试请改用 `JAVA_TOOL_OPTIONS` 或环境变量。**拉取新增依赖的提交后必须 `pnpm install`**（本次 UI 交付引入 `@englishflow/performance`，否则 admin-web 类型检查报 TS2307）。
+
+---
+
+## 7. 本次状态记录（2026-09-28，环境让步，两步走已定）
+
+> 本节只记交接事实，不改任何 PASS/PARTIAL/BLOCKED 行级判定，不替代 QA 终审。
+
+* **HEAD**：`ca8509e1e`（`dev`，与 `origin/dev` 同步）。工作区有 6 个已改未提交文档（`CHANGELOG/CURRENT-HANDOFF/README` + `artifacts/uat-2026-09-23/README` + `artifacts/uat-2026-09-26/README` + `docs/07-operations/README`），内容是 `LEDGER-CALIBER-SYNC-20260928` 两套 56 页台账口径并列说明；`B4-multilingual-plan.md` 仍按既有决议保留本地未跟踪，不纳入本次提交。
+* **本机环境（2026-09-28 实测，冷态）**：Java 进程 0 个；`18070/18080/18087/18180-18183/13306/16379/19000-19001` 全 CLOSED（`pnpm ports:check` 全 FREE）；Docker Desktop 未启动，MySQL/Redis/Kafka/MinIO 均不可达；默认 Node v24.9.0（项目要 20.19.5，nvm 已有）、默认 Java 21（项目要 25，`C:\Program Files\Java\jdk-25` 已有）。**第一步/第二步本地可做，但必须先烧环境，不能直接修。**
+* **门禁快照**：`doc-audit` PASS（死链 0、孤儿 58 为信息项）；`p1r-stale-claims-check` PASS（1860 files）。两套台账数字仍并列：严格口径 `PASS 0 / PARTIAL 29 / BLOCKED 27`，代理侧 v10 `PASS 40 / HONEST-EMPTY 16 / BLOCKED 0`，不可互换。
+* **用户决策**：第一步（修首页 503 + 阅读/写作 403/404）与第二步（本地可闭环收口：词汇正典、听力练题口、离线下载、客服原文等）可立即执行；第三步（线上环境 + 第三方法务/版权/支付/推送资源）暂时无法提供，先冻结。计划是**本地能测的全验收通过 → 发线上 → 再补需线上环境的功能**。用户曾选“直接覆盖老判定”，**本次未执行**（canonical 变更权归 QA，直接翻 PASS 会造假账并触发门禁告警）；合规做法是加注对照 + 逐行重跑取证 + QA 签字，已留待下轮。
+* **换电脑接手**：切到 `dev` 并 `git pull`；`nvm use 20.19.5`、`JAVA_HOME` 指到 `jdk-25`；启动 Docker Desktop 等 infra healthy；`pnpm install`（有 `@englishflow/performance` 新增依赖）；`pnpm ports:check` 全 FREE 才能起 16 后端 + 4 前端；按 §6 顺序先复现首页 503 与阅读诊断 9 条路径。

@@ -1,6 +1,6 @@
 # 四端 Phase 1 全量验收推进记录（2026-09-23）
 
-> **最新接手快照（2026-09-26 14:46 CST）**：[四端测试接手报告](../uat-2026-09-26/README.md)。本文件保存 9 月 23 日起的分批验收记录；文中各批“服务就绪”和“当前”只对该批当时环境成立。9 月 25 日 Batch24 所在私有 UAT 容器栈已于 9 月 26 日停止；当前供浏览器测试的是本机源码构建的主机 Java 进程和四端开发服务。最新本机实测新增合成成人注册/登录正向证据，同时复现首页 503、阅读 Gateway 预检 403/普通 GET 404；详见[登录冒烟](../uat-2026-09-26/local-latest-runtime/login-smoke/summary.md)与[阅读诊断](../uat-2026-09-26/local-latest-runtime/reading-diagnosis/summary.md)。最近完整 56 项判定仍为 **PASS 0 / PARTIAL 29 / BLOCKED 27 / NOT_TESTED 0**，没有因局部成功上调整页验收状态。
+> **最新接手快照（2026-09-26 14:46 CST）**：[四端测试接手报告](../uat-2026-09-26/README.md)。本文件保存 9 月 23 日起的分批验收记录；文中各批“服务就绪”和“当前”只对该批当时环境成立。9 月 25 日 Batch24 所在私有 UAT 容器栈已于 9 月 26 日停止；当前供浏览器测试的是本机源码构建的主机 Java 进程和四端开发服务。最新本机实测新增合成成人注册/登录正向证据，同时复现首页 503、阅读 Gateway 预检 403/普通 GET 404；详见[登录冒烟](../uat-2026-09-26/local-latest-runtime/login-smoke/summary.md)与[阅读诊断](../uat-2026-09-26/local-latest-runtime/reading-diagnosis/summary.md)。最近完整 56 项判定仍为 **PASS 0 / PARTIAL 29 / BLOCKED 27 / NOT_TESTED 0**，没有因局部成功上调整页验收状态（本文件与覆盖台账均为严格整页业务验收口径；并列存在的[56 PAGE-P1 三态总表](../../docs/07-operations/page-push-ledger-2026-09-26.md)是另一套代理侧三态口径，2026-09-28 v10 为 PASS 40 / HONEST-EMPTY 16 / BLOCKED 0，两者数字不可互相换算、互不替代）。
 
 ## 判定口径
 

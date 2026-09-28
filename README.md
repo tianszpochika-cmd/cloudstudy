@@ -60,7 +60,7 @@ Phase 1 **有意设计为覆盖面较大的首发基座**，不是只做一条�
 
 ### Phase 1 状态解释
 
-**2026-09-26 四端测试接手**：[当前接手报告](artifacts/uat-2026-09-26/README.md)汇总本机当前源码的运行与浏览器证据、9 月 25 日私有容器的历史边界、已知首页 503 和阅读/技能 Gateway 路由断路，以及接手测试顺序。[56 项 PAGE-P1 台账](artifacts/uat-2026-09-23/coverage-ledger.md)最近完整判定为 **PASS 0 / PARTIAL 29 / BLOCKED 27 / NOT_TESTED 0**；整页业务验收完成 **0/56**，检查覆盖 **56/56**。此口径与下方 2026-09-20 的 P1R 开发任务审计不同，均不能替代发布验收。
+**2026-09-26 四端测试接手**：[当前接手报告](artifacts/uat-2026-09-26/README.md)汇总本机当前源码的运行与浏览器证据、9 月 25 日私有容器的历史边界、已知首页 503 和阅读/技能 Gateway 路由断路，以及接手测试顺序。[56 项 PAGE-P1 台账](artifacts/uat-2026-09-23/coverage-ledger.md)（严格整页业务验收口径）最近完整判定为 **PASS 0 / PARTIAL 29 / BLOCKED 27 / NOT_TESTED 0**；整页业务验收完成 **0/56**，检查覆盖 **56/56**。并列的[56 PAGE-P1 三态总表](docs/07-operations/page-push-ledger-2026-09-26.md)（代理侧复核，2026-09-28 v10）为 **PASS 40 / HONEST-EMPTY 16 / BLOCKED 0**——两表判定规则不同（前者要求隔离环境整页闭环，后者允许"关键动作+落库+恢复有本轮证据"、设计性空态判 HONEST-EMPTY），数字不可互相换算、互不替代，行级 canonical 状态变更权归 QA。此口径与下方 2026-09-20 的 P1R 开发任务审计不同，均不能替代发布验收。
 
 **2026-09-21 官网正式实现**：已按用户批准的提案 06 更新 `apps/official-site`，本地访问 `http://127.0.0.1:18182/`。包含深浅色、手机导航、空间/角色墙/拼句、学习内容与免费入口；详见[实现日志与本地验证](docs/06-design/v2-980plus/official-site-experience-proposal-2026-09-21/implementation/README.md)。未部署公网，不改变 P1R 验收状态。
 
