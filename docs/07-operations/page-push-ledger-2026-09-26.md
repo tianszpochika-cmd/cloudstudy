@@ -7,6 +7,8 @@
 > v8 增补（2026-09-28，送审门）：PAGE-P1-ADMIN-REVIEW 由 HONEST-EMPTY 转 PASS——送审→双签→发布全链22/22（含L2终审自动ACTIVE、报告绑定、裸稿409），浏览器admin建稿零错；PAGE-P1-ADMIN-PUBLISH-ROLLBACK 由 BLOCKED 转 PASS——发布→下架→v2→回滚v1→目录回到v1全链实证。BLOCKED 剩 1 项（RISK）。
 >
 > v9 增补（2026-09-28，RISK并入治理页）：PAGE-P1-ADMIN-RISK 由 BLOCKED 转 PASS——真锁定→评估建档→分诊→隔离→升级→关闭13/13，治理页风险区建档零错（无独立路由）。BLOCKED 清零。
+>
+> v10 增补（2026-09-28，TODAY练习绑定）：PAGE-P1-TODAY 由 HONEST-EMPTY 转 PASS——today带practiceRef→B10会话出真题干→行内作答判分（错ZERO进错题/对FULL）10/10，浏览器见题作答零错。
 
 > 口径：`PASS`=关键动作+落库+恢复均有本轮证据；`HONEST-EMPTY`=渲染正确、空态系设计/门所致、无崩；
 > `BLOCKED`=需产品/代码缺口关闭。本表是代理侧复核记录；台账 canonical 状态变更权归QA。
@@ -40,7 +42,7 @@
 | PAGE-P1-ASSESSMENT-RESULT | PASS | 双端报告卡 + study-loop |
 | PAGE-P1-PLAN-MAP | PASS | 确保计划用户浏览见ACTIVE计划（15分钟/v2，零错） |
 | PAGE-P1-LEARN-HOME | PASS | 计划接线：定级→ensure→home READY见计划横幅（plan-wiring-e2e） |
-| PAGE-P1-TODAY | HONEST-EMPTY | API today有任务；页面缺V2任务标题映射（后续） |
+| PAGE-P1-TODAY | PASS | today带practiceRef→B10真题干→行内作答判分（today-practice-e2e） |
 | PAGE-P1-COURSE-SHELF | PASS | course-shelf（6/6+点进会话） |
 | PAGE-P1-VOCAB | HONEST-EMPTY | 详情可读（large-vocab）；列表迁正典待办 |
 | PAGE-P1-GRAMMAR | PASS | B3交互环：绑定题干3条可练，UI答题B10判分FULL（b3-practice-e2e 18/18） |
@@ -85,6 +87,6 @@
 
 ## 汇总
 
-* PASS 39 / HONEST-EMPTY 17 / BLOCKED 0（HONEST-EMPTY均为M8冻结项、r20设计关闭、已登记后续或天然空态，逐行见表）。
+* PASS 40 / HONEST-EMPTY 16 / BLOCKED 0（HONEST-EMPTY均为M8冻结项、r20设计关闭、已登记后续或天然空态，逐行见表）。
 * 通知偏好写：R102 根因定位（无效请求体 + `/error`转发被denyAll盖错），有效体200持久，阻塞摘除；遗留owner项：`/error`盖错真错误、W4-`REVIEW_DUE`考古。
 * BLOCKED 剩1项（ADMIN-RISK）；正典题库Ph2/B3交互/计划接线/盖错推广/送审门已闭环（见 demo 文档§34-40）；M8冻结、W4考古不做。

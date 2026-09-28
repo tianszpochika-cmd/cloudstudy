@@ -273,6 +273,13 @@
 * E2E [实测]：`tmp/risk-e2e.mjs` 13/13——真锁定→评估建档→去重→队列→分诊→隔离→升级→关闭→终端态409＋分析师建档＋重放＋学员403；落库（案件行＋决策史＋锁定行）；浏览器治理页风险区建档零错。证据：`evidence/live/2026-09-27/risk-governance-e2e/`。
 * 单测 [实测]：IAM 121、admin-ops 82全绿（含新增锁定5＋风险5）；网关parity仅预置reading单失败（与本轮无关，扫描确认）。
 
+## 42. TODAY任务练习绑定（2026-09-28）
+
+* 契约先行 [实测]：b10新增`B9PracticeRef`（answer-free练习指针：contentCode+version+questionItemId，无题干选项答案）；`PlacementBankPlanSeed`与`B10LearningPlanTask`各+可选practiceRef；无新操作（465）无新事件；validate绿（465 ops/815 schemas）。
+* 语义 [实测]：content plan-items逐seed发ref；learning V11给srs行加`practice_ref_json`（ensure时一次join pin住，bank后迁不影响已种行；progress列永不被ref回填；旧行NULL=纯展示）；today/first-day/current-view/ensure-tasks原样透出。
+* UI [实测]：today按ref分组建B10会话（stable key复用，不刷会话垃圾）→ 真题干做标题 → 行内单选作答走既有B10判分（错进错题库）；无ref行保持原样丢弃（非伪造标题）；typecheck绿。
+* E2E [实测]：`tmp/today-practice-e2e.mjs` 10/10——ensure→today带ref→会话出题干→错判ZERO→对判FULL→错题入库；落库（srs ref行＋会话＋错题）；浏览器today见真题＋行内作答判分零错。证据：`evidence/live/2026-09-28/today-practice-e2e/`。
+
 ## 35. runner树崩与孤儿进程（2026-09-26，运维教训）
 
 * 现象：runner树先后死两次（iam/assessment报`exited: code=4294967295`整树归零）；另发现树死后有子进程变孤儿继续占端口（如assessment PID 40664持18091且readiness 200），导致后续重起报端口占用再死，形成连环。

@@ -1,0 +1,59 @@
+{
+  "task": "TODAY-PRACTICE-E2E",
+  "capturedAt": "2026-09-28T00:38:30.506Z",
+  "result": "PASS",
+  "passed": 10,
+  "total": 10,
+  "checks": [
+    {
+      "n": "login",
+      "ok": true,
+      "o": 200
+    },
+    {
+      "n": "target",
+      "ok": true,
+      "o": "200"
+    },
+    {
+      "n": "placement-done",
+      "ok": true,
+      "o": "report ok"
+    },
+    {
+      "n": "ensure",
+      "ok": true,
+      "o": "200"
+    },
+    {
+      "n": "today-refs",
+      "ok": true,
+      "o": "200 items=3 refd=3"
+    },
+    {
+      "n": "ref-shape",
+      "ok": true,
+      "o": "{\"questionItemId\":\"266001\",\"contentVersionId\":266100,\"contentCode\":\"p1.placement.v1\"}"
+    },
+    {
+      "n": "session-stems",
+      "ok": true,
+      "o": "200 stems=3"
+    },
+    {
+      "n": "wrong-graded",
+      "ok": true,
+      "o": "200 bucket=ZERO"
+    },
+    {
+      "n": "right-graded",
+      "ok": true,
+      "o": "200 bucket=FULL"
+    },
+    {
+      "n": "mistake-recorded",
+      "ok": true,
+      "o": "200"
+    }
+  ]
+}
