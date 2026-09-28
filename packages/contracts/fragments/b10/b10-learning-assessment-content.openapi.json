@@ -4141,6 +4141,7 @@
           "dimension",
           "displayOrder"
         ],
+        "description": "Answer-free plan task seed. practiceRef is an answer-free pointer the client resolves into a B10 session; it carries no stems, options or answer rules.",
         "properties": {
           "itemId": {
             "$ref": "#/components/schemas/B10Int64Id"
@@ -4171,6 +4172,34 @@
           "displayOrder": {
             "type": "integer",
             "minimum": 1
+          },
+          "practiceRef": {
+            "$ref": "#/components/schemas/B10PracticeRef"
+          }
+        }
+      },
+      "B10PracticeRef": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "contentCode",
+          "contentVersionId",
+          "questionItemId"
+        ],
+        "description": "Answer-free practice pointer: identifies gradable content without carrying stems, options or answer rules. The client resolves it into a B10 session; assessment fetches rules server-side.",
+        "properties": {
+          "contentCode": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "contentVersionId": {
+            "$ref": "#/components/schemas/B10Int64Id"
+          },
+          "questionItemId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
           }
         }
       },
@@ -5811,6 +5840,9 @@
           },
           "contentPin": {
             "$ref": "#/components/schemas/B10ContentVersionPin"
+          },
+          "practiceRef": {
+            "$ref": "#/components/schemas/B10PracticeRef"
           },
           "stateVersion": {
             "$ref": "#/components/schemas/B10StateVersion"

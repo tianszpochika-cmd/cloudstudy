@@ -69037,6 +69037,9 @@
           "contentPin": {
             "$ref": "#/components/schemas/B10ContentVersionPin"
           },
+          "practiceRef": {
+            "$ref": "#/components/schemas/B10PracticeRef"
+          },
           "stateVersion": {
             "$ref": "#/components/schemas/B10StateVersion"
           }
@@ -80676,6 +80679,7 @@
           "dimension",
           "displayOrder"
         ],
+        "description": "Answer-free plan task seed. practiceRef is an answer-free pointer the client resolves into a B10 session; it carries no stems, options or answer rules.",
         "properties": {
           "itemId": {
             "$ref": "#/components/schemas/B10Int64Id"
@@ -80706,6 +80710,9 @@
           "displayOrder": {
             "type": "integer",
             "minimum": 1
+          },
+          "practiceRef": {
+            "$ref": "#/components/schemas/B10PracticeRef"
           }
         }
       },
@@ -81187,6 +81194,31 @@
               "maxLength": 128,
               "pattern": "^rsk_[A-Za-z0-9._:-]{6,120}$"
             }
+          }
+        }
+      },
+      "B10PracticeRef": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "contentCode",
+          "contentVersionId",
+          "questionItemId"
+        ],
+        "description": "Answer-free practice pointer: identifies gradable content without carrying stems, options or answer rules. The client resolves it into a B10 session; assessment fetches rules server-side.",
+        "properties": {
+          "contentCode": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "contentVersionId": {
+            "$ref": "#/components/schemas/B10Int64Id"
+          },
+          "questionItemId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
           }
         }
       }
@@ -83623,6 +83655,23 @@
             "controllerEvidence": {
               "sourcePath": "services/iam-service/src/main/java/com/englishflow/iam/web/IamPolicyControlController.java",
               "requestMapping": "/api/v1/iam/policy-versions"
+            }
+          },
+          {
+            "projectionId": "iam-domain.accounts-locked",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/iam/accounts/locked",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "iam-service",
+            "targetUriConfig": "gateway.identity.iam-base-url",
+            "pathStrategy": "PRESERVE_PUBLIC_PATH",
+            "targetPathTemplate": "/api/v1/iam/accounts/locked",
+            "controllerEvidence": {
+              "sourcePath": "services/iam-service/src/main/java/com/englishflow/iam/web/IamAccountSecurityController.java",
+              "requestMapping": "/api/v1/iam/accounts"
             }
           }
         ]
@@ -86332,6 +86381,58 @@
               "sourcePath": "services/admin-ops-service/src/main/java/com/englishflow/adminops/web/AdminOpsController.java",
               "requestMapping": "/internal/v1/admin-ops"
             }
+          },
+          {
+            "status": "AVAILABLE",
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "admin-ops-service",
+            "targetUriConfig": "gateway.b13.admin-ops-base-url",
+            "pathStrategy": "REWRITE_PATH",
+            "controllerEvidence": {
+              "sourcePath": "services/admin-ops-service/src/main/java/com/englishflow/adminops/web/RiskController.java",
+              "requestMapping": "/internal/v1/admin-ops/risk"
+            },
+            "projectionId": "admin-domain.risk-cases",
+            "publicPathTemplate": "/api/v1/admin/ops/risk/cases",
+            "methods": [
+              "GET",
+              "POST"
+            ],
+            "targetPathTemplate": "/internal/v1/admin-ops/risk/cases"
+          },
+          {
+            "status": "AVAILABLE",
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "admin-ops-service",
+            "targetUriConfig": "gateway.b13.admin-ops-base-url",
+            "pathStrategy": "REWRITE_PATH",
+            "controllerEvidence": {
+              "sourcePath": "services/admin-ops-service/src/main/java/com/englishflow/adminops/web/RiskController.java",
+              "requestMapping": "/internal/v1/admin-ops/risk"
+            },
+            "projectionId": "admin-domain.risk-case-commands",
+            "publicPathTemplate": "/api/v1/admin/ops/risk/cases/{caseId}/commands",
+            "methods": [
+              "POST"
+            ],
+            "targetPathTemplate": "/internal/v1/admin-ops/risk/cases/{caseId}/commands"
+          },
+          {
+            "status": "AVAILABLE",
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "admin-ops-service",
+            "targetUriConfig": "gateway.b13.admin-ops-base-url",
+            "pathStrategy": "REWRITE_PATH",
+            "controllerEvidence": {
+              "sourcePath": "services/admin-ops-service/src/main/java/com/englishflow/adminops/web/RiskController.java",
+              "requestMapping": "/internal/v1/admin-ops/risk"
+            },
+            "projectionId": "admin-domain.risk-rules-evaluate",
+            "publicPathTemplate": "/api/v1/admin/ops/risk/rules:evaluate",
+            "methods": [
+              "POST"
+            ],
+            "targetPathTemplate": "/internal/v1/admin-ops/risk/rules:evaluate"
           }
         ]
       },
