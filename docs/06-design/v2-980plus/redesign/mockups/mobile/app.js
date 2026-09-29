@@ -1,6 +1,6 @@
 /* 语学星移动端整机交互稿 · 静态数据 · 无后端 */
 const S = {
-  user: null, gate: "NONE", consents: {}, goal: null, quiz: { i: 0, score: 0, sel: null, done: false },
+  user: "演示账号", gate: "PASS", consents: {}, goal: null, quiz: { i: 0, score: 0, sel: null, done: false },
   mistakes: [], plan: false, today: [{ id: "t1", t: "语法 · There ___ two books.", min: 5, kind: "grammar" }, { id: "t2", t: "阅读 · 图书馆", min: 5, kind: "reading" }],
   shelf: ["四级词汇 B1", "零基础 A1", "六级 B2", "商务口语", "雅思备考", "生活英语"],
   msgs: [{ t: "欢迎来到语学星", d: "先定级，3 分钟出报告", read: false }, { t: "今日任务已生成", d: "语法 2 道", read: false }],
@@ -174,8 +174,8 @@ function sres(v) { document.getElementById("sr").innerHTML = v ? `<button class=
 /* ---------- 路由 ---------- */
 const AUTH_FREE = ["login", "register", "reset"];
 function render() {
-  let r = (location.hash || "#/login").replace("#/", "");
-  if (!V[r]) r = "login";
+  let r = (location.hash || "#/home").replace("#/", "");
+  if (!V[r]) r = "home";
   if (!AUTH_FREE.includes(r) && !S.user) r = "login";
   if (["placement", "report"].includes(r) && S.gate !== "PASS" && !S.user) r = "login";
   document.getElementById("title").textContent = TITLES[r] || "语学星";
