@@ -193,7 +193,46 @@ V.areview = () => `<div class="card"><h2>L1 初审</h2><p class="d">reviewer-l1 
 V.apublish = () => `<div class="card"><h2>发布 / 下线 / 回滚</h2><p class="d">目录实时预览</p><button class="btn sm" onclick="toast('已发布，书架可见（演示）')">发布</button> <button class="btn sm" onclick="arm(this,function(){toast('已下架（演示）')})">下架</button> <button class="btn sm" onclick="arm(this,function(){toast('已回滚 v1（演示）')})">回滚 v1</button></div>`;
 V.agov = () => `<div class="card"><h2>治理 · 风险区</h2><p class="d">无独立路由，并入治理页</p><div class="card" style="margin:0"><b>RISK-001 · 刷分嫌疑</b><p class="d">待建档</p><button class="btn sm" onclick="toast('已建档（演示）')">建档</button> <button class="btn sm" onclick="toast('已隔离（演示）')">隔离</button></div></div>`;
 V.aaudit = () => `<div class="card"><h2>审计</h2><p class="d">分页 + 脱敏 · 导出 internal-only</p><p class="d">req-9208 · 同意记录 · 允许</p><p class="d">req-6fd9 · 注册门 · 拒绝</p></div>`;
-V.ai = () => `<div class="card"><h2>AI 伴学（P2 未开）</h2><p class="d">Gate 未过无 CTA 是设计。演示一次问答：</p><input id="aiq" value="are 和 is 怎么分？"><button class="btn" onclick="document.getElementById('aia').style.display='block'">问</button><div class="card" id="aia" style="display:none;margin:10px 0 0"><b>AI：</b>主语复数用 are。<p class="d">来源：规则库（演示）· 可采纳/重做/降级</p><button class="btn sm" onclick="toast('已采纳（演示）')">采纳</button> <button class="btn sm" onclick="toast('已降级回规则路（演示）')">降级</button></div></div>`;
+const AIPLANS = [
+  { id: "chat", t: "💬 自由对话", d: "随便聊，AI 陪你练英语" },
+  { id: "essay", t: "📝 作文批改", d: "贴作文，给分＋改法" },
+  { id: "speak", t: "🗣️ 口语陪练", d: "情景对话，练张嘴" },
+  { id: "plan", t: "📋 制定计划", d: "按水平排一周" },
+  { id: "mistake", t: "❤️ 错题讲解", d: "讲透为什么错" },
+  { id: "trans", t: "🔄 翻译润色", d: "中英互译＋地道表达" },
+  { id: "story", t: "📖 单词故事", d: "一词一故事，好记" },
+  { id: "grammar", t: "📏 语法医生", d: "句子哪错一查便知" },
+  { id: "mock", t: "🎤 模拟面试", d: "英文面试陪练" },
+  { id: "mail", t: "✉️ 邮件助手", d: "英文邮件起草润色" },
+];
+const AICHAT = [];
+V.ai = () => `<div class="card"><h2>🤖 AI 伴学（P2 未开·演示）</h2><p class="d">Gate 未过无 CTA 是设计；下面是快捷方案，开一两个先体验：</p>${AIPLANS.map(p => `<button class="opt" onclick="aiopen('${p.id}')">${p.t}<br><span class="meta">${p.d}</span></button>`).join("")}</div><div class="card" id="aibox" style="display:none"><div id="aimsgs" style="max-height:220px;overflow-y:auto"></div><div style="display:flex;gap:6px;margin-top:8px"><input id="aiin" placeholder="输入英文试试" style="flex:1"><button class="btn sm" onclick="aisend()">发</button></div></div>`;
+function aiopen(id) {
+  const box = document.getElementById("aibox");
+  box.style.display = "block";
+  const msgs = document.getElementById("aimsgs");
+  const plan = AIPLANS.find(p => p.id === id);
+  const openers = { essay: "把作文贴进来，我给分＋改法（演示）。", speak: "Hi! What did you do today?（演示）", plan: "说说你的目标和每天分钟，我来排（演示）。", mistake: "把错题贴进来，我讲透它（演示）。", trans: "中英互贴，我来翻＋润色（演示）。", story: "说个单词，我编个故事（演示）。", grammar: "把句子贴进来，我来断病句（演示）。", mock: "Tell me about yourself.（演示）", mail: "说中文，我起草英文邮件（演示）。", chat: "随便聊，我陪你练英语（演示）。" };
+  AICHAT.length = 0;
+  AICHAT.push({ who: "ai", t: openers[id] || openers.chat });
+  apaint();
+  box.scrollIntoView();
+}
+function apaint() { document.getElementById("aimsgs").innerHTML = AICHAT.map(m => `<p class="d" style="text-align:${m.who === "me" ? "right" : "left"}"><b>${m.who === "me" ? "我" : "AI"}：</b>${m.t}</p>`).join(""); }
+function aisend() {
+  const inp = document.getElementById("aiin"), v = (inp.value || "").trim();
+  if (!v) return;
+  AICHAT.push({ who: "me", t: v });
+  const low = v.toLowerCase();
+  let r = "记下了，换个说法再说一遍？（演示）";
+  if (/hello|hi|hey/.test(low)) r = "Hello! Nice to see you. What did you learn today?（演示）";
+  else if (/[\u4e00-\u9fa5]/.test(v)) r = "英文试试？比如先说一句今天做的事（演示）。";
+  else if (v.split(/\s+/).length < 3) r = "再长一点，加个 because 试试？（演示）";
+  else r = "Good sentence! 再来一句，用上新学的词（演示）。";
+  AICHAT.push({ who: "ai", t: r });
+  inp.value = "";
+  apaint();
+}
 V.voice = () => `<div class="card"><h2>语音跟读</h2><p class="d">无麦先说，不直接开。RTC 未接，先练跟读：</p><b>“Good morning.”</b><br><button class="btn sm" style="margin-top:8px" onclick="toast('录音 3 秒… 评分 85（演示）')">🎤 跟读评分</button></div>`;
 V.k12 = () => `<div class="card empty"><b>青少年模式（上锁）</b><p class="d">该版本仅服务成人。P3 资质齐了再开。</p><button class="btn sm" onclick="goBack()">返回</button></div>`;
 V.pay = () => `<div class="card"><h2>收银台（沙盒）</h2><p class="d">Phase 1 基金 · ¥99 · 不扣真款 · 金额二次确认</p><button class="btn" onclick="arm(this,function(){var r=document.getElementById('payr');r.className='fb ok';r.style.display='block'})">支付 ¥99</button><div class="fb" id="payr" style="display:none;margin-top:10px">✓ 支付成功（沙盒）· 权益待开通演示</div></div>`;
