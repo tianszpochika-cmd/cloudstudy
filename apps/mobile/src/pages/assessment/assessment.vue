@@ -14,8 +14,6 @@ const store = useLearnerContentStore()
 const session = useSessionStore()
 const selectedKey = ref('')
 const startedAt = ref(Date.now())
-/** IC-058 定级引导：首次空白先讲题量与目的，不承诺用时。 */
-const guideSeen = ref(false)
 watch(() => session.identityRevision, () => { selectedKey.value = ''; startedAt.value = Date.now() }, { flush: 'sync' })
 const question = computed(() => store.placement.currentQuestion)
 const report = computed(() => store.placement.report)
@@ -58,9 +56,8 @@ onShow(async () => { if (await ensureMobilePageAccess('/pages/assessment/assessm
       <text class="question-count">{{ isSkipped ? '已跳过测评' : '历史两题练习结果' }}</text>
       <text v-if="!isSkipped && report.cefrLevel && scorePercent !== null" class="result-title">{{ report.cefrLevel }} · {{ scorePercent }} 分</text>
       <text v-if="isSkipped" class="question">自选起点{{ report.requestedStartingLevel ? ` ${report.requestedStartingLevel}` : '' }}，水平尚未验证。</text>
-      <text v-else class="question">旧版练习仅供参考，不能代替四维定级。已按本次作答更新画像，今日任务见首页。</text>
-      <button tabindex="0" role="button" class="yx-button" type="button" @click="openToday">生成我的计划 →</button>
-      <button tabindex="0" role="button" class="yx-button yx-button--secondary" type="button" @click="openToday">查看今日状态</button>
+      <text v-else class="question">旧版练习仅供参考，不能代替四维定级。</text>
+      <button tabindex="0" role="button" class="yx-button" type="button" @click="openToday">查看今日状态</button>
     </view>
     <view v-else-if="question" class="yx-card question-card">
       <view class="question-meta"><text>{{ question.dimension }}</text><text>{{ question.stepIndex }} / {{ question.totalSteps }}</text></view>
@@ -75,10 +72,8 @@ onShow(async () => { if (await ensureMobilePageAccess('/pages/assessment/assessm
       <text v-if="store.placementStatus === 'loading' || store.placementStatus === 'idle'" class="question" role="status">正在准备测评…</text>
       <text v-else-if="store.placementStatus === 'offline' || store.placementStatus === 'error'" class="question" role="alert">测评暂时不可用，请稍后重试。</text>
       <text v-else-if="store.placementStatus === 'forbidden'" class="question" role="alert">当前账号没有测评权限。</text>
-      <text v-else-if="!guideSeen" class="question">共 10 道题，测出你的起点，约几分钟。准备好就开始。</text>
       <text v-else class="question">目前没有可用题目，可以稍后重试。</text>
-      <button v-if="!guideSeen && store.placementStatus !== 'loading' && store.placementStatus !== 'idle' && store.placementStatus !== 'offline' && store.placementStatus !== 'error' && store.placementStatus !== 'forbidden'" tabindex="0" role="button" class="yx-button" type="button" @click="guideSeen = true; load()">开始测评</button>
-      <button v-else-if="store.placementStatus !== 'loading' && store.placementStatus !== 'idle'" tabindex="0" role="button" class="yx-button" type="button" @click="load">重新读取</button>
+      <button v-if="store.placementStatus !== 'loading' && store.placementStatus !== 'idle'" tabindex="0" role="button" class="yx-button" type="button" @click="load">重新读取</button>
       <button tabindex="0" role="button" class="yx-button yx-button--secondary" type="button" @click="openHome">返回学习首页</button>
     </view>
   </view>

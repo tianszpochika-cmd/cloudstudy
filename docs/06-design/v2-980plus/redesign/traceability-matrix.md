@@ -223,37 +223,37 @@
 | IC-006 | 同意版本更新 |  | 待实施 |
 | IC-007 | 密码重置申请回执 |  | 待实施 |
 | IC-008 | 设置/设备/隐私总览 |  | 待实施 |
-| IC-009 | 首次学习引导条 | apps/mobile/src/pages/home/home.vue（新号无任务无课程时顶条去定级） | typecheck通过 |
-| IC-010 | 定级答题页 | apps/mobile/src/pages/assessment/assessment.vue（题干选项+提交中禁用+断网存本地；实现齐） | 走读通过 |
-| IC-011 | 定级提交反馈 | apps/mobile/src/pages/assessment/assessment.vue（offline重读提示；行内即时反馈随store；实现齐） | 走读通过 |
-| IC-012 | 定级报告卡 | apps/mobile/src/pages/assessment/assessment.vue（分+画像建议+生成计划键；维度明细待模型扩展） | typecheck通过 |
-| IC-013 | 计划生成/重排 | 需home模型加计划字段（契约缺口，待后端）；本轮不动 | blocked-契约 |
-| IC-014 | 计划解释 | 同上（待计划字段） | blocked-契约 |
-| IC-015 | 今日任务流 | apps/mobile/src/pages/today/today.vue（实现齐；零改动） | 走读通过 |
-| IC-016 | 今日空态分流 | today.vue（补双CTA去书架/再测） | typecheck通过 |
-| IC-017 | 未完成任务安排 | home.vue（stale欠账提示） | typecheck通过 |
-| IC-018 | 今日完成 | home.vue（全完成撒花） | typecheck通过 |
-| IC-019 | 今日断网/同步 | today.vue（离线分支齐；零改动） | 走读通过 |
-| IC-020 | 学习首页 | home.vue（引导条+任务+书架；计划横幅待契约） | 部分通过 |
-| IC-021 | 首次学习专页 | 首日流缺少独立页（现状并入首页引导条IC-009） | deferred-并入IC-009 |
-| IC-022 | 练题（语法/阅读行内判分） | apps/mobile/src/pages/b2-practice/b2-practice.vue（作答+判分结果；实现齐；零改动） | 走读通过 |
-| IC-023 | 会话与检查点 | b2-practice.vue（checkpoint存点）+ learn.vue（会话续读；实现齐；零改动） | 走读通过 |
-| IC-024 | 词汇/听说写入口总览 | practice.vue（入口宫格）+ b2-vocabulary/b11-* 页存在；零改动 | 走读通过 |
+| IC-009 | 首次学习引导条 |  | 待实施 |
+| IC-010 | 定级答题页 |  | 待实施 |
+| IC-011 | 定级提交反馈 |  | 待实施 |
+| IC-012 | 定级报告卡 |  | 待实施 |
+| IC-013 | 计划生成/重排 |  | 待实施 |
+| IC-014 | 计划解释 |  | 待实施 |
+| IC-015 | 今日任务流 |  | 待实施 |
+| IC-016 | 今日空态分流 |  | 待实施 |
+| IC-017 | 未完成任务安排 |  | 待实施 |
+| IC-018 | 今日完成 |  | 待实施 |
+| IC-019 | 今日断网/同步 |  | 待实施 |
+| IC-020 | 学习首页 |  | 待实施 |
+| IC-021 | 首次学习专页 |  | 待实施 |
+| IC-022 | 练题（语法/阅读行内判分） |  | 待实施 |
+| IC-023 | 会话与检查点 |  | 待实施 |
+| IC-024 | 词汇/听说写入口总览 |  | 待实施 |
 | IC-025 | 词汇详情 |  | 待实施 |
 | IC-026 | 听力 |  | 待实施 |
 | IC-027 | 口语 |  | 待实施 |
 | IC-028 | 写作 |  | 待实施 |
-| IC-029 | 书架续学 | home.vue（continueCourse）+ learn.vue（续读；实现齐；零改动） | 走读通过 |
-| IC-030 | 错题与补救 | b10-report.vue（错题列表+变式重练；实现齐；零改动） | 走读通过 |
-| IC-031 | 掌握度/弱点 | b10-report.vue（mastery/reasonTrace；实现齐；零改动） | 走读通过 |
-| IC-032 | 到期复习（SRS） | learn.vue（review队列+complete；实现齐；零改动） | 走读通过 |
-| IC-033 | 日报/周报 | b10-report.vue（分数+指标+链接；教练建议待模型扩展；其余齐） | 部分通过 |
-| IC-034 | 设置（偏好/主题/语言） | settings.vue（主题/高对比/动效/语言/通知/设备入口齐；零改动） | 走读通过 |
-| IC-035 | 设备管理 | devices.vue + settings入口；零改动 | 走读通过 |
-| IC-036 | 隐私中心 | support/privacy链（导出删除入口；实现齐；零改动） | 走读通过 |
-| IC-037 | 学习端客服入口 | support.vue（提交编号+列表；实现齐；零改动） | 走读通过 |
-| IC-038 | 商城未开放边界 | b5-commerce.vue（空目录诚实态；零改动） | 走读通过 |
-| IC-039 | 书架搜索 | home.vue（书架索引过滤+换词提示，已实现） | typecheck通过 |
+| IC-029 | 书架续学 |  | 待实施 |
+| IC-030 | 错题与补救 |  | 待实施 |
+| IC-031 | 掌握度/弱点 |  | 待实施 |
+| IC-032 | 到期复习（SRS） |  | 待实施 |
+| IC-033 | 日报/周报 |  | 待实施 |
+| IC-034 | 设置（偏好/主题/语言） |  | 待实施 |
+| IC-035 | 设备管理 |  | 待实施 |
+| IC-036 | 隐私中心 |  | 待实施 |
+| IC-037 | 学习端客服入口 |  | 待实施 |
+| IC-038 | 商城未开放边界 |  | 待实施 |
+| IC-039 | 书架搜索 |  | 待实施 |
 | IC-040 | 内容列表/建稿 |  | 待实施 |
 | IC-041 | 送审/简审/双签 |  | 待实施 |
 | IC-042 | 发布/下架/回滚 |  | 待实施 |
@@ -266,14 +266,14 @@
 | IC-049 | 审计列表 |  | 待实施 |
 | IC-050 | 治理页风险区 |  | 待实施 |
 | IC-051 | 举报队列 |  | 待实施 |
-| IC-052 | 注册表单 | apps/mobile/src/pages/register/register.vue + src/auth/fixture-adapter.ts | 静态验收（typecheck+b12 8/8） |
-| IC-053 | 学习端登录 | apps/mobile/src/pages/login/login.vue + src/auth/navigation.ts（实现齐：回跳保留/401全局恢复/深链兜底；零改动） | 代码走读通过；handoff 2/2+b12 8/8；bootstrap套件10挂为9-26既有分支债待修 |
-| IC-054 | 重置表单 | apps/mobile/src/pages/reset-password/reset-password.vue（实现齐：恒定文案/两步/token深链；零改动）+ fixture复位口 | 走读通过；H5 fixture模式18183壳200编译通过（服务已停） |
-| IC-055 | 成人门说明/提交 | apps/mobile/src/pages/onboarding/onboarding.vue（补门说明先行文案） | typecheck通过 |
-| IC-056 | 同意逐项查看 | apps/mobile/src/pages/onboarding/onboarding.vue（补逐项用途子文案） | typecheck通过 |
-| IC-057 | 画像字段与草稿 | apps/mobile/src/pages/onboarding/onboarding.vue + stores/learner-content.ts（目标+时长+本地草稿续填齐；标签为Web端能力，移动端有意简化，零改动） | 走读通过 |
-| IC-058 | 定级引导 | apps/mobile/src/pages/assessment/assessment.vue（首空白讲题量目的+开始键，不承诺用时） | typecheck通过 |
-| IC-059 | 定级冲突/失败恢复 | apps/mobile/src/pages/assessment/assessment.vue（离线重读+checkpoint续答，实现齐；零改动） | 走读通过 |
+| IC-052 | 注册表单 |  | 待实施 |
+| IC-053 | 学习端登录 |  | 待实施 |
+| IC-054 | 重置表单 |  | 待实施 |
+| IC-055 | 成人门说明/提交 |  | 待实施 |
+| IC-056 | 同意逐项查看 |  | 待实施 |
+| IC-057 | 画像字段与草稿 |  | 待实施 |
+| IC-058 | 定级引导 |  | 待实施 |
+| IC-059 | 定级冲突/失败恢复 |  | 待实施 |
 | IC-060 | 消息列表 |  | 待实施 |
 | IC-061 | 通知偏好与免打扰 |  | 待实施 |
 | IC-062 | 离线包 |  | 待实施 |

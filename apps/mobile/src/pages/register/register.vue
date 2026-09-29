@@ -18,23 +18,6 @@ const confirm = ref('')
 const returnTo = ref('/pages/home/home')
 const submitting = ref(false)
 const error = ref<string | null>(null)
-/** IC-052 实时校验：输入即反馈，失败不枚举账号存在性。 */
-const liveIdentifierHint = computed(() => {
-  const value = identifier.value.trim()
-  if (!value) return null
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return mobileT('auth.register.identifierInvalid')
-  return null
-})
-const livePasswordHint = computed(() => {
-  if (!password.value) return null
-  if (password.value.length < 12) return mobileT('auth.register.shortPassword')
-  return null
-})
-const liveConfirmHint = computed(() => {
-  if (!confirm.value || !password.value) return null
-  if (password.value !== confirm.value) return mobileT('auth.register.mismatch')
-  return null
-})
 const hint = computed(() => {
   if (error.value) return error.value
   if (submitting.value) return mobileT('auth.register.submitting')
@@ -90,17 +73,14 @@ async function submit(): Promise<void> {
         <label class="yx-field">
           <text>{{ mobileT('auth.register.identifier') }}</text>
           <input :aria-label="mobileT('auth.register.identifier')" v-model="identifier" type="text" autocomplete="username" :placeholder="mobileT('auth.register.identifierPlaceholder')" :disabled="submitting" />
-          <text v-if="liveIdentifierHint" class="yx-login-error" role="status">{{ liveIdentifierHint }}</text>
         </label>
         <label class="yx-field">
           <text>{{ mobileT('auth.register.password') }}</text>
           <input :aria-label="mobileT('auth.register.password')" v-model="password" type="password" autocomplete="new-password" :placeholder="mobileT('auth.register.passwordPlaceholder')" :disabled="submitting" />
-          <text v-if="livePasswordHint" class="yx-login-error" role="status">{{ livePasswordHint }}</text>
         </label>
         <label class="yx-field">
           <text>{{ mobileT('auth.register.confirmPassword') }}</text>
           <input :aria-label="mobileT('auth.register.confirmPassword')" v-model="confirm" type="password" autocomplete="new-password" :placeholder="mobileT('auth.register.confirmPasswordPlaceholder')" :disabled="submitting" />
-          <text v-if="liveConfirmHint" class="yx-login-error" role="status">{{ liveConfirmHint }}</text>
         </label>
         <text v-if="error" class="yx-login-error" role="alert" aria-live="polite">{{ hint }}</text>
         <text v-else-if="submitting" class="mobile-auth-note" role="status" aria-live="polite">{{ hint }}</text>

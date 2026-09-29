@@ -3,7 +3,6 @@ import { defineStore } from 'pinia'
 import { getInMemoryAccessToken, setInMemoryAccessToken, setInMemoryRequestIdentity } from '../auth/access-token'
 import { mobileAuthFailureMarker } from '../auth/auth-failure-copy'
 import { createGatewayMobileAuthAdapter, safeMobileReturnTo, type MobileAdultGateStatus, type MobileAuthAdapter, type MobileAuthSnapshot, type MobileLoginCredentials, type MobileTokenPair } from '../auth/gateway-auth'
-import { createFixtureMobileAuthAdapter, isFixtureApiMode } from '../auth/fixture-adapter'
 import { getUniRuntime, isNativeAppRuntime, type UniSecureStorage, type UniRuntime } from '../platform/uni-runtime'
 import { removeAllLearningCaches } from './learning-cache'
 
@@ -72,7 +71,7 @@ export const useSessionStore = defineStore('session', () => {
   let transientReturnTo: string | null = null
   let authEpoch = 0
 
-  function adapter(): MobileAuthAdapter { if (!activeAdapter) activeAdapter = isFixtureApiMode() ? createFixtureMobileAuthAdapter() : createGatewayMobileAuthAdapter(); return activeAdapter }
+  function adapter(): MobileAuthAdapter { if (!activeAdapter) activeAdapter = createGatewayMobileAuthAdapter(); return activeAdapter }
   function applySnapshot(snapshot: MobileAuthSnapshot | null): void { if (!snapshot) return; if (snapshot.tokenPair) setTokenPair(snapshot.tokenPair); permissions.value = snapshot.permissions ?? permissions.value; adultGate.value = snapshot.adultGate ?? adultGate.value }
   function acceptPermissions(snapshot: MobileAuthSnapshot | null): void {
     const subject = snapshot?.principal?.subject?.trim()
