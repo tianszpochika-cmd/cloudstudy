@@ -267,7 +267,7 @@
 | IC-050 | 治理页风险区 |  | 待实施 |
 | IC-051 | 举报队列 |  | 待实施 |
 | IC-052 | 注册表单 | apps/mobile/src/pages/register/register.vue + src/auth/fixture-adapter.ts | 静态验收（typecheck+b12 8/8） |
-| IC-053 | 学习端登录 |  | 待实施 |
+| IC-053 | 学习端登录 | apps/mobile/src/pages/login/login.vue + src/auth/navigation.ts（实现齐：回跳保留/401全局恢复/深链兜底；零改动） | 代码走读通过；handoff 2/2+b12 8/8；bootstrap套件10挂为9-26既有分支债待修 |
 | IC-054 | 重置表单 |  | 待实施 |
 | IC-055 | 成人门说明/提交 |  | 待实施 |
 | IC-056 | 同意逐项查看 |  | 待实施 |
