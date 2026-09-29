@@ -271,7 +271,7 @@
 | IC-054 | 重置表单 | apps/mobile/src/pages/reset-password/reset-password.vue（实现齐：恒定文案/两步/token深链；零改动）+ fixture复位口 | 走读通过；H5 fixture模式18183壳200编译通过（服务已停） |
 | IC-055 | 成人门说明/提交 | apps/mobile/src/pages/onboarding/onboarding.vue（补门说明先行文案） | typecheck通过 |
 | IC-056 | 同意逐项查看 | apps/mobile/src/pages/onboarding/onboarding.vue（补逐项用途子文案） | typecheck通过 |
-| IC-057 | 画像字段与草稿 |  | 待实施 |
+| IC-057 | 画像字段与草稿 | apps/mobile/src/pages/onboarding/onboarding.vue + stores/learner-content.ts（目标+时长+本地草稿续填齐；标签为Web端能力，移动端有意简化，零改动） | 走读通过 |
 | IC-058 | 定级引导 |  | 待实施 |
 | IC-059 | 定级冲突/失败恢复 |  | 待实施 |
 | IC-060 | 消息列表 |  | 待实施 |
