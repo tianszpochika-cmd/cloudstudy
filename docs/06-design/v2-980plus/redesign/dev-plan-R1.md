@@ -40,3 +40,22 @@ L1 共 17 卡，R1 迭代列车见下节。
 | IT-7 收口 | L9 读+L19 读+L20+审计 BC-208+全链重放 | BC-085…093/185/186/188…192/193…198/208 | 删库重建跑全链，证据归档 |
 
 铁律：上站没绿灯，下站不开工；每站先写卡（L1 已拆，其余随站拆），后写码；跨站回归只跑已绿链。
+
+## L2 定级环（BC-013…022 → R1-018…029）
+
+| 卡 | BC | 做什么 | 验收 |
+|---|---|---|---|
+| R1-018 | BC-013 | 前端切 P1 新口（`POST /placement/sessions`，替换 B25 旧调用） | 10 道密封题干，无答案物 → owner: learner-web/mobile；依赖：R1-017 |
+| R1-019 | BC-019 | B25 写口下线（网关路由摘除，只读保留） | 旧会话可读，新开 404 → owner: api-gateway；依赖：R1-018 |
+| R1-020 | BC-014 | 逐题作答 checkpoint（顺序+版本锁） | 乱序并发 409 → owner: assessment-service；依赖：R1-018 |
+| R1-021 | BC-015 | 规则判分 FULL/ZERO（行内即时反馈） | 可解释判分 → owner: assessment-service；依赖：R1-020 |
+| R1-022 | BC-016 | 报告快照（reportId+digest 钉死） | 不可变报告 → owner: assessment-service；依赖：R1-021 |
+| R1-023 | BC-017 | 跳过 fast-track（SKIPPED 基线） | 基线落库 → owner: assessment-service；依赖：R1-018 |
+| R1-024 | BC-018 | 重测（新 session，旧报告保留） | 历史可查 → owner: assessment-service；依赖：R1-022 |
+| R1-025 | BC-020 | 题库种子进仓（10 道，3/3/2/2） | 重建自动 10 行 → owner: content-service；依赖：无（种子先行） |
+| R1-026 | BC-021 | B3 绑定种子进仓（5 道干题） | 重建自动 5 行 → owner: content-service；依赖：R1-025 |
+| R1-027 | BC-022 | 断网续答（checkpoint 恢复） | 重进续题号 → owner: learner-web；依赖：R1-020 |
+| R1-028 | IC-010…012/058/059 | 定级交互验收（引导/答题/反馈/报告/重试） | 幕幕对稿 → owner: learner-web；依赖：R1-022 |
+| R1-029 | — | L2 干净库重放（10 道→报告） | 全绿归档 → owner: QA；依赖：R1-018…028 |
+
+L2 共 12 卡。R1 累计 29 卡。下一条 L3，你说拆我就拆。
