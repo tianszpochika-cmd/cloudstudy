@@ -156,7 +156,22 @@ V.settings = () => `<div class="card"><h2>设置</h2><p class="d">偏好版本�
 V.devices = () => `<div class="card"><h2>设备</h2><p class="d">当前设备：本机浏览器</p><p class="d">另一台 Android · 2 天前 <button class="btn sm" onclick="arm(this,function(){toast('已踢出（演示）')})">踢出</button></p></div>`;
 V.privacy = () => `<div class="card"><h2>隐私</h2><p class="d">导出/删除入口（M6）：申请后按进度展示</p><button class="btn sm" onclick="toast('导出申请已提交（演示）')">申请导出</button> <button class="btn sm" onclick="arm(this,function(){document.getElementById('delr').style.display='block'})">申请删除</button><div class="fb wa" id="delr" style="display:none;margin-top:10px">已受理 · 旧 token 即刻失效，数据逐服务清理后给回执（演示）</div></div>`;
 V.support = () => `<div class="card"><h2>客服</h2><p class="d">提交后只显示编号，客服按编号处理</p><input id="sup" placeholder="一句话描述问题"><button class="btn" onclick="toast('工单已提交，编号 TK-1024（演示）')">提交工单</button></div>`;
-V.search = () => `<div class="card"><h2>搜索</h2><input id="q" placeholder="搜课程/帮助" oninput="sres(this.value)"><div id="sr"></div></div>`;
+const SH = { q: "", hist: ["四级", "音标"] };
+function sidx() {
+  const idx = [];
+  BOOKS.forEach(b => idx.push({ ty: "课程", t: b.title, d: b.intro, go: "#/shelf" }));
+  WB4.concat(WB6).forEach(w => idx.push({ ty: "词汇", t: w[0], d: w[2], go: "#/drill" }));
+  [["重置密码", "我的→设置", "#/settings"], ["退款", "我的→退款开票", "#/refund"], ["音标", "首页→零基础专区", "#/phonics"], ["客服", "我的→客服", "#/support"]].forEach(([t, d, go]) => idx.push({ ty: "帮助", t, d, go }));
+  return idx;
+}
+function sgo(t) { if (t && !SH.hist.includes(t)) { SH.hist.unshift(t); SH.hist = SH.hist.slice(0, 5); } }
+V.search = () => {
+  const q = SH.q.trim().toLowerCase();
+  const res = q ? sidx().filter(e => (e.t + e.d).toLowerCase().includes(q)).slice(0, 8) : [];
+  const groups = ["课程", "词汇", "帮助"].map(g => ({ g, items: res.filter(e => e.ty === g) })).filter(x => x.items.length);
+  return `<div class="card"><h2>搜索</h2><input id="q" placeholder="搜课程/词汇/帮助" value="${SH.q.replace(/"/g, "")}" oninput="SH.q=this.value;render2()"><div id="sr"></div></div>` + (!q ? `<div class="card"><p class="d">历史：${SH.hist.map(h => `<button class="btn sm ghost" onclick="SH.q='${h}';render()">${h}</button>`).join(" ")}</p></div>` : groups.length ? groups.map(({ g, items }) => `<div class="card"><b>${g}</b>${items.map(e => `<button class="opt" onclick="sgo('${e.t}');nav('${e.go}')">${e.t} · ${e.d} ›</button>`).join("")}</div>`).join("") : `<div class="card empty"><b>没搜到“${SH.q}”</b><p class="d">换个词试试</p></div>`);
+};
+function render2() { const v = document.getElementById("q"); const pos = v ? v.selectionStart : 0; render(); const n = document.getElementById("q"); if (n) { n.focus(); try { n.setSelectionRange(pos, pos); } catch (e) { } } }
 V.commerce = () => `<div class="card empty"><b>🛒 商城</b><p class="d">课程准备中，暂无可购。先去书架学习。</p><button class="btn sm" onclick="nav('#/courses')">去书架</button> <button class="btn sm" onclick="nav('#/pay')">沙盒收银台演示 →</button></div>`;
 V.admin = () => `<div class="card"><p class="d">演示：staff 视角（test 档）。双签：申请人禁自审。</p>${[["📝 建稿送审", "#/adraft"], ["✔️ 双签审核", "#/areview"], ["🚀 发布回滚", "#/apublish"], ["🛡️ 治理风控", "#/agov"], ["📜 审计", "#/aaudit"]].map(([t, h]) => `<button class="opt" onclick="nav('${h}')">${t} ›</button>`).join("")}</div>`;
 V.adraft = () => `<div class="card"><h2>草稿箱</h2><p class="d">版本锁 · 无权 403 不泄漏存在性</p><div class="card" style="margin:0 0 8px"><b>语法课 · There be 句型（v3）</b><p class="d">版权已绑定 · 报告已绑定 · 缺项：无</p><button class="btn sm" onclick="toast('已送审（演示）')">提交送审</button></div><label class="lb">新建草稿标题</label><input id="dt" value="新课标题"><button class="btn" onclick="toast('草稿已建 202（演示）')">建稿</button></div>`;
