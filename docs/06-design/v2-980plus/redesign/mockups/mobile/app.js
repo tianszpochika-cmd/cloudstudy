@@ -233,7 +233,17 @@ function aisend() {
   inp.value = "";
   apaint();
 }
-V.voice = () => `<div class="card"><h2>语音跟读</h2><p class="d">无麦先说，不直接开。RTC 未接，先练跟读：</p><b>“Good morning.”</b><br><button class="btn sm" style="margin-top:8px" onclick="toast('录音 3 秒… 评分 85（演示）')">🎤 跟读评分</button></div>`;
+const VOI = { scene: "跟读", rec: false, t: 0, hist: [] };
+const VOISCENES = { "跟读": ["Good morning.", "How are you?", "See you tomorrow."], "复述": ["The train leaves at nine.", "Practice makes perfect."], "对话": ["What did you do today?", "Tell me about your weekend."] };
+V.voice = () => `<div class="card"><h2>🎤 语音跟读</h2><p class="d">场景：${Object.keys(VOISCENES).map(s => `<button class="btn sm${VOI.scene === s ? "" : " ghost"}" onclick="VOI.scene='${s}';VOI.rec=false;render()">${s}</button>`).join(" ")}</p><div class="card" style="margin:8px 0"><b id="votext">${VOISCENES[VOI.scene][0]}</b> <button class="btn sm" onclick="speak(document.getElementById('votext').textContent)">🔊 示范</button></div>${VOI.rec ? `<div class="card" style="margin:8px 0"><p class="d">● 录音中 <b id="vsec">0</b>s ～～～（演示波形）</p><button class="btn" onclick="vstop()">停止判分</button></div>` : `<button class="btn" onclick="VOI.rec=true;VOI.t=0;render();vtick()">🎤 开始录音</button>`}<p class="d">无麦先说（演示跳过设备检查）；RTC 未接不评真分。</p></div><div class="card"><h2>📝 本轮记录</h2>${VOI.hist.length ? VOI.hist.map(h => `<p class="d">${h.s} → 发音 ${h.p} · 流利 ${h.f} · 完整 ${h.c}</p>`).join("") : `<p class="d">还没有，先录一条 👆</p>`}</div>`;
+function vtick() { const el = document.getElementById("vsec"); if (!el || !VOI.rec) return; VOI.t++; el.textContent = VOI.t; setTimeout(vtick, 1000); }
+function vstop() {
+  VOI.rec = false;
+  const base = 70 + ((VOI.t * 7 + VOI.hist.length * 13) % 25);
+  VOI.hist.unshift({ s: document.getElementById("votext").textContent, p: base, f: Math.min(99, base + 3), c: Math.min(99, base + 6) });
+  render();
+  toast("判分完成（演示分，非真评测）");
+}
 V.k12 = () => `<div class="card empty"><b>青少年模式（上锁）</b><p class="d">该版本仅服务成人。P3 资质齐了再开。</p><button class="btn sm" onclick="goBack()">返回</button></div>`;
 V.pay = () => `<div class="card"><h2>收银台（沙盒）</h2><p class="d">Phase 1 基金 · ¥99 · 不扣真款 · 金额二次确认</p><button class="btn" onclick="arm(this,function(){var r=document.getElementById('payr');r.className='fb ok';r.style.display='block'})">支付 ¥99</button><div class="fb" id="payr" style="display:none;margin-top:10px">✓ 支付成功（沙盒）· 权益待开通演示</div></div>`;
 V.a11y = () => `<div class="card"><h2>无障碍</h2><p class="d">跟随系统＋手动档</p><button class="opt" onclick="a11y('contrast')">◐ 高对比：<b id="a11yc">关</b> ›</button><button class="opt" onclick="a11y('font')">A 字体：<b id="a11yf">标准</b> ›</button><button class="opt" onclick="a11y('motion')">▶ 动效：<b id="a11ym">开</b> ›</button></div>`;
