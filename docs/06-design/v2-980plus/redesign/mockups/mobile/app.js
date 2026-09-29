@@ -244,7 +244,15 @@ function vstop() {
   render();
   toast("判分完成（演示分，非真评测）");
 }
-V.k12 = () => `<div class="card empty"><b>青少年模式（上锁）</b><p class="d">该版本仅服务成人。P3 资质齐了再开。</p><button class="btn sm" onclick="goBack()">返回</button></div>`;
+const K12 = { role: null, book: null, anti: false };
+V.k12 = () => {
+  if (!K12.role) return `<div class="card empty"><b>🎒 青少年模式（P3 未开·演示）</b><p class="d">你是？</p><button class="btn sm" onclick="K12.role='student';render()">我是学生</button> <button class="btn sm" onclick="K12.role='parent';render()">我是家长</button> <button class="btn sm" onclick="K12.role='teacher';render()">我是老师</button><p></p><button class="btn sm ghost" onclick="goBack()">返回成人版</button></div>`;
+  if (K12.role === "parent") return `<div class="card"><h2>👪 家长页（演示）</h2><p class="d">绑定孩子：<button class="btn sm" onclick="toast('扫码绑定（演示）')">扫码绑定</button></p><p class="d">本周：学 45 分钟 · 3 天</p><button class="btn sm" onclick="toast('已撤回授权，孩子端即刻停用（演示）')">撤回授权</button> <button class="btn sm ghost" onclick="K12.role=null;render()">换角色</button></div>`;
+  if (K12.role === "teacher") return `<div class="card"><h2>👩‍🏫 老师页（演示）</h2><p class="d">班级：初一 3 班 · 40 人</p><p class="d">本周布置：单词 50 · 课文 2 篇 <button class="btn sm" onclick="toast('已布置（演示）')">布置</button></p><button class="btn sm ghost" onclick="K12.role=null;render()">换角色</button></div>`;
+  if (!K12.book) return `<div class="card"><h2>📚 选教材（演示）</h2><p class="d">按年级，版权先行（演示全正版）</p>${["人教七上", "人教七下", "外研七上"].map(b => `<button class="opt" onclick="K12.book='${b}';render()">${b} ›</button>`).join("")}<button class="btn sm ghost" onclick="K12.role=null;render()">换角色</button></div>`;
+  if (!K12.anti) return `<div class="card"><h2>${K12.book}</h2><p class="d">第一课：问候 <button class="btn sm" onclick="speak('Good morning class')">🔊</button></p><p>Good morning, class!</p><p class="d">坐下：Sit down, please.</p><button class="btn" onclick="K12.anti=true;render()">下课</button></div>`;
+  return `<div class="card empty"><b>⏰ 今天学够 40 分钟啦，明天见！</b><p class="d">防沉迷：到点即停，不突破（演示）</p><button class="btn sm" onclick="K12.anti=false;K12.book=null;render()">明天再来</button></div>`;
+};
 V.pay = () => `<div class="card"><h2>收银台（沙盒）</h2><p class="d">Phase 1 基金 · ¥99 · 不扣真款 · 金额二次确认</p><button class="btn" onclick="arm(this,function(){var r=document.getElementById('payr');r.className='fb ok';r.style.display='block'})">支付 ¥99</button><div class="fb" id="payr" style="display:none;margin-top:10px">✓ 支付成功（沙盒）· 权益待开通演示</div></div>`;
 V.a11y = () => `<div class="card"><h2>无障碍</h2><p class="d">跟随系统＋手动档</p><button class="opt" onclick="a11y('contrast')">◐ 高对比：<b id="a11yc">关</b> ›</button><button class="opt" onclick="a11y('font')">A 字体：<b id="a11yf">标准</b> ›</button><button class="opt" onclick="a11y('motion')">▶ 动效：<b id="a11ym">开</b> ›</button></div>`;
 V.arrears = () => `<div class="card"><h2>📚 今日任务</h2><div class="card" style="margin:0 0 8px;border-color:var(--warn)"><b>昨天有 1 节没学完，今天补吗？</b><p class="d">补上不断签</p><button class="btn sm" onclick="toast('已加入今日（演示）');nav('#/today')">补上 →</button> <button class="btn sm ghost" onclick="nav('#/today')">跳过</button></div></div>`;
