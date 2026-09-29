@@ -1,7 +1,7 @@
 /* 语学星移动端整机交互稿 · 静态数据 · 无后端 */
 const S = {
   user: "演示账号", gate: "PASS", consents: {}, goal: null, quiz: { i: 0, score: 0, sel: null, done: false },
-  mistakes: [], plan: false, today: [{ id: "t1", t: "语法 · There ___ two books.", min: 5, kind: "grammar" }, { id: "t2", t: "阅读 · 图书馆", min: 5, kind: "reading" }],
+  mistakes: [{ t: "There ___ two books on the desk.", why: "定位：语法待补" }, { t: "abandon", why: "定位：词汇待补" }, { t: "Hardly had I arrived when it rained.", why: "定位：阅读待补" }], plan: false, today: [{ id: "t1", t: "语法 · There ___ two books.", min: 5, kind: "grammar" }, { id: "t2", t: "阅读 · 图书馆", min: 5, kind: "reading" }],
   shelf: ["四级词汇 B1", "零基础 A1", "六级 B2", "商务口语", "雅思备考", "生活英语"],
   msgs: [{ t: "欢迎来到语学星", d: "先定级，3 分钟出报告", read: false }, { t: "今日任务已生成", d: "语法 2 道", read: false }],
   streak: 1, consentV: "b30-consent-v1",
