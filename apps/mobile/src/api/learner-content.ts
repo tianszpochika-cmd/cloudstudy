@@ -246,7 +246,9 @@ function requireSameIdentity(isCurrent?: () => boolean): void {
   if (isCurrent && !isCurrent()) throw new Error('账号已变化，请重新打开页面后操作。')
 }
 
-export const mobileLearnerContentApi = {
+import { fixtureMobileLearnerContentApi } from './fixture-learner-content'
+
+const gatewayMobileLearnerContentApi = {
   async readOnboarding(): Promise<MobileOnboardingModel> {
     // Preferences are the canonical source for content locale. Resolve them
     // before requesting locale-specific onboarding options so a cached or
@@ -329,7 +331,7 @@ export const mobileLearnerContentApi = {
       })
       requireSameIdentity(isCurrent)
     }
-    const result = await mobileLearnerContentApi.readOnboarding()
+    const result = await gatewayMobileLearnerContentApi.readOnboarding()
     requireSameIdentity(isCurrent)
     return result
   },
@@ -345,7 +347,7 @@ export const mobileLearnerContentApi = {
 
   async savePreferences(input: { themeMode?: MobileThemeMode; highContrast?: boolean; motionMode?: MobileMotionMode; contentLocale?: string; clientEventId: string }, isCurrent?: () => boolean): Promise<MobileLearnerAccount> {
     requireSameIdentity(isCurrent)
-    const current = await mobileLearnerContentApi.readAccount()
+    const current = await gatewayMobileLearnerContentApi.readAccount()
     requireSameIdentity(isCurrent)
     const data: Record<string, unknown> = { expectedStateVersion: current.stateVersion }
     if (input.contentLocale !== undefined) data.contentLocale = input.contentLocale
@@ -360,7 +362,7 @@ export const mobileLearnerContentApi = {
     if (Object.keys(data).length === 1) throw new Error('没有可保存的学习偏好。')
     await mobileApiClient.request('/learner/preferences', { method: 'PATCH', data, header: { 'Idempotency-Key': input.clientEventId } })
     requireSameIdentity(isCurrent)
-    const result = await mobileLearnerContentApi.readAccount()
+    const result = await gatewayMobileLearnerContentApi.readAccount()
     requireSameIdentity(isCurrent)
     if (input.contentLocale !== undefined && result.contentLocale !== input.contentLocale) {
       throw new Error('学习内容语言尚未由账户确认，请重试。')
@@ -419,3 +421,12 @@ export function mobileLearnerContentError(error: unknown): Error {
   if (apiError.status === 404) return new Error('当前内容版本已下线或暂不可用。')
   return apiError
 }
+
+/**
+ * 数据源选择器：`VITE_MOBILE_API_MODE=fixture` 走静态数据（交互验收），
+ * 默认走网关。调用方只认 `mobileLearnerContentApi`，翻开关不用改页。
+ */
+export const mobileLearnerContentApi: typeof gatewayMobileLearnerContentApi =
+  import.meta.env?.VITE_MOBILE_API_MODE === 'fixture'
+    ? (fixtureMobileLearnerContentApi as unknown as typeof gatewayMobileLearnerContentApi)
+    : gatewayMobileLearnerContentApi
