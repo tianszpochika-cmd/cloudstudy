@@ -143,7 +143,14 @@ function dress(part, v) {
   if (part === "wall") { T3.scene.background.set(v); T3.ground.material.color.set(v); }
 }
 function wave() { if (T3) T3.waving = 40; else toast("3D 还没加载好"); }
-V.msgs = () => `<h2 style="margin:0 0 10px">消息</h2>` + S.msgs.map(m => `<div class="card"><b>${m.t}</b><p class="d">${m.d}</p></div>`).join("");
+const MSGS = [
+  { id: "m1", cat: "学习", t: "今日任务已生成", d: "语法 2 道，预计 10 分钟", time: "08:00", read: false },
+  { id: "m2", cat: "学习", t: "欢迎来到语学星", d: "先定级，3 分钟出报告", time: "昨天", read: false },
+  { id: "m3", cat: "系统", t: "条款更新了", d: "看一眼再继续，一键重签", time: "周一", read: true },
+  { id: "m4", cat: "互动", t: "有人给你点赞", d: "你的打卡被 3 人点赞（演示）", time: "周一", read: true },
+];
+const MG = { cat: "全部" };
+V.msgs = () => { const un = MSGS.filter(m => !m.read).length; const list = MSGS.filter(m => MG.cat === "全部" || m.cat === MG.cat); return `<div class="card"><h2>✉️ 消息${un ? `（${un} 未读）` : ""}</h2><p class="d">${["全部", "学习", "系统", "互动"].map(c => `<button class="btn sm${MG.cat === c ? "" : " ghost"}" onclick="MG.cat='${c}';render()">${c}</button>`).join(" ")} <button class="btn sm ghost" onclick="MSGS.forEach(m=>m.read=true);render()">全标已读</button></p></div>` + (list.length ? list.map(m => `<div class="card" onclick="MSGS.find(x=>x.id==='${m.id}').read=true;render()" style="cursor:pointer;${m.read ? "opacity:.65" : ""}"><b>${m.read ? "" : "● "}${m.t}</b> <span class="tag">${m.cat}</span><p class="d">${m.d}</p><p class="meta">${m.time}</p></div>`).join("") : `<div class="card empty"><b>这类没消息</b></div>`); };
 V.me = () => `<div class="card" style="text-align:center"><b style="font-size:18px">${S.user || "未登录"}</b><p class="d">B1 · 已坚持 1 天</p></div><div class="card">${[["📖 书架", "#/courses"], ["📚 新书架", "#/shelf"], ["❤️ 错题本", "#/mistakes"], ["🔁 复习", "#/srs"], ["📊 学习报告", "#/weekly"], ["✉️ 消息", "#/msgs"], ["🔍 搜索", "#/search"], ["🛒 商城（空目录）", "#/commerce"], ["🤖 AI 伴学（演示）", "#/ai"], ["🎤 语音跟读", "#/voice"], ["🔒 青少年模式", "#/k12"], ["🛠️ 管理（staff 演示）", "#/admin"], ["♿ 无障碍", "#/a11y"], ["🔤 音标", "#/phonics"], ["🔠 字母", "#/alphabet"], ["📖 词汇详情", "#/vocab"], ["🎧 听力", "#/listening"], ["🎙️ 口语", "#/speaking"], ["✍️ 写作", "#/writing"], ["📦 离线包", "#/offpkg"], ["🧾 退款开票", "#/refund"], ["⚙️ 设置", "#/settings"], ...(DEMO ? [["🧪 更多状态屏", "#/arrears"], ["⛔ 门被拒", "#/greject"], ["📄 同意升级", "#/cupgrade"]] : [])].map(([t, h]) => `<button class="opt" onclick="nav('${h}')">${t} ›</button>`).join("")}</div>`;
 V.settings = () => `<div class="card"><h2>设置</h2><p class="d">偏好版本写回读 · 高对比/字体/动效见无障碍</p><button class="opt" onclick="nav('#/devices')">📱 设备 ›</button><button class="opt" onclick="nav('#/privacy')">🔒 隐私 ›</button><button class="opt" onclick="toast('主题已切换（演示）')">🌗 深色模式 ›</button><button class="btn ghost" onclick="arm(this,function(){S.user=null;toast('已退出');nav('#/login')})">退出登录</button></div>`;
 V.devices = () => `<div class="card"><h2>设备</h2><p class="d">当前设备：本机浏览器</p><p class="d">另一台 Android · 2 天前 <button class="btn sm" onclick="arm(this,function(){toast('已踢出（演示）')})">踢出</button></p></div>`;
