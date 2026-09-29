@@ -15,6 +15,7 @@ import { useSessionStore } from '../../stores/session'
 const store = useLearnerContentStore()
 const session = useSessionStore()
 const hasConfirmedProgress = computed(() => Boolean(store.home?.tasks.length && store.home.targetMinutes > 0 && !store.home.stale))
+const allTasksDone = computed(() => Boolean(store.home?.tasks.length) && store.home.tasks.every((task) => task.status === 'COMPLETED'))
 const canContinueCourse = computed(() => Boolean(store.home?.tasks.some((task) => (task.status === 'AVAILABLE' || task.status === 'IN_PROGRESS') && task.contentCode)
   || store.home?.content.some((item) => item.availability === 'PUBLISHED')))
 onShow(async () => { if (await ensureMobilePageAccess('/pages/home/home')) void store.loadHome() })
@@ -43,6 +44,8 @@ function continueCourse(): void {
       <button tabindex="0" role="button" class="yx-button" type="button" @click="store.loadHome()">重试</button>
     </view>
     <view v-else-if="store.home" class="yx-card">
+      <view v-if="store.home.stale" class="yx-card guide-strip" role="status"><text class="state-title">昨天有 1 节没学完，今天补吗？</text><button tabindex="0" role="button" class="yx-button" type="button" @click="open('/pages/today/today')">去补上 →</button></view>
+      <view v-if="allTasksDone" class="yx-card guide-strip" role="status"><text class="state-title">🎉 今天全完成了，明天见！</text><text class="state-description">复习队列见“今日”，保持手感。</text></view>
       <template v-if="hasConfirmedProgress">
         <view class="progress-row"><text>今日进度</text><text class="progress">{{ store.progress }}%</text></view>
         <view class="progress-track"><view class="progress-value" :style="{ width: `${store.progress}%` }"></view></view>

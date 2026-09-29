@@ -227,15 +227,15 @@
 | IC-010 | 定级答题页 | apps/mobile/src/pages/assessment/assessment.vue（题干选项+提交中禁用+断网存本地；实现齐） | 走读通过 |
 | IC-011 | 定级提交反馈 | apps/mobile/src/pages/assessment/assessment.vue（offline重读提示；行内即时反馈随store；实现齐） | 走读通过 |
 | IC-012 | 定级报告卡 | apps/mobile/src/pages/assessment/assessment.vue（分+画像建议+生成计划键；维度明细待模型扩展） | typecheck通过 |
-| IC-013 | 计划生成/重排 |  | 待实施 |
-| IC-014 | 计划解释 |  | 待实施 |
-| IC-015 | 今日任务流 |  | 待实施 |
-| IC-016 | 今日空态分流 |  | 待实施 |
-| IC-017 | 未完成任务安排 |  | 待实施 |
-| IC-018 | 今日完成 |  | 待实施 |
-| IC-019 | 今日断网/同步 |  | 待实施 |
-| IC-020 | 学习首页 |  | 待实施 |
-| IC-021 | 首次学习专页 |  | 待实施 |
+| IC-013 | 计划生成/重排 | 需home模型加计划字段（契约缺口，待后端）；本轮不动 | blocked-契约 |
+| IC-014 | 计划解释 | 同上（待计划字段） | blocked-契约 |
+| IC-015 | 今日任务流 | apps/mobile/src/pages/today/today.vue（实现齐；零改动） | 走读通过 |
+| IC-016 | 今日空态分流 | today.vue（补双CTA去书架/再测） | typecheck通过 |
+| IC-017 | 未完成任务安排 | home.vue（stale欠账提示） | typecheck通过 |
+| IC-018 | 今日完成 | home.vue（全完成撒花） | typecheck通过 |
+| IC-019 | 今日断网/同步 | today.vue（离线分支齐；零改动） | 走读通过 |
+| IC-020 | 学习首页 | home.vue（引导条+任务+书架；计划横幅待契约） | 部分通过 |
+| IC-021 | 首次学习专页 | 首日流缺少独立页（现状并入首页引导条IC-009） | deferred-并入IC-009 |
 | IC-022 | 练题（语法/阅读行内判分） |  | 待实施 |
 | IC-023 | 会话与检查点 |  | 待实施 |
 | IC-024 | 词汇/听说写入口总览 |  | 待实施 |

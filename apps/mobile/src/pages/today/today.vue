@@ -35,12 +35,12 @@ function backHome(): void { getUniRuntime().switchTab({ url: '/pages/home/home' 
         <button tabindex="0" role="button" class="yx-button yx-button--secondary" type="button" @click="store.loadHome()">重新加载</button>
       </view>
       <template v-if="store.home"><text class="progress">{{ store.progress }}%</text><text class="yx-description">目标 {{ store.home.targetMinutes }} 分钟，已完成 {{ store.home.completedMinutes }} 分钟。</text></template>
-      <view v-if="store.home && !store.home.tasks.length" class="empty">今天还没有安排任务。</view>
+      <view v-if="store.home && !store.home.tasks.length" class="empty">今天还没有安排任务。<view><button tabindex="0" role="button" class="yx-button yx-button--secondary" type="button" @click="openUniPage('/pages/learn/learn')">去书架逛逛</button><button tabindex="0" role="button" class="yx-button yx-button--secondary" type="button" @click="openUniPage('/pages/assessment/assessment')">再测一次</button></view></view>
       <view v-for="task in store.home?.tasks" :key="task.id" class="task-row">
         <view class="task-copy"><text class="title">{{ task.title }}</text><text class="description">{{ task.description }} · {{ task.minutes }} 分钟</text></view>
         <button tabindex="0" role="button" :disabled="!canOpenTask(task)" @click="viewTask(task)">{{ task.status === 'COMPLETED' ? '已完成' : task.status === 'LOCKED' ? '未解锁' : canOpenTask(task) ? '查看课程' : '暂不可用' }}</button>
       </view>
-      <view v-if="!store.home && store.homeStatus === 'empty'" class="empty">今天还没有可展示的任务。</view>
+      <view v-if="!store.home && store.homeStatus === 'empty'" class="empty">今天还没有可展示的任务。<view><button tabindex="0" role="button" class="yx-button yx-button--secondary" type="button" @click="openUniPage('/pages/learn/learn')">去书架逛逛</button><button tabindex="0" role="button" class="yx-button yx-button--secondary" type="button" @click="openUniPage('/pages/assessment/assessment')">再测一次</button></view></view>
     </view>
     <button tabindex="0" role="button" class="yx-button yx-button--secondary" @click="backHome">返回学习首页</button>
   </view>
