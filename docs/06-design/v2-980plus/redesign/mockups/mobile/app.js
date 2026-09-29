@@ -153,6 +153,18 @@ const ABC = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 const WB4 = [["abandon", "/əˈbændən/", "抛弃"], ["ability", "/əˈbɪləti/", "能力"], ["absent", "/ˈæbsənt/", "缺席的"], ["absolute", "/ˈæbsəluːt/", "绝对的"], ["absorb", "/əbˈsɔːb/", "吸收"], ["abstract", "/ˈæbstrækt/", "抽象的"], ["abundant", "/əˈbʌndənt/", "丰富的"], ["abuse", "/əˈbjuːz/", "滥用"], ["academy", "/əˈkædəmi/", "学院"], ["accelerate", "/əkˈseləreɪt/", "加速"], ["accent", "/ˈæksənt/", "口音"], ["accept", "/əkˈsept/", "接受"], ["access", "/ˈækses/", "进入"], ["accommodate", "/əˈkɒmədeɪt/", "容纳"], ["accompany", "/əˈkʌmpəni/", "陪伴"], ["accomplish", "/əˈkɒmplɪʃ/", "完成"], ["account", "/əˈkaʊnt/", "账户"], ["accumulate", "/əˈkjuːmjəleɪt/", "积累"], ["accuracy", "/ˈækjərəsi/", "准确"], ["accuse", "/əˈkjuːz/", "指控"]];
 const WB6 = [["abolish", "/əˈbɒlɪʃ/", "废除"], ["absurd", "/əbˈsɜːd/", "荒谬的"], ["abundance", "/əˈbʌndəns/", "丰富"], ["acclaim", "/əˈkleɪm/", "赞誉"], ["acquaint", "/əˈkweɪnt/", "使熟悉"], ["adhere", "/ədˈhɪə/", "坚持"], ["adjacent", "/əˈdʒeɪsənt/", "邻近的"], ["adjoin", "/əˈdʒɔɪn/", "毗连"], ["administer", "/ədˈmɪnɪstə/", "管理"], ["admirable", "/ˈædmərəbl/", "令人钦佩的"], ["admission", "/ədˈmɪʃən/", "入学许可"], ["adolescent", "/ˌædəˈlesənt/", "青少年"], ["adore", "/əˈdɔː/", "热爱"], ["adorn", "/əˈdɔːn/", "装饰"], ["adverse", "/ˈædvɜːs/", "不利的"], ["advertise", "/ˈædvətaɪz/", "做广告"], ["advocate", "/ˈædvəkeɪt/", "提倡"], ["aesthetic", "/iːsˈθetɪk/", "美学的"], ["affiliate", "/əˈfɪlieɪt/", "附属"], ["affirm", "/əˈfɜːm/", "断言"]];
 const DR = { book: "CET4", i: 0, known: 0, show: false, mode: "zhan", quizPick: -1, quizDone: false };
+const FAM = {
+  abandon: { infl: ["abandon", "abandons", "abandoned", "abandoning", "abandonment n.抛弃"], sent: ["Don't abandon hope.", "The ship was abandoned.", "He abandoned the plan."], slang: "abandon ship（开溜，多指散伙）", story: "a-(away 离开)+ban(喊)→喊走→抛弃" },
+  accept: { infl: ["accept", "accepts", "accepted", "accepting", "acceptance n.接受"], sent: ["I accept your gift.", "She accepted the offer.", "Accepting change is hard."], slang: "accepted!（中了！表示同意）", story: "ac-(to 朝向)+cept(拿)→拿过来→接受" },
+  accuse: { infl: ["accuse", "accuses", "accused", "accusing", "accusation n.指控"], sent: ["He accused her of lying.", "They were accused.", "Stop accusing me!"], slang: "the accused（被告，人）", story: "ac-(to)+cause(因由)→归咎于某因→指控" },
+  absorb: { infl: ["absorb", "absorbs", "absorbed", "absorbing", "absorption n.吸收"], sent: ["Plants absorb sunlight.", "He absorbed the news.", "Absorbing is the first step."], slang: "absorbed in…（沉浸于……）", story: "ab-(away 消除)+sorb(吸)→吸掉→吸收" },
+  abuse: { infl: ["abuse", "abuses", "abused", "abusing"], sent: ["Don't abuse drugs.", "He abused my trust.", "Abusing power ends badly."], slang: "substance abuse（药物滥用）", story: "ab-(away 偏离)+use(用)→乱用→滥用" },
+  access: { infl: ["access", "accesses", "accessed", "accessing", "accessible adj.可进入的"], sent: ["You have access now.", "We accessed the file.", "Accessing data is logged."], slang: "all-access（全通）", story: "ac-(to)+cess(走)→走进去→进入" },
+};
+function famOf(w) {
+  if (FAM[w]) return FAM[w];
+  return { infl: [w, w + "s", w + "ed", w + "ing"], sent: ["I know " + w + ".", "We use " + w + " every day.", w + " is useful."], slang: "（该词俚语待补充）", story: "（词源待补充，先记形和音）" };
+}
 function wset(book) { DR.book = book; DR.i = 0; DR.known = 0; DR.show = false; DR.quizPick = -1; DR.quizDone = false; nav("#/drill"); }
 function wlist() { return DR.book === "CET4" ? WB4 : WB6; }
 function dreveal() { DR.show = true; render(); }
@@ -164,7 +176,11 @@ function wquiz() { const L = wlist(), idx = Math.min(DR.i, L.length - 1), w = L[
 function qpick(k) { DR.quizPick = k; render(); }
 V.drill = () => {
   const L = wlist();
-  const tabs = `<p class="d">模式：<button class="btn sm${DR.mode === "zhan" ? "" : " ghost"}" onclick="DR.mode='zhan';DR.show=false;render()">斩词</button> <button class="btn sm${DR.mode === "quiz" ? "" : " ghost"}" onclick="DR.mode='quiz';DR.quizPick=-1;DR.quizDone=false;render()">选项</button></p>`;
+  const tabs = `<p class="d">模式：<button class="btn sm${DR.mode === "zhan" ? "" : " ghost"}" onclick="DR.mode='zhan';DR.show=false;render()">斩词</button> <button class="btn sm${DR.mode === "quiz" ? "" : " ghost"}" onclick="DR.mode='quiz';DR.quizPick=-1;DR.quizDone=false;render()">选项</button> <button class="btn sm${DR.mode === "fam" ? "" : " ghost"}" onclick="DR.mode='fam';render()">高效</button></p>`;
+  if (DR.mode === "fam") {
+    const L = wlist(), w = L[Math.min(DR.i, L.length - 1)], f = famOf(w[0]);
+    return `<div class="meta">${DR.book === "CET4" ? "四级" : "六级"} · 第 ${Math.min(DR.i + 1, L.length)}/${L.length} · 高效学一词顶十词</div>${tabs}<div class="card"><b style="font-size:32px">${w[0]}</b> <span class="meta">${w[1]}</span> <button class="btn sm" onclick="speak('${w[0]}')">🔊</button><p style="font-size:20px"><b>${w[2]}</b></p></div><div class="card"><h2>🔀 变形全家</h2>${f.infl.map(x => `<span class="tag">${x}</span>`).join("")}</div><div class="card"><h2>🧩 组句</h2>${f.sent.map((s, k) => `<p class="d">${k + 1}. ${s} <button class="btn sm" onclick="speak('${s.replace(/'/g, "")}')">🔊</button></p>`).join("")}</div><div class="card"><h2>😎 俚语</h2><p>${f.slang}</p></div><div class="card"><h2>📜 由来</h2><p class="d">${f.story}</p></div><button class="btn" onclick="dzhan(true)">学会了，下一词 →</button> <button class="btn ghost" onclick="dzhan(false)">先收着 →</button>`;
+  }
   if (DR.mode === "quiz") {
     const { w, opts } = wquiz();
     let mid = "";
