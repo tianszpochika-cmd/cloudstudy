@@ -269,8 +269,8 @@
 | IC-052 | 注册表单 | apps/mobile/src/pages/register/register.vue + src/auth/fixture-adapter.ts | 静态验收（typecheck+b12 8/8） |
 | IC-053 | 学习端登录 | apps/mobile/src/pages/login/login.vue + src/auth/navigation.ts（实现齐：回跳保留/401全局恢复/深链兜底；零改动） | 代码走读通过；handoff 2/2+b12 8/8；bootstrap套件10挂为9-26既有分支债待修 |
 | IC-054 | 重置表单 | apps/mobile/src/pages/reset-password/reset-password.vue（实现齐：恒定文案/两步/token深链；零改动）+ fixture复位口 | 走读通过；H5 fixture模式18183壳200编译通过（服务已停） |
-| IC-055 | 成人门说明/提交 |  | 待实施 |
-| IC-056 | 同意逐项查看 |  | 待实施 |
+| IC-055 | 成人门说明/提交 | apps/mobile/src/pages/onboarding/onboarding.vue（补门说明先行文案） | typecheck通过 |
+| IC-056 | 同意逐项查看 | apps/mobile/src/pages/onboarding/onboarding.vue（补逐项用途子文案） | typecheck通过 |
 | IC-057 | 画像字段与草稿 |  | 待实施 |
 | IC-058 | 定级引导 |  | 待实施 |
 | IC-059 | 定级冲突/失败恢复 |  | 待实施 |

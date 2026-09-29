@@ -136,11 +136,11 @@ async function cancel(): Promise<void> {
       <view v-if="step === 1" class="yx-onboarding-step">
         <text class="section-kicker">确认身份与同意事项</text>
         <text class="section-title">确认成人身份</text>
-        <text class="section-description">仅限已满 18 岁的学习者。</text>
+        <text class="section-description">语学星只服务满 18 岁的学习者，所以先确认一下生日；信息只用来判定，不做别的用途。</text>
         <label class="birth-year"><text>出生年份</text><input v-model.number="birthYear" type="number" inputmode="numeric" placeholder="例如 1995" aria-label="出生年份" /></label>
-        <label class="consent"><checkbox :checked="ageConfirmed" @click="ageConfirmed = !ageConfirmed" /><text>我确认自己已满 18 周岁</text></label>
-        <label class="consent"><checkbox :checked="privacyConsent" @click="privacyConsent = !privacyConsent" /><text>我同意隐私说明</text></label>
-        <label class="consent"><checkbox :checked="termsConsent" @click="termsConsent = !termsConsent" /><text>我同意学习服务条款</text></label>
+        <label class="consent"><checkbox :checked="ageConfirmed" @click="ageConfirmed = !ageConfirmed" /><text>我确认自己已满 18 周岁<text class="consent-purpose">用于开放学习能力</text></text></label>
+        <label class="consent"><checkbox :checked="privacyConsent" @click="privacyConsent = !privacyConsent" /><text>我同意隐私说明<text class="consent-purpose">数据怎么存、怎么删</text></text></label>
+        <label class="consent"><checkbox :checked="termsConsent" @click="termsConsent = !termsConsent" /><text>我同意学习服务条款<text class="consent-purpose">学习服务的使用规则</text></text></label>
       </view>
 
       <view v-else class="yx-onboarding-step">
@@ -187,6 +187,7 @@ async function cancel(): Promise<void> {
 .birth-year { display: grid; gap: 12rpx; margin-top: 30rpx; color: var(--yx-text-primary); font-size: 25rpx; font-weight: 700; }
 .birth-year input { box-sizing: border-box; width: 100%; height: 80rpx; padding: 0 18rpx; border: 1rpx solid var(--yx-border); border-radius: 12rpx; color: var(--yx-text-primary); background: var(--yx-surface-page); font-size: 28rpx; }
 .consent { display: flex; align-items: center; gap: 10rpx; margin-top: 22rpx; color: var(--yx-text-secondary); font-size: 25rpx; line-height: 1.5; }
+.consent-purpose { display: block; color: var(--yx-text-tertiary); font-size: 21rpx; }
 .flow-note { display: block; margin-top: 24rpx; color: var(--yx-text-tertiary); font-size: 22rpx; line-height: 1.6; }
 .choice-list { display: grid; gap: 14rpx; }
 .choice { display: grid; gap: 6rpx; width: 100%; margin: 0; padding: 18rpx 20rpx; border: 1rpx solid var(--yx-border); border-radius: 14rpx; color: var(--yx-text-primary); background: var(--yx-surface-card); font-size: 26rpx; text-align: left; }
