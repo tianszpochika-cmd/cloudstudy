@@ -1,7 +1,7 @@
 /* 语学星移动端整机交互稿 · 静态数据 · 无后端 */
 const S = {
   user: "演示账号", gate: "PASS", consents: {}, goal: null, quiz: { i: 0, score: 0, sel: null, done: false },
-  mistakes: [{ t: "There ___ two books on the desk.", why: "定位：语法待补" }, { t: "abandon", why: "定位：词汇待补" }, { t: "Hardly had I arrived when it rained.", why: "定位：阅读待补" }], plan: false, today: [{ id: "t1", t: "语法 · There ___ two books.", min: 5, kind: "grammar" }, { id: "t2", t: "阅读 · 图书馆", min: 5, kind: "reading" }],
+  mistakes: [{ t: "There ___ two books on the desk.", why: "定位：语法待补", kind: "sentence" }, { t: "abandon", why: "定位：词汇待补", kind: "word" }, { t: "Hardly had I arrived when it rained.", why: "定位：阅读待补", kind: "sentence" }], plan: false, today: [{ id: "t1", t: "语法 · There ___ two books.", min: 5, kind: "grammar" }, { id: "t2", t: "阅读 · 图书馆", min: 5, kind: "reading" }],
   shelf: ["四级词汇 B1", "零基础 A1", "六级 B2", "商务口语", "雅思备考", "生活英语"],
   msgs: [{ t: "欢迎来到语学星", d: "先定级，3 分钟出报告", read: false }, { t: "今日任务已生成", d: "语法 2 道", read: false }],
   streak: 1, consentV: "b30-consent-v1",
@@ -57,7 +57,7 @@ function wlookup(w) {
 }
 function speak(w) { try { const u = new SpeechSynthesisUtterance(w); u.lang = "en-US"; speechSynthesis.cancel(); speechSynthesis.speak(u); } catch (e) { toast("朗读不可用（演示）"); } }
 function stemWords() { const h = document.getElementById("pstem"); if (!h || h.dataset.w) return; h.dataset.w = "1"; h.innerHTML = h.textContent.split(/(\s+)/).map(p => /[A-Za-z]{2,}/.test(p) ? `<u onclick="wlookup('${p.replace(/[^A-Za-z]/g, '')}')" style="cursor:pointer;text-decoration:underline dotted">${p}</u>` : p).join(""); }
-V.mistakes = () => (S.mistakes.length ? S.mistakes.map(m => `<div class="card"><b>${m.t}</b><p class="d">${m.why}</p><button class="btn sm" onclick="toast('变式题稍后见（演示）')">变式再练 →</button></div>`).join("") : `<div class="card empty"><b>错题本是空的 🎉</b><p class="d">去今日任务做一道，错了会自动进来</p><button class="btn sm" onclick="nav('#/today')">去做题</button></div>`);
+V.mistakes = () => (S.mistakes.length ? S.mistakes.map(m => `<div class="card"><b>${m.t}</b><p class="d">${m.why}</p>${m.kind === "word" ? `<button class="btn sm" onclick="speak('${m.t}')">🔊 跟读</button> <button class="btn sm ghost" onclick="nav('#/drill')">去刷 →</button>` : `<button class="btn sm" onclick="toast('变式题稍后见（演示）')">变式再练 →</button>`}</div>`).join("") : `<div class="card empty"><b>错题本是空的 🎉</b><p class="d">去今日任务做一道，错了会自动进来</p><button class="btn sm" onclick="nav('#/today')">去做题</button></div>`);
 V.srs = () => `<div class="card"><h2>复习</h2><p class="d">到期 0 个 · 直写入口已关闭（设计如此）</p><button class="btn ghost" onclick="nav('#/today')">回今日看看</button></div>`;
 V.weekly = () => `<div class="card"><h2>学习报告</h2><p class="d">本周 15 分钟 · 新学 10 · 复习 5</p><p class="d">💡 教练建议：保持每天 15 分钟，语法是重点。</p></div>`;
 V.world = () => `<div class="card empty"><b>🌍 世界（R2 开放）</b><p class="d">房间、排行、赛季还没开，先好好学习</p><button class="btn sm" onclick="nav('#/avatar')">看看装扮</button></div><div class="card"><h2>🏆 排行榜</h2><p class="d">赛季未开始</p></div>`;
@@ -228,7 +228,7 @@ V.drill = () => {
       else {
         const parts = wsplit(w[0]);
         mid = `<div class="fb no">! 选错了，进复习</div><div class="card" style="margin:10px 0 0"><b>🔍 ${w[0]} 拆开看</b><p style="font-size:22px">${parts.join(" + ")}</p><p class="d">读音：${w[1]} · 中文：${w[2]}</p><p class="d">点读跟三遍，记住形和音的对应（演示拆分）。</p><button class="btn sm" onclick="speak('${w[0]}')">🔊 跟读</button> <button class="btn sm ghost" onclick="dzhan(false)">记下了，下一词 →</button></div>`;
-        if (!S.mistakes.some(m => m.t === w[0])) S.mistakes.push({ t: w[0], why: "定位：词汇待补" });
+        if (!S.mistakes.some(m => m.t === w[0])) S.mistakes.push({ t: w[0], why: "定位：词汇待补", kind: "word" });
       }
     }
     return `<div class="meta">${DR.book === "CET4" ? "四级" : "六级"} · 第 ${Math.min(DR.i + 1, L.length)}/${L.length} · 已斩 ${DR.known}</div>${tabs}<div class="card" style="text-align:center"><b style="font-size:34px">${w[0]}</b><p class="d">${w[1]} <button class="btn sm" onclick="speak('${w[0]}')">🔊</button></p></div>` + opts.map((o, k) => `<button class="opt" onclick="qpick(${k})">${wpic(o.w)} ${o.zh}</button>`).join("") + mid;
@@ -247,7 +247,7 @@ function doGate() { const ag = document.getElementById("cf"); if (!document.getE
 function doConsents() { const a = [...document.querySelectorAll(".ag")]; if (!a.every(x => x.checked)) { toast("三项都要签"); return; } toast("三项已签署"); nav("#/onboard"); }
 function doGoal() { S.goal = document.getElementById("g").selectedOptions[0].text; S.quiz = { i: 0, score: 0, sel: null, done: false }; toast("目标已保存"); nav("#/placement"); }
 function pick(k) { S.quiz.sel = k; document.querySelectorAll("#qo .opt").forEach((x, j) => x.classList.toggle("sel", j === k)); }
-function qSubmit() { const q = BANK[S.quiz.i]; if (S.quiz.sel == null) { toast("先选一个"); return; } const f = document.getElementById("qfb"), ok = S.quiz.sel === q.a; if (ok) S.quiz.score++; else S.mistakes.push({ t: q.s, why: "定位：" + q.dim + "待补" }); f.textContent = ok ? "✓ 对了" : "! 记下了，进错题本，变式稍后见"; f.className = "fb " + (ok ? "ok" : "no"); }
+function qSubmit() { const q = BANK[S.quiz.i]; if (S.quiz.sel == null) { toast("先选一个"); return; } const f = document.getElementById("qfb"), ok = S.quiz.sel === q.a; if (ok) S.quiz.score++; else S.mistakes.push({ t: q.s, why: "定位：" + q.dim + "待补", kind: /^[A-Za-z]+$/.test(q.s.split(" ")[0]) && q.s.split(" ").length <= 2 ? "word" : "sentence" }); f.textContent = ok ? "✓ 对了" : "! 记下了，进错题本，变式稍后见"; f.className = "fb " + (ok ? "ok" : "no"); }
 function qNext() { if (S.quiz.i < BANK.length - 1) { S.quiz.i++; render(); } else { S.quiz.done = true; nav("#/report"); } }
 let PSEL = null;
 const A = { l1: false, l2: false };
@@ -255,7 +255,7 @@ function paintRev() { const el = document.getElementById("revst"); if (el) el.te
 const AX = { c: false, f: 0, m: true };
 function a11y(k) { if (k === "contrast") { AX.c = !AX.c; document.body.style.filter = AX.c ? "contrast(1.4)" : ""; document.getElementById("a11yc").textContent = AX.c ? "开" : "关"; } if (k === "font") { AX.f = (AX.f + 1) % 3; const z = [15, 17, 19][AX.f]; document.body.style.fontSize = z + "px"; document.getElementById("a11yf").textContent = ["标准", "大", "特大"][AX.f]; } if (k === "motion") { AX.m = !AX.m; document.getElementById("a11ym").textContent = AX.m ? "开" : "关"; toast(AX.m ? "动效已开" : "动效已关（演示）"); } }
 function ppick(k, el) { PSEL = k; document.querySelectorAll("#po .opt").forEach((x, j) => x.classList.toggle("sel", j === k)); }
-function psubmit() { if (PSEL == null) { toast("先选一个"); return; } const f = document.getElementById("pfb"), ok = PSEL === 1; if (!ok) S.mistakes.push({ t: "There ___ two books on the desk.", why: "定位：语法待补" }); f.textContent = ok ? "✓ FULL：主语复数用 are" : "! ZERO：已进错题本"; f.className = "fb " + (ok ? "ok" : "no"); }
+function psubmit() { if (PSEL == null) { toast("先选一个"); return; } const f = document.getElementById("pfb"), ok = PSEL === 1; if (!ok) S.mistakes.push({ t: "There ___ two books on the desk.", why: "定位：语法待补", kind: "sentence" }); f.textContent = ok ? "✓ FULL：主语复数用 are" : "! ZERO：已进错题本"; f.className = "fb " + (ok ? "ok" : "no"); }
 function sres(v) { document.getElementById("sr").innerHTML = v ? `<button class="opt" onclick="nav('#/courses')">📖 ${v}相关课程 ›</button><button class="opt" onclick="toast('帮助：重置密码走我的→设置')">❓ ${v}相关帮助 ›</button>` : ""; }
 
 /* ---------- 路由 ---------- */
