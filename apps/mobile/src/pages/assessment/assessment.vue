@@ -58,8 +58,9 @@ onShow(async () => { if (await ensureMobilePageAccess('/pages/assessment/assessm
       <text class="question-count">{{ isSkipped ? '已跳过测评' : '历史两题练习结果' }}</text>
       <text v-if="!isSkipped && report.cefrLevel && scorePercent !== null" class="result-title">{{ report.cefrLevel }} · {{ scorePercent }} 分</text>
       <text v-if="isSkipped" class="question">自选起点{{ report.requestedStartingLevel ? ` ${report.requestedStartingLevel}` : '' }}，水平尚未验证。</text>
-      <text v-else class="question">旧版练习仅供参考，不能代替四维定级。</text>
-      <button tabindex="0" role="button" class="yx-button" type="button" @click="openToday">查看今日状态</button>
+      <text v-else class="question">旧版练习仅供参考，不能代替四维定级。已按本次作答更新画像，今日任务见首页。</text>
+      <button tabindex="0" role="button" class="yx-button" type="button" @click="openToday">生成我的计划 →</button>
+      <button tabindex="0" role="button" class="yx-button yx-button--secondary" type="button" @click="openToday">查看今日状态</button>
     </view>
     <view v-else-if="question" class="yx-card question-card">
       <view class="question-meta"><text>{{ question.dimension }}</text><text>{{ question.stepIndex }} / {{ question.totalSteps }}</text></view>

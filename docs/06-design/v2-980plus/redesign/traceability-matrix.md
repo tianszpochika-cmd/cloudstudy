@@ -226,7 +226,7 @@
 | IC-009 | 首次学习引导条 | apps/mobile/src/pages/home/home.vue（新号无任务无课程时顶条去定级） | typecheck通过 |
 | IC-010 | 定级答题页 | apps/mobile/src/pages/assessment/assessment.vue（题干选项+提交中禁用+断网存本地；实现齐） | 走读通过 |
 | IC-011 | 定级提交反馈 | apps/mobile/src/pages/assessment/assessment.vue（offline重读提示；行内即时反馈随store；实现齐） | 走读通过 |
-| IC-012 | 定级报告卡 |  | 待实施 |
+| IC-012 | 定级报告卡 | apps/mobile/src/pages/assessment/assessment.vue（分+画像建议+生成计划键；维度明细待模型扩展） | typecheck通过 |
 | IC-013 | 计划生成/重排 |  | 待实施 |
 | IC-014 | 计划解释 |  | 待实施 |
 | IC-015 | 今日任务流 |  | 待实施 |
