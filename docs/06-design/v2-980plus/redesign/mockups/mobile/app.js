@@ -73,7 +73,21 @@ const SRSQ = [
 ];
 V.srs = () => { const left = SRSQ.filter(q => !q.done); return `<div class="card"><h2>🔁 复习（SM2）</h2><p class="d">到期 ${left.length} 个 · 看词想意，按想起程度打分，直写入口已关闭</p></div>` + (left.length ? `<div class="card" style="text-align:center;padding:28px 16px"><b style="font-size:34px">${left[0].w}</b><p class="d">stage ${left[0].stage}</p>${left[0].show ? `<p style="font-size:20px"><b>${left[0].zh}</b></p><p class="d">想起来了吗？</p>${[["忘了", 0], ["模糊", 2], ["想起", 4], ["秒答", 5]].map(([t, q]) => `<button class="btn sm" onclick="srsrate(${q})">${t} ${q}</button>`).join(" ")}` : `<button class="btn sm ghost" onclick="SRSQ.find(q=>!q.done).show=true;render()">想一下，点看中文</button>`}</div>` : `<div class="card empty"><b>复习完了 🎉</b><p class="d">下次到期自动进来</p><button class="btn sm" onclick="nav('#/today')">回今日</button></div>`); };
 function srsrate(q) { const cur = SRSQ.find(x => !x.done); if (!cur) return; if (q >= 4) { cur.done = true; toast("已掌握，stage+1（演示）"); } else { cur.show = false; cur.stage = 1; SRSQ.push({ ...cur }); toast(" stage 回落，明轮再见（演示）"); } render(); }
-V.weekly = () => `<div class="card"><h2>学习报告</h2><p class="d">本周 15 分钟 · 新学 10 · 复习 5</p><p class="d">💡 教练建议：保持每天 15 分钟，语法是重点。</p></div>`;
+V.weekly = () => `<div class="card"><h2>学习报告</h2><p class="d">本周 15 分钟 · 新学 10 · 复习 5</p><p class="d">💡 教练建议：保持每天 15 分钟，语法是重点。</p></div><div class="card"><h2>📅 本月打卡</h2><div class="cal" id="wcal"></div><div class="card" id="wday" style="margin:10px 0 0"><p class="d">点上面任意一天 👆</p></div></div>`;
+const WCAL = { 3: 15, 4: 20, 5: 0, 6: 25, 7: 15, 8: 0, 9: 30, 10: 12, 11: 18, 12: 0, 13: 22, 14: 15, 15: 28, 16: 10, 17: 0, 18: 20, 19: 15, 20: 25, 21: 0, 22: 18, 23: 15, 24: 30, 25: 12, 26: 0, 27: 20, 28: 15 };
+function wcalPaint() {
+  const el = document.getElementById("wcal");
+  if (!el || el.dataset.p) return;
+  el.dataset.p = "1";
+  const days = ["一", "二", "三", "四", "五", "六", "日"];
+  let h = days.map(d => `<span>${d}</span>`).join("");
+  for (let d = 1; d <= 28; d++) { const m = WCAL[d] || 0; h += `<span class="${m > 0 ? "hit" : ""}" style="${m > 0 ? "" : "opacity:.5"}" onclick="wday(${d})">${d}</span>`; }
+  el.innerHTML = h;
+}
+function wday(d) {
+  const m = WCAL[d] || 0;
+  document.getElementById("wday").innerHTML = m > 0 ? `<b>9 月 ${d} 日</b><p class="d">学习 ${m} 分钟 · 新学 ${Math.round(m * 0.7)} · 复习 ${Math.round(m * 0.3)}</p>` : `<b>9 月 ${d} 日</b><p class="d">这天没学，去补一节？</p><button class="btn sm" onclick="nav('#/today')">去今日</button>`;
+}
 V.world = () => `<div class="card empty"><b>🌍 世界（R2 开放）</b><p class="d">房间、排行、赛季还没开，先好好学习</p><button class="btn sm" onclick="nav('#/avatar')">看看装扮</button></div><div class="card"><h2>🏆 排行榜</h2><p class="d">赛季未开始</p></div>`;
 V.avatar = () => `<div class="card"><h2>👕 我的背景墙＋小人</h2><p class="d">Three.js 演示：换服装/配饰/发型＋打招呼（低端机自动降画质）</p><div id="t3d" style="width:100%;height:300px;border-radius:12px;overflow:hidden;background:#1c1430"></div><p class="d">上衣：<button class="btn sm" onclick="dress('shirt','#5b2fd6')">紫</button> <button class="btn sm" onclick="dress('shirt','#1d9e6b')">绿</button> <button class="btn sm" onclick="dress('shirt','#d64545')">红</button></p><p class="d">发型：<button class="btn sm" onclick="dress('hair','round')">圆寸</button> <button class="btn sm" onclick="dress('hair','cap')">帽子</button>　配饰：<button class="btn sm" onclick="dress('acc','glasses')">眼镜</button> <button class="btn sm" onclick="dress('acc','none')">无</button></p><p class="d">背景墙：<button class="btn sm" onclick="dress('wall','#1c1430')">星夜</button> <button class="btn sm" onclick="dress('wall','#0e3b2e')">森林</button> <button class="btn sm" onclick="dress('wall','#3b1d0e')">沙漠</button></p><button class="btn" onclick="wave()">👋 打招呼</button></div><div class="card"><h2>衣柜</h2><p class="d">目录可看，试穿不落库；兑换需权益（未开放）</p><span class="tag">默认卫衣·试穿中</span><span class="tag">星空外套·未开放</span><br><button class="btn sm" onclick="toast('兑换未开放：先完成学习任务')">兑换</button></div>`;
 let T3 = null;
@@ -285,6 +299,7 @@ function render() {
   document.querySelectorAll("#tabs a").forEach(a => a.classList.toggle("on", a.dataset.t === r));
   document.getElementById("view").innerHTML = V[r]();
   if (r === "practice" && typeof stemWords === "function") stemWords();
+  if (r === "weekly" && typeof wcalPaint === "function") wcalPaint();
   if (r === "avatar" && typeof stage3d === "function") stage3d();
   if (r !== "avatar" && typeof T3 !== "undefined" && T3 && T3.raf) { cancelAnimationFrame(T3.raf); T3.raf = 0; }
   document.getElementById("view").scrollTop = 0;
