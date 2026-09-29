@@ -57,7 +57,60 @@ V.mistakes = () => (S.mistakes.length ? S.mistakes.map(m => `<div class="card"><
 V.srs = () => `<div class="card"><h2>复习</h2><p class="d">到期 0 个 · 直写入口已关闭（设计如此）</p><button class="btn ghost" onclick="nav('#/today')">回今日看看</button></div>`;
 V.weekly = () => `<div class="card"><h2>学习报告</h2><p class="d">本周 15 分钟 · 新学 10 · 复习 5</p><p class="d">💡 教练建议：保持每天 15 分钟，语法是重点。</p></div>`;
 V.world = () => `<div class="card empty"><b>🌍 世界（R2 开放）</b><p class="d">房间、排行、赛季还没开，先好好学习</p><button class="btn sm" onclick="nav('#/avatar')">看看装扮</button></div><div class="card"><h2>🏆 排行榜</h2><p class="d">赛季未开始</p></div>`;
-V.avatar = () => `<div class="card"><h2>👕 装扮</h2><p class="d">目录可看，试穿不落库；兑换需权益（未开放）</p><span class="tag">默认卫衣·试穿中</span><span class="tag">星空外套·未开放</span><br><button class="btn sm" onclick="toast('兑换未开放：先完成学习任务')">兑换</button></div>`;
+V.avatar = () => `<div class="card"><h2>👕 我的背景墙＋小人</h2><p class="d">Three.js 演示：换服装/配饰/发型＋打招呼（低端机自动降画质）</p><div id="t3d" style="width:100%;height:300px;border-radius:12px;overflow:hidden;background:#1c1430"></div><p class="d">上衣：<button class="btn sm" onclick="dress('shirt','#5b2fd6')">紫</button> <button class="btn sm" onclick="dress('shirt','#1d9e6b')">绿</button> <button class="btn sm" onclick="dress('shirt','#d64545')">红</button></p><p class="d">发型：<button class="btn sm" onclick="dress('hair','round')">圆寸</button> <button class="btn sm" onclick="dress('hair','cap')">帽子</button>　配饰：<button class="btn sm" onclick="dress('acc','glasses')">眼镜</button> <button class="btn sm" onclick="dress('acc','none')">无</button></p><p class="d">背景墙：<button class="btn sm" onclick="dress('wall','#1c1430')">星夜</button> <button class="btn sm" onclick="dress('wall','#0e3b2e')">森林</button> <button class="btn sm" onclick="dress('wall','#3b1d0e')">沙漠</button></p><button class="btn" onclick="wave()">👋 打招呼</button></div><div class="card"><h2>衣柜</h2><p class="d">目录可看，试穿不落库；兑换需权益（未开放）</p><span class="tag">默认卫衣·试穿中</span><span class="tag">星空外套·未开放</span><br><button class="btn sm" onclick="toast('兑换未开放：先完成学习任务')">兑换</button></div>`;
+let T3 = null;
+async function stage3d() {
+  const el = document.getElementById("t3d");
+  if (!el) return;
+  if (T3) { el.appendChild(T3.renderer.domElement); if (!T3.raf) T3.tick(); return; }
+  try {
+    const THREE = await import("https://unpkg.com/three@0.160.0/build/three.module.js");
+    const W = el.clientWidth || 320, H = 300;
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
+    renderer.setSize(W, H);
+    el.appendChild(renderer.domElement);
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color("#1c1430");
+    const cam = new THREE.PerspectiveCamera(45, W / H, 0.1, 100);
+    cam.position.set(0, 1.6, 4.2); cam.lookAt(0, 1, 0);
+    scene.add(new THREE.AmbientLight(0xffffff, 0.9));
+    const key = new THREE.DirectionalLight(0xffffff, 1.2); key.position.set(2, 4, 3); scene.add(key);
+    const skin = new THREE.MeshStandardMaterial({ color: "#f2c89b" });
+    const M = {};
+    M.body = new THREE.Mesh(new THREE.CapsuleGeometry(0.34, 0.7, 6, 14), new THREE.MeshStandardMaterial({ color: "#5b2fd6" }));
+    M.body.position.y = 0.85; scene.add(M.body);
+    M.head = new THREE.Mesh(new THREE.SphereGeometry(0.3, 20, 16), skin); M.head.position.y = 1.72; scene.add(M.head);
+    M.hair = new THREE.Mesh(new THREE.SphereGeometry(0.31, 20, 12, 0, Math.PI * 2, 0, 1.4), new THREE.MeshStandardMaterial({ color: "#2b2118" }));
+    M.hair.position.y = 1.78; scene.add(M.hair);
+    M.cap = new THREE.Mesh(new THREE.ConeGeometry(0.3, 0.35, 16), new THREE.MeshStandardMaterial({ color: "#d64545" }));
+    M.cap.position.y = 2.0; M.cap.visible = false; scene.add(M.cap);
+    const armG = new THREE.CapsuleGeometry(0.09, 0.5, 4, 8);
+    M.armL = new THREE.Mesh(armG, skin); M.armL.position.set(-0.46, 1.05, 0); scene.add(M.armL);
+    M.armR = new THREE.Mesh(armG, skin); M.armR.position.set(0.46, 1.05, 0); scene.add(M.armR);
+    M.glasses = new THREE.Group();
+    const gm = new THREE.MeshStandardMaterial({ color: "#111111" });
+    const l1 = new THREE.Mesh(new THREE.TorusGeometry(0.09, 0.02, 8, 16), gm); l1.position.set(-0.11, 1.74, 0.26);
+    const l2 = l1.clone(); l2.position.x = 0.11; M.glasses.add(l1, l2); M.glasses.visible = false; scene.add(M.glasses);
+    const ground = new THREE.Mesh(new THREE.CircleGeometry(1.4, 28), new THREE.MeshStandardMaterial({ color: "#2c2350" }));
+    ground.rotation.x = -Math.PI / 2; scene.add(ground);
+    let waving = 0, spin = 0;
+    T3 = { THREE, scene, cam, renderer, M, ground, waving: 0, raf: 0,
+      tick() { spin += 0.004; const t = performance.now() / 90; M.armR.rotation.z = T3.waving > 0 ? (-0.9 + Math.sin(t) * 0.7) : (-0.2 + Math.sin(spin) * 0.06); if (T3.waving > 0) T3.waving--; M.body.rotation.y = Math.sin(spin * 0.6) * 0.08; renderer.render(scene, cam); T3.raf = requestAnimationFrame(() => T3.tick()); } };
+    const vis = () => { if (document.hidden || !document.getElementById("t3d")) return; };
+    document.addEventListener("visibilitychange", vis);
+    T3.tick();
+    toast("3D 小人已加载（演示）");
+  } catch (e) { el.innerHTML = "<p class='d' style='padding:20px'>3D 加载失败（需联网），已降级 2D（演示）。</p>"; }
+}
+function dress(part, v) {
+  if (!T3) { toast("3D 还没加载好"); return; }
+  if (part === "shirt") T3.M.body.material.color.set(v);
+  if (part === "hair") { const cap = v === "cap"; T3.M.cap.visible = cap; T3.M.hair.visible = !cap; }
+  if (part === "acc") T3.M.glasses.visible = v === "glasses";
+  if (part === "wall") { T3.scene.background.set(v); T3.ground.material.color.set(v); }
+}
+function wave() { if (T3) T3.waving = 40; else toast("3D 还没加载好"); }
 V.msgs = () => `<h2 style="margin:0 0 10px">消息</h2>` + S.msgs.map(m => `<div class="card"><b>${m.t}</b><p class="d">${m.d}</p></div>`).join("");
 V.me = () => `<div class="card" style="text-align:center"><b style="font-size:18px">${S.user || "未登录"}</b><p class="d">B1 · 已坚持 1 天</p></div><div class="card">${[["📖 书架", "#/courses"], ["❤️ 错题本", "#/mistakes"], ["🔁 复习", "#/srs"], ["📊 学习报告", "#/weekly"], ["✉️ 消息", "#/msgs"], ["🔍 搜索", "#/search"], ["🛒 商城（空目录）", "#/commerce"], ["🤖 AI 伴学（演示）", "#/ai"], ["🎤 语音跟读", "#/voice"], ["🔒 青少年模式", "#/k12"], ["🛠️ 管理（staff 演示）", "#/admin"], ["♿ 无障碍", "#/a11y"], ["🧪 更多状态屏", "#/arrears"], ["🔤 音标", "#/phonics"], ["🔠 字母", "#/alphabet"], ["📖 词汇详情", "#/vocab"], ["🎧 听力", "#/listening"], ["🎙️ 口语", "#/speaking"], ["✍️ 写作", "#/writing"], ["📦 离线包", "#/offpkg"], ["🧾 退款开票", "#/refund"], ["⛔ 门被拒", "#/greject"], ["📄 同意升级", "#/cupgrade"], ["⚙️ 设置", "#/settings"]].map(([t, h]) => `<button class="opt" onclick="nav('${h}')">${t} ›</button>`).join("")}</div>`;
 V.settings = () => `<div class="card"><h2>设置</h2><p class="d">偏好版本写回读 · 高对比/字体/动效见无障碍</p><button class="opt" onclick="nav('#/devices')">📱 设备 ›</button><button class="opt" onclick="nav('#/privacy')">🔒 隐私 ›</button><button class="opt" onclick="toast('主题已切换（演示）')">🌗 深色模式 ›</button><button class="btn ghost" onclick="S.user=null;toast('已退出');nav('#/login')">退出登录</button></div>`;
@@ -127,6 +180,8 @@ function render() {
   document.querySelectorAll("#tabs a").forEach(a => a.classList.toggle("on", a.dataset.t === r));
   document.getElementById("view").innerHTML = V[r]();
   if (r === "practice" && typeof stemWords === "function") stemWords();
+  if (r === "avatar" && typeof stage3d === "function") stage3d();
+  if (r !== "avatar" && typeof T3 !== "undefined" && T3 && T3.raf) { cancelAnimationFrame(T3.raf); T3.raf = 0; }
   document.getElementById("view").scrollTop = 0;
   if (r === "placement" && S.quiz.done) { S.quiz.done = false; }
 }
