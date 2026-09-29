@@ -4,7 +4,7 @@ import MobilePageHeader from '../../components/MobilePageHeader.vue'
 import { mobileT, useMobileExperience } from '../../platform/experience'
 const { experienceStyle, experienceMotion } = useMobileExperience()
 
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import { openUniPage } from '../../platform/uni-runtime'
 import { ensureMobilePageAccess } from '../../auth/navigation'
@@ -14,6 +14,14 @@ import { useSessionStore } from '../../stores/session'
 
 const store = useLearnerContentStore()
 const session = useSessionStore()
+/** IC-039 书架索引搜索：只过滤已读回的书架，不过滤服务端。 */
+const shelfQuery = ref('')
+const filteredContent = computed(() => {
+  const query = shelfQuery.value.trim().toLowerCase()
+  const items = store.home?.content ?? []
+  if (!query) return items
+  return items.filter((item) => `${item.title} ${item.summary ?? ''}`.toLowerCase().includes(query))
+})
 const hasConfirmedProgress = computed(() => Boolean(store.home?.tasks.length && store.home.targetMinutes > 0 && !store.home.stale))
 const allTasksDone = computed(() => Boolean(store.home?.tasks.length) && store.home.tasks.every((task) => task.status === 'COMPLETED'))
 const canContinueCourse = computed(() => Boolean(store.home?.tasks.some((task) => (task.status === 'AVAILABLE' || task.status === 'IN_PROGRESS') && task.contentCode)
@@ -57,7 +65,9 @@ function continueCourse(): void {
       </view>
       <view v-if="store.home.content.length" class="content-list">
         <text class="content-list__title">课程内容</text>
-        <button tabindex="0" role="button" v-for="item in store.home.content" :key="item.contentCode" class="content-row" :disabled="item.availability !== 'PUBLISHED'" @click="open(`/pages/learn/learn?contentCode=${encodeURIComponent(item.contentCode)}`)">
+        <input v-model="shelfQuery" type="text" class="yx-search" placeholder="搜书架课程" aria-label="搜书架课程" />
+        <text v-if="shelfQuery.trim() && !filteredContent.length" class="task-description" role="status">换个词试试。</text>
+        <button tabindex="0" role="button" v-for="item in filteredContent" :key="item.contentCode" class="content-row" :disabled="item.availability !== 'PUBLISHED'" @click="open(`/pages/learn/learn?contentCode=${encodeURIComponent(item.contentCode)}`)">
           <text class="content-title">{{ item.title }}</text>
           <text class="content-description">{{ item.summary || '暂无简介' }}<text v-if="item.availability !== 'PUBLISHED'"> · {{ mobileT(`availability.${item.availability}`) }}</text></text>
         </button>
@@ -76,6 +86,6 @@ function continueCourse(): void {
 .progress-row { display: flex; justify-content: space-between; align-items: center; color: var(--yx-text-secondary); font-size: 24rpx; }
 .progress { color: var(--yx-brand); font-size: 56rpx; font-weight: 800; }
 .progress-track { height: 14rpx; margin: 10rpx 0 26rpx; border-radius: 99rpx; background: var(--yx-surface-soft); overflow: hidden; }.progress-value { height: 100%; border-radius: inherit; background: var(--yx-brand); }
-.task-row { display: flex; align-items: center; gap: 16rpx; padding: 20rpx 0; border-top: 1rpx solid var(--yx-border); }.task-copy { flex: 1; min-width: 0; overflow-wrap: anywhere; }.task-title, .task-description, .task-warning { display: block; }.task-title { font-weight: 700; }.task-description { margin-top: 6rpx; color: var(--yx-text-secondary); font-size: 22rpx; }.task-warning { margin-top: 8rpx; color: var(--yx-danger); font-size: 21rpx; }.task-button, .login-button { flex: 0 0 auto; min-width: 120rpx; padding: 8rpx 14rpx; border-radius: 12rpx; color: var(--yx-brand); background: var(--yx-brand-soft); font-size: 22rpx; }.empty { display: grid; gap: 8rpx; padding: 26rpx 0; color: var(--yx-text-secondary); font-size: 24rpx; }.content-list { display: grid; gap: 12rpx; margin-top: 20rpx; padding-top: 18rpx; border-top: 1rpx solid var(--yx-border); }.content-list__title { font-weight: 700; }.content-row { display: grid; gap: 6rpx; width: 100%; padding: 16rpx; border: 1rpx solid var(--yx-border); border-radius: 14rpx; color: var(--yx-text-primary); background: var(--yx-surface-card); text-align: left; }.content-row:disabled{opacity:.65}.content-title, .content-description { display: block; }.content-description { color: var(--yx-text-secondary); font-size: 22rpx; line-height: 1.45; }.entry-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14rpx; margin-top: 20rpx; }.yx-button--secondary { color: var(--yx-brand); background: var(--yx-surface-card); }.state-title,.state-description{display:block}.state-title{font-weight:700}.state-description{margin-top:12rpx;color:var(--yx-text-secondary);font-size:23rpx}.first-day { display: grid; gap: 8rpx; margin-top: 20rpx; color: var(--yx-text-tertiary); font-size: 21rpx; }.yx-status { display: grid; gap: 12rpx; margin-top: 22rpx; color: var(--yx-text-secondary); font-size: 22rpx; }
+.task-row { display: flex; align-items: center; gap: 16rpx; padding: 20rpx 0; border-top: 1rpx solid var(--yx-border); }.task-copy { flex: 1; min-width: 0; overflow-wrap: anywhere; }.task-title, .task-description, .task-warning { display: block; }.task-title { font-weight: 700; }.task-description { margin-top: 6rpx; color: var(--yx-text-secondary); font-size: 22rpx; }.task-warning { margin-top: 8rpx; color: var(--yx-danger); font-size: 21rpx; }.task-button, .login-button { flex: 0 0 auto; min-width: 120rpx; padding: 8rpx 14rpx; border-radius: 12rpx; color: var(--yx-brand); background: var(--yx-brand-soft); font-size: 22rpx; }.empty { display: grid; gap: 8rpx; padding: 26rpx 0; color: var(--yx-text-secondary); font-size: 24rpx; }.content-list { display: grid; gap: 12rpx; margin-top: 20rpx; padding-top: 18rpx; border-top: 1rpx solid var(--yx-border); }.content-list__title { font-weight: 700; }.content-row { display: grid; gap: 6rpx; width: 100%; padding: 16rpx; border: 1rpx solid var(--yx-border); border-radius: 14rpx; color: var(--yx-text-primary); background: var(--yx-surface-card); text-align: left; }.content-row:disabled{opacity:.65}.yx-search{box-sizing:border-box;width:100%;height:76rpx;padding:0 16rpx;border:1rpx solid var(--yx-border);border-radius:12rpx;font-size:25rpx;background:var(--yx-surface-page)}.content-title, .content-description { display: block; }.content-description { color: var(--yx-text-secondary); font-size: 22rpx; line-height: 1.45; }.entry-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14rpx; margin-top: 20rpx; }.yx-button--secondary { color: var(--yx-brand); background: var(--yx-surface-card); }.state-title,.state-description{display:block}.state-title{font-weight:700}.state-description{margin-top:12rpx;color:var(--yx-text-secondary);font-size:23rpx}.first-day { display: grid; gap: 8rpx; margin-top: 20rpx; color: var(--yx-text-tertiary); font-size: 21rpx; }.yx-status { display: grid; gap: 12rpx; margin-top: 22rpx; color: var(--yx-text-secondary); font-size: 22rpx; }
 @media (max-width: 420px) { .task-row { flex-wrap: wrap; }.task-copy { flex-basis: 100%; }.task-button { margin-left: auto; } }
 </style>
