@@ -35,6 +35,7 @@ function continueCourse(): void {
 
     <MobilePageHeader page="home" />
 
+    <view v-if="store.home && store.homeStatus !== 'idle' && store.homeStatus !== 'loading' && !store.home.tasks.length && !store.home.content.some((item) => item.availability === 'PUBLISHED')" class="yx-card guide-strip" role="status"><text class="state-title">先定级，3 分钟出报告</text><text class="state-description">测完自动生成你的学习计划。</text><button tabindex="0" role="button" class="yx-button" type="button" @click="open('/pages/assessment/assessment')">去定级 →</button></view>
     <view v-if="store.homeStatus === 'idle' || store.homeStatus === 'loading'" class="yx-card" role="status"><text>正在读取今日任务…</text></view>
     <view v-else-if="store.homeStatus === 'offline' || store.homeStatus === 'error' || store.homeStatus === 'forbidden'" class="yx-card" role="alert">
       <text class="state-title">今日任务暂不可用</text>

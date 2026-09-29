@@ -223,9 +223,9 @@
 | IC-006 | 同意版本更新 |  | 待实施 |
 | IC-007 | 密码重置申请回执 |  | 待实施 |
 | IC-008 | 设置/设备/隐私总览 |  | 待实施 |
-| IC-009 | 首次学习引导条 |  | 待实施 |
-| IC-010 | 定级答题页 |  | 待实施 |
-| IC-011 | 定级提交反馈 |  | 待实施 |
+| IC-009 | 首次学习引导条 | apps/mobile/src/pages/home/home.vue（新号无任务无课程时顶条去定级） | typecheck通过 |
+| IC-010 | 定级答题页 | apps/mobile/src/pages/assessment/assessment.vue（题干选项+提交中禁用+断网存本地；实现齐） | 走读通过 |
+| IC-011 | 定级提交反馈 | apps/mobile/src/pages/assessment/assessment.vue（offline重读提示；行内即时反馈随store；实现齐） | 走读通过 |
 | IC-012 | 定级报告卡 |  | 待实施 |
 | IC-013 | 计划生成/重排 |  | 待实施 |
 | IC-014 | 计划解释 |  | 待实施 |
@@ -272,8 +272,8 @@
 | IC-055 | 成人门说明/提交 | apps/mobile/src/pages/onboarding/onboarding.vue（补门说明先行文案） | typecheck通过 |
 | IC-056 | 同意逐项查看 | apps/mobile/src/pages/onboarding/onboarding.vue（补逐项用途子文案） | typecheck通过 |
 | IC-057 | 画像字段与草稿 | apps/mobile/src/pages/onboarding/onboarding.vue + stores/learner-content.ts（目标+时长+本地草稿续填齐；标签为Web端能力，移动端有意简化，零改动） | 走读通过 |
-| IC-058 | 定级引导 |  | 待实施 |
-| IC-059 | 定级冲突/失败恢复 |  | 待实施 |
+| IC-058 | 定级引导 | apps/mobile/src/pages/assessment/assessment.vue（首空白讲题量目的+开始键，不承诺用时） | typecheck通过 |
+| IC-059 | 定级冲突/失败恢复 | apps/mobile/src/pages/assessment/assessment.vue（离线重读+checkpoint续答，实现齐；零改动） | 走读通过 |
 | IC-060 | 消息列表 |  | 待实施 |
 | IC-061 | 通知偏好与免打扰 |  | 待实施 |
 | IC-062 | 离线包 |  | 待实施 |
