@@ -33,7 +33,26 @@ V.report = () => `<div class="card" style="text-align:center;background:linear-g
 V.home = () => `${S.plan ? `<div class="banner"><b>📋 本周计划：${S.goal || "四级词汇 B1"}</b><p>因为你定级词汇不错、语法待补，所以这周每天 15 分钟：词汇 5 + 语法 10。</p></div>` : `<div class="card empty"><b>还没有计划</b><p class="d">定级 3 分钟，生成你的计划</p><button class="btn" onclick="nav('#/placement')">去定级 →</button></div>`}<div class="card"><h2>📚 今日任务（${S.today.length}）</h2><p class="d">${S.today.length ? "语法阅读 · 预计 10 分钟" : "今天没任务啦 🎉"}</p><button class="btn" onclick="nav('#/today')">${S.today.length ? "开始今日 →" : "去看看"}</button></div><div class="card"><h2>📖 书架</h2><p class="d">${S.shelf.length} 门演示课 · 上次学到第 2 节</p><button class="btn ghost" onclick="nav('#/courses')">继续学习 →</button></div><div class="card"><h2>🎯 打卡</h2><div class="cal">${["一", "二", "三", "四", "五", "六", "日"].map(d => `<span>${d}</span>`).join("")}${[1, 0, 0, 0, 0, 0, 0].map(h => `<span class="${h ? "hit" : ""}">${h ? "✓" : "·"}</span>`).join("")}</div></div>`;
 V.today = () => (S.today.length ? `<h2 style="margin:0 0 10px">📚 今日任务</h2>` + S.today.map(t => `<div class="card"><b>${t.t}</b><p class="d">${t.min} 分钟 · 练题判分</p><button class="btn sm" onclick="nav('#/practice')">开始 →</button></div>`).join("") : `<div class="card empty"><b>今天没任务啦 🎉</b><p class="d">去书架逛逛，或再测一次</p><button class="btn sm" onclick="nav('#/courses')">去书架</button> <button class="btn sm" onclick="nav('#/placement')">再测一次</button></div>`) + `<div class="card"><p class="d">状态演示：</p>${[["arrears", "欠账"], ["celebrate", "撒花"], ["offlinet", "断网"], ["pgen", "生成中"]].map(([r, t]) => `<button class="btn sm ghost" onclick="nav('#/${r}')">${t}</button>`).join(" ")}</div>`;
 V.courses = () => `<h2 style="margin:0 0 10px">📖 书架</h2>` + S.shelf.map((c, i) => `<div class="card"><b>${c}</b><p class="d">${i === 0 ? "上次学到第 2 节" : "未开始"}</p><button class="btn sm" onclick="nav('#/practice')">${i === 0 ? "继续 →" : "开始 →"}</button></div>`).join("");
-V.practice = () => `<div class="meta">语法 · 行内判分不跳页</div><div class="card"><h2>There ___ two books on the desk.</h2><div id="po"><button class="opt" onclick="ppick(0,this)">A. is</button><button class="opt" onclick="ppick(1,this)">B. are</button><button class="opt" onclick="ppick(2,this)">C. am</button></div><div class="fb" id="pfb"></div><button class="btn" onclick="psubmit()">提交判分</button></div>`;
+V.practice = () => `<div class="meta">语法 · 行内判分不跳页 · 点句子里的单词查词</div><div class="card"><h2 id="pstem">There ___ two books on the desk.</h2><div id="po"><button class="opt" onclick="ppick(0,this)">A. is</button><button class="opt" onclick="ppick(1,this)">B. are</button><button class="opt" onclick="ppick(2,this)">C. am</button></div><div class="fb" id="pfb"></div><button class="btn" onclick="psubmit()">提交判分</button></div><div class="card" id="wd" style="display:none"></div>`;
+const LEX = {
+  there: { ph: "/ðeə/", zh: "那里；存在", morph: "—", coll: "there be 句型：There is/are …", ex: "There is a book." },
+  two: { ph: "/tuː/", zh: "二", morph: "second 第二", coll: "two books 两本书", ex: "Two cats." },
+  books: { ph: "/bʊks/", zh: "书（复数）", morph: "book→books；book 书", coll: "read books 读书", ex: "Two books." },
+  book: { ph: "/bʊk/", zh: "书；预订", morph: "books 复数；booking 预订", coll: "read a book 读书", ex: "A book." },
+  on: { ph: "/ɒn/", zh: "在…上", morph: "—", coll: "on the desk 在桌上", ex: "On the desk." },
+  the: { ph: "/ðə/", zh: "这；那（定冠词）", morph: "—", coll: "the books 这些书", ex: "The books." },
+  desk: { ph: "/desk/", zh: "书桌", morph: "desks 复数", coll: "at the desk 在书桌旁", ex: "The desk." },
+};
+function wlookup(w) {
+  const k = w.toLowerCase().replace(/[^a-z]/g, "");
+  const e = LEX[k];
+  const box = document.getElementById("wd");
+  if (!e) { box.style.display = "block"; box.innerHTML = `<b>${w}</b><p class="d">词库暂无，先记下（演示）。</p>`; return; }
+  box.style.display = "block";
+  box.innerHTML = `<b>${w} <span class="meta">${e.ph}</span></b> <button class="btn sm" onclick="speak('${k}')">🔊 读</button><p class="d">中文：${e.zh}</p><p class="d">变形：${e.morph}</p><p class="d">搭配：${e.coll}</p><p class="d">例：${e.ex}</p>`;
+}
+function speak(w) { try { const u = new SpeechSynthesisUtterance(w); u.lang = "en-US"; speechSynthesis.cancel(); speechSynthesis.speak(u); } catch (e) { toast("朗读不可用（演示）"); } }
+function stemWords() { const h = document.getElementById("pstem"); if (!h || h.dataset.w) return; h.dataset.w = "1"; h.innerHTML = h.textContent.split(/(\s+)/).map(p => /[A-Za-z]{2,}/.test(p) ? `<u onclick="wlookup('${p.replace(/[^A-Za-z]/g, '')}')" style="cursor:pointer;text-decoration:underline dotted">${p}</u>` : p).join(""); }
 V.mistakes = () => (S.mistakes.length ? S.mistakes.map(m => `<div class="card"><b>${m.t}</b><p class="d">${m.why}</p><button class="btn sm" onclick="toast('变式题稍后见（演示）')">变式再练 →</button></div>`).join("") : `<div class="card empty"><b>错题本是空的 🎉</b><p class="d">去今日任务做一道，错了会自动进来</p><button class="btn sm" onclick="nav('#/today')">去做题</button></div>`);
 V.srs = () => `<div class="card"><h2>复习</h2><p class="d">到期 0 个 · 直写入口已关闭（设计如此）</p><button class="btn ghost" onclick="nav('#/today')">回今日看看</button></div>`;
 V.weekly = () => `<div class="card"><h2>学习报告</h2><p class="d">本周 15 分钟 · 新学 10 · 复习 5</p><p class="d">💡 教练建议：保持每天 15 分钟，语法是重点。</p></div>`;
@@ -101,6 +120,7 @@ function render() {
   document.getElementById("tabs").style.display = TABS.includes(r) ? "flex" : "none";
   document.querySelectorAll("#tabs a").forEach(a => a.classList.toggle("on", a.dataset.t === r));
   document.getElementById("view").innerHTML = V[r]();
+  if (r === "practice" && typeof stemWords === "function") stemWords();
   document.getElementById("view").scrollTop = 0;
   if (r === "placement" && S.quiz.done) { S.quiz.done = false; }
 }
