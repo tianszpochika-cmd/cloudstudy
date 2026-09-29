@@ -266,7 +266,7 @@
 | IC-049 | 审计列表 |  | 待实施 |
 | IC-050 | 治理页风险区 |  | 待实施 |
 | IC-051 | 举报队列 |  | 待实施 |
-| IC-052 | 注册表单 |  | 待实施 |
+| IC-052 | 注册表单 | apps/mobile/src/pages/register/register.vue + src/auth/fixture-adapter.ts | 静态验收（typecheck+b12 8/8） |
 | IC-053 | 学习端登录 |  | 待实施 |
 | IC-054 | 重置表单 |  | 待实施 |
 | IC-055 | 成人门说明/提交 |  | 待实施 |
