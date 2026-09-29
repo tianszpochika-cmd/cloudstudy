@@ -172,7 +172,21 @@ V.search = () => {
   return `<div class="card"><h2>搜索</h2><input id="q" placeholder="搜课程/词汇/帮助" value="${SH.q.replace(/"/g, "")}" oninput="SH.q=this.value;render2()"><div id="sr"></div></div>` + (!q ? `<div class="card"><p class="d">历史：${SH.hist.map(h => `<button class="btn sm ghost" onclick="SH.q='${h}';render()">${h}</button>`).join(" ")}</p></div>` : groups.length ? groups.map(({ g, items }) => `<div class="card"><b>${g}</b>${items.map(e => `<button class="opt" onclick="sgo('${e.t}');nav('${e.go}')">${e.t} · ${e.d} ›</button>`).join("")}</div>`).join("") : `<div class="card empty"><b>没搜到“${SH.q}”</b><p class="d">换个词试试</p></div>`);
 };
 function render2() { const v = document.getElementById("q"); const pos = v ? v.selectionStart : 0; render(); const n = document.getElementById("q"); if (n) { n.focus(); try { n.setSelectionRange(pos, pos); } catch (e) { } } }
-V.commerce = () => `<div class="card empty"><b>🛒 商城</b><p class="d">课程准备中，暂无可购。先去书架学习。</p><button class="btn sm" onclick="nav('#/courses')">去书架</button> <button class="btn sm" onclick="nav('#/pay')">沙盒收银台演示 →</button></div>`;
+const GOODS = [
+  { id: "g1", cat: "会员", t: "月度会员", d: "全部课程＋AI 伴学", price: 19, oprice: 29, tag: "热卖" },
+  { id: "g2", cat: "会员", t: "年度会员", d: "月均 ¥9 · 最划算", price: 108, oprice: 228, tag: "省一半" },
+  { id: "g3", cat: "课程", t: "四级冲刺包", d: "真题＋模考＋讲解", price: 49, oprice: 99, tag: "" },
+  { id: "g4", cat: "课程", t: "雅思 6.5 全程", d: "听说读写四科", price: 299, oprice: 599, tag: "名师" },
+  { id: "g5", cat: "周边", t: "单词卡片盒", d: "500 高频词实物卡", price: 39, oprice: 59, tag: "" },
+  { id: "g6", cat: "周边", t: "学习帆布包", d: "装下你的坚持", price: 59, oprice: 79, tag: "新品" },
+];
+const GC = { cat: "全部", cur: null };
+V.commerce = () => {
+  if (GC.cur) { const g = GOODS.find(x => x.id === GC.cur); return `<div class="card"><button class="btn sm ghost" onclick="GC.cur=null;render()">← 商城</button><h2>${g.t}</h2><p>${g.tag ? `<span class="tag">${g.tag}</span> ` : ""}<span class="tag">${g.cat}</span></p><p class="d">${g.d}</p><p style="font-size:26px"><b>¥${g.price}</b> <s class="meta">¥${g.oprice}</s></p><button class="btn" onclick="nav('#/pay')">去结算 →</button></div>`; }
+  const cats = ["全部", "会员", "课程", "周边"];
+  const list = GOODS.filter(g => GC.cat === "全部" || g.cat === GC.cat);
+  return `<div class="card"><h2>🛒 商城（演示价，不扣款）</h2><p class="d">${cats.map(c => `<button class="btn sm${GC.cat === c ? "" : " ghost"}" onclick="GC.cat='${c}';render()">${c}</button>`).join(" ")}</p></div>` + list.map(g => `<div class="card"><b>${g.t}</b> ${g.tag ? `<span class="tag">${g.tag}</span>` : ""}<p class="d">${g.d}</p><p><b>¥${g.price}</b> <s class="meta">¥${g.oprice}</s> <button class="btn sm" style="float:right" onclick="GC.cur='${g.id}';render()">详情 →</button></p></div>`).join("");
+};
 V.admin = () => `<div class="card"><p class="d">演示：staff 视角（test 档）。双签：申请人禁自审。</p>${[["📝 建稿送审", "#/adraft"], ["✔️ 双签审核", "#/areview"], ["🚀 发布回滚", "#/apublish"], ["🛡️ 治理风控", "#/agov"], ["📜 审计", "#/aaudit"]].map(([t, h]) => `<button class="opt" onclick="nav('${h}')">${t} ›</button>`).join("")}</div>`;
 V.adraft = () => `<div class="card"><h2>草稿箱</h2><p class="d">版本锁 · 无权 403 不泄漏存在性</p><div class="card" style="margin:0 0 8px"><b>语法课 · There be 句型（v3）</b><p class="d">版权已绑定 · 报告已绑定 · 缺项：无</p><button class="btn sm" onclick="toast('已送审（演示）')">提交送审</button></div><label class="lb">新建草稿标题</label><input id="dt" value="新课标题"><button class="btn" onclick="toast('草稿已建 202（演示）')">建稿</button></div>`;
 V.areview = () => `<div class="card"><h2>L1 初审</h2><p class="d">reviewer-l1 视角</p><button class="btn" onclick="A.l1=true;toast('L1 通过（演示）');paintRev()">通过</button></div><div class="card"><h2>L2 终审</h2><p class="d">reviewer-l2 视角 · 自动 ACTIVE</p><button class="btn" onclick="A.l2=true;toast('L2 通过，已 ACTIVE（演示）');paintRev()">通过并发布</button></div><div class="card"><h2>状态</h2><p class="d" id="revst">L1 待审 · L2 待审</p></div>`;
