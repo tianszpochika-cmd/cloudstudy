@@ -121,5 +121,29 @@
 | 三 | 宝箱 3 个＋组队 5 天 | `#/world`（`WD_CHEST/WD_TEAM`） | 组队满 5 天开组队箱、点亮组队星成就；开启不入账 |
 | 三 | 自习房间 3 间完整 | `#/world`（`WD_ROOMS`） | 加入/满员/不占两席/退出/断线恢复规则全画 |
 | 三 | 好友动态 2 条＋提醒两档 | `#/msgs`、`#/settings` | 好友周学/组队缺勤深链联赛/世界；晨间 8:00/睡前 22:00 只记偏好 |
+| 四 | R1 主链六屏 | `#/planexp`、`#/session`、`#/mastery`、`#/pfault`、`#/npref`、`#/firstlearn` | 计划解释/会话检查点/掌握度弱点/定级恢复/通知偏好/首次学习；入口分别挂 `pgen`/`placement`/`msgs` |
+| 四 | 管理后台六屏＋治理全链 | `#/alogin`、`#/amedia`、`#/acs`、`#/ashop`、`#/areport`、`#/aobs` | 管理登录/媒体上传/客服后台/商城后台/举报队列/观测恢复；`admin` 数组扩展；`agov` 补评估→分诊→隔离→升级→关闭全链 |
+| 四 | 世界交易五屏 | `#/games`、`#/space`、`#/subs`、`#/native`、`#/rewards` | 小游戏目录（R2 未开）/个人空间只读/订阅对账/原生壳矩阵/任务奖励；入口挂 `league`/`commerce`/`achieve` |
+| 四 | AI/语音/K12/客服七屏 | `#/aigate`、`#/aiflow`、`#/vscore`、`#/k12guard`、`#/k12course`、`#/tdetail`、`#/paudio` | AI 门＋调用链/语音评分保留/K12 治理＋课程/工单详情/音频保留；入口挂 `ai`/`voice`/`k12`/`support`/`privacy` |
 
-校验：`node scripts/check-mobile-mockups.mjs` → `screens=58 fails=0`（新增 `#/league`）。
+校验：`node scripts/check-mobile-mockups.mjs` → `screens=82 fails=0`（本批 +24）。
+
+## 9. v2.2 交互友好度修复（2026-09-30，P0–P2 全量）
+
+> 全是静态稿改动，不碰 BC/IC 编号与冻结基线；校验保持 `screens=82 fails=0`。
+
+| 级 | 修复 | 落点 |
+|---|---|---|
+| P0 | 报告 CTA 改走 `pgen`（生成中→完成→home）；`today` 全完成态深链 `celebrate`；`pgen` 下的 `planexp`/`firstlearn` 默认可达 | `#/report`、`#/today` |
+| P0 | 练题判分后加下一步：回今日/进错题本/会话说明 | `#/practice` |
+| P0 | 收银台成功态加查看订单/回商城 | `#/pay` |
+| P0 | `aperm`/`adraft`/`areview`/`aaudit` 补"← 管理"（`aaudit` 另带观测恢复入口） | 管理后台 |
+| P0 | 装扮屏加回世界/看看成就/动效设置 | `#/avatar` |
+| P1 | 双书架分工：`courses` 改"分类速览"＋互链图书管 | `#/courses`、`#/shelf`、TITLES |
+| P1 | 学习者屏黑话转人话：409→会被打回、reportId→已锁定、ensure→不建两份、验签→对暗号、Barge-in→随时打断 | `#/session`、`#/pfault`、`#/planexp`、`#/subs`、`#/vscore` |
+| P1 | 高危加二次确认：家长撤回授权、取消续订 | `#/k12`、`#/refund` |
+| P1 | 联赛排名文案对齐实现（本屏关闭）；`privacy` 加排名开关 | `#/league`、`#/privacy` |
+| P1 | `settings` 通知卡只留深链入口，开关收归 `npref` | `#/settings` |
+| P1 | 工单筛选无结果空态 | `#/tdetail` |
+| P2 | 离线屏加离线包说明；`native`/`k12guard` 与 `about` 互链（下载卡挂原生壳说明） | `#/offlinet`、`#/native`、`#/k12guard`、`#/about` |
+| P2 | 小游戏加"开了会长什么样"；注册加密码规则校验；重签按钮改名"重签完成" | `#/games`、`register`、`#/cupgrade` |
