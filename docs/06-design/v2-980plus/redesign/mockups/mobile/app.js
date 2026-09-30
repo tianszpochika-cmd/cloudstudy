@@ -1,11 +1,15 @@
 /* 语学星移动端整机交互稿 · 静态数据 · 无后端 */
 const S = {
-  user: "演示账号", gate: "PASS", consents: {}, goal: null, quiz: { i: 0, score: 0, sel: null, done: false },
+  user: "演示账号", gate: "PASS", consents: {}, goal: null, staff: false, quiz: { i: 0, score: 0, sel: null, done: false },
   mistakes: [{ t: "There ___ two books on the desk.", why: "定位：语法待补", kind: "sentence" }, { t: "abandon", why: "定位：词汇待补", kind: "word" }, { t: "Hardly had I arrived when it rained.", why: "定位：阅读待补", kind: "sentence" }], plan: false, today: [{ id: "t1", t: "语法 · There ___ two books.", min: 5, kind: "grammar" }, { id: "t2", t: "阅读 · 图书馆", min: 5, kind: "reading" }],
   shelf: ["四级词汇 B1", "零基础 A1", "六级 B2", "商务口语", "雅思备考", "生活英语"],
+  lastRead: { book: "四级词汇红宝书", ch: "第二章 核心 1500" },
   msgs: [{ t: "欢迎来到语学星", d: "先定级，3 分钟出报告", read: false }, { t: "今日任务已生成", d: "语法 2 道", read: false }],
-  streak: 1, consentV: "b30-consent-v1",
+  streak: 1, consentV: "b30-consent-v1", minutes: 15,
 };
+const SET = { study: true, report: true, sys: false, slot: "morning", theme: "follow", uilang: "zh-CN", content: "en-US" };
+const STM = { freeze: 2, repaired: [] };
+function stmRepair(d) { if (STM.freeze <= 0) { toast("Freeze 用完了（演示）"); return; } if ((WCAL[d] || 0) > 0) return; WCAL[d] = 10; STM.freeze--; STM.repaired.push(d); toast("已补签 " + d + " 日（演示，剩 " + STM.freeze + " Freeze）"); render(); }
 const BANK = [
   { s: "Choose the word closest in meaning to 'happy'.", o: ["glad", "angry", "tired"], a: 0, dim: "词汇" },
   { s: "She ___ to school every day.", o: ["go", "goes", "going"], a: 1, dim: "语法" },
@@ -13,7 +17,7 @@ const BANK = [
   { s: "Li Lei gets up at six thirty. What time does he get up?", o: ["six thirty", "seven", "eight"], a: 0, dim: "阅读" },
   { s: "读下面这段并作答：It is sunny today. What do they do after school?", o: ["swim", "play football", "read"], a: 1, dim: "听力" },
 ];
-const TITLES = { login: "登录", register: "注册", reset: "重置密码", gate: "身份确认", onboard: "学习目标", placement: "定级测评", report: "测评报告", home: "首页", today: "今日任务", courses: "书架", practice: "练题", mistakes: "错题本", srs: "复习", weekly: "学习报告", world: "世界", avatar: "装扮", msgs: "消息", me: "我的", settings: "设置", devices: "设备", privacy: "隐私", support: "客服", search: "搜索", commerce: "商城", admin: "管理", adraft: "建稿送审", areview: "双签审核", apublish: "发布回滚", agov: "治理风控", aaudit: "审计", aperm: "权限只读", ai: "AI 伴学", voice: "语音跟读", k12: "青少年模式", pay: "收银台", a11y: "无障碍", arrears: "补课提醒", celebrate: "完成撒花", offlinet: "断网今日", pgen: "计划生成中", greject: "门被拒", cupgrade: "同意升级", vocab: "词汇详情", listening: "听力", speaking: "口语", writing: "写作", offpkg: "离线包", refund: "退款开票", phonics: "音标", alphabet: "字母", wordbook: "单词本", drill: "刷单词", shelf: "书架", book: "图书详情", chapter: "章节正文", about: "关于" };
+const TITLES = { login: "登录", register: "注册", reset: "重置密码", gate: "身份确认", onboard: "学习目标", placement: "定级测评", report: "测评报告", home: "首页", today: "今日任务", courses: "书架", practice: "练题", mistakes: "错题本", srs: "复习", weekly: "学习报告", world: "世界", avatar: "装扮", msgs: "消息", me: "我的", settings: "设置", devices: "设备", privacy: "隐私", support: "客服", search: "搜索", commerce: "商城", admin: "管理", adraft: "建稿送审", areview: "双签审核", apublish: "发布回滚", agov: "治理风控", aaudit: "审计", aperm: "权限只读", ai: "AI 伴学", voice: "语音跟读", k12: "青少年模式", pay: "收银台", a11y: "无障碍", arrears: "补课提醒", celebrate: "完成撒花", offlinet: "断网今日", pgen: "计划生成中", greject: "门被拒", cupgrade: "同意升级", vocab: "词汇详情", listening: "听力", speaking: "口语", writing: "写作", offpkg: "离线包", refund: "退款开票", phonics: "音标", alphabet: "字母", wordbook: "单词本", drill: "刷单词", shelf: "书架", book: "图书详情", chapter: "章节正文", about: "关于", achieve: "成就墙", league: "联赛" };
 /* 测试脚手架开关：默认关闭，加 ?demo=1 才显示预填账号与状态演示入口 */
 const DEMO = /[?&]demo=1/.test(location.search);
 const TABS = ["home", "today", "world", "me"];
@@ -34,8 +38,36 @@ V.gate = () => `<div class="card"><h2>先讲一句：为什么要生日</h2><p c
 V.onboard = () => `<div class="card"><h2>定个小目标</h2><p class="d">先选一个，一周后可换。存完按钮去定级，不回首页。</p><label class="lb">目标</label><select id="g"><option value="CET_4_6">大学英语四级 · B1</option><option value="ZERO_BASIS">零基础 · A1</option><option value="CET_6">六级 · B2</option></select><label class="lb">每天分钟</label><select id="m"><option>15</option><option>30</option><option>45</option></select><button class="btn" onclick="doGoal()">保存，去定级 →</button></div>`;
 V.placement = () => { const q = BANK[S.quiz.i]; return `<div class="meta">第 ${S.quiz.i + 1}/${BANK.length} 题 · ${q.dim} · 提交中禁用 · 断网存本地</div><div class="prog"><i style="width:${(S.quiz.i / BANK.length) * 100}%"></i></div><div class="card"><h2>${q.s}</h2><div id="qo">${q.o.map((t, k) => `<button class="opt" data-k="${k}" onclick="pick(${k})">${"ABC"[k]}. ${t}</button>`).join("")}</div><div class="fb" id="qfb"></div><div class="row" style="display:flex;gap:8px"><button class="btn ghost" style="flex:1" onclick="qNext()">下一题 →</button><button class="btn" style="flex:1" onclick="qSubmit()">提交</button></div></div>`; };
 V.report = () => `<div class="card" style="text-align:center;background:linear-gradient(135deg,#5b2fd6,#8b5cf6);color:#fff;border:0"><b style="font-size:44px">B1</b><div>定级完成 · ${S.quiz.score}/${BANK.length}</div></div><div class="card"><h2>维度</h2>${[["词汇", 80], ["语法", 60], ["阅读", 70], ["听力", 50]].map(([t, v]) => `<div class="dim"><span class="v">${t} ${v}</span><span class="bar w"><i style="width:${v}%"></i></span></div>`).join("")}</div><div class="card"><h2>💡 教练建议</h2><p class="d">词汇不错，语法补两周，每天 10 分钟，今日任务已排好。</p><button class="btn" onclick="S.plan=true;toast('计划已生成');nav('#/home')">生成我的计划 →</button></div>`;
-V.home = () => `${S.plan ? `<div class="banner"><b>📋 本周计划：${S.goal || "四级词汇 B1"}</b><p>因为你定级词汇不错、语法待补，所以这周每天 15 分钟：词汇 5 + 语法 10。</p></div>` : `<div class="card empty"><b>还没有计划</b><p class="d">定级 3 分钟，生成你的计划</p><button class="btn" onclick="nav('#/placement')">去定级 →</button></div>`}<div class="card"><h2>❤️ 错题本 ${S.mistakes.length ? `（${S.mistakes.length}）` : ""}</h2><p class="d">${S.mistakes.length ? "最新：" + S.mistakes[S.mistakes.length - 1].t.slice(0, 18) + "…" : "做错的题自动进来"}</p><button class="btn ghost" onclick="nav('#/mistakes')">进错题本 →</button></div><div class="card"><h2>⚔️ 刷单词</h2><p class="d">四级/六级词本，进来就刷</p><button class="btn" onclick="nav('#/wordbook')">选词本开刷 →</button></div><div class="card"><h2>🔰 零基础专区</h2><p class="d">从字母和音标开始，不考试</p><button class="btn sm" onclick="nav('#/alphabet')">字母 →</button> <button class="btn sm" onclick="nav('#/phonics')">音标 →</button></div><div class="card"><h2>📚 今日任务（${S.today.length}）</h2><p class="d">${S.today.length ? "语法阅读 · 预计 10 分钟" : "今天没任务啦 🎉"}</p><button class="btn" onclick="nav('#/today')">${S.today.length ? "开始今日 →" : "去看看"}</button></div><div class="card"><h2>📖 书架</h2><p class="d">${S.shelf.length} 门演示课 · 上次学到第 2 节</p><button class="btn ghost" onclick="nav('#/courses')">继续学习 →</button></div><div class="card"><h2>🎯 打卡</h2><div class="cal">${["一", "二", "三", "四", "五", "六", "日"].map(d => `<span>${d}</span>`).join("")}${[1, 0, 0, 0, 0, 0, 0].map(h => `<span class="${h ? "hit" : ""}">${h ? "✓" : "·"}</span>`).join("")}</div></div>`;
-V.today = () => (S.today.length ? `<h2 style="margin:0 0 10px">📚 今日任务</h2>` + S.today.map(t => `<div class="card"><b>${t.t}</b><p class="d">${t.min} 分钟 · 练题判分</p><button class="btn sm" onclick="nav('#/practice')">开始 →</button></div>`).join("") : `<div class="card empty"><b>今天没任务啦 🎉</b><p class="d">去书架逛逛，或再测一次</p><button class="btn sm" onclick="nav('#/courses')">去书架</button> <button class="btn sm" onclick="nav('#/placement')">再测一次</button></div>`) + (DEMO ? `<div class="card"><p class="d">状态演示：</p>${[["arrears", "欠账"], ["celebrate", "撒花"], ["offlinet", "断网"], ["pgen", "生成中"]].map(([r, t]) => `<button class="btn sm ghost" onclick="nav('#/${r}')">${t}</button>`).join(" ")}</div>` : ``);
+V.home = () => {
+  const words = S.mistakes.filter(m => m.kind === "word").length, sents = S.mistakes.length - words;
+  const doneT = S.today.filter(t => t.done).length, totalT = S.today.length;
+  const totalMin = S.today.reduce((a, b) => a + (b.done ? 0 : b.min), 0);
+  const wcalWeek = (typeof WCAL !== "undefined") ? [3, 4, 5, 6, 7, 8, 9].map(d => (WCAL[d] || 0) > 0 ? 1 : 0) : [1, 0, 0, 0, 0, 0, 0];
+  const planLine = `这周每天 ${S.minutes} 分钟：词汇 ${Math.max(5, Math.round(S.minutes / 3))} + 语法 ${S.minutes - Math.max(5, Math.round(S.minutes / 3))}。`;
+  const weakLine = S.quiz.score > 0 ? `定级 ${S.quiz.score}/${BANK.length}，语法待补，所以` : `先按${S.goal || "四级词汇 B1"}来，`;
+  return `${S.plan ? `<div class="banner"><b>📋 本周计划：${S.goal || "四级词汇 B1"}</b><p>${weakLine}${planLine}</p><p><button class="btn sm" onclick="BK.cur='b1';BK.ch=1;nav('#/chapter')">继续读：${S.lastRead.book} →</button> <button class="btn sm ghost" onclick="nav('#/today')">开始今日${totalT - doneT > 0 ? `（剩 ${totalT - doneT}）` : ""} →</button></p></div>` : `<div class="card empty"><b>还没有计划</b><p class="d">定级 3 分钟，生成你的计划</p><button class="btn" onclick="nav('#/placement')">去定级 →</button></div>`
+    }<div class="card"><h2>📚 今日任务（${doneT}/${totalT}）</h2><p class="d">${totalT ? (doneT === totalT ? "今天全完成了 🎉" : `剩 ${totalT - doneT} 个 · 约 ${totalMin} 分钟`) : "今天没任务啦 🎉"}</p><p class="d">${"●".repeat(doneT)}${"○".repeat(totalT - doneT)}</p><button class="btn" onclick="nav('#/today')">${doneT === totalT ? "去看看" : "开始今日 →"}</button></div><div class="card"><h2>❤️ 错题本${S.mistakes.length ? `（${S.mistakes.length}）` : ""}</h2><p class="d">${S.mistakes.length ? `单词 ${words} · 句子 ${sents} · 最新：${S.mistakes[S.mistakes.length - 1].t.slice(0, 16)}…` : "做错的题自动进来"}</p><p><button class="btn sm ghost" onclick="MK.st='all';MK.ty='all';nav('#/mistakes')">进错题本 →</button> <button class="btn sm ghost" onclick="MK.st='all';MK.ty='word';nav('#/mistakes')">看单词 →</button> <button class="btn sm ghost" onclick="MK.st='all';MK.ty='sentence';nav('#/mistakes')">看句子 →</button></p></div><div class="card"><h2>⚔️ 刷单词</h2><p class="d">四级/六级 40 词 · 本轮已斩 ${DR.known} · 复习 ${SRSQ.filter(q => !q.done).length} 到期</p><p><button class="btn sm" onclick="nav('#/wordbook')">选词本开刷 →</button> <button class="btn sm ghost" onclick="nav('#/drill')">继续刷（${DR.book === "CET4" ? "四级" : "六级"}第 ${Math.min(DR.i + 1, wlist().length)}/${wlist().length}） →</button></p></div>${(!S.plan || S.quiz.score === 0) ? `<div class="card"><h2>🔰 零基础专区</h2><p class="d">从字母和音标开始，不考试</p><button class="btn sm" onclick="nav('#/alphabet')">字母 →</button> <button class="btn sm" onclick="nav('#/phonics')">音标 →</button></div>` : ``}<div class="card"><h2>📖 书架</h2><p class="d">${S.lastRead.book} · ${S.lastRead.ch}</p><button class="btn ghost" onclick="BK.cur='b1';BK.ch=1;nav('#/chapter')">继续读 →</button></div><div class="card" onclick="nav('#/weekly')" style="cursor:pointer"><h2>🎯 打卡</h2><div class="cal">${["一", "二", "三", "四", "五", "六", "日"].map(d => `<span>${d}</span>`).join("")}${wcalWeek.map(h => `<span class="${h ? "hit" : ""}">${h ? "✓" : "·"}</span>`).join("")}</div><p class="d">点进周报看每天明细 →</p></div>`;
+};
+function homeDone(id) { const t = S.today.find(x => x.id === id); if (t) { t.done = true; toast("已完成（演示）"); render(); } }
+V.today = () => {
+  const doneT = S.today.filter(t => t.done).length, totalT = S.today.length;
+  const leftT = S.today.filter(t => !t.done);
+  const srsLeft = SRSQ.filter(q => !q.done);
+  const srsShow = srsLeft.slice(0, 2);
+  const srsMin = srsLeft.length * 2;
+  const leftMin = leftT.reduce((a, b) => a + b.min, 0) + srsMin;
+  const over = leftMin > S.minutes;
+  const head = `<div class="card"><h2>📚 今日安排</h2><p class="d">今日共约 ${leftMin} 分钟（目标每天 ${S.minutes} 分钟）：已完成 ${doneT} · 剩 ${totalT - doneT + (srsLeft.length ? 1 : 0)} 组${over ? " · 超预算了也没关系，明天顺延" : ""}</p><p class="d">${"●".repeat(doneT)}${"○".repeat(totalT - doneT)}${srsLeft.length ? " ＋复习" : ""}（演示口径：复习 1 个按 2 分钟）</p></div>`;
+  if (!S.plan) return head + `<div class="card empty"><b>还没建计划</b><p class="d">定级 3 分钟，生成你的今日安排</p><button class="btn" onclick="nav('#/placement')">去定级 →</button></div>`;
+  if (totalT > 0 && doneT === totalT && !srsLeft.length) return head + `<div class="card empty"><b>🎉 今天全完成了，明天见！</b><p class="d">已保存，可结束；想再看看也行</p><p><button class="btn sm" onclick="nav('#/srs')">查看回顾 →</button> <button class="btn sm ghost" onclick="nav('#/mistakes')">错题本 →</button> <button class="btn sm ghost" onclick="nav('#/home')">回首页</button></p></div>`;
+  if (!totalT && !srsLeft.length) return head + `<div class="card empty"><b>今天没任务啦 🎉</b><p class="d">去书架逛逛，或看看复习</p><button class="btn sm" onclick="nav('#/shelf')">去书架</button> <button class="btn sm ghost" onclick="nav('#/srs')">去复习</button></div>`;
+  return head
+    + `<p class="d" style="margin:4px 0 8px">▶️ 继续上次</p><div class="card"><b>📖 ${S.lastRead.book}</b><p class="d">${S.lastRead.ch}</p><button class="btn sm" onclick="BK.cur='b1';BK.ch=1;nav('#/chapter')">继续读 →</button></div>`
+    + (srsLeft.length ? `<p class="d" style="margin:12px 0 8px">🔁 到期复习（${srsLeft.length} 个 · 约 ${srsMin} 分钟）</p>` + srsShow.map(q => `<div class="card"><b>${q.w}</b> <span class="tag">stage ${q.stage}</span><p class="d">${q.zh}</p></div>`).join("") + (srsLeft.length > 2 ? `<p class="d">还有 ${srsLeft.length - 2} 个…</p>` : ``) + `<button class="btn sm ghost" onclick="nav('#/srs')">去复习 →</button>` : ``)
+    + (leftT.length ? `<p class="d" style="margin:12px 0 8px">✨ 新学（剩 ${leftT.length} 个）</p>` + leftT.map(t => `<div class="card"><b>${t.t}</b><p class="d">${t.min} 分钟 · 练题判分</p><p><button class="btn sm" onclick="nav('#/practice')">开始 →</button> <button class="btn sm ghost" onclick="homeDone('${t.id}')">标完成 ✓</button></p></div>`).join("") : ``)
+    + (doneT ? `<p class="d" style="margin:12px 0 8px">✅ 已完成（${doneT}）</p>` + S.today.filter(t => t.done).map(t => `<div class="card" style="opacity:.65"><b>✓ ${t.t}</b><p class="d">${t.min} 分钟 · <span class="tag">已完成</span></p></div>`).join("") : ``)
+    + (DEMO ? `<div class="card"><p class="d">状态演示：</p>${[["arrears", "欠账"], ["celebrate", "撒花"], ["offlinet", "断网"], ["pgen", "生成中"]].map(([r, t]) => `<button class="btn sm ghost" onclick="nav('#/${r}')">${t}</button>`).join(" ")}</div>` : ``);
+};
 V.courses = () => `<h2 style="margin:0 0 10px">📖 书架</h2>` + S.shelf.map((c, i) => `<div class="card"><b>${c}</b><p class="d">${i === 0 ? "上次学到第 2 节" : "未开始"}</p><button class="btn sm" onclick="nav('#/practice')">${i === 0 ? "继续 →" : "开始 →"}</button></div>`).join("");
 V.practice = () => `<div class="meta">语法 · 行内判分不跳页 · 点句子里的单词查词</div><div class="card"><h2 id="pstem">There ___ two books on the desk.</h2><div id="po"><button class="opt" onclick="ppick(0,this)">A. is</button><button class="opt" onclick="ppick(1,this)">B. are</button><button class="opt" onclick="ppick(2,this)">C. am</button></div><div class="fb" id="pfb"></div><button class="btn" onclick="psubmit()">提交判分</button></div><div class="card" id="wd" style="display:none"></div>`;
 const LEX = {
@@ -57,13 +89,49 @@ function wlookup(w) {
 }
 function speak(w) { try { const u = new SpeechSynthesisUtterance(w); u.lang = "en-US"; speechSynthesis.cancel(); speechSynthesis.speak(u); } catch (e) { toast("朗读不可用（演示）"); } }
 function stemWords() { const h = document.getElementById("pstem"); if (!h || h.dataset.w) return; h.dataset.w = "1"; h.innerHTML = h.textContent.split(/(\s+)/).map(p => /[A-Za-z]{2,}/.test(p) ? `<u onclick="wlookup('${p.replace(/[^A-Za-z]/g, '')}')" style="cursor:pointer;text-decoration:underline dotted">${p}</u>` : p).join(""); }
-const MK = { st: "all", ty: "all" };
+const MK = { st: "all", ty: "all", vid: -1 };
+function mkVariant(i) { MK.vid = i; render(); }
+function mkDone(i) { const m = S.mistakes[i]; if (!m) return; S.mistakes.splice(i, 1); MK.vid = -1; toast("已掌握，销账（演示）"); render(); }
+function mkVarQuiz() {
+  const m = S.mistakes[MK.vid];
+  if (!m) return null;
+  if (m.kind === "word") {
+    const pool = vcAll().filter(x => x.w !== m.t).slice(0, 12);
+    const others = [pool[1], pool[5], pool[9]].filter(Boolean);
+    const opts = others.map(o => ({ t: o.w, ok: false })).concat([{ t: m.t, ok: true }]);
+    const h = m.t.length * 7;
+    for (let k = opts.length - 1; k > 0; k--) { const j = (h + k * 3) % (k + 1); const t = opts[k]; opts[k] = opts[j]; opts[j] = t; }
+    return { kind: "word", opts };
+  }
+  return { kind: "sentence", stem: "There ___ two pens on the desk.", opts: [{ t: "is", ok: false }, { t: "are", ok: true }, { t: "am", ok: false }] };
+}
+let MKPICK = -1;
+let MKPACK = null;
+function mkPack() { const all = S.mistakes; if (all.length < 2) { toast("错题不够 2 道，先去做题（演示）"); return; } MKPACK = { list: all.slice(0, Math.min(10, all.length)), pos: 0, right: 0, pick: -1 }; MK.vid = -2; render(); }
+function mkPackPick(k) { if (!MKPACK) return; MKPACK.pick = k; const m = MKPACK.list[MKPACK.pos]; const ok = (m.kind === "word" && k === 0) || (m.kind !== "word" && k === 1); MKPACK.lastOk = ok; render(); }
+function mkPackNext() { if (!MKPACK || MKPACK.pick < 0) { toast("先选一个"); return; } if (MKPACK.lastOk) { MKPACK.right++; const m = MKPACK.list[MKPACK.pos]; const gi = S.mistakes.indexOf(m); if (gi >= 0) S.mistakes.splice(gi, 1); } MKPACK.pos++; MKPACK.pick = -1; if (MKPACK.pos >= MKPACK.list.length) { const r = MKPACK.right; MKPACK = null; MK.vid = -1; toast("打包练完：对 " + r + "（演示，已销对的）"); render(); } else render(); }
+function mkPick(k) { MKPICK = k; render(); }
+function mkSubmit() {
+  const v = mkVarQuiz();
+  if (!v || MKPICK < 0) { toast("先选一个"); return; }
+  if (v.opts[MKPICK].ok) { const m = S.mistakes[MK.vid]; S.mistakes.splice(MK.vid, 1); MK.vid = -1; MKPICK = -1; toast("变式通过，已销账（演示）"); render(); }
+  else { toast("再想想，答案不在这里（演示）"); render(); }
+}
 V.mistakes = () => {
   const all = S.mistakes;
   const todo = all.length, words = all.filter(m => m.kind === "word").length, sents = todo - words;
   let list = all.filter(m => (MK.st === "all" ? true : MK.st === "todo") && (MK.ty === "all" ? true : (MK.ty === "word" ? m.kind === "word" : m.kind !== "word")));
   if (MK.st === "done") list = [];
-  return `<div class="card"><h2>❤️ 错题本</h2><p class="d">共 ${todo} · 待补救 ${todo} · 单词 ${words} · 句子 ${sents}</p><p class="d">状态：<button class="btn sm${MK.st === "all" ? "" : " ghost"}" onclick="MK.st='all';render()">全部</button> <button class="btn sm${MK.st === "todo" ? "" : " ghost"}" onclick="MK.st='todo';render()">待补救</button> <button class="btn sm${MK.st === "done" ? "" : " ghost"}" onclick="MK.st='done';render()">已掌握</button></p><p class="d">题型：<button class="btn sm${MK.ty === "all" ? "" : " ghost"}" onclick="MK.ty='all';render()">全部</button> <button class="btn sm${MK.ty === "word" ? "" : " ghost"}" onclick="MK.ty='word';render()">单词</button> <button class="btn sm${MK.ty === "sentence" ? "" : " ghost"}" onclick="MK.ty='sentence';render()">句子</button></p></div>` + (list.length ? list.map(m => `<div class="card"><b>${m.t}</b><p class="d">${m.why}</p>${m.kind === "word" ? `<button class="btn sm" onclick="speak('${m.t}')">🔊 跟读</button> <button class="btn sm ghost" onclick="nav('#/drill')">去刷 →</button>` : `<button class="btn sm" onclick="toast('变式题稍后见（演示）')">变式再练 →</button>`}</div>`).join("") : `<div class="card empty"><b>${MK.st === "done" ? "已掌握是空的，去补救几道吧" : "没有符合的错题"}</b><p class="d">去今日任务做一道，错了会自动进来</p><button class="btn sm" onclick="nav('#/today')">去做题</button></div>`);
+  if (MK.vid === -2 && MKPACK) {
+    const m = MKPACK.list[MKPACK.pos];
+    return `<div class="card"><button class="btn sm ghost" onclick="MKPACK=null;MK.vid=-1;render()">← 错题本</button><h2>📦 一次 10 题（${MKPACK.pos + 1}/${MKPACK.list.length} · 对 ${MKPACK.right}）</h2><p class="d">原题：${m.t}（${m.why}）· 对了自动销账</p>${m.kind === "word" ? `<p class="d">中文“${m.why.replace("定位：", "").replace("待补", "")}”是哪个词？</p><button class="opt${MKPACK.pick === 0 ? " sel" : ""}" onclick="mkPackPick(0)">A. ${m.t}</button><button class="opt${MKPACK.pick === 1 ? " sel" : ""}" onclick="mkPackPick(1)">B.  look（干扰）</button>` : `<p><b>${m.t}</b></p><button class="opt${MKPACK.pick === 0 ? " sel" : ""}" onclick="mkPackPick(0)">A. 需要变式</button><button class="opt${MKPACK.pick === 1 ? " sel" : ""}" onclick="mkPackPick(1)">B. 我会了</button>`}${MKPACK.pick >= 0 ? (MKPACK.lastOk ? `<div class="fb ok">✓ 对了</div>` : `<div class="fb no">! 不对</div>`) : ``}<button class="btn" onclick="mkPackNext()">下一题 →</button></div>`;
+  }
+  const v = MK.vid >= 0 ? mkVarQuiz() : null;
+  if (MK.vid >= 0 && v) {
+    const m = S.mistakes[MK.vid];
+    return `<div class="card"><button class="btn sm ghost" onclick="MK.vid=-1;MKPICK=-1;render()">← 错题本</button><h2>🔁 变式再练（演示）</h2><p class="d">原题：${m.t}（${m.why}）</p>${v.kind === "word" ? `<p class="d">“${m.why.replace("定位：", "").replace("待补", "")}”是哪个词？</p>` : `<p><b>${v.stem}</b></p>`}${v.opts.map((o, k) => `<button class="opt${MKPICK === k ? " sel" : ""}" onclick="mkPick(${k})">${"ABCD"[k]}. ${o.t}</button>`).join("")}${MKPICK >= 0 ? (v.opts[MKPICK].ok ? `<div class="fb ok">✓ 对了，点提交销账</div>` : `<div class="fb no">! 不对，再想想</div>`) : ``}<button class="btn" onclick="mkSubmit()">提交（对了就销账）</button></div>`;
+  }
+  return `<div class="card"><h2>❤️ 错题本</h2><p class="d">共 ${todo} · 待补救 ${todo} · 单词 ${words} · 句子 ${sents}</p><p><button class="btn sm" onclick="mkPack()">📦 一次 10 题 →</button></p><p class="d">状态：<button class="btn sm${MK.st === "all" ? "" : " ghost"}" onclick="MK.st='all';render()">全部</button> <button class="btn sm${MK.st === "todo" ? "" : " ghost"}" onclick="MK.st='todo';render()">待补救</button> <button class="btn sm${MK.st === "done" ? "" : " ghost"}" onclick="MK.st='done';render()">已掌握</button></p><p class="d">题型：<button class="btn sm${MK.ty === "all" ? "" : " ghost"}" onclick="MK.ty='all';render()">全部</button> <button class="btn sm${MK.ty === "word" ? "" : " ghost"}" onclick="MK.ty='word';render()">单词</button> <button class="btn sm${MK.ty === "sentence" ? "" : " ghost"}" onclick="MK.ty='sentence';render()">句子</button></p></div>` + (list.length ? list.map(m => { const gi = S.mistakes.indexOf(m); return `<div class="card"><b>${m.t}</b><p class="d">${m.why}</p>${m.kind === "word" ? `<button class="btn sm" onclick="speak('${m.t}')">🔊 跟读</button> <button class="btn sm ghost" onclick="nav('#/drill')">去刷 →</button> <button class="btn sm ghost" onclick="mkVariant(${gi});MKPICK=-1">变式 →</button>` : `<button class="btn sm" onclick="mkVariant(${gi});MKPICK=-1">变式再练 →</button> <button class="btn sm ghost" onclick="mkDone(${gi})">会了 ✓</button>`}</div>`; }).join("") : `<div class="card empty"><b>${MK.st === "done" ? "已掌握是空的，去补救几道吧" : "没有符合的错题"}</b><p class="d">去今日任务做一道，错了会自动进来</p><button class="btn sm" onclick="nav('#/today')">去做题</button></div>`);
 };
 const SRSQ = [
   { w: "abandon", zh: "抛弃", stage: 2, show: false },
@@ -71,9 +139,23 @@ const SRSQ = [
   { w: "persistence", zh: "坚持", stage: 3, show: false },
   { w: "clarify", zh: "澄清", stage: 1, show: false },
 ];
-V.srs = () => { const left = SRSQ.filter(q => !q.done); return `<div class="card"><h2>🔁 复习（SM2）</h2><p class="d">到期 ${left.length} 个 · 看词想意，按想起程度打分，直写入口已关闭</p></div>` + (left.length ? `<div class="card" style="text-align:center;padding:28px 16px"><b style="font-size:34px">${left[0].w}</b><p class="d">stage ${left[0].stage}</p>${left[0].show ? `<p style="font-size:20px"><b>${left[0].zh}</b></p><p class="d">想起来了吗？</p>${[["忘了", 0], ["模糊", 2], ["想起", 4], ["秒答", 5]].map(([t, q]) => `<button class="btn sm" onclick="srsrate(${q})">${t} ${q}</button>`).join(" ")}` : `<button class="btn sm ghost" onclick="SRSQ.find(q=>!q.done).show=true;render()">想一下，点看中文</button>`}</div>` : `<div class="card empty"><b>复习完了 🎉</b><p class="d">下次到期自动进来</p><button class="btn sm" onclick="nav('#/today')">回今日</button></div>`); };
+V.srs = () => { const left = SRSQ.filter(q => !q.done); const total = SRSQ.length; const cur = left[0]; const idx = cur ? SRSQ.indexOf(cur) : total; return `<div class="card"><h2>🔁 复习（SM2）</h2><p class="d">到期 ${left.length} 个 · 第 ${left.length ? idx + 1 : total}/${total} · 看词想意，按想起程度打分，直写入口已关闭</p><p class="d">进度：${"●".repeat(total - left.length)}${"○".repeat(left.length)}（演示） <button class="btn sm ghost" onclick="srsUndo()">撤销上次 →</button></p></div>` + (left.length ? `<div class="card" style="text-align:center;padding:28px 16px"><b style="font-size:34px">${left[0].w}</b><p class="d">stage ${left[0].stage}</p>${left[0].show ? `<p style="font-size:20px"><b>${left[0].zh}</b></p><p class="d">想起来了吗？</p>${[["忘了", 0], ["模糊", 2], ["想起", 4], ["秒答", 5]].map(([t, q]) => `<button class="btn sm" onclick="srsrate(${q})">${t} ${q}</button>`).join(" ")}` : `<button class="btn sm ghost" onclick="SRSQ.find(q=>!q.done).show=true;render()">想一下，点看中文</button>`}</div>` : `<div class="card empty"><b>复习完了 🎉</b><p class="d">下次到期自动进来</p><button class="btn sm" onclick="nav('#/today')">回今日</button></div>`); };
 function srsrate(q) { const cur = SRSQ.find(x => !x.done); if (!cur) return; if (q >= 4) { cur.done = true; toast("已掌握，stage+1（演示）"); } else { cur.show = false; cur.stage = 1; SRSQ.push({ ...cur }); toast(" stage 回落，明轮再见（演示）"); } render(); }
-V.weekly = () => `<div class="card"><h2>学习报告</h2><p class="d">本周 15 分钟 · 新学 10 · 复习 5</p><p class="d">💡 教练建议：保持每天 15 分钟，语法是重点。</p></div><div class="card"><h2>📅 本月打卡</h2><div class="cal" id="wcal"></div><div class="card" id="wday" style="margin:10px 0 0"><p class="d">点上面任意一天 👆</p></div></div>`;
+V.weekly = () => {
+  const wm = WREP.mode;
+  const days = WREP.week;
+  const total = days.reduce((a, b) => a + b.m, 0);
+  const sumN = days.reduce((a, b) => a + b.n, 0), sumR = days.reduce((a, b) => a + b.r, 0);
+  const max = Math.max(30, ...days.map(d => d.m));
+  const bars = days.map((d, i) => `<div style="flex:1;text-align:center;cursor:pointer" onclick="wrepDay(${i})"><div style="height:90px;display:flex;align-items:flex-end;justify-content:center"><div style="width:70%;border-radius:6px 6px 0 0;background:${WREP.day === i ? "#5b2fd6" : d.m > 0 ? "#8b5cf6" : "#e7e1f5"};height:${Math.max(4, Math.round(d.m / max * 86))}px"></div></div><div style="font-size:11px;color:${WREP.day === i ? "#5b2fd6" : "#6f6480"};font-weight:${WREP.day === i ? "700" : "400"}">${"一二三四五六日"[i]}${d.m > 0 ? "·" + d.m : ""}</div></div>`).join("");
+  const dd = days[WREP.day];
+  const dimRows = [["词汇", dd.dim[0]], ["语法", dd.dim[1]], ["阅读", dd.dim[2]], ["听力", dd.dim[3]]].map(([t, v]) => `<div class="dim"><span class="v">${t} ${v}</span><span class="bar w"><i style="width:${v}%"></i></span></div>`).join("");
+  const sug = dd.m === 0 ? "这天没学：去今日补一节，或看看错题本。" : dd.dim[1] < 65 ? "语法是短板：每天加 5 分钟语法，明天今日里有 2 道。" : "保持手感：明天继续 " + S.minutes + " 分钟，复习优先。";
+  return `<div class="card"><h2>📊 学习报告</h2><p class="d">${["周", "月"].map(m => `<button class="btn sm${wm === m ? "" : " ghost"}" onclick="WREP.mode='${m}';WREP.day=0;render()">${m}</button>`).join(" ")} · 演示数据，非服务端报告</p>${wm === "周" ? `<div style="display:flex;gap:4px;margin:8px 0">${bars}</div><div class="card" id="wrepday" style="margin:8px 0 0"><b>周${"一二三四五六日"[WREP.day]} · ${dd.m} 分钟</b><p class="d">新学 ${dd.n} · 复习 ${dd.r}</p>${dimRows}<p class="d">💡 ${sug}</p><p>${dd.m === 0 ? `<button class="btn sm" onclick="nav('#/today')">去今日补 →</button> <button class="btn sm ghost" onclick="nav('#/mistakes')">看错题 →</button>` : `<button class="btn sm" onclick="nav('#/today')">去今日 →</button> <button class="btn sm ghost" onclick="nav('#/srs')">去复习 →</button>`}</p></div>` : `<div class="card" style="margin:8px 0 0"><h2>📅 本月打卡</h2><div class="cal" id="wcal"></div><div class="card" id="wday" style="margin:10px 0 0"><p class="d">点上面任意一天 👆</p></div></div>`}</div><div class="card"><h2>📈 本周累计</h2><p class="d">${total} 分钟 · 新学 ${sumN} · 复习 ${sumR} · 目标 ${S.goal || "四级词汇 B1"} · 每天 ${S.minutes} 分钟</p><p><button class="btn sm" onclick="nav('#/today')">继续今日 →</button> <button class="btn sm ghost" onclick="nav('#/mistakes')">错题本 (${S.mistakes.length}) →</button> <button class="btn sm ghost" onclick="nav('#/srs')">复习 →</button></p><p class="d">分享只读快照：不带登录态，他人打开看不到你的错题与隐私（演示说明）。 <button class="btn sm ghost" onclick="toast('分享链接已复制（演示，7 天有效）')">复制分享 →</button></p></div>`;
+};
+const WREP = { mode: "周", day: 3, week: [{ m: 15, n: 10, r: 5, dim: [80, 60, 70, 50] }, { m: 20, n: 12, r: 8, dim: [82, 58, 71, 52] }, { m: 0, n: 0, r: 0, dim: [0, 0, 0, 0] }, { m: 25, n: 15, r: 10, dim: [85, 62, 72, 55] }, { m: 15, n: 9, r: 6, dim: [83, 64, 70, 53] }, { m: 0, n: 0, r: 0, dim: [0, 0, 0, 0] }, { m: 30, n: 18, r: 12, dim: [86, 66, 74, 57] }] };
+function wrepDay(i) { WREP.day = i; render(); }
+function srsUndo() { const done = SRSQ.filter(q => q.done); if (!done.length) { toast("没有可撤销的（演示）"); return; } const last = done[done.length - 1]; last.done = false; last.show = true; toast("已撤销上一次打分（演示）"); render(); }
 const WCAL = { 3: 15, 4: 20, 5: 0, 6: 25, 7: 15, 8: 0, 9: 30, 10: 12, 11: 18, 12: 0, 13: 22, 14: 15, 15: 28, 16: 10, 17: 0, 18: 20, 19: 15, 20: 25, 21: 0, 22: 18, 23: 15, 24: 30, 25: 12, 26: 0, 27: 20, 28: 15 };
 function wcalPaint() {
   const el = document.getElementById("wcal");
@@ -86,9 +168,58 @@ function wcalPaint() {
 }
 function wday(d) {
   const m = WCAL[d] || 0;
-  document.getElementById("wday").innerHTML = m > 0 ? `<b>9 月 ${d} 日</b><p class="d">学习 ${m} 分钟 · 新学 ${Math.round(m * 0.7)} · 复习 ${Math.round(m * 0.3)}</p>` : `<b>9 月 ${d} 日</b><p class="d">这天没学，去补一节？</p><button class="btn sm" onclick="nav('#/today')">去今日</button>`;
+  const wasRepair = STM.repaired.includes(d);
+  document.getElementById("wday").innerHTML = m > 0 ? `<b>9 月 ${d} 日</b><p class="d">学习 ${m} 分钟 · 新学 ${Math.round(m * 0.7)} · 复习 ${Math.round(m * 0.3)}${wasRepair ? " · 补签" : ""}</p>` : `<b>9 月 ${d} 日</b><p class="d">这天没学${STM.freeze > 0 ? `，可用 Freeze 补签（剩 ${STM.freeze}，昨日有学才可补演示规则）` : "，Freeze 用完了"}，去补一节？</p><p><button class="btn sm" onclick="stmRepair(${d})">补签 Freeze →</button> <button class="btn sm ghost" onclick="nav('#/today')">去今日</button></p>`;
 }
-V.world = () => `<div class="card empty"><b>🌍 世界（R2 开放）</b><p class="d">房间、排行、赛季还没开，先好好学习</p><button class="btn sm" onclick="nav('#/avatar')">看看装扮</button></div><div class="card"><h2>🏆 排行榜</h2><p class="d">赛季未开始</p></div>`;
+V.world = () => {
+  const weekMin = [3, 4, 5, 6, 7, 8, 9].reduce((a, d) => a + (WCAL[d] || 0), 0);
+  const xp = weekMin * 2 + S.streak * 10;
+  const xpNext = 200, pct = Math.min(100, Math.round(xp / xpNext * 100));
+  const achGot = WD_ACH.filter(a => a.st === "got").length;
+  const weekDots = [3, 4, 5, 6, 7, 8, 9].map(d => (WCAL[d] || 0) > 0 ? 1 : 0);
+  return `<div class="card" style="background:linear-gradient(135deg,#f3edff,#e9f7f0);border:0"><h2>🌍 世界</h2><p class="d">成长 / 空间 / 联赛 / 宝箱 / 组队 / 房间 / 排行 / 赛季全画（演示数据；上线按许可隐藏）。</p></div><div class="card"><h2>📊 我的成长</h2><p><b>Lv.3 学徒</b> <span class="tag">${xp}/${xpNext} XP</span></p><div class="prog"><i style="width:${pct}%"></i></div><p class="d">本周 ${weekMin} 分钟 · 连续 ${S.streak} 天 · 成就 ${achGot}/${WD_ACH.length} · 联赛：${LG.div} · 宝箱 ${WD_CHEST.filter(c => c.st === "open").length} 可开</p><p><button class="btn sm" onclick="WD.tab='ach';nav('#/achieve')">成就墙 →</button> <button class="btn sm ghost" onclick="nav('#/weekly')">学习报告 →</button> <button class="btn sm ghost" onclick="nav('#/league')">联赛 →</button></p></div><div class="card" onclick="nav('#/weekly')" style="cursor:pointer"><h2>📅 本周打卡</h2><div class="cal">${["一", "二", "三", "四", "五", "六", "日"].map(d => `<span>${d}</span>`).join("")}${weekDots.map(h => `<span class="${h ? "hit" : ""}">${h ? "✓" : "·"}</span>`).join("")}</div><p class="d">点进周报看每天明细 →</p></div><div class="card"><h2>🏠 我的空间</h2><p class="d">背景：星夜 · 小人：默认卫衣 · 成就陈列 ${achGot} 枚（演示布置）</p><p><button class="btn sm" onclick="nav('#/avatar')">去装扮 →</button> <button class="btn sm ghost" onclick="WD.tab='ach';nav('#/achieve')">看看成就 →</button></p></div><div class="card"><h2>🎁 宝箱（${WD_CHEST.filter(c => c.st === "open").length} 可开）</h2>${WD_CHEST.map(c => `<p class="d">${c.st === "open" ? "🎁" : "🔒"} ${c.t} · ${c.d} ${c.st === "open" ? `<button class="btn sm" onclick="chestOpen('${c.id}')">开启 →</button>` : ``}</p>`).join("")}</div><div class="card"><h2>👥 组队 5 天（演示）</h2><p class="d">${WD_TEAM.done}/5 天 · 队友：你 + 2 演示伙伴 · 奖：宝石箱（演示规则）</p><div class="prog"><i style="width:${WD_TEAM.done / 5 * 100}%"></i></div><p><button class="btn sm" onclick="teamDay()">今日组队 +1 →</button> <button class="btn sm ghost" onclick="nav('#/msgs')">动态 →</button></p></div><div class="card"><h2>🏠 自习房间</h2>${WD_ROOMS.map(r => `<div class="card" style="margin:8px 0"><b>${r.t}</b> <span class="tag">${r.seat}/${r.cap} 席</span><p class="d">${r.d}</p><p>${r.joined ? `<span class="tag">已在房</span> <button class="btn sm ghost" onclick="roomLeave('${r.id}')">退出</button>` : `<button class="btn sm" onclick="roomJoin('${r.id}')">加入 →</button>`}</p></div>`).join("")}<p class="d">满员找其他房间；断线先读本人席位再恢复；同一人不占两席（演示规则）。</p></div><div class="card"><h2>🏆 排行榜</h2>${LG.board.map((p, i) => `<p class="d">${i + 1}. ${p.n} · ${p.xp} XP ${p.me ? "（我）" : ""}</p>`).join("")}<p><button class="btn sm ghost" onclick="nav('#/league')">联赛详情 →</button></p></div><div class="card"><h2>🗓️ 赛季</h2><p class="d">${LG.season} · 结算中与已到账分开（演示说明）。</p></div>`;
+};
+const LG = { div: "白银联赛", week: 3, board: [{ n: "学徒小语", xp: 320 }, { n: "你", xp: 0, me: true }, { n: "晨读阿甘", xp: 280 }, { n: "夜猫卷王", xp: 250 }, { n: "单词收割机", xp: 210 }], season: "S3 赛季 · 规则已定稿（演示）· 起止 9.1–9.30 · 资格：周学满 60 分钟" };
+function lgSync() { const weekMin = [3, 4, 5, 6, 7, 8, 9].reduce((a, d) => a + (WCAL[d] || 0), 0); const me = LG.board.find(p => p.me); if (me) { me.xp = weekMin * 2 + S.streak * 10; LG.board.sort((a, b) => b.xp - a.xp); } }
+V.league = () => {
+  lgSync();
+  return `<div class="card"><button class="btn sm ghost" onclick="nav('#/world')">← 世界</button><h2>🏆 ${LG.div} · 第 ${LG.week} 周</h2><p class="d">每周日按 XP 分组；Diamond 前 10 进三阶段淘汰赛；可在隐私设置关闭排名（演示说明）。</p></div>` + LG.board.map((p, i) => `<div class="card" style="${p.me ? "border-color:var(--brand)" : ""}"><b>${i + 1}. ${p.n}</b> <span class="tag">${p.xp} XP</span>${p.me ? `<p class="d">就是你 · 本周继续学可超车</p>` : ``}</div>`).join("") + `<div class="card"><p class="d">演示榜：4 演示伙伴 + 你（真 XP 同步）；不填机器人冒充真人，上线按许可隐藏实名。</p><p><button class="btn sm ghost" onclick="PV.rankOff=!PV.rankOff;toast(PV.rankOff?'排名已关闭（演示）':'排名已打开（演示）');render()">${PV.rankOff ? "打开排名" : "关闭排名"}</button></p></div>`;
+};
+const WD_CHEST = [
+  { id: "c1", t: "路径宝箱", d: "定级完成解锁 · 宝石 + 增益（演示）", st: "open" },
+  { id: "c2", t: "组队宝箱", d: "组队 5 天全满开启（演示 0/5）", st: "lock" },
+  { id: "c3", t: "联赛宝箱", d: "周日结算前 3 开启（演示）", st: "lock" },
+];
+function chestOpen(id) { const c = WD_CHEST.find(x => x.id === id); if (!c || c.st !== "open") return; c.st = "done"; c.d = "已开启：宝石 +20（演示，不入账）"; toast("宝箱已开（演示，不入账）"); render(); }
+const WD_TEAM = { done: 0 };
+function teamDay() { if (WD_TEAM.done >= 5) { toast("组队已满 5 天（演示）"); return; } WD_TEAM.done++; const c = WD_CHEST.find(x => x.id === "c2"); if (WD_TEAM.done >= 5 && c && c.st === "lock") { c.st = "open"; c.d = "组队 5 天全满开启（演示）"; } const a = WD_ACH.find(x => x.id === "a16"); if (WD_TEAM.done >= 5 && a && a.st === "lock") { a.st = "got"; a.p = "1/1"; } render(); }
+const WD_ROOMS = [
+  { id: "r1", t: "晨读房", d: "6:00–8:00 · 专注 25 分钟", seat: 3, cap: 8, joined: false },
+  { id: "r2", t: "晚间自习", d: "20:00–22:00 · 断线可恢复", seat: 8, cap: 8, joined: false },
+  { id: "r3", t: "周末冲刺", d: "周六 9:00 · 续租 7 天", seat: 2, cap: 6, joined: false },
+];
+function roomJoin(id) { const r = WD_ROOMS.find(x => x.id === id); if (!r) return; if (r.seat >= r.cap && !r.joined) { toast("满员了，换个房间（演示）"); return; } if (WD_ROOMS.some(x => x.joined && x.id !== id)) { toast("已在别的房，先退出（演示：不占两席）"); return; } r.joined = true; r.seat++; toast("已加入 " + r.t + "（演示）"); render(); }
+function roomLeave(id) { const r = WD_ROOMS.find(x => x.id === id); if (!r || !r.joined) return; r.joined = false; r.seat--; render(); }
+const WD_ACH = [
+  { id: "a1", t: "初来乍到", d: "完成注册与身份确认", st: "got" },
+  { id: "a2", t: "一战定级", d: "完成一次定级出报告", st: "got" },
+  { id: "a3", t: "坚持 3 天", d: "连续学习 3 天（演示 1/3）", st: "lock", p: "1/3" },
+  { id: "a4", t: "坚持 7 天", d: "连续学习 7 天（演示 1/7）", st: "lock", p: "1/7" },
+  { id: "a5", t: "错题清道夫", d: "变式销账 5 道（演示 0/5）", st: "lock", p: "0/5" },
+  { id: "a6", t: "词汇 40", d: "刷完 40 词一轮（演示）", st: "lock", p: "0/40" },
+  { id: "a9", t: "限时快手", d: "限时挑战对 8 个（演示，去刷）", st: "lock", p: "0/8" },
+  { id: "a10", t: "听力入门", d: "听完 3 篇（演示，去听）", st: "lock", p: "0/3" },
+  { id: "a11", t: "跟读首秀", d: "完成 1 次跟读（演示，去语音）", st: "lock", p: "0/1" },
+  { id: "a12", t: "打卡分享", d: "分享一次学习报告（演示）", st: "lock", p: "0/1" },
+  { id: "a13", t: "联赛新秀", d: "进一次周联赛榜（演示）", st: "lock", p: "0/1" },
+  { id: "a14", t: "赛季参与", d: "赛季规则公布后参赛", st: "closed" },
+  { id: "a15", t: "宝箱猎人", d: "开 1 个宝箱（演示）", st: "lock", p: "0/1" },
+  { id: "a16", t: "组队之星", d: "完成一次 5 天组队（演示）", st: "lock", p: "0/1" },
+  { id: "a7", t: "赛季冠军", d: "赛季结算第一", st: "closed" },
+  { id: "a8", t: "自习达人", d: "房间专注 10 次", st: "closed" },
+];
+const WD = { tab: "ach" };
+V.achieve = () => `<div class="card"><button class="btn sm ghost" onclick="nav('#/world')">← 世界</button><h2>🏅 成就墙（${WD_ACH.filter(a => a.st === "got").length}/${WD_ACH.length}）</h2><p class="d">已获 / 未获 / 未开放分开；规则可查；未开放不挂可领红点（演示）。</p></div>` + WD_ACH.map(a => `<div class="card" style="${a.st === "got" ? "" : "opacity:.75"}"><b>${a.st === "got" ? "🏅 " : a.st === "lock" ? "🔒 " : "⏳ "}${a.t}</b> <span class="tag">${a.st === "got" ? "已获" : a.st === "lock" ? "未获" + (a.p ? "·" + a.p : "") : "未开放"}</span><p class="d">${a.d}</p>${a.st === "got" ? `` : a.st === "lock" ? `<button class="btn sm ghost" onclick="nav('#/today')">去攒 →</button>` : `<p class="d">赛季/房间开门后再来（不写日期）。</p>`}</div>`).join("");
 V.avatar = () => `<div class="card"><h2>👕 我的背景墙＋小人</h2><p class="d">Three.js 演示：换服装/配饰/发型＋打招呼（低端机自动降画质）</p><div id="t3d" style="width:100%;height:300px;border-radius:12px;overflow:hidden;background:#1c1430"></div><p class="d">上衣：<button class="btn sm" onclick="dress('shirt','#5b2fd6')">紫</button> <button class="btn sm" onclick="dress('shirt','#1d9e6b')">绿</button> <button class="btn sm" onclick="dress('shirt','#d64545')">红</button></p><p class="d">发型：<button class="btn sm" onclick="dress('hair','round')">圆寸</button> <button class="btn sm" onclick="dress('hair','cap')">帽子</button>　配饰：<button class="btn sm" onclick="dress('acc','glasses')">眼镜</button> <button class="btn sm" onclick="dress('acc','none')">无</button></p><p class="d">背景墙：<button class="btn sm" onclick="dress('wall','#1c1430')">星夜</button> <button class="btn sm" onclick="dress('wall','#0e3b2e')">森林</button> <button class="btn sm" onclick="dress('wall','#3b1d0e')">沙漠</button></p><button class="btn" onclick="wave()">👋 打招呼</button></div><div class="card"><h2>衣柜</h2><p class="d">目录可看，试穿不落库；兑换需权益（未开放）</p><span class="tag">默认卫衣·试穿中</span><span class="tag">星空外套·未开放</span><br><button class="btn sm" onclick="toast('兑换未开放：先完成学习任务')">兑换</button></div>`;
 let T3 = null;
 async function stage3d() {
@@ -137,26 +268,33 @@ async function stage3d() {
 }
 function dress(part, v) {
   if (!T3) { toast("3D 还没加载好"); return; }
-  if (part === "shirt") T3.M.body.material.color.set(v);
-  if (part === "hair") { const cap = v === "cap"; T3.M.cap.visible = cap; T3.M.hair.visible = !cap; }
-  if (part === "acc") T3.M.glasses.visible = v === "glasses";
-  if (part === "wall") { T3.scene.background.set(v); T3.ground.material.color.set(v); }
+  if (part === "shirt") { T3.M.body.material.color.set(v); dressAck("上衣"); }
+  if (part === "hair") { const cap = v === "cap"; T3.M.cap.visible = cap; T3.M.hair.visible = !cap; dressAck(cap ? "帽子" : "圆寸"); }
+  if (part === "acc") { T3.M.glasses.visible = v === "glasses"; dressAck(v === "glasses" ? "眼镜" : "无配饰"); }
+  if (part === "wall") { T3.scene.background.set(v); T3.ground.material.color.set(v); dressAck("背景墙"); }
 }
 function wave() { if (T3) T3.waving = 40; else toast("3D 还没加载好"); }
 const MSGS = [
-  { id: "m1", cat: "学习", t: "今日任务已生成", d: "语法 2 道，预计 10 分钟", time: "08:00", read: false },
-  { id: "m2", cat: "学习", t: "欢迎来到语学星", d: "先定级，3 分钟出报告", time: "昨天", read: false },
-  { id: "m3", cat: "系统", t: "条款更新了", d: "看一眼再继续，一键重签", time: "周一", read: true },
+  { id: "m1", cat: "学习", t: "今日任务已生成", d: "语法 2 道，预计 10 分钟", time: "08:00", read: false, go: "#/today" },
+  { id: "m2", cat: "学习", t: "欢迎来到语学星", d: "先定级，3 分钟出报告", time: "昨天", read: false, go: "#/placement" },
+  { id: "m3", cat: "系统", t: "条款更新了", d: "看一眼再继续，一键重签", time: "周一", read: true, go: "#/cupgrade" },
   { id: "m4", cat: "互动", t: "有人给你点赞", d: "你的打卡被 3 人点赞（演示）", time: "周一", read: true },
+  { id: "m5", cat: "互动", t: "好友本周学了 120 分钟", d: "演示伙伴晨读阿甘 · 去联赛看看（演示数据）", time: "周二", read: false, go: "#/league" },
+  { id: "m6", cat: "互动", t: "组队缺 1 天", d: "组队 5 天差 1 天，宝箱等你（演示）", time: "今天", read: false, go: "#/world" },
 ];
 const MG = { cat: "全部" };
-V.msgs = () => { const un = MSGS.filter(m => !m.read).length; const list = MSGS.filter(m => MG.cat === "全部" || m.cat === MG.cat); return `<div class="card"><h2>✉️ 消息${un ? `（${un} 未读）` : ""}</h2><p class="d">${["全部", "学习", "系统", "互动"].map(c => `<button class="btn sm${MG.cat === c ? "" : " ghost"}" onclick="MG.cat='${c}';render()">${c}</button>`).join(" ")} <button class="btn sm ghost" onclick="MSGS.forEach(m=>m.read=true);render()">全标已读</button></p></div>` + (list.length ? list.map(m => `<div class="card" onclick="MSGS.find(x=>x.id==='${m.id}').read=true;render()" style="cursor:pointer;${m.read ? "opacity:.65" : ""}"><b>${m.read ? "" : "● "}${m.t}</b> <span class="tag">${m.cat}</span><p class="d">${m.d}</p><p class="meta">${m.time}</p></div>`).join("") : `<div class="card empty"><b>这类没消息</b></div>`); };
-V.me = () => `<div class="card" style="text-align:center;background:linear-gradient(135deg,#f3edff,#e9f7f0);border:0"><div style="font-size:44px">😎</div><b style="font-size:19px">${S.user || "未登录"}</b><p class="d">B1 · 已坚持 ${S.streak} 天 · 错题 ${S.mistakes.length}</p><p><span class="tag">Lv.3 学徒</span> <span class="tag">本周 15 分钟</span></p></div><div class="card"><h2>📚 学习</h2>${[["📖 书架", "#/courses", ""], ["📚 新书架", "#/shelf", ""], ["❤️ 错题本", "#/mistakes", S.mistakes.length ? S.mistakes.length + " 待补" : ""], ["🔁 复习", "#/srs", ""], ["📊 学习报告", "#/weekly", ""], ["⚔️ 刷单词", "#/wordbook", ""], ["🔤 音标", "#/phonics", ""], ["🔠 字母", "#/alphabet", ""]].map(([t, h, b]) => `<button class="opt" onclick="nav('${h}')">${t}${b ? ` <span class="tag">${b}</span>` : ""} ›</button>`).join("")}</div><div class="card"><h2>🌍 探索</h2>${[["🌍 世界", "#/world", ""], ["👕 装扮", "#/avatar", ""], ["🤖 AI 伴学", "#/ai", "演示"], ["🎤 语音跟读", "#/voice", ""], ["✉️ 消息", "#/msgs", MSGS.filter(m => !m.read).length ? MSGS.filter(m => !m.read).length + " 未读" : ""], ["🔍 搜索", "#/search", ""], ["🛒 商城", "#/commerce", ""], ["🔒 青少年模式", "#/k12", ""]].map(([t, h, b]) => `<button class="opt" onclick="nav('${h}')">${t}${b ? ` <span class="tag">${b}</span>` : ""} ›</button>`).join("")}</div><div class="card"><h2>🛠️ 服务</h2>${[["🛠️ 管理", "#/admin", "staff"], ["♿ 无障碍", "#/a11y", ""], ["📖 词汇详情", "#/vocab", ""], ["🎧 听力", "#/listening", ""], ["🎙️ 口语", "#/speaking", ""], ["✍️ 写作", "#/writing", ""], ["📦 离线包", "#/offpkg", ""], ["🧾 退款开票", "#/refund", ""], ["⚙️ 设置", "#/settings", ""], ["ℹ️ 关于", "#/about", ""]].map(([t, h, b]) => `<button class="opt" onclick="nav('${h}')">${t}${b ? ` <span class="tag">${b}</span>` : ""} ›</button>`).join("")}</div>${DEMO ? `<div class="card"><p class="d">测试：</p>${[["🧪 更多状态屏", "#/arrears"], ["⛔ 门被拒", "#/greject"], ["📄 同意升级", "#/cupgrade"]].map(([t, h]) => `<button class="opt" onclick="nav('${h}')">${t} ›</button>`).join("")}</div>` : ``}`;
-V.about = () => `<div class="card" style="text-align:center"><b style="font-size:20px">语学星</b><p class="d">版本 1.0.0-demo · 静态交互稿</p><p class="d">学习目标 → 练习 → 反馈 → 复习 → 复盘</p></div><div class="card"><p class="d">用户协议 · 隐私政策 · 开源许可</p><p class="d">客服：我的→客服 · 工作日 9-18</p></div>`;
-V.settings = () => `<div class="card"><h2>设置</h2><p class="d">偏好版本写回读 · 高对比/字体/动效见无障碍</p><button class="opt" onclick="nav('#/devices')">📱 设备 ›</button><button class="opt" onclick="nav('#/privacy')">🔒 隐私 ›</button><button class="opt" onclick="toast('主题已切换（演示）')">🌗 深色模式 ›</button><button class="btn ghost" onclick="arm(this,function(){S.user=null;toast('已退出');nav('#/login')})">退出登录</button></div>`;
-V.devices = () => `<div class="card"><h2>设备</h2><p class="d">当前设备：本机浏览器</p><p class="d">另一台 Android · 2 天前 <button class="btn sm" onclick="arm(this,function(){toast('已踢出（演示）')})">踢出</button></p></div>`;
-V.privacy = () => `<div class="card"><h2>隐私</h2><p class="d">导出/删除入口（M6）：申请后按进度展示</p><button class="btn sm" onclick="toast('导出申请已提交（演示）')">申请导出</button> <button class="btn sm" onclick="arm(this,function(){document.getElementById('delr').style.display='block'})">申请删除</button><div class="fb wa" id="delr" style="display:none;margin-top:10px">已受理 · 旧 token 即刻失效，数据逐服务清理后给回执（演示）</div></div>`;
-V.support = () => `<div class="card"><h2>客服</h2><p class="d">提交后只显示编号，客服按编号处理</p><input id="sup" placeholder="一句话描述问题"><button class="btn" onclick="toast('工单已提交，编号 TK-1024（演示）')">提交工单</button></div>`;
+function msgGo(id) { const m = MSGS.find(x => x.id === id); if (!m) return; m.read = true; if (m.go) nav(m.go); else render(); }
+V.msgs = () => { const un = MSGS.filter(m => !m.read).length; const list = MSGS.filter(m => MG.cat === "全部" || m.cat === MG.cat); return `<div class="card"><h2>✉️ 消息${un ? `（${un} 未读）` : ""}</h2><p class="d">${["全部", "学习", "系统", "互动"].map(c => `<button class="btn sm${MG.cat === c ? "" : " ghost"}" onclick="MG.cat='${c}';render()">${c}</button>`).join(" ")} <button class="btn sm ghost" onclick="MSGS.forEach(m=>m.read=true);render()">全标已读</button></p></div>` + (list.length ? list.map(m => `<div class="card" onclick="msgGo('${m.id}')" style="cursor:pointer;${m.read ? "opacity:.65" : ""}"><b>${m.read ? "" : "● "}${m.t}</b> <span class="tag">${m.cat}</span><p class="d">${m.d}</p><p class="meta">${m.time}</p>${m.go ? `<p><button class="btn sm ghost">去看看 →</button></p>` : ``}</div>`).join("") : `<div class="card empty"><b>这类没消息</b></div>`); };
+V.me = () => `<div class="card" style="text-align:center;background:linear-gradient(135deg,#f3edff,#e9f7f0);border:0"><div style="font-size:44px">😎</div><b style="font-size:19px">${S.user || "未登录"}</b><p class="d">B1 · 已坚持 ${S.streak} 天 · 错题 ${S.mistakes.length}</p><p><span class="tag">Lv.3 学徒</span> <span class="tag">本周 15 分钟</span></p></div><div class="card"><h2>▶️ 继续学</h2><p class="d">${S.lastRead.book} · ${S.lastRead.ch}</p><p><button class="btn sm" onclick="BK.cur='b1';BK.ch=1;nav('#/chapter')">继续读 →</button> <button class="btn sm ghost" onclick="nav('#/today')">今日任务 (${S.today.length}) →</button></p>${S.mistakes.length ? `<p class="d">上道错题：${String(S.mistakes[S.mistakes.length - 1].t).slice(0, 18)}… <button class="btn sm ghost" onclick="nav('#/mistakes')">去补救 →</button></p>` : ``}</div><div class="card"><h2>📚 学习</h2>${[["📚 图书管", "#/shelf", "在读·第二章"], ["⚡ 快速书架", "#/courses", ""], ["❤️ 错题本", "#/mistakes", S.mistakes.length ? S.mistakes.length + " 待补" : ""], ["🔁 复习", "#/srs", SRSQ.filter(q => !q.done).length ? SRSQ.filter(q => !q.done).length + " 到期" : ""], ["📊 学习报告", "#/weekly", ""], ["⚔️ 刷单词", "#/wordbook", "40 词"], ["🔤 音标", "#/phonics", ""], ["🔠 字母", "#/alphabet", ""]].map(([t, h, b]) => `<button class="opt" onclick="nav('${h}')">${t}${b ? ` <span class="tag">${b}</span>` : ""} ›</button>`).join("")}</div><div class="card"><h2>🌍 探索</h2>${[["🌍 世界", "#/world", "联赛·宝箱"], ["👕 装扮", "#/avatar", ""], ["🤖 AI 伴学", "#/ai", "演示"], ["🎤 语音跟读", "#/voice", ""], ["✉️ 消息", "#/msgs", MSGS.filter(m => !m.read).length ? MSGS.filter(m => !m.read).length + " 未读" : ""], ["🔍 搜索", "#/search", ""], ["🛒 商城", "#/commerce", "演示价"], ["🔒 青少年模式", "#/k12", "P3 未开"]].map(([t, h, b]) => `<button class="opt" onclick="nav('${h}')">${t}${b ? ` <span class="tag">${b}</span>` : ""} ›</button>`).join("")}</div><div class="card"><h2>🔤 听说读写</h2>${[["📖 词汇详情", "#/vocab", S.mistakes.filter(m => m.kind === "word").length ? S.mistakes.filter(m => m.kind === "word").length + " 待补" : ""], ["🎧 听力", "#/listening", ""], ["🎙️ 口语", "#/speaking", "语音跟读可用"], ["✍️ 写作", "#/writing", "暂无题"]].map(([t, h, b]) => `<button class="opt" onclick="nav('${h}')">${t}${b ? ` <span class="tag">${b}</span>` : ""} ›</button>`).join("")}</div><div class="card"><h2>👤 账号与系统</h2>${[["📦 离线包", "#/offpkg", "未开放下载"], ["🧾 退款开票", "#/refund", ""], ["⚙️ 设置", "#/settings", ""], ["♿ 无障碍", "#/a11y", ""], ["ℹ️ 关于", "#/about", ""]].map(([t, h, b]) => `<button class="opt" onclick="nav('${h}')">${t}${b ? ` <span class="tag">${b}</span>` : ""} ›</button>`).join("")}</div><div class="card"><h2>🛠️ 员工</h2><p class="d">需 staff 权限；普通账号只看说明，不进控制台（演示）。</p>${S.staff ? `<button class="opt" onclick="nav('#/admin')">🛠️ 管理控制台 ›</button>` : `<button class="opt" onclick="S.staff=true;toast('已切 staff 演示身份');render()">🔓 切 staff 演示身份 ›</button>`}<button class="opt" onclick="nav('#/support')">💬 客服 ›</button></div>${DEMO ? `<div class="card"><p class="d">测试：</p>${[["🧪 更多状态屏", "#/arrears"], ["⛔ 门被拒", "#/greject"], ["📄 同意升级", "#/cupgrade"]].map(([t, h]) => `<button class="opt" onclick="nav('${h}')">${t} ›</button>`).join("")}</div>` : ``}`;
+V.about = () => `<div class="card" style="text-align:center"><b style="font-size:20px">语学星</b><p class="d">版本 1.0.0-demo · 静态交互稿</p><p class="d">学习目标 → 练习 → 反馈 → 复习 → 复盘</p></div><div class="card"><h2>📄 法务与合规</h2><p class="d">正文以官网为准，稿内只看入口结构；官网本地 18182 未启动时外链打不开。</p><a class="opt" href="http://127.0.0.1:18182/terms" target="_blank" rel="noopener" style="text-decoration:none;color:inherit">📝 用户协议 <span class="meta">官网正文为准</span> ›</a><a class="opt" href="http://127.0.0.1:18182/privacy" target="_blank" rel="noopener" style="text-decoration:none;color:inherit">🔒 隐私政策 <span class="meta">官网正文为准</span> ›</a><a class="opt" href="http://127.0.0.1:18182/compliance" target="_blank" rel="noopener" style="text-decoration:none;color:inherit">📋 合规公示 <span class="meta">官网正文为准</span> ›</a><a class="opt" href="http://127.0.0.1:18182/minors" target="_blank" rel="noopener" style="text-decoration:none;color:inherit">🧒 未成年人说明 <span class="meta">仅服务成人</span> ›</a></div><div class="card"><h2>💬 服务与帮助</h2><button class="opt" onclick="nav('#/support')">💬 联系客服 <span class="meta">工作日 9-18</span> ›</button><a class="opt" href="http://127.0.0.1:18182/help" target="_blank" rel="noopener" style="text-decoration:none;color:inherit">❓ 帮助中心 <span class="meta">官网正文为准</span> ›</a><a class="opt" href="http://127.0.0.1:18182/announcements" target="_blank" rel="noopener" style="text-decoration:none;color:inherit">📢 公告 <span class="meta">官网正文为准</span> ›</a><a class="opt" href="http://127.0.0.1:18182/status" target="_blank" rel="noopener" style="text-decoration:none;color:inherit">📡 服务状态 <span class="meta">非实时可用率</span> ›</a></div><div class="card"><h2>✨ 产品</h2><a class="opt" href="http://127.0.0.1:18182/about" target="_blank" rel="noopener" style="text-decoration:none;color:inherit">ℹ️ 关于语学星 <span class="meta">官网正文为准</span> ›</a><a class="opt" href="http://127.0.0.1:18182/download" target="_blank" rel="noopener" style="text-decoration:none;color:inherit">⬇️ 下载 <span class="meta">官网正文为准</span> ›</a><a class="opt" href="http://127.0.0.1:18182/pricing" target="_blank" rel="noopener" style="text-decoration:none;color:inherit">💰 价格 <span class="meta">首发免费，官网为准</span> ›</a></div><div class="card"><h2>🧾 开源与版本</h2><p class="d">开源许可：稿内说明，正式文本以官网与仓库为准（演示不虚构条款）。</p><p class="d">版本 1.0.0-demo · 18283 交互稿；法务文本未在稿内复刻，避免与官网不一致。</p></div>`;
+V.settings = () => `<div class="card"><h2>🎯 学习偏好</h2><p class="d">当前：${S.goal || "四级词汇 B1"} · 每天 ${S.minutes} 分钟</p><label class="lb">目标</label><select id="sg"><option${(S.goal || "").includes("四级") ? " selected" : ""}>大学英语四级 · B1</option><option${(S.goal || "").includes("零基础") ? " selected" : ""}>零基础 · A1</option><option${(S.goal || "").includes("六级") ? " selected" : ""}>六级 · B2</option></select><label class="lb">每天分钟</label><select id="sm">${[5, 15, 30, 45].map(m => `<option${S.minutes === m ? " selected" : ""}>${m}</option>`).join("")}</select><button class="btn" onclick="doSetGoal()">保存偏好</button><p class="d">保存后今日起按新目标重排；已完成记录保留，不抹历史（演示）。</p></div><div class="card"><h2>🔔 通知</h2><p class="d">只列真实可用渠道；推送未开前不开“开启成功”。</p><button class="opt" onclick="SET.study=!SET.study;render()">${SET.study ? "✅" : "⬜"} 学习提醒 ›</button><p class="d">时段：<button class="btn sm${SET.slot === "morning" ? "" : " ghost"}" onclick="SET.slot='morning';render()">晨间 8:00</button> <button class="btn sm${SET.slot === "night" ? "" : " ghost"}" onclick="SET.slot='night';render()">睡前 22:00</button>（只记偏好，不真推演示）</p><button class="opt" onclick="SET.report=!SET.report;render()">${SET.report ? "✅" : "⬜"} 学习报告 ›</button><button class="opt" onclick="SET.sys=!SET.sys;render()">${SET.sys ? "✅" : "⬜"} 系统公告 ›</button></div><div class="card"><h2>🎨 显示与语言</h2><button class="opt" onclick="nav('#/a11y')">♿ 无障碍（对比/字体/动效） ›</button><p class="d">主题：${["follow", "light", "dark"].map(t => `<button class="btn sm${SET.theme === t ? "" : " ghost"}" onclick="SET.theme='${t}';toast('主题：${{ follow: "跟随系统", light: "浅色", dark: "深色" }[t]}（演示）');render()">${{ follow: "跟随系统", light: "浅色", dark: "深色" }[t]}</button>`).join(" ")}</p><p class="d">界面语言：<button class="btn sm" onclick="toast('界面语言：中文（演示）')">中文 ›</button></p><p class="d">内容语言：<button class="btn sm" onclick="toast('内容语言：英语（演示）')">英语 ›</button></p><p class="d">界面语言只管按钮文案，题目语言不动（locale 分离）。</p></div><div class="card"><h2>📱 设备与隐私</h2><button class="opt" onclick="nav('#/devices')">📱 设备管理 ›</button><button class="opt" onclick="nav('#/privacy')">🔒 隐私（导出/删除） ›</button><button class="opt" onclick="nav('#/cupgrade')">📄 同意版本 ›</button></div><div class="card"><h2>👤 账号</h2><p class="d">推送未开：通知开关只记偏好，不代表能收到推送（演示）。</p><button class="btn ghost" onclick="arm(this,function(){S.user=null;toast('已退出');nav('#/login')})">退出登录</button></div>`;
+function doSetGoal() { S.goal = document.getElementById("sg").selectedOptions[0].text; S.minutes = parseInt(document.getElementById("sm").value, 10); toast("偏好已保存，今日起重排（演示）"); render(); }
+const PV = { exp: null, del: null };
+const SUP = { cat: "功能", list: [{ id: "TK-1024", cat: "功能", t: "听力播到一半停了", st: "处理中" }, { id: "TK-1019", cat: "账号", t: "换手机想踢掉旧设备", st: "已回复" }] };
+V.devices = () => `<div class="card"><h2>📱 设备</h2><p class="d">踢出二次确认；被踢设备旧会话失效并清该账号本地私有状态（演示说明）。</p><div class="card" style="margin:0 0 8px;border-color:var(--brand)"><b>本机浏览器</b> <span class="tag">当前设备</span><p class="d">最后活跃：刚刚 · 退出登录即清本机该账号状态</p></div><div class="card" style="margin:0"><b>Android · Pixel（演示）</b><p class="d">最后活跃：2 天前 <button class="btn sm" onclick="arm(this,function(){toast('已踢出（演示）：该设备旧会话失效')})">踢出</button></p></div></div>`;
+V.privacy = () => `<div class="card"><h2>🔒 隐私</h2><p class="d">撤回先说影响；导出/删除给请求编号与进度，不是点完即完成（演示）。</p><p><button class="btn sm" onclick="PV.exp='REQ-2026-0007';toast('导出申请已提交，编号 REQ-2026-0007（演示）');render()">申请导出</button> <button class="btn sm" onclick="arm(this,function(){PV.del='DEL-2026-0003';render()})">申请删除</button></p>${PV.exp ? `<div class="fb wa" style="display:block">导出 ${PV.exp} · 处理中：学习档案 ✓ / 错题 ⏳ / 录音 —（演示进度）</div>` : ``}${PV.del ? `<div class="fb wa" style="display:block">删除 ${PV.del} · 已受理：旧 token 即刻失效，数据逐服务清理后给回执（演示）</div>` : ``}</div>`;
+V.support = () => `<div class="card"><h2>💬 客服</h2><p class="d">提交后只显示编号，客服按编号处理；正文受控（演示只收一句话）。</p><p class="d">分类：${["功能", "账号", "内容", "支付"].map(c => `<button class="btn sm${SUP.cat === c ? "" : " ghost"}" onclick="SUP.cat='${c}';render()">${c}</button>`).join(" ")}</p><input id="sup" placeholder="一句话描述问题"><button class="btn" onclick="supSend()">提交工单</button></div><div class="card"><h2>🧾 我的工单（${SUP.list.length}）</h2>${SUP.list.map(t => `<div class="card" style="margin:8px 0"><b>${t.id}</b> <span class="tag">${t.cat}</span> <span class="tag">${t.st}</span><p class="d">${t.t}</p></div>`).join("")}</div>`;
+function supSend() { const v = (document.getElementById("sup").value || "").trim(); if (!v) { toast("先写一句话"); return; } const id = "TK-" + (1025 + SUP.list.length); SUP.list.unshift({ id, cat: SUP.cat, t: v.slice(0, 40), st: "已提交" }); toast("工单已提交，编号 " + id + "（演示）"); render(); }
 const SH = { q: "", hist: ["四级", "音标"] };
 function sidx() {
   const idx = [];
@@ -170,8 +308,16 @@ V.search = () => {
   const q = SH.q.trim().toLowerCase();
   const res = q ? sidx().filter(e => (e.t + e.d).toLowerCase().includes(q)).slice(0, 8) : [];
   const groups = ["课程", "词汇", "帮助"].map(g => ({ g, items: res.filter(e => e.ty === g) })).filter(x => x.items.length);
-  return `<div class="card"><h2>搜索</h2><input id="q" placeholder="搜课程/词汇/帮助" value="${SH.q.replace(/"/g, "")}" oninput="SH.q=this.value;render2()"><div id="sr"></div></div>` + (!q ? `<div class="card"><p class="d">历史：${SH.hist.map(h => `<button class="btn sm ghost" onclick="SH.q='${h}';render()">${h}</button>`).join(" ")}</p></div>` : groups.length ? groups.map(({ g, items }) => `<div class="card"><b>${g}</b>${items.map(e => `<button class="opt" onclick="sgo('${e.t}');nav('${e.go}')">${e.t} · ${e.d} ›</button>`).join("")}</div>`).join("") : `<div class="card empty"><b>没搜到“${SH.q}”</b><p class="d">换个词试试</p></div>`);
+  return `<div class="card"><h2>搜索</h2><input id="q" placeholder="搜课程/词汇/帮助" value="${SH.q.replace(/"/g, "")}" oninput="SH.q=this.value;render2()"><div id="sr"></div><p class="d">词汇结果进详情页（可自测/加复习），课程进图书管。</p></div>` + (!q ? `<div class="card"><p class="d">历史：${SH.hist.map(h => `<button class="btn sm ghost" onclick="SH.q='${h}';render()">${h}</button>`).join(" ")}</p></div>` : groups.length ? groups.map(({ g, items }) => `<div class="card"><b>${g}</b>${items.map(e => `<button class="opt" onclick="sgo('${e.t}');sgo2('${e.t}','${e.ty}')">${e.t} · ${e.d} ›</button>`).join("")}</div>`).join("") : `<div class="card empty"><b>没搜到“${SH.q}”</b><p class="d">换个词试试</p></div>`);
 };
+function sgo2(t, ty) {
+  if (ty === "词汇") {
+    const a = vcAll().find(x => x.w.toLowerCase() === String(t).toLowerCase());
+    if (a) { VC.w = a.w; VC.quizPick = -1; VC.q = ""; nav("#/vocab"); return; }
+  }
+  const idx = sidx().find(e => e.t === t);
+  nav(idx ? idx.go : "#/shelf");
+}
 function render2() { const v = document.getElementById("q"); const pos = v ? v.selectionStart : 0; render(); const n = document.getElementById("q"); if (n) { n.focus(); try { n.setSelectionRange(pos, pos); } catch (e) { } } }
 const GOODS = [
   { id: "g1", cat: "会员", t: "月度会员", d: "全部课程＋AI 伴学", price: 19, oprice: 29, tag: "热卖" },
@@ -186,8 +332,9 @@ V.commerce = () => {
   if (GC.cur) { const g = GOODS.find(x => x.id === GC.cur); return `<div class="card"><button class="btn sm ghost" onclick="GC.cur=null;render()">← 商城</button><h2>${g.t}</h2><p>${g.tag ? `<span class="tag">${g.tag}</span> ` : ""}<span class="tag">${g.cat}</span></p><p class="d">${g.d}</p><p style="font-size:26px"><b>¥${g.price}</b> <s class="meta">¥${g.oprice}</s></p><button class="btn" onclick="nav('#/pay')">去结算 →</button></div>`; }
   const cats = ["全部", "会员", "课程", "周边"];
   const list = GOODS.filter(g => GC.cat === "全部" || g.cat === GC.cat);
-  return `<div class="card"><h2>🛒 商城（演示价，不扣款）</h2><p class="d">${cats.map(c => `<button class="btn sm${GC.cat === c ? "" : " ghost"}" onclick="GC.cat='${c}';render()">${c}</button>`).join(" ")}</p></div>` + list.map(g => `<div class="card"><b>${g.t}</b> ${g.tag ? `<span class="tag">${g.tag}</span>` : ""}<p class="d">${g.d}</p><p><b>¥${g.price}</b> <s class="meta">¥${g.oprice}</s> <button class="btn sm" style="float:right" onclick="GC.cur='${g.id}';render()">详情 →</button></p></div>`).join("");
+  return `<div class="card"><h2>🛒 商城（演示价，不扣款）</h2><p class="d">${cats.map(c => `<button class="btn sm${GC.cat === c ? "" : " ghost"}" onclick="GC.cat='${c}';render()">${c}</button>`).join(" ")}</p><p><button class="btn sm ghost" onclick="nav('#/refund')">我的订单 / 退款 →</button></p></div>` + list.map(g => `<div class="card"><b>${g.t}</b> ${g.tag ? `<span class="tag">${g.tag}</span>` : ""}<p class="d">${g.d}</p><p><b>¥${g.price}</b> <s class="meta">¥${g.oprice}</s> <button class="btn sm" style="float:right" onclick="GC.cur='${g.id}';render()">详情 →</button></p></div>`).join("");
 };
+function dressAck(c) { toast("换装：" + c + "（演示，不落库）"); }
 const ADM = { pub: 6, pend: 2, users: 128, risk: 1 };
 V.admin = () => `<div class="card"><p class="d">staff 视角（test 档）· 双签申请人禁自审</p><h2>📊 今日概览</h2><p><span class="tag">在架 ${ADM.pub}</span> <span class="tag">待审 ${ADM.pend}</span> <span class="tag">学员 ${ADM.users}</span> <span class="tag">风险 ${ADM.risk}</span></p><p class="d">口径：仅统计已发布与已落库，不含草稿（演示）。</p></div><div class="card"><h2>📌 待办（${ADM.pend}）</h2><p class="d">语法课 v3 · 等 L1 <button class="btn sm" onclick="nav('#/areview')">去审 →</button></p><p class="d">RISK-001 · 等建档 <button class="btn sm" onclick="nav('#/agov')">去看 →</button></p></div><div class="card"><h2>🧭 管理</h2>${[["📝 建稿送审", "#/adraft"], ["✔️ 双签审核", "#/areview"], ["🚀 发布回滚", "#/apublish"], ["🛡️ 治理风控", "#/agov"], ["📜 审计", "#/aaudit"], ["🔑 权限只读", "#/aperm"]].map(([t, h]) => `<button class="opt" onclick="nav('${h}')">${t} ›</button>`).join("")}</div>`;
 V.aperm = () => `<div class="card"><h2>🔑 权限（只读）</h2><p class="d">role-learner：14 项学员权限</p><p class="d">staff：投影/审计/工单读</p><p class="d">reviewer-l1/l2：初审/终审发布</p><p class="d">改权限走双人审批（演示无入口）。</p></div>`;
@@ -209,7 +356,7 @@ const AIPLANS = [
   { id: "mail", t: "✉️ 邮件助手", d: "英文邮件起草润色" },
 ];
 const AICHAT = [];
-V.ai = () => `<div class="card"><h2>🤖 AI 伴学（P2 未开·演示）</h2><p class="d">Gate 未过无 CTA 是设计；下面是快捷方案，开一两个先体验：</p>${AIPLANS.map(p => `<button class="opt" onclick="aiopen('${p.id}')">${p.t}<br><span class="meta">${p.d}</span></button>`).join("")}</div><div class="card" id="aibox" style="display:none"><div id="aimsgs" style="max-height:220px;overflow-y:auto"></div><div style="display:flex;gap:6px;margin-top:8px"><input id="aiin" placeholder="输入英文试试" style="flex:1"><button class="btn sm" onclick="aisend()">发</button></div></div>`;
+V.ai = () => `<div class="card"><h2>🤖 AI 伴学（P2 未开·演示）</h2><p class="d">Gate 未过无 CTA 是设计；下面是快捷方案，开一两个先体验。答不上来可转练题/客服，不硬聊。</p>${AIPLANS.slice(0, 4).map(p => `<button class="opt" onclick="aiopen('${p.id}')">${p.t}<br><span class="meta">${p.d}</span></button>`).join("")}<button class="opt" onclick="document.getElementById('aiMore').style.display='block';this.style.display='none'">更多方案（${AIPLANS.length - 4}） ›</button><div id="aiMore" style="display:none">${AIPLANS.slice(4).map(p => `<button class="opt" onclick="aiopen('${p.id}')">${p.t}<br><span class="meta">${p.d}</span></button>`).join("")}</div></div><div class="card" id="aibox" style="display:none"><div id="aimsgs" style="max-height:220px;overflow-y:auto"></div><div style="display:flex;gap:6px;margin-top:8px"><input id="aiin" placeholder="输入英文试试" style="flex:1"><button class="btn sm" onclick="aisend()">发</button></div><p class="d">聊不下去？ <button class="btn sm ghost" onclick="nav('#/practice')">转练题 →</button> <button class="btn sm ghost" onclick="nav('#/support')">问客服 →</button></p></div>`;
 function aiopen(id) {
   const box = document.getElementById("aibox");
   box.style.display = "block";
@@ -237,8 +384,11 @@ function aisend() {
   apaint();
 }
 const VOI = { scene: "跟读", rec: false, t: 0, hist: [] };
-const VOISCENES = { "跟读": ["Good morning.", "How are you?", "See you tomorrow."], "复述": ["The train leaves at nine.", "Practice makes perfect."], "对话": ["What did you do today?", "Tell me about your weekend."] };
-V.voice = () => `<div class="card"><h2>🎤 语音跟读</h2><p class="d">场景：${Object.keys(VOISCENES).map(s => `<button class="btn sm${VOI.scene === s ? "" : " ghost"}" onclick="VOI.scene='${s}';VOI.rec=false;render()">${s}</button>`).join(" ")}</p><div class="card" style="margin:8px 0"><b id="votext">${VOISCENES[VOI.scene][0]}</b> <button class="btn sm" onclick="speak(document.getElementById('votext').textContent)">🔊 示范</button></div>${VOI.rec ? `<div class="card" style="margin:8px 0"><p class="d">● 录音中 <b id="vsec">0</b>s ～～～（演示波形）</p><button class="btn" onclick="vstop()">停止判分</button></div>` : `<button class="btn" onclick="VOI.rec=true;VOI.t=0;render();vtick()">🎤 开始录音</button>`}<p class="d">无麦先说（演示跳过设备检查）；RTC 未接不评真分。</p></div><div class="card"><h2>📝 本轮记录</h2>${VOI.hist.length ? VOI.hist.map(h => `<p class="d">${h.s} → 发音 ${h.p} · 流利 ${h.f} · 完整 ${h.c}</p>`).join("") : `<p class="d">还没有，先录一条 👆</p>`}</div>`;
+const VOISCENES = { "跟读": ["Good morning.", "How are you?", "See you tomorrow."], "复述": ["The train leaves at nine.", "Practice makes perfect."], "对话": ["What did you do today?", "Tell me about your weekend."], "口头翻译": ["早上好。", "火车九点开。"], "角色扮演": ["Welcome! Table for two?", "Check in, please."] };
+function vdemoText() { const t = document.getElementById("votext"); return t ? t.textContent : VOISCENES[VOI.scene][0]; }
+function vlisten() { speak(vdemoText()); }
+function vreplay(h) { speak(VOI.hist[h].s); }
+V.voice = () => `<div class="card"><h2>🎤 语音跟读</h2><p class="d">跟读 / 口头翻译 / 对话 / 角色扮演全画（演示 TTS 示范 + 模拟录音；真评测走服务端，不承诺时间）。</p><p class="d">场景：${Object.keys(VOISCENES).map(s => `<button class="btn sm${VOI.scene === s ? "" : " ghost"}" onclick="VOI.scene='${s}';VOI.rec=false;render()">${s}</button>`).join(" ")}</p><div class="card" style="margin:8px 0"><b id="votext">${VOISCENES[VOI.scene][0]}</b> <button class="btn sm" onclick="vlisten()">🔊 示范</button>${VOI.scene === "口头翻译" ? `<p class="d">看到中文说英文（演示：点示范听英文答案）</p>` : ``}${VOI.scene === "角色扮演" ? `<p class="d">你演客人，我演店员（演示：一人一句轮着来）</p>` : ``}</div>${VOI.rec ? `<div class="card" style="margin:8px 0"><p class="d">● 录音中 <b id="vsec">0</b>s ～～～（演示波形）</p><button class="btn" onclick="vstop()">停止判分</button></div>` : `<button class="btn" onclick="VOI.rec=true;VOI.t=0;render();vtick()">🎤 开始录音</button>`}<p class="d">无麦先说（演示跳过设备检查）；RTC 未接不评真分。</p></div><div class="card"><h2>📝 本轮记录</h2>${VOI.hist.length ? VOI.hist.map((h, i) => `<div class="card" style="margin:8px 0"><p class="d">${h.s}</p><p>发音 <b>${h.p}</b> · 流利 <b>${h.f}</b> · 完整 <b>${h.c}</b></p><div class="prog"><i style="width:${h.p}%"></i></div><p><button class="btn sm" onclick="vreplay(${i})">回听 🔊</button></p></div>`).join("") : `<p class="d">还没有，先录一条 👆</p>`}</div>`;
 function vtick() { const el = document.getElementById("vsec"); if (!el || !VOI.rec) return; VOI.t++; el.textContent = VOI.t; setTimeout(vtick, 1000); }
 function vstop() {
   VOI.rec = false;
@@ -257,19 +407,131 @@ V.k12 = () => {
   return `<div class="card empty"><b>⏰ 今天学够 40 分钟啦，明天见！</b><p class="d">防沉迷：到点即停，不突破（演示）</p><button class="btn sm" onclick="K12.anti=false;K12.book=null;render()">明天再来</button></div>`;
 };
 V.pay = () => `<div class="card"><h2>收银台（沙盒）</h2><p class="d">Phase 1 基金 · ¥99 · 不扣真款 · 金额二次确认</p><button class="btn" onclick="arm(this,function(){var r=document.getElementById('payr');r.className='fb ok';r.style.display='block'})">支付 ¥99</button><div class="fb" id="payr" style="display:none;margin-top:10px">✓ 支付成功（沙盒）· 权益待开通演示</div></div>`;
-V.a11y = () => `<div class="card"><h2>♿ 无障碍</h2><p class="d">跟随系统＋手动档，所见即所得</p><button class="opt" onclick="a11y('contrast')">◐ 高对比：<b id="a11yc">关</b> ›</button><button class="opt" onclick="a11y('font')">A 字体：<b id="a11yf">标准</b> ›</button><button class="opt" onclick="a11y('motion')">▶ 动效：<b id="a11ym">开</b> ›</button></div><div class="card"><h2>👁 预览</h2><p style="font-size:22px"><b>Good morning.</b></p><p class="d">早上好。今天也要学 15 分钟。</p><p><span class="tag">B1</span> <span class="tag">今日 2 题</span></p><button class="btn sm" onclick="toast('预览：按钮对比达标（演示）')">示例按钮</button></div>`;
+V.a11y = () => `<div class="card"><h2>♿ 无障碍</h2><p class="d">跟随系统＋手动档，所见即所得；设置只在本机生效（演示），换设备需重设。</p><button class="opt" onclick="a11y('contrast')">◐ 高对比：<b id="a11yc">${AX.c ? "开" : "关"}</b> ›</button><button class="opt" onclick="a11y('font')">A 字体：<b id="a11yf">${["标准", "大", "特大"][AX.f]}</b> ›</button><button class="opt" onclick="a11y('motion')">▶ 动效：<b id="a11ym">${AX.m ? "开" : "关"}</b> ›</button><button class="opt" onclick="a11y('focus')">◎ 焦点框：<b id="a11yfo">${AX.fo ? "强" : "默认"}</b> ›</button><button class="opt" onclick="a11y('voice')">🔊 读屏/朗读：<b id="a11yv">${AX.v ? "开" : "关"}</b> ›</button><p><button class="btn sm ghost" onclick="a11yReset()">恢复默认</button></p></div><div class="card"><h2>👁 预览（真实生效区）</h2><p style="font-size:22px"><b>Good morning.</b></p><p class="d">早上好。今天也要学 15 分钟。</p><p><span class="tag">B1</span> <span class="tag">今日 2 题</span></p><button class="btn sm" onclick="toast('预览：当前对比/字号/动效即你所见（演示）')">示例按钮</button> <button class="btn sm ghost" onclick="a11yDemo()">播报这段 🔊</button><p class="d">状态不用颜色 alone 表达：✓=可做 ♥=待补救 ⌁=待同步，均有文字。</p><div class="fb ok">✓ 保存成功是这种条（文字＋色块）</div><div class="fb no">! 出错是这种条（文字＋色块）</div></div><div class="card"><h2>⌨️ 键盘与焦点自查</h2><p class="d">Tab 走一遍：本页按钮 → 预览 → 下面三链接，焦点框${AX.fo ? "已加强" : "为默认"}；回车可点，焦点不丢。</p><p><button class="btn sm" onclick="nav('#/shelf')">书架 ›</button> <button class="btn sm" onclick="nav('#/practice')">练题 ›</button> <button class="btn sm" onclick="nav('#/home')">首页 ›</button></p><p class="d">抽验屏（书架/练题）不是全部范围；长题干、320 宽度、横竖屏以真机为准，稿内不认证。</p></div>`;
+function a11yDemo() { if (!AX.v) { toast("先打开读屏/朗读（演示）"); return; } speak("Good morning. Time to study fifteen minutes."); }
 V.arrears = () => `<div class="card"><h2>📚 今日任务</h2><div class="card" style="margin:0 0 8px;border-color:var(--warn)"><b>昨天有 1 节没学完，今天补吗？</b><p class="d">补上不断签</p><button class="btn sm" onclick="toast('已加入今日（演示）');nav('#/today')">补上 →</button> <button class="btn sm ghost" onclick="nav('#/today')">跳过</button></div></div>`;
 V.celebrate = () => `<div class="card" style="text-align:center"><b style="font-size:40px">🎉</b><h2>今天全完成了，明天见！</h2><p class="d">复习队列见明日今日，保持手感</p><button class="btn" onclick="nav('#/home')">回首页</button></div>`;
 V.offlinet = () => `<div class="card"><h2>📚 今日任务</h2><div class="fb wa">⌁ 离线任务已保留，联网后同步</div><div class="card" style="margin:8px 0 0"><b>语法 · There ___ two books.</b><p class="d">本地草稿 · 待同步</p></div></div>`;
 V.pgen = () => `<div class="card"><h2>计划生成中…</h2><div class="prog"><i style="width:60%"></i></div><p class="d">按定级报告组装，失败给重试</p><button class="btn ghost" onclick="S.plan=true;toast('计划已生成');nav('#/home')">模拟完成 →</button></div>`;
 V.greject = () => `<div class="card empty"><b>暂不能开放学习</b><p class="d">身份未通过，可退出或联系客服</p><button class="btn sm" onclick="arm(this,function(){S.user=null;nav('#/login')})">退出</button> <button class="btn sm" onclick="nav('#/support')">联系客服</button></div>`;
 V.cupgrade = () => `<div class="card"><h2>条款更新了</h2><p class="d">看一眼再继续，一键重签</p><button class="btn" onclick="toast('已重签（演示）');goBack()">重签并继续</button></div>`;
-V.vocab = () => `<div class="card"><h2>glad <span class="meta">/ɡlæd/</span></h2><p class="d">adj. 高兴的</p><p class="d">例：We are glad to see you.</p><p class="d">缺项写“暂无”，不编发音。</p><button class="btn sm" onclick="toast('已加入复习（演示）')">加入复习</button></div>`;
-V.listening = () => `<div class="card"><h2>听力</h2><p class="d">暂无可播内容（无版权），看文本替代：</p><p>Good morning. The train leaves at nine.</p><button class="btn sm" onclick="nav('#/practice')">去练题</button></div>`;
-V.speaking = () => `<div class="card empty"><b>口语跟读</b><p class="d">录音跟读 M8 开放，先练听力打底</p><button class="btn sm" onclick="nav('#/listening')">去听力</button></div>`;
-V.writing = () => `<div class="card empty"><b>写作</b><p class="d">暂无题目（待 B3 迁正典）</p><button class="btn sm" onclick="goBack()">返回</button></div>`;
-V.offpkg = () => `<div class="card"><h2>离线包</h2><p class="d">列表可读 · 下载 404 保留：当前无可下载真实包</p><button class="btn sm" onclick="toast('下载不可用：无真实包（演示）')">下载（不可用）</button></div>`;
-V.refund = () => `<div class="card"><h2>退款 / 开票</h2><p class="d">沙盒单 TK-1 · 进度：审核中</p><button class="btn sm" onclick="toast('退款进度：审核中（演示）')">查进度</button></div>`;
+const VC = { w: "abandon", q: "", quizPick: -1 };
+function vcAll() { return WB4.map(w => ({ book: "CET4", w: w[0], ph: w[1], zh: w[2] })).concat(WB6.map(w => ({ book: "CET6", w: w[0], ph: w[1], zh: w[2] }))); }
+function vcData() { const a = vcAll(); return a.find(x => x.w === VC.w) || a[0]; }
+function vcPick(w) { VC.w = w; VC.quizPick = -1; VC.q = ""; render(); }
+function vcPrev() { const a = vcAll(); let i = a.findIndex(x => x.w === VC.w); i = (i - 1 + a.length) % a.length; VC.w = a[i].w; VC.quizPick = -1; render(); }
+function vcNext() { const a = vcAll(); let i = a.findIndex(x => x.w === VC.w); i = (i + 1) % a.length; VC.w = a[i].w; VC.quizPick = -1; render(); }
+function vclist() {
+  const q = VC.q.trim().toLowerCase();
+  if (!q) return `<p class="d">输入英文或中文搜 40 词（四级 20＋六级 20）</p>`;
+  const res = vcAll().filter(e => e.w.includes(q) || e.zh.includes(q)).slice(0, 6);
+  if (!res.length) return `<div class="card empty" style="margin:8px 0 0"><b>没搜到“${VC.q}”</b><p class="d">换个词试试，或去刷单词</p></div>`;
+  return res.map(e => `<button class="opt" onclick="vcPick('${e.w}')"><b>${e.w}</b> <span class="meta">${e.ph}</span> · ${e.zh} <span class="tag">${e.book}</span> ›</button>`).join("");
+}
+function vcQuiz(k) { VC.quizPick = k; render(); }
+function vcAdd() {
+  const d = vcData();
+  if (SRSQ.some(x => x.w === d.w && !x.done)) { toast("已在复习队列（演示）"); return; }
+  SRSQ.unshift({ w: d.w, zh: d.zh, stage: 1, show: false });
+  toast("已加入复习（演示）"); render();
+}
+function vcMark(know) {
+  const d = vcData();
+  if (know) { toast("记下了，去复习巩固（演示）"); }
+  else { if (!S.mistakes.some(m => m.t === d.w)) S.mistakes.push({ t: d.w, why: "定位：词汇待补", kind: "word" }); toast("已进错题本（演示）"); }
+  render();
+}
+function vcDrill() { const d = vcData(); DR.book = d.book === "CET4" ? "CET4" : "CET6"; const L = wlist(); const i = L.findIndex(x => x[0] === d.w); DR.i = i >= 0 ? i : 0; DR.known = 0; DR.show = false; DR.quizPick = -1; DR.quizDone = false; DR.mode = "zhan"; nav("#/drill"); }
+function vcQuizOpts() {
+  const d = vcData();
+  const pool = vcAll().filter(x => x.w !== d.w && x.book === d.book).slice(0, 12);
+  const others = [pool[(d.w.length) % pool.length], pool[(d.w.length + 4) % pool.length], pool[(d.w.length + 8) % pool.length]];
+  const opts = others.map(o => ({ w: o.w, zh: o.zh, ok: false })).concat([{ w: d.w, zh: d.zh, ok: true }]);
+  const h = d.w.length * 3 + d.zh.length;
+  for (let k = opts.length - 1; k > 0; k--) { const j = (h + k * 5) % (k + 1); const t = opts[k]; opts[k] = opts[j]; opts[j] = t; }
+  return { d, opts };
+}
+V.vocab = () => {
+  const d = vcData();
+  const f = famOf(d.w);
+  const parts = wsplit(d.w);
+  const lk = d.w.toLowerCase();
+  const lex = (typeof LEX !== "undefined" && LEX[lk]) ? LEX[lk] : null;
+  const inSrs = SRSQ.find(x => x.w === d.w && !x.done);
+  const idx = vcAll().findIndex(x => x.w === d.w);
+  const qo = vcQuizOpts();
+  return `<div class="card"><p class="d">${d.book} · 第 ${idx + 1}/40 · ${wpic(d.w)} ${inSrs ? "· 已在复习 stage " + inSrs.stage : ""}</p><div style="text-align:center;padding:8px 0"><b style="font-size:36px">${d.w}</b><p class="d">${d.ph} <button class="btn sm" onclick="speak('${d.w}')">🔊 读</button></p><p style="font-size:20px"><b>${d.zh}</b></p></div><p style="display:flex;gap:8px"><button class="btn sm ghost" style="flex:1" onclick="vcPrev()">← 上一词</button><button class="btn sm ghost" style="flex:1" onclick="vcNext()">下一词 →</button></p></div><div class="card"><h2>🔍 找词</h2><input id="vcq" placeholder="英文 / 中文，如 abandon / 抛弃" value="${VC.q.replace(/"/g, "")}" oninput="VC.q=this.value;document.getElementById('vclist').innerHTML=vclist()"><div id="vclist">${vclist()}</div></div><div class="card"><h2>🔀 拆开记</h2><p style="font-size:22px">${parts.join(" + ")}</p><p class="d">形和音对应着记（演示拆分，非权威词源）。</p>${lex ? `<p class="d">搭配：${lex.coll}</p><p class="d">例：${lex.ex}</p>` : `<p class="d">搭配：暂无，先记例句 👇</p>`}</div><div class="card"><h2>🔤 变形全家</h2><p>${f.infl.map(x => `<span class="tag">${x}</span>`).join("")}</p></div><div class="card"><h2>🧩 组句（点 🔊 跟读）</h2>${f.sent.map((s, k) => `<p class="d">${k + 1}. ${s} <button class="btn sm" onclick="speak('${s.replace(/'/g, "")}')">🔊</button></p>`).join("")}</div><div class="card"><h2>😎 俚语</h2><p>${f.slang}</p><h2 style="margin-top:10px">📜 由来</h2><p class="d">${f.story}</p></div><div class="card"><h2>✅ 自测：中文 → 英文</h2><p class="d">“${d.zh}”是哪个？</p>${qo.opts.map((o, k) => `<button class="opt${VC.quizPick === k ? " sel" : ""}" onclick="vcQuiz(${k})">${wpic(o.w)} ${o.w}</button>`).join("")}${VC.quizPick >= 0 ? (qo.opts[VC.quizPick].ok ? `<div class="fb ok">✓ 对了</div>` : `<div class="fb no">! 选错了：${d.w} 拆开是 ${parts.join(" + ")}，跟读三遍 <button class="btn sm" onclick="speak('${d.w}')">🔊</button></div>`) : ``}</div><div class="card"><h2>📌 行动</h2><p><button class="btn sm" onclick="vcAdd()">${inSrs ? "已在复习 ✓" : "加入复习"}</button> <button class="btn sm ghost" onclick="vcMark(true)">会了 ✓</button> <button class="btn sm ghost" onclick="vcMark(false)">不会，进错题</button></p><p><button class="btn sm ghost" onclick="vcDrill()">去刷这本 →</button> <button class="btn sm ghost" onclick="nav('#/srs')">去复习 →</button> <button class="btn sm ghost" onclick="nav('#/mistakes')">错题本 →</button></p><p class="d">缺项写“暂无”，不编发音；演示状态不代表服务端已落库。</p></div>`;
+};
+const LSM = {
+  cur: 0, rate: 1, showSub: true, loop: false, playing: false, quizPick: -1, done: 0, mix: 0,
+  hist: [],
+  mats: [
+    { title: "问候", lv: "A0", en: "Good morning. How are you? See you tomorrow.", zh: "早上好。你好吗？明天见。", mix: "Good morning. 你好吗？See you tomorrow.", q: { s: "早上打招呼说了什么？", o: ["Good morning", "Good night", "Goodbye"], a: 0 }, q2: { s: "播客里“明天见”怎么说？", o: ["See you tomorrow", "Good night", "Bye bye"], a: 0 } },
+    { title: "火车站", lv: "A1", en: "Good morning. The train leaves at nine. Please be on time.", zh: "早上好。火车九点开。请准时。", mix: "Good morning. 火车 nine 点开。Please be on time.", q: { s: "火车几点开？", o: ["eight", "nine", "ten"], a: 1 }, q2: { s: "播客提醒你要什么？", o: ["hurry", "be on time", "run"], a: 1 } },
+    { title: "机场", lv: "B1", en: "Where is the exit? Please check in early. Keep your boarding pass.", zh: "出口在哪？请提前值机。登机牌拿好。", mix: "Where is the exit? 请提前 check in. Keep your boarding pass.", q: { s: "机场提醒你拿好什么？", o: ["passport", "boarding pass", "ticket"], a: 1 }, q2: { s: "播客里“出口”怎么说？", o: ["exit", "enter", "exist"], a: 0 } },
+  ],
+};
+function lsel(i) { try { speechSynthesis.cancel(); } catch (e) { } LSM.cur = i; LSM.playing = false; LSM.quizPick = -1; LSM.quizPick2 = -1; render(); }
+function lrate(r) { LSM.rate = r; toast("语速 " + r + "x（演示）"); render(); }
+function lsub() { LSM.showSub = !LSM.showSub; render(); }
+function lloop() { LSM.loop = !LSM.loop; toast(LSM.loop ? "单句循环开（演示）" : "单句循环关"); render(); }
+function lplay() {
+  const m = LSM.mats[LSM.cur];
+  const txt = LSM.mix === 1 ? m.mix : m.en;
+  try {
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(txt);
+    u.lang = LSM.mix === 1 ? "zh-CN" : "en-US"; u.rate = LSM.rate;
+    LSM.playing = true; render();
+    u.onend = () => {
+      if (LSM.loop) { lplay(); return; }
+      LSM.playing = false;
+      if (!LSM.hist.includes(m.title)) { LSM.hist.push(m.title); LSM.done++; }
+      render(); toast("播完了（演示 TTS，非版权真音）");
+    };
+    u.onerror = () => { LSM.playing = false; render(); };
+    speechSynthesis.speak(u);
+  } catch (e) { toast("朗读不可用（演示）"); }
+}
+function lstop() { try { speechSynthesis.cancel(); } catch (e) { } LSM.playing = false; render(); }
+function ldictCheck() {
+  const v = (document.getElementById("ldict").value || "").trim().toLowerCase().replace(/[.,?!]/g, "");
+  const m = LSM.mats[LSM.cur];
+  const key = m.en.toLowerCase().replace(/[.,?!]/g, "");
+  const f = document.getElementById("ldictfb");
+  const words = v.split(/\s+/).filter(Boolean).length, total = key.split(/\s+/).length;
+  const hit = v && (key.includes(v) || v.split(/\s+/).filter(w => key.includes(w)).length >= Math.max(2, Math.floor(total / 2)));
+  f.textContent = !v ? "先在上面播一遍，凭听写一句（演示，不判真分）" : hit ? "✓ 对上 " + words + "/" + total + " 词，意思对了" : "! 差一点，对照字幕再听一遍";
+  f.className = "fb " + (!v ? "wa" : hit ? "ok" : "no");
+}
+function lquizPick(k) { LSM.quizPick = k; render(); }
+V.listening = () => {
+  const m = LSM.mats[LSM.cur];
+  const q = m.q;
+  return `<div class="card"><h2>🎧 听力 · 播客</h2><p class="d">演示 TTS 朗读，非版权真音；真音与 0.5x–2.0x 保音高待接，不承诺时间。</p><p class="d">材料：${LSM.mats.map((x, i) => `<button class="btn sm${LSM.cur === i ? "" : " ghost"}" onclick="lsel(${i})">${x.lv} ${x.title}</button>`).join(" ")}</p><p class="d">播客档：<button class="btn sm${LSM.mix === 0 ? "" : " ghost"}" onclick="LSM.mix=0;render()">全英文</button> <button class="btn sm${LSM.mix === 1 ? "" : " ghost"}" onclick="LSM.mix=1;render()">中英混播</button> · 已听完 ${LSM.done} 篇${LSM.hist.length ? "（" + LSM.hist.join("、") + "）" : ""}</p></div><div class="card"><b>${m.lv} · ${m.title}${LSM.mix === 1 ? " · 混播" : ""}</b>${LSM.showSub ? `<p style="font-size:17px">${LSM.mix === 1 ? m.mix : m.en}</p><p class="d">${m.zh}</p>` : `<p class="d">字幕已藏，先盲听一遍再打开</p>`}<p><button class="btn sm" onclick="lsub()">${LSM.showSub ? "藏字幕" : "看字幕"}</button> <button class="btn sm${LSM.loop ? "" : " ghost"}" onclick="lloop()">🔁 循环</button></p><p class="d">语速：${[0.5, 0.75, 1, 1.25, 1.5, 2].map(r => `<button class="btn sm${LSM.rate === r ? "" : " ghost"}" onclick="lrate(${r})">${r}x</button>`).join(" ")}</p>${LSM.playing ? `<button class="btn" onclick="lstop()">⏸ 停止</button><p class="d">▶ 播放中 ${LSM.rate}x${LSM.loop ? " · 循环" : ""}（演示）</p>` : `<button class="btn" onclick="lplay()">🔊 播放</button>`}</div><div class="card"><h2>✍️ 听写一句</h2><p class="d">播完凭印象写，不看字幕；只对意思，不判真分。</p><input id="ldict" placeholder="Type what you hear" oninput="LSM.dict=this.value"><div class="fb wa" id="ldictfb" style="display:block">先播一遍再写 👆</div><button class="btn sm" onclick="ldictCheck()">核对</button></div><div class="card"><h2>❓ 听后两题</h2><p class="d">${q.s}</p>${q.o.map((t, k) => `<button class="opt${LSM.quizPick === k ? " sel" : ""}" onclick="lquizPick(${k})">${"ABC"[k]}. ${t}</button>`).join("")}${LSM.quizPick >= 0 ? (LSM.quizPick === q.a ? `<div class="fb ok">✓ 对了</div>` : `<div class="fb no">! 再听一遍，答案在音频里</div>`) : ``}<p class="d" style="margin-top:10px">${m.q2.s}</p>${m.q2.o.map((t, k) => `<button class="opt${LSM.quizPick2 === k ? " sel" : ""}" onclick="LSM.quizPick2=${k};render()">${"ABC"[k]}. ${t}</button>`).join("")}${LSM.quizPick2 >= 0 ? (LSM.quizPick2 === m.q2.a ? `<div class="fb ok">✓ 对了</div>` : `<div class="fb no">! 再听一遍</div>`) : ``}</div><div class="card"><button class="opt" onclick="nav('#/practice')">去练题 ›</button><button class="opt" onclick="nav('#/voice')">去跟读 ›</button></div>`;
+};
+V.speaking = () => `<div class="card"><h2>🎙️ 口语</h2><p class="d">跟读 / 口头翻译 / 对话 / 角色扮演四题型（演示；真评测走服务端，不承诺时间）。</p><p>${[["跟读", "跟读"], ["口头翻译", "口头翻译"], ["对话", "对话"], ["角色扮演", "角色扮演"]].map(([t, s]) => `<button class="btn sm" onclick="VOI.scene='${s}';VOI.rec=false;nav('#/voice')">${t} →</button>`).join(" ")}</p><p class="d">Video Call / Roleplay 真链（P2 门）：门未开先练上面的演示场景。</p><p><button class="btn sm ghost" onclick="toast('Video Call 未开：P2 门（演示）')">Video Call（未开）</button> <button class="btn sm ghost" onclick="VOI.scene='角色扮演';nav('#/voice')">Roleplay 演示 →</button></p></div><div class="card"><p><button class="btn sm ghost" onclick="nav('#/listening')">先去听力打底 →</button> <button class="btn sm ghost" onclick="goBack()">返回</button></p></div>`;
+V.writing = () => `<div class="card empty"><b>✍️ 写作</b><p class="d">暂无可写题目</p><p class="d">题目还在准备（需版权与审核），提交与反馈链也没接好；现在放空白编辑器写了也存不下来，所以没放。</p><p><button class="btn sm" onclick="nav('#/practice')">去练题 →</button> <button class="btn sm ghost" onclick="nav('#/mistakes')">去错题本 →</button></p><p><button class="btn sm ghost" onclick="goBack()">返回</button></p></div><div class="card"><p class="d">将来开了是什么样：审题 → 写作 → 提交 → 规则反馈（演示说明，不承诺时间）。</p></div>`;
+const OP_PKGS = [
+  { id: "p1", t: "四级词汇包", ver: "v3（演示结构）", size: "—", scope: "四级核心词 + 例句", st: "未开放下载", note: "完整离线未准入（R3），当前请在线学。" },
+  { id: "p2", t: "零基础包", ver: "v1（演示结构）", size: "—", scope: "字母 + 音标 + 短句", st: "未开放下载", note: "完整离线未准入（R3），当前请在线学。" },
+  { id: "p3", t: "六级阅读包", ver: "v2（演示结构）", size: "—", scope: "长难句 + 精读", st: "未开放下载", note: "完整离线未准入（R3），当前请在线学。" },
+];
+V.offpkg = () => `<div class="card"><h2>离线包</h2><p class="d">列表可读：版本 / 大小 / 内容范围 / 状态可见。完整离线未准入前不开放下载，不保留可点的必败下载。</p><p class="d">装了 PWA ≠ 离线可学；断网时今日进度处理另见说明。</p><button class="btn sm ghost" onclick="nav('#/offlinet')">断网时怎么办 →</button></div>` + OP_PKGS.map(p => `<div class="card"><b>${p.t}</b> <span class="tag">${p.st}</span><p class="d">版本：${p.ver} · 大小：${p.size}</p><p class="d">范围：${p.scope}</p><p class="d">${p.note}</p><button class="btn sm" onclick="nav('#/shelf')">去书架在线学 →</button></div>`).join("") + `<div class="card"><p class="d">结构为演示占位，非真实可下载字节；大小“—”表示未定，不虚构 MB 数。</p></div>`;
+const RF = { cur: null };
+const RF_ORDERS = [
+  { id: "tk1", t: "月度会员", price: 19, pay: "已支付（沙盒）", right: "有效", rf: "L1 已过·等 L2", step: 1, inv: "未申请" },
+  { id: "tk2", t: "四级冲刺包", price: 49, pay: "已支付（沙盒）", right: "有效", rf: "无", step: -1, inv: "电子收据可看" },
+  { id: "tk3", t: "年度会员", price: 108, pay: "已退款（沙盒）", right: "已按政策撤销（演示）", rf: "已到账（沙盒）", step: 4, inv: "商店收据可看·本地发票待渠道确认" },
+];
+const RF_STEPS = ["已申请", "L1 通过", "L2 通过", "渠道处理中", "已到账（沙盒）"];
+function rfApply(id) { const o = RF_ORDERS.find(x => x.id === id); if (!o || o.rf !== "无") { toast("该单已有退款进度（演示）"); return; } o.rf = "已申请·等 L1"; o.step = 0; toast("退款申请已提交（演示）"); render(); }
+function rfInv(id, kind) { const o = RF_ORDERS.find(x => x.id === id); if (!o) return; o.inv = kind + "申请中（演示）"; toast(kind + "申请已提交（演示）"); render(); }
+V.refund = () => {
+  const o = RF_ORDERS.find(x => x.id === RF.cur);
+  if (o) return `<div class="card"><button class="btn sm ghost" onclick="RF.cur=null;render()">← 退款/开票</button><h2>${o.t} · ¥${o.price}</h2><p class="d">资金：${o.pay} · 权益：${o.right}</p>${o.step >= 0 ? `<p class="d">退款：${RF_STEPS.map((s, i) => `<span class="tag"${i === o.step ? ` style="border-color:var(--brand);color:var(--brand)"` : ""}>${i <= o.step ? "● " : ""}${s}</span>`).join(" ")}</p><p class="d">当前：${o.rf} · 双人审批保留，单人运营方案待定，不虚构第二审批人。</p>` : `<p class="d">退款：无 · 取消续订≠退款，只停下次扣费，当前权益保留到到期。</p>`}<p><button class="btn sm" onclick="arm(this,function(){rfApply('${o.id}')})">申请退款</button> <button class="btn sm ghost" onclick="toast('取消续订：下次不再扣费，当前权益保留到到期（演示）')">取消续订</button></p></div><div class="card"><h2>🧾 开票</h2><p class="d">当前：${o.inv}</p><p class="d">能开何种票据按渠道确定；商店收据不直接当本地发票（待确认）。</p><button class="btn sm" onclick="rfInv('${o.id}','电子收据')">申请电子收据</button> <button class="btn sm ghost" onclick="rfInv('${o.id}','本地发票')">申请本地发票</button></div><div class="card"><p class="d">到账与权益变化分开：受理≠已到账；退款完成前权益保持有效，完成后按政策撤销（演示）。</p></div>`;
+  return `<div class="card"><h2>退款 / 开票</h2><p class="d">沙盒演示，不扣真款不发真权益；受理≠已到账。</p></div>` + RF_ORDERS.map(x => `<div class="card"><b>${x.t}</b> <span class="tag">¥${x.price}</span><p class="d">资金：${x.pay} · 权益：${x.right}</p><p class="d">退款：${x.rf} · 开票：${x.inv}</p><button class="btn sm" onclick="RF.cur='${x.id}';render()">查看进度 →</button></div>`).join("") + `<div class="card"><p class="d">取消续订≠退款；退款双人审批保留；票据种类按渠道确定（待确认，不虚构）。</p></div>`;
+};
 const VOWELS = [["iː", "sheep"], ["ɪ", "ship"], ["e", "bed"], ["æ", "cat"], ["ɑː", "car"], ["ɒ", "hot"], ["ɔː", "door"], ["ʊ", "book"], ["uː", "food"], ["ʌ", "cup"], ["ɜː", "bird"], ["ə", "about"], ["eɪ", "day"], ["aɪ", "my"], ["ɔɪ", "boy"], ["əʊ", "go"], ["aʊ", "how"], ["ɪə", "here"], ["eə", "there"], ["ʊə", "tour"]];
 const CONSS = [["p", "pen"], ["b", "book"], ["t", "tea"], ["d", "dog"], ["k", "key"], ["g", "go"], ["f", "fish"], ["v", "van"], ["θ", "think"], ["ð", "this"], ["s", "sun"], ["z", "zoo"], ["ʃ", "ship"], ["ʒ", "vision"], ["h", "hat"], ["m", "man"], ["n", "no"], ["ŋ", "sing"], ["l", "look"], ["r", "red"], ["j", "yes"], ["w", "we"], ["tʃ", "chair"], ["dʒ", "jump"], ["tr", "tree"], ["dr", "dog"], ["ts", "cats"], ["dz", "beds"]];
 const PHQ = [["sip", "zip"], ["ship", "sheep"], ["cat", "cut"], ["pen", "pan"]];
@@ -331,6 +593,12 @@ function wset(book) { DR.book = book; DR.i = 0; DR.known = 0; DR.show = false; D
 function wlist() { return DR.book === "CET4" ? WB4 : WB6; }
 function dreveal() { DR.show = true; render(); }
 function dzhan(know) { if (know) DR.known++; DR.i++; DR.show = false; DR.quizPick = -1; DR.quizDone = false; if (DR.i >= wlist().length) { toast(`本轮完：斩 ${DR.known}/${wlist().length}`); nav("#/wordbook"); } else render(); }
+function drDetail() { const L = wlist(); const w = L[Math.min(DR.i, L.length - 1)][0]; VC.w = w; VC.quizPick = -1; VC.q = ""; nav("#/vocab"); }
+const TCH = { on: false, sec: 60, right: 0, wrong: 0, timer: 0, list: [], best: null };
+function tchStart() { const L = wlist(); const pool = L.map((x, i) => i); for (let k = pool.length - 1; k > 0; k--) { const j = (DR.i + k * 3) % (k + 1); const t = pool[k]; pool[k] = pool[j]; pool[j] = t; } TCH.list = pool.slice(0, Math.min(10, pool.length)); TCH.on = true; TCH.sec = 60; TCH.right = 0; TCH.wrong = 0; TCH.pos = 0; TCH.pick = -1; clearInterval(TCH.timer); TCH.timer = setInterval(() => { TCH.sec--; if (TCH.sec <= 0) tchFinish(); else { const el = document.getElementById("tchsec"); if (el) el.textContent = TCH.sec; } }, 1000); render(); }
+function tchOpts() { const L = wlist(); const idx = TCH.list[Math.min(TCH.pos, TCH.list.length - 1)]; const w = L[idx]; const others = L.filter((_, j) => j !== idx).slice(0, 12); const o = [others[(idx + 1) % others.length], others[(idx + 5) % others.length], others[(idx + 9) % others.length]].map(x => ({ zh: x[2], ok: false })).concat([{ zh: w[2], ok: true }]); const h = idx * 5 + TCH.pos; for (let k = o.length - 1; k > 0; k--) { const j = (h + k * 3) % (k + 1); const t = o[k]; o[k] = o[j]; o[j] = t; } return { w, o }; }
+function tchPick(k) { if (!TCH.on) return; TCH.pick = k; const { w, o } = tchOpts(); if (o[k].ok) TCH.right++; else { TCH.wrong++; if (!S.mistakes.some(m => m.t === w[0])) S.mistakes.push({ t: w[0], why: "定位：词汇待补", kind: "word" }); } TCH.pos++; TCH.pick = -1; if (TCH.pos >= TCH.list.length) tchFinish(); else render(); }
+function tchFinish() { if (!TCH.on) return; clearInterval(TCH.timer); TCH.on = false; const score = TCH.right * 10 - TCH.wrong * 2; if (!TCH.best || score > TCH.best.score) TCH.best = { score, right: TCH.right, wrong: TCH.wrong }; render(); toast("限时结束：对 " + TCH.right + " / 错 " + TCH.wrong + "（演示，不上榜）"); }
 const PIC = { abandon: "🗑️", ability: "💪", absent: "🏫", absolute: "💯", absorb: "🧽", abstract: "🎨", abundant: "🌾", abuse: "🚫", academy: "🏛️", accelerate: "🚀", accent: "🗣️", accept: "🤝", access: "🔑", accommodate: "🏠", accompany: "👥", accomplish: "🏆", account: "👤", accumulate: "📚", accuracy: "🎯", accuse: "⚖️", abolish: "🔨", absurd: "🤪", abundance: "🌾", acclaim: "👏", acquaint: "🤝", adhere: "🧲", adjacent: "🏘️", adjoin: "🧱", administer: "💼", admirable: "⭐", admission: "🎫", adolescent: "🧑", adore: "❤️", adorn: "💎", adverse: "⛈️", advertise: "📢", advocate: "📣", aesthetic: "🌸", affiliate: "🔗", affirm: "✅" };
 function wpic(w) { return PIC[w] || "🔤"; }
 function wsplit(w) { const m = w.match(/^(.{2,4})(.+?)(ing|ed|tion|sion|ance|ence|ment|ness|ly|ous|ive|al|er|or|ist)?$/); if (!m) return [w]; return [m[1], m[2], m[3] || ""].filter(Boolean); }
@@ -338,7 +606,13 @@ function wquiz() { const L = wlist(), idx = Math.min(DR.i, L.length - 1), w = L[
 function qpick(k) { DR.quizPick = k; render(); }
 V.drill = () => {
   const L = wlist();
-  const tabs = `<p class="d">模式：<button class="btn sm${DR.mode === "zhan" ? "" : " ghost"}" onclick="DR.mode='zhan';DR.show=false;render()">斩词</button> <button class="btn sm${DR.mode === "quiz" ? "" : " ghost"}" onclick="DR.mode='quiz';DR.quizPick=-1;DR.quizDone=false;render()">选项</button> <button class="btn sm${DR.mode === "fam" ? "" : " ghost"}" onclick="DR.mode='fam';render()">高效</button></p>`;
+  const tabs = `<p class="d">模式：<button class="btn sm${DR.mode === "zhan" ? "" : " ghost"}" onclick="DR.mode='zhan';DR.show=false;render()">斩词</button> <button class="btn sm${DR.mode === "quiz" ? "" : " ghost"}" onclick="DR.mode='quiz';DR.quizPick=-1;DR.quizDone=false;render()">选项</button> <button class="btn sm${DR.mode === "fam" ? "" : " ghost"}" onclick="DR.mode='fam';render()">高效</button> <button class="btn sm${DR.mode === "time" ? "" : " ghost"}" onclick="DR.mode='time';render()">⏱️ 限时</button> <button class="btn sm ghost" onclick="drDetail()">看详情 →</button></p>`;
+  if (DR.mode === "time") {
+    if (!TCH.on && !TCH.best && TCH.right === 0 && TCH.wrong === 0) return `<div class="meta">${DR.book === "CET4" ? "四级" : "六级"} · 限时 60 秒 · 对+10/错-2 · 错进错题（演示，不上榜）</div>${tabs}<div class="card empty"><b>⏱️ 限时挑战</b><p class="d">60 秒能对几个？错的自动进错题本</p><button class="btn" onclick="tchStart()">开始 →</button></div>`;
+    if (!TCH.on && (TCH.right > 0 || TCH.wrong > 0 || TCH.best)) { const b = TCH.best; return `<div class="meta">${DR.book === "CET4" ? "四级" : "六级"} · 限时结算（演示）</div>${tabs}<div class="card" style="text-align:center"><b style="font-size:40px">${TCH.right * 10 - TCH.wrong * 2}</b><p class="d">对 ${TCH.right} · 错 ${TCH.wrong} · 错题已进本</p>${b ? `<p class="d">个人最佳：${b.score}（对 ${b.right}/错 ${b.wrong}）</p>` : ``}<button class="btn" onclick="tchStart()">再来一轮 →</button> <button class="btn ghost" onclick="nav('#/mistakes')">看错题 →</button></div>`; }
+    const { w, o } = tchOpts();
+    return `<div class="meta">${DR.book === "CET4" ? "四级" : "六级"} · 剩 <b id="tchsec">${TCH.sec}</b>s · 对 ${TCH.right} 错 ${TCH.wrong} · 第 ${Math.min(TCH.pos + 1, TCH.list.length)}/${TCH.list.length}</div>${tabs}<div class="card" style="text-align:center"><b style="font-size:34px">${w[0]}</b><p class="d">${w[1]}</p></div>` + o.map((x, k) => `<button class="opt" onclick="tchPick(${k})">${wpic(w[0])} ${x.zh}</button>`).join("");
+  }
   if (DR.mode === "fam") {
     const L = wlist(), w = L[Math.min(DR.i, L.length - 1)], f = famOf(w[0]);
     return `<div class="meta">${DR.book === "CET4" ? "四级" : "六级"} · 第 ${Math.min(DR.i + 1, L.length)}/${L.length} · 高效学一词顶十词</div>${tabs}<div class="card"><b style="font-size:32px">${w[0]}</b> <span class="meta">${w[1]}</span> <button class="btn sm" onclick="speak('${w[0]}')">🔊</button><p style="font-size:20px"><b>${w[2]}</b></p></div><div class="card"><h2>🔀 变形全家</h2>${f.infl.map(x => `<span class="tag">${x}</span>`).join("")}</div><div class="card"><h2>🧩 组句</h2>${f.sent.map((s, k) => `<p class="d">${k + 1}. ${s} <button class="btn sm" onclick="speak('${s.replace(/'/g, "")}')">🔊</button></p>`).join("")}</div><div class="card"><h2>😎 俚语</h2><p>${f.slang}</p></div><div class="card"><h2>📜 由来</h2><p class="d">${f.story}</p></div><button class="btn" onclick="dzhan(true)">学会了，下一词 →</button> <button class="btn ghost" onclick="dzhan(false)">先收着 →</button>`;
@@ -371,7 +645,9 @@ const PHG = [
 ];
 const PHO = { open: 0 };
 V.phonics = () => `<div class="card" style="background:#fbfaff"><h2>🔤 音标</h2><p class="d">点符号听发音，分组慢慢来</p>${PHG.map((g, i) => `<div class="card" style="margin:10px 0;background:#fff"><button class="opt" onclick="PHO.open=${i};render()"><b>${g.t}</b> ${PHO.open === i ? "▾" : "▸"}</button>${PHO.open === i ? `<div style="margin-top:10px">${g.items.map(([s, w]) => `<button class="btn sm" style="margin:4px;padding:12px 14px" onclick="speak('${w}')">${s}<br><span class="meta">${w}</span></button>`).join(" ")}</div>` : ``}</div>`).join("")}</div><div class="card" style="background:#fbfaff"><h2>👂 最小对立对辨音</h2>${PHQ.map(([a, b]) => `<p class="d"><button class="btn sm" onclick="speak('${a}')">${a} 🔊</button> <button class="btn sm" onclick="speak('${b}')">${b} 🔊</button></p>`).join("")}<p class="d">听两遍，凭感觉选（演示不判分）</p></div>`;
-V.alphabet = () => `<div class="card"><h2>🔠 字母 · 26</h2><p class="d">点字母听发音，看大小写和例词</p>${ABC.map(c => `<button class="btn sm" onclick="speak('${c}');document.getElementById('alD').innerHTML='<b>${c} ${c.toLowerCase()}</b> · 例：${c === 'A' ? 'apple 苹果' : c === 'B' ? 'book 书' : c === 'C' ? 'cat 猫' : '…'}'">${c}</button>`).join(" ")}</div><div class="card" id="alD"><p class="d">点上面任意字母 👆</p></div><div class="card"><h2>🔗 自然拼读</h2><p class="d">c-a-t → cat（演示：点听整词）</p><button class="btn sm" onclick="speak('cat')">🔊 cat</button> <button class="btn sm" onclick="speak('dog')">🔊 dog</button> <button class="btn sm" onclick="toast('更多拼读课待补充（演示）')">更多 →</button></div>`;
+V.alphabet = () => `<div class="card"><h2>🔠 字母 · 26</h2><p class="d">点字母听发音，看大小写和例词；例词待补的不编，先标出来</p>${ABC.map(c => `<button class="btn sm" onclick="alPick('${c}')">${c}</button>`).join(" ")}</div><div class="card" id="alD"><p class="d">点上面任意字母 👆</p></div><div class="card"><h2>🔗 自然拼读</h2><p class="d">c-a-t → cat（演示：点听整词）</p><button class="btn sm" onclick="speak('cat')">🔊 cat</button> <button class="btn sm" onclick="speak('dog')">🔊 dog</button> <button class="btn sm" onclick="toast('更多拼读课待补充（演示）')">更多 →</button></div>`;
+const AL_EX = { A: "apple 苹果", B: "book 书", C: "cat 猫", D: "dog 狗", E: "egg 鸡蛋", F: "fish 鱼", G: "go 去", H: "hat 帽子", I: "ice 冰", J: "jump 跳", K: "key 钥匙", L: "look 看", M: "man 男人", N: "no 不", O: "open 打开", P: "pen 钢笔", Q: "queen 王后", R: "red 红色", S: "sun 太阳", T: "tea 茶", U: "up 向上", V: "van 厢车", W: "we 我们", X: "box 盒子", Y: "yes 是", Z: "zoo 动物园" };
+function alPick(c) { speak(c); const el = document.getElementById("alD"); if (el) el.innerHTML = '<b>' + c + ' ' + c.toLowerCase() + '</b> · 例：' + (AL_EX[c] || '待补'); }
 
 /* ---------- 动作 ---------- */
 function doLogin() { S.user = document.getElementById("li").value || "t-learner-01@test.invalid"; S.gate = S.gate === "NONE" ? "PENDING" : S.gate; toast("登录成功"); nav(S.gate === "PASS" ? "#/home" : "#/gate"); }
@@ -385,8 +661,32 @@ function qNext() { if (S.quiz.i < BANK.length - 1) { S.quiz.i++; render(); } els
 let PSEL = null;
 const A = { l1: false, l2: false };
 function paintRev() { const el = document.getElementById("revst"); if (el) el.textContent = (A.l1 ? "L1 已过" : "L1 待审") + " · " + (A.l2 ? "L2 已过/ACTIVE" : "L2 待审"); }
-const AX = { c: false, f: 0, m: true };
-function a11y(k) { if (k === "contrast") { AX.c = !AX.c; document.body.style.filter = AX.c ? "contrast(1.4)" : ""; document.getElementById("a11yc").textContent = AX.c ? "开" : "关"; } if (k === "font") { AX.f = (AX.f + 1) % 3; const z = [15, 17, 19][AX.f]; document.body.style.fontSize = z + "px"; document.getElementById("a11yf").textContent = ["标准", "大", "特大"][AX.f]; } if (k === "motion") { AX.m = !AX.m; document.getElementById("a11ym").textContent = AX.m ? "开" : "关"; toast(AX.m ? "动效已开" : "动效已关（演示）"); } }
+const AX = { c: false, f: 0, m: true, fo: false, v: false };
+function a11yApply() {
+  document.body.style.filter = AX.c ? "contrast(1.4)" : "";
+  document.body.style.fontSize = [15, 17, 19][AX.f] + "px";
+  const st = document.getElementById("a11y-focus-style");
+  if (AX.fo && !st) { document.head.insertAdjacentHTML("beforeend", '<style id="a11y-focus-style">button:focus,.opt:focus,input:focus,select:focus,a:focus{outline:3px solid #5b2fd6 !important;outline-offset:2px}</style>'); }
+  if (!AX.fo && st) st.remove();
+  ["a11yc", "a11yf", "a11ym", "a11yfo", "a11yv"].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (id === "a11yc") el.textContent = AX.c ? "开" : "关";
+    if (id === "a11yf") el.textContent = ["标准", "大", "特大"][AX.f];
+    if (id === "a11ym") el.textContent = AX.m ? "开" : "关";
+    if (id === "a11yfo") el.textContent = AX.fo ? "强" : "默认";
+    if (id === "a11yv") el.textContent = AX.v ? "开" : "关";
+  });
+}
+function a11y(k) {
+  if (k === "contrast") { AX.c = !AX.c; toast(AX.c ? "高对比已开（演示）" : "高对比已关"); }
+  if (k === "font") { AX.f = (AX.f + 1) % 3; toast("字体：" + ["标准", "大", "特大"][AX.f] + "（演示）"); }
+  if (k === "motion") { AX.m = !AX.m; toast(AX.m ? "动效已开" : "动效已关：保存/完成/出错仍有文字条，不靠动画（演示）"); }
+  if (k === "focus") { AX.fo = !AX.fo; toast(AX.fo ? "焦点框已加强（演示）" : "焦点框恢复默认"); }
+  if (k === "voice") { AX.v = !AX.v; if (!AX.v) { try { speechSynthesis.cancel(); } catch (e) { } } toast(AX.v ? "朗读已开，点“播报这段”试（演示）" : "朗读已关"); }
+  a11yApply();
+}
+function a11yReset() { AX.c = false; AX.f = 0; AX.m = true; AX.fo = false; AX.v = false; try { speechSynthesis.cancel(); } catch (e) { } a11yApply(); toast("已恢复默认（演示）"); render(); }
 function ppick(k, el) { PSEL = k; document.querySelectorAll("#po .opt").forEach((x, j) => x.classList.toggle("sel", j === k)); }
 function psubmit() { if (PSEL == null) { toast("先选一个"); return; } const f = document.getElementById("pfb"), ok = PSEL === 1; if (!ok) S.mistakes.push({ t: "There ___ two books on the desk.", why: "定位：语法待补", kind: "sentence" }); f.textContent = ok ? "✓ FULL：主语复数用 are" : "! ZERO：已进错题本"; f.className = "fb " + (ok ? "ok" : "no"); }
 function sres(v) { document.getElementById("sr").innerHTML = v ? `<button class="opt" onclick="nav('#/courses')">📖 ${v}相关课程 ›</button><button class="opt" onclick="toast('帮助：重置密码走我的→设置')">❓ ${v}相关帮助 ›</button>` : ""; }

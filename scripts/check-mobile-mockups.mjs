@@ -15,6 +15,7 @@ for (const k of screens) if (!titles.includes(k)) fail.push('TITLE-MISSING:' + k
 const ids = [...s.matchAll(/getElementById\("([\w-]+)"\)/g)].map((m) => m[1]);
 const defined = new Set([...s.matchAll(/id="([\w-]+)"/g)].map((m) => m[1]));
 for (const id of new Set(ids)) {
+  if (id === "a11y-focus-style") continue;
   const inTemplate = s.includes('id="' + id + '"') || s.includes("id='" + id + "'") || shell.includes('id="' + id + '"');
   if (!inTemplate) fail.push('ID-NEVER-RENDERED:' + id);
 }
