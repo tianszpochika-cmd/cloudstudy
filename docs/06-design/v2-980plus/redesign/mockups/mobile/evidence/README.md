@@ -1,8 +1,20 @@
 # 移动端静态交互原型证据索引
 
-更新时间：2026-09-30。原型使用静态演示数据；本目录归档批次证据，不能据文件数、截图数或机器零发现宣布完整业务通过。
+更新时间：2026-10-01。原型使用静态演示数据；本目录归档批次证据，不能据文件数、截图数或机器零发现宣布完整业务通过。
 
 ## 最新修整
+
+### 六类学习能力与产品评审修正
+
+[本轮证据索引](learning-upgrade-20260930/README.md)归档真实界面点击、纯模型规则检查、25 页×4 场景布局采样、高对比 12 次抽查和 15 张已目检截图。跨书续读等五项 P1 在静态原型修正，六能力实现说明见[改造记录](../../../mobile-learning-upgrade-20260930.md)。历史 R12/R14 不覆盖，也不把它们的通过数字算入本轮。
+
+### 当前产品评审
+
+[2026-09-30 产品评审](../../../mobile-product-review-20260930.md)抽样读取 20 个路由，实际完成语法/阅读两题组，复现续读、目标/预算、错题变式、自评掌握与今日回顾问题。11 张截图保存在 `product-review-20260930/`；该批保留修复前评审时点，实施后证据另列在上一节，不与历史回归或全量矩阵互换。
+
+主要证据：[变式不匹配](product-review-20260930/mistake-variant-mismatch.jpg)、[五分钟任务仍为八分钟](product-review-20260930/goal-five-minutes-unchanged-tasks.jpg)、[续读错书](product-review-20260930/resume-opens-wrong-book.jpg)、[自评记掌握](product-review-20260930/self-rating-counted-as-mastered.jpg)、[今日完成显示共零分钟](product-review-20260930/today-complete-zero-minutes.jpg)、[今日回顾进入复习](product-review-20260930/today-recap-opens-srs.jpg)、[320px 世界页](product-review-20260930/world-320-current.jpg)。
+
+### 界面修整证据
 
 | 内容 | 文件 | 范围 |
 |---|---|---|

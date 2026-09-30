@@ -1,0 +1,1481 @@
+{
+  "scope": "静态前端，真实界面点击；断言数不是旅程数",
+  "dateWindow": "2026-09-30 to 2026-10-01",
+  "assertions": [
+    {
+      "name": "刷新保留第2题和C选项",
+      "pass": true
+    },
+    {
+      "name": "回顾展示刚完成基础题组2/2",
+      "pass": true
+    },
+    {
+      "name": "浏览商务目录后继续读仍是四级第二章",
+      "pass": true
+    },
+    {
+      "name": "阅读笔记刷新后保留",
+      "pass": true
+    },
+    {
+      "name": "写作刷新保留完整草稿",
+      "pass": true
+    },
+    {
+      "name": "写作提交失败保留55词草稿",
+      "pass": true
+    },
+    {
+      "name": "写作未知状态刷新仍可查询",
+      "pass": true
+    },
+    {
+      "name": "写作规则反馈与自评可保存",
+      "pass": true
+    },
+    {
+      "name": "自评认识仍处于待验证",
+      "pass": true
+    },
+    {
+      "name": "She错误匹配三单变式",
+      "pass": true
+    },
+    {
+      "name": "尚未到期的次日验证不能提交",
+      "pass": true
+    },
+    {
+      "name": "次日通过后等待七日且反馈仍为原验证题",
+      "pass": true
+    },
+    {
+      "name": "七日到期答对后进入已验证",
+      "pass": true
+    },
+    {
+      "name": "课程筛选能展示暂无内容",
+      "pass": true
+    },
+    {
+      "name": "无匹配课程有清除筛选入口",
+      "pass": true
+    },
+    {
+      "name": "调整30分钟仍保留进行中题组选项",
+      "pass": true
+    },
+    {
+      "name": "同页选择没有页面入场动画",
+      "pass": true
+    },
+    {
+      "name": "3词任务完成并有独立结果",
+      "pass": true
+    },
+    {
+      "name": "修改后提交保留两份历史",
+      "pass": true
+    },
+    {
+      "name": "写作提交同步今日任务完成",
+      "pass": true
+    },
+    {
+      "name": "周回顾箭头在44像素按钮内居中",
+      "pass": true
+    },
+    {
+      "name": "收藏课程能通过状态筛选找到",
+      "pass": true
+    },
+    {
+      "name": "词汇搜索进入同一个单词详情",
+      "pass": true
+    },
+    {
+      "name": "低评分复习有限结束且分清词数和回忆次数",
+      "pass": true
+    },
+    {
+      "name": "重练后旧2/2与新1/2均保留",
+      "pass": true
+    },
+    {
+      "name": "阅读查词保留原句上下文",
+      "pass": true
+    },
+    {
+      "name": "收藏列表回到原章且笔记可查",
+      "pass": true
+    },
+    {
+      "name": "键盘选择后焦点留在原控件",
+      "pass": true
+    },
+    {
+      "name": "写作自评刷新后仍保持选择",
+      "pass": true
+    },
+    {
+      "name": "特大字号学习日文字保持单行",
+      "pass": true
+    }
+  ],
+  "layoutSamples": [
+    {
+      "theme": "dark",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 740,
+      "height": 740,
+      "overflow": [],
+      "route": "home",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "dark",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 740,
+      "height": 740,
+      "overflow": [],
+      "route": "today",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "dark",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 740,
+      "height": 740,
+      "overflow": [],
+      "route": "courses",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "dark",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 740,
+      "height": 740,
+      "overflow": [],
+      "route": "words",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "dark",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 740,
+      "height": 740,
+      "overflow": [],
+      "route": "reviewqueue",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "dark",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 740,
+      "overflow": [],
+      "route": "plan",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "dark",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 740,
+      "overflow": [],
+      "route": "calendar",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "dark",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 740,
+      "overflow": [],
+      "route": "recap",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "dark",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 740,
+      "overflow": [],
+      "route": "history",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "dark",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 740,
+      "overflow": [],
+      "route": "chapter",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "dark",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 740,
+      "overflow": [],
+      "route": "book",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "dark",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 740,
+      "overflow": [],
+      "route": "writing",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "dark",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 740,
+      "height": 740,
+      "overflow": [],
+      "route": "world",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "dark",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 740,
+      "height": 740,
+      "overflow": [],
+      "route": "me",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "dark",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 740,
+      "overflow": [],
+      "route": "settings",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "dark",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 740,
+      "overflow": [],
+      "route": "listening",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "dark",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 740,
+      "overflow": [],
+      "route": "speaking",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "dark",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 740,
+      "overflow": [],
+      "route": "mastery",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "dark",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 740,
+      "overflow": [],
+      "route": "result",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "dark",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 740,
+      "overflow": [],
+      "route": "mistakes",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "dark",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 740,
+      "overflow": [],
+      "route": "collections",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "dark",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 740,
+      "overflow": [],
+      "route": "onboard",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "dark",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 740,
+      "overflow": [],
+      "route": "pgen",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "dark",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 740,
+      "overflow": [],
+      "route": "firstlearn",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "dark",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 740,
+      "overflow": [],
+      "route": "drill",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "light",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 740,
+      "height": 740,
+      "overflow": [],
+      "route": "home",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "light",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 740,
+      "height": 740,
+      "overflow": [],
+      "route": "today",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "light",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 740,
+      "height": 740,
+      "overflow": [],
+      "route": "courses",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "light",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 740,
+      "height": 740,
+      "overflow": [],
+      "route": "words",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "light",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 740,
+      "height": 740,
+      "overflow": [],
+      "route": "reviewqueue",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "light",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 740,
+      "overflow": [],
+      "route": "plan",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "light",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 740,
+      "overflow": [],
+      "route": "calendar",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "light",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 740,
+      "overflow": [],
+      "route": "recap",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "light",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 740,
+      "overflow": [],
+      "route": "history",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "light",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 740,
+      "overflow": [],
+      "route": "chapter",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "light",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 740,
+      "overflow": [],
+      "route": "book",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "light",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 740,
+      "overflow": [],
+      "route": "writing",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "light",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 740,
+      "height": 740,
+      "overflow": [],
+      "route": "world",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "light",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 740,
+      "height": 740,
+      "overflow": [],
+      "route": "me",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "light",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 740,
+      "overflow": [],
+      "route": "settings",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "light",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 740,
+      "overflow": [],
+      "route": "listening",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "light",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 740,
+      "overflow": [],
+      "route": "speaking",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "light",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 740,
+      "overflow": [],
+      "route": "mastery",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "light",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 740,
+      "overflow": [],
+      "route": "result",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "light",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 740,
+      "overflow": [],
+      "route": "mistakes",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "light",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 740,
+      "overflow": [],
+      "route": "collections",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "light",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 740,
+      "overflow": [],
+      "route": "onboard",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "light",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 740,
+      "overflow": [],
+      "route": "pgen",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "light",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 740,
+      "overflow": [],
+      "route": "firstlearn",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "light",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 740,
+      "overflow": [],
+      "route": "drill",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "light",
+      "font": "standard",
+      "width": 390,
+      "docOverflow": 0,
+      "footer": 844,
+      "height": 844,
+      "overflow": [],
+      "route": "home",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "light",
+      "font": "standard",
+      "width": 390,
+      "docOverflow": 0,
+      "footer": 844,
+      "height": 844,
+      "overflow": [],
+      "route": "today",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "light",
+      "font": "standard",
+      "width": 390,
+      "docOverflow": 0,
+      "footer": 844,
+      "height": 844,
+      "overflow": [],
+      "route": "courses",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "light",
+      "font": "standard",
+      "width": 390,
+      "docOverflow": 0,
+      "footer": 844,
+      "height": 844,
+      "overflow": [],
+      "route": "words",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "light",
+      "font": "standard",
+      "width": 390,
+      "docOverflow": 0,
+      "footer": 844,
+      "height": 844,
+      "overflow": [],
+      "route": "reviewqueue",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "light",
+      "font": "standard",
+      "width": 390,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 844,
+      "overflow": [],
+      "route": "plan",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "light",
+      "font": "standard",
+      "width": 390,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 844,
+      "overflow": [],
+      "route": "calendar",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "light",
+      "font": "standard",
+      "width": 390,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 844,
+      "overflow": [],
+      "route": "recap",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "light",
+      "font": "standard",
+      "width": 390,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 844,
+      "overflow": [],
+      "route": "history",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "light",
+      "font": "standard",
+      "width": 390,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 844,
+      "overflow": [],
+      "route": "chapter",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "light",
+      "font": "standard",
+      "width": 390,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 844,
+      "overflow": [],
+      "route": "book",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "light",
+      "font": "standard",
+      "width": 390,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 844,
+      "overflow": [],
+      "route": "writing",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "light",
+      "font": "standard",
+      "width": 390,
+      "docOverflow": 0,
+      "footer": 844,
+      "height": 844,
+      "overflow": [],
+      "route": "world",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "light",
+      "font": "standard",
+      "width": 390,
+      "docOverflow": 0,
+      "footer": 844,
+      "height": 844,
+      "overflow": [],
+      "route": "me",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "light",
+      "font": "standard",
+      "width": 390,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 844,
+      "overflow": [],
+      "route": "settings",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "light",
+      "font": "standard",
+      "width": 390,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 844,
+      "overflow": [],
+      "route": "listening",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "light",
+      "font": "standard",
+      "width": 390,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 844,
+      "overflow": [],
+      "route": "speaking",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "light",
+      "font": "standard",
+      "width": 390,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 844,
+      "overflow": [],
+      "route": "mastery",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "light",
+      "font": "standard",
+      "width": 390,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 844,
+      "overflow": [],
+      "route": "result",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "light",
+      "font": "standard",
+      "width": 390,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 844,
+      "overflow": [],
+      "route": "mistakes",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "light",
+      "font": "standard",
+      "width": 390,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 844,
+      "overflow": [],
+      "route": "collections",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "light",
+      "font": "standard",
+      "width": 390,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 844,
+      "overflow": [],
+      "route": "onboard",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "light",
+      "font": "standard",
+      "width": 390,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 844,
+      "overflow": [],
+      "route": "pgen",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "light",
+      "font": "standard",
+      "width": 390,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 844,
+      "overflow": [],
+      "route": "firstlearn",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "light",
+      "font": "standard",
+      "width": 390,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 844,
+      "overflow": [],
+      "route": "drill",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "dark",
+      "font": "standard",
+      "width": 390,
+      "docOverflow": 0,
+      "footer": 844,
+      "height": 844,
+      "overflow": [],
+      "route": "home",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "dark",
+      "font": "standard",
+      "width": 390,
+      "docOverflow": 0,
+      "footer": 844,
+      "height": 844,
+      "overflow": [],
+      "route": "today",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "dark",
+      "font": "standard",
+      "width": 390,
+      "docOverflow": 0,
+      "footer": 844,
+      "height": 844,
+      "overflow": [],
+      "route": "courses",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "dark",
+      "font": "standard",
+      "width": 390,
+      "docOverflow": 0,
+      "footer": 844,
+      "height": 844,
+      "overflow": [],
+      "route": "words",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "dark",
+      "font": "standard",
+      "width": 390,
+      "docOverflow": 0,
+      "footer": 844,
+      "height": 844,
+      "overflow": [],
+      "route": "reviewqueue",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "dark",
+      "font": "standard",
+      "width": 390,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 844,
+      "overflow": [],
+      "route": "plan",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "dark",
+      "font": "standard",
+      "width": 390,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 844,
+      "overflow": [],
+      "route": "calendar",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "dark",
+      "font": "standard",
+      "width": 390,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 844,
+      "overflow": [],
+      "route": "recap",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "dark",
+      "font": "standard",
+      "width": 390,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 844,
+      "overflow": [],
+      "route": "history",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "dark",
+      "font": "standard",
+      "width": 390,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 844,
+      "overflow": [],
+      "route": "chapter",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "dark",
+      "font": "standard",
+      "width": 390,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 844,
+      "overflow": [],
+      "route": "book",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "dark",
+      "font": "standard",
+      "width": 390,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 844,
+      "overflow": [],
+      "route": "writing",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "dark",
+      "font": "standard",
+      "width": 390,
+      "docOverflow": 0,
+      "footer": 844,
+      "height": 844,
+      "overflow": [],
+      "route": "world",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "dark",
+      "font": "standard",
+      "width": 390,
+      "docOverflow": 0,
+      "footer": 844,
+      "height": 844,
+      "overflow": [],
+      "route": "me",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "dark",
+      "font": "standard",
+      "width": 390,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 844,
+      "overflow": [],
+      "route": "settings",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "dark",
+      "font": "standard",
+      "width": 390,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 844,
+      "overflow": [],
+      "route": "listening",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "dark",
+      "font": "standard",
+      "width": 390,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 844,
+      "overflow": [],
+      "route": "speaking",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "dark",
+      "font": "standard",
+      "width": 390,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 844,
+      "overflow": [],
+      "route": "mastery",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "dark",
+      "font": "standard",
+      "width": 390,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 844,
+      "overflow": [],
+      "route": "result",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "dark",
+      "font": "standard",
+      "width": 390,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 844,
+      "overflow": [],
+      "route": "mistakes",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "dark",
+      "font": "standard",
+      "width": 390,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 844,
+      "overflow": [],
+      "route": "collections",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "dark",
+      "font": "standard",
+      "width": 390,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 844,
+      "overflow": [],
+      "route": "onboard",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "dark",
+      "font": "standard",
+      "width": 390,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 844,
+      "overflow": [],
+      "route": "pgen",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "dark",
+      "font": "standard",
+      "width": 390,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 844,
+      "overflow": [],
+      "route": "firstlearn",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "dark",
+      "font": "standard",
+      "width": 390,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 844,
+      "overflow": [],
+      "route": "drill",
+      "small": [],
+      "viewOverflow": 0
+    }
+  ],
+  "highContrastSamples": [
+    {
+      "theme": "dark-HC",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 740,
+      "height": 740,
+      "overflow": [],
+      "route": "home",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "dark-HC",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 740,
+      "overflow": [],
+      "route": "plan",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "dark-HC",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 740,
+      "overflow": [],
+      "route": "writing",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "dark-HC",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 740,
+      "height": 740,
+      "overflow": [],
+      "route": "courses",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "dark-HC",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 740,
+      "height": 740,
+      "overflow": [],
+      "route": "reviewqueue",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "dark-HC",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 740,
+      "overflow": [],
+      "route": "weekly",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "light-HC",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 740,
+      "height": 740,
+      "overflow": [],
+      "route": "home",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "light-HC",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 740,
+      "overflow": [],
+      "route": "plan",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "light-HC",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 740,
+      "overflow": [],
+      "route": "writing",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "light-HC",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 740,
+      "height": 740,
+      "overflow": [],
+      "route": "courses",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "light-HC",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 740,
+      "height": 740,
+      "overflow": [],
+      "route": "reviewqueue",
+      "small": [],
+      "viewOverflow": 0
+    },
+    {
+      "theme": "light-HC",
+      "font": "xl",
+      "width": 320,
+      "docOverflow": 0,
+      "footer": 0,
+      "height": 740,
+      "overflow": [],
+      "route": "weekly",
+      "small": [],
+      "viewOverflow": 0
+    }
+  ],
+  "notes": [
+    "矩阵为直接访问已有路由的真实渲染尺寸采样，未注入业务状态；不能替代可达性旅程",
+    "D+1/D+7 通过演示工具推进日期；不是实际等待七天",
+    "布局截图关闭了动效以获取稳定画面，已单独验证正常动效下同页选择没有页面入场动画",
+    "截图目检后补修特大字号学习日换行，浅/深320计划页定向复测无溢出；写作自评新增刷新断言。"
+  ],
+  "consoleErrors": []
+}

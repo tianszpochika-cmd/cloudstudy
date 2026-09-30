@@ -1,0 +1,29 @@
+PASS all goal/budget templates fit declared budgets
+PASS five minutes is one five-minute task
+PASS all target families select relevant core content
+PASS CET6 selects advanced core sample
+PASS completed and in-progress survive reduction
+PASS rest day adds no new tasks
+PASS defer preserves answer snapshot
+PASS browse directory does not change resume identity
+PASS legacy completed aggregates remain visible but not scored
+PASS practice refresh restores answers without duplicate submission
+PASS retry keeps prior round
+PASS self rating does not verify mastery
+PASS third person mistake matches third person variant
+PASS word variant uses actual word meaning
+PASS unknown knowledge item stays unavailable
+PASS future validation cannot be submitted
+PASS repair then next-day and seven-day validation
+PASS failed verification reopens same item
+PASS review forgotten round is finite and separates operations
+PASS review undo restores date and removes completion record
+PASS writing rule feedback does not invent full scoring
+PASS short writing requires revision
+PASS unknown writing resolves exactly once and keeps draft
+PASS record identity makes repeat completion idempotent
+PASS self-rated words excluded from question accuracy
+PASS completed repair keeps the answered stem on feedback
+PASS retrying old record does not inflate today task count
+PASS fully read book and no due queue do not create blocked tasks
+Pure model checks: 28/28

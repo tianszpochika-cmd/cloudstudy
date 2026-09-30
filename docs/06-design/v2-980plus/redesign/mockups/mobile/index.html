@@ -223,4 +223,41 @@ svg[viewBox="0 0 12 12"]{width:14px;height:14px;flex:none;vertical-align:middle}
 .word-actions{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-2)}
 .word-actions .btn{margin:0}
 @media(max-width:350px){#view{padding-left:12px;padding-right:12px}.card{padding:14px}.btn.sm{padding:10px 12px}}
-</style></head><body><div class="phone"><div class="topbar"><button class="bk" id="bk" aria-label="返回" onclick="goBack()"><svg viewBox="0 0 12 12" fill="none"><path d="M7.5 2.5 4 6l3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><b id="title">语学星</b><span class="sp"></span><span class="meta" id="net">在线</span></div><div id="view"></div><nav class="tabbar" id="tabs"><a href="#/home" data-t="home"><i>🏠</i>首页</a><a href="#/today" data-t="today"><i>📚</i>学习</a><a href="#/world" data-t="world"><i>🌍</i>世界</a><a href="#/me" data-t="me"><i>👤</i>我的</a></nav><div class="toast" id="toast" role="status" aria-live="polite"></div></div><script src="app.js"></script></body></html>
+/* 学习闭环：语义 Token 复用，内容与操作分层，放大字号保持流式布局。 */
+.study-nav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-bottom:16px}
+.section-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
+.section-heading>:first-child{min-width:0;margin:0}.section-heading .tag{flex:none}
+.card h3{font-size:17px;line-height:1.5;margin:0}.card .actions{margin-top:16px}
+.actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin:16px 0}.actions>.btn{margin:0;max-width:100%}
+.btn.sm.primary-action,.btn.primary-action{background:var(--primary);color:var(--on-primary);border-color:var(--primary);box-shadow:none}
+.primary-action:disabled{opacity:.55}.summary-card{background:var(--card)}
+.metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:20px 0}
+.metrics>div{min-width:0;text-align:center;padding:12px 2px;border-radius:12px;background:var(--surface)}
+.metrics strong{display:block;font-size:24px;line-height:1.3;overflow-wrap:anywhere;color:var(--ink)}
+.metrics span{display:block;margin-top:6px;color:var(--mut);font-size:12px;line-height:1.4}
+.next-line{margin-top:16px!important}.quick-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:16px}
+.quick-links>.opt{margin:0;min-width:0}.entry-list .opt{margin-top:12px}
+.list-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 0;border-bottom:1px solid var(--line)}
+.list-row:last-child{border-bottom:0}.list-row>div{min-width:0}.list-row .btn,.list-row .tag{flex:none}
+.record-row{justify-content:space-between;align-items:center;gap:12px}.record-row>span:first-child{flex:1;min-width:0}
+.record-row .d{display:block;margin-top:6px;line-height:1.5;font-size:13px;font-weight:400}
+.record-row>span:last-child{flex:none}.answer-detail{border-top:1px solid var(--line);margin-top:20px;padding-top:16px}
+.answer-detail b{line-height:1.65}.result-score{font-size:36px;line-height:1.3;margin:20px 0}.result-score span{font-size:16px;color:var(--mut)}
+.day-picker,.filter-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:12px}
+.day-picker{grid-template-columns:repeat(4,minmax(0,1fr))}.day-picker .mode-button{white-space:nowrap}.theme-picker{grid-template-columns:repeat(3,minmax(0,1fr))}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.form-grid>div{min-width:0}
+.plan-line{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.plan-line span{min-width:0}.plan-line b{white-space:nowrap;flex:none}
+textarea{display:block;width:100%;min-width:0;resize:vertical;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);font:inherit;line-height:1.7;padding:12px;box-sizing:border-box}
+input,select{min-width:0;max-width:100%}.writing-copy,.note-preview{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.8}
+.lookup-result{margin-top:16px;padding-top:16px;border-top:1px solid var(--line)}.lookup-context{border-left:3px solid var(--brand);padding-left:12px;line-height:1.7}
+.reference-card summary{cursor:pointer;min-height:44px;display:flex;align-items:center;font-weight:700;line-height:1.5}.reference-card summary::before{content:'＋';margin-right:8px}.reference-card[open] summary::before{content:'－'}
+.rule-list{margin:16px 0;padding:12px;background:var(--surface);border-radius:12px}.rule-list p{margin:8px 0}
+.week-summary{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;text-align:center}
+.week-summary span{color:var(--mut);font-size:13px}.week-summary b{display:block;margin-top:8px;border-radius:10px;padding:12px 0;background:var(--surface);color:var(--mut)}
+.week-summary .studied{background:var(--soft);color:var(--brand)}
+.reading-passage{line-height:1.8;overflow-wrap:anywhere}.choice-list{margin:16px 0}.choice-list .opt{margin-top:12px}
+.calendar-day p:last-child{margin-bottom:0}
+@media(max-width:350px){.actions{gap:10px}.metrics strong{font-size:21px}.quick-links{gap:8px}.section-heading{align-items:flex-start;flex-wrap:wrap}.theme-picker{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}}
+html[data-fz="2"] .form-grid{grid-template-columns:1fr}html[data-fz="2"] .metrics strong{font-size:21px}html[data-fz="2"] .day-picker{grid-template-columns:repeat(3,minmax(0,1fr))}
+</style></head><body><div class="phone"><div class="topbar"><button class="bk" id="bk" aria-label="返回" onclick="goBack()"><svg viewBox="0 0 12 12" fill="none"><path d="M7.5 2.5 4 6l3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><b id="title">语学星</b><span class="sp"></span><span class="meta" id="net">在线</span></div><div id="view"></div><nav class="tabbar" id="tabs"><a href="#/home" data-t="home"><i>🏠</i>首页</a><a href="#/today" data-t="today"><i>📚</i>学习</a><a href="#/world" data-t="world"><i>🌍</i>世界</a><a href="#/me" data-t="me"><i>👤</i>我的</a></nav><div class="toast" id="toast" role="status" aria-live="polite"></div></div><script src="app.js"></script><script src="learning.js"></script></body></html>

@@ -13,21 +13,22 @@ function stmRepair(d) { if (STM.freeze <= 0) { toast("Freeze 用完了（演示�
 /* ---------- 演示数据本机持久化（localStorage，仅原型；会话级开关不存） ---------- */
 const DBKEY = "yxx-demo-v3";
 function dbSave() { try {
-  localStorage.setItem(DBKEY, JSON.stringify({ v: 3,
+  localStorage.setItem(DBKEY, JSON.stringify({ v: 4, learning: LM,
     S: { user: S.user, gate: S.gate, goal: S.goal, minutes: S.minutes, plan: S.plan, consents: S.consents, consentV: S.consentV, mistakes: S.mistakes, today: S.today, streak: S.streak, lastRead: S.lastRead, quick: S.quick, fav: S.fav, quiz: S.quiz },
-    SET, SRSQ, WCAL, STM, BKpos: BK.pos, BKcur: BK.cur, BKch: BK.ch, PR, SRS, DRb: { book: DR.book, known: DR.known }, BKlv: BK.lv, AX,
+    SET, SRSQ, WCAL, STM, BKpos: BK.pos, BKcur: BK.cur, BKch: BK.ch, PR, SRS, DRb: { ...DR }, BKlv: BK.lv, AX,
     SUPlist: SUP.list, PV, RF: RF_ORDERS, TEAM: WD_TEAM.done, CHEST: WD_CHEST.map(c => c.st),
     ACH: WD_ACH.map(a => ({ st: a.st, p: a.p })), MSGS: MSGS.map(m => m.read) }));
 } catch (e) { } }
 function dbLoad() { try {
-  const d = JSON.parse(localStorage.getItem(DBKEY) || "null"); if (!d || d.v !== 3) return false;
+  const d = JSON.parse(localStorage.getItem(DBKEY) || "null"); if (!d || ![3, 4].includes(d.v)) return false;
+  if (d.learning) Object.assign(LM, d.learning);
   Object.assign(S, { user: d.S.user, gate: d.S.gate, goal: d.S.goal, minutes: d.S.minutes, plan: d.S.plan, consents: d.S.consents || {}, consentV: d.S.consentV, mistakes: d.S.mistakes, today: d.S.today, streak: d.S.streak, lastRead: d.S.lastRead, quick: d.S.quick, fav: d.S.fav || [] });
   if (d.S.quiz && Array.isArray(d.S.quiz.answers)) S.quiz = d.S.quiz;
   if (d.PR) Object.assign(PR, d.PR);
   if (d.SRS) Object.assign(SRS, d.SRS);
   Object.assign(SET, d.SET); SRSQ.length = 0; d.SRSQ.forEach(x => SRSQ.push(x));
   Object.keys(WCAL).forEach(k => delete WCAL[k]); Object.assign(WCAL, d.WCAL); Object.assign(STM, d.STM);
-  DR.book = d.DRb.book; DR.known = d.DRb.known; BK.lv = d.BKlv; if (d.BKpos) BK.pos = d.BKpos; if (d.BKcur) BK.cur = d.BKcur; if (d.BKch != null) BK.ch = d.BKch; Object.assign(AX, d.AX);
+  Object.assign(DR, d.DRb); DR.i = d.DRb.i || 0; BK.lv = d.BKlv; if (d.BKpos) BK.pos = d.BKpos; if (d.BKcur) BK.cur = d.BKcur; if (d.BKch != null) BK.ch = d.BKch; Object.assign(AX, d.AX);
   SUP.list = d.SUPlist; if (d.PV) Object.assign(PV, d.PV); d.RF.forEach((r, i) => { if (RF_ORDERS[i]) Object.assign(RF_ORDERS[i], { rf: r.rf, step: r.step, inv: r.inv }); });
   WD_TEAM.done = d.TEAM; d.CHEST.forEach((st, i) => { if (WD_CHEST[i]) WD_CHEST[i].st = st; });
   d.ACH.forEach((a, i) => { if (WD_ACH[i]) Object.assign(WD_ACH[i], a); });
@@ -41,7 +42,7 @@ function normalizeState() {
   SRSQ.forEach(q => { if (q.done == null) q.done = false; if (q.show == null) q.show = false; if (q.round == null) q.round = 0; });
   S.today.forEach(t => { if (!t.group) { if (t.id === "t1") t.group = "g1"; if (t.id === "t2") t.group = "r1"; } if (t.done == null) t.done = false; if (t.right == null) t.right = 0; if (!t.total) t.total = (t.group && typeof GROUPS !== "undefined" && GROUPS[t.group]) ? GROUPS[t.group].items.length : 1; });
   if (!S.quiz || !S.quiz.answers) S.quiz = { i: 0, sel: null, phase: "answer", answers: [], done: false, score: 0 };
-  if (typeof PR !== "undefined" && PR.taskId && !S.today.some(t => t.id === PR.taskId)) { PR.taskId = null; PR.phase = "answer"; PR.pos = 0; PR.sel = -1; }
+  if (typeof PR !== "undefined" && PR.taskId && !S.today.some(t => t.id === PR.taskId) && LM.freeTask?.id !== PR.taskId) { PR.taskId = null; PR.phase = "answer"; PR.pos = 0; PR.sel = -1; }
   if (typeof SRS !== "undefined" && SRS.order) { SRS.order = SRS.order.filter(i => SRSQ[i]); SRS.redo = (SRS.redo || []).filter(i => SRSQ[i]); if (!SRS.order.length && SRS.phase === "run") SRS.phase = "idle"; }
 }
 /* 统一今日任务（写法/阅读两组，稳定标识跨页关联） */
@@ -585,13 +586,13 @@ function pgenStart() {
   PG.st = "run"; PG.msg = ""; render();
   const tok = PG.tok = (PG.tok || 0) + 1;
   setTimeout(() => {
-    if (PG.tok !== tok) return;
+    if (PG.tok !== tok || PG.st !== "run") return;
     if (LAB.offline) { PG.st = "fail"; PG.msg = "离线：拼不出计划，联网后重试"; render(); return; }
     if (LAB.failNext) { LAB.failNext = false; PG.st = "fail"; PG.msg = "生成失败：拼装超时，重试不会建出两份计划"; render(); return; }
-    PG.st = "ok"; S.plan = true; if (!S.today.length) S.today = freshToday(); render();
+    PG.st = "ok"; S.plan = true; lmApplyPlan(LM.plan, "keep"); render();
   }, 1400);
 }
-function quickStart() { S.quick = true; S.plan = true; if (!S.today.length) S.today = freshToday(); toast("快速开始：按画像目标从基础难度起步，不是正式成绩（演示）"); nav("#/today"); }
+function quickStart() { S.quick = true; S.plan = true; lmApplyPlan(LM.plan, "keep"); toast("已准备基础学习任务，可随时调整计划"); nav("#/today"); }
 V.pgen = () => {
   const first = S.today.find(t => !t.done);
   if (PG.st === "run") return `<div class="card"><h2>计划生成中…</h2><div class="prog"><i style="width:60%"></i></div><p class="d">按定级报告组装本轮两组任务</p><button class="btn ghost" onclick="PG.st='idle';render()">取消，稍后再说</button></div>`;
@@ -794,10 +795,13 @@ function chapFav() {
 function openChapter(bookId, chIdx) {
   const b = BOOKS.find(x => x.id === bookId) || BOOKS[0];
   BK.cur = b.id; BK.ch = Math.max(0, Math.min(chIdx || 0, b.toc.length - 1));
-  S.lastRead = { book: b.title, ch: b.toc[BK.ch] };
+  S.lastRead = { bookId: b.id, chapter: BK.ch, book: b.title, ch: b.toc[BK.ch] };
+  LM.chapters[b.id + ":" + BK.ch] ||= { done: false, note: "" };
+  dbSave();
   nav("#/chapter");
+  if (LASTR === "chapter") render();
 }
-function resumeChapter() { openChapter(BK.cur || "b1", BK.ch || 0); }
+function resumeChapter() { const p = lmLastRead(); openChapter(p.bookId, p.chapter); }
 let CHSAVE = 0;
 function chapSaveNow() { try { if (LASTR === "chapter") { BK.pos[BK.cur + ":" + BK.ch] = document.getElementById("view").scrollTop; dbSave(); } } catch (e) { } }
 function chapSaveSoon() { const t = Date.now(); if (t - CHSAVE < 300) return; CHSAVE = t; setTimeout(chapSaveNow, 350); }
@@ -825,7 +829,7 @@ function drDetail() { const L = wlist(); const w = L[Math.min(DR.i, L.length - 1
 const TCH = { on: false, sec: 60, right: 0, wrong: 0, timer: 0, list: [], best: null };
 function tchStart() { const L = wlist(); const pool = L.map((x, i) => i); for (let k = pool.length - 1; k > 0; k--) { const j = (DR.i + k * 3) % (k + 1); const t = pool[k]; pool[k] = pool[j]; pool[j] = t; } TCH.list = pool.slice(0, Math.min(10, pool.length)); TCH.on = true; TCH.sec = 60; TCH.right = 0; TCH.wrong = 0; TCH.pos = 0; TCH.pick = -1; clearInterval(TCH.timer); TCH.timer = setInterval(() => { TCH.sec--; if (TCH.sec <= 0) tchFinish(); else { const el = document.getElementById("tchsec"); if (el) el.textContent = TCH.sec; } }, 1000); render(); }
 function tchOpts() { const L = wlist(); const idx = TCH.list[Math.min(TCH.pos, TCH.list.length - 1)]; const w = L[idx]; const others = L.filter((_, j) => j !== idx).slice(0, 12); const o = [others[(idx + 1) % others.length], others[(idx + 5) % others.length], others[(idx + 9) % others.length]].map(x => ({ zh: x[2], ok: false })).concat([{ zh: w[2], ok: true }]); const h = idx * 5 + TCH.pos; for (let k = o.length - 1; k > 0; k--) { const j = (h + k * 3) % (k + 1); const t = o[k]; o[k] = o[j]; o[j] = t; } return { w, o }; }
-function tchPick(k) { if (!TCH.on) return; TCH.pick = k; const { w, o } = tchOpts(); if (o[k].ok) TCH.right++; else { TCH.wrong++; if (!S.mistakes.some(m => m.t === w[0])) S.mistakes.push({ t: w[0], why: "定位：词汇待补", kind: "word" }); } TCH.pos++; TCH.pick = -1; if (TCH.pos >= TCH.list.length) tchFinish(); else render(); }
+function tchPick(k) { if (!TCH.on) return; TCH.pick = k; const { w, o } = tchOpts(); if (o[k].ok) TCH.right++; else { TCH.wrong++; addMistake(w[0], w[2], "word", "词汇选项练习"); } TCH.pos++; TCH.pick = -1; if (TCH.pos >= TCH.list.length) tchFinish(); else render(); }
 function tchFinish() { if (!TCH.on) return; clearInterval(TCH.timer); TCH.on = false; const score = TCH.right * 10 - TCH.wrong * 2; if (!TCH.best || score > TCH.best.score) TCH.best = { score, right: TCH.right, wrong: TCH.wrong }; render(); toast("限时结束：对 " + TCH.right + " / 错 " + TCH.wrong + "（演示，不上榜）"); }
 const PIC = { abandon: "🗑️", ability: "💪", absent: "🏫", absolute: "💯", absorb: "🧽", abstract: "🎨", abundant: "🌾", abuse: "🚫", academy: "🏛️", accelerate: "🚀", accent: "🗣️", accept: "🤝", access: "🔑", accommodate: "🏠", accompany: "👥", accomplish: "🏆", account: "👤", accumulate: "📚", accuracy: "🎯", accuse: "⚖️", abolish: "🔨", absurd: "🤪", abundance: "🌾", acclaim: "👏", acquaint: "🤝", adhere: "🧲", adjacent: "🏘️", adjoin: "🧱", administer: "💼", admirable: "⭐", admission: "🎫", adolescent: "🧑", adore: "❤️", adorn: "💎", adverse: "⛈️", advertise: "📢", advocate: "📣", aesthetic: "🌸", affiliate: "🔗", affirm: "✅" };
 function wpic(w) { return PIC[w] || "🔤"; }
@@ -834,7 +838,7 @@ function wquiz() { const L = wlist(), idx = Math.min(DR.i, L.length - 1), w = L[
 function qpick(k) { DR.quizPick = k; render(); }
 V.drill = () => {
   const L = wlist();
-  const tabs = `<div class="study-toolbar"><div class="toolbar-heading"><span class="meta">学习模式</span><button class="text-link" onclick="drDetail()">词汇详情 ${CHEV}</button></div><div class="mode-switch" role="group" aria-label="刷词模式">${[["zhan", "斩词"], ["quiz", "选项"], ["fam", "高效"], ["time", "限时"]].map(([mode, label]) => `<button class="mode-button${DR.mode === mode ? " is-active" : ""}" aria-pressed="${DR.mode === mode}" onclick="DR.mode='${mode}';DR.show=false;DR.quizPick=-1;DR.quizDone=false;render()">${label}</button>`).join("")}</div></div>`;
+  const tabs = `<div class="study-toolbar"><div class="toolbar-heading"><span class="meta">学习模式</span><button class="text-link" onclick="drDetail()">词汇详情 ${CHEV}</button></div><div class="mode-switch" style="grid-template-columns:repeat(${LM.wordTask ? 3 : 4},minmax(0,1fr))" role="group" aria-label="刷词模式">${[["zhan", "回忆"], ["quiz", "选项"], ["fam", "词形"], ["time", "限时"]].filter(([mode]) => !LM.wordTask || mode !== "time").map(([mode, label]) => `<button class="mode-button${DR.mode === mode ? " is-active" : ""}" aria-pressed="${DR.mode === mode}" onclick="DR.mode='${mode}';DR.show=false;DR.quizPick=-1;DR.quizDone=false;render()">${label}</button>`).join("")}</div></div>`;
   if (DR.mode === "time") {
     if (!TCH.on && !TCH.best && TCH.right === 0 && TCH.wrong === 0) return `<div class="meta">${DR.book === "CET4" ? "四级" : "六级"} · 限时 60 秒 · 对+10/错-2 · 错进错题（演示，不上榜）</div>${tabs}<div class="card empty"><b>⏱️ 限时挑战</b><p class="d">60 秒能对几个？错的自动进错题本</p><button class="btn" onclick="tchStart()">开始 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>`;
     if (!TCH.on && (TCH.right > 0 || TCH.wrong > 0 || TCH.best)) { const b = TCH.best; return `<div class="meta">${DR.book === "CET4" ? "四级" : "六级"} · 限时结算（演示）</div>${tabs}<div class="card" style="text-align:center"><b style="font-size:40px">${TCH.right * 10 - TCH.wrong * 2}</b><p class="d">对 ${TCH.right} · 错 ${TCH.wrong} · 错题已进本</p>${b ? `<p class="d">个人最佳：${b.score}（对 ${b.right}/错 ${b.wrong}）</p>` : ``}<button class="btn" onclick="tchStart()">再来一轮 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button> <button class="btn ghost" onclick="nav('#/mistakes')">看错题 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>`; }
@@ -843,7 +847,7 @@ V.drill = () => {
   }
   if (DR.mode === "fam") {
     const L = wlist(), w = L[Math.min(DR.i, L.length - 1)], f = famOf(w[0]);
-    return `<div class="meta">${DR.book === "CET4" ? "四级" : "六级"} · 第 ${Math.min(DR.i + 1, L.length)}/${L.length} · 高效学一词顶十词</div>${tabs}<div class="card word-card"><div class="word-heading"><b class="word-title">${w[0]}</b><button class="icon-button" aria-label="朗读当前单词" onclick="speak('${w[0]}')">🔊</button></div><p class="d">${w[1]}</p><p style="font-size:20px"><b>${w[2]}</b></p></div><div class="card"><h2>🔀 变形全家</h2>${f.infl.map(x => `<span class="tag">${x}</span>`).join("")}</div><div class="card"><h2>🧩 组句</h2>${f.sent.map((s, k) => `<p class="d">${k + 1}. ${s} <button class="btn sm" onclick="speak('${s.replace(/'/g, "")}')">🔊</button></p>`).join("")}</div><div class="card"><h2>😎 俚语</h2><p>${f.slang}</p></div><div class="card"><h2>📜 由来</h2><p class="d">${f.story}</p></div><button class="btn" onclick="dzhan(true)">学会了，下一词 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button> <button class="btn ghost" onclick="dzhan(false)">先收着 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`;
+    return `<div class="meta">${DR.book === "CET4" ? "四级" : "六级"} · 第 ${Math.min(DR.i + 1, L.length)}/${L.length} · 词形与例句</div>${tabs}<div class="card word-card"><div class="word-heading"><b class="word-title">${w[0]}</b><button class="icon-button" aria-label="朗读当前单词" onclick="speak('${w[0]}')">🔊</button></div><p class="d">${w[1]}</p><p style="font-size:20px"><b>${w[2]}</b></p></div><div class="card"><h2>🔀 变形全家</h2>${f.infl.map(x => `<span class="tag">${x}</span>`).join("")}</div><div class="card"><h2>🧩 组句</h2>${f.sent.map((s, k) => `<p class="d">${k + 1}. ${s} <button class="btn sm" onclick="speak('${s.replace(/'/g, "")}')">🔊</button></p>`).join("")}</div><div class="card"><h2>😎 俚语</h2><p>${f.slang}</p></div><div class="card"><h2>📜 由来</h2><p class="d">${f.story}</p></div><button class="btn" onclick="dzhan(true)">本次记得，下一词 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button> <button class="btn ghost" onclick="dzhan(false)">加入复习，下一词 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`;
   }
   if (DR.mode === "quiz") {
     const { w, opts } = wquiz();
@@ -854,13 +858,13 @@ V.drill = () => {
       else {
         const parts = wsplit(w[0]);
         mid = `<div class="fb no">! 选错了，进复习</div><div class="card" style="margin:10px 0 0"><b>🔍 ${w[0]} 拆开看</b><p style="font-size:22px">${parts.join(" + ")}</p><p class="d">读音：${w[1]} · 中文：${w[2]}</p><p class="d">点读跟三遍，记住形和音的对应（演示拆分）。</p><button class="btn sm" onclick="speak('${w[0]}')">🔊 跟读</button> <button class="btn sm ghost" onclick="dzhan(false)">记下了，下一词 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>`;
-        if (!S.mistakes.some(m => m.t === w[0])) S.mistakes.push({ t: w[0], why: "定位：词汇待补", kind: "word" });
+        addMistake(w[0], w[2], "word", "词汇选项练习");
       }
     }
-    return `<div class="meta">${DR.book === "CET4" ? "四级" : "六级"} · 第 ${Math.min(DR.i + 1, L.length)}/${L.length} · 已斩 ${DR.known}</div>${tabs}<div class="card word-card"><div class="word-heading"><b class="word-title">${w[0]}</b><button class="icon-button" aria-label="朗读当前单词" onclick="speak('${w[0]}')">🔊</button></div><p class="d">${w[1]}</p></div>` + opts.map((o, k) => `<button class="opt" onclick="qpick(${k})">${wpic(o.w)} ${o.zh}</button>`).join("") + mid;
+    return `<div class="meta">${DR.book === "CET4" ? "四级" : "六级"} · 第 ${LM.wordTask ? (LM.wordSeen || []).length + 1 : Math.min(DR.i + 1, L.length)}/${LM.wordTask ? 3 : L.length} · 本轮记得 ${DR.known}</div>${tabs}<div class="card word-card"><div class="word-heading"><b class="word-title">${w[0]}</b><button class="icon-button" aria-label="朗读当前单词" onclick="speak('${w[0]}')">🔊</button></div><p class="d">${w[1]}</p></div>` + opts.map((o, k) => `<button class="opt" onclick="qpick(${k})">${wpic(o.w)} ${o.zh}</button>`).join("") + mid;
   }
   const w = L[Math.min(DR.i, L.length - 1)];
-  return `<div class="meta">${DR.book === "CET4" ? "四级" : "六级"} · 第 ${Math.min(DR.i + 1, L.length)}/${L.length} · 已斩 ${DR.known}</div>${tabs}<div class="card word-card"><div class="word-heading"><b class="word-title">${w[0]}</b></div><p class="d">${w[1]}</p><div class="word-meaning">${DR.show ? `<p><b>${w[2]}</b></p><button class="btn sm ghost" aria-label="朗读当前单词" onclick="speak('${w[0]}')">🔊 朗读</button>` : `<button class="btn sm ghost" onclick="dreveal()">点看中文</button>`}</div></div>${DR.show ? `<div class="word-actions"><button class="btn ghost" onclick="dzhan(false)">收 ✋</button><button class="btn" onclick="dzhan(true)">斩 ⚔️</button></div>` : ``}`;
+  return `<div class="meta">${DR.book === "CET4" ? "四级" : "六级"} · 第 ${LM.wordTask ? (LM.wordSeen || []).length + 1 : Math.min(DR.i + 1, L.length)}/${LM.wordTask ? 3 : L.length} · 本轮记得 ${DR.known}</div>${tabs}<div class="card word-card"><div class="word-heading"><b class="word-title">${w[0]}</b></div><p class="d">${w[1]}</p><div class="word-meaning">${DR.show ? `<p><b>${w[2]}</b></p><button class="btn sm ghost" aria-label="朗读当前单词" onclick="speak('${w[0]}')">🔊 朗读</button>` : `<button class="btn sm ghost" onclick="dreveal()">点看中文</button>`}</div></div>${DR.show ? `<div class="word-actions"><button class="btn ghost" onclick="dzhan(false)">加入复习</button><button class="btn" onclick="dzhan(true)">本次记得</button></div>` : ``}`;
 };
 V.wordbook = () => `<div class="card"><h2>📕 单词本</h2><p class="d">选一本，直接开刷（斩＝会，收＝不会进复习）</p><button class="opt" onclick="wset('CET4')"><b>四级词汇</b> · 20 词 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="opt" onclick="wset('CET6')"><b>六级词汇</b> · 20 词 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>`;
 const PHG = [
@@ -1070,32 +1074,40 @@ function render() {
   if (LASTR === "chapter" && r !== "chapter") { try { BK.pos[BK.cur + ":" + BK.ch] = document.getElementById("view").scrollTop; } catch (e) { } }
   const view = document.getElementById("view");
   const pageChanged = LASTR !== r;
+  const focused = !pageChanged && view.contains(document.activeElement) ? { id: document.activeElement.id, handler: document.activeElement.getAttribute("onclick"), tag: document.activeElement.tagName } : null;
   const previousScroll = view.scrollTop;
   document.getElementById("title").textContent = TITLES[r] || "语学星";
   document.getElementById("bk").style.visibility = (["login", "home"].includes(r)) ? "hidden" : "visible";
-  document.getElementById("tabs").style.display = TABS.includes(r) ? "flex" : "none";
-  document.querySelectorAll("#tabs a").forEach(a => a.classList.toggle("on", a.dataset.t === r));
+  const studyRoutes = ["courses", "words", "reviewqueue", "shelf"];
+  const mainTab = studyRoutes.includes(r) ? "today" : r;
+  document.getElementById("tabs").style.display = TABS.includes(mainTab) ? "flex" : "none";
+  document.querySelectorAll("#tabs a").forEach(a => { a.classList.toggle("on", a.dataset.t === mainTab); if (a.dataset.t === mainTab) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
   applyA11y();
   view.classList.toggle("page-enter", pageChanged);
   view.dataset.route = r;
-  view.dataset.tabs = TABS.includes(r) ? "1" : "0";
+  view.dataset.tabs = TABS.includes(mainTab) ? "1" : "0";
   view.innerHTML = V[r]();
   layoutContent(view);
   const itemKey = r === "placement" ? `${r}:${S.quiz.i}` : r === "practice" ? `${r}:${PR.taskId}:${PR.pos}` : r === "srs" ? `${r}:${SRS.pass}:${srsCur()}` : r === "drill" ? `${r}:${DR.book}:${DR.i}:${DR.mode === 'time' ? (TCH.pos || 0) : ''}` : r === "chapter" ? `${r}:${BK.cur}:${BK.ch}` : r;
   view.onscroll = chapSaveSoon;
-  if (r === "weekly" && typeof wcalPaint === "function") wcalPaint();
   if (r === "avatar" && typeof stage3d === "function") stage3d();
   if (r !== "avatar" && typeof T3 !== "undefined" && T3 && T3.raf) { cancelAnimationFrame(T3.raf); T3.raf = 0; }
   view.scrollTop = pageChanged || LASTITEM !== itemKey ? ((r === "chapter" && BK.pos[BK.cur + ":" + BK.ch]) || 0) : previousScroll;
+  if (focused && LASTITEM === itemKey) {
+    const target = focused.id ? document.getElementById(focused.id) : focused.handler ? [...view.querySelectorAll("button,a,input,select")].find(el => el.tagName === focused.tag && el.getAttribute("onclick") === focused.handler) : null;
+    if (target && !target.disabled) target.focus({ preventScroll: true });
+  }
   LASTR = r;
   LASTITEM = itemKey;
   if (r === "placement" && S.quiz.done) { S.quiz.done = false; }
   dbSave();
 }
-const hasDB = dbLoad(); normalizeState();
+function bootMock() {
+const hasDB = dbLoad(); normalizeState(); lmNormalize();
 if (!hasDB) { try { if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) AX.m = false; } catch (e) { } }
 applyA11y();
 window.addEventListener("hashchange", render);
 window.addEventListener("beforeunload", chapSaveNow);
 document.addEventListener("visibilitychange", () => { if (document.hidden) chapSaveNow(); });
 render();
+}

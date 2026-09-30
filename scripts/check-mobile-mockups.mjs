@@ -1,5 +1,5 @@
 import fs from 'node:fs';
-const s = fs.readFileSync('docs/06-design/v2-980plus/redesign/mockups/mobile/app.js', 'utf8');
+const s = ['app.js', 'learning.js'].map(name => fs.readFileSync('docs/06-design/v2-980plus/redesign/mockups/mobile/' + name, 'utf8')).join('\n');
 const shell = fs.readFileSync('docs/06-design/v2-980plus/redesign/mockups/mobile/index.html', 'utf8');
 const fail = [];
 const screens = new Set([...s.matchAll(/^V\.(\w+)\s*=/gm)].map((m) => m[1]));
@@ -11,6 +11,7 @@ for (const h of [...s.matchAll(/onclick="([A-Za-z_]\w*)\(/g)].map((m) => m[1])) 
   if (!fns.has(h) && !['toast', 'nav', 'goBack'].includes(h)) fail.push('HANDLER-MISSING:' + h);
 }
 const titles = s.match(/const TITLES = \{([^}]*)\}/s)[1].split(',').map((x) => x.trim().split(':')[0]);
+titles.push(...s.match(/const LEARNING_TITLES = \{([^}]*)\}/s)[1].split(',').map((x) => x.trim().split(':')[0]));
 for (const k of screens) if (!titles.includes(k)) fail.push('TITLE-MISSING:' + k);
 const ids = [...s.matchAll(/getElementById\("([\w-]+)"\)/g)].map((m) => m[1]);
 const defined = new Set([...s.matchAll(/id="([\w-]+)"/g)].map((m) => m[1]));
