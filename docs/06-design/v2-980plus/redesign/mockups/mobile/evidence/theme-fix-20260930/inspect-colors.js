@@ -1,0 +1,9 @@
+(() => {
+  const rgba = s => { const m=s.match(/rgba?\(([^)]+)\)/); if(!m) return null; const v=m[1].split(/[,\s/]+/).filter(Boolean).map(Number); return [v[0],v[1],v[2],v.length>3?v[3]:1]; };
+  const blend=(a,b)=>a.slice(0,3).map((v,i)=>v*a[3]+b[i]*(1-a[3])).concat(1);
+  const luminance=c=>c.slice(0,3).map(v=>{v/=255;return v<=.04045?v/12.92:((v+.055)/1.055)**2.4;}).reduce((sum,v,i)=>sum+v*[.2126,.7152,.0722][i],0);
+  const ratio=(a,b)=>{const x=luminance(a),y=luminance(b);return (Math.max(x,y)+.05)/(Math.min(x,y)+.05);};
+  const backgrounds=e=>{if(!e)return [[255,255,255,1]]; const s=getComputedStyle(e), colors=(s.backgroundImage.match(/rgba?\([^)]+\)/g)||[]).map(rgba); const own=rgba(s.backgroundColor); if(colors.length){const bases=own&&own[3]===1?[own]:backgrounds(e.parentElement);return colors.flatMap(c=>bases.map(b=>blend(c,b)));} if(own&&own[3]===1)return[own];const bases=backgrounds(e.parentElement);return own&&own[3]>0?bases.map(b=>blend(own,b)):bases;};
+  const rows=Array.from(document.querySelectorAll('#view *, .topbar *, .tabbar a')).filter(e=>Array.from(e.childNodes).some(n=>n.nodeType===3&&/[A-Za-z0-9\u4e00-\u9fff]/.test(n.textContent))&&!e.closest('[disabled]')&&getComputedStyle(e).display!=='none'&&e.getClientRects().length).map(e=>{const s=getComputedStyle(e),fg=rgba(s.color),bg=backgrounds(e),r=Math.min(...bg.map(b=>ratio(fg,b)));return {text:e.textContent.trim().slice(0,55),contrast:Number(r.toFixed(2)),foreground:s.color,backgrounds:bg.map(c=>c.slice(0,3).map(Math.round)),threshold:Number.parseFloat(s.fontSize)>=24||(Number.parseFloat(s.fontSize)>=18.66&&Number.parseInt(s.fontWeight)>=700)?3:4.5};});
+  return {route:location.hash,theme:document.documentElement.dataset.theme,hc:document.documentElement.dataset.hc,count:rows.length,minContrast:Math.min(...rows.map(r=>r.contrast)),failures:rows.filter(r=>r.contrast<r.threshold),rows};
+})();

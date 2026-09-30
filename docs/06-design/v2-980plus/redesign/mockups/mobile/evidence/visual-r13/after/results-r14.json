@@ -1,0 +1,42 @@
+[
+  {
+    "name": "R1-open-b4c2",
+    "pass": true,
+    "detail": "进入商务第三章"
+  },
+  {
+    "name": "R1-home-resume",
+    "pass": true,
+    "detail": "首页继续读回到商务谈判"
+  },
+  {
+    "name": "R1-today-resume",
+    "pass": true,
+    "detail": "今日继续读回到商务谈判"
+  },
+  {
+    "name": "R1-me-resume",
+    "pass": true,
+    "detail": "我的继续读回到商务谈判"
+  },
+  {
+    "name": "R2-scroll-reload",
+    "pass": true,
+    "detail": "刷新后同章节且位置恢复 sc=260"
+  },
+  {
+    "name": "R3-md-bold",
+    "pass": true,
+    "detail": "列表加粗正常渲染，无原始标记"
+  },
+  {
+    "name": "R4-primary",
+    "pass": true,
+    "detail": "容器稳定 195x44 filter=brightness(0.95)"
+  },
+  {
+    "name": "R4-ghost",
+    "pass": true,
+    "detail": "容器稳定 112x44 filter=none"
+  }
+]

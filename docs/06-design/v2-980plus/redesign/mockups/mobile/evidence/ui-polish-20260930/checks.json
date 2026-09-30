@@ -1,0 +1,192 @@
+{
+  "scope": "Finite browser UI checks; not full business or accessibility acceptance",
+  "checks": [
+    {
+      "documentWidth": 320,
+      "overflow": [],
+      "route": "home",
+      "smallControls": [],
+      "theme": "dark",
+      "viewport": 320
+    },
+    {
+      "documentWidth": 320,
+      "overflow": [],
+      "route": "world",
+      "smallControls": [],
+      "theme": "dark",
+      "viewport": 320
+    },
+    {
+      "documentWidth": 320,
+      "overflow": [],
+      "route": "me",
+      "smallControls": [],
+      "theme": "dark",
+      "viewport": 320
+    },
+    {
+      "documentWidth": 320,
+      "overflow": [],
+      "route": "today",
+      "smallControls": [],
+      "theme": "dark",
+      "viewport": 320
+    },
+    {
+      "documentWidth": 320,
+      "overflow": [],
+      "route": "weekly",
+      "smallControls": [],
+      "theme": "dark",
+      "viewport": 320
+    },
+    {
+      "documentWidth": 320,
+      "overflow": [],
+      "route": "drill",
+      "smallControls": [],
+      "theme": "dark",
+      "viewport": 320
+    },
+    {
+      "documentWidth": 320,
+      "fz": "2",
+      "overflow": [],
+      "route": "home",
+      "tabsBottom": 740.0000152587891,
+      "viewport": 320
+    },
+    {
+      "documentWidth": 320,
+      "fz": "2",
+      "overflow": [],
+      "route": "world",
+      "tabsBottom": 740.0000152587891,
+      "viewport": 320
+    },
+    {
+      "documentWidth": 320,
+      "fz": "2",
+      "overflow": [],
+      "route": "me",
+      "tabsBottom": 740.0000152587891,
+      "viewport": 320
+    },
+    {
+      "documentWidth": 320,
+      "fz": "2",
+      "overflow": [],
+      "route": "drill",
+      "tabsBottom": 0,
+      "viewport": 320
+    },
+    {
+      "after": 740,
+      "animations": [
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none",
+        "none"
+      ],
+      "before": 740,
+      "test": "world-inline-update",
+      "updated": true
+    },
+    {
+      "entry": false,
+      "scroll": 0,
+      "test": "next-word-no-page-animation",
+      "word": "ability"
+    },
+    {
+      "documentWidth": 320,
+      "fz": "0",
+      "overflow": [],
+      "route": "home",
+      "smallControls": [],
+      "theme": "light",
+      "viewport": 320
+    },
+    {
+      "documentWidth": 320,
+      "fz": "0",
+      "overflow": [],
+      "route": "world",
+      "smallControls": [],
+      "theme": "light",
+      "viewport": 320
+    },
+    {
+      "documentWidth": 320,
+      "fz": "0",
+      "overflow": [],
+      "route": "me",
+      "smallControls": [],
+      "theme": "light",
+      "viewport": 320
+    },
+    {
+      "documentWidth": 320,
+      "fz": "0",
+      "overflow": [],
+      "route": "today",
+      "smallControls": [],
+      "theme": "light",
+      "viewport": 320
+    },
+    {
+      "documentWidth": 320,
+      "fz": "0",
+      "overflow": [],
+      "route": "weekly",
+      "smallControls": [],
+      "theme": "light",
+      "viewport": 320
+    },
+    {
+      "documentWidth": 320,
+      "fz": "0",
+      "overflow": [],
+      "route": "drill",
+      "smallControls": [],
+      "theme": "light",
+      "viewport": 320
+    },
+    {
+      "backCenterDelta": {
+        "dx": 0,
+        "dy": 0
+      },
+      "centerDelta": {
+        "dx": 0,
+        "dy": 0
+      },
+      "icon": {
+        "h": 14,
+        "w": 14
+      },
+      "test": "icon-size-and-centering",
+      "touch": {
+        "h": 44,
+        "w": 44
+      }
+    },
+    {
+      "animations": [
+        "none",
+        "none",
+        "none",
+        "none"
+      ],
+      "meaning": "能力\n\n🔊 朗读",
+      "pageEnter": false,
+      "test": "reveal-no-page-animation"
+    }
+  ]
+}

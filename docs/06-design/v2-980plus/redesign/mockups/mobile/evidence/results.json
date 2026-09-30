@@ -1,0 +1,117 @@
+[
+  {
+    "name": "F1-minutes-saved",
+    "pass": true,
+    "detail": "每天30分钟落库"
+  },
+  {
+    "name": "F1-score",
+    "pass": true,
+    "detail": "对3/5（Q0故意答错＋Q2跳过不计分）"
+  },
+  {
+    "name": "F1-report-dynamic",
+    "pass": true,
+    "detail": "报告随作答变化"
+  },
+  {
+    "name": "F1-pgen-ok",
+    "pass": true,
+    "detail": "生成成功态"
+  },
+  {
+    "name": "F2-group-result",
+    "pass": true,
+    "detail": "对2/3，完成≠掌握文案"
+  },
+  {
+    "name": "F2-task-updated",
+    "pass": true,
+    "detail": "t1 done, 对2/3"
+  },
+  {
+    "name": "F2-today-sync",
+    "pass": true,
+    "detail": "今日显示对2/3"
+  },
+  {
+    "name": "F5-resume-label",
+    "pass": true,
+    "detail": "今日显示继续第1题"
+  },
+  {
+    "name": "F5-draft-kept",
+    "pass": true,
+    "detail": "返回后选中态保留"
+  },
+  {
+    "name": "F4-done-empty",
+    "pass": true,
+    "detail": "初始已掌握为空态（非假数据）"
+  },
+  {
+    "name": "F4-variant-pass",
+    "pass": true,
+    "detail": "变式通过记掌握"
+  },
+  {
+    "name": "F4-done-listed",
+    "pass": true,
+    "detail": "已掌握列表可查"
+  },
+  {
+    "name": "F4-undo",
+    "pass": true,
+    "detail": "撤销恢复待补救数"
+  },
+  {
+    "name": "F3-forget-advance",
+    "pass": true,
+    "detail": "忘了后进入下一词 abandon→accumulate"
+  },
+  {
+    "name": "F3-undo",
+    "pass": true,
+    "detail": "撤销回到原词"
+  },
+  {
+    "name": "F3-round-end",
+    "pass": true,
+    "detail": "正常结束有总结"
+  },
+  {
+    "name": "persist-reload",
+    "pass": true,
+    "detail": "刷新后t1仍完成"
+  },
+  {
+    "name": "lab-fail",
+    "pass": true,
+    "detail": "注入失败可见可重试"
+  },
+  {
+    "name": "lab-retry",
+    "pass": true,
+    "detail": "重试一次成功（不重复计分走recordQuiz幂等）"
+  },
+  {
+    "name": "a11y-motion",
+    "pass": true,
+    "detail": "data-motion=0"
+  },
+  {
+    "name": "a11y-font",
+    "pass": true,
+    "detail": "大字只缩放内容区，整机不动"
+  },
+  {
+    "name": "theme-dark-follow",
+    "pass": true,
+    "detail": "跟随系统深色生效"
+  },
+  {
+    "name": "narrow-320",
+    "pass": true,
+    "detail": "无横向溢出"
+  }
+]

@@ -1,5 +1,19 @@
 # Changelog
 
+- [MOCK-DOCS-20260930] **移动端静态原型交付文档与证据归档。** 同步重设包入口、演示指南、修订记录和证据索引，明确当前工作为前端 UI/交互/静态数据；区分 R3–R14 历史断言、注入状态采样与最新局部 UI 目检。归档可在仓库中读取的 R14 独立复核与截图，保留最近阅读目的地缺陷及未测项；补充今日续读说明至按钮 12px 间距的 390/320px 实测记录。Git 归档不改变冻结或正式业务验收状态。
+
+- [MOCK-UI-20260930] **移动端原型图标、同页动效与布局修整。** 首页/世界共用紧凑打卡卡片，箭头固定 14px、点击区 44px；进场动画仅在路由切换播放，同页展开/选择/更新保留位置，下一题/下一词直接回到内容顶部。统一卡片与操作区间距、按钮图标居中、说明文字与动作分组；刷词模式改四列选择，词汇/音标/朗读独立排版。浏览器实测深浅色 320px 六类页面无横向溢出、按钮高度≥44px；深色特大字号四类页面无溢出；证据与实际操作记录见 `mockups/mobile/evidence/ui-polish-20260930/`。范围仅静态前端原型。
+
+- [MOCK-R14-20260930] **移动端 R14 收尾（前端 only）。** 统一最近阅读记录（openChapter/resumeChapter 跨书续读＋阅读位置三处保存＋刷新恢复）、列表 Markdown 加粗走 mdInline、按压动效改亮度（容器静止与按住一致）；口径同步：33 系断言数非 33 条旅程，pressed 旧 no-el 删除。针对性验证 verify-r14 8/8，回归 23＋10 全过，审计双矩阵分类全零。证据见 `redesign/mockups/mobile/evidence/visual-r13/after/results-r14.json`。人工目检未做，不宣布冻结，见修订说明 §14.3。
+
+- [MOCK-R13-20260930] **移动端 R13 缺陷修复与验证（前端 only，复核记录逐条闭环）。** 修特大字号底栏出视口（字号改缩放内容区＋铬层补偿，320×740 底栏 659–740 可点）、阅读刷新空白（持久化当前书章节＋索引钳制回退）、lab 无内容无效（同步清空/恢复复习队列）、首页未建计划与今日不一致（首页改引导卡）；首页主动作唯一化、KPI 不换行；alphabet I 键补 44px。真实交互 23＋10 项断言（分属约 10 条用户旅程）全过；审计升级分类统计＋底栏遮挡＋补路由状态，after 双矩阵 428＋176 组分类全零。证据见 `redesign/mockups/mobile/evidence/visual-r13/`。人工目检未做，不宣布冻结，见修订说明 §13.5。
+
+- [MOCK-R12-20260930] **移动端视觉验收与修复（样式层与测量脚本 only）。** Chromium 真实渲染 1136 组（全路由×浅/深/双高对比×默认/选中/按下/禁用/成功/错误/空态＋特大字号 320/390）：修 tab 选中缩放溢出、hero 光晕伪元素溢出、hero KPI 与幽灵按钮在渐变亮处对比不足（→5.5:1＋）。after 双矩阵 0 失败；特大字号横向溢出清零。60＋ 截图与 audit.json 见 `redesign/mockups/mobile/evidence/visual-r12/`。人工目检未做，不宣布冻结，待办见修订说明 §12.4。
+
+- [MOCK-THEME-FIX-20260930] **移动端静态原型主题配色修复。** 修正深色原生按钮黑字/黑箭头、浅色卡片描边、低对比选中导航与深色高对比黑字覆盖；统一表面、选中、按钮与反馈语义颜色，替换我的/世界/音标/周报/报告固定颜色，保留前端交互与持久化。18 页双主题、5 页双主题高对比及选中/反馈/320px 检查，49 次采样无低于阈值的文本，截图已目检；不据此宣称全部无障碍或前端完成，特大字号横向滚动仍待修复。证据见 `docs/06-design/v2-980plus/redesign/mockups/mobile/evidence/theme-fix-20260930/`，详见[修订说明 §11](docs/06-design/v2-980plus/redesign/revision-notes.md)。
+
+- [MOCK-R3-20260930] **第二轮移动端前端原型完整打通（只做前端，不碰后端）。** 统一演示数据＋localStorage 本机持久化（`yxx-demo-v3`），演示工具集中到 `#/lab` 并移出正常学习路径；定级五态机＋跳过＋报告按实际作答算分讲评；计划生成中/成功/失败/重试；语法/阅读两题组（选择→提交锁→解析→下一题→结果记任务对率，完成≠掌握）；复习本批≤4＋稍后再看＋快照撤销＋总结；错题 todo/done 双态＋变式＋撤销＋归并；阅读长文＋位置记忆＋查词收藏；深色/字号/动效真实生效。Chromium 实操 `verify-mock-flows` 23/23、`verify-mock-extra` 10/10，截图与结果见 `docs/06-design/v2-980plus/redesign/mockups/mobile/evidence/`。详见[修订说明 §10](docs/06-design/v2-980plus/redesign/revision-notes.md)与[演示指南](docs/06-design/v2-980plus/redesign/mockups/mobile/DEMO-GUIDE.md)。P1R 验收状态不变。
+
 - [TEST-DEPLOY-AF4EA883-20260928] **clyunedev test 重建发版成功（`5c5dc319` → `af4ea883`）。** 旧库无 `p1r_schema_history` 被 `--verify` 阻拦符合预期；170 行测试数确认可丢后删 14 个业务库重建。19 个应用容器全 `af4ea883`；13 个外部账本齐（content 27/learning 11/learner 12/notif 8/adminops 6，IAM Flyway 18）；网关 UP、JWKS、官网 200。双门已关回 false。待办：种子 `--target=test` 适配、5 个 test 号、旧镜像清理。详见 `CURRENT-HANDOFF.md` §8。
 - [HANDOFF-ENV-COLD-20260928] **环境让步交接记录（只记事实，不改判定）。** HEAD `ca8509e1e`（`dev`，与 `origin/dev` 同步）；本机冷态：Java 进程 0、`pnpm ports:check` 全 FREE、Docker 未启动、默认 Node 24/Java 21 与项目要求（20.19.5/25）错位但本地均有可用版本。`doc-audit` PASS（死链 0）、`stale-claims` PASS（1860 files）。用户决策：第一步修首页 503 与阅读/写作 403/404、第二步收本地可闭环项可立即执行，第三步线上/第三方资源冻结；计划本地验收通过后发线上再补线上功能。“直接覆盖老判定”本次未执行（canonical 归 QA）。换电脑按 `CURRENT-HANDOFF.md` §7 接手。
 - [LEDGER-CALIBER-SYNC-20260928] **两套 56 页台账口径对齐（只更新过期引用，不改判定行）。** 消除"两组互斥数字被当作同一现状引用"的冲突：并列声明 [56 PAGE-P1 三态总表](docs/07-operations/page-push-ledger-2026-09-26.md)（代理侧复核，2026-09-28 v10：PASS 40 / HONEST-EMPTY 16 / BLOCKED 0，证据根 `evidence/live/2026-09-26` 至 `2026-09-28`）与 [2026-09-23 覆盖台账](artifacts/uat-2026-09-23/coverage-ledger.md)（严格整页业务验收：PASS 0 / PARTIAL 29 / BLOCKED 27 / NOT_TESTED 0）判定规则不同、数字不可互相换算、互不替代，行级 canonical 状态变更权归 QA。更新过期"最近完整判定"引用：[CURRENT-HANDOFF](CURRENT-HANDOFF.md) 头部与 §0、根 [README](README.md) Phase 1 状态解释、[9-26 接手报告](artifacts/uat-2026-09-26/README.md)、[9-23 验收记录](artifacts/uat-2026-09-23/README.md) 头部、[运行与验证证据索引](docs/07-operations/README.md)（三态总表此前零入链，已列入当前读取顺序）。两表本身的行级判定与历史批次记录均未改动。

@@ -1,0 +1,52 @@
+[
+  {
+    "name": "X1-quickstart",
+    "pass": true,
+    "detail": "基线计划2组，非正式成绩"
+  },
+  {
+    "name": "X2-longtext",
+    "pass": true,
+    "detail": "长文样例588字"
+  },
+  {
+    "name": "X2-lookup",
+    "pass": true,
+    "detail": "查词出中文+搭配"
+  },
+  {
+    "name": "X2-tosrs",
+    "pass": true,
+    "detail": "生词进复习队列"
+  },
+  {
+    "name": "X2-fav",
+    "pass": true,
+    "detail": "收藏1节"
+  },
+  {
+    "name": "X2-pos",
+    "pass": true,
+    "detail": "返回恢复位置 sc=300"
+  },
+  {
+    "name": "X3-pay-fail",
+    "pass": true,
+    "detail": "失败态：钱没扣+可重试"
+  },
+  {
+    "name": "X3-pay-retry",
+    "pass": true,
+    "detail": "重试成功"
+  },
+  {
+    "name": "X4-xl-font",
+    "pass": true,
+    "detail": "内容区zoom=1.25，底栏可见可点 top=763/844"
+  },
+  {
+    "name": "X5-landscape",
+    "pass": true,
+    "detail": "横屏渲染，1个按钮（fresh未建计划态）"
+  }
+]

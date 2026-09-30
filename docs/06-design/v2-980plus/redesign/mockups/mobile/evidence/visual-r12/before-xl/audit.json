@@ -1,0 +1,3483 @@
+{
+ "mode": "before-xl",
+ "routes": 102,
+ "results": [
+  {
+   "key": "home@light@320",
+   "route": "home",
+   "tag": "",
+   "theme": "light",
+   "vp": 320,
+   "count": 48,
+   "min": 5.51,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [
+    {
+     "path": "div.hero",
+     "sw": 294,
+     "cw": 224,
+     "text": "先定个位，再排计划 🌱定级 3 分钟，生成你的专属计划去定"
+    },
+    {
+     "path": "a.on",
+     "sw": 67,
+     "cw": 64,
+     "text": "🏠首页"
+    }
+   ],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "home-planned@light@320",
+   "route": "home",
+   "tag": "planned",
+   "theme": "light",
+   "vp": 320,
+   "count": 56,
+   "min": 4.27,
+   "fails": 7,
+   "failSample": [
+    {
+     "text": "2",
+     "contrast": 4.27,
+     "fg": "rgb(255, 255, 255)",
+     "bg": [
+      [
+       90,
+       65,
+       161
+      ],
+      [
+       117,
+       80,
+       221
+      ],
+      [
+       138,
+       102,
+       210
+      ]
+     ],
+     "big": false,
+     "threshold": 4.5
+    },
+    {
+     "text": "今日待做",
+     "contrast": 4.27,
+     "fg": "rgb(255, 255, 255)",
+     "bg": [
+      [
+       90,
+       65,
+       161
+      ],
+      [
+       117,
+       80,
+       221
+      ],
+      [
+       138,
+       102,
+       210
+      ]
+     ],
+     "big": false,
+     "threshold": 4.5
+    },
+    {
+     "text": "3",
+     "contrast": 4.27,
+     "fg": "rgb(255, 255, 255)",
+     "bg": [
+      [
+       90,
+       65,
+       161
+      ],
+      [
+       117,
+       80,
+       221
+      ],
+      [
+       138,
+       102,
+       210
+      ]
+     ],
+     "big": false,
+     "threshold": 4.5
+    }
+   ],
+   "overflow": [
+    {
+     "path": "div.hero",
+     "sw": 294,
+     "cw": 224,
+     "text": "本周计划 · 四级词汇 B1晚上好，继续推进 👋先按四级词"
+    },
+    {
+     "path": "a.on",
+     "sw": 67,
+     "cw": 64,
+     "text": "🏠首页"
+    }
+   ],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "today@light@320",
+   "route": "today",
+   "tag": "",
+   "theme": "light",
+   "vp": 320,
+   "count": 27,
+   "min": 5.51,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [
+    {
+     "path": "a.on",
+     "sw": 67,
+     "cw": 64,
+     "text": "📚学习"
+    }
+   ],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "today-done@light@320",
+   "route": "today",
+   "tag": "done",
+   "theme": "light",
+   "vp": 320,
+   "count": 29,
+   "min": 5.51,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [
+    {
+     "path": "a.on",
+     "sw": 67,
+     "cw": 64,
+     "text": "📚学习"
+    }
+   ],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "today-empty@light@320",
+   "route": "today",
+   "tag": "empty",
+   "theme": "light",
+   "vp": 320,
+   "count": 27,
+   "min": 5.51,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [
+    {
+     "path": "a.on",
+     "sw": 67,
+     "cw": 64,
+     "text": "📚学习"
+    }
+   ],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "placement@light@320",
+   "route": "placement",
+   "tag": "",
+   "theme": "light",
+   "vp": 320,
+   "count": 13,
+   "min": 4.94,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "placement-saved@light@320",
+   "route": "placement",
+   "tag": "saved",
+   "theme": "light",
+   "vp": 320,
+   "count": 13,
+   "min": 4.84,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "placement-failed@light@320",
+   "route": "placement",
+   "tag": "failed",
+   "theme": "light",
+   "vp": 320,
+   "count": 14,
+   "min": 4.94,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "practice@light@320",
+   "route": "practice",
+   "tag": "",
+   "theme": "light",
+   "vp": 320,
+   "count": 5,
+   "min": 5.51,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "practice-wrong@light@320",
+   "route": "practice",
+   "tag": "wrong",
+   "theme": "light",
+   "vp": 320,
+   "count": 10,
+   "min": 4.94,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "practice-result@light@320",
+   "route": "practice",
+   "tag": "result",
+   "theme": "light",
+   "vp": 320,
+   "count": 8,
+   "min": 5.51,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "report@light@320",
+   "route": "report",
+   "tag": "",
+   "theme": "light",
+   "vp": 320,
+   "count": 14,
+   "min": 5.51,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "mistakes@light@320",
+   "route": "mistakes",
+   "tag": "",
+   "theme": "light",
+   "vp": 320,
+   "count": 30,
+   "min": 5.51,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "mistakes-done@light@320",
+   "route": "mistakes",
+   "tag": "done",
+   "theme": "light",
+   "vp": 320,
+   "count": 17,
+   "min": 5.51,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "mistakes-variant@light@320",
+   "route": "mistakes",
+   "tag": "variant",
+   "theme": "light",
+   "vp": 320,
+   "count": 10,
+   "min": 5.51,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "srs@light@320",
+   "route": "srs",
+   "tag": "",
+   "theme": "light",
+   "vp": 320,
+   "count": 8,
+   "min": 5.51,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "srs-done@light@320",
+   "route": "srs",
+   "tag": "done",
+   "theme": "light",
+   "vp": 320,
+   "count": 11,
+   "min": 5.51,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "settings@light@320",
+   "route": "settings",
+   "tag": "",
+   "theme": "light",
+   "vp": 320,
+   "count": 29,
+   "min": 5.51,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "me@light@320",
+   "route": "me",
+   "tag": "",
+   "theme": "light",
+   "vp": 320,
+   "count": 67,
+   "min": 4.82,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [
+    {
+     "path": "a.on",
+     "sw": 67,
+     "cw": 64,
+     "text": "👤我的"
+    }
+   ],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "world@light@320",
+   "route": "world",
+   "tag": "",
+   "theme": "light",
+   "vp": 320,
+   "count": 66,
+   "min": 4.82,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [
+    {
+     "path": "a.on",
+     "sw": 67,
+     "cw": 64,
+     "text": "🌍世界"
+    }
+   ],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "home@dark@320",
+   "route": "home",
+   "tag": "",
+   "theme": "dark",
+   "vp": 320,
+   "count": 48,
+   "min": 5.93,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [
+    {
+     "path": "div.hero",
+     "sw": 294,
+     "cw": 224,
+     "text": "先定个位，再排计划 🌱定级 3 分钟，生成你的专属计划去定"
+    },
+    {
+     "path": "a.on",
+     "sw": 67,
+     "cw": 64,
+     "text": "🏠首页"
+    }
+   ],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "home-planned@dark@320",
+   "route": "home",
+   "tag": "planned",
+   "theme": "dark",
+   "vp": 320,
+   "count": 56,
+   "min": 4.27,
+   "fails": 7,
+   "failSample": [
+    {
+     "text": "2",
+     "contrast": 4.27,
+     "fg": "rgb(255, 255, 255)",
+     "bg": [
+      [
+       90,
+       65,
+       161
+      ],
+      [
+       117,
+       80,
+       221
+      ],
+      [
+       138,
+       102,
+       210
+      ]
+     ],
+     "big": false,
+     "threshold": 4.5
+    },
+    {
+     "text": "今日待做",
+     "contrast": 4.27,
+     "fg": "rgb(255, 255, 255)",
+     "bg": [
+      [
+       90,
+       65,
+       161
+      ],
+      [
+       117,
+       80,
+       221
+      ],
+      [
+       138,
+       102,
+       210
+      ]
+     ],
+     "big": false,
+     "threshold": 4.5
+    },
+    {
+     "text": "3",
+     "contrast": 4.27,
+     "fg": "rgb(255, 255, 255)",
+     "bg": [
+      [
+       90,
+       65,
+       161
+      ],
+      [
+       117,
+       80,
+       221
+      ],
+      [
+       138,
+       102,
+       210
+      ]
+     ],
+     "big": false,
+     "threshold": 4.5
+    }
+   ],
+   "overflow": [
+    {
+     "path": "div.hero",
+     "sw": 294,
+     "cw": 224,
+     "text": "本周计划 · 四级词汇 B1晚上好，继续推进 👋先按四级词"
+    },
+    {
+     "path": "a.on",
+     "sw": 67,
+     "cw": 64,
+     "text": "🏠首页"
+    }
+   ],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "today@dark@320",
+   "route": "today",
+   "tag": "",
+   "theme": "dark",
+   "vp": 320,
+   "count": 27,
+   "min": 6.48,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [
+    {
+     "path": "a.on",
+     "sw": 67,
+     "cw": 64,
+     "text": "📚学习"
+    }
+   ],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "today-done@dark@320",
+   "route": "today",
+   "tag": "done",
+   "theme": "dark",
+   "vp": 320,
+   "count": 29,
+   "min": 6.48,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [
+    {
+     "path": "a.on",
+     "sw": 67,
+     "cw": 64,
+     "text": "📚学习"
+    }
+   ],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "today-empty@dark@320",
+   "route": "today",
+   "tag": "empty",
+   "theme": "dark",
+   "vp": 320,
+   "count": 27,
+   "min": 6.48,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [
+    {
+     "path": "a.on",
+     "sw": 67,
+     "cw": 64,
+     "text": "📚学习"
+    }
+   ],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "placement@dark@320",
+   "route": "placement",
+   "tag": "",
+   "theme": "dark",
+   "vp": 320,
+   "count": 13,
+   "min": 5.93,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "placement-saved@dark@320",
+   "route": "placement",
+   "tag": "saved",
+   "theme": "dark",
+   "vp": 320,
+   "count": 13,
+   "min": 6.48,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "placement-failed@dark@320",
+   "route": "placement",
+   "tag": "failed",
+   "theme": "dark",
+   "vp": 320,
+   "count": 14,
+   "min": 5.93,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "practice@dark@320",
+   "route": "practice",
+   "tag": "",
+   "theme": "dark",
+   "vp": 320,
+   "count": 5,
+   "min": 5.93,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "practice-wrong@dark@320",
+   "route": "practice",
+   "tag": "wrong",
+   "theme": "dark",
+   "vp": 320,
+   "count": 10,
+   "min": 6.48,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "practice-result@dark@320",
+   "route": "practice",
+   "tag": "result",
+   "theme": "dark",
+   "vp": 320,
+   "count": 8,
+   "min": 5.93,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "report@dark@320",
+   "route": "report",
+   "tag": "",
+   "theme": "dark",
+   "vp": 320,
+   "count": 14,
+   "min": 5.93,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "mistakes@dark@320",
+   "route": "mistakes",
+   "tag": "",
+   "theme": "dark",
+   "vp": 320,
+   "count": 30,
+   "min": 6.48,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "mistakes-done@dark@320",
+   "route": "mistakes",
+   "tag": "done",
+   "theme": "dark",
+   "vp": 320,
+   "count": 17,
+   "min": 6.48,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "mistakes-variant@dark@320",
+   "route": "mistakes",
+   "tag": "variant",
+   "theme": "dark",
+   "vp": 320,
+   "count": 10,
+   "min": 5.93,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "srs@dark@320",
+   "route": "srs",
+   "tag": "",
+   "theme": "dark",
+   "vp": 320,
+   "count": 8,
+   "min": 6.48,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "srs-done@dark@320",
+   "route": "srs",
+   "tag": "done",
+   "theme": "dark",
+   "vp": 320,
+   "count": 11,
+   "min": 6.48,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "settings@dark@320",
+   "route": "settings",
+   "tag": "",
+   "theme": "dark",
+   "vp": 320,
+   "count": 29,
+   "min": 5.93,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "me@dark@320",
+   "route": "me",
+   "tag": "",
+   "theme": "dark",
+   "vp": 320,
+   "count": 67,
+   "min": 6.48,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [
+    {
+     "path": "a.on",
+     "sw": 67,
+     "cw": 64,
+     "text": "👤我的"
+    }
+   ],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "world@dark@320",
+   "route": "world",
+   "tag": "",
+   "theme": "dark",
+   "vp": 320,
+   "count": 66,
+   "min": 6.48,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [
+    {
+     "path": "a.on",
+     "sw": 67,
+     "cw": 64,
+     "text": "🌍世界"
+    }
+   ],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "home@light-hc@320",
+   "route": "home",
+   "tag": "",
+   "theme": "light-hc",
+   "vp": 320,
+   "count": 48,
+   "min": 5.93,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [
+    {
+     "path": "div.hero",
+     "sw": 294,
+     "cw": 224,
+     "text": "先定个位，再排计划 🌱定级 3 分钟，生成你的专属计划去定"
+    },
+    {
+     "path": "a.on",
+     "sw": 67,
+     "cw": 64,
+     "text": "🏠首页"
+    }
+   ],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "home-planned@light-hc@320",
+   "route": "home",
+   "tag": "planned",
+   "theme": "light-hc",
+   "vp": 320,
+   "count": 56,
+   "min": 4.27,
+   "fails": 7,
+   "failSample": [
+    {
+     "text": "2",
+     "contrast": 4.27,
+     "fg": "rgb(255, 255, 255)",
+     "bg": [
+      [
+       90,
+       65,
+       161
+      ],
+      [
+       117,
+       80,
+       221
+      ],
+      [
+       138,
+       102,
+       210
+      ]
+     ],
+     "big": false,
+     "threshold": 4.5
+    },
+    {
+     "text": "今日待做",
+     "contrast": 4.27,
+     "fg": "rgb(255, 255, 255)",
+     "bg": [
+      [
+       90,
+       65,
+       161
+      ],
+      [
+       117,
+       80,
+       221
+      ],
+      [
+       138,
+       102,
+       210
+      ]
+     ],
+     "big": false,
+     "threshold": 4.5
+    },
+    {
+     "text": "3",
+     "contrast": 4.27,
+     "fg": "rgb(255, 255, 255)",
+     "bg": [
+      [
+       90,
+       65,
+       161
+      ],
+      [
+       117,
+       80,
+       221
+      ],
+      [
+       138,
+       102,
+       210
+      ]
+     ],
+     "big": false,
+     "threshold": 4.5
+    }
+   ],
+   "overflow": [
+    {
+     "path": "div.hero",
+     "sw": 294,
+     "cw": 224,
+     "text": "本周计划 · 四级词汇 B1晚上好，继续推进 👋先按四级词"
+    },
+    {
+     "path": "a.on",
+     "sw": 67,
+     "cw": 64,
+     "text": "🏠首页"
+    }
+   ],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "today@light-hc@320",
+   "route": "today",
+   "tag": "",
+   "theme": "light-hc",
+   "vp": 320,
+   "count": 27,
+   "min": 8.94,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [
+    {
+     "path": "a.on",
+     "sw": 67,
+     "cw": 64,
+     "text": "📚学习"
+    }
+   ],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "today-done@light-hc@320",
+   "route": "today",
+   "tag": "done",
+   "theme": "light-hc",
+   "vp": 320,
+   "count": 29,
+   "min": 8.94,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [
+    {
+     "path": "a.on",
+     "sw": 67,
+     "cw": 64,
+     "text": "📚学习"
+    }
+   ],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "today-empty@light-hc@320",
+   "route": "today",
+   "tag": "empty",
+   "theme": "light-hc",
+   "vp": 320,
+   "count": 27,
+   "min": 8.94,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [
+    {
+     "path": "a.on",
+     "sw": 67,
+     "cw": 64,
+     "text": "📚学习"
+    }
+   ],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "placement@light-hc@320",
+   "route": "placement",
+   "tag": "",
+   "theme": "light-hc",
+   "vp": 320,
+   "count": 13,
+   "min": 5.93,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "placement-saved@light-hc@320",
+   "route": "placement",
+   "tag": "saved",
+   "theme": "light-hc",
+   "vp": 320,
+   "count": 13,
+   "min": 4.84,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "placement-failed@light-hc@320",
+   "route": "placement",
+   "tag": "failed",
+   "theme": "light-hc",
+   "vp": 320,
+   "count": 14,
+   "min": 5.93,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "practice@light-hc@320",
+   "route": "practice",
+   "tag": "",
+   "theme": "light-hc",
+   "vp": 320,
+   "count": 5,
+   "min": 5.93,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "practice-wrong@light-hc@320",
+   "route": "practice",
+   "tag": "wrong",
+   "theme": "light-hc",
+   "vp": 320,
+   "count": 10,
+   "min": 5.98,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "practice-result@light-hc@320",
+   "route": "practice",
+   "tag": "result",
+   "theme": "light-hc",
+   "vp": 320,
+   "count": 8,
+   "min": 5.93,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "report@light-hc@320",
+   "route": "report",
+   "tag": "",
+   "theme": "light-hc",
+   "vp": 320,
+   "count": 14,
+   "min": 5.93,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "mistakes@light-hc@320",
+   "route": "mistakes",
+   "tag": "",
+   "theme": "light-hc",
+   "vp": 320,
+   "count": 30,
+   "min": 8.94,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "mistakes-done@light-hc@320",
+   "route": "mistakes",
+   "tag": "done",
+   "theme": "light-hc",
+   "vp": 320,
+   "count": 17,
+   "min": 8.94,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "mistakes-variant@light-hc@320",
+   "route": "mistakes",
+   "tag": "variant",
+   "theme": "light-hc",
+   "vp": 320,
+   "count": 10,
+   "min": 5.93,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "srs@light-hc@320",
+   "route": "srs",
+   "tag": "",
+   "theme": "light-hc",
+   "vp": 320,
+   "count": 8,
+   "min": 8.94,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "srs-done@light-hc@320",
+   "route": "srs",
+   "tag": "done",
+   "theme": "light-hc",
+   "vp": 320,
+   "count": 11,
+   "min": 8.94,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "settings@light-hc@320",
+   "route": "settings",
+   "tag": "",
+   "theme": "light-hc",
+   "vp": 320,
+   "count": 29,
+   "min": 5.93,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "me@light-hc@320",
+   "route": "me",
+   "tag": "",
+   "theme": "light-hc",
+   "vp": 320,
+   "count": 67,
+   "min": 8.94,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [
+    {
+     "path": "a.on",
+     "sw": 67,
+     "cw": 64,
+     "text": "👤我的"
+    }
+   ],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "world@light-hc@320",
+   "route": "world",
+   "tag": "",
+   "theme": "light-hc",
+   "vp": 320,
+   "count": 66,
+   "min": 8.94,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [
+    {
+     "path": "a.on",
+     "sw": 67,
+     "cw": 64,
+     "text": "🌍世界"
+    }
+   ],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "home@dark-hc@320",
+   "route": "home",
+   "tag": "",
+   "theme": "dark-hc",
+   "vp": 320,
+   "count": 48,
+   "min": 5.93,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [
+    {
+     "path": "div.hero",
+     "sw": 294,
+     "cw": 224,
+     "text": "先定个位，再排计划 🌱定级 3 分钟，生成你的专属计划去定"
+    },
+    {
+     "path": "a.on",
+     "sw": 67,
+     "cw": 64,
+     "text": "🏠首页"
+    }
+   ],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "home-planned@dark-hc@320",
+   "route": "home",
+   "tag": "planned",
+   "theme": "dark-hc",
+   "vp": 320,
+   "count": 56,
+   "min": 4.27,
+   "fails": 7,
+   "failSample": [
+    {
+     "text": "2",
+     "contrast": 4.27,
+     "fg": "rgb(255, 255, 255)",
+     "bg": [
+      [
+       90,
+       65,
+       161
+      ],
+      [
+       117,
+       80,
+       221
+      ],
+      [
+       138,
+       102,
+       210
+      ]
+     ],
+     "big": false,
+     "threshold": 4.5
+    },
+    {
+     "text": "今日待做",
+     "contrast": 4.27,
+     "fg": "rgb(255, 255, 255)",
+     "bg": [
+      [
+       90,
+       65,
+       161
+      ],
+      [
+       117,
+       80,
+       221
+      ],
+      [
+       138,
+       102,
+       210
+      ]
+     ],
+     "big": false,
+     "threshold": 4.5
+    },
+    {
+     "text": "3",
+     "contrast": 4.27,
+     "fg": "rgb(255, 255, 255)",
+     "bg": [
+      [
+       90,
+       65,
+       161
+      ],
+      [
+       117,
+       80,
+       221
+      ],
+      [
+       138,
+       102,
+       210
+      ]
+     ],
+     "big": false,
+     "threshold": 4.5
+    }
+   ],
+   "overflow": [
+    {
+     "path": "div.hero",
+     "sw": 294,
+     "cw": 224,
+     "text": "本周计划 · 四级词汇 B1晚上好，继续推进 👋先按四级词"
+    },
+    {
+     "path": "a.on",
+     "sw": 67,
+     "cw": 64,
+     "text": "🏠首页"
+    }
+   ],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "today@dark-hc@320",
+   "route": "today",
+   "tag": "",
+   "theme": "dark-hc",
+   "vp": 320,
+   "count": 27,
+   "min": 8.41,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [
+    {
+     "path": "a.on",
+     "sw": 67,
+     "cw": 64,
+     "text": "📚学习"
+    }
+   ],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "today-done@dark-hc@320",
+   "route": "today",
+   "tag": "done",
+   "theme": "dark-hc",
+   "vp": 320,
+   "count": 29,
+   "min": 8.41,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [
+    {
+     "path": "a.on",
+     "sw": 67,
+     "cw": 64,
+     "text": "📚学习"
+    }
+   ],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "today-empty@dark-hc@320",
+   "route": "today",
+   "tag": "empty",
+   "theme": "dark-hc",
+   "vp": 320,
+   "count": 27,
+   "min": 8.41,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [
+    {
+     "path": "a.on",
+     "sw": 67,
+     "cw": 64,
+     "text": "📚学习"
+    }
+   ],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "placement@dark-hc@320",
+   "route": "placement",
+   "tag": "",
+   "theme": "dark-hc",
+   "vp": 320,
+   "count": 13,
+   "min": 5.93,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "placement-saved@dark-hc@320",
+   "route": "placement",
+   "tag": "saved",
+   "theme": "dark-hc",
+   "vp": 320,
+   "count": 13,
+   "min": 8.11,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "placement-failed@dark-hc@320",
+   "route": "placement",
+   "tag": "failed",
+   "theme": "dark-hc",
+   "vp": 320,
+   "count": 14,
+   "min": 5.93,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "practice@dark-hc@320",
+   "route": "practice",
+   "tag": "",
+   "theme": "dark-hc",
+   "vp": 320,
+   "count": 5,
+   "min": 5.93,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "practice-wrong@dark-hc@320",
+   "route": "practice",
+   "tag": "wrong",
+   "theme": "dark-hc",
+   "vp": 320,
+   "count": 10,
+   "min": 8.06,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "practice-result@dark-hc@320",
+   "route": "practice",
+   "tag": "result",
+   "theme": "dark-hc",
+   "vp": 320,
+   "count": 8,
+   "min": 5.93,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "report@dark-hc@320",
+   "route": "report",
+   "tag": "",
+   "theme": "dark-hc",
+   "vp": 320,
+   "count": 14,
+   "min": 5.93,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "mistakes@dark-hc@320",
+   "route": "mistakes",
+   "tag": "",
+   "theme": "dark-hc",
+   "vp": 320,
+   "count": 30,
+   "min": 8.41,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "mistakes-done@dark-hc@320",
+   "route": "mistakes",
+   "tag": "done",
+   "theme": "dark-hc",
+   "vp": 320,
+   "count": 17,
+   "min": 8.41,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "mistakes-variant@dark-hc@320",
+   "route": "mistakes",
+   "tag": "variant",
+   "theme": "dark-hc",
+   "vp": 320,
+   "count": 10,
+   "min": 5.93,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "srs@dark-hc@320",
+   "route": "srs",
+   "tag": "",
+   "theme": "dark-hc",
+   "vp": 320,
+   "count": 8,
+   "min": 8.41,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "srs-done@dark-hc@320",
+   "route": "srs",
+   "tag": "done",
+   "theme": "dark-hc",
+   "vp": 320,
+   "count": 11,
+   "min": 8.41,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "settings@dark-hc@320",
+   "route": "settings",
+   "tag": "",
+   "theme": "dark-hc",
+   "vp": 320,
+   "count": 29,
+   "min": 5.93,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "me@dark-hc@320",
+   "route": "me",
+   "tag": "",
+   "theme": "dark-hc",
+   "vp": 320,
+   "count": 67,
+   "min": 8.41,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [
+    {
+     "path": "a.on",
+     "sw": 67,
+     "cw": 64,
+     "text": "👤我的"
+    }
+   ],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "world@dark-hc@320",
+   "route": "world",
+   "tag": "",
+   "theme": "dark-hc",
+   "vp": 320,
+   "count": 66,
+   "min": 8.41,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [
+    {
+     "path": "a.on",
+     "sw": 67,
+     "cw": 64,
+     "text": "🌍世界"
+    }
+   ],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "home@light@390",
+   "route": "home",
+   "tag": "",
+   "theme": "light",
+   "vp": 390,
+   "count": 48,
+   "min": 5.51,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [
+    {
+     "path": "div.hero",
+     "sw": 350,
+     "cw": 280,
+     "text": "先定个位，再排计划 🌱定级 3 分钟，生成你的专属计划去定"
+    },
+    {
+     "path": "a.on",
+     "sw": 81,
+     "cw": 78,
+     "text": "🏠首页"
+    }
+   ],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "home-planned@light@390",
+   "route": "home",
+   "tag": "planned",
+   "theme": "light",
+   "vp": 390,
+   "count": 56,
+   "min": 4.27,
+   "fails": 7,
+   "failSample": [
+    {
+     "text": "2",
+     "contrast": 4.27,
+     "fg": "rgb(255, 255, 255)",
+     "bg": [
+      [
+       90,
+       65,
+       161
+      ],
+      [
+       117,
+       80,
+       221
+      ],
+      [
+       138,
+       102,
+       210
+      ]
+     ],
+     "big": false,
+     "threshold": 4.5
+    },
+    {
+     "text": "今日待做",
+     "contrast": 4.27,
+     "fg": "rgb(255, 255, 255)",
+     "bg": [
+      [
+       90,
+       65,
+       161
+      ],
+      [
+       117,
+       80,
+       221
+      ],
+      [
+       138,
+       102,
+       210
+      ]
+     ],
+     "big": false,
+     "threshold": 4.5
+    },
+    {
+     "text": "3",
+     "contrast": 4.27,
+     "fg": "rgb(255, 255, 255)",
+     "bg": [
+      [
+       90,
+       65,
+       161
+      ],
+      [
+       117,
+       80,
+       221
+      ],
+      [
+       138,
+       102,
+       210
+      ]
+     ],
+     "big": false,
+     "threshold": 4.5
+    }
+   ],
+   "overflow": [
+    {
+     "path": "div.hero",
+     "sw": 350,
+     "cw": 280,
+     "text": "本周计划 · 四级词汇 B1晚上好，继续推进 👋先按四级词"
+    },
+    {
+     "path": "a.on",
+     "sw": 81,
+     "cw": 78,
+     "text": "🏠首页"
+    }
+   ],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "today@light@390",
+   "route": "today",
+   "tag": "",
+   "theme": "light",
+   "vp": 390,
+   "count": 27,
+   "min": 5.51,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [
+    {
+     "path": "a.on",
+     "sw": 81,
+     "cw": 78,
+     "text": "📚学习"
+    }
+   ],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "today-done@light@390",
+   "route": "today",
+   "tag": "done",
+   "theme": "light",
+   "vp": 390,
+   "count": 29,
+   "min": 5.51,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [
+    {
+     "path": "a.on",
+     "sw": 81,
+     "cw": 78,
+     "text": "📚学习"
+    }
+   ],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "today-empty@light@390",
+   "route": "today",
+   "tag": "empty",
+   "theme": "light",
+   "vp": 390,
+   "count": 27,
+   "min": 5.51,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [
+    {
+     "path": "a.on",
+     "sw": 81,
+     "cw": 78,
+     "text": "📚学习"
+    }
+   ],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "placement@light@390",
+   "route": "placement",
+   "tag": "",
+   "theme": "light",
+   "vp": 390,
+   "count": 13,
+   "min": 4.94,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "placement-saved@light@390",
+   "route": "placement",
+   "tag": "saved",
+   "theme": "light",
+   "vp": 390,
+   "count": 13,
+   "min": 4.84,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "placement-failed@light@390",
+   "route": "placement",
+   "tag": "failed",
+   "theme": "light",
+   "vp": 390,
+   "count": 14,
+   "min": 4.94,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "practice@light@390",
+   "route": "practice",
+   "tag": "",
+   "theme": "light",
+   "vp": 390,
+   "count": 5,
+   "min": 5.51,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "practice-wrong@light@390",
+   "route": "practice",
+   "tag": "wrong",
+   "theme": "light",
+   "vp": 390,
+   "count": 10,
+   "min": 4.94,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "practice-result@light@390",
+   "route": "practice",
+   "tag": "result",
+   "theme": "light",
+   "vp": 390,
+   "count": 8,
+   "min": 5.51,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "report@light@390",
+   "route": "report",
+   "tag": "",
+   "theme": "light",
+   "vp": 390,
+   "count": 14,
+   "min": 5.51,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "mistakes@light@390",
+   "route": "mistakes",
+   "tag": "",
+   "theme": "light",
+   "vp": 390,
+   "count": 30,
+   "min": 5.51,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "mistakes-done@light@390",
+   "route": "mistakes",
+   "tag": "done",
+   "theme": "light",
+   "vp": 390,
+   "count": 17,
+   "min": 5.51,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "mistakes-variant@light@390",
+   "route": "mistakes",
+   "tag": "variant",
+   "theme": "light",
+   "vp": 390,
+   "count": 10,
+   "min": 5.51,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "srs@light@390",
+   "route": "srs",
+   "tag": "",
+   "theme": "light",
+   "vp": 390,
+   "count": 8,
+   "min": 5.51,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "srs-done@light@390",
+   "route": "srs",
+   "tag": "done",
+   "theme": "light",
+   "vp": 390,
+   "count": 11,
+   "min": 5.51,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "settings@light@390",
+   "route": "settings",
+   "tag": "",
+   "theme": "light",
+   "vp": 390,
+   "count": 29,
+   "min": 5.51,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "me@light@390",
+   "route": "me",
+   "tag": "",
+   "theme": "light",
+   "vp": 390,
+   "count": 67,
+   "min": 4.82,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [
+    {
+     "path": "a.on",
+     "sw": 81,
+     "cw": 78,
+     "text": "👤我的"
+    }
+   ],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "world@light@390",
+   "route": "world",
+   "tag": "",
+   "theme": "light",
+   "vp": 390,
+   "count": 66,
+   "min": 4.82,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [
+    {
+     "path": "a.on",
+     "sw": 81,
+     "cw": 78,
+     "text": "🌍世界"
+    }
+   ],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "home@dark@390",
+   "route": "home",
+   "tag": "",
+   "theme": "dark",
+   "vp": 390,
+   "count": 48,
+   "min": 5.93,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [
+    {
+     "path": "div.hero",
+     "sw": 350,
+     "cw": 280,
+     "text": "先定个位，再排计划 🌱定级 3 分钟，生成你的专属计划去定"
+    },
+    {
+     "path": "a.on",
+     "sw": 81,
+     "cw": 78,
+     "text": "🏠首页"
+    }
+   ],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "home-planned@dark@390",
+   "route": "home",
+   "tag": "planned",
+   "theme": "dark",
+   "vp": 390,
+   "count": 56,
+   "min": 4.27,
+   "fails": 7,
+   "failSample": [
+    {
+     "text": "2",
+     "contrast": 4.27,
+     "fg": "rgb(255, 255, 255)",
+     "bg": [
+      [
+       90,
+       65,
+       161
+      ],
+      [
+       117,
+       80,
+       221
+      ],
+      [
+       138,
+       102,
+       210
+      ]
+     ],
+     "big": false,
+     "threshold": 4.5
+    },
+    {
+     "text": "今日待做",
+     "contrast": 4.27,
+     "fg": "rgb(255, 255, 255)",
+     "bg": [
+      [
+       90,
+       65,
+       161
+      ],
+      [
+       117,
+       80,
+       221
+      ],
+      [
+       138,
+       102,
+       210
+      ]
+     ],
+     "big": false,
+     "threshold": 4.5
+    },
+    {
+     "text": "3",
+     "contrast": 4.27,
+     "fg": "rgb(255, 255, 255)",
+     "bg": [
+      [
+       90,
+       65,
+       161
+      ],
+      [
+       117,
+       80,
+       221
+      ],
+      [
+       138,
+       102,
+       210
+      ]
+     ],
+     "big": false,
+     "threshold": 4.5
+    }
+   ],
+   "overflow": [
+    {
+     "path": "div.hero",
+     "sw": 350,
+     "cw": 280,
+     "text": "本周计划 · 四级词汇 B1晚上好，继续推进 👋先按四级词"
+    },
+    {
+     "path": "a.on",
+     "sw": 81,
+     "cw": 78,
+     "text": "🏠首页"
+    }
+   ],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "today@dark@390",
+   "route": "today",
+   "tag": "",
+   "theme": "dark",
+   "vp": 390,
+   "count": 27,
+   "min": 6.48,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [
+    {
+     "path": "a.on",
+     "sw": 81,
+     "cw": 78,
+     "text": "📚学习"
+    }
+   ],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "today-done@dark@390",
+   "route": "today",
+   "tag": "done",
+   "theme": "dark",
+   "vp": 390,
+   "count": 29,
+   "min": 6.48,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [
+    {
+     "path": "a.on",
+     "sw": 81,
+     "cw": 78,
+     "text": "📚学习"
+    }
+   ],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "today-empty@dark@390",
+   "route": "today",
+   "tag": "empty",
+   "theme": "dark",
+   "vp": 390,
+   "count": 27,
+   "min": 6.48,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [
+    {
+     "path": "a.on",
+     "sw": 81,
+     "cw": 78,
+     "text": "📚学习"
+    }
+   ],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "placement@dark@390",
+   "route": "placement",
+   "tag": "",
+   "theme": "dark",
+   "vp": 390,
+   "count": 13,
+   "min": 5.93,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "placement-saved@dark@390",
+   "route": "placement",
+   "tag": "saved",
+   "theme": "dark",
+   "vp": 390,
+   "count": 13,
+   "min": 6.48,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "placement-failed@dark@390",
+   "route": "placement",
+   "tag": "failed",
+   "theme": "dark",
+   "vp": 390,
+   "count": 14,
+   "min": 5.93,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "practice@dark@390",
+   "route": "practice",
+   "tag": "",
+   "theme": "dark",
+   "vp": 390,
+   "count": 5,
+   "min": 5.93,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "practice-wrong@dark@390",
+   "route": "practice",
+   "tag": "wrong",
+   "theme": "dark",
+   "vp": 390,
+   "count": 10,
+   "min": 6.48,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "practice-result@dark@390",
+   "route": "practice",
+   "tag": "result",
+   "theme": "dark",
+   "vp": 390,
+   "count": 8,
+   "min": 5.93,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "report@dark@390",
+   "route": "report",
+   "tag": "",
+   "theme": "dark",
+   "vp": 390,
+   "count": 14,
+   "min": 5.93,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "mistakes@dark@390",
+   "route": "mistakes",
+   "tag": "",
+   "theme": "dark",
+   "vp": 390,
+   "count": 30,
+   "min": 6.48,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "mistakes-done@dark@390",
+   "route": "mistakes",
+   "tag": "done",
+   "theme": "dark",
+   "vp": 390,
+   "count": 17,
+   "min": 6.48,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "mistakes-variant@dark@390",
+   "route": "mistakes",
+   "tag": "variant",
+   "theme": "dark",
+   "vp": 390,
+   "count": 10,
+   "min": 5.93,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "srs@dark@390",
+   "route": "srs",
+   "tag": "",
+   "theme": "dark",
+   "vp": 390,
+   "count": 8,
+   "min": 6.48,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "srs-done@dark@390",
+   "route": "srs",
+   "tag": "done",
+   "theme": "dark",
+   "vp": 390,
+   "count": 11,
+   "min": 6.48,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "settings@dark@390",
+   "route": "settings",
+   "tag": "",
+   "theme": "dark",
+   "vp": 390,
+   "count": 29,
+   "min": 5.93,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "me@dark@390",
+   "route": "me",
+   "tag": "",
+   "theme": "dark",
+   "vp": 390,
+   "count": 67,
+   "min": 6.48,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [
+    {
+     "path": "a.on",
+     "sw": 81,
+     "cw": 78,
+     "text": "👤我的"
+    }
+   ],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "world@dark@390",
+   "route": "world",
+   "tag": "",
+   "theme": "dark",
+   "vp": 390,
+   "count": 66,
+   "min": 6.48,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [
+    {
+     "path": "a.on",
+     "sw": 81,
+     "cw": 78,
+     "text": "🌍世界"
+    }
+   ],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "home@light-hc@390",
+   "route": "home",
+   "tag": "",
+   "theme": "light-hc",
+   "vp": 390,
+   "count": 48,
+   "min": 5.93,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [
+    {
+     "path": "div.hero",
+     "sw": 350,
+     "cw": 280,
+     "text": "先定个位，再排计划 🌱定级 3 分钟，生成你的专属计划去定"
+    },
+    {
+     "path": "a.on",
+     "sw": 81,
+     "cw": 78,
+     "text": "🏠首页"
+    }
+   ],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "home-planned@light-hc@390",
+   "route": "home",
+   "tag": "planned",
+   "theme": "light-hc",
+   "vp": 390,
+   "count": 56,
+   "min": 4.27,
+   "fails": 7,
+   "failSample": [
+    {
+     "text": "2",
+     "contrast": 4.27,
+     "fg": "rgb(255, 255, 255)",
+     "bg": [
+      [
+       90,
+       65,
+       161
+      ],
+      [
+       117,
+       80,
+       221
+      ],
+      [
+       138,
+       102,
+       210
+      ]
+     ],
+     "big": false,
+     "threshold": 4.5
+    },
+    {
+     "text": "今日待做",
+     "contrast": 4.27,
+     "fg": "rgb(255, 255, 255)",
+     "bg": [
+      [
+       90,
+       65,
+       161
+      ],
+      [
+       117,
+       80,
+       221
+      ],
+      [
+       138,
+       102,
+       210
+      ]
+     ],
+     "big": false,
+     "threshold": 4.5
+    },
+    {
+     "text": "3",
+     "contrast": 4.27,
+     "fg": "rgb(255, 255, 255)",
+     "bg": [
+      [
+       90,
+       65,
+       161
+      ],
+      [
+       117,
+       80,
+       221
+      ],
+      [
+       138,
+       102,
+       210
+      ]
+     ],
+     "big": false,
+     "threshold": 4.5
+    }
+   ],
+   "overflow": [
+    {
+     "path": "div.hero",
+     "sw": 350,
+     "cw": 280,
+     "text": "本周计划 · 四级词汇 B1晚上好，继续推进 👋先按四级词"
+    },
+    {
+     "path": "a.on",
+     "sw": 81,
+     "cw": 78,
+     "text": "🏠首页"
+    }
+   ],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "today@light-hc@390",
+   "route": "today",
+   "tag": "",
+   "theme": "light-hc",
+   "vp": 390,
+   "count": 27,
+   "min": 8.94,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [
+    {
+     "path": "a.on",
+     "sw": 81,
+     "cw": 78,
+     "text": "📚学习"
+    }
+   ],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "today-done@light-hc@390",
+   "route": "today",
+   "tag": "done",
+   "theme": "light-hc",
+   "vp": 390,
+   "count": 29,
+   "min": 8.94,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [
+    {
+     "path": "a.on",
+     "sw": 81,
+     "cw": 78,
+     "text": "📚学习"
+    }
+   ],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "today-empty@light-hc@390",
+   "route": "today",
+   "tag": "empty",
+   "theme": "light-hc",
+   "vp": 390,
+   "count": 27,
+   "min": 8.94,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [
+    {
+     "path": "a.on",
+     "sw": 81,
+     "cw": 78,
+     "text": "📚学习"
+    }
+   ],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "placement@light-hc@390",
+   "route": "placement",
+   "tag": "",
+   "theme": "light-hc",
+   "vp": 390,
+   "count": 13,
+   "min": 5.93,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "placement-saved@light-hc@390",
+   "route": "placement",
+   "tag": "saved",
+   "theme": "light-hc",
+   "vp": 390,
+   "count": 13,
+   "min": 4.84,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "placement-failed@light-hc@390",
+   "route": "placement",
+   "tag": "failed",
+   "theme": "light-hc",
+   "vp": 390,
+   "count": 14,
+   "min": 5.93,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "practice@light-hc@390",
+   "route": "practice",
+   "tag": "",
+   "theme": "light-hc",
+   "vp": 390,
+   "count": 5,
+   "min": 5.93,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "practice-wrong@light-hc@390",
+   "route": "practice",
+   "tag": "wrong",
+   "theme": "light-hc",
+   "vp": 390,
+   "count": 10,
+   "min": 5.98,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "practice-result@light-hc@390",
+   "route": "practice",
+   "tag": "result",
+   "theme": "light-hc",
+   "vp": 390,
+   "count": 8,
+   "min": 5.93,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "report@light-hc@390",
+   "route": "report",
+   "tag": "",
+   "theme": "light-hc",
+   "vp": 390,
+   "count": 14,
+   "min": 5.93,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "mistakes@light-hc@390",
+   "route": "mistakes",
+   "tag": "",
+   "theme": "light-hc",
+   "vp": 390,
+   "count": 30,
+   "min": 8.94,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "mistakes-done@light-hc@390",
+   "route": "mistakes",
+   "tag": "done",
+   "theme": "light-hc",
+   "vp": 390,
+   "count": 17,
+   "min": 8.94,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "mistakes-variant@light-hc@390",
+   "route": "mistakes",
+   "tag": "variant",
+   "theme": "light-hc",
+   "vp": 390,
+   "count": 10,
+   "min": 5.93,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "srs@light-hc@390",
+   "route": "srs",
+   "tag": "",
+   "theme": "light-hc",
+   "vp": 390,
+   "count": 8,
+   "min": 8.94,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "srs-done@light-hc@390",
+   "route": "srs",
+   "tag": "done",
+   "theme": "light-hc",
+   "vp": 390,
+   "count": 11,
+   "min": 8.94,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "settings@light-hc@390",
+   "route": "settings",
+   "tag": "",
+   "theme": "light-hc",
+   "vp": 390,
+   "count": 29,
+   "min": 5.93,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "me@light-hc@390",
+   "route": "me",
+   "tag": "",
+   "theme": "light-hc",
+   "vp": 390,
+   "count": 67,
+   "min": 8.94,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [
+    {
+     "path": "a.on",
+     "sw": 81,
+     "cw": 78,
+     "text": "👤我的"
+    }
+   ],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "world@light-hc@390",
+   "route": "world",
+   "tag": "",
+   "theme": "light-hc",
+   "vp": 390,
+   "count": 66,
+   "min": 8.94,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [
+    {
+     "path": "a.on",
+     "sw": 81,
+     "cw": 78,
+     "text": "🌍世界"
+    }
+   ],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "home@dark-hc@390",
+   "route": "home",
+   "tag": "",
+   "theme": "dark-hc",
+   "vp": 390,
+   "count": 48,
+   "min": 5.93,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [
+    {
+     "path": "div.hero",
+     "sw": 350,
+     "cw": 280,
+     "text": "先定个位，再排计划 🌱定级 3 分钟，生成你的专属计划去定"
+    },
+    {
+     "path": "a.on",
+     "sw": 81,
+     "cw": 78,
+     "text": "🏠首页"
+    }
+   ],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "home-planned@dark-hc@390",
+   "route": "home",
+   "tag": "planned",
+   "theme": "dark-hc",
+   "vp": 390,
+   "count": 56,
+   "min": 4.27,
+   "fails": 7,
+   "failSample": [
+    {
+     "text": "2",
+     "contrast": 4.27,
+     "fg": "rgb(255, 255, 255)",
+     "bg": [
+      [
+       90,
+       65,
+       161
+      ],
+      [
+       117,
+       80,
+       221
+      ],
+      [
+       138,
+       102,
+       210
+      ]
+     ],
+     "big": false,
+     "threshold": 4.5
+    },
+    {
+     "text": "今日待做",
+     "contrast": 4.27,
+     "fg": "rgb(255, 255, 255)",
+     "bg": [
+      [
+       90,
+       65,
+       161
+      ],
+      [
+       117,
+       80,
+       221
+      ],
+      [
+       138,
+       102,
+       210
+      ]
+     ],
+     "big": false,
+     "threshold": 4.5
+    },
+    {
+     "text": "3",
+     "contrast": 4.27,
+     "fg": "rgb(255, 255, 255)",
+     "bg": [
+      [
+       90,
+       65,
+       161
+      ],
+      [
+       117,
+       80,
+       221
+      ],
+      [
+       138,
+       102,
+       210
+      ]
+     ],
+     "big": false,
+     "threshold": 4.5
+    }
+   ],
+   "overflow": [
+    {
+     "path": "div.hero",
+     "sw": 350,
+     "cw": 280,
+     "text": "本周计划 · 四级词汇 B1晚上好，继续推进 👋先按四级词"
+    },
+    {
+     "path": "a.on",
+     "sw": 81,
+     "cw": 78,
+     "text": "🏠首页"
+    }
+   ],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "today@dark-hc@390",
+   "route": "today",
+   "tag": "",
+   "theme": "dark-hc",
+   "vp": 390,
+   "count": 27,
+   "min": 8.41,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [
+    {
+     "path": "a.on",
+     "sw": 81,
+     "cw": 78,
+     "text": "📚学习"
+    }
+   ],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "today-done@dark-hc@390",
+   "route": "today",
+   "tag": "done",
+   "theme": "dark-hc",
+   "vp": 390,
+   "count": 29,
+   "min": 8.41,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [
+    {
+     "path": "a.on",
+     "sw": 81,
+     "cw": 78,
+     "text": "📚学习"
+    }
+   ],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "today-empty@dark-hc@390",
+   "route": "today",
+   "tag": "empty",
+   "theme": "dark-hc",
+   "vp": 390,
+   "count": 27,
+   "min": 8.41,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [
+    {
+     "path": "a.on",
+     "sw": 81,
+     "cw": 78,
+     "text": "📚学习"
+    }
+   ],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "placement@dark-hc@390",
+   "route": "placement",
+   "tag": "",
+   "theme": "dark-hc",
+   "vp": 390,
+   "count": 13,
+   "min": 5.93,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "placement-saved@dark-hc@390",
+   "route": "placement",
+   "tag": "saved",
+   "theme": "dark-hc",
+   "vp": 390,
+   "count": 13,
+   "min": 8.11,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "placement-failed@dark-hc@390",
+   "route": "placement",
+   "tag": "failed",
+   "theme": "dark-hc",
+   "vp": 390,
+   "count": 14,
+   "min": 5.93,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "practice@dark-hc@390",
+   "route": "practice",
+   "tag": "",
+   "theme": "dark-hc",
+   "vp": 390,
+   "count": 5,
+   "min": 5.93,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "practice-wrong@dark-hc@390",
+   "route": "practice",
+   "tag": "wrong",
+   "theme": "dark-hc",
+   "vp": 390,
+   "count": 10,
+   "min": 8.06,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "practice-result@dark-hc@390",
+   "route": "practice",
+   "tag": "result",
+   "theme": "dark-hc",
+   "vp": 390,
+   "count": 8,
+   "min": 5.93,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "report@dark-hc@390",
+   "route": "report",
+   "tag": "",
+   "theme": "dark-hc",
+   "vp": 390,
+   "count": 14,
+   "min": 5.93,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "mistakes@dark-hc@390",
+   "route": "mistakes",
+   "tag": "",
+   "theme": "dark-hc",
+   "vp": 390,
+   "count": 30,
+   "min": 8.41,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "mistakes-done@dark-hc@390",
+   "route": "mistakes",
+   "tag": "done",
+   "theme": "dark-hc",
+   "vp": 390,
+   "count": 17,
+   "min": 8.41,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "mistakes-variant@dark-hc@390",
+   "route": "mistakes",
+   "tag": "variant",
+   "theme": "dark-hc",
+   "vp": 390,
+   "count": 10,
+   "min": 5.93,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "srs@dark-hc@390",
+   "route": "srs",
+   "tag": "",
+   "theme": "dark-hc",
+   "vp": 390,
+   "count": 8,
+   "min": 8.41,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "srs-done@dark-hc@390",
+   "route": "srs",
+   "tag": "done",
+   "theme": "dark-hc",
+   "vp": 390,
+   "count": 11,
+   "min": 8.41,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "settings@dark-hc@390",
+   "route": "settings",
+   "tag": "",
+   "theme": "dark-hc",
+   "vp": 390,
+   "count": 29,
+   "min": 5.93,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "me@dark-hc@390",
+   "route": "me",
+   "tag": "",
+   "theme": "dark-hc",
+   "vp": 390,
+   "count": 67,
+   "min": 8.41,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [
+    {
+     "path": "a.on",
+     "sw": 81,
+     "cw": 78,
+     "text": "👤我的"
+    }
+   ],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  },
+  {
+   "key": "world@dark-hc@390",
+   "route": "world",
+   "tag": "",
+   "theme": "dark-hc",
+   "vp": 390,
+   "count": 66,
+   "min": 8.41,
+   "fails": 0,
+   "failSample": [],
+   "overflow": [
+    {
+     "path": "a.on",
+     "sw": 81,
+     "cw": 78,
+     "text": "🌍世界"
+    }
+   ],
+   "viewOverflow": false,
+   "touch": [],
+   "errors": []
+  }
+ ],
+ "totals": {
+  "n": 160,
+  "withFindings": 56,
+  "shots": 56
+ }
+}
