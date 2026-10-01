@@ -8,7 +8,7 @@
 
 [本轮证据索引](learning-upgrade-20260930/README.md)归档真实界面点击、纯模型规则检查、25 页×4 场景布局采样、高对比 12 次抽查和 15 张已目检截图。跨书续读等五项 P1 在静态原型修正，六能力实现说明见[改造记录](../../../mobile-learning-upgrade-20260930.md)。历史 R12/R14 不覆盖，也不把它们的通过数字算入本轮。
 
-### 当前产品评审
+### 修复前产品评审
 
 [2026-09-30 产品评审](../../../mobile-product-review-20260930.md)抽样读取 20 个路由，实际完成语法/阅读两题组，复现续读、目标/预算、错题变式、自评掌握与今日回顾问题。11 张截图保存在 `product-review-20260930/`；该批保留修复前评审时点，实施后证据另列在上一节，不与历史回归或全量矩阵互换。
 
@@ -36,12 +36,13 @@
 | R12/R13 视觉矩阵 | [before](visual-r12/before/audit.json)、[before-xl](visual-r12/before-xl/audit.json)、[after](visual-r12/after/audit.json)、[after-xl](visual-r12/after-xl/audit.json) | 历史 before/after 与截图；部分 setup 注入状态，证明可渲染，不能替代真实可达性或人眼目检；归档后不覆盖 |
 | R13 缺陷配对 | `visual-r13/before/`、`visual-r13/after/` | 特大字号底栏、刷新正文、空态、未建计划等当时修补证据 |
 | R14 阅读/按压 | [8 项断言](visual-r13/after/results-r14.json)及同目录 3 张 `r14-*` 截图 | 部分起始状态注入；按压测试只证明其实际采样控件 |
-| R14 独立复核 | [复核原文](independent-r14/review-findings.md)、[错书目的地](independent-r14/resume-after-browsing-wrong-book.png)、[刷新位置恢复](independent-r14/chapter-reload-position-preserved.png) | 复核时点的原文归档。报告提到的文档口径已修正；最近阅读目的地缺陷仍开放 |
+| R14 独立复核 | [复核原文](independent-r14/review-findings.md)、[错书目的地](independent-r14/resume-after-browsing-wrong-book.png)、[刷新位置恢复](independent-r14/chapter-reload-position-preserved.png) | 保留复核时点原文；最近阅读目的地缺陷已在六能力改造修正，修复后操作见最新证据，旧截图不覆盖 |
 
 ## 当前未关闭事项
 
-- 读商务第三章 → 只浏览四级词汇目录 → 首页继续读，会受到目录浏览状态污染而跳错书。需要独立的最近阅读 bookId/chIdx，打开正文才更新；本次 UI 与文档归档没有修复该行为。
 - 读屏、软键盘、iOS/Android 真机、TTS 真实语音、3D 联网，以及全部横屏和高对比按住态尚未完成验证。
 - 本批局部截图目检不代表历史全部截图或全路由签收；原型基线仍不宣布整体冻结。
+
+五项产品评审 P1 已在原型修正，见[实施说明](../../../mobile-learning-upgrade-20260930.md)。上述未测事项与历史缺陷分别记录，不把修复前截图当作当前缺陷状态。
 
 脚本说明见[演示指南](../DEMO-GUIDE.md)。从当前代码重跑历史 before 脚本只会得到当前界面，不能重建过去缺陷；验证新的修改应存入新的证据目录。
