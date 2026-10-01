@@ -1,0 +1,2524 @@
+[
+  {
+    "requested": "login",
+    "actual": "login",
+    "snapshot": "- generic: 登录\n- generic: 在线\n- heading \"进入本机演示档案\" [level=2]\n- paragraph: 这是静态原型：账号只用于演示身份，不连接认证服务，也不隔离多账号数据。退出后本机草稿和学习记录仍保留；再次进入会使用同一份档案。\n- generic: 演示账号\n- textbox \"演示账号\":\n  - /placeholder: 输入演示账号\n- generic: 演示密码\n- textbox \"演示密码\":\n  - /placeholder: 输入演示密码（不保存）\n- button \"进入演示档案\"\n- button \"演示注册流程\"\n- button \"忘记密码\"\n- status",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "register",
+    "actual": "register",
+    "snapshot": "- button \"返回\":\n- generic: 注册\n- generic: 在线\n- heading \"演示注册流程\" [level=2]\n- paragraph: 创建演示身份后仍需成年人确认与主动同意。原型沿用同一本机档案，不创建后台账号或隔离多账号数据；密码不会保存。\n- generic: 演示账号\n- textbox \"演示账号\":\n  - /placeholder: 输入演示账号\n- generic: 演示密码（≥8 位，字母+数字）\n- textbox \"演示密码（≥8 位，字母+数字）\":\n  - /placeholder: 密码\n- button \"继续演示注册\"\n- button \"返回登录\"\n- status",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "reset",
+    "actual": "reset",
+    "snapshot": "- button \"返回\":\n- generic: 重置密码\n- generic: 在线\n- heading \"重置密码\" [level=2]\n- paragraph: 如果账号存在，邮件已发出（永远这句，不枚举）。\n- generic: 账号\n- textbox: new@test.invalid\n- button \"发送重置邮件\"\n- button \"返回\"\n- status",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "gate",
+    "actual": "gate",
+    "snapshot": "- button \"返回\":\n- generic: 身份确认\n- generic: 在线\n- heading \"确认成年人身份\" [level=2]\n- paragraph: 当前学习版本只服务满 18 岁的成年人。原型使用完整出生日期演示判断，日期仅保存在本机，不代表正式身份认证。\n- status: 当前为成年人通过状态的演示样例\n- generic: 出生日期\n- textbox \"出生日期\"\n- checkbox \"我确认出生日期准确且已满 18 岁\"\n- text: 我确认出生日期准确且已满 18 岁\n- button \"确认身份\"\n- heading \"同意记录\" [level=2]\n- paragraph: 当前演示版本 b30-consent-v1。请逐项阅读并主动确认；尚未通过成年人确认时不能签署进入学习。\n- checkbox \"我已阅读并同意服务条款\"\n- text: 我已阅读并同意服务条款\n- checkbox \"我已阅读并同意隐私说明\"\n- text: 我已阅读并同意隐私说明\n- checkbox \"我已阅读并同意成人学习说明\"\n- text: 我已阅读并同意成人学习说明\n- button \"签署并继续\"\n- button \"隐私设置\"\n- button \"帮助与反馈\"\n- button \"退出演示\"\n- status",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "onboard",
+    "actual": "onboard",
+    "snapshot": "- button \"返回\":\n- generic: 学习目标\n- generic: 在线\n- heading \"定个小目标\" [level=2]\n- paragraph: 按自己能坚持的节奏来。调整前先看变化，已完成的记录会保留。\n- generic: 学习目标\n- combobox \"学习目标\":\n  - option \"基础英语\"\n  - option \"大学英语\" [selected]\n  - option \"考研英语\"\n  - option \"职场英语\"\n- generic: 大学英语方向\n- combobox \"大学英语方向\":\n  - option \"四级\" [selected]\n  - option \"六级\"\n- generic: 每天投入\n- combobox \"每天投入\":\n  - option \"5 分钟\"\n  - option \"15 分钟\"\n  - option \"30 分钟\"\n  - option \"45 分钟\" [selected]\n- paragraph: 每周学习日\n- button \"周一\" [pressed]\n- button \"周二\" [pressed]\n- button \"周三\" [pressed]\n- button \"周四\" [pressed]\n- button \"周五\" [pressed]\n- button \"周六\" [pressed]\n- button \"周日\" [pressed]\n- button \"预览学习安排\"\n- status",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "placement",
+    "actual": "placement",
+    "snapshot": "- button \"返回\":\n- generic: 定级测评\n- generic: 在线\n- generic: 第 1/5 题 · 词汇 · 答完本轮统一出报告\n- heading \"Choose the word closest in meaning to 'happy'.\" [level=2]\n- button \"A. glad\"\n- button \"B. angry\"\n- button \"C. tired\"\n- button \"下一题\" [disabled]:\n  - generic: 下一题\n- button \"提交\"\n- button \"跳过\"\n- heading \"🧰 会话与掌握\" [level=2]\n- paragraph:\n  - button \"会话检查点\":\n    - generic: 会话检查点\n  - button \"掌握度\":\n    - generic: 掌握度\n  - button \"失败恢复\":\n    - generic: 失败恢复\n- status",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "report",
+    "actual": "placement",
+    "snapshot": "- button \"返回\":\n- generic: 定级测评\n- generic: 在线\n- generic: 第 1/5 题 · 词汇 · 答完本轮统一出报告\n- heading \"Choose the word closest in meaning to 'happy'.\" [level=2]\n- button \"A. glad\"\n- button \"B. angry\"\n- button \"C. tired\"\n- button \"下一题\" [disabled]:\n  - generic: 下一题\n- button \"提交\"\n- button \"跳过\"\n- heading \"🧰 会话与掌握\" [level=2]\n- paragraph:\n  - button \"会话检查点\":\n    - generic: 会话检查点\n  - button \"掌握度\":\n    - generic: 掌握度\n  - button \"失败恢复\":\n    - generic: 失败恢复\n- status",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "home",
+    "actual": "home",
+    "snapshot": "- generic: 首页\n- generic: 在线\n- paragraph: 演示账号 · 演示数据\n- heading \"今天，学一点再向前\" [level=2]\n- paragraph: 大学英语 · 四级 · 每天 45 分钟\n- strong: 2/7\n- generic: 今日任务\n- strong: \"38\"\n- generic: 预计剩余分钟\n- strong: \"32\"\n- generic: 今日 XP\n- button \"继续今日学习\"\n- paragraph: 下一项：语法 · There be 句型 · 预计 5 分钟\n- button \"发现课程 ›\"\n- button \"复习安排 ›\"\n- heading \"继续阅读\" [level=2]\n- generic: 本机记录\n- heading \"四级词汇红宝书\" [level=3]\n- paragraph: 第一章 高频 500\n- button \"继续读\"\n- button \"收藏与笔记\"\n- heading \"继续自主练习\" [level=2]\n- paragraph: 重练轮次独立保存，原来的完成结果仍可查看。\n- button \"阅读 · 图书馆的一天 第 1/2 题 · 进行中 ›\":\n  - text: 阅读 · 图书馆的一天\n  - generic: 第 1/2 题 · 进行中\n  - generic: ›\n- heading \"本周学习\" [level=2]\n- button \"查看本周回顾\":\n- text: 一\n- generic: ·\n- text: 二\n- generic: ·\n- text: 三\n- generic: ·\n- text: 四\n- generic: ✓\n- text: 五\n- generic: ✓\n- text: 六\n- generic: ·\n- text: 日\n- generic: ·\n- paragraph: 完成的学习自动记录；点右上角查看每天的结果。\n- button \"调整计划\"\n- button \"学习记录\"\n- navigation:\n  - link \"🏠 首页\":\n    - /url: \"#/home\"\n    - generic: 🏠\n    - text: 首页\n  - link \"📚 学习\":\n    - /url: \"#/today\"\n    - generic: 📚\n    - text: 学习\n  - link \"🌍 世界\":\n    - /url: \"#/world\"\n    - generic: 🌍\n    - text: 世界\n  - link \"👤 我的\":\n    - /url: \"#/me\"\n    - generic: 👤\n    - text: 我的\n- status",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "today",
+    "actual": "today",
+    "snapshot": "- button \"返回\":\n- generic: 学习\n- generic: 在线\n- navigation \"学习分区\":\n  - button \"今日\"\n  - button \"课程\"\n  - button \"词汇\"\n  - button \"复习\"\n- heading \"今日安排\" [level=2]\n- button \"调整\"\n- paragraph: 大学英语 · 四级 · 目标 45 分钟\n- paragraph: 今日安排预计 53 分钟 · 剩余预计 38 分钟；接回的进度使今日超出预算，可在计划中顺延。\n- paragraph: 已完成 2/7 项；完成任务与掌握知识分别记录。\n- heading \"语法 · There be 句型\" [level=3]\n- generic: 进行中\n- paragraph: 预计 5 分钟\n- button \"继续学习\"\n- heading \"阅读 · 图书馆的一天\" [level=3]\n- generic: 待开始\n- paragraph: 预计 8 分钟\n- button \"开始学习\"\n- heading \"写作 · 给朋友的一封信\" [level=3]\n- generic: 进行中\n- paragraph: 预计 10 分钟\n- button \"继续学习\"\n- heading \"词汇 · 回忆 3 个词\" [level=3]\n- generic: ✓ 已完成\n- paragraph: 预计 5 分钟\n- button \"查看结果\"\n- heading \"阅读 · 完成一个章节\" [level=3]\n- generic: ✓ 已完成\n- paragraph: 预计 10 分钟\n- button \"查看结果\"\n- heading \"复习 · 本轮回忆\" [level=3]\n- generic: 待开始\n- paragraph: 预计 5 分钟\n- button \"开始学习\"\n- heading \"写作 · 给朋友的一封信\" [level=3]\n- generic: 进行中\n- paragraph: 预计 10 分钟\n- button \"继续学习\"\n- button \"查看今日回顾\"\n- heading \"顺延的学习\" [level=2]\n- text: 语法 · There be 句型\n- paragraph: 前一学习日未完成 · 2026-10-01 · 保留进度\n- button \"接着学\"\n- text: 词汇 · 回忆 3 个词\n- paragraph: 前一学习日未完成 · 2026-10-01 · 保留进度\n- button \"接着学\"\n- text: 阅读 · 完成一个章节\n- paragraph: 前一学习日未完成 · 2026-10-01 · ✓ 已完成\n- button \"查看结果\"\n- text: 复习 · 本轮回忆\n- paragraph: 前一学习日未完成 · 2026-10-01 · 保留进度\n- button \"接着学\"\n- heading \"继续阅读\" [level=2]\n- generic: 本机记录\n- heading \"四级词汇红宝书\" [level=3]\n- paragraph: 第一章 高频 500\n- button \"继续读\"\n- button \"收藏与笔记\"\n- heading \"继续自主练习\" [level=2]\n- paragraph: 重练轮次独立保存，原来的完成结果仍可查看。\n- button \"阅读 · 图书馆的一天 第 1/2 题 · 进行中 ›\":\n  - text: 阅读 · 图书馆的一天\n  - generic: 第 1/2 题 · 进行中\n  - generic: ›\n- navigation:\n  - link \"🏠 首页\":\n    - /url: \"#/home\"\n    - generic: 🏠\n    - text: 首页\n  - link \"📚 学习\":\n    - /url: \"#/today\"\n    - generic: 📚\n    - text: 学习\n  - link \"🌍 世界\":\n    - /url: \"#/world\"\n    - generic: 🌍\n    - text: 世界\n  - link \"👤 我的\":\n    - /url: \"#/me\"\n    - generic: 👤\n    - text: 我的\n- status",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "courses",
+    "actual": "courses",
+    "snapshot": "- button \"返回\":\n- generic: 发现课程\n- generic: 在线\n- navigation \"学习分区\":\n  - button \"今日\"\n  - button \"课程\"\n  - button \"词汇\"\n  - button \"复习\"\n- heading \"发现适合你的内容\" [level=2]\n- paragraph: 章节是原创学习片段；书名用于表达学习方向，不提供原书全文。\n- generic: 学习目标\n- combobox \"学习目标\":\n  - option \"全部目标\" [selected]\n  - option \"基础英语\"\n  - option \"大学英语\"\n  - option \"考研英语\"\n  - option \"职场英语\"\n- generic: 参考水平\n- combobox \"参考水平\":\n  - option \"全部水平\" [selected]\n  - option \"A1\"\n  - option \"A2\"\n  - option \"B1\"\n  - option \"B2\"\n  - option \"C1\"\n- generic: 学习状态\n- combobox \"学习状态\":\n  - option \"全部\" [selected]\n  - option \"在学\"\n  - option \"收藏\"\n  - option \"已完成\"\n  - option \"未开始\"\n  - option \"暂无内容\"\n- heading \"四级词汇红宝书\" [level=3]\n- generic: B1\n- paragraph: 大学英语 · 在学 · 1/3 节完成\n- button \"继续课程\"\n- button \"☆ 收藏\"\n- heading \"零基础英语\" [level=3]\n- generic: A1\n- paragraph: 基础英语 · 未开始 · 0/3 节完成\n- button \"查看章节\"\n- button \"☆ 收藏\"\n- heading \"六级长难句\" [level=3]\n- generic: B2\n- paragraph: 大学英语 · 未开始 · 0/3 节完成\n- button \"查看章节\"\n- button \"☆ 收藏\"\n- heading \"商务口语 100 句\" [level=3]\n- generic: B1\n- paragraph: 职场英语 · 未开始 · 0/3 节完成\n- button \"查看章节\"\n- button \"☆ 收藏\"\n- heading \"雅思备考\" [level=3]\n- generic: B2\n- paragraph: 大学英语 · 未开始 · 0/4 节完成\n- button \"查看章节\"\n- button \"☆ 收藏\"\n- heading \"生活英语\" [level=3]\n- generic: A2\n- paragraph: 基础英语 · 未开始 · 0/3 节完成\n- button \"查看章节\"\n- button \"☆ 收藏\"\n- heading \"考研阅读 · 研究与生活\" [level=3]\n- generic: B2\n- paragraph: 考研英语 · 未开始 · 0/3 节完成\n- button \"查看章节\"\n- button \"☆ 收藏\"\n- heading \"考研阅读进阶\" [level=3]\n- generic: C1\n- paragraph: 考研英语 · 暂无内容\n- paragraph: 此方向暂未提供样例。换一个水平或选择其他课程。\n- heading \"技能练习\" [level=2]\n- button \"写作 ›\"\n- button \"听力 ›\"\n- button \"口语 ›\"\n- button \"收藏与笔记 ›\"\n- navigation:\n  - link \"🏠 首页\":\n    - /url: \"#/home\"\n    - generic: 🏠\n    - text: 首页\n  - link \"📚 学习\":\n    - /url: \"#/today\"\n    - generic: 📚\n    - text: 学习\n  - link \"🌍 世界\":\n    - /url: \"#/world\"\n    - generic: 🌍\n    - text: 世界\n  - link \"👤 我的\":\n    - /url: \"#/me\"\n    - generic: 👤\n    - text: 我的\n- status",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "practice",
+    "actual": "practice",
+    "snapshot": "- button \"返回\":\n- generic: 练题\n- generic: 在线\n- generic: 阅读 · 图书馆的一天 · 第 1/2 题\n- heading \"阅读材料\" [level=3]\n- paragraph: Li Lei gets up at six thirty. He goes to the library at eight. The library opens at eight thirty. He reads books there.\n- heading \"What time does Li Lei get up?\" [level=2]\n- button \"A. six thirty\" [disabled]\n- button \"B. seven\" [disabled] [pressed]\n- button \"C. eight\" [disabled]\n- status: 需要再练。已保存到错题本。第一句 six thirty，照着找\n- button \"提交答案\" [disabled]\n- button \"下一题\"\n- button \"保存进度，稍后继续\"\n- status",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "mistakes",
+    "actual": "mistakes",
+    "snapshot": "- button \"返回\":\n- generic: 错题本\n- generic: 在线\n- paragraph: 历史演示 · 本次已修复 · 待次日验证\n- heading \"abandon\" [level=2]\n- paragraph: 原题说明：定位：词汇待补\n- paragraph: 下次验证：2026-10-03（尚未到期）\n- heading \"同知识点变式\" [level=3]\n- paragraph: “abandon” 的意思是？\n- button \"A. 抛弃\" [disabled] [pressed]\n- button \"B. 在场的\" [disabled]\n- button \"C. 订票\" [disabled]\n- status:\n  - text: ✓ 本次答对。抛弃\n  - paragraph: 本次已修复 · 待次日验证 · 2026-10-03\n- button \"本轮已记录\" [disabled]\n- button \"回到错题列表\"\n- button \"撤销上次操作\"\n- status",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "srs",
+    "actual": "srs",
+    "snapshot": "- button \"返回\":\n- generic: 复习\n- generic: 在线\n- generic: 本批 4 个词 · 第 1/4 个\n- heading \"abandon\" [level=2]\n- paragraph: 来源：词汇样例\n- button \"显示释义\"\n- button \"稍后继续\"\n- status",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "weekly",
+    "actual": "weekly",
+    "snapshot": "- button \"返回\":\n- generic: 本周回顾\n- generic: 在线\n- heading \"本周回顾\" [level=2]\n- paragraph: 2026-09-28 — 2026-10-04\n- strong: \"2\"\n- generic: 学习天数\n- strong: \"9\"\n- generic: 完成记录\n- strong: \"100\"\n- generic: 本周 XP\n- paragraph: 统计来自本机学习记录；没有记录的日期不填入演示成绩。\n- heading \"每天的学习\" [level=2]\n- button \"09-28 · 周一 0 条完成记录 · 0 XP ›\":\n  - text: 09-28 · 周一\n  - generic: 0 条完成记录 · 0 XP\n  - generic: ›\n- button \"09-29 · 周二 0 条完成记录 · 0 XP ›\":\n  - text: 09-29 · 周二\n  - generic: 0 条完成记录 · 0 XP\n  - generic: ›\n- button \"09-30 · 周三 0 条完成记录 · 0 XP ›\":\n  - text: 09-30 · 周三\n  - generic: 0 条完成记录 · 0 XP\n  - generic: ›\n- button \"10-01 · 周四 6 条完成记录 · 68 XP ›\":\n  - text: 10-01 · 周四\n  - generic: 6 条完成记录 · 68 XP\n  - generic: ›\n- button \"10-02 · 周五 3 条完成记录 · 32 XP ›\":\n  - text: 10-02 · 周五\n  - generic: 3 条完成记录 · 32 XP\n  - generic: ›\n- button \"10-03 · 周六 0 条完成记录 · 0 XP ›\":\n  - text: 10-03 · 周六\n  - generic: 0 条完成记录 · 0 XP\n  - generic: ›\n- button \"10-04 · 周日 0 条完成记录 · 0 XP ›\":\n  - text: 10-04 · 周日\n  - generic: 0 条完成记录 · 0 XP\n  - generic: ›\n- button \"全部学习记录\"\n- status",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "world",
+    "actual": "world",
+    "snapshot": "- button \"返回\":\n- generic: 世界\n- generic: 在线\n- paragraph: 学习带来的成长\n- heading \"每一步都有收获\" [level=2]\n- strong: \"100\"\n- generic: 本周 XP\n- strong: \"100\"\n- generic: 累计 XP\n- strong: \"9\"\n- generic: 完成学习\n- button \"本周回顾 ›\"\n- button \"成就样例 ›\"\n- button \"联赛样例 ›\"\n- heading \"本周学习\" [level=2]\n- button \"查看本周回顾\":\n- text: 一\n- generic: ·\n- text: 二\n- generic: ·\n- text: 三\n- generic: ·\n- text: 四\n- generic: ✓\n- text: 五\n- generic: ✓\n- text: 六\n- generic: ·\n- text: 日\n- generic: ·\n- paragraph: 完成的学习自动记录；点右上角查看每天的结果。\n- heading \"一起坚持\" [level=2]\n- paragraph: 小组目标：本周完成 3 次学习。你的贡献来自学习记录。\n- paragraph: 已贡献 3/3 次\n- button \"我的空间\"\n- navigation:\n  - link \"🏠 首页\":\n    - /url: \"#/home\"\n    - generic: 🏠\n    - text: 首页\n  - link \"📚 学习\":\n    - /url: \"#/today\"\n    - generic: 📚\n    - text: 学习\n  - link \"🌍 世界\":\n    - /url: \"#/world\"\n    - generic: 🌍\n    - text: 世界\n  - link \"👤 我的\":\n    - /url: \"#/me\"\n    - generic: 👤\n    - text: 我的\n- status",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "league",
+    "actual": "league",
+    "snapshot": "- button \"返回\":\n- generic: 联赛\n- generic: 在线\n- heading \"本周联赛样例\" [level=2]\n- paragraph: 其他成员为固定样例，你的本周 XP 来自本机学习记录。\n- button \"关闭我的排名\"\n- generic: 1. 星河（样例）\n- generic: 280 XP\n- generic: 2. 小林（样例）\n- generic: 190 XP\n- generic: 3. 演示账号\n- generic: 100 XP\n- status",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "games",
+    "actual": "games",
+    "snapshot": "- button \"返回\":\n- generic: 小游戏\n- generic: 在线\n- button \"联赛\":\n  - generic: 联赛\n- heading \"🎮 小游戏\" [level=2]\n- paragraph: R2 门：目录可看，对局未开（演示不写开放日期）。\n- paragraph: 对局开后：可信开局 → 实时判分 → 奖励自动进成长账（演示说明）。\n- text: 单词消消乐\n- generic: 未开放\n- paragraph: 可信开局 · 判分防刷 · 奖励走成长账（开门后）\n- button \"去学习\":\n  - generic: 去学习\n- text: 听音拼词\n- generic: 未开放\n- paragraph: 可信开局 · 判分防刷 · 奖励走成长账（开门后）\n- button \"去学习\":\n  - generic: 去学习\n- text: 语法跑酷\n- generic: 未开放\n- paragraph: 可信开局 · 判分防刷 · 奖励走成长账（开门后）\n- button \"去学习\":\n  - generic: 去学习\n- text: 口语接龙\n- generic: 未开放\n- paragraph: 可信开局 · 判分防刷 · 奖励走成长账（开门后）\n- button \"去学习\":\n  - generic: 去学习\n- text: 阅读寻宝\n- generic: 未开放\n- paragraph: 可信开局 · 判分防刷 · 奖励走成长账（开门后）\n- button \"去学习\":\n  - generic: 去学习\n- text: 组队答题\n- generic: 未开放\n- paragraph: 可信开局 · 判分防刷 · 奖励走成长账（开门后）\n- button \"去学习\":\n  - generic: 去学习\n- status",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "space",
+    "actual": "space",
+    "snapshot": "- button \"返回\":\n- generic: 个人空间\n- generic: 在线\n- button \"世界\":\n  - generic: 世界\n- heading \"🪞 个人空间\" [level=2]\n- paragraph: 只读参观：看布置，不写 UGC（演示）。\n- heading \"演示伙伴的空间\" [level=2]\n- paragraph: 背景：森林 · 陈列 3 枚成就 · 赛季最佳第 4（演示数据）\n- paragraph:\n  - button \"装扮我的\":\n    - generic: 装扮我的\n  - button \"看看成就\":\n    - generic: 看看成就\n- paragraph: 社交写链 R3 开；有用户才开榜，不填机器人冒充真人。\n- status",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "subs",
+    "actual": "subs",
+    "snapshot": "- button \"返回\":\n- generic: 订阅对账\n- generic: 在线\n- button \"商城\"\n- heading \"🔁 订阅与对账\" [level=2]\n- paragraph: 本机沙盒：商品、价格和支付状态来自同一订单。取消续订保留当前权益；退款与票据申请独立保存。\n- text: 月度会员 · ¥19\n- paragraph: 已支付（沙盒） · 续订已取消\n- button \"查看本次订阅\"\n- text: 月度会员 · ¥19\n- paragraph: 已支付（沙盒） · 续订为自动续订样例\n- button \"查看本次订阅\"\n- text: 年度会员 · ¥108\n- paragraph: 已退款（沙盒） · 续订已取消\n- button \"查看本次订阅\"\n- paragraph: 真实支付回调、扣款、权益发放与三方对账尚未接入。\n- button \"选购商品\"\n- button \"查看全部订单\"\n- status",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "native",
+    "actual": "native",
+    "snapshot": "- button \"返回\":\n- generic: 原生壳\n- generic: 在线\n- button \"联赛\":\n  - generic: 联赛\n- heading \"📱 原生与多端壳\" [level=2]\n- paragraph: R3 末尾：稿内只画入口与门，不承诺上架日期（演示）。\n- heading \"壳矩阵\" [level=2]\n- paragraph: uni-app 小程序目标条件编译 · 微信登录态 · iOS / Android 壳 · Tauri 桌面壳（禁 Electron）· PWA 工作区。\n- paragraph: 推送 APNs / FCM；密钥进 Keychain / Keystore，不落普通存储。\n- paragraph:\n  - button \"关于本稿\":\n    - generic: 关于本稿\n- status",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "rewards",
+    "actual": "rewards",
+    "snapshot": "- button \"返回\":\n- generic: 任务奖励\n- generic: 在线\n- button \"成就\":\n  - generic: 成就\n- heading \"🎁 任务奖励\" [level=2]\n- paragraph: 可信完成才结算；重放不重结（演示口径）。\n- heading \"领取\" [level=2]\n- paragraph:\n  - generic: 连续 3 天 ＋20 XP\n  - button \"领取\"\n- paragraph: 成长结算走 Kafka 事件；R2 开榜，当前只看不动账。\n- paragraph:\n  - button \"回世界\":\n    - generic: 回世界\n  - button \"看报告\":\n    - generic: 看报告\n- status",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "achieve",
+    "actual": "achieve",
+    "snapshot": "- button \"返回\":\n- generic: 成就墙\n- generic: 在线\n- button \"世界\":\n  - generic: 世界\n- heading \"🏅 成就墙（2/16）\" [level=2]\n- paragraph: 已获 / 未获 / 未开放分开；规则可查；未开放不挂可领红点（演示）。\n- paragraph:\n  - button \"任务奖励\":\n    - generic: 任务奖励\n  - button \"学习报告\":\n    - generic: 学习报告\n- text: 🏅 初来乍到\n- generic: 已获\n- paragraph: 完成注册与身份确认\n- text: 🏅 一战定级\n- generic: 已获\n- paragraph: 完成一次定级出报告\n- text: 🔒 坚持 3 天\n- generic: 未获·1/3\n- paragraph: 连续学习 3 天（演示 1/3）\n- button \"去攒\":\n  - generic: 去攒\n- text: 🔒 坚持 7 天\n- generic: 未获·1/7\n- paragraph: 连续学习 7 天（演示 1/7）\n- button \"去攒\":\n  - generic: 去攒\n- text: 🔒 错题清道夫\n- generic: 未获·0/5\n- paragraph: 变式销账 5 道（演示 0/5）\n- button \"去攒\":\n  - generic: 去攒\n- text: 🔒 词汇 40\n- generic: 未获·0/40\n- paragraph: 刷完 40 词一轮（演示）\n- button \"去攒\":\n  - generic: 去攒\n- text: 🔒 限时快手\n- generic: 未获·0/8\n- paragraph: 限时挑战对 8 个（演示，去刷）\n- button \"去攒\":\n  - generic: 去攒\n- text: 🔒 听力入门\n- generic: 未获·0/3\n- paragraph: 听完 3 篇（演示，去听）\n- button \"去攒\":\n  - generic: 去攒\n- text: 🔒 跟读首秀\n- generic: 未获·0/1\n- paragraph: 完成 1 次跟读（演示，去语音）\n- button \"去攒\":\n  - generic: 去攒\n- text: 🔒 打卡分享\n- generic: 未获·0/1\n- paragraph: 分享一次学习报告（演示）\n- button \"去攒\":\n  - generic: 去攒\n- text: 🔒 联赛新秀\n- generic: 未获·0/1\n- paragraph: 进一次周联赛榜（演示）\n- button \"去攒\":\n  - generic: 去攒\n- text: ⏳ 赛季参与\n- generic: 未开放\n- paragraph: 赛季规则公布后参赛\n- paragraph: 赛季/房间开门后再来（不写日期）。\n- text: 🔒 宝箱猎人\n- generic: 未获·0/1\n- paragraph: 开 1 个宝箱（演示）\n- button \"去攒\":\n  - generic: 去攒\n- text: 🔒 组队之星\n- generic: 未获·0/1\n- paragraph: 完成一次 5 天组队（演示）\n- button \"去攒\":\n  - generic: 去攒\n- text: ⏳ 赛季冠军\n- generic: 未开放\n- paragraph: 赛季结算第一\n- paragraph: 赛季/房间开门后再来（不写日期）。\n- text: ⏳ 自习达人\n- generic: 未开放\n- paragraph: 房间专注 10 次\n- paragraph: 赛季/房间开门后再来（不写日期）。\n- status",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "avatar",
+    "actual": "avatar",
+    "snapshot": "- button \"返回\":\n- generic: 装扮\n- generic: 在线\n- heading \"👕 我的背景墙＋小人\" [level=2]\n- paragraph: Three.js 演示：换服装/配饰/发型＋打招呼（低端机自动降画质）\n- paragraph:\n  - generic: 上衣：\n  - button \"紫\"\n  - button \"绿\"\n  - button \"红\"\n- paragraph:\n  - generic: 发型： 配饰：\n  - button \"圆寸\"\n  - button \"帽子\"\n  - button \"眼镜\"\n  - button \"无\"\n- paragraph:\n  - generic: 背景墙：\n  - button \"星夜\"\n  - button \"森林\"\n  - button \"沙漠\"\n- button \"👋 打招呼\"\n- heading \"衣柜\" [level=2]\n- paragraph: 目录可看，试穿不落库；兑换需权益（未开放）\n- generic: 默认卫衣·试穿中\n- generic: 星空外套·未开放\n- button \"兑换\"\n- paragraph:\n  - button \"回世界\":\n    - generic: 回世界\n  - button \"看看成就\":\n    - generic: 看看成就\n  - button \"动效设置\":\n    - generic: 动效设置\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "msgs",
+    "actual": "msgs",
+    "snapshot": "- button \"返回\":\n- generic: 消息\n- generic: 在线\n- heading \"✉️ 消息（4 未读）\" [level=2]\n- paragraph:\n  - button \"全部\"\n  - button \"学习\"\n  - button \"系统\"\n  - button \"互动\"\n  - button \"全标已读\"\n  - button \"通知偏好\":\n    - generic: 通知偏好\n- text: ● 今日任务已生成\n- generic: 学习\n- paragraph: 语法 2 道，预计 10 分钟\n- paragraph: 08:00\n- paragraph:\n  - button \"去看看\":\n    - generic: 去看看\n- text: ● 欢迎来到语学星\n- generic: 学习\n- paragraph: 先定级，3 分钟出报告\n- paragraph: 昨天\n- paragraph:\n  - button \"去看看\":\n    - generic: 去看看\n- text: 条款更新了\n- generic: 系统\n- paragraph: 看一眼再继续，一键重签\n- paragraph: 周一\n- paragraph:\n  - button \"去看看\":\n    - generic: 去看看\n- text: 有人给你点赞\n- generic: 互动\n- paragraph: 你的打卡被 3 人点赞（演示）\n- paragraph: 周一\n- text: ● 好友本周学了 120 分钟\n- generic: 互动\n- paragraph: 演示伙伴晨读阿甘 · 去联赛看看（演示数据）\n- paragraph: 周二\n- paragraph:\n  - button \"去看看\":\n    - generic: 去看看\n- text: ● 组队缺 1 天\n- generic: 互动\n- paragraph: 组队 5 天差 1 天，宝箱等你（演示）\n- paragraph: 今天\n- paragraph:\n  - button \"去看看\":\n    - generic: 去看看\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "me",
+    "actual": "me",
+    "snapshot": "- button \"返回\":\n- generic: 我的\n- generic: 在线\n- paragraph: 本机演示档案\n- heading \"演示账号\" [level=2]\n- paragraph: 大学英语 · 四级 · B1（起步参考）\n- button \"调整学习目标\"\n- heading \"我的学习\" [level=2]\n- button \"学习记录 ›\"\n- button \"学习计划 ›\"\n- button \"收藏与笔记 ›\"\n- button \"巩固进度 ›\"\n- heading \"设置与帮助\" [level=2]\n- button \"设置 ›\"\n- button \"消息 ›\"\n- button \"帮助与反馈 ›\"\n- button \"关于与说明 ›\"\n- button \"原型演示工具 ›\"\n- navigation:\n  - link \"🏠 首页\":\n    - /url: \"#/home\"\n    - generic: 🏠\n    - text: 首页\n  - link \"📚 学习\":\n    - /url: \"#/today\"\n    - generic: 📚\n    - text: 学习\n  - link \"🌍 世界\":\n    - /url: \"#/world\"\n    - generic: 🌍\n    - text: 世界\n  - link \"👤 我的\":\n    - /url: \"#/me\"\n    - generic: 👤\n    - text: 我的\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "about",
+    "actual": "about",
+    "snapshot": "- button \"返回\":\n- generic: 关于\n- generic: 在线\n- text: 语学星\n- paragraph: 版本 1.0.0-demo · 静态交互稿\n- paragraph: 学习目标 → 练习 → 反馈 → 复习 → 复盘\n- heading \"📄 法务与合规\" [level=2]\n- paragraph: 正文以官网为准，稿内只看入口结构；官网本地 18182 未启动时外链打不开。\n- link \"📝 用户协议 官网正文为准\":\n  - /url: http://127.0.0.1:18182/terms\n  - generic: 📝 用户协议 官网正文为准\n- link \"🔒 隐私政策 官网正文为准\":\n  - /url: http://127.0.0.1:18182/privacy\n  - generic: 🔒 隐私政策 官网正文为准\n- link \"📋 合规公示 官网正文为准\":\n  - /url: http://127.0.0.1:18182/compliance\n  - generic: 📋 合规公示 官网正文为准\n- link \"🧒 未成年人说明 仅服务成人\":\n  - /url: http://127.0.0.1:18182/minors\n  - generic: 🧒 未成年人说明 仅服务成人\n- heading \"💬 服务与帮助\" [level=2]\n- button \"💬 联系客服 工作日 9-18\":\n  - generic: 💬 联系客服 工作日 9-18\n- link \"❓ 帮助中心 官网正文为准\":\n  - /url: http://127.0.0.1:18182/help\n  - generic: ❓ 帮助中心 官网正文为准\n- link \"📢 公告 官网正文为准\":\n  - /url: http://127.0.0.1:18182/announcements\n  - generic: 📢 公告 官网正文为准\n- link \"📡 服务状态 非实时可用率\":\n  - /url: http://127.0.0.1:18182/status\n  - generic: 📡 服务状态 非实时可用率\n- heading \"✨ 产品\" [level=2]\n- link \"ℹ️ 关于语学星 官网正文为准\":\n  - /url: http://127.0.0.1:18182/about\n  - generic: ℹ️ 关于语学星 官网正文为准\n- link \"⬇️ 下载 官网正文为准\":\n  - /url: http://127.0.0.1:18182/download\n  - generic: ⬇️ 下载 官网正文为准\n- button \"📱 原生壳说明（R3 门）\":\n  - generic: 📱 原生壳说明（R3 门）\n- link \"💰 价格 首发免费，官网为准\":\n  - /url: http://127.0.0.1:18182/pricing\n  - generic: 💰 价格 首发免费，官网为准\n- heading \"🧾 开源与版本\" [level=2]\n- paragraph: 开源许可：稿内说明，正式文本以官网与仓库为准（演示不虚构条款）。\n- paragraph: 版本 1.0.0-demo · 18283 交互稿；法务文本未在稿内复刻，避免与官网不一致。\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "settings",
+    "actual": "settings",
+    "snapshot": "- button \"返回\":\n- generic: 设置\n- generic: 在线\n- heading \"学习偏好\" [level=2]\n- paragraph: 大学英语 · 四级 · 每天 45 分钟 · 每周 7 天\n- button \"预览计划调整\"\n- heading \"显示\" [level=2]\n- button \"跟随系统\"\n- button \"浅色\"\n- button \"深色\" [pressed]\n- button \"字号、对比与动效 ›\"\n- paragraph: 界面语言：中文 · 学习语言：英语\n- heading \"通知、账号与隐私\" [level=2]\n- button \"通知偏好 ›\"\n- button \"设备管理 ›\"\n- button \"隐私设置 ›\"\n- button \"同意记录 ›\"\n- button \"退出登录\"\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "devices",
+    "actual": "devices",
+    "snapshot": "- button \"返回\":\n- generic: 设备\n- generic: 在线\n- heading \"📱 设备\" [level=2]\n- paragraph: 设备管理界面预览，没有连接真实会话服务。\n- text: 本机浏览器\n- generic: 当前演示\n- paragraph: 退出会结束当前演示身份和管理预览；本机草稿与学习记录保留。清除数据请使用原型演示工具。\n- text: Android · Pixel（固定样例）\n- paragraph:\n  - generic: 最后活跃：2 天前（样例）\n  - button \"预览踢出确认\"\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "privacy",
+    "actual": "privacy",
+    "snapshot": "- button \"返回\":\n- generic: 隐私\n- generic: 在线\n- heading \"🔒 隐私\" [level=2]\n- paragraph: 本页保存本机演示请求。正式导出、账号删除和服务清理尚未接入；学习记录与草稿仍保留。\n- paragraph:\n  - button \"申请导出\"\n  - button \"申请删除\"\n  - button \"音频保留\"\n  - button \"关闭排名\"\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "support",
+    "actual": "support",
+    "snapshot": "- button \"返回\":\n- generic: 客服\n- generic: 在线\n- heading \"💬 客服\" [level=2]\n- paragraph: 一句话描述问题，最多 40 字。工单和草稿保存在本机；此原型尚未发送至客服。\n- paragraph:\n  - generic: 分类：\n  - button \"功能\"\n  - button \"账号\"\n  - button \"内容\"\n  - button \"支付\"\n- textbox \"问题描述\":\n  - /placeholder: 一句话描述问题（最多40字）\n- button \"提交工单\"\n- button \"工单详情\"\n- heading \"🧾 我的工单（3）\" [level=2]\n- text: TK-39\n- generic: 内容\n- generic: 已提交\n- paragraph: <b>审计草稿</b>\n- text: TK-1024\n- generic: 功能\n- generic: 处理中\n- paragraph: 听力播到一半停了\n- text: TK-1019\n- generic: 账号\n- generic: 已回复\n- paragraph: 换手机想踢掉旧设备\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "search",
+    "actual": "search",
+    "snapshot": "- button \"返回\":\n- generic: 搜索\n- generic: 在线\n- heading \"搜索\" [level=2]\n- textbox \"搜课程/词汇/帮助\"\n- paragraph: 词汇结果进详情页（可自测/加复习），课程进图书管。\n- paragraph:\n  - generic: 历史：\n  - button \"四级\"\n  - button \"音标\"\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "commerce",
+    "actual": "commerce",
+    "snapshot": "- button \"返回\":\n- generic: 商城\n- generic: 在线\n- button \"商城\":\n  - generic: 商城\n- heading \"月度会员\" [level=2]\n- paragraph:\n  - generic: 热卖\n  - generic: 会员\n- paragraph: 本机会员购买流程样例；AI 伴学在 Phase 2 开放\n- paragraph: ¥19 ¥29\n- paragraph: 本机沙盒商品，不发货、不扣款、不承诺考试成绩。\n- button \"去结算\":\n  - generic: 去结算\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "admin",
+    "actual": "alogin",
+    "snapshot": "- button \"返回\":\n- generic: 管理登录\n- generic: 在线\n- heading \"管理身份预览\" [level=2]\n- paragraph: 后台页面使用固定样例，仅供查看管理动线。开启预览不会创建真实管理会话或授予正式权限；退出、重新进入或刷新后关闭。\n- button \"开启管理预览\"\n- button \"返回演示工具\"\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "aperm",
+    "actual": "alogin",
+    "snapshot": "- button \"返回\":\n- generic: 管理登录\n- generic: 在线\n- heading \"管理身份预览\" [level=2]\n- paragraph: 后台页面使用固定样例，仅供查看管理动线。开启预览不会创建真实管理会话或授予正式权限；退出、重新进入或刷新后关闭。\n- button \"开启管理预览\"\n- button \"返回演示工具\"\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "adraft",
+    "actual": "alogin",
+    "snapshot": "- button \"返回\":\n- generic: 管理登录\n- generic: 在线\n- heading \"管理身份预览\" [level=2]\n- paragraph: 后台页面使用固定样例，仅供查看管理动线。开启预览不会创建真实管理会话或授予正式权限；退出、重新进入或刷新后关闭。\n- button \"开启管理预览\"\n- button \"返回演示工具\"\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "areview",
+    "actual": "alogin",
+    "snapshot": "- button \"返回\":\n- generic: 管理登录\n- generic: 在线\n- heading \"管理身份预览\" [level=2]\n- paragraph: 后台页面使用固定样例，仅供查看管理动线。开启预览不会创建真实管理会话或授予正式权限；退出、重新进入或刷新后关闭。\n- button \"开启管理预览\"\n- button \"返回演示工具\"\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "apublish",
+    "actual": "alogin",
+    "snapshot": "- button \"返回\":\n- generic: 管理登录\n- generic: 在线\n- heading \"管理身份预览\" [level=2]\n- paragraph: 后台页面使用固定样例，仅供查看管理动线。开启预览不会创建真实管理会话或授予正式权限；退出、重新进入或刷新后关闭。\n- button \"开启管理预览\"\n- button \"返回演示工具\"\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "agov",
+    "actual": "alogin",
+    "snapshot": "- button \"返回\":\n- generic: 管理登录\n- generic: 在线\n- heading \"管理身份预览\" [level=2]\n- paragraph: 后台页面使用固定样例，仅供查看管理动线。开启预览不会创建真实管理会话或授予正式权限；退出、重新进入或刷新后关闭。\n- button \"开启管理预览\"\n- button \"返回演示工具\"\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "aaudit",
+    "actual": "alogin",
+    "snapshot": "- button \"返回\":\n- generic: 管理登录\n- generic: 在线\n- heading \"管理身份预览\" [level=2]\n- paragraph: 后台页面使用固定样例，仅供查看管理动线。开启预览不会创建真实管理会话或授予正式权限；退出、重新进入或刷新后关闭。\n- button \"开启管理预览\"\n- button \"返回演示工具\"\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "alogin",
+    "actual": "alogin",
+    "snapshot": "- button \"返回\":\n- generic: 管理登录\n- generic: 在线\n- heading \"管理身份预览\" [level=2]\n- paragraph: 后台页面使用固定样例，仅供查看管理动线。开启预览不会创建真实管理会话或授予正式权限；退出、重新进入或刷新后关闭。\n- button \"开启管理预览\"\n- button \"返回演示工具\"\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "amedia",
+    "actual": "alogin",
+    "snapshot": "- button \"返回\":\n- generic: 管理登录\n- generic: 在线\n- heading \"管理身份预览\" [level=2]\n- paragraph: 后台页面使用固定样例，仅供查看管理动线。开启预览不会创建真实管理会话或授予正式权限；退出、重新进入或刷新后关闭。\n- button \"开启管理预览\"\n- button \"返回演示工具\"\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "acs",
+    "actual": "alogin",
+    "snapshot": "- button \"返回\":\n- generic: 管理登录\n- generic: 在线\n- heading \"管理身份预览\" [level=2]\n- paragraph: 后台页面使用固定样例，仅供查看管理动线。开启预览不会创建真实管理会话或授予正式权限；退出、重新进入或刷新后关闭。\n- button \"开启管理预览\"\n- button \"返回演示工具\"\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "ashop",
+    "actual": "alogin",
+    "snapshot": "- button \"返回\":\n- generic: 管理登录\n- generic: 在线\n- heading \"管理身份预览\" [level=2]\n- paragraph: 后台页面使用固定样例，仅供查看管理动线。开启预览不会创建真实管理会话或授予正式权限；退出、重新进入或刷新后关闭。\n- button \"开启管理预览\"\n- button \"返回演示工具\"\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "areport",
+    "actual": "alogin",
+    "snapshot": "- button \"返回\":\n- generic: 管理登录\n- generic: 在线\n- heading \"管理身份预览\" [level=2]\n- paragraph: 后台页面使用固定样例，仅供查看管理动线。开启预览不会创建真实管理会话或授予正式权限；退出、重新进入或刷新后关闭。\n- button \"开启管理预览\"\n- button \"返回演示工具\"\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "aobs",
+    "actual": "alogin",
+    "snapshot": "- button \"返回\":\n- generic: 管理登录\n- generic: 在线\n- heading \"管理身份预览\" [level=2]\n- paragraph: 后台页面使用固定样例，仅供查看管理动线。开启预览不会创建真实管理会话或授予正式权限；退出、重新进入或刷新后关闭。\n- button \"开启管理预览\"\n- button \"返回演示工具\"\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "ai",
+    "actual": "ai",
+    "snapshot": "- button \"返回\":\n- generic: AI 伴学\n- generic: 在线\n- heading \"🤖 AI 伴学（P2 未开·演示）\" [level=2]\n- paragraph: Gate 未过无 CTA 是设计；下面是快捷方案，开一两个先体验。答不上来可转练题/客服，不硬聊。\n- button \"💬 自由对话 随便聊，AI 陪你练英语\":\n  - text: 💬 自由对话\n  - generic: 随便聊，AI 陪你练英语\n- button \"📝 作文批改 贴作文，给分＋改法\":\n  - text: 📝 作文批改\n  - generic: 贴作文，给分＋改法\n- button \"🗣️ 口语陪练 情景对话，练张嘴\":\n  - text: 🗣️ 口语陪练\n  - generic: 情景对话，练张嘴\n- button \"📋 制定计划 按水平排一周\":\n  - text: 📋 制定计划\n  - generic: 按水平排一周\n- button \"更多方案（6）\":\n  - generic: 更多方案（6）\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "voice",
+    "actual": "voice",
+    "snapshot": "- button \"返回\":\n- generic: 语音跟读\n- generic: 在线\n- heading \"🎤 语音跟读\" [level=2]\n- paragraph: 跟读 / 口头翻译 / 对话 / 角色扮演全画（演示 TTS 示范 + 模拟录音；真评测走服务端，不承诺时间）。\n- paragraph:\n  - generic: 场景：\n  - button \"跟读\"\n  - button \"复述\"\n  - button \"对话\"\n  - button \"口头翻译\"\n  - button \"角色扮演\"\n- text: Good morning.\n- button \"朗读\": 🔊 示范\n- button \"🎤 开始录音\"\n- paragraph: 无麦先说（演示跳过设备检查）；RTC 未接不评真分。\n- paragraph:\n  - button \"评分与保留\":\n    - generic: 评分与保留\n- heading \"📝 本轮记录\" [level=2]\n- paragraph: 还没有，先录一条 👆\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "k12",
+    "actual": "k12",
+    "snapshot": "- button \"返回\":\n- generic: 青少年模式\n- generic: 在线\n- text: 🎒 青少年模式（P3 未开·演示）\n- paragraph: 你是？\n- button \"我是学生\"\n- button \"我是家长\"\n- button \"我是老师\"\n- paragraph\n- button \"返回成人版\"\n- paragraph:\n  - button \"治理规则\":\n    - generic: 治理规则\n  - button \"教材课程\":\n    - generic: 教材课程\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "aigate",
+    "actual": "aigate",
+    "snapshot": "- button \"返回\":\n- generic: AI门\n- generic: 在线\n- button \"AI 伴学\":\n  - generic: AI 伴学\n- heading \"🚪 AI 门\" [level=2]\n- paragraph: 四件齐了才开：阶段 P2 ＋ 成人 ＋ 同意 ＋ 成本预算（演示说明）。\n- heading \"当前\" [level=2]\n- paragraph: P1 无 AI 入口是设计；R2 走 stub，不调真模型、不计真成本。\n- paragraph:\n  - button \"看调用链\":\n    - generic: 看调用链\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "aiflow",
+    "actual": "aiflow",
+    "snapshot": "- button \"返回\":\n- generic: AI链\n- generic: 在线\n- button \"AI 门\":\n  - generic: AI 门\n- heading \"🔗 AI 调用链\" [level=2]\n- paragraph: 输入 → 预检 → 请求 → 流式 → 核验 → 落库（演示口径）。\n- heading \"关键件\" [level=2]\n- paragraph: 输入授权告知；前置敏感拦截；prompt_version 固定；流式可停止；输出后置合规核验；Schema 校验；结果带来源保存；采纳 / 重做 / 转普通练习。\n- paragraph: 超时降级给普通练题；成本进 cost_ledger 台账；审计与用户历史分离存。\n- paragraph:\n  - button \"去体验\":\n    - generic: 去体验\n  - button \"转练题\":\n    - generic: 转练题\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "vscore",
+    "actual": "vscore",
+    "snapshot": "- button \"返回\":\n- generic: 语音评分\n- generic: 在线\n- button \"语音\":\n  - generic: 语音\n- heading \"📊 发音评分与保留\" [level=2]\n- paragraph: 结构化评分走服务端，不直连模型；RTC 失败不伪造结果（演示口径）。\n- heading \"录音\" [level=2]\n- paragraph: 原始音频隔离分级存；保留到期即清；导出 / 删除走隐私申请。\n- paragraph: 随时打断：你一说话就停播；自建语音方案另立评审（ADR）。\n- paragraph:\n  - button \"回口语\":\n    - generic: 回口语\n  - button \"隐私申请\":\n    - generic: 隐私申请\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "k12guard",
+    "actual": "k12guard",
+    "snapshot": "- button \"返回\":\n- generic: K12治理\n- generic: 在线\n- button \"青少年模式\":\n  - generic: 青少年模式\n- heading \"🛡️ K12 治理\" [level=2]\n- paragraph: P3 上锁：手续不全代码可写、门不开（演示）。\n- heading \"门与手续\" [level=2]\n- paragraph: K12 Gate 默认关；未成年人识别 → 监护授权；教师 / 机构资质校验；开锁手续清单签完才开。\n- heading \"在用保护\" [level=2]\n- paragraph: 时长 / 时段到点即停；家长一键撤回即刻停用；未成年人隐私另行请求；安全事件进审计。\n- paragraph:\n  - button \"关于本稿\":\n    - generic: 关于本稿\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "k12course",
+    "actual": "k12course",
+    "snapshot": "- button \"返回\":\n- generic: K12课程\n- generic: 在线\n- button \"青少年模式\":\n  - generic: 青少年模式\n- heading \"📚 K12 课程\" [level=2]\n- paragraph: 教材同步先验版权＋地区；中高考专项标注考纲版本（演示）。\n- heading \"闭环\" [level=2]\n- paragraph: 教材课 → 练习 → 报告 → 家长页同步（只读），与成人链隔离。\n- paragraph:\n  - button \"治理规则\":\n    - generic: 治理规则\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "tdetail",
+    "actual": "tdetail",
+    "snapshot": "- button \"返回\":\n- generic: 工单详情\n- generic: 在线\n- button \"客服\"\n- heading \"🧾 工单详情\" [level=2]\n- paragraph:\n  - generic: 筛选：\n  - button \"全部\"\n  - button \"已提交\"\n  - button \"处理中\"\n  - button \"已回复\"\n- text: TK-39\n- generic: 内容\n- generic: 已提交\n- paragraph: <b>审计草稿</b>\n- paragraph: 本机演示记录；处理与回复为样例状态，尚未发送至客服。\n- text: TK-1024\n- generic: 功能\n- generic: 处理中\n- paragraph: 听力播到一半停了\n- paragraph: 本机演示记录；处理与回复为样例状态，尚未发送至客服。\n- text: TK-1019\n- generic: 账号\n- generic: 已回复\n- paragraph: 换手机想踢掉旧设备\n- paragraph: 本机演示记录；处理与回复为样例状态，尚未发送至客服。\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "paudio",
+    "actual": "paudio",
+    "snapshot": "- button \"返回\":\n- generic: 音频保留\n- generic: 在线\n- button \"隐私\":\n  - generic: 隐私\n- heading \"🎙️ 音频保留说明\" [level=2]\n- paragraph: 跟读录音默认只留评分特征；原始音频另行授权才存（演示口径）。\n- heading \"到期与删除\" [level=2]\n- paragraph: 保留期到自动清；删号时逐服务清理并给回执；处理中显示编号＋进度，不点完即完成。\n- paragraph:\n  - button \"回语音\":\n    - generic: 回语音\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "pay",
+    "actual": "pay",
+    "snapshot": "- button \"返回\":\n- generic: 收银台\n- generic: 在线\n- heading \"收银台（沙盒）\" [level=2]\n- paragraph: 月度会员 · ¥19 · 本机演示，不扣真款\n- paragraph: 订单：demo-order-41\n- generic: 沙盒支付已确认，本机订单已保存；不会扣真款或发放真实权益。\n- paragraph:\n  - button \"查看订单\"\n  - button \"回商城\"\n  - button \"重新购买\"\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "a11y",
+    "actual": "a11y",
+    "snapshot": "- button \"返回\":\n- generic: 无障碍\n- generic: 在线\n- heading \"♿ 无障碍\" [level=2]\n- paragraph: 跟随系统＋手动档，所见即所得；设置只在本机生效（演示），换设备需重设。\n- button \"◐ 高对比：开\":\n  - generic: ◐ 高对比：开\n- button \"A 字体：特大\":\n  - generic: A 字体：特大\n- button \"▶ 动效：开\":\n  - generic: ▶ 动效：开\n- button \"◎ 焦点框：默认\":\n  - generic: ◎ 焦点框：默认\n- button \"🔊 读屏/朗读：关\":\n  - generic: 🔊 读屏/朗读：关\n- paragraph:\n  - button \"恢复默认\"\n- heading \"👁 预览（真实生效区）\" [level=2]\n- paragraph: Good morning.\n- paragraph: 早上好。今天也要学 15 分钟。\n- paragraph:\n  - generic: B1\n  - generic: 今日 2 题\n- button \"示例按钮\"\n- button \"播报这段 🔊\"\n- paragraph: 状态不用颜色 alone 表达：✓=可做 ♥=待补救 ⌁=待同步，均有文字。\n- generic: ✓ 保存成功是这种条（文字＋色块）\n- generic: \"! 出错是这种条（文字＋色块）\"\n- heading \"⌨️ 键盘与焦点自查\" [level=2]\n- paragraph: Tab 走一遍：本页按钮 → 预览 → 下面三链接，焦点框为默认；回车可点，焦点不丢。\n- paragraph:\n  - button \"书架\":\n    - generic: 书架\n  - button \"练题\":\n    - generic: 练题\n  - button \"首页\":\n    - generic: 首页\n- paragraph: 抽验屏（书架/练题）不是全部范围；长题干、320 宽度、横竖屏以真机为准，稿内不认证。\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "arrears",
+    "actual": "arrears",
+    "snapshot": "- button \"返回\":\n- generic: 补课提醒\n- generic: 在线\n- heading \"可以接着完成的学习\" [level=2]\n- paragraph: 接回任务会保留原来的题目和草稿，可按今天的时间安排继续。\n- button \"查看今日与顺延安排\"\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "celebrate",
+    "actual": "celebrate",
+    "snapshot": "- button \"返回\":\n- generic: 完成撒花\n- generic: 在线\n- heading \"查看这一次的学习收获\" [level=2]\n- paragraph: 完成结果以本机记录为准，可以查看反馈、复习安排或继续未完成的任务。\n- button \"查看今日回顾\"\n- button \"回到学习\"\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "offlinet",
+    "actual": "offlinet",
+    "snapshot": "- button \"返回\":\n- generic: 断网今日\n- generic: 在线\n- heading \"离线时保留学习进度\" [level=2]\n- paragraph: 已经加载的原型页面可继续查看；选择和草稿保存在本机。当前原型没有服务端自动同步，恢复连接后请主动提交或查询未知结果。\n- button \"查看保存的学习\"\n- button \"离线包说明\"\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "pgen",
+    "actual": "pgen",
+    "snapshot": "- button \"返回\":\n- generic: 计划生成中\n- generic: 在线\n- heading \"生成今日安排\" [level=2]\n- paragraph: 按目标与时间预算安排固定样例内容，已完成和进行中的任务会保留。\n- button \"生成今日计划\"\n- button \"查看学习计划\"\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "planexp",
+    "actual": "planexp",
+    "snapshot": "- button \"返回\":\n- generic: 计划解释\n- generic: 在线\n- heading \"你的学习安排\" [level=2]\n- paragraph: 大学英语 · 四级 · 每天 45 分钟 · 每周 7 天\n- paragraph: 先做目标对应的小题组，再按预算加入阅读、写作、词汇和复习。当前内容是固定学习样例；测评结果作为水平参考。\n- paragraph: 休息日不增加新任务；未完成内容保留在顺延列表。调整计划前可以选择保留或顺延进行中的任务。\n- button \"预览计划调整\"\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "session",
+    "actual": "session",
+    "snapshot": "- button \"返回\":\n- generic: 会话检查点\n- generic: 在线\n- heading \"🔗 会话与检查点\" [level=2]\n- paragraph: 练习按会话走，checkpoint 是断点续练的依据（演示）。\n- heading \"顺序＋版本锁\" [level=2]\n- paragraph: 按题序作答；乱序/并发提交会被打回（409），按服务端题号重拉再答；判分规则按版本锁定，老会话不受新规则影响。\n- heading \"断点续练\" [level=2]\n- paragraph: 做到第 3 题退出 → 回来从第 3 题继续；重复提交幂等，不重复计分。\n- paragraph:\n  - button \"继续练\":\n    - generic: 继续练\n  - button \"回今日\":\n    - generic: 回今日\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "mastery",
+    "actual": "mastery",
+    "snapshot": "- button \"返回\":\n- generic: 掌握度\n- generic: 在线\n- heading \"巩固进度\" [level=2]\n- strong: \"3\"\n- generic: 待补救\n- strong: \"1\"\n- generic: 待验证\n- strong: \"0\"\n- generic: 已验证\n- paragraph: 此处是学习项的验证状态，不是正式等级或能力认证。\n- button \"查看学习项\"\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "pfault",
+    "actual": "pfault",
+    "snapshot": "- button \"返回\":\n- generic: 定级恢复\n- generic: 在线\n- heading \"🛟 定级恢复\" [level=2]\n- paragraph: 出错不丢题，失败有出口（演示）。\n- heading \"409 版本冲突\" [level=2]\n- paragraph: 乱序/并发提交会被打回（409）→ 按服务端题号重拉进度再答，不覆盖已答。\n- heading \"断网续答\" [level=2]\n- paragraph: 断网先存本机草稿（只存题号＋选项）；恢复后按 checkpoint 续题号。\n- heading \"重测\" [level=2]\n- paragraph: 重测开新 session，旧报告保留可查，不覆盖。\n- paragraph:\n  - button \"回定级\":\n    - generic: 回定级\n  - button \"看报告\":\n    - generic: 看报告\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "npref",
+    "actual": "npref",
+    "snapshot": "- button \"返回\":\n- generic: 通知偏好\n- generic: 在线\n- button \"消息\":\n  - generic: 消息\n- heading \"🔔 通知偏好\" [level=2]\n- paragraph: 开关只记偏好＋版本号，能否收到看真实渠道（演示：推送未开不开“成功”）。\n- heading \"渠道\" [level=2]\n- button \"✅ 学习提醒\":\n  - generic: ✅ 学习提醒\n- button \"✅ 学习报告\":\n  - generic: ✅ 学习报告\n- button \"⬜ 系统公告\":\n  - generic: ⬜ 系统公告\n- heading \"免打扰\" [level=2]\n- paragraph:\n  - generic: 时段：\n  - button \"晨间 8:00\"\n  - button \"睡前 22:00\"\n- paragraph: 部分失败自动重试 3 次；真实事件驱动 R2 开，Push / Email / SMS 走 R3（演示不开）。\n- paragraph:\n  - button \"回设置\":\n    - generic: 回设置\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "firstlearn",
+    "actual": "firstlearn",
+    "snapshot": "- button \"返回\":\n- generic: 首次学习\n- generic: 在线\n- heading \"选择开始方式\" [level=2]\n- paragraph: 大学英语 · 四级 · 每天 45 分钟\n- paragraph: 先用五道样例题了解自己的起点，也可以直接做一组基础任务。样例测评不替代正式等级考试。\n- button \"先做样例测评\"\n- button \"直接开始学习\"\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "greject",
+    "actual": "greject",
+    "snapshot": "- button \"返回\":\n- generic: 门被拒\n- generic: 在线\n- text: 暂不能开放学习\n- paragraph: 身份未通过，可退出或联系客服\n- button \"退出\"\n- button \"联系客服\"\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "cupgrade",
+    "actual": "cupgrade",
+    "snapshot": "- button \"返回\":\n- generic: 同意升级\n- generic: 在线\n- heading \"本机同意记录\" [level=2]\n- paragraph: 当前演示版本：b30-consent-v1。样例通过状态与本人在原型中的签署分别标明；均不代表服务端授权。\n- paragraph:\n  - text: TERMS · 当前版本已记录\n  - text: 演示样例 · b30-consent-v1\n- paragraph:\n  - text: PRIVACY · 当前版本已记录\n  - text: 演示样例 · b30-consent-v1\n- paragraph:\n  - text: ADULT_LEARNING · 当前版本已记录\n  - text: 演示样例 · b30-consent-v1\n- button \"查看并重新确认\"\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "vocab",
+    "actual": "vocab",
+    "snapshot": "- button \"返回\":\n- generic: 词汇详情\n- generic: 在线\n- paragraph: CET4 · 第 1/40 · 🗑️ · 已在复习\n- text: abandon\n- paragraph:\n  - generic: /əˈbændən/\n  - button \"朗读\": 🔊 读\n- paragraph: 抛弃\n- paragraph:\n  - button \"上一词\":\n    - generic: 上一词\n  - button \"下一词\":\n    - generic: 下一词\n- heading \"🔍 找词\" [level=2]\n- textbox \"英文 / 中文，如 abandon / 抛弃\"\n- paragraph: 输入英文或中文搜 40 词（四级 20＋六级 20）\n- heading \"🔀 拆开记\" [level=2]\n- paragraph: aban + don\n- paragraph: 形和音对应着记（演示拆分，非权威词源）。\n- paragraph: 暂无已核对的搭配与例句，可先记词义和读音。\n- heading \"🔤 变形全家\" [level=2]\n- paragraph:\n  - generic: abandon\n  - generic: abandons\n  - generic: abandoned\n  - generic: abandoning\n  - generic: abandonment n.抛弃\n- heading \"🧩 组句（点 🔊 跟读）\" [level=2]\n- paragraph:\n  - generic: 1. Don't abandon hope.\n  - button \"朗读\": 🔊\n- paragraph:\n  - generic: 2. The ship was abandoned.\n  - button \"朗读\": 🔊\n- paragraph:\n  - generic: 3. He abandoned the plan.\n  - button \"朗读\": 🔊\n- heading \"😎 搭配与记忆提示\" [level=2]\n- paragraph: abandon ship（开溜，多指散伙）\n- paragraph: 仅为记忆联想，不代表已核对词源：a-(away 离开)+ban(喊)→喊走→抛弃\n- heading \"✅ 自测：中文 → 英文\" [level=2]\n- paragraph: “抛弃”是哪个？\n- button \"🔑 access\"\n- button \"🗑️ abandon\"\n- button \"🏛️ academy\"\n- button \"🧽 absorb\"\n- heading \"📌 行动\" [level=2]\n- paragraph:\n  - button \"已在复习 ✓\"\n  - button \"会了 ✓\"\n  - button \"不会，进错题\"\n- paragraph:\n  - button \"去刷这本\":\n    - generic: 去刷这本\n  - button \"去复习\":\n    - generic: 去复习\n  - button \"错题本\":\n    - generic: 错题本\n- paragraph: 缺项写“暂无”，不编发音；演示状态不代表服务端已落库。\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "listening",
+    "actual": "listening",
+    "snapshot": "- button \"返回\":\n- generic: 听力\n- generic: 在线\n- heading \"听力练习\" [level=2]\n- paragraph: 系统语音朗读样例。完成后保存的是材料理解结果，不是正式听力水平。\n- generic: 材料\n- combobox \"材料\":\n  - option \"A0 · 问候\"\n  - option \"A1 · 火车站\" [selected]\n  - option \"B1 · 机场\"\n- generic: 语速\n- combobox \"语速\":\n  - option \"0.5 倍\"\n  - option \"0.75 倍\"\n  - option \"1 倍\" [selected]\n  - option \"1.25 倍\"\n  - option \"1.5 倍\"\n  - option \"2 倍\"\n- button \"播放材料\"\n- button \"隐藏字幕\" [pressed]\n- paragraph: Good morning. The train leaves at nine. Please be on time.\n- paragraph: 早上好。火车九点开。请准时。\n- heading \"材料理解\" [level=2]\n- paragraph: 火车几点开？\n- button \"A. eight\"\n- button \"B. nine\"\n- button \"C. ten\"\n- paragraph: 播客提醒你要什么？\n- button \"A. hurry\"\n- button \"B. be on time\"\n- button \"C. run\"\n- button \"保存本次理解结果\"\n- button \"返回课程\"\n- button \"练习记录\"\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "speaking",
+    "actual": "speaking",
+    "snapshot": "- button \"返回\":\n- generic: 口语\n- generic: 在线\n- heading \"口语练习\" [level=2]\n- generic: 练习方式\n- combobox \"练习方式\":\n  - option \"跟读\" [selected]\n  - option \"口头翻译\"\n  - option \"角色练习\"\n- paragraph: Could you help me check this report?\n- paragraph: 你能帮我检查这份报告吗？\n- paragraph: 朗读使用系统语音。先自己说一遍，再对照文字；这里不录音、不生成发音分数。\n- button \"听示范\"\n- button \"查看本轮自练\"\n- button \"再练一次\"\n- button \"返回课程\"\n- button \"练习记录\"\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "writing",
+    "actual": "writing",
+    "snapshot": "- button \"返回\":\n- generic: 写作\n- generic: 在线\n- paragraph: 原创练习 · 规则反馈\n- heading \"给朋友的一封信\" [level=2]\n- paragraph: 邀请 Sam 周末一起学习英语。说明活动、时间，并询问对方是否方便。写 40–100 个英文单词，包含称呼和结束语。\n- generic: 我的草稿\n- textbox \"我的草稿\":\n  - /placeholder: Dear Sam,...\n  - text: DAY TWO DRAFT Dear Sam I will read on Sunday.\n- status: 10 个英文单词 · 草稿已保存到本机\n- button \"检查并提交\"\n- generic \"＋ 查看参考文本与检查范围\"\n- heading \"历次提交\" [level=2]\n- button \"写作 · 给朋友的一封信 13:14 · 已保存\":\n  - text: 写作 · 给朋友的一封信\n  - generic: 13:14 · 已保存\n  - generic: ›\n- button \"写作 · 给朋友的一封信 13:13 · 已保存\":\n  - text: 写作 · 给朋友的一封信\n  - generic: 13:13 · 已保存\n  - generic: ›\n- button \"保存草稿，返回学习\"\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "offpkg",
+    "actual": "offpkg",
+    "snapshot": "- button \"返回\":\n- generic: 离线包\n- generic: 在线\n- heading \"离线包\" [level=2]\n- paragraph: 列表可读：版本 / 大小 / 内容范围 / 状态可见。完整离线未准入前不开放下载，不保留可点的必败下载。\n- paragraph: 装了 PWA ≠ 离线可学；断网时今日进度处理另见说明。\n- button \"断网时怎么办\":\n  - generic: 断网时怎么办\n- text: 四级词汇包\n- generic: 未开放下载\n- paragraph: 版本：v3（演示结构） · 大小：—\n- paragraph: 范围：四级核心词 + 例句\n- paragraph: 完整离线未准入（R3），当前请在线学。\n- button \"去书架在线学\":\n  - generic: 去书架在线学\n- text: 零基础包\n- generic: 未开放下载\n- paragraph: 版本：v1（演示结构） · 大小：—\n- paragraph: 范围：字母 + 音标 + 短句\n- paragraph: 完整离线未准入（R3），当前请在线学。\n- button \"去书架在线学\":\n  - generic: 去书架在线学\n- text: 六级阅读包\n- generic: 未开放下载\n- paragraph: 版本：v2（演示结构） · 大小：—\n- paragraph: 范围：长难句 + 精读\n- paragraph: 完整离线未准入（R3），当前请在线学。\n- button \"去书架在线学\":\n  - generic: 去书架在线学\n- paragraph: 结构为演示占位，非真实可下载字节；大小“—”表示未定，不虚构 MB 数。\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "refund",
+    "actual": "refund",
+    "snapshot": "- button \"返回\":\n- generic: 退款开票\n- generic: 在线\n- heading \"我的订单 / 退款 / 票据\" [level=2]\n- paragraph: 本机沙盒订单；初始三笔为固定样例。新结算保存同一商品与价格，刷新后仍可查看。\n- button \"回商城\"\n- text: 月度会员\n- generic: ¥19\n- paragraph: demo-order-41\n- paragraph: 资金：已支付（沙盒） · 权益：有效（本机演示）\n- paragraph: 退款：无\n- button \"查看订单\"\n- text: 月度会员\n- generic: ¥19\n- paragraph: tk1\n- paragraph: 资金：已支付（沙盒） · 权益：有效\n- paragraph: 退款：L1 已过·等 L2\n- button \"查看订单\"\n- text: 四级冲刺包\n- generic: ¥49\n- paragraph: tk2\n- paragraph: 资金：已支付（沙盒） · 权益：有效\n- paragraph: 退款：无\n- button \"查看订单\"\n- text: 年度会员\n- generic: ¥108\n- paragraph: tk3\n- paragraph: 资金：已退款（沙盒） · 权益：已按政策撤销（演示）\n- paragraph: 退款：已到账（沙盒）\n- button \"查看订单\"\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "shelf",
+    "actual": "shelf",
+    "snapshot": "- button \"返回\":\n- generic: 书架\n- generic: 在线\n- navigation \"学习分区\":\n  - button \"今日\"\n  - button \"课程\"\n  - button \"词汇\"\n  - button \"复习\"\n- heading \"发现适合你的内容\" [level=2]\n- paragraph: 章节是原创学习片段；书名用于表达学习方向，不提供原书全文。\n- generic: 学习目标\n- combobox \"学习目标\":\n  - option \"全部目标\" [selected]\n  - option \"基础英语\"\n  - option \"大学英语\"\n  - option \"考研英语\"\n  - option \"职场英语\"\n- generic: 参考水平\n- combobox \"参考水平\":\n  - option \"全部水平\" [selected]\n  - option \"A1\"\n  - option \"A2\"\n  - option \"B1\"\n  - option \"B2\"\n  - option \"C1\"\n- generic: 学习状态\n- combobox \"学习状态\":\n  - option \"全部\" [selected]\n  - option \"在学\"\n  - option \"收藏\"\n  - option \"已完成\"\n  - option \"未开始\"\n  - option \"暂无内容\"\n- heading \"四级词汇红宝书\" [level=3]\n- generic: B1\n- paragraph: 大学英语 · 在学 · 1/3 节完成\n- button \"继续课程\"\n- button \"☆ 收藏\"\n- heading \"零基础英语\" [level=3]\n- generic: A1\n- paragraph: 基础英语 · 未开始 · 0/3 节完成\n- button \"查看章节\"\n- button \"☆ 收藏\"\n- heading \"六级长难句\" [level=3]\n- generic: B2\n- paragraph: 大学英语 · 未开始 · 0/3 节完成\n- button \"查看章节\"\n- button \"☆ 收藏\"\n- heading \"商务口语 100 句\" [level=3]\n- generic: B1\n- paragraph: 职场英语 · 未开始 · 0/3 节完成\n- button \"查看章节\"\n- button \"☆ 收藏\"\n- heading \"雅思备考\" [level=3]\n- generic: B2\n- paragraph: 大学英语 · 未开始 · 0/4 节完成\n- button \"查看章节\"\n- button \"☆ 收藏\"\n- heading \"生活英语\" [level=3]\n- generic: A2\n- paragraph: 基础英语 · 未开始 · 0/3 节完成\n- button \"查看章节\"\n- button \"☆ 收藏\"\n- heading \"考研阅读 · 研究与生活\" [level=3]\n- generic: B2\n- paragraph: 考研英语 · 未开始 · 0/3 节完成\n- button \"查看章节\"\n- button \"☆ 收藏\"\n- heading \"考研阅读进阶\" [level=3]\n- generic: C1\n- paragraph: 考研英语 · 暂无内容\n- paragraph: 此方向暂未提供样例。换一个水平或选择其他课程。\n- heading \"技能练习\" [level=2]\n- button \"写作 ›\"\n- button \"听力 ›\"\n- button \"口语 ›\"\n- button \"收藏与笔记 ›\"\n- navigation:\n  - link \"🏠 首页\":\n    - /url: \"#/home\"\n    - generic: 🏠\n    - text: 首页\n  - link \"📚 学习\":\n    - /url: \"#/today\"\n    - generic: 📚\n    - text: 学习\n  - link \"🌍 世界\":\n    - /url: \"#/world\"\n    - generic: 🌍\n    - text: 世界\n  - link \"👤 我的\":\n    - /url: \"#/me\"\n    - generic: 👤\n    - text: 我的\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "book",
+    "actual": "book",
+    "snapshot": "- button \"返回\":\n- generic: 图书详情\n- generic: 在线\n- paragraph: 原创片段与词汇学习样例\n- heading \"四级词汇红宝书\" [level=2]\n- paragraph: 原创词汇片段与例句，用于打磨学习交互；章名数字为目录样例，不表示已提供完整词库。 · 已完成 1/3 节\n- button \"☆ 收藏课程\"\n- heading \"章节目录\" [level=2]\n- button \"1. 第一章 高频 500 ✓ 已完成 ›\":\n  - text: 1. 第一章 高频 500\n  - generic: ✓ 已完成\n  - generic: ›\n- button \"2. 第二章 核心 1500 未开始 ›\":\n  - text: 2. 第二章 核心 1500\n  - generic: 未开始\n  - generic: ›\n- button \"3. 第三章 冲刺 1000 未开始 ›\":\n  - text: 3. 第三章 冲刺 1000\n  - generic: 未开始\n  - generic: ›\n- button \"返回课程\"\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "chapter",
+    "actual": "chapter",
+    "snapshot": "- button \"返回\":\n- generic: 章节正文\n- generic: 在线\n- paragraph: 第 1/3 节\n- generic: ✓ 本节已完成\n- paragraph: 四级词汇红宝书\n- article:\n  - heading \"第一章 高频 500\" [level=2]\n  - paragraph: 本节以 abandon（抛弃） 为原创词汇学习样例。\n  - blockquote: 记忆提示：把单词放进自己的句子中，再通过练习检验。\n  - list:\n    - listitem: abandon bad habits.\n    - listitem: 抛掉坏习惯。\n  - paragraph: 文字词卡：abandon → 抛弃 → Abandon bad habits.\n  - heading \"怎样练习\" [level=3]\n  - paragraph: 读出例句，再用 abandon 写一句话。本节没有引用已核验的真题频次。\n- heading \"查词与收藏\" [level=2]\n- paragraph: 本节词汇，点词保留原句：\n- button \"abandon\"\n- generic: 英文单词\n- textbox \"英文单词\":\n  - /placeholder: 输入要查的单词\n  - text: abandon\n- button \"查词\"\n- button \"★ 已收藏本节\" [pressed]\n- status:\n  - text: abandon\n  - paragraph: 抛弃\n  - paragraph: abandon 永远排第一，因为它是四级最爱考的动词。\n  - button \"朗读\"\n  - button \"加入复习\"\n- heading \"本节笔记\" [level=2]\n- generic: 记下一句话或疑问\n- textbox \"记下一句话或疑问\":\n  - /placeholder: 笔记会自动保存到本机\n  - text: \"Audit note: abandon bad habits.\"\n- status: 已保存到本机 · 31 字\n- heading \"继续往下读\" [level=2]\n- button \"✓ 已完成本节\" [disabled]\n- button \"下一节\"\n- button \"返回本书目录\"\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "drill",
+    "actual": "drill",
+    "snapshot": "- button \"返回\":\n- generic: 刷单词\n- generic: 在线\n- generic: 四级 · 限时 60 秒 · 对+10/错-2 · 错题进本（演示，不上榜）\n- generic: 学习模式\n- button \"词汇详情\":\n  - generic: 词汇详情\n- group \"刷词模式\":\n  - button \"回忆\"\n  - button \"选项\"\n  - button \"词形\"\n  - button \"限时\" [pressed]\n- heading \"限时挑战\" [level=2]\n- paragraph: 60 秒能对几个？离开页面会暂停，挑战不计入今日三词任务。\n- button \"开始挑战\"\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "wordbook",
+    "actual": "wordbook",
+    "snapshot": "- button \"返回\":\n- generic: 单词本\n- generic: 在线\n- heading \"选择一组词汇\" [level=2]\n- paragraph: 自评认识，或加入复习。每轮完成后会保存回忆记录。\n- button \"四级词汇 · 20 词 ›\"\n- button \"六级词汇 · 20 词 ›\"\n- button \"返回词汇学习\"\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "phonics",
+    "actual": "phonics",
+    "snapshot": "- button \"返回\":\n- generic: 音标\n- generic: 在线\n- heading \"🔤 音标\" [level=2]\n- paragraph: 点符号听发音，分组慢慢来\n- button \"单元音 · 12 ▾\":\n  - generic: 单元音 · 12\n  - text: ▾\n- button \"iː sheep\":\n  - text: iː\n  - generic: sheep\n- button \"ɪ ship\":\n  - text: ɪ\n  - generic: ship\n- button \"e bed\":\n  - text: e\n  - generic: bed\n- button \"æ cat\":\n  - text: æ\n  - generic: cat\n- button \"ɑː car\":\n  - text: ɑː\n  - generic: car\n- button \"ɒ hot\":\n  - text: ɒ\n  - generic: hot\n- button \"ɔː door\":\n  - text: ɔː\n  - generic: door\n- button \"ʊ book\":\n  - text: ʊ\n  - generic: book\n- button \"uː food\":\n  - text: uː\n  - generic: food\n- button \"ʌ cup\":\n  - text: ʌ\n  - generic: cup\n- button \"ɜː bird\":\n  - text: ɜː\n  - generic: bird\n- button \"ə about\":\n  - text: ə\n  - generic: about\n- button \"双元音 · 8 ▸\":\n  - generic: 双元音 · 8\n  - text: ▸\n- button \"爆破音 · 6 ▸\":\n  - generic: 爆破音 · 6\n  - text: ▸\n- button \"摩擦音 · 9 ▸\":\n  - generic: 摩擦音 · 9\n  - text: ▸\n- button \"鼻/边/滑音 · 7 ▸\":\n  - generic: 鼻/边/滑音 · 7\n  - text: ▸\n- button \"破擦音 · 6 ▸\":\n  - generic: 破擦音 · 6\n  - text: ▸\n- heading \"👂 最小对立对辨音\" [level=2]\n- paragraph:\n  - button \"sip 🔊\"\n  - button \"zip 🔊\"\n- paragraph:\n  - button \"ship 🔊\"\n  - button \"sheep 🔊\"\n- paragraph:\n  - button \"cat 🔊\"\n  - button \"cut 🔊\"\n- paragraph:\n  - button \"pen 🔊\"\n  - button \"pan 🔊\"\n- paragraph: 听两遍，凭感觉选（演示不判分）\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "alphabet",
+    "actual": "alphabet",
+    "snapshot": "- button \"返回\":\n- generic: 字母\n- generic: 在线\n- heading \"🔠 字母 · 26\" [level=2]\n- paragraph: 点字母听发音，看大小写和例词；例词待补的不编，先标出来\n- button \"A\"\n- button \"B\"\n- button \"C\"\n- button \"D\"\n- button \"E\"\n- button \"F\"\n- button \"G\"\n- button \"H\"\n- button \"I\"\n- button \"J\"\n- button \"K\"\n- button \"L\"\n- button \"M\"\n- button \"N\"\n- button \"O\"\n- button \"P\"\n- button \"Q\"\n- button \"R\"\n- button \"S\"\n- button \"T\"\n- button \"U\"\n- button \"V\"\n- button \"W\"\n- button \"X\"\n- button \"Y\"\n- button \"Z\"\n- paragraph: 点上面任意字母 👆\n- heading \"🔗 自然拼读\" [level=2]\n- paragraph: c-a-t → cat（演示：点听整词）\n- button \"🔊 cat\"\n- button \"🔊 dog\"\n- button \"更多\":\n  - generic: 更多\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "lab",
+    "actual": "lab",
+    "snapshot": "- button \"返回\":\n- generic: 演示工具\n- generic: 在线\n- heading \"六能力演示工具\" [level=2]\n- paragraph: 当前演示日期 2026-10-02（已偏移 1 天）。普通学习页不能提前通过延迟验证。\n- button \"演示日期 +1 天\"\n- button \"演示日期 +6 天\"\n- button \"恢复真实日期\"\n- button \"写作空态：关\"\n- button \"管理身份预览：关\"\n- button \"AI 能力预览\"\n- button \"青少年阶段说明\"\n- button \"后台样例\"\n- heading \"🧪 演示工具\" [level=2]\n- paragraph: 集中放测试开关：重置数据、切换场景、注入故障、直接完成。不在正常学习界面出现（演示）。\n- heading \"数据\" [level=2]\n- paragraph:\n  - button \"重置全部演示数据\"\n  - button \"恢复今日任务\"\n- paragraph: 重置清本机保存并重载页面。\n- heading \"今日场景\" [level=2]\n- paragraph:\n  - button \"有任务\"\n  - button \"全完成\"\n  - button \"无内容\"\n  - button \"未建计划\"\n- heading \"故障注入（下一次提交有效）\" [level=2]\n- paragraph:\n  - button \"提交失败 关\"\n  - button \"结果未知 关\"\n  - button \"断网模式 关\"\n- paragraph: 影响定级 / 练习 / 计划生成的提交；断网时提交只保留草稿。\n- heading \"直接完成（演示）\" [level=2]\n- paragraph:\n  - generic: 语法 · There be 句型 · 未完成\n  - button \"标完成 ✓\"\n- paragraph:\n  - generic: 阅读 · 图书馆的一天 · 未完成\n  - button \"标完成 ✓\"\n- paragraph:\n  - generic: 写作 · 给朋友的一封信 · 未完成\n  - button \"标完成 ✓\"\n- paragraph: 词汇 · 回忆 3 个词 · 已完成\n- paragraph: 阅读 · 完成一个章节 · 已完成\n- paragraph:\n  - generic: 复习 · 本轮回忆 · 未完成\n  - button \"标完成 ✓\"\n- paragraph:\n  - generic: 写作 · 给朋友的一封信 · 未完成\n  - button \"标完成 ✓\"\n- heading \"身份与定级\" [level=2]\n- paragraph:\n  - button \"切 staff\"\n  - button \"重做定级\"\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "recap",
+    "actual": "recap",
+    "snapshot": "- button \"返回\":\n- generic: 今日回顾\n- generic: 在线\n- paragraph: 2026-10-02 · 今天\n- heading \"每一小步，都有记录\" [level=2]\n- strong: \"3\"\n- generic: 完成记录\n- strong: 1/1\n- generic: 本轮答题\n- strong: \"32\"\n- generic: 获得 XP\n- paragraph: 任务卡用时为预估；这里不把它当作实际学习时长。旧版缺少题目明细的汇总不计入答题与 XP。\n- heading \"学习结果\" [level=2]\n- button \"错题补救 · abandon 13:21 · 1/1 答对\":\n  - text: 错题补救 · abandon\n  - generic: 13:21 · 1/1 答对\n  - generic: ›\n- button \"四级词汇红宝书 · 第一章 高频 500 13:19 · 已保存 · 预计 10 分钟\":\n  - text: 四级词汇红宝书 · 第一章 高频 500\n  - generic: 13:19 · 已保存 · 预计 10 分钟\n  - generic: ›\n- button \"词汇练习 · 3 个词 13:18 · 2/3 词义答对\":\n  - text: 词汇练习 · 3 个词\n  - generic: 13:18 · 2/3 词义答对\n  - generic: ›\n- heading \"接下来的安排\" [level=2]\n- paragraph: 4 个词到期 · 0 项验证到期\n- button \"查看复习安排\"\n- button \"全部记录\"\n- button \"结束本次学习\"\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "history",
+    "actual": "history",
+    "snapshot": "- button \"返回\":\n- generic: 学习记录\n- generic: 在线\n- heading \"学习记录\" [level=2]\n- paragraph: 每轮独立保存。重新练习会新增结果，不覆盖上一轮。\n- button \"本周回顾\"\n- button \"学习日历\"\n- heading \"2026-10-02\" [level=2]\n- button \"当天回顾\"\n- button \"错题补救 · abandon 13:21 · 1/1 答对\":\n  - text: 错题补救 · abandon\n  - generic: 13:21 · 1/1 答对\n  - generic: ›\n- button \"四级词汇红宝书 · 第一章 高频 500 13:19 · 已保存 · 预计 10 分钟\":\n  - text: 四级词汇红宝书 · 第一章 高频 500\n  - generic: 13:19 · 已保存 · 预计 10 分钟\n  - generic: ›\n- button \"词汇练习 · 3 个词 13:18 · 2/3 词义答对\":\n  - text: 词汇练习 · 3 个词\n  - generic: 13:18 · 2/3 词义答对\n  - generic: ›\n- heading \"2026-10-01\" [level=2]\n- button \"当天回顾\"\n- button \"写作 · 给朋友的一封信 13:14 · 已保存\":\n  - text: 写作 · 给朋友的一封信\n  - generic: 13:14 · 已保存\n  - generic: ›\n- button \"写作 · 给朋友的一封信 13:13 · 已保存\":\n  - text: 写作 · 给朋友的一封信\n  - generic: 13:13 · 已保存\n  - generic: ›\n- button \"口语自练 · 跟读 13:11 · 已保存\":\n  - text: 口语自练 · 跟读\n  - generic: 13:11 · 已保存\n  - generic: ›\n- button \"口语自练 · 跟读 13:11 · 已保存\":\n  - text: 口语自练 · 跟读\n  - generic: 13:11 · 已保存\n  - generic: ›\n- button \"听力材料理解 · 问候 13:11 · 2/2 答对\":\n  - text: 听力材料理解 · 问候\n  - generic: 13:11 · 2/2 答对\n  - generic: ›\n- button \"阅读 · 图书馆的一天 13:09 · 2/2 答对 · 预计 8 分钟\":\n  - text: 阅读 · 图书馆的一天\n  - generic: 13:09 · 2/2 答对 · 预计 8 分钟\n  - generic: ›\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "result",
+    "actual": "result",
+    "snapshot": "- button \"返回\":\n- generic: 学习结果\n- generic: 在线\n- paragraph: 2026-10-01 13:09 · 已保存在本机\n- heading \"阅读 · 图书馆的一天\" [level=2]\n- paragraph: 2/2 答对 · 预计 8 分钟\n- text: What time does Li Lei get up?\n- paragraph: 你的答案：six thirty · ✓ 答对\n- paragraph: 参考：six thirty。第一句 six thirty，照着找\n- text: Where does he go at eight?\n- paragraph: 你的答案：library · ✓ 答对\n- paragraph: 参考：library。第二句 the library\n- button \"再练一轮\"\n- button \"回到当天回顾\"\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "plan",
+    "actual": "plan",
+    "snapshot": "- button \"返回\":\n- generic: 学习计划\n- generic: 在线\n- heading \"调整学习计划\" [level=2]\n- paragraph: 按自己能坚持的节奏来。调整前先看变化，已完成的记录会保留。\n- generic: 学习目标\n- combobox \"学习目标\":\n  - option \"基础英语\"\n  - option \"大学英语\" [selected]\n  - option \"考研英语\"\n  - option \"职场英语\"\n- generic: 大学英语方向\n- combobox \"大学英语方向\":\n  - option \"四级\" [selected]\n  - option \"六级\"\n- generic: 每天投入\n- combobox \"每天投入\":\n  - option \"5 分钟\"\n  - option \"15 分钟\"\n  - option \"30 分钟\"\n  - option \"45 分钟\" [selected]\n- paragraph: 每周学习日\n- button \"周一\" [pressed]\n- button \"周二\" [pressed]\n- button \"周三\" [pressed]\n- button \"周四\" [pressed]\n- button \"周五\" [pressed]\n- button \"周六\" [pressed]\n- button \"周日\" [pressed]\n- generic: 进行中的任务\n- combobox \"进行中的任务\":\n  - option \"保留在今日，接着完成\" [selected]\n  - option \"顺延，保留进度稍后继续\"\n- button \"预览计划变化\"\n- button \"取消调整\"\n- button \"学习日历\"\n- button \"学习记录\"\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "calendar",
+    "actual": "calendar",
+    "snapshot": "- button \"返回\":\n- generic: 学习日历\n- generic: 在线\n- heading \"接下来两周\" [level=2]\n- paragraph: 学习日安排目标对应的任务；休息日可以自由阅读，未完成进度可以接着学。\n- button \"调整学习日\"\n- heading \"10-02 · 周五\" [level=3]\n- generic: 今天 · 学习日\n- paragraph: 大学英语 · 四级 · 预计不超过 45 分钟 · 0 项复习/验证\n- button \"查看 3 条学习记录\"\n- heading \"10-03 · 周六\" [level=3]\n- generic: 学习日\n- paragraph: 大学英语 · 四级 · 预计不超过 45 分钟 · 1 项复习/验证\n- heading \"10-04 · 周日\" [level=3]\n- generic: 学习日\n- paragraph: 大学英语 · 四级 · 预计不超过 45 分钟 · 0 项复习/验证\n- heading \"10-05 · 周一\" [level=3]\n- generic: 学习日\n- paragraph: 大学英语 · 四级 · 预计不超过 45 分钟 · 0 项复习/验证\n- heading \"10-06 · 周二\" [level=3]\n- generic: 学习日\n- paragraph: 大学英语 · 四级 · 预计不超过 45 分钟 · 0 项复习/验证\n- heading \"10-07 · 周三\" [level=3]\n- generic: 学习日\n- paragraph: 大学英语 · 四级 · 预计不超过 45 分钟 · 0 项复习/验证\n- heading \"10-08 · 周四\" [level=3]\n- generic: 学习日\n- paragraph: 大学英语 · 四级 · 预计不超过 45 分钟 · 0 项复习/验证\n- heading \"10-09 · 周五\" [level=3]\n- generic: 学习日\n- paragraph: 大学英语 · 四级 · 预计不超过 45 分钟 · 0 项复习/验证\n- heading \"10-10 · 周六\" [level=3]\n- generic: 学习日\n- paragraph: 大学英语 · 四级 · 预计不超过 45 分钟 · 0 项复习/验证\n- heading \"10-11 · 周日\" [level=3]\n- generic: 学习日\n- paragraph: 大学英语 · 四级 · 预计不超过 45 分钟 · 0 项复习/验证\n- heading \"10-12 · 周一\" [level=3]\n- generic: 学习日\n- paragraph: 大学英语 · 四级 · 预计不超过 45 分钟 · 0 项复习/验证\n- heading \"10-13 · 周二\" [level=3]\n- generic: 学习日\n- paragraph: 大学英语 · 四级 · 预计不超过 45 分钟 · 0 项复习/验证\n- heading \"10-14 · 周三\" [level=3]\n- generic: 学习日\n- paragraph: 大学英语 · 四级 · 预计不超过 45 分钟 · 0 项复习/验证\n- heading \"10-15 · 周四\" [level=3]\n- generic: 学习日\n- paragraph: 大学英语 · 四级 · 预计不超过 45 分钟 · 0 项复习/验证\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "reviewqueue",
+    "actual": "reviewqueue",
+    "snapshot": "- button \"返回\":\n- generic: 复习安排\n- generic: 在线\n- navigation \"学习分区\":\n  - button \"今日\"\n  - button \"课程\"\n  - button \"词汇\"\n  - button \"复习\"\n- heading \"复习安排\" [level=2]\n- paragraph: 今天：4 个词到期 · 0 项延迟验证到期\n- button \"继续本轮复习\"\n- button \"错题与验证\"\n- heading \"词汇下次日期\" [level=2]\n- text: abandon\n- paragraph: 词汇样例 · 2026-10-01\n- generic: 已到期\n- text: accumulate\n- paragraph: 词汇样例 · 2026-10-01\n- generic: 已到期\n- text: persistence\n- paragraph: 词汇样例 · 2026-10-01\n- generic: 已到期\n- text: clarify\n- paragraph: 词汇样例 · 2026-10-01\n- generic: 已到期\n- heading \"延迟验证\" [level=2]\n- button \"abandon 本次已修复 · 待次日验证 · 2026-10-03 ›\":\n  - text: abandon\n  - generic: 本次已修复 · 待次日验证 · 2026-10-03\n  - generic: ›\n- navigation:\n  - link \"🏠 首页\":\n    - /url: \"#/home\"\n    - generic: 🏠\n    - text: 首页\n  - link \"📚 学习\":\n    - /url: \"#/today\"\n    - generic: 📚\n    - text: 学习\n  - link \"🌍 世界\":\n    - /url: \"#/world\"\n    - generic: 🌍\n    - text: 世界\n  - link \"👤 我的\":\n    - /url: \"#/me\"\n    - generic: 👤\n    - text: 我的\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "collections",
+    "actual": "collections",
+    "snapshot": "- button \"返回\":\n- generic: 收藏与笔记\n- generic: 在线\n- heading \"收藏与笔记\" [level=2]\n- paragraph: 笔记随输入自动保存；点一项回到原书原章。\n- paragraph: ★ 收藏 · 四级词汇红宝书\n- heading \"第一章 高频 500\" [level=3]\n- paragraph: \"Audit note: abandon bad habits.\"\n- button \"回到本节\"\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "words",
+    "actual": "words",
+    "snapshot": "- button \"返回\":\n- generic: 词汇学习\n- generic: 在线\n- navigation \"学习分区\":\n  - button \"今日\"\n  - button \"课程\"\n  - button \"词汇\"\n  - button \"复习\"\n- heading \"词汇学习\" [level=2]\n- paragraph: 40 个样例词。认识只是自评，加入复习后可按日期回忆。\n- button \"全部\" [pressed]\n- button \"四级\"\n- button \"六级\"\n- button \"已加复习\"\n- generic: 查找单词或释义\n- textbox \"查找单词或释义\":\n  - /placeholder: 例如 abandon / 抛弃\n- button \"查找\"\n- button \"开始刷词\"\n- heading \"40 个匹配词\" [level=2]\n- button \"abandon 抛弃 · 四级 · 已加复习 ›\":\n  - text: abandon\n  - generic: 抛弃 · 四级 · 已加复习\n  - generic: ›\n- button \"ability 能力 · 四级 ›\":\n  - text: ability\n  - generic: 能力 · 四级\n  - generic: ›\n- button \"absent 缺席的 · 四级 ›\":\n  - text: absent\n  - generic: 缺席的 · 四级\n  - generic: ›\n- button \"absolute 绝对的 · 四级 ›\":\n  - text: absolute\n  - generic: 绝对的 · 四级\n  - generic: ›\n- button \"absorb 吸收 · 四级 ›\":\n  - text: absorb\n  - generic: 吸收 · 四级\n  - generic: ›\n- button \"abstract 抽象的 · 四级 ›\":\n  - text: abstract\n  - generic: 抽象的 · 四级\n  - generic: ›\n- button \"abundant 丰富的 · 四级 ›\":\n  - text: abundant\n  - generic: 丰富的 · 四级\n  - generic: ›\n- button \"abuse 滥用 · 四级 ›\":\n  - text: abuse\n  - generic: 滥用 · 四级\n  - generic: ›\n- button \"academy 学院 · 四级 ›\":\n  - text: academy\n  - generic: 学院 · 四级\n  - generic: ›\n- button \"accelerate 加速 · 四级 ›\":\n  - text: accelerate\n  - generic: 加速 · 四级\n  - generic: ›\n- button \"accent 口音 · 四级 ›\":\n  - text: accent\n  - generic: 口音 · 四级\n  - generic: ›\n- button \"accept 接受 · 四级 ›\":\n  - text: accept\n  - generic: 接受 · 四级\n  - generic: ›\n- button \"access 进入 · 四级 ›\":\n  - text: access\n  - generic: 进入 · 四级\n  - generic: ›\n- button \"accommodate 容纳 · 四级 ›\":\n  - text: accommodate\n  - generic: 容纳 · 四级\n  - generic: ›\n- button \"accompany 陪伴 · 四级 ›\":\n  - text: accompany\n  - generic: 陪伴 · 四级\n  - generic: ›\n- button \"accomplish 完成 · 四级 ›\":\n  - text: accomplish\n  - generic: 完成 · 四级\n  - generic: ›\n- button \"account 账户 · 四级 ›\":\n  - text: account\n  - generic: 账户 · 四级\n  - generic: ›\n- button \"accumulate 积累 · 四级 · 已加复习 ›\":\n  - text: accumulate\n  - generic: 积累 · 四级 · 已加复习\n  - generic: ›\n- button \"accuracy 准确 · 四级 ›\":\n  - text: accuracy\n  - generic: 准确 · 四级\n  - generic: ›\n- button \"accuse 指控 · 四级 ›\":\n  - text: accuse\n  - generic: 指控 · 四级\n  - generic: ›\n- button \"abolish 废除 · 六级 ›\":\n  - text: abolish\n  - generic: 废除 · 六级\n  - generic: ›\n- button \"absurd 荒谬的 · 六级 ›\":\n  - text: absurd\n  - generic: 荒谬的 · 六级\n  - generic: ›\n- button \"abundance 丰富 · 六级 ›\":\n  - text: abundance\n  - generic: 丰富 · 六级\n  - generic: ›\n- button \"acclaim 赞誉 · 六级 ›\":\n  - text: acclaim\n  - generic: 赞誉 · 六级\n  - generic: ›\n- button \"acquaint 使熟悉 · 六级 ›\":\n  - text: acquaint\n  - generic: 使熟悉 · 六级\n  - generic: ›\n- button \"adhere 坚持 · 六级 ›\":\n  - text: adhere\n  - generic: 坚持 · 六级\n  - generic: ›\n- button \"adjacent 邻近的 · 六级 ›\":\n  - text: adjacent\n  - generic: 邻近的 · 六级\n  - generic: ›\n- button \"adjoin 毗连 · 六级 ›\":\n  - text: adjoin\n  - generic: 毗连 · 六级\n  - generic: ›\n- button \"administer 管理 · 六级 ›\":\n  - text: administer\n  - generic: 管理 · 六级\n  - generic: ›\n- button \"admirable 令人钦佩的 · 六级 ›\":\n  - text: admirable\n  - generic: 令人钦佩的 · 六级\n  - generic: ›\n- button \"admission 入学许可 · 六级 ›\":\n  - text: admission\n  - generic: 入学许可 · 六级\n  - generic: ›\n- button \"adolescent 青少年 · 六级 ›\":\n  - text: adolescent\n  - generic: 青少年 · 六级\n  - generic: ›\n- button \"adore 热爱 · 六级 ›\":\n  - text: adore\n  - generic: 热爱 · 六级\n  - generic: ›\n- button \"adorn 装饰 · 六级 ›\":\n  - text: adorn\n  - generic: 装饰 · 六级\n  - generic: ›\n- button \"adverse 不利的 · 六级 ›\":\n  - text: adverse\n  - generic: 不利的 · 六级\n  - generic: ›\n- button \"advertise 做广告 · 六级 ›\":\n  - text: advertise\n  - generic: 做广告 · 六级\n  - generic: ›\n- button \"advocate 提倡 · 六级 ›\":\n  - text: advocate\n  - generic: 提倡 · 六级\n  - generic: ›\n- button \"aesthetic 美学的 · 六级 ›\":\n  - text: aesthetic\n  - generic: 美学的 · 六级\n  - generic: ›\n- button \"affiliate 附属 · 六级 ›\":\n  - text: affiliate\n  - generic: 附属 · 六级\n  - generic: ›\n- button \"affirm 断言 · 六级 ›\":\n  - text: affirm\n  - generic: 断言 · 六级\n  - generic: ›\n- button \"音标学习\"\n- button \"字母学习\"\n- navigation:\n  - link \"🏠 首页\":\n    - /url: \"#/home\"\n    - generic: 🏠\n    - text: 首页\n  - link \"📚 学习\":\n    - /url: \"#/today\"\n    - generic: 📚\n    - text: 学习\n  - link \"🌍 世界\":\n    - /url: \"#/world\"\n    - generic: 🌍\n    - text: 世界\n  - link \"👤 我的\":\n    - /url: \"#/me\"\n    - generic: 👤\n    - text: 我的\n- status: 3D 小人已加载（演示）",
+    "bounds": {
+      "body": 320,
+      "client": 244,
+      "empty": false,
+      "view": 244,
+      "width": 320
+    },
+    "mode": "320-dark-contrast-xl"
+  },
+  {
+    "requested": "login",
+    "actual": "login",
+    "snapshot": "- generic: 登录\n- generic: 在线\n- heading \"进入本机演示档案\" [level=2]\n- paragraph: 这是静态原型：账号只用于演示身份，不连接认证服务，也不隔离多账号数据。退出后本机草稿和学习记录仍保留；再次进入会使用同一份档案。\n- generic: 演示账号\n- textbox \"演示账号\":\n  - /placeholder: 输入演示账号\n- generic: 演示密码\n- textbox \"演示密码\":\n  - /placeholder: 输入演示密码（不保存）\n- button \"进入演示档案\"\n- button \"演示注册流程\"\n- button \"忘记密码\"\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "register",
+    "actual": "register",
+    "snapshot": "- button \"返回\":\n- generic: 注册\n- generic: 在线\n- heading \"演示注册流程\" [level=2]\n- paragraph: 创建演示身份后仍需成年人确认与主动同意。原型沿用同一本机档案，不创建后台账号或隔离多账号数据；密码不会保存。\n- generic: 演示账号\n- textbox \"演示账号\":\n  - /placeholder: 输入演示账号\n- generic: 演示密码（≥8 位，字母+数字）\n- textbox \"演示密码（≥8 位，字母+数字）\":\n  - /placeholder: 密码\n- button \"继续演示注册\"\n- button \"返回登录\"\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "reset",
+    "actual": "reset",
+    "snapshot": "- button \"返回\":\n- generic: 重置密码\n- generic: 在线\n- heading \"重置密码\" [level=2]\n- paragraph: 如果账号存在，邮件已发出（永远这句，不枚举）。\n- generic: 账号\n- textbox: new@test.invalid\n- button \"发送重置邮件\"\n- button \"返回\"\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "gate",
+    "actual": "gate",
+    "snapshot": "- button \"返回\":\n- generic: 身份确认\n- generic: 在线\n- heading \"确认成年人身份\" [level=2]\n- paragraph: 当前学习版本只服务满 18 岁的成年人。原型使用完整出生日期演示判断，日期仅保存在本机，不代表正式身份认证。\n- status: 当前为成年人通过状态的演示样例\n- generic: 出生日期\n- textbox \"出生日期\"\n- checkbox \"我确认出生日期准确且已满 18 岁\"\n- text: 我确认出生日期准确且已满 18 岁\n- button \"确认身份\"\n- heading \"同意记录\" [level=2]\n- paragraph: 当前演示版本 b30-consent-v1。请逐项阅读并主动确认；尚未通过成年人确认时不能签署进入学习。\n- checkbox \"我已阅读并同意服务条款\"\n- text: 我已阅读并同意服务条款\n- checkbox \"我已阅读并同意隐私说明\"\n- text: 我已阅读并同意隐私说明\n- checkbox \"我已阅读并同意成人学习说明\"\n- text: 我已阅读并同意成人学习说明\n- button \"签署并继续\"\n- button \"隐私设置\"\n- button \"帮助与反馈\"\n- button \"退出演示\"\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "onboard",
+    "actual": "onboard",
+    "snapshot": "- button \"返回\":\n- generic: 学习目标\n- generic: 在线\n- heading \"定个小目标\" [level=2]\n- paragraph: 按自己能坚持的节奏来。调整前先看变化，已完成的记录会保留。\n- generic: 学习目标\n- combobox \"学习目标\":\n  - option \"基础英语\"\n  - option \"大学英语\" [selected]\n  - option \"考研英语\"\n  - option \"职场英语\"\n- generic: 大学英语方向\n- combobox \"大学英语方向\":\n  - option \"四级\" [selected]\n  - option \"六级\"\n- generic: 每天投入\n- combobox \"每天投入\":\n  - option \"5 分钟\"\n  - option \"15 分钟\"\n  - option \"30 分钟\"\n  - option \"45 分钟\" [selected]\n- paragraph: 每周学习日\n- button \"周一\" [pressed]\n- button \"周二\" [pressed]\n- button \"周三\" [pressed]\n- button \"周四\" [pressed]\n- button \"周五\" [pressed]\n- button \"周六\" [pressed]\n- button \"周日\" [pressed]\n- button \"预览学习安排\"\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "placement",
+    "actual": "placement",
+    "snapshot": "- button \"返回\":\n- generic: 定级测评\n- generic: 在线\n- generic: 第 1/5 题 · 词汇 · 答完本轮统一出报告\n- heading \"Choose the word closest in meaning to 'happy'.\" [level=2]\n- button \"A. glad\"\n- button \"B. angry\"\n- button \"C. tired\"\n- button \"下一题\" [disabled]:\n  - generic: 下一题\n- button \"提交\"\n- button \"跳过\"\n- heading \"🧰 会话与掌握\" [level=2]\n- paragraph:\n  - button \"会话检查点\":\n    - generic: 会话检查点\n  - button \"掌握度\":\n    - generic: 掌握度\n  - button \"失败恢复\":\n    - generic: 失败恢复\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "report",
+    "actual": "placement",
+    "snapshot": "- button \"返回\":\n- generic: 定级测评\n- generic: 在线\n- generic: 第 1/5 题 · 词汇 · 答完本轮统一出报告\n- heading \"Choose the word closest in meaning to 'happy'.\" [level=2]\n- button \"A. glad\"\n- button \"B. angry\"\n- button \"C. tired\"\n- button \"下一题\" [disabled]:\n  - generic: 下一题\n- button \"提交\"\n- button \"跳过\"\n- heading \"🧰 会话与掌握\" [level=2]\n- paragraph:\n  - button \"会话检查点\":\n    - generic: 会话检查点\n  - button \"掌握度\":\n    - generic: 掌握度\n  - button \"失败恢复\":\n    - generic: 失败恢复\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "home",
+    "actual": "home",
+    "snapshot": "- generic: 首页\n- generic: 在线\n- paragraph: 演示账号 · 演示数据\n- heading \"今天，学一点再向前\" [level=2]\n- paragraph: 大学英语 · 四级 · 每天 45 分钟\n- strong: 2/7\n- generic: 今日任务\n- strong: \"38\"\n- generic: 预计剩余分钟\n- strong: \"32\"\n- generic: 今日 XP\n- button \"继续今日学习\"\n- paragraph: 下一项：语法 · There be 句型 · 预计 5 分钟\n- button \"发现课程 ›\"\n- button \"复习安排 ›\"\n- heading \"继续阅读\" [level=2]\n- generic: 本机记录\n- heading \"四级词汇红宝书\" [level=3]\n- paragraph: 第一章 高频 500\n- button \"继续读\"\n- button \"收藏与笔记\"\n- heading \"继续自主练习\" [level=2]\n- paragraph: 重练轮次独立保存，原来的完成结果仍可查看。\n- button \"阅读 · 图书馆的一天 第 1/2 题 · 进行中 ›\":\n  - text: 阅读 · 图书馆的一天\n  - generic: 第 1/2 题 · 进行中\n  - generic: ›\n- heading \"本周学习\" [level=2]\n- button \"查看本周回顾\":\n- text: 一\n- generic: ·\n- text: 二\n- generic: ·\n- text: 三\n- generic: ·\n- text: 四\n- generic: ✓\n- text: 五\n- generic: ✓\n- text: 六\n- generic: ·\n- text: 日\n- generic: ·\n- paragraph: 完成的学习自动记录；点右上角查看每天的结果。\n- button \"调整计划\"\n- button \"学习记录\"\n- navigation:\n  - link \"🏠 首页\":\n    - /url: \"#/home\"\n    - generic: 🏠\n    - text: 首页\n  - link \"📚 学习\":\n    - /url: \"#/today\"\n    - generic: 📚\n    - text: 学习\n  - link \"🌍 世界\":\n    - /url: \"#/world\"\n    - generic: 🌍\n    - text: 世界\n  - link \"👤 我的\":\n    - /url: \"#/me\"\n    - generic: 👤\n    - text: 我的\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "today",
+    "actual": "today",
+    "snapshot": "- button \"返回\":\n- generic: 学习\n- generic: 在线\n- navigation \"学习分区\":\n  - button \"今日\"\n  - button \"课程\"\n  - button \"词汇\"\n  - button \"复习\"\n- heading \"今日安排\" [level=2]\n- button \"调整\"\n- paragraph: 大学英语 · 四级 · 目标 45 分钟\n- paragraph: 今日安排预计 53 分钟 · 剩余预计 38 分钟；接回的进度使今日超出预算，可在计划中顺延。\n- paragraph: 已完成 2/7 项；完成任务与掌握知识分别记录。\n- heading \"语法 · There be 句型\" [level=3]\n- generic: 进行中\n- paragraph: 预计 5 分钟\n- button \"继续学习\"\n- heading \"阅读 · 图书馆的一天\" [level=3]\n- generic: 待开始\n- paragraph: 预计 8 分钟\n- button \"开始学习\"\n- heading \"写作 · 给朋友的一封信\" [level=3]\n- generic: 进行中\n- paragraph: 预计 10 分钟\n- button \"继续学习\"\n- heading \"词汇 · 回忆 3 个词\" [level=3]\n- generic: ✓ 已完成\n- paragraph: 预计 5 分钟\n- button \"查看结果\"\n- heading \"阅读 · 完成一个章节\" [level=3]\n- generic: ✓ 已完成\n- paragraph: 预计 10 分钟\n- button \"查看结果\"\n- heading \"复习 · 本轮回忆\" [level=3]\n- generic: 待开始\n- paragraph: 预计 5 分钟\n- button \"开始学习\"\n- heading \"写作 · 给朋友的一封信\" [level=3]\n- generic: 进行中\n- paragraph: 预计 10 分钟\n- button \"继续学习\"\n- button \"查看今日回顾\"\n- heading \"顺延的学习\" [level=2]\n- text: 语法 · There be 句型\n- paragraph: 前一学习日未完成 · 2026-10-01 · 保留进度\n- button \"接着学\"\n- text: 词汇 · 回忆 3 个词\n- paragraph: 前一学习日未完成 · 2026-10-01 · 保留进度\n- button \"接着学\"\n- text: 阅读 · 完成一个章节\n- paragraph: 前一学习日未完成 · 2026-10-01 · ✓ 已完成\n- button \"查看结果\"\n- text: 复习 · 本轮回忆\n- paragraph: 前一学习日未完成 · 2026-10-01 · 保留进度\n- button \"接着学\"\n- heading \"继续阅读\" [level=2]\n- generic: 本机记录\n- heading \"四级词汇红宝书\" [level=3]\n- paragraph: 第一章 高频 500\n- button \"继续读\"\n- button \"收藏与笔记\"\n- heading \"继续自主练习\" [level=2]\n- paragraph: 重练轮次独立保存，原来的完成结果仍可查看。\n- button \"阅读 · 图书馆的一天 第 1/2 题 · 进行中 ›\":\n  - text: 阅读 · 图书馆的一天\n  - generic: 第 1/2 题 · 进行中\n  - generic: ›\n- navigation:\n  - link \"🏠 首页\":\n    - /url: \"#/home\"\n    - generic: 🏠\n    - text: 首页\n  - link \"📚 学习\":\n    - /url: \"#/today\"\n    - generic: 📚\n    - text: 学习\n  - link \"🌍 世界\":\n    - /url: \"#/world\"\n    - generic: 🌍\n    - text: 世界\n  - link \"👤 我的\":\n    - /url: \"#/me\"\n    - generic: 👤\n    - text: 我的\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "courses",
+    "actual": "courses",
+    "snapshot": "- button \"返回\":\n- generic: 发现课程\n- generic: 在线\n- navigation \"学习分区\":\n  - button \"今日\"\n  - button \"课程\"\n  - button \"词汇\"\n  - button \"复习\"\n- heading \"发现适合你的内容\" [level=2]\n- paragraph: 章节是原创学习片段；书名用于表达学习方向，不提供原书全文。\n- generic: 学习目标\n- combobox \"学习目标\":\n  - option \"全部目标\" [selected]\n  - option \"基础英语\"\n  - option \"大学英语\"\n  - option \"考研英语\"\n  - option \"职场英语\"\n- generic: 参考水平\n- combobox \"参考水平\":\n  - option \"全部水平\" [selected]\n  - option \"A1\"\n  - option \"A2\"\n  - option \"B1\"\n  - option \"B2\"\n  - option \"C1\"\n- generic: 学习状态\n- combobox \"学习状态\":\n  - option \"全部\" [selected]\n  - option \"在学\"\n  - option \"收藏\"\n  - option \"已完成\"\n  - option \"未开始\"\n  - option \"暂无内容\"\n- heading \"四级词汇红宝书\" [level=3]\n- generic: B1\n- paragraph: 大学英语 · 在学 · 1/3 节完成\n- button \"继续课程\"\n- button \"☆ 收藏\"\n- heading \"零基础英语\" [level=3]\n- generic: A1\n- paragraph: 基础英语 · 未开始 · 0/3 节完成\n- button \"查看章节\"\n- button \"☆ 收藏\"\n- heading \"六级长难句\" [level=3]\n- generic: B2\n- paragraph: 大学英语 · 未开始 · 0/3 节完成\n- button \"查看章节\"\n- button \"☆ 收藏\"\n- heading \"商务口语 100 句\" [level=3]\n- generic: B1\n- paragraph: 职场英语 · 未开始 · 0/3 节完成\n- button \"查看章节\"\n- button \"☆ 收藏\"\n- heading \"雅思备考\" [level=3]\n- generic: B2\n- paragraph: 大学英语 · 未开始 · 0/4 节完成\n- button \"查看章节\"\n- button \"☆ 收藏\"\n- heading \"生活英语\" [level=3]\n- generic: A2\n- paragraph: 基础英语 · 未开始 · 0/3 节完成\n- button \"查看章节\"\n- button \"☆ 收藏\"\n- heading \"考研阅读 · 研究与生活\" [level=3]\n- generic: B2\n- paragraph: 考研英语 · 未开始 · 0/3 节完成\n- button \"查看章节\"\n- button \"☆ 收藏\"\n- heading \"考研阅读进阶\" [level=3]\n- generic: C1\n- paragraph: 考研英语 · 暂无内容\n- paragraph: 此方向暂未提供样例。换一个水平或选择其他课程。\n- heading \"技能练习\" [level=2]\n- button \"写作 ›\"\n- button \"听力 ›\"\n- button \"口语 ›\"\n- button \"收藏与笔记 ›\"\n- navigation:\n  - link \"🏠 首页\":\n    - /url: \"#/home\"\n    - generic: 🏠\n    - text: 首页\n  - link \"📚 学习\":\n    - /url: \"#/today\"\n    - generic: 📚\n    - text: 学习\n  - link \"🌍 世界\":\n    - /url: \"#/world\"\n    - generic: 🌍\n    - text: 世界\n  - link \"👤 我的\":\n    - /url: \"#/me\"\n    - generic: 👤\n    - text: 我的\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "practice",
+    "actual": "practice",
+    "snapshot": "- button \"返回\":\n- generic: 练题\n- generic: 在线\n- generic: 阅读 · 图书馆的一天 · 第 1/2 题\n- heading \"阅读材料\" [level=3]\n- paragraph: Li Lei gets up at six thirty. He goes to the library at eight. The library opens at eight thirty. He reads books there.\n- heading \"What time does Li Lei get up?\" [level=2]\n- button \"A. six thirty\" [disabled]\n- button \"B. seven\" [disabled] [pressed]\n- button \"C. eight\" [disabled]\n- status: 需要再练。已保存到错题本。第一句 six thirty，照着找\n- button \"提交答案\" [disabled]\n- button \"下一题\"\n- button \"保存进度，稍后继续\"\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "mistakes",
+    "actual": "mistakes",
+    "snapshot": "- button \"返回\":\n- generic: 错题本\n- generic: 在线\n- paragraph: 历史演示 · 本次已修复 · 待次日验证\n- heading \"abandon\" [level=2]\n- paragraph: 原题说明：定位：词汇待补\n- paragraph: 下次验证：2026-10-03（尚未到期）\n- heading \"同知识点变式\" [level=3]\n- paragraph: “abandon” 的意思是？\n- button \"A. 抛弃\" [disabled] [pressed]\n- button \"B. 在场的\" [disabled]\n- button \"C. 订票\" [disabled]\n- status:\n  - text: ✓ 本次答对。抛弃\n  - paragraph: 本次已修复 · 待次日验证 · 2026-10-03\n- button \"本轮已记录\" [disabled]\n- button \"回到错题列表\"\n- button \"撤销上次操作\"\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "srs",
+    "actual": "srs",
+    "snapshot": "- button \"返回\":\n- generic: 复习\n- generic: 在线\n- generic: 本批 4 个词 · 第 1/4 个\n- heading \"abandon\" [level=2]\n- paragraph: 来源：词汇样例\n- button \"显示释义\"\n- button \"稍后继续\"\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "weekly",
+    "actual": "weekly",
+    "snapshot": "- button \"返回\":\n- generic: 本周回顾\n- generic: 在线\n- heading \"本周回顾\" [level=2]\n- paragraph: 2026-09-28 — 2026-10-04\n- strong: \"2\"\n- generic: 学习天数\n- strong: \"9\"\n- generic: 完成记录\n- strong: \"100\"\n- generic: 本周 XP\n- paragraph: 统计来自本机学习记录；没有记录的日期不填入演示成绩。\n- heading \"每天的学习\" [level=2]\n- button \"09-28 · 周一 0 条完成记录 · 0 XP ›\":\n  - text: 09-28 · 周一\n  - generic: 0 条完成记录 · 0 XP\n  - generic: ›\n- button \"09-29 · 周二 0 条完成记录 · 0 XP ›\":\n  - text: 09-29 · 周二\n  - generic: 0 条完成记录 · 0 XP\n  - generic: ›\n- button \"09-30 · 周三 0 条完成记录 · 0 XP ›\":\n  - text: 09-30 · 周三\n  - generic: 0 条完成记录 · 0 XP\n  - generic: ›\n- button \"10-01 · 周四 6 条完成记录 · 68 XP ›\":\n  - text: 10-01 · 周四\n  - generic: 6 条完成记录 · 68 XP\n  - generic: ›\n- button \"10-02 · 周五 3 条完成记录 · 32 XP ›\":\n  - text: 10-02 · 周五\n  - generic: 3 条完成记录 · 32 XP\n  - generic: ›\n- button \"10-03 · 周六 0 条完成记录 · 0 XP ›\":\n  - text: 10-03 · 周六\n  - generic: 0 条完成记录 · 0 XP\n  - generic: ›\n- button \"10-04 · 周日 0 条完成记录 · 0 XP ›\":\n  - text: 10-04 · 周日\n  - generic: 0 条完成记录 · 0 XP\n  - generic: ›\n- button \"全部学习记录\"\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "world",
+    "actual": "world",
+    "snapshot": "- button \"返回\":\n- generic: 世界\n- generic: 在线\n- paragraph: 学习带来的成长\n- heading \"每一步都有收获\" [level=2]\n- strong: \"100\"\n- generic: 本周 XP\n- strong: \"100\"\n- generic: 累计 XP\n- strong: \"9\"\n- generic: 完成学习\n- button \"本周回顾 ›\"\n- button \"成就样例 ›\"\n- button \"联赛样例 ›\"\n- heading \"本周学习\" [level=2]\n- button \"查看本周回顾\":\n- text: 一\n- generic: ·\n- text: 二\n- generic: ·\n- text: 三\n- generic: ·\n- text: 四\n- generic: ✓\n- text: 五\n- generic: ✓\n- text: 六\n- generic: ·\n- text: 日\n- generic: ·\n- paragraph: 完成的学习自动记录；点右上角查看每天的结果。\n- heading \"一起坚持\" [level=2]\n- paragraph: 小组目标：本周完成 3 次学习。你的贡献来自学习记录。\n- paragraph: 已贡献 3/3 次\n- button \"我的空间\"\n- navigation:\n  - link \"🏠 首页\":\n    - /url: \"#/home\"\n    - generic: 🏠\n    - text: 首页\n  - link \"📚 学习\":\n    - /url: \"#/today\"\n    - generic: 📚\n    - text: 学习\n  - link \"🌍 世界\":\n    - /url: \"#/world\"\n    - generic: 🌍\n    - text: 世界\n  - link \"👤 我的\":\n    - /url: \"#/me\"\n    - generic: 👤\n    - text: 我的\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "league",
+    "actual": "league",
+    "snapshot": "- button \"返回\":\n- generic: 联赛\n- generic: 在线\n- heading \"本周联赛样例\" [level=2]\n- paragraph: 其他成员为固定样例，你的本周 XP 来自本机学习记录。\n- button \"关闭我的排名\"\n- generic: 1. 星河（样例）\n- generic: 280 XP\n- generic: 2. 小林（样例）\n- generic: 190 XP\n- generic: 3. 演示账号\n- generic: 100 XP\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "games",
+    "actual": "games",
+    "snapshot": "- button \"返回\":\n- generic: 小游戏\n- generic: 在线\n- button \"联赛\":\n  - generic: 联赛\n- heading \"🎮 小游戏\" [level=2]\n- paragraph: R2 门：目录可看，对局未开（演示不写开放日期）。\n- paragraph: 对局开后：可信开局 → 实时判分 → 奖励自动进成长账（演示说明）。\n- text: 单词消消乐\n- generic: 未开放\n- paragraph: 可信开局 · 判分防刷 · 奖励走成长账（开门后）\n- button \"去学习\":\n  - generic: 去学习\n- text: 听音拼词\n- generic: 未开放\n- paragraph: 可信开局 · 判分防刷 · 奖励走成长账（开门后）\n- button \"去学习\":\n  - generic: 去学习\n- text: 语法跑酷\n- generic: 未开放\n- paragraph: 可信开局 · 判分防刷 · 奖励走成长账（开门后）\n- button \"去学习\":\n  - generic: 去学习\n- text: 口语接龙\n- generic: 未开放\n- paragraph: 可信开局 · 判分防刷 · 奖励走成长账（开门后）\n- button \"去学习\":\n  - generic: 去学习\n- text: 阅读寻宝\n- generic: 未开放\n- paragraph: 可信开局 · 判分防刷 · 奖励走成长账（开门后）\n- button \"去学习\":\n  - generic: 去学习\n- text: 组队答题\n- generic: 未开放\n- paragraph: 可信开局 · 判分防刷 · 奖励走成长账（开门后）\n- button \"去学习\":\n  - generic: 去学习\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "space",
+    "actual": "space",
+    "snapshot": "- button \"返回\":\n- generic: 个人空间\n- generic: 在线\n- button \"世界\":\n  - generic: 世界\n- heading \"🪞 个人空间\" [level=2]\n- paragraph: 只读参观：看布置，不写 UGC（演示）。\n- heading \"演示伙伴的空间\" [level=2]\n- paragraph: 背景：森林 · 陈列 3 枚成就 · 赛季最佳第 4（演示数据）\n- paragraph:\n  - button \"装扮我的\":\n    - generic: 装扮我的\n  - button \"看看成就\":\n    - generic: 看看成就\n- paragraph: 社交写链 R3 开；有用户才开榜，不填机器人冒充真人。\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "subs",
+    "actual": "subs",
+    "snapshot": "- button \"返回\":\n- generic: 订阅对账\n- generic: 在线\n- button \"商城\"\n- heading \"🔁 订阅与对账\" [level=2]\n- paragraph: 本机沙盒：商品、价格和支付状态来自同一订单。取消续订保留当前权益；退款与票据申请独立保存。\n- text: 月度会员 · ¥19\n- paragraph: 已支付（沙盒） · 续订已取消\n- button \"查看本次订阅\"\n- text: 月度会员 · ¥19\n- paragraph: 已支付（沙盒） · 续订为自动续订样例\n- button \"查看本次订阅\"\n- text: 年度会员 · ¥108\n- paragraph: 已退款（沙盒） · 续订已取消\n- button \"查看本次订阅\"\n- paragraph: 真实支付回调、扣款、权益发放与三方对账尚未接入。\n- button \"选购商品\"\n- button \"查看全部订单\"\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "native",
+    "actual": "native",
+    "snapshot": "- button \"返回\":\n- generic: 原生壳\n- generic: 在线\n- button \"联赛\":\n  - generic: 联赛\n- heading \"📱 原生与多端壳\" [level=2]\n- paragraph: R3 末尾：稿内只画入口与门，不承诺上架日期（演示）。\n- heading \"壳矩阵\" [level=2]\n- paragraph: uni-app 小程序目标条件编译 · 微信登录态 · iOS / Android 壳 · Tauri 桌面壳（禁 Electron）· PWA 工作区。\n- paragraph: 推送 APNs / FCM；密钥进 Keychain / Keystore，不落普通存储。\n- paragraph:\n  - button \"关于本稿\":\n    - generic: 关于本稿\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "rewards",
+    "actual": "rewards",
+    "snapshot": "- button \"返回\":\n- generic: 任务奖励\n- generic: 在线\n- button \"成就\":\n  - generic: 成就\n- heading \"🎁 任务奖励\" [level=2]\n- paragraph: 可信完成才结算；重放不重结（演示口径）。\n- heading \"领取\" [level=2]\n- paragraph:\n  - generic: 连续 3 天 ＋20 XP\n  - button \"领取\"\n- paragraph: 成长结算走 Kafka 事件；R2 开榜，当前只看不动账。\n- paragraph:\n  - button \"回世界\":\n    - generic: 回世界\n  - button \"看报告\":\n    - generic: 看报告\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "achieve",
+    "actual": "achieve",
+    "snapshot": "- button \"返回\":\n- generic: 成就墙\n- generic: 在线\n- button \"世界\":\n  - generic: 世界\n- heading \"🏅 成就墙（2/16）\" [level=2]\n- paragraph: 已获 / 未获 / 未开放分开；规则可查；未开放不挂可领红点（演示）。\n- paragraph:\n  - button \"任务奖励\":\n    - generic: 任务奖励\n  - button \"学习报告\":\n    - generic: 学习报告\n- text: 🏅 初来乍到\n- generic: 已获\n- paragraph: 完成注册与身份确认\n- text: 🏅 一战定级\n- generic: 已获\n- paragraph: 完成一次定级出报告\n- text: 🔒 坚持 3 天\n- generic: 未获·1/3\n- paragraph: 连续学习 3 天（演示 1/3）\n- button \"去攒\":\n  - generic: 去攒\n- text: 🔒 坚持 7 天\n- generic: 未获·1/7\n- paragraph: 连续学习 7 天（演示 1/7）\n- button \"去攒\":\n  - generic: 去攒\n- text: 🔒 错题清道夫\n- generic: 未获·0/5\n- paragraph: 变式销账 5 道（演示 0/5）\n- button \"去攒\":\n  - generic: 去攒\n- text: 🔒 词汇 40\n- generic: 未获·0/40\n- paragraph: 刷完 40 词一轮（演示）\n- button \"去攒\":\n  - generic: 去攒\n- text: 🔒 限时快手\n- generic: 未获·0/8\n- paragraph: 限时挑战对 8 个（演示，去刷）\n- button \"去攒\":\n  - generic: 去攒\n- text: 🔒 听力入门\n- generic: 未获·0/3\n- paragraph: 听完 3 篇（演示，去听）\n- button \"去攒\":\n  - generic: 去攒\n- text: 🔒 跟读首秀\n- generic: 未获·0/1\n- paragraph: 完成 1 次跟读（演示，去语音）\n- button \"去攒\":\n  - generic: 去攒\n- text: 🔒 打卡分享\n- generic: 未获·0/1\n- paragraph: 分享一次学习报告（演示）\n- button \"去攒\":\n  - generic: 去攒\n- text: 🔒 联赛新秀\n- generic: 未获·0/1\n- paragraph: 进一次周联赛榜（演示）\n- button \"去攒\":\n  - generic: 去攒\n- text: ⏳ 赛季参与\n- generic: 未开放\n- paragraph: 赛季规则公布后参赛\n- paragraph: 赛季/房间开门后再来（不写日期）。\n- text: 🔒 宝箱猎人\n- generic: 未获·0/1\n- paragraph: 开 1 个宝箱（演示）\n- button \"去攒\":\n  - generic: 去攒\n- text: 🔒 组队之星\n- generic: 未获·0/1\n- paragraph: 完成一次 5 天组队（演示）\n- button \"去攒\":\n  - generic: 去攒\n- text: ⏳ 赛季冠军\n- generic: 未开放\n- paragraph: 赛季结算第一\n- paragraph: 赛季/房间开门后再来（不写日期）。\n- text: ⏳ 自习达人\n- generic: 未开放\n- paragraph: 房间专注 10 次\n- paragraph: 赛季/房间开门后再来（不写日期）。\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "avatar",
+    "actual": "avatar",
+    "snapshot": "- button \"返回\":\n- generic: 装扮\n- generic: 在线\n- heading \"👕 我的背景墙＋小人\" [level=2]\n- paragraph: Three.js 演示：换服装/配饰/发型＋打招呼（低端机自动降画质）\n- paragraph:\n  - generic: 上衣：\n  - button \"紫\"\n  - button \"绿\"\n  - button \"红\"\n- paragraph:\n  - generic: 发型： 配饰：\n  - button \"圆寸\"\n  - button \"帽子\"\n  - button \"眼镜\"\n  - button \"无\"\n- paragraph:\n  - generic: 背景墙：\n  - button \"星夜\"\n  - button \"森林\"\n  - button \"沙漠\"\n- button \"👋 打招呼\"\n- heading \"衣柜\" [level=2]\n- paragraph: 目录可看，试穿不落库；兑换需权益（未开放）\n- generic: 默认卫衣·试穿中\n- generic: 星空外套·未开放\n- button \"兑换\"\n- paragraph:\n  - button \"回世界\":\n    - generic: 回世界\n  - button \"看看成就\":\n    - generic: 看看成就\n  - button \"动效设置\":\n    - generic: 动效设置\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "msgs",
+    "actual": "msgs",
+    "snapshot": "- button \"返回\":\n- generic: 消息\n- generic: 在线\n- heading \"✉️ 消息（4 未读）\" [level=2]\n- paragraph:\n  - button \"全部\"\n  - button \"学习\"\n  - button \"系统\"\n  - button \"互动\"\n  - button \"全标已读\"\n  - button \"通知偏好\":\n    - generic: 通知偏好\n- text: ● 今日任务已生成\n- generic: 学习\n- paragraph: 语法 2 道，预计 10 分钟\n- paragraph: 08:00\n- paragraph:\n  - button \"去看看\":\n    - generic: 去看看\n- text: ● 欢迎来到语学星\n- generic: 学习\n- paragraph: 先定级，3 分钟出报告\n- paragraph: 昨天\n- paragraph:\n  - button \"去看看\":\n    - generic: 去看看\n- text: 条款更新了\n- generic: 系统\n- paragraph: 看一眼再继续，一键重签\n- paragraph: 周一\n- paragraph:\n  - button \"去看看\":\n    - generic: 去看看\n- text: 有人给你点赞\n- generic: 互动\n- paragraph: 你的打卡被 3 人点赞（演示）\n- paragraph: 周一\n- text: ● 好友本周学了 120 分钟\n- generic: 互动\n- paragraph: 演示伙伴晨读阿甘 · 去联赛看看（演示数据）\n- paragraph: 周二\n- paragraph:\n  - button \"去看看\":\n    - generic: 去看看\n- text: ● 组队缺 1 天\n- generic: 互动\n- paragraph: 组队 5 天差 1 天，宝箱等你（演示）\n- paragraph: 今天\n- paragraph:\n  - button \"去看看\":\n    - generic: 去看看\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "me",
+    "actual": "me",
+    "snapshot": "- button \"返回\":\n- generic: 我的\n- generic: 在线\n- paragraph: 本机演示档案\n- heading \"演示账号\" [level=2]\n- paragraph: 大学英语 · 四级 · B1（起步参考）\n- button \"调整学习目标\"\n- heading \"我的学习\" [level=2]\n- button \"学习记录 ›\"\n- button \"学习计划 ›\"\n- button \"收藏与笔记 ›\"\n- button \"巩固进度 ›\"\n- heading \"设置与帮助\" [level=2]\n- button \"设置 ›\"\n- button \"消息 ›\"\n- button \"帮助与反馈 ›\"\n- button \"关于与说明 ›\"\n- button \"原型演示工具 ›\"\n- navigation:\n  - link \"🏠 首页\":\n    - /url: \"#/home\"\n    - generic: 🏠\n    - text: 首页\n  - link \"📚 学习\":\n    - /url: \"#/today\"\n    - generic: 📚\n    - text: 学习\n  - link \"🌍 世界\":\n    - /url: \"#/world\"\n    - generic: 🌍\n    - text: 世界\n  - link \"👤 我的\":\n    - /url: \"#/me\"\n    - generic: 👤\n    - text: 我的\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "about",
+    "actual": "about",
+    "snapshot": "- button \"返回\":\n- generic: 关于\n- generic: 在线\n- text: 语学星\n- paragraph: 版本 1.0.0-demo · 静态交互稿\n- paragraph: 学习目标 → 练习 → 反馈 → 复习 → 复盘\n- heading \"📄 法务与合规\" [level=2]\n- paragraph: 正文以官网为准，稿内只看入口结构；官网本地 18182 未启动时外链打不开。\n- link \"📝 用户协议 官网正文为准\":\n  - /url: http://127.0.0.1:18182/terms\n  - generic: 📝 用户协议 官网正文为准\n- link \"🔒 隐私政策 官网正文为准\":\n  - /url: http://127.0.0.1:18182/privacy\n  - generic: 🔒 隐私政策 官网正文为准\n- link \"📋 合规公示 官网正文为准\":\n  - /url: http://127.0.0.1:18182/compliance\n  - generic: 📋 合规公示 官网正文为准\n- link \"🧒 未成年人说明 仅服务成人\":\n  - /url: http://127.0.0.1:18182/minors\n  - generic: 🧒 未成年人说明 仅服务成人\n- heading \"💬 服务与帮助\" [level=2]\n- button \"💬 联系客服 工作日 9-18\":\n  - generic: 💬 联系客服 工作日 9-18\n- link \"❓ 帮助中心 官网正文为准\":\n  - /url: http://127.0.0.1:18182/help\n  - generic: ❓ 帮助中心 官网正文为准\n- link \"📢 公告 官网正文为准\":\n  - /url: http://127.0.0.1:18182/announcements\n  - generic: 📢 公告 官网正文为准\n- link \"📡 服务状态 非实时可用率\":\n  - /url: http://127.0.0.1:18182/status\n  - generic: 📡 服务状态 非实时可用率\n- heading \"✨ 产品\" [level=2]\n- link \"ℹ️ 关于语学星 官网正文为准\":\n  - /url: http://127.0.0.1:18182/about\n  - generic: ℹ️ 关于语学星 官网正文为准\n- link \"⬇️ 下载 官网正文为准\":\n  - /url: http://127.0.0.1:18182/download\n  - generic: ⬇️ 下载 官网正文为准\n- button \"📱 原生壳说明（R3 门）\":\n  - generic: 📱 原生壳说明（R3 门）\n- link \"💰 价格 首发免费，官网为准\":\n  - /url: http://127.0.0.1:18182/pricing\n  - generic: 💰 价格 首发免费，官网为准\n- heading \"🧾 开源与版本\" [level=2]\n- paragraph: 开源许可：稿内说明，正式文本以官网与仓库为准（演示不虚构条款）。\n- paragraph: 版本 1.0.0-demo · 18283 交互稿；法务文本未在稿内复刻，避免与官网不一致。\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "settings",
+    "actual": "settings",
+    "snapshot": "- button \"返回\":\n- generic: 设置\n- generic: 在线\n- heading \"学习偏好\" [level=2]\n- paragraph: 大学英语 · 四级 · 每天 45 分钟 · 每周 7 天\n- button \"预览计划调整\"\n- heading \"显示\" [level=2]\n- button \"跟随系统\"\n- button \"浅色\" [pressed]\n- button \"深色\"\n- button \"字号、对比与动效 ›\"\n- paragraph: 界面语言：中文 · 学习语言：英语\n- heading \"通知、账号与隐私\" [level=2]\n- button \"通知偏好 ›\"\n- button \"设备管理 ›\"\n- button \"隐私设置 ›\"\n- button \"同意记录 ›\"\n- button \"退出登录\"\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "devices",
+    "actual": "devices",
+    "snapshot": "- button \"返回\":\n- generic: 设备\n- generic: 在线\n- heading \"📱 设备\" [level=2]\n- paragraph: 设备管理界面预览，没有连接真实会话服务。\n- text: 本机浏览器\n- generic: 当前演示\n- paragraph: 退出会结束当前演示身份和管理预览；本机草稿与学习记录保留。清除数据请使用原型演示工具。\n- text: Android · Pixel（固定样例）\n- paragraph:\n  - generic: 最后活跃：2 天前（样例）\n  - button \"预览踢出确认\"\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "privacy",
+    "actual": "privacy",
+    "snapshot": "- button \"返回\":\n- generic: 隐私\n- generic: 在线\n- heading \"🔒 隐私\" [level=2]\n- paragraph: 本页保存本机演示请求。正式导出、账号删除和服务清理尚未接入；学习记录与草稿仍保留。\n- paragraph:\n  - button \"申请导出\"\n  - button \"申请删除\"\n  - button \"音频保留\"\n  - button \"关闭排名\"\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "support",
+    "actual": "support",
+    "snapshot": "- button \"返回\":\n- generic: 客服\n- generic: 在线\n- heading \"💬 客服\" [level=2]\n- paragraph: 一句话描述问题，最多 40 字。工单和草稿保存在本机；此原型尚未发送至客服。\n- paragraph:\n  - generic: 分类：\n  - button \"功能\"\n  - button \"账号\"\n  - button \"内容\"\n  - button \"支付\"\n- textbox \"问题描述\":\n  - /placeholder: 一句话描述问题（最多40字）\n- button \"提交工单\"\n- button \"工单详情\"\n- heading \"🧾 我的工单（3）\" [level=2]\n- text: TK-39\n- generic: 内容\n- generic: 已提交\n- paragraph: <b>审计草稿</b>\n- text: TK-1024\n- generic: 功能\n- generic: 处理中\n- paragraph: 听力播到一半停了\n- text: TK-1019\n- generic: 账号\n- generic: 已回复\n- paragraph: 换手机想踢掉旧设备\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "search",
+    "actual": "search",
+    "snapshot": "- button \"返回\":\n- generic: 搜索\n- generic: 在线\n- heading \"搜索\" [level=2]\n- textbox \"搜课程/词汇/帮助\"\n- paragraph: 词汇结果进详情页（可自测/加复习），课程进图书管。\n- paragraph:\n  - generic: 历史：\n  - button \"四级\"\n  - button \"音标\"\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "commerce",
+    "actual": "commerce",
+    "snapshot": "- button \"返回\":\n- generic: 商城\n- generic: 在线\n- button \"商城\":\n  - generic: 商城\n- heading \"月度会员\" [level=2]\n- paragraph:\n  - generic: 热卖\n  - generic: 会员\n- paragraph: 本机会员购买流程样例；AI 伴学在 Phase 2 开放\n- paragraph: ¥19 ¥29\n- paragraph: 本机沙盒商品，不发货、不扣款、不承诺考试成绩。\n- button \"去结算\":\n  - generic: 去结算\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "admin",
+    "actual": "alogin",
+    "snapshot": "- button \"返回\":\n- generic: 管理登录\n- generic: 在线\n- heading \"管理身份预览\" [level=2]\n- paragraph: 后台页面使用固定样例，仅供查看管理动线。开启预览不会创建真实管理会话或授予正式权限；退出、重新进入或刷新后关闭。\n- button \"开启管理预览\"\n- button \"返回演示工具\"\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "aperm",
+    "actual": "alogin",
+    "snapshot": "- button \"返回\":\n- generic: 管理登录\n- generic: 在线\n- heading \"管理身份预览\" [level=2]\n- paragraph: 后台页面使用固定样例，仅供查看管理动线。开启预览不会创建真实管理会话或授予正式权限；退出、重新进入或刷新后关闭。\n- button \"开启管理预览\"\n- button \"返回演示工具\"\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "adraft",
+    "actual": "alogin",
+    "snapshot": "- button \"返回\":\n- generic: 管理登录\n- generic: 在线\n- heading \"管理身份预览\" [level=2]\n- paragraph: 后台页面使用固定样例，仅供查看管理动线。开启预览不会创建真实管理会话或授予正式权限；退出、重新进入或刷新后关闭。\n- button \"开启管理预览\"\n- button \"返回演示工具\"\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "areview",
+    "actual": "alogin",
+    "snapshot": "- button \"返回\":\n- generic: 管理登录\n- generic: 在线\n- heading \"管理身份预览\" [level=2]\n- paragraph: 后台页面使用固定样例，仅供查看管理动线。开启预览不会创建真实管理会话或授予正式权限；退出、重新进入或刷新后关闭。\n- button \"开启管理预览\"\n- button \"返回演示工具\"\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "apublish",
+    "actual": "alogin",
+    "snapshot": "- button \"返回\":\n- generic: 管理登录\n- generic: 在线\n- heading \"管理身份预览\" [level=2]\n- paragraph: 后台页面使用固定样例，仅供查看管理动线。开启预览不会创建真实管理会话或授予正式权限；退出、重新进入或刷新后关闭。\n- button \"开启管理预览\"\n- button \"返回演示工具\"\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "agov",
+    "actual": "alogin",
+    "snapshot": "- button \"返回\":\n- generic: 管理登录\n- generic: 在线\n- heading \"管理身份预览\" [level=2]\n- paragraph: 后台页面使用固定样例，仅供查看管理动线。开启预览不会创建真实管理会话或授予正式权限；退出、重新进入或刷新后关闭。\n- button \"开启管理预览\"\n- button \"返回演示工具\"\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "aaudit",
+    "actual": "alogin",
+    "snapshot": "- button \"返回\":\n- generic: 管理登录\n- generic: 在线\n- heading \"管理身份预览\" [level=2]\n- paragraph: 后台页面使用固定样例，仅供查看管理动线。开启预览不会创建真实管理会话或授予正式权限；退出、重新进入或刷新后关闭。\n- button \"开启管理预览\"\n- button \"返回演示工具\"\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "alogin",
+    "actual": "alogin",
+    "snapshot": "- button \"返回\":\n- generic: 管理登录\n- generic: 在线\n- heading \"管理身份预览\" [level=2]\n- paragraph: 后台页面使用固定样例，仅供查看管理动线。开启预览不会创建真实管理会话或授予正式权限；退出、重新进入或刷新后关闭。\n- button \"开启管理预览\"\n- button \"返回演示工具\"\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "amedia",
+    "actual": "alogin",
+    "snapshot": "- button \"返回\":\n- generic: 管理登录\n- generic: 在线\n- heading \"管理身份预览\" [level=2]\n- paragraph: 后台页面使用固定样例，仅供查看管理动线。开启预览不会创建真实管理会话或授予正式权限；退出、重新进入或刷新后关闭。\n- button \"开启管理预览\"\n- button \"返回演示工具\"\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "acs",
+    "actual": "alogin",
+    "snapshot": "- button \"返回\":\n- generic: 管理登录\n- generic: 在线\n- heading \"管理身份预览\" [level=2]\n- paragraph: 后台页面使用固定样例，仅供查看管理动线。开启预览不会创建真实管理会话或授予正式权限；退出、重新进入或刷新后关闭。\n- button \"开启管理预览\"\n- button \"返回演示工具\"\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "ashop",
+    "actual": "alogin",
+    "snapshot": "- button \"返回\":\n- generic: 管理登录\n- generic: 在线\n- heading \"管理身份预览\" [level=2]\n- paragraph: 后台页面使用固定样例，仅供查看管理动线。开启预览不会创建真实管理会话或授予正式权限；退出、重新进入或刷新后关闭。\n- button \"开启管理预览\"\n- button \"返回演示工具\"\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "areport",
+    "actual": "alogin",
+    "snapshot": "- button \"返回\":\n- generic: 管理登录\n- generic: 在线\n- heading \"管理身份预览\" [level=2]\n- paragraph: 后台页面使用固定样例，仅供查看管理动线。开启预览不会创建真实管理会话或授予正式权限；退出、重新进入或刷新后关闭。\n- button \"开启管理预览\"\n- button \"返回演示工具\"\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "aobs",
+    "actual": "alogin",
+    "snapshot": "- button \"返回\":\n- generic: 管理登录\n- generic: 在线\n- heading \"管理身份预览\" [level=2]\n- paragraph: 后台页面使用固定样例，仅供查看管理动线。开启预览不会创建真实管理会话或授予正式权限；退出、重新进入或刷新后关闭。\n- button \"开启管理预览\"\n- button \"返回演示工具\"\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "ai",
+    "actual": "ai",
+    "snapshot": "- button \"返回\":\n- generic: AI 伴学\n- generic: 在线\n- heading \"🤖 AI 伴学（P2 未开·演示）\" [level=2]\n- paragraph: Gate 未过无 CTA 是设计；下面是快捷方案，开一两个先体验。答不上来可转练题/客服，不硬聊。\n- button \"💬 自由对话 随便聊，AI 陪你练英语\":\n  - text: 💬 自由对话\n  - generic: 随便聊，AI 陪你练英语\n- button \"📝 作文批改 贴作文，给分＋改法\":\n  - text: 📝 作文批改\n  - generic: 贴作文，给分＋改法\n- button \"🗣️ 口语陪练 情景对话，练张嘴\":\n  - text: 🗣️ 口语陪练\n  - generic: 情景对话，练张嘴\n- button \"📋 制定计划 按水平排一周\":\n  - text: 📋 制定计划\n  - generic: 按水平排一周\n- button \"更多方案（6）\":\n  - generic: 更多方案（6）\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "voice",
+    "actual": "voice",
+    "snapshot": "- button \"返回\":\n- generic: 语音跟读\n- generic: 在线\n- heading \"🎤 语音跟读\" [level=2]\n- paragraph: 跟读 / 口头翻译 / 对话 / 角色扮演全画（演示 TTS 示范 + 模拟录音；真评测走服务端，不承诺时间）。\n- paragraph:\n  - generic: 场景：\n  - button \"跟读\"\n  - button \"复述\"\n  - button \"对话\"\n  - button \"口头翻译\"\n  - button \"角色扮演\"\n- text: Good morning.\n- button \"朗读\": 🔊 示范\n- button \"🎤 开始录音\"\n- paragraph: 无麦先说（演示跳过设备检查）；RTC 未接不评真分。\n- paragraph:\n  - button \"评分与保留\":\n    - generic: 评分与保留\n- heading \"📝 本轮记录\" [level=2]\n- paragraph: 还没有，先录一条 👆\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "k12",
+    "actual": "k12",
+    "snapshot": "- button \"返回\":\n- generic: 青少年模式\n- generic: 在线\n- text: 🎒 青少年模式（P3 未开·演示）\n- paragraph: 你是？\n- button \"我是学生\"\n- button \"我是家长\"\n- button \"我是老师\"\n- paragraph\n- button \"返回成人版\"\n- paragraph:\n  - button \"治理规则\":\n    - generic: 治理规则\n  - button \"教材课程\":\n    - generic: 教材课程\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "aigate",
+    "actual": "aigate",
+    "snapshot": "- button \"返回\":\n- generic: AI门\n- generic: 在线\n- button \"AI 伴学\":\n  - generic: AI 伴学\n- heading \"🚪 AI 门\" [level=2]\n- paragraph: 四件齐了才开：阶段 P2 ＋ 成人 ＋ 同意 ＋ 成本预算（演示说明）。\n- heading \"当前\" [level=2]\n- paragraph: P1 无 AI 入口是设计；R2 走 stub，不调真模型、不计真成本。\n- paragraph:\n  - button \"看调用链\":\n    - generic: 看调用链\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "aiflow",
+    "actual": "aiflow",
+    "snapshot": "- button \"返回\":\n- generic: AI链\n- generic: 在线\n- button \"AI 门\":\n  - generic: AI 门\n- heading \"🔗 AI 调用链\" [level=2]\n- paragraph: 输入 → 预检 → 请求 → 流式 → 核验 → 落库（演示口径）。\n- heading \"关键件\" [level=2]\n- paragraph: 输入授权告知；前置敏感拦截；prompt_version 固定；流式可停止；输出后置合规核验；Schema 校验；结果带来源保存；采纳 / 重做 / 转普通练习。\n- paragraph: 超时降级给普通练题；成本进 cost_ledger 台账；审计与用户历史分离存。\n- paragraph:\n  - button \"去体验\":\n    - generic: 去体验\n  - button \"转练题\":\n    - generic: 转练题\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "vscore",
+    "actual": "vscore",
+    "snapshot": "- button \"返回\":\n- generic: 语音评分\n- generic: 在线\n- button \"语音\":\n  - generic: 语音\n- heading \"📊 发音评分与保留\" [level=2]\n- paragraph: 结构化评分走服务端，不直连模型；RTC 失败不伪造结果（演示口径）。\n- heading \"录音\" [level=2]\n- paragraph: 原始音频隔离分级存；保留到期即清；导出 / 删除走隐私申请。\n- paragraph: 随时打断：你一说话就停播；自建语音方案另立评审（ADR）。\n- paragraph:\n  - button \"回口语\":\n    - generic: 回口语\n  - button \"隐私申请\":\n    - generic: 隐私申请\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "k12guard",
+    "actual": "k12guard",
+    "snapshot": "- button \"返回\":\n- generic: K12治理\n- generic: 在线\n- button \"青少年模式\":\n  - generic: 青少年模式\n- heading \"🛡️ K12 治理\" [level=2]\n- paragraph: P3 上锁：手续不全代码可写、门不开（演示）。\n- heading \"门与手续\" [level=2]\n- paragraph: K12 Gate 默认关；未成年人识别 → 监护授权；教师 / 机构资质校验；开锁手续清单签完才开。\n- heading \"在用保护\" [level=2]\n- paragraph: 时长 / 时段到点即停；家长一键撤回即刻停用；未成年人隐私另行请求；安全事件进审计。\n- paragraph:\n  - button \"关于本稿\":\n    - generic: 关于本稿\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "k12course",
+    "actual": "k12course",
+    "snapshot": "- button \"返回\":\n- generic: K12课程\n- generic: 在线\n- button \"青少年模式\":\n  - generic: 青少年模式\n- heading \"📚 K12 课程\" [level=2]\n- paragraph: 教材同步先验版权＋地区；中高考专项标注考纲版本（演示）。\n- heading \"闭环\" [level=2]\n- paragraph: 教材课 → 练习 → 报告 → 家长页同步（只读），与成人链隔离。\n- paragraph:\n  - button \"治理规则\":\n    - generic: 治理规则\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "tdetail",
+    "actual": "tdetail",
+    "snapshot": "- button \"返回\":\n- generic: 工单详情\n- generic: 在线\n- button \"客服\"\n- heading \"🧾 工单详情\" [level=2]\n- paragraph:\n  - generic: 筛选：\n  - button \"全部\"\n  - button \"已提交\"\n  - button \"处理中\"\n  - button \"已回复\"\n- text: TK-39\n- generic: 内容\n- generic: 已提交\n- paragraph: <b>审计草稿</b>\n- paragraph: 本机演示记录；处理与回复为样例状态，尚未发送至客服。\n- text: TK-1024\n- generic: 功能\n- generic: 处理中\n- paragraph: 听力播到一半停了\n- paragraph: 本机演示记录；处理与回复为样例状态，尚未发送至客服。\n- text: TK-1019\n- generic: 账号\n- generic: 已回复\n- paragraph: 换手机想踢掉旧设备\n- paragraph: 本机演示记录；处理与回复为样例状态，尚未发送至客服。\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "paudio",
+    "actual": "paudio",
+    "snapshot": "- button \"返回\":\n- generic: 音频保留\n- generic: 在线\n- button \"隐私\":\n  - generic: 隐私\n- heading \"🎙️ 音频保留说明\" [level=2]\n- paragraph: 跟读录音默认只留评分特征；原始音频另行授权才存（演示口径）。\n- heading \"到期与删除\" [level=2]\n- paragraph: 保留期到自动清；删号时逐服务清理并给回执；处理中显示编号＋进度，不点完即完成。\n- paragraph:\n  - button \"回语音\":\n    - generic: 回语音\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "pay",
+    "actual": "pay",
+    "snapshot": "- button \"返回\":\n- generic: 收银台\n- generic: 在线\n- heading \"收银台（沙盒）\" [level=2]\n- paragraph: 月度会员 · ¥19 · 本机演示，不扣真款\n- paragraph: 订单：demo-order-41\n- generic: 沙盒支付已确认，本机订单已保存；不会扣真款或发放真实权益。\n- paragraph:\n  - button \"查看订单\"\n  - button \"回商城\"\n  - button \"重新购买\"\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "a11y",
+    "actual": "a11y",
+    "snapshot": "- button \"返回\":\n- generic: 无障碍\n- generic: 在线\n- heading \"♿ 无障碍\" [level=2]\n- paragraph: 跟随系统＋手动档，所见即所得；设置只在本机生效（演示），换设备需重设。\n- button \"◐ 高对比：关\":\n  - generic: ◐ 高对比：关\n- button \"A 字体：标准\":\n  - generic: A 字体：标准\n- button \"▶ 动效：开\":\n  - generic: ▶ 动效：开\n- button \"◎ 焦点框：默认\":\n  - generic: ◎ 焦点框：默认\n- button \"🔊 读屏/朗读：关\":\n  - generic: 🔊 读屏/朗读：关\n- paragraph:\n  - button \"恢复默认\"\n- heading \"👁 预览（真实生效区）\" [level=2]\n- paragraph: Good morning.\n- paragraph: 早上好。今天也要学 15 分钟。\n- paragraph:\n  - generic: B1\n  - generic: 今日 2 题\n- button \"示例按钮\"\n- button \"播报这段 🔊\"\n- paragraph: 状态不用颜色 alone 表达：✓=可做 ♥=待补救 ⌁=待同步，均有文字。\n- generic: ✓ 保存成功是这种条（文字＋色块）\n- generic: \"! 出错是这种条（文字＋色块）\"\n- heading \"⌨️ 键盘与焦点自查\" [level=2]\n- paragraph: Tab 走一遍：本页按钮 → 预览 → 下面三链接，焦点框为默认；回车可点，焦点不丢。\n- paragraph:\n  - button \"书架\":\n    - generic: 书架\n  - button \"练题\":\n    - generic: 练题\n  - button \"首页\":\n    - generic: 首页\n- paragraph: 抽验屏（书架/练题）不是全部范围；长题干、320 宽度、横竖屏以真机为准，稿内不认证。\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "arrears",
+    "actual": "arrears",
+    "snapshot": "- button \"返回\":\n- generic: 补课提醒\n- generic: 在线\n- heading \"可以接着完成的学习\" [level=2]\n- paragraph: 接回任务会保留原来的题目和草稿，可按今天的时间安排继续。\n- button \"查看今日与顺延安排\"\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "celebrate",
+    "actual": "celebrate",
+    "snapshot": "- button \"返回\":\n- generic: 完成撒花\n- generic: 在线\n- heading \"查看这一次的学习收获\" [level=2]\n- paragraph: 完成结果以本机记录为准，可以查看反馈、复习安排或继续未完成的任务。\n- button \"查看今日回顾\"\n- button \"回到学习\"\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "offlinet",
+    "actual": "offlinet",
+    "snapshot": "- button \"返回\":\n- generic: 断网今日\n- generic: 在线\n- heading \"离线时保留学习进度\" [level=2]\n- paragraph: 已经加载的原型页面可继续查看；选择和草稿保存在本机。当前原型没有服务端自动同步，恢复连接后请主动提交或查询未知结果。\n- button \"查看保存的学习\"\n- button \"离线包说明\"\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "pgen",
+    "actual": "pgen",
+    "snapshot": "- button \"返回\":\n- generic: 计划生成中\n- generic: 在线\n- heading \"生成今日安排\" [level=2]\n- paragraph: 按目标与时间预算安排固定样例内容，已完成和进行中的任务会保留。\n- button \"生成今日计划\"\n- button \"查看学习计划\"\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "planexp",
+    "actual": "planexp",
+    "snapshot": "- button \"返回\":\n- generic: 计划解释\n- generic: 在线\n- heading \"你的学习安排\" [level=2]\n- paragraph: 大学英语 · 四级 · 每天 45 分钟 · 每周 7 天\n- paragraph: 先做目标对应的小题组，再按预算加入阅读、写作、词汇和复习。当前内容是固定学习样例；测评结果作为水平参考。\n- paragraph: 休息日不增加新任务；未完成内容保留在顺延列表。调整计划前可以选择保留或顺延进行中的任务。\n- button \"预览计划调整\"\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "session",
+    "actual": "session",
+    "snapshot": "- button \"返回\":\n- generic: 会话检查点\n- generic: 在线\n- heading \"🔗 会话与检查点\" [level=2]\n- paragraph: 练习按会话走，checkpoint 是断点续练的依据（演示）。\n- heading \"顺序＋版本锁\" [level=2]\n- paragraph: 按题序作答；乱序/并发提交会被打回（409），按服务端题号重拉再答；判分规则按版本锁定，老会话不受新规则影响。\n- heading \"断点续练\" [level=2]\n- paragraph: 做到第 3 题退出 → 回来从第 3 题继续；重复提交幂等，不重复计分。\n- paragraph:\n  - button \"继续练\":\n    - generic: 继续练\n  - button \"回今日\":\n    - generic: 回今日\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "mastery",
+    "actual": "mastery",
+    "snapshot": "- button \"返回\":\n- generic: 掌握度\n- generic: 在线\n- heading \"巩固进度\" [level=2]\n- strong: \"3\"\n- generic: 待补救\n- strong: \"1\"\n- generic: 待验证\n- strong: \"0\"\n- generic: 已验证\n- paragraph: 此处是学习项的验证状态，不是正式等级或能力认证。\n- button \"查看学习项\"\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "pfault",
+    "actual": "pfault",
+    "snapshot": "- button \"返回\":\n- generic: 定级恢复\n- generic: 在线\n- heading \"🛟 定级恢复\" [level=2]\n- paragraph: 出错不丢题，失败有出口（演示）。\n- heading \"409 版本冲突\" [level=2]\n- paragraph: 乱序/并发提交会被打回（409）→ 按服务端题号重拉进度再答，不覆盖已答。\n- heading \"断网续答\" [level=2]\n- paragraph: 断网先存本机草稿（只存题号＋选项）；恢复后按 checkpoint 续题号。\n- heading \"重测\" [level=2]\n- paragraph: 重测开新 session，旧报告保留可查，不覆盖。\n- paragraph:\n  - button \"回定级\":\n    - generic: 回定级\n  - button \"看报告\":\n    - generic: 看报告\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "npref",
+    "actual": "npref",
+    "snapshot": "- button \"返回\":\n- generic: 通知偏好\n- generic: 在线\n- button \"消息\":\n  - generic: 消息\n- heading \"🔔 通知偏好\" [level=2]\n- paragraph: 开关只记偏好＋版本号，能否收到看真实渠道（演示：推送未开不开“成功”）。\n- heading \"渠道\" [level=2]\n- button \"✅ 学习提醒\":\n  - generic: ✅ 学习提醒\n- button \"✅ 学习报告\":\n  - generic: ✅ 学习报告\n- button \"⬜ 系统公告\":\n  - generic: ⬜ 系统公告\n- heading \"免打扰\" [level=2]\n- paragraph:\n  - generic: 时段：\n  - button \"晨间 8:00\"\n  - button \"睡前 22:00\"\n- paragraph: 部分失败自动重试 3 次；真实事件驱动 R2 开，Push / Email / SMS 走 R3（演示不开）。\n- paragraph:\n  - button \"回设置\":\n    - generic: 回设置\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "firstlearn",
+    "actual": "firstlearn",
+    "snapshot": "- button \"返回\":\n- generic: 首次学习\n- generic: 在线\n- heading \"选择开始方式\" [level=2]\n- paragraph: 大学英语 · 四级 · 每天 45 分钟\n- paragraph: 先用五道样例题了解自己的起点，也可以直接做一组基础任务。样例测评不替代正式等级考试。\n- button \"先做样例测评\"\n- button \"直接开始学习\"\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "greject",
+    "actual": "greject",
+    "snapshot": "- button \"返回\":\n- generic: 门被拒\n- generic: 在线\n- text: 暂不能开放学习\n- paragraph: 身份未通过，可退出或联系客服\n- button \"退出\"\n- button \"联系客服\"\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "cupgrade",
+    "actual": "cupgrade",
+    "snapshot": "- button \"返回\":\n- generic: 同意升级\n- generic: 在线\n- heading \"本机同意记录\" [level=2]\n- paragraph: 当前演示版本：b30-consent-v1。样例通过状态与本人在原型中的签署分别标明；均不代表服务端授权。\n- paragraph:\n  - text: TERMS · 当前版本已记录\n  - text: 演示样例 · b30-consent-v1\n- paragraph:\n  - text: PRIVACY · 当前版本已记录\n  - text: 演示样例 · b30-consent-v1\n- paragraph:\n  - text: ADULT_LEARNING · 当前版本已记录\n  - text: 演示样例 · b30-consent-v1\n- button \"查看并重新确认\"\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "vocab",
+    "actual": "vocab",
+    "snapshot": "- button \"返回\":\n- generic: 词汇详情\n- generic: 在线\n- paragraph: CET4 · 第 1/40 · 🗑️ · 已在复习\n- text: abandon\n- paragraph:\n  - generic: /əˈbændən/\n  - button \"朗读\": 🔊 读\n- paragraph: 抛弃\n- paragraph:\n  - button \"上一词\":\n    - generic: 上一词\n  - button \"下一词\":\n    - generic: 下一词\n- heading \"🔍 找词\" [level=2]\n- textbox \"英文 / 中文，如 abandon / 抛弃\"\n- paragraph: 输入英文或中文搜 40 词（四级 20＋六级 20）\n- heading \"🔀 拆开记\" [level=2]\n- paragraph: aban + don\n- paragraph: 形和音对应着记（演示拆分，非权威词源）。\n- paragraph: 暂无已核对的搭配与例句，可先记词义和读音。\n- heading \"🔤 变形全家\" [level=2]\n- paragraph:\n  - generic: abandon\n  - generic: abandons\n  - generic: abandoned\n  - generic: abandoning\n  - generic: abandonment n.抛弃\n- heading \"🧩 组句（点 🔊 跟读）\" [level=2]\n- paragraph:\n  - generic: 1. Don't abandon hope.\n  - button \"朗读\": 🔊\n- paragraph:\n  - generic: 2. The ship was abandoned.\n  - button \"朗读\": 🔊\n- paragraph:\n  - generic: 3. He abandoned the plan.\n  - button \"朗读\": 🔊\n- heading \"😎 搭配与记忆提示\" [level=2]\n- paragraph: abandon ship（开溜，多指散伙）\n- paragraph: 仅为记忆联想，不代表已核对词源：a-(away 离开)+ban(喊)→喊走→抛弃\n- heading \"✅ 自测：中文 → 英文\" [level=2]\n- paragraph: “抛弃”是哪个？\n- button \"🔑 access\"\n- button \"🗑️ abandon\"\n- button \"🏛️ academy\"\n- button \"🧽 absorb\"\n- heading \"📌 行动\" [level=2]\n- paragraph:\n  - button \"已在复习 ✓\"\n  - button \"会了 ✓\"\n  - button \"不会，进错题\"\n- paragraph:\n  - button \"去刷这本\":\n    - generic: 去刷这本\n  - button \"去复习\":\n    - generic: 去复习\n  - button \"错题本\":\n    - generic: 错题本\n- paragraph: 缺项写“暂无”，不编发音；演示状态不代表服务端已落库。\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "listening",
+    "actual": "listening",
+    "snapshot": "- button \"返回\":\n- generic: 听力\n- generic: 在线\n- heading \"听力练习\" [level=2]\n- paragraph: 系统语音朗读样例。完成后保存的是材料理解结果，不是正式听力水平。\n- generic: 材料\n- combobox \"材料\":\n  - option \"A0 · 问候\"\n  - option \"A1 · 火车站\" [selected]\n  - option \"B1 · 机场\"\n- generic: 语速\n- combobox \"语速\":\n  - option \"0.5 倍\"\n  - option \"0.75 倍\"\n  - option \"1 倍\" [selected]\n  - option \"1.25 倍\"\n  - option \"1.5 倍\"\n  - option \"2 倍\"\n- button \"播放材料\"\n- button \"隐藏字幕\" [pressed]\n- paragraph: Good morning. The train leaves at nine. Please be on time.\n- paragraph: 早上好。火车九点开。请准时。\n- heading \"材料理解\" [level=2]\n- paragraph: 火车几点开？\n- button \"A. eight\"\n- button \"B. nine\"\n- button \"C. ten\"\n- paragraph: 播客提醒你要什么？\n- button \"A. hurry\"\n- button \"B. be on time\"\n- button \"C. run\"\n- button \"保存本次理解结果\"\n- button \"返回课程\"\n- button \"练习记录\"\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "speaking",
+    "actual": "speaking",
+    "snapshot": "- button \"返回\":\n- generic: 口语\n- generic: 在线\n- heading \"口语练习\" [level=2]\n- generic: 练习方式\n- combobox \"练习方式\":\n  - option \"跟读\" [selected]\n  - option \"口头翻译\"\n  - option \"角色练习\"\n- paragraph: Could you help me check this report?\n- paragraph: 你能帮我检查这份报告吗？\n- paragraph: 朗读使用系统语音。先自己说一遍，再对照文字；这里不录音、不生成发音分数。\n- button \"听示范\"\n- button \"查看本轮自练\"\n- button \"再练一次\"\n- button \"返回课程\"\n- button \"练习记录\"\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "writing",
+    "actual": "writing",
+    "snapshot": "- button \"返回\":\n- generic: 写作\n- generic: 在线\n- paragraph: 原创练习 · 规则反馈\n- heading \"给朋友的一封信\" [level=2]\n- paragraph: 邀请 Sam 周末一起学习英语。说明活动、时间，并询问对方是否方便。写 40–100 个英文单词，包含称呼和结束语。\n- generic: 我的草稿\n- textbox \"我的草稿\":\n  - /placeholder: Dear Sam,...\n  - text: DAY TWO DRAFT Dear Sam I will read on Sunday.\n- status: 10 个英文单词 · 草稿已保存到本机\n- button \"检查并提交\"\n- generic \"＋ 查看参考文本与检查范围\"\n- heading \"历次提交\" [level=2]\n- button \"写作 · 给朋友的一封信 13:14 · 已保存\":\n  - text: 写作 · 给朋友的一封信\n  - generic: 13:14 · 已保存\n  - generic: ›\n- button \"写作 · 给朋友的一封信 13:13 · 已保存\":\n  - text: 写作 · 给朋友的一封信\n  - generic: 13:13 · 已保存\n  - generic: ›\n- button \"保存草稿，返回学习\"\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "offpkg",
+    "actual": "offpkg",
+    "snapshot": "- button \"返回\":\n- generic: 离线包\n- generic: 在线\n- heading \"离线包\" [level=2]\n- paragraph: 列表可读：版本 / 大小 / 内容范围 / 状态可见。完整离线未准入前不开放下载，不保留可点的必败下载。\n- paragraph: 装了 PWA ≠ 离线可学；断网时今日进度处理另见说明。\n- button \"断网时怎么办\":\n  - generic: 断网时怎么办\n- text: 四级词汇包\n- generic: 未开放下载\n- paragraph: 版本：v3（演示结构） · 大小：—\n- paragraph: 范围：四级核心词 + 例句\n- paragraph: 完整离线未准入（R3），当前请在线学。\n- button \"去书架在线学\":\n  - generic: 去书架在线学\n- text: 零基础包\n- generic: 未开放下载\n- paragraph: 版本：v1（演示结构） · 大小：—\n- paragraph: 范围：字母 + 音标 + 短句\n- paragraph: 完整离线未准入（R3），当前请在线学。\n- button \"去书架在线学\":\n  - generic: 去书架在线学\n- text: 六级阅读包\n- generic: 未开放下载\n- paragraph: 版本：v2（演示结构） · 大小：—\n- paragraph: 范围：长难句 + 精读\n- paragraph: 完整离线未准入（R3），当前请在线学。\n- button \"去书架在线学\":\n  - generic: 去书架在线学\n- paragraph: 结构为演示占位，非真实可下载字节；大小“—”表示未定，不虚构 MB 数。\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "refund",
+    "actual": "refund",
+    "snapshot": "- button \"返回\":\n- generic: 退款开票\n- generic: 在线\n- heading \"我的订单 / 退款 / 票据\" [level=2]\n- paragraph: 本机沙盒订单；初始三笔为固定样例。新结算保存同一商品与价格，刷新后仍可查看。\n- button \"回商城\"\n- text: 月度会员\n- generic: ¥19\n- paragraph: demo-order-41\n- paragraph: 资金：已支付（沙盒） · 权益：有效（本机演示）\n- paragraph: 退款：无\n- button \"查看订单\"\n- text: 月度会员\n- generic: ¥19\n- paragraph: tk1\n- paragraph: 资金：已支付（沙盒） · 权益：有效\n- paragraph: 退款：L1 已过·等 L2\n- button \"查看订单\"\n- text: 四级冲刺包\n- generic: ¥49\n- paragraph: tk2\n- paragraph: 资金：已支付（沙盒） · 权益：有效\n- paragraph: 退款：无\n- button \"查看订单\"\n- text: 年度会员\n- generic: ¥108\n- paragraph: tk3\n- paragraph: 资金：已退款（沙盒） · 权益：已按政策撤销（演示）\n- paragraph: 退款：已到账（沙盒）\n- button \"查看订单\"\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "shelf",
+    "actual": "shelf",
+    "snapshot": "- button \"返回\":\n- generic: 书架\n- generic: 在线\n- navigation \"学习分区\":\n  - button \"今日\"\n  - button \"课程\"\n  - button \"词汇\"\n  - button \"复习\"\n- heading \"发现适合你的内容\" [level=2]\n- paragraph: 章节是原创学习片段；书名用于表达学习方向，不提供原书全文。\n- generic: 学习目标\n- combobox \"学习目标\":\n  - option \"全部目标\" [selected]\n  - option \"基础英语\"\n  - option \"大学英语\"\n  - option \"考研英语\"\n  - option \"职场英语\"\n- generic: 参考水平\n- combobox \"参考水平\":\n  - option \"全部水平\" [selected]\n  - option \"A1\"\n  - option \"A2\"\n  - option \"B1\"\n  - option \"B2\"\n  - option \"C1\"\n- generic: 学习状态\n- combobox \"学习状态\":\n  - option \"全部\" [selected]\n  - option \"在学\"\n  - option \"收藏\"\n  - option \"已完成\"\n  - option \"未开始\"\n  - option \"暂无内容\"\n- heading \"四级词汇红宝书\" [level=3]\n- generic: B1\n- paragraph: 大学英语 · 在学 · 1/3 节完成\n- button \"继续课程\"\n- button \"☆ 收藏\"\n- heading \"零基础英语\" [level=3]\n- generic: A1\n- paragraph: 基础英语 · 未开始 · 0/3 节完成\n- button \"查看章节\"\n- button \"☆ 收藏\"\n- heading \"六级长难句\" [level=3]\n- generic: B2\n- paragraph: 大学英语 · 未开始 · 0/3 节完成\n- button \"查看章节\"\n- button \"☆ 收藏\"\n- heading \"商务口语 100 句\" [level=3]\n- generic: B1\n- paragraph: 职场英语 · 未开始 · 0/3 节完成\n- button \"查看章节\"\n- button \"☆ 收藏\"\n- heading \"雅思备考\" [level=3]\n- generic: B2\n- paragraph: 大学英语 · 未开始 · 0/4 节完成\n- button \"查看章节\"\n- button \"☆ 收藏\"\n- heading \"生活英语\" [level=3]\n- generic: A2\n- paragraph: 基础英语 · 未开始 · 0/3 节完成\n- button \"查看章节\"\n- button \"☆ 收藏\"\n- heading \"考研阅读 · 研究与生活\" [level=3]\n- generic: B2\n- paragraph: 考研英语 · 未开始 · 0/3 节完成\n- button \"查看章节\"\n- button \"☆ 收藏\"\n- heading \"考研阅读进阶\" [level=3]\n- generic: C1\n- paragraph: 考研英语 · 暂无内容\n- paragraph: 此方向暂未提供样例。换一个水平或选择其他课程。\n- heading \"技能练习\" [level=2]\n- button \"写作 ›\"\n- button \"听力 ›\"\n- button \"口语 ›\"\n- button \"收藏与笔记 ›\"\n- navigation:\n  - link \"🏠 首页\":\n    - /url: \"#/home\"\n    - generic: 🏠\n    - text: 首页\n  - link \"📚 学习\":\n    - /url: \"#/today\"\n    - generic: 📚\n    - text: 学习\n  - link \"🌍 世界\":\n    - /url: \"#/world\"\n    - generic: 🌍\n    - text: 世界\n  - link \"👤 我的\":\n    - /url: \"#/me\"\n    - generic: 👤\n    - text: 我的\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "book",
+    "actual": "book",
+    "snapshot": "- button \"返回\":\n- generic: 图书详情\n- generic: 在线\n- paragraph: 原创片段与词汇学习样例\n- heading \"四级词汇红宝书\" [level=2]\n- paragraph: 原创词汇片段与例句，用于打磨学习交互；章名数字为目录样例，不表示已提供完整词库。 · 已完成 1/3 节\n- button \"☆ 收藏课程\"\n- heading \"章节目录\" [level=2]\n- button \"1. 第一章 高频 500 ✓ 已完成 ›\":\n  - text: 1. 第一章 高频 500\n  - generic: ✓ 已完成\n  - generic: ›\n- button \"2. 第二章 核心 1500 未开始 ›\":\n  - text: 2. 第二章 核心 1500\n  - generic: 未开始\n  - generic: ›\n- button \"3. 第三章 冲刺 1000 未开始 ›\":\n  - text: 3. 第三章 冲刺 1000\n  - generic: 未开始\n  - generic: ›\n- button \"返回课程\"\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "chapter",
+    "actual": "chapter",
+    "snapshot": "- button \"返回\":\n- generic: 章节正文\n- generic: 在线\n- paragraph: 第 1/3 节\n- generic: ✓ 本节已完成\n- paragraph: 四级词汇红宝书\n- article:\n  - heading \"第一章 高频 500\" [level=2]\n  - paragraph: 本节以 abandon（抛弃） 为原创词汇学习样例。\n  - blockquote: 记忆提示：把单词放进自己的句子中，再通过练习检验。\n  - list:\n    - listitem: abandon bad habits.\n    - listitem: 抛掉坏习惯。\n  - paragraph: 文字词卡：abandon → 抛弃 → Abandon bad habits.\n  - heading \"怎样练习\" [level=3]\n  - paragraph: 读出例句，再用 abandon 写一句话。本节没有引用已核验的真题频次。\n- heading \"查词与收藏\" [level=2]\n- paragraph: 本节词汇，点词保留原句：\n- button \"abandon\"\n- generic: 英文单词\n- textbox \"英文单词\":\n  - /placeholder: 输入要查的单词\n  - text: abandon\n- button \"查词\"\n- button \"★ 已收藏本节\" [pressed]\n- status:\n  - text: abandon\n  - paragraph: 抛弃\n  - paragraph: abandon 永远排第一，因为它是四级最爱考的动词。\n  - button \"朗读\"\n  - button \"加入复习\"\n- heading \"本节笔记\" [level=2]\n- generic: 记下一句话或疑问\n- textbox \"记下一句话或疑问\":\n  - /placeholder: 笔记会自动保存到本机\n  - text: \"Audit note: abandon bad habits.\"\n- status: 已保存到本机 · 31 字\n- heading \"继续往下读\" [level=2]\n- button \"✓ 已完成本节\" [disabled]\n- button \"下一节\"\n- button \"返回本书目录\"\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "drill",
+    "actual": "drill",
+    "snapshot": "- button \"返回\":\n- generic: 刷单词\n- generic: 在线\n- generic: 四级 · 限时 60 秒 · 对+10/错-2 · 错题进本（演示，不上榜）\n- generic: 学习模式\n- button \"词汇详情\":\n  - generic: 词汇详情\n- group \"刷词模式\":\n  - button \"回忆\"\n  - button \"选项\"\n  - button \"词形\"\n  - button \"限时\" [pressed]\n- heading \"限时挑战\" [level=2]\n- paragraph: 60 秒能对几个？离开页面会暂停，挑战不计入今日三词任务。\n- button \"开始挑战\"\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "wordbook",
+    "actual": "wordbook",
+    "snapshot": "- button \"返回\":\n- generic: 单词本\n- generic: 在线\n- heading \"选择一组词汇\" [level=2]\n- paragraph: 自评认识，或加入复习。每轮完成后会保存回忆记录。\n- button \"四级词汇 · 20 词 ›\"\n- button \"六级词汇 · 20 词 ›\"\n- button \"返回词汇学习\"\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "phonics",
+    "actual": "phonics",
+    "snapshot": "- button \"返回\":\n- generic: 音标\n- generic: 在线\n- heading \"🔤 音标\" [level=2]\n- paragraph: 点符号听发音，分组慢慢来\n- button \"单元音 · 12 ▾\":\n  - generic: 单元音 · 12\n  - text: ▾\n- button \"iː sheep\":\n  - text: iː\n  - generic: sheep\n- button \"ɪ ship\":\n  - text: ɪ\n  - generic: ship\n- button \"e bed\":\n  - text: e\n  - generic: bed\n- button \"æ cat\":\n  - text: æ\n  - generic: cat\n- button \"ɑː car\":\n  - text: ɑː\n  - generic: car\n- button \"ɒ hot\":\n  - text: ɒ\n  - generic: hot\n- button \"ɔː door\":\n  - text: ɔː\n  - generic: door\n- button \"ʊ book\":\n  - text: ʊ\n  - generic: book\n- button \"uː food\":\n  - text: uː\n  - generic: food\n- button \"ʌ cup\":\n  - text: ʌ\n  - generic: cup\n- button \"ɜː bird\":\n  - text: ɜː\n  - generic: bird\n- button \"ə about\":\n  - text: ə\n  - generic: about\n- button \"双元音 · 8 ▸\":\n  - generic: 双元音 · 8\n  - text: ▸\n- button \"爆破音 · 6 ▸\":\n  - generic: 爆破音 · 6\n  - text: ▸\n- button \"摩擦音 · 9 ▸\":\n  - generic: 摩擦音 · 9\n  - text: ▸\n- button \"鼻/边/滑音 · 7 ▸\":\n  - generic: 鼻/边/滑音 · 7\n  - text: ▸\n- button \"破擦音 · 6 ▸\":\n  - generic: 破擦音 · 6\n  - text: ▸\n- heading \"👂 最小对立对辨音\" [level=2]\n- paragraph:\n  - button \"sip 🔊\"\n  - button \"zip 🔊\"\n- paragraph:\n  - button \"ship 🔊\"\n  - button \"sheep 🔊\"\n- paragraph:\n  - button \"cat 🔊\"\n  - button \"cut 🔊\"\n- paragraph:\n  - button \"pen 🔊\"\n  - button \"pan 🔊\"\n- paragraph: 听两遍，凭感觉选（演示不判分）\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "alphabet",
+    "actual": "alphabet",
+    "snapshot": "- button \"返回\":\n- generic: 字母\n- generic: 在线\n- heading \"🔠 字母 · 26\" [level=2]\n- paragraph: 点字母听发音，看大小写和例词；例词待补的不编，先标出来\n- button \"A\"\n- button \"B\"\n- button \"C\"\n- button \"D\"\n- button \"E\"\n- button \"F\"\n- button \"G\"\n- button \"H\"\n- button \"I\"\n- button \"J\"\n- button \"K\"\n- button \"L\"\n- button \"M\"\n- button \"N\"\n- button \"O\"\n- button \"P\"\n- button \"Q\"\n- button \"R\"\n- button \"S\"\n- button \"T\"\n- button \"U\"\n- button \"V\"\n- button \"W\"\n- button \"X\"\n- button \"Y\"\n- button \"Z\"\n- paragraph: 点上面任意字母 👆\n- heading \"🔗 自然拼读\" [level=2]\n- paragraph: c-a-t → cat（演示：点听整词）\n- button \"🔊 cat\"\n- button \"🔊 dog\"\n- button \"更多\":\n  - generic: 更多\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "lab",
+    "actual": "lab",
+    "snapshot": "- button \"返回\":\n- generic: 演示工具\n- generic: 在线\n- heading \"六能力演示工具\" [level=2]\n- paragraph: 当前演示日期 2026-10-02（已偏移 1 天）。普通学习页不能提前通过延迟验证。\n- button \"演示日期 +1 天\"\n- button \"演示日期 +6 天\"\n- button \"恢复真实日期\"\n- button \"写作空态：关\"\n- button \"管理身份预览：关\"\n- button \"AI 能力预览\"\n- button \"青少年阶段说明\"\n- button \"后台样例\"\n- heading \"🧪 演示工具\" [level=2]\n- paragraph: 集中放测试开关：重置数据、切换场景、注入故障、直接完成。不在正常学习界面出现（演示）。\n- heading \"数据\" [level=2]\n- paragraph:\n  - button \"重置全部演示数据\"\n  - button \"恢复今日任务\"\n- paragraph: 重置清本机保存并重载页面。\n- heading \"今日场景\" [level=2]\n- paragraph:\n  - button \"有任务\"\n  - button \"全完成\"\n  - button \"无内容\"\n  - button \"未建计划\"\n- heading \"故障注入（下一次提交有效）\" [level=2]\n- paragraph:\n  - button \"提交失败 关\"\n  - button \"结果未知 关\"\n  - button \"断网模式 关\"\n- paragraph: 影响定级 / 练习 / 计划生成的提交；断网时提交只保留草稿。\n- heading \"直接完成（演示）\" [level=2]\n- paragraph:\n  - generic: 语法 · There be 句型 · 未完成\n  - button \"标完成 ✓\"\n- paragraph:\n  - generic: 阅读 · 图书馆的一天 · 未完成\n  - button \"标完成 ✓\"\n- paragraph:\n  - generic: 写作 · 给朋友的一封信 · 未完成\n  - button \"标完成 ✓\"\n- paragraph: 词汇 · 回忆 3 个词 · 已完成\n- paragraph: 阅读 · 完成一个章节 · 已完成\n- paragraph:\n  - generic: 复习 · 本轮回忆 · 未完成\n  - button \"标完成 ✓\"\n- paragraph:\n  - generic: 写作 · 给朋友的一封信 · 未完成\n  - button \"标完成 ✓\"\n- heading \"身份与定级\" [level=2]\n- paragraph:\n  - button \"切 staff\"\n  - button \"重做定级\"\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "recap",
+    "actual": "recap",
+    "snapshot": "- button \"返回\":\n- generic: 今日回顾\n- generic: 在线\n- paragraph: 2026-10-02 · 今天\n- heading \"每一小步，都有记录\" [level=2]\n- strong: \"3\"\n- generic: 完成记录\n- strong: 1/1\n- generic: 本轮答题\n- strong: \"32\"\n- generic: 获得 XP\n- paragraph: 任务卡用时为预估；这里不把它当作实际学习时长。旧版缺少题目明细的汇总不计入答题与 XP。\n- heading \"学习结果\" [level=2]\n- button \"错题补救 · abandon 13:21 · 1/1 答对\":\n  - text: 错题补救 · abandon\n  - generic: 13:21 · 1/1 答对\n  - generic: ›\n- button \"四级词汇红宝书 · 第一章 高频 500 13:19 · 已保存 · 预计 10 分钟\":\n  - text: 四级词汇红宝书 · 第一章 高频 500\n  - generic: 13:19 · 已保存 · 预计 10 分钟\n  - generic: ›\n- button \"词汇练习 · 3 个词 13:18 · 2/3 词义答对\":\n  - text: 词汇练习 · 3 个词\n  - generic: 13:18 · 2/3 词义答对\n  - generic: ›\n- heading \"接下来的安排\" [level=2]\n- paragraph: 4 个词到期 · 0 项验证到期\n- button \"查看复习安排\"\n- button \"全部记录\"\n- button \"结束本次学习\"\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "history",
+    "actual": "history",
+    "snapshot": "- button \"返回\":\n- generic: 学习记录\n- generic: 在线\n- heading \"学习记录\" [level=2]\n- paragraph: 每轮独立保存。重新练习会新增结果，不覆盖上一轮。\n- button \"本周回顾\"\n- button \"学习日历\"\n- heading \"2026-10-02\" [level=2]\n- button \"当天回顾\"\n- button \"错题补救 · abandon 13:21 · 1/1 答对\":\n  - text: 错题补救 · abandon\n  - generic: 13:21 · 1/1 答对\n  - generic: ›\n- button \"四级词汇红宝书 · 第一章 高频 500 13:19 · 已保存 · 预计 10 分钟\":\n  - text: 四级词汇红宝书 · 第一章 高频 500\n  - generic: 13:19 · 已保存 · 预计 10 分钟\n  - generic: ›\n- button \"词汇练习 · 3 个词 13:18 · 2/3 词义答对\":\n  - text: 词汇练习 · 3 个词\n  - generic: 13:18 · 2/3 词义答对\n  - generic: ›\n- heading \"2026-10-01\" [level=2]\n- button \"当天回顾\"\n- button \"写作 · 给朋友的一封信 13:14 · 已保存\":\n  - text: 写作 · 给朋友的一封信\n  - generic: 13:14 · 已保存\n  - generic: ›\n- button \"写作 · 给朋友的一封信 13:13 · 已保存\":\n  - text: 写作 · 给朋友的一封信\n  - generic: 13:13 · 已保存\n  - generic: ›\n- button \"口语自练 · 跟读 13:11 · 已保存\":\n  - text: 口语自练 · 跟读\n  - generic: 13:11 · 已保存\n  - generic: ›\n- button \"口语自练 · 跟读 13:11 · 已保存\":\n  - text: 口语自练 · 跟读\n  - generic: 13:11 · 已保存\n  - generic: ›\n- button \"听力材料理解 · 问候 13:11 · 2/2 答对\":\n  - text: 听力材料理解 · 问候\n  - generic: 13:11 · 2/2 答对\n  - generic: ›\n- button \"阅读 · 图书馆的一天 13:09 · 2/2 答对 · 预计 8 分钟\":\n  - text: 阅读 · 图书馆的一天\n  - generic: 13:09 · 2/2 答对 · 预计 8 分钟\n  - generic: ›\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "result",
+    "actual": "result",
+    "snapshot": "- button \"返回\":\n- generic: 学习结果\n- generic: 在线\n- paragraph: 2026-10-01 13:09 · 已保存在本机\n- heading \"阅读 · 图书馆的一天\" [level=2]\n- paragraph: 2/2 答对 · 预计 8 分钟\n- text: What time does Li Lei get up?\n- paragraph: 你的答案：six thirty · ✓ 答对\n- paragraph: 参考：six thirty。第一句 six thirty，照着找\n- text: Where does he go at eight?\n- paragraph: 你的答案：library · ✓ 答对\n- paragraph: 参考：library。第二句 the library\n- button \"再练一轮\"\n- button \"回到当天回顾\"\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "plan",
+    "actual": "plan",
+    "snapshot": "- button \"返回\":\n- generic: 学习计划\n- generic: 在线\n- heading \"调整学习计划\" [level=2]\n- paragraph: 按自己能坚持的节奏来。调整前先看变化，已完成的记录会保留。\n- generic: 学习目标\n- combobox \"学习目标\":\n  - option \"基础英语\"\n  - option \"大学英语\" [selected]\n  - option \"考研英语\"\n  - option \"职场英语\"\n- generic: 大学英语方向\n- combobox \"大学英语方向\":\n  - option \"四级\" [selected]\n  - option \"六级\"\n- generic: 每天投入\n- combobox \"每天投入\":\n  - option \"5 分钟\"\n  - option \"15 分钟\"\n  - option \"30 分钟\"\n  - option \"45 分钟\" [selected]\n- paragraph: 每周学习日\n- button \"周一\" [pressed]\n- button \"周二\" [pressed]\n- button \"周三\" [pressed]\n- button \"周四\" [pressed]\n- button \"周五\" [pressed]\n- button \"周六\" [pressed]\n- button \"周日\" [pressed]\n- generic: 进行中的任务\n- combobox \"进行中的任务\":\n  - option \"保留在今日，接着完成\" [selected]\n  - option \"顺延，保留进度稍后继续\"\n- button \"预览计划变化\"\n- button \"取消调整\"\n- button \"学习日历\"\n- button \"学习记录\"\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "calendar",
+    "actual": "calendar",
+    "snapshot": "- button \"返回\":\n- generic: 学习日历\n- generic: 在线\n- heading \"接下来两周\" [level=2]\n- paragraph: 学习日安排目标对应的任务；休息日可以自由阅读，未完成进度可以接着学。\n- button \"调整学习日\"\n- heading \"10-02 · 周五\" [level=3]\n- generic: 今天 · 学习日\n- paragraph: 大学英语 · 四级 · 预计不超过 45 分钟 · 0 项复习/验证\n- button \"查看 3 条学习记录\"\n- heading \"10-03 · 周六\" [level=3]\n- generic: 学习日\n- paragraph: 大学英语 · 四级 · 预计不超过 45 分钟 · 1 项复习/验证\n- heading \"10-04 · 周日\" [level=3]\n- generic: 学习日\n- paragraph: 大学英语 · 四级 · 预计不超过 45 分钟 · 0 项复习/验证\n- heading \"10-05 · 周一\" [level=3]\n- generic: 学习日\n- paragraph: 大学英语 · 四级 · 预计不超过 45 分钟 · 0 项复习/验证\n- heading \"10-06 · 周二\" [level=3]\n- generic: 学习日\n- paragraph: 大学英语 · 四级 · 预计不超过 45 分钟 · 0 项复习/验证\n- heading \"10-07 · 周三\" [level=3]\n- generic: 学习日\n- paragraph: 大学英语 · 四级 · 预计不超过 45 分钟 · 0 项复习/验证\n- heading \"10-08 · 周四\" [level=3]\n- generic: 学习日\n- paragraph: 大学英语 · 四级 · 预计不超过 45 分钟 · 0 项复习/验证\n- heading \"10-09 · 周五\" [level=3]\n- generic: 学习日\n- paragraph: 大学英语 · 四级 · 预计不超过 45 分钟 · 0 项复习/验证\n- heading \"10-10 · 周六\" [level=3]\n- generic: 学习日\n- paragraph: 大学英语 · 四级 · 预计不超过 45 分钟 · 0 项复习/验证\n- heading \"10-11 · 周日\" [level=3]\n- generic: 学习日\n- paragraph: 大学英语 · 四级 · 预计不超过 45 分钟 · 0 项复习/验证\n- heading \"10-12 · 周一\" [level=3]\n- generic: 学习日\n- paragraph: 大学英语 · 四级 · 预计不超过 45 分钟 · 0 项复习/验证\n- heading \"10-13 · 周二\" [level=3]\n- generic: 学习日\n- paragraph: 大学英语 · 四级 · 预计不超过 45 分钟 · 0 项复习/验证\n- heading \"10-14 · 周三\" [level=3]\n- generic: 学习日\n- paragraph: 大学英语 · 四级 · 预计不超过 45 分钟 · 0 项复习/验证\n- heading \"10-15 · 周四\" [level=3]\n- generic: 学习日\n- paragraph: 大学英语 · 四级 · 预计不超过 45 分钟 · 0 项复习/验证\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "reviewqueue",
+    "actual": "reviewqueue",
+    "snapshot": "- button \"返回\":\n- generic: 复习安排\n- generic: 在线\n- navigation \"学习分区\":\n  - button \"今日\"\n  - button \"课程\"\n  - button \"词汇\"\n  - button \"复习\"\n- heading \"复习安排\" [level=2]\n- paragraph: 今天：4 个词到期 · 0 项延迟验证到期\n- button \"继续本轮复习\"\n- button \"错题与验证\"\n- heading \"词汇下次日期\" [level=2]\n- text: abandon\n- paragraph: 词汇样例 · 2026-10-01\n- generic: 已到期\n- text: accumulate\n- paragraph: 词汇样例 · 2026-10-01\n- generic: 已到期\n- text: persistence\n- paragraph: 词汇样例 · 2026-10-01\n- generic: 已到期\n- text: clarify\n- paragraph: 词汇样例 · 2026-10-01\n- generic: 已到期\n- heading \"延迟验证\" [level=2]\n- button \"abandon 本次已修复 · 待次日验证 · 2026-10-03 ›\":\n  - text: abandon\n  - generic: 本次已修复 · 待次日验证 · 2026-10-03\n  - generic: ›\n- navigation:\n  - link \"🏠 首页\":\n    - /url: \"#/home\"\n    - generic: 🏠\n    - text: 首页\n  - link \"📚 学习\":\n    - /url: \"#/today\"\n    - generic: 📚\n    - text: 学习\n  - link \"🌍 世界\":\n    - /url: \"#/world\"\n    - generic: 🌍\n    - text: 世界\n  - link \"👤 我的\":\n    - /url: \"#/me\"\n    - generic: 👤\n    - text: 我的\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "collections",
+    "actual": "collections",
+    "snapshot": "- button \"返回\":\n- generic: 收藏与笔记\n- generic: 在线\n- heading \"收藏与笔记\" [level=2]\n- paragraph: 笔记随输入自动保存；点一项回到原书原章。\n- paragraph: ★ 收藏 · 四级词汇红宝书\n- heading \"第一章 高频 500\" [level=3]\n- paragraph: \"Audit note: abandon bad habits.\"\n- button \"回到本节\"\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "words",
+    "actual": "words",
+    "snapshot": "- button \"返回\":\n- generic: 词汇学习\n- generic: 在线\n- navigation \"学习分区\":\n  - button \"今日\"\n  - button \"课程\"\n  - button \"词汇\"\n  - button \"复习\"\n- heading \"词汇学习\" [level=2]\n- paragraph: 40 个样例词。认识只是自评，加入复习后可按日期回忆。\n- button \"全部\" [pressed]\n- button \"四级\"\n- button \"六级\"\n- button \"已加复习\"\n- generic: 查找单词或释义\n- textbox \"查找单词或释义\":\n  - /placeholder: 例如 abandon / 抛弃\n- button \"查找\"\n- button \"开始刷词\"\n- heading \"40 个匹配词\" [level=2]\n- button \"abandon 抛弃 · 四级 · 已加复习 ›\":\n  - text: abandon\n  - generic: 抛弃 · 四级 · 已加复习\n  - generic: ›\n- button \"ability 能力 · 四级 ›\":\n  - text: ability\n  - generic: 能力 · 四级\n  - generic: ›\n- button \"absent 缺席的 · 四级 ›\":\n  - text: absent\n  - generic: 缺席的 · 四级\n  - generic: ›\n- button \"absolute 绝对的 · 四级 ›\":\n  - text: absolute\n  - generic: 绝对的 · 四级\n  - generic: ›\n- button \"absorb 吸收 · 四级 ›\":\n  - text: absorb\n  - generic: 吸收 · 四级\n  - generic: ›\n- button \"abstract 抽象的 · 四级 ›\":\n  - text: abstract\n  - generic: 抽象的 · 四级\n  - generic: ›\n- button \"abundant 丰富的 · 四级 ›\":\n  - text: abundant\n  - generic: 丰富的 · 四级\n  - generic: ›\n- button \"abuse 滥用 · 四级 ›\":\n  - text: abuse\n  - generic: 滥用 · 四级\n  - generic: ›\n- button \"academy 学院 · 四级 ›\":\n  - text: academy\n  - generic: 学院 · 四级\n  - generic: ›\n- button \"accelerate 加速 · 四级 ›\":\n  - text: accelerate\n  - generic: 加速 · 四级\n  - generic: ›\n- button \"accent 口音 · 四级 ›\":\n  - text: accent\n  - generic: 口音 · 四级\n  - generic: ›\n- button \"accept 接受 · 四级 ›\":\n  - text: accept\n  - generic: 接受 · 四级\n  - generic: ›\n- button \"access 进入 · 四级 ›\":\n  - text: access\n  - generic: 进入 · 四级\n  - generic: ›\n- button \"accommodate 容纳 · 四级 ›\":\n  - text: accommodate\n  - generic: 容纳 · 四级\n  - generic: ›\n- button \"accompany 陪伴 · 四级 ›\":\n  - text: accompany\n  - generic: 陪伴 · 四级\n  - generic: ›\n- button \"accomplish 完成 · 四级 ›\":\n  - text: accomplish\n  - generic: 完成 · 四级\n  - generic: ›\n- button \"account 账户 · 四级 ›\":\n  - text: account\n  - generic: 账户 · 四级\n  - generic: ›\n- button \"accumulate 积累 · 四级 · 已加复习 ›\":\n  - text: accumulate\n  - generic: 积累 · 四级 · 已加复习\n  - generic: ›\n- button \"accuracy 准确 · 四级 ›\":\n  - text: accuracy\n  - generic: 准确 · 四级\n  - generic: ›\n- button \"accuse 指控 · 四级 ›\":\n  - text: accuse\n  - generic: 指控 · 四级\n  - generic: ›\n- button \"abolish 废除 · 六级 ›\":\n  - text: abolish\n  - generic: 废除 · 六级\n  - generic: ›\n- button \"absurd 荒谬的 · 六级 ›\":\n  - text: absurd\n  - generic: 荒谬的 · 六级\n  - generic: ›\n- button \"abundance 丰富 · 六级 ›\":\n  - text: abundance\n  - generic: 丰富 · 六级\n  - generic: ›\n- button \"acclaim 赞誉 · 六级 ›\":\n  - text: acclaim\n  - generic: 赞誉 · 六级\n  - generic: ›\n- button \"acquaint 使熟悉 · 六级 ›\":\n  - text: acquaint\n  - generic: 使熟悉 · 六级\n  - generic: ›\n- button \"adhere 坚持 · 六级 ›\":\n  - text: adhere\n  - generic: 坚持 · 六级\n  - generic: ›\n- button \"adjacent 邻近的 · 六级 ›\":\n  - text: adjacent\n  - generic: 邻近的 · 六级\n  - generic: ›\n- button \"adjoin 毗连 · 六级 ›\":\n  - text: adjoin\n  - generic: 毗连 · 六级\n  - generic: ›\n- button \"administer 管理 · 六级 ›\":\n  - text: administer\n  - generic: 管理 · 六级\n  - generic: ›\n- button \"admirable 令人钦佩的 · 六级 ›\":\n  - text: admirable\n  - generic: 令人钦佩的 · 六级\n  - generic: ›\n- button \"admission 入学许可 · 六级 ›\":\n  - text: admission\n  - generic: 入学许可 · 六级\n  - generic: ›\n- button \"adolescent 青少年 · 六级 ›\":\n  - text: adolescent\n  - generic: 青少年 · 六级\n  - generic: ›\n- button \"adore 热爱 · 六级 ›\":\n  - text: adore\n  - generic: 热爱 · 六级\n  - generic: ›\n- button \"adorn 装饰 · 六级 ›\":\n  - text: adorn\n  - generic: 装饰 · 六级\n  - generic: ›\n- button \"adverse 不利的 · 六级 ›\":\n  - text: adverse\n  - generic: 不利的 · 六级\n  - generic: ›\n- button \"advertise 做广告 · 六级 ›\":\n  - text: advertise\n  - generic: 做广告 · 六级\n  - generic: ›\n- button \"advocate 提倡 · 六级 ›\":\n  - text: advocate\n  - generic: 提倡 · 六级\n  - generic: ›\n- button \"aesthetic 美学的 · 六级 ›\":\n  - text: aesthetic\n  - generic: 美学的 · 六级\n  - generic: ›\n- button \"affiliate 附属 · 六级 ›\":\n  - text: affiliate\n  - generic: 附属 · 六级\n  - generic: ›\n- button \"affirm 断言 · 六级 ›\":\n  - text: affirm\n  - generic: 断言 · 六级\n  - generic: ›\n- button \"音标学习\"\n- button \"字母学习\"\n- navigation:\n  - link \"🏠 首页\":\n    - /url: \"#/home\"\n    - generic: 🏠\n    - text: 首页\n  - link \"📚 学习\":\n    - /url: \"#/today\"\n    - generic: 📚\n    - text: 学习\n  - link \"🌍 世界\":\n    - /url: \"#/world\"\n    - generic: 🌍\n    - text: 世界\n  - link \"👤 我的\":\n    - /url: \"#/me\"\n    - generic: 👤\n    - text: 我的\n- status: 已恢复默认（演示）",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-standard"
+  },
+  {
+    "requested": "admin",
+    "actual": "admin",
+    "snapshot": "- button \"返回\":\n- generic: 管理\n- generic: 在线\n- paragraph: staff 视角（test 档）· 双签申请人禁自审\n- heading \"📊 今日概览\" [level=2]\n- paragraph:\n  - generic: 在架 6\n  - generic: 待审 2\n  - generic: 学员 128\n  - generic: 风险 1\n- paragraph: 口径：仅统计已发布与已落库，不含草稿（演示）。\n- heading \"📌 待办（2）\" [level=2]\n- paragraph:\n  - generic: 语法课 v3 · 等 L1\n  - button \"去审\":\n    - generic: 去审\n- paragraph:\n  - generic: RISK-001 · 等建档\n  - button \"去看\":\n    - generic: 去看\n- heading \"🧭 管理\" [level=2]\n- button \"📝 建稿送审\":\n  - generic: 📝 建稿送审\n- button \"✔️ 双签审核\":\n  - generic: ✔️ 双签审核\n- button \"🚀 发布回滚\":\n  - generic: 🚀 发布回滚\n- button \"🛡️ 治理风控\":\n  - generic: 🛡️ 治理风控\n- button \"📜 审计\":\n  - generic: 📜 审计\n- button \"🔑 权限只读\":\n  - generic: 🔑 权限只读\n- button \"🔐 管理登录\":\n  - generic: 🔐 管理登录\n- button \"🎞️ 媒体上传\":\n  - generic: 🎞️ 媒体上传\n- button \"🎧 客服后台\":\n  - generic: 🎧 客服后台\n- button \"🧾 商城后台\":\n  - generic: 🧾 商城后台\n- button \"🚩 举报队列\":\n  - generic: 🚩 举报队列\n- button \"📡 观测恢复\":\n  - generic: 📡 观测恢复\n- status",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-staff-preview"
+  },
+  {
+    "requested": "aperm",
+    "actual": "aperm",
+    "snapshot": "- button \"返回\":\n- generic: 权限只读\n- generic: 在线\n- heading \"🔑 权限（只读）\" [level=2]\n- paragraph: role-learner：14 项学员权限\n- paragraph: staff：投影/审计/工单读\n- paragraph: reviewer-l1/l2：初审/终审发布\n- paragraph: 改权限走双人审批（演示无入口）。\n- paragraph:\n  - button \"管理\":\n    - generic: 管理\n- status",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-staff-preview"
+  },
+  {
+    "requested": "adraft",
+    "actual": "adraft",
+    "snapshot": "- button \"返回\":\n- generic: 建稿送审\n- generic: 在线\n- heading \"草稿箱\" [level=2]\n- paragraph: 版本锁 · 无权 403 不泄漏存在性\n- text: 语法课 · There be 句型（v3）\n- paragraph: 版权已绑定 · 报告已绑定 · 缺项：无\n- button \"提交送审\"\n- generic: 新建草稿标题\n- textbox: 新课标题\n- button \"建稿\"\n- paragraph:\n  - button \"管理\":\n    - generic: 管理\n- status",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-staff-preview"
+  },
+  {
+    "requested": "areview",
+    "actual": "areview",
+    "snapshot": "- button \"返回\":\n- generic: 双签审核\n- generic: 在线\n- heading \"L1 初审\" [level=2]\n- paragraph: reviewer-l1 视角\n- button \"通过\"\n- heading \"L2 终审\" [level=2]\n- paragraph: reviewer-l2 视角 · 自动 ACTIVE\n- button \"通过并发布\"\n- heading \"状态\" [level=2]\n- paragraph: L1 待审 · L2 待审\n- paragraph:\n  - button \"管理\":\n    - generic: 管理\n- status",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-staff-preview"
+  },
+  {
+    "requested": "apublish",
+    "actual": "apublish",
+    "snapshot": "- button \"返回\":\n- generic: 发布回滚\n- generic: 在线\n- heading \"发布 / 下线 / 回滚\" [level=2]\n- paragraph: 目录实时预览\n- button \"发布\"\n- button \"下架\"\n- button \"回滚 v1\"\n- status",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-staff-preview"
+  },
+  {
+    "requested": "agov",
+    "actual": "agov",
+    "snapshot": "- button \"返回\":\n- generic: 治理风控\n- generic: 在线\n- heading \"治理 · 风险区\" [level=2]\n- paragraph: 无独立路由，并入治理页\n- text: RISK-001 · 刷分嫌疑\n- paragraph: 待建档\n- paragraph: 全链：风险评估 → 分诊 → 隔离 → 升级 → 关闭；处置写链 R3，R1 只读建档（演示）。\n- paragraph:\n  - button \"举报队列\":\n    - generic: 举报队列\n  - button \"观测恢复\":\n    - generic: 观测恢复\n- button \"建档\"\n- button \"隔离\"\n- status",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-staff-preview"
+  },
+  {
+    "requested": "aaudit",
+    "actual": "aaudit",
+    "snapshot": "- button \"返回\":\n- generic: 审计\n- generic: 在线\n- heading \"审计\" [level=2]\n- paragraph: 分页 + 脱敏 · 导出 internal-only\n- paragraph: req-9208 · 同意记录 · 允许\n- paragraph: req-6fd9 · 注册门 · 拒绝\n- paragraph:\n  - button \"管理\":\n    - generic: 管理\n  - button \"观测恢复\":\n    - generic: 观测恢复\n- status",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-staff-preview"
+  },
+  {
+    "requested": "amedia",
+    "actual": "amedia",
+    "snapshot": "- button \"返回\":\n- generic: 媒体上传\n- generic: 在线\n- button \"管理\":\n  - generic: 管理\n- heading \"🎞️ 媒体与上传\" [level=2]\n- paragraph: 元数据走内容服务，音频字节永不过内容服务（演示说明）。\n- heading \"上传正链\" [level=2]\n- paragraph: 版权绑定 → 审核通过 → 签名 URL 直传对象存储 → 回调登记 manifest。\n- button \"获取上传凭证\"\n- heading \"边界\" [level=2]\n- paragraph: 未绑定版权不可送审；R1 只读已审资源。\n- paragraph:\n  - button \"回建稿\":\n    - generic: 回建稿\n  - button \"去发布\":\n    - generic: 去发布\n- status",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-staff-preview"
+  },
+  {
+    "requested": "acs",
+    "actual": "acs",
+    "snapshot": "- button \"返回\":\n- generic: 客服后台\n- generic: 在线\n- button \"管理\":\n  - generic: 管理\n- heading \"🎧 客服后台\" [level=2]\n- paragraph: R1 只读队列，处置写链 R3；正文受控、一事一号（演示）。\n- text: TK-39\n- generic: 内容\n- generic: 已提交\n- paragraph: <b>审计草稿</b>\n- paragraph:\n  - button \"接单\"\n  - button \"详情\":\n    - generic: 详情\n- text: TK-1024\n- generic: 功能\n- generic: 处理中\n- paragraph: 听力播到一半停了\n- paragraph:\n  - button \"接单\"\n  - button \"详情\":\n    - generic: 详情\n- text: TK-1019\n- generic: 账号\n- generic: 已回复\n- paragraph: 换手机想踢掉旧设备\n- paragraph:\n  - button \"接单\"\n  - button \"详情\":\n    - generic: 详情\n- status",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-staff-preview"
+  },
+  {
+    "requested": "ashop",
+    "actual": "ashop",
+    "snapshot": "- button \"返回\":\n- generic: 商城后台\n- generic: 在线\n- button \"管理\":\n  - generic: 管理\n- heading \"🧾 商城后台\" [level=2]\n- paragraph: 订单 → 订阅 → 对账 → 退款 → 开票，一条线查到底（演示）。\n- heading \"对账\" [level=2]\n- paragraph: 日切：订单＝渠道＝权益；差异进人工复核，不自动改账。\n- heading \"退款\" [level=2]\n- paragraph: 双人审批保留；单人运营方案待定，不虚构第二审批人。\n- paragraph:\n  - button \"看前台\":\n    - generic: 看前台\n  - button \"退款开票\":\n    - generic: 退款开票\n- status",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-staff-preview"
+  },
+  {
+    "requested": "areport",
+    "actual": "areport",
+    "snapshot": "- button \"返回\":\n- generic: 举报队列\n- generic: 在线\n- button \"治理\":\n  - generic: 治理\n- heading \"🚩 举报队列\" [level=2]\n- paragraph: R1 只读队列；处置写链 R3 开（演示）。\n- text: RPT-301 · 房间刷屏嫌疑\n- generic: 待分诊\n- paragraph: 来源：房间巡检（演示）\n- paragraph:\n  - button \"分诊建档\":\n    - generic: 分诊建档\n- status",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-staff-preview"
+  },
+  {
+    "requested": "aobs",
+    "actual": "aobs",
+    "snapshot": "- button \"返回\":\n- generic: 观测恢复\n- generic: 在线\n- button \"审计\":\n  - generic: 审计\n- heading \"📡 观测与恢复\" [level=2]\n- paragraph: 发布门三件：健康探针 / 优雅停机 / SBOM（演示说明）。\n- heading \"链路\" [level=2]\n- paragraph: 网关 401 进审计包络；requestId / traceId / auditId 跨服务关联。\n- paragraph: Outbox → Kafka 白名单投递，失败进 DLQ 可回放；跨服务 Saga＋补偿，不用分布式事务。\n- heading \"发布\" [level=2]\n- paragraph: 命名回滚＋恢复点；回滚先停写再切读（演示口径）。\n- paragraph:\n  - button \"去发布回滚\":\n    - generic: 去发布回滚\n- status",
+    "bounds": {
+      "body": 390,
+      "client": 375,
+      "empty": false,
+      "view": 375,
+      "width": 390
+    },
+    "mode": "390-light-staff-preview"
+  }
+]

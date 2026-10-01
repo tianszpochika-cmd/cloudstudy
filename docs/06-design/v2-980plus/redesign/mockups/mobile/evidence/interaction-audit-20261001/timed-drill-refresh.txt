@@ -1,0 +1,4 @@
+{
+  "before": "- button \"返回\":\n- generic: 刷单词\n- generic: 在线\n- generic: 学习模式\n- button \"词汇详情\":\n  - generic: 词汇详情\n- group \"刷词模式\":\n  - button \"回忆\"\n  - button \"选项\"\n  - button \"词形\"\n  - button \"限时\" [pressed]\n- heading \"限时挑战已暂停\" [level=2]\n- paragraph: 剩余 51 秒 · 对 0 · 错 0。离开页面、切换模式或浏览器进入后台时会停表。\n- button \"继续本轮\"\n- button \"重新开始一轮\"\n- status",
+  "after": "- button \"返回\":\n- generic: 刷单词\n- generic: 在线\n- generic: 学习模式\n- button \"词汇详情\":\n  - generic: 词汇详情\n- group \"刷词模式\":\n  - button \"回忆\"\n  - button \"选项\"\n  - button \"词形\"\n  - button \"限时\" [pressed]\n- heading \"限时挑战已暂停\" [level=2]\n- paragraph: 剩余 51 秒 · 对 0 · 错 0。离开页面、切换模式或浏览器进入后台时会停表。\n- button \"继续本轮\"\n- button \"重新开始一轮\"\n- status"
+}

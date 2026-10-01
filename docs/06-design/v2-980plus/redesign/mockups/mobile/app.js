@@ -1,6 +1,6 @@
 /* 语学星移动端整机交互稿 · 静态数据 · 无后端 */
 const S = {
-  user: "演示账号", gate: "PASS", consents: {}, goal: null, staff: false, quiz: { i: 0, score: 0, sel: null, done: false },
+  user: "演示账号", gate: "PASS", birthDate: null, consents: Object.fromEntries(["TERMS", "PRIVACY", "ADULT_LEARNING"].map(key => [key, { agreed: true, version: "b30-consent-v1", source: "演示样例" }])), goal: null, staff: false, quiz: { i: 0, score: 0, sel: null, done: false },
   mistakes: [{ t: "There ___ two books on the desk.", why: "定位：语法待补", kind: "sentence" }, { t: "abandon", why: "定位：词汇待补", kind: "word" }, { t: "Hardly had I arrived when it rained.", why: "定位：阅读待补", kind: "sentence" }], plan: false, today: [{ id: "t1", group: "g1", t: "语法 · There be 句型", min: 5, kind: "grammar", done: false, right: 0, total: 3 }, { id: "t2", group: "r1", t: "阅读 · 图书馆的一天", min: 8, kind: "reading", done: false, right: 0, total: 2 }],
   shelf: ["四级词汇 B1", "零基础 A1", "六级 B2", "商务口语", "雅思备考", "生活英语"],
   lastRead: { book: "四级词汇红宝书", ch: "第二章 核心 1500" },
@@ -13,23 +13,27 @@ function stmRepair(d) { if (STM.freeze <= 0) { toast("Freeze 用完了（演示�
 /* ---------- 演示数据本机持久化（localStorage，仅原型；会话级开关不存） ---------- */
 const DBKEY = "yxx-demo-v3";
 function dbSave() { try {
+  lmSavePractice(); lmSaveWriting(); lmSaveWords(); lmSaveListening(); lmSaveTimed();
   localStorage.setItem(DBKEY, JSON.stringify({ v: 4, learning: LM,
-    S: { user: S.user, gate: S.gate, goal: S.goal, minutes: S.minutes, plan: S.plan, consents: S.consents, consentV: S.consentV, mistakes: S.mistakes, today: S.today, streak: S.streak, lastRead: S.lastRead, quick: S.quick, fav: S.fav, quiz: S.quiz },
+    S: { user: S.user, gate: S.gate, birthDate: S.birthDate, goal: S.goal, minutes: S.minutes, plan: S.plan, consents: S.consents, consentV: S.consentV, mistakes: S.mistakes, today: S.today, streak: S.streak, lastRead: S.lastRead, quick: S.quick, fav: S.fav, quiz: S.quiz },
     SET, SRSQ, WCAL, STM, BKpos: BK.pos, BKcur: BK.cur, BKch: BK.ch, PR, SRS, DRb: { ...DR }, BKlv: BK.lv, AX,
-    SUPlist: SUP.list, PV, RF: RF_ORDERS, TEAM: WD_TEAM.done, CHEST: WD_CHEST.map(c => c.st),
+    SUPlist: SUP.list, SUPstate: { draft: SUP.draft, cat: SUP.cat, cur: SUP.cur, from: SUP.from }, PV, RF: RF_ORDERS, PAY, GC, TEAM: WD_TEAM.done, CHEST: WD_CHEST.map(c => c.st),
     ACH: WD_ACH.map(a => ({ st: a.st, p: a.p })), MSGS: MSGS.map(m => m.read) }));
 } catch (e) { } }
 function dbLoad() { try {
   const d = JSON.parse(localStorage.getItem(DBKEY) || "null"); if (!d || ![3, 4].includes(d.v)) return false;
   if (d.learning) Object.assign(LM, d.learning);
-  Object.assign(S, { user: d.S.user, gate: d.S.gate, goal: d.S.goal, minutes: d.S.minutes, plan: d.S.plan, consents: d.S.consents || {}, consentV: d.S.consentV, mistakes: d.S.mistakes, today: d.S.today, streak: d.S.streak, lastRead: d.S.lastRead, quick: d.S.quick, fav: d.S.fav || [] });
+  Object.assign(S, { user: d.S.user, gate: d.S.gate, birthDate: d.S.birthDate || null, goal: d.S.goal, minutes: d.S.minutes, plan: d.S.plan, consents: d.S.consents || {}, consentV: d.S.consentV || "b30-consent-v1", mistakes: d.S.mistakes, today: d.S.today, streak: d.S.streak, lastRead: d.S.lastRead, quick: d.S.quick, fav: d.S.fav || [] });
   if (d.S.quiz && Array.isArray(d.S.quiz.answers)) S.quiz = d.S.quiz;
   if (d.PR) Object.assign(PR, d.PR);
   if (d.SRS) Object.assign(SRS, d.SRS);
   Object.assign(SET, d.SET); SRSQ.length = 0; d.SRSQ.forEach(x => SRSQ.push(x));
   Object.keys(WCAL).forEach(k => delete WCAL[k]); Object.assign(WCAL, d.WCAL); Object.assign(STM, d.STM);
   Object.assign(DR, d.DRb); DR.i = d.DRb.i || 0; BK.lv = d.BKlv; if (d.BKpos) BK.pos = d.BKpos; if (d.BKcur) BK.cur = d.BKcur; if (d.BKch != null) BK.ch = d.BKch; Object.assign(AX, d.AX);
-  SUP.list = d.SUPlist; if (d.PV) Object.assign(PV, d.PV); d.RF.forEach((r, i) => { if (RF_ORDERS[i]) Object.assign(RF_ORDERS[i], { rf: r.rf, step: r.step, inv: r.inv }); });
+  if (Array.isArray(d.SUPlist)) SUP.list = d.SUPlist; if (d.SUPstate) Object.assign(SUP, d.SUPstate);
+  if (d.PV) Object.assign(PV, d.PV);
+  if (Array.isArray(d.RF)) RF_ORDERS.splice(0, RF_ORDERS.length, ...d.RF.filter(r => r && typeof r.id === "string" && typeof r.t === "string" && Number.isFinite(r.price)));
+  if (d.PAY) Object.assign(PAY, d.PAY); if (d.GC) Object.assign(GC, d.GC); auxNormalizeState();
   WD_TEAM.done = d.TEAM; d.CHEST.forEach((st, i) => { if (WD_CHEST[i]) WD_CHEST[i].st = st; });
   d.ACH.forEach((a, i) => { if (WD_ACH[i]) Object.assign(WD_ACH[i], a); });
   if (d.MSGS) d.MSGS.forEach((r, i) => { if (MSGS[i]) MSGS[i].read = r; });
@@ -42,7 +46,10 @@ function normalizeState() {
   SRSQ.forEach(q => { if (q.done == null) q.done = false; if (q.show == null) q.show = false; if (q.round == null) q.round = 0; });
   S.today.forEach(t => { if (!t.group) { if (t.id === "t1") t.group = "g1"; if (t.id === "t2") t.group = "r1"; } if (t.done == null) t.done = false; if (t.right == null) t.right = 0; if (!t.total) t.total = (t.group && typeof GROUPS !== "undefined" && GROUPS[t.group]) ? GROUPS[t.group].items.length : 1; });
   if (!S.quiz || !S.quiz.answers) S.quiz = { i: 0, sel: null, phase: "answer", answers: [], done: false, score: 0 };
-  if (typeof PR !== "undefined" && PR.taskId && !S.today.some(t => t.id === PR.taskId) && LM.freeTask?.id !== PR.taskId) { PR.taskId = null; PR.phase = "answer"; PR.pos = 0; PR.sel = -1; }
+  if (S.quiz.phase === "submitting") { S.quiz.phase = "unknown"; S.quiz.fb = { cls: "wa", msg: "上次提交被中断，选择已保留。先查询本次结果，避免重复提交。" }; }
+  S.consents ||= {};
+  if (S.user === "演示账号" && S.gate === "PASS" && !Object.keys(S.consents).length) S.consents = Object.fromEntries(CONSENT_KEYS.map(key => [key, { agreed: true, version: S.consentV, source: "演示样例" }]));
+  if (typeof PR !== "undefined" && PR.taskId && !S.today.some(t => t.id === PR.taskId) && !LM.freeTasks?.[PR.taskId] && LM.freeTask?.id !== PR.taskId) { PR.taskId = null; PR.phase = "answer"; PR.pos = 0; PR.sel = -1; }
   if (typeof SRS !== "undefined" && SRS.order) { SRS.order = SRS.order.filter(i => SRSQ[i]); SRS.redo = (SRS.redo || []).filter(i => SRSQ[i]); if (!SRS.order.length && SRS.phase === "run") SRS.phase = "idle"; }
 }
 /* 统一今日任务（写法/阅读两组，稳定标识跨页关联） */
@@ -63,44 +70,80 @@ const BANK = [
   { s: "She ___ to school every day.", o: ["go", "goes", "going"], a: 1, dim: "语法", why: "she 三单＋every day 一般现在时，用 goes" },
   { s: "There ___ two books on the desk.", o: ["is", "are", "am"], a: 1, dim: "语法", why: "two books 复数，there be 用 are" },
   { s: "Li Lei gets up at six thirty. What time does he get up?", o: ["six thirty", "seven", "eight"], a: 0, dim: "阅读", why: "短文原句 six thirty，照着找就行" },
-  { s: "It is sunny today. What did they do after school?", o: ["swim", "play football", "read"], a: 1, dim: "听力", why: "题干问放学后做什么，play football 是文中动作" },
+  { s: "It was sunny today. After school, they played football. What did they do after school?", o: ["swim", "play football", "read"], a: 1, dim: "阅读", why: "文字材料明确写出 After school, they played football，放学后踢了足球。此题没有音频，不测听力。" },
 ];
 const TITLES = { login: "登录", register: "注册", reset: "重置密码", gate: "身份确认", onboard: "学习目标", placement: "定级测评", report: "测评报告", home: "首页", today: "今日任务", courses: "分类速览", practice: "练题", mistakes: "错题本", srs: "复习", weekly: "学习报告", world: "世界", avatar: "装扮", msgs: "消息", me: "我的", settings: "设置", devices: "设备", privacy: "隐私", support: "客服", search: "搜索", commerce: "商城", admin: "管理", adraft: "建稿送审", areview: "双签审核", apublish: "发布回滚", agov: "治理风控", aaudit: "审计", aperm: "权限只读", ai: "AI 伴学", voice: "语音跟读", k12: "青少年模式", pay: "收银台", a11y: "无障碍", arrears: "补课提醒", celebrate: "完成撒花", offlinet: "断网今日", pgen: "计划生成中", greject: "门被拒", cupgrade: "同意升级", vocab: "词汇详情", listening: "听力", speaking: "口语", writing: "写作", offpkg: "离线包", refund: "退款开票", phonics: "音标", alphabet: "字母", wordbook: "单词本", drill: "刷单词", shelf: "书架", book: "图书详情", chapter: "章节正文", about: "关于", achieve: "成就墙", league: "联赛", planexp: "计划解释", session: "会话检查点", mastery: "掌握度", pfault: "定级恢复", npref: "通知偏好", firstlearn: "首次学习", alogin: "管理登录", amedia: "媒体上传", acs: "客服后台", ashop: "商城后台", areport: "举报队列", aobs: "观测恢复", games: "小游戏", space: "个人空间", subs: "订阅对账", native: "原生壳", rewards: "任务奖励", aigate: "AI门", aiflow: "AI链", vscore: "语音评分", k12guard: "K12治理", k12course: "K12课程", tdetail: "工单详情", paudio: "音频保留", lab: "演示工具" };
 /* 测试脚手架开关：默认关闭，加 ?demo=1 才显示预填账号与状态演示入口 */
 const DEMO = /[?&]demo=1/.test(location.search);
 const TABS = ["home", "today", "world", "me"];
 function toast(m) { const t = document.getElementById("toast"); t.textContent = m; t.classList.add("show"); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove("show"), 2200); }
-function goBack() { if (history.length > 1) history.back(); else location.hash = "#/home"; }
-function nav(h) { location.hash = h; }
+function goBack() { if (history.state?.yxxMobile && history.state.depth > 0) history.back(); else nav(S.user ? "#/home" : "#/login"); }
+function nav(h) { syncIdentity(); if (h !== "#/drill") tchPause("已离开限时挑战，返回后可继续"); if (location.hash === h) render(); else location.hash = h; }
 /* 人性化：危险动作两步确认（第一下武装，第二下执行，3 秒回落） */
-function arm(el, fn) { if (el.dataset.armed) { delete el.dataset.armed; el.classList.remove("danger"); fn(); } else { el.dataset.armed = "1"; el.classList.add("danger"); const t = el.textContent; el.textContent = "再点一次确认"; setTimeout(() => { delete el.dataset.armed; el.classList.remove("danger"); if (el.isConnected) el.textContent = t; }, 3000); } }
+let ARM_SERIAL = 0;
+function arm(el, fn) {
+  if (!el || !el.isConnected) return;
+  if (el.dataset.armed) {
+    delete el.dataset.armed; el.classList.remove("danger"); el.textContent = el.dataset.armLabel; delete el.dataset.armLabel; fn();
+  } else {
+    const token = String(++ARM_SERIAL), label = el.textContent;
+    el.dataset.armed = token; el.dataset.armLabel = label; el.classList.add("danger"); el.textContent = "再点一次确认";
+    setTimeout(() => { if (el.dataset.armed !== token) return; delete el.dataset.armed; delete el.dataset.armLabel; el.classList.remove("danger"); if (el.isConnected) el.textContent = label; }, 3000);
+  }
+}
 function needAuth() { if (!S.user) { toast("请先登录"); nav("#/login"); return false; } return true; }
-function needReady() { if (!needAuth()) return false; if (S.gate !== "PASS") { toast("身份确认中，先逛逛"); nav("#/gate"); return false; } return true; }
+const CONSENT_KEYS = ["TERMS", "PRIVACY", "ADULT_LEARNING"];
+let IDENTITY_EPOCH = 0;
+let ACTIVE_IDENTITY = S.user;
+let ROUTE_DEPTH = 0;
+function hasConsents() { return CONSENT_KEYS.every(key => S.consents?.[key]?.agreed && S.consents[key].version === S.consentV); }
+function needReady() { if (!needAuth()) return false; if (S.gate !== "PASS" || !hasConsents()) { toast(S.gate !== "PASS" ? "请先完成成年人身份确认" : "请先确认当前版本的同意记录"); nav("#/gate"); return false; } return true; }
+function syncIdentity() {
+  if (ACTIVE_IDENTITY === S.user) { if (!S.user) S.staff = false; return; }
+  ACTIVE_IDENTITY = S.user; IDENTITY_EPOCH++; S.staff = false;
+  S.quiz.tok = (S.quiz.tok || 0) + 1;
+  if (S.quiz.phase === "submitting") { S.quiz.phase = "unknown"; S.quiz.fb = { cls: "wa", msg: "登录状态已改变，本次提交已暂停。重新进入后先查询结果。" }; }
+  PR.tok = (PR.tok || 0) + 1;
+  if (PR.phase === "submitting") { PR.phase = "answer"; PR.fb = { cls: "wa", msg: "登录状态已改变，选择已保留，可重新提交。" }; }
+  PG.tok = (PG.tok || 0) + 1; if (PG.st === "run") PG.st = "idle";
+  if (typeof LM !== "undefined" && LM.writing.phase === "submitting") { LM.writing.phase = "draft"; LM.writing.pending = null; LM.writing.feedback = "登录状态已改变，提交已暂停，草稿保留在本机。"; }
+}
+function identityToken() { return { user: S.user, epoch: IDENTITY_EPOCH }; }
+function identityCurrent(token) { return token.user === S.user && token.epoch === IDENTITY_EPOCH && S.gate === "PASS" && hasConsents(); }
+function realDate() { const d = new Date(); return [d.getFullYear(), String(d.getMonth() + 1).padStart(2, "0"), String(d.getDate()).padStart(2, "0")].join("-"); }
+function birthdayAge(value, now = new Date()) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value || "")) return null;
+  const [year, month, day] = value.split("-").map(Number), birth = new Date(0); birth.setFullYear(year, month - 1, day); birth.setHours(0, 0, 0, 0);
+  if (year < 1 || birth.getFullYear() !== year || birth.getMonth() !== month - 1 || birth.getDate() !== day || birth > now) return null;
+  return now.getFullYear() - year - (now.getMonth() + 1 < month || (now.getMonth() + 1 === month && now.getDate() < day) ? 1 : 0);
+}
 
 /* ---------- 屏 ---------- */
 const V = {};
-V.login = () => `<div class="card"><h2>欢迎回来</h2><p class="d">账号密码登录，失败不枚举。</p><label class="lb">账号</label><input id="li" value="${DEMO ? "t-learner-01@test.invalid" : ""}" placeholder="邮箱"><label class="lb">密码</label><input id="lp" type="password" value="" placeholder="密码"><button class="btn" onclick="doLogin()">登录</button><button class="btn ghost" onclick="nav('#/register')">去注册</button><button class="btn ghost" onclick="nav('#/reset')">忘记密码</button></div>`;
-V.register = () => `<div class="card"><h2>注册</h2><p class="d">201 即成功，只建账号，不开学习能力。</p><label class="lb">账号（邮箱）</label><input id="ri" value="${DEMO ? "new@test.invalid" : ""}" placeholder="邮箱"><label class="lb">密码（≥8 位，字母+数字）</label><input id="rp" type="password" value="" placeholder="密码"><button class="btn" onclick="doRegister()">注册</button><button class="btn ghost" onclick="nav('#/login')">已有账号登录</button></div>`;
+V.login = () => `<div class="card"><h2>进入本机演示档案</h2><p class="d">这是静态原型：账号只用于演示身份，不连接认证服务，也不隔离多账号数据。退出后本机草稿和学习记录仍保留；再次进入会使用同一份档案。</p><label class="lb" for="li">演示账号</label><input id="li" value="${lh(DEMO ? "t-learner-01@test.invalid" : "")}" placeholder="输入演示账号"><label class="lb" for="lp">演示密码</label><input id="lp" type="password" value="" placeholder="输入演示密码（不保存）"><button class="btn" onclick="doLogin()">进入演示档案</button><button class="btn ghost" onclick="nav('#/register')">演示注册流程</button><button class="btn ghost" onclick="nav('#/reset')">忘记密码</button></div>`;
+V.register = () => `<div class="card"><h2>演示注册流程</h2><p class="d">创建演示身份后仍需成年人确认与主动同意。原型沿用同一本机档案，不创建后台账号或隔离多账号数据；密码不会保存。</p><label class="lb" for="ri">演示账号</label><input id="ri" value="${lh(DEMO ? "new@test.invalid" : "")}" placeholder="输入演示账号"><label class="lb" for="rp">演示密码（≥8 位，字母+数字）</label><input id="rp" type="password" value="" placeholder="密码"><button class="btn" onclick="doRegister()">继续演示注册</button><button class="btn ghost" onclick="nav('#/login')">返回登录</button></div>`;
 V.reset = () => `<div class="card"><h2>重置密码</h2><p class="d">如果账号存在，邮件已发出（永远这句，不枚举）。</p><label class="lb">账号</label><input value="new@test.invalid"><button class="btn" onclick="toast('如果账号存在，邮件已发出')">发送重置邮件</button><button class="btn ghost" onclick="goBack()">返回</button></div>`;
-V.gate = () => `<div class="card"><h2>先讲一句：为什么要生日</h2><p class="d">语学星只服务成年人，确认一下就放行。</p><label class="lb">出生年份</label><input id="by" type="number" value="${DEMO ? "1995" : ""}" placeholder="如 1995"><label class="lb" style="margin-top:8px"><input type="checkbox" id="cf" checked style="width:auto"> 我已满 18 岁</label><button class="btn" onclick="doGate()">确认身份</button></div><div class="card"><h2>三项同意</h2><p class="d">版本动态读取（演示 ${S.consentV}）。可选项不预勾。</p>${["TERMS 服务条款", "PRIVACY 隐私说明", "ADULT_LEARNING 成人学习"].map((t, i) => `<label class="lb" style="font-weight:400"><input type="checkbox" class="ag" checked style="width:auto"> ${t}</label>`).join("")}<button class="btn" onclick="doConsents()">签署并继续</button></div>`;
+V.gate = () => `<div class="card"><h2>确认成年人身份</h2><p class="d">当前学习版本只服务满 18 岁的成年人。原型使用完整出生日期演示判断，日期仅保存在本机，不代表正式身份认证。</p>${S.gate === "REJECTED" ? `<div class="fb no" role="status">根据填写的日期，你尚未满 18 岁，当前不能开放学习。可以查看隐私说明、反馈问题或退出。</div>` : S.gate === "PASS" ? `<div class="fb ok" role="status">${S.birthDate ? "成年人身份已确认（本机演示）" : "当前为成年人通过状态的演示样例"}</div>` : ""}<label class="lb" for="by">出生日期</label><input id="by" type="date" max="${realDate()}" value="${lh(S.birthDate || (DEMO ? "1995-01-01" : ""))}"><label class="lb" style="margin-top:8px"><input type="checkbox" id="cf" style="width:auto"> 我确认出生日期准确且已满 18 岁</label><button class="btn" onclick="doGate()">确认身份</button></div><div class="card"><h2>同意记录</h2><p class="d">当前演示版本 ${lh(S.consentV)}。请逐项阅读并主动确认；尚未通过成年人确认时不能签署进入学习。</p>${[["TERMS", "服务条款"], ["PRIVACY", "隐私说明"], ["ADULT_LEARNING", "成人学习说明"]].map(([key, label]) => `<label class="lb" style="font-weight:400"><input type="checkbox" class="ag" data-consent="${key}" style="width:auto"> 我已阅读并同意${label}</label>`).join("")}<button class="btn" ${S.gate !== "PASS" ? "disabled" : ""} onclick="doConsents()">签署并继续</button></div><div class="actions"><button class="btn sm ghost" onclick="nav('#/privacy')">隐私设置</button><button class="btn sm ghost" onclick="nav('#/support')">帮助与反馈</button><button class="btn sm ghost" onclick="S.user=null;nav('#/login')">退出演示</button></div>`;
 V.onboard = () => `<div class="card"><h2>定个小目标</h2><p class="d">先选一个，一周后可换。存完按钮去定级，不回首页。</p><label class="lb">目标</label><select id="g"><option value="CET_4_6">大学英语四级 · B1</option><option value="ZERO_BASIS">零基础 · A1</option><option value="CET_6">六级 · B2</option></select><label class="lb">每天分钟</label><select id="m"><option>15</option><option>30</option><option>45</option></select><button class="btn" onclick="doGoal()">保存，去定级 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>`;
 V.placement = () => { const q = BANK[S.quiz.i]; const ph = S.quiz.phase || "answer"; return `<div class="meta">第 ${S.quiz.i + 1}/${BANK.length} 题 · ${q.dim} · 答完本轮统一出报告</div><div class="prog"><i style="width:${(S.quiz.i / BANK.length) * 100}%"></i></div><div class="card"><h2>${q.s}</h2><div id="qo">${q.o.map((t, k) => `<button class="opt${S.quiz.sel === k ? " sel" : ""}" data-k="${k}" onclick="pick(${k})">${"ABC"[k]}. ${t}</button>`).join("")}</div>${S.quiz.fb ? `<div class="fb ${S.quiz.fb.cls}" id="qfb" style="display:block">${S.quiz.fb.msg}</div>` : `<div class="fb" id="qfb"></div>`}${ph === "unknown" ? `<button class="btn" onclick="qResolve()">查询结果</button>` : ``}<div class="row" style="display:flex;gap:8px"><button class="btn ghost" style="flex:1"${ph !== "saved" ? " disabled" : ``} onclick="qNext()">${S.quiz.i < BANK.length - 1 ? "下一题" : "出报告"} <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="btn" style="flex:1" onclick="qSubmit()"${ph !== "answer" ? " disabled" : ``}>提交</button><button class="btn ghost" style="flex:1"${ph !== "answer" ? " disabled" : ``} onclick="qSkip()">跳过</button></div><div class="card"><h2>🧰 会话与掌握</h2><p><button class="btn sm" onclick="nav('#/session')">会话检查点 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button> <button class="btn sm ghost" onclick="nav('#/mastery')">掌握度 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button> <button class="btn sm ghost" onclick="nav('#/pfault')">失败恢复 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></p></div></div>`; };
 function repDim() {
   return ["词汇", "语法", "阅读", "听力"].map(d => {
-    const qs = BANK.map((q, i) => ({ q, a: S.quiz.answers[i] })).filter(x => x.q.dim === d && x.a && !x.a.skip);
+    const samples = BANK.map((q, i) => ({ q, a: S.quiz.answers[i] })).filter(x => x.q.dim === d);
+    const qs = samples.filter(x => x.a && !x.a.skip);
     const ok = qs.filter(x => x.a.ok).length;
-    return { d, ok, total: qs.length, pct: qs.length ? Math.round(ok / qs.length * 100) : null };
+    return { d, ok, total: qs.length, samples: samples.length, pct: qs.length ? Math.round(ok / qs.length * 100) : null };
   });
 }
-function repLevel() { const s = S.quiz.score; return s >= 5 ? "B2" : s >= 3 ? "B1" : s >= 1 ? "A2" : "A1"; }
+function repLevel() { if (!S.quiz.answers?.some(a => a && !a.skip)) return "未定级"; const s = S.quiz.score; return s >= 5 ? "B2" : s >= 3 ? "B1" : s >= 1 ? "A2" : "A1"; }
 V.report = () => {
   const dims = repDim();
   const answered = dims.filter(d => d.total > 0);
   const weak = answered.length ? answered.slice().sort((a, b) => a.pct - b.pct)[0] : null;
   const skipped = BANK.map((q, i) => ({ q, i })).filter(x => S.quiz.answers[x.i] && S.quiz.answers[x.i].skip);
   const wrong = BANK.map((q, i) => ({ q, i })).filter(x => S.quiz.answers[x.i] && !S.quiz.answers[x.i].skip && !S.quiz.answers[x.i].ok);
-  const sug = !answered.length ? "本轮大多跳过：先去今日做两节基础，再回来定级。" : weak.pct < 70 ? `${weak.d}是短板：每天 ${S.minutes} 分钟里先补${weak.d}，今日任务会按这个排。` : `基础不错：保持每天 ${S.minutes} 分钟，复习优先。`;
-  return `<div class="card report-summary" style="text-align:center;border:0"><b style="font-size:44px">${repLevel()}</b><div>定级完成 · 对 ${S.quiz.score}/${BANK.length}${S.quick ? " · 快速开始基线（非正式成绩）" : ""}</div></div><div class="card"><h2>维度（按本轮作答算）</h2>${dims.map(({ d, ok, total, pct }) => `<div class="dim"><span class="v">${d} ${pct == null ? "未答" : pct}</span><span class="bar w"><i style="width:${pct == null ? 0 : pct}%"></i></span></div>`).join("")}</div><div class="card"><h2>💡 教练建议</h2><p class="d">${sug}</p><button class="btn" onclick="nav('#/pgen')">生成我的计划 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>` + (wrong.length ? `<div class="card"><h2>本轮讲评</h2>` + wrong.map(({ q }) => `<p class="d"><b>${q.s}</b><br>→ ${q.why}</p>`).join("") + `</div>` : ``) + (skipped.length ? `<div class="card"><p class="d">未答 ${skipped.length} 题（跳过不计分）：${skipped.map(({ q }) => q.s.slice(0, 12) + "…").join(" / ")}</p><p><button class="btn sm ghost" onclick="S.quiz.i=Math.max(0,S.quiz.answers.findIndex(a=>a&&a.skip));S.quiz.sel=null;S.quiz.phase='answer';S.quiz.fb=null;nav('#/placement')">回定级补答</button></p></div>` : ``); };
+  const total = answered.reduce((n, d) => n + d.total, 0);
+  const sug = !total ? "本轮没有有效作答。可以补答样例，或按所选目标从基础任务开始。" : weak.pct < 70 ? `本轮${weak.d}样例答对 ${weak.ok}/${weak.total}，可先重看相关讲评；这些少量题目不足以判定正式能力弱项。` : "本轮样例答对较多，可以继续学习，并用后续练习记录检验。";
+  return `<div class="card report-summary" style="text-align:center;border:0"><b style="font-size:28px">${total ? "样例测评完成" : "未定级"}</b><p>${total ? `${repLevel()}（样例起步参考）` : "本轮全部跳过，无有效作答"} · 答对 ${S.quiz.score}/${total} · 跳过 ${skipped.length}/${BANK.length}</p><p class="d">五道固定原创样例用于体验测评流程；分档不构成正式 CEFR 等级。听力、口语、写作未测。</p></div><div class="card"><h2>本轮样例维度</h2>${dims.map(({ d, ok, total, samples, pct }) => `<div class="dim"><span class="v">${d} ${samples === 0 ? "未测" : pct == null ? "未答" : `${ok}/${total} · ${pct}%`}</span><span class="bar w"><i style="width:${pct == null ? 0 : pct}%"></i></span></div>`).join("")}</div><div class="card"><h2>💡 学习建议</h2><p class="d">${sug}</p><p class="d">当前计划按学习目标、每日分钟和学习日模板安排，尚未按这份测评自动调课。</p><button class="btn" onclick="nav('#/pgen')">查看我的计划</button></div>` + (wrong.length ? `<div class="card"><h2>本轮讲评</h2>` + wrong.map(({ q }) => `<p class="d"><b>${lh(q.s)}</b><br>→ ${lh(q.why)}</p>`).join("") + `</div>` : ``) + (skipped.length ? `<div class="card"><p class="d">未答 ${skipped.length} 题（跳过不计分）：${skipped.map(({ q }) => lh(q.s.slice(0, 12)) + "…").join(" / ")}</p><p><button class="btn sm ghost" onclick="qResumeSkipped()">回样例测评补答</button></p></div>` : ``); };
 function checkinCard() {
   const dots = [3, 4, 5, 6, 7, 8, 9].map(d => (WCAL[d] || 0) > 0);
   return `<section class="card checkin-card"><div class="card-heading"><h2>📅 本周打卡</h2><button class="icon-button" aria-label="查看本周打卡明细" onclick="nav('#/weekly')">${CHEV}</button></div><div class="cal">${["一", "二", "三", "四", "五", "六", "日"].map(d => `<span>${d}</span>`).join("")}${dots.map(hit => `<span class="${hit ? "hit" : ""}">${hit ? "✓" : "·"}</span>`).join("")}</div><p class="d">本周已打卡 ${dots.filter(Boolean).length} 天 · 查看每天的学习明细</p></section>`;
@@ -336,9 +379,9 @@ V.league = () => {
 };
 V.games = () => `<div class="card"><button class="btn sm ghost" onclick="nav('#/league')"><svg viewBox="0 0 12 12" fill="none"><path d="M7.5 2.5 4 6l3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> 联赛</button><h2>🎮 小游戏</h2><p class="d">R2 门：目录可看，对局未开（演示不写开放日期）。</p><p class="d">对局开后：可信开局 → 实时判分 → 奖励自动进成长账（演示说明）。</p></div>` + ["单词消消乐", "听音拼词", "语法跑酷", "口语接龙", "阅读寻宝", "组队答题"].map(t => `<div class="card"><b>${t}</b> <span class="tag">未开放</span><p class="d">可信开局 · 判分防刷 · 奖励走成长账（开门后）</p><button class="btn sm ghost" onclick="toast('未开放：先去今日任务（演示）');nav('#/today')">去学习 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>`).join("");
 V.space = () => `<div class="card"><button class="btn sm ghost" onclick="nav('#/world')"><svg viewBox="0 0 12 12" fill="none"><path d="M7.5 2.5 4 6l3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> 世界</button><h2>🪞 个人空间</h2><p class="d">只读参观：看布置，不写 UGC（演示）。</p></div><div class="card"><h2>演示伙伴的空间</h2><p class="d">背景：森林 · 陈列 3 枚成就 · 赛季最佳第 4（演示数据）</p><p><button class="btn sm" onclick="nav('#/avatar')">装扮我的 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button> <button class="btn sm ghost" onclick="nav('#/achieve')">看看成就 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></p></div><div class="card"><p class="d">社交写链 R3 开；有用户才开榜，不填机器人冒充真人。</p></div>`;
-V.subs = () => `<div class="card"><button class="btn sm ghost" onclick="nav('#/commerce')"><svg viewBox="0 0 12 12" fill="none"><path d="M7.5 2.5 4 6l3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> 商城</button><h2>🔁 订阅与对账</h2><p class="d">沙盒演示：受理≠已到账；金额以价格快照为准，稿内不列真价。</p></div><div class="card"><h2>生命周期</h2><p class="d">下单防重 → 支付意图 → 回调对暗号 → 交易确认 → 权益发放；自动续费可关，取消续订≠退款。</p></div><div class="card"><h2>对账</h2><p class="d">日切三方对平；沙盒并行对照；真通道 R3 准入后开。</p><p><button class="btn sm" onclick="nav('#/pay')">去收银台 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button> <button class="btn sm ghost" onclick="nav('#/refund')">退款开票 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></p></div>`;
+V.subs = () => `<div class="card"><button class="btn sm ghost" onclick="nav('#/commerce')">商城</button><h2>🔁 订阅与对账</h2><p class="d">本机沙盒：商品、价格和支付状态来自同一订单。取消续订保留当前权益；退款与票据申请独立保存。</p></div>` + RF_ORDERS.filter(o => o.cat === "会员").map(o => `<div class="card"><b>${lh(o.t)} · ¥${o.price}</b><p class="d">${lh(o.pay)} · 续订${o.renewal === "cancelled" ? "已取消" : "为自动续订样例"}</p><button class="btn sm" onclick="RF.cur='${o.id}';nav('#/refund')">查看本次订阅</button></div>`).join("") + `<div class="card"><p class="d">真实支付回调、扣款、权益发放与三方对账尚未接入。</p><button class="btn sm" onclick="nav('#/commerce')">选购商品</button> <button class="btn sm ghost" onclick="nav('#/refund')">查看全部订单</button></div>`;
 V.native = () => `<div class="card"><button class="btn sm ghost" onclick="nav('#/league')"><svg viewBox="0 0 12 12" fill="none"><path d="M7.5 2.5 4 6l3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> 联赛</button><h2>📱 原生与多端壳</h2><p class="d">R3 末尾：稿内只画入口与门，不承诺上架日期（演示）。</p></div><div class="card"><h2>壳矩阵</h2><p class="d">uni-app 小程序目标条件编译 · 微信登录态 · iOS / Android 壳 · Tauri 桌面壳（禁 Electron）· PWA 工作区。</p><p class="d">推送 APNs / FCM；密钥进 Keychain / Keystore，不落普通存储。</p><p><button class="btn sm ghost" onclick="nav('#/about')">关于本稿 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></p></div>`;
-V.rewards = () => `<div class="card"><button class="btn sm ghost" onclick="nav('#/achieve')"><svg viewBox="0 0 12 12" fill="none"><path d="M7.5 2.5 4 6l3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> 成就</button><h2>🎁 任务奖励</h2><p class="d">可信完成才结算；重放不重结（演示口径）。</p></div><div class="card"><h2>领取</h2><p class="d">连续 3 天 ＋20 XP <button class="btn sm" onclick="toast('已领取 ＋20 XP（演示，不入账）')">领取</button></p><p class="d">成长结算走 Kafka 事件；R2 开榜，当前只看不动账。</p><p><button class="btn sm ghost" onclick="nav('#/world')">回世界 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button> <button class="btn sm ghost" onclick="nav('#/weekly')">看报告 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></p></div>`;
+V.rewards = () => `<div class="card"><button class="btn sm ghost" onclick="nav('#/achieve')"><svg viewBox="0 0 12 12" fill="none"><path d="M7.5 2.5 4 6l3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> 成就</button><h2>🎁 任务奖励</h2><p class="d">可信完成才结算；重放不重结（演示口径）。</p></div><div class="card"><h2>领取规则样例</h2><p class="d">连续 3 天 ＋20 XP <button class="btn sm" onclick="toast('奖励规则预览：连续学习达到条件后由正式服务结算；当前本机没有新增奖励入账')">查看领取规则</button></p><p class="d">成长结算走 Kafka 事件；R2 开榜，当前只看不动账。</p><p><button class="btn sm ghost" onclick="nav('#/world')">回世界 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button> <button class="btn sm ghost" onclick="nav('#/weekly')">看报告 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></p></div>`;
 const WD_CHEST = [
   { id: "c1", t: "路径宝箱", d: "定级完成解锁 · 宝石 + 增益（演示）", st: "open" },
   { id: "c2", t: "组队宝箱", d: "组队 5 天全满开启（演示 0/5）", st: "lock" },
@@ -374,19 +417,55 @@ const WD_ACH = [
 ];
 const WD = { tab: "ach" };
 V.achieve = () => `<div class="card"><button class="btn sm ghost" onclick="nav('#/world')"><svg viewBox="0 0 12 12" fill="none"><path d="M7.5 2.5 4 6l3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> 世界</button><h2>🏅 成就墙（${WD_ACH.filter(a => a.st === "got").length}/${WD_ACH.length}）</h2><p class="d">已获 / 未获 / 未开放分开；规则可查；未开放不挂可领红点（演示）。</p><p><button class="btn sm" onclick="nav('#/rewards')">任务奖励 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button> <button class="btn sm ghost" onclick="nav('#/weekly')">学习报告 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></p></div>` + WD_ACH.map(a => `<div class="card" style="${a.st === "got" ? "" : "opacity:.75"}"><b>${a.st === "got" ? "🏅 " : a.st === "lock" ? "🔒 " : "⏳ "}${a.t}</b> <span class="tag">${a.st === "got" ? "已获" : a.st === "lock" ? "未获" + (a.p ? "·" + a.p : "") : "未开放"}</span><p class="d">${a.d}</p>${a.st === "got" ? `` : a.st === "lock" ? `<button class="btn sm ghost" onclick="nav('#/today')">去攒 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>` : `<p class="d">赛季/房间开门后再来（不写日期）。</p>`}</div>`).join("");
-V.avatar = () => `<div class="card"><h2>👕 我的背景墙＋小人</h2><p class="d">Three.js 演示：换服装/配饰/发型＋打招呼（低端机自动降画质）</p><div id="t3d" style="width:100%;height:300px;border-radius:12px;overflow:hidden;background:#1c1430"></div><p class="d">上衣：<button class="btn sm" onclick="dress('shirt','#5b2fd6')">紫</button> <button class="btn sm" onclick="dress('shirt','#1d9e6b')">绿</button> <button class="btn sm" onclick="dress('shirt','#d64545')">红</button></p><p class="d">发型：<button class="btn sm" onclick="dress('hair','round')">圆寸</button> <button class="btn sm" onclick="dress('hair','cap')">帽子</button>　配饰：<button class="btn sm" onclick="dress('acc','glasses')">眼镜</button> <button class="btn sm" onclick="dress('acc','none')">无</button></p><p class="d">背景墙：<button class="btn sm" onclick="dress('wall','#1c1430')">星夜</button> <button class="btn sm" onclick="dress('wall','#0e3b2e')">森林</button> <button class="btn sm" onclick="dress('wall','#3b1d0e')">沙漠</button></p><button class="btn" onclick="wave()">👋 打招呼</button></div><div class="card"><h2>衣柜</h2><p class="d">目录可看，试穿不落库；兑换需权益（未开放）</p><span class="tag">默认卫衣·试穿中</span><span class="tag">星空外套·未开放</span><br><button class="btn sm" onclick="toast('兑换未开放：先完成学习任务')">兑换</button><p><button class="btn sm" onclick="nav('#/world')">回世界 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button> <button class="btn sm ghost" onclick="nav('#/achieve')">看看成就 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button> <button class="btn sm ghost" onclick="nav('#/a11y')">动效设置 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></p></div>`;
-let T3 = null;
+V.avatar = () => `<div class="card"><h2>👕 我的背景墙＋小人</h2><p class="d">本机 2D 预览可即时试穿；3D 可用时切换显示。换装保留到本次会话结束，刷新后恢复默认。</p><div id="t3d" style="width:100%;min-height:300px;border-radius:12px;overflow:hidden">${avatarSvg()}</div><p class="d">上衣：<button class="btn sm" onclick="dress('shirt','#5b2fd6')">紫</button> <button class="btn sm" onclick="dress('shirt','#1d9e6b')">绿</button> <button class="btn sm" onclick="dress('shirt','#d64545')">红</button></p><p class="d">发型：<button class="btn sm" onclick="dress('hair','round')">圆寸</button> <button class="btn sm" onclick="dress('hair','cap')">帽子</button>　配饰：<button class="btn sm" onclick="dress('acc','glasses')">眼镜</button> <button class="btn sm" onclick="dress('acc','none')">无</button></p><p class="d">背景墙：<button class="btn sm" onclick="dress('wall','#1c1430')">星夜</button> <button class="btn sm" onclick="dress('wall','#0e3b2e')">森林</button> <button class="btn sm" onclick="dress('wall','#3b1d0e')">沙漠</button></p><button class="btn" onclick="wave()"${AX.m ? "" : " disabled"}>👋 打招呼</button>${AX.m ? "" : `<p class="d">动效已关闭，挥手暂停；仍可静态试穿。</p>`}</div><div class="card"><h2>衣柜</h2><p class="d">目录可看，试穿不落库；兑换需权益（未开放）</p><span class="tag">默认卫衣·试穿中</span><span class="tag">星空外套·未开放</span><br><button class="btn sm" onclick="toast('兑换未开放：先完成学习任务')">兑换</button><p><button class="btn sm" onclick="nav('#/world')">回世界 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button> <button class="btn sm ghost" onclick="nav('#/achieve')">看看成就 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button> <button class="btn sm ghost" onclick="nav('#/a11y')">动效设置 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></p></div>`;
+const AVATAR = { shirt: "#5b2fd6", hair: "round", acc: "none", wall: "#1c1430", greeting: false };
+const AVATAR_OPTIONS = { shirt: ["#5b2fd6", "#1d9e6b", "#d64545"], hair: ["round", "cap"], acc: ["glasses", "none"], wall: ["#1c1430", "#0e3b2e", "#3b1d0e"] };
+let T3 = null, T3_LOADING = null, T3_FAILED = false, AVATAR_GREETING = 0, AVATAR_GREETING_TOKEN = 0;
+function avatarSvg() {
+  return `<svg viewBox="0 0 320 300" role="img" aria-label="本机2D装扮预览" style="display:block;width:100%;height:300px"><rect width="320" height="300" fill="${AVATAR.wall}"/><circle cx="270" cy="42" r="15" fill="#f2c89b" opacity=".35"/><circle cx="42" cy="64" r="3" fill="#f2c89b"/><circle cx="70" cy="36" r="2" fill="#f2c89b"/><ellipse cx="160" cy="274" rx="85" ry="11" fill="#000" opacity=".2"/><path d="M142 228v35m36-35v35" stroke="#292b3e" stroke-width="24" stroke-linecap="round"/><path d="M116 153q44-31 88 0l-11 82h-66z" fill="${AVATAR.shirt}"/><path d="M121 164l-24 55" stroke="#f2c89b" stroke-width="18" stroke-linecap="round"/><path d="${AVATAR.greeting ? "M199 162l27-32 3-29" : "M199 164l24 55"}" stroke="#f2c89b" stroke-width="18" stroke-linecap="round"/><rect x="147" y="125" width="26" height="27" rx="10" fill="#f2c89b"/><circle cx="160" cy="97" r="42" fill="#f2c89b"/>${AVATAR.hair === "cap" ? `<path d="M116 82q7-40 44-40t44 40z" fill="#d64545"/><path d="M159 76h62" stroke="#d64545" stroke-width="12" stroke-linecap="round"/>` : `<path d="M118 86q2-47 42-43t42 43q-19-22-42-9t-42 9" fill="#2b2118"/>`}<circle cx="146" cy="101" r="3" fill="#292b3e"/><circle cx="175" cy="101" r="3" fill="#292b3e"/><path d="M148 117q13 11 26 0" stroke="#292b3e" stroke-width="3" fill="none" stroke-linecap="round"/>${AVATAR.acc === "glasses" ? `<g stroke="#111" stroke-width="3" fill="none"><rect x="133" y="90" width="26" height="20" rx="6"/><rect x="163" y="90" width="26" height="20" rx="6"/><path d="M159 98h4"/></g>` : ""}${AVATAR.greeting ? `<text x="218" y="80" fill="#f2c89b" font-size="17">Hi!</text>` : ""}</svg>`;
+}
+function avatarLive() { const el = document.getElementById("t3d"); return el?.isConnected && !document.hidden && location.hash === "#/avatar" ? el : null; }
+function avatarFallback(reason = "2D 预览可立即试穿；3D 正在载入。") { const el = avatarLive(); if (el) el.innerHTML = avatarSvg() + `<p class="meta" style="padding:0 12px 10px">${lh(reason)}</p>`; }
+function avatarStop() {
+  if (T3?.raf) cancelAnimationFrame(T3.raf);
+  if (T3) { T3.raf = 0; T3.waving = 0; T3.M.armR.rotation.z = -0.2; T3.M.body.rotation.y = 0; if (avatarLive()) T3.renderer.render(T3.scene, T3.cam); }
+  clearTimeout(AVATAR_GREETING); AVATAR_GREETING = 0; AVATAR_GREETING_TOKEN++; AVATAR.greeting = false;
+  if (!T3 && avatarLive()) avatarFallback(T3_FAILED ? "3D 不可用，已切换本机 2D；全部试穿控件仍可用。" : "2D 预览可立即试穿；3D 正在载入。");
+}
+function avatarTick() {
+  if (!T3) return; T3.raf = 0;
+  if (!AX.m || !avatarLive()) { T3.waving = 0; return; }
+  T3.spin += 0.004; const t = performance.now() / 90;
+  T3.M.armR.rotation.z = T3.waving > 0 ? (-0.9 + Math.sin(t) * 0.7) : (-0.2 + Math.sin(T3.spin) * 0.06);
+  if (T3.waving > 0) T3.waving--; T3.M.body.rotation.y = Math.sin(T3.spin * 0.6) * 0.08;
+  T3.renderer.render(T3.scene, T3.cam); T3.raf = requestAnimationFrame(avatarTick);
+}
+function avatarSync() {
+  const el = avatarLive(); if (!el) return;
+  if (!T3) { avatarFallback(T3_FAILED ? "3D 不可用，已切换本机 2D；全部试穿控件仍可用。" : "2D 预览可立即试穿；3D 正在载入。"); return; }
+  if (!AX.m) avatarStop();
+  if (!el.contains(T3.renderer.domElement)) el.replaceChildren(T3.renderer.domElement);
+  T3.M.body.material.color.set(AVATAR.shirt); T3.M.cap.visible = AVATAR.hair === "cap"; T3.M.hair.visible = AVATAR.hair !== "cap"; T3.M.glasses.visible = AVATAR.acc === "glasses"; T3.scene.background.set(AVATAR.wall); T3.ground.material.color.set(AVATAR.wall);
+  T3.M.armR.rotation.z = -0.2; T3.M.body.rotation.y = 0;
+  const width = el.clientWidth || 320; T3.renderer.setSize(width, 300); T3.cam.aspect = width / 300; T3.cam.updateProjectionMatrix(); T3.renderer.render(T3.scene, T3.cam);
+  if (AX.m && !T3.raf) T3.tick();
+}
+function avatarLoadThree() { return import("https://unpkg.com/three@0.160.0/build/three.module.js"); }
 async function stage3d() {
-  const el = document.getElementById("t3d");
-  if (!el) return;
-  if (T3) { el.appendChild(T3.renderer.domElement); if (!T3.raf) T3.tick(); return; }
+  let el = avatarLive(); if (!el) return;
+  if (T3 || T3_FAILED) { avatarSync(); return; }
+  avatarFallback();
+  let candidate = null;
   try {
-    const THREE = await import("https://unpkg.com/three@0.160.0/build/three.module.js");
+    T3_LOADING ||= avatarLoadThree(); const THREE = await T3_LOADING;
+    el = avatarLive(); if (!el) return;
+    if (T3) { avatarSync(); return; }
     const W = el.clientWidth || 320, H = 300;
     const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
+    candidate = renderer;
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.setSize(W, H);
-    el.appendChild(renderer.domElement);
+    el.replaceChildren(renderer.domElement);
     const scene = new THREE.Scene();
     scene.background = new THREE.Color("#1c1430");
     const cam = new THREE.PerspectiveCamera(45, W / H, 0.1, 100);
@@ -411,23 +490,20 @@ async function stage3d() {
     const l2 = l1.clone(); l2.position.x = 0.11; M.glasses.add(l1, l2); M.glasses.visible = false; scene.add(M.glasses);
     const ground = new THREE.Mesh(new THREE.CircleGeometry(1.4, 28), new THREE.MeshStandardMaterial({ color: "#2c2350" }));
     ground.rotation.x = -Math.PI / 2; scene.add(ground);
-    let waving = 0, spin = 0;
-    T3 = { THREE, scene, cam, renderer, M, ground, waving: 0, raf: 0,
-      tick() { spin += 0.004; const t = performance.now() / 90; M.armR.rotation.z = T3.waving > 0 ? (-0.9 + Math.sin(t) * 0.7) : (-0.2 + Math.sin(spin) * 0.06); if (T3.waving > 0) T3.waving--; M.body.rotation.y = Math.sin(spin * 0.6) * 0.08; renderer.render(scene, cam); T3.raf = requestAnimationFrame(() => T3.tick()); } };
-    const vis = () => { if (document.hidden || !document.getElementById("t3d")) return; };
-    document.addEventListener("visibilitychange", vis);
-    T3.tick();
-    toast("3D 小人已加载（演示）");
-  } catch (e) { el.innerHTML = "<p class='d' style='padding:20px'>3D 加载失败（需联网），已降级 2D（演示）。</p>"; }
+    T3 = { THREE, scene, cam, renderer, M, ground, waving: 0, spin: 0, raf: 0, tick: avatarTick };
+    avatarSync();
+  } catch (e) { avatarStop(); candidate?.dispose(); T3 = null; T3_FAILED = true; avatarFallback("3D 不可用，已切换本机 2D；全部试穿控件仍可用。"); }
 }
 function dress(part, v) {
-  if (!T3) { toast("3D 还没加载好"); return; }
-  if (part === "shirt") { T3.M.body.material.color.set(v); dressAck("上衣"); }
-  if (part === "hair") { const cap = v === "cap"; T3.M.cap.visible = cap; T3.M.hair.visible = !cap; dressAck(cap ? "帽子" : "圆寸"); }
-  if (part === "acc") { T3.M.glasses.visible = v === "glasses"; dressAck(v === "glasses" ? "眼镜" : "无配饰"); }
-  if (part === "wall") { T3.scene.background.set(v); T3.ground.material.color.set(v); dressAck("背景墙"); }
+  if (!AVATAR_OPTIONS[part]?.includes(v) || !avatarLive()) return;
+  AVATAR[part] = v; avatarSync(); dressAck({ shirt: "上衣", hair: "发型", acc: "配饰", wall: "背景墙" }[part]);
 }
-function wave() { if (T3) T3.waving = 40; else toast("3D 还没加载好"); }
+function wave() {
+  if (!AX.m) { toast("动效已关闭，挥手暂停；仍可静态试穿"); return; } if (!avatarLive()) return;
+  AVATAR.greeting = true; if (T3) { T3.waving = 40; if (!T3.raf) T3.tick(); } else avatarSync();
+  clearTimeout(AVATAR_GREETING); const token = ++AVATAR_GREETING_TOKEN;
+  AVATAR_GREETING = setTimeout(() => { if (token !== AVATAR_GREETING_TOKEN) return; AVATAR.greeting = false; AVATAR_GREETING = 0; avatarSync(); }, 900);
+}
 const MSGS = [
   { id: "m1", cat: "学习", t: "今日任务已生成", d: "语法 2 道，预计 10 分钟", time: "08:00", read: false, go: "#/today" },
   { id: "m2", cat: "学习", t: "欢迎来到语学星", d: "先定级，3 分钟出报告", time: "昨天", read: false, go: "#/placement" },
@@ -439,16 +515,27 @@ const MSGS = [
 const MG = { cat: "全部" };
 function msgGo(id) { const m = MSGS.find(x => x.id === id); if (!m) return; m.read = true; if (m.go) nav(m.go); else render(); }
 V.msgs = () => { const un = MSGS.filter(m => !m.read).length; const list = MSGS.filter(m => MG.cat === "全部" || m.cat === MG.cat); return `<div class="card"><h2>✉️ 消息${un ? `（${un} 未读）` : ""}</h2><p class="d">${["全部", "学习", "系统", "互动"].map(c => `<button class="btn sm${MG.cat === c ? "" : " ghost"}" onclick="MG.cat='${c}';render()">${c}</button>`).join(" ")} <button class="btn sm ghost" onclick="MSGS.forEach(m=>m.read=true);render()">全标已读</button> <button class="btn sm ghost" onclick="nav('#/npref')">通知偏好 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></p></div>` + (list.length ? list.map(m => `<div class="card" onclick="msgGo('${m.id}')" style="cursor:pointer;${m.read ? "opacity:.65" : ""}"><b>${m.read ? "" : "● "}${m.t}</b> <span class="tag">${m.cat}</span><p class="d">${m.d}</p><p class="meta">${m.time}</p>${m.go ? `<p><button class="btn sm ghost">去看看 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></p>` : ``}</div>`).join("") : `<div class="card empty"><b>这类没消息</b></div>`); };
-V.me = () => `<div class="card summary" style="text-align:center"><div style="font-size:44px">😎</div><b style="font-size:19px">${S.user || "未登录"}</b><p class="d">B1 · 已坚持 ${S.streak} 天 · 错题 ${S.mistakes.length}</p><p><span class="tag">Lv.3 学徒</span> <span class="tag">本周 15 分钟</span></p></div><div class="card"><h2>▶️ 继续学</h2><p class="d">${S.lastRead.book} · ${S.lastRead.ch}</p><p><button class="btn sm" onclick="resumeChapter()">继续读 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button> <button class="btn sm ghost" onclick="nav('#/today')">今日任务 (${S.today.length}) <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></p>${S.mistakes.length ? `<p class="d">上道错题：${String(S.mistakes[S.mistakes.length - 1].t).slice(0, 18)}… <button class="btn sm ghost" onclick="nav('#/mistakes')">去补救 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></p>` : ``}</div><div class="card"><p class="eyebrow">学习工具</p><h2>📚 学习</h2>${[["📚 图书管", "#/shelf", "在读·第二章"], ["⚡ 快速书架", "#/courses", ""], ["❤️ 错题本", "#/mistakes", S.mistakes.length ? S.mistakes.length + " 待补" : ""], ["🔁 复习", "#/srs", SRSQ.filter(q => !q.done).length ? SRSQ.filter(q => !q.done).length + " 到期" : ""], ["📊 学习报告", "#/weekly", ""], ["⚔️ 刷单词", "#/wordbook", "40 词"], ["🔤 音标", "#/phonics", ""], ["🔠 字母", "#/alphabet", ""]].map(([t, h, b]) => `<button class="opt" onclick="nav('${h}')">${t}${b ? ` <span class="tag">${b}</span>` : ""} <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`).join("")}</div><div class="card"><p class="eyebrow">发现</p><h2>🌍 探索</h2>${[["🌍 世界", "#/world", "联赛·宝箱"], ["👕 装扮", "#/avatar", ""], ["🤖 AI 伴学", "#/ai", "演示"], ["🎤 语音跟读", "#/voice", ""], ["✉️ 消息", "#/msgs", MSGS.filter(m => !m.read).length ? MSGS.filter(m => !m.read).length + " 未读" : ""], ["🔍 搜索", "#/search", ""], ["🛒 商城", "#/commerce", "演示价"], ["🔒 青少年模式", "#/k12", "P3 未开"]].map(([t, h, b]) => `<button class="opt" onclick="nav('${h}')">${t}${b ? ` <span class="tag">${b}</span>` : ""} <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`).join("")}</div><div class="card"><p class="eyebrow">单项</p><h2>🔤 听说读写</h2>${[["📖 词汇详情", "#/vocab", S.mistakes.filter(m => m.kind === "word").length ? S.mistakes.filter(m => m.kind === "word").length + " 待补" : ""], ["🎧 听力", "#/listening", ""], ["🎙️ 口语", "#/speaking", "语音跟读可用"], ["✍️ 写作", "#/writing", "暂无题"]].map(([t, h, b]) => `<button class="opt" onclick="nav('${h}')">${t}${b ? ` <span class="tag">${b}</span>` : ""} <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`).join("")}</div><div class="card"><p class="eyebrow">设置与帮助</p><h2>👤 账号与系统</h2>${[["📦 离线包", "#/offpkg", "未开放下载"], ["🧾 退款开票", "#/refund", ""], ["⚙️ 设置", "#/settings", ""], ["♿ 无障碍", "#/a11y", ""], ["ℹ️ 关于", "#/about", ""], ["🧪 演示工具", "#/lab", ""]].map(([t, h, b]) => `<button class="opt" onclick="nav('${h}')">${t}${b ? ` <span class="tag">${b}</span>` : ""} <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`).join("")}</div><div class="card"><h2>🛠️ 员工</h2><p class="d">需 staff 权限；普通账号只看说明，不进控制台（演示）。</p>${S.staff ? `<button class="opt" onclick="nav('#/admin')">🛠️ 管理控制台 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>` : `<button class="opt" onclick="S.staff=true;toast('已切 staff 演示身份');render()">🔓 切 staff 演示身份 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`}<button class="opt" onclick="nav('#/support')">💬 客服 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>${DEMO ? `<div class="card"><p class="d">测试：</p>${[["🧪 更多状态屏", "#/arrears"], ["⛔ 门被拒", "#/greject"], ["📄 同意升级", "#/cupgrade"]].map(([t, h]) => `<button class="opt" onclick="nav('${h}')">${t} <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`).join("")}</div>` : ``}`;
+V.me = () => `<div class="card summary" style="text-align:center"><div style="font-size:44px">😎</div><b style="font-size:19px">${lh(S.user || "未登录")}</b><p class="d">B1 · 已坚持 ${S.streak} 天 · 错题 ${S.mistakes.length}</p><p><span class="tag">Lv.3 学徒</span> <span class="tag">本周 15 分钟</span></p></div><div class="card"><h2>▶️ 继续学</h2><p class="d">${S.lastRead.book} · ${S.lastRead.ch}</p><p><button class="btn sm" onclick="resumeChapter()">继续读 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button> <button class="btn sm ghost" onclick="nav('#/today')">今日任务 (${S.today.length}) <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></p>${S.mistakes.length ? `<p class="d">上道错题：${String(S.mistakes[S.mistakes.length - 1].t).slice(0, 18)}… <button class="btn sm ghost" onclick="nav('#/mistakes')">去补救 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></p>` : ``}</div><div class="card"><p class="eyebrow">学习工具</p><h2>📚 学习</h2>${[["📚 图书管", "#/shelf", "在读·第二章"], ["⚡ 快速书架", "#/courses", ""], ["❤️ 错题本", "#/mistakes", S.mistakes.length ? S.mistakes.length + " 待补" : ""], ["🔁 复习", "#/srs", SRSQ.filter(q => !q.done).length ? SRSQ.filter(q => !q.done).length + " 到期" : ""], ["📊 学习报告", "#/weekly", ""], ["⚔️ 刷单词", "#/wordbook", "40 词"], ["🔤 音标", "#/phonics", ""], ["🔠 字母", "#/alphabet", ""]].map(([t, h, b]) => `<button class="opt" onclick="nav('${h}')">${t}${b ? ` <span class="tag">${b}</span>` : ""} <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`).join("")}</div><div class="card"><p class="eyebrow">发现</p><h2>🌍 探索</h2>${[["🌍 世界", "#/world", "联赛·宝箱"], ["👕 装扮", "#/avatar", ""], ["🤖 AI 伴学", "#/ai", "演示"], ["🎤 语音跟读", "#/voice", ""], ["✉️ 消息", "#/msgs", MSGS.filter(m => !m.read).length ? MSGS.filter(m => !m.read).length + " 未读" : ""], ["🔍 搜索", "#/search", ""], ["🛒 商城", "#/commerce", "演示价"], ["🔒 青少年模式", "#/k12", "P3 未开"]].map(([t, h, b]) => `<button class="opt" onclick="nav('${h}')">${t}${b ? ` <span class="tag">${b}</span>` : ""} <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`).join("")}</div><div class="card"><p class="eyebrow">单项</p><h2>🔤 听说读写</h2>${[["📖 词汇详情", "#/vocab", S.mistakes.filter(m => m.kind === "word").length ? S.mistakes.filter(m => m.kind === "word").length + " 待补" : ""], ["🎧 听力", "#/listening", ""], ["🎙️ 口语", "#/speaking", "语音跟读可用"], ["✍️ 写作", "#/writing", "暂无题"]].map(([t, h, b]) => `<button class="opt" onclick="nav('${h}')">${t}${b ? ` <span class="tag">${b}</span>` : ""} <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`).join("")}</div><div class="card"><p class="eyebrow">设置与帮助</p><h2>👤 账号与系统</h2>${[["📦 离线包", "#/offpkg", "未开放下载"], ["🧾 退款开票", "#/refund", ""], ["⚙️ 设置", "#/settings", ""], ["♿ 无障碍", "#/a11y", ""], ["ℹ️ 关于", "#/about", ""], ["🧪 演示工具", "#/lab", ""]].map(([t, h, b]) => `<button class="opt" onclick="nav('${h}')">${t}${b ? ` <span class="tag">${b}</span>` : ""} <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`).join("")}</div><div class="card"><h2>🛠️ 员工</h2><p class="d">需 staff 权限；普通账号只看说明，不进控制台（演示）。</p>${S.staff ? `<button class="opt" onclick="nav('#/admin')">🛠️ 管理控制台 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>` : `<button class="opt" onclick="S.staff=true;toast('已切 staff 演示身份');render()">🔓 切 staff 演示身份 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`}<button class="opt" onclick="nav('#/support')">💬 客服 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>${DEMO ? `<div class="card"><p class="d">测试：</p>${[["🧪 更多状态屏", "#/arrears"], ["⛔ 门被拒", "#/greject"], ["📄 同意升级", "#/cupgrade"]].map(([t, h]) => `<button class="opt" onclick="nav('${h}')">${t} <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`).join("")}</div>` : ``}`;
 V.about = () => `<div class="card" style="text-align:center"><b style="font-size:20px">语学星</b><p class="d">版本 1.0.0-demo · 静态交互稿</p><p class="d">学习目标 → 练习 → 反馈 → 复习 → 复盘</p></div><div class="card"><h2>📄 法务与合规</h2><p class="d">正文以官网为准，稿内只看入口结构；官网本地 18182 未启动时外链打不开。</p><a class="opt" href="http://127.0.0.1:18182/terms" target="_blank" rel="noopener" style="text-decoration:none;color:inherit">📝 用户协议 <span class="meta">官网正文为准</span> <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a><a class="opt" href="http://127.0.0.1:18182/privacy" target="_blank" rel="noopener" style="text-decoration:none;color:inherit">🔒 隐私政策 <span class="meta">官网正文为准</span> <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a><a class="opt" href="http://127.0.0.1:18182/compliance" target="_blank" rel="noopener" style="text-decoration:none;color:inherit">📋 合规公示 <span class="meta">官网正文为准</span> <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a><a class="opt" href="http://127.0.0.1:18182/minors" target="_blank" rel="noopener" style="text-decoration:none;color:inherit">🧒 未成年人说明 <span class="meta">仅服务成人</span> <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a></div><div class="card"><h2>💬 服务与帮助</h2><button class="opt" onclick="nav('#/support')">💬 联系客服 <span class="meta">工作日 9-18</span> <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><a class="opt" href="http://127.0.0.1:18182/help" target="_blank" rel="noopener" style="text-decoration:none;color:inherit">❓ 帮助中心 <span class="meta">官网正文为准</span> <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a><a class="opt" href="http://127.0.0.1:18182/announcements" target="_blank" rel="noopener" style="text-decoration:none;color:inherit">📢 公告 <span class="meta">官网正文为准</span> <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a><a class="opt" href="http://127.0.0.1:18182/status" target="_blank" rel="noopener" style="text-decoration:none;color:inherit">📡 服务状态 <span class="meta">非实时可用率</span> <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a></div><div class="card"><h2>✨ 产品</h2><a class="opt" href="http://127.0.0.1:18182/about" target="_blank" rel="noopener" style="text-decoration:none;color:inherit">ℹ️ 关于语学星 <span class="meta">官网正文为准</span> <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a><a class="opt" href="http://127.0.0.1:18182/download" target="_blank" rel="noopener" style="text-decoration:none;color:inherit">⬇️ 下载 <span class="meta">官网正文为准</span> <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a><button class="opt" onclick="nav('#/native')">📱 原生壳说明（R3 门） <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><a class="opt" href="http://127.0.0.1:18182/pricing" target="_blank" rel="noopener" style="text-decoration:none;color:inherit">💰 价格 <span class="meta">首发免费，官网为准</span> <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a></div><div class="card"><h2>🧾 开源与版本</h2><p class="d">开源许可：稿内说明，正式文本以官网与仓库为准（演示不虚构条款）。</p><p class="d">版本 1.0.0-demo · 18283 交互稿；法务文本未在稿内复刻，避免与官网不一致。</p></div>`;
 V.settings = () => `<div class="card"><h2>🎯 学习偏好</h2><p class="d">当前：${S.goal || "四级词汇 B1"} · 每天 ${S.minutes} 分钟</p><label class="lb">目标</label><select id="sg"><option${(S.goal || "").includes("四级") ? " selected" : ""}>大学英语四级 · B1</option><option${(S.goal || "").includes("零基础") ? " selected" : ""}>零基础 · A1</option><option${(S.goal || "").includes("六级") ? " selected" : ""}>六级 · B2</option></select><label class="lb">每天分钟</label><select id="sm">${[5, 15, 30, 45].map(m => `<option${S.minutes === m ? " selected" : ""}>${m}</option>`).join("")}</select><button class="btn" onclick="doSetGoal()">保存偏好</button><p class="d">保存后今日起按新目标重排；已完成记录保留，不抹历史（演示）。</p></div><div class="card"><h2>🔔 通知</h2><p class="d">开关只在通知偏好里管，这里只留入口（演示）。</p><button class="opt" onclick="nav('#/npref')">通知偏好与免打扰 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div><div class="card"><h2>🎨 显示与语言</h2><button class="opt" onclick="nav('#/a11y')">♿ 无障碍（对比/字体/动效） <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><p class="d">主题：${["follow", "light", "dark"].map(t => `<button class="btn sm${SET.theme === t ? "" : " ghost"}" onclick="SET.theme='${t}';toast('主题：${{ follow: "跟随系统", light: "浅色", dark: "深色" }[t]}');render()">${{ follow: "跟随系统", light: "浅色", dark: "深色" }[t]}</button>`).join(" ")}</p><p class="d">界面语言：<button class="btn sm" onclick="toast('界面语言：中文（演示）')">中文 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></p><p class="d">内容语言：<button class="btn sm" onclick="toast('内容语言：英语（演示）')">英语 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></p><p class="d">界面语言只管按钮文案，题目语言不动（locale 分离）。</p></div><div class="card"><h2>📱 设备与隐私</h2><button class="opt" onclick="nav('#/devices')">📱 设备管理 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="opt" onclick="nav('#/privacy')">🔒 隐私（导出/删除） <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="opt" onclick="nav('#/cupgrade')">📄 同意版本 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div><div class="card"><h2>👤 账号</h2><p class="d">推送未开：通知开关只记偏好，不代表能收到推送（演示）。</p><button class="btn ghost" onclick="arm(this,function(){S.user=null;toast('已退出');nav('#/login')})">退出登录</button></div>`;
 function doSetGoal() { S.goal = document.getElementById("sg").selectedOptions[0].text; S.minutes = parseInt(document.getElementById("sm").value, 10); toast("偏好已保存，今日起重排（演示）"); render(); }
 const PV = { exp: null, del: null };
-const SUP = { cat: "功能", list: [{ id: "TK-1024", cat: "功能", t: "听力播到一半停了", st: "处理中" }, { id: "TK-1019", cat: "账号", t: "换手机想踢掉旧设备", st: "已回复" }] };
-V.devices = () => `<div class="card"><h2>📱 设备</h2><p class="d">踢出二次确认；被踢设备旧会话失效并清该账号本地私有状态（演示说明）。</p><div class="card" style="margin:0 0 8px;border-color:var(--brand)"><b>本机浏览器</b> <span class="tag">当前设备</span><p class="d">最后活跃：刚刚 · 退出登录即清本机该账号状态</p></div><div class="card" style="margin:0"><b>Android · Pixel（演示）</b><p class="d">最后活跃：2 天前 <button class="btn sm" onclick="arm(this,function(){toast('已踢出（演示）：该设备旧会话失效')})">踢出</button></p></div></div>`;
-V.privacy = () => `<div class="card"><h2>🔒 隐私</h2><p class="d">撤回先说影响；导出/删除给请求编号与进度，不是点完即完成（演示）。</p><p><button class="btn sm" onclick="PV.exp='REQ-2026-0007';toast('导出申请已提交，编号 REQ-2026-0007（演示）');render()">申请导出</button> <button class="btn sm" onclick="arm(this,function(){PV.del='DEL-2026-0003';render()})">申请删除</button> <button class="btn sm ghost" onclick="nav('#/paudio')">音频保留 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button> <button class="btn sm ghost" onclick="PV.rankOff=!PV.rankOff;toast(PV.rankOff?'排名已关闭（演示）':'排名已打开（演示）');render()">${PV.rankOff ? "打开排名" : "关闭排名"}</button></p>${PV.exp ? `<div class="fb wa" style="display:block">导出 ${PV.exp} · 处理中：学习档案 ✓ / 错题 ⏳ / 录音 —（演示进度）</div>` : ``}${PV.del ? `<div class="fb wa" style="display:block">删除 ${PV.del} · 已受理：旧 token 即刻失效，数据逐服务清理后给回执（演示）</div>` : ``}</div>`;
-V.support = () => `<div class="card"><h2>💬 客服</h2><p class="d">提交后只显示编号，客服按编号处理；正文受控（演示只收一句话）。</p><p class="d">分类：${["功能", "账号", "内容", "支付"].map(c => `<button class="btn sm${SUP.cat === c ? "" : " ghost"}" onclick="SUP.cat='${c}';render()">${c}</button>`).join(" ")}</p><input id="sup" placeholder="一句话描述问题"><button class="btn" onclick="supSend()">提交工单</button> <button class="btn ghost" onclick="nav('#/tdetail')">工单详情 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div><div class="card"><h2>🧾 我的工单（${SUP.list.length}）</h2>${SUP.list.map(t => `<div class="card" style="margin:8px 0"><b>${t.id}</b> <span class="tag">${t.cat}</span> <span class="tag">${t.st}</span><p class="d">${t.t}</p></div>`).join("")}</div>`;
-function supSend() { const v = (document.getElementById("sup").value || "").trim(); if (!v) { toast("先写一句话"); return; } const id = "TK-" + (1025 + SUP.list.length); SUP.list.unshift({ id, cat: SUP.cat, t: v.slice(0, 40), st: "已提交" }); toast("工单已提交，编号 " + id + "（演示）"); render(); }
+const SUP = { cat: "功能", draft: "", cur: null, from: "support", list: [{ id: "TK-1024", cat: "功能", t: "听力播到一半停了", st: "处理中" }, { id: "TK-1019", cat: "账号", t: "换手机想踢掉旧设备", st: "已回复" }] };
+V.devices = () => `<div class="card"><h2>📱 设备</h2><p class="d">设备管理界面预览，没有连接真实会话服务。</p><div class="card" style="margin:0 0 8px;border-color:var(--brand)"><b>本机浏览器</b> <span class="tag">当前演示</span><p class="d">退出会结束当前演示身份和管理预览；本机草稿与学习记录保留。清除数据请使用原型演示工具。</p></div><div class="card" style="margin:0"><b>Android · Pixel（固定样例）</b><p class="d">最后活跃：2 天前（样例） <button class="btn sm" onclick="arm(this,function(){toast('已演示踢出确认；没有连接真实设备')})">预览踢出确认</button></p></div></div>`;
+function privacyExport() { PV.exp ||= lmId("demo-export"); toast("导出请求已保存在本机（演示）"); render(); }
+function privacyDelete() { PV.del ||= lmId("demo-delete"); toast("删除请求已保存在本机（演示），可撤回"); render(); }
+function privacyCancelDelete() { PV.del = null; toast("已撤回本机删除请求（演示）"); render(); }
+V.privacy = () => `<div class="card"><h2>🔒 隐私</h2><p class="d">本页保存本机演示请求。正式导出、账号删除和服务清理尚未接入；学习记录与草稿仍保留。</p><p><button class="btn sm" onclick="privacyExport()">申请导出</button> <button class="btn sm" onclick="arm(this,privacyDelete)"${PV.del ? " disabled" : ""}>申请删除</button> <button class="btn sm ghost" onclick="nav('#/paudio')">音频保留</button> <button class="btn sm ghost" onclick="PV.rankOff=!PV.rankOff;toast(PV.rankOff?'排名已关闭（演示）':'排名已打开（演示）');render()">${PV.rankOff ? "打开排名" : "关闭排名"}</button></p>${PV.exp ? `<div class="fb wa" style="display:block">导出 ${lh(PV.exp)} · 本机请求已保存，等待正式服务接入；尚未生成导出文件。</div>` : ``}${PV.del ? `<div class="fb wa" style="display:block">删除 ${lh(PV.del)} · 本机请求已保存，尚未执行账号删除或数据清理。<p><button class="btn sm ghost" onclick="privacyCancelDelete()">撤回删除请求</button></p></div>` : ``}</div>`;
+V.support = () => `<div class="card"><h2>💬 客服</h2><p class="d">一句话描述问题，最多 40 字。工单和草稿保存在本机；此原型尚未发送至客服。</p><p class="d">分类：${["功能", "账号", "内容", "支付"].map(c => `<button class="btn sm${SUP.cat === c ? "" : " ghost"}" onclick="SUP.cat='${c}';render()">${c}</button>`).join(" ")}</p><input id="sup" aria-label="问题描述" maxlength="40" value="${lh(SUP.draft)}" oninput="supDraftInput()" placeholder="一句话描述问题（最多40字）"><button class="btn" onclick="supSend()">提交工单</button> <button class="btn ghost" onclick="SUP.cur=null;SUP.from='support';nav('#/tdetail')">查看全部工单</button></div><div class="card"><h2>🧾 我的工单（${SUP.list.length}）</h2>${SUP.list.map(t => `<div class="card" style="margin:8px 0"><b>${lh(t.id)}</b> <span class="tag">${lh(t.cat)}</span> <span class="tag">${lh(t.st)}</span><p class="d">${lh(t.t)}</p><button class="btn sm ghost" onclick="supOpen('${t.id}')">查看这张工单</button></div>`).join("")}</div>`;
+function supDraftInput() { const el = document.getElementById("sup"); if (el) SUP.draft = el.value || ""; dbSave(); }
+function supOpen(id, from = "support") { if (!SUP.list.some(t => t.id === id)) { toast("未找到这张工单，请返回列表"); return; } SUP.cur = id; SUP.from = from === "acs" ? "acs" : "support"; nav("#/tdetail"); }
+function supClose() { SUP.cur = null; nav(SUP.from === "acs" ? "#/acs" : "#/support"); }
+function supSend() {
+  const el = document.getElementById("sup"), v = (el ? el.value : SUP.draft).trim();
+  if (!v) { toast("先写一句话"); return; } if (v.length > 40) { SUP.draft = v; dbSave(); toast("最多 40 字，请缩短描述后提交"); return; }
+  const id = lmId("demo-ticket"); SUP.list.unshift({ id, cat: SUP.cat, t: v, st: "已提交" }); SUP.draft = ""; if (el) el.value = "";
+  toast("本机工单已保存，编号 " + id + "（演示）"); render();
+}
 const SH = { q: "", hist: ["四级", "音标"] };
 function sidx() {
   const idx = [];
@@ -462,7 +549,7 @@ V.search = () => {
   const q = SH.q.trim().toLowerCase();
   const res = q ? sidx().filter(e => (e.t + e.d).toLowerCase().includes(q)).slice(0, 8) : [];
   const groups = ["课程", "词汇", "帮助"].map(g => ({ g, items: res.filter(e => e.ty === g) })).filter(x => x.items.length);
-  return `<div class="card"><h2>搜索</h2><input id="q" placeholder="搜课程/词汇/帮助" value="${SH.q.replace(/"/g, "")}" oninput="SH.q=this.value;render2()"><div id="sr"></div><p class="d">词汇结果进详情页（可自测/加复习），课程进图书管。</p></div>` + (!q ? `<div class="card"><p class="d">历史：${SH.hist.map(h => `<button class="btn sm ghost" onclick="SH.q='${h}';render()">${h}</button>`).join(" ")}</p></div>` : groups.length ? groups.map(({ g, items }) => `<div class="card"><b>${g}</b>${items.map(e => `<button class="opt" onclick="sgo('${e.t}');sgo2('${e.t}','${e.ty}')">${e.t} · ${e.d} <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`).join("")}</div>`).join("") : `<div class="card empty"><b>没搜到“${SH.q}”</b><p class="d">换个词试试</p></div>`);
+  return `<div class="card"><h2>搜索</h2><input id="q" placeholder="搜课程/词汇/帮助" value="${lh(SH.q)}" oninput="SH.q=this.value;render2()"><div id="sr"></div><p class="d">词汇结果进详情页（可自测/加复习），课程进图书管。</p></div>` + (!q ? `<div class="card"><p class="d">历史：${SH.hist.map(h => `<button class="btn sm ghost" onclick="SH.q='${h}';render()">${h}</button>`).join(" ")}</p></div>` : groups.length ? groups.map(({ g, items }) => `<div class="card"><b>${g}</b>${items.map(e => `<button class="opt" onclick="sgo('${e.t}');sgo2('${e.t}','${e.ty}')">${e.t} · ${e.d} <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`).join("")}</div>`).join("") : `<div class="card empty"><b>没搜到“${lh(SH.q)}”</b><p class="d">换个词试试</p></div>`);
 };
 function sgo2(t, ty) {
   if (ty === "词汇") {
@@ -474,16 +561,49 @@ function sgo2(t, ty) {
 }
 function render2() { const v = document.getElementById("q"); const pos = v ? v.selectionStart : 0; render(); const n = document.getElementById("q"); if (n) { n.focus(); try { n.setSelectionRange(pos, pos); } catch (e) { } } }
 const GOODS = [
-  { id: "g1", cat: "会员", t: "月度会员", d: "全部课程＋AI 伴学", price: 19, oprice: 29, tag: "热卖" },
+  { id: "g1", cat: "会员", t: "月度会员", d: "本机会员购买流程样例；AI 伴学在 Phase 2 开放", price: 19, oprice: 29, tag: "热卖" },
   { id: "g2", cat: "会员", t: "年度会员", d: "月均 ¥9 · 最划算", price: 108, oprice: 228, tag: "省一半" },
-  { id: "g3", cat: "课程", t: "四级冲刺包", d: "真题＋模考＋讲解", price: 49, oprice: 99, tag: "" },
+  { id: "g3", cat: "课程", t: "四级冲刺包", d: "原创题目、模拟练习与解析样例", price: 49, oprice: 99, tag: "" },
   { id: "g4", cat: "课程", t: "雅思 6.5 全程", d: "听说读写四科", price: 299, oprice: 599, tag: "名师" },
   { id: "g5", cat: "周边", t: "单词卡片盒", d: "500 高频词实物卡", price: 39, oprice: 59, tag: "" },
   { id: "g6", cat: "周边", t: "学习帆布包", d: "装下你的坚持", price: 59, oprice: 79, tag: "新品" },
 ];
 const GC = { cat: "全部", cur: null };
+const PAY = { productId: null, title: "", price: 0, cat: "", intentId: null, orderId: null, phase: "idle", message: "" };
+function checkoutOpen(id, fresh = false) {
+  const g = GOODS.find(x => x.id === id); if (!g) { toast("商品不存在，请重新选择"); return; }
+  if (fresh || PAY.productId !== id || !PAY.intentId) Object.assign(PAY, { productId: g.id, title: g.t, price: g.price, cat: g.cat, intentId: lmId("demo-checkout"), orderId: null, phase: "ready", message: "" });
+  GC.cur = id; nav("#/pay");
+}
+function payStatus(o) { return { paid: "已支付（沙盒）", failed: "支付失败（沙盒）", unknown: "支付结果未知（沙盒）", refunded: "已退款（沙盒）" }[o.paymentPhase] || "待支付（沙盒）"; }
+function paySettle(o, phase) {
+  o.paymentPhase = phase; o.pay = payStatus(o); o.right = phase === "paid" ? "有效（本机演示）" : "未开通（本机演示）";
+  if (PAY.orderId === o.id) { PAY.phase = phase; PAY.message = phase === "paid" ? "沙盒支付已确认，本机订单已保存；不会扣真款或发放真实权益。" : phase === "unknown" ? "本次沙盒结果未知。请查询同一订单，确认前不开放演示权益。" : "本次沙盒支付失败。可重试同一订单，不会另建一笔。"; }
+}
+function payCommit(intentId) {
+  if (!PAY.productId || PAY.intentId !== intentId) { toast("结算商品已变化，请重新确认"); return; }
+  let o = RF_ORDERS.find(x => x.id === PAY.orderId);
+  if (o && ["paid", "unknown", "refunded"].includes(o.paymentPhase)) { toast(o.paymentPhase === "unknown" ? "请先查询本次订单结果" : "本次订单已完成，可在订单页查看"); return; }
+  if (LAB.offline) { PAY.message = "断网模式：选择和价格已保留，本次未提交沙盒支付。"; render(); return; }
+  if (!o) {
+    o = { id: lmId("demo-order"), productId: PAY.productId, t: PAY.title, price: PAY.price, cat: PAY.cat, paymentPhase: "ready", pay: "待支付（沙盒）", right: "未开通（本机演示）", rf: "无", step: -1, renewal: PAY.cat === "会员" ? "active" : "none", receiptStatus: "未申请", invoiceStatus: "未申请", demo: true };
+    RF_ORDERS.unshift(o); PAY.orderId = o.id;
+  }
+  const phase = LAB.failNext ? "failed" : LAB.unknownNext ? "unknown" : "paid";
+  if (LAB.failNext) LAB.failNext = false; else if (LAB.unknownNext) LAB.unknownNext = false;
+  paySettle(o, phase); render();
+}
+function payResolve(id = PAY.orderId) {
+  const o = RF_ORDERS.find(x => x.id === id); if (!o || o.paymentPhase !== "unknown") return;
+  if (LAB.offline) { toast("断网模式下无法查询，本次订单仍保留"); return; }
+  paySettle(o, "paid"); toast("已查询同一订单：沙盒支付已确认"); render();
+}
+function payRetry(id = PAY.orderId) {
+  const o = RF_ORDERS.find(x => x.id === id); if (!o || o.paymentPhase !== "failed") { toast("该单无需重试，请查看当前状态"); return; }
+  Object.assign(PAY, { productId: o.productId, title: o.t, price: o.price, cat: o.cat, intentId: PAY.orderId === id && PAY.intentId ? PAY.intentId : lmId("demo-checkout"), orderId: id, phase: "ready", message: "重试原订单，商品与价格保持原快照。" }); nav("#/pay");
+}
 V.commerce = () => {
-  if (GC.cur) { const g = GOODS.find(x => x.id === GC.cur); return `<div class="card"><button class="btn sm ghost" onclick="GC.cur=null;render()"><svg viewBox="0 0 12 12" fill="none"><path d="M7.5 2.5 4 6l3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> 商城</button><h2>${g.t}</h2><p>${g.tag ? `<span class="tag">${g.tag}</span> ` : ""}<span class="tag">${g.cat}</span></p><p class="d">${g.d}</p><p style="font-size:26px"><b>¥${g.price}</b> <s class="meta">¥${g.oprice}</s></p><button class="btn" onclick="nav('#/pay')">去结算 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>`; }
+  if (GC.cur && GOODS.some(x => x.id === GC.cur)) { const g = GOODS.find(x => x.id === GC.cur); return `<div class="card"><button class="btn sm ghost" onclick="GC.cur=null;render()"><svg viewBox="0 0 12 12" fill="none"><path d="M7.5 2.5 4 6l3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> 商城</button><h2>${g.t}</h2><p>${g.tag ? `<span class="tag">${g.tag}</span> ` : ""}<span class="tag">${g.cat}</span></p><p class="d">${g.d}</p><p style="font-size:26px"><b>¥${g.price}</b> <s class="meta">¥${g.oprice}</s></p><p class="d">本机沙盒商品，不发货、不扣款、不承诺考试成绩。</p><button class="btn" onclick="checkoutOpen('${g.id}')">去结算 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>`; }
   const cats = ["全部", "会员", "课程", "周边"];
   const list = GOODS.filter(g => GC.cat === "全部" || g.cat === GC.cat);
   return `<div class="card"><h2>🛒 商城（演示价，不扣款）</h2><p class="d">${cats.map(c => `<button class="btn sm${GC.cat === c ? "" : " ghost"}" onclick="GC.cat='${c}';render()">${c}</button>`).join(" ")}</p><p><button class="btn sm ghost" onclick="nav('#/refund')">我的订单 / 退款 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button> <button class="btn sm ghost" onclick="nav('#/subs')">订阅对账 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></p></div>` + list.map(g => `<div class="card"><b>${g.t}</b> ${g.tag ? `<span class="tag">${g.tag}</span>` : ""}<p class="d">${g.d}</p><p><b>¥${g.price}</b> <s class="meta">¥${g.oprice}</s> <button class="btn sm" style="float:right" onclick="GC.cur='${g.id}';render()">详情 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></p></div>`).join("");
@@ -497,9 +617,9 @@ V.areview = () => `<div class="card"><h2>L1 初审</h2><p class="d">reviewer-l1 
 V.apublish = () => `<div class="card"><h2>发布 / 下线 / 回滚</h2><p class="d">目录实时预览</p><button class="btn sm" onclick="toast('已发布，书架可见（演示）')">发布</button> <button class="btn sm" onclick="arm(this,function(){toast('已下架（演示）')})">下架</button> <button class="btn sm" onclick="arm(this,function(){toast('已回滚 v1（演示）')})">回滚 v1</button></div>`;
 V.agov = () => `<div class="card"><h2>治理 · 风险区</h2><p class="d">无独立路由，并入治理页</p><div class="card" style="margin:0"><b>RISK-001 · 刷分嫌疑</b><p class="d">待建档</p><p class="d">全链：风险评估 → 分诊 → 隔离 → 升级 → 关闭；处置写链 R3，R1 只读建档（演示）。</p><p><button class="btn sm ghost" onclick="nav('#/areport')">举报队列 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button> <button class="btn sm ghost" onclick="nav('#/aobs')">观测恢复 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></p><button class="btn sm" onclick="toast('已建档（演示）')">建档</button> <button class="btn sm" onclick="toast('已隔离（演示）')">隔离</button></div></div>`;
 V.aaudit = () => `<div class="card"><h2>审计</h2><p class="d">分页 + 脱敏 · 导出 internal-only</p><p class="d">req-9208 · 同意记录 · 允许</p><p class="d">req-6fd9 · 注册门 · 拒绝</p><p><button class="btn sm ghost" onclick="nav('#/admin')"><svg viewBox="0 0 12 12" fill="none"><path d="M7.5 2.5 4 6l3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> 管理</button> <button class="btn sm ghost" onclick="nav('#/aobs')">观测恢复 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></p></div>`;
-V.alogin = () => `<div class="card"><button class="btn sm ghost" onclick="nav('#/admin')"><svg viewBox="0 0 12 12" fill="none"><path d="M7.5 2.5 4 6l3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> 管理</button><h2>🔐 管理登录</h2><p class="d">staff / reviewer 独立登录；登录后回跳原页面；会话恢复无需重登（演示）。</p><label class="lb">工号</label><input value="" placeholder="如 staff-01"><label class="lb">密码</label><input type="password" value="" placeholder="密码"><button class="btn" onclick="S.staff=true;toast('管理登录成功（演示）');nav('#/admin')">登录</button><p class="d">双签申请人禁自审；改权限走双人审批。</p></div>`;
+V.alogin = () => `<div class="card"><h2>管理身份预览</h2><p class="d">后台页面使用固定样例，仅供查看管理动线。开启预览不会创建真实管理会话或授予正式权限；退出、重新进入或刷新后关闭。</p><button class="btn" onclick="S.staff=true;toast('已开启本机会话管理预览');nav('#/admin')">开启管理预览</button><button class="btn ghost" onclick="nav('#/lab')">返回演示工具</button></div>`;
 V.amedia = () => `<div class="card"><button class="btn sm ghost" onclick="nav('#/admin')"><svg viewBox="0 0 12 12" fill="none"><path d="M7.5 2.5 4 6l3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> 管理</button><h2>🎞️ 媒体与上传</h2><p class="d">元数据走内容服务，音频字节永不过内容服务（演示说明）。</p></div><div class="card"><h2>上传正链</h2><p class="d">版权绑定 → 审核通过 → 签名 URL 直传对象存储 → 回调登记 manifest。</p><button class="btn sm" onclick="toast('上传凭证已签发（演示）')">获取上传凭证</button></div><div class="card"><h2>边界</h2><p class="d">未绑定版权不可送审；R1 只读已审资源。</p><p><button class="btn sm ghost" onclick="nav('#/adraft')">回建稿 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button> <button class="btn sm ghost" onclick="nav('#/apublish')">去发布 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></p></div>`;
-V.acs = () => `<div class="card"><button class="btn sm ghost" onclick="nav('#/admin')"><svg viewBox="0 0 12 12" fill="none"><path d="M7.5 2.5 4 6l3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> 管理</button><h2>🎧 客服后台</h2><p class="d">R1 只读队列，处置写链 R3；正文受控、一事一号（演示）。</p></div>` + SUP.list.map(t => `<div class="card"><b>${t.id}</b> <span class="tag">${t.cat}</span> <span class="tag">${t.st}</span><p class="d">${t.t}</p><p><button class="btn sm" onclick="toast('已接单（演示）')">接单</button> <button class="btn sm ghost" onclick="nav('#/tdetail')">详情 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></p></div>`).join("");
+V.acs = () => `<div class="card"><button class="btn sm ghost" onclick="nav('#/admin')"><svg viewBox="0 0 12 12" fill="none"><path d="M7.5 2.5 4 6l3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> 管理</button><h2>🎧 客服后台</h2><p class="d">R1 只读队列，处置写链 R3；正文受控、一事一号（演示）。</p></div>` + SUP.list.map(t => `<div class="card"><b>${lh(t.id)}</b> <span class="tag">${lh(t.cat)}</span> <span class="tag">${lh(t.st)}</span><p class="d">${lh(t.t)}</p><p><button class="btn sm" onclick="toast('本页只读，未实际接单；正式接单流程后续接入')">查看接单说明</button> <button class="btn sm ghost" onclick="supOpen('${t.id}','acs')">详情 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></p></div>`).join("");
 V.ashop = () => `<div class="card"><button class="btn sm ghost" onclick="nav('#/admin')"><svg viewBox="0 0 12 12" fill="none"><path d="M7.5 2.5 4 6l3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> 管理</button><h2>🧾 商城后台</h2><p class="d">订单 → 订阅 → 对账 → 退款 → 开票，一条线查到底（演示）。</p></div><div class="card"><h2>对账</h2><p class="d">日切：订单＝渠道＝权益；差异进人工复核，不自动改账。</p></div><div class="card"><h2>退款</h2><p class="d">双人审批保留；单人运营方案待定，不虚构第二审批人。</p><p><button class="btn sm" onclick="nav('#/commerce')">看前台 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button> <button class="btn sm ghost" onclick="nav('#/refund')">退款开票 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></p></div>`;
 V.areport = () => `<div class="card"><button class="btn sm ghost" onclick="nav('#/agov')"><svg viewBox="0 0 12 12" fill="none"><path d="M7.5 2.5 4 6l3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> 治理</button><h2>🚩 举报队列</h2><p class="d">R1 只读队列；处置写链 R3 开（演示）。</p></div><div class="card"><b>RPT-301 · 房间刷屏嫌疑</b> <span class="tag">待分诊</span><p class="d">来源：房间巡检（演示）</p><p><button class="btn sm" onclick="toast('已分诊 → 建档（演示）');nav('#/agov')">分诊建档 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></p></div>`;
 V.aobs = () => `<div class="card"><button class="btn sm ghost" onclick="nav('#/aaudit')"><svg viewBox="0 0 12 12" fill="none"><path d="M7.5 2.5 4 6l3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> 审计</button><h2>📡 观测与恢复</h2><p class="d">发布门三件：健康探针 / 优雅停机 / SBOM（演示说明）。</p></div><div class="card"><h2>链路</h2><p class="d">网关 401 进审计包络；requestId / traceId / auditId 跨服务关联。</p><p class="d">Outbox → Kafka 白名单投递，失败进 DLQ 可回放；跨服务 Saga＋补偿，不用分布式事务。</p></div><div class="card"><h2>发布</h2><p class="d">命名回滚＋恢复点；回滚先停写再切读（演示口径）。</p><p><button class="btn sm ghost" onclick="nav('#/apublish')">去发布回滚 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></p></div>`;
@@ -572,10 +692,25 @@ V.vscore = () => `<div class="card"><button class="btn sm ghost" onclick="nav('#
 V.k12guard = () => `<div class="card"><button class="btn sm ghost" onclick="nav('#/k12')"><svg viewBox="0 0 12 12" fill="none"><path d="M7.5 2.5 4 6l3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> 青少年模式</button><h2>🛡️ K12 治理</h2><p class="d">P3 上锁：手续不全代码可写、门不开（演示）。</p></div><div class="card"><h2>门与手续</h2><p class="d">K12 Gate 默认关；未成年人识别 → 监护授权；教师 / 机构资质校验；开锁手续清单签完才开。</p></div><div class="card"><h2>在用保护</h2><p class="d">时长 / 时段到点即停；家长一键撤回即刻停用；未成年人隐私另行请求；安全事件进审计。</p><p><button class="btn sm ghost" onclick="nav('#/about')">关于本稿 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></p></div>`;
 V.k12course = () => `<div class="card"><button class="btn sm ghost" onclick="nav('#/k12')"><svg viewBox="0 0 12 12" fill="none"><path d="M7.5 2.5 4 6l3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> 青少年模式</button><h2>📚 K12 课程</h2><p class="d">教材同步先验版权＋地区；中高考专项标注考纲版本（演示）。</p></div><div class="card"><h2>闭环</h2><p class="d">教材课 → 练习 → 报告 → 家长页同步（只读），与成人链隔离。</p><p><button class="btn sm ghost" onclick="nav('#/k12guard')">治理规则 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></p></div>`;
 const TD = {cur:null, f:"全部"};
-V.tdetail = () => `<div class="card"><button class="btn sm ghost" onclick="TD.cur=null;nav('#/support')"><svg viewBox="0 0 12 12" fill="none"><path d="M7.5 2.5 4 6l3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> 客服</button><h2>🧾 工单详情</h2><p class="d">一事一号；筛选：${["全部", "已提交", "处理中", "已回复"].map(f => `<button class="btn sm${TD.f === f ? "" : " ghost"}" onclick="TD.f='${f}';render()">${f}</button>`).join(" ")}</p></div>` + SUP.list.filter(t => TD.f === "全部" || t.st === TD.f).map(t => `<div class="card"><b>${t.id}</b> <span class="tag">${t.cat}</span> <span class="tag">${t.st}</span><p class="d">${t.t}</p><p class="d">流转：提交 → 接单 → 回复 → 升级 / 关闭；正文受控必要项待批（演示口径）。</p><p><button class="btn sm" onclick="toast('已催单一次（演示）')">催单</button> <button class="btn sm ghost" onclick="nav('#/acs')">后台视角 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></p></div>`).join("") || `<div class="card empty"><b>这类暂无工单</b><p class="d">换个筛选看看</p></div>`;
+V.tdetail = () => {
+  if (SUP.cur) {
+    const t = SUP.list.find(t => t.id === SUP.cur);
+    return `<div class="card"><button class="btn sm ghost" onclick="supClose()">${SUP.from === "acs" ? "返回客服队列" : "返回我的工单"}</button><h2>🧾 工单详情</h2>${t ? `<b>${lh(t.id)}</b> <span class="tag">${lh(t.cat)}</span> <span class="tag">${lh(t.st)}</span><p class="d">${lh(t.t)}</p><p class="d">本机演示记录；处理与回复为样例状态，尚未发送至客服。</p>` : `<p class="d">工单不存在或已移除，请返回列表重新选择。</p>`}</div>`;
+  }
+  const rows = SUP.list.filter(t => TD.f === "全部" || t.st === TD.f);
+  return `<div class="card"><button class="btn sm ghost" onclick="TD.cur=null;nav('#/support')">客服</button><h2>🧾 工单列表</h2><p class="d">筛选：${["全部", "已提交", "处理中", "已回复"].map(f => `<button class="btn sm${TD.f === f ? "" : " ghost"}" onclick="TD.f='${f}';render()">${f}</button>`).join(" ")}</p></div>` + (rows.length ? rows.map(t => `<div class="card"><b>${lh(t.id)}</b> <span class="tag">${lh(t.cat)}</span> <span class="tag">${lh(t.st)}</span><p class="d">${lh(t.t)}</p><p class="d">本机演示记录；处理与回复为样例状态，尚未发送至客服。</p><button class="btn sm ghost" onclick="supOpen('${t.id}',SUP.from)">查看这张工单</button></div>`).join("") : `<div class="card empty"><b>这类暂无工单</b><p class="d">换个筛选看看</p></div>`);
+};
 V.paudio = () => `<div class="card"><button class="btn sm ghost" onclick="nav('#/privacy')"><svg viewBox="0 0 12 12" fill="none"><path d="M7.5 2.5 4 6l3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> 隐私</button><h2>🎙️ 音频保留说明</h2><p class="d">跟读录音默认只留评分特征；原始音频另行授权才存（演示口径）。</p></div><div class="card"><h2>到期与删除</h2><p class="d">保留期到自动清；删号时逐服务清理并给回执；处理中显示编号＋进度，不点完即完成。</p><p><button class="btn sm ghost" onclick="nav('#/voice')">回语音 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></p></div>`;
-function payGo(el) { arm(el, function() { const r = document.getElementById("payr"); if (LAB.failNext) { LAB.failNext = false; r.className = "fb no"; r.style.display = "block"; r.textContent = "! 支付没成功：渠道超时，钱没扣，再试一次"; return; } r.className = "fb ok"; r.style.display = "block"; r.textContent = "✓ 支付成功（沙盒）· 权益待开通演示"; }); }
-V.pay = () => `<div class="card"><h2>收银台（沙盒）</h2><p class="d">Phase 1 基金 · ¥99 · 不扣真款 · 金额二次确认</p><button class="btn" onclick="payGo(this)">支付 ¥99</button><div class="fb" id="payr" style="display:none;margin-top:10px">✓ 支付成功（沙盒）· 权益待开通演示</div><p><button class="btn sm" onclick="nav('#/refund')">查看订单 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button> <button class="btn sm ghost" onclick="nav('#/commerce')">回商城 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></p></div>`;
+function payGo(el) {
+  if (!PAY.productId) { toast("请先选择商品"); return; }
+  if (!el.dataset.armed) el.dataset.payIntent = PAY.intentId;
+  arm(el, () => payCommit(el.dataset.payIntent));
+}
+V.pay = () => {
+  if (!PAY.productId) return `<div class="card empty"><h2>收银台（沙盒）</h2><p class="d">请先在商城选择商品，再确认本机演示价格。</p><button class="btn" onclick="nav('#/commerce')">去选商品</button></div>`;
+  const locked = ["paid", "unknown", "refunded"].includes(PAY.phase);
+  return `<div class="card"><h2>收银台（沙盒）</h2><p class="d">${lh(PAY.title)} · ¥${PAY.price} · 本机演示，不扣真款</p>${PAY.orderId ? `<p class="meta">订单：${lh(PAY.orderId)}</p>` : ""}${!locked ? `<button class="btn" onclick="payGo(this)">确认沙盒支付 ¥${PAY.price}</button>` : ""}${PAY.phase === "unknown" ? `<button class="btn" onclick="payResolve()">查询本次支付结果</button>` : ""}${PAY.phase === "failed" ? `<button class="btn ghost" onclick="payRetry()">重试原订单</button>` : ""}${PAY.message ? `<div class="fb ${PAY.phase === "paid" ? "ok" : PAY.phase === "failed" ? "no" : "wa"}" id="payr" style="display:block;margin-top:10px">${lh(PAY.message)}</div>` : ""}<p><button class="btn sm" onclick="RF.cur=PAY.orderId;nav('#/refund')">查看订单</button> <button class="btn sm ghost" onclick="nav('#/commerce')">回商城</button>${["paid", "refunded"].includes(PAY.phase) ? ` <button class="btn sm ghost" onclick="checkoutOpen('${PAY.productId}',true)">重新购买</button>` : ""}</p></div>`;
+};
 V.a11y = () => `<div class="card"><h2>♿ 无障碍</h2><p class="d">跟随系统＋手动档，所见即所得；设置只在本机生效（演示），换设备需重设。</p><button class="opt" onclick="a11y('contrast')">◐ 高对比：<b id="a11yc">${AX.c ? "开" : "关"}</b> <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="opt" onclick="a11y('font')">A 字体：<b id="a11yf">${["标准", "大", "特大"][AX.f]}</b> <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="opt" onclick="a11y('motion')">▶ 动效：<b id="a11ym">${AX.m ? "开" : "关"}</b> <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="opt" onclick="a11y('focus')">◎ 焦点框：<b id="a11yfo">${AX.fo ? "强" : "默认"}</b> <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="opt" onclick="a11y('voice')">🔊 读屏/朗读：<b id="a11yv">${AX.v ? "开" : "关"}</b> <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><p><button class="btn sm ghost" onclick="a11yReset()">恢复默认</button></p></div><div class="card"><h2>👁 预览（真实生效区）</h2><p style="font-size:22px"><b>Good morning.</b></p><p class="d">早上好。今天也要学 15 分钟。</p><p><span class="tag">B1</span> <span class="tag">今日 2 题</span></p><button class="btn sm" onclick="toast('预览：当前对比/字号/动效即你所见（演示）')">示例按钮</button> <button class="btn sm ghost" onclick="a11yDemo()">播报这段 🔊</button><p class="d">状态不用颜色 alone 表达：✓=可做 ♥=待补救 ⌁=待同步，均有文字。</p><div class="fb ok">✓ 保存成功是这种条（文字＋色块）</div><div class="fb no">! 出错是这种条（文字＋色块）</div></div><div class="card"><h2>⌨️ 键盘与焦点自查</h2><p class="d">Tab 走一遍：本页按钮 → 预览 → 下面三链接，焦点框${AX.fo ? "已加强" : "为默认"}；回车可点，焦点不丢。</p><p><button class="btn sm" onclick="nav('#/shelf')">书架 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button> <button class="btn sm" onclick="nav('#/practice')">练题 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button> <button class="btn sm" onclick="nav('#/home')">首页 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></p><p class="d">抽验屏（书架/练题）不是全部范围；长题干、320 宽度、横竖屏以真机为准，稿内不认证。</p></div>`;
 function a11yDemo() { if (!AX.v) { toast("先打开读屏/朗读（演示）"); return; } speak("Good morning. Time to study fifteen minutes."); }
 V.arrears = () => `<div class="card"><h2>📚 今日任务</h2><div class="card" style="margin:0 0 8px;border-color:var(--warn)"><b>昨天有 1 节没学完，今天补吗？</b><p class="d">补上不断签</p><button class="btn sm" onclick="toast('已加入今日（演示）');nav('#/today')">补上 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button> <button class="btn sm ghost" onclick="nav('#/today')">跳过</button></div></div>`;
@@ -583,16 +718,18 @@ V.celebrate = () => `<div class="card" style="text-align:center"><b style="font-
 V.offlinet = () => `<div class="card"><h2>📚 今日任务</h2><div class="fb wa">⌁ 离线任务已保留，联网后同步</div><div class="card" style="margin:8px 0 0"><b>语法 · There ___ two books.</b><p class="d">本地草稿 · 待同步</p><p><button class="btn sm ghost" onclick="nav('#/offpkg')">离线包说明 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></p></div></div>`;
 const PG = { st: "idle", msg: "" };
 function pgenStart() {
+  if (!needReady()) return;
   PG.st = "run"; PG.msg = ""; render();
   const tok = PG.tok = (PG.tok || 0) + 1;
+  const identity = identityToken();
   setTimeout(() => {
-    if (PG.tok !== tok || PG.st !== "run") return;
+    if (!identityCurrent(identity) || PG.tok !== tok || PG.st !== "run") return;
     if (LAB.offline) { PG.st = "fail"; PG.msg = "离线：拼不出计划，联网后重试"; render(); return; }
     if (LAB.failNext) { LAB.failNext = false; PG.st = "fail"; PG.msg = "生成失败：拼装超时，重试不会建出两份计划"; render(); return; }
     PG.st = "ok"; S.plan = true; lmApplyPlan(LM.plan, "keep"); render();
   }, 1400);
 }
-function quickStart() { S.quick = true; S.plan = true; lmApplyPlan(LM.plan, "keep"); toast("已准备基础学习任务，可随时调整计划"); nav("#/today"); }
+function quickStart() { if (!needReady()) return; S.quick = true; S.plan = true; lmApplyPlan(LM.plan, "keep"); toast("已准备基础学习任务，可随时调整计划"); nav("#/today"); }
 V.pgen = () => {
   const first = S.today.find(t => !t.done);
   if (PG.st === "run") return `<div class="card"><h2>计划生成中…</h2><div class="prog"><i style="width:60%"></i></div><p class="d">按定级报告组装本轮两组任务</p><button class="btn ghost" onclick="PG.st='idle';render()">取消，稍后再说</button></div>`;
@@ -607,7 +744,7 @@ V.pfault = () => `<div class="card"><h2>🛟 定级恢复</h2><p class="d">出�
 V.npref = () => `<div class="card"><button class="btn sm ghost" onclick="nav('#/msgs')"><svg viewBox="0 0 12 12" fill="none"><path d="M7.5 2.5 4 6l3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> 消息</button><h2>🔔 通知偏好</h2><p class="d">开关只记偏好＋版本号，能否收到看真实渠道（演示：推送未开不开“成功”）。</p></div><div class="card"><h2>渠道</h2><button class="opt" onclick="SET.study=!SET.study;render()">${SET.study ? "✅" : "⬜"} 学习提醒 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="opt" onclick="SET.report=!SET.report;render()">${SET.report ? "✅" : "⬜"} 学习报告 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="opt" onclick="SET.sys=!SET.sys;render()">${SET.sys ? "✅" : "⬜"} 系统公告 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div><div class="card"><h2>免打扰</h2><p class="d">时段：<button class="btn sm${SET.slot === "morning" ? "" : " ghost"}" onclick="SET.slot='morning';render()">晨间 8:00</button> <button class="btn sm${SET.slot === "night" ? "" : " ghost"}" onclick="SET.slot='night';render()">睡前 22:00</button></p><p class="d">部分失败自动重试 3 次；真实事件驱动 R2 开，Push / Email / SMS 走 R3（演示不开）。</p><p><button class="btn sm ghost" onclick="nav('#/settings')">回设置 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></p></div>`;
 V.firstlearn = () => `<div class="card"><h2>🌱 首次学习</h2><p class="d">新号 3 击到达定级：画像 → 定级 / 快速开始 → 今日（演示）。</p></div><div class="card"><h2>两条路</h2><p class="d">① 定级 3 分钟出报告再排计划（推荐）② 快速开始：按画像目标从基础难度起步（SKIPPED 基线），不伪造正式报告。</p><p><button class="btn sm" onclick="nav('#/placement')">去定级 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button> <button class="btn sm ghost" onclick="quickStart()">快速开始 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></p></div>`;
 V.greject = () => `<div class="card empty"><b>暂不能开放学习</b><p class="d">身份未通过，可退出或联系客服</p><button class="btn sm" onclick="arm(this,function(){S.user=null;nav('#/login')})">退出</button> <button class="btn sm" onclick="nav('#/support')">联系客服</button></div>`;
-V.cupgrade = () => `<div class="card"><h2>条款更新了</h2><p class="d">看一眼再继续，一键重签</p><button class="btn" onclick="toast('已重签（演示）');goBack()">重签完成</button></div>`;
+V.cupgrade = () => `<div class="card"><h2>本机同意记录</h2><p class="d">当前演示版本：${lh(S.consentV)}。样例通过状态与本人在原型中的签署分别标明；均不代表服务端授权。</p>${CONSENT_KEYS.map(key => { const record = S.consents[key]; return `<p class="d"><b>${lh(key)}</b> · ${record?.agreed && record.version === S.consentV ? "当前版本已记录" : "尚未确认当前版本"}${record ? `<br>${lh(record.source || "本机演示")} · ${lh(record.version)}${record.at ? " · " + lh(new Date(record.at).toLocaleDateString("zh-CN")) : ""}` : ""}</p>`; }).join("")}<button class="btn" onclick="nav('#/gate')">查看并重新确认</button></div>`;
 const VC = { w: "abandon", q: "", quizPick: -1 };
 function vcAll() { return WB4.map(w => ({ book: "CET4", w: w[0], ph: w[1], zh: w[2] })).concat(WB6.map(w => ({ book: "CET6", w: w[0], ph: w[1], zh: w[2] }))); }
 function vcData() { const a = vcAll(); return a.find(x => x.w === VC.w) || a[0]; }
@@ -618,20 +755,17 @@ function vclist() {
   const q = VC.q.trim().toLowerCase();
   if (!q) return `<p class="d">输入英文或中文搜 40 词（四级 20＋六级 20）</p>`;
   const res = vcAll().filter(e => e.w.includes(q) || e.zh.includes(q)).slice(0, 6);
-  if (!res.length) return `<div class="card empty" style="margin:8px 0 0"><b>没搜到“${VC.q}”</b><p class="d">换个词试试，或去刷单词</p></div>`;
+  if (!res.length) return `<div class="card empty" style="margin:8px 0 0"><b>没搜到“${lh(VC.q)}”</b><p class="d">换个词试试，或去刷单词</p></div>`;
   return res.map(e => `<button class="opt" onclick="vcPick('${e.w}')"><b>${e.w}</b> <span class="meta">${e.ph}</span> · ${e.zh} <span class="tag">${e.book}</span> <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`).join("");
 }
 function vcQuiz(k) { VC.quizPick = k; render(); }
 function vcAdd() {
-  const d = vcData();
-  if (SRSQ.some(x => x.w === d.w && !x.done)) { toast("已在复习队列（演示）"); return; }
-  SRSQ.unshift({ w: d.w, zh: d.zh, stage: 1, show: false });
-  toast("已加入复习（演示）"); render();
+  srsAddWord(vcData().w); render();
 }
 function vcMark(know) {
   const d = vcData();
-  if (know) { toast("记下了，去复习巩固（演示）"); }
-  else { if (!S.mistakes.some(m => m.t === d.w)) S.mistakes.push({ t: d.w, why: "定位：词汇待补", kind: "word" }); toast("已进错题本（演示）"); }
+  if (know) { const m = S.mistakes.find(x => x.t === d.w); if (m) { lmSelfRate(m.id); return; } toast("本次自评记得，去复习验证；尚未判定掌握（演示）"); }
+  else { addMistake(d.w, "定位：词汇待补", "word", "词汇详情"); toast("已记入错题，可在错题本做补救练习（演示）"); }
   render();
 }
 function vcDrill() { const d = vcData(); DR.book = d.book === "CET4" ? "CET4" : "CET6"; const L = wlist(); const i = L.findIndex(x => x[0] === d.w); DR.i = i >= 0 ? i : 0; DR.known = 0; DR.show = false; DR.quizPick = -1; DR.quizDone = false; DR.mode = "zhan"; nav("#/drill"); }
@@ -650,10 +784,10 @@ V.vocab = () => {
   const parts = wsplit(d.w);
   const lk = d.w.toLowerCase();
   const lex = (typeof LEX !== "undefined" && LEX[lk]) ? LEX[lk] : null;
-  const inSrs = SRSQ.find(x => x.w === d.w && !x.done);
+  const inSrs = SRSQ.find(x => x.w === d.w);
   const idx = vcAll().findIndex(x => x.w === d.w);
   const qo = vcQuizOpts();
-  return `<div class="card"><p class="d">${d.book} · 第 ${idx + 1}/40 · ${wpic(d.w)} ${inSrs ? "· 已在复习" : ""}</p><div style="text-align:center;padding:8px 0"><b style="font-size:36px">${d.w}</b><p class="d">${d.ph} <button class="btn sm" onclick="speak('${d.w}')">🔊 读</button></p><p style="font-size:20px"><b>${d.zh}</b></p></div><p style="display:flex;gap:8px"><button class="btn sm ghost" style="flex:1" onclick="vcPrev()"><svg viewBox="0 0 12 12" fill="none"><path d="M7.5 2.5 4 6l3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> 上一词</button><button class="btn sm ghost" style="flex:1" onclick="vcNext()">下一词 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></p></div><div class="card"><h2>🔍 找词</h2><input id="vcq" placeholder="英文 / 中文，如 abandon / 抛弃" value="${VC.q.replace(/"/g, "")}" oninput="VC.q=this.value;document.getElementById('vclist').innerHTML=vclist()"><div id="vclist">${vclist()}</div></div><div class="card"><h2>🔀 拆开记</h2><p style="font-size:22px">${parts.join(" + ")}</p><p class="d">形和音对应着记（演示拆分，非权威词源）。</p>${lex ? `<p class="d">搭配：${lex.coll}</p><p class="d">例：${lex.ex}</p>` : `<p class="d">搭配：暂无，先记例句 👇</p>`}</div><div class="card"><h2>🔤 变形全家</h2><p>${f.infl.map(x => `<span class="tag">${x}</span>`).join("")}</p></div><div class="card"><h2>🧩 组句（点 🔊 跟读）</h2>${f.sent.map((s, k) => `<p class="d">${k + 1}. ${s} <button class="btn sm" onclick="speak('${s.replace(/'/g, "")}')">🔊</button></p>`).join("")}</div><div class="card"><h2>😎 俚语</h2><p>${f.slang}</p><h2 style="margin-top:10px">📜 由来</h2><p class="d">${f.story}</p></div><div class="card"><h2>✅ 自测：中文 → 英文</h2><p class="d">“${d.zh}”是哪个？</p>${qo.opts.map((o, k) => `<button class="opt${VC.quizPick === k ? " sel" : ""}" onclick="vcQuiz(${k})">${wpic(o.w)} ${o.w}</button>`).join("")}${VC.quizPick >= 0 ? (qo.opts[VC.quizPick].ok ? `<div class="fb ok">✓ 对了</div>` : `<div class="fb no">! 选错了：${d.w} 拆开是 ${parts.join(" + ")}，跟读三遍 <button class="btn sm" onclick="speak('${d.w}')">🔊</button></div>`) : ``}</div><div class="card"><h2>📌 行动</h2><p><button class="btn sm" onclick="vcAdd()">${inSrs ? "已在复习 ✓" : "加入复习"}</button> <button class="btn sm ghost" onclick="vcMark(true)">会了 ✓</button> <button class="btn sm ghost" onclick="vcMark(false)">不会，进错题</button></p><p><button class="btn sm ghost" onclick="vcDrill()">去刷这本 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button> <button class="btn sm ghost" onclick="nav('#/srs')">去复习 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button> <button class="btn sm ghost" onclick="nav('#/mistakes')">错题本 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></p><p class="d">缺项写“暂无”，不编发音；演示状态不代表服务端已落库。</p></div>`;
+  return `<div class="card"><p class="d">${d.book} · 第 ${idx + 1}/40 · ${wpic(d.w)} ${inSrs ? "· 已在复习" : ""}</p><div style="text-align:center;padding:8px 0"><b style="font-size:36px">${d.w}</b><p class="d">${d.ph} <button class="btn sm" onclick="speak('${d.w}')">🔊 读</button></p><p style="font-size:20px"><b>${d.zh}</b></p></div><p style="display:flex;gap:8px"><button class="btn sm ghost" style="flex:1" onclick="vcPrev()"><svg viewBox="0 0 12 12" fill="none"><path d="M7.5 2.5 4 6l3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> 上一词</button><button class="btn sm ghost" style="flex:1" onclick="vcNext()">下一词 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></p></div><div class="card"><h2>🔍 找词</h2><input id="vcq" placeholder="英文 / 中文，如 abandon / 抛弃" value="${lh(VC.q)}" oninput="VC.q=this.value;document.getElementById('vclist').innerHTML=vclist()"><div id="vclist">${vclist()}</div></div><div class="card"><h2>🔀 拆开记</h2><p style="font-size:22px">${parts.join(" + ")}</p><p class="d">形和音对应着记（演示拆分，非权威词源）。</p>${lex ? `<p class="d">搭配：${lex.coll}</p><p class="d">例：${lex.ex}</p>` : `<p class="d">暂无已核对的搭配与例句，可先记词义和读音。</p>`}</div><div class="card"><h2>🔤 变形全家</h2><p>${f.infl.map(x => `<span class="tag">${x}</span>`).join("")}</p></div><div class="card"><h2>🧩 组句（点 🔊 跟读）</h2>${f.sent.length ? f.sent.map((s, k) => `<p class="d">${k + 1}. ${s} <button class="btn sm" onclick="speak('${s.replace(/'/g, "")}')">🔊</button></p>`).join("") : `<p class="d">暂无已核对的例句。</p>`}</div><div class="card"><h2>😎 搭配与记忆提示</h2><p>${f.slang}</p><p class="d">仅为记忆联想，不代表已核对词源：${f.story}</p></div><div class="card"><h2>✅ 自测：中文 → 英文</h2><p class="d">“${d.zh}”是哪个？</p>${qo.opts.map((o, k) => `<button class="opt${VC.quizPick === k ? " sel" : ""}" onclick="vcQuiz(${k})">${wpic(o.w)} ${o.w}</button>`).join("")}${VC.quizPick >= 0 ? (qo.opts[VC.quizPick].ok ? `<div class="fb ok">✓ 对了</div>` : `<div class="fb no">! 选错了：${d.w} 拆开是 ${parts.join(" + ")}，跟读三遍 <button class="btn sm" onclick="speak('${d.w}')">🔊</button></div>`) : ``}</div><div class="card"><h2>📌 行动</h2><p><button class="btn sm" onclick="vcAdd()">${inSrs ? "已在复习 ✓" : "加入复习"}</button> <button class="btn sm ghost" onclick="vcMark(true)">会了 ✓</button> <button class="btn sm ghost" onclick="vcMark(false)">不会，进错题</button></p><p><button class="btn sm ghost" onclick="vcDrill()">去刷这本 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button> <button class="btn sm ghost" onclick="nav('#/srs')">去复习 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button> <button class="btn sm ghost" onclick="nav('#/mistakes')">错题本 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></p><p class="d">缺项写“暂无”，不编发音；演示状态不代表服务端已落库。</p></div>`;
 };
 const LSM = {
   cur: 0, rate: 1, showSub: true, loop: false, playing: false, quizPick: -1, done: 0, mix: 0,
@@ -664,29 +798,34 @@ const LSM = {
     { title: "机场", lv: "B1", en: "Where is the exit? Please check in early. Keep your boarding pass.", zh: "出口在哪？请提前值机。登机牌拿好。", mix: "Where is the exit? 请提前 check in. Keep your boarding pass.", q: { s: "机场提醒你拿好什么？", o: ["passport", "boarding pass", "ticket"], a: 1 }, q2: { s: "播客里“出口”怎么说？", o: ["exit", "enter", "exist"], a: 0 } },
   ],
 };
-function lsel(i) { try { speechSynthesis.cancel(); } catch (e) { } LSM.cur = i; LSM.playing = false; LSM.quizPick = -1; LSM.quizPick2 = -1; render(); }
+let LPLAY_SERIAL = 0;
+function lcancel() { LPLAY_SERIAL++; LSM.playing = false; try { speechSynthesis.cancel(); } catch (e) { } }
+function lsel(i) { if (!LSM.mats[i]) return; lcancel(); LSM.cur = i; LSM.quizPick = -1; LSM.quizPick2 = -1; render(); }
 function lrate(r) { LSM.rate = r; toast("语速 " + r + "x（演示）"); render(); }
 function lsub() { LSM.showSub = !LSM.showSub; render(); }
 function lloop() { LSM.loop = !LSM.loop; toast(LSM.loop ? "单句循环开（演示）" : "单句循环关"); render(); }
 function lplay() {
+  if (!needReady()) return;
   const m = LSM.mats[LSM.cur];
   const txt = LSM.mix === 1 ? m.mix : m.en;
+  lcancel(); const token = LPLAY_SERIAL, identity = identityToken(), material = LSM.cur;
+  const current = () => token === LPLAY_SERIAL && identityCurrent(identity) && material === LSM.cur;
   try {
-    speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(txt);
     u.lang = LSM.mix === 1 ? "zh-CN" : "en-US"; u.rate = LSM.rate;
     LSM.playing = true; render();
     u.onend = () => {
+      if (!current()) return;
       if (LSM.loop) { lplay(); return; }
       LSM.playing = false;
       if (!LSM.hist.includes(m.title)) { LSM.hist.push(m.title); LSM.done++; }
       render(); toast("播完了（演示 TTS，非版权真音）");
     };
-    u.onerror = () => { LSM.playing = false; render(); };
+    u.onerror = () => { if (!current()) return; LSM.playing = false; render(); };
     speechSynthesis.speak(u);
-  } catch (e) { toast("朗读不可用（演示）"); }
+  } catch (e) { if (current()) { LSM.playing = false; render(); toast("朗读不可用（演示）"); } }
 }
-function lstop() { try { speechSynthesis.cancel(); } catch (e) { } LSM.playing = false; render(); }
+function lstop() { lcancel(); render(); }
 function ldictCheck() {
   const v = (document.getElementById("ldict").value || "").trim().toLowerCase().replace(/[.,?!]/g, "");
   const m = LSM.mats[LSM.cur];
@@ -718,24 +857,66 @@ const RF_ORDERS = [
   { id: "tk3", t: "年度会员", price: 108, pay: "已退款（沙盒）", right: "已按政策撤销（演示）", rf: "已到账（沙盒）", step: 4, inv: "商店收据可看·本地发票待渠道确认" },
 ];
 const RF_STEPS = ["已申请", "L1 通过", "L2 通过", "渠道处理中", "已到账（沙盒）"];
-function rfApply(id) { const o = RF_ORDERS.find(x => x.id === id); if (!o || o.rf !== "无") { toast("该单已有退款进度（演示）"); return; } o.rf = "已申请·等 L1"; o.step = 0; toast("退款申请已提交（演示）"); render(); }
-function rfInv(id, kind) { const o = RF_ORDERS.find(x => x.id === id); if (!o) return; o.inv = kind + "申请中（演示）"; toast(kind + "申请已提交（演示）"); render(); }
+function auxNormalizeState() {
+  SUP.draft = String(SUP.draft || ""); if (!["功能", "账号", "内容", "支付"].includes(SUP.cat)) SUP.cat = "功能";
+  SUP.cur = typeof SUP.cur === "string" ? SUP.cur : null; SUP.from = SUP.from === "acs" ? "acs" : "support";
+  const ids = new Set();
+  for (let i = 0; i < RF_ORDERS.length;) {
+    const o = RF_ORDERS[i];
+    if (!o || typeof o.id !== "string" || ids.has(o.id) || !Number.isFinite(o.price) || o.price < 0) { RF_ORDERS.splice(i, 1); continue; }
+    ids.add(o.id);
+    const g = GOODS.find(x => x.id === o.productId) || GOODS.find(x => x.t === o.t); o.productId ||= g?.id || null; o.cat ||= g?.cat || "课程";
+    if (!["ready", "paid", "failed", "unknown", "refunded"].includes(o.paymentPhase)) o.paymentPhase = String(o.pay).includes("已退款") ? "refunded" : String(o.pay).includes("已支付") ? "paid" : "unknown";
+    o.renewal ||= o.cat === "会员" ? (o.paymentPhase === "refunded" ? "cancelled" : "active") : "none";
+    const legacyInvoice = String(o.inv || "");
+    o.receiptStatus ||= legacyInvoice.includes("电子收据申请") ? "申请中（演示）" : legacyInvoice.includes("收据可看") ? "样例收据可查看" : "未申请";
+    o.invoiceStatus ||= legacyInvoice.includes("本地发票申请") ? "申请中（演示）" : legacyInvoice.includes("本地发票待") ? "待渠道确认（样例）" : "未申请";
+    o.rf ||= "无"; o.step = Number.isInteger(o.step) ? o.step : -1; o.demo = true; i++;
+  }
+  const o = RF_ORDERS.find(x => x.id === PAY.orderId);
+  if (o) Object.assign(PAY, { productId: o.productId, title: o.t, price: o.price, cat: o.cat, phase: PAY.phase === "ready" && o.paymentPhase === "failed" ? "ready" : o.paymentPhase });
+  else if (PAY.orderId) Object.assign(PAY, { orderId: null, phase: "ready", message: "上次订单未找到，请重新确认本机结算。" });
+  if (!GOODS.some(g => g.id === PAY.productId)) Object.assign(PAY, { productId: null, title: "", price: 0, cat: "", intentId: null, orderId: null, phase: "idle", message: "" });
+  if (!GOODS.some(g => g.id === GC.cur)) GC.cur = null;
+}
+auxNormalizeState();
+function rfApply(id) {
+  const o = RF_ORDERS.find(x => x.id === id); if (!o || o.paymentPhase !== "paid") { toast("仅已支付的沙盒订单可申请退款"); return; }
+  if (o.rf !== "无") { toast("该单已有退款进度（演示）"); return; }
+  o.rf = "已申请·等 L1"; o.step = 0; toast("本机退款申请已保存（演示），尚未到账"); render();
+}
+function rfCancelRenewal(id) {
+  const o = RF_ORDERS.find(x => x.id === id); if (!o || o.cat !== "会员" || o.paymentPhase !== "paid") { toast("该单没有可取消的会员续订"); return; }
+  if (o.renewal === "cancelled") { toast("该单续订已取消（演示）"); return; }
+  o.renewal = "cancelled"; toast("本机续订已取消（演示），当前权益保持有效"); render();
+}
+function rfInv(id, kind) {
+  const o = RF_ORDERS.find(x => x.id === id); if (!o || !["paid", "refunded"].includes(o.paymentPhase) || !["电子收据", "本地发票"].includes(kind)) { toast("请先确认本次订单的支付结果"); return; }
+  const key = kind === "电子收据" ? "receiptStatus" : "invoiceStatus";
+  if (o[key] !== "未申请") { toast("该项已有本机申请或样例状态"); return; }
+  o[key] = "申请中（演示）"; toast(kind + "请求已保存在本机，尚未签发真实票据"); render();
+}
+function rfPaymentActions(o) {
+  if (o.paymentPhase === "unknown") return `<button class="btn sm" onclick="payResolve('${o.id}')">查询本次支付结果</button>`;
+  if (o.paymentPhase === "failed") return `<button class="btn sm" onclick="payRetry('${o.id}')">重试原订单</button>`;
+  return "";
+}
 V.refund = () => {
   const o = RF_ORDERS.find(x => x.id === RF.cur);
-  if (o) return `<div class="card"><button class="btn sm ghost" onclick="RF.cur=null;render()"><svg viewBox="0 0 12 12" fill="none"><path d="M7.5 2.5 4 6l3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> 退款/开票</button><h2>${o.t} · ¥${o.price}</h2><p class="d">资金：${o.pay} · 权益：${o.right}</p>${o.step >= 0 ? `<p class="d">退款：${RF_STEPS.map((s, i) => `<span class="tag"${i === o.step ? ` style="border-color:var(--brand);color:var(--brand)"` : ""}>${i <= o.step ? "● " : ""}${s}</span>`).join(" ")}</p><p class="d">当前：${o.rf} · 双人审批保留，单人运营方案待定，不虚构第二审批人。</p>` : `<p class="d">退款：无 · 取消续订≠退款，只停下次扣费，当前权益保留到到期。</p>`}<p><button class="btn sm" onclick="arm(this,function(){rfApply('${o.id}')})">申请退款</button> <button class="btn sm ghost" onclick="arm(this,function(){toast('取消续订：下次不再扣费，当前权益保留到到期（演示）')})">取消续订</button></p></div><div class="card"><h2>🧾 开票</h2><p class="d">当前：${o.inv}</p><p class="d">能开何种票据按渠道确定；商店收据不直接当本地发票（待确认）。</p><button class="btn sm" onclick="rfInv('${o.id}','电子收据')">申请电子收据</button> <button class="btn sm ghost" onclick="rfInv('${o.id}','本地发票')">申请本地发票</button></div><div class="card"><p class="d">到账与权益变化分开：受理≠已到账；退款完成前权益保持有效，完成后按政策撤销（演示）。</p></div>`;
-  return `<div class="card"><h2>退款 / 开票</h2><p class="d">沙盒演示，不扣真款不发真权益；受理≠已到账。</p></div>` + RF_ORDERS.map(x => `<div class="card"><b>${x.t}</b> <span class="tag">¥${x.price}</span><p class="d">资金：${x.pay} · 权益：${x.right}</p><p class="d">退款：${x.rf} · 开票：${x.inv}</p><button class="btn sm" onclick="RF.cur='${x.id}';render()">查看进度 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>`).join("") + `<div class="card"><p class="d">取消续订≠退款；退款双人审批保留；票据种类按渠道确定（待确认，不虚构）。</p></div>`;
+  if (o) return `<div class="card"><button class="btn sm ghost" onclick="RF.cur=null;render()">我的订单</button><h2>${lh(o.t)} · ¥${o.price}</h2><p class="meta">订单：${lh(o.id)} · 本机沙盒</p><p class="d">资金：${lh(o.pay)} · 权益：${lh(o.right)}</p>${rfPaymentActions(o)}<p class="d">退款：${lh(o.rf)}</p>${o.step >= 0 ? `<p class="d">${RF_STEPS.map((s, i) => `<span class="tag">${i <= o.step ? "● " : ""}${s}</span>`).join(" ")}</p>` : ""}<p><button class="btn sm" onclick="arm(this,function(){rfApply('${o.id}')})"${o.paymentPhase !== "paid" || o.rf !== "无" ? " disabled" : ""}>申请退款</button></p>${o.cat === "会员" ? `<p class="d">续订：${o.renewal === "cancelled" ? "已取消（本机演示）" : "自动续订样例"}</p><button class="btn sm ghost" onclick="arm(this,function(){rfCancelRenewal('${o.id}')})"${o.paymentPhase !== "paid" || o.renewal === "cancelled" ? " disabled" : ""}>取消续订</button>` : `<p class="d">本商品没有会员续订。</p>`}</div><div class="card"><h2>🧾 票据</h2><p class="d">电子收据：${lh(o.receiptStatus)}</p><p class="d">本地发票：${lh(o.invoiceStatus)}</p><p class="d">两种请求独立保存。真实票据渠道尚未接入，本页不会签发真实收据或发票。</p><button class="btn sm" onclick="rfInv('${o.id}','电子收据')"${!["paid", "refunded"].includes(o.paymentPhase) || o.receiptStatus !== "未申请" ? " disabled" : ""}>申请电子收据</button> <button class="btn sm ghost" onclick="rfInv('${o.id}','本地发票')"${!["paid", "refunded"].includes(o.paymentPhase) || o.invoiceStatus !== "未申请" ? " disabled" : ""}>申请本地发票</button></div><div class="card"><p class="d">取消续订只变更本机续订状态，当前权益保留。退款申请受理后等待审核；本原型不执行真实退款。</p></div>`;
+  return `<div class="card"><h2>我的订单 / 退款 / 票据</h2><p class="d">本机沙盒订单；初始三笔为固定样例。新结算保存同一商品与价格，刷新后仍可查看。</p><button class="btn sm ghost" onclick="nav('#/commerce')">回商城</button></div>` + RF_ORDERS.map(x => `<div class="card"><b>${lh(x.t)}</b> <span class="tag">¥${x.price}</span><p class="meta">${lh(x.id)}</p><p class="d">资金：${lh(x.pay)} · 权益：${lh(x.right)}</p><p class="d">退款：${lh(x.rf)}</p><button class="btn sm" onclick="RF.cur='${x.id}';render()">查看订单</button></div>`).join("");
 };
 const VOWELS = [["iː", "sheep"], ["ɪ", "ship"], ["e", "bed"], ["æ", "cat"], ["ɑː", "car"], ["ɒ", "hot"], ["ɔː", "door"], ["ʊ", "book"], ["uː", "food"], ["ʌ", "cup"], ["ɜː", "bird"], ["ə", "about"], ["eɪ", "day"], ["aɪ", "my"], ["ɔɪ", "boy"], ["əʊ", "go"], ["aʊ", "how"], ["ɪə", "here"], ["eə", "there"], ["ʊə", "tour"]];
 const CONSS = [["p", "pen"], ["b", "book"], ["t", "tea"], ["d", "dog"], ["k", "key"], ["g", "go"], ["f", "fish"], ["v", "van"], ["θ", "think"], ["ð", "this"], ["s", "sun"], ["z", "zoo"], ["ʃ", "ship"], ["ʒ", "vision"], ["h", "hat"], ["m", "man"], ["n", "no"], ["ŋ", "sing"], ["l", "look"], ["r", "red"], ["j", "yes"], ["w", "we"], ["tʃ", "chair"], ["dʒ", "jump"], ["tr", "tree"], ["dr", "dog"], ["ts", "cats"], ["dz", "beds"]];
 const PHQ = [["sip", "zip"], ["ship", "sheep"], ["cat", "cut"], ["pen", "pan"]];
 const ABC = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 const BOOKS = [
-  { id: "b1", title: "四级词汇红宝书", author: "俞敏洪", year: "2023", purpose: "四级一次过", tags: ["四级", "词汇", "B1"], dir: "每天 30 词 → 练题 → 复习", intro: "四级核心 3000 词，按频排序，配真题例句。", toc: ["第一章 高频 500", "第二章 核心 1500", "第三章 冲刺 1000"], sents: [["Abandon bad habits.", "A1", "抛掉坏习惯。"], ["Knowledge changes life.", "A2", "知识改变生活。"], ["Persistence pays off.", "B1", "坚持终有回报。"]] },
-  { id: "b2", title: "零基础英语", author: "语学星教研", year: "2024", purpose: "开口不害怕", tags: ["零基础", "口语", "A1"], dir: "字母→音标→短句→对话", intro: "从 26 字母到日常 100 句，配音频跟读。", toc: ["第一单元 字母音标", "第二单元 问候告别", "第三单元 吃穿住行"], sents: [["Good morning.", "A0", "早上好。"], ["How are you?", "A0", "你好吗？"], ["See you.", "A0", "再见。"]] },
-  { id: "b3", title: "六级长难句", author: "李笑来", year: "2022", purpose: "阅读上 200", tags: ["六级", "阅读", "B2"], dir: "拆句→精读→复述", intro: "100 个真题长难句，拆到主谓宾。", toc: ["第一章 定语从句", "第二章 状语从句", "第三章 综合实战"], sents: [["The man who lives next door is a doctor.", "B1", "住隔壁的男人是医生。"], ["Hardly had I arrived when it rained.", "B2", "我刚到就下雨了。"], ["What matters is not what you say.", "B2", "重要的不是你说什么。"]] },
-  { id: "b4", title: "商务口语 100 句", author: "语学星教研", year: "2024", purpose: "开会能张嘴", tags: ["商务", "口语", "B1"], dir: "跟读→角色扮演→实战", intro: "会议邮件谈判全场景 100 句。", toc: ["第一章 会议", "第二章 邮件", "第三章 谈判"], sents: [["Let us get started.", "A1", "我们开始吧。"], ["Could you clarify?", "B1", "能再说清楚点吗？"], ["Win-win matters.", "B1", "双赢很重要。"]] },
-  { id: "b5", title: "雅思备考", author: "语学星教研", year: "2023", purpose: "雅思 6.5", tags: ["雅思", "备考", "B2"], dir: "听说读写四科并进", intro: "听说读写四科题型全覆盖。", toc: ["听力篇", "阅读篇", "写作篇", "口语篇"], sents: [["Time management is key.", "B1", "时间管理是关键。"], ["Cohesion improves writing.", "B2", "衔接提升写作。"]] },
-  { id: "b6", title: "生活英语", author: "语学星教研", year: "2024", purpose: "出国不抓瞎", tags: ["生活", "口语", "A2"], dir: "场景闯关，一天一关", intro: "机场酒店医院全场景。", toc: ["机场篇", "酒店篇", "医院篇"], sents: [["Where is the exit?", "A1", "出口在哪？"], ["Check in, please.", "A1", "请办理入住。"]] },
+  { id: "b1", title: "四级词汇红宝书", author: "语学星原创样例", year: "原型", purpose: "四级词汇练习", tags: ["四级", "词汇", "B1"], dir: "每天 30 词 → 练题 → 复习", intro: "原创词汇片段与例句，用于打磨学习交互；章名数字为目录样例，不表示已提供完整词库。", toc: ["第一章 高频 500", "第二章 核心 1500", "第三章 冲刺 1000"], sents: [["Abandon bad habits.", "A1", "抛掉坏习惯。"], ["Knowledge changes life.", "A2", "知识改变生活。"], ["Persistence pays off.", "B1", "坚持终有回报。"]] },
+  { id: "b2", title: "零基础英语", author: "语学星原创样例", year: "原型", purpose: "开口不害怕", tags: ["零基础", "口语", "A1"], dir: "字母→音标→短句→对话", intro: "原创字母、问候与日常短句样例，配系统语音朗读。", toc: ["第一单元 字母音标", "第二单元 问候告别", "第三单元 吃穿住行"], sents: [["Good morning.", "A0", "早上好。"], ["How are you?", "A0", "你好吗？"], ["See you.", "A0", "再见。"]] },
+  { id: "b3", title: "六级长难句", author: "语学星原创样例", year: "原型", purpose: "阅读拆句练习", tags: ["六级", "阅读", "B2"], dir: "拆句→精读→复述", intro: "原创长难句片段，练习辨认主谓宾与从句；不提供历年真题全集。", toc: ["第一章 定语从句", "第二章 状语从句", "第三章 综合实战"], sents: [["The man who lives next door is a doctor.", "B1", "住隔壁的男人是医生。"], ["Hardly had I arrived when it rained.", "B2", "我刚到就下雨了。"], ["What matters is not what you say.", "B2", "重要的不是你说什么。"]] },
+  { id: "b4", title: "商务口语 100 句", author: "语学星原创样例", year: "原型", purpose: "开会能张嘴", tags: ["商务", "口语", "B1"], dir: "跟读→角色扮演→实战", intro: "原创会议、邮件和谈判短句样例；书名为课程主题，不表示已收录 100 句。", toc: ["第一章 会议", "第二章 邮件", "第三章 谈判"], sents: [["Let us get started.", "A1", "我们开始吧。"], ["Could you clarify?", "B1", "能再说清楚点吗？"], ["Win-win matters.", "B1", "双赢很重要。"]] },
+  { id: "b5", title: "雅思备考", author: "语学星原创样例", year: "原型", purpose: "雅思 6.5", tags: ["雅思", "备考", "B2"], dir: "听说读写四科并进", intro: "原创听说读写学习提示与片段，不代表完整备考课程，不承诺考试成绩。", toc: ["听力篇", "阅读篇", "写作篇", "口语篇"], sents: [["Time management is key.", "B1", "时间管理是关键。"], ["Cohesion improves writing.", "B2", "衔接提升写作。"]] },
+  { id: "b6", title: "生活英语", author: "语学星原创样例", year: "原型", purpose: "出国不抓瞎", tags: ["生活", "口语", "A2"], dir: "场景闯关，一天一关", intro: "原创机场、酒店与求助短句样例。", toc: ["机场篇", "酒店篇", "医院篇"], sents: [["Where is the exit?", "A1", "出口在哪？"], ["Check in, please.", "A1", "请办理入住。"]] },
 ];
 const BK = { cur: null, ch: 1, lv: "B1", so: 0, pos: {} };
 let LASTR = "";
@@ -762,12 +943,12 @@ V.book = () => { const b = BOOKS.find(x => x.id === BK.cur) || BOOKS[0]; const a
 function mdInline(s) { return s.replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/\*(.+?)\*/g, "<i>$1</i>").replace(/`(.+?)`/g, "<code>$1</code>"); }
 function md(src) { return src.split("\n").map(line => { let l = line; if (/^### /.test(l)) return `<h4>${l.slice(4)}</h4>`; if (/^## /.test(l)) return `<h3>${l.slice(3)}</h3>`; if (/^# /.test(l)) return `<h2>${l.slice(2)}</h2>`; if (/^> /.test(l)) return `<blockquote>${l.slice(2)}</blockquote>`; if (/^!\[.*?\]\(.*?\)/.test(l)) { const m = l.match(/!\[(.*?)\]\((.*?)\)/); return `<figure><img src="${m[2]}" alt="${m[1]}" style="max-width:100%;border-radius:10px"><figcaption class="meta">${m[1]}</figcaption></figure>`; } if (/^[-*] /.test(l)) return `<li>${mdInline(l.slice(2))}</li>`; if (/^\d+\. /.test(l)) return `<li>${mdInline(l.replace(/^\d+\. /, ""))}</li>`; if (/^```/.test(l)) return ""; l = mdInline(l); return l.trim() ? `<p>${l}</p>` : ""; }).join("").replace(/(<li>.*?<\/li>)+/g, "<ul>$&</ul>"); }
 const CHAP = {
-  b1: ["# 第一章 高频 500\n\n**abandon** 永远排第一，因为它是四级最爱考的动词。\n\n> 记住：抛掉坏习惯，留下好分数。\n\n- abandon bad habits.\n- 抛掉坏习惯。\n\n![单词卡](https://picsum.photos/seed/abandon/400/200)\n\n## 为什么先学它\n\n出现频率 *极高*，`CET-4` 十年真题 9 次。", "# 第二章 核心 1500\n\n从 **ability（能力）** 到 **accuse（指控）**，先抓动词再抓名词。\n\n> 方法：每天 30 词，读三遍：第一遍看形，第二遍听音，第三遍造句。\n\n## 1. 先拿下 5 个动词\n\n- **abandon** 抛弃：Abandon bad habits. 抛掉坏习惯。\n- **absorb** 吸收：Plants absorb sunlight. 植物吸收阳光。\n- **abuse** 滥用：Do not abuse drugs. 别滥用药物。\n- **accelerate** 加速：The car accelerated. 车加速了。\n- **accompany** 陪伴：She accompanies her son. 她陪着儿子。\n\n## 2. 再记 5 个名词\n\n- **ability** 能力：to the best of my ability. 尽我所能。\n- **academy** 学院：a music academy. 音乐学院。\n- **account** 账户：an email account. 电子邮箱。\n- **abundance** 丰富：in abundance. 充足。\n- **accusation** 指控：a false accusation. 虚假指控。\n\n## 3. 小测两道\n\n1. She ___ to school every day.（go/goes）\n2. There ___ two books.（is/are）\n\n> 答案：1 goes（三单），2 are（复数）。错了进错题本，变式稍后见。", "# 第三章 冲刺 1000\n\n考前 30 天刷完，`B1` 稳了。\n\n> 冲刺不熬夜，复习看错题本。"],
-  b2: ["# 第一单元 字母音标\n\n**A a** 苹果 apple，**B b** 书 book。\n\n- 跟读三遍\n- 指认大小写\n\n![字母墙](https://picsum.photos/seed/abc/400/200)", "# 第二单元 问候告别\n\n**Good morning.** 早上好。\n\n> 见面先笑，再开口。", "# 第三单元 吃穿住行\n\n点餐、问路、买单三件套。"],
-  b3: ["# 第一章 定语从句\n\n**who/which/that** 三兄弟，修饰名词不含糊。\n\n- The man *who* lives next door.\n- 住隔壁的男人。", "# 第二章 状语从句\n\n时间地点原因让步，一网打尽。", "# 第三章 综合实战\n\n十年真题，拆到主谓宾。"],
+  b1: ["# 第一章 高频 500\n\n本节以 **abandon（抛弃）** 为原创词汇学习样例。\n\n> 记忆提示：把单词放进自己的句子中，再通过练习检验。\n\n- abandon bad habits.\n- 抛掉坏习惯。\n\n**文字词卡**：abandon → 抛弃 → Abandon bad habits.\n\n## 怎样练习\n\n读出例句，再用 abandon 写一句话。本节没有引用已核验的真题频次。", "# 第二章 核心 1500\n\n从 **ability（能力）** 到 **accuse（指控）**，先抓动词再抓名词。\n\n> 方法：每天 30 词，读三遍：第一遍看形，第二遍听音，第三遍造句。\n\n## 1. 先拿下 5 个动词\n\n- **abandon** 抛弃：Abandon bad habits. 抛掉坏习惯。\n- **absorb** 吸收：Plants absorb sunlight. 植物吸收阳光。\n- **abuse** 滥用：Do not abuse drugs. 别滥用药物。\n- **accelerate** 加速：The car accelerated. 车加速了。\n- **accompany** 陪伴：She accompanies her son. 她陪着儿子。\n\n## 2. 再记 5 个名词\n\n- **ability** 能力：to the best of my ability. 尽我所能。\n- **academy** 学院：a music academy. 音乐学院。\n- **account** 账户：an email account. 电子邮箱。\n- **abundance** 丰富：in abundance. 充足。\n- **accusation** 指控：a false accusation. 虚假指控。\n\n## 3. 小测两道\n\n1. She ___ to school every day.（go/goes）\n2. There ___ two books.（is/are）\n\n> 答案：1 goes（三单），2 are（复数）。这两题供阅读自查，不会自动写入错题本；可到练习页完成客观题。", "# 第三章 冲刺 1000\n\n复习词义与例句，记录仍不熟悉的词。本节为原创练习提示，完成不代表已达到 `B1`。\n\n> 冲刺不熬夜，复习看错题本。"],
+  b2: ["# 第一单元 字母音标\n\n**A a** 苹果 apple，**B b** 书 book。\n\n- 跟读三遍\n- 指认大小写\n\n**文字提示**：A/a、B/b 对照大小写，结合 apple、book 读出字母。", "# 第二单元 问候告别\n\n**Good morning.** 早上好。\n\n> 见面先笑，再开口。", "# 第三单元 吃穿住行\n\n点餐、问路、买单三件套。"],
+  b3: ["# 第一章 定语从句\n\n**who/which/that** 三兄弟，修饰名词不含糊。\n\n- The man *who* lives next door.\n- 住隔壁的男人。", "# 第二章 状语从句\n\n时间地点原因让步，一网打尽。", "# 第三章 综合实战\n\n原创拆句样例：The learner who reviews every day remembers more words. 找出主语、谓语和定语从句。"],
   b4: ["# 第一章 会议\n\n**Let's get started.** 我们开始吧。\n\n> 开会三件套：开场、转折、收尾。", "# 第二章 邮件\n\n附件用语：Please find attached.", "# 第三章 谈判\n\nWin-win matters. 双赢很重要。"],
   b5: ["# 听力篇\n\n先抓关键词，再听细节。", "# 阅读篇\n\n略读 + 精读两遍法。", "# 写作篇\n\n开头结尾模板背下来。", "# 口语篇\n\nPart 1 流利度优先。"],
-  b6: ["# 机场篇\n\n**Where is the exit?** 出口在哪？\n\n![机场](https://picsum.photos/seed/airport/400/200)", "# 酒店篇\n\n**Check in, please.** 请办理入住。", "# 医院篇\n\n**I need help.** 我需要帮助。"],
+  b6: ["# 机场篇\n\n**Where is the exit?** 出口在哪？\n\n**场景词卡**：exit（出口）、boarding pass（登机牌）。", "# 酒店篇\n\n**Check in, please.** 请办理入住。", "# 医院篇\n\n**I need help.** 我需要帮助。"],
 };
 function chapLex() {
   const v = (document.getElementById("chapq").value || "").trim().toLowerCase().replace(/[^a-z]/g, "");
@@ -782,8 +963,8 @@ function srsAddWord(w) {
   const k = String(w).toLowerCase().replace(/[^a-z]/g, "");
   const zh = hit ? hit.zh : (LEX[k] ? LEX[k].zh : "");
   if (!zh) { toast("词库没有这个词（演示）"); return; }
-  if (SRSQ.some(x => x.w === (hit ? hit.w : k) && !x.done)) { toast("已在复习队列（演示）"); return; }
-  SRSQ.unshift({ w: hit ? hit.w : k, zh, show: false });
+  if (SRSQ.some(x => x.w === (hit ? hit.w : k))) { toast("已在复习安排中（演示）"); return; }
+  SRSQ.push({ w: hit ? hit.w : k, zh, show: false, done: false });
   toast("已加入复习（演示）"); render();
 }
 function chapFav() {
@@ -819,52 +1000,73 @@ const FAM = {
 };
 function famOf(w) {
   if (FAM[w]) return FAM[w];
-  return { infl: [w, w + "s", w + "ed", w + "ing"], sent: ["I know " + w + ".", "We use " + w + " every day.", w + " is useful."], slang: "（该词俚语待补充）", story: "（词源待补充，先记形和音）" };
+  return { infl: ["暂无已核对的变形资料"], sent: [], slang: "暂无已核对的俚语资料。", story: "暂无已核对的词源资料，例句也尚未补齐。" };
 }
 function wset(book) { DR.book = book; DR.i = 0; DR.known = 0; DR.show = false; DR.quizPick = -1; DR.quizDone = false; nav("#/drill"); }
 function wlist() { return DR.book === "CET4" ? WB4 : WB6; }
 function dreveal() { DR.show = true; render(); }
-function dzhan(know) { const L0 = wlist()[Math.min(DR.i, wlist().length - 1)]; if (know) DR.known++; else if (L0 && !SRSQ.some(x => x.w === L0[0] && !x.done)) { SRSQ.unshift({ w: L0[0], zh: L0[2], show: false }); toast("收进复习了（演示）"); } DR.i++; DR.show = false; DR.quizPick = -1; DR.quizDone = false; if (DR.i >= wlist().length) { toast(`本轮完：斩 ${DR.known}/${wlist().length}`); nav("#/wordbook"); } else render(); }
-function drDetail() { const L = wlist(); const w = L[Math.min(DR.i, L.length - 1)][0]; VC.w = w; VC.quizPick = -1; VC.q = ""; nav("#/vocab"); }
-const TCH = { on: false, sec: 60, right: 0, wrong: 0, timer: 0, list: [], best: null };
-function tchStart() { const L = wlist(); const pool = L.map((x, i) => i); for (let k = pool.length - 1; k > 0; k--) { const j = (DR.i + k * 3) % (k + 1); const t = pool[k]; pool[k] = pool[j]; pool[j] = t; } TCH.list = pool.slice(0, Math.min(10, pool.length)); TCH.on = true; TCH.sec = 60; TCH.right = 0; TCH.wrong = 0; TCH.pos = 0; TCH.pick = -1; clearInterval(TCH.timer); TCH.timer = setInterval(() => { TCH.sec--; if (TCH.sec <= 0) tchFinish(); else { const el = document.getElementById("tchsec"); if (el) el.textContent = TCH.sec; } }, 1000); render(); }
+function dzhan(know) { const L0 = wlist()[Math.min(DR.i, wlist().length - 1)]; if (know) DR.known++; else if (L0) srsAddWord(L0[0]); DR.i++; DR.show = false; DR.quizPick = -1; DR.quizDone = false; if (DR.i >= wlist().length) { toast(`本轮完：斩 ${DR.known}/${wlist().length}`); nav("#/wordbook"); } else render(); }
+function drDetail() { const L = wlist(); const w = DR.mode === "time" && TCH.book === DR.book && TCH.list.length && TCH.pos < TCH.list.length ? tchOpts().w[0] : L[Math.min(DR.i, L.length - 1)][0]; VC.w = w; VC.quizPick = -1; VC.q = ""; nav("#/vocab"); }
+const TCH = { on: false, paused: false, sec: 60, right: 0, wrong: 0, timer: 0, list: [], best: null, bests: {}, book: null, pos: 0 };
+function tchPause(reason) { if (!TCH.on) return; clearInterval(TCH.timer); TCH.timer = 0; TCH.on = false; TCH.paused = true; TCH.pauseReason = reason; }
+function drillLifecycle(route) { if (TCH.on && (route !== "drill" || DR.mode !== "time" || DR.book !== TCH.book || LM.wordClosed || document.hidden || !identityCurrent(TCH.identity))) tchPause("挑战已暂停，回到本页后可继续"); }
+function tchRun() {
+  TCH.on = true; TCH.paused = false; TCH.identity = identityToken(); clearInterval(TCH.timer);
+  TCH.timer = setInterval(() => {
+    if (!TCH.on) return;
+    if (location.hash !== "#/drill" || DR.mode !== "time" || DR.book !== TCH.book || document.hidden || !identityCurrent(TCH.identity)) { tchPause("挑战已暂停，回到本页后可继续"); return; }
+    TCH.sec--; if (TCH.sec <= 0) tchFinish(); else { const el = document.getElementById("tchsec"); if (el) el.textContent = TCH.sec; }
+  }, 1000);
+}
+function tchStart() { if (!needReady() || LM.wordTask || LM.wordClosed) return; const L = wlist(); const pool = L.map((x, i) => i); for (let k = pool.length - 1; k > 0; k--) { const j = (DR.i + k * 3) % (k + 1); const t = pool[k]; pool[k] = pool[j]; pool[j] = t; } TCH.list = pool.slice(0, Math.min(10, pool.length)); TCH.book = DR.book; TCH.sec = 60; TCH.right = 0; TCH.wrong = 0; TCH.pos = 0; TCH.pick = -1; TCH.best = TCH.bests[DR.book] || null; tchRun(); render(); }
+function tchResume() { if (!needReady() || LM.wordTask || LM.wordClosed || !TCH.paused || TCH.book !== DR.book || DR.mode !== "time") return; tchRun(); render(); }
 function tchOpts() { const L = wlist(); const idx = TCH.list[Math.min(TCH.pos, TCH.list.length - 1)]; const w = L[idx]; const others = L.filter((_, j) => j !== idx).slice(0, 12); const o = [others[(idx + 1) % others.length], others[(idx + 5) % others.length], others[(idx + 9) % others.length]].map(x => ({ zh: x[2], ok: false })).concat([{ zh: w[2], ok: true }]); const h = idx * 5 + TCH.pos; for (let k = o.length - 1; k > 0; k--) { const j = (h + k * 3) % (k + 1); const t = o[k]; o[k] = o[j]; o[j] = t; } return { w, o }; }
-function tchPick(k) { if (!TCH.on) return; TCH.pick = k; const { w, o } = tchOpts(); if (o[k].ok) TCH.right++; else { TCH.wrong++; addMistake(w[0], w[2], "word", "词汇选项练习"); } TCH.pos++; TCH.pick = -1; if (TCH.pos >= TCH.list.length) tchFinish(); else render(); }
-function tchFinish() { if (!TCH.on) return; clearInterval(TCH.timer); TCH.on = false; const score = TCH.right * 10 - TCH.wrong * 2; if (!TCH.best || score > TCH.best.score) TCH.best = { score, right: TCH.right, wrong: TCH.wrong }; render(); toast("限时结束：对 " + TCH.right + " / 错 " + TCH.wrong + "（演示，不上榜）"); }
+function tchPick(k, position = TCH.pos) { if (!TCH.on || position !== TCH.pos || DR.mode !== "time" || DR.book !== TCH.book || LM.wordTask || !identityCurrent(TCH.identity)) return; const { w, o } = tchOpts(); if (!o[k]) return; TCH.pick = k; if (o[k].ok) TCH.right++; else { TCH.wrong++; addMistake(w[0], w[2], "word", "词汇限时练习"); } TCH.pos++; TCH.pick = -1; if (TCH.pos >= TCH.list.length) tchFinish(); else render(); }
+function tchFinish() { if (!TCH.on) return; clearInterval(TCH.timer); TCH.timer = 0; TCH.on = false; TCH.paused = false; const score = TCH.right * 10 - TCH.wrong * 2; if (!TCH.best || score > TCH.best.score) TCH.best = { score, right: TCH.right, wrong: TCH.wrong }; TCH.bests[TCH.book] = TCH.best; render(); toast("限时结束：对 " + TCH.right + " / 错 " + TCH.wrong + "（演示，不上榜）"); }
 const PIC = { abandon: "🗑️", ability: "💪", absent: "🏫", absolute: "💯", absorb: "🧽", abstract: "🎨", abundant: "🌾", abuse: "🚫", academy: "🏛️", accelerate: "🚀", accent: "🗣️", accept: "🤝", access: "🔑", accommodate: "🏠", accompany: "👥", accomplish: "🏆", account: "👤", accumulate: "📚", accuracy: "🎯", accuse: "⚖️", abolish: "🔨", absurd: "🤪", abundance: "🌾", acclaim: "👏", acquaint: "🤝", adhere: "🧲", adjacent: "🏘️", adjoin: "🧱", administer: "💼", admirable: "⭐", admission: "🎫", adolescent: "🧑", adore: "❤️", adorn: "💎", adverse: "⛈️", advertise: "📢", advocate: "📣", aesthetic: "🌸", affiliate: "🔗", affirm: "✅" };
 function wpic(w) { return PIC[w] || "🔤"; }
 function wsplit(w) { const m = w.match(/^(.{2,4})(.+?)(ing|ed|tion|sion|ance|ence|ment|ness|ly|ous|ive|al|er|or|ist)?$/); if (!m) return [w]; return [m[1], m[2], m[3] || ""].filter(Boolean); }
 function wquiz() { const L = wlist(), idx = Math.min(DR.i, L.length - 1), w = L[idx]; const others = L.filter((_, j) => j !== idx).slice(0, 3); const opts = [...others.map(o => ({ zh: o[2], w: o[0], ok: false })), { zh: w[2], w: w[0], ok: true }]; const h = DR.i * 7 + w[0].length; for (let k = opts.length - 1; k > 0; k--) { const j = (h + k * 3) % (k + 1); const t = opts[k]; opts[k] = opts[j]; opts[j] = t; } return { w, opts }; }
-function qpick(k) { DR.quizPick = k; render(); }
+function drWordKey() { return (LM.wordTask || "free") + ":" + DR.book + ":" + DR.i; }
+function drMode(mode) { if (!["zhan", "quiz", "fam", "time"].includes(mode) || LM.wordClosed || DR.mode === mode) return; if (mode === "time" && LM.wordTask) { toast("今日词汇任务使用回忆、选项或词形模式"); return; } if (DR.mode === "time") tchPause("已切换学习模式，限时挑战暂停"); DR.mode = mode; render(); }
+function qpick(k, key = drWordKey()) { if (!needReady() || LM.wordClosed || DR.mode !== "quiz" || key !== drWordKey() || DR.quizDone || DR.quizPick >= 0) return; const quiz = wquiz(); if (!quiz.opts[k]) return; DR.quizPick = k; DR.quizDone = true; DR.quizSnapshot = { key, w: quiz.w.slice(), opts: quiz.opts.map(o => ({ ...o })), ok: quiz.opts[k].ok }; if (!quiz.opts[k].ok) addMistake(quiz.w[0], quiz.w[2], "word", "词汇选项练习"); render(); }
+function drNextWord(know, key) { if (!needReady() || LM.wordClosed || key !== drWordKey() || (DR.mode === "quiz" && DR.quizPick < 0)) return; dzhan(know); }
 V.drill = () => {
-  const L = wlist();
-  const tabs = `<div class="study-toolbar"><div class="toolbar-heading"><span class="meta">学习模式</span><button class="text-link" onclick="drDetail()">词汇详情 ${CHEV}</button></div><div class="mode-switch" style="grid-template-columns:repeat(${LM.wordTask ? 3 : 4},minmax(0,1fr))" role="group" aria-label="刷词模式">${[["zhan", "回忆"], ["quiz", "选项"], ["fam", "词形"], ["time", "限时"]].filter(([mode]) => !LM.wordTask || mode !== "time").map(([mode, label]) => `<button class="mode-button${DR.mode === mode ? " is-active" : ""}" aria-pressed="${DR.mode === mode}" onclick="DR.mode='${mode}';DR.show=false;DR.quizPick=-1;DR.quizDone=false;render()">${label}</button>`).join("")}</div></div>`;
-  if (DR.mode === "time") {
-    if (!TCH.on && !TCH.best && TCH.right === 0 && TCH.wrong === 0) return `<div class="meta">${DR.book === "CET4" ? "四级" : "六级"} · 限时 60 秒 · 对+10/错-2 · 错进错题（演示，不上榜）</div>${tabs}<div class="card empty"><b>⏱️ 限时挑战</b><p class="d">60 秒能对几个？错的自动进错题本</p><button class="btn" onclick="tchStart()">开始 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>`;
-    if (!TCH.on && (TCH.right > 0 || TCH.wrong > 0 || TCH.best)) { const b = TCH.best; return `<div class="meta">${DR.book === "CET4" ? "四级" : "六级"} · 限时结算（演示）</div>${tabs}<div class="card" style="text-align:center"><b style="font-size:40px">${TCH.right * 10 - TCH.wrong * 2}</b><p class="d">对 ${TCH.right} · 错 ${TCH.wrong} · 错题已进本</p>${b ? `<p class="d">个人最佳：${b.score}（对 ${b.right}/错 ${b.wrong}）</p>` : ``}<button class="btn" onclick="tchStart()">再来一轮 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button> <button class="btn ghost" onclick="nav('#/mistakes')">看错题 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>`; }
-    const { w, o } = tchOpts();
-    return `<div class="meta">${DR.book === "CET4" ? "四级" : "六级"} · 剩 <b id="tchsec">${TCH.sec}</b>s · 对 ${TCH.right} 错 ${TCH.wrong} · 第 ${Math.min(TCH.pos + 1, TCH.list.length)}/${TCH.list.length}</div>${tabs}<div class="card word-card"><div class="word-heading"><b class="word-title">${w[0]}</b></div><p class="d">${w[1]}</p></div>` + o.map((x, k) => `<button class="opt" onclick="tchPick(${k})">${wpic(w[0])} ${x.zh}</button>`).join("");
+  if (LM.wordClosed) {
+    const result = LM.records.filter(r => r.kind === "words").at(-1);
+    return `<div class="card"><h2>本轮词汇已完成</h2><p class="d">查看旧页面不会继续计词或重新提交。本轮记录保留在学习记录中。</p><div class="actions">${result ? `<button class="btn sm" onclick="lmOpenResult('${result.id}')">查看本轮结果</button>` : ""}<button class="btn sm ghost" onclick="nav('#/today')">回今日安排</button><button class="btn sm ghost" onclick="lmStartWords('${DR.book}',0)">开始自由学习新一轮</button></div></div>`;
   }
+  const L = wlist(), key = drWordKey();
+  const counter = `${LM.wordTask ? (LM.wordSeen || []).length + 1 : Math.min(DR.i + 1, L.length)}/${LM.wordTask ? (S.today.find(t => t.id === LM.wordTask)?.limit || 3) : L.length}`;
+  const meta = `${DR.book === "CET4" ? "四级" : "六级"} · 第 ${counter} 词 · 本轮记得 ${DR.known}`;
+  const tabs = `<div class="study-toolbar"><div class="toolbar-heading"><span class="meta">学习模式</span><button class="text-link" onclick="drDetail()">词汇详情 ${CHEV}</button></div><div class="mode-switch" style="grid-template-columns:repeat(${LM.wordTask ? 3 : 4},minmax(0,1fr))" role="group" aria-label="刷词模式">${[["zhan", "回忆"], ["quiz", "选项"], ["fam", "词形"], ["time", "限时"]].filter(([mode]) => !LM.wordTask || mode !== "time").map(([mode, label]) => `<button class="mode-button${DR.mode === mode ? " is-active" : ""}" aria-pressed="${DR.mode === mode}" onclick="drMode('${mode}')">${label}</button>`).join("")}</div></div>`;
+  if (DR.mode === "time") {
+    if (LM.wordTask) return `${tabs}<div class="card"><h2>继续今日词汇任务</h2><p class="d">今日任务不使用限时模式，已学习的词与进度保留。</p><button class="btn" onclick="drMode('zhan')">回到回忆模式</button></div>`;
+    if (TCH.book === DR.book && TCH.paused) return `${tabs}<div class="card"><h2>限时挑战已暂停</h2><p class="d">剩余 ${TCH.sec} 秒 · 对 ${TCH.right} · 错 ${TCH.wrong}。离开页面、切换模式或浏览器进入后台时会停表。</p><div class="actions"><button class="btn sm" onclick="tchResume()">继续本轮</button><button class="btn sm ghost" onclick="tchStart()">重新开始一轮</button></div></div>`;
+    if (TCH.book !== DR.book || (!TCH.on && !TCH.best && TCH.right === 0 && TCH.wrong === 0)) return `<div class="meta">${DR.book === "CET4" ? "四级" : "六级"} · 限时 60 秒 · 对+10/错-2 · 错题进本（演示，不上榜）</div>${tabs}<div class="card empty"><h2>限时挑战</h2><p class="d">60 秒能对几个？离开页面会暂停，挑战不计入今日三词任务。</p><button class="btn" onclick="tchStart()">开始挑战</button></div>`;
+    if (!TCH.on) return `<div class="meta">${DR.book === "CET4" ? "四级" : "六级"} · 限时结算（演示）</div>${tabs}<div class="card" style="text-align:center"><b style="font-size:40px">${TCH.right * 10 - TCH.wrong * 2}</b><p class="d">对 ${TCH.right} · 错 ${TCH.wrong} · 错题已进本</p>${TCH.best ? `<p class="d">本词库个人最佳：${TCH.best.score}（对 ${TCH.best.right}/错 ${TCH.best.wrong}）</p>` : ""}<button class="btn" onclick="tchStart()">再来一轮</button><button class="btn ghost" onclick="nav('#/mistakes')">查看错题</button></div>`;
+    const { w, o } = tchOpts();
+    return `<div class="meta">${DR.book === "CET4" ? "四级" : "六级"} · 剩 <b id="tchsec">${TCH.sec}</b>s · 对 ${TCH.right} 错 ${TCH.wrong} · 第 ${Math.min(TCH.pos + 1, TCH.list.length)}/${TCH.list.length} 题</div>${tabs}<div class="card word-card"><div class="word-heading"><b class="word-title">${w[0]}</b></div><p class="d">${w[1]}</p></div>` + o.map((x, k) => `<button class="opt" onclick="tchPick(${k},${TCH.pos})">${wpic(w[0])} ${x.zh}</button>`).join("") + `<button class="btn ghost" onclick="tchPause('主动暂停');render()">暂停挑战</button>`;
+  }
+  const next = know => `drNextWord(${know},'${key}')`;
   if (DR.mode === "fam") {
-    const L = wlist(), w = L[Math.min(DR.i, L.length - 1)], f = famOf(w[0]);
-    return `<div class="meta">${DR.book === "CET4" ? "四级" : "六级"} · 第 ${Math.min(DR.i + 1, L.length)}/${L.length} · 词形与例句</div>${tabs}<div class="card word-card"><div class="word-heading"><b class="word-title">${w[0]}</b><button class="icon-button" aria-label="朗读当前单词" onclick="speak('${w[0]}')">🔊</button></div><p class="d">${w[1]}</p><p style="font-size:20px"><b>${w[2]}</b></p></div><div class="card"><h2>🔀 变形全家</h2>${f.infl.map(x => `<span class="tag">${x}</span>`).join("")}</div><div class="card"><h2>🧩 组句</h2>${f.sent.map((s, k) => `<p class="d">${k + 1}. ${s} <button class="btn sm" onclick="speak('${s.replace(/'/g, "")}')">🔊</button></p>`).join("")}</div><div class="card"><h2>😎 俚语</h2><p>${f.slang}</p></div><div class="card"><h2>📜 由来</h2><p class="d">${f.story}</p></div><button class="btn" onclick="dzhan(true)">本次记得，下一词 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button> <button class="btn ghost" onclick="dzhan(false)">加入复习，下一词 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`;
+    const w = L[Math.min(DR.i, L.length - 1)], f = famOf(w[0]);
+    return `<div class="meta">${meta} · 词形与例句</div>${tabs}<div class="card word-card"><div class="word-heading"><b class="word-title">${w[0]}</b><button class="icon-button" aria-label="朗读当前单词" onclick="speak('${w[0]}')">🔊</button></div><p class="d">${w[1]}</p><p style="font-size:20px"><b>${w[2]}</b></p></div><div class="card"><h2>变形全家</h2>${f.infl.map(x => `<span class="tag">${x}</span>`).join("")}</div><div class="card"><h2>例句</h2>${f.sent.length ? f.sent.map(s => `<p class="d">${s}<button class="btn sm" onclick="speak('${s.replace(/'/g, "")}')">🔊</button></p>`).join("") : `<p class="d">暂无已核对的例句。</p>`}</div><div class="card"><h2>搭配与记忆提示</h2><p>${f.slang}</p><p class="d">仅为记忆联想，不代表已核对词源：${f.story}</p></div><div class="actions"><button class="btn" onclick="${next(true)}">本次记得，下一词</button><button class="btn ghost" onclick="${next(false)}">加入复习，下一词</button></div>`;
   }
   if (DR.mode === "quiz") {
-    const { w, opts } = wquiz();
-    let mid = "";
-    if (DR.quizPick >= 0) {
+    const snapshot = DR.quizDone && DR.quizSnapshot?.key === key ? DR.quizSnapshot : wquiz(), { w, opts } = snapshot;
+    const selected = Number.isInteger(DR.quizPick) && DR.quizPick >= 0 && DR.quizPick < opts.length;
+    let feedback = "";
+    if (selected) {
       const right = opts[DR.quizPick].ok;
-      if (right) { mid = `<div class="fb ok">✓ 对了</div><button class="btn" onclick="dzhan(true)">下一词 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`; }
-      else {
-        const parts = wsplit(w[0]);
-        mid = `<div class="fb no">! 选错了，进复习</div><div class="card" style="margin:10px 0 0"><b>🔍 ${w[0]} 拆开看</b><p style="font-size:22px">${parts.join(" + ")}</p><p class="d">读音：${w[1]} · 中文：${w[2]}</p><p class="d">点读跟三遍，记住形和音的对应（演示拆分）。</p><button class="btn sm" onclick="speak('${w[0]}')">🔊 跟读</button> <button class="btn sm ghost" onclick="dzhan(false)">记下了，下一词 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>`;
-        addMistake(w[0], w[2], "word", "词汇选项练习");
-      }
+      feedback = right
+        ? `<div class="fb ok" role="status">本次选择正确。查看反馈不会新增作答。</div><button class="btn" onclick="${next(true)}">下一词</button>`
+        : `<div class="fb no" role="status">本次选择不正确，已记录到错题本。</div><div class="card"><h2>${w[0]} 的提示</h2><p>${wsplit(w[0]).join(" + ")}</p><p class="d">${w[1]} · ${w[2]}</p><div class="actions"><button class="btn sm ghost" onclick="speak('${w[0]}')">朗读本词</button><button class="btn sm" onclick="${next(false)}">加入复习，下一词</button></div></div>`;
     }
-    return `<div class="meta">${DR.book === "CET4" ? "四级" : "六级"} · 第 ${LM.wordTask ? (LM.wordSeen || []).length + 1 : Math.min(DR.i + 1, L.length)}/${LM.wordTask ? 3 : L.length} · 本轮记得 ${DR.known}</div>${tabs}<div class="card word-card"><div class="word-heading"><b class="word-title">${w[0]}</b><button class="icon-button" aria-label="朗读当前单词" onclick="speak('${w[0]}')">🔊</button></div><p class="d">${w[1]}</p></div>` + opts.map((o, k) => `<button class="opt" onclick="qpick(${k})">${wpic(o.w)} ${o.zh}</button>`).join("") + mid;
+    return `<div class="meta">${meta}</div>${tabs}<div class="card word-card"><div class="word-heading"><b class="word-title">${w[0]}</b><button class="icon-button" aria-label="朗读当前单词" onclick="speak('${w[0]}')">🔊</button></div><p class="d">${w[1]}</p></div>` + opts.map((o, k) => `<button class="opt${DR.quizPick === k ? " sel" : ""}" aria-pressed="${DR.quizPick === k}" ${selected ? "disabled" : ""} onclick="qpick(${k},'${key}')">${wpic(o.w)} ${o.zh}</button>`).join("") + feedback;
   }
   const w = L[Math.min(DR.i, L.length - 1)];
-  return `<div class="meta">${DR.book === "CET4" ? "四级" : "六级"} · 第 ${LM.wordTask ? (LM.wordSeen || []).length + 1 : Math.min(DR.i + 1, L.length)}/${LM.wordTask ? 3 : L.length} · 本轮记得 ${DR.known}</div>${tabs}<div class="card word-card"><div class="word-heading"><b class="word-title">${w[0]}</b></div><p class="d">${w[1]}</p><div class="word-meaning">${DR.show ? `<p><b>${w[2]}</b></p><button class="btn sm ghost" aria-label="朗读当前单词" onclick="speak('${w[0]}')">🔊 朗读</button>` : `<button class="btn sm ghost" onclick="dreveal()">点看中文</button>`}</div></div>${DR.show ? `<div class="word-actions"><button class="btn ghost" onclick="dzhan(false)">加入复习</button><button class="btn" onclick="dzhan(true)">本次记得</button></div>` : ``}`;
+  return `<div class="meta">${meta}</div>${tabs}<div class="card word-card"><div class="word-heading"><b class="word-title">${w[0]}</b></div><p class="d">${w[1]}</p><div class="word-meaning">${DR.show ? `<p><b>${w[2]}</b></p><button class="btn sm ghost" aria-label="朗读当前单词" onclick="speak('${w[0]}')">朗读</button>` : `<button class="btn sm ghost" onclick="dreveal()">点看中文</button>`}</div></div>${DR.show ? `<div class="word-actions"><button class="btn ghost" onclick="${next(false)}">加入复习</button><button class="btn" onclick="${next(true)}">本次记得</button></div>` : ""}`;
 };
 V.wordbook = () => `<div class="card"><h2>📕 单词本</h2><p class="d">选一本，直接开刷（斩＝会，收＝不会进复习）</p><button class="opt" onclick="wset('CET4')"><b>四级词汇</b> · 20 词 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="opt" onclick="wset('CET6')"><b>六级词汇</b> · 20 词 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>`;
 const PHG = [
@@ -882,13 +1084,14 @@ const AL_EX = { A: "apple 苹果", B: "book 书", C: "cat 猫", D: "dog 狗", E:
 function alPick(c) { speak(c); const el = document.getElementById("alD"); if (el) el.innerHTML = '<b>' + c + ' ' + c.toLowerCase() + '</b> · 例：' + (AL_EX[c] || '待补'); }
 
 /* ---------- 动作 ---------- */
-function doLogin() { S.user = document.getElementById("li").value || "t-learner-01@test.invalid"; S.gate = S.gate === "NONE" ? "PENDING" : S.gate; toast("登录成功"); nav(S.gate === "PASS" ? "#/home" : "#/gate"); }
-function doRegister() { const id = document.getElementById("ri").value; if (!id || !id.trim()) { toast("先填个账号"); return; } const pw = document.getElementById("rp").value || ""; if (pw.length < 8 || !/[A-Za-z]/.test(pw) || !/[0-9]/.test(pw)) { toast("密码≥8 位且含字母+数字"); return; } S.user = id; S.gate = "PENDING"; toast("注册成功（201），先过身份确认"); nav("#/gate"); }
-function doGate() { const ag = document.getElementById("cf"); if (!document.getElementById("by").value || !ag.checked) { toast("请填写年份并确认已满 18 岁"); return; } S.gate = "PASS"; toast("身份已确认（演示）"); }
-function doConsents() { const a = [...document.querySelectorAll(".ag")]; if (!a.every(x => x.checked)) { toast("三项都要签"); return; } toast("三项已签署"); nav("#/onboard"); }
+function doLogin() { const id = document.getElementById("li").value.trim(), password = document.getElementById("lp").value; if (!id || !password) { toast("请填写演示账号和密码"); return; } S.user = id; syncIdentity(); S.staff = false; S.gate = S.gate === "NONE" ? "PENDING" : S.gate; toast("已进入本机演示档案"); nav(S.gate === "PASS" && hasConsents() ? "#/home" : "#/gate"); }
+function doRegister() { const id = document.getElementById("ri").value.trim(); if (!id) { toast("先填个账号"); return; } const pw = document.getElementById("rp").value || ""; if (pw.length < 8 || !/[A-Za-z]/.test(pw) || !/[0-9]/.test(pw)) { toast("密码≥8 位且含字母+数字"); return; } S.user = id; syncIdentity(); S.staff = false; S.gate = "PENDING"; S.birthDate = null; S.consents = {}; toast("演示身份已创建，请确认成年人身份"); nav("#/gate"); }
+function doGate() { if (!needAuth()) return; const value = document.getElementById("by").value, age = birthdayAge(value); if (age == null) { toast("请填写有效且不晚于今天的出生日期"); return; } S.birthDate = value; if (age < 18) { S.gate = "REJECTED"; S.consents = {}; toast("尚未满 18 岁，当前不能开放学习"); render(); return; } if (!document.getElementById("cf").checked) { toast("请主动确认出生日期准确且已满 18 岁"); return; } S.gate = "PASS"; toast("成年人身份已确认（本机演示）"); render(); }
+function doConsents() { if (!needAuth()) return; if (S.gate !== "PASS") { toast("请先通过成年人身份确认"); return; } const a = [...document.querySelectorAll(".ag")]; if (a.length !== CONSENT_KEYS.length || !a.every(x => x.checked) || !CONSENT_KEYS.every(key => a.some(x => x.dataset.consent === key))) { toast("请逐项阅读并主动确认三项说明"); return; } S.consents = Object.fromEntries(CONSENT_KEYS.map(key => [key, { agreed: true, version: S.consentV, at: new Date().toISOString(), source: "本机演示签署" }])); dbSave(); toast("同意记录已保存到本机"); nav("#/onboard"); }
 function doGoal() { S.goal = document.getElementById("g").selectedOptions[0].text; S.minutes = parseInt(document.getElementById("m").value, 10) || 15; S.quick = false; S.plan = false; S.quiz = { i: 0, sel: null, phase: "answer", answers: [], done: false, score: 0 }; toast("目标已保存：每天 " + S.minutes + " 分钟"); nav("#/placement"); }
-function pick(k) { if (S.quiz.phase !== "answer") return; S.quiz.sel = k; document.querySelectorAll("#qo .opt").forEach((x, j) => x.classList.toggle("sel", j === k)); }
+function pick(k) { if (S.quiz.phase !== "answer") return; S.quiz.sel = k; document.querySelectorAll("#qo .opt").forEach((x, j) => x.classList.toggle("sel", j === k)); dbSave(); }
 function qSubmit() {
+  if (!needReady()) return;
   const qi = S.quiz.i;
   if (S.quiz.phase === "saved") { toast("本题已记录，去下一题"); return; }
   if (S.quiz.phase !== "answer") return;
@@ -896,8 +1099,9 @@ function qSubmit() {
   if (S.quiz.sel == null) { toast("先选一个，或点跳过"); return; }
   S.quiz.phase = "submitting"; S.quiz.fb = { msg: "提交中…", cls: "wa" }; render();
   const tok = S.quiz.tok = (S.quiz.tok || 0) + 1;
+  const identity = identityToken();
   setTimeout(() => {
-    if (S.quiz.tok !== tok || S.quiz.i !== qi || S.quiz.phase !== "submitting") return;
+    if (!identityCurrent(identity) || S.quiz.tok !== tok || S.quiz.i !== qi || S.quiz.phase !== "submitting") return;
     if (LAB.failNext) { LAB.failNext = false; S.quiz.phase = "answer"; S.quiz.fb = { msg: "提交失败，再点一次提交重试（选择还在）", cls: "no" }; render(); return; }
     if (LAB.unknownNext) { LAB.unknownNext = false; S.quiz.phase = "unknown"; S.quiz.fb = { msg: "结果未知：先别重做，点查询结果（不重复计分）", cls: "wa" }; render(); return; }
     recordQuiz(qi, S.quiz.sel);
@@ -907,19 +1111,27 @@ function recordQuiz(qi, sel) {
   if (S.quiz.answers[qi] && !S.quiz.answers[qi].skip) { S.quiz.phase = "saved"; render(); return; }
   const q = BANK[qi], ok = sel === q.a;
   S.quiz.answers[qi] = { sel, ok };
-  if (ok) S.quiz.score++; else addMistake(q.s, "定位：" + q.dim + "待补", "sentence", "定级");
+  qRecount(); if (!ok) addMistake(q.s, "定位：" + q.dim + "待补", "sentence", "样例测评");
   S.quiz.phase = "saved";
   S.quiz.fb = { msg: `已保存（第 ${qi + 1}/${BANK.length} 题）· 本轮结束统一讲评`, cls: "ok" };
   render();
 }
-function qResolve() { if (S.quiz.phase === "unknown") recordQuiz(S.quiz.i, S.quiz.sel); }
+function qResolve() { if (needReady() && S.quiz.phase === "unknown") recordQuiz(S.quiz.i, S.quiz.sel); }
 function qSkip() {
   const qi = S.quiz.i;
   if (S.quiz.phase !== "answer") return;
+  if (S.quiz.answers[qi] && !S.quiz.answers[qi].skip) return;
   S.quiz.answers[qi] = { skip: true }; S.quiz.phase = "saved";
+  qRecount();
   S.quiz.fb = { msg: "已跳过，不计分；报告会单独列出未答题", cls: "wa" }; render();
 }
-function qNext() { if (S.quiz.phase !== "saved") { toast("先作答提交保存，或点跳过"); return; } if (S.quiz.i < BANK.length - 1) { S.quiz.i++; S.quiz.sel = null; S.quiz.phase = "answer"; S.quiz.fb = null; render(); } else { S.quiz.done = true; nav("#/report"); } }
+function qRecount() { S.quiz.score = BANK.reduce((n, q, i) => n + (S.quiz.answers[i] && !S.quiz.answers[i].skip && S.quiz.answers[i].ok ? 1 : 0), 0); }
+function qLoad(index) {
+  S.quiz.i = index; const a = S.quiz.answers[index]; S.quiz.sel = a && !a.skip ? a.sel : null;
+  S.quiz.phase = a && !a.skip ? "saved" : "answer"; S.quiz.fb = a && !a.skip ? { msg: "本题已有保存的答案，可直接前往下一题。", cls: "ok" } : a?.skip ? { msg: "本题先前跳过，现在可以补答。", cls: "wa" } : null;
+}
+function qResumeSkipped() { const i = S.quiz.answers.findIndex(a => a?.skip); if (i < 0) { toast("本轮没有待补答的样例"); return; } S.quiz.done = false; qLoad(i); nav("#/placement"); }
+function qNext() { if (S.quiz.phase !== "saved") { toast("先作答提交保存，或点跳过"); return; } if (S.quiz.i < BANK.length - 1) { qLoad(S.quiz.i + 1); render(); } else { qRecount(); S.quiz.done = true; nav("#/report"); } }
 /* ---------- 任务题组（稳定标识；语法 g1 / 阅读 r1） ---------- */
 const GROUPS = {
   g1: { title: "语法 · There be 句型", kind: "grammar", items: [
@@ -950,13 +1162,15 @@ function enterTask(taskId) {
 }
 function prPick(k) { if (PR.phase !== "answer") return; PR.sel = k; render(); }
 function prSubmit() {
+  if (!needReady()) return;
   const g = prGroup(); if (!g || PR.phase !== "answer") return;
   if (LAB.offline) { PR.fb = { msg: "离线：选择已保留为草稿，联网后点提交", cls: "wa" }; render(); return; }
   if (PR.sel < 0) { toast("先选一个"); return; }
   PR.phase = "submitting"; PR.fb = { msg: "提交中…", cls: "wa" }; render();
   const tok = PR.tok = (PR.tok || 0) + 1, pos = PR.pos, tid = PR.taskId;
+  const identity = identityToken();
   setTimeout(() => {
-    if (PR.tok !== tok || PR.taskId !== tid || PR.pos !== pos || PR.phase !== "submitting") return;
+    if (!identityCurrent(identity) || PR.tok !== tok || PR.taskId !== tid || PR.pos !== pos || PR.phase !== "submitting") return;
     if (LAB.failNext) { LAB.failNext = false; PR.phase = "answer"; PR.fb = { msg: "提交失败，再点一次提交重试（选择还在）", cls: "no" }; render(); return; }
     if (LAB.unknownNext) { LAB.unknownNext = false; PR.phase = "unknown"; PR.fb = { msg: "结果未知：先别重做，点查询结果（不重复计分）", cls: "wa" }; render(); return; }
     prRecord(pos, PR.sel);
@@ -971,7 +1185,7 @@ function prRecord(pos, sel) {
   PR.fb = { msg: ok ? `✓ 对了：${it.why}` : `! 再看一眼：${it.why}（已进错题本）`, cls: ok ? "ok" : "no" };
   render();
 }
-function prResolve() { if (PR.phase === "unknown") prRecord(PR.pos, PR.sel); }
+function prResolve() { if (needReady() && PR.phase === "unknown") prRecord(PR.pos, PR.sel); }
 function prNext() {
   const g = prGroup(); if (!g || PR.phase !== "saved") return;
   if (PR.pos < g.items.length - 1) { PR.pos++; PR.sel = -1; PR.phase = "answer"; PR.fb = null; render(); }
@@ -995,6 +1209,7 @@ function applyA11y() {
   root.setAttribute("data-fz", String(AX.f));
   const sc = document.getElementById("view");
   if (sc) sc.style.zoom = [1, 1.12, 1.25][AX.f] || 1;
+  if (!AX.m) avatarStop();
 }
 function a11yApply() {
   applyA11y();
@@ -1014,7 +1229,7 @@ function a11y(k) {
   if (k === "motion") { AX.m = !AX.m; toast(AX.m ? "动效已开" : "动效已关：保存/完成/出错仍有文字条，不靠动画"); }
   if (k === "focus") { AX.fo = !AX.fo; toast(AX.fo ? "焦点框已加强（演示）" : "焦点框恢复默认"); }
   if (k === "voice") { AX.v = !AX.v; if (!AX.v) { try { speechSynthesis.cancel(); } catch (e) { } } toast(AX.v ? "朗读已开，点“播报这段”试（演示）" : "朗读已关"); }
-  a11yApply();
+  a11yApply(); dbSave();
 }
 function a11yReset() { AX.c = false; AX.f = 0; AX.m = true; AX.fo = false; AX.v = false; try { speechSynthesis.cancel(); } catch (e) { } a11yApply(); toast("已恢复默认（演示）"); render(); }
 function sres(v) { document.getElementById("sr").innerHTML = v ? `<button class="opt" onclick="nav('#/courses')">📖 ${v}相关课程 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="opt" onclick="toast('帮助：重置密码走我的→设置')">❓ ${v}相关帮助 <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>` : ""; }
@@ -1031,6 +1246,16 @@ function labToday(mode) {
 V.lab = () => `<div class="card"><h2>🧪 演示工具</h2><p class="d">集中放测试开关：重置数据、切换场景、注入故障、直接完成。不在正常学习界面出现（演示）。</p></div><div class="card"><h2>数据</h2><p><button class="btn sm" onclick="labReset()">重置全部演示数据</button> <button class="btn sm ghost" onclick="labToday('fresh');toast('今日已恢复两项未完成（演示）')">恢复今日任务</button></p><p class="d">重置清本机保存并重载页面。</p></div><div class="card"><h2>今日场景</h2><p>${[["fresh", "有任务"], ["done", "全完成"], ["empty", "无内容"], ["noplan", "未建计划"]].map(([m, t]) => `<button class="btn sm ghost" onclick="labToday('${m}');toast('场景：${t}（演示）')">${t}</button>`).join(" ")}</p></div><div class="card"><h2>故障注入（下一次提交有效）</h2><p><button class="btn sm${LAB.failNext ? "" : " ghost"}" onclick="LAB.failNext=!LAB.failNext;render()">提交失败 ${LAB.failNext ? "开" : "关"}</button> <button class="btn sm${LAB.unknownNext ? "" : " ghost"}" onclick="LAB.unknownNext=!LAB.unknownNext;render()">结果未知 ${LAB.unknownNext ? "开" : "关"}</button> <button class="btn sm${LAB.offline ? "" : " ghost"}" onclick="LAB.offline=!LAB.offline;render()">断网模式 ${LAB.offline ? "开" : "关"}</button></p><p class="d">影响定级 / 练习 / 计划生成的提交；断网时提交只保留草稿。</p></div><div class="card"><h2>直接完成（演示）</h2>${S.today.length ? S.today.map(t => `<p class="d">${t.t} ${t.done ? "· 已完成" : "· 未完成" + ` <button class="btn sm ghost" onclick="homeDone('${t.id}')">标完成 ✓</button>`}</p>`).join("") : `<p class="d">今日无任务，先恢复今日任务。</p>`}</div><div class="card"><h2>身份与定级</h2><p><button class="btn sm ghost" onclick="S.staff=!S.staff;toast(S.staff?'已切 staff（演示）':'已切回学员');render()">${S.staff ? "切回学员" : "切 staff"}</button> <button class="btn sm ghost" onclick="S.quiz={i:0,sel:null,phase:'answer',answers:[],done:false,score:0};nav('#/placement')">重做定级</button></p></div>`;
 /* ---------- 路由 ---------- */
 const AUTH_FREE = ["login", "register", "reset"];
+const ACCOUNT_ROUTES = ["gate", "greject", "me", "settings", "devices", "privacy", "support", "tdetail", "npref", "a11y", "cupgrade", "paudio", "about", "lab", "alogin"];
+const ADMIN_ROUTES = ["admin", "adraft", "areview", "apublish", "agov", "aaudit", "aperm", "amedia", "acs", "ashop", "areport", "aobs"];
+function resolveRoute(requested) {
+  let route = V[requested] ? requested : "home";
+  if (!AUTH_FREE.includes(route) && !S.user) return "login";
+  if (ADMIN_ROUTES.includes(route)) return S.staff ? route : "alogin";
+  if (!AUTH_FREE.includes(route) && !ACCOUNT_ROUTES.includes(route) && (S.gate !== "PASS" || !hasConsents())) return "gate";
+  if (route === "report" && !S.quiz.done) return "placement";
+  return route;
+}
 function layoutContent(view) {
   // Keep labels and actions distinct instead of laying buttons into prose lines.
   view.querySelectorAll("p").forEach(p => {
@@ -1067,10 +1292,14 @@ function layoutContent(view) {
   view.querySelectorAll('svg[viewBox="0 0 12 12"]').forEach(svg => { svg.setAttribute("aria-hidden", "true"); svg.setAttribute("focusable", "false"); });
 }
 function render() {
-  let r = (location.hash || "#/home").replace("#/", "");
-  if (!V[r]) r = "home";
-  if (!AUTH_FREE.includes(r) && !S.user) r = "login";
-  if (["placement", "report"].includes(r) && S.gate !== "PASS" && !S.user) r = "login";
+  syncIdentity();
+  lmEnsureDay();
+  const requested = (location.hash || "#/home").replace("#/", ""), r = resolveRoute(requested);
+  if (LASTR === "listening" && r !== "listening" && LSM.playing) lcancel();
+  drillLifecycle(r);
+  if (history.state?.yxxMobile && history.state.route === requested) ROUTE_DEPTH = history.state.depth;
+  else if (LASTR) ROUTE_DEPTH++;
+  history.replaceState({ ...history.state, yxxMobile: true, route: r, depth: ROUTE_DEPTH }, "", "#/" + r);
   if (LASTR === "chapter" && r !== "chapter") { try { BK.pos[BK.cur + ":" + BK.ch] = document.getElementById("view").scrollTop; } catch (e) { } }
   const view = document.getElementById("view");
   const pageChanged = LASTR !== r;
@@ -1091,7 +1320,7 @@ function render() {
   const itemKey = r === "placement" ? `${r}:${S.quiz.i}` : r === "practice" ? `${r}:${PR.taskId}:${PR.pos}` : r === "srs" ? `${r}:${SRS.pass}:${srsCur()}` : r === "drill" ? `${r}:${DR.book}:${DR.i}:${DR.mode === 'time' ? (TCH.pos || 0) : ''}` : r === "chapter" ? `${r}:${BK.cur}:${BK.ch}` : r;
   view.onscroll = chapSaveSoon;
   if (r === "avatar" && typeof stage3d === "function") stage3d();
-  if (r !== "avatar" && typeof T3 !== "undefined" && T3 && T3.raf) { cancelAnimationFrame(T3.raf); T3.raf = 0; }
+  if (r !== "avatar") avatarStop();
   view.scrollTop = pageChanged || LASTITEM !== itemKey ? ((r === "chapter" && BK.pos[BK.cur + ":" + BK.ch]) || 0) : previousScroll;
   if (focused && LASTITEM === itemKey) {
     const target = focused.id ? document.getElementById(focused.id) : focused.handler ? [...view.querySelectorAll("button,a,input,select")].find(el => el.tagName === focused.tag && el.getAttribute("onclick") === focused.handler) : null;
@@ -1099,15 +1328,15 @@ function render() {
   }
   LASTR = r;
   LASTITEM = itemKey;
-  if (r === "placement" && S.quiz.done) { S.quiz.done = false; }
   dbSave();
 }
 function bootMock() {
 const hasDB = dbLoad(); normalizeState(); lmNormalize();
+ACTIVE_IDENTITY = S.user; S.staff = false;
 if (!hasDB) { try { if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) AX.m = false; } catch (e) { } }
 applyA11y();
 window.addEventListener("hashchange", render);
-window.addEventListener("beforeunload", chapSaveNow);
-document.addEventListener("visibilitychange", () => { if (document.hidden) chapSaveNow(); });
+window.addEventListener("beforeunload", () => { chapSaveNow(); tchPause("已离开页面"); avatarStop(); dbSave(); });
+document.addEventListener("visibilitychange", () => { if (document.hidden) { chapSaveNow(); tchPause("浏览器进入后台，挑战已暂停"); avatarStop(); dbSave(); } else if (TCH.paused && LASTR === "drill" && DR.mode === "time") render(); else if (LASTR === "avatar") stage3d(); });
 render();
 }

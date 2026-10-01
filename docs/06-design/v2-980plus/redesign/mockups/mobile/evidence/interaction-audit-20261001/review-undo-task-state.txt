@@ -1,0 +1,81 @@
+- button "返回":
+- generic: 学习
+- generic: 在线
+- navigation "学习分区":
+  - button "今日"
+  - button "课程"
+  - button "词汇"
+  - button "复习"
+- heading "今日安排" [level=2]
+- button "调整"
+- paragraph: 大学英语 · 四级 · 目标 45 分钟
+- paragraph: 今日安排预计 45 分钟 · 剩余预计 30 分钟
+- paragraph: 已完成 2/6 项；完成任务与掌握知识分别记录。
+- heading "词汇 · 回忆 3 个词" [level=3]
+- generic: ✓ 已完成
+- paragraph: 预计 5 分钟
+- button "查看结果"
+- heading "阅读 · 完成一个章节" [level=3]
+- generic: ✓ 已完成
+- paragraph: 预计 10 分钟
+- button "查看结果"
+- heading "语法 · There be 句型" [level=3]
+- generic: 进行中
+- paragraph: 预计 5 分钟
+- button "继续学习"
+- heading "写作 · 给朋友的一封信" [level=3]
+- generic: 进行中
+- paragraph: 预计 10 分钟
+- button "继续学习"
+- heading "写作 · 给朋友的一封信" [level=3]
+- generic: 进行中
+- paragraph: 预计 10 分钟
+- button "继续学习"
+- heading "复习 · 本轮回忆" [level=3]
+- generic: 待开始
+- paragraph: 预计 5 分钟
+- button "开始学习"
+- button "查看今日回顾"
+- heading "顺延的学习" [level=2]
+- text: 语法 · There be 句型
+- paragraph: 前一学习日未完成 · 2026-10-01 · 保留进度
+- button "接着学"
+- text: 词汇 · 回忆 3 个词
+- paragraph: 前一学习日未完成 · 2026-10-01 · 保留进度
+- button "接着学"
+- text: 阅读 · 完成一个章节
+- paragraph: 前一学习日未完成 · 2026-10-01 · ✓ 已完成
+- button "查看结果"
+- text: 复习 · 本轮回忆
+- paragraph: 前一学习日未完成 · 2026-10-01 · ✓ 已完成
+- button "查看结果"
+- heading "继续阅读" [level=2]
+- generic: 本机记录
+- heading "四级词汇红宝书" [level=3]
+- paragraph: 第一章 高频 500
+- button "继续读"
+- button "收藏与笔记"
+- heading "继续自主练习" [level=2]
+- paragraph: 重练轮次独立保存，原来的完成结果仍可查看。
+- button "阅读 · 图书馆的一天 第 1/2 题 · 进行中 ›":
+  - text: 阅读 · 图书馆的一天
+  - generic: 第 1/2 题 · 进行中
+  - generic: ›
+- navigation:
+  - link "🏠 首页":
+    - /url: "#/home"
+    - generic: 🏠
+    - text: 首页
+  - link "📚 学习":
+    - /url: "#/today"
+    - generic: 📚
+    - text: 学习
+  - link "🌍 世界":
+    - /url: "#/world"
+    - generic: 🌍
+    - text: 世界
+  - link "👤 我的":
+    - /url: "#/me"
+    - generic: 👤
+    - text: 我的
+- status
