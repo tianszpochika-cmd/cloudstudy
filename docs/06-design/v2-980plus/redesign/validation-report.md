@@ -1,5 +1,7 @@
 # v2.0 文档结构校验结果
 
+> **dev-redesign 分支入口校正（2026-10-06）：文档结构与准备审查快照，非实时任务进度。** 本分支只按[迭代 2（第二轮重设计）当前进度](CURRENT-PROGRESS.md)接手；下文的旧计数、状态和下一步不构成本分支任务认领指令，不能迁移为 R1 卡验收。
+
 ## 2026-10-06 R1-002 主审收口
 
 [独立审查](../../../../evidence/p1r/m2/P1R-M2-002/redesign/R1-002/reviewer-3-closeout/review.md)与[输入快照](../../../../evidence/p1r/m2/P1R-M2-002/redesign/R1-002/source-and-inputs-4.json)：准备工具语法、Flyway/专用库基线、受控秘密、14项进程身份/拒绝检查通过；两个自有进程已停止。IAM TLS/健康/JWKS通过，Gateway转发502；实际注册Cookie、201/安全拒绝/事务回滚和领域403均未执行。保持本地revision27/R1-002 PLANNED，不签READY、不提升父Gate。本轮发布范围仅准备工具和证据，旧共享产品/计划差量不随本次提交发布。

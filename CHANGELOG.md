@@ -1,5 +1,7 @@
 # Changelog
 
+- [ITERATION2-PROGRESS-20261006] 统一 dev-redesign 的迭代 2（第二轮重设计）接手与进度入口：新增 CURRENT-PROGRESS，重写根交接并归档九月旧交接；同步 AGENTS、README、需求/设计/路线图/运行索引、原 P1R/B/G 进度入口与 Agent 工作流。明确迭代轮次、IT-2 与 Phase 2 的区别，保留完整卡墙/R1-001 验收差量及 R1-002 未签 READY 的缺口；不迁移旧完成率、不升级业务验收。[当前进度](docs/06-design/v2-980plus/redesign/CURRENT-PROGRESS.md)。
+
 - [LOCAL-DEV-20261006] 修复 macOS 工具链/Chrome 检测、Node 20 i18n 测试加载、IAM Clock/精确到期校验、Gateway 控制器证据与路由负例；配置 Redis 空卷 ACL、固定官方源码 MinIO 构建、IAM schema 准备与 v2 默认启动，移除凭证日志并限制 DoD URL 豁免。修复 pnpm 兼容 CLI 分隔符解析，补齐 IAM 响应头并切断前端 withheld 路由调用，保留明确不可用态；同步契约生成、迁移清单、CI 的 macOS/H5/空卷验证及启动文档。本机 15 v2 服务与四前端就绪，Java 回归 1,444 执行通过/61 跳过；P1R 仍 26 失败，iOS 初始化仍待完成，不宣称全量验收。[验证记录](docs/07-operations/local-environment-verification-2026-10-06.md)。
 
 - [R1-002-PREP-CLOSEOUT-20261006] 收口隔离IAM准备工具：DPAPI与NTFS权限、env口令注入、正确Secure配置及创建时间/退出确认守卫；主审只读验库和IAM TLS/健康/JWKS通过，关闭两个遗留自有进程。Gateway转发502与身份兼容/Outbox扩围仍阻塞READY。仅提交本次准备包及文档摘要，保留其他共享未提交工作。[收口报告](evidence/p1r/m2/P1R-M2-002/redesign/R1-002/reviewer-3-closeout/review.md)。

@@ -1,7 +1,16 @@
 # 语学星 Agent 工作与架构开发规则 (AGENTS.md)
 
-> **版本**：v4.5 (v2-980plus 全量需求 + Phase 1 业务运行设计 + Java 25 + 微服务/Gateway/IAM/RBAC)
+> **版本**：v4.6 (v2-980plus 全量需求 + Phase 1 业务运行设计 + Java 25 + 微服务/Gateway/IAM/RBAC)
 > **面向对象**：所有参与语学星研发的 AI Agent 与全栈工程师。
+
+## 0. dev-redesign 分支接手规则（2026-10-06）
+
+本分支执行**迭代 2（第二轮重设计 / Redesign）**，唯一当前进度入口是 [CURRENT-PROGRESS](docs/06-design/v2-980plus/redesign/CURRENT-PROGRESS.md)，跨会话入口为 [CURRENT-HANDOFF](CURRENT-HANDOFF.md)，卡计划为 [dev-plan-R1](docs/06-design/v2-980plus/redesign/dev-plan-R1.md)。先核对这三个入口再认领任务。迭代 2 不等于 R1 的 IT-2 定级站，也不等于产品 Phase 2。
+
+- 本分支新工作按 `R1-*` 卡、BC/IC 和依赖推进；旧 `P1R-*`、B/DEV/G 与 PAGE-P1 台账只作历史/复用/冻结门禁来源，不是当前开工队列，不自动迁移完成状态。
+- 每卡继续建立 `FEAT/PRD-ATOM/V2-980 + ARCH + ACT/JNY/PAGE/RULE/INT/E2E`、服务/data owner 与 Evidence 映射；原 P1R 父任务/manifest 只保留追溯，不随 R1 准备检查升级。
+- 全量 114 卡墙与 R1-001 完整验收差量未随前序提交发布；先补齐可审计基线。最近具名工作点为 R1-002 准备收口，未签 READY；不得据历史本地 1/114、旧 75% 或静态原型数宣称本轮完成率。
+- IT-1 干净库全绿并签收后才能开 IT-2；不要看到 IT-2 已有计划就跳站。架构、Phase 1、契约、隐私、端口与 DoD 约束继续有效。
 
 ## 1. 产品与业务使命
 
@@ -11,7 +20,7 @@
 
 ## 2. 核心技术栈与架构选型约束 (Tech Stack Boundaries)
 
-本文件与 [v2-980plus 设计包](docs/06-design/v2-980plus/README.md)、[Phase 1 业务运行设计包](docs/06-design/v2-980plus/phase1-business-operation/README.md)、[Phase 1 开发计划重基线](requirements/backlog/v2-phase1-rebaseline/README.md)、[v2 微服务目标架构](docs/02-architecture/v2-microservices-architecture.md)、[平台能力矩阵](docs/02-architecture/v2-platform-capability-matrix.md) 和 ADR-0009/0010/0012/0013/0014 一起构成当前需求/设计/架构/执行基线。[B7+ 代码任务台账](requirements/backlog/v2-B7plus-代码重塑与交互测试任务基线.md) 只保留现有实现与迁移状态，不直接充当下一轮开发计划。`v2-980plus/` 是新一轮开发唯一的全量业务设计与需求落地基线；其 `phase1-business-operation/` 子包补齐角色、端到端旅程、逐页功能、学习规则、后台流程、联调、恢复与 E2E 追溯，不改变 980 范围计数。Phase 1 新开发只从 `P1R-*` 任务台账认领，旧 B/DEV/G 状态不得自动迁移。v1 详细设计、B0–B6 和 `core-api` 只保留历史/迁移语义，不能覆盖 v2。新任务必须建立 `FEAT/PRD-ATOM/V2-980 + ARCH + ACT/JNY/PAGE/RULE/INT/E2E` 映射，并如实保留尚未关闭的契约、事件、实现和证据 GAP。
+本文件与 [v2-980plus 设计包](docs/06-design/v2-980plus/README.md)、[Phase 1 业务运行设计包](docs/06-design/v2-980plus/phase1-business-operation/README.md)、[Phase 1 开发计划重基线](requirements/backlog/v2-phase1-rebaseline/README.md)、[v2 微服务目标架构](docs/02-architecture/v2-microservices-architecture.md)、[平台能力矩阵](docs/02-architecture/v2-platform-capability-matrix.md) 和 ADR-0009/0010/0012/0013/0014 一起构成当前需求/设计/架构/执行基线。[B7+ 代码任务台账](requirements/backlog/v2-B7plus-代码重塑与交互测试任务基线.md) 只保留现有实现与迁移状态，不直接充当下一轮开发计划。`v2-980plus/` 是新一轮开发唯一的全量业务设计与需求落地基线；其 `phase1-business-operation/` 子包补齐角色、端到端旅程、逐页功能、学习规则、后台流程、联调、恢复与 E2E 追溯，不改变 980 范围计数。原 Phase 1 重基线使用 `P1R-*`；在 `dev-redesign` 上优先执行第 0 节的 `R1-*` 卡计划，旧 P1R/B/DEV/G 状态不得自动迁移。v1 详细设计、B0–B6 和 `core-api` 只保留历史/迁移语义，不能覆盖 v2。新任务必须建立 `FEAT/PRD-ATOM/V2-980 + ARCH + ACT/JNY/PAGE/RULE/INT/E2E` 映射，并如实保留尚未关闭的契约、事件、实现和证据 GAP。
 
 所有 Agent 在编写、重构或引入第三方依赖时，必须严格遵守以下技术栈边界，**严禁私自引入冲突框架**：
 
@@ -111,7 +120,7 @@
 
 ## 5. Agent 标准作业流程 (SOP)
 
-1. **审题与范围界定**：阅读相关 `requirements/` 和 `docs/`，明确改动影响范围并列出简要执行计划。
+1. **审题与范围界定**：先读第 0 节指定的本分支进度/交接/卡计划，再阅读相关 `requirements/` 和 `docs/`，明确改动影响范围并列出简要执行计划。
 2. **建立边界与契约**：先写类型、数据表迁移和接口 Schema，再写业务实现。
 3. **小步迭代与验证**：编写小步代码，运行最小验证（测试/语法检查），严禁一次性大面积破坏性修改。
 4. **架构决策透明化**：遇到架构冲突或新增关键技术选型时，新增 ADR 至 `docs/10-decisions/`，不得静默变更约定。

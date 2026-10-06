@@ -1,5 +1,7 @@
 # Phase 1 阶段验收与 Evidence 标准
 
+> **dev-redesign 接手提示（2026-10-06）：原 P1R 计划规则 / 依赖 / 验收追溯参考。** 本分支当前任务与进度只看[迭代 2 当前进度](../../../docs/06-design/v2-980plus/redesign/CURRENT-PROGRESS.md)；本文不提供独立的开工队列，不迁移旧验收状态。
+
 > 目标：让“写完代码”与“业务可运行”“可以发布”严格分离
 > 原则：没有当前 commit、当前环境和可回放 Evidence，不得标记 `ACCEPTED`
 

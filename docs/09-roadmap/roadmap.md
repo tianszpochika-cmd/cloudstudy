@@ -1,10 +1,10 @@
 # 产品路线图
 
-> **文档分类：当前执行路线图**。Platform 0、Phase 1 和后续阶段的阶段顺序以本路线图为索引；Phase 1 的任务、依赖、状态和 Evidence 唯一以 [Phase 1 开发计划重基线](../../requirements/backlog/v2-phase1-rebaseline/README.md) 为准，业务范围和设计状态仍以 v2-980plus 为准。`V2-980-0001..0980` 固定表示 930 个业务单元 + 50 个跨域扩展登记位，成熟度为 184/486/310，不等于 980 份可实施详细设计或已完成实现。
+> **文档分类：当前执行路线图**。Platform 0、Phase 1 和后续阶段的阶段顺序以本路线图为索引；dev-redesign 的当前接手/执行以[迭代 2 当前进度](../06-design/v2-980plus/redesign/CURRENT-PROGRESS.md)与[R1 卡计划](../06-design/v2-980plus/redesign/dev-plan-R1.md)为准；[原 Phase 1 重基线](../../requirements/backlog/v2-phase1-rebaseline/README.md)保留来源/复用/冻结门禁，业务范围和设计状态仍以 v2-980plus 为准。`V2-980-0001..0980` 固定表示 930 个业务单元 + 50 个跨域扩展登记位，成熟度为 184/486/310，不等于 980 份可实施详细设计或已完成实现。
 
 > 三阶段产品边界以 PRD v3.3 和 v2-980plus 为准。后端技术演进以 [v2 微服务目标架构](../02-architecture/v2-microservices-architecture.md) 和 ADR-0010 为准；平台能力建设不等于提前开放 AI/K12 业务。
 
-> 旧 B0–B36、`DEV-*` 与 G0–G4 台账仅作历史、迁移和现有实现候选证据。新开发只认领 `P1R-*`；旧状态不能直接代表 Gateway、RBAC、微服务迁移或真实运行完成。
+> 旧 B0–B36、`DEV-*` 与 G0–G4 台账仅作历史、迁移和现有实现候选证据。本分支新开发按 R1 卡依赖认领；P1R 仅作原计划追溯；旧状态不能直接代表 Gateway、RBAC、微服务迁移或真实运行完成。
 
 ## Platform 0：v2 平台与架构基座
 
@@ -26,7 +26,7 @@
 - 至少一个学习读链路和一个关键写链路完成“Gateway → 服务侧 PEP → 领域事实 → Outbox → Trace/Audit”回放，且内容/题目、attempt/判分、掌握度/复习分别由唯一 owner 管理。
 - 新服务模板能在本地固定端口和 CI 中启动；跨服务直写、共享 ORM entity、客户端角色头扫描为 0。
 
-## Phase 1 重基线执行批次（P1R）
+## 原 Phase 1 重基线批次（P1R，历史拆分与复用来源）
 
 [Phase 1 开发计划重基线](../../requirements/backlog/v2-phase1-rebaseline/README.md) 将开发划分为 9 个里程碑、108 个编号任务；初始状态全部为 `PLANNED`，不继承旧台账完成结论：
 

@@ -1,8 +1,10 @@
 # P1R 执行记录
 
-本目录是 Phase 1 重基线计划的当前执行日志入口。任务状态只以 `../02-编号任务台账.md` 为准，验收结论只以 `evidence/p1r/` 下通过校验的 canonical manifest 为准；旧 B0–B36、DEV、G 与旧 Evidence 只能作为 `historical-candidate`。
+> **dev-redesign 分支入口校正（2026-10-06）：历史进度 / 复用参考。** 本分支只按[迭代 2（第二轮重设计）当前进度](../../../../docs/06-design/v2-980plus/redesign/CURRENT-PROGRESS.md)接手；下文的旧计数、状态和下一步不构成本分支任务认领指令，不能迁移为 R1 卡验收。
 
-## 当前检查点
+本目录保留原 Phase 1 重基线计划的历史执行日志。任务状态只以 `../02-编号任务台账.md` 为准，验收结论只以 `evidence/p1r/` 下通过校验的 canonical manifest 为准；旧 B0–B36、DEV、G 与旧 Evidence 只能作为 `historical-candidate`。
+
+## 原计划历史检查点（不作本分支任务指令）
 
 - 工作分支：`dev`。
 - 当前台账计数：`25 ACCEPTED / 1 BLOCKED / 2 IN_PROGRESS / 80 PLANNED`（共 108 项）。

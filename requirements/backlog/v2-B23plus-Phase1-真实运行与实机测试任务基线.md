@@ -1,5 +1,7 @@
 # v2 B23–B27 Phase 1 登录、真实数据与测试任务基线
 
+> **dev-redesign 分支入口校正（2026-10-06）：历史进度 / 复用参考。** 本分支只按[迭代 2（第二轮重设计）当前进度](../../docs/06-design/v2-980plus/redesign/CURRENT-PROGRESS.md)接手；下文的旧计数、状态和下一步不构成本分支任务认领指令，不能迁移为 R1 卡验收。
+
 > **文档分类：Historical / Superseded**。本文件只保留当时的认证、数据、测试和设备候选证据；当前新开发入口是 [`v2-phase1-rebaseline`](./v2-phase1-rebaseline/README.md)。
 > 基线 ID：V2-PHASE1-AUTH-DATA-20260823
 > 历史快照状态：B23–B27 曾形成代码、静态和部分本地回放证据，但 JWT、Redis、Kafka/Outbox、认证后浏览器、真机、发布与交接运行 Gate 未全部闭合；不得据此标记任何 `P1R-*` 为完成。

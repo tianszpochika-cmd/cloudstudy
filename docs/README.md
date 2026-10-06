@@ -2,6 +2,10 @@
 
 本目录是产品与研发文档的**总入口**。文档的事实源优先级、Phase 1 范围冻结、跨域数据所有权与文件命名规范，统一由 [00-vision/document-governance.md](00-vision/document-governance.md) 规定；本索引与治理规则冲突时，以治理规则为准。
 
+## dev-redesign 当前入口
+
+本分支执行**迭代 2（第二轮重设计）**。先读[唯一当前进度](06-design/v2-980plus/redesign/CURRENT-PROGRESS.md)与[根交接](../CURRENT-HANDOFF.md)，再读[R1 卡计划](06-design/v2-980plus/redesign/dev-plan-R1.md)。旧台账与带日期报告是复用/历史证据。
+
 ## 目录地图
 
 | 目录 | 定位 | 索引 |
@@ -21,8 +25,8 @@
 
 ## 按任务的阅读路径
 
-- **接手 Phase 1 开发**：[00-vision/document-governance.md](00-vision/document-governance.md) → [06-design/v2-980plus/README.md](06-design/v2-980plus/README.md) → [02-architecture/v2-microservices-architecture.md](02-architecture/v2-microservices-architecture.md) → [requirements/backlog/v2-phase1-rebaseline/README.md](../requirements/backlog/v2-phase1-rebaseline/README.md)。
-- **查当前任务状态**：唯一事实源是 [02-编号任务台账](../requirements/backlog/v2-phase1-rebaseline/02-编号任务台账.md)，其他文档的计数均为快照。
+- **接手本分支开发**：[当前进度](06-design/v2-980plus/redesign/CURRENT-PROGRESS.md) → [R1 卡计划](06-design/v2-980plus/redesign/dev-plan-R1.md) → [文档治理](00-vision/document-governance.md) → [v2 设计](06-design/v2-980plus/README.md) → [目标架构](02-architecture/v2-microservices-architecture.md)。
+- **查当前任务状态**：只看[迭代 2 当前进度](06-design/v2-980plus/redesign/CURRENT-PROGRESS.md)及其引用的 R1 卡证据；[P1R 台账](../requirements/backlog/v2-phase1-rebaseline/02-编号任务台账.md)只保留原计划状态，不是本分支任务队列。
 - **改接口或数据结构**：先看 [05-api/](05-api/README.md) 与 `packages/contracts/`，并判断是否需要新增 ADR。
 - **查历史运行结论**：[07-operations/](07-operations/README.md)；注意其中全部为历史快照，不代表当前状态。
 - **理解选型原因**：[10-decisions/](10-decisions/README.md)，重点 ADR-0009/0010/0012/0013/0014。

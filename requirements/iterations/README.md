@@ -1,11 +1,12 @@
-# 迭代记录
+# 迭代计划与历史记录
 
-本目录保存按迭代组织的开发记录。**所有条目均为历史快照**，其勾选状态不是当前任务命令，也不改变 v2-980plus 的 930+50 登记与 184/486/310 成熟度分布。
+## dev-redesign 当前迭代
 
-## 文档清单
+- [迭代 2 — 第二轮重设计](iteration-02-redesign.md)：本分支当前迭代入口索引。
+- [唯一当前进度](../../docs/06-design/v2-980plus/redesign/CURRENT-PROGRESS.md)与[R1 卡计划](../../docs/06-design/v2-980plus/redesign/dev-plan-R1.md)：当前工作点、缺口、卡依赖与验收路径，只在进度页维护当前状态。
 
-- [iteration-00-foundation.md](iteration-00-foundation.md)：Iteration 00「基础骨架」记录（Historical / Superseded）。
+## 历史迭代
 
-## 须知
+- [iteration-00-foundation.md](iteration-00-foundation.md)：Iteration 00「基础骨架」记录（Historical / Superseded）。旧勾选不是本分支任务指令，不改变 v2-980plus 范围与成熟度，也不迁移为 R1 验收。
 
-当前需求与执行入口是 [../README.md](../README.md) 与 [../backlog/v2-phase1-rebaseline/README.md](../backlog/v2-phase1-rebaseline/README.md)。本目录仅供历史追溯。
+原 P1R 见[历史计划与冻结来源](../backlog/v2-phase1-rebaseline/README.md)。需求与技术约束继续见[需求中心](../README.md)与根 AGENTS；不根据旧计数或“下一步”认领当前任务。

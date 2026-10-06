@@ -2,15 +2,12 @@
 
 本目录保存按日期、批次和运行环境形成的验证快照，不是需求、架构或当前配置的事实源。旧快照中的 Java 版本、依赖数量、认证方案、端口状态、契约计数和测试结果只说明当次运行，不得覆盖当前代码与配置。
 
-当前读取顺序：
+dev-redesign 当前读取顺序：
 
-1. 当前需求与设计：[`../06-design/v2-980plus/README.md`](../06-design/v2-980plus/README.md)。
-2. 当前架构：[`../02-architecture/v2-microservices-architecture.md`](../02-architecture/v2-microservices-architecture.md)。
-3. 当前本机验收台账：[`../../requirements/backlog/v2-B28plus-Phase1-本机真实全栈与MCP浏览器验收任务基线.md`](../../requirements/backlog/v2-B28plus-Phase1-本机真实全栈与MCP浏览器验收任务基线.md)。
-4. 当前本机交接结论：[`b36-validation.md`](b36-validation.md)，仍为 `LOCAL-TEST-NO-PASS`。
-5. 当前 56 页页面状态（两套并列口径，数字不可互换）：严格整页业务验收以 [`../../artifacts/uat-2026-09-23/coverage-ledger.md`](../../artifacts/uat-2026-09-23/coverage-ledger.md)（PASS 0 / PARTIAL 29 / BLOCKED 27）为准；代理侧三态复核以 [`page-push-ledger-2026-09-26.md`](page-push-ledger-2026-09-26.md)（2026-09-28 v10，PASS 40 / HONEST-EMPTY 16 / BLOCKED 0）为准。两表判定规则不同，行级 canonical 状态变更权归 QA。
-6. 当前发布门禁：[`../../requirements/backlog/G0-G4-治理门禁任务基线.md`](../../requirements/backlog/G0-G4-治理门禁任务基线.md)，仍为 `BLOCKED/NO-GO`。
-7. 当前机器配置只从 `config/`、固定端口表、契约 canonical 文件和实际检查命令读取；不得从旧 validation 报告反推。
+1. [迭代 2 当前进度](../06-design/v2-980plus/redesign/CURRENT-PROGRESS.md) → [根交接](../../CURRENT-HANDOFF.md) → [R1 卡计划](../06-design/v2-980plus/redesign/dev-plan-R1.md)。
+2. [当前架构](../02-architecture/v2-microservices-architecture.md)、[本地开发指南](local-development.md)及 `config/` / canonical 契约。
+3. [2026-10-06 本机环境验证](local-environment-verification-2026-10-06.md)：只说明当次环境和测试范围，不改变 R1 卡验收。
+4. 历史 P1R/B/G、`b36-validation.md`、56 页覆盖/三态台账及九月报告只作为复用/审计候选；不能代替本轮干净库与独立验收，也不构成当前开工队列。原读取顺序见[九月历史交接](../../CURRENT-HANDOFF-ARCHIVE-2026-09-28.md)。
 
 带具体日期、runId 或 B 编号的报告应保持可审计，不为追随新口径而改写历史结果。若其中含已废弃的外部认证、五项必需依赖、旧契约计数或旧页面旅程，只能按历史快照解释；新开发和新验收必须引用当前权威入口。
 

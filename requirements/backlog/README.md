@@ -2,14 +2,19 @@
 
 把经过确认的需求拆成可交付任务。每个任务应关联用户故事、验收标准、影响目录和优先级。
 
-> **文档分类：当前执行索引**。[Phase 1 开发计划重基线](./v2-phase1-rebaseline/README.md) 是当前唯一新开发入口；B0–B36、`DEV-*` 和 G0–G4 只保留实现/迁移/运行候选证据与历史状态。所有 `P1R-*` 任务仍须引用 v2-980plus、业务运行 ID 与 `ARCH-*`，不能把 980 范围登记或旧静态结果当作完成。
+> **文档分类：本分支执行与历史复用索引**。[迭代 2 当前进度](../../docs/06-design/v2-980plus/redesign/CURRENT-PROGRESS.md)与[R1 卡计划](../../docs/06-design/v2-980plus/redesign/dev-plan-R1.md)是 dev-redesign 唯一当前入口；[原 Phase 1 重基线](./v2-phase1-rebaseline/README.md)保留原任务状态、复用/冻结来源；B0–B36、`DEV-*` 和 G0–G4 只保留实现/迁移/运行候选证据与历史状态。所有 `P1R-*` 任务仍须引用 v2-980plus、业务运行 ID 与 `ARCH-*`，不能把 980 范围登记或旧静态结果当作完成。
 
-## 当前 Phase 1 执行计划
+## dev-redesign 当前执行计划
+
+- [迭代 2 当前进度](../../docs/06-design/v2-980plus/redesign/CURRENT-PROGRESS.md)：最近工作点、证据缺口、卡依赖及 Agent 接手顺序；只在此维护当前进度。
+- [R1 卡计划](../../docs/06-design/v2-980plus/redesign/dev-plan-R1.md)：IT-1～IT-7，已细拆 L1/L2；IT-2 为定级环，不表示已开工。
+
+## 原 Phase 1 计划与冻结来源
 
 - [Phase 1 开发计划重基线](./v2-phase1-rebaseline/README.md)：9 个里程碑、108 个 `P1R-*` 任务；包含现状复用策略、依赖图、编号台账、D2–D5 验收/Evidence 标准和全量追溯覆盖矩阵。
 - [DoD Gate 与证据包规范](./DoD-Gate与证据包规范.md)：通用 G0–G4 与证据包要求；新计划的更具体成熟度和里程碑 Gate 见 `v2-phase1-rebaseline/03-阶段验收与Evidence标准.md`。
 
-新任务只在 `v2-phase1-rebaseline/02-编号任务台账.md` 认领。初始 108 项全部是 `PLANNED`；旧状态不得自动迁移为 `READY/ACCEPTED`。
+P1R 的 108 项及初始状态属于原计划；本分支不在该旧队列自动续领。R1 依赖和状态按进度页及当前卡证据确认，旧状态不得自动迁移。
 
 ## 重基线原则
 
@@ -36,7 +41,7 @@
 
 执行规则：
 
-1. 新开发只在 `v2-phase1-rebaseline/02-编号任务台账.md` 的 `P1R-*` 行认领；旧 B/DEV/G 台账不得继续接收新开发状态。
+1. dev-redesign 新开发只从迭代 2 当前进度页进入 R1 卡计划；旧 P1R/B/DEV/G 台账不得承接本轮新卡状态。
 2. API、事件或数据结构先更新 packages/contracts/ 与数据库迁移，再实现业务。
 3. Agent 只能提交“待验收”，由统筹 Agent/评审人依据证据改为“已完成”。
 4. 每次状态变化同步追加更新日志，不删除历史记录。

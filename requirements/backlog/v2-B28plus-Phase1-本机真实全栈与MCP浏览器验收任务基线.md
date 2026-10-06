@@ -1,5 +1,7 @@
 # v2 B28–B36 Phase 1 本机真实全栈与 MCP 浏览器验收任务基线
 
+> **dev-redesign 分支入口校正（2026-10-06）：历史进度 / 复用参考。** 本分支只按[迭代 2（第二轮重设计）当前进度](../../docs/06-design/v2-980plus/redesign/CURRENT-PROGRESS.md)接手；下文的旧计数、状态和下一步不构成本分支任务认领指令，不能迁移为 R1 卡验收。
+
 > **文档分类：Historical / Superseded**。本文件只保留本机运行和浏览器候选证据；当前新开发入口是 [`v2-phase1-rebaseline`](./v2-phase1-rebaseline/README.md)。
 > 基线 ID：V2-PHASE1-LOCAL-REAL-E2E-20260824  
 > 历史快照状态：B28–B33 曾形成自动化运行/构建和部分本机证据，但自有 JWT 后的完整 Browser 全旅程、B34–B36 收口及设备/发布 Gate 未闭合；旧完成描述不得迁移到 `P1R-*`。

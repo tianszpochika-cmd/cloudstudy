@@ -1,5 +1,7 @@
 # v2 B7+ 代码重塑与交互测试任务基线
 
+> **dev-redesign 分支入口校正（2026-10-06）：历史进度 / 复用参考。** 本分支只按[迭代 2（第二轮重设计）当前进度](../../docs/06-design/v2-980plus/redesign/CURRENT-PROGRESS.md)接手；下文的旧计数、状态和下一步不构成本分支任务认领指令，不能迁移为 R1 卡验收。
+
 > **文档分类：Historical / Superseded**。本文件只保留代码、迁移、静态与运行候选证据；当前新开发入口是 [`v2-phase1-rebaseline`](./v2-phase1-rebaseline/README.md)，旧 B 状态不得自动迁移为 `P1R-*` 的完成状态。
 > 基线 ID：`V2-CODE-BASELINE-20260822`  
 > 历史快照状态：下述完成/阻塞描述只记录当时检查结果，不能替代当前提交验证。B0–B14 曾完成代码层验证，B2 保留 3 个外部集成 TODO；B15–B22 形成了不同程度的代码/静态基础，但真实运行、设备、staging、发布或生产证据并未闭合。最新历史交接见 [`test-phase-handoff-2026-08-22.md`](../../docs/07-operations/test-phase-handoff-2026-08-22.md)。
