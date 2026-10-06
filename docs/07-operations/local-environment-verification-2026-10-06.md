@@ -4,7 +4,7 @@
 
 ## 结论与范围
 
-本机 macOS arm64（M1 Max / 64 GB）可启动 Phase 1 开发栈：四项基础设施 healthy，15 个 v2 服务 readiness UP，四个前端可访问并完成基础交互。完整 Java 25 后端单元回归通过，前端类型/构建和契约结构、合并、生成检查通过。**完整 P1R 治理回归仍有 26 项失败，iOS 原生测试仍受 Xcode 首次初始化阻塞；不能称项目全部测试或业务验收通过。**
+本机 macOS arm64（M1 Max / 64 GB）可启动 Phase 1 开发栈：四项基础设施 healthy，15 个 v2 服务 readiness UP，四个前端可访问并完成基础交互。完整 Java 25 后端单元回归通过，前端类型/构建和契约结构、合并、生成检查通过。**完整 P1R 治理回归仍有 26 项失败；后续复核已完成 Xcode 初始化，iOS 工具检查和模拟器启动通过，项目原生应用打包/设备测试仍未验收；不能称项目全部测试或业务验收通过。**
 
 从 `dev-redesign` 的 `94b03e06` fast-forward 到远程 `98017031` 后开展修复，保留了原有未提交工作。此记录是本地维护证据，不提升任何 P1R/Evidence 状态，不把 R1-002 的准备收口当成正式 IAM 改造验收。
 
@@ -58,9 +58,24 @@
 | `pnpm test:p1r` | 1,463 项：1,437 PASS、26 FAIL、0 skipped，不能报全绿 |
 | Android SDK / 模拟器 | API 36、build-tools 36.0.0、platform-tools 37.0.1、emulator 37.2.12；工具 PASS；合成本地 AVD `cloudstudy-api36` 启动、adb device、sys.boot_completed=1 |
 | 文档全库审计 | 修正既有管理端指南相对链接后 deadLinks=0；全库仍有 60 个未入链文档和 1 个缺 README 的目录，完整审计仍 FAIL，未做豁免 |
-| iOS | Xcode 27.0 已安装；first launch / simctl 因许可未完成仍 FAIL，未运行 iOS 原生应用测试 |
+| iOS | 初次检查因许可未完成 FAIL；后续复核 Xcode 27.0 / first launch / simctl 均 PASS，iOS 27.0 SDK 与 runtime 可用，iPhone 18 Pro 实际启动完成；尚未运行项目 iOS 原生应用测试 |
 
 Android SDK、AVD 和登录 shell 环境在主机用户目录配置，不提交 SDK、主机路径或许可文件。停止本轮模拟器可用 `adb -s emulator-5554 emu kill`。本轮 Java/frontend runner 正在运行，关闭对应终端即可停止；不要在运行中覆盖 JAR。
+
+## iOS 环境后续复核（2026-10-06 22:53 CST）
+
+本轮源码为 `f1a8466d`；用户完成 Xcode 首次设置后重新检查，此前许可/初始化阻塞已关闭。
+
+| 检查 | 结果 |
+|---|---|
+| `xcode-select -p` | `/Applications/Xcode.app/Contents/Developer` |
+| `pnpm native:check -- --ios` | PASS；Xcode 27.0（27A266a）、first launch、iOS Simulator 三项通过，退出码 0 |
+| `xcodebuild -showsdks` | iOS 27.0 / iOS Simulator 27.0 SDK 可用 |
+| `xcrun simctl list runtimes` | iOS 27.0（24A434）runtime 可用 |
+| `xcrun simctl list devices available` | iPhone/iPad 模拟器设备可用 |
+| `xcrun simctl boot` + `bootstatus <device-id> -b` | iPhone 18 Pro 初次数据迁移后 Finished，退出码 0；验证后关闭本轮启动设备 |
+
+iOS 的 Xcode/SDK/模拟器环境已具备。本轮没有构建或安装本项目 iOS 应用；uni-app 的 HBuilderX/原生打包基座、签名、Keychain 和原生业务/真机测试仍需分别验证。工具检查与模拟器启动不升级 R1 业务卡或发布 Gate。历史 CHANGELOG 中“初始化待完成”只描述首次检查，以本节复核及迭代 2 进度页为后续接手依据。
 
 ## 仍未关闭的 26 项治理回归
 
