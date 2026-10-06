@@ -12,9 +12,15 @@ class MobileApiError extends Error {
   constructor(status) { super(`HTTP ${status}`); this.status = status }
 }
 
+const unavailableModule = { exports: {} }
+const unavailableSource = fs.readFileSync(path.resolve(appRoot, '../../packages/api-client/src/unavailable.ts'), 'utf8')
+const unavailableCompiled = ts.transpileModule(unavailableSource, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText
+new Function('module', 'exports', unavailableCompiled)(unavailableModule, unavailableModule.exports)
+
 function adapter(request) {
   const module = { exports: {} }
   const require = (name) => {
+    if (name === './unavailable') return { unavailableOperation: () => unavailableModule.exports.rejectUnavailableOperation('Feature unavailable') }
     if (name === './client') return { mobileApiClient: { request }, MobileApiError }
     if (name === '../domain/b11') return { contentVersionOf: (value, fallback = 'unknown') => value ?? fallback }
     throw new Error(`unexpected module: ${name}`)
@@ -95,4 +101,23 @@ test('failed media authorization cannot revive a content-embedded playback URL',
   assert.equal(denied?.rightsStatus, 'PENDING')
   assert.equal(denied?.availability, 'NOT_READY')
   assert.deepEqual(denied?.variants, [])
+})
+
+test('withheld recording, reading, listening and sync operations reject without transport or successful empty fallback', async () => {
+  let requests = 0
+  const api = adapter(async () => { requests += 1; return {} })
+  const calls = [
+    () => api.startB11ListeningSession(1, context, 'event', '301'),
+    () => api.submitB11Dictation('session', 'segment', 'answer', context, 'event', '301'),
+    () => api.loadB11Phonetics(context),
+    () => api.saveB11ReadingProgress({}, 'block', 10, 1, context, 'event'),
+    () => api.submitB11ReadingQuestion({}, 'answer', context, 'event'),
+    () => api.registerB11Recording({}, context),
+    () => api.deleteB11Recording('recording', context, 'event'),
+    () => api.submitB11SelfRating('recording', 'GOOD', context, 'event', '301'),
+    () => api.completeB11Shadowing({}, context),
+    () => api.syncB11Offline([], 'cursor', context, 'batch'),
+  ]
+  for (const call of calls) await assert.rejects(call(), error => error.code === 'FEATURE_UNAVAILABLE' && error.retryable === false)
+  assert.equal(requests, 0)
 })

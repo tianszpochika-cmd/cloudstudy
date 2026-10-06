@@ -1,14 +1,12 @@
+import { unavailableOperation } from './unavailable'
 import { adminClient, AdminApiError } from './client'
 import { adminT } from '../platform/admin-i18n'
 
 /**
  * B4-02 phonetics catalog browser for the tenant control plane.
  *
- * Read-only: the page renders the published `b3_content_experience`
- * PHONETICS projection through the existing learner `/phonetics/*`
- * gateway channel (no new gateway path). `language=fr-FR` reads the
- * `PHONETICS-FR` domain; omitting it keeps the legacy English catalog.
- * Audio bytes never flow through this page (symbols/profiles only).
+ * The owner-bound Gateway projection is pending. Catalog and pair reads reject
+ * locally with a translated unavailable state until that projection is verified.
  */
 
 export interface PhonemeRow {
@@ -65,7 +63,7 @@ export async function listPhonemes(language?: string): Promise<PhonemeRow[]> {
   if (language?.trim()) params.set('language', language.trim())
   const query = params.toString() ? `?${params.toString()}` : ''
   try {
-    const rows = unwrapItems(await adminClient.request(`/phonetics/catalog${query}`))
+    const rows = unwrapItems(await unavailableOperation())
     return rows.map((row) => ({
       ...row,
       phonemeId: (row.phonemeId ?? '') as number | string,
@@ -81,7 +79,7 @@ export async function listPhoneticPairs(language?: string): Promise<MinimalPairR
   const params = new URLSearchParams({ limit: '20' })
   if (language?.trim()) params.set('language', language.trim())
   try {
-    const rows = unwrapItems(await adminClient.request(`/phonetics/minimal-pairs?${params.toString()}`))
+    const rows = unwrapItems(await unavailableOperation())
     return rows.map((row) => ({
       ...row,
       pairId: (row.pairId ?? '') as number | string,

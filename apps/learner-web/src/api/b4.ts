@@ -1,3 +1,4 @@
+import { unavailableOperation } from './unavailable'
 import { apiClient } from './client'
 import { createClientId } from '../platform/client-id'
 import { listNotificationPreferences, setNotificationPreference, type NotificationPreference, type UpdateNotificationPreferenceInput } from './notifications'
@@ -162,17 +163,17 @@ export async function saveB4NotificationPreferences(input: UpdateNotificationPre
 
 export async function listB4OfflinePackages(): Promise<unknown> { return apiClient.get('/sync/offline-packages') }
 export async function authorizeB4OfflinePackage(packageId: string): Promise<unknown> {
-  return apiClient.post(`/sync/offline-packages/${encodeURIComponent(packageId)}/authorize`, {}, withKey(`b4-offline-authorize-${packageId}`))
+  return unavailableOperation()
 }
 export async function updateB4OfflineDownload(downloadId: string, action: 'PAUSE' | 'RESUME' | 'PART_RECEIVED', partIndex?: number, etag?: string): Promise<unknown> {
-  return apiClient.patch(`/sync/offline-downloads/${encodeURIComponent(downloadId)}`, { action, ...(partIndex === undefined ? {} : { partIndex }), ...(etag ? { etag } : {}) }, withKey(`b4-offline-download-${downloadId}-${action}-${partIndex ?? 'none'}`))
+  return unavailableOperation()
 }
 export async function cleanupB4OfflineDownload(downloadId: string): Promise<unknown> {
-  return apiClient.post(`/sync/offline-downloads/${encodeURIComponent(downloadId)}/cleanup`, {}, withKey(`b4-offline-cleanup-${downloadId}`))
+  return unavailableOperation()
 }
 export async function listB4SyncChanges(cursor = '0'): Promise<unknown> {
-  return apiClient.get(`/sync/changes?cursor=${encodeURIComponent(cursor)}&limit=50`)
+  return unavailableOperation()
 }
 export async function pushB4SyncEvents(events: B4SyncEvent[]): Promise<unknown> {
-  return apiClient.post('/sync/events', { clientBatchId: idempotencyKey('b4-sync-batch'), events }, withKey('b4-sync-events'))
+  return unavailableOperation()
 }

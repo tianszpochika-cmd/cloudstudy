@@ -561,7 +561,7 @@ class IamAuthenticationController {
         PrincipalId principal = principalId(jwt);
         AccountRecord account = passwords.find(principal);
         SessionRecord session = trustedSession(principal, sessionId(jwt), null);
-        if (session.expiresAt().isBefore(Instant.now())) {
+        if (!session.expiresAt().isAfter(Instant.now(clock))) {
             throw new IamPolicyException(IamDecisionCode.SESSION_EXPIRED, "iam.session.expired");
         }
         return account;

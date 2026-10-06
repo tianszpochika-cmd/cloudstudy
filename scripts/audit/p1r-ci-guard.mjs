@@ -32,6 +32,13 @@ assert('CI has no placeholder job', !/placeholder|scaffold check|echo\s+["']?CI 
 assert('CI is least privilege', /permissions:\s*\r?\n\s+contents:\s*read/m.test(workflow), 'top-level contents: read permission is required');
 assert('CI tests Windows', /windows-latest/.test(workflow), 'Windows runner is required');
 assert('CI tests Linux', /ubuntu-latest/.test(workflow), 'Linux runner is required');
+assert('CI tests macOS frontend', /macos-latest/.test(workflow), 'macOS frontend runner is required');
+assert('CI handles dev-redesign branch', /branches:\s*\[[^\]]*\bdev-redesign\b[^\]]*\]/m.test(workflow), 'push.dev-redesign is not configured');
+assert('CI bootstraps fresh local infrastructure', /^\s*local-infrastructure:\s*$/m.test(workflow)
+  && /pnpm infra:up/.test(workflow) && /check-local-infra.mjs --require-healthy/.test(workflow), 'fresh-volume infrastructure gate is required');
+assert('CI runs workspace unit tests', /run:\s*pnpm test\s*$/m.test(workflow), 'workspace unit tests are required');
+assert('CI tests mobile unavailable transport boundary', /run:\s*pnpm --filter @englishflow\/mobile test:b11\s*$/m.test(workflow), 'Mobile B11 transport regression is required');
+assert('CI builds Mobile H5', /run:\s*pnpm --filter @englishflow\/mobile build:h5\s*$/m.test(workflow), 'Mobile H5 build gate is required');
 assert('CI runs frozen install', /pnpm install --frozen-lockfile/.test(workflow), 'frozen pnpm install is required');
 assert('CI runs Java tests', /mvn[^\r\n]*\stest\b/.test(workflow), 'Maven test gate is required');
 assert('CI runs supply-chain gate', /p1r:supply-chain:check/.test(workflow), 'supply-chain gate is required');

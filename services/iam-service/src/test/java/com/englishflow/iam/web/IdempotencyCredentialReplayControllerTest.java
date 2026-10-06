@@ -739,6 +739,24 @@ class IdempotencyCredentialReplayControllerTest {
                 current.createdAt(), fixture.clock().instant()));
     }
 
+    @Test
+    void principalSessionUsesInjectedClockAndRejectsExactExpiry() {
+        Fixture fixture = fixture(Duration.ofMinutes(15), Duration.ofDays(30));
+        var login = fixture.controller().login(nativeLogin(UUID.randomUUID().toString()), NATIVE,
+                "session-clock-boundary-key-1234");
+        Jwt jwt = decodeAccessToken(fixture, login.getBody().data().accessToken());
+        var authentication = new JwtAuthenticationToken(jwt);
+        fixture.clock().advance(Duration.ofDays(30).minusSeconds(1));
+        assertEquals(200, fixture.controller().principalMe(authentication).getStatusCode().value());
+        fixture.clock().advance(Duration.ofSeconds(1));
+        IamPolicyException expired = assertThrows(IamPolicyException.class,
+                () -> fixture.controller().principalMe(authentication));
+        assertEquals(IamDecisionCode.SESSION_EXPIRED, expired.code());
+        fixture.clock().advance(Duration.ofSeconds(1));
+        assertEquals(IamDecisionCode.SESSION_EXPIRED, assertThrows(IamPolicyException.class,
+                () -> fixture.controller().principalMe(authentication)).code());
+    }
+
     private static void assertUnavailable(org.junit.jupiter.api.function.Executable operation) {
         IamPolicyException failure = assertThrows(IamPolicyException.class, operation);
         assertEquals(IamDecisionCode.IDEMPOTENCY_RESULT_UNAVAILABLE, failure.code());

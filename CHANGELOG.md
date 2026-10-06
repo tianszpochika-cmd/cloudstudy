@@ -1,5 +1,7 @@
 # Changelog
 
+- [LOCAL-DEV-20261006] 修复 macOS 工具链/Chrome 检测、Node 20 i18n 测试加载、IAM Clock/精确到期校验、Gateway 控制器证据与路由负例；配置 Redis 空卷 ACL、固定官方源码 MinIO 构建、IAM schema 准备与 v2 默认启动，移除凭证日志并限制 DoD URL 豁免。修复 pnpm 兼容 CLI 分隔符解析，补齐 IAM 响应头并切断前端 withheld 路由调用，保留明确不可用态；同步契约生成、迁移清单、CI 的 macOS/H5/空卷验证及启动文档。本机 15 v2 服务与四前端就绪，Java 回归 1,444 执行通过/61 跳过；P1R 仍 26 失败，iOS 初始化仍待完成，不宣称全量验收。[验证记录](docs/07-operations/local-environment-verification-2026-10-06.md)。
+
 - [R1-002-PREP-CLOSEOUT-20261006] 收口隔离IAM准备工具：DPAPI与NTFS权限、env口令注入、正确Secure配置及创建时间/退出确认守卫；主审只读验库和IAM TLS/健康/JWKS通过，关闭两个遗留自有进程。Gateway转发502与身份兼容/Outbox扩围仍阻塞READY。仅提交本次准备包及文档摘要，保留其他共享未提交工作。[收口报告](evidence/p1r/m2/P1R-M2-002/redesign/R1-002/reviewer-3-closeout/review.md)。
 
 - [MOCK-ADMIN-20261001] **管理端静态交互原型新建（16 屏）+ 移动端交互审计 A01–A19。** 新建 `mockups/admin/`（index 壳 + app.js + DEMO-GUIDE），复用手机壳风格，存储键 `yxx-admin-v1` 与学习端隔离；覆盖 L8 内容双审（建稿/送审/双签/发布回滚）、管理登录/仪表盘/权限只读/媒体上传、L9 治理建档/举报只读、客服后台/商城后台/退款双人审批、审计列表/观测发布门，对应 BC-071…084/085…094/168/171…175/185…187/200/204…208，IC-040…051；入口 `http://127.0.0.1:18283/admin/#/dash`，检查 `scripts/check-admin-mockups.mjs` 16 屏 0 缺失。移动端修复任务切换丢作答、SRS 撤销误删、重练混结果、跨日串任务、复习累计撤销、刷词覆盖、写作串草稿、阅读不同步、听力交卷、口语重存、首学绕过、限时计时、成人边界同意守卫、订单绑定、客服草稿、账号文案、缺数据展示、无障碍持久化、测评样例共 A01–A19；新增 4 模型回归脚本（41/41、23 组、35/35、10 组）+ learning-model 28/28 + 91 屏检查 + 194 次布局扫描，证据见 `interaction-audit-20261001/`。老移动端文件按审计修复，正式 `apps/*` 不动，不反推业务/交互规格。

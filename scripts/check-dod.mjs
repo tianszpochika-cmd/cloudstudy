@@ -216,6 +216,17 @@ function isPlaceholderValue(value) {
   return PLACEHOLDER_VALUES.some((placeholder) => normalized.includes(placeholder));
 }
 
+// This reviewed variable names an internal endpoint, not the token itself.
+// Other sensitive assignments remain scanned even when their value is a URL.
+function isEndpointUrl(key, value) {
+  if (key !== 'GATEWAY_AUDIT_SERVICE_TOKEN_URI') return false;
+  try {
+    const endpoint = new URL(value);
+    return ['http:', 'https:'].includes(endpoint.protocol)
+      && !endpoint.username && !endpoint.password && !endpoint.search && !endpoint.hash;
+  } catch { return false; }
+}
+
 export function scanSecrets(repoRoot) {
   const findings = [];
   for (const absolutePath of listFiles(repoRoot)) {
@@ -244,7 +255,7 @@ export function scanSecrets(repoRoot) {
         if (!syntheticPolicyMarker && pattern.test(line)) findings.push({ type, path: relativePath, line: index + 1 });
       }
       const assignment = line.match(SENSITIVE_ASSIGNMENT_PATTERN);
-      if (assignment && assignment[2].length >= 16 && !isPlaceholderValue(assignment[2])) {
+      if (assignment && assignment[2].length >= 16 && !isPlaceholderValue(assignment[2]) && !isEndpointUrl(assignment[1], assignment[2])) {
         findings.push({ type: 'sensitive-assignment', path: relativePath, line: index + 1, key: assignment[1] });
       }
     });
@@ -302,6 +313,8 @@ export function runSelfTest() {
     writeFileSync(join(fixtureRoot, '.env'), 'JWT_SECRET=realistic-credential-value-1234567890\n', 'utf8');
     writeFileSync(join(fixtureRoot, '.env.example'), 'JWT_SECRET=change-me\n', 'utf8');
     writeFileSync(join(fixtureRoot, 'PemParser.java'), 'pem.replace("-----BEGIN PRIVATE KEY-----", "").replace("-----END PRIVATE KEY-----", "");\n', 'utf8');
+    writeFileSync(join(fixtureRoot, 'endpoints.env'), 'GATEWAY_AUDIT_SERVICE_TOKEN_URI=http://iam-service:18087/internal/v1/iam/service-token\n', 'utf8');
+    writeFileSync(join(fixtureRoot, 'url-credentials.env'), 'API_TOKEN=https://opaque-credential.invalid/value\nGATEWAY_AUDIT_SERVICE_TOKEN_URI=https://user:opaque-credential@host.invalid/path\nGATEWAY_AUDIT_SERVICE_TOKEN_URI=https://host.invalid/path?access_token=opaque-credential\nSERVICE_TOKEN_URL=https://opaque-credential.invalid/value\n', 'utf8');
     const privateKeyFixture = [
       `-----BEGIN ${'PRIVATE KEY'}-----`,
       'QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB',
@@ -314,6 +327,8 @@ export function runSelfTest() {
     assert.ok(findings.some((finding) => finding.type === 'sensitive-assignment' && finding.path === '.env'));
     assert.equal(findings.some((finding) => finding.path === '.env.example'), false);
     assert.equal(findings.some((finding) => finding.path === 'PemParser.java'), false);
+    assert.equal(findings.some((finding) => finding.path === 'endpoints.env'), false);
+    assert.equal(findings.filter((finding) => finding.path === 'url-credentials.env').length, 4);
     assert.ok(findings.some((finding) => finding.type === 'private-key-block' && finding.path === 'leaked.key'));
 
     const goodRegistry = {
@@ -327,7 +342,7 @@ export function runSelfTest() {
       services: { 'core-api': { port: 18080 }, duplicate: { port: 18080 } }
     };
     assert.ok(validatePortRegistry(badRegistry, { 'core-api': 18080 }).some((failure) => failure.includes('端口重复')));
-    return { passed: 6, failed: 0, message: 'secret placeholder、真实 PEM、解析器字面量、敏感变量、端口合法和端口重复检测均通过' };
+    return { passed: 11, failed: 0, message: '占位值、真实 PEM、解析器字面量、敏感变量、单一端点及 URL 凭证负例、合法与重复端口检测均通过' };
   } finally {
     rmSync(fixtureRoot, { recursive: true, force: true });
   }

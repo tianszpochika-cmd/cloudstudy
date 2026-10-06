@@ -21,7 +21,8 @@ test('B11 mobile media and learning mutations are Gateway-relative and idempoten
   assert.match(api, /clientEventId/)
   assert.match(api, /contentVersion/)
   assert.match(api, new RegExp('/media/assets'))
-  assert.match(api, new RegExp('/sync/changes'))
+  assert.doesNotMatch(api, new RegExp('/sync/changes'))
+  assert.match(api, /unavailableOperation/)
   assert.doesNotMatch(api, /https?:\/\/(?!127\.0\.0\.1:18070)/)
 })
 

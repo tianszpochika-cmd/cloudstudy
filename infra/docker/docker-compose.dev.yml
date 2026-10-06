@@ -27,9 +27,23 @@ services:
     networks:
       - yuxuexing-local
 
+  redis-init:
+    image: redis:7-alpine
+    restart: "no"
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - 'set -eu; if [ ! -e /data/users.acl ]; then printf "%s\n" "user default on nopass ~* &* +@all" > /data/users.acl; fi'
+    volumes:
+      - yuxuexing-redis:/data
+    networks:
+      - yuxuexing-local
+
   redis:
     image: redis:7-alpine
     restart: unless-stopped
+    depends_on:
+      redis-init:
+        condition: service_completed_successfully
     command:
       - redis-server
       - --appendonly
@@ -56,7 +70,10 @@ services:
       - yuxuexing-local
 
   minio:
-    image: quay.io/minio/minio:latest
+    image: cloudstudy-local/minio:7aac2a2c5b7c
+    build:
+      context: .
+      dockerfile: Minio.Dockerfile
     restart: unless-stopped
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER:-change-me}
@@ -83,7 +100,14 @@ services:
       - yuxuexing-local
 
   minio-init:
-    image: quay.io/minio/mc:latest
+    image: cloudstudy-local/minio-mc:77f82e18b540
+    build:
+      context: .
+      dockerfile: Minio.Dockerfile
+      args:
+        MINIO_COMPONENT: mc
+        SOURCE_COMMIT: 77f82e18b5401a65958f1619df6ebb994634bd88
+        SOURCE_SHA256: 167415edd21bc29f5360943dac64272aa5cda0a39f3070b15cfeca671c43d975
     restart: "no"
     depends_on:
       minio:

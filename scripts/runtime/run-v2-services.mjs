@@ -42,8 +42,9 @@ function values(name) {
 
 const requested = values('--service').flatMap((value) => value.split(/[\s,]+/)).filter(Boolean);
 const selectAll = args.includes('--all');
+const includeLegacy = args.includes('--include-legacy');
 if (!selectAll && requested.length === 0) {
-  console.error('Usage: pnpm services:run -- --all [--skip-health]');
+  console.error('Usage: pnpm services:run -- --all [--include-legacy] [--skip-health]');
   console.error('   or: pnpm services:run -- --service api-gateway,iam-service');
   process.exit(2);
 }
@@ -58,7 +59,9 @@ if (unknown.length > 0) {
   console.error(`Unknown runtime service(s): ${unknown.join(', ')}`);
   process.exit(2);
 }
-const selected = selectAll ? manifest.services : requested.map((id) => byId.get(id));
+const selected = selectAll
+  ? manifest.services.filter(service => includeLegacy || service.profile !== 'legacy-compatibility')
+  : requested.map((id) => byId.get(id));
 
 function assertJava25() {
   const result = spawnSync(process.platform === 'win32' ? 'java.exe' : 'java', ['-version'], {
@@ -234,10 +237,6 @@ function runtimeEnvironment(service, port) {
     environment.GATEWAY_AUDIT_SERVICE_TOKEN_URI = process.env.GATEWAY_AUDIT_SERVICE_TOKEN_URI ?? 'http://127.0.0.1:18087/internal/v1/iam/service-token';
     environment.GATEWAY_AUDIT_SERVICE_CLIENT_ID = process.env.GATEWAY_AUDIT_SERVICE_CLIENT_ID ?? 'api-gateway';
     environment.GATEWAY_AUDIT_SERVICE_CLIENT_SECRET = process.env.GATEWAY_AUDIT_SERVICE_CLIENT_SECRET ?? 'local-gateway-service-secret';
-    if (process.env.P1R_DIAG === '1') {
-      console.log('P1R-DIAG gateway secret =', environment.GATEWAY_AUDIT_SERVICE_CLIENT_SECRET);
-      console.log('P1R-DIAG gateway digest =', crypto.createHash('sha256').update(environment.GATEWAY_AUDIT_SERVICE_CLIENT_SECRET).digest('hex'));
-    }
   }
 
   if (service.id === 'workflow-service') {

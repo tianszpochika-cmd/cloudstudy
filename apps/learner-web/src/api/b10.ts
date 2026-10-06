@@ -1,3 +1,4 @@
+import { unavailableOperation } from './unavailable'
 import { ApiError, apiClient, type ApiRequestOptions } from './client'
 import { learnerI18n } from '../platform/v2-foundation'
 import type {
@@ -33,20 +34,11 @@ export const B10_GATEWAY_ROUTES = {
     vocabularyBatch: '/learning/srs/batches',
     vocabularyReview: '/learning/srs/reviews',
     vocabularySync: '/learning/srs/reviews:sync',
-    readingProgress: '/reading/progress',
-    readingMining: '/reading/mining',
-    grammarBlocks: '/grammar/sentences',
-    grammarImitation: '/grammar/sentences',
-    writingHistory: '/writing/history',
     reportDaily: '/learning/stats/daily-report',
     reportWeekly: '/learning/stats/weekly-report',
   },
   assessment: {
     sessions: '/assessment/sessions',
-    grammarAttempts: '/grammar/practice/attempts',
-    readingAttempts: '/reading/attempts',
-    writingSubmissions: '/writing/submissions',
-    proofreading: '/writing/corrections',
   },
   content: {
     vocabularyItem: '/content/learner/vocabulary',
@@ -57,11 +49,7 @@ export const B10_GATEWAY_ROUTES = {
     grammarPoints: '/grammar/points',
     grammarExercises: '/grammar/exercises',
     grammarMastery: '/grammar/mastery',
-    grammarSentences: '/grammar/sentences',
     writingPrompts: '/writing/prompts',
-    writingTemplates: '/writing/templates',
-    writingMaterials: '/writing/materials',
-    proofreadingExercises: '/writing/proofreading/exercises',
   },
 } as const
 
@@ -694,11 +682,11 @@ export async function submitReadingQuiz(question: B10ReadingQuestion, answer: st
 }
 
 export async function saveReadingProgress(payload: { articleId: number; blockId: string; progressPercent: number; positionVersion: number; contentVersionId: number }, stableKey: string): Promise<void> {
-  await apiClient.put(B10_GATEWAY_ROUTES.learning.readingProgress, { ...payload, clientEventId: stableKey }, withB10Headers(stableKey))
+  await unavailableOperation()
 }
 
 export async function createReadingMining(articleId: number, blockId: string, selectedText: string, contentVersionId: number, stableKey: string): Promise<void> {
-  await apiClient.post(B10_GATEWAY_ROUTES.learning.readingMining, { articleId, blockId, selectedText, contentVersionId, clientEventId: stableKey }, withB10Headers(stableKey))
+  await unavailableOperation()
 }
 
 export async function listGrammarPoints(): Promise<B10GrammarPoint[]> {
@@ -717,7 +705,7 @@ export async function listGrammarMastery(grammarPointId?: number): Promise<B10Gr
 }
 
 export async function getSentenceGraph(sentenceId: number): Promise<B10SentenceGraph> {
-  const graph = parseSentenceGraph(await apiClient.get<unknown>(`${B10_GATEWAY_ROUTES.content.grammarSentences}/${sentenceId}`, withB10Headers()))
+  const graph = parseSentenceGraph(await unavailableOperation<unknown>())
   if (!graph) throw new Error('句法结构暂时无法读取。')
   return graph
 }
@@ -734,11 +722,11 @@ export async function submitGrammarAttempt(exercise: B10GrammarExercise, answer:
 }
 
 export async function submitSentenceBlocks(sentenceId: number, blockOrder: string[], contentVersionId: number, stableKey: string): Promise<B10Feedback> {
-  return parseFeedback(await apiClient.post<unknown>(`${B10_GATEWAY_ROUTES.learning.grammarBlocks}/${sentenceId}/blocks`, { blockOrder, contentVersionId, clientEventId: stableKey }, withB10Headers(stableKey)))
+  return parseFeedback(await unavailableOperation<unknown>())
 }
 
 export async function submitSentenceImitation(sentenceId: number, slotValues: Record<string, string>, contentVersionId: number, stableKey: string): Promise<B10Feedback> {
-  return parseFeedback(await apiClient.post<unknown>(`${B10_GATEWAY_ROUTES.learning.grammarImitation}/${sentenceId}/imitation`, { slotValues, contentVersionId, clientEventId: stableKey }, withB10Headers(stableKey)))
+  return parseFeedback(await unavailableOperation<unknown>())
 }
 
 export async function listWritingPrompts(): Promise<B10WritingPrompt[]> {
@@ -747,31 +735,31 @@ export async function listWritingPrompts(): Promise<B10WritingPrompt[]> {
 }
 
 export async function listWritingTemplates(): Promise<B10WritingTemplate[]> {
-  const response = await apiClient.get<unknown>(`${B10_GATEWAY_ROUTES.content.writingTemplates}${query({ limit: 20 })}`, withB10Headers())
+  const response = await unavailableOperation<unknown>()
   return listFrom(response).flatMap((item) => { const template = parseWritingTemplate(item); return template ? [template] : [] })
 }
 
 export async function listWritingMaterials(): Promise<B10WritingMaterial[]> {
-  const response = await apiClient.get<unknown>(`${B10_GATEWAY_ROUTES.content.writingMaterials}${query({ limit: 20 })}`, withB10Headers())
+  const response = await unavailableOperation<unknown>()
   return listFrom(response).flatMap((item) => { const material = parseWritingMaterial(item); return material ? [material] : [] })
 }
 
 export async function listProofreadingExercises(): Promise<B10ProofreadingIssue[]> {
-  const response = await apiClient.get<unknown>(`${B10_GATEWAY_ROUTES.content.proofreadingExercises}${query({ limit: 20 })}`, withB10Headers())
+  const response = await unavailableOperation<unknown>()
   return listFrom(response).flatMap((item) => { const issue = parseProofreadingIssue(item); return issue ? [issue] : [] })
 }
 
 export async function listWritingHistory(): Promise<B10WritingHistoryItem[]> {
-  const response = await apiClient.get<unknown>(`${B10_GATEWAY_ROUTES.learning.writingHistory}${query({ limit: 20 })}`, withB10Headers())
+  const response = await unavailableOperation<unknown>()
   return listFrom(response).flatMap((item) => { const history = parseWritingHistory(item); return history ? [history] : [] })
 }
 
 export async function submitWriting(promptId: number, answer: string, contentVersionId: number, stableKey: string): Promise<B10WritingFeedback> {
-  const result = parseWritingFeedback(await apiClient.post<unknown>(B10_GATEWAY_ROUTES.assessment.writingSubmissions, { promptId, answer, contentVersionId, mode: 'RULED_TRANSLATION', clientSubmissionId: stableKey }, withB10Headers(stableKey)))
+  const result = parseWritingFeedback(await unavailableOperation<unknown>())
   if (!result) throw new Error('写作服务暂未返回规则反馈。')
   return result
 }
 
 export async function submitProofreading(promptId: number, answer: string, contentVersionId: number, stableKey: string): Promise<B10Feedback> {
-  return parseFeedback(await apiClient.post<unknown>(B10_GATEWAY_ROUTES.assessment.proofreading, { promptId, answer, contentVersionId, clientSubmissionId: stableKey }, withB10Headers(stableKey)))
+  return parseFeedback(await unavailableOperation<unknown>())
 }

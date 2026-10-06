@@ -1,3 +1,4 @@
+import { unavailableOperation } from './unavailable'
 import { apiClient, type ApiRequestOptions } from './client'
 import { createClientId } from '../platform/client-id'
 import type {
@@ -423,13 +424,7 @@ export async function requestDataExport(): Promise<DataExportResponse> {
 }
 
 export async function sendCheckpoint(context: ContinueContext): Promise<void> {
-  await apiClient.put(`/sync/checkpoints/${encodeURIComponent(context.lessonId)}`, {
-    moduleId: context.moduleId,
-    stepIndex: context.stepIndex,
-    totalSteps: context.totalSteps,
-    elapsedTimeMs: context.elapsedTimeMs,
-    updatedAt: context.updatedAt,
-  }, withIdempotency())
+  await unavailableOperation()
 }
 
 export function isApiUnavailable(error: unknown): boolean {

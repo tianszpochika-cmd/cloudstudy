@@ -3,9 +3,9 @@
   "policy": {
     "versionDrift": "fail",
     "missingRuntime": "fail",
-    "supportedPlatforms": ["windows-x64", "linux-x64"],
+    "supportedPlatforms": ["windows-x64", "linux-x64", "darwin-arm64", "darwin-x64"],
     "portsSource": "config/local-ports.json",
-    "portsCanonicalSha256": "8022df585efdf12f124e8747be7f3a2e52dc323b9a919502c9cb4e62eaa8e493",
+    "portsCanonicalSha256": "28d84de5a93c65dd3e13b5d5dd99d455f8516975a2257bcb0462024f458c21da",
     "portsAutoIncrement": false
   },
   "node": {

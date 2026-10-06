@@ -770,32 +770,32 @@
       {
         "service": "iam-service",
         "path": "services/iam-service/src/main/resources/db/migration",
-        "fileCount": 14
+        "fileCount": 17
       },
       {
         "service": "learner-service",
         "path": "services/learner-service/src/main/resources/db/migration",
-        "fileCount": 10
+        "fileCount": 12
       },
       {
         "service": "content-service",
         "path": "services/content-service/src/main/resources/db/migration",
-        "fileCount": 14
+        "fileCount": 26
       },
       {
         "service": "learning-service",
         "path": "services/learning-service/src/main/resources/db/migration",
-        "fileCount": 9
+        "fileCount": 11
       },
       {
         "service": "assessment-service",
         "path": "services/assessment-service/src/main/resources/db/migration",
-        "fileCount": 6
+        "fileCount": 8
       },
       {
         "service": "media-service",
         "path": "services/media-service/src/main/resources/db/migration",
-        "fileCount": 6
+        "fileCount": 7
       },
       {
         "service": "gamification-service",
@@ -815,7 +815,7 @@
       {
         "service": "notification-service",
         "path": "services/notification-service/src/main/resources/db/migration",
-        "fileCount": 7
+        "fileCount": 8
       },
       {
         "service": "analytics-service",
@@ -825,7 +825,7 @@
       {
         "service": "admin-ops-service",
         "path": "services/admin-ops-service/src/main/resources/db/migration",
-        "fileCount": 4
+        "fileCount": 6
       },
       {
         "service": "audit-service",

@@ -39,10 +39,11 @@ test('missing, duplicate and unknown GAP records fail closed', () => {
 
 test('a GAP cannot close before owner tasks and Evidence are accepted', () => {
   const changed = copyRegistry();
-  const openOwnerGapIndex = changed.gaps.findIndex((gap) =>
-    gap.closureTasks.some((taskId) => tasksById.get(taskId)?.status !== 'ACCEPTED'),
-  );
-  assert.notEqual(openOwnerGapIndex, -1, 'fixture requires at least one GAP with an unaccepted closure task');
+  const openOwnerGapIndex = changed.gaps.findIndex((gap) => gap.closureTasks.length > 0);
+  assert.notEqual(openOwnerGapIndex, -1, 'fixture requires a GAP with a closure task');
+  const fixtureTasks = new Map(tasksById);
+  const taskId = changed.gaps[openOwnerGapIndex].closureTasks[0];
+  fixtureTasks.set(taskId, { ...fixtureTasks.get(taskId), status: 'REVIEW' });
   changed.gaps[openOwnerGapIndex] = {
     ...changed.gaps[openOwnerGapIndex],
     status: 'CLOSED',
@@ -50,7 +51,7 @@ test('a GAP cannot close before owner tasks and Evidence are accepted', () => {
     closedAt: '2026-08-29T00:00:00.000Z',
     reviewer: 'independent-reviewer',
   };
-  const errors = validateGapRegistryData({ registry: changed, matrixGapIds, tasksById, root, checkEvidenceFiles: false });
+  const errors = validateGapRegistryData({ registry: changed, matrixGapIds, tasksById: fixtureTasks, root, checkEvidenceFiles: false });
   assert(errors.some((error) => error.includes('every closure task to be ACCEPTED')));
 });
 

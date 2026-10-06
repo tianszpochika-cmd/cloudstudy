@@ -38,7 +38,7 @@
     }
   },
   "scripts": {
-    "test": "node --test tests/starter-locales.test.mjs",
+    "test": "node --import ../../scripts/dev/register-typescript.mjs --test tests/starter-locales.test.mjs",
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "devDependencies": {

@@ -54,3 +54,5 @@ export function requestApiOperation<TOperation extends GeneratedApiOperationId>(
 ): Promise<GeneratedOperation<TOperation>['response']> {
   return client.request<GeneratedOperation<TOperation>['response']>(path, options)
 }
+
+export * from './unavailable'

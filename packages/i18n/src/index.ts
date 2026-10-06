@@ -506,3 +506,9 @@ export function createI18n(options: I18nOptions = {}): I18nInstance {
     },
   }
 }
+
+/** Shared copy for operations withheld until their owner implementation is ready. */
+export const operationAvailabilityMessages = {
+  'zh-CN': { common: { featureUnavailable: '这项功能暂未开放，请查看服务公告。' } },
+  'en-US': { common: { featureUnavailable: 'This feature is not available yet. Check service announcements.' } },
+} as const

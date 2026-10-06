@@ -23,7 +23,7 @@ test("canonical M1-007 reliability policy passes without runtime promotion", fun
   assert.equal(report.summary.taskId, "P1R-M1-007");
   assert.equal(report.summary.maturity, "D2_CONTRACT_READY");
   assert.equal(report.summary.runtimeStatus, "NOT_RUNTIME_VERIFIED");
-  assert.equal(report.summary.canonicalEvents, 50);
+  assert.equal(report.summary.canonicalEvents, 51);
   assert.equal(report.summary.reliabilitySchemas, 8);
   assert.equal(report.summary.retryMaxAttempts, 5);
   assert.equal(report.summary.b26Mode, "static-only");

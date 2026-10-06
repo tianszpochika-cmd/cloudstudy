@@ -77,7 +77,15 @@ function browserProbe() {
     }
     return { command: null, version: null };
   }
-  for (const command of ['google-chrome', 'chrome', 'chromium', 'chromium-browser', 'microsoft-edge']) {
+  const candidates = [process.env.CHROME_PATH,
+    ...(process.platform === 'darwin' ? [
+      '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+      path.join(os.homedir(), 'Applications/Google Chrome.app/Contents/MacOS/Google Chrome'),
+      '/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge'
+    ] : []),
+    'google-chrome', 'chrome', 'chromium', 'chromium-browser', 'microsoft-edge'
+  ].filter(Boolean);
+  for (const command of candidates) {
     const probe = run(command, ['--version']);
     const version = probe.status === 0 ? versionFrom(outputOf(probe)) : null;
     if (version) return { command, version };

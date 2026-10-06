@@ -1,3 +1,4 @@
+import { unavailableOperation } from './unavailable'
 import { mobileApiClient, MobileApiError } from './client'
 import { listGrammarExercises as listB3GrammarExercises, submitGrammarAttempt as submitB3GrammarAttempt } from './b3'
 import { createClientId } from '../platform/client-id'
@@ -34,7 +35,6 @@ export const B10_GATEWAY_PATHS = {
     projection: '/content/learner',
     vocabularyDetail: '/content/learner/vocabulary',
     grammarPoints: '/grammar/points',
-    sentenceGraph: '/grammar/sentences',
     readingArticles: '/reading/articles',
     readingQuestions: '/reading/questions',
     writingPrompts: '/writing/prompts',
@@ -43,7 +43,6 @@ export const B10_GATEWAY_PATHS = {
     srsBatch: '/learning/srs/batches',
     srsReview: '/learning/srs/reviews',
     srsSync: '/learning/srs/reviews:sync',
-    readingProgress: '/reading/progress',
   },
   assessment: {
     dailyStream: '/assessment/daily-stream',
@@ -52,11 +51,6 @@ export const B10_GATEWAY_PATHS = {
     masteryVerifications: '/mastery/verifications',
     dailyReport: '/learning/stats/daily-report',
     weeklyReport: '/learning/stats/weekly-report',
-    grammarSessions: '/grammar/practice/sessions',
-    writingSubmissions: '/writing/submissions',
-    corrections: '/writing/corrections',
-    readingAttempts: '/reading/attempts',
-    readingMining: '/reading/mining',
   },
 } as const
 
@@ -610,7 +604,7 @@ export const b10LearningApi = {
   },
 
   async getSentenceGraph(context: B10RequestContext, sentenceId: number): Promise<B10SyntaxGraph> {
-    const graph = parseSyntaxGraph(await mobileApiClient.request<unknown>(query(`${B10_GATEWAY_PATHS.content.sentenceGraph}/${encodeURIComponent(String(sentenceId))}`, { contentLocale: context.contentLocale }), { header: headers(context) }))
+    const graph = parseSyntaxGraph(await unavailableOperation<unknown>())
     if (!graph) throw new Error('句法服务没有返回可解析的结构图。')
     return graph
   },
@@ -645,7 +639,7 @@ export const b10LearningApi = {
   },
 
   async saveReadingProgress(context: B10RequestContext, article: B10ReadingArticle, blockId: string, progressPercent: number, positionVersion: number, clientEventId: string): Promise<void> {
-    await mobileApiClient.request(B10_GATEWAY_PATHS.learning.readingProgress, { method: 'PUT', data: { articleId: article.articleId, blockId, progressPercent, positionVersion, contentVersionId: article.contentVersionId, clientEventId }, header: headers(context, clientEventId) })
+    await unavailableOperation()
   },
 
   async listReadingQuestions(context: B10RequestContext, articleId: number): Promise<B10ReadingQuestion[]> {
@@ -654,13 +648,13 @@ export const b10LearningApi = {
   },
 
   async submitReadingAttempt(context: B10RequestContext, question: B10ReadingQuestion, answer: B10AnswerInput, clientEventId: string): Promise<B10ReadingAttempt> {
-    const response = await mobileApiClient.request<unknown>(B10_GATEWAY_PATHS.assessment.readingAttempts, { method: 'POST', data: { questionId: question.questionId, answer, contentVersionId: question.contentVersionId, clientEventId }, header: headers(context, clientEventId) })
+    const response = await unavailableOperation<unknown>()
     const source = isRecord(unwrap(response)) ? unwrap(response) as RecordValue : {}
     return { attemptId: nullableNumber(source.attemptId), questionId: question.questionId, correct: booleanOrNull(source.correct ?? source.isCorrect), score: typeof source.score === 'number' ? source.score : null, feedbackCode: text(source.feedbackCode) || null, reviewSignal: text(source.reviewSignal) || null, ruleVersion: text(source.ruleVersion) || null, contentVersionStale: source.contentVersionStale === true || source.status === 'CONTENT_VERSION_STALE' }
   },
 
   async mineReadingExpression(context: B10RequestContext, article: B10ReadingArticle, blockId: string, selectedText: string, clientEventId: string): Promise<unknown> {
-    return mobileApiClient.request(B10_GATEWAY_PATHS.assessment.readingMining, { method: 'POST', data: { articleId: article.articleId, blockId, selectedText, contentVersionId: article.contentVersionId, clientEventId }, header: headers(context, clientEventId) })
+    return unavailableOperation()
   },
 
   async listWritingPrompts(context: B10RequestContext, promptType?: B10WritingPrompt['promptType']): Promise<B10WritingPrompt[]> {
@@ -669,12 +663,12 @@ export const b10LearningApi = {
   },
 
   async submitWriting(context: B10RequestContext, prompt: B10WritingPrompt, answer: string, mode: 'TRANSLATION' | 'CORRECTION' | 'WRITING', clientEventId: string): Promise<B10RuleFeedback> {
-    const response = await mobileApiClient.request<unknown>(B10_GATEWAY_PATHS.assessment.writingSubmissions, { method: 'POST', data: { promptId: prompt.promptId, answer, clientSubmissionId: clientEventId, contentVersionId: prompt.contentVersionId, mode }, header: headers(context, clientEventId) })
+    const response = await unavailableOperation<unknown>()
     return parseRuleFeedback(response)
   },
 
   async submitCorrection(context: B10RequestContext, prompt: B10WritingPrompt, answer: string, clientEventId: string): Promise<B10RuleFeedback> {
-    const response = await mobileApiClient.request<unknown>(B10_GATEWAY_PATHS.assessment.corrections, { method: 'POST', data: { promptId: prompt.promptId, answer, clientSubmissionId: clientEventId, ...(prompt.contentVersionId ? { contentVersionId: prompt.contentVersionId } : {}) }, header: headers(context, clientEventId) })
+    const response = await unavailableOperation<unknown>()
     return parseRuleFeedback(response)
   },
 

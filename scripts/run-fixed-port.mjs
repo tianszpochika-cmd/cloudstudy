@@ -54,6 +54,9 @@ const child = spawn(command, commandArgs, {
   cwd: process.cwd(),
   env: {
     ...process.env,
+    HOST: host,
+    NITRO_HOST: host,
+    NUXT_HOST: host,
     PORT: String(port),
     SERVICE_PORT: String(port)
   },

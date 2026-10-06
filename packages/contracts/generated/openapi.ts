@@ -1275,7 +1275,7 @@ export type B9ContentItemDefinition = { itemCode: string; itemType: B9ContentIte
 /**
  * Generated from the contract source.
  */
-export type B9ContentDraftInput = { contentType: B9ContentType; title: string; summary?: string; contentLocale: B9Locale; targetLevel: "A1" | "A2" | "B1" | "B2" | "C1" | "C2"; sourceCode: string; licenseCode: string; contentHash: string; items: readonly [B9ContentItemDefinition, ...Array<B9ContentItemDefinition>]; };
+export type B9ContentDraftInput = { contentType: B9ContentType; title: string; summary?: string; contentLocale: B9Locale; targetLevel: "A1" | "A2" | "B1" | "B2" | "C1" | "C2"; sourceCode: string; licenseCode: string; permittedChannels?: readonly [string] | readonly [string, string] | readonly [string, string, string] | readonly [string, string, string, string] | readonly [string, string, string, string, string] | readonly [string, string, string, string, string, string] | readonly [string, string, string, string, string, string, string] | readonly [string, string, string, string, string, string, string, string] | readonly [string, string, string, string, string, string, string, string, string] | readonly [string, string, string, string, string, string, string, string, string, string] | readonly [string, string, string, string, string, string, string, string, string, string, string] | readonly [string, string, string, string, string, string, string, string, string, string, string, string] | readonly [string, string, string, string, string, string, string, string, string, string, string, string, string] | readonly [string, string, string, string, string, string, string, string, string, string, string, string, string, string] | readonly [string, string, string, string, string, string, string, string, string, string, string, string, string, string, string] | readonly [string, string, string, string, string, string, string, string, string, string, string, string, string, string, string, string]; authorizationEvidenceRef?: string; allowsLearning?: boolean; contentHash: string; items: readonly [B9ContentItemDefinition, ...Array<B9ContentItemDefinition>]; };
 
 /**
  * 命令只表达意图和资源版本；actor、tenant、owner、role、permission、reviewer 和版权事实均由服务端从已验证上下文与内容记录派生。
@@ -1285,7 +1285,7 @@ export type B9ContentCommandRequest = ({ command: "CREATE_DRAFT" | "SAVE_DRAFT" 
 /**
  * 服务端生成的命令受理结果。排期命令只返回只读任务引用；任务 status 不是 runtime publication proof。
  */
-export type B9ContentCommandAccepted = { commandId: string; command: "CREATE_DRAFT" | "SAVE_DRAFT" | "VALIDATE_DRAFT" | "SUBMIT_REVIEW" | "REVIEW_FIRST" | "REVIEW_FINAL" | "PUBLISH" | "SCHEDULE_PUBLISH" | "CANCEL_SCHEDULED_PUBLISH" | "UNPUBLISH" | "ROLLBACK" | "LEXEME_UPSERT" | "LEXEME_SUBMIT_REVIEW" | "LEXEME_REVIEW_FIRST" | "LEXEME_REVIEW_FINAL" | "LEXEME_PUBLISH" | "LEXEME_UNPUBLISH" | "LEXEME_ARCHIVE" | "LEXEME_PRONUNCIATION_UPSERT" | "LEXEME_PRONUNCIATION_QC" | "ITEM_UPSERT" | "ITEM_SUBMIT_REVIEW" | "ITEM_REVIEW_FIRST" | "ITEM_REVIEW_FINAL" | "ITEM_PUBLISH" | "ITEM_UNPUBLISH" | "ITEM_ARCHIVE"; contentCode: B9ContentCode; contentVersionId?: B9ContentVersionId; status: B9CommandStatus; stateVersion: B9StateVersion; outboxEventId?: string; acceptedAt: B9DateTime; scheduledPublishTask?: B9ScheduledPublishTaskRef; lexemeId?: string; lexemeStateVersion?: B9StateVersion; itemId?: string; itemStateVersion?: B9StateVersion; };
+export type B9ContentCommandAccepted = { commandId: string; command: "CREATE_DRAFT" | "SAVE_DRAFT" | "VALIDATE_DRAFT" | "SUBMIT_REVIEW" | "REVIEW_FIRST" | "REVIEW_FINAL" | "PUBLISH" | "SCHEDULE_PUBLISH" | "CANCEL_SCHEDULED_PUBLISH" | "UNPUBLISH" | "ROLLBACK" | "LEXEME_UPSERT" | "LEXEME_SUBMIT_REVIEW" | "LEXEME_REVIEW_FIRST" | "LEXEME_REVIEW_FINAL" | "LEXEME_PUBLISH" | "LEXEME_UNPUBLISH" | "LEXEME_ARCHIVE" | "LEXEME_PRONUNCIATION_UPSERT" | "LEXEME_PRONUNCIATION_QC" | "ITEM_UPSERT" | "ITEM_SUBMIT_REVIEW" | "ITEM_REVIEW_FIRST" | "ITEM_REVIEW_FINAL" | "ITEM_PUBLISH" | "ITEM_UNPUBLISH" | "ITEM_ARCHIVE"; contentCode: B9ContentCode; contentVersionId?: B9ContentVersionId; status: B9CommandStatus; stateVersion: B9StateVersion; outboxEventId?: string; acceptedAt: B9DateTime; scheduledPublishTask?: B9ScheduledPublishTaskRef; lexemeId?: string; lexemeStateVersion?: B9StateVersion; itemId?: string; itemStateVersion?: B9StateVersion; validationReport?: B9ValidationReport; };
 
 /**
  * Generated from the contract source.
@@ -1355,7 +1355,7 @@ export type B9PublicProjectionState = { availability: B9ContentAvailability; pro
 /**
  * 内容后台状态。canonical 持久状态为 DRAFT/IN_REVIEW/APPROVED/PUBLISHED/ARCHIVED；旧 UNPUBLISHED/ROLLED_BACK 只读兼容且新实现不得产生。排期任务由服务端只读维护。
  */
-export type B9AdminContentState = { contentCode: B9ContentCode; contentType: B9ContentType; title: string; authorSubject?: string; stateVersion: B9StateVersion; latestStatus: "DRAFT" | "IN_REVIEW" | "APPROVED" | "PUBLISHED" | "UNPUBLISHED" | "ROLLED_BACK" | "ARCHIVED"; versions: ReadonlyArray<B9ContentVersionSummary>; publicProjection: B9PublicProjectionState; rightsStatus: "PENDING" | "VALID" | "EXPIRED" | "REVOKED"; reviewSubmissionReady?: boolean; reviewSubmissionReason?: "READY" | "DRAFT_REQUIRED" | "RIGHTS_NOT_READY" | "VALIDATION_NOT_PASSED" | "VALIDATION_REPORT_UNAVAILABLE" | "MEDIA_ELIGIBILITY_UNAVAILABLE"; reviewRecords?: (readonly [] | readonly [({ contentVersionId: B9ContentVersionId; contentHash: string; reviewStage: "FIRST_REVIEW" | "FINAL_REVIEW"; decision: "APPROVED" | "REJECTED" | "CHANGES_REQUESTED"; reviewVersion: number; auditId: B9AuditId; decidedAt: B9DateTime; }) & ({ reviewStage: "FIRST_REVIEW"; } | { reviewStage: "FINAL_REVIEW"; })] | readonly [({ contentVersionId: B9ContentVersionId; contentHash: string; reviewStage: "FIRST_REVIEW" | "FINAL_REVIEW"; decision: "APPROVED" | "REJECTED" | "CHANGES_REQUESTED"; reviewVersion: number; auditId: B9AuditId; decidedAt: B9DateTime; }) & ({ reviewStage: "FIRST_REVIEW"; } | { reviewStage: "FINAL_REVIEW"; }), ({ contentVersionId: B9ContentVersionId; contentHash: string; reviewStage: "FIRST_REVIEW" | "FINAL_REVIEW"; decision: "APPROVED" | "REJECTED" | "CHANGES_REQUESTED"; reviewVersion: number; auditId: B9AuditId; decidedAt: B9DateTime; }) & ({ reviewStage: "FIRST_REVIEW"; } | { reviewStage: "FINAL_REVIEW"; })]) & (readonly [] | readonly [{ reviewStage: "FIRST_REVIEW"; }] | (readonly [({ contentVersionId: B9ContentVersionId; contentHash: string; reviewStage: "FIRST_REVIEW" | "FINAL_REVIEW"; decision: "APPROVED" | "REJECTED" | "CHANGES_REQUESTED"; reviewVersion: number; auditId: B9AuditId; decidedAt: B9DateTime; }) & ({ reviewStage: "FIRST_REVIEW"; } | { reviewStage: "FINAL_REVIEW"; }), ({ contentVersionId: B9ContentVersionId; contentHash: string; reviewStage: "FIRST_REVIEW" | "FINAL_REVIEW"; decision: "APPROVED" | "REJECTED" | "CHANGES_REQUESTED"; reviewVersion: number; auditId: B9AuditId; decidedAt: B9DateTime; }) & ({ reviewStage: "FIRST_REVIEW"; } | { reviewStage: "FINAL_REVIEW"; })])); scheduledPublishTask?: B9ScheduledPublishTaskRef; lexeme?: LexemeRecord; item?: ContentItemRecord; scheduledTasks?: ReadonlyArray<{ taskId: string; targetType: "PACK" | "LEXEME" | "ITEM"; targetRef: string; expectedStateVersion?: B9StateVersion; runAt: B9DateTime; status: "SCHEDULED" | "CANCELLED" | "EXECUTED" | "FAILED"; reasonCode?: string; failureCode?: string; createdBy?: string; createdAt?: B9DateTime; updatedAt?: B9DateTime; }>; };
+export type B9AdminContentState = { contentCode: B9ContentCode; contentType: B9ContentType; title: string; authorSubject?: string; stateVersion: B9StateVersion; latestStatus: "DRAFT" | "IN_REVIEW" | "APPROVED" | "PUBLISHED" | "UNPUBLISHED" | "ROLLED_BACK" | "ARCHIVED"; versions: ReadonlyArray<B9ContentVersionSummary>; publicProjection: B9PublicProjectionState; rightsStatus: "PENDING" | "VALID" | "EXPIRED" | "REVOKED"; reviewSubmissionReady?: boolean; reviewSubmissionReason?: "READY" | "DRAFT_REQUIRED" | "RIGHTS_NOT_READY" | "VALIDATION_NOT_PASSED" | "VALIDATION_REPORT_UNAVAILABLE" | "MEDIA_ELIGIBILITY_UNAVAILABLE"; validationReport?: B9ValidationReport; reviewRecords?: (readonly [] | readonly [({ contentVersionId: B9ContentVersionId; contentHash: string; reviewStage: "FIRST_REVIEW" | "FINAL_REVIEW"; decision: "APPROVED" | "REJECTED" | "CHANGES_REQUESTED"; reviewVersion: number; auditId: B9AuditId; decidedAt: B9DateTime; }) & ({ reviewStage: "FIRST_REVIEW"; } | { reviewStage: "FINAL_REVIEW"; })] | readonly [({ contentVersionId: B9ContentVersionId; contentHash: string; reviewStage: "FIRST_REVIEW" | "FINAL_REVIEW"; decision: "APPROVED" | "REJECTED" | "CHANGES_REQUESTED"; reviewVersion: number; auditId: B9AuditId; decidedAt: B9DateTime; }) & ({ reviewStage: "FIRST_REVIEW"; } | { reviewStage: "FINAL_REVIEW"; }), ({ contentVersionId: B9ContentVersionId; contentHash: string; reviewStage: "FIRST_REVIEW" | "FINAL_REVIEW"; decision: "APPROVED" | "REJECTED" | "CHANGES_REQUESTED"; reviewVersion: number; auditId: B9AuditId; decidedAt: B9DateTime; }) & ({ reviewStage: "FIRST_REVIEW"; } | { reviewStage: "FINAL_REVIEW"; })]) & (readonly [] | readonly [{ reviewStage: "FIRST_REVIEW"; }] | (readonly [({ contentVersionId: B9ContentVersionId; contentHash: string; reviewStage: "FIRST_REVIEW" | "FINAL_REVIEW"; decision: "APPROVED" | "REJECTED" | "CHANGES_REQUESTED"; reviewVersion: number; auditId: B9AuditId; decidedAt: B9DateTime; }) & ({ reviewStage: "FIRST_REVIEW"; } | { reviewStage: "FINAL_REVIEW"; }), ({ contentVersionId: B9ContentVersionId; contentHash: string; reviewStage: "FIRST_REVIEW" | "FINAL_REVIEW"; decision: "APPROVED" | "REJECTED" | "CHANGES_REQUESTED"; reviewVersion: number; auditId: B9AuditId; decidedAt: B9DateTime; }) & ({ reviewStage: "FIRST_REVIEW"; } | { reviewStage: "FINAL_REVIEW"; })])); scheduledPublishTask?: B9ScheduledPublishTaskRef; lexeme?: LexemeRecord; item?: ContentItemRecord; scheduledTasks?: ReadonlyArray<{ taskId: string; targetType: "PACK" | "LEXEME" | "ITEM"; targetRef: string; expectedStateVersion?: B9StateVersion; runAt: B9DateTime; status: "SCHEDULED" | "CANCELLED" | "EXECUTED" | "FAILED"; reasonCode?: string; failureCode?: string; createdBy?: string; createdAt?: B9DateTime; updatedAt?: B9DateTime; }>; };
 
 /**
  * Generated from the contract source.
@@ -1738,9 +1738,9 @@ export type B10AssessmentContentSnapshot = { pin: B10ContentVersionPin; snapshot
 export type B10ContentRecovery = ({ usageScope: "FUTURE_READ_ONLY"; requestedVersionId: B10Int64Id; resolvedVersionId?: B10Int64Id | null; resolvedSnapshotId?: B10SnapshotId | null; resolution: "EXACT_PIN" | "IMMUTABLE_SNAPSHOT" | "SAFE_FUTURE_FALLBACK" | "UNAVAILABLE"; contentEpoch?: B10ContentEpoch; recoveryReasonCode?: "NONE" | "CONTENT_UNPUBLISHED" | "RIGHTS_EXPIRED" | "SNAPSHOT_MISSING" | "POLICY_DENIED" | "SERVICE_DEGRADED" | "RIGHTS_REMOVED" | "SECURITY_REMOVED" | "LEGAL_REMOVED"; mustNotRegrade: true; resolvedAt: B10DateTime; }) & ({ resolvedVersionId: B10Int64Id | null; resolvedSnapshotId: B10SnapshotId | null; resolution: "EXACT_PIN"; } | { resolvedSnapshotId: B10SnapshotId | null; resolution: "IMMUTABLE_SNAPSHOT"; resolvedVersionId?: never; } | { resolvedVersionId: B10Int64Id | null; resolvedSnapshotId: B10SnapshotId | null; resolution: "SAFE_FUTURE_FALLBACK"; } | { resolution: "UNAVAILABLE"; recoveryReasonCode: "CONTENT_UNPUBLISHED" | "RIGHTS_EXPIRED" | "SNAPSHOT_MISSING" | "POLICY_DENIED" | "SERVICE_DEGRADED" | "RIGHTS_REMOVED" | "SECURITY_REMOVED" | "LEGAL_REMOVED"; resolvedVersionId?: never; resolvedSnapshotId?: never; });
 
 /**
- * The client may request a content version but cannot provide tenant, owner, role, score or grading rule facts.
+ * The client may request a content version but cannot provide tenant, owner, role, score or grading rule facts. An optional contentCode names the gradable content (default course-b25-basics); the server resolves rules for the named (contentCode, contentVersionId) pair and answers 410 when it is unavailable.
  */
-export type B10CreateAssessmentSessionRequest = { contentVersionId: B10Int64Id; mode: "PRACTICE" | "REVIEW" | "PLACEMENT" | "MOCK"; itemIds?: readonly [B10Int64Id, ...Array<B10Int64Id>]; clientSessionRef?: string; };
+export type B10CreateAssessmentSessionRequest = { contentCode?: B10ContentCode; contentVersionId: B10Int64Id; mode: "PRACTICE" | "REVIEW" | "PLACEMENT" | "MOCK"; itemIds?: readonly [B10Int64Id, ...Array<B10Int64Id>]; clientSessionRef?: string; };
 
 /**
  * Session lifecycle only. Attempt and report lifecycles are distinct aggregates and cannot be inferred from this status.
@@ -3170,7 +3170,7 @@ export type B10SourceWatermark = { owner: "learning-service" | "assessment-servi
 /**
  * A server-planned learning task. Priority, budget, content pin and state version are authoritative projections, not client commands.
  */
-export type B10LearningPlanTask = { taskId: B10TaskId; planId: B10PlanId; planVersion: B10ProjectionVersion; streamRevision: string; planningRuleVersion: "P1_DAILY_PLAN_V1"; completionRuleVersion: B10RuleVersion; candidateId: string; logicalItemId: B10Int64Id; actionAggregateId: string; candidateType: string; candidateSnapshotDigest: B10Sha256; planningInputDigest: B10Sha256; sourceFactRefs: readonly [string, ...Array<string>]; eligibilityDecision: "ELIGIBLE" | "RECOVERY_REFERENCE" | "INELIGIBLE"; sequence: number; taskType: string; priorityClass: "RECOVERY_REQUIRED" | "DELAY_VERIFICATION_DUE" | "SRS_OVERDUE_OR_DUE" | "MISTAKE_REPAIR" | "GOAL_CRITICAL" | "NEW_CORE" | "OPTIONAL"; budgetMinutes: 5 | 15 | 30 | 45; plannedMinutes: number; backlog: "NONE" | "CATCH_UP"; budgetLane: "REVIEW_REPAIR" | "GOAL_NEW" | "SKILL_ROTATION" | "OPTIONAL"; primaryReasonCode: string; secondaryReasonCodes?: ReadonlyArray<string>; reasonTrace?: ReadonlyArray<B10ReasonTrace>; status: B10LearningTaskStatus; contentPin: B10ContentVersionPin; stateVersion: B10StateVersion; };
+export type B10LearningPlanTask = { taskId: B10TaskId; planId: B10PlanId; planVersion: B10ProjectionVersion; streamRevision: string; planningRuleVersion: "P1_DAILY_PLAN_V1"; completionRuleVersion: B10RuleVersion; candidateId: string; logicalItemId: B10Int64Id; actionAggregateId: string; candidateType: string; candidateSnapshotDigest: B10Sha256; planningInputDigest: B10Sha256; sourceFactRefs: readonly [string, ...Array<string>]; eligibilityDecision: "ELIGIBLE" | "RECOVERY_REFERENCE" | "INELIGIBLE"; sequence: number; taskType: string; priorityClass: "RECOVERY_REQUIRED" | "DELAY_VERIFICATION_DUE" | "SRS_OVERDUE_OR_DUE" | "MISTAKE_REPAIR" | "GOAL_CRITICAL" | "NEW_CORE" | "OPTIONAL"; budgetMinutes: 5 | 15 | 30 | 45; plannedMinutes: number; backlog: "NONE" | "CATCH_UP"; budgetLane: "REVIEW_REPAIR" | "GOAL_NEW" | "SKILL_ROTATION" | "OPTIONAL"; primaryReasonCode: string; secondaryReasonCodes?: ReadonlyArray<string>; reasonTrace?: ReadonlyArray<B10ReasonTrace>; status: B10LearningTaskStatus; contentPin: B10ContentVersionPin; practiceRef?: B10PracticeRef; stateVersion: B10StateVersion; };
 
 /**
  * The canonical learning-service plan projection. It is derived from owned plan, SRS, repair and mastery facts.
@@ -3987,6 +3987,96 @@ export type AdminLearningCommandRequest = { command: "RESET_SRS_ITEM"; itemId: s
  */
 export type B12AdminReport = { reportId: string; roomRef?: string | null; targetRef: string; targetSeatIndex?: number; reasonCode: string; status: "RECEIVED" | "TRIAGED" | "ACTIONED" | "REJECTED" | "APPEALED" | "CLOSED"; reviewMode: "MANUAL"; createdAt: string; updatedAt: string; };
 
+/**
+ * Generated from the contract source.
+ */
+export type PlacementBankSealedSnapshotResponse = { data: PlacementBankSealedSnapshot; };
+
+/**
+ * Sealed P1 placement bank. Answer rules cross the internal boundary only; the browser only ever sees itemId/itemCode/itemType/stem/options/displayOrder.
+ */
+export type PlacementBankSealedSnapshot = { bankCode: "P1_PLACEMENT_V1"; contentVersionId: B10Int64Id; contentEpoch: B10ContentEpoch; contentStateVersion: number; snapshotId: B10SnapshotId; snapshotHash: B10Sha256; answerRuleSetVersion: B10RuleVersion; answerRuleVersion: B10RuleVersion; ruleDigest: B10Sha256; items: readonly [PlacementBankSealedItem, PlacementBankSealedItem, PlacementBankSealedItem, PlacementBankSealedItem, PlacementBankSealedItem, PlacementBankSealedItem, PlacementBankSealedItem, PlacementBankSealedItem, PlacementBankSealedItem, PlacementBankSealedItem]; };
+
+/**
+ * Generated from the contract source.
+ */
+export type PlacementBankSealedItem = { itemId: B10Int64Id; itemCode: string; itemType: "VOCABULARY" | "GRAMMAR" | "READING" | "LISTENING"; dimension: "VOCABULARY" | "BASIC_GRAMMAR" | "READING" | "LISTENING"; displayOrder: number; stem: string; options: readonly [B10ContentItemOption, B10ContentItemOption, ...Array<B10ContentItemOption>]; questionType: "CHOICE"; scoringVersion: B10RuleVersion; maxScore: number; contentCode: B10ContentCode; contentVersionId: B10Int64Id; answerRule: { correctOption: string; }; };
+
+/**
+ * Server-verified placement pin. Only learning-service calls this after verifying the placement report; learners never self-pin content.
+ */
+export type B9TargetPinRequest = { targetId: number; contentVersionId: number; contentEpoch: number; placementReportId: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B9TargetPinResult = { targetId: number; contentVersionId: number; contentEpoch: number; pinned: boolean; replayed: boolean; };
+
+/**
+ * Generated from the contract source.
+ */
+export type PlacementBankPlanItemsResponse = { data: PlacementBankPlanItems; };
+
+/**
+ * Answer-free plan task seeds. Identifiers and display order only; no stems, options or answer rules.
+ */
+export type PlacementBankPlanItems = { bankCode: "P1_PLACEMENT_V1"; contentVersionId: B10Int64Id; contentEpoch: B10ContentEpoch; contentStateVersion: number; items: readonly [PlacementBankPlanSeed, ...Array<PlacementBankPlanSeed>]; };
+
+/**
+ * Answer-free plan task seed. practiceRef is an answer-free pointer the client resolves into a B10 session; it carries no stems, options or answer rules.
+ */
+export type PlacementBankPlanSeed = { itemId: B10Int64Id; itemCode: string; itemType: "VOCABULARY" | "GRAMMAR" | "READING" | "LISTENING"; dimension: "VOCABULARY" | "BASIC_GRAMMAR" | "READING" | "LISTENING"; displayOrder: number; practiceRef?: B10PracticeRef; };
+
+/**
+ * The client supplies only a placement report pointer; target, placement, content and plan facts are all server-derived and verified.
+ */
+export type B10EnsurePlanRequest = { placementReportId: string; };
+
+/**
+ * Ensured plan with its immutable planning input. planningInput/plan are present exactly when status is ACTIVE; EMPTY carries neither (honest empty, not a plan).
+ */
+export type B10EnsurePlanResult = { planId: string; status: "ACTIVE" | "EMPTY"; targetMinutes: number; planVersion: number; replayed: boolean; planningInput?: B9PlanningInputSnapshot; plan?: B9PlanReference; tasks: ReadonlyArray<unknown>; };
+
+/**
+ * 绑定不可变版本与哈希的服务端校验事实；客户端只能引用其 ID 做乐观绑定，重放与发布时服务端按版本+哈希重查，旧报告不能为新版本背书。
+ */
+export type B9ValidationReport = { reportId: B9ContentValidationReportId; reportVersion: B9EvidenceVersion; contentVersionId: B9ContentVersionId; contentHash: string; ruleVersion: string; passed: boolean; findingCount: number; blockers: number; mediaRefs: ReadonlyArray<string>; checkedBy: string; checkedAt: B9DateTime; };
+
+/**
+ * Minimal-disclosure lockout fact. Raw identity stays in IAM; callers receive only the opaque stable subject reference plus lockout state.
+ */
+export type B8LockedAccount = { subjectRef: string; failedAttempts: number; lockedUntil: string; updatedAt: string; };
+
+/**
+ * Ops-owned risk coordination fact. Containment and escalation are recorded here; domain actions stay in their owner flows and are referenced, never executed by this object.
+ */
+export type AdminRiskCase = { caseId: string; category: "ACCOUNT_SECURITY" | "DEVICE_ANOMALY" | "PAYMENT_ANOMALY" | "ACTIVATION_ABUSE" | "EXPORT_ANOMALY" | "CONTENT_RIGHTS"; severity: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL"; status: "OPEN" | "TRIAGED" | "ACTIONED" | "ESCALATED" | "CLOSED"; source: "ANALYST_FILED" | "RULE_HIT"; ruleId?: string; ruleVersion?: string; title: string; subjectRef?: string; evidenceRefs?: readonly [] | readonly [string] | readonly [string, string] | readonly [string, string, string] | readonly [string, string, string, string] | readonly [string, string, string, string, string] | readonly [string, string, string, string, string, string] | readonly [string, string, string, string, string, string, string] | readonly [string, string, string, string, string, string, string, string]; assigneeNote?: string; containmentRef?: string; escalationTarget?: "SUPPORT" | "AUDIT"; escalationRef?: string; closedReason?: string; stateVersion: number; decisions: ReadonlyArray<{ decisionId: string; command: "TRIAGE" | "ISOLATE" | "UNISOLATE" | "ESCALATE" | "CLOSE"; reason: string; decidedBy: string; decidedAt: string; }>; createdAt: string; updatedAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type AdminRiskFileRequest = { category: "ACCOUNT_SECURITY" | "DEVICE_ANOMALY" | "PAYMENT_ANOMALY" | "ACTIVATION_ABUSE" | "EXPORT_ANOMALY" | "CONTENT_RIGHTS"; severity: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL"; title: string; subjectRef?: string; evidenceRefs?: readonly [] | readonly [string] | readonly [string, string] | readonly [string, string, string] | readonly [string, string, string, string] | readonly [string, string, string, string, string] | readonly [string, string, string, string, string, string] | readonly [string, string, string, string, string, string, string] | readonly [string, string, string, string, string, string, string, string]; note?: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type AdminRiskDecisionRequest = { command: "TRIAGE" | "ISOLATE" | "UNISOLATE" | "ESCALATE" | "CLOSE"; reason: string; assigneeNote?: string; containmentRef?: string; escalationTarget?: "SUPPORT" | "AUDIT"; escalationRef?: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type AdminRiskEvaluateRequest = { rules?: readonly [] | readonly ["ACCOUNT_LOCKOUT"] | readonly ["ACCOUNT_LOCKOUT", "ACCOUNT_LOCKOUT"] | readonly ["ACCOUNT_LOCKOUT", "ACCOUNT_LOCKOUT", "ACCOUNT_LOCKOUT"] | readonly ["ACCOUNT_LOCKOUT", "ACCOUNT_LOCKOUT", "ACCOUNT_LOCKOUT", "ACCOUNT_LOCKOUT"] | readonly ["ACCOUNT_LOCKOUT", "ACCOUNT_LOCKOUT", "ACCOUNT_LOCKOUT", "ACCOUNT_LOCKOUT", "ACCOUNT_LOCKOUT"] | readonly ["ACCOUNT_LOCKOUT", "ACCOUNT_LOCKOUT", "ACCOUNT_LOCKOUT", "ACCOUNT_LOCKOUT", "ACCOUNT_LOCKOUT", "ACCOUNT_LOCKOUT"] | readonly ["ACCOUNT_LOCKOUT", "ACCOUNT_LOCKOUT", "ACCOUNT_LOCKOUT", "ACCOUNT_LOCKOUT", "ACCOUNT_LOCKOUT", "ACCOUNT_LOCKOUT", "ACCOUNT_LOCKOUT"] | readonly ["ACCOUNT_LOCKOUT", "ACCOUNT_LOCKOUT", "ACCOUNT_LOCKOUT", "ACCOUNT_LOCKOUT", "ACCOUNT_LOCKOUT", "ACCOUNT_LOCKOUT", "ACCOUNT_LOCKOUT", "ACCOUNT_LOCKOUT"]; since?: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type AdminRiskEvaluateResult = { evaluatedAt: string; rulesChecked: number; casesFiled: number; caseIds: ReadonlyArray<string>; };
+
+/**
+ * Answer-free practice pointer: identifies gradable content without carrying stems, options or answer rules. The client resolves it into a B10 session; assessment fetches rules server-side.
+ */
+export type B10PracticeRef = { contentCode: string; contentVersionId: B10Int64Id; questionItemId: string; };
+
 export interface CanonicalIdRegistry {
   userId: CanonicalInt64Id;
   contentVersionId: CanonicalInt64Id;
@@ -4461,6 +4551,16 @@ export interface ApiOperationRegistry {
   getAdminLearnerSrs: { method: "GET"; path: "/api/v1/admin/learners/{subjectId}/srs"; request: never; response: ApiSuccessEnvelope & { data: Record<string, never>; }; idempotent: false };
   sendAdminLearningCommand: { method: "POST"; path: "/api/v1/admin/learners/{subjectId}/learning-commands"; request: AdminLearningCommandRequest; response: ApiSuccessEnvelope & { data: Record<string, never>; }; idempotent: true };
   getAdminLearnerAssessments: { method: "GET"; path: "/api/v1/admin/learners/{subjectId}/assessments"; request: never; response: ApiSuccessEnvelope & { data: Record<string, never>; }; idempotent: false };
+  getPlacementBankSealedSnapshot: { method: "GET"; path: "/internal/v1/content/placement-bank/sealed"; request: never; response: PlacementBankSealedSnapshotResponse; idempotent: false };
+  pinB9LearnerTargetContent: { method: "PUT"; path: "/internal/v1/learner/targets/pin"; request: B9TargetPinRequest; response: B9TargetPinResult; idempotent: true };
+  getB10LearningPlanView: { method: "GET"; path: "/internal/v1/learning/plans/current-view"; request: never; response: B10EnsurePlanResult; idempotent: false };
+  getPlacementBankPlanItems: { method: "GET"; path: "/internal/v1/content/placement-bank/plan-items"; request: never; response: PlacementBankPlanItemsResponse; idempotent: false };
+  ensureB10LearningPlan: { method: "POST"; path: "/api/v1/learning/plans:ensure"; request: B10EnsurePlanRequest; response: ApiSuccessEnvelope & { data: B10EnsurePlanResult; }; idempotent: true };
+  listB8LockedAccounts: { method: "GET"; path: "/api/v1/iam/accounts/locked"; request: never; response: ApiCursorPageEnvelope & { data: ReadonlyArray<B8LockedAccount>; }; idempotent: false };
+  listAdminRiskCases: { method: "GET"; path: "/api/v1/admin/ops/risk/cases"; request: never; response: ApiCursorPageEnvelope & { data: ReadonlyArray<AdminRiskCase>; }; idempotent: false };
+  fileAdminRiskCase: { method: "POST"; path: "/api/v1/admin/ops/risk/cases"; request: AdminRiskFileRequest; response: { data: AdminRiskCase; }; idempotent: true };
+  decideAdminRiskCase: { method: "POST"; path: "/api/v1/admin/ops/risk/cases/{caseId}/commands"; request: AdminRiskDecisionRequest; response: { data: AdminRiskCase; }; idempotent: true };
+  evaluateAdminRiskRules: { method: "POST"; path: "/api/v1/admin/ops/risk/rules:evaluate"; request: AdminRiskEvaluateRequest; response: { data: AdminRiskEvaluateResult; }; idempotent: true };
 }
 
 export type ApiOperationId = keyof ApiOperationRegistry;

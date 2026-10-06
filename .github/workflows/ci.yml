@@ -3,7 +3,7 @@ name: ci
 on:
   pull_request:
   push:
-    branches: [dev, master]
+    branches: [dev, dev-redesign, master]
 
 permissions:
   contents: read
@@ -84,6 +84,33 @@ jobs:
 
   frontend:
     name: Frontend typecheck and build
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    needs: governance
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.19.0
+          run_install: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20.19.5
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm p1r:toolchain:static
+      - run: pnpm test
+      - run: pnpm --filter @englishflow/mobile test:b11
+      - run: pnpm typecheck
+      - run: pnpm build
+      - run: pnpm --filter @englishflow/mobile build:h5
+
+  local-infrastructure:
+    name: Fresh local infrastructure bootstrap
     runs-on: ubuntu-latest
     timeout-minutes: 30
     needs: governance
@@ -98,8 +125,18 @@ jobs:
           node-version: 20.19.5
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm typecheck
-      - run: pnpm build
+      - run: pnpm ports:check
+      - run: pnpm infra:check
+      - run: pnpm infra:up
+      - run: docker compose -f infra/docker/docker-compose.dev.yml up -d --wait --wait-timeout 180 mysql redis minio kafka
+      - run: node scripts/check-local-infra.mjs --require-healthy
+      - run: docker compose -f infra/docker/docker-compose.dev.yml run --rm --no-deps minio-init
+      - run: pnpm redis:acl
+      - run: pnpm db:prepare:iam
+      - run: pnpm p1r:kafka:topics -- --apply
+      - name: Stop local infrastructure
+        if: always()
+        run: docker compose -f infra/docker/docker-compose.dev.yml down
 
   backend-v2:
     name: Java 25 v2 service tests

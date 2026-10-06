@@ -245,7 +245,9 @@ export function inspectRequiredCiContractGate(workflowText) {
   };
 }
 
-function parseArgs(argv) {
+export function parseArgs(argv) {
+  // pnpm forwards its leading separator to package scripts; preserve all real flags.
+  if (argv[0] === '--') argv = argv.slice(1);
   const args = { kind: 'all', json: false };
   for (let index = 0; index < argv.length; index += 1) {
     const value = argv[index];

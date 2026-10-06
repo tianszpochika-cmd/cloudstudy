@@ -97,6 +97,8 @@ public final class GatewayRouteExecutionPolicy {
      */
     private static final ControllerEvidence LEARNING_V2 = evidence("learning-service",
             "services/learning-service/src/main/java/com/englishflow/learning/web/V2LearningController.java", "/api/v1/learning");
+    private static final ControllerEvidence LEARNING_V2_PLANS = evidence("learning-service",
+            "services/learning-service/src/main/java/com/englishflow/learning/web/V2PlansController.java", "/api/v1/learning");
     private static final ControllerEvidence ASSESSMENT_B10 = evidence("assessment-service",
             "services/assessment-service/src/main/java/com/englishflow/assessment/web/B10AssessmentJdbcController.java", "/internal/v1/assessment");
     private static final ControllerEvidence ASSESSMENT_P1 = evidence("assessment-service",
@@ -563,7 +565,7 @@ public final class GatewayRouteExecutionPolicy {
                 rewrite("library-entry-delete", "/api/v1/vocab/library/entries/{entryId}", "/internal/v1/learning/vocab/library/entries/{entryId}", LEARNING_B25, HttpMethod.DELETE));
         add(definitions, "learning-domain",
                 rewrite("continue-context", "/api/v1/learning/continue-context", "/internal/v1/learning/continue-context", LEARNING_B25, HttpMethod.GET, HttpMethod.PUT),
-                preserve("plans-ensure", "/api/v1/learning/plans:ensure", LEARNING_V2, HttpMethod.POST),
+                preserve("plans-ensure", "/api/v1/learning/plans:ensure", LEARNING_V2_PLANS, HttpMethod.POST),
                 rewrite("daily-report", "/api/v1/learning/stats/daily-report", "/internal/v1/learning/stats/daily-report", LEARNING_B25, HttpMethod.GET),
                 rewrite("weekly-report", "/api/v1/learning/stats/weekly-report", "/internal/v1/learning/stats/weekly-report", LEARNING_B25, HttpMethod.GET),
                 rewrite("daily-summary", "/api/v1/learning/stats/daily-summary", "/internal/v1/learning/stats/daily-summary", LEARNING_B25, HttpMethod.GET),

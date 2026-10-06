@@ -122,7 +122,7 @@ Phase 1 不启用生成式 AI；AI 导师、生成式评测、RTC AI 对话和�
 ## 本地开发快速上手
 
 ### 环境要求
-- **Node.js**：`>= 18.18.0` (推荐 pnpm)
+- **Node.js / pnpm**：`20.19.5` / `10.19.0`（版本锁定见 `config/toolchain-baseline.json`）
 - **Java**：`OpenJDK 25 LTS`（旧 `core-api` 兼容 `17`）
 - **Python**：`3.11+` (Phase 2 运行)
 - **MySQL**：`8.0+`
@@ -132,12 +132,14 @@ Phase 1 不启用生成式 AI；AI 导师、生成式评测、RTC AI 对话和�
 
 > 固定端口唯一事实源：`config/local-ports.json`；启动前先跑 `pnpm ports:check`。端口被占用时停止占用进程，不得自动改用其他端口。
 
-1. **安装前端依赖**：`pnpm install`
+1. **安装前端依赖并检查工具**：`pnpm install --frozen-lockfile`、`pnpm p1r:toolchain:check`
 2. **检查固定端口**：`pnpm ports:check`
-3. **启动本地基础设施**（MySQL/Redis/MinIO/Kafka/RabbitMQ 一键）：`docker compose -f infra/docker/docker-compose.dev.yml up -d`
-4. **构建并启动 v2 后端全栈**（16 个服务：Gateway 18070、workflow 18071、core-api 18080、IAM 18087、11 个领域服务 18088–18098、audit 18099）：
-   - 首次或代码变更后：`pnpm services:build`
-   - 启动：`pnpm services:run -- --all`（自带逐服务 readiness 健康检查）
+3. **启动本地基础设施**（MySQL/Redis/MinIO/Kafka）：`pnpm infra:up`，随后等待健康并复核私有桶。MinIO 从固定官方源码构建，Redis 空卷初始化保留既有 ACL。
+4. **在服务关闭时准备数据库/ACL/topics**：`pnpm b28:owner-schemas`、`pnpm db:prepare:iam`、`pnpm redis:acl`、`pnpm p1r:kafka:topics -- --apply`。IAM 完整迁移由 Flyway 执行；首次 V13 必须确认旧写入已排空。
+   **构建并启动 15 个 v2 服务**（Gateway 18070、workflow 18071、IAM 18087、11 个领域服务 18088–18098、audit 18099）：
+   - 首次或代码变更后：停服务再执行 `pnpm services:build -- --all`
+   - 正常启动：`pnpm services:run -- --all --timeout-ms 120000`（逐服务 readiness 检查）。首次 V13 迁移确认方法见完整指南。
+   - `core-api` 仅在显式 `--include-legacy` 或单独选择时运行；另需 RabbitMQ，不属于默认 v2 栈。
 5. **启动学员 Web 端**：`cd apps/learner-web && pnpm dev`，地址为 `http://127.0.0.1:18180`
 6. **启动管理后台**：`cd apps/admin-web && pnpm dev`，地址为 `http://127.0.0.1:18181`
 7. **启动官网**：`cd apps/official-site && pnpm dev`，地址为 `http://127.0.0.1:18182`
@@ -146,7 +148,9 @@ Phase 1 不启用生成式 AI；AI 导师、生成式评测、RTC AI 对话和�
 补充：
 
 - 本地种子/拟真数据：先明确设置 `LOCAL_TEST_SUBJECT` 为一个已注册、活跃且以 `@local.invalid` 结尾的合成账号 principal ID，再运行 `pnpm db:seed:local-real-all`（基础）；`pnpm db:seed:large-vocab`（词表）、`pnpm db:check:bulk-100x`（全库数据量门禁）。该基础种子只写入指定合成账号，不能向所有活跃学习者批量播种奖励或权益。
-- 后端 jar 必须比源码新；改了 `services/**` Java 代码后需要重新 `pnpm services:build` 对应服务再启动。
+- 改后端源码后先停服务，执行 `pnpm services:build -- --service <service-id>` 再启动，避免运行中覆盖 JAR。
 - v2 微服务只走 Gateway 入口（18070）访问业务 API；`core-api`（18080）仅为 v1 迁移兼容与回滚边界。
 
 端口规则见 `docs/02-architecture/local-development-port-allocation.md`。端口被占用时停止占用进程，不得自动改用其他端口。
+
+完整步骤、原生 SDK 检查、迁移失败处理与测试命令见 [本地开发指南](docs/07-operations/local-development.md)。本机验证可用 `pnpm local:smoke`；当前运行就绪与尚未通过的 P1R 门禁分别记录在 [2026-10-06 验证记录](docs/07-operations/local-environment-verification-2026-10-06.md)，不能据健康检查宣称全量业务验收。

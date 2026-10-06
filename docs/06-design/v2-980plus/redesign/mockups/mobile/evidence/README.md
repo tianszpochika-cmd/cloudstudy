@@ -14,7 +14,7 @@
 
 ### 管理端静态原型（新建）
 
-[管理端演示指南](../admin/DEMO-GUIDE.md)。`mockups/admin/` 16 屏覆盖 L8/L9/客服/商城/审计，对应 BC-071…084/085…094/168/171…175/185…187/200/204…208，IC-040…051；入口 `http://127.0.0.1:18283/admin/#/dash`，存储键 `yxx-admin-v1` 与学习端隔离；检查 `scripts/check-admin-mockups.mjs` 16 屏 0 缺失。正式 `apps/admin-web` 实现阶段照此真相编写。
+[管理端演示指南](../../admin/DEMO-GUIDE.md)。`mockups/admin/` 16 屏覆盖 L8/L9/客服/商城/审计，对应 BC-071…084/085…094/168/171…175/185…187/200/204…208，IC-040…051；入口 `http://127.0.0.1:18283/admin/#/dash`，存储键 `yxx-admin-v1` 与学习端隔离；检查 `scripts/check-admin-mockups.mjs` 16 屏 0 缺失。正式 `apps/admin-web` 实现阶段照此真相编写。
 
 ### 修复前产品评审
 

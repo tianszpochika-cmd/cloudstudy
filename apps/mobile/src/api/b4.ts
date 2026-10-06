@@ -1,3 +1,4 @@
+import { unavailableOperation } from './unavailable'
 import { mobileApiClient } from './client'
 import type { B4FocusAction, B4GameCode, B4InteractionCode, B4PerformanceLevel, B4ReportReason, B4SyncEvent } from '../domain/b4'
 import { createClientId } from '../platform/client-id'
@@ -46,8 +47,8 @@ export async function appealB4ModerationReport(reportId: string, appealCode: 'FA
 export async function listB4Notifications(): Promise<unknown> { return request('/notifications/messages?limit=20') }
 export async function readB4Notification(messageId: string): Promise<unknown> { return request(`/notifications/messages/${encodeURIComponent(messageId)}/read`, { method: 'PUT', data: {}, ...withKey(`b4-notification-${messageId}`) }) }
 export async function readAllB4Notifications(): Promise<unknown> { return request('/notifications/messages/read-all', { method: 'PUT', data: {}, ...withKey('b4-notification-all') }) }
-export async function listB4OfflinePackages(): Promise<unknown> { return request('/sync/offline-packages?limit=20') }
-export async function authorizeB4OfflinePackage(packageId: string): Promise<unknown> { return request(`/sync/offline-packages/${encodeURIComponent(packageId)}/authorize`, { method: 'POST', ...withKey(`b4-offline-authorize-${packageId}`) }) }
-export async function updateB4OfflineDownload(downloadId: string, action: 'PAUSE' | 'RESUME' | 'PART_RECEIVED', partIndex?: number, etag?: string): Promise<unknown> { return request(`/sync/offline-downloads/${encodeURIComponent(downloadId)}`, { method: 'PATCH', data: { action, ...(partIndex === undefined ? {} : { partIndex }), ...(etag ? { etag } : {}) }, ...withKey(`b4-offline-download-${downloadId}-${action}-${partIndex ?? 'none'}`) }) }
-export async function cleanupB4OfflineDownload(downloadId: string): Promise<unknown> { return request(`/sync/offline-downloads/${encodeURIComponent(downloadId)}/cleanup`, { method: 'POST', data: {}, ...withKey(`b4-offline-cleanup-${downloadId}`) }) }
-export async function pushB4SyncEvents(events: B4SyncEvent[]): Promise<unknown> { return request('/sync/events', { method: 'POST', data: { clientBatchId: key('b4-sync-batch'), events }, ...withKey('b4-sync-events') }) }
+export async function listB4OfflinePackages(): Promise<unknown> { return unavailableOperation() }
+export async function authorizeB4OfflinePackage(packageId: string): Promise<unknown> { return unavailableOperation() }
+export async function updateB4OfflineDownload(downloadId: string, action: 'PAUSE' | 'RESUME' | 'PART_RECEIVED', partIndex?: number, etag?: string): Promise<unknown> { return unavailableOperation() }
+export async function cleanupB4OfflineDownload(downloadId: string): Promise<unknown> { return unavailableOperation() }
+export async function pushB4SyncEvents(events: B4SyncEvent[]): Promise<unknown> { return unavailableOperation() }

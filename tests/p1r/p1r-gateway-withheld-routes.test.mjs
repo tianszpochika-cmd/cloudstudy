@@ -53,7 +53,7 @@ function availableExactOverrides(withheldRule) {
       .filter((projection) => projection.status === 'AVAILABLE'
         && projection.publicPathTemplate === rule.match.path
         && projection.methods.every((method) => rule.match.methods.includes(method)))
-      .map((projection) => projection.publicPathTemplate);
+      .map((projection) => ({ path: projection.publicPathTemplate, methods: projection.methods }));
   });
 }
 
@@ -88,9 +88,24 @@ function stringLiterals(source) {
   const literals = [];
   for (const script of scripts) {
     const syntaxTree = ts.createSourceFile(source.file, script, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
+    const transportMethod = (node) => {
+      for (let parent = node.parent; parent; parent = parent.parent) {
+        if (!ts.isCallExpression(parent)) continue;
+        const name = ts.isPropertyAccessExpression(parent.expression) ? parent.expression.name.text
+          : ts.isIdentifier(parent.expression) ? parent.expression.text : '';
+        if (['get', 'post', 'put', 'patch', 'delete'].includes(name)) return name.toUpperCase();
+        if (name === 'request') {
+          const options = parent.arguments[1];
+          const method = options && ts.isObjectLiteralExpression(options) ? options.properties.find(property =>
+            ts.isPropertyAssignment(property) && property.name.getText(syntaxTree) === 'method') : undefined;
+          return method && ts.isStringLiteralLike(method.initializer) ? method.initializer.text : 'GET';
+        }
+      }
+      return null;
+    };
     const visit = (node) => {
-      if (ts.isStringLiteralLike(node)) literals.push(node.text);
-      if (ts.isTemplateExpression(node)) literals.push(node.head.text);
+      if (ts.isStringLiteralLike(node)) literals.push({ value: node.text, method: transportMethod(node) });
+      if (ts.isTemplateExpression(node)) literals.push({ value: node.head.text + node.templateSpans.map((span) => '{dynamic}' + span.literal.text).join(''), method: transportMethod(node) });
       ts.forEachChild(node, visit);
     };
     visit(syntaxTree);
@@ -106,15 +121,29 @@ function callsWithheldRoute(source, routePath, exactOverrides = []) {
     paths.push(routePath.slice('/api/v1'.length));
   }
   const literals = source.literals ?? stringLiterals(source);
-  const isExactOverrideCall = (literal) => exactOverrides.some((override) => {
+  const isExactOverrideCall = (literal, method) => exactOverrides.some((entry) => {
+    const override = typeof entry === 'string' ? entry : entry.path;
+    const methods = typeof entry === 'string' ? ['GET'] : entry.methods;
+    if (method && !methods.includes(method)) return false;
     const variants = [override];
     if (source.file.includes('/src/api/') && override.startsWith('/api/v1/')) {
       variants.push(override.slice('/api/v1'.length));
     }
-    return variants.some((route) => literal === route || literal.startsWith(`${route}?`));
+    return variants.some((route) => {
+      const routeSegments = route.split('/');
+      const literalSegments = literal.split('?')[0].split('/');
+      return routeSegments.length === literalSegments.length && routeSegments.every((segment, index) =>
+        /^\{[^}]+\}$/.test(segment)
+          ? literalSegments[index].length > 0
+          : segment === literalSegments[index]);
+    });
   });
-  return literals.some((literal) => !isExactOverrideCall(literal) && paths.some((prefix) =>
-    literal === prefix || literal.startsWith(`${prefix}/`) || literal.startsWith(`${prefix}?`)));
+  return literals.some((entry) => {
+    const literal = typeof entry === 'string' ? entry : entry.value;
+    const method = typeof entry === 'string' ? null : entry.method;
+    return !isExactOverrideCall(literal, method) && paths.some((prefix) =>
+      literal === prefix || literal.startsWith(`${prefix}/`) || literal.startsWith(`${prefix}?`));
+  });
 }
 
 test('no frontend calls a route the Gateway withholds', () => {
@@ -153,4 +182,18 @@ test('every withheld rule names why it is withheld', () => {
     assert.ok(typeof entry.owner === 'string' && entry.owner.length > 0,
       `${entry.ruleId} must still declare its canonical owner`);
   }
+});
+
+test('available parameter routes preserve their exact path shape', () => {
+  const route = '/api/v1/reading/articles/{articleId}';
+  assert.equal(callsWithheldRoute({ file: 'apps/learner-web/src/api/b3.ts', text: 'apiClient.get(`/reading/articles/${articleId}`)' }, '/api/v1/reading', [route]), false);
+  assert.equal(callsWithheldRoute({ file: 'apps/learner-web/src/api/b3.ts', text: 'apiClient.get(`/reading/articles/${articleId}/outside`)' }, '/api/v1/reading', [route]), true);
+  assert.equal(callsWithheldRoute({ file: 'apps/learner-web/src/api/b3.ts', text: 'apiClient.get(`/reading/articles/${articleId}-outside`)' }, '/api/v1/reading', [route]), false);
+});
+
+test('available GET projection never permits a POST caller through a withheld prefix', () => {
+  const overrides = [{ path: '/api/v1/grammar/points', methods: ['GET'] }];
+  assert.equal(callsWithheldRoute({ file: 'apps/mobile/src/api/b3.ts', text: "mobileApiClient.request('/grammar/points', { method: 'POST' })" }, '/api/v1/grammar', overrides), true);
+  assert.equal(callsWithheldRoute({ file: 'apps/learner-web/src/api/b3.ts', text: "apiClient.post('/grammar/points', {})" }, '/api/v1/grammar', overrides), true);
+  assert.equal(callsWithheldRoute({ file: 'apps/learner-web/src/api/b3.ts', text: "apiClient.get('/grammar/points')" }, '/api/v1/grammar', overrides), false);
 });

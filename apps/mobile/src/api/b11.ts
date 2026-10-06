@@ -1,3 +1,4 @@
+import { unavailableOperation } from './unavailable'
 import { mobileApiClient, MobileApiError } from './client'
 import type { DictationResult, ListeningMaterial, Phoneme, ReadingArticle, ReadingAttemptResult, ReadingQuestion, SpeakingRecording } from '../domain/b3'
 import type { B11Conflict, B11MediaManifest, B11OfflineEvent, B11ReadingWorkspace, B11RecordingResult, B11ListeningWorkspace, B11SyncResponse } from '../domain/b11'
@@ -9,10 +10,10 @@ export interface B11RequestContext { uiLocale: string; contentLocale: string }
 
 export const B11_GATEWAY_PATHS = {
   media: { manifest: '/media/assets', signedUrl: '/media/assets', progress: '/learning/media-progress' },
-  listening: { materials: '/listening/materials', sessions: '/listening/sessions', dictation: '/listening/sessions' },
-  reading: { articles: '/reading/articles', questions: '/reading/questions', progress: '/reading/progress', attempts: '/reading/attempts' },
-  speaking: { phonetics: '/phonetics/catalog', recordings: '/speaking/recordings', shadowing: '/speaking/shadowing/completions' },
-  offline: { sync: '/sync/changes' },
+  listening: { materials: '/listening/materials',  },
+  reading: { articles: '/reading/articles', questions: '/reading/questions',  },
+  speaking: {   },
+  offline: { },
 } as const
 
 function isRecord(value: unknown): value is RecordValue { return typeof value === 'object' && value !== null && !Array.isArray(value) }
@@ -60,7 +61,7 @@ export async function loadB11ListeningMaterials(context: B11RequestContext): Pro
 }
 
 export async function startB11ListeningSession(materialId: number, context: B11RequestContext, clientEventId: string, version: string | number): Promise<string | null> {
-  const source = unwrap(await mobileApiClient.request('/listening/sessions', { method: 'POST', data: { materialId, contentVersion: version, contentVersionId: version, mode: 'LISTEN', clientEventId }, header: headers(context, clientEventId) }))
+  const source = unwrap(await unavailableOperation())
   return isRecord(source) ? text(source.sessionId ?? source.id) : null
 }
 
@@ -92,7 +93,7 @@ export async function saveB11MediaProgress(input: { sessionId?: string | null; a
 }
 
 export async function submitB11Dictation(sessionId: string, segmentId: string, answer: string, context: B11RequestContext, clientEventId: string, version: string | number): Promise<DictationResult> {
-  return unwrap(await mobileApiClient.request(`/listening/sessions/${encodeURIComponent(sessionId)}/dictation`, { method: 'POST', data: { segmentId, mode: 'SENTENCE', answer, attemptNo: 1, clientEventId, contentVersion: version, contentVersionId: version }, header: headers(context, clientEventId) })) as DictationResult
+  return unwrap(await unavailableOperation()) as DictationResult
 }
 
 export async function loadB11ReadingWorkspace(context: B11RequestContext): Promise<B11ReadingWorkspace | null> {
@@ -105,32 +106,32 @@ export async function loadB11ReadingWorkspace(context: B11RequestContext): Promi
 }
 
 export async function saveB11ReadingProgress(article: ReadingArticle, blockId: string, progressPercent: number, entityVersion: number, context: B11RequestContext, clientEventId: string): Promise<void> {
-  await mobileApiClient.request(B11_GATEWAY_PATHS.reading.progress, { method: 'PUT', data: { articleId: article.articleId, blockId, progressPercent, positionVersion: entityVersion, contentVersion: contentVersion(article.contentVersionId, 'unknown'), clientEventId }, header: headers(context, clientEventId) })
+  await unavailableOperation()
 }
 
 export async function submitB11ReadingQuestion(question: ReadingQuestion, answer: string, context: B11RequestContext, clientEventId: string): Promise<ReadingAttemptResult> {
-  return unwrap(await mobileApiClient.request(B11_GATEWAY_PATHS.reading.attempts, { method: 'POST', data: { questionId: question.questionId, answer, contentVersion: contentVersion(question.contentVersionId, 'unknown'), contentVersionId: question.contentVersionId, clientEventId }, header: headers(context, clientEventId) })) as ReadingAttemptResult
+  return unwrap(await unavailableOperation()) as ReadingAttemptResult
 }
 
 export async function loadB11Phonetics(context: B11RequestContext): Promise<Phoneme[]> {
-  return list<Phoneme>(await mobileApiClient.request(query(B11_GATEWAY_PATHS.speaking.phonetics, { setCode: 'EN_48_PHASE1', contentLocale: context.contentLocale })))
+  return list<Phoneme>(await unavailableOperation())
 }
 
 export async function registerB11Recording(input: { sourceSegmentId: string; durationMs: number; contentHash: string; storageMode: 'LOCAL_ENCRYPTED' | 'LOCAL_TEMP'; contentVersion: string | number; clientEventId: string }, context: B11RequestContext): Promise<B11RecordingResult> {
-  const source = unwrap(await mobileApiClient.request(B11_GATEWAY_PATHS.speaking.recordings, { method: 'POST', data: { sourceSegmentId: input.sourceSegmentId, durationMs: input.durationMs, contentHash: input.contentHash, storageMode: input.storageMode, contentVersion: input.contentVersion, contentVersionId: input.contentVersion, clientEventId: input.clientEventId, aiScoringAvailable: false }, header: headers(context, input.clientEventId) }))
+  const source = unwrap(await unavailableOperation())
   return { recording: source as SpeakingRecording, aiScoringAvailable: false, localCopyRetained: true }
 }
 
 export async function deleteB11Recording(recordingId: string, context: B11RequestContext, clientEventId: string): Promise<void> {
-  await mobileApiClient.request(`${B11_GATEWAY_PATHS.speaking.recordings}/${encodeURIComponent(recordingId)}`, { method: 'DELETE', header: headers(context, clientEventId) })
+  await unavailableOperation()
 }
 
 export async function submitB11SelfRating(recordingId: string, rating: string, context: B11RequestContext, clientEventId: string, version: string | number): Promise<void> {
-  await mobileApiClient.request(`${B11_GATEWAY_PATHS.speaking.recordings}/${encodeURIComponent(recordingId)}/self-rating`, { method: 'POST', data: { recordingId, rating, contentVersion: version, clientEventId, aiScoringAvailable: false }, header: headers(context, clientEventId) })
+  await unavailableOperation()
 }
 
 export async function completeB11Shadowing(input: { recordingId: string; sourceSegmentId: string; contentVersion: string | number; clientEventId: string }, context: B11RequestContext): Promise<RecordValue> {
-  const source = unwrap(await mobileApiClient.request(B11_GATEWAY_PATHS.speaking.shadowing, { method: 'POST', data: { ...input, clientEventId: input.clientEventId, aiScoringAvailable: false }, header: headers(context, input.clientEventId) }))
+  const source = unwrap(await unavailableOperation())
   return isRecord(source) ? source : {}
 }
 
@@ -143,7 +144,7 @@ function parseSync(value: unknown, clientBatchId: string, fallbackIds: string[])
 }
 
 export async function syncB11Offline(events: B11OfflineEvent[], cursor: string, context: B11RequestContext, clientBatchId: string): Promise<B11SyncResponse> {
-  return parseSync(await mobileApiClient.request(B11_GATEWAY_PATHS.offline.sync, { method: 'POST', data: { clientBatchId, baseCursor: cursor, changes: events, contentLocale: context.contentLocale }, header: headers(context, clientBatchId) }), clientBatchId, events.map((item) => item.clientEventId))
+  return parseSync(await unavailableOperation(), clientBatchId, events.map((item) => item.clientEventId))
 }
 
 export function isB11OfflineError(error: unknown): boolean { return serverError(error) }
