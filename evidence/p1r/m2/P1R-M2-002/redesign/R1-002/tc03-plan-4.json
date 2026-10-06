@@ -1,0 +1,30 @@
+{
+  "taskId": "R1-002",
+  "kind": "PREPARATION_PLAN_ONLY",
+  "executed": false,
+  "cases": [
+    {
+      "id": "TC03-A-transaction-write-failure",
+      "fixtureScope": "r1_002_iam_t3g only, after READY and Outbox implementation",
+      "fault": "Scoped reversible failure at the necessary audit or Outbox INSERT inside the registration transaction, after earlier principal/account writes. Prove the shared transaction with implementation and JDBC readback.",
+      "action": "Submit one synthetic registration, receive non-201, remove the fault, retry the same request/key according to the infrastructure-failure idempotency contract.",
+      "readback": ["principal", "account", "device", "session", "consent", "audit", "Outbox", "idempotency claim/replay state"],
+      "expected": "No partially committed account/session/Outbox after failure. After permitted retry exactly one local account/bootstrap fact; no false success or duplicate principal.",
+      "pending": "Exact SQL trigger/fixture and row predicates depend on approved Outbox schema and transaction attachment; no fault was injected."
+    },
+    {
+      "id": "TC03-B-relay-unavailable",
+      "fault": "Pause this card's own relay or use an isolated broker-failure fixture; do not stop shared Kafka.",
+      "expected": "If local transaction commits, registration remains 201 and Outbox remains pending. Restore relay, broker acknowledgment precedes published status. At-least-once delivery with deduplication, not Kafka exactly-once.",
+      "readback": ["account/session count", "Outbox eventId/dedupeKey/status", "relay acknowledgment/retry evidence"],
+      "pending": "Producer/relay implementation and isolated failure fixture. Full learner integration is a separate acceptance boundary."
+    },
+    {
+      "id": "TC03-C-business-conflict-separate",
+      "expected": "409 business conflict follows existing idempotent rejection semantics. Removing the conflict does not imply the same key must then return 201. This case does not prove transaction rollback.",
+      "executed": false
+    }
+  ],
+  "sharedWrites": false,
+  "registrationPerformed": false
+}

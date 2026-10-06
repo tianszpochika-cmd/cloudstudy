@@ -1,0 +1,56 @@
+{
+  "checkedAt": "2026-10-05T15:07:56.156Z",
+  "schema": "r1_002_iam_t3g",
+  "runner": "r1_002_runner_t3g",
+  "policySource": "control-plane",
+  "purpose": "本地合成测试用途，不冒充正式法务签收",
+  "reuse": "policy-fixture-3",
+  "steps": [
+    {
+      "step": "vault-controlled",
+      "ok": true,
+      "detail": {
+        "store": "dpapi-current-user",
+        "independent": true
+      }
+    },
+    {
+      "step": "fixture-readback-full",
+      "ok": true,
+      "detail": {
+        "rows": [
+          "ADULT_LEARNING\tb30-consent-v1\t9702cd4fe3e50613f84030998f65c0...",
+          "PRIVACY_NOTICE\tb30-consent-v1\t4ab15e31c11c9ef99b267ae6209104...",
+          "TERMS_OF_SERVICE\tb30-consent-v1\teb74b7254589589f61f5f3747d83..."
+        ]
+      }
+    },
+    {
+      "step": "user-baseline-zero",
+      "ok": true,
+      "detail": {
+        "counts": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    }
+  ],
+  "failedChecks": [],
+  "readback": [
+    "ADULT_LEARNING\tb30-consent-v1\t9702cd4fe3e50613f84030998f65c0c8e7961f058176b24f8a9e82006abea189\t2026-08-30 00:00:00\tb30-consent-policy-v1\t718e235dab2c1854fe9c650eeade24d4f67666db8e5fa1bff08036dc2ebf1358\tLEARNING_REQUIRED\t[\"LEARNING\"]\tiam://consent/ADULT_LEARNING_ELIGIBILITY\tACTIVE",
+    "PRIVACY_NOTICE\tb30-consent-v1\t4ab15e31c11c9ef99b267ae620910420fdb8a9b6f720b988afeb59d5262ddd84\t2026-08-30 00:00:00\tb30-consent-policy-v1\t718e235dab2c1854fe9c650eeade24d4f67666db8e5fa1bff08036dc2ebf1358\tBASE_REQUIRED\t[\"ACCOUNT\", \"LEARNING\"]\tiam://consent/PRIVACY_NOTICE\tACTIVE",
+    "TERMS_OF_SERVICE\tb30-consent-v1\teb74b7254589589f61f5f3747d83379bc6f1e950ab7d8fd52f64f3ab50fb39fb\t2026-08-30 00:00:00\tb30-consent-policy-v1\t718e235dab2c1854fe9c650eeade24d4f67666db8e5fa1bff08036dc2ebf1358\tBASE_REQUIRED\t[\"ACCOUNT\", \"LEARNING\"]\tiam://consent/ACCOUNT_TERMS\tACTIVE"
+  ],
+  "userBaseline": [
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "finishedAt": "2026-10-05T15:07:58.272Z"
+}

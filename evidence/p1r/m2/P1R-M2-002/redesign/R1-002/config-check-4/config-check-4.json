@@ -1,0 +1,45 @@
+{
+  "checkedAt": "2026-10-05T15:24:45.055Z",
+  "scope": "own-isolated-iam-18087+gateway-18070",
+  "checks": [
+    {
+      "name": "iam-health-https",
+      "result": "PASS",
+      "detail": {
+        "status": 200
+      }
+    },
+    {
+      "name": "iam-jwks-https",
+      "result": "PASS",
+      "detail": {
+        "keys": 1,
+        "kids": [
+          "iam-local-2026-08"
+        ]
+      }
+    },
+    {
+      "name": "refresh-cookie-secure-effective",
+      "result": "FAIL",
+      "error": "secure not proven effective: {\"source\":\"/actuator/configprops\",\"value\":\"NOT_EXPOSED\",\"status\":401}\n+ actual - expected\n\n+ 'NOT_EXPOSED'\n- true"
+    },
+    {
+      "name": "gateway-jwks-forward",
+      "result": "FAIL",
+      "error": "gateway forward failed: connect ECONNREFUSED 127.0.0.1:18070"
+    }
+  ],
+  "failed": [
+    "refresh-cookie-secure-effective",
+    "gateway-jwks-forward"
+  ],
+  "jwksKids": [
+    "iam-local-2026-08"
+  ],
+  "secureEvidence": {
+    "source": "/actuator/configprops",
+    "value": "NOT_EXPOSED",
+    "status": 401
+  }
+}

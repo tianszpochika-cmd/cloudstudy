@@ -1,0 +1,138 @@
+{
+  "checkedAt": "2026-10-06T08:03:20.519Z",
+  "scope": "owned preparation instances; public GET and identity-checked stop only",
+  "checks": [
+    {
+      "name": "api-gateway-owned-identity",
+      "result": "PASS"
+    },
+    {
+      "name": "api-gateway-wrong-pid",
+      "result": "PASS",
+      "type": "controlled rejection; no signal sent"
+    },
+    {
+      "name": "api-gateway-wrong-time",
+      "result": "PASS",
+      "type": "controlled rejection; no signal sent"
+    },
+    {
+      "name": "api-gateway-wrong-hash",
+      "result": "PASS",
+      "type": "controlled rejection; no signal sent"
+    },
+    {
+      "name": "api-gateway-wrong-jar",
+      "result": "PASS",
+      "type": "controlled rejection; no signal sent"
+    },
+    {
+      "name": "api-gateway-wrong-port",
+      "result": "PASS",
+      "type": "controlled rejection; no signal sent"
+    },
+    {
+      "name": "api-gateway-missing-time",
+      "result": "PASS",
+      "type": "controlled rejection; no signal sent"
+    },
+    {
+      "name": "iam-service-owned-identity",
+      "result": "PASS"
+    },
+    {
+      "name": "iam-service-wrong-pid",
+      "result": "PASS",
+      "type": "controlled rejection; no signal sent"
+    },
+    {
+      "name": "iam-service-wrong-time",
+      "result": "PASS",
+      "type": "controlled rejection; no signal sent"
+    },
+    {
+      "name": "iam-service-wrong-hash",
+      "result": "PASS",
+      "type": "controlled rejection; no signal sent"
+    },
+    {
+      "name": "iam-service-wrong-jar",
+      "result": "PASS",
+      "type": "controlled rejection; no signal sent"
+    },
+    {
+      "name": "iam-service-wrong-port",
+      "result": "PASS",
+      "type": "controlled rejection; no signal sent"
+    },
+    {
+      "name": "iam-service-missing-time",
+      "result": "PASS",
+      "type": "controlled rejection; no signal sent"
+    }
+  ],
+  "stopped": [
+    {
+      "pid": 45288,
+      "processCreatedAt": "2026-10-05T16:43:51.3335010Z",
+      "executable": "C:\\Program Files\\Microsoft\\jdk-25.0.4.101-hotspot\\bin\\java.exe",
+      "jarPath": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\services\\api-gateway\\target\\api-gateway-0.1.0-SNAPSHOT.jar",
+      "port": 18070,
+      "exited": true,
+      "portFree": true
+    },
+    {
+      "pid": 25732,
+      "processCreatedAt": "2026-10-05T15:18:54.3556340Z",
+      "executable": "C:\\Program Files\\Microsoft\\jdk-25.0.4.101-hotspot\\bin\\java.exe",
+      "jarPath": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\services\\iam-service\\target\\iam-service-0.1.0-SNAPSHOT.jar",
+      "port": 18087,
+      "exited": true,
+      "portFree": true
+    }
+  ],
+  "registrationPerformed": false,
+  "publicGet": [
+    {
+      "port": 18087,
+      "path": "/actuator/health/readiness",
+      "status": 200,
+      "kids": []
+    },
+    {
+      "port": 18087,
+      "path": "/api/v1/auth/jwks",
+      "status": 200,
+      "kids": [
+        "iam-local-2026-08"
+      ]
+    },
+    {
+      "port": 18070,
+      "path": "/api/v1/auth/jwks",
+      "status": 502,
+      "kids": []
+    }
+  ],
+  "secure": {
+    "explicitLaunchArgument": true,
+    "actualSetCookieVerified": false,
+    "reason": "registration not authorized in preparation"
+  },
+  "ports": [
+    {
+      "port": 18070,
+      "listening": false
+    },
+    {
+      "port": 18087,
+      "listening": false
+    },
+    {
+      "port": 18090,
+      "listening": false
+    }
+  ],
+  "result": "PASS_OWNED_CLEANUP",
+  "finishedAt": "2026-10-06T08:03:24.647Z"
+}

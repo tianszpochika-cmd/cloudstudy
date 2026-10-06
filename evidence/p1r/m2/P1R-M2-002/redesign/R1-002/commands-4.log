@@ -1,0 +1,13 @@
+# R1-002 主审收口命令记录（2026-10-06）
+
+- 读取版本4准备脚本、非秘密JSON、状态墙：revision27，R1-002 PLANNED。前任最终准备包缺失，以实际文件审查，不把start收据当完成。
+- 所有版本4准备脚本及新增进程守卫 node --check：exit0。
+- DPAPI模块元数据及受保护DACL核验：exit0；只输出存在性、长度、独立性，不输出秘密。
+- keytool口令传递代码修正为env；未重建或覆盖当前测试证书。完整TLS重建未再次执行。
+- r1-002-validate-4.cjs（R1_002_EVIDENCE_DIR指向reviewer-3-closeout/validate）：exit0；Flyway validate、原生历史、用户零基线、三项ACTIVE政策共6项通过。只读DB验证，不新增schema/用户，不注册。
+- reviewer-3-closeout/verify-and-close.cjs：exit0；IAM HTTPS健康/JWKS200；Gateway公开JWKS502（保留失败）；14身份/受控拒绝检查通过。匹配实际OS创建时间后停止自有PID45288和25732，三端口释放。
+- node scripts/check-redesign-dev-plan.mjs：exit0，114卡/569步/593定义；本地状态1 ACCEPTED、113 PLANNED，无STALE。
+- node --test scripts/test-redesign-task-state.mjs：exit0，67/67通过。临时夹具测试，不提升产品状态。
+
+前任失败尝试的完整独立原始输出未全部留存，不声称已补回。保留其现存失败JSON。
+用户已授权提交远程；提交仅本包及新增摘要，不广泛stage其他共享工作。私钥、DPAPI文件、环境凭据和构建jar均不入Git。

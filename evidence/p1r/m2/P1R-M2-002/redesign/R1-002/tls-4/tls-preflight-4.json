@@ -1,0 +1,43 @@
+{
+  "checkedAt": "2026-10-05T16:43:16.412Z",
+  "scope": "own-isolated-iam-18087",
+  "checks": [
+    {
+      "name": "tls-cert-pin",
+      "result": "PASS",
+      "detail": {
+        "fp256": "8A:D2:F6:24:00:0C:B3:9F:FB:DE:C2:FF:D4:BE:8D:C0:9C:04:2C:F3:A5:06:B4:00:00:6F:F7:14:CA:FF:A1:37",
+        "san": "IP Address:127.0.0.1"
+      }
+    },
+    {
+      "name": "tls-handshake-verified",
+      "result": "PASS",
+      "detail": {
+        "authorized": true,
+        "authError": null,
+        "protocol": "TLSv1.3",
+        "cipher": "TLS_AES_256_GCM_SHA384",
+        "pinnedFp": "8A:D2:F6:24:00:0C:B3:9F:FB:DE:C2:FF:D4:BE:8D:C0:9C:04:2C:F3:A5:06:B4:00:00:6F:F7:14:CA:FF:A1:37"
+      }
+    },
+    {
+      "name": "health-status",
+      "result": "PASS",
+      "detail": {
+        "status": 200
+      }
+    },
+    {
+      "name": "jwks-get",
+      "result": "PASS",
+      "detail": {
+        "keys": 1
+      }
+    }
+  ],
+  "failed": [],
+  "jwksKids": [
+    "iam-local-2026-08"
+  ]
+}

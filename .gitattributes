@@ -17,3 +17,6 @@
 # Windows 批处理脚本必须保持 CRLF，否则 cmd.exe 解析可能异常。
 *.bat   text eol=crlf
 *.cmd   text eol=crlf
+
+# R1-002 evidence snapshots use raw bytes; do not rewrite their recorded SHA-256 inputs.
+evidence/p1r/m2/P1R-M2-002/redesign/R1-002/** -text whitespace=cr-at-eol

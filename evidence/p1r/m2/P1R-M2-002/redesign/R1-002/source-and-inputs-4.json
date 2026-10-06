@@ -1,0 +1,132 @@
+{
+  "taskId": "R1-002",
+  "kind": "PREPARATION_CLOSEOUT_NOT_PRODUCT_DELIVERY",
+  "checkedAt": "2026-10-06T08:10:17.534Z",
+  "sourceCommit": "3d11be3337accd32afbdbe13a218bca38c786043",
+  "localPlanContext": {
+    "revision": 27,
+    "state": "PLANNED",
+    "r1_001": "ACCEPTED",
+    "publishedWithThisBundle": false
+  },
+  "decision": "PREPARATION_PARTIAL_NOT_READY",
+  "files": [
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/r1-002-vault-4.cjs",
+      "sha256": "77d0e49acf3138968eed7cbb42955c8136c7eaeb2b900ea024c0e6fdcb233696"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/r1-002-validate-4.cjs",
+      "sha256": "2d0ec1bfe65b9f981c633209bc70022de5340817d6fd9854236c53a3c1d8ce59"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/r1-002-rotate-t3g-4.cjs",
+      "sha256": "f7a6790b87228ad6df827ba5e3d71d815c9e4109b371353079c241fbd9945f6f"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/prepare-policy-fixture-4.cjs",
+      "sha256": "891b67cd5a558ef83ba855628f3d2d86cee1056866dda37c438e0f07d833f6ad"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/r1-002-launcher-4.cjs",
+      "sha256": "854b219af63f853220484382161dcd58194053a120570b2aac2c9fb46c08bb73"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/r1-002-gateway-4.cjs",
+      "sha256": "aa198ec5bd1926eeb2dea3667fa89d3747a7cce6ffada0f562fc95da22b67ea4"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/r1-002-bg-start-4.cjs",
+      "sha256": "ff2843402134e78e639748eb3c165d9441905121c9a324604b16a315272a7315"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/r1-002-config-check-4.cjs",
+      "sha256": "33cd8b14e8bb370be0735d98d61cea358965857bef4fe4434d80dce1c0828341"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/r1-002-tls-rebuild-4.cjs",
+      "sha256": "f3c6fd42d9a084a485663755af57a43faa21b2ab197536cf57bbc175efa617a7"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/tls-preflight-4.cjs",
+      "sha256": "24c6fdddbcce4ad9072c8f8253da40c7d84bed4be7e272258231beae04904364"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/r1-002-process-guard.cjs",
+      "sha256": "4fd48d5280d3b62161652bd81ca550e65607cfb6b58b9c2bffb4d6a303a26526"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/validate-4/validate-4.json",
+      "sha256": "304cec30d63194369ee8ba70e05f830626173dc496fb3ae9b607ff2d999b190f"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/policy-fixture-4/policy-fixture-4.json",
+      "sha256": "34fc239a86deecf9ac959d44c7e145d1757110ec61f3702aa3875b8ae13d98f6"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/tls-4/tls-preflight-4.json",
+      "sha256": "6922a219709bafa8ac02bd477796c6a176ef4442e562e3efa8399ccdd59a9061"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/config-check-4/config-check-4.json",
+      "sha256": "d1ab03af50f9cca865698437578bd43bacf88af5b08d346c187e98def6658f31"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/launcher-4/launcher-4.json",
+      "sha256": "1d249f3f9f256d20c8a09d408ebd75a4ab8dfbf12932c382057b64f6ef23ad34"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/gateway-4/gateway-4.json",
+      "sha256": "85bf103942069934a282d9234119b200d35e3daac62b27e56f4af5e6d1733397"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/t3-tls/r1-002.pem",
+      "sha256": "1359a606b37a75ace92fddacb56ab45b6a216c1a56c0c8962c32c9b13b0c3da8"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/t3-tls/r1-002.cer",
+      "sha256": "8ad2f624000cb39ffbdec2ffd4be8dc09c042cf3a506b400006ff714caffa137"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/outbox-proposal-4.md",
+      "sha256": "0e4b605fa2865dc6007bcb5b9f2388367253c15a3b04ae087c5e85452ae7e9d1"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/tc03-plan-4.json",
+      "sha256": "4ece76e0a5f665c8dc625aa1d4d969d34bfaaf921d56cff57ddcdf54a5150cfb"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/prep-report-4.md",
+      "sha256": "cb51022ad60a67b6ed079309f46f95f16af345f3d85570360d944570b1887fda"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/commands-4.log",
+      "sha256": "182873002cabe58c476f256bf33ba250449c273e499b8eb72e004610aaf34142"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/reviewer-3-closeout/review.md",
+      "sha256": "036b0420b42d3d38c5c7c2439fb73795666a0bb2f856150f4ec3eaf92120918e"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/reviewer-3-closeout/verify-and-close.cjs",
+      "sha256": "7cb43fa2f5efcb794353860ce6686faff76ede613451ea3127749f838207665b"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/reviewer-3-closeout/runtime-and-cleanup.json",
+      "sha256": "c2b3a9ccb25db38fd4dc86b546765a8f3d777a869c16a468806d7475233396ec"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/reviewer-3-closeout/validate/validate-4.json",
+      "sha256": "c07859be893463e00a365c3fd93442d186c4304604f14ccc7ea6591fc5312817"
+    }
+  ],
+  "knownGaps": [
+    "Gateway JWKS forwarding independently returned 502; separate JWT JWKS client trust not verified",
+    "UUID/prn_ identity representation and precise Outbox scope not approved",
+    "Complete event sample validation awaits identity decision",
+    "Registration TC01/02/03, Set-Cookie and domain403 not executed"
+  ],
+  "registrationPerformed": false,
+  "sharedWrites": false,
+  "secretValuesPublished": false
+}

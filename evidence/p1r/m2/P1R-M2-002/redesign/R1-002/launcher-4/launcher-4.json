@@ -1,0 +1,98 @@
+{
+  "checkedAt": "2026-10-05T15:18:51.492Z",
+  "mode": "start",
+  "schema": "r1_002_iam_t3g",
+  "runner": "r1_002_runner_t3g",
+  "host": "127.0.0.1",
+  "port": 18087,
+  "steps": [
+    {
+      "step": "jar",
+      "ok": true,
+      "detail": {
+        "bytes": 43852295,
+        "sha": "5d3fcdf828d91fe8"
+      }
+    },
+    {
+      "step": "vault-controlled",
+      "ok": true,
+      "detail": {
+        "store": "dpapi-current-user",
+        "independent": true
+      }
+    },
+    {
+      "step": "tls-controlled",
+      "ok": true,
+      "detail": {
+        "note": "reuse controlled store",
+        "controlledDir": "C:\\Users\\Administrator\\AppData\\Local\\Cloudstudy\\R1-002\\tls"
+      }
+    },
+    {
+      "step": "safe-env",
+      "ok": true,
+      "detail": {
+        "keys": [
+          "IAM_PERSISTENCE_ENABLED",
+          "IAM_FLYWAY_ENABLED",
+          "SPRING_FLYWAY_ENABLED",
+          "IAM_JDBC_URL",
+          "IAM_JDBC_USERNAME",
+          "IAM_PERSISTENCE_SCHEMA",
+          "IAM_CONSENT_POLICY_SOURCE",
+          "IAM_PASSWORD_MIN_LENGTH",
+          "IAM_JWT_ISSUER",
+          "IAM_JWT_AUDIENCE",
+          "IAM_JWT_ALGORITHM",
+          "IAM_JWT_KEY_ID",
+          "IAM_LOCAL_ADULT_GATE_ENABLED",
+          "IAM_NATIVE_TRANSPORT_POLICY",
+          "IAM_JWT_REFRESH_COOKIE_SECURE",
+          "SERVER_SSL_ENABLED",
+          "P1R_DIAG"
+        ]
+      }
+    },
+    {
+      "step": "started",
+      "ok": true,
+      "detail": {
+        "pid": 25732
+      }
+    }
+  ],
+  "failedChecks": [],
+  "jar": {
+    "path": "services/iam-service/target/iam-service-0.1.0-SNAPSHOT.jar",
+    "bytes": 43852295,
+    "sha256": "5d3fcdf828d91fe8793002d99ce1ddbdca484762d84be925e408de4bd0221f3f"
+  },
+  "safeEnv": {
+    "IAM_PERSISTENCE_ENABLED": "true",
+    "IAM_FLYWAY_ENABLED": "true",
+    "SPRING_FLYWAY_ENABLED": "true",
+    "IAM_JDBC_URL": "jdbc:mysql://127.0.0.1:13306/r1_002_iam_t3g?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true (user=r1_002_runner_t3g)",
+    "IAM_JDBC_USERNAME": "r1_002_runner_t3g",
+    "IAM_PERSISTENCE_SCHEMA": "r1_002_iam_t3g",
+    "IAM_CONSENT_POLICY_SOURCE": "control-plane",
+    "IAM_PASSWORD_MIN_LENGTH": "12",
+    "IAM_JWT_ISSUER": "https://127.0.0.1:18087",
+    "IAM_JWT_AUDIENCE": "yuxuexing-api",
+    "IAM_JWT_ALGORITHM": "RS256",
+    "IAM_JWT_KEY_ID": "iam-local-2026-08",
+    "IAM_LOCAL_ADULT_GATE_ENABLED": "false (guard requires non-local; registration TC uses no attestation input)",
+    "IAM_NATIVE_TRANSPORT_POLICY": "deny",
+    "IAM_JWT_REFRESH_COOKIE_SECURE": "true (explicit --iam.jwt.refresh-cookie-secure=true; base default true)",
+    "SERVER_SSL_ENABLED": "true (controlled test keystore; JWT issuer https, audience unchanged)",
+    "P1R_DIAG": "0"
+  },
+  "gatewayIam": {
+    "iamDirect": "https://127.0.0.1:18087",
+    "jwks": "https://127.0.0.1:18087/api/v1/auth/jwks",
+    "trust": "explicit controlled test CA (r1-002.pem pin); verification ON, no insecure bypass",
+    "gatewayToLearning403": "Gateway /api/v1/learning/* -> learning-service:18090 (register TC01 holds restricted JWT, expects 403)"
+  },
+  "finishedAt": "2026-10-05T15:18:54.358Z"
+}
