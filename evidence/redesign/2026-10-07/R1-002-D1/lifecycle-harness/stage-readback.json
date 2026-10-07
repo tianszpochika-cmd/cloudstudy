@@ -1,0 +1,15 @@
+{
+  "kind": "R1_002_D1_OFFLINE_READBACK",
+  "verified": {
+    "signature": "PASS",
+    "source": "PASS",
+    "artifacts": 217,
+    "artifactHashes": "PASS",
+    "sourceToJarVerified": false,
+    "dynamic": "NOT_EXECUTED"
+  },
+  "signaturePayloadPublicOnly": true,
+  "realRunPath": "<RUN_DIR>",
+  "originalBindingSha256": "a97738f97c8614e6beac80ca00e2bddfdc46796fe0795d64fdd25f848144983c",
+  "publicSanitizedBindingIsNotSignedOriginal": true
+}

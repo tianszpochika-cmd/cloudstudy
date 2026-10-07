@@ -1,0 +1,16 @@
+{
+  "kind": "REAL_OWNED_TOY_EXIT_SIGNING_PROOF",
+  "sourceReceiptSha256BeforeFix": "c0bc32123cc2bff9d09b1f1f2a620eab33a7cf5c69a22965e1bd75b0eed8c2a5",
+  "platform": "darwin",
+  "event": "owned-child-exited",
+  "schemaAccepted": true,
+  "childExitObserved": true,
+  "childExitCode": 0,
+  "childExitSignal": null,
+  "signingAccepted": false,
+  "exceptionClass": "Error",
+  "diagnosis": "signer attempts current kernel identity after observed exit; unavailable PID rejects",
+  "commandExitCode": 0,
+  "businessListener": false,
+  "secretsArchived": false
+}

@@ -1,0 +1,278 @@
+{
+  "algorithm": "Ed25519",
+  "body": {
+    "artifact": {
+      "bytes": 60346,
+      "path": "binding.json",
+      "sha256": "a97738f97c8614e6beac80ca00e2bddfdc46796fe0795d64fdd25f848144983c"
+    },
+    "bindHost": "127.0.0.1",
+    "createdAt": "2026-10-07T13:54:00.678Z",
+    "event": "staged",
+    "iamBusinessRuntime": false,
+    "intent": "R1_002_PREPARATION_HARNESS",
+    "ownerKind": "harness",
+    "platform": "darwin",
+    "ports": [
+      18070,
+      18087
+    ],
+    "portsConfigSha256": "0a6b43d35379fed2e679961b34a0ad0e9ec1888dfb7d1a2c76eed20706e5ca95",
+    "process": null,
+    "runId": "cb7f8221-8d23-48bf-92c8-3c3a2f215d3b",
+    "schemaVersion": "r1-002-run-receipt/v1",
+    "source": {
+      "dirtySha256": "2907094f72878bb069f16794b0f8caf290627973a536a8162be44992752614e3",
+      "files": [
+        {
+          "path": "config/local-ports.json",
+          "sha256": "0a6b43d35379fed2e679961b34a0ad0e9ec1888dfb7d1a2c76eed20706e5ca95"
+        },
+        {
+          "path": "pom.xml",
+          "sha256": "d663a16aea33c574e89b3062085adf916f0d7d4d6d14224e73445a825dc4ea0e"
+        },
+        {
+          "path": "scripts/redesign/r1-002/GatewayTlsProbe.java",
+          "sha256": "abea032fd9c2178bfc0e02e94b729bf5a8151b16e1cee130b5c116d039fb741c"
+        },
+        {
+          "path": "scripts/redesign/r1-002/VerifyGatewayBinding.java",
+          "sha256": "84be68281b5c0883c3eb36ee34b788b9096b605c3bc60eeff43793ed498d6543"
+        },
+        {
+          "path": "scripts/redesign/r1-002/VerifyTrust.java",
+          "sha256": "09d5db9af1412f7d1a2631b3d4e083ad08111729d139a835068153f53bae6a3d"
+        },
+        {
+          "path": "scripts/redesign/r1-002/lifecycle.mjs",
+          "sha256": "0b7e6ef04de409cfd5d3cb41611fe7a25b4268aab3e093cf872e2ffb5c24a719"
+        },
+        {
+          "path": "scripts/redesign/r1-002/lifecycle.test.mjs",
+          "sha256": "f212383fe28c986ca2acd291ac08a4d2556ac18a1d3d7f7e19e37766e4fc38d6"
+        },
+        {
+          "path": "scripts/redesign/r1-002/prepare.mjs",
+          "sha256": "bfb9b91f19f7a50c45c53347549ffbe5ea9d9e9148a5da1ff1f409943258c399"
+        },
+        {
+          "path": "scripts/redesign/r1-002/prepare.test.mjs",
+          "sha256": "312182dbaded2ebc0d997b4af5e9e1d6f01f8454e50c880db6ad14afe7a5b9b7"
+        },
+        {
+          "path": "scripts/redesign/r1-002/process-identity.mjs",
+          "sha256": "ffe624362ed92aa1046238b989f8f139cfc8c1e065e227596c9c1e9db134a59d"
+        },
+        {
+          "path": "scripts/redesign/r1-002/process-identity.test.mjs",
+          "sha256": "bd93a4fa9292cc31d88f41e73e3a3f37459c259bf134871de981b29ebe54f398"
+        },
+        {
+          "path": "scripts/redesign/r1-002/receipt.mjs",
+          "sha256": "c0bc32123cc2bff9d09b1f1f2a620eab33a7cf5c69a22965e1bd75b0eed8c2a5"
+        },
+        {
+          "path": "scripts/redesign/r1-002/receipt.test.mjs",
+          "sha256": "f351495d17314bfc8b9937d162ee5dd2b6e8974d89141205aed207be174b920d"
+        },
+        {
+          "path": "scripts/redesign/r1-002/sanitize-evidence.mjs",
+          "sha256": "cab2eff3544d128b1586e24170fc4e7a26583d8aabcc449b13254eceec275c00"
+        },
+        {
+          "path": "scripts/redesign/r1-002/tls-harness.mjs",
+          "sha256": "a2e25ec465e42672238438e0747c57594f5cee292a726485c5771af87d5823ab"
+        },
+        {
+          "path": "scripts/redesign/r1-002/verify-binding.mjs",
+          "sha256": "c1272f1ebfaa3643d4246937296b5d8d84e70890278462ae0510bb89bb26afcc"
+        },
+        {
+          "path": "services/api-gateway/pom.xml",
+          "sha256": "d0d4caed78c7fbd967dc650975de9804b26a879ff2596972905a7d5340e687aa"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/ApiGatewayApplication.java",
+          "sha256": "53e9965271177a3f8e2c0d3bab6a691eacb342e3782be654ab1dbc7460193e88"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/config/GatewayAuditProperties.java",
+          "sha256": "225df62711ff4a21c4525c243b6f5e65beb3e6855898962b75f33e9e945e58e9"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/config/GatewayConfiguration.java",
+          "sha256": "523f8f336735e00993a40b85bbb38fd563046145c53e2f16dc5e69537aeb69bb"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/config/GatewayIamPublicJwkSource.java",
+          "sha256": "bc3fd76268902ccb3a3a05d971d0f55f341f1066f0e2afe8b2a65608dcd0498c"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/config/GatewayJwtValidators.java",
+          "sha256": "f01fac736cf24273478267c5c8506eaa9654646f914d9920223581791db94ee0"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/config/GatewayProperties.java",
+          "sha256": "6a8efec7b5cb84b74ab518b710c247ba8a81963a173659a07b0bf384e5570aa6"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/config/SecurityAuditSinkConfiguration.java",
+          "sha256": "76848c1e3f7bced3a98892c775841a0de6f96de9bf5a4b0e6f5a3c339d9fb46a"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/filter/ApiVersionBoundaryGlobalFilter.java",
+          "sha256": "08906eb570a1b0a4b122c06ecf9eca56e576e970f5b7ddd4c0434d19dfa3856b"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/filter/B14RouteModeGuardGlobalFilter.java",
+          "sha256": "2875dd239a50dc6f2d12150d7734845834c8dbaa0638547d48fff793eac1d24f"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/filter/BrowserOriginCsrfGlobalFilter.java",
+          "sha256": "9083e229c0d57d3869d67f79582d98d2e8d8617544efd7da2ce9f6fe717de78e"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/filter/CanonicalCorsPreflightWebFilter.java",
+          "sha256": "84081fed46ae6dfa29b0d5c9fa33cb181c7c3b5c0ada8417771ee10aa96d876e"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/filter/CanonicalRoutePolicyWebFilter.java",
+          "sha256": "73a72ad2b5fef01202445bc38b905a8408846fe0ee76f8630d185efc4449dcd6"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/filter/ClientAuthorizationContextHeaders.java",
+          "sha256": "3ff58fbffcfa983433fa7bfbda1fe5131dd93600183ac76c031fc3c7fed9f3f5"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/filter/ClientAuthorizationContextSanitizerGlobalFilter.java",
+          "sha256": "2acdff154e3a3370907458e762341e50052bd2b4423ff4a4f5f66c3e1db95dcc"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/filter/CorsDenyHeaders.java",
+          "sha256": "7c75a1363504aee5490a5815cbd82136d94d8808c1f0140969a9b135995506eb"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/filter/GatewayErrorHandlingGlobalFilter.java",
+          "sha256": "2980414f73b4c536c1b2a28c32797b9731c688a419435f2dd083fe6dd606fcde"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/filter/JwtPreValidationBoundaryGlobalFilter.java",
+          "sha256": "ddaa737261939a22194037c77773a54254a445dee4d49d2371480c7956b7b47a"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/filter/RateLimitGlobalFilter.java",
+          "sha256": "f6344f4053fa885a5e49430ad8969916981775eb91ccea3846be99717c936e6b"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/filter/RateLimitPlaceholderGlobalFilter.java",
+          "sha256": "a5b36faaad25f4e13067dbbfc566c7c477f142402f99e64d07c6b16625c487ef"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/filter/RequestContextGlobalFilter.java",
+          "sha256": "26acf080e721b74a25b116ed5c2afc207b6b68e71143fbef85a3975aa616e52a"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/filter/SecurityAuditGlobalFilter.java",
+          "sha256": "b00f2eec4c4296ab89290337191fa9d02d2d565e87bdbe9f3981274695d8f8c6"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/policy/GatewayRouteExecutionPolicy.java",
+          "sha256": "041934846fdaa1a4abbfa51acfd704135ec8dbbca054e4ce0388d06c71bad0dc"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/policy/GatewayRoutePolicy.java",
+          "sha256": "60eea40dcb5733200350e1bbc510684bb859d0349a277a2347ab5f1892766f59"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/rate/InMemoryRateLimitBackend.java",
+          "sha256": "dc2d763223c38e2634974de78a66cfdce5a437dbce8b119ab4e785a002390bc2"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/rate/RateLimitBackend.java",
+          "sha256": "6acdfa9b56da0d7f1859fed2d1a485f157cc9b2017712e4219e4ab98ed7bb267"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/rate/RateLimitBackendUnavailableException.java",
+          "sha256": "226e9590f4c12b91bfbd2a5a12d5cc85b1fafb1563feb447c1a5c84d393a6252"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/rate/RateLimitDecision.java",
+          "sha256": "abdc0df33ac6b86fbc72ad00c1979f08695245ea12dfba0209bf793fbbe1863b"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/rate/RedisRateLimitBackend.java",
+          "sha256": "a90b85b3f35da9cc91743ea84e75bdfe22a9f725e6a1321945df4030041854c5"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/support/BoundedSecurityAuditSink.java",
+          "sha256": "7985829d56b6ff88c863c6eb75a14aa989c1fcc66e1ffe8496be204a0d2a05c7"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/support/CorrelationIds.java",
+          "sha256": "b6127d800ea29d4370b174d2e1036e4595e028f298a53c9bac9b83bd78cdd7fe"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/support/GatewayAuditAttributes.java",
+          "sha256": "8071314defc352c6643cf4da0ae9faff7b5128fcf83d15cd0c05f5da57d8a503"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/support/GatewayAuthenticationFailureHandler.java",
+          "sha256": "8f8a0c1b5ff54565ca23dfa68fa47aa3b290b6c71824d572a97282d05006b1cc"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/support/GatewayError.java",
+          "sha256": "bba6762287ec02d27a806e132035433a61af49fbf2eb459f0bc2a95063fafb85"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/support/GatewayErrorMapper.java",
+          "sha256": "7a1c704f9b1b533cffd6e509f92f52a6f42d0997bb7f24ca5cc43c69bb9fd254"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/support/GatewayErrorResponseWriter.java",
+          "sha256": "3472acc6011f4f9e7f044d7d42ca39c84c63d1a023d234ce53bf1d194c6c109c"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/support/HttpSecurityAuditSink.java",
+          "sha256": "a39d8ca615016e2745964218a70239dad5ed2c46f03188cae515562fbb2547e1"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/support/RuntimeEvidenceSecurityAuditSink.java",
+          "sha256": "fba2d4cc2a2bc0419893e8c5299646f40965e9805208d58f38f5b0449711dffd"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/support/SecurityAuditRecord.java",
+          "sha256": "7ae36834fc8b0980a8c893e2f27383aecdfad4182f2edef6a2968b7f6ced37ec"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/support/SecurityAuditRecorder.java",
+          "sha256": "a38f30140f0ccc46846ebad787d9a6d39978d13800afc8099b004a56134c5d93"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/support/SecurityAuditSink.java",
+          "sha256": "492df4f609c00e7c6473fef7a406446d0ddaab4af08da4f58c4c8b0a535e0823"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/support/ServiceTokenClient.java",
+          "sha256": "5734796e1ebcab24bdf3f7accebf4199919189f63a9e0fc8512d39287234faea"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/web/GatewayHealthController.java",
+          "sha256": "aedc6ad96ef0b91771a18d3c88cf9e3f36917e0326f0ccc3f279b513a834f2ad"
+        },
+        {
+          "path": "services/api-gateway/src/main/resources/application-local.yml",
+          "sha256": "20dd1876e8564f5d76e2182e93e693268b7212357bc48ceb84d9981a103f7d9f"
+        },
+        {
+          "path": "services/api-gateway/src/main/resources/application.yml",
+          "sha256": "002a12bd335d431caa77bc7a319ea55f188f4d0b659c52033931f7f16050da90"
+        }
+      ],
+      "gitHead": "2ffa2eb2794b32e9f51ee7a1ac5ac4834ec5b7fb"
+    }
+  },
+  "keyId": "0b44bd43a030eab103b97c7a9e5b1d6bbea4e79f45f60c2b68ee95a9f11c82ad",
+  "schemaVersion": "r1-002-run-receipt/v1",
+  "signature": "zVftl6Sgxs+67xIE8mBLFGmUEjoqlBOYDCf+wLEw8Zk+bf75FfsgIx2H4z9JZ26AcZYqSIUf0qRbMeKJvJVRCQ=="
+}

@@ -1,0 +1,160 @@
+{
+  "kind": "R1_002_D1_COMMANDS",
+  "actualPlatform": "darwin",
+  "baseline": "2ffa2eb2794b32e9f51ee7a1ac5ac4834ec5b7fb",
+  "allDynamicTls": "NOT_EXECUTED",
+  "commands": [
+    {
+      "action": "createTls in new protected Git-outside directory via existing prepare.mjs",
+      "exitCode": 0,
+      "secrets": "not emitted; inherited signing material not used"
+    },
+    {
+      "action": "stage first attempt; javac succeeded, offline Java SCG factory constructor3 failed",
+      "exitCode": 1,
+      "underlyingJavaExit": 1,
+      "log": "probe-first-attempt.log"
+    },
+    {
+      "action": "stage second attempt; javac/production probe succeeded, shared guard rejected Java nested $ class path",
+      "exitCode": 1,
+      "reason": "Run relative path rejected"
+    },
+    {
+      "action": "stage final after constructor4 and shared literal-$ guard fix; new run/key, old artifacts untouched",
+      "exitCode": 0,
+      "javacExit": 0,
+      "javaOfflineExit": 0,
+      "signedBindingVerify": "PASS",
+      "artifactHashes": 217,
+      "evidence": "stage-final.json"
+    },
+    {
+      "argv": [
+        "node",
+        "--test",
+        "scripts/redesign/r1-002/lifecycle.test.mjs"
+      ],
+      "exitCode": 0,
+      "log": "lifecycle-tests-final.log",
+      "scope": "D1 offline only"
+    },
+    {
+      "argv": [
+        "node",
+        "--check",
+        "scripts/redesign/r1-002/lifecycle.mjs"
+      ],
+      "exitCode": 0,
+      "log": "syntax-final.log",
+      "scope": "D1 offline only"
+    },
+    {
+      "argv": [
+        "node",
+        "scripts/redesign/r1-002/lifecycle.mjs",
+        "--out",
+        "<EVIDENCE_DIR>/preflight-final.json"
+      ],
+      "exitCode": 0,
+      "scope": "readonly OS facts; no socket/connect/listen"
+    },
+    {
+      "argv": [
+        "node",
+        "scripts/redesign/r1-002/lifecycle.mjs",
+        "--mode",
+        "launch-harness"
+      ],
+      "exitCode": 1,
+      "expectedRefusal": true,
+      "output": "R1-002 D1 refused: D2_NOT_AUTHORIZED; signals=0 listeners=0 db=0",
+      "signals": 0,
+      "listeners": 0,
+      "dbOperations": 0
+    },
+    {
+      "argv": [
+        "node",
+        "scripts/redesign/r1-002/lifecycle.mjs",
+        "--mode",
+        "probe"
+      ],
+      "exitCode": 1,
+      "expectedRefusal": true,
+      "output": "R1-002 D1 refused: D2_NOT_AUTHORIZED; signals=0 listeners=0 db=0",
+      "signals": 0,
+      "listeners": 0,
+      "dbOperations": 0
+    },
+    {
+      "argv": [
+        "node",
+        "scripts/redesign/r1-002/lifecycle.mjs",
+        "--mode",
+        "restore-verify"
+      ],
+      "exitCode": 1,
+      "expectedRefusal": true,
+      "output": "R1-002 D1 refused: D2_RESTORE_BUNDLE_NOT_APPROVED; signals=0 listeners=0 db=0",
+      "signals": 0,
+      "listeners": 0,
+      "dbOperations": 0
+    },
+    {
+      "argv": [
+        "node",
+        "scripts/redesign/r1-002/lifecycle.mjs",
+        "--mode",
+        "launch-harness",
+        "--approved-window",
+        "true"
+      ],
+      "exitCode": 1,
+      "expectedRefusal": true,
+      "output": "R1-002 D1 refused: UNKNOWN_OR_DUPLICATE_ARGUMENT; signals=0 listeners=0 db=0",
+      "signals": 0,
+      "listeners": 0,
+      "dbOperations": 0
+    },
+    {
+      "action": "offline signed stage readback using trusted external receipt public key; publish original staged payload(public relative paths only) plus public key",
+      "exitCode": 0,
+      "artifactHashes": 217,
+      "signature": "PASS",
+      "sourceToJarVerified": false,
+      "evidence": "stage-readback.json"
+    },
+    {
+      "action": "context-review lifecycle tests",
+      "exitCode": 0,
+      "tests": 21,
+      "log": "lifecycle-tests-context-review.log",
+      "metadataNegatives": [
+        "valid same-key ports=[]",
+        "valid same-key ownerKind=toy-child",
+        "valid signature simulated other-platform; not cross-OS execution"
+      ]
+    },
+    {
+      "action": "context-review syntax",
+      "exitCode": 0,
+      "log": "syntax-context-review.log"
+    },
+    {
+      "action": "context-review independent new run/key stage after shared 12expected/deleted exited event",
+      "exitCode": 0,
+      "javacExit": 0,
+      "javaOfflineExit": 0,
+      "signedBindingVerify": "PASS",
+      "artifactHashes": 217,
+      "evidence": "stage-reviewed.json"
+    },
+    {
+      "action": "context-review readonly preflight",
+      "exitCode": 0,
+      "evidence": "preflight-reviewed.json",
+      "portListeners": 0
+    }
+  ]
+}

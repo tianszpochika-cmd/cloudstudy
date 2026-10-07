@@ -1,0 +1,1737 @@
+{
+  "kind": "R1_002_D1_STAGE",
+  "runId": "63dafdec-09bc-4307-833d-83a8114e454c",
+  "runDirectory": "<RUN_DIR>",
+  "keyDirectory": "<RECEIPT_KEY_DIR>",
+  "materialDirectory": "<PRIVATE_MATERIAL_DIR>",
+  "binding": {
+    "kind": "R1_002_D1_ARTIFACT_BINDING",
+    "schemaVersion": 1,
+    "runId": "63dafdec-09bc-4307-833d-83a8114e454c",
+    "source": {
+      "gitHead": "2ffa2eb2794b32e9f51ee7a1ac5ac4834ec5b7fb",
+      "dirtySha256": "30127d9142ded6b4e66e4b57b6a6a60dee83bfc83fdb811376919d865b1c96cf",
+      "files": [
+        {
+          "path": "config/local-ports.json",
+          "sha256": "0a6b43d35379fed2e679961b34a0ad0e9ec1888dfb7d1a2c76eed20706e5ca95"
+        },
+        {
+          "path": "pom.xml",
+          "sha256": "d663a16aea33c574e89b3062085adf916f0d7d4d6d14224e73445a825dc4ea0e"
+        },
+        {
+          "path": "scripts/redesign/r1-002/GatewayTlsProbe.java",
+          "sha256": "abea032fd9c2178bfc0e02e94b729bf5a8151b16e1cee130b5c116d039fb741c"
+        },
+        {
+          "path": "scripts/redesign/r1-002/VerifyGatewayBinding.java",
+          "sha256": "84be68281b5c0883c3eb36ee34b788b9096b605c3bc60eeff43793ed498d6543"
+        },
+        {
+          "path": "scripts/redesign/r1-002/VerifyTrust.java",
+          "sha256": "09d5db9af1412f7d1a2631b3d4e083ad08111729d139a835068153f53bae6a3d"
+        },
+        {
+          "path": "scripts/redesign/r1-002/lifecycle.mjs",
+          "sha256": "5dace89cfab45c0f02d32cf80271d480f42c1b3081e03ea3f80210d8b502773d"
+        },
+        {
+          "path": "scripts/redesign/r1-002/lifecycle.test.mjs",
+          "sha256": "18f4761f8a21cee2b12c2cafe5f74d7a3baf24a79c17a1798bf7a4213eda6bde"
+        },
+        {
+          "path": "scripts/redesign/r1-002/prepare.mjs",
+          "sha256": "bfb9b91f19f7a50c45c53347549ffbe5ea9d9e9148a5da1ff1f409943258c399"
+        },
+        {
+          "path": "scripts/redesign/r1-002/prepare.test.mjs",
+          "sha256": "312182dbaded2ebc0d997b4af5e9e1d6f01f8454e50c880db6ad14afe7a5b9b7"
+        },
+        {
+          "path": "scripts/redesign/r1-002/process-identity.mjs",
+          "sha256": "ffe624362ed92aa1046238b989f8f139cfc8c1e065e227596c9c1e9db134a59d"
+        },
+        {
+          "path": "scripts/redesign/r1-002/process-identity.test.mjs",
+          "sha256": "bd93a4fa9292cc31d88f41e73e3a3f37459c259bf134871de981b29ebe54f398"
+        },
+        {
+          "path": "scripts/redesign/r1-002/receipt.mjs",
+          "sha256": "46b9eb30ba485697980ce3da5ae13948943c4f734b53d4491d0cb86d64ae436f"
+        },
+        {
+          "path": "scripts/redesign/r1-002/receipt.test.mjs",
+          "sha256": "4eb02d0cccfefd1c26844adf7d2ad85201ce6904d7fe355df4f84165fb0c8a8e"
+        },
+        {
+          "path": "scripts/redesign/r1-002/sanitize-evidence.mjs",
+          "sha256": "cab2eff3544d128b1586e24170fc4e7a26583d8aabcc449b13254eceec275c00"
+        },
+        {
+          "path": "scripts/redesign/r1-002/tls-harness.mjs",
+          "sha256": "a2e25ec465e42672238438e0747c57594f5cee292a726485c5771af87d5823ab"
+        },
+        {
+          "path": "scripts/redesign/r1-002/verify-binding.mjs",
+          "sha256": "c1272f1ebfaa3643d4246937296b5d8d84e70890278462ae0510bb89bb26afcc"
+        },
+        {
+          "path": "services/api-gateway/pom.xml",
+          "sha256": "d0d4caed78c7fbd967dc650975de9804b26a879ff2596972905a7d5340e687aa"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/ApiGatewayApplication.java",
+          "sha256": "53e9965271177a3f8e2c0d3bab6a691eacb342e3782be654ab1dbc7460193e88"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/config/GatewayAuditProperties.java",
+          "sha256": "225df62711ff4a21c4525c243b6f5e65beb3e6855898962b75f33e9e945e58e9"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/config/GatewayConfiguration.java",
+          "sha256": "523f8f336735e00993a40b85bbb38fd563046145c53e2f16dc5e69537aeb69bb"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/config/GatewayIamPublicJwkSource.java",
+          "sha256": "bc3fd76268902ccb3a3a05d971d0f55f341f1066f0e2afe8b2a65608dcd0498c"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/config/GatewayJwtValidators.java",
+          "sha256": "f01fac736cf24273478267c5c8506eaa9654646f914d9920223581791db94ee0"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/config/GatewayProperties.java",
+          "sha256": "6a8efec7b5cb84b74ab518b710c247ba8a81963a173659a07b0bf384e5570aa6"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/config/SecurityAuditSinkConfiguration.java",
+          "sha256": "76848c1e3f7bced3a98892c775841a0de6f96de9bf5a4b0e6f5a3c339d9fb46a"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/filter/ApiVersionBoundaryGlobalFilter.java",
+          "sha256": "08906eb570a1b0a4b122c06ecf9eca56e576e970f5b7ddd4c0434d19dfa3856b"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/filter/B14RouteModeGuardGlobalFilter.java",
+          "sha256": "2875dd239a50dc6f2d12150d7734845834c8dbaa0638547d48fff793eac1d24f"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/filter/BrowserOriginCsrfGlobalFilter.java",
+          "sha256": "9083e229c0d57d3869d67f79582d98d2e8d8617544efd7da2ce9f6fe717de78e"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/filter/CanonicalCorsPreflightWebFilter.java",
+          "sha256": "84081fed46ae6dfa29b0d5c9fa33cb181c7c3b5c0ada8417771ee10aa96d876e"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/filter/CanonicalRoutePolicyWebFilter.java",
+          "sha256": "73a72ad2b5fef01202445bc38b905a8408846fe0ee76f8630d185efc4449dcd6"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/filter/ClientAuthorizationContextHeaders.java",
+          "sha256": "3ff58fbffcfa983433fa7bfbda1fe5131dd93600183ac76c031fc3c7fed9f3f5"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/filter/ClientAuthorizationContextSanitizerGlobalFilter.java",
+          "sha256": "2acdff154e3a3370907458e762341e50052bd2b4423ff4a4f5f66c3e1db95dcc"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/filter/CorsDenyHeaders.java",
+          "sha256": "7c75a1363504aee5490a5815cbd82136d94d8808c1f0140969a9b135995506eb"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/filter/GatewayErrorHandlingGlobalFilter.java",
+          "sha256": "2980414f73b4c536c1b2a28c32797b9731c688a419435f2dd083fe6dd606fcde"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/filter/JwtPreValidationBoundaryGlobalFilter.java",
+          "sha256": "ddaa737261939a22194037c77773a54254a445dee4d49d2371480c7956b7b47a"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/filter/RateLimitGlobalFilter.java",
+          "sha256": "f6344f4053fa885a5e49430ad8969916981775eb91ccea3846be99717c936e6b"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/filter/RateLimitPlaceholderGlobalFilter.java",
+          "sha256": "a5b36faaad25f4e13067dbbfc566c7c477f142402f99e64d07c6b16625c487ef"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/filter/RequestContextGlobalFilter.java",
+          "sha256": "26acf080e721b74a25b116ed5c2afc207b6b68e71143fbef85a3975aa616e52a"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/filter/SecurityAuditGlobalFilter.java",
+          "sha256": "b00f2eec4c4296ab89290337191fa9d02d2d565e87bdbe9f3981274695d8f8c6"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/policy/GatewayRouteExecutionPolicy.java",
+          "sha256": "041934846fdaa1a4abbfa51acfd704135ec8dbbca054e4ce0388d06c71bad0dc"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/policy/GatewayRoutePolicy.java",
+          "sha256": "60eea40dcb5733200350e1bbc510684bb859d0349a277a2347ab5f1892766f59"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/rate/InMemoryRateLimitBackend.java",
+          "sha256": "dc2d763223c38e2634974de78a66cfdce5a437dbce8b119ab4e785a002390bc2"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/rate/RateLimitBackend.java",
+          "sha256": "6acdfa9b56da0d7f1859fed2d1a485f157cc9b2017712e4219e4ab98ed7bb267"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/rate/RateLimitBackendUnavailableException.java",
+          "sha256": "226e9590f4c12b91bfbd2a5a12d5cc85b1fafb1563feb447c1a5c84d393a6252"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/rate/RateLimitDecision.java",
+          "sha256": "abdc0df33ac6b86fbc72ad00c1979f08695245ea12dfba0209bf793fbbe1863b"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/rate/RedisRateLimitBackend.java",
+          "sha256": "a90b85b3f35da9cc91743ea84e75bdfe22a9f725e6a1321945df4030041854c5"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/support/BoundedSecurityAuditSink.java",
+          "sha256": "7985829d56b6ff88c863c6eb75a14aa989c1fcc66e1ffe8496be204a0d2a05c7"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/support/CorrelationIds.java",
+          "sha256": "b6127d800ea29d4370b174d2e1036e4595e028f298a53c9bac9b83bd78cdd7fe"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/support/GatewayAuditAttributes.java",
+          "sha256": "8071314defc352c6643cf4da0ae9faff7b5128fcf83d15cd0c05f5da57d8a503"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/support/GatewayAuthenticationFailureHandler.java",
+          "sha256": "8f8a0c1b5ff54565ca23dfa68fa47aa3b290b6c71824d572a97282d05006b1cc"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/support/GatewayError.java",
+          "sha256": "bba6762287ec02d27a806e132035433a61af49fbf2eb459f0bc2a95063fafb85"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/support/GatewayErrorMapper.java",
+          "sha256": "7a1c704f9b1b533cffd6e509f92f52a6f42d0997bb7f24ca5cc43c69bb9fd254"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/support/GatewayErrorResponseWriter.java",
+          "sha256": "3472acc6011f4f9e7f044d7d42ca39c84c63d1a023d234ce53bf1d194c6c109c"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/support/HttpSecurityAuditSink.java",
+          "sha256": "a39d8ca615016e2745964218a70239dad5ed2c46f03188cae515562fbb2547e1"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/support/RuntimeEvidenceSecurityAuditSink.java",
+          "sha256": "fba2d4cc2a2bc0419893e8c5299646f40965e9805208d58f38f5b0449711dffd"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/support/SecurityAuditRecord.java",
+          "sha256": "7ae36834fc8b0980a8c893e2f27383aecdfad4182f2edef6a2968b7f6ced37ec"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/support/SecurityAuditRecorder.java",
+          "sha256": "a38f30140f0ccc46846ebad787d9a6d39978d13800afc8099b004a56134c5d93"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/support/SecurityAuditSink.java",
+          "sha256": "492df4f609c00e7c6473fef7a406446d0ddaab4af08da4f58c4c8b0a535e0823"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/support/ServiceTokenClient.java",
+          "sha256": "5734796e1ebcab24bdf3f7accebf4199919189f63a9e0fc8512d39287234faea"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/web/GatewayHealthController.java",
+          "sha256": "aedc6ad96ef0b91771a18d3c88cf9e3f36917e0326f0ccc3f279b513a834f2ad"
+        },
+        {
+          "path": "services/api-gateway/src/main/resources/application-local.yml",
+          "sha256": "20dd1876e8564f5d76e2182e93e693268b7212357bc48ceb84d9981a103f7d9f"
+        },
+        {
+          "path": "services/api-gateway/src/main/resources/application.yml",
+          "sha256": "002a12bd335d431caa77bc7a319ea55f188f4d0b659c52033931f7f16050da90"
+        }
+      ]
+    },
+    "portsConfigSha256": "0a6b43d35379fed2e679961b34a0ad0e9ec1888dfb7d1a2c76eed20706e5ca95",
+    "sourceJarProvenance": "UNATTESTED_CURRENT_TARGET",
+    "sourceToJarVerified": false,
+    "toolchainBaselineSha256": "3b4d41a16d3278bee54187eee6a3bcb5d8dea5f3aa353ff468be502e71cc0143",
+    "originalJar": {
+      "path": "services/api-gateway/target/api-gateway-0.1.0-SNAPSHOT.jar",
+      "sha256": "34f13139294dead9f80cf0a4d41d43485d9cb95e0895c319ed4504b1fad66380"
+    },
+    "tools": [
+      {
+        "executable": "/Users/Admin/.local/tools/jdk-25.0.4.1+1/Contents/Home/bin/java",
+        "sha256": "83c9c5310d044e7c4262432854eb1bc5f49763d7c1e9971777a646c91b96c06d"
+      },
+      {
+        "executable": "/Users/Admin/.local/tools/jdk-25.0.4.1+1/Contents/Home/bin/javac",
+        "sha256": "d4013ecb3b669979bba5359d0e62d974cfb735ab6356d54436da41c60c62f1a6"
+      },
+      {
+        "executable": "/Users/Admin/.local/tools/jdk-25.0.4.1+1/Contents/Home/bin/jar",
+        "sha256": "b33e2a4833433fdf954fc2cf48fa7858e6f641f1f7fe06c37a4db184720a30fb"
+      }
+    ],
+    "javaVersion": "openjdk 25.0.4.1 2026-08-18 LTS\nOpenJDK Runtime Environment Temurin-25.0.4.1+1 (build 25.0.4.1+1-LTS)\nOpenJDK 64-Bit Server VM Temurin-25.0.4.1+1 (build 25.0.4.1+1-LTS, mixed mode, sharing)",
+    "javacVersion": "javac 25.0.4.1",
+    "entries": [
+      {
+        "path": "artifact/BOOT-INF/classes/application-local.yml",
+        "bytes": 1790,
+        "sha256": "20dd1876e8564f5d76e2182e93e693268b7212357bc48ceb84d9981a103f7d9f"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/application.yml",
+        "bytes": 9371,
+        "sha256": "002a12bd335d431caa77bc7a319ea55f188f4d0b659c52033931f7f16050da90"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/ApiGatewayApplication.class",
+        "bytes": 845,
+        "sha256": "5ed91ac6ba1bad6c064daf90fcba17b71535add323200556d0e25f3ebc648cfb"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/config/GatewayAuditProperties.class",
+        "bytes": 2594,
+        "sha256": "123d5a27d50fc7b2dd85cb74d78ae83b68f68c2ac23074f6b12253c2017c31eb"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/config/GatewayConfiguration.class",
+        "bytes": 31633,
+        "sha256": "705f13b47cb45256847edb9691f6a3858da023cfd88580d3b174a8f72495b4b2"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/config/GatewayIamPublicJwkSource$CachedJwkSet.class",
+        "bytes": 2701,
+        "sha256": "aef934c976d2e4d26dcb82ff3b7f068a251057145147527ff62d5669afe66df9"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/config/GatewayIamPublicJwkSource.class",
+        "bytes": 11469,
+        "sha256": "9697f10b9f1c9b764c8e98483f0f861d6d11001ce125fba949ab13d046d64788"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/config/GatewayJwtValidators.class",
+        "bytes": 8319,
+        "sha256": "2d227d509dd456a4a499df9bcc3c06325516a22806b6d941789218ab16b62b6e"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/config/GatewayProperties$B12Services.class",
+        "bytes": 4136,
+        "sha256": "f0d8241b6151db39962fef281066a06674daa12551504057a278585a31e15a70"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/config/GatewayProperties$B13Services.class",
+        "bytes": 4117,
+        "sha256": "7cb116ed2b627724bde69325cddc05fcc0a642a179e8f89f33a61a851f345c1b"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/config/GatewayProperties$B14Services$RouteMode.class",
+        "bytes": 1676,
+        "sha256": "6d8ce185fa2c97df408e9d6fa32c4d134f99957ae6d34d6386c4a8519259c066"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/config/GatewayProperties$B14Services.class",
+        "bytes": 7383,
+        "sha256": "442995820c224cf8461831106e7562a9c7fc62bed76257946152075ec1d0b92c"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/config/GatewayProperties$Compatibility.class",
+        "bytes": 3220,
+        "sha256": "e29a61eb374765963e459f52546b19e6141ec5b429318fbcf34537a236f1adad"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/config/GatewayProperties$Cors$OriginProfile.class",
+        "bytes": 1734,
+        "sha256": "d45f8727dea9ddfa6a32fbf6f1d57d240b36ae32c757575de2f4435656f0ad2a"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/config/GatewayProperties$Cors.class",
+        "bytes": 8635,
+        "sha256": "e1e23087b752370ecdbe69136389220435c692dc8f3db67b49d24341b11b704f"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/config/GatewayProperties$Identity.class",
+        "bytes": 2897,
+        "sha256": "3184dc54a6ff9c9bec7d3156833fd55a664b4abfc138813a523746878eef4415"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/config/GatewayProperties$RateLimit.class",
+        "bytes": 8670,
+        "sha256": "85308184d825f1f60b29cbb0c4ddef027c203ecc7783c92ce0ba96cfc0cf2954"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/config/GatewayProperties$RateLimitPolicy.class",
+        "bytes": 2756,
+        "sha256": "d5cee15b86c03d218b6b797928cb4c1be2ec5d2cda95a587537d3e0c097cf00b"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/config/GatewayProperties$RequestContext.class",
+        "bytes": 1924,
+        "sha256": "735f64540cdd24d68e75404793bd3fabbd26c38ad813b93008a7f906a8a503b4"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/config/GatewayProperties$Security.class",
+        "bytes": 4069,
+        "sha256": "097fdd154b14f45c23a06e3928c28d1fd4c471c54115aae6506bda6d5a3469e7"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/config/GatewayProperties$WorkflowServices.class",
+        "bytes": 3481,
+        "sha256": "7c15b4cb10c9b77362981cf3263498662d5283bdf9cf10ea6ff3bd228f7ffe0c"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/config/GatewayProperties.class",
+        "bytes": 7279,
+        "sha256": "7f461f6e6fad8ddd24b8b91c863c4c371ca923b35238401fc6b8aa1e2af7eac9"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/config/SecurityAuditSinkConfiguration.class",
+        "bytes": 3549,
+        "sha256": "31b5ac4d46b82388c0b54ffed89ac43a8b503fe1526919426ab73e03c0c83395"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/filter/ApiVersionBoundaryGlobalFilter.class",
+        "bytes": 3568,
+        "sha256": "a3f77f39ea71cde97e7341f7c5c588c2df876495547843ec96997846ecd6da21"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/filter/B14RouteModeGuardGlobalFilter.class",
+        "bytes": 5742,
+        "sha256": "94d7a8fe203bff9236be02d59f9d1a50fcdefe54af37b5420238fc539e816a14"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/filter/BrowserOriginCsrfGlobalFilter.class",
+        "bytes": 10691,
+        "sha256": "cbf85d26fe25d48a2d582b3d032e87b0af8a09dced40f29f40feefd0ee9755bc"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/filter/CanonicalCorsPreflightWebFilter.class",
+        "bytes": 14706,
+        "sha256": "d8ccde7e041018a5370a93e307f68188c32e086b40e29eabcebe3138df45c6c5"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/filter/CanonicalRoutePolicyWebFilter.class",
+        "bytes": 7901,
+        "sha256": "d2b68ace9ec869a280ea24b2bba01005dbcab533fe69c145fba7dcb81f148cd8"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/filter/ClientAuthorizationContextHeaders.class",
+        "bytes": 2095,
+        "sha256": "7017fab1a31901b3992a4dff924f3fd9ba95b1f3a568f77739eaae1e3c704b75"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/filter/ClientAuthorizationContextSanitizerGlobalFilter.class",
+        "bytes": 3107,
+        "sha256": "4c13e7961d64a48664c5eef57ab1cfb441b0bcd50c7bbdb1634f37775a463099"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/filter/CorsDenyHeaders.class",
+        "bytes": 2097,
+        "sha256": "f61c8103e72da6e016ad86ecee1862fe1331f9cf2ca0ae3276cd165b10486f69"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/filter/GatewayErrorHandlingGlobalFilter.class",
+        "bytes": 4068,
+        "sha256": "17aa14b6e4179d5ebac193b790e197eca1d2a8a9c5ee6fe88c30ccfff62299c1"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/filter/JwtPreValidationBoundaryGlobalFilter.class",
+        "bytes": 4700,
+        "sha256": "01b986ef24dee71dc6df472b674ec4d2ccb5c97eb192d6e43fb52b6cb6cbd7bc"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/filter/RateLimitGlobalFilter$1.class",
+        "bytes": 3106,
+        "sha256": "1e07297b60d6d3feb26538e2452aca3157b8469a80dd9f5ecdcd045c7649fcb2"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/filter/RateLimitGlobalFilter$2.class",
+        "bytes": 1381,
+        "sha256": "4f1fd26dba01aa141baadcce737ca193ebcd70909276b447dd79183ec6b315d5"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/filter/RateLimitGlobalFilter$AdmissionBodyTooLargeException.class",
+        "bytes": 563,
+        "sha256": "6d5b54a53c286e701ab2f071bbca4c76cb5652b5591141ceec02024b1ed1b5bc"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/filter/RateLimitGlobalFilter$AdmissionContext.class",
+        "bytes": 2301,
+        "sha256": "6efe14b15e2d32a9e9fd452d95b43ade9d5050acf9e8b55f41bc44b052744e57"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/filter/RateLimitGlobalFilter.class",
+        "bytes": 27917,
+        "sha256": "425b4f819fc509789dac3ed79c56493525ed7b2964e2bbd035755940173c19a4"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/filter/RateLimitPlaceholderGlobalFilter.class",
+        "bytes": 804,
+        "sha256": "b86138ca1f98024a792f542e94df818cad5421887eb0f60d804f4269714e7f9a"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/filter/RequestContextGlobalFilter.class",
+        "bytes": 5327,
+        "sha256": "fbfd8fe1ca1cd954fcfc80bb1e252b9506e0b63ea545a7620a96ce883b4cc281"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/filter/SecurityAuditGlobalFilter.class",
+        "bytes": 3045,
+        "sha256": "351b854da76e333fa73ad41a725d48263004f114e43e95a2859929f8b379a1a0"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/policy/GatewayRouteExecutionPolicy$ControllerEvidence.class",
+        "bytes": 2586,
+        "sha256": "73e5335195eb93544491b393be6edbb7dfe6d883854512aedd1f7f640d258bd1"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/policy/GatewayRouteExecutionPolicy$ExecutionKind.class",
+        "bytes": 1579,
+        "sha256": "df46914df1aea102425fc1ba56dd72583ab40384a1d7209ce81738a05720883b"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/policy/GatewayRouteExecutionPolicy$PathProjection.class",
+        "bytes": 6085,
+        "sha256": "fcd392e10234e18756b75f701dc68c5ad6136ccdf20025e97019c7a203d99696"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/policy/GatewayRouteExecutionPolicy$PathStrategy.class",
+        "bytes": 1593,
+        "sha256": "87c2ac11b0bd172791f23de6644fed14f9fb076dbe95eb80f0bda37d4a9ebef1"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/policy/GatewayRouteExecutionPolicy$Resolution.class",
+        "bytes": 5248,
+        "sha256": "00861f004611e0404befa7cb08a5a9611ffd9e3542736e6bf6547bbfd6124f7c"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/policy/GatewayRouteExecutionPolicy$RouteBinding.class",
+        "bytes": 7105,
+        "sha256": "b97ba229017ac39896a8996349b463dbe42a0a25e19e347332e9ca22a1df0ea0"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/policy/GatewayRouteExecutionPolicy.class",
+        "bytes": 60858,
+        "sha256": "d7562c3ccfa46a4dd70acd87cd523d8aca917b95f682ad5510b37dc007aae9cc"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/policy/GatewayRoutePolicy$AuthClass.class",
+        "bytes": 2519,
+        "sha256": "8eb452ad8934e0fa705d174635bcf874ea42229f1d46f80fc666b39e95b71ddc"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/policy/GatewayRoutePolicy$MatchType.class",
+        "bytes": 1431,
+        "sha256": "067f4250d1ef8a06c9cb3c9d9622fd2e1fa7837ae6b9aea15982947dd90333f6"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/policy/GatewayRoutePolicy$Resolution.class",
+        "bytes": 2450,
+        "sha256": "ee9e73c1f550002e0cdd87046fb74e2a3d9c1735ce5f117b92c83691c37f761e"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/policy/GatewayRoutePolicy$ResolutionStatus.class",
+        "bytes": 1540,
+        "sha256": "824eaf46b8d5a57802cf6d1ec55fbcd816efb4f0200ae74ed83a67389f86233d"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/policy/GatewayRoutePolicy$Rule.class",
+        "bytes": 6317,
+        "sha256": "a42e9b54e24e5e2073f7c554b2f33b049d3561866e04fbc5f6e43278b378d6d2"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/policy/GatewayRoutePolicy.class",
+        "bytes": 16398,
+        "sha256": "d3da9334844dea6625b377b9621a79f2dffa21a211418ae26066de9639fa85dc"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/rate/InMemoryRateLimitBackend$Window.class",
+        "bytes": 856,
+        "sha256": "4339bf7cf6f39a3b7c4118d562a1c19d3ea4567ab628594432b20504cc7092cc"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/rate/InMemoryRateLimitBackend.class",
+        "bytes": 5451,
+        "sha256": "faa005998f15529c7ef05edc4ec66fcafec6756d0b62b23aa547ad5c149f5a26"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/rate/RateLimitBackend.class",
+        "bytes": 688,
+        "sha256": "85b5611a959775203ab92c8b8c158e5bf89d657b9cf851dc870b405fed6223f7"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/rate/RateLimitBackendUnavailableException.class",
+        "bytes": 582,
+        "sha256": "1059f2047f9d6a4abc9b297d8d4117f7ddeb9a013d4c8bb041a9da4e2adb3593"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/rate/RateLimitDecision.class",
+        "bytes": 1891,
+        "sha256": "8cc70b46a36e9c2485b73c704e50e017139c3038144ed154e6ec07f5d9c53d63"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/rate/RedisRateLimitBackend.class",
+        "bytes": 6173,
+        "sha256": "fce7d8d024867018ae0990c64baba6b3cbea089c0447a08190b6c0f3ba16af0e"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/support/BoundedSecurityAuditSink.class",
+        "bytes": 1640,
+        "sha256": "71665ba6a8400617644ed6b4a15d88e211a296244455aea800a338dc975973bd"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/support/CorrelationIds.class",
+        "bytes": 3072,
+        "sha256": "4c9a870e790f0e95b99d347b75e234da0a26a1c4ed7d5eff3fd4f808383de2b2"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/support/GatewayAuditAttributes.class",
+        "bytes": 1931,
+        "sha256": "2b39892913dd5d565151e275dee10013fd0679afefe764eae7d85569c8be4a8c"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/support/GatewayAuthenticationFailureHandler.class",
+        "bytes": 3751,
+        "sha256": "bf74cd0fe66f6cb3e13f3a068ad7464566d2144ca9c5c49eab26e836367356ef"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/support/GatewayError.class",
+        "bytes": 2605,
+        "sha256": "dcd51689ac2f52eb43c1d9d830d70facfaf68e707916c55a57d4127f28281769"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/support/GatewayErrorMapper.class",
+        "bytes": 3829,
+        "sha256": "c8f0c1a735a6054a29fd5522041b5af2be9527feb018010a344e0bedc0bd38f8"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/support/GatewayErrorResponseWriter.class",
+        "bytes": 6039,
+        "sha256": "bb05793cbe3c21cf244cfdfb3ec30061116e6ff85479d31cd429bb300e114521"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/support/HttpSecurityAuditSink.class",
+        "bytes": 12412,
+        "sha256": "cbefc1b49872d76fb771a3229e46afe29edc80577b29ab6a0ae46e6c26ec41f5"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/support/RuntimeEvidenceSecurityAuditSink.class",
+        "bytes": 6593,
+        "sha256": "c7170f8b1a8646dbeb73d592fc4e567f68db1ec7abd1a5f050cf9d5ecbcf55d4"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/support/SecurityAuditRecord.class",
+        "bytes": 3227,
+        "sha256": "c1cd5d5dcd6abf251b2b9c794467a6366e7f50cb2fcad36012d94ca21038deb3"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/support/SecurityAuditRecorder$PrincipalDetails.class",
+        "bytes": 1998,
+        "sha256": "a26b946fab24dc17779705b6368d38ea9ac2f727a56e2f13ee70e5517c4a0b06"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/support/SecurityAuditRecorder.class",
+        "bytes": 11678,
+        "sha256": "6f672e814f89b5aa86b1dfbf4d06c5c466f22c3c4bf4519f6da4b10f25474db2"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/support/SecurityAuditSink.class",
+        "bytes": 327,
+        "sha256": "7b15dea8773b11b7d3001338141261c57a7a2f7dbf8bd812c5f4d54c6ecd12f9"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/support/ServiceTokenClient$CachedToken.class",
+        "bytes": 2320,
+        "sha256": "4fcafc43be4cff3e85f17f77540aef0220340342098c69c7b7238d89fca6e23d"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/support/ServiceTokenClient.class",
+        "bytes": 7179,
+        "sha256": "b7044b089036f3d15e2e86d5351c93bd3e80db9ba1f10bff0ef6585de3e4eec4"
+      },
+      {
+        "path": "artifact/BOOT-INF/classes/com/englishflow/gateway/web/GatewayHealthController.class",
+        "bytes": 3882,
+        "sha256": "1e5a9a90765749a91bf01ed9f8fd3f0d35712f2b51ed1e741148a688a02d0f58"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/HdrHistogram-2.2.2.jar",
+        "bytes": 177206,
+        "sha256": "22d1d4316c4ec13a68b559e98c8256d69071593731da96136640f864fa14fad8"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/annotations-13.0.jar",
+        "bytes": 17536,
+        "sha256": "ace2a10dc8e2d5fd34925ecac03e4988b2c0f851650c94b8cef49ba1bd111478"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/bcprov-jdk18on-1.85.2.jar",
+        "bytes": 10280518,
+        "sha256": "986b0fb92ec10e0c66b43e036ce0077e6150cfaecd1db9fb92b56672e157afe5"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/classmate-1.7.3.jar",
+        "bytes": 68249,
+        "sha256": "75fbda45456f123fb6e2028a6189442d8d0730b357adce4c0a6d7e789f70669b"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/commons-logging-1.3.6.jar",
+        "bytes": 74010,
+        "sha256": "f8ead8943401081dea0aa824b5b1ba40a0e4ed297a572a0f02258150a0b62357"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/context-propagation-1.2.1.jar",
+        "bytes": 35890,
+        "sha256": "5b69e2100640879ccf4b20673ced86de560b8e217b55542f85a53d3563b72aaa"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/hibernate-validator-9.1.3.Final.jar",
+        "bytes": 1403754,
+        "sha256": "0497ebbe23fafe4180b74bd0b96a67eee8556552decc4d3c120c1dc737a2b5fb"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/jackson-annotations-2.21.jar",
+        "bytes": 82104,
+        "sha256": "53ca085f4a150f703f49e1aabd935bd03b43e1ea3d55d135438292af22cef56b"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/jackson-core-3.1.5.jar",
+        "bytes": 598605,
+        "sha256": "9431b7fa2673bbb618c11d865fe15e13222fd182a214ff998cb7e56afd8f35d2"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/jackson-databind-3.1.5.jar",
+        "bytes": 1944003,
+        "sha256": "3a2338d996fd3056791df8d335fa9ba8a62a706ed4245ecf81b3e583df37d08a"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/jakarta.activation-api-2.1.4.jar",
+        "bytes": 67380,
+        "sha256": "c9db52100ce6c8aac95cc39075f95720d2e561b11f8051b81c121ad4effd7004"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/jakarta.annotation-api-3.0.0.jar",
+        "bytes": 26378,
+        "sha256": "b01f55552284cfb149411e64eabca75e942d26d2e1786b32914250e4330afaa2"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/jakarta.validation-api-3.1.1.jar",
+        "bytes": 106136,
+        "sha256": "63ce00156388c365f3ac1be71fcfaf114682fc0c452020b5df6e7ec236e142ab"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/jakarta.xml.bind-api-4.0.5.jar",
+        "bytes": 131219,
+        "sha256": "5e489b6c874c4119e003ff1403db523ee3a8959ec499f3de29e77245efccf216"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/jboss-logging-3.6.3.Final.jar",
+        "bytes": 62672,
+        "sha256": "7c12ee575508f81e22b1db9334b969d0ec54ef0fd1dcba24eeab1a44235fc366"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/jspecify-1.0.1.jar",
+        "bytes": 3064,
+        "sha256": "070d75f261fe4c5b8202508366715f7f2d4660f88c8ef7e6d3575e48c9683b66"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/jul-to-slf4j-2.0.18.jar",
+        "bytes": 6347,
+        "sha256": "cbb7d1aaaa9e871eb1a06594abd911bf97027152976edf1edc315be75239204e"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/kotlin-stdlib-2.3.21.jar",
+        "bytes": 1804721,
+        "sha256": "6f64eac736db9434dd6925b4a518b9d1d17177652320c37916cf9ba3ce7d7d7a"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/lettuce-core-7.5.2.RELEASE.jar",
+        "bytes": 2595839,
+        "sha256": "86e245a6cfc36a40aaa1f54027e639a70cb4008d12717164041aefe9bbd072c1"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/log4j-api-2.25.5.jar",
+        "bytes": 351427,
+        "sha256": "64777f73ea0b3104c04eb82befbdccc30a425a19e83ad06cb2f93aa303511863"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/log4j-to-slf4j-2.25.5.jar",
+        "bytes": 24173,
+        "sha256": "b68e8b47342dbc9b35644a14fe2efc0b7bf18da703910cd05ad5501ffe07bba1"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/logback-classic-1.5.38.jar",
+        "bytes": 287122,
+        "sha256": "afb439c61fa287c9e1925523b13baab03617e724406a389d48b61c2c3e46b700"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/logback-core-1.5.38.jar",
+        "bytes": 641090,
+        "sha256": "a855a0fc97b1d06f4efb1c3bba5ebd0eb508d8b58e68e89e4bbc23a85135c883"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/micrometer-commons-1.17.1.jar",
+        "bytes": 51810,
+        "sha256": "f2cee6ef046e72eec8128474c7f58c6217173b45ae373c30de0289f2a56ab0fd"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/micrometer-core-1.17.1.jar",
+        "bytes": 915235,
+        "sha256": "9ca47dfa831409b40253c8dc98c17b9d3e050ebbde4d1543c5521dca2b95ad56"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/micrometer-jakarta9-1.17.1.jar",
+        "bytes": 54773,
+        "sha256": "37fbb0a98ba92e185ae7ebe0804fe6c1394bf7fba7573b204fa6fc3998c2e246"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/micrometer-observation-1.17.1.jar",
+        "bytes": 84311,
+        "sha256": "eb34f0cd84a879393ae5c21160fc06385ccdc74f36a4d1e31b199f59acfdaf71"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/micrometer-registry-otlp-1.17.1.jar",
+        "bytes": 95772,
+        "sha256": "c991036f05cf1a84b02bcc95b9a686ac39a584b01e7afdab1562a5c1dc71d0c9"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/micrometer-tracing-1.7.1.jar",
+        "bytes": 105842,
+        "sha256": "435e97807c1e14ae66e6265a0f713b1525e51b8f3531e63b09d9697494010d89"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/micrometer-tracing-bridge-otel-1.7.1.jar",
+        "bytes": 80895,
+        "sha256": "3c9de2464049c10ed2f2575de51c15dab79cbe4487ec13e65687e57db9c233b6"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/netty-buffer-4.2.17.Final.jar",
+        "bytes": 378264,
+        "sha256": "0d249178ec0204b35a6ad3e5ac8a6c2ecb3eb496c6cdae40b8eca4fa3cb6a0c7"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/netty-codec-base-4.2.17.Final.jar",
+        "bytes": 155357,
+        "sha256": "3b92bc3b7d231fa6f4889b2b9281cae6b634428b8121fb1b9b5fccba1543d352"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/netty-codec-classes-quic-4.2.17.Final.jar",
+        "bytes": 265345,
+        "sha256": "542e718fdd8fa4f6d57bef9f91a5fa01200940cb8b381fd4c21fb5c170276c71"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/netty-codec-compression-4.2.17.Final.jar",
+        "bytes": 237078,
+        "sha256": "425b287a1f36986a5c8edd76379a49decdf99d284f3454f3fa607a073bfb2c18"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/netty-codec-dns-4.2.17.Final.jar",
+        "bytes": 71407,
+        "sha256": "394f4649a824683735f28b299d0a48caff059ae30e654e2abf8b3f392af4d374"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/netty-codec-http-4.2.17.Final.jar",
+        "bytes": 679207,
+        "sha256": "a5bde91ac82ab90579df6559c0bd7ea6ae37460e3f18116ab4122194283b3669"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/netty-codec-http2-4.2.17.Final.jar",
+        "bytes": 496389,
+        "sha256": "450af97424cf58d2d72ad4d476d9e290f2fdf69fa181c289a6e6dd176bb86a7b"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/netty-codec-http3-4.2.17.Final.jar",
+        "bytes": 225995,
+        "sha256": "9fcf9873e31b2899c407b42d320aaf6afeb69807e63d9a865c391b4339fa24c7"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/netty-codec-native-quic-4.2.17.Final-linux-aarch_64.jar",
+        "bytes": 2600232,
+        "sha256": "350ba4c87cb8d2066d895f511605e1479da2c25e2bf5c2cf5dcb4cd34fcaae75"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/netty-codec-native-quic-4.2.17.Final-linux-x86_64.jar",
+        "bytes": 2749569,
+        "sha256": "9225b069850e2238126359b6d3ad00df1c8c528ce5123682b8090c09ec37bdbf"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/netty-codec-native-quic-4.2.17.Final-osx-aarch_64.jar",
+        "bytes": 2322840,
+        "sha256": "a6b5bee555259e6b955ecc45f0425a000332d35d545a9a97e5730f0e939c0065"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/netty-codec-native-quic-4.2.17.Final-osx-x86_64.jar",
+        "bytes": 2470522,
+        "sha256": "d8c48589adfafd798d1c4b3996d9b19dc7bd9f1785524b821388e2db73a52dd2"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/netty-codec-native-quic-4.2.17.Final-windows-x86_64.jar",
+        "bytes": 1547250,
+        "sha256": "1540888c76d55eff98899d7f1cd109fddda137992e170ee4096871886e15f4b8"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/netty-codec-socks-4.2.17.Final.jar",
+        "bytes": 133039,
+        "sha256": "6b5760cc512cee1f7515e25010892471f3995045f84cd6c1d1b6e6cee534733c"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/netty-common-4.2.17.Final.jar",
+        "bytes": 820948,
+        "sha256": "502aae2a6680e9bca3558a3fa098f06dc4d87340b8b714e925a6d690871c092a"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/netty-handler-4.2.17.Final.jar",
+        "bytes": 588756,
+        "sha256": "4df11c7520b556c5e2c84b939182699d48fcbb09e97a6bb5e1c0b6835227d126"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/netty-handler-proxy-4.2.17.Final.jar",
+        "bytes": 26791,
+        "sha256": "94089bea6ba6f3248725f2bf233aa2bc70ac1547c21b9bdfc7548f710a845aa0"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/netty-resolver-4.2.17.Final.jar",
+        "bytes": 32977,
+        "sha256": "7a4b599b9c0c29a505d3b7311f142df883fb27d0f67495a7cbaf533b0e456623"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/netty-resolver-dns-4.2.17.Final.jar",
+        "bytes": 174347,
+        "sha256": "d332481c22136a68c2ee9e45e86212174932587d93a5dd4d201e196828bf9f91"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/netty-resolver-dns-classes-macos-4.2.17.Final.jar",
+        "bytes": 9845,
+        "sha256": "e5708301fe173ce03d31f1a76ac0682d0a7b955451c968314a13e661855b33c5"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/netty-resolver-dns-native-macos-4.2.17.Final-osx-x86_64.jar",
+        "bytes": 20435,
+        "sha256": "69ba9124d88cde3c5d96237aabd7cadcdf416200e52f2933c275863d5ee8831e"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/netty-transport-4.2.17.Final.jar",
+        "bytes": 549857,
+        "sha256": "d2409ce3a735cbab4188d0ea5d82abed823a6a07a8389f49af4a9e1243a562bc"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/netty-transport-classes-epoll-4.2.17.Final.jar",
+        "bytes": 159936,
+        "sha256": "4e21d8a2e3429d9de967a716d58119f57585786bd2f7213bf5b27770425269de"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/netty-transport-native-epoll-4.2.17.Final-linux-x86_64.jar",
+        "bytes": 42377,
+        "sha256": "c295b1d7f46e3c7375c93fa4c8abcc3944398c5e4eb53e31587cbbf0bf559d4f"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/netty-transport-native-unix-common-4.2.17.Final.jar",
+        "bytes": 46878,
+        "sha256": "e01aa467b9104de54a57c08c290f70b22e53ec97cf5583c87c112170ef5832cc"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/nimbus-jose-jwt-10.9.1.jar",
+        "bytes": 813607,
+        "sha256": "33152ea83ec50d22706fdaf3b07acbcd716f9a68edcabdd7c4d02843cbdcdcf6"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/okhttp-jvm-5.3.2.jar",
+        "bytes": 868403,
+        "sha256": "c771f48075b763f6c322055e21129a94b7de4c1faf3f8f58ace320b0c9517a30"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/okio-jvm-3.16.4.jar",
+        "bytes": 383010,
+        "sha256": "2196b993cd34dbbd919e7e01f57a4781b58bee80f86106163e287c20343a96a7"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/opentelemetry-api-1.62.0.jar",
+        "bytes": 175114,
+        "sha256": "d58143928c049233653e6bf1282ff8a767ebdd5e6a82b3f336158c30e40b431d"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/opentelemetry-common-1.62.0.jar",
+        "bytes": 4458,
+        "sha256": "d6310bebde67d65c1519696728d8604005315ed08ab14071956fc0826fd71815"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/opentelemetry-context-1.62.0.jar",
+        "bytes": 50758,
+        "sha256": "8ec86c3609222b9b6307bf40154c1f1c288d1f18ada0155409e7797adbdbe517"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/opentelemetry-exporter-common-1.62.0.jar",
+        "bytes": 141278,
+        "sha256": "50f84b5b58048f69bd684ec874413944209995e01c177200555c151dabfe1ec9"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/opentelemetry-exporter-otlp-1.62.0.jar",
+        "bytes": 74899,
+        "sha256": "59df47fdc4bef6866ed39eb6a04892c68e28d7938eaeaa21801ac5dd2dcb0d65"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/opentelemetry-exporter-otlp-common-1.62.0.jar",
+        "bytes": 229018,
+        "sha256": "79eaaaf044df15209ee1461b668f7c93547734a793d6cf6ad5e57290d3f8c0ea"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/opentelemetry-exporter-sender-okhttp-1.62.0.jar",
+        "bytes": 33696,
+        "sha256": "8c9b2c4394543c4f28e0a6c66d16259a1bfaf67a47a689fb001bd9a92dafb6ea"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/opentelemetry-extension-trace-propagators-1.62.0.jar",
+        "bytes": 29473,
+        "sha256": "d301b26215e8f18553b62759d2c17493f321b8c74d9782841446ab8d2d716b9f"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/opentelemetry-proto-1.10.0-alpha.jar",
+        "bytes": 902536,
+        "sha256": "931e84b0802d77ae963e26c6ad6129b4ad0f2510fe907f019f5c988c2a869c3a"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/opentelemetry-sdk-1.62.0.jar",
+        "bytes": 13010,
+        "sha256": "99d421ea0e5a1ca8e45cb67f1d5db7f0e8a718dd55eeb86c1323597e1f10aed3"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/opentelemetry-sdk-common-1.62.0.jar",
+        "bytes": 85065,
+        "sha256": "bf9d13df9a50e49a5db664ba8ebfad79f73f03219d2ac6f6709d432f6896eba0"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/opentelemetry-sdk-extension-autoconfigure-spi-1.62.0.jar",
+        "bytes": 20581,
+        "sha256": "220c22bcf420faae59b7225c789f572eaa22e7af2304d55508aaf2a3efcfecf8"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/opentelemetry-sdk-logs-1.62.0.jar",
+        "bytes": 79362,
+        "sha256": "51c94329bc8e335ed79027d29d49c075c11b91b39e48679edf590e784a392406"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/opentelemetry-sdk-metrics-1.62.0.jar",
+        "bytes": 365132,
+        "sha256": "50b057fbf063f6801f623212f4b51b6a3fefc77837314a1316b2f54894c8b5d4"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/opentelemetry-sdk-trace-1.62.0.jar",
+        "bytes": 145227,
+        "sha256": "fb6c0953b229a6da1db813135ae11a621bf9da56b7356c1e93049ed4b088c232"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/opentelemetry-semconv-1.41.1.jar",
+        "bytes": 20004,
+        "sha256": "636ad7dac093d22fb84bf8d928ef836694f2d63c92d72b3df21b86002e8becef"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/protobuf-java-4.35.1.jar",
+        "bytes": 1843510,
+        "sha256": "a4345ba2aa009912ff6f90467fea2d104605256b72c50840d75f13256638a472"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/reactive-streams-1.0.4.jar",
+        "bytes": 11640,
+        "sha256": "f75ca597789b3dac58f61857b9ac2e1034a68fa672db35055a8fb4509e325f28"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/reactor-core-3.8.7.jar",
+        "bytes": 1938852,
+        "sha256": "9a5f1bfc5ad0416a410ff63beaa279cc30c2da3ae9b111a678c83c99298a1551"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/reactor-extra-3.6.1.jar",
+        "bytes": 111364,
+        "sha256": "9a7db643b2c713d9d4b4bbaa746cf781282a314d17c4bdbb1a4bd7c72da56ac6"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/reactor-netty-core-1.3.7.jar",
+        "bytes": 554975,
+        "sha256": "8bf232cbaef9ee7445adecc714999aa8ccc8f027d00d881a686cc99c1a4952e9"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/reactor-netty-http-1.3.7.jar",
+        "bytes": 691869,
+        "sha256": "f351ff98022e1b73dd93aa59283c3e69cdbb11e21ba217bed732cc0a7d9b83fa"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/redis-authx-core-0.1.1-beta2.jar",
+        "bytes": 18264,
+        "sha256": "cc56edb08b3df8562cddac108dca61907d21cc4ad04de05e9f5d1b01058390af"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/slf4j-api-2.0.18.jar",
+        "bytes": 69982,
+        "sha256": "44508fd1576500688c790b190acdd16fec4f8c79a3e0b900afd70503cf055f55"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/snakeyaml-2.6.jar",
+        "bytes": 340068,
+        "sha256": "c8f7a98e7394adda02f6317249710e4d1b4c7a25aa8c7eace0c2eea52eb8bf85"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/spring-aop-7.0.9.jar",
+        "bytes": 426204,
+        "sha256": "b8c5d6bfcb1f4993f2cc124f7ab7fac40edf5256b9e43c2f7250a733cb5510e9"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/spring-beans-7.0.9.jar",
+        "bytes": 928155,
+        "sha256": "ff218b827a25c9e8929b0cd56dfb56916cea9d5b669ed97dc7cb262508ff548b"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/spring-boot-4.1.1.jar",
+        "bytes": 1392217,
+        "sha256": "0d92b532b1d4020640e72d78c31af175c23db8e0ddd45b81855b7fdf4c9c70f0"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/spring-boot-actuator-4.1.1.jar",
+        "bytes": 357191,
+        "sha256": "2bbb38417af25cfc6f57a9b01a85db9b6ccdcadb9e5d40f6b1b2f54a08f8b798"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/spring-boot-actuator-autoconfigure-4.1.1.jar",
+        "bytes": 141045,
+        "sha256": "bedbd4282a0f0c6a08bd5342d3940b50d8a013420d8a536695aedb1421b5e0f5"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/spring-boot-autoconfigure-4.1.1.jar",
+        "bytes": 372740,
+        "sha256": "59228756ddd76cea050f95d86deff334789bc53b6688beaa673b1af2b9794592"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/spring-boot-data-commons-4.1.1.jar",
+        "bytes": 30273,
+        "sha256": "e9911b99825ea5650827ec1e2d2fc1890c7e63b6f048c1f4dba2c8e85ff6d354"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/spring-boot-data-redis-4.1.1.jar",
+        "bytes": 90182,
+        "sha256": "8df7709a73616c85f12fbee0476a2856a766cda70c6ad87c9a24062b8fe34c91"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/spring-boot-health-4.1.1.jar",
+        "bytes": 155266,
+        "sha256": "f60151e1f014b40761d0644be1cb04f82df7fc3e9b7bf6e946848547eec399e7"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/spring-boot-http-client-4.1.1.jar",
+        "bytes": 142672,
+        "sha256": "a7bae90c3d39eb318fee764d8a18dfa4009d62a9b0d6843c3ce987f4c0ad606e"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/spring-boot-http-codec-4.1.1.jar",
+        "bytes": 20058,
+        "sha256": "fadc1a322454c68ad78e20c11002255e143bd991d3e619b952a3a5f542b5d0fd"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/spring-boot-http-converter-4.1.1.jar",
+        "bytes": 54316,
+        "sha256": "52a167430a918c223b2ccd2eb62aff91a8e43e6daebe5a07caa37b9a04c61cb9"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/spring-boot-jackson-4.1.1.jar",
+        "bytes": 82549,
+        "sha256": "69a9b4d8850a0532a5e44ff7306a03621485b26596e7f9481de7d28e68a2dd42"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/spring-boot-jarmode-tools-4.1.1.jar",
+        "bytes": 53968,
+        "sha256": "062a9edf01809f4a2b48bfc2fe392fedd27448a3a57113bef510576673d4397f"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/spring-boot-micrometer-metrics-4.1.1.jar",
+        "bytes": 248317,
+        "sha256": "70dd91dcc319d00998ce5e410b03b841e682aa2f60e4bab159c78ff0ecdb7d0f"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/spring-boot-micrometer-observation-4.1.1.jar",
+        "bytes": 28846,
+        "sha256": "09ebd9ff7de21d10b1f11c70ca0ea8766a8a727affd19642584bee5a314ea11a"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/spring-boot-micrometer-tracing-4.1.1.jar",
+        "bytes": 40727,
+        "sha256": "78802babfbe19ccc5c1e49782219e2540fbfe905f7a94e2aea432372e29ca60a"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/spring-boot-micrometer-tracing-opentelemetry-4.1.1.jar",
+        "bytes": 71703,
+        "sha256": "d918f554b585348bbfbab29709b7e7eea77682800015616f17ccfe7625bc6cdf"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/spring-boot-netty-4.1.1.jar",
+        "bytes": 9809,
+        "sha256": "09f218966bcdc79014269b2e79fc705761d9d15113ad7cecc5333ebf0e7ee630"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/spring-boot-opentelemetry-4.1.1.jar",
+        "bytes": 72878,
+        "sha256": "ad9c45771cc8ce7af0e5abdf1ebd083777335b097acbbbc260d4c604eb8ec342"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/spring-boot-persistence-4.1.1.jar",
+        "bytes": 16032,
+        "sha256": "0f78d2556ac3ed75f9eaf3134a1fba94ad1ec3414b52aa279c1f690217e71e3c"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/spring-boot-reactor-4.1.1.jar",
+        "bytes": 11967,
+        "sha256": "13690004a723022d7692225122bbfaa6be102e084041c325a6767004659dd440"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/spring-boot-reactor-netty-4.1.1.jar",
+        "bytes": 42736,
+        "sha256": "6ee3cacbb619e82a3230ef98ad95c661286af4c99aede4d3c37bc8bebbba20ae"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/spring-boot-restclient-4.1.1.jar",
+        "bytes": 45030,
+        "sha256": "e613f02dafc91120634aff26272e77fe1e56d6a644967bd74ed7beb7f199b17e"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/spring-boot-security-4.1.1.jar",
+        "bytes": 97816,
+        "sha256": "c940697be9bc67820d5011b86d58105836b7cae7c8fb5d4e61d635b51b392cbe"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/spring-boot-security-oauth2-resource-server-4.1.1.jar",
+        "bytes": 63327,
+        "sha256": "8b28c4c3ce43b8fabac0df94f66dd3d1c77b24c7ea7726977c6d6bee2d41fab1"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/spring-boot-transaction-4.1.1.jar",
+        "bytes": 21031,
+        "sha256": "e7f2fad4fe65bf6aaf1b1a538a68a1cf69988adb558f4a0fc0992a8be4fddf64"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/spring-boot-validation-4.1.1.jar",
+        "bytes": 15260,
+        "sha256": "c2546a81b6b7a39f51d889c99047f24567e4b28d1717fb53a65e9327cfc436f1"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/spring-boot-web-server-4.1.1.jar",
+        "bytes": 171647,
+        "sha256": "6912fb1fdf7f657a61ac050760fa835fb1e7496399291697e2901f82887a4fee"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/spring-boot-webflux-4.1.1.jar",
+        "bytes": 151963,
+        "sha256": "1c94602a67ec2424d741c0833ef3b053108031a8249a7d7328021c6bcc3d5259"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/spring-cloud-commons-5.0.3.jar",
+        "bytes": 314190,
+        "sha256": "32dc8bcaa6ecafa1769569d029d209c26586efc8373733a183ac0e60d689d9a7"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/spring-cloud-context-5.0.3.jar",
+        "bytes": 199977,
+        "sha256": "66acd3a11f220f321e3592d7af2eff205ee9aa907c92c116e9147167e7efa743"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/spring-cloud-gateway-server-webflux-5.0.3.jar",
+        "bytes": 762996,
+        "sha256": "e44a06b3cc46e0b1cc293c327b7c6ae71683e08747b53e5a001c58e9c1271871"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/spring-cloud-starter-5.0.3.jar",
+        "bytes": 2201,
+        "sha256": "1c0b606eb6bd75bc8371090c6a2ed8dcd1299cc9d64f61026f5cb43c1c535695"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/spring-cloud-starter-gateway-server-webflux-5.0.3.jar",
+        "bytes": 2276,
+        "sha256": "e3c3e9fd3599de3a72de55053fb210a0a3ef017f2e264b85660173967bba18d7"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/spring-context-7.0.9.jar",
+        "bytes": 1399435,
+        "sha256": "7552a2fcfa30cea53eb14d7a65a7a8e1b1dd82e832a7164fb7e6fb105f438858"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/spring-context-support-7.0.9.jar",
+        "bytes": 177654,
+        "sha256": "3c0c35a0371539f5e7d4e9d0226b9a009a4109cd0e20e805e27132dd6ae0727d"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/spring-core-7.0.9.jar",
+        "bytes": 2035755,
+        "sha256": "5195f4722699b39878d99a832549fe65df2890b159d063b88fff31b1ca65ae36"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/spring-data-commons-4.1.1.jar",
+        "bytes": 1773023,
+        "sha256": "cf2a3f9bfabefca1a8c2c0f0a65c393d9ff83b0cb1cf7b705accac18a6ed0ee4"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/spring-data-keyvalue-4.1.1.jar",
+        "bytes": 141238,
+        "sha256": "e8986c8e2577d271096266335a798c8fb5df91fd2fdf85607252056884fb554d"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/spring-data-redis-4.1.1.jar",
+        "bytes": 2453827,
+        "sha256": "ad609b5a51bb8591cd923d358125a65d9bea193f79480a37ae60a1d0d5ae55b2"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/spring-expression-7.0.9.jar",
+        "bytes": 327140,
+        "sha256": "046434c40f43819729b9b1db0e6c659dfa68184c1c2c2efa5f7b3a5b27c4e2e2"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/spring-messaging-7.0.9.jar",
+        "bytes": 613714,
+        "sha256": "19ea7561e5d61e19bee0c94733d03bbf9384c9356eea2d4e90cce7ba3c0ab01b"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/spring-oxm-7.0.9.jar",
+        "bytes": 60103,
+        "sha256": "213b742973516a7ae0846c79757cf905b634e2367ee0bdc0c34a067d365f922b"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/spring-security-config-7.1.1.jar",
+        "bytes": 2142861,
+        "sha256": "1f947c853f14cab76563464ee22e72f6672f3913db52647d2f5d1df5f2b1e5a5"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/spring-security-core-7.1.1.jar",
+        "bytes": 641255,
+        "sha256": "98a5011baa78df36fb184e6ce0e8e086ca9a64fcdd8f161c0a96475a3a0907bd"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/spring-security-crypto-7.1.1.jar",
+        "bytes": 118836,
+        "sha256": "6e8bb2337faccabd30626f917ed1d2bfa9dde982229b6b373b644d1a01635403"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/spring-security-oauth2-core-7.1.1.jar",
+        "bytes": 126535,
+        "sha256": "29140d71b37cf1246bf16e33619e88e7baaa1c66bf5574e3c3e9a9f225f0ef6e"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/spring-security-oauth2-jose-7.1.1.jar",
+        "bytes": 152497,
+        "sha256": "e07d47cac04de4f01be6a6c3f8be249472444b24fd4fad8ff030b45bfe6c5b9c"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/spring-security-oauth2-resource-server-7.1.1.jar",
+        "bytes": 153481,
+        "sha256": "d8e2d24d2829ec4e2f8212c2c465c5abb30463f550d650080cc8f1d71d0daa6c"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/spring-security-web-7.1.1.jar",
+        "bytes": 932968,
+        "sha256": "dece134a2332c976a2c94ecf13f816c64e8ea7f2139795485afe655fba0408f3"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/spring-tx-7.0.9.jar",
+        "bytes": 292080,
+        "sha256": "bfb15da6e096e2c0752e9db9987d2415bf0da1d744efc988535c10c6b6c2eedd"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/spring-web-7.0.9.jar",
+        "bytes": 2226342,
+        "sha256": "941ced476427bde2533872f293da535fd0258de3f3a650a7f1bfe01ed2927302"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/spring-webflux-7.0.9.jar",
+        "bytes": 1028459,
+        "sha256": "70ce35b3b507c2b5711daf78afccdb5d78142fdd3fc1ad0790257655bd6794da"
+      },
+      {
+        "path": "artifact/BOOT-INF/lib/tomcat-embed-el-11.0.24.jar",
+        "bytes": 271215,
+        "sha256": "ad0546f12dace008aacce18ba13222137760b310ca719e173d3e13021b9af6c6"
+      },
+      {
+        "path": "artifact/api-gateway.jar",
+        "bytes": 73128103,
+        "sha256": "34f13139294dead9f80cf0a4d41d43485d9cb95e0895c319ed4504b1fad66380"
+      },
+      {
+        "path": "artifact/probe-classes/com/englishflow/gateway/config/GatewayTlsProbe$MutableClock.class",
+        "bytes": 848,
+        "sha256": "82353fb71c7af72ae718dc2d70150c801574131cb19f1d435996f2483e02c7c9"
+      },
+      {
+        "path": "artifact/probe-classes/com/englishflow/gateway/config/GatewayTlsProbe.class",
+        "bytes": 11729,
+        "sha256": "19f5c1246fe526e220d0a42dc8129b7dfc902929ee25065c8b8ea5e330805006"
+      }
+    ],
+    "probe": {
+      "kind": "R1_002_D1_OFFLINE_CLIENT_PROBE",
+      "iamBusinessRuntime": false,
+      "scgFactoryInstantiated": true,
+      "productionIndependentSourceInstantiated": true,
+      "networkRequests": 0,
+      "listeners": 0,
+      "accessTokensSigned": 0,
+      "routeHandshake": "NOT_EXECUTED",
+      "independentHandshake": "NOT_EXECUTED",
+      "routeFactoryClass": "org.springframework.cloud.gateway.config.HttpClientFactory",
+      "routeFactoryCodeSource": "file:<RUN_DIR>/artifact/BOOT-INF/lib/spring-cloud-gateway-server-webflux-5.0.3.jar",
+      "independentClass": "com.englishflow.gateway.config.GatewayIamPublicJwkSource",
+      "independentCodeSource": "file:<RUN_DIR>/artifact/BOOT-INF/classes/",
+      "productionRequestTimeoutMillis": 2000,
+      "productionCacheTtlSeconds": 300,
+      "documentFixtureChecks": {
+        "fixtureIsNotTlsOrBusinessEvidence": true,
+        "privateJwkSelectedCount": 1,
+        "privateJwkReturned": true,
+        "publicKeyOnlyProductionGap": "OPEN",
+        "knownKidCount": 1,
+        "cachedKnownKidDocumentReads": 1,
+        "unknownKidCount": 0,
+        "unknownKidDocumentReads": 2,
+        "expiredCacheDocumentReads": 3,
+        "malformedDocumentRejected": true,
+        "overBoundDocumentRejected": true
+      }
+    },
+    "iamBusinessRuntime": false,
+    "tlsCases": [
+      {
+        "id": "TLS-01",
+        "status": "NOT_EXECUTED"
+      },
+      {
+        "id": "TLS-02",
+        "status": "NOT_EXECUTED"
+      },
+      {
+        "id": "TLS-03",
+        "status": "NOT_EXECUTED"
+      },
+      {
+        "id": "TLS-04",
+        "status": "NOT_EXECUTED"
+      },
+      {
+        "id": "TLS-05",
+        "status": "NOT_EXECUTED"
+      },
+      {
+        "id": "TLS-06",
+        "status": "NOT_EXECUTED"
+      },
+      {
+        "id": "TLS-07",
+        "status": "NOT_EXECUTED"
+      },
+      {
+        "id": "TLS-08",
+        "status": "NOT_EXECUTED"
+      }
+    ],
+    "publicCertificateSha256": "2398dce27b43cb1d003088e8f3c46e3ec1fe999aa39ebfe31ee0348bcfd28d02",
+    "materialReadbacks": [
+      {
+        "kind": "routeCertificate",
+        "metadata": {
+          "uid": 502,
+          "mode": 384,
+          "type": "file"
+        }
+      },
+      {
+        "kind": "independentTrustStore",
+        "metadata": {
+          "uid": 502,
+          "mode": 384,
+          "type": "file"
+        }
+      }
+    ]
+  },
+  "receipt": {
+    "kind": "redacted-summary-not-signed-original",
+    "schemaVersion": "r1-002-run-receipt/v1",
+    "runId": "63dafdec-09bc-4307-833d-83a8114e454c",
+    "event": "staged",
+    "intent": "R1_002_PREPARATION_HARNESS",
+    "platform": "darwin",
+    "keyId": "c3dae0baa3e7a1756f76b6107eb983c5c83f6daeef431cb2d025ac0cdea7feb1",
+    "receiptSha256": "3673d8b9b4e34fe10b48e4b1904aedd886b04cf0913874511d5729d9616f9519",
+    "source": {
+      "dirtySha256": "30127d9142ded6b4e66e4b57b6a6a60dee83bfc83fdb811376919d865b1c96cf",
+      "files": [
+        {
+          "path": "config/local-ports.json",
+          "sha256": "0a6b43d35379fed2e679961b34a0ad0e9ec1888dfb7d1a2c76eed20706e5ca95"
+        },
+        {
+          "path": "pom.xml",
+          "sha256": "d663a16aea33c574e89b3062085adf916f0d7d4d6d14224e73445a825dc4ea0e"
+        },
+        {
+          "path": "scripts/redesign/r1-002/GatewayTlsProbe.java",
+          "sha256": "abea032fd9c2178bfc0e02e94b729bf5a8151b16e1cee130b5c116d039fb741c"
+        },
+        {
+          "path": "scripts/redesign/r1-002/VerifyGatewayBinding.java",
+          "sha256": "84be68281b5c0883c3eb36ee34b788b9096b605c3bc60eeff43793ed498d6543"
+        },
+        {
+          "path": "scripts/redesign/r1-002/VerifyTrust.java",
+          "sha256": "09d5db9af1412f7d1a2631b3d4e083ad08111729d139a835068153f53bae6a3d"
+        },
+        {
+          "path": "scripts/redesign/r1-002/lifecycle.mjs",
+          "sha256": "5dace89cfab45c0f02d32cf80271d480f42c1b3081e03ea3f80210d8b502773d"
+        },
+        {
+          "path": "scripts/redesign/r1-002/lifecycle.test.mjs",
+          "sha256": "18f4761f8a21cee2b12c2cafe5f74d7a3baf24a79c17a1798bf7a4213eda6bde"
+        },
+        {
+          "path": "scripts/redesign/r1-002/prepare.mjs",
+          "sha256": "bfb9b91f19f7a50c45c53347549ffbe5ea9d9e9148a5da1ff1f409943258c399"
+        },
+        {
+          "path": "scripts/redesign/r1-002/prepare.test.mjs",
+          "sha256": "312182dbaded2ebc0d997b4af5e9e1d6f01f8454e50c880db6ad14afe7a5b9b7"
+        },
+        {
+          "path": "scripts/redesign/r1-002/process-identity.mjs",
+          "sha256": "ffe624362ed92aa1046238b989f8f139cfc8c1e065e227596c9c1e9db134a59d"
+        },
+        {
+          "path": "scripts/redesign/r1-002/process-identity.test.mjs",
+          "sha256": "bd93a4fa9292cc31d88f41e73e3a3f37459c259bf134871de981b29ebe54f398"
+        },
+        {
+          "path": "scripts/redesign/r1-002/receipt.mjs",
+          "sha256": "46b9eb30ba485697980ce3da5ae13948943c4f734b53d4491d0cb86d64ae436f"
+        },
+        {
+          "path": "scripts/redesign/r1-002/receipt.test.mjs",
+          "sha256": "4eb02d0cccfefd1c26844adf7d2ad85201ce6904d7fe355df4f84165fb0c8a8e"
+        },
+        {
+          "path": "scripts/redesign/r1-002/sanitize-evidence.mjs",
+          "sha256": "cab2eff3544d128b1586e24170fc4e7a26583d8aabcc449b13254eceec275c00"
+        },
+        {
+          "path": "scripts/redesign/r1-002/tls-harness.mjs",
+          "sha256": "a2e25ec465e42672238438e0747c57594f5cee292a726485c5771af87d5823ab"
+        },
+        {
+          "path": "scripts/redesign/r1-002/verify-binding.mjs",
+          "sha256": "c1272f1ebfaa3643d4246937296b5d8d84e70890278462ae0510bb89bb26afcc"
+        },
+        {
+          "path": "services/api-gateway/pom.xml",
+          "sha256": "d0d4caed78c7fbd967dc650975de9804b26a879ff2596972905a7d5340e687aa"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/ApiGatewayApplication.java",
+          "sha256": "53e9965271177a3f8e2c0d3bab6a691eacb342e3782be654ab1dbc7460193e88"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/config/GatewayAuditProperties.java",
+          "sha256": "225df62711ff4a21c4525c243b6f5e65beb3e6855898962b75f33e9e945e58e9"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/config/GatewayConfiguration.java",
+          "sha256": "523f8f336735e00993a40b85bbb38fd563046145c53e2f16dc5e69537aeb69bb"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/config/GatewayIamPublicJwkSource.java",
+          "sha256": "bc3fd76268902ccb3a3a05d971d0f55f341f1066f0e2afe8b2a65608dcd0498c"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/config/GatewayJwtValidators.java",
+          "sha256": "f01fac736cf24273478267c5c8506eaa9654646f914d9920223581791db94ee0"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/config/GatewayProperties.java",
+          "sha256": "6a8efec7b5cb84b74ab518b710c247ba8a81963a173659a07b0bf384e5570aa6"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/config/SecurityAuditSinkConfiguration.java",
+          "sha256": "76848c1e3f7bced3a98892c775841a0de6f96de9bf5a4b0e6f5a3c339d9fb46a"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/filter/ApiVersionBoundaryGlobalFilter.java",
+          "sha256": "08906eb570a1b0a4b122c06ecf9eca56e576e970f5b7ddd4c0434d19dfa3856b"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/filter/B14RouteModeGuardGlobalFilter.java",
+          "sha256": "2875dd239a50dc6f2d12150d7734845834c8dbaa0638547d48fff793eac1d24f"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/filter/BrowserOriginCsrfGlobalFilter.java",
+          "sha256": "9083e229c0d57d3869d67f79582d98d2e8d8617544efd7da2ce9f6fe717de78e"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/filter/CanonicalCorsPreflightWebFilter.java",
+          "sha256": "84081fed46ae6dfa29b0d5c9fa33cb181c7c3b5c0ada8417771ee10aa96d876e"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/filter/CanonicalRoutePolicyWebFilter.java",
+          "sha256": "73a72ad2b5fef01202445bc38b905a8408846fe0ee76f8630d185efc4449dcd6"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/filter/ClientAuthorizationContextHeaders.java",
+          "sha256": "3ff58fbffcfa983433fa7bfbda1fe5131dd93600183ac76c031fc3c7fed9f3f5"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/filter/ClientAuthorizationContextSanitizerGlobalFilter.java",
+          "sha256": "2acdff154e3a3370907458e762341e50052bd2b4423ff4a4f5f66c3e1db95dcc"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/filter/CorsDenyHeaders.java",
+          "sha256": "7c75a1363504aee5490a5815cbd82136d94d8808c1f0140969a9b135995506eb"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/filter/GatewayErrorHandlingGlobalFilter.java",
+          "sha256": "2980414f73b4c536c1b2a28c32797b9731c688a419435f2dd083fe6dd606fcde"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/filter/JwtPreValidationBoundaryGlobalFilter.java",
+          "sha256": "ddaa737261939a22194037c77773a54254a445dee4d49d2371480c7956b7b47a"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/filter/RateLimitGlobalFilter.java",
+          "sha256": "f6344f4053fa885a5e49430ad8969916981775eb91ccea3846be99717c936e6b"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/filter/RateLimitPlaceholderGlobalFilter.java",
+          "sha256": "a5b36faaad25f4e13067dbbfc566c7c477f142402f99e64d07c6b16625c487ef"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/filter/RequestContextGlobalFilter.java",
+          "sha256": "26acf080e721b74a25b116ed5c2afc207b6b68e71143fbef85a3975aa616e52a"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/filter/SecurityAuditGlobalFilter.java",
+          "sha256": "b00f2eec4c4296ab89290337191fa9d02d2d565e87bdbe9f3981274695d8f8c6"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/policy/GatewayRouteExecutionPolicy.java",
+          "sha256": "041934846fdaa1a4abbfa51acfd704135ec8dbbca054e4ce0388d06c71bad0dc"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/policy/GatewayRoutePolicy.java",
+          "sha256": "60eea40dcb5733200350e1bbc510684bb859d0349a277a2347ab5f1892766f59"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/rate/InMemoryRateLimitBackend.java",
+          "sha256": "dc2d763223c38e2634974de78a66cfdce5a437dbce8b119ab4e785a002390bc2"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/rate/RateLimitBackend.java",
+          "sha256": "6acdfa9b56da0d7f1859fed2d1a485f157cc9b2017712e4219e4ab98ed7bb267"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/rate/RateLimitBackendUnavailableException.java",
+          "sha256": "226e9590f4c12b91bfbd2a5a12d5cc85b1fafb1563feb447c1a5c84d393a6252"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/rate/RateLimitDecision.java",
+          "sha256": "abdc0df33ac6b86fbc72ad00c1979f08695245ea12dfba0209bf793fbbe1863b"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/rate/RedisRateLimitBackend.java",
+          "sha256": "a90b85b3f35da9cc91743ea84e75bdfe22a9f725e6a1321945df4030041854c5"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/support/BoundedSecurityAuditSink.java",
+          "sha256": "7985829d56b6ff88c863c6eb75a14aa989c1fcc66e1ffe8496be204a0d2a05c7"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/support/CorrelationIds.java",
+          "sha256": "b6127d800ea29d4370b174d2e1036e4595e028f298a53c9bac9b83bd78cdd7fe"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/support/GatewayAuditAttributes.java",
+          "sha256": "8071314defc352c6643cf4da0ae9faff7b5128fcf83d15cd0c05f5da57d8a503"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/support/GatewayAuthenticationFailureHandler.java",
+          "sha256": "8f8a0c1b5ff54565ca23dfa68fa47aa3b290b6c71824d572a97282d05006b1cc"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/support/GatewayError.java",
+          "sha256": "bba6762287ec02d27a806e132035433a61af49fbf2eb459f0bc2a95063fafb85"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/support/GatewayErrorMapper.java",
+          "sha256": "7a1c704f9b1b533cffd6e509f92f52a6f42d0997bb7f24ca5cc43c69bb9fd254"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/support/GatewayErrorResponseWriter.java",
+          "sha256": "3472acc6011f4f9e7f044d7d42ca39c84c63d1a023d234ce53bf1d194c6c109c"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/support/HttpSecurityAuditSink.java",
+          "sha256": "a39d8ca615016e2745964218a70239dad5ed2c46f03188cae515562fbb2547e1"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/support/RuntimeEvidenceSecurityAuditSink.java",
+          "sha256": "fba2d4cc2a2bc0419893e8c5299646f40965e9805208d58f38f5b0449711dffd"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/support/SecurityAuditRecord.java",
+          "sha256": "7ae36834fc8b0980a8c893e2f27383aecdfad4182f2edef6a2968b7f6ced37ec"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/support/SecurityAuditRecorder.java",
+          "sha256": "a38f30140f0ccc46846ebad787d9a6d39978d13800afc8099b004a56134c5d93"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/support/SecurityAuditSink.java",
+          "sha256": "492df4f609c00e7c6473fef7a406446d0ddaab4af08da4f58c4c8b0a535e0823"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/support/ServiceTokenClient.java",
+          "sha256": "5734796e1ebcab24bdf3f7accebf4199919189f63a9e0fc8512d39287234faea"
+        },
+        {
+          "path": "services/api-gateway/src/main/java/com/englishflow/gateway/web/GatewayHealthController.java",
+          "sha256": "aedc6ad96ef0b91771a18d3c88cf9e3f36917e0326f0ccc3f279b513a834f2ad"
+        },
+        {
+          "path": "services/api-gateway/src/main/resources/application-local.yml",
+          "sha256": "20dd1876e8564f5d76e2182e93e693268b7212357bc48ceb84d9981a103f7d9f"
+        },
+        {
+          "path": "services/api-gateway/src/main/resources/application.yml",
+          "sha256": "002a12bd335d431caa77bc7a319ea55f188f4d0b659c52033931f7f16050da90"
+        }
+      ],
+      "gitHead": "2ffa2eb2794b32e9f51ee7a1ac5ac4834ec5b7fb"
+    },
+    "portsConfigSha256": "0a6b43d35379fed2e679961b34a0ad0e9ec1888dfb7d1a2c76eed20706e5ca95",
+    "artifact": {
+      "bytes": 60346,
+      "path": "binding.json",
+      "sha256": "6ab4be8c352e7a9303351a82e4db0dbd5f2928b7b33ddc7b68e9f53ec1e2b52d"
+    },
+    "ownerKind": "harness",
+    "iamBusinessRuntime": false,
+    "process": null
+  },
+  "verified": {
+    "signature": "PASS",
+    "source": "PASS",
+    "artifacts": 217,
+    "artifactHashes": "PASS",
+    "sourceToJarVerified": false,
+    "dynamic": "NOT_EXECUTED"
+  },
+  "signals": 0,
+  "listeners": 0,
+  "dbOperations": 0
+}

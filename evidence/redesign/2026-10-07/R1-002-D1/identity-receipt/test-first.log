@@ -1,0 +1,75 @@
+TAP version 13
+# Subtest: actual macOS PID/PPID/executable/cwd/kernel microsecond birth read, no argv/env
+ok 1 - actual macOS PID/PPID/executable/cwd/kernel microsecond birth read, no argv/env
+  ---
+  duration_ms: 140.789416
+  ...
+# Subtest: synthetic fixture: PID reuse birth/cwd/executable/PPID changes reject
+ok 2 - synthetic fixture: PID reuse birth/cwd/executable/PPID changes reject
+  ---
+  duration_ms: 0.1745
+  ...
+# Subtest: detached CLI/numeric PID/shaped handles and platform spoofing reject before signal
+ok 3 - detached CLI/numeric PID/shaped handles and platform spoofing reject before signal
+  ---
+  duration_ms: 0.442792
+  ...
+# Subtest: real retained direct toy child: identity/artifact verified, bounded SIGTERM exits
+ok 4 - real retained direct toy child: identity/artifact verified, bounded SIGTERM exits
+  ---
+  duration_ms: 608.909292
+  ...
+# Subtest: real artifact replacement rejects stop; original toy still alive without signal
+ok 5 - real artifact replacement rejects stop; original toy still alive without signal
+  ---
+  duration_ms: 458.617334
+  ...
+# Subtest: real stubborn toy SIGTERM times out; no escalation, owned IPC cleanup only
+ok 6 - real stubborn toy SIGTERM times out; no escalation, owned IPC cleanup only
+  ---
+  duration_ms: 653.9565
+  ...
+# Subtest: canonical sorted JSON, strict primitives, dense arrays and no accessors
+ok 7 - canonical sorted JSON, strict primitives, dense arrays and no accessors
+  ---
+  duration_ms: 0.972541
+  ...
+# Subtest: real Ed25519 signature requires external anchor and precise expected context
+ok 8 - real Ed25519 signature requires external anchor and precise expected context
+  ---
+  duration_ms: 39.829417
+  ...
+# Subtest: signature covers time, artifact/source, event and OS birth identity
+ok 9 - signature covers time, artifact/source, event and OS birth identity
+  ---
+  duration_ms: 467.1085
+  ...
+# Subtest: closed schema rejects secret/argv/env fields and unsafe/unsorted source paths
+ok 10 - closed schema rejects secret/argv/env fields and unsafe/unsorted source paths
+  ---
+  duration_ms: 17.377333
+  ...
+# Subtest: signer rejects mismatched actual source, ports and artifact; no source-to-JAR claim
+ok 11 - signer rejects mismatched actual source, ports and artifact; no source-to-JAR claim
+  ---
+  duration_ms: 70.556916
+  ...
+# Subtest: real chmod/lstat, symlink and traversal boundaries; keys remain outside Git
+ok 12 - real chmod/lstat, symlink and traversal boundaries; keys remain outside Git
+  ---
+  duration_ms: 21.017958
+  ...
+# Subtest: public evidence redacts full process paths; summary cannot be used as signed original
+ok 13 - public evidence redacts full process paths; summary cannot be used as signed original
+  ---
+  duration_ms: 319.97225
+  ...
+1..13
+# tests 13
+# suites 0
+# pass 13
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1910.632708

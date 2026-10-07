@@ -1,0 +1,115 @@
+TAP version 13
+# Subtest: default mode is read-only preflight; arbitrary command/adopt/kill and approval bool rejected
+ok 1 - default mode is read-only preflight; arbitrary command/adopt/kill and approval bool rejected
+  ---
+  duration_ms: 0.9205
+  ...
+# Subtest: unknown or traversing run id rejected before filesystem access
+ok 2 - unknown or traversing run id rejected before filesystem access
+  ---
+  duration_ms: 0.297708
+  ...
+# Subtest: registered ports are fixed and configuration bytes hashed
+ok 3 - registered ports are fixed and configuration bytes hashed
+  ---
+  duration_ms: 0.23675
+  ...
+# Subtest: fixture occupied/unknown ports refuse with zero signal/listener/DB
+ok 4 - fixture occupied/unknown ports refuse with zero signal/listener/DB
+  ---
+  duration_ms: 0.478875
+  ...
+# Subtest: missing/self-signed/expired fixture windows never authorize D2
+ok 5 - missing/self-signed/expired fixture windows never authorize D2
+  ---
+  duration_ms: 0.103125
+  ...
+# Subtest: fixture source provenance/material/binding deficiencies are independent blockers
+ok 6 - fixture source provenance/material/binding deficiencies are independent blockers
+  ---
+  duration_ms: 0.074375
+  ...
+# Subtest: all seemingly green test fixture values still fail without real D2 authority
+ok 7 - all seemingly green test fixture values still fail without real D2 authority
+  ---
+  duration_ms: 0.066208
+  ...
+# Subtest: TLS config rejects insecure/hostname bypass/fallback and unknown overrides
+ok 8 - TLS config rejects insecure/hostname bypass/fallback and unknown overrides
+  ---
+  duration_ms: 0.175666
+  ...
+# Subtest: TLS config locks endpoint, host and both registered ports
+ok 9 - TLS config locks endpoint, host and both registered ports
+  ---
+  duration_ms: 0.185833
+  ...
+# Subtest: independent materials cannot be aliases by identical path
+ok 10 - independent materials cannot be aliases by identical path
+  ---
+  duration_ms: 0.138084
+  ...
+# Subtest: public publisher validation rejects private fields without disguising production behavior
+ok 11 - public publisher validation rejects private fields without disguising production behavior
+  ---
+  duration_ms: 0.198417
+  ...
+# Subtest: all TLS cases remain NOT_EXECUTED; dynamic helpers refuse synchronously
+ok 12 - all TLS cases remain NOT_EXECUTED; dynamic helpers refuse synchronously
+  ---
+  duration_ms: 0.132416
+  ...
+# Subtest: public archive sanitizer redacts run/key/material paths without mutating input
+ok 13 - public archive sanitizer redacts run/key/material paths without mutating input
+  ---
+  duration_ms: 0.140375
+  ...
+# Subtest: signed offline fixture validates manifest/context; this is not source-to-JAR proof
+ok 14 - signed offline fixture validates manifest/context; this is not source-to-JAR proof
+  ---
+  duration_ms: 930.447208
+  ...
+# Subtest: artifact byte drift is refused using signed manifest
+ok 15 - artifact byte drift is refused using signed manifest
+  ---
+  duration_ms: 911.395583
+  ...
+# Subtest: manifest byte drift is refused without recomputing trust from edited body
+ok 16 - manifest byte drift is refused without recomputing trust from edited body
+  ---
+  duration_ms: 922.360292
+  ...
+# Subtest: receipt signature tampering is refused
+ok 17 - receipt signature tampering is refused
+  ---
+  duration_ms: 928.60125
+  ...
+# Subtest: receipt for another source/port or staged metadata context cannot be trusted
+ok 18 - receipt for another source/port or staged metadata context cannot be trusted
+  ---
+  duration_ms: 5148.362875
+  ...
+# Subtest: artifact symlink and traversal rejected by shared guard
+ok 19 - artifact symlink and traversal rejected by shared guard
+  ---
+  duration_ms: 908.971167
+  ...
+# Subtest: actual material chmod downgrade triggers protected-path refusal
+ok 20 - actual material chmod downgrade triggers protected-path refusal
+  ---
+  duration_ms: 835.154125
+  ...
+# Subtest: unknown run and detached stop cannot reach a signal
+ok 21 - unknown run and detached stop cannot reach a signal
+  ---
+  duration_ms: 883.1125
+  ...
+1..21
+# tests 21
+# suites 0
+# pass 21
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 11529.698375

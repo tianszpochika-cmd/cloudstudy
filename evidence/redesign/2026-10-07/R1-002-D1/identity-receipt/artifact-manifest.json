@@ -1,0 +1,41 @@
+{
+  "kind": "nonsecret-offline-evidence-manifest",
+  "files": [
+    {
+      "path": "exited-event-pre-fix-proof.json",
+      "sha256": "0b1c5155cefa889564e29102dcf4fc62c1de4306875d7588432f406ffec6f5c8"
+    },
+    {
+      "path": "prior-source-and-results.json",
+      "sha256": "237325c28dbeb8ae2839247028327cf4a196bd566d0fdc0cc81fd697665766ae"
+    },
+    {
+      "path": "review-ready.md",
+      "sha256": "5d0226de7cdefe32dae36544acf56cb4273ff346817c91c619432a3fa1b6be19"
+    },
+    {
+      "path": "scope-narrowing.md",
+      "sha256": "1aad718bf4c39f3e76947183fd0b74f48bfb3d338f8479b614827b0595ece806"
+    },
+    {
+      "path": "source-and-results.json",
+      "sha256": "c64c81e01e57f43489ef7735f3b34af80a09c278e6cad364203ffdead33a5a5e"
+    },
+    {
+      "path": "task-spec.md",
+      "sha256": "52ea014337d334cd5a1202a5b9023c0cb1c1a4773d4b82f02623612765703a52"
+    },
+    {
+      "path": "test-after-scope-narrowing.log",
+      "sha256": "305b9ad89753a8f9c8a76d75dfc2eb341b167a3bf6359102bfa22600cd71f775"
+    },
+    {
+      "path": "test-final.log",
+      "sha256": "926a8818f576f9f9fcc1924880f535818fe1081ec75c202ee9c3e99d07a11ad9"
+    },
+    {
+      "path": "test-first.log",
+      "sha256": "c9ac2ee5ec6c291fe44644f0f6df416c23ed829dcd1861ee2942b8fa212dfab1"
+    }
+  ]
+}

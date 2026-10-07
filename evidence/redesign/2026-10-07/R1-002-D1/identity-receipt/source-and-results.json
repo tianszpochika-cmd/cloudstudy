@@ -1,0 +1,80 @@
+{
+  "kind": "D1_OFFLINE_SOURCE_SCOPED_PASS_NOT_WORKFLOW_ACCEPTANCE",
+  "head": "2ffa2eb2794b32e9f51ee7a1ac5ac4834ec5b7fb",
+  "platform": "Darwin",
+  "source": [
+    {
+      "path": "scripts/redesign/r1-002/receipt.mjs",
+      "sha256": "46b9eb30ba485697980ce3da5ae13948943c4f734b53d4491d0cb86d64ae436f"
+    },
+    {
+      "path": "scripts/redesign/r1-002/receipt.test.mjs",
+      "sha256": "4eb02d0cccfefd1c26844adf7d2ad85201ce6904d7fe355df4f84165fb0c8a8e"
+    },
+    {
+      "path": "scripts/redesign/r1-002/process-identity.mjs",
+      "sha256": "ffe624362ed92aa1046238b989f8f139cfc8c1e065e227596c9c1e9db134a59d"
+    },
+    {
+      "path": "scripts/redesign/r1-002/process-identity.test.mjs",
+      "sha256": "bd93a4fa9292cc31d88f41e73e3a3f37459c259bf134871de981b29ebe54f398"
+    }
+  ],
+  "validation": {
+    "command": "node --test scripts/redesign/r1-002/receipt.test.mjs scripts/redesign/r1-002/process-identity.test.mjs",
+    "exitCode": 0,
+    "tests": 14,
+    "pass": 14,
+    "fail": 0,
+    "skipped": 0,
+    "log": "test-after-scope-narrowing.log"
+  },
+  "realEvidence": [
+    "Ed25519 key generation/sign/verify with external public key",
+    "POSIX currentUID/lstat/chmod 0700/0600 refusal 0750/0640/0444; 0500/0400 valid",
+    "symlink/dangling symlink/path traversal refusal; literal Java nested-class filename",
+    "macOS libproc OS birth microseconds/PID/PPID/executable and cwd-only lsof readback",
+    "three non-listening Node toy children: SIGTERM exit, artifact drift refusal without signal, SIGTERM timeout with no escalation; own IPC cleanup"
+  ],
+  "syntheticEvidence": [
+    "PID birth reuse and PPID/cwd/executable comparisons are fixtures, not induced OS PID reuse",
+    "wrong run/source/artifact/context/key and malformed closed-schema/canonical JSON negatives"
+  ],
+  "unverified": [
+    "Linux read-only implementation not run; Linux stop rejects without proven pidfd",
+    "Windows CIM/DACL unavailable; read/sign/stop rejected",
+    "No real PID reuse race or malicious OS-user attack reproduced",
+    "No independent CLI adoption/stop protocol; detached CLI rejects",
+    "No D2/D3 maintenance approval, TLS dynamic handshake, DB/Kafka/JWT/business E2E",
+    "Binding pre-existing artifact does not establish source-to-JAR build"
+  ],
+  "publicEvidence": "No key values, full protected paths, argv/env or passwords archived. Summary explicitly not signed original; full private receipt belongs in protected run directory. Test temporary keys/files removed.",
+  "narrowing": {
+    "unsupportedEvent": "owned-child-exited",
+    "reason": "schema accepted event but actual toy exit then current kernel PID read failed at signer; root/Luna authorized removal",
+    "retainedExitMeaning": "local ChildProcess result only, not signed death proof",
+    "expectedFields": [
+      "runId",
+      "intent",
+      "source",
+      "portsConfigSha256",
+      "artifact",
+      "process",
+      "event",
+      "platform",
+      "bindHost",
+      "ports",
+      "ownerKind",
+      "iamBusinessRuntime"
+    ],
+    "sameKeyContextNegatives": [
+      "ports=[]",
+      "ownerKind=toy-child"
+    ],
+    "priorLogsPreserved": [
+      "test-first.log",
+      "test-final.log"
+    ],
+    "priorSourceReport": "prior-source-and-results.json"
+  }
+}

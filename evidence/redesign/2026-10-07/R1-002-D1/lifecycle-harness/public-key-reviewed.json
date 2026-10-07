@@ -1,0 +1,5 @@
+{
+  "kind": "run-receipt-public-key-not-maintenance-authority",
+  "keyId": "c3dae0baa3e7a1756f76b6107eb983c5c83f6daeef431cb2d025ac0cdea7feb1",
+  "publicKeyPem": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEA7XzoUwVEh0ejkZdfPYNyDEBRvlJd1gcy8jfh4aUpzU8=\n-----END PUBLIC KEY-----\n"
+}

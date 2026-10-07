@@ -1,0 +1,93 @@
+{
+  "kind": "R1_002_D1_SOURCE_AND_INPUTS",
+  "baseline": "2ffa2eb2794b32e9f51ee7a1ac5ac4834ec5b7fb",
+  "sourceJarProvenance": "UNATTESTED_CURRENT_TARGET",
+  "sourceToJarVerified": false,
+  "stageSourceFilesMatchCurrent": 61,
+  "sources": [
+    {
+      "path": "scripts/redesign/r1-002/lifecycle.mjs",
+      "sha256": "5dace89cfab45c0f02d32cf80271d480f42c1b3081e03ea3f80210d8b502773d",
+      "owner": "iam_preparation"
+    },
+    {
+      "path": "scripts/redesign/r1-002/lifecycle.test.mjs",
+      "sha256": "18f4761f8a21cee2b12c2cafe5f74d7a3baf24a79c17a1798bf7a4213eda6bde",
+      "owner": "iam_preparation"
+    },
+    {
+      "path": "scripts/redesign/r1-002/tls-harness.mjs",
+      "sha256": "a2e25ec465e42672238438e0747c57594f5cee292a726485c5771af87d5823ab",
+      "owner": "iam_preparation"
+    },
+    {
+      "path": "scripts/redesign/r1-002/GatewayTlsProbe.java",
+      "sha256": "abea032fd9c2178bfc0e02e94b729bf5a8151b16e1cee130b5c116d039fb741c",
+      "owner": "iam_preparation"
+    },
+    {
+      "path": "scripts/redesign/r1-002/README.md",
+      "sha256": "f6af73bdaa7dedf0163c23dfa1c1c85d1bcd421b378ac1ee9ccdcec7642a41f0",
+      "owner": "iam_preparation"
+    },
+    {
+      "path": "scripts/redesign/r1-002/receipt.mjs",
+      "sha256": "46b9eb30ba485697980ce3da5ae13948943c4f734b53d4491d0cb86d64ae436f",
+      "owner": "baseline_recovery"
+    },
+    {
+      "path": "scripts/redesign/r1-002/receipt.test.mjs",
+      "sha256": "4eb02d0cccfefd1c26844adf7d2ad85201ce6904d7fe355df4f84165fb0c8a8e",
+      "owner": "baseline_recovery"
+    },
+    {
+      "path": "scripts/redesign/r1-002/process-identity.mjs",
+      "sha256": "ffe624362ed92aa1046238b989f8f139cfc8c1e065e227596c9c1e9db134a59d",
+      "owner": "baseline_recovery"
+    },
+    {
+      "path": "scripts/redesign/r1-002/process-identity.test.mjs",
+      "sha256": "bd93a4fa9292cc31d88f41e73e3a3f37459c259bf134871de981b29ebe54f398",
+      "owner": "baseline_recovery"
+    }
+  ],
+  "inputs": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "747d8ed7f650ec5b2ae70742fc598130a77e8608a21dbef41b9e88add1645790"
+    },
+    {
+      "path": "CURRENT-HANDOFF.md",
+      "sha256": "d7acd158485c6ffaddc9bccb29e33ca2317a7cc80afd27ac9b2c38244efd4c3b"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/CURRENT-PROGRESS.md",
+      "sha256": "8edbdb983df9bc0d1db331037332876e8eb73872622b0d9f8ba1b38719366156"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/dev-plan-R1.md",
+      "sha256": "be49c857a9499affbc81569697cbc197d4934857ea50e82b46d8ae2f2a036f07"
+    },
+    {
+      "path": "evidence/redesign/2026-10-07/R1-002-next-round-plan/execution-plan.md",
+      "sha256": "51a6f5695fdb1fc21410c705a26037723fdcd56f40e639326936eda29b24cb61"
+    },
+    {
+      "path": "evidence/redesign/2026-10-07/orchestrator-review/final-scope-review.md",
+      "sha256": "59cf598e808e18d000402ae243ef48594fdac46cca9ddbe078206f49b7b18c67"
+    },
+    {
+      "path": "config/local-ports.json",
+      "sha256": "0a6b43d35379fed2e679961b34a0ad0e9ec1888dfb7d1a2c76eed20706e5ca95"
+    },
+    {
+      "path": "services/api-gateway/target/api-gateway-0.1.0-SNAPSHOT.jar",
+      "sha256": "34f13139294dead9f80cf0a4d41d43485d9cb95e0895c319ed4504b1fad66380"
+    }
+  ],
+  "actualPlatform": "darwin",
+  "linuxWindows": "NOT_EXECUTED",
+  "allTlsCases": "NOT_EXECUTED",
+  "finalStage": "stage-reviewed.json",
+  "reviewedArtifactCount": 217
+}

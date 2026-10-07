@@ -1,0 +1,6 @@
+Exception in thread "main" java.lang.NullPointerException: Cannot invoke "org.springframework.cloud.gateway.config.HttpClientSslConfigurer.configureSsl(reactor.netty.http.client.HttpClient)" because "this.sslConfigurer" is null
+	at org.springframework.cloud.gateway.config.HttpClientFactory.configureSsl(HttpClientFactory.java:114)
+	at org.springframework.cloud.gateway.config.HttpClientFactory.createInstance(HttpClientFactory.java:98)
+	at org.springframework.cloud.gateway.config.HttpClientFactory.createInstance(HttpClientFactory.java:48)
+	at org.springframework.beans.factory.config.AbstractFactoryBean.afterPropertiesSet(AbstractFactoryBean.java:138)
+	at com.englishflow.gateway.config.GatewayTlsProbe.main(GatewayTlsProbe.java:57)
