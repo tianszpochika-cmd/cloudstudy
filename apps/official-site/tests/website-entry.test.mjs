@@ -54,7 +54,7 @@ test("entry configuration rejects credentials, executable URLs and embedded quer
     for (const mobile of [false, true])
       assert.throws(() => buildPublicLearningEntry({ base, mobile }));
 });
-test("sitemap exposes public website routes and six learning descriptions without retired pricing pages", () => {
+test("R1-001 sitemap includes honest pricing/download pages and six learning descriptions", () => {
   assert.equal(new Set(publicRoutes).size, publicRoutes.length);
   for (const route of [
     "/world",
@@ -63,8 +63,10 @@ test("sitemap exposes public website routes and six learning descriptions withou
     "/start",
     "/courses/daily-words",
     "/privacy",
+    "/pricing",
+    "/download",
   ])
     assert.ok(publicRoutes.includes(route));
-  for (const route of ["/pricing", "/download", "/login", "/register"])
+  for (const route of ["/login", "/register"])
     assert.ok(!publicRoutes.includes(route));
 });

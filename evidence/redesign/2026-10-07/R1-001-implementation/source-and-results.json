@@ -1,0 +1,110 @@
+{
+  "kind": "R1_001_CURRENT_SOURCE_BOUND_REDELIVERY_NOT_ACCEPTANCE",
+  "taskId": "R1-001",
+  "at": "2026-10-07T00:18:37.098273+00:00",
+  "sourceCommit": "ff0f8057f4088ead03ab7890493cdf9d06f6d5f1",
+  "sourceDeltaPatchSha256": "d4497aea42a3f25068565a34db96730a2769d88677760b992b5ccbe967112038",
+  "taskSpecSha256": "9f578b432074b59083233b2f478b39cd611948aa366d93c8c89a8939247b0da6",
+  "currentFiles": [
+    {
+      "path": "apps/official-site/README.md",
+      "sha256": "e12aece9dd9d12d8247d096c68e806edf1169e8cb168485e42a43047e9e5ef5b",
+      "tracked": true
+    },
+    {
+      "path": "apps/official-site/components/SiteStartButton.vue",
+      "sha256": "55d7bd4ea7dcfc4b82b2cbeb9a7146a3a8247f007a60784d8cf5bc6a4c8b66ab",
+      "tracked": true
+    },
+    {
+      "path": "apps/official-site/composables/useOfficialSiteLinks.ts",
+      "sha256": "2eb577db0718b68be53d9c1e71170a3a0e4d2842ebc3639df9ee2b8359a73c0c",
+      "tracked": true
+    },
+    {
+      "path": "apps/official-site/composables/usePublicProjection.ts",
+      "sha256": "17327dbb3495a2cac462706398625b2e25bec6237573808d4e5a961c526c9d1b",
+      "tracked": true
+    },
+    {
+      "path": "apps/official-site/pages/start.vue",
+      "sha256": "4aac4ade6cf5dddf4a29b25398630ba3da374507d791cd363f16ff2f5469f7fd",
+      "tracked": true
+    },
+    {
+      "path": "apps/official-site/pages/courses/index.vue",
+      "sha256": "50fa4354ad37916855765444243cb78c9f5df217d530eb3483b1a5263aa3c9cf",
+      "tracked": true
+    },
+    {
+      "path": "apps/official-site/pages/pricing.vue",
+      "sha256": "552447d04753781eb1f1baa38b1ccf5ca18dc2a66e6ae28f088797ba746aaa83",
+      "tracked": true
+    },
+    {
+      "path": "apps/official-site/pages/download.vue",
+      "sha256": "6ba17499978b0931c74c492caf37f14d5681a45c3b08c078c4aac957e6c218d9",
+      "tracked": true
+    },
+    {
+      "path": "apps/official-site/utils/site-content.mjs",
+      "sha256": "57f1dbe0353aa27565a3fe2e36a5ec0d2fc3a701259209ec732286dabbe5a361",
+      "tracked": true
+    },
+    {
+      "path": "packages/i18n/src/official-site.ts",
+      "sha256": "4832e991e1b247183e504fbcbaa6503fb40c3a246d0dc10e59a48f874a81bedd",
+      "tracked": true
+    },
+    {
+      "path": "apps/official-site/tests/b13-official-site.test.mjs",
+      "sha256": "552852d7edadebc810b80bcc073143df9c82aeb4d8920002c506b761e6757e85",
+      "tracked": true
+    },
+    {
+      "path": "apps/official-site/tests/b14-fe-005.test.mjs",
+      "sha256": "45146b7c0d8d7bd01721b4ad2d5cd6067657d07c69723c40c7c6565399377f93",
+      "tracked": true
+    },
+    {
+      "path": "apps/official-site/tests/website-entry.test.mjs",
+      "sha256": "3b4fac22c6b1b349633dd7134462e1f048fcfa424949d0fe321d9062d431733e",
+      "tracked": true
+    },
+    {
+      "path": "apps/official-site/tests/r1-001.test.mjs",
+      "sha256": "e33db16486a0b4c1e1d257dfa71ba859bc85e4f665db43aa307858368b146e12",
+      "tracked": false
+    }
+  ],
+  "historicalApplicationTests": [
+    {
+      "path": "apps/official-site/tests/b13-official-site.test.mjs",
+      "sourceCommit": "8a689ec5c7fca3dd753d972db10057cc768437c8",
+      "gitBlob": "a53a7e844cdd9b233f36ed28f48b778aff1ee7b8",
+      "sha256": "cb4639aea81aee747e148572a931718e021c96a76e7df2a837be9f381cc315ee"
+    },
+    {
+      "path": "apps/official-site/tests/b14-fe-005.test.mjs",
+      "sourceCommit": "8a689ec5c7fca3dd753d972db10057cc768437c8",
+      "gitBlob": "9952393df391651e322a3d12164389f566363c54",
+      "sha256": "19eedcbe12d8f58fa7f79aa5594f176b7d3ae45b913b42b57c4d267a09ca14b3"
+    },
+    {
+      "path": "apps/official-site/tests/website-entry.test.mjs",
+      "sourceCommit": "8a689ec5c7fca3dd753d972db10057cc768437c8",
+      "gitBlob": "1c1f2869e81bc26646a52b5ba3a23f48b9532795",
+      "sha256": "c48b4d7ce788352a67e0ca8130d648801225fe8f0951bc24c9874221da0160a0"
+    }
+  ],
+  "currentNuxtProcess": "PID  PPID STARTED                      COMMAND\n 9008  9007 Tue Oct  6 21:47:40 2026     node /Users/Admin/Desktop/work/cloudstudy/apps/official-site/node_modules/.bin/../nuxt/bin/nuxt.mjs dev --host 127.0.0.1 --port 18182 --strictPort",
+  "noServiceStartOrRestart": true,
+  "frontend": {
+    "nuxt": "3.21.11",
+    "node": "20.19.5",
+    "pnpm": "10.19.0",
+    "playwright": "1.63.0",
+    "chrome": "154.0.8037.98"
+  },
+  "runtimeBinding": "Existing Nuxt dev PID/cwd + HEAD/diff/task/file hashes; no production build-ID endpoint; isolated build not launched."
+}

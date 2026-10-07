@@ -1,0 +1,130 @@
+{
+  "task": "R1-002",
+  "sourceHead": "ff0f8057f4088ead03ab7890493cdf9d06f6d5f1",
+  "status": "PREPARATION_PARTIAL_NOT_READY",
+  "inputs": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "747d8ed7f650ec5b2ae70742fc598130a77e8608a21dbef41b9e88add1645790"
+    },
+    {
+      "path": "CURRENT-HANDOFF.md",
+      "sha256": "d7acd158485c6ffaddc9bccb29e33ca2317a7cc80afd27ac9b2c38244efd4c3b"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/CURRENT-PROGRESS.md",
+      "sha256": "002db8dd23cc50b1e0796f53d1315133996405ff0cbef730f17414f84062c463"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/dev-plan-R1.md",
+      "sha256": "be49c857a9499affbc81569697cbc197d4934857ea50e82b46d8ae2f2a036f07"
+    },
+    {
+      "path": "docs/07-operations/local-environment-verification-2026-10-06.md",
+      "sha256": "5c8bc3d1f2c9c417486f546faa461fd221292c380590956e4e7244a4ed5ac396"
+    },
+    {
+      "path": "config/local-ports.json",
+      "sha256": "0a6b43d35379fed2e679961b34a0ad0e9ec1888dfb7d1a2c76eed20706e5ca95"
+    },
+    {
+      "path": "services/api-gateway/pom.xml",
+      "sha256": "d0d4caed78c7fbd967dc650975de9804b26a879ff2596972905a7d5340e687aa"
+    },
+    {
+      "path": "services/api-gateway/src/main/java/com/englishflow/gateway/config/GatewayIamPublicJwkSource.java",
+      "sha256": "bc3fd76268902ccb3a3a05d971d0f55f341f1066f0e2afe8b2a65608dcd0498c"
+    },
+    {
+      "path": "services/api-gateway/src/main/resources/application.yml",
+      "sha256": "002a12bd335d431caa77bc7a319ea55f188f4d0b659c52033931f7f16050da90"
+    },
+    {
+      "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/PrincipalId.java",
+      "sha256": "68c7d5d7ef9ac311dff328126afa44fc5a03e6174674a0bb588360c3f0250351"
+    },
+    {
+      "path": "services/iam-service/src/main/java/com/englishflow/iam/auth/JwtTokenService.java",
+      "sha256": "b631fcf65fdb08253befc6824334c93f3946941029227698917317bc5b694f4b"
+    },
+    {
+      "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/PasswordAccountService.java",
+      "sha256": "919426fa9da4c48beea7f5d08d3a2e5a5694024c804ea66eb6032547720ca2b1"
+    },
+    {
+      "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/JdbcAuditFactPort.java",
+      "sha256": "db178bc4cb65b957ca99dd3855118e7a7ed9c5b86d1a59cbd161c39b718c7fa4"
+    },
+    {
+      "path": "services/iam-service/src/main/resources/application.yaml",
+      "sha256": "278b68b596c6dfbbcc7d1b101d190c57320b334f7a58fe8f74b02b0397b56c74"
+    },
+    {
+      "path": "services/learner-service/src/main/java/com/englishflow/learner/web/VerifiedLearnerPrincipalFactory.java",
+      "sha256": "3b377ab281de7a51bf7b23f615a09f56ea6a4de009e71f24ff5f2714a18f522b"
+    },
+    {
+      "path": "services/learner-service/src/main/java/com/englishflow/learner/web/LearnerHttpPrincipals.java",
+      "sha256": "579de91baf1f7d38520e37a34c33f2344fd2abccd0f2d7859b8401dc5c88f021"
+    },
+    {
+      "path": "scripts/runtime/run-v2-services.mjs",
+      "sha256": "49be977664109b6c68dfd648215703bfd1e57e4777bfb14b8493272a557d304a"
+    },
+    {
+      "path": "packages/contracts/events/v1/catalog.json",
+      "sha256": "8ccb3c6f2fe1fd1fd04b611da7d421503d5a0d2b533899bcdda7d4db8a04ce6b"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/reviewer-3-closeout/review.md",
+      "sha256": "036b0420b42d3d38c5c7c2439fb73795666a0bb2f856150f4ec3eaf92120918e"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/reviewer-3-closeout/runtime-and-cleanup.json",
+      "sha256": "c2b3a9ccb25db38fd4dc86b546765a8f3d777a869c16a468806d7475233396ec"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/outbox-proposal-4.md",
+      "sha256": "0e4b605fa2865dc6007bcb5b9f2388367253c15a3b04ae087c5e85452ae7e9d1"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/tc03-plan-4.json",
+      "sha256": "4ece76e0a5f665c8dc625aa1d4d969d34bfaaf921d56cff57ddcdf54a5150cfb"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/prep-report-4.md",
+      "sha256": "cb51022ad60a67b6ed079309f46f95f16af345f3d85570360d944570b1887fda"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/r1-002-gateway-4.cjs",
+      "sha256": "aa198ec5bd1926eeb2dea3667fa89d3747a7cce6ffada0f562fc95da22b67ea4"
+    }
+  ],
+  "newToolSources": [
+    {
+      "path": "scripts/redesign/r1-002/README.md",
+      "sha256": "a38aa31875e8c7f23968cf0d903c1ec499e937cc149f77661a3e09ffce6b4bfa"
+    },
+    {
+      "path": "scripts/redesign/r1-002/VerifyGatewayBinding.java",
+      "sha256": "84be68281b5c0883c3eb36ee34b788b9096b605c3bc60eeff43793ed498d6543"
+    },
+    {
+      "path": "scripts/redesign/r1-002/VerifyTrust.java",
+      "sha256": "09d5db9af1412f7d1a2631b3d4e083ad08111729d139a835068153f53bae6a3d"
+    },
+    {
+      "path": "scripts/redesign/r1-002/prepare.mjs",
+      "sha256": "ba1f0d1197688be270cb085f0e9bd93e1d66ebecf3611458a9446461f72c0778"
+    },
+    {
+      "path": "scripts/redesign/r1-002/prepare.test.mjs",
+      "sha256": "b1b65b4bd1f68db96a495bdddc8b762e63831714057d4e59cb3dca5a7cb7a6b1"
+    },
+    {
+      "path": "scripts/redesign/r1-002/verify-binding.mjs",
+      "sha256": "c1272f1ebfaa3643d4246937296b5d8d84e70890278462ae0510bb89bb26afcc"
+    }
+  ],
+  "privateMaterialIncluded": false
+}

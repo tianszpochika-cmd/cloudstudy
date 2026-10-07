@@ -1,0 +1,60 @@
+{
+  "kind": "CURRENT_SOURCE_SCOPED_DELIVERY_PENDING_INDEPENDENT_REVIEW",
+  "taskId": "R1-001",
+  "sourceCommit": "ff0f8057f4088ead03ab7890493cdf9d06f6d5f1",
+  "sourceDeltaPatchSha256": "802d1ae21c563dccc26df3bcd44017e0e31d00c59af3df0a3fe630dac84901b3",
+  "taskSpecSha256": "7d7cf7e5a1a4d2c18a549b4634caa2ce2a34a486dd046e5098f85da14a11d2af",
+  "validation": {
+    "websiteApplicationTests": {
+      "pass": 26,
+      "fail": 0,
+      "skip": 0,
+      "exitCode": 0,
+      "log": "test-website.log"
+    },
+    "R1HttpSsrSafeHandoffTests": {
+      "pass": 3,
+      "fail": 0,
+      "skip": 0,
+      "exitCode": 0,
+      "log": "test-r1-001.log"
+    },
+    "nuxiTypecheck": {
+      "exitCode": 0,
+      "log": "typecheck.log"
+    },
+    "isolatedProductionBuild": {
+      "exitCode": 0,
+      "log": "build.log",
+      "serverStarted": false,
+      "reason": "Separate buildDir/Nitro buildDir/output to preserve existing dev runner"
+    },
+    "browser": {
+      "exitCode": 0,
+      "requestedRouteCount": 11,
+      "observations": 22,
+      "direct200": 22,
+      "nonBlank": 22,
+      "overlays": 0,
+      "horizontalOverflow": 0,
+      "routeErrorCount": 0,
+      "ctaProof": 2,
+      "blockedWrites": 0,
+      "registrationSubmitted": false,
+      "simulatedErrorRetryCases": 2,
+      "evidence": "browser-observation.json",
+      "initialHarnessFailure": "browser-first-observation.json: registered URL navigation finished before DOM; wait visible password input fixed, source not changed."
+    }
+  },
+  "explicitGaps": [
+    "original114cardWall",
+    "originalR1-001acceptance",
+    "namedIndependentAcceptor/currentWorkflowTransition",
+    "IAMregister201/Cookie/transaction/events",
+    "adultGatePersisted",
+    "noLearningScopes/domain403",
+    "fullThemesLocalesA11yRealDevices",
+    "productionRelease"
+  ],
+  "workflowPromotion": false
+}

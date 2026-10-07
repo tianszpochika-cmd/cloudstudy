@@ -1,0 +1,18 @@
+{
+  "kind": "FIXED_HISTORY_REPLAY_VERIFICATION_NOT_BUSINESS_ACCEPTANCE",
+  "fixture": "temporary Git repository; fixed original object store read-only alternate; changed progress input only; fixture removed",
+  "sourceCommit": "ff0f8057f4088ead03ab7890493cdf9d06f6d5f1",
+  "fixtureWorkingProgressDiffers": true,
+  "realProgressUnchanged": true,
+  "exitCode": 0,
+  "stdout": "{\"sourceCommit\": \"ff0f8057f4088ead03ab7890493cdf9d06f6d5f1\", \"sourceManifestSha256\": \"d6c4f419fa62932d74ab6542ec0ef16583748cde07790f650dba95a9b2f3b319\", \"verifyReplay\": true, \"cards\": 29, \"sourceFiles\": 25, \"r1_002_artifactsMatching\": 27, \"r1_002_artifactsTotal\": 27}",
+  "stderr": "",
+  "immutableOutputsUnchanged": true,
+  "sha256": {
+    "source-manifest.json": "d6c4f419fa62932d74ab6542ec0ef16583748cde07790f650dba95a9b2f3b319",
+    "cards-29-index.json": "2cccf11bfe980e3936a7b8cc104c6c815024053dcf8f05405759031bbb33d9b1",
+    "cards-29-index.md": "65c4092d4609d24ea767e4ffdf6c3c1d919eafdd511b1d9869fb61a27e3ea57e",
+    "search-snapshot.json": "63714d3e8c012093c938cfbbfcb5c6acf4e018159fefee1a6f048c5c1bc98d92",
+    "source-integrity-check.json": "afa7623ffdd31a2b88e8d6104409a9f63a1a9fe1d53085e0790beb6cc6d1c7b2"
+  }
+}

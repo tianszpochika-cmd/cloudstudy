@@ -1,0 +1,174 @@
+{
+  "scope": "source and historical artifact integrity only; no card acceptance",
+  "r1_002_inputManifest": {
+    "entries": 27,
+    "matching": 27,
+    "files": [
+      {
+        "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/r1-002-vault-4.cjs",
+        "exists": true,
+        "digestMatches": true
+      },
+      {
+        "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/r1-002-validate-4.cjs",
+        "exists": true,
+        "digestMatches": true
+      },
+      {
+        "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/r1-002-rotate-t3g-4.cjs",
+        "exists": true,
+        "digestMatches": true
+      },
+      {
+        "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/prepare-policy-fixture-4.cjs",
+        "exists": true,
+        "digestMatches": true
+      },
+      {
+        "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/r1-002-launcher-4.cjs",
+        "exists": true,
+        "digestMatches": true
+      },
+      {
+        "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/r1-002-gateway-4.cjs",
+        "exists": true,
+        "digestMatches": true
+      },
+      {
+        "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/r1-002-bg-start-4.cjs",
+        "exists": true,
+        "digestMatches": true
+      },
+      {
+        "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/r1-002-config-check-4.cjs",
+        "exists": true,
+        "digestMatches": true
+      },
+      {
+        "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/r1-002-tls-rebuild-4.cjs",
+        "exists": true,
+        "digestMatches": true
+      },
+      {
+        "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/tls-preflight-4.cjs",
+        "exists": true,
+        "digestMatches": true
+      },
+      {
+        "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/r1-002-process-guard.cjs",
+        "exists": true,
+        "digestMatches": true
+      },
+      {
+        "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/validate-4/validate-4.json",
+        "exists": true,
+        "digestMatches": true
+      },
+      {
+        "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/policy-fixture-4/policy-fixture-4.json",
+        "exists": true,
+        "digestMatches": true
+      },
+      {
+        "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/tls-4/tls-preflight-4.json",
+        "exists": true,
+        "digestMatches": true
+      },
+      {
+        "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/config-check-4/config-check-4.json",
+        "exists": true,
+        "digestMatches": true
+      },
+      {
+        "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/launcher-4/launcher-4.json",
+        "exists": true,
+        "digestMatches": true
+      },
+      {
+        "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/gateway-4/gateway-4.json",
+        "exists": true,
+        "digestMatches": true
+      },
+      {
+        "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/t3-tls/r1-002.pem",
+        "exists": true,
+        "digestMatches": true
+      },
+      {
+        "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/t3-tls/r1-002.cer",
+        "exists": true,
+        "digestMatches": true
+      },
+      {
+        "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/outbox-proposal-4.md",
+        "exists": true,
+        "digestMatches": true
+      },
+      {
+        "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/tc03-plan-4.json",
+        "exists": true,
+        "digestMatches": true
+      },
+      {
+        "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/prep-report-4.md",
+        "exists": true,
+        "digestMatches": true
+      },
+      {
+        "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/commands-4.log",
+        "exists": true,
+        "digestMatches": true
+      },
+      {
+        "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/reviewer-3-closeout/review.md",
+        "exists": true,
+        "digestMatches": true
+      },
+      {
+        "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/reviewer-3-closeout/verify-and-close.cjs",
+        "exists": true,
+        "digestMatches": true
+      },
+      {
+        "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/reviewer-3-closeout/runtime-and-cleanup.json",
+        "exists": true,
+        "digestMatches": true
+      },
+      {
+        "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/reviewer-3-closeout/validate/validate-4.json",
+        "exists": true,
+        "digestMatches": true
+      }
+    ]
+  },
+  "historicalOfficialSweep": {
+    "capturedAt": "2026-09-26T12:32:32.502Z",
+    "records": 22,
+    "routes": [
+      "/",
+      "/about",
+      "/announcements",
+      "/compliance",
+      "/courses",
+      "/download",
+      "/minors",
+      "/pricing",
+      "/privacy",
+      "/status",
+      "/terms"
+    ],
+    "viewports": [
+      "desk",
+      "mob"
+    ],
+    "allHttp200": true,
+    "allErrorsEmpty": true,
+    "taskBindingFound": false,
+    "evidenceCommit": "9ddcb954195dc3849d92ab7d99895b64b9c8e17f",
+    "qualifiesAsR1_001Acceptance": false
+  },
+  "index": {
+    "cards": 29,
+    "noImportedWorkflowStates": true
+  }
+}

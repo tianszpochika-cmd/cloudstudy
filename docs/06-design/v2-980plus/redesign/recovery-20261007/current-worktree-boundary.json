@@ -1,0 +1,88 @@
+{
+  "kind": "CURRENT_WORKTREE_BOUNDARY_NOT_CARD_STATE",
+  "at": "2026-10-07T00:18:37.921503+00:00",
+  "historicalSourceCommit": "ff0f8057f4088ead03ab7890493cdf9d06f6d5f1",
+  "currentHead": "ff0f8057f4088ead03ab7890493cdf9d06f6d5f1",
+  "trackedNameStatusVsBaseline": [
+    "M\tapps/official-site/README.md",
+    "M\tapps/official-site/components/SiteStartButton.vue",
+    "M\tapps/official-site/composables/useOfficialSiteLinks.ts",
+    "M\tapps/official-site/composables/usePublicProjection.ts",
+    "M\tapps/official-site/pages/courses/index.vue",
+    "M\tapps/official-site/pages/download.vue",
+    "M\tapps/official-site/pages/pricing.vue",
+    "M\tapps/official-site/pages/start.vue",
+    "M\tapps/official-site/tests/b13-official-site.test.mjs",
+    "M\tapps/official-site/tests/b14-fe-005.test.mjs",
+    "M\tapps/official-site/tests/website-entry.test.mjs",
+    "M\tapps/official-site/utils/site-content.mjs",
+    "M\tdocs/06-design/v2-980plus/redesign/mockups/mobile/evidence/README.md",
+    "M\tpackages/i18n/src/official-site.ts"
+  ],
+  "statusPorcelain": [
+    " M apps/official-site/README.md",
+    " M apps/official-site/components/SiteStartButton.vue",
+    " M apps/official-site/composables/useOfficialSiteLinks.ts",
+    " M apps/official-site/composables/usePublicProjection.ts",
+    " M apps/official-site/pages/courses/index.vue",
+    " M apps/official-site/pages/download.vue",
+    " M apps/official-site/pages/pricing.vue",
+    " M apps/official-site/pages/start.vue",
+    " M apps/official-site/tests/b13-official-site.test.mjs",
+    " M apps/official-site/tests/b14-fe-005.test.mjs",
+    " M apps/official-site/tests/website-entry.test.mjs",
+    " M apps/official-site/utils/site-content.mjs",
+    " M docs/06-design/v2-980plus/redesign/mockups/mobile/evidence/README.md",
+    " M packages/i18n/src/official-site.ts",
+    "?? apps/official-site/tests/r1-001.test.mjs",
+    "?? docs/06-design/v2-980plus/redesign/mockups/mobile/README.md",
+    "?? docs/06-design/v2-980plus/redesign/mockups/mobile/evidence/independent-r14/README.md",
+    "?? docs/06-design/v2-980plus/redesign/recovery-20261007/",
+    "?? evidence/redesign/",
+    "?? scripts/redesign/"
+  ],
+  "indexedSourceCurrentChanges": [
+    {
+      "path": "apps/official-site/pages/courses/index.vue",
+      "historicalSha256": "d2bb4d7622573c08e553b1adea4431565ff661a3fb42748e072f0619339a5742",
+      "currentSha256": "50fa4354ad37916855765444243cb78c9f5df217d530eb3483b1a5263aa3c9cf"
+    },
+    {
+      "path": "apps/official-site/pages/start.vue",
+      "historicalSha256": "d4c00c19a90ec4775aabb9823f5e72512f55d19b50733550fd88f3b6b3a657ab",
+      "currentSha256": "4aac4ade6cf5dddf4a29b25398630ba3da374507d791cd363f16ff2f5469f7fd"
+    },
+    {
+      "path": "apps/official-site/components/SiteStartButton.vue",
+      "historicalSha256": "e966175babbfa7c1f3cda300f81f69a07df4a827a31c4b2d0c8d89c363936a5f",
+      "currentSha256": "55d7bd4ea7dcfc4b82b2cbeb9a7146a3a8247f007a60784d8cf5bc6a4c8b66ab"
+    },
+    {
+      "path": "apps/official-site/composables/useOfficialSiteLinks.ts",
+      "historicalSha256": "efa0830ae0c5b3150e441def1e45ed4b3f5c2d873a3b739efbabcd4e253b3cc2",
+      "currentSha256": "2eb577db0718b68be53d9c1e71170a3a0e4d2842ebc3639df9ee2b8359a73c0c"
+    }
+  ],
+  "preservedMobileFiles": [
+    {
+      "path": "docs/06-design/v2-980plus/redesign/mockups/mobile/evidence/README.md",
+      "originalSha256": "982766f6602aa45aadb207de3b9156c690278de1fc46a81e7625256b52068d14",
+      "currentSha256": "982766f6602aa45aadb207de3b9156c690278de1fc46a81e7625256b52068d14",
+      "preserved": true
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/mockups/mobile/README.md",
+      "originalSha256": "c784ad68793e9235629acd56fa024cb90d8d2aca74880ce12f8490fd88a52595",
+      "currentSha256": "c784ad68793e9235629acd56fa024cb90d8d2aca74880ce12f8490fd88a52595",
+      "preserved": true
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/mockups/mobile/evidence/independent-r14/README.md",
+      "originalSha256": "923f4230c334e53e8b89202f1fa0587fda1f7efaab981c2b93b0c48145ea38ce",
+      "currentSha256": "923f4230c334e53e8b89202f1fa0587fda1f7efaab981c2b93b0c48145ea38ce",
+      "preserved": true
+    }
+  ],
+  "workflowStatesImported": false,
+  "policy": "Legal current progress/document changes do not fail historical blob checks and never promote cards; 3 pre-existing mobile files remain separately preserved."
+}

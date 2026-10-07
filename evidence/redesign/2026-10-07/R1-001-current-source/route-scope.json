@@ -1,0 +1,445 @@
+{
+  "kind": "R1_001_PROPOSED_EXPLICIT_11_ROUTE_SCOPE",
+  "sourceCommit": "ff0f8057f4088ead03ab7890493cdf9d06f6d5f1",
+  "authority": "PAGE-P1-OFFICIAL canonical route column; BC-001 only says11, IC-001 names HOME/COURSES/PRICING; historic sweep corroboration, not R1 acceptance",
+  "strict200Interpretation": "Original route first HTTP response must200; 301->200 does not count as direct200 unless scope owner expressly chooses alias acceptance.",
+  "routeCount": 11,
+  "routes": [
+    {
+      "pageId": "PAGE-P1-OFFICIAL-HOME",
+      "route": "/",
+      "source": {
+        "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+        "line": 48
+      },
+      "observations": [
+        {
+          "viewport": {
+            "width": 1280,
+            "height": 900
+          },
+          "statusChain": [
+            200
+          ],
+          "finalUrl": "http://127.0.0.1:18182/",
+          "h1": [
+            "让英语，回到你的日常。"
+          ],
+          "screenshot": "screenshots/desktop_.png"
+        },
+        {
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "statusChain": [
+            200
+          ],
+          "finalUrl": "http://127.0.0.1:18182/",
+          "h1": [
+            "让英语，回到你的日常。"
+          ],
+          "screenshot": "screenshots/mobile_.png"
+        }
+      ]
+    },
+    {
+      "pageId": "PAGE-P1-OFFICIAL-COURSES",
+      "route": "/courses",
+      "source": {
+        "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+        "line": 49
+      },
+      "observations": [
+        {
+          "viewport": {
+            "width": 1280,
+            "height": 900
+          },
+          "statusChain": [
+            200
+          ],
+          "finalUrl": "http://127.0.0.1:18182/courses",
+          "h1": [
+            "找到今天想学的内容。"
+          ],
+          "screenshot": "screenshots/desktop_courses.png"
+        },
+        {
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "statusChain": [
+            200
+          ],
+          "finalUrl": "http://127.0.0.1:18182/courses",
+          "h1": [
+            "找到今天想学的内容。"
+          ],
+          "screenshot": "screenshots/mobile_courses.png"
+        }
+      ]
+    },
+    {
+      "pageId": "PAGE-P1-OFFICIAL-PRICING",
+      "route": "/pricing",
+      "source": {
+        "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+        "line": 50
+      },
+      "observations": [
+        {
+          "viewport": {
+            "width": 1280,
+            "height": 900
+          },
+          "statusChain": [
+            301,
+            200
+          ],
+          "finalUrl": "http://127.0.0.1:18182/start",
+          "h1": [
+            "学习账号开放情况"
+          ],
+          "screenshot": "screenshots/desktop_pricing.png"
+        },
+        {
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "statusChain": [
+            301,
+            200
+          ],
+          "finalUrl": "http://127.0.0.1:18182/start",
+          "h1": [
+            "学习账号开放情况"
+          ],
+          "screenshot": "screenshots/mobile_pricing.png"
+        }
+      ]
+    },
+    {
+      "pageId": "PAGE-P1-OFFICIAL-DOWNLOAD",
+      "route": "/download",
+      "source": {
+        "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+        "line": 51
+      },
+      "observations": [
+        {
+          "viewport": {
+            "width": 1280,
+            "height": 900
+          },
+          "statusChain": [
+            301,
+            200
+          ],
+          "finalUrl": "http://127.0.0.1:18182/start",
+          "h1": [
+            "学习账号开放情况"
+          ],
+          "screenshot": "screenshots/desktop_download.png"
+        },
+        {
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "statusChain": [
+            301,
+            200
+          ],
+          "finalUrl": "http://127.0.0.1:18182/start",
+          "h1": [
+            "学习账号开放情况"
+          ],
+          "screenshot": "screenshots/mobile_download.png"
+        }
+      ]
+    },
+    {
+      "pageId": "PAGE-P1-OFFICIAL-ANNOUNCEMENTS",
+      "route": "/announcements",
+      "source": {
+        "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+        "line": 52
+      },
+      "observations": [
+        {
+          "viewport": {
+            "width": 1280,
+            "height": 900
+          },
+          "statusChain": [
+            200
+          ],
+          "finalUrl": "http://127.0.0.1:18182/announcements",
+          "h1": [
+            "产品动态与服务通知。"
+          ],
+          "screenshot": "screenshots/desktop_announcements.png"
+        },
+        {
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "statusChain": [
+            200
+          ],
+          "finalUrl": "http://127.0.0.1:18182/announcements",
+          "h1": [
+            "产品动态与服务通知。"
+          ],
+          "screenshot": "screenshots/mobile_announcements.png"
+        }
+      ]
+    },
+    {
+      "pageId": "PAGE-P1-OFFICIAL-ABOUT",
+      "route": "/about",
+      "source": {
+        "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+        "line": 53
+      },
+      "observations": [
+        {
+          "viewport": {
+            "width": 1280,
+            "height": 900
+          },
+          "statusChain": [
+            200
+          ],
+          "finalUrl": "http://127.0.0.1:18182/about",
+          "h1": [
+            "学习，应该能继续下去。"
+          ],
+          "screenshot": "screenshots/desktop_about.png"
+        },
+        {
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "statusChain": [
+            200
+          ],
+          "finalUrl": "http://127.0.0.1:18182/about",
+          "h1": [
+            "学习，应该能继续下去。"
+          ],
+          "screenshot": "screenshots/mobile_about.png"
+        }
+      ]
+    },
+    {
+      "pageId": "PAGE-P1-OFFICIAL-COMPLIANCE",
+      "route": "/compliance",
+      "source": {
+        "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+        "line": 54
+      },
+      "observations": [
+        {
+          "viewport": {
+            "width": 1280,
+            "height": 900
+          },
+          "statusChain": [
+            200
+          ],
+          "finalUrl": "http://127.0.0.1:18182/compliance",
+          "h1": [
+            "公开信息"
+          ],
+          "screenshot": "screenshots/desktop_compliance.png"
+        },
+        {
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "statusChain": [
+            200
+          ],
+          "finalUrl": "http://127.0.0.1:18182/compliance",
+          "h1": [
+            "公开信息"
+          ],
+          "screenshot": "screenshots/mobile_compliance.png"
+        }
+      ]
+    },
+    {
+      "pageId": "PAGE-P1-OFFICIAL-STATUS",
+      "route": "/status",
+      "source": {
+        "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+        "line": 55
+      },
+      "observations": [
+        {
+          "viewport": {
+            "width": 1280,
+            "height": 900
+          },
+          "statusChain": [
+            200
+          ],
+          "finalUrl": "http://127.0.0.1:18182/status",
+          "h1": [
+            "服务状态，及时了解。"
+          ],
+          "screenshot": "screenshots/desktop_status.png"
+        },
+        {
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "statusChain": [
+            200
+          ],
+          "finalUrl": "http://127.0.0.1:18182/status",
+          "h1": [
+            "服务状态，及时了解。"
+          ],
+          "screenshot": "screenshots/mobile_status.png"
+        }
+      ]
+    },
+    {
+      "pageId": "PAGE-P1-OFFICIAL-PRIVACY",
+      "route": "/privacy",
+      "source": {
+        "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+        "line": 56
+      },
+      "observations": [
+        {
+          "viewport": {
+            "width": 1280,
+            "height": 900
+          },
+          "statusChain": [
+            200
+          ],
+          "finalUrl": "http://127.0.0.1:18182/privacy",
+          "h1": [
+            "隐私与数据"
+          ],
+          "screenshot": "screenshots/desktop_privacy.png"
+        },
+        {
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "statusChain": [
+            200
+          ],
+          "finalUrl": "http://127.0.0.1:18182/privacy",
+          "h1": [
+            "隐私与数据"
+          ],
+          "screenshot": "screenshots/mobile_privacy.png"
+        }
+      ]
+    },
+    {
+      "pageId": "PAGE-P1-OFFICIAL-TERMS",
+      "route": "/terms",
+      "source": {
+        "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+        "line": 57
+      },
+      "observations": [
+        {
+          "viewport": {
+            "width": 1280,
+            "height": 900
+          },
+          "statusChain": [
+            200
+          ],
+          "finalUrl": "http://127.0.0.1:18182/terms",
+          "h1": [
+            "使用说明"
+          ],
+          "screenshot": "screenshots/desktop_terms.png"
+        },
+        {
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "statusChain": [
+            200
+          ],
+          "finalUrl": "http://127.0.0.1:18182/terms",
+          "h1": [
+            "使用说明"
+          ],
+          "screenshot": "screenshots/mobile_terms.png"
+        }
+      ]
+    },
+    {
+      "pageId": "PAGE-P1-OFFICIAL-MINORS",
+      "route": "/minors",
+      "source": {
+        "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+        "line": 58
+      },
+      "observations": [
+        {
+          "viewport": {
+            "width": 1280,
+            "height": 900
+          },
+          "statusChain": [
+            200
+          ],
+          "finalUrl": "http://127.0.0.1:18182/minors",
+          "h1": [
+            "成人使用范围"
+          ],
+          "screenshot": "screenshots/desktop_minors.png"
+        },
+        {
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "statusChain": [
+            200
+          ],
+          "finalUrl": "http://127.0.0.1:18182/minors",
+          "h1": [
+            "成人使用范围"
+          ],
+          "screenshot": "screenshots/mobile_minors.png"
+        }
+      ]
+    }
+  ],
+  "currentCounts": {
+    "publicRoutesExplicit": 19,
+    "publicRoutesDirectStatic": 13,
+    "publicRoutesMethodDetails": 6,
+    "NuxtVueTemplates": 16,
+    "NuxtStaticTemplatesIncludingTwo301Aliases": 15,
+    "NuxtDynamicTemplates": 1,
+    "concreteAddressesIncludingSixMethodDetailsAndTwoAliases": 21,
+    "READMEPageClassCount": 14,
+    "mockSummaryPageCount": 11,
+    "BC001PageCount": 11,
+    "IC001NamedPageClasses": 3
+  },
+  "mockBoundary": "redesign README line25 aggregate11static statement; no official-specific 11route manifest under redesign/mockups found; cannot import acceptance."
+}

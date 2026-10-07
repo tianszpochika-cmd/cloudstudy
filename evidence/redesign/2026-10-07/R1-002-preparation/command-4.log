@@ -1,0 +1,49 @@
+{
+  "task": "R1-002",
+  "status": "PREPARATION_PARTIAL_NOT_READY",
+  "checkedAt": "2026-10-06T22:13:16.931Z",
+  "mode": "create-tls",
+  "platform": "darwin",
+  "architecture": "arm64",
+  "sourceHead": "ff0f8057f4088ead03ab7890493cdf9d06f6d5f1",
+  "toolSha256": "ba1f0d1197688be270cb085f0e9bd93e1d66ebecf3611458a9446461f72c0778",
+  "localPortsSha256": "0a6b43d35379fed2e679961b34a0ad0e9ec1888dfb7d1a2c76eed20706e5ca95",
+  "result": {
+    "directory": "<PRIVATE_MATERIAL_DIR>",
+    "publicCertificate": {
+      "sha256": "f1f8fcf21d3bfbef7670f5ed0cab1551609868a49726435608a209e9175a50fa",
+      "fingerprint256": "3A:34:4C:CA:B6:11:8F:5A:7B:87:58:A6:74:CB:F4:27:A0:80:22:AE:6B:72:3E:B1:6F:EB:34:6F:3C:C3:18:92",
+      "subjectAltName": "IP Address:127.0.0.1, DNS:localhost",
+      "validFrom": "Oct  6 22:13:17 2026 GMT",
+      "validTo": "Oct 13 22:13:17 2026 GMT",
+      "ca": false
+    },
+    "plan": {
+      "issuer": "http://127.0.0.1:18087",
+      "iamTransport": "https://127.0.0.1:18087",
+      "jwksTransport": "https://127.0.0.1:18087/api/v1/auth/jwks",
+      "gatewayArguments": [
+        "--spring.cloud.gateway.server.webflux.httpclient.ssl.trusted-x509-certificates[0]=<PRIVATE_MATERIAL_DIR>/test-ca.pem",
+        "--spring.cloud.gateway.server.webflux.httpclient.ssl.use-insecure-trust-manager=false"
+      ],
+      "independentJwksClient": {
+        "implementation": "GatewayIamPublicJwkSource.readDocument → WebClient.builder().build()",
+        "trustConfiguration": "Dedicated JVM trustStore via protected external gateway-jvm.args; does not inherit SCG route CA settings"
+      },
+      "runtimeVerified": false,
+      "registrationPerformed": false,
+      "databaseTouched": false
+    },
+    "keytoolImportAndListExit": 0,
+    "javaArgfileParseExit": 0,
+    "offlineJvmTrust": {
+      "dedicatedDefaultJvmTrust": "PASS",
+      "exactlyOneTestAnchor": "PASS",
+      "emptyStoreRejects": "PASS",
+      "networkHandshakeExecuted": false
+    },
+    "privateMaterialPermissions": "directory0700/files0600",
+    "serviceStarted": false,
+    "databaseTouched": false
+  }
+}

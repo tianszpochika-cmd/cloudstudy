@@ -1,0 +1,152 @@
+{
+  "task": "R1-002",
+  "status": "PREPARATION_PARTIAL_NOT_READY",
+  "checkedAt": "2026-10-06T22:24:03.219Z",
+  "mode": "create-tls",
+  "platform": "darwin",
+  "architecture": "arm64",
+  "sourceHead": "ff0f8057f4088ead03ab7890493cdf9d06f6d5f1",
+  "toolSha256": "fd579fa6bb4bad18885f85a44acdb8f53c6f1b7957a31ff6f14a613e541adc0e",
+  "localPortsSha256": "0a6b43d35379fed2e679961b34a0ad0e9ec1888dfb7d1a2c76eed20706e5ca95",
+  "result": {
+    "directory": "<PRIVATE_MATERIAL_DIR>",
+    "publicCertificate": {
+      "sha256": "57402b46a848c2d8401bd60dac3e2af81af92b5f11a3b96fef8af4ae897192d4",
+      "fingerprint256": "12:6C:A8:43:BB:4A:7F:7A:35:9B:6F:12:16:03:67:03:77:72:9F:84:68:22:A7:E9:50:82:22:59:13:CC:6F:B5",
+      "subjectAltName": "IP Address:127.0.0.1, DNS:localhost",
+      "validFrom": "Oct  6 22:24:03 2026 GMT",
+      "validTo": "Oct 13 22:24:03 2026 GMT",
+      "ca": false
+    },
+    "plan": {
+      "issuer": "http://127.0.0.1:18087",
+      "iamTransport": "https://127.0.0.1:18087",
+      "jwksTransport": "https://127.0.0.1:18087/api/v1/auth/jwks",
+      "gatewayArguments": [
+        "--spring.cloud.gateway.server.webflux.httpclient.ssl.trusted-x509-certificates[0]=<PRIVATE_MATERIAL_DIR>/test-ca.pem",
+        "--spring.cloud.gateway.server.webflux.httpclient.ssl.use-insecure-trust-manager=false"
+      ],
+      "independentJwksClient": {
+        "implementation": "GatewayIamPublicJwkSource.readDocument → WebClient.builder().build()",
+        "trustConfiguration": "Dedicated JVM trustStore via protected external gateway-jvm.args; does not inherit SCG route CA settings"
+      },
+      "runtimeVerified": false,
+      "registrationPerformed": false,
+      "databaseTouched": false
+    },
+    "keytoolImportAndListExit": 0,
+    "javaArgfileParseExit": 0,
+    "offlineJvmTrust": {
+      "dedicatedDefaultJvmTrust": "PASS",
+      "exactlyOneTestAnchor": "PASS",
+      "emptyStoreRejects": "PASS",
+      "networkHandshakeExecuted": false
+    },
+    "privateMaterialPermissions": {
+      "checkedAt": "2026-10-06T22:24:04.257Z",
+      "method": "filesystem-lstat-owner-and-mode",
+      "checks": [
+        {
+          "name": "material-directory",
+          "kind": "directory",
+          "mode": "0700",
+          "expectedMode": "0700",
+          "ownerUid": 502,
+          "expectedOwnerUid": 502,
+          "ownerMatches": true,
+          "symbolicLink": false,
+          "expectedTypeMatches": true,
+          "result": "PASS"
+        },
+        {
+          "name": "test-key.pem",
+          "kind": "file",
+          "mode": "0600",
+          "expectedMode": "0600",
+          "ownerUid": 502,
+          "expectedOwnerUid": 502,
+          "ownerMatches": true,
+          "symbolicLink": false,
+          "expectedTypeMatches": true,
+          "result": "PASS"
+        },
+        {
+          "name": "test-ca.pem",
+          "kind": "file",
+          "mode": "0600",
+          "expectedMode": "0600",
+          "ownerUid": 502,
+          "expectedOwnerUid": 502,
+          "ownerMatches": true,
+          "symbolicLink": false,
+          "expectedTypeMatches": true,
+          "result": "PASS"
+        },
+        {
+          "name": "iam-server.p12",
+          "kind": "file",
+          "mode": "0600",
+          "expectedMode": "0600",
+          "ownerUid": 502,
+          "expectedOwnerUid": 502,
+          "ownerMatches": true,
+          "symbolicLink": false,
+          "expectedTypeMatches": true,
+          "result": "PASS"
+        },
+        {
+          "name": "gateway-trust.p12",
+          "kind": "file",
+          "mode": "0600",
+          "expectedMode": "0600",
+          "ownerUid": 502,
+          "expectedOwnerUid": 502,
+          "ownerMatches": true,
+          "symbolicLink": false,
+          "expectedTypeMatches": true,
+          "result": "PASS"
+        },
+        {
+          "name": "gateway-jvm.args",
+          "kind": "file",
+          "mode": "0600",
+          "expectedMode": "0600",
+          "ownerUid": 502,
+          "expectedOwnerUid": 502,
+          "ownerMatches": true,
+          "symbolicLink": false,
+          "expectedTypeMatches": true,
+          "result": "PASS"
+        },
+        {
+          "name": "iam-private.properties",
+          "kind": "file",
+          "mode": "0600",
+          "expectedMode": "0600",
+          "ownerUid": 502,
+          "expectedOwnerUid": 502,
+          "ownerMatches": true,
+          "symbolicLink": false,
+          "expectedTypeMatches": true,
+          "result": "PASS"
+        },
+        {
+          "name": "transport-plan.json",
+          "kind": "file",
+          "mode": "0600",
+          "expectedMode": "0600",
+          "ownerUid": 502,
+          "expectedOwnerUid": 502,
+          "ownerMatches": true,
+          "symbolicLink": false,
+          "expectedTypeMatches": true,
+          "result": "PASS"
+        }
+      ],
+      "result": "PASS",
+      "contentsRead": false
+    },
+    "serviceStarted": false,
+    "databaseTouched": false
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "task": "R1-002",
+  "status": "PREPARATION_PARTIAL_NOT_READY",
+  "executableJarSha256": "34f13139294dead9f80cf0a4d41d43485d9cb95e0895c319ed4504b1fad66380",
+  "dependency": "spring-cloud-gateway-server-webflux-5.0.3.jar",
+  "dependencySha256": "e44a06b3cc46e0b1cc293c327b7c6ae71683e08747b53e5a001c58e9c1271871",
+  "binderSourceSha256": "84be68281b5c0883c3eb36ee34b788b9096b605c3bc60eeff43793ed498d6543",
+  "result": {
+    "currentPrefixBindsExactCertificate": "PASS",
+    "insecureTrustManagerFalse": "PASS",
+    "legacyPrefixUnbound": "PASS",
+    "gatewayRouteHandshakeExecuted": false,
+    "independentWebClientHandshakeExecuted": false
+  }
+}

@@ -1,0 +1,65 @@
+TAP version 13
+# Subtest: rejects unknown, duplicate, missing, and unsupported mode arguments
+ok 1 - rejects unknown, duplicate, missing, and unsupported mode arguments
+  ---
+  duration_ms: 0.732084
+  ...
+# Subtest: creation requires a caller-selected protected external parent
+ok 2 - creation requires a caller-selected protected external parent
+  ---
+  duration_ms: 0.097458
+  ...
+# Subtest: resolves directory symlinks before repository exclusion
+ok 3 - resolves directory symlinks before repository exclusion
+  ---
+  duration_ms: 1.281291
+  ...
+# Subtest: refuses group/world accessible private directory
+ok 4 - refuses group/world accessible private directory
+  ---
+  duration_ms: 0.903917
+  ...
+# Subtest: fixed IAM and Gateway ports reject drift without opening a listener
+ok 5 - fixed IAM and Gateway ports reject drift without opening a listener
+  ---
+  duration_ms: 0.178708
+  ...
+# Subtest: preserves issuer identity while both IAM transports use HTTPS
+ok 6 - preserves issuer identity while both IAM transports use HTTPS
+  ---
+  duration_ms: 0.145
+  ...
+# Subtest: rejects old prefix, insecure trust manager, transport downgrade, and acceptance claims
+ok 7 - rejects old prefix, insecure trust manager, transport downgrade, and acceptance claims
+  ---
+  duration_ms: 0.240166
+  ...
+# Subtest: Java argfile quoting preserves spaces and Windows path separators; rejects injected lines
+ok 8 - Java argfile quoting preserves spaces and Windows path separators; rejects injected lines
+  ---
+  duration_ms: 0.136208
+  ...
+# Subtest: private readback records actual owner/mode and refuses a changed file permission
+ok 9 - private readback records actual owner/mode and refuses a changed file permission
+  ---
+  duration_ms: 2.164208
+  ...
+# Subtest: private readback refuses symlink, wrong file type, path escape, and non-0700 directory
+ok 10 - private readback refuses symlink, wrong file type, path escape, and non-0700 directory
+  ---
+  duration_ms: 1.204625
+  ...
+# Subtest: archive sanitization redacts material paths without changing executable input or source provenance
+ok 11 - archive sanitization redacts material paths without changing executable input or source provenance
+  ---
+  duration_ms: 0.464
+  ...
+1..11
+# tests 11
+# suites 0
+# pass 11
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 55.95325

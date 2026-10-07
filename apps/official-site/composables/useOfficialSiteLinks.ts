@@ -2,15 +2,25 @@ import {
   appendCampaignParams,
   buildLearnerLink,
   buildLearnerLoginLink,
+  buildPublicLearningEntry,
   preserveCampaignParams,
   safePublicHref,
 } from "~/utils/public-links.mjs";
 
 export function useOfficialSiteLinks() {
-  const { officialI18nAdapter, officialThemeController } =
+  const { officialThemeController } =
     useNuxtApp().$foundation;
   const route = useRoute();
   const config = useRuntimeConfig();
+  const { locale } = useSiteText();
+  const entryTheme = ref(officialThemeController.theme);
+  let stopTheme: (() => void) | undefined;
+  onMounted(() => {
+    stopTheme = officialThemeController.subscribe((state) => {
+      entryTheme.value = state.theme;
+    });
+  });
+  onBeforeUnmount(() => stopTheme?.());
   const learnerWebUrl = String(config.public.learnerWebUrl || "/");
   const configuredOrigins = Array.isArray(config.public.publicLinkOrigins)
     ? config.public.publicLinkOrigins.map(String)
@@ -38,9 +48,18 @@ export function useOfficialSiteLinks() {
     // learner login page. It never receives, stores, or forwards business tokens.
     return buildLearnerLoginLink(learnerWebUrl, {
       returnTo,
-      locale: officialI18nAdapter.state.locale,
-      theme: officialThemeController.theme,
+      locale: locale.value,
+      theme: entryTheme.value,
       campaignParams: campaignParams(),
+    });
+  }
+
+  function registerLink() {
+    return buildPublicLearningEntry({
+      base: learnerWebUrl,
+      locale: locale.value,
+      theme: entryTheme.value,
+      campaign: campaignParams(),
     });
   }
 
@@ -57,5 +76,5 @@ export function useOfficialSiteLinks() {
     return appendCampaignParams(safe, route.query);
   }
 
-  return { learnerLink, authLink, publicLink, campaignParams };
+  return { learnerLink, authLink, registerLink, publicLink, campaignParams };
 }

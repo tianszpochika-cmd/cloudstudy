@@ -1,0 +1,748 @@
+diff --git a/apps/official-site/README.md b/apps/official-site/README.md
+index 01bac057..aee611a4 100644
+--- a/apps/official-site/README.md
++++ b/apps/official-site/README.md
+@@ -1,6 +1,6 @@
+ # 语学星官方网站
+ 
+-已按用户确认的官网提案 06 改造 `apps/official-site`，采用 Vue 3、TypeScript、Nuxt SSR。首页、学习内容、学习世界、练习示例、帮助、开放情况与公开说明共 14 类页面、19 个公开内容地址。详细交付与验证见[官网正式实现记录](../../docs/06-design/v2-980plus/official-site-experience-proposal-2026-09-21/implementation/README.md)。
++已按用户确认的官网提案 06 改造 `apps/official-site`，采用 Vue 3、TypeScript、Nuxt SSR。首页、学习内容、学习世界、练习示例、帮助、开放情况与公开说明共 16 类页面、21 个公开内容地址。详细交付与验证见[官网正式实现记录](../../docs/06-design/v2-980plus/official-site-experience-proposal-2026-09-21/implementation/README.md)。
+ 
+ ## 本地启动
+ 
+@@ -16,6 +16,7 @@ pnpm --filter @englishflow/official-site dev
+ pnpm --filter @englishflow/official-site build
+ pnpm --filter @englishflow/official-site exec nuxi typecheck
+ pnpm --filter @englishflow/official-site test:website
++pnpm --filter @englishflow/official-site exec node --import ../../scripts/dev/register-typescript.mjs --test tests/r1-001.test.mjs
+ node apps/official-site/tests/browser/website-runtime.cjs
+ ```
+ 
+@@ -38,7 +39,7 @@ node apps/official-site/tests/browser/website-runtime.cjs
+ | `/pricing`、`/download` | 301 至 `/start`，保留查询参数 |
+ | `/robots.txt`、`/sitemap.xml` | 抓取规则与 19 个 canonical 地址 |
+ 
+-当前官网提供无需登录的浏览示例；学习账号注册与登录暂不可用。首期免费为计划安排，开放时间与范围以公告为准；当前不展示未获批的付费套餐或尚未开放的 App 下载。公开课程/公告/公示仍来自 Gateway；无法加载时显示可重试状态。
++R1-001 当前源交付保留无需登录的浏览示例，去注册 CTA 安全跳转到 learner-web `/register`。仅面向 18 岁以上成人与大学生；注册后仍需服务端成人资格校验，通过前不开放学习能力。首期免费为计划安排，开放时间与范围以公告为准；当前不展示未获批的付费套餐或尚未开放的 App 下载。公开课程/公告/公示仍来自 Gateway；无法加载时显示可重试状态。
+ 
+ ## 配置
+ 
+@@ -51,7 +52,7 @@ node apps/official-site/tests/browser/website-runtime.cjs
+ | `NUXT_PUBLIC_PROJECTION_PATH` | `/public/site/projection` |
+ | `NUXT_PUBLIC_LINK_ORIGINS` | 额外允许的公告/下载来源，逗号分隔 |
+ 
+-官网不接收登录密码，不建立业务会话。`utils/public-links.mjs` 保留学习端注册/登录链接的安全构造，但当前页面不展示这些不可用入口；公开接口只读，每次上游请求超时为 2.5 秒。备案与完整法律文件仍须以正式核实、公示版本为准。
++官网不接收登录密码，不建立业务会话。`utils/public-links.mjs` 提供注册/登录链接的安全构造；当前注册入口使用固定 learner-web origin 与 returnTo，只保留白名单 UTM/UI 偏好；公开接口只读，每次上游请求超时为 2.5 秒。备案与完整法律文件仍须以正式核实、公示版本为准。
+ 
+ ## 共享基础与维护
+ 
+@@ -60,3 +61,5 @@ node apps/official-site/tests/browser/website-runtime.cjs
+ - 性能：`@englishflow/performance` 提供 Ultra / High / Medium / Performance。页面动效默认开启，顶部不再提供开关，也不继承旧按钮的暂停偏好；轻量减少装饰，省电采用静态 2D，继续尊重系统减少动态效果。
+ - Nuxt 插件按请求创建主题/语言实例；公开 HTML 使用 SSR，不缓存个性化 HTML。仅 robots 与 sitemap 预渲染，避免不同访问者的主题/语言串用。
+ - 学习示例是本页内存交互；角色为本地 SVG，空间为 CSS 透视分层。正式 Three.js 模型、账号装扮和游戏结算仍由学习端实现。
++
++R1-001 11 个 canonical 地址按 PAGE 登记册单独验收，价格和下载为直接 200 的公开投影页，进入 sitemap；只在相关目录为空时显示准备中，保留错误/权限/恢复/维护与重试，非空可只读展示服务端已发布的价格、权益和渠道说明，不提供购买/支付/安装包动作；课程真实空投影显示“课程准备中”。其他公开页继续保留。当前源证据见 [R1-001重新交付](../../evidence/redesign/2026-10-07/R1-001-implementation/task-spec.md)，不是旧验收恢复，也不验收 IAM 注册201或学习权限。
+diff --git a/apps/official-site/components/SiteStartButton.vue b/apps/official-site/components/SiteStartButton.vue
+index 2cf98d17..e2ba7a9f 100644
+--- a/apps/official-site/components/SiteStartButton.vue
++++ b/apps/official-site/components/SiteStartButton.vue
+@@ -3,10 +3,13 @@ withDefaults(defineProps<{ label?: string; secondary?: boolean }>(), {
+   label: "",
+ });
+ const { t } = useSiteText();
++const { registerLink } = useOfficialSiteLinks();
+ </script>
+ <template>
+   <NuxtLink
+-    to="/start"
++    :to="registerLink()"
++    external
++    data-register-entry
+     class="btn"
+     :class="secondary ? 'btn-white' : 'btn-primary'"
+     >{{ label || t("official.c03e46770e") }}<SiteIcon name="arrow"
+diff --git a/apps/official-site/composables/useOfficialSiteLinks.ts b/apps/official-site/composables/useOfficialSiteLinks.ts
+index 9daa267f..e15bdfa9 100644
+--- a/apps/official-site/composables/useOfficialSiteLinks.ts
++++ b/apps/official-site/composables/useOfficialSiteLinks.ts
+@@ -2,15 +2,25 @@ import {
+   appendCampaignParams,
+   buildLearnerLink,
+   buildLearnerLoginLink,
++  buildPublicLearningEntry,
+   preserveCampaignParams,
+   safePublicHref,
+ } from "~/utils/public-links.mjs";
+ 
+ export function useOfficialSiteLinks() {
+-  const { officialI18nAdapter, officialThemeController } =
++  const { officialThemeController } =
+     useNuxtApp().$foundation;
+   const route = useRoute();
+   const config = useRuntimeConfig();
++  const { locale } = useSiteText();
++  const entryTheme = ref(officialThemeController.theme);
++  let stopTheme: (() => void) | undefined;
++  onMounted(() => {
++    stopTheme = officialThemeController.subscribe((state) => {
++      entryTheme.value = state.theme;
++    });
++  });
++  onBeforeUnmount(() => stopTheme?.());
+   const learnerWebUrl = String(config.public.learnerWebUrl || "/");
+   const configuredOrigins = Array.isArray(config.public.publicLinkOrigins)
+     ? config.public.publicLinkOrigins.map(String)
+@@ -38,12 +48,21 @@ export function useOfficialSiteLinks() {
+     // learner login page. It never receives, stores, or forwards business tokens.
+     return buildLearnerLoginLink(learnerWebUrl, {
+       returnTo,
+-      locale: officialI18nAdapter.state.locale,
+-      theme: officialThemeController.theme,
++      locale: locale.value,
++      theme: entryTheme.value,
+       campaignParams: campaignParams(),
+     });
+   }
+ 
++  function registerLink() {
++    return buildPublicLearningEntry({
++      base: learnerWebUrl,
++      locale: locale.value,
++      theme: entryTheme.value,
++      campaign: campaignParams(),
++    });
++  }
++
+   function publicLink(
+     value: string | null | undefined,
+     fallback: string | null = null,
+@@ -57,5 +76,5 @@ export function useOfficialSiteLinks() {
+     return appendCampaignParams(safe, route.query);
+   }
+ 
+-  return { learnerLink, authLink, publicLink, campaignParams };
++  return { learnerLink, authLink, registerLink, publicLink, campaignParams };
+ }
+diff --git a/apps/official-site/composables/usePublicProjection.ts b/apps/official-site/composables/usePublicProjection.ts
+index 636c3625..0fb13113 100644
+--- a/apps/official-site/composables/usePublicProjection.ts
++++ b/apps/official-site/composables/usePublicProjection.ts
+@@ -34,11 +34,28 @@ export function usePublicProjection(
+     if (pending) return pending;
+     pending = (async () => {
+       try {
++        let commerceDegraded = false;
+         const response = await request<PublicProjectionResponse>(
+           "/api/public-projection",
+-          { query: { locale } },
++          {
++            query: { locale },
++            onResponse({ response }) {
++              commerceDegraded = response.headers.get("x-public-projection-commerce") === "degraded";
++            },
++          },
+         );
+-        result.value = response;
++        if (!response?.projection) throw new Error("PUBLIC_PROJECTION_UNAVAILABLE");
++        // The existing BFF can keep content usable while its commerce read fails.
++        // Only the pricing scope must treat that cleared catalog as unavailable.
++        result.value = key === "pricing" && commerceDegraded
++          ? {
++              projection: EMPTY_PUBLIC_PROJECTION,
++              state: "error",
++              stale: false,
++              source: "empty-fallback",
++              errorCode: "PUBLIC_COMMERCE_PROJECTION_UNAVAILABLE",
++            }
++          : response;
+       } catch {
+         result.value = {
+           projection: EMPTY_PUBLIC_PROJECTION,
+diff --git a/apps/official-site/pages/courses/index.vue b/apps/official-site/pages/courses/index.vue
+index b922f0db..e84ecb9d 100644
+--- a/apps/official-site/pages/courses/index.vue
++++ b/apps/official-site/pages/courses/index.vue
+@@ -26,6 +26,11 @@ function filter(groupValue: string, searchValue = query.value) {
+   });
+ }
+ const { loadState, load } = usePublicProjection("courses");
++const { registerLink } = useOfficialSiteLinks();
++const coursesEmpty = computed(
++  () => loadState.value.state === "empty" ||
++    (loadState.value.state === "ready" && !loadState.value.projection.courses.length),
++);
+ useOfficialSeo({
+   title: t("official.c66fb6e8c0"),
+   description: t("official.c0978c4332"),
+@@ -100,7 +105,7 @@ useOfficialSeo({
+               <h2 id="published-courses-title">{{ t("official.c52c0deec0") }}</h2>
+               <p class="catalog-note">{{ t("official.cab2cf9e17") }}</p>
+             </div>
+-            <NuxtLink class="link-arrow" to="/start"
++            <NuxtLink class="link-arrow" :to="registerLink()" external data-register-entry
+               >{{ t("official.caa236cbb2") }}<SiteIcon name="arrow"
+             /></NuxtLink>
+           </div>
+@@ -119,7 +124,7 @@ useOfficialSeo({
+               <span v-if="course.level" class="pill">{{ course.level }}</span>
+               <h3>{{ course.title }}</h3>
+               <p v-if="course.description">{{ course.description }}</p>
+-              <NuxtLink class="link-arrow" to="/start"
++              <NuxtLink class="link-arrow" :to="registerLink()" external data-register-entry
+                 >{{ t("official.caa236cbb2") }}<SiteIcon name="arrow"
+               /></NuxtLink>
+             </article>
+@@ -127,6 +132,10 @@ useOfficialSeo({
+           <PublicStatus
+             v-if="loadState.state !== 'ready' || !loadState.projection.courses.length"
+             :state="loadState.state === 'ready' ? 'empty' : loadState.state"
++            :title="coursesEmpty ? t('official.r1CoursesPreparing') : undefined"
++            :message="coursesEmpty ? t('official.r1CoursesPreparingNote') : undefined"
++            :action-label="coursesEmpty ? t('official.c03e46770e') : undefined"
++            :action-href="coursesEmpty ? registerLink() : undefined"
+             @retry="load"
+           />
+         </section>
+diff --git a/apps/official-site/pages/download.vue b/apps/official-site/pages/download.vue
+index 9e6fb8af..35c0ff23 100644
+--- a/apps/official-site/pages/download.vue
++++ b/apps/official-site/pages/download.vue
+@@ -1,5 +1,49 @@
+ <script setup lang="ts">
+-const route = useRoute();
+-await navigateTo({ path: "/start", query: route.query }, { redirectCode: 301 });
++import { useOfficialSeo } from "~/utils/seo";
++const { t } = useSiteText();
++const { loadState, load } = usePublicProjection("download");
++const channels = computed(() => loadState.value.projection.downloadChannels);
++const catalogEmpty = computed(() =>
++  ["ready", "empty"].includes(loadState.value.state) && !channels.value.length,
++);
++const showCatalog = computed(() =>
++  ["ready", "recovery"].includes(loadState.value.state) && channels.value.length > 0,
++);
++useOfficialSeo({
++  title: t("official.r1DownloadTitle"),
++  description: t("official.r1DownloadNote"),
++  path: "/download",
++});
+ </script>
+-<template><div /></template>
++<template>
++  <div>
++    <PageHeading
++      :title="t('official.r1DownloadTitle')"
++      :lead="t('official.r1DownloadNote')"
++      :label="t('official.r1DownloadLabel')"
++    />
++    <section class="page-body">
++      <div class="container">
++        <div v-if="showCatalog" class="published-grid" data-public-catalog>
++          <article v-for="item in channels" :key="item.id" class="public-course-card" :data-availability="item.availability">
++            <h2>{{ item.name }}</h2>
++            <p v-if="item.platform">{{ item.platform }}</p>
++            <p v-if="item.description">{{ item.description }}</p>
++            <p>{{ t(`official.r1Availability_${item.availability}`) }}</p>
++          </article>
++        </div>
++        <PublicStatus
++          v-if="loadState.state !== 'ready' || catalogEmpty"
++          :state="catalogEmpty ? 'empty' : loadState.state"
++          :title="catalogEmpty ? t('official.r1DownloadPreparing') : undefined"
++          :message="catalogEmpty ? t('official.r1DownloadEmptyNote') : undefined"
++          :action-href="catalogEmpty ? '/announcements' : undefined"
++          :action-label="t('official.c584d952d2')"
++          @retry="load"
++        />
++        <p class="catalog-note">{{ t("official.r1DownloadBoundary") }}</p>
++        <SiteStartButton />
++      </div>
++    </section>
++  </div>
++</template>
+diff --git a/apps/official-site/pages/pricing.vue b/apps/official-site/pages/pricing.vue
+index 9e6fb8af..4b2ea8b9 100644
+--- a/apps/official-site/pages/pricing.vue
++++ b/apps/official-site/pages/pricing.vue
+@@ -1,5 +1,58 @@
+ <script setup lang="ts">
+-const route = useRoute();
+-await navigateTo({ path: "/start", query: route.query }, { redirectCode: 301 });
++import { useOfficialSeo } from "~/utils/seo";
++const { t } = useSiteText();
++const { loadState, load } = usePublicProjection("pricing");
++const plans = computed(() => [...new Map(
++  [...loadState.value.projection.skus, ...loadState.value.projection.pricingPlans]
++    .map((plan) => [plan.skuId || plan.id, plan]),
++).values()]);
++const catalogEmpty = computed(() =>
++  ["ready", "empty"].includes(loadState.value.state) && !plans.value.length,
++);
++const showCatalog = computed(() =>
++  ["ready", "recovery"].includes(loadState.value.state) && plans.value.length > 0,
++);
++useOfficialSeo({
++  title: t("official.r1PricingTitle"),
++  description: t("official.r1PricingNote"),
++  path: "/pricing",
++});
+ </script>
+-<template><div /></template>
++<template>
++  <div>
++    <PageHeading
++      :title="t('official.r1PricingTitle')"
++      :lead="t('official.r1PricingNote')"
++      :label="t('official.r1PricingLabel')"
++    />
++    <section class="page-body">
++      <div class="container">
++        <div v-if="showCatalog" class="published-grid" data-public-catalog>
++          <article v-for="item in plans" :key="item.id" class="public-course-card" :data-availability="item.availability">
++            <h2>{{ item.name }}</h2>
++            <p v-if="item.price" class="sku-price"><strong>{{ item.price }}</strong><span>{{ item.unit || item.currency }}</span></p>
++            <p v-if="item.eligibilityMessage">{{ item.eligibilityMessage }}</p>
++            <p v-if="item.description">{{ item.description }}</p>
++            <ul v-if="item.entitlements.length">
++              <li v-for="entitlement in item.entitlements" :key="entitlement.id">
++                {{ entitlement.name }}<span v-if="entitlement.description"> · {{ entitlement.description }}</span>
++              </li>
++            </ul>
++            <p>{{ t(`official.r1Availability_${item.availability}`) }}</p>
++          </article>
++        </div>
++        <PublicStatus
++          v-if="loadState.state !== 'ready' || catalogEmpty"
++          :state="catalogEmpty ? 'empty' : loadState.state"
++          :title="catalogEmpty ? t('official.r1PricingPreparing') : undefined"
++          :message="catalogEmpty ? t('official.r1PricingEmptyNote') : undefined"
++          :action-href="catalogEmpty ? '/announcements' : undefined"
++          :action-label="t('official.c584d952d2')"
++          @retry="load"
++        />
++        <p class="catalog-note">{{ t("official.r1PricingBoundary") }}</p>
++        <SiteStartButton />
++      </div>
++    </section>
++  </div>
++</template>
+diff --git a/apps/official-site/pages/start.vue b/apps/official-site/pages/start.vue
+index 4ccdc038..643a4f91 100644
+--- a/apps/official-site/pages/start.vue
++++ b/apps/official-site/pages/start.vue
+@@ -8,6 +8,7 @@ const { t } = useSiteText(),
+ const siteAddress = computed(
+   () => String(config.public.siteUrl).replace(/\/$/, "") + "/start",
+ );
++const { registerLink } = useOfficialSiteLinks();
+ async function copy() {
+   try {
+     await navigator.clipboard.writeText(siteAddress.value);
+@@ -50,6 +51,13 @@ useOfficialSeo({
+             /></NuxtLink>
+             <NuxtLink
+               class="btn btn-primary btn-wide"
++              :to="registerLink()"
++              external
++              data-register-entry
++              >{{ t("official.c03e46770e") }}<SiteIcon name="arrow"
++            /></NuxtLink>
++            <NuxtLink
++              class="btn btn-outline btn-wide"
+               to="/#practice-example"
+               data-sample-entry
+               >{{ t("official.c742e91d0b")
+diff --git a/apps/official-site/tests/b13-official-site.test.mjs b/apps/official-site/tests/b13-official-site.test.mjs
+index a53a7e84..b582f236 100644
+--- a/apps/official-site/tests/b13-official-site.test.mjs
++++ b/apps/official-site/tests/b13-official-site.test.mjs
+@@ -131,7 +131,7 @@ test("B13 官网状态覆盖 loading/empty/error/permission/recovery/maintenance
+   );
+ });
+ 
+-test("官网保留公开投影兼容，但免费首发不展示套餐或购买入口", async () => {
++test("R1-001 保留公开投影兼容，价格/下载独立空态且不展示购买入口", async () => {
+   const projection = await source("utils/public-projection.ts");
+   const pricing = await source("pages/pricing.vue");
+   const sku = await source("components/PublicSkuCard.vue");
+@@ -148,12 +148,13 @@ test("官网保留公开投影兼容，但免费首发不展示套餐或购买
+   ]) {
+     assert.match(projection, new RegExp(token));
+   }
+-  assert.match(pricing, /navigateTo/);
+-  assert.match(pricing, /\/start/);
+-  assert.match(pricing, /redirectCode: 301/);
++  assert.match(pricing, /PublicStatus/);
++  assert.match(pricing, /r1PricingPreparing/);
++  assert.doesNotMatch(pricing, /navigateTo|redirectCode/);
+   assert.match(sku, /entitlement-list/);
+   assert.match(campaign, /safe|publicLink|authLink/);
+-  assert.match(download, /\/start/);
++  assert.match(download, /r1DownloadPreparing/);
++  assert.doesNotMatch(download, /navigateTo|redirectCode/);
+   assert.doesNotMatch(pricing, /PublicSkuCard|jsonld-pricing-public-offers/);
+   assert.doesNotMatch(
+     pricing,
+diff --git a/apps/official-site/tests/b14-fe-005.test.mjs b/apps/official-site/tests/b14-fe-005.test.mjs
+index 9952393d..7d516840 100644
+--- a/apps/official-site/tests/b14-fe-005.test.mjs
++++ b/apps/official-site/tests/b14-fe-005.test.mjs
+@@ -59,34 +59,33 @@ test("official site applies explicit URL locale/theme preferences after restore"
+   assert.doesNotMatch(header, /buildPublicLearningEntry|authLink|login-link|menu-login/);
+ });
+ 
+-test("public learning entry exposes availability and no blocked account action", async () => {
++// R1-001 supersedes 8a689ec5's closed-account UI policy. Canonical auth rules remain unchanged.
++test("R1-001 public entry links to learner registration and retains adult/read-only boundaries", async () => {
+   const header = await read("apps/official-site/components/SiteHeader.vue");
+   const start = await read("apps/official-site/pages/start.vue");
++  const button = await read("apps/official-site/components/SiteStartButton.vue");
++  const links = await read("apps/official-site/composables/useOfficialSiteLinks.ts");
+   const home = await read("apps/official-site/pages/index.vue");
+-  const about = await read("apps/official-site/pages/about.vue");
+   const courseIndex = await read("apps/official-site/pages/courses/index.vue");
+   const copy = await read("packages/i18n/src/official-site.ts");
+-
+   assert.match(header, /SiteStartButton/);
+   assert.match(header, /menu-example/);
+   assert.doesNotMatch(header, /menu-login|login-link|authLink/);
++  for (const source of [button, start, courseIndex]) assert.match(source, /registerLink\(\)/);
++  assert.match(links, /buildPublicLearningEntry/);
++  assert.match(start, /data-register-entry/);
+   assert.match(start, /data-sample-entry/);
+   assert.match(start, /to="\/#practice-example"/);
+   assert.match(start, /role="status"[\s\S]*official\.c8a7b34f12/);
+   assert.equal((start.match(/official\.c8a7b34f12/g) || []).length, 1);
+-  assert.match(start, /to="\/announcements"/);
+-  assert.doesNotMatch(start, /buildPublicLearningEntry|data-learning-entry|text-login|entry\(true\)/);
+   assert.match(home, /id="practice-example"/);
+-  assert.match(copy, /学习账号注册与登录当前暂不可用/);
+-  assert.match(copy, /cbd70ad936: "学习账号开放情况"/);
+-  assert.match(copy, /c8a7b34f12: "学习账号注册与登录暂不可用。"/);
+-  assert.match(copy, /c584d952d2: "查看服务公告"/);
+-  assert.match(copy, /c89f868063: "手机浏览器示例"/);
+-  assert.match(copy, /c5973f1b79: "电脑浏览器示例"/);
++  assert.match(copy, /18 岁以上成人与大学生/);
++  assert.match(copy, /通过前不开放学习能力/);
++  assert.match(copy, /c03e46770e: "去注册"/);
++  assert.match(copy, /r1CoursesPreparing: "课程准备中"/);
+   assert.match(copy, /c7044fa394: "界面示意"/);
+   assert.match(copy, /个人数据查看、导出和删除功能当前无法通过学习账号访问/);
+-  assert.match(about, /official\.cd3b2479fd/);
+-  assert.match(courseIndex, /to="\/start"/);
++  assert.doesNotMatch(copy, /学习账号注册与登录(?:当前)?暂不可用|学习账号注册暂不可用/);
+   assert.doesNotMatch(copy, /初期免费开放|初期开放的学习功能免费使用|同一个账号登录即可查看已经保存/);
+ });
+ 
+diff --git a/apps/official-site/tests/website-entry.test.mjs b/apps/official-site/tests/website-entry.test.mjs
+index 1c1f2869..8a8a1353 100644
+--- a/apps/official-site/tests/website-entry.test.mjs
++++ b/apps/official-site/tests/website-entry.test.mjs
+@@ -54,7 +54,7 @@ test("entry configuration rejects credentials, executable URLs and embedded quer
+     for (const mobile of [false, true])
+       assert.throws(() => buildPublicLearningEntry({ base, mobile }));
+ });
+-test("sitemap exposes public website routes and six learning descriptions without retired pricing pages", () => {
++test("R1-001 sitemap includes honest pricing/download pages and six learning descriptions", () => {
+   assert.equal(new Set(publicRoutes).size, publicRoutes.length);
+   for (const route of [
+     "/world",
+@@ -63,8 +63,10 @@ test("sitemap exposes public website routes and six learning descriptions withou
+     "/start",
+     "/courses/daily-words",
+     "/privacy",
++    "/pricing",
++    "/download",
+   ])
+     assert.ok(publicRoutes.includes(route));
+-  for (const route of ["/pricing", "/download", "/login", "/register"])
++  for (const route of ["/login", "/register"])
+     assert.ok(!publicRoutes.includes(route));
+ });
+diff --git a/apps/official-site/utils/site-content.mjs b/apps/official-site/utils/site-content.mjs
+index 493fd9a2..8c7317f3 100644
+--- a/apps/official-site/utils/site-content.mjs
++++ b/apps/official-site/utils/site-content.mjs
+@@ -157,6 +157,8 @@ export const complianceNotices = Object.freeze([
+ export const publicRoutes = Object.freeze([
+   "/",
+   "/courses",
++  "/pricing",
++  "/download",
+   "/world",
+   "/method",
+   "/start",
+diff --git a/packages/i18n/src/official-site.ts b/packages/i18n/src/official-site.ts
+index 425ab6c3..3226d8f3 100644
+--- a/packages/i18n/src/official-site.ts
++++ b/packages/i18n/src/official-site.ts
+@@ -2,14 +2,33 @@
+ export const officialWebsiteMessages = {
+   "zh-CN": {
+     official: {
+-      cfc20bd937: "学习账号暂不可用",
++      r1Availability_available: "已发布的公开介绍",
++      "r1Availability_coming-soon": "准备中",
++      r1Availability_unavailable: "暂不可用",
++      r1Availability_maintenance: "维护中",
++      r1Availability_restricted: "受限，请以服务端资格判断为准",
++      r1CoursesPreparing: "课程准备中",
++      r1CoursesPreparingNote: "这里可以了解学习方式。正式课程尚未发布；可先前往学习端注册，注册后仍需通过成人资格校验。",
++      r1PricingLabel: "价格方案",
++      r1PricingTitle: "价格与开放安排",
++      r1PricingNote: "这里只展示已发布的公开介绍；本页不提供购买或支付入口。",
++      r1PricingEmptyNote: "目前没有已发布的收费方案，开放安排以正式公告为准。",
++      r1PricingPreparing: "收费方案暂未开放",
++      r1PricingBoundary: "仅展示服务端已发布的价格与权益说明；本页不提供购买或支付入口，也不创建订单。注册不代表获得付费权益或学习权限。",
++      r1DownloadLabel: "下载",
++      r1DownloadTitle: "浏览器访问与下载安排",
++      r1DownloadNote: "查看已发布的渠道说明；本页不提供安装包或应用商店下载入口。",
++      r1DownloadEmptyNote: "目前没有已发布的下载渠道，后续安排以正式公告为准。",
++      r1DownloadPreparing: "下载准备中",
++      r1DownloadBoundary: "目前不提供安装包或应用商店下载入口。后续版本与下载信息以正式公告为准。",
++      cfc20bd937: "仅面向 18 岁以上成人",
+       c0f921987a: "先浏览官网示例，",
+       ce62733459: "查看当前开放情况。",
+       ce9c9057b2: "词卡、拼句和空间示例无需登录，也不会保存学习记录。",
+-      c03e46770e: "查看开放情况",
++      c03e46770e: "去注册",
+       c742e91d0b: "浏览无需登录的示例",
+       c4d8b2e671: "示例内容",
+-      c8a7b34f12: "学习账号注册与登录暂不可用。",
++      c8a7b34f12: "仅面向 18 岁以上成人与大学生。注册后仍需通过成人资格校验，通过前不开放学习能力。",
+       cbe1356abf: "了解怎么学",
+       c8b980a2ff: "了解学习方式",
+       cb458ea40b: "当前位置",
+@@ -69,7 +88,7 @@ export const officialWebsiteMessages = {
+       c36a0f1dc5: "学习内容",
+       c831468464: "怎么学",
+       cdf0fd9f57: "学习世界",
+-      cd28ebd1dd: "查看开放情况",
++      cd28ebd1dd: "去注册",
+       cc0c78a429: "了解更多",
+       c0adb1147b: "常见问题",
+       c3a9d26408: "关于语学星",
+@@ -79,7 +98,7 @@ export const officialWebsiteMessages = {
+       c1d29e2d17: "一点一点，学得更从容。",
+       cf3b9e99ed: "显示与语言",
+       cf7ce229f6: "© 2026 语学星",
+-      c594f92349: "面向 18 岁以上成人与大学生 · 学习账号暂不可用",
++      c594f92349: "面向 18 岁以上成人与大学生 · 注册后仍需成人资格校验",
+       c21f1e8827: "登录",
+       cfb1c7dc70: "主导航",
+       c43268b927: "切换为浅色模式",
+@@ -170,7 +189,7 @@ export const officialWebsiteMessages = {
+       cab85b3ad3: "回到首页",
+       cd42c35cd6: "跳到主要内容",
+       ce46a39b05: "官网示例可免费体验",
+-      c930b5e016: "官网示例可体验 · 学习账号暂不可用",
++      c930b5e016: "官网示例可体验 · 正式课程准备中",
+       c464f12ed4: "为成人的日常语言学习留一个位置。",
+       c9d4463ed0: "学习，应该能继续下去。",
+       c6c92bf054: "语学星，为成人的日常语言学习留一个位置。",
+@@ -186,7 +205,7 @@ export const officialWebsiteMessages = {
+       cc5bd081f4: "口语以录音自评为主，写作与练习基于规则反馈。",
+       c9576078dc: "节奏由你定",
+       c20944d434: "从适合自己的目标开始，让练习与复习成为可以继续的小事。",
+-      c63e42afa3: "当前面向 18 岁以上成人与大学生；官网示例可体验，学习账号暂不可用。",
++      c63e42afa3: "当前面向 18 岁以上成人与大学生；官网示例可体验，注册后仍需成人资格校验。",
+       cd3b2479fd: "查看开放情况",
+       c9f9bb9530: "服务公告 · 语学星",
+       ce8a9e7813: "开放安排与服务变化，集中在这里查看。",
+@@ -214,7 +233,7 @@ export const officialWebsiteMessages = {
+       cb6d26530e: "查看全部内容",
+       cab2cf9e17: "这里介绍学习方式，具体课程以学习端已开放内容为准。",
+       c52c0deec0: "当前公开课程",
+-      caa236cbb2: "查看开放情况",
++      caa236cbb2: "去注册",
+       ccc3aad4f2: "看看练习示例",
+       cd529d921d: "可以这样学",
+       c0d2ad5cd6: "用一段内容，了解过程",
+@@ -239,7 +258,7 @@ export const officialWebsiteMessages = {
+       c128a71f1f: "学习与复习",
+       cdf6c9f969: "设备与账号",
+       c1298e2d3d: "关于个人学习记录",
+-      ce2b38dbd2: "学习账号登录暂不可用；请先查看服务公告与官网常见问题。",
++      ce2b38dbd2: "账号注册与登录请前往学习端；具体学习范围以服务公告与学习端实际开放为准。",
+       cdebfe7b60: "查看开放情况",
+       cbbf7c4dcc: "例如：免费、手机、复习",
+       c962042f91: "搜索常见问题",
+@@ -248,7 +267,7 @@ export const officialWebsiteMessages = {
+       c5ee1dcfb9: "查看全部问题",
+       cb2ffbd59f: "语学星 · 让英语，回到你的日常",
+       cea0be3689:
+-        "面向成人的学习方式介绍与无需登录的交互示例；学习账号暂未开放。",
++        "面向成人的学习方式介绍与无需登录的交互示例；正式课程准备中。",
+       c0767ba7e6: "18 岁以上 · 可浏览官网示例",
+       c2e979a4ec: "让英语，",
+       c0d2e65603: "回到你的",
+@@ -302,13 +321,13 @@ export const officialWebsiteMessages = {
+       c517ae4253: "浏览学习方式与无需登录的示例。",
+       c2344282d4: "地址已复制。",
+       c807b1c5ad: "未能复制，请选中上方地址复制。",
+-      c3c8699607: "开放情况 · 语学星",
+-      cca1d656e3: "可在手机或电脑浏览器体验语学星官网示例。",
+-      cbd70ad936: "学习账号开放情况",
+-      ce55878cbf: "官网示例可在手机或电脑浏览器体验。",
+-      c89f868063: "手机浏览器示例",
+-      c5973f1b79: "电脑浏览器示例",
+-      cf5629c6ae: "体验词卡与拼句，了解学习方式。",
++      c3c8699607: "注册前说明 · 语学星",
++      cca1d656e3: "面向 18 岁以上成人，前往学习端注册；正式课程准备中。",
++      cbd70ad936: "创建账号前，先了解这些。",
++      ce55878cbf: "面向 18 岁以上成人与大学生；官网示例仍可无需登录体验。",
++      c89f868063: "在手机浏览器注册",
++      c5973f1b79: "创建学习账号",
++      cf5629c6ae: "注册将在学习端完成。正式课程准备中，注册不会直接开放学习能力。",
+       c2573715f8: "浏览无需登录的示例",
+       c8c7a38714: "浏览无需登录的示例",
+       c584d952d2: "查看服务公告",
+@@ -490,36 +509,36 @@ export const officialWebsiteMessages = {
+       cc2e18464b: "对照自己的草稿与修改。",
+       cd8a16c657: "现在需要付费吗？",
+       ccf755ddd8:
+-        "官网词卡、拼句与空间示例可免费体验，无需注册，也不会生成正式学习记录。学习账号注册与登录当前暂不可用；目前没有可购买的付费套餐，开放安排以公告为准。",
++        "官网词卡、拼句与空间示例可免费体验，无需注册，也不会生成正式学习记录。账号可前往学习端注册，仍需成人资格校验；目前没有可购买的付费套餐，开放安排以公告为准。",
+       c16d00b26b: "适合什么人使用？",
+       c4eb096b32:
+         "当前面向 18 岁以上的成人与大学生，适合想重新捡起英语、积累日常表达，或保持学习习惯的人。不必一次学习所有内容，可以根据自己的基础和目标选择起点。\n\n基础还不牢时，可以先练常用词和简单句；想提高理解能力，可以从听力或分级阅读开始；想练表达，可以尝试跟读录音自评与规则写作。具体可学习的内容以学习端实际开放为准，当前不提供未成年人或 K12 学习服务。",
+       c86e26ec32: "手机上需要下载 App 吗？",
+       c0d6dbcfed:
+-        "官网可直接用浏览器访问，词卡和空间示例无需登录，也不会保存进度。学习账号注册与登录当前暂不可用；原生 App 尚未开放，后续安排以公告为准。",
++        "官网可直接用浏览器访问，词卡和空间示例无需登录，也不会保存进度。账号注册在学习端完成；原生 App 尚未开放，后续安排以公告为准。",
+       c5df6035ca: "每天怎么安排学习和复习？",
+       c89fe58a30:
+         "每日目标和复习节奏是学习方式建议；当前没有开放的正式课程或复习任务。官网交互示例只供体验，不保存学习记录。",
+       c0a7f23be3: "口语和写作会怎样反馈？",
+       c74039d358:
+-        "学习账号与正式学习内容暂未开放。后续口语和写作功能以学习端实际开放情况为准；官网示例不提供真实口语评分。",
++        "正式课程准备中，注册后仍需成人资格校验。后续口语和写作功能以学习端实际开放情况为准；官网示例不提供真实口语评分。",
+       c6c6333aa1: "换设备后，从哪里继续？",
+       c56795ed12:
+-        "当前学习账号注册与登录暂不可用，无法从官网开始跨设备学习。官网词卡、拼句和换装仅供体验，不会保存或同步记录；开放后以学习端实际功能为准。",
++        "账号注册在学习端完成；注册不代表跨设备学习能力已经开放。官网词卡、拼句和换装仅供体验，不会保存或同步记录；开放后以学习端实际功能为准。",
+       c2972385cc: "学过的单词，会在哪里复习？",
+       c7f751e397:
+         "当前没有开放的正式课程、复习任务或词本内容。官网词卡仅供体验，不保存学习记录；开放内容以公告为准。",
+       cdd3c49411: "使用中遇到问题，怎么反馈？",
+       c8e1ef5c30:
+-        "可以先查看常见问题和服务公告。学习账号登录当前暂不可用，个人学习记录相关入口暂时无法访问。不要在公开页面提交密码、验证码或支付信息。",
++        "可以先查看常见问题和服务公告。账号问题请在学习端处理；正式课程准备中，个人学习记录相关功能以学习端实际开放情况为准。不要在公开页面提交密码、验证码或支付信息。",
+       c07cf49449: "了解公开浏览与个人学习数据的区别。",
+       c1a10d2a89: "公开说明",
+       c684201411: "浏览官网",
+       ca9dffa106:
+         "官网用于展示产品与学习内容。无需提供账号密码、录音或支付信息，也可以浏览这些介绍。",
+-      c761850f5e: "学习账号开放后",
++      c761850f5e: "学习账号与个人记录",
+       ce469d6cff:
+-        "学习账号注册与登录当前暂不可用，个人学习记录功能尚未开放。官网交互示例不会保存账号数据。",
++        "账号注册在学习端完成，个人学习记录功能以学习端实际开放为准。官网交互示例不会保存账号数据。",
+       cea6f0e0c4: "管理自己的数据",
+       c90b929b3d:
+         "个人数据查看、导出和删除功能当前无法通过学习账号访问；相关入口开放后将以学习端页面说明为准。",
+@@ -531,23 +550,23 @@ export const officialWebsiteMessages = {
+         "语学星当前面向 18 岁以上的成人与大学生，围绕词汇、听读、规则练习与复习提供学习方式。",
+       c0070d2da4: "初期免费安排",
+       c5a13413c4:
+-        "首期免费是当前计划安排；学习账号注册与学习内容暂未开放。具体功能范围和开放时间以公告为准。",
++        "首期免费是当前计划安排；可前往学习端注册，正式课程准备中。具体功能范围和开放时间以公告为准。",
+       cbc3001a44: "学习与下载入口",
+       c40af6e57f:
+-        "学习账号注册与登录暂不可用。官网示例无需登录；原生 App 开放与下载信息以正式公告为准。",
++        "账号注册与登录在学习端完成，仍需通过成人资格校验。官网示例无需登录；原生 App 开放与下载信息以正式公告为准。",
+       c800516bdf:
+-        "本页为公开使用说明。学习账号注册暂不可用；完整用户协议请以正式公示版本为准。",
++        "本页为公开使用说明。账号注册在学习端完成；完整用户协议请以正式公示版本为准。",
+       c8a5864925: "当前只面向 18 岁以上学习者。",
+       cba002d2c7: "用户范围说明",
+       c6fa38d274: "当前开放对象",
+       c0b8ad4aaa:
+-        "第一阶段只面向 18 岁以上的成人与大学生。当前学习账号注册与学习功能暂未开放；开放后仍需通过成人资格校验。",
++        "第一阶段只面向 18 岁以上的成人与大学生。注册后仍需通过成人资格校验，通过前不开放学习能力；具体内容以学习端实际开放为准。",
+       cf9ef545a0: "未成年人暂不开放",
+       c8da426472:
+         "当前不开放儿童账号、家长绑定或面向未成年人的学习服务。请不要代未成年人注册使用。",
+       c95deefe31: "后续范围变化",
+       c89362a7b8: "如未来开放新的用户范围，会先完成相应准备并发布独立说明。",
+-      c4c106ef06: "本页说明成人使用范围；学习开放后将在学习端完成资格校验。",
++      c4c106ef06: "本页说明成人使用范围；注册后将在学习端完成资格校验。",
+       cb44f7b0a9: "服务主体与公开文件，在这里查看。",
+       cb73cc4224: "公示入口",
+       ca64f130cb: "主体与备案",
+--- /dev/null
++++ b/apps/official-site/tests/r1-001.test.mjs
+@@ -0,0 +1,73 @@
++import test from "node:test";
++import assert from "node:assert/strict";
++import { createI18n } from "@englishflow/i18n";
++import { officialWebsiteMessages } from "@englishflow/i18n/official-site";
++import { publicRoutes } from "../utils/site-content.mjs";
++import { buildPublicLearningEntry } from "../utils/public-links.mjs";
++
++// Current-source R1 contract. Uses the already running fixed-port site; never starts a runner.
++const origin = "http://127.0.0.1:18182";
++const routes = ["/", "/courses", "/pricing", "/download", "/announcements", "/about", "/compliance", "/status", "/privacy", "/terms", "/minors"];
++const read = async (route) => {
++  const response = await fetch(origin + route, { redirect: "manual" });
++  assert.equal(response.status, 200, route + " must be directly 200");
++  return response.text();
++};
++
++test("R1-001 PAGE canonical eleven original URLs remain direct 200 public pages", async () => {
++  for (const route of routes) {
++    assert.ok(publicRoutes.includes(route), route + " must be indexed");
++    const html = await read(route);
++    assert.match(html, /<h1[\s>]/, route + " has visible page content");
++    assert.doesNotMatch(html, /type=["']password["']/i, route + " does not receive passwords");
++  }
++});
++
++test("R1-001 honest course, price and download messages do not promise approved offers", async () => {
++  const courses = await read("/courses");
++  assert.match(courses, /课程准备中/);
++  assert.match(courses, /正式课程尚未发布/);
++  const pricing = await read("/pricing");
++  assert.match(pricing, /收费方案暂未开放/);
++  assert.match(pricing, /不提供购买或支付入口/);
++  const download = await read("/download");
++  assert.match(download, /下载准备中/);
++  assert.match(download, /不提供安装包或应用商店下载入口/);
++  for (const html of [pricing, download]) {
++    assert.doesNotMatch(html, /href=["'][^"']*\.(?:apk|ipa|exe|dmg)(?:[?"'])/i);
++    assert.doesNotMatch(html, /¥\s*\d|￥\s*\d|data-purchase|data-checkout/);
++  }
++});
++
++test("R1-001 handoff to learner registration has adult boundary and controlled URL preferences", async () => {
++  const query = "?locale=zh-CN&theme=dark&utm_source=r1-audit&returnTo=%2F%2Fevil.test&redirect=https%3A%2F%2Fevil.test&access_token=forbidden";
++  const html = await read("/start" + query);
++  assert.match(html, /18 岁以上成人与大学生/);
++  assert.match(html, /通过前不开放学习能力/);
++  const hrefs = [...html.matchAll(/href="([^"]+)"/g)].map((m) => m[1].replaceAll("&amp;", "&"));
++  const registration = hrefs.map((h) => new URL(h, origin)).filter((u) => u.pathname === "/register");
++  assert.ok(registration.length > 0, "actual SSR page exposes registration");
++  for (const url of registration) {
++    assert.equal(url.origin, "http://127.0.0.1:18180");
++    assert.equal(url.searchParams.get("returnTo"), "/home");
++    assert.equal(url.searchParams.get("uiLocale"), "zh-CN");
++    assert.equal(url.searchParams.get("theme"), "dark");
++    assert.equal(url.searchParams.get("utm_source"), "r1-audit");
++    for (const key of ["access_token", "redirect", "owner", "tenant", "role"]) assert.equal(url.searchParams.has(key), false);
++  }
++  assert.match(html, /href="\/#practice-example"/);
++  // Helper still rejects unsafe configured origins; the site doesn't build an arbitrary destination.
++  assert.throws(() => buildPublicLearningEntry({ base: "javascript:alert(1)" }));
++});
++
++test("R1-001 en-US UI resolves actual shared zh-CN fallback without changing content locale", () => {
++  const i18n = createI18n({ locale: "en-US", contentLocale: "en-US", messages: officialWebsiteMessages });
++  for (const [key, expected] of [
++    ["r1CoursesPreparing", "课程准备中"],
++    ["r1PricingPreparing", "收费方案暂未开放"],
++    ["r1DownloadPreparing", "下载准备中"],
++    ["c03e46770e", "去注册"],
++  ]) assert.equal(i18n.t("official." + key), expected);
++  assert.equal(i18n.locale, "en-US");
++  assert.equal(i18n.contentLocale, "en-US");
++});

@@ -1,0 +1,50 @@
+TAP version 13
+# Subtest: rejects unknown, duplicate, missing, and unsupported mode arguments
+ok 1 - rejects unknown, duplicate, missing, and unsupported mode arguments
+  ---
+  duration_ms: 0.728833
+  ...
+# Subtest: creation requires a caller-selected protected external parent
+ok 2 - creation requires a caller-selected protected external parent
+  ---
+  duration_ms: 0.143625
+  ...
+# Subtest: resolves directory symlinks before repository exclusion
+ok 3 - resolves directory symlinks before repository exclusion
+  ---
+  duration_ms: 1.497083
+  ...
+# Subtest: refuses group/world accessible private directory
+ok 4 - refuses group/world accessible private directory
+  ---
+  duration_ms: 0.546042
+  ...
+# Subtest: fixed IAM and Gateway ports reject drift without opening a listener
+ok 5 - fixed IAM and Gateway ports reject drift without opening a listener
+  ---
+  duration_ms: 0.203792
+  ...
+# Subtest: preserves issuer identity while both IAM transports use HTTPS
+ok 6 - preserves issuer identity while both IAM transports use HTTPS
+  ---
+  duration_ms: 0.15875
+  ...
+# Subtest: rejects old prefix, insecure trust manager, transport downgrade, and acceptance claims
+ok 7 - rejects old prefix, insecure trust manager, transport downgrade, and acceptance claims
+  ---
+  duration_ms: 0.718792
+  ...
+# Subtest: Java argfile quoting preserves spaces and Windows path separators; rejects injected lines
+ok 8 - Java argfile quoting preserves spaces and Windows path separators; rejects injected lines
+  ---
+  duration_ms: 0.186667
+  ...
+1..8
+# tests 8
+# suites 0
+# pass 8
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 51.946334

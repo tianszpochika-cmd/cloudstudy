@@ -131,7 +131,7 @@ test("B13 官网状态覆盖 loading/empty/error/permission/recovery/maintenance
   );
 });
 
-test("官网保留公开投影兼容，但免费首发不展示套餐或购买入口", async () => {
+test("R1-001 保留公开投影兼容，价格/下载独立空态且不展示购买入口", async () => {
   const projection = await source("utils/public-projection.ts");
   const pricing = await source("pages/pricing.vue");
   const sku = await source("components/PublicSkuCard.vue");
@@ -148,12 +148,13 @@ test("官网保留公开投影兼容，但免费首发不展示套餐或购买�
   ]) {
     assert.match(projection, new RegExp(token));
   }
-  assert.match(pricing, /navigateTo/);
-  assert.match(pricing, /\/start/);
-  assert.match(pricing, /redirectCode: 301/);
+  assert.match(pricing, /PublicStatus/);
+  assert.match(pricing, /r1PricingPreparing/);
+  assert.doesNotMatch(pricing, /navigateTo|redirectCode/);
   assert.match(sku, /entitlement-list/);
   assert.match(campaign, /safe|publicLink|authLink/);
-  assert.match(download, /\/start/);
+  assert.match(download, /r1DownloadPreparing/);
+  assert.doesNotMatch(download, /navigateTo|redirectCode/);
   assert.doesNotMatch(pricing, /PublicSkuCard|jsonld-pricing-public-offers/);
   assert.doesNotMatch(
     pricing,

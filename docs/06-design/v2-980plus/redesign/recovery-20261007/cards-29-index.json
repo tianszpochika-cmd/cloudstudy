@@ -1,0 +1,5354 @@
+{
+  "kind": "SOURCE_HANDOFF_INDEX_NOT_EXECUTABLE_WALL",
+  "sourceCommit": "ff0f8057f4088ead03ab7890493cdf9d06f6d5f1",
+  "definedCardCount": 29,
+  "original114WallRecovered": false,
+  "workflowStatesImported": false,
+  "cards": [
+    {
+      "taskId": "R1-001",
+      "station": "IT-1",
+      "definitionSource": {
+        "path": "docs/06-design/v2-980plus/redesign/dev-plan-R1.md",
+        "line": 12
+      },
+      "title": "官网 11 页空目录诚实态（课程准备中+去注册 CTA）",
+      "rawDefinition": "| R1-001 | BC-001 | 官网 11 页空目录诚实态（课程准备中+去注册 CTA） | 双视口 200，空态文案对稿 → owner: official-site；依赖：无 |",
+      "deliveryOwnerAsWritten": "official-site",
+      "dependencyAsWritten": "无",
+      "acceptanceAsWritten": "双视口 200，空态文案对稿",
+      "BC": [
+        {
+          "id": "BC-001",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 56
+        }
+      ],
+      "IC": [
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 40,
+          "id": "IC-001"
+        }
+      ],
+      "BCMappingKind": "计划显式BC",
+      "sourceNavigationCandidates": {
+        "FEAT": [
+          {
+            "path": "requirements/feature-matrix.md",
+            "line": 273,
+            "id": "FEAT-USR-003"
+          }
+        ],
+        "PRD_ATOM": [
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 1119,
+            "id": "PRD-ATOM-1044"
+          }
+        ],
+        "V2_980": [
+          {
+            "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+            "line": 383,
+            "id": "V2-980-0361"
+          }
+        ],
+        "ARCH": [
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 11,
+            "id": "ARCH-GW-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 16,
+            "id": "ARCH-API-001"
+          }
+        ],
+        "ACT": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+            "line": 26,
+            "id": "ACT-P1-VISITOR"
+          }
+        ],
+        "JNY": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/02-端到端业务旅程台账.md",
+            "line": 47,
+            "id": "JNY-P1-01"
+          }
+        ],
+        "PAGE": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 48,
+            "id": "PAGE-P1-OFFICIAL-HOME"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 49,
+            "id": "PAGE-P1-OFFICIAL-COURSES"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 50,
+            "id": "PAGE-P1-OFFICIAL-PRICING"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 51,
+            "id": "PAGE-P1-OFFICIAL-DOWNLOAD"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 52,
+            "id": "PAGE-P1-OFFICIAL-ANNOUNCEMENTS"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 53,
+            "id": "PAGE-P1-OFFICIAL-ABOUT"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 54,
+            "id": "PAGE-P1-OFFICIAL-COMPLIANCE"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 55,
+            "id": "PAGE-P1-OFFICIAL-STATUS"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 56,
+            "id": "PAGE-P1-OFFICIAL-PRIVACY"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 57,
+            "id": "PAGE-P1-OFFICIAL-TERMS"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 58,
+            "id": "PAGE-P1-OFFICIAL-MINORS"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 71,
+            "id": "PAGE-P1-AUTH-REGISTER-RESET"
+          }
+        ],
+        "RULE": [],
+        "INT": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/06-业务联调矩阵.md",
+            "line": 54,
+            "id": "INT-P1-001"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/06-业务联调矩阵.md",
+            "line": 58,
+            "id": "INT-P1-005"
+          }
+        ],
+        "E2E": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/08-验收与追溯规范.md",
+            "line": 55,
+            "id": "E2E-P1-PUBLIC-ENTRY"
+          }
+        ]
+      },
+      "candidateMappingBoundary": "候选导航：源ID存在，逐卡完整覆盖/权威绑定未签收；不迁移源文状态",
+      "dataOwnerCandidates": [
+        {
+          "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+          "line": 95,
+          "id": "| 内容、课程、题目、答案规则版本",
+          "owner": "content-service"
+        }
+      ],
+      "ruleBoundary": "源旅程标为不适用（认证/成人/官网），安全/同意政策仍需绑定",
+      "pageBoundary": "页面台账为源快照，代码存在/缺失描述未在此升级",
+      "historicalEvidenceNotes": [
+        {
+          "source": {
+            "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/source-and-inputs-4.json",
+            "line": 9,
+            "id": "\"r1_001\""
+          },
+          "claim": "原机器上下文 ACCEPTED，publishedWithThisBundle=false；不迁移"
+        },
+        {
+          "source": {
+            "path": "evidence/live/2026-09-26/page-sweep/official/summary.json",
+            "line": 2,
+            "id": "\"capturedAt\""
+          },
+          "claim": "2026-09-26 页面 sweep；非 R1-001 验收"
+        }
+      ],
+      "currentWorkflowState": null,
+      "gaps": [
+        "GAP-TRACE-SIGNOFF",
+        "GAP-CARD-CONTRACT-BINDING",
+        "GAP-CURRENT-RUNTIME-EVIDENCE",
+        "GAP-NAMED-ACCEPTOR",
+        "GAP-R1-001-DELIVERY",
+        "GAP-R1-001-ACCEPTANCE"
+      ]
+    },
+    {
+      "taskId": "R1-002",
+      "station": "IT-1",
+      "definitionSource": {
+        "path": "docs/06-design/v2-980plus/redesign/dev-plan-R1.md",
+        "line": 13
+      },
+      "title": "注册接口联调（201+会话，无学习能力）",
+      "rawDefinition": "| R1-002 | BC-002 | 注册接口联调（201+会话，无学习能力） | 干净库注册 201，token 无学习权限 → owner: iam-service；依赖：R1-001 |",
+      "deliveryOwnerAsWritten": "iam-service",
+      "dependencyAsWritten": "R1-001",
+      "acceptanceAsWritten": "干净库注册 201，token 无学习权限",
+      "BC": [
+        {
+          "id": "BC-002",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 57
+        }
+      ],
+      "IC": [
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 3,
+          "id": "IC-002"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 47,
+          "id": "IC-052"
+        }
+      ],
+      "BCMappingKind": "计划显式BC",
+      "sourceNavigationCandidates": {
+        "FEAT": [
+          {
+            "path": "requirements/feature-matrix.md",
+            "line": 271,
+            "id": "FEAT-USR-001"
+          },
+          {
+            "path": "requirements/feature-matrix.md",
+            "line": 274,
+            "id": "FEAT-USR-004"
+          }
+        ],
+        "PRD_ATOM": [
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 1119,
+            "id": "PRD-ATOM-1044"
+          },
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 1124,
+            "id": "PRD-ATOM-1049"
+          }
+        ],
+        "V2_980": [
+          {
+            "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+            "line": 381,
+            "id": "V2-980-0359"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+            "line": 384,
+            "id": "V2-980-0362"
+          }
+        ],
+        "ARCH": [
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 12,
+            "id": "ARCH-IAM-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 13,
+            "id": "ARCH-IAM-002"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 11,
+            "id": "ARCH-GW-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 15,
+            "id": "ARCH-EVT-001"
+          }
+        ],
+        "ACT": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+            "line": 26,
+            "id": "ACT-P1-VISITOR"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+            "line": 27,
+            "id": "ACT-P1-LEARNER"
+          }
+        ],
+        "JNY": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/02-端到端业务旅程台账.md",
+            "line": 47,
+            "id": "JNY-P1-01"
+          }
+        ],
+        "PAGE": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 70,
+            "id": "PAGE-P1-AUTH-LOGIN"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 71,
+            "id": "PAGE-P1-AUTH-REGISTER-RESET"
+          }
+        ],
+        "RULE": [],
+        "INT": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/06-业务联调矩阵.md",
+            "line": 54,
+            "id": "INT-P1-001"
+          }
+        ],
+        "E2E": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/08-验收与追溯规范.md",
+            "line": 56,
+            "id": "E2E-P1-AUTH-LIFECYCLE"
+          }
+        ]
+      },
+      "candidateMappingBoundary": "候选导航：源ID存在，逐卡完整覆盖/权威绑定未签收；不迁移源文状态",
+      "dataOwnerCandidates": [
+        {
+          "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+          "line": 93,
+          "id": "| principal、账号密码",
+          "owner": "iam-service"
+        }
+      ],
+      "ruleBoundary": "源旅程标为不适用（认证/成人/官网），安全/同意政策仍需绑定",
+      "pageBoundary": "页面台账为源快照，代码存在/缺失描述未在此升级",
+      "historicalEvidenceNotes": [
+        {
+          "source": {
+            "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/reviewer-3-closeout/review.md",
+            "line": 3,
+            "id": "PREPARATION_PARTIAL_NOT_READY"
+          },
+          "claim": "原机器 PLANNED/revision27；未 READY"
+        }
+      ],
+      "currentWorkflowState": null,
+      "gaps": [
+        "GAP-TRACE-SIGNOFF",
+        "GAP-CARD-CONTRACT-BINDING",
+        "GAP-CURRENT-RUNTIME-EVIDENCE",
+        "GAP-NAMED-ACCEPTOR"
+      ]
+    },
+    {
+      "taskId": "R1-003",
+      "station": "IT-1",
+      "definitionSource": {
+        "path": "docs/06-design/v2-980plus/redesign/dev-plan-R1.md",
+        "line": 14
+      },
+      "title": "注册幂等回放（同键同结果）",
+      "rawDefinition": "| R1-003 | BC-003 | 注册幂等回放（同键同结果） | 重放同号 → owner: iam-service；依赖：R1-002 |",
+      "deliveryOwnerAsWritten": "iam-service",
+      "dependencyAsWritten": "R1-002",
+      "acceptanceAsWritten": "重放同号",
+      "BC": [
+        {
+          "id": "BC-003",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 58
+        }
+      ],
+      "IC": [
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 3,
+          "id": "IC-002"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 47,
+          "id": "IC-052"
+        }
+      ],
+      "BCMappingKind": "计划显式BC",
+      "sourceNavigationCandidates": {
+        "FEAT": [
+          {
+            "path": "requirements/feature-matrix.md",
+            "line": 271,
+            "id": "FEAT-USR-001"
+          },
+          {
+            "path": "requirements/feature-matrix.md",
+            "line": 274,
+            "id": "FEAT-USR-004"
+          }
+        ],
+        "PRD_ATOM": [
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 1119,
+            "id": "PRD-ATOM-1044"
+          },
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 1124,
+            "id": "PRD-ATOM-1049"
+          }
+        ],
+        "V2_980": [
+          {
+            "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+            "line": 381,
+            "id": "V2-980-0359"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+            "line": 384,
+            "id": "V2-980-0362"
+          }
+        ],
+        "ARCH": [
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 12,
+            "id": "ARCH-IAM-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 13,
+            "id": "ARCH-IAM-002"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 11,
+            "id": "ARCH-GW-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 15,
+            "id": "ARCH-EVT-001"
+          }
+        ],
+        "ACT": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+            "line": 26,
+            "id": "ACT-P1-VISITOR"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+            "line": 27,
+            "id": "ACT-P1-LEARNER"
+          }
+        ],
+        "JNY": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/02-端到端业务旅程台账.md",
+            "line": 47,
+            "id": "JNY-P1-01"
+          }
+        ],
+        "PAGE": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 70,
+            "id": "PAGE-P1-AUTH-LOGIN"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 71,
+            "id": "PAGE-P1-AUTH-REGISTER-RESET"
+          }
+        ],
+        "RULE": [],
+        "INT": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/06-业务联调矩阵.md",
+            "line": 54,
+            "id": "INT-P1-001"
+          }
+        ],
+        "E2E": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/08-验收与追溯规范.md",
+            "line": 56,
+            "id": "E2E-P1-AUTH-LIFECYCLE"
+          }
+        ]
+      },
+      "candidateMappingBoundary": "候选导航：源ID存在，逐卡完整覆盖/权威绑定未签收；不迁移源文状态",
+      "dataOwnerCandidates": [
+        {
+          "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+          "line": 93,
+          "id": "| principal、账号密码",
+          "owner": "iam-service"
+        }
+      ],
+      "ruleBoundary": "源旅程标为不适用（认证/成人/官网），安全/同意政策仍需绑定",
+      "pageBoundary": "页面台账为源快照，代码存在/缺失描述未在此升级",
+      "historicalEvidenceNotes": [],
+      "currentWorkflowState": null,
+      "gaps": [
+        "GAP-TRACE-SIGNOFF",
+        "GAP-CARD-CONTRACT-BINDING",
+        "GAP-CURRENT-RUNTIME-EVIDENCE",
+        "GAP-NAMED-ACCEPTOR"
+      ]
+    },
+    {
+      "taskId": "R1-004",
+      "station": "IT-1",
+      "definitionSource": {
+        "path": "docs/06-design/v2-980plus/redesign/dev-plan-R1.md",
+        "line": 15
+      },
+      "title": "登录/刷新/撤销全套",
+      "rawDefinition": "| R1-004 | BC-004 | 登录/刷新/撤销全套 | 轮换+撤销+重放清理 → owner: iam-service；依赖：R1-002 |",
+      "deliveryOwnerAsWritten": "iam-service",
+      "dependencyAsWritten": "R1-002",
+      "acceptanceAsWritten": "轮换+撤销+重放清理",
+      "BC": [
+        {
+          "id": "BC-004",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 59
+        }
+      ],
+      "IC": [
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 3,
+          "id": "IC-002"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 161,
+          "id": "IC-053"
+        }
+      ],
+      "BCMappingKind": "计划显式BC",
+      "sourceNavigationCandidates": {
+        "FEAT": [
+          {
+            "path": "requirements/feature-matrix.md",
+            "line": 271,
+            "id": "FEAT-USR-001"
+          },
+          {
+            "path": "requirements/feature-matrix.md",
+            "line": 274,
+            "id": "FEAT-USR-004"
+          }
+        ],
+        "PRD_ATOM": [
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 1119,
+            "id": "PRD-ATOM-1044"
+          },
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 1124,
+            "id": "PRD-ATOM-1049"
+          }
+        ],
+        "V2_980": [
+          {
+            "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+            "line": 381,
+            "id": "V2-980-0359"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+            "line": 384,
+            "id": "V2-980-0362"
+          }
+        ],
+        "ARCH": [
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 12,
+            "id": "ARCH-IAM-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 13,
+            "id": "ARCH-IAM-002"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 11,
+            "id": "ARCH-GW-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 15,
+            "id": "ARCH-EVT-001"
+          }
+        ],
+        "ACT": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+            "line": 26,
+            "id": "ACT-P1-VISITOR"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+            "line": 27,
+            "id": "ACT-P1-LEARNER"
+          }
+        ],
+        "JNY": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/02-端到端业务旅程台账.md",
+            "line": 47,
+            "id": "JNY-P1-01"
+          }
+        ],
+        "PAGE": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 70,
+            "id": "PAGE-P1-AUTH-LOGIN"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 71,
+            "id": "PAGE-P1-AUTH-REGISTER-RESET"
+          }
+        ],
+        "RULE": [],
+        "INT": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/06-业务联调矩阵.md",
+            "line": 54,
+            "id": "INT-P1-001"
+          }
+        ],
+        "E2E": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/08-验收与追溯规范.md",
+            "line": 56,
+            "id": "E2E-P1-AUTH-LIFECYCLE"
+          }
+        ]
+      },
+      "candidateMappingBoundary": "候选导航：源ID存在，逐卡完整覆盖/权威绑定未签收；不迁移源文状态",
+      "dataOwnerCandidates": [
+        {
+          "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+          "line": 93,
+          "id": "| principal、账号密码",
+          "owner": "iam-service"
+        }
+      ],
+      "ruleBoundary": "源旅程标为不适用（认证/成人/官网），安全/同意政策仍需绑定",
+      "pageBoundary": "页面台账为源快照，代码存在/缺失描述未在此升级",
+      "historicalEvidenceNotes": [],
+      "currentWorkflowState": null,
+      "gaps": [
+        "GAP-TRACE-SIGNOFF",
+        "GAP-CARD-CONTRACT-BINDING",
+        "GAP-CURRENT-RUNTIME-EVIDENCE",
+        "GAP-NAMED-ACCEPTOR"
+      ]
+    },
+    {
+      "taskId": "R1-005",
+      "station": "IT-1",
+      "definitionSource": {
+        "path": "docs/06-design/v2-980plus/redesign/dev-plan-R1.md",
+        "line": 16
+      },
+      "title": "多设备列表+踢出（标当前设备）",
+      "rawDefinition": "| R1-005 | BC-005 | 多设备列表+踢出（标当前设备） | 被踢 401 → owner: iam-service；依赖：R1-004 |",
+      "deliveryOwnerAsWritten": "iam-service",
+      "dependencyAsWritten": "R1-004",
+      "acceptanceAsWritten": "被踢 401",
+      "BC": [
+        {
+          "id": "BC-005",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 60
+        }
+      ],
+      "IC": [
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 3,
+          "id": "IC-002"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 48,
+          "id": "IC-008"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 115,
+          "id": "IC-035"
+        }
+      ],
+      "BCMappingKind": "计划显式BC",
+      "sourceNavigationCandidates": {
+        "FEAT": [
+          {
+            "path": "requirements/feature-matrix.md",
+            "line": 275,
+            "id": "FEAT-USR-005"
+          }
+        ],
+        "PRD_ATOM": [
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 1125,
+            "id": "PRD-ATOM-1050"
+          }
+        ],
+        "V2_980": [
+          {
+            "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+            "line": 385,
+            "id": "V2-980-0363"
+          }
+        ],
+        "ARCH": [
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 12,
+            "id": "ARCH-IAM-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 13,
+            "id": "ARCH-IAM-002"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 11,
+            "id": "ARCH-GW-001"
+          }
+        ],
+        "ACT": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+            "line": 27,
+            "id": "ACT-P1-LEARNER"
+          }
+        ],
+        "JNY": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/02-端到端业务旅程台账.md",
+            "line": 47,
+            "id": "JNY-P1-01"
+          }
+        ],
+        "PAGE": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 100,
+            "id": "PAGE-P1-DEVICES"
+          }
+        ],
+        "RULE": [],
+        "INT": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/06-业务联调矩阵.md",
+            "line": 54,
+            "id": "INT-P1-001"
+          }
+        ],
+        "E2E": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/08-验收与追溯规范.md",
+            "line": 56,
+            "id": "E2E-P1-AUTH-LIFECYCLE"
+          }
+        ]
+      },
+      "candidateMappingBoundary": "候选导航：源ID存在，逐卡完整覆盖/权威绑定未签收；不迁移源文状态",
+      "dataOwnerCandidates": [
+        {
+          "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+          "line": 93,
+          "id": "| principal、账号密码",
+          "owner": "iam-service"
+        }
+      ],
+      "ruleBoundary": "源旅程标为不适用（认证/成人/官网），安全/同意政策仍需绑定",
+      "pageBoundary": "页面台账为源快照，代码存在/缺失描述未在此升级",
+      "historicalEvidenceNotes": [],
+      "currentWorkflowState": null,
+      "gaps": [
+        "GAP-TRACE-SIGNOFF",
+        "GAP-CARD-CONTRACT-BINDING",
+        "GAP-CURRENT-RUNTIME-EVIDENCE",
+        "GAP-NAMED-ACCEPTOR"
+      ]
+    },
+    {
+      "taskId": "R1-006",
+      "station": "IT-1",
+      "definitionSource": {
+        "path": "docs/06-design/v2-980plus/redesign/dev-plan-R1.md",
+        "line": 17
+      },
+      "title": "成人门提交（PASSED/REJECTED 落库审计）",
+      "rawDefinition": "| R1-006 | BC-006 | 成人门提交（PASSED/REJECTED 落库审计） | 双路径落库 → owner: iam-service；依赖：R1-004 |",
+      "deliveryOwnerAsWritten": "iam-service",
+      "dependencyAsWritten": "R1-004",
+      "acceptanceAsWritten": "双路径落库",
+      "BC": [
+        {
+          "id": "BC-006",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 61
+        }
+      ],
+      "IC": [
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 48,
+          "id": "IC-003"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 50,
+          "id": "IC-005"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 48,
+          "id": "IC-055"
+        }
+      ],
+      "BCMappingKind": "计划显式BC",
+      "sourceNavigationCandidates": {
+        "FEAT": [
+          {
+            "path": "requirements/feature-matrix.md",
+            "line": 271,
+            "id": "FEAT-USR-001"
+          }
+        ],
+        "PRD_ATOM": [
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 1114,
+            "id": "PRD-ATOM-1039"
+          },
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 1118,
+            "id": "PRD-ATOM-1043"
+          }
+        ],
+        "V2_980": [
+          {
+            "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+            "line": 381,
+            "id": "V2-980-0359"
+          }
+        ],
+        "ARCH": [
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 12,
+            "id": "ARCH-IAM-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 13,
+            "id": "ARCH-IAM-002"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 11,
+            "id": "ARCH-GW-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 15,
+            "id": "ARCH-EVT-001"
+          }
+        ],
+        "ACT": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+            "line": 27,
+            "id": "ACT-P1-LEARNER"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+            "line": 37,
+            "id": "ACT-P1-SYSTEM"
+          }
+        ],
+        "JNY": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/02-端到端业务旅程台账.md",
+            "line": 55,
+            "id": "JNY-P1-02"
+          }
+        ],
+        "PAGE": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 72,
+            "id": "PAGE-P1-ADULT-CONSENT"
+          }
+        ],
+        "RULE": [],
+        "INT": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/06-业务联调矩阵.md",
+            "line": 55,
+            "id": "INT-P1-002"
+          }
+        ],
+        "E2E": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/08-验收与追溯规范.md",
+            "line": 57,
+            "id": "E2E-P1-ADULT-CONSENT"
+          }
+        ]
+      },
+      "candidateMappingBoundary": "候选导航：源ID存在，逐卡完整覆盖/权威绑定未签收；不迁移源文状态",
+      "dataOwnerCandidates": [
+        {
+          "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+          "line": 93,
+          "id": "| principal、账号密码",
+          "owner": "iam-service"
+        }
+      ],
+      "ruleBoundary": "源旅程标为不适用（认证/成人/官网），安全/同意政策仍需绑定",
+      "pageBoundary": "页面台账为源快照，代码存在/缺失描述未在此升级",
+      "historicalEvidenceNotes": [],
+      "currentWorkflowState": null,
+      "gaps": [
+        "GAP-TRACE-SIGNOFF",
+        "GAP-CARD-CONTRACT-BINDING",
+        "GAP-CURRENT-RUNTIME-EVIDENCE",
+        "GAP-NAMED-ACCEPTOR",
+        "GAP-ADULT-CONSENT-EXACT-SOURCE"
+      ]
+    },
+    {
+      "taskId": "R1-007",
+      "station": "IT-1",
+      "definitionSource": {
+        "path": "docs/06-design/v2-980plus/redesign/dev-plan-R1.md",
+        "line": 18
+      },
+      "title": "门未过等待态（进系统+能力置灰+人话）",
+      "rawDefinition": "| R1-007 | BC-007 | 门未过等待态（进系统+能力置灰+人话） | 不卡死，有退出键 → owner: learner-web/mobile；依赖：R1-006 |",
+      "deliveryOwnerAsWritten": "learner-web/mobile",
+      "dependencyAsWritten": "R1-006",
+      "acceptanceAsWritten": "不卡死，有退出键",
+      "BC": [
+        {
+          "id": "BC-007",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 62
+        }
+      ],
+      "IC": [
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 48,
+          "id": "IC-003"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 50,
+          "id": "IC-005"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 48,
+          "id": "IC-055"
+        }
+      ],
+      "BCMappingKind": "计划显式BC",
+      "sourceNavigationCandidates": {
+        "FEAT": [
+          {
+            "path": "requirements/feature-matrix.md",
+            "line": 271,
+            "id": "FEAT-USR-001"
+          }
+        ],
+        "PRD_ATOM": [
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 1114,
+            "id": "PRD-ATOM-1039"
+          },
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 1118,
+            "id": "PRD-ATOM-1043"
+          }
+        ],
+        "V2_980": [
+          {
+            "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+            "line": 381,
+            "id": "V2-980-0359"
+          }
+        ],
+        "ARCH": [
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 12,
+            "id": "ARCH-IAM-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 13,
+            "id": "ARCH-IAM-002"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 11,
+            "id": "ARCH-GW-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 15,
+            "id": "ARCH-EVT-001"
+          }
+        ],
+        "ACT": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+            "line": 27,
+            "id": "ACT-P1-LEARNER"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+            "line": 37,
+            "id": "ACT-P1-SYSTEM"
+          }
+        ],
+        "JNY": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/02-端到端业务旅程台账.md",
+            "line": 55,
+            "id": "JNY-P1-02"
+          }
+        ],
+        "PAGE": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 72,
+            "id": "PAGE-P1-ADULT-CONSENT"
+          }
+        ],
+        "RULE": [],
+        "INT": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/06-业务联调矩阵.md",
+            "line": 55,
+            "id": "INT-P1-002"
+          }
+        ],
+        "E2E": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/08-验收与追溯规范.md",
+            "line": 57,
+            "id": "E2E-P1-ADULT-CONSENT"
+          }
+        ]
+      },
+      "candidateMappingBoundary": "候选导航：源ID存在，逐卡完整覆盖/权威绑定未签收；不迁移源文状态",
+      "dataOwnerCandidates": [
+        {
+          "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+          "line": 93,
+          "id": "| principal、账号密码",
+          "owner": "iam-service"
+        }
+      ],
+      "ruleBoundary": "源旅程标为不适用（认证/成人/官网），安全/同意政策仍需绑定",
+      "pageBoundary": "页面台账为源快照，代码存在/缺失描述未在此升级",
+      "historicalEvidenceNotes": [],
+      "currentWorkflowState": null,
+      "gaps": [
+        "GAP-TRACE-SIGNOFF",
+        "GAP-CARD-CONTRACT-BINDING",
+        "GAP-CURRENT-RUNTIME-EVIDENCE",
+        "GAP-NAMED-ACCEPTOR",
+        "GAP-ADULT-CONSENT-EXACT-SOURCE"
+      ]
+    },
+    {
+      "taskId": "R1-008",
+      "station": "IT-1",
+      "definitionSource": {
+        "path": "docs/06-design/v2-980plus/redesign/dev-plan-R1.md",
+        "line": 19
+      },
+      "title": "三同意动态版（先读已发布版本再签）",
+      "rawDefinition": "| R1-008 | BC-008 | 三同意动态版（先读已发布版本再签） | 换版本不 409 → owner: iam-service + learner-web；依赖：R1-006 |",
+      "deliveryOwnerAsWritten": "iam-service + learner-web",
+      "dependencyAsWritten": "R1-006",
+      "acceptanceAsWritten": "换版本不 409",
+      "BC": [
+        {
+          "id": "BC-008",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 63
+        }
+      ],
+      "IC": [
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 48,
+          "id": "IC-003"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 51,
+          "id": "IC-006"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 164,
+          "id": "IC-056"
+        }
+      ],
+      "BCMappingKind": "计划显式BC",
+      "sourceNavigationCandidates": {
+        "FEAT": [
+          {
+            "path": "requirements/feature-matrix.md",
+            "line": 271,
+            "id": "FEAT-USR-001"
+          }
+        ],
+        "PRD_ATOM": [
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 1114,
+            "id": "PRD-ATOM-1039"
+          },
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 1118,
+            "id": "PRD-ATOM-1043"
+          }
+        ],
+        "V2_980": [
+          {
+            "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+            "line": 381,
+            "id": "V2-980-0359"
+          }
+        ],
+        "ARCH": [
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 12,
+            "id": "ARCH-IAM-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 13,
+            "id": "ARCH-IAM-002"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 11,
+            "id": "ARCH-GW-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 15,
+            "id": "ARCH-EVT-001"
+          }
+        ],
+        "ACT": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+            "line": 27,
+            "id": "ACT-P1-LEARNER"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+            "line": 37,
+            "id": "ACT-P1-SYSTEM"
+          }
+        ],
+        "JNY": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/02-端到端业务旅程台账.md",
+            "line": 55,
+            "id": "JNY-P1-02"
+          }
+        ],
+        "PAGE": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 72,
+            "id": "PAGE-P1-ADULT-CONSENT"
+          }
+        ],
+        "RULE": [],
+        "INT": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/06-业务联调矩阵.md",
+            "line": 55,
+            "id": "INT-P1-002"
+          }
+        ],
+        "E2E": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/08-验收与追溯规范.md",
+            "line": 57,
+            "id": "E2E-P1-ADULT-CONSENT"
+          }
+        ]
+      },
+      "candidateMappingBoundary": "候选导航：源ID存在，逐卡完整覆盖/权威绑定未签收；不迁移源文状态",
+      "dataOwnerCandidates": [
+        {
+          "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+          "line": 93,
+          "id": "| principal、账号密码",
+          "owner": "iam-service"
+        }
+      ],
+      "ruleBoundary": "源旅程标为不适用（认证/成人/官网），安全/同意政策仍需绑定",
+      "pageBoundary": "页面台账为源快照，代码存在/缺失描述未在此升级",
+      "historicalEvidenceNotes": [],
+      "currentWorkflowState": null,
+      "gaps": [
+        "GAP-TRACE-SIGNOFF",
+        "GAP-CARD-CONTRACT-BINDING",
+        "GAP-CURRENT-RUNTIME-EVIDENCE",
+        "GAP-NAMED-ACCEPTOR",
+        "GAP-ADULT-CONSENT-EXACT-SOURCE"
+      ]
+    },
+    {
+      "taskId": "R1-009",
+      "station": "IT-1",
+      "definitionSource": {
+        "path": "docs/06-design/v2-980plus/redesign/dev-plan-R1.md",
+        "line": 20
+      },
+      "title": "撤回回收（相关能力 403）",
+      "rawDefinition": "| R1-009 | BC-009 | 撤回回收（相关能力 403） | 撤回即回收 → owner: iam-service；依赖：R1-008 |",
+      "deliveryOwnerAsWritten": "iam-service",
+      "dependencyAsWritten": "R1-008",
+      "acceptanceAsWritten": "撤回即回收",
+      "BC": [
+        {
+          "id": "BC-009",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 64
+        }
+      ],
+      "IC": [
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 48,
+          "id": "IC-003"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 51,
+          "id": "IC-006"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 48,
+          "id": "IC-008"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 116,
+          "id": "IC-036"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 164,
+          "id": "IC-056"
+        }
+      ],
+      "BCMappingKind": "计划显式BC",
+      "sourceNavigationCandidates": {
+        "FEAT": [
+          {
+            "path": "requirements/feature-matrix.md",
+            "line": 271,
+            "id": "FEAT-USR-001"
+          }
+        ],
+        "PRD_ATOM": [
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 1114,
+            "id": "PRD-ATOM-1039"
+          },
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 1118,
+            "id": "PRD-ATOM-1043"
+          }
+        ],
+        "V2_980": [
+          {
+            "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+            "line": 381,
+            "id": "V2-980-0359"
+          }
+        ],
+        "ARCH": [
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 12,
+            "id": "ARCH-IAM-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 13,
+            "id": "ARCH-IAM-002"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 11,
+            "id": "ARCH-GW-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 15,
+            "id": "ARCH-EVT-001"
+          }
+        ],
+        "ACT": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+            "line": 27,
+            "id": "ACT-P1-LEARNER"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+            "line": 37,
+            "id": "ACT-P1-SYSTEM"
+          }
+        ],
+        "JNY": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/02-端到端业务旅程台账.md",
+            "line": 55,
+            "id": "JNY-P1-02"
+          }
+        ],
+        "PAGE": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 72,
+            "id": "PAGE-P1-ADULT-CONSENT"
+          }
+        ],
+        "RULE": [],
+        "INT": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/06-业务联调矩阵.md",
+            "line": 55,
+            "id": "INT-P1-002"
+          }
+        ],
+        "E2E": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/08-验收与追溯规范.md",
+            "line": 57,
+            "id": "E2E-P1-ADULT-CONSENT"
+          }
+        ]
+      },
+      "candidateMappingBoundary": "候选导航：源ID存在，逐卡完整覆盖/权威绑定未签收；不迁移源文状态",
+      "dataOwnerCandidates": [
+        {
+          "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+          "line": 93,
+          "id": "| principal、账号密码",
+          "owner": "iam-service"
+        }
+      ],
+      "ruleBoundary": "源旅程标为不适用（认证/成人/官网），安全/同意政策仍需绑定",
+      "pageBoundary": "页面台账为源快照，代码存在/缺失描述未在此升级",
+      "historicalEvidenceNotes": [],
+      "currentWorkflowState": null,
+      "gaps": [
+        "GAP-TRACE-SIGNOFF",
+        "GAP-CARD-CONTRACT-BINDING",
+        "GAP-CURRENT-RUNTIME-EVIDENCE",
+        "GAP-NAMED-ACCEPTOR",
+        "GAP-ADULT-CONSENT-EXACT-SOURCE"
+      ]
+    },
+    {
+      "taskId": "R1-010",
+      "station": "IT-1",
+      "definitionSource": {
+        "path": "docs/06-design/v2-980plus/redesign/dev-plan-R1.md",
+        "line": 21
+      },
+      "title": "画像保存+草稿续填",
+      "rawDefinition": "| R1-010 | BC-010/202 | 画像保存+草稿续填 | 落库+中途回来续上 → owner: learner-service；依赖：R1-008 |",
+      "deliveryOwnerAsWritten": "learner-service",
+      "dependencyAsWritten": "R1-008",
+      "acceptanceAsWritten": "落库+中途回来续上",
+      "BC": [
+        {
+          "id": "BC-010",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 65
+        },
+        {
+          "id": "BC-202",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 393
+        }
+      ],
+      "IC": [
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 49,
+          "id": "IC-004"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 49,
+          "id": "IC-057"
+        }
+      ],
+      "BCMappingKind": "计划显式BC",
+      "sourceNavigationCandidates": {
+        "FEAT": [
+          {
+            "path": "requirements/feature-matrix.md",
+            "line": 79,
+            "id": "FEAT-ONB-001"
+          },
+          {
+            "path": "requirements/feature-matrix.md",
+            "line": 80,
+            "id": "FEAT-ONB-002"
+          }
+        ],
+        "PRD_ATOM": [
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 1128,
+            "id": "PRD-ATOM-1053"
+          },
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 1131,
+            "id": "PRD-ATOM-1056"
+          }
+        ],
+        "V2_980": [
+          {
+            "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+            "line": 23,
+            "id": "V2-980-0001"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+            "line": 24,
+            "id": "V2-980-0002"
+          }
+        ],
+        "ARCH": [
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 13,
+            "id": "ARCH-IAM-002"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 11,
+            "id": "ARCH-GW-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 14,
+            "id": "ARCH-DATA-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 15,
+            "id": "ARCH-EVT-001"
+          }
+        ],
+        "ACT": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+            "line": 27,
+            "id": "ACT-P1-LEARNER"
+          }
+        ],
+        "JNY": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/02-端到端业务旅程台账.md",
+            "line": 62,
+            "id": "JNY-P1-03"
+          }
+        ],
+        "PAGE": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 73,
+            "id": "PAGE-P1-ONB-GOAL"
+          }
+        ],
+        "RULE": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/04-学习机制与学习引擎规则.md",
+            "line": 38,
+            "id": "RULE-P1-DAILY-PLAN"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/04-学习机制与学习引擎规则.md",
+            "line": 44,
+            "id": "RULE-P1-TIME-SYNC"
+          }
+        ],
+        "INT": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/06-业务联调矩阵.md",
+            "line": 56,
+            "id": "INT-P1-003"
+          }
+        ],
+        "E2E": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/08-验收与追溯规范.md",
+            "line": 58,
+            "id": "E2E-P1-FIRST-DAY"
+          }
+        ]
+      },
+      "candidateMappingBoundary": "候选导航：源ID存在，逐卡完整覆盖/权威绑定未签收；不迁移源文状态",
+      "dataOwnerCandidates": [
+        {
+          "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+          "line": 94,
+          "id": "| 学习目标、每日时长",
+          "owner": "learner-service"
+        }
+      ],
+      "ruleBoundary": "只引用设计规则，不声明实现",
+      "pageBoundary": "页面台账为源快照，代码存在/缺失描述未在此升级",
+      "historicalEvidenceNotes": [],
+      "currentWorkflowState": null,
+      "gaps": [
+        "GAP-TRACE-SIGNOFF",
+        "GAP-CARD-CONTRACT-BINDING",
+        "GAP-CURRENT-RUNTIME-EVIDENCE",
+        "GAP-NAMED-ACCEPTOR"
+      ]
+    },
+    {
+      "taskId": "R1-011",
+      "station": "IT-1",
+      "definitionSource": {
+        "path": "docs/06-design/v2-980plus/redesign/dev-plan-R1.md",
+        "line": 22
+      },
+      "title": "向导进度（3 击达定级）",
+      "rawDefinition": "| R1-011 | BC-011 | 向导进度（3 击达定级） | 新号 3 击 → owner: learner-web/mobile；依赖：R1-010 |",
+      "deliveryOwnerAsWritten": "learner-web/mobile",
+      "dependencyAsWritten": "R1-010",
+      "acceptanceAsWritten": "新号 3 击",
+      "BC": [
+        {
+          "id": "BC-011",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 66
+        }
+      ],
+      "IC": [
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 49,
+          "id": "IC-004"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 54,
+          "id": "IC-009"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 49,
+          "id": "IC-057"
+        }
+      ],
+      "BCMappingKind": "计划显式BC",
+      "sourceNavigationCandidates": {
+        "FEAT": [
+          {
+            "path": "requirements/feature-matrix.md",
+            "line": 79,
+            "id": "FEAT-ONB-001"
+          },
+          {
+            "path": "requirements/feature-matrix.md",
+            "line": 80,
+            "id": "FEAT-ONB-002"
+          }
+        ],
+        "PRD_ATOM": [
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 1128,
+            "id": "PRD-ATOM-1053"
+          },
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 1131,
+            "id": "PRD-ATOM-1056"
+          }
+        ],
+        "V2_980": [
+          {
+            "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+            "line": 23,
+            "id": "V2-980-0001"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+            "line": 24,
+            "id": "V2-980-0002"
+          }
+        ],
+        "ARCH": [
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 13,
+            "id": "ARCH-IAM-002"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 11,
+            "id": "ARCH-GW-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 14,
+            "id": "ARCH-DATA-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 15,
+            "id": "ARCH-EVT-001"
+          }
+        ],
+        "ACT": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+            "line": 27,
+            "id": "ACT-P1-LEARNER"
+          }
+        ],
+        "JNY": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/02-端到端业务旅程台账.md",
+            "line": 62,
+            "id": "JNY-P1-03"
+          }
+        ],
+        "PAGE": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 73,
+            "id": "PAGE-P1-ONB-GOAL"
+          }
+        ],
+        "RULE": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/04-学习机制与学习引擎规则.md",
+            "line": 38,
+            "id": "RULE-P1-DAILY-PLAN"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/04-学习机制与学习引擎规则.md",
+            "line": 44,
+            "id": "RULE-P1-TIME-SYNC"
+          }
+        ],
+        "INT": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/06-业务联调矩阵.md",
+            "line": 56,
+            "id": "INT-P1-003"
+          }
+        ],
+        "E2E": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/08-验收与追溯规范.md",
+            "line": 58,
+            "id": "E2E-P1-FIRST-DAY"
+          }
+        ]
+      },
+      "candidateMappingBoundary": "候选导航：源ID存在，逐卡完整覆盖/权威绑定未签收；不迁移源文状态",
+      "dataOwnerCandidates": [
+        {
+          "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+          "line": 94,
+          "id": "| 学习目标、每日时长",
+          "owner": "learner-service"
+        }
+      ],
+      "ruleBoundary": "只引用设计规则，不声明实现",
+      "pageBoundary": "页面台账为源快照，代码存在/缺失描述未在此升级",
+      "historicalEvidenceNotes": [],
+      "currentWorkflowState": null,
+      "gaps": [
+        "GAP-TRACE-SIGNOFF",
+        "GAP-CARD-CONTRACT-BINDING",
+        "GAP-CURRENT-RUNTIME-EVIDENCE",
+        "GAP-NAMED-ACCEPTOR"
+      ]
+    },
+    {
+      "taskId": "R1-012",
+      "station": "IT-1",
+      "definitionSource": {
+        "path": "docs/06-design/v2-980plus/redesign/dev-plan-R1.md",
+        "line": 23
+      },
+      "title": "重置不枚举（恒 202）",
+      "rawDefinition": "| R1-012 | BC-012 | 重置不枚举（恒 202） | 有无账号同响应 → owner: iam-service；依赖：R1-002 |",
+      "deliveryOwnerAsWritten": "iam-service",
+      "dependencyAsWritten": "R1-002",
+      "acceptanceAsWritten": "有无账号同响应",
+      "BC": [
+        {
+          "id": "BC-012",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 67
+        }
+      ],
+      "IC": [
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 3,
+          "id": "IC-002"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 52,
+          "id": "IC-007"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 162,
+          "id": "IC-054"
+        }
+      ],
+      "BCMappingKind": "计划显式BC",
+      "sourceNavigationCandidates": {
+        "FEAT": [
+          {
+            "path": "requirements/feature-matrix.md",
+            "line": 272,
+            "id": "FEAT-USR-002"
+          }
+        ],
+        "PRD_ATOM": [],
+        "V2_980": [
+          {
+            "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+            "line": 382,
+            "id": "V2-980-0360"
+          }
+        ],
+        "ARCH": [
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 12,
+            "id": "ARCH-IAM-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 11,
+            "id": "ARCH-GW-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 21,
+            "id": "ARCH-SEC-001"
+          }
+        ],
+        "ACT": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+            "line": 26,
+            "id": "ACT-P1-VISITOR"
+          }
+        ],
+        "JNY": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/02-端到端业务旅程台账.md",
+            "line": 47,
+            "id": "JNY-P1-01"
+          }
+        ],
+        "PAGE": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 71,
+            "id": "PAGE-P1-AUTH-REGISTER-RESET"
+          }
+        ],
+        "RULE": [],
+        "INT": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/06-业务联调矩阵.md",
+            "line": 54,
+            "id": "INT-P1-001"
+          }
+        ],
+        "E2E": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/08-验收与追溯规范.md",
+            "line": 56,
+            "id": "E2E-P1-AUTH-LIFECYCLE"
+          }
+        ]
+      },
+      "candidateMappingBoundary": "候选导航：源ID存在，逐卡完整覆盖/权威绑定未签收；不迁移源文状态",
+      "dataOwnerCandidates": [
+        {
+          "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+          "line": 93,
+          "id": "| principal、账号密码",
+          "owner": "iam-service"
+        }
+      ],
+      "ruleBoundary": "源旅程标为不适用（认证/成人/官网），安全/同意政策仍需绑定",
+      "pageBoundary": "页面台账为源快照，代码存在/缺失描述未在此升级",
+      "historicalEvidenceNotes": [],
+      "currentWorkflowState": null,
+      "gaps": [
+        "GAP-TRACE-SIGNOFF",
+        "GAP-CARD-CONTRACT-BINDING",
+        "GAP-CURRENT-RUNTIME-EVIDENCE",
+        "GAP-NAMED-ACCEPTOR",
+        "GAP-PRD-ATOM-EXACT"
+      ]
+    },
+    {
+      "taskId": "R1-013",
+      "station": "IT-1",
+      "definitionSource": {
+        "path": "docs/06-design/v2-980plus/redesign/dev-plan-R1.md",
+        "line": 24
+      },
+      "title": "门被拒清理与重进",
+      "rawDefinition": "| R1-013 | BC-201 | 门被拒清理与重进 | 数据清理+重进 → owner: iam-service；依赖：R1-006 |",
+      "deliveryOwnerAsWritten": "iam-service",
+      "dependencyAsWritten": "R1-006",
+      "acceptanceAsWritten": "数据清理+重进",
+      "BC": [
+        {
+          "id": "BC-201",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 392
+        }
+      ],
+      "IC": [
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 50,
+          "id": "IC-005"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 48,
+          "id": "IC-055"
+        }
+      ],
+      "BCMappingKind": "计划显式BC",
+      "sourceNavigationCandidates": {
+        "FEAT": [
+          {
+            "path": "requirements/feature-matrix.md",
+            "line": 271,
+            "id": "FEAT-USR-001"
+          }
+        ],
+        "PRD_ATOM": [
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 1114,
+            "id": "PRD-ATOM-1039"
+          },
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 1118,
+            "id": "PRD-ATOM-1043"
+          }
+        ],
+        "V2_980": [
+          {
+            "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+            "line": 381,
+            "id": "V2-980-0359"
+          }
+        ],
+        "ARCH": [
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 12,
+            "id": "ARCH-IAM-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 13,
+            "id": "ARCH-IAM-002"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 11,
+            "id": "ARCH-GW-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 15,
+            "id": "ARCH-EVT-001"
+          }
+        ],
+        "ACT": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+            "line": 27,
+            "id": "ACT-P1-LEARNER"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+            "line": 37,
+            "id": "ACT-P1-SYSTEM"
+          }
+        ],
+        "JNY": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/02-端到端业务旅程台账.md",
+            "line": 55,
+            "id": "JNY-P1-02"
+          }
+        ],
+        "PAGE": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 72,
+            "id": "PAGE-P1-ADULT-CONSENT"
+          }
+        ],
+        "RULE": [],
+        "INT": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/06-业务联调矩阵.md",
+            "line": 55,
+            "id": "INT-P1-002"
+          }
+        ],
+        "E2E": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/08-验收与追溯规范.md",
+            "line": 57,
+            "id": "E2E-P1-ADULT-CONSENT"
+          }
+        ]
+      },
+      "candidateMappingBoundary": "候选导航：源ID存在，逐卡完整覆盖/权威绑定未签收；不迁移源文状态",
+      "dataOwnerCandidates": [
+        {
+          "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+          "line": 93,
+          "id": "| principal、账号密码",
+          "owner": "iam-service"
+        }
+      ],
+      "ruleBoundary": "源旅程标为不适用（认证/成人/官网），安全/同意政策仍需绑定",
+      "pageBoundary": "页面台账为源快照，代码存在/缺失描述未在此升级",
+      "historicalEvidenceNotes": [],
+      "currentWorkflowState": null,
+      "gaps": [
+        "GAP-TRACE-SIGNOFF",
+        "GAP-CARD-CONTRACT-BINDING",
+        "GAP-CURRENT-RUNTIME-EVIDENCE",
+        "GAP-NAMED-ACCEPTOR",
+        "GAP-ADULT-CONSENT-EXACT-SOURCE"
+      ]
+    },
+    {
+      "taskId": "R1-014",
+      "station": "IT-1",
+      "definitionSource": {
+        "path": "docs/06-design/v2-980plus/redesign/dev-plan-R1.md",
+        "line": 25
+      },
+      "title": "L1 干净库重放（删库→种子→全卡回归）",
+      "rawDefinition": "| R1-014 | — | L1 干净库重放（删库→种子→全卡回归） | 14 卡全绿，证据归档 → owner: QA；依赖：R1-001…013 |",
+      "deliveryOwnerAsWritten": "QA",
+      "dependencyAsWritten": "R1-001…013",
+      "acceptanceAsWritten": "14 卡全绿，证据归档",
+      "BC": [
+        {
+          "id": "BC-001",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 56
+        },
+        {
+          "id": "BC-002",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 57
+        },
+        {
+          "id": "BC-003",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 58
+        },
+        {
+          "id": "BC-004",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 59
+        },
+        {
+          "id": "BC-005",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 60
+        },
+        {
+          "id": "BC-006",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 61
+        },
+        {
+          "id": "BC-007",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 62
+        },
+        {
+          "id": "BC-008",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 63
+        },
+        {
+          "id": "BC-009",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 64
+        },
+        {
+          "id": "BC-010",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 65
+        },
+        {
+          "id": "BC-011",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 66
+        },
+        {
+          "id": "BC-012",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 67
+        },
+        {
+          "id": "BC-201",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 392
+        },
+        {
+          "id": "BC-202",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 393
+        }
+      ],
+      "IC": [
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 40,
+          "id": "IC-001"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 3,
+          "id": "IC-002"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 48,
+          "id": "IC-003"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 49,
+          "id": "IC-004"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 50,
+          "id": "IC-005"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 51,
+          "id": "IC-006"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 52,
+          "id": "IC-007"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 48,
+          "id": "IC-008"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 54,
+          "id": "IC-009"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 115,
+          "id": "IC-035"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 116,
+          "id": "IC-036"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 47,
+          "id": "IC-052"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 161,
+          "id": "IC-053"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 162,
+          "id": "IC-054"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 48,
+          "id": "IC-055"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 164,
+          "id": "IC-056"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 49,
+          "id": "IC-057"
+        }
+      ],
+      "BCMappingKind": "BC/IC关联或汇总派生，非原卡新增范围",
+      "sourceNavigationCandidates": {
+        "FEAT": [
+          {
+            "path": "requirements/feature-matrix.md",
+            "line": 79,
+            "id": "FEAT-ONB-001"
+          },
+          {
+            "path": "requirements/feature-matrix.md",
+            "line": 80,
+            "id": "FEAT-ONB-002"
+          },
+          {
+            "path": "requirements/feature-matrix.md",
+            "line": 271,
+            "id": "FEAT-USR-001"
+          },
+          {
+            "path": "requirements/feature-matrix.md",
+            "line": 272,
+            "id": "FEAT-USR-002"
+          },
+          {
+            "path": "requirements/feature-matrix.md",
+            "line": 273,
+            "id": "FEAT-USR-003"
+          },
+          {
+            "path": "requirements/feature-matrix.md",
+            "line": 274,
+            "id": "FEAT-USR-004"
+          },
+          {
+            "path": "requirements/feature-matrix.md",
+            "line": 275,
+            "id": "FEAT-USR-005"
+          }
+        ],
+        "PRD_ATOM": [
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 1114,
+            "id": "PRD-ATOM-1039"
+          },
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 1118,
+            "id": "PRD-ATOM-1043"
+          },
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 1119,
+            "id": "PRD-ATOM-1044"
+          },
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 1124,
+            "id": "PRD-ATOM-1049"
+          },
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 1125,
+            "id": "PRD-ATOM-1050"
+          },
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 1128,
+            "id": "PRD-ATOM-1053"
+          },
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 1131,
+            "id": "PRD-ATOM-1056"
+          }
+        ],
+        "V2_980": [
+          {
+            "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+            "line": 23,
+            "id": "V2-980-0001"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+            "line": 24,
+            "id": "V2-980-0002"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+            "line": 381,
+            "id": "V2-980-0359"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+            "line": 382,
+            "id": "V2-980-0360"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+            "line": 383,
+            "id": "V2-980-0361"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+            "line": 384,
+            "id": "V2-980-0362"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+            "line": 385,
+            "id": "V2-980-0363"
+          }
+        ],
+        "ARCH": [
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 16,
+            "id": "ARCH-API-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 14,
+            "id": "ARCH-DATA-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 15,
+            "id": "ARCH-EVT-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 11,
+            "id": "ARCH-GW-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 12,
+            "id": "ARCH-IAM-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 13,
+            "id": "ARCH-IAM-002"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 21,
+            "id": "ARCH-SEC-001"
+          }
+        ],
+        "ACT": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+            "line": 27,
+            "id": "ACT-P1-LEARNER"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+            "line": 37,
+            "id": "ACT-P1-SYSTEM"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+            "line": 26,
+            "id": "ACT-P1-VISITOR"
+          }
+        ],
+        "JNY": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/02-端到端业务旅程台账.md",
+            "line": 47,
+            "id": "JNY-P1-01"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/02-端到端业务旅程台账.md",
+            "line": 55,
+            "id": "JNY-P1-02"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/02-端到端业务旅程台账.md",
+            "line": 62,
+            "id": "JNY-P1-03"
+          }
+        ],
+        "PAGE": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 72,
+            "id": "PAGE-P1-ADULT-CONSENT"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 70,
+            "id": "PAGE-P1-AUTH-LOGIN"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 71,
+            "id": "PAGE-P1-AUTH-REGISTER-RESET"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 100,
+            "id": "PAGE-P1-DEVICES"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 53,
+            "id": "PAGE-P1-OFFICIAL-ABOUT"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 52,
+            "id": "PAGE-P1-OFFICIAL-ANNOUNCEMENTS"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 54,
+            "id": "PAGE-P1-OFFICIAL-COMPLIANCE"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 49,
+            "id": "PAGE-P1-OFFICIAL-COURSES"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 51,
+            "id": "PAGE-P1-OFFICIAL-DOWNLOAD"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 48,
+            "id": "PAGE-P1-OFFICIAL-HOME"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 58,
+            "id": "PAGE-P1-OFFICIAL-MINORS"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 50,
+            "id": "PAGE-P1-OFFICIAL-PRICING"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 56,
+            "id": "PAGE-P1-OFFICIAL-PRIVACY"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 55,
+            "id": "PAGE-P1-OFFICIAL-STATUS"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 57,
+            "id": "PAGE-P1-OFFICIAL-TERMS"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 73,
+            "id": "PAGE-P1-ONB-GOAL"
+          }
+        ],
+        "RULE": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/04-学习机制与学习引擎规则.md",
+            "line": 38,
+            "id": "RULE-P1-DAILY-PLAN"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/04-学习机制与学习引擎规则.md",
+            "line": 44,
+            "id": "RULE-P1-TIME-SYNC"
+          }
+        ],
+        "INT": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/06-业务联调矩阵.md",
+            "line": 54,
+            "id": "INT-P1-001"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/06-业务联调矩阵.md",
+            "line": 55,
+            "id": "INT-P1-002"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/06-业务联调矩阵.md",
+            "line": 56,
+            "id": "INT-P1-003"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/06-业务联调矩阵.md",
+            "line": 58,
+            "id": "INT-P1-005"
+          }
+        ],
+        "E2E": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/08-验收与追溯规范.md",
+            "line": 57,
+            "id": "E2E-P1-ADULT-CONSENT"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/08-验收与追溯规范.md",
+            "line": 56,
+            "id": "E2E-P1-AUTH-LIFECYCLE"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/08-验收与追溯规范.md",
+            "line": 58,
+            "id": "E2E-P1-FIRST-DAY"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/08-验收与追溯规范.md",
+            "line": 55,
+            "id": "E2E-P1-PUBLIC-ENTRY"
+          }
+        ]
+      },
+      "candidateMappingBoundary": "候选导航：源ID存在，逐卡完整覆盖/权威绑定未签收；不迁移源文状态",
+      "dataOwnerCandidates": [
+        {
+          "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+          "line": 95,
+          "id": "| 内容、课程、题目、答案规则版本",
+          "owner": "content-service"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+          "line": 93,
+          "id": "| principal、账号密码",
+          "owner": "iam-service"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+          "line": 94,
+          "id": "| 学习目标、每日时长",
+          "owner": "learner-service"
+        }
+      ],
+      "ruleBoundary": "只引用设计规则，不声明实现",
+      "pageBoundary": "页面台账为源快照，代码存在/缺失描述未在此升级",
+      "historicalEvidenceNotes": [],
+      "currentWorkflowState": null,
+      "gaps": [
+        "GAP-TRACE-SIGNOFF",
+        "GAP-CARD-CONTRACT-BINDING",
+        "GAP-CURRENT-RUNTIME-EVIDENCE",
+        "GAP-NAMED-ACCEPTOR"
+      ]
+    },
+    {
+      "taskId": "R1-015",
+      "station": "IT-1",
+      "definitionSource": {
+        "path": "docs/06-design/v2-980plus/redesign/dev-plan-R1.md",
+        "line": 26
+      },
+      "title": "注册/登录/重置三页细分验收",
+      "rawDefinition": "| R1-015 | IC-052…054 | 注册/登录/重置三页细分验收 | 三页按幕验收 → owner: learner-web；依赖：R1-002 |",
+      "deliveryOwnerAsWritten": "learner-web",
+      "dependencyAsWritten": "R1-002",
+      "acceptanceAsWritten": "三页按幕验收",
+      "BC": [
+        {
+          "id": "BC-002",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 57
+        },
+        {
+          "id": "BC-003",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 58
+        },
+        {
+          "id": "BC-004",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 59
+        },
+        {
+          "id": "BC-012",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 67
+        }
+      ],
+      "IC": [
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 3,
+          "id": "IC-002"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 52,
+          "id": "IC-007"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 47,
+          "id": "IC-052"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 161,
+          "id": "IC-053"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 162,
+          "id": "IC-054"
+        }
+      ],
+      "BCMappingKind": "BC/IC关联或汇总派生，非原卡新增范围",
+      "sourceNavigationCandidates": {
+        "FEAT": [
+          {
+            "path": "requirements/feature-matrix.md",
+            "line": 271,
+            "id": "FEAT-USR-001"
+          },
+          {
+            "path": "requirements/feature-matrix.md",
+            "line": 274,
+            "id": "FEAT-USR-004"
+          }
+        ],
+        "PRD_ATOM": [
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 1119,
+            "id": "PRD-ATOM-1044"
+          },
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 1124,
+            "id": "PRD-ATOM-1049"
+          }
+        ],
+        "V2_980": [
+          {
+            "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+            "line": 381,
+            "id": "V2-980-0359"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+            "line": 384,
+            "id": "V2-980-0362"
+          }
+        ],
+        "ARCH": [
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 12,
+            "id": "ARCH-IAM-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 13,
+            "id": "ARCH-IAM-002"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 11,
+            "id": "ARCH-GW-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 15,
+            "id": "ARCH-EVT-001"
+          }
+        ],
+        "ACT": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+            "line": 26,
+            "id": "ACT-P1-VISITOR"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+            "line": 27,
+            "id": "ACT-P1-LEARNER"
+          }
+        ],
+        "JNY": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/02-端到端业务旅程台账.md",
+            "line": 47,
+            "id": "JNY-P1-01"
+          }
+        ],
+        "PAGE": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 70,
+            "id": "PAGE-P1-AUTH-LOGIN"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 71,
+            "id": "PAGE-P1-AUTH-REGISTER-RESET"
+          }
+        ],
+        "RULE": [],
+        "INT": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/06-业务联调矩阵.md",
+            "line": 54,
+            "id": "INT-P1-001"
+          }
+        ],
+        "E2E": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/08-验收与追溯规范.md",
+            "line": 56,
+            "id": "E2E-P1-AUTH-LIFECYCLE"
+          }
+        ]
+      },
+      "candidateMappingBoundary": "候选导航：源ID存在，逐卡完整覆盖/权威绑定未签收；不迁移源文状态",
+      "dataOwnerCandidates": [
+        {
+          "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+          "line": 93,
+          "id": "| principal、账号密码",
+          "owner": "iam-service"
+        }
+      ],
+      "ruleBoundary": "源旅程标为不适用（认证/成人/官网），安全/同意政策仍需绑定",
+      "pageBoundary": "页面台账为源快照，代码存在/缺失描述未在此升级",
+      "historicalEvidenceNotes": [],
+      "currentWorkflowState": null,
+      "gaps": [
+        "GAP-TRACE-SIGNOFF",
+        "GAP-CARD-CONTRACT-BINDING",
+        "GAP-CURRENT-RUNTIME-EVIDENCE",
+        "GAP-NAMED-ACCEPTOR"
+      ]
+    },
+    {
+      "taskId": "R1-016",
+      "station": "IT-1",
+      "definitionSource": {
+        "path": "docs/06-design/v2-980plus/redesign/dev-plan-R1.md",
+        "line": 27
+      },
+      "title": "门说明+同意逐项验收",
+      "rawDefinition": "| R1-016 | IC-055/056 | 门说明+同意逐项验收 | 文案对稿 → owner: learner-web；依赖：R1-007 |",
+      "deliveryOwnerAsWritten": "learner-web",
+      "dependencyAsWritten": "R1-007",
+      "acceptanceAsWritten": "文案对稿",
+      "BC": [
+        {
+          "id": "BC-006",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 61
+        },
+        {
+          "id": "BC-007",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 62
+        },
+        {
+          "id": "BC-008",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 63
+        },
+        {
+          "id": "BC-009",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 64
+        },
+        {
+          "id": "BC-201",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 392
+        }
+      ],
+      "IC": [
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 48,
+          "id": "IC-003"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 50,
+          "id": "IC-005"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 51,
+          "id": "IC-006"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 48,
+          "id": "IC-008"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 116,
+          "id": "IC-036"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 48,
+          "id": "IC-055"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 164,
+          "id": "IC-056"
+        }
+      ],
+      "BCMappingKind": "BC/IC关联或汇总派生，非原卡新增范围",
+      "sourceNavigationCandidates": {
+        "FEAT": [
+          {
+            "path": "requirements/feature-matrix.md",
+            "line": 271,
+            "id": "FEAT-USR-001"
+          }
+        ],
+        "PRD_ATOM": [
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 1114,
+            "id": "PRD-ATOM-1039"
+          },
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 1118,
+            "id": "PRD-ATOM-1043"
+          }
+        ],
+        "V2_980": [
+          {
+            "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+            "line": 381,
+            "id": "V2-980-0359"
+          }
+        ],
+        "ARCH": [
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 12,
+            "id": "ARCH-IAM-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 13,
+            "id": "ARCH-IAM-002"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 11,
+            "id": "ARCH-GW-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 15,
+            "id": "ARCH-EVT-001"
+          }
+        ],
+        "ACT": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+            "line": 27,
+            "id": "ACT-P1-LEARNER"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+            "line": 37,
+            "id": "ACT-P1-SYSTEM"
+          }
+        ],
+        "JNY": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/02-端到端业务旅程台账.md",
+            "line": 55,
+            "id": "JNY-P1-02"
+          }
+        ],
+        "PAGE": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 72,
+            "id": "PAGE-P1-ADULT-CONSENT"
+          }
+        ],
+        "RULE": [],
+        "INT": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/06-业务联调矩阵.md",
+            "line": 55,
+            "id": "INT-P1-002"
+          }
+        ],
+        "E2E": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/08-验收与追溯规范.md",
+            "line": 57,
+            "id": "E2E-P1-ADULT-CONSENT"
+          }
+        ]
+      },
+      "candidateMappingBoundary": "候选导航：源ID存在，逐卡完整覆盖/权威绑定未签收；不迁移源文状态",
+      "dataOwnerCandidates": [
+        {
+          "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+          "line": 93,
+          "id": "| principal、账号密码",
+          "owner": "iam-service"
+        }
+      ],
+      "ruleBoundary": "源旅程标为不适用（认证/成人/官网），安全/同意政策仍需绑定",
+      "pageBoundary": "页面台账为源快照，代码存在/缺失描述未在此升级",
+      "historicalEvidenceNotes": [],
+      "currentWorkflowState": null,
+      "gaps": [
+        "GAP-TRACE-SIGNOFF",
+        "GAP-CARD-CONTRACT-BINDING",
+        "GAP-CURRENT-RUNTIME-EVIDENCE",
+        "GAP-NAMED-ACCEPTOR",
+        "GAP-ADULT-CONSENT-EXACT-SOURCE"
+      ]
+    },
+    {
+      "taskId": "R1-017",
+      "station": "IT-1",
+      "definitionSource": {
+        "path": "docs/06-design/v2-980plus/redesign/dev-plan-R1.md",
+        "line": 28
+      },
+      "title": "画像字段+引导条验收",
+      "rawDefinition": "| R1-017 | IC-057/009 | 画像字段+引导条验收 | 按钮去定级 → owner: learner-web；依赖：R1-010 |",
+      "deliveryOwnerAsWritten": "learner-web",
+      "dependencyAsWritten": "R1-010",
+      "acceptanceAsWritten": "按钮去定级",
+      "BC": [
+        {
+          "id": "BC-010",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 65
+        },
+        {
+          "id": "BC-011",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 66
+        },
+        {
+          "id": "BC-202",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 393
+        }
+      ],
+      "IC": [
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 49,
+          "id": "IC-004"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 54,
+          "id": "IC-009"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 49,
+          "id": "IC-057"
+        }
+      ],
+      "BCMappingKind": "BC/IC关联或汇总派生，非原卡新增范围",
+      "sourceNavigationCandidates": {
+        "FEAT": [
+          {
+            "path": "requirements/feature-matrix.md",
+            "line": 79,
+            "id": "FEAT-ONB-001"
+          },
+          {
+            "path": "requirements/feature-matrix.md",
+            "line": 80,
+            "id": "FEAT-ONB-002"
+          }
+        ],
+        "PRD_ATOM": [
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 1128,
+            "id": "PRD-ATOM-1053"
+          },
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 1131,
+            "id": "PRD-ATOM-1056"
+          }
+        ],
+        "V2_980": [
+          {
+            "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+            "line": 23,
+            "id": "V2-980-0001"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+            "line": 24,
+            "id": "V2-980-0002"
+          }
+        ],
+        "ARCH": [
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 13,
+            "id": "ARCH-IAM-002"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 11,
+            "id": "ARCH-GW-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 14,
+            "id": "ARCH-DATA-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 15,
+            "id": "ARCH-EVT-001"
+          }
+        ],
+        "ACT": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+            "line": 27,
+            "id": "ACT-P1-LEARNER"
+          }
+        ],
+        "JNY": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/02-端到端业务旅程台账.md",
+            "line": 62,
+            "id": "JNY-P1-03"
+          }
+        ],
+        "PAGE": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 73,
+            "id": "PAGE-P1-ONB-GOAL"
+          }
+        ],
+        "RULE": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/04-学习机制与学习引擎规则.md",
+            "line": 38,
+            "id": "RULE-P1-DAILY-PLAN"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/04-学习机制与学习引擎规则.md",
+            "line": 44,
+            "id": "RULE-P1-TIME-SYNC"
+          }
+        ],
+        "INT": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/06-业务联调矩阵.md",
+            "line": 56,
+            "id": "INT-P1-003"
+          }
+        ],
+        "E2E": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/08-验收与追溯规范.md",
+            "line": 58,
+            "id": "E2E-P1-FIRST-DAY"
+          }
+        ]
+      },
+      "candidateMappingBoundary": "候选导航：源ID存在，逐卡完整覆盖/权威绑定未签收；不迁移源文状态",
+      "dataOwnerCandidates": [
+        {
+          "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+          "line": 94,
+          "id": "| 学习目标、每日时长",
+          "owner": "learner-service"
+        }
+      ],
+      "ruleBoundary": "只引用设计规则，不声明实现",
+      "pageBoundary": "页面台账为源快照，代码存在/缺失描述未在此升级",
+      "historicalEvidenceNotes": [],
+      "currentWorkflowState": null,
+      "gaps": [
+        "GAP-TRACE-SIGNOFF",
+        "GAP-CARD-CONTRACT-BINDING",
+        "GAP-CURRENT-RUNTIME-EVIDENCE",
+        "GAP-NAMED-ACCEPTOR"
+      ]
+    },
+    {
+      "taskId": "R1-018",
+      "station": "IT-2",
+      "definitionSource": {
+        "path": "docs/06-design/v2-980plus/redesign/dev-plan-R1.md",
+        "line": 50
+      },
+      "title": "前端切 P1 新口（`POST /placement/sessions`，替换 B25 旧调用）",
+      "rawDefinition": "| R1-018 | BC-013 | 前端切 P1 新口（`POST /placement/sessions`，替换 B25 旧调用） | 10 道密封题干，无答案物 → owner: learner-web/mobile；依赖：R1-017 |",
+      "deliveryOwnerAsWritten": "learner-web/mobile",
+      "dependencyAsWritten": "R1-017",
+      "acceptanceAsWritten": "10 道密封题干，无答案物",
+      "BC": [
+        {
+          "id": "BC-013",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 75
+        }
+      ],
+      "IC": [
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 55,
+          "id": "IC-010"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 166,
+          "id": "IC-058"
+        }
+      ],
+      "BCMappingKind": "计划显式BC",
+      "sourceNavigationCandidates": {
+        "FEAT": [
+          {
+            "path": "requirements/feature-matrix.md",
+            "line": 81,
+            "id": "FEAT-ONB-003"
+          },
+          {
+            "path": "requirements/feature-matrix.md",
+            "line": 82,
+            "id": "FEAT-ONB-004"
+          }
+        ],
+        "PRD_ATOM": [
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 162,
+            "id": "PRD-ATOM-0087"
+          },
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 165,
+            "id": "PRD-ATOM-0090"
+          },
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 166,
+            "id": "PRD-ATOM-0091"
+          },
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 167,
+            "id": "PRD-ATOM-0092"
+          }
+        ],
+        "V2_980": [
+          {
+            "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+            "line": 25,
+            "id": "V2-980-0003"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+            "line": 26,
+            "id": "V2-980-0004"
+          }
+        ],
+        "ARCH": [
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 16,
+            "id": "ARCH-API-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 13,
+            "id": "ARCH-IAM-002"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 11,
+            "id": "ARCH-GW-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 14,
+            "id": "ARCH-DATA-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 15,
+            "id": "ARCH-EVT-001"
+          }
+        ],
+        "ACT": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+            "line": 27,
+            "id": "ACT-P1-LEARNER"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+            "line": 37,
+            "id": "ACT-P1-SYSTEM"
+          }
+        ],
+        "JNY": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/02-端到端业务旅程台账.md",
+            "line": 69,
+            "id": "JNY-P1-04"
+          }
+        ],
+        "PAGE": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 74,
+            "id": "PAGE-P1-ASSESSMENT"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 75,
+            "id": "PAGE-P1-ASSESSMENT-RESULT"
+          }
+        ],
+        "RULE": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/04-学习机制与学习引擎规则.md",
+            "line": 37,
+            "id": "RULE-P1-PLACEMENT"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/04-学习机制与学习引擎规则.md",
+            "line": 39,
+            "id": "RULE-P1-SESSION"
+          }
+        ],
+        "INT": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/06-业务联调矩阵.md",
+            "line": 57,
+            "id": "INT-P1-004"
+          }
+        ],
+        "E2E": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/08-验收与追溯规范.md",
+            "line": 58,
+            "id": "E2E-P1-FIRST-DAY"
+          }
+        ]
+      },
+      "candidateMappingBoundary": "候选导航：源ID存在，逐卡完整覆盖/权威绑定未签收；不迁移源文状态",
+      "dataOwnerCandidates": [
+        {
+          "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+          "line": 96,
+          "id": "| placement/练习/模考会话",
+          "owner": "assessment-service"
+        }
+      ],
+      "ruleBoundary": "只引用设计规则，不声明实现",
+      "pageBoundary": "页面台账为源快照，代码存在/缺失描述未在此升级",
+      "historicalEvidenceNotes": [],
+      "currentWorkflowState": null,
+      "gaps": [
+        "GAP-TRACE-SIGNOFF",
+        "GAP-CARD-CONTRACT-BINDING",
+        "GAP-CURRENT-RUNTIME-EVIDENCE",
+        "GAP-NAMED-ACCEPTOR"
+      ]
+    },
+    {
+      "taskId": "R1-019",
+      "station": "IT-2",
+      "definitionSource": {
+        "path": "docs/06-design/v2-980plus/redesign/dev-plan-R1.md",
+        "line": 51
+      },
+      "title": "B25 写口下线（网关路由摘除，只读保留）",
+      "rawDefinition": "| R1-019 | BC-019 | B25 写口下线（网关路由摘除，只读保留） | 旧会话可读，新开 404 → owner: api-gateway；依赖：R1-018 |",
+      "deliveryOwnerAsWritten": "api-gateway",
+      "dependencyAsWritten": "R1-018",
+      "acceptanceAsWritten": "旧会话可读，新开 404",
+      "BC": [
+        {
+          "id": "BC-019",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 81
+        }
+      ],
+      "IC": [
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 55,
+          "id": "IC-010"
+        }
+      ],
+      "BCMappingKind": "计划显式BC",
+      "sourceNavigationCandidates": {
+        "FEAT": [
+          {
+            "path": "requirements/feature-matrix.md",
+            "line": 81,
+            "id": "FEAT-ONB-003"
+          },
+          {
+            "path": "requirements/feature-matrix.md",
+            "line": 82,
+            "id": "FEAT-ONB-004"
+          }
+        ],
+        "PRD_ATOM": [
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 162,
+            "id": "PRD-ATOM-0087"
+          },
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 165,
+            "id": "PRD-ATOM-0090"
+          },
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 166,
+            "id": "PRD-ATOM-0091"
+          },
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 167,
+            "id": "PRD-ATOM-0092"
+          }
+        ],
+        "V2_980": [
+          {
+            "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+            "line": 25,
+            "id": "V2-980-0003"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+            "line": 26,
+            "id": "V2-980-0004"
+          }
+        ],
+        "ARCH": [
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 16,
+            "id": "ARCH-API-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 13,
+            "id": "ARCH-IAM-002"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 11,
+            "id": "ARCH-GW-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 14,
+            "id": "ARCH-DATA-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 15,
+            "id": "ARCH-EVT-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 22,
+            "id": "ARCH-SVC-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 23,
+            "id": "ARCH-LCM-001"
+          }
+        ],
+        "ACT": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+            "line": 27,
+            "id": "ACT-P1-LEARNER"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+            "line": 37,
+            "id": "ACT-P1-SYSTEM"
+          }
+        ],
+        "JNY": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/02-端到端业务旅程台账.md",
+            "line": 69,
+            "id": "JNY-P1-04"
+          }
+        ],
+        "PAGE": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 74,
+            "id": "PAGE-P1-ASSESSMENT"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 75,
+            "id": "PAGE-P1-ASSESSMENT-RESULT"
+          }
+        ],
+        "RULE": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/04-学习机制与学习引擎规则.md",
+            "line": 37,
+            "id": "RULE-P1-PLACEMENT"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/04-学习机制与学习引擎规则.md",
+            "line": 39,
+            "id": "RULE-P1-SESSION"
+          }
+        ],
+        "INT": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/06-业务联调矩阵.md",
+            "line": 57,
+            "id": "INT-P1-004"
+          }
+        ],
+        "E2E": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/08-验收与追溯规范.md",
+            "line": 58,
+            "id": "E2E-P1-FIRST-DAY"
+          }
+        ]
+      },
+      "candidateMappingBoundary": "候选导航：源ID存在，逐卡完整覆盖/权威绑定未签收；不迁移源文状态",
+      "dataOwnerCandidates": [
+        {
+          "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+          "line": 96,
+          "id": "| placement/练习/模考会话",
+          "owner": "assessment-service"
+        }
+      ],
+      "ruleBoundary": "只引用设计规则，不声明实现",
+      "pageBoundary": "页面台账为源快照，代码存在/缺失描述未在此升级",
+      "historicalEvidenceNotes": [],
+      "currentWorkflowState": null,
+      "gaps": [
+        "GAP-TRACE-SIGNOFF",
+        "GAP-CARD-CONTRACT-BINDING",
+        "GAP-CURRENT-RUNTIME-EVIDENCE",
+        "GAP-NAMED-ACCEPTOR"
+      ]
+    },
+    {
+      "taskId": "R1-020",
+      "station": "IT-2",
+      "definitionSource": {
+        "path": "docs/06-design/v2-980plus/redesign/dev-plan-R1.md",
+        "line": 52
+      },
+      "title": "逐题作答 checkpoint（顺序+版本锁）",
+      "rawDefinition": "| R1-020 | BC-014 | 逐题作答 checkpoint（顺序+版本锁） | 乱序并发 409 → owner: assessment-service；依赖：R1-018 |",
+      "deliveryOwnerAsWritten": "assessment-service",
+      "dependencyAsWritten": "R1-018",
+      "acceptanceAsWritten": "乱序并发 409",
+      "BC": [
+        {
+          "id": "BC-014",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 76
+        }
+      ],
+      "IC": [
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 56,
+          "id": "IC-011"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 167,
+          "id": "IC-059"
+        }
+      ],
+      "BCMappingKind": "计划显式BC",
+      "sourceNavigationCandidates": {
+        "FEAT": [
+          {
+            "path": "requirements/feature-matrix.md",
+            "line": 81,
+            "id": "FEAT-ONB-003"
+          },
+          {
+            "path": "requirements/feature-matrix.md",
+            "line": 82,
+            "id": "FEAT-ONB-004"
+          }
+        ],
+        "PRD_ATOM": [
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 162,
+            "id": "PRD-ATOM-0087"
+          },
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 165,
+            "id": "PRD-ATOM-0090"
+          },
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 166,
+            "id": "PRD-ATOM-0091"
+          },
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 167,
+            "id": "PRD-ATOM-0092"
+          }
+        ],
+        "V2_980": [
+          {
+            "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+            "line": 25,
+            "id": "V2-980-0003"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+            "line": 26,
+            "id": "V2-980-0004"
+          }
+        ],
+        "ARCH": [
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 16,
+            "id": "ARCH-API-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 13,
+            "id": "ARCH-IAM-002"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 11,
+            "id": "ARCH-GW-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 14,
+            "id": "ARCH-DATA-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 15,
+            "id": "ARCH-EVT-001"
+          }
+        ],
+        "ACT": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+            "line": 27,
+            "id": "ACT-P1-LEARNER"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+            "line": 37,
+            "id": "ACT-P1-SYSTEM"
+          }
+        ],
+        "JNY": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/02-端到端业务旅程台账.md",
+            "line": 69,
+            "id": "JNY-P1-04"
+          }
+        ],
+        "PAGE": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 74,
+            "id": "PAGE-P1-ASSESSMENT"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 75,
+            "id": "PAGE-P1-ASSESSMENT-RESULT"
+          }
+        ],
+        "RULE": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/04-学习机制与学习引擎规则.md",
+            "line": 37,
+            "id": "RULE-P1-PLACEMENT"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/04-学习机制与学习引擎规则.md",
+            "line": 39,
+            "id": "RULE-P1-SESSION"
+          }
+        ],
+        "INT": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/06-业务联调矩阵.md",
+            "line": 57,
+            "id": "INT-P1-004"
+          }
+        ],
+        "E2E": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/08-验收与追溯规范.md",
+            "line": 58,
+            "id": "E2E-P1-FIRST-DAY"
+          }
+        ]
+      },
+      "candidateMappingBoundary": "候选导航：源ID存在，逐卡完整覆盖/权威绑定未签收；不迁移源文状态",
+      "dataOwnerCandidates": [
+        {
+          "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+          "line": 96,
+          "id": "| placement/练习/模考会话",
+          "owner": "assessment-service"
+        }
+      ],
+      "ruleBoundary": "只引用设计规则，不声明实现",
+      "pageBoundary": "页面台账为源快照，代码存在/缺失描述未在此升级",
+      "historicalEvidenceNotes": [],
+      "currentWorkflowState": null,
+      "gaps": [
+        "GAP-TRACE-SIGNOFF",
+        "GAP-CARD-CONTRACT-BINDING",
+        "GAP-CURRENT-RUNTIME-EVIDENCE",
+        "GAP-NAMED-ACCEPTOR"
+      ]
+    },
+    {
+      "taskId": "R1-021",
+      "station": "IT-2",
+      "definitionSource": {
+        "path": "docs/06-design/v2-980plus/redesign/dev-plan-R1.md",
+        "line": 53
+      },
+      "title": "规则判分 FULL/ZERO（行内即时反馈）",
+      "rawDefinition": "| R1-021 | BC-015 | 规则判分 FULL/ZERO（行内即时反馈） | 可解释判分 → owner: assessment-service；依赖：R1-020 |",
+      "deliveryOwnerAsWritten": "assessment-service",
+      "dependencyAsWritten": "R1-020",
+      "acceptanceAsWritten": "可解释判分",
+      "BC": [
+        {
+          "id": "BC-015",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 77
+        }
+      ],
+      "IC": [
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 56,
+          "id": "IC-011"
+        }
+      ],
+      "BCMappingKind": "计划显式BC",
+      "sourceNavigationCandidates": {
+        "FEAT": [
+          {
+            "path": "requirements/feature-matrix.md",
+            "line": 81,
+            "id": "FEAT-ONB-003"
+          },
+          {
+            "path": "requirements/feature-matrix.md",
+            "line": 82,
+            "id": "FEAT-ONB-004"
+          }
+        ],
+        "PRD_ATOM": [
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 162,
+            "id": "PRD-ATOM-0087"
+          },
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 165,
+            "id": "PRD-ATOM-0090"
+          },
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 166,
+            "id": "PRD-ATOM-0091"
+          },
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 167,
+            "id": "PRD-ATOM-0092"
+          }
+        ],
+        "V2_980": [
+          {
+            "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+            "line": 25,
+            "id": "V2-980-0003"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+            "line": 26,
+            "id": "V2-980-0004"
+          }
+        ],
+        "ARCH": [
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 16,
+            "id": "ARCH-API-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 13,
+            "id": "ARCH-IAM-002"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 11,
+            "id": "ARCH-GW-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 14,
+            "id": "ARCH-DATA-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 15,
+            "id": "ARCH-EVT-001"
+          }
+        ],
+        "ACT": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+            "line": 27,
+            "id": "ACT-P1-LEARNER"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+            "line": 37,
+            "id": "ACT-P1-SYSTEM"
+          }
+        ],
+        "JNY": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/02-端到端业务旅程台账.md",
+            "line": 69,
+            "id": "JNY-P1-04"
+          }
+        ],
+        "PAGE": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 74,
+            "id": "PAGE-P1-ASSESSMENT"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 75,
+            "id": "PAGE-P1-ASSESSMENT-RESULT"
+          }
+        ],
+        "RULE": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/04-学习机制与学习引擎规则.md",
+            "line": 37,
+            "id": "RULE-P1-PLACEMENT"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/04-学习机制与学习引擎规则.md",
+            "line": 39,
+            "id": "RULE-P1-SESSION"
+          }
+        ],
+        "INT": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/06-业务联调矩阵.md",
+            "line": 57,
+            "id": "INT-P1-004"
+          }
+        ],
+        "E2E": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/08-验收与追溯规范.md",
+            "line": 58,
+            "id": "E2E-P1-FIRST-DAY"
+          }
+        ]
+      },
+      "candidateMappingBoundary": "候选导航：源ID存在，逐卡完整覆盖/权威绑定未签收；不迁移源文状态",
+      "dataOwnerCandidates": [
+        {
+          "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+          "line": 96,
+          "id": "| placement/练习/模考会话",
+          "owner": "assessment-service"
+        }
+      ],
+      "ruleBoundary": "只引用设计规则，不声明实现",
+      "pageBoundary": "页面台账为源快照，代码存在/缺失描述未在此升级",
+      "historicalEvidenceNotes": [],
+      "currentWorkflowState": null,
+      "gaps": [
+        "GAP-TRACE-SIGNOFF",
+        "GAP-CARD-CONTRACT-BINDING",
+        "GAP-CURRENT-RUNTIME-EVIDENCE",
+        "GAP-NAMED-ACCEPTOR"
+      ]
+    },
+    {
+      "taskId": "R1-022",
+      "station": "IT-2",
+      "definitionSource": {
+        "path": "docs/06-design/v2-980plus/redesign/dev-plan-R1.md",
+        "line": 54
+      },
+      "title": "报告快照（reportId+digest 钉死）",
+      "rawDefinition": "| R1-022 | BC-016 | 报告快照（reportId+digest 钉死） | 不可变报告 → owner: assessment-service；依赖：R1-021 |",
+      "deliveryOwnerAsWritten": "assessment-service",
+      "dependencyAsWritten": "R1-021",
+      "acceptanceAsWritten": "不可变报告",
+      "BC": [
+        {
+          "id": "BC-016",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 78
+        }
+      ],
+      "IC": [
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 57,
+          "id": "IC-012"
+        }
+      ],
+      "BCMappingKind": "计划显式BC",
+      "sourceNavigationCandidates": {
+        "FEAT": [
+          {
+            "path": "requirements/feature-matrix.md",
+            "line": 81,
+            "id": "FEAT-ONB-003"
+          },
+          {
+            "path": "requirements/feature-matrix.md",
+            "line": 82,
+            "id": "FEAT-ONB-004"
+          }
+        ],
+        "PRD_ATOM": [
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 162,
+            "id": "PRD-ATOM-0087"
+          },
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 165,
+            "id": "PRD-ATOM-0090"
+          },
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 166,
+            "id": "PRD-ATOM-0091"
+          },
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 167,
+            "id": "PRD-ATOM-0092"
+          }
+        ],
+        "V2_980": [
+          {
+            "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+            "line": 25,
+            "id": "V2-980-0003"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+            "line": 26,
+            "id": "V2-980-0004"
+          }
+        ],
+        "ARCH": [
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 16,
+            "id": "ARCH-API-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 13,
+            "id": "ARCH-IAM-002"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 11,
+            "id": "ARCH-GW-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 14,
+            "id": "ARCH-DATA-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 15,
+            "id": "ARCH-EVT-001"
+          }
+        ],
+        "ACT": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+            "line": 27,
+            "id": "ACT-P1-LEARNER"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+            "line": 37,
+            "id": "ACT-P1-SYSTEM"
+          }
+        ],
+        "JNY": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/02-端到端业务旅程台账.md",
+            "line": 69,
+            "id": "JNY-P1-04"
+          }
+        ],
+        "PAGE": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 74,
+            "id": "PAGE-P1-ASSESSMENT"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 75,
+            "id": "PAGE-P1-ASSESSMENT-RESULT"
+          }
+        ],
+        "RULE": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/04-学习机制与学习引擎规则.md",
+            "line": 37,
+            "id": "RULE-P1-PLACEMENT"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/04-学习机制与学习引擎规则.md",
+            "line": 39,
+            "id": "RULE-P1-SESSION"
+          }
+        ],
+        "INT": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/06-业务联调矩阵.md",
+            "line": 57,
+            "id": "INT-P1-004"
+          }
+        ],
+        "E2E": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/08-验收与追溯规范.md",
+            "line": 58,
+            "id": "E2E-P1-FIRST-DAY"
+          }
+        ]
+      },
+      "candidateMappingBoundary": "候选导航：源ID存在，逐卡完整覆盖/权威绑定未签收；不迁移源文状态",
+      "dataOwnerCandidates": [
+        {
+          "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+          "line": 96,
+          "id": "| placement/练习/模考会话",
+          "owner": "assessment-service"
+        }
+      ],
+      "ruleBoundary": "只引用设计规则，不声明实现",
+      "pageBoundary": "页面台账为源快照，代码存在/缺失描述未在此升级",
+      "historicalEvidenceNotes": [],
+      "currentWorkflowState": null,
+      "gaps": [
+        "GAP-TRACE-SIGNOFF",
+        "GAP-CARD-CONTRACT-BINDING",
+        "GAP-CURRENT-RUNTIME-EVIDENCE",
+        "GAP-NAMED-ACCEPTOR"
+      ]
+    },
+    {
+      "taskId": "R1-023",
+      "station": "IT-2",
+      "definitionSource": {
+        "path": "docs/06-design/v2-980plus/redesign/dev-plan-R1.md",
+        "line": 55
+      },
+      "title": "跳过 fast-track（SKIPPED 基线）",
+      "rawDefinition": "| R1-023 | BC-017 | 跳过 fast-track（SKIPPED 基线） | 基线落库 → owner: assessment-service；依赖：R1-018 |",
+      "deliveryOwnerAsWritten": "assessment-service",
+      "dependencyAsWritten": "R1-018",
+      "acceptanceAsWritten": "基线落库",
+      "BC": [
+        {
+          "id": "BC-017",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 79
+        }
+      ],
+      "IC": [
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 55,
+          "id": "IC-010"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 166,
+          "id": "IC-058"
+        }
+      ],
+      "BCMappingKind": "计划显式BC",
+      "sourceNavigationCandidates": {
+        "FEAT": [
+          {
+            "path": "requirements/feature-matrix.md",
+            "line": 83,
+            "id": "FEAT-ONB-005"
+          }
+        ],
+        "PRD_ATOM": [
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 165,
+            "id": "PRD-ATOM-0090"
+          },
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 166,
+            "id": "PRD-ATOM-0091"
+          }
+        ],
+        "V2_980": [
+          {
+            "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+            "line": 27,
+            "id": "V2-980-0005"
+          }
+        ],
+        "ARCH": [
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 16,
+            "id": "ARCH-API-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 13,
+            "id": "ARCH-IAM-002"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 11,
+            "id": "ARCH-GW-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 14,
+            "id": "ARCH-DATA-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 15,
+            "id": "ARCH-EVT-001"
+          }
+        ],
+        "ACT": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+            "line": 27,
+            "id": "ACT-P1-LEARNER"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+            "line": 37,
+            "id": "ACT-P1-SYSTEM"
+          }
+        ],
+        "JNY": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/02-端到端业务旅程台账.md",
+            "line": 69,
+            "id": "JNY-P1-04"
+          }
+        ],
+        "PAGE": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 74,
+            "id": "PAGE-P1-ASSESSMENT"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 75,
+            "id": "PAGE-P1-ASSESSMENT-RESULT"
+          }
+        ],
+        "RULE": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/04-学习机制与学习引擎规则.md",
+            "line": 37,
+            "id": "RULE-P1-PLACEMENT"
+          }
+        ],
+        "INT": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/06-业务联调矩阵.md",
+            "line": 57,
+            "id": "INT-P1-004"
+          }
+        ],
+        "E2E": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/08-验收与追溯规范.md",
+            "line": 58,
+            "id": "E2E-P1-FIRST-DAY"
+          }
+        ]
+      },
+      "candidateMappingBoundary": "候选导航：源ID存在，逐卡完整覆盖/权威绑定未签收；不迁移源文状态",
+      "dataOwnerCandidates": [
+        {
+          "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+          "line": 96,
+          "id": "| placement/练习/模考会话",
+          "owner": "assessment-service"
+        }
+      ],
+      "ruleBoundary": "只引用设计规则，不声明实现",
+      "pageBoundary": "页面台账为源快照，代码存在/缺失描述未在此升级",
+      "historicalEvidenceNotes": [],
+      "currentWorkflowState": null,
+      "gaps": [
+        "GAP-TRACE-SIGNOFF",
+        "GAP-CARD-CONTRACT-BINDING",
+        "GAP-CURRENT-RUNTIME-EVIDENCE",
+        "GAP-NAMED-ACCEPTOR"
+      ]
+    },
+    {
+      "taskId": "R1-024",
+      "station": "IT-2",
+      "definitionSource": {
+        "path": "docs/06-design/v2-980plus/redesign/dev-plan-R1.md",
+        "line": 56
+      },
+      "title": "重测（新 session，旧报告保留）",
+      "rawDefinition": "| R1-024 | BC-018 | 重测（新 session，旧报告保留） | 历史可查 → owner: assessment-service；依赖：R1-022 |",
+      "deliveryOwnerAsWritten": "assessment-service",
+      "dependencyAsWritten": "R1-022",
+      "acceptanceAsWritten": "历史可查",
+      "BC": [
+        {
+          "id": "BC-018",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 80
+        }
+      ],
+      "IC": [
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 57,
+          "id": "IC-012"
+        }
+      ],
+      "BCMappingKind": "计划显式BC",
+      "sourceNavigationCandidates": {
+        "FEAT": [
+          {
+            "path": "requirements/feature-matrix.md",
+            "line": 81,
+            "id": "FEAT-ONB-003"
+          },
+          {
+            "path": "requirements/feature-matrix.md",
+            "line": 82,
+            "id": "FEAT-ONB-004"
+          }
+        ],
+        "PRD_ATOM": [
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 162,
+            "id": "PRD-ATOM-0087"
+          },
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 165,
+            "id": "PRD-ATOM-0090"
+          },
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 166,
+            "id": "PRD-ATOM-0091"
+          },
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 167,
+            "id": "PRD-ATOM-0092"
+          }
+        ],
+        "V2_980": [
+          {
+            "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+            "line": 25,
+            "id": "V2-980-0003"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+            "line": 26,
+            "id": "V2-980-0004"
+          }
+        ],
+        "ARCH": [
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 16,
+            "id": "ARCH-API-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 13,
+            "id": "ARCH-IAM-002"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 11,
+            "id": "ARCH-GW-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 14,
+            "id": "ARCH-DATA-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 15,
+            "id": "ARCH-EVT-001"
+          }
+        ],
+        "ACT": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+            "line": 27,
+            "id": "ACT-P1-LEARNER"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+            "line": 37,
+            "id": "ACT-P1-SYSTEM"
+          }
+        ],
+        "JNY": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/02-端到端业务旅程台账.md",
+            "line": 69,
+            "id": "JNY-P1-04"
+          }
+        ],
+        "PAGE": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 74,
+            "id": "PAGE-P1-ASSESSMENT"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 75,
+            "id": "PAGE-P1-ASSESSMENT-RESULT"
+          }
+        ],
+        "RULE": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/04-学习机制与学习引擎规则.md",
+            "line": 37,
+            "id": "RULE-P1-PLACEMENT"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/04-学习机制与学习引擎规则.md",
+            "line": 39,
+            "id": "RULE-P1-SESSION"
+          }
+        ],
+        "INT": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/06-业务联调矩阵.md",
+            "line": 57,
+            "id": "INT-P1-004"
+          }
+        ],
+        "E2E": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/08-验收与追溯规范.md",
+            "line": 58,
+            "id": "E2E-P1-FIRST-DAY"
+          }
+        ]
+      },
+      "candidateMappingBoundary": "候选导航：源ID存在，逐卡完整覆盖/权威绑定未签收；不迁移源文状态",
+      "dataOwnerCandidates": [
+        {
+          "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+          "line": 96,
+          "id": "| placement/练习/模考会话",
+          "owner": "assessment-service"
+        }
+      ],
+      "ruleBoundary": "只引用设计规则，不声明实现",
+      "pageBoundary": "页面台账为源快照，代码存在/缺失描述未在此升级",
+      "historicalEvidenceNotes": [],
+      "currentWorkflowState": null,
+      "gaps": [
+        "GAP-TRACE-SIGNOFF",
+        "GAP-CARD-CONTRACT-BINDING",
+        "GAP-CURRENT-RUNTIME-EVIDENCE",
+        "GAP-NAMED-ACCEPTOR"
+      ]
+    },
+    {
+      "taskId": "R1-025",
+      "station": "IT-2",
+      "definitionSource": {
+        "path": "docs/06-design/v2-980plus/redesign/dev-plan-R1.md",
+        "line": 57
+      },
+      "title": "题库种子进仓（10 道，3/3/2/2）",
+      "rawDefinition": "| R1-025 | BC-020 | 题库种子进仓（10 道，3/3/2/2） | 重建自动 10 行 → owner: content-service；依赖：无（种子先行） |",
+      "deliveryOwnerAsWritten": "content-service",
+      "dependencyAsWritten": "无（种子先行）",
+      "acceptanceAsWritten": "重建自动 10 行",
+      "BC": [
+        {
+          "id": "BC-020",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 82
+        }
+      ],
+      "IC": [],
+      "BCMappingKind": "计划显式BC",
+      "sourceNavigationCandidates": {
+        "FEAT": [
+          {
+            "path": "requirements/feature-matrix.md",
+            "line": 81,
+            "id": "FEAT-ONB-003"
+          },
+          {
+            "path": "requirements/feature-matrix.md",
+            "line": 82,
+            "id": "FEAT-ONB-004"
+          }
+        ],
+        "PRD_ATOM": [
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 162,
+            "id": "PRD-ATOM-0087"
+          },
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 165,
+            "id": "PRD-ATOM-0090"
+          },
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 166,
+            "id": "PRD-ATOM-0091"
+          },
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 167,
+            "id": "PRD-ATOM-0092"
+          }
+        ],
+        "V2_980": [
+          {
+            "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+            "line": 25,
+            "id": "V2-980-0003"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+            "line": 26,
+            "id": "V2-980-0004"
+          }
+        ],
+        "ARCH": [
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 16,
+            "id": "ARCH-API-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 13,
+            "id": "ARCH-IAM-002"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 11,
+            "id": "ARCH-GW-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 14,
+            "id": "ARCH-DATA-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 15,
+            "id": "ARCH-EVT-001"
+          }
+        ],
+        "ACT": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+            "line": 37,
+            "id": "ACT-P1-SYSTEM"
+          }
+        ],
+        "JNY": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/02-端到端业务旅程台账.md",
+            "line": 69,
+            "id": "JNY-P1-04"
+          }
+        ],
+        "PAGE": [],
+        "RULE": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/04-学习机制与学习引擎规则.md",
+            "line": 37,
+            "id": "RULE-P1-PLACEMENT"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/04-学习机制与学习引擎规则.md",
+            "line": 39,
+            "id": "RULE-P1-SESSION"
+          }
+        ],
+        "INT": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/06-业务联调矩阵.md",
+            "line": 57,
+            "id": "INT-P1-004"
+          }
+        ],
+        "E2E": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/08-验收与追溯规范.md",
+            "line": 58,
+            "id": "E2E-P1-FIRST-DAY"
+          }
+        ]
+      },
+      "candidateMappingBoundary": "候选导航：源ID存在，逐卡完整覆盖/权威绑定未签收；不迁移源文状态",
+      "dataOwnerCandidates": [
+        {
+          "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+          "line": 95,
+          "id": "| 内容、课程、题目、答案规则版本",
+          "owner": "content-service"
+        }
+      ],
+      "ruleBoundary": "只引用设计规则，不声明实现",
+      "pageBoundary": "技术种子无独立用户幕",
+      "historicalEvidenceNotes": [],
+      "currentWorkflowState": null,
+      "gaps": [
+        "GAP-TRACE-SIGNOFF",
+        "GAP-CARD-CONTRACT-BINDING",
+        "GAP-CURRENT-RUNTIME-EVIDENCE",
+        "GAP-NAMED-ACCEPTOR"
+      ]
+    },
+    {
+      "taskId": "R1-026",
+      "station": "IT-2",
+      "definitionSource": {
+        "path": "docs/06-design/v2-980plus/redesign/dev-plan-R1.md",
+        "line": 58
+      },
+      "title": "B3 绑定种子进仓（5 道干题）",
+      "rawDefinition": "| R1-026 | BC-021 | B3 绑定种子进仓（5 道干题） | 重建自动 5 行 → owner: content-service；依赖：R1-025 |",
+      "deliveryOwnerAsWritten": "content-service",
+      "dependencyAsWritten": "R1-025",
+      "acceptanceAsWritten": "重建自动 5 行",
+      "BC": [
+        {
+          "id": "BC-021",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 83
+        }
+      ],
+      "IC": [],
+      "BCMappingKind": "计划显式BC",
+      "sourceNavigationCandidates": {
+        "FEAT": [
+          {
+            "path": "requirements/feature-matrix.md",
+            "line": 81,
+            "id": "FEAT-ONB-003"
+          },
+          {
+            "path": "requirements/feature-matrix.md",
+            "line": 82,
+            "id": "FEAT-ONB-004"
+          }
+        ],
+        "PRD_ATOM": [
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 162,
+            "id": "PRD-ATOM-0087"
+          },
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 165,
+            "id": "PRD-ATOM-0090"
+          },
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 166,
+            "id": "PRD-ATOM-0091"
+          },
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 167,
+            "id": "PRD-ATOM-0092"
+          }
+        ],
+        "V2_980": [
+          {
+            "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+            "line": 25,
+            "id": "V2-980-0003"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+            "line": 26,
+            "id": "V2-980-0004"
+          }
+        ],
+        "ARCH": [
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 16,
+            "id": "ARCH-API-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 13,
+            "id": "ARCH-IAM-002"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 11,
+            "id": "ARCH-GW-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 14,
+            "id": "ARCH-DATA-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 15,
+            "id": "ARCH-EVT-001"
+          }
+        ],
+        "ACT": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+            "line": 37,
+            "id": "ACT-P1-SYSTEM"
+          }
+        ],
+        "JNY": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/02-端到端业务旅程台账.md",
+            "line": 69,
+            "id": "JNY-P1-04"
+          }
+        ],
+        "PAGE": [],
+        "RULE": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/04-学习机制与学习引擎规则.md",
+            "line": 37,
+            "id": "RULE-P1-PLACEMENT"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/04-学习机制与学习引擎规则.md",
+            "line": 39,
+            "id": "RULE-P1-SESSION"
+          }
+        ],
+        "INT": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/06-业务联调矩阵.md",
+            "line": 57,
+            "id": "INT-P1-004"
+          }
+        ],
+        "E2E": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/08-验收与追溯规范.md",
+            "line": 58,
+            "id": "E2E-P1-FIRST-DAY"
+          }
+        ]
+      },
+      "candidateMappingBoundary": "候选导航：源ID存在，逐卡完整覆盖/权威绑定未签收；不迁移源文状态",
+      "dataOwnerCandidates": [
+        {
+          "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+          "line": 95,
+          "id": "| 内容、课程、题目、答案规则版本",
+          "owner": "content-service"
+        }
+      ],
+      "ruleBoundary": "只引用设计规则，不声明实现",
+      "pageBoundary": "技术种子无独立用户幕",
+      "historicalEvidenceNotes": [],
+      "currentWorkflowState": null,
+      "gaps": [
+        "GAP-TRACE-SIGNOFF",
+        "GAP-CARD-CONTRACT-BINDING",
+        "GAP-CURRENT-RUNTIME-EVIDENCE",
+        "GAP-NAMED-ACCEPTOR"
+      ]
+    },
+    {
+      "taskId": "R1-027",
+      "station": "IT-2",
+      "definitionSource": {
+        "path": "docs/06-design/v2-980plus/redesign/dev-plan-R1.md",
+        "line": 59
+      },
+      "title": "断网续答（checkpoint 恢复）",
+      "rawDefinition": "| R1-027 | BC-022 | 断网续答（checkpoint 恢复） | 重进续题号 → owner: learner-web；依赖：R1-020 |",
+      "deliveryOwnerAsWritten": "learner-web",
+      "dependencyAsWritten": "R1-020",
+      "acceptanceAsWritten": "重进续题号",
+      "BC": [
+        {
+          "id": "BC-022",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 84
+        }
+      ],
+      "IC": [
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 55,
+          "id": "IC-010"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 56,
+          "id": "IC-011"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 71,
+          "id": "IC-019"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 167,
+          "id": "IC-059"
+        }
+      ],
+      "BCMappingKind": "计划显式BC",
+      "sourceNavigationCandidates": {
+        "FEAT": [
+          {
+            "path": "requirements/feature-matrix.md",
+            "line": 81,
+            "id": "FEAT-ONB-003"
+          },
+          {
+            "path": "requirements/feature-matrix.md",
+            "line": 82,
+            "id": "FEAT-ONB-004"
+          }
+        ],
+        "PRD_ATOM": [
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 162,
+            "id": "PRD-ATOM-0087"
+          },
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 165,
+            "id": "PRD-ATOM-0090"
+          },
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 166,
+            "id": "PRD-ATOM-0091"
+          },
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 167,
+            "id": "PRD-ATOM-0092"
+          }
+        ],
+        "V2_980": [
+          {
+            "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+            "line": 25,
+            "id": "V2-980-0003"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+            "line": 26,
+            "id": "V2-980-0004"
+          }
+        ],
+        "ARCH": [
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 16,
+            "id": "ARCH-API-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 13,
+            "id": "ARCH-IAM-002"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 11,
+            "id": "ARCH-GW-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 14,
+            "id": "ARCH-DATA-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 15,
+            "id": "ARCH-EVT-001"
+          }
+        ],
+        "ACT": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+            "line": 27,
+            "id": "ACT-P1-LEARNER"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+            "line": 37,
+            "id": "ACT-P1-SYSTEM"
+          }
+        ],
+        "JNY": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/02-端到端业务旅程台账.md",
+            "line": 69,
+            "id": "JNY-P1-04"
+          }
+        ],
+        "PAGE": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 74,
+            "id": "PAGE-P1-ASSESSMENT"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 75,
+            "id": "PAGE-P1-ASSESSMENT-RESULT"
+          }
+        ],
+        "RULE": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/04-学习机制与学习引擎规则.md",
+            "line": 37,
+            "id": "RULE-P1-PLACEMENT"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/04-学习机制与学习引擎规则.md",
+            "line": 39,
+            "id": "RULE-P1-SESSION"
+          }
+        ],
+        "INT": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/06-业务联调矩阵.md",
+            "line": 57,
+            "id": "INT-P1-004"
+          }
+        ],
+        "E2E": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/08-验收与追溯规范.md",
+            "line": 58,
+            "id": "E2E-P1-FIRST-DAY"
+          }
+        ]
+      },
+      "candidateMappingBoundary": "候选导航：源ID存在，逐卡完整覆盖/权威绑定未签收；不迁移源文状态",
+      "dataOwnerCandidates": [
+        {
+          "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+          "line": 96,
+          "id": "| placement/练习/模考会话",
+          "owner": "assessment-service"
+        }
+      ],
+      "ruleBoundary": "只引用设计规则，不声明实现",
+      "pageBoundary": "页面台账为源快照，代码存在/缺失描述未在此升级",
+      "historicalEvidenceNotes": [],
+      "currentWorkflowState": null,
+      "gaps": [
+        "GAP-TRACE-SIGNOFF",
+        "GAP-CARD-CONTRACT-BINDING",
+        "GAP-CURRENT-RUNTIME-EVIDENCE",
+        "GAP-NAMED-ACCEPTOR"
+      ]
+    },
+    {
+      "taskId": "R1-028",
+      "station": "IT-2",
+      "definitionSource": {
+        "path": "docs/06-design/v2-980plus/redesign/dev-plan-R1.md",
+        "line": 60
+      },
+      "title": "定级交互验收（引导/答题/反馈/报告/重试）",
+      "rawDefinition": "| R1-028 | IC-010…012/058/059 | 定级交互验收（引导/答题/反馈/报告/重试） | 幕幕对稿 → owner: learner-web；依赖：R1-022 |",
+      "deliveryOwnerAsWritten": "learner-web",
+      "dependencyAsWritten": "R1-022",
+      "acceptanceAsWritten": "幕幕对稿",
+      "BC": [
+        {
+          "id": "BC-013",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 75
+        },
+        {
+          "id": "BC-014",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 76
+        },
+        {
+          "id": "BC-015",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 77
+        },
+        {
+          "id": "BC-016",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 78
+        },
+        {
+          "id": "BC-017",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 79
+        },
+        {
+          "id": "BC-018",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 80
+        },
+        {
+          "id": "BC-019",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 81
+        },
+        {
+          "id": "BC-022",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 84
+        }
+      ],
+      "IC": [
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 55,
+          "id": "IC-010"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 56,
+          "id": "IC-011"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 57,
+          "id": "IC-012"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 71,
+          "id": "IC-019"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 166,
+          "id": "IC-058"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 167,
+          "id": "IC-059"
+        }
+      ],
+      "BCMappingKind": "BC/IC关联或汇总派生，非原卡新增范围",
+      "sourceNavigationCandidates": {
+        "FEAT": [
+          {
+            "path": "requirements/feature-matrix.md",
+            "line": 81,
+            "id": "FEAT-ONB-003"
+          },
+          {
+            "path": "requirements/feature-matrix.md",
+            "line": 82,
+            "id": "FEAT-ONB-004"
+          }
+        ],
+        "PRD_ATOM": [
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 162,
+            "id": "PRD-ATOM-0087"
+          },
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 165,
+            "id": "PRD-ATOM-0090"
+          },
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 166,
+            "id": "PRD-ATOM-0091"
+          },
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 167,
+            "id": "PRD-ATOM-0092"
+          }
+        ],
+        "V2_980": [
+          {
+            "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+            "line": 25,
+            "id": "V2-980-0003"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+            "line": 26,
+            "id": "V2-980-0004"
+          }
+        ],
+        "ARCH": [
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 16,
+            "id": "ARCH-API-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 13,
+            "id": "ARCH-IAM-002"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 11,
+            "id": "ARCH-GW-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 14,
+            "id": "ARCH-DATA-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 15,
+            "id": "ARCH-EVT-001"
+          }
+        ],
+        "ACT": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+            "line": 27,
+            "id": "ACT-P1-LEARNER"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+            "line": 37,
+            "id": "ACT-P1-SYSTEM"
+          }
+        ],
+        "JNY": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/02-端到端业务旅程台账.md",
+            "line": 69,
+            "id": "JNY-P1-04"
+          }
+        ],
+        "PAGE": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 74,
+            "id": "PAGE-P1-ASSESSMENT"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 75,
+            "id": "PAGE-P1-ASSESSMENT-RESULT"
+          }
+        ],
+        "RULE": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/04-学习机制与学习引擎规则.md",
+            "line": 37,
+            "id": "RULE-P1-PLACEMENT"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/04-学习机制与学习引擎规则.md",
+            "line": 39,
+            "id": "RULE-P1-SESSION"
+          }
+        ],
+        "INT": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/06-业务联调矩阵.md",
+            "line": 57,
+            "id": "INT-P1-004"
+          }
+        ],
+        "E2E": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/08-验收与追溯规范.md",
+            "line": 58,
+            "id": "E2E-P1-FIRST-DAY"
+          }
+        ]
+      },
+      "candidateMappingBoundary": "候选导航：源ID存在，逐卡完整覆盖/权威绑定未签收；不迁移源文状态",
+      "dataOwnerCandidates": [
+        {
+          "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+          "line": 96,
+          "id": "| placement/练习/模考会话",
+          "owner": "assessment-service"
+        }
+      ],
+      "ruleBoundary": "只引用设计规则，不声明实现",
+      "pageBoundary": "页面台账为源快照，代码存在/缺失描述未在此升级",
+      "historicalEvidenceNotes": [],
+      "currentWorkflowState": null,
+      "gaps": [
+        "GAP-TRACE-SIGNOFF",
+        "GAP-CARD-CONTRACT-BINDING",
+        "GAP-CURRENT-RUNTIME-EVIDENCE",
+        "GAP-NAMED-ACCEPTOR"
+      ]
+    },
+    {
+      "taskId": "R1-029",
+      "station": "IT-2",
+      "definitionSource": {
+        "path": "docs/06-design/v2-980plus/redesign/dev-plan-R1.md",
+        "line": 61
+      },
+      "title": "L2 干净库重放（10 道→报告）",
+      "rawDefinition": "| R1-029 | — | L2 干净库重放（10 道→报告） | 全绿归档 → owner: QA；依赖：R1-018…028 |",
+      "deliveryOwnerAsWritten": "QA",
+      "dependencyAsWritten": "R1-018…028",
+      "acceptanceAsWritten": "全绿归档",
+      "BC": [
+        {
+          "id": "BC-013",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 75
+        },
+        {
+          "id": "BC-014",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 76
+        },
+        {
+          "id": "BC-015",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 77
+        },
+        {
+          "id": "BC-016",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 78
+        },
+        {
+          "id": "BC-017",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 79
+        },
+        {
+          "id": "BC-018",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 80
+        },
+        {
+          "id": "BC-019",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 81
+        },
+        {
+          "id": "BC-020",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 82
+        },
+        {
+          "id": "BC-021",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 83
+        },
+        {
+          "id": "BC-022",
+          "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+          "line": 84
+        }
+      ],
+      "IC": [
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 55,
+          "id": "IC-010"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 56,
+          "id": "IC-011"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 57,
+          "id": "IC-012"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 71,
+          "id": "IC-019"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 166,
+          "id": "IC-058"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+          "line": 167,
+          "id": "IC-059"
+        }
+      ],
+      "BCMappingKind": "BC/IC关联或汇总派生，非原卡新增范围",
+      "sourceNavigationCandidates": {
+        "FEAT": [
+          {
+            "path": "requirements/feature-matrix.md",
+            "line": 81,
+            "id": "FEAT-ONB-003"
+          },
+          {
+            "path": "requirements/feature-matrix.md",
+            "line": 82,
+            "id": "FEAT-ONB-004"
+          }
+        ],
+        "PRD_ATOM": [
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 162,
+            "id": "PRD-ATOM-0087"
+          },
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 165,
+            "id": "PRD-ATOM-0090"
+          },
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 166,
+            "id": "PRD-ATOM-0091"
+          },
+          {
+            "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+            "line": 167,
+            "id": "PRD-ATOM-0092"
+          }
+        ],
+        "V2_980": [
+          {
+            "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+            "line": 25,
+            "id": "V2-980-0003"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+            "line": 26,
+            "id": "V2-980-0004"
+          }
+        ],
+        "ARCH": [
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 16,
+            "id": "ARCH-API-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 14,
+            "id": "ARCH-DATA-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 15,
+            "id": "ARCH-EVT-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 11,
+            "id": "ARCH-GW-001"
+          },
+          {
+            "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+            "line": 13,
+            "id": "ARCH-IAM-002"
+          }
+        ],
+        "ACT": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+            "line": 27,
+            "id": "ACT-P1-LEARNER"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+            "line": 37,
+            "id": "ACT-P1-SYSTEM"
+          }
+        ],
+        "JNY": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/02-端到端业务旅程台账.md",
+            "line": 69,
+            "id": "JNY-P1-04"
+          }
+        ],
+        "PAGE": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 74,
+            "id": "PAGE-P1-ASSESSMENT"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+            "line": 75,
+            "id": "PAGE-P1-ASSESSMENT-RESULT"
+          }
+        ],
+        "RULE": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/04-学习机制与学习引擎规则.md",
+            "line": 37,
+            "id": "RULE-P1-PLACEMENT"
+          },
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/04-学习机制与学习引擎规则.md",
+            "line": 39,
+            "id": "RULE-P1-SESSION"
+          }
+        ],
+        "INT": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/06-业务联调矩阵.md",
+            "line": 57,
+            "id": "INT-P1-004"
+          }
+        ],
+        "E2E": [
+          {
+            "path": "docs/06-design/v2-980plus/phase1-business-operation/08-验收与追溯规范.md",
+            "line": 58,
+            "id": "E2E-P1-FIRST-DAY"
+          }
+        ]
+      },
+      "candidateMappingBoundary": "候选导航：源ID存在，逐卡完整覆盖/权威绑定未签收；不迁移源文状态",
+      "dataOwnerCandidates": [
+        {
+          "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+          "line": 96,
+          "id": "| placement/练习/模考会话",
+          "owner": "assessment-service"
+        }
+      ],
+      "ruleBoundary": "只引用设计规则，不声明实现",
+      "pageBoundary": "页面台账为源快照，代码存在/缺失描述未在此升级",
+      "historicalEvidenceNotes": [],
+      "currentWorkflowState": null,
+      "gaps": [
+        "GAP-TRACE-SIGNOFF",
+        "GAP-CARD-CONTRACT-BINDING",
+        "GAP-CURRENT-RUNTIME-EVIDENCE",
+        "GAP-NAMED-ACCEPTOR"
+      ]
+    }
+  ]
+}

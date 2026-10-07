@@ -8,6 +8,7 @@ const { t } = useSiteText(),
 const siteAddress = computed(
   () => String(config.public.siteUrl).replace(/\/$/, "") + "/start",
 );
+const { registerLink } = useOfficialSiteLinks();
 async function copy() {
   try {
     await navigator.clipboard.writeText(siteAddress.value);
@@ -50,6 +51,13 @@ useOfficialSeo({
             /></NuxtLink>
             <NuxtLink
               class="btn btn-primary btn-wide"
+              :to="registerLink()"
+              external
+              data-register-entry
+              >{{ t("official.c03e46770e") }}<SiteIcon name="arrow"
+            /></NuxtLink>
+            <NuxtLink
+              class="btn btn-outline btn-wide"
               to="/#practice-example"
               data-sample-entry
               >{{ t("official.c742e91d0b")

@@ -1,5 +1,7 @@
 # Changelog
 
+- [R1-SCOPED-DELIVERY-20261007] 发布固定 `ff0f8057` 来源的29卡接手导航与恢复工具，862项来源校验和只读生成器重放通过；原114卡墙、状态工具及R1-001完整验收原件仍未找回。官网当前源修正受控注册CTA与价格/下载投影空/非空、退化和恢复状态，官网26项、R1 HTTP/SSR/fallback 4项及type/build通过；既有dev的11原路由双视口22次直接200、注册页可达但未提交，4次真实空态与40个fixture分支、2个无关scope和4张非空fixture视觉复核通过。R1-002专项准备修正SCG新TLS前缀、独立JVM信任、实际owner/mode读回及发布路径脱敏，工具11/11通过；两条真实HTTPS链、身份/Outbox范围与业务验收仍OPEN，保持PREPARATION_PARTIAL_NOT_READY。Luna仅签收 **ACCEPT_SCOPED_DELIVERY / SOURCE_SCOPED_PASS**，不迁移workflow ACCEPTED；D1仅可下一轮具名离线开工，D2/D3未签，不START003～005、不解锁IT-2。本轮未重启当前15服务；26项治理FAIL/61skip保留10月6日快照，未重跑或放宽全量门禁。[当前进度](docs/06-design/v2-980plus/redesign/CURRENT-PROGRESS.md)、[独立终审](evidence/redesign/2026-10-07/orchestrator-review/final-scope-review.md)、[恢复报告](docs/06-design/v2-980plus/redesign/recovery-20261007/recovery-report.md)、[准备报告](evidence/redesign/2026-10-07/R1-002-preparation/report.md)。
+
 - [IOS-ENV-20261006] 用户完成 Xcode 首次设置后复核：Xcode 27.0、first launch、iOS Simulator 工具检查三项 PASS，iOS 27.0 SDK/runtime 可用，iPhone 18 Pro 模拟器实际启动完成并关闭本轮设备。同步环境报告与迭代 2 进度，关闭旧许可/初始化阻塞；项目 iOS 打包、签名、Keychain、业务及真机测试仍未验收。[复核记录](docs/07-operations/local-environment-verification-2026-10-06.md#ios-环境后续复核2026-10-06-2253-cst)。
 
 - [ITERATION2-PROGRESS-20261006] 统一 dev-redesign 的迭代 2（第二轮重设计）接手与进度入口：新增 CURRENT-PROGRESS，重写根交接并归档九月旧交接；同步 AGENTS、README、需求/设计/路线图/运行索引、原 P1R/B/G 进度入口与 Agent 工作流。明确迭代轮次、IT-2 与 Phase 2 的区别，保留完整卡墙/R1-001 验收差量及 R1-002 未签 READY 的缺口；不迁移旧完成率、不升级业务验收。[当前进度](docs/06-design/v2-980plus/redesign/CURRENT-PROGRESS.md)。

@@ -1,0 +1,222 @@
+{
+  "kind": "R1_001_CANDIDATE_SOURCE_NAVIGATION_NOT_COVERAGE_SIGNOFF",
+  "sourceCommit": "ff0f8057f4088ead03ab7890493cdf9d06f6d5f1",
+  "task": {
+    "taskId": "R1-001",
+    "station": "IT-1",
+    "definitionSource": {
+      "path": "docs/06-design/v2-980plus/redesign/dev-plan-R1.md",
+      "line": 12
+    },
+    "title": "官网 11 页空目录诚实态（课程准备中+去注册 CTA）",
+    "rawDefinition": "| R1-001 | BC-001 | 官网 11 页空目录诚实态（课程准备中+去注册 CTA） | 双视口 200，空态文案对稿 → owner: official-site；依赖：无 |",
+    "deliveryOwnerAsWritten": "official-site",
+    "dependencyAsWritten": "无",
+    "acceptanceAsWritten": "双视口 200，空态文案对稿",
+    "BC": [
+      {
+        "id": "BC-001",
+        "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+        "line": 56
+      }
+    ],
+    "IC": [
+      {
+        "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+        "line": 46,
+        "id": "IC-001"
+      }
+    ],
+    "BCMappingKind": "计划显式BC",
+    "sourceNavigationCandidates": {
+      "FEAT": [
+        {
+          "path": "requirements/feature-matrix.md",
+          "line": 273,
+          "id": "FEAT-USR-003"
+        }
+      ],
+      "PRD_ATOM": [
+        {
+          "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+          "line": 1119,
+          "id": "PRD-ATOM-1044"
+        }
+      ],
+      "V2_980": [
+        {
+          "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+          "line": 383,
+          "id": "V2-980-0361"
+        }
+      ],
+      "ARCH": [
+        {
+          "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+          "line": 11,
+          "id": "ARCH-GW-001"
+        },
+        {
+          "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+          "line": 16,
+          "id": "ARCH-API-001"
+        }
+      ],
+      "ACT": [
+        {
+          "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+          "line": 26,
+          "id": "ACT-P1-VISITOR"
+        }
+      ],
+      "JNY": [
+        {
+          "path": "docs/06-design/v2-980plus/phase1-business-operation/02-端到端业务旅程台账.md",
+          "line": 47,
+          "id": "JNY-P1-01"
+        }
+      ],
+      "PAGE": [
+        {
+          "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+          "line": 48,
+          "id": "PAGE-P1-OFFICIAL-HOME"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+          "line": 49,
+          "id": "PAGE-P1-OFFICIAL-COURSES"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+          "line": 50,
+          "id": "PAGE-P1-OFFICIAL-PRICING"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+          "line": 51,
+          "id": "PAGE-P1-OFFICIAL-DOWNLOAD"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+          "line": 52,
+          "id": "PAGE-P1-OFFICIAL-ANNOUNCEMENTS"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+          "line": 53,
+          "id": "PAGE-P1-OFFICIAL-ABOUT"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+          "line": 54,
+          "id": "PAGE-P1-OFFICIAL-COMPLIANCE"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+          "line": 55,
+          "id": "PAGE-P1-OFFICIAL-STATUS"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+          "line": 56,
+          "id": "PAGE-P1-OFFICIAL-PRIVACY"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+          "line": 57,
+          "id": "PAGE-P1-OFFICIAL-TERMS"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+          "line": 58,
+          "id": "PAGE-P1-OFFICIAL-MINORS"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+          "line": 71,
+          "id": "PAGE-P1-AUTH-REGISTER-RESET"
+        }
+      ],
+      "RULE": [],
+      "INT": [
+        {
+          "path": "docs/06-design/v2-980plus/phase1-business-operation/06-业务联调矩阵.md",
+          "line": 54,
+          "id": "INT-P1-001"
+        },
+        {
+          "path": "docs/06-design/v2-980plus/phase1-business-operation/06-业务联调矩阵.md",
+          "line": 58,
+          "id": "INT-P1-005"
+        }
+      ],
+      "E2E": [
+        {
+          "path": "docs/06-design/v2-980plus/phase1-business-operation/08-验收与追溯规范.md",
+          "line": 55,
+          "id": "E2E-P1-PUBLIC-ENTRY"
+        }
+      ]
+    },
+    "candidateMappingBoundary": "候选导航：源ID存在，逐卡完整覆盖/权威绑定未签收；不迁移源文状态",
+    "dataOwnerCandidates": [
+      {
+        "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+        "line": 95,
+        "id": "| 内容、课程、题目、答案规则版本",
+        "owner": "content-service"
+      }
+    ],
+    "ruleBoundary": "源旅程标为不适用（认证/成人/官网），安全/同意政策仍需绑定",
+    "pageBoundary": "页面台账为源快照，代码存在/缺失描述未在此升级",
+    "historicalEvidenceNotes": [
+      {
+        "source": {
+          "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/source-and-inputs-4.json",
+          "line": 9,
+          "id": "\"r1_001\""
+        },
+        "claim": "原机器上下文 ACCEPTED，publishedWithThisBundle=false；不迁移"
+      },
+      {
+        "source": {
+          "path": "evidence/live/2026-09-26/page-sweep/official/summary.json",
+          "line": 2,
+          "id": "\"capturedAt\""
+        },
+        "claim": "2026-09-26 页面 sweep；非 R1-001 验收"
+      }
+    ],
+    "currentWorkflowState": null,
+    "gaps": [
+      "GAP-TRACE-SIGNOFF",
+      "GAP-CARD-CONTRACT-BINDING",
+      "GAP-CURRENT-RUNTIME-EVIDENCE",
+      "GAP-NAMED-ACCEPTOR",
+      "GAP-R1-001-DELIVERY",
+      "GAP-R1-001-ACCEPTANCE"
+    ]
+  },
+  "runtimeEvidence": {
+    "officialSiteOwner": "official-site",
+    "projectionSource": "gateway",
+    "dataOwners": {
+      "courses": "content-service",
+      "prices": "commerce-service",
+      "authAdultGateSession": "iam-service"
+    },
+    "notVerified": [
+      "IAM register201",
+      "Cookie",
+      "adult Gate persisted",
+      "no learning scopes",
+      "domain403",
+      "clean database E2E"
+    ]
+  },
+  "ruleBoundaries": {
+    "source": "AGENTS.md sections1/2.2/3.3 + ADR-0013 + PAGE-P1-OFFICIAL-MINORS",
+    "namedRULEId": "GAP-NAMED-AUTH-ADULT-RULE-BINDING"
+  }
+}

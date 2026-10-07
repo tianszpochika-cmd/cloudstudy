@@ -1,0 +1,68 @@
+{
+  "sourceHead": "ff0f8057f4088ead03ab7890493cdf9d06f6d5f1",
+  "status": "PROPOSED_NOT_APPROVED",
+  "checkedAt": "2026-10-06T22:22:33.615903+00:00",
+  "inputs": [
+    {
+      "path": "scripts/runtime/run-v2-services.mjs",
+      "sha256": "49be977664109b6c68dfd648215703bfd1e57e4777bfb14b8493272a557d304a"
+    },
+    {
+      "path": "services/iam-service/src/main/java/com/englishflow/iam/config/IamRuntimeConfiguration.java",
+      "sha256": "eaedacd9cdeac288f393c2ae4d28880e68493cd33ca92848fce75c2993b111c3"
+    },
+    {
+      "path": "services/iam-service/src/main/resources/application-local.yaml",
+      "sha256": "794a221236e2e226b5619f5ec1f5e552294ff2412b7f32538a5d7ae4427d5bd8"
+    },
+    {
+      "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/PrincipalId.java",
+      "sha256": "68c7d5d7ef9ac311dff328126afa44fc5a03e6174674a0bb588360c3f0250351"
+    },
+    {
+      "path": "services/iam-service/src/main/java/com/englishflow/iam/auth/JwtTokenService.java",
+      "sha256": "b631fcf65fdb08253befc6824334c93f3946941029227698917317bc5b694f4b"
+    },
+    {
+      "path": "services/learner-service/src/main/java/com/englishflow/learner/web/VerifiedLearnerPrincipalFactory.java",
+      "sha256": "3b377ab281de7a51bf7b23f615a09f56ea6a4de009e71f24ff5f2714a18f522b"
+    },
+    {
+      "path": "services/learner-service/src/main/java/com/englishflow/learner/web/LearnerHttpPrincipals.java",
+      "sha256": "579de91baf1f7d38520e37a34c33f2344fd2abccd0f2d7859b8401dc5c88f021"
+    },
+    {
+      "path": "services/learner-service/src/main/java/com/englishflow/learner/web/LearnerHttpConfiguration.java",
+      "sha256": "5aad67a9675991b7e50295cd30b60caee7917bcc6fa728406c7a496b0f6e4b40"
+    },
+    {
+      "path": "services/learner-service/src/main/java/com/englishflow/learner/web/B25LearnerJdbcController.java",
+      "sha256": "9169d839030d4204aa29b4299d71749573186783c5835d28442ccb5167c00b82"
+    },
+    {
+      "path": "services/learner-service/src/main/java/com/englishflow/learner/web/TargetPinController.java",
+      "sha256": "55667417c4123454dfeb98d1a104b3a6d3f35c8192971d6f319818c988a5c69e"
+    },
+    {
+      "path": "packages/contracts/fragments/b8/b8-auth-iam.openapi.json",
+      "sha256": "a90946ca28f5ef3cdd48c8ca887a5d66277287b73837cacbdf3f8cb852b25f9f"
+    },
+    {
+      "path": "packages/contracts/events/v1/fragments/m1-018-iam-v2.events.json",
+      "sha256": "323c1614f04301b74f568610add6ca922f34f43ece7340ba4a2922738164f989"
+    }
+  ],
+  "plans": [
+    {
+      "path": "evidence/redesign/2026-10-07/R1-002-next-round-plan/execution-plan.md",
+      "sha256": "51a6f5695fdb1fc21410c705a26037723fdcd56f40e639326936eda29b24cb61"
+    },
+    {
+      "path": "evidence/redesign/2026-10-07/R1-002-next-round-plan/identity-decision-A-draft.md",
+      "sha256": "dab6e19c7d2d3c4582b54e808f72f0965a51f3ef59cc16ead467844c9a2b6be0"
+    }
+  ],
+  "servicesStartedOrStopped": false,
+  "environmentSecretsRead": false,
+  "databaseWritten": false
+}

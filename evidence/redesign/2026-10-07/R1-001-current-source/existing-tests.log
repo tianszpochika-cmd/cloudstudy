@@ -1,0 +1,144 @@
+
+> @englishflow/official-site@1.0.0 test:website /Users/Admin/Desktop/work/cloudstudy/apps/official-site
+> node --test tests/b13-official-site.test.mjs tests/b14-fe-005.test.mjs tests/website-entry.test.mjs tests/public-projection-bff.test.mjs
+
+TAP version 13
+# Subtest: B13 公开链接只允许受控 origin，并保留 UTM 而不接受 open redirect
+ok 1 - B13 公开链接只允许受控 origin，并保留 UTM 而不接受 open redirect
+  ---
+  duration_ms: 2.225459
+  ...
+# Subtest: B13 官网状态覆盖 loading/empty/error/permission/recovery/maintenance
+ok 2 - B13 官网状态覆盖 loading/empty/error/permission/recovery/maintenance
+  ---
+  duration_ms: 0.658542
+  ...
+# Subtest: 官网保留公开投影兼容，但免费首发不展示套餐或购买入口
+ok 3 - 官网保留公开投影兼容，但免费首发不展示套餐或购买入口
+  ---
+  duration_ms: 5.718334
+  ...
+# Subtest: B13 官网只读取公开投影，不包含订单/支付/权益写接口或客户端事实写入
+ok 4 - B13 官网只读取公开投影，不包含订单/支付/权益写接口或客户端事实写入
+  ---
+  duration_ms: 5.165125
+  ...
+# Subtest: B13 官网保留 SSR/SEO/structured data、移动入口和 token 适配
+ok 5 - B13 官网保留 SSR/SEO/structured data、移动入口和 token 适配
+  ---
+  duration_ms: 2.988792
+  ...
+# Subtest: official site reads a controlled Gateway base URL and restores locale/theme
+ok 6 - official site reads a controlled Gateway base URL and restores locale/theme
+  ---
+  duration_ms: 5.286709
+  ...
+# Subtest: clyunedev official image builds mobile handoff with the public mobile origin
+ok 7 - clyunedev official image builds mobile handoff with the public mobile origin
+  ---
+  duration_ms: 1.898708
+  ...
+# Subtest: official site applies explicit URL locale/theme preferences after restore
+ok 8 - official site applies explicit URL locale/theme preferences after restore
+  ---
+  duration_ms: 2.072042
+  ...
+# Subtest: public learning entry exposes availability and no blocked account action
+ok 9 - public learning entry exposes availability and no blocked account action
+  ---
+  duration_ms: 5.043334
+  ...
+# Subtest: official site exposes all eight state semantics without color-only status
+ok 10 - official site exposes all eight state semantics without color-only status
+  ---
+  duration_ms: 0.776209
+  ...
+# Subtest: official site remains public read-only and has no client authority facts
+ok 11 - official site remains public read-only and has no client authority facts
+  ---
+  duration_ms: 7.484583
+  ...
+# Subtest: BFF uses the private Gateway for both public reads and caches a complete response
+ok 12 - BFF uses the private Gateway for both public reads and caches a complete response
+  ---
+  duration_ms: 18.710417
+  ...
+# Subtest: an upstream failure uses a no-store fallback, including a recent recovery snapshot
+ok 13 - an upstream failure uses a no-store fallback, including a recent recovery snapshot
+  ---
+  duration_ms: 12.923583
+  ...
+# Subtest: an authoritative empty projection clears the old ready snapshot
+ok 14 - an authoritative empty projection clears the old ready snapshot
+  ---
+  duration_ms: 13.835292
+  ...
+# Subtest: an expired snapshot cannot revive an old course during an outage
+ok 15 - an expired snapshot cannot revive an old course during an outage
+  ---
+  duration_ms: 8.883042
+  ...
+# Subtest: upstream rejection cannot expose a cached public projection
+ok 16 - upstream rejection cannot expose a cached public projection
+  ---
+  duration_ms: 33.25175
+  ...
+# Subtest: an in-flight older ready response cannot refill a revoked public snapshot
+ok 17 - an in-flight older ready response cannot refill a revoked public snapshot
+  ---
+  duration_ms: 30.88425
+  ...
+# Subtest: browser network failure clears prior public facts and exposes only a controlled code
+ok 18 - browser network failure clears prior public facts and exposes only a controlled code
+  ---
+  duration_ms: 4.186541
+  ...
+# Subtest: success and recovery snapshots remain isolated by UI locale
+ok 19 - success and recovery snapshots remain isolated by UI locale
+  ---
+  duration_ms: 5.928125
+  ...
+# Subtest: bad private URL fails closed and commerce degradation does not enter shared cache
+ok 20 - bad private URL fails closed and commerce degradation does not enter shared cache
+  ---
+  duration_ms: 11.361792
+  ...
+# Subtest: an empty or failed commerce catalog never revives prices from content
+ok 21 - an empty or failed commerce catalog never revives prices from content
+  ---
+  duration_ms: 5.675958
+  ...
+# Subtest: malformed public offers are withheld instead of displaying a placeholder price
+ok 22 - malformed public offers are withheld instead of displaying a placeholder price
+  ---
+  duration_ms: 18.442666
+  ...
+# Subtest: Nuxt and full Compose keep the internal address private
+ok 23 - Nuxt and full Compose keep the internal address private
+  ---
+  duration_ms: 7.099875
+  ...
+# Subtest: free entry uses device-specific register/login routes and fixed safe return paths
+ok 24 - free entry uses device-specific register/login routes and fixed safe return paths
+  ---
+  duration_ms: 1.671833
+  ...
+# Subtest: entry configuration rejects credentials, executable URLs and embedded query/hash destinations
+ok 25 - entry configuration rejects credentials, executable URLs and embedded query/hash destinations
+  ---
+  duration_ms: 0.217208
+  ...
+# Subtest: sitemap exposes public website routes and six learning descriptions without retired pricing pages
+ok 26 - sitemap exposes public website routes and six learning descriptions without retired pricing pages
+  ---
+  duration_ms: 0.110375
+  ...
+1..26
+# tests 26
+# suites 0
+# pass 26
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 594.536375

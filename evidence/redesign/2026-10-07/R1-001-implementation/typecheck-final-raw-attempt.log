@@ -1,0 +1,5 @@
+composables/usePublicProjection.ts(37,40): error TS2339: Property 'raw' does not exist on type 'H3Event$Fetch | $Fetch<unknown, NitroFetchRequest>'.
+  Property 'raw' does not exist on type 'H3Event$Fetch'.
+undefined
+/Users/Admin/Desktop/work/cloudstudy/apps/official-site:
+ ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL  Command failed with exit code 2: nuxi typecheck

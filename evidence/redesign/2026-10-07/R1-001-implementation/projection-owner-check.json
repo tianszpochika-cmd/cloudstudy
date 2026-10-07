@@ -1,0 +1,44 @@
+[
+  {
+    "url": "http://127.0.0.1:18182/api/public-projection?locale=zh-CN",
+    "status": 200,
+    "headers": {
+      "x-public-projection-commerce": "gateway",
+      "x-public-projection-source": "gateway"
+    },
+    "body": {
+      "projection": {
+        "schemaVersion": "public-site-v1",
+        "uiLocale": "zh-CN",
+        "contentLocale": "en-US",
+        "generatedAt": null,
+        "courses": [],
+        "pricingPlans": [],
+        "skus": [],
+        "campaigns": [],
+        "downloadChannels": [],
+        "announcements": [],
+        "complianceNotices": []
+      },
+      "state": "empty",
+      "stale": false,
+      "source": "gateway",
+      "errorCode": null
+    }
+  },
+  {
+    "url": "http://127.0.0.1:18070/api/v1/public/commerce/catalog?uiLocale=zh-CN",
+    "status": 200,
+    "headers": {},
+    "body": {
+      "catalogVersion": "commerce-public-v1",
+      "uiLocale": "zh-CN",
+      "contentLocale": "en-US",
+      "plans": [],
+      "publishedAt": "2026-10-06T22:34:27.652836Z",
+      "checkoutPath": "/pricing",
+      "productionPaymentEnabled": false,
+      "autoRenewalEnabled": false
+    }
+  }
+]

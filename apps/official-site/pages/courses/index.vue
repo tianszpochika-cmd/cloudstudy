@@ -26,6 +26,11 @@ function filter(groupValue: string, searchValue = query.value) {
   });
 }
 const { loadState, load } = usePublicProjection("courses");
+const { registerLink } = useOfficialSiteLinks();
+const coursesEmpty = computed(
+  () => loadState.value.state === "empty" ||
+    (loadState.value.state === "ready" && !loadState.value.projection.courses.length),
+);
 useOfficialSeo({
   title: t("official.c66fb6e8c0"),
   description: t("official.c0978c4332"),
@@ -100,7 +105,7 @@ useOfficialSeo({
               <h2 id="published-courses-title">{{ t("official.c52c0deec0") }}</h2>
               <p class="catalog-note">{{ t("official.cab2cf9e17") }}</p>
             </div>
-            <NuxtLink class="link-arrow" to="/start"
+            <NuxtLink class="link-arrow" :to="registerLink()" external data-register-entry
               >{{ t("official.caa236cbb2") }}<SiteIcon name="arrow"
             /></NuxtLink>
           </div>
@@ -119,7 +124,7 @@ useOfficialSeo({
               <span v-if="course.level" class="pill">{{ course.level }}</span>
               <h3>{{ course.title }}</h3>
               <p v-if="course.description">{{ course.description }}</p>
-              <NuxtLink class="link-arrow" to="/start"
+              <NuxtLink class="link-arrow" :to="registerLink()" external data-register-entry
                 >{{ t("official.caa236cbb2") }}<SiteIcon name="arrow"
               /></NuxtLink>
             </article>
@@ -127,6 +132,10 @@ useOfficialSeo({
           <PublicStatus
             v-if="loadState.state !== 'ready' || !loadState.projection.courses.length"
             :state="loadState.state === 'ready' ? 'empty' : loadState.state"
+            :title="coursesEmpty ? t('official.r1CoursesPreparing') : undefined"
+            :message="coursesEmpty ? t('official.r1CoursesPreparingNote') : undefined"
+            :action-label="coursesEmpty ? t('official.c03e46770e') : undefined"
+            :action-href="coursesEmpty ? registerLink() : undefined"
             @retry="load"
           />
         </section>

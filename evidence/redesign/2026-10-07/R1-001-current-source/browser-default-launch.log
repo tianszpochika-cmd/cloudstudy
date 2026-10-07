@@ -1,0 +1,20 @@
+node:internal/process/promises:391
+    triggerUncaughtException(err, true /* fromPromise */);
+    ^
+
+browserType.launch: Executable doesn't exist at /Users/Admin/Library/Caches/ms-playwright/chromium_headless_shell-1243/chrome-headless-shell-mac-arm64/chrome-headless-shell
+╔════════════════════════════════════════════════════════════╗
+║ Looks like Playwright was just installed or updated.       ║
+║ Please run the following command to download new browsers: ║
+║                                                            ║
+║     npx playwright install                                 ║
+║                                                            ║
+║ <3 Playwright Team                                         ║
+╚════════════════════════════════════════════════════════════╝
+    at /Users/Admin/Desktop/work/cloudstudy/evidence/redesign/2026-10-07/R1-001-current-source/current-source-browser.cjs:25:31
+    at Object.<anonymous> (/Users/Admin/Desktop/work/cloudstudy/evidence/redesign/2026-10-07/R1-001-current-source/current-source-browser.cjs:54:3) {
+  log: [],
+  name: 'Error'
+}
+
+Node.js v20.19.5

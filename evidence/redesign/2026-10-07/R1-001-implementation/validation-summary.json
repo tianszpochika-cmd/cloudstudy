@@ -1,0 +1,92 @@
+{
+  "kind": "SOURCE_SCOPED_PASS_NOT_WORKFLOW_ACCEPTANCE",
+  "taskId": "R1-001",
+  "sourceCommit": "ff0f8057f4088ead03ab7890493cdf9d06f6d5f1",
+  "sourceDeltaPatchSha256": "d4497aea42a3f25068565a34db96730a2769d88677760b992b5ccbe967112038",
+  "taskSpecSha256": "9f578b432074b59083233b2f478b39cd611948aa366d93c8c89a8939247b0da6",
+  "validation": {
+    "websiteApplicationTests": {
+      "pass": 26,
+      "fail": 0,
+      "skip": 0,
+      "exitCode": 0,
+      "log": "test-website-final.log"
+    },
+    "R1HttpSsrSafeHandoffAndSharedFallback": {
+      "pass": 4,
+      "fail": 0,
+      "skip": 0,
+      "exitCode": 0,
+      "log": "test-r1-001-final.log"
+    },
+    "nuxiTypecheck": {
+      "exitCode": 0,
+      "log": "typecheck-final.log"
+    },
+    "isolatedProductionBuild": {
+      "exitCode": 0,
+      "log": "build-final.log",
+      "serverStarted": false
+    },
+    "browserFinal": {
+      "exitCode": 0,
+      "requestedRoutes": 11,
+      "observations": 22,
+      "direct200": 22,
+      "nonBlank": 22,
+      "overlays": 0,
+      "horizontalOverflow": 0,
+      "routeErrorCount": 0,
+      "actualHomepageRegistrationProofs": 2,
+      "registrationSubmitted": false,
+      "blockedWrites": 0,
+      "evidence": "browser-observation.json"
+    },
+    "projectionBranches": {
+      "realAffectedPages": 4,
+      "simulatedCases": 40,
+      "unrelatedCourseCases": 2,
+      "errors": 0,
+      "blockedWrites": 0,
+      "scenarios": [
+        "commerce-degraded",
+        "empty",
+        "error",
+        "loading",
+        "maintenance",
+        "missing-response",
+        "permission",
+        "ready-nonempty",
+        "ready-related-empty",
+        "recovery"
+      ],
+      "evidence": "projection-branches.json",
+      "fixtureIsNotPublishedBackendFacts": true
+    },
+    "nonemptyFinalVisualSupplement": {
+      "realAffectedPages": 4,
+      "simulatedCases": 4,
+      "unrelatedCourseCases": 2,
+      "errors": 0,
+      "evidence": "projection-nonempty-final.json"
+    }
+  },
+  "retainedDiagnostics": [
+    "browser-first-observation.json navigation-before-DOM harness timing, fixed wait without app edit",
+    "typecheck-final-raw-attempt.log TS2339: SSR H3Event$Fetch lacks .raw; test-r1-001-final-raw-attempt.log SSR falsely error; test-website-final-raw-attempt.log prior callable mock incompatible; corrected same-request onResponse",
+    "projection-branches-raw-attempt.json browser-only raw succeeded; not used as SSR proof"
+  ],
+  "explicitGaps": [
+    "original114cardWall",
+    "originalR1-001acceptance",
+    "independentReview/workflowTransition",
+    "IAMregister201/Cookie/transaction/events",
+    "adultGatePersisted",
+    "noLearningScopes/domain403",
+    "dedicatedCleanDatabaseExit",
+    "fullThemesLocalesA11yRealDevices",
+    "productionRelease",
+    "traceSignoff/namedRULEbinding"
+  ],
+  "workflowPromotion": false
+}

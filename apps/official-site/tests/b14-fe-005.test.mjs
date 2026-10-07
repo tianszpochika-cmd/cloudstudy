@@ -59,34 +59,33 @@ test("official site applies explicit URL locale/theme preferences after restore"
   assert.doesNotMatch(header, /buildPublicLearningEntry|authLink|login-link|menu-login/);
 });
 
-test("public learning entry exposes availability and no blocked account action", async () => {
+// R1-001 supersedes 8a689ec5's closed-account UI policy. Canonical auth rules remain unchanged.
+test("R1-001 public entry links to learner registration and retains adult/read-only boundaries", async () => {
   const header = await read("apps/official-site/components/SiteHeader.vue");
   const start = await read("apps/official-site/pages/start.vue");
+  const button = await read("apps/official-site/components/SiteStartButton.vue");
+  const links = await read("apps/official-site/composables/useOfficialSiteLinks.ts");
   const home = await read("apps/official-site/pages/index.vue");
-  const about = await read("apps/official-site/pages/about.vue");
   const courseIndex = await read("apps/official-site/pages/courses/index.vue");
   const copy = await read("packages/i18n/src/official-site.ts");
-
   assert.match(header, /SiteStartButton/);
   assert.match(header, /menu-example/);
   assert.doesNotMatch(header, /menu-login|login-link|authLink/);
+  for (const source of [button, start, courseIndex]) assert.match(source, /registerLink\(\)/);
+  assert.match(links, /buildPublicLearningEntry/);
+  assert.match(start, /data-register-entry/);
   assert.match(start, /data-sample-entry/);
   assert.match(start, /to="\/#practice-example"/);
   assert.match(start, /role="status"[\s\S]*official\.c8a7b34f12/);
   assert.equal((start.match(/official\.c8a7b34f12/g) || []).length, 1);
-  assert.match(start, /to="\/announcements"/);
-  assert.doesNotMatch(start, /buildPublicLearningEntry|data-learning-entry|text-login|entry\(true\)/);
   assert.match(home, /id="practice-example"/);
-  assert.match(copy, /学习账号注册与登录当前暂不可用/);
-  assert.match(copy, /cbd70ad936: "学习账号开放情况"/);
-  assert.match(copy, /c8a7b34f12: "学习账号注册与登录暂不可用。"/);
-  assert.match(copy, /c584d952d2: "查看服务公告"/);
-  assert.match(copy, /c89f868063: "手机浏览器示例"/);
-  assert.match(copy, /c5973f1b79: "电脑浏览器示例"/);
+  assert.match(copy, /18 岁以上成人与大学生/);
+  assert.match(copy, /通过前不开放学习能力/);
+  assert.match(copy, /c03e46770e: "去注册"/);
+  assert.match(copy, /r1CoursesPreparing: "课程准备中"/);
   assert.match(copy, /c7044fa394: "界面示意"/);
   assert.match(copy, /个人数据查看、导出和删除功能当前无法通过学习账号访问/);
-  assert.match(about, /official\.cd3b2479fd/);
-  assert.match(courseIndex, /to="\/start"/);
+  assert.doesNotMatch(copy, /学习账号注册与登录(?:当前)?暂不可用|学习账号注册暂不可用/);
   assert.doesNotMatch(copy, /初期免费开放|初期开放的学习功能免费使用|同一个账号登录即可查看已经保存/);
 });
 

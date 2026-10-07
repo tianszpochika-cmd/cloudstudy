@@ -1,0 +1,260 @@
+{
+  "kind": "CURRENT_SOURCE_PROVENANCE_NOT_ACCEPTANCE",
+  "sourceCommit": "ff0f8057f4088ead03ab7890493cdf9d06f6d5f1",
+  "sourceBranch": "dev-redesign",
+  "at": "2026-10-06T22:23:07.084008+00:00",
+  "appLastPathCommit": "8a689ec5c7fca3dd753d972db10057cc768437c8 2026-09-26T15:36:28+08:00 [WORKSPACE] 2026-09-26 local full-stack sync: backend 16 services + 4 frontends verified, workspace changes push",
+  "appAndOfficialCopyDiff": "",
+  "sourceFiles": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "747d8ed7f650ec5b2ae70742fc598130a77e8608a21dbef41b9e88add1645790",
+      "lastPathCommit": "f1a8466daa56b73a65966c16225d259935f35e3c"
+    },
+    {
+      "path": "CURRENT-HANDOFF.md",
+      "sha256": "d7acd158485c6ffaddc9bccb29e33ca2317a7cc80afd27ac9b2c38244efd4c3b",
+      "lastPathCommit": "f1a8466daa56b73a65966c16225d259935f35e3c"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/CURRENT-PROGRESS.md",
+      "sha256": "002db8dd23cc50b1e0796f53d1315133996405ff0cbef730f17414f84062c463",
+      "lastPathCommit": "ff0f8057f4088ead03ab7890493cdf9d06f6d5f1"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/dev-plan-R1.md",
+      "sha256": "be49c857a9499affbc81569697cbc197d4934857ea50e82b46d8ae2f2a036f07",
+      "lastPathCommit": "f1a8466daa56b73a65966c16225d259935f35e3c"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+      "sha256": "25f6bc7c78a16a64b602648185a096985a3fd2f3f50ef8a88e95413b499c2f5f",
+      "lastPathCommit": "127a07c4ba02ee1f8f36a225b336033a0ef242de"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+      "sha256": "0fd4a2f421f49832caebe0384b73b3ddaa2b5f743164a0782c80e4835a6669ea",
+      "lastPathCommit": "127a07c4ba02ee1f8f36a225b336033a0ef242de"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/README.md",
+      "sha256": "f8a92bcf591c85a0a1f214c053ad2c430d6f5e06cb60e55889fef539514546ea",
+      "lastPathCommit": "f1a8466daa56b73a65966c16225d259935f35e3c"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+      "sha256": "49dec04b396cdb732c61c210b6d4473dc37dedef21c8620bf4b59f1c39356625",
+      "lastPathCommit": "a14933595d56d7ec7b1255fc99f1b965495e9e5b"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/official-site-experience-proposal-2026-09-21/implementation/README.md",
+      "sha256": "71b55b8444b8ff42933f4f347b2920e6d258531ec8a82cd81cbcd0b61fc32605",
+      "lastPathCommit": "5c5dc3191a48e07909c0ae7e6117b0b035db9343"
+    },
+    {
+      "path": "apps/official-site/README.md",
+      "sha256": "99ba9521788c77119615ae603ef942b1736b3ad488dbbcf15f073fed00785099",
+      "lastPathCommit": "8a689ec5c7fca3dd753d972db10057cc768437c8"
+    },
+    {
+      "path": "apps/official-site/components/SiteStartButton.vue",
+      "sha256": "e966175babbfa7c1f3cda300f81f69a07df4a827a31c4b2d0c8d89c363936a5f",
+      "lastPathCommit": "5c5dc3191a48e07909c0ae7e6117b0b035db9343"
+    },
+    {
+      "path": "apps/official-site/components/SiteHeader.vue",
+      "sha256": "5faa71122d09b936288d8455442152d0b3c030f6833170d1d0c98683300727e2",
+      "lastPathCommit": "8a689ec5c7fca3dd753d972db10057cc768437c8"
+    },
+    {
+      "path": "apps/official-site/components/PublicStatus.vue",
+      "sha256": "1fd360e513110e3b8dfb9da22e53d640b0aff9a5c81aa0edac383b9bdb6281a9",
+      "lastPathCommit": "5c5dc3191a48e07909c0ae7e6117b0b035db9343"
+    },
+    {
+      "path": "apps/official-site/composables/useOfficialSiteLinks.ts",
+      "sha256": "efa0830ae0c5b3150e441def1e45ed4b3f5c2d873a3b739efbabcd4e253b3cc2",
+      "lastPathCommit": "5c5dc3191a48e07909c0ae7e6117b0b035db9343"
+    },
+    {
+      "path": "apps/official-site/composables/useLearningDevice.ts",
+      "sha256": "16f80eedc54f9aad19342f90c75b36dcf86a9bf94a583bd3094dd9b0e2fef737",
+      "lastPathCommit": "5c5dc3191a48e07909c0ae7e6117b0b035db9343"
+    },
+    {
+      "path": "apps/official-site/utils/public-links.mjs",
+      "sha256": "94abc4fd69d51bf6964fcfa93f6e8a6a044141a54359603205b930de5ff9e3e6",
+      "lastPathCommit": "5c5dc3191a48e07909c0ae7e6117b0b035db9343"
+    },
+    {
+      "path": "apps/official-site/utils/site-content.mjs",
+      "sha256": "33553a4cb0f3e8c49c1c19821056f3cfa927052f2d3700fa83f08e08b6b2c7ff",
+      "lastPathCommit": "5c5dc3191a48e07909c0ae7e6117b0b035db9343"
+    },
+    {
+      "path": "packages/i18n/src/official-site.ts",
+      "sha256": "5889d1a4a1e36820a333435d8ea78170606926751e0795f7d3a93a0a6c8c906a",
+      "lastPathCommit": "8a689ec5c7fca3dd753d972db10057cc768437c8"
+    },
+    {
+      "path": "apps/learner-web/src/router/index.ts",
+      "sha256": "65548e98014197d553608cbc43d3b36702b4e09511708e5a4836c42f29b70e43",
+      "lastPathCommit": "8a689ec5c7fca3dd753d972db10057cc768437c8"
+    },
+    {
+      "path": "apps/learner-web/src/pages/RegisterPage.vue",
+      "sha256": "6287a1efb338724b10f2ce3bcacb37c619bbbdaa3c2be73de825ff837862c7d5",
+      "lastPathCommit": "8a689ec5c7fca3dd753d972db10057cc768437c8"
+    },
+    {
+      "path": "apps/mobile/src/pages.json",
+      "sha256": "7dca1d2e4851db6d7d0ba92de6bedbd3227d0340ab87968019b34fc8dc05d9a6",
+      "lastPathCommit": "8a689ec5c7fca3dd753d972db10057cc768437c8"
+    },
+    {
+      "path": "apps/mobile/src/pages/register/register.vue",
+      "sha256": "072afdb33e8ebe2d68b5478ef4c32ba09f0e89423b931ba29984e44804386dcd",
+      "lastPathCommit": "2f4842ba02af906bcee965fab6735ce3f12adbfc"
+    },
+    {
+      "path": "scripts/contracts/compatibility-diff.mjs",
+      "sha256": "c3b043a577381bdf84c474dc4d76d3488a1016fbd4acde57a113dda20b5b542c",
+      "lastPathCommit": "8a689ec5c7fca3dd753d972db10057cc768437c8"
+    },
+    {
+      "path": "requirements/backlog/v2-phase1-rebaseline/execution/LEGACY-B-TEST-TRIAGE.md",
+      "sha256": "62f92a2ef1fe34c62020fe39cbd5b9765a29ad41d3d6bcd0afdf27953fd49e4d",
+      "lastPathCommit": "8b9fefd2f6ad027f0fbbbbc7390882cbc9e1fc54"
+    },
+    {
+      "path": "docs/10-decisions/0013-self-owned-jwt-authentication-center.md",
+      "sha256": "46a8e3809acb4b10e08bcf4d70c57954f47844c44376c0aaef86573f84eb71ab",
+      "lastPathCommit": "e4618b324e5a93926da0750a8100fc9377ac97ec"
+    },
+    {
+      "path": "apps/official-site/pages/about.vue",
+      "sha256": "d70cac5f7c6f4c9dacfc84cc94d90cd51792cdf63222025322c9f73151c6f5e1",
+      "lastPathCommit": "5c5dc3191a48e07909c0ae7e6117b0b035db9343"
+    },
+    {
+      "path": "apps/official-site/pages/announcements.vue",
+      "sha256": "9d675a1796994af1e87959894de3203821b013f0fb11bd84159a38512572781c",
+      "lastPathCommit": "5c5dc3191a48e07909c0ae7e6117b0b035db9343"
+    },
+    {
+      "path": "apps/official-site/pages/compliance.vue",
+      "sha256": "07a2425381a9c04ad40aa51c815c5fb7e2fca938cfb2a3922ac2e7d0a3604561",
+      "lastPathCommit": "5c5dc3191a48e07909c0ae7e6117b0b035db9343"
+    },
+    {
+      "path": "apps/official-site/pages/courses/[id].vue",
+      "sha256": "b39ba266b184ed8721216676a02bac982f02f7fa45b3fe25373ad26b7c72faee",
+      "lastPathCommit": "5c5dc3191a48e07909c0ae7e6117b0b035db9343"
+    },
+    {
+      "path": "apps/official-site/pages/courses/index.vue",
+      "sha256": "d2bb4d7622573c08e553b1adea4431565ff661a3fb42748e072f0619339a5742",
+      "lastPathCommit": "8a689ec5c7fca3dd753d972db10057cc768437c8"
+    },
+    {
+      "path": "apps/official-site/pages/download.vue",
+      "sha256": "1f73880a488b95ac560579c2cf40bb5c08d09d24422b649a9c6706ffbbb8afa5",
+      "lastPathCommit": "5c5dc3191a48e07909c0ae7e6117b0b035db9343"
+    },
+    {
+      "path": "apps/official-site/pages/help.vue",
+      "sha256": "81273d4d1f0b4768f9aea797461530b33d72ee89a7f36ad0dd9acbfd19ec5e6d",
+      "lastPathCommit": "5c5dc3191a48e07909c0ae7e6117b0b035db9343"
+    },
+    {
+      "path": "apps/official-site/pages/index.vue",
+      "sha256": "cb52d704bc53f6810483b22580815f43eaee91360ce976ee0f3d07b3b98baef5",
+      "lastPathCommit": "8a689ec5c7fca3dd753d972db10057cc768437c8"
+    },
+    {
+      "path": "apps/official-site/pages/method.vue",
+      "sha256": "dcb40a53cbcc4ee91fccbb472543c4978fa18e0187c8e3e46952036bae1ce7e9",
+      "lastPathCommit": "5c5dc3191a48e07909c0ae7e6117b0b035db9343"
+    },
+    {
+      "path": "apps/official-site/pages/minors.vue",
+      "sha256": "d17a1f687e4502122bfaa6fa92b1ebfa5de1759343918a0a75624ff227b528f2",
+      "lastPathCommit": "5c5dc3191a48e07909c0ae7e6117b0b035db9343"
+    },
+    {
+      "path": "apps/official-site/pages/pricing.vue",
+      "sha256": "1f73880a488b95ac560579c2cf40bb5c08d09d24422b649a9c6706ffbbb8afa5",
+      "lastPathCommit": "5c5dc3191a48e07909c0ae7e6117b0b035db9343"
+    },
+    {
+      "path": "apps/official-site/pages/privacy.vue",
+      "sha256": "72562ecc8f4a38d00d5af7eccc736d715ba48f96dd3d8ac6f07d1b05ba61cf9f",
+      "lastPathCommit": "5c5dc3191a48e07909c0ae7e6117b0b035db9343"
+    },
+    {
+      "path": "apps/official-site/pages/start.vue",
+      "sha256": "d4c00c19a90ec4775aabb9823f5e72512f55d19b50733550fd88f3b6b3a657ab",
+      "lastPathCommit": "8a689ec5c7fca3dd753d972db10057cc768437c8"
+    },
+    {
+      "path": "apps/official-site/pages/status.vue",
+      "sha256": "f85952587dc38b4799dd3aaea76c971fb6635ca43b1e508c5de8d519b1add355",
+      "lastPathCommit": "5c5dc3191a48e07909c0ae7e6117b0b035db9343"
+    },
+    {
+      "path": "apps/official-site/pages/terms.vue",
+      "sha256": "5e6b4c8c59d3cae277d6bd63ed6255d4366eba4358b7a3b182313cdbab70f44b",
+      "lastPathCommit": "5c5dc3191a48e07909c0ae7e6117b0b035db9343"
+    },
+    {
+      "path": "apps/official-site/pages/world.vue",
+      "sha256": "782743eb49b713a736619b469a9e63459de4dae38a5000ae352ec218a63b1d27",
+      "lastPathCommit": "5c5dc3191a48e07909c0ae7e6117b0b035db9343"
+    },
+    {
+      "path": "apps/official-site/tests/b13-official-site.test.mjs",
+      "sha256": "cb4639aea81aee747e148572a931718e021c96a76e7df2a837be9f381cc315ee",
+      "lastPathCommit": "5c5dc3191a48e07909c0ae7e6117b0b035db9343"
+    },
+    {
+      "path": "apps/official-site/tests/b14-fe-005.test.mjs",
+      "sha256": "19eedcbe12d8f58fa7f79aa5594f176b7d3ae45b913b42b57c4d267a09ca14b3",
+      "lastPathCommit": "8a689ec5c7fca3dd753d972db10057cc768437c8"
+    },
+    {
+      "path": "apps/official-site/tests/public-projection-bff.test.mjs",
+      "sha256": "dd2802e7a8bfb8edb76537bc8efd077c605e1562214c0d00b883566ea23b3675",
+      "lastPathCommit": "8a689ec5c7fca3dd753d972db10057cc768437c8"
+    },
+    {
+      "path": "apps/official-site/tests/website-entry.test.mjs",
+      "sha256": "c48b4d7ce788352a67e0ca8130d648801225fe8f0951bc24c9874221da0160a0",
+      "lastPathCommit": "5c5dc3191a48e07909c0ae7e6117b0b035db9343"
+    }
+  ],
+  "process": {
+    "listener": "COMMAND  PID  USER   FD   TYPE             DEVICE SIZE/OFF NODE NAME\nnode    9008 Admin   15u  IPv4 0x5f56170daa4a3984      0t0  TCP 127.0.0.1:18182 (LISTEN)",
+    "process": "PID  PPID STARTED                      COMMAND\n 9008  9007 Tue Oct  6 21:47:40 2026     node /Users/Admin/Desktop/work/cloudstudy/apps/official-site/node_modules/.bin/../nuxt/bin/nuxt.mjs dev --host 127.0.0.1 --port 18182 --strictPort",
+    "cwd": "p9008\nfcwd\nn/Users/Admin/Desktop/work/cloudstudy/apps/official-site",
+    "noServiceStartedOrRestarted": true,
+    "runtimeVersionBindingLimitation": "Nuxt dev cwd/process aligns source; no immutable source/build manifest endpoint. Observation bound by recorded HEAD + file digests, not production build acceptance."
+  },
+  "versions": {
+    "node": "v20.19.5",
+    "pnpm": "10.19.0",
+    "playwright": "Version 1.63.0",
+    "browser": "installed Google Chrome 154.0.8037.98"
+  },
+  "historyPolicy": {
+    "closedAccountRuleIntroducedCommit": "8a689ec5c7fca3dd753d972db10057cc768437c8",
+    "evidence": "git blame B14 FE test lines 60..90; official README lines41,54; i18n unavailable keys",
+    "canonicalClosureRuleBindingFound": false,
+    "boundedSearch": [
+      "scripts/contracts/compatibility-diff.mjs",
+      "docs/10-decisions/*.md",
+      "requirements/backlog/v2-phase1-rebaseline/execution/LEGACY-B-TEST-TRIAGE.md",
+      "apps/official-site/tests/*.mjs"
+    ],
+    "gap": "GAP-CLOSURE-POLICY-CANONICAL-BINDING; absence in bounded search is not a blanket claim that all B14 tests are ungoverned."
+  }
+}

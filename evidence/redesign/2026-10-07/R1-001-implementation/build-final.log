@@ -1,0 +1,148 @@
+Isolated final build directories: /var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC
+ℹ Building client...
+ℹ vite v7.3.6 building client environment for production...
+ℹ transforming...
+ℹ ✓ 260 modules transformed.
+ℹ rendering chunks...
+ℹ computing gzip size...
+ℹ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/nuxt/dist/client/manifest.json       13.18 kB │ gzip:   1.35 kB
+ℹ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/nuxt/dist/client/_nuxt/CLCGf3iG.js    0.08 kB │ gzip:   0.10 kB
+ℹ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/nuxt/dist/client/_nuxt/DlAUqK2U.js    0.09 kB │ gzip:   0.10 kB
+ℹ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/nuxt/dist/client/_nuxt/CQj3PyPE.js    0.29 kB │ gzip:   0.21 kB
+ℹ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/nuxt/dist/client/_nuxt/BPIBrDBs.js    0.29 kB │ gzip:   0.22 kB
+ℹ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/nuxt/dist/client/_nuxt/C_CooTKi.js    0.30 kB │ gzip:   0.22 kB
+ℹ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/nuxt/dist/client/_nuxt/D2cl6yHU.js    0.51 kB │ gzip:   0.34 kB
+ℹ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/nuxt/dist/client/_nuxt/DunOe_hk.js    0.55 kB │ gzip:   0.39 kB
+ℹ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/nuxt/dist/client/_nuxt/CEpzf149.js    0.64 kB │ gzip:   0.41 kB
+ℹ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/nuxt/dist/client/_nuxt/C3zXPmQ1.js    0.78 kB │ gzip:   0.50 kB
+ℹ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/nuxt/dist/client/_nuxt/Db6qBbiu.js    0.90 kB │ gzip:   0.51 kB
+ℹ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/nuxt/dist/client/_nuxt/BEvhLbWR.js    1.10 kB │ gzip:   0.62 kB
+ℹ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/nuxt/dist/client/_nuxt/2l6Zvjtz.js    1.14 kB │ gzip:   0.60 kB
+ℹ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/nuxt/dist/client/_nuxt/SBRXUdVM.js    1.16 kB │ gzip:   0.59 kB
+ℹ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/nuxt/dist/client/_nuxt/DmWk7IL1.js    1.23 kB │ gzip:   0.62 kB
+ℹ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/nuxt/dist/client/_nuxt/DKlbye8h.js    1.23 kB │ gzip:   0.74 kB
+ℹ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/nuxt/dist/client/_nuxt/BTtvyPTc.js    1.23 kB │ gzip:   0.58 kB
+ℹ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/nuxt/dist/client/_nuxt/BhOvYjad.js    1.37 kB │ gzip:   0.74 kB
+ℹ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/nuxt/dist/client/_nuxt/Dqbnbl7k.js    1.62 kB │ gzip:   0.78 kB
+ℹ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/nuxt/dist/client/_nuxt/DpWUcpkZ.js    1.70 kB │ gzip:   0.90 kB
+ℹ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/nuxt/dist/client/_nuxt/B8lPWVQh.js    1.90 kB │ gzip:   0.89 kB
+ℹ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/nuxt/dist/client/_nuxt/CFzPOIEm.js    2.36 kB │ gzip:   1.06 kB
+ℹ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/nuxt/dist/client/_nuxt/DfxJcdhC.js    2.50 kB │ gzip:   1.22 kB
+ℹ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/nuxt/dist/client/_nuxt/C9TCov6P.js    3.02 kB │ gzip:   1.29 kB
+ℹ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/nuxt/dist/client/_nuxt/wHXAU4uC.js    3.81 kB │ gzip:   1.68 kB
+ℹ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/nuxt/dist/client/_nuxt/CRPragmI.js    3.86 kB │ gzip:   1.58 kB
+ℹ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/nuxt/dist/client/_nuxt/DmeHeZIZ.js    4.16 kB │ gzip:   1.77 kB
+ℹ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/nuxt/dist/client/_nuxt/ofnP4n0y.js    4.19 kB │ gzip:   1.66 kB
+ℹ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/nuxt/dist/client/_nuxt/JdNu65KH.js    4.52 kB │ gzip:   2.18 kB
+ℹ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/nuxt/dist/client/_nuxt/CGSlZCoT.js    5.65 kB │ gzip:   1.92 kB
+ℹ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/nuxt/dist/client/_nuxt/DWBWhoCN.js    6.73 kB │ gzip:   2.09 kB
+ℹ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/nuxt/dist/client/_nuxt/C0ycxT1F.js    6.79 kB │ gzip:   2.72 kB
+ℹ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/nuxt/dist/client/_nuxt/n5s8_CSf.js   16.20 kB │ gzip:   5.89 kB
+ℹ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/nuxt/dist/client/_nuxt/CccRk97Y.js  263.39 kB │ gzip: 100.30 kB
+ℹ ✓ built in 1.99s
+✔ Client built in 2001ms
+ℹ Building server...
+ℹ vite v7.3.6 building ssr environment for production...
+ℹ transforming...
+ℹ ✓ 206 modules transformed.
+ℹ rendering chunks...
+ℹ ✓ built in 1.44s
+✔ Server built in 1450ms
+[nitro] ℹ Initializing prerenderer
+[nitro] ℹ Prerendering 2 routes
+[nitro]   ├─ /robots.txt (5ms)
+[nitro]   ├─ /sitemap.xml (6ms)
+[nitro] ℹ Prerendered 2 routes in 0.506 seconds
+[nitro] ✔ Generated public ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/public
+[nitro] ℹ Building Nuxt Nitro server (preset: node-server, compatibility date: 2024-04-03)
+[nitro] ✔ Nuxt Nitro server built
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/_id_-DMXVzKWQ.mjs (7.75 kB) (2.03 kB gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/_id_-DMXVzKWQ.mjs.map (6.67 kB) (1.46 kB gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/_plugin-vue_export-helper-1tPrXgE0.mjs (254 B) (201 B gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/_plugin-vue_export-helper-1tPrXgE0.mjs.map (516 B) (325 B gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/_virtual_public-kAGT_pBP.mjs (210 B) (178 B gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/_virtual_public-kAGT_pBP.mjs.map (303 B) (235 B gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/about-ab0MR8BB.mjs (3.2 kB) (1.22 kB gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/about-ab0MR8BB.mjs.map (2.51 kB) (761 B gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/announcements-DxErA34j.mjs (3.45 kB) (1.22 kB gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/announcements-DxErA34j.mjs.map (2.9 kB) (927 B gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/client.precomputed.mjs (25.3 kB) (2.09 kB gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/client.precomputed.mjs.map (17.2 kB) (793 B gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/compliance-CEg2NCaD.mjs (2.83 kB) (1.06 kB gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/compliance-CEg2NCaD.mjs.map (2.24 kB) (792 B gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/default-CP2js19J.mjs (24.5 kB) (4.47 kB gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/default-CP2js19J.mjs.map (20.4 kB) (3.41 kB gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/download-BPnEfFGf.mjs (4.24 kB) (1.39 kB gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/download-BPnEfFGf.mjs.map (3.65 kB) (1.06 kB gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/entry-styles.DVUA12GO.mjs (81.1 kB) (15.6 kB gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/entry-styles.DVUA12GO.mjs.map (974 B) (340 B gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/error-500.mjs (4.9 kB) (2.06 kB gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/error-500.mjs.map (376 B) (274 B gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/experience-content-DtnFbHg1.mjs (7.26 kB) (2.06 kB gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/experience-content-DtnFbHg1.mjs.map (6.14 kB) (587 B gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/help-aE6GyWvO.mjs (5.31 kB) (1.78 kB gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/help-aE6GyWvO.mjs.map (4.71 kB) (1.24 kB gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/index-M9QGhvQK.mjs (8.75 kB) (2.44 kB gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/index-M9QGhvQK.mjs.map (7.66 kB) (1.77 kB gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/index-zIp4O7JD.mjs (15.1 kB) (2.71 kB gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/index-zIp4O7JD.mjs.map (12.8 kB) (1.69 kB gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/LearningMethodCard-Ymy9_LJy.mjs (6.71 kB) (1.47 kB gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/LearningMethodCard-Ymy9_LJy.mjs.map (5.42 kB) (1.35 kB gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/method-Bl-3--_k.mjs (2.81 kB) (1.05 kB gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/method-Bl-3--_k.mjs.map (2.08 kB) (686 B gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/MethodArtwork-CvSzLFb6.mjs (1.98 kB) (820 B gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/MethodArtwork-CvSzLFb6.mjs.map (1.87 kB) (732 B gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/minors-C0IBSVEQ.mjs (1.41 kB) (630 B gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/minors-C0IBSVEQ.mjs.map (865 B) (450 B gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/PageHeading-DZ2P-cUw.mjs (2.08 kB) (869 B gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/PageHeading-DZ2P-cUw.mjs.map (1.9 kB) (762 B gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/PracticeSample-CcZcPKA5.mjs (5.04 kB) (1.5 kB gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/PracticeSample-CcZcPKA5.mjs.map (4.64 kB) (1.14 kB gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/pricing-CpRj0x8W.mjs (5.15 kB) (1.58 kB gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/pricing-CpRj0x8W.mjs.map (4.69 kB) (1.27 kB gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/privacy-C9aXYqTE.mjs (1.42 kB) (631 B gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/privacy-C9aXYqTE.mjs.map (867 B) (445 B gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/PublicDocument-DdfI3MpX.mjs (4.68 kB) (1.53 kB gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/PublicDocument-DdfI3MpX.mjs.map (4.41 kB) (1.26 kB gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/seo-BH8YBFY4.mjs (1.53 kB) (703 B gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/seo-BH8YBFY4.mjs.map (1.63 kB) (655 B gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/server.mjs (188 kB) (53 kB gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/server.mjs.map (181 kB) (26.3 kB gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/SiteFaq-ChziM8nN.mjs (1.48 kB) (668 B gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/SiteFaq-ChziM8nN.mjs.map (1.6 kB) (659 B gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/SiteModal-S1v81F5J.mjs (2.16 kB) (944 B gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/SiteModal-S1v81F5J.mjs.map (2.23 kB) (838 B gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/SiteStartButton-B5pfqI0z.mjs (2.1 kB) (858 B gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/SiteStartButton-B5pfqI0z.mjs.map (1.9 kB) (757 B gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/start-h6SlLNjI.mjs (11.4 kB) (2.53 kB gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/start-h6SlLNjI.mjs.map (9.76 kB) (1.69 kB gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/status-CXmi3Lr1.mjs (3.71 kB) (1.18 kB gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/status-CXmi3Lr1.mjs.map (3.06 kB) (854 B gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/styles.mjs (389 B) (300 B gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/styles.mjs.map (367 B) (263 B gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/terms-D6NUcW00.mjs (1.41 kB) (629 B gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/terms-D6NUcW00.mjs.map (863 B) (448 B gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/useOfficialSiteLinks-B5XzQNEF.mjs (7.29 kB) (2.11 kB gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/useOfficialSiteLinks-B5XzQNEF.mjs.map (8.64 kB) (2.01 kB gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/usePublicProjection-DOiZgrUq.mjs (9.28 kB) (2.95 kB gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/usePublicProjection-DOiZgrUq.mjs.map (7.16 kB) (1.74 kB gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/world-CXx3IcLk.mjs (2.89 kB) (1.05 kB gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/world-CXx3IcLk.mjs.map (2.16 kB) (687 B gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/WorldExperience-BizPcnM4.mjs (20.4 kB) (5.21 kB gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/_/WorldExperience-BizPcnM4.mjs.map (16.2 kB) (2.81 kB gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/nitro/nitro.mjs (183 kB) (45.3 kB gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/nitro/nitro.mjs.map (9.09 kB) (1.17 kB gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/routes/api/public-projection.get.mjs (25 kB) (5.97 kB gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/routes/api/public-projection.get.mjs.map (27.5 kB) (4.8 kB gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/routes/renderer.mjs (15.3 kB) (4.98 kB gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/routes/renderer.mjs.map (2.37 kB) (438 B gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/routes/robots.txt.mjs (771 B) (426 B gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/routes/robots.txt.mjs.map (596 B) (267 B gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/routes/sitemap.xml.mjs (1.51 kB) (744 B gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/routes/sitemap.xml.mjs.map (1.44 kB) (491 B gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/virtual/_virtual_spa-template.mjs (94 B) (100 B gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/chunks/virtual/_virtual_spa-template.mjs.map (90 B) (98 B gzip)
+  ├─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/index.mjs (353 B) (205 B gzip)
+  └─ ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/package.json (673 B) (311 B gzip)
+Σ Total size: 2.62 MB (621 kB gzip)
+[nitro] ✔ You can preview this build using node ../../../../../../../var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/cloudstudy-r1-001-final-build-CrPSuC/output/server/index.mjs

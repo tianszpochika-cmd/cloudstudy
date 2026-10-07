@@ -157,6 +157,8 @@ export const complianceNotices = Object.freeze([
 export const publicRoutes = Object.freeze([
   "/",
   "/courses",
+  "/pricing",
+  "/download",
   "/world",
   "/method",
   "/start",

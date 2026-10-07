@@ -1,0 +1,155 @@
+{
+  "sourceCommit": "ff0f8057f4088ead03ab7890493cdf9d06f6d5f1",
+  "sources": [
+    {
+      "sourceId": "plan",
+      "path": "docs/06-design/v2-980plus/redesign/dev-plan-R1.md",
+      "sha256": "be49c857a9499affbc81569697cbc197d4934857ea50e82b46d8ae2f2a036f07",
+      "lastPathCommit": "f1a8466daa56b73a65966c16225d259935f35e3c"
+    },
+    {
+      "sourceId": "progress",
+      "path": "docs/06-design/v2-980plus/redesign/CURRENT-PROGRESS.md",
+      "sha256": "002db8dd23cc50b1e0796f53d1315133996405ff0cbef730f17414f84062c463",
+      "lastPathCommit": "ff0f8057f4088ead03ab7890493cdf9d06f6d5f1"
+    },
+    {
+      "sourceId": "handoff",
+      "path": "CURRENT-HANDOFF.md",
+      "sha256": "d7acd158485c6ffaddc9bccb29e33ca2317a7cc80afd27ac9b2c38244efd4c3b",
+      "lastPathCommit": "f1a8466daa56b73a65966c16225d259935f35e3c"
+    },
+    {
+      "sourceId": "agents",
+      "path": "AGENTS.md",
+      "sha256": "747d8ed7f650ec5b2ae70742fc598130a77e8608a21dbef41b9e88add1645790",
+      "lastPathCommit": "f1a8466daa56b73a65966c16225d259935f35e3c"
+    },
+    {
+      "sourceId": "bc",
+      "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+      "sha256": "25f6bc7c78a16a64b602648185a096985a3fd2f3f50ef8a88e95413b499c2f5f",
+      "lastPathCommit": "127a07c4ba02ee1f8f36a225b336033a0ef242de"
+    },
+    {
+      "sourceId": "ic",
+      "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+      "sha256": "0fd4a2f421f49832caebe0384b73b3ddaa2b5f743164a0782c80e4835a6669ea",
+      "lastPathCommit": "127a07c4ba02ee1f8f36a225b336033a0ef242de"
+    },
+    {
+      "sourceId": "redesign_trace",
+      "path": "docs/06-design/v2-980plus/redesign/traceability-matrix.md",
+      "sha256": "a8528bc19dbc1563beac9fd63b6477642c70721c084f444f594c3a75501dcf06",
+      "lastPathCommit": "2f4842ba02af906bcee965fab6735ce3f12adbfc"
+    },
+    {
+      "sourceId": "features",
+      "path": "requirements/feature-matrix.md",
+      "sha256": "0c2feaf86d0c6fc6391c6acd22eea52b614f09670f33bb8b6221b0fd1c6d8fc8",
+      "lastPathCommit": "9a38ff2185286bc8e279f785ff3fad5de30de569"
+    },
+    {
+      "sourceId": "atoms",
+      "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+      "sha256": "bc852f17b12a81245c3862781e5f7eb5e2e1b2955adc984d016133eea7e53b26",
+      "lastPathCommit": "aac5c3462e01f3b3bec34bb13e7cd9f74ff34f72"
+    },
+    {
+      "sourceId": "scope",
+      "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+      "sha256": "c96f3587c7e825c4d961cc56a44a15e5f198c59f8bdaa9cea11ba105956b526c",
+      "lastPathCommit": "f7a2e76fcc206c26f296ae6f1c2a4296d0a8a573"
+    },
+    {
+      "sourceId": "arch",
+      "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+      "sha256": "61e6826d6994f94cd6829da2873500b942bdad2b493e10ea7d754905377750dc",
+      "lastPathCommit": "41f6a43b54bc51187fb71513e80468311cb1e411"
+    },
+    {
+      "sourceId": "actors_owners",
+      "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+      "sha256": "d2a11d8e542373441683368b6af180c7bbbf2cf654399df574eb78d664474c7c",
+      "lastPathCommit": "b01505a71f8b6f980d63cd58e3c3687e59daa13a"
+    },
+    {
+      "sourceId": "journeys",
+      "path": "docs/06-design/v2-980plus/phase1-business-operation/02-端到端业务旅程台账.md",
+      "sha256": "28fee299ff0eb8eb17b5eccc83555395964e978481979931f29fe4b6dc32ab38",
+      "lastPathCommit": "9a38ff2185286bc8e279f785ff3fad5de30de569"
+    },
+    {
+      "sourceId": "pages",
+      "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+      "sha256": "49dec04b396cdb732c61c210b6d4473dc37dedef21c8620bf4b59f1c39356625",
+      "lastPathCommit": "a14933595d56d7ec7b1255fc99f1b965495e9e5b"
+    },
+    {
+      "sourceId": "rules",
+      "path": "docs/06-design/v2-980plus/phase1-business-operation/04-学习机制与学习引擎规则.md",
+      "sha256": "f88882d32b56bbc31b3ffa553f5f83dd2a687c2caedc0d5aaadb9d120f8222bc",
+      "lastPathCommit": "a7f92095323f2afc4e6d28eeaff977e2197fcd0c"
+    },
+    {
+      "sourceId": "integration",
+      "path": "docs/06-design/v2-980plus/phase1-business-operation/06-业务联调矩阵.md",
+      "sha256": "36deaf9bf227d7565e69ec3dbd5f6655bcdc690789a949be194f48836365e3ba",
+      "lastPathCommit": "2a747ba3917acd92664911c6b4be070ff469e302"
+    },
+    {
+      "sourceId": "acceptance",
+      "path": "docs/06-design/v2-980plus/phase1-business-operation/08-验收与追溯规范.md",
+      "sha256": "68094074693b8143669332e6412f93061f58b790cb06601caebcfdec093bf403",
+      "lastPathCommit": "3cfd473f81fb83e38d6fdbcdf7f62903876e6ddc"
+    },
+    {
+      "sourceId": "closeout",
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/reviewer-3-closeout/review.md",
+      "sha256": "036b0420b42d3d38c5c7c2439fb73795666a0bb2f856150f4ec3eaf92120918e",
+      "lastPathCommit": "98017031d309d0debb548426314838e9b850e25e"
+    },
+    {
+      "sourceId": "closeout_inputs",
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/source-and-inputs-4.json",
+      "sha256": "dc5393310e85c981f8d68cddeb1ccf88f190240894d9fba07ad42eb5d58979a1",
+      "lastPathCommit": "98017031d309d0debb548426314838e9b850e25e"
+    },
+    {
+      "sourceId": "closeout_commands",
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/commands-4.log",
+      "sha256": "182873002cabe58c476f256bf33ba250449c273e499b8eb72e004610aaf34142",
+      "lastPathCommit": "98017031d309d0debb548426314838e9b850e25e"
+    },
+    {
+      "sourceId": "official_sweep",
+      "path": "evidence/live/2026-09-26/page-sweep/official/summary.json",
+      "sha256": "9fb8a37aba9a196aedb5227399aecde5710e35d748b53497f2cd91c693ed44d5",
+      "lastPathCommit": "9ddcb954195dc3849d92ab7d99895b64b9c8e17f"
+    },
+    {
+      "sourceId": "official_courses",
+      "path": "apps/official-site/pages/courses/index.vue",
+      "sha256": "d2bb4d7622573c08e553b1adea4431565ff661a3fb42748e072f0619339a5742",
+      "lastPathCommit": "8a689ec5c7fca3dd753d972db10057cc768437c8"
+    },
+    {
+      "sourceId": "official_start",
+      "path": "apps/official-site/pages/start.vue",
+      "sha256": "d4c00c19a90ec4775aabb9823f5e72512f55d19b50733550fd88f3b6b3a657ab",
+      "lastPathCommit": "8a689ec5c7fca3dd753d972db10057cc768437c8"
+    },
+    {
+      "sourceId": "official_start_button",
+      "path": "apps/official-site/components/SiteStartButton.vue",
+      "sha256": "e966175babbfa7c1f3cda300f81f69a07df4a827a31c4b2d0c8d89c363936a5f",
+      "lastPathCommit": "5c5dc3191a48e07909c0ae7e6117b0b035db9343"
+    },
+    {
+      "sourceId": "official_links",
+      "path": "apps/official-site/composables/useOfficialSiteLinks.ts",
+      "sha256": "efa0830ae0c5b3150e441def1e45ed4b3f5c2d873a3b739efbabcd4e253b3cc2",
+      "lastPathCommit": "5c5dc3191a48e07909c0ae7e6117b0b035db9343"
+    }
+  ]
+}

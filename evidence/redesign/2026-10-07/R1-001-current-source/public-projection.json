@@ -1,0 +1,19 @@
+{
+  "projection": {
+    "schemaVersion": "public-site-v1",
+    "uiLocale": "zh-CN",
+    "contentLocale": "en-US",
+    "generatedAt": null,
+    "courses": [],
+    "pricingPlans": [],
+    "skus": [],
+    "campaigns": [],
+    "downloadChannels": [],
+    "announcements": [],
+    "complianceNotices": []
+  },
+  "state": "empty",
+  "stale": false,
+  "source": "gateway",
+  "errorCode": null
+}

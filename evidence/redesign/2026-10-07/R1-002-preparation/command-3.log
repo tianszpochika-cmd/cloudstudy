@@ -1,0 +1,77 @@
+{
+  "task": "R1-002",
+  "status": "PREPARATION_PARTIAL_NOT_READY",
+  "checkedAt": "2026-10-06T22:13:16.549Z",
+  "mode": "inspect",
+  "platform": "darwin",
+  "architecture": "arm64",
+  "sourceHead": "ff0f8057f4088ead03ab7890493cdf9d06f6d5f1",
+  "toolSha256": "ba1f0d1197688be270cb085f0e9bd93e1d66ebecf3611458a9446461f72c0778",
+  "localPortsSha256": "0a6b43d35379fed2e679961b34a0ad0e9ec1888dfb7d1a2c76eed20706e5ca95",
+  "result": {
+    "dependency": {
+      "version": "5.0.3",
+      "jarSha256": "e44a06b3cc46e0b1cc293c327b7c6ae71683e08747b53e5a001c58e9c1271871",
+      "properties": [
+        {
+          "name": "spring.cloud.gateway.server.webflux.httpclient.ssl.trusted-x509-certificates",
+          "type": "java.util.List<java.lang.String>",
+          "description": "Trusted certificates for verifying the remote endpoint's certificate.",
+          "sourceType": "org.springframework.cloud.gateway.config.HttpClientProperties$Ssl"
+        },
+        {
+          "name": "spring.cloud.gateway.server.webflux.httpclient.ssl.use-insecure-trust-manager",
+          "type": "java.lang.Boolean",
+          "description": "Installs the netty InsecureTrustManagerFactory. This is insecure and not suitable for production.",
+          "sourceType": "org.springframework.cloud.gateway.config.HttpClientProperties$Ssl",
+          "defaultValue": false
+        }
+      ],
+      "status": "PASS",
+      "runtimeBindingVerified": false
+    },
+    "jwksSourceSha256": "bc3fd76268902ccb3a3a05d971d0f55f341f1066f0e2afe8b2a65608dcd0498c",
+    "independentClientObserved": true,
+    "processes": [
+      {
+        "service": "api-gateway",
+        "port": 18070,
+        "occupied": true,
+        "processes": [
+          {
+            "pid": 8713,
+            "summary": "8713  8694 java Tue Oct  6 21:46:35 2026",
+            "parentPid": 8694,
+            "projectAllServicesRunner": true,
+            "jar": "services/api-gateway/target/api-gateway-0.1.0-SNAPSHOT.jar",
+            "diskJarSha256": "34f13139294dead9f80cf0a4d41d43485d9cb95e0895c319ed4504b1fad66380",
+            "runtimeJarBytesProven": false,
+            "startupReceiptAvailable": false,
+            "stopped": false
+          }
+        ]
+      },
+      {
+        "service": "iam-service",
+        "port": 18087,
+        "occupied": true,
+        "processes": [
+          {
+            "pid": 8817,
+            "summary": "8817  8694 java Tue Oct  6 21:46:39 2026",
+            "parentPid": 8694,
+            "projectAllServicesRunner": true,
+            "jar": "services/iam-service/target/iam-service-0.1.0-SNAPSHOT.jar",
+            "diskJarSha256": "fc76f6a9a69c319f7119619288f8d1b1dcf5e6470047e7bc8a82e9a2a15a8a97",
+            "runtimeJarBytesProven": false,
+            "startupReceiptAvailable": false,
+            "stopped": false
+          }
+        ]
+      }
+    ],
+    "tlsRuntimeStatus": "OPEN",
+    "noServicesStartedOrStopped": true,
+    "noDatabaseOperation": true
+  }
+}

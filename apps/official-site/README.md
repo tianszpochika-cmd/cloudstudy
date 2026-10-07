@@ -1,6 +1,6 @@
 # 语学星官方网站
 
-已按用户确认的官网提案 06 改造 `apps/official-site`，采用 Vue 3、TypeScript、Nuxt SSR。首页、学习内容、学习世界、练习示例、帮助、开放情况与公开说明共 14 类页面、19 个公开内容地址。详细交付与验证见[官网正式实现记录](../../docs/06-design/v2-980plus/official-site-experience-proposal-2026-09-21/implementation/README.md)。
+已按用户确认的官网提案 06 改造 `apps/official-site`，采用 Vue 3、TypeScript、Nuxt SSR。首页、学习内容、学习世界、练习示例、帮助、开放情况与公开说明共 16 类页面、21 个公开内容地址。详细交付与验证见[官网正式实现记录](../../docs/06-design/v2-980plus/official-site-experience-proposal-2026-09-21/implementation/README.md)。
 
 ## 本地启动
 
@@ -16,6 +16,7 @@ pnpm --filter @englishflow/official-site dev
 pnpm --filter @englishflow/official-site build
 pnpm --filter @englishflow/official-site exec nuxi typecheck
 pnpm --filter @englishflow/official-site test:website
+pnpm --filter @englishflow/official-site exec node --import ../../scripts/dev/register-typescript.mjs --test tests/r1-001.test.mjs
 node apps/official-site/tests/browser/website-runtime.cjs
 ```
 
@@ -38,7 +39,7 @@ node apps/official-site/tests/browser/website-runtime.cjs
 | `/pricing`、`/download` | 301 至 `/start`，保留查询参数 |
 | `/robots.txt`、`/sitemap.xml` | 抓取规则与 19 个 canonical 地址 |
 
-当前官网提供无需登录的浏览示例；学习账号注册与登录暂不可用。首期免费为计划安排，开放时间与范围以公告为准；当前不展示未获批的付费套餐或尚未开放的 App 下载。公开课程/公告/公示仍来自 Gateway；无法加载时显示可重试状态。
+R1-001 当前源交付保留无需登录的浏览示例，去注册 CTA 安全跳转到 learner-web `/register`。仅面向 18 岁以上成人与大学生；注册后仍需服务端成人资格校验，通过前不开放学习能力。首期免费为计划安排，开放时间与范围以公告为准；当前不展示未获批的付费套餐或尚未开放的 App 下载。公开课程/公告/公示仍来自 Gateway；无法加载时显示可重试状态。
 
 ## 配置
 
@@ -51,7 +52,7 @@ node apps/official-site/tests/browser/website-runtime.cjs
 | `NUXT_PUBLIC_PROJECTION_PATH` | `/public/site/projection` |
 | `NUXT_PUBLIC_LINK_ORIGINS` | 额外允许的公告/下载来源，逗号分隔 |
 
-官网不接收登录密码，不建立业务会话。`utils/public-links.mjs` 保留学习端注册/登录链接的安全构造，但当前页面不展示这些不可用入口；公开接口只读，每次上游请求超时为 2.5 秒。备案与完整法律文件仍须以正式核实、公示版本为准。
+官网不接收登录密码，不建立业务会话。`utils/public-links.mjs` 提供注册/登录链接的安全构造；当前注册入口使用固定 learner-web origin 与 returnTo，只保留白名单 UTM/UI 偏好；公开接口只读，每次上游请求超时为 2.5 秒。备案与完整法律文件仍须以正式核实、公示版本为准。
 
 ## 共享基础与维护
 
@@ -60,3 +61,5 @@ node apps/official-site/tests/browser/website-runtime.cjs
 - 性能：`@englishflow/performance` 提供 Ultra / High / Medium / Performance。页面动效默认开启，顶部不再提供开关，也不继承旧按钮的暂停偏好；轻量减少装饰，省电采用静态 2D，继续尊重系统减少动态效果。
 - Nuxt 插件按请求创建主题/语言实例；公开 HTML 使用 SSR，不缓存个性化 HTML。仅 robots 与 sitemap 预渲染，避免不同访问者的主题/语言串用。
 - 学习示例是本页内存交互；角色为本地 SVG，空间为 CSS 透视分层。正式 Three.js 模型、账号装扮和游戏结算仍由学习端实现。
+
+R1-001 11 个 canonical 地址按 PAGE 登记册单独验收，价格和下载为直接 200 的公开投影页，进入 sitemap；只在相关目录为空时显示准备中，保留错误/权限/恢复/维护与重试，非空可只读展示服务端已发布的价格、权益和渠道说明，不提供购买/支付/安装包动作；课程真实空投影显示“课程准备中”。其他公开页继续保留。当前源证据见 [R1-001重新交付](../../evidence/redesign/2026-10-07/R1-001-implementation/task-spec.md)，不是旧验收恢复，也不验收 IAM 注册201或学习权限。

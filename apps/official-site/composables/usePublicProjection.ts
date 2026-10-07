@@ -34,11 +34,28 @@ export function usePublicProjection(
     if (pending) return pending;
     pending = (async () => {
       try {
+        let commerceDegraded = false;
         const response = await request<PublicProjectionResponse>(
           "/api/public-projection",
-          { query: { locale } },
+          {
+            query: { locale },
+            onResponse({ response }) {
+              commerceDegraded = response.headers.get("x-public-projection-commerce") === "degraded";
+            },
+          },
         );
-        result.value = response;
+        if (!response?.projection) throw new Error("PUBLIC_PROJECTION_UNAVAILABLE");
+        // The existing BFF can keep content usable while its commerce read fails.
+        // Only the pricing scope must treat that cleared catalog as unavailable.
+        result.value = key === "pricing" && commerceDegraded
+          ? {
+              projection: EMPTY_PUBLIC_PROJECTION,
+              state: "error",
+              stale: false,
+              source: "empty-fallback",
+              errorCode: "PUBLIC_COMMERCE_PROJECTION_UNAVAILABLE",
+            }
+          : response;
       } catch {
         result.value = {
           projection: EMPTY_PUBLIC_PROJECTION,

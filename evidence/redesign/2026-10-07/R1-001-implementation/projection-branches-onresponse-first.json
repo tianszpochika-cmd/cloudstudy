@@ -1,0 +1,656 @@
+{
+  "kind": "FINAL_SOURCE_AFFECTED_ROUTE_PROJECTION_BRANCHES_NOT_WORKFLOW_ACCEPTANCE",
+  "at": "2026-10-06T23:09:51.886Z",
+  "real": [
+    {
+      "scope": "pricing",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "firstStatus": 200,
+      "emptyCopy": "收费方案暂未开放",
+      "enUsFallback": true,
+      "screenshot": "screenshots/final_desktop_pricing_real.png",
+      "horizontalOverflow": false
+    },
+    {
+      "scope": "download",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "firstStatus": 200,
+      "emptyCopy": "下载准备中",
+      "enUsFallback": true,
+      "screenshot": "screenshots/final_desktop_download_real.png",
+      "horizontalOverflow": false
+    },
+    {
+      "scope": "pricing",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "firstStatus": 200,
+      "emptyCopy": "收费方案暂未开放",
+      "enUsFallback": true,
+      "screenshot": "screenshots/final_mobile_pricing_real.png",
+      "horizontalOverflow": false
+    },
+    {
+      "scope": "download",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "firstStatus": 200,
+      "emptyCopy": "下载准备中",
+      "enUsFallback": true,
+      "screenshot": "screenshots/final_mobile_download_real.png",
+      "horizontalOverflow": false
+    }
+  ],
+  "simulated": [
+    {
+      "scope": "pricing",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "scenario": "loading",
+      "responseState": "loading",
+      "commerceHeader": "gateway",
+      "expectedHeading": "正在加载公开内容",
+      "catalogShown": false,
+      "realReadonlyPriceFixtureShown": false,
+      "retryAvailable": false,
+      "unsafeActionLinks": [],
+      "screenshot": "screenshots/final_desktop_pricing_loading.png"
+    },
+    {
+      "scope": "pricing",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "scenario": "empty",
+      "responseState": "empty",
+      "commerceHeader": "gateway",
+      "expectedHeading": "收费方案暂未开放",
+      "catalogShown": false,
+      "realReadonlyPriceFixtureShown": false,
+      "retryAvailable": false,
+      "unsafeActionLinks": [],
+      "screenshot": "screenshots/final_desktop_pricing_empty.png"
+    },
+    {
+      "scope": "pricing",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "scenario": "error",
+      "responseState": "error",
+      "commerceHeader": "gateway",
+      "expectedHeading": "公开内容暂时无法加载",
+      "catalogShown": false,
+      "realReadonlyPriceFixtureShown": false,
+      "retryAvailable": true,
+      "unsafeActionLinks": [],
+      "screenshot": "screenshots/final_desktop_pricing_error.png"
+    },
+    {
+      "scope": "pricing",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "scenario": "permission",
+      "responseState": "permission",
+      "commerceHeader": "gateway",
+      "expectedHeading": "暂时无法访问这项内容",
+      "catalogShown": false,
+      "realReadonlyPriceFixtureShown": false,
+      "retryAvailable": true,
+      "unsafeActionLinks": [],
+      "screenshot": "screenshots/final_desktop_pricing_permission.png"
+    },
+    {
+      "scope": "pricing",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "scenario": "recovery",
+      "responseState": "recovery",
+      "commerceHeader": "gateway",
+      "expectedHeading": "正在恢复公开内容",
+      "catalogShown": true,
+      "realReadonlyPriceFixtureShown": true,
+      "retryAvailable": true,
+      "unsafeActionLinks": [],
+      "screenshot": "screenshots/final_desktop_pricing_recovery.png"
+    },
+    {
+      "scope": "pricing",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "scenario": "maintenance",
+      "responseState": "maintenance",
+      "commerceHeader": "gateway",
+      "expectedHeading": "服务正在维护",
+      "catalogShown": false,
+      "realReadonlyPriceFixtureShown": false,
+      "retryAvailable": true,
+      "unsafeActionLinks": [],
+      "screenshot": "screenshots/final_desktop_pricing_maintenance.png"
+    },
+    {
+      "scope": "pricing",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "scenario": "ready-nonempty",
+      "responseState": "ready",
+      "commerceHeader": "gateway",
+      "expectedHeading": "审查用公开方案",
+      "catalogShown": true,
+      "realReadonlyPriceFixtureShown": true,
+      "retryAvailable": false,
+      "unsafeActionLinks": [],
+      "screenshot": "screenshots/final_desktop_pricing_ready-nonempty.png"
+    },
+    {
+      "scope": "pricing",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "scenario": "ready-related-empty",
+      "responseState": "ready",
+      "commerceHeader": "gateway",
+      "expectedHeading": "收费方案暂未开放",
+      "catalogShown": false,
+      "realReadonlyPriceFixtureShown": false,
+      "retryAvailable": false,
+      "unsafeActionLinks": [],
+      "screenshot": "screenshots/final_desktop_pricing_ready-related-empty.png"
+    },
+    {
+      "scope": "pricing",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "scenario": "commerce-degraded",
+      "responseState": "ready",
+      "commerceHeader": "degraded",
+      "expectedHeading": "公开内容暂时无法加载",
+      "catalogShown": false,
+      "realReadonlyPriceFixtureShown": false,
+      "retryAvailable": true,
+      "unsafeActionLinks": [],
+      "screenshot": "screenshots/final_desktop_pricing_commerce-degraded.png"
+    },
+    {
+      "scope": "download",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "scenario": "loading",
+      "responseState": "loading",
+      "commerceHeader": "gateway",
+      "expectedHeading": "正在加载公开内容",
+      "catalogShown": false,
+      "realReadonlyPriceFixtureShown": false,
+      "retryAvailable": false,
+      "unsafeActionLinks": [],
+      "screenshot": "screenshots/final_desktop_download_loading.png"
+    },
+    {
+      "scope": "download",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "scenario": "empty",
+      "responseState": "empty",
+      "commerceHeader": "gateway",
+      "expectedHeading": "下载准备中",
+      "catalogShown": false,
+      "realReadonlyPriceFixtureShown": false,
+      "retryAvailable": false,
+      "unsafeActionLinks": [],
+      "screenshot": "screenshots/final_desktop_download_empty.png"
+    },
+    {
+      "scope": "download",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "scenario": "error",
+      "responseState": "error",
+      "commerceHeader": "gateway",
+      "expectedHeading": "公开内容暂时无法加载",
+      "catalogShown": false,
+      "realReadonlyPriceFixtureShown": false,
+      "retryAvailable": true,
+      "unsafeActionLinks": [],
+      "screenshot": "screenshots/final_desktop_download_error.png"
+    },
+    {
+      "scope": "download",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "scenario": "permission",
+      "responseState": "permission",
+      "commerceHeader": "gateway",
+      "expectedHeading": "暂时无法访问这项内容",
+      "catalogShown": false,
+      "realReadonlyPriceFixtureShown": false,
+      "retryAvailable": true,
+      "unsafeActionLinks": [],
+      "screenshot": "screenshots/final_desktop_download_permission.png"
+    },
+    {
+      "scope": "download",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "scenario": "recovery",
+      "responseState": "recovery",
+      "commerceHeader": "gateway",
+      "expectedHeading": "正在恢复公开内容",
+      "catalogShown": true,
+      "realReadonlyPriceFixtureShown": false,
+      "retryAvailable": true,
+      "unsafeActionLinks": [],
+      "screenshot": "screenshots/final_desktop_download_recovery.png"
+    },
+    {
+      "scope": "download",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "scenario": "maintenance",
+      "responseState": "maintenance",
+      "commerceHeader": "gateway",
+      "expectedHeading": "服务正在维护",
+      "catalogShown": false,
+      "realReadonlyPriceFixtureShown": false,
+      "retryAvailable": true,
+      "unsafeActionLinks": [],
+      "screenshot": "screenshots/final_desktop_download_maintenance.png"
+    },
+    {
+      "scope": "download",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "scenario": "ready-nonempty",
+      "responseState": "ready",
+      "commerceHeader": "gateway",
+      "expectedHeading": "审查用公开渠道",
+      "catalogShown": true,
+      "realReadonlyPriceFixtureShown": false,
+      "retryAvailable": false,
+      "unsafeActionLinks": [],
+      "screenshot": "screenshots/final_desktop_download_ready-nonempty.png"
+    },
+    {
+      "scope": "download",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "scenario": "ready-related-empty",
+      "responseState": "ready",
+      "commerceHeader": "gateway",
+      "expectedHeading": "下载准备中",
+      "catalogShown": false,
+      "realReadonlyPriceFixtureShown": false,
+      "retryAvailable": false,
+      "unsafeActionLinks": [],
+      "screenshot": "screenshots/final_desktop_download_ready-related-empty.png"
+    },
+    {
+      "scope": "download",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "scenario": "commerce-degraded",
+      "responseState": "ready",
+      "commerceHeader": "degraded",
+      "expectedHeading": "审查用公开渠道",
+      "catalogShown": true,
+      "realReadonlyPriceFixtureShown": false,
+      "retryAvailable": false,
+      "unsafeActionLinks": [],
+      "screenshot": "screenshots/final_desktop_download_commerce-degraded.png"
+    },
+    {
+      "scope": "pricing",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "scenario": "loading",
+      "responseState": "loading",
+      "commerceHeader": "gateway",
+      "expectedHeading": "正在加载公开内容",
+      "catalogShown": false,
+      "realReadonlyPriceFixtureShown": false,
+      "retryAvailable": false,
+      "unsafeActionLinks": [],
+      "screenshot": "screenshots/final_mobile_pricing_loading.png"
+    },
+    {
+      "scope": "pricing",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "scenario": "empty",
+      "responseState": "empty",
+      "commerceHeader": "gateway",
+      "expectedHeading": "收费方案暂未开放",
+      "catalogShown": false,
+      "realReadonlyPriceFixtureShown": false,
+      "retryAvailable": false,
+      "unsafeActionLinks": [],
+      "screenshot": "screenshots/final_mobile_pricing_empty.png"
+    },
+    {
+      "scope": "pricing",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "scenario": "error",
+      "responseState": "error",
+      "commerceHeader": "gateway",
+      "expectedHeading": "公开内容暂时无法加载",
+      "catalogShown": false,
+      "realReadonlyPriceFixtureShown": false,
+      "retryAvailable": true,
+      "unsafeActionLinks": [],
+      "screenshot": "screenshots/final_mobile_pricing_error.png"
+    },
+    {
+      "scope": "pricing",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "scenario": "permission",
+      "responseState": "permission",
+      "commerceHeader": "gateway",
+      "expectedHeading": "暂时无法访问这项内容",
+      "catalogShown": false,
+      "realReadonlyPriceFixtureShown": false,
+      "retryAvailable": true,
+      "unsafeActionLinks": [],
+      "screenshot": "screenshots/final_mobile_pricing_permission.png"
+    },
+    {
+      "scope": "pricing",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "scenario": "recovery",
+      "responseState": "recovery",
+      "commerceHeader": "gateway",
+      "expectedHeading": "正在恢复公开内容",
+      "catalogShown": true,
+      "realReadonlyPriceFixtureShown": true,
+      "retryAvailable": true,
+      "unsafeActionLinks": [],
+      "screenshot": "screenshots/final_mobile_pricing_recovery.png"
+    },
+    {
+      "scope": "pricing",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "scenario": "maintenance",
+      "responseState": "maintenance",
+      "commerceHeader": "gateway",
+      "expectedHeading": "服务正在维护",
+      "catalogShown": false,
+      "realReadonlyPriceFixtureShown": false,
+      "retryAvailable": true,
+      "unsafeActionLinks": [],
+      "screenshot": "screenshots/final_mobile_pricing_maintenance.png"
+    },
+    {
+      "scope": "pricing",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "scenario": "ready-nonempty",
+      "responseState": "ready",
+      "commerceHeader": "gateway",
+      "expectedHeading": "审查用公开方案",
+      "catalogShown": true,
+      "realReadonlyPriceFixtureShown": true,
+      "retryAvailable": false,
+      "unsafeActionLinks": [],
+      "screenshot": "screenshots/final_mobile_pricing_ready-nonempty.png"
+    },
+    {
+      "scope": "pricing",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "scenario": "ready-related-empty",
+      "responseState": "ready",
+      "commerceHeader": "gateway",
+      "expectedHeading": "收费方案暂未开放",
+      "catalogShown": false,
+      "realReadonlyPriceFixtureShown": false,
+      "retryAvailable": false,
+      "unsafeActionLinks": [],
+      "screenshot": "screenshots/final_mobile_pricing_ready-related-empty.png"
+    },
+    {
+      "scope": "pricing",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "scenario": "commerce-degraded",
+      "responseState": "ready",
+      "commerceHeader": "degraded",
+      "expectedHeading": "公开内容暂时无法加载",
+      "catalogShown": false,
+      "realReadonlyPriceFixtureShown": false,
+      "retryAvailable": true,
+      "unsafeActionLinks": [],
+      "screenshot": "screenshots/final_mobile_pricing_commerce-degraded.png"
+    },
+    {
+      "scope": "download",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "scenario": "loading",
+      "responseState": "loading",
+      "commerceHeader": "gateway",
+      "expectedHeading": "正在加载公开内容",
+      "catalogShown": false,
+      "realReadonlyPriceFixtureShown": false,
+      "retryAvailable": false,
+      "unsafeActionLinks": [],
+      "screenshot": "screenshots/final_mobile_download_loading.png"
+    },
+    {
+      "scope": "download",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "scenario": "empty",
+      "responseState": "empty",
+      "commerceHeader": "gateway",
+      "expectedHeading": "下载准备中",
+      "catalogShown": false,
+      "realReadonlyPriceFixtureShown": false,
+      "retryAvailable": false,
+      "unsafeActionLinks": [],
+      "screenshot": "screenshots/final_mobile_download_empty.png"
+    },
+    {
+      "scope": "download",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "scenario": "error",
+      "responseState": "error",
+      "commerceHeader": "gateway",
+      "expectedHeading": "公开内容暂时无法加载",
+      "catalogShown": false,
+      "realReadonlyPriceFixtureShown": false,
+      "retryAvailable": true,
+      "unsafeActionLinks": [],
+      "screenshot": "screenshots/final_mobile_download_error.png"
+    },
+    {
+      "scope": "download",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "scenario": "permission",
+      "responseState": "permission",
+      "commerceHeader": "gateway",
+      "expectedHeading": "暂时无法访问这项内容",
+      "catalogShown": false,
+      "realReadonlyPriceFixtureShown": false,
+      "retryAvailable": true,
+      "unsafeActionLinks": [],
+      "screenshot": "screenshots/final_mobile_download_permission.png"
+    },
+    {
+      "scope": "download",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "scenario": "recovery",
+      "responseState": "recovery",
+      "commerceHeader": "gateway",
+      "expectedHeading": "正在恢复公开内容",
+      "catalogShown": true,
+      "realReadonlyPriceFixtureShown": false,
+      "retryAvailable": true,
+      "unsafeActionLinks": [],
+      "screenshot": "screenshots/final_mobile_download_recovery.png"
+    },
+    {
+      "scope": "download",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "scenario": "maintenance",
+      "responseState": "maintenance",
+      "commerceHeader": "gateway",
+      "expectedHeading": "服务正在维护",
+      "catalogShown": false,
+      "realReadonlyPriceFixtureShown": false,
+      "retryAvailable": true,
+      "unsafeActionLinks": [],
+      "screenshot": "screenshots/final_mobile_download_maintenance.png"
+    },
+    {
+      "scope": "download",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "scenario": "ready-nonempty",
+      "responseState": "ready",
+      "commerceHeader": "gateway",
+      "expectedHeading": "审查用公开渠道",
+      "catalogShown": true,
+      "realReadonlyPriceFixtureShown": false,
+      "retryAvailable": false,
+      "unsafeActionLinks": [],
+      "screenshot": "screenshots/final_mobile_download_ready-nonempty.png"
+    },
+    {
+      "scope": "download",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "scenario": "ready-related-empty",
+      "responseState": "ready",
+      "commerceHeader": "gateway",
+      "expectedHeading": "下载准备中",
+      "catalogShown": false,
+      "realReadonlyPriceFixtureShown": false,
+      "retryAvailable": false,
+      "unsafeActionLinks": [],
+      "screenshot": "screenshots/final_mobile_download_ready-related-empty.png"
+    },
+    {
+      "scope": "download",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "scenario": "commerce-degraded",
+      "responseState": "ready",
+      "commerceHeader": "degraded",
+      "expectedHeading": "审查用公开渠道",
+      "catalogShown": true,
+      "realReadonlyPriceFixtureShown": false,
+      "retryAvailable": false,
+      "unsafeActionLinks": [],
+      "screenshot": "screenshots/final_mobile_download_commerce-degraded.png"
+    }
+  ],
+  "unrelatedScope": [
+    {
+      "scope": "courses",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "commerceHeader": "degraded",
+      "publicCourseStillReadable": true
+    },
+    {
+      "scope": "courses",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "commerceHeader": "degraded",
+      "publicCourseStillReadable": true
+    }
+  ],
+  "errors": [],
+  "blockedWrites": [],
+  "failure": null,
+  "browserVersion": "154.0.8037.98"
+}
