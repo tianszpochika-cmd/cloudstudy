@@ -1,0 +1,111 @@
+{
+  "kind": "R1_002_RUNTIME_STABLE_EVIDENCE_DIGESTS",
+  "status": "DELIVERED_FOR_INDEPENDENT_REVIEW",
+  "files": [
+    {
+      "path": "evidence/redesign/2026-10-08/R1-002/runtime/business-tests-final.log",
+      "bytes": 918,
+      "sha256": "2ed73d968ba1df6a0ba1f940b2be25c2488bd2692bd1694de4b9d9ea59eebf68"
+    },
+    {
+      "path": "evidence/redesign/2026-10-08/R1-002/runtime/business-tests-grant-literals.log",
+      "bytes": 1123,
+      "sha256": "30a0e920d0d13b90ccd8452f8c793f2f4d38a8729210e816af835fe3f37b4def"
+    },
+    {
+      "path": "evidence/redesign/2026-10-08/R1-002/runtime/business-tests-jdbc.log",
+      "bytes": 913,
+      "sha256": "117f87752ff0cd6d56f6eeca111440cee1c46909c914fd012c5a042e09e3ded9"
+    },
+    {
+      "path": "evidence/redesign/2026-10-08/R1-002/runtime/offline-probe.json",
+      "bytes": 13589,
+      "sha256": "3533a53321cee60b2c11ae8f8594fa9aa8ffb55d23aa78d2b1d4fc28d411263c"
+    },
+    {
+      "path": "evidence/redesign/2026-10-08/R1-002/runtime/owner-table-readback.json",
+      "bytes": 1090,
+      "sha256": "f99577c3c8c8d816132d8789e7bd7798db2748517fd21bf1e2220867d45f47e6"
+    },
+    {
+      "path": "evidence/redesign/2026-10-08/R1-002/runtime/permission-readback-final.json",
+      "bytes": 2926,
+      "sha256": "767a491f8509109de2b80ce1417259b64941246256656af84863e62a20d9d663"
+    },
+    {
+      "path": "evidence/redesign/2026-10-08/R1-002/runtime/prepared-0fcf31a0718c.json",
+      "bytes": 2846,
+      "sha256": "12acaf8ccd9a0f7ce7be8ab46dd132a9875a103d726703c62533f1e8308dbd63"
+    },
+    {
+      "path": "evidence/redesign/2026-10-08/R1-002/runtime/prepared.json",
+      "bytes": 2423,
+      "sha256": "2b3cc8cf72e8d887acf9460b8bbf26d485c35cf2cedfc11865afcc3535ac18b4"
+    },
+    {
+      "path": "evidence/redesign/2026-10-08/R1-002/runtime/privacy-scan.json",
+      "bytes": 592,
+      "sha256": "7e6082aecfca41dcad8768daacb045f41fbe2af5a68bab2a9dd109c254b23572"
+    },
+    {
+      "path": "evidence/redesign/2026-10-08/R1-002/runtime/readback-summary.json",
+      "bytes": 1606,
+      "sha256": "9499b3238ae9c838d56e1f98f5bd377aa9e33bf9ae163a3dd2a09d9e64cb684d"
+    },
+    {
+      "path": "evidence/redesign/2026-10-08/R1-002/runtime/report.md",
+      "bytes": 7467,
+      "sha256": "97016d24aee450efba70f86f72abbd8e99ef93b11b31731d23d3e48cdc39709e"
+    },
+    {
+      "path": "evidence/redesign/2026-10-08/R1-002/runtime/run-approval-first-attempt.json",
+      "bytes": 860,
+      "sha256": "7dd606932ef5f6eafb47be209777731d6c1651aa887c1c6546b745d796d0db92"
+    },
+    {
+      "path": "evidence/redesign/2026-10-08/R1-002/runtime/run-approval.json",
+      "bytes": 986,
+      "sha256": "cead2ffff1d1805141cbe62d828b221afc69ced6ed3c266c7a74a64af4e6a441"
+    },
+    {
+      "path": "evidence/redesign/2026-10-08/R1-002/runtime/runtime-results-51ca8300.json",
+      "bytes": 3072,
+      "sha256": "ffc10f7cf361c1f0b93ccc5c91ee427322154cc820424d5a4fa1fabc15c16047"
+    },
+    {
+      "path": "evidence/redesign/2026-10-08/R1-002/runtime/runtime-results-925ac824.json",
+      "bytes": 3452,
+      "sha256": "ec7de09e7fc2635db2c1ed13cafb32a33d61b6ed1f479d4d2006bacb1cb43f8f"
+    },
+    {
+      "path": "evidence/redesign/2026-10-08/R1-002/runtime/source-manifest-post-tightening.json",
+      "bytes": 1995,
+      "sha256": "e3e08fc0be1ec0a1d6b73361467253a497c2f0f0051bfe9ce8677914d2b6689e"
+    },
+    {
+      "path": "evidence/redesign/2026-10-08/R1-002/runtime/source-manifest.json",
+      "bytes": 1197,
+      "sha256": "b829488862da41dfabdd4ae972bd74f41d91dbf7ab74e005868691d2235594c0"
+    },
+    {
+      "path": "evidence/redesign/2026-10-08/R1-002/runtime/task-spec.md",
+      "bytes": 6697,
+      "sha256": "b68016942a4f7b869ec9c10e11c8e38111825468086de936df3565f36d1c70c1"
+    },
+    {
+      "path": "evidence/redesign/2026-10-08/R1-002/runtime/tool-tests-current.log",
+      "bytes": 5823,
+      "sha256": "d41f1a0c9b2443a4d700d891fb13c5ea635da4aeb72a1f700f109ee07de2a79e"
+    },
+    {
+      "path": "evidence/redesign/2026-10-08/R1-002/runtime/tool-tests-final.log",
+      "bytes": 5621,
+      "sha256": "2fbc33721f2c4bd60e6808d8fc4105bdd8546f800c51ed8744f133d3ec1005c1"
+    },
+    {
+      "path": "evidence/redesign/2026-10-08/R1-002/runtime/tool-tests.log",
+      "bytes": 14000,
+      "sha256": "04d3aa33af540d81a9e8fd19f0f6833de371f600446b33879d69742d583505d0"
+    }
+  ]
+}

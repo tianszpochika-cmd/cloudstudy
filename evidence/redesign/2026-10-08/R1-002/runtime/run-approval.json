@@ -1,0 +1,19 @@
+{
+  "kind": "ROOT_APPROVED_R1_002_RUNTIME",
+  "source": "User2026-10-08continueR1-002completion_then_safe_pause; root named runtime/task-spec scope approval",
+  "scriptSha256": "9db3dc4cf3333046633319a109eb020d0163942155acf035d302f42d9c41b0a7",
+  "schema": "r1_002_20261008_0fcf31a0718c",
+  "mysqlId": "db87392020398271b86e76c8738c2ea7af619a41ef11eb3cee68d8910956deec",
+  "ports": [
+    18087,
+    18070,
+    18088
+  ],
+  "bindHost": "127.0.0.1",
+  "createdAt": "2026-10-08T03:45:15.353Z",
+  "expiresAt": "2026-10-08T07:50:33.448Z",
+  "scope": "Only fresh IAM owner schema; direct TLS registration; current Gateway two HTTPS clients; learner own PEP403; owned child cleanup; no infrastructure lifecycle; preserve resources",
+  "amendedAt": "2026-10-08T03:50:33.447Z",
+  "amendment": "Root authorized fresh IAM plus separate learner owner JDBC schema after first learner config startup failure. Preserve first schema/result.",
+  "learnerSchema": "r1_002_learner_20261008_2d2f1b2df75d"
+}

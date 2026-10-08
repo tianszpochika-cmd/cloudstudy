@@ -5,7 +5,7 @@ import path from 'node:path';
 import os from 'node:os';
 import { createHash, randomUUID, createPrivateKey, sign } from 'node:crypto';
 import { parseArgs, registeredPorts, assessDynamicGate, sourceSnapshot, verifyStagedRun, dispatch, repositoryRoot,
-  sanitizeEvidence } from './lifecycle.mjs';
+  sanitizeEvidence, validateBuildReceipt, readBuildReceipt, BUILD_RECEIPT_PATH } from './lifecycle.mjs';
 import { validateHarnessConfig, validatePublicEnvelope, launchHarness, probeHarness, TLS_CASES } from './tls-harness.mjs';
 import { canonicalize, createReceiptKey, createSignedReceipt, hashArtifact, guardRunPath,
   RECEIPT_SCHEMA_VERSION, RECEIPT_INTENT } from './receipt.mjs';
@@ -204,4 +204,52 @@ test('unknown run and detached stop cannot reach a signal', () => {
     assert.throws(() => dispatch({ mode: 'stop-owned', runRoot: f.parent, runId: 'r1-002-missing' }));
     assert.throws(() => dispatch({ mode: 'stop-owned', runRoot: f.parent, runId: path.basename(f.run) }));
   } finally { f.cleanup(); }
+});
+
+function buildFixture() {
+  const names = ['services/api-gateway/src/main/java/com/englishflow/gateway/config/GatewayIamPublicJwkSource.java',
+    'services/api-gateway/src/test/java/com/englishflow/gateway/config/GatewayIamPublicJwkSourceTest.java'];
+  const inputFiles = names.map(name => ({ path: name, sha256: hash(name) }));
+  const javaTool = { executable: '/fixture/java', sha256: hash('java'), version: 'openjdk 25.0.2 2026-01-20' };
+  const jar = { path: 'services/api-gateway/target/api-gateway-0.1.0-SNAPSHOT.jar', bytes: 10, sha256: hash('jar') };
+  const context = { gitHead: 'fixture-head', inputFiles, javaTool, jar };
+  const receipt = { schemaVersion: 'r1-002-gateway-build/v1', kind: 'CURRENT_SOURCE_BUILD_RECEIPT_NOT_BUSINESS_ACCEPTANCE',
+    module: 'services/api-gateway', baselineGitHead: context.gitHead, inputsUnchangedAfterBuild: true,
+    sourceJarProvenance: 'CURRENT_SOURCE_BUILT_WITH_RECEIPTED_COMMAND', inputFiles, sourceFiles: inputFiles,
+    inputSnapshotSha256: hash(canonicalize(inputFiles)), tools: { java: javaTool },
+    commands: [{ argv: ['-f', 'services/api-gateway/pom.xml', '-Dtest=GatewayIamPublicJwkSourceTest', 'test'], exitCode: 0 },
+      { argv: ['-f', 'services/api-gateway/pom.xml', 'clean', 'package', '-DskipTests'], exitCode: 0 }], outputs: [jar] };
+  return { receipt, context };
+}
+
+test('current receipted build verifies actual separately provided context without dynamic authority', () => {
+  const f = buildFixture(); const result = validateBuildReceipt(f.receipt, f.context);
+  assert.equal(result.sourceToJarVerified, true); assert.equal(result.dynamicAuthority, false);
+});
+
+test('missing/unknown/different build and module receipts fail closed', () => {
+  const f = buildFixture();
+  for (const changed of [null, { ...f.receipt, schemaVersion: 'unknown' }, { ...f.receipt, baselineGitHead: 'another-build' },
+    { ...f.receipt, module: 'services/iam-service' }, { ...f.receipt, inputsUnchangedAfterBuild: false }]) {
+    assert.throws(() => validateBuildReceipt(changed, f.context), /BUILD_RECEIPT_CONTEXT/);
+  }
+});
+
+test('source/hash/partial input/Java/output drift and unsuccessful command cannot attest build', () => {
+  const f = buildFixture();
+  for (const changed of [{ ...f.receipt, inputFiles: [] }, { ...f.receipt, inputSnapshotSha256: hash('other') },
+    { ...f.receipt, sourceFiles: [] }, { ...f.receipt, tools: { java: { ...f.context.javaTool, sha256: hash('other') } } },
+    { ...f.receipt, outputs: [{ ...f.context.jar, sha256: hash('other') }] },
+    { ...f.receipt, commands: f.receipt.commands.map(command => ({ ...command, exitCode: 1 })) }]) {
+    assert.throws(() => validateBuildReceipt(changed, f.context), /BUILD_RECEIPT_/);
+  }
+  assert.throws(() => validateBuildReceipt(f.receipt, { ...f.context, inputFiles: [] }), /SOURCE_DRIFT/);
+});
+
+test('build receipt reader rejects missing and arbitrary path before reading any artifact', () => {
+  for (const value of [undefined, '/outside/arbitrary.json', path.join(repositoryRoot, '../other.json')]) {
+    assert.throws(() => readBuildReceipt(value), /BUILD_RECEIPT_SCOPE/);
+  }
+  assert.equal(parseArgs(['--mode', 'stage', '--build-receipt', path.join(repositoryRoot, BUILD_RECEIPT_PATH)]).buildReceipt,
+    path.join(repositoryRoot, BUILD_RECEIPT_PATH));
 });

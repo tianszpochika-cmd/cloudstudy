@@ -11,10 +11,9 @@ import { validateHarnessConfig, TLS_CASES, launchHarness, probeHarness } from '.
 
 export const repositoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 export const MODES = Object.freeze(['preflight', 'stage', 'launch-harness', 'probe', 'stop-owned', 'restore-verify']);
-// Prior scoped review binds these disk bytes, not a source-to-JAR build attestation.
-const REVIEWED_GATEWAY_JAR_SHA256 = '34f13139294dead9f80cf0a4d41d43485d9cb95e0895c319ed4504b1fad66380';
+export const BUILD_RECEIPT_PATH = 'evidence/redesign/2026-10-08/R1-002/gateway/build-receipt.json';
 const allowedDirty = new Set(['README.md', 'lifecycle.mjs', 'lifecycle.test.mjs', 'tls-harness.mjs',
-  'GatewayTlsProbe.java', 'receipt.mjs', 'receipt.test.mjs', 'process-identity.mjs', 'process-identity.test.mjs']
+  'GatewayTlsProbe.java', 'business-runtime.mjs', 'business-runtime.test.mjs', 'receipt.mjs', 'receipt.test.mjs', 'process-identity.mjs', 'process-identity.test.mjs']
   .map(name => `scripts/redesign/r1-002/${name}`));
 const sha = value => createHash('sha256').update(value).digest('hex');
 const safeRelative = name => typeof name === 'string' && name && !path.isAbsolute(name)
@@ -23,7 +22,7 @@ const safeRelative = name => typeof name === 'string' && name && !path.isAbsolut
 export function parseArgs(args) {
   const options = { mode: 'preflight' };
   const names = new Map([['--mode', 'mode'], ['--run-root', 'runRoot'], ['--run-id', 'runId'],
-    ['--key-dir', 'keyDirectory'], ['--material-dir', 'materialDirectory'], ['--out', 'out']]);
+    ['--key-dir', 'keyDirectory'], ['--material-dir', 'materialDirectory'], ['--build-receipt', 'buildReceipt'], ['--out', 'out']]);
   for (let i = 0; i < args.length; i += 2) {
     const name = names.get(args[i]);
     if (!name || !args[i + 1] || args[i + 1].startsWith('--') || Object.hasOwn(options, name) && name !== 'mode') {
@@ -88,7 +87,7 @@ export function inspectFixedPorts(ports) {
 export function sourceSnapshot(root = repositoryRoot) {
   const names = ['pom.xml', 'services/api-gateway/pom.xml', 'config/local-ports.json',
     ...fileList(path.join(root, 'services/api-gateway/src/main')).map(name => `services/api-gateway/src/main/${name}`),
-    ...fileList(path.join(root, 'scripts/redesign/r1-002')).filter(name => /\.(mjs|java)$/.test(name))
+    ...fileList(path.join(root, 'scripts/redesign/r1-002')).filter(name => /\.(mjs|java)$/.test(name) && !name.startsWith('business-runtime.'))
       .map(name => `scripts/redesign/r1-002/${name}`)].sort();
   const files = names.map(name => {
     if (!safeRelative(name)) throw new Error('UNSAFE_SOURCE_PATH');
@@ -98,8 +97,65 @@ export function sourceSnapshot(root = repositoryRoot) {
   const dirtyNames = new Set(command('git', ['diff', 'HEAD', '--name-only', '-z'], { cwd: root }).split('\0').filter(Boolean));
   for (const name of command('git', ['ls-files', '--others', '--exclude-standard', '-z'], { cwd: root }).split('\0').filter(Boolean)) dirtyNames.add(name);
   const dirty = files.filter(item => dirtyNames.has(item.path));
-  if (dirty.some(item => !allowedDirty.has(item.path))) throw new Error('SOURCE_DIRTY_OUTSIDE_REVIEWED_ALLOWLIST');
+  if (dirty.some(item => !allowedDirty.has(item.path) && item.path !== 'services/api-gateway/src/main/java/com/englishflow/gateway/config/GatewayIamPublicJwkSource.java')) throw new Error('SOURCE_DIRTY_OUTSIDE_REVIEWED_ALLOWLIST');
   return { gitHead, dirtySha256: sha(canonicalize(files)), files };
+}
+
+export function buildInputSnapshot(root = repositoryRoot) {
+  const tracked = command('git', ['ls-files', '-z', 'services/api-gateway/src', 'services/api-gateway/pom.xml',
+    'pom.xml', 'config/toolchain-baseline.json', 'config/local-ports.json',
+    'scripts/redesign/r1-002/receipt.mjs', 'scripts/redesign/r1-002/receipt.test.mjs',
+    'scripts/redesign/r1-002/process-identity.mjs', 'scripts/redesign/r1-002/process-identity.test.mjs'], { cwd: root }).split('\0').filter(Boolean).sort();
+  return tracked.map(name => {
+    const file = path.join(root, name);
+    if (!safeRelative(name) || lstatSync(file).isSymbolicLink() || !lstatSync(file).isFile()) throw new Error('UNSAFE_BUILD_INPUT');
+    return { path: name, sha256: sha(readFileSync(file)) };
+  });
+}
+
+// A build receipt records a reviewed command execution. It never grants a maintenance window.
+export function validateBuildReceipt(receipt, { gitHead, inputFiles, javaTool, jar } = {}) {
+  if (!receipt || receipt.schemaVersion !== 'r1-002-gateway-build/v1'
+      || receipt.kind !== 'CURRENT_SOURCE_BUILD_RECEIPT_NOT_BUSINESS_ACCEPTANCE'
+      || receipt.module !== 'services/api-gateway' || receipt.baselineGitHead !== gitHead
+      || receipt.inputsUnchangedAfterBuild !== true
+      || receipt.sourceJarProvenance !== 'CURRENT_SOURCE_BUILT_WITH_RECEIPTED_COMMAND') throw new Error('BUILD_RECEIPT_CONTEXT');
+  if (!Array.isArray(inputFiles) || !inputFiles.length || canonicalize(receipt.inputFiles) !== canonicalize(inputFiles)
+      || receipt.inputSnapshotSha256 !== sha(canonicalize(inputFiles))) throw new Error('BUILD_RECEIPT_SOURCE_DRIFT');
+  const sourceNames = ['services/api-gateway/src/main/java/com/englishflow/gateway/config/GatewayIamPublicJwkSource.java',
+    'services/api-gateway/src/test/java/com/englishflow/gateway/config/GatewayIamPublicJwkSourceTest.java'];
+  if (canonicalize(receipt.sourceFiles) !== canonicalize(sourceNames.map(name => inputFiles.find(item => item.path === name)))) {
+    throw new Error('BUILD_RECEIPT_NAMED_SOURCE_DRIFT');
+  }
+  if (!javaTool || !receipt.tools?.java || receipt.tools.java.executable !== javaTool.executable
+      || receipt.tools.java.sha256 !== javaTool.sha256 || receipt.tools.java.version !== javaTool.version
+      || !/^openjdk 25(?:\.| )/m.test(javaTool.version)) throw new Error('BUILD_RECEIPT_JAVA_DRIFT');
+  const expectedArgs = [
+    ['-f', 'services/api-gateway/pom.xml', '-Dtest=GatewayIamPublicJwkSourceTest', 'test'],
+    ['-f', 'services/api-gateway/pom.xml', 'clean', 'package', '-DskipTests']
+  ];
+  if (!Array.isArray(receipt.commands) || receipt.commands.length !== 2
+      || receipt.commands.some((item, i) => item.exitCode !== 0 || canonicalize(item.argv) !== canonicalize(expectedArgs[i]))) {
+    throw new Error('BUILD_RECEIPT_COMMANDS');
+  }
+  if (!jar || canonicalize(receipt.outputs) !== canonicalize([jar])) throw new Error('BUILD_RECEIPT_JAR_DRIFT');
+  return { sourceJarProvenance: 'CURRENT_SOURCE_BUILD_RECEIPT_VERIFIED', sourceToJarVerified: true,
+    module: receipt.module, inputSnapshotSha256: receipt.inputSnapshotSha256, output: jar,
+    dynamicAuthority: false };
+}
+
+export function readBuildReceipt(receiptPath, { root = repositoryRoot, jarPath } = {}) {
+  if (!receiptPath || path.resolve(receiptPath) !== path.join(root, BUILD_RECEIPT_PATH)) throw new Error('BUILD_RECEIPT_SCOPE');
+  if (!existsSync(receiptPath) || lstatSync(receiptPath).isSymbolicLink() || !lstatSync(receiptPath).isFile()) throw new Error('BUILD_RECEIPT_MISSING_OR_UNSAFE');
+  const bytes = readFileSync(receiptPath);
+  const java = executable('java');
+  const result = validateBuildReceipt(JSON.parse(bytes), {
+    gitHead: command('git', ['rev-parse', 'HEAD'], { cwd: root }).trim(), inputFiles: buildInputSnapshot(root),
+    javaTool: { executable: java, sha256: sha(readFileSync(java)), version: command(java, ['--version']).trim() },
+    jar: { path: 'services/api-gateway/target/api-gateway-0.1.0-SNAPSHOT.jar', bytes: lstatSync(jarPath).size,
+      sha256: sha(readFileSync(jarPath)) }
+  });
+  return { ...result, receiptPath: BUILD_RECEIPT_PATH, receiptSha256: sha(bytes) };
 }
 
 export function assessDynamicGate({ portStates, bindingValid = false, sourceProvenance = 'UNPROVEN',
@@ -143,22 +199,22 @@ function readonlyTree(directory) {
   chmodSync(directory, 0o500);
 }
 
-export function stage({ runRoot, keyDirectory, materialDirectory }) {
+export function stage({ runRoot, keyDirectory, materialDirectory, buildReceipt }) {
   if (process.platform === 'win32') throw new Error('WINDOWS_STAGE_UNVERIFIED');
   if (!runRoot || !keyDirectory || !materialDirectory) throw new Error('STAGE_REQUIRES_PROTECTED_RUN_KEY_MATERIAL_DIRECTORIES');
   assertProtectedPath(runRoot, { directory: true, repositoryRoot });
   const ports = registeredPorts(); const source = sourceSnapshot();
   const config = materialConfig(materialDirectory, ports);
+  const originalJar = path.join(repositoryRoot, 'services/api-gateway/target/api-gateway-0.1.0-SNAPSHOT.jar');
+  if (!lstatSync(originalJar).isFile() || lstatSync(originalJar).isSymbolicLink()) throw new Error('UNSAFE_INPUT_JAR');
+  const jarHash = sha(readFileSync(originalJar));
+  const build = readBuildReceipt(buildReceipt, { jarPath: originalJar });
   const key = createReceiptKey({ keyDirectory, repositoryRoot });
   const runDirectory = path.join(realpathSync(runRoot), `r1-002-${randomUUID()}`);
   mkdirSync(runDirectory, { mode: 0o700 });
   chmodSync(runDirectory, 0o700);
   const runId = path.basename(runDirectory).slice('r1-002-'.length);
   const artifactDirectory = path.join(runDirectory, 'artifact'); mkdirSync(artifactDirectory, { mode: 0o700 });
-  const originalJar = path.join(repositoryRoot, 'services/api-gateway/target/api-gateway-0.1.0-SNAPSHOT.jar');
-  if (!lstatSync(originalJar).isFile() || lstatSync(originalJar).isSymbolicLink()) throw new Error('UNSAFE_INPUT_JAR');
-  const jarHash = sha(readFileSync(originalJar));
-  if (jarHash !== REVIEWED_GATEWAY_JAR_SHA256) throw new Error('REVIEWED_JAR_DRIFT');
   copyFileSync(originalJar, path.join(artifactDirectory, 'api-gateway.jar'));
   const java = executable('java'), javac = executable('javac'), jar = executable('jar');
   const entries = command(jar, ['--list', '--file', path.join(artifactDirectory, 'api-gateway.jar')]).trim().split('\n');
@@ -173,7 +229,7 @@ export function stage({ runRoot, keyDirectory, materialDirectory }) {
   const entriesBinding = fileList(artifactDirectory).map(name => ({ path: `artifact/${name}`, bytes: lstatSync(path.join(artifactDirectory, name)).size,
     sha256: sha(readFileSync(path.join(artifactDirectory, name))) }));
   const binding = { kind: 'R1_002_D1_ARTIFACT_BINDING', schemaVersion: 1, runId, source, portsConfigSha256: ports.sha256,
-    sourceJarProvenance: 'UNATTESTED_CURRENT_TARGET', sourceToJarVerified: false,
+    sourceJarProvenance: build.sourceJarProvenance, sourceToJarVerified: build.sourceToJarVerified, build,
     toolchainBaselineSha256: sha(readFileSync(path.join(repositoryRoot, 'config/toolchain-baseline.json'))),
     originalJar: { path: 'services/api-gateway/target/api-gateway-0.1.0-SNAPSHOT.jar', sha256: jarHash },
     tools: [java, javac, jar].map(tool => ({ executable: tool, sha256: sha(readFileSync(tool)) })),
@@ -182,7 +238,8 @@ export function stage({ runRoot, keyDirectory, materialDirectory }) {
     publicCertificateSha256: sha(readFileSync(config.routeCertificate)),
     materialReadbacks: ['routeCertificate', 'independentTrustStore'].map(name => ({ kind: name,
       metadata: assertProtectedPath(config[name], { directory: false, repositoryRoot }) })) };
-  if (jarHash !== sha(readFileSync(originalJar)) || canonicalize(source) !== canonicalize(sourceSnapshot())) throw new Error('SOURCE_OR_JAR_CHANGED_DURING_STAGE');
+  if (canonicalize(build) !== canonicalize(readBuildReceipt(buildReceipt, { jarPath: originalJar }))
+      || jarHash !== sha(readFileSync(originalJar)) || canonicalize(source) !== canonicalize(sourceSnapshot())) throw new Error('SOURCE_OR_JAR_CHANGED_DURING_STAGE');
   readonlyTree(artifactDirectory);
   writeFileSync(path.join(runDirectory, 'binding.json'), JSON.stringify(binding, null, 2) + '\n', { mode: 0o600, flag: 'wx' });
   const artifact = hashArtifact({ runDirectory, relativePath: 'binding.json', repositoryRoot });
@@ -223,8 +280,13 @@ export function verifyStagedRun({ runDirectory, trustedPublicKey }) {
     if (actual.sha256 !== entry.sha256 || actual.bytes !== entry.bytes) throw new Error('ARTIFACT_DRIFT');
   }
   for (const tool of binding.tools) if (sha(readFileSync(tool.executable)) !== tool.sha256) throw new Error('JAVA_TOOL_DRIFT');
+  if (binding.build) {
+    const currentBuild = readBuildReceipt(path.join(repositoryRoot, BUILD_RECEIPT_PATH), { jarPath: path.join(repositoryRoot, binding.build.output.path) });
+    if (canonicalize(binding.build) !== canonicalize(currentBuild)
+        || binding.originalJar.sha256 !== currentBuild.output.sha256) throw new Error('STAGED_BUILD_RECEIPT_DRIFT');
+  }
   return { signature: 'PASS', source: 'PASS', artifacts: binding.entries.length, artifactHashes: 'PASS',
-    sourceToJarVerified: false, dynamic: 'NOT_EXECUTED' };
+    sourceToJarVerified: binding.build?.sourceToJarVerified === true, dynamic: 'NOT_EXECUTED' };
 }
 
 function lookupRun(runRoot, runId) {
@@ -262,7 +324,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
     const options = parseArgs(process.argv.slice(2));
     const result = sanitizeEvidence(dispatch(options), options);
     if (options.out) {
-      const evidenceRoot = path.join(repositoryRoot, 'evidence/redesign/2026-10-07/R1-002-D1/lifecycle-harness');
+      const evidenceRoot = path.join(repositoryRoot, 'evidence/redesign/2026-10-08/R1-002/runtime');
       const output = path.resolve(options.out);
       if (path.dirname(output) !== evidenceRoot || lstatSync(evidenceRoot).isSymbolicLink() || existsSync(output)) throw new Error('EVIDENCE_OUTPUT_SCOPE_OR_OVERWRITE');
       writeFileSync(output, JSON.stringify(result, null, 2) + '\n', { flag: 'wx' });

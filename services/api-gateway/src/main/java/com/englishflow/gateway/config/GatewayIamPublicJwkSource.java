@@ -18,6 +18,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -45,6 +46,8 @@ final class GatewayIamPublicJwkSource {
 
     /** Bounded document read; a JWKS for RS256 keys is a few hundred bytes. */
     static final int MAX_DOCUMENT_CHARS = 256 * 1024;
+
+    private static final Set<String> PRIVATE_KEY_MEMBERS = Set.of("d", "p", "q", "dp", "dq", "qi", "oth", "k");
 
     private final Mono<String> document;
     private final Clock clock;
@@ -128,8 +131,10 @@ final class GatewayIamPublicJwkSource {
         try {
             parsed = JSONObjectUtils.parse(raw);
         } catch (ParseException exception) {
-            throw new IllegalStateException("IAM public JWKS document is not valid JSON", exception);
+            // Parser diagnostics may contain input, including accidentally published secrets.
+            throw new IllegalStateException("IAM public JWKS document is not valid JSON");
         }
+        rejectPrivateMaterial(parsed);
         Object data = parsed.get("data");
         Map<String, Object> keySetDocument = data instanceof Map<?, ?> envelope
                 ? stringKeyed(envelope)
@@ -138,9 +143,27 @@ final class GatewayIamPublicJwkSource {
             throw new IllegalStateException("IAM public JWKS document does not contain a key list");
         }
         try {
-            return JWKSet.parse(keySetDocument);
+            JWKSet jwkSet = JWKSet.parse(keySetDocument);
+            if (jwkSet.getKeys().stream().anyMatch(JWK::isPrivate)) {
+                throw new IllegalStateException("IAM public JWKS document contains private key material");
+            }
+            return jwkSet;
         } catch (ParseException exception) {
-            throw new IllegalStateException("IAM public JWKS document is not a valid JWK set", exception);
+            throw new IllegalStateException("IAM public JWKS document is not a valid JWK set");
+        }
+    }
+
+    /** Inspect before Nimbus parsing: unsupported or malformed keys may otherwise be ignored. */
+    private static void rejectPrivateMaterial(Object value) {
+        if (value instanceof Map<?, ?> object) {
+            for (Map.Entry<?, ?> entry : object.entrySet()) {
+                if (PRIVATE_KEY_MEMBERS.contains(entry.getKey())) {
+                    throw new IllegalStateException("IAM public JWKS document contains private key material");
+                }
+                rejectPrivateMaterial(entry.getValue());
+            }
+        } else if (value instanceof List<?> values) {
+            values.forEach(GatewayIamPublicJwkSource::rejectPrivateMaterial);
         }
     }
 

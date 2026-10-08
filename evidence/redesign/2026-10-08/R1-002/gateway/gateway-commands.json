@@ -1,0 +1,29 @@
+[
+  {
+    "executable": "/Users/Admin/.local/tools/maven/bin/mvn",
+    "args": [
+      "-f",
+      "services/api-gateway/pom.xml",
+      "-Dtest=GatewayIamPublicJwkSourceTest",
+      "test"
+    ],
+    "exitCode": 0,
+    "startedAt": "2026-10-08T03:35:53.991914+00:00",
+    "finishedAt": "2026-10-08T03:36:07.851477+00:00",
+    "log": "evidence/redesign/2026-10-08/R1-002/gateway/jwk-source-test.log"
+  },
+  {
+    "executable": "/Users/Admin/.local/tools/maven/bin/mvn",
+    "args": [
+      "-f",
+      "services/api-gateway/pom.xml",
+      "clean",
+      "package",
+      "-DskipTests"
+    ],
+    "exitCode": 0,
+    "startedAt": "2026-10-08T03:36:07.852131+00:00",
+    "finishedAt": "2026-10-08T03:36:19.448339+00:00",
+    "log": "evidence/redesign/2026-10-08/R1-002/gateway/gateway-package.log"
+  }
+]

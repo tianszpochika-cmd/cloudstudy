@@ -1,0 +1,87 @@
+{
+  "kind": "R1_002_OWNED_RUNTIME",
+  "schema": "r1_002_20261008_d5b6380af8df",
+  "user": "r1002_d5b6380af8df",
+  "mysql": {
+    "id": "db87392020398271b86e76c8738c2ea7af619a41ef11eb3cee68d8910956deec",
+    "name": "/yuxuexing-local-mysql-1",
+    "image": "mysql:8.0",
+    "project": "yuxuexing-local",
+    "service": "mysql",
+    "port": [
+      {
+        "HostIp": "127.0.0.1",
+        "HostPort": "13306"
+      }
+    ],
+    "state": "running",
+    "health": "healthy"
+  },
+  "privateDirectory": "<PRIVATE_MATERIAL_DIR>",
+  "permissions": {
+    "checkedAt": "2026-10-08T03:39:25.010Z",
+    "method": "filesystem-lstat-owner-and-mode",
+    "checks": [
+      {
+        "name": "material-directory",
+        "kind": "directory",
+        "mode": "0700",
+        "expectedMode": "0700",
+        "ownerUid": 502,
+        "expectedOwnerUid": 502,
+        "ownerMatches": true,
+        "symbolicLink": false,
+        "expectedTypeMatches": true,
+        "result": "PASS"
+      },
+      {
+        "name": "iam-signer.pem",
+        "kind": "file",
+        "mode": "0600",
+        "expectedMode": "0600",
+        "ownerUid": 502,
+        "expectedOwnerUid": 502,
+        "ownerMatches": true,
+        "symbolicLink": false,
+        "expectedTypeMatches": true,
+        "result": "PASS"
+      },
+      {
+        "name": "iam-runtime.properties",
+        "kind": "file",
+        "mode": "0600",
+        "expectedMode": "0600",
+        "ownerUid": 502,
+        "expectedOwnerUid": 502,
+        "ownerMatches": true,
+        "symbolicLink": false,
+        "expectedTypeMatches": true,
+        "result": "PASS"
+      },
+      {
+        "name": "runtime.json",
+        "kind": "file",
+        "mode": "0600",
+        "expectedMode": "0600",
+        "ownerUid": 502,
+        "expectedOwnerUid": 502,
+        "ownerMatches": true,
+        "symbolicLink": false,
+        "expectedTypeMatches": true,
+        "result": "PASS"
+      }
+    ],
+    "result": "PASS",
+    "contentsRead": false
+  },
+  "certificate": {
+    "sha256": "d10a8cc0155db6126782f6b6de750b26094ff7be5ddaaad3371db07031c85379",
+    "fingerprint256": "B5:7A:F2:2F:3A:1C:5F:DF:1C:25:03:C7:2C:D1:42:94:D7:7E:49:F6:1B:0D:01:6D:5C:70:5C:30:EA:28:76:CA",
+    "subjectAltName": "IP Address:127.0.0.1, DNS:localhost",
+    "validFrom": "Oct  8 03:39:22 2026 GMT",
+    "validTo": "Oct 15 03:39:22 2026 GMT",
+    "ca": false
+  },
+  "databaseCreated": true,
+  "servicesStarted": false
+}

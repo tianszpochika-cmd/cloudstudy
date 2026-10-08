@@ -1,0 +1,155 @@
+TAP version 13
+# Subtest: DB write names cannot target existing schemas or SQL injection
+ok 1 - DB write names cannot target existing schemas or SQL injection
+  ---
+  duration_ms: 1.019042
+  ...
+# Subtest: cookie verification requires all browser safeguards and no JSON credential
+ok 2 - cookie verification requires all browser safeguards and no JSON credential
+  ---
+  duration_ms: 0.343541
+  ...
+# Subtest: actual RS256 signature and exact pre-gate owner/tenant/permissions required
+ok 3 - actual RS256 signature and exact pre-gate owner/tenant/permissions required
+  ---
+  duration_ms: 189.197292
+  ...
+# Subtest: damaged token JSON has fixed safe classification without echoing token bytes
+ok 4 - damaged token JSON has fixed safe classification without echoing token bytes
+  ---
+  duration_ms: 0.249708
+  ...
+# Subtest: default mode is read-only preflight; arbitrary command/adopt/kill and approval bool rejected
+ok 5 - default mode is read-only preflight; arbitrary command/adopt/kill and approval bool rejected
+  ---
+  duration_ms: 0.8485
+  ...
+# Subtest: unknown or traversing run id rejected before filesystem access
+ok 6 - unknown or traversing run id rejected before filesystem access
+  ---
+  duration_ms: 0.250166
+  ...
+# Subtest: registered ports are fixed and configuration bytes hashed
+ok 7 - registered ports are fixed and configuration bytes hashed
+  ---
+  duration_ms: 0.31025
+  ...
+# Subtest: fixture occupied/unknown ports refuse with zero signal/listener/DB
+ok 8 - fixture occupied/unknown ports refuse with zero signal/listener/DB
+  ---
+  duration_ms: 0.495
+  ...
+# Subtest: missing/self-signed/expired fixture windows never authorize D2
+ok 9 - missing/self-signed/expired fixture windows never authorize D2
+  ---
+  duration_ms: 0.098208
+  ...
+# Subtest: fixture source provenance/material/binding deficiencies are independent blockers
+ok 10 - fixture source provenance/material/binding deficiencies are independent blockers
+  ---
+  duration_ms: 0.064875
+  ...
+# Subtest: all seemingly green test fixture values still fail without real D2 authority
+ok 11 - all seemingly green test fixture values still fail without real D2 authority
+  ---
+  duration_ms: 0.065583
+  ...
+# Subtest: TLS config rejects insecure/hostname bypass/fallback and unknown overrides
+ok 12 - TLS config rejects insecure/hostname bypass/fallback and unknown overrides
+  ---
+  duration_ms: 0.186958
+  ...
+# Subtest: TLS config locks endpoint, host and both registered ports
+ok 13 - TLS config locks endpoint, host and both registered ports
+  ---
+  duration_ms: 0.189292
+  ...
+# Subtest: independent materials cannot be aliases by identical path
+ok 14 - independent materials cannot be aliases by identical path
+  ---
+  duration_ms: 0.139166
+  ...
+# Subtest: public publisher validation rejects private fields without disguising production behavior
+ok 15 - public publisher validation rejects private fields without disguising production behavior
+  ---
+  duration_ms: 0.17
+  ...
+# Subtest: all TLS cases remain NOT_EXECUTED; dynamic helpers refuse synchronously
+ok 16 - all TLS cases remain NOT_EXECUTED; dynamic helpers refuse synchronously
+  ---
+  duration_ms: 0.137458
+  ...
+# Subtest: public archive sanitizer redacts run/key/material paths without mutating input
+ok 17 - public archive sanitizer redacts run/key/material paths without mutating input
+  ---
+  duration_ms: 0.200958
+  ...
+# Subtest: signed offline fixture validates manifest/context; this is not source-to-JAR proof
+ok 18 - signed offline fixture validates manifest/context; this is not source-to-JAR proof
+  ---
+  duration_ms: 1078.177792
+  ...
+# Subtest: artifact byte drift is refused using signed manifest
+ok 19 - artifact byte drift is refused using signed manifest
+  ---
+  duration_ms: 1203.735375
+  ...
+# Subtest: manifest byte drift is refused without recomputing trust from edited body
+ok 20 - manifest byte drift is refused without recomputing trust from edited body
+  ---
+  duration_ms: 1004.033583
+  ...
+# Subtest: receipt signature tampering is refused
+ok 21 - receipt signature tampering is refused
+  ---
+  duration_ms: 1017.196916
+  ...
+# Subtest: receipt for another source/port or staged metadata context cannot be trusted
+ok 22 - receipt for another source/port or staged metadata context cannot be trusted
+  ---
+  duration_ms: 5866.165167
+  ...
+# Subtest: artifact symlink and traversal rejected by shared guard
+ok 23 - artifact symlink and traversal rejected by shared guard
+  ---
+  duration_ms: 973.97225
+  ...
+# Subtest: actual material chmod downgrade triggers protected-path refusal
+ok 24 - actual material chmod downgrade triggers protected-path refusal
+  ---
+  duration_ms: 968.653
+  ...
+# Subtest: unknown run and detached stop cannot reach a signal
+ok 25 - unknown run and detached stop cannot reach a signal
+  ---
+  duration_ms: 909.38575
+  ...
+# Subtest: current receipted build verifies actual separately provided context without dynamic authority
+ok 26 - current receipted build verifies actual separately provided context without dynamic authority
+  ---
+  duration_ms: 0.390375
+  ...
+# Subtest: missing/unknown/different build and module receipts fail closed
+ok 27 - missing/unknown/different build and module receipts fail closed
+  ---
+  duration_ms: 0.159417
+  ...
+# Subtest: source/hash/partial input/Java/output drift and unsuccessful command cannot attest build
+ok 28 - source/hash/partial input/Java/output drift and unsuccessful command cannot attest build
+  ---
+  duration_ms: 0.390958
+  ...
+# Subtest: build receipt reader rejects missing and arbitrary path before reading any artifact
+ok 29 - build receipt reader rejects missing and arbitrary path before reading any artifact
+  ---
+  duration_ms: 0.141
+  ...
+1..29
+# tests 29
+# suites 0
+# pass 29
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 13088.914875

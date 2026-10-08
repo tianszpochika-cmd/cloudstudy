@@ -108,14 +108,25 @@ public final class GatewayTlsProbe {
         String privateDocument = new JWKSet(privateFixture).toString(false);
         String publicDocument = new JWKSet(privateFixture.toPublicJWK()).toString();
         var privateSource = new GatewayIamPublicJwkSource(Mono.just(privateDocument), Clock.systemUTC());
-        var selectedPrivate = privateSource.select(selector("synthetic-offline-kid")).collectList().block();
+        java.util.List<com.nimbusds.jose.jwk.JWK> selectedPrivate = null;
+        boolean privateDocumentRejected = false;
+        try {
+            selectedPrivate = privateSource.select(selector("synthetic-offline-kid")).collectList().block();
+        } catch (IllegalStateException expected) {
+            if (!"IAM public JWKS document contains private key material".equals(expected.getMessage())) {
+                throw expected;
+            }
+            privateDocumentRejected = true;
+        }
         boolean privateReturned = selectedPrivate != null && selectedPrivate.stream().anyMatch(key -> key.isPrivate());
         // Report actual loaded production behavior; do not filter/convert its result to fake rejection.
         Map<String, Object> checks = new LinkedHashMap<>();
         checks.put("fixtureIsNotTlsOrBusinessEvidence", true);
-        checks.put("privateJwkSelectedCount", selectedPrivate == null ? -1 : selectedPrivate.size());
+        checks.put("privateDocumentRejected", privateDocumentRejected);
+        checks.put("privateRejectionClassification", privateDocumentRejected ? "PRIVATE_MATERIAL_DOCUMENT" : "NOT_REJECTED");
+        checks.put("privateJwkSelectedCount", selectedPrivate == null ? 0 : selectedPrivate.size());
         checks.put("privateJwkReturned", privateReturned);
-        checks.put("publicKeyOnlyProductionGap", privateReturned ? "OPEN" : "NOT_OBSERVED");
+        checks.put("publicKeyOnlyProductionGap", privateDocumentRejected && !privateReturned ? "PRODUCTION_DOCUMENT_REJECTED" : "OPEN");
 
         var clock = new MutableClock();
         var reads = new AtomicInteger();

@@ -1,0 +1,1187 @@
+{
+  "schemaVersion": "r1-002-runtime-builds/v1",
+  "kind": "CURRENT_SOURCE_BUILD_RECEIPT_NOT_BUSINESS_ACCEPTANCE",
+  "baselineGitHead": "8215c95d8ad63169a68afb997f2d7ad8bc1b9b71",
+  "sourceJarProvenance": "CURRENT_SOURCE_BUILT_WITH_RECEIPTED_COMMAND",
+  "tools": {
+    "java": {
+      "executable": "/Users/Admin/.local/tools/jdk-25.0.4.1+1/Contents/Home/bin/java",
+      "sha256": "83c9c5310d044e7c4262432854eb1bc5f49763d7c1e9971777a646c91b96c06d",
+      "version": "openjdk 25.0.4.1 2026-08-18 LTS\nOpenJDK Runtime Environment Temurin-25.0.4.1+1 (build 25.0.4.1+1-LTS)\nOpenJDK 64-Bit Server VM Temurin-25.0.4.1+1 (build 25.0.4.1+1-LTS, mixed mode, sharing)",
+      "releaseFileSha256": "e5e50f3c36e9ce7ac50ccbc499c8299880e8fb8fee57bb3a7a2b890477ce8498",
+      "versionArgv": [
+        "--version"
+      ]
+    },
+    "maven": {
+      "executable": "/Users/Admin/.local/tools/maven/bin/mvn",
+      "sha256": "4533c1d9bd2d1bfae90dd270fef2d5a6d71a4772bcfeac5ba88052bc99226164",
+      "version": "Apache Maven 3.10.0 (c43a36b8d67be7e0805a411bc0898af1a51f5472)\nMaven home: /Users/Admin/.local/tools/maven\nJava version: 25.0.4.1, vendor: Eclipse Adoptium, runtime: /Users/Admin/.local/tools/jdk-25.0.4.1+1/Contents/Home\nDefault locale: zh_CN_#Hans, platform encoding: UTF-8, time zone: Asia/Shanghai\nOS name: \"mac os x\", version: \"27.0.1\", arch: \"aarch64\", family: \"mac\""
+    }
+  },
+  "modules": [
+    {
+      "module": "services/iam-service",
+      "inputFiles": [
+        {
+          "path": "config/local-ports.json",
+          "sha256": "0a6b43d35379fed2e679961b34a0ad0e9ec1888dfb7d1a2c76eed20706e5ca95"
+        },
+        {
+          "path": "config/toolchain-baseline.json",
+          "sha256": "3b4d41a16d3278bee54187eee6a3bcb5d8dea5f3aa353ff468be502e71cc0143"
+        },
+        {
+          "path": "pom.xml",
+          "sha256": "d663a16aea33c574e89b3062085adf916f0d7d4d6d14224e73445a825dc4ea0e"
+        },
+        {
+          "path": "services/iam-service/pom.xml",
+          "sha256": "262a7e88000cc345cc4fc452d5c008084929d600f80e3c06264aa26be2f23298"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/IamServiceApplication.java",
+          "sha256": "653f05abe8a8ee58cc11efe82761f889239d1d68aefbeb7613b48c23228f8661"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/auth/JwtPermissionAuthenticationConverter.java",
+          "sha256": "a8a9aefb9c216055528ceac1a0bdb1b3eb0e5143d077a894a80c78ebb80d6591"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/auth/JwtSigningKeyProvider.java",
+          "sha256": "0246c0e2ea3d2c6550e405070d0eb44112fcfcf3acbe0bcd6d6fccfdeffb92cd"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/auth/JwtTokenService.java",
+          "sha256": "b631fcf65fdb08253befc6824334c93f3946941029227698917317bc5b694f4b"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/auth/ServiceTokenService.java",
+          "sha256": "85085efde44e607335d18bdd154c789f20148dc0d6c4ea3fe989cf5be3fa118b"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/config/IamRuntimeConfiguration.java",
+          "sha256": "eaedacd9cdeac288f393c2ae4d28880e68493cd33ca92848fce75c2993b111c3"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/config/IamSecurityConfiguration.java",
+          "sha256": "6d8e60ffc543a1f707fe3da7f12e0d2f8d83fa7aae3f483d393ce57100c449ea"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/config/IamServiceProperties.java",
+          "sha256": "c12e02f0bda15195fa97771d8c757bf86e64a5d4cd5808c84b15af5c96a5a48a"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/AccountRecord.java",
+          "sha256": "0d1b91ac817e33c5ec36c8262f882da43371064e0a951adadcec0a219c07ee64"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/AccountStatus.java",
+          "sha256": "f0436e5b16fa8390ef0aaf9c532d1395f005a823293ecf24e2e485f132ee15ed"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/AccountStore.java",
+          "sha256": "4789a5214ffdfb935e0a6751a4f55abf3140b1100952406cea2f751dc9936320"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/AdultGateCommand.java",
+          "sha256": "5bc2e6f64d83fdbe6a44bd6f7c01294558976501b3e941a6f32a09a4f04722e6"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/AdultGateFact.java",
+          "sha256": "924a2399cd9e1ec7575a84c0edb27df823fee1d6915713f4328399b2f3316c20"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/AdultGateFactStore.java",
+          "sha256": "619b58a358f6c4e02c31abb679fde5fc7eac9a1bb112ab084a43fe55483cf0c4"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/AdultGateResult.java",
+          "sha256": "8d316e5697d365de6dd3860140b58a258c7e6eafc3460db02b7bef66cad0a562"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/AdultGateService.java",
+          "sha256": "2bf83c5eda6ecdbe4f4d08dc83a276db53c53b2318b99f904f8c6d16de20b2a6"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/AuditDecision.java",
+          "sha256": "bbee79af00acb3577afb5218ad010a47548e053f9567cc4bda2a926de79f1194"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/AuditFactPort.java",
+          "sha256": "39ce8efcb306222380004e2c62aa48b35ae4f3628a0a6e9eb964180a5f4a7e3d"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/ClientAuthorityClaims.java",
+          "sha256": "7f6fa4075dc36d5abb9914def780570d1e15d55b9e1b70e35cb4f6ca8e345a98"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/ConsentCommand.java",
+          "sha256": "ea4f94ca9bb5ac5fda38270e134f596923c19066e2d89b85524f14a86955c45c"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/ConsentHistoryEntry.java",
+          "sha256": "b4700df48f63d4ac44ad1afe51064ae30c40b87e7167b14c2776f8bb876f8f4e"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/ConsentPolicyDescriptor.java",
+          "sha256": "8fe213d7988ba81ff41dca60fdabc48b628a38c39b73048255810b0e49d22945"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/ConsentPolicyPort.java",
+          "sha256": "e4d601b5cd96627ca5d07181b9f0439f61676a7a0ac033d8695c6943825f3d2f"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/ConsentRecord.java",
+          "sha256": "a70444bd3e08b642277664d15ab71b2b3cf59cfea2e10af2c344f3ead6ebbfe3"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/ConsentService.java",
+          "sha256": "ed9673e8a8b1e42e320a33b4052a86c65db08104454fb6b8a77c192c4ff41995"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/ConsentStore.java",
+          "sha256": "1d486bfb505d29ad1af38a293ccd041e282cd1fad37effdb1561d91d24e41b92"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/ConsentType.java",
+          "sha256": "36211e45a658a13b0178640fbb0e875f4a8268e2d08d199d4315879adcff64be"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/ConsentVersion.java",
+          "sha256": "77f331300a3f5ee85f4de63e9b763d0902f4d6479d65c5f7c218a79fc205b6a7"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/DeviceId.java",
+          "sha256": "8de4edce25c93d95126de30431482f1976bca1248f001c0b20a05df39ff5a3ff"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/DeviceRegistration.java",
+          "sha256": "2c730f607f89f0f29d49ad9c9153b3420c0badcf3daa2c25fe5adac6b0e59a0c"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/DeviceRegistrationCommand.java",
+          "sha256": "a510d3fd4f595944d6b70e6c59ef8cf3dfd285850df1a72b9f4b5084c24a8976"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/DeviceRegistryPort.java",
+          "sha256": "84d5055cba4daa2f107b0e51ac55dfe282e72ed97ede5f8c0d9173a18de6cc40"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/DeviceService.java",
+          "sha256": "961f8cf09f6a8a961643e3878e251754e1c0be1c046d2d08f09bcfaa9e7af36c"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/FailClosedAccountStore.java",
+          "sha256": "259ef2e469f721efa40af853f1ca5d92858fc88378d2f5d366f7606ca8daabba"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/FailClosedAdultGateFactStore.java",
+          "sha256": "8ae832bd5cac09ac320e1b25322ba55dae15ba28ff5ae80b78adb21ca38ef4b7"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/FailClosedAuditFactPort.java",
+          "sha256": "e3eb588dee80e7d53910d5ba675cdc1c8ecbce776dae8232918a5f163eabde16"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/FailClosedConsentStore.java",
+          "sha256": "773999775bf042ec71fa02ffe617782c3ded6d557f46310247ff253fa0b4a25f"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/FailClosedDeviceRegistry.java",
+          "sha256": "3810cf0840dd794edbb2449585dac7c088baf0d403ef6c02b1cb3e007d40ef49"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/FailClosedIdempotencyStore.java",
+          "sha256": "f892fbd9dfa18f48d610265c85dd0c475b9e6b9c9eba46954003baa1c19790a4"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/FailClosedPasswordResetChallengeStore.java",
+          "sha256": "923c59c7dc778be19065821c391f9d374f188ba5fce14732be945ec1eb799419"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/FailClosedPolicyStore.java",
+          "sha256": "9f4bd15a54ad4098a0f48983de4084039a180a460f8ffd9a06df23832b24f3f1"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/FailClosedRateLimitStore.java",
+          "sha256": "e787abde2f86645d46f560327b1669d1efea97f5a7ae8447d2a2efecfd97376c"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/FailClosedSessionStore.java",
+          "sha256": "fa16ff8de91348f5888348d5ccf77bcda3f779e384cd207ca233570a92ea3166"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/IamDecisionCode.java",
+          "sha256": "32b1646bc1b064de83b0dca57ee70a6ba6d2cd225f1d3184295f80dbc7f0a02a"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/IamPolicyException.java",
+          "sha256": "d71cf8763423797e3fc5049507004f47400ea0942ecd4adb06f70a2ff75492c6"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/IamTransactionRunner.java",
+          "sha256": "f5e7fd19f2e7927050af95065167bf774bd4e2ebd2951fcd85c9366f29447d58"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/IdempotencyRecord.java",
+          "sha256": "1dfb7f7fb169bc39f9e3259dd4aee524f14c98db3b304cf787fa007c7a207c52"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/IdempotencyReplayPolicy.java",
+          "sha256": "f253d1aca6d307d127b6042b9cd471fdcfc9b99c6f4a58796e666cefd3deb195"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/IdempotencyRequestFingerprint.java",
+          "sha256": "aeeafd2c7d10efad4fc4bbba0240c32e76441a2330aa83f1168dfee6e5ddeb3c"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/IdempotencyResponseCodec.java",
+          "sha256": "e5c5eadc470bab1e7aa30a49f6f3fbf1a9ca46c9b95fe700aeb4c6fc99fbf2e2"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/IdempotencyService.java",
+          "sha256": "134afcdaec1520c38e1b72013c611ee5067aa4606fe930d9b15c320c62eb184d"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/IdempotencyStore.java",
+          "sha256": "8cbdaf237b8a18ec73987ab355ec16aadbe7f63dba81a4432d20dbac0d95130a"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/InMemoryAccountStore.java",
+          "sha256": "33099f3a6ad4aaa99fccd4a8844299938786d355c228e80dda0f492bafe33f76"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/InMemoryAdultGateFactStore.java",
+          "sha256": "7dde4588acbe0f8dd31ce7107a22c47d46c878a0ba77cd3f46522fe342f7c7b9"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/InMemoryAuditFactPort.java",
+          "sha256": "6d033f7a30b31afac36486fe6842cc21d062ca8fbe51f6cc6fede9f280e50967"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/InMemoryConsentStore.java",
+          "sha256": "0c1b969f31c698980e17681be56baac35936a5d23a470123c2b38d41e7fbdef7"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/InMemoryDeviceRegistry.java",
+          "sha256": "613603eb8f2c633ce15312acbfc02a61155625494252b44f08e093421d28dd00"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/InMemoryIdempotencyStore.java",
+          "sha256": "effbab8a29b1a913cd8fa7fe5de650fe3cd0ccce1b1b7250dff85b2f061cf805"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/InMemoryPasswordResetChallengeStore.java",
+          "sha256": "00d4493c86bd22ff5092982a41982fdde41156ec60cfffc2a8065a4b0e6bfb26"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/InMemoryPasswordResetDelivery.java",
+          "sha256": "e8e07a579d0ba5f344af1e34474e5e190e140af67e352292b61178487255189f"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/InMemoryPolicyStore.java",
+          "sha256": "1e3563454e2889102c5f29b1305b2931093509887911815168994464a4d6fcf4"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/InMemoryRateLimitStore.java",
+          "sha256": "bae78bc6997094eca4146830f3226d58f0dbc5635b6ebc57b0361eda6d311a90"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/InMemorySessionStore.java",
+          "sha256": "4f012be28b60e00ab55f5100b7390d29e9e26830d9c86f03f37bf7ab1fd9d91f"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/JdbcAccountStore.java",
+          "sha256": "366b051f2b6cf1a091a5d52c84cf2d5470121b510166b8b838b2c5c154900482"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/JdbcAdultGateFactStore.java",
+          "sha256": "afbb67a8e12542984e56400c77049e0728ef7f38b0a5efb82e651f0715cc732f"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/JdbcAuditFactPort.java",
+          "sha256": "db178bc4cb65b957ca99dd3855118e7a7ed9c5b86d1a59cbd161c39b718c7fa4"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/JdbcConsentPolicy.java",
+          "sha256": "f37aac4fd563ea14c7a3d06078a6b698ae6d315f47056935670639c27eed4de9"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/JdbcConsentStore.java",
+          "sha256": "5134df96f631fc318ba17e47dcf74f4597855c544eadddea71a34e53e639e854"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/JdbcDeviceRegistry.java",
+          "sha256": "fd4e15488f15b9353eb1d2f937489af205f95a7b40b35442772f5310476d7e6b"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/JdbcIdempotencyStore.java",
+          "sha256": "f3e8d5cbd0d6903957533080fa0bd2cff48cd704fd31976763ad7e5ee713f2dd"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/JdbcPasswordResetChallengeStore.java",
+          "sha256": "3e7fd790818d2813b1ced8dd18db1235d803ec2d95fba6f5c4fe5e4e66242f40"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/JdbcPolicyStore.java",
+          "sha256": "dc963867801220f97c44bf42b5e6bea65d69c17a5c298f02df1b9691474f47ce"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/JdbcRateLimitStore.java",
+          "sha256": "358c9e9d8f8ca093d46aa531e368ab51022ff448a3af4845d138984fc05dccc9"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/JdbcSessionStore.java",
+          "sha256": "018bc74768645904cf1f19501bf7d4487e7f5e6a717e285b2503eb1f173f13ad"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/PasswordAccountService.java",
+          "sha256": "919426fa9da4c48beea7f5d08d3a2e5a5694024c804ea66eb6032547720ca2b1"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/PasswordResetChallenge.java",
+          "sha256": "5c0f889cae2aae7c05bac57c0441a86379efcc8ac83f5a5777b1e6cd8cc6e34d"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/PasswordResetChallengeStore.java",
+          "sha256": "3391f758e96d838d7e69a70381f7702ae98588d5af88c142ea5499d4db656aff"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/PasswordResetDelivery.java",
+          "sha256": "71360fd3f88899ffdfe02244c7df1e9d8d4c83563fed50ee46a6c1dc0f20aad7"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/PasswordResetDeliveryPort.java",
+          "sha256": "005ddc5d09824f3ea122c0d2796ea8705cfbaf1533129773789745bcfb655352"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/PasswordResetService.java",
+          "sha256": "8d66f39eda62f27c13471941d7adda7423fda22fa2c2701f12fb881b66bd22c1"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/PdpAuthorizationRequest.java",
+          "sha256": "b5fcbb73fbe5cd44dc388a10fc6dbf35e7e492002f08e78dae873bed8389401b"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/PdpDecision.java",
+          "sha256": "db70380d9f9bea13351fc6645bd97f13489e6ef41e5a0b2a3f6f1baa9c4c3a32"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/PdpDecisionService.java",
+          "sha256": "032d034f2498cf50334cbea81cde25dce7c360125c98081318949c5d3ab95e7b"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/PolicyAccessAuthenticationVerifier.java",
+          "sha256": "f860ccfccb6cafe58282db81c97cf1cade2d2abc4cd7e4a9984ecc12a8dfe1cb"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/PolicyActor.java",
+          "sha256": "6530a70b235d838a00cf2cf8218f038d3541c2af27c1ea325213677f238e674f"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/PolicyAuditRecord.java",
+          "sha256": "454cc83cdb6e6ab8b267dc3470a3e4917cc5aaa07786bb3f110599e25d895380"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/PolicyBootstrapService.java",
+          "sha256": "0b8268af5c05d3c97df212a1014b70b43154d1232e83b1b3b9b8fcd88b9f2769"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/PolicyBundle.java",
+          "sha256": "f11e46445ef45b0fd22d52a812b4a9465821a71295b68e92dfe43bce9f7d4276"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/PolicyCacheInvalidationReceipt.java",
+          "sha256": "6d915286971fb9ca70ebde0942488659f4b61846a3e18f45f0ecf2587dc91343"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/PolicyControlService.java",
+          "sha256": "6dc443cc1fc0db212e214d3ae9240d8177eeb1adde1ea637ed9348cfc12fe75f"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/PolicyDocument.java",
+          "sha256": "f04b53ef75cb9948b7f4b78f02fc1bae53389e9df799e356f8227ff91009390a"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/PolicyLifecycleStatus.java",
+          "sha256": "0560f806deac64e185f9a97ec9f7f4e5f4cf722cff634ad326a79f20ed8e4183"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/PolicyMutation.java",
+          "sha256": "44c4729bb72a3a73612da4b2f5fb10378e8234477baeb6ad46f326ce1dd04193"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/PolicyStore.java",
+          "sha256": "d6310f96d2d1f0bb3d6c03f7b202ca437fc86ce4639a9353bb9bca1bcdf4b4a4"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/PolicyVersionRecord.java",
+          "sha256": "ec9ba98e8929a71869c4afe991afa195ed04f1e06f40896c81c9a378160d3a6f"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/PrincipalId.java",
+          "sha256": "68c7d5d7ef9ac311dff328126afa44fc5a03e6174674a0bb588360c3f0250351"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/RateLimitStore.java",
+          "sha256": "b9b8e10adc4c9b90719e299bbbecc6ec7f83df71e376540203ed931988afe28a"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/SecretDigests.java",
+          "sha256": "8229b0f650697c0848c4c9a0549d21d3c0579815a6869712dd38ab510f440668"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/ServerPrincipalContext.java",
+          "sha256": "13bbfbaaa219ad9e473445e01e4c0fbeb8fcc102dde72e0a49ccf77293971613"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/SessionId.java",
+          "sha256": "8c41e7800d2a4bd7c6a9fb957bec7bbd51f305637e9cc851a1ffb96b6b5de38e"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/SessionRecord.java",
+          "sha256": "f2dc2e25eeaaa18d15030c727a5fb97a4477f5204ade20b03cf19686913fbcb7"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/SessionRotationResult.java",
+          "sha256": "2c83280e1ebac053868b7af8a36165ecb1bcb4ebc168ba01208df0df896fe7d6"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/SessionService.java",
+          "sha256": "5f208d93f9cf7e51fdd8d3ac73195b0de8f448374c5e752fe14616819670deaa"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/SessionStatus.java",
+          "sha256": "1ad457068922580511d5ca3688fc8b61ca52038cad82b4417e83ba05903a8e8a"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/SessionStore.java",
+          "sha256": "60506bf0e996d39a762cdc19accde6a3b25de83e4e974ee1dc5f8184abfabe88"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/StaticConsentPolicy.java",
+          "sha256": "c4c2ded883181ed1f799c5705aa008d574254bc2a9f147cf1fe90e234ca112d7"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/TenantScope.java",
+          "sha256": "83ccbb48fe67b3969c36335fb5bd85055340ba6c3bd8c5ef69c100f8b471b46a"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/TrustedAgeEvidence.java",
+          "sha256": "5cbfe164edcf2700f70fec3334e02f50c70428f75b4bfc286a1236bff6b08130"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/UnprovisionedPasswordResetDelivery.java",
+          "sha256": "8a4d7f1f565f3040e61fddafaa3ebae14ab32d92f7d8ed69003579ba3b78a61c"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/VerifiedServiceIdentity.java",
+          "sha256": "91b49d494e8f039ab22c66aa6404e347896ee1756b92467edfdccfd49168bd22"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/web/IamAccountDeletionController.java",
+          "sha256": "a23270ce7bc24dd651bfc7edb1a8912194fc8c3dae158dfdc1f291203d0a59f8"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/web/IamAccountSecurityController.java",
+          "sha256": "85c73afbda851b7e914fea2a87e7d5256797f54512bc057b532045bcbc858b6f"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/web/IamPolicyControlController.java",
+          "sha256": "876c29d2cd2989530bde34a4e287f340df2440e5b4dfd0844d1f91241b8c7a83"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/web/IamProviderBoundaryController.java",
+          "sha256": "8301ca7f1c9a49da9ba9dfde664f23968fcb11bee5b68eb393926bd1e4cc5035"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/web/IamRequestCorrelationContext.java",
+          "sha256": "cf0cc663e55aa80f8bf63ee3f5c2b720b409a1546801d983a87b266a2493af49"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/web/IamRequestCorrelationFilter.java",
+          "sha256": "30396d6ea8c83437012b3c327ae5eb2fbb9bb8f99bfa869ed1840e1d8ee19e76"
+        },
+        {
+          "path": "services/iam-service/src/main/java/com/englishflow/iam/web/IamServiceTokenController.java",
+          "sha256": "f73e9d195b4b0b82dfbd8e8460972b82b234415275933eb87d1a3963b4b44924"
+        },
+        {
+          "path": "services/iam-service/src/main/resources/application-local.yaml",
+          "sha256": "794a221236e2e226b5619f5ec1f5e552294ff2412b7f32538a5d7ae4427d5bd8"
+        },
+        {
+          "path": "services/iam-service/src/main/resources/application.yaml",
+          "sha256": "278b68b596c6dfbbcc7d1b101d190c57320b334f7a58fe8f74b02b0397b56c74"
+        },
+        {
+          "path": "services/iam-service/src/main/resources/db/migration/V10__create_iam_policy_control_plane.sql",
+          "sha256": "ea1cabefd5d49de243b319a57f421f3914db214e8da334b6ef6539746716351a"
+        },
+        {
+          "path": "services/iam-service/src/main/resources/db/migration/V11__extend_iam_consent_facts.sql",
+          "sha256": "af1bf4e1f99aa914d8afef3ca11858620952931ae7d0b46ea824a8924fbaf92e"
+        },
+        {
+          "path": "services/iam-service/src/main/resources/db/migration/V12__normalize_iam_consent_withdrawal_facts.sql",
+          "sha256": "fb9342323e0080bcd3deb55242387cb0723f8848f8c0cf696d11861be12f9c9d"
+        },
+        {
+          "path": "services/iam-service/src/main/resources/db/migration/V13__key_and_version_idempotency_request_hashes.sql",
+          "sha256": "6cfb4ca903dce6b942a9f0e86fdf317f4b2b0d215ba243d258170ca9c59c85e8"
+        },
+        {
+          "path": "services/iam-service/src/main/resources/db/migration/V14__create_iam_consent_document_control.sql",
+          "sha256": "bbe3deefb752defe92c85593cea32d12deaf2b286f1feeeccd4409b0a39a332d"
+        },
+        {
+          "path": "services/iam-service/src/main/resources/db/migration/V15__create_account_deletion.sql",
+          "sha256": "6f370ba65cf0fdf6504430358c083ae5ecbf441aeae0556dd425c102a4af47ec"
+        },
+        {
+          "path": "services/iam-service/src/main/resources/db/migration/V16__grant_canonical_placement_permissions_to_learners.sql",
+          "sha256": "5eb22a4f7a6d97cf9ff04b7828c2a923d301735e49842be7dd0f71a71d3cf2b9"
+        },
+        {
+          "path": "services/iam-service/src/main/resources/db/migration/V17__grant_canonical_b12_learner_permissions.sql",
+          "sha256": "5b524e31e175d5ee4ead9183a957b803b7d22c167721a2131a020411a412bc09"
+        },
+        {
+          "path": "services/iam-service/src/main/resources/db/migration/V18__grant_canonical_notification_preference_permissions.sql",
+          "sha256": "2e6c47673cd15179dba936af68bbf072559e709b1c33dc19d0cf123b63aad28e"
+        },
+        {
+          "path": "services/iam-service/src/main/resources/db/migration/V1__create_iam_service_schema.sql",
+          "sha256": "7f6b53749a6546d1d0479b96b3e7c0d370928f2ede803fa7ce1e267c9723e828"
+        },
+        {
+          "path": "services/iam-service/src/main/resources/db/migration/V3__seed_b30_policy_version.sql",
+          "sha256": "a9ecb96233d934c46dc3a6bd617431f7876a226e896fc898bba36787bceb1858"
+        },
+        {
+          "path": "services/iam-service/src/main/resources/db/migration/V4__preserve_iam_consent_history.sql",
+          "sha256": "ffba958ccfe4aa3de3f7d58eb7548853056c95c86d8b65146a3d456915a00373"
+        },
+        {
+          "path": "services/iam-service/src/main/resources/db/migration/V5__create_self_owned_jwt_auth_schema.sql",
+          "sha256": "2c3b4f4b4c3bc72caeb3f10d03be106a0eb0d125ee398c0c5c71073554d000a4"
+        },
+        {
+          "path": "services/iam-service/src/main/resources/db/migration/V6__create_password_reset_challenges.sql",
+          "sha256": "ba57134e77313e2510546a928f2636f9cb3565bcc862847648d29c21800afbfc"
+        },
+        {
+          "path": "services/iam-service/src/main/resources/db/migration/V7__create_iam_idempotency_record.sql",
+          "sha256": "3bda77c8d0fcfeda5751e7d98a4a25ebffbd6ff444ff00ff1e88f3ea61f1c9e1"
+        },
+        {
+          "path": "services/iam-service/src/main/resources/db/migration/V8__create_iam_rate_limit.sql",
+          "sha256": "c598aada47852427839478ee6248c4438e849b10cf17fa4fdd78b42eb5cd6d0c"
+        },
+        {
+          "path": "services/iam-service/src/main/resources/db/migration/V9__encrypt_idempotency_response_snapshots.sql",
+          "sha256": "c968e0adbb25e30e731cde528dc425b8a8348dabb2f6056f5406a8a6b749e6f6"
+        },
+        {
+          "path": "services/iam-service/src/test/java/com/englishflow/iam/ConsentHistoryEntryTest.java",
+          "sha256": "1e79c47cfd3844910607a42adbc98503f77959a64aa8ad40d5fe4de10af9c49b"
+        },
+        {
+          "path": "services/iam-service/src/test/java/com/englishflow/iam/IamB12PermissionMigrationTest.java",
+          "sha256": "9351f16d8516df7dcc903066664037e9a3ab8975aac4b2e474c7ba38e975c9c2"
+        },
+        {
+          "path": "services/iam-service/src/test/java/com/englishflow/iam/IamConsentIdempotencyRollbackSafetyTest.java",
+          "sha256": "a90c061b035987c1019a600a87f82c4213803a90acc83a388f63a584883c3080"
+        },
+        {
+          "path": "services/iam-service/src/test/java/com/englishflow/iam/IamConsentJdbcPersistenceContextTest.java",
+          "sha256": "1614ce3433615a1516f7d8ff5895bbec765409388e16550cbd27817a97c54ab4"
+        },
+        {
+          "path": "services/iam-service/src/test/java/com/englishflow/iam/IamConsentPolicyJdbcPersistenceContextTest.java",
+          "sha256": "7c7639f478174c53dc3f9ff95f5003eb806f1cc241b87417344b5170417afe25"
+        },
+        {
+          "path": "services/iam-service/src/test/java/com/englishflow/iam/IamJdbcPersistenceContextTest.java",
+          "sha256": "7c3a27b89621546c4da86af561c12c3432f23d37d7629ce8c3bb9d3525027400"
+        },
+        {
+          "path": "services/iam-service/src/test/java/com/englishflow/iam/IamJwtAuthenticationTest.java",
+          "sha256": "24cee01a4331c57de3821ce09b4d8aec606c042e31fab389b35f66868a488091"
+        },
+        {
+          "path": "services/iam-service/src/test/java/com/englishflow/iam/IamNotificationPreferencePermissionMigrationTest.java",
+          "sha256": "0dcdf3e80c18d0d9a1ad112ffc49e449a040301ce91eab76153b44addf1462d8"
+        },
+        {
+          "path": "services/iam-service/src/test/java/com/englishflow/iam/IamPolicyControlServiceTest.java",
+          "sha256": "f52a72287c678c032e4b99110e95d8206595677c81947a29877f4341b0a39289"
+        },
+        {
+          "path": "services/iam-service/src/test/java/com/englishflow/iam/IamPolicyIdempotencyRollbackSafetyTest.java",
+          "sha256": "6746ea8d07a0db6c3c13da79db1d2d70316cb0333b8e0827b7f1216db81c9102"
+        },
+        {
+          "path": "services/iam-service/src/test/java/com/englishflow/iam/IamPolicyJdbcPersistenceContextTest.java",
+          "sha256": "8eeaf0e06c3cc1f0e36070083d57b9bc0a586fc4aa8dcc2de757ced10f0d3ceb"
+        },
+        {
+          "path": "services/iam-service/src/test/java/com/englishflow/iam/IamSecurityFactsTest.java",
+          "sha256": "c078866f0f9ba00c84cad7112d91966a1db98d069fa19dcfff2b6f4e46fb02cf"
+        },
+        {
+          "path": "services/iam-service/src/test/java/com/englishflow/iam/IdempotencyV13MigrationSecurityTest.java",
+          "sha256": "47ca1da71462005a7f2dc80a4b1b58b5b5ae73bc616371c576986ad41e000c21"
+        },
+        {
+          "path": "services/iam-service/src/test/java/com/englishflow/iam/PasswordAccountConcurrencySecurityTest.java",
+          "sha256": "8ba00b654167626cb2d84f0125db8ec841c061616bd74de779eafd7079e13e4e"
+        },
+        {
+          "path": "services/iam-service/src/test/java/com/englishflow/iam/auth/JwtTokenServiceTest.java",
+          "sha256": "a6ac38fb74427b32f85bdf0bc81448395044b6770b25f4dc8fd63306290e41d3"
+        },
+        {
+          "path": "services/iam-service/src/test/java/com/englishflow/iam/auth/ServiceTokenServiceTest.java",
+          "sha256": "11d74c358f801b9f72579b5db91e759bf07dbb6e3214a20c7957b977c338e967"
+        },
+        {
+          "path": "services/iam-service/src/test/java/com/englishflow/iam/domain/IdempotencySecurityHardeningTest.java",
+          "sha256": "e0e1ba98fdd7a6a3b07f196baf21233b3c44605c786109788e916151b4ae00a0"
+        },
+        {
+          "path": "services/iam-service/src/test/java/com/englishflow/iam/migration/IamFlywayMigrationTest.java",
+          "sha256": "7f4b06ca8ccb7498574e8e95a59ac36a9b4a0811e57a57f9fa7dd990bd979bb5"
+        },
+        {
+          "path": "services/iam-service/src/test/java/com/englishflow/iam/web/IamAccountDeletionSafetyBoundaryTest.java",
+          "sha256": "f2a1c2f17f19575f102b5458df86ce657a39f7ebe150f99884f835f2722aa15c"
+        },
+        {
+          "path": "services/iam-service/src/test/java/com/englishflow/iam/web/IamAccountSecurityControllerTest.java",
+          "sha256": "bdb617293373bb0085155959c51873fe38cb1afc089a6b710c44d0de3ba1d25d"
+        },
+        {
+          "path": "services/iam-service/src/test/java/com/englishflow/iam/web/IamLearnerPermissionGateTest.java",
+          "sha256": "86d54d8d3e824b6dd23e5ab9b9387bae27f85fabfbadbe90d30b863503137230"
+        },
+        {
+          "path": "services/iam-service/src/test/java/com/englishflow/iam/web/IdempotencyCredentialReplayControllerTest.java",
+          "sha256": "7141f3f98724b0426fda89ed8be72c19b873b7a9affb6c2e7f78d27f18a3d7b3"
+        },
+        {
+          "path": "services/iam-service/src/test/resources/application-test.yaml",
+          "sha256": "4ea0688c5e4f8823757668395eb7eb0fd0871b6f598aecec86fa97f977d10e0e"
+        }
+      ],
+      "inputSnapshotSha256": "44b16e34ad15a137b1052f88fa461c60e0e38081b6d0819f8082701af32fc4c9",
+      "inputsUnchangedAfterBuild": true,
+      "commands": [
+        {
+          "executable": "/Users/Admin/.local/tools/maven/bin/mvn",
+          "exitCode": 0,
+          "startedAt": "2026-10-08T03:36:58.497944+00:00",
+          "finishedAt": "2026-10-08T03:37:06.278933+00:00",
+          "log": "evidence/redesign/2026-10-08/R1-002/gateway/iam-service-package.log",
+          "logSha256": "642118b32b7aa3beea937d9dcb78156d5874d9ebe8f2a7325d73d0c6bb5e3819",
+          "argv": [
+            "-f",
+            "services/iam-service/pom.xml",
+            "clean",
+            "package",
+            "-DskipTests"
+          ]
+        }
+      ],
+      "outputs": [
+        {
+          "path": "services/iam-service/target/iam-service-0.1.0-SNAPSHOT.jar",
+          "bytes": 43847067,
+          "sha256": "fc76f6a9a69c319f7119619288f8d1b1dcf5e6470047e7bc8a82e9a2a15a8a97"
+        }
+      ]
+    },
+    {
+      "module": "services/learner-service",
+      "inputFiles": [
+        {
+          "path": "config/local-ports.json",
+          "sha256": "0a6b43d35379fed2e679961b34a0ad0e9ec1888dfb7d1a2c76eed20706e5ca95"
+        },
+        {
+          "path": "config/toolchain-baseline.json",
+          "sha256": "3b4d41a16d3278bee54187eee6a3bcb5d8dea5f3aa353ff468be502e71cc0143"
+        },
+        {
+          "path": "pom.xml",
+          "sha256": "d663a16aea33c574e89b3062085adf916f0d7d4d6d14224e73445a825dc4ea0e"
+        },
+        {
+          "path": "services/learner-service/pom.xml",
+          "sha256": "f0bad98b7c03b7efb07d2d4bd708d80f26c161b984cd8148c3efd95926de2d07"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/LearnerServiceApplication.java",
+          "sha256": "c5bfe51fc0a492e1de609b2bfc903a86a21e9632f431d1070404dd3684936cc3"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/adapter/failclosed/FailClosedLearnerProfileStore.java",
+          "sha256": "5783a2ac2f1d237c5caed4e3504c5666b17b30addb523e3705791fefda998f0d"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/adapter/failclosed/FailClosedLearnerTargetIdGenerator.java",
+          "sha256": "337788fd38a323d64fda6824e36df3dee06a53724a580dda17ed01102f1c67ac"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/adapter/jdbc/JdbcLearnerProfileStore.java",
+          "sha256": "bb1621b343696a46a8afb28f867ce5adb7b860bcabe9404b29cb97e5f11e170b"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/adapter/jdbc/JdbcLearnerTargetIdGenerator.java",
+          "sha256": "bbdc5ede2c93b3ec5ebf3a8ec3f0713cfd567014121639ef1660b5bd87ad15cd"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/adapter/memory/EmptyLegacyLearnerReadModel.java",
+          "sha256": "c1323b1fd6ee3fc0786f952bf4df8f702707823369cb68530d685366994fb2c6"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/adapter/memory/InMemoryLearnerProfileStore.java",
+          "sha256": "21568180c7a54b8ba6aa01c0c1024326e022ddde315f77d5c066cbf448cea9bc"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/adapter/memory/InMemoryLearnerTargetIdGenerator.java",
+          "sha256": "39f1ecc11af64c0e68c3723c33552d805b34c774afbdcabbfcb536c31a53bece"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/adapter/shadow/LearnerProfileShadowAdapter.java",
+          "sha256": "c3562d03f9e0d69dbae7247ff6dcbf574625ce2085f4f5fee97ab9bb6c4aa8ff"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/application/DefaultLearnerProfileCommandService.java",
+          "sha256": "ce0faf54a5b4dc5e854ac7e60926a30e023a918a699ca99dd13d8abc2ae3d05f"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/application/DefaultLearnerProfileQueryService.java",
+          "sha256": "7cbf54743cc26d07b8b253f3d15cb49f4e891875322eb7c5a36e01e3d2616565"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/application/FirstDayView.java",
+          "sha256": "01bfa35c5d070b5da2c9d9fabcb6652356fde8c4ae6fa1a6386c2bffda8d5c71"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/application/LearnerAdminService.java",
+          "sha256": "bcedf0344c490537b07a25ee0f01a4ea3a8b37c506e627e2af2f2324d3fee9af"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/application/LearnerProfileCommandPort.java",
+          "sha256": "071e34fc05fd06177236da2dc1da1bc1443880da9f76a6767f512b9ec58a0040"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/application/LearnerProfileQueryPort.java",
+          "sha256": "145c21ce62587338a1301839dcddc895eb363f320634e8777615851e43499b47"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/application/LearnerProfileView.java",
+          "sha256": "71194f07e3499fb5c0d2249c06cd25bd89cd11d87b70ad145a47888238215965"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/application/MutationResult.java",
+          "sha256": "934a913e5706a40987f871db703e7267118cc3c8762f8604abc01d5db7c60c21"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/application/RequestMetadata.java",
+          "sha256": "8bf13b73f794257d08e1e7fed856d2067685a9975d2b5ff60bdb69701a8f121e"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/application/SetLearningGoalCommand.java",
+          "sha256": "41b582f3ddd2bf5a687f4c9835383574b0262a101562cc61be83d8f8722b2ea2"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/application/TargetPinService.java",
+          "sha256": "d6e232683cacc1c47ca9a821d93ad809ce329fc5e09fa161261c4ee618dcc2f1"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/application/UpdateLearnerPreferencesCommand.java",
+          "sha256": "385bfd52bd8a0ffeb7284379f10d7474ecaa077f48202c92fb54bf0b7858a0c6"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/application/UpdateLearnerProfileCommand.java",
+          "sha256": "00af097bd1eca0c790264c1066985a16a52c2df6dc0da87e2333391f40f89292"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/config/LearnerPersistenceConfiguration.java",
+          "sha256": "4061169f6aa0c371cab738919e95e1b7256d3a522e79a25d17e4268feb75d4c7"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/config/LearnerPersistenceProperties.java",
+          "sha256": "2b6b5d39e8572fa3c7459c34775eebf0aa6d01126652380fda34eb44f622fd51"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/config/LearnerServiceConfiguration.java",
+          "sha256": "7bb0625f8409f311b85b3062f498381668f8fe0217003758719bbca83050fd70"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/config/LearnerServiceProperties.java",
+          "sha256": "b7f95cd78932fef92dc636195a371e3eb5aed5f855d1bb7d8d10203d9ea71ee4"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/domain/AssessmentState.java",
+          "sha256": "6e56e3c859ca60216808c4f85777337de98adabff4834b7e4c6db1a4120aeba4"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/domain/AuthorizationDecision.java",
+          "sha256": "7b32ee69380c5ada9ca20ee1efc87bff1fd85a7288f73194dc5da9b18c879255"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/domain/CefrLevel.java",
+          "sha256": "e239a17a1b213b431731340538a9955fb551ce9f7f267a26ff4a660c8a6ac037"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/domain/ClientAuthorityClaims.java",
+          "sha256": "bb05ec98f0650435349999ff4b8f98e0452a5f4c3a5aefa2bf1b9cc1bd8e399f"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/domain/ConsentState.java",
+          "sha256": "241459b107d2f1fce3b4df833b1e9128be2b11340ba53ed378af702975edfc86"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/domain/DailyStudyMinutes.java",
+          "sha256": "1a5e1281e625777eb710471f0f02b448c0da0904d1f4efb52a079a97794b0aa1"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/domain/FirstDayProjection.java",
+          "sha256": "711e9fa067b8fb03840448912141f565490a466b626ccfd71702f35e4c256a7a"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/domain/GoalType.java",
+          "sha256": "8475ebf2363284a733005934978a2e07758ee6dcef0a6ef103c7ccffa20af981"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/domain/IdempotencyKey.java",
+          "sha256": "e3c78ac9bbe718fab603ce208435bb165dabc00359a9103c23f1f8fc45df02f1"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/domain/IdempotencyRecord.java",
+          "sha256": "a6f1028d920b2178fd0b8f3bce04c8d1d5686cc9949b929accb07a211696ac9a"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/domain/LearnerAccessPolicy.java",
+          "sha256": "0e21d3fed9da034f45ac08252aeed7940ddad9c0789da35c2c1ef3410e86a138"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/domain/LearnerAuthorizationException.java",
+          "sha256": "ee1a1521032ea8bc9afad737443ae1216d3492c2c996665ce0dc5b108c42ff57"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/domain/LearnerCommitResult.java",
+          "sha256": "e5a45ab659c467f6f499a98b6344d68dc66aa5e08bae6aafd3366b65627ea5dc"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/domain/LearnerDecisionCode.java",
+          "sha256": "33235e8e5eb643134cab3a1721d138d629a6c6a653e04b6c7e7bf49f48f90668"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/domain/LearnerDomainException.java",
+          "sha256": "ecb5a617bdd17ffab7a1542a2de0305970c4d110ce8680e163bfdab996405f97"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/domain/LearnerMutation.java",
+          "sha256": "a6ff58b3272bde362c4202988a029f91d64c3f2173ff84c03095fdae8327112b"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/domain/LearnerOutboxEvent.java",
+          "sha256": "02bef42b652c168502831ee2bc1d202f6b28c85e32aeb27f330d06de77b467e3"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/domain/LearnerPreferences.java",
+          "sha256": "df7538ce3799a512110e939a9800d29341ae211b45e3228cf6bf21cf74559a2a"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/domain/LearnerPrincipalContext.java",
+          "sha256": "b7e161cf0f5816e56e4649497a408a47b12a0a53c8df7d7fd3cc3ba0fd8ad011"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/domain/LearnerProfile.java",
+          "sha256": "6584a204e0feda51d068fc889ee4d27c011c203f289d129a6dbcf687b29fd439"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/domain/LearnerTenantScope.java",
+          "sha256": "e1a063da1eef24fed0ee740ca8ae09120b5932fa99807df80765fe6d817db027"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/domain/LearningGoal.java",
+          "sha256": "681d7dbcacbc6182099da7ea4ee2733ec9c7e9fe4e63daed0dbe6fa1c5839802"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/domain/LegacyLearnerSnapshot.java",
+          "sha256": "d27a3ab8ad34721c3ce438715b6d8db7f5d2613861c63546ad543d165d125c39"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/domain/OnboardingState.java",
+          "sha256": "156f601692d7ad8368cce880d84a285870ce8733f8f1f106702bf8f59a5202f2"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/domain/ProfileSource.java",
+          "sha256": "1b9d1aef9683b15b3bc8324dd9f727d11376607c636cdbded1cf72fbb8312273"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/domain/ThemeMode.java",
+          "sha256": "711d179d42fec92b94c779b3f5c0d18fb184f770c71a4a108730a5f7b30f425a"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/integration/LearnerReadProjection.java",
+          "sha256": "bd45d61fb0051dd76ca7b8a205b3979b39201b5b24d46291c1aa798f46a26180"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/integration/LearnerReadProjectionPort.java",
+          "sha256": "9aec89be75972d9015bfa51957da8a267ca12f13670c0e37191e12e3c161eab1"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/port/LearnerProfileStore.java",
+          "sha256": "4081f3350decb6a3c026b955a420ecda20493dd2c55ace90eb02be4223cfa8a3"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/port/LearnerTargetIdGenerator.java",
+          "sha256": "66f880fd085e4fd00ef17e75908222312df22d225b8d29ddd2befabc103b32c0"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/port/LegacyLearnerReadModelPort.java",
+          "sha256": "5c486e465aaa914bccf7bbd24d1e930c647fd9662b57c289d7ecb65322729a31"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/security/ClientAuthorityHeaderFilter.java",
+          "sha256": "8c26164691d98fd14317dc7e6f758dcbb55e006bb5a1e66534f4939fd39a72df"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/security/FailClosedPep.java",
+          "sha256": "c114019776ce99ef11e48667b388f10a5609236da4c005a67d183fde959bab2e"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/security/IamEnvelopedJwkSource.java",
+          "sha256": "729d17ad82942f07ae751e0bc63a5a59f75fd1650199b8a97c5ffc8127465723"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/security/LearnerJwtAuthenticationConverter.java",
+          "sha256": "6d43bd6d850ca8ff34843305d44930193877125bd2953c896e39e031992df0b4"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/security/PdpActivationGuard.java",
+          "sha256": "df2f261ea201b92c6e8adc46acd54109db266ee98fe55b8f9e052fd702ca17ff"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/security/PdpDecision.java",
+          "sha256": "de2b1c2226a42e8485929d2740a6922ff2ee8a29613fed5b06239958c867830b"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/security/PdpPort.java",
+          "sha256": "fc17f8e78241614576eea7d036349ab4d7a8725eb6d3753a0faf103a86d63a27"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/security/PdpRequest.java",
+          "sha256": "832bdb33ab0f69c43482aa5da5ecc23b1f924830418b07baa2f42448e59fd30d"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/security/ResourceServerSecurityProperties.java",
+          "sha256": "807f6dfd12837f6a857dd97e91baac01339d189a96a18f77962ea74b1066a545"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/security/SecurityConfiguration.java",
+          "sha256": "0eb51e43736f5b76049bb51af1eb33672526dbbf23159b4ec3cf6e3de2ae11fe"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/security/UnavailablePdpPort.java",
+          "sha256": "04fb6c5ba63ff5f69346a0e3d633ed2229401d3ec551e9551dcf4cca38937d63"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/web/B25LearnerJdbcController.java",
+          "sha256": "9169d839030d4204aa29b4299d71749573186783c5835d28442ccb5167c00b82"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/web/LearnerAdminController.java",
+          "sha256": "c8a09299b214351a1d10131d698fab1858c0e530029d38b1c2bb704e93e2b4f1"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/web/LearnerAdminPrincipals.java",
+          "sha256": "400a55bc2da54ca59598bebc308fcfddeefd512cf16b56e5882b30299b50cec5"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/web/LearnerHttpConfiguration.java",
+          "sha256": "5aad67a9675991b7e50295cd30b60caee7917bcc6fa728406c7a496b0f6e4b40"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/web/LearnerHttpController.java",
+          "sha256": "b55716399811e37083c03c304a4599a6fbcd50029ede6a2e9746641fc46d3ff7"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/web/LearnerHttpExceptionHandler.java",
+          "sha256": "ad70b47cf8814c2bb0a51963d58ea91709b5417944d0a2c128d35b53ce0b8f9c"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/web/LearnerHttpPrincipals.java",
+          "sha256": "579de91baf1f7d38520e37a34c33f2344fd2abccd0f2d7859b8401dc5c88f021"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/web/LearningPlanViewClient.java",
+          "sha256": "f23c467a3a6aa294248a4eb39f021a866e1194be12b96cbf27b96678f6dfddec"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/web/TargetPinController.java",
+          "sha256": "55667417c4123454dfeb98d1a104b3a6d3f35c8192971d6f319818c988a5c69e"
+        },
+        {
+          "path": "services/learner-service/src/main/java/com/englishflow/learner/web/VerifiedLearnerPrincipalFactory.java",
+          "sha256": "3b377ab281de7a51bf7b23f615a09f56ea6a4de009e71f24ff5f2714a18f522b"
+        },
+        {
+          "path": "services/learner-service/src/main/resources/application.yml",
+          "sha256": "ea73c73b9d804c895d5e980a9a2dc698fbc8f7176bd7f96bd3fec5c949238f19"
+        },
+        {
+          "path": "services/learner-service/src/main/resources/db/migration/V10__export_lifecycle_columns.sql",
+          "sha256": "1126d05ab9a760835cbf67f93599b7230c27da3fc3d1564842491c19ca2a3137"
+        },
+        {
+          "path": "services/learner-service/src/main/resources/db/migration/V11__goal_language_cert.sql",
+          "sha256": "ff30aee41d5edc765be6082866bf155b12f408d09fd9dc850a049eb653731dfc"
+        },
+        {
+          "path": "services/learner-service/src/main/resources/db/migration/V12__target_content_pin_and_study_days.sql",
+          "sha256": "5333d4cce2b78e37876e4bcec21942fad32c71c738d389ee662a596656de85d2"
+        },
+        {
+          "path": "services/learner-service/src/main/resources/db/migration/V1__create_learner_service_schema.sql",
+          "sha256": "dfab2886277a2cacbbb41d5393d2c6b9739eb3213320ff1a668b3caf81bb5cef"
+        },
+        {
+          "path": "services/learner-service/src/main/resources/db/migration/V2__create_learner_first_day_projection.sql",
+          "sha256": "67347d18f30d4f0bf068b8ca5733a718ac750ec6965fcb1ed43d9242e8e036cd"
+        },
+        {
+          "path": "services/learner-service/src/main/resources/db/migration/V3__durable_target_ids_and_key_lengths.sql",
+          "sha256": "9372f13482d9d942240371820d2be81fe5abff6a2c01268c305eea94d747c4d3"
+        },
+        {
+          "path": "services/learner-service/src/main/resources/db/migration/V4__create_b25_learner_runtime.sql",
+          "sha256": "c2a9dd5ce4600fca34d8932f5e54db58301d0cce66daf83d6d5ebde40907568b"
+        },
+        {
+          "path": "services/learner-service/src/main/resources/db/migration/V5__add_b25_profile_preferences.sql",
+          "sha256": "566d1a0a74f636814fde804c802ce84273b3ead4c8ba3f113412b1bbb1fcfe13"
+        },
+        {
+          "path": "services/learner-service/src/main/resources/db/migration/V6__create_b25_privacy_export_jobs.sql",
+          "sha256": "45afb00a178e03618712edd5e13ba8199f288e1a33b130dbc729eaa0dd79c20d"
+        },
+        {
+          "path": "services/learner-service/src/main/resources/db/migration/V7__create_b25_onboarding_options.sql",
+          "sha256": "c2bf62b60d5b776e026012e84fbb25ccd1770a0f0a951922c94edab9ae4c267a"
+        },
+        {
+          "path": "services/learner-service/src/main/resources/db/migration/V8__freeze_b25_daily_quota_minutes.sql",
+          "sha256": "c5e04cead75aeb53db74a51caa1ba635a47b8a11cc7b222bfbdcdc410f02f010"
+        },
+        {
+          "path": "services/learner-service/src/main/resources/db/migration/V9__standardize_learner_outbox_event_shape.sql",
+          "sha256": "9850e485baae3a12c2ea4c36f279930eb8cd018a7eeae2ed7003368e10e26adc"
+        },
+        {
+          "path": "services/learner-service/src/test/java/com/englishflow/learner/LearnerDomainTest.java",
+          "sha256": "ae41765c19e6e966b6db346848a7329ffadfd8c7fadad374bd46540dfb44f3dd"
+        },
+        {
+          "path": "services/learner-service/src/test/java/com/englishflow/learner/application/LearnerAdminServiceTest.java",
+          "sha256": "bf3101cfe5c461f8c7a2bcf74a613102d09634e3ab092ec4cd15c1ab8344860c"
+        },
+        {
+          "path": "services/learner-service/src/test/java/com/englishflow/learner/application/TargetPinServiceTest.java",
+          "sha256": "04d55f3403b2706e59321be87251ce4103515aea69ed3204ca81dec95613f353"
+        },
+        {
+          "path": "services/learner-service/src/test/java/com/englishflow/learner/domain/LearnerOutboxEventTest.java",
+          "sha256": "e5fb108c04c5901fadf248d33380e7804f0f15da037c20716b153aeb73c2eb40"
+        },
+        {
+          "path": "services/learner-service/src/test/java/com/englishflow/learner/migration/LearnerFlywayMigrationTest.java",
+          "sha256": "819b197c6c40c930a9d21deb0511e112b7efa9f308ccb3cfd8b46e7197ac7832"
+        },
+        {
+          "path": "services/learner-service/src/test/java/com/englishflow/learner/security/ClientAuthorityHeaderFilterTest.java",
+          "sha256": "ae1ede43878fcdbf52c35bb5d77c02f00bfa53829b88dc86f35ae6f67401b1a5"
+        },
+        {
+          "path": "services/learner-service/src/test/java/com/englishflow/learner/security/FailClosedPepTest.java",
+          "sha256": "8666874e4477e1613a1d5c84c13924af4ebfa75d7ff6d1fa7436740b6ad3c4ed"
+        },
+        {
+          "path": "services/learner-service/src/test/java/com/englishflow/learner/security/IamEnvelopedJwkSourceTest.java",
+          "sha256": "f1cbaf4854ada6543c6499116b1cb3065c5c472e8b834ec497e016cb0941e567"
+        },
+        {
+          "path": "services/learner-service/src/test/java/com/englishflow/learner/security/LearnerJwtAuthenticationConverterTest.java",
+          "sha256": "9167c9fcbda2b13476b3810ad751f687202ddcc63867874f54b9214194b3d7e0"
+        },
+        {
+          "path": "services/learner-service/src/test/java/com/englishflow/learner/security/LearnerJwtDecoderNegativeTest.java",
+          "sha256": "71aaf6995c4d6a04973830b2ba9836cc779ef488123c8b04502e5e7da4520bce"
+        },
+        {
+          "path": "services/learner-service/src/test/java/com/englishflow/learner/security/PdpActivationGuardTest.java",
+          "sha256": "fe37d6f064f42ec9cd69a9dc8b621124148ec1d01007338e9a497c5c2a761b4c"
+        },
+        {
+          "path": "services/learner-service/src/test/java/com/englishflow/learner/web/B25LearnerJdbcAuthorizationTest.java",
+          "sha256": "d8f35b3001aa12c51c274864cf085282f9df6be48b024d43c3e924a35a52a65b"
+        },
+        {
+          "path": "services/learner-service/src/test/java/com/englishflow/learner/web/LearnerAdminPrincipalsTest.java",
+          "sha256": "02dfd76407f40d8a450d116bb74dfd4cab4289bbd1f4868dcc7519fbe36dc13c"
+        },
+        {
+          "path": "services/learner-service/src/test/java/com/englishflow/learner/web/LearnerFirstDayHttpMappingTest.java",
+          "sha256": "7ad2241ac6e2c2a83b602de620903d2fc0b624c14f33a5686eac87ffb9df8a4f"
+        },
+        {
+          "path": "services/learner-service/src/test/java/com/englishflow/learner/web/LearnerHomePlanProjectionTest.java",
+          "sha256": "1521c018e4dbb924e83bbe2dbadb34726ff423546622a880dad3a3626eee32b8"
+        },
+        {
+          "path": "services/learner-service/src/test/java/com/englishflow/learner/web/LearnerHttpPrincipalsTest.java",
+          "sha256": "d9f12f3194054b57ebdce3e340c2b38ba0c602e9b40af7afe4f73cfb20c59389"
+        },
+        {
+          "path": "services/learner-service/src/test/java/com/englishflow/learner/web/LearnerTargetGoalCodeMappingTest.java",
+          "sha256": "cde0bcfdd44e60d34709f6a82e478ea09948fb757d0c05e14cb0f450ed1f5dbe"
+        }
+      ],
+      "inputSnapshotSha256": "a63ed1cfd0f2b85598fcfc5f7705b55c56338b88c06273b1514cf3c944f31e2f",
+      "inputsUnchangedAfterBuild": true,
+      "commands": [
+        {
+          "executable": "/Users/Admin/.local/tools/maven/bin/mvn",
+          "exitCode": 0,
+          "startedAt": "2026-10-08T03:37:06.350619+00:00",
+          "finishedAt": "2026-10-08T03:37:11.256995+00:00",
+          "log": "evidence/redesign/2026-10-08/R1-002/gateway/learner-service-package.log",
+          "logSha256": "b6d1bf9cb1dc163c813b3fb9f3e02d51dbbb0f55971eead19c2e4eb567a19287",
+          "argv": [
+            "-f",
+            "services/learner-service/pom.xml",
+            "clean",
+            "package",
+            "-DskipTests"
+          ]
+        }
+      ],
+      "outputs": [
+        {
+          "path": "services/learner-service/target/learner-service-0.1.0-SNAPSHOT.jar",
+          "bytes": 41555971,
+          "sha256": "ea83b9d93e6fc034fddb8eded4a7c4d636ee218b965224fc4056ddea54cf5da0"
+        }
+      ]
+    }
+  ],
+  "scope": "Skip tests packaging only. No services started; no database or Docker mutation."
+}

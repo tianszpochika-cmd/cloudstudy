@@ -1,0 +1,131 @@
+{
+  "kind": "R1_002_REGISTRATION_RUNTIME",
+  "status": "PASS",
+  "build": {
+    "sourceJarProvenance": "CURRENT_SOURCE_BUILD_RECEIPT_VERIFIED",
+    "sourceToJarVerified": true,
+    "module": "services/api-gateway",
+    "inputSnapshotSha256": "044d1b9befc8bbbeb5c49a4a8ae88075d5cf6ba427d859123a0954b7bc776952",
+    "output": {
+      "path": "services/api-gateway/target/api-gateway-0.1.0-SNAPSHOT.jar",
+      "bytes": 73128627,
+      "sha256": "db67eeae844ff68b3d2d58d5668151a78bb8a02696a159260b168227b6ace1c3"
+    },
+    "dynamicAuthority": false,
+    "receiptPath": "evidence/redesign/2026-10-08/R1-002/gateway/build-receipt.json",
+    "receiptSha256": "111ebbed9c696c608c85fb2b43eb026d082bd035471436e44bd70db750f7a651"
+  },
+  "businessCardOnly": true,
+  "tlsCasesOldD1": "NOT_EXECUTED",
+  "checks": {
+    "flyway": {
+      "successfulVersions": 17,
+      "failed": 0,
+      "maxVersion": 18
+    },
+    "cleanBaseline": {
+      "principals": 0,
+      "accounts": 0,
+      "sessions": 0,
+      "devices": 0,
+      "audits": 0,
+      "completedIdempotency": 0
+    },
+    "registration": {
+      "status": 201,
+      "cacheControl": "no-store",
+      "cookie": {
+        "name": "yuxuexing_refresh",
+        "path": "/api/v1/auth",
+        "httpOnly": true,
+        "secure": true,
+        "sameSite": "Lax",
+        "positiveMaxAge": true,
+        "bodyRefreshTokenPresent": false
+      }
+    },
+    "token": {
+      "signature": "RS256_VERIFIED",
+      "issuer": "http://127.0.0.1:18087",
+      "audience": "yuxuexing-api",
+      "adultGate": "NOT_EVALUATED",
+      "consentState": "UNKNOWN",
+      "subjectOwnerEqual": true,
+      "tenant": "platform",
+      "phase": "phase-1",
+      "learningPermissionCount": 0,
+      "permissionCount": 4
+    },
+    "signer": {
+      "algorithm": "RSA",
+      "bits": 3072,
+      "externalPersistedKey": true
+    },
+    "durableFactLinks": {
+      "matchingAccountPrincipalSessionDevice": 1,
+      "adultFact": "PENDING",
+      "session": "ACTIVE"
+    },
+    "durable": {
+      "principals": 1,
+      "accounts": 1,
+      "sessions": 1,
+      "devices": 1,
+      "audits": 3,
+      "completedIdempotency": 1
+    },
+    "rollback": {
+      "status": 503,
+      "unchangedCounts": {
+        "principals": 1,
+        "accounts": 1,
+        "sessions": 1,
+        "devices": 1,
+        "audits": 3,
+        "completedIdempotency": 1
+      }
+    },
+    "gatewayHttpsPositive": {
+      "route": 200,
+      "independent": 200
+    },
+    "gatewayWrongIndependentTrust": {
+      "route": 200,
+      "independent": 401
+    },
+    "gatewayWrongRouteTrust": {
+      "route": 502,
+      "independentRoute": 502,
+      "independentClientProof": "positive separate client already verified; authenticated forwarded request also needs route TLS"
+    },
+    "learnerFlyway": {
+      "successfulVersions": 12,
+      "failed": 0,
+      "maxVersion": 12
+    },
+    "servicePep": {
+      "directService": "learner-service",
+      "port": 18088,
+      "path": "/api/v1/learner/targets",
+      "status": 403,
+      "gatewayBypassed": true,
+      "errorCode": "CONSENT_REQUIRED",
+      "domainAdapter": "jdbc, dedicated learner-owned clean schema; denial before domain read"
+    }
+  },
+  "ownedChildrenStopped": true,
+  "portStates": [
+    {
+      "port": 18070,
+      "state": "FREE",
+      "pids": []
+    },
+    {
+      "port": 18087,
+      "state": "FREE",
+      "pids": []
+    }
+  ],
+  "learnerPortFree": true,
+  "cleanupErrors": []
+}

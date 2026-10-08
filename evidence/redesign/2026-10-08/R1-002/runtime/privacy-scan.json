@@ -1,0 +1,15 @@
+{
+  "kind": "R1_002_PUBLIC_DELIVERY_PRIVACY_SCAN",
+  "scope": "own R1-002 evidence plus seven current owned/shared source files",
+  "filesScanned": 41,
+  "protectedKnownValuesCompared": 85,
+  "rawProtectedPathsArchived": false,
+  "matches": {
+    "knownProtectedSecretMatches": 0,
+    "privateKeyBlocks": 0,
+    "compactAccessTokenMatches": 0,
+    "syntheticRegistrationIdentifierMatches": 0
+  },
+  "result": "PASS",
+  "limits": "Checks known test config secrets, private key PEM blocks, compact access tokens and generated synthetic identifiers; does not claim a general secret detector."
+}

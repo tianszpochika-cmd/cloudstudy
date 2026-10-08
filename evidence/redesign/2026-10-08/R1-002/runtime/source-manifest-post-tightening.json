@@ -1,0 +1,58 @@
+{
+  "kind": "R1_002_POST_RUN_TOOL_SOURCE_MANIFEST",
+  "status": "DELIVERED_FOR_INDEPENDENT_REVIEW",
+  "actualExecutionScriptSha256": "9db3dc4cf3333046633319a109eb020d0163942155acf035d302f42d9c41b0a7",
+  "executionManifest": "source-manifest.json",
+  "executionApproval": "run-approval.json",
+  "executionResult": "runtime-results-925ac824.json",
+  "latestToolWasBusinessExecuted": false,
+  "sourceFiles": [
+    {
+      "path": "scripts/redesign/r1-002/business-runtime.mjs",
+      "sha256": "eda7075959c60f4d8a2bd133a123367f4d0e1ead6088f463a125f9966e1af570"
+    },
+    {
+      "path": "scripts/redesign/r1-002/business-runtime.test.mjs",
+      "sha256": "8f77d8374011748250c4aa90796e9c3c8cfa6f96a91f498682fc5a6bcb298ea2"
+    },
+    {
+      "path": "scripts/redesign/r1-002/GatewayTlsProbe.java",
+      "sha256": "057a857b09f46c18e7e6409e1c21d74f400cd7c9d7035d80e0809492096b2b56"
+    },
+    {
+      "path": "scripts/redesign/r1-002/lifecycle.mjs",
+      "sha256": "9023abcb2db725958196f67b2651690d027606d30051a37d8f7e299326c780c1"
+    },
+    {
+      "path": "scripts/redesign/r1-002/lifecycle.test.mjs",
+      "sha256": "8a5c32b7cc773847c944f2f37d6b88fb0e33e23d9b697b97a3db86bb19d9ef35"
+    },
+    {
+      "path": "scripts/redesign/r1-002/README.md",
+      "sha256": "abd0185dd4574561fd41fbc2708fc941b9de2ec7c71ad5212de412eb9f360000"
+    },
+    {
+      "path": "scripts/redesign/r1-002/prepare.mjs",
+      "sha256": "bfb9b91f19f7a50c45c53347549ffbe5ea9d9e9148a5da1ff1f409943258c399"
+    }
+  ],
+  "unchangedSharedPrepare": true,
+  "postRunPrivilegeEvidence": [
+    "permission-readback-final.json",
+    "owner-table-readback.json",
+    "readback-summary.json"
+  ],
+  "tests": {
+    "executedToolCombination": {
+      "passed": 29,
+      "log": "tool-tests-current.log"
+    },
+    "latestBusinessTargeted": {
+      "passed": 5,
+      "log": "business-tests-grant-literals.log"
+    },
+    "overlappingBusinessTests": 4,
+    "combinedLatestThirtyWasRerun": false
+  },
+  "acceptedByExecutor": false
+}

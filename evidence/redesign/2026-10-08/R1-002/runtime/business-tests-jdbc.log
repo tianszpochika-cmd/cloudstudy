@@ -1,0 +1,30 @@
+TAP version 13
+# Subtest: DB write names cannot target existing schemas or SQL injection
+ok 1 - DB write names cannot target existing schemas or SQL injection
+  ---
+  duration_ms: 1.371791
+  ...
+# Subtest: cookie verification requires all browser safeguards and no JSON credential
+ok 2 - cookie verification requires all browser safeguards and no JSON credential
+  ---
+  duration_ms: 0.417
+  ...
+# Subtest: actual RS256 signature and exact pre-gate owner/tenant/permissions required
+ok 3 - actual RS256 signature and exact pre-gate owner/tenant/permissions required
+  ---
+  duration_ms: 191.288625
+  ...
+# Subtest: damaged token JSON has fixed safe classification without echoing token bytes
+ok 4 - damaged token JSON has fixed safe classification without echoing token bytes
+  ---
+  duration_ms: 0.234
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 4
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 247.596792

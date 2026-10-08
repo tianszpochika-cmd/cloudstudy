@@ -1,0 +1,101 @@
+{
+  "kind": "R1_002_OWNED_RUNTIME",
+  "schema": "r1_002_20261008_0fcf31a0718c",
+  "user": "r1002_0fcf31a0718c",
+  "learnerSchema": "r1_002_learner_20261008_2d2f1b2df75d",
+  "learnerUser": "r1002l_2d2f1b2df75d",
+  "mysql": {
+    "id": "db87392020398271b86e76c8738c2ea7af619a41ef11eb3cee68d8910956deec",
+    "name": "/yuxuexing-local-mysql-1",
+    "image": "mysql:8.0",
+    "project": "yuxuexing-local",
+    "service": "mysql",
+    "port": [
+      {
+        "HostIp": "127.0.0.1",
+        "HostPort": "13306"
+      }
+    ],
+    "state": "running",
+    "health": "healthy"
+  },
+  "privateDirectory": "<PRIVATE_MATERIAL_DIR>",
+  "permissions": {
+    "checkedAt": "2026-10-08T03:49:46.737Z",
+    "method": "filesystem-lstat-owner-and-mode",
+    "checks": [
+      {
+        "name": "material-directory",
+        "kind": "directory",
+        "mode": "0700",
+        "expectedMode": "0700",
+        "ownerUid": 502,
+        "expectedOwnerUid": 502,
+        "ownerMatches": true,
+        "symbolicLink": false,
+        "expectedTypeMatches": true,
+        "result": "PASS"
+      },
+      {
+        "name": "iam-signer.pem",
+        "kind": "file",
+        "mode": "0600",
+        "expectedMode": "0600",
+        "ownerUid": 502,
+        "expectedOwnerUid": 502,
+        "ownerMatches": true,
+        "symbolicLink": false,
+        "expectedTypeMatches": true,
+        "result": "PASS"
+      },
+      {
+        "name": "iam-runtime.properties",
+        "kind": "file",
+        "mode": "0600",
+        "expectedMode": "0600",
+        "ownerUid": 502,
+        "expectedOwnerUid": 502,
+        "ownerMatches": true,
+        "symbolicLink": false,
+        "expectedTypeMatches": true,
+        "result": "PASS"
+      },
+      {
+        "name": "learner-runtime.properties",
+        "kind": "file",
+        "mode": "0600",
+        "expectedMode": "0600",
+        "ownerUid": 502,
+        "expectedOwnerUid": 502,
+        "ownerMatches": true,
+        "symbolicLink": false,
+        "expectedTypeMatches": true,
+        "result": "PASS"
+      },
+      {
+        "name": "runtime.json",
+        "kind": "file",
+        "mode": "0600",
+        "expectedMode": "0600",
+        "ownerUid": 502,
+        "expectedOwnerUid": 502,
+        "ownerMatches": true,
+        "symbolicLink": false,
+        "expectedTypeMatches": true,
+        "result": "PASS"
+      }
+    ],
+    "result": "PASS",
+    "contentsRead": false
+  },
+  "certificate": {
+    "sha256": "9a23713c9b57a2c51245b2cc3b9e4e2636f7bb76e5b207d67534799d9aee3281",
+    "fingerprint256": "60:62:D0:A1:D4:BF:9A:48:76:DA:AB:09:82:C5:7D:8C:29:55:2D:E8:DD:A4:2E:57:58:F5:04:E0:59:95:6B:FB",
+    "subjectAltName": "IP Address:127.0.0.1, DNS:localhost",
+    "validFrom": "Oct  8 03:49:43 2026 GMT",
+    "validTo": "Oct 15 03:49:43 2026 GMT",
+    "ca": false
+  },
+  "databaseCreated": true,
+  "servicesStarted": false
+}

@@ -1,0 +1,36 @@
+{
+  "kind": "R1_002_POST_TIGHTENING_READONLY_TABLE_CHECK",
+  "mysqlId": "db87392020398271b86e76c8738c2ea7af619a41ef11eb3cee68d8910956deec",
+  "users": [
+    {
+      "owner": "iam-final",
+      "user": "r1002_0fcf31a0718c",
+      "schema": "r1_002_20261008_0fcf31a0718c",
+      "table": "flyway_schema_history",
+      "actualTableSelect": "ALLOWED",
+      "successfulMigrationCount": 17,
+      "individualRowsReturned": 0
+    },
+    {
+      "owner": "learner-final",
+      "user": "r1002l_2d2f1b2df75d",
+      "schema": "r1_002_learner_20261008_2d2f1b2df75d",
+      "table": "flyway_schema_history",
+      "actualTableSelect": "ALLOWED",
+      "successfulMigrationCount": 12,
+      "individualRowsReturned": 0
+    },
+    {
+      "owner": "iam-first-failed",
+      "user": "r1002_d5b6380af8df",
+      "schema": "r1_002_20261008_d5b6380af8df",
+      "table": "flyway_schema_history",
+      "actualTableSelect": "ALLOWED",
+      "successfulMigrationCount": 17,
+      "individualRowsReturned": 0
+    }
+  ],
+  "businessMutations": 0,
+  "servicesStarted": 0,
+  "containerLifecycleOperations": 0
+}

@@ -1,0 +1,270 @@
+TAP version 13
+# Subtest: DB write names cannot target existing schemas or SQL injection
+ok 1 - DB write names cannot target existing schemas or SQL injection
+  ---
+  duration_ms: 0.880667
+  ...
+# Subtest: cookie verification requires all browser safeguards and no JSON credential
+ok 2 - cookie verification requires all browser safeguards and no JSON credential
+  ---
+  duration_ms: 0.329667
+  ...
+# Subtest: actual RS256 signature and exact pre-gate owner/tenant/permissions required
+ok 3 - actual RS256 signature and exact pre-gate owner/tenant/permissions required
+  ---
+  duration_ms: 151.49975
+  ...
+# Subtest: default mode is read-only preflight; arbitrary command/adopt/kill and approval bool rejected
+ok 4 - default mode is read-only preflight; arbitrary command/adopt/kill and approval bool rejected
+  ---
+  duration_ms: 0.760042
+  ...
+# Subtest: unknown or traversing run id rejected before filesystem access
+ok 5 - unknown or traversing run id rejected before filesystem access
+  ---
+  duration_ms: 0.202
+  ...
+# Subtest: registered ports are fixed and configuration bytes hashed
+ok 6 - registered ports are fixed and configuration bytes hashed
+  ---
+  duration_ms: 0.169542
+  ...
+# Subtest: fixture occupied/unknown ports refuse with zero signal/listener/DB
+ok 7 - fixture occupied/unknown ports refuse with zero signal/listener/DB
+  ---
+  duration_ms: 0.402458
+  ...
+# Subtest: missing/self-signed/expired fixture windows never authorize D2
+ok 8 - missing/self-signed/expired fixture windows never authorize D2
+  ---
+  duration_ms: 0.084833
+  ...
+# Subtest: fixture source provenance/material/binding deficiencies are independent blockers
+ok 9 - fixture source provenance/material/binding deficiencies are independent blockers
+  ---
+  duration_ms: 0.060584
+  ...
+# Subtest: all seemingly green test fixture values still fail without real D2 authority
+ok 10 - all seemingly green test fixture values still fail without real D2 authority
+  ---
+  duration_ms: 0.05775
+  ...
+# Subtest: TLS config rejects insecure/hostname bypass/fallback and unknown overrides
+ok 11 - TLS config rejects insecure/hostname bypass/fallback and unknown overrides
+  ---
+  duration_ms: 0.167792
+  ...
+# Subtest: TLS config locks endpoint, host and both registered ports
+ok 12 - TLS config locks endpoint, host and both registered ports
+  ---
+  duration_ms: 0.172334
+  ...
+# Subtest: independent materials cannot be aliases by identical path
+ok 13 - independent materials cannot be aliases by identical path
+  ---
+  duration_ms: 0.129333
+  ...
+# Subtest: public publisher validation rejects private fields without disguising production behavior
+ok 14 - public publisher validation rejects private fields without disguising production behavior
+  ---
+  duration_ms: 0.185334
+  ...
+# Subtest: all TLS cases remain NOT_EXECUTED; dynamic helpers refuse synchronously
+ok 15 - all TLS cases remain NOT_EXECUTED; dynamic helpers refuse synchronously
+  ---
+  duration_ms: 0.130417
+  ...
+# Subtest: public archive sanitizer redacts run/key/material paths without mutating input
+ok 16 - public archive sanitizer redacts run/key/material paths without mutating input
+  ---
+  duration_ms: 0.158834
+  ...
+# Subtest: signed offline fixture validates manifest/context; this is not source-to-JAR proof
+not ok 17 - signed offline fixture validates manifest/context; this is not source-to-JAR proof
+  ---
+  duration_ms: 198.471916
+  location: '/Users/Admin/Desktop/work/cloudstudy/scripts/redesign/r1-002/lifecycle.test.mjs:147:1'
+  failureType: 'testCodeFailure'
+  error: 'Source is not tracked public code or approved D1 source'
+  code: 'ERR_TEST_FAILURE'
+  stack: |-
+    fail (file:///Users/Admin/Desktop/work/cloudstudy/scripts/redesign/r1-002/receipt.mjs:10:33)
+    createSignedReceipt (file:///Users/Admin/Desktop/work/cloudstudy/scripts/redesign/r1-002/receipt.mjs:168:158)
+    fixture (file:///Users/Admin/Desktop/work/cloudstudy/scripts/redesign/r1-002/lifecycle.test.mjs:133:18)
+    TestContext.<anonymous> (file:///Users/Admin/Desktop/work/cloudstudy/scripts/redesign/r1-002/lifecycle.test.mjs:148:13)
+    Test.runInAsyncScope (node:async_hooks:206:9)
+    Test.run (node:internal/test_runner/test:796:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:526:18)
+    Test.postRun (node:internal/test_runner/test:889:19)
+    Test.run (node:internal/test_runner/test:835:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+  ...
+# Subtest: artifact byte drift is refused using signed manifest
+not ok 18 - artifact byte drift is refused using signed manifest
+  ---
+  duration_ms: 171.087625
+  location: '/Users/Admin/Desktop/work/cloudstudy/scripts/redesign/r1-002/lifecycle.test.mjs:152:1'
+  failureType: 'testCodeFailure'
+  error: 'Source is not tracked public code or approved D1 source'
+  code: 'ERR_TEST_FAILURE'
+  stack: |-
+    fail (file:///Users/Admin/Desktop/work/cloudstudy/scripts/redesign/r1-002/receipt.mjs:10:33)
+    createSignedReceipt (file:///Users/Admin/Desktop/work/cloudstudy/scripts/redesign/r1-002/receipt.mjs:168:158)
+    fixture (file:///Users/Admin/Desktop/work/cloudstudy/scripts/redesign/r1-002/lifecycle.test.mjs:133:18)
+    TestContext.<anonymous> (file:///Users/Admin/Desktop/work/cloudstudy/scripts/redesign/r1-002/lifecycle.test.mjs:153:13)
+    Test.runInAsyncScope (node:async_hooks:206:9)
+    Test.run (node:internal/test_runner/test:796:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:526:18)
+    Test.postRun (node:internal/test_runner/test:889:19)
+    Test.run (node:internal/test_runner/test:835:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+  ...
+# Subtest: manifest byte drift is refused without recomputing trust from edited body
+not ok 19 - manifest byte drift is refused without recomputing trust from edited body
+  ---
+  duration_ms: 163.83525
+  location: '/Users/Admin/Desktop/work/cloudstudy/scripts/redesign/r1-002/lifecycle.test.mjs:157:1'
+  failureType: 'testCodeFailure'
+  error: 'Source is not tracked public code or approved D1 source'
+  code: 'ERR_TEST_FAILURE'
+  stack: |-
+    fail (file:///Users/Admin/Desktop/work/cloudstudy/scripts/redesign/r1-002/receipt.mjs:10:33)
+    createSignedReceipt (file:///Users/Admin/Desktop/work/cloudstudy/scripts/redesign/r1-002/receipt.mjs:168:158)
+    fixture (file:///Users/Admin/Desktop/work/cloudstudy/scripts/redesign/r1-002/lifecycle.test.mjs:133:18)
+    TestContext.<anonymous> (file:///Users/Admin/Desktop/work/cloudstudy/scripts/redesign/r1-002/lifecycle.test.mjs:158:13)
+    Test.runInAsyncScope (node:async_hooks:206:9)
+    Test.run (node:internal/test_runner/test:796:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:526:18)
+    Test.postRun (node:internal/test_runner/test:889:19)
+    Test.run (node:internal/test_runner/test:835:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+  ...
+# Subtest: receipt signature tampering is refused
+not ok 20 - receipt signature tampering is refused
+  ---
+  duration_ms: 168.347
+  location: '/Users/Admin/Desktop/work/cloudstudy/scripts/redesign/r1-002/lifecycle.test.mjs:162:1'
+  failureType: 'testCodeFailure'
+  error: 'Source is not tracked public code or approved D1 source'
+  code: 'ERR_TEST_FAILURE'
+  stack: |-
+    fail (file:///Users/Admin/Desktop/work/cloudstudy/scripts/redesign/r1-002/receipt.mjs:10:33)
+    createSignedReceipt (file:///Users/Admin/Desktop/work/cloudstudy/scripts/redesign/r1-002/receipt.mjs:168:158)
+    fixture (file:///Users/Admin/Desktop/work/cloudstudy/scripts/redesign/r1-002/lifecycle.test.mjs:133:18)
+    TestContext.<anonymous> (file:///Users/Admin/Desktop/work/cloudstudy/scripts/redesign/r1-002/lifecycle.test.mjs:163:13)
+    Test.runInAsyncScope (node:async_hooks:206:9)
+    Test.run (node:internal/test_runner/test:796:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:526:18)
+    Test.postRun (node:internal/test_runner/test:889:19)
+    Test.run (node:internal/test_runner/test:835:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+  ...
+# Subtest: receipt for another source/port or staged metadata context cannot be trusted
+not ok 21 - receipt for another source/port or staged metadata context cannot be trusted
+  ---
+  duration_ms: 227.405959
+  location: '/Users/Admin/Desktop/work/cloudstudy/scripts/redesign/r1-002/lifecycle.test.mjs:167:1'
+  failureType: 'testCodeFailure'
+  error: 'Source is not tracked public code or approved D1 source'
+  code: 'ERR_TEST_FAILURE'
+  stack: |-
+    fail (file:///Users/Admin/Desktop/work/cloudstudy/scripts/redesign/r1-002/receipt.mjs:10:33)
+    createSignedReceipt (file:///Users/Admin/Desktop/work/cloudstudy/scripts/redesign/r1-002/receipt.mjs:168:158)
+    fixture (file:///Users/Admin/Desktop/work/cloudstudy/scripts/redesign/r1-002/lifecycle.test.mjs:133:18)
+    TestContext.<anonymous> (file:///Users/Admin/Desktop/work/cloudstudy/scripts/redesign/r1-002/lifecycle.test.mjs:168:13)
+    Test.runInAsyncScope (node:async_hooks:206:9)
+    Test.run (node:internal/test_runner/test:796:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:526:18)
+    Test.postRun (node:internal/test_runner/test:889:19)
+    Test.run (node:internal/test_runner/test:835:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+  ...
+# Subtest: artifact symlink and traversal rejected by shared guard
+not ok 22 - artifact symlink and traversal rejected by shared guard
+  ---
+  duration_ms: 189.813875
+  location: '/Users/Admin/Desktop/work/cloudstudy/scripts/redesign/r1-002/lifecycle.test.mjs:183:1'
+  failureType: 'testCodeFailure'
+  error: 'Source is not tracked public code or approved D1 source'
+  code: 'ERR_TEST_FAILURE'
+  stack: |-
+    fail (file:///Users/Admin/Desktop/work/cloudstudy/scripts/redesign/r1-002/receipt.mjs:10:33)
+    createSignedReceipt (file:///Users/Admin/Desktop/work/cloudstudy/scripts/redesign/r1-002/receipt.mjs:168:158)
+    fixture (file:///Users/Admin/Desktop/work/cloudstudy/scripts/redesign/r1-002/lifecycle.test.mjs:133:18)
+    TestContext.<anonymous> (file:///Users/Admin/Desktop/work/cloudstudy/scripts/redesign/r1-002/lifecycle.test.mjs:184:13)
+    Test.runInAsyncScope (node:async_hooks:206:9)
+    Test.run (node:internal/test_runner/test:796:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:526:18)
+    Test.postRun (node:internal/test_runner/test:889:19)
+    Test.run (node:internal/test_runner/test:835:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+  ...
+# Subtest: actual material chmod downgrade triggers protected-path refusal
+not ok 23 - actual material chmod downgrade triggers protected-path refusal
+  ---
+  duration_ms: 199.337291
+  location: '/Users/Admin/Desktop/work/cloudstudy/scripts/redesign/r1-002/lifecycle.test.mjs:191:1'
+  failureType: 'testCodeFailure'
+  error: 'Source is not tracked public code or approved D1 source'
+  code: 'ERR_TEST_FAILURE'
+  stack: |-
+    fail (file:///Users/Admin/Desktop/work/cloudstudy/scripts/redesign/r1-002/receipt.mjs:10:33)
+    createSignedReceipt (file:///Users/Admin/Desktop/work/cloudstudy/scripts/redesign/r1-002/receipt.mjs:168:158)
+    fixture (file:///Users/Admin/Desktop/work/cloudstudy/scripts/redesign/r1-002/lifecycle.test.mjs:133:18)
+    TestContext.<anonymous> (file:///Users/Admin/Desktop/work/cloudstudy/scripts/redesign/r1-002/lifecycle.test.mjs:192:13)
+    Test.runInAsyncScope (node:async_hooks:206:9)
+    Test.run (node:internal/test_runner/test:796:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:526:18)
+    Test.postRun (node:internal/test_runner/test:889:19)
+    Test.run (node:internal/test_runner/test:835:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+  ...
+# Subtest: unknown run and detached stop cannot reach a signal
+not ok 24 - unknown run and detached stop cannot reach a signal
+  ---
+  duration_ms: 173.533792
+  location: '/Users/Admin/Desktop/work/cloudstudy/scripts/redesign/r1-002/lifecycle.test.mjs:202:1'
+  failureType: 'testCodeFailure'
+  error: 'Source is not tracked public code or approved D1 source'
+  code: 'ERR_TEST_FAILURE'
+  stack: |-
+    fail (file:///Users/Admin/Desktop/work/cloudstudy/scripts/redesign/r1-002/receipt.mjs:10:33)
+    createSignedReceipt (file:///Users/Admin/Desktop/work/cloudstudy/scripts/redesign/r1-002/receipt.mjs:168:158)
+    fixture (file:///Users/Admin/Desktop/work/cloudstudy/scripts/redesign/r1-002/lifecycle.test.mjs:133:18)
+    TestContext.<anonymous> (file:///Users/Admin/Desktop/work/cloudstudy/scripts/redesign/r1-002/lifecycle.test.mjs:203:13)
+    Test.runInAsyncScope (node:async_hooks:206:9)
+    Test.run (node:internal/test_runner/test:796:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:526:18)
+    Test.postRun (node:internal/test_runner/test:889:19)
+    Test.run (node:internal/test_runner/test:835:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+  ...
+# Subtest: current receipted build verifies actual separately provided context without dynamic authority
+ok 25 - current receipted build verifies actual separately provided context without dynamic authority
+  ---
+  duration_ms: 0.788958
+  ...
+# Subtest: missing/unknown/different build and module receipts fail closed
+ok 26 - missing/unknown/different build and module receipts fail closed
+  ---
+  duration_ms: 0.18525
+  ...
+# Subtest: source/hash/partial input/Java/output drift and unsuccessful command cannot attest build
+ok 27 - source/hash/partial input/Java/output drift and unsuccessful command cannot attest build
+  ---
+  duration_ms: 0.404334
+  ...
+# Subtest: build receipt reader rejects missing and arbitrary path before reading any artifact
+ok 28 - build receipt reader rejects missing and arbitrary path before reading any artifact
+  ---
+  duration_ms: 0.152208
+  ...
+1..28
+# tests 28
+# suites 0
+# pass 20
+# fail 8
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1553.593791

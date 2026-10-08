@@ -1,0 +1,16 @@
+{
+  "validator": "scripts/redesign/r1-002/lifecycle.mjs#readBuildReceipt",
+  "exitCode": 0,
+  "sourceJarProvenance": "CURRENT_SOURCE_BUILD_RECEIPT_VERIFIED",
+  "sourceToJarVerified": true,
+  "module": "services/api-gateway",
+  "inputSnapshotSha256": "044d1b9befc8bbbeb5c49a4a8ae88075d5cf6ba427d859123a0954b7bc776952",
+  "output": {
+    "path": "services/api-gateway/target/api-gateway-0.1.0-SNAPSHOT.jar",
+    "bytes": 73128627,
+    "sha256": "db67eeae844ff68b3d2d58d5668151a78bb8a02696a159260b168227b6ace1c3"
+  },
+  "dynamicAuthority": false,
+  "receiptPath": "evidence/redesign/2026-10-08/R1-002/gateway/build-receipt.json",
+  "receiptSha256": "111ebbed9c696c608c85fb2b43eb026d082bd035471436e44bd70db750f7a651"
+}

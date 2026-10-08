@@ -1,0 +1,69 @@
+{
+  "kind": "R1_002_READONLY_OWNER_READBACK",
+  "mysqlId": "db87392020398271b86e76c8738c2ea7af619a41ef11eb3cee68d8910956deec",
+  "accountRegisteredAuditCount": 1,
+  "actionCode": "account_registered",
+  "resourceType": "account_registered",
+  "grants": [
+    {
+      "owner": "iam",
+      "schema": "r1_002_20261008_0fcf31a0718c",
+      "user": "r1002_0fcf31a0718c",
+      "grants": [
+        {
+          "privileges": [
+            "USAGE"
+          ],
+          "scope": "*.*"
+        },
+        {
+          "privileges": [
+            "SELECT",
+            "INSERT",
+            "UPDATE",
+            "DELETE",
+            "CREATE",
+            "DROP",
+            "REFERENCES",
+            "INDEX",
+            "ALTER"
+          ],
+          "scope": "`r1_002_20261008_0fcf31a0718c`.*"
+        }
+      ],
+      "globalWrite": false,
+      "schemaPatternHasUnescapedUnderscore": true
+    },
+    {
+      "owner": "learner",
+      "schema": "r1_002_learner_20261008_2d2f1b2df75d",
+      "user": "r1002l_2d2f1b2df75d",
+      "grants": [
+        {
+          "privileges": [
+            "USAGE"
+          ],
+          "scope": "*.*"
+        },
+        {
+          "privileges": [
+            "SELECT",
+            "INSERT",
+            "UPDATE",
+            "DELETE",
+            "CREATE",
+            "DROP",
+            "REFERENCES",
+            "INDEX",
+            "ALTER"
+          ],
+          "scope": "`r1_002_learner_20261008_2d2f1b2df75d`.*"
+        }
+      ],
+      "globalWrite": false,
+      "schemaPatternHasUnescapedUnderscore": true
+    }
+  ],
+  "mutationCount": 0,
+  "subjectsReturned": 0
+}

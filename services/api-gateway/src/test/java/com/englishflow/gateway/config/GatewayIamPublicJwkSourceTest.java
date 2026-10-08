@@ -9,6 +9,8 @@ import com.nimbusds.jose.jwk.gen.RSAKeyGenerator;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import reactor.core.publisher.Mono;
 
 import java.time.Clock;
@@ -16,7 +18,10 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.Map;
+import java.util.LinkedHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -54,6 +59,107 @@ class GatewayIamPublicJwkSourceTest {
                 Mono.just(new JWKSet(key.toPublicJWK()).toString()), fixedClock(Instant.now()));
 
         assertEquals(1, source.select(signedJwtWithKeyId(KID)).collectList().block().size());
+    }
+
+    @Test
+    void rejectsSyntheticPrivateRsaInBareAndEnvelopedDocuments() throws Exception {
+        RSAKey privateKey = signingKey(KID);
+        String privateDocument = new JWKSet(privateKey).toString(false);
+
+        assertPrivateRejected(privateDocument);
+        assertPrivateRejected("{\"data\":" + privateDocument + ",\"meta\":{\"requestId\":\"unit-test\"}}");
+    }
+
+    @Test
+    void rejectsEntireMixedDocumentInsteadOfSelectingItsPublicKey() throws Exception {
+        RSAKey publicKey = signingKey(KID).toPublicJWK();
+        RSAKey privateKey = signingKey("synthetic-private");
+        String mixed = new JWKSet(List.of(publicKey, privateKey)).toString(false);
+        GatewayIamPublicJwkSource source = new GatewayIamPublicJwkSource(Mono.just(mixed), fixedClock(Instant.now()));
+
+        IllegalStateException failure = assertThrows(IllegalStateException.class,
+                () -> source.select(signedJwtWithKeyId(KID)).collectList().block());
+        assertSafePrivateFailure(failure);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"d", "p", "q", "dp", "dq", "qi", "oth", "k"})
+    void rejectsPrivateMemberPresenceEvenIfMalformedOrNull(String member) throws Exception {
+        for (Object value : new Object[]{"synthetic-private-marker", 7, List.of(), Map.of()}) {
+            Map<String, Object> key = new LinkedHashMap<>(signingKey(KID).toPublicJWK().toJSONObject());
+            key.put(member, value);
+            assertPrivateRejected(com.nimbusds.jose.util.JSONObjectUtils.toJSONString(Map.of("keys", List.of(key))));
+        }
+        Map<String, Object> nullMember = new LinkedHashMap<>(signingKey(KID).toPublicJWK().toJSONObject());
+        nullMember.put(member, null);
+        assertPrivateRejected(com.nimbusds.jose.util.JSONObjectUtils.toJSONString(Map.of("keys", List.of(nullMember))));
+    }
+
+    @Test
+    void rejectsPrivateMembersInUnsupportedMalformedEcOkpAndSymmetricKeys() throws Exception {
+        String publicKey = signingKey(KID).toPublicJWK().toJSONString();
+        for (String hidden : List.of(
+                "{\"kty\":\"UNKNOWN\",\"d\":null}",
+                "{\"kty\":\"UNKNOWN\",\"k\":{}}",
+                "{\"kty\":\"RSA\",\"oth\":[]}",
+                "{\"kty\":\"EC\",\"d\":\"synthetic-private-marker\"}",
+                "{\"kty\":\"OKP\",\"d\":\"synthetic-private-marker\"}",
+                "{\"kty\":\"oct\",\"k\":\"synthetic-private-marker\"}")) {
+            String mixed = "{\"keys\":[" + publicKey + "," + hidden + "]}";
+            assertPrivateRejected(mixed);
+            assertPrivateRejected("{\"data\":" + mixed + ",\"meta\":{\"requestId\":\"unit-test\"}}");
+        }
+    }
+
+    @Test
+    void privateMaterialInIgnoredEnvelopeOrExtensionCannotBypassTheCheck() throws Exception {
+        String publicDocument = new JWKSet(signingKey(KID).toPublicJWK()).toString();
+        assertPrivateRejected("{\"data\":" + publicDocument + ",\"keys\":[{\"kty\":\"UNKNOWN\",\"d\":null}]}");
+        assertPrivateRejected("{\"data\":" + publicDocument + ",\"extension\":{\"nested\":[{\"k\":null}]}}");
+    }
+
+    @Test
+    void privateDocumentFailureNeverEntersCacheAndValidRetryRecovers() throws Exception {
+        RSAKey key = signingKey(KID);
+        AtomicReference<String> currentDocument = new AtomicReference<>(new JWKSet(key).toString(false));
+        AtomicInteger reads = new AtomicInteger();
+        GatewayIamPublicJwkSource source = new GatewayIamPublicJwkSource(Mono.defer(() -> {
+            reads.incrementAndGet();
+            return Mono.just(currentDocument.get());
+        }), fixedClock(Instant.now()));
+
+        for (int attempt = 0; attempt < 2; attempt++) {
+            assertSafePrivateFailure(assertThrows(IllegalStateException.class,
+                    () -> source.select(signedJwtWithKeyId(KID)).collectList().block()));
+        }
+        assertEquals(2, reads.get(), "a rejected document must not become a successful or failed cached key set");
+        currentDocument.set(enveloped(key));
+        List<JWK> selected = source.select(signedJwtWithKeyId(KID)).collectList().block();
+        assertEquals(1, selected.size());
+        assertTrue(!selected.getFirst().isPrivate());
+        source.select(signedJwtWithKeyId(KID)).collectList().block();
+        assertEquals(3, reads.get(), "only a validated public key set may enter the cache");
+    }
+
+    @Test
+    void malformedDocumentDiagnosticsDoNotRetainInputOrParserCause() {
+        for (String malformed : List.of("{\"synthetic-private-marker\":",
+                "{\"keys\":[{\"kty\":\"RSA\",\"n\":\"synthetic-private-marker\"}]}")) {
+            IllegalStateException failure = assertThrows(IllegalStateException.class,
+                    () -> GatewayIamPublicJwkSource.parseJwkSet(malformed));
+            assertTrue(!failure.getMessage().contains("synthetic-private-marker"));
+            assertNull(failure.getCause());
+        }
+    }
+
+    private static void assertPrivateRejected(String document) {
+        assertSafePrivateFailure(assertThrows(IllegalStateException.class,
+                () -> GatewayIamPublicJwkSource.parseJwkSet(document)));
+    }
+
+    private static void assertSafePrivateFailure(IllegalStateException failure) {
+        assertEquals("IAM public JWKS document contains private key material", failure.getMessage());
+        assertNull(failure.getCause(), "parser causes may retain unpublished key material");
     }
 
     @Test

@@ -1,0 +1,18 @@
+{
+  "kind": "ROOT_APPROVED_R1_002_RUNTIME",
+  "source": "User2026-10-08continueR1-002completion_then_safe_pause; root named runtime/task-spec scope approval",
+  "scriptSha256": "31a5a7cfb28133e3e0c555dbbc557ee1aef0a10fe0779ed1202b02e66f9d5d0a",
+  "schema": "r1_002_20261008_d5b6380af8df",
+  "mysqlId": "db87392020398271b86e76c8738c2ea7af619a41ef11eb3cee68d8910956deec",
+  "ports": [
+    18087,
+    18070,
+    18088
+  ],
+  "bindHost": "127.0.0.1",
+  "createdAt": "2026-10-08T03:45:15.353Z",
+  "expiresAt": "2026-10-08T07:45:15.354Z",
+  "scope": "Only fresh IAM owner schema; direct TLS registration; current Gateway two HTTPS clients; learner own PEP403; owned child cleanup; no infrastructure lifecycle; preserve resources",
+  "amendedAt": "2026-10-08T03:46:26.805Z",
+  "amendment": "Root-required safe JSON errors and full principal zero/rollback baseline"
+}

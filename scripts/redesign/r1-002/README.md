@@ -42,3 +42,11 @@ Java probe通过实际SCG `HttpClientFactory`建立route client，直接加载�
 D2当前没有维护authority trust anchor或批准窗口，`launch-harness/probe`一律先拒绝0signal/0listener/0DB；即使传伪批准boolean、自选公钥或“绿灯”fixture也不能授权。`tls-harness.mjs`没有raw listen接口，future publisher仅允许注册18087的health/JWKS GET；生产client harness固定18070，须在另行具名D2源码和窗口审查后实施动态入口。`stop-owned`独立CLI一律调用共享detached拒绝；不能因receipt、PID、出生时间看似匹配就跨CLI发signal。共享processidentity仅允许同监督进程的实际child handle，非监听toy验证由其owner执行，本轮没有stop当前runner。
 
 `restore-verify`缺原栈恢复bundle/窗口时只拒绝，不启动runner或查询数据库；未来原栈恢复归D2维护owner。stage/stdout与`--out`归档都脱敏`<RUN_ROOT>/<RUN_DIR>/<RECEIPT_KEY_DIR>/<PRIVATE_MATERIAL_DIR>`，可执行binding留在Git外；脱敏binding/公开summary不是对应签名原文。另行归档的[staged receipt原文](../../../evidence/redesign/2026-10-07/R1-002-D1/lifecycle-harness/signed-stage-reviewed.json)和[公开验签key](../../../evidence/redesign/2026-10-07/R1-002-D1/lifecycle-harness/public-key-reviewed.json)只含公共source/run-relative artifact路径（process=null），可验证Ed25519签名，证明D1收据provenance；artifact hash对应Git外真实binding，不是脱敏副本，不能反用来授权D2或证明source→JAR构建。macOS离线实测另见本轮证据；Linux/Windows未实跑不称verified。
+
+## 2026-10-08 当前受审构建与 R1-002 专属运行
+
+本日具名 scope 取代此前 D1 仅离线工作范围；旧 D1 TLS-01～08 状态仍为历史未执行。`stage` 必须显式传 `--build-receipt`，仅接受本日 `evidence/redesign/2026-10-08/R1-002/gateway/build-receipt.json`。先从当前 Git HEAD、完整具名输入文件、Java 与实际 JAR 独立读取 expected，再校验收据命令成功与全部摘要；不再绑定旧 target hash。已验证构建收据只提供 source/JAR 来源，不授予动态窗口。probe 对真实加载生产类的 synthetic private document 仅捕获精确 private-material 拒绝异常，其他异常继续失败。
+
+`business-runtime.mjs prepare` 按本日根审具名批准创建 Git 外本机测试 TLS/RSA3072/signer/config 与唯一随机 IAM schema/专属账号，既有 Docker 容器仅作已批准基础设施。每次 SQL 前核对本项目容器 ID/project/service/image/固定映射；禁止基础设施启停。`run <external directory>` 要求本日根审 `run-approval.json` 绑定 script SHA、专属 schema、MySQL ID 和有效期；受控 IAM 注册密码 TLS 直达18087，Gateway18070只检 JWKS/受限token，learner18088自身 PEP 拒绝。失败记录 FAILED 并逐个清理同监督自有child；没有端口kill或PID收养。配置/日志/token/凭据不归档，证据仅摘要。专属 schema/材料保留用于复核；不自动删除，不升级其他卡/IT-1。
+
+本日最终运行与运行后权限收紧见 [runtime/report.md](../../../evidence/redesign/2026-10-08/R1-002/runtime/report.md)。prepare 为 IAM 与 learner 分别生成专属 schema/user；数据库 GRANT 根据 MySQL partial_revokes 模式处理下划线，保证 literal 单库权限。实际业务执行源码与后续 helper 修正分别记摘要，后续修正没有覆盖执行审批或重跑注册。当前只读验证三个本轮用户本库真实表聚合可读、另一自有库拒绝；所有服务已停，库与 Git 外材料保留。
