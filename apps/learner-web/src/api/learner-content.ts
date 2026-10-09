@@ -454,6 +454,39 @@ function parsePlan(value: unknown): LearnerHomeReadModel['plan'] {
   return { planId, taskCount: tasks.length, tasks }
 }
 
+let cachedActiveConsentVersion: string | null = null
+let consentRefreshPromise: Promise<string> | null = null
+
+async function fetchActiveConsentVersion(): Promise<string> {
+  try {
+    const raw = await requestOptional<unknown>('/iam/principal/me')
+    const unwrapped = unwrap(raw)
+    if (isRecord(unwrapped)) {
+      const consentState = isRecord(unwrapped.consentState) ? unwrapped.consentState : undefined
+      if (consentState && typeof consentState.version === 'string' && consentState.version.trim()) {
+        return consentState.version.trim()
+      }
+    }
+  } catch {
+    // fallback to default
+  }
+  return 'b30-consent-v1'
+}
+
+async function refreshActiveConsentVersion(): Promise<string> {
+  if (!consentRefreshPromise) {
+    consentRefreshPromise = fetchActiveConsentVersion().then((v) => {
+      cachedActiveConsentVersion = v
+      consentRefreshPromise = null
+      return v
+    }).catch((err) => {
+      consentRefreshPromise = null
+      throw err
+    })
+  }
+  return consentRefreshPromise
+}
+
 export const learnerContentPort: LearnerContentPort = {
   async readOnboarding(contentLocale) {
     const [profile, target, preferences, options] = await Promise.all([
@@ -484,26 +517,43 @@ export const learnerContentPort: LearnerContentPort = {
       throw new Error('成人 Gate、隐私/条款同意和学习目标必须全部完成后才能保存。')
     }
     const targetLevel = input.profile.targetGoal === 'ZERO_BASIS' ? 'A1' : input.profile.targetGoal === 'CET_4_6' ? 'B1' : 'B2'
+
+    const signConsent = async (type: string, keySuffix: string) => {
+      const version = cachedActiveConsentVersion ?? 'b30-consent-v1'
+      try {
+        await request<unknown>('/iam/consents', {
+          method: 'PUT',
+          body: { type, version, decision: 'ACCEPTED' },
+          ...withIdempotency(`${input.clientEventId}-${keySuffix}`),
+        })
+      } catch (error) {
+        const status = (error instanceof ApiError || error instanceof LearnerContentReadModelError)
+          ? error.status
+          : (isRecord(error) && typeof error.status === 'number' ? error.status : 0)
+        if (status === 409) {
+          let latestVersion = cachedActiveConsentVersion
+          if (latestVersion === version || !latestVersion) {
+            latestVersion = await refreshActiveConsentVersion()
+          }
+          if (latestVersion && latestVersion !== version) {
+            await request<unknown>('/iam/consents', {
+              method: 'PUT',
+              body: { type, version: latestVersion, decision: 'ACCEPTED' },
+              ...withIdempotency(`${input.clientEventId}-${keySuffix}`),
+            })
+            return
+          }
+        }
+        throw error
+      }
+    }
+
     await Promise.all([
-      request<unknown>('/iam/consents', {
-        method: 'PUT',
-        body: { type: 'PRIVACY', version: 'b30-consent-v1', decision: 'ACCEPTED' },
-        ...withIdempotency(`${input.clientEventId}-privacy`),
-      }),
-      request<unknown>('/iam/consents', {
-        method: 'PUT',
-        body: { type: 'TERMS', version: 'b30-consent-v1', decision: 'ACCEPTED' },
-        ...withIdempotency(`${input.clientEventId}-terms`),
-      }),
-      // P1-LIVE-014: the server requires ADULT_LEARNING (LEARNING_REQUIRED) for
-      // learning access; without it every learner endpoint stays 403 after an
-      // otherwise complete UI onboarding.
-      request<unknown>('/iam/consents', {
-        method: 'PUT',
-        body: { type: 'ADULT_LEARNING', version: 'b30-consent-v1', decision: 'ACCEPTED' },
-        ...withIdempotency(`${input.clientEventId}-adult-learning`),
-      }),
+      signConsent('PRIVACY', 'privacy'),
+      signConsent('TERMS', 'terms'),
+      signConsent('ADULT_LEARNING', 'adult-learning'),
     ])
+
     // Access tokens freeze eligibility at issuance. Refresh through the session
     // store so its permission snapshot and the token used by owner writes agree.
     const [{ useSessionStore }, { pinia }] = await Promise.all([

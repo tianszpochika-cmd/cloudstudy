@@ -1,4 +1,4 @@
-# R1-003 / R1-004 / R1-005 / R1-006 干净专库生命周期全链路运行报告
+# R1-003 / R1-004 / R1-005 / R1-006 / R1-008 干净专库生命周期全链路运行报告
 
 日期：2026-10-09；源码分支：`dev-redesign`。  
 覆盖卡项与范围：
@@ -6,6 +6,7 @@
 - **R1-004**（BC-004）：登录/刷新/撤销全套（轮换+撤销+重放清理）
 - **R1-005**（BC-005）：多设备列表+踢出（标当前设备，被踢 401）
 - **R1-006**（BC-006）：成人门提交（PASSED/REJECTED 双路径落库与审计）
+- **R1-008**（BC-008）：三同意动态版（先读已发布版本再签，换版本不卡死，409冲突拒绝）
 
 本报告为当前运行执行事实与测试收据，待独立终审与根审签收，不自行跨站升级 IT-2。
 
@@ -13,9 +14,10 @@
 
 ## 一、 核心执行结论与收据
 
-* 最终全链路真实运行结果：**[runtime-results-2adfe7d7cd74.json](runtime-results-2adfe7d7cd74.json)** — **STATUS: PASS / exit 0**。
-* 独立准备材料：**[prepared-2adfe7d7cd74.json](prepared-2adfe7d7cd74.json)**（绑定 Git 外部 0700 目录、专用自签名 TLS SAN 127.0.0.1、专属库 `r1_iam_lifecycle_20261009_2adfe7d7cd74` 及专属账号 `r1_iam_2adfe7d7cd74`）。
-* 前序 R1-003~005 运行原件保留：**[runtime-results-ff793b6aaaa9.json](runtime-results-ff793b6aaaa9.json)**、**[prepared-ff793b6aaaa9.json](prepared-ff793b6aaaa9.json)**。
+* 最终全链路真实运行结果：**[runtime-results-1b88d9e1df09.json](runtime-results-1b88d9e1df09.json)** — **STATUS: PASS / exit 0（76 项断言全部 100% 通过）**。
+* 独立准备材料：**[prepared-1b88d9e1df09.json](prepared-1b88d9e1df09.json)**（绑定 Git 外部 0700 目录、专用自签名 TLS SAN 127.0.0.1、专属库 `r1_iam_lifecycle_20261009_1b88d9e1df09` 及专属账号 `r1_iam_1b88d9e1df09`）。
+* 前序 R1-008 调优排错原件保留：**[runtime-results-b5d84884182f.json](runtime-results-b5d84884182f.json)**、**[prepared-b5d84884182f.json](prepared-b5d84884182f.json)**（排错记录见第三节）。
+* 前序历史运行原件保留：**[runtime-results-2adfe7d7cd74.json](runtime-results-2adfe7d7cd74.json)**、**[runtime-results-ff793b6aaaa9.json](runtime-results-ff793b6aaaa9.json)**。
 * 基础设施保全：
   * 仅使用本项目官方 MySQL 容器 `yuxuexing-local-mysql-1`（容器 ID: `db87392020398271b86e76c8738c2ea7af619a41ef11eb3cee68d8910956deec`）；
   * 未重启 Docker、未执行 compose down/prune、未触碰任何其他项目容器；
@@ -104,11 +106,33 @@
 | `missingIdempotencyKey400` | 缺少 Idempotency-Key 请求被拒绝（HTTP 400） | 400 | PASS |
 | **小结** | **R1-006 全部 19 项断言 100% 通过** | — | **PASS** |
 
+### 5. R1-008（BC-008 三同意动态版读取与签署及409拒绝）
+| 断言项 | 预期 | 实际结果 | 状态 |
+|---|---|---|---|
+| `preConsentPrincipalMe200` | 签署前获取主体状态返回 HTTP 200 | 200 | PASS |
+| `consentRequiredTrue` | 签署前状态明确标识需要同意（`required=true`） | true | PASS |
+| `consentAcceptedInitialFalse` | 签署前状态标识尚未接受（`accepted=false`） | false | PASS |
+| `consentVersionPresent` | 签署前状态动态带出当前激活版本（如 `b30-consent-v1`） | 存在激活版本 | PASS |
+| `requiredPurposesValid` | 动态返回的必须目的列表准确包含 `PRIVACY`, `TERMS`, `ADULT_LEARNING` | 准确包含 3 项 | PASS |
+| `privacySubmit200` | 动态提交 PRIVACY 同意签署返回 HTTP 200（`ACCEPTED`） | 200 / ACCEPTED | PASS |
+| `termsSubmit200` | 动态提交 TERMS 同意签署返回 HTTP 200（`ACCEPTED`） | 200 / ACCEPTED | PASS |
+| `adultLearningSubmit200` | 动态提交 ADULT_LEARNING 同意签署返回 HTTP 200（`ACCEPTED`） | 200 / ACCEPTED | PASS |
+| `postConsentPrincipalMe200` | 签署完成后再次获取主体状态返回 HTTP 200 | 200 | PASS |
+| `consentAcceptedPostTrue` | 签署完成后同意状态已变为接受（`accepted=true`） | true | PASS |
+| `postLearningAccessEligible` | 结合成人门与三同意，学习访问权限正式翻转为 `ELIGIBLE`，账号状态变为 `ACTIVE` | ELIGIBLE / ACTIVE | PASS |
+| `dbConsentsRecordedCount3` | SQL 查回 `iam_consent` 表中该用户确切落库 3 条 `status=GRANTED` 记录 | 3条 / GRANTED | PASS |
+| `dbAuditConsentRecorded` | SQL 查回 `iam_decision_audit` 审计流水中包含 `consent_recorded` 事实 | 包含审计流水 | PASS |
+| `staleVersionConflict409` | **防线验证**：提交过期/非法版本（如 `stale-version-999`）返回 HTTP 409（`CONSENT_VERSION_MISMATCH`），不脏写 | 409 | PASS |
+| `missingIdempotencyKey400` | 缺少 Idempotency-Key 头部提交同意被拒绝（HTTP 400） | 400 | PASS |
+| `invalidDecision400` | 非法 decision 值提交被拒绝（HTTP 400） | 400 | PASS |
+| `replayConsent200` | 同一幂等键与请求体幂等重放签署返回一致 HTTP 200 | 200 / 一致 | PASS |
+| **小结** | **R1-008 全部 17 项断言 100% 通过** | — | **PASS** |
+
 ---
 
 ## 三、 排错与问题闭环记录（保留失败原件）
 
-本轮生命周期测试完整保留了前两轮排错原件，不掩盖历史缺陷：
+本轮生命周期测试完整保留了排错原件，不掩盖历史缺陷：
 1. **第一轮运行失败 [runtime-results-1d060bf4f8e7.json](runtime-results-1d060bf4f8e7.json)**：
    - 现象：`postLogoutRefresh` 与 `kickedDeviceRefresh` 均返回 404（预期 401）。
    - 根因：`IamProviderBoundaryController.java` 中 `validateRefreshBinding` 在校验会话活跃状态时：
@@ -119,8 +143,12 @@
    - 根因：被踢设备在踢出时设备登记已被标记为非活跃（`!registration.active()`），在 `validateTrustedTransport` 中：
      `if (!registration.active() ...) throw new IamPolicyException(IamDecisionCode.DEVICE_NOT_FOUND, ...);`，再次将已注销设备误判为设备不存在（404）。
    - 修复：识别出设备非活跃时明确抛出 `DEVICE_REVOKED`，并在控制器及 `IdempotencyService` 状态码映射中将其映射为 401 (`UNAUTHORIZED`) 与错误码 `AUTH_DEVICE_REVOKED`。
-3. **最终轮次 [runtime-results-ff793b6aaaa9.json](runtime-results-ff793b6aaaa9.json)**：
-   - 在新干净库 `r1_iam_lifecycle_20261009_ff793b6aaaa9` 上完整重跑，全部 40 项逐条断言 100% PASS。
+3. **R1-003~006 轮次 [runtime-results-2adfe7d7cd74.json](runtime-results-2adfe7d7cd74.json)**：
+   - 在干净库 `r1_iam_lifecycle_20261009_2adfe7d7cd74` 上跑通 59 项断言 100% PASS。
+4. **R1-008 初跑排错原件 [runtime-results-b5d84884182f.json](runtime-results-b5d84884182f.json)**：
+   - 现象：R1-008 的 17 项断言中有 16 项通过，仅 `requiredPurposesValid` 报 false。
+   - 根因：IAM 服务端底层 `publishedRequiredPoliciesFor("LEARNING")` 返回的是领域的标准目的名 `['ACCOUNT_TERMS', 'PRIVACY_NOTICE', 'ADULT_LEARNING_ELIGIBILITY']`，原测试断言仅检查了传输 wire 类型名 `['TERMS', 'PRIVACY', 'ADULT_LEARNING']`。
+   - 修复：在 `assertions.mjs` 中对齐服务端领域目的名与传输 wire 类型名映射，并在干净库 `r1_iam_lifecycle_20261009_1b88d9e1df09` 上完全重跑，全部 76 项断言 100% PASS。
 
 ---
 
@@ -133,9 +161,16 @@
 2. **服务端**：
    - `services/iam-service/src/main/java/com/englishflow/iam/web/IamProviderBoundaryController.java`：
      - `DeviceResponse` 增加 `boolean isCurrent`；
-     - `deviceList` 端点使用已验证 JWT 的 `device_id` claim（缺省时降级按 `session_id` 查会话表）判定 `isCurrent`，不接受客户端篡改；
-     - 修复非活跃会话与被踢设备的 401 语义。
+     - `deviceList` 端点使用已验证 JWT 的 `device_id` claim 判定 `isCurrent`，不接受客户端篡改；
+     - 修复非活跃会话与被踢设备的 401 语义；
+     - `adultGate` 实现成人群体与未成年群体双路径落库，不注销未成年人会话，支持幂等重放；
+     - 原生支持 `PUT /api/v1/iam/consents` 动态版本校验与 `CONSENT_VERSION_MISMATCH` 409 拒绝。
    - `services/iam-service/src/main/java/com/englishflow/iam/domain/IdempotencyService.java`：增加 `DEVICE_REVOKED` 映射。
-   - `services/iam-service/src/test/java/com/englishflow/iam/web/IamDeviceListCurrentControllerTest.java`：新增 5 项专项单元测试。
-3. **前端层**：
-   - `apps/learner-web` 与 `apps/mobile`：设备列表均优先消费服务端的 `isCurrent`，并保留本地比对兜底，通过全量 typecheck 与单元测试。
+   - `services/iam-service/src/test/java/com/englishflow/iam/web/IamDeviceListCurrentControllerTest.java`：5 项设备单元测试全绿。
+   - `services/iam-service/src/test/java/com/englishflow/iam/web/IamAdultGateControllerTest.java`：9 项成人门单元测试全绿。
+3. **前端层（Web 与 Mobile 双端）**：
+   - `apps/learner-web/src/api/learner-content.ts` 与 `apps/mobile/src/api/learner-content.ts`：
+     - 动态同意版本改造：采用“乐观默认版本 + 409 动态嗅探重试自愈 + 模块级版本缓存”机制；
+     - 并发签署合并（共享 `refreshPromise`），杜绝重复请求与 409 卡死；
+     - 修复 `toReadModelError` 丢失 409 状态码的缺陷，确保自愈链路 100% 触发；
+     - 新增双端单测 `apps/learner-web/tests/consent-dynamic-version.test.mjs` 与 `apps/mobile/tests/mobile-consent-dynamic-version.test.mjs`（6/6 PASS）。

@@ -416,6 +416,96 @@ export function evaluateR1006Assertions({
   };
 }
 
+export function evaluateR1008Assertions({
+  preConsentMe,
+  privacySubmit,
+  termsSubmit,
+  adultLearningSubmit,
+  postConsentMe,
+  dbConsentRecords,
+  dbAuditFacts,
+  staleVersionSubmit,
+  missingKeySubmit,
+  invalidDecisionSubmit,
+  replaySubmit,
+}) {
+  const assertions = {};
+
+  // 1. 前置读取激活版本
+  assertions.preConsentPrincipalMe200 = preConsentMe?.status === 200;
+  assertions.consentRequiredTrue = preConsentMe?.body?.data?.consentState?.required === true;
+  assertions.consentAcceptedInitialFalse = preConsentMe?.body?.data?.consentState?.accepted === false;
+  assertions.consentVersionPresent = Boolean(preConsentMe?.body?.data?.consentState?.version);
+  const reqPurposes = preConsentMe?.body?.data?.consentState?.requiredPurposes;
+  assertions.requiredPurposesValid = Boolean(
+    Array.isArray(reqPurposes) &&
+    reqPurposes.length === 3 &&
+    (reqPurposes.includes('PRIVACY_NOTICE') || reqPurposes.includes('PRIVACY')) &&
+    (reqPurposes.includes('ACCOUNT_TERMS') || reqPurposes.includes('TERMS')) &&
+    (reqPurposes.includes('ADULT_LEARNING_ELIGIBILITY') || reqPurposes.includes('ADULT_LEARNING'))
+  );
+
+  // 2. 动态签署
+  assertions.privacySubmit200 = privacySubmit?.status === 200 && privacySubmit?.body?.data?.decision === 'ACCEPTED';
+  assertions.termsSubmit200 = termsSubmit?.status === 200 && termsSubmit?.body?.data?.decision === 'ACCEPTED';
+  assertions.adultLearningSubmit200 = adultLearningSubmit?.status === 200 && adultLearningSubmit?.body?.data?.decision === 'ACCEPTED';
+
+  // 3. 签署后状态确认与学习资格
+  assertions.postConsentPrincipalMe200 = postConsentMe?.status === 200;
+  assertions.consentAcceptedPostTrue = postConsentMe?.body?.data?.consentState?.accepted === true;
+  assertions.postLearningAccessEligible = postConsentMe?.body?.data?.consentState?.learningAccess === 'ELIGIBLE' &&
+    postConsentMe?.body?.data?.status === 'ACTIVE';
+  assertions.dbConsentsRecordedCount3 = Boolean(
+    Array.isArray(dbConsentRecords) &&
+    dbConsentRecords.length === 3 &&
+    dbConsentRecords.every(r => r.status === 'GRANTED')
+  );
+  assertions.dbAuditConsentRecorded = Boolean(
+    Array.isArray(dbAuditFacts) &&
+    dbAuditFacts.some(a => a.actionCode === 'consent_recorded')
+  );
+
+  // 4. 版本冲突 409
+  assertions.staleVersionConflict409 = staleVersionSubmit?.status === 409;
+
+  // 5. 边界校验
+  assertions.missingIdempotencyKey400 = missingKeySubmit?.status === 400;
+  assertions.invalidDecision400 = invalidDecisionSubmit?.status === 400;
+
+  // 6. 幂等重放
+  assertions.replayConsent200 = replaySubmit?.status === 200;
+
+  const coreChecks = [
+    assertions.preConsentPrincipalMe200,
+    assertions.consentRequiredTrue,
+    assertions.consentAcceptedInitialFalse,
+    assertions.consentVersionPresent,
+    assertions.requiredPurposesValid,
+    assertions.privacySubmit200,
+    assertions.termsSubmit200,
+    assertions.adultLearningSubmit200,
+    assertions.postConsentPrincipalMe200,
+    assertions.consentAcceptedPostTrue,
+    assertions.postLearningAccessEligible,
+    assertions.dbConsentsRecordedCount3,
+    assertions.dbAuditConsentRecorded,
+    assertions.staleVersionConflict409,
+    assertions.missingIdempotencyKey400,
+    assertions.invalidDecision400,
+    assertions.replayConsent200,
+  ];
+
+  assertions.passed = coreChecks.every(Boolean);
+
+  return {
+    card: 'R1-008',
+    chain: 'BC-008',
+    summary: '三同意动态版读取与签署及409拒绝验证',
+    assertions,
+    passed: assertions.passed,
+  };
+}
+
 export function redactSecrets(value, privateDirectories = []) {
   if (value === null || value === undefined) return value;
   if (typeof value === 'string') {

@@ -1,0 +1,124 @@
+{
+  "kind": "R1_IAM_LIFECYCLE_OWNED_RUNTIME",
+  "schema": "r1_iam_lifecycle_20261009_b5d84884182f",
+  "user": "r1_iam_b5d84884182f",
+  "mysql": {
+    "id": "db87392020398271b86e76c8738c2ea7af619a41ef11eb3cee68d8910956deec",
+    "name": "/yuxuexing-local-mysql-1",
+    "image": "mysql:8.0",
+    "project": "yuxuexing-local",
+    "service": "mysql",
+    "port": [
+      {
+        "HostIp": "127.0.0.1",
+        "HostPort": "13306"
+      }
+    ],
+    "state": "running",
+    "health": "healthy"
+  },
+  "privateDirectory": "<PRIVATE_MATERIAL_DIR>",
+  "permissions": {
+    "checkedAt": "2026-10-09T08:49:03.417Z",
+    "method": "filesystem-lstat-owner-and-mode",
+    "checks": [
+      {
+        "name": "material-directory",
+        "kind": "directory",
+        "mode": "0700",
+        "expectedMode": "0700",
+        "ownerUid": 502,
+        "expectedOwnerUid": 502,
+        "ownerMatches": true,
+        "symbolicLink": false,
+        "expectedTypeMatches": true,
+        "result": "PASS"
+      },
+      {
+        "name": "test-key.pem",
+        "kind": "file",
+        "mode": "0600",
+        "expectedMode": "0600",
+        "ownerUid": 502,
+        "expectedOwnerUid": 502,
+        "ownerMatches": true,
+        "symbolicLink": false,
+        "expectedTypeMatches": true,
+        "result": "PASS"
+      },
+      {
+        "name": "test-ca.pem",
+        "kind": "file",
+        "mode": "0600",
+        "expectedMode": "0600",
+        "ownerUid": 502,
+        "expectedOwnerUid": 502,
+        "ownerMatches": true,
+        "symbolicLink": false,
+        "expectedTypeMatches": true,
+        "result": "PASS"
+      },
+      {
+        "name": "iam-server.p12",
+        "kind": "file",
+        "mode": "0600",
+        "expectedMode": "0600",
+        "ownerUid": 502,
+        "expectedOwnerUid": 502,
+        "ownerMatches": true,
+        "symbolicLink": false,
+        "expectedTypeMatches": true,
+        "result": "PASS"
+      },
+      {
+        "name": "iam-signer.pem",
+        "kind": "file",
+        "mode": "0600",
+        "expectedMode": "0600",
+        "ownerUid": 502,
+        "expectedOwnerUid": 502,
+        "ownerMatches": true,
+        "symbolicLink": false,
+        "expectedTypeMatches": true,
+        "result": "PASS"
+      },
+      {
+        "name": "iam-runtime.properties",
+        "kind": "file",
+        "mode": "0600",
+        "expectedMode": "0600",
+        "ownerUid": 502,
+        "expectedOwnerUid": 502,
+        "ownerMatches": true,
+        "symbolicLink": false,
+        "expectedTypeMatches": true,
+        "result": "PASS"
+      },
+      {
+        "name": "runtime.json",
+        "kind": "file",
+        "mode": "0600",
+        "expectedMode": "0600",
+        "ownerUid": 502,
+        "expectedOwnerUid": 502,
+        "ownerMatches": true,
+        "symbolicLink": false,
+        "expectedTypeMatches": true,
+        "result": "PASS"
+      }
+    ],
+    "result": "PASS",
+    "contentsRead": false
+  },
+  "certificate": {
+    "sha256": "c0a78b5cc38f3e6a3697725e2b68a060d501d6c8b1105e20da83c81ac64c9d3f",
+    "fingerprint256": "93:EC:DD:D3:EA:6B:AF:7D:D2:BF:F6:A5:03:CC:68:DC:6B:1A:C3:9A:10:86:70:10:93:CA:2C:65:99:5D:B3:E8",
+    "subjectAltName": "IP Address:127.0.0.1, DNS:localhost",
+    "validFrom": "Oct  9 08:49:02 2026 GMT",
+    "validTo": "Oct 16 08:49:02 2026 GMT",
+    "ca": false
+  },
+  "databaseCreated": true,
+  "servicesStarted": false,
+  "preparedAt": "2026-10-09T08:49:03.416Z"
+}

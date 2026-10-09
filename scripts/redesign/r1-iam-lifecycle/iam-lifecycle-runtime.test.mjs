@@ -14,6 +14,7 @@ import {
   evaluateR1004Assertions,
   evaluateR1005Assertions,
   evaluateR1006Assertions,
+  evaluateR1008Assertions,
   redactSecrets,
   generateCleanupPlan,
 } from './assertions.mjs';
@@ -737,3 +738,108 @@ test('R1-006 assertion evaluation checks adult and minor paths, DB facts, audits
   assert.equal(negMissingKey.passed, false);
   assert.equal(negMissingKey.assertions.missingIdempotencyKey400, false);
 });
+
+test('R1-008 assertion evaluation checks consent reading, dynamic signing, DB facts, 409 conflict and replay', () => {
+  const basePositive = {
+    preConsentMe: {
+      status: 200,
+      body: {
+        data: {
+          consentState: {
+            required: true,
+            accepted: false,
+            version: 'b30-consent-v1',
+            requiredPurposes: ['PRIVACY', 'TERMS', 'ADULT_LEARNING'],
+          },
+        },
+      },
+    },
+    privacySubmit: { status: 200, body: { data: { type: 'PRIVACY', decision: 'ACCEPTED' } } },
+    termsSubmit: { status: 200, body: { data: { type: 'TERMS', decision: 'ACCEPTED' } } },
+    adultLearningSubmit: { status: 200, body: { data: { type: 'ADULT_LEARNING', decision: 'ACCEPTED' } } },
+    postConsentMe: {
+      status: 200,
+      body: {
+        data: {
+          status: 'ACTIVE',
+          consentState: {
+            required: true,
+            accepted: true,
+            version: 'b30-consent-v1',
+            learningAccess: 'ELIGIBLE',
+          },
+        },
+      },
+    },
+    dbConsentRecords: [
+      { consentType: 'PRIVACY', documentVersion: 'b30-consent-v1', status: 'GRANTED' },
+      { consentType: 'TERMS', documentVersion: 'b30-consent-v1', status: 'GRANTED' },
+      { consentType: 'ADULT_LEARNING', documentVersion: 'b30-consent-v1', status: 'GRANTED' },
+    ],
+    dbAuditFacts: [
+      { actionCode: 'consent_recorded', decision: 'ALLOW' },
+      { actionCode: 'consent_recorded', decision: 'ALLOW' },
+      { actionCode: 'consent_recorded', decision: 'ALLOW' },
+    ],
+    staleVersionSubmit: { status: 409 },
+    missingKeySubmit: { status: 400 },
+    invalidDecisionSubmit: { status: 400 },
+    replaySubmit: { status: 200, body: { data: { type: 'PRIVACY', decision: 'ACCEPTED' } } },
+  };
+
+  const positive = evaluateR1008Assertions(basePositive);
+  assert.equal(positive.passed, true);
+  assert.equal(positive.card, 'R1-008');
+  assert.equal(positive.chain, 'BC-008');
+  assert.equal(positive.assertions.preConsentPrincipalMe200, true);
+  assert.equal(positive.assertions.consentVersionPresent, true);
+  assert.equal(positive.assertions.privacySubmit200, true);
+  assert.equal(positive.assertions.termsSubmit200, true);
+  assert.equal(positive.assertions.adultLearningSubmit200, true);
+  assert.equal(positive.assertions.postLearningAccessEligible, true);
+  assert.equal(positive.assertions.dbConsentsRecordedCount3, true);
+  assert.equal(positive.assertions.dbAuditConsentRecorded, true);
+  assert.equal(positive.assertions.staleVersionConflict409, true);
+  assert.equal(positive.assertions.replayConsent200, true);
+
+  // Negative 1: Missing consent version in preConsentMe
+  const negMissingVer = evaluateR1008Assertions({
+    ...basePositive,
+    preConsentMe: { status: 200, body: { data: { consentState: { required: true, accepted: false } } } },
+  });
+  assert.equal(negMissingVer.passed, false);
+  assert.equal(negMissingVer.assertions.consentVersionPresent, false);
+
+  // Negative 2: Privacy submit not 200
+  const negPrivacyFail = evaluateR1008Assertions({
+    ...basePositive,
+    privacySubmit: { status: 500 },
+  });
+  assert.equal(negPrivacyFail.passed, false);
+  assert.equal(negPrivacyFail.assertions.privacySubmit200, false);
+
+  // Negative 3: DB consent records count < 3
+  const negDbCount = evaluateR1008Assertions({
+    ...basePositive,
+    dbConsentRecords: [{ consentType: 'PRIVACY', status: 'GRANTED' }],
+  });
+  assert.equal(negDbCount.passed, false);
+  assert.equal(negDbCount.assertions.dbConsentsRecordedCount3, false);
+
+  // Negative 4: Stale version did not return 409
+  const negNo409 = evaluateR1008Assertions({
+    ...basePositive,
+    staleVersionSubmit: { status: 200 },
+  });
+  assert.equal(negNo409.passed, false);
+  assert.equal(negNo409.assertions.staleVersionConflict409, false);
+
+  // Negative 5: Missing key did not return 400
+  const negNo400 = evaluateR1008Assertions({
+    ...basePositive,
+    missingKeySubmit: { status: 200 },
+  });
+  assert.equal(negNo400.passed, false);
+  assert.equal(negNo400.assertions.missingIdempotencyKey400, false);
+});
+

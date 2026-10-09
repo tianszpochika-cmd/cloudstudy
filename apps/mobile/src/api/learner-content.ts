@@ -246,6 +246,39 @@ function requireSameIdentity(isCurrent?: () => boolean): void {
   if (isCurrent && !isCurrent()) throw new Error('账号已变化，请重新打开页面后操作。')
 }
 
+let cachedActiveConsentVersion: string | null = null
+let consentRefreshPromise: Promise<string> | null = null
+
+async function fetchActiveConsentVersion(): Promise<string> {
+  try {
+    const raw = await requestOptional('/iam/principal/me')
+    const unwrapped = unwrap(raw)
+    if (isRecord(unwrapped)) {
+      const consentState = isRecord(unwrapped.consentState) ? unwrapped.consentState : undefined
+      if (consentState && typeof consentState.version === 'string' && consentState.version.trim()) {
+        return consentState.version.trim()
+      }
+    }
+  } catch {
+    // fallback to default
+  }
+  return 'b30-consent-v1'
+}
+
+async function refreshActiveConsentVersion(): Promise<string> {
+  if (!consentRefreshPromise) {
+    consentRefreshPromise = fetchActiveConsentVersion().then((v) => {
+      cachedActiveConsentVersion = v
+      consentRefreshPromise = null
+      return v
+    }).catch((err) => {
+      consentRefreshPromise = null
+      throw err
+    })
+  }
+  return consentRefreshPromise
+}
+
 export const mobileLearnerContentApi = {
   async readOnboarding(): Promise<MobileOnboardingModel> {
     // Preferences are the canonical source for content locale. Resolve them
@@ -270,12 +303,40 @@ export const mobileLearnerContentApi = {
       throw new Error('请先完成成人确认、同意事项和学习目标。')
     }
     const targetLevel = input.goal === 'ZERO_BASIS' ? 'A1' : input.goal === 'CET_4_6' ? 'B1' : 'B2'
+
+    const signConsent = async (type: string, keySuffix: string) => {
+      const version = cachedActiveConsentVersion ?? 'b30-consent-v1'
+      try {
+        await mobileApiClient.request('/iam/consents', {
+          method: 'PUT',
+          data: { type, version, decision: 'ACCEPTED' },
+          header: { 'Idempotency-Key': `${input.clientEventId}-${keySuffix}` },
+        })
+      } catch (error) {
+        if (error instanceof MobileApiError && error.status === 409) {
+          let latestVersion = cachedActiveConsentVersion
+          if (latestVersion === version || !latestVersion) {
+            latestVersion = await refreshActiveConsentVersion()
+          }
+          if (latestVersion && latestVersion !== version) {
+            await mobileApiClient.request('/iam/consents', {
+              method: 'PUT',
+              data: { type, version: latestVersion, decision: 'ACCEPTED' },
+              header: { 'Idempotency-Key': `${input.clientEventId}-${keySuffix}` },
+            })
+            return
+          }
+        }
+        throw error
+      }
+    }
+
     // Consent is an IAM fact. Learner writes require a freshly issued access
     // token carrying that fact, and each write advances one profile version.
     await Promise.all([
-      mobileApiClient.request('/iam/consents', { method: 'PUT', data: { type: 'PRIVACY', version: 'b30-consent-v1', decision: 'ACCEPTED' }, header: { 'Idempotency-Key': `${input.clientEventId}-privacy` } }),
-      mobileApiClient.request('/iam/consents', { method: 'PUT', data: { type: 'TERMS', version: 'b30-consent-v1', decision: 'ACCEPTED' }, header: { 'Idempotency-Key': `${input.clientEventId}-terms` } }),
-      mobileApiClient.request('/iam/consents', { method: 'PUT', data: { type: 'ADULT_LEARNING', version: 'b30-consent-v1', decision: 'ACCEPTED' }, header: { 'Idempotency-Key': `${input.clientEventId}-adult-learning` } }),
+      signConsent('PRIVACY', 'privacy'),
+      signConsent('TERMS', 'terms'),
+      signConsent('ADULT_LEARNING', 'adult-learning'),
     ])
     requireSameIdentity(isCurrent)
     const [{ useSessionStore }, { pinia }] = await Promise.all([import('../stores/session'), import('../stores/pinia')])

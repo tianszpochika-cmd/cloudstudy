@@ -1,6 +1,6 @@
-# R1-IAM-Lifecycle 干净专库运行验证工具 (R1-003 / R1-004 / R1-005 / R1-006)
+# R1-IAM-Lifecycle 干净专库运行验证工具 (R1-003 / R1-004 / R1-005 / R1-006 / R1-008)
 
-本工具为语学星平台 Phase 1 迭代 2（Redesign）的 **R1-003**、**R1-004**、**R1-005** 与 **R1-006** 四张业务卡提供「干净专库、单 IAM 服务、全生命周期运行验证」支撑。
+本工具为语学星平台 Phase 1 迭代 2（Redesign）的 **R1-003**、**R1-004**、**R1-005**、**R1-006** 与 **R1-008** 五张业务卡提供「干净专库、单 IAM 服务、全生命周期运行验证」支撑。
 
 > **安全准则**：本工具仅供受控离线实现与测试。未经根审签发具名 `run-approval.json` 前，严禁真正启动服务或向数据库执行写入。默认模式为严格只读审计模式（0 进程、0 写入、0 网络请求、0 Docker 命令）。
 
@@ -14,6 +14,7 @@
 | **R1-004** | **BC-004** (登录/刷新/撤销全套) | IC-002 / IC-053 | 1. 新独立账号注册后登录：HTTP 200，下发 Cookie 与 Access Token，建立活动会话。<br>2. **刷新轮换**：携带合法 refresh cookie 请求刷新，返回 HTTP 200，**新 refresh token 替代旧 token**；Cookie 严格具备 `HttpOnly`、`Secure`、`SameSite=Lax`、`Path=/api/v1/auth`，且响应体**绝不包含明文 refreshToken**。<br>3. **旧 refresh token 重放**：使用轮换前的旧 refresh token 再次刷新，返回 HTTP 401（`AUTH_REFRESH_REUSE_DETECTED`），**触发令牌族撤销**，SQL 读回该 session 状态为 `REVOKED`。<br>4. **登出与失效令牌**：重新登录后执行 logout，返回 HTTP 200，SQL 读回 session 为 `REVOKED`；被撤销 session 的旧 access token 与 refresh token 再次使用均返回 HTTP 401。 |
 | **R1-005** | **BC-005** (设备列表与踢出) | IC-002 / IC-008 / IC-035 | 1. 同一账号分别以设备 A 和设备 B 成功登录，生成两个活跃会话。<br>2. **设备识别**：携带设备 A 令牌请求 `GET /api/v1/iam/devices`，设备列表中**恰有一个 `isCurrent=true` 且其 deviceId 为 A**；携带设备 B 令牌请求时，**恰有一个 `isCurrent=true` 且其 deviceId 为 B**。<br>3. **踢出操作**：设备 A 调用 `POST /api/v1/iam/devices/{deviceIdB}/kickout`，返回 HTTP 200。<br>4. **被踢令牌失效**：设备 B 的旧 Access Token 请求受保护接口返回 HTTP 401；设备 B 的 Refresh Token 刷新返回 HTTP 401；SQL 读回设备 B 的会话状态为 `REVOKED`。<br>5. **主调设备不受影响**：设备 A 的凭据继续保持有效（HTTP 200），SQL 读回设备 A 会话仍为 `ACTIVE`。 |
 | **R1-006** | **BC-006** (成人门双路径与审计) | IC-002 / IC-037 | 1. **成年人路径**：有效账号提交 adult-gate（birthYear 1995），返回 HTTP 200，status 为 `PASSED`、learningAccess 为 `ELIGIBLE`、evidenceStatus 为 `SERVER_VERIFIED`；SQL 读回 principal 表 adult_gate_status 为 `APPROVED` 且 adult_verified_at 非空；审计表记入 decision `ALLOW`，reason_code 为 `adult_gate_allowed`；幂等重放返回一致结果。<br>2. **未成年人路径**：全新注册账号提交 adult-gate（birthYear 2015），返回 HTTP 200，status 为 `REJECTED`、learningAccess 为 `RESTRICTED`、evidenceStatus 为 `REJECTED`；SQL 读回 principal 表 adult_gate_status 为 `REJECTED` 且 adult_verified_at 为 NULL；审计表记入 decision `DENY`，reason_code 为 `ADULT_AGE_BELOW_MINIMUM`；会话保持 `ACTIVE`，受限态可访问 `/api/v1/iam/principal/me`（HTTP 200）；幂等重放返回一致结果。<br>3. **同键参数冲突与边界拒绝**：同键不同参数重放返回 HTTP 409；缺失 confirmed 确认返回 HTTP 403；缺失 Idempotency-Key 头部返回 HTTP 400。 |
+| **R1-008** | **BC-008** (三同意动态版读取与签署及409拒绝) | IC-002 / IC-054 | 1. **前置读取激活版本**：请求 `GET /api/v1/iam/principal/me` 提取动态 `consentState.version`（非写死）；<br>2. **三项动态签署**：分别对 `PRIVACY`、`TERMS`、`ADULT_LEARNING` 携带激活版本发起 `PUT /api/v1/iam/consents` 签署，均返回 HTTP 200（`decision=ACCEPTED`）；<br>3. **落库与资格翻转**：SQL 查回 `iam_consent` 表包含 3 条 `status=GRANTED` 记录；审计表记录 `consent_recorded`；再次调用 `GET /api/v1/iam/principal/me` 验证 `consentState.accepted=true` 且 `learningAccess=ELIGIBLE`，账号状态为 `ACTIVE`；<br>4. **409 版本冲突**：提交过时/无效版本（如 `stale-version-999`）返回 HTTP 409（`CONSENT_VERSION_MISMATCH`），不造成脏写入；<br>5. **边界与幂等**：缺失 `Idempotency-Key` 返回 400；非法 decision 返回 400；同键同体重放返回一致 200。 |
 
 ---
 

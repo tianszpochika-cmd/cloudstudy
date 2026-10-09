@@ -1,0 +1,158 @@
+{
+  "kind": "R1_IAM_LIFECYCLE_EXECUTION_RESULTS",
+  "status": "PASS",
+  "executedAt": "2026-10-09T08:51:34.611Z",
+  "schema": "r1_iam_lifecycle_20261009_1b88d9e1df09",
+  "user": "r1_iam_1b88d9e1df09",
+  "results": {
+    "r1003": {
+      "card": "R1-003",
+      "chain": "BC-003",
+      "summary": "注册幂等回放验证",
+      "assertions": {
+        "initialCleanDb": true,
+        "firstRegistrationStatus201": true,
+        "firstRegistrationHasSession": true,
+        "firstRegistrationHasDevice": true,
+        "replayStatusConsistent": true,
+        "replaySessionConsistent": true,
+        "replayDeviceConsistent": true,
+        "replayNoSecondAccount": true,
+        "replayCompletedIdempotencyCount": true,
+        "conflictRejected": true,
+        "conflictActualStatus": 409,
+        "conflictNoSecondAccount": true,
+        "missingKeyRejected": true,
+        "missingKeyActualStatus": 400,
+        "passed": true
+      },
+      "passed": true
+    },
+    "r1004": {
+      "card": "R1-004",
+      "chain": "BC-004",
+      "summary": "登录/刷新/撤销全套生命周期验证",
+      "assertions": {
+        "registrationStatus201": true,
+        "loginStatus200": true,
+        "loginHasSession": true,
+        "refreshStatus200": true,
+        "refreshRotatedNewTokenDifferent": true,
+        "refreshCookieSecurity": true,
+        "refreshBodyNoPlaintextToken": true,
+        "replayOldRefreshRejected": true,
+        "replayOldRefreshActualStatus": 401,
+        "replayOldRefreshSessionRevoked": true,
+        "reloginStatus200": true,
+        "logoutStatus200": true,
+        "logoutSessionRevoked": true,
+        "postLogoutAccessRejected401": true,
+        "postLogoutAccessActualStatus": 401,
+        "postLogoutRefreshRejected401": true,
+        "postLogoutRefreshActualStatus": 401,
+        "passed": true
+      },
+      "passed": true
+    },
+    "r1005": {
+      "card": "R1-005",
+      "chain": "BC-005",
+      "summary": "多设备列表识别与踢出验证",
+      "assertions": {
+        "loginAStatus200": true,
+        "loginBStatus200": true,
+        "devicesFromAStatus200": true,
+        "devicesFromAHasSingleCurrent": true,
+        "devicesFromAIsCurrentDeviceIdA": true,
+        "devicesFromBStatus200": true,
+        "devicesFromBHasSingleCurrent": true,
+        "devicesFromBIsCurrentDeviceIdB": true,
+        "kickoutStatus200": true,
+        "kickedDeviceAccessRejected401": true,
+        "kickedDeviceAccessActualStatus": 401,
+        "kickedDeviceRefreshRejected401": true,
+        "kickedDeviceRefreshActualStatus": 401,
+        "deviceARemainsValid200": true,
+        "sessionStatusBRevoked": true,
+        "sessionStatusAActive": true,
+        "passed": true
+      },
+      "passed": true
+    },
+    "r1006": {
+      "card": "R1-006",
+      "chain": "BC-006",
+      "summary": "成人门提交双路径落库与审计验证",
+      "assertions": {
+        "adultSubmitStatus200": true,
+        "adultGateStatusPassed": true,
+        "adultLearningAccessEligible": true,
+        "adultEvidenceVerified": true,
+        "dbAdultGateStatusApproved": true,
+        "dbAdultAuditAllow": true,
+        "adultReplayConsistent": true,
+        "minorSubmitStatus200": true,
+        "minorGateStatusRejected": true,
+        "minorLearningAccessRestricted": true,
+        "minorEvidenceRejected": true,
+        "dbMinorGateStatusRejected": true,
+        "dbMinorAuditDeny": true,
+        "minorSessionActive": true,
+        "minorPostAccess200": true,
+        "minorReplayConsistent": true,
+        "minorConflict409": true,
+        "missingConfirmation403": true,
+        "missingIdempotencyKey400": true,
+        "passed": true
+      },
+      "passed": true
+    },
+    "r1008": {
+      "card": "R1-008",
+      "chain": "BC-008",
+      "summary": "三同意动态版读取与签署及409拒绝验证",
+      "assertions": {
+        "preConsentPrincipalMe200": true,
+        "consentRequiredTrue": true,
+        "consentAcceptedInitialFalse": true,
+        "consentVersionPresent": true,
+        "requiredPurposesValid": true,
+        "privacySubmit200": true,
+        "termsSubmit200": true,
+        "adultLearningSubmit200": true,
+        "postConsentPrincipalMe200": true,
+        "consentAcceptedPostTrue": true,
+        "postLearningAccessEligible": true,
+        "dbConsentsRecordedCount3": true,
+        "dbAuditConsentRecorded": true,
+        "staleVersionConflict409": true,
+        "missingIdempotencyKey400": true,
+        "invalidDecision400": true,
+        "replayConsent200": true,
+        "passed": true
+      },
+      "passed": true
+    }
+  },
+  "checks": {
+    "flyway": {
+      "successfulVersions": 17,
+      "failed": 0,
+      "maxVersion": 18
+    },
+    "initialCleanCounts": {
+      "principals": 0,
+      "accounts": 0,
+      "sessions": 0,
+      "devices": 0,
+      "audits": 0,
+      "completedIdempotency": 0
+    }
+  },
+  "passed": true,
+  "cleanup": {
+    "iamStopped": true,
+    "port18087Released": true,
+    "cleanupErrors": []
+  }
+}

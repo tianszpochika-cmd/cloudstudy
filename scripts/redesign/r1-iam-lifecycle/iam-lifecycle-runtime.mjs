@@ -42,6 +42,7 @@ import {
   evaluateR1004Assertions,
   evaluateR1005Assertions,
   evaluateR1006Assertions,
+  evaluateR1008Assertions,
   redactSecrets,
   generateCleanupPlan,
 } from './assertions.mjs';
@@ -205,6 +206,34 @@ export function getLatestAuditFact(principalId, actionCode, config) {
     actionCode: action,
     resourceType,
   };
+}
+
+export function getConsentRecords(principalId, config) {
+  const schema = assertIamLifecycleSchema(config.schema);
+  const cleanId = String(principalId).replaceAll(/[^a-f0-9-]/gi, '');
+  const raw = sql(
+    `SELECT consent_type, policy_version, status FROM ${schema}.iam_consent WHERE principal_id='${cleanId}';`,
+    config.mysql
+  ).trim();
+  if (!raw) return [];
+  return raw.split('\n').filter(Boolean).map(line => {
+    const [consentType, policyVersion, status] = line.split('\t');
+    return { consentType, policyVersion, status };
+  });
+}
+
+export function getAllAuditFacts(principalId, config) {
+  const schema = assertIamLifecycleSchema(config.schema);
+  const cleanId = String(principalId).replaceAll(/[^a-f0-9-]/gi, '');
+  const raw = sql(
+    `SELECT action_code, decision, reason_code FROM ${schema}.iam_decision_audit WHERE principal_id='${cleanId}';`,
+    config.mysql
+  ).trim();
+  if (!raw) return [];
+  return raw.split('\n').filter(Boolean).map(line => {
+    const [actionCode, decision, reasonCode] = line.split('\t');
+    return { actionCode, decision, reasonCode };
+  });
 }
 
 function protectedDirectory(directory) {
@@ -580,6 +609,7 @@ export async function runMode({ configDir, approvalPath, outPath } = {}) {
       r1004: null,
       r1005: null,
       r1006: null,
+      r1008: null,
     },
     checks: {},
   };
@@ -1052,11 +1082,140 @@ export async function runMode({ configDir, approvalPath, outPath } = {}) {
       missingKey,
     });
 
+    // ==========================================
+    // SCENARIO 5: R1-008 三同意动态版读取与签署及409拒绝
+    // ==========================================
+    // 5.1 前置读取激活版本（使用已通过成人门的成年人账号 tokenA）
+    const preConsentMe = await http('https://127.0.0.1:18087/api/v1/iam/principal/me', {
+      method: 'GET',
+      token: tokenA,
+      ca,
+    });
+    const dynamicConsentVersion = preConsentMe.body?.data?.consentState?.version || 'b30-consent-v1';
+
+    // 5.2 动态签署 PRIVACY, TERMS, ADULT_LEARNING
+    const privacyKey = 'idemp-r1008-priv-' + randomBytes(16).toString('hex');
+    const privacySubmit = await http('https://127.0.0.1:18087/api/v1/iam/consents', {
+      method: 'PUT',
+      token: tokenA,
+      body: {
+        type: 'PRIVACY',
+        version: dynamicConsentVersion,
+        decision: 'ACCEPTED',
+      },
+      idempotencyKey: privacyKey,
+      ca,
+    });
+
+    const termsKey = 'idemp-r1008-terms-' + randomBytes(16).toString('hex');
+    const termsSubmit = await http('https://127.0.0.1:18087/api/v1/iam/consents', {
+      method: 'PUT',
+      token: tokenA,
+      body: {
+        type: 'TERMS',
+        version: dynamicConsentVersion,
+        decision: 'ACCEPTED',
+      },
+      idempotencyKey: termsKey,
+      ca,
+    });
+
+    const adultLearningKey = 'idemp-r1008-adult-' + randomBytes(16).toString('hex');
+    const adultLearningSubmit = await http('https://127.0.0.1:18087/api/v1/iam/consents', {
+      method: 'PUT',
+      token: tokenA,
+      body: {
+        type: 'ADULT_LEARNING',
+        version: dynamicConsentVersion,
+        decision: 'ACCEPTED',
+      },
+      idempotencyKey: adultLearningKey,
+      ca,
+    });
+
+    // 5.3 签署后状态确认与学习资格
+    const postConsentMe = await http('https://127.0.0.1:18087/api/v1/iam/principal/me', {
+      method: 'GET',
+      token: tokenA,
+      ca,
+    });
+
+    // 5.4 SQL 查回 DB 记录与审计
+    const dbConsentRecords = getConsentRecords(adultPrincipalId, config);
+    const dbAuditFacts = getAllAuditFacts(adultPrincipalId, config);
+
+    // 5.5 过期版本冲突 409
+    const staleVersionSubmit = await http('https://127.0.0.1:18087/api/v1/iam/consents', {
+      method: 'PUT',
+      token: tokenA,
+      body: {
+        type: 'PRIVACY',
+        version: 'stale-version-999',
+        decision: 'ACCEPTED',
+      },
+      idempotencyKey: 'idemp-r1008-stale-' + randomBytes(16).toString('hex'),
+      ca,
+    });
+
+    // 5.6 边界拒绝：缺 Idempotency-Key
+    const missingKeySubmit = await http('https://127.0.0.1:18087/api/v1/iam/consents', {
+      method: 'PUT',
+      token: tokenA,
+      body: {
+        type: 'PRIVACY',
+        version: dynamicConsentVersion,
+        decision: 'ACCEPTED',
+      },
+      ca,
+    });
+
+    // 5.7 边界拒绝：非法 decision
+    const invalidDecisionSubmit = await http('https://127.0.0.1:18087/api/v1/iam/consents', {
+      method: 'PUT',
+      token: tokenA,
+      body: {
+        type: 'PRIVACY',
+        version: dynamicConsentVersion,
+        decision: 'INVALID_DECISION',
+      },
+      idempotencyKey: 'idemp-r1008-invalid-' + randomBytes(16).toString('hex'),
+      ca,
+    });
+
+    // 5.8 幂等重放
+    const replaySubmit = await http('https://127.0.0.1:18087/api/v1/iam/consents', {
+      method: 'PUT',
+      token: tokenA,
+      body: {
+        type: 'PRIVACY',
+        version: dynamicConsentVersion,
+        decision: 'ACCEPTED',
+      },
+      idempotencyKey: privacyKey,
+      ca,
+    });
+
+    // 5.9 将 report.results.r1008 = evaluateR1008Assertions(...) 写入结果
+    report.results.r1008 = evaluateR1008Assertions({
+      preConsentMe,
+      privacySubmit,
+      termsSubmit,
+      adultLearningSubmit,
+      postConsentMe,
+      dbConsentRecords,
+      dbAuditFacts,
+      staleVersionSubmit,
+      missingKeySubmit,
+      invalidDecisionSubmit,
+      replaySubmit,
+    });
+
     const allPassed =
       report.results.r1003?.passed &&
       report.results.r1004?.passed &&
       report.results.r1005?.passed &&
-      report.results.r1006?.passed;
+      report.results.r1006?.passed &&
+      report.results.r1008?.passed;
 
     report.status = allPassed ? 'PASS' : 'FAILED';
     report.passed = Boolean(allPassed);

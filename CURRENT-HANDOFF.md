@@ -6,7 +6,7 @@
 
 1. 核对分支、提交与已有差量；阅读 [AGENTS](AGENTS.md)。
 2. 阅读[当前进度与最近工作点](docs/06-design/v2-980plus/redesign/CURRENT-PROGRESS.md)、[重设计包](docs/06-design/v2-980plus/redesign/README.md)、[R1 执行计划](docs/06-design/v2-980plus/redesign/dev-plan-R1.md)。
-3. 当前进度：R1-002~006 已通过独立终审签收；R1-007 门未过等待态双端实现与单测全绿；当前正在推进 R1-008（三同意动态版）。当前没有足够证据宣称 IT-1 已出站或 IT-2 已开工。
+3. 当前进度：R1-002~006、R1-008 已通过独立终审签收；R1-007 门未过等待态双端实现与单测全绿；下一步推进 R1-009（画像首步极简：目标/时长/每日提醒）。当前没有足够证据宣称 IT-1 已出站或 IT-2 已开工。
 4. 本机启动、测试与 SDK 检查见[开发指南](docs/07-operations/local-development.md)和[10 月 6 日环境验证](docs/07-operations/local-environment-verification-2026-10-06.md)；运行状态需重新检查，环境通过不升级业务验收。
 
 “迭代 2”是这轮 Redesign；IT-2 是 R1 内的定级站；Phase 2 是产品 AI 阶段。三者分别使用，不互相解锁。

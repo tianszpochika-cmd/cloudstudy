@@ -1,5 +1,25 @@
 # Changelog
 
+- [R1-008-20261009] **R1-008（三同意动态版）全套生命周期专库运行与双端动态自愈验证通过。**
+  - **BC-008 / IC-002 / IC-054 动态版本签署与落库**：
+    - 前置通过 `GET /api/v1/iam/principal/me` 动态提取激活版本（`b30-consent-v1`）；
+    - 针对 `PRIVACY`、`TERMS`、`ADULT_LEARNING` 动态发起 `PUT /api/v1/iam/consents` 签署，均返回 200 `ACCEPTED`；
+    - SQL 读回 `iam_consent` 确切落库 3 条 `status=GRANTED` 记录；审计流水记录 `consent_recorded`；
+    - 结合成人门，学习权限正式翻转为 `learningAccess=ELIGIBLE`，账号状态变为 `ACTIVE`；
+  - **防线验证与边界拒绝**：
+    - 提交过期/非激活版本（如 `stale-version-999`）返回 HTTP 409（`CONSENT_VERSION_MISMATCH`），不造成脏数据写入；
+    - 缺 `Idempotency-Key` 拒 400，非法 decision 拒 400；同键同体重放返回一致 200；
+  - **双端前端自愈与并发合并改造**：
+    - Web 端（`apps/learner-web/src/api/learner-content.ts`）与 Mobile 端（`apps/mobile/src/api/learner-content.ts`）重构：
+    - 采用“乐观默认版本 + 409 动态嗅探重试自愈 + 模块级版本缓存”机制；
+    - 并发签署共享 `refreshPromise` 合并，杜绝重复网络请求与换版本卡死用户；
+    - 修复 `toReadModelError` 丢失 409 状态码问题，确保自愈链路 100% 触发；
+    - 新增双端单测 `apps/learner-web/tests/consent-dynamic-version.test.mjs` 与 `apps/mobile/tests/mobile-consent-dynamic-version.test.mjs`（6/6 PASS）；
+  - **干净专库全生命周期运行收据**：
+    - 在新 MySQL 干净专库 `r1_iam_lifecycle_20261009_1b88d9e1df09` 与单 IAM 进程（固定端口 18087 HTTPS）上真实执行 R1-003~008 全套 76 项逐条断言（R1-003: 12, R1-004: 14, R1-005: 14, R1-006: 19, R1-008: 17）100% 全部 PASS。进程已安全退出，18087 端口完全释放；
+    - 独立终审审查员 Luna 签发 [终审报告](evidence/redesign/2026-10-09/R1-IAM-LIFECYCLE/final-review.md) **ACCEPTED_CARD_SCOPE / R1_003_004_005_006_008_ACCEPTANCE_PASS**，当前标记 **SAFELY_PAUSED**；
+    - 下一步推进卡项为 **R1-009（画像首步极简：目标/时长/每日提醒）**。
+
 - [R1-007-20261009] **R1-007（门未过等待态）Web/Mobile 双端实现与单元验证完成。**
   - **BC-007 / IC-005 / IC-055 路由放行**：当成人门状态为 `REJECTED` 时，账号合法功能完全放行（`/settings`、`/me`、`/support`、`/platform` 与移动端个人中心/设置/支持），杜绝死循环与强制拦截 onboarding；
   - **人话说明与对稿**：受限页面与横幅展示合规人话解释：“当前版本仅面向 18 岁以上成人开放，暂不能向你开放学习功能。”，符合 IC-005 规范，绝不诱导修改年龄绕过；
