@@ -555,7 +555,7 @@ export const useB1Store = defineStore('b1', () => {
     if (!stillCurrent(subject, generation)) return
     devices.value = []
     deviceStatus.value = 'loading'
-    if (!readAccessToken() || !session.deviceId) { deviceStatus.value = 'error'; return }
+    if (!readAccessToken()) { deviceStatus.value = 'error'; return }
     try {
       const remote = await fetchDevices(session.deviceId)
       if (!stillCurrent(subject, generation)) return
@@ -573,7 +573,7 @@ export const useB1Store = defineStore('b1', () => {
     const generation = session.authGeneration
     if (!stillCurrent(subject, generation)) return
     const device = devices.value.find((item) => item.deviceId === deviceId)
-    if (!useSessionStore().deviceId || !device || device.current || device.status !== 'ACTIVE') {
+    if (!device || device.current || device.status !== 'ACTIVE') {
       lastError.value = '无法确认目标设备，请刷新列表。'; return
     }
     try { await kickDevice(deviceId); if (stillCurrent(subject, generation)) await refreshDevices() }
@@ -584,7 +584,7 @@ export const useB1Store = defineStore('b1', () => {
     const subject = verifiedSubject.value
     const generation = session.authGeneration
     if (!stillCurrent(subject, generation)) return
-    if (!useSessionStore().deviceId || deviceStatus.value !== 'ready') return
+    if (deviceStatus.value !== 'ready') return
     const others = devices.value.filter((item) => !item.current && item.status === 'ACTIVE').map((item) => item.deviceId)
     if (!others.length) return
     try {

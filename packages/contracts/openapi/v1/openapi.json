@@ -50667,7 +50667,8 @@
           "deviceId",
           "deviceType",
           "status",
-          "lastActiveAt"
+          "lastActiveAt",
+          "isCurrent"
         ],
         "properties": {
           "deviceId": {
@@ -50688,6 +50689,10 @@
             "type": "string",
             "format": "date-time",
             "description": "Latest successful authentication on this device; this is not continuous activity tracking."
+          },
+          "isCurrent": {
+            "type": "boolean",
+            "description": "服务端由已验证令牌判定，不接受客户端声明。"
           }
         }
       },

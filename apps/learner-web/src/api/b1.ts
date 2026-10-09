@@ -361,7 +361,7 @@ export async function patchPrivacy(settings: PrivacySettings): Promise<void> {
   }, withIdempotency())
 }
 
-export async function fetchDevices(currentDeviceId: string | null): Promise<DeviceSession[]> {
+export async function fetchDevices(currentDeviceId?: string | null): Promise<DeviceSession[]> {
   const response = await apiClient.get<unknown>('/iam/devices')
   const source = unwrap(response)
   // IAM's cursor envelope carries DeviceListResponse.devices, not items.
@@ -379,7 +379,9 @@ export async function fetchDevices(currentDeviceId: string | null): Promise<Devi
       clientVersion: readString(item.clientVersion) ?? '',
       lastActiveAt: readString(item.lastActiveAt) ?? '',
       region: readString(item.region) ?? '',
-      current: Boolean(currentDeviceId) && deviceId === currentDeviceId,
+      current: typeof item.isCurrent === 'boolean'
+        ? item.isCurrent
+        : (Boolean(currentDeviceId) && deviceId === currentDeviceId),
       status: item.status === 'ACTIVE' ? 'ACTIVE' : 'KICKED',
     }]
   })

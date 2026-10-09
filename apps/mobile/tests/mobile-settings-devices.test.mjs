@@ -17,17 +17,23 @@ function load(relativePath, modules) {
   return module.exports
 }
 
-test('device list reads the IAM envelope and rejects malformed records', async () => {
+test('device list reads the IAM envelope, parses server isCurrent, and rejects malformed records', async () => {
   const calls = []
-  let response = { data: { devices: [{ deviceId: 'device-a', deviceType: 'IOS', status: 'ACTIVE', lastActiveAt: '2026-09-25T10:00:00Z' }] } }
+  let response = { data: { devices: [
+    { deviceId: 'device-a', deviceType: 'IOS', status: 'ACTIVE', lastActiveAt: '2026-09-25T10:00:00Z', isCurrent: true },
+    { deviceId: 'device-b', deviceType: 'WEB', status: 'ACTIVE', lastActiveAt: '2026-09-25T10:05:00Z', isCurrent: false },
+  ] } }
   const api = load('src/api/devices.ts', {
     './client': { mobileApiClient: { request: async (...args) => { calls.push(args); return response } } },
     '../platform/client-id': { createClientId: (prefix) => `${prefix}-fixture` },
   })
 
-  assert.deepEqual(await api.listMobileDevices(), [{ deviceId: 'device-a', deviceType: 'IOS', status: 'ACTIVE', lastActiveAt: '2026-09-25T10:00:00Z' }])
+  assert.deepEqual(await api.listMobileDevices(), [
+    { deviceId: 'device-a', deviceType: 'IOS', status: 'ACTIVE', lastActiveAt: '2026-09-25T10:00:00Z', isCurrent: true },
+    { deviceId: 'device-b', deviceType: 'WEB', status: 'ACTIVE', lastActiveAt: '2026-09-25T10:05:00Z', isCurrent: false },
+  ])
   assert.equal(calls[0][0], '/iam/devices')
-  response = { data: { devices: [{ deviceId: 'device-b', deviceType: 'WEB', status: 'UNKNOWN', lastActiveAt: '' }] } }
+  response = { data: { devices: [{ deviceId: 'device-c', deviceType: 'WEB', status: 'UNKNOWN', lastActiveAt: '' }] } }
   await assert.rejects(api.listMobileDevices(), /无效记录/)
 })
 
@@ -45,12 +51,27 @@ test('device kickout encodes the ID and sends an idempotency key', async () => {
   await assert.rejects(api.kickoutMobileDevice(' '), /缺少设备标识/)
 })
 
-test('current devices and revoked devices cannot be revoked', () => {
+test('current devices and revoked devices cannot be revoked with server isCurrent priority and fallback', () => {
   const domain = load('src/domain/devices.ts', {})
-  assert.equal(domain.canRevokeMobileDevice({ deviceId: 'current', status: 'ACTIVE' }, 'current'), false)
-  assert.equal(domain.canRevokeMobileDevice({ deviceId: 'other', status: 'ACTIVE' }, 'current'), true)
-  assert.equal(domain.canRevokeMobileDevice({ deviceId: 'other', status: 'REVOKED' }, 'current'), false)
-  assert.equal(domain.canRevokeMobileDevice({ deviceId: 'other', status: 'ACTIVE' }, null), false)
+
+  // Server provides isCurrent: true -> current device
+  assert.equal(domain.isCurrentMobileDevice({ deviceId: 'dev-1', isCurrent: true }, 'dev-2'), true)
+  assert.equal(domain.canRevokeMobileDevice({ deviceId: 'dev-1', status: 'ACTIVE', isCurrent: true }, 'dev-2'), false)
+
+  // Server provides isCurrent: false -> not current device, even if client thought it was
+  assert.equal(domain.isCurrentMobileDevice({ deviceId: 'dev-2', isCurrent: false }, 'dev-2'), false)
+  assert.equal(domain.canRevokeMobileDevice({ deviceId: 'dev-2', status: 'ACTIVE', isCurrent: false }, 'dev-2'), true)
+
+  // Revoked devices cannot be revoked
+  assert.equal(domain.canRevokeMobileDevice({ deviceId: 'dev-3', status: 'REVOKED', isCurrent: false }, 'dev-1'), false)
+
+  // Fallback mode when isCurrent is absent (undefined)
+  assert.equal(domain.isCurrentMobileDevice({ deviceId: 'dev-fallback' }, 'dev-fallback'), true)
+  assert.equal(domain.isCurrentMobileDevice({ deviceId: 'dev-fallback' }, 'other'), false)
+  assert.equal(domain.isCurrentMobileDevice({ deviceId: 'dev-fallback' }, null), false)
+  assert.equal(domain.canRevokeMobileDevice({ deviceId: 'dev-fallback', status: 'ACTIVE' }, 'dev-fallback'), false)
+  assert.equal(domain.canRevokeMobileDevice({ deviceId: 'dev-fallback', status: 'ACTIVE' }, 'other'), true)
+  assert.equal(domain.canRevokeMobileDevice({ deviceId: 'dev-fallback', status: 'ACTIVE' }, null), false)
 })
 
 test('reduced motion remains distinct from full motion and motion off', () => {

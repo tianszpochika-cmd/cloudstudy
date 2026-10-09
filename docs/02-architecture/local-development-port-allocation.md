@@ -33,7 +33,7 @@
   | Audit Service | 18099 | Spring Boot | 平台 append-only 审计事实摄取与合规留存；独立 schema；仅服务边界验证 |
   | Workflow Service | 18071 | Spring Boot | Saga 状态、定时任务、补偿、DLQ 与人工恢复；不跨域写表（P1R-M2-006 登记） |
 | Core API | 18080 | Spring Boot | v1 兼容后端；Gateway 接入前的本地回滚入口 |
-| AI Orchestrator | 18081 | FastAPI | Phase 2，Phase 1 禁用 |
+| AI Orchestrator | 18100 | FastAPI | Phase 2，Phase 1 禁用；2026-10-08 由 18081 迁移（避让本机其他项目占用） |
 | Content Worker | 18082 | Worker health | 可选 |
 | Analytics Worker | 18083 | Worker health | 可选 |
 | Job Runner | 18084 | Worker health | 可选 |
@@ -56,7 +56,7 @@
 | RabbitMQ management | 15690 | Docker host mapping | v1 兼容管理端；容器内仍为 15672 |
 | MinIO API | 19000 | Docker host mapping | 容器内仍为 9000 |
 | MinIO Console | 19001 | Docker host mapping | 容器内仍为 9001 |
-| Mailpit SMTP | 18025 | Optional Docker service | 容器内通常为 1025 |
+| Mailpit SMTP | 18027 | Optional Docker service | 容器内通常为 1025；2026-10-08 由 18025 迁移（避让本机其他项目占用） |
 | Mailpit UI | 18026 | Optional Docker service | 容器内通常为 8025 |
 | Prometheus | 19090 | Optional observability | |
 | Grafana | 19091 | Optional observability | |

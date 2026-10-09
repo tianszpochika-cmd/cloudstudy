@@ -28,6 +28,7 @@ function parseDevice(value: unknown): B8Device {
     deviceType: value.deviceType,
     status: value.status,
     lastActiveAt: value.lastActiveAt,
+    isCurrent: typeof value.isCurrent === 'boolean' ? value.isCurrent : false,
   }
 }
 

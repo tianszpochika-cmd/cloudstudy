@@ -319,9 +319,11 @@ class IamAuthenticationController {
     public ResponseEntity<ApiCursorPageEnvelope<DeviceListResponse>> deviceList(Authentication authentication,
                                                                                   @org.springframework.web.bind.annotation.RequestParam(value = "cursor", required = false) String cursor,
                                                                                   @org.springframework.web.bind.annotation.RequestParam(value = "pageSize", required = false) Integer pageSize) {
-        AccountRecord account = authenticatedAccount(verifiedJwt(authentication));
+        Jwt jwt = verifiedJwt(authentication);
+        AccountRecord account = authenticatedAccount(jwt);
+        String currentDeviceId = resolveCurrentDeviceId(jwt);
         List<DeviceResponse> items = devices.list(ServerPrincipalContext.forPlatform(account.principalId(), account.roles()))
-                .stream().map(device -> deviceResponse(account.principalId(), device)).toList();
+                .stream().map(device -> deviceResponse(account.principalId(), device, currentDeviceId)).toList();
         int requestedPageSize = pageSize == null ? 20 : pageSize;
         if (requestedPageSize < 1 || requestedPageSize > 100) throw badRequest("iam.pagination.page_size_invalid");
         if (cursor != null && !cursor.isBlank()) throw badRequest("iam.pagination.cursor_invalid");
@@ -801,7 +803,10 @@ class IamAuthenticationController {
         DeviceRegistration registration = devices.list(ServerPrincipalContext.forPlatform(session.principalId(), Set.of()))
                 .stream().filter(value -> value.deviceId().equals(session.deviceId())).findFirst()
                 .orElseThrow(() -> new IamPolicyException(IamDecisionCode.DEVICE_NOT_FOUND, "iam.device.not_found"));
-        if (!registration.active() || isNativePlatform(registration.platform())
+        if (!registration.active()) {
+            throw new IamPolicyException(IamDecisionCode.DEVICE_REVOKED, "iam.device.revoked");
+        }
+        if (isNativePlatform(registration.platform())
                 != (transport == AuthTransport.NATIVE_SECURE_STORAGE)) {
             throw new IamPolicyException(IamDecisionCode.DEVICE_NOT_FOUND, "iam.auth.transport_device_mismatch");
         }
@@ -966,7 +971,7 @@ class IamAuthenticationController {
             throw badRequest("iam.auth.web_refresh_body_forbidden");
         }
         if (session.status() != SessionStatus.ACTIVE) {
-            throw new IamPolicyException(IamDecisionCode.DEVICE_NOT_FOUND, "iam.device.not_found");
+            throw new IamPolicyException(IamDecisionCode.SESSION_REVOKED, "iam.session.revoked");
         }
     }
     private String readRefreshCookie(HttpServletRequest request) {
@@ -1090,8 +1095,36 @@ class IamAuthenticationController {
         return new AdultGateResponse(status, access, fact.evaluatedAt(), fact.policyVersion(), 18,
                 evidenceStatus, fact.retryAllowed());
     }
-    private DeviceResponse deviceResponse(PrincipalId principal, DeviceRegistration device) {
-        return new DeviceResponse(device.deviceId().value(), normalizePlatform(device.platform()), device.active() ? "ACTIVE" : "REVOKED", device.lastAuthenticatedAt());
+    private DeviceResponse deviceResponse(PrincipalId principal, DeviceRegistration device, String currentDeviceId) {
+        boolean isCurrent = currentDeviceId != null && !currentDeviceId.isBlank()
+                && currentDeviceId.equals(device.deviceId().value());
+        return new DeviceResponse(device.deviceId().value(), normalizePlatform(device.platform()),
+                device.active() ? "ACTIVE" : "REVOKED", device.lastAuthenticatedAt(), isCurrent);
+    }
+
+    private String resolveCurrentDeviceId(Jwt jwt) {
+        if (jwt == null) {
+            return null;
+        }
+        String deviceIdClaim = jwt.getClaimAsString("device_id");
+        if (deviceIdClaim != null && !deviceIdClaim.isBlank()) {
+            return deviceIdClaim.trim();
+        }
+        try {
+            String sidClaim = jwt.getClaimAsString("session_id");
+            if (sidClaim == null || sidClaim.isBlank()) {
+                sidClaim = jwt.getClaimAsString("sid");
+            }
+            if (sidClaim != null && !sidClaim.isBlank()) {
+                SessionRecord session = sessions.find(new SessionId(UUID.fromString(sidClaim.trim())));
+                if (session != null && session.deviceId() != null) {
+                    return session.deviceId().value();
+                }
+            }
+        } catch (RuntimeException ignored) {
+            // fail-closed: unable to resolve device from session
+        }
+        return null;
     }
     private SessionRevocationResponse revocationResponse(SessionRecord session, String scope, String reasonCode) {
         return new SessionRevocationResponse(session.sessionId().toString(), "REVOKED", scope,
@@ -1169,7 +1202,7 @@ class IamAuthenticationController {
             case INVALID_CREDENTIALS, PASSWORD_RESET_INVALID, SESSION_NOT_FOUND, SESSION_EXPIRED,
                     SESSION_REVOKED, SESSION_REPLAY, JWT_ISSUER_INVALID, JWT_AUDIENCE_INVALID,
                     JWT_SIGNATURE_INVALID, JWT_ALGORITHM_INVALID, JWT_TIME_INVALID,
-                    JWT_TOKEN_TYPE_INVALID, JWT_SCOPE_INVALID -> HttpStatus.UNAUTHORIZED;
+                    JWT_TOKEN_TYPE_INVALID, JWT_SCOPE_INVALID, DEVICE_REVOKED -> HttpStatus.UNAUTHORIZED;
             case ADULT_CONFIRMATION_REQUIRED, ADULT_AGE_EVIDENCE_MISSING, ADULT_AGE_EVIDENCE_INVALID,
                     ADULT_AGE_BELOW_MINIMUM, CLIENT_AUTHORITY_OVERRIDE, CLIENT_TRUSTED_INPUT_REJECTED,
                     CONSENT_REQUIRES_EXPLICIT_ACCEPTANCE -> HttpStatus.FORBIDDEN;
@@ -1214,6 +1247,7 @@ class IamAuthenticationController {
             case SESSION_NOT_FOUND -> "AUTH_INVALID_REFRESH_TOKEN";
             case SESSION_EXPIRED -> "AUTH_REFRESH_TOKEN_EXPIRED";
             case SESSION_REVOKED -> "AUTH_REFRESH_TOKEN_REVOKED";
+            case DEVICE_REVOKED -> "AUTH_DEVICE_REVOKED";
             case SESSION_REPLAY -> "AUTH_REFRESH_REUSE_DETECTED";
             case DEVICE_NOT_FOUND -> "NOT_FOUND";
             case PRINCIPAL_NOT_FOUND -> "NOT_FOUND";
@@ -1258,7 +1292,7 @@ class IamAuthenticationController {
     public record JwksResponse(List<Map<String, Object>> keys) {}
     public record PermissionsResponse(String principalId, List<String> roles, List<String> permissions,
                                       AdultGateResponse adultGate, String policyVersion) {}
-    public record DeviceResponse(String deviceId, String deviceType, String status, Instant lastActiveAt) {}
+    public record DeviceResponse(String deviceId, String deviceType, String status, Instant lastActiveAt, boolean isCurrent) {}
     public record DeviceListResponse(List<DeviceResponse> devices) {}
     public record AdultGateRequest(boolean confirmed, int birthYear, String policyVersion) {}
     public record ConsentListResponse(List<ConsentResponse> items) {}

@@ -5,7 +5,7 @@ import type { B8Device } from '@englishflow/contracts'
 import MobilePageHeader from '../../components/MobilePageHeader.vue'
 import { ensureMobilePageAccess } from '../../auth/navigation'
 import { listMobileDevices, kickoutMobileDevice } from '../../api/devices'
-import { canRevokeMobileDevice } from '../../domain/devices'
+import { canRevokeMobileDevice, isCurrentMobileDevice } from '../../domain/devices'
 import { useSessionStore } from '../../stores/session'
 import { useMobileExperience } from '../../platform/experience'
 import { sameMobilePreferenceIdentity } from '../../domain/mobile-preference-sync'
@@ -172,10 +172,10 @@ onHide(() => { devicesVisible = false })
           <view v-for="device in devices" :key="device.deviceId" class="device-row">
             <view class="device-row-heading">
               <view><text class="device-name">{{ deviceTypeLabel(device.deviceType) }}</text><text class="device-id">设备编号 {{ shortDeviceId(device.deviceId) }}</text></view>
-              <text :class="['device-status', device.status === 'ACTIVE' ? 'device-status--active' : '']">{{ device.deviceId === session.deviceId ? '当前设备' : device.status === 'ACTIVE' ? '使用中' : '已退出' }}</text>
+              <text :class="['device-status', device.status === 'ACTIVE' ? 'device-status--active' : '']">{{ isCurrentMobileDevice(device, session.deviceId) ? '当前设备' : device.status === 'ACTIVE' ? '使用中' : '已退出' }}</text>
             </view>
             <text class="device-last-active">最近登录：{{ lastLoginLabel(device.lastActiveAt) }}</text>
-            <text v-if="device.deviceId === session.deviceId" class="device-protected">当前设备不能从此处退出。</text>
+            <text v-if="isCurrentMobileDevice(device, session.deviceId)" class="device-protected">当前设备不能从此处退出。</text>
             <button v-else-if="canRevokeMobileDevice(device, session.deviceId)" tabindex="0" role="button" class="devices-secondary device-revoke" :loading="busyAction === device.deviceId" :disabled="Boolean(busyAction)" @click="revokeDevice(device)">退出此设备</button>
           </view>
         </view>

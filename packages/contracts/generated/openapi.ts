@@ -1195,7 +1195,7 @@ export type B8PrincipalResponse = { principalId: string; subject?: B8ServerDeriv
 /**
  * Generated from the contract source.
  */
-export type B8Device = { deviceId: string; deviceType: string; status: "ACTIVE" | "REVOKED"; lastActiveAt: string; };
+export type B8Device = { deviceId: string; deviceType: string; status: "ACTIVE" | "REVOKED"; lastActiveAt: string; isCurrent: boolean; };
 
 /**
  * Generated from the contract source.
