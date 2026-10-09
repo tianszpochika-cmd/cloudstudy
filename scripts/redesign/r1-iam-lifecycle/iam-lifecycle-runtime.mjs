@@ -41,6 +41,7 @@ import {
   evaluateR1003Assertions,
   evaluateR1004Assertions,
   evaluateR1005Assertions,
+  evaluateR1006Assertions,
   redactSecrets,
   generateCleanupPlan,
 } from './assertions.mjs';
@@ -159,6 +160,51 @@ function getSessionStatus(sessionId, config) {
     `SELECT status FROM ${schema}.iam_session WHERE session_id='${cleanId}';`,
     config.mysql
   ).trim();
+}
+
+export function getPrincipalFact(principalId, config) {
+  const schema = assertIamLifecycleSchema(config.schema);
+  const cleanId = String(principalId).replaceAll(/[^a-f0-9-]/gi, '');
+  const row = sql(
+    `SELECT adult_gate_status, adult_gate_version, adult_verified_at, status FROM ${schema}.iam_principal WHERE principal_id='${cleanId}';`,
+    config.mysql
+  ).trim();
+  if (!row) return null;
+  const [adultGateStatus, adultGateVersion, adultVerifiedAt, status] = row.split('\t');
+  return {
+    principalId: cleanId,
+    adultGateStatus: adultGateStatus || null,
+    adultGateVersion: adultGateVersion || null,
+    adultVerifiedAt: adultVerifiedAt && adultVerifiedAt !== 'NULL' ? adultVerifiedAt : null,
+    status: status || null,
+  };
+}
+
+export function getLatestAuditFact(principalId, actionCode, config) {
+  const schema = assertIamLifecycleSchema(config.schema);
+  const cleanId = String(principalId).replaceAll(/[^a-f0-9-]/gi, '');
+  let where = `principal_id='${cleanId}'`;
+  if (actionCode) {
+    const cleanAction = String(actionCode).replaceAll(/[^a-zA-Z0-9_-]/g, '');
+    where += ` AND (action_code='${cleanAction}' OR resource_type='${cleanAction}' OR reason_code='${cleanAction}')`;
+  }
+  const row = sql(
+    `SELECT decision, reason_code, action_code, resource_type FROM ${schema}.iam_decision_audit WHERE ${where} ORDER BY created_at DESC LIMIT 1;`,
+    config.mysql
+  ).trim();
+  if (!row) return null;
+  const [decision, reasonCode, action, resourceType] = row.split('\t');
+  let normalizedReasonCode = reasonCode;
+  if (reasonCode && reasonCode.toLowerCase() === 'adult_age_below_minimum') {
+    normalizedReasonCode = 'ADULT_AGE_BELOW_MINIMUM';
+  }
+  return {
+    decision,
+    reasonCode: normalizedReasonCode,
+    rawReasonCode: reasonCode,
+    actionCode: action,
+    resourceType,
+  };
 }
 
 function protectedDirectory(directory) {
@@ -427,7 +473,7 @@ export function prepareMode({ privateParent, outPath } = {}) {
     `iam.jwt.private-key-file=${path.join(directory, 'iam-signer.pem')}`,
     'iam.jwt.ephemeral-keys-allowed=false',
     'iam.consent.policy-source=local-candidate',
-    'iam.local-adult-gate-enabled=false',
+    'iam.local-adult-gate-enabled=true',
     'management.otlp.metrics.export.enabled=false',
     'management.opentelemetry.enabled=false',
   ].join('\n') + '\n';
@@ -533,6 +579,7 @@ export async function runMode({ configDir, approvalPath, outPath } = {}) {
       r1003: null,
       r1004: null,
       r1005: null,
+      r1006: null,
     },
     checks: {},
   };
@@ -854,12 +901,165 @@ export async function runMode({ configDir, approvalPath, outPath } = {}) {
       sessionStatusB,
     });
 
+    // ==========================================
+    // SCENARIO 4: R1-006 成人门双路径落库与审计
+    // ==========================================
+    // 4.1 使用已有的有效账号/Token 提交成年人成人门（birthYear: 1995, confirmed: true, policyVersion: 'b30-adult-v1'）
+    const adultPrincipalId = accessAAfterKickout.body?.data?.principalId
+      || JSON.parse(Buffer.from(tokenA.split('.')[1], 'base64url').toString()).sub;
+    const adultGateKey = 'idemp-r1006-adult-' + randomBytes(16).toString('hex');
+    const adultGateBody = {
+      birthYear: 1995,
+      confirmed: true,
+      policyVersion: 'b30-adult-v1',
+    };
+    const adultSubmit = await http('https://127.0.0.1:18087/api/v1/iam/adult-gate', {
+      method: 'POST',
+      token: tokenA,
+      body: adultGateBody,
+      idempotencyKey: adultGateKey,
+      ca,
+    });
+
+    // 4.2 查回 principal 与 audit 记录
+    const adultPrincipalFact = getPrincipalFact(adultPrincipalId, config);
+    const adultAuditFact = getLatestAuditFact(adultPrincipalId, 'adult_gate_allowed', config);
+
+    // 4.3 幂等重放成年人成人门
+    const adultReplay = await http('https://127.0.0.1:18087/api/v1/iam/adult-gate', {
+      method: 'POST',
+      token: tokenA,
+      body: adultGateBody,
+      idempotencyKey: adultGateKey,
+      ca,
+    });
+
+    // 4.4 注册并登录一个全新的未成年人测试账号
+    const minorIdentifier = 'r1006-minor-' + randomBytes(8).toString('hex') + '@example.invalid';
+    const minorPassword = randomBytes(24).toString('base64url');
+    const minorDevice = {
+      deviceId: randomUUID(),
+      deviceType: 'WEB',
+      deviceName: 'R1-006 Minor Synthetic Device',
+      osVersion: 'test',
+      clientVersion: 'r1-006',
+    };
+    await http('https://127.0.0.1:18087/api/v1/auth/register', {
+      method: 'POST',
+      body: { identifier: minorIdentifier, password: minorPassword, device: minorDevice },
+      idempotencyKey: 'idemp-r1006-minor-reg-' + randomBytes(16).toString('hex'),
+      authTransport: 'WEB_COOKIE',
+      ca,
+    });
+    const minorLogin = await http('https://127.0.0.1:18087/api/v1/auth/login', {
+      method: 'POST',
+      body: { identifier: minorIdentifier, password: minorPassword, device: minorDevice },
+      idempotencyKey: 'idemp-r1006-minor-login-' + randomBytes(16).toString('hex'),
+      authTransport: 'WEB_COOKIE',
+      ca,
+    });
+    const minorToken = minorLogin.body?.data?.accessToken;
+    const minorSessionId = minorLogin.body?.data?.sessionId;
+    const minorPrincipalId = JSON.parse(Buffer.from(minorToken.split('.')[1], 'base64url').toString()).sub;
+
+    // 4.5 提交未成年人成人门（birthYear: 2015, confirmed: true, policyVersion: 'b30-adult-v1'）
+    const minorGateKey = 'idemp-r1006-minor-gate-' + randomBytes(16).toString('hex');
+    const minorGateBody = {
+      birthYear: 2015,
+      confirmed: true,
+      policyVersion: 'b30-adult-v1',
+    };
+    const minorSubmit = await http('https://127.0.0.1:18087/api/v1/iam/adult-gate', {
+      method: 'POST',
+      token: minorToken,
+      body: minorGateBody,
+      idempotencyKey: minorGateKey,
+      ca,
+    });
+
+    // 4.6 查回未成年人 principal、audit 与 session 状态
+    const minorPrincipalFact = getPrincipalFact(minorPrincipalId, config);
+    const minorAuditFact = getLatestAuditFact(minorPrincipalId, 'adult_age_below_minimum', config);
+    const minorSessionStatus = getSessionStatus(minorSessionId, config);
+
+    // 4.7 验证未成年人使用该 token 访问 /api/v1/iam/principal/me 为 200（受限态可访问）
+    const minorPrincipalMe = await http('https://127.0.0.1:18087/api/v1/iam/principal/me', {
+      method: 'GET',
+      token: minorToken,
+      ca,
+    });
+
+    // 4.8 幂等重放未成年人成人门
+    const minorReplay = await http('https://127.0.0.1:18087/api/v1/iam/adult-gate', {
+      method: 'POST',
+      token: minorToken,
+      body: minorGateBody,
+      idempotencyKey: minorGateKey,
+      ca,
+    });
+
+    // 4.9 同键不同参数重放（如改为 1990 年）得到 409
+    const minorConflict = await http('https://127.0.0.1:18087/api/v1/iam/adult-gate', {
+      method: 'POST',
+      token: minorToken,
+      body: {
+        birthYear: 1990,
+        confirmed: true,
+        policyVersion: 'b30-adult-v1',
+      },
+      idempotencyKey: minorGateKey,
+      ca,
+    });
+
+    // 4.10 边界校验：缺 confirmed 提交得到 403；缺 Idempotency-Key 得到 400
+    const missingConfirmation = await http('https://127.0.0.1:18087/api/v1/iam/adult-gate', {
+      method: 'POST',
+      token: minorToken,
+      body: {
+        birthYear: 1995,
+        confirmed: false,
+        policyVersion: 'b30-adult-v1',
+      },
+      idempotencyKey: 'idemp-r1006-miss-conf-' + randomBytes(16).toString('hex'),
+      ca,
+    });
+
+    const missingKey = await http('https://127.0.0.1:18087/api/v1/iam/adult-gate', {
+      method: 'POST',
+      token: minorToken,
+      body: {
+        birthYear: 1995,
+        confirmed: true,
+        policyVersion: 'b30-adult-v1',
+      },
+      ca,
+    });
+
+    // 4.11 将 report.results.r1006 = evaluateR1006Assertions(...) 写入结果
+    report.results.r1006 = evaluateR1006Assertions({
+      adultSubmit,
+      adultPrincipalFact,
+      adultAuditFact,
+      adultReplay,
+      minorSubmit,
+      minorPrincipalFact,
+      minorAuditFact,
+      minorSessionStatus,
+      minorPrincipalMe,
+      minorReplay,
+      minorConflict,
+      missingConfirmation,
+      missingKey,
+    });
+
     const allPassed =
       report.results.r1003?.passed &&
       report.results.r1004?.passed &&
-      report.results.r1005?.passed;
+      report.results.r1005?.passed &&
+      report.results.r1006?.passed;
 
     report.status = allPassed ? 'PASS' : 'FAILED';
+    report.passed = Boolean(allPassed);
   } catch (error) {
     report.status = 'FAILED';
     report.failure = /^[A-Z0-9_]{1,100}$/.test(error.message) ? error.message : 'RUNTIME_ERROR';

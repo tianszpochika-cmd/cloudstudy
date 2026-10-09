@@ -323,6 +323,99 @@ export function evaluateR1005Assertions({
   };
 }
 
+export function evaluateR1006Assertions({
+  adultSubmit,
+  adultPrincipalFact,
+  adultAuditFact,
+  adultReplay,
+  minorSubmit,
+  minorPrincipalFact,
+  minorAuditFact,
+  minorSessionStatus,
+  minorPrincipalMe,
+  minorReplay,
+  minorConflict,
+  missingConfirmation,
+  missingKey,
+}) {
+  const assertions = {};
+
+  // 成年路径
+  assertions.adultSubmitStatus200 = adultSubmit?.status === 200;
+  assertions.adultGateStatusPassed = adultSubmit?.body?.data?.status === 'PASSED';
+  assertions.adultLearningAccessEligible = adultSubmit?.body?.data?.learningAccess === 'ELIGIBLE';
+  assertions.adultEvidenceVerified = adultSubmit?.body?.data?.evidenceStatus === 'SERVER_VERIFIED';
+  assertions.dbAdultGateStatusApproved = Boolean(
+    adultPrincipalFact?.adultGateStatus === 'APPROVED' &&
+    adultPrincipalFact?.adultVerifiedAt != null
+  );
+  assertions.dbAdultAuditAllow = Boolean(
+    adultAuditFact?.decision === 'ALLOW' &&
+    (adultAuditFact?.reasonCode === 'adult_gate_allowed' || adultAuditFact?.reasonCode === 'ADULT_GATE_ALLOWED')
+  );
+  assertions.adultReplayConsistent = Boolean(
+    adultReplay?.status === 200 &&
+    adultReplay?.body?.data?.status === 'PASSED'
+  );
+
+  // 未成年路径
+  assertions.minorSubmitStatus200 = minorSubmit?.status === 200;
+  assertions.minorGateStatusRejected = minorSubmit?.body?.data?.status === 'REJECTED';
+  assertions.minorLearningAccessRestricted = minorSubmit?.body?.data?.learningAccess === 'RESTRICTED';
+  assertions.minorEvidenceRejected = minorSubmit?.body?.data?.evidenceStatus === 'REJECTED';
+  assertions.dbMinorGateStatusRejected = Boolean(
+    minorPrincipalFact?.adultGateStatus === 'REJECTED' &&
+    minorPrincipalFact?.adultVerifiedAt == null
+  );
+  assertions.dbMinorAuditDeny = Boolean(
+    minorAuditFact?.decision === 'DENY' &&
+    (minorAuditFact?.reasonCode === 'ADULT_AGE_BELOW_MINIMUM' || minorAuditFact?.reasonCode === 'adult_age_below_minimum')
+  );
+  assertions.minorSessionActive = minorSessionStatus === 'ACTIVE';
+  assertions.minorPostAccess200 = minorPrincipalMe?.status === 200;
+  assertions.minorReplayConsistent = Boolean(
+    minorReplay?.status === 200 &&
+    minorReplay?.body?.data?.status === 'REJECTED'
+  );
+  assertions.minorConflict409 = minorConflict?.status === 409;
+
+  // 边界拒绝
+  assertions.missingConfirmation403 = missingConfirmation?.status === 403;
+  assertions.missingIdempotencyKey400 = missingKey?.status === 400;
+
+  const coreChecks = [
+    assertions.adultSubmitStatus200,
+    assertions.adultGateStatusPassed,
+    assertions.adultLearningAccessEligible,
+    assertions.adultEvidenceVerified,
+    assertions.dbAdultGateStatusApproved,
+    assertions.dbAdultAuditAllow,
+    assertions.adultReplayConsistent,
+    assertions.minorSubmitStatus200,
+    assertions.minorGateStatusRejected,
+    assertions.minorLearningAccessRestricted,
+    assertions.minorEvidenceRejected,
+    assertions.dbMinorGateStatusRejected,
+    assertions.dbMinorAuditDeny,
+    assertions.minorSessionActive,
+    assertions.minorPostAccess200,
+    assertions.minorReplayConsistent,
+    assertions.minorConflict409,
+    assertions.missingConfirmation403,
+    assertions.missingIdempotencyKey400,
+  ];
+
+  assertions.passed = coreChecks.every(Boolean);
+
+  return {
+    card: 'R1-006',
+    chain: 'BC-006',
+    summary: '成人门提交双路径落库与审计验证',
+    assertions,
+    passed: assertions.passed,
+  };
+}
+
 export function redactSecrets(value, privateDirectories = []) {
   if (value === null || value === undefined) return value;
   if (typeof value === 'string') {

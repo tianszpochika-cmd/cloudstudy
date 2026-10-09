@@ -13,6 +13,7 @@ import {
   evaluateR1003Assertions,
   evaluateR1004Assertions,
   evaluateR1005Assertions,
+  evaluateR1006Assertions,
   redactSecrets,
   generateCleanupPlan,
 } from './assertions.mjs';
@@ -437,4 +438,302 @@ test('Cleanup plan mode generates non-destructive SQL statements with warnings',
   assert.ok(plan.sqlStatements[0].includes('DROP USER IF EXISTS \'r1_iam_aabbccddeeff\'@\'%\''));
   assert.ok(plan.sqlStatements[1].includes('DROP DATABASE IF EXISTS r1_iam_lifecycle_20261009_aabbccddeeff'));
   assert.ok(plan.warning.includes('Automatic DROP execution is disabled'));
+});
+
+test('R1-006 assertion evaluation checks adult and minor paths, DB facts, audits, replays, and boundary rejections', () => {
+  const basePositive = {
+    adultSubmit: {
+      status: 200,
+      body: {
+        data: {
+          status: 'PASSED',
+          learningAccess: 'ELIGIBLE',
+          evidenceStatus: 'SERVER_VERIFIED',
+        },
+      },
+    },
+    adultPrincipalFact: {
+      principalId: 'p-adult-1',
+      adultGateStatus: 'APPROVED',
+      adultVerifiedAt: '2026-10-09T10:00:00.000Z',
+      status: 'ACTIVE',
+    },
+    adultAuditFact: {
+      decision: 'ALLOW',
+      reasonCode: 'adult_gate_allowed',
+    },
+    adultReplay: {
+      status: 200,
+      body: {
+        data: {
+          status: 'PASSED',
+          learningAccess: 'ELIGIBLE',
+        },
+      },
+    },
+    minorSubmit: {
+      status: 200,
+      body: {
+        data: {
+          status: 'REJECTED',
+          learningAccess: 'RESTRICTED',
+          evidenceStatus: 'REJECTED',
+        },
+      },
+    },
+    minorPrincipalFact: {
+      principalId: 'p-minor-1',
+      adultGateStatus: 'REJECTED',
+      adultVerifiedAt: null,
+      status: 'ACTIVE',
+    },
+    minorAuditFact: {
+      decision: 'DENY',
+      reasonCode: 'ADULT_AGE_BELOW_MINIMUM',
+    },
+    minorSessionStatus: 'ACTIVE',
+    minorPrincipalMe: {
+      status: 200,
+      body: {
+        data: {
+          status: 'RESTRICTED',
+        },
+      },
+    },
+    minorReplay: {
+      status: 200,
+      body: {
+        data: {
+          status: 'REJECTED',
+        },
+      },
+    },
+    minorConflict: {
+      status: 409,
+      body: {
+        error: { code: 'IDEMPOTENCY_CONFLICT' },
+      },
+    },
+    missingConfirmation: {
+      status: 403,
+      body: {
+        error: { code: 'FORBIDDEN' },
+      },
+    },
+    missingKey: {
+      status: 400,
+      body: {
+        error: { code: 'VALIDATION_ERROR' },
+      },
+    },
+  };
+
+  // 1. Positive baseline
+  const positive = evaluateR1006Assertions(basePositive);
+  assert.equal(positive.passed, true);
+  assert.equal(positive.card, 'R1-006');
+  assert.equal(positive.chain, 'BC-006');
+  assert.equal(positive.assertions.adultSubmitStatus200, true);
+  assert.equal(positive.assertions.adultGateStatusPassed, true);
+  assert.equal(positive.assertions.adultLearningAccessEligible, true);
+  assert.equal(positive.assertions.adultEvidenceVerified, true);
+  assert.equal(positive.assertions.dbAdultGateStatusApproved, true);
+  assert.equal(positive.assertions.dbAdultAuditAllow, true);
+  assert.equal(positive.assertions.adultReplayConsistent, true);
+  assert.equal(positive.assertions.minorSubmitStatus200, true);
+  assert.equal(positive.assertions.minorGateStatusRejected, true);
+  assert.equal(positive.assertions.minorLearningAccessRestricted, true);
+  assert.equal(positive.assertions.minorEvidenceRejected, true);
+  assert.equal(positive.assertions.dbMinorGateStatusRejected, true);
+  assert.equal(positive.assertions.dbMinorAuditDeny, true);
+  assert.equal(positive.assertions.minorSessionActive, true);
+  assert.equal(positive.assertions.minorPostAccess200, true);
+  assert.equal(positive.assertions.minorReplayConsistent, true);
+  assert.equal(positive.assertions.minorConflict409, true);
+  assert.equal(positive.assertions.missingConfirmation403, true);
+  assert.equal(positive.assertions.missingIdempotencyKey400, true);
+
+  // 2. Negative: Adult submit status not 200
+  const negAdultSubmitStatus = evaluateR1006Assertions({
+    ...basePositive,
+    adultSubmit: { status: 500 },
+  });
+  assert.equal(negAdultSubmitStatus.passed, false);
+  assert.equal(negAdultSubmitStatus.assertions.adultSubmitStatus200, false);
+
+  // 3. Negative: Adult gate status not PASSED
+  const negAdultGateStatus = evaluateR1006Assertions({
+    ...basePositive,
+    adultSubmit: { ...basePositive.adultSubmit, body: { data: { status: 'PENDING' } } },
+  });
+  assert.equal(negAdultGateStatus.passed, false);
+  assert.equal(negAdultGateStatus.assertions.adultGateStatusPassed, false);
+
+  // 4. Negative: Adult learningAccess not ELIGIBLE
+  const negAdultLearningAccess = evaluateR1006Assertions({
+    ...basePositive,
+    adultSubmit: { ...basePositive.adultSubmit, body: { data: { status: 'PASSED', learningAccess: 'RESTRICTED' } } },
+  });
+  assert.equal(negAdultLearningAccess.passed, false);
+  assert.equal(negAdultLearningAccess.assertions.adultLearningAccessEligible, false);
+
+  // 5. Negative: Adult evidenceStatus not SERVER_VERIFIED
+  const negAdultEvidence = evaluateR1006Assertions({
+    ...basePositive,
+    adultSubmit: { ...basePositive.adultSubmit, body: { data: { status: 'PASSED', learningAccess: 'ELIGIBLE', evidenceStatus: 'UNVERIFIED' } } },
+  });
+  assert.equal(negAdultEvidence.passed, false);
+  assert.equal(negAdultEvidence.assertions.adultEvidenceVerified, false);
+
+  // 6. Negative: DB Adult gate status not APPROVED
+  const negDbAdultStatus = evaluateR1006Assertions({
+    ...basePositive,
+    adultPrincipalFact: { ...basePositive.adultPrincipalFact, adultGateStatus: 'PENDING' },
+  });
+  assert.equal(negDbAdultStatus.passed, false);
+  assert.equal(negDbAdultStatus.assertions.dbAdultGateStatusApproved, false);
+
+  // 7. Negative: DB Adult verifiedAt is null
+  const negDbAdultVerifiedNull = evaluateR1006Assertions({
+    ...basePositive,
+    adultPrincipalFact: { ...basePositive.adultPrincipalFact, adultVerifiedAt: null },
+  });
+  assert.equal(negDbAdultVerifiedNull.passed, false);
+  assert.equal(negDbAdultVerifiedNull.assertions.dbAdultGateStatusApproved, false);
+
+  // 8. Negative: DB Adult audit not ALLOW
+  const negDbAdultAuditDeny = evaluateR1006Assertions({
+    ...basePositive,
+    adultAuditFact: { decision: 'DENY', reasonCode: 'adult_gate_allowed' },
+  });
+  assert.equal(negDbAdultAuditDeny.passed, false);
+  assert.equal(negDbAdultAuditDeny.assertions.dbAdultAuditAllow, false);
+
+  // 9. Negative: DB Adult audit reasonCode mismatch
+  const negDbAdultAuditReason = evaluateR1006Assertions({
+    ...basePositive,
+    adultAuditFact: { decision: 'ALLOW', reasonCode: 'unknown_code' },
+  });
+  assert.equal(negDbAdultAuditReason.passed, false);
+  assert.equal(negDbAdultAuditReason.assertions.dbAdultAuditAllow, false);
+
+  // 10. Negative: Adult replay not consistent
+  const negAdultReplay = evaluateR1006Assertions({
+    ...basePositive,
+    adultReplay: { status: 200, body: { data: { status: 'REJECTED' } } },
+  });
+  assert.equal(negAdultReplay.passed, false);
+  assert.equal(negAdultReplay.assertions.adultReplayConsistent, false);
+
+  // 11. Negative: Minor submit status not 200
+  const negMinorSubmitStatus = evaluateR1006Assertions({
+    ...basePositive,
+    minorSubmit: { status: 400 },
+  });
+  assert.equal(negMinorSubmitStatus.passed, false);
+  assert.equal(negMinorSubmitStatus.assertions.minorSubmitStatus200, false);
+
+  // 12. Negative: Minor gate status not REJECTED
+  const negMinorGateStatus = evaluateR1006Assertions({
+    ...basePositive,
+    minorSubmit: { ...basePositive.minorSubmit, body: { data: { status: 'PASSED' } } },
+  });
+  assert.equal(negMinorGateStatus.passed, false);
+  assert.equal(negMinorGateStatus.assertions.minorGateStatusRejected, false);
+
+  // 13. Negative: Minor learningAccess not RESTRICTED
+  const negMinorLearningAccess = evaluateR1006Assertions({
+    ...basePositive,
+    minorSubmit: { ...basePositive.minorSubmit, body: { data: { status: 'REJECTED', learningAccess: 'ELIGIBLE' } } },
+  });
+  assert.equal(negMinorLearningAccess.passed, false);
+  assert.equal(negMinorLearningAccess.assertions.minorLearningAccessRestricted, false);
+
+  // 14. Negative: Minor evidenceStatus not REJECTED
+  const negMinorEvidence = evaluateR1006Assertions({
+    ...basePositive,
+    minorSubmit: { ...basePositive.minorSubmit, body: { data: { status: 'REJECTED', learningAccess: 'RESTRICTED', evidenceStatus: 'SERVER_VERIFIED' } } },
+  });
+  assert.equal(negMinorEvidence.passed, false);
+  assert.equal(negMinorEvidence.assertions.minorEvidenceRejected, false);
+
+  // 15. Negative: DB Minor gate status not REJECTED
+  const negDbMinorStatus = evaluateR1006Assertions({
+    ...basePositive,
+    minorPrincipalFact: { ...basePositive.minorPrincipalFact, adultGateStatus: 'APPROVED' },
+  });
+  assert.equal(negDbMinorStatus.passed, false);
+  assert.equal(negDbMinorStatus.assertions.dbMinorGateStatusRejected, false);
+
+  // 16. Negative: DB Minor verifiedAt not null
+  const negDbMinorVerifiedNotNull = evaluateR1006Assertions({
+    ...basePositive,
+    minorPrincipalFact: { ...basePositive.minorPrincipalFact, adultVerifiedAt: '2026-10-09T10:00:00Z' },
+  });
+  assert.equal(negDbMinorVerifiedNotNull.passed, false);
+  assert.equal(negDbMinorVerifiedNotNull.assertions.dbMinorGateStatusRejected, false);
+
+  // 17. Negative: DB Minor audit not DENY
+  const negDbMinorAuditAllow = evaluateR1006Assertions({
+    ...basePositive,
+    minorAuditFact: { decision: 'ALLOW', reasonCode: 'ADULT_AGE_BELOW_MINIMUM' },
+  });
+  assert.equal(negDbMinorAuditAllow.passed, false);
+  assert.equal(negDbMinorAuditAllow.assertions.dbMinorAuditDeny, false);
+
+  // 18. Negative: DB Minor audit reasonCode mismatch
+  const negDbMinorAuditReason = evaluateR1006Assertions({
+    ...basePositive,
+    minorAuditFact: { decision: 'DENY', reasonCode: 'WRONG_REASON' },
+  });
+  assert.equal(negDbMinorAuditReason.passed, false);
+  assert.equal(negDbMinorAuditReason.assertions.dbMinorAuditDeny, false);
+
+  // 19. Negative: Minor session erroneously killed (not ACTIVE)
+  const negMinorSessionKilled = evaluateR1006Assertions({
+    ...basePositive,
+    minorSessionStatus: 'REVOKED',
+  });
+  assert.equal(negMinorSessionKilled.passed, false);
+  assert.equal(negMinorSessionKilled.assertions.minorSessionActive, false);
+
+  // 20. Negative: Minor principal/me cannot be accessed (e.g. 401 or 403)
+  const negMinorPrincipalMe = evaluateR1006Assertions({
+    ...basePositive,
+    minorPrincipalMe: { status: 403 },
+  });
+  assert.equal(negMinorPrincipalMe.passed, false);
+  assert.equal(negMinorPrincipalMe.assertions.minorPostAccess200, false);
+
+  // 21. Negative: Minor replay not consistent
+  const negMinorReplay = evaluateR1006Assertions({
+    ...basePositive,
+    minorReplay: { status: 200, body: { data: { status: 'PASSED' } } },
+  });
+  assert.equal(negMinorReplay.passed, false);
+  assert.equal(negMinorReplay.assertions.minorReplayConsistent, false);
+
+  // 22. Negative: Minor conflict not 409
+  const negMinorConflict = evaluateR1006Assertions({
+    ...basePositive,
+    minorConflict: { status: 200 },
+  });
+  assert.equal(negMinorConflict.passed, false);
+  assert.equal(negMinorConflict.assertions.minorConflict409, false);
+
+  // 23. Negative: Missing confirmation not 403
+  const negMissingConf = evaluateR1006Assertions({
+    ...basePositive,
+    missingConfirmation: { status: 200 },
+  });
+  assert.equal(negMissingConf.passed, false);
+  assert.equal(negMissingConf.assertions.missingConfirmation403, false);
+
+  // 24. Negative: Missing key not 400
+  const negMissingKey = evaluateR1006Assertions({
+    ...basePositive,
+    missingKey: { status: 200 },
+  });
+  assert.equal(negMissingKey.passed, false);
+  assert.equal(negMissingKey.assertions.missingIdempotencyKey400, false);
 });

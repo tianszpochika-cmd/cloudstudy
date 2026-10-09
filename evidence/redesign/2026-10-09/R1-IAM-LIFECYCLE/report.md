@@ -1,10 +1,11 @@
-# R1-003 / R1-004 / R1-005 干净专库生命周期全链路运行报告
+# R1-003 / R1-004 / R1-005 / R1-006 干净专库生命周期全链路运行报告
 
 日期：2026-10-09；源码分支：`dev-redesign`。  
 覆盖卡项与范围：
 - **R1-003**（BC-003）：注册幂等回放（同键同结果，不建第二账号）
 - **R1-004**（BC-004）：登录/刷新/撤销全套（轮换+撤销+重放清理）
 - **R1-005**（BC-005）：多设备列表+踢出（标当前设备，被踢 401）
+- **R1-006**（BC-006）：成人门提交（PASSED/REJECTED 双路径落库与审计）
 
 本报告为当前运行执行事实与测试收据，待独立终审与根审签收，不自行跨站升级 IT-2。
 
@@ -12,8 +13,9 @@
 
 ## 一、 核心执行结论与收据
 
-* 最终全链路真实运行结果：**[runtime-results-ff793b6aaaa9.json](runtime-results-ff793b6aaaa9.json)** — **STATUS: PASS / exit 0**。
-* 独立准备材料：**[prepared-ff793b6aaaa9.json](prepared-ff793b6aaaa9.json)**（绑定 Git 外部 0700 目录、专用自签名 TLS SAN 127.0.0.1、专属库 `r1_iam_lifecycle_20261009_ff793b6aaaa9` 及专属账号 `r1_iam_ff793b6aaaa9`）。
+* 最终全链路真实运行结果：**[runtime-results-2adfe7d7cd74.json](runtime-results-2adfe7d7cd74.json)** — **STATUS: PASS / exit 0**。
+* 独立准备材料：**[prepared-2adfe7d7cd74.json](prepared-2adfe7d7cd74.json)**（绑定 Git 外部 0700 目录、专用自签名 TLS SAN 127.0.0.1、专属库 `r1_iam_lifecycle_20261009_2adfe7d7cd74` 及专属账号 `r1_iam_2adfe7d7cd74`）。
+* 前序 R1-003~005 运行原件保留：**[runtime-results-ff793b6aaaa9.json](runtime-results-ff793b6aaaa9.json)**、**[prepared-ff793b6aaaa9.json](prepared-ff793b6aaaa9.json)**。
 * 基础设施保全：
   * 仅使用本项目官方 MySQL 容器 `yuxuexing-local-mysql-1`（容器 ID: `db87392020398271b86e76c8738c2ea7af619a41ef11eb3cee68d8910956deec`）；
   * 未重启 Docker、未执行 compose down/prune、未触碰任何其他项目容器；
@@ -77,6 +79,30 @@
 | `sessionStatusBRevoked` | 数据库读回被踢设备 B 的会话已变为 REVOKED | REVOKED | PASS |
 | `sessionStatusAActive` | 数据库读回主调设备 A 的会话仍为 ACTIVE | ACTIVE | PASS |
 | **小结** | **R1-005 全部 14 项断言 100% 通过** | — | **PASS** |
+
+### 4. R1-006（BC-006 成人门提交双路径落库与审计）
+| 断言项 | 预期 | 实际结果 | 状态 |
+|---|---|---|---|
+| `adultSubmitStatus200` | 成年人提交成人门返回 HTTP 200 | 200 | PASS |
+| `adultGateStatusPassed` | 成年人返回 data.status 为 "PASSED" | PASSED | PASS |
+| `adultLearningAccessEligible` | 成年人返回 data.learningAccess 为 "ELIGIBLE" | ELIGIBLE | PASS |
+| `adultEvidenceVerified` | 成年人返回 data.evidenceStatus 为 "SERVER_VERIFIED" | SERVER_VERIFIED | PASS |
+| `dbAdultGateStatusApproved` | SQL 读回 iam_principal 表中 adult_gate_status 为 APPROVED，且 adult_verified_at 非空 | APPROVED / 存在时间戳 | PASS |
+| `dbAdultAuditAllow` | SQL 读回 iam_decision_audit 表中该判定为 ALLOW，reason_code 为 adult_gate_allowed | ALLOW / adult_gate_allowed | PASS |
+| `adultReplayConsistent` | 成年人同键同请求体幂等重放返回一致结果（200 + PASSED） | 一致 | PASS |
+| `minorSubmitStatus200` | 未成年人提交成人门返回 HTTP 200（业务评估完成） | 200 | PASS |
+| `minorGateStatusRejected` | 未成年人返回 data.status 为 "REJECTED" | REJECTED | PASS |
+| `minorLearningAccessRestricted` | 未成年人返回 data.learningAccess 为 "RESTRICTED" | RESTRICTED | PASS |
+| `minorEvidenceRejected` | 未成年人返回 data.evidenceStatus 为 "REJECTED" | REJECTED | PASS |
+| `dbMinorGateStatusRejected` | SQL 读回 iam_principal 表中 adult_gate_status 为 REJECTED，且 adult_verified_at 为空 | REJECTED / NULL | PASS |
+| `dbMinorAuditDeny` | SQL 读回 iam_decision_audit 表中该判定为 DENY，reason_code 为 ADULT_AGE_BELOW_MINIMUM | DENY / ADULT_AGE_BELOW_MINIMUM | PASS |
+| `minorSessionActive` | **防线验证**：未成年人提交被拒后，当前 Session 依然保持 ACTIVE（未被无差别注销） | ACTIVE | PASS |
+| `minorPostAccess200` | **受限浏览**：未成年人携带原 Token 访问 /api/v1/iam/principal/me 依然可达（HTTP 200） | 200 | PASS |
+| `minorReplayConsistent` | 未成年人同键同请求体幂等重放返回一致结果（200 + REJECTED，不再抛 503） | 一致 | PASS |
+| `minorConflict409` | 同一幂等键携带不同请求体（修改年份）被拒绝（HTTP 409） | 409 | PASS |
+| `missingConfirmation403` | 缺少 confirmed 明确确认请求被拒绝（HTTP 403） | 403 | PASS |
+| `missingIdempotencyKey400` | 缺少 Idempotency-Key 请求被拒绝（HTTP 400） | 400 | PASS |
+| **小结** | **R1-006 全部 19 项断言 100% 通过** | — | **PASS** |
 
 ---
 

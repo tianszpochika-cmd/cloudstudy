@@ -363,7 +363,7 @@ class IamAuthenticationController {
         String key = requireIdempotencyKey(idempotencyKey);
         PrincipalId principal = principalId(verifiedJwt(authentication));
         authenticatedAccount(verifiedJwt(authentication));
-        if (request == null || !request.confirmed()) throw new IamPolicyException(
+        if (request == null || !Boolean.TRUE.equals(request.confirmed())) throw new IamPolicyException(
                 IamDecisionCode.ADULT_CONFIRMATION_REQUIRED, "iam.adult_gate.confirmation_required");
         if (request.policyVersion() == null || !"b30-adult-v1".equals(request.policyVersion())) throw new IamPolicyException(
                 IamDecisionCode.ADULT_AGE_EVIDENCE_INVALID, "iam.adult_gate.policy_version_invalid");
@@ -376,20 +376,22 @@ class IamAuthenticationController {
             // domain type that rejects anything outside 0..150 with an unchecked exception. Without this
             // check the boundary answered 500 iam.internal.error, whose retryable flag invites a client
             // to retry an input that can never succeed.
-            int currentYear = Year.now().getValue();
+            if (request.birthYear() == null) {
+                throw new IamPolicyException(IamDecisionCode.ADULT_AGE_EVIDENCE_INVALID,
+                        "iam.adult_gate.birth_year_invalid");
+            }
+            int currentYear = Year.now(clock).getValue();
             int age = currentYear - request.birthYear();
             if (age < 0 || age > 150) {
                 throw new IamPolicyException(IamDecisionCode.ADULT_AGE_EVIDENCE_INVALID,
                         "iam.adult_gate.birth_year_invalid");
             }
             AdultGateResult result = adultGates.evaluate(new AdultGateCommand(principal, true,
-                    TrustedAgeEvidence.fromServerAttestation(age, "local-development-attestation", Instant.now()),
+                    TrustedAgeEvidence.fromServerAttestation(age, "local-development-attestation", Instant.now(clock)),
                     null, null, ClientAuthorityClaims.none()));
-            if (!result.allowed()) {
-                adultGates.invalidate(principal, "b30-adult-v1");
-                throw new IamPolicyException(result.code(), result.messageKey());
-            }
-            AdultGateFact fact = adultGateFacts.approve(principal, "b30-adult-v1", result.auditDecision().occurredAt());
+            AdultGateFact fact = !result.allowed()
+                    ? adultGateFacts.invalidate(principal, "b30-adult-v1", result.auditDecision().occurredAt())
+                    : adultGateFacts.approve(principal, "b30-adult-v1", result.auditDecision().occurredAt());
             ResponseEntity<ApiSuccessEnvelope<AdultGateResponse>> response = success(HttpStatus.OK,
                     adultGateResponse(fact), CacheControl.noStore());
             return executed(response, principal.toString());
@@ -744,8 +746,8 @@ class IamAuthenticationController {
     }
 
     private ResponseEntity<ApiSuccessEnvelope<AdultGateResponse>> replayAdultGate(PrincipalId principal) {
-        AdultGateFact fact = adultGateFacts.find(principal, Instant.now());
-        if (!"APPROVED".equals(fact.status())) throw new IamPolicyException(IamDecisionCode.IDEMPOTENCY_RESULT_UNAVAILABLE,
+        AdultGateFact fact = adultGateFacts.find(principal, Instant.now(clock));
+        if ("PENDING".equals(fact.status())) throw new IamPolicyException(IamDecisionCode.IDEMPOTENCY_RESULT_UNAVAILABLE,
                 "iam.idempotency.result_unavailable");
         return success(HttpStatus.OK, adultGateResponse(fact), CacheControl.noStore());
     }
@@ -1294,7 +1296,7 @@ class IamAuthenticationController {
                                       AdultGateResponse adultGate, String policyVersion) {}
     public record DeviceResponse(String deviceId, String deviceType, String status, Instant lastActiveAt, boolean isCurrent) {}
     public record DeviceListResponse(List<DeviceResponse> devices) {}
-    public record AdultGateRequest(boolean confirmed, int birthYear, String policyVersion) {}
+    public record AdultGateRequest(Boolean confirmed, Integer birthYear, String policyVersion) {}
     public record ConsentListResponse(List<ConsentResponse> items) {}
     public record ConsentUpdateRequest(String type, String version, String decision,
                                        String expectedDocumentDigest) {
