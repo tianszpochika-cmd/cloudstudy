@@ -11,7 +11,14 @@ const ONBOARDING_PATH = '/pages/onboarding/onboarding'
 const HOME_PATH = '/pages/home/home'
 
 const PUBLIC_PATHS = new Set([LOGIN_PATH, FORBIDDEN_PATH, '/pages/register/register', '/pages/reset-password/reset-password'])
-const AUTH_ONLY_PATHS = new Set([ONBOARDING_PATH, '/pages/devices/devices'])
+const AUTH_ONLY_PATHS = new Set([
+  ONBOARDING_PATH,
+  '/pages/devices/devices',
+  '/pages/settings/settings',
+  '/pages/profile/profile',
+  '/pages/support/support',
+  '/pages/b6-platform/b6-platform',
+])
 
 type RouteOptions = { url?: string; delta?: number }
 
@@ -105,6 +112,10 @@ export async function continueAfterLogin(returnTo: string): Promise<void> {
   const session = useSessionStore(pinia)
   const safe = safeMobileReturnTo(returnTo)
   if (isMobileLearningPath(safe) && !session.isLearningReady) {
+    if (session.adultGate === 'REJECTED') {
+      openUniPage(FORBIDDEN_PATH)
+      return
+    }
     showOnboarding(safe)
     return
   }
@@ -120,7 +131,14 @@ async function resolveBlockedNavigation(target: string): Promise<void> {
     const session = useSessionStore(pinia)
     try { await session.restore() } catch { /* the session store closes the gate on restore failure */ }
     if (!session.isAuthenticated) { showLogin(target); return }
-    if (isMobileLearningPath(target) && !session.isLearningReady) { showOnboarding(target); return }
+    if (isMobileLearningPath(target) && !session.isLearningReady) {
+      if (session.adultGate === 'REJECTED') {
+        openUniPage(FORBIDDEN_PATH)
+        return
+      }
+      showOnboarding(target)
+      return
+    }
     if (isMobileLearningPath(target) && !await hydrateContentLocale()) {
       if (!session.isAuthenticated) showLogin(target)
       return

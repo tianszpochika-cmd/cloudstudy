@@ -245,7 +245,19 @@ router.beforeEach(async (to) => {
     return session.consumeReturnTo()
   }
 
-  const adultGateExempt = new Set(['adult-gate', 'onboarding', 'forbidden'])
+  const allowedAccountRoutes = new Set(['settings', 'settings-root', 'me', 'support', 'platform', 'forbidden'])
+
+  // BC-007 / IC-005 / IC-055: When adult gate is REJECTED, access to account, settings, support and forbidden
+  // is preserved. Learning routes and onboarding forms are blocked with a clear human explanation.
+  if (session.adultGate === 'REJECTED') {
+    if (allowedAccountRoutes.has(String(to.name))) {
+      return true
+    }
+    session.forbiddenReason = '当前版本仅面向 18 岁以上成人开放，暂不能向你开放学习功能。'
+    return { name: 'forbidden' }
+  }
+
+  const adultGateExempt = new Set(['adult-gate', 'onboarding', ...allowedAccountRoutes])
   if (to.meta.requiresAuth && !adultGateExempt.has(String(to.name)) && !session.isLearningReady) {
     session.setReturnTo(to.fullPath)
     return { name: 'onboarding', query: { redirect: safeReturnTo(to.fullPath) } }

@@ -1,5 +1,12 @@
 # Changelog
 
+- [R1-007-20261009] **R1-007（门未过等待态）Web/Mobile 双端实现与单元验证完成。**
+  - **BC-007 / IC-005 / IC-055 路由放行**：当成人门状态为 `REJECTED` 时，账号合法功能完全放行（`/settings`、`/me`、`/support`、`/platform` 与移动端个人中心/设置/支持），杜绝死循环与强制拦截 onboarding；
+  - **人话说明与对稿**：受限页面与横幅展示合规人话解释：“当前版本仅面向 18 岁以上成人开放，暂不能向你开放学习功能。”，符合 IC-005 规范，绝不诱导修改年龄绕过；
+  - **学习能力置灰与阻断**：首页任务按钮、定级页面、答题操作在受限状态下全部禁用置灰，AppShell 学习导航禁用；
+  - **明确退出出口**：受限页与向导页提供直连 `session.logout()` 的退出登录按钮，保证用户不卡死；
+  - **双端类型检查与单测**：新增 `apps/learner-web/tests/adult-gate-restricted.test.mjs`（4/4 PASS），修复移动端与 Web 端 mock 依赖缺失，双端 54 项单测全绿，`vue-tsc` 与 `tsc` 类型检查 0 错误。
+
 - [R1-003-006-20261009] **R1-003、R1-004、R1-005、R1-006 全套生命周期专库运行验收通过。** 
   - **R1-003~005**：`B8Device` 契约增补 `isCurrent: boolean`（服务端由已验证 JWT 判定，不接受客户端声明），两端前端完成适配；修复两处历史 404 映射为 401（非活跃会话与被踢设备刷新）；
   - **R1-006**：实现成人门提交（POST `/api/v1/iam/adult-gate`）双路径落库与审计。成年人返回 200 PASSED / ELIGIBLE / SERVER_VERIFIED，DB 落库 APPROVED / verifiedAt，审计记 ALLOW（`adult_gate_allowed`）；未成年人返回 200 REJECTED / RESTRICTED / REJECTED，DB 落库 REJECTED / verifiedAt=NULL，审计记 DENY（`ADULT_AGE_BELOW_MINIMUM`）；

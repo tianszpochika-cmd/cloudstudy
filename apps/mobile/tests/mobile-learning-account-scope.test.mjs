@@ -51,6 +51,7 @@ function environment() {
   const sessionModule = load('src/stores/session.ts', {
     vue: require('vue'), pinia: require('pinia'),
     '../auth/access-token': { getInMemoryAccessToken: () => token, setInMemoryAccessToken: (value) => { token = value }, setInMemoryRequestIdentity: () => {} },
+    '../auth/auth-failure-copy': { mobileAuthFailureMarker: () => 'failed' },
     '../auth/gateway-auth': { createGatewayMobileAuthAdapter: () => { throw new Error('Use a test auth adapter') }, safeMobileReturnTo: (value) => typeof value === 'string' ? value : '/pages/home/home' },
     '../platform/uni-runtime': platform,
     './learning-cache': cache,

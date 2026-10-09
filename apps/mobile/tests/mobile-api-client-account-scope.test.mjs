@@ -61,6 +61,7 @@ function environment({ unauthorizedHandler } = {}) {
     },
     '../auth/gateway-auth': { createGatewayMobileAuthAdapter: () => { throw new Error('A test auth adapter must be installed') }, safeMobileReturnTo: (value) => typeof value === 'string' ? value : '/pages/home/home' },
     '../platform/uni-runtime': platform,
+    '../auth/auth-failure-copy': { mobileAuthFailureMarker: () => 'failed' },
     './learning-cache': cache,
   })
   const session = sessionModule.useSessionStore()

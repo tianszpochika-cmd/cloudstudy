@@ -23,10 +23,13 @@ const saving = ref(false)
 const goalOptions = computed(() => store.onboardingOptions.length ? store.onboardingOptions : targetGoals)
 const quotaOptions = computed(() => store.onboardingQuotas.length ? store.onboardingQuotas : dailyQuotaOptions)
 const adultBirthYearValid = computed(() => typeof birthYear.value === 'number' && Number.isInteger(birthYear.value) && birthYear.value >= 1900 && birthYear.value <= new Date().getFullYear() - 18)
-const canContinue = computed(() => step.value === 1
-  ? adultBirthYearValid.value && ageConfirmed.value && privacyConsent.value && termsConsent.value
-  : Boolean(targetGoal.value && quota.value))
-const stepLabel = computed(() => step.value === 1 ? '确认身份与同意事项' : '选择学习目标')
+const canContinue = computed(() => {
+  if (session.adultGate === 'REJECTED') return false
+  return step.value === 1
+    ? adultBirthYearValid.value && ageConfirmed.value && privacyConsent.value && termsConsent.value
+    : Boolean(targetGoal.value && quota.value)
+})
+const stepLabel = computed(() => session.adultGate === 'REJECTED' ? '访问受限' : step.value === 1 ? '确认身份与同意事项' : '选择学习目标')
 
 onMounted(async () => {
   store.restore()
@@ -112,7 +115,18 @@ async function cancel(): Promise<void> {
       </header>
 
       <Transition name="setup-step" mode="out-in">
-        <form v-if="step === 1" key="identity" class="setup-card" @submit.prevent="next">
+        <div v-if="session.adultGate === 'REJECTED'" key="rejected" class="setup-card" role="alert">
+          <p class="setup-card__kicker">访问受限</p>
+          <h2>暂未开放学习</h2>
+          <p class="setup-card__description">当前版本仅面向 18 岁以上成人开放，暂不能向你开放学习功能。</p>
+          <p class="policy-note">根据平台合规要求，Phase 1 仅面向 18 周岁以上成年人开放。你可以访问账号设置、隐私与客服支持功能。</p>
+          <div class="setup-actions">
+            <RouterLink class="button button--secondary" to="/settings">前往账号设置</RouterLink>
+            <RouterLink class="button button--ghost" to="/support">帮助与反馈</RouterLink>
+          </div>
+        </div>
+
+        <form v-else-if="step === 1" key="identity" class="setup-card" @submit.prevent="next">
           <p class="setup-card__kicker">{{ stepLabel }}</p>
           <h2>确认成人身份</h2>
           <p class="setup-card__description">仅限已满 18 岁的学习者。</p>

@@ -72,6 +72,7 @@ export const useSessionStore = defineStore('session', () => {
   const authGeneration = computed(() => authEpoch.value)
   const isAuthenticated = computed(() => Boolean(accessToken.value))
   const isLearningReady = computed(() => isAuthenticated.value && adultGate.value === 'PASSED' && permissions.value.includes('learning.plan.read'))
+  const isAdultGateRejected = computed(() => adultGate.value === 'REJECTED')
   let activeAdapter: JwtAuthAdapter | null = null
   let restorePromise: Promise<void> | null = null
   let refreshPromise: Promise<boolean> | null = null
@@ -587,6 +588,7 @@ export const useSessionStore = defineStore('session', () => {
     authGeneration,
     isAuthenticated,
     isLearningReady,
+    isAdultGateRejected,
     restore,
     prepareLogin,
     login,

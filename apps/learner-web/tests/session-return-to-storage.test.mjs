@@ -45,6 +45,7 @@ function loadSessionStore() {
     },
     '../api/client': { ApiError: class ApiError extends Error {} },
     '../platform/gateway': { getGatewayBaseUrl: () => 'https://gateway.example.test' },
+    '../auth/auth-failure-copy': { learnerAuthFailureMarker: () => 'failed' },
     '../domain/b1': { B1_STORAGE_KEY: 'yx.b1.learner-web.v1' },
   }
   new Function('require', 'module', 'exports', compiled)((name) => {

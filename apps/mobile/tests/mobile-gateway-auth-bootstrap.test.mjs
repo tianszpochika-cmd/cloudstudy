@@ -57,6 +57,7 @@ function environment() {
     '../auth/access-token': accessTokens,
     '../auth/gateway-auth': auth,
     '../platform/uni-runtime': platform,
+    '../auth/auth-failure-copy': { mobileAuthFailureMarker: () => 'failed' },
     './learning-cache': { removeAllLearningCaches() {} },
   })
   return {

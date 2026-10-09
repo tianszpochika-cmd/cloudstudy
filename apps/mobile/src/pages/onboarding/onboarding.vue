@@ -37,9 +37,12 @@ watch(() => session.identityRevision, () => {
 }, { flush: 'sync' })
 
 const adultBirthYearValid = computed(() => Boolean(birthYear.value && birthYear.value >= 1900 && birthYear.value <= new Date().getFullYear() - 18))
-const canContinue = computed(() => step.value === 1
-  ? adultBirthYearValid.value && ageConfirmed.value && privacyConsent.value && termsConsent.value
-  : Boolean(goal.value && quota.value))
+const canContinue = computed(() => {
+  if (session.adultGate === 'REJECTED') return false
+  return step.value === 1
+    ? adultBirthYearValid.value && ageConfirmed.value && privacyConsent.value && termsConsent.value
+    : Boolean(goal.value && quota.value)
+})
 
 function goLogin(url = '/pages/login/login'): void {
   const runtime = getUniRuntime()
@@ -133,7 +136,18 @@ async function cancel(): Promise<void> {
     </view>
 
     <view class="yx-card yx-onboarding-card">
-      <view v-if="step === 1" class="yx-onboarding-step">
+      <view v-if="session.adultGate === 'REJECTED'" class="yx-onboarding-step" role="alert">
+        <text class="section-kicker">访问受限</text>
+        <text class="section-title">暂未开放学习</text>
+        <text class="section-description">当前版本仅面向 18 岁以上成人开放，暂不能向你开放学习功能。</text>
+        <text class="flow-note">根据平台合规要求，Phase 1 仅面向 18 周岁以上成年人开放。你可以访问账号设置、隐私与客服支持功能。</text>
+        <view class="onboarding-actions" style="margin-top: 24rpx;">
+          <button tabindex="0" role="button" class="yx-button yx-button--secondary" type="button" @click="openUniPage('/pages/profile/profile')">前往个人中心与设置</button>
+          <button tabindex="0" role="button" class="yx-button yx-button--secondary" type="button" @click="openUniPage('/pages/support/support')">帮助与反馈</button>
+        </view>
+      </view>
+
+      <view v-else-if="step === 1" class="yx-onboarding-step">
         <text class="section-kicker">确认身份与同意事项</text>
         <text class="section-title">确认成人身份</text>
         <text class="section-description">仅限已满 18 岁的学习者。</text>
