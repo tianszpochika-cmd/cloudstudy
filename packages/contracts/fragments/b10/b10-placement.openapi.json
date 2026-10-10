@@ -179,6 +179,63 @@
         }
       }
     },
+    "/api/v1/assessment/placement/sessions/{sessionId}/retest": {
+      "post": {
+        "tags": ["b10-assessment"],
+        "summary": "Open a new P1 placement session from a completed report",
+        "operationId": "retestB10PlacementSession",
+        "security": [{ "bearerAuth": [] }],
+        "x-contract": {
+          "owner": "assessment-service",
+          "placementRule": "P1_PLACEMENT_V1",
+          "requestAuthority": "bodyless; server keeps the completed session, report and digest, then pins a new session from the current bank",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+        },
+        "x-p1r-placement": {
+          "canonical": true,
+          "lifecycle": "RETEST_NEW_SESSION_KEEP_COMPLETED_REPORT",
+          "legacyAdapter": "retestCompletedPlacement"
+        },
+        "x-authorization": {
+          "requiredPermission": "assessment.placement.session.create",
+          "defaultDecision": "DENY",
+          "trustedFacts": ["subject", "tenant", "adultGate", "phase", "contentRights", "entitlement", "resourceOwner", "policyVersion"],
+          "resourceOwner": "server-derived placement session owner",
+          "serviceSidePepRequired": true
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "p1-placement-retest",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "same subject, completed source session and current bank pin returns the original retest session",
+          "sameKeyDifferentPayload": "CONFLICT_409"
+        },
+        "parameters": [
+          { "$ref": "#/components/parameters/B10SessionId" },
+          { "$ref": "#/components/parameters/B10IdempotencyKey" }
+        ],
+        "responses": {
+          "201": {
+            "description": "New server-pinned placement session; the completed report stays stored",
+            "content": { "application/json": { "schema": { "allOf": [
+              { "$ref": "#/components/schemas/ApiSuccessEnvelope" },
+              { "type": "object", "required": ["data"], "properties": { "data": { "$ref": "#/components/schemas/B10PlacementSession" } } }
+            ] } } },
+            "headers": {
+              "X-Request-Id": { "$ref": "#/components/headers/XRequestId" },
+              "X-Trace-Id": { "$ref": "#/components/headers/XTraceId" },
+              "X-API-Version": { "$ref": "#/components/headers/XApiVersion" }
+            }
+          },
+          "401": { "$ref": "#/components/responses/ApiUnauthorized" },
+          "403": { "$ref": "#/components/responses/ApiForbidden" },
+          "404": { "$ref": "#/components/responses/ApiNotFound" },
+          "409": { "$ref": "#/components/responses/ApiConflict" },
+          "422": { "$ref": "#/components/responses/ApiUnprocessableEntity" },
+          "503": { "$ref": "#/components/responses/ApiServiceUnavailable" }
+        }
+      }
+    },
     "/api/v1/assessment/placement/baselines/skip": {
       "post": {
         "tags": ["b10-assessment"],

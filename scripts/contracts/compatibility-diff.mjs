@@ -4316,7 +4316,7 @@ function compareM1018B26Promotion(previous, current, allowance) {
 export const M2001_GATEWAY_EXECUTION_TARGET_PROMOTION_ID = 'P1R-M2-001';
 export const M2001_SOURCE_CONTRACT_BASELINE_REF = '66246d5b4a68a988a9af4ece68a446640b123812';
 export const M2001_OPENAPI_SOURCE_SEMANTIC_SHA256 = 'a154f2004f06e5da096abea630855152fac9e87224ad48565a38e6010ab9416b';
-export const M2001_GATEWAY_ROOT_SEMANTIC_SHA256 = '54bfc77c73bd32ae8cc3a2bb110a5971242ca39015a1bf836f30e2a28bbe1faa';
+export const M2001_GATEWAY_ROOT_SEMANTIC_SHA256 = '2dfd6d3a84a1648e842f13867235d3a0d659bb92fb75fb206c512a80ba5593ab';
 export const M2001_EXECUTION_TARGET_POLICY_SEMANTIC_SHA256 = 'd5182f41d59ef89a4e4743db930eda8ab0e42eb1113d6d57b08b9e4af507c2f9';
 export const M2001_OPENAPI_EXPECTED_SEMANTIC_SHA256 = 'cdcdf214a0f6ea25886461995ef732acfaa82900f9f4880143b390d9d1298e67';
 export const M2001_OPENAPI_ROOT_EXTENSION = 'x-p1r-gateway-boundary';
@@ -4371,6 +4371,22 @@ export const M2001_APPROVED_ADDITIVE_NODES = Object.freeze([
   { reason: 'B3 grammar points read operation declares verified bearer authentication', segments: ['paths', '/api/v1/grammar/points', 'get', 'security'] },
   { reason: 'B3 grammar points read publishes its contract-first owner and closed legacy eligibility state', segments: ['paths', '/api/v1/grammar/points', 'get', 'x-contract'] },
   { reason: 'B3 grammar points read declares its fail-closed content-service PEP facts', segments: ['paths', '/api/v1/grammar/points', 'get', 'x-authorization'] },
+  { reason: 'R1-024 public placement retest opens a new session and keeps the completed report', segments: ['paths', '/api/v1/assessment/placement/sessions/{sessionId}/retest'] },
+  { reason: 'IT-2 cross-scheme refresh cookie is CHIPS Partitioned on set', segments: ['components', 'headers', 'B8RefreshCookie', 'x-cookie', 'partitioned'] },
+  { reason: 'IT-2 cross-scheme refresh cookie is CHIPS Partitioned on clear', segments: ['components', 'headers', 'B8RefreshCookieClear', 'x-cookie', 'partitioned'] },
+]);
+
+/**
+ * Reviewed replacements of nodes that already exist on the M1-018 baseline.
+ * Each entry must name one existing node whose approved value differs from the
+ * baseline. The projection copies that approved value and still has to equal
+ * the current document. A sameSite or description edit outside this list fails closed.
+ */
+export const M2001_APPROVED_REPLACED_NODES = Object.freeze([
+  { reason: 'IT-2 refresh Set-Cookie text is SameSite=None and Partitioned', segments: ['components', 'headers', 'B8RefreshCookie', 'description'] },
+  { reason: 'IT-2 refresh cookie SameSite is None because learner web and IAM use different schemes', segments: ['components', 'headers', 'B8RefreshCookie', 'x-cookie', 'sameSite'] },
+  { reason: 'IT-2 clear-cookie text is SameSite=None and Partitioned', segments: ['components', 'headers', 'B8RefreshCookieClear', 'description'] },
+  { reason: 'IT-2 clear cookie keeps SameSite=None', segments: ['components', 'headers', 'B8RefreshCookieClear', 'x-cookie', 'sameSite'] },
 ]);
 
 function resolveAdditiveParent(document, segments) {
@@ -4424,7 +4440,8 @@ function applyApprovedAdditiveNodes(expected, approved) {
  * OpenAPI checkpoint. M2-001 owns the complete Gateway root and exactly two
  * health identity scalars; every other path, operation field, schema field,
  * tag and root extension remains equivalent under stable comparison, except
- * the reviewed purely-additive nodes in {@link M2001_APPROVED_ADDITIVE_NODES}.
+ * the reviewed purely-additive nodes in {@link M2001_APPROVED_ADDITIVE_NODES}
+ * and the reviewed replacements in {@link M2001_APPROVED_REPLACED_NODES}.
  */
 export function buildM2001OpenApiExpectedProjection(previous, approved, allowance) {
   const approvedHealth = approved?.paths?.[M2001_HEALTH_PATH]?.get;
@@ -4446,7 +4463,20 @@ export function buildM2001OpenApiExpectedProjection(previous, approved, allowanc
   expected.paths[M2001_HEALTH_PATH].get.summary = M2001_HEALTH_SUMMARY;
   expected.components.schemas.HealthData.properties.service.const = M2001_HEALTH_SERVICE_CONST;
   if (!applyApprovedAdditiveNodes(expected, approved)) return undefined;
+  if (!applyApprovedReplacedNodes(expected, approved)) return undefined;
   return expected;
+}
+
+function applyApprovedReplacedNodes(expected, approved) {
+  for (const entry of M2001_APPROVED_REPLACED_NODES) {
+    const target = resolveAdditiveParent(expected, entry.segments);
+    const source = resolveAdditiveParent(approved, entry.segments);
+    if (target === undefined || source === undefined) return false;
+    if (!(target.key in target.parent) || !(source.key in source.parent)) return false;
+    if (stableGovernanceValue(target.parent[target.key]) === stableGovernanceValue(source.parent[source.key])) return false;
+    target.parent[target.key] = structuredClone(source.parent[source.key]);
+  }
+  return true;
 }
 
 export function compareM2001OpenApiDescriptors(previous, current) {

@@ -596,12 +596,12 @@ public final class GatewayRouteExecutionPolicy {
                 rewrite("p1-placement-session-create", "/api/v1/assessment/placement/sessions", "/internal/v1/assessment/placement/sessions", ASSESSMENT_P1, HttpMethod.POST),
                 rewrite("p1-placement-session-read", "/api/v1/assessment/placement/sessions/{sessionId}", "/internal/v1/assessment/placement/sessions/{sessionId}", ASSESSMENT_P1, HttpMethod.GET),
                 rewrite("p1-placement-response", "/api/v1/assessment/placement/sessions/{sessionId}/responses", "/internal/v1/assessment/placement/sessions/{sessionId}/responses", ASSESSMENT_P1, HttpMethod.POST),
+                rewrite("p1-placement-retest", "/api/v1/assessment/placement/sessions/{sessionId}/retest", "/internal/v1/assessment/placement/sessions/{sessionId}/retest", ASSESSMENT_P1, HttpMethod.POST),
                 rewrite("p1-placement-skip", "/api/v1/assessment/placement/baselines/skip", "/internal/v1/assessment/placement/baselines/skip", ASSESSMENT_P1, HttpMethod.POST),
                 rewrite("p1-placement-report", "/api/v1/assessment/placement/reports/{reportId}", "/internal/v1/assessment/placement/reports/{reportId}", ASSESSMENT_P1, HttpMethod.GET),
-                // R1-019: POST /placement/start is not forwarded. GET remains the old B25 session read.
+                // R1-019: POST /placement/start, /submit-step and /skip are not forwarded.
+                // GET start and GET /report/{sessionId} remain the old B25 reads.
                 rewrite("placement-start", "/api/v1/assessment/placement/start", "/internal/v1/assessment/placement/start", ASSESSMENT_B25, HttpMethod.GET),
-                rewrite("placement-submit-step", "/api/v1/assessment/placement/submit-step", "/internal/v1/assessment/placement/submit-step", ASSESSMENT_B25, HttpMethod.POST),
-                rewrite("placement-skip", "/api/v1/assessment/placement/skip", "/internal/v1/assessment/placement/skip", ASSESSMENT_B25, HttpMethod.POST),
                 rewrite("placement-report", "/api/v1/assessment/placement/report/{sessionId}", "/internal/v1/assessment/placement/report/{sessionId}", ASSESSMENT_B25, HttpMethod.GET),
                 rewrite("daily-stream", "/api/v1/assessment/daily-stream", "/internal/v1/assessment/daily-stream", ASSESSMENT_B25, HttpMethod.GET),
                 rewrite("session-create", "/api/v1/assessment/sessions", "/internal/v1/assessment/sessions", ASSESSMENT_B10, HttpMethod.POST),

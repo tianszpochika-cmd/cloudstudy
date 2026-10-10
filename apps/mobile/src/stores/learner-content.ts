@@ -199,7 +199,9 @@ export const useLearnerContentStore = defineStore('mobile-learner-content', () =
     onboardingStatus.value = 'loading'
     lastError.value = null
     try {
-      const remote = await mobileLearnerContentApi.saveOnboarding({ goal, quota, consentsRecorded: true, clientEventId: eventId('mobile-onboarding-target') }, () => sameIdentity(owner))
+      // Learner stores platform:{subjectUuid}:{operation}:{Idempotency-Key} and rejects a dedupe key over 128 characters.
+      // preference.update plus "-preferences" leaves 14 characters for this prefix.
+      const remote = await mobileLearnerContentApi.saveOnboarding({ goal, quota, consentsRecorded: true, clientEventId: eventId('h5-goal') }, () => sameIdentity(owner))
       if (!stillCurrent(owner)) return false
       applyOnboarding(remote, owner)
       goals.value = onboarding.value.goals.length ? [...onboarding.value.goals] : [...fallbackGoals]
@@ -242,7 +244,7 @@ export const useLearnerContentStore = defineStore('mobile-learner-content', () =
     if (!owner) { reset(); onboardingStatus.value = 'forbidden'; return }
     restore(); onboarding.value = { ...onboarding.value, goal, quota, completed: false }; persist(); onboardingStatus.value = 'loading'; lastError.value = null
     try {
-      const remote = await mobileLearnerContentApi.saveOnboarding({ goal, quota, ...consent, clientEventId: eventId('mobile-onboarding') }, () => sameIdentity(owner))
+      const remote = await mobileLearnerContentApi.saveOnboarding({ goal, quota, ...consent, clientEventId: eventId('h5-setup') }, () => sameIdentity(owner))
       if (!stillCurrent(owner)) return
       applyOnboarding(remote, owner)
       goals.value = onboarding.value.goals.length ? [...onboarding.value.goals] : [...fallbackGoals]
@@ -381,6 +383,32 @@ export const useLearnerContentStore = defineStore('mobile-learner-content', () =
       lastError.value = mobileLearnerContentError(error).message || '本题尚未提交成功。未提交的选择不会当成已保存。'
     }
   }
+  async function retestPlacement(): Promise<void> {
+    const owner = scope()
+    if (!owner) return
+    const sessionId = placement.value.sessionId
+    if (!sessionId?.startsWith('asess_')) {
+      placementStatus.value = 'error'
+      lastError.value = '还没有可重测的服务端报告。'
+      return
+    }
+    placementStatus.value = 'loading'
+    lastError.value = null
+    try {
+      const contentLocale = await ensureContentLocale(owner)
+      if (!contentLocale) throw new Error(lastError.value || '学习语言设置暂时无法读取。')
+      const remote = await mobileLearnerContentApi.retestPlacement(contentLocale, sessionId, eventId('mobile-placement-retest'))
+      if (!stillCurrent(owner)) return
+      placement.value = { ...remote, reconciledWithoutReceipt: false }
+      placementStatus.value = remote.currentQuestion || remote.sessionId?.startsWith('asess_') ? 'ready' : 'empty'
+      persist()
+    } catch (error) {
+      if (!stillCurrent(owner)) return
+      placementStatus.value = 'error'
+      lastError.value = mobileLearnerContentError(error).message || '重测没有开出新题。原来的报告还在。'
+      persist()
+    }
+  }
   async function loadHome(): Promise<void> {
     const owner = scope()
     if (!owner) { reset(); homeStatus.value = 'forbidden'; return }
@@ -419,5 +447,5 @@ export const useLearnerContentStore = defineStore('mobile-learner-content', () =
       persist()
     }
   }
-  return { onboarding, goals, quotas, account, accountStatus, home, firstDay, placement, onboardingStatus, onboardingResume, homeStatus, firstDayStatus, placementStatus, lastError, progress, restore, persist, loadOnboarding, loadOnboardingResume, recordRequiredConsents, saveTarget, saveOnboarding, loadAccount, savePreferences, saveContentLocale, loadFirstDay, loadPlacement, submitPlacementAnswer, loadHome, completeTask }
+  return { onboarding, goals, quotas, account, accountStatus, home, firstDay, placement, onboardingStatus, onboardingResume, homeStatus, firstDayStatus, placementStatus, lastError, progress, restore, persist, loadOnboarding, loadOnboardingResume, recordRequiredConsents, saveTarget, saveOnboarding, loadAccount, savePreferences, saveContentLocale, loadFirstDay, loadPlacement, submitPlacementAnswer, retestPlacement, loadHome, completeTask }
 })

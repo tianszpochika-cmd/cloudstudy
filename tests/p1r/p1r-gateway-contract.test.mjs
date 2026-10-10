@@ -136,6 +136,7 @@ test('M2-001 approved additive nodes are exactly the reviewed post-baseline addi
       ['paths//api/v1/grammar/points/get/security', null, 'B3 grammar points read operation declares verified bearer authentication'],
       ['paths//api/v1/grammar/points/get/x-contract', null, 'B3 grammar points read publishes its contract-first owner and closed legacy eligibility state'],
       ['paths//api/v1/grammar/points/get/x-authorization', null, 'B3 grammar points read declares its fail-closed content-service PEP facts'],
+      ['paths//api/v1/assessment/placement/sessions/{sessionId}/retest', null, 'R1-024 public placement retest opens a new session and keeps the completed report'],
     ],
   );
 });

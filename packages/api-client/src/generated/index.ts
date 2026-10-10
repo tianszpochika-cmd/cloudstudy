@@ -470,6 +470,7 @@ export interface GeneratedApiOperationRegistry {
   decideAdminRiskCase: { method: "POST"; path: "/api/v1/admin/ops/risk/cases/{caseId}/commands"; request: AdminRiskDecisionRequest; requestBodyRequired: true; response: { data: AdminRiskCase; }; };
   evaluateAdminRiskRules: { method: "POST"; path: "/api/v1/admin/ops/risk/rules:evaluate"; request: AdminRiskEvaluateRequest; requestBodyRequired: false; response: { data: AdminRiskEvaluateResult; }; };
   getIamLearningConsentFact: { method: "GET"; path: "/internal/v1/iam/principals/{principalId}/learning-consent"; request: never; requestBodyRequired: false; response: { data: B8LearningConsentFact; }; };
+  retestB10PlacementSession: { method: "POST"; path: "/api/v1/assessment/placement/sessions/{sessionId}/retest"; request: never; requestBodyRequired: false; response: ApiSuccessEnvelope & { data: B10PlacementSession; }; };
 }
 
 export type GeneratedApiOperationId = keyof GeneratedApiOperationRegistry;

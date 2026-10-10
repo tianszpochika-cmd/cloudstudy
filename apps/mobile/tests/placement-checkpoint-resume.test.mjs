@@ -294,7 +294,8 @@ test('mobile placement page does not promise local or offline completion', () =>
   assert.match(page, /刚才提交的这题答对了。/)
   assert.match(page, /刚才提交的这题没有答对。/)
   assert.match(page, /报告已生成/)
-  assert.match(page, /disabled>重测尚未接通/)
+  assert.match(page, /@click="retest">重测/)
+  assert.doesNotMatch(page, /重测尚未接通/)
   assert.doesNotMatch(page, /correctOption|正确选项|3 分钟|已存本机|可离线答完/)
 })
 

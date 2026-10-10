@@ -664,6 +664,15 @@ export const mobileLearnerContentApi = {
     }))
   },
 
+  async retestPlacement(contentLocale = 'en-US', sessionId: string, clientEventId: string): Promise<MobilePlacementModel> {
+    void contentLocale
+    return parsePlacement(await mobileApiClient.request<unknown>(`/assessment/placement/sessions/${encodeURIComponent(sessionId)}/retest`, {
+      method: 'POST',
+      data: {},
+      header: { 'Idempotency-Key': clientEventId },
+    }))
+  },
+
   async submitPlacementAnswer(input: { sessionId: string; questionId: string; selectedKey: string; timeSpentSec: number; contentLocale: string; clientEventId: string; stateVersion?: number | null; itemId?: number | null; itemSequence?: number | null }): Promise<MobilePlacementModel> {
     const stateVersion = input.stateVersion
     const itemId = input.itemId

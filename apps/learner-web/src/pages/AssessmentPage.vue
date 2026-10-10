@@ -37,18 +37,30 @@ const feedbackText = computed(() => store.placementFeedback === 'FULL' ? '刚才
 store.restore()
 const guidePending = ref(!store.assessment.sessionId?.startsWith('asess_'))
 const startRequested = ref(false)
+const retestPending = ref(false)
 onMounted(() => { if (!guidePending.value) void store.loadAssessment(); startedAt.value = Date.now() })
 async function submit(): Promise<void> { if (!selected.value) return; const answer = selected.value; selected.value = ''; await store.submitAnswer(answer, (Date.now() - startedAt.value) / 1000); startedAt.value = Date.now() }
 async function fastTrack(level: 'ZERO_A1' | 'CET4_B1' | 'CET6_B2' | 'POSTGRAD_B2_PLUS'): Promise<void> { await store.applyFastTrack(level) }
 async function restart(): Promise<void> { selected.value = ''; startedAt.value = Date.now(); await store.restartAssessment() }
 function begin(): void { if (startRequested.value) return; startRequested.value = true; guidePending.value = false; startedAt.value = Date.now(); void store.loadAssessment() }
 function retry(): void { void store.loadAssessment() }
+async function retest(): Promise<void> {
+  if (retestPending.value) return
+  retestPending.value = true
+  selected.value = ''
+  try {
+    await store.retestAssessment()
+    startedAt.value = Date.now()
+  } finally {
+    retestPending.value = false
+  }
+}
 </script>
 <template>
   <section class="page-stack" aria-labelledby="assessment-title"><ExperienceHeader page="Assessment" icon="target" title-id="assessment-title" hero><span class="assessment-progress-label">{{ progressLabel }}</span></ExperienceHeader>
   <article v-if="isRestricted" class="result-card restricted-card" role="alert"><p class="card-kicker">测评访问受限</p><h3>暂未开放测评</h3><p>当前版本仅面向 18 岁以上成人开放，暂不能向你开放学习功能。</p><div class="result-actions"><RouterLink class="button button--secondary" to="/settings">前往账号设置</RouterLink><RouterLink class="button button--ghost" to="/support">帮助与反馈</RouterLink><button class="button button--ghost" type="button" @click="logout">退出登录</button></div></article>
   <article v-else-if="isDone && baseline" class="result-card"><p class="card-kicker">已跳过测评</p><h3>水平尚未验证</h3><p v-if="baseline.requestedStartingLevel">你选择了 {{ baseline.requestedStartingLevel }} 作为起点；这不是测评等级。</p><div class="result-actions"><button class="button button--primary" type="button" @click="router.push({ name: 'today' })">查看今日状态</button><button class="button button--secondary" type="button" @click="restart">参加测评</button></div></article>
-  <article v-else-if="isDone && hasServerReport" class="result-card"><p class="card-kicker">报告已生成</p><h3 v-if="report">{{ report.cefrLevel }} · {{ Math.round(report.score) }} 分</h3><p v-if="countedReport">答对 {{ countedReport.full }} 题，共 {{ countedReport.total }} 题。</p><p v-if="advice">{{ advice }}</p><p v-if="feedbackText" role="status">{{ feedbackText }}</p><p>重测会另开一套题，这份报告会保留。是否调整已有计划需要另外确认。</p><div class="result-actions"><button class="button button--primary" type="button" @click="router.push({ name: 'today' })">查看今日状态</button><button class="button button--secondary" type="button" disabled>重测尚未接通</button></div></article>
+  <article v-else-if="isDone && hasServerReport" class="result-card"><p class="card-kicker">报告已生成</p><h3 v-if="report">{{ report.cefrLevel }} · {{ Math.round(report.score) }} 分</h3><p v-if="countedReport">答对 {{ countedReport.full }} 题，共 {{ countedReport.total }} 题。</p><p v-if="advice">{{ advice }}</p><p v-if="feedbackText" role="status">{{ feedbackText }}</p><p>重测会另开一套题，这份报告会保留。是否调整已有计划需要另外确认。</p><div class="result-actions"><button class="button button--primary" type="button" @click="router.push({ name: 'today' })">查看今日状态</button><button class="button button--secondary" type="button" :disabled="retestPending" @click="retest">重测</button></div></article>
   <article v-else-if="question" class="question-card"><div class="question-meta"><span v-if="question.helperText">{{ question.helperText }}</span><span>第 {{ question.stepIndex }} 题，共 {{ question.totalSteps }} 题</span></div><p v-if="store.assessment.acceptedSequence > 0">服务端已接收 {{ store.assessment.acceptedSequence }} 题。</p><h3>{{ question.stemText }}</h3><p v-if="feedbackText" role="status">{{ feedbackText }}</p><div class="options"><button v-for="option in question.options" :key="option.key" class="option" :class="{ selected: selected === option.key }" type="button" @click="selected = option.key"><b>{{ option.key }}</b><span>{{ option.text }}</span></button></div><p>当前选择只留在这一页。离开后，还没提交的选择不会保留。</p><p v-if="store.assessment.status === 'error'" class="error-text" role="alert">{{ store.lastError || '答案状态尚未确认。请先重新读取，不会因此新开一套题。' }}</p><button v-if="store.assessment.status === 'error'" class="button button--primary" type="button" @click="retry">重新读取</button><button v-else class="button button--primary" type="button" :disabled="!selected || store.assessment.status === 'submitting'" @click="submit">{{ store.assessment.status === 'submitting' ? '正在记录…' : '提交答案' }}</button></article>
   <article v-else-if="guidePending && !isLoading && !hasError" class="info-card"><h3>开始定级</h3><p>共 10 道题。用来了解你现在的英语起点，方便安排后面的学习。</p><button class="button button--primary" type="button" @click="begin">开始</button></article>
   <article v-else-if="isLoading" class="info-card" role="status"><h3>正在准备测评</h3><p>请稍候。</p></article>

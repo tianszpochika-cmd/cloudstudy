@@ -20,7 +20,7 @@ export const DEFAULT_EVENT_CATALOG =
   "packages/contracts/events/v1/catalog.json";
 export const DEFAULT_B26_STATIC_POLICY = "config/b26-event-runtime.json";
 export const FROZEN_POLICY_DIGEST =
-  "9eb39bdaa5f4965d3940b3718dbaf519832948912acaaf5a3d78954dcc4f303b";
+  "1d6f883d2d2061454986a1d74c06fc899d866290a0bb2a2775469bb9d84db7e7";
 
 const defaultRoot = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -183,6 +183,11 @@ const EXPECTED_ROUTES = Object.freeze([
     operationId: "submitB10PlacementResponse",
   }),
   Object.freeze({
+    path: "/api/v1/assessment/placement/sessions/{sessionId}/retest",
+    method: "POST",
+    operationId: "retestB10PlacementSession",
+  }),
+  Object.freeze({
     path: "/api/v1/assessment/placement/baselines/skip",
     method: "POST",
     operationId: "createB10PlacementSkipBaseline",
@@ -299,7 +304,7 @@ const B10_ROUTE_POLICIES = Object.freeze([
     ...EXPECTED_ROUTES[0],
     lifecycle: "CREATE_SERVER_PINNED_SESSION",
     legacyAdapter: "startPlacementSession",
-    responseStatuses: ["201", "401", "403", "409", "422"],
+    responseStatuses: ["201", "401", "403", "409", "422", "503"],
     requestBody: "FORBIDDEN",
     idempotency: true,
   }),
@@ -307,7 +312,7 @@ const B10_ROUTE_POLICIES = Object.freeze([
     ...EXPECTED_ROUTES[1],
     lifecycle: "READ_SAME_SESSION",
     legacyAdapter: "readPlacementSession",
-    responseStatuses: ["200", "401", "403", "404"],
+    responseStatuses: ["200", "401", "403", "404", "503"],
     requestBody: "FORBIDDEN",
     idempotency: false,
   }),
@@ -315,24 +320,32 @@ const B10_ROUTE_POLICIES = Object.freeze([
     ...EXPECTED_ROUTES[2],
     lifecycle: "CHECKPOINT_OR_COMPLETE_SAME_SESSION",
     legacyAdapter: "submitPlacementStep",
-    responseStatuses: ["200", "401", "403", "409", "422"],
+    responseStatuses: ["200", "401", "403", "404", "409", "422", "503"],
     requestBody: "B10PlacementResponseSubmitRequest",
     idempotency: true,
   }),
   Object.freeze({
     ...EXPECTED_ROUTES[3],
+    lifecycle: "RETEST_NEW_SESSION_KEEP_COMPLETED_REPORT",
+    legacyAdapter: "retestCompletedPlacement",
+    responseStatuses: ["201", "401", "403", "404", "409", "422", "503"],
+    requestBody: "FORBIDDEN",
+    idempotency: true,
+  }),
+  Object.freeze({
+    ...EXPECTED_ROUTES[4],
     lifecycle: "CREATE_UNVERIFIED_BASELINE",
     legacyAdapter: "skipB1Placement",
-    responseStatuses: ["201", "401", "403", "409", "422"],
+    responseStatuses: ["201", "401", "403", "409", "422", "503"],
     requestBody: "B10PlacementSkipBaselineRequest",
     requestBodyRequired: false,
     idempotency: true,
   }),
   Object.freeze({
-    ...EXPECTED_ROUTES[4],
+    ...EXPECTED_ROUTES[5],
     lifecycle: "READ_IMMUTABLE_RESULT_REPORT",
     legacyAdapter: "getB1PlacementReport",
-    responseStatuses: ["200", "401", "403", "404"],
+    responseStatuses: ["200", "401", "403", "404", "503"],
     requestBody: "FORBIDDEN",
     idempotency: false,
   }),

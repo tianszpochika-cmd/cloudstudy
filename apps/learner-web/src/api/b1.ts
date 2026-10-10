@@ -222,23 +222,16 @@ export async function startPlacement(): Promise<PlacementQuestion | null> {
 }
 
 export async function submitPlacementStep(input: { sessionId: string; questionId: string; selectedKey: string; timeSpentSec: number }): Promise<AssessmentStepResponse> {
-  const response = await apiClient.post<unknown>('/assessment/placement/submit-step', {
-    sessionUuid: input.sessionId,
-    questionId: input.questionId,
-    selectedAnswer: input.selectedKey,
-    timeSpentSec: input.timeSpentSec,
-  }, withIdempotency())
-  const source = unwrap(response)
-  const sourceRecord = isRecord(source) ? source : {}
-  return {
-    isCompleted: readBoolean(sourceRecord.isCompleted) ?? Boolean(parseReport(sourceRecord)),
-    nextQuestion: parseQuestion(sourceRecord.nextQuestion, input.sessionId, 1),
-    finalReport: parseReport(sourceRecord.finalReport),
-  }
+  void input
+  throw new Error('定级作答已改走当前会话的检查点，旧的逐题写口不再提交。')
 }
 
 export async function skipPlacement(fastTrackLevel: string): Promise<void> {
-  await apiClient.post('/assessment/placement/skip', { fastTrackLevel }, withIdempotency())
+  const levels: Record<string, string> = { ZERO_A1: 'A1', CET4_B1: 'B1', CET6_B2: 'B2', POSTGRAD_B2_PLUS: 'B2' }
+  const level = levels[fastTrackLevel]
+  await apiClient.post('/assessment/placement/baselines/skip', level
+    ? { requestedStartingLevel: { level, authority: 'USER_SELECTED_NON_AUTHORITATIVE' } }
+    : {}, withIdempotency())
 }
 
 export async function fetchHomeFeed(): Promise<unknown> {

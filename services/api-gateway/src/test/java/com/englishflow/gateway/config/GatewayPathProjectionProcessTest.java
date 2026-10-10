@@ -50,6 +50,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -213,6 +214,26 @@ class GatewayPathProjectionProcessTest {
         assertForwarded(HttpMethod.POST,
                 "/api/v1/assessment/placement/sessions",
                 "/internal/v1/assessment/placement/sessions");
+
+        for (String retired : List.of(
+                "/api/v1/assessment/placement/submit-step",
+                "/api/v1/assessment/placement/skip")) {
+            client.post()
+                    .uri(retired)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                    .header(HttpHeaders.CONTENT_TYPE, "application/json")
+                    .header("Idempotency-Key", "r1-019-retired-write")
+                    .bodyValue("{}")
+                    .exchange()
+                    .expectStatus().isNotFound()
+                    .expectBody()
+                    .jsonPath("$.error.errorCode").isEqualTo("NOT_FOUND");
+            assertNull(UPSTREAM.pollNow(), retired + " must not reach a B25 write port");
+        }
+
+        assertForwarded(HttpMethod.POST,
+                "/api/v1/assessment/placement/sessions/asess_12345678/retest",
+                "/internal/v1/assessment/placement/sessions/asess_12345678/retest");
     }
 
     @Test

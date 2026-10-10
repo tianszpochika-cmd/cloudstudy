@@ -174,7 +174,8 @@ export interface LearnerContentPort {
   readPlacement(input: { contentLocale: string; sessionId?: string | null }): Promise<PlacementReadModel>
   startPlacement(input: { contentLocale: string; clientEventId: string }): Promise<PlacementReadModel>
   submitPlacementAnswer(input: PlacementAnswerInput): Promise<PlacementSubmitResult>
-  skipPlacement(input: { fastTrackLevel: string; contentLocale: string; clientEventId: string }): Promise<PlacementSubmitResult | null>
+  skipPlacement(input: { fastTrackLevel: string; sessionId?: string | null; contentLocale: string; clientEventId: string }): Promise<PlacementSubmitResult | null>
+  retestPlacement(input: { sessionId: string; contentLocale: string; clientEventId: string }): Promise<PlacementReadModel>
   readHome(contentLocale: string): Promise<LearnerHomeReadModel>
   readToday(contentLocale: string): Promise<LearnerHomeReadModel>
   completeTask(input: { taskId: string; contentLocale: string; clientEventId: string }): Promise<LearnerHomeReadModel | null>

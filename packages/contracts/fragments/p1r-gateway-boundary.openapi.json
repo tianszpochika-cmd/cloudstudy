@@ -3450,6 +3450,23 @@
             }
           },
           {
+            "projectionId": "assessment-domain.p1-placement-retest",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/assessment/placement/sessions/{sessionId}/retest",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "assessment-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.assessment",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/assessment/placement/sessions/{sessionId}/retest",
+            "controllerEvidence": {
+              "sourcePath": "services/assessment-service/src/main/java/com/englishflow/assessment/web/P1PlacementJdbcController.java",
+              "requestMapping": "/internal/v1/assessment/placement"
+            }
+          },
+          {
             "projectionId": "assessment-domain.p1-placement-skip",
             "status": "AVAILABLE",
             "publicPathTemplate": "/api/v1/assessment/placement/baselines/skip",
@@ -3495,40 +3512,6 @@
             "targetUriConfig": "gateway.b14.service-base-urls.assessment",
             "pathStrategy": "REWRITE_PATH",
             "targetPathTemplate": "/internal/v1/assessment/placement/start",
-            "controllerEvidence": {
-              "sourcePath": "services/assessment-service/src/main/java/com/englishflow/assessment/web/B25AssessmentJdbcController.java",
-              "requestMapping": "/internal/v1/assessment"
-            }
-          },
-          {
-            "projectionId": "assessment-domain.placement-submit-step",
-            "status": "AVAILABLE",
-            "publicPathTemplate": "/api/v1/assessment/placement/submit-step",
-            "methods": [
-              "POST"
-            ],
-            "executionKind": "UPSTREAM",
-            "upstreamOwner": "assessment-service",
-            "targetUriConfig": "gateway.b14.service-base-urls.assessment",
-            "pathStrategy": "REWRITE_PATH",
-            "targetPathTemplate": "/internal/v1/assessment/placement/submit-step",
-            "controllerEvidence": {
-              "sourcePath": "services/assessment-service/src/main/java/com/englishflow/assessment/web/B25AssessmentJdbcController.java",
-              "requestMapping": "/internal/v1/assessment"
-            }
-          },
-          {
-            "projectionId": "assessment-domain.placement-skip",
-            "status": "AVAILABLE",
-            "publicPathTemplate": "/api/v1/assessment/placement/skip",
-            "methods": [
-              "POST"
-            ],
-            "executionKind": "UPSTREAM",
-            "upstreamOwner": "assessment-service",
-            "targetUriConfig": "gateway.b14.service-base-urls.assessment",
-            "pathStrategy": "REWRITE_PATH",
-            "targetPathTemplate": "/internal/v1/assessment/placement/skip",
             "controllerEvidence": {
               "sourcePath": "services/assessment-service/src/main/java/com/englishflow/assessment/web/B25AssessmentJdbcController.java",
               "requestMapping": "/internal/v1/assessment"
@@ -5477,7 +5460,8 @@
         "name": "yuxuexing_refresh",
         "httpOnly": true,
         "secure": true,
-        "sameSite": "Lax",
+        "sameSite": "None",
+        "partitioned": true,
         "path": "/api/v1/auth"
       },
       "synchronizerToken": "NOT_REQUIRED_WHILE_EXACT_SOURCE_POLICY_IS_ENFORCED"

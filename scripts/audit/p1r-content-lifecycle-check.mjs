@@ -12,7 +12,7 @@ const defaultRoot = path.resolve(scriptDir, '..', '..');
 
 export const DEFAULT_CONTENT_LIFECYCLE_POLICY = 'config/p1r-content-lifecycle.v1.json';
 const DEFAULT_PLACEMENT_POLICY = 'config/p1r-placement-contract.v1.json';
-const FROZEN_PLACEMENT_POLICY_SHA256 = '9eb39bdaa5f4965d3940b3718dbaf519832948912acaaf5a3d78954dcc4f303b';
+const FROZEN_PLACEMENT_POLICY_SHA256 = '1d6f883d2d2061454986a1d74c06fc899d866290a0bb2a2775469bb9d84db7e7';
 const B9_OPENAPI_PATH = 'packages/contracts/fragments/b9/b9-content.openapi.json';
 const B9_SHARED_OPENAPI_PATH = 'packages/contracts/fragments/b9/b9-shared.openapi.json';
 const B1_OPENAPI_PATH = 'packages/contracts/fragments/b1-content.openapi.json';

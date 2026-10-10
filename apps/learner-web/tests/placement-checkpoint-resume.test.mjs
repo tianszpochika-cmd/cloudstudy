@@ -315,7 +315,8 @@ test('placement pages do not promise a local or offline completion', () => {
   assert.match(page, /第 \{\{ question\.stepIndex \}\} 题，共 \{\{ question\.totalSteps \}\} 题/)
   assert.match(page, /当前选择只留在这一页。离开后，还没提交的选择不会保留。/)
   assert.match(page, /报告已生成/)
-  assert.match(page, /disabled>重测尚未接通/)
+  assert.match(page, /@click="retest">重测/)
+  assert.doesNotMatch(page, /重测尚未接通/)
   assert.doesNotMatch(page, /\{\{[^}]*correctOption/)
 })
 

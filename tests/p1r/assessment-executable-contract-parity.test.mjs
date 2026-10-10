@@ -15,8 +15,6 @@ const iam = fs.readFileSync(path.join(root,
 // a projection are deliberately absent from this runtime parity list.
 const executable = [
   ['GET', '/api/v1/assessment/placement/start', 'read', false],
-  ['POST', '/api/v1/assessment/placement/submit-step', 'write', true],
-  ['POST', '/api/v1/assessment/placement/skip', 'write', true],
   ['GET', '/api/v1/assessment/placement/report/{sessionId}', 'read', false],
   ['POST', '/api/v1/assessment/sessions', 'write', true],
   ['GET', '/api/v1/assessment/sessions/{sessionId}', 'read', false],
@@ -28,12 +26,19 @@ const executable = [
   ['POST', '/api/v1/assessment/mistakes/{mistakeId}/verify', 'write', true],
 ];
 
-test('12 executable assessment operations agree on owner, JWT permission, and write effect', () => {
+test('10 executable assessment operations agree on owner, JWT permission, and write effect', () => {
   const projections = gateway['x-p1r-gateway-boundary'].routeExecutions.find(
     (rule) => rule.ruleId === 'assessment-domain').projections;
   assert.match(iam, /"assessment\.session\.read"/);
   assert.match(iam, /"assessment\.session\.write"/);
-  assert.equal(executable.length, 12);
+  assert.equal(executable.length, 10);
+  for (const retired of ['/api/v1/assessment/placement/submit-step', '/api/v1/assessment/placement/skip']) {
+    assert.equal(openApi.paths[retired].post.deprecated, true);
+    assert.equal(projections.some((item) => item.publicPathTemplate === retired), false);
+  }
+  const retest = projections.find((item) => item.publicPathTemplate === '/api/v1/assessment/placement/sessions/{sessionId}/retest');
+  assert.deepEqual(retest.methods, ['POST']);
+  assert.equal(openApi.paths['/api/v1/assessment/placement/sessions/{sessionId}/retest'].post.operationId, 'retestB10PlacementSession');
   const start = projections.find((item) => item.publicPathTemplate === '/api/v1/assessment/placement/start');
   assert.deepEqual(start.methods, ['GET']);
   assert.equal(openApi.paths['/api/v1/assessment/placement/start'].post?.deprecated, true);

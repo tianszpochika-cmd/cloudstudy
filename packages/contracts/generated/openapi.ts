@@ -3993,7 +3993,7 @@ export type B12AdminReport = { reportId: string; roomRef?: string | null; target
 export type PlacementBankSealedSnapshotResponse = { data: PlacementBankSealedSnapshot; };
 
 /**
- * Sealed P1 placement bank delivery. Stem, options, item code, dimension, display order and content version only. answer_rule_json stays in the owner table. Scoring read is left to R1-021.
+ * Sealed P1 placement bank delivery. Stem, options, item code, dimension, display order and content version only. answer_rule_json stays in the owner table and is not on this route. Scoring read is left to R1-021.
  */
 export type PlacementBankSealedSnapshot = { bankCode: "P1_PLACEMENT_V1"; contentVersionId: B10Int64Id; contentEpoch: B10ContentEpoch; contentStateVersion: number; snapshotId: B10SnapshotId; snapshotHash: B10Sha256; items: readonly [PlacementBankSealedItem, PlacementBankSealedItem, PlacementBankSealedItem, PlacementBankSealedItem, PlacementBankSealedItem, PlacementBankSealedItem, PlacementBankSealedItem, PlacementBankSealedItem, PlacementBankSealedItem, PlacementBankSealedItem]; };
 
@@ -4567,6 +4567,7 @@ export interface ApiOperationRegistry {
   decideAdminRiskCase: { method: "POST"; path: "/api/v1/admin/ops/risk/cases/{caseId}/commands"; request: AdminRiskDecisionRequest; response: { data: AdminRiskCase; }; idempotent: true };
   evaluateAdminRiskRules: { method: "POST"; path: "/api/v1/admin/ops/risk/rules:evaluate"; request: AdminRiskEvaluateRequest; response: { data: AdminRiskEvaluateResult; }; idempotent: true };
   getIamLearningConsentFact: { method: "GET"; path: "/internal/v1/iam/principals/{principalId}/learning-consent"; request: never; response: { data: B8LearningConsentFact; }; idempotent: false };
+  retestB10PlacementSession: { method: "POST"; path: "/api/v1/assessment/placement/sessions/{sessionId}/retest"; request: never; response: ApiSuccessEnvelope & { data: B10PlacementSession; }; idempotent: true };
 }
 
 export type ApiOperationId = keyof ApiOperationRegistry;

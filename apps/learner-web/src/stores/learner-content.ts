@@ -571,6 +571,7 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
     try {
       const remote = await learnerContentPort.skipPlacement({
         fastTrackLevel,
+        sessionId: assessment.value.sessionId,
         contentLocale: learnerI18n.contentLocale,
         clientEventId: eventId('placement-skip'),
       })
@@ -591,6 +592,37 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
     } catch (error) {
       if (!stillCurrent(owner)) return
       assessmentStatus.value = setError(error, '快速定级服务暂时不可用，未生成本地替代报告。')
+    }
+    persist()
+  }
+
+  async function retestAssessment(): Promise<void> {
+    restore()
+    const owner = identity()
+    if (!stillCurrent(owner)) return
+    const sessionId = assessment.value.sessionId
+    if (!LOCAL_REAL_RUNTIME || !sessionId?.startsWith('asess_') || !readAccessToken()) {
+      assessmentStatus.value = 'error'
+      lastError.value = '还没有可重测的服务端报告。'
+      return
+    }
+    assessmentStatus.value = 'loading'
+    lastError.value = null
+    placementFeedback.value = null
+    try {
+      const remote = await learnerContentPort.retestPlacement({
+        sessionId,
+        contentLocale: learnerI18n.contentLocale,
+        clientEventId: eventId('placement-retest'),
+      })
+      if (!stillCurrent(owner)) return
+      applyServerPlacement({ ...remote, report: null, skipBaseline: null }, remote.currentQuestion ? 'ready' : 'error')
+      placementReport.value = null
+      assessmentStatus.value = remote.currentQuestion ? 'ready' : 'empty'
+      syncState.value = 'remote'
+    } catch (error) {
+      if (!stillCurrent(owner)) return
+      assessmentStatus.value = setError(error, '重测没有开出新题。原来的报告还在。')
     }
     persist()
   }
@@ -619,7 +651,7 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
       return
     }
     try {
-      const remote = await learnerContentPort.skipPlacement({ fastTrackLevel, contentLocale: learnerI18n.contentLocale, clientEventId: eventId('placement-skip') })
+      const remote = await learnerContentPort.skipPlacement({ fastTrackLevel, sessionId: assessment.value.sessionId, contentLocale: learnerI18n.contentLocale, clientEventId: eventId('placement-skip') })
       if (!stillCurrent(owner)) return
       if (remote?.report) assessment.value.report = remote.report
       syncState.value = 'remote'
@@ -921,6 +953,7 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
     saveOnboarding,
     loadAssessment,
     restartAssessment,
+    retestAssessment,
     submitAnswer,
     applyFastTrack,
     loadHome,

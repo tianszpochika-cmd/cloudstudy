@@ -39,11 +39,11 @@ const EXPECTED_ROUTE_RULE_COUNT = 74;
 // counts unchanged; target-plan digest line stays on its frozen drift).
 const EXPECTED_EXECUTION_PLAN_COUNT = 74;
 // R1-019: B25 POST /placement/start is no longer executed. 224 -> 223.
-const EXPECTED_AVAILABLE_EXECUTION_OPERATION_COUNT = 223;
+const EXPECTED_AVAILABLE_EXECUTION_OPERATION_COUNT = 222;
 // This is a reviewed semantic binding for the finite M2-001 target table. It
 // deliberately prevents a target from silently moving to a different, still
 // valid controller method without a corresponding Gateway parity change.
-export const FROZEN_EXECUTION_TARGET_PLAN_SHA256 = '0da3e568fac7394dda30eda71e0e1b23b4414ebf581208d23e9e82eb271cb4d7';
+export const FROZEN_EXECUTION_TARGET_PLAN_SHA256 = '80461b37ad4d4daaf4d7ba2242ec85b7f6b52de8465ab047ae8c968dfa16f8d3';
 const EXECUTION_POLICY_FIELDS = [
   'schemaVersion',
   'sourceOfTruth',
@@ -1296,7 +1296,7 @@ function checkOriginsCsrfAndNative(policy, errors) {
   add(errors, csrf?.refererFallback?.allowedOnlyWhenOriginAbsent === true && csrf?.refererFallback?.match === 'EXACT_ORIGIN_FROM_ABSOLUTE_URI', 'CSRF Referer fallback must be exact and only when Origin is absent');
   add(errors, csrf?.missingOrUntrustedSourceDecision === 'DENY' && csrf?.failureStatus === 403 && csrf?.failureResponse === '#/components/responses/ApiForbidden', 'CSRF failures must deny with canonical 403');
   const cookie = csrf?.cookie;
-  add(errors, cookie?.name === 'yuxuexing_refresh' && cookie?.httpOnly === true && cookie?.secure === true && cookie?.sameSite === 'Lax' && cookie?.path === '/api/v1/auth', 'Web refresh cookie security attributes are invalid');
+  add(errors, cookie?.name === 'yuxuexing_refresh' && cookie?.httpOnly === true && cookie?.secure === true && cookie?.sameSite === 'None' && cookie?.partitioned === true && cookie?.path === '/api/v1/auth', 'Web refresh cookie security attributes are invalid');
   add(errors, csrf?.synchronizerToken === 'NOT_REQUIRED_WHILE_EXACT_SOURCE_POLICY_IS_ENFORCED', 'CSRF policy must not silently replace its exact-source defense');
   const native = policy.nativeTransport;
   add(errors, native?.selector === 'X-Auth-Transport=NATIVE_SECURE_STORAGE' && native?.trustedClientAndDeviceContextCrossCheck === true, 'native transport must be explicit and server-cross-checked');

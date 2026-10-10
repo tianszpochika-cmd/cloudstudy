@@ -39019,6 +39019,118 @@
           }
         }
       }
+    },
+    "/api/v1/assessment/placement/sessions/{sessionId}/retest": {
+      "post": {
+        "tags": [
+          "b10-assessment"
+        ],
+        "summary": "Open a new P1 placement session from a completed report",
+        "operationId": "retestB10PlacementSession",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-contract": {
+          "owner": "assessment-service",
+          "placementRule": "P1_PLACEMENT_V1",
+          "requestAuthority": "bodyless; server keeps the completed session, report and digest, then pins a new session from the current bank",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+        },
+        "x-p1r-placement": {
+          "canonical": true,
+          "lifecycle": "RETEST_NEW_SESSION_KEEP_COMPLETED_REPORT",
+          "legacyAdapter": "retestCompletedPlacement"
+        },
+        "x-authorization": {
+          "requiredPermission": "assessment.placement.session.create",
+          "defaultDecision": "DENY",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "adultGate",
+            "phase",
+            "contentRights",
+            "entitlement",
+            "resourceOwner",
+            "policyVersion"
+          ],
+          "resourceOwner": "server-derived placement session owner",
+          "serviceSidePepRequired": true
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "p1-placement-retest",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "same subject, completed source session and current bank pin returns the original retest session",
+          "sameKeyDifferentPayload": "CONFLICT_409"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B10SessionId"
+          },
+          {
+            "$ref": "#/components/parameters/B10IdempotencyKey"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "New server-pinned placement session; the completed report stays stored",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B10PlacementSession"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ApiUnprocessableEntity"
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -40927,14 +41039,15 @@
         }
       },
       "B8RefreshCookie": {
-        "description": "WEB_COOKIE variant only: Set-Cookie must set yuxuexing_refresh=<opaque>; Path=/api/v1/auth; Max-Age=<positive seconds>; HttpOnly; Secure; SameSite=Lax. It is never emitted by the native variant and is not readable by Web/H5 JavaScript.",
+        "description": "WEB_COOKIE variant only: Set-Cookie must set yuxuexing_refresh=<opaque>; Path=/api/v1/auth; Max-Age=<positive seconds>; HttpOnly; Secure; SameSite=None; Partitioned. It is never emitted by the native variant and is not readable by Web/H5 JavaScript. SameSite does not replace the exact Origin check.",
         "x-cookie": {
           "name": "yuxuexing_refresh",
           "path": "/api/v1/auth",
           "maxAge": "positive-seconds",
           "httpOnly": true,
           "secure": true,
-          "sameSite": "Lax",
+          "sameSite": "None",
+          "partitioned": true,
           "transport": "WEB_COOKIE",
           "native": "forbidden"
         },
@@ -40979,7 +41092,7 @@
         }
       },
       "B8RefreshCookieClear": {
-        "description": "WEB_COOKIE variant only: Set-Cookie must clear yuxuexing_refresh with yuxuexing_refresh=; Path=/api/v1/auth; Max-Age=0; Expires=<past HTTP-date>; HttpOnly; Secure; SameSite=Lax. It is never emitted by the native variant.",
+        "description": "WEB_COOKIE variant only: Set-Cookie must clear yuxuexing_refresh with yuxuexing_refresh=; Path=/api/v1/auth; Max-Age=0; Expires=<past HTTP-date>; HttpOnly; Secure; SameSite=None; Partitioned. It is never emitted by the native variant.",
         "x-cookie": {
           "name": "yuxuexing_refresh",
           "path": "/api/v1/auth",
@@ -40988,7 +41101,8 @@
           "expires": "past-http-date",
           "httpOnly": true,
           "secure": true,
-          "sameSite": "Lax",
+          "sameSite": "None",
+          "partitioned": true,
           "transport": "WEB_COOKIE",
           "native": "forbidden"
         },
@@ -84768,6 +84882,23 @@
             }
           },
           {
+            "projectionId": "assessment-domain.p1-placement-retest",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/assessment/placement/sessions/{sessionId}/retest",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "assessment-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.assessment",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/assessment/placement/sessions/{sessionId}/retest",
+            "controllerEvidence": {
+              "sourcePath": "services/assessment-service/src/main/java/com/englishflow/assessment/web/P1PlacementJdbcController.java",
+              "requestMapping": "/internal/v1/assessment/placement"
+            }
+          },
+          {
             "projectionId": "assessment-domain.p1-placement-skip",
             "status": "AVAILABLE",
             "publicPathTemplate": "/api/v1/assessment/placement/baselines/skip",
@@ -84813,40 +84944,6 @@
             "targetUriConfig": "gateway.b14.service-base-urls.assessment",
             "pathStrategy": "REWRITE_PATH",
             "targetPathTemplate": "/internal/v1/assessment/placement/start",
-            "controllerEvidence": {
-              "sourcePath": "services/assessment-service/src/main/java/com/englishflow/assessment/web/B25AssessmentJdbcController.java",
-              "requestMapping": "/internal/v1/assessment"
-            }
-          },
-          {
-            "projectionId": "assessment-domain.placement-submit-step",
-            "status": "AVAILABLE",
-            "publicPathTemplate": "/api/v1/assessment/placement/submit-step",
-            "methods": [
-              "POST"
-            ],
-            "executionKind": "UPSTREAM",
-            "upstreamOwner": "assessment-service",
-            "targetUriConfig": "gateway.b14.service-base-urls.assessment",
-            "pathStrategy": "REWRITE_PATH",
-            "targetPathTemplate": "/internal/v1/assessment/placement/submit-step",
-            "controllerEvidence": {
-              "sourcePath": "services/assessment-service/src/main/java/com/englishflow/assessment/web/B25AssessmentJdbcController.java",
-              "requestMapping": "/internal/v1/assessment"
-            }
-          },
-          {
-            "projectionId": "assessment-domain.placement-skip",
-            "status": "AVAILABLE",
-            "publicPathTemplate": "/api/v1/assessment/placement/skip",
-            "methods": [
-              "POST"
-            ],
-            "executionKind": "UPSTREAM",
-            "upstreamOwner": "assessment-service",
-            "targetUriConfig": "gateway.b14.service-base-urls.assessment",
-            "pathStrategy": "REWRITE_PATH",
-            "targetPathTemplate": "/internal/v1/assessment/placement/skip",
             "controllerEvidence": {
               "sourcePath": "services/assessment-service/src/main/java/com/englishflow/assessment/web/B25AssessmentJdbcController.java",
               "requestMapping": "/internal/v1/assessment"
@@ -86795,7 +86892,8 @@
         "name": "yuxuexing_refresh",
         "httpOnly": true,
         "secure": true,
-        "sameSite": "Lax",
+        "sameSite": "None",
+        "partitioned": true,
         "path": "/api/v1/auth"
       },
       "synchronizerToken": "NOT_REQUIRED_WHILE_EXACT_SOURCE_POLICY_IS_ENFORCED"

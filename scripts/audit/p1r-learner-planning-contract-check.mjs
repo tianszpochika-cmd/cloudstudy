@@ -20,7 +20,7 @@ export const DEFAULT_EVENT_RELIABILITY = 'packages/contracts/events/v1/reliabili
 export const DEFAULT_B26_RUNTIME = 'config/b26-event-runtime.json';
 
 const FROZEN_POLICY_SHA256 = '6cc686492ffa6733eb8bcb0942c6c9d850a19c08031c2196d9afba7fe906f0d6';
-const FROZEN_M1_012_PLACEMENT_POLICY_SHA256 = '9eb39bdaa5f4965d3940b3718dbaf519832948912acaaf5a3d78954dcc4f303b';
+const FROZEN_M1_012_PLACEMENT_POLICY_SHA256 = '1d6f883d2d2061454986a1d74c06fc899d866290a0bb2a2775469bb9d84db7e7';
 const POLICY_KEYS = [
   '$schema', 'schemaVersion', 'task', 'phase', 'maturity', 'runtimeStatus', 'canonicalSources',
   'compatibilityPromotion', 'runtimeBoundary', 'canonicalRoutes', 'authorization', 'goalCatalog',

@@ -18,6 +18,7 @@ const startedAt = ref(Date.now())
 const guidePending = ref(false)
 const guideChecked = ref(false)
 const startRequested = ref(false)
+const retestPending = ref(false)
 watch(() => session.identityRevision, () => { selectedKey.value = ''; startedAt.value = Date.now(); guidePending.value = false; guideChecked.value = false; startRequested.value = false }, { flush: 'sync' })
 const question = computed(() => store.placement.currentQuestion)
 const report = computed(() => store.placement.report)
@@ -65,6 +66,18 @@ function begin(): void {
   void load()
 }
 
+async function retest(): Promise<void> {
+  if (retestPending.value) return
+  retestPending.value = true
+  selectedKey.value = ''
+  try {
+    await store.retestPlacement()
+    startedAt.value = Date.now()
+  } finally {
+    retestPending.value = false
+  }
+}
+
 function openToday(): void { getUniRuntime().navigateTo({ url: '/pages/today/today' }) }
 function openHome(): void { getUniRuntime().switchTab({ url: '/pages/home/home' }) }
 
@@ -107,7 +120,7 @@ onShow(async () => {
       <text v-if="feedbackText" class="question" role="status">{{ feedbackText }}</text>
       <text class="question">重测会另开一套题，这份报告会保留。是否调整已有计划需要另外确认。</text>
       <button tabindex="0" role="button" class="yx-button" type="button" @click="openToday">查看今日状态</button>
-      <button tabindex="0" role="button" class="yx-button yx-button--secondary" type="button" disabled>重测尚未接通</button>
+      <button tabindex="0" role="button" class="yx-button yx-button--secondary" type="button" :disabled="retestPending" @click="retest">重测</button>
     </view>
     <view v-else-if="question" class="yx-card question-card">
       <view class="question-meta"><text>第 {{ question.stepIndex }} 题，共 {{ question.totalSteps }} 题</text></view>

@@ -44,9 +44,24 @@ const READ_MODEL_PATHS = {
   home: '/learner/home',
   contentCatalog: '/content/learner/catalog',
   placementSessions: '/assessment/placement/sessions',
-  placementSkipCommand: '/assessment/placement/skip',
+  placementSkipCommand: '/assessment/placement/baselines/skip',
   taskCompleteCommand: '/onboarding/daily-tasks',
 } as const
+
+const FAST_TRACK_STARTING_LEVEL = {
+  ZERO_A1: 'A1',
+  CET4_B1: 'B1',
+  CET6_B2: 'B2',
+  POSTGRAD_B2_PLUS: 'B2',
+} as const
+
+function placementSkipBody(input: { fastTrackLevel: string; sessionId?: string | null }): RecordValue {
+  const level = FAST_TRACK_STARTING_LEVEL[input.fastTrackLevel as keyof typeof FAST_TRACK_STARTING_LEVEL]
+  const body: RecordValue = {}
+  if (input.sessionId?.startsWith('asess_')) body.sessionId = input.sessionId
+  if (level) body.requestedStartingLevel = { level, authority: 'USER_SELECTED_NON_AUTHORITATIVE' }
+  return body
+}
 
 function isRecord(value: unknown): value is RecordValue {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
@@ -319,8 +334,9 @@ function parseSkipBaseline(value: unknown): AssessmentSkipBaseline | null {
   if (!isRecord(source)) return null
   const result = isRecord(source.report) ? source.report : source
   if (result.resultKind !== 'SKIPPED' && source.status !== 'SKIPPED') return null
-  const reportId = readString(result.reportId)
   const sessionId = readString(result.sessionId) ?? readString(source.sessionId)
+  // A skip baseline is not a scored report. The session id is the durable identity.
+  const reportId = readString(result.reportId) ?? sessionId
   if (!reportId || !sessionId) return null
   const hint = isRecord(result.requestedStartingLevel) ? readString(result.requestedStartingLevel.level) : null
   return {
@@ -938,10 +954,18 @@ export const learnerContentPort: LearnerContentPort = {
     }
   },
 
+  async retestPlacement(input) {
+    return parsePlacementModel(await request(`${READ_MODEL_PATHS.placementSessions}/${encodeURIComponent(input.sessionId)}/retest`, {
+      method: 'POST',
+      body: {},
+      ...withIdempotency(input.clientEventId),
+    }), input.contentLocale)
+  },
+
   async skipPlacement(input) {
     const response = await request<unknown>(READ_MODEL_PATHS.placementSkipCommand, {
       method: 'POST',
-      body: input,
+      body: placementSkipBody(input),
       ...withIdempotency(input.clientEventId),
     })
     const source = isRecord(unwrap(response)) ? unwrap(response) as RecordValue : {}
