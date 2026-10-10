@@ -29,11 +29,17 @@ async function checkScenario(name, width) {
       return
     }
     if (['/auth/token/refresh', '/auth/login'].includes(suffix)) data = token
-    else if (suffix === '/iam/permissions' || suffix === '/iam/me') data = { adultGate: 'PASSED', subject: 'state-fixture', permissions: ['learning.plan.read'] }
+    else if (suffix === '/iam/permissions' || suffix === '/iam/me' || suffix === '/iam/principal/me') data = { adultGate: 'PASSED', subject: 'state-fixture', permissions: ['learning.plan.read'], consentState: { accepted: true, unsatisfiedPurposes: [] } }
     else if (suffix === '/learner/home') data = emptyHome
+    else if (suffix === '/learner/preferences') data = { themeMode: 'LIGHT', uiLocale: 'zh-CN', contentLocale: 'en-US', stateVersion: 1 }
+    else if (suffix === '/learner/targets') data = { goalCode: 'WORKPLACE_DAILY', dailyQuotaMinutes: 15 }
     else if (suffix === '/content/learner/catalog') data = catalog
     else if (suffix === '/content/learner/ui-coffee') data = { ...catalog.items[0], items: [{ itemId: 'ui-item', text: 'Could I have a latte, please?', options: [] }] }
-    else if (suffix === '/learner/profile') { requests.profile++; status = 503; data = { message: '资料服务暂不可用' } }
+    else if (suffix === '/learner/profile') {
+      requests.profile++
+      if (name === 'profile') { status = 503; data = { message: '资料服务暂不可用' } }
+      else data = { status: 'ACTIVE', themeMode: 'LIGHT', uiLocale: 'zh-CN', contentLocale: 'en-US', stateVersion: 1 }
+    }
     else if (suffix === '/learning/review-queue') {
       requests.review++
       if (name === 'learn-ready') data = { items: [{ queueItemId: 'fixture-item', source: 'REVIEW', state: 'LEARNING', priority: 80, completable: false }] }

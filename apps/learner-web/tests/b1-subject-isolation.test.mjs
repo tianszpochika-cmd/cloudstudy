@@ -42,22 +42,19 @@ function fixture() {
     location: { pathname: '/home', search: '', hash: '' },
   }
   setActivePinia(createPinia())
-  let token = null
   let account = 'A'
   let nextContinue = null
   let nextSave = null
   let nextHome = null
   let nextRefresh = null
   const domain = moduleFrom('src/domain/b1.ts', {})
-  const access = {
-    getInMemoryAccessToken: () => token,
-    setInMemoryAccessToken: value => { token = value },
-  }
+  const access = moduleFrom('src/auth/access-token.ts', {})
   const router = { currentRoute: { value: { name: 'home' } }, replace: async () => {} }
   const sessionModule = moduleFrom('src/stores/session.ts', {
     vue, pinia: requirePackage('pinia'),
     '../auth/gateway-auth': { createGatewayAuthAdapter: () => { throw new Error('injected adapter required') }, safeReturnTo: () => '/home' },
     '../auth/access-token': access,
+    '../auth/auth-failure-copy': moduleFrom('src/auth/auth-failure-copy.ts', {}),
     '../api/client': { ApiError: class ApiError extends Error {} },
     '../platform/gateway': { getGatewayBaseUrl: () => 'http://127.0.0.1:18070' },
     '../domain/b1': domain,

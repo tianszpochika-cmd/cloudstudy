@@ -30,7 +30,7 @@ async function contextFor(theme, width, signedIn) {
     let data, status = 200
     if (route.request().method() === 'OPTIONS') return route.fulfill({ status: 204, headers: { 'Access-Control-Allow-Origin': 'http://127.0.0.1:18183', 'Access-Control-Allow-Headers': 'Content-Type, Authorization, Idempotency-Key, X-Request-Id, Accept-Language, X-Content-Locale', 'Access-Control-Allow-Credentials': 'true', 'Access-Control-Allow-Methods': 'GET, POST, PATCH, PUT, DELETE, OPTIONS' } })
     if (['/auth/token/refresh', '/auth/login', '/auth/register'].includes(suffix)) data = token
-    else if (suffix === '/iam/permissions' || suffix === '/iam/me') data = { adultGate: 'PASSED', subject: 'ui-fixture', permissions: ['learning.plan.read'] }
+    else if (suffix === '/iam/permissions' || suffix === '/iam/me' || suffix === '/iam/principal/me') data = { adultGate: 'PASSED', subject: 'ui-fixture', permissions: ['learning.plan.read'], consentState: { accepted: true, unsatisfiedPurposes: [] } }
     else if (suffix === '/learner/profile') data = { ...account, preferences: { ...account.preferences, themeMode: theme === 'dark' ? 'DARK' : 'LIGHT', highContrast: theme === 'high-contrast' } }
     else if (suffix === '/learner/home') data = home
     else if (suffix === '/learner/first-day') data = { state: 'READY', taskCount: 1 }
@@ -38,7 +38,7 @@ async function contextFor(theme, width, signedIn) {
     else if (suffix.startsWith('/content/learner/') && suffix.includes('ui-coffee')) data = { ...catalog.items[0], items: [{ itemId: 'ui-item', text: 'Could I have a latte, please?', options: [] }] }
     else if (suffix === '/onboarding/options') data = { goals: [{ value: 'WORKPLACE_DAILY', label: '日常交流', description: '在生活中自然表达' }], dailyQuotaMinutes: [5, 15, 30, 45] }
     else if (suffix === '/learner/targets') data = account.goal
-    else if (suffix === '/learner/preferences') data = { ...account.preferences, themeMode: theme === 'dark' ? 'DARK' : 'LIGHT', highContrast: theme === 'high-contrast' }
+    else if (suffix === '/learner/preferences') data = { ...account.preferences, themeMode: theme === 'dark' ? 'DARK' : 'LIGHT', highContrast: theme === 'high-contrast', stateVersion: 1 }
     else if (suffix === '/auth/password-reset/confirm') {
       resetConfirmationRequests.push(route.request().postDataJSON())
       data = {}

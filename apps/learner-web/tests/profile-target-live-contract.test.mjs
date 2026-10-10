@@ -15,6 +15,7 @@ function apiFor(owner) {
   const require = name => {
     if (name === './client') return { apiClient: owner }
     if (name === '../platform/client-id') return { createClientId: () => `profile-target-${++sequence}` }
+    if (name === './unavailable') return { unavailableOperation: () => Promise.reject(new Error('unavailable')) }
     throw new Error(`unexpected module ${name}`)
   }
   new Function('require', 'module', 'exports', compiled)(require, module, module.exports)

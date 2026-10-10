@@ -52,12 +52,10 @@ onShow(async () => {
       <text class="error">{{ store.lastError || '请稍后重试。' }}</text>
       <button tabindex="0" role="button" class="yx-button" type="button" @click="refreshAccount">重试</button>
     </view>
-    <view class="yx-card profile-facts">
-      <text class="card-title">账号与语言</text>
-      <text>成人核验：{{ session.adultGate === 'PASSED' ? '已通过' : session.adultGate === 'REJECTED' ? '未通过' : '待核验' }}</text>
-    </view>
     <view v-if="hasLoadedAccount" class="yx-card mobile-profile-banner"><view class="mobile-profile-avatar" aria-hidden="true">学</view><view><text class="mobile-profile-name">我的学习</text><text class="mobile-profile-caption">{{ goalLabel }}<text v-if="dailyGoal"> · {{ dailyGoal }}</text></text></view></view>
     <view v-if="hasLoadedAccount" class="yx-card profile-facts">
+      <text class="card-title">账号与语言</text>
+      <text>成人核验：{{ session.adultGate === 'PASSED' ? '已通过' : session.adultGate === 'REJECTED' ? '未通过' : '待核验' }}</text>
       <text>界面语言：{{ uiLocaleLabel }}</text>
       <text>学习语言：{{ contentLocaleLabel }}</text>
       <button tabindex="0" role="button" class="yx-button yx-button--secondary" type="button" @click="openUniPage('/pages/onboarding/onboarding')">修改学习目标</button>

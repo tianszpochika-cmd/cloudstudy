@@ -17,7 +17,7 @@
 | 源码交付、未独立终审 | 2 | R1-001（SOURCE_SCOPED_PASS）、R1-007 |
 | 已实现/回放、待站级签收 | 21 | R1-009～017（IT-1）、R1-018～029（IT-2） |
 | 未定义（待按站拆卡） | ~85 | IT-3～IT-7 |
-| 跳过 | 0 | — |
+| 跳过 | 1 | `support-real-gateway.e2e`，见第 4 节 |
 
 ## 2. 已定义卡
 
@@ -57,8 +57,8 @@
 
 | 站 | 状态 | 出站门 |
 |---|---|---|
-| IT-1 | Luna REJECT/FAIL（基线 69bea68b）；复检 ce0aa296 PASS 未签；it1-named-gates / R1-014 PASS，自审 PASS_WITH_GAPS 未签 | 独立签收。具名门浏览器已有，仍缺 Luna |
-| IT-2 | BLOCKED；it2-station PASS_WITH_NOT_RUN；it2-score-browser 10 题 PASS 未签 | 三个独立 owner schema 的 IAM 真签出站。原 3 个 NOT_RUN 不回写 |
+| IT-1 | Luna REJECT/FAIL（基线 69bea68b）；复检 ce0aa296 PASS 未签；it1-named-gates / R1-014 PASS，自审 PASS_WITH_GAPS 未签。**待 Luna 签收（外部依赖）**，不再当作本轮开工阻塞 | 独立签收。具名门浏览器已有，仍缺 Luna。不改 `lunaStamp`，不改 station-acceptance 原件 |
+| IT-2 | BLOCKED；it2-station PASS_WITH_NOT_RUN；it2-score-browser 10 题 PASS 未签。**待 Luna 签收（外部依赖）**。三个独立 owner schema 的 IAM 真签出站仍未完成：本轮 `services:run` 只有 HTTP IAM，没有在不写钥匙串的前提下换上 r1 TLS | 三个独立 owner schema 的 IAM 真签出站。原 3 个 NOT_RUN 不回写 |
 | IT-3 计划今日 | 未拆卡 TODO | BC-023…032/199 |
 | IT-4 练错复 | 未拆卡 TODO | BC-033…062/203 |
 | IT-5 报告 | 未拆卡 TODO | BC-063…070 |
@@ -67,12 +67,15 @@
 
 ## 4. 跳过记录
 
-（暂无。无法完成的卡在此登记：卡号、原因、证据、日期。）
+| 编号 | 原因 | 证据 | 日期 |
+|---|---|---|---|
+| support-real-gateway.e2e | 真实 Gateway 工单 UAT 要向 `https://127.0.0.1:18087` 注册。本轮 `pnpm services:run` 的 IAM 是 HTTP，HTTPS 连接失败。r1 测试 CA 不在磁盘上。按约束不把证书写入 macOS 钥匙串，也不改该用例去忽略证书错误 | `evidence/redesign/2026-10-10/unit-tests-r2/report.md`；失败阶段 `register`，`registered:false`，清理 `ACCOUNT:0` | 2026-10-10 |
 
 ## 5. 轮次记录
 
 | 轮次 | screen | 范围 | 结果 |
 |---|---|---|---|
 | r1 | cs-r1 | IT-1 具名门补齐与复检 | 浏览器与 R1-014 PASS；自审 PASS_WITH_GAPS；未出站、未签 |
+| r2 | cs-r2 | 顶层 Node 测试修复；IT-3 拆卡见后续提交 | 292 项中 291 通过；`support-real-gateway.e2e` 因 IAM 只有 HTTP 记入跳过。`lunaStamp` 仍为 false |
 
 旧 grok 会话 PID 59062（01a120cd…）推送 e7cd6dd1 后空闲，保留运行但不再使用。

@@ -3,8 +3,9 @@ import MobilePageHeader from '../../components/MobilePageHeader.vue'
 import { useMobileExperience } from '../../platform/experience'
 const { experienceStyle, experienceMotion } = useMobileExperience()
 
-import { onLoad } from '@dcloudio/uni-app'
+import { onShow } from '@dcloudio/uni-app'
 import { ref } from 'vue'
+import { ensureMobilePageAccess } from '../../auth/navigation'
 import {
   listMobileSupportTickets,
   type MobileSupportTicket,
@@ -35,7 +36,7 @@ async function load(): Promise<void> {
   }
 }
 
-onLoad(() => { void load() })
+onShow(async () => { if (await ensureMobilePageAccess('/pages/support/support')) await load() })
 </script>
 
 <template>

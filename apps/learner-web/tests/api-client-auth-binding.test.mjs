@@ -563,7 +563,8 @@ test('actual learner API client refuses an A refresh result after B logs in and 
       error => ({ error }),
     )
     await refreshStarted.promise
-    assert.equal(requests.at(-1).authorization, 'Bearer token-A-1')
+    assert.equal(requests.at(-1).path, '/auth/token/refresh')
+    assert.equal(requests.at(-1).authorization, null, 'IAM refresh uses the Secure cookie and must not attach the access token')
     assert.equal(await store.login('learner-b', 'not-a-real-password'), true)
     refreshGate.resolve(jsonResponse(200, { accessToken: 'token-A-2' }))
     const outcome = await pending

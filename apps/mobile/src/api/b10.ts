@@ -43,6 +43,7 @@ export const B10_GATEWAY_PATHS = {
     srsBatch: '/learning/srs/batches',
     srsReview: '/learning/srs/reviews',
     srsSync: '/learning/srs/reviews:sync',
+    readingProgress: '/reading/progress',
   },
   assessment: {
     dailyStream: '/assessment/daily-stream',
@@ -51,6 +52,7 @@ export const B10_GATEWAY_PATHS = {
     masteryVerifications: '/mastery/verifications',
     dailyReport: '/learning/stats/daily-report',
     weeklyReport: '/learning/stats/weekly-report',
+    readingMining: '/reading/mining',
   },
 } as const
 
@@ -639,7 +641,7 @@ export const b10LearningApi = {
   },
 
   async saveReadingProgress(context: B10RequestContext, article: B10ReadingArticle, blockId: string, progressPercent: number, positionVersion: number, clientEventId: string): Promise<void> {
-    await unavailableOperation()
+    await mobileApiClient.request(B10_GATEWAY_PATHS.learning.readingProgress, { method: 'PUT', data: { articleId: article.articleId, blockId, progressPercent, positionVersion, contentVersionId: article.contentVersionId, clientEventId }, header: headers(context, clientEventId) })
   },
 
   async listReadingQuestions(context: B10RequestContext, articleId: number): Promise<B10ReadingQuestion[]> {
@@ -654,7 +656,7 @@ export const b10LearningApi = {
   },
 
   async mineReadingExpression(context: B10RequestContext, article: B10ReadingArticle, blockId: string, selectedText: string, clientEventId: string): Promise<unknown> {
-    return unavailableOperation()
+    return mobileApiClient.request(B10_GATEWAY_PATHS.assessment.readingMining, { method: 'POST', data: { articleId: article.articleId, blockId, selectedText, contentVersionId: article.contentVersionId, clientEventId }, header: headers(context, clientEventId) })
   },
 
   async listWritingPrompts(context: B10RequestContext, promptType?: B10WritingPrompt['promptType']): Promise<B10WritingPrompt[]> {

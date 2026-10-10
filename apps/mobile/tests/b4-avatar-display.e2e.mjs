@@ -28,7 +28,9 @@ async function scenario(kind, width) {
     }
     let data = {}
     if (suffix === '/auth/token/refresh') data = { accessToken: 'avatar-fixture-only', adultGate: 'PASSED', deviceId: 'avatar-fixture-device', sessionId: 'avatar-fixture-session' }
-    else if (suffix === '/iam/permissions' || suffix === '/iam/me') data = { adultGate: 'PASSED', subject: 'avatar-fixture', permissions: ['learning.plan.read'] }
+    else if (suffix === '/iam/permissions' || suffix === '/iam/me' || suffix === '/iam/principal/me') data = { adultGate: 'PASSED', subject: 'avatar-fixture', permissions: ['learning.plan.read'], consentState: { accepted: true, unsatisfiedPurposes: [] } }
+    else if (suffix === '/learner/targets') data = { goalCode: 'WORKPLACE_DAILY', dailyQuotaMinutes: 15 }
+    else if (suffix === '/learner/preferences' || suffix === '/learner/profile') data = { status: 'ACTIVE', themeMode: 'LIGHT', motionMode: 'FULL', uiLocale: 'zh-CN', contentLocale: 'en-US', stateVersion: 1 }
     else if (suffix === '/avatar/profile' && kind === 'default') data = { profile: { avatarId: 'learner-01', resourceVersion: 'avatar-2026.08.1', loadoutId: 'starter-loadout', renderMode: '2D_FALLBACK' } }
     else if (suffix === '/avatar/profile' && kind === 'owner-empty') data = { profile: { renderMode: '2D_FALLBACK' } }
     else if (suffix === '/avatar/items') data = { items: kind === 'default' ? [

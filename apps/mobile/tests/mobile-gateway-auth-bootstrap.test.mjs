@@ -183,7 +183,9 @@ test('real refresh adapter verifies permissions after replacing the token', asyn
   await waitFor(() => env.requests.length === 3)
   const refreshRequest = requestAt(env, '/auth/token/refresh')
   assert.equal(refreshRequest.method, 'POST')
-  assert.equal(refreshRequest.header.Authorization, 'Bearer token-A')
+  assert.equal(new URL(refreshRequest.url).origin, 'https://iam.example.test')
+  assert.equal(refreshRequest.header.Authorization, undefined, 'IAM refresh uses the Secure cookie and must not attach the access token')
+  assert.equal(refreshRequest.withCredentials, true)
   await completeRequest(refreshRequest, 200, { accessToken: 'token-A-refreshed' })
 
   await waitFor(() => env.requests.length === 4)
@@ -212,7 +214,8 @@ test('real refresh fails closed when verified A receives B permissions, before a
   const refreshing = env.session.refreshSilently()
   await waitFor(() => env.requests.length === 3)
   const refreshRequest = requestAt(env, '/auth/token/refresh')
-  assert.equal(refreshRequest.header.Authorization, 'Bearer token-A')
+  assert.equal(new URL(refreshRequest.url).origin, 'https://iam.example.test')
+  assert.equal(refreshRequest.header.Authorization, undefined, 'IAM refresh uses the Secure cookie and must not attach the access token')
   await completeRequest(refreshRequest, 200, { accessToken: 'token-A-refreshed', sessionId: 'session-A' })
 
   await waitFor(() => env.requests.length === 4)

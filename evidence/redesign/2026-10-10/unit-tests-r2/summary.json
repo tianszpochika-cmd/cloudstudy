@@ -1,0 +1,25 @@
+{
+  "kind": "R2_TOP_LEVEL_NODE_TESTS",
+  "date": "2026-10-10",
+  "command": "node --test apps/mobile/tests/*.mjs apps/learner-web/tests/*.mjs",
+  "node": "v20.19.5",
+  "baseline": {
+    "commit": "e7cd6dd1",
+    "tests": 292,
+    "fail": 26,
+    "note": "Same 26 names as the r1 end log. Pre-existing on the redesign baseline."
+  },
+  "after": {
+    "tests": 292,
+    "pass": 291,
+    "fail": 1,
+    "failedFile": "apps/mobile/tests/support-real-gateway.e2e.mjs"
+  },
+  "lunaStamp": false,
+  "skipped": [
+    {
+      "id": "support-real-gateway.e2e",
+      "reason": "Live UAT needs HTTPS IAM on 127.0.0.1:18087. pnpm services:run exposes HTTP only (actuator 200). HTTPS connect fails. The r1 SPKI test CA is not on disk, and this round does not add a certificate to the macOS keychain."
+    }
+  ]
+}

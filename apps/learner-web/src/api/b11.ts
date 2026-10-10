@@ -1,4 +1,3 @@
-import { unavailableOperation } from './unavailable'
 import { ApiError, apiClient } from './client'
 import type { B11ListeningProgress, B11MediaManifest, B11OfflineChange, B11RecordingMetadata, B11SignedUrl, B11SyncResult } from '../domain/b11'
 
@@ -7,7 +6,8 @@ type RecordValue = Record<string, unknown>
 export const B11_GATEWAY_ROUTES = {
   manifest: (assetId: string) => `/media/assets/${encodeURIComponent(assetId)}/manifest`,
   signedUrl: (assetId: string) => `/media/assets/${encodeURIComponent(assetId)}/signed-url`,
-
+  offlineChanges: '/sync/changes',
+  recordings: '/speaking/recordings',
 } as const
 
 function withB11Headers(idempotencyKey?: string): { headers: Headers } {
@@ -75,18 +75,18 @@ export async function saveB11MediaProgress(input: B11MediaProgressInput): Promis
 }
 
 export async function pushB11OfflineChanges(changes: B11OfflineChange[], baseCursor: string): Promise<B11SyncResult> {
-  const value = unwrap(await unavailableOperation())
+  const value = unwrap(await apiClient.post(B11_GATEWAY_ROUTES.offlineChanges, { baseCursor, changes }, withB11Headers(`b11-sync-${baseCursor}-${changes.map((item) => item.clientEventId).join('-')}`)))
   const source = record(value)
   return { nextCursor: stringValue(source.nextCursor, baseCursor), acceptedClientEventIds: Array.isArray(source.acceptedClientEventIds) ? source.acceptedClientEventIds.filter((item): item is string => typeof item === 'string') : [], conflicts: Array.isArray(source.conflicts) ? source.conflicts as B11SyncResult['conflicts'] : [], recoveryCodes: Array.isArray(source.recoveryCodes) ? source.recoveryCodes.filter((item): item is string => typeof item === 'string') : [] }
 }
 
 export async function pullB11OfflineChanges(cursor: string): Promise<{ nextCursor: string; changes: B11OfflineChange[] }> {
-  const source = record(unwrap(await unavailableOperation()))
+  const source = record(unwrap(await apiClient.get(`${B11_GATEWAY_ROUTES.offlineChanges}?cursor=${encodeURIComponent(cursor)}`, withB11Headers())))
   return { nextCursor: stringValue(source.nextCursor, cursor), changes: Array.isArray(source.changes) ? source.changes as B11OfflineChange[] : [] }
 }
 
 export async function saveB11RecordingMetadata(metadata: Omit<B11RecordingMetadata, 'status' | 'aiScoringEnabled'>): Promise<B11RecordingMetadata> {
-  const response = record(unwrap(await unavailableOperation()))
+  const response = record(unwrap(await apiClient.post(B11_GATEWAY_ROUTES.recordings, { ...metadata, clientEventId: metadata.recordingId }, withB11Headers(`b11-recording-${metadata.recordingId}`))))
   return { recordingId: stringValue(response.recordingId, metadata.recordingId), sourceSegmentId: metadata.sourceSegmentId, durationMs: metadata.durationMs, contentHash: metadata.contentHash, storageMode: metadata.storageMode, status: response.status === 'REVOKED' || response.status === 'FAILED' || response.status === 'LOCAL_ONLY' ? response.status : 'SAVED', aiScoringEnabled: false, createdAt: stringValue(response.createdAt) }
 }
 

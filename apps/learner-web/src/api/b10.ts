@@ -34,6 +34,8 @@ export const B10_GATEWAY_ROUTES = {
     vocabularyBatch: '/learning/srs/batches',
     vocabularyReview: '/learning/srs/reviews',
     vocabularySync: '/learning/srs/reviews:sync',
+    readingProgress: '/reading/progress',
+    readingMining: '/reading/mining',
     reportDaily: '/learning/stats/daily-report',
     reportWeekly: '/learning/stats/weekly-report',
   },
@@ -682,11 +684,11 @@ export async function submitReadingQuiz(question: B10ReadingQuestion, answer: st
 }
 
 export async function saveReadingProgress(payload: { articleId: number; blockId: string; progressPercent: number; positionVersion: number; contentVersionId: number }, stableKey: string): Promise<void> {
-  await unavailableOperation()
+  await apiClient.put(B10_GATEWAY_ROUTES.learning.readingProgress, { ...payload, clientEventId: stableKey }, withB10Headers(stableKey))
 }
 
 export async function createReadingMining(articleId: number, blockId: string, selectedText: string, contentVersionId: number, stableKey: string): Promise<void> {
-  await unavailableOperation()
+  await apiClient.post(B10_GATEWAY_ROUTES.learning.readingMining, { articleId, blockId, selectedText, contentVersionId, clientEventId: stableKey }, withB10Headers(stableKey))
 }
 
 export async function listGrammarPoints(): Promise<B10GrammarPoint[]> {
