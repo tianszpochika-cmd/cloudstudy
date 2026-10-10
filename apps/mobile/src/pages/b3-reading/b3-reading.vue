@@ -9,6 +9,7 @@ import B10StatusPanel from '../../components/b10/B10StatusPanel.vue'
 import type { B10ReadingArticle, B10ReadingAttempt, B10ReadingQuestion } from '../../domain/b10'
 import { b10LearningApi, b10ErrorInfo, createB10ClientEventId } from '../../api/b10'
 import { packNotice } from '../../domain/grammar-reading-pack'
+import { practiceFeedback } from '../../domain/practice-loop'
 import { b10ContentLocale, b10ThemeMode, b10T, b10UiLocale } from '../../platform/b10-foundation'
 import { getUniRuntime } from '../../platform/uni-runtime'
 import { useSessionStore } from '../../stores/session'
@@ -32,6 +33,10 @@ const fontScale = ref(1)
 const themeClass = computed(() => `b10-theme--${b10ThemeMode.value}`)
 const queueCount = computed(() => pendingEventId.value ? 1 : 0)
 const readingPackNotice = computed(() => packNotice('READING', questions.value.length, message.value))
+function readingFeedback(questionId: number) {
+  const attempt = attempts.value[String(questionId)]
+  return attempt ? practiceFeedback({ correct: attempt.correct }) : null
+}
 const context = computed(() => ({ uiLocale: b10UiLocale.value, contentLocale: b10ContentLocale.value }))
 const storageKey = 'yx.b10.mobile.reading.v1'
 let loadRequest = 0
@@ -140,7 +145,7 @@ onUnmounted(() => engine.dispose())
       <view class="b10-reading-progress"><text>{{ Math.round(progress) }}%</text><slider class="b10-reading-progress__slider" :value="progress" min="0" max="100" @change="progress = Number($event.detail.value); saved = false; pendingEventId = null; persist()" /><text v-if="queueCount">待同步 {{ queueCount }}</text></view>
       <button tabindex="0" role="button" class="yx-button" type="button" @click="save">{{ b10T('reading.save') }}</button>
       <text v-if="readingPackNotice" class="b10-pack-notice" data-pack-notice>{{ readingPackNotice }}</text>
-      <view v-if="questions.length" class="b10-reading-questions"><text class="b10-kicker">{{ b10T('reading.question') }}</text><view v-for="question in questions" :key="question.questionId" class="b10-reading-question"><text class="b10-reading-question__stem">{{ question.stemText }}</text><label v-for="option in question.options" :key="option.optionCode" class="b10-reading-question__option"><radio :value="option.optionCode" :checked="answers[String(question.questionId)] === option.optionCode" @click="answers[String(question.questionId)] = option.optionCode" />{{ option.label }}</label><button tabindex="0" role="button" class="b10-mine" type="button" @click="submitQuestion(question)">{{ b10T('reading.submit') }}</button><text v-if="attempts[String(question.questionId)]" class="b10-reading-question__feedback">{{ attempts[String(question.questionId)].correct ? '回答正确' : '需要复习' }}</text></view></view>
+      <view v-if="questions.length" class="b10-reading-questions"><text class="b10-kicker">{{ b10T('reading.question') }}</text><view v-for="question in questions" :key="question.questionId" class="b10-reading-question"><text class="b10-reading-question__stem">{{ question.stemText }}</text><label v-for="option in question.options" :key="option.optionCode" class="b10-reading-question__option"><radio :value="option.optionCode" :checked="answers[String(question.questionId)] === option.optionCode" @click="answers[String(question.questionId)] = option.optionCode" />{{ option.label }}</label><button tabindex="0" role="button" class="b10-mine" type="button" @click="submitQuestion(question)">{{ b10T('reading.submit') }}</button><text v-if="readingFeedback(question.questionId)" data-save-receipt>{{ readingFeedback(question.questionId)?.savedReceipt }}</text><text v-if="readingFeedback(question.questionId)" data-feedback-text>{{ readingFeedback(question.questionId)?.feedbackText }}</text><text v-if="readingFeedback(question.questionId)" data-next-question>{{ readingFeedback(question.questionId)?.nextQuestion }}</text></view></view>
     </view>
     <view v-else-if="status === 'loading'" class="yx-card b10-empty"><text>{{ b10T('status.loading') }}</text></view>
     <view v-else-if="status === 'empty'" class="yx-card b10-empty" role="status"><text class="b10-empty__title">{{ b10T('reading.noArticle') }}</text><text>{{ b10T('status.noSample') }}</text><button tabindex="0" role="button" class="yx-button" type="button" @click="load">{{ b10T('status.retry') }}</button></view>

@@ -111,6 +111,10 @@ export interface B10Feedback {
   evidence: string | null
   attemptId?: string | number | null
   reportId?: string | null
+  savedReceipt?: string | null
+  feedbackText?: string | null
+  nextQuestion?: string | null
+  scoreBucket?: string | null
 }
 
 export interface B10ReportWeakness {

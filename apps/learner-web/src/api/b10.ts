@@ -614,9 +614,13 @@ export async function submitPracticeAnswer(sessionId: string, payload: { exercis
   const source = recordValue(unwrap(response))
   const scoreBucket = stringValue(source.scoreBucket)?.toUpperCase()
   return {
-    ...parseFeedback({ ...source, correct: scoreBucket === 'FULL' ? true : scoreBucket === 'ZERO' ? false : null, message: scoreBucket ? `服务端已完成判分：${scoreBucket}` : '服务端已接收本次作答。' }),
+    ...parseFeedback({ ...source, correct: scoreBucket === 'FULL' ? true : scoreBucket === 'ZERO' ? false : null, message: stringValue(source.feedbackText) ?? (scoreBucket ? `服务端已完成判分：${scoreBucket}` : '服务端已接收本次作答。') }),
     attemptId: stringValue(source.attemptId),
     reportId: stringValue(source.reportId),
+    savedReceipt: stringValue(source.savedReceipt),
+    feedbackText: stringValue(source.feedbackText),
+    nextQuestion: stringValue(source.nextQuestion),
+    scoreBucket: scoreBucket ?? null,
   }
 }
 

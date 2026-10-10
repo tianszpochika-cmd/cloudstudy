@@ -105,6 +105,10 @@ export interface B10AnswerResult {
   contentVersionStale: boolean
   attemptId?: string | null
   reportId?: string | null
+  savedReceipt?: string | null
+  feedbackText?: string | null
+  nextQuestion?: string | null
+  scoreBucket?: string | null
 }
 
 export type B10AnswerInput =
@@ -200,6 +204,10 @@ export interface B10RuleFeedback {
   aiScoringAvailable: false
   deduplicated: boolean
   contentVersionStale: boolean
+  savedReceipt?: string | null
+  feedbackText?: string | null
+  nextQuestion?: string | null
+  scoreBucket?: string | null
 }
 
 export interface B10ReadingArticle {

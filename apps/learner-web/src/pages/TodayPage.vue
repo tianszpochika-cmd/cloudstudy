@@ -6,6 +6,7 @@ import StatePanel from '../components/StatePanel.vue'
 import { useLearnerContentStore } from '../stores/learner-content'
 import { userFacingError } from '../platform/user-facing-error'
 import { emptyStateView, firstLearningGuideCopy, type EmptyStateView } from '../domain/plan-today'
+import { practiceFeedback } from '../domain/practice-loop'
 
 const router = useRouter()
 const store = useLearnerContentStore()
@@ -29,8 +30,10 @@ function openPlanEmpty(view: EmptyStateView): void {
   void router.push({ name: view.to })
 }
 const selections = ref<Record<string, string>>({})
-function practiceResult(taskId: string): { correct: boolean; feedbackCode: string | null } | null {
-  return store.practiceResults[taskId] ?? null
+function practiceResult(taskId: string) {
+  const result = store.practiceResults[taskId]
+  if (!result) return null
+  return practiceFeedback({ correct: result.correct })
 }
 function submitPractice(taskId: string): void {
   const optionKey = selections.value[taskId]
@@ -70,8 +73,10 @@ function continueLearning(): void {
           <div class="practice-options">
             <label v-for="option in task.options" :key="option.key"><input v-model="selections[task.id]" type="radio" :name="`practice-${task.id}`" :value="option.key" />{{ option.text }}</label>
           </div>
-          <p v-if="practiceResult(task.id)" :class="{ completed: practiceResult(task.id)?.correct }">
-            {{ practiceResult(task.id)?.correct ? '回答正确' : '再想想' }} · {{ practiceResult(task.id)?.feedbackCode }}
+          <p v-if="practiceResult(task.id)" class="practice-feedback">
+            <span data-save-receipt>{{ practiceResult(task.id)?.savedReceipt }}</span>
+            <span data-feedback-text>{{ practiceResult(task.id)?.feedbackText }}</span>
+            <span data-next-question>{{ practiceResult(task.id)?.nextQuestion }}</span>
           </p>
         </div>
         <button class="button button--ghost" type="button" :disabled="!selections[task.id]" @click="submitPractice(task.id)">提交作答</button>

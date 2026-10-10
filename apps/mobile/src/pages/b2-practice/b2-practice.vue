@@ -10,6 +10,7 @@ import { createAdaptivePerformanceEngine, type PerformanceLevel } from '@english
 import B10ExerciseCard from '../../components/b10/B10ExerciseCard.vue'
 import B10StatusPanel from '../../components/b10/B10StatusPanel.vue'
 import type { B10AnswerInput, B10AnswerResult } from '../../domain/b10'
+import { practiceFeedback } from '../../domain/practice-loop'
 import { b10ThemeMode, b10T } from '../../platform/b10-foundation'
 import { useB10LearningStore } from '../../stores/b10-learning'
 import { getUniRuntime } from '../../platform/uni-runtime'
@@ -24,6 +25,15 @@ watch(() => session.identityRevision, () => { lastResult.value = null }, { flush
 const themeClass = computed(() => `b10-theme--${b10ThemeMode.value}`)
 const exercise = computed(() => store.practice?.exercises.find((item) => !store.answerResults[String(item.exerciseId)]) ?? null)
 const answeredCount = computed(() => Object.keys(store.answerResults).length)
+const answerFeedback = computed(() => lastResult.value ? practiceFeedback({
+  correct: lastResult.value.isCorrect,
+  savedReceipt: lastResult.value.savedReceipt,
+  feedbackText: lastResult.value.feedbackText,
+  nextQuestion: lastResult.value.nextQuestion,
+  scoreBucket: lastResult.value.scoreBucket,
+  received: answeredCount.value,
+  total: store.practice?.exercises.length ?? 0,
+}) : null)
 function setPerformance(level: PerformanceLevel): void { engine.setLevel(level, 'manual'); performanceLevel.value = level }
 function load(): void { lastResult.value = null; void store.loadPractice() }
 async function answer(value: B10AnswerInput): Promise<void> { if (!exercise.value) return; lastResult.value = await store.submitAnswer(exercise.value.exerciseId, value) }
@@ -43,7 +53,7 @@ onUnmounted(() => engine.dispose())
       <view class="b10-practice-card__progress"><text>{{ answeredCount }} / {{ store.practice?.exercises.length ?? 0 }}</text><text>{{ exercise.questionType }}</text></view>
       <B10ExerciseCard :exercise="exercise" :disabled="store.practiceStatus === 'loading'" @answer="answer" />
       <view class="b10-practice-card__actions"><button tabindex="0" role="button" class="yx-button yx-button--secondary" type="button" @click="checkpoint">{{ b10T('practice.checkpoint') }}</button><button tabindex="0" role="button" v-if="lastResult" class="yx-button yx-button--secondary" type="button" @click="lastResult = null">{{ b10T('practice.next') }}</button></view>
-      <view v-if="lastResult" class="b10-result" role="alert"><text class="b10-result__title">{{ lastResult.isCorrect === true ? '规则命中' : lastResult.isCorrect === false ? '需要复习' : '答案已接收' }}</text><text>{{ lastResult.scoringStatus }}<template v-if="lastResult.score !== null"> · {{ lastResult.score }} / {{ lastResult.maxScore ?? 0 }}</template></text><text v-for="cause in lastResult.errorCauseCandidates" :key="cause">{{ cause }}</text><text v-if="lastResult.contentVersionStale" class="b10-result__stale">{{ b10T('common.stale') }}</text></view>
+      <view v-if="answerFeedback" class="b10-result" role="alert"><text data-save-receipt>{{ answerFeedback.savedReceipt }}</text><text data-feedback-text>{{ answerFeedback.feedbackText }}</text><text data-next-question>{{ answerFeedback.nextQuestion }}</text><text v-if="lastResult?.contentVersionStale" class="b10-result__stale">{{ b10T('common.stale') }}</text></view>
     </view>
 
     <view v-else-if="store.practiceStatus === 'loading'" class="yx-card b10-empty"><text>{{ b10T('practice.loading') }}</text></view>

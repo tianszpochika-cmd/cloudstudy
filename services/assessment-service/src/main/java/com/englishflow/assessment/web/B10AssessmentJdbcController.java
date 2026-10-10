@@ -10,6 +10,7 @@ import com.englishflow.assessment.adapter.content.BankPracticeRuleProvider;
 import com.englishflow.assessment.domain.AssessmentMistake;
 import com.englishflow.assessment.domain.AssessmentPrincipal;
 import com.englishflow.assessment.domain.GrammarReadingPack;
+import com.englishflow.assessment.domain.PracticeFeedback;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -662,7 +663,12 @@ public class B10AssessmentJdbcController {
         data.put("itemCount", number(row.get("item_count")));
         data.put("submissionDigest", row.get("submission_digest"));
         data.put("scoreBucket", row.get("score_bucket"));
-        data.put("pin", pin(one("SELECT * FROM b10_assessment_session WHERE session_id = ?", row.get("session_id"))));
+        Map<String, Object> sessionRow = one("SELECT * FROM b10_assessment_session WHERE session_id = ?", row.get("session_id"));
+        data.put("pin", pin(sessionRow));
+        int received = jsonSize(sessionRow == null ? null : sessionRow.get("answers_json"), false);
+        int total = jsonSize(sessionRow == null ? null : sessionRow.get("items_json"), true);
+        if (total < 1) total = (int) number(row.get("item_count"));
+        data.putAll(PracticeFeedback.of(text(row.get("score_bucket")), received, total).ordered());
         data.put("assessmentVersion", "B10_RULES_2026_08_26");
         data.put("createdAt", timestamp(row.get("created_at")));
         data.put("assessedAt", timestamp(row.get("created_at")));
@@ -1093,6 +1099,13 @@ public class B10AssessmentJdbcController {
     }
 
     private static List<Object> valueList(Object value) { return value instanceof List<?> list ? new ArrayList<>(list) : List.of(); }
+
+    private int jsonSize(Object raw, boolean list) {
+        Object parsed = parseJson(raw, list ? List.of() : Map.of());
+        if (list && parsed instanceof List<?> values) return values.size();
+        if (!list && parsed instanceof Map<?, ?> values) return values.size();
+        return 0;
+    }
 
     private Object parseJson(Object raw, Object fallback) {
         try { return raw == null ? fallback : mapper.readValue(String.valueOf(raw), Object.class); }

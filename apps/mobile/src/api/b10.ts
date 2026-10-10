@@ -275,6 +275,10 @@ function parseAnswerResult(value: unknown, exerciseId: number): B10AnswerResult 
     revision: nullableNumber(source.revision ?? source.attemptVersion),
     scoringStatus: ['SCORED', 'PENDING_MANUAL', 'REJECTED', 'LATE', 'ACCEPTED'].includes(text(source.scoringStatus)) ? text(source.scoringStatus) as B10AnswerResult['scoringStatus'] : 'ACCEPTED',
     isCorrect: booleanOrNull(source.isCorrect) ?? (text(source.scoreBucket) === 'FULL' ? true : text(source.scoreBucket) === 'ZERO' ? false : null),
+    savedReceipt: text(source.savedReceipt) || null,
+    feedbackText: text(source.feedbackText) || null,
+    nextQuestion: text(source.nextQuestion) || null,
+    scoreBucket: text(source.scoreBucket) || null,
     score: typeof source.score === 'number' ? source.score : null,
     maxScore: typeof source.maxScore === 'number' ? source.maxScore : null,
     errorCauseCandidates: Array.isArray(source.errorCauseCandidates) ? source.errorCauseCandidates.filter((entry): entry is string => typeof entry === 'string') : [],
@@ -297,7 +301,6 @@ function parseRuleFeedback(value: unknown): B10RuleFeedback {
   }) : []
   return {
     accepted: source.accepted !== false,
-    correct: booleanOrNull(source.correct ?? source.isCorrect),
     score: typeof source.score === 'number' ? source.score : null,
     ruleVersion: text(source.ruleVersion) || null,
     feedbackCode: text(source.feedbackCode) || null,
@@ -307,6 +310,11 @@ function parseRuleFeedback(value: unknown): B10RuleFeedback {
     aiScoringAvailable: false,
     deduplicated: source.deduplicated === true,
     contentVersionStale: source.contentVersionStale === true || source.status === 'CONTENT_VERSION_STALE',
+    savedReceipt: text(source.savedReceipt) || null,
+    feedbackText: text(source.feedbackText) || null,
+    nextQuestion: text(source.nextQuestion) || null,
+    scoreBucket: text(source.scoreBucket) || null,
+    correct: booleanOrNull(source.correct ?? source.isCorrect) ?? (text(source.scoreBucket) === 'FULL' ? true : text(source.scoreBucket) === 'ZERO' ? false : null),
   }
 }
 

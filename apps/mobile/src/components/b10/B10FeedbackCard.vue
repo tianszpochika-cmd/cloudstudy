@@ -1,12 +1,24 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { B10RuleFeedback } from '../../domain/b10'
+import { practiceFeedback } from '../../domain/practice-loop'
 import { b10T } from '../../platform/b10-foundation'
 
-defineProps<{ feedback: B10RuleFeedback | null }>()
+const props = defineProps<{ feedback: B10RuleFeedback | null }>()
+const view = computed(() => props.feedback ? practiceFeedback({
+  correct: props.feedback.correct,
+  savedReceipt: props.feedback.savedReceipt,
+  feedbackText: props.feedback.feedbackText,
+  nextQuestion: props.feedback.nextQuestion,
+  scoreBucket: props.feedback.scoreBucket,
+}) : null)
 </script>
 
 <template>
   <view v-if="feedback" class="b10-feedback" role="alert">
+    <text v-if="view" data-save-receipt>{{ view.savedReceipt }}</text>
+    <text v-if="view" data-feedback-text>{{ view.feedbackText }}</text>
+    <text v-if="view" data-next-question>{{ view.nextQuestion }}</text>
     <text class="b10-feedback__title">{{ feedback.correct === true ? '规则命中' : feedback.correct === false ? '需要修复' : b10T('writing.feedback') }}</text>
     <text v-if="feedback.feedbackCode" class="b10-feedback__code">{{ feedback.feedbackCode }} · {{ feedback.ruleVersion ?? 'server-rule' }}</text>
     <text v-if="feedback.score !== null" class="b10-feedback__score">{{ Math.round(feedback.score) }}</text>
