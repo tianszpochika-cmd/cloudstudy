@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -35,8 +37,21 @@ public class B25LearnerJdbcController {
     private static final List<Integer> DAILY_QUOTA_MINUTES = List.of(5, 15, 30, 45);
     private static final Logger LOGGER = LoggerFactory.getLogger(B25LearnerJdbcController.class);
     private final JdbcTemplate jdbc;
+    private final LearningConsentRecheck consentRecheck;
 
-    public B25LearnerJdbcController(JdbcTemplate jdbc) { this.jdbc = jdbc; }
+    public B25LearnerJdbcController(JdbcTemplate jdbc) {
+        this(jdbc, (LearningConsentRecheck) null);
+    }
+
+    @Autowired
+    public B25LearnerJdbcController(JdbcTemplate jdbc, ObjectProvider<LearningConsentRecheck> recheck) {
+        this(jdbc, recheck == null ? null : recheck.getIfAvailable());
+    }
+
+    B25LearnerJdbcController(JdbcTemplate jdbc, LearningConsentRecheck consentRecheck) {
+        this.jdbc = jdbc;
+        this.consentRecheck = consentRecheck;
+    }
 
     @GetMapping("/profile")
     public Map<String, Object> profile(Authentication authentication) {
@@ -247,7 +262,7 @@ public class B25LearnerJdbcController {
     @Transactional(transactionManager = "learnerTransactionManager")
     public Map<String, Object> createPrivacyExport(@RequestBody(required = false) Map<String, Object> request,
             Authentication authentication, @RequestHeader("Idempotency-Key") String idempotencyKey) {
-        Principal p = principal(authentication, "iam.self.write");
+        Principal p = privacyPrincipal(authentication, "iam.self.write");
         if (idempotencyKey == null || idempotencyKey.isBlank()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Idempotency-Key is required");
         }
@@ -281,7 +296,7 @@ public class B25LearnerJdbcController {
     @GetMapping("/privacy/export/{exportId}")
     public Map<String, Object> privacyExportStatus(@PathVariable String exportId,
             Authentication authentication) {
-        Principal p = principal(authentication, "iam.self.read");
+        Principal p = privacyPrincipal(authentication, "iam.self.read");
         Map<String, Object> row = one("""
                 SELECT export_id, export_status, policy_name, created_at, expires_at, downloaded_at
                   FROM b25_learner_privacy_export
@@ -304,7 +319,7 @@ public class B25LearnerJdbcController {
     @Transactional(transactionManager = "learnerTransactionManager")
     public Map<String, Object> privacyExportDownload(@PathVariable String exportId,
             Authentication authentication) {
-        Principal p = principal(authentication, "iam.self.read");
+        Principal p = privacyPrincipal(authentication, "iam.self.read");
         Map<String, Object> row = one("""
                 SELECT export_id, export_status, policy_name, created_at, expires_at, downloaded_at
                   FROM b25_learner_privacy_export
@@ -530,8 +545,18 @@ public class B25LearnerJdbcController {
                 "redactionPolicy", String.valueOf(policyName));
     }
 
-    private static Principal principal(Authentication authentication, String permission) {
-        return new Principal(LearnerHttpPrincipals.requireLearningAccess(authentication, permission).subject());
+    private Principal principal(Authentication authentication, String permission) {
+        return new Principal(LearnerHttpPrincipals.requireLearningAccess(
+                authentication, permission, consentRecheck).subject());
+    }
+
+    /**
+     * Privacy export is not a learning capability. It keeps the existing token-claim gate and
+     * is not closed by the live learning-consent recheck.
+     */
+    private Principal privacyPrincipal(Authentication authentication, String permission) {
+        return new Principal(LearnerHttpPrincipals.requireLearningAccess(
+                authentication, permission, null).subject());
     }
 
     private static String required(Map<String, Object> values, String key) {

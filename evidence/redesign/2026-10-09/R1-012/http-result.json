@@ -1,0 +1,231 @@
+{
+  "card": "R1-012",
+  "bc": "BC-012",
+  "date": "2026-10-09",
+  "branch": "dev-redesign",
+  "iam": "https://127.0.0.1:18087",
+  "schema": "r1_012_iam_20261009_cd996f0812ae",
+  "assertionsPassed": true,
+  "failureCount": 0,
+  "probeError": null,
+  "failures": [],
+  "cases": [
+    {
+      "name": "register.known",
+      "status": 201,
+      "hasPrincipal": true
+    },
+    {
+      "name": "register.other",
+      "status": 201,
+      "hasPrincipal": true
+    },
+    {
+      "name": "register.limited",
+      "status": 201,
+      "hasPrincipal": true
+    },
+    {
+      "name": "sql.before",
+      "challenges": 0
+    },
+    {
+      "name": "request.missing",
+      "status": 202,
+      "challenges": 0,
+      "code": {
+        "status": 202,
+        "errorCode": null,
+        "message": null,
+        "retryable": null
+      }
+    },
+    {
+      "name": "request.present",
+      "status": 202,
+      "challenges": 1,
+      "digestChars": 64,
+      "unconsumed": true,
+      "unexpired": true
+    },
+    {
+      "name": "request.pair",
+      "equal": true,
+      "status": 202,
+      "publicHeaders": {
+        "cache-control": "no-store",
+        "connection": "keep-alive",
+        "content-type": "application/json",
+        "keep-alive": "timeout=60",
+        "strict-transport-security": "max-age=31536000 ; includeSubDomains",
+        "transfer-encoding": "chunked",
+        "x-api-version": "v1",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "DENY",
+        "x-xss-protection": "0"
+      },
+      "publicBody": {
+        "data": {
+          "accepted": true
+        },
+        "meta": {
+          "apiVersion": "v1",
+          "schemaVersion": "1.0.0"
+        }
+      },
+      "contentLength": [
+        null,
+        null
+      ],
+      "presentLeaks": [],
+      "missingLeaks": [],
+      "presentHeaderLeaks": [],
+      "missingHeaderLeaks": []
+    },
+    {
+      "name": "request.blank.empty",
+      "status": 400,
+      "code": {
+        "status": 400,
+        "errorCode": "VALIDATION_ERROR",
+        "message": "iam.password_reset.invalid",
+        "retryable": false
+      },
+      "challenges": 1
+    },
+    {
+      "name": "request.blank.spaces",
+      "status": 400,
+      "code": {
+        "status": 400,
+        "errorCode": "VALIDATION_ERROR",
+        "message": "iam.password_reset.invalid",
+        "retryable": false
+      },
+      "challenges": 1
+    },
+    {
+      "name": "request.blank.newline",
+      "status": 400,
+      "code": {
+        "status": 400,
+        "errorCode": "VALIDATION_ERROR",
+        "message": "iam.password_reset.invalid",
+        "retryable": false
+      },
+      "challenges": 1
+    },
+    {
+      "name": "request.blank.omitted",
+      "status": 400,
+      "code": {
+        "status": 400,
+        "errorCode": "VALIDATION_ERROR",
+        "message": "iam.password_reset.invalid",
+        "retryable": false
+      },
+      "challenges": 1
+    },
+    {
+      "name": "confirm.wrong-vs-other-account",
+      "equal": true,
+      "status": 401,
+      "errorCode": "INTERNAL_ERROR",
+      "message": "iam.password_reset.invalid"
+    },
+    {
+      "name": "confirm.wrong-vs-missing",
+      "equal": true,
+      "status": 401,
+      "errorCode": "INTERNAL_ERROR",
+      "message": "iam.password_reset.invalid"
+    },
+    {
+      "name": "confirm.success",
+      "status": 204,
+      "consumed": true
+    },
+    {
+      "name": "confirm.used-real-vs-missing",
+      "equal": true,
+      "status": 401,
+      "errorCode": "INTERNAL_ERROR",
+      "message": "iam.password_reset.invalid"
+    },
+    {
+      "name": "confirm.used-vs-wrong-token",
+      "equal": true,
+      "status": 401,
+      "errorCode": "INTERNAL_ERROR",
+      "message": "iam.password_reset.invalid"
+    },
+    {
+      "name": "confirm.expired-real-vs-missing",
+      "equal": true,
+      "status": 401,
+      "errorCode": "INTERNAL_ERROR",
+      "message": "iam.password_reset.invalid"
+    },
+    {
+      "name": "confirm.expired-vs-wrong-token",
+      "equal": true,
+      "status": 401,
+      "errorCode": "INTERNAL_ERROR",
+      "message": "iam.password_reset.invalid"
+    },
+    {
+      "name": "confirm.preconsumed-real-vs-missing",
+      "equal": true,
+      "status": 401,
+      "errorCode": "INTERNAL_ERROR",
+      "message": "iam.password_reset.invalid"
+    },
+    {
+      "name": "confirm.preconsumed-vs-wrong-token",
+      "equal": true,
+      "status": 401,
+      "errorCode": "INTERNAL_ERROR",
+      "message": "iam.password_reset.invalid"
+    },
+    {
+      "name": "rate.known",
+      "statuses": [
+        202,
+        202,
+        202,
+        202,
+        202,
+        429
+      ],
+      "challenges": 9
+    },
+    {
+      "name": "rate.missing",
+      "statuses": [
+        202,
+        202,
+        202,
+        202,
+        202,
+        429
+      ],
+      "challenges": 9
+    },
+    {
+      "name": "rate.limited-pair",
+      "equal": true,
+      "status": 429,
+      "errorCode": "RATE_LIMITED",
+      "message": "iam.password_reset.rate_limited"
+    },
+    {
+      "name": "sql.rate-counts",
+      "counts": [
+        "1",
+        "1",
+        "5",
+        "5"
+      ]
+    }
+  ]
+}

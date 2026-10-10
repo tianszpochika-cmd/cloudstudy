@@ -386,6 +386,13 @@ class IamAuthenticationController {
                 throw new IamPolicyException(IamDecisionCode.ADULT_AGE_EVIDENCE_INVALID,
                         "iam.adult_gate.birth_year_invalid");
             }
+            // A recorded REJECTED fact is final. Do not re-evaluate, approve, call
+            // AdultGateService.invalidate, or revoke the session that R1-006 keeps ACTIVE.
+            AdultGateFact existing = adultGateFacts.find(principal, Instant.now(clock));
+            if ("REJECTED".equals(existing.status())) {
+                return executed(success(HttpStatus.OK, heldRejection(existing), CacheControl.noStore()),
+                        principal.toString());
+            }
             AdultGateResult result = adultGates.evaluate(new AdultGateCommand(principal, true,
                     TrustedAgeEvidence.fromServerAttestation(age, "local-development-attestation", Instant.now(clock)),
                     null, null, ClientAuthorityClaims.none()));
@@ -1088,6 +1095,13 @@ class IamAuthenticationController {
                         evaluatedAt, null, unsatisfied),
                 new ConsentProvenance(evaluatedAt));
     }
+    /** Rejection stays REJECTED and is not a prompt to submit another age. */
+    private AdultGateResponse heldRejection(AdultGateFact fact) {
+        AdultGateResponse current = adultGateResponse(fact);
+        return new AdultGateResponse("REJECTED", "RESTRICTED", current.effectiveAt(),
+                current.policyVersion(), current.minimumAge(), "REJECTED", false);
+    }
+
     private AdultGateResponse adultGateResponse(AdultGateFact fact) {
         String status = "APPROVED".equals(fact.status()) ? "PASSED"
                 : "PENDING".equals(fact.status()) ? "NOT_EVALUATED" : "REJECTED";
@@ -1138,7 +1152,6 @@ class IamAuthenticationController {
         String purpose = descriptor.purpose();
         String state = record.accepted() ? "GRANTED" : "WITHDRAWN";
         String restriction = record.accepted() ? "NO_RESTRICTION" : descriptor.withdrawalEffect().name();
-        String effect = record.accepted() ? "NO_ACTION" : descriptor.withdrawalEffect().name();
         String revalidation = record.accepted() ? "CURRENT" : "REVALIDATION_REQUIRED";
         List<String> reasons = record.accepted() ? List.of() : List.of("CONSENT_WITHDRAWN");
         return new ConsentResponse(type, record.documentVersion().value(), record.accepted() ? "ACCEPTED" : "WITHDRAWN",
@@ -1146,9 +1159,24 @@ class IamAuthenticationController {
                 new ConsentDocument(record.documentVersion().value(), record.documentDigest(), descriptor.publishedAt()), state,
                 record.effectiveAt(), restriction,
                 new RevalidationRequirement(revalidation, !record.accepted(), record.recordedAt(), null, reasons),
-                new ConsentWithdrawalEffect(effect, record.recordedAt(), !record.accepted()),
+                withdrawalEffect(record, descriptor, consents.capabilitiesRestrictedBy(record.type())),
                 new ConsentProvenance(record.recordedAt()), descriptor.policyRef(),
                 record.policyVersion().value(), "consent:" + record.consentId());
+    }
+
+    /**
+     * Verifiable withdrawal receipt. Accepted decisions list no affected capability. A withdrawn
+     * decision lists only the canonical capabilities that require this document, and always
+     * records that the account and consent history are retained.
+     */
+    static ConsentWithdrawalEffect withdrawalEffect(ConsentRecord record, ConsentPolicyDescriptor descriptor,
+                                                    List<String> restrictedCapabilities) {
+        boolean withdrawn = !record.accepted();
+        String effect = withdrawn ? descriptor.withdrawalEffect().name() : "NO_ACTION";
+        List<String> affected = withdrawn ? List.copyOf(restrictedCapabilities) : List.of();
+        String sessionEffect = withdrawn && record.revokeSessions() ? "REVOKE_ALL_SESSIONS" : "UNCHANGED";
+        return new ConsentWithdrawalEffect(effect, record.recordedAt(), withdrawn, affected,
+                sessionEffect, "RETAINED", "RETAINED");
     }
 
     private <T> ResponseEntity<ApiSuccessEnvelope<T>> success(HttpStatus status, T data, CacheControl cacheControl) {
@@ -1318,7 +1346,11 @@ class IamAuthenticationController {
     public record RevalidationRequirement(String status, boolean required, Instant evaluatedAt,
                                          Instant dueAt, List<String> reasonCodes) {}
     public record ConsentWithdrawalEffect(String effect, Instant appliesAt,
-                                          boolean cacheInvalidationRequired) {}
+                                          boolean cacheInvalidationRequired,
+                                          List<String> affectedCapabilities,
+                                          String sessionEffect,
+                                          String accountEffect,
+                                          String historyEffect) {}
     public record ConsentProvenance(String authority, Instant recordedAt,
                                     String documentSource, String policySource) {
         public ConsentProvenance(Instant recordedAt) {

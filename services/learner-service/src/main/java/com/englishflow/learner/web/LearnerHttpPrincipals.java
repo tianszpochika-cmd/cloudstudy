@@ -59,16 +59,32 @@ public final class LearnerHttpPrincipals {
      */
     public static VerifiedLearnerPrincipal requireLearningAccess(
             Authentication authentication, String permission) {
+        return requireLearningAccess(authentication, permission, null);
+    }
+
+    public static VerifiedLearnerPrincipal requireLearningAccess(
+            Authentication authentication, String permission, LearningConsentRecheck recheck) {
         VerifiedLearnerPrincipal principal = require(authentication);
         Jwt token = ((JwtAuthenticationToken) authentication).getToken();
         if (!"PASSED".equals(token.getClaim("adult_gate"))
                 || !"GRANTED".equals(token.getClaim("consent_state"))) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "learning access is not granted");
         }
+        if (recheck != null && !liveGrant(recheck, principal.subject())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "learning access is not granted");
+        }
         if (permission == null || !principal.permissions().contains(permission)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "learner permission is required");
         }
         return principal;
+    }
+
+    private static boolean liveGrant(LearningConsentRecheck recheck, String principalId) {
+        try {
+            return recheck.currentlyGranted(principalId);
+        } catch (RuntimeException unavailable) {
+            return false;
+        }
     }
 
     /** Verified identity and authority facts for one request. */

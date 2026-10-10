@@ -1,0 +1,181 @@
+{
+  "failures": [],
+  "events": [
+    {
+      "name": "register",
+      "status": 201,
+      "detail": "has-data"
+    },
+    {
+      "name": "before-grant.put",
+      "status": 403,
+      "detail": "CONSENT_REQUIRED"
+    },
+    {
+      "name": "sql.before-grant",
+      "detail": {
+        "goals": 0,
+        "profiles": 0,
+        "b25": 0,
+        "idempotency": 0,
+        "outbox": 0
+      }
+    },
+    {
+      "name": "adult",
+      "status": 200,
+      "detail": "PASSED"
+    },
+    {
+      "name": "accept.TERMS",
+      "status": 200,
+      "detail": "ACCEPTED"
+    },
+    {
+      "name": "accept.PRIVACY",
+      "status": 200,
+      "detail": "ACCEPTED"
+    },
+    {
+      "name": "accept.ADULT_LEARNING",
+      "status": 200,
+      "detail": "ACCEPTED"
+    },
+    {
+      "name": "accept.PRODUCT_ANALYTICS",
+      "status": 200,
+      "detail": "ACCEPTED"
+    },
+    {
+      "name": "login",
+      "status": 200,
+      "detail": "has-data"
+    },
+    {
+      "name": "claims",
+      "detail": {
+        "consent_state": "GRANTED",
+        "adult_gate": "PASSED",
+        "token_type": "access",
+        "sub": "fc080ce6-afa3-4c3e-8770-ce9b871a95a6"
+      }
+    },
+    {
+      "name": "get.missing",
+      "status": 404,
+      "detail": ""
+    },
+    {
+      "name": "sql.after-missing-get",
+      "detail": {
+        "goals": 0,
+        "profiles": 0,
+        "b25": 0,
+        "idempotency": 0,
+        "outbox": 0
+      }
+    },
+    {
+      "name": "put.partial",
+      "status": 400,
+      "detail": "INVALID_PROFILE"
+    },
+    {
+      "name": "sql.after-partial",
+      "detail": {
+        "goals": 0,
+        "profiles": 0,
+        "b25": 0,
+        "idempotency": 0,
+        "outbox": 0
+      }
+    },
+    {
+      "name": "put.saved",
+      "status": 200,
+      "detail": {
+        "goalCode": "COLLEGE_CET",
+        "dailyQuotaMinutes": 30,
+        "targetLevel": "B1",
+        "stateVersion": 1,
+        "targetVersion": 1,
+        "targetId": 1001,
+        "replayed": false
+      }
+    },
+    {
+      "name": "sql.row",
+      "detail": "DRAFT\t1\tCET_4_6\t30\tB1\t1001\t1"
+    },
+    {
+      "name": "sql.after-put",
+      "detail": {
+        "goals": 1,
+        "profiles": 1,
+        "b25": 0,
+        "idempotency": 1,
+        "outbox": 1
+      }
+    },
+    {
+      "name": "get.readback",
+      "status": 200,
+      "detail": {
+        "goalCode": "COLLEGE_CET",
+        "dailyQuotaMinutes": 30,
+        "stateVersion": 1,
+        "targetVersion": 1,
+        "targetId": 1001
+      }
+    },
+    {
+      "name": "put.replay",
+      "status": 200,
+      "detail": {
+        "goalCode": "COLLEGE_CET",
+        "dailyQuotaMinutes": 30,
+        "stateVersion": 1,
+        "targetVersion": 1,
+        "targetId": 1001,
+        "replayed": true
+      }
+    },
+    {
+      "name": "put.conflict",
+      "status": 409,
+      "detail": "IDEMPOTENCY_CONFLICT"
+    },
+    {
+      "name": "put.stale",
+      "status": 409,
+      "detail": "CONCURRENT_UPDATE"
+    },
+    {
+      "name": "sql.after-conflict",
+      "detail": {
+        "goals": 1,
+        "profiles": 1,
+        "b25": 0,
+        "idempotency": 1,
+        "outbox": 1
+      }
+    },
+    {
+      "name": "sql.row-after",
+      "detail": "DRAFT\t1\tCET_4_6\t30\tB1\t1001\t1"
+    },
+    {
+      "name": "get.after-conflict",
+      "status": 200,
+      "detail": "COLLEGE_CET"
+    },
+    {
+      "name": "get.first-day",
+      "status": 200,
+      "detail": {
+        "state": "NOT_READY",
+        "hasNextAction": false
+      }
+    }
+  ]
+}

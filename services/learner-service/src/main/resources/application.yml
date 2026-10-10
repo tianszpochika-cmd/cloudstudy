@@ -64,6 +64,12 @@ service:
 learner:
   phase: ${LEARNER_PHASE:phase-1}
   legacy-read-enabled: ${LEARNER_LEGACY_READ_ENABLED:true}
+  consent-recheck:
+    # On unless LEARNER_CONSENT_RECHECK_ENABLED=false. A missing IAM answer fails closed.
+    enabled: ${LEARNER_CONSENT_RECHECK_ENABLED:true}
+    iam-base-url: ${LEARNER_CONSENT_RECHECK_IAM_BASE_URL:https://127.0.0.1:18087}
+    client-id: ${LEARNER_CONSENT_RECHECK_CLIENT_ID:learner-service}
+    client-secret: ${LEARNER_CONSENT_RECHECK_CLIENT_SECRET:}
   persistence:
     # disabled is deliberate: no database means no pretend durable/real data.
     mode: ${LEARNER_PERSISTENCE_MODE:disabled}

@@ -1,0 +1,162 @@
+{
+  "schema": "r1_013_iam_20261009_8c5460575767",
+  "checks": [
+    {
+      "name": "register",
+      "ok": true,
+      "detail": {
+        "status": 201,
+        "adult_gate": "NOT_EVALUATED",
+        "sessionId": "649aebbd-9adb-4ea6-8db2-e3615895c7d4"
+      }
+    },
+    {
+      "name": "minor-gate",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "gateStatus": "REJECTED",
+        "learningAccess": "RESTRICTED",
+        "evidenceStatus": "REJECTED",
+        "retryAllowed": true
+      }
+    },
+    {
+      "name": "minor-db",
+      "ok": true,
+      "detail": {
+        "principal": {
+          "status": "REJECTED",
+          "adultVerifiedAt": "NULL",
+          "version": "b30-adult-v1"
+        },
+        "session": {
+          "status": "ACTIVE",
+          "revokedAt": "NULL"
+        }
+      }
+    },
+    {
+      "name": "me-after-minor",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "accountStatus": "RESTRICTED",
+        "adultGate": "REJECTED",
+        "learningAccess": "RESTRICTED"
+      }
+    },
+    {
+      "name": "minor-replay",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "sameBody": true
+      }
+    },
+    {
+      "name": "adult-year-stays-rejected",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "gateStatus": "REJECTED",
+        "learningAccess": "RESTRICTED",
+        "evidenceStatus": "REJECTED",
+        "retryAllowed": false,
+        "sameEffectiveAt": true
+      }
+    },
+    {
+      "name": "adult-year-db",
+      "ok": true,
+      "detail": {
+        "principal": {
+          "status": "REJECTED",
+          "adultVerifiedAt": "NULL",
+          "version": "b30-adult-v1"
+        },
+        "session": {
+          "status": "ACTIVE",
+          "revokedAt": "NULL"
+        },
+        "auditUnchanged": true
+      }
+    },
+    {
+      "name": "adult-year-replay",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "sameBody": true,
+        "retryAllowed": false
+      }
+    },
+    {
+      "name": "me-before-logout",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "session": {
+          "status": "ACTIVE",
+          "revokedAt": "NULL"
+        }
+      }
+    },
+    {
+      "name": "logout",
+      "ok": true,
+      "detail": {
+        "status": 200
+      }
+    },
+    {
+      "name": "relogin-claim",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "adult_gate": "REJECTED",
+        "consent_state": "UNKNOWN",
+        "sessionId": "e54ba2d4-28b8-4359-b86f-8b83e0398c90"
+      }
+    },
+    {
+      "name": "relogin-session-active",
+      "ok": true,
+      "detail": {
+        "newSession": {
+          "status": "ACTIVE",
+          "revokedAt": "NULL"
+        },
+        "loggedOutSession": {
+          "status": "REVOKED",
+          "revokedAt": "SET"
+        }
+      }
+    },
+    {
+      "name": "me-after-relogin",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "accountStatus": "RESTRICTED",
+        "adultGate": "REJECTED",
+        "gateLearningAccess": "RESTRICTED",
+        "consentLearningAccess": "RESTRICTED"
+      }
+    },
+    {
+      "name": "retained-account-and-audit",
+      "ok": true,
+      "detail": {
+        "accountCount": "1",
+        "accountStatus": "ACTIVE",
+        "deletionCount": "0",
+        "auditCount": "8",
+        "denyCount": "1",
+        "allowCount": "0",
+        "birthColumns": "0",
+        "yearHits": []
+      }
+    }
+  ]
+}

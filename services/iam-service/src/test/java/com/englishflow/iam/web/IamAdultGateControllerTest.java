@@ -30,6 +30,7 @@ import com.englishflow.iam.domain.PasswordAccountService;
 import com.englishflow.iam.domain.PasswordResetService;
 import com.englishflow.iam.domain.PrincipalId;
 import com.englishflow.iam.domain.ServerPrincipalContext;
+import com.englishflow.iam.domain.SessionId;
 import com.englishflow.iam.domain.SessionRecord;
 import com.englishflow.iam.domain.SessionService;
 import com.englishflow.iam.domain.SessionStatus;
@@ -43,6 +44,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.oauth2.core.OAuth2TokenValidatorResult;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
@@ -64,6 +67,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -88,6 +92,7 @@ class IamAdultGateControllerTest {
     private AdultGateService adultGates;
     private IamAuthenticationController controller;
     private MockMvc mockMvc;
+    private JwtSigningKeyProvider signingKeys;
 
     private PrincipalId principalId;
     private SessionRecord session;
@@ -137,7 +142,8 @@ class IamAdultGateControllerTest {
                 sessions, IamTransactionRunner.direct(), rateLimits,
                 resetDelivery, properties.getIdempotency().getFingerprintSecret());
 
-        JwtSigningKeyProvider keys = new JwtSigningKeyProvider(properties);
+        signingKeys = new JwtSigningKeyProvider(properties);
+        JwtSigningKeyProvider keys = signingKeys;
         JWKSource<SecurityContext> source = (selector, ctx) -> List.of(keys.signingKey());
         JwtTokenService tokens = new JwtTokenService(new NimbusJwtEncoder(source), keys, properties, clock);
 
@@ -513,5 +519,142 @@ class IamAdultGateControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error.errorCode").value("VALIDATION_ERROR"))
                 .andExpect(jsonPath("$.error.message").value("iam.idempotency.invalid"));
+    }
+
+    @Test
+    @DisplayName("测试 10: 拒绝后换键成年年份仍 REJECTED，再登录 claim 仍是 REJECTED，会话仍 ACTIVE")
+    void rejectedGateStaysRejectedAcrossNewKeyAndRelogin() throws Exception {
+        String minorBody = """
+                {
+                    "confirmed": true,
+                    "birthYear": 2015,
+                    "policyVersion": "b30-adult-v1"
+                }
+                """;
+        String adultBody = """
+                {
+                    "confirmed": true,
+                    "birthYear": 1995,
+                    "policyVersion": "b30-adult-v1"
+                }
+                """;
+        String minorKey = "idemp-adult-gate-0000000010";
+        String adultKey = "idemp-adult-gate-000000010b";
+
+        MvcResult rejected = mockMvc.perform(post("/api/v1/iam/adult-gate")
+                        .principal(authToken)
+                        .header("Idempotency-Key", minorKey)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(minorBody))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.status").value("REJECTED"))
+                .andExpect(jsonPath("$.data.learningAccess").value("RESTRICTED"))
+                .andReturn();
+        JsonNode rejectedData = objectMapper.readTree(rejected.getResponse().getContentAsString()).get("data");
+        Instant rejectedAt = adultGateFacts.find(principalId, NOW).evaluatedAt();
+        long gateAudits = audit.decisions().stream().filter(decision -> "adult_gate".equals(decision.decisionType())).count();
+
+        MvcResult held = mockMvc.perform(post("/api/v1/iam/adult-gate")
+                        .principal(authToken)
+                        .header("Idempotency-Key", adultKey)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(adultBody))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.status").value("REJECTED"))
+                .andExpect(jsonPath("$.data.learningAccess").value("RESTRICTED"))
+                .andExpect(jsonPath("$.data.evidenceStatus").value("REJECTED"))
+                .andExpect(jsonPath("$.data.retryAllowed").value(false))
+                .andReturn();
+        JsonNode heldData = objectMapper.readTree(held.getResponse().getContentAsString()).get("data");
+        assertEquals(rejectedData.get("effectiveAt").asText(), heldData.get("effectiveAt").asText());
+        assertFalse(held.getResponse().getContentAsString().contains("1995"));
+        assertFalse(held.getResponse().getContentAsString().contains("2015"));
+
+        AdultGateFact fact = adultGateFacts.find(principalId, NOW);
+        assertEquals("REJECTED", fact.status());
+        assertEquals(rejectedAt, fact.evaluatedAt());
+        assertEquals(gateAudits, audit.decisions().stream().filter(decision -> "adult_gate".equals(decision.decisionType())).count());
+        assertTrue(audit.decisions().stream().anyMatch(decision ->
+                decision.code() == IamDecisionCode.ADULT_AGE_BELOW_MINIMUM && !decision.allowed()));
+        assertEquals(0, audit.decisions().stream().filter(decision ->
+                "adult_gate".equals(decision.decisionType()) && decision.allowed()).count());
+        assertEquals(SessionStatus.ACTIVE, sessions.find(session.sessionId()).status());
+        assertNull(sessions.find(session.sessionId()).revokedAt());
+        assertNotNull(passwords.find(principalId));
+
+        mockMvc.perform(get("/api/v1/iam/principal/me").principal(authToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.status").value("RESTRICTED"))
+                .andExpect(jsonPath("$.data.adultGate.status").value("REJECTED"))
+                .andExpect(jsonPath("$.data.adultGate.learningAccess").value("RESTRICTED"));
+
+        MvcResult minorReplay = mockMvc.perform(post("/api/v1/iam/adult-gate")
+                        .principal(authToken)
+                        .header("Idempotency-Key", minorKey)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(minorBody))
+                .andExpect(status().isOk())
+                .andReturn();
+        MvcResult adultReplay = mockMvc.perform(post("/api/v1/iam/adult-gate")
+                        .principal(authToken)
+                        .header("Idempotency-Key", adultKey)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(adultBody))
+                .andExpect(status().isOk())
+                .andReturn();
+        assertEquals(rejectedData, objectMapper.readTree(minorReplay.getResponse().getContentAsString()).get("data"));
+        assertEquals(heldData, objectMapper.readTree(adultReplay.getResponse().getContentAsString()).get("data"));
+        assertEquals(SessionStatus.ACTIVE, sessions.find(session.sessionId()).status());
+
+        mockMvc.perform(post("/api/v1/auth/logout")
+                        .principal(authToken)
+                        .header("Idempotency-Key", "idemp-adult-gate-logout-10"))
+                .andExpect(status().isOk());
+
+        String loginBody = """
+                {
+                    "identifier": "adult-learner@example.com",
+                    "password": "ValidPassword123!",
+                    "device": {
+                        "deviceType": "WEB",
+                        "deviceName": "Chrome Browser",
+                        "clientVersion": "1.0.0"
+                    }
+                }
+                """;
+        MvcResult login = mockMvc.perform(post("/api/v1/auth/login")
+                        .header("Idempotency-Key", "idemp-adult-gate-login-010")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(loginBody))
+                .andExpect(status().isOk())
+                .andReturn();
+        String accessToken = objectMapper.readTree(login.getResponse().getContentAsString())
+                .get("data").get("accessToken").asText();
+        Jwt loginJwt = decodeAccessToken(accessToken);
+        assertEquals("REJECTED", loginJwt.getClaimAsString("adult_gate"));
+        assertFalse("NOT_EVALUATED".equals(loginJwt.getClaimAsString("adult_gate")));
+        assertFalse("PASSED".equals(loginJwt.getClaimAsString("adult_gate")));
+
+        JwtAuthenticationToken reloginAuth = new JwtAuthenticationToken(loginJwt,
+                List.of(new SimpleGrantedAuthority("TOKEN_TYPE_access")));
+        mockMvc.perform(get("/api/v1/iam/principal/me").principal(reloginAuth))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.adultGate.status").value("REJECTED"))
+                .andExpect(jsonPath("$.data.adultGate.learningAccess").value("RESTRICTED"))
+                .andExpect(jsonPath("$.data.consentState.learningAccess").value("RESTRICTED"))
+                .andExpect(jsonPath("$.data.status").value("RESTRICTED"));
+
+        SessionRecord reloginSession = sessions.find(new SessionId(UUID.fromString(loginJwt.getClaimAsString("session_id"))));
+        assertEquals(SessionStatus.ACTIVE, reloginSession.status());
+        assertNull(reloginSession.revokedAt());
+        assertEquals(0, audit.decisions().stream().filter(decision ->
+                "adult_gate".equals(decision.decisionType()) && decision.allowed()).count());
+        assertNotNull(passwords.find(principalId));
+    }
+
+    private Jwt decodeAccessToken(String token) {
+        NimbusJwtDecoder decoder = NimbusJwtDecoder.withPublicKey(signingKeys.publicKey()).build();
+        decoder.setJwtValidator(jwt -> OAuth2TokenValidatorResult.success());
+        return decoder.decode(token);
     }
 }

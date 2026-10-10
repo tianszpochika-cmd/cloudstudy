@@ -1,0 +1,13 @@
+after-register {"status":"PENDING","adultVerifiedAt":"NULL","version":null}
+after-register-session {"status":"ACTIVE","revokedAt":"NULL"}
+after-minor {"status":"REJECTED","adultVerifiedAt":"NULL","version":"b30-adult-v1"}
+after-minor-session {"status":"ACTIVE","revokedAt":"NULL"}
+after-minor-audit account_registered	ALLOW	account_registered	1 | adult_gate	DENY	adult_age_below_minimum	1 | device_registered	ALLOW	device_registered	1 | session_opened	ALLOW	session_opened	1
+after-adult-year {"status":"REJECTED","adultVerifiedAt":"NULL","version":"b30-adult-v1"}
+after-adult-year-session {"status":"ACTIVE","revokedAt":"NULL"}
+after-adult-year-audit account_registered	ALLOW	account_registered	1 | adult_gate	DENY	adult_age_below_minimum	1 | device_registered	ALLOW	device_registered	1 | session_opened	ALLOW	session_opened	1
+after-relogin-new-session {"status":"ACTIVE","revokedAt":"NULL"}
+after-relogin-old-session {"status":"REVOKED","revokedAt":"SET"}
+account count=1 status=ACTIVE deletion=0 audit=8
+birthColumns=0 adultGateAllow=0 adultGateDeny=1
+plaintextYearHits none

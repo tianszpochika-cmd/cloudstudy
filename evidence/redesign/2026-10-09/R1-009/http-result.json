@@ -1,0 +1,250 @@
+{
+  "failures": [],
+  "out": [
+    {
+      "name": "primary.register",
+      "status": 201,
+      "detail": "2dc2f9b7-f3dd-42e4-a4df-0f8a7b07259c"
+    },
+    {
+      "name": "primary.adult",
+      "status": 200,
+      "detail": {
+        "status": "PASSED",
+        "learningAccess": "ELIGIBLE",
+        "effectiveAt": "2026-10-09T13:49:54.029433Z",
+        "policyVersion": "b30-adult-v1",
+        "minimumAge": 18,
+        "evidenceStatus": "SERVER_VERIFIED",
+        "retryAllowed": false
+      }
+    },
+    {
+      "name": "primary.accept.TERMS",
+      "status": 200,
+      "detail": "ACCEPTED"
+    },
+    {
+      "name": "primary.accept.PRIVACY",
+      "status": 200,
+      "detail": "ACCEPTED"
+    },
+    {
+      "name": "primary.accept.ADULT_LEARNING",
+      "status": 200,
+      "detail": "ACCEPTED"
+    },
+    {
+      "name": "primary.accept.PRODUCT_ANALYTICS",
+      "status": 200,
+      "detail": "ACCEPTED"
+    },
+    {
+      "name": "primary.login",
+      "status": 200
+    },
+    {
+      "name": "primary.claims",
+      "detail": {
+        "consent_state": "GRANTED",
+        "adult_gate": "PASSED",
+        "token_type": "access",
+        "sub": "cb0d7727-c7fa-4361-9652-4b4c1bc9fb8e"
+      }
+    },
+    {
+      "name": "before.public-profile",
+      "status": 200,
+      "detail": "has-data"
+    },
+    {
+      "name": "before.b25-options",
+      "status": 200,
+      "detail": "has-data"
+    },
+    {
+      "name": "before.b25-profile",
+      "status": 200,
+      "detail": "has-data"
+    },
+    {
+      "name": "before.b25-targets",
+      "status": 200,
+      "detail": "has-data"
+    },
+    {
+      "name": "before.privacy-export",
+      "status": 200,
+      "detail": "{\"status\":\"QUEUED\",\"exportId\":\"privacy-export-6d1a2947-8148-4f45-85dd-41a320699ac0\",\"redactionPolicy\":\"learner-self\"}"
+    },
+    {
+      "name": "before.principal-me",
+      "status": 200,
+      "detail": "ACTIVE"
+    },
+    {
+      "name": "withdraw.analytics",
+      "status": 200,
+      "detail": {
+        "effect": "RESTRICT_PROTECTED_CAPABILITY",
+        "appliesAt": "2026-10-09T13:49:55.303484Z",
+        "cacheInvalidationRequired": true,
+        "affectedCapabilities": [],
+        "sessionEffect": "UNCHANGED",
+        "accountEffect": "RETAINED",
+        "historyEffect": "RETAINED"
+      }
+    },
+    {
+      "name": "after-analytics.public-profile",
+      "status": 200,
+      "detail": "has-data"
+    },
+    {
+      "name": "after-analytics.b25-options",
+      "status": 200,
+      "detail": "has-data"
+    },
+    {
+      "name": "after-analytics.b25-profile",
+      "status": 200,
+      "detail": "has-data"
+    },
+    {
+      "name": "after-analytics.b25-targets",
+      "status": 200,
+      "detail": "has-data"
+    },
+    {
+      "name": "withdraw.adult",
+      "status": 200,
+      "detail": {
+        "effect": "RESTRICT_ALL_LEARNING_ACCESS",
+        "appliesAt": "2026-10-09T13:49:55.589119Z",
+        "cacheInvalidationRequired": true,
+        "affectedCapabilities": [
+          "LEARNING"
+        ],
+        "sessionEffect": "REVOKE_ALL_SESSIONS",
+        "accountEffect": "RETAINED",
+        "historyEffect": "RETAINED"
+      }
+    },
+    {
+      "name": "after-adult.public-profile",
+      "status": 403,
+      "detail": "CONSENT_REQUIRED"
+    },
+    {
+      "name": "after-adult.b25-options",
+      "status": 403,
+      "detail": "Forbidden"
+    },
+    {
+      "name": "after-adult.b25-profile",
+      "status": 403,
+      "detail": "Forbidden"
+    },
+    {
+      "name": "after-adult.b25-targets",
+      "status": 403,
+      "detail": "Forbidden"
+    },
+    {
+      "name": "after.privacy-export",
+      "status": 200,
+      "detail": "{\"status\":\"QUEUED\",\"exportId\":\"privacy-export-1b8a8b90-1dcd-4c05-b8e7-dd67bd60b21c\",\"redactionPolicy\":\"learner-self\"}"
+    },
+    {
+      "name": "after.principal-me",
+      "status": 401,
+      "detail": {
+        "errorCode": "AUTH_REFRESH_TOKEN_REVOKED",
+        "message": "iam.session.revoked",
+        "retryable": false
+      }
+    },
+    {
+      "name": "fact.user-token",
+      "status": 403,
+      "detail": ""
+    },
+    {
+      "name": "fact.service-token",
+      "status": 200,
+      "detail": [
+        "iam.consent.read"
+      ]
+    },
+    {
+      "name": "fact.after-withdraw",
+      "status": 200,
+      "detail": {
+        "principalId": "cb0d7727-c7fa-4361-9652-4b4c1bc9fb8e",
+        "learningConsent": "WITHDRAWN",
+        "learningAccess": "RESTRICTED"
+      }
+    },
+    {
+      "name": "second.register",
+      "status": 201,
+      "detail": "071bd8c2-207e-4d29-9060-27c09311a2df"
+    },
+    {
+      "name": "second.adult",
+      "status": 200,
+      "detail": {
+        "status": "PASSED",
+        "learningAccess": "ELIGIBLE",
+        "effectiveAt": "2026-10-09T13:49:56.253992Z",
+        "policyVersion": "b30-adult-v1",
+        "minimumAge": 18,
+        "evidenceStatus": "SERVER_VERIFIED",
+        "retryAllowed": false
+      }
+    },
+    {
+      "name": "second.accept.TERMS",
+      "status": 200,
+      "detail": "ACCEPTED"
+    },
+    {
+      "name": "second.accept.PRIVACY",
+      "status": 200,
+      "detail": "ACCEPTED"
+    },
+    {
+      "name": "second.accept.ADULT_LEARNING",
+      "status": 200,
+      "detail": "ACCEPTED"
+    },
+    {
+      "name": "second.accept.PRODUCT_ANALYTICS",
+      "status": 200,
+      "detail": "ACCEPTED"
+    },
+    {
+      "name": "second.login",
+      "status": 200
+    },
+    {
+      "name": "second.claims",
+      "detail": {
+        "consent_state": "GRANTED",
+        "adult_gate": "PASSED",
+        "token_type": "access",
+        "sub": "b0225c6a-343f-47ea-baeb-ac0316483e7e"
+      }
+    },
+    {
+      "name": "second.before-iam-stop",
+      "status": 200,
+      "detail": "has-data"
+    },
+    {
+      "name": "second.principal-me",
+      "status": 200,
+      "detail": "ACTIVE"
+    }
+  ]
+}

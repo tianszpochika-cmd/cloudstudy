@@ -16,7 +16,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -52,6 +54,69 @@ class B25LearnerJdbcAuthorizationTest {
 
         assertEquals("mysql", response.get("source"));
         verify(jdbc).queryForList(anyString());
+    }
+
+    @Test
+    void staleGrantedTokenIsForbiddenOnLearningRoutesWhenLiveConsentIsWithdrawn() {
+        JdbcTemplate jdbc = mock(JdbcTemplate.class);
+        LearningConsentRecheck withdrawn = principalId -> false;
+        B25LearnerJdbcController controller = new B25LearnerJdbcController(jdbc, withdrawn);
+        Authentication token = token(List.of("learner.profile.read", "learner.profile.write", "learner.target.write",
+                "learner.onboarding.read", "learning.plan.read", "learning.task.write", "learner.preference.write"),
+                "PASSED", "GRANTED");
+
+        for (GuardedRoute route : learningRoutes()) {
+            ResponseStatusException failure = assertThrows(ResponseStatusException.class,
+                    () -> route.action().accept(controller, token), route.name());
+            assertEquals(HttpStatus.FORBIDDEN, failure.getStatusCode(), route.name());
+            assertFalse(failure.getStatusCode().isSameCodeAs(HttpStatus.UNAUTHORIZED), route.name());
+        }
+        verifyNoInteractions(jdbc);
+    }
+
+    @Test
+    void liveGrantStillReachesLearningRead() {
+        JdbcTemplate jdbc = mock(JdbcTemplate.class);
+        when(jdbc.queryForList(anyString())).thenReturn(List.of());
+        B25LearnerJdbcController controller = new B25LearnerJdbcController(jdbc, principalId -> true);
+
+        Map<String, Object> response = controller.onboardingOptions(
+                token(List.of("learner.onboarding.read"), "PASSED", "GRANTED"));
+
+        assertEquals("mysql", response.get("source"));
+        verify(jdbc).queryForList(anyString());
+    }
+
+    @Test
+    void unreadableLiveConsentFailsClosedBeforeLearningData() {
+        JdbcTemplate jdbc = mock(JdbcTemplate.class);
+        LearningConsentRecheck unavailable = principalId -> {
+            throw new IllegalStateException("iam unavailable");
+        };
+        B25LearnerJdbcController controller = new B25LearnerJdbcController(jdbc, unavailable);
+
+        ResponseStatusException failure = assertThrows(ResponseStatusException.class, () -> controller.profile(
+                token(List.of("learner.profile.read"), "PASSED", "GRANTED")));
+
+        assertEquals(HttpStatus.FORBIDDEN, failure.getStatusCode());
+        verifyNoInteractions(jdbc);
+    }
+
+    @Test
+    void privacyExportStaysOpenWhenOnlyTheLiveLearningFactIsWithdrawn() {
+        JdbcTemplate jdbc = mock(JdbcTemplate.class);
+        B25LearnerJdbcController controller = new B25LearnerJdbcController(jdbc, principalId -> false);
+        Authentication token = token(List.of("iam.self.read", "iam.self.write"), "PASSED", "GRANTED");
+
+        ResponseStatusException missing = assertThrows(ResponseStatusException.class,
+                () -> controller.privacyExportStatus("export", token));
+
+        assertEquals(HttpStatus.NOT_FOUND, missing.getStatusCode());
+        verify(jdbc).queryForList(anyString(), eq("export"), eq("platform"), eq(SUBJECT));
+    }
+
+    private static List<GuardedRoute> learningRoutes() {
+        return routes().stream().filter(route -> !route.name().contains("privacy")).toList();
     }
 
     private static void assertDenied(GuardedRoute route, B25LearnerJdbcController controller,

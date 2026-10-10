@@ -27,6 +27,10 @@ public class LearnerServiceProperties {
     @NestedConfigurationProperty
     private LearnerPersistenceProperties persistence = new LearnerPersistenceProperties();
 
+    @Valid
+    @NestedConfigurationProperty
+    private ConsentRecheckProperties consentRecheck = new ConsentRecheckProperties();
+
     public String getPhase() {
         return phase;
     }
@@ -49,5 +53,30 @@ public class LearnerServiceProperties {
 
     public void setPersistence(LearnerPersistenceProperties persistence) {
         this.persistence = persistence;
+    }
+
+    public ConsentRecheckProperties getConsentRecheck() {
+        return consentRecheck;
+    }
+
+    public void setConsentRecheck(ConsentRecheckProperties consentRecheck) {
+        this.consentRecheck = consentRecheck == null ? new ConsentRecheckProperties() : consentRecheck;
+    }
+
+    /** Live IAM learning-consent read. On by default; a missing IAM answer fails closed. */
+    public static class ConsentRecheckProperties {
+        private boolean enabled = true;
+        private String iamBaseUrl = "https://127.0.0.1:18087";
+        private String clientId = "learner-service";
+        private String clientSecret = "";
+
+        public boolean isEnabled() { return enabled; }
+        public void setEnabled(boolean enabled) { this.enabled = enabled; }
+        public String getIamBaseUrl() { return iamBaseUrl; }
+        public void setIamBaseUrl(String iamBaseUrl) { this.iamBaseUrl = iamBaseUrl; }
+        public String getClientId() { return clientId; }
+        public void setClientId(String clientId) { this.clientId = clientId; }
+        public String getClientSecret() { return clientSecret; }
+        public void setClientSecret(String clientSecret) { this.clientSecret = clientSecret; }
     }
 }

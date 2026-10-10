@@ -44,11 +44,15 @@ public class JdbcAdultGateFactStore implements AdultGateFactStore {
             int updated = jdbc.update(
                     "UPDATE iam_principal SET adult_gate_status = 'APPROVED', "
                             + "adult_gate_version = ?, adult_verified_at = ? WHERE principal_id = ? "
+                            + "AND adult_gate_status <> 'REJECTED' "
                             + "AND NOT (adult_gate_status = 'APPROVED' AND adult_gate_version = ? "
                             + "AND adult_verified_at IS NOT NULL)",
                     policyVersion, Timestamp.from(evaluatedAt), principalId.toString(), policyVersion);
             if (updated != 1) {
                 AdultGateFact current = find(principalId, evaluatedAt);
+                if ("REJECTED".equals(current.status())) {
+                    return current;
+                }
                 if (!"APPROVED".equals(current.status()) || !policyVersion.equals(current.policyVersion())) {
                     throw unavailable();
                 }

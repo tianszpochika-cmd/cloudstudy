@@ -1,0 +1,17 @@
+account	status
+account	ACTIVE
+principal	status
+principal	ACTIVE
+deletion	COUNT(*)
+deletion	0
+consent	consent_type	status	IF(revoked_at IS NULL, 'open', 'revoked')
+consent	ADULT_LEARNING	GRANTED	open
+consent	ADULT_LEARNING	WITHDRAWN	revoked
+consent	PRIVACY_NOTICE	GRANTED	open
+consent	PRODUCT_ANALYTICS	GRANTED	open
+consent	PRODUCT_ANALYTICS	WITHDRAWN	revoked
+consent	TERMS_OF_SERVICE	GRANTED	open
+sessions	status	COUNT(*)
+sessions	REVOKED	2
+second_account	status
+second_account	ACTIVE

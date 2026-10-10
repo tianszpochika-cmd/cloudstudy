@@ -16,6 +16,10 @@ public final class InMemoryAdultGateFactStore implements AdultGateFactStore {
 
     @Override
     public AdultGateFact approve(PrincipalId principalId, String policyVersion, Instant evaluatedAt) {
+        AdultGateFact existing = facts.get(principalId);
+        if (existing != null && "REJECTED".equals(existing.status())) {
+            return existing;
+        }
         AdultGateFact fact = new AdultGateFact("APPROVED", policyVersion, evaluatedAt, false);
         facts.put(principalId, fact);
         return fact;

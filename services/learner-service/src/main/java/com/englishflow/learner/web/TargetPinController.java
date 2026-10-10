@@ -5,6 +5,8 @@ import com.englishflow.learner.application.TargetPinService;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -32,9 +34,20 @@ import org.springframework.web.server.ResponseStatusException;
 public final class TargetPinController {
 
     private final TargetPinService pins;
+    private final LearningConsentRecheck consentRecheck;
 
     public TargetPinController(TargetPinService pins) {
+        this(pins, (LearningConsentRecheck) null);
+    }
+
+    @Autowired
+    public TargetPinController(TargetPinService pins, ObjectProvider<LearningConsentRecheck> recheck) {
+        this(pins, recheck == null ? null : recheck.getIfAvailable());
+    }
+
+    TargetPinController(TargetPinService pins, LearningConsentRecheck consentRecheck) {
         this.pins = pins;
+        this.consentRecheck = consentRecheck;
     }
 
     @PutMapping("/pin")
@@ -42,7 +55,8 @@ public final class TargetPinController {
             @RequestBody(required = false) Map<String, Object> body,
             Authentication authentication,
             @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey) {
-        var principal = LearnerHttpPrincipals.requireLearningAccess(authentication, "learner.target.write");
+        var principal = LearnerHttpPrincipals.requireLearningAccess(
+                authentication, "learner.target.write", consentRecheck);
         requireKey(idempotencyKey);
         if (body == null) throw bad("pin request is required");
         long targetId = positiveLong(body.get("targetId"));

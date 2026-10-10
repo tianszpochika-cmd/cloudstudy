@@ -293,7 +293,7 @@ public final class LearnerHttpController {
                         .orElse(null),
                 matching.map(com.englishflow.learner.application.TargetPinService.TargetPin::contentEpoch)
                         .orElse(null),
-                version, goal.updatedAt());
+                version, version, goal.updatedAt());
     }
 
     private static String targetGoalCode(GoalType type) {
@@ -419,8 +419,14 @@ public final class LearnerHttpController {
             String status,
             Long pinnedContentVersionId,
             Long pinnedContentEpoch,
+            long targetVersion,
             long stateVersion,
             Instant updatedAt) {
+        public TargetData {
+            if (targetVersion != stateVersion) {
+                throw new IllegalArgumentException("targetVersion must equal stateVersion");
+            }
+        }
     }
 
     public record PreferencesData(

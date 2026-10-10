@@ -1,0 +1,20 @@
+-- SELECT (SELECT COUNT(*) FROM r1_010_lrn_20261009_dfd353d3ff81.learner_goal),(SELECT COUNT(*) FROM r1_010_lrn_20261009_dfd353d3ff81.learner_profile),(SELECT COUNT(*) FROM r1_010_lrn_20261009_dfd353d3ff81.b25_learner_goal),(SELECT COUNT(*) FROM r1_010_lrn_20261009_dfd353d3ff81.learner_idempotency_record),(SELECT COUNT(*) FROM r1_010_lrn_20261009_dfd353d3ff81.learner_outbox_event);
+0	0	0	0	0
+
+-- SELECT (SELECT COUNT(*) FROM r1_010_lrn_20261009_dfd353d3ff81.learner_goal),(SELECT COUNT(*) FROM r1_010_lrn_20261009_dfd353d3ff81.learner_profile),(SELECT COUNT(*) FROM r1_010_lrn_20261009_dfd353d3ff81.b25_learner_goal),(SELECT COUNT(*) FROM r1_010_lrn_20261009_dfd353d3ff81.learner_idempotency_record),(SELECT COUNT(*) FROM r1_010_lrn_20261009_dfd353d3ff81.learner_outbox_event);
+0	0	0	0	0
+
+-- SELECT (SELECT COUNT(*) FROM r1_010_lrn_20261009_dfd353d3ff81.learner_goal),(SELECT COUNT(*) FROM r1_010_lrn_20261009_dfd353d3ff81.learner_profile),(SELECT COUNT(*) FROM r1_010_lrn_20261009_dfd353d3ff81.b25_learner_goal),(SELECT COUNT(*) FROM r1_010_lrn_20261009_dfd353d3ff81.learner_idempotency_record),(SELECT COUNT(*) FROM r1_010_lrn_20261009_dfd353d3ff81.learner_outbox_event);
+0	0	0	0	0
+
+-- SELECT p.onboarding_state, p.profile_version, g.goal_type, g.daily_study_minutes, g.starting_level, g.target_id, (SELECT COUNT(*) FROM r1_010_lrn_20261009_dfd353d3ff81.learner_goal g2 WHERE g2.owner_id='fc080ce6-afa3-4c3e-8770-ce9b871a95a6') FROM r1_010_lrn_20261009_dfd353d3ff81.learner_profile p LEFT JOIN r1_010_lrn_20261009_dfd353d3ff81.learner_goal g ON g.profile_id=p.profile_id WHERE p.owner_id='fc080ce6-afa3-4c3e-8770-ce9b871a95a6';
+DRAFT	1	CET_4_6	30	B1	1001	1
+
+-- SELECT (SELECT COUNT(*) FROM r1_010_lrn_20261009_dfd353d3ff81.learner_goal),(SELECT COUNT(*) FROM r1_010_lrn_20261009_dfd353d3ff81.learner_profile),(SELECT COUNT(*) FROM r1_010_lrn_20261009_dfd353d3ff81.b25_learner_goal),(SELECT COUNT(*) FROM r1_010_lrn_20261009_dfd353d3ff81.learner_idempotency_record),(SELECT COUNT(*) FROM r1_010_lrn_20261009_dfd353d3ff81.learner_outbox_event);
+1	1	0	1	1
+
+-- SELECT (SELECT COUNT(*) FROM r1_010_lrn_20261009_dfd353d3ff81.learner_goal),(SELECT COUNT(*) FROM r1_010_lrn_20261009_dfd353d3ff81.learner_profile),(SELECT COUNT(*) FROM r1_010_lrn_20261009_dfd353d3ff81.b25_learner_goal),(SELECT COUNT(*) FROM r1_010_lrn_20261009_dfd353d3ff81.learner_idempotency_record),(SELECT COUNT(*) FROM r1_010_lrn_20261009_dfd353d3ff81.learner_outbox_event);
+1	1	0	1	1
+
+-- SELECT p.onboarding_state, p.profile_version, g.goal_type, g.daily_study_minutes, g.starting_level, g.target_id, (SELECT COUNT(*) FROM r1_010_lrn_20261009_dfd353d3ff81.learner_goal g2 WHERE g2.owner_id='fc080ce6-afa3-4c3e-8770-ce9b871a95a6') FROM r1_010_lrn_20261009_dfd353d3ff81.learner_profile p LEFT JOIN r1_010_lrn_20261009_dfd353d3ff81.learner_goal g ON g.profile_id=p.profile_id WHERE p.owner_id='fc080ce6-afa3-4c3e-8770-ce9b871a95a6';
+DRAFT	1	CET_4_6	30	B1	1001	1

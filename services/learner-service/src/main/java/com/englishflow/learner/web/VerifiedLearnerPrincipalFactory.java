@@ -24,9 +24,16 @@ import org.springframework.security.oauth2.jwt.Jwt;
 public final class VerifiedLearnerPrincipalFactory {
 
     private final LearnerServiceProperties properties;
+    private final LearningConsentRecheck consentRecheck;
 
     public VerifiedLearnerPrincipalFactory(LearnerServiceProperties properties) {
+        this(properties, null);
+    }
+
+    public VerifiedLearnerPrincipalFactory(LearnerServiceProperties properties,
+                                            LearningConsentRecheck consentRecheck) {
         this.properties = properties;
+        this.consentRecheck = consentRecheck;
     }
 
     public LearnerPrincipalContext from(Authentication authentication) {
@@ -69,11 +76,23 @@ public final class VerifiedLearnerPrincipalFactory {
         ConsentState consentState = "GRANTED".equalsIgnoreCase(consent)
                 ? ConsentState.GRANTED
                 : "WITHDRAWN".equalsIgnoreCase(consent) ? ConsentState.WITHDRAWN : ConsentState.UNKNOWN;
+        if (consentRecheck != null && consentState == ConsentState.GRANTED && !liveGrant(principalId)) {
+            // A previously issued GRANTED claim is not current after withdrawal.
+            consentState = ConsentState.WITHDRAWN;
+        }
         boolean revoked = Boolean.TRUE.equals(jwt.getClaim("revoked"))
                 || "REVOKED".equalsIgnoreCase(firstText(jwt, "status"));
         return new LearnerPrincipalContext(
                 LearnerTenantScope.forPhaseOne(principalId), properties.getPhase(), roles, permissions,
                 consentState, revoked, ClientAuthorityClaims.none());
+    }
+
+    private boolean liveGrant(String principalId) {
+        try {
+            return consentRecheck.currentlyGranted(principalId);
+        } catch (RuntimeException unavailable) {
+            return false;
+        }
     }
 
     private static String firstText(Jwt jwt, String... names) {

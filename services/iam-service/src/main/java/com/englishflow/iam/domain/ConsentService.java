@@ -148,6 +148,24 @@ public final class ConsentService {
     }
 
     /**
+     * Capabilities whose canonical required set includes this document. The result is the
+     * withdrawal impact list: it does not add capabilities, delete the account, or erase history.
+     */
+    public List<String> capabilitiesRestrictedBy(ConsentType type) {
+        Objects.requireNonNull(type, "type");
+        return List.of(
+                        "ACCOUNT", "LEARNING", "ANALYTICS",
+                        "VOICE_REMOTE_PROCESS", "VOICE_REMOTE_RECORD",
+                        "VOICE_REMOTE_REPLAY", "VOICE_REMOTE_UPLOAD")
+                .stream()
+                .filter(capability -> {
+                    Set<ConsentType> required = CANONICAL_REQUIRED_TYPES.get(capability);
+                    return required != null && required.contains(type);
+                })
+                .toList();
+    }
+
+    /**
      * Checks only the consent purposes required for one server-selected capability. Optional
      * analytics consent and capability-specific voice consent therefore cannot become global
      * account gates.

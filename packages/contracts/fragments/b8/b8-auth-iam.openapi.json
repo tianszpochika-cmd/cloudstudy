@@ -2278,6 +2278,53 @@
         }
       }
     },
+    "/internal/v1/iam/principals/{principalId}/learning-consent": {
+      "get": {
+        "tags": ["b8-auth"],
+        "operationId": "getIamLearningConsentFact",
+        "summary": "Read the current learning-consent fact for a trusted PEP",
+        "security": [{"B8ServiceIdentity": []}],
+        "x-contract": {
+          "domain": "iam",
+          "owner": "iam-service",
+          "phase": "P1",
+          "internalOnly": true
+        },
+        "x-authorization": {
+          "requiredPermission": "iam.consent.read",
+          "defaultDecision": "DENY",
+          "source": "consent-store-not-caller-claims"
+        },
+        "parameters": [
+          {
+            "name": "principalId",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string", "format": "uuid"}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Current learning consent fact read from the consent store, not from the caller token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["data"],
+                  "properties": {
+                    "data": {"$ref": "#/components/schemas/B8LearningConsentFact"}
+                  }
+                }
+              }
+            }
+          },
+          "400": {"$ref": "#/components/responses/ApiBadRequest"},
+          "401": {"$ref": "#/components/responses/ApiUnauthorized"},
+          "403": {"$ref": "#/components/responses/ApiForbidden"}
+        }
+      }
+    },
     "/internal/v1/iam/policy-bundles/active": {
       "get": {
         "tags": [
@@ -4811,6 +4858,17 @@
           }
         }
       },
+      "B8LearningConsentFact": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["principalId", "learningConsent", "learningAccess"],
+        "description": "Live learning-consent fact for a trusted PEP. GRANTED/ELIGIBLE only when every LEARNING-required consent is currently accepted against the published document.",
+        "properties": {
+          "principalId": {"type": "string", "format": "uuid"},
+          "learningConsent": {"type": "string", "enum": ["GRANTED", "WITHDRAWN"]},
+          "learningAccess": {"type": "string", "enum": ["ELIGIBLE", "RESTRICTED"]}
+        }
+      },
       "B8ConsentWithdrawalEffect": {
         "type": "object",
         "additionalProperties": false,
@@ -4835,6 +4893,37 @@
           },
           "cacheInvalidationRequired": {
             "type": "boolean"
+          },
+          "affectedCapabilities": {
+            "type": "array",
+            "description": "Capabilities whose canonical required-consent set includes this document and stay unsatisfied while the decision is WITHDRAWN. Empty when the decision is ACCEPTED, and empty for an optional document outside those sets. The list is not account deletion, does not erase consent history, and does not close privacy-export or support routes.",
+            "items": {
+              "type": "string",
+              "enum": [
+                "ACCOUNT",
+                "LEARNING",
+                "ANALYTICS",
+                "VOICE_REMOTE_PROCESS",
+                "VOICE_REMOTE_RECORD",
+                "VOICE_REMOTE_REPLAY",
+                "VOICE_REMOTE_UPLOAD"
+              ]
+            }
+          },
+          "sessionEffect": {
+            "type": "string",
+            "enum": ["UNCHANGED", "REVOKE_ALL_SESSIONS"],
+            "description": "REVOKE_ALL_SESSIONS only when the withdrawn fact's published revokeSessions flag is true. Optional and voice withdrawal stay UNCHANGED."
+          },
+          "accountEffect": {
+            "type": "string",
+            "const": "RETAINED",
+            "description": "Withdrawal retains the account. It is not an account-deletion request."
+          },
+          "historyEffect": {
+            "type": "string",
+            "const": "RETAINED",
+            "description": "Prior consent rows stay in immutable history. Withdrawal appends a new fact and does not overwrite the granted row."
           }
         }
       },
