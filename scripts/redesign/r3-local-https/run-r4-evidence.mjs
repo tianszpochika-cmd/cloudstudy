@@ -16,9 +16,9 @@ import { certificateSpkiHash, prepareIamTls } from './prepare-iam-tls.mjs';
 
 const root = '/Users/Admin/Desktop/work/cloudstudy';
 const day = 'evidence/redesign/2026-10-11';
-const it4Evidence = join(root, day, `it4-browser-${suffix}`);
 const container = 'yuxuexing-local-mysql-1';
 const suffix = randomBytes(4).toString('hex');
+const it4Evidence = join(root, day, `it4-browser-${suffix}`);
 const names = {
   iam: [`r4_it4_20261011_iam_${suffix}`, `r4i_iam_${suffix}`],
   learner: [`r4_it4_20261011_lrn_${suffix}`, `r4i_lrn_${suffix}`],
