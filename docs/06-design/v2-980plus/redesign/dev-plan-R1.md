@@ -60,4 +60,26 @@ L1 共 17 卡，R1 迭代列车见下节。
 | R1-028 | IC-010…012/058/059 | 定级交互验收（引导/答题/反馈/报告/重试） | 幕幕对稿 → owner: learner-web；依赖：R1-022 |
 | R1-029 | — | L2 干净库重放（10 道→报告） | 全绿归档 → owner: QA；依赖：R1-018…028 |
 
-L2 共 12 卡；本文已细拆合计 29 卡。后续先恢复核对原全量计划，确认当前卡与依赖；进入 IT-3 前补齐 L3 细卡及验收，不能把本文尾部当作立即开发 L3 的指令。
+L2 共 12 卡。
+
+## L3 计划今日环（BC-023…032/199 → R1-030…042）
+
+> 2026-10-10 按 IT-3 真实 BC/IC 拆卡。编号从 R1-030 连续接在 R1-029 之后，不按 114 卡墙计数补空卡。本文仍只定义任务，不记录完成状态。IT-4 及以后仍等进站再拆。
+
+| 卡 | BC | 做什么 | 验收 |
+|---|---|---|---|
+| R1-030 | BC-023 | ensure 只接受正式报告指针：校验后 pin，再生成计划。缺报告或输入不足返回可解释失败，不把空计划当成成功。DEC-03 未批，跳过基线不进入 ensure | 缺 `placementReportId` 为 422；正式报告返回 planId、status、targetMinutes、planVersion → owner: learning-service；依赖：R1-022 |
+| R1-031 | BC-024 | 同一学习者、同一正式报告和稳定幂等键重放同一计划。来源或目标变化用新键，旧键不能覆盖旧结果 | 同键 `replayed=true`；同键异体 409 → owner: learning-service + learner-web/mobile；依赖：R1-030 |
+| R1-032 | BC-025 | 首页计划横幅显示服务端分钟、状态和解释。不能只因为有 planId 就当成可以开始 | Web/H5 两视口横幅对稿 → owner: learner-web/mobile；依赖：R1-030 |
+| R1-033 | BC-026 | 一句话解释只来自目标、每日分钟和 resultKind。SKIPPED 写“初始安排，后续按练习调整”，不暗示已经测准。解释不写入 planningInput 键集 | 纯函数单测锁住文案和键集 → owner: learning-service；依赖：R1-030 |
+| R1-034 | BC-027 | 今日任务携带有效 practiceRef。没有指针的项不编造题干。空队列返回 emptyReason | 有指针才能练习；空队列带原因 → owner: learning-service + learner-web/mobile；依赖：R1-030 |
+| R1-035 | BC-028 | 空态分流：未建计划、今日完成、暂无内容、暂无到期复习、请求失败各自给出动作，不统一引导重测 | NO_PLAN 开始设置，COMPLETED 结束学习，NO_CONTENT 看可用内容，NO_DUE_REVIEW 新学或结束，失败重试 → owner: learner-web/mobile；依赖：R1-034 |
+| R1-036 | BC-029 | 目标确认后按 If-Match 计划版本重排未开始任务。已完成 SRS 不删除，旧快照不改。版本不符 409 | 重排后完成行仍在；冲突不覆盖 → owner: learning-service；依赖：R1-030、R1-038 |
+| R1-037 | BC-030 | Web 与 H5 读回同一个 planId 和 planVersion。提交冲突时重新读取，不回写过期计划 | 两端字段一致；409 后重读 → owner: learner-web/mobile；依赖：R1-032 |
+| R1-038 | BC-031 | 计划输入快照只追加 pin_version。相同摘要重放，不同摘要插入新版本，不 UPDATE。撞上已有版本 409。解释引用写入当时的句子 | 主键含 pin_version；历史行不被改写 → owner: learning-service；依赖：R1-030 |
+| R1-039 | BC-032 | 首次学习引导看第一项有没有完成，不看注册是否超过 24 小时。没有任务时说明还不能开始，不假装已完成 | 未完成可见，完成后收起 → owner: learning-service + learner-web/mobile；依赖：R1-034 |
+| R1-040 | BC-199 | 书架只列可访问的已发布内容。空目录、无搜索结果、加载失败分开。续学进入仍有效的检查点，过期上下文不能绕过 | 三态分开；ACTIVE 才继续 → owner: learner-web/mobile；依赖：R1-032 |
+| R1-041 | IC-013…021/029 | 计划今日交互验收：生成、解释、今日任务、空态、首页、首次引导、书架续学 | 幕幕对稿 → owner: learner-web/mobile；依赖：R1-030…040 |
+| R1-042 | — | L3 干净库重放：报告到横幅，再到今日有任务 | 证据归档。Luna 未签前 lunaStamp 保持 false → owner: QA；依赖：R1-030…041 |
+
+L3 共 13 卡。本文已细拆合计 42 卡。IT-4～IT-7 不在本表，不能按剩余卡数补造。
