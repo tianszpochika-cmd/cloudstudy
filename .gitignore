@@ -32,6 +32,9 @@ Thumbs.db
 .workbuddy/
 *.swp
 
+# Local TLS material (test CA, PKCS12, signing key, passwords). Never commit.
+.runtime/
+
 # local data and logs
 logs/*
 !logs/.gitkeep

@@ -1,8 +1,10 @@
 import net from 'node:net';
 import crypto from 'node:crypto';
+import https from 'node:https';
 import { existsSync, mkdirSync, readdirSync, readFileSync } from 'node:fs';
 import { spawn, spawnSync } from 'node:child_process';
 import path from 'node:path';
+import { loadIamTls } from '../redesign/r3-local-https/prepare-iam-tls.mjs';
 
 const root = process.cwd();
 const manifest = JSON.parse(readFileSync(path.join(root, 'config', 'v2-runtime-services.json'), 'utf8'));
@@ -62,6 +64,12 @@ if (unknown.length > 0) {
 const selected = selectAll
   ? manifest.services.filter(service => includeLegacy || service.profile !== 'legacy-compatibility')
   : requested.map((id) => byId.get(id));
+const iamTls = loadIamTls();
+if (iamTls) {
+  console.log(`[services:run] iam tls https://127.0.0.1:18087 spki=${iamTls.spki}`);
+} else {
+  console.log('[services:run] no .runtime/r3-iam-tls material; iam stays on HTTP');
+}
 
 function assertJava25() {
   const result = spawnSync(process.platform === 'win32' ? 'java.exe' : 'java', ['-version'], {
@@ -120,8 +128,8 @@ function activeProfiles(service) {
 }
 
 function runtimeEnvironment(service, port) {
-  const jwtIssuer = process.env.IAM_JWT_ISSUER ?? 'http://127.0.0.1:18087';
-  const jwtJwks = process.env.IAM_JWT_JWKS_URI ?? `${jwtIssuer.replace(/\/$/, '')}/api/v1/auth/jwks`;
+  const jwtIssuer = process.env.IAM_JWT_ISSUER ?? iamTls?.issuer ?? 'http://127.0.0.1:18087';
+  const jwtJwks = process.env.IAM_JWT_JWKS_URI ?? iamTls?.jwks ?? `${jwtIssuer.replace(/\/$/, '')}/api/v1/auth/jwks`;
   const jwtAudience = process.env.IAM_JWT_AUDIENCE ?? 'yuxuexing-api';
   const environment = {
     ...process.env,
@@ -167,13 +175,28 @@ function runtimeEnvironment(service, port) {
     // harness therefore starts IAM with `--spring.profiles.active=local`; see activeProfiles().
     // A stable RSA file key keeps the published JWKS valid across restarts; without one IAM
     // falls back to the local-profile ephemeral key and the JWKS rotates on every restart.
-    const signingKeyFile = process.env.IAM_JWT_PRIVATE_KEY_FILE ?? path.join('secrets', 'iam-rsa-private.pem');
-    if (signingKeyFile && existsSync(path.join(root, signingKeyFile))) {
-      environment.IAM_JWT_PRIVATE_KEY_FILE = signingKeyFile;
+    const signingKeyFile = process.env.IAM_JWT_PRIVATE_KEY_FILE
+      ?? (iamTls ? iamTls.signerPem : path.join('secrets', 'iam-rsa-private.pem'));
+    const signingKeyAbsolute = path.isAbsolute(signingKeyFile) ? signingKeyFile : path.join(root, signingKeyFile);
+    if (signingKeyFile && existsSync(signingKeyAbsolute)) {
+      environment.IAM_JWT_PRIVATE_KEY_FILE = signingKeyAbsolute;
+      if (iamTls) environment.IAM_JWT_EPHEMERAL_KEYS_ALLOWED = 'false';
     } else {
       console.warn(`[services:run] iam-service: no signing key at ${signingKeyFile}; `
         + 'falling back to the ephemeral local-profile key (JWKS rotates on restart)');
     }
+    if (iamTls) {
+      environment.SERVER_SSL_ENABLED = 'true';
+      environment.SERVER_SSL_KEY_STORE_TYPE = 'PKCS12';
+      environment.SERVER_SSL_KEY_ALIAS = iamTls.keyAlias;
+      environment.SERVER_SSL_KEY_STORE = iamTls.keyStore;
+      environment.SERVER_SSL_KEY_STORE_PASSWORD = iamTls.keystorePassword;
+      environment.IAM_JWT_REFRESH_COOKIE_SECURE = 'true';
+    }
+  }
+  if (iamTls) {
+    environment.IAM_SERVICE_BASE_URL = process.env.IAM_SERVICE_BASE_URL ?? 'https://127.0.0.1:18087';
+    environment.LEARNER_CONSENT_RECHECK_IAM_BASE_URL = process.env.LEARNER_CONSENT_RECHECK_IAM_BASE_URL ?? 'https://127.0.0.1:18087';
   }
   if (service.id === 'api-gateway') {
     environment.GATEWAY_RESOURCE_SERVER_ENABLED = 'true';
@@ -234,7 +257,8 @@ function runtimeEnvironment(service, port) {
   // that record cannot carry optional components — see GatewayAuditProperties.
   if (service.id === 'api-gateway') {
     environment.GATEWAY_AUDIT_INGEST_URI = process.env.GATEWAY_AUDIT_INGEST_URI ?? 'http://127.0.0.1:18099/internal/v1/audit/events';
-    environment.GATEWAY_AUDIT_SERVICE_TOKEN_URI = process.env.GATEWAY_AUDIT_SERVICE_TOKEN_URI ?? 'http://127.0.0.1:18087/internal/v1/iam/service-token';
+    environment.GATEWAY_AUDIT_SERVICE_TOKEN_URI = process.env.GATEWAY_AUDIT_SERVICE_TOKEN_URI
+      ?? (iamTls ? 'https://127.0.0.1:18087/internal/v1/iam/service-token' : 'http://127.0.0.1:18087/internal/v1/iam/service-token');
     environment.GATEWAY_AUDIT_SERVICE_CLIENT_ID = process.env.GATEWAY_AUDIT_SERVICE_CLIENT_ID ?? 'api-gateway';
     environment.GATEWAY_AUDIT_SERVICE_CLIENT_SECRET = process.env.GATEWAY_AUDIT_SERVICE_CLIENT_SECRET ?? 'local-gateway-service-secret';
   }
@@ -376,10 +400,33 @@ function runtimeEnvironment(service, port) {
   return environment;
 }
 
+function httpsStatus(port, requestPath, caPem) {
+  return new Promise((resolve, reject) => {
+    const request = https.request({
+      host: manifest.host,
+      port,
+      path: requestPath,
+      method: 'GET',
+      ca: readFileSync(caPem),
+      rejectUnauthorized: true,
+      servername: manifest.host,
+      timeout: 4000,
+    }, (response) => {
+      response.resume();
+      resolve(response.statusCode ?? 0);
+    });
+    request.on('timeout', () => request.destroy(new Error('timeout')));
+    request.on('error', reject);
+    request.end();
+  });
+}
+
 async function waitForHealth(service, child) {
   const port = ports.services[service.portKey]?.port;
   const healthBasePath = service.healthBasePath ?? '';
-  const url = `http://${manifest.host}:${port}${healthBasePath}${service.healthPath}`;
+  const requestPath = `${healthBasePath}${service.healthPath}`;
+  const httpsIam = Boolean(iamTls) && service.id === 'iam-service';
+  const url = `${httpsIam ? 'https' : 'http'}://${manifest.host}:${port}${requestPath}`;
   const deadline = Date.now() + timeoutMs;
   let lastError = 'no response';
   let exited = null;
@@ -387,15 +434,31 @@ async function waitForHealth(service, child) {
   while (Date.now() < deadline) {
     if (exited) throw new Error(`${service.id}: exited before health check (${exited})`);
     try {
-      const response = await fetch(url);
-      if (response.ok) return;
-      lastError = `HTTP ${response.status}`;
+      if (httpsIam) {
+        const status = await httpsStatus(port, requestPath, iamTls.caPem);
+        if (status >= 200 && status < 300) return;
+        lastError = `HTTP ${status}`;
+      } else {
+        const response = await fetch(url);
+        if (response.ok) return;
+        lastError = `HTTP ${response.status}`;
+      }
     } catch (error) {
       lastError = error.message;
     }
     await new Promise((resolve) => setTimeout(resolve, 1000));
   }
   throw new Error(`${service.id}: health timeout at ${url} (${lastError})`);
+}
+
+function jvmTlsArgs() {
+  if (!iamTls) return [];
+  return [
+    `-Djavax.net.ssl.trustStore=${iamTls.trustStore}`,
+    '-Djavax.net.ssl.trustStoreType=PKCS12',
+    `-Djavax.net.ssl.trustStorePassword=${iamTls.truststorePassword}`,
+    '-Dio.netty.handler.ssl.noOpenSsl=true',
+  ];
 }
 
 const children = [];
@@ -433,6 +496,7 @@ try {
     if (!jar) throw new Error(`${service.id}: no built jar found; run pnpm services:build -- --service ${service.id}`);
     const port = ports.services[service.portKey].port;
     const child = spawn('java', [
+      ...jvmTlsArgs(),
       '-jar', jar,
       `--server.address=${manifest.host}`,
       `--server.port=${port}`,

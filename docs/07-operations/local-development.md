@@ -62,7 +62,15 @@ pnpm p1r:kafka:topics -- --apply
 pnpm services:build -- --all
 ```
 
-6. 启动服务。全新的 IAM 数据库首次迁移，以及尚未执行 V13 的旧库，需要先关闭写入口、确认所有旧 IAM writer 和在途请求已排空，再显式确认：
+6. 需要学习端直达 IAM TLS 时，先在忽略目录生成回环测试证书。私钥留在 `.runtime/r3-iam-tls/`，不进 Git，也不写入 macOS 钥匙串。步骤见 [r3 本地 HTTPS](../../scripts/redesign/r3-local-https/README.md)。
+
+```sh
+node scripts/redesign/r3-local-https/prepare-iam-tls.mjs
+```
+
+有这份材料时，下一步的 `pnpm services:run` 让 IAM 监听 `https://127.0.0.1:18087`，令牌签发者仍是 `http://127.0.0.1:18087`，JWKS 走 HTTPS。没有材料时 IAM 保持 HTTP。Node 进程要在启动前设置 `NODE_EXTRA_CA_CERTS` 指向 `test-ca.pem`。浏览器只放行 `public.json` 里的 SPKI，不用全局忽略证书。
+
+7. 启动服务。全新的 IAM 数据库首次迁移，以及尚未执行 V13 的旧库，需要先关闭写入口、确认所有旧 IAM writer 和在途请求已排空，再显式确认：
 
 ```sh
 IAM_IDEMPOTENCY_V13_WRITERS_DRAINED=true pnpm services:run -- --all --timeout-ms 120000
@@ -76,7 +84,7 @@ pnpm services:run -- --all --timeout-ms 120000
 
 `--all` 默认运行 15 个 v2 服务，含 workflow/audit。Core API 为 v1 兼容边界，仅在显式 `--include-legacy` 或 `--service core-api` 时启动；使用它须另起 RabbitMQ，不能据兼容进程声称 v2 功能完成。IAM 迁移失败时保留数据库，检查失败版本与 schema；禁止自动清库、baseline 或未经核对的 repair。V5 删除旧 provider 表需要 IAM schema 内 DROP 权限，新准备脚本已包含此权限。
 
-7. 分别打开四个终端启动前端：
+8. 分别打开四个终端启动前端：
 
 ```sh
 pnpm --filter @englishflow/learner-web dev

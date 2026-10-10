@@ -1,5 +1,10 @@
 # Changelog
 
+- [R3-LOCAL-IAM-HTTPS-20261010] **本地 IAM 可按忽略目录里的测试证书以 HTTPS 监听 18087。**
+  - `scripts/redesign/r3-local-https/prepare-iam-tls.mjs` 在 `.runtime/r3-iam-tls/` 生成回环 CA、PKCS12 和 JVM 信任库。口令和私钥不进 Git，也不写入 macOS 钥匙串。
+  - `pnpm services:run` 发现该材料后打开 IAM TLS，JWKS 与 Gateway 上游改为 `https://127.0.0.1:18087`，令牌 `iss` 仍是 `http://127.0.0.1:18087`。没有材料时保持 HTTP。
+  - 浏览器信任方式是 Chrome/Playwright 的 `--ignore-certificate-errors-spki-list`。Node 使用 `NODE_EXTRA_CA_CERTS`。
+
 - [R1-030-042-20261010] **IT-3 计划今日（R1-030…040）代码落地；浏览器站与干净库重放未跑。**
   - learning-service：正式报告才写解释句；输入快照只追加 `pin_version`，不覆盖历史；`POST /api/v1/learning/plans:replan` 要求确认影响和 `If-Match`，只改未开始的 SRS，已完成行保留。Flyway `V12`。
   - 契约增补今日空态、解释、首次学习引导和重排请求/结果。Gateway 增加 `plans-replan` 保留路由。
