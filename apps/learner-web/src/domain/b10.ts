@@ -36,6 +36,7 @@ export interface B10VocabularyCard {
   title: string
   phoneticUs: string | null
   phoneticUk: string | null
+  audioUrl?: string | null
   frontHint: string | null
   contentVersionId: number | null
   contentLocale: string

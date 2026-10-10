@@ -19,9 +19,9 @@ const primary: Link[] = [
   { name: 'courses', key: 'courses', icon: 'book' }, { name: 'learn', key: 'learn', icon: 'route' },
 ]
 const practices: Link[] = [
-  { name: 'vocabulary', key: 'vocabulary', icon: 'cards' }, { name: 'b3-listening', key: 'listening', icon: 'headphones' },
-  { name: 'b3-reading', key: 'reading', icon: 'book' }, { name: 'b3-speaking', key: 'speaking', icon: 'mic' },
-  { name: 'b3-grammar', key: 'grammar', icon: 'spark' }, { name: 'b3-writing', key: 'writing', icon: 'pen' },
+  { name: 'vocabulary', key: 'vocabulary', icon: 'cards' },
+  { name: 'b3-reading', key: 'reading', icon: 'book' },
+  { name: 'b3-grammar', key: 'grammar', icon: 'spark' },
   { name: 'b2-practice', key: 'practice', icon: 'check' },
 ]
 const growth: Link[] = [
@@ -50,7 +50,6 @@ const inboxState = ref<'idle' | 'loading' | 'error'>('idle')
 const unread = computed(() => inbox.value.filter(m => !m.read).length)
 function active(item: Link) {
   if (item.name === 'b2-report') return ['b2-report', 'weakness-report'].includes(String(route.name))
-  if (item.name === 'b3-writing') return ['b3-writing', 'writing-practice'].includes(String(route.name))
   if (item.name === 'b3-reading') return ['b3-reading', 'reader'].includes(String(route.name))
   return item.name === route.name
 }

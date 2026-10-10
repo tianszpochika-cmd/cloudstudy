@@ -9,8 +9,9 @@ import { createAdaptivePerformanceEngine, type PerformanceLevel } from '@english
 import B10StatusPanel from '../../components/b10/B10StatusPanel.vue'
 import { useB10LearningStore } from '../../stores/b10-learning'
 import { b10ThemeMode, b10T } from '../../platform/b10-foundation'
-import { openUniPage } from '../../platform/uni-runtime'
+import { getUniRuntime, openUniPage } from '../../platform/uni-runtime'
 import { ensureMobilePageAccess } from '../../auth/navigation'
+import { vocabPlayable } from '../../domain/closed-practice'
 
 const store = useB10LearningStore()
 const engine = createAdaptivePerformanceEngine()
@@ -23,6 +24,14 @@ function open(path: string): void { openUniPage(path) }
 function load(): void { void store.loadSrs() }
 function reveal(): void { void store.revealCard() }
 function rate(value: 0 | 1 | 2 | 3): void { void store.rateCard(value) }
+function playAudio(): void {
+  const src = store.currentCard?.audioUrl
+  if (!vocabPlayable(src)) return
+  const context = getUniRuntime().createInnerAudioContext?.()
+  if (!context || !src) return
+  context.src = src
+  context.play()
+}
 onShow(async () => { if (await ensureMobilePageAccess('/pages/b2-vocabulary/b2-vocabulary')) load() })
 onUnmounted(() => engine.dispose())
 </script>
@@ -37,6 +46,8 @@ onUnmounted(() => engine.dispose())
       <view class="b10-vocab-card__meta"><text>{{ store.currentCard.sourceReason }}</text><text v-if="store.currentCard.masteryStatus">{{ store.currentCard.masteryStatus }}</text></view>
       <text class="b10-vocab-card__word">{{ store.currentCard.title }}</text>
       <text v-if="store.currentCard.phonetic" class="b10-vocab-card__phonetic">{{ store.currentCard.phonetic }}</text>
+      <button v-if="vocabPlayable(store.currentCard.audioUrl)" type="button" data-vocab-play @click="playAudio">播放</button>
+      <text v-else data-vocab-silent>没有发音，不能播放。</text>
       <text v-if="store.currentCard.hint && !store.currentCard.revealed" class="b10-vocab-card__hint">{{ store.currentCard.hint }}</text>
       <text v-if="!store.currentCard.revealed" class="b10-vocab-card__privacy">正面不展示释义、例句或标准答案。</text>
       <button tabindex="0" role="button" v-if="!store.currentCard.revealed" class="yx-button" type="button" :disabled="store.status === 'loading'" @click="reveal">{{ store.status === 'loading' ? b10T('vocab.revealing') : b10T('vocab.reveal') }}</button>

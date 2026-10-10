@@ -28,6 +28,7 @@ onUnmounted(() => { audio.value?.destroy(); unsubscribe(); engine.dispose() })
 <template>
   <view class="yx-page" :style="experienceStyle" :data-motion="experienceMotion">
     <MobilePageHeader page="b3-listening" />
+    <view class="yx-card" data-closed-practice role="status"><text>听力功能暂未开放，可以先做其他练习。</text><button type="button" data-closed-back @click="getUniRuntime().navigateTo({ url: '/pages/today/today' })">回到可用学习</button></view>
 
     <B2StatusPanel :status="status" :message="message" :performance-level="performanceLevel" @retry="load" @performance="setPerformance" @sync="() => undefined" />
     <view v-if="material && segment" class="yx-card listening-card">

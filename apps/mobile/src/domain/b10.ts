@@ -30,6 +30,7 @@ export interface B10SrsCard {
   contentVersion: string | null
   contentVersionId: number | null
   phonetic: string | null
+  audioUrl?: string | null
   hint: string | null
   meaningCn: string | null
   definitionEn: string | null

@@ -34,6 +34,8 @@ function submitCorrection(): void { void store.submitCurrentProofreading(correct
 <template>
   <section class="b10-page" :data-performance="store.performanceLevel" aria-labelledby="writing-title">
     <ExperienceHeader page="Writing" icon="pen" title-id="writing-title" />
+    <p data-closed-practice role="status">写作功能暂未开放，可以先做其他练习。</p>
+    <a data-closed-back href="/today">回到可用学习</a>
     <B10StatePanel v-if="store.writingStatus !== 'ready' || store.writingMessage" :status="store.writingStatus" :message="store.writingMessage" module-label="WRT / WRITING" :performance-level="store.performanceLevel" @retry="retry" @performance="performance" />
     <section v-if="prompt" class="writing-layout">
       <article class="prompt-panel"><p class="eyebrow">{{ prompt.promptType }} · {{ prompt.contentVersionId }}</p><h3>{{ prompt.title }}</h3><p>{{ prompt.taskText }}</p><div class="tags"><span v-for="target in prompt.targetStructure" :key="target">{{ target }}</span></div><h4>可用模板</h4><button v-for="template in store.writingTemplates" :key="template.templateId" class="template" :class="{ active: selectedTemplateId === template.templateId }" type="button" @click="chooseTemplate(template.templateId)"><strong>{{ template.title }}</strong><small>{{ template.structure.map((slot) => slot.label).join(' → ') }}</small></button><h4>主题材料</h4><p v-for="material in store.writingMaterials" :key="material.materialId" class="material">{{ material.title }}：{{ material.bodyText }}</p></article>

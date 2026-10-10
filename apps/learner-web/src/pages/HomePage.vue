@@ -52,11 +52,8 @@ const heroUnavailable = computed(() => store.homeStatus === 'error' || store.hom
 const heroLoading = computed(() => store.homeStatus === 'idle' || store.homeStatus === 'loading')
 const activities: Array<{ name: string; key: string; hint: string; icon: AppIconName }> = [
   { name: 'vocabulary', key: 'vocabulary', hint: 'vocabHint', icon: 'cards' },
-  { name: 'b3-listening', key: 'listening', hint: 'listeningHint', icon: 'headphones' },
   { name: 'b3-reading', key: 'reading', hint: 'readingHint', icon: 'book' },
-  { name: 'b3-speaking', key: 'speaking', hint: 'speakingHint', icon: 'mic' },
   { name: 'b3-grammar', key: 'grammar', hint: 'grammarHint', icon: 'spark' },
-  { name: 'b3-writing', key: 'writing', hint: 'writingHint', icon: 'pen' },
 ]
 function start(task = nextTask.value) {
   if (isRestricted.value) return

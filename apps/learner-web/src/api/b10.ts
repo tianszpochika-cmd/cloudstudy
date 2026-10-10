@@ -172,6 +172,7 @@ function parseVocabularyCard(value: unknown, position: number, total: number): B
     title,
     phoneticUs: stringValue(source.phoneticUs),
     phoneticUk: stringValue(source.phoneticUk),
+    audioUrl: stringValue(source.audioUrl) ?? stringValue(source.pronunciationUrl),
     frontHint: stringValue(source.frontHint) ?? stringValue(source.prompt),
     contentVersionId: contentVersionId(source),
     contentLocale: contentLocale(source),

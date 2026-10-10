@@ -270,6 +270,8 @@ async function advanceRoleplay(choiceCode?: string): Promise<void> {
 <template>
   <section class="b3-page">
     <ExperienceHeader page="Speaking" icon="mic" title-id="speaking-title" />
+    <p data-closed-practice role="status">跟读功能暂未开放，可以先做其他练习。</p>
+    <a data-closed-back href="/today">回到可用学习</a>
     <div v-if="store.status === 'loading'" class="panel">
       正在读取 48 个音标条目…
     </div>

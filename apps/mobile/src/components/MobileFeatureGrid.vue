@@ -3,9 +3,9 @@ import { mobileT } from '../platform/experience'
 import { openUniPage } from '../platform/uni-runtime'
 withDefaults(defineProps<{ compact?: boolean }>(), { compact: false })
 const features = [
-  { page: 'b2-vocabulary', icon: 'Aa', tone: 'purple' }, { page: 'b11-listening', icon: '◖◗', tone: 'sage' },
-  { page: 'b11-reading', icon: '▤', tone: 'apricot' }, { page: 'b11-speaking', icon: '♫', tone: 'purple' },
-  { page: 'b3-grammar', icon: '⌘', tone: 'sage' }, { page: 'b3-writing', icon: '✎', tone: 'apricot' },
+  { page: 'b2-vocabulary', icon: 'Aa', tone: 'purple' },
+  { page: 'b11-reading', icon: '▤', tone: 'apricot' },
+  { page: 'b3-grammar', icon: '⌘', tone: 'sage' },
 ]
 </script>
 <template>

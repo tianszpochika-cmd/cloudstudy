@@ -114,9 +114,7 @@ onShow(async () => { await session.restore(); if (!session.isAuthenticated) { ge
     <view class="yx-card b10-flow">
       <text class="b10-flow__title">练习入口</text>
       <button tabindex="0" role="button" class="yx-button" type="button" @click="open('/pages/b2-practice/b2-practice')">基础练习</button>
-      <button tabindex="0" role="button" class="yx-button yx-button--secondary" type="button" @click="open('/pages/b11-listening/b11-listening')">听力精练</button>
       <button tabindex="0" role="button" class="yx-button yx-button--secondary" type="button" @click="open('/pages/b11-reading/b11-reading')">分级阅读</button>
-      <button tabindex="0" role="button" class="yx-button yx-button--secondary" type="button" @click="open('/pages/b11-speaking/b11-speaking')">音标与跟读</button>
       <button tabindex="0" role="button" class="yx-button yx-button--secondary" type="button" @click="open('/pages/b3-grammar/b3-grammar')">语法练习</button>
     </view>
     <view class="yx-card review-card">

@@ -101,6 +101,7 @@ onUnmounted(() => { audio.value?.destroy() })
 <template>
   <view class="yx-page b11-page" :class="themeClass" :style="experienceStyle" :data-motion="store.motionDisabled || store.performanceLevel === 'Performance' ? 'off' : experienceMotion">
     <MobilePageHeader page="b11-speaking" />
+    <view class="yx-card" data-closed-practice role="status"><text>跟读功能暂未开放，可以先做其他练习。</text><button type="button" data-closed-back @click="getUniRuntime().navigateTo({ url: '/pages/today/today' })">回到可用学习</button></view>
 
     <B11StatusPanel :status="store.phoneticsStatus === 'error' || store.recordingStatus === 'error' ? 'error' : store.recordingStatus === 'offline' ? 'offline' : store.phoneticsStatus" :message="store.recordingMessage ?? store.phoneticsMessage" :queue-count="store.queueCount" :performance-level="store.performanceLevel" :motion-disabled="store.motionDisabled" @retry="load" @sync="sync" @performance="setPerformance" @motion="setMotion" />
 

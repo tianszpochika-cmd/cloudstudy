@@ -163,6 +163,7 @@ function parseSrsCard(value: unknown, position: number, snapshotId: number | nul
     contentVersion,
     contentVersionId: nullableNumber(value.contentVersionId),
     phonetic: text(value.phoneticUs ?? value.phoneticUk) || null,
+    audioUrl: text(value.audioUrl ?? value.pronunciationUrl) || null,
     hint: text(value.frontHint ?? value.prompt) || null,
     meaningCn: null,
     definitionEn: null,

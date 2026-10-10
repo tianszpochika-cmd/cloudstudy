@@ -35,6 +35,7 @@ onMounted(async () => { await session.restore(); if (!session.isAuthenticated) {
 <template>
   <view class="yx-page" :style="experienceStyle" :data-motion="experienceMotion">
     <MobilePageHeader page="b3-speaking" />
+    <view class="yx-card" data-closed-practice role="status"><text>跟读功能暂未开放，可以先做其他练习。</text><button type="button" data-closed-back @click="getUniRuntime().navigateTo({ url: '/pages/today/today' })">回到可用学习</button></view>
     <B2StatusPanel :status="status" :message="message" :performance-level="performanceLevel" @retry="load" @performance="setPerformance" @sync="() => undefined" />
   <view v-if="phonemes.length" class="yx-card phoneme-card"><text class="card-kicker">英语音标 · 发音图解 · {{ phonemes.length }}/48</text><view class="phoneme-grid"><button tabindex="0" role="button" v-for="phoneme in phonemes" :key="phoneme.phonemeId" :class="{ active: selectedPhoneme?.phonemeId === phoneme.phonemeId }" class="phoneme" type="button" @click="selectPhoneme(phoneme)"><text class="phoneme__symbol">{{ phoneme.symbol }}</text><text>{{ phoneme.exampleWord }}</text><text class="phoneme__group">{{ phoneme.group }}</text></button></view></view>
   <view v-if="phonemes.length" class="yx-card demo-audio" role="status" aria-live="polite"><text class="card-kicker">DEMO AUDIO</text><button tabindex="0" role="button" v-if="demoAudioUrl" class="yx-button yx-button--secondary" type="button" @click="playDemoAudio">播放示范音频</button><text>{{ demoAudioMessage }}</text></view>

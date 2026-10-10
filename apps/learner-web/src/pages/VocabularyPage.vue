@@ -4,6 +4,7 @@ import { computed, onMounted } from 'vue'
 import B10StatePanel from '../components/b10/B10StatePanel.vue'
 import { useLearningUi } from '../platform/learning-ui'
 import { useB10Store } from '../stores/b10'
+import { vocabPlayable } from '../domain/closed-practice'
 import type { B10PerformanceLevel, B10ReviewQuality } from '../domain/b10'
 
 import '../platform/b10-i18n'
@@ -34,7 +35,7 @@ function rate(value: B10ReviewQuality): void { void store.rateCard(value) }
       <article class="vocabulary-card" :class="{ 'vocabulary-card--static': store.performanceLevel === 'Performance' }" aria-live="polite">
         <div class="card-topline"><span>{{ card.position + 1 }}<span v-if="card.total"> / {{ card.total }}</span></span><span>{{ card.srs?.masteryStatus ?? 'NEW' }} · {{ card.srs?.delayedVerifyStage ?? 'NONE' }}</span></div>
         <section v-if="store.cardPhase === 'FRONT' || store.cardPhase === 'REVEALING'" class="card-front" aria-label="词卡正面">
-          <span class="eyebrow">{{ ui.t('b10.vocabulary.recall') }}</span><h3>{{ card.title }}</h3><div class="phonetics"><span v-if="card.phoneticUs">US {{ card.phoneticUs }}</span><span v-if="card.phoneticUk">UK {{ card.phoneticUk }}</span></div><p v-if="card.frontHint">{{ card.frontHint }}</p><p class="muted">{{ ui.t('b10.vocabulary.frontOnly') }}</p><button class="primary-button" type="button" :disabled="store.cardPhase !== 'FRONT'" @click="store.revealCard">{{ store.cardPhase === 'REVEALING' ? ui.t('b10.vocabulary.revealing') : ui.t('b10.vocabulary.reveal') }}</button>
+          <span class="eyebrow">{{ ui.t('b10.vocabulary.recall') }}</span><h3>{{ card.title }}</h3><div class="phonetics"><span v-if="card.phoneticUs">US {{ card.phoneticUs }}</span><span v-if="card.phoneticUk">UK {{ card.phoneticUk }}</span></div><audio v-if="vocabPlayable(card.audioUrl)" data-vocab-play :src="card.audioUrl ?? undefined" controls></audio><p v-else data-vocab-silent>没有发音，不能播放。</p><p v-if="card.frontHint">{{ card.frontHint }}</p><p class="muted">{{ ui.t('b10.vocabulary.frontOnly') }}</p><button class="primary-button" type="button" :disabled="store.cardPhase !== 'FRONT'" @click="store.revealCard">{{ store.cardPhase === 'REVEALING' ? ui.t('b10.vocabulary.revealing') : ui.t('b10.vocabulary.reveal') }}</button>
         </section>
         <section v-else-if="store.cardPhase === 'BACK' || store.cardPhase === 'SUBMITTING' || store.cardPhase === 'PENDING_SYNC' || store.cardPhase === 'SYNCED'" class="card-back" aria-label="词卡内容">
           <span class="eyebrow">{{ ui.t('b10.vocabulary.confidence') }}</span><h3>{{ card.title }}</h3><div class="meaning"><strong>{{ card.back?.meaningCn ?? '—' }}</strong><span v-if="card.back?.partOfSpeech">{{ card.back.partOfSpeech }}</span></div><p v-if="card.back?.definitionEn">{{ card.back.definitionEn }}</p><ul v-if="card.back?.examples.length" class="examples"><li v-for="example in card.back.examples" :key="example.sentence"><span>{{ example.sentence }}</span><small v-if="example.translation">{{ example.translation }}</small></li></ul><p v-if="card.back?.collocations.length" class="muted">{{ card.back.collocations.join(' · ') }}</p><p v-if="card.back?.rootSummary" class="muted">{{ card.back.rootSummary }}</p>

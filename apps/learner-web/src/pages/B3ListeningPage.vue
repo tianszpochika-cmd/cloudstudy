@@ -65,6 +65,8 @@ async function savePosition(): Promise<void> { if (!audio.value || !store.listen
 <template>
   <section class="b3-page">
     <ExperienceHeader page="Listening" icon="headphones" title-id="listening-title" />
+    <p data-closed-practice role="status">听力功能暂未开放，可以先做其他练习。</p>
+    <a data-closed-back href="/today">回到可用学习</a>
     <div v-if="store.status === 'loading'" class="panel">正在读取听力素材…</div>
     <div v-else-if="store.status === 'error' || store.status === 'offline'" class="panel error">{{ store.message }}<button type="button" @click="store.loadListening">重新读取</button></div>
     <div v-else-if="material" class="grid">
