@@ -73,8 +73,9 @@ export async function listB18ReviewQueue(): Promise<ReviewQueueView> {
   const items: unknown[] = Array.isArray(source) ? source : Array.isArray(candidate) ? candidate : []
   const history = (Array.isArray(payload.history) ? payload.history : []).flatMap((item) => {
     const row = record(item)
-    const disposition = text(row.disposition)
-    if (disposition !== 'COMPLETED' && disposition !== 'DEFERRED') return []
+    const rawDisposition = text(row.disposition)
+    if (rawDisposition !== 'COMPLETED' && rawDisposition !== 'DEFERRED') return []
+    const disposition: 'COMPLETED' | 'DEFERRED' = rawDisposition
     return [{ itemId: text(row.itemId) ?? '', disposition }]
   })
   return {

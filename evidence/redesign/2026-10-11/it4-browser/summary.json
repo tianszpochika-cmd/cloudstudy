@@ -1,0 +1,155 @@
+{
+  "kind": "R4_IT4_BROWSER",
+  "summary": "FAIL",
+  "accepted": false,
+  "it4Outbound": false,
+  "lunaStamp": false,
+  "suffix": "aa28b151",
+  "chain": "FAIL",
+  "dbFacts": {
+    "assessmentSchema": "r4_it4_20261011_asm_aa28b151",
+    "learningSchema": "r4_it4_20261011_lng_aa28b151",
+    "sessions": "0",
+    "attempts": "0",
+    "mistakes": "0",
+    "zeroAttempts": "0"
+  },
+  "steps": [
+    {
+      "name": "ports-free",
+      "status": "PASS"
+    },
+    {
+      "name": "dedicated-schemas",
+      "status": "PASS"
+    },
+    {
+      "name": "iam-https",
+      "status": "PASS"
+    },
+    {
+      "name": "content-seed",
+      "status": "PASS"
+    },
+    {
+      "name": "admin-ops-memory",
+      "status": "PASS"
+    },
+    {
+      "name": "register-web-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "placement-web-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "session-web-1280",
+      "status": "FAIL"
+    },
+    {
+      "name": "answer-web-1280",
+      "status": "FAIL"
+    },
+    {
+      "name": "receipt-web-1280",
+      "status": "FAIL"
+    },
+    {
+      "name": "mistake-web-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "repair-web-1280",
+      "status": "FAIL"
+    },
+    {
+      "name": "review-web-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "today-web-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "register-web-390",
+      "status": "PASS"
+    },
+    {
+      "name": "placement-web-390",
+      "status": "PASS"
+    },
+    {
+      "name": "session-web-390",
+      "status": "FAIL"
+    },
+    {
+      "name": "answer-web-390",
+      "status": "FAIL"
+    },
+    {
+      "name": "receipt-web-390",
+      "status": "FAIL"
+    },
+    {
+      "name": "mistake-web-390",
+      "status": "PASS"
+    },
+    {
+      "name": "repair-web-390",
+      "status": "FAIL"
+    },
+    {
+      "name": "review-web-390",
+      "status": "PASS"
+    },
+    {
+      "name": "today-web-390",
+      "status": "PASS"
+    },
+    {
+      "name": "register-h5-390",
+      "status": "PASS"
+    },
+    {
+      "name": "placement-h5-390",
+      "status": "PASS"
+    },
+    {
+      "name": "session-h5-390",
+      "status": "FAIL"
+    },
+    {
+      "name": "walk-h5-390",
+      "status": "FAIL"
+    },
+    {
+      "name": "register-h5-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "placement-h5-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "session-h5-1280",
+      "status": "FAIL"
+    },
+    {
+      "name": "walk-h5-1280",
+      "status": "FAIL"
+    },
+    {
+      "name": "db-facts",
+      "status": "PASS"
+    },
+    {
+      "name": "schemas-dropped",
+      "status": "PASS"
+    },
+    {
+      "name": "qida-unchanged",
+      "status": "PASS"
+    }
+  ]
+}
