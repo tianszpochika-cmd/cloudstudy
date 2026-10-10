@@ -6,7 +6,7 @@
 
 1. 核对分支、提交与已有差量；阅读 [AGENTS](AGENTS.md)。
 2. 阅读[当前进度与最近工作点](docs/06-design/v2-980plus/redesign/CURRENT-PROGRESS.md)、[重设计包](docs/06-design/v2-980plus/redesign/README.md)、[R1 执行计划](docs/06-design/v2-980plus/redesign/dev-plan-R1.md)。
-3. 当前进度以 [CURRENT-PROGRESS](docs/06-design/v2-980plus/redesign/CURRENT-PROGRESS.md) 为准。R1-009 是同意撤回与能力回收，不是画像；画像是 R1-010。本轮 IT-1 真实浏览器验收 REJECT / FAIL，IT-2 动态验收 BLOCKED；已有 R1-018～029 历史开发/回放事实保留，但不构成 IT-1 绿灯后的合规开站或出站。Luna max 独立终审维持上述判定；原因、17卡矩阵、修复清单与终审从当前进度页链接进入。
+3. 当前进度以 [CURRENT-PROGRESS](docs/06-design/v2-980plus/redesign/CURRENT-PROGRESS.md) 为准。R1-009 是同意撤回与能力回收，不是画像；画像是 R1-010。Luna 对基线 `69bea68b` 的终审仍是 IT-1 **REJECT / FAIL**、IT-2 **BLOCKED**，原件在 `evidence/redesign/2026-10-10/station-acceptance/`，不要改写成通过。其后未签收的证据：`it2-station` 是 PASS_WITH_NOT_RUN；`it2-browser` 后缀 `5e3c868e` 和 `it1-recheck` 后缀 `ce0aa296` 的 `summary` 都是 PASS，`accepted`、出站标记和 `lunaStamp` 都是 false。`it1-recheck/screenshots/failure.png` 是通过前一次手机端保存失败的画面。IT-1 出站仍要 17 张卡的干净库证据和独立签收。具名门还没有幂等回放、踢设备、未成年拒绝、撤回同意、10 题计分和官网完整验收。不要补造 R1-030。不要动 qida 容器，不要删除保留库 `r1_it1_browser_20261010_iam_5d9f4b7e` 和 `r1_it1_browser_20261010_cnt_5d9f4b7e`。
 4. 本机启动、测试与 SDK 检查见[开发指南](docs/07-operations/local-development.md)和[10 月 6 日环境验证](docs/07-operations/local-environment-verification-2026-10-06.md)；运行状态需重新检查，环境通过不升级业务验收。
 
 “迭代 2”是这轮 Redesign；IT-2 是 R1 内的定级站；Phase 2 是产品 AI 阶段。三者分别使用，不互相解锁。
