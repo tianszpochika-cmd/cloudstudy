@@ -126,6 +126,29 @@ class ContentReleaseStudioTest {
     }
 
     @Test
+    void forceOfflineStopsThePinnedVersionAndTheNewerPublish() {
+        prepare("it6-pin-force");
+        publish("it6-pin-force", editor(), "pf1");
+        studio.handle(editor(), "RELEASE_SYNC", "it6-pin-force", Map.of("idempotencyKey", "pf2"));
+        studio.handle(editor(), "RELEASE_CREATE", "it6-pin-force", Map.of("title", "第二课", "idempotencyKey", "pf3"));
+        bind("it6-pin-force", 2, "SIMPLE");
+        publish("it6-pin-force", editor(), "pf4");
+        studio.handle(editor(), "RELEASE_SYNC", "it6-pin-force", Map.of("idempotencyKey", "pf5"));
+        studio.handle(editor(), "RELEASE_PIN", "it6-pin-force", Map.of("versionNumber", 1, "idempotencyKey", "pf6"));
+        ContentReleaseStudio.Stored force = studio.handle(editor(), "RELEASE_FORCE_OFFLINE", "it6-pin-force",
+                Map.of("reason", "停止分发", "idempotencyKey", "pf7"));
+        assertEquals("FORCE_OFFLINE", data(force).get("catalogState"));
+        assertEquals("SESSION_AND_MEDIA", data(force).get("unpublishScope"));
+        assertTrue(studio.learnerCards().stream().noneMatch(card -> "it6-pin-force".equals(card.get("contentCode"))));
+        ContentOperationException denied = assertThrows(ContentOperationException.class,
+                () -> studio.learnerRead("it6-pin-force", null));
+        assertEquals("CONTENT_FORCE_OFFLINE", denied.code());
+        ContentOperationException pinned = assertThrows(ContentOperationException.class,
+                () -> studio.learnerRead("it6-pin-force", 1L));
+        assertEquals("CONTENT_FORCE_OFFLINE", pinned.code());
+    }
+
+    @Test
     void normalUnpublishKeepsTheOldReadAndForceStopsIt() {
         prepare("it6-off");
         publish("it6-off", editor(), "off1");

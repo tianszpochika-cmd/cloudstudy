@@ -68,12 +68,12 @@ public class ContentReleaseStudio {
     public Optional<Map<String, Object>> learnerRead(String contentCode, Long versionPin) {
         synchronized (guard) {
             Version version = resolveLearnerVersion(contentCode, versionPin);
-            if (version == null) {
-                return Optional.empty();
-            }
-            if (version.force) {
+            if ((version != null && version.force) || (version == null && anyForced(contentCode))) {
                 throw ContentOperationException.conflict(
                         "CONTENT_FORCE_OFFLINE", "这份内容已强制停止分发，在学版本也不能继续。");
+            }
+            if (version == null) {
+                return Optional.empty();
             }
             Map<String, Object> content = card(version, version.number);
             Map<String, Object> body = new LinkedHashMap<>();
@@ -329,11 +329,26 @@ public class ContentReleaseStudio {
         if (reason.isBlank()) {
             return error(400, "UNPUBLISH_REASON_REQUIRED", "下架需要写下原因。", null);
         }
+        String scope = text(input.get("scope")).isBlank() ? (force ? "SESSION_AND_MEDIA" : "CATALOG") : text(input.get("scope"));
+        if (force) {
+            for (Version item : versions.values()) {
+                if (!item.code.equals(contentCode) || !item.publishedOnce) {
+                    continue;
+                }
+                item.unpublishReason = reason;
+                item.unpublishScope = scope;
+                item.force = true;
+                item.status = "FORCE_OFFLINE";
+                item.catalog = "FORCE_OFFLINE";
+                item.stateVersion++;
+            }
+            return ok(view(version, true));
+        }
         version.unpublishReason = reason;
-        version.unpublishScope = text(input.get("scope")).isBlank() ? (force ? "SESSION_AND_MEDIA" : "CATALOG") : text(input.get("scope"));
-        version.force = force;
-        version.status = force ? "FORCE_OFFLINE" : "ARCHIVED";
-        version.catalog = force ? "FORCE_OFFLINE" : "UNPUBLISHED";
+        version.unpublishScope = scope;
+        version.force = false;
+        version.status = "ARCHIVED";
+        version.catalog = "UNPUBLISHED";
         version.stateVersion++;
         return ok(view(version, true));
     }
@@ -526,6 +541,15 @@ public class ContentReleaseStudio {
             gaps.add(gap("media", "必要媒体的对象字节还没有接上"));
         }
         return gaps;
+    }
+
+    private boolean anyForced(String code) {
+        for (Version version : versions.values()) {
+            if (version.code.equals(code) && version.force) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private Version visibleForLearner(String code) {
