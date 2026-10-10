@@ -11,6 +11,7 @@ import { ensureMobilePageAccess } from '../../auth/navigation'
 import type { MobileTask } from '../../domain/learner-content'
 import { hasPlacementEntryReached, ONBOARDING_GUIDE_ACTION, onboardingProgressLabel, onboardingRemainingStepLabels, selectOnboardingResumeStep, showOnboardingGuide } from '../../domain/onboarding-resume'
 import { emptyStateView, firstLearningGuideCopy, isAccessibleContent, shelfSearchState, type EmptyStateView } from '../../domain/plan-today'
+import { learnerAuthoringActions, shelfNote } from '../../domain/content-release'
 import { useLearnerContentStore } from '../../stores/learner-content'
 import { useSessionStore } from '../../stores/session'
 
@@ -24,6 +25,8 @@ const visibleContent = computed(() => {
   const needle = courseQuery.value.trim().toLowerCase()
   return publishedContent.value.filter((item) => !needle || `${item.title} ${item.summary}`.toLowerCase().includes(needle))
 })
+const releaseNote = computed(() => shelfNote(publishedContent.value))
+void learnerAuthoringActions()
 const shelf = computed(() => shelfSearchState(
   publishedContent.value.length,
   visibleContent.value.length,
@@ -107,6 +110,7 @@ function openPlanEmpty(view: EmptyStateView): void {
       </view>
       <view class="content-list">
         <text class="content-list__title">课程内容</text>
+        <text v-if="releaseNote" data-release-note>{{ releaseNote }}</text>
         <input v-model="courseQuery" class="course-search" type="search" aria-label="搜索课程" placeholder="搜索课程" />
         <text v-if="shelf === 'catalog-empty'" class="content-description">书架里还没有可学习的内容。</text>
         <text v-else-if="shelf === 'no-matches'" class="content-description">没有匹配的课程。</text>

@@ -8,6 +8,7 @@ import { useLearnerContentStore } from '../stores/learner-content'
 import { useExperienceText } from '../platform/experience-ui'
 import { userFacingError } from '../platform/user-facing-error'
 import { continueCheckpoint, isAccessibleContent, shelfSearchState } from '../domain/plan-today'
+import { learnerAuthoringActions, shelfNote } from '../domain/content-release'
 const router = useRouter()
 const store = useLearnerContentStore()
 const t = useExperienceText()
@@ -22,6 +23,8 @@ const results = computed(() => content.value.filter(item => (!kind.value || item
 const shelfFailed = computed(() => Boolean(store.lastError) || contentStatus.value === 'UNAVAILABLE' || store.homeStatus === 'offline' || store.homeStatus === 'error')
 const shelf = computed(() => shelfSearchState(content.value.length, results.value.length, shelfFailed.value))
 const activeContinue = computed(() => continueCheckpoint(store.home?.continueContext ?? null))
+const releaseNote = computed(() => shelfNote(content.value))
+void learnerAuthoringActions()
 onMounted(() => { store.restore(); void store.loadHome() })
 function retry() { void store.retry('home') }
 function openCourse(contentId: string) { void router.push({ name: 'learn-session', query: { contentId } }) }
@@ -35,6 +38,7 @@ function resumeActive(): void {
   <section class="page-stack library-experience" aria-labelledby="courses-title">
     <ExperienceHeader page="Courses" title-id="courses-title" icon="book" />
     <div class="library-toolbar"><div class="filter-pills"><button type="button" :class="{ active: !kind }" :aria-pressed="!kind" @click="kind = ''">{{ t('all') }}</button><button v-for="value in kinds" :key="value" type="button" :class="{ active: kind === value }" :aria-pressed="kind === value" @click="kind = value">{{ kindLabel(value) }}</button></div><label class="search-field"><AppIcon name="search" :size="18" /><input v-model="query" type="search" :aria-label="t('searchCourses')" :placeholder="t('searchCourses')" /></label><button v-if="activeContinue" class="button button--secondary" type="button" @click="resumeActive">继续学习</button></div>
+    <p v-if="releaseNote" data-release-note>{{ releaseNote }}</p>
     <StatePanel v-if="store.homeStatus === 'loading'" state="loading" :title="t('loading')" />
     <StatePanel v-else-if="store.homeStatus === 'forbidden'" state="permission" title="暂时没有访问权限" description="请确认使用了正确的账号，或前往帮助页反馈。" action-label="帮助与反馈" @action="router.push({ name: 'support' })" />
     <StatePanel v-else-if="shelf === 'error'" state="error" title="内容暂时没能加载" :description="userFacingError(store.lastError, '请检查网络后重试。')" action-label="重新加载" @action="retry" />

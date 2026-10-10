@@ -2,6 +2,7 @@
 import { confirmDiscard, useUnsavedChanges } from "../platform/unsaved";
 import { ui } from "../platform/experience";
 import AdminPageIntro from "../components/AdminPageIntro.vue";
+import AdminReleasePanel from "../components/AdminReleasePanel.vue";
 import { computed, onMounted, ref, watch } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import {
@@ -513,6 +514,7 @@ onMounted(() => {
         >刷新</el-button
       ></AdminPageIntro
     >
+    <AdminReleasePanel />
 
     <el-alert
       v-if="viewState === 'permission'"

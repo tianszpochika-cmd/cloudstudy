@@ -4,6 +4,7 @@ import { RouterLink } from "vue-router";
 import { getDashboardMetrics } from "../api/b5";
 import { isRecord, unwrap } from "../domain/b5";
 import { adminPages, ui } from "../platform/experience";
+import { b3ReplayCopy, dashboardMetric, mediaBoundary } from "../domain/content-release";
 import { useAdminStore } from "../stores/admin";
 import { adminI18n } from "../platform/v2-foundation";
 import AdminIcon from "../components/AdminIcon.vue";
@@ -13,6 +14,8 @@ const loading = ref(true);
 const error = ref(false);
 const metricRows = ref<Record<string, unknown>[]>([]);
 const updated = ref("");
+const releaseMetric = dashboardMetric("EMPTY", null);
+const mediaNote = mediaBoundary(false, true);
 const shortcuts = computed(() =>
   adminPages.filter(
     (page) => page.key !== "dashboard" && session.can(page.permission),
@@ -158,6 +161,9 @@ onMounted(() => {
           min-width="160"
       /></el-table>
       <el-empty v-else :description="ui('dashboard.empty')" :image-size="80" />
+      <p data-dashboard-metric>发布口径：{{ releaseMetric.text }}。没有示例数。</p>
+      <p data-media-boundary>{{ mediaNote.copy }}</p>
+      <p data-b3-roster>{{ b3ReplayCopy() }}</p>
     </el-card>
   </div>
 </template>

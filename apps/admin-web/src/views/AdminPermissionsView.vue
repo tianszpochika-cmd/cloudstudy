@@ -1,16 +1,24 @@
 <script setup lang="ts">
 import { onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import { loginReturn, permissionPage } from '../domain/content-release'
 import type { B8PolicyRule } from '@englishflow/contracts'
 import AdminPageIntro from '../components/AdminPageIntro.vue'
 import { adminI18n } from '../platform/v2-foundation'
 import { b8PolicyT } from '../platform/b8-policy-i18n'
 import { useB8PolicyStore } from '../stores/b8-policy'
 import { useAdminStore } from '../stores/admin'
+import { adminPages } from '../platform/experience'
 
+const permissionCopy = permissionPage()
 const store = useB8PolicyStore()
 const session = useAdminStore()
 const router = useRouter()
+
+function backToAllowed(): void {
+  const allowed = adminPages.filter((page) => session.can(page.permission)).map((page) => page.path)
+  void router.push(loginReturn('', allowed))
+}
 
 function formatTime(value: string): string {
   const date = new Date(value)
@@ -42,6 +50,8 @@ watch(() => session.isAuthenticated, (authenticated) => {
 
 <template>
   <div class="view-stack policy-page">
+    <p data-permission-readonly>{{ permissionCopy.copy }}</p>
+    <button type="button" data-permission-return @click="backToAllowed">回到有权页面</button>
     <AdminPageIntro>
       <el-button :loading="store.viewState === 'loading'" @click="store.load">
         {{ b8PolicyT('refresh') }}

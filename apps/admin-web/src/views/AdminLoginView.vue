@@ -2,6 +2,7 @@
 import { computed, nextTick, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { authT } from "../auth/i18n";
+import { loginFailureCopy } from "../domain/content-release";
 import { safeAdminReturnTo } from "../auth/gateway-auth";
 import { useAdminStore } from "../stores/admin";
 import { adminPages, ui } from "../platform/experience";
@@ -38,7 +39,7 @@ async function submit() {
   try {
     const ok = await session.login(identifier.value, password.value);
     if (!ok) {
-      errorMessage.value = ui("login.failed");
+      errorMessage.value = loginFailureCopy();
       return;
     }
     const target = session.consumeReturnTo();
@@ -52,7 +53,7 @@ async function submit() {
             "/forbidden"),
     );
   } catch {
-    errorMessage.value = ui("login.failed");
+    errorMessage.value = loginFailureCopy();
   } finally {
     submitting.value = false;
     password.value = "";
@@ -181,6 +182,7 @@ async function submit() {
               >{{ ui("login.passwordRequired") }}</small
             ><small v-if="capsLock" class="muted">{{ ui("login.caps") }}</small>
           </div>
+          <p data-login-enumeration>{{ loginFailureCopy() }}</p>
           <p v-if="errorMessage" class="login-status" role="alert">
             {{ errorMessage }}
           </p>
