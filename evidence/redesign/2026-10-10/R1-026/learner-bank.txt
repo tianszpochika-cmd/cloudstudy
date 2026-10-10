@@ -1,0 +1,2 @@
+403
+{"error":{"code":"CONTENT_RIGHTS_NOT_READY","retryable":false,"message":"content copyright rights do not allow this channel"}}

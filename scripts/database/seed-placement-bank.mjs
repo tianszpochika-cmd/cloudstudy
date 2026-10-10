@@ -1,4 +1,6 @@
-// P1 placement bank seed: ten sealed items (3V/3G/2R/2L) with ACTIVE rights.
+// P1 placement bank repair seed: ten sealed items (3V/3G/2R/2L) with ACTIVE rights.
+// Clean-database replay is Flyway V28__seed_placement_item_bank.sql (same ids and
+// stems). This script only delete-then-inserts that one bank on local MySQL.
 // kind='QUESTION' (parseable by ContentKind; the bank IS a question bank) and
 // rights channels='["SEALED"]' (the sealed internal endpoint is the only
 // outlet: LEARNER/PUBLIC projections 403-skip instead of leaking a bogus

@@ -102,6 +102,18 @@ class ContentJwtDecoderNegativeTest {
                 Instant.now().plusSeconds(300), JWSAlgorithm.HS256)));
     }
 
+    @Test
+    void serviceTokenIsAccepted() throws Exception {
+        assertNotNull(decoder().decode(token(signingKey, ISSUER, AUDIENCE,
+                Instant.now().plusSeconds(300), JWSAlgorithm.RS256, "service")));
+    }
+
+    @Test
+    void otherTokenTypeIsRejected() throws Exception {
+        assertThrows(JwtException.class, () -> decoder().decode(token(signingKey, ISSUER, AUDIENCE,
+                Instant.now().plusSeconds(300), JWSAlgorithm.RS256, "refresh")));
+    }
+
     private JwtDecoder decoder() {
         ContentResourceServerProperties properties = new ContentResourceServerProperties();
         properties.setEnabled(true);
@@ -113,13 +125,18 @@ class ContentJwtDecoderNegativeTest {
 
     private static String token(RSAKey key, String issuer, String audience, Instant expiresAt, JWSAlgorithm algorithm)
             throws Exception {
+        return token(key, issuer, audience, expiresAt, algorithm, "access");
+    }
+
+    private static String token(RSAKey key, String issuer, String audience, Instant expiresAt, JWSAlgorithm algorithm,
+                                String tokenType) throws Exception {
         JWTClaimsSet claims = new JWTClaimsSet.Builder()
                 .subject("principal-1")
                 .issuer(issuer)
                 .audience(audience)
                 .issueTime(Date.from(Instant.now()))
                 .expirationTime(Date.from(expiresAt))
-                .claim("token_type", "access")
+                .claim("token_type", tokenType)
                 .claim("scope", "learning.plan.read")
                 .claim("permissions", List.of("learning.plan.read"))
                 .build();

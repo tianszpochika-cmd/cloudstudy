@@ -69,25 +69,34 @@ public class PlacementBankSealedJdbcTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    void sealedBankServesTenItemsWithAnswerRulesForInternalScoring() {
-        Map<String, Object> data = (Map<String, Object>) controller.sealed(learner).get("data");
+    void sealedBankServesTenItemsWithoutAnswerMaterial() throws Exception {
+        Map<String, Object> body = controller.sealed(learner);
+        Map<String, Object> data = (Map<String, Object>) body.get("data");
         assertEquals("P1_PLACEMENT_V1", data.get("bankCode"));
         assertEquals(266100L, ((Number) data.get("contentVersionId")).longValue());
         assertEquals(1L, ((Number) data.get("contentStateVersion")).longValue());
         assertTrue(String.valueOf(data.get("snapshotId")).startsWith("snap_"));
         assertTrue(String.valueOf(data.get("snapshotHash")).matches("[a-f0-9]{64}"));
-        assertTrue(String.valueOf(data.get("ruleDigest")).matches("[a-f0-9]{64}"));
+        assertEquals(java.util.Set.of("bankCode", "contentVersionId", "contentEpoch", "snapshotId",
+                "snapshotHash", "contentStateVersion", "items"), data.keySet());
         List<Map<String, Object>> items = (List<Map<String, Object>>) data.get("items");
         assertEquals(10, items.size());
-        long vocab = items.stream().filter(item -> "VOCABULARY".equals(item.get("dimension"))).count();
-        long grammar = items.stream().filter(item -> "BASIC_GRAMMAR".equals(item.get("dimension"))).count();
-        assertEquals(3, vocab);
-        assertEquals(3, grammar);
+        assertEquals(3, items.stream().filter(item -> "VOCABULARY".equals(item.get("dimension"))).count());
+        assertEquals(3, items.stream().filter(item -> "BASIC_GRAMMAR".equals(item.get("dimension"))).count());
+        assertEquals(2, items.stream().filter(item -> "READING".equals(item.get("dimension"))).count());
+        assertEquals(2, items.stream().filter(item -> "LISTENING".equals(item.get("dimension"))).count());
         for (Map<String, Object> item : items) {
-            Map<String, Object> rule = (Map<String, Object>) item.get("answerRule");
-            List<Map<String, Object>> options = (List<Map<String, Object>>) item.get("options");
-            assertTrue(options.stream().anyMatch(option -> rule.get("correctOption").equals(option.get("optionId"))));
+            assertEquals(java.util.Set.of("itemId", "itemCode", "itemType", "dimension", "displayOrder",
+                    "stem", "options", "contentVersionId"), item.keySet());
+            assertTrue(item.get("stem") instanceof String && !String.valueOf(item.get("stem")).isBlank());
+            assertTrue(item.get("options") instanceof List<?> options && options.size() >= 2);
         }
+        String json = new ObjectMapper().writeValueAsString(body).toLowerCase();
+        assertTrue(!json.contains("answer") && !json.contains("correctoption"), json);
+        String stored = jdbc.queryForObject(
+                "SELECT answer_rule_json FROM content_placement_item WHERE placement_item_id = 266001",
+                String.class);
+        assertTrue(stored.contains("correctOption"));
     }
 
     @Test

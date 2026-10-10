@@ -1,5 +1,6 @@
 package com.englishflow.content.web;
 
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -8,12 +9,15 @@ import java.util.HexFormat;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
@@ -25,11 +29,15 @@ import tools.jackson.databind.ObjectMapper;
  *
  * <p>Serves the canonical ten-item {@code P1_PLACEMENT_V1} snapshot (3 VOCABULARY /
  * 3 BASIC_GRAMMAR / 2 READING / 2 LISTENING) with ACTIVE rights to the
- * assessment-service internal adapter. Answer rules cross this internal boundary
- * only and are never projected to the browser: assessment splits learner items
- * from sealed scoring input. The route stays internal-only (loopback, Gateway
- * DENY) and Phase 1 carries the caller's verified learner JWT until validated
- * workload identity lands (see the {@code transportInterim} contract note on
+ * assessment-service internal adapter. This delivery returns stem, options,
+ * item code, dimension, display order and the content version only.
+ * {@code answer_rule_json} stays in {@code content_placement_item} and is not
+ * serialized on the sealed or plan-items routes. Objective grading is
+ * {@code POST /score}: a service token, one item id and one option, FULL or
+ * ZERO, and a sentence that does not contain the correct option. The sealed
+ * route stays internal-only (loopback, Gateway DENY) and Phase 1 carries the
+ * caller's verified learner JWT until validated workload identity lands (see
+ * the {@code transportInterim} contract note on
  * {@code getPlacementBankSealedSnapshot}). Any bank shape drift fails closed
  * with 503 instead of serving a substituted or partial manifest.
  */
@@ -41,13 +49,14 @@ public final class PlacementBankSealedController {
     private static final String TENANT = "platform";
     private static final String BANK = "P1_PLACEMENT_V1";
     private static final String BANK_CONTENT_ID = "p1-placement-bank-v1";
-    private static final String ANSWER_RULE_SET_VERSION = "p1-placement-bank-v1";
     /**
      * B10 content code for this bank. Assessment resolves practice sessions by
      * contentCode; the plan-items practiceRef carries this code so learning
      * tasks stay gradable without ever touching stems or answer rules here.
      */
     private static final String B10_CONTENT_CODE = "p1.placement.v1";
+    static final String FULL_EXPLANATION = "Selected option equals the stored answer rule.";
+    static final String ZERO_EXPLANATION = "Selected option does not equal the stored answer rule.";
 
     private final JdbcTemplate jdbc;
     private final ObjectMapper objectMapper;
@@ -63,20 +72,16 @@ public final class PlacementBankSealedController {
         List<Map<String, Object>> rows = bankRows();
         List<Map<String, Object>> items = sealedItems(rows);
         long contentVersionId = contentVersion(rows);
-        String scoringVersion = scoringVersion(rows);
+        scoringVersion(rows);
         long contentEpoch = contentEpoch();
         String snapshotId = "snap_p1.placement.v1-" + contentVersionId;
         String snapshotHash = sha256(canonicalItems(items));
-        String ruleDigest = sha256(canonicalRules(items, scoringVersion));
         Map<String, Object> snapshot = new LinkedHashMap<>();
         snapshot.put("bankCode", BANK);
         snapshot.put("contentVersionId", contentVersionId);
         snapshot.put("contentEpoch", contentEpoch);
         snapshot.put("snapshotId", snapshotId);
         snapshot.put("snapshotHash", snapshotHash);
-        snapshot.put("answerRuleSetVersion", ANSWER_RULE_SET_VERSION);
-        snapshot.put("answerRuleVersion", scoringVersion);
-        snapshot.put("ruleDigest", ruleDigest);
         snapshot.put("contentStateVersion", contentStateVersion(contentVersionId));
         snapshot.put("items", items);
         return Map.of("data", snapshot);
@@ -118,6 +123,46 @@ public final class PlacementBankSealedController {
         return Map.of("data", data);
     }
 
+    /**
+     * Grades one published bank item. Equality is exact: no trim, no case fold.
+     * The correct option is not copied onto the response.
+     */
+    @PostMapping("/score")
+    public Map<String, Object> score(Authentication authentication,
+                                     @RequestBody(required = false) Map<String, Object> body) {
+        ContentHttpPrincipals.requirePlacementScore(authentication);
+        if (body == null || !body.keySet().equals(Set.of("itemId", "selectedOptionId"))) {
+            throw unprocessable("placement score fields are invalid");
+        }
+        if (!(body.get("selectedOptionId") instanceof String selected)) {
+            throw unprocessable("placement score option is invalid");
+        }
+        long itemId = requireItemId(body.get("itemId"));
+        List<Map<String, Object>> rows = jdbc.queryForList("""
+                SELECT options_json, answer_rule_json
+                  FROM content_placement_item
+                 WHERE tenant_id = ? AND bank_code = ? AND placement_item_id = ?
+                   AND status = 'PUBLISHED' AND copyright_status = 'ACTIVE'
+                   AND rights_allows_learning = TRUE
+                """, TENANT, BANK, itemId);
+        if (rows.isEmpty()) {
+            throw notFound("placement item is not in the published bank");
+        }
+        List<Map<String, Object>> choices = options(rows.getFirst().get("options_json"));
+        String correct = answerRule(rows.getFirst().get("answer_rule_json"), choices);
+        // Exact option-key equality. Do not trim, case-fold or fuzzy-match.
+        boolean full = selected.equals(correct);
+        String explanation = full ? FULL_EXPLANATION : ZERO_EXPLANATION;
+        if (explanation.contains("correctOption")) {
+            throw unavailable("placement score explanation leaked answer material");
+        }
+        Map<String, Object> data = new LinkedHashMap<>();
+        data.put("itemId", itemId);
+        data.put("outcome", full ? "FULL" : "ZERO");
+        data.put("explanation", explanation);
+        return Map.of("data", Map.copyOf(data));
+    }
+
     private List<Map<String, Object>> bankRows() {
         return jdbc.queryForList("""
                 SELECT placement_item_id, dimension, display_order, item_code, item_type,
@@ -156,10 +201,15 @@ public final class PlacementBankSealedController {
                 throw unavailable("placement bank item identity or stem is invalid");
             }
             List<Map<String, Object>> options = options(row.get("options_json"));
-            String correctOption = answerRule(row.get("answer_rule_json"), options);
+            // Resolved only to fail closed. The correct option is not copied onto the delivery item.
+            answerRule(row.get("answer_rule_json"), options);
             String questionType = text(row.get("question_type"));
             if (!"CHOICE".equals(questionType)) {
                 throw unavailable("placement bank question type is not objectively gradable");
+            }
+            if (number(row.get("max_score"), -1) < 1 || text(row.get("content_code")).isBlank()
+                    || text(row.get("scoring_version")).isBlank()) {
+                throw unavailable("placement bank scoring facts are incomplete");
             }
             Map<String, Object> item = new LinkedHashMap<>();
             item.put("itemId", itemId);
@@ -169,12 +219,7 @@ public final class PlacementBankSealedController {
             item.put("displayOrder", order);
             item.put("stem", stem);
             item.put("options", options);
-            item.put("questionType", questionType);
-            item.put("scoringVersion", text(row.get("scoring_version")));
-            item.put("maxScore", (int) number(row.get("max_score"), -1));
-            item.put("contentCode", text(row.get("content_code")));
             item.put("contentVersionId", number(row.get("content_version_id"), -1));
-            item.put("answerRule", Map.of("correctOption", correctOption));
             items.add(Map.copyOf(item));
         }
         if (!seen.equals(required)) {
@@ -290,21 +335,22 @@ public final class PlacementBankSealedController {
             canonical.append(item.get("itemId")).append(':').append(item.get("itemCode"))
                     .append(':').append(item.get("dimension")).append(':').append(item.get("displayOrder"))
                     .append(':').append(item.get("stem")).append(':').append(item.get("options"))
-                    .append(':').append(item.get("questionType")).append(':').append(item.get("scoringVersion"))
-                    .append(':').append(item.get("maxScore")).append(':').append(item.get("contentCode"))
                     .append(':').append(item.get("contentVersionId")).append('|');
         }
         return canonical.toString();
     }
 
-    private static String canonicalRules(List<Map<String, Object>> items, String scoringVersion) {
-        StringBuilder canonical = new StringBuilder(scoringVersion).append('|');
-        for (Map<String, Object> item : items) {
-            @SuppressWarnings("unchecked")
-            Map<String, Object> rule = (Map<String, Object>) item.get("answerRule");
-            canonical.append(item.get("itemId")).append(':').append(rule.get("correctOption")).append('|');
+    private static long requireItemId(Object value) {
+        if (!(value instanceof Number number)) {
+            throw unprocessable("placement score itemId is invalid");
         }
-        return canonical.toString();
+        try {
+            long parsed = new BigDecimal(number.toString()).toBigIntegerExact().longValueExact();
+            if (parsed > 0) return parsed;
+        } catch (ArithmeticException | NumberFormatException invalid) {
+            // Fractional and overflowing ids are not bank keys.
+        }
+        throw unprocessable("placement score itemId is invalid");
     }
 
     private static long number(Object value, long fallback) {
@@ -317,6 +363,14 @@ public final class PlacementBankSealedController {
 
     private static ResponseStatusException unavailable(String message) {
         return new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, message);
+    }
+
+    private static ResponseStatusException unprocessable(String message) {
+        return new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, message);
+    }
+
+    private static ResponseStatusException notFound(String message) {
+        return new ResponseStatusException(HttpStatus.NOT_FOUND, message);
     }
 
     private static String sha256(String value) {

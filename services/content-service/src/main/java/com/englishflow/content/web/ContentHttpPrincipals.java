@@ -56,6 +56,30 @@ public final class ContentHttpPrincipals {
         return principal;
     }
 
+    /**
+     * Placement scoring reads {@code answer_rule_json}. Only a service token
+     * bound to its own {@code service_id} and granted answer-rule read may call it.
+     * A learner access token is not enough.
+     */
+    public static VerifiedContentPrincipal requirePlacementScore(Authentication authentication) {
+        if (!(authentication instanceof JwtAuthenticationToken jwt) || !jwt.isAuthenticated()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "service token is required");
+        }
+        if (!"service".equals(jwt.getToken().getClaimAsString("token_type"))) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "placement scoring requires a service token");
+        }
+        String subject = jwt.getToken().getSubject();
+        String serviceId = jwt.getToken().getClaimAsString("service_id");
+        if (subject == null || subject.isBlank() || !subject.equals(serviceId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "service identity is not bound");
+        }
+        VerifiedContentPrincipal principal = require(authentication);
+        if (!principal.permissions().contains("content:answer-rules:read")) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "placement scoring permission is required");
+        }
+        return principal;
+    }
+
     /** Verified identity and authority facts for one request. */
     public record VerifiedContentPrincipal(
             String subject,

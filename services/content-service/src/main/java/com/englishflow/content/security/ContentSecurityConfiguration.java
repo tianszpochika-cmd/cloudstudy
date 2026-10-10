@@ -155,7 +155,9 @@ public class ContentSecurityConfiguration {
                 new JwtAudienceValidator(audience),
                 new JwtTimestampValidator(Duration.ofSeconds(60)),
                 algorithm,
-                new JwtClaimValidator<String>("token_type", "access"::equals),
+                // Learner calls keep token_type=access. The placement score route also
+                // accepts a service token; the controller still rejects access tokens there.
+                new JwtClaimValidator<String>("token_type", value -> "access".equals(value) || "service".equals(value)),
                 new JwtClaimValidator<String>("scope", value -> value != null && !value.isBlank()),
                 authorityClaims);
     }

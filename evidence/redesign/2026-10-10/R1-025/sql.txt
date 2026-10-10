@@ -1,0 +1,37 @@
+rows	COUNT(*)
+rows	10
+dim:VOCABULARY	3
+dim:BASIC_GRAMMAR	3
+dim:READING	2
+dim:LISTENING	2
+bank	10
+answers	10
+version	1
+version	description	success
+1	create content service schema	1
+3	complete content persistence schema	1
+4	create b25 content runtime	1
+5	add b25 learner vocabulary projection	1
+6	add b3 learner experience content	1
+7	seed b3 learner experience content	1
+8	mark local media projection ready	1
+9	create public site facet projection	1
+10	create b2 content chunks	1
+11	complete local phonetics catalog	1
+12	repair initial phonetics utf8 payloads	1
+13	repair b3 utf8 payloads	1
+14	standardize content outbox event shape	1
+15	create content event receipt and inbound stat	1
+16	create lexeme master	1
+17	create content item and schedule	1
+18	add schedule cohort	1
+19	lexeme language	1
+20	french phonetics	1
+21	content item kinds	1
+22	content aggregate revision and version ids	1
+23	unpublish unbound legacy content	1
+24	placement item bank	1
+25	b3 item binding	1
+26	validation report	1
+27	rights proposal	1
+28	seed placement item bank	1

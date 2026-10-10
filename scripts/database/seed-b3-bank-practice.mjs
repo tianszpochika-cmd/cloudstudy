@@ -1,9 +1,12 @@
 // B3 practice fixture for the canonical bank ("供 B3 练").
-// Reads stems/options LIVE from content_placement_item (single source of truth)
-// and writes stem-only b3_content_experience rows + content_b3_item_binding
-// rows. No answers ever enter B3 payloads; grading lives in B10 via the
-// sealed bank. Only GRAMMAR_EXERCISE (3) and READING_QUESTION (2) are mapped:
-// listening/vocab bank items need projected question endpoints (follow-up).
+// Clean-database replay is Flyway V29__seed_b3_practice_bindings.sql (same five
+// keys, stems and bindings). This script only delete-then-inserts that set on
+// local MySQL. It reads stems/options LIVE from content_placement_item (single
+// source of truth) and writes stem-only b3_content_experience rows +
+// content_b3_item_binding rows. No answers ever enter B3 payloads; grading
+// lives in B10 via the sealed bank. Only GRAMMAR_EXERCISE (3) and
+// READING_QUESTION (2) are mapped: listening/vocab bank items need projected
+// question endpoints (follow-up). Five rows do not open the learner catalog.
 // Local MySQL only. Run: node scripts/database/seed-b3-bank-practice.mjs
 import { runMysql } from './lib/mysql-client.mjs';
 
