@@ -116,6 +116,27 @@ public class B10AssessmentJdbcController {
             return replaySessionCreation(principal.subject(), idempotencyKey, requestDigest,
                     body, mode, requestedCode, contentVersionId, raced);
         }
+        // A second open of the same learnable pin reuses the in-progress session.
+        // A new idempotency key still stores that same receipt.
+        Map<String, Object> open = one("""
+                SELECT * FROM b10_assessment_session
+                 WHERE tenant_id = ? AND principal_id = ? AND status = 'IN_PROGRESS'
+                   AND content_code = ? AND content_version_id = ? AND mode = ?
+                 ORDER BY started_at
+                 LIMIT 1
+                """, TENANT, principal.subject(), requestedCode, contentVersionId, mode);
+        if (open != null) {
+            Map<String, Object> response = envelope(sessionView(open));
+            int saved = jdbc.update("""
+                    UPDATE assessment_idempotency SET response_json = ?
+                     WHERE tenant_id = ? AND subject_id = ? AND operation = ? AND idempotency_key = ?
+                    """, json(response), TENANT, principal.subject(), SESSION_CREATE_OPERATION, idempotencyKey);
+            if (saved != 1) {
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                        "assessment session creation response was not saved");
+            }
+            return response;
+        }
 
         List<Map<String, Object>> rules = rules(requestedCode, contentVersionId, body.get("itemIds"));
         BankPracticeRuleProvider.BankRules bank = null;

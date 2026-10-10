@@ -1,5 +1,9 @@
 # Changelog
 
+- [R1-043-20261011] **同一内容、版本和模式下，进行中的练习会话再次打开仍返回原会话。**
+  - assessment-service 在幂等键认领成功后，按租户、主体、内容码、内容版本和模式查找 `IN_PROGRESS` 会话。命中则把该回执写到新键上，不再插入第二张进行中会话。同键重放、不同模式仍各自建单。
+  - Web 同一练习类型继续使用 `b2-practice-session-${sessionType}`。H5 本地已有进行中会话时先读取，不先新建。`lunaStamp` 仍为 false。
+
 - [R3-OUTCOME-PLAN-PIN-20261011] **答案无关的正式定级报告可以钉学习计划。**
   - 十分题结果仍只对 `reportId`、`outcomes`、`snapshotId`、`snapshotHash` 做摘要。评分等级、置信度和会话号写在摘要旁边，不进入摘要事实，也不写入答案规则文本。
   - `plans:ensure` 遇到这种快照时改向已完成会话读取内容钉、目标钉和清单。规则钉若只有 `completionRuleVersion=P1_PLACEMENT_V1`，规则摘要取该版本字符串的 sha256。带 `result` 信封的旧报告路径不变。

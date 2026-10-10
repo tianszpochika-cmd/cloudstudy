@@ -102,6 +102,34 @@ class B10SessionCreationIdempotencyTest {
         assertEquals(2, jdbc.sessionWrites);
     }
 
+    @Test
+    void secondOpenOfTheSameContentReusesTheInProgressSession() throws Exception {
+        NewSessionJdbc jdbc = new NewSessionJdbc();
+        ObjectMapper mapper = new ObjectMapper();
+        B10AssessmentJdbcController controller = new B10AssessmentJdbcController(jdbc, mapper,
+                "http://127.0.0.1:18089");
+        Map<String, Object> request = new LinkedHashMap<>();
+        request.put("contentVersionId", 25001);
+        request.put("mode", "PRACTICE");
+        request.put("clientSessionRef", "open-a");
+        Map<String, Object> first = controller.createSession(learner(), request, "open-key-a", null);
+        Map<String, Object> again = new LinkedHashMap<>(request);
+        again.put("clientSessionRef", "open-b");
+        Map<String, Object> second = controller.createSession(learner(), again, "open-key-b", null);
+        assertEquals(((Map<?, ?>) first.get("data")).get("sessionId"),
+                ((Map<?, ?>) second.get("data")).get("sessionId"));
+        assertEquals(1, jdbc.sessionWrites);
+
+        Map<String, Object> otherMode = new LinkedHashMap<>();
+        otherMode.put("contentVersionId", 25001);
+        otherMode.put("mode", "REVIEW");
+        otherMode.put("clientSessionRef", "open-c");
+        Map<String, Object> third = controller.createSession(learner(), otherMode, "open-key-c", null);
+        assertNotEquals(((Map<?, ?>) first.get("data")).get("sessionId"),
+                ((Map<?, ?>) third.get("data")).get("sessionId"));
+        assertEquals(2, jdbc.sessionWrites);
+    }
+
     private static JwtAuthenticationToken learner() {
         return learner(SUBJECT);
     }
@@ -213,6 +241,15 @@ class B10SessionCreationIdempotencyTest {
                 }
                 Map<String, Object> row = sessions.get(args[1] + "|" + args[2]);
                 return row == null ? List.of() : List.of(row);
+            }
+            if (sql.contains("FROM b10_assessment_session") && sql.contains("status = 'IN_PROGRESS'")) {
+                return sessions.values().stream().filter(row -> args[1].equals(row.get("principal_id"))
+                        && "IN_PROGRESS".equals(row.get("status"))
+                        && args[2].equals(row.get("content_code"))
+                        && args[3] instanceof Number requested
+                        && row.get("content_version_id") instanceof Number stored
+                        && requested.longValue() == stored.longValue()
+                        && args[4].equals(row.get("mode"))).toList();
             }
             if (sql.contains("FROM b10_assessment_session") && sql.contains("session_id = ?")) {
                 return sessions.values().stream().filter(row -> args[0].equals(row.get("session_id"))).toList();

@@ -151,6 +151,9 @@ class B10BankSessionCreationTest {
                 ruleQueries.add(String.valueOf(args[0]) + ":" + args[1]);
                 return List.of();
             }
+            if (sql.contains("FROM b10_assessment_session") && sql.contains("status = 'IN_PROGRESS'")) {
+                return List.of();
+            }
             if (sql.contains("FROM b10_assessment_session") && sql.contains("idempotency_key")) {
                 return sessions.values().stream()
                         .filter(row -> row.get("idempotency_key") != null
