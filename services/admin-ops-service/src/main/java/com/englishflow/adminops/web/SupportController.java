@@ -57,12 +57,26 @@ public final class SupportController {
         if ("it7".equals(projection)) {
             return closureBoard(request);
         }
-        List<Map<String, Object>> items = service.list(principal(), includeAll).stream()
+        AdminPrincipal current = principal();
+        List<Map<String, Object>> items = service.list(current, includeAll).stream()
                 .map(SupportController::ticketView)
                 .toList();
         Map<String, Object> data = new LinkedHashMap<>();
         data.put("items", items);
         data.put("nextCursor", null);
+        if (closureStudio != null) {
+            It7ClosureStudio.Actor actor = current == null
+                    ? It7ClosureStudio.Actor.anonymous()
+                    : new It7ClosureStudio.Actor(current.subjectId(), true, current.permissions());
+            It7ClosureStudio.Result result = closureStudio.handle(actor, "BOARD", Map.of());
+            if (result.status() < 400 && result.data() != null) {
+                data.put("ticketCopy", result.data().get("ticketCopy"));
+                data.put("supportNumber", result.data().get("supportNumber"));
+                data.put("privacy", result.data().get("privacy"));
+                data.put("auditVisible", false);
+                data.put("auditSharedWithLearner", false);
+            }
+        }
         return AdminOpsHttpSupport.envelope(data, request);
     }
 

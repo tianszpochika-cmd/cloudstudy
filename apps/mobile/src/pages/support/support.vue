@@ -7,8 +7,7 @@ import { onShow } from '@dcloudio/uni-app'
 import { ref } from 'vue'
 import { ensureMobilePageAccess } from '../../auth/navigation'
 import {
-  listMobileSupportTickets,
-  readMobileClosureBoard,
+  loadMobileSupportDesk,
   type MobileSupportTicket,
 } from '../../api/support'
 import { supportNotice, ticketNotice, type ClosureBoard } from '../../domain/it7-closure'
@@ -30,8 +29,9 @@ async function load(): Promise<void> {
   loading.value = true
   error.value = null
   try {
-    tickets.value = await listMobileSupportTickets()
-    closure.value = await readMobileClosureBoard().catch(() => null)
+    const desk = await loadMobileSupportDesk()
+    tickets.value = desk.tickets
+    closure.value = desk.board
   } catch (cause) {
     tickets.value = []
     error.value = cause instanceof Error ? cause.message : '客服暂时不可用。'
@@ -50,6 +50,7 @@ onShow(async () => { if (await ensureMobilePageAccess('/pages/support/support'))
 
     <view class="yx-card">
       <text class="yx-eyebrow">客服与帮助</text>
+      <text class="yx-note">暂不能提交新工单，可查看已有工单。</text>
       <text class="yx-note it7-closure">{{ ticketNotice(closure) }}</text>
       <text v-if="supportNotice(closure)" class="yx-note">{{ supportNotice(closure) }}</text>
     </view>

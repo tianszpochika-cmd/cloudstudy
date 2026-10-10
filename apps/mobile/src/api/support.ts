@@ -42,12 +42,20 @@ export async function readMobileClosureBoard(): Promise<ClosureBoard | null> {
   return isRecord(data) ? data as ClosureBoard : null
 }
 
-export async function listMobileSupportTickets(): Promise<MobileSupportTicket[]> {
+export async function loadMobileSupportDesk(): Promise<{ tickets: MobileSupportTicket[]; board: ClosureBoard | null }> {
   const raw = await mobileApiClient.request<unknown>('/support/tickets')
   const data = unwrap(raw)
   const items = isRecord(data) && Array.isArray(data.items) ? data.items : []
-  return items.flatMap((item) => {
+  const tickets = items.flatMap((item) => {
     const ticket = ticketOf(item)
     return ticket ? [ticket] : []
   })
+  const board = isRecord(data) && (typeof data.ticketCopy === 'string' || typeof data.supportNumber === 'string')
+    ? data as ClosureBoard
+    : null
+  return { tickets, board }
+}
+
+export async function listMobileSupportTickets(): Promise<MobileSupportTicket[]> {
+  return (await loadMobileSupportDesk()).tickets
 }
