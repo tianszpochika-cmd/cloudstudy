@@ -1,5 +1,11 @@
 # Changelog
 
+- [R3-IT3-BROWSER-20261011] **IT-3 浏览器走查通过：正式报告、首页横幅、今日任务、计划重排。**
+  - 干净库后缀 `d2012bf6`。Web 与 H5、1280 与 390 四条链路的注册、正式报告、横幅、今日任务、`plans:ensure` 和 `plans:replan` 都是 PASS。重排从计划版本 2 发到版本 3。`lunaStamp` 仍为 false。
+  - 网关带凭证的 CORS 允许 `If-Match`，浏览器才能发出重排。学习服务用 `getLong` 读出 `plan_version`。客户端在令牌刷新期间仍用刚读到的版本重排。
+  - 八个未登录页和登录后的首页、今日任务，文档横向溢出都是 0。390 宽首页的插画超出自身盒子，被 `.home-hero` 裁剪，没有出现横向滚动条。
+  - `support-real-gateway.e2e` 在本轮专用 IAM 库上补跑通过。证据在 `evidence/redesign/2026-10-11/`。
+
 - [R1-043-20261011] **同一内容、版本和模式下，进行中的练习会话再次打开仍返回原会话。**
   - assessment-service 在幂等键认领成功后，按租户、主体、内容码、内容版本和模式查找 `IN_PROGRESS` 会话。命中则把该回执写到新键上，不再插入第二张进行中会话。同键重放、不同模式仍各自建单。
   - Web 同一练习类型继续使用 `b2-practice-session-${sessionType}`。H5 本地已有进行中会话时先读取，不先新建。`lunaStamp` 仍为 false。

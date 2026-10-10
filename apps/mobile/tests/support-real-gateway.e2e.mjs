@@ -6,6 +6,15 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 import { chromium } from 'playwright'
 
+function certificateSpkiHash(pemPath) {
+  const publicKeyPem = execFileSync('openssl', ['x509', '-in', pemPath, '-pubkey', '-noout'], { encoding: 'utf8' })
+  const publicKeyDer = execFileSync('openssl', ['pkey', '-pubin', '-outform', 'der'], { input: publicKeyPem })
+  return createHash('sha256').update(publicKeyDer).digest('base64')
+}
+
+const iamSchema = process.env.SUPPORT_UAT_IAM_SCHEMA || 'iam_service'
+assert.match(iamSchema, /^[A-Za-z0-9_]+$/, 'unsafe IAM schema name')
+
 const root = path.resolve(import.meta.dirname, '../../..')
 const stamp = `${Date.now().toString(36)}-${randomBytes(4).toString('hex')}`
 const identifier = `uat-support-${stamp}@local.invalid`
@@ -67,13 +76,13 @@ async function screenshot(page, name, width) {
 function cleanupExactAccount() {
   assert.match(identifier, /^uat-support-[a-z0-9-]+@local\.invalid$/, 'unsafe local identifier')
   const sql = `START TRANSACTION;
-UPDATE iam_service.iam_session s JOIN iam_service.iam_account a ON a.principal_id=s.principal_id
+UPDATE \`${iamSchema}\`.iam_session s JOIN \`${iamSchema}\`.iam_account a ON a.principal_id=s.principal_id
  SET s.status='REVOKED', s.revoked_at=UTC_TIMESTAMP(6), s.revoke_reason='LOCAL_UAT_CLEANUP'
  WHERE a.identifier='${identifier}' AND s.status='ACTIVE';
-UPDATE iam_service.iam_account SET status='DISABLED', roles='', permissions=''
+UPDATE \`${iamSchema}\`.iam_account SET status='DISABLED', roles='', permissions=''
  WHERE identifier='${identifier}';
-SELECT CONCAT('ACCOUNT:',COUNT(*),':',COALESCE(MAX(status),'NONE')) FROM iam_service.iam_account WHERE identifier='${identifier}';
-SELECT CONCAT('ACTIVE_SESSIONS:',COUNT(*)) FROM iam_service.iam_session s JOIN iam_service.iam_account a ON a.principal_id=s.principal_id WHERE a.identifier='${identifier}' AND s.status='ACTIVE';
+SELECT CONCAT('ACCOUNT:',COUNT(*),':',COALESCE(MAX(status),'NONE')) FROM \`${iamSchema}\`.iam_account WHERE identifier='${identifier}';
+SELECT CONCAT('ACTIVE_SESSIONS:',COUNT(*)) FROM \`${iamSchema}\`.iam_session s JOIN \`${iamSchema}\`.iam_account a ON a.principal_id=s.principal_id WHERE a.identifier='${identifier}' AND s.status='ACTIVE';
 COMMIT;`
   const result = execFileSync('docker', ['exec', '-i', '-e', 'MYSQL_PWD=root-local-only', 'yuxuexing-local-mysql-1', 'mysql', '-uroot', '-N', '-B', '-e', sql], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] })
   const account = result.match(/ACCOUNT:(\d+):(DISABLED|NONE)/)?.slice(1)
@@ -88,7 +97,9 @@ try {
   for (const url of ['http://127.0.0.1:18183/', `${gateway}/actuator/health`]) {
     assert.equal((await fetch(url)).status, 200, `preflight ${safePath(url)}`)
   }
-  browser = await chromium.launch({ headless: true })
+  const launchArgs = []
+  if (process.env.IAM_TEST_CA_PEM) launchArgs.push(`--ignore-certificate-errors-spki-list=${certificateSpkiHash(process.env.IAM_TEST_CA_PEM)}`)
+  browser = await chromium.launch({ headless: true, channel: 'chrome', args: launchArgs })
   const registration = await browser.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: 'reduce' })
   const registrationPage = await registration.newPage()
   track(registrationPage)
@@ -107,26 +118,44 @@ try {
 
   stage = 'adult-gate'
   await registrationPage.locator('.birth-year input').fill('1995')
-  for (const checkbox of await registrationPage.locator('.consent uni-checkbox').all()) await checkbox.click()
+  await registrationPage.locator('.consent').filter({ hasText: '我确认自己已满 18 周岁' }).locator('.uni-checkbox-input, uni-checkbox').first().click()
   const continueButton = registrationPage.getByRole('button', { name: '继续', exact: true })
   evidence.stages.push({ name: 'adult-ui-ready', continueEnabled: await continueButton.isEnabled(), checkboxCount: await registrationPage.locator('.consent uni-checkbox').count() })
   assert.ok(await continueButton.isEnabled(), 'adult gate action is disabled after all inputs')
   const adultStatus = await statusAfter(registrationPage, '/api/v1/iam/adult-gate', () => continueButton.click())
   assert.equal(adultStatus, 200)
   evidence.stages.push({ name: stage, status: adultStatus })
-  await registrationPage.getByText('选择学习目标', { exact: true }).waitFor()
 
-  stage = 'consent-and-target'
+  stage = 'consent'
+  await registrationPage.getByText('完成必要同意', { exact: true }).waitFor()
+  await registrationPage.waitForFunction(() => {
+    const match = (document.body?.innerText || '').match(/已发布版本\s+(\S+)/)
+    return Boolean(match && match[1] && match[1] !== '版本未读到')
+  })
   const consentResponses = []
   registrationPage.on('response', response => {
     if (safePath(response.url()) === '/api/v1/iam/consents' && response.request().method() === 'PUT') consentResponses.push(response.status())
   })
+  const consentRows = registrationPage.locator('.yx-onboarding-step .consent')
+  const consentCount = await consentRows.count()
+  for (let index = 0; index < consentCount; index += 1) {
+    const box = consentRows.nth(index).locator('.uni-checkbox-input, uni-checkbox, input[type=checkbox]').first()
+    if (await box.count()) await box.click()
+    else await consentRows.nth(index).click()
+  }
+  const consentContinue = registrationPage.getByRole('button', { name: '继续', exact: true })
+  assert.ok(await consentContinue.isEnabled(), 'consent continue stays disabled after every required row')
+  await consentContinue.click()
+  await registrationPage.getByText('选择学习目标', { exact: true }).waitFor()
+  assert.deepEqual(consentResponses.sort(), [200, 200, 200])
+  evidence.stages.push({ name: stage, consentStatuses: consentResponses })
+
+  stage = 'consent-and-target'
   await registrationPage.locator('.choice-list .choice').first().click()
   await registrationPage.getByRole('button', { name: '15 分钟', exact: true }).click()
   await registrationPage.getByRole('button', { name: '保存并开始测评' }).click()
   await waitForPath(registrationPage, 'assessment')
-  assert.deepEqual(consentResponses.sort(), [200, 200, 200])
-  evidence.stages.push({ name: stage, consentStatuses: consentResponses })
+  evidence.stages.push({ name: stage, arrived: 'assessment' })
   await registration.close()
 
   stage = 'fresh-login'

@@ -1,0 +1,195 @@
+{
+  "kind": "R3_IT3_BROWSER",
+  "summary": "PASS",
+  "accepted": false,
+  "it3Outbound": false,
+  "lunaStamp": false,
+  "suffix": "d2012bf6",
+  "support": "PASS",
+  "steps": [
+    {
+      "name": "ports-free",
+      "status": "PASS"
+    },
+    {
+      "name": "dedicated-schemas",
+      "status": "PASS"
+    },
+    {
+      "name": "iam-https",
+      "status": "PASS"
+    },
+    {
+      "name": "content-seed",
+      "status": "PASS"
+    },
+    {
+      "name": "admin-ops-memory",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-logged-out-root-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-logged-out-today-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-logged-out-courses-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-logged-out-login-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-logged-out-root-390",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-logged-out-today-390",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-logged-out-courses-390",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-logged-out-login-390",
+      "status": "PASS"
+    },
+    {
+      "name": "support-real-gateway",
+      "status": "PASS"
+    },
+    {
+      "name": "register-web-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "report-web-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "banner-web-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-home-web-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "today-web-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-today-web-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "ensure-web-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "replan-web-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "register-web-390",
+      "status": "PASS"
+    },
+    {
+      "name": "report-web-390",
+      "status": "PASS"
+    },
+    {
+      "name": "banner-web-390",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-home-web-390",
+      "status": "PASS"
+    },
+    {
+      "name": "today-web-390",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-today-web-390",
+      "status": "PASS"
+    },
+    {
+      "name": "ensure-web-390",
+      "status": "PASS"
+    },
+    {
+      "name": "replan-web-390",
+      "status": "PASS"
+    },
+    {
+      "name": "register-h5-390",
+      "status": "PASS"
+    },
+    {
+      "name": "report-h5-390",
+      "status": "PASS"
+    },
+    {
+      "name": "banner-h5-390",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-home-h5-390",
+      "status": "PASS"
+    },
+    {
+      "name": "today-h5-390",
+      "status": "PASS"
+    },
+    {
+      "name": "ensure-h5-390",
+      "status": "PASS"
+    },
+    {
+      "name": "replan-h5-390",
+      "status": "PASS"
+    },
+    {
+      "name": "register-h5-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "report-h5-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "banner-h5-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-home-h5-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "today-h5-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "ensure-h5-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "replan-h5-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "schemas-dropped",
+      "status": "PASS"
+    },
+    {
+      "name": "qida-unchanged",
+      "status": "PASS"
+    }
+  ]
+}

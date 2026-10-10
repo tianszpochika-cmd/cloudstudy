@@ -15,11 +15,11 @@
 | 已定义卡 | 59 | R1-001～059。R1-030～042 是 IT-3 拆卡，R1-043～059 是 IT-4 拆卡 |
 | 卡范围独立验收（ACCEPTED_CARD_SCOPE） | 6 | R1-002/003/004/005/006/008 |
 | 源码交付、未独立终审 | 2 | R1-001（SOURCE_SCOPED_PASS）、R1-007 |
-| 已实现/回放、待站级签收 | 33 | R1-009～017（IT-1）、R1-018～029（IT-2）、R1-030～040（IT-3 代码已落地，浏览器站未签）、R1-043（服务端复用已单测，浏览器站未签） |
-| 已定义、本轮未跑站级 | 2 | R1-041 交互对稿、R1-042 干净库重放。见第 4 节 |
+| 已实现/回放、待站级签收 | 35 | R1-009～017（IT-1）、R1-018～029（IT-2）、R1-030～042（IT-3 浏览器 PASS，未签）、R1-043（服务端复用已单测，浏览器站未签） |
+| 已定义、本轮未跑站级 | 0 | R1-041/042 已于 2026-10-11 补跑。见第 4 节 |
 | 已定义、未实现 | 16 | R1-044～059。见第 2 节。不按 114 减已有卡数补空卡 |
 | 未定义（待按站拆卡） | IT-5～IT-7 | 不按剩余张数补卡 |
-| 跳过 | 3 | `support-real-gateway.e2e`；IT-3 真实浏览器与干净库重放；local-development 全仓门禁未整跑。见第 4 节 |
+| 跳过 | 3 | 原三行保留。工单补跑与 IT-3 浏览器已于 r3 通过。全仓门禁仍见第 4 节 |
 
 ## 2. 已定义卡
 
@@ -65,8 +65,8 @@
 | R1-038 | IT-3 | 输入快照只追加版本 | 已实现，待站级签收 | 不原地改历史快照 |
 | R1-039 | IT-3 | 首次学习按完成状态引导 | 已实现，待站级签收 | 完成后引导收起 |
 | R1-040 | IT-3 | 书架、搜索与续学 | 已实现，待站级签收 | 三态搜索与有效检查点 |
-| R1-041 | IT-3 | 计划今日交互验收 | 未跑浏览器对稿 | 幕幕对稿 |
-| R1-042 | IT-3 | L3 干净库重放 | 未跑 | 报告→横幅→今日任务 |
+| R1-041 | IT-3 | 计划今日交互验收 | 浏览器对稿 PASS，未签。后缀 d2012bf6。lunaStamp=false | 幕幕对稿 |
+| R1-042 | IT-3 | L3 干净库重放 | 干净库重放 PASS，未签。报告→横幅→今日→重排。lunaStamp=false | 报告→横幅→今日任务 |
 | R1-043 | IT-4 | 练习建单锁定内容码与版本，重复开单复用同一进行中会话 | 服务端复用已单测；Web 同类型稳定键；H5 先读本地进行中会话。lunaStamp=false | Web/H5 连续点同一练习，会话号不变 |
 | R1-044 | IT-4 | 语法 3 道、阅读 2 道只回 FULL/ZERO；题包不足为 CLOSED_MISSING | 已定义，未实现 | 真实题数或关闭说明 |
 | R1-045 | IT-4 | 保存回执先于文字反馈，下一题明确 | 已定义，未实现 | 作答后看到文字反馈和下一题 |
@@ -91,7 +91,7 @@
 |---|---|---|
 | IT-1 | Luna REJECT/FAIL（基线 69bea68b）；复检 ce0aa296 PASS 未签；it1-named-gates / R1-014 PASS，自审 PASS_WITH_GAPS 未签。**待 Luna 签收（外部依赖）**，不再当作本轮开工阻塞 | 独立签收。具名门浏览器已有，仍缺 Luna。不改 `lunaStamp`，不改 station-acceptance 原件 |
 | IT-2 | BLOCKED；it2-station PASS_WITH_NOT_RUN；it2-score-browser 10 题 PASS 未签。**待 Luna 签收（外部依赖）**。三个独立 owner schema 的 IAM 真签出站仍未完成：本轮 `services:run` 只有 HTTP IAM，没有在不写钥匙串的前提下换上 r1 TLS | 三个独立 owner schema 的 IAM 真签出站。原 3 个 NOT_RUN 不回写 |
-| IT-3 计划今日 | R1-030…040 代码已落地；R1-041/042 浏览器与干净库未跑。lunaStamp=false | BC-023…032/199 |
+| IT-3 计划今日 | R1-030…042 浏览器走查 PASS，后缀 d2012bf6。自审 PASS_WITH_GAPS。lunaStamp=false | BC-023…032/199 |
 | IT-4 练错复 | R1-043 服务端复用已单测。R1-044…059 仍未实现。lunaStamp=false | BC-033…062/203 |
 | IT-5 报告 | 未拆卡 TODO | BC-063…070 |
 | IT-6 双审 | 未拆卡 TODO | BC-071…084/200/204…207 |
@@ -101,8 +101,8 @@
 
 | 编号 | 原因 | 证据 | 日期 |
 |---|---|---|---|
-| support-real-gateway.e2e | 真实 Gateway 工单 UAT 要向 `https://127.0.0.1:18087` 注册。本轮 `pnpm services:run` 的 IAM 是 HTTP，HTTPS 连接失败。r1 测试 CA 不在磁盘上。按约束不把证书写入 macOS 钥匙串，也不改该用例去忽略证书错误 | `evidence/redesign/2026-10-10/unit-tests-r2/report.md`；失败阶段 `register`，`registered:false`，清理 `ACCOUNT:0` | 2026-10-10 |
-| R1-041 / R1-042 | IT-3 真实 Chrome 走查和干净库重放要向 HTTPS IAM 注册。本轮监督进程里的 IAM 只听 HTTP `127.0.0.1:18087`。磁盘上没有 `iam-server.p12` / `test-ca.pem`，`tls-harness` 不能签发。按约束不把证书写入 macOS 钥匙串，也不把客户端改成忽略证书或改打 HTTP。因此没有新建专用 schema，也没有声称报告→横幅→今日任务的浏览器链通过 | `evidence/redesign/2026-10-10/it3-plan-today/report.md` | 2026-10-10 |
+| support-real-gateway.e2e | 真实 Gateway 工单 UAT 要向 `https://127.0.0.1:18087` 注册。本轮 `pnpm services:run` 的 IAM 是 HTTP，HTTPS 连接失败。r1 测试 CA 不在磁盘上。按约束不把证书写入 macOS 钥匙串，也不改该用例去忽略证书错误。已于 r3 补跑通过 | `evidence/redesign/2026-10-10/unit-tests-r2/report.md`；失败阶段 `register`，`registered:false`，清理 `ACCOUNT:0`。补跑：`evidence/redesign/2026-10-11/r3-support-gateway/summary.json` | 2026-10-10 |
+| R1-041 / R1-042 | IT-3 真实 Chrome 走查和干净库重放要向 HTTPS IAM 注册。本轮监督进程里的 IAM 只听 HTTP `127.0.0.1:18087`。磁盘上没有 `iam-server.p12` / `test-ca.pem`，`tls-harness` 不能签发。按约束不把证书写入 macOS 钥匙串，也不把客户端改成忽略证书或改打 HTTP。因此当时没有声称报告→横幅→今日任务的浏览器链通过。已于 r3 补跑通过 | `evidence/redesign/2026-10-10/it3-plan-today/report.md`。补跑：`evidence/redesign/2026-10-11/it3-browser/report.md`，后缀 `d2012bf6`，summary PASS | 2026-10-10 |
 | local-development-gates | 已过：`pnpm typecheck`（turbo 7/7，exit 0）、`pnpm test`（turbo 只执行 `@englishflow/i18n` 11 项，缓存命中，exit 0；它不包含两端顶层 299 项）、`pnpm contracts:validate`（468 operations，exit 0）、`pnpm dod:check`（5 项 PASS，`strict:false`，exit 0）。未整跑：`pnpm build`、mobile `build:h5` / `build:app`、`mvn -B -ntp -f pom.xml test`、`pnpm test:p1r`。全量 Maven 会连共享库 `127.0.0.1:13306` 的 `iam_service` 等 schema，本轮不在共享库上跑集成上下文，也不为它新建或删除库。P1R 单文件 4 项失败在 `eee50c76` 上同样存在，不改冻结 hash。文档写明 2026-10-06 的 P1R 完整回归仍有 26 项失败 | `evidence/redesign/2026-10-10/it3-plan-today/report.md` | 2026-10-10 |
 
 ## 5. 轮次记录
@@ -111,5 +111,6 @@
 |---|---|---|---|
 | r1 | cs-r1 | IT-1 具名门补齐与复检 | 浏览器与 R1-014 PASS；自审 PASS_WITH_GAPS；未出站、未签 |
 | r2 | cs-r2 | 顶层 Node 测试修复；IT-3 拆成 R1-030…042 并落地 R1-030…040 | 同一命令现为 299 项、298 通过、1 失败，失败文件仍是 `support-real-gateway.e2e`。R1-041/042 因 IAM 只有 HTTP 未跑浏览器和干净库。全仓 local-development 门禁未整跑。`lunaStamp` 仍为 false |
+| r3 | cs-r3 | 恢复本地 IAM HTTPS；补跑工单 UAT；IT-3 浏览器走查；IT-4 拆成 R1-043…059 并落地 R1-043 | 浏览器后缀 `d2012bf6` summary PASS。工单在证据栈里补跑 PASS。自审 PASS_WITH_GAPS。`lunaStamp` 仍为 false。R1-044～059 未实现。顶层 `node --test --test-concurrency=1 apps/mobile/tests/*.mjs apps/learner-web/tests/*.mjs` 在只开 H5 时为 301 项、300 通过、1 失败，失败文件仍是 `support-real-gateway.e2e`（预检未连上 Gateway）。相对 r2 的 299/298/1，多出的 2 项是 R1-043 的复用锁，已通过 |
 
 旧 grok 会话 PID 59062（01a120cd…）推送 e7cd6dd1 后空闲，保留运行但不再使用。

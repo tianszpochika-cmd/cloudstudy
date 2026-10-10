@@ -1,0 +1,18 @@
+{
+  "summary": "PASS_WITH_GAPS",
+  "accepted": false,
+  "it3Outbound": false,
+  "lunaStamp": false,
+  "date": "2026-10-11",
+  "reviewer": "executing-agent",
+  "suffix": "d2012bf6",
+  "browser": "evidence/redesign/2026-10-11/it3-browser",
+  "support": "evidence/redesign/2026-10-11/r3-support-gateway",
+  "gaps": [
+    "GAP-LUNA",
+    "GAP-WALL-114",
+    "GAP-IT4-REMAINING",
+    "GAP-DECORATIVE-ARTWORK",
+    "GAP-LOCAL-GATES"
+  ]
+}
