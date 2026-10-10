@@ -8,6 +8,7 @@ import { emptyConsentChoices, readPublishedConsentVersion, requiredConsentItems 
 import { canonicalGoalOptions, mapUiGoal, onboardingProgressLabel, prefillSavedTarget, selectOnboardingResumeStep, type CanonicalTargetGoal, type OnboardingResumeStep } from '../domain/onboarding-resume'
 import { useLearnerContentStore } from '../stores/learner-content'
 import { useSessionStore } from '../stores/session'
+import type { AdultGateStatus } from '../auth/gateway-auth'
 import { userFacingError } from '../platform/user-facing-error'
 
 const router = useRouter()
@@ -74,6 +75,10 @@ async function leaveRejected(): Promise<void> {
   await router.replace({ name: 'forbidden' })
 }
 
+function readAdultGate(): AdultGateStatus {
+  return session.adultGate
+}
+
 async function loadResume(): Promise<void> {
   if (session.adultGate === 'REJECTED') { await leaveRejected(); return }
   resumeError.value = null
@@ -85,7 +90,7 @@ async function loadResume(): Promise<void> {
   savedQuota.value = null
   try {
     const facts = await store.loadOnboardingResume(true)
-    if (session.adultGate === 'REJECTED' || selectOnboardingResumeStep(facts) === 'rejected') { await leaveRejected(); return }
+    if (readAdultGate() === 'REJECTED' || selectOnboardingResumeStep(facts) === 'rejected') { await leaveRejected(); return }
     step.value = selectOnboardingResumeStep(facts)
     const filled = prefillSavedTarget(facts.target)
     if (filled.goal && filled.quota) {
