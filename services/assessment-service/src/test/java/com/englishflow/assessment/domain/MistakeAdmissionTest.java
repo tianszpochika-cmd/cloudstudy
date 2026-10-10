@@ -26,4 +26,16 @@ class MistakeAdmissionTest {
         }
         assertEquals(1, mistake.wrongCount());
     }
+
+    @Test
+    void admittedFactNamesTheSourceAndLeavesTheAnswerOut() {
+        var fact = MistakeAdmission.admittedFact(7, 266004, "aatm_1", "p1.placement.v1", "UNCLASSIFIED");
+        assertEquals("ZERO", fact.get("scoreBucket"));
+        assertEquals("aatm_1", fact.get("sourceAttemptId"));
+        assertEquals(266004L, fact.get("itemId"));
+        assertEquals("mistake-admitted:aatm_1:266004", MistakeAdmission.dedupeKey("aatm_1", 266004));
+        assertFalse(fact.containsKey("answer"));
+        assertFalse(fact.containsKey("answerHash"));
+        assertEquals(MistakeAdmission.EVENT, "learning.mistake.admitted.v1");
+    }
 }

@@ -566,6 +566,12 @@ public class B10AssessmentJdbcController {
                 mistake.tagSourceAttempt(sourceAttemptId);
             }
             saveMistake(mistake);
+            Map<String, Object> admitted = MistakeAdmission.admittedFact(
+                    mistake.mistakeId(), itemId, sourceAttemptId, gradingCode, mistake.errorCategory());
+            appendOutbox(MistakeAdmission.EVENT, "learning.event.v1", 1,
+                    "assessment_mistake", String.valueOf(mistake.mistakeId()), subject,
+                    sourceAttemptId, sourceAttemptId,
+                    MistakeAdmission.dedupeKey(sourceAttemptId, itemId), admitted, now);
         }
     }
 
@@ -611,10 +617,29 @@ public class B10AssessmentJdbcController {
     private Map<String, Object> mistakeView(AssessmentMistake mistake) {
         Map<String, Object> view = new LinkedHashMap<>(mistake.learnerView());
         view.put("tenantId", mistake.tenantId());
+        view.put("scoreBucket", "ZERO");
+        view.put("contentCode", contentCode(mistake.ruleVersion()));
+        String sourceAttemptId = sourceAttempt(mistake);
+        if (!sourceAttemptId.isBlank()) view.put("sourceAttemptId", sourceAttemptId);
         if (mistake.mistakeStatus() == AssessmentMistake.MistakeStatus.MASTERED) {
             view.put("closureCopy", VariantRepair.PASSED);
         }
         return view;
+    }
+
+    private static String contentCode(String ruleVersion) {
+        if (ruleVersion == null || ruleVersion.isBlank()) return "";
+        int marker = ruleVersion.lastIndexOf(":v");
+        return marker > 0 ? ruleVersion.substring(0, marker) : ruleVersion;
+    }
+
+    private static String sourceAttempt(AssessmentMistake mistake) {
+        String found = "";
+        for (Map<String, Object> trace : mistake.reasonTrace()) {
+            Object value = trace.get("sourceAttemptId");
+            if (value != null && !String.valueOf(value).isBlank()) found = String.valueOf(value).trim();
+        }
+        return found;
     }
 
     private static Instant instantOf(Object value) {

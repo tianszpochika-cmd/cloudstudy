@@ -234,6 +234,17 @@ public class LearningRuntimeConfiguration {
     }
 
     @Bean
+    @ConditionalOnProperty(prefix = "learning.ports", name = "mode", havingValue = "http")
+    com.englishflow.learning.adapter.http.AssessmentMistakeQueueProjector assessmentMistakeQueueProjector(
+            tools.jackson.databind.ObjectMapper objectMapper,
+            @org.springframework.beans.factory.annotation.Value(
+                    "${learning.ports.assessment-base-url:http://127.0.0.1:18091}")
+            String assessmentBaseUrl) {
+        return com.englishflow.learning.adapter.http.AssessmentMistakeQueueProjector.http(
+                objectMapper, assessmentBaseUrl);
+    }
+
+    @Bean
     com.englishflow.learning.adapter.http.VerifiedPlacementReport placementReportVerifier(
             tools.jackson.databind.ObjectMapper objectMapper,
             @org.springframework.beans.factory.annotation.Value(

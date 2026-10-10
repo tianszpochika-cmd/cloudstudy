@@ -25,6 +25,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.englishflow.learning.adapter.http.AssessmentMistakeQueueProjector;
+import com.englishflow.learning.adapter.http.BearerTokens;
 import com.englishflow.learning.domain.EmptyBook;
 import com.englishflow.learning.domain.MasteryWrite;
 
@@ -42,10 +44,20 @@ public class B3LearningJdbcController {
 
     private final JdbcTemplate jdbc;
     private final ObjectMapper objectMapper;
+    private final AssessmentMistakeQueueProjector mistakeQueue;
 
     public B3LearningJdbcController(JdbcTemplate jdbc, ObjectMapper objectMapper) {
         this.jdbc = jdbc;
         this.objectMapper = objectMapper;
+        this.mistakeQueue = AssessmentMistakeQueueProjector.disabled();
+    }
+
+    @org.springframework.beans.factory.annotation.Autowired
+    public B3LearningJdbcController(JdbcTemplate jdbc, ObjectMapper objectMapper,
+            org.springframework.beans.factory.ObjectProvider<AssessmentMistakeQueueProjector> projectors) {
+        this.jdbc = jdbc;
+        this.objectMapper = objectMapper;
+        this.mistakeQueue = projectors.getIfAvailable(AssessmentMistakeQueueProjector::disabled);
     }
 
     @PostMapping("/grammar/attempts")
@@ -399,11 +411,15 @@ public class B3LearningJdbcController {
     @GetMapping("/mastery/mistakes")
     public Map<String, Object> mistakes(Authentication authentication) {
         Principal principal = principal(authentication, "learning.mastery.read");
+        mistakeQueue.project(jdbc, principal.subject(), BearerTokens.current(authentication));
         List<Map<String, Object>> rows = jdbc.queryForList("""
                 SELECT resource_key, payload_json, result_json, created_at
                   FROM b3_learning_interaction
                  WHERE tenant_id = ? AND principal_id = ?
-                   AND domain_code = 'GRAMMAR' AND action_code = 'ATTEMPT'
+                   AND (
+                        (domain_code = 'GRAMMAR' AND action_code = 'ATTEMPT')
+                        OR action_code = 'ASSESSMENT_ZERO'
+                   )
                  ORDER BY created_at DESC
                 """, TENANT, principal.subject());
         List<Map<String, Object>> items = rows.stream()

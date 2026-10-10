@@ -29,6 +29,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.englishflow.learning.adapter.http.AssessmentMistakeQueueProjector;
+import com.englishflow.learning.adapter.http.BearerTokens;
 import com.englishflow.learning.domain.EmptyBook;
 import com.englishflow.learning.domain.ReviewBudget;
 import com.englishflow.learning.domain.ReviewHistory;
@@ -41,8 +43,19 @@ import com.englishflow.learning.domain.StageProjection;
 public class B25LearningJdbcController {
     private static final String TENANT = "platform";
     private final JdbcTemplate jdbc;
+    private final AssessmentMistakeQueueProjector mistakeQueue;
 
-    public B25LearningJdbcController(JdbcTemplate jdbc) { this.jdbc = jdbc; }
+    public B25LearningJdbcController(JdbcTemplate jdbc) {
+        this.jdbc = jdbc;
+        this.mistakeQueue = AssessmentMistakeQueueProjector.disabled();
+    }
+
+    @org.springframework.beans.factory.annotation.Autowired
+    public B25LearningJdbcController(JdbcTemplate jdbc,
+            org.springframework.beans.factory.ObjectProvider<AssessmentMistakeQueueProjector> projectors) {
+        this.jdbc = jdbc;
+        this.mistakeQueue = projectors.getIfAvailable(AssessmentMistakeQueueProjector::disabled);
+    }
 
     @GetMapping("/plan/current")
     public Map<String, Object> currentPlan(Authentication authentication) {
@@ -523,6 +536,7 @@ public class B25LearningJdbcController {
     public Map<String, Object> mistakes(Authentication authentication,
             @RequestParam(required = false) String status) {
         Principal principal = principal(authentication, "learning.mastery.read");
+        mistakeQueue.project(jdbc, principal.subject(), BearerTokens.current(authentication));
         String requestedStatus = status == null ? "" : status.trim().toUpperCase(java.util.Locale.ROOT);
         if (requestedStatus.length() > 32) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "status is too long");
