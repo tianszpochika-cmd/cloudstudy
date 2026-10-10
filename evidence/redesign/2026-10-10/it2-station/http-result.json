@@ -1,0 +1,418 @@
+{
+  "card": "IT-2-STATION",
+  "date": "2026-10-10",
+  "branch": "dev-redesign",
+  "schema": "it2_station_20261010_88c52892",
+  "summary": "PASS_WITH_NOT_RUN",
+  "accepted": false,
+  "it2Outbound": false,
+  "identity": "temporary-jwks-not-iam",
+  "schemaIsolation": "single-shared-test-schema",
+  "steps": [
+    {
+      "name": "mysql-identity",
+      "status": "PASS",
+      "detail": {
+        "name": "/yuxuexing-local-mysql-1",
+        "image": "mysql:8.0",
+        "project": "yuxuexing-local",
+        "service": "mysql",
+        "status": "running",
+        "health": "healthy",
+        "port": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "13306"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ports-free",
+      "status": "PASS",
+      "detail": {
+        "ports": [
+          18070,
+          18088,
+          18089,
+          18091,
+          18199,
+          18229
+        ],
+        "occupied": []
+      }
+    },
+    {
+      "name": "content-seed-10-3-3-2-2",
+      "status": "PASS",
+      "detail": {
+        "flyway": "28\t0",
+        "seeded": {
+          "total": 10,
+          "vocab": 3,
+          "grammar": 3,
+          "reading": 2,
+          "listening": 2,
+          "bank": 10,
+          "answers": 10
+        }
+      }
+    },
+    {
+      "name": "sealed-200-no-correctOption",
+      "status": "PASS",
+      "detail": {
+        "status": 200,
+        "bytes": 3498,
+        "dims": {
+          "VOCABULARY": 3,
+          "BASIC_GRAMMAR": 3,
+          "READING": 2,
+          "LISTENING": 2
+        },
+        "leaks": false,
+        "sampleKeys": [
+          "dimension",
+          "stem",
+          "contentVersionId",
+          "displayOrder",
+          "itemType",
+          "itemId",
+          "options",
+          "itemCode"
+        ]
+      }
+    },
+    {
+      "name": "sealed-under-10-is-503",
+      "status": "PASS",
+      "detail": {
+        "status": 503,
+        "total": 9,
+        "body": "{\"timestamp\":\"2026-10-10T07:05:03.265Z\",\"status\":503,\"error\":\"Service Unavailable\",\"path\":\"/internal/v1/content/placement-bank/sealed\"}",
+        "stemLeaked": false
+      }
+    },
+    {
+      "name": "sealed-restored-200",
+      "status": "PASS",
+      "detail": {
+        "status": 200,
+        "total": 10
+      }
+    },
+    {
+      "name": "learner-active-goal",
+      "status": "PASS",
+      "detail": {
+        "status": 200,
+        "flyway": "12\t0",
+        "goal": {
+          "status": "ACTIVE",
+          "targetId": 1001,
+          "goalCode": "FOUNDATION",
+          "stateVersion": 1
+        }
+      }
+    },
+    {
+      "name": "assessment-flyway",
+      "status": "PASS",
+      "detail": {
+        "assessmentFlyway": "1,2,3,4,5,6,7,8,9,10,11\t0"
+      }
+    },
+    {
+      "name": "gate-closed-403-no-session",
+      "status": "PASS",
+      "detail": {
+        "adult": 403,
+        "consent": 403,
+        "sessions": 0,
+        "adultBody": "{\"detail\":\"adult gate is required\",\"instance\":\"/internal/v1/assessment/placement/sessions\",\"status\":403,\"title\":\"Forbidden\"}",
+        "consentBody": "{\"detail\":\"learning consent is required\",\"instance\":\"/internal/v1/assessment/placement/sessions\",\"status\":403,\"title\":\"Forbidden\"}"
+      }
+    },
+    {
+      "name": "open-10-stems-no-correctOption",
+      "status": "PASS",
+      "detail": {
+        "status": 201,
+        "acceptedSequence": 0,
+        "stateVersion": 1,
+        "items": 10,
+        "leaks": false,
+        "leakHits": [],
+        "r1018RealDb": true,
+        "targetRead": {
+          "status": 200,
+          "goalStatus": "ACTIVE",
+          "targetId": 1001,
+          "stateVersion": 1
+        }
+      }
+    },
+    {
+      "name": "out-of-order-409-unchanged",
+      "status": "PASS",
+      "detail": {
+        "status": 409,
+        "acceptedSequence": 0,
+        "responses": 0,
+        "body": "{\"detail\":\"placement checkpoint is stale or out of order\",\"instance\":\"/internal/v1/assessment/placement/sessions/asess_f94c6a1545a4469a9620945c9d7a5d38/responses\",\"status\":409,\"title\":\"Conflict\"}"
+      }
+    },
+    {
+      "name": "correct-full-advances-no-correctOption",
+      "status": "PASS",
+      "detail": {
+        "status": 200,
+        "outcome": "FULL",
+        "acceptedSequence": 1,
+        "leaks": false
+      }
+    },
+    {
+      "name": "stale-or-behind-409-unchanged",
+      "status": "PASS",
+      "detail": {
+        "behind": 409,
+        "stale": 409,
+        "acceptedSequence": 1,
+        "responses": 1
+      }
+    },
+    {
+      "name": "wrong-zero-no-correctOption",
+      "status": "PASS",
+      "detail": {
+        "status": 200,
+        "outcome": "ZERO",
+        "acceptedSequence": 2,
+        "leaks": false,
+        "usedWrongOption": true
+      }
+    },
+    {
+      "name": "ten-items-report-digest",
+      "status": "PASS",
+      "detail": {
+        "acceptedSequence": 10,
+        "status": "COMPLETED",
+        "reportId": "rpt_1aff9597dd5f440283eb8795be3922d8",
+        "digest": "801f6bf9148715c07d6cfc80a428ace7fd3875f3d456d327ce79f3e03f9a880b",
+        "outcomes": [
+          "FULL",
+          "ZERO",
+          "FULL",
+          "ZERO",
+          "FULL",
+          "ZERO",
+          "FULL",
+          "ZERO",
+          "FULL",
+          "ZERO"
+        ]
+      }
+    },
+    {
+      "name": "report-reread-same-digest",
+      "status": "PASS",
+      "detail": {
+        "first": 200,
+        "second": 200,
+        "digest": "801f6bf9148715c07d6cfc80a428ace7fd3875f3d456d327ce79f3e03f9a880b",
+        "sameBody": true
+      }
+    },
+    {
+      "name": "retest-new-session-old-digest",
+      "status": "PASS",
+      "detail": {
+        "status": 201,
+        "newSession": "asess_46f1639f1ff94d25850e172c079ff963",
+        "acceptedSequence": 0,
+        "oldDigest": "801f6bf9148715c07d6cfc80a428ace7fd3875f3d456d327ce79f3e03f9a880b",
+        "via": "assessment-internal"
+      }
+    },
+    {
+      "name": "public-retest-201-keeps-report",
+      "status": "PASS",
+      "detail": {
+        "status": 201,
+        "newSession": "asess_cd96d189c2824a90b508f0ca10e8424a",
+        "acceptedSequence": 0,
+        "oldDigest": "801f6bf9148715c07d6cfc80a428ace7fd3875f3d456d327ce79f3e03f9a880b"
+      }
+    },
+    {
+      "name": "retired-write-404-submit-step",
+      "status": "PASS",
+      "detail": {
+        "status": 404,
+        "errorCode": "NOT_FOUND"
+      }
+    },
+    {
+      "name": "retired-write-404-skip",
+      "status": "PASS",
+      "detail": {
+        "status": 404,
+        "errorCode": "NOT_FOUND"
+      }
+    },
+    {
+      "name": "network-interrupt-checkpoint-restored",
+      "status": "PASS",
+      "detail": {
+        "dropped": "destroyed",
+        "restoredSequence": 1,
+        "restoredVersion": 2,
+        "resumeStatus": 200
+      }
+    },
+    {
+      "name": "incomplete-retest-409",
+      "status": "PASS",
+      "detail": {
+        "status": 409,
+        "sessions": 3,
+        "body": "{\"detail\":\"placement retest requires a completed report\",\"instance\":\"/internal/v1/assessment/placement/sessions/asess_46f1639f1ff94d25850e172c079ff963/retest\",\"status\":409,\"title\":\"Conflict\"}"
+      }
+    },
+    {
+      "name": "skip-incomplete-skipped-no-report",
+      "status": "PASS",
+      "detail": {
+        "status": 201,
+        "bodyStatus": "SKIPPED",
+        "resultKind": "SKIPPED",
+        "hasReportId": false
+      }
+    },
+    {
+      "name": "skip-completed-409-digest-unchanged",
+      "status": "PASS",
+      "detail": {
+        "status": 409,
+        "digest": "801f6bf9148715c07d6cfc80a428ace7fd3875f3d456d327ce79f3e03f9a880b",
+        "storedDigest": "801f6bf9148715c07d6cfc80a428ace7fd3875f3d456d327ce79f3e03f9a880b",
+        "body": "{\"detail\":\"completed placement cannot be skipped\",\"instance\":\"/internal/v1/assessment/placement/baselines/skip\",\"status\":409,\"title\":\"Conflict\"}"
+      }
+    },
+    {
+      "name": "gateway-post-start-404",
+      "status": "PASS",
+      "detail": {
+        "status": 404,
+        "errorCode": "NOT_FOUND",
+        "b25": 0,
+        "body": "{\"error\":{\"errorCode\":\"NOT_FOUND\",\"message\":\"The API route is not available.\",\"retryable\":false},\"meta\":{\"requestId\":\"req-8d4fe09b0b984f1993fdc24a05f7ae06\",\"traceId\":\"deae84d917404c43b92ec6a63bdd2acb\",\"apiVersion\":\"v1\",\"schemaVersion\":\"1.0.0\",\"serverTime\":\"2026-10-10T07:05:20.357784Z\"}}"
+      }
+    },
+    {
+      "name": "gateway-get-start-forwarded",
+      "status": "PASS",
+      "detail": {
+        "status": 200,
+        "body": "{\"status\":\"EMPTY\",\"contentLocale\":\"en-US\"}"
+      }
+    },
+    {
+      "name": "gateway-post-sessions-not-404",
+      "status": "PASS",
+      "detail": {
+        "status": 201,
+        "sessionId": "asess_2e13ab91e6854466bbb1a8ab592a1115"
+      }
+    },
+    {
+      "name": "r1-018-real-db-open",
+      "status": "PASS",
+      "detail": {
+        "reason": "同一专库上，content 密封下发经 assessment 开题，网关 POST /placement/sessions 返回 10 道无 correctOption 的题干。"
+      }
+    },
+    {
+      "name": "learner-web-placement-resume",
+      "status": "PASS",
+      "detail": {
+        "exitCode": 0,
+        "tests": 15,
+        "pass": 15,
+        "fail": 0
+      }
+    },
+    {
+      "name": "mobile-placement-resume",
+      "status": "PASS",
+      "detail": {
+        "exitCode": 0,
+        "tests": 16,
+        "pass": 16,
+        "fail": 0
+      }
+    },
+    {
+      "name": "browser-full-chain",
+      "status": "NOT_RUN",
+      "detail": {
+        "reason": "这次没有开浏览器，也没有真机走查"
+      }
+    },
+    {
+      "name": "retest-button-enabled-in-source",
+      "status": "PASS",
+      "detail": {
+        "web": true,
+        "mobile": true
+      }
+    }
+  ],
+  "cleanup": "content-service=143 learner-service=143 assessment-service=143 api-gateway=143 schemaLeft=0 listenersLeft=none qidaUnchanged=true",
+  "notes": [
+    "PASS mysql-identity {\"name\":\"/yuxuexing-local-mysql-1\",\"image\":\"mysql:8.0\",\"project\":\"yuxuexing-local\",\"service\":\"mysql\",\"status\":\"running\",\"health\":\"healthy\",\"port\":[{\"HostIp\":\"127.0.0.1\",\"HostPort\":\"13306\"}]}",
+    "PASS ports-free {\"ports\":[18070,18088,18089,18091,18199,18229],\"occupied\":[]}",
+    "SCHEMA it2_station_20261010_88c52892",
+    "CONTENT_HEALTH 200 {\"groups\":[\"liveness\",\"readiness\"],\"status\":\"UP\"}",
+    "PASS content-seed-10-3-3-2-2 {\"flyway\":\"28\\t0\",\"seeded\":{\"total\":10,\"vocab\":3,\"grammar\":3,\"reading\":2,\"listening\":2,\"bank\":10,\"answers\":10}}",
+    "PASS sealed-200-no-correctOption {\"status\":200,\"bytes\":3498,\"dims\":{\"VOCABULARY\":3,\"BASIC_GRAMMAR\":3,\"READING\":2,\"LISTENING\":2},\"leaks\":false,\"sampleKeys\":[\"dimension\",\"stem\",\"contentVersionId\",\"displayOrder\",\"itemType\",\"itemId\",\"options\",\"itemCode\"]}",
+    "PASS sealed-under-10-is-503 {\"status\":503,\"total\":9,\"body\":\"{\\\"timestamp\\\":\\\"2026-10-10T07:05:03.265Z\\\",\\\"status\\\":503,\\\"error\\\":\\\"Service Unavailable\\\",\\\"path\\\":\\\"/internal/v1/content/placement-bank/sealed\\\"}\",\"stemLeaked\":false}",
+    "PASS sealed-restored-200 {\"status\":200,\"total\":10}",
+    "LEARNER_HEALTH 200 {\"groups\":[\"liveness\",\"readiness\"],\"status\":\"UP\"}",
+    "PASS learner-active-goal {\"status\":200,\"flyway\":\"12\\t0\",\"goal\":{\"status\":\"ACTIVE\",\"targetId\":1001,\"goalCode\":\"FOUNDATION\",\"stateVersion\":1}}",
+    "ASSESSMENT_HEALTH 200 {\"groups\":[\"liveness\",\"readiness\"],\"status\":\"UP\"}",
+    "PASS assessment-flyway {\"assessmentFlyway\":\"1,2,3,4,5,6,7,8,9,10,11\\t0\"}",
+    "GATEWAY_HEALTH 200 {\"groups\":[\"liveness\",\"readiness\"],\"status\":\"UP\"}",
+    "PASS gate-closed-403-no-session {\"adult\":403,\"consent\":403,\"sessions\":0,\"adultBody\":\"{\\\"detail\\\":\\\"adult gate is required\\\",\\\"instance\\\":\\\"/internal/v1/assessment/placement/sessions\\\",\\\"status\\\":403,\\\"title\\\":\\\"Forbidden\\\"}\",\"consentBody\":\"{\\\"detail\\\":\\\"learning consent is required\\\",\\\"instance\\\":\\\"/internal/v1/assessment/placement/sessions\\\",\\\"status\\\":403,\\\"title\\\":\\\"Forbidden\\\"}\"}",
+    "PASS open-10-stems-no-correctOption {\"status\":201,\"acceptedSequence\":0,\"stateVersion\":1,\"items\":10,\"leaks\":false,\"leakHits\":[],\"r1018RealDb\":true,\"targetRead\":{\"status\":200,\"goalStatus\":\"ACTIVE\",\"targetId\":1001,\"stateVersion\":1}}",
+    "PASS out-of-order-409-unchanged {\"status\":409,\"acceptedSequence\":0,\"responses\":0,\"body\":\"{\\\"detail\\\":\\\"placement checkpoint is stale or out of order\\\",\\\"instance\\\":\\\"/internal/v1/assessment/placement/sessions/asess_f94c6a1545a4469a9620945c9d7a5d38/responses\\\",\\\"status\\\":409,\\\"title\\\":\\\"Conflict\\\"}\"}",
+    "PASS correct-full-advances-no-correctOption {\"status\":200,\"outcome\":\"FULL\",\"acceptedSequence\":1,\"leaks\":false}",
+    "PASS stale-or-behind-409-unchanged {\"behind\":409,\"stale\":409,\"acceptedSequence\":1,\"responses\":1}",
+    "PASS wrong-zero-no-correctOption {\"status\":200,\"outcome\":\"ZERO\",\"acceptedSequence\":2,\"leaks\":false,\"usedWrongOption\":true}",
+    "PASS ten-items-report-digest {\"acceptedSequence\":10,\"status\":\"COMPLETED\",\"reportId\":\"rpt_1aff9597dd5f440283eb8795be3922d8\",\"digest\":\"801f6bf9148715c07d6cfc80a428ace7fd3875f3d456d327ce79f3e03f9a880b\",\"outcomes\":[\"FULL\",\"ZERO\",\"FULL\",\"ZERO\",\"FULL\",\"ZERO\",\"FULL\",\"ZERO\",\"FULL\",\"ZERO\"]}",
+    "PASS report-reread-same-digest {\"first\":200,\"second\":200,\"digest\":\"801f6bf9148715c07d6cfc80a428ace7fd3875f3d456d327ce79f3e03f9a880b\",\"sameBody\":true}",
+    "PASS retest-new-session-old-digest {\"status\":201,\"newSession\":\"asess_46f1639f1ff94d25850e172c079ff963\",\"acceptedSequence\":0,\"oldDigest\":\"801f6bf9148715c07d6cfc80a428ace7fd3875f3d456d327ce79f3e03f9a880b\",\"via\":\"assessment-internal\"}",
+    "PASS public-retest-201-keeps-report {\"status\":201,\"newSession\":\"asess_cd96d189c2824a90b508f0ca10e8424a\",\"acceptedSequence\":0,\"oldDigest\":\"801f6bf9148715c07d6cfc80a428ace7fd3875f3d456d327ce79f3e03f9a880b\"}",
+    "PASS retired-write-404-submit-step {\"status\":404,\"errorCode\":\"NOT_FOUND\"}",
+    "PASS retired-write-404-skip {\"status\":404,\"errorCode\":\"NOT_FOUND\"}",
+    "PASS network-interrupt-checkpoint-restored {\"dropped\":\"destroyed\",\"restoredSequence\":1,\"restoredVersion\":2,\"resumeStatus\":200}",
+    "PASS incomplete-retest-409 {\"status\":409,\"sessions\":3,\"body\":\"{\\\"detail\\\":\\\"placement retest requires a completed report\\\",\\\"instance\\\":\\\"/internal/v1/assessment/placement/sessions/asess_46f1639f1ff94d25850e172c079ff963/retest\\\",\\\"status\\\":409,\\\"title\\\":\\\"Conflict\\\"}\"}",
+    "PASS skip-incomplete-skipped-no-report {\"status\":201,\"bodyStatus\":\"SKIPPED\",\"resultKind\":\"SKIPPED\",\"hasReportId\":false}",
+    "PASS skip-completed-409-digest-unchanged {\"status\":409,\"digest\":\"801f6bf9148715c07d6cfc80a428ace7fd3875f3d456d327ce79f3e03f9a880b\",\"storedDigest\":\"801f6bf9148715c07d6cfc80a428ace7fd3875f3d456d327ce79f3e03f9a880b\",\"body\":\"{\\\"detail\\\":\\\"completed placement cannot be skipped\\\",\\\"instance\\\":\\\"/internal/v1/assessment/placement/baselines/skip\\\",\\\"status\\\":409,\\\"title\\\":\\\"Conflict\\\"}\"}",
+    "PASS gateway-post-start-404 {\"status\":404,\"errorCode\":\"NOT_FOUND\",\"b25\":0,\"body\":\"{\\\"error\\\":{\\\"errorCode\\\":\\\"NOT_FOUND\\\",\\\"message\\\":\\\"The API route is not available.\\\",\\\"retryable\\\":false},\\\"meta\\\":{\\\"requestId\\\":\\\"req-8d4fe09b0b984f1993fdc24a05f7ae06\\\",\\\"traceId\\\":\\\"deae84d917404c43b92ec6a63bdd2acb\\\",\\\"apiVersion\\\":\\\"v1\\\",\\\"schemaVersion\\\":\\\"1.0.0\\\",\\\"serverTime\\\":\\\"2026-10-10T07:05:20.357784Z\\\"}}\"}",
+    "PASS gateway-get-start-forwarded {\"status\":200,\"body\":\"{\\\"status\\\":\\\"EMPTY\\\",\\\"contentLocale\\\":\\\"en-US\\\"}\"}",
+    "PASS gateway-post-sessions-not-404 {\"status\":201,\"sessionId\":\"asess_2e13ab91e6854466bbb1a8ab592a1115\"}",
+    "PASS r1-018-real-db-open {\"reason\":\"同一专库上，content 密封下发经 assessment 开题，网关 POST /placement/sessions 返回 10 道无 correctOption 的题干。\"}",
+    "content-service_EXIT 143",
+    "learner-service_EXIT 143",
+    "assessment-service_EXIT 143",
+    "api-gateway_EXIT 143",
+    "CLEANUP content-service=143 learner-service=143 assessment-service=143 api-gateway=143 schemaLeft=0 listenersLeft=none qidaUnchanged=true",
+    "PASS learner-web-placement-resume {\"exitCode\":0,\"tests\":15,\"pass\":15,\"fail\":0}",
+    "PASS mobile-placement-resume {\"exitCode\":0,\"tests\":16,\"pass\":16,\"fail\":0}",
+    "NOT_RUN browser-full-chain {\"reason\":\"这次没有开浏览器，也没有真机走查\"}",
+    "PASS retest-button-enabled-in-source {\"web\":true,\"mobile\":true}"
+  ]
+}
