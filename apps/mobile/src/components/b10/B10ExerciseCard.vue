@@ -13,8 +13,9 @@ const pairs = ref<Array<{ leftId: string; rightId: string }>>([])
 
 const isTextAnswer = computed(() => ['FILL_BLANK', 'SPELL_INPUT', 'ERROR_CORRECTION', 'TRANSLATION_INPUT'].includes(props.exercise.questionType))
 const tokens = computed(() => ordered.value.map((id) => props.exercise.tokens.find((token) => token.tokenId === id)).filter((token): token is NonNullable<typeof token> => Boolean(token)))
-function choose(key: string): void { selected.value = key; emit('answer', { selectedOptionKeys: [key] }) }
+function choose(key: string): void { if (props.disabled) return; selected.value = key; emit('answer', { selectedOptionKeys: [key] }) }
 function submitText(): void {
+  if (props.disabled) return
   if (props.exercise.questionType === 'FILL_BLANK') emit('answer', { blanks: [{ blankId: props.exercise.blankIds[0] ?? 'blank-1', text: blankValue.value }] })
   else emit('answer', { text: textValue.value })
 }
@@ -24,6 +25,7 @@ function toggleToken(tokenId: string): void {
   emit('answer', { orderedTokenIds: ordered.value })
 }
 function moveToken(index: number, offset: number): void {
+  if (props.disabled) return
   const target = index + offset
   if (target < 0 || target >= ordered.value.length) return
   const next = [...ordered.value]

@@ -3,12 +3,13 @@ import ExperienceHeader from '../components/ExperienceHeader.vue'
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useLearnerContentStore } from '../stores/learner-content'
-import { resumeView } from '../domain/practice-loop'
+import { acceptSubmission, resumeView } from '../domain/practice-loop'
 
 const router = useRouter()
 const store = useLearnerContentStore()
 const selectedKey = ref('')
 const startedAt = ref(Date.now())
+const submitting = ref(false)
 
 const question = computed(() => store.assessment.currentQuestion)
 const report = computed(() => store.assessment.report)
@@ -38,11 +39,16 @@ async function load(): Promise<void> {
 }
 
 async function submit(): Promise<void> {
-  if (!selectedKey.value || !question.value) return
+  if (!selectedKey.value || !question.value || !acceptSubmission(submitting.value)) return
   const answer = selectedKey.value
   selectedKey.value = ''
-  await store.submitAnswer(answer, (Date.now() - startedAt.value) / 1000)
-  startedAt.value = Date.now()
+  submitting.value = true
+  try {
+    await store.submitAnswer(answer, (Date.now() - startedAt.value) / 1000)
+    startedAt.value = Date.now()
+  } finally {
+    submitting.value = false
+  }
 }
 
 function openToday(): void {
@@ -90,7 +96,7 @@ onMounted(() => { void load() })
           <span>{{ option.text }}</span>
         </button>
       </div>
-      <button class="primary-button" type="button" :disabled="!selectedKey || isLoading" @click="void submit()">
+      <button class="primary-button" type="button" data-single-submit :disabled="!selectedKey || isLoading || submitting" @click="void submit()">
         {{ isLoading ? '正在记录…' : '提交答案' }}
       </button>
     </section>

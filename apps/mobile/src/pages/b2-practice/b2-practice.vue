@@ -10,7 +10,7 @@ import { createAdaptivePerformanceEngine, type PerformanceLevel } from '@english
 import B10ExerciseCard from '../../components/b10/B10ExerciseCard.vue'
 import B10StatusPanel from '../../components/b10/B10StatusPanel.vue'
 import type { B10AnswerInput, B10AnswerResult } from '../../domain/b10'
-import { practiceFeedback, resumeView } from '../../domain/practice-loop'
+import { acceptSubmission, practiceFeedback, resumeView } from '../../domain/practice-loop'
 import { b10ThemeMode, b10T } from '../../platform/b10-foundation'
 import { useB10LearningStore } from '../../stores/b10-learning'
 import { getUniRuntime } from '../../platform/uni-runtime'
@@ -21,6 +21,7 @@ const store = useB10LearningStore()
 const engine = createAdaptivePerformanceEngine()
 const performanceLevel = ref<PerformanceLevel>(engine.level)
 const lastResult = ref<B10AnswerResult | null>(null)
+const submitting = ref(false)
 watch(() => session.identityRevision, () => { lastResult.value = null }, { flush: 'sync' })
 const themeClass = computed(() => `b10-theme--${b10ThemeMode.value}`)
 const resume = computed(() => resumeView(store.practice))
@@ -42,7 +43,12 @@ const answerFeedback = computed(() => lastResult.value ? practiceFeedback({
 }) : null)
 function setPerformance(level: PerformanceLevel): void { engine.setLevel(level, 'manual'); performanceLevel.value = level }
 function load(): void { lastResult.value = null; void store.loadPractice() }
-async function answer(value: B10AnswerInput): Promise<void> { if (!exercise.value) return; lastResult.value = await store.submitAnswer(exercise.value.exerciseId, value) }
+async function answer(value: B10AnswerInput): Promise<void> {
+  if (!exercise.value || !acceptSubmission(submitting.value)) return
+  submitting.value = true
+  try { lastResult.value = await store.submitAnswer(exercise.value.exerciseId, value) }
+  finally { submitting.value = false }
+}
 function checkpoint(): void { void store.saveCheckpoint(exercise.value?.exerciseId ?? null) }
 function openReport(): void { getUniRuntime().navigateTo({ url: '/pages/b10-report/b10-report' }) }
 onShow(async () => { await session.restore(); if (!session.isAuthenticated) { getUniRuntime().navigateTo({ url: '/pages/login/login' }); return } load() })
@@ -59,7 +65,7 @@ onUnmounted(() => engine.dispose())
     <view v-else-if="exercise" class="yx-card b10-practice-card">
       <text data-resume>{{ resume.copy }}</text>
       <view class="b10-practice-card__progress"><text>{{ answeredCount }} / {{ store.practice?.exercises.length ?? 0 }}</text><text>{{ exercise.questionType }}</text></view>
-      <B10ExerciseCard :exercise="exercise" :disabled="store.practiceStatus === 'loading'" @answer="answer" />
+      <B10ExerciseCard :exercise="exercise" :disabled="store.practiceStatus === 'loading' || submitting" data-single-submit @answer="answer" />
       <view class="b10-practice-card__actions"><button tabindex="0" role="button" class="yx-button yx-button--secondary" type="button" @click="checkpoint">{{ b10T('practice.checkpoint') }}</button><button tabindex="0" role="button" v-if="lastResult" class="yx-button yx-button--secondary" type="button" @click="lastResult = null">{{ b10T('practice.next') }}</button></view>
       <view v-if="answerFeedback" class="b10-result" role="alert"><text data-save-receipt>{{ answerFeedback.savedReceipt }}</text><text data-feedback-text>{{ answerFeedback.feedbackText }}</text><text data-next-question>{{ answerFeedback.nextQuestion }}</text><text v-if="lastResult?.contentVersionStale" class="b10-result__stale">{{ b10T('common.stale') }}</text></view>
     </view>

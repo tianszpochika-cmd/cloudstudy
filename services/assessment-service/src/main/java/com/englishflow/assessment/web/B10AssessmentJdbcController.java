@@ -9,6 +9,7 @@ import tools.jackson.databind.node.ObjectNode;
 import com.englishflow.assessment.adapter.content.BankPracticeRuleProvider;
 import com.englishflow.assessment.domain.AssessmentMistake;
 import com.englishflow.assessment.domain.AssessmentPrincipal;
+import com.englishflow.assessment.domain.AttemptGuard;
 import com.englishflow.assessment.domain.GrammarReadingPack;
 import com.englishflow.assessment.domain.PracticeCheckpoint;
 import com.englishflow.assessment.domain.PracticeFeedback;
@@ -38,6 +39,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
@@ -276,6 +279,15 @@ public class B10AssessmentJdbcController {
         return envelope(sessionView(ownerSession(sessionId, principal.subject())));
     }
 
+    @RequestMapping(path = "/sessions/{sessionId}/attempts/{attemptId}", method = {RequestMethod.PUT, RequestMethod.PATCH})
+    public Map<String, Object> rejectAttemptRewrite(
+            Authentication authentication,
+            @PathVariable String sessionId,
+            @PathVariable String attemptId) {
+        principal(authentication, "assessment.session.write");
+        throw new ResponseStatusException(HttpStatus.CONFLICT, AttemptGuard.ILLEGAL);
+    }
+
     @PostMapping("/sessions/{sessionId}/attempts")
     @Transactional
     public Map<String, Object> submitAttempt(
@@ -285,6 +297,9 @@ public class B10AssessmentJdbcController {
             @RequestHeader("Idempotency-Key") String idempotencyKey) {
         Principal principal = principal(authentication, "assessment.session.write");
         requireKey(idempotencyKey);
+        if (AttemptGuard.rejectsMutation(body)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, AttemptGuard.ILLEGAL);
+        }
         Map<String, Object> session = ownerSession(sessionId, principal.subject());
         String submissionId = text(body.get("submissionId"));
         if (submissionId.isBlank()) bad("submissionId is required");
@@ -803,6 +818,9 @@ public class B10AssessmentJdbcController {
         pin.put("snapshotHash", text(row == null ? null : row.get("snapshot_hash"), SNAPSHOT_HASH));
         pin.put("pinStatus", "PINNED");
         pin.put("pinnedAt", Instant.now().toString());
+        String pinnedCode = text(row == null ? null : row.get("content_code"), CONTENT_CODE);
+        long pinnedVersion = number(row == null ? null : row.get("content_version_id"), DEFAULT_CONTENT_VERSION);
+        pin.put("ruleVersion", AttemptGuard.pinnedRuleVersion(pinnedCode, pinnedVersion));
         Object altVersion = row == null ? null : row.get("alternative_content_version_id");
         if (altVersion != null) {
             pin.put("pinStatus", "SUBSTITUTED");

@@ -53,3 +53,16 @@ export function resumeView(input: {
     : Math.max(1, input?.received ?? 0)
   return { index, copy: input?.resumeCopy?.trim() || `上次学到第 ${index} 题，继续`, stopped: false }
 }
+
+export const ILLEGAL_ACTION = '这个操作现在不能用'
+
+/** The rule version is the one stored when the session opened. */
+export function pinnedRuleVersion(contentCode: string, contentVersionId: number): string {
+  const code = contentCode.trim() || 'content'
+  return `${code}:v${Math.max(0, contentVersionId)}`
+}
+
+/** A second click while the first submit is still running does not start another one. */
+export function acceptSubmission(inFlight: boolean): boolean {
+  return !inFlight
+}
