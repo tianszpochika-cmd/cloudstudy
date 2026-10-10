@@ -197,6 +197,13 @@
       }
     },
     {
+      "path": "pages/report-share/report-share",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "分享的学习报告"
+      }
+    },
+    {
       "path": "pages/b10-report/b10-report",
       "style": {
         "navigationStyle": "custom",

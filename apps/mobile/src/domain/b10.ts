@@ -152,6 +152,25 @@ export interface B10Verification {
   remediationId?: number | null
 }
 
+export interface B10PeriodView {
+  availability: string
+  copy: string
+  periodStart: string
+  periodEndExclusive: string
+  learningDayZone: string
+  updatedAt: string
+  newItems: number | null
+  reviewItems: number | null
+  accuracy: number | null
+  activeMillis: number | null
+  durationStatus: string
+  durationCopy: string
+  suggestion: string
+  suggestionBasis: string
+  reportVersion: number | null
+  officialScore: boolean
+}
+
 export interface B10Report {
   reportId: number | string
   reportType: 'EXAM_DIAGNOSTIC' | 'DAILY' | 'WEEKLY'
@@ -163,6 +182,7 @@ export interface B10Report {
   metrics: Array<{ code: string; label: string; value: number; max?: number }>
   evidence: Array<{ exerciseId?: number; mistakeId?: number; label: string; detail: string }>
   explanation: string[]
+  period?: B10PeriodView | null
 }
 
 export interface B10GrammarPoint {

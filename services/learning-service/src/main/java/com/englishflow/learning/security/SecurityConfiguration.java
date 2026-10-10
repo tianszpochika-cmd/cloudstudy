@@ -99,6 +99,7 @@ public class SecurityConfiguration {
                     // Boot sanitizes the rest), so permitting the forward is safe.
                     auth.dispatcherTypeMatchers(jakarta.servlet.DispatcherType.ERROR).permitAll();
                     auth.requestMatchers("/actuator/**").permitAll();
+                    auth.requestMatchers(org.springframework.http.HttpMethod.GET, "/internal/v1/learning/report-shares/*").permitAll();
                     if (properties.isEnabled()) auth.anyRequest().authenticated();
                     else auth.anyRequest().denyAll();
                 })

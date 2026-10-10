@@ -59,13 +59,22 @@ class B25ReviewEvidenceGateTest {
         assertEquals("RECOVERY_REQUIRED", batch.get("status"));
         assertTrue(((List<?>) batch.get("items")).isEmpty());
 
+        org.mockito.Mockito.when(jdbc.queryForList(org.mockito.ArgumentMatchers.contains("b3_learning_interaction"),
+                org.mockito.ArgumentMatchers.any(Object[].class))).thenReturn(List.of());
+
         Map<String, Object> report = controller.dailyReport(learner, "2026-09-23");
         assertEquals("PARTIAL", report.get("status"));
         assertEquals("UNVERIFIED_LEGACY_REVIEW", report.get("verificationStatus"));
         assertNull(report.get("reviewItems"));
         assertNull(report.get("accuracy"));
         assertTrue(((List<?>) report.get("weakness")).isEmpty());
-        verifyNoInteractions(jdbc);
+        @SuppressWarnings("unchecked")
+        Map<String, Object> period = (Map<String, Object>) report.get("period");
+        assertEquals("NEVER_STUDIED", period.get("availability"));
+        assertNull(period.get("newItems"));
+        assertEquals(false, period.get("officialScore"));
+        org.mockito.Mockito.verify(jdbc).queryForList(org.mockito.ArgumentMatchers.contains("b3_learning_interaction"),
+                org.mockito.ArgumentMatchers.any(Object[].class));
     }
 
     private static void assertEvidenceConflict(Runnable action) {

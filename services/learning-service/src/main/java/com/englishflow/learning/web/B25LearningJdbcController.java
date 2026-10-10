@@ -6,6 +6,8 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
+import java.security.SecureRandom;
+import java.util.HexFormat;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +34,7 @@ import org.springframework.web.server.ResponseStatusException;
 import com.englishflow.learning.adapter.http.AssessmentMistakeQueueProjector;
 import com.englishflow.learning.adapter.http.BearerTokens;
 import com.englishflow.learning.domain.EmptyBook;
+import com.englishflow.learning.domain.LearningPeriodReport;
 import com.englishflow.learning.domain.ReviewBudget;
 import com.englishflow.learning.domain.ReviewHistory;
 import com.englishflow.learning.domain.StageProjection;
@@ -453,6 +456,65 @@ public class B25LearningJdbcController {
         return report(principal.subject(), start, start.plusDays(7), "WEEKLY");
     }
 
+    /** A new unguessable ref each call. The stored snapshot has public fields only. */
+    @PostMapping("/reports/{reportType}/shares")
+    @Transactional
+    public Map<String, Object> issueReportShare(Authentication authentication, @PathVariable String reportType,
+            @RequestParam(required = false) String date) {
+        Principal principal = principal(authentication, "learning.progress.read");
+        String kind = reportKind(reportType);
+        LocalDate anchor = parseDate(date, LocalDate.now(ZoneOffset.UTC));
+        LocalDate start = "WEEKLY".equals(kind) ? anchor.with(DayOfWeek.MONDAY) : anchor;
+        LocalDate end = start.plusDays("WEEKLY".equals(kind) ? 7 : 1);
+        Map<String, Object> periodReport = period(principal.subject(), kind, start, end);
+        byte[] random = new byte[16];
+        SECURE_RANDOM.nextBytes(random);
+        String ref = HexFormat.of().formatHex(random);
+        Instant now = Instant.now();
+        Map<String, Object> share = LearningPeriodReport.issue(periodReport, ref, now);
+        jdbc.update("""
+                INSERT INTO b25_learning_report_share
+                    (share_ref, tenant_id, principal_id, report_type, snapshot_json, expires_at)
+                VALUES (?, ?, ?, ?, ?, ?)
+                """, ref, TENANT, principal.subject(), kind, writeJson(share.get("publicFields")),
+                java.sql.Timestamp.from(Instant.parse(String.valueOf(share.get("expiresAt")))));
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("ref", ref);
+        body.put("expiresAt", share.get("expiresAt"));
+        body.put("publicPath", "/api/v1/public/learning/report-shares/" + ref);
+        body.put("status", "ACTIVE");
+        return body;
+    }
+
+    @PostMapping("/report-shares/{ref}/revoke")
+    @Transactional
+    public Map<String, Object> revokeReportShare(Authentication authentication, @PathVariable String ref) {
+        Principal principal = principal(authentication, "learning.progress.read");
+        Map<String, Object> row = shareRow(ref);
+        if (row == null || !principal.subject().equals(text(row.get("principal_id")))) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "share not found");
+        }
+        Instant now = Instant.now();
+        jdbc.update("""
+                UPDATE b25_learning_report_share
+                   SET revoked_at = ?
+                 WHERE share_ref = ? AND tenant_id = ? AND principal_id = ?
+                """, java.sql.Timestamp.from(now), ref, TENANT, principal.subject());
+        return Map.of("ref", ref, "status", "REVOKED", "revokedAt", now.toString());
+    }
+
+    /** Anonymous read. Revoked and expired stay distinct and carry no private report. */
+    @GetMapping("/report-shares/{ref}")
+    public Map<String, Object> readReportShare(@PathVariable String ref) {
+        Map<String, Object> row = shareRow(ref);
+        if (row == null) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "share not found");
+        Map<String, Object> share = new LinkedHashMap<>();
+        share.put("expiresAt", instantText(row.get("expires_at")));
+        share.put("revokedAt", row.get("revoked_at") == null ? null : instantText(row.get("revoked_at")));
+        share.put("publicFields", shareSnapshot(row.get("snapshot_json")));
+        return LearningPeriodReport.publicView(share, Instant.now());
+    }
+
     /** B18 uses the learning owner for the same durable SRS queue. */
     @GetMapping("/review-queue")
     public Map<String, Object> reviewQueue(Authentication authentication,
@@ -685,7 +747,123 @@ public class B25LearningJdbcController {
         result.put("source", "learning-service");
         result.put("periodStart", start.toString());
         result.put("periodEndExclusive", end.toString());
+        // Legacy metrics stay null. The period object is the trusted activity projection.
+        result.put("period", period(subject, reportType, start, end));
         return result;
+    }
+
+    private Map<String, Object> period(String subject, String reportType, LocalDate start, LocalDate end) {
+        Instant asOf = Instant.now();
+        try {
+            List<Map<String, Object>> rows = jdbc.queryForList("""
+                    SELECT interaction_id, idempotency_key, action_code, created_at,
+                           JSON_UNQUOTE(JSON_EXTRACT(result_json, '$.activityKind')) AS activity_kind,
+                           JSON_UNQUOTE(JSON_EXTRACT(result_json, '$.correct')) AS correct_value,
+                           JSON_UNQUOTE(JSON_EXTRACT(result_json, '$.activeMillis')) AS active_millis,
+                           JSON_UNQUOTE(JSON_EXTRACT(result_json, '$.segment')) AS segment
+                      FROM b3_learning_interaction
+                     WHERE tenant_id = ? AND principal_id = ? AND status = 'ACCEPTED'
+                    """, TENANT, subject);
+            if (rows == null) return LearningPeriodReport.unread(reportType, start, end, asOf);
+            java.util.ArrayList<LearningPeriodReport.Activity> activities = new java.util.ArrayList<>();
+            for (Map<String, Object> row : rows) activities.add(periodActivity(row));
+            return LearningPeriodReport.compose(subject, reportType, start, end, activities, asOf);
+        } catch (org.springframework.dao.DataAccessException exception) {
+            return LearningPeriodReport.failed(reportType, start, end, asOf);
+        }
+    }
+
+    private static LearningPeriodReport.Activity periodActivity(Map<String, Object> row) {
+        String id = text(row.get("idempotency_key"));
+        if (id.isBlank()) id = text(row.get("interaction_id"));
+        String kind = text(row.get("activity_kind"));
+        String action = text(row.get("action_code"));
+        String lane = "REVIEW".equalsIgnoreCase(kind)
+                || "ASSESSMENT_ZERO".equals(action)
+                || "MISTAKE_RETRY".equals(action)
+                || "REVIEW".equals(action) ? "REVIEW"
+                : "NEW".equalsIgnoreCase(kind) || "ATTEMPT".equals(action) ? "NEW" : "";
+        return new LearningPeriodReport.Activity(id, periodInstant(row.get("created_at")), lane,
+                periodBoolean(row.get("correct_value")), periodMillis(row.get("active_millis")), periodSegment(row.get("segment")));
+    }
+
+    private static Instant periodInstant(Object value) {
+        if (value instanceof java.sql.Timestamp timestamp) return timestamp.toInstant();
+        if (value instanceof Instant instant) return instant;
+        if (value == null || String.valueOf(value).isBlank()) return null;
+        try { return Instant.parse(String.valueOf(value).replace(' ', 'T')); }
+        catch (RuntimeException exception) { return null; }
+    }
+
+    private static Boolean periodBoolean(Object value) {
+        String text = text(value);
+        if ("true".equalsIgnoreCase(text)) return true;
+        if ("false".equalsIgnoreCase(text)) return false;
+        return null;
+    }
+
+    private static Long periodMillis(Object value) {
+        String text = text(value);
+        if (text.isBlank() || "null".equalsIgnoreCase(text)) return null;
+        try { return Long.parseLong(text); }
+        catch (NumberFormatException exception) { return null; }
+    }
+
+    private static String periodSegment(Object value) {
+        String text = text(value);
+        return "null".equalsIgnoreCase(text) ? "" : text;
+    }
+
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
+
+    private static String reportKind(String reportType) {
+        if ("DAILY".equalsIgnoreCase(reportType)) return "DAILY";
+        if ("WEEKLY".equalsIgnoreCase(reportType)) return "WEEKLY";
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "reportType must be DAILY or WEEKLY");
+    }
+
+    private Map<String, Object> shareRow(String ref) {
+        if (ref == null || !ref.matches("[0-9a-f]{32}")) return null;
+        return one("""
+                SELECT share_ref, principal_id, snapshot_json, expires_at, revoked_at
+                  FROM b25_learning_report_share
+                 WHERE share_ref = ? AND tenant_id = ?
+                """, ref, TENANT);
+    }
+
+    private static String writeJson(Object value) {
+        try {
+            return JSON_READER.writeValueAsString(value);
+        } catch (RuntimeException exception) {
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "share snapshot is unreadable");
+        }
+    }
+
+    private static String instantText(Object value) {
+        if (value instanceof java.sql.Timestamp timestamp) return timestamp.toInstant().toString();
+        if (value instanceof Instant instant) return instant.toString();
+        String text = String.valueOf(value).trim().replace(' ', 'T');
+        if (text.endsWith(".0")) text = text.substring(0, text.length() - 2) + "Z";
+        return text;
+    }
+
+    private static Map<String, Object> shareSnapshot(Object raw) {
+        Map<String, Object> fields = new LinkedHashMap<>();
+        Object decoded = raw;
+        if (!(raw instanceof Map<?, ?>)) {
+            try {
+                decoded = JSON_READER.readValue(String.valueOf(raw), Object.class);
+            } catch (RuntimeException exception) {
+                return fields;
+            }
+        }
+        if (decoded instanceof Map<?, ?> map) {
+            for (Map.Entry<?, ?> entry : map.entrySet()) fields.put(String.valueOf(entry.getKey()), entry.getValue());
+        }
+        fields.remove("subject");
+        fields.remove("principalId");
+        fields.remove("token");
+        return fields;
     }
 
     private static LocalDate parseDate(String value, LocalDate fallback) {

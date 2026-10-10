@@ -8,6 +8,7 @@ import { onShow } from '@dcloudio/uni-app'
 import { createAdaptivePerformanceEngine, type PerformanceLevel } from '@englishflow/performance'
 import B10StatusPanel from '../../components/b10/B10StatusPanel.vue'
 import { b10ThemeMode, b10T } from '../../platform/b10-foundation'
+import { b10LearningApi } from '../../api/b10'
 import { useB10LearningStore } from '../../stores/b10-learning'
 import { openUniPage, getUniRuntime } from '../../platform/uni-runtime'
 import { useSessionStore } from '../../stores/session'
@@ -24,6 +25,19 @@ function setPerformance(level: PerformanceLevel): void { engine.setLevel(level, 
 function load(): void { void Promise.all([store.loadMistakes(), store.loadReport(reportPeriod.value)]) }
 function selectReportPeriod(period: 'daily' | 'weekly'): void { reportPeriod.value = period; load() }
 function retry(mistakeId: number): void { void store.startMistakeRetry(mistakeId) }
+const shareRef = ref('')
+const shareNote = ref('')
+function issueShare(): void {
+  shareNote.value = ''
+  void b10LearningApi.issueReportShare(reportPeriod.value).then((share) => {
+    shareRef.value = share.ref
+    shareNote.value = '只读链接不含登录信息，7 天后失效。'
+  }).catch((error: unknown) => { shareNote.value = error instanceof Error ? error.message : '分享链接没有生成。' })
+}
+function revokeShare(): void {
+  if (!shareRef.value) return
+  void b10LearningApi.revokeReportShare(shareRef.value).then(() => { shareRef.value = ''; shareNote.value = '这份分享已经撤销。' })
+}
 const emptyLabel = computed(() => {
   if (store.status === 'error' || store.status === 'offline') return emptyBook(0, 0, true).copy
   return store.emptyCopy || emptyBook(store.attemptCount, store.mistakes.length).copy
@@ -46,7 +60,7 @@ onUnmounted(() => engine.dispose())
     <text v-if="store.remediationId" data-remediation>{{ store.remediationId }}</text>
     <view v-if="store.mistakes.length" class="yx-card b10-mistakes"><text class="b10-section-title">{{ b10T('report.mistakes') }}</text><view v-for="mistake in store.mistakes" :key="mistake.mistakeId" class="b10-mistake"><view class="b10-mistake__copy"><text class="b10-mistake__title">{{ mistake.errorCategory }}</text><text>{{ mistake.prompt ?? `题目 ${mistake.itemId}` }}</text><text class="b10-mistake__meta" data-closure>{{ closureLabel(mistake.mistakeStatus, mistake.closureCopy) }}</text><text v-if="mistake.masteryStatus" class="b10-mistake__meta">{{ mistake.masteryStatus }}</text><text v-for="reason in mistake.reasonTrace" :key="reason.code" class="b10-mistake__reason">{{ reason.label }}<template v-if="reason.evidence"> · {{ reason.evidence }}</template></text></view><button tabindex="0" role="button" class="b10-mini" type="button" :disabled="mistake.mistakeStatus === 'MASTERED'" @click="retry(mistake.mistakeId)">{{ b10T('report.retry') }}</button></view></view>
     <view v-else-if="store.status !== 'loading'" class="yx-card b10-empty"><text>{{ b10T('report.noMistakes') }}</text></view>
-    <view v-if="store.report" class="yx-card b10-report"><view class="b10-report__header"><text class="b10-section-title">{{ b10T('report.report') }}</text><text class="b10-report__status">{{ store.report.status }}</text></view><view class="b10-report__score"><text v-if="store.report.score !== null">{{ store.report.score }}<text v-if="store.report.reportedMaxScore !== null"> / {{ store.report.reportedMaxScore }}</text></text><text v-else>{{ store.report.status === 'PARTIAL' ? b10T('report.partial') : b10T('report.noReport') }}</text></view><view v-if="store.report.metrics.length" class="b10-metrics"><view v-for="metric in store.report.metrics" :key="metric.code" class="b10-metric"><text>{{ metric.label }}</text><text>{{ metric.value }}<template v-if="metric.max !== undefined"> / {{ metric.max }}</template></text></view></view><view v-if="store.report.evidence.length" class="b10-evidence"><text class="b10-section-title">{{ b10T('report.reason') }}</text><view v-for="item in store.report.evidence" :key="`${item.label}-${item.detail}`"><text>{{ item.label }}</text><text>{{ item.detail }}</text></view></view></view>
+    <view v-if="store.report?.period" class="yx-card b10-report" :data-period-availability="store.report.period.availability"><text data-period-copy>{{ store.report.period.copy }}</text><text>统计范围 {{ store.report.period.periodStart }} 至 {{ store.report.period.periodEndExclusive }}（{{ store.report.period.learningDayZone }}）</text><text>更新时间 {{ store.report.period.updatedAt }} · 版本 {{ store.report.period.reportVersion ?? '—' }}</text><text>新学 {{ store.report.period.newItems ?? '—' }} · 复习 {{ store.report.period.reviewItems ?? '—' }}</text><text>{{ store.report.period.durationCopy }}</text><text data-suggestion>建议：{{ store.report.period.suggestion }}</text><text>依据 {{ store.report.period.suggestionBasis }}。这是规则建议，不是已开放的 AI 功能。</text><button type="button" data-share-issue @click="issueShare">生成只读链接</button><button v-if="shareRef" type="button" data-share-revoke @click="revokeShare">撤销分享</button><text v-if="shareRef">/pages/report-share/report-share?ref={{ shareRef }}</text><text v-if="shareNote">{{ shareNote }}</text></view><view v-if="store.report" class="yx-card b10-report"><view class="b10-report__header"><text class="b10-section-title">{{ b10T('report.report') }}</text><text class="b10-report__status">{{ store.report.status }}</text></view><view class="b10-report__score"><text v-if="store.report.score !== null">{{ store.report.score }}<text v-if="store.report.reportedMaxScore !== null"> / {{ store.report.reportedMaxScore }}</text></text><text v-else>{{ store.report.status === 'PARTIAL' ? b10T('report.partial') : b10T('report.noReport') }}</text></view><view v-if="store.report.metrics.length" class="b10-metrics"><view v-for="metric in store.report.metrics" :key="metric.code" class="b10-metric"><text>{{ metric.label }}</text><text>{{ metric.value }}<template v-if="metric.max !== undefined"> / {{ metric.max }}</template></text></view></view><view v-if="store.report.evidence.length" class="b10-evidence"><text class="b10-section-title">{{ b10T('report.reason') }}</text><view v-for="item in store.report.evidence" :key="`${item.label}-${item.detail}`"><text>{{ item.label }}</text><text>{{ item.detail }}</text></view></view></view>
     <view v-else-if="store.reportStatus === 'loading'" class="yx-card b10-empty"><text>{{ b10T('status.loading') }}</text></view>
     <view class="b10-links"><button tabindex="0" role="button" class="yx-button yx-button--secondary" type="button" @click="open('/pages/b2-vocabulary/b2-vocabulary')">词汇复习</button><button tabindex="0" role="button" class="yx-button yx-button--secondary" type="button" @click="open('/pages/b2-practice/b2-practice')">继续练习</button></view>
   </view>

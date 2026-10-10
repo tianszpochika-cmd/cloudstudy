@@ -264,6 +264,22 @@
         "compatibilityMode": "NONE"
       },
       {
+        "ruleId": "public-learning-report-share",
+        "priority": 900,
+        "match": {
+          "type": "PREFIX",
+          "path": "/api/v1/public/learning/report-shares",
+          "methods": [
+            "GET"
+          ]
+        },
+        "upstreamOwner": "learning-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "ANONYMOUS_PUBLIC",
+        "authClass": "PUBLIC_READ",
+        "compatibilityMode": "NONE"
+      },
+      {
         "ruleId": "wechat-callback",
         "priority": 1000,
         "match": {
@@ -1629,6 +1645,30 @@
             "controllerEvidence": {
               "sourcePath": "services/content-service/src/main/java/com/englishflow/content/web/ContentHttpController.java",
               "requestMapping": "/api/v1/public/site/projection"
+            }
+          }
+        ]
+      },
+      {
+        "ruleId": "public-learning-report-share",
+        "defaultStatus": "UNAVAILABLE",
+        "defaultReason": "no_exact_canonical_execution_target",
+        "projections": [
+          {
+            "projectionId": "public-learning-report-share.read",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/public/learning/report-shares/{ref}",
+            "methods": [
+              "GET"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learning-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learning",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/learning/report-shares/{ref}",
+            "controllerEvidence": {
+              "sourcePath": "services/learning-service/src/main/java/com/englishflow/learning/web/B25LearningJdbcController.java",
+              "requestMapping": "/internal/v1/learning"
             }
           }
         ]
@@ -3002,6 +3042,40 @@
             "targetUriConfig": "gateway.b14.service-base-urls.learning",
             "pathStrategy": "REWRITE_PATH",
             "targetPathTemplate": "/internal/v1/learning/stats/weekly-report",
+            "controllerEvidence": {
+              "sourcePath": "services/learning-service/src/main/java/com/englishflow/learning/web/B25LearningJdbcController.java",
+              "requestMapping": "/internal/v1/learning"
+            }
+          },
+          {
+            "projectionId": "learning-domain.report-share-issue",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/learning/reports/{reportType}/shares",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learning-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learning",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/learning/reports/{reportType}/shares",
+            "controllerEvidence": {
+              "sourcePath": "services/learning-service/src/main/java/com/englishflow/learning/web/B25LearningJdbcController.java",
+              "requestMapping": "/internal/v1/learning"
+            }
+          },
+          {
+            "projectionId": "learning-domain.report-share-revoke",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/learning/report-shares/{ref}/revoke",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learning-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learning",
+            "pathStrategy": "REWRITE_PATH",
+            "targetPathTemplate": "/internal/v1/learning/report-shares/{ref}/revoke",
             "controllerEvidence": {
               "sourcePath": "services/learning-service/src/main/java/com/englishflow/learning/web/B25LearningJdbcController.java",
               "requestMapping": "/internal/v1/learning"

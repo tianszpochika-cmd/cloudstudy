@@ -129,6 +129,25 @@ export interface B10ReportWeakness {
   nextAction: string | null
 }
 
+export interface LearningPeriodView {
+  availability: string
+  copy: string
+  periodStart: string
+  periodEndExclusive: string
+  learningDayZone: string
+  updatedAt: string
+  newItems: number | null
+  reviewItems: number | null
+  accuracy: number | null
+  activeMillis: number | null
+  durationStatus: string
+  durationCopy: string
+  suggestion: string
+  suggestionBasis: string
+  reportVersion: number | null
+  officialScore: boolean
+}
+
 export interface B10Report {
   reportId: string
   reportType: 'DAILY' | 'WEEKLY' | 'EXAM'
@@ -143,6 +162,7 @@ export interface B10Report {
   d1Pending: number | null
   d7Pending: number | null
   weakness: B10ReportWeakness[]
+  period?: LearningPeriodView | null
 }
 
 export interface B10ReadingBlock {

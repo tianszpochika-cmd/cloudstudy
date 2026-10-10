@@ -288,6 +288,31 @@ function parseReport(value: unknown, reportType: B10Report['reportType']): B10Re
     d1Pending: numberValue(report.d1Pending),
     d7Pending: numberValue(report.d7Pending),
     weakness,
+    period: parsePeriod(report.period),
+  }
+}
+
+function parsePeriod(value: unknown): B10Report['period'] {
+  const source = recordValue(value)
+  const availability = stringValue(source.availability)
+  if (!availability) return null
+  return {
+    availability,
+    copy: stringValue(source.copy) ?? '',
+    periodStart: stringValue(source.periodStart) ?? '',
+    periodEndExclusive: stringValue(source.periodEndExclusive) ?? '',
+    learningDayZone: stringValue(source.learningDayZone) ?? 'Asia/Shanghai',
+    updatedAt: stringValue(source.updatedAt) ?? '',
+    newItems: numberValue(source.newItems),
+    reviewItems: numberValue(source.reviewItems),
+    accuracy: numberValue(source.accuracy),
+    activeMillis: numberValue(source.activeMillis),
+    durationStatus: stringValue(source.durationStatus) ?? 'NOT_RECORDED',
+    durationCopy: stringValue(source.durationCopy) ?? '',
+    suggestion: stringValue(source.suggestion) ?? '',
+    suggestionBasis: stringValue(source.suggestionBasis) ?? '',
+    reportVersion: numberValue(source.reportVersion),
+    officialScore: source.officialScore === true,
   }
 }
 
@@ -643,6 +668,18 @@ async function checkpointDigest(value: unknown): Promise<string> {
   let hash = 2166136261
   for (const char of serialized) hash = Math.imul(hash ^ char.charCodeAt(0), 16777619)
   return `${Math.abs(hash).toString(16).padStart(8, '0')}${'0'.repeat(56)}`
+}
+
+export async function issueReportShare(reportType: 'DAILY' | 'WEEKLY'): Promise<{ ref: string; expiresAt: string; publicPath: string }> {
+  const response = await apiClient.post<unknown>(`/learning/reports/${reportType}/shares`, {}, withB10Headers())
+  const source = recordValue(unwrap(response)) ?? {}
+  const ref = stringValue(source.ref)
+  if (!ref || !/^[0-9a-f]{32}$/.test(ref)) throw new Error('分享链接没有生成。')
+  return { ref, expiresAt: stringValue(source.expiresAt) ?? '', publicPath: stringValue(source.publicPath) ?? `/api/v1/public/learning/report-shares/${ref}` }
+}
+
+export async function revokeReportShare(ref: string): Promise<void> {
+  await apiClient.post(`/learning/report-shares/${encodeURIComponent(ref)}/revoke`, {}, withB10Headers())
 }
 
 export async function getLearningReport(reportType: 'DAILY' | 'WEEKLY' = 'DAILY', date = new Date().toISOString().slice(0, 10)): Promise<B10Report> {

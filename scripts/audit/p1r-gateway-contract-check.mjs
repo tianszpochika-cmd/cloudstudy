@@ -21,7 +21,7 @@ const EXPECTED_INTERNAL_OPERATION_COUNT = 66;
 // without rebasing; those owners still owe the M1-004 rebaseline.
 // B3 interaction (2026-09-27): +1 reading/questions EXACT@850 (bound bank
 // items become listable; route/execution counts move together, no new operation).
-const EXPECTED_ROUTE_RULE_COUNT = 74;
+const EXPECTED_ROUTE_RULE_COUNT = 75;
 // Execution targets are deliberately separate from the broad route-owner
 // policy.  A route rule answers who is authoritative; an execution projection
 // answers whether this exact, canonical public operation has a verified local
@@ -37,13 +37,13 @@ const EXPECTED_ROUTE_RULE_COUNT = 74;
 // P1R-ADMIN-RISK (2026-09-28): +5 available (4 risk ops inside the existing
 // admin-domain PREFIX rule + IAM locked-accounts inside iam-domain; rules/plans
 // counts unchanged; target-plan digest line stays on its frozen drift).
-const EXPECTED_EXECUTION_PLAN_COUNT = 74;
+const EXPECTED_EXECUTION_PLAN_COUNT = 75;
 // R1-019: B25 POST /placement/start is no longer executed. 224 -> 223.
-const EXPECTED_AVAILABLE_EXECUTION_OPERATION_COUNT = 223;
+const EXPECTED_AVAILABLE_EXECUTION_OPERATION_COUNT = 226;
 // This is a reviewed semantic binding for the finite M2-001 target table. It
 // deliberately prevents a target from silently moving to a different, still
 // valid controller method without a corresponding Gateway parity change.
-export const FROZEN_EXECUTION_TARGET_PLAN_SHA256 = '4a8d20413d8b90792348c6ff8870464fb02c6bd547f279b4ac75610eb79b58cd';
+export const FROZEN_EXECUTION_TARGET_PLAN_SHA256 = 'f6e9cb48732fd64abd8a89f5f7d9c1dd6892981c13722a0def638343ea5fb80d';
 const EXECUTION_POLICY_FIELDS = [
   'schemaVersion',
   'sourceOfTruth',

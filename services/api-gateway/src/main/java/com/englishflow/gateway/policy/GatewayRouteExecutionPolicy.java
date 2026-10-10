@@ -491,6 +491,8 @@ public final class GatewayRouteExecutionPolicy {
                 preserve("content", "/api/v1/public/content/{contentCode}", CONTENT_PUBLIC_DETAIL, HttpMethod.GET));
         add(definitions, "public-site",
                 preserve("projection", "/api/v1/public/site/projection", CONTENT_PUBLIC_SITE_PROJECTION, HttpMethod.GET));
+        add(definitions, "public-learning-report-share",
+                rewrite("read", "/api/v1/public/learning/report-shares/{ref}", "/internal/v1/learning/report-shares/{ref}", LEARNING_B25, HttpMethod.GET));
         add(definitions, "public-commerce", rewrite("catalog", "/api/v1/public/commerce/catalog", "/internal/v1/commerce/public/catalog", COMMERCE, HttpMethod.GET));
         add(definitions, "admin-content",
                 rewrite("command-detail", "/api/v1/admin/content-commands/{contentCode}", "/internal/v1/content/admin-commands/{contentCode}", CONTENT_ADMIN, HttpMethod.GET),
@@ -569,6 +571,8 @@ public final class GatewayRouteExecutionPolicy {
                 preserve("plans-replan", "/api/v1/learning/plans:replan", LEARNING_V2_PLANS, HttpMethod.POST),
                 rewrite("daily-report", "/api/v1/learning/stats/daily-report", "/internal/v1/learning/stats/daily-report", LEARNING_B25, HttpMethod.GET),
                 rewrite("weekly-report", "/api/v1/learning/stats/weekly-report", "/internal/v1/learning/stats/weekly-report", LEARNING_B25, HttpMethod.GET),
+                rewrite("report-share-issue", "/api/v1/learning/reports/{reportType}/shares", "/internal/v1/learning/reports/{reportType}/shares", LEARNING_B25, HttpMethod.POST),
+                rewrite("report-share-revoke", "/api/v1/learning/report-shares/{ref}/revoke", "/internal/v1/learning/report-shares/{ref}/revoke", LEARNING_B25, HttpMethod.POST),
                 rewrite("daily-summary", "/api/v1/learning/stats/daily-summary", "/internal/v1/learning/stats/daily-summary", LEARNING_B25, HttpMethod.GET),
                 rewrite("srs-batches", "/api/v1/learning/srs/batches", "/internal/v1/learning/srs/batches", LEARNING_B25, HttpMethod.POST),
                 rewrite("srs-batch", "/api/v1/learning/srs/batches/{snapshotId}", "/internal/v1/learning/srs/batches/{snapshotId}", LEARNING_B25, HttpMethod.GET),

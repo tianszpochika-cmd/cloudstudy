@@ -138,6 +138,7 @@ public final class GatewayRoutePolicy {
             rule("public-content", 900, MatchType.PREFIX, "/api/v1/public/content", "content-service", "INTERNAL_V1", "ANONYMOUS_PUBLIC", AuthClass.PUBLIC_READ, "NONE", HttpMethod.GET),
             rule("public-commerce", 900, MatchType.PREFIX, "/api/v1/public/commerce", "commerce-service", "INTERNAL_V1", "ANONYMOUS_PUBLIC", AuthClass.PUBLIC_READ, "NONE", HttpMethod.GET),
             rule("public-site", 900, MatchType.PREFIX, "/api/v1/public/site", "content-service", "INTERNAL_V1", "ANONYMOUS_PUBLIC", AuthClass.PUBLIC_READ, "NONE", HttpMethod.GET),
+            rule("public-learning-report-share", 900, MatchType.PREFIX, "/api/v1/public/learning/report-shares", "learning-service", "INTERNAL_V1", "ANONYMOUS_PUBLIC", AuthClass.PUBLIC_READ, "NONE", HttpMethod.GET),
             rule("wechat-callback", 1000, MatchType.EXACT, "/api/v1/commerce/wechat/callback", "commerce-service", "INTERNAL_V1", "SIGNED_EXTERNAL_CALLBACK", AuthClass.PROVIDER_CALLBACK, "NONE", HttpMethod.POST),
             rule("alipay-callback", 1000, MatchType.EXACT, "/api/v1/commerce/alipay/notify", "commerce-service", "INTERNAL_V1", "SIGNED_EXTERNAL_CALLBACK", AuthClass.PROVIDER_CALLBACK, "NONE", HttpMethod.POST),
             rule("apple-notification", 1000, MatchType.EXACT, "/api/v1/commerce/apple/notifications", "commerce-service", "INTERNAL_V1", "SIGNED_EXTERNAL_CALLBACK", AuthClass.PROVIDER_CALLBACK, "NONE", HttpMethod.POST),

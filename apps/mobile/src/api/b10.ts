@@ -52,6 +52,8 @@ export const B10_GATEWAY_PATHS = {
     masteryMistakes: '/mastery/mistakes',
     masteryVerifications: '/mastery/verifications',
     dailyReport: '/learning/stats/daily-report',
+    reportShare: '/learning/reports',
+    reportShareRevoke: '/learning/report-shares',
     weeklyReport: '/learning/stats/weekly-report',
     readingMining: '/reading/mining',
   },
@@ -505,6 +507,31 @@ function parseReport(value: unknown, fallbackType: B10Report['reportType']): B10
       return label && detail ? [{ label, detail, ...(nullableNumber(item.exerciseId) ? { exerciseId: nullableNumber(item.exerciseId) as number } : {}), ...(nullableNumber(item.mistakeId) ? { mistakeId: nullableNumber(item.mistakeId) as number } : {}) }] : []
     }) : canonicalEvidence,
     explanation: Array.isArray(source.explanation) ? source.explanation.filter((entry): entry is string => typeof entry === 'string') : Object.values(isRecord(source.explanation) ? source.explanation : {}).filter((entry): entry is string => typeof entry === 'string').concat(scoreBucket ? [`服务端报告：${scoreBucket}`] : []),
+    period: parsePeriod(source.period),
+  }
+}
+
+function parsePeriod(value: unknown): B10Report['period'] {
+  if (!isRecord(value)) return null
+  const availability = text(value.availability)
+  if (!availability) return null
+  return {
+    availability,
+    copy: text(value.copy),
+    periodStart: text(value.periodStart),
+    periodEndExclusive: text(value.periodEndExclusive),
+    learningDayZone: text(value.learningDayZone, 'Asia/Shanghai'),
+    updatedAt: text(value.updatedAt),
+    newItems: typeof value.newItems === 'number' ? value.newItems : null,
+    reviewItems: typeof value.reviewItems === 'number' ? value.reviewItems : null,
+    accuracy: typeof value.accuracy === 'number' ? value.accuracy : null,
+    activeMillis: typeof value.activeMillis === 'number' ? value.activeMillis : null,
+    durationStatus: text(value.durationStatus, 'NOT_RECORDED'),
+    durationCopy: text(value.durationCopy),
+    suggestion: text(value.suggestion),
+    suggestionBasis: text(value.suggestionBasis),
+    reportVersion: typeof value.reportVersion === 'number' ? value.reportVersion : null,
+    officialScore: value.officialScore === true,
   }
 }
 
@@ -624,6 +651,19 @@ export const b10LearningApi = {
     const verification = parseVerification(response)
     if (!verification) throw new Error('验证服务没有返回状态。')
     return verification
+  },
+
+  async issueReportShare(period: 'daily' | 'weekly'): Promise<{ ref: string; publicPath: string }> {
+    const type = period === 'weekly' ? 'WEEKLY' : 'DAILY'
+    const response = await mobileApiClient.request<unknown>(`${B10_GATEWAY_PATHS.assessment.reportShare}/${type}/shares`, { method: 'POST', data: {} })
+    const source = isRecord(unwrap(response)) ? unwrap(response) as RecordValue : {}
+    const ref = typeof source.ref === 'string' ? source.ref : ''
+    if (!/^[0-9a-f]{32}$/.test(ref)) throw new Error('分享链接没有生成。')
+    return { ref, publicPath: typeof source.publicPath === 'string' ? source.publicPath : `/api/v1/public/learning/report-shares/${ref}` }
+  },
+
+  async revokeReportShare(ref: string): Promise<void> {
+    await mobileApiClient.request(`${B10_GATEWAY_PATHS.assessment.reportShareRevoke}/${encodeURIComponent(ref)}/revoke`, { method: 'POST', data: {} })
   },
 
   async readReport(context: B10RequestContext, period: 'daily' | 'weekly'): Promise<B10Report> {

@@ -11,7 +11,7 @@ const FORBIDDEN_PATH = '/pages/forbidden/forbidden'
 const ONBOARDING_PATH = '/pages/onboarding/onboarding'
 const HOME_PATH = '/pages/home/home'
 
-const PUBLIC_PATHS = new Set([LOGIN_PATH, FORBIDDEN_PATH, '/pages/register/register', '/pages/reset-password/reset-password'])
+const PUBLIC_PATHS = new Set([LOGIN_PATH, FORBIDDEN_PATH, '/pages/register/register', '/pages/reset-password/reset-password', '/pages/report-share/report-share'])
 const AUTH_ONLY_PATHS = new Set([
   ONBOARDING_PATH,
   '/pages/devices/devices',

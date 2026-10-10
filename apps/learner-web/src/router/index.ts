@@ -91,6 +91,12 @@ export const routes: RouteRecordRaw[] = [
     meta: { requiresAuth: true, shell: true, title: '练习' },
   },
   {
+    path: '/share/reports/:ref',
+    name: 'report-share',
+    component: () => import('../pages/ReportSharePage.vue'),
+    meta: { shell: false, title: '分享的学习报告' },
+  },
+  {
     path: '/b2/report',
     name: 'b2-report',
     component: () => import('../pages/B2ReportPage.vue'),
@@ -235,6 +241,7 @@ export const router = createRouter({
 router.beforeEach(async (to) => {
   const session = useSessionStore(pinia)
   await session.restore()
+  if (to.name === 'report-share') return true
 
   const preview = to.query.preview === '1' && isFeatureEnabled('learner.preview')
 
