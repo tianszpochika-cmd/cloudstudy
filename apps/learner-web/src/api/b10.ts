@@ -238,6 +238,10 @@ function parseSession(value: unknown): B10PracticeSession | null {
     stateVersion: numberValue(source.stateVersion) ?? 1,
     lastAttemptId: stringValue(source.lastAttemptId),
     reportId: stringValue(source.reportId),
+    resumeIndex: numberValue(source.resumeIndex),
+    resumeCopy: stringValue(source.resumeCopy),
+    contentOffline: source.contentOffline === true,
+    exitCopy: stringValue(source.exitCopy),
   }
 }
 

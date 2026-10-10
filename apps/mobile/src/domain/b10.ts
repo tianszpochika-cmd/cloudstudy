@@ -88,6 +88,10 @@ export interface B10AssessmentSession {
   stateVersion: number
   lastAttemptId: string | null
   reportId: string | null
+  resumeIndex?: number | null
+  resumeCopy?: string | null
+  contentOffline?: boolean
+  exitCopy?: string | null
 }
 
 export interface B10AnswerResult {

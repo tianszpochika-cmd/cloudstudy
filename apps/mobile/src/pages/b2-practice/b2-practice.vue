@@ -10,7 +10,7 @@ import { createAdaptivePerformanceEngine, type PerformanceLevel } from '@english
 import B10ExerciseCard from '../../components/b10/B10ExerciseCard.vue'
 import B10StatusPanel from '../../components/b10/B10StatusPanel.vue'
 import type { B10AnswerInput, B10AnswerResult } from '../../domain/b10'
-import { practiceFeedback } from '../../domain/practice-loop'
+import { practiceFeedback, resumeView } from '../../domain/practice-loop'
 import { b10ThemeMode, b10T } from '../../platform/b10-foundation'
 import { useB10LearningStore } from '../../stores/b10-learning'
 import { getUniRuntime } from '../../platform/uni-runtime'
@@ -23,7 +23,13 @@ const performanceLevel = ref<PerformanceLevel>(engine.level)
 const lastResult = ref<B10AnswerResult | null>(null)
 watch(() => session.identityRevision, () => { lastResult.value = null }, { flush: 'sync' })
 const themeClass = computed(() => `b10-theme--${b10ThemeMode.value}`)
-const exercise = computed(() => store.practice?.exercises.find((item) => !store.answerResults[String(item.exerciseId)]) ?? null)
+const resume = computed(() => resumeView(store.practice))
+const exercise = computed(() => {
+  const list = store.practice?.exercises ?? []
+  if (resume.value.stopped) return null
+  const start = Math.max(0, resume.value.index - 1)
+  return list.find((item, index) => index >= start && !store.answerResults[String(item.exerciseId)]) ?? null
+})
 const answeredCount = computed(() => Object.keys(store.answerResults).length)
 const answerFeedback = computed(() => lastResult.value ? practiceFeedback({
   correct: lastResult.value.isCorrect,
@@ -49,7 +55,9 @@ onUnmounted(() => engine.dispose())
 
     <B10StatusPanel :status="store.practiceStatus" :message="store.practiceMessage" :performance-level="performanceLevel" @retry="load" @performance="setPerformance" />
 
-    <view v-if="exercise" class="yx-card b10-practice-card">
+    <view v-if="resume.stopped" class="yx-card" role="status" data-offline-exit>{{ resume.copy }}</view>
+    <view v-else-if="exercise" class="yx-card b10-practice-card">
+      <text data-resume>{{ resume.copy }}</text>
       <view class="b10-practice-card__progress"><text>{{ answeredCount }} / {{ store.practice?.exercises.length ?? 0 }}</text><text>{{ exercise.questionType }}</text></view>
       <B10ExerciseCard :exercise="exercise" :disabled="store.practiceStatus === 'loading'" @answer="answer" />
       <view class="b10-practice-card__actions"><button tabindex="0" role="button" class="yx-button yx-button--secondary" type="button" @click="checkpoint">{{ b10T('practice.checkpoint') }}</button><button tabindex="0" role="button" v-if="lastResult" class="yx-button yx-button--secondary" type="button" @click="lastResult = null">{{ b10T('practice.next') }}</button></view>

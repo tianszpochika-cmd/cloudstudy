@@ -10,6 +10,7 @@ import com.englishflow.assessment.adapter.content.BankPracticeRuleProvider;
 import com.englishflow.assessment.domain.AssessmentMistake;
 import com.englishflow.assessment.domain.AssessmentPrincipal;
 import com.englishflow.assessment.domain.GrammarReadingPack;
+import com.englishflow.assessment.domain.PracticeCheckpoint;
 import com.englishflow.assessment.domain.PracticeFeedback;
 
 import java.nio.charset.StandardCharsets;
@@ -594,14 +595,18 @@ public class B10AssessmentJdbcController {
             @RequestHeader("Idempotency-Key") String idempotencyKey) {
         Principal principal = principal(authentication, "assessment.session.write");
         requireKey(idempotencyKey);
-        ownerSession(sessionId, principal.subject());
+        Map<String, Object> checkpointSession = ownerSession(sessionId, principal.subject());
+        if ("CONTENT_OFFLINE".equals(text(checkpointSession.get("alternative_reason_code")))) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, PracticeCheckpoint.OFFLINE_EXIT);
+        }
         Map<String, Object> attempt = one("""
                 SELECT * FROM b10_assessment_attempt
                  WHERE attempt_id = ? AND session_id = ? AND principal_id = ? AND tenant_id = ?
                 """, attemptId, sessionId, principal.subject(), TENANT);
         if (attempt == null) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "assessment attempt not found");
         long version = positiveLong(body.get("checkpointVersion"), 1L);
-        int cursor = (int) Math.max(0L, longValue(body.get("itemCursor"), 0L));
+        int receivedAnswers = jsonSize(checkpointSession.get("answers_json"), false);
+        int cursor = PracticeCheckpoint.clampCursor(receivedAnswers, (int) Math.max(0L, longValue(body.get("itemCursor"), 0L)));
         String digest = text(body.get("checkpointDigest"));
         if (digest.isBlank()) bad("checkpointDigest is required");
         List<Object> completed = valueList(body.get("completedItemIds"));
@@ -641,7 +646,13 @@ public class B10AssessmentJdbcController {
         data.put("status", row.get("status"));
         data.put("mode", row.get("mode"));
         data.put("pin", pin(row));
-        data.put("items", parseJson(row.get("items_json"), List.of()));
+        boolean contentOffline = "CONTENT_OFFLINE".equals(text(row.get("alternative_reason_code")));
+        PracticeCheckpoint.Resume resume = PracticeCheckpoint.resume(jsonSize(row.get("answers_json"), false), !contentOffline);
+        data.put("items", resume.stopped() ? List.of() : parseJson(row.get("items_json"), List.of()));
+        data.put("resumeIndex", resume.index());
+        data.put("resumeCopy", resume.copy());
+        data.put("contentOffline", resume.stopped());
+        if (resume.stopped()) data.put("exitCopy", resume.copy());
         data.put("attemptCount", number(row.get("attempt_count")));
         data.put("stateVersion", number(row.get("state_version")));
         String lastAttemptId = text(row.get("last_attempt_id"));

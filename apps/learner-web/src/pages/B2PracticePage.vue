@@ -3,6 +3,7 @@ import ExperienceHeader from '../components/ExperienceHeader.vue'
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useLearnerContentStore } from '../stores/learner-content'
+import { resumeView } from '../domain/practice-loop'
 
 const router = useRouter()
 const store = useLearnerContentStore()
@@ -14,6 +15,16 @@ const report = computed(() => store.assessment.report)
 const isCompleted = computed(() => store.assessment.status === 'completed' || Boolean(report.value))
 const isLoading = computed(() => store.assessmentStatus === 'loading' || store.assessment.status === 'submitting')
 const scorePercent = computed(() => Math.round(report.value?.score ?? 0))
+const resume = computed(() => {
+  const offline = Boolean(store.lastError?.includes('内容已下线'))
+  const received = store.assessment.acceptedSequence ?? 0
+  if (!question.value && !offline && received <= 0) return null
+  return resumeView({
+    received,
+    resumeIndex: received > 0 ? received : question.value?.stepIndex,
+    contentOffline: offline,
+  })
+})
 const progress = computed(() => {
   const current = question.value
   if (!current) return report.value ? 100 : 0
@@ -55,7 +66,9 @@ onMounted(() => { void load() })
       </div>
     </section>
 
+    <p v-if="resume?.stopped" data-offline-exit role="status">{{ resume.copy }}</p>
     <section v-else-if="question" class="question-panel">
+      <p data-resume>{{ resume?.copy }}</p>
       <div class="question-meta">
         <span>{{ question.dimension }} · {{ question.stepIndex }} / {{ question.totalSteps }}</span>
         <span>{{ progress }}%</span>

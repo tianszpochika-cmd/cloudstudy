@@ -28,3 +28,28 @@ export function practiceFeedback(input: {
     nextQuestion: input.nextQuestion?.trim() || (received >= total ? '本次练习已完成' : `下一题：第 ${received + 1} 题`),
   }
 }
+
+export const OFFLINE_EXIT = '内容已下线，已停止加载。可以回到可用学习。'
+
+export interface ResumeView {
+  index: number
+  copy: string
+  stopped: boolean
+}
+
+/** Stay on the last question the server has accepted. Offline content does not load. */
+export function resumeView(input: {
+  received?: number | null
+  resumeIndex?: number | null
+  resumeCopy?: string | null
+  contentOffline?: boolean | null
+  exitCopy?: string | null
+} | null | undefined): ResumeView {
+  if (input?.contentOffline) {
+    return { index: 0, copy: input.exitCopy?.trim() || OFFLINE_EXIT, stopped: true }
+  }
+  const index = input?.resumeIndex && input.resumeIndex > 0
+    ? input.resumeIndex
+    : Math.max(1, input?.received ?? 0)
+  return { index, copy: input?.resumeCopy?.trim() || `上次学到第 ${index} 题，继续`, stopped: false }
+}

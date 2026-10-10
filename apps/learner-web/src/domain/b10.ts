@@ -99,6 +99,10 @@ export interface B10PracticeSession {
   stateVersion: number
   lastAttemptId: string | null
   reportId: string | null
+  resumeIndex?: number | null
+  resumeCopy?: string | null
+  contentOffline?: boolean
+  exitCopy?: string | null
 }
 
 export interface B10Feedback {

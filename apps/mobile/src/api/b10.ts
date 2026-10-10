@@ -263,6 +263,10 @@ function parseAssessmentSession(value: unknown): B10AssessmentSession {
     stateVersion: number(source.stateVersion, 1),
     lastAttemptId: text(source.lastAttemptId) || null,
     reportId: text(source.reportId) || null,
+    resumeIndex: nullableNumber(source.resumeIndex),
+    resumeCopy: text(source.resumeCopy) || null,
+    contentOffline: source.contentOffline === true,
+    exitCopy: text(source.exitCopy) || null,
   }
 }
 
