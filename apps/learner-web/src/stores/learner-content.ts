@@ -27,7 +27,7 @@ import {
   type PracticeTodayTask,
 } from '../api/practice-today'
 import { ensureLearningPlan, readPlanTodayQueue, replanLearningPlan } from '../api/plan-today'
-import { shouldEnsurePlan, type PlanTodayQueue } from '../domain/plan-today'
+import { planVersionFromEnsure, shouldEnsurePlan, type PlanTodayQueue } from '../domain/plan-today'
 import {
   LearnerContentReadModelError,
   type LearnerContentPersistedState,
@@ -137,6 +137,8 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
   const planQueue = ref<PlanTodayQueue | null>(null)
   const planQueueStatus = ref<ReadModelStatus>('idle')
   const planNotice = ref<string | null>(null)
+  // Declared before the identity watch. That watch calls reset during setup.
+  let ensuredPlanVersion = 0
 
   function resetForIdentity(subject: string | null, generation: number): void {
     activeIdentity = { subject, generation }
@@ -168,6 +170,7 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
     planQueue.value = null
     planQueueStatus.value = 'idle'
     planNotice.value = null
+    ensuredPlanVersion = 0
   }
 
   watch([verifiedSubject, () => session.authGeneration], ([subject, generation]) => {
@@ -189,6 +192,19 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
       && expected.subject === activeIdentity.subject
       && expected.generation === session.authGeneration
       && expected.generation === activeIdentity.generation)
+  }
+
+  /** Replan may run while a token refresh is in flight. A dead session may not. */
+  function sameOwner(owner: { subject: string; generation: number } | null): boolean {
+    if (!owner) return false
+    const status = session.status
+    if (status === 'unauthenticated' || status === 'revoking' || status === 'error') return false
+    return owner.subject === verifiedSubject.value && owner.generation === session.authGeneration
+  }
+
+  function markReplan(detail: string): void {
+    if (typeof document === 'undefined') return
+    document.documentElement.dataset.replan = detail.slice(0, 180)
   }
 
   const hasOnboardingConsent = computed(() => onboarding.value.ageConfirmed && isAdultBirthYear(onboarding.value.birthYear) && onboarding.value.privacyConsent && onboarding.value.termsConsent)
@@ -735,8 +751,11 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
   ): Promise<void> {
     if (!stillCurrent(owner) || !shouldEnsurePlan({ reportId, resultKind })) return
     try {
-      await ensureLearningPlan(reportId as string)
+      const ensured = await ensureLearningPlan(reportId as string)
       if (!stillCurrent(owner)) return
+      const version = planVersionFromEnsure(ensured)
+      if (version >= 1) ensuredPlanVersion = version
+      planNotice.value = null
       await refreshPlanQueue(owner)
     } catch (error) {
       if (!stillCurrent(owner)) return
@@ -745,15 +764,29 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
   }
 
   async function replanAfterGoal(owner: { subject: string; generation: number } | null): Promise<void> {
-    if (!stillCurrent(owner)) return
-    const knownVersion = planQueue.value?.planVersion ?? 0
-    await refreshPlanQueue(owner)
-    if (!stillCurrent(owner)) return
-    const refreshed = planQueue.value
-    const version = planQueueStatus.value !== 'error' && refreshed && refreshed.planVersion >= 1
-      ? refreshed.planVersion
-      : knownVersion
-    if (version < 1) return
+    if (!sameOwner(owner)) {
+      markReplan(`skip-before status=${session.status}`)
+      return
+    }
+    let version = Math.max(planQueue.value?.planVersion ?? 0, ensuredPlanVersion)
+    let readError = ''
+    try {
+      const queue = await readPlanTodayQueue()
+      if (queue.planVersion >= 1) version = Math.max(version, queue.planVersion)
+      if (stillCurrent(owner)) {
+        planQueue.value = queue
+        planQueueStatus.value = queue.planId || queue.itemCount > 0 ? 'ready' : 'empty'
+      }
+    } catch (error) {
+      readError = error instanceof Error ? error.message : 'read-failed'
+    }
+    if (!sameOwner(owner) || version < 1) {
+      // No plan yet (the first goal save, before placement) is not a failure.
+      markReplan(`skip-after version=${version} status=${session.status} err=${readError}`)
+      return
+    }
+    ensuredPlanVersion = version
+    markReplan(`post version=${version}`)
     const clientEventId = eventId('plan-replan')
     try {
       await replanLearningPlan(version, clientEventId)

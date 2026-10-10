@@ -2,7 +2,7 @@ import { computed, ref, watch } from 'vue'
 import { defineStore } from 'pinia'
 import { mobileLearnerContentApi, mobileLearnerContentError } from '../api/learner-content'
 import { ensureLearningPlan, readPlanToday, replanLearningPlan } from '../api/plan-today'
-import { shouldEnsurePlan, type PlanTodayQueue } from '../domain/plan-today'
+import { planVersionFromEnsure, shouldEnsurePlan, type PlanTodayQueue } from '../domain/plan-today'
 import type { MobileFirstDayModel, MobileGoalOption, MobileHomeModel, MobileLearnerAccount, MobileMotionMode, MobileOnboardingModel, MobilePlacementModel, MobileReadModelStatus, MobileThemeMode } from '../domain/learner-content'
 import { getUniRuntime } from '../platform/uni-runtime'
 import { createClientId } from '../platform/client-id'
@@ -84,6 +84,15 @@ export const useLearnerContentStore = defineStore('mobile-learner-content', () =
     return Boolean(left && right && left.subject === right.subject && left.revision === right.revision)
   }
   function stillCurrent(value: Scope | null): boolean { return sameIdentity(value) && session.isAuthenticated }
+  function sameOwner(owner: Scope | null): boolean {
+    if (!owner || !sameIdentity(owner)) return false
+    const status = session.status
+    return status === 'authenticated' || status === 'refreshing' || status === 'restoring'
+  }
+  function markReplan(detail: string): void {
+    if (typeof document === 'undefined') return
+    document.documentElement.dataset.replan = detail.slice(0, 180)
+  }
   function applyAccount(remote: MobileLearnerAccount, owner: Scope): boolean {
     if (!stillCurrent(owner)) return false
     account.value = remote
@@ -108,6 +117,8 @@ export const useLearnerContentStore = defineStore('mobile-learner-content', () =
     if (!stillCurrent(owner) || !sameScope(contentLocaleOwner, owner)) return null
     return account.value.contentLocale
   }
+  // Declared before the identity watch. That watch calls reset during setup.
+  let ensuredPlanVersion = 0
   function reset(): void {
     restored.value = false
     onboarding.value = { ...fallbackOnboarding, goals: [...fallbackGoals], quotas: [...fallbackQuotas] }
@@ -119,6 +130,7 @@ export const useLearnerContentStore = defineStore('mobile-learner-content', () =
     placement.value = emptyPlacementModel()
     placementStatus.value = 'idle'; onboardingStatus.value = 'idle'; homeStatus.value = 'idle'; firstDayStatus.value = 'idle'; lastError.value = null
     planQueue.value = null; planQueueStatus.value = 'idle'; planNotice.value = null
+    ensuredPlanVersion = 0
     onboardingResume.value = null
     resumeCache = null
   }
@@ -446,8 +458,11 @@ export const useLearnerContentStore = defineStore('mobile-learner-content', () =
   async function ensurePlanFromReport(owner: Scope | null, reportId: string | null, resultKind: string | null): Promise<void> {
     if (!stillCurrent(owner) || !shouldEnsurePlan({ reportId, resultKind })) return
     try {
-      await ensureLearningPlan(reportId as string)
+      const ensured = await ensureLearningPlan(reportId as string)
       if (!stillCurrent(owner)) return
+      const version = planVersionFromEnsure(ensured)
+      if (version >= 1) ensuredPlanVersion = version
+      planNotice.value = null
       await refreshPlanQueue(owner)
     } catch (error) {
       if (!stillCurrent(owner)) return
@@ -455,14 +470,29 @@ export const useLearnerContentStore = defineStore('mobile-learner-content', () =
     }
   }
   async function replanAfterGoal(owner: Scope | null): Promise<void> {
-    if (!stillCurrent(owner)) return
-    const knownVersion = planQueue.value?.planVersion ?? 0
-    await refreshPlanQueue(owner)
-    if (!stillCurrent(owner)) return
-    const version = planQueueStatus.value !== 'error' && (planQueue.value?.planVersion ?? 0) >= 1
-      ? (planQueue.value?.planVersion ?? 0)
-      : knownVersion
-    if (version < 1) return
+    if (!sameOwner(owner)) {
+      markReplan(`skip-before status=${session.status}`)
+      return
+    }
+    let version = Math.max(planQueue.value?.planVersion ?? 0, ensuredPlanVersion)
+    let readError = ''
+    try {
+      const queue = await readPlanToday()
+      if (queue.planVersion >= 1) version = Math.max(version, queue.planVersion)
+      if (stillCurrent(owner)) {
+        planQueue.value = queue
+        planQueueStatus.value = queue.planId || queue.itemCount > 0 ? 'ready' : 'empty'
+      }
+    } catch (error) {
+      readError = error instanceof Error ? error.message : 'read-failed'
+    }
+    if (!sameOwner(owner) || version < 1) {
+      // No plan yet (the first goal save, before placement) is not a failure.
+      markReplan(`skip-after version=${version} status=${session.status} err=${readError}`)
+      return
+    }
+    ensuredPlanVersion = version
+    markReplan(`post version=${version}`)
     const clientEventId = eventId('plan-replan')
     try {
       await replanLearningPlan(version, clientEventId)

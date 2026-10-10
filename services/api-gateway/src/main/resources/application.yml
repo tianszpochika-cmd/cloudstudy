@@ -128,7 +128,9 @@ gateway:
     # Keep this list in lock-step with the shared client envelope.  These are
     # non-safelisted headers emitted by learner-web/mobile for tenant-safe
     # device context, locale negotiation, snapshots and request tracing.
-    credentialed-allowed-headers: Authorization,Content-Type,Idempotency-Key,X-Request-Id,X-Trace-Id,X-Device-Id,X-Client-Version,X-Timezone,X-UI-Locale,X-Content-Locale,X-Snapshot-Id,X-Performance-Level,traceparent,X-Auth-Transport
+    # If-Match is the plan replan optimistic-lock header. Without it the
+    # browser preflight fails and plans:replan never leaves the page.
+    credentialed-allowed-headers: Authorization,Content-Type,Idempotency-Key,If-Match,X-Request-Id,X-Trace-Id,X-Device-Id,X-Client-Version,X-Timezone,X-UI-Locale,X-Content-Locale,X-Snapshot-Id,X-Performance-Level,traceparent,X-Auth-Transport
     public-allowed-headers: Content-Type,X-Request-Id,X-Trace-Id,X-UI-Locale,X-Content-Locale,traceparent
     exposed-headers: X-Request-Id,X-Trace-Id,Retry-After
     refresh-cookie-name: ${IAM_REFRESH_COOKIE_NAME:yuxuexing_refresh}

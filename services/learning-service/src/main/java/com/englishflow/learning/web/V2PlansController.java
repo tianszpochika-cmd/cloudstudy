@@ -224,9 +224,15 @@ public class V2PlansController {
             }
             return ResponseEntity.ok(Map.of("data", replayReceipt(receipts.getFirst().get("result_json"))));
         }
-        List<Map<String, Object>> plans = jdbc.queryForList(
+        List<Map<String, Object>> plans = jdbc.query(
                 "SELECT plan_id, plan_version, status FROM b25_learning_plan WHERE principal_id = ? AND tenant_id = ?",
-                subject, TENANT);
+                (rs, rowNum) -> {
+                    Map<String, Object> row = new LinkedHashMap<>();
+                    row.put("plan_id", rs.getString("plan_id"));
+                    row.put("plan_version", rs.getLong("plan_version"));
+                    row.put("status", rs.getString("status"));
+                    return row;
+                }, subject, TENANT);
         if (plans.isEmpty()) {
             throw unprocessable("learner plan is not available");
         }

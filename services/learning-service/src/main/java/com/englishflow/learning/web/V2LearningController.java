@@ -95,18 +95,22 @@ public class V2LearningController {
     }
 
     private Map<String, Object> currentPlanRow(String subject) {
-        List<Map<String, Object>> rows = jdbc.queryForList(
+        List<Map<String, Object>> rows = jdbc.query(
                 "SELECT plan_id, status, target_minutes, plan_version FROM b25_learning_plan WHERE principal_id = ? AND tenant_id = ?",
-                subject, TENANT);
+                (rs, rowNum) -> {
+                    Map<String, Object> row = new LinkedHashMap<>();
+                    row.put("status", rs.getString("status"));
+                    row.put("planId", rs.getString("plan_id"));
+                    row.put("targetMinutes", rs.getInt("target_minutes"));
+                    // BIGINT UNSIGNED is not always a java.lang.Number on the map
+                    // row. getLong is the value the plan was stored with.
+                    row.put("planVersion", rs.getLong("plan_version"));
+                    return row;
+                }, subject, TENANT);
         if (rows.isEmpty()) {
             return Map.of("status", "EMPTY", "planId", "", "targetMinutes", 0, "planVersion", 0);
         }
-        Map<String, Object> row = rows.get(0);
-        return Map.of(
-                "status", String.valueOf(row.get("status")),
-                "planId", String.valueOf(row.get("plan_id")),
-                "targetMinutes", row.get("target_minutes") instanceof Number n ? n.intValue() : 0,
-                "planVersion", row.get("plan_version") instanceof Number n ? n.longValue() : 0L);
+        return rows.get(0);
     }
 
     private List<Map<String, Object>> todayItems(String subject) {

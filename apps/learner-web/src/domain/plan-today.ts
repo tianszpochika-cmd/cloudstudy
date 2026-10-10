@@ -36,7 +36,12 @@ function text(value: unknown): string | null {
 }
 
 function whole(value: unknown): number | null {
-  return typeof value === 'number' && Number.isFinite(value) ? Math.trunc(value) : null
+  if (typeof value === 'number' && Number.isFinite(value)) return Math.trunc(value)
+  if (typeof value === 'string' && /^[0-9]+$/.test(value)) {
+    const parsed = Number(value)
+    if (Number.isSafeInteger(parsed)) return parsed
+  }
+  return null
 }
 
 export function ensureIdempotencyKey(reportId: string): string {
@@ -45,6 +50,13 @@ export function ensureIdempotencyKey(reportId: string): string {
 
 export function replanIdempotencyKey(planVersion: number, clientEventId: string): string {
   return `plan-replan-${planVersion}-${clientEventId}`
+}
+
+/** Version written by plans:ensure. Today may still be loading; 0 means unknown. */
+export function planVersionFromEnsure(value: unknown): number {
+  const source = record(unwrap(value)) ? unwrap(value) as Record<string, unknown> : {}
+  const nested = record(source.plan) ? source.plan : null
+  return whole(source.planVersion) ?? whole(nested?.planVersion) ?? 0
 }
 
 /** A formal report id may ensure a plan. A skip baseline must not. */
