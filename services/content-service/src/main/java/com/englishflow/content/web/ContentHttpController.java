@@ -6,6 +6,7 @@ import com.englishflow.content.domain.ContentAudience;
 import com.englishflow.content.domain.ContentChannel;
 import com.englishflow.content.domain.ContentVersionId;
 import com.englishflow.content.domain.PublicContentProjection;
+import com.englishflow.content.release.ContentReleaseStudio;
 
 import java.net.InetAddress;
 import java.net.URI;
@@ -38,16 +39,19 @@ public final class ContentHttpController {
     private final VerifiedContentPrincipalFactory principals;
     private final ObjectProvider<JdbcTemplate> jdbcTemplates;
     private final ObjectMapper objectMapper;
+    private final ContentReleaseStudio releaseStudio;
 
     public ContentHttpController(
             ContentReadService reads,
             VerifiedContentPrincipalFactory principals,
             ObjectProvider<JdbcTemplate> jdbcTemplates,
-            ObjectMapper objectMapper) {
+            ObjectMapper objectMapper,
+            ContentReleaseStudio releaseStudio) {
         this.reads = reads;
         this.principals = principals;
         this.jdbcTemplates = jdbcTemplates;
         this.objectMapper = objectMapper;
+        this.releaseStudio = releaseStudio;
     }
 
     @GetMapping("/api/v1/public/content/catalog")
@@ -172,6 +176,11 @@ public final class ContentHttpController {
             @RequestHeader HttpHeaders headers) {
         ContentHttpPrincipals.requireLearnerRead(authentication);
         ContentActor actor = principals.from(authentication);
+        if (releaseStudio.owns(contentCode)) {
+            return envelope(releaseStudio.learnerRead(contentCode, versionPin)
+                    .orElseThrow(() -> com.englishflow.content.domain.ContentOperationException.notFound(
+                            "CONTENT_NOT_VISIBLE", "内容不存在或还不能学习。")), headers, false);
+        }
         ContentReadService.ReadResult read = reads.readByCodeResult(
                 contentCode, ContentAudience.LEARNER, ContentChannel.LEARNER,
                 versionPin == null ? null : ContentVersionId.of(versionPin),
@@ -186,13 +195,22 @@ public final class ContentHttpController {
         return envelope(data, headers, false);
     }
 
-    private static Map<String, Object> catalogData(List<ContentReadService.CatalogEntry> projections) {
+    private Map<String, Object> catalogData(List<ContentReadService.CatalogEntry> projections) {
         long epoch = projections.stream().mapToLong(ContentReadService.CatalogEntry::contentEpoch).max().orElse(1L);
         long revision = projections.stream().mapToLong(ContentReadService.CatalogEntry::projectionVersion).max().orElse(1L);
-        return Map.of(
-                "items", projections.stream().map(ContentHttpController::card).toList(),
-                "contentEpoch", Math.max(1L, epoch),
-                "projectionVersion", Math.max(1L, revision));
+        List<Map<String, Object>> items = new ArrayList<>();
+        projections.stream().map(ContentHttpController::card).forEach(items::add);
+        for (Map<String, Object> extra : releaseStudio.learnerCards()) {
+            boolean known = items.stream().anyMatch(item -> extra.get("contentCode").equals(item.get("contentCode")));
+            if (!known) {
+                items.add(extra);
+            }
+        }
+        Map<String, Object> data = new LinkedHashMap<>();
+        data.put("items", items);
+        data.put("contentEpoch", Math.max(1L, epoch));
+        data.put("projectionVersion", Math.max(1L, revision));
+        return data;
     }
 
     private static Map<String, Object> card(ContentReadService.CatalogEntry entry) {

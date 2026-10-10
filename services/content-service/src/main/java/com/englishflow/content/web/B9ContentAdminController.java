@@ -5,6 +5,7 @@ import com.englishflow.content.application.ContentItemCommandService;
 import com.englishflow.content.application.LexemeCommandService;
 import com.englishflow.content.application.ScheduledPublishService;
 import com.englishflow.content.domain.ContentActor;
+import com.englishflow.content.release.ContentReleaseStudio;
 import com.englishflow.content.domain.ContentAutoValidation;
 import com.englishflow.content.domain.ContentDefinition;
 import com.englishflow.content.domain.ContentId;
@@ -83,6 +84,14 @@ public final class B9ContentAdminController {
     private final ContentIdempotencyPort idempotency;
     private final VerifiedContentPrincipalFactory principals;
     private final ValidationReportStore reports;
+    private ContentReleaseStudio releaseStudio = new ContentReleaseStudio();
+
+    @Autowired
+    void setReleaseStudio(ContentReleaseStudio releaseStudio) {
+        if (releaseStudio != null) {
+            this.releaseStudio = releaseStudio;
+        }
+    }
 
     @Autowired
     public B9ContentAdminController(
@@ -158,6 +167,12 @@ public final class B9ContentAdminController {
         String contentCode = text(input.get("contentCode"));
         if (command.isBlank() || contentCode.isBlank()) {
             throw ContentOperationException.badRequest("CONTENT_COMMAND_INVALID", "command and contentCode are required");
+        }
+        if (command.startsWith("RELEASE_")) {
+            Map<String, Object> releaseInput = new LinkedHashMap<>(input);
+            releaseInput.put("idempotencyKey", key);
+            ContentReleaseStudio.Stored release = releaseStudio.handle(actor, command, contentCode, releaseInput);
+            return ResponseEntity.status(release.status()).body(release.body());
         }
         ContentRequestContext context = context(headers);
         if ("CREATE_DRAFT".equals(command) || "SAVE_DRAFT".equals(command)) {
