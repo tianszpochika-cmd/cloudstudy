@@ -44,7 +44,7 @@
 | R12/R13 视觉矩阵 | [before](visual-r12/before/audit.json)、[before-xl](visual-r12/before-xl/audit.json)、[after](visual-r12/after/audit.json)、[after-xl](visual-r12/after-xl/audit.json) | 历史 before/after 与截图；部分 setup 注入状态，证明可渲染，不能替代真实可达性或人眼目检；归档后不覆盖 |
 | R13 缺陷配对 | `visual-r13/before/`、`visual-r13/after/` | 特大字号底栏、刷新正文、空态、未建计划等当时修补证据 |
 | R14 阅读/按压 | [8 项断言](visual-r13/after/results-r14.json)及同目录 3 张 `r14-*` 截图 | 部分起始状态注入；按压测试只证明其实际采样控件 |
-| R14 独立复核 | [复核原文](independent-r14/review-findings.md)、[错书目的地](independent-r14/resume-after-browsing-wrong-book.png)、[刷新位置恢复](independent-r14/chapter-reload-position-preserved.png) | 保留复核时点原文；最近阅读目的地缺陷已在六能力改造修正，修复后操作见最新证据，旧截图不覆盖 |
+| R14 独立复核 | [目录索引](independent-r14/README.md)、[复核原文](independent-r14/review-findings.md)、[错书目的地](independent-r14/resume-after-browsing-wrong-book.png)、[刷新位置恢复](independent-r14/chapter-reload-position-preserved.png) | 保留复核时点原文；最近阅读目的地缺陷已在六能力改造修正，修复后操作见最新证据，旧截图不覆盖 |
 
 ## 当前未关闭事项
 
@@ -53,4 +53,4 @@
 
 五项产品评审 P1 已在原型修正，见[实施说明](../../../mobile-learning-upgrade-20260930.md)。上述未测事项与历史缺陷分别记录，不把修复前截图当作当前缺陷状态。
 
-脚本说明见[演示指南](../DEMO-GUIDE.md)。从当前代码重跑历史 before 脚本只会得到当前界面，不能重建过去缺陷；验证新的修改应存入新的证据目录。
+脚本说明见[演示指南](../DEMO-GUIDE.md)，本原型的目录索引见[上级 README](../README.md)。从当前代码重跑历史 before 脚本只会得到当前界面，不能重建过去缺陷；验证新的修改应存入新的证据目录。
