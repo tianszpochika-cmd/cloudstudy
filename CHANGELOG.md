@@ -1,5 +1,11 @@
 # Changelog
 
+- [R1-030-042-20261010] **IT-3 计划今日（R1-030…040）代码落地；浏览器站与干净库重放未跑。**
+  - learning-service：正式报告才写解释句；输入快照只追加 `pin_version`，不覆盖历史；`POST /api/v1/learning/plans:replan` 要求确认影响和 `If-Match`，只改未开始的 SRS，已完成行保留。Flyway `V12`。
+  - 契约增补今日空态、解释、首次学习引导和重排请求/结果。Gateway 增加 `plans-replan` 保留路由。
+  - Web 与 H5 共用同一套今日计划规则：横幅用服务端解释，五类空态分开，书架只显示已发布内容，续学只认进行中的检查点。跳过定级不会触发 ensure。
+  - `lunaStamp` 仍为 false。真实浏览器验收未做：本轮 IAM 只有 HTTP，测试证书不能写入系统钥匙串。
+
 - [STATION-ACCEPTANCE-20261010] **IT-1 本轮真实浏览器验收 REJECT / FAIL；IT-2 动态验收 BLOCKED。**
   - 验收源码锚定 `69bea68b44b2c8c6c6dbdcdb38c0b955a458aaf1`。Web/Mobile H5 两视口共12次注册、登录、重置表单观察到认证请求目标为 HTTP Gateway，违反密码直达 IAM TLS 边界；请求发送前保护性中断，未向 Gateway 发送密码。当前 IAM 源码缺 CORS 配置，既有 artifact 的 TLS 实际 OPTIONS 缺允许 origin/credential/method 响应头（无本轮 fresh-build 绑定）；两项 P1 问题见[运行报告](evidence/redesign/2026-10-10/station-acceptance/it1/report.md)与[独立验收矩阵](evidence/redesign/2026-10-10/station-acceptance/review/acceptance-matrix.md)。
   - 正常独立 content 下官网11页双视口22/22 HTTP200、无横向溢出/pageerror，主页与课程空态4次CTA到真实注册页；课程/下载是真实空态，价格依赖未起为诚实错误态。仅计当前具名范围，不恢复原 R1-001 完整验收/114卡墙。历史六卡独立范围验收保留，R1-007保留DELIVERY_PASS源码/单测事实而不升为独立验收。

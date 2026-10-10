@@ -15,10 +15,10 @@
 | 已定义卡 | 42 | R1-001～042。其中 R1-030～042 是 IT-3 真实拆卡 |
 | 卡范围独立验收（ACCEPTED_CARD_SCOPE） | 6 | R1-002/003/004/005/006/008 |
 | 源码交付、未独立终审 | 2 | R1-001（SOURCE_SCOPED_PASS）、R1-007 |
-| 已实现/回放、待站级签收 | 21 | R1-009～017（IT-1）、R1-018～029（IT-2） |
-| 已定义、本轮实现中 | 13 | R1-030～042（IT-3） |
+| 已实现/回放、待站级签收 | 32 | R1-009～017（IT-1）、R1-018～029（IT-2）、R1-030～040（IT-3 代码已落地，浏览器站未签） |
+| 已定义、本轮未跑站级 | 2 | R1-041 交互对稿、R1-042 干净库重放。见第 4 节 |
 | 未定义（待按站拆卡） | IT-4～IT-7 | 不按剩余张数补卡 |
-| 跳过 | 1 | `support-real-gateway.e2e`，见第 4 节 |
+| 跳过 | 3 | `support-real-gateway.e2e`；IT-3 真实浏览器与干净库重放；local-development 全仓门禁未整跑。见第 4 节 |
 
 ## 2. 已定义卡
 
@@ -53,19 +53,19 @@
 | R1-027 | IT-2 | 断网续答 | 实现/回放 | 重进续题号 |
 | R1-028 | IT-2 | 定级交互验收 | it2-score-browser 覆盖计分与重测幕；整站幕幕对稿仍未签 | 幕幕对稿 |
 | R1-029 | IT-2 | L2 干净库重放 | 原件 26 PASS / 3 NOT_RUN 不回写；其后公开重测 201 与浏览器计分已有证据，仍未出站 | 全绿归档 |
-| R1-030 | IT-3 | ensure 正式报告 pin 与计划 | 待实现 | 正式报告后读到 planId |
-| R1-031 | IT-3 | ensure 幂等重放 | 待实现 | 同键重放、异体 409 |
-| R1-032 | IT-3 | 首页计划横幅 | 待实现 | Web/H5 两视口横幅 |
-| R1-033 | IT-3 | 一句话计划解释 | 待实现 | 解释来自服务端 |
-| R1-034 | IT-3 | 今日任务与 practiceRef | 待实现 | 有指针才练习 |
-| R1-035 | IT-3 | 今日空态分流 | 待实现 | 五态文案与动作 |
-| R1-036 | IT-3 | 目标确认后版本锁重排 | 待实现 | 409 与完成行保留 |
-| R1-037 | IT-3 | Web/H5 同一计划读回 | 待实现 | 同 planId/planVersion |
-| R1-038 | IT-3 | 输入快照只追加版本 | 待实现 | 不原地改历史快照 |
-| R1-039 | IT-3 | 首次学习按完成状态引导 | 待实现 | 完成后引导收起 |
-| R1-040 | IT-3 | 书架、搜索与续学 | 待实现 | 三态搜索与有效检查点 |
-| R1-041 | IT-3 | 计划今日交互验收 | 待实现 | 幕幕对稿 |
-| R1-042 | IT-3 | L3 干净库重放 | 待实现 | 报告→横幅→今日任务 |
+| R1-030 | IT-3 | ensure 正式报告 pin 与计划 | 已实现，待站级签收 | 正式报告后读到 planId |
+| R1-031 | IT-3 | ensure 幂等重放 | 已实现，待站级签收 | 同键重放、异体 409 |
+| R1-032 | IT-3 | 首页计划横幅 | 已实现，待站级签收 | Web/H5 两视口横幅 |
+| R1-033 | IT-3 | 一句话计划解释 | 已实现，待站级签收 | 解释来自服务端 |
+| R1-034 | IT-3 | 今日任务与 practiceRef | 已实现，待站级签收 | 有指针才练习 |
+| R1-035 | IT-3 | 今日空态分流 | 已实现，待站级签收 | 五态文案与动作 |
+| R1-036 | IT-3 | 目标确认后版本锁重排 | 已实现，待站级签收 | 409 与完成行保留 |
+| R1-037 | IT-3 | Web/H5 同一计划读回 | 已实现，待站级签收 | 同 planId/planVersion |
+| R1-038 | IT-3 | 输入快照只追加版本 | 已实现，待站级签收 | 不原地改历史快照 |
+| R1-039 | IT-3 | 首次学习按完成状态引导 | 已实现，待站级签收 | 完成后引导收起 |
+| R1-040 | IT-3 | 书架、搜索与续学 | 已实现，待站级签收 | 三态搜索与有效检查点 |
+| R1-041 | IT-3 | 计划今日交互验收 | 未跑浏览器对稿 | 幕幕对稿 |
+| R1-042 | IT-3 | L3 干净库重放 | 未跑 | 报告→横幅→今日任务 |
 
 ## 3. 站级状态
 
@@ -73,7 +73,7 @@
 |---|---|---|
 | IT-1 | Luna REJECT/FAIL（基线 69bea68b）；复检 ce0aa296 PASS 未签；it1-named-gates / R1-014 PASS，自审 PASS_WITH_GAPS 未签。**待 Luna 签收（外部依赖）**，不再当作本轮开工阻塞 | 独立签收。具名门浏览器已有，仍缺 Luna。不改 `lunaStamp`，不改 station-acceptance 原件 |
 | IT-2 | BLOCKED；it2-station PASS_WITH_NOT_RUN；it2-score-browser 10 题 PASS 未签。**待 Luna 签收（外部依赖）**。三个独立 owner schema 的 IAM 真签出站仍未完成：本轮 `services:run` 只有 HTTP IAM，没有在不写钥匙串的前提下换上 r1 TLS | 三个独立 owner schema 的 IAM 真签出站。原 3 个 NOT_RUN 不回写 |
-| IT-3 计划今日 | 已拆 R1-030…042，实现见后续提交。lunaStamp=false | BC-023…032/199 |
+| IT-3 计划今日 | R1-030…040 代码已落地；R1-041/042 浏览器与干净库未跑。lunaStamp=false | BC-023…032/199 |
 | IT-4 练错复 | 未拆卡 TODO | BC-033…062/203 |
 | IT-5 报告 | 未拆卡 TODO | BC-063…070 |
 | IT-6 双审 | 未拆卡 TODO | BC-071…084/200/204…207 |
@@ -84,12 +84,14 @@
 | 编号 | 原因 | 证据 | 日期 |
 |---|---|---|---|
 | support-real-gateway.e2e | 真实 Gateway 工单 UAT 要向 `https://127.0.0.1:18087` 注册。本轮 `pnpm services:run` 的 IAM 是 HTTP，HTTPS 连接失败。r1 测试 CA 不在磁盘上。按约束不把证书写入 macOS 钥匙串，也不改该用例去忽略证书错误 | `evidence/redesign/2026-10-10/unit-tests-r2/report.md`；失败阶段 `register`，`registered:false`，清理 `ACCOUNT:0` | 2026-10-10 |
+| R1-041 / R1-042 | IT-3 真实 Chrome 走查和干净库重放要向 HTTPS IAM 注册。本轮监督进程里的 IAM 只听 HTTP `127.0.0.1:18087`。磁盘上没有 `iam-server.p12` / `test-ca.pem`，`tls-harness` 不能签发。按约束不把证书写入 macOS 钥匙串，也不把客户端改成忽略证书或改打 HTTP。因此没有新建专用 schema，也没有声称报告→横幅→今日任务的浏览器链通过 | `evidence/redesign/2026-10-10/it3-plan-today/report.md` | 2026-10-10 |
+| local-development-gates | 已过：`pnpm typecheck`（turbo 7/7，exit 0）、`pnpm test`（turbo 只执行 `@englishflow/i18n` 11 项，缓存命中，exit 0；它不包含两端顶层 299 项）、`pnpm contracts:validate`（468 operations，exit 0）、`pnpm dod:check`（5 项 PASS，`strict:false`，exit 0）。未整跑：`pnpm build`、mobile `build:h5` / `build:app`、`mvn -B -ntp -f pom.xml test`、`pnpm test:p1r`。全量 Maven 会连共享库 `127.0.0.1:13306` 的 `iam_service` 等 schema，本轮不在共享库上跑集成上下文，也不为它新建或删除库。P1R 单文件 4 项失败在 `eee50c76` 上同样存在，不改冻结 hash。文档写明 2026-10-06 的 P1R 完整回归仍有 26 项失败 | `evidence/redesign/2026-10-10/it3-plan-today/report.md` | 2026-10-10 |
 
 ## 5. 轮次记录
 
 | 轮次 | screen | 范围 | 结果 |
 |---|---|---|---|
 | r1 | cs-r1 | IT-1 具名门补齐与复检 | 浏览器与 R1-014 PASS；自审 PASS_WITH_GAPS；未出站、未签 |
-| r2 | cs-r2 | 顶层 Node 测试修复；IT-3 已拆 R1-030…042，实现见后续提交 | 292 项中 291 通过；`support-real-gateway.e2e` 因 IAM 只有 HTTP 记入跳过。`lunaStamp` 仍为 false |
+| r2 | cs-r2 | 顶层 Node 测试修复；IT-3 拆成 R1-030…042 并落地 R1-030…040 | 同一命令现为 299 项、298 通过、1 失败，失败文件仍是 `support-real-gateway.e2e`。R1-041/042 因 IAM 只有 HTTP 未跑浏览器和干净库。全仓 local-development 门禁未整跑。`lunaStamp` 仍为 false |
 
 旧 grok 会话 PID 59062（01a120cd…）推送 e7cd6dd1 后空闲，保留运行但不再使用。

@@ -1,0 +1,68 @@
+{
+  "kind": "R2_IT3_PLAN_TODAY",
+  "date": "2026-10-10",
+  "accepted": false,
+  "lunaStamp": false,
+  "it3Outbound": false,
+  "cardsDefined": ["R1-030", "R1-031", "R1-032", "R1-033", "R1-034", "R1-035", "R1-036", "R1-037", "R1-038", "R1-039", "R1-040", "R1-041", "R1-042"],
+  "codeLanded": ["R1-030", "R1-031", "R1-032", "R1-033", "R1-034", "R1-035", "R1-036", "R1-037", "R1-038", "R1-039", "R1-040"],
+  "notRun": ["R1-041", "R1-042"],
+  "nodeGate": {
+    "command": "node --test --test-concurrency=1 apps/mobile/tests/*.mjs apps/learner-web/tests/*.mjs",
+    "node": "v20.19.5",
+    "tests": 299,
+    "pass": 298,
+    "fail": 1,
+    "failedFile": "apps/mobile/tests/support-real-gateway.e2e.mjs",
+    "durationMs": 89417,
+    "exitCode": 1
+  },
+  "java": {
+    "learningServiceTests": 12,
+    "learningServiceFailures": 0,
+    "gatewayParityTests": 6,
+    "gatewayParityFailures": 0
+  },
+  "contracts": {
+    "mergeCheck": "28 OpenAPI fragments, 436 routes",
+    "generateCheck": "5 generated files",
+    "validateExitCode": 0,
+    "validateOperations": 468
+  },
+  "typecheck": {
+    "command": "pnpm typecheck",
+    "turboTasksSuccessful": 7,
+    "exitCode": 0
+  },
+  "pnpmTest": {
+    "command": "pnpm test",
+    "note": "turbo ran only @englishflow/i18n, 11 pass, cache hit. It does not include the 299 app tests.",
+    "exitCode": 0
+  },
+  "dodCheck": {
+    "command": "pnpm dod:check",
+    "pass": 5,
+    "fail": 0,
+    "strict": false,
+    "exitCode": 0
+  },
+  "p1rGatewayContractFile": {
+    "tests": 38,
+    "pass": 34,
+    "fail": 4,
+    "sameFailuresOnCommit": "eee50c76"
+  },
+  "learnerWebSmoke": {
+    "status": 200,
+    "pageerrors": 0,
+    "overflowOnLogin": true,
+    "countedAsStationPass": false
+  },
+  "cleanup": {
+    "stoppedPgids": [73799, 67240, 20695],
+    "schemasCreated": [],
+    "schemasDropped": [],
+    "qidaUntouched": true,
+    "yuxuexingInfraLeftRunning": true
+  }
+}
