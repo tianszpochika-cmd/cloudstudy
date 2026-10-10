@@ -1,0 +1,1001 @@
+{
+  "summary": "PASS",
+  "accepted": false,
+  "it1Outbound": false,
+  "lunaStamp": false,
+  "historicalRejectUnchanged": true,
+  "cards": [
+    {
+      "card": "R1-001",
+      "status": "PASS"
+    },
+    {
+      "card": "R1-002",
+      "status": "PASS"
+    },
+    {
+      "card": "R1-003",
+      "status": "PASS"
+    },
+    {
+      "card": "R1-004",
+      "status": "PASS"
+    },
+    {
+      "card": "R1-005",
+      "status": "PASS"
+    },
+    {
+      "card": "R1-006",
+      "status": "PASS"
+    },
+    {
+      "card": "R1-007",
+      "status": "PASS"
+    },
+    {
+      "card": "R1-008",
+      "status": "PASS"
+    },
+    {
+      "card": "R1-009",
+      "status": "PASS"
+    },
+    {
+      "card": "R1-010",
+      "status": "PASS"
+    },
+    {
+      "card": "R1-011",
+      "status": "PASS"
+    },
+    {
+      "card": "R1-012",
+      "status": "PASS"
+    },
+    {
+      "card": "R1-013",
+      "status": "PASS"
+    },
+    {
+      "card": "R1-015",
+      "status": "PASS"
+    },
+    {
+      "card": "R1-016",
+      "status": "PASS"
+    },
+    {
+      "card": "R1-017",
+      "status": "PASS"
+    },
+    {
+      "card": "R1-014",
+      "status": "PASS"
+    }
+  ],
+  "it2": "PASS",
+  "steps": [
+    {
+      "name": "mysql-identity",
+      "status": "PASS",
+      "detail": {
+        "name": "/yuxuexing-local-mysql-1",
+        "image": "mysql:8.0",
+        "project": "yuxuexing-local",
+        "service": "mysql",
+        "status": "running",
+        "health": "healthy",
+        "port": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "13306"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ports-free",
+      "status": "PASS",
+      "detail": {
+        "occupied": []
+      }
+    },
+    {
+      "name": "four-owner-schemas",
+      "status": "PASS",
+      "detail": {
+        "iam": "r1_named_20261010_iam_c08e65d3",
+        "learner": "r1_named_20261010_lrn_c08e65d3",
+        "content": "r1_named_20261010_cnt_c08e65d3",
+        "assessment": "r1_named_20261010_asm_c08e65d3"
+      }
+    },
+    {
+      "name": "content-seed-own-schema",
+      "status": "PASS",
+      "detail": {
+        "seeded": "10",
+        "schema": "r1_named_20261010_cnt_c08e65d3"
+      }
+    },
+    {
+      "name": "placement-answer-key-loaded",
+      "status": "PASS",
+      "detail": {
+        "count": 10
+      }
+    },
+    {
+      "name": "gateway-high-risk-budget",
+      "status": "PASS",
+      "detail": {
+        "requestsPerWindow": 2000,
+        "scope": "evidence-process"
+      }
+    },
+    {
+      "name": "browser-ca-pinned-by-spki",
+      "status": "PASS",
+      "detail": {
+        "mode": "ignore-certificate-errors-spki-list",
+        "profile": "playwright-temporary"
+      }
+    },
+    {
+      "name": "official-home-1280x900",
+      "status": "PASS",
+      "detail": {
+        "status": 200,
+        "overflow": false,
+        "errors": [],
+        "courseOk": true,
+        "priceHonest": true
+      }
+    },
+    {
+      "name": "official-about-1280x900",
+      "status": "PASS",
+      "detail": {
+        "status": 200,
+        "overflow": false,
+        "errors": [],
+        "courseOk": true,
+        "priceHonest": true
+      }
+    },
+    {
+      "name": "official-announcements-1280x900",
+      "status": "PASS",
+      "detail": {
+        "status": 200,
+        "overflow": false,
+        "errors": [],
+        "courseOk": true,
+        "priceHonest": true
+      }
+    },
+    {
+      "name": "official-compliance-1280x900",
+      "status": "PASS",
+      "detail": {
+        "status": 200,
+        "overflow": false,
+        "errors": [],
+        "courseOk": true,
+        "priceHonest": true
+      }
+    },
+    {
+      "name": "official-courses-1280x900",
+      "status": "PASS",
+      "detail": {
+        "status": 200,
+        "overflow": false,
+        "errors": [],
+        "courseOk": true,
+        "priceHonest": true
+      }
+    },
+    {
+      "name": "official-download-1280x900",
+      "status": "PASS",
+      "detail": {
+        "status": 200,
+        "overflow": false,
+        "errors": [],
+        "courseOk": true,
+        "priceHonest": true
+      }
+    },
+    {
+      "name": "official-minors-1280x900",
+      "status": "PASS",
+      "detail": {
+        "status": 200,
+        "overflow": false,
+        "errors": [],
+        "courseOk": true,
+        "priceHonest": true
+      }
+    },
+    {
+      "name": "official-pricing-1280x900",
+      "status": "PASS",
+      "detail": {
+        "status": 200,
+        "overflow": false,
+        "errors": [],
+        "courseOk": true,
+        "priceHonest": true
+      }
+    },
+    {
+      "name": "official-privacy-1280x900",
+      "status": "PASS",
+      "detail": {
+        "status": 200,
+        "overflow": false,
+        "errors": [],
+        "courseOk": true,
+        "priceHonest": true
+      }
+    },
+    {
+      "name": "official-status-1280x900",
+      "status": "PASS",
+      "detail": {
+        "status": 200,
+        "overflow": false,
+        "errors": [],
+        "courseOk": true,
+        "priceHonest": true
+      }
+    },
+    {
+      "name": "official-terms-1280x900",
+      "status": "PASS",
+      "detail": {
+        "status": 200,
+        "overflow": false,
+        "errors": [],
+        "courseOk": true,
+        "priceHonest": true
+      }
+    },
+    {
+      "name": "official-cta-home-1280x900",
+      "status": "PASS",
+      "detail": {
+        "url": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome"
+      }
+    },
+    {
+      "name": "official-cta-courses-1280x900",
+      "status": "PASS",
+      "detail": {
+        "url": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome"
+      }
+    },
+    {
+      "name": "official-home-390x844",
+      "status": "PASS",
+      "detail": {
+        "status": 200,
+        "overflow": false,
+        "errors": [],
+        "courseOk": true,
+        "priceHonest": true
+      }
+    },
+    {
+      "name": "official-about-390x844",
+      "status": "PASS",
+      "detail": {
+        "status": 200,
+        "overflow": false,
+        "errors": [],
+        "courseOk": true,
+        "priceHonest": true
+      }
+    },
+    {
+      "name": "official-announcements-390x844",
+      "status": "PASS",
+      "detail": {
+        "status": 200,
+        "overflow": false,
+        "errors": [],
+        "courseOk": true,
+        "priceHonest": true
+      }
+    },
+    {
+      "name": "official-compliance-390x844",
+      "status": "PASS",
+      "detail": {
+        "status": 200,
+        "overflow": false,
+        "errors": [],
+        "courseOk": true,
+        "priceHonest": true
+      }
+    },
+    {
+      "name": "official-courses-390x844",
+      "status": "PASS",
+      "detail": {
+        "status": 200,
+        "overflow": false,
+        "errors": [],
+        "courseOk": true,
+        "priceHonest": true
+      }
+    },
+    {
+      "name": "official-download-390x844",
+      "status": "PASS",
+      "detail": {
+        "status": 200,
+        "overflow": false,
+        "errors": [],
+        "courseOk": true,
+        "priceHonest": true
+      }
+    },
+    {
+      "name": "official-minors-390x844",
+      "status": "PASS",
+      "detail": {
+        "status": 200,
+        "overflow": false,
+        "errors": [],
+        "courseOk": true,
+        "priceHonest": true
+      }
+    },
+    {
+      "name": "official-pricing-390x844",
+      "status": "PASS",
+      "detail": {
+        "status": 200,
+        "overflow": false,
+        "errors": [],
+        "courseOk": true,
+        "priceHonest": true
+      }
+    },
+    {
+      "name": "official-privacy-390x844",
+      "status": "PASS",
+      "detail": {
+        "status": 200,
+        "overflow": false,
+        "errors": [],
+        "courseOk": true,
+        "priceHonest": true
+      }
+    },
+    {
+      "name": "official-status-390x844",
+      "status": "PASS",
+      "detail": {
+        "status": 200,
+        "overflow": false,
+        "errors": [],
+        "courseOk": true,
+        "priceHonest": true
+      }
+    },
+    {
+      "name": "official-terms-390x844",
+      "status": "PASS",
+      "detail": {
+        "status": 200,
+        "overflow": false,
+        "errors": [],
+        "courseOk": true,
+        "priceHonest": true
+      }
+    },
+    {
+      "name": "official-cta-home-390x844",
+      "status": "PASS",
+      "detail": {
+        "url": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome"
+      }
+    },
+    {
+      "name": "official-cta-courses-390x844",
+      "status": "PASS",
+      "detail": {
+        "url": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome"
+      }
+    },
+    {
+      "name": "register-web-1280x900",
+      "status": "PASS",
+      "detail": {
+        "method": "POST",
+        "origin": "https://127.0.0.1:18087",
+        "path": "/api/v1/auth/register",
+        "status": 201
+      }
+    },
+    {
+      "name": "replay-same-web-1280x900",
+      "status": "PASS",
+      "detail": {
+        "status": 201,
+        "sameSession": true,
+        "accounts": "1"
+      }
+    },
+    {
+      "name": "replay-conflict-web-1280x900",
+      "status": "PASS",
+      "detail": {
+        "status": 409,
+        "accounts": "1"
+      }
+    },
+    {
+      "name": "copy-gate-web-1280x900",
+      "status": "PASS",
+      "detail": {
+        "missing": [],
+        "blocked": []
+      }
+    },
+    {
+      "name": "copy-consent-web-1280x900",
+      "status": "PASS",
+      "detail": {
+        "disabledBefore": true,
+        "missing": [],
+        "labels": [],
+        "version": "b30-consent-v1"
+      }
+    },
+    {
+      "name": "consent-signed-web-1280x900",
+      "status": "PASS",
+      "detail": {
+        "count": 3,
+        "statuses": [
+          200,
+          200,
+          200
+        ]
+      }
+    },
+    {
+      "name": "profile-fields-web",
+      "status": "PASS",
+      "detail": {
+        "fields": [],
+        "optional": true
+      }
+    },
+    {
+      "name": "button-to-placement-web",
+      "status": "PASS",
+      "detail": {
+        "url": "http://127.0.0.1:18180/assessment"
+      }
+    },
+    {
+      "name": "refresh-web-1280x900",
+      "status": "PASS",
+      "detail": {
+        "count": 2
+      }
+    },
+    {
+      "name": "login-web-1280x900",
+      "status": "PASS",
+      "detail": {
+        "method": "POST",
+        "origin": "https://127.0.0.1:18087",
+        "path": "/api/v1/auth/login",
+        "status": 200
+      }
+    },
+    {
+      "name": "guide-bar-web-1280x900",
+      "status": "PASS",
+      "detail": {
+        "copyOk": true,
+        "url": "http://127.0.0.1:18180/assessment"
+      }
+    },
+    {
+      "name": "readback-web-1280x900",
+      "status": "PASS",
+      "detail": {
+        "url": "http://127.0.0.1:18180/onboarding"
+      }
+    },
+    {
+      "name": "it2-ten-item-score",
+      "status": "PASS",
+      "detail": {
+        "outcomes": [
+          {
+            "index": 1,
+            "expected": "FULL",
+            "matched": true
+          },
+          {
+            "index": 2,
+            "expected": "ZERO",
+            "matched": true
+          },
+          {
+            "index": 3,
+            "expected": "FULL",
+            "matched": true
+          },
+          {
+            "index": 4,
+            "expected": "ZERO",
+            "matched": true
+          },
+          {
+            "index": 5,
+            "expected": "FULL",
+            "matched": true
+          },
+          {
+            "index": 6,
+            "expected": "ZERO",
+            "matched": true
+          },
+          {
+            "index": 7,
+            "expected": "FULL",
+            "matched": true
+          },
+          {
+            "index": 8,
+            "expected": "ZERO",
+            "matched": true
+          },
+          {
+            "index": 9,
+            "expected": "FULL",
+            "matched": true
+          },
+          {
+            "index": 10,
+            "expected": "ZERO",
+            "matched": true
+          }
+        ],
+        "report": "答对 5 题，共 10 题"
+      }
+    },
+    {
+      "name": "it2-public-retest",
+      "status": "PASS",
+      "detail": {
+        "status": 201,
+        "url": "http://127.0.0.1:18180/assessment"
+      }
+    },
+    {
+      "name": "register-h5-390x844",
+      "status": "PASS",
+      "detail": {
+        "method": "POST",
+        "origin": "https://127.0.0.1:18087",
+        "path": "/api/v1/auth/register",
+        "status": 201
+      }
+    },
+    {
+      "name": "replay-same-h5-390x844",
+      "status": "PASS",
+      "detail": {
+        "status": 201,
+        "sameSession": true,
+        "accounts": "1"
+      }
+    },
+    {
+      "name": "replay-conflict-h5-390x844",
+      "status": "PASS",
+      "detail": {
+        "status": 409,
+        "accounts": "1"
+      }
+    },
+    {
+      "name": "copy-gate-h5-390x844",
+      "status": "PASS",
+      "detail": {
+        "missing": [],
+        "blocked": []
+      }
+    },
+    {
+      "name": "copy-consent-h5-390x844",
+      "status": "PASS",
+      "detail": {
+        "disabledBefore": true,
+        "missing": [],
+        "labels": [],
+        "version": "b30-consent-v1"
+      }
+    },
+    {
+      "name": "consent-signed-h5-390x844",
+      "status": "PASS",
+      "detail": {
+        "count": 3,
+        "statuses": [
+          200,
+          200,
+          200
+        ]
+      }
+    },
+    {
+      "name": "profile-fields-h5",
+      "status": "PASS",
+      "detail": {
+        "fields": [],
+        "optional": false
+      }
+    },
+    {
+      "name": "button-to-placement-h5",
+      "status": "PASS",
+      "detail": {
+        "url": "http://127.0.0.1:18183/#/pages/assessment/assessment"
+      }
+    },
+    {
+      "name": "refresh-h5-390x844",
+      "status": "PASS",
+      "detail": {
+        "count": 2
+      }
+    },
+    {
+      "name": "login-h5-390x844",
+      "status": "PASS",
+      "detail": {
+        "method": "POST",
+        "origin": "https://127.0.0.1:18087",
+        "path": "/api/v1/auth/login",
+        "status": 200
+      }
+    },
+    {
+      "name": "guide-bar-h5-390x844",
+      "status": "PASS",
+      "detail": {
+        "copyOk": true,
+        "url": "http://127.0.0.1:18183/#/pages/assessment/assessment"
+      }
+    },
+    {
+      "name": "readback-h5-390x844",
+      "status": "PASS",
+      "detail": {
+        "url": "http://127.0.0.1:18183/#/pages/onboarding/onboarding"
+      }
+    },
+    {
+      "name": "withdraw-403-h5-390x844",
+      "status": "PASS",
+      "detail": {
+        "withdraw": 200,
+        "withdrawn": true,
+        "learning": 403,
+        "consentMentioned": true
+      }
+    },
+    {
+      "name": "register-web-390x844",
+      "status": "PASS",
+      "detail": {
+        "method": "POST",
+        "origin": "https://127.0.0.1:18087",
+        "path": "/api/v1/auth/register",
+        "status": 201
+      }
+    },
+    {
+      "name": "replay-same-web-390x844",
+      "status": "PASS",
+      "detail": {
+        "status": 201,
+        "sameSession": true,
+        "accounts": "1"
+      }
+    },
+    {
+      "name": "replay-conflict-web-390x844",
+      "status": "PASS",
+      "detail": {
+        "status": 409,
+        "accounts": "1"
+      }
+    },
+    {
+      "name": "copy-gate-web-390x844",
+      "status": "PASS",
+      "detail": {
+        "missing": [],
+        "blocked": []
+      }
+    },
+    {
+      "name": "minor-client-blocked-web-390x844",
+      "status": "PASS",
+      "detail": {
+        "disabled": true
+      }
+    },
+    {
+      "name": "minor-server-web-390x844",
+      "status": "PASS",
+      "detail": {
+        "status": 200,
+        "rejected": true
+      }
+    },
+    {
+      "name": "minor-forbidden-web-390x844",
+      "status": "PASS",
+      "detail": {
+        "url": "http://127.0.0.1:18180/forbidden"
+      }
+    },
+    {
+      "name": "minor-exits-web-390x844",
+      "status": "PASS",
+      "detail": {
+        "url": "http://127.0.0.1:18180/support"
+      }
+    },
+    {
+      "name": "login-web-390x844",
+      "status": "PASS",
+      "detail": {
+        "method": "POST",
+        "origin": "https://127.0.0.1:18087",
+        "path": "/api/v1/auth/login",
+        "status": 200
+      }
+    },
+    {
+      "name": "reentry-web-390x844",
+      "status": "PASS",
+      "detail": {
+        "url": "http://127.0.0.1:18180/forbidden",
+        "yearLeft": 0,
+        "retryLeft": 0,
+        "bounced": true
+      }
+    },
+    {
+      "name": "minor-db-web-390x844",
+      "status": "PASS",
+      "detail": {
+        "gate": "REJECTED",
+        "accountStatus": "ACTIVE",
+        "sessions": "ACTIVE"
+      }
+    },
+    {
+      "name": "register-h5-1280x900",
+      "status": "PASS",
+      "detail": {
+        "method": "POST",
+        "origin": "https://127.0.0.1:18087",
+        "path": "/api/v1/auth/register",
+        "status": 201
+      }
+    },
+    {
+      "name": "replay-same-h5-1280x900",
+      "status": "PASS",
+      "detail": {
+        "status": 201,
+        "sameSession": true,
+        "accounts": "1"
+      }
+    },
+    {
+      "name": "replay-conflict-h5-1280x900",
+      "status": "PASS",
+      "detail": {
+        "status": 409,
+        "accounts": "1"
+      }
+    },
+    {
+      "name": "copy-gate-h5-1280x900",
+      "status": "PASS",
+      "detail": {
+        "missing": [],
+        "blocked": []
+      }
+    },
+    {
+      "name": "minor-client-blocked-h5-1280x900",
+      "status": "PASS",
+      "detail": {
+        "disabled": true
+      }
+    },
+    {
+      "name": "minor-server-h5-1280x900",
+      "status": "PASS",
+      "detail": {
+        "status": 200,
+        "rejected": true
+      }
+    },
+    {
+      "name": "minor-forbidden-h5-1280x900",
+      "status": "PASS",
+      "detail": {
+        "url": "http://127.0.0.1:18183/?reload=1791638480551#/pages/forbidden/forbidden"
+      }
+    },
+    {
+      "name": "minor-exits-h5-1280x900",
+      "status": "PASS",
+      "detail": {
+        "url": "http://127.0.0.1:18183/#/pages/support/support"
+      }
+    },
+    {
+      "name": "login-h5-1280x900",
+      "status": "PASS",
+      "detail": {
+        "method": "POST",
+        "origin": "https://127.0.0.1:18087",
+        "path": "/api/v1/auth/login",
+        "status": 200
+      }
+    },
+    {
+      "name": "reentry-h5-1280x900",
+      "status": "PASS",
+      "detail": {
+        "url": "http://127.0.0.1:18183/?reentry=1791638481669#/pages/forbidden/forbidden",
+        "yearLeft": 0,
+        "retryLeft": 0,
+        "bounced": true
+      }
+    },
+    {
+      "name": "minor-db-h5-1280x900",
+      "status": "PASS",
+      "detail": {
+        "gate": "REJECTED",
+        "accountStatus": "ACTIVE",
+        "sessions": "ACTIVE"
+      }
+    },
+    {
+      "name": "reset-web-1280x900",
+      "status": "PASS",
+      "detail": {
+        "method": "POST",
+        "origin": "https://127.0.0.1:18087",
+        "path": "/api/v1/auth/password-reset/request",
+        "status": 202,
+        "account": "existing"
+      }
+    },
+    {
+      "name": "reset-web-390x844-unknown",
+      "status": "PASS",
+      "detail": {
+        "method": "POST",
+        "origin": "https://127.0.0.1:18087",
+        "path": "/api/v1/auth/password-reset/request",
+        "status": 202,
+        "account": "unknown"
+      }
+    },
+    {
+      "name": "reset-h5-390x844",
+      "status": "PASS",
+      "detail": {
+        "method": "POST",
+        "origin": "https://127.0.0.1:18087",
+        "path": "/api/v1/auth/password-reset/request",
+        "status": 202,
+        "account": "existing"
+      }
+    },
+    {
+      "name": "reset-h5-1280x900-unknown",
+      "status": "PASS",
+      "detail": {
+        "method": "POST",
+        "origin": "https://127.0.0.1:18087",
+        "path": "/api/v1/auth/password-reset/request",
+        "status": 202,
+        "account": "unknown"
+      }
+    },
+    {
+      "name": "kick-login-web-kicks-h5",
+      "status": "PASS",
+      "detail": {
+        "keeper": 200,
+        "kicked": 200
+      }
+    },
+    {
+      "name": "kick-request-web-kicks-h5",
+      "status": "PASS",
+      "detail": {
+        "status": 200,
+        "origin": "http://127.0.0.1:18070",
+        "path": "/api/v1/iam/devices/b400ee95-9bf2-4cde-b661-f215dfe02312/kickout"
+      }
+    },
+    {
+      "name": "kick-401-web-kicks-h5",
+      "status": "PASS",
+      "detail": {
+        "origin": "https://127.0.0.1:18087",
+        "path": "/api/v1/auth/token/refresh",
+        "status": 401,
+        "url": "http://127.0.0.1:18183/?kicked=1791638486032#/pages/login/login?returnTo=%252Fpages%252Fhome%252Fhome"
+      }
+    },
+    {
+      "name": "kick-login-h5-kicks-web",
+      "status": "PASS",
+      "detail": {
+        "keeper": 200,
+        "kicked": 200
+      }
+    },
+    {
+      "name": "kick-request-h5-kicks-web",
+      "status": "PASS",
+      "detail": {
+        "status": 200,
+        "origin": "http://127.0.0.1:18070",
+        "path": "/api/v1/iam/devices/c93ea196-d4ea-420c-8968-1f3440f1b16a/kickout"
+      }
+    },
+    {
+      "name": "kick-401-h5-kicks-web",
+      "status": "PASS",
+      "detail": {
+        "origin": "https://127.0.0.1:18087",
+        "path": "/api/v1/auth/token/refresh",
+        "status": 401,
+        "url": "http://127.0.0.1:18180/login?redirect=/home"
+      }
+    },
+    {
+      "name": "passwords-and-refresh-stay-off-gateway",
+      "status": "PASS",
+      "detail": {
+        "leaked": []
+      }
+    }
+  ],
+  "dropped": [
+    "r1_named_20261010_iam_c08e65d3=0",
+    "r1_named_20261010_lrn_c08e65d3=0",
+    "r1_named_20261010_cnt_c08e65d3=0",
+    "r1_named_20261010_asm_c08e65d3=0"
+  ],
+  "retainedSchemasLeft": "2",
+  "listeners": [],
+  "qidaUnchanged": true
+}

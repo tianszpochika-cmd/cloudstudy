@@ -1,0 +1,1740 @@
+[
+  {
+    "method": "POST",
+    "origin": "https://127.0.0.1:18087",
+    "path": "/api/v1/auth/register",
+    "status": 201,
+    "ids": {
+      "sessionId": "75959403-0bda-43e2-b3a8-fbbcbd1931be",
+      "deviceId": "965274da-1e1b-4f49-8e79-4267ce7b9d20"
+    }
+  },
+  {
+    "method": "POST",
+    "origin": "https://127.0.0.1:18087",
+    "path": "/api/v1/auth/register",
+    "status": 201,
+    "ids": {
+      "sessionId": "75959403-0bda-43e2-b3a8-fbbcbd1931be",
+      "deviceId": "965274da-1e1b-4f49-8e79-4267ce7b9d20"
+    }
+  },
+  {
+    "method": "POST",
+    "origin": "https://127.0.0.1:18087",
+    "path": "/api/v1/auth/register",
+    "status": 409,
+    "ids": {
+      "errorCode": "IDEMPOTENCY_CONFLICT"
+    },
+    "error": "{\"error\":{\"errorCode\":\"IDEMPOTENCY_CONFLICT\",\"message\":\"iam.idempotency.key_reused\",\"retryable\":false},\"meta\":{\"requestId\":\"440e1caa-3a55-4b61-9128-caec938f7666\",\"traceId\":\"085b7da"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/permissions",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/principal/me",
+    "status": 200
+  },
+  {
+    "method": "POST",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/adult-gate",
+    "status": 200,
+    "ids": {
+      "status": "PASSED"
+    }
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/principal/me",
+    "status": 200
+  },
+  {
+    "method": "PUT",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/consents",
+    "status": 200,
+    "ids": {
+      "status": "CURRENT"
+    }
+  },
+  {
+    "method": "PUT",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/consents",
+    "status": 200,
+    "ids": {
+      "status": "CURRENT"
+    }
+  },
+  {
+    "method": "PUT",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/consents",
+    "status": 200,
+    "ids": {
+      "status": "CURRENT"
+    }
+  },
+  {
+    "method": "POST",
+    "origin": "https://127.0.0.1:18087",
+    "path": "/api/v1/auth/token/refresh",
+    "status": 200,
+    "ids": {
+      "sessionId": "75959403-0bda-43e2-b3a8-fbbcbd1931be",
+      "deviceId": "965274da-1e1b-4f49-8e79-4267ce7b9d20"
+    }
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/permissions",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/principal/me",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/principal/me",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/targets",
+    "status": 404,
+    "ids": {}
+  },
+  {
+    "method": "PUT",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/consents",
+    "status": 200,
+    "ids": {
+      "status": "CURRENT"
+    }
+  },
+  {
+    "method": "PUT",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/consents",
+    "status": 200,
+    "ids": {
+      "status": "CURRENT"
+    }
+  },
+  {
+    "method": "PUT",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/consents",
+    "status": 200,
+    "ids": {
+      "status": "CURRENT"
+    }
+  },
+  {
+    "method": "POST",
+    "origin": "https://127.0.0.1:18087",
+    "path": "/api/v1/auth/token/refresh",
+    "status": 200,
+    "ids": {
+      "sessionId": "75959403-0bda-43e2-b3a8-fbbcbd1931be",
+      "deviceId": "965274da-1e1b-4f49-8e79-4267ce7b9d20"
+    }
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/permissions",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/preferences",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/targets",
+    "status": 404,
+    "ids": {}
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/profile",
+    "status": 200
+  },
+  {
+    "method": "PATCH",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/profile",
+    "status": 200,
+    "ids": {
+      "status": "ONBOARDING"
+    }
+  },
+  {
+    "method": "PUT",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/targets",
+    "status": 200,
+    "ids": {
+      "status": "ACTIVE"
+    }
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/profile",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/preferences",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/onboarding/options",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/targets",
+    "status": 200,
+    "ids": {
+      "status": "ACTIVE"
+    }
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/principal/me",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/targets",
+    "status": 200,
+    "ids": {
+      "status": "ACTIVE"
+    }
+  },
+  {
+    "method": "POST",
+    "origin": "https://127.0.0.1:18087",
+    "path": "/api/v1/auth/login",
+    "status": 200,
+    "ids": {
+      "sessionId": "81dd570d-01ea-40e7-985c-70984e530980",
+      "deviceId": "6a1c9c1d-0463-47db-a24d-6eb3f6585233"
+    }
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/permissions",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/principal/me",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/targets",
+    "status": 200,
+    "error": "unreadable"
+  },
+  {
+    "method": "POST",
+    "origin": "https://127.0.0.1:18087",
+    "path": "/api/v1/auth/token/refresh",
+    "status": 200,
+    "ids": {
+      "sessionId": "81dd570d-01ea-40e7-985c-70984e530980",
+      "deviceId": "6a1c9c1d-0463-47db-a24d-6eb3f6585233"
+    }
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/principal/me",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/permissions",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/principal/me",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/targets",
+    "status": 200,
+    "ids": {
+      "status": "ACTIVE"
+    }
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/home",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/content/learner/catalog",
+    "status": 200
+  },
+  {
+    "method": "POST",
+    "origin": "https://127.0.0.1:18087",
+    "path": "/api/v1/auth/login",
+    "status": 200,
+    "ids": {
+      "sessionId": "0cb4234f-e0e9-4d73-9199-51840c437a06",
+      "deviceId": "5c5a742c-538a-41bc-8ea8-9147c7826635"
+    }
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/permissions",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/principal/me",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/targets",
+    "status": 503,
+    "ids": {
+      "errorCode": "SERVICE_UNAVAILABLE"
+    },
+    "error": "{\"error\":{\"errorCode\":\"SERVICE_UNAVAILABLE\",\"message\":\"The upstream service is unavailable.\",\"retryable\":true},\"meta\":{\"requestId\":\"req-199612b4763e4223a97bc2bfc105cc9a\",\"traceId\":"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/home",
+    "status": 503,
+    "ids": {
+      "errorCode": "SERVICE_UNAVAILABLE"
+    },
+    "error": "{\"error\":{\"errorCode\":\"SERVICE_UNAVAILABLE\",\"message\":\"The upstream service is unavailable.\",\"retryable\":true},\"meta\":{\"requestId\":\"req-9abb2d1880aa4997a373b35e7aef6c80\",\"traceId\":"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/content/learner/catalog",
+    "status": 200
+  },
+  {
+    "method": "POST",
+    "origin": "https://127.0.0.1:18087",
+    "path": "/api/v1/auth/token/refresh",
+    "status": 200,
+    "ids": {
+      "sessionId": "0cb4234f-e0e9-4d73-9199-51840c437a06",
+      "deviceId": "5c5a742c-538a-41bc-8ea8-9147c7826635"
+    }
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/principal/me",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/permissions",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/principal/me",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/targets",
+    "status": 200,
+    "ids": {
+      "status": "ACTIVE"
+    }
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/onboarding/options",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/profile",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/preferences",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/targets",
+    "status": 200,
+    "ids": {
+      "status": "ACTIVE"
+    }
+  },
+  {
+    "method": "POST",
+    "origin": "https://127.0.0.1:18087",
+    "path": "/api/v1/auth/token/refresh",
+    "status": 200,
+    "ids": {
+      "sessionId": "0cb4234f-e0e9-4d73-9199-51840c437a06",
+      "deviceId": "5c5a742c-538a-41bc-8ea8-9147c7826635"
+    }
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/principal/me",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/permissions",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/principal/me",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/targets",
+    "status": 200,
+    "ids": {
+      "status": "ACTIVE"
+    }
+  },
+  {
+    "method": "POST",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/assessment/placement/sessions",
+    "status": 201,
+    "ids": {
+      "sessionId": "asess_b7e5f4ac94e44aecbd88cac721a2d912",
+      "status": "CREATED"
+    }
+  },
+  {
+    "method": "POST",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/assessment/placement/sessions/asess_b7e5f4ac94e44aecbd88cac721a2d912/responses",
+    "status": 200,
+    "ids": {
+      "sessionId": "asess_b7e5f4ac94e44aecbd88cac721a2d912",
+      "status": "IN_PROGRESS"
+    }
+  },
+  {
+    "method": "POST",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/assessment/placement/sessions/asess_b7e5f4ac94e44aecbd88cac721a2d912/responses",
+    "status": 200,
+    "ids": {
+      "sessionId": "asess_b7e5f4ac94e44aecbd88cac721a2d912",
+      "status": "IN_PROGRESS"
+    }
+  },
+  {
+    "method": "POST",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/assessment/placement/sessions/asess_b7e5f4ac94e44aecbd88cac721a2d912/responses",
+    "status": 200,
+    "ids": {
+      "sessionId": "asess_b7e5f4ac94e44aecbd88cac721a2d912",
+      "status": "IN_PROGRESS"
+    }
+  },
+  {
+    "method": "POST",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/assessment/placement/sessions/asess_b7e5f4ac94e44aecbd88cac721a2d912/responses",
+    "status": 200,
+    "ids": {
+      "sessionId": "asess_b7e5f4ac94e44aecbd88cac721a2d912",
+      "status": "IN_PROGRESS"
+    }
+  },
+  {
+    "method": "POST",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/assessment/placement/sessions/asess_b7e5f4ac94e44aecbd88cac721a2d912/responses",
+    "status": 200,
+    "ids": {
+      "sessionId": "asess_b7e5f4ac94e44aecbd88cac721a2d912",
+      "status": "IN_PROGRESS"
+    }
+  },
+  {
+    "method": "POST",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/assessment/placement/sessions/asess_b7e5f4ac94e44aecbd88cac721a2d912/responses",
+    "status": 200,
+    "ids": {
+      "sessionId": "asess_b7e5f4ac94e44aecbd88cac721a2d912",
+      "status": "IN_PROGRESS"
+    }
+  },
+  {
+    "method": "POST",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/assessment/placement/sessions/asess_b7e5f4ac94e44aecbd88cac721a2d912/responses",
+    "status": 200,
+    "ids": {
+      "sessionId": "asess_b7e5f4ac94e44aecbd88cac721a2d912",
+      "status": "IN_PROGRESS"
+    }
+  },
+  {
+    "method": "POST",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/assessment/placement/sessions/asess_b7e5f4ac94e44aecbd88cac721a2d912/responses",
+    "status": 200,
+    "ids": {
+      "sessionId": "asess_b7e5f4ac94e44aecbd88cac721a2d912",
+      "status": "IN_PROGRESS"
+    }
+  },
+  {
+    "method": "POST",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/assessment/placement/sessions/asess_b7e5f4ac94e44aecbd88cac721a2d912/responses",
+    "status": 200,
+    "ids": {
+      "sessionId": "asess_b7e5f4ac94e44aecbd88cac721a2d912",
+      "status": "IN_PROGRESS"
+    }
+  },
+  {
+    "method": "POST",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/assessment/placement/sessions/asess_b7e5f4ac94e44aecbd88cac721a2d912/responses",
+    "status": 200,
+    "ids": {
+      "sessionId": "asess_b7e5f4ac94e44aecbd88cac721a2d912",
+      "status": "COMPLETED"
+    }
+  },
+  {
+    "method": "POST",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/assessment/placement/sessions/asess_b7e5f4ac94e44aecbd88cac721a2d912/retest",
+    "status": 201,
+    "ids": {
+      "sessionId": "asess_88e783fa2edd43d8b79472108cf3682c",
+      "status": "CREATED"
+    }
+  },
+  {
+    "method": "POST",
+    "origin": "https://127.0.0.1:18087",
+    "path": "/api/v1/auth/register",
+    "status": 201,
+    "ids": {
+      "sessionId": "5e44963b-27f7-4fb4-836a-b099740a9d52",
+      "deviceId": "29a75b54-22cc-41b0-9a8a-77ffb42b61a1"
+    }
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/permissions",
+    "status": 200
+  },
+  {
+    "method": "POST",
+    "origin": "https://127.0.0.1:18087",
+    "path": "/api/v1/auth/register",
+    "status": 201,
+    "ids": {
+      "sessionId": "5e44963b-27f7-4fb4-836a-b099740a9d52",
+      "deviceId": "29a75b54-22cc-41b0-9a8a-77ffb42b61a1"
+    }
+  },
+  {
+    "method": "POST",
+    "origin": "https://127.0.0.1:18087",
+    "path": "/api/v1/auth/register",
+    "status": 409,
+    "ids": {
+      "errorCode": "IDEMPOTENCY_CONFLICT"
+    },
+    "error": "{\"error\":{\"errorCode\":\"IDEMPOTENCY_CONFLICT\",\"message\":\"iam.idempotency.key_reused\",\"retryable\":false},\"meta\":{\"requestId\":\"8f0e3823-bfe9-484f-99ce-cae940309ceb\",\"traceId\":\"4522d06"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/principal/me",
+    "status": 200
+  },
+  {
+    "method": "POST",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/adult-gate",
+    "status": 200,
+    "ids": {
+      "status": "PASSED"
+    }
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/principal/me",
+    "status": 200
+  },
+  {
+    "method": "PUT",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/consents",
+    "status": 200,
+    "ids": {
+      "status": "CURRENT"
+    }
+  },
+  {
+    "method": "PUT",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/consents",
+    "status": 200,
+    "ids": {
+      "status": "CURRENT"
+    }
+  },
+  {
+    "method": "PUT",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/consents",
+    "status": 200,
+    "ids": {
+      "status": "CURRENT"
+    }
+  },
+  {
+    "method": "POST",
+    "origin": "https://127.0.0.1:18087",
+    "path": "/api/v1/auth/token/refresh",
+    "status": 200,
+    "ids": {
+      "sessionId": "5e44963b-27f7-4fb4-836a-b099740a9d52",
+      "deviceId": "29a75b54-22cc-41b0-9a8a-77ffb42b61a1"
+    }
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/permissions",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/principal/me",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/principal/me",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/targets",
+    "status": 404,
+    "ids": {}
+  },
+  {
+    "method": "PUT",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/consents",
+    "status": 200,
+    "ids": {
+      "status": "CURRENT"
+    }
+  },
+  {
+    "method": "PUT",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/consents",
+    "status": 200,
+    "ids": {
+      "status": "CURRENT"
+    }
+  },
+  {
+    "method": "PUT",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/consents",
+    "status": 200,
+    "ids": {
+      "status": "CURRENT"
+    }
+  },
+  {
+    "method": "POST",
+    "origin": "https://127.0.0.1:18087",
+    "path": "/api/v1/auth/token/refresh",
+    "status": 200,
+    "ids": {
+      "sessionId": "5e44963b-27f7-4fb4-836a-b099740a9d52",
+      "deviceId": "29a75b54-22cc-41b0-9a8a-77ffb42b61a1"
+    }
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/permissions",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/profile",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/preferences",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/targets",
+    "status": 404,
+    "ids": {}
+  },
+  {
+    "method": "PUT",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/targets",
+    "status": 200,
+    "ids": {
+      "status": "ACTIVE"
+    }
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/preferences",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/onboarding/options",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/profile",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/targets",
+    "status": 200,
+    "ids": {
+      "status": "ACTIVE"
+    }
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/principal/me",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/targets",
+    "status": 200,
+    "ids": {
+      "status": "ACTIVE"
+    }
+  },
+  {
+    "method": "POST",
+    "origin": "https://127.0.0.1:18087",
+    "path": "/api/v1/auth/login",
+    "status": 200,
+    "ids": {
+      "sessionId": "fcb7a388-2ee7-4769-a927-b6306d6f8d19",
+      "deviceId": "6550d090-5c89-456b-a83c-9ba3e5c1f48a"
+    }
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/permissions",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/principal/me",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/targets",
+    "status": 200,
+    "ids": {
+      "status": "ACTIVE"
+    }
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/profile",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/preferences",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/targets",
+    "status": 200,
+    "ids": {
+      "status": "ACTIVE"
+    }
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/content/learner/catalog",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/home",
+    "status": 200
+  },
+  {
+    "method": "POST",
+    "origin": "https://127.0.0.1:18087",
+    "path": "/api/v1/auth/login",
+    "status": 200,
+    "ids": {
+      "sessionId": "f6903c1b-a0e4-4df9-95dc-289946f44281",
+      "deviceId": "f75e6641-095a-4abc-a8b4-504bb81dffba"
+    }
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/permissions",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/principal/me",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/targets",
+    "status": 503,
+    "ids": {
+      "errorCode": "SERVICE_UNAVAILABLE"
+    },
+    "error": "{\"error\":{\"errorCode\":\"SERVICE_UNAVAILABLE\",\"message\":\"The upstream service is unavailable.\",\"retryable\":true},\"meta\":{\"requestId\":\"req-3a3685e5c4054cd4a1fb7b8d09ebd70f\",\"traceId\":"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/targets",
+    "status": 503,
+    "ids": {
+      "errorCode": "SERVICE_UNAVAILABLE"
+    },
+    "error": "{\"error\":{\"errorCode\":\"SERVICE_UNAVAILABLE\",\"message\":\"The upstream service is unavailable.\",\"retryable\":true},\"meta\":{\"requestId\":\"req-05a139f1c7d6475ba3552d47f128d107\",\"traceId\":"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/preferences",
+    "status": 503,
+    "ids": {
+      "errorCode": "SERVICE_UNAVAILABLE"
+    },
+    "error": "{\"error\":{\"errorCode\":\"SERVICE_UNAVAILABLE\",\"message\":\"The upstream service is unavailable.\",\"retryable\":true},\"meta\":{\"requestId\":\"req-2303a485dd30460e84ccf70154f40e3e\",\"traceId\":"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/profile",
+    "status": 503,
+    "ids": {
+      "errorCode": "SERVICE_UNAVAILABLE"
+    },
+    "error": "{\"error\":{\"errorCode\":\"SERVICE_UNAVAILABLE\",\"message\":\"The upstream service is unavailable.\",\"retryable\":true},\"meta\":{\"requestId\":\"req-86dc6ecbdfe949d78c125ecc1e1f5c7a\",\"traceId\":"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/preferences",
+    "status": 503,
+    "ids": {
+      "errorCode": "SERVICE_UNAVAILABLE"
+    },
+    "error": "{\"error\":{\"errorCode\":\"SERVICE_UNAVAILABLE\",\"message\":\"The upstream service is unavailable.\",\"retryable\":true},\"meta\":{\"requestId\":\"req-b5077e74b93c459f8093beae0272c6be\",\"traceId\":"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/targets",
+    "status": 503,
+    "ids": {
+      "errorCode": "SERVICE_UNAVAILABLE"
+    },
+    "error": "{\"error\":{\"errorCode\":\"SERVICE_UNAVAILABLE\",\"message\":\"The upstream service is unavailable.\",\"retryable\":true},\"meta\":{\"requestId\":\"req-5f108e2c9b314a7b855369e369a0ec1b\",\"traceId\":"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/profile",
+    "status": 503,
+    "ids": {
+      "errorCode": "SERVICE_UNAVAILABLE"
+    },
+    "error": "{\"error\":{\"errorCode\":\"SERVICE_UNAVAILABLE\",\"message\":\"The upstream service is unavailable.\",\"retryable\":true},\"meta\":{\"requestId\":\"req-62534bb7a64f4ba09c531b9dd82f2481\",\"traceId\":"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/targets",
+    "status": 503,
+    "ids": {
+      "errorCode": "SERVICE_UNAVAILABLE"
+    },
+    "error": "{\"error\":{\"errorCode\":\"SERVICE_UNAVAILABLE\",\"message\":\"The upstream service is unavailable.\",\"retryable\":true},\"meta\":{\"requestId\":\"req-08d1ea6018a44647a6660f4a3874d99c\",\"traceId\":"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/profile",
+    "status": 503,
+    "ids": {
+      "errorCode": "SERVICE_UNAVAILABLE"
+    },
+    "error": "{\"error\":{\"errorCode\":\"SERVICE_UNAVAILABLE\",\"message\":\"The upstream service is unavailable.\",\"retryable\":true},\"meta\":{\"requestId\":\"req-08621ed82dc7443da46dfc70519d1252\",\"traceId\":"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/preferences",
+    "status": 503,
+    "ids": {
+      "errorCode": "SERVICE_UNAVAILABLE"
+    },
+    "error": "{\"error\":{\"errorCode\":\"SERVICE_UNAVAILABLE\",\"message\":\"The upstream service is unavailable.\",\"retryable\":true},\"meta\":{\"requestId\":\"req-2296b1cae3884fbf8cdc7ce0d749fbcf\",\"traceId\":"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/principal/me",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/targets",
+    "status": 200,
+    "ids": {
+      "status": "ACTIVE"
+    }
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/preferences",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/profile",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/onboarding/options",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/targets",
+    "status": 200,
+    "ids": {
+      "status": "ACTIVE"
+    }
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/profile",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/preferences",
+    "status": 200
+  },
+  {
+    "method": "PUT",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/consents",
+    "status": 200,
+    "ids": {
+      "status": "REVALIDATION_REQUIRED"
+    }
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/targets",
+    "status": 200,
+    "ids": {
+      "status": "ACTIVE"
+    }
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/content/learner/catalog",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/home",
+    "status": 403,
+    "ids": {
+      "code": "CONSENT_REQUIRED"
+    },
+    "error": "{\"error\":{\"retryable\":false,\"code\":\"CONSENT_REQUIRED\",\"message\":\"learner operation denied: CONSENT_REQUIRED\"}}"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/targets",
+    "status": 403,
+    "ids": {
+      "code": "CONSENT_REQUIRED"
+    },
+    "error": "{\"error\":{\"retryable\":false,\"code\":\"CONSENT_REQUIRED\",\"message\":\"learner operation denied: CONSENT_REQUIRED\"}}"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/principal/me",
+    "status": 401,
+    "ids": {
+      "errorCode": "AUTH_REFRESH_TOKEN_REVOKED"
+    },
+    "error": "{\"error\":{\"errorCode\":\"AUTH_REFRESH_TOKEN_REVOKED\",\"message\":\"iam.session.revoked\",\"retryable\":false},\"meta\":{\"requestId\":\"req-f4a3c16c8e674e31ba7eb77c1a6861a5\",\"traceId\":\"3479d050"
+  },
+  {
+    "method": "POST",
+    "origin": "https://127.0.0.1:18087",
+    "path": "/api/v1/auth/register",
+    "status": 201,
+    "ids": {
+      "sessionId": "906f62eb-6628-4f8e-8448-4532d8c8282c",
+      "deviceId": "e5a30612-bebc-46f7-beb0-4815db9c8593"
+    }
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/permissions",
+    "status": 200
+  },
+  {
+    "method": "POST",
+    "origin": "https://127.0.0.1:18087",
+    "path": "/api/v1/auth/register",
+    "status": 201,
+    "ids": {
+      "sessionId": "906f62eb-6628-4f8e-8448-4532d8c8282c",
+      "deviceId": "e5a30612-bebc-46f7-beb0-4815db9c8593"
+    }
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/principal/me",
+    "status": 200
+  },
+  {
+    "method": "POST",
+    "origin": "https://127.0.0.1:18087",
+    "path": "/api/v1/auth/register",
+    "status": 409,
+    "ids": {
+      "errorCode": "IDEMPOTENCY_CONFLICT"
+    },
+    "error": "{\"error\":{\"errorCode\":\"IDEMPOTENCY_CONFLICT\",\"message\":\"iam.idempotency.key_reused\",\"retryable\":false},\"meta\":{\"requestId\":\"83993365-aa0a-440a-808d-524c21bf67a8\",\"traceId\":\"3a84414"
+  },
+  {
+    "method": "POST",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/adult-gate",
+    "status": 200,
+    "ids": {
+      "status": "REJECTED"
+    }
+  },
+  {
+    "method": "POST",
+    "origin": "https://127.0.0.1:18087",
+    "path": "/api/v1/auth/token/refresh",
+    "status": 200,
+    "ids": {
+      "sessionId": "906f62eb-6628-4f8e-8448-4532d8c8282c",
+      "deviceId": "e5a30612-bebc-46f7-beb0-4815db9c8593"
+    }
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/principal/me",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/permissions",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/profile",
+    "status": 403,
+    "ids": {
+      "code": "CONSENT_REQUIRED"
+    },
+    "error": "{\"error\":{\"retryable\":false,\"code\":\"CONSENT_REQUIRED\",\"message\":\"learner operation denied: CONSENT_REQUIRED\"}}"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/preferences",
+    "status": 403,
+    "ids": {
+      "code": "CONSENT_REQUIRED"
+    },
+    "error": "{\"error\":{\"retryable\":false,\"code\":\"CONSENT_REQUIRED\",\"message\":\"learner operation denied: CONSENT_REQUIRED\"}}"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/targets",
+    "status": 403,
+    "ids": {
+      "code": "CONSENT_REQUIRED"
+    },
+    "error": "{\"error\":{\"retryable\":false,\"code\":\"CONSENT_REQUIRED\",\"message\":\"learner operation denied: CONSENT_REQUIRED\"}}"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/devices",
+    "status": 200
+  },
+  {
+    "method": "POST",
+    "origin": "https://127.0.0.1:18087",
+    "path": "/api/v1/auth/token/refresh",
+    "status": 200,
+    "ids": {
+      "sessionId": "906f62eb-6628-4f8e-8448-4532d8c8282c",
+      "deviceId": "e5a30612-bebc-46f7-beb0-4815db9c8593"
+    }
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/principal/me",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/permissions",
+    "status": 200
+  },
+  {
+    "method": "POST",
+    "origin": "https://127.0.0.1:18087",
+    "path": "/api/v1/auth/login",
+    "status": 200,
+    "ids": {
+      "sessionId": "46b4f8f9-090d-4046-a581-bed370df1bd7",
+      "deviceId": "64c65a9a-c041-44da-92be-81c33767aa4b"
+    }
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/permissions",
+    "status": 200
+  },
+  {
+    "method": "POST",
+    "origin": "https://127.0.0.1:18087",
+    "path": "/api/v1/auth/token/refresh",
+    "status": 200,
+    "ids": {
+      "sessionId": "46b4f8f9-090d-4046-a581-bed370df1bd7",
+      "deviceId": "64c65a9a-c041-44da-92be-81c33767aa4b"
+    }
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/principal/me",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/permissions",
+    "status": 200
+  },
+  {
+    "method": "POST",
+    "origin": "https://127.0.0.1:18087",
+    "path": "/api/v1/auth/register",
+    "status": 201,
+    "ids": {
+      "sessionId": "1e93a0f7-62e9-4e02-b633-c4db59208e81",
+      "deviceId": "62b8bc0d-6d20-424a-86fc-4718ad05239c"
+    }
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/permissions",
+    "status": 200
+  },
+  {
+    "method": "POST",
+    "origin": "https://127.0.0.1:18087",
+    "path": "/api/v1/auth/register",
+    "status": 201,
+    "ids": {
+      "sessionId": "1e93a0f7-62e9-4e02-b633-c4db59208e81",
+      "deviceId": "62b8bc0d-6d20-424a-86fc-4718ad05239c"
+    }
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/principal/me",
+    "status": 200
+  },
+  {
+    "method": "POST",
+    "origin": "https://127.0.0.1:18087",
+    "path": "/api/v1/auth/register",
+    "status": 409,
+    "ids": {
+      "errorCode": "IDEMPOTENCY_CONFLICT"
+    },
+    "error": "{\"error\":{\"errorCode\":\"IDEMPOTENCY_CONFLICT\",\"message\":\"iam.idempotency.key_reused\",\"retryable\":false},\"meta\":{\"requestId\":\"6516e0cd-6472-4dbd-b061-fd585acf6e2e\",\"traceId\":\"48ea0b6"
+  },
+  {
+    "method": "POST",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/adult-gate",
+    "status": 200,
+    "ids": {
+      "status": "REJECTED"
+    }
+  },
+  {
+    "method": "POST",
+    "origin": "https://127.0.0.1:18087",
+    "path": "/api/v1/auth/token/refresh",
+    "status": 200,
+    "ids": {
+      "sessionId": "1e93a0f7-62e9-4e02-b633-c4db59208e81",
+      "deviceId": "62b8bc0d-6d20-424a-86fc-4718ad05239c"
+    }
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/permissions",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/permissions",
+    "status": 200
+  },
+  {
+    "method": "POST",
+    "origin": "https://127.0.0.1:18087",
+    "path": "/api/v1/auth/token/refresh",
+    "status": 200,
+    "ids": {
+      "sessionId": "1e93a0f7-62e9-4e02-b633-c4db59208e81",
+      "deviceId": "62b8bc0d-6d20-424a-86fc-4718ad05239c"
+    }
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/permissions",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/permissions",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/support/tickets",
+    "status": 503,
+    "ids": {
+      "errorCode": "SERVICE_UNAVAILABLE"
+    },
+    "error": "{\"error\":{\"errorCode\":\"SERVICE_UNAVAILABLE\",\"message\":\"The upstream service is unavailable.\",\"retryable\":true},\"meta\":{\"requestId\":\"req-f33b02ef2af045fcaa792748de7c351d\",\"traceId\":"
+  },
+  {
+    "method": "POST",
+    "origin": "https://127.0.0.1:18087",
+    "path": "/api/v1/auth/login",
+    "status": 200,
+    "ids": {
+      "sessionId": "4a54ee8c-1e2d-4931-8424-f45191111929",
+      "deviceId": "bb602333-1618-4e27-87e4-6afbce82ace4"
+    }
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/permissions",
+    "status": 200
+  },
+  {
+    "method": "POST",
+    "origin": "https://127.0.0.1:18087",
+    "path": "/api/v1/auth/token/refresh",
+    "status": 200,
+    "ids": {
+      "sessionId": "4a54ee8c-1e2d-4931-8424-f45191111929",
+      "deviceId": "bb602333-1618-4e27-87e4-6afbce82ace4"
+    }
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/permissions",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/permissions",
+    "status": 200
+  },
+  {
+    "method": "POST",
+    "origin": "https://127.0.0.1:18087",
+    "path": "/api/v1/auth/login",
+    "status": 200,
+    "ids": {
+      "sessionId": "3f8eee6b-060b-4e3b-86ff-261a6342f553",
+      "deviceId": "675732ef-e540-419f-92e8-f80698805520"
+    }
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/permissions",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/principal/me",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/targets",
+    "status": 200,
+    "ids": {
+      "status": "ACTIVE"
+    }
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/content/learner/catalog",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/home",
+    "status": 200
+  },
+  {
+    "method": "POST",
+    "origin": "https://127.0.0.1:18087",
+    "path": "/api/v1/auth/token/refresh",
+    "status": 200,
+    "ids": {
+      "sessionId": "3f8eee6b-060b-4e3b-86ff-261a6342f553",
+      "deviceId": "675732ef-e540-419f-92e8-f80698805520"
+    }
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/principal/me",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/permissions",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/profile",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/preferences",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/devices",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/targets",
+    "status": 200,
+    "ids": {
+      "status": "ACTIVE"
+    }
+  },
+  {
+    "method": "POST",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/devices/b400ee95-9bf2-4cde-b661-f215dfe02312/kickout",
+    "status": 200,
+    "ids": {
+      "sessionId": "9bbea57e-9905-4673-830b-6cad41186beb",
+      "status": "REVOKED"
+    }
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/devices",
+    "status": 200
+  },
+  {
+    "method": "POST",
+    "origin": "https://127.0.0.1:18087",
+    "path": "/api/v1/auth/login",
+    "status": 200,
+    "ids": {
+      "sessionId": "9bbea57e-9905-4673-830b-6cad41186beb",
+      "deviceId": "b400ee95-9bf2-4cde-b661-f215dfe02312"
+    }
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/permissions",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/principal/me",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/targets",
+    "status": 200,
+    "ids": {
+      "status": "ACTIVE"
+    }
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/preferences",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/profile",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/targets",
+    "status": 200,
+    "ids": {
+      "status": "ACTIVE"
+    }
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/content/learner/catalog",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/home",
+    "status": 200
+  },
+  {
+    "method": "POST",
+    "origin": "https://127.0.0.1:18087",
+    "path": "/api/v1/auth/token/refresh",
+    "status": 401,
+    "ids": {
+      "errorCode": "AUTH_DEVICE_REVOKED"
+    },
+    "error": "{\"error\":{\"errorCode\":\"AUTH_DEVICE_REVOKED\",\"message\":\"iam.device.revoked\",\"retryable\":false},\"meta\":{\"requestId\":\"94f6cba8-7a34-40e8-a920-35023b9eaaa6\",\"traceId\":\"50deac1a-8d58-4f"
+  },
+  {
+    "method": "POST",
+    "origin": "https://127.0.0.1:18087",
+    "path": "/api/v1/auth/login",
+    "status": 200,
+    "ids": {
+      "sessionId": "10bba932-3417-4bd2-a3c6-bdd4450a5dfe",
+      "deviceId": "ccdd81ef-c46f-416c-b7ff-1eeaad372cb6"
+    }
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/permissions",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/principal/me",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/targets",
+    "status": 403,
+    "ids": {
+      "code": "CONSENT_REQUIRED"
+    },
+    "error": "{\"error\":{\"retryable\":false,\"code\":\"CONSENT_REQUIRED\",\"message\":\"learner operation denied: CONSENT_REQUIRED\"}}"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/principal/me",
+    "status": 200
+  },
+  {
+    "method": "POST",
+    "origin": "https://127.0.0.1:18087",
+    "path": "/api/v1/auth/token/refresh",
+    "status": 200,
+    "ids": {
+      "sessionId": "10bba932-3417-4bd2-a3c6-bdd4450a5dfe",
+      "deviceId": "ccdd81ef-c46f-416c-b7ff-1eeaad372cb6"
+    }
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/permissions",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/permissions",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/devices",
+    "status": 200
+  },
+  {
+    "method": "POST",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/devices/c93ea196-d4ea-420c-8968-1f3440f1b16a/kickout",
+    "status": 200,
+    "ids": {
+      "sessionId": "7524f3cd-e02f-4f36-a2e8-498f706bd98d",
+      "status": "REVOKED"
+    }
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/devices",
+    "status": 200
+  },
+  {
+    "method": "POST",
+    "origin": "https://127.0.0.1:18087",
+    "path": "/api/v1/auth/login",
+    "status": 200,
+    "ids": {
+      "sessionId": "7524f3cd-e02f-4f36-a2e8-498f706bd98d",
+      "deviceId": "c93ea196-d4ea-420c-8968-1f3440f1b16a"
+    }
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/permissions",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/principal/me",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/targets",
+    "status": 403,
+    "ids": {
+      "code": "CONSENT_REQUIRED"
+    },
+    "error": "{\"error\":{\"retryable\":false,\"code\":\"CONSENT_REQUIRED\",\"message\":\"learner operation denied: CONSENT_REQUIRED\"}}"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/principal/me",
+    "status": 200
+  },
+  {
+    "method": "POST",
+    "origin": "https://127.0.0.1:18087",
+    "path": "/api/v1/auth/token/refresh",
+    "status": 401,
+    "ids": {
+      "errorCode": "AUTH_DEVICE_REVOKED"
+    },
+    "error": "{\"error\":{\"errorCode\":\"AUTH_DEVICE_REVOKED\",\"message\":\"iam.device.revoked\",\"retryable\":false},\"meta\":{\"requestId\":\"5fcd3f76-f23f-4c15-ae11-60ac8ccb6d2d\",\"traceId\":\"53751229-173a-45"
+  }
+]
