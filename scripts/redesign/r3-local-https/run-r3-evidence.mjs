@@ -41,6 +41,7 @@ let qidaBefore = [];
 let dropped = false;
 
 rmSync(join(it3Evidence, 'logs'), { recursive: true, force: true });
+rmSync(join(it3Evidence, 'screenshots'), { recursive: true, force: true });
 for (const dir of [supportEvidence, it3Evidence, join(it3Evidence, 'screenshots'), join(supportEvidence, 'screenshots'), directory]) {
   mkdirSync(dir, { recursive: true });
 }
