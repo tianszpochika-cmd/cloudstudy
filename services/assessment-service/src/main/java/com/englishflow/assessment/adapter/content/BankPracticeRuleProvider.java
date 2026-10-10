@@ -20,15 +20,17 @@ import java.util.Map;
  * Practice rules for the canonical placement bank, resolved over HTTP from
  * content-service's sealed bank endpoint. Assessment keeps no master copy:
  * every call re-reads the sealed snapshot, so a bank change can never grade
- * against stale rules. Any failure returns {@code null} and the caller keeps
+ * against stale stems. Any failure returns {@code null} and the caller keeps
  * its existing unavailable-content behavior (410 at session creation); rules
  * are never invented, substituted from legacy sets, or persisted here.
  *
- * <p>Rule-shape adaptation (documented, verbatim values): the sealed
- * {@code answerRule.correctOption} becomes the B10 {@code answer} rule key
- * that {@code isCorrect} grades; {@code BASIC_GRAMMAR} maps to the B10
- * {@code GRAMMAR} dimension word; bank option objects already carry
- * {@code optionId/label} which the B10 learner projection reads directly.
+ * <p>The sealed route does not carry {@code answerRule}. A stray correct
+ * option on that payload is ignored. Each row is marked
+ * {@code grader=PLACEMENT_SCORE} so the attempt path asks the service-token
+ * score port, which is the only place the stored option is read.
+ * {@code BASIC_GRAMMAR} maps to the B10 {@code GRAMMAR} dimension word; bank
+ * option objects already carry {@code optionId/label} which the B10 learner
+ * projection reads directly.
  */
 public final class BankPracticeRuleProvider {
 
@@ -119,18 +121,15 @@ public final class BankPracticeRuleProvider {
                 throw unavailable();
             }
         }
-        if (!(item.get("answerRule") instanceof Map<?, ?> rule)
-                || !(rule.get("correctOption") instanceof String correct) || correct.isBlank()
-                || !optionIds.contains(correct)) {
-            throw unavailable();
-        }
+        // answerRule stays in content-service. Do not copy correctOption even
+        // if a caller attached it to the sealed item.
         Map<String, Object> row = new LinkedHashMap<>();
         row.put("item_id", String.valueOf(itemId.longValue()));
         row.put("content_version_id", contentVersionId);
         row.put("prompt", stem);
         row.put("options_json", json(item.get("options")));
         row.put("dimension", dimension);
-        row.put("answer_rule_json", json(Map.of("answer", correct)));
+        row.put("answer_rule_json", json(Map.of("grader", "PLACEMENT_SCORE")));
         return row;
     }
 

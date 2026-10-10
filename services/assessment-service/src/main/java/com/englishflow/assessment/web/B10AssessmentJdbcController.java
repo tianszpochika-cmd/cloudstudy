@@ -8,6 +8,7 @@ import tools.jackson.databind.node.ObjectNode;
 
 import com.englishflow.assessment.adapter.content.BankPracticeRuleProvider;
 import com.englishflow.assessment.domain.AssessmentMistake;
+import com.englishflow.assessment.port.PlacementRuleScorePort;
 import com.englishflow.assessment.domain.AssessmentPrincipal;
 import com.englishflow.assessment.domain.AttemptGuard;
 import com.englishflow.assessment.domain.GrammarReadingPack;
@@ -44,7 +45,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -69,13 +69,21 @@ public class B10AssessmentJdbcController {
     private final ObjectMapper mapper;
     private final String contentBaseUrl;
     private final BankPracticeRuleProvider bankRules;
+    private final PlacementRuleScorePort placementScores;
 
+    public B10AssessmentJdbcController(JdbcTemplate jdbc, ObjectMapper mapper, String contentBaseUrl) {
+        this(jdbc, mapper, contentBaseUrl, null);
+    }
+
+    @org.springframework.beans.factory.annotation.Autowired
     public B10AssessmentJdbcController(JdbcTemplate jdbc, ObjectMapper mapper,
-            @org.springframework.beans.factory.annotation.Value("${assessment.content.base-url:http://127.0.0.1:18089}") String contentBaseUrl) {
+            @org.springframework.beans.factory.annotation.Value("${assessment.content.base-url:http://127.0.0.1:18089}") String contentBaseUrl,
+            PlacementRuleScorePort placementScores) {
         this.jdbc = jdbc;
         this.mapper = mapper;
         this.contentBaseUrl = contentBaseUrl;
         this.bankRules = new BankPracticeRuleProvider(mapper, contentBaseUrl);
+        this.placementScores = placementScores;
     }
 
     @PostMapping("/sessions")
@@ -367,7 +375,7 @@ public class B10AssessmentJdbcController {
             String selected = answerValue(submission.get("response"));
             answers.put(String.valueOf(itemId), selected);
             scored++;
-            if (isCorrect(rule.get("answer_rule_json"), selected)) correct++;
+            if (gradeRule(rule, selected)) correct++;
             else mistakes.add(text(rule.get("item_id")));
         }
         String submissionDigest = sha256(json(submissions));
@@ -384,7 +392,7 @@ public class B10AssessmentJdbcController {
         // (e.g. the rest of the bank for a subset practice) never do.
         List<Map<String, Object>> sessionRules = sessionRules(session, rules);
         List<String> allMistakes = sessionRules.stream()
-                .filter(rule -> !isCorrect(rule.get("answer_rule_json"), answerMap.get(String.valueOf(numericItemId(text(rule.get("item_id")))))))
+                .filter(rule -> !gradeRule(rule, answerMap.get(String.valueOf(numericItemId(text(rule.get("item_id")))))))
                 .map(rule -> text(rule.get("item_id"))).toList();
         int total = sessionRules.size();
         int totalCorrect = total - allMistakes.size();
@@ -1136,6 +1144,25 @@ public class B10AssessmentJdbcController {
             return text(map.get("selectedOptionKey"), text(map.get("selectedKey"), text(map.get("text"))));
         }
         return text(raw);
+    }
+
+    /**
+     * Local rules still match {@code answer}/{@code correctKey}. Bank rows
+     * carry only {@code grader=PLACEMENT_SCORE}; the correct option stays in
+     * content-service and is read by the service-token score port.
+     */
+    boolean gradeRule(Map<String, Object> rule, String selected) {
+        JsonNode node = mapper.readTree(text(rule.get("answer_rule_json"), "{}"));
+        if ("PLACEMENT_SCORE".equals(node.path("grader").asText())) {
+            if (selected == null || selected.isBlank()) return false;
+            if (placementScores == null) {
+                throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,
+                        "placement rule score requires a service token");
+            }
+            long itemId = numericItemId(text(rule.get("item_id")));
+            return "FULL".equals(placementScores.score(itemId, selected).outcome());
+        }
+        return isCorrect(rule.get("answer_rule_json"), selected);
     }
 
     private boolean isCorrect(Object rawRule, String selected) {

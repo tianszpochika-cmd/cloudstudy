@@ -1,7 +1,7 @@
 import { unavailableOperation } from './unavailable'
 import { mobileApiClient, MobileApiError } from './client'
 import { mentionsClosedMissing, PACK_CLOSED_COPY } from '../domain/grammar-reading-pack'
-import { listGrammarExercises as listB3GrammarExercises, submitGrammarAttempt as submitB3GrammarAttempt } from './b3'
+import { listGrammarExercises as listB3GrammarExercises } from './b3'
 import { createClientId } from '../platform/client-id'
 import type {
   B10AnswerInput,
@@ -656,7 +656,34 @@ export const b10LearningApi = {
   },
 
   async submitGrammarAnswer(context: B10RequestContext, sessionId: string, exerciseId: number, answer: B10AnswerInput, contentVersionId: number | null, clientEventId: string): Promise<B10RuleFeedback> {
-    const response = await submitB3GrammarAttempt(exerciseId, answer as Record<string, unknown>)
+    const rawExercises = await listB3GrammarExercises()
+    const raw = rawExercises.find((item) => isRecord(item) && number(item.exerciseId, 0) === exerciseId)
+    const ref = raw && isRecord(raw.practiceRef) ? raw.practiceRef : null
+    const contentCode = ref ? text(ref.contentCode) : ''
+    const version = ref ? nullableNumber(ref.contentVersionId) : contentVersionId
+    const questionItemId = ref ? Number(text(ref.questionItemId)) : NaN
+    if (!contentCode || version == null || !Number.isSafeInteger(questionItemId) || questionItemId <= 0) {
+      throw new Error('该练习暂无可判分的服务端版本，已保留你的答案。')
+    }
+    const sessionKey = `h5-grammar-${questionItemId}`
+    const opened = parseAssessmentSession(await mobileApiClient.request<unknown>(query(B10_GATEWAY_PATHS.assessment.sessions, { contentLocale: context.contentLocale }), {
+      method: 'POST',
+      data: { contentCode, contentVersionId: version, mode: 'PRACTICE', itemIds: [questionItemId], clientSessionRef: sessionKey },
+      header: headers(context, sessionKey),
+    }))
+    if (!opened.sessionId || opened.sessionId === 'unknown-session') throw new Error('练习服务没有返回可继续的会话。')
+    const submissionId = `sub_${clientEventId.replace(/[^A-Za-z0-9._:-]/g, '').slice(0, 112)}`
+    const response = await mobileApiClient.request<unknown>(`${B10_GATEWAY_PATHS.assessment.sessions}/${encodeURIComponent(opened.sessionId)}/attempts`, {
+      method: 'POST',
+      data: {
+        expectedStateVersion: opened.stateVersion,
+        submissionId,
+        items: [{ itemId: questionItemId, sequence: 0, response: answer, clientSubmissionId: clientEventId }],
+        clientEventId,
+      },
+      header: headers(context, clientEventId),
+    })
+    void sessionId
     return parseRuleFeedback(response)
   },
 

@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/** Bank practice rules resolve sealed snapshots or stay null; never invented. */
+/** Bank practice rows come from the sealed delivery and never copy the answer. */
 class BankPracticeRuleProviderTest {
 
     private final ObjectMapper mapper = new ObjectMapper();
@@ -49,7 +49,7 @@ class BankPracticeRuleProviderTest {
     }
 
     @Test
-    void sealedBankBecomesB10RuleRowsWithAdaptedAnswerKey() {
+    void sealedBankBecomesScoreGradedRowsWithoutTheCorrectOption() {
         BankPracticeRuleProvider provider = new BankPracticeRuleProvider(mapper, baseUrl);
         BankPracticeRuleProvider.BankRules rules = provider.fetch("p1.placement.v1", 266100, "Bearer t");
         assertNotNull(rules);
@@ -59,7 +59,30 @@ class BankPracticeRuleProviderTest {
         Map<String, Object> grammar = rules.rows().stream()
                 .filter(row -> "266004".equals(row.get("item_id"))).findFirst().orElseThrow();
         assertEquals("GRAMMAR", grammar.get("dimension"));
-        assertEquals("b", sneakyRead(grammar.get("answer_rule_json")).get("answer"));
+        assertEquals("PLACEMENT_SCORE", sneakyRead(grammar.get("answer_rule_json")).get("grader"));
+        String stored = String.valueOf(grammar.get("answer_rule_json"));
+        assertTrue(!stored.contains("correctOption") && !stored.contains("\"answer\""));
+    }
+
+    @Test
+    void sealedDeliveryWithoutAnswerRuleStillOpensPracticeRows() throws Exception {
+        Map<String, Object> delivered = new LinkedHashMap<>(bank());
+        @SuppressWarnings("unchecked")
+        List<Object> items = new ArrayList<>((List<Object>) delivered.get("items"));
+        List<Object> stripped = new ArrayList<>();
+        for (Object raw : items) {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> item = new LinkedHashMap<>((Map<String, Object>) raw);
+            item.remove("answerRule");
+            stripped.add(item);
+        }
+        delivered.put("items", stripped);
+        body = mapper.writeValueAsString(Map.of("data", delivered));
+        BankPracticeRuleProvider provider = new BankPracticeRuleProvider(mapper, baseUrl);
+        BankPracticeRuleProvider.BankRules rules = provider.fetch("p1.placement.v1", 266100, "Bearer t");
+        assertNotNull(rules);
+        assertEquals(10, rules.rows().size());
+        assertEquals("PLACEMENT_SCORE", sneakyRead(rules.rows().getFirst().get("answer_rule_json")).get("grader"));
     }
 
     @Test
@@ -89,7 +112,7 @@ class BankPracticeRuleProviderTest {
         List<Object> items = new ArrayList<>((List<Object>) drifted.get("items"));
         @SuppressWarnings("unchecked")
         Map<String, Object> first = new LinkedHashMap<>((Map<String, Object>) items.getFirst());
-        first.remove("answerRule");
+        first.remove("stem");
         items.set(0, first);
         drifted.put("items", items);
         body = mapper.writeValueAsString(Map.of("data", drifted));

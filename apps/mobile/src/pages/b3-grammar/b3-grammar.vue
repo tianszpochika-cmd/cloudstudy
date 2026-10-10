@@ -117,7 +117,13 @@ async function load(): Promise<void> {
     if (requestId !== grammarSelectionRequest || !isCurrent(scope)) return
     points.value = nextPoints
     correctionPrompt.value = nextCorrectionPrompt
-    if (!points.value.length) { status.value = 'empty'; return }
+    if (!points.value.length) {
+      const loose = await b10LearningApi.createGrammarSession(context.value, 0, null, createB10ClientEventId('grammar-unbound'))
+      if (requestId !== grammarSelectionRequest || !isCurrent(scope)) return
+      grammarSession.value = loose
+      status.value = loose.exercises.length ? 'ready' : 'empty'
+      return
+    }
     await loadPoint(points.value.find((point) => point.grammarPointId === grammarDraft.value.selectedPointId) ?? points.value[0])
   } catch (error) { if (requestId !== grammarSelectionRequest || !isCurrent(scope)) return; const info = b10ErrorInfo(error, '语法知识树暂时不可用。'); status.value = info.kind; message.value = info.message }
 }
