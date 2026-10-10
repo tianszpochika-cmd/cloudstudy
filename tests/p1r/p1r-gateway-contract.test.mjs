@@ -137,6 +137,15 @@ test('M2-001 approved additive nodes are exactly the reviewed post-baseline addi
       ['paths//api/v1/grammar/points/get/x-contract', null, 'B3 grammar points read publishes its contract-first owner and closed legacy eligibility state'],
       ['paths//api/v1/grammar/points/get/x-authorization', null, 'B3 grammar points read declares its fail-closed content-service PEP facts'],
       ['paths//api/v1/assessment/placement/sessions/{sessionId}/retest', null, 'R1-024 public placement retest opens a new session and keeps the completed report'],
+      ['components/headers/B8RefreshCookie/x-cookie/partitioned', null, 'IT-2 cross-scheme refresh cookie is CHIPS Partitioned on set'],
+      ['components/headers/B8RefreshCookieClear/x-cookie/partitioned', null, 'IT-2 cross-scheme refresh cookie is CHIPS Partitioned on clear'],
+      ['components/schemas/B10EnsurePlanResult/properties/explanation', null, 'IT-3 ensure result carries the server-owned one-sentence explanation'],
+      ['components/schemas/B10LearningPlan/properties/emptyReason', null, 'IT-3 today queue names why it is empty or ready'],
+      ['components/schemas/B10LearningPlan/properties/explanation', null, 'IT-3 plan projection can carry the snapshot explanation'],
+      ['components/schemas/B10LearningPlan/properties/firstLearning', null, 'IT-3 first-learning guidance is completion state, not account age'],
+      ['components/schemas/B10PlanReplanRequest', null, 'IT-3 confirmed replan request keeps completed history'],
+      ['components/schemas/B10PlanReplanResult', null, 'IT-3 replan result reports rescheduled and preserved counts'],
+      ['paths//api/v1/learning/plans:replan', null, 'IT-3 public replan route versions unstarted tasks'],
     ],
   );
 });

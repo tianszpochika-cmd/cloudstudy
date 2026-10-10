@@ -162,7 +162,7 @@ public final class PlanningInputAssembler {
                 + target.timeZoneId() + "|" + target.contentVersionId());
     }
 
-    static String sha256(String value) {
+    public static String sha256(String value) {
         try {
             return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256")
                     .digest(value.getBytes(StandardCharsets.UTF_8)));

@@ -26,6 +26,8 @@ import {
   submitPracticeTodayTask as submitPracticeTodayAnswer,
   type PracticeTodayTask,
 } from '../api/practice-today'
+import { ensureLearningPlan, readPlanTodayQueue, replanLearningPlan } from '../api/plan-today'
+import { shouldEnsurePlan, type PlanTodayQueue } from '../domain/plan-today'
 import {
   LearnerContentReadModelError,
   type LearnerContentPersistedState,
@@ -92,6 +94,10 @@ function messageFor(error: unknown, fallback: string): string {
   return error instanceof LearnerContentReadModelError ? error.message : error instanceof Error && error.message ? error.message : fallback
 }
 
+function httpStatus(error: unknown): number {
+  return typeof error === 'object' && error !== null && 'status' in error && typeof error.status === 'number' ? error.status : 0
+}
+
 function mergeAssessmentReport(current: AssessmentReport | null, next: AssessmentReport | null): AssessmentReport | null {
   return next ? { ...next } : current
 }
@@ -128,6 +134,9 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
   const practiceAnswers = ref<Record<string, string>>({})
   const practiceResults = ref<Record<string, { correct: boolean; feedbackCode: string | null }>>({})
   const practiceError = ref<string | null>(null)
+  const planQueue = ref<PlanTodayQueue | null>(null)
+  const planQueueStatus = ref<ReadModelStatus>('idle')
+  const planNotice = ref<string | null>(null)
 
   function resetForIdentity(subject: string | null, generation: number): void {
     activeIdentity = { subject, generation }
@@ -156,6 +165,9 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
     practiceAnswers.value = {}
     practiceResults.value = {}
     practiceError.value = null
+    planQueue.value = null
+    planQueueStatus.value = 'idle'
+    planNotice.value = null
   }
 
   watch([verifiedSubject, () => session.authGeneration], ([subject, generation]) => {
@@ -494,6 +506,7 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
       syncState.value = 'remote'
       lastError.value = rejected ? '这题还没提交成功。进度仍以服务端已接收的检查点为准。' : null
       if (completed) onboarding.value = { ...onboarding.value, completed: true, updatedAt: new Date().toISOString() }
+      if (completed && stillCurrent(owner)) await ensurePlanFromReport(owner, placementReport.value?.reportId ?? null, 'ASSESSED')
     } catch (error) {
       if (!stillCurrent(owner)) return
       placementFeedback.value = null
@@ -699,6 +712,62 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
       }
     }
     persist()
+    await refreshPlanQueue(owner)
+  }
+
+  async function refreshPlanQueue(owner: { subject: string; generation: number } | null = identity()): Promise<void> {
+    if (!stillCurrent(owner)) return
+    try {
+      const queue = await readPlanTodayQueue()
+      if (!stillCurrent(owner)) return
+      planQueue.value = queue
+      planQueueStatus.value = queue.planId || queue.itemCount > 0 ? 'ready' : 'empty'
+    } catch {
+      if (!stillCurrent(owner)) return
+      planQueueStatus.value = 'error'
+    }
+  }
+
+  async function ensurePlanFromReport(
+    owner: { subject: string; generation: number } | null,
+    reportId: string | null,
+    resultKind: string | null,
+  ): Promise<void> {
+    if (!stillCurrent(owner) || !shouldEnsurePlan({ reportId, resultKind })) return
+    try {
+      await ensureLearningPlan(reportId as string)
+      if (!stillCurrent(owner)) return
+      await refreshPlanQueue(owner)
+    } catch (error) {
+      if (!stillCurrent(owner)) return
+      planNotice.value = messageFor(error, '学习计划还没有生成。定级结果已保存。')
+    }
+  }
+
+  async function replanAfterGoal(owner: { subject: string; generation: number } | null): Promise<void> {
+    if (!stillCurrent(owner)) return
+    const knownVersion = planQueue.value?.planVersion ?? 0
+    await refreshPlanQueue(owner)
+    if (!stillCurrent(owner)) return
+    const refreshed = planQueue.value
+    const version = planQueueStatus.value !== 'error' && refreshed && refreshed.planVersion >= 1
+      ? refreshed.planVersion
+      : knownVersion
+    if (version < 1) return
+    const clientEventId = eventId('plan-replan')
+    try {
+      await replanLearningPlan(version, clientEventId)
+      if (!stillCurrent(owner)) return
+      await refreshPlanQueue(owner)
+    } catch (error) {
+      if (!stillCurrent(owner)) return
+      if (httpStatus(error) === 409) {
+        planNotice.value = '计划版本已变化，请重新读取。'
+        await refreshPlanQueue(owner)
+        return
+      }
+      planNotice.value = messageFor(error, '目标已保存。计划还没有按新目标重排。')
+    }
   }
 
   async function loadToday(): Promise<void> {
@@ -718,6 +787,7 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
       if (!today.value && home.value) today.value = home.value.today ?? home.value.home
     }
     persist()
+    await refreshPlanQueue(owner)
     await loadPracticeToday(owner)
   }
 
@@ -897,6 +967,7 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
       resumeCache = null
       await loadOnboardingResume(true)
       persist()
+      await replanAfterGoal(owner)
       return true
     } catch (error) {
       if (!stillCurrent(owner)) return false
@@ -937,6 +1008,9 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
     practiceAnswers,
     practiceResults,
     practiceError,
+    planQueue,
+    planQueueStatus,
+    planNotice,
     hasOnboardingConsent,
     hasPreferences,
     assessmentProgress,
@@ -958,6 +1032,7 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
     applyFastTrack,
     loadHome,
     loadToday,
+    refreshPlanQueue,
     loadPracticeToday,
     submitPracticeTodayTask,
     completeTask,

@@ -566,6 +566,7 @@ public final class GatewayRouteExecutionPolicy {
         add(definitions, "learning-domain",
                 rewrite("continue-context", "/api/v1/learning/continue-context", "/internal/v1/learning/continue-context", LEARNING_B25, HttpMethod.GET, HttpMethod.PUT),
                 preserve("plans-ensure", "/api/v1/learning/plans:ensure", LEARNING_V2_PLANS, HttpMethod.POST),
+                preserve("plans-replan", "/api/v1/learning/plans:replan", LEARNING_V2_PLANS, HttpMethod.POST),
                 rewrite("daily-report", "/api/v1/learning/stats/daily-report", "/internal/v1/learning/stats/daily-report", LEARNING_B25, HttpMethod.GET),
                 rewrite("weekly-report", "/api/v1/learning/stats/weekly-report", "/internal/v1/learning/stats/weekly-report", LEARNING_B25, HttpMethod.GET),
                 rewrite("daily-summary", "/api/v1/learning/stats/daily-summary", "/internal/v1/learning/stats/daily-summary", LEARNING_B25, HttpMethod.GET),

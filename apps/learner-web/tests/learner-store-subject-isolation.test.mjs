@@ -82,6 +82,8 @@ test('learner-content rejects A storage for B and discards A home response after
     '../domain/b1': f.b1Domain,
     '../api/learner-content': { learnerContentPort: port, createLocalPlacementSnapshot: () => ({}) },
     '../api/practice-today': { readPracticeToday: async () => [], submitPracticeTodayTask: async () => ({}) },
+    '../api/plan-today': { readPlanTodayQueue: async () => ({ planId: '', planVersion: 0, itemCount: 0 }), ensureLearningPlan: async () => ({}), replanLearningPlan: async () => ({}) },
+    '../domain/plan-today': { shouldEnsurePlan: () => false },
     '../domain/learner-content': f.learnerDomain,
     '../domain/onboarding-resume': load('src/domain/onboarding-resume.ts', {}),
   }, [['import.meta.env.VITE_RUNTIME_MODE', "'local-real'"]])
@@ -120,6 +122,8 @@ test('learner-content A logout and A login rejects delayed response from the ear
     '../domain/b1': f.b1Domain,
     '../api/learner-content': { learnerContentPort: { readToday: () => pending.promise }, createLocalPlacementSnapshot: () => ({}) },
     '../api/practice-today': { readPracticeToday: async () => [], submitPracticeTodayTask: async () => ({}) },
+    '../api/plan-today': { readPlanTodayQueue: async () => ({ planId: '', planVersion: 0, itemCount: 0 }), ensureLearningPlan: async () => ({}), replanLearningPlan: async () => ({}) },
+    '../domain/plan-today': { shouldEnsurePlan: () => false },
     '../domain/learner-content': f.learnerDomain,
     '../domain/onboarding-resume': load('src/domain/onboarding-resume.ts', {}),
   }, [['import.meta.env.VITE_RUNTIME_MODE', "'local-real'"]])

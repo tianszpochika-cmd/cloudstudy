@@ -4316,7 +4316,7 @@ function compareM1018B26Promotion(previous, current, allowance) {
 export const M2001_GATEWAY_EXECUTION_TARGET_PROMOTION_ID = 'P1R-M2-001';
 export const M2001_SOURCE_CONTRACT_BASELINE_REF = '66246d5b4a68a988a9af4ece68a446640b123812';
 export const M2001_OPENAPI_SOURCE_SEMANTIC_SHA256 = 'a154f2004f06e5da096abea630855152fac9e87224ad48565a38e6010ab9416b';
-export const M2001_GATEWAY_ROOT_SEMANTIC_SHA256 = '2dfd6d3a84a1648e842f13867235d3a0d659bb92fb75fb206c512a80ba5593ab';
+export const M2001_GATEWAY_ROOT_SEMANTIC_SHA256 = 'df1e70a70bd43dbd62ed9c64a7886cf748e3ef0ba7c61f358dbd71f32747941b';
 export const M2001_EXECUTION_TARGET_POLICY_SEMANTIC_SHA256 = 'd5182f41d59ef89a4e4743db930eda8ab0e42eb1113d6d57b08b9e4af507c2f9';
 export const M2001_OPENAPI_EXPECTED_SEMANTIC_SHA256 = 'cdcdf214a0f6ea25886461995ef732acfaa82900f9f4880143b390d9d1298e67';
 export const M2001_OPENAPI_ROOT_EXTENSION = 'x-p1r-gateway-boundary';
@@ -4374,6 +4374,13 @@ export const M2001_APPROVED_ADDITIVE_NODES = Object.freeze([
   { reason: 'R1-024 public placement retest opens a new session and keeps the completed report', segments: ['paths', '/api/v1/assessment/placement/sessions/{sessionId}/retest'] },
   { reason: 'IT-2 cross-scheme refresh cookie is CHIPS Partitioned on set', segments: ['components', 'headers', 'B8RefreshCookie', 'x-cookie', 'partitioned'] },
   { reason: 'IT-2 cross-scheme refresh cookie is CHIPS Partitioned on clear', segments: ['components', 'headers', 'B8RefreshCookieClear', 'x-cookie', 'partitioned'] },
+  { reason: 'IT-3 ensure result carries the server-owned one-sentence explanation', segments: ['components', 'schemas', 'B10EnsurePlanResult', 'properties', 'explanation'] },
+  { reason: 'IT-3 today queue names why it is empty or ready', segments: ['components', 'schemas', 'B10LearningPlan', 'properties', 'emptyReason'] },
+  { reason: 'IT-3 plan projection can carry the snapshot explanation', segments: ['components', 'schemas', 'B10LearningPlan', 'properties', 'explanation'] },
+  { reason: 'IT-3 first-learning guidance is completion state, not account age', segments: ['components', 'schemas', 'B10LearningPlan', 'properties', 'firstLearning'] },
+  { reason: 'IT-3 confirmed replan request keeps completed history', segments: ['components', 'schemas', 'B10PlanReplanRequest'] },
+  { reason: 'IT-3 replan result reports rescheduled and preserved counts', segments: ['components', 'schemas', 'B10PlanReplanResult'] },
+  { reason: 'IT-3 public replan route versions unstarted tasks', segments: ['paths', '/api/v1/learning/plans:replan'] },
 ]);
 
 /**

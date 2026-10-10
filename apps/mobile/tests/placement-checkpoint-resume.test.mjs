@@ -322,6 +322,8 @@ const storeModule = load('src/stores/learner-content.ts', {
     mobileLearnerContentApi: placementApi,
     mobileLearnerContentError: (error) => ({ message: error instanceof Error && error.message ? error.message : '本题尚未提交成功。未提交的选择不会当成已保存。' }),
   },
+  '../api/plan-today': { readPlanToday: async () => ({ planId: '', planVersion: 0, itemCount: 0 }), ensureLearningPlan: async () => ({}), replanLearningPlan: async () => ({}) },
+  '../domain/plan-today': { shouldEnsurePlan: () => false },
   '../domain/onboarding-resume': load('src/domain/onboarding-resume.ts', {}),
   '../platform/uni-runtime': { getUniRuntime: () => globalThis.__placementRuntime },
   '../platform/client-id': { createClientId: (prefix) => `${prefix}-key` },

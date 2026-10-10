@@ -118,6 +118,8 @@ function environment() {
   const contentModule = load('src/stores/learner-content.ts', {
     vue: require('vue'), pinia: require('pinia'),
     '../api/learner-content': { mobileLearnerContentApi: contentApi, mobileLearnerContentError: (error) => ({ message: error.message }) },
+    '../api/plan-today': { readPlanToday: async () => ({ planId: '', planVersion: 0, itemCount: 0 }), ensureLearningPlan: async () => ({}), replanLearningPlan: async () => ({}) },
+    '../domain/plan-today': { shouldEnsurePlan: () => false },
     '../domain/onboarding-resume': load('src/domain/onboarding-resume.ts', {}),
     '../platform/uni-runtime': platform,
     '../platform/client-id': { createClientId: (prefix) => `${prefix}-fixture` },

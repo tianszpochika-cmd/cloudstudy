@@ -10,6 +10,8 @@ import com.englishflow.learning.adapter.http.VerifiedPlacementReport.PlacementPi
 import com.englishflow.learning.application.CreateLearningPlanCommand;
 import com.englishflow.learning.application.LearningCommandResult;
 import com.englishflow.learning.application.LearningPlanService;
+import com.englishflow.learning.application.PlanDayFacts;
+import com.englishflow.learning.application.PlanInputHistory;
 import com.englishflow.learning.application.PlanningInputAssembler;
 import com.englishflow.learning.application.PlanningInputAssembler.AssembledPlanView;
 import com.englishflow.learning.application.ResumeLearningPlanCommand;
@@ -32,6 +34,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -156,7 +159,9 @@ public class V2PlansController {
                 facts.profileVersion(), facts.preferenceVersion(), facts.contentLocale(),
                 facts.weeklyStudyDays(), plan, rightsStateVersion, verified.subject(),
                 TENANT, adultGate(authentication), consentState(authentication), Instant.now());
-        boolean inputExisted = saveInputSnapshot(principal.scope().ownerId(), target, plan, assembled);
+        String explanation = PlanDayFacts.explanation(target.goalCode(), plan.dailyQuotaMinutes(),
+                resultKind(assembled));
+        boolean inputExisted = saveInputSnapshot(principal.scope().ownerId(), target, plan, assembled, explanation);
         Map<String, Map<String, Object>> refs = contents.planSeeds(plan.contentVersionId());
         projectB25(principal.scope().ownerId(), target, plan, refs);
         boolean replayed = created.replayed() && inputExisted && !resumed;
@@ -167,33 +172,203 @@ public class V2PlansController {
         data.put("targetMinutes", plan.dailyQuotaMinutes());
         data.put("planVersion", plan.version());
         data.put("replayed", replayed);
+        data.put("explanation", explanation);
         data.put("planningInput", assembled.planningInput());
         data.put("plan", assembled.planRef());
         data.put("tasks", planTasks(plan, refs));
         return ResponseEntity.ok(Map.of("data", data));
     }
 
+    /**
+     * Replan unstarted tasks after the learner confirms a goal change.
+     * If-Match and baseStateVersion must both equal the current plan version.
+     * Completed SRS rows and stored input snapshots are left in place.
+     */
+    @PostMapping("/plans:replan")
+    @Transactional
+    public ResponseEntity<Map<String, Object>> replan(
+            Authentication authentication,
+            @RequestBody(required = false) Map<String, Object> body,
+            @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey,
+            @RequestHeader(value = "If-Match", required = false) String ifMatch) {
+        VerifiedLearningPrincipal verified = LearningHttpPrincipals.require(authentication, "learning.plan.write");
+        requireKey(idempotencyKey);
+        if (body == null) {
+            throw unprocessable("replan body is required");
+        }
+        for (String forbidden : Set.of("tenant", "tenantId", "owner", "ownerId", "status", "completed", "priorityClass")) {
+            if (body.containsKey(forbidden)) {
+                throw unprocessable("client cannot set " + forbidden);
+            }
+        }
+        if (!Boolean.TRUE.equals(body.get("confirmImpact"))) {
+            throw unprocessable("confirmImpact must be true");
+        }
+        if (!(body.get("clientEventId") instanceof String eventId) || eventId.length() < 8 || eventId.length() > 96) {
+            throw unprocessable("clientEventId is required");
+        }
+        long baseVersion = positiveLong(body.get("baseStateVersion"), "baseStateVersion");
+        long matchVersion = positiveLong(ifMatch, "If-Match");
+        if (baseVersion != matchVersion) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "plan version does not match If-Match");
+        }
+        String subject = verified.subject();
+        String payloadHash = PlanningInputAssembler.sha256(baseVersion + "|true|" + eventId);
+        List<Map<String, Object>> receipts = jdbc.queryForList(
+                "SELECT payload_hash, result_json FROM learning_plan_replan_receipt WHERE tenant_id = ? AND principal_id = ? AND idempotency_key = ?",
+                TENANT, subject, idempotencyKey);
+        if (!receipts.isEmpty()) {
+            String storedHash = String.valueOf(receipts.getFirst().get("payload_hash"));
+            if (PlanInputHistory.rejectsOverwrite(storedHash, payloadHash)) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "idempotency key was used for a different replan");
+            }
+            return ResponseEntity.ok(Map.of("data", replayReceipt(receipts.getFirst().get("result_json"))));
+        }
+        List<Map<String, Object>> plans = jdbc.queryForList(
+                "SELECT plan_id, plan_version, status FROM b25_learning_plan WHERE principal_id = ? AND tenant_id = ?",
+                subject, TENANT);
+        if (plans.isEmpty()) {
+            throw unprocessable("learner plan is not available");
+        }
+        Map<String, Object> current = plans.getFirst();
+        long planVersion = current.get("plan_version") instanceof Number number ? number.longValue() : 0L;
+        if (planVersion != baseVersion) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "plan version is stale");
+        }
+        Integer preserved = jdbc.queryForObject("""
+                SELECT COUNT(*) FROM b25_learning_srs_state
+                 WHERE principal_id = ? AND tenant_id = ? AND (review_count > 0 OR stage <> 'NEW')
+                """, Integer.class, subject, TENANT);
+        int rescheduled = jdbc.update("""
+                UPDATE b25_learning_srs_state
+                   SET due_at = CURRENT_TIMESTAMP(6)
+                 WHERE principal_id = ? AND tenant_id = ? AND stage = 'NEW' AND review_count = 0
+                """, subject, TENANT);
+        int bumped = jdbc.update("""
+                UPDATE b25_learning_plan
+                   SET plan_version = plan_version + 1
+                 WHERE principal_id = ? AND tenant_id = ? AND plan_version = ?
+                """, subject, TENANT, baseVersion);
+        if (bumped != 1) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "plan version is stale");
+        }
+        Map<String, Object> data = new LinkedHashMap<>();
+        data.put("planId", String.valueOf(current.get("plan_id")));
+        data.put("planVersion", baseVersion + 1L);
+        data.put("replayed", false);
+        data.put("rescheduledCount", rescheduled);
+        data.put("preservedCompletedCount", preserved == null ? 0 : preserved);
+        String explanation = latestExplanation(subject);
+        if (!explanation.isBlank()) {
+            data.put("explanation", explanation);
+        }
+        try {
+            jdbc.update("""
+                    INSERT INTO learning_plan_replan_receipt
+                        (tenant_id, principal_id, idempotency_key, payload_hash, result_json)
+                    VALUES (?, ?, ?, ?, ?)
+                    """, TENANT, subject, idempotencyKey, payloadHash, json(data));
+        } catch (DuplicateKeyException race) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "replan idempotency key raced");
+        }
+        return ResponseEntity.ok(Map.of("data", data));
+    }
+
     private boolean saveInputSnapshot(String subject, LearnerTargetSnapshot target,
-                                      LearningPlan plan, AssembledPlanView assembled) {
-        List<Map<String, Object>> existing = jdbc.queryForList(
-                "SELECT pin_digest FROM learning_plan_input_snapshot WHERE tenant_id = ? AND principal_id = ? AND target_id = ? AND content_version_id = ?",
-                TENANT, subject, target.targetId(), target.contentVersionId());
-        if (!existing.isEmpty()
-                && assembled.pinDigest().equals(String.valueOf(existing.getFirst().get("pin_digest")))) {
+                                      LearningPlan plan, AssembledPlanView assembled, String explanation) {
+        List<Map<String, Object>> existing = jdbc.queryForList("""
+                SELECT pin_version, pin_digest FROM learning_plan_input_snapshot
+                 WHERE tenant_id = ? AND principal_id = ? AND target_id = ? AND content_version_id = ?
+                """, TENANT, subject, target.targetId(), target.contentVersionId());
+        List<PlanInputHistory.Existing> rows = new ArrayList<>();
+        for (Map<String, Object> row : existing) {
+            long version = row.get("pin_version") instanceof Number number ? number.longValue() : 0L;
+            rows.add(new PlanInputHistory.Existing(version, String.valueOf(row.get("pin_digest"))));
+        }
+        PlanInputHistory.Decision decision = PlanInputHistory.decide(rows, assembled.pinDigest());
+        if (decision instanceof PlanInputHistory.Decision.Replay) {
             return true;
         }
-        jdbc.update("""
-                INSERT INTO learning_plan_input_snapshot
-                    (tenant_id, principal_id, target_id, content_version_id, content_epoch,
-                     plan_id, pin_id, pin_version, pin_digest, input_fact_watermark, input_json, created_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP(6))
-                ON DUPLICATE KEY UPDATE plan_id = VALUES(plan_id), pin_id = VALUES(pin_id),
-                    pin_version = VALUES(pin_version), pin_digest = VALUES(pin_digest),
-                    input_fact_watermark = VALUES(input_fact_watermark), input_json = VALUES(input_json)
-                """, TENANT, subject, target.targetId(), target.contentVersionId(), plan.contentEpoch(),
-                plan.planId(), assembled.pinId(), assembled.pinVersion(), assembled.pinDigest(),
-                assembled.watermark(), json(assembled.planningInput()));
+        long pinVersion = ((PlanInputHistory.Decision.Insert) decision).pinVersion();
+        try {
+            jdbc.update("""
+                    INSERT INTO learning_plan_input_snapshot
+                        (tenant_id, principal_id, target_id, content_version_id, content_epoch,
+                         plan_id, pin_id, pin_version, pin_digest, input_fact_watermark, input_json,
+                         explanation_text, created_at)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP(6))
+                    """, TENANT, subject, target.targetId(), target.contentVersionId(), plan.contentEpoch(),
+                    plan.planId(), assembled.pinId(), pinVersion, assembled.pinDigest(),
+                    assembled.watermark(), json(assembled.planningInput()), explanation);
+        } catch (DuplicateKeyException conflict) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "plan input snapshot is immutable");
+        }
         return false;
+    }
+
+    private static String resultKind(AssembledPlanView assembled) {
+        Object baseline = assembled.planningInput().get("placementBaseline");
+        if (baseline instanceof Map<?, ?> map && map.get("resultKind") instanceof String kind && !kind.isBlank()) {
+            return kind;
+        }
+        return "UNKNOWN";
+    }
+
+    private String latestExplanation(String subject) {
+        List<Map<String, Object>> rows = jdbc.queryForList("""
+                SELECT explanation_text FROM learning_plan_input_snapshot
+                 WHERE tenant_id = ? AND principal_id = ?
+                 ORDER BY created_at DESC, pin_version DESC
+                 LIMIT 1
+                """, TENANT, subject);
+        if (rows.isEmpty() || rows.getFirst().get("explanation_text") == null) {
+            return "";
+        }
+        return String.valueOf(rows.getFirst().get("explanation_text"));
+    }
+
+    private Map<String, Object> replayReceipt(Object raw) {
+        if (!(raw instanceof String json) || json.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "replan receipt is unreadable");
+        }
+        try {
+            Object decoded = mapper.readValue(json, Object.class);
+            if (!(decoded instanceof Map<?, ?> map)) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "replan receipt is unreadable");
+            }
+            Map<String, Object> data = new LinkedHashMap<>();
+            for (Map.Entry<?, ?> entry : map.entrySet()) {
+                data.put(String.valueOf(entry.getKey()), entry.getValue());
+            }
+            data.put("replayed", true);
+            return data;
+        } catch (ResponseStatusException again) {
+            throw again;
+        } catch (Exception invalid) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "replan receipt is unreadable");
+        }
+    }
+
+    private static long positiveLong(Object value, String name) {
+        long parsed;
+        if (value instanceof Number number) {
+            parsed = number.longValue();
+        } else if (value instanceof String text) {
+            String trimmed = text.trim();
+            if (trimmed.length() >= 2 && trimmed.startsWith("\"") && trimmed.endsWith("\"")) {
+                trimmed = trimmed.substring(1, trimmed.length() - 1);
+            }
+            if (!trimmed.matches("\\d+")) {
+                throw unprocessable(name + " is required");
+            }
+            parsed = Long.parseLong(trimmed);
+        } else {
+            throw unprocessable(name + " is required");
+        }
+        if (parsed < 1) {
+            throw unprocessable(name + " is required");
+        }
+        return parsed;
     }
 
     private void projectB25(String subject, LearnerTargetSnapshot target, LearningPlan plan,

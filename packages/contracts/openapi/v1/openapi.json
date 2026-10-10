@@ -39131,6 +39131,118 @@
           }
         }
       }
+    },
+    "/api/v1/learning/plans:replan": {
+      "post": {
+        "tags": [
+          "b10-learning-plan"
+        ],
+        "summary": "Replan unstarted tasks after a confirmed goal change",
+        "operationId": "replanB10LearningPlan",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "learning-service",
+        "x-contract": {
+          "owner": "learning-service",
+          "canonical": true,
+          "command": "learning.plan.replan",
+          "authority": "the server keeps completed SRS rows and input snapshots; the client only confirms impact and the base plan version"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "learning.plan.write",
+          "pep": "learning-service-local",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
+          ],
+          "clientAuthority": "none; plan version and completed history are server-derived"
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "b10-learning-plan-replan",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "the same key and payload returns the original replan receipt",
+          "conflicts": {
+            "stalePlanVersion": {
+              "status": 409,
+              "errorCode": "LRN_PLAN_STATE_VERSION_CONFLICT"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B10IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/B10IfMatch"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B10PlanReplanRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Unstarted tasks were rescheduled. Completed rows stayed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B10PlanReplanResult"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ApiUnprocessableEntity"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -69410,6 +69522,46 @@
           "generatedAt": {
             "$ref": "#/components/schemas/B10DateTime"
           },
+          "emptyReason": {
+            "type": "string",
+            "enum": [
+              "NO_PLAN",
+              "NO_DUE_REVIEW",
+              "COMPLETED",
+              "READY",
+              "NO_CONTENT"
+            ],
+            "description": "Why today's queue is empty or ready. The client maps each value to its own action and does not collapse them into a retest."
+          },
+          "explanation": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512,
+            "description": "The sentence stored on the planning-input snapshot that produced this plan. Later goal edits do not rewrite it."
+          },
+          "firstLearning": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "guideVisible",
+              "reason"
+            ],
+            "properties": {
+              "guideVisible": {
+                "type": "boolean"
+              },
+              "reason": {
+                "type": "string",
+                "enum": [
+                  "NO_PLAN",
+                  "NO_CONTENT",
+                  "INCOMPLETE",
+                  "COMPLETED"
+                ]
+              }
+            },
+            "description": "First-learning guidance follows whether the earliest task is still open. Account age is not an input."
+          },
           "tasks": {
             "type": "array",
             "items": {
@@ -80948,6 +81100,12 @@
           "replayed": {
             "type": "boolean"
           },
+          "explanation": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512,
+            "description": "One sentence stored with the planning-input snapshot. It is derived from the verified goal, daily minutes and placement result kind."
+          },
           "planningInput": {
             "$ref": "#/components/schemas/B9PlanningInputSnapshot"
           },
@@ -81430,6 +81588,70 @@
               "ELIGIBLE",
               "RESTRICTED"
             ]
+          }
+        }
+      },
+      "B10PlanReplanRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Confirmed intent to reschedule unstarted tasks after a goal change. Completed history and snapshots stay.",
+        "required": [
+          "baseStateVersion",
+          "confirmImpact",
+          "clientEventId"
+        ],
+        "properties": {
+          "baseStateVersion": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1
+          },
+          "confirmImpact": {
+            "type": "boolean",
+            "const": true
+          },
+          "clientEventId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 96
+          }
+        }
+      },
+      "B10PlanReplanResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "planId",
+          "planVersion",
+          "replayed",
+          "rescheduledCount",
+          "preservedCompletedCount"
+        ],
+        "properties": {
+          "planId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "planVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "replayed": {
+            "type": "boolean"
+          },
+          "rescheduledCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "preservedCompletedCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "explanation": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
           }
         }
       }
@@ -84383,6 +84605,23 @@
             "targetUriConfig": "gateway.b14.service-base-urls.learning",
             "pathStrategy": "PRESERVE_PUBLIC_PATH",
             "targetPathTemplate": "/api/v1/learning/plans:ensure",
+            "controllerEvidence": {
+              "sourcePath": "services/learning-service/src/main/java/com/englishflow/learning/web/V2PlansController.java",
+              "requestMapping": "/api/v1/learning"
+            }
+          },
+          {
+            "projectionId": "learning-domain.plans-replan",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/learning/plans:replan",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learning-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learning",
+            "pathStrategy": "PRESERVE_PUBLIC_PATH",
+            "targetPathTemplate": "/api/v1/learning/plans:replan",
             "controllerEvidence": {
               "sourcePath": "services/learning-service/src/main/java/com/englishflow/learning/web/V2PlansController.java",
               "requestMapping": "/api/v1/learning"

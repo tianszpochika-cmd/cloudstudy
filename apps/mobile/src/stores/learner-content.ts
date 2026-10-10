@@ -1,6 +1,8 @@
 import { computed, ref, watch } from 'vue'
 import { defineStore } from 'pinia'
 import { mobileLearnerContentApi, mobileLearnerContentError } from '../api/learner-content'
+import { ensureLearningPlan, readPlanToday, replanLearningPlan } from '../api/plan-today'
+import { shouldEnsurePlan, type PlanTodayQueue } from '../domain/plan-today'
 import type { MobileFirstDayModel, MobileGoalOption, MobileHomeModel, MobileLearnerAccount, MobileMotionMode, MobileOnboardingModel, MobilePlacementModel, MobileReadModelStatus, MobileThemeMode } from '../domain/learner-content'
 import { getUniRuntime } from '../platform/uni-runtime'
 import { createClientId } from '../platform/client-id'
@@ -35,6 +37,10 @@ function emptyPlacementModel(): MobilePlacementModel {
 
 function eventId(prefix: string): string { return createClientId(prefix) }
 
+function httpStatus(error: unknown): number {
+  return typeof error === 'object' && error !== null && 'status' in error && typeof error.status === 'number' ? error.status : 0
+}
+
 export const useLearnerContentStore = defineStore('mobile-learner-content', () => {
   const session = useSessionStore()
   const restored = ref(false)
@@ -56,6 +62,9 @@ export const useLearnerContentStore = defineStore('mobile-learner-content', () =
   const homeStatus = ref<MobileReadModelStatus>('idle')
   const firstDayStatus = ref<MobileReadModelStatus>('idle')
   const lastError = ref<string | null>(null)
+  const planQueue = ref<PlanTodayQueue | null>(null)
+  const planQueueStatus = ref<MobileReadModelStatus>('idle')
+  const planNotice = ref<string | null>(null)
   const progress = computed(() => {
     const value = home.value
     return value && value.targetMinutes > 0 ? Math.min(100, Math.round(value.completedMinutes / value.targetMinutes * 100)) : 0
@@ -109,6 +118,7 @@ export const useLearnerContentStore = defineStore('mobile-learner-content', () =
     home.value = null; firstDay.value = null
     placement.value = emptyPlacementModel()
     placementStatus.value = 'idle'; onboardingStatus.value = 'idle'; homeStatus.value = 'idle'; firstDayStatus.value = 'idle'; lastError.value = null
+    planQueue.value = null; planQueueStatus.value = 'idle'; planNotice.value = null
     onboardingResume.value = null
     resumeCache = null
   }
@@ -210,6 +220,7 @@ export const useLearnerContentStore = defineStore('mobile-learner-content', () =
       resumeCache = null
       await loadOnboardingResume(true)
       persist()
+      await replanAfterGoal(owner)
       return true
     } catch (error) {
       if (!stillCurrent(owner)) return false
@@ -375,6 +386,9 @@ export const useLearnerContentStore = defineStore('mobile-learner-content', () =
       } else {
         placementStatus.value = remote.report || remote.currentQuestion || remote.sessionId?.startsWith('asess_') ? 'ready' : 'empty'
         lastError.value = null
+        if (remote.report?.resultKind === 'ASSESSED') {
+          await ensurePlanFromReport(owner, remote.report.reportId, remote.report.resultKind)
+        }
       }
       persist()
     } catch (error) {
@@ -415,6 +429,54 @@ export const useLearnerContentStore = defineStore('mobile-learner-content', () =
     restore(); homeStatus.value = 'loading'; lastError.value = null
     try { const contentLocale = await ensureContentLocale(owner); if (!contentLocale) throw new Error(lastError.value || '学习语言设置暂时无法读取。'); const remote = await mobileLearnerContentApi.readHome(contentLocale); if (!stillCurrent(owner)) return; home.value = remote; homeStatus.value = home.value.contentStatus === 'UNAVAILABLE' ? 'unavailable' : home.value.tasks.length || home.value.content.length ? 'ready' : 'empty'; persist() }
     catch (error) { if (!stillCurrent(owner)) return; homeStatus.value = 'offline'; lastError.value = mobileLearnerContentError(error).message; persist() }
+    await refreshPlanQueue(owner)
+  }
+  async function refreshPlanQueue(owner: Scope | null = scope()): Promise<void> {
+    if (!stillCurrent(owner)) return
+    try {
+      const queue = await readPlanToday()
+      if (!stillCurrent(owner)) return
+      planQueue.value = queue
+      planQueueStatus.value = queue.planId || queue.itemCount > 0 ? 'ready' : 'empty'
+    } catch {
+      if (!stillCurrent(owner)) return
+      planQueueStatus.value = 'error'
+    }
+  }
+  async function ensurePlanFromReport(owner: Scope | null, reportId: string | null, resultKind: string | null): Promise<void> {
+    if (!stillCurrent(owner) || !shouldEnsurePlan({ reportId, resultKind })) return
+    try {
+      await ensureLearningPlan(reportId as string)
+      if (!stillCurrent(owner)) return
+      await refreshPlanQueue(owner)
+    } catch (error) {
+      if (!stillCurrent(owner)) return
+      planNotice.value = mobileLearnerContentError(error).message || '学习计划还没有生成。定级结果已保存。'
+    }
+  }
+  async function replanAfterGoal(owner: Scope | null): Promise<void> {
+    if (!stillCurrent(owner)) return
+    const knownVersion = planQueue.value?.planVersion ?? 0
+    await refreshPlanQueue(owner)
+    if (!stillCurrent(owner)) return
+    const version = planQueueStatus.value !== 'error' && (planQueue.value?.planVersion ?? 0) >= 1
+      ? (planQueue.value?.planVersion ?? 0)
+      : knownVersion
+    if (version < 1) return
+    const clientEventId = eventId('plan-replan')
+    try {
+      await replanLearningPlan(version, clientEventId)
+      if (!stillCurrent(owner)) return
+      await refreshPlanQueue(owner)
+    } catch (error) {
+      if (!stillCurrent(owner)) return
+      if (httpStatus(error) === 409) {
+        planNotice.value = '计划版本已变化，请重新读取。'
+        await refreshPlanQueue(owner)
+        return
+      }
+      planNotice.value = mobileLearnerContentError(error).message || '目标已保存。计划还没有按新目标重排。'
+    }
   }
   function preserveContentProjectionAfterCompletion(model: MobileHomeModel): MobileHomeModel {
     // Completion returns the updated task stream, not the content catalog.
@@ -447,5 +509,5 @@ export const useLearnerContentStore = defineStore('mobile-learner-content', () =
       persist()
     }
   }
-  return { onboarding, goals, quotas, account, accountStatus, home, firstDay, placement, onboardingStatus, onboardingResume, homeStatus, firstDayStatus, placementStatus, lastError, progress, restore, persist, loadOnboarding, loadOnboardingResume, recordRequiredConsents, saveTarget, saveOnboarding, loadAccount, savePreferences, saveContentLocale, loadFirstDay, loadPlacement, submitPlacementAnswer, retestPlacement, loadHome, completeTask }
+  return { onboarding, goals, quotas, account, accountStatus, home, firstDay, placement, onboardingStatus, onboardingResume, homeStatus, firstDayStatus, placementStatus, lastError, planQueue, planQueueStatus, planNotice, progress, restore, persist, loadOnboarding, loadOnboardingResume, recordRequiredConsents, saveTarget, saveOnboarding, loadAccount, savePreferences, saveContentLocale, loadFirstDay, loadPlacement, submitPlacementAnswer, retestPlacement, loadHome, refreshPlanQueue, completeTask }
 })

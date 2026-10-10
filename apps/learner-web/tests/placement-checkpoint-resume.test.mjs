@@ -341,6 +341,8 @@ const storeModule = load('src/stores/learner-content.ts', {
     createLocalPlacementSnapshot: () => { throw new Error('real restore must not open a local paper') },
   },
   '../api/practice-today': { readPracticeToday: async () => [], submitPracticeTodayTask: async () => ({}) },
+  '../api/plan-today': { readPlanTodayQueue: async () => ({ planId: '', planVersion: 0, itemCount: 0 }), ensureLearningPlan: async () => ({}), replanLearningPlan: async () => ({}) },
+  '../domain/plan-today': { shouldEnsurePlan: () => false },
   '../domain/learner-content': learnerDomain,
   '../domain/onboarding-resume': load('src/domain/onboarding-resume.ts', {}),
 }, [['import.meta.env.VITE_RUNTIME_MODE', "'local-real'"]])

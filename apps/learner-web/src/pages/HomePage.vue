@@ -5,6 +5,7 @@ import StatePanel from '../components/StatePanel.vue'
 import AppIcon, { type AppIconName } from '../components/AppIcon.vue'
 import StudyArtwork from '../components/StudyArtwork.vue'
 import { hasPlacementEntryReached, ONBOARDING_GUIDE_ACTION, onboardingProgressLabel, onboardingRemainingStepLabels, selectOnboardingResumeStep, showOnboardingGuide } from '../domain/onboarding-resume'
+import { emptyStateView, firstLearningGuideCopy, type EmptyStateView } from '../domain/plan-today'
 import { useLearnerContentStore } from '../stores/learner-content'
 import { useExperienceText } from '../platform/experience-ui'
 import { useLearningUi } from '../platform/learning-ui'
@@ -32,6 +33,19 @@ const stream = computed(() => home.value?.today?.dailyStream ?? home.value?.home
 const tasks = computed(() => stream.value?.tasks ?? [])
 const content = computed(() => home.value?.content ?? [])
 const plan = computed(() => home.value?.plan ?? null)
+const planExplanation = computed(() => store.planQueue?.explanation ?? null)
+const firstLearningCopy = computed(() => store.planQueue?.firstLearning?.guideVisible
+  ? firstLearningGuideCopy(store.planQueue.firstLearning.reason)
+  : null)
+const planEmpty = computed(() => {
+  if (tasks.value.length > 0) return null
+  if (store.planQueueStatus !== 'ready' && store.planQueueStatus !== 'empty') return null
+  return emptyStateView({ failed: false, reason: store.planQueue?.emptyReason ?? null, hasTasks: false })
+})
+function openPlanEmpty(view: EmptyStateView): void {
+  if (view.to === 'retry') { void store.refreshPlanQueue(); return }
+  void router.push({ name: view.to === 'home' ? 'home' : view.to })
+}
 const completeCount = computed(() => tasks.value.filter(task => task.completed).length)
 const nextTask = computed(() => tasks.value.find(task => !task.completed && task.contentCode))
 const heroUnavailable = computed(() => store.homeStatus === 'error' || store.homeStatus === 'offline')
@@ -65,6 +79,8 @@ onMounted(() => { store.restore(); void store.loadHome(); void loadGuide() })
   <section class="page-stack home-experience" aria-labelledby="home-title">
     <div class="home-greeting"><div><p class="experience-eyebrow"><AppIcon name="spark" :size="15" />A LITTLE, EVERY DAY</p><h1 id="home-title">{{ t('homeTitle') }}</h1><p>{{ t('homeDescription') }}</p></div><RouterLink v-if="!isRestricted" class="text-link" :to="{ name: 'onboarding' }">{{ t('setGoal') }}<AppIcon name="arrow" :size="16" /></RouterLink></div>
     <RouterLink v-if="guideVisible" class="onboarding-guide" :to="guideTo"><span class="onboarding-guide__copy"><span>{{ guideLabel }}</span><small v-if="guideSteps.length">剩余步骤：{{ guideSteps.join('、') }}</small></span><strong>{{ guideAction }}</strong></RouterLink>
+    <p v-if="firstLearningCopy" class="first-learning-guide" role="status">{{ firstLearningCopy }}</p>
+    <p v-if="store.planNotice" class="plan-notice" role="status">{{ store.planNotice }}</p>
     <div v-if="isRestricted" class="restricted-banner" role="alert">
       <div class="restricted-banner__copy">
         <strong>学习功能暂未开放</strong>
@@ -84,11 +100,12 @@ onMounted(() => { store.restore(); void store.loadHome(); void loadGuide() })
         </article>
         <article class="experience-card home-tasks">
           <div class="section-heading"><div><span class="card-kicker">YOUR DAILY PLAN</span><h2>{{ t('myTasks') }}</h2></div><RouterLink class="text-link" :to="{ name: 'today' }">{{ t('viewAll') }}<AppIcon name="arrow" :size="16" /></RouterLink></div>
-          <div v-if="plan" class="plan-banner"><strong>学习计划 {{ plan.planId }}</strong><span>{{ plan.taskCount }} 个今日任务已下发</span><RouterLink class="text-link" :to="{ name: 'today' }">去完成<AppIcon name="arrow" :size="16" /></RouterLink></div>
+          <div v-if="planExplanation || plan" class="plan-banner"><strong>{{ planExplanation || `学习计划 ${plan?.planId}` }}</strong><span v-if="plan">{{ planExplanation ? `学习计划 ${plan.planId}` : `${plan.taskCount} 个今日任务已下发` }}</span><RouterLink class="text-link" :to="{ name: 'today' }">去完成<AppIcon name="arrow" :size="16" /></RouterLink></div>
           <StatePanel v-if="store.homeStatus === 'loading'" state="loading" :title="t('loading')" />
           <StatePanel v-else-if="store.homeStatus === 'offline'" state="offline" :title="ui.t('common.state.offline')" :description="ui.t('learning.state.offline')" :action-label="ui.t('common.retry')" @action="() => { void store.loadHome() }" />
           <StatePanel v-else-if="store.lastError" state="error" :title="t('myTasks')" :description="userFacingError(store.lastError, '暂时无法读取今日任务，请稍后重试。')" action-label="重试" @action="() => { void store.loadHome() }" />
           <div v-else-if="tasks.length" class="daily-task-list"><button v-for="(task, index) in tasks.slice(0,4)" :key="task.id" type="button" class="daily-task" :class="{ 'daily-task--done': task.completed }" :disabled="task.completed || isRestricted" @click="start(task)"><span class="daily-task__number"><AppIcon v-if="task.completed" name="check" :size="18" /><template v-else>{{ String(index + 1).padStart(2, '0') }}</template></span><span class="daily-task__copy"><strong>{{ task.title }}</strong><small>{{ task.minutes }} {{ t('minutes') }} · {{ task.description }}</small></span><span class="daily-task__state">{{ task.completed ? t('completed') : task.contentCode ? t('start') : '浏览课程' }}</span><AppIcon v-if="!task.completed" name="arrow" :size="17" /></button></div>
+          <StatePanel v-else-if="planEmpty" state="empty" :title="planEmpty.title" :description="planEmpty.description" :action-label="planEmpty.action" @action="openPlanEmpty(planEmpty)" />
           <StatePanel v-else state="empty" title="今天还没有安排任务" description="可以先从书架选择一节课。" action-label="浏览课程" @action="router.push({ name: 'courses' })" />
         </article>
       </div>
@@ -112,4 +129,5 @@ onMounted(() => { store.restore(); void store.loadHome(); void loadGuide() })
 .restricted-banner__actions{display:flex;gap:10px;align-items:center}
 .plan-banner{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 14px;border:1px solid var(--yx-color-border);border-radius:12px;background:var(--yx-color-surface-card);margin-bottom:12px}
 .plan-banner span{color:var(--yx-color-text-secondary);font-size:13px}
+.first-learning-guide,.plan-notice{margin:0 0 12px;padding:12px 14px;border:1px solid var(--yx-color-border);border-radius:12px;background:var(--yx-color-surface-card)}
 </style>

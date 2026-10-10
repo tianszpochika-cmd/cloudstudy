@@ -1,5 +1,7 @@
 package com.englishflow.learning.web;
 
+import com.englishflow.learning.application.PlanDayFacts;
+
 import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -61,6 +63,7 @@ public class V2LearningController {
                 "targetMinutes", plan.get("targetMinutes"),
                 "generatedAt", Instant.now().toString(),
                 "source", "learning-service:owner-db"));
+        data.put("firstLearning", firstLearning(subject, plan));
         return Map.of("data", data);
     }
 
@@ -70,13 +73,25 @@ public class V2LearningController {
         String subject = LearningHttpPrincipals.require(authentication, "learning.review.read").subject();
         List<Map<String, Object>> items = todayItems(subject);
         Map<String, Object> plan = currentPlanRow(subject);
-        return Map.of("data", Map.of(
-                "principalId", subject,
-                "planVersion", plan.get("planVersion"),
-                "targetMinutes", plan.get("targetMinutes"),
-                "count", items.size(),
-                "items", items.stream().limit(50).toList(),
-                "generatedAt", Instant.now().toString()));
+        QueueFacts facts = queueFacts(subject);
+        boolean hasPlan = !"EMPTY".equals(plan.get("status"));
+        String emptyReason = PlanDayFacts.emptyReason(hasPlan, facts.openDue(), facts.total(), facts.unfinished());
+        Map<String, Object> data = new LinkedHashMap<>();
+        data.put("principalId", subject);
+        data.put("planId", plan.get("planId"));
+        data.put("status", plan.get("status"));
+        data.put("planVersion", plan.get("planVersion"));
+        data.put("targetMinutes", plan.get("targetMinutes"));
+        data.put("count", items.size());
+        data.put("items", items.stream().limit(50).toList());
+        data.put("emptyReason", emptyReason);
+        data.put("firstLearning", firstLearning(subject, plan));
+        if (!facts.explanation().isBlank()) {
+            data.put("explanation", facts.explanation());
+            data.put("explanationPinVersion", facts.explanationPinVersion());
+        }
+        data.put("generatedAt", Instant.now().toString());
+        return Map.of("data", data);
     }
 
     private Map<String, Object> currentPlanRow(String subject) {
@@ -110,6 +125,65 @@ public class V2LearningController {
                     if (ref != null) item.put("practiceRef", ref);
                     return Map.copyOf(item);
                 }).toList();
+    }
+
+    private record QueueFacts(int openDue, int unfinished, int total, String explanation, long explanationPinVersion) {
+    }
+
+    private QueueFacts queueFacts(String subject) {
+        Map<String, Object> counts = jdbc.queryForMap("""
+                SELECT COALESCE(SUM(CASE WHEN due_at <= CURRENT_TIMESTAMP(6)
+                          AND (stage = 'NEW' OR review_count = 0) THEN 1 ELSE 0 END), 0) AS open_due,
+                       COALESCE(SUM(CASE WHEN stage = 'NEW' OR review_count = 0 THEN 1 ELSE 0 END), 0) AS unfinished,
+                       COUNT(*) AS total_rows
+                  FROM b25_learning_srs_state
+                 WHERE principal_id = ? AND tenant_id = ?
+                """, subject, TENANT);
+        List<Map<String, Object>> explanation = jdbc.queryForList("""
+                SELECT explanation_text, pin_version FROM learning_plan_input_snapshot
+                 WHERE tenant_id = ? AND principal_id = ?
+                 ORDER BY created_at DESC, pin_version DESC
+                 LIMIT 1
+                """, TENANT, subject);
+        String text = "";
+        long pinVersion = 0L;
+        if (!explanation.isEmpty()) {
+            Object stored = explanation.getFirst().get("explanation_text");
+            text = stored == null ? "" : String.valueOf(stored);
+            if (explanation.getFirst().get("pin_version") instanceof Number number) {
+                pinVersion = number.longValue();
+            }
+        }
+        return new QueueFacts(count(counts.get("open_due")), count(counts.get("unfinished")),
+                count(counts.get("total_rows")), text, pinVersion);
+    }
+
+    private Map<String, Object> firstLearning(String subject, Map<String, Object> plan) {
+        boolean hasPlan = !"EMPTY".equals(plan.get("status"));
+        List<Map<String, Object>> first = jdbc.queryForList("""
+                SELECT stage, review_count FROM b25_learning_srs_state
+                 WHERE principal_id = ? AND tenant_id = ?
+                 ORDER BY item_id
+                 LIMIT 1
+                """, subject, TENANT);
+        boolean hasTask = !first.isEmpty();
+        boolean open = false;
+        if (hasTask) {
+            String stage = String.valueOf(first.getFirst().get("stage"));
+            int reviews = count(first.getFirst().get("review_count"));
+            open = "NEW".equals(stage) && reviews == 0;
+        }
+        String reason = PlanDayFacts.firstLearningReason(hasPlan, hasTask, open);
+        return Map.of(
+                "guideVisible", PlanDayFacts.firstLearningGuideVisible(reason),
+                "reason", reason);
+    }
+
+    private static int count(Object value) {
+        if (value instanceof Number number) {
+            return number.intValue();
+        }
+        return 0;
     }
 
     private static final tools.jackson.databind.ObjectMapper REF_READER =

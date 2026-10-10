@@ -2957,6 +2957,23 @@
             }
           },
           {
+            "projectionId": "learning-domain.plans-replan",
+            "status": "AVAILABLE",
+            "publicPathTemplate": "/api/v1/learning/plans:replan",
+            "methods": [
+              "POST"
+            ],
+            "executionKind": "UPSTREAM",
+            "upstreamOwner": "learning-service",
+            "targetUriConfig": "gateway.b14.service-base-urls.learning",
+            "pathStrategy": "PRESERVE_PUBLIC_PATH",
+            "targetPathTemplate": "/api/v1/learning/plans:replan",
+            "controllerEvidence": {
+              "sourcePath": "services/learning-service/src/main/java/com/englishflow/learning/web/V2PlansController.java",
+              "requestMapping": "/api/v1/learning"
+            }
+          },
+          {
             "projectionId": "learning-domain.daily-report",
             "status": "AVAILABLE",
             "publicPathTemplate": "/api/v1/learning/stats/daily-report",
