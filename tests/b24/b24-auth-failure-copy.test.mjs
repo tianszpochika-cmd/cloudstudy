@@ -64,7 +64,7 @@ test('real API Error objects map to concise bilingual login and registration cop
     assert.equal(mobileHelpers.mobileAuthFailureCopy('login', generic503, tMobile), mobile.auth.login.retry)
     assert.equal(learnerHelpers.learnerAuthFailureCopy('register', generic409, tWeb), learner.register.failed)
     assert.equal(mobileHelpers.mobileAuthFailureCopy('register', generic409, tMobile), mobile.auth.register.failed)
-    assert.equal(learnerHelpers.learnerAuthFailureCopy('register', accountConflict, tWeb), learner.register.accountConflict)
+    assert.equal(learnerHelpers.learnerAuthFailureCopy('register', accountConflict, tWeb), learner.register.failed)
     assert.equal(mobileHelpers.mobileAuthFailureCopy('register', accountConflict, tMobile), mobile.auth.register.accountConflict)
 
     assert.equal(learnerHelpers.learnerAuthFailureCopy('login', invalidCredentials, tWeb), learner.login.invalidCredentials)

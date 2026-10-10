@@ -81,7 +81,9 @@ test('learner-content rejects A storage for B and discards A home response after
     '../platform/client-id': { createClientId: () => 'event' },
     '../domain/b1': f.b1Domain,
     '../api/learner-content': { learnerContentPort: port, createLocalPlacementSnapshot: () => ({}) },
+    '../api/practice-today': { readPracticeToday: async () => [], submitPracticeTodayTask: async () => ({}) },
     '../domain/learner-content': f.learnerDomain,
+    '../domain/onboarding-resume': load('src/domain/onboarding-resume.ts', {}),
   }, [['import.meta.env.VITE_RUNTIME_MODE', "'local-real'"]])
   const store = storeModule.useLearnerContentStore()
   store.setConsent({ birthYear: 1990, ageConfirmed: true, privacyConsent: true, termsConsent: true })
@@ -117,7 +119,9 @@ test('learner-content A logout and A login rejects delayed response from the ear
     '../platform/client-id': { createClientId: () => 'event' },
     '../domain/b1': f.b1Domain,
     '../api/learner-content': { learnerContentPort: { readToday: () => pending.promise }, createLocalPlacementSnapshot: () => ({}) },
+    '../api/practice-today': { readPracticeToday: async () => [], submitPracticeTodayTask: async () => ({}) },
     '../domain/learner-content': f.learnerDomain,
+    '../domain/onboarding-resume': load('src/domain/onboarding-resume.ts', {}),
   }, [['import.meta.env.VITE_RUNTIME_MODE', "'local-real'"]])
   const store = storeModule.useLearnerContentStore()
   const oldRead = store.loadToday()

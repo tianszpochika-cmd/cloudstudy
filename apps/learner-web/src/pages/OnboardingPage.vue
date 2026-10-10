@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import AppIcon from '../components/AppIcon.vue'
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { dailyQuotaOptions, subTags, targetGoals, type DailyQuotaMinutes, type SubTag, type TargetGoal } from '../domain/b1'
+import { apiClient } from '../api/client'
+import { dailyQuotaOptions, subTags, targetGoals, type DailyQuotaMinutes, type SubTag } from '../domain/b1'
+import { emptyConsentChoices, readPublishedConsentVersion, requiredConsentItems } from '../domain/onboarding-consent-copy'
+import { canonicalGoalOptions, mapUiGoal, onboardingProgressLabel, prefillSavedTarget, selectOnboardingResumeStep, type CanonicalTargetGoal, type OnboardingResumeStep } from '../domain/onboarding-resume'
 import { useLearnerContentStore } from '../stores/learner-content'
 import { useSessionStore } from '../stores/session'
 import { userFacingError } from '../platform/user-facing-error'
@@ -10,34 +13,100 @@ import { userFacingError } from '../platform/user-facing-error'
 const router = useRouter()
 const store = useLearnerContentStore()
 const session = useSessionStore()
-const step = ref<1 | 2>(1)
+const step = ref<OnboardingResumeStep>('gate')
 const birthYear = ref<number | null>(null)
 const ageConfirmed = ref(false)
-const privacyConsent = ref(false)
-const termsConsent = ref(false)
-const targetGoal = ref<TargetGoal | null>(null)
+const consentChecked = reactive(emptyConsentChoices())
+const publishedConsentVersion = ref<string | null>(null)
+const targetGoal = ref<CanonicalTargetGoal | null>(null)
 const selectedTags = ref<SubTag[]>([])
 const quota = ref<DailyQuotaMinutes>(15)
 const saving = ref(false)
+const savedGoal = ref<CanonicalTargetGoal | null>(null)
+const savedQuota = ref<number | null>(null)
+const resumeError = ref<string | null>(null)
 
-const goalOptions = computed(() => store.onboardingOptions.length ? store.onboardingOptions : targetGoals)
+const goalOptions = computed(() => canonicalGoalOptions(store.onboardingOptions.length ? store.onboardingOptions : targetGoals))
 const quotaOptions = computed(() => store.onboardingQuotas.length ? store.onboardingQuotas : dailyQuotaOptions)
 const adultBirthYearValid = computed(() => typeof birthYear.value === 'number' && Number.isInteger(birthYear.value) && birthYear.value >= 1900 && birthYear.value <= new Date().getFullYear() - 18)
+const targetDirty = computed(() => Boolean(savedGoal.value) && (targetGoal.value !== savedGoal.value || quota.value !== savedQuota.value))
+const requiredConsentsChecked = computed(() => requiredConsentItems.every((item) => consentChecked[item.purpose]))
 const canContinue = computed(() => {
-  if (session.adultGate === 'REJECTED') return false
-  return step.value === 1
-    ? adultBirthYearValid.value && ageConfirmed.value && privacyConsent.value && termsConsent.value
-    : Boolean(targetGoal.value && quota.value)
+  if (step.value === 'gate') return adultBirthYearValid.value && ageConfirmed.value
+  if (step.value === 'consent') return requiredConsentsChecked.value && Boolean(publishedConsentVersion.value)
+  if (step.value === 'assessment') return true
+  return Boolean(targetGoal.value && quota.value)
 })
-const stepLabel = computed(() => session.adultGate === 'REJECTED' ? '访问受限' : step.value === 1 ? '确认身份与同意事项' : '选择学习目标')
+let consentVersionRequest = 0
 
-onMounted(async () => {
-  store.restore()
-  await store.loadOnboarding()
-  targetGoal.value = store.onboarding.targetGoal
-  quota.value = store.onboarding.dailyQuotaMinutes ?? 15
-  selectedTags.value = [...store.onboarding.subTags]
+function clearConsentChoices(): void {
+  consentVersionRequest += 1
+  for (const item of requiredConsentItems) consentChecked[item.purpose] = false
+  publishedConsentVersion.value = null
+}
+
+async function loadPublishedConsentVersion(): Promise<void> {
+  const request = ++consentVersionRequest
+  publishedConsentVersion.value = null
+  try {
+    const raw = await apiClient.request<unknown>('/iam/principal/me')
+    if (request !== consentVersionRequest || step.value !== 'consent') return
+    publishedConsentVersion.value = readPublishedConsentVersion(raw)
+  } catch {
+    if (request !== consentVersionRequest || step.value !== 'consent') return
+    publishedConsentVersion.value = null
+  }
+}
+const stepLabel = computed(() => step.value === 'gate' ? '确认成人身份' : step.value === 'consent' ? '必要同意' : step.value === 'assessment' ? '目标已保存' : '选择学习目标')
+const progressLabel = computed(() => store.onboardingResume ? onboardingProgressLabel(store.onboardingResume) : '正在读取已保存进度')
+const stepRank = computed(() => step.value === 'gate' ? 0 : step.value === 'consent' ? 1 : step.value === 'goal' ? 2 : 3)
+const primaryLabel = computed(() => {
+  if (saving.value && step.value !== 'assessment') return step.value === 'goal' ? '正在保存…' : '正在确认…'
+  if (step.value === 'assessment') return '开始定级'
+  if (step.value === 'goal') return '保存并开始测评'
+  return '继续'
 })
+const targetUnreadable = computed(() => step.value === 'goal' && store.onboardingResume?.target.readable === false)
+
+onMounted(() => { void loadResume() })
+
+async function leaveRejected(): Promise<void> {
+  await router.replace({ name: 'forbidden' })
+}
+
+async function loadResume(): Promise<void> {
+  if (session.adultGate === 'REJECTED') { await leaveRejected(); return }
+  resumeError.value = null
+  birthYear.value = null
+  ageConfirmed.value = false
+  clearConsentChoices()
+  selectedTags.value = []
+  savedGoal.value = null
+  savedQuota.value = null
+  try {
+    const facts = await store.loadOnboardingResume(true)
+    if (session.adultGate === 'REJECTED' || selectOnboardingResumeStep(facts) === 'rejected') { await leaveRejected(); return }
+    step.value = selectOnboardingResumeStep(facts)
+    const filled = prefillSavedTarget(facts.target)
+    if (filled.goal && filled.quota) {
+      savedGoal.value = filled.goal
+      savedQuota.value = filled.quota
+      targetGoal.value = filled.goal
+      quota.value = filled.quota
+    } else {
+      targetGoal.value = null
+      quota.value = 15
+    }
+    if (step.value === 'goal' || step.value === 'assessment') {
+      try { await store.loadOnboarding() } catch { /* the local goal catalog remains usable */ }
+    }
+    if (step.value === 'consent') void loadPublishedConsentVersion()
+  } catch (error) {
+    resumeError.value = error instanceof Error ? error.message : '已保存进度暂时无法读取。'
+    step.value = session.adultGate === 'PASSED' ? 'consent' : 'gate'
+    if (step.value === 'consent') void loadPublishedConsentVersion()
+  }
+}
 
 function toggleTag(tag: SubTag): void {
   selectedTags.value = selectedTags.value.includes(tag)
@@ -45,37 +114,55 @@ function toggleTag(tag: SubTag): void {
     : selectedTags.value.length < 3 ? [...selectedTags.value, tag] : selectedTags.value
 }
 
-function nextPath(): string | { name: 'assessment' } {
-  const returnTo = session.consumeReturnTo()
-  return returnTo === '/home' || returnTo === '/onboarding' || returnTo === '/adult-gate'
-    ? { name: 'assessment' }
-    : returnTo
+function back(): void {
+  if (saving.value) return
+  if (step.value === 'consent') step.value = 'gate'
+  else if (step.value === 'goal') {
+    step.value = 'consent'
+    void loadPublishedConsentVersion()
+  }
+}
+
+async function saveEdits(): Promise<void> {
+  const wireGoal = mapUiGoal(targetGoal.value)
+  if (!targetDirty.value || !wireGoal || !quota.value || saving.value) return
+  saving.value = true
+  try {
+    if (await store.saveTarget(wireGoal, quota.value)) {
+      savedGoal.value = targetGoal.value
+      savedQuota.value = quota.value
+      step.value = 'assessment'
+    }
+  } finally {
+    saving.value = false
+  }
 }
 
 async function next(): Promise<void> {
   if (!canContinue.value || saving.value) return
-
-  if (step.value === 1) {
-    saving.value = true
-    try {
-      // The server decision remains authoritative; this screen only keeps the
-      // three explicit user acknowledgements together in one first-run step.
-      if (session.adultGate !== 'PASSED' && !(await session.confirmAdultGate(Number(birthYear.value)))) return
-      // Learner reads before consent can legitimately return 403. Do not carry
-      // that stale read error into the goal step after the adult gate succeeds.
-      store.lastError = null
-      store.setConsent({ birthYear: Number(birthYear.value), ageConfirmed: true, privacyConsent: true, termsConsent: true })
-      step.value = 2
-    } finally {
-      saving.value = false
-    }
+  if (step.value === 'assessment') {
+    await router.replace({ name: 'assessment' })
     return
   }
-
-  store.setPreferences(targetGoal.value as TargetGoal, selectedTags.value, quota.value)
   saving.value = true
   try {
-    if (await store.saveOnboarding()) await router.replace(nextPath())
+    if (step.value === 'gate') {
+      if (!(await session.confirmAdultGate(Number(birthYear.value)))) {
+        if (session.adultGate === 'REJECTED') await leaveRejected()
+        return
+      }
+      store.lastError = null
+      step.value = 'consent'
+      void loadPublishedConsentVersion()
+      return
+    }
+    if (step.value === 'consent') {
+      if (await store.recordRequiredConsents()) step.value = 'goal'
+      return
+    }
+    const wireGoal = mapUiGoal(targetGoal.value)
+    if (!wireGoal || !quota.value) return
+    if (await store.saveTarget(wireGoal, quota.value)) await router.replace({ name: 'assessment' })
   } finally {
     saving.value = false
   }
@@ -98,63 +185,85 @@ async function cancel(): Promise<void> {
           <AppIcon name="spark" :size="32" />
           <span>语学星</span>
         </div>
-        <p class="eyebrow">FIRST DAY · {{ step }}/2</p>
+        <p class="eyebrow">按已保存进度继续</p>
         <h1 id="onboarding-title">欢迎来到语学星</h1>
-        <p class="lead">先确认身份，再选择学习目标。</p>
+        <p class="lead">{{ progressLabel }}</p>
 
-        <ol class="setup-progress" aria-label="首次设置进度">
-          <li :class="{ 'setup-progress__item--active': step === 1, 'setup-progress__item--done': step === 2 }" :aria-current="step === 1 ? 'step' : undefined">
+        <ol class="setup-progress" aria-label="设置进度">
+          <li :class="{ 'setup-progress__item--active': stepRank === 0, 'setup-progress__item--done': stepRank > 0 }" :aria-current="stepRank === 0 ? 'step' : undefined">
             <span class="setup-progress__number">1</span>
             <span>确认身份</span>
           </li>
-          <li :class="{ 'setup-progress__item--active': step === 2 }" :aria-current="step === 2 ? 'step' : undefined">
+          <li :class="{ 'setup-progress__item--active': stepRank === 1, 'setup-progress__item--done': stepRank > 1 }" :aria-current="stepRank === 1 ? 'step' : undefined">
             <span class="setup-progress__number">2</span>
-            <span>选择目标</span>
+            <span>必要同意</span>
+          </li>
+          <li :class="{ 'setup-progress__item--active': stepRank === 2, 'setup-progress__item--done': stepRank > 2 }" :aria-current="stepRank === 2 ? 'step' : undefined">
+            <span class="setup-progress__number">3</span>
+            <span>学习目标</span>
           </li>
         </ol>
       </header>
 
-      <Transition name="setup-step" mode="out-in">
-        <div v-if="session.adultGate === 'REJECTED'" key="rejected" class="setup-card" role="alert">
-          <p class="setup-card__kicker">访问受限</p>
-          <h2>暂未开放学习</h2>
-          <p class="setup-card__description">当前版本仅面向 18 岁以上成人开放，暂不能向你开放学习功能。</p>
-          <p class="policy-note">根据平台合规要求，Phase 1 仅面向 18 周岁以上成年人开放。你可以访问账号设置、隐私与客服支持功能。</p>
-          <div class="setup-actions">
-            <RouterLink class="button button--secondary" to="/settings">前往账号设置</RouterLink>
-            <RouterLink class="button button--ghost" to="/support">帮助与反馈</RouterLink>
-          </div>
-        </div>
+      <p v-if="session.adultGate === 'REJECTED'" class="policy-note" role="status">正在打开无权限页。</p>
 
-        <form v-else-if="step === 1" key="identity" class="setup-card" @submit.prevent="next">
+      <Transition v-else name="setup-step" mode="out-in">
+        <form v-if="step === 'gate'" key="gate" class="setup-card" @submit.prevent="next">
           <p class="setup-card__kicker">{{ stepLabel }}</p>
           <h2>确认成人身份</h2>
-          <p class="setup-card__description">仅限已满 18 岁的学习者。</p>
-
+          <p class="setup-card__description">只收集出生年份，用来判断是否已满 18 岁。现有成人门不需要月和日，所以不收集完整生日。成人门还没通过时，停在这一步。</p>
+          <p class="policy-note">如果没有通过，仍可前往账号设置、帮助与反馈或退出登录。这里不提供再试一次，也不提供改年份。</p>
           <label class="field-label" for="adult-birth-year">
             出生年份
             <input id="adult-birth-year" v-model.number="birthYear" type="number" min="1900" :max="new Date().getFullYear() - 18" autocomplete="bday-year" required />
           </label>
           <div class="consent-list">
             <label class="check"><input v-model="ageConfirmed" type="checkbox" required /> <span>我确认自己已满 18 周岁</span></label>
-            <label class="check"><input v-model="privacyConsent" type="checkbox" required /> <span>我同意隐私说明</span></label>
-            <label class="check"><input v-model="termsConsent" type="checkbox" required /> <span>我同意学习服务条款</span></label>
           </div>
-          <p v-if="session.lastError" class="setup-error" role="alert">{{ userFacingError(session.lastError, '身份确认未完成，请重试。') }}</p>
+          <p class="policy-note">本页还没提交的内容只留在这一页，离开后不会保留。</p>
+          <p v-if="resumeError" class="setup-error" role="alert">{{ resumeError }}</p>
+          <p v-if="session.lastError" class="setup-error" role="alert">{{ userFacingError(session.lastError, '身份确认未完成，请重试。本页还没提交的内容，离开后不会保留。') }}</p>
           <div class="setup-actions">
-            <button class="button button--primary" type="submit" :disabled="saving || !canContinue">{{ saving ? '正在确认…' : '继续' }}</button>
+            <button class="button button--primary" type="submit" :disabled="saving || !canContinue">{{ primaryLabel }}</button>
           </div>
         </form>
 
-        <form v-else key="plan" class="setup-card" @submit.prevent="next">
+        <form v-else-if="step === 'consent'" key="consent" class="setup-card" @submit.prevent="next">
           <p class="setup-card__kicker">{{ stepLabel }}</p>
-          <h2>你想先解决什么？</h2>
-          <p class="setup-card__description">选一个最重要的方向，我们会据此准备首日测评和学习任务。</p>
+          <h2>完成必要同意</h2>
+          <p class="setup-card__description">账号条款、隐私说明和成人学习资格要逐项看见。开始时不勾选，也不默认全选。</p>
+          <div class="consent-list">
+            <label v-for="item in requiredConsentItems" :key="item.purpose" class="check">
+              <input v-model="consentChecked[item.purpose]" type="checkbox" />
+              <span class="consent-copy">
+                <strong>{{ item.label }}</strong>
+                <small>用途码 {{ item.purpose }}</small>
+                <small>必要</small>
+                <small>已发布版本 {{ publishedConsentVersion || '版本未读到' }}</small>
+              </span>
+            </label>
+          </div>
+          <p v-if="!requiredConsentsChecked" class="policy-note">未勾选时，受影响的是学习资格，不是把账号设置、帮助与反馈和退出登录一起禁掉。</p>
+          <p v-if="!publishedConsentVersion" class="policy-note">版本未读到。已发布版本暂时读不到，这一步先不提交同意。</p>
+          <p class="policy-note">本页还没提交的内容只留在这一页，离开后不会保留。</p>
+          <p v-if="resumeError" class="setup-error" role="alert">{{ resumeError }}</p>
+          <p v-if="store.lastError" class="setup-error" role="alert">{{ userFacingError(store.lastError, '必要同意尚未保存。本页还没提交的内容，离开后不会保留。') }}</p>
+          <div class="setup-actions">
+            <button class="button button--ghost" type="button" :disabled="saving" @click="back">上一步</button>
+            <button class="button button--primary" type="submit" :disabled="saving || !canContinue">{{ primaryLabel }}</button>
+          </div>
+        </form>
+
+        <form v-else key="goal" class="setup-card" @submit.prevent="next">
+          <p class="setup-card__kicker">{{ stepLabel }}</p>
+          <h2>{{ step === 'assessment' ? '目标已保存' : '你想先解决什么？' }}</h2>
+          <p class="setup-card__description">{{ step === 'assessment' ? '已保存的目标仍在服务端。没有改目标的话，直接开始定级，不必重填。' : '选一个目标并保存后，进入现有定级入口。' }}</p>
+          <p v-if="targetUnreadable" class="policy-note" role="status">学习目标暂时无法读取。本页不会把读失败当成没有目标。</p>
 
           <fieldset class="setup-fieldset">
             <legend>学习目标</legend>
             <div class="choice-grid">
-              <button v-for="goal in goalOptions" :key="goal.value" class="choice" :class="{ selected: targetGoal === goal.value }" type="button" :aria-pressed="targetGoal === goal.value" @click="targetGoal = goal.value">
+              <button v-for="goal in goalOptions" :key="goal.value" class="choice" :class="{ selected: targetGoal === goal.value }" type="button" :aria-pressed="targetGoal === goal.value" :data-goal-code="goal.value" @click="targetGoal = goal.value">
                 <strong>{{ goal.label }}</strong>
                 <span>{{ goal.description }}</span>
               </button>
@@ -162,7 +271,7 @@ async function cancel(): Promise<void> {
           </fieldset>
 
           <fieldset class="setup-fieldset">
-            <legend>可选重点 <small>最多 3 个</small></legend>
+            <legend>可选重点 <small>可以稍后补</small></legend>
             <div class="tag-list">
               <button v-for="tag in subTags" :key="tag.value" class="tag" :class="{ selected: selectedTags.includes(tag.value) }" type="button" :aria-pressed="selectedTags.includes(tag.value)" @click="toggleTag(tag.value)">{{ tag.label }}</button>
             </div>
@@ -175,11 +284,12 @@ async function cancel(): Promise<void> {
             </div>
           </fieldset>
 
-          <p class="policy-note">目标不需要一次选对，以后可以随时调整。</p>
-          <p v-if="store.lastError" class="setup-error" role="alert">{{ store.lastError }}</p>
+          <p class="policy-note">本页还没提交的内容只留在这一页，离开后不会保留。可选重点还不能单独保存，离开本页后不会保留。</p>
+          <p v-if="store.lastError" class="setup-error" role="alert">{{ userFacingError(store.lastError, '学习目标尚未保存。本页还没提交的内容，离开后不会保留。') }}</p>
           <div class="setup-actions">
-            <button class="button button--ghost" type="button" :disabled="saving" @click="step = 1">上一步</button>
-            <button class="button button--primary" type="submit" :disabled="saving || !canContinue || store.onboardingStatus === 'loading'">{{ saving ? '正在保存…' : '保存并开始测评' }}</button>
+            <button v-if="step === 'goal'" class="button button--ghost" type="button" :disabled="saving" @click="back">上一步</button>
+            <button v-if="targetDirty" class="button button--secondary" type="button" :disabled="saving || !targetGoal" @click="saveEdits">{{ saving ? '正在保存…' : '保存修改' }}</button>
+            <button class="button button--primary" type="submit" :data-primary-action="step === 'assessment' ? 'assessment' : 'save-target'" :disabled="saving || !canContinue || store.onboardingStatus === 'loading'">{{ primaryLabel }}</button>
           </div>
         </form>
       </Transition>
@@ -210,6 +320,8 @@ async function cancel(): Promise<void> {
 .consent-list { display: grid; gap: 12px; }
 .check { display: flex; align-items: flex-start; gap: 10px; color: var(--yx-color-text-secondary); line-height: 1.6; }
 .check input { width: 17px; height: 17px; flex: 0 0 auto; margin-top: 3px; accent-color: var(--yx-color-brand-primary); }
+.consent-copy { display: grid; gap: 2px; }
+.consent-copy small { color: var(--yx-color-text-tertiary); font-size: 12px; font-weight: 600; }
 .policy-note { margin: 20px 0 0; color: var(--yx-color-text-tertiary); font-size: 13px; line-height: 1.7; }
 .setup-fieldset { min-width: 0; margin: 26px 0 0; padding: 0; border: 0; }
 .setup-fieldset legend { margin-bottom: 12px; color: var(--yx-color-text-primary); font-size: 14px; font-weight: 700; }

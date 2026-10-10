@@ -4,7 +4,7 @@ import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { authT } from '../auth/i18n'
 import { safeReturnTo } from '../auth/gateway-auth'
-import { learnerAuthFailureCopy } from '../auth/auth-failure-copy'
+import { learnerAuthFailureCopy, learnerAuthFailureMarker } from '../auth/auth-failure-copy'
 import { useSessionStore } from '../stores/session'
 
 const route = useRoute()
@@ -39,11 +39,15 @@ async function send(): Promise<void> {
   submitting.value = true
   try {
     const ok = await session.requestPasswordReset(identifier.value)
-    requestSent.value = ok
-    if (!ok) {
+    if (!ok && learnerAuthFailureMarker(session.lastError) === 'RATE_LIMITED') {
+      requestSent.value = false
       error.value = learnerAuthFailureCopy('resetRequest', session.lastError, authT)
       errorKind.value = 'server'
+      return
     }
+    requestSent.value = true
+    error.value = null
+    errorKind.value = null
   } finally {
     submitting.value = false
   }

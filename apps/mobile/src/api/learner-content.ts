@@ -65,13 +65,38 @@ function parseQuotas(value: unknown): number[] {
   return value.filter((item): item is number => typeof item === 'number' && [5, 15, 30, 45].includes(item))
 }
 
+function mapUiGoalCode(value: string): string | null {
+  switch (value) {
+    case 'FOUNDATION':
+    case 'ZERO_BASIS':
+      return 'ZERO_BASIS'
+    case 'COLLEGE_CET':
+    case 'CET_4_6':
+      return 'CET_4_6'
+    case 'POSTGRADUATE_ENGLISH':
+    case 'POSTGRADUATE':
+      return 'POSTGRADUATE'
+    case 'WORKPLACE_DAILY':
+    case 'WORKPLACE':
+      return 'WORKPLACE_DAILY'
+    default:
+      return null
+  }
+}
+
+function decisionCode(details: unknown): string | null {
+  if (!isRecord(details)) return null
+  const source = isRecord(details.error) ? details.error : details
+  return typeof source.code === 'string' && source.code.trim() ? source.code.trim() : null
+}
+
 function parseOnboarding(profileValue: unknown, targetValue: unknown, preferenceValue: unknown, optionsValue: unknown): MobileOnboardingModel {
   const profile = isRecord(unwrap(profileValue)) ? unwrap(profileValue) as RecordValue : {}
   const target = isRecord(unwrap(targetValue)) ? unwrap(targetValue) as RecordValue : {}
   const preferences = isRecord(unwrap(preferenceValue)) ? unwrap(preferenceValue) as RecordValue : {}
   const options = isRecord(unwrap(optionsValue)) ? unwrap(optionsValue) as RecordValue : {}
   return {
-    goal: text(target.goalCode ?? target.goal_code ?? profile.targetGoal ?? profile.target_goal) || null,
+    goal: mapUiGoalCode(text(target.goalCode ?? target.goal_code ?? profile.targetGoal ?? profile.target_goal)) || null,
     quota: number(target.dailyQuotaMinutes ?? target.daily_quota_minutes, 0) || null,
     goals: parseGoalOptions(options.goals),
     quotas: parseQuotas(options.dailyQuotaMinutes ?? options.quotas),
@@ -172,54 +197,162 @@ function parseContentDetail(value: unknown): MobileContentDetail {
   }
 }
 
-function parsePlacementQuestion(value: unknown): MobilePlacementQuestion | null {
+function identifier(value: unknown): string {
+  if (typeof value === 'number' && Number.isSafeInteger(value) && value > 0) return String(value)
+  return text(value)
+}
+
+function readItemId(value: unknown): number | null {
+  return typeof value === 'number' && Number.isSafeInteger(value) && value > 0 ? value : null
+}
+
+function readSequence(value: unknown): number | null {
+  return typeof value === 'number' && Number.isSafeInteger(value) && value >= 0 ? value : null
+}
+
+function readStateVersion(value: unknown): number | null {
+  return typeof value === 'number' && Number.isSafeInteger(value) && value >= 0 ? value : null
+}
+
+async function sha256Hex(value: string): Promise<string> {
+  const subtle = globalThis.crypto?.subtle
+  if (!subtle) throw new Error('当前环境无法生成作答摘要，这题没有提交。')
+  const digest = await subtle.digest('SHA-256', new TextEncoder().encode(value))
+  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0')).join('')
+}
+
+function itemAtSequence(items: unknown[], sequence: number): unknown {
+  for (const item of items) {
+    if (!isRecord(item)) continue
+    if (readSequence(item.itemSequence) === sequence || readSequence(item.displayOrder) === sequence) return item
+  }
+  const index = sequence - 1
+  return index >= 0 && index < items.length ? items[index] : null
+}
+
+function parsePlacementQuestion(value: unknown, totalSteps: number | null = null, stepHint: number | null = null): MobilePlacementQuestion | null {
   if (!isRecord(value)) return null
-  const questionId = text(value.questionId ?? value.itemId)
-  if (!questionId) return null
+  const questionId = text(value.questionId) || identifier(value.itemId)
+  const stemText = text(value.stemText) || text(value.stem) || text(value.prompt)
+  if (!questionId || !stemText) return null
   const rawOptions = Array.isArray(value.options) ? value.options : []
+  const options = rawOptions.flatMap((option): Array<{ key: string; text: string }> => {
+    if (!isRecord(option)) return []
+    const key = text(option.key) || text(option.optionId) || text(option.optionCode)
+    const optionText = text(option.text) || text(option.label)
+    return key && optionText ? [{ key, text: optionText }] : []
+  })
+  if (!options.length) return null
+  const rawDimension = text(value.dimension) || text(value.itemType)
   return {
     questionId,
-    stemText: text(value.stemText ?? value.prompt, '请完成本题。'),
-    options: rawOptions.flatMap((option): Array<{ key: string; text: string }> => {
-      if (!isRecord(option)) return []
-      const key = text(option.key ?? option.optionCode)
-      const optionText = text(option.text ?? option.label)
-      return key && optionText ? [{ key, text: optionText }] : []
-    }),
-    dimension: text(value.dimension, 'VOCABULARY'),
+    stemText,
+    options,
+    dimension: rawDimension === 'GRAMMAR' || rawDimension === 'BASIC_GRAMMAR' ? 'GRAMMAR' : rawDimension === 'LISTENING' ? 'LISTENING' : rawDimension || 'VOCABULARY',
     difficulty: number(value.difficulty, 1),
-    stepIndex: number(value.stepIndex, 1),
-    totalSteps: number(value.totalSteps, 2),
+    stepIndex: stepHint ?? number(value.stepIndex, number(value.displayOrder, 1)),
+    totalSteps: totalSteps ?? number(value.totalSteps, 10),
     timeLimitSec: number(value.timeLimitSec, 25),
+    itemId: readItemId(value.itemId),
   }
 }
 
-function parsePlacementReport(value: unknown): MobilePlacementReport | null {
+function optionalCount(value: unknown): number | null {
+  return typeof value === 'number' && Number.isSafeInteger(value) && value >= 0 ? value : null
+}
+
+function parsePlacementReport(value: unknown, sessionFallback: string | null = null): MobilePlacementReport | null {
   if (!isRecord(value)) return null
-  const reportId = text(value.reportId)
-  const sessionId = text(value.sessionId)
-  if (!reportId || !sessionId) return null
-  const skipped = value.resultKind === 'SKIPPED'
-  const requestedStartingLevel = isRecord(value.requestedStartingLevel) ? text(value.requestedStartingLevel.level) : null
-  const mistakes = Array.isArray(value.mistakes) ? value.mistakes.filter((item): item is string => typeof item === 'string') : []
+  const summary = isRecord(value.summary) ? value.summary : value
+  if (value.resultKind === 'SKIPPED' || summary.resultKind === 'SKIPPED') {
+    const reportId = text(value.reportId) || text(summary.reportId)
+    const sessionId = text(value.sessionId) || text(summary.sessionId) || sessionFallback || ''
+    if (!reportId || !sessionId) return null
+    const requested = isRecord(value.requestedStartingLevel) ? value.requestedStartingLevel : isRecord(summary.requestedStartingLevel) ? summary.requestedStartingLevel : null
+    return {
+      reportId,
+      sessionId,
+      resultKind: 'SKIPPED',
+      cefrLevel: null,
+      score: null,
+      requestedStartingLevel: requested ? text(requested.level) || null : null,
+      mistakes: [],
+      fullCount: null,
+      zeroCount: null,
+      itemCount: null,
+    }
+  }
+  const reportId = text(value.reportId) || text(summary.reportId)
+  const sessionId = text(value.sessionId) || text(summary.sessionId) || sessionFallback || ''
+  if (!reportId) return null
+  const measuredScore = typeof value.score === 'number' ? value.score : typeof value.aggregateScore === 'number' ? value.aggregateScore : typeof summary.score === 'number' ? summary.score : typeof summary.aggregateScore === 'number' ? summary.aggregateScore : null
+  const measuredLevel = text(value.cefrLevel) || text(value.referenceLevel) || text(summary.cefrLevel) || text(summary.referenceLevel) || null
   return {
-    reportId, sessionId, resultKind: skipped ? 'SKIPPED' : 'ASSESSED',
-    cefrLevel: skipped ? null : text(value.cefrLevel) || null,
-    score: skipped ? null : typeof value.score === 'number' ? value.score : null,
-    requestedStartingLevel: skipped ? requestedStartingLevel : null,
-    mistakes,
+    reportId,
+    sessionId,
+    resultKind: 'ASSESSED',
+    cefrLevel: measuredLevel,
+    score: measuredScore,
+    requestedStartingLevel: null,
+    mistakes: [],
+    fullCount: optionalCount(summary.fullCount),
+    zeroCount: optionalCount(summary.zeroCount),
+    itemCount: optionalCount(summary.itemCount),
   }
 }
 
-function parsePlacement(value: unknown): MobilePlacementModel {
+function emptyPlacement(): MobilePlacementModel {
+  return { sessionId: null, status: 'EMPTY', currentQuestion: null, report: null, isCompleted: false, stateVersion: null, acceptedSequence: 0, nextSequence: null, reconciledWithoutReceipt: false, responseOutcome: null }
+}
+
+function selectPlacementItem(source: RecordValue, items: unknown[], acceptedSequence: number, nextSequence: number | null, totalSteps: number | null): unknown {
+  const explicit = source.currentItem ?? source.currentQuestion ?? source.nextItem ?? source.nextQuestion
+  if (explicit != null) return explicit
+  const total = totalSteps ?? (items.length || 10)
+  const sequence = nextSequence ?? (acceptedSequence > 0 ? acceptedSequence + 1 : 1)
+  if (sequence < 1 || sequence > total) return null
+  if (acceptedSequence > 0 || sequence === 1) return itemAtSequence(items, sequence)
+  return null
+}
+
+function parsePlacement(value: unknown, reconciledWithoutReceipt = false): MobilePlacementModel {
   const source = isRecord(unwrap(value)) ? unwrap(value) as RecordValue : {}
+  const manifest = isRecord(source.manifest) ? source.manifest : null
+  const items = Array.isArray(source.items) ? source.items : []
+  const totalSteps = typeof manifest?.totalItemCount === 'number' ? manifest.totalItemCount : items.length || null
+  const acceptedSequence = readSequence(source.acceptedSequence) ?? 0
+  const nextSequence = readSequence(source.nextSequence) ?? (source.acceptedSequence != null ? acceptedSequence + 1 : null)
+  const completed = isRecord(source.completedResult) ? source.completedResult : isRecord(source.finalResult) ? source.finalResult : null
+  const current = selectPlacementItem(source, items, acceptedSequence, nextSequence, totalSteps)
+  const stepHint = nextSequence != null && nextSequence >= 1 && (totalSteps == null || nextSequence <= totalSteps) ? nextSequence : null
+  const sessionId = text(source.sessionId) || null
+  const reportValue = source.report ?? source.finalReport ?? (completed && completed.resultKind !== 'SKIPPED' ? completed : null)
+  const report = parsePlacementReport(reportValue, sessionId) ?? parsePlacementReport(isRecord(source.summary) ? source.summary : null, sessionId)
+  const responseOutcome = source.outcome === 'FULL' || source.outcome === 'ZERO' ? source.outcome : null
   return {
-    sessionId: text(source.sessionId) || null,
-    status: text(source.status, 'EMPTY'),
-    currentQuestion: parsePlacementQuestion(source.currentQuestion ?? source.nextQuestion),
-    report: parsePlacementReport(source.report),
-    isCompleted: source.isCompleted === true || text(source.status) === 'COMPLETED',
+    sessionId,
+    status: text(source.status, sessionId ? 'IN_PROGRESS' : 'EMPTY'),
+    currentQuestion: parsePlacementQuestion(current, totalSteps, stepHint),
+    report,
+    isCompleted: source.isCompleted === true || text(source.status) === 'COMPLETED' || completed?.resultKind === 'ASSESSED' || Boolean(report && report.resultKind === 'ASSESSED'),
+    stateVersion: readStateVersion(source.stateVersion) ?? readStateVersion(source.state_version),
+    acceptedSequence,
+    nextSequence,
+    reconciledWithoutReceipt,
+    responseOutcome,
   }
+}
+
+function placementConflictAction(
+  attempt: { stateVersion: number; itemSequence: number; itemId: number },
+  latest: MobilePlacementModel,
+  retried: boolean,
+): 'adopt' | 'retry' | 'stop' {
+  if (latest.acceptedSequence >= attempt.itemSequence) return 'adopt'
+  const sequence = latest.nextSequence ?? latest.currentQuestion?.stepIndex ?? null
+  const sameItem = latest.currentQuestion?.itemId == null || latest.currentQuestion.itemId === attempt.itemId
+  const unchanged = latest.stateVersion === attempt.stateVersion && sequence === attempt.itemSequence && sameItem
+  return unchanged && !retried ? 'retry' : 'stop'
 }
 
 function parseHome(learnerValue: unknown, contentValue: unknown): MobileHomeModel {
@@ -279,7 +412,124 @@ async function refreshActiveConsentVersion(): Promise<string> {
   return consentRefreshPromise
 }
 
+export interface MobileOnboardingResumeRead {
+  adultGate: string
+  consent: { readable: boolean; accepted: boolean | null; unsatisfiedPurposes: readonly string[] }
+  target: { readable: boolean; saved: boolean; goal: string | null; quota: number | null }
+}
+
+function parseAdultGateFact(value: unknown): string {
+  if (value === 'PASSED' || value === 'REJECTED' || value === 'REQUIRED') return value
+  if (!isRecord(value)) return 'UNKNOWN'
+  if (value.status === 'PASSED' || value.status === 'APPROVED') return 'PASSED'
+  if (value.status === 'REJECTED') return 'REJECTED'
+  if (value.status === 'REQUIRED' || value.status === 'PENDING' || value.status === 'NOT_EVALUATED') return 'REQUIRED'
+  return 'UNKNOWN'
+}
+
+function parseConsentFact(value: unknown): MobileOnboardingResumeRead['consent'] {
+  if (!isRecord(value)) return { readable: false, accepted: null, unsatisfiedPurposes: [] }
+  const accepted = typeof value.accepted === 'boolean' ? value.accepted : null
+  const purposes = Array.isArray(value.unsatisfiedPurposes)
+    ? value.unsatisfiedPurposes.filter((item): item is string => typeof item === 'string')
+    : null
+  if (accepted === null && purposes === null) return { readable: false, accepted: null, unsatisfiedPurposes: [] }
+  return { readable: true, accepted, unsatisfiedPurposes: purposes ?? [] }
+}
+
+async function readIamResumeFacts(): Promise<{ adultGate: string; consent: MobileOnboardingResumeRead['consent'] }> {
+  const raw = await mobileApiClient.request<unknown>('/iam/principal/me')
+  const source = unwrap(raw)
+  const record = isRecord(source) ? source : {}
+  const principal = isRecord(record.principal) ? record.principal : record
+  const adultGate = parseAdultGateFact(record.adultGate ?? record.adultGateStatus ?? principal.adultGate ?? principal.adultGateStatus)
+  const consentSource = isRecord(record.consentState) ? record.consentState : isRecord(principal.consentState) ? principal.consentState : null
+  return { adultGate, consent: parseConsentFact(consentSource) }
+}
+
+async function readTargetFact(): Promise<MobileOnboardingResumeRead['target'] & { consentRequired: boolean }> {
+  try {
+    const raw = await mobileApiClient.request<unknown>('/learner/targets')
+    const source = unwrap(raw)
+    const record = isRecord(source) ? source : {}
+    const goal = mapUiGoalCode(text(record.goalCode ?? record.goal_code))
+    const quota = number(record.dailyQuotaMinutes ?? record.daily_quota_minutes, 0)
+    const saved = Boolean(goal && [5, 15, 30, 45].includes(quota))
+    return { readable: true, saved, goal: saved ? goal : null, quota: saved ? quota : null, consentRequired: false }
+  } catch (error) {
+    if (error instanceof MobileApiError && error.status === 404) return { readable: true, saved: false, goal: null, quota: null, consentRequired: false }
+    if (error instanceof MobileApiError && error.status === 403 && decisionCode(error.details) === 'CONSENT_REQUIRED') {
+      return { readable: true, saved: false, goal: null, quota: null, consentRequired: true }
+    }
+    return { readable: false, saved: false, goal: null, quota: null, consentRequired: false }
+  }
+}
+
+async function signConsent(type: string, keySuffix: string, clientEventId: string): Promise<void> {
+  const version = cachedActiveConsentVersion ?? 'b30-consent-v1'
+  try {
+    await mobileApiClient.request('/iam/consents', {
+      method: 'PUT',
+      data: { type, version, decision: 'ACCEPTED' },
+      header: { 'Idempotency-Key': `${clientEventId}-${keySuffix}` },
+    })
+  } catch (error) {
+    if (error instanceof MobileApiError && error.status === 409) {
+      let latestVersion = cachedActiveConsentVersion
+      if (latestVersion === version || !latestVersion) latestVersion = await refreshActiveConsentVersion()
+      if (latestVersion && latestVersion !== version) {
+        await mobileApiClient.request('/iam/consents', {
+          method: 'PUT',
+          data: { type, version: latestVersion, decision: 'ACCEPTED' },
+          header: { 'Idempotency-Key': `${clientEventId}-${keySuffix}` },
+        })
+        return
+      }
+    }
+    throw error
+  }
+}
+
+async function signRequiredConsents(clientEventId: string, isCurrent?: () => boolean): Promise<void> {
+  requireSameIdentity(isCurrent)
+  await Promise.all([
+    signConsent('PRIVACY', 'privacy', clientEventId),
+    signConsent('TERMS', 'terms', clientEventId),
+    signConsent('ADULT_LEARNING', 'adult-learning', clientEventId),
+  ])
+  requireSameIdentity(isCurrent)
+  const [{ useSessionStore }, { pinia }] = await Promise.all([import('../stores/session'), import('../stores/pinia')])
+  requireSameIdentity(isCurrent)
+  const session = useSessionStore(pinia)
+  if (!await session.refreshSilently()) throw new Error(session.lastError || '必要同意已提交，但会话还没有更新。请重试。本页还没提交的内容，离开后不会保留。')
+  requireSameIdentity(isCurrent)
+}
+
 export const mobileLearnerContentApi = {
+  async readOnboardingResume(): Promise<MobileOnboardingResumeRead> {
+    const iam = await readIamResumeFacts()
+    if (iam.adultGate !== 'PASSED') return { ...iam, target: { readable: true, saved: false, goal: null, quota: null } }
+    const target = await readTargetFact()
+    if (target.consentRequired) {
+      return {
+        adultGate: iam.adultGate,
+        consent: { readable: true, accepted: false, unsatisfiedPurposes: ['ADULT_LEARNING_ELIGIBILITY'] },
+        target: { readable: true, saved: false, goal: null, quota: null },
+      }
+    }
+    return { adultGate: iam.adultGate, consent: iam.consent, target }
+  },
+
+  async recordRequiredConsents(clientEventId: string, isCurrent?: () => boolean): Promise<void> {
+    await signRequiredConsents(clientEventId, isCurrent)
+    const iam = await readIamResumeFacts()
+    const accepted = iam.consent.readable && iam.consent.accepted === true
+      && !iam.consent.unsatisfiedPurposes.some((item) => item === 'ACCOUNT_TERMS' || item === 'PRIVACY_NOTICE' || item === 'ADULT_LEARNING_ELIGIBILITY')
+    if (iam.adultGate === 'PASSED' && !accepted) {
+      throw new Error('必要同意尚未在服务端生效，请重试。本页还没提交的内容，离开后不会保留。')
+    }
+  },
+
   async readOnboarding(): Promise<MobileOnboardingModel> {
     // Preferences are the canonical source for content locale. Resolve them
     // before requesting locale-specific onboarding options so a cached or
@@ -297,53 +547,17 @@ export const mobileLearnerContentApi = {
     return parseOnboarding(profile, target, preferences, options)
   },
 
-  async saveOnboarding(input: { goal: string; quota: number; clientEventId: string; birthYear?: number; ageConfirmed?: boolean; privacyConsent?: boolean; termsConsent?: boolean }, isCurrent?: () => boolean): Promise<MobileOnboardingModel> {
+  async saveOnboarding(input: { goal: string; quota: number; clientEventId: string; birthYear?: number; ageConfirmed?: boolean; privacyConsent?: boolean; termsConsent?: boolean; consentsRecorded?: boolean }, isCurrent?: () => boolean): Promise<MobileOnboardingModel> {
     requireSameIdentity(isCurrent)
-    if (!input.birthYear || !input.ageConfirmed || !input.privacyConsent || !input.termsConsent || !input.goal || !input.quota) {
-      throw new Error('请先完成成人确认、同意事项和学习目标。')
+    const consentFields = Boolean(input.birthYear && input.ageConfirmed && input.privacyConsent && input.termsConsent)
+    if (!input.goal || !input.quota || (!input.consentsRecorded && !consentFields)) {
+      throw new Error(input.consentsRecorded ? '请先选择学习目标和每天时长。' : '请先完成成人确认、同意事项和学习目标。')
     }
     const targetLevel = input.goal === 'ZERO_BASIS' ? 'A1' : input.goal === 'CET_4_6' ? 'B1' : 'B2'
 
-    const signConsent = async (type: string, keySuffix: string) => {
-      const version = cachedActiveConsentVersion ?? 'b30-consent-v1'
-      try {
-        await mobileApiClient.request('/iam/consents', {
-          method: 'PUT',
-          data: { type, version, decision: 'ACCEPTED' },
-          header: { 'Idempotency-Key': `${input.clientEventId}-${keySuffix}` },
-        })
-      } catch (error) {
-        if (error instanceof MobileApiError && error.status === 409) {
-          let latestVersion = cachedActiveConsentVersion
-          if (latestVersion === version || !latestVersion) {
-            latestVersion = await refreshActiveConsentVersion()
-          }
-          if (latestVersion && latestVersion !== version) {
-            await mobileApiClient.request('/iam/consents', {
-              method: 'PUT',
-              data: { type, version: latestVersion, decision: 'ACCEPTED' },
-              header: { 'Idempotency-Key': `${input.clientEventId}-${keySuffix}` },
-            })
-            return
-          }
-        }
-        throw error
-      }
-    }
-
     // Consent is an IAM fact. Learner writes require a freshly issued access
     // token carrying that fact, and each write advances one profile version.
-    await Promise.all([
-      signConsent('PRIVACY', 'privacy'),
-      signConsent('TERMS', 'terms'),
-      signConsent('ADULT_LEARNING', 'adult-learning'),
-    ])
-    requireSameIdentity(isCurrent)
-    const [{ useSessionStore }, { pinia }] = await Promise.all([import('../stores/session'), import('../stores/pinia')])
-    requireSameIdentity(isCurrent)
-    const session = useSessionStore(pinia)
-    if (!await session.refreshSilently()) throw new Error(session.lastError || '会话更新失败，请重新登录。')
-    requireSameIdentity(isCurrent)
+    await signRequiredConsents(input.clientEventId, isCurrent)
 
     // Re-read the owner after IAM refresh. A previous attempt may have saved
     // only some steps before the network failed; its new retry key must not
@@ -436,23 +650,53 @@ export const mobileLearnerContentApi = {
   },
 
   async readPlacement(contentLocale = 'en-US', sessionId?: string | null): Promise<MobilePlacementModel> {
-    return parsePlacement(await mobileApiClient.request<unknown>(query('/assessment/placement/start', { contentLocale, ...(sessionId ? { sessionId } : {}) })))
+    void contentLocale
+    if (!sessionId) return emptyPlacement()
+    return parsePlacement(await mobileApiClient.request<unknown>(`/assessment/placement/sessions/${encodeURIComponent(sessionId)}`))
   },
 
   async startPlacement(contentLocale = 'en-US', clientEventId: string): Promise<MobilePlacementModel> {
-    return parsePlacement(await mobileApiClient.request<unknown>('/assessment/placement/start', {
+    void contentLocale
+    return parsePlacement(await mobileApiClient.request<unknown>('/assessment/placement/sessions', {
       method: 'POST',
-      data: { contentCode: 'course-b25-basics', contentLocale },
+      data: {},
       header: { 'Idempotency-Key': clientEventId },
     }))
   },
 
-  async submitPlacementAnswer(input: { sessionId: string; questionId: string; selectedKey: string; timeSpentSec: number; contentLocale: string; clientEventId: string }): Promise<MobilePlacementModel> {
-    return parsePlacement(await mobileApiClient.request<unknown>('/assessment/placement/submit-step', {
-      method: 'POST',
-      data: input,
-      header: { 'Idempotency-Key': input.clientEventId },
-    }))
+  async submitPlacementAnswer(input: { sessionId: string; questionId: string; selectedKey: string; timeSpentSec: number; contentLocale: string; clientEventId: string; stateVersion?: number | null; itemId?: number | null; itemSequence?: number | null }): Promise<MobilePlacementModel> {
+    const stateVersion = input.stateVersion
+    const itemId = input.itemId
+    const itemSequence = input.itemSequence
+    if (stateVersion == null || itemId == null || itemSequence == null || !Number.isSafeInteger(stateVersion) || !Number.isSafeInteger(itemId) || !Number.isSafeInteger(itemSequence) || itemId < 1 || itemSequence < 1 || itemSequence > 10) {
+      throw new Error('这题还没有服务端检查点，没有提交。')
+    }
+    const idempotencyKey = input.clientEventId
+    const candidateResponse = { responseType: 'CHOICE', selectedOptionIds: [input.selectedKey] }
+    const responseDigest = await sha256Hex(JSON.stringify([input.sessionId, itemId, itemSequence, candidateResponse]))
+    const data = { expectedStateVersion: stateVersion, itemId, itemSequence, candidateResponse, responseDigest, timeSpentSec: input.timeSpentSec }
+    const path = `/assessment/placement/sessions/${encodeURIComponent(input.sessionId)}/responses`
+    const post = () => mobileApiClient.request<unknown>(path, { method: 'POST', data, header: { 'Idempotency-Key': idempotencyKey } })
+    const readBack = () => mobileLearnerContentApi.readPlacement(input.contentLocale, input.sessionId)
+    const reconcile = async (retried: boolean): Promise<MobilePlacementModel> => {
+      const latest = await readBack()
+      if (placementConflictAction({ stateVersion, itemSequence, itemId }, latest, retried) !== 'retry') {
+        return { ...latest, reconciledWithoutReceipt: true }
+      }
+      try {
+        return parsePlacement(await post(), false)
+      } catch (error) {
+        if (!(error instanceof MobileApiError) || error.status !== 409) throw error
+        const afterRetry = await readBack()
+        return { ...afterRetry, reconciledWithoutReceipt: true }
+      }
+    }
+    try {
+      return parsePlacement(await post(), false)
+    } catch (error) {
+      if (!(error instanceof MobileApiError) || error.status !== 409) throw error
+      return reconcile(false)
+    }
   },
 
   async readHome(contentLocale = 'en-US'): Promise<MobileHomeModel> {

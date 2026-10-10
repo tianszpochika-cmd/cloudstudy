@@ -21,20 +21,39 @@ const totalSteps = computed(() => question.value?.totalSteps ?? (report.value ? 
 const progressLabel = computed(() => isRestricted.value ? '访问受限' : question.value ? `${store.assessmentProgress}/${totalSteps.value}` : isDone.value ? '已完成' : `${store.assessmentProgress}/${totalSteps.value}`)
 const isLoading = computed(() => store.assessmentStatus === 'loading' || store.assessment.status === 'submitting')
 const hasError = computed(() => ['offline', 'forbidden', 'content-unavailable', 'error'].includes(store.assessmentStatus) && !question.value)
-onMounted(() => { store.restore(); void store.loadAssessment(); startedAt.value = Date.now() })
+const heldCheckpoint = computed(() => Boolean(store.assessment.sessionId?.startsWith('asess_') && !question.value && !isDone.value && !isLoading.value && !hasError.value && !isRestricted.value))
+const hasServerReport = computed(() => Boolean(report.value || store.placementReport))
+const countedReport = computed(() => {
+  const full = store.placementReport?.fullCount
+  const total = store.placementReport?.itemCount
+  return typeof full === 'number' && typeof total === 'number' ? { full, total } : null
+})
+const advice = computed(() => {
+  const text = report.value?.recommendedAdvice?.trim() ?? ''
+  if (!text || text.includes('correctOption') || text.includes('answerRule')) return ''
+  return text
+})
+const feedbackText = computed(() => store.placementFeedback === 'FULL' ? '刚才提交的这题答对了。' : store.placementFeedback === 'ZERO' ? '刚才提交的这题没有答对。' : '')
+store.restore()
+const guidePending = ref(!store.assessment.sessionId?.startsWith('asess_'))
+const startRequested = ref(false)
+onMounted(() => { if (!guidePending.value) void store.loadAssessment(); startedAt.value = Date.now() })
 async function submit(): Promise<void> { if (!selected.value) return; const answer = selected.value; selected.value = ''; await store.submitAnswer(answer, (Date.now() - startedAt.value) / 1000); startedAt.value = Date.now() }
 async function fastTrack(level: 'ZERO_A1' | 'CET4_B1' | 'CET6_B2' | 'POSTGRAD_B2_PLUS'): Promise<void> { await store.applyFastTrack(level) }
 async function restart(): Promise<void> { selected.value = ''; startedAt.value = Date.now(); await store.restartAssessment() }
+function begin(): void { if (startRequested.value) return; startRequested.value = true; guidePending.value = false; startedAt.value = Date.now(); void store.loadAssessment() }
 function retry(): void { void store.loadAssessment() }
 </script>
 <template>
   <section class="page-stack" aria-labelledby="assessment-title"><ExperienceHeader page="Assessment" icon="target" title-id="assessment-title" hero><span class="assessment-progress-label">{{ progressLabel }}</span></ExperienceHeader>
   <article v-if="isRestricted" class="result-card restricted-card" role="alert"><p class="card-kicker">测评访问受限</p><h3>暂未开放测评</h3><p>当前版本仅面向 18 岁以上成人开放，暂不能向你开放学习功能。</p><div class="result-actions"><RouterLink class="button button--secondary" to="/settings">前往账号设置</RouterLink><RouterLink class="button button--ghost" to="/support">帮助与反馈</RouterLink><button class="button button--ghost" type="button" @click="logout">退出登录</button></div></article>
   <article v-else-if="isDone && baseline" class="result-card"><p class="card-kicker">已跳过测评</p><h3>水平尚未验证</h3><p v-if="baseline.requestedStartingLevel">你选择了 {{ baseline.requestedStartingLevel }} 作为起点；这不是测评等级。</p><div class="result-actions"><button class="button button--primary" type="button" @click="router.push({ name: 'today' })">查看今日状态</button><button class="button button--secondary" type="button" @click="restart">参加测评</button></div></article>
-  <article v-else-if="isDone && report" class="result-card"><p class="card-kicker">历史两题练习结果</p><h3>{{ report.cefrLevel }} · {{ Math.round(report.score) }} 分</h3><p>这是旧版练习参考，不能代替四维定级。</p><div class="result-actions"><button class="button button--primary" type="button" @click="router.push({ name: 'today' })">查看今日状态</button><button class="button button--secondary" type="button" @click="restart">重新开始</button></div></article>
-  <article v-else-if="question" class="question-card"><div class="question-meta"><span>{{ question.helperText }}</span><span>{{ question.stepIndex }}/{{ question.totalSteps }}</span></div><h3>{{ question.stemText }}</h3><div class="options"><button v-for="option in question.options" :key="option.key" class="option" :class="{ selected: selected === option.key }" type="button" @click="selected = option.key"><b>{{ option.key }}</b><span>{{ option.text }}</span></button></div><p v-if="store.assessment.status === 'error'" class="error-text" role="alert">答案状态尚未确认，请重新读取后继续。</p><button v-if="store.assessment.status === 'error'" class="button button--primary" type="button" @click="retry">重新读取</button><button v-else class="button button--primary" type="button" :disabled="!selected || store.assessment.status === 'submitting'" @click="submit">{{ store.assessment.status === 'submitting' ? '正在记录…' : '提交答案' }}</button></article>
+  <article v-else-if="isDone && hasServerReport" class="result-card"><p class="card-kicker">报告已生成</p><h3 v-if="report">{{ report.cefrLevel }} · {{ Math.round(report.score) }} 分</h3><p v-if="countedReport">答对 {{ countedReport.full }} 题，共 {{ countedReport.total }} 题。</p><p v-if="advice">{{ advice }}</p><p v-if="feedbackText" role="status">{{ feedbackText }}</p><p>重测会另开一套题，这份报告会保留。是否调整已有计划需要另外确认。</p><div class="result-actions"><button class="button button--primary" type="button" @click="router.push({ name: 'today' })">查看今日状态</button><button class="button button--secondary" type="button" disabled>重测尚未接通</button></div></article>
+  <article v-else-if="question" class="question-card"><div class="question-meta"><span v-if="question.helperText">{{ question.helperText }}</span><span>第 {{ question.stepIndex }} 题，共 {{ question.totalSteps }} 题</span></div><p v-if="store.assessment.acceptedSequence > 0">服务端已接收 {{ store.assessment.acceptedSequence }} 题。</p><h3>{{ question.stemText }}</h3><p v-if="feedbackText" role="status">{{ feedbackText }}</p><div class="options"><button v-for="option in question.options" :key="option.key" class="option" :class="{ selected: selected === option.key }" type="button" @click="selected = option.key"><b>{{ option.key }}</b><span>{{ option.text }}</span></button></div><p>当前选择只留在这一页。离开后，还没提交的选择不会保留。</p><p v-if="store.assessment.status === 'error'" class="error-text" role="alert">{{ store.lastError || '答案状态尚未确认。请先重新读取，不会因此新开一套题。' }}</p><button v-if="store.assessment.status === 'error'" class="button button--primary" type="button" @click="retry">重新读取</button><button v-else class="button button--primary" type="button" :disabled="!selected || store.assessment.status === 'submitting'" @click="submit">{{ store.assessment.status === 'submitting' ? '正在记录…' : '提交答案' }}</button></article>
+  <article v-else-if="guidePending && !isLoading && !hasError" class="info-card"><h3>开始定级</h3><p>共 10 道题。用来了解你现在的英语起点，方便安排后面的学习。</p><button class="button button--primary" type="button" @click="begin">开始</button></article>
   <article v-else-if="isLoading" class="info-card" role="status"><h3>正在准备测评</h3><p>请稍候。</p></article>
   <article v-else-if="hasError" class="info-card" role="alert"><h3>测评暂时不可用</h3><p>{{ userFacingError(store.lastError, '暂时无法读取测评，请稍后重试。') }}</p><button class="button button--primary" type="button" @click="retry">重试</button></article>
+  <article v-else-if="heldCheckpoint" class="info-card" role="status"><h3>定级进度在服务端</h3><p>重新读取会从已接收检查点的下一题继续，不会新开一套题。</p><button class="button button--primary" type="button" @click="retry">重新读取</button></article>
   <article v-else class="info-card"><h3>暂无可用测评</h3><p>目前没有可用题目，可以稍后重试。</p><button class="button button--primary" type="button" @click="retry">重新读取</button></article>
   <details v-if="!isDone && !isRestricted && !(question && store.assessment.status === 'error')" class="fast-track"><summary>跳过测评，选择起点</summary><p>自选起点不会生成测评等级。</p><div class="tag-list"><button class="tag" type="button" :disabled="isLoading" @click="fastTrack('ZERO_A1')">从 A1 开始</button><button class="tag" type="button" :disabled="isLoading" @click="fastTrack('CET4_B1')">从 B1 开始</button><button class="tag" type="button" :disabled="isLoading" @click="fastTrack('CET6_B2')">从 B2 开始</button></div></details></section>
 </template>

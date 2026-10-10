@@ -4,11 +4,12 @@ import MobilePageHeader from '../../components/MobilePageHeader.vue'
 import { mobileT, useMobileExperience } from '../../platform/experience'
 const { experienceStyle, experienceMotion } = useMobileExperience()
 
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import { openUniPage } from '../../platform/uni-runtime'
 import { ensureMobilePageAccess } from '../../auth/navigation'
 import type { MobileTask } from '../../domain/learner-content'
+import { hasPlacementEntryReached, ONBOARDING_GUIDE_ACTION, onboardingProgressLabel, onboardingRemainingStepLabels, selectOnboardingResumeStep, showOnboardingGuide } from '../../domain/onboarding-resume'
 import { useLearnerContentStore } from '../../stores/learner-content'
 import { useSessionStore } from '../../stores/session'
 
@@ -17,7 +18,28 @@ const session = useSessionStore()
 const hasConfirmedProgress = computed(() => Boolean(store.home?.tasks.length && store.home.targetMinutes > 0 && !store.home.stale))
 const canContinueCourse = computed(() => Boolean(store.home?.tasks.some((task) => (task.status === 'AVAILABLE' || task.status === 'IN_PROGRESS') && task.contentCode)
   || store.home?.content.some((item) => item.availability === 'PUBLISHED')))
-onShow(async () => { if (await ensureMobilePageAccess('/pages/home/home')) void store.loadHome() })
+const guideReady = ref(false)
+const guideAction = ONBOARDING_GUIDE_ACTION
+const guideVisible = computed(() => {
+  const facts = store.onboardingResume
+  if (!guideReady.value || !facts || session.adultGate === 'REJECTED') return false
+  const storage = typeof sessionStorage === 'undefined' ? null : sessionStorage
+  return showOnboardingGuide(facts, hasPlacementEntryReached(storage, session.verifiedSubject))
+})
+const guideLabel = computed(() => store.onboardingResume ? onboardingProgressLabel(store.onboardingResume) : '')
+const guideSteps = computed(() => store.onboardingResume ? onboardingRemainingStepLabels(store.onboardingResume) : [])
+const guidePath = computed(() => store.onboardingResume && selectOnboardingResumeStep(store.onboardingResume) === 'assessment' ? '/pages/assessment/assessment' : '/pages/onboarding/onboarding')
+async function loadGuide(): Promise<void> {
+  guideReady.value = false
+  if (session.adultGate === 'REJECTED' || typeof store.loadOnboardingResume !== 'function') return
+  try {
+    await store.loadOnboardingResume()
+    guideReady.value = true
+  } catch {
+    guideReady.value = false
+  }
+}
+onShow(async () => { if (await ensureMobilePageAccess('/pages/home/home')) { void store.loadHome(); void loadGuide() } })
 function open(path: string): void { openUniPage(path) }
 function openTask(task: MobileTask): void {
   if ((task.status !== 'AVAILABLE' && task.status !== 'IN_PROGRESS') || !task.contentCode) return
@@ -34,6 +56,8 @@ function continueCourse(): void {
   <view class="yx-page" :style="experienceStyle" :data-motion="experienceMotion">
 
     <MobilePageHeader page="home" />
+
+    <view v-if="guideVisible" class="onboarding-guide"><view class="onboarding-guide__copy"><text>{{ guideLabel }}</text><text v-if="guideSteps.length" class="onboarding-guide__steps">剩余步骤：{{ guideSteps.join('、') }}</text></view><button tabindex="0" role="button" class="yx-button" type="button" @click="open(guidePath)">{{ guideAction }}</button></view>
 
     <view v-if="store.homeStatus === 'idle' || store.homeStatus === 'loading'" class="yx-card" role="status"><text>正在读取今日任务…</text></view>
     <view v-else-if="store.homeStatus === 'offline' || store.homeStatus === 'error' || store.homeStatus === 'forbidden'" class="yx-card" role="alert">
@@ -69,6 +93,10 @@ function continueCourse(): void {
 </template>
 
 <style scoped>
+.onboarding-guide { display: flex; align-items: center; justify-content: space-between; gap: 12rpx; margin-top: 20rpx; padding: 18rpx; border: 1rpx solid var(--yx-border); border-radius: 14rpx; background: var(--yx-brand-soft); }
+.onboarding-guide__copy { display: flex; flex-direction: column; gap: 4rpx; min-width: 0; }
+.onboarding-guide__steps { color: var(--yx-text-secondary); font-size: 22rpx; }
+.onboarding-guide .yx-button { margin-top: 0; }
 .progress-row { display: flex; justify-content: space-between; align-items: center; color: var(--yx-text-secondary); font-size: 24rpx; }
 .progress { color: var(--yx-brand); font-size: 56rpx; font-weight: 800; }
 .progress-track { height: 14rpx; margin: 10rpx 0 26rpx; border-radius: 99rpx; background: var(--yx-surface-soft); overflow: hidden; }.progress-value { height: 100%; border-radius: inherit; background: var(--yx-brand); }

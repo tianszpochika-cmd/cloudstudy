@@ -64,14 +64,28 @@ export interface LearnerOnboardingReadModel {
   revision: string | null
 }
 
+export interface PlacementFormalReport {
+  reportId: string
+  fullCount: number | null
+  zeroCount: number | null
+  itemCount: number | null
+}
+
 export interface PlacementReadModel {
   status: 'AVAILABLE' | 'IN_PROGRESS' | 'COMPLETED' | 'SKIPPED' | 'EMPTY'
   sessionId: string | null
   currentQuestion: PlacementQuestion | null
   report: AssessmentReport | null
+  /** Present when the server already stored a report id. Counts stay null if the server did not send them. */
+  formalReport: PlacementFormalReport | null
+  /** Set only from a submit receipt. Never inferred, and never a correct option. */
+  responseOutcome: 'FULL' | 'ZERO' | null
   skipBaseline: AssessmentSkipBaseline | null
   contentVersionId: string | null
   contentLocale: string
+  stateVersion: number | null
+  acceptedSequence: number
+  nextSequence: number | null
 }
 
 export interface LearnerHomeReadModel {
@@ -95,18 +109,39 @@ export interface PlacementAnswerInput {
   selectedKey: string
   timeSpentSec: number
   contentLocale: string
+  stateVersion?: number | null
+  itemId?: number | null
+  itemSequence?: number | null
+  idempotencyKey?: string
 }
 
 export interface PlacementSubmitResult {
   isCompleted: boolean
   nextQuestion: PlacementQuestion | null
   report: AssessmentReport | null
+  formalReport?: PlacementFormalReport | null
+  /** Present only when this attempt's receipt said FULL or ZERO. Absent means no grade was returned. */
+  responseOutcome?: 'FULL' | 'ZERO' | null
   skipBaseline?: AssessmentSkipBaseline | null
+  /** False when a 409 was reconciled to the server checkpoint without a receipt for this attempt. */
+  accepted?: boolean
+  stateVersion?: number | null
+  acceptedSequence?: number | null
+  nextSequence?: number | null
+  sessionId?: string | null
 }
 
 export interface SaveOnboardingInput {
   profile: OnboardingProfile
   clientEventId: string
+  /** IAM already records the required learning consents, so this write is only the target. */
+  consentsRecorded?: boolean
+}
+
+export interface OnboardingResumeRead {
+  adultGate: string
+  consent: { readable: boolean; accepted: boolean | null; unsatisfiedPurposes: readonly string[] }
+  target: { readable: boolean; saved: boolean; goal: string | null; quota: number | null }
 }
 
 export interface ReadModelErrorShape {
@@ -132,6 +167,8 @@ export class LearnerContentReadModelError extends Error implements ReadModelErro
 
 export interface LearnerContentPort {
   readOnboarding(contentLocale: string): Promise<LearnerOnboardingReadModel>
+  readOnboardingResume(): Promise<OnboardingResumeRead>
+  recordRequiredConsents(clientEventId: string): Promise<void>
   saveOnboarding(input: SaveOnboardingInput): Promise<LearnerOnboardingReadModel | null>
   readContent(contentId: string): Promise<LearnerContentDetail>
   readPlacement(input: { contentLocale: string; sessionId?: string | null }): Promise<PlacementReadModel>

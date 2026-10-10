@@ -5,6 +5,7 @@ import type { MobileFirstDayModel, MobileGoalOption, MobileHomeModel, MobileLear
 import { getUniRuntime } from '../platform/uni-runtime'
 import { createClientId } from '../platform/client-id'
 import { mobileI18n } from '../platform/v2-foundation'
+import { mapUiGoal, type OnboardingResumeFacts } from '../domain/onboarding-resume'
 import { useSessionStore } from './session'
 import { LEARNER_CONTENT_STORAGE_KEY, removeLearningCache } from './learning-cache'
 
@@ -26,7 +27,11 @@ const fallbackOnboarding: MobileOnboardingModel = { goal: null, quota: null, goa
 
 const fallbackAccount: MobileLearnerAccount = { uiLocale: 'zh-CN', contentLocale: 'en-US', timezone: 'Asia/Shanghai', themeMode: 'SYSTEM', highContrast: false, motionMode: 'FULL', goal: null, quota: null, stateVersion: 0 }
 
-interface PersistedState { subject: string; onboarding?: MobileOnboardingModel; home?: MobileHomeModel | null; firstDay?: MobileFirstDayModel | null }
+interface PersistedState { subject: string; onboarding?: MobileOnboardingModel; home?: MobileHomeModel | null; firstDay?: MobileFirstDayModel | null; placementSessionId?: string | null }
+
+function emptyPlacementModel(): MobilePlacementModel {
+  return { sessionId: null, status: 'EMPTY', currentQuestion: null, report: null, isCompleted: false, stateVersion: null, acceptedSequence: 0, nextSequence: null, reconciledWithoutReceipt: false, responseOutcome: null }
+}
 
 function eventId(prefix: string): string { return createClientId(prefix) }
 
@@ -43,9 +48,11 @@ export const useLearnerContentStore = defineStore('mobile-learner-content', () =
   const accountStatus = ref<MobileReadModelStatus>('idle')
   const home = ref<MobileHomeModel | null>(null)
   const firstDay = ref<MobileFirstDayModel | null>(null)
-  const placement = ref<MobilePlacementModel>({ sessionId: null, status: 'EMPTY', currentQuestion: null, report: null, isCompleted: false })
+  const placement = ref<MobilePlacementModel>(emptyPlacementModel())
   const placementStatus = ref<MobileReadModelStatus>('idle')
   const onboardingStatus = ref<MobileReadModelStatus>('idle')
+  const onboardingResume = ref<OnboardingResumeFacts | null>(null)
+  let resumeCache: { key: string; facts: OnboardingResumeFacts } | null = null
   const homeStatus = ref<MobileReadModelStatus>('idle')
   const firstDayStatus = ref<MobileReadModelStatus>('idle')
   const lastError = ref<string | null>(null)
@@ -100,12 +107,19 @@ export const useLearnerContentStore = defineStore('mobile-learner-content', () =
     accountOwner = null; contentLocaleOwner = null
     mobileI18n.setContentLocale('en-US')
     home.value = null; firstDay.value = null
-    placement.value = { sessionId: null, status: 'EMPTY', currentQuestion: null, report: null, isCompleted: false }
+    placement.value = emptyPlacementModel()
     placementStatus.value = 'idle'; onboardingStatus.value = 'idle'; homeStatus.value = 'idle'; firstDayStatus.value = 'idle'; lastError.value = null
+    onboardingResume.value = null
+    resumeCache = null
   }
   watch(() => session.identityRevision, reset, { flush: 'sync' })
 
-  function persist(): void { const owner = scope(); if (!owner) return; getUniRuntime().setStorageSync(STORAGE_KEY, JSON.stringify({ subject: owner.subject, onboarding: onboarding.value, home: home.value, firstDay: firstDay.value } satisfies PersistedState)) }
+  function persist(): void {
+    const owner = scope()
+    if (!owner) return
+    const placementSessionId = placement.value.sessionId?.startsWith('asess_') ? placement.value.sessionId : null
+    getUniRuntime().setStorageSync(STORAGE_KEY, JSON.stringify({ subject: owner.subject, onboarding: onboarding.value, home: home.value, firstDay: firstDay.value, placementSessionId } satisfies PersistedState))
+  }
   function restore(): void {
     const owner = scope()
     if (!owner) return
@@ -122,9 +136,85 @@ export const useLearnerContentStore = defineStore('mobile-learner-content', () =
           if (saved.home) home.value = saved.home
           if (saved.firstDay) firstDay.value = saved.firstDay
         }
+        if (typeof saved.placementSessionId === 'string' && saved.placementSessionId.startsWith('asess_')) {
+          placement.value = { ...emptyPlacementModel(), sessionId: saved.placementSessionId }
+        }
       } catch { removeLearningCache(STORAGE_KEY) }
     }
     restored.value = true
+  }
+  function resumeKey(owner: Scope | null): string {
+    return owner ? `${owner.subject}:${owner.revision}` : ''
+  }
+  async function loadOnboardingResume(force = false): Promise<OnboardingResumeFacts> {
+    const owner = scope()
+    const key = resumeKey(owner)
+    if (!force && resumeCache && resumeCache.key === key) return resumeCache.facts
+    const remote = await mobileLearnerContentApi.readOnboardingResume()
+    if (!stillCurrent(owner)) throw new Error('账号已变化')
+    const quota = remote.target.quota
+    const facts: OnboardingResumeFacts = {
+      adultGate: remote.adultGate,
+      consent: {
+        readable: remote.consent.readable,
+        accepted: remote.consent.accepted,
+        unsatisfiedPurposes: [...remote.consent.unsatisfiedPurposes],
+      },
+      target: {
+        readable: remote.target.readable,
+        saved: remote.target.saved,
+        goal: mapUiGoal(remote.target.goal),
+        quota: quota === 5 || quota === 15 || quota === 30 || quota === 45 ? quota : null,
+      },
+    }
+    if (facts.target.quota === null) facts.target.saved = false
+    onboardingResume.value = facts
+    resumeCache = { key, facts }
+    return facts
+  }
+  async function recordRequiredConsents(): Promise<boolean> {
+    const owner = scope()
+    if (!owner) { reset(); onboardingStatus.value = 'forbidden'; return false }
+    lastError.value = null
+    try {
+      await mobileLearnerContentApi.recordRequiredConsents(eventId('mobile-onboarding-consent'), () => sameIdentity(owner))
+      if (!stillCurrent(owner)) return false
+      resumeCache = null
+      await loadOnboardingResume(true)
+      return true
+    } catch (error) {
+      if (!stillCurrent(owner)) return false
+      lastError.value = mobileLearnerContentError(error).message
+      return false
+    }
+  }
+  async function saveTarget(goal: string, quota: number): Promise<boolean> {
+    const owner = scope()
+    if (!owner) { reset(); onboardingStatus.value = 'forbidden'; return false }
+    if (session.adultGate !== 'PASSED') {
+      lastError.value = '请先完成服务端成人确认。'
+      onboardingStatus.value = 'offline'
+      return false
+    }
+    onboardingStatus.value = 'loading'
+    lastError.value = null
+    try {
+      const remote = await mobileLearnerContentApi.saveOnboarding({ goal, quota, consentsRecorded: true, clientEventId: eventId('mobile-onboarding-target') }, () => sameIdentity(owner))
+      if (!stillCurrent(owner)) return false
+      applyOnboarding(remote, owner)
+      goals.value = onboarding.value.goals.length ? [...onboarding.value.goals] : [...fallbackGoals]
+      quotas.value = onboarding.value.quotas.length ? [...onboarding.value.quotas] : [...fallbackQuotas]
+      onboardingStatus.value = 'ready'
+      resumeCache = null
+      await loadOnboardingResume(true)
+      persist()
+      return true
+    } catch (error) {
+      if (!stillCurrent(owner)) return false
+      onboardingStatus.value = 'offline'
+      lastError.value = mobileLearnerContentError(error).message || '学习目标尚未保存。本页还没提交的内容，离开后不会保留。'
+      return false
+    }
   }
   async function loadOnboarding(): Promise<void> {
     const owner = scope()
@@ -218,21 +308,34 @@ export const useLearnerContentStore = defineStore('mobile-learner-content', () =
     try {
       const contentLocale = await ensureContentLocale(owner)
       if (!contentLocale) throw new Error(lastError.value || '学习语言设置暂时无法读取。')
-      let remote = await mobileLearnerContentApi.readPlacement(contentLocale, placement.value.sessionId)
+      const storedSessionId = placement.value.sessionId
+      const sessionId = storedSessionId && storedSessionId.startsWith('asess_') ? storedSessionId : null
+      let remote: MobilePlacementModel
+      if (sessionId) {
+        remote = await mobileLearnerContentApi.readPlacement(contentLocale, sessionId)
+      } else {
+        remote = await mobileLearnerContentApi.startPlacement(contentLocale, eventId('mobile-placement-start'))
+        if (!stillCurrent(owner)) return
+        // A successful start can race the read-model projection during a fresh
+        // H5 session. Re-read that same session once. Restoring an existing
+        // asess_ session must not POST again.
+        if (!remote.report && !remote.currentQuestion && remote.sessionId?.startsWith('asess_')) {
+          remote = await mobileLearnerContentApi.readPlacement(contentLocale, remote.sessionId)
+        }
+      }
       if (!stillCurrent(owner)) return
-      if (remote.status === 'EMPTY') remote = await mobileLearnerContentApi.startPlacement(contentLocale, eventId('mobile-placement-start'))
-      if (!stillCurrent(owner)) return
-      // A successful start can race the read-model projection during a fresh
-      // H5 session. Re-read the same server-owned session once before exposing
-      // an empty state; never synthesize a question on the client.
-      if (!remote.report && !remote.currentQuestion) remote = await mobileLearnerContentApi.readPlacement(contentLocale, remote.sessionId)
-      if (!stillCurrent(owner)) return
-      placement.value = remote
-      placementStatus.value = remote.report || remote.currentQuestion ? 'ready' : 'empty'
+      placement.value = { ...remote, reconciledWithoutReceipt: false }
+      placementStatus.value = remote.report || remote.currentQuestion || remote.sessionId?.startsWith('asess_') ? 'ready' : 'empty'
+      persist()
     } catch (error) {
       if (!stillCurrent(owner)) return
       placementStatus.value = 'offline'
       lastError.value = mobileLearnerContentError(error).message
+      // A failed read must not POST. Drop any answer payload and keep only the
+      // server session pointer, when one was already stored.
+      const sessionId = placement.value.sessionId?.startsWith('asess_') ? placement.value.sessionId : null
+      placement.value = { ...emptyPlacementModel(), sessionId }
+      persist()
     }
   }
   async function submitPlacementAnswer(selectedKey: string, timeSpentSec: number): Promise<void> {
@@ -241,27 +344,41 @@ export const useLearnerContentStore = defineStore('mobile-learner-content', () =
     const current = placement.value.currentQuestion
     const sessionId = placement.value.sessionId
     if (!current || !sessionId || !selectedKey || placementStatus.value === 'loading') return
+    if (placement.value.stateVersion == null || current.itemId == null) {
+      placementStatus.value = 'offline'
+      lastError.value = '这题还没有服务端检查点，没有提交。'
+      return
+    }
     placementStatus.value = 'loading'; lastError.value = null
     try {
       const contentLocale = await ensureContentLocale(owner)
       if (!contentLocale) throw new Error(lastError.value || '学习语言设置暂时无法读取。')
-      let remote = await mobileLearnerContentApi.submitPlacementAnswer({
+      const remote = await mobileLearnerContentApi.submitPlacementAnswer({
         sessionId,
         questionId: current.questionId,
         selectedKey,
         timeSpentSec: Math.max(0, Math.min(current.timeLimitSec, Math.round(timeSpentSec))),
         contentLocale,
-        clientEventId: eventId(`mobile-placement-${current.questionId}`),
+        clientEventId: eventId(`mobile-placement-${sessionId}-${current.stepIndex}-${placement.value.stateVersion}`),
+        stateVersion: placement.value.stateVersion,
+        itemId: current.itemId,
+        itemSequence: current.stepIndex,
       })
       if (!stillCurrent(owner)) return
-      if (!remote.report && !remote.currentQuestion) remote = await mobileLearnerContentApi.readPlacement(contentLocale, remote.sessionId || sessionId)
-      if (!stillCurrent(owner)) return
+      const sameQuestion = remote.currentQuestion?.questionId === current.questionId
       placement.value = remote
-      placementStatus.value = placement.value.report || placement.value.currentQuestion ? 'ready' : 'empty'
+      if (remote.reconciledWithoutReceipt && sameQuestion) {
+        placementStatus.value = 'offline'
+        lastError.value = '这题还没提交成功。进度仍以服务端已接收的检查点为准。'
+      } else {
+        placementStatus.value = remote.report || remote.currentQuestion || remote.sessionId?.startsWith('asess_') ? 'ready' : 'empty'
+        lastError.value = null
+      }
+      persist()
     } catch (error) {
       if (!stillCurrent(owner)) return
       placementStatus.value = 'offline'
-      lastError.value = mobileLearnerContentError(error).message
+      lastError.value = mobileLearnerContentError(error).message || '本题尚未提交成功。未提交的选择不会当成已保存。'
     }
   }
   async function loadHome(): Promise<void> {
@@ -302,5 +419,5 @@ export const useLearnerContentStore = defineStore('mobile-learner-content', () =
       persist()
     }
   }
-  return { onboarding, goals, quotas, account, accountStatus, home, firstDay, placement, onboardingStatus, homeStatus, firstDayStatus, placementStatus, lastError, progress, restore, persist, loadOnboarding, saveOnboarding, loadAccount, savePreferences, saveContentLocale, loadFirstDay, loadPlacement, submitPlacementAnswer, loadHome, completeTask }
+  return { onboarding, goals, quotas, account, accountStatus, home, firstDay, placement, onboardingStatus, onboardingResume, homeStatus, firstDayStatus, placementStatus, lastError, progress, restore, persist, loadOnboarding, loadOnboardingResume, recordRequiredConsents, saveTarget, saveOnboarding, loadAccount, savePreferences, saveContentLocale, loadFirstDay, loadPlacement, submitPlacementAnswer, loadHome, completeTask }
 })

@@ -1,6 +1,8 @@
 export type AuthFailureAction = 'login' | 'register' | 'resetRequest' | 'resetConfirm'
 export type AuthFailureMarker =
   | 'iam.consent.version_unavailable'
+  | 'iam.consent.withdrawn'
+  | 'iam.eligibility.insufficient'
   | 'iam.credentials.invalid'
   | 'iam.account.locked'
   | 'iam.account.already_exists'
@@ -8,6 +10,8 @@ export type AuthFailureMarker =
   | 'iam.password_reset.invalid'
   | 'RATE_LIMITED'
   | 'UNKNOWN_AUTH_ERROR'
+
+export type LearnerLoginArrival = 'consent_withdrawn' | 'eligibility_insufficient'
 
 type Translate = (key: string) => string
 type FailureDetails = { status: number | null; values: string[]; rawText: string }
@@ -39,10 +43,30 @@ function hasExact(values: string[], marker: string): boolean {
   return values.some((value) => value === marker || value.startsWith(`${marker}（`) || value.startsWith(`${marker} (`))
 }
 
+function hasAnyExact(values: string[], markers: readonly string[]): boolean {
+  return markers.some((marker) => hasExact(values, marker))
+}
+
+const CONSENT_WITHDRAWN_MARKERS = ['iam.consent.withdrawn', 'consent_withdrawn', 'CONSENT_WITHDRAWN', 'REQUIRED_CONSENT_WITHDRAWN'] as const
+const ELIGIBILITY_INSUFFICIENT_MARKERS = ['iam.eligibility.insufficient', 'eligibility_insufficient', 'ELIGIBILITY_INSUFFICIENT', 'LEARNING_ELIGIBILITY_INSUFFICIENT'] as const
+
+/** A login arrival notice is not a credential failure. Unknown reasons stay silent. */
+export function learnerLoginArrival(reason: unknown): LearnerLoginArrival | null {
+  const value = Array.isArray(reason) ? reason[0] : reason
+  if (typeof value !== 'string') return null
+  const text = value.trim()
+  if (!text) return null
+  if (text === '同意撤回' || (CONSENT_WITHDRAWN_MARKERS as readonly string[]).includes(text)) return 'consent_withdrawn'
+  if (text === '资格不足' || (ELIGIBILITY_INSUFFICIENT_MARKERS as readonly string[]).includes(text)) return 'eligibility_insufficient'
+  return null
+}
+
 /** Reduce an API/runtime failure to a small allowlist before it enters the session store. */
 export function learnerAuthFailureMarker(failure: unknown): AuthFailureMarker {
   const { status, values, rawText } = failureDetails(failure)
   if (hasExact(values, 'iam.consent.version_unavailable')) return 'iam.consent.version_unavailable'
+  if (hasAnyExact(values, CONSENT_WITHDRAWN_MARKERS) || /同意撤回|consent[._-]withdrawn|REQUIRED_CONSENT_WITHDRAWN/i.test(rawText)) return 'iam.consent.withdrawn'
+  if (hasAnyExact(values, ELIGIBILITY_INSUFFICIENT_MARKERS) || /资格不足|eligibility[._-]insufficient|ELIGIBILITY_INSUFFICIENT/i.test(rawText)) return 'iam.eligibility.insufficient'
   if (hasExact(values, 'iam.credentials.invalid')) return 'iam.credentials.invalid'
   if (hasExact(values, 'iam.account.locked')) return 'iam.account.locked'
   if (hasExact(values, 'iam.account.already_exists')) return 'iam.account.already_exists'
@@ -63,6 +87,8 @@ export function learnerAuthFailureMarker(failure: unknown): AuthFailureMarker {
 export function learnerAuthFailureCopy(action: AuthFailureAction, failure: unknown, t: Translate): string {
   const marker = learnerAuthFailureMarker(failure)
   if (action === 'login') {
+    if (marker === 'iam.consent.withdrawn') return t('login.consentWithdrawn')
+    if (marker === 'iam.eligibility.insufficient') return t('login.eligibilityInsufficient')
     if (marker === 'iam.consent.version_unavailable') return t('login.accountUnavailable')
     if (marker === 'RATE_LIMITED' || marker === 'iam.login.rate_limited') return t('login.rateLimited')
     if (marker === 'iam.credentials.invalid') return t('login.invalidCredentials')
@@ -72,10 +98,13 @@ export function learnerAuthFailureCopy(action: AuthFailureAction, failure: unkno
   if (action === 'register') {
     if (marker === 'iam.consent.version_unavailable') return t('register.temporarilyUnavailable')
     if (marker === 'RATE_LIMITED' || marker === 'iam.login.rate_limited') return t('register.rateLimited')
-    if (marker === 'iam.account.already_exists') return t('register.accountConflict')
     return t('register.failed')
   }
+  if (action === 'resetRequest') {
+    if (marker === 'RATE_LIMITED' || marker === 'iam.login.rate_limited') return t('passwordReset.rateLimited')
+    return t('passwordReset.requestSent')
+  }
   if (marker === 'RATE_LIMITED' || marker === 'iam.login.rate_limited') return t('passwordReset.rateLimited')
-  if (action === 'resetConfirm' && marker === 'iam.password_reset.invalid') return t('passwordReset.invalidCode')
-  return t(action === 'resetRequest' ? 'passwordReset.requestFailed' : 'passwordReset.confirmFailed')
+  if (marker === 'iam.password_reset.invalid') return t('passwordReset.invalidCode')
+  return t('passwordReset.confirmFailed')
 }

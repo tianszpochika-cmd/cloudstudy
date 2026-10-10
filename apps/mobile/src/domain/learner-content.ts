@@ -110,6 +110,7 @@ export interface MobilePlacementQuestion {
   stepIndex: number
   totalSteps: number
   timeLimitSec: number
+  itemId: number | null
 }
 
 export interface MobilePlacementReport {
@@ -120,6 +121,10 @@ export interface MobilePlacementReport {
   score: number | null
   requestedStartingLevel: string | null
   mistakes: string[]
+  /** Null unless the server summary included the count. Never a stand-in for a missing score. */
+  fullCount: number | null
+  zeroCount: number | null
+  itemCount: number | null
 }
 
 export interface MobilePlacementModel {
@@ -128,6 +133,13 @@ export interface MobilePlacementModel {
   currentQuestion: MobilePlacementQuestion | null
   report: MobilePlacementReport | null
   isCompleted: boolean
+  stateVersion: number | null
+  acceptedSequence: number
+  nextSequence: number | null
+  /** True when this view was aligned after a 409 and is not a receipt for the attempt just sent. */
+  reconciledWithoutReceipt: boolean
+  /** FULL or ZERO only when the submit receipt said so. Null is not a score. */
+  responseOutcome: 'FULL' | 'ZERO' | null
 }
 
 export class MobileLearnerContentError extends Error {

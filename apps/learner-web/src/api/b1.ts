@@ -77,30 +77,38 @@ function withIdempotency(options: ApiRequestOptions = {}): ApiRequestOptions {
   return { ...options, headers: { ...(options.headers ?? {}), 'Idempotency-Key': key } }
 }
 
-function parseQuestion(value: unknown, fallbackSessionId: string, fallbackStepIndex: number): PlacementQuestion | null {
+function identifier(value: unknown): string | null {
+  if (typeof value === 'number' && Number.isSafeInteger(value) && value > 0) return String(value)
+  return readString(value)
+}
+
+function parseQuestion(value: unknown, fallbackSessionId: string, fallbackStepIndex: number, totalSteps: number | null = null): PlacementQuestion | null {
   const source = unwrap(value)
   if (!isRecord(source)) return null
   const questionSource = isRecord(source.question) ? source.question : source
-  const questionId = readString(questionSource.questionId) ?? readString(questionSource.id)
-  const stemText = readString(questionSource.stemText) ?? readString(questionSource.prompt)
+  const questionId = readString(questionSource.questionId) ?? readString(questionSource.id) ?? identifier(questionSource.itemId)
+  const stemText = readString(questionSource.stemText) ?? readString(questionSource.stem) ?? readString(questionSource.prompt)
   const optionsSource = Array.isArray(questionSource.options) ? questionSource.options : []
   const options = optionsSource.flatMap((item): Array<{ key: string; text: string }> => {
     if (!isRecord(item)) return []
-    const key = readString(item.key)
-    const text = readString(item.text)
+    const key = readString(item.key) ?? readString(item.optionId)
+    const text = readString(item.text) ?? readString(item.label)
     return key && text ? [{ key, text }] : []
   })
-  const dimension = questionSource.dimension === 'GRAMMAR' || questionSource.dimension === 'LISTENING' ? questionSource.dimension : 'VOCABULARY'
+  const rawDimension = readString(questionSource.dimension) ?? readString(questionSource.itemType)
+  const dimension = rawDimension === 'GRAMMAR' || rawDimension === 'BASIC_GRAMMAR'
+    ? 'GRAMMAR'
+    : rawDimension === 'LISTENING' ? 'LISTENING' : 'VOCABULARY'
   if (!questionId || !stemText || options.length === 0) return null
   return {
     questionId,
     sessionId: readString(source.sessionUuid) ?? readString(source.sessionId) ?? fallbackSessionId,
-    stepIndex: readNumber(source.stepIndex) ?? fallbackStepIndex,
-    totalSteps: readNumber(source.totalSteps) ?? 10,
+    stepIndex: readNumber(source.stepIndex) ?? readNumber(questionSource.displayOrder) ?? fallbackStepIndex,
+    totalSteps: totalSteps ?? readNumber(source.totalSteps) ?? 10,
     dimension,
     difficulty: readNumber(questionSource.difficulty) ?? 2,
     stemText,
-    helperText: readString(questionSource.helperText) ?? `${dimension === 'VOCABULARY' ? '词汇识别' : dimension === 'GRAMMAR' ? '基础语法' : '听力理解'} · 规则化测评`,
+    helperText: readString(questionSource.helperText) ?? '',
     options,
     correctKey: null,
     timeLimitSec: readNumber(questionSource.timeLimitSec) ?? 25,
@@ -201,9 +209,16 @@ export async function saveOnboardingProfile(profile: OnboardingProfile): Promise
 }
 
 export async function startPlacement(): Promise<PlacementQuestion | null> {
-  const sessionId = `placement-${Date.now()}`
-  const response = await apiClient.post<unknown>('/assessment/placement/start', {}, withIdempotency())
-  return parseQuestion(response, sessionId, 1)
+  const response = await apiClient.post<unknown>('/assessment/placement/sessions', {}, withIdempotency())
+  const source = unwrap(response)
+  if (!isRecord(source)) return null
+  const sessionId = readString(source.sessionId)
+  if (!sessionId) return null
+  const manifest = isRecord(source.manifest) ? source.manifest : null
+  const items = Array.isArray(source.items) ? source.items : []
+  const current = isRecord(source.currentItem) ? source.currentItem : isRecord(items[0]) ? items[0] : null
+  if (!current) return null
+  return parseQuestion({ ...current, sessionId }, sessionId, readNumber(current.displayOrder) ?? 1, readNumber(manifest?.totalItemCount))
 }
 
 export async function submitPlacementStep(input: { sessionId: string; questionId: string; selectedKey: string; timeSpentSec: number }): Promise<AssessmentStepResponse> {

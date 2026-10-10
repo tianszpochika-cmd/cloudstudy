@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import { pinia } from '../stores/pinia'
 import { useSessionStore } from '../stores/session'
+import { useLearnerContentStore } from '../stores/learner-content'
+import { markPlacementEntryReached, selectOnboardingResumeStep } from '../domain/onboarding-resume'
 import { isFeatureEnabled } from '../platform/feature-gates'
 import { safeReturnTo } from '../auth/gateway-auth'
 
@@ -261,6 +263,29 @@ router.beforeEach(async (to) => {
   if (to.meta.requiresAuth && !adultGateExempt.has(String(to.name)) && !session.isLearningReady) {
     session.setReturnTo(to.fullPath)
     return { name: 'onboarding', query: { redirect: safeReturnTo(to.fullPath) } }
+  }
+
+  let placementEntryReady = false
+  if (
+    to.meta.requiresAuth
+    && session.isAuthenticated
+    && session.adultGate === 'PASSED'
+    && session.isLearningReady
+    && !adultGateExempt.has(String(to.name))
+  ) {
+    try {
+      const facts = await useLearnerContentStore(pinia).loadOnboardingResume()
+      const resumeStep = selectOnboardingResumeStep(facts)
+      const missingTarget = resumeStep === 'goal' && facts.target.readable && !facts.target.saved
+      if (resumeStep === 'gate' || resumeStep === 'consent' || missingTarget) return { name: 'onboarding' }
+      placementEntryReady = resumeStep === 'assessment'
+    } catch {
+      // An unreadable target or consent must not bounce the learner in a loop.
+    }
+  }
+
+  if (to.name === 'assessment' && session.isAuthenticated && session.adultGate === 'PASSED' && placementEntryReady) {
+    markPlacementEntryReached(typeof sessionStorage === 'undefined' ? null : sessionStorage, session.userId)
   }
 
   if (to.name === 'adult-gate' && session.adultGate === 'PASSED') return session.consumeReturnTo()

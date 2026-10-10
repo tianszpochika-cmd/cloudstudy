@@ -1,5 +1,6 @@
 import { setMobileApiErrorHandler } from '../api/client'
 import { safeMobileReturnTo } from './gateway-auth'
+import { selectOnboardingResumeStep } from '../domain/onboarding-resume'
 import { getUniRuntime, openUniPage, type UniRuntime } from '../platform/uni-runtime'
 import { pinia } from '../stores/pinia'
 import { useLearnerContentStore } from '../stores/learner-content'
@@ -90,6 +91,36 @@ function showOnboarding(returnTo: string): void {
   relaunchOrNavigate(ONBOARDING_PATH)
 }
 
+function rejectedAwayFromAccount(target: string): boolean {
+  const session = useSessionStore(pinia)
+  if (session.adultGate !== 'REJECTED') return false
+  const normalized = normalizeMobilePagePath(target)
+  return normalized === ONBOARDING_PATH || isMobileLearningPath(normalized)
+}
+
+async function redirectIfResumeBlocksLearning(target: string): Promise<boolean> {
+  if (!isMobileLearningPath(target)) return false
+  const session = useSessionStore(pinia)
+  if (session.adultGate !== 'PASSED' || !session.isLearningReady) return false
+  const content = useLearnerContentStore(pinia)
+  if (typeof content.loadOnboardingResume !== 'function') return false
+  try {
+    const facts = await content.loadOnboardingResume()
+    const step = selectOnboardingResumeStep(facts)
+    if (step === 'rejected') {
+      openUniPage(FORBIDDEN_PATH)
+      return true
+    }
+    if (step === 'gate' || step === 'consent' || (step === 'goal' && facts.target.readable && !facts.target.saved)) {
+      showOnboarding(target)
+      return true
+    }
+    return false
+  } catch {
+    return false
+  }
+}
+
 async function hydrateContentLocale(): Promise<boolean> {
   const session = useSessionStore(pinia)
   if (!session.isLearningReady) return false
@@ -111,14 +142,15 @@ async function hydrateContentLocale(): Promise<boolean> {
 export async function continueAfterLogin(returnTo: string): Promise<void> {
   const session = useSessionStore(pinia)
   const safe = safeMobileReturnTo(returnTo)
+  if (rejectedAwayFromAccount(safe)) {
+    openUniPage(FORBIDDEN_PATH)
+    return
+  }
   if (isMobileLearningPath(safe) && !session.isLearningReady) {
-    if (session.adultGate === 'REJECTED') {
-      openUniPage(FORBIDDEN_PATH)
-      return
-    }
     showOnboarding(safe)
     return
   }
+  if (isMobileLearningPath(safe) && await redirectIfResumeBlocksLearning(safe)) return
   if (isMobileLearningPath(safe) && !await hydrateContentLocale()) return
   openUniPage(safe)
 }
@@ -131,14 +163,15 @@ async function resolveBlockedNavigation(target: string): Promise<void> {
     const session = useSessionStore(pinia)
     try { await session.restore() } catch { /* the session store closes the gate on restore failure */ }
     if (!session.isAuthenticated) { showLogin(target); return }
+    if (rejectedAwayFromAccount(target)) {
+      openUniPage(FORBIDDEN_PATH)
+      return
+    }
     if (isMobileLearningPath(target) && !session.isLearningReady) {
-      if (session.adultGate === 'REJECTED') {
-        openUniPage(FORBIDDEN_PATH)
-        return
-      }
       showOnboarding(target)
       return
     }
+    if (isMobileLearningPath(target) && await redirectIfResumeBlocksLearning(target)) return
     if (isMobileLearningPath(target) && !await hydrateContentLocale()) {
       if (!session.isAuthenticated) showLogin(target)
       return
@@ -152,6 +185,10 @@ function interceptNavigation(options: RouteOptions): false | RouteOptions {
   const target = normalizeMobilePagePath(options.url)
   if (!isMobileProtectedPath(target)) return options
   const session = useSessionStore(pinia)
+  if (session.isAuthenticated && rejectedAwayFromAccount(target)) {
+    void resolveBlockedNavigation(target)
+    return false
+  }
   if (session.isAuthenticated && (!isMobileLearningPath(target) || session.isLearningReady)) return options
   void resolveBlockedNavigation(target)
   return false
@@ -173,7 +210,9 @@ export async function bootstrapMobileAuth(initialPath: unknown): Promise<void> {
   try { await session.restore() } catch { /* restore has already cleared the local session */ }
   if (!isMobileProtectedPath(target)) return
   if (!session.isAuthenticated) { showLogin(target); return }
+  if (rejectedAwayFromAccount(target)) { openUniPage(FORBIDDEN_PATH); return }
   if (isMobileLearningPath(target) && !session.isLearningReady) { showOnboarding(target); return }
+  if (isMobileLearningPath(target) && await redirectIfResumeBlocksLearning(target)) return
   if (isMobileLearningPath(target) && !await hydrateContentLocale()) return
 }
 
@@ -183,7 +222,9 @@ export async function ensureMobilePageAccess(target: string): Promise<boolean> {
   const session = useSessionStore(pinia)
   try { await session.restore() } catch { /* restore has already closed the session */ }
   if (!session.isAuthenticated) { showLogin(normalized); return false }
+  if (rejectedAwayFromAccount(normalized)) { openUniPage(FORBIDDEN_PATH); return false }
   if (isMobileLearningPath(normalized) && !session.isLearningReady) { showOnboarding(normalized); return false }
+  if (isMobileLearningPath(normalized) && await redirectIfResumeBlocksLearning(normalized)) return false
   if (isMobileLearningPath(normalized) && !await hydrateContentLocale()) {
     if (!session.isAuthenticated) showLogin(normalized)
     return false

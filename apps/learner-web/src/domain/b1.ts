@@ -57,6 +57,8 @@ export interface PlacementQuestion {
   options: QuestionOption[]
   correctKey: string | null
   timeLimitSec: number
+  /** Server item id for the placement response. Local preview questions omit it. */
+  itemId?: number | null
 }
 
 export interface AnswerRecord {
@@ -105,6 +107,12 @@ export interface AssessmentSnapshot {
   skipBaseline?: AssessmentSkipBaseline | null
   lastSavedAt: string | null
   resumed: boolean
+  /** Last session version read from the server. Not a local answer. */
+  stateVersion: number | null
+  /** Questions the server has already accepted. Zero means none. */
+  acceptedSequence: number
+  /** Next server sequence. 11 means all 10 responses were accepted. */
+  nextSequence: number | null
 }
 
 export interface ContinueContext {
@@ -251,7 +259,7 @@ export function createDefaultOnboarding(): OnboardingProfile {
 }
 
 export function createDefaultAssessment(): AssessmentSnapshot {
-  return { status: 'idle', sessionId: null, currentQuestion: null, answers: [], report: null, lastSavedAt: null, resumed: false }
+  return { status: 'idle', sessionId: null, currentQuestion: null, answers: [], report: null, lastSavedAt: null, resumed: false, stateVersion: null, acceptedSequence: 0, nextSequence: null }
 }
 
 export function createDefaultPrivacy(): PrivacySettings {

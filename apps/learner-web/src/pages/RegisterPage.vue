@@ -52,7 +52,7 @@ async function submit(): Promise<void> {
       errorKind.value = 'server'
       return
     }
-    await router.replace(session.adultGate === 'REQUIRED' ? { name: 'onboarding' } : session.adultGate === 'REJECTED' ? { name: 'forbidden' } : session.consumeReturnTo())
+    await router.replace(session.adultGate === 'REJECTED' ? { name: 'forbidden' } : session.adultGate === 'PASSED' ? session.consumeReturnTo() : { name: 'onboarding' })
   } finally {
     submitting.value = false
   }

@@ -48,8 +48,14 @@ test('registration and password reset messages cover Chinese and English labels,
 
   assert.equal(learner['zh-CN'].auth.register.identifier, '账号')
   assert.equal(learner['en-US'].auth.register.identifier, 'Account')
-  assert.match(learner['zh-CN'].auth.passwordReset.requestSent, /如果账号存在/)
-  assert.match(learner['en-US'].auth.passwordReset.requestSent, /If the account exists/)
+  assert.equal(learner['zh-CN'].auth.register.accountConflict, learner['zh-CN'].auth.register.failed)
+  assert.equal(learner['en-US'].auth.register.accountConflict, learner['en-US'].auth.register.failed)
+  assert.doesNotMatch(learner['zh-CN'].auth.register.accountConflict, /已注册|账号已存在/)
+  assert.doesNotMatch(learner['en-US'].auth.register.accountConflict, /already be registered|already exists|account exists/i)
+  assert.equal(learner['zh-CN'].auth.passwordReset.requestSent, '如果该账号可接收重置通知，我们会发送操作说明。')
+  assert.equal(learner['en-US'].auth.passwordReset.requestSent, 'If this account can receive a reset notice, we will send instructions.')
+  assert.doesNotMatch(learner['zh-CN'].auth.passwordReset.requestSent, /如果账号存在/)
+  assert.doesNotMatch(learner['en-US'].auth.passwordReset.requestSent, /if the account exists/i)
   assert.match(mobile['zh-CN'].mobile.auth.resetPassword.requiredFields, /重置口令/)
   assert.match(mobile['en-US'].mobile.auth.resetPassword.requiredFields, /reset code/)
   assert.match(learner['en-US'].auth.register.validationTitle, /Check your details/)
@@ -78,7 +84,8 @@ test('auth pages keep concise guidance while retaining password and account reco
     assert.match(mobileMessages.auth.register.shortPassword, /12/)
     assert.notEqual(webReset.description, webReset.requestHint)
     assert.notEqual(mobileMessages.pages['reset-password'].description, mobileReset.requestHint)
-    assert.match(webReset.requestSent, /账号存在|account exists/i)
+    assert.match(webReset.requestSent, /可接收重置通知|can receive a reset notice/)
+    assert.doesNotMatch(webReset.requestSent, /账号存在|account exists|if the account exists/i)
   }
 })
 
@@ -87,10 +94,15 @@ test('auth failure copy localizes known conflicts and rate limits and hides unkn
   const mobile = mobileFailureCopy.mobileAuthFailureCopy
   const t = (key) => key
 
-  assert.equal(web('register', '该账号已存在，请直接登录或走密码重置。（iam.account.already_exists）', t), 'register.accountConflict')
+  assert.equal(web('register', '该账号已存在，请直接登录或走密码重置。（iam.account.already_exists）', t), 'register.failed')
   assert.equal(web('register', '请求过于频繁，请稍后再试。', t), 'register.rateLimited')
   assert.equal(web('resetConfirm', 'iam.password_reset.invalid', t), 'passwordReset.invalidCode')
-  assert.equal(web('resetRequest', '数据库连接池异常：secret-token', t), 'passwordReset.requestFailed')
+  assert.equal(web('resetRequest', '请求过于频繁，请稍后再试。', t), 'passwordReset.rateLimited')
+  assert.equal(web('resetRequest', '数据库连接池异常：secret-token', t), 'passwordReset.requestSent')
+  assert.equal(web('resetRequest', 'iam.account.already_exists', t), 'passwordReset.requestSent')
+  assert.equal(web('login', 'CONSENT_WITHDRAWN', t), 'login.consentWithdrawn')
+  assert.equal(web('login', '资格不足', t), 'login.eligibilityInsufficient')
+  assert.equal(web('login', 'iam.credentials.invalid', t), 'login.invalidCredentials')
   assert.equal(mobile('register', '内容或进度已更新，请刷新后重试。', t), 'auth.register.failed')
   assert.equal(mobile('register', 'iam.account.already_exists', t), 'auth.register.accountConflict')
   assert.equal(mobile('resetRequest', '操作太频繁，请稍后重试。', t), 'auth.resetPassword.rateLimited')

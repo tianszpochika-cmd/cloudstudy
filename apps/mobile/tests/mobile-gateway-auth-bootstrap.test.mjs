@@ -95,6 +95,7 @@ test('device management remains reachable with an authenticated IAM session befo
     '../stores/pinia': { pinia: {} },
     '../stores/learner-content': { useLearnerContentStore: () => ({ loadAccount: async () => { preferenceReads += 1 } }) },
     '../stores/session': { useSessionStore: () => session },
+    '../domain/onboarding-resume': load('src/domain/onboarding-resume.ts', {}),
   })
   assert.equal(navigation.isMobileLearningPath('/pages/devices/devices'), false)
   assert.equal(navigation.isMobileLearningPath('/pages/home/home'), true)

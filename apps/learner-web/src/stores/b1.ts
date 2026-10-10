@@ -249,29 +249,35 @@ export const useB1Store = defineStore('b1', () => {
     const generation = session.authGeneration
     if (!stillCurrent(subject, generation)) return
     if (assessment.value.status === 'completed') return
-    assessment.value.status = assessment.value.answers.length > 0 ? 'ready' : 'loading'
+    assessment.value.status = 'loading'
     lastError.value = null
-    if (assessment.value.answers.length === 0) {
-      assessment.value.sessionId = `local-${Date.now()}`
-      assessment.value.currentQuestion = getLocalQuestion(0, assessment.value.sessionId)
-    } else if (!assessment.value.currentQuestion) {
-      assessment.value.currentQuestion = getLocalQuestion(assessment.value.answers.length, assessment.value.sessionId ?? 'local-placement')
+    if (!readAccessToken()) {
+      assessment.value.currentQuestion = null
+      assessment.value.status = 'error'
+      lastError.value = '请先登录后再开始定级。'
+      persist()
+      return
     }
-    if (readAccessToken()) {
-      try {
-        const question = await startPlacement()
-        if (!stillCurrent(subject, generation)) return
-        if (question) {
-          assessment.value.sessionId = question.sessionId
-          assessment.value.currentQuestion = question
-        }
-      } catch (error) {
-        if (!stillCurrent(subject, generation)) return
-        markSyncError(error, '测评题目暂时无法从服务端加载，已保留本地恢复路径。')
-        assessment.value.status = isOnline() ? 'ready' : 'offline'
+    try {
+      const question = await startPlacement()
+      if (!stillCurrent(subject, generation)) return
+      if (!question?.sessionId?.startsWith('asess_')) {
+        assessment.value.sessionId = null
+        assessment.value.currentQuestion = null
+        assessment.value.status = 'error'
+        lastError.value = '定级题没有从服务端开始，没有改用本地题目。'
+      } else {
+        assessment.value.sessionId = question.sessionId
+        assessment.value.currentQuestion = question
+        assessment.value.status = 'ready'
       }
+    } catch (error) {
+      if (!stillCurrent(subject, generation)) return
+      assessment.value.sessionId = null
+      assessment.value.currentQuestion = null
+      assessment.value.status = 'error'
+      markSyncError(error, '定级题暂时无法开始，没有创建本地题目。')
     }
-    assessment.value.status = assessment.value.currentQuestion ? 'ready' : 'error'
     assessment.value.lastSavedAt = new Date().toISOString()
     persist()
   }

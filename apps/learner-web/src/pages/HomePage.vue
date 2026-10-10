@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import StatePanel from '../components/StatePanel.vue'
 import AppIcon, { type AppIconName } from '../components/AppIcon.vue'
 import StudyArtwork from '../components/StudyArtwork.vue'
+import { hasPlacementEntryReached, ONBOARDING_GUIDE_ACTION, onboardingProgressLabel, onboardingRemainingStepLabels, selectOnboardingResumeStep, showOnboardingGuide } from '../domain/onboarding-resume'
 import { useLearnerContentStore } from '../stores/learner-content'
 import { useExperienceText } from '../platform/experience-ui'
 import { useLearningUi } from '../platform/learning-ui'
@@ -15,6 +16,16 @@ const session = useSessionStore()
 const t = useExperienceText()
 const ui = useLearningUi()
 const isRestricted = computed(() => session.adultGate === 'REJECTED')
+const guideReady = ref(false)
+const guideAction = ONBOARDING_GUIDE_ACTION
+const guideVisible = computed(() => {
+  const facts = store.onboardingResume
+  if (!guideReady.value || !facts || isRestricted.value) return false
+  return showOnboardingGuide(facts, hasPlacementEntryReached(typeof sessionStorage === 'undefined' ? null : sessionStorage, session.userId))
+})
+const guideLabel = computed(() => store.onboardingResume ? onboardingProgressLabel(store.onboardingResume) : '')
+const guideSteps = computed(() => store.onboardingResume ? onboardingRemainingStepLabels(store.onboardingResume) : [])
+const guideTo = computed(() => store.onboardingResume && selectOnboardingResumeStep(store.onboardingResume) === 'assessment' ? { name: 'assessment' } : { name: 'onboarding' })
 async function logout(): Promise<void> { await session.logout(); await router.replace({ name: 'login' }) }
 const home = computed(() => ['ready', 'empty', 'unavailable'].includes(store.homeStatus) ? store.home : null)
 const stream = computed(() => home.value?.today?.dailyStream ?? home.value?.home?.dailyStream)
@@ -38,11 +49,22 @@ function start(task = nextTask.value) {
   if (!task?.contentCode) { void router.push({ name: 'courses' }); return }
   void router.push({ name: 'learn-session', query: { taskId: task.id, contentCode: task.contentCode } })
 }
-onMounted(() => { store.restore(); void store.loadHome() })
+async function loadGuide(): Promise<void> {
+  guideReady.value = false
+  if (!session.isAuthenticated || session.adultGate === 'REJECTED') return
+  try {
+    await store.loadOnboardingResume()
+    guideReady.value = true
+  } catch {
+    guideReady.value = false
+  }
+}
+onMounted(() => { store.restore(); void store.loadHome(); void loadGuide() })
 </script>
 <template>
   <section class="page-stack home-experience" aria-labelledby="home-title">
     <div class="home-greeting"><div><p class="experience-eyebrow"><AppIcon name="spark" :size="15" />A LITTLE, EVERY DAY</p><h1 id="home-title">{{ t('homeTitle') }}</h1><p>{{ t('homeDescription') }}</p></div><RouterLink v-if="!isRestricted" class="text-link" :to="{ name: 'onboarding' }">{{ t('setGoal') }}<AppIcon name="arrow" :size="16" /></RouterLink></div>
+    <RouterLink v-if="guideVisible" class="onboarding-guide" :to="guideTo"><span class="onboarding-guide__copy"><span>{{ guideLabel }}</span><small v-if="guideSteps.length">剩余步骤：{{ guideSteps.join('、') }}</small></span><strong>{{ guideAction }}</strong></RouterLink>
     <div v-if="isRestricted" class="restricted-banner" role="alert">
       <div class="restricted-banner__copy">
         <strong>学习功能暂未开放</strong>
@@ -80,6 +102,10 @@ onMounted(() => { store.restore(); void store.loadHome() })
   </section>
 </template>
 <style scoped>
+.onboarding-guide{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 16px;padding:14px 16px;border:1px solid var(--yx-color-border);border-radius:14px;background:var(--yx-color-brand-primary-soft);color:inherit;text-decoration:none}
+.onboarding-guide__copy{display:grid;gap:2px}
+.onboarding-guide small{color:var(--yx-color-text-secondary);font-size:12px}
+.onboarding-guide strong{color:var(--yx-color-brand-primary);white-space:nowrap}
 .restricted-banner{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;padding:16px 20px;border:1px solid var(--yx-color-border);border-left:4px solid var(--yx-color-warning,#f59e0b);border-radius:14px;background:var(--yx-color-surface-card);margin-bottom:20px}
 .restricted-banner__copy strong{display:block;font-size:15px;color:var(--yx-color-text-primary);margin-bottom:4px}
 .restricted-banner__copy p{margin:0;color:var(--yx-color-text-secondary);font-size:13px}

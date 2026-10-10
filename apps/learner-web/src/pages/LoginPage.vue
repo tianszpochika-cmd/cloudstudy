@@ -7,7 +7,7 @@ import AuthLayout from '../layouts/AuthLayout.vue'
 import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { authT } from '../auth/i18n'
-import { learnerAuthFailureCopy } from '../auth/auth-failure-copy'
+import { learnerAuthFailureCopy, learnerAuthFailureMarker, learnerLoginArrival } from '../auth/auth-failure-copy'
 import { safeReturnTo } from '../auth/gateway-auth'
 import { useSessionStore } from '../stores/session'
 
@@ -18,18 +18,37 @@ const identifier = ref('')
 const password = ref('')
 const submitting = ref(false)
 const loginError = ref<string | null>(null)
+const failureKind = ref<'consent_withdrawn' | 'eligibility_insufficient' | 'credentials' | 'other' | null>(null)
 const redirectTarget = computed(() => safeReturnTo(route.query.redirect ?? session.peekReturnTo()))
+const arrival = computed(() => learnerLoginArrival(route.query.reason))
+const noticeKind = computed(() => {
+  if (failureKind.value === 'consent_withdrawn' || failureKind.value === 'eligibility_insufficient') return failureKind.value
+  if (failureKind.value) return null
+  return arrival.value
+})
+
+const statusTitle = computed(() => {
+  if (submitting.value && !loginError.value) return authT('login.ready')
+  if (noticeKind.value === 'consent_withdrawn') return authT('login.consentWithdrawnTitle')
+  if (noticeKind.value === 'eligibility_insufficient') return authT('login.eligibilityTitle')
+  if (loginError.value) return authT('login.errorTitle')
+  return authT('login.ready')
+})
 
 const statusDescription = computed(() => {
   if (loginError.value) return loginError.value
   if (submitting.value) return authT('login.submitting')
+  if (noticeKind.value === 'consent_withdrawn') return authT('login.consentWithdrawn')
+  if (noticeKind.value === 'eligibility_insufficient') return authT('login.eligibilityInsufficient')
   return authT('login.formHint')
 })
 
 async function submit(): Promise<void> {
   if (submitting.value) return
   loginError.value = null
+  failureKind.value = null
   if (!identifier.value.trim() || !password.value) {
+    failureKind.value = 'other'
     loginError.value = authT('login.required')
     return
   }
@@ -38,9 +57,18 @@ async function submit(): Promise<void> {
   try {
     const ok = await session.login(identifier.value, password.value)
     if (!ok) {
+      const marker = learnerAuthFailureMarker(session.lastError)
+      failureKind.value = marker === 'iam.consent.withdrawn'
+        ? 'consent_withdrawn'
+        : marker === 'iam.eligibility.insufficient'
+          ? 'eligibility_insufficient'
+          : marker === 'iam.credentials.invalid'
+            ? 'credentials'
+            : 'other'
       loginError.value = learnerAuthFailureCopy('login', session.lastError, authT)
       return
     }
+    failureKind.value = null
     await router.replace(session.adultGate === 'REQUIRED' ? { name: 'onboarding' } : session.adultGate === 'REJECTED' ? { name: 'forbidden' } : session.consumeReturnTo())
   } finally {
     submitting.value = false
@@ -81,11 +109,11 @@ async function submit(): Promise<void> {
             :disabled="submitting"
           ><button type="button" class="icon-button" :aria-label="t(showPassword ? 'hidePassword' : 'showPassword')" :aria-pressed="showPassword" @click="showPassword = !showPassword"><AppIcon name="eye" :size="19" /></button></div>
         </label>
-        <div class="auth-links"><RouterLink :to="{ name: 'register', query: { redirect: redirectTarget } }">{{ t('createAccount') }}</RouterLink><RouterLink :to="{ name: 'reset-password', query: { redirect: redirectTarget } }">{{ t('forgot') }}</RouterLink></div>
-        <div v-if="loginError || submitting" class="login-status" :class="{ 'login-status--error': loginError }" :role="loginError ? 'alert' : 'status'" aria-live="polite" :aria-busy="submitting">
-          <span class="login-status__mark" aria-hidden="true">{{ loginError ? '!' : '✦' }}</span>
+        <div class="auth-links"><RouterLink :to="{ name: 'register', query: { redirect: redirectTarget } }">{{ t('createAccount') }}</RouterLink><RouterLink v-if="!noticeKind" :to="{ name: 'reset-password', query: { redirect: redirectTarget } }">{{ t('forgot') }}</RouterLink></div>
+        <div v-if="loginError || submitting || noticeKind" class="login-status" :class="{ 'login-status--error': loginError && !noticeKind }" :role="loginError && !noticeKind ? 'alert' : 'status'" aria-live="polite" :aria-busy="submitting">
+          <span class="login-status__mark" aria-hidden="true">{{ loginError && !noticeKind ? '!' : '✦' }}</span>
           <div>
-            <strong>{{ loginError ? authT('login.errorTitle') : authT('login.ready') }}</strong>
+            <strong>{{ statusTitle }}</strong>
             <p>{{ statusDescription }}</p>
           </div>
         </div>
