@@ -11,6 +11,7 @@ import com.englishflow.assessment.domain.AssessmentMistake;
 import com.englishflow.assessment.domain.AssessmentPrincipal;
 import com.englishflow.assessment.domain.AttemptGuard;
 import com.englishflow.assessment.domain.GrammarReadingPack;
+import com.englishflow.assessment.domain.MistakeAdmission;
 import com.englishflow.assessment.domain.PracticeCheckpoint;
 import com.englishflow.assessment.domain.PracticeCompletion;
 import com.englishflow.assessment.domain.PracticeFeedback;
@@ -418,7 +419,9 @@ public class B10AssessmentJdbcController {
         // are questions, so questionId mirrors itemId; the rule engine does
         // not classify errors, hence UNCLASSIFIED (its own term elsewhere).
         // allMistakes (not just submitted) so unanswered items count too.
-        recordMistakes(principal.subject(), allMistakes, answerMap, gradingCode, gradingVersion);
+        if (MistakeAdmission.entersBook(totalScoreBucket)) {
+            recordMistakes(principal.subject(), allMistakes, answerMap, gradingCode, gradingVersion, attemptId);
+        }
         String nextStatus = allMistakes.isEmpty() || answerMap.size() >= total ? "ASSESSED" : "IN_PROGRESS";
         jdbc.update("""
                 UPDATE b10_assessment_session
@@ -524,7 +527,7 @@ public class B10AssessmentJdbcController {
     }
 
     private void recordMistakes(String subject, List<String> codes, Map<String, String> answerMap,
-            String gradingCode, long gradingVersion) {
+            String gradingCode, long gradingVersion, String sourceAttemptId) {
         String ruleVersion = (gradingCode + ":v" + gradingVersion).trim();
         if (ruleVersion.length() > 128) ruleVersion = ruleVersion.substring(0, 128);
         Instant now = Instant.now();
@@ -538,9 +541,12 @@ public class B10AssessmentJdbcController {
                 long nextId = number(oneValue("SELECT COALESCE(MAX(mistake_id), 0) + 1 FROM assessment_mistake"), 1L);
                 mistake = new AssessmentMistake(nextId, AssessmentPrincipal.authenticated(subject, TENANT),
                         itemId, itemId, "UNCLASSIFIED", ruleVersion, sha256(answerMap.getOrDefault(code, "")), now);
+                mistake.tagSourceAttempt(sourceAttemptId);
             } else {
                 mistake = restoreMistake(row);
+                if (mistake.hasSourceAttempt(sourceAttemptId)) continue;
                 mistake.mergeWrong(now, mistake.errorCategory());
+                mistake.tagSourceAttempt(sourceAttemptId);
             }
             saveMistake(mistake);
         }

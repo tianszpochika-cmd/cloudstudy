@@ -2,6 +2,7 @@ package com.englishflow.assessment.domain;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -68,6 +69,33 @@ public final class AssessmentMistake {
             }
         }
         return mistake;
+    }
+
+    public boolean hasSourceAttempt(String sourceAttemptId) {
+        if (sourceAttemptId == null || sourceAttemptId.isBlank()) return false;
+        for (Map<String, Object> trace : reasonTrace) {
+            Object value = trace.get("sourceAttemptId");
+            if (value != null && sourceAttemptId.equals(String.valueOf(value))) return true;
+        }
+        return false;
+    }
+
+    /** Records which attempt created or repeated this mistake. A second pass of the same attempt is a no-op. */
+    public void tagSourceAttempt(String sourceAttemptId) {
+        if (sourceAttemptId == null || sourceAttemptId.isBlank() || hasSourceAttempt(sourceAttemptId)) return;
+        if (!reasonTrace.isEmpty()) {
+            Map<String, Object> updated = new LinkedHashMap<>(reasonTrace.get(reasonTrace.size() - 1));
+            if (!updated.containsKey("sourceAttemptId")) {
+                updated.put("sourceAttemptId", sourceAttemptId);
+                reasonTrace.set(reasonTrace.size() - 1, Map.copyOf(updated));
+                return;
+            }
+        }
+        reasonTrace.add(Map.of(
+                "ruleVersion", ruleVersion,
+                "errorCategory", errorCategory,
+                "sourceAttemptId", sourceAttemptId,
+                "occurredAt", lastErrorAt.toString()));
     }
 
     public void mergeWrong(Instant occurredAt, String additionalCategory) {

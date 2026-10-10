@@ -4,6 +4,7 @@ import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { fetchMistakesQueue, type LoopMistake } from '../api/b2'
 import StatePanel from '../components/StatePanel.vue'
+import { ZERO_ONLY_COPY } from '../domain/mistake-book'
 
 type ViewState = 'loading' | 'ready' | 'empty' | 'permission' | 'error'
 
@@ -39,6 +40,7 @@ onMounted(() => { void load() })
 <template>
   <section class="page-stack">
     <ExperienceHeader page="Mistakes" icon="bookmark" />
+    <p data-zero-only>{{ ZERO_ONLY_COPY }}</p>
     <StatePanel
       v-if="state !== 'ready'"
       :state="state"

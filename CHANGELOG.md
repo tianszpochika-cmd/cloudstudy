@@ -1,5 +1,9 @@
 # Changelog
 
+- [R1-050-20261011] **只有整次答错的练习进入错题本，同一作答不重复建补救。**
+  - 总分不是 ZERO 时不写错题。同一 `sourceAttemptId` 再次出现时不再合并出第二条补救。
+  - Web 错题页和 H5 报告写明“错题本只保留整次答错的练习。”`lunaStamp` 仍为 false。
+
 - [R1-049-20261011] **一次练习完成只写一条 outbox，完成页不显示奖励。**
   - 会话变为已判分时，用去重键 `practice-complete:{sessionId}` 追加一条完成事件。同一会话再次完成不会再插入第二条。
   - 作答回执 `rewardVisible` 为 false。Web 与 H5 的练习完成处不出现奖励文案。`lunaStamp` 仍为 false。
