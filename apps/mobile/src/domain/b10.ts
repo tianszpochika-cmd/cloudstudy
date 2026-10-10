@@ -135,6 +135,8 @@ export interface B10Mistake {
   questionType: B10QuestionType | null
   contentVersionId: number | null
   verificationId: number | null
+  closureCopy?: string | null
+  variantStatus?: string | null
 }
 
 export interface B10Verification {

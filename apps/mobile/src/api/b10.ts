@@ -463,6 +463,8 @@ function parseMistake(value: unknown): B10Mistake | null {
     questionType: ['CHOICE', 'CONNECT_LINE', 'DRAG_SORTER', 'FILL_BLANK', 'SPELL_INPUT', 'LISTEN_CHOICE', 'ERROR_CORRECTION', 'TRANSLATION_INPUT'].includes(text(value.questionType)) ? text(value.questionType) as B10Mistake['questionType'] : null,
     contentVersionId: nullableNumber(value.contentVersionId),
     verificationId: nullableNumber(value.verificationId),
+    closureCopy: text(value.closureCopy) || null,
+    variantStatus: text(value.variantStatus) || null,
   }
 }
 

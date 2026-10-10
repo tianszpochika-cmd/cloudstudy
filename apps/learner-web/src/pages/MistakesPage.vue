@@ -4,7 +4,7 @@ import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { fetchMistakesQueue, type LoopMistake } from '../api/b2'
 import StatePanel from '../components/StatePanel.vue'
-import { ZERO_ONLY_COPY } from '../domain/mistake-book'
+import { ZERO_ONLY_COPY, closureLabel } from '../domain/mistake-book'
 
 type ViewState = 'loading' | 'ready' | 'empty' | 'permission' | 'error'
 
@@ -52,7 +52,7 @@ onMounted(() => { void load() })
     <section v-else class="info-card" aria-label="错题列表">
       <ul class="yx-mistake-list">
         <li v-for="item in mistakes" :key="String(item.interactionId ?? item.resourceKey)">
-          <div><strong>{{ item.resourceKey ?? '练习题' }}</strong><span class="yx-pill yx-pill--warning">{{ item.mistakeStatus }}</span></div>
+          <div><strong>{{ item.resourceKey ?? '练习题' }}</strong><span class="yx-pill yx-pill--warning" data-closure>{{ closureLabel(item.mistakeStatus) }}</span></div>
           <span class="yx-fact-tag">{{ item.domainCode ?? '' }} · {{ item.errorCategory ?? '' }}</span>
           <p v-if="item.message">{{ item.message }}</p>
           <p v-if="item.feedbackCode" class="yx-fact-tag">反馈：{{ item.feedbackCode }}</p>

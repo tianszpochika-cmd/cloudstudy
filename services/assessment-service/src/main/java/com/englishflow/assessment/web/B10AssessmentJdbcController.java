@@ -13,6 +13,7 @@ import com.englishflow.assessment.domain.AttemptGuard;
 import com.englishflow.assessment.domain.GrammarReadingPack;
 import com.englishflow.assessment.domain.MistakeAdmission;
 import com.englishflow.assessment.domain.PracticeCheckpoint;
+import com.englishflow.assessment.domain.VariantRepair;
 import com.englishflow.assessment.domain.PracticeCompletion;
 import com.englishflow.assessment.domain.PracticeFeedback;
 
@@ -515,6 +516,14 @@ public class B10AssessmentJdbcController {
                 idempotencyKey, requestDigest);
         if (replay != null) return replay;
         AssessmentMistake mistake = ownedMistake(mistakeId, principal.subject());
+        if (!VariantRepair.linked(mistake.itemId(), variantItemId)) {
+            Map<String, Object> missing = new LinkedHashMap<>(mistakeView(mistake));
+            missing.put("variantStatus", VariantRepair.NO_VARIANT);
+            missing.put("variantCopy", VariantRepair.NO_VARIANT_COPY);
+            Map<String, Object> explained = envelope(missing);
+            saveMistakeIdempotency(principal.subject(), "B10_MISTAKE_VARIANT", idempotencyKey, explained);
+            return explained;
+        }
         try {
             mistake.registerVariant(variantItemId, Instant.now());
         } catch (com.englishflow.assessment.domain.AssessmentDomainException invalid) {
@@ -594,6 +603,9 @@ public class B10AssessmentJdbcController {
     private Map<String, Object> mistakeView(AssessmentMistake mistake) {
         Map<String, Object> view = new LinkedHashMap<>(mistake.learnerView());
         view.put("tenantId", mistake.tenantId());
+        if (mistake.mistakeStatus() == AssessmentMistake.MistakeStatus.MASTERED) {
+            view.put("closureCopy", VariantRepair.PASSED);
+        }
         return view;
     }
 
