@@ -1,0 +1,21 @@
+{
+  "summary": "PASS_WITH_GAPS",
+  "accepted": false,
+  "it1Outbound": false,
+  "lunaStamp": false,
+  "date": "2026-10-10",
+  "reviewer": "executing-agent",
+  "suffix": "c08e65d3",
+  "namedGates": "evidence/redesign/2026-10-10/it1-named-gates",
+  "r1014": "evidence/redesign/2026-10-10/R1-014",
+  "it2Score": "evidence/redesign/2026-10-10/it2-score-browser",
+  "gaps": [
+    "GAP-MINOR-FORM",
+    "GAP-WITHDRAW-UI",
+    "GAP-H5-RELOAD",
+    "GAP-RATE-BUDGET",
+    "GAP-IT2-STATION",
+    "GAP-R1-029-HISTORY",
+    "GAP-LUNA"
+  ]
+}
