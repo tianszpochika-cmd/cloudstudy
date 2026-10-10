@@ -15,10 +15,10 @@
 | 已定义卡 | 90 | R1-001～090。R1-060～069 是 IT-5，R1-070～090 是 IT-6 |
 | 卡范围独立验收（ACCEPTED_CARD_SCOPE） | 6 | R1-002/003/004/005/006/008 |
 | 源码交付、未独立终审 | 2 | R1-001（SOURCE_SCOPED_PASS）、R1-007 |
-| 已实现/回放、待站级签收 | 61 | R1-009～069。R1-058/059 的 r5 重放未签。R1-068/069 的 r6 重放未签 |
-| 已定义、浏览器站未跑 | 0 | R1-068、R1-069 已于 r6 跑过，见第 3、4 节 |
-| 已跑、站级未通过 | 0 | R1-058/059 的较早后缀 `614f3d8b` 仍是补救 FAIL。其后 `c460b646` 未签字 PASS，不改写旧证据 |
-| 已定义、未实现 | 21 | R1-070～090。IT-6 刚拆卡，实现随各卡提交 |
+| 已实现/回放、待站级签收 | 82 | R1-009～090。R1-058/059 的 r5 重放未签。R1-068/069 与 R1-089/090 的 r6 重放未签 |
+| 已定义、浏览器站未跑 | 0 | R1-068、R1-069 与 R1-089、R1-090 已于 r6 跑过，见第 3 节 |
+| 已跑、站级未通过 | 0 | R1-058/059 的较早后缀 `614f3d8b` 仍是补救 FAIL。其后 `c460b646` 未签字 PASS，不改写旧证据。IT-6 较早失败后缀保留，通过后缀是 `ad30b8bc` |
+| 已定义、未实现 | 0 | R1-070～090 已实现并走过浏览器站。IT-7 仍未拆，不算进未实现 |
 | 未定义（待按站拆卡） | IT-7 | 不按剩余张数补卡 |
 | 跳过 | 5 | 原五行保留。R1-068/069 已追加实际结论，原行不删 |
 
@@ -95,27 +95,27 @@
 | R1-067 | IT-5 | BC-070 历史报告不改写 | 封存后的更正是新版本，摘要重算，不改已封存的一版。lunaStamp=false | 更正后能看到上一版 |
 | R1-068 | IT-5 | IC-012/IC-033 交互验收 | 后缀 `1f244c3b`：Web/H5、1280 与 390，定级卡、日/周状态、有效时长、规则建议、分享与撤销 PASS。空态没有能力零分。lunaStamp=false | 幕幕对稿 |
 | R1-069 | IT-5 | 干净库重放 | 后缀 `1f244c3b`：四个空库摘要相同，学习交互 0，分享 4 且都已撤销。六个 `r6_it5_` 库已删。lunaStamp=false | 空库上同一摘要 |
-| R1-070 | IT-6 | BC-071 建草稿 | 已定义，待实现。202 与版本一致，失败不留幽灵草稿。lunaStamp=false | 建稿后能读回草稿 |
-| R1-071 | IT-6 | BC-072 版本锁编辑 | 已定义，待实现。冲突留下最新版和未提交修改。lunaStamp=false | 冲突不覆盖 |
-| R1-072 | IT-6 | BC-073 无权边界 | 已定义，待实现。403 不泄漏内容是否存在。lunaStamp=false | 无权限没有绕过按钮 |
-| R1-073 | IT-6 | BC-074 送审缺项 | 已定义，待实现。409 一次列齐版权、报告和必要媒体。lunaStamp=false | 缺项列表 |
-| R1-074 | IT-6 | BC-075 双签初审 | 已定义，待实现。只在双签模式记初审。lunaStamp=false | 简审没有第二审 |
-| R1-075 | IT-6 | BC-076 双签终审 | 已定义，待实现。编辑不能自审，重复审批不新增记录。lunaStamp=false | 终审人与编辑不同 |
-| R1-076 | IT-6 | BC-077 发布事实 | 已定义，待实现。发布写入事实，目录另行同步。lunaStamp=false | 发布后学习端尚未可见 |
-| R1-077 | IT-6 | BC-078 目录投影 | 已定义，待实现。发布中、已发布、同步失败分开。lunaStamp=false | 学习端只见已同步版本 |
-| R1-078 | IT-6 | BC-079 下架 | 已定义，待实现。普通下架与强制停止分开。lunaStamp=false | 两种下架文案不同 |
-| R1-079 | IT-6 | BC-080 回滚 | 已定义，待实现。旧版失去资格就不能回滚。lunaStamp=false | 回滚前看到校验 |
-| R1-080 | IT-6 | BC-081 版权绑定 | 已定义，待实现。版权钉在版本上。lunaStamp=false | 只有提案号不能发布 |
-| R1-081 | IT-6 | BC-082 审核报告 | 已定义，待实现。报告钉在版本和模式上。lunaStamp=false | 换版后旧报告无效 |
-| R1-082 | IT-6 | BC-083 旧 B3 清单 | 已定义。113+2 是一次性口径，干净库不重放清理。lunaStamp=false | 无独立用户幕 |
-| R1-083 | IT-6 | BC-084 简审档 | 已定义，待实现。默认简审，可切双签。lunaStamp=false | 页面写明当前模式 |
-| R1-084 | IT-6 | BC-200 在学锁定 | 已定义，待实现。普通升级不替换在学版本。lunaStamp=false | 学习端看到锁定说明 |
-| R1-085 | IT-6 | BC-204 管理登录 | 已定义，待实现。失败不枚举，回到有权页。lunaStamp=false | 登录失败文案 |
-| R1-086 | IT-6 | BC-205 仪表盘 | 已定义，待实现。零、暂无、计算中、失败分开。lunaStamp=false | 不出现示例数 |
-| R1-087 | IT-6 | BC-206 权限只读 | 已定义，待实现。只读页没有写按钮。lunaStamp=false | 无权回到有权页 |
-| R1-088 | IT-6 | BC-207 媒体边界 | 已定义，待实现。字节未接时不能显示可发布。lunaStamp=false | 边界说明 |
-| R1-089 | IT-6 | IC-040…046 交互验收 | 已定义，待浏览器。lunaStamp=false | Web/H5，1280 与 390 |
-| R1-090 | IT-6 | 干净库重放 | 已定义，待浏览器。建稿到回滚。lunaStamp=false | 干净库走完发布链 |
+| R1-070 | IT-6 | BC-071 建草稿 | 已实现，待签收。提交 `d3945cc1`。浏览器后缀 `ad30b8bc`：建稿 202，失败不留幽灵草稿。lunaStamp=false | 建稿后能读回草稿 |
+| R1-071 | IT-6 | BC-072 版本锁编辑 | 已实现，待签收。提交 `d3945cc1`。后缀 `ad30b8bc` 冲突 409 `DRAFT_CONFLICT`。lunaStamp=false | 冲突不覆盖 |
+| R1-072 | IT-6 | BC-073 无权边界 | 已实现，待签收。提交 `d3945cc1`、`74cd7e50`。不存在与存在都是同一 403，页面有回到有权页面。lunaStamp=false | 无权限没有绕过按钮 |
+| R1-073 | IT-6 | BC-074 送审缺项 | 已实现，待签收。提交 `d3945cc1`。听力一次列出版权、媒体、报告。lunaStamp=false | 缺项列表 |
+| R1-074 | IT-6 | BC-075 双签初审 | 已实现，待签收。提交 `d3945cc1`。简审做初审得到 409 `SIMPLE_NO_SECOND_SIGNATURE`。lunaStamp=false | 简审没有第二审 |
+| R1-075 | IT-6 | BC-076 双签终审 | 已实现，待签收。提交 `d3945cc1`。自审 403，同一人终审 409，另一人终审 200，第三人 409。lunaStamp=false | 终审人与编辑不同 |
+| R1-076 | IT-6 | BC-077 发布事实 | 已实现，待签收。提交 `d3945cc1`。发布后目录是 PUBLISHING，学习端还看不到标题。lunaStamp=false | 发布后学习端尚未可见 |
+| R1-077 | IT-6 | BC-078 目录投影 | 已实现，待签收。提交 `d3945cc1`。同步成功才可见，失败保持隐藏。lunaStamp=false | 学习端只见已同步版本 |
+| R1-078 | IT-6 | BC-079 下架 | 已实现，待签收。提交 `d3945cc1`、`f2512c5a`。普通下架 200；强制停止后学习端读取 409。lunaStamp=false | 两种下架文案不同 |
+| R1-079 | IT-6 | BC-080 回滚 | 已实现，待签收。提交 `d3945cc1`。不合格 409，合格 202。lunaStamp=false | 回滚前看到校验 |
+| R1-080 | IT-6 | BC-081 版权绑定 | 已实现，待签收。提交 `d3945cc1`。版本对不上是 409 `RIGHTS_NOT_BOUND`。lunaStamp=false | 只有提案号不能发布 |
+| R1-081 | IT-6 | BC-082 审核报告 | 已实现，待签收。提交 `d3945cc1`。模式不一致是 409 `REPORT_NOT_BOUND`。lunaStamp=false | 换版后旧报告无效 |
+| R1-082 | IT-6 | BC-083 旧 B3 清单 | 已实现，待签收。提交 `d3945cc1`。清单 113+2，mutated=false，没有重放清理。lunaStamp=false | 无独立用户幕 |
+| R1-083 | IT-6 | BC-084 简审档 | 已实现，待签收。提交 `d3945cc1`、`74cd7e50`。默认 SIMPLE，页面可切到双签。lunaStamp=false | 页面写明当前模式 |
+| R1-084 | IT-6 | BC-200 在学锁定 | 已实现，待签收。提交 `d3945cc1`、`74cd7e50`、`f2512c5a`。新版本不替换锁定的第 1 版；强制停止后这一版也不能再读。lunaStamp=false | 学习端看到锁定说明 |
+| R1-085 | IT-6 | BC-204 管理登录 | 已实现，待签收。提交 `74cd7e50`。失败文案不说明账号是否存在，登录后回到有权页。lunaStamp=false | 登录失败文案 |
+| R1-086 | IT-6 | BC-205 仪表盘 | 已实现，待签收。提交 `74cd7e50`。发布口径是暂无，没有示例数。lunaStamp=false | 不出现示例数 |
+| R1-087 | IT-6 | BC-206 权限只读 | 已实现，待签收。提交 `74cd7e50`。只读页没有通过、驳回或发布。lunaStamp=false | 无权回到有权页 |
+| R1-088 | IT-6 | BC-207 媒体边界 | 已实现，待签收。提交 `d3945cc1`、`74cd7e50`。字节没接上时不能显示成可发布。lunaStamp=false | 边界说明 |
+| R1-089 | IT-6 | IC-040…046 交互验收 | 已跑，待签收。证据 `129fbcd1`，后缀 `ad30b8bc`：Web 与 H5、1280 与 390，`summary` PASS。lunaStamp=false | Web/H5，1280 与 390 |
+| R1-090 | IT-6 | 干净库重放 | 已跑，待签收。后缀 `ad30b8bc` 两次简审指纹相同。六个 `r6_it6_` 库已删。lunaStamp=false | 干净库走完发布链 |
 
 ## 3. 站级状态
 
@@ -126,7 +126,7 @@
 | IT-3 计划今日 | R1-030…042 浏览器走查 PASS，后缀 d2012bf6。自审 PASS_WITH_GAPS。lunaStamp=false | BC-023…032/199 |
 | IT-4 练错复 | R1-043…057 已实现并单测。浏览器后缀 `614f3d8b`：建单、作答、回执 PASS，补救 FAIL，`summary` FAIL，目录保留。其后后缀 `c460b646`：补救到今日复习 PASS，`summary` PASS，六个 `r5_it4_` 库已删。accepted / it4Outbound / lunaStamp 仍是 false。不是出站签收 | BC-033…062/203 |
 | IT-5 报告 | R1-060…069 已实现。浏览器后缀 `1f244c3b`：`summary` PASS，链 PASS，四个空库同一摘要，六个 `r6_it5_` 库已删。较早后缀 `6cb7e018` 分享打开 FAIL，目录保留。accepted / it5Outbound / lunaStamp 仍是 false。不是出站签收 | BC-063…070 |
-| IT-6 双审 | 已拆 R1-070…090，待实现。浏览器站未跑。lunaStamp=false | BC-071…084/200/204…207 |
+| IT-6 双审 | R1-070…090 已实现。浏览器后缀 `ad30b8bc`：`summary` PASS，链 PASS。六个 `r6_it6_` 库已删。较早后缀 `cd0b278e`、`7f6d6931`、`072a1ca2`、`944d414b` 保留。accepted / it6Outbound / lunaStamp 仍是 false。不是出站签收 | BC-071…084/200/204…207 |
 | IT-7 收口 | 未拆卡 TODO | BC-085…093/185/186/188…198/208 |
 
 ## 4. 跳过记录
@@ -149,5 +149,6 @@
 | r3 | cs-r3 | 恢复本地 IAM HTTPS；补跑工单 UAT；IT-3 浏览器走查；IT-4 拆成 R1-043…059，落地 R1-043 与 R1-044 | 浏览器后缀 `d2012bf6` summary PASS。工单在证据栈里补跑 PASS。自审 PASS_WITH_GAPS。`lunaStamp` 仍为 false。R1-044 题包单测通过。R1-045～059 未实现，见第 4 节。顶层 `node --test --test-concurrency=1 apps/mobile/tests/*.mjs apps/learner-web/tests/*.mjs` 在只开 H5 时为 301 项、300 通过、1 失败，失败文件仍是 `support-real-gateway.e2e`（预检未连上 Gateway）。其后的题包 node 测试另有 3 项通过。相对 r2 的 299/298/1，多出的 2 项是 R1-043 的复用锁，已通过 |
 | r4 | cs-r4 | 实现 R1-045…057；IT-4 浏览器与干净库重放 | 浏览器后缀 `614f3d8b`：建单、作答、回执在 Web/H5、1280 与 390 PASS；补救 FAIL。库事实会话 6、作答 4、错题 4、ZERO 4，六个 `r4_it4_` 库已删。较早后缀 `aa28b151` 停在建单 410，目录保留。自审 FAIL，`lunaStamp` 仍为 false。assessment-service 单测 151 项、0 失败、2 跳过。同一顶层 node 命令在 H5 与 Gateway 已监听时为 345 项、344 通过、1 失败，失败文件仍是 `support-real-gateway.e2e`：注册超时，清理目标是 `r4_it4_20261011_iam_nodesuite`，没有写 `iam_service`。learner-web 与 mobile 类型检查通过。`pnpm contracts:validate` 为 468 operations。qida 名称计数前后都是 51，没有改这些容器 |
 | r5 | cs-r5 | 接通 IT-4 补救投影；重跑 R1-058/059；拆并实现 IT-5 R1-060…069 | 补救投影提交 `c1fb7e64`。浏览器后缀 `c460b646`：`summary` PASS，链 PASS，会话 6、作答 4、错题 4、ZERO 4、投影 4，六个 `r5_it4_20261011_*_c460b646` 已删。`accepted` / `it4Outbound` / `lunaStamp` 仍为 false。`614f3d8b` 不改写。learning-service 199 项、0 失败、3 跳过。assessment-service 153 项、0 失败、2 跳过。Gateway 路由对测 6 项通过。契约审计仍是原有三项基线差（公开 365/404、`iam-account-deletions`、内部 66/67），摘要已与冻结值一致。同一顶层 node 命令在 H5 与 Gateway 监听时为 345 项、344 通过、1 失败，失败仍是 `support-real-gateway.e2e` 注册超时；清理目标 `r5_nodesuite_20261011_iam` 已删，18087 未监听，没有写 `iam_service`。learner-web 与 mobile 类型检查通过。`pnpm contracts:validate` 为 471 operations。R1-068/069 浏览器站未跑，见第 4 节。开始时运行中的 qida 名称是 51。收口时 `qida-dev-tsz` 仍在；`qida-auth-four-chain-20261011-c8d8c36ec0eb` 于 04:56:23 +08 退出，工作目录不在本仓库，本轮没有对它执行 stop 或 start |
+| r6 | cs-r6 | 补跑 IT-5 浏览器站；拆并实现 IT-6 R1-070…090；跑浏览器站和回归 | IT-5 后缀 `1f244c3b`：`summary` PASS，提交 `26708119`、`308ac4f8`。IT-6 拆卡 `12e62e8f`，发布台 `d3945cc1`，两端页面 `74cd7e50`，强制停止 `f2512c5a`。浏览器后缀 `ad30b8bc`：`summary` PASS，链 PASS，Web 与 H5、1280 与 390。六个 `r6_it6_` 库已删。较早后缀 `cd0b278e`、`7f6d6931`、`072a1ca2`、`944d414b` 保留。`accepted` / `it6Outbound` / `lunaStamp` 仍为 false。113+2 只核对清单，没有重放清理。H5 390 文档横向溢出是 0，个别元素多出 10px 或 17px。learning-service 199 项、0 失败、3 跳过。assessment-service 153 项、0 失败、2 跳过。learner-web、mobile、admin-web 类型检查通过。`pnpm contracts:validate` 为 471 operations。同一顶层 node 命令在 H5、Gateway 与 HTTPS IAM 监听时为 348 项、348 通过、0 失败；`support-real-gateway.e2e` 通过，清理目标是 `r6_node_20261011_iam_8a9e94d1`，该库已删，没有写 `iam_service`。qida 名称计数前后都是 51，没有改这些容器。本轮服务已停，固定端口无监听 |
 
-旧 grok 会话 PID 59062（01a120cd…）推送 e7cd6dd1 后空闲，保留运行但不再使用。
+旧 grok 会话 PID 59062（01a120cd…）推送 e7cd6dd1 后空闲，保留运行但不再使用。本轮没有找到该进程，也没有向它发信号。
