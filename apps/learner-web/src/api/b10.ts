@@ -1,4 +1,5 @@
 import { unavailableOperation } from './unavailable'
+import { mentionsClosedMissing, PACK_CLOSED_COPY } from '../domain/grammar-reading-pack'
 import { ApiError, apiClient, type ApiRequestOptions } from './client'
 import { learnerI18n } from '../platform/v2-foundation'
 import type {
@@ -583,7 +584,13 @@ export async function createPracticeSession(sessionType: 'DAILY' | 'QUICK' | 'CH
   if (practice?.contentCode) body.contentCode = practice.contentCode
   if (practiceItemIds.length) body.itemIds = practiceItemIds
   else if (targetCount > 0) body.itemIds = undefined
-  const response = await apiClient.post<unknown>(B10_GATEWAY_ROUTES.assessment.sessions, body, withB10Headers(stableKey))
+  let response: unknown
+  try {
+    response = await apiClient.post<unknown>(B10_GATEWAY_ROUTES.assessment.sessions, body, withB10Headers(stableKey))
+  } catch (error) {
+    if (mentionsClosedMissing(error)) throw new Error(PACK_CLOSED_COPY)
+    throw error
+  }
   const session = parseSession(response)
   if (!session) throw new Error('练习服务返回了无法识别的会话。')
   return session

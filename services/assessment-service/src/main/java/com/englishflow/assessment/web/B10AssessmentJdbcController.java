@@ -9,6 +9,7 @@ import tools.jackson.databind.node.ObjectNode;
 import com.englishflow.assessment.adapter.content.BankPracticeRuleProvider;
 import com.englishflow.assessment.domain.AssessmentMistake;
 import com.englishflow.assessment.domain.AssessmentPrincipal;
+import com.englishflow.assessment.domain.GrammarReadingPack;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -98,26 +99,9 @@ public class B10AssessmentJdbcController {
             return replaySessionCreation(principal.subject(), idempotencyKey, requestDigest,
                     body, mode, requestedCode, contentVersionId, existing);
         }
-        int claimed = jdbc.update("""
-                INSERT IGNORE INTO assessment_idempotency
-                    (tenant_id, subject_id, operation, idempotency_key, request_digest, response_json, created_at)
-                VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP(6))
-                """, TENANT, principal.subject(), SESSION_CREATE_OPERATION, idempotencyKey,
-                requestDigest, json(Map.of("status", "IN_PROGRESS")));
-        if (claimed == 0) {
-            Map<String, Object> raced = one("""
-                    SELECT * FROM b10_assessment_session
-                     WHERE tenant_id = ? AND principal_id = ? AND idempotency_key = ?
-                     FOR UPDATE
-                    """, TENANT, principal.subject(), idempotencyKey);
-            if (raced == null) {
-                throw new ResponseStatusException(HttpStatus.CONFLICT, "assessment session creation is still processing");
-            }
-            return replaySessionCreation(principal.subject(), idempotencyKey, requestDigest,
-                    body, mode, requestedCode, contentVersionId, raced);
-        }
         // A second open of the same learnable pin reuses the in-progress session.
-        // A new idempotency key still stores that same receipt.
+        // A new idempotency key still stores that same receipt. Reuse happens
+        // before the pack check so a session that already opened can finish.
         Map<String, Object> open = one("""
                 SELECT * FROM b10_assessment_session
                  WHERE tenant_id = ? AND principal_id = ? AND status = 'IN_PROGRESS'
@@ -126,6 +110,9 @@ public class B10AssessmentJdbcController {
                  LIMIT 1
                 """, TENANT, principal.subject(), requestedCode, contentVersionId, mode);
         if (open != null) {
+            Map<String, Object> raced = claimSessionCreate(principal, idempotencyKey, requestDigest,
+                    body, mode, requestedCode, contentVersionId);
+            if (raced != null) return raced;
             Map<String, Object> response = envelope(sessionView(open));
             int saved = jdbc.update("""
                     UPDATE assessment_idempotency SET response_json = ?
@@ -147,6 +134,18 @@ public class B10AssessmentJdbcController {
             // whole bank.
             if (bank != null) rules = filterByItemIds(bank.rows(), body.get("itemIds"));
         }
+        // Grammar is three items and reading is two. A short pack closes here,
+        // before any idempotency claim and before the 7B substitute, so a
+        // missing pack does not borrow another skill or stick a key.
+        boolean namedItems = !valueList(body.get("itemIds")).isEmpty();
+        GrammarReadingPack.Selection pack = GrammarReadingPack.select(requestedCode, rules, namedItems);
+        if (pack.closedMissing()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, GrammarReadingPack.CLOSED_MISSING);
+        }
+        rules = pack.rules();
+        Map<String, Object> raced = claimSessionCreate(principal, idempotencyKey, requestDigest,
+                body, mode, requestedCode, contentVersionId);
+        if (raced != null) return raced;
         // P1R decision 7B: assessment assembles the session pin. The requested pin
         // stays in content_*; when it has no rules, ask content-service for the
         // deterministic substitute and grade that instead of inventing content.
@@ -201,6 +200,31 @@ public class B10AssessmentJdbcController {
                     "assessment session creation response was not saved");
         }
         return response;
+    }
+
+    /**
+     * Claims the idempotency key. A null return means this caller owns the claim.
+     * A map is the replay of a session that won the same key.
+     */
+    private Map<String, Object> claimSessionCreate(Principal principal, String idempotencyKey, String requestDigest,
+            Map<String, Object> body, String mode, String requestedCode, long contentVersionId) {
+        int claimed = jdbc.update("""
+                INSERT IGNORE INTO assessment_idempotency
+                    (tenant_id, subject_id, operation, idempotency_key, request_digest, response_json, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP(6))
+                """, TENANT, principal.subject(), SESSION_CREATE_OPERATION, idempotencyKey,
+                requestDigest, json(Map.of("status", "IN_PROGRESS")));
+        if (claimed != 0) return null;
+        Map<String, Object> raced = one("""
+                SELECT * FROM b10_assessment_session
+                 WHERE tenant_id = ? AND principal_id = ? AND idempotency_key = ?
+                 FOR UPDATE
+                """, TENANT, principal.subject(), idempotencyKey);
+        if (raced == null) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "assessment session creation is still processing");
+        }
+        return replaySessionCreation(principal.subject(), idempotencyKey, requestDigest,
+                body, mode, requestedCode, contentVersionId, raced);
     }
 
     private Map<String, Object> replaySessionCreation(String subject, String key, String requestDigest,
@@ -329,7 +353,10 @@ public class B10AssessmentJdbcController {
         String submissionDigest = sha256(json(submissions));
         int attemptVersion = (int) number(oneValue("SELECT COALESCE(MAX(attempt_version), 0) + 1 FROM b10_assessment_attempt WHERE session_id = ?", sessionId));
         String attemptId = "aatm_" + compactUuid();
-        String scoreBucket = correct == scored ? "FULL" : correct == 0 ? "ZERO" : "PARTIAL";
+        boolean exactPack = grammarReadingPack(session);
+        String scoreBucket = exactPack
+                ? GrammarReadingPack.score(correct, scored)
+                : correct == scored ? "FULL" : correct == 0 ? "ZERO" : "PARTIAL";
         String reportId = "rpt_" + compactUuid();
         Map<String, String> answerMap = readAnswers(answers);
         // Mistake and score totals cover the session's own items: unanswered
@@ -341,7 +368,9 @@ public class B10AssessmentJdbcController {
                 .map(rule -> text(rule.get("item_id"))).toList();
         int total = sessionRules.size();
         int totalCorrect = total - allMistakes.size();
-        String totalScoreBucket = totalCorrect == total ? "FULL" : totalCorrect == 0 ? "ZERO" : "PARTIAL";
+        String totalScoreBucket = exactPack
+                ? GrammarReadingPack.score(totalCorrect, total)
+                : totalCorrect == total ? "FULL" : totalCorrect == 0 ? "ZERO" : "PARTIAL";
         jdbc.update("""
                 INSERT INTO b10_assessment_attempt
                     (attempt_id, session_id, principal_id, tenant_id, attempt_version,
@@ -1075,10 +1104,22 @@ public class B10AssessmentJdbcController {
         catch (JacksonException exception) { throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "assessment state cannot be serialized", exception); }
     }
 
+    private boolean grammarReadingPack(Map<String, Object> session) {
+        Object raw = parseJson(session.get("items_json"), List.of());
+        if (!(raw instanceof List<?> items) || items.isEmpty()) return false;
+        List<String> types = new ArrayList<>();
+        for (Object entry : items) {
+            if (entry instanceof Map<?, ?> item && item.get("itemType") != null) {
+                types.add(String.valueOf(item.get("itemType")));
+            }
+        }
+        return GrammarReadingPack.isExactPack(types);
+    }
+
     private static String itemType(Object dimension) {
         String value = upperText(dimension, "VOCABULARY");
         return switch (value) {
-            case "GRAMMAR" -> "GRAMMAR";
+            case "GRAMMAR", "BASIC_GRAMMAR" -> "GRAMMAR";
             case "SENTENCE" -> "SENTENCE";
             case "READING" -> "READING";
             case "LISTENING" -> "LISTENING";

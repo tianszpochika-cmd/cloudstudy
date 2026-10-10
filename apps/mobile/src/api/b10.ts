@@ -1,5 +1,6 @@
 import { unavailableOperation } from './unavailable'
 import { mobileApiClient, MobileApiError } from './client'
+import { mentionsClosedMissing, PACK_CLOSED_COPY } from '../domain/grammar-reading-pack'
 import { listGrammarExercises as listB3GrammarExercises, submitGrammarAttempt as submitB3GrammarAttempt } from './b3'
 import { createClientId } from '../platform/client-id'
 import type {
@@ -131,6 +132,7 @@ function mapError(error: unknown, fallback: string): B10ErrorInfo {
   const detailRecord = isRecord(details) ? details : {}
   const nestedError = isRecord(detailRecord.error) ? detailRecord.error : {}
   const message = text(nestedError.message ?? detailRecord.message, error instanceof Error ? error.message : fallback) || fallback
+  if (mentionsClosedMissing(error) || mentionsClosedMissing(detailRecord)) return { status, message: PACK_CLOSED_COPY, retryable: false, kind: 'error' }
   if (status === 401) return { status, message: '请先登录后再继续学习。', retryable: false, kind: 'forbidden' }
   if (status === 403) return { status, message, retryable: false, kind: 'forbidden' }
   if (status === 404 || status === 410) return { status, message: status === 410 ? '内容版本已失效，请重新读取当前版本。' : message, retryable: false, kind: 'stale' }

@@ -10,6 +10,7 @@ import B10FeedbackCard from '../../components/b10/B10FeedbackCard.vue'
 import B10StatusPanel from '../../components/b10/B10StatusPanel.vue'
 import type { B10AnswerInput, B10AssessmentSession, B10GrammarPoint, B10RuleFeedback, B10SyntaxGraph, B10WritingPrompt } from '../../domain/b10'
 import { b10LearningApi, b10ErrorInfo, createB10ClientEventId } from '../../api/b10'
+import { packNotice } from '../../domain/grammar-reading-pack'
 import { b10ContentLocale, b10ThemeMode, b10T, b10UiLocale } from '../../platform/b10-foundation'
 import { getUniRuntime } from '../../platform/uni-runtime'
 import { useSessionStore } from '../../stores/session'
@@ -39,6 +40,7 @@ const GRAMMAR_DRAFT_KEY = 'yx.b10.mobile.grammar-draft.v1'
 const grammarDraft = ref<MobileGrammarDraft>(emptyGrammarDraft())
 const themeClass = computed(() => `b10-theme--${b10ThemeMode.value}`)
 const exercise = computed(() => grammarSession.value?.exercises.find((item) => item.position === 0) ?? grammarSession.value?.exercises[0] ?? null)
+const grammarPackNotice = computed(() => packNotice('GRAMMAR', grammarSession.value?.exercises.length ?? 0, message.value))
 const linearMode = computed(() => performanceLevel.value === 'Performance' || graph.value?.graphStatus === 'DEGRADED')
 const context = computed(() => ({ uiLocale: b10UiLocale.value, contentLocale: b10ContentLocale.value }))
 function isRecord(value: unknown): value is Record<string, unknown> { return typeof value === 'object' && value !== null && !Array.isArray(value) }
@@ -166,6 +168,7 @@ watch(slotValues, (value) => { if (graph.value) { grammarDraft.value.slotValues[
       <view v-if="blockOrder.length" class="b10-practice-section"><text class="b10-section-title">{{ b10T('grammar.order') }}</text><view v-for="(blockId, index) in blockOrder" :key="blockId" class="b10-block-row"><text>{{ index + 1 }}. {{ graph.slices.find((slice) => slice.sliceId === blockId)?.text ?? blockId }}</text><view><button tabindex="0" role="button" class="b10-move" type="button" :disabled="index === 0" aria-label="上移" @click="moveBlock(index, -1)">↑</button><button tabindex="0" role="button" class="b10-move" type="button" :disabled="index === blockOrder.length - 1" aria-label="下移" @click="moveBlock(index, 1)">↓</button></view></view><button tabindex="0" role="button" class="yx-button" type="button" @click="submitBlocks">{{ b10T('grammar.submit') }}</button></view>
       <view v-if="Object.keys(graph.imitationSlots).length" class="b10-practice-section"><text class="b10-section-title">{{ b10T('grammar.imitate') }}</text><view v-for="(value, key) in graph.imitationSlots" :key="key" class="b10-slot"><text>{{ key }}</text><input v-model="slotValues[key]" class="b10-input" :placeholder="value" /></view><button tabindex="0" role="button" class="yx-button" type="button" @click="submitImitation">{{ b10T('grammar.submit') }}</button></view>
     </view>
+    <text v-if="grammarPackNotice" class="b10-pack-notice" data-pack-notice>{{ grammarPackNotice }}</text>
     <B10ExerciseCard v-if="exercise" :exercise="exercise" @answer="submitExerciseAnswer" />
     <B10FeedbackCard :feedback="feedback" />
 
