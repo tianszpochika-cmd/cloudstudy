@@ -1,0 +1,201 @@
+{
+  "date": "2026-10-10",
+  "branch": "dev-redesign",
+  "suffix": "49bfbb89",
+  "iamSchema": "r1_it1_exit_20261010_iam_49bfbb89",
+  "learnerSchema": "r1_it1_exit_20261010_lrn_49bfbb89",
+  "assessmentSchema": "r1_it1_exit_20261010_asm_49bfbb89",
+  "dbUser": "r1_it1_exit_20261010_49bfbb89",
+  "consentRecheckEnv": "unset",
+  "steps": [
+    {
+      "id": "seed.flyway",
+      "httpStatus": 200,
+      "result": "PASS",
+      "detail": {
+        "iamAccounts": 0,
+        "iamFlyway": "17,0",
+        "learnerFlyway": "12,0",
+        "assessmentFlyway": "8,0"
+      }
+    },
+    {
+      "id": "register.201-no-learning",
+      "httpStatus": 201,
+      "result": "PASS",
+      "detail": {
+        "adult_gate": "NOT_EVALUATED",
+        "consent_state": "UNKNOWN",
+        "permissionCount": 4,
+        "learningPermissionCount": 0,
+        "permissions": [
+          "iam.self.read",
+          "iam.self.write",
+          "learner.profile.read",
+          "learner.profile.write"
+        ],
+        "error": null,
+        "transportError": null
+      }
+    },
+    {
+      "id": "adult-gate.passed",
+      "httpStatus": 200,
+      "result": "PASS",
+      "detail": {
+        "gateStatus": "PASSED",
+        "learningAccess": "ELIGIBLE",
+        "error": null,
+        "transportError": null
+      }
+    },
+    {
+      "id": "consents.three-accepted",
+      "httpStatus": "200,200,200",
+      "result": "PASS",
+      "detail": {
+        "results": [
+          {
+            "type": "TERMS",
+            "status": 200,
+            "decision": "ACCEPTED",
+            "error": null,
+            "transportError": null
+          },
+          {
+            "type": "PRIVACY",
+            "status": 200,
+            "decision": "ACCEPTED",
+            "error": null,
+            "transportError": null
+          },
+          {
+            "type": "ADULT_LEARNING",
+            "status": 200,
+            "decision": "ACCEPTED",
+            "error": null,
+            "transportError": null
+          }
+        ]
+      }
+    },
+    {
+      "id": "consents.relogin",
+      "httpStatus": 200,
+      "result": "PASS",
+      "detail": {
+        "adult_gate": "PASSED",
+        "consent_state": "GRANTED",
+        "hasTargetWrite": true,
+        "hasAssessmentSessionRead": true,
+        "permissionCount": 60,
+        "error": null,
+        "transportError": null
+      }
+    },
+    {
+      "id": "targets.put",
+      "httpStatus": 200,
+      "result": "PASS",
+      "detail": {
+        "goalCode": "COLLEGE_CET",
+        "dailyQuotaMinutes": 30,
+        "targetLevel": "B1",
+        "stateVersion": 1,
+        "targetVersion": 1,
+        "error": null,
+        "transportError": null
+      }
+    },
+    {
+      "id": "targets.get-readback",
+      "httpStatus": 200,
+      "result": "PASS",
+      "detail": {
+        "goalCode": "COLLEGE_CET",
+        "dailyQuotaMinutes": 30,
+        "targetLevel": "B1",
+        "stateVersion": 1,
+        "targetVersion": 1,
+        "error": null,
+        "transportError": null
+      }
+    },
+    {
+      "id": "route.assessment-page",
+      "httpStatus": null,
+      "result": "PASS",
+      "detail": {
+        "path": "/assessment",
+        "name": "assessment",
+        "component": "AssessmentPage.vue"
+      }
+    },
+    {
+      "id": "placement.read.owner",
+      "httpStatus": 200,
+      "result": "PASS",
+      "detail": {
+        "path": "GET /internal/v1/assessment/placement/start",
+        "body": {
+          "status": "EMPTY",
+          "contentLocale": "en-US"
+        },
+        "error": null,
+        "transportError": null,
+        "text": null
+      }
+    },
+    {
+      "id": "placement.read.gateway",
+      "httpStatus": 200,
+      "result": "PASS",
+      "detail": {
+        "path": "GET /api/v1/assessment/placement/start",
+        "body": {
+          "status": "EMPTY",
+          "contentLocale": "en-US"
+        },
+        "error": null,
+        "transportError": null,
+        "text": null
+      }
+    }
+  ],
+  "notes": [
+    "cleanup schemas=0 users=0",
+    "PORTS_FREE_AFTER"
+  ],
+  "mysql": {
+    "name": "/yuxuexing-local-mysql-1",
+    "image": "mysql:8.0",
+    "project": "yuxuexing-local",
+    "service": "mysql",
+    "status": "running",
+    "health": "healthy",
+    "port": [
+      {
+        "HostIp": "127.0.0.1",
+        "HostPort": "13306"
+      }
+    ]
+  },
+  "placement": {
+    "routeExists": true,
+    "ownerStatus": 200,
+    "gatewayStatus": 200,
+    "ownerDenied": false,
+    "gatewayDenied": false,
+    "ownerImplemented": true,
+    "gatewayImplemented": true,
+    "ownerBody": {
+      "status": "EMPTY",
+      "contentLocale": "en-US"
+    },
+    "gatewayBody": {
+      "status": "EMPTY",
+      "contentLocale": "en-US"
+    }
+  },
+  "failed": []
+}

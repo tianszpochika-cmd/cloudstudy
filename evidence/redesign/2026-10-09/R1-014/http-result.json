@@ -1,0 +1,299 @@
+{
+  "card": "R1-014",
+  "kind": "R1_014_SAME_DATABASE_REPLAY",
+  "iamSchema": "r1_014_iam_20261009_bde32c82b018",
+  "learnerSchema": "r1_014_lrn_20261009_bde32c82b018",
+  "failureCount": 0,
+  "passCount": 21,
+  "failCount": 0,
+  "failures": [],
+  "steps": [
+    {
+      "id": "seed.flyway",
+      "httpStatus": 200,
+      "result": "PASS",
+      "detail": {
+        "iamAccounts": 0,
+        "learnerGoals": 0,
+        "iamFlyway": "17,0",
+        "learnerFlyway": "12,0"
+      }
+    },
+    {
+      "id": "register.201-no-learning",
+      "httpStatus": 201,
+      "result": "PASS",
+      "detail": {
+        "adult_gate": "NOT_EVALUATED",
+        "consent_state": "UNKNOWN",
+        "permissionCount": 4,
+        "learningPermissionCount": 0,
+        "permissions": [
+          "iam.self.read",
+          "iam.self.write",
+          "learner.profile.read",
+          "learner.profile.write"
+        ],
+        "sessionId": "4f54512a-6289-4cd5-a160-3503beb325eb",
+        "deviceId": "2147aedc-17e8-4b26-8400-36290c14eac8",
+        "error": null
+      }
+    },
+    {
+      "id": "register.replay-same-result",
+      "httpStatus": 201,
+      "result": "PASS",
+      "detail": {
+        "firstStatus": 201,
+        "sessionSame": true,
+        "deviceSame": true,
+        "accounts": 1,
+        "error": null
+      }
+    },
+    {
+      "id": "login",
+      "httpStatus": 200,
+      "result": "PASS",
+      "detail": {
+        "hasAccessToken": true,
+        "hasRefreshCookie": true,
+        "sessionId": "f728bd13-1a4c-43c4-a9a0-a59e711b5bda",
+        "error": null
+      }
+    },
+    {
+      "id": "refresh",
+      "httpStatus": 200,
+      "result": "PASS",
+      "detail": {
+        "rotated": true,
+        "error": null
+      }
+    },
+    {
+      "id": "revoke",
+      "httpStatus": 200,
+      "result": "PASS",
+      "detail": {
+        "logoutStatus": 200,
+        "meAfterStatus": 401,
+        "session": "REVOKED",
+        "error": "AUTH_REFRESH_TOKEN_REVOKED"
+      }
+    },
+    {
+      "id": "adult-gate.passed",
+      "httpStatus": 200,
+      "result": "PASS",
+      "detail": {
+        "registerStatus": 201,
+        "gateStatus": "PASSED",
+        "learningAccess": "ELIGIBLE",
+        "error": null
+      }
+    },
+    {
+      "id": "adult-gate.rejected",
+      "httpStatus": 200,
+      "result": "PASS",
+      "detail": {
+        "registerStatus": 201,
+        "gateStatus": "REJECTED",
+        "learningAccess": "RESTRICTED",
+        "error": null
+      }
+    },
+    {
+      "id": "adult-gate.rejected-retry-still-rejected",
+      "httpStatus": 200,
+      "result": "PASS",
+      "detail": {
+        "gateStatus": "REJECTED",
+        "learningAccess": "RESTRICTED",
+        "retryAllowed": false,
+        "session": "ACTIVE",
+        "error": null
+      }
+    },
+    {
+      "id": "consents.three-accepted",
+      "httpStatus": "200,200,200",
+      "result": "PASS",
+      "detail": {
+        "results": [
+          {
+            "type": "TERMS",
+            "status": 200,
+            "decision": "ACCEPTED",
+            "error": null
+          },
+          {
+            "type": "PRIVACY",
+            "status": 200,
+            "decision": "ACCEPTED",
+            "error": null
+          },
+          {
+            "type": "ADULT_LEARNING",
+            "status": 200,
+            "decision": "ACCEPTED",
+            "error": null
+          }
+        ]
+      }
+    },
+    {
+      "id": "consents.relogin",
+      "httpStatus": 200,
+      "result": "PASS",
+      "detail": {
+        "status": 200,
+        "adult_gate": "PASSED",
+        "consent_state": "GRANTED",
+        "error": null
+      }
+    },
+    {
+      "id": "targets.missing-404",
+      "httpStatus": 404,
+      "result": "PASS",
+      "detail": {
+        "goalRows": 0,
+        "error": null
+      }
+    },
+    {
+      "id": "targets.put-learner-goal",
+      "httpStatus": 200,
+      "result": "PASS",
+      "detail": {
+        "goalCode": "COLLEGE_CET",
+        "dailyQuotaMinutes": 30,
+        "sql": "CET_4_6\t30\tB1",
+        "goalRows": 1,
+        "error": null
+      }
+    },
+    {
+      "id": "targets.get-readback",
+      "httpStatus": 200,
+      "result": "PASS",
+      "detail": {
+        "goalCode": "COLLEGE_CET",
+        "dailyQuotaMinutes": 30,
+        "targetLevel": "B1",
+        "stateVersion": 1,
+        "targetVersion": 1,
+        "error": null
+      }
+    },
+    {
+      "id": "withdraw.adult-learning-403",
+      "httpStatus": 200,
+      "result": "PASS",
+      "detail": {
+        "withdrawDecision": "WITHDRAWN",
+        "profileStatus": 403,
+        "profileError": "CONSENT_REQUIRED",
+        "targetsStatus": 403,
+        "targetsError": "CONSENT_REQUIRED"
+      }
+    },
+    {
+      "id": "withdraw.account-active",
+      "httpStatus": null,
+      "result": "PASS",
+      "detail": {
+        "accountStatus": "ACTIVE",
+        "principalId": "280ed5e1-af7d-4eae-91bf-ceec662a8be1"
+      }
+    },
+    {
+      "id": "password-reset.known",
+      "httpStatus": 202,
+      "result": "PASS",
+      "detail": {
+        "accepted": true,
+        "error": null
+      }
+    },
+    {
+      "id": "password-reset.unknown",
+      "httpStatus": 202,
+      "result": "PASS",
+      "detail": {
+        "accepted": true,
+        "error": null
+      }
+    },
+    {
+      "id": "password-reset.body-equal",
+      "httpStatus": "202/202",
+      "result": "PASS",
+      "detail": {
+        "equal": true,
+        "known": {
+          "data": {
+            "accepted": true
+          },
+          "meta": {
+            "apiVersion": "v1",
+            "schemaVersion": "1.0.0"
+          }
+        },
+        "unknown": {
+          "data": {
+            "accepted": true
+          },
+          "meta": {
+            "apiVersion": "v1",
+            "schemaVersion": "1.0.0"
+          }
+        }
+      }
+    },
+    {
+      "id": "password-reset.blank-400",
+      "httpStatus": "400,400,400",
+      "result": "PASS",
+      "detail": {
+        "cases": [
+          {
+            "name": "empty",
+            "status": 400,
+            "error": "VALIDATION_ERROR"
+          },
+          {
+            "name": "spaces",
+            "status": 400,
+            "error": "VALIDATION_ERROR"
+          },
+          {
+            "name": "omitted",
+            "status": 400,
+            "error": "VALIDATION_ERROR"
+          }
+        ]
+      }
+    },
+    {
+      "id": "devices.kick-401",
+      "httpStatus": 200,
+      "result": "PASS",
+      "detail": {
+        "loginA": 200,
+        "loginB": 200,
+        "listStatus": 200,
+        "currentCount": 1,
+        "currentIsA": true,
+        "kickStatus": 200,
+        "kickedMe": 401,
+        "callerMe": 200,
+        "sessionA": "ACTIVE",
+        "sessionB": "REVOKED",
+        "error": "AUTH_REFRESH_TOKEN_REVOKED"
+      }
+    }
+  ]
+}
