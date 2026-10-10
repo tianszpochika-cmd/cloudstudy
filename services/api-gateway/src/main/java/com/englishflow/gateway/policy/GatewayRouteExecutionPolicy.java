@@ -598,7 +598,8 @@ public final class GatewayRouteExecutionPolicy {
                 rewrite("p1-placement-response", "/api/v1/assessment/placement/sessions/{sessionId}/responses", "/internal/v1/assessment/placement/sessions/{sessionId}/responses", ASSESSMENT_P1, HttpMethod.POST),
                 rewrite("p1-placement-skip", "/api/v1/assessment/placement/baselines/skip", "/internal/v1/assessment/placement/baselines/skip", ASSESSMENT_P1, HttpMethod.POST),
                 rewrite("p1-placement-report", "/api/v1/assessment/placement/reports/{reportId}", "/internal/v1/assessment/placement/reports/{reportId}", ASSESSMENT_P1, HttpMethod.GET),
-                rewrite("placement-start", "/api/v1/assessment/placement/start", "/internal/v1/assessment/placement/start", ASSESSMENT_B25, HttpMethod.GET, HttpMethod.POST),
+                // R1-019: POST /placement/start is not forwarded. GET remains the old B25 session read.
+                rewrite("placement-start", "/api/v1/assessment/placement/start", "/internal/v1/assessment/placement/start", ASSESSMENT_B25, HttpMethod.GET),
                 rewrite("placement-submit-step", "/api/v1/assessment/placement/submit-step", "/internal/v1/assessment/placement/submit-step", ASSESSMENT_B25, HttpMethod.POST),
                 rewrite("placement-skip", "/api/v1/assessment/placement/skip", "/internal/v1/assessment/placement/skip", ASSESSMENT_B25, HttpMethod.POST),
                 rewrite("placement-report", "/api/v1/assessment/placement/report/{sessionId}", "/internal/v1/assessment/placement/report/{sessionId}", ASSESSMENT_B25, HttpMethod.GET),

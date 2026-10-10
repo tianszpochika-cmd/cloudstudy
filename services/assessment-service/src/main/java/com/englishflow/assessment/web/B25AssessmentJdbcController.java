@@ -171,17 +171,27 @@ public class B25AssessmentJdbcController {
         requireKey(idempotencyKey);
         String level = fastTrackCefr(body == null ? null : body.get("fastTrackLevel"));
         if (!level.isBlank() && !List.of("A1", "A2", "B1", "B2", "C1", "C2").contains(level)) bad("unsupported fastTrackLevel");
+        String namedSession = text(body == null ? null : body.get("sessionId"), "");
+        if (!namedSession.isBlank()) {
+            Map<String, Object> named = one("SELECT * FROM b25_assessment_session WHERE session_id = ? AND principal_id = ? AND tenant_id = ?", namedSession, principal.subject(), TENANT);
+            if (named != null && "COMPLETED".equals(String.valueOf(named.get("status")))) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "completed placement cannot be skipped");
+            }
+        }
         if (!claimOnce(principal.subject(), idempotencyKey, "PLACEMENT_SKIP", sha256(level))) {
             Map<String, Object> existing = one("SELECT * FROM b25_assessment_session WHERE principal_id = ? AND tenant_id = ? AND idempotency_key = ? AND status = 'SKIPPED'", principal.subject(), TENANT, idempotencyKey);
             if (existing == null) throw new ResponseStatusException(HttpStatus.CONFLICT, "placement skip receipt is unavailable");
-            return sessionView(existing);
+            return skippedBaseline(existing);
         }
         String sessionId = UUID.randomUUID().toString();
-        jdbc.update("INSERT INTO b25_assessment_session (session_id, principal_id, tenant_id, content_code, status, answers_json, idempotency_key) VALUES (?, ?, ?, ?, 'SKIPPED', '{}', ?)", sessionId, principal.subject(), TENANT, DEFAULT_CONTENT, idempotencyKey);
-        String reportId = UUID.randomUUID().toString();
-        jdbc.update("INSERT INTO b25_assessment_report (report_id, session_id, principal_id, tenant_id, cefr_level, score, radar_json, mistakes_json, result_kind, requested_starting_level) VALUES (?, ?, ?, ?, NULL, NULL, ?, ?, 'SKIPPED', ?)", reportId, sessionId, principal.subject(), TENANT, "{}", "[]", level.isBlank() ? null : level);
-        jdbc.update("UPDATE b25_assessment_session SET report_id = ? WHERE session_id = ?", reportId, sessionId);
-        return reportView(one("SELECT * FROM b25_assessment_report WHERE report_id = ?", reportId));
+        Map<String, Object> stored = new LinkedHashMap<>();
+        stored.put("baselineSource", "USER_SKIP");
+        stored.put("resultKind", "SKIPPED");
+        if (!level.isBlank()) {
+            stored.put("requestedStartingLevel", Map.of("level", level, "authority", "USER_SELECTED_NON_AUTHORITATIVE"));
+        }
+        jdbc.update("INSERT INTO b25_assessment_session (session_id, principal_id, tenant_id, content_code, status, answers_json, idempotency_key) VALUES (?, ?, ?, ?, 'SKIPPED', ?, ?)", sessionId, principal.subject(), TENANT, DEFAULT_CONTENT, json(stored), idempotencyKey);
+        return skippedBaseline(one("SELECT * FROM b25_assessment_session WHERE session_id = ?", sessionId));
     }
 
     @GetMapping("/placement/report/{sessionId}")
@@ -216,6 +226,9 @@ public class B25AssessmentJdbcController {
         result.put("status", session.get("status")); result.put("sessionId", session.get("session_id"));
         result.put("contentVersionId", session.get("content_code"));
         String reportId = text(session.get("report_id"), "");
+        if ("SKIPPED".equals(String.valueOf(session.get("status"))) && reportId.isBlank()) {
+            return skippedBaseline(session);
+        }
         if (!reportId.isBlank()) {
             result.put("report", reportView(one("SELECT * FROM b25_assessment_report WHERE report_id = ?", reportId)));
             result.put("isCompleted", true); return result;
@@ -251,6 +264,21 @@ public class B25AssessmentJdbcController {
         result.put("position", 1);
         result.put("feedbackPolicy", "IMMEDIATE");
         result.put("contentVersionId", row.get("content_version_id"));
+        return result;
+    }
+
+    /** Gateway skip target. SKIPPED is the user's choice, not a measured report. */
+    private Map<String, Object> skippedBaseline(Map<String, Object> session) {
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("status", "SKIPPED");
+        result.put("sessionId", session.get("session_id"));
+        result.put("resultKind", "SKIPPED");
+        result.put("baselineSource", "USER_SKIP");
+        result.put("confidence", "UNVERIFIED");
+        Object stored = parseJson(session.get("answers_json"), Map.of());
+        if (stored instanceof Map<?, ?> values && values.get("requestedStartingLevel") instanceof Map<?, ?> hint) {
+            result.put("requestedStartingLevel", hint);
+        }
         return result;
     }
 

@@ -3488,8 +3488,7 @@
             "status": "AVAILABLE",
             "publicPathTemplate": "/api/v1/assessment/placement/start",
             "methods": [
-              "GET",
-              "POST"
+              "GET"
             ],
             "executionKind": "UPSTREAM",
             "upstreamOwner": "assessment-service",

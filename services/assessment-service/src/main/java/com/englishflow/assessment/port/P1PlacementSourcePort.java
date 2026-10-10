@@ -23,8 +23,10 @@ public interface P1PlacementSourcePort {
     record SealedItem(long itemId, P1PlacementScorer.Dimension dimension,
                       Map<String, Object> learnerItem, ContentSnapshot scoringSnapshot) {
         public SealedItem {
-            if (itemId < 1 || dimension == null || scoringSnapshot == null
-                    || scoringSnapshot.itemId() != itemId) {
+            // A null scoring snapshot means the sealed bank did not ship answer
+            // rules. Opening still accepts the item. R1-021 owns scoring.
+            if (itemId < 1 || dimension == null
+                    || scoringSnapshot != null && scoringSnapshot.itemId() != itemId) {
                 throw new IllegalArgumentException("placement item and scoring snapshot must agree");
             }
             learnerItem = SafePayloads.freeze(learnerItem);
@@ -65,9 +67,9 @@ public interface P1PlacementSourcePort {
             if (!expectedType.equals(learnerItem.get("itemType"))) {
                 throw new IllegalArgumentException("placement item type does not match its dimension");
             }
-            if (!Set.of(QuestionType.CHOICE, QuestionType.LISTEN_CHOICE, QuestionType.FILL_BLANK,
-                    QuestionType.DRAG_SORTER, QuestionType.SPELL_INPUT, QuestionType.DICTATION,
-                    QuestionType.CONNECT_LINE).contains(scoringSnapshot.questionType())) {
+            if (scoringSnapshot != null && !Set.of(QuestionType.CHOICE, QuestionType.LISTEN_CHOICE,
+                    QuestionType.FILL_BLANK, QuestionType.DRAG_SORTER, QuestionType.SPELL_INPUT,
+                    QuestionType.DICTATION, QuestionType.CONNECT_LINE).contains(scoringSnapshot.questionType())) {
                 throw new IllegalArgumentException("placement item is not objectively gradable");
             }
         }
@@ -86,8 +88,7 @@ public interface P1PlacementSourcePort {
                 throw new IllegalArgumentException("placement owner eligibility is incomplete");
             }
             if (!targetPin.keySet().equals(Set.of("targetId", "targetVersion", "targetSnapshotDigest"))
-                    || !contentPin.keySet().equals(Set.of("contentVersionId", "contentEpoch", "snapshotId", "snapshotHash"))
-                    || !answerRulePin.keySet().equals(Set.of("answerRuleSetVersion", "answerRuleVersion", "ruleDigest", "completionRuleVersion"))) {
+                    || !contentPin.keySet().equals(Set.of("contentVersionId", "contentEpoch", "snapshotId", "snapshotHash"))) {
                 throw new IllegalArgumentException("placement pins are incomplete");
             }
             integer(targetPin.get("targetId"), 1);
@@ -97,19 +98,32 @@ public interface P1PlacementSourcePort {
             integer(contentPin.get("contentEpoch"), 0);
             requireToken(contentPin.get("snapshotId"), "snap_[A-Za-z0-9._:-]{8,127}");
             requireToken(contentPin.get("snapshotHash"), "[a-f0-9]{64}");
-            requireText(answerRulePin.get("answerRuleSetVersion"), 1, 96);
-            requireText(answerRulePin.get("answerRuleVersion"), 1, 96);
-            requireToken(answerRulePin.get("ruleDigest"), "[a-f0-9]{64}");
+            P1PlacementScorer.requireManifest(items.stream()
+                    .map(item -> new P1PlacementScorer.Item(Long.toString(item.itemId()), item.dimension())).toList());
+            boolean scored = items.stream().allMatch(item -> item.scoringSnapshot() != null);
+            boolean deferred = items.stream().allMatch(item -> item.scoringSnapshot() == null);
+            if (!scored && !deferred) {
+                throw new IllegalArgumentException("placement scoring snapshots must be all present or all deferred");
+            }
+            if (scored) {
+                if (!answerRulePin.keySet().equals(Set.of(
+                        "answerRuleSetVersion", "answerRuleVersion", "ruleDigest", "completionRuleVersion"))) {
+                    throw new IllegalArgumentException("placement pins are incomplete");
+                }
+                requireText(answerRulePin.get("answerRuleSetVersion"), 1, 96);
+                requireText(answerRulePin.get("answerRuleVersion"), 1, 96);
+                requireToken(answerRulePin.get("ruleDigest"), "[a-f0-9]{64}");
+            } else if (!answerRulePin.keySet().equals(Set.of("completionRuleVersion"))) {
+                throw new IllegalArgumentException("placement pins are incomplete");
+            }
             if (!"P1_PLACEMENT_V1".equals(answerRulePin.get("completionRuleVersion"))) {
                 throw new IllegalArgumentException("placement completion rule must be pinned to P1_PLACEMENT_V1");
             }
-            P1PlacementScorer.requireManifest(items.stream()
-                    .map(item -> new P1PlacementScorer.Item(Long.toString(item.itemId()), item.dimension())).toList());
             Set<Long> ids = new HashSet<>();
             for (SealedItem item : items) {
                 if (!ids.add(item.itemId())) throw new IllegalArgumentException("placement item id repeats");
-                if (item.scoringSnapshot().contentVersionId() != contentVersionId
-                        || !item.scoringSnapshot().scoringVersion().equals(answerRulePin.get("answerRuleVersion"))) {
+                if (scored && (item.scoringSnapshot().contentVersionId() != contentVersionId
+                        || !item.scoringSnapshot().scoringVersion().equals(answerRulePin.get("answerRuleVersion")))) {
                     throw new IllegalArgumentException("placement item does not match content and rule pins");
                 }
             }

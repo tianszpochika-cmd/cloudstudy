@@ -222,6 +222,44 @@ class GatewayRoutePolicyContractParityTest {
     }
 
     @Test
+    void b25PlacementStartWriteIsNotExecutableWhileTheOldReadAndSessionCreateRemain() {
+        GatewayRouteExecutionPolicy executionPolicy = new GatewayRouteExecutionPolicy(
+                executableGatewayProperties(), routePolicy);
+
+        GatewayRoutePolicy.Resolution startWrite = routePolicy.resolve(
+                HttpMethod.POST, "/api/v1/assessment/placement/start");
+        assertTrue(startWrite.matched());
+        assertEquals("assessment-domain", startWrite.rule().ruleId());
+        assertFalse(executionPolicy.canExecute(startWrite.rule(), HttpMethod.POST,
+                "/api/v1/assessment/placement/start"),
+                "POST /placement/start must not be forwarded to the B25 write port");
+
+        GatewayRoutePolicy.Resolution startRead = routePolicy.resolve(
+                HttpMethod.GET, "/api/v1/assessment/placement/start");
+        assertTrue(executionPolicy.canExecute(startRead.rule(), HttpMethod.GET,
+                "/api/v1/assessment/placement/start"));
+        GatewayRouteExecutionPolicy.RouteBinding read = executionPolicy.routeBindings().stream()
+                .filter(binding -> "placement-start".equals(binding.pathProjection().bindingId()))
+                .findFirst()
+                .orElseThrow();
+        assertEquals(List.of(HttpMethod.GET), read.methods());
+        assertEquals("/internal/v1/assessment/placement/start",
+                read.pathProjection().transformedTargetPath("/api/v1/assessment/placement/start"));
+
+        GatewayRoutePolicy.Resolution sessionCreate = routePolicy.resolve(
+                HttpMethod.POST, "/api/v1/assessment/placement/sessions");
+        assertTrue(executionPolicy.canExecute(sessionCreate.rule(), HttpMethod.POST,
+                "/api/v1/assessment/placement/sessions"));
+        GatewayRouteExecutionPolicy.RouteBinding create = executionPolicy.routeBindings().stream()
+                .filter(binding -> binding.pathProjection().accepts(
+                        HttpMethod.POST, "/api/v1/assessment/placement/sessions"))
+                .findFirst()
+                .orElseThrow();
+        assertEquals("/internal/v1/assessment/placement/sessions",
+                create.pathProjection().transformedTargetPath("/api/v1/assessment/placement/sessions"));
+    }
+
+    @Test
     void providerCallbacksStayFailClosedUntilCommerceOwnsTheSignedExternalBoundary() {
         GatewayRouteExecutionPolicy executionPolicy = new GatewayRouteExecutionPolicy(
                 executableGatewayProperties(), routePolicy);

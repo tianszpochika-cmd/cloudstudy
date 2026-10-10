@@ -1,8 +1,7 @@
 package com.englishflow.assessment.adapter.content;
 
-import com.englishflow.assessment.domain.ContentSnapshot;
 import com.englishflow.assessment.domain.P1PlacementScorer;
-import com.englishflow.assessment.domain.QuestionType;
+import com.englishflow.assessment.domain.SafePayloads;
 import com.englishflow.assessment.port.P1PlacementSourcePort;
 import com.englishflow.assessment.web.AssessmentHttpPrincipals.VerifiedAssessmentPrincipal;
 import org.springframework.http.HttpStatus;
@@ -22,10 +21,10 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HexFormat;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -41,6 +40,16 @@ import java.util.Map;
  * {@code /internal/v1} without changing pin semantics. Every transport, shape
  * or pin problem fails closed with 503: the controller never substitutes the
  * B25 two-question legacy set for the P1 ten-item snapshot.
+ *
+ * <p>The sealed delivery used for opening is answer-free. It carries
+ * {@code bankCode}, {@code contentVersionId}, {@code contentEpoch},
+ * {@code snapshotId}, {@code snapshotHash}, {@code contentStateVersion} and
+ * ten items with stem and options only. Missing {@code answerRule},
+ * {@code correctOption} or bank-level rule versions is not an open failure
+ * and this adapter does not invent them. Scoring an accepted current item
+ * is {@link HttpPlacementRuleScorePort}; this open adapter still does not
+ * read answer rules. An item that does carry answer material is rejected
+ * so it cannot reach the learner.
  *
  * <p>Target pin semantics: {@code targetId}/{@code targetVersion} are the
  * learner owner's identifiers verbatim; {@code targetSnapshotDigest} is the
@@ -76,7 +85,7 @@ public final class HttpPlacementBankPort implements P1PlacementSourcePort {
             throw unavailable("placement bank snapshot is unavailable");
         }
         Map<String, Object> goal = activeGoal(bearer);
-        return new Resolved(targetPin(goal), contentPin(bank), answerRulePin(bank),
+        return new Resolved(targetPin(goal), contentPin(bank), completionPin(),
                 sealedItems(bank), true, true, true, true, true);
     }
 
@@ -124,12 +133,8 @@ public final class HttpPlacementBankPort implements P1PlacementSourcePort {
         return pin;
     }
 
-    private Map<String, Object> answerRulePin(Map<String, Object> bank) {
-        requireBank(bank);
+    private Map<String, Object> completionPin() {
         Map<String, Object> pin = new LinkedHashMap<>();
-        pin.put("answerRuleSetVersion", text(bank.get("answerRuleSetVersion"), "bank rule set version"));
-        pin.put("answerRuleVersion", text(bank.get("answerRuleVersion"), "bank rule version"));
-        pin.put("ruleDigest", digest(bank.get("ruleDigest"), "bank rule digest"));
         pin.put("completionRuleVersion", COMPLETION_RULE);
         return pin;
     }
@@ -141,7 +146,6 @@ public final class HttpPlacementBankPort implements P1PlacementSourcePort {
             throw unavailable("placement bank must expose exactly ten sealed items");
         }
         long contentVersionId = positiveLong(bank.get("contentVersionId"), "bank content version");
-        String scoringVersion = text(bank.get("answerRuleVersion"), "bank rule version");
         List<SealedItem> items = new ArrayList<>(10);
         for (Object rawItem : values) {
             if (!(rawItem instanceof Map<?, ?> raw)) {
@@ -149,22 +153,15 @@ public final class HttpPlacementBankPort implements P1PlacementSourcePort {
             }
             @SuppressWarnings("unchecked")
             Map<String, Object> item = (Map<String, Object>) raw;
+            if (exposesAnswerMaterial(item)) {
+                throw unavailable("placement bank item exposes answer material");
+            }
             long itemId = positiveLong(item.get("itemId"), "bank item id");
-            P1PlacementScorer.Dimension dimension = dimension(item.get("dimension"));
-            Map<String, Object> learnerItem = learnerItem(item, itemId);
-            Map<String, Object> answerRule = answerRule(item);
-            int maxScore = maxScore(item);
-            ContentSnapshot snapshot = new ContentSnapshot(
-                    String.valueOf(item.get("contentCode")),
-                    positiveLong(item.get("contentVersionId"), "bank item content version"),
-                    itemId, itemId, QuestionType.CHOICE,
-                    Map.of("stem", String.valueOf(item.get("stem")), "options", learnerItem.get("options")),
-                    answerRule, scoringVersion, maxScore, true);
-            if (snapshot.contentVersionId() != contentVersionId
-                    || !snapshot.scoringVersion().equals(scoringVersion)) {
+            if (positiveLong(item.get("contentVersionId"), "bank item content version") != contentVersionId) {
                 throw unavailable("placement bank item does not match the bank pin");
             }
-            items.add(new SealedItem(itemId, dimension, learnerItem, snapshot));
+            P1PlacementScorer.Dimension dimension = dimension(item.get("dimension"));
+            items.add(new SealedItem(itemId, dimension, learnerItem(item, itemId), null));
         }
         return List.copyOf(items);
     }
@@ -183,15 +180,21 @@ public final class HttpPlacementBankPort implements P1PlacementSourcePort {
         return learner;
     }
 
-    private Map<String, Object> answerRule(Map<String, Object> item) {
-        if (!(item.get("answerRule") instanceof Map<?, ?> rule)
-                || !(rule.get("correctOption") instanceof String correct)
-                || correct.isBlank()) {
-            throw unavailable("placement bank answer rule is invalid");
+    private static boolean exposesAnswerMaterial(Object value) {
+        if (SafePayloads.containsSensitive(value)) return true;
+        if (value instanceof Map<?, ?> map) {
+            for (Map.Entry<?, ?> entry : map.entrySet()) {
+                if (entry.getKey() instanceof String key && "explanation".equals(normalizeKey(key))) return true;
+                if (exposesAnswerMaterial(entry.getValue())) return true;
+            }
+        } else if (value instanceof List<?> list) {
+            for (Object item : list) if (exposesAnswerMaterial(item)) return true;
         }
-        Map<String, Object> answerRules = new HashMap<>();
-        answerRules.put("correctOption", correct);
-        return answerRules;
+        return false;
+    }
+
+    private static String normalizeKey(String key) {
+        return key.toLowerCase(Locale.ROOT).replace("_", "");
     }
 
     private void requireBank(Map<String, Object> bank) {
@@ -254,21 +257,8 @@ public final class HttpPlacementBankPort implements P1PlacementSourcePort {
         throw unavailable(what + " is invalid");
     }
 
-    private static int maxScore(Object item) {
-        if (item instanceof Map<?, ?> map && map.get("maxScore") instanceof Number number
-                && number.intValue() >= 1 && number.intValue() <= 100) {
-            return number.intValue();
-        }
-        throw unavailable("bank item max score is invalid");
-    }
-
     private static long nonNegativeLong(Object value, String what) {
         if (value instanceof Number number && number.longValue() >= 0) return number.longValue();
-        throw unavailable(what + " is invalid");
-    }
-
-    private static String text(Object value, String what) {
-        if (value instanceof String text && !text.isBlank() && text.length() <= 96) return text;
         throw unavailable(what + " is invalid");
     }
 

@@ -9,7 +9,9 @@ import com.englishflow.assessment.port.AssessmentOutboxPort;
 import com.englishflow.assessment.port.P1PlacementSourcePort;
 import com.englishflow.assessment.port.P1PlacementSourcePort.Resolved;
 import com.englishflow.assessment.port.P1PlacementSourcePort.SealedItem;
+import com.englishflow.assessment.port.PlacementRuleScorePort;
 import com.englishflow.assessment.web.AssessmentHttpPrincipals.VerifiedAssessmentPrincipal;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
@@ -60,14 +62,24 @@ public class P1PlacementJdbcController {
     private final ObjectMapper mapper;
     private final P1PlacementSourcePort sourcePort;
     private final AssessmentOutboxPort outbox;
+    private final PlacementRuleScorePort ruleScorePort;
     private final RuleScoringEngine scorer = new RuleScoringEngine();
 
+    /** Checkpoint tests that predate rule scoring. Runtime injection always supplies the port. */
     public P1PlacementJdbcController(JdbcTemplate jdbc, ObjectMapper mapper,
                                      P1PlacementSourcePort sourcePort, AssessmentOutboxPort outbox) {
+        this(jdbc, mapper, sourcePort, outbox, null);
+    }
+
+    @Autowired
+    public P1PlacementJdbcController(JdbcTemplate jdbc, ObjectMapper mapper,
+                                     P1PlacementSourcePort sourcePort, AssessmentOutboxPort outbox,
+                                     PlacementRuleScorePort ruleScorePort) {
         this.jdbc = jdbc;
         this.mapper = mapper;
         this.sourcePort = sourcePort;
         this.outbox = outbox;
+        this.ruleScorePort = ruleScorePort;
     }
 
     @PostMapping("/sessions")
@@ -80,6 +92,9 @@ public class P1PlacementJdbcController {
         requireKey(key);
         if (body != null && !body.isEmpty()) throw invalid("placement start has no client authority fields");
         Resolved source = resolve(principal);
+        if (source.items().size() != 10) {
+            throw unavailable("placement bank must expose exactly ten sealed items");
+        }
         String requestDigest = SafePayloads.digest(List.of("CREATE", sourceDigest(source)));
         Map<String, Object> replay = claimOrReplay(principal, key, "CREATE", requestDigest);
         if (replay != null) return ResponseEntity.status(HttpStatus.CREATED).body(envelope(replay));
@@ -123,11 +138,43 @@ public class P1PlacementJdbcController {
         // Check the resource owner even when this key replays an old receipt.
         ownerSession(sessionId, principal);
         String requestDigest = SafePayloads.digest(List.of("RESPONSE", sessionId, body));
-        Map<String, Object> replay = claimOrReplay(principal, key, "RESPONSE", requestDigest);
-        if (replay != null) return envelope(replay);
+        Map<String, Object> existingClaim = one("""
+                SELECT operation, request_digest, response_json FROM p1_placement_idempotency
+                 WHERE tenant_id = ? AND principal_id = ? AND idempotency_key = ?
+                """, TENANT, principal.subject(), key);
+        if (existingClaim != null) {
+            if (!"RESPONSE".equals(existingClaim.get("operation"))
+                    || !requestDigest.equals(existingClaim.get("request_digest"))) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT,
+                        "Idempotency-Key was reused for a different command");
+            }
+            Map<String, Object> stored = object(existingClaim.get("response_json"));
+            if (!stored.isEmpty()) return envelope(stored);
+        }
 
         Map<String, Object> session = ownerSessionForUpdate(sessionId, principal);
+        List<Map<String, Object>> sealed = maps(session.get("sealed_items_json"));
+        if (sealed.size() != 10) throw unavailable("sealed placement snapshot is invalid");
+        Map<String, Object> already = one("""
+                SELECT item_sequence, accepted_at FROM p1_placement_response
+                 WHERE session_id = ? AND principal_id = ? AND tenant_id = ?
+                   AND item_sequence = ? AND request_digest = ?
+                """, sessionId, principal.subject(), TENANT, sequence, requestDigest);
+        if (already != null && existingClaim != null) {
+            Map<String, Object> receipt = receiptForAccepted(session, sealed, sequence);
+            saveResponseReceipt(principal, key, requestDigest, receipt);
+            return envelope(receipt);
+        }
+        if ("SKIPPED".equals(String.valueOf(session.get("status")))) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "placement was skipped");
+        }
         if ("COMPLETED".equals(session.get("status"))) {
+            // A repeated tenth answer returns the stored report. It does not insert another one.
+            if (sameStoredCompletion(session, sealed, sequence, requestDigest)) {
+                Map<String, Object> receipt = receiptForAccepted(session, sealed, sequence);
+                saveResponseReceipt(principal, key, requestDigest, receipt);
+                return envelope(receipt);
+            }
             throw new ResponseStatusException(HttpStatus.CONFLICT, "placement is already complete");
         }
         int cursor = ((Number) session.get("current_sequence")).intValue();
@@ -135,65 +182,74 @@ public class P1PlacementJdbcController {
         if (sequence != cursor || expectedVersion != stateVersion) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "placement checkpoint is stale or out of order");
         }
-        List<Map<String, Object>> sealed = maps(session.get("sealed_items_json"));
-        if (sealed.size() != 10 || sequence > sealed.size()) throw unavailable("sealed placement snapshot is invalid");
         Map<String, Object> current = sealed.get(sequence - 1);
         if (positiveLong(current.get("itemId")) != itemId) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "placement item is out of order");
         }
-        boolean correct = score(current, candidate);
-        Instant now = Instant.now();
-        jdbc.update("""
-                INSERT INTO p1_placement_response
-                    (session_id, item_sequence, item_id, principal_id, tenant_id,
-                     response_digest, request_digest, correct, time_spent_sec, accepted_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """, sessionId, sequence, itemId, principal.subject(), TENANT,
-                responseDigest, requestDigest, correct, spent, Timestamp.from(now));
+        // Answer-free opens have no sealed rule. Score only this current item.
+        boolean deferred = answerFree(current);
+        Boolean correct = null;
+        String outcome = null;
+        String explanation = null;
+        if (deferred) {
+            Map<String, Object> learnerItem = maps(session.get("learner_items_json")).get(sequence - 1);
+            acceptUnscored(learnerItem, candidate);
+            if (ruleScorePort != null) {
+                PlacementRuleScorePort.RuleScore graded = gradeCurrent(itemId, candidate);
+                correct = "FULL".equals(graded.outcome());
+                outcome = graded.outcome();
+                explanation = graded.explanation();
+            }
+        } else {
+            correct = score(current, candidate);
+        }
         long nextVersion = stateVersion + 1;
         int nextSequence = sequence + 1;
-        String checkpointDigest = sha256(sessionId + ":" + nextVersion + ":" + nextSequence
-                + ":" + requestDigest);
-        jdbc.update("""
-                INSERT INTO p1_placement_checkpoint
-                    (session_id, state_version, principal_id, tenant_id, next_sequence, checkpoint_digest, saved_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-                """, sessionId, nextVersion, principal.subject(), TENANT,
-                nextSequence, checkpointDigest, Timestamp.from(now));
-        String nextStatus = nextSequence == 11 ? "COMPLETED" : "IN_PROGRESS";
-        int updated = jdbc.update("""
+        // Unscored answer-free sessions stay open. The tenth scored outcome freezes one report.
+        boolean outcomeReportDue = deferred && ruleScorePort != null && nextSequence == 11;
+        String nextStatus = (!deferred && nextSequence == 11) || outcomeReportDue ? "COMPLETED" : "IN_PROGRESS";
+        String previousStatus = String.valueOf(session.get("status"));
+        Instant now = Instant.now();
+        Timestamp savedAt = Timestamp.from(now);
+        int claimed = jdbc.update("""
                 UPDATE p1_placement_session SET status = ?, state_version = ?, current_sequence = ?, updated_at = ?
-                 WHERE session_id = ? AND principal_id = ? AND tenant_id = ? AND state_version = ?
-                """, nextStatus, nextVersion, nextSequence, Timestamp.from(now),
-                sessionId, principal.subject(), TENANT, stateVersion);
-        if (updated != 1) throw new ResponseStatusException(HttpStatus.CONFLICT,
-                "placement checkpoint changed concurrently");
-
-        Map<String, Object> receipt = new LinkedHashMap<>();
-        receipt.put("sessionId", sessionId);
-        receipt.put("stateVersion", nextVersion);
-        receipt.put("status", nextStatus);
-        receipt.put("acceptedAt", now.toString());
-        if (nextSequence == 11) {
-            List<Map<String, Object>> answers = jdbc.queryForList("""
-                    SELECT item_id, correct FROM p1_placement_response
-                     WHERE session_id = ? AND principal_id = ? AND tenant_id = ? ORDER BY item_sequence
-                    """, sessionId, principal.subject(), TENANT);
-            if (answers.size() != 10) throw unavailable("placement checkpoint coverage is incomplete");
-            Map<String, Boolean> graded = new LinkedHashMap<>();
-            for (Map<String, Object> answer : answers) {
-                graded.put(String.valueOf(answer.get("item_id")), Boolean.TRUE.equals(answer.get("correct"))
-                        || answer.get("correct") instanceof Number n && n.intValue() == 1);
-            }
-            List<P1PlacementScorer.Item> manifestItems = scorerItems(sealed);
-            P1PlacementScorer.Assessed assessed = P1PlacementScorer.assess(manifestItems, graded);
-            Map<String, Object> result = freezeResult(session, principal, "ASSESSED", assessed, null,
-                    nextVersion, now);
-            receipt.put("finalResult", result);
-        } else {
-            receipt.put("nextItem", maps(session.get("learner_items_json")).get(nextSequence - 1));
+                 WHERE session_id = ? AND principal_id = ? AND tenant_id = ?
+                   AND state_version = ? AND current_sequence = ?
+                """, nextStatus, nextVersion, nextSequence, savedAt,
+                sessionId, principal.subject(), TENANT, stateVersion, cursor);
+        if (claimed != 1) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "placement checkpoint changed concurrently");
         }
-        finishClaim(principal, key, receipt);
+        try {
+            jdbc.update("""
+                    INSERT INTO p1_placement_response
+                        (session_id, item_sequence, item_id, principal_id, tenant_id,
+                         response_digest, request_digest, correct, time_spent_sec, accepted_at)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """, sessionId, sequence, itemId, principal.subject(), TENANT,
+                    responseDigest, requestDigest, correct, spent, savedAt);
+            String checkpointDigest = sha256(sessionId + ":" + nextVersion + ":" + nextSequence
+                    + ":" + requestDigest);
+            jdbc.update("""
+                    INSERT INTO p1_placement_checkpoint
+                        (session_id, state_version, principal_id, tenant_id, next_sequence, checkpoint_digest, saved_at)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                    """, sessionId, nextVersion, principal.subject(), TENANT,
+                    nextSequence, checkpointDigest, savedAt);
+        } catch (DuplicateKeyException conflict) {
+            revertCheckpoint(sessionId, principal.subject(), previousStatus, stateVersion, cursor, savedAt);
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "placement checkpoint changed concurrently");
+        }
+        Map<String, Object> finalResult = null;
+        Map<String, Object> outcomeReport = null;
+        if (!deferred && nextSequence == 11) {
+            finalResult = freezeScoredPlacement(session, principal, sealed, nextVersion, now);
+        } else if (outcomeReportDue) {
+            outcomeReport = freezeOutcomeReport(session, principal, now);
+        }
+        Map<String, Object> receipt = checkpointReceipt(sessionId, sequence, nextVersion, nextStatus,
+                now, session, finalResult, outcome, explanation, outcomeReport);
+        saveResponseReceipt(principal, key, requestDigest, receipt);
         return envelope(receipt);
     }
 
@@ -206,7 +262,7 @@ public class P1PlacementJdbcController {
                 "assessment.placement.skip");
         requireKey(key);
         Map<String, Object> input = body == null ? Map.of() : body;
-        if (!Set.of("requestedStartingLevel").containsAll(input.keySet())) {
+        if (!Set.of("requestedStartingLevel", "sessionId").containsAll(input.keySet())) {
             throw invalid("skip accepts only a non-authoritative starting-level hint");
         }
         Map<String, Object> requestedLevel = null;
@@ -218,17 +274,52 @@ public class P1PlacementJdbcController {
                 throw invalid("starting-level hint is invalid");
             }
         }
-        Resolved source = resolve(principal);
-        String requestDigest = SafePayloads.digest(List.of("SKIP", sourceDigest(source), input));
+        String bound = null;
+        if (input.containsKey("sessionId")) {
+            if (!(input.get("sessionId") instanceof String id) || !id.matches("asess_[A-Za-z0-9]{8,128}")) {
+                throw invalid("placement session id is invalid");
+            }
+            bound = id;
+        }
+        // A finished report is not a skip target. Reject before the bank read and before any write.
+        Map<String, Object> boundSession = null;
+        if (bound != null) {
+            boundSession = ownerSession(bound, principal);
+            if ("COMPLETED".equals(String.valueOf(boundSession.get("status"))) || hasResult(bound)) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "completed placement cannot be skipped");
+            }
+        }
+        Resolved source = null;
+        if (bound == null) source = resolve(principal);
+        String requestDigest = bound == null
+                ? SafePayloads.digest(List.of("SKIP", sourceDigest(source), input))
+                : SafePayloads.digest(List.of("SKIP", bound, input));
         Map<String, Object> replay = claimOrReplay(principal, key, "SKIP", requestDigest);
         if (replay != null) return ResponseEntity.status(HttpStatus.CREATED).body(envelope(replay));
-        String sessionId = "asess_" + compactId();
+        if (boundSession != null && "SKIPPED".equals(String.valueOf(boundSession.get("status")))) {
+            Map<String, Object> existing = object(boundSession.get("baseline_json"));
+            finishClaim(principal, key, existing);
+            return ResponseEntity.status(HttpStatus.CREATED).body(envelope(existing));
+        }
         Instant now = Instant.now();
-        insertSession(sessionId, principal, source, "COMPLETED", 11, now);
-        Map<String, Object> result = freezeResult(ownerSession(sessionId, principal), principal,
-                "SKIPPED", null, requestedLevel, 1, now);
-        finishClaim(principal, key, result);
-        return ResponseEntity.status(HttpStatus.CREATED).body(envelope(result));
+        String sessionId;
+        if (bound == null) {
+            sessionId = "asess_" + compactId();
+            insertSession(sessionId, principal, source, "SKIPPED", 1, now);
+        } else {
+            sessionId = bound;
+        }
+        Map<String, Object> baseline = skippedBaseline(sessionId, requestedLevel, now);
+        int marked = jdbc.update("""
+                UPDATE p1_placement_session SET status = 'SKIPPED', baseline_json = ?, updated_at = ?
+                 WHERE session_id = ? AND principal_id = ? AND tenant_id = ?
+                   AND status IN ('CREATED', 'IN_PROGRESS', 'SKIPPED')
+                """, json(baseline), Timestamp.from(now), sessionId, principal.subject(), TENANT);
+        if (marked != 1) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "completed placement cannot be skipped");
+        }
+        finishClaim(principal, key, baseline);
+        return ResponseEntity.status(HttpStatus.CREATED).body(envelope(baseline));
     }
 
     @GetMapping("/reports/{reportId}")
@@ -242,6 +333,95 @@ public class P1PlacementJdbcController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "placement report owner mismatch");
         }
         return envelope(object(row.get("report_json")));
+    }
+
+    /** Opens a new session from the current bank. The completed session and its report stay as stored. */
+    @PostMapping("/sessions/{sessionId}/retest")
+    @Transactional
+    public ResponseEntity<Map<String, Object>> retest(Authentication authentication,
+            @PathVariable String sessionId,
+            @RequestBody(required = false) Map<String, Object> body,
+            @RequestHeader(value = "Idempotency-Key", required = false) String key) {
+        VerifiedAssessmentPrincipal principal = AssessmentHttpPrincipals.require(authentication,
+                "assessment.placement.session.create");
+        requireKey(key);
+        if (body != null && !body.isEmpty()) throw invalid("placement retest has no client authority fields");
+        // Reject before the bank read so an unfinished session cannot insert a row.
+        requireCompletedReport(sessionId, principal);
+        Resolved source = resolve(principal);
+        if (source.items().size() != 10) {
+            throw unavailable("placement bank must expose exactly ten sealed items");
+        }
+        String requestDigest = SafePayloads.digest(List.of("RETEST", sessionId, sourceDigest(source)));
+        Map<String, Object> replay = claimOrReplay(principal, key, "RETEST", requestDigest);
+        if (replay != null) return ResponseEntity.status(HttpStatus.CREATED).body(envelope(replay));
+
+        String retestSessionId = "asess_" + compactId();
+        insertSession(retestSessionId, principal, source, "CREATED", 1, Instant.now());
+        Map<String, Object> view = sessionView(ownerSession(retestSessionId, principal));
+        finishClaim(principal, key, view);
+        return ResponseEntity.status(HttpStatus.CREATED).body(envelope(view));
+    }
+
+    @GetMapping("/history")
+    public Map<String, Object> history(Authentication authentication) {
+        VerifiedAssessmentPrincipal principal = AssessmentHttpPrincipals.require(authentication,
+                "assessment.placement.session.read");
+        List<Map<String, Object>> rows = jdbc.queryForList("""
+                SELECT s.session_id, s.status, s.current_sequence, s.started_at, s.updated_at,
+                       r.report_id, r.result_json
+                  FROM p1_placement_session s
+                  LEFT JOIN p1_placement_result r
+                    ON r.session_id = s.session_id AND r.tenant_id = s.tenant_id
+                   AND r.principal_id = s.principal_id
+                 WHERE s.tenant_id = ? AND s.principal_id = ?
+                 ORDER BY s.started_at ASC, s.session_id ASC
+                """, TENANT, principal.subject());
+        List<Map<String, Object>> entries = new ArrayList<>(rows.size());
+        for (Map<String, Object> row : rows) entries.add(historyEntry(row));
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("entries", List.copyOf(entries));
+        return envelope(body);
+    }
+
+    private void requireCompletedReport(String sessionId, VerifiedAssessmentPrincipal principal) {
+        Map<String, Object> session = ownerSession(sessionId, principal);
+        if (!"COMPLETED".equals(session.get("status"))) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "placement retest requires a completed report");
+        }
+        Map<String, Object> result = one("""
+                SELECT report_id FROM p1_placement_result
+                 WHERE session_id = ? AND principal_id = ? AND tenant_id = ?
+                """, sessionId, principal.subject(), TENANT);
+        if (result == null || result.get("report_id") == null) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "placement retest requires a completed report");
+        }
+    }
+
+    private Map<String, Object> historyEntry(Map<String, Object> row) {
+        int cursor = ((Number) row.get("current_sequence")).intValue();
+        if (cursor < 1 || cursor > 11) throw unavailable("placement item pin is invalid");
+        Map<String, Object> entry = new LinkedHashMap<>();
+        entry.put("sessionId", row.get("session_id"));
+        entry.put("status", row.get("status"));
+        entry.put("acceptedSequence", cursor - 1);
+        entry.put("startedAt", timestamp(row.get("started_at")));
+        entry.put("updatedAt", timestamp(row.get("updated_at")));
+        Object reportId = row.get("report_id");
+        if (reportId != null) {
+            entry.put("reportId", reportId);
+            String digest = summaryDigest(row.get("result_json"));
+            if (digest != null) entry.put("digest", digest);
+        }
+        return entry;
+    }
+
+    /** Only the pinned outcome digest. The stored report body is not copied into history. */
+    private String summaryDigest(Object raw) {
+        if (raw == null) return null;
+        Object digest = object(raw).get("digest");
+        if (digest instanceof String value && value.matches(DIGEST_PATTERN)) return value;
+        return null;
     }
 
     private Resolved resolve(VerifiedAssessmentPrincipal principal) {
@@ -264,6 +444,11 @@ public class P1PlacementJdbcController {
             Map<String, Object> sealedItem = new LinkedHashMap<>();
             sealedItem.put("itemId", item.itemId());
             sealedItem.put("dimension", item.dimension().name());
+            if (snapshot == null) {
+                // Answer-free open. Do not invent correctOption or answerRules.
+                sealedItem.put("contentVersionId", source.contentPin().get("contentVersionId"));
+                return sealedItem;
+            }
             sealedItem.put("contentCode", snapshot.contentCode());
             sealedItem.put("contentVersionId", snapshot.contentVersionId());
             sealedItem.put("questionId", snapshot.questionId());
@@ -392,6 +577,279 @@ public class P1PlacementJdbcController {
                 event, now));
     }
 
+    private static boolean answerFree(Map<String, Object> sealed) {
+        return !sealed.containsKey("questionType") && !sealed.containsKey("answerRules");
+    }
+
+    private void acceptUnscored(Map<String, Object> learnerItem, Map<String, Object> candidate) {
+        if (!"CHOICE".equals(String.valueOf(candidate.get("responseType")))) {
+            throw invalid("placement response does not match the current item");
+        }
+        requireKeys(candidate, Set.of("responseType", "selectedOptionIds"));
+        requireStrings(candidate.get("selectedOptionIds"), 32, "[a-z][a-z0-9._:-]{0,63}");
+        if (!(learnerItem.get("options") instanceof List<?> options) || options.isEmpty()) {
+            throw unavailable("placement learner item is not answer-free");
+        }
+        java.util.HashSet<String> optionIds = new java.util.HashSet<>();
+        for (Object raw : options) {
+            if (raw instanceof Map<?, ?> option && option.get("optionId") instanceof String id) optionIds.add(id);
+        }
+        for (Object selected : (List<?>) candidate.get("selectedOptionIds")) {
+            if (!optionIds.contains(String.valueOf(selected))) {
+                throw invalid("placement response does not match the current item");
+            }
+        }
+    }
+
+    private Map<String, Object> receiptForAccepted(Map<String, Object> session, List<Map<String, Object>> sealed,
+                                                   int sequence) {
+        String sessionId = String.valueOf(session.get("session_id"));
+        Map<String, Object> checkpoint = one("""
+                SELECT state_version, next_sequence, saved_at FROM p1_placement_checkpoint
+                 WHERE session_id = ? AND principal_id = ? AND tenant_id = ? AND next_sequence = ?
+                """, sessionId, session.get("principal_id"), TENANT, sequence + 1);
+        if (checkpoint == null) throw unavailable("placement checkpoint is missing");
+        boolean deferred = answerFree(sealed.get(sequence - 1));
+        String status = !deferred && sequence == 10 ? "COMPLETED" : "IN_PROGRESS";
+        Map<String, Object> finalResult = null;
+        if ("COMPLETED".equals(status)) {
+            Map<String, Object> result = one(
+                    "SELECT result_json FROM p1_placement_result WHERE session_id = ? AND tenant_id = ?",
+                    sessionId, TENANT);
+            if (result == null) throw unavailable("placement result is missing");
+            finalResult = object(result.get("result_json"));
+        }
+        String outcome = null;
+        String explanation = null;
+        if (ruleScorePort != null && deferred) {
+            Map<String, Object> graded = one("""
+                    SELECT correct FROM p1_placement_response
+                     WHERE session_id = ? AND principal_id = ? AND tenant_id = ? AND item_sequence = ?
+                    """, sessionId, session.get("principal_id"), TENANT, sequence);
+            if (graded != null && graded.get("correct") != null) {
+                boolean full = Boolean.TRUE.equals(graded.get("correct"))
+                        || graded.get("correct") instanceof Number number && number.intValue() == 1;
+                outcome = full ? "FULL" : "ZERO";
+                explanation = full ? PlacementRuleScorePort.FULL_EXPLANATION
+                        : PlacementRuleScorePort.ZERO_EXPLANATION;
+            }
+        }
+        Map<String, Object> outcomeReport = null;
+        if (ruleScorePort != null && deferred && sequence == 10) {
+            outcomeReport = storedOutcomeReport(sessionId);
+            status = "COMPLETED";
+        }
+        return checkpointReceipt(sessionId, sequence, ((Number) checkpoint.get("state_version")).longValue(),
+                status, acceptedInstant(checkpoint.get("saved_at")), session, finalResult, outcome, explanation,
+                outcomeReport);
+    }
+
+    private boolean sameStoredCompletion(Map<String, Object> session, List<Map<String, Object>> sealed,
+                                         int sequence, String requestDigest) {
+        if (ruleScorePort == null || sequence != 10 || sealed.size() != 10 || !answerFree(sealed.get(9))) {
+            return false;
+        }
+        Map<String, Object> stored = one("""
+                SELECT request_digest FROM p1_placement_response
+                 WHERE session_id = ? AND principal_id = ? AND tenant_id = ? AND item_sequence = 10
+                """, session.get("session_id"), session.get("principal_id"), TENANT);
+        return stored != null && requestDigest.equals(stored.get("request_digest"));
+    }
+
+    /** One immutable snapshot. A second call returns the row already stored for this session. */
+    private Map<String, Object> freezeOutcomeReport(Map<String, Object> session,
+                                                     VerifiedAssessmentPrincipal principal, Instant now) {
+        String sessionId = String.valueOf(session.get("session_id"));
+        Map<String, Object> existing = one("""
+                SELECT report_json FROM p1_placement_result WHERE session_id = ? AND tenant_id = ?
+                """, sessionId, TENANT);
+        if (existing != null) return object(existing.get("report_json"));
+        List<Map<String, Object>> answers = jdbc.queryForList("""
+                SELECT item_sequence, correct FROM p1_placement_response
+                 WHERE session_id = ? AND principal_id = ? AND tenant_id = ?
+                 ORDER BY item_sequence
+                """, sessionId, principal.subject(), TENANT);
+        if (answers.size() != 10) throw unavailable("placement checkpoint coverage is incomplete");
+        List<Map<String, Object>> outcomes = new ArrayList<>(10);
+        int fullCount = 0;
+        for (int index = 0; index < answers.size(); index++) {
+            Map<String, Object> answer = answers.get(index);
+            int itemSequence = ((Number) answer.get("item_sequence")).intValue();
+            if (itemSequence != index + 1 || answer.get("correct") == null) {
+                throw unavailable("placement outcome sequence is incomplete");
+            }
+            boolean full = Boolean.TRUE.equals(answer.get("correct"))
+                    || answer.get("correct") instanceof Number number && number.intValue() == 1;
+            if (full) fullCount++;
+            Map<String, Object> outcome = new LinkedHashMap<>();
+            outcome.put("sequence", itemSequence);
+            outcome.put("outcome", full ? "FULL" : "ZERO");
+            outcomes.add(outcome);
+        }
+        Map<String, Object> contentPin = object(session.get("content_pin_json"));
+        String snapshotId = String.valueOf(contentPin.get("snapshotId"));
+        String snapshotHash = String.valueOf(contentPin.get("snapshotHash"));
+        if (!snapshotId.matches("snap_[A-Za-z0-9._:-]{8,127}") || !snapshotHash.matches(DIGEST_PATTERN)) {
+            throw unavailable("placement bank snapshot pin is invalid");
+        }
+        String reportId = "rpt_" + compactId();
+        Map<String, Object> facts = new LinkedHashMap<>();
+        facts.put("reportId", reportId);
+        facts.put("outcomes", outcomes);
+        facts.put("snapshotId", snapshotId);
+        facts.put("snapshotHash", snapshotHash);
+        String digest = sha256(json(facts));
+        Map<String, Object> summary = new LinkedHashMap<>();
+        summary.put("reportId", reportId);
+        summary.put("digest", digest);
+        summary.put("itemCount", 10);
+        summary.put("fullCount", fullCount);
+        summary.put("zeroCount", 10 - fullCount);
+        summary.put("snapshotId", snapshotId);
+        summary.put("snapshotHash", snapshotHash);
+        Map<String, Object> report = new LinkedHashMap<>();
+        report.put("reportId", reportId);
+        report.put("digest", digest);
+        report.put("snapshotId", snapshotId);
+        report.put("snapshotHash", snapshotHash);
+        report.put("outcomes", outcomes);
+        report.put("summary", summary);
+        String reportJson = json(report);
+        String summaryJson = json(summary);
+        if (reportJson.contains("correctOption") || reportJson.contains("answerRule")
+                || summaryJson.contains("correctOption") || summaryJson.contains("answerRule")
+                || SafePayloads.containsSensitive(report)) {
+            throw unavailable("placement report contains protected answer material");
+        }
+        try {
+            jdbc.update("""
+                    INSERT INTO p1_placement_result
+                        (placement_result_id, session_id, report_id, principal_id, tenant_id,
+                         result_kind, result_json, report_json, completed_at)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """, "plr_" + compactId(), sessionId, reportId, principal.subject(), TENANT,
+                    "ASSESSED", summaryJson, reportJson, Timestamp.from(now));
+        } catch (DuplicateKeyException conflict) {
+            return storedOutcomeReport(sessionId);
+        }
+        return report;
+    }
+
+    private Map<String, Object> storedOutcomeReport(String sessionId) {
+        Map<String, Object> row = one("""
+                SELECT report_json FROM p1_placement_result WHERE session_id = ? AND tenant_id = ?
+                """, sessionId, TENANT);
+        if (row == null) throw unavailable("placement report is missing");
+        return object(row.get("report_json"));
+    }
+
+    private PlacementRuleScorePort.RuleScore gradeCurrent(long itemId, Map<String, Object> candidate) {
+        List<?> selected = (List<?>) candidate.get("selectedOptionIds");
+        PlacementRuleScorePort.RuleScore graded;
+        if (selected.size() != 1) {
+            graded = new PlacementRuleScorePort.RuleScore("ZERO", PlacementRuleScorePort.ZERO_EXPLANATION);
+        } else {
+            try {
+                graded = ruleScorePort.score(itemId, String.valueOf(selected.getFirst()));
+            } catch (ResponseStatusException expected) {
+                throw expected;
+            } catch (RuntimeException failed) {
+                throw unavailable("placement rule score is unavailable");
+            }
+        }
+        if (graded == null) throw unavailable("placement rule score is not objective");
+        return graded;
+    }
+
+    private Map<String, Object> checkpointReceipt(String sessionId, int acceptedSequence, long stateVersion,
+                                                  String status, Instant acceptedAt, Map<String, Object> session,
+                                                  Map<String, Object> finalResult, String outcome, String explanation,
+                                                  Map<String, Object> outcomeReport) {
+        Map<String, Object> receipt = new LinkedHashMap<>();
+        receipt.put("sessionId", sessionId);
+        receipt.put("stateVersion", stateVersion);
+        receipt.put("status", status);
+        receipt.put("acceptedSequence", acceptedSequence);
+        receipt.put("nextSequence", acceptedSequence + 1);
+        receipt.put("acceptedAt", acceptedAt.toString());
+        if (outcome != null) {
+            receipt.put("outcome", outcome);
+            receipt.put("explanation", explanation);
+        }
+        if (finalResult != null) {
+            receipt.put("finalResult", finalResult);
+        } else if (outcomeReport != null) {
+            receipt.put("report", outcomeReport);
+            receipt.put("summary", outcomeReport.get("summary"));
+        } else if (acceptedSequence < 10) {
+            receipt.put("nextItem", maps(session.get("learner_items_json")).get(acceptedSequence));
+        }
+        return receipt;
+    }
+
+    private Map<String, Object> freezeScoredPlacement(Map<String, Object> session,
+                                                      VerifiedAssessmentPrincipal principal,
+                                                      List<Map<String, Object>> sealed, long nextVersion, Instant now) {
+        String sessionId = String.valueOf(session.get("session_id"));
+        List<Map<String, Object>> answers = jdbc.queryForList("""
+                SELECT item_id, correct FROM p1_placement_response
+                 WHERE session_id = ? AND principal_id = ? AND tenant_id = ? ORDER BY item_sequence
+                """, sessionId, principal.subject(), TENANT);
+        if (answers.size() != 10) throw unavailable("placement checkpoint coverage is incomplete");
+        Map<String, Boolean> graded = new LinkedHashMap<>();
+        for (Map<String, Object> answer : answers) {
+            graded.put(String.valueOf(answer.get("item_id")), Boolean.TRUE.equals(answer.get("correct"))
+                    || answer.get("correct") instanceof Number n && n.intValue() == 1);
+        }
+        P1PlacementScorer.Assessed assessed = P1PlacementScorer.assess(scorerItems(sealed), graded);
+        return freezeResult(session, principal, "ASSESSED", assessed, null, nextVersion, now);
+    }
+
+    private void saveResponseReceipt(VerifiedAssessmentPrincipal principal, String key, String requestDigest,
+                                     Map<String, Object> response) {
+        Map<String, Object> existing = one("""
+                SELECT operation, request_digest, response_json FROM p1_placement_idempotency
+                 WHERE tenant_id = ? AND principal_id = ? AND idempotency_key = ?
+                """, TENANT, principal.subject(), key);
+        if (existing == null) {
+            try {
+                jdbc.update("""
+                        INSERT INTO p1_placement_idempotency
+                            (tenant_id, principal_id, idempotency_key, operation, request_digest, response_json, created_at)
+                        VALUES (?, ?, ?, ?, ?, '{}', CURRENT_TIMESTAMP(6))
+                        """, TENANT, principal.subject(), key, "RESPONSE", requestDigest);
+            } catch (DuplicateKeyException ignored) {
+                existing = one("""
+                        SELECT operation, request_digest, response_json FROM p1_placement_idempotency
+                         WHERE tenant_id = ? AND principal_id = ? AND idempotency_key = ?
+                        """, TENANT, principal.subject(), key);
+                if (existing == null) throw ignored;
+            }
+        }
+        if (existing != null && (!"RESPONSE".equals(existing.get("operation"))
+                || !requestDigest.equals(existing.get("request_digest")))) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "Idempotency-Key was reused for a different command");
+        }
+        finishClaim(principal, key, response);
+    }
+
+    private void revertCheckpoint(String sessionId, String principal, String status, long stateVersion,
+                                  int sequence, Timestamp updatedAt) {
+        jdbc.update("""
+                UPDATE p1_placement_session SET status = ?, state_version = ?, current_sequence = ?, updated_at = ?
+                 WHERE session_id = ? AND principal_id = ? AND tenant_id = ? AND state_version = ?
+                """, status, stateVersion, sequence, updatedAt,
+                sessionId, principal, TENANT, stateVersion + 1);
+    }
+
+    private static Instant acceptedInstant(Object value) {
+        if (value instanceof Timestamp timestamp) return timestamp.toInstant();
+        if (value instanceof Instant instant) return instant;
+        if (value instanceof java.time.LocalDateTime dateTime) return dateTime.toInstant(java.time.ZoneOffset.UTC);
+        return Instant.parse(String.valueOf(value));
+    }
+
     boolean score(Map<String, Object> sealed, Map<String, Object> candidate) {
         String responseType = String.valueOf(candidate.get("responseType"));
         if ("UNANSWERED".equals(responseType)) {
@@ -515,18 +973,60 @@ public class P1PlacementJdbcController {
         view.put("targetPin", object(row.get("target_pin_json")));
         view.put("startedAt", timestamp(row.get("started_at")));
         view.put("updatedAt", timestamp(row.get("updated_at")));
+        List<Map<String, Object>> items = projectLearnerItems(row.get("learner_items_json"));
+        view.put("items", items);
+        int cursor = ((Number) row.get("current_sequence")).intValue();
+        if (cursor < 1 || cursor > 11) throw unavailable("placement item pin is invalid");
+        view.put("acceptedSequence", cursor - 1);
+        view.put("nextSequence", cursor);
+        if ("SKIPPED".equals(String.valueOf(row.get("status")))) {
+            view.put("resultKind", "SKIPPED");
+            view.put("baselineSource", "USER_SKIP");
+            view.put("confidence", "UNVERIFIED");
+            if (row.get("baseline_json") != null) {
+                Map<String, Object> baseline = object(row.get("baseline_json"));
+                if (baseline.get("requestedStartingLevel") != null) {
+                    view.put("requestedStartingLevel", baseline.get("requestedStartingLevel"));
+                }
+            }
+            return view;
+        }
         if ("COMPLETED".equals(row.get("status"))) {
             Map<String, Object> result = one("SELECT result_json FROM p1_placement_result WHERE session_id = ? AND tenant_id = ?",
                     row.get("session_id"), TENANT);
             if (result == null) throw unavailable("placement result is missing");
             view.put("completedResult", object(result.get("result_json")));
-        } else {
-            int cursor = ((Number) row.get("current_sequence")).intValue();
-            List<Map<String, Object>> items = maps(row.get("learner_items_json"));
-            if (items.size() != 10 || cursor < 1 || cursor > 10) throw unavailable("placement item pin is invalid");
+        } else if (cursor <= 10) {
             view.put("currentItem", items.get(cursor - 1));
         }
         return view;
+    }
+
+    private List<Map<String, Object>> projectLearnerItems(Object raw) {
+        List<Map<String, Object>> items = maps(raw);
+        if (items.size() != 10) throw unavailable("placement item pin is invalid");
+        List<Map<String, Object>> projected = new ArrayList<>(10);
+        for (Map<String, Object> item : items) {
+            Map<String, Object> safe = new LinkedHashMap<>(SafePayloads.sanitizeLearnerView(item));
+            safe.keySet().removeIf(P1PlacementJdbcController::hiddenAnswerField);
+            if (SafePayloads.containsSensitive(safe) || !text(safe.get("stem"))
+                    || !(safe.get("options") instanceof List<?> options) || options.isEmpty()) {
+                throw unavailable("placement learner item is not answer-free");
+            }
+            projected.add(Map.copyOf(safe));
+        }
+        return List.copyOf(projected);
+    }
+
+    private static boolean hiddenAnswerField(String key) {
+        String normalized = key.toLowerCase(java.util.Locale.ROOT).replace("_", "");
+        return normalized.equals("explanation") || normalized.equals("correctanswer")
+                || normalized.equals("answerrule") || normalized.equals("answerrules")
+                || normalized.equals("correctoption") || normalized.equals("correctoptionkeys");
+    }
+
+    private static boolean text(Object value) {
+        return value instanceof String string && !string.isBlank();
     }
 
     private Map<String, Object> ownerSession(String sessionId, VerifiedAssessmentPrincipal principal) {
@@ -547,6 +1047,26 @@ public class P1PlacementJdbcController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "placement session owner mismatch");
         }
         return row;
+    }
+
+    /** Skip is a user choice. It is not a scored report and has no reportId or digest. */
+    private Map<String, Object> skippedBaseline(String sessionId, Map<String, Object> requestedLevel, Instant now) {
+        Map<String, Object> baseline = new LinkedHashMap<>();
+        baseline.put("sessionId", sessionId);
+        baseline.put("status", "SKIPPED");
+        baseline.put("resultKind", "SKIPPED");
+        baseline.put("baselineSource", "USER_SKIP");
+        baseline.put("confidence", "UNVERIFIED");
+        if (requestedLevel != null) baseline.put("requestedStartingLevel", requestedLevel);
+        baseline.put("recordedAt", now.toString());
+        return baseline;
+    }
+
+    private boolean hasResult(String sessionId) {
+        return one("""
+                SELECT report_id FROM p1_placement_result
+                 WHERE session_id = ? AND tenant_id = ?
+                """, sessionId, TENANT) != null;
     }
 
     private Map<String, Object> claimOrReplay(VerifiedAssessmentPrincipal principal, String key,
@@ -610,9 +1130,14 @@ public class P1PlacementJdbcController {
 
     private String sourceDigest(Resolved source) {
         return SafePayloads.digest(List.of(source.targetPin(), source.contentPin(), source.answerRulePin(),
-                source.items().stream().map(item -> List.of(item.itemId(), item.dimension().name(),
-                        item.learnerItem(), item.scoringSnapshot().learnerFields(),
-                        item.scoringSnapshot().answerRules(), item.scoringSnapshot().scoringVersion())).toList()));
+                source.items().stream().map(item -> {
+                    ContentSnapshot snapshot = item.scoringSnapshot();
+                    if (snapshot == null) {
+                        return List.of(item.itemId(), item.dimension().name(), item.learnerItem());
+                    }
+                    return List.of(item.itemId(), item.dimension().name(), item.learnerItem(),
+                            snapshot.learnerFields(), snapshot.answerRules(), snapshot.scoringVersion());
+                }).toList()));
     }
 
     private static List<P1PlacementScorer.Item> scorerItems(List<Map<String, Object>> sealed) {

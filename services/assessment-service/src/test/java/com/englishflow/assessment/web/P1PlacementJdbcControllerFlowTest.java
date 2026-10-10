@@ -24,7 +24,6 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /** A synthetic source tests the owner flow without pretending content-service is ready. */
@@ -87,24 +86,28 @@ class P1PlacementJdbcControllerFlowTest {
     }
 
     @Test
-    void skipIsAnUnverifiedNullScoreAndItsKeyCannotBecomeAnotherCommand() throws Exception {
+    void skipIsAnUnverifiedBaselineAndItsKeyCannotBecomeAnotherCommand() throws Exception {
         Map<String, Object> hint = Map.of("requestedStartingLevel",
                 Map.of("level", "B2", "authority", "USER_SELECTED_NON_AUTHORITATIVE"));
         Map<String, Object> skipped = data(controller.skip(learner(), hint, "p1-skip-key-00001").getBody());
+        assertEquals("SKIPPED", skipped.get("status"));
         assertEquals("SKIPPED", skipped.get("resultKind"));
-        assertEquals("SKIPPED", skipped.get("completionStatus"));
+        assertEquals("USER_SKIP", skipped.get("baselineSource"));
         assertEquals("UNVERIFIED", skipped.get("confidence"));
-        assertNull(skipped.get("aggregateScore"));
-        assertNull(skipped.get("referenceLevel"));
+        assertFalse(skipped.containsKey("reportId"));
+        assertFalse(skipped.containsKey("digest"));
+        assertFalse(skipped.containsKey("aggregateScore"));
+        assertFalse(skipped.containsKey("referenceLevel"));
         assertFalse(skipped.containsKey("dimensionSummaries"));
         assertEquals(normalized(skipped), normalized(
                 data(controller.skip(learner(), hint, "p1-skip-key-00001").getBody())));
-        assertEquals(normalized(skipped), normalized(
-                data(controller.read(learner(), String.valueOf(skipped.get("sessionId"))))
-                        .get("completedResult")));
+        Map<String, Object> session = data(controller.read(learner(), String.valueOf(skipped.get("sessionId"))));
+        assertEquals("SKIPPED", session.get("status"));
+        assertEquals("USER_SKIP", session.get("baselineSource"));
+        assertFalse(session.containsKey("completedResult"));
         assertEquals(1, jdbc.sessions.size());
-        assertEquals(1, jdbc.results.size());
-        assertEquals(1, events.size());
+        assertEquals(0, jdbc.results.size());
+        assertEquals(0, events.size());
 
         ResponseStatusException different = assertThrows(ResponseStatusException.class,
                 () -> controller.skip(learner(), Map.of(), "p1-skip-key-00001"));
@@ -265,6 +268,18 @@ class P1PlacementJdbcControllerFlowTest {
                 checkpoints.add(Map.of("session_id", args[0], "state_version", args[1]));
                 return 1;
             }
+            if (sql.contains("UPDATE p1_placement_session") && sql.contains("baseline_json")) {
+                Map<String, Object> row = sessions.get(String.valueOf(args[2]));
+                if (row == null) return 0;
+                String status = String.valueOf(row.get("status"));
+                if (!"CREATED".equals(status) && !"IN_PROGRESS".equals(status) && !"SKIPPED".equals(status)) {
+                    return 0;
+                }
+                row.put("status", "SKIPPED");
+                row.put("baseline_json", args[0]);
+                row.put("updated_at", args[1]);
+                return 1;
+            }
             if (sql.contains("UPDATE p1_placement_session")) {
                 Map<String, Object> row = sessions.get(String.valueOf(args[4]));
                 if (!row.get("state_version").equals(args[7])) return 0;
@@ -302,6 +317,9 @@ class P1PlacementJdbcControllerFlowTest {
                 return responses.stream().filter(value -> value.get("session_id").equals(args[0]))
                         .map(value -> Map.of("item_id", value.get("item_id"),
                                 "correct", value.get("correct"))).toList();
+            }
+            if (sql.contains("FROM p1_placement_response") && sql.contains("request_digest")) {
+                return List.of();
             }
             if (sql.contains("FROM p1_placement_result") && sql.contains("report_id = ?")) {
                 return results.values().stream()

@@ -26,6 +26,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -85,15 +86,38 @@ class HttpPlacementBankPortTest {
         P1PlacementSourcePort.Resolved resolved = port.resolve(principal());
         assertEquals(10, resolved.items().size());
         assertEquals(266100L, ((Number) resolved.contentPin().get("contentVersionId")).longValue());
+        assertEquals("snap_p1.placement.v1-266100", resolved.contentPin().get("snapshotId"));
+        assertEquals("a".repeat(64), resolved.contentPin().get("snapshotHash"));
+        assertEquals(Set.of("completionRuleVersion"), resolved.answerRulePin().keySet());
         assertEquals("P1_PLACEMENT_V1", resolved.answerRulePin().get("completionRuleVersion"));
         assertEquals(71001L, ((Number) resolved.targetPin().get("targetId")).longValue());
         assertEquals(3L, ((Number) resolved.targetPin().get("targetVersion")).longValue());
         assertTrue(String.valueOf(resolved.targetPin().get("targetSnapshotDigest")).matches("[a-f0-9]{64}"));
         assertEquals("Bearer test-bearer", authorization.get());
         for (P1PlacementSourcePort.SealedItem item : resolved.items()) {
+            assertNull(item.scoringSnapshot());
             assertTrue(!item.learnerItem().containsKey("answerRule")
-                    && !item.learnerItem().containsKey("correctOption"));
+                    && !item.learnerItem().containsKey("correctOption")
+                    && !item.learnerItem().containsKey("explanation"));
+            assertTrue(item.learnerItem().get("stem") instanceof String);
+            assertTrue(item.learnerItem().get("options") instanceof List<?> options && !options.isEmpty());
         }
+    }
+
+    @Test
+    void answerMaterialOnTheBankItemFailsClosed() throws Exception {
+        Map<String, Object> poisoned = new LinkedHashMap<>(bank());
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> items = new ArrayList<>((List<Map<String, Object>>) poisoned.get("items"));
+        Map<String, Object> first = new LinkedHashMap<>(items.getFirst());
+        first.put("answerRule", Map.of("correctOption", "a"));
+        items.set(0, first);
+        poisoned.put("items", items);
+        bankBody = mapper.writeValueAsString(Map.of("data", poisoned));
+        HttpPlacementBankPort port = new HttpPlacementBankPort(mapper, baseUrl, baseUrl, Duration.ofSeconds(5));
+        ResponseStatusException failure = assertThrows(ResponseStatusException.class,
+                () -> port.resolve(principal()));
+        assertEquals(HttpStatus.SERVICE_UNAVAILABLE, failure.getStatusCode());
     }
 
     @Test
@@ -170,12 +194,7 @@ class HttpPlacementBankPortTest {
             item.put("stem", "Stem " + index + "?");
             item.put("options", List.of(Map.of("optionId", "a", "label", "alpha"),
                     Map.of("optionId", "b", "label", "beta")));
-            item.put("questionType", "CHOICE");
-            item.put("scoringVersion", "p1-choice-v1");
-            item.put("maxScore", 10);
-            item.put("contentCode", "p1.placement.v1");
             item.put("contentVersionId", 266100);
-            item.put("answerRule", Map.of("correctOption", "a"));
             items.add(item);
         }
         Map<String, Object> bank = new LinkedHashMap<>();
@@ -184,9 +203,7 @@ class HttpPlacementBankPortTest {
         bank.put("contentEpoch", 1);
         bank.put("snapshotId", "snap_p1.placement.v1-266100");
         bank.put("snapshotHash", "a".repeat(64));
-        bank.put("answerRuleSetVersion", "p1-placement-bank-v1");
-        bank.put("answerRuleVersion", "p1-choice-v1");
-        bank.put("ruleDigest", "b".repeat(64));
+        bank.put("contentStateVersion", 1);
         bank.put("items", items);
         return bank;
     }

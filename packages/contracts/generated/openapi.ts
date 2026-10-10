@@ -2535,7 +2535,7 @@ export type B8ConsentDocument = { version: string; digest: string; publishedAt: 
 /**
  * Generated from the contract source.
  */
-export type B8ConsentWithdrawalEffect = { effect: "NO_ACTION" | "RESTRICT_PROTECTED_CAPABILITY" | "RESTRICT_ALL_LEARNING_ACCESS" | "REVOKE_SENSITIVE_SESSION_SCOPE"; appliesAt: string; cacheInvalidationRequired: boolean; };
+export type B8ConsentWithdrawalEffect = { effect: "NO_ACTION" | "RESTRICT_PROTECTED_CAPABILITY" | "RESTRICT_ALL_LEARNING_ACCESS" | "REVOKE_SENSITIVE_SESSION_SCOPE"; appliesAt: string; cacheInvalidationRequired: boolean; affectedCapabilities?: ReadonlyArray<"ACCOUNT" | "LEARNING" | "ANALYTICS" | "VOICE_REMOTE_PROCESS" | "VOICE_REMOTE_RECORD" | "VOICE_REMOTE_REPLAY" | "VOICE_REMOTE_UPLOAD">; sessionEffect?: "UNCHANGED" | "REVOKE_ALL_SESSIONS"; accountEffect?: "RETAINED"; historyEffect?: "RETAINED"; };
 
 /**
  * Generated from the contract source.
@@ -3993,14 +3993,14 @@ export type B12AdminReport = { reportId: string; roomRef?: string | null; target
 export type PlacementBankSealedSnapshotResponse = { data: PlacementBankSealedSnapshot; };
 
 /**
- * Sealed P1 placement bank. Answer rules cross the internal boundary only; the browser only ever sees itemId/itemCode/itemType/stem/options/displayOrder.
+ * Sealed P1 placement bank delivery. Stem, options, item code, dimension, display order and content version only. answer_rule_json stays in the owner table. Scoring read is left to R1-021.
  */
-export type PlacementBankSealedSnapshot = { bankCode: "P1_PLACEMENT_V1"; contentVersionId: B10Int64Id; contentEpoch: B10ContentEpoch; contentStateVersion: number; snapshotId: B10SnapshotId; snapshotHash: B10Sha256; answerRuleSetVersion: B10RuleVersion; answerRuleVersion: B10RuleVersion; ruleDigest: B10Sha256; items: readonly [PlacementBankSealedItem, PlacementBankSealedItem, PlacementBankSealedItem, PlacementBankSealedItem, PlacementBankSealedItem, PlacementBankSealedItem, PlacementBankSealedItem, PlacementBankSealedItem, PlacementBankSealedItem, PlacementBankSealedItem]; };
+export type PlacementBankSealedSnapshot = { bankCode: "P1_PLACEMENT_V1"; contentVersionId: B10Int64Id; contentEpoch: B10ContentEpoch; contentStateVersion: number; snapshotId: B10SnapshotId; snapshotHash: B10Sha256; items: readonly [PlacementBankSealedItem, PlacementBankSealedItem, PlacementBankSealedItem, PlacementBankSealedItem, PlacementBankSealedItem, PlacementBankSealedItem, PlacementBankSealedItem, PlacementBankSealedItem, PlacementBankSealedItem, PlacementBankSealedItem]; };
 
 /**
  * Generated from the contract source.
  */
-export type PlacementBankSealedItem = { itemId: B10Int64Id; itemCode: string; itemType: "VOCABULARY" | "GRAMMAR" | "READING" | "LISTENING"; dimension: "VOCABULARY" | "BASIC_GRAMMAR" | "READING" | "LISTENING"; displayOrder: number; stem: string; options: readonly [B10ContentItemOption, B10ContentItemOption, ...Array<B10ContentItemOption>]; questionType: "CHOICE"; scoringVersion: B10RuleVersion; maxScore: number; contentCode: B10ContentCode; contentVersionId: B10Int64Id; answerRule: { correctOption: string; }; };
+export type PlacementBankSealedItem = { itemId: B10Int64Id; itemCode: string; itemType: "VOCABULARY" | "GRAMMAR" | "READING" | "LISTENING"; dimension: "VOCABULARY" | "BASIC_GRAMMAR" | "READING" | "LISTENING"; displayOrder: number; stem: string; options: readonly [B10ContentItemOption, B10ContentItemOption, ...Array<B10ContentItemOption>]; contentVersionId: B10Int64Id; };
 
 /**
  * Server-verified placement pin. Only learning-service calls this after verifying the placement report; learners never self-pin content.
@@ -4076,6 +4076,11 @@ export type AdminRiskEvaluateResult = { evaluatedAt: string; rulesChecked: numbe
  * Answer-free practice pointer: identifies gradable content without carrying stems, options or answer rules. The client resolves it into a B10 session; assessment fetches rules server-side.
  */
 export type B10PracticeRef = { contentCode: string; contentVersionId: B10Int64Id; questionItemId: string; };
+
+/**
+ * Live learning-consent fact for a trusted PEP. GRANTED/ELIGIBLE only when every LEARNING-required consent is currently accepted against the published document.
+ */
+export type B8LearningConsentFact = { principalId: string; learningConsent: "GRANTED" | "WITHDRAWN"; learningAccess: "ELIGIBLE" | "RESTRICTED"; };
 
 export interface CanonicalIdRegistry {
   userId: CanonicalInt64Id;
@@ -4561,6 +4566,7 @@ export interface ApiOperationRegistry {
   fileAdminRiskCase: { method: "POST"; path: "/api/v1/admin/ops/risk/cases"; request: AdminRiskFileRequest; response: { data: AdminRiskCase; }; idempotent: true };
   decideAdminRiskCase: { method: "POST"; path: "/api/v1/admin/ops/risk/cases/{caseId}/commands"; request: AdminRiskDecisionRequest; response: { data: AdminRiskCase; }; idempotent: true };
   evaluateAdminRiskRules: { method: "POST"; path: "/api/v1/admin/ops/risk/rules:evaluate"; request: AdminRiskEvaluateRequest; response: { data: AdminRiskEvaluateResult; }; idempotent: true };
+  getIamLearningConsentFact: { method: "GET"; path: "/internal/v1/iam/principals/{principalId}/learning-consent"; request: never; response: { data: B8LearningConsentFact; }; idempotent: false };
 }
 
 export type ApiOperationId = keyof ApiOperationRegistry;

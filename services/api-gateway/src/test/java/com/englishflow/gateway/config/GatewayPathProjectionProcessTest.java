@@ -59,6 +59,7 @@ import reactor.core.scheduler.Schedulers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Sends real HTTP requests from the Gateway's RouteLocator to a loopback
@@ -179,6 +180,39 @@ class GatewayPathProjectionProcessTest {
         assertForwarded(HttpMethod.GET,
                 "/api/v1/admin/moderation/reports",
                 "/internal/v1/social/admin/moderation/reports");
+    }
+
+    @Test
+    void b25PlacementStartWriteReturns404WhileOldReadAndSessionCreateStillForward() throws Exception {
+        client.post()
+                .uri("/api/v1/assessment/placement/start")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .header(HttpHeaders.CONTENT_TYPE, "application/json")
+                .header("Idempotency-Key", "r1-019-placement-start")
+                .bodyValue("{\"contentCode\":\"course-b25-basics\"}")
+                .exchange()
+                .expectStatus().isNotFound()
+                .expectBody()
+                .jsonPath("$.error.errorCode").isEqualTo("NOT_FOUND");
+        assertNull(UPSTREAM.pollNow(),
+                "POST /api/v1/assessment/placement/start must not reach the B25 write port");
+
+        client.get()
+                .uri("/api/v1/assessment/placement/start?sessionId=legacy-session-1")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .header("X-Request-Id", "r1-019-placement-read")
+                .exchange()
+                .expectStatus().isOk();
+        CapturedRequest read = UPSTREAM.next();
+        assertNotNull(read, "GET /api/v1/assessment/placement/start did not reach the old B25 read port");
+        assertEquals("GET", read.method());
+        assertEquals("/internal/v1/assessment/placement/start", read.path());
+        assertEquals("sessionId=legacy-session-1", read.query());
+        assertEquals("canonical-assessment-domain-placement-start", read.routeId());
+
+        assertForwarded(HttpMethod.POST,
+                "/api/v1/assessment/placement/sessions",
+                "/internal/v1/assessment/placement/sessions");
     }
 
     @Test
@@ -377,6 +411,10 @@ class GatewayPathProjectionProcessTest {
                 Thread.currentThread().interrupt();
                 throw new AssertionError("Interrupted while waiting for upstream request", failure);
             }
+        }
+
+        CapturedRequest pollNow() {
+            return requests.poll();
         }
 
         UpstreamResponse request(URI target, HttpMethod method, String routeId) throws IOException {

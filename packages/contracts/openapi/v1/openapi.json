@@ -38098,7 +38098,7 @@
           "consumer": "assessment-service",
           "access": "forwarded verified learner JWT only; never projected by the Gateway",
           "transportInterim": "assessment-service forwards the incoming verified learner JWT until validated workload identity lands; the route stays internal-only (127.0.0.1, Gateway DENY)",
-          "answerProtection": "answer rules cross this internal boundary only and never reach the browser; assessment splits learner items from sealed scoring input",
+          "answerProtection": "delivery returns stem, options, itemCode, dimension, displayOrder and contentVersionId only; answer_rule_json stays in content_placement_item and is not on this route. Scoring read is left to R1-021.",
           "bankRule": "P1_PLACEMENT_V1",
           "runtimeStatus": "NOT_RUNTIME_VERIFIED"
         },
@@ -38944,6 +38944,72 @@
                 "$ref": "#/components/headers/XApiVersion"
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          }
+        }
+      }
+    },
+    "/internal/v1/iam/principals/{principalId}/learning-consent": {
+      "get": {
+        "tags": [
+          "b8-auth"
+        ],
+        "operationId": "getIamLearningConsentFact",
+        "summary": "Read the current learning-consent fact for a trusted PEP",
+        "security": [
+          {
+            "B8ServiceIdentity": []
+          }
+        ],
+        "x-contract": {
+          "domain": "iam",
+          "owner": "iam-service",
+          "phase": "P1",
+          "internalOnly": true
+        },
+        "x-authorization": {
+          "requiredPermission": "iam.consent.read",
+          "defaultDecision": "DENY",
+          "source": "consent-store-not-caller-claims"
+        },
+        "parameters": [
+          {
+            "name": "principalId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Current learning consent fact read from the consent store, not from the caller token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/B8LearningConsentFact"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
           },
           "401": {
             "$ref": "#/components/responses/ApiUnauthorized"
@@ -62848,6 +62914,40 @@
           },
           "cacheInvalidationRequired": {
             "type": "boolean"
+          },
+          "affectedCapabilities": {
+            "type": "array",
+            "description": "Capabilities whose canonical required-consent set includes this document and stay unsatisfied while the decision is WITHDRAWN. Empty when the decision is ACCEPTED, and empty for an optional document outside those sets. The list is not account deletion, does not erase consent history, and does not close privacy-export or support routes.",
+            "items": {
+              "type": "string",
+              "enum": [
+                "ACCOUNT",
+                "LEARNING",
+                "ANALYTICS",
+                "VOICE_REMOTE_PROCESS",
+                "VOICE_REMOTE_RECORD",
+                "VOICE_REMOTE_REPLAY",
+                "VOICE_REMOTE_UPLOAD"
+              ]
+            }
+          },
+          "sessionEffect": {
+            "type": "string",
+            "enum": [
+              "UNCHANGED",
+              "REVOKE_ALL_SESSIONS"
+            ],
+            "description": "REVOKE_ALL_SESSIONS only when the withdrawn fact's published revokeSessions flag is true. Optional and voice withdrawal stay UNCHANGED."
+          },
+          "accountEffect": {
+            "type": "string",
+            "const": "RETAINED",
+            "description": "Withdrawal retains the account. It is not an account-deletion request."
+          },
+          "historyEffect": {
+            "type": "string",
+            "const": "RETAINED",
+            "description": "Prior consent rows stay in immutable history. Withdrawal appends a new fact and does not overwrite the granted row."
           }
         }
       },
@@ -80425,12 +80525,9 @@
           "contentStateVersion",
           "snapshotId",
           "snapshotHash",
-          "answerRuleSetVersion",
-          "answerRuleVersion",
-          "ruleDigest",
           "items"
         ],
-        "description": "Sealed P1 placement bank. Answer rules cross the internal boundary only; the browser only ever sees itemId/itemCode/itemType/stem/options/displayOrder.",
+        "description": "Sealed P1 placement bank delivery. Stem, options, item code, dimension, display order and content version only. answer_rule_json stays in the owner table and is not on this route. Scoring read is left to R1-021.",
         "properties": {
           "bankCode": {
             "type": "string",
@@ -80455,15 +80552,6 @@
           "snapshotHash": {
             "$ref": "#/components/schemas/B10Sha256"
           },
-          "answerRuleSetVersion": {
-            "$ref": "#/components/schemas/B10RuleVersion"
-          },
-          "answerRuleVersion": {
-            "$ref": "#/components/schemas/B10RuleVersion"
-          },
-          "ruleDigest": {
-            "$ref": "#/components/schemas/B10Sha256"
-          },
           "items": {
             "type": "array",
             "minItems": 10,
@@ -80485,12 +80573,7 @@
           "displayOrder",
           "stem",
           "options",
-          "questionType",
-          "scoringVersion",
-          "maxScore",
-          "contentCode",
-          "contentVersionId",
-          "answerRule"
+          "contentVersionId"
         ],
         "properties": {
           "itemId": {
@@ -80537,40 +80620,8 @@
               "$ref": "#/components/schemas/B10ContentItemOption"
             }
           },
-          "questionType": {
-            "type": "string",
-            "enum": [
-              "CHOICE"
-            ]
-          },
-          "scoringVersion": {
-            "$ref": "#/components/schemas/B10RuleVersion"
-          },
-          "maxScore": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
-          },
-          "contentCode": {
-            "$ref": "#/components/schemas/B10ContentCode"
-          },
           "contentVersionId": {
             "$ref": "#/components/schemas/B10Int64Id"
-          },
-          "answerRule": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": [
-              "correctOption"
-            ],
-            "description": "Internal-only scoring input. Never projected to the browser.",
-            "properties": {
-              "correctOption": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 64
-              }
-            }
           }
         }
       },
@@ -81235,6 +81286,36 @@
             "type": "string",
             "minLength": 1,
             "maxLength": 128
+          }
+        }
+      },
+      "B8LearningConsentFact": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "principalId",
+          "learningConsent",
+          "learningAccess"
+        ],
+        "description": "Live learning-consent fact for a trusted PEP. GRANTED/ELIGIBLE only when every LEARNING-required consent is currently accepted against the published document.",
+        "properties": {
+          "principalId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "learningConsent": {
+            "type": "string",
+            "enum": [
+              "GRANTED",
+              "WITHDRAWN"
+            ]
+          },
+          "learningAccess": {
+            "type": "string",
+            "enum": [
+              "ELIGIBLE",
+              "RESTRICTED"
+            ]
           }
         }
       }
@@ -84725,8 +84806,7 @@
             "status": "AVAILABLE",
             "publicPathTemplate": "/api/v1/assessment/placement/start",
             "methods": [
-              "GET",
-              "POST"
+              "GET"
             ],
             "executionKind": "UPSTREAM",
             "upstreamOwner": "assessment-service",

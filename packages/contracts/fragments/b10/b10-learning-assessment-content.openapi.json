@@ -298,7 +298,7 @@
           "consumer": "assessment-service",
           "access": "forwarded verified learner JWT only; never projected by the Gateway",
           "transportInterim": "assessment-service forwards the incoming verified learner JWT until validated workload identity lands; the route stays internal-only (127.0.0.1, Gateway DENY)",
-          "answerProtection": "answer rules cross this internal boundary only and never reach the browser; assessment splits learner items from sealed scoring input",
+          "answerProtection": "delivery returns stem, options, itemCode, dimension, displayOrder and contentVersionId only; answer_rule_json stays in content_placement_item and is not on this route. Scoring read is left to R1-021.",
           "bankRule": "P1_PLACEMENT_V1",
           "runtimeStatus": "NOT_RUNTIME_VERIFIED"
         },
@@ -3932,12 +3932,9 @@
           "contentStateVersion",
           "snapshotId",
           "snapshotHash",
-          "answerRuleSetVersion",
-          "answerRuleVersion",
-          "ruleDigest",
           "items"
         ],
-        "description": "Sealed P1 placement bank. Answer rules cross the internal boundary only; the browser only ever sees itemId/itemCode/itemType/stem/options/displayOrder.",
+        "description": "Sealed P1 placement bank delivery. Stem, options, item code, dimension, display order and content version only. answer_rule_json stays in the owner table and is not on this route. Scoring read is left to R1-021.",
         "properties": {
           "bankCode": {
             "type": "string",
@@ -3962,15 +3959,6 @@
           "snapshotHash": {
             "$ref": "#/components/schemas/B10Sha256"
           },
-          "answerRuleSetVersion": {
-            "$ref": "#/components/schemas/B10RuleVersion"
-          },
-          "answerRuleVersion": {
-            "$ref": "#/components/schemas/B10RuleVersion"
-          },
-          "ruleDigest": {
-            "$ref": "#/components/schemas/B10Sha256"
-          },
           "items": {
             "type": "array",
             "minItems": 10,
@@ -3992,12 +3980,7 @@
           "displayOrder",
           "stem",
           "options",
-          "questionType",
-          "scoringVersion",
-          "maxScore",
-          "contentCode",
-          "contentVersionId",
-          "answerRule"
+          "contentVersionId"
         ],
         "properties": {
           "itemId": {
@@ -4044,40 +4027,8 @@
               "$ref": "#/components/schemas/B10ContentItemOption"
             }
           },
-          "questionType": {
-            "type": "string",
-            "enum": [
-              "CHOICE"
-            ]
-          },
-          "scoringVersion": {
-            "$ref": "#/components/schemas/B10RuleVersion"
-          },
-          "maxScore": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
-          },
-          "contentCode": {
-            "$ref": "#/components/schemas/B10ContentCode"
-          },
           "contentVersionId": {
             "$ref": "#/components/schemas/B10Int64Id"
-          },
-          "answerRule": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": [
-              "correctOption"
-            ],
-            "description": "Internal-only scoring input. Never projected to the browser.",
-            "properties": {
-              "correctOption": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 64
-              }
-            }
           }
         }
       },

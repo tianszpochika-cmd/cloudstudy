@@ -1,6 +1,7 @@
 package com.englishflow.assessment.config;
 
 import com.englishflow.assessment.adapter.content.HttpPlacementBankPort;
+import com.englishflow.assessment.adapter.content.HttpPlacementRuleScorePort;
 import com.englishflow.assessment.adapter.content.UnavailableContentSnapshotPort;
 import com.englishflow.assessment.adapter.content.UnavailableP1PlacementSourcePort;
 import com.englishflow.assessment.adapter.jdbc.JdbcAssessmentOutbox;
@@ -10,6 +11,7 @@ import com.englishflow.assessment.port.AssessmentOutboxPort;
 import com.englishflow.assessment.port.AssessmentStatePort;
 import com.englishflow.assessment.port.ContentSnapshotPort;
 import com.englishflow.assessment.port.P1PlacementSourcePort;
+import com.englishflow.assessment.port.PlacementRuleScorePort;
 import org.flywaydb.core.Flyway;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -120,6 +122,22 @@ public class AssessmentPersistenceConfiguration {
                     "${assessment.placement.bank.learner-base-url:http://127.0.0.1:18088}")
             String learnerBaseUrl) {
         return new HttpPlacementBankPort(objectMapper, contentBaseUrl, learnerBaseUrl,
+                java.time.Duration.ofSeconds(5));
+    }
+
+    /**
+     * Service-token score call. An empty token fails closed on use and does not
+     * invent an outcome. It never forwards the learner JWT.
+     */
+    @Bean
+    PlacementRuleScorePort placementRuleScorePort(tools.jackson.databind.ObjectMapper objectMapper,
+            @org.springframework.beans.factory.annotation.Value(
+                    "${assessment.placement.score.content-base-url:http://127.0.0.1:18089}")
+            String contentBaseUrl,
+            @org.springframework.beans.factory.annotation.Value(
+                    "${assessment.placement.score.service-token:}")
+            String serviceToken) {
+        return new HttpPlacementRuleScorePort(objectMapper, contentBaseUrl, serviceToken,
                 java.time.Duration.ofSeconds(5));
     }
 

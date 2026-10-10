@@ -45,6 +45,8 @@ class P1PlacementJdbcControllerSafetyTest {
         denied(() -> controller.respond(broadOnly, "asess_any12345", Map.of(), "placement-response-key", null));
         denied(() -> controller.skip(broadOnly, Map.of(), "placement-skip-key"));
         denied(() -> controller.report(broadOnly, "rpt_any12345"));
+        denied(() -> controller.retest(broadOnly, "asess_any12345", Map.of(), "placement-retest-key1"));
+        denied(() -> controller.history(broadOnly));
         denied(() -> controller.create(learnerWithGate("WITHDRAWN", "assessment.placement.session.create"),
                 Map.of(), "placement-create-key"));
         verifyNoInteractions(jdbc, outbox);
@@ -91,6 +93,14 @@ class P1PlacementJdbcControllerSafetyTest {
                 .getStatusCode());
         assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, assertThrows(ResponseStatusException.class,
                 () -> controller.create(learner("assessment.placement.session.create"), Map.of(), null))
+                .getStatusCode());
+        assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, assertThrows(ResponseStatusException.class,
+                () -> controller.retest(learner("assessment.placement.session.create"), "asess_any12345",
+                        Map.of("previousReportId", "rpt_forged"), "placement-retest-key1"))
+                .getStatusCode());
+        assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, assertThrows(ResponseStatusException.class,
+                () -> controller.retest(learner("assessment.placement.session.create"), "asess_any12345",
+                        Map.of(), null))
                 .getStatusCode());
         verifyNoInteractions(jdbc, outbox);
     }

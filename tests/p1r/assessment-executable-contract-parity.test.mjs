@@ -15,7 +15,6 @@ const iam = fs.readFileSync(path.join(root,
 // a projection are deliberately absent from this runtime parity list.
 const executable = [
   ['GET', '/api/v1/assessment/placement/start', 'read', false],
-  ['POST', '/api/v1/assessment/placement/start', 'write', true],
   ['POST', '/api/v1/assessment/placement/submit-step', 'write', true],
   ['POST', '/api/v1/assessment/placement/skip', 'write', true],
   ['GET', '/api/v1/assessment/placement/report/{sessionId}', 'read', false],
@@ -29,12 +28,15 @@ const executable = [
   ['POST', '/api/v1/assessment/mistakes/{mistakeId}/verify', 'write', true],
 ];
 
-test('13 executable assessment operations agree on owner, JWT permission, and write effect', () => {
+test('12 executable assessment operations agree on owner, JWT permission, and write effect', () => {
   const projections = gateway['x-p1r-gateway-boundary'].routeExecutions.find(
     (rule) => rule.ruleId === 'assessment-domain').projections;
   assert.match(iam, /"assessment\.session\.read"/);
   assert.match(iam, /"assessment\.session\.write"/);
-  assert.equal(executable.length, 13);
+  assert.equal(executable.length, 12);
+  const start = projections.find((item) => item.publicPathTemplate === '/api/v1/assessment/placement/start');
+  assert.deepEqual(start.methods, ['GET']);
+  assert.equal(openApi.paths['/api/v1/assessment/placement/start'].post?.deprecated, true);
   for (const [method, route, access, write] of executable) {
     const operation = openApi.paths[route]?.[method.toLowerCase()];
     assert.ok(operation, `${method} ${route} must exist`);
