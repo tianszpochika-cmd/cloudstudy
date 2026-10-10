@@ -13,6 +13,7 @@ import { b10ThemeMode } from '../../platform/b10-foundation'
 import { consumePendingNavigationQuery, openUniPage, getUniRuntime } from '../../platform/uni-runtime'
 import { useSessionStore } from '../../stores/session'
 import { useB18LearningStore } from '../../stores/b18-learning'
+import { weaknessView } from '../../domain/mistake-book'
 
 const session = useSessionStore()
 const learning = useB18LearningStore()
@@ -119,6 +120,8 @@ onShow(async () => { await session.restore(); if (!session.isAuthenticated) { ge
     </view>
     <view class="yx-card review-card">
       <text class="b10-flow__title">{{ reviewCountKnown ? `待复习 ${learning.queue.length} 项` : '复习安排' }}</text>
+      <text v-if="learning.queue.length === 0" data-weakness-unknown>{{ weaknessView(0).copy }}</text>
+      <text v-else data-weakness-evidence>已有复习证据</text>
       <text v-if="learning.state === 'idle' || learning.state === 'loading'" role="status">正在读取复习安排…</text>
       <text v-else-if="learning.state === 'empty'">暂无待复习内容。</text>
       <template v-else-if="reviewNotice">

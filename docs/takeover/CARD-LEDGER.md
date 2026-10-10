@@ -76,7 +76,7 @@
 | R1-049 | IT-4 | 练习完成只写一条 outbox；成长未开放不显示奖励 | 完成键 practice-complete:{sessionId}；rewardVisible=false。lunaStamp=false | 完成后没有奖励提示 |
 | R1-050 | IT-4 | 只有 ZERO 入错题本；补救按来源去重 | 非 ZERO 不入本；同一 sourceAttemptId 不重复合并。lunaStamp=false | 错题本只有答错项 |
 | R1-051 | IT-4 | 无变式为 NO_VARIANT；通过只销本次补救 | 无关联变式返回 NO_VARIANT。销账文案是“本次补救已通过”。lunaStamp=false | 补救完成页写本次通过 |
-| R1-052 | IT-4 | 掌握度不可直写；不足为 WEAKNESS_UNKNOWN；同一目标归并 | 已定义，未实现 | 弱点空态和有证据列表分开 |
+| R1-052 | IT-4 | 掌握度不可直写；不足为 WEAKNESS_UNKNOWN；同一目标归并 | 自带 stage 为 409「这个操作现在不能用」。无证据为 WEAKNESS_UNKNOWN。同一目标只留先到的一条。lunaStamp=false | 弱点空态和有证据列表分开 |
 | R1-053 | IT-4 | 空本区分尚未练习和已全对；跨端同投影；中断恢复同一补救 | 已定义，未实现 | 空本文案一致，返回仍是同一任务 |
 | R1-054 | IT-4 | SRS 保持 SM2_Q03_V1；超预算顺延，不堆欠账 | 已定义，未实现 | 今日任务能看到到期复习 |
 | R1-055 | IT-4 | 拒绝自报写 stage；完成事件同键不重复推进 | 已定义，未实现 | 复习页没有直接标完成的写入 |

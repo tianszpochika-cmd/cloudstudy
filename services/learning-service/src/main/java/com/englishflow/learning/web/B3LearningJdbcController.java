@@ -25,6 +25,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.englishflow.learning.domain.MasteryWrite;
+
 import tools.jackson.databind.ObjectMapper;
 
 /**
@@ -423,7 +425,7 @@ public class B3LearningJdbcController {
                 })
                 .filter(java.util.Objects::nonNull)
                 .toList();
-        return Map.of("items", items, "source", "mysql");
+        return Map.of("items", MasteryWrite.mergeSameTarget(items), "source", "mysql");
     }
 
     /** Aggregate learner-owned review and interaction facts for the B2 mastery page. */
@@ -457,6 +459,9 @@ public class B3LearningJdbcController {
                 """, Integer.class, TENANT, principal.subject()));
         result.put("source", "mysql");
         result.put("calculationVersion", "B3-B25-MASTERY-1");
+        long evidence = number(counts.get("total")) + number(result.get("mistakes")) + number(result.get("reviewFacts"));
+        result.put("weaknessStatus", MasteryWrite.weaknessStatus(evidence));
+        if (evidence <= 0) result.put("weaknessCopy", MasteryWrite.UNKNOWN_COPY);
         return result;
     }
 
@@ -486,7 +491,7 @@ public class B3LearningJdbcController {
                  ORDER BY created_at DESC
                 """, TENANT, principal.subject()).stream()
                 .map(row -> parseResult(row.get("result_json"))).toList();
-        return Map.of("items", items, "source", "mysql");
+        return Map.of("items", MasteryWrite.mergeSameTarget(items), "source", "mysql");
     }
 
     @PostMapping("/mastery/verifications/{verificationId}/submit")
@@ -496,10 +501,13 @@ public class B3LearningJdbcController {
             @RequestBody Map<String, Object> body,
             @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey) {
         Principal principal = principal(authentication, "learning.mastery.write");
+        if (MasteryWrite.rejectsDirectStage(body)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, MasteryWrite.ILLEGAL);
+        }
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("verificationId", integerOrString(verificationId));
         result.put("mistakeId", body.getOrDefault("mistakeId", verificationId));
-        result.put("stage", body.getOrDefault("stage", "D0"));
+        result.put("stage", "D0");
         result.put("result", "PASSED");
         result.put("score", 1.0);
         result.put("maxScore", 1.0);

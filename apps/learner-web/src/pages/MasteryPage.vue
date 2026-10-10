@@ -4,6 +4,7 @@ import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { fetchSrsOverview, type LoopMastery } from '../api/b2'
 import StatePanel from '../components/StatePanel.vue'
+import { weaknessView } from '../domain/mistake-book'
 
 type ViewState = 'loading' | 'ready' | 'empty' | 'permission' | 'error'
 
@@ -43,11 +44,12 @@ onMounted(() => { void load() })
       v-if="state !== 'ready'"
       :state="state"
       title="掌握度"
-      :description="state === 'empty' ? '还没有复习数据——去背几个词再回来。' : state === 'permission' ? '当前会话没有掌握度读取权限。' : (lastError ?? '掌握度暂时不可用。')"
+      :description="state === 'empty' ? weaknessView(0).copy : state === 'permission' ? '当前会话没有掌握度读取权限。' : (lastError ?? '掌握度暂时不可用。')"
       :action-label="state === 'error' ? '重试' : ''"
       @action="load"
     />
-    <section v-else-if="mastery" class="info-card" aria-label="掌握度统计">
+    <p v-if="state === 'empty'" data-weakness-unknown>{{ weaknessView(0).copy }}</p>
+    <section v-else-if="mastery" class="info-card" data-weakness-evidence aria-label="掌握度统计">
       <dl class="yx-stats">
         <div><dt>全部</dt><dd>{{ mastery.total }}</dd></div>
         <div><dt>新词</dt><dd>{{ mastery.newCount }}</dd></div>
