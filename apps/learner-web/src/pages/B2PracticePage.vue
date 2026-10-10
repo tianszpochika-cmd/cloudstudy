@@ -3,7 +3,7 @@ import ExperienceHeader from '../components/ExperienceHeader.vue'
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useLearnerContentStore } from '../stores/learner-content'
-import { acceptSubmission, resumeView } from '../domain/practice-loop'
+import { acceptSubmission, resumeView, showPracticeReward } from '../domain/practice-loop'
 
 const router = useRouter()
 const store = useLearnerContentStore()
@@ -66,6 +66,7 @@ onMounted(() => { void load() })
       <p class="card-kicker">历史两题练习结果</p>
       <h3>{{ report.cefrLevel }} · {{ scorePercent }} 分</h3>
       <p>旧版练习仅供参考，不能代替四维定级。</p>
+      <p v-if="!showPracticeReward()" data-reward-hidden>本次练习已完成。</p>
       <div class="actions">
         <button class="primary-button" type="button" @click="openToday">查看今日任务</button>
         <button class="secondary-button" type="button" @click="void load()">重新读取报告</button>

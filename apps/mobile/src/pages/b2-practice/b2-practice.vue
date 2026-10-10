@@ -10,7 +10,7 @@ import { createAdaptivePerformanceEngine, type PerformanceLevel } from '@english
 import B10ExerciseCard from '../../components/b10/B10ExerciseCard.vue'
 import B10StatusPanel from '../../components/b10/B10StatusPanel.vue'
 import type { B10AnswerInput, B10AnswerResult } from '../../domain/b10'
-import { acceptSubmission, practiceFeedback, resumeView } from '../../domain/practice-loop'
+import { acceptSubmission, practiceFeedback, resumeView, showPracticeReward } from '../../domain/practice-loop'
 import { b10ThemeMode, b10T } from '../../platform/b10-foundation'
 import { useB10LearningStore } from '../../stores/b10-learning'
 import { getUniRuntime } from '../../platform/uni-runtime'
@@ -73,6 +73,7 @@ onUnmounted(() => engine.dispose())
     <view v-else-if="store.practiceStatus === 'loading'" class="yx-card b10-empty"><text>{{ b10T('practice.loading') }}</text></view>
     <view v-else class="yx-card b10-empty"><text class="b10-empty__title">{{ store.practiceStatus === 'empty' ? b10T('practice.empty') : b10T('status.error') }}</text><text>{{ store.practiceMessage ?? b10T('status.noSample') }}</text><button tabindex="0" role="button" class="yx-button" type="button" @click="load">{{ b10T('status.retry') }}</button></view>
     <button tabindex="0" role="button" v-if="store.practice && !exercise" class="yx-button" type="button" @click="openReport">{{ b10T('practice.complete') }}</button>
+    <text v-if="store.practice && !exercise && !showPracticeReward()" data-reward-hidden>本次练习已完成。</text>
     <MobileFeatureGrid />
   </view>
 </template>

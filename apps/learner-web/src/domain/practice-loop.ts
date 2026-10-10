@@ -66,3 +66,8 @@ export function pinnedRuleVersion(contentCode: string, contentVersionId: number)
 export function acceptSubmission(inFlight: boolean): boolean {
   return !inFlight
 }
+
+/** Phase 1 practice completion never shows a reward. */
+export function showPracticeReward(rewardVisible?: boolean | null): boolean {
+  return rewardVisible === true
+}

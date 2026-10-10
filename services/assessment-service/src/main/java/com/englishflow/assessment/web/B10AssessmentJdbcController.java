@@ -12,6 +12,7 @@ import com.englishflow.assessment.domain.AssessmentPrincipal;
 import com.englishflow.assessment.domain.AttemptGuard;
 import com.englishflow.assessment.domain.GrammarReadingPack;
 import com.englishflow.assessment.domain.PracticeCheckpoint;
+import com.englishflow.assessment.domain.PracticeCompletion;
 import com.englishflow.assessment.domain.PracticeFeedback;
 
 import java.nio.charset.StandardCharsets;
@@ -426,6 +427,16 @@ public class B10AssessmentJdbcController {
                        updated_at = CURRENT_TIMESTAMP(6)
                  WHERE session_id = ? AND principal_id = ? AND tenant_id = ?
                 """, json(answers), attemptId, reportId, nextStatus, sessionId, principal.subject(), TENANT);
+        if ("ASSESSED".equals(nextStatus)) {
+            Map<String, Object> completed = new LinkedHashMap<>();
+            completed.put("sessionId", sessionId);
+            completed.put("attemptId", attemptId);
+            completed.put("scoreBucket", totalScoreBucket);
+            completed.put("rewardVisible", PracticeCompletion.rewardVisible());
+            appendOutbox(PracticeCompletion.EVENT, "learning.event.v1", 1,
+                    "assessment_session", sessionId, principal.subject(), submissionId, submissionId,
+                    PracticeCompletion.dedupeKey(sessionId), completed, Instant.now());
+        }
         Map<String, Object> view = attemptView(one("SELECT * FROM b10_assessment_attempt WHERE attempt_id = ?", attemptId));
         saveAttemptIdempotency(principal.subject(), idempotencyKey, requestDigest, attemptId);
         return envelope(view);
@@ -695,6 +706,7 @@ public class B10AssessmentJdbcController {
         int total = jsonSize(sessionRow == null ? null : sessionRow.get("items_json"), true);
         if (total < 1) total = (int) number(row.get("item_count"));
         data.putAll(PracticeFeedback.of(text(row.get("score_bucket")), received, total).ordered());
+        data.put("rewardVisible", PracticeCompletion.rewardVisible());
         data.put("assessmentVersion", "B10_RULES_2026_08_26");
         data.put("createdAt", timestamp(row.get("created_at")));
         data.put("assessedAt", timestamp(row.get("created_at")));
