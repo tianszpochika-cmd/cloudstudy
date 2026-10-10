@@ -1,0 +1,461 @@
+{
+  "summary": "PASS",
+  "accepted": false,
+  "it1Outbound": false,
+  "lunaStamp": false,
+  "cycle": "create-empty-schema, flyway-seed, browser-regression, drop-schema",
+  "evidence": "evidence/redesign/2026-10-10/it1-named-gates",
+  "cards": [
+    {
+      "card": "R1-001",
+      "status": "PASS"
+    },
+    {
+      "card": "R1-002",
+      "status": "PASS"
+    },
+    {
+      "card": "R1-003",
+      "status": "PASS"
+    },
+    {
+      "card": "R1-004",
+      "status": "PASS"
+    },
+    {
+      "card": "R1-005",
+      "status": "PASS"
+    },
+    {
+      "card": "R1-006",
+      "status": "PASS"
+    },
+    {
+      "card": "R1-007",
+      "status": "PASS"
+    },
+    {
+      "card": "R1-008",
+      "status": "PASS"
+    },
+    {
+      "card": "R1-009",
+      "status": "PASS"
+    },
+    {
+      "card": "R1-010",
+      "status": "PASS"
+    },
+    {
+      "card": "R1-011",
+      "status": "PASS"
+    },
+    {
+      "card": "R1-012",
+      "status": "PASS"
+    },
+    {
+      "card": "R1-013",
+      "status": "PASS"
+    },
+    {
+      "card": "R1-015",
+      "status": "PASS"
+    },
+    {
+      "card": "R1-016",
+      "status": "PASS"
+    },
+    {
+      "card": "R1-017",
+      "status": "PASS"
+    },
+    {
+      "card": "R1-014",
+      "status": "PASS"
+    }
+  ],
+  "steps": [
+    {
+      "name": "mysql-identity",
+      "status": "PASS"
+    },
+    {
+      "name": "ports-free",
+      "status": "PASS"
+    },
+    {
+      "name": "four-owner-schemas",
+      "status": "PASS"
+    },
+    {
+      "name": "content-seed-own-schema",
+      "status": "PASS"
+    },
+    {
+      "name": "placement-answer-key-loaded",
+      "status": "PASS"
+    },
+    {
+      "name": "gateway-high-risk-budget",
+      "status": "PASS"
+    },
+    {
+      "name": "browser-ca-pinned-by-spki",
+      "status": "PASS"
+    },
+    {
+      "name": "official-home-1280x900",
+      "status": "PASS"
+    },
+    {
+      "name": "official-about-1280x900",
+      "status": "PASS"
+    },
+    {
+      "name": "official-announcements-1280x900",
+      "status": "PASS"
+    },
+    {
+      "name": "official-compliance-1280x900",
+      "status": "PASS"
+    },
+    {
+      "name": "official-courses-1280x900",
+      "status": "PASS"
+    },
+    {
+      "name": "official-download-1280x900",
+      "status": "PASS"
+    },
+    {
+      "name": "official-minors-1280x900",
+      "status": "PASS"
+    },
+    {
+      "name": "official-pricing-1280x900",
+      "status": "PASS"
+    },
+    {
+      "name": "official-privacy-1280x900",
+      "status": "PASS"
+    },
+    {
+      "name": "official-status-1280x900",
+      "status": "PASS"
+    },
+    {
+      "name": "official-terms-1280x900",
+      "status": "PASS"
+    },
+    {
+      "name": "official-cta-home-1280x900",
+      "status": "PASS"
+    },
+    {
+      "name": "official-cta-courses-1280x900",
+      "status": "PASS"
+    },
+    {
+      "name": "official-home-390x844",
+      "status": "PASS"
+    },
+    {
+      "name": "official-about-390x844",
+      "status": "PASS"
+    },
+    {
+      "name": "official-announcements-390x844",
+      "status": "PASS"
+    },
+    {
+      "name": "official-compliance-390x844",
+      "status": "PASS"
+    },
+    {
+      "name": "official-courses-390x844",
+      "status": "PASS"
+    },
+    {
+      "name": "official-download-390x844",
+      "status": "PASS"
+    },
+    {
+      "name": "official-minors-390x844",
+      "status": "PASS"
+    },
+    {
+      "name": "official-pricing-390x844",
+      "status": "PASS"
+    },
+    {
+      "name": "official-privacy-390x844",
+      "status": "PASS"
+    },
+    {
+      "name": "official-status-390x844",
+      "status": "PASS"
+    },
+    {
+      "name": "official-terms-390x844",
+      "status": "PASS"
+    },
+    {
+      "name": "official-cta-home-390x844",
+      "status": "PASS"
+    },
+    {
+      "name": "official-cta-courses-390x844",
+      "status": "PASS"
+    },
+    {
+      "name": "register-web-1280x900",
+      "status": "PASS"
+    },
+    {
+      "name": "replay-same-web-1280x900",
+      "status": "PASS"
+    },
+    {
+      "name": "replay-conflict-web-1280x900",
+      "status": "PASS"
+    },
+    {
+      "name": "copy-gate-web-1280x900",
+      "status": "PASS"
+    },
+    {
+      "name": "copy-consent-web-1280x900",
+      "status": "PASS"
+    },
+    {
+      "name": "consent-signed-web-1280x900",
+      "status": "PASS"
+    },
+    {
+      "name": "profile-fields-web",
+      "status": "PASS"
+    },
+    {
+      "name": "button-to-placement-web",
+      "status": "PASS"
+    },
+    {
+      "name": "refresh-web-1280x900",
+      "status": "PASS"
+    },
+    {
+      "name": "login-web-1280x900",
+      "status": "PASS"
+    },
+    {
+      "name": "guide-bar-web-1280x900",
+      "status": "PASS"
+    },
+    {
+      "name": "readback-web-1280x900",
+      "status": "PASS"
+    },
+    {
+      "name": "it2-ten-item-score",
+      "status": "PASS"
+    },
+    {
+      "name": "it2-public-retest",
+      "status": "PASS"
+    },
+    {
+      "name": "register-h5-390x844",
+      "status": "PASS"
+    },
+    {
+      "name": "replay-same-h5-390x844",
+      "status": "PASS"
+    },
+    {
+      "name": "replay-conflict-h5-390x844",
+      "status": "PASS"
+    },
+    {
+      "name": "copy-gate-h5-390x844",
+      "status": "PASS"
+    },
+    {
+      "name": "copy-consent-h5-390x844",
+      "status": "PASS"
+    },
+    {
+      "name": "consent-signed-h5-390x844",
+      "status": "PASS"
+    },
+    {
+      "name": "profile-fields-h5",
+      "status": "PASS"
+    },
+    {
+      "name": "button-to-placement-h5",
+      "status": "PASS"
+    },
+    {
+      "name": "refresh-h5-390x844",
+      "status": "PASS"
+    },
+    {
+      "name": "login-h5-390x844",
+      "status": "PASS"
+    },
+    {
+      "name": "guide-bar-h5-390x844",
+      "status": "PASS"
+    },
+    {
+      "name": "readback-h5-390x844",
+      "status": "PASS"
+    },
+    {
+      "name": "withdraw-403-h5-390x844",
+      "status": "PASS"
+    },
+    {
+      "name": "register-web-390x844",
+      "status": "PASS"
+    },
+    {
+      "name": "replay-same-web-390x844",
+      "status": "PASS"
+    },
+    {
+      "name": "replay-conflict-web-390x844",
+      "status": "PASS"
+    },
+    {
+      "name": "copy-gate-web-390x844",
+      "status": "PASS"
+    },
+    {
+      "name": "minor-client-blocked-web-390x844",
+      "status": "PASS"
+    },
+    {
+      "name": "minor-server-web-390x844",
+      "status": "PASS"
+    },
+    {
+      "name": "minor-forbidden-web-390x844",
+      "status": "PASS"
+    },
+    {
+      "name": "minor-exits-web-390x844",
+      "status": "PASS"
+    },
+    {
+      "name": "login-web-390x844",
+      "status": "PASS"
+    },
+    {
+      "name": "reentry-web-390x844",
+      "status": "PASS"
+    },
+    {
+      "name": "minor-db-web-390x844",
+      "status": "PASS"
+    },
+    {
+      "name": "register-h5-1280x900",
+      "status": "PASS"
+    },
+    {
+      "name": "replay-same-h5-1280x900",
+      "status": "PASS"
+    },
+    {
+      "name": "replay-conflict-h5-1280x900",
+      "status": "PASS"
+    },
+    {
+      "name": "copy-gate-h5-1280x900",
+      "status": "PASS"
+    },
+    {
+      "name": "minor-client-blocked-h5-1280x900",
+      "status": "PASS"
+    },
+    {
+      "name": "minor-server-h5-1280x900",
+      "status": "PASS"
+    },
+    {
+      "name": "minor-forbidden-h5-1280x900",
+      "status": "PASS"
+    },
+    {
+      "name": "minor-exits-h5-1280x900",
+      "status": "PASS"
+    },
+    {
+      "name": "login-h5-1280x900",
+      "status": "PASS"
+    },
+    {
+      "name": "reentry-h5-1280x900",
+      "status": "PASS"
+    },
+    {
+      "name": "minor-db-h5-1280x900",
+      "status": "PASS"
+    },
+    {
+      "name": "reset-web-1280x900",
+      "status": "PASS"
+    },
+    {
+      "name": "reset-web-390x844-unknown",
+      "status": "PASS"
+    },
+    {
+      "name": "reset-h5-390x844",
+      "status": "PASS"
+    },
+    {
+      "name": "reset-h5-1280x900-unknown",
+      "status": "PASS"
+    },
+    {
+      "name": "kick-login-web-kicks-h5",
+      "status": "PASS"
+    },
+    {
+      "name": "kick-request-web-kicks-h5",
+      "status": "PASS"
+    },
+    {
+      "name": "kick-401-web-kicks-h5",
+      "status": "PASS"
+    },
+    {
+      "name": "kick-login-h5-kicks-web",
+      "status": "PASS"
+    },
+    {
+      "name": "kick-request-h5-kicks-web",
+      "status": "PASS"
+    },
+    {
+      "name": "kick-401-h5-kicks-web",
+      "status": "PASS"
+    },
+    {
+      "name": "passwords-and-refresh-stay-off-gateway",
+      "status": "PASS"
+    }
+  ],
+  "dropped": [
+    "r1_named_20261010_iam_c08e65d3=0",
+    "r1_named_20261010_lrn_c08e65d3=0",
+    "r1_named_20261010_cnt_c08e65d3=0",
+    "r1_named_20261010_asm_c08e65d3=0"
+  ],
+  "retainedSchemasLeft": "2",
+  "listeners": [],
+  "qidaUnchanged": true
+}
