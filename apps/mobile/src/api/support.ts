@@ -1,4 +1,5 @@
 import { mobileApiClient } from './client'
+import type { ClosureBoard } from '../domain/it7-closure'
 
 export interface MobileSupportTicket {
   ticketId: string
@@ -33,6 +34,12 @@ function ticketOf(value: unknown): MobileSupportTicket | null {
     priority: text(source.priority, 'NORMAL'),
     slaState: typeof source.slaState === 'string' ? source.slaState : null,
   }
+}
+
+export async function readMobileClosureBoard(): Promise<ClosureBoard | null> {
+  const raw = await mobileApiClient.request<unknown>('/support/tickets?projection=it7')
+  const data = unwrap(raw)
+  return isRecord(data) ? data as ClosureBoard : null
 }
 
 export async function listMobileSupportTickets(): Promise<MobileSupportTicket[]> {

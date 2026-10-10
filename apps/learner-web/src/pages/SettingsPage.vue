@@ -12,6 +12,8 @@ import { computed, onMounted, ref } from 'vue'
 import LearningPreferences from '../components/LearningPreferences.vue'
 import { useB1Store } from '../stores/b1'
 import { dailyQuotaOptions, type DailyQuotaMinutes } from '../domain/b1'
+import { privacyNotices } from '../domain/it7-closure'
+import { readClosureBoard } from '../api/support'
 
 const props = defineProps<{ section?: string }>()
 const b1 = useB1Store()
@@ -19,10 +21,12 @@ const quota = ref<DailyQuotaMinutes>(15)
 const saving = ref(false)
 const saved = ref(false)
 const section = computed(() => props.section ?? 'profile')
+const privacyLines = ref<string[]>([])
 
 onMounted(async () => {
   await b1.loadAccountData()
   if (b1.profileStatus === 'ready') quota.value = b1.profile.dailyQuotaMinutes
+  privacyLines.value = privacyNotices(await readClosureBoard().catch(() => null))
 })
 
 async function refreshProfile(): Promise<void> {
@@ -71,7 +75,8 @@ async function refreshDevices(): Promise<void> { await b1.refreshDevices() }
     </article>
     <article v-else-if="section === 'privacy'" class="form-card">
       <h3>{{ et('settingsPrivacyTab') }}</h3>
-      <p class="muted">{{ et('settingsPrivacyUnavailable') }}</p>
+      <p class="muted it7-closure">{{ et('settingsPrivacyUnavailable') }}</p>
+      <p v-for="line in privacyLines" :key="line" class="muted">{{ line }}</p>
     </article>
     <article v-else class="form-card">
       <h3>{{ et('settingsDevicesTab') }}</h3>

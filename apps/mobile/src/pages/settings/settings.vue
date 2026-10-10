@@ -8,6 +8,8 @@ const { experienceStyle, experienceMotion } = useMobileExperience()
 import { onBeforeUnmount, ref, watch } from 'vue'
 import { onHide, onShow } from '@dcloudio/uni-app'
 import { ensureMobilePageAccess } from '../../auth/navigation'
+import { privacyNotices } from '../../domain/it7-closure'
+import { readMobileClosureBoard } from '../../api/support'
 import { useLearnerContentStore } from '../../stores/learner-content'
 import { useSessionStore } from '../../stores/session'
 import { listB12NotificationPreferences, updateB12NotificationPreference } from '../../api/b12'
@@ -19,6 +21,7 @@ import type { PerformanceLevel } from '@englishflow/performance'
 import type { MobileMotionMode, MobileThemeMode } from '../../domain/learner-content'
 
 const store = useLearnerContentStore()
+const privacyLines = ref<string[]>([])
 const session = useSessionStore()
 function preferenceSyncStorage() { try { return getUniRuntime() } catch { return null } }
 let preferenceSubject: string | null = null
@@ -128,6 +131,7 @@ onShow(async () => {
   settingsVisible = true
   syncPreferenceSubject(session.verifiedSubject)
   void loadNotificationSettings()
+  privacyLines.value = privacyNotices(await readMobileClosureBoard().catch(() => null))
   await loadAccountPreferences()
 })
 
@@ -397,6 +401,10 @@ async function selectContentLocale(index: number): Promise<void> {
       <text v-if="saveError" class="error" role="alert">{{ saveError }}</text>
       <view v-if="store.accountStatus === 'loading'" class="preference-state" role="status">正在读取账户偏好…</view>
       <view v-else-if="!saveError && store.lastError && store.accountStatus !== 'ready'" class="preference-state" role="alert"><text>账户偏好暂时无法读取；本机设置仍可使用。</text><button tabindex="0" role="button" class="setting-option" @click="loadAccountPreferences">重试读取</button></view>
+    </view>
+    <view class="yx-card settings-card it7-closure">
+      <text class="card-title">隐私与数据</text>
+      <text v-for="line in privacyLines" :key="line" class="setting-note">{{ line }}</text>
     </view>
     <view class="yx-card settings-card">
       <text class="card-title">设备与会话</text>

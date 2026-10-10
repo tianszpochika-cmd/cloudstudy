@@ -26,6 +26,7 @@ const routes: RouteRecordRaw[] = [
     meta: { requiresAuth: true },
   },
   { path: "/", redirect: "/dashboard" },
+  { path: "/risk", redirect: "/governance" },
   { path: "/:pathMatch(.*)*", redirect: "/dashboard" },
   {
     path: "/dashboard",

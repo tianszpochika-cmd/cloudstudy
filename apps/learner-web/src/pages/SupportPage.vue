@@ -4,8 +4,10 @@ import { onMounted, ref } from 'vue'
 import {
   getSupportTicket,
   listSupportTickets,
+  readClosureBoard,
   type SupportTicket,
 } from '../api/support'
+import { supportNotice, ticketNotice, type ClosureBoard } from '../domain/it7-closure'
 import StatePanel from '../components/StatePanel.vue'
 import { userFacingError } from '../platform/user-facing-error'
 
@@ -15,6 +17,7 @@ const state = ref<ViewState>('loading')
 const lastError = ref<string | null>(null)
 const tickets = ref<SupportTicket[]>([])
 const selected = ref<SupportTicket | null>(null)
+const closure = ref<ClosureBoard | null>(null)
 const categoryNames: Record<string, string> = {
   CONTENT_CORRECTION: '内容有误', ACCOUNT_ACCESS: '账号登录', BILLING: '订单与权益',
   LEARNING_DATA: '学习记录', PRIVACY_REQUEST: '隐私与数据', TECHNICAL: '使用问题',
@@ -60,12 +63,20 @@ async function open(ticketId: string): Promise<void> {
   }
 }
 
-onMounted(() => { void load() })
+onMounted(() => {
+  void load()
+  void readClosureBoard().then((board) => { closure.value = board }).catch(() => { closure.value = null })
+})
 </script>
 
 <template>
   <main class="page-stack">
     <ExperienceHeader page="Support" icon="help" />
+    <section class="info-card it7-closure" aria-label="客服提交状态">
+      <div class="yx-section-heading"><div><h3>提交问题</h3></div></div>
+      <p>{{ ticketNotice(closure) }}</p>
+      <p v-if="supportNotice(closure)">{{ supportNotice(closure) }}</p>
+    </section>
     <StatePanel
       v-if="state === 'loading' || state === 'permission' || state === 'error' || state === 'recovery'"
       :state="state === 'recovery' ? 'error' : state"
@@ -75,10 +86,6 @@ onMounted(() => { void load() })
       @action="load"
     />
     <template v-if="state === 'ready' || state === 'empty' || tickets.length">
-      <section class="info-card" aria-label="客服提交状态">
-        <div class="yx-section-heading"><div><h3>提交问题</h3></div></div>
-        <p>工单提交暂不可用。现有工单可在下方查看。</p>
-      </section>
       <section class="info-card" aria-label="我的工单">
         <div class="yx-section-heading"><div><h3>我的工单</h3></div><span class="yx-fact-tag">{{ tickets.length }} 张</span></div>
         <p v-if="!tickets.length" class="yx-fact-tag">暂无可见工单。</p>

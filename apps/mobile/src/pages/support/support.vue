@@ -8,10 +8,13 @@ import { ref } from 'vue'
 import { ensureMobilePageAccess } from '../../auth/navigation'
 import {
   listMobileSupportTickets,
+  readMobileClosureBoard,
   type MobileSupportTicket,
 } from '../../api/support'
+import { supportNotice, ticketNotice, type ClosureBoard } from '../../domain/it7-closure'
 
 const tickets = ref<MobileSupportTicket[]>([])
+const closure = ref<ClosureBoard | null>(null)
 const loading = ref(false)
 const error = ref<string | null>(null)
 const categoryNames: Record<string, string> = {
@@ -28,6 +31,7 @@ async function load(): Promise<void> {
   error.value = null
   try {
     tickets.value = await listMobileSupportTickets()
+    closure.value = await readMobileClosureBoard().catch(() => null)
   } catch (cause) {
     tickets.value = []
     error.value = cause instanceof Error ? cause.message : '客服暂时不可用。'
@@ -46,7 +50,8 @@ onShow(async () => { if (await ensureMobilePageAccess('/pages/support/support'))
 
     <view class="yx-card">
       <text class="yx-eyebrow">客服与帮助</text>
-      <text class="yx-note">暂不能提交新工单，可查看已有工单。</text>
+      <text class="yx-note it7-closure">{{ ticketNotice(closure) }}</text>
+      <text v-if="supportNotice(closure)" class="yx-note">{{ supportNotice(closure) }}</text>
     </view>
 
     <view class="yx-card">

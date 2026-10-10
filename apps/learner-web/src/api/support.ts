@@ -1,4 +1,5 @@
 import { apiClient } from './client'
+import type { ClosureBoard } from '../domain/it7-closure'
 
 export type SupportTicketState =
   | 'OPEN'
@@ -45,6 +46,12 @@ function ticketOf(value: unknown): SupportTicket | null {
     slaDueAt: typeof source.slaDueAt === 'string' ? source.slaDueAt : null,
     redactionVersion: typeof source.redactionVersion === 'string' ? source.redactionVersion : null,
   }
+}
+
+export async function readClosureBoard(): Promise<ClosureBoard | null> {
+  const raw = await apiClient.get<unknown>('/support/tickets?projection=it7')
+  const data = unwrap(raw)
+  return isRecord(data) ? data as ClosureBoard : null
 }
 
 export async function listSupportTickets(): Promise<SupportTicket[]> {

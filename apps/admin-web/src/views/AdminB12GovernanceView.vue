@@ -5,11 +5,15 @@ import { b12ModeLabel, b12ReasonLabel, b12StatusLabel, b12T } from "../platform/
 import { useAdminStore } from "../stores/admin";
 import { B12_MODERATION_STATUSES, useB12AdminStore } from "../stores/b12";
 import { RISK_CATEGORIES, RISK_COMMANDS, RISK_SEVERITIES, useRiskAdminStore } from "../stores/risk";
+import { postClosure, readClosureBoard } from "../api/closure";
+import { governanceNotice, routeNotice, type ClosureBoard } from "../domain/it7-closure";
 
 const session = useAdminStore();
 const store = useB12AdminStore();
 const risk = useRiskAdminStore();
 
+const closure = ref<ClosureBoard | null>(null);
+const closureNotice = ref("");
 const showFileForm = ref(false);
 const fileCategory = ref<string>("ACCOUNT_SECURITY");
 const fileSeverity = ref<string>("MEDIUM");
@@ -66,9 +70,29 @@ async function submitDecide(): Promise<void> {
   if (ok) decideCaseId.value = "";
 }
 
+async function loadClosure(): Promise<void> {
+  try {
+    closure.value = await readClosureBoard();
+    closureNotice.value = "";
+  } catch (error) {
+    closureNotice.value = error instanceof Error ? error.message : "收口区暂时读不到。";
+  }
+}
+
+async function fileClosure(): Promise<void> {
+  try {
+    await postClosure("FILE", { sourceRef: `browser-${Date.now()}`, title: "有来源的档案" });
+    await loadClosure();
+    closureNotice.value = governanceNotice(closure.value);
+  } catch (error) {
+    closureNotice.value = error instanceof Error ? error.message : "建档没有完成。";
+  }
+}
+
 onMounted(() => {
   void store.load();
   void risk.load();
+  void loadClosure();
 });
 watch(
   () => [session.isAuthenticated, session.principal?.subject, session.permissions.join("\u0000")] as const,
@@ -228,6 +252,14 @@ watch(
         </template>
       </el-dialog>
     </el-card>
+
+    <section class="it7-closure" aria-label="收口只读">
+      <h3>收口只读</h3>
+      <p>{{ governanceNotice(closure) }}</p>
+      <p>{{ routeNotice(closure) }}</p>
+      <p v-if="closureNotice">{{ closureNotice }}</p>
+      <button type="button" @click="fileClosure">按来源建档</button>
+    </section>
   </div>
 </template>
 

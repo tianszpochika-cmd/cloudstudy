@@ -7,8 +7,11 @@ import { searchAuditLogs } from "../api/b5";
 import { toAudit, type AuditEntry } from "../domain/b5";
 import { adminI18n } from "../platform/v2-foundation";
 import { useAdminStore } from "../stores/admin";
+import { readClosureBoard } from "../api/closure";
+import { auditNotice, type ClosureBoard } from "../domain/it7-closure";
 
 const session = useAdminStore();
+const closure = ref<ClosureBoard | null>(null);
 const rows = ref<AuditEntry[]>([]);
 const loading = ref(false);
 const loadingMore = ref(false);
@@ -118,6 +121,7 @@ watch(
 );
 onMounted(() => {
   void load();
+  void readClosureBoard().then((board) => { closure.value = board; }).catch(() => { closure.value = null; });
 });
 onUnmounted(() => { ++loadRequest; });
 </script>
@@ -133,6 +137,7 @@ onUnmounted(() => { ++loadRequest; });
       ></AdminPageIntro
     ><el-alert title="脱敏记录" type="info" :closable="false" show-icon
       >仅显示审计引用与处理结果。</el-alert
+    ><p class="it7-closure">{{ auditNotice(closure) }}内部审计不提供给学习端。</p
     ><el-card shadow="never"
       ><div class="list-toolbar">
         <el-input
