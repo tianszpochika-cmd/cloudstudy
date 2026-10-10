@@ -1,0 +1,12 @@
+{
+  "at": "2026-10-10T04:41:43.582Z",
+  "result": "PASS",
+  "checks": [
+    "JWT triplet",
+    "private PEM",
+    "refresh cookie",
+    "generated private-config password/secret values"
+  ],
+  "textFilesScanned": 12,
+  "screenshots": "registration/login/reset entered-input screenshots masked; before and official screenshots do not contain account input values"
+}

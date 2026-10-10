@@ -1,0 +1,261 @@
+{
+  "kind": "IT1_AUTH_PAGES_PROTECTIVE_OBSERVATION",
+  "at": "2026-10-10T04:35:13.913Z",
+  "observations": [
+    {
+      "app": "web",
+      "viewport": "desktop",
+      "flow": "login",
+      "initial": {
+        "url": "http://127.0.0.1:18180/login",
+        "body": "语学星\nA LITTLE, EVERY DAY\n让英语， 回到你的日常。\n\n记几个词，听一段对话。 一点一点，学得更从容。\n\n✦\n✧\nlittle by little\ngrow.\n✦\nLEARN A LITTLE. EVERY DAY.\n语学星\n初期免费开放 · 面向 18 岁以上成人与大学生\n登录后，马上开始学习\n\n使用语学星账号登录；首次进入只需完成一个简短设置。\n\n账号\n密码\n免费创建账号\n忘记密码\n登录并继续\n\n登录完成后，你只需要确认年龄、同意必要说明并选择学习目标。",
+        "inputs": [
+          {
+            "type": "text",
+            "label": null
+          },
+          {
+            "type": "password",
+            "label": null
+          }
+        ],
+        "buttons": [
+          "",
+          "登录并继续"
+        ]
+      },
+      "after": {
+        "url": "http://127.0.0.1:18180/login",
+        "body": "语学星\nA LITTLE, EVERY DAY\n让英语， 回到你的日常。\n\n记几个词，听一段对话。 一点一点，学得更从容。\n\n✦\n✧\nlittle by little\ngrow.\n✦\nLEARN A LITTLE. EVERY DAY.\n语学星\n初期免费开放 · 面向 18 岁以上成人与大学生\n登录后，马上开始学习\n\n使用语学星账号登录；首次进入只需完成一个简短设置。\n\n账号\n密码\n免费创建账号\n忘记密码\n!\n登录未完成\n\n登录没有完成，请稍后重试。\n\n登录并继续\n\n登录完成后，你只需要确认年龄、同意必要说明并选择学习目标。"
+      },
+      "screenshot": "screenshots/web-desktop-login-transport-fail.png"
+    },
+    {
+      "app": "web",
+      "viewport": "desktop",
+      "flow": "reset-request",
+      "initial": {
+        "url": "http://127.0.0.1:18180/reset-password",
+        "body": "语学星\nA LITTLE, EVERY DAY\n让英语， 回到你的日常。\n\n记几个词，听一段对话。 一点一点，学得更从容。\n\n✦\n✧\nlittle by little\ngrow.\n✦\nLEARN A LITTLE. EVERY DAY.\n语学星\n初期免费开放 · 面向 18 岁以上成人与大学生\n找回密码\n\n按步骤重设密码，恢复账号访问。\n\n✦\n密码重置\n\n填写注册时使用的账号，然后查收重置指引。\n\n账号\n发送重置指引\n我已收到口令\n\n返回登录",
+        "inputs": [
+          {
+            "type": "text",
+            "label": "账号"
+          }
+        ],
+        "buttons": [
+          "发送重置指引",
+          "我已收到口令"
+        ]
+      },
+      "after": {
+        "url": "http://127.0.0.1:18180/reset-password",
+        "body": "语学星\nA LITTLE, EVERY DAY\n让英语， 回到你的日常。\n\n记几个词，听一段对话。 一点一点，学得更从容。\n\n✦\n✧\nlittle by little\ngrow.\n✦\nLEARN A LITTLE. EVERY DAY.\n语学星\n初期免费开放 · 面向 18 岁以上成人与大学生\n找回密码\n\n按步骤重设密码，恢复账号访问。\n\n✦\n密码重置\n\n如果该账号可接收重置通知，我们会发送操作说明。\n\n账号\n发送重置指引\n我已收到口令\n\n返回登录"
+      },
+      "screenshot": "screenshots/web-desktop-reset-transport-fail.png"
+    },
+    {
+      "app": "h5",
+      "viewport": "desktop",
+      "flow": "login",
+      "initial": {
+        "url": "http://127.0.0.1:18183/#/pages/login/login",
+        "body": "✦\n语学星\n为热爱学习的你\nSIGN IN\n登录语学星\n登录后继续学习。\n✦\nAa\n账号登录\n创建账号 ↗\n账号\n输入邮箱或账号\n密码\n输入密码\n显示\n登录并继续\n忘记密码？\n目前面向 18 岁及以上成人与大学生",
+        "inputs": [
+          {
+            "type": "text",
+            "label": null
+          },
+          {
+            "type": "password",
+            "label": null
+          }
+        ],
+        "buttons": [
+          "创建账号 ↗",
+          "显示",
+          "登录并继续",
+          "忘记密码？"
+        ]
+      },
+      "after": {
+        "url": "http://127.0.0.1:18183/#/pages/login/login",
+        "body": "✦\n语学星\n为热爱学习的你\nSIGN IN\n登录语学星\n登录后继续学习。\n✦\nAa\n账号登录\n创建账号 ↗\n账号\n密码\n显示\n登录没有完成，请稍后重试。\n登录并继续\n忘记密码？\n目前面向 18 岁及以上成人与大学生"
+      },
+      "screenshot": "screenshots/h5-desktop-login-transport-fail.png"
+    },
+    {
+      "app": "h5",
+      "viewport": "desktop",
+      "flow": "reset-request",
+      "initial": {
+        "url": "http://127.0.0.1:18183/#/pages/reset-password/reset-password",
+        "body": "",
+        "inputs": [],
+        "buttons": []
+      },
+      "after": {
+        "url": "http://127.0.0.1:18183/#/pages/reset-password/reset-password",
+        "body": "✦\n语学星\n为热爱学习的你\nLET’S GET YOU BACK\n重设密码，\n继续学习。\n按步骤重设密码。\n✦\nAa\n填写注册时使用的账号，然后查收重置指引。\n账号\n发送没有完成，请稍后再试。\n发送重置指引\n我已收到口令\n已有账号？去登录\n目前面向 18 岁及以上成人与大学生"
+      },
+      "screenshot": "screenshots/h5-desktop-reset-transport-fail.png"
+    },
+    {
+      "app": "web",
+      "viewport": "mobile",
+      "flow": "login",
+      "initial": {
+        "url": "http://127.0.0.1:18180/login",
+        "body": "语学星\n初期免费开放 · 面向 18 岁以上成人与大学生\n登录后，马上开始学习\n\n使用语学星账号登录；首次进入只需完成一个简短设置。\n\n账号\n密码\n免费创建账号\n忘记密码\n登录并继续\n\n登录完成后，你只需要确认年龄、同意必要说明并选择学习目标。",
+        "inputs": [
+          {
+            "type": "text",
+            "label": null
+          },
+          {
+            "type": "password",
+            "label": null
+          }
+        ],
+        "buttons": [
+          "",
+          "登录并继续"
+        ]
+      },
+      "after": {
+        "url": "http://127.0.0.1:18180/login",
+        "body": "语学星\n初期免费开放 · 面向 18 岁以上成人与大学生\n登录后，马上开始学习\n\n使用语学星账号登录；首次进入只需完成一个简短设置。\n\n账号\n密码\n免费创建账号\n忘记密码\n!\n登录未完成\n\n登录没有完成，请稍后重试。\n\n登录并继续\n\n登录完成后，你只需要确认年龄、同意必要说明并选择学习目标。"
+      },
+      "screenshot": "screenshots/web-mobile-login-transport-fail.png"
+    },
+    {
+      "app": "web",
+      "viewport": "mobile",
+      "flow": "reset-request",
+      "initial": {
+        "url": "http://127.0.0.1:18180/reset-password",
+        "body": "语学星\n初期免费开放 · 面向 18 岁以上成人与大学生\n找回密码\n\n按步骤重设密码，恢复账号访问。\n\n✦\n密码重置\n\n填写注册时使用的账号，然后查收重置指引。\n\n账号\n发送重置指引\n我已收到口令\n\n返回登录",
+        "inputs": [
+          {
+            "type": "text",
+            "label": "账号"
+          }
+        ],
+        "buttons": [
+          "发送重置指引",
+          "我已收到口令"
+        ]
+      },
+      "after": {
+        "url": "http://127.0.0.1:18180/reset-password",
+        "body": "语学星\n初期免费开放 · 面向 18 岁以上成人与大学生\n找回密码\n\n按步骤重设密码，恢复账号访问。\n\n✦\n密码重置\n\n如果该账号可接收重置通知，我们会发送操作说明。\n\n账号\n发送重置指引\n我已收到口令\n\n返回登录"
+      },
+      "screenshot": "screenshots/web-mobile-reset-transport-fail.png"
+    },
+    {
+      "app": "h5",
+      "viewport": "mobile",
+      "flow": "login",
+      "initial": {
+        "url": "http://127.0.0.1:18183/#/pages/login/login",
+        "body": "✦\n语学星\n为热爱学习的你\nSIGN IN\n登录语学星\n登录后继续学习。\n✦\nAa\n账号登录\n创建账号 ↗\n账号\n输入邮箱或账号\n密码\n输入密码\n显示\n登录并继续\n忘记密码？\n目前面向 18 岁及以上成人与大学生",
+        "inputs": [
+          {
+            "type": "text",
+            "label": null
+          },
+          {
+            "type": "password",
+            "label": null
+          }
+        ],
+        "buttons": [
+          "创建账号 ↗",
+          "显示",
+          "登录并继续",
+          "忘记密码？"
+        ]
+      },
+      "after": {
+        "url": "http://127.0.0.1:18183/#/pages/login/login",
+        "body": "✦\n语学星\n为热爱学习的你\nSIGN IN\n登录语学星\n登录后继续学习。\n✦\nAa\n账号登录\n创建账号 ↗\n账号\n密码\n显示\n登录没有完成，请稍后重试。\n登录并继续\n忘记密码？\n目前面向 18 岁及以上成人与大学生"
+      },
+      "screenshot": "screenshots/h5-mobile-login-transport-fail.png"
+    },
+    {
+      "app": "h5",
+      "viewport": "mobile",
+      "flow": "reset-request",
+      "initial": {
+        "url": "http://127.0.0.1:18183/#/pages/reset-password/reset-password",
+        "body": "",
+        "inputs": [],
+        "buttons": []
+      },
+      "after": {
+        "url": "http://127.0.0.1:18183/#/pages/reset-password/reset-password",
+        "body": "✦\n语学星\n为热爱学习的你\nLET’S GET YOU BACK\n重设密码，\n继续学习。\n按步骤重设密码。\n✦\nAa\n填写注册时使用的账号，然后查收重置指引。\n账号\n发送没有完成，请稍后再试。\n发送重置指引\n我已收到口令\n已有账号？去登录\n目前面向 18 岁及以上成人与大学生"
+      },
+      "screenshot": "screenshots/h5-mobile-reset-transport-fail.png"
+    }
+  ],
+  "protectedRequests": [
+    {
+      "app": "web",
+      "viewport": "desktop",
+      "method": "POST",
+      "destination": "http://127.0.0.1:18070/api/v1/auth/login",
+      "action": "ABORT_BEFORE_NETWORK"
+    },
+    {
+      "app": "web",
+      "viewport": "desktop",
+      "method": "POST",
+      "destination": "http://127.0.0.1:18070/api/v1/auth/password-reset/request",
+      "action": "ABORT_BEFORE_NETWORK"
+    },
+    {
+      "app": "h5",
+      "viewport": "desktop",
+      "method": "POST",
+      "destination": "http://127.0.0.1:18070/api/v1/auth/login",
+      "action": "ABORT_BEFORE_NETWORK"
+    },
+    {
+      "app": "h5",
+      "viewport": "desktop",
+      "method": "POST",
+      "destination": "http://127.0.0.1:18070/api/v1/auth/password-reset/request",
+      "action": "ABORT_BEFORE_NETWORK"
+    },
+    {
+      "app": "web",
+      "viewport": "mobile",
+      "method": "POST",
+      "destination": "http://127.0.0.1:18070/api/v1/auth/login",
+      "action": "ABORT_BEFORE_NETWORK"
+    },
+    {
+      "app": "web",
+      "viewport": "mobile",
+      "method": "POST",
+      "destination": "http://127.0.0.1:18070/api/v1/auth/password-reset/request",
+      "action": "ABORT_BEFORE_NETWORK"
+    },
+    {
+      "app": "h5",
+      "viewport": "mobile",
+      "method": "POST",
+      "destination": "http://127.0.0.1:18070/api/v1/auth/login",
+      "action": "ABORT_BEFORE_NETWORK"
+    },
+    {
+      "app": "h5",
+      "viewport": "mobile",
+      "method": "POST",
+      "destination": "http://127.0.0.1:18070/api/v1/auth/password-reset/request",
+      "action": "ABORT_BEFORE_NETWORK"
+    }
+  ],
+  "failures": []
+}

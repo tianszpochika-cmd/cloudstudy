@@ -1,0 +1,82 @@
+{
+  "date": "2026-10-10",
+  "branch": "dev-redesign",
+  "suffix": "5d9f4b7e",
+  "iamSchema": "r1_it1_browser_20261010_iam_5d9f4b7e",
+  "learnerSchema": "r1_it1_browser_20261010_lrn_5d9f4b7e",
+  "assessmentSchema": "r1_it1_browser_20261010_asm_5d9f4b7e",
+  "dbUser": "it1_iam_5d9f4b7e",
+  "consentRecheckEnv": "unset",
+  "steps": [
+    {
+      "id": "seed.iam-flyway",
+      "httpStatus": 200,
+      "result": "PASS",
+      "detail": {
+        "iamAccounts": 0,
+        "iamFlyway": "17,0"
+      }
+    }
+  ],
+  "notes": [],
+  "mysql": {
+    "name": "/yuxuexing-local-mysql-1",
+    "image": "mysql:8.0",
+    "project": "yuxuexing-local",
+    "service": "mysql",
+    "status": "running",
+    "health": "healthy",
+    "port": [
+      {
+        "HostIp": "127.0.0.1",
+        "HostPort": "13306"
+      }
+    ]
+  },
+  "sourceHead": "69bea68b44b2c8c6c6dbdcdb38c0b955a458aaf1",
+  "directory": "/var/folders/mc/tnx5nz3j19qf2qbxplzhz5880000gp/T/r1-it1-browser-5d9f4b7e",
+  "schemaOwners": {
+    "iam": {
+      "schema": "r1_it1_browser_20261010_iam_5d9f4b7e",
+      "user": "it1_iam_5d9f4b7e"
+    },
+    "content": {
+      "schema": "r1_it1_browser_20261010_cnt_5d9f4b7e",
+      "user": "it1_cnt_5d9f4b7e"
+    }
+  },
+  "grantMode": "0",
+  "jars": {
+    "iam-service": "7a36d7a0d1add53d05f4b3f2359cf94b4525becaef591c7f0bd485926fa98a91",
+    "api-gateway": "0222f10d11dd8b2b4b9294f3c1772401e9d45712f359685310ea12a28e96663d"
+  },
+  "browserSpki": "FwPk9vMlYKg1gwCtcpkj4/5+NdqA6aCW90nH7k+5GMs=",
+  "children": [
+    {
+      "pid": 91829,
+      "processGroup": false
+    },
+    {
+      "pid": 91864,
+      "processGroup": false
+    },
+    {
+      "pid": 91979,
+      "processGroup": true
+    },
+    {
+      "pid": 91985,
+      "processGroup": true
+    },
+    {
+      "pid": 91991,
+      "processGroup": true
+    }
+  ],
+  "cleanup": {
+    "childrenStopped": true,
+    "remainingListeners": [],
+    "schemasRetained": true,
+    "usersRetained": true
+  }
+}

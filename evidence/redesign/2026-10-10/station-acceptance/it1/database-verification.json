@@ -1,0 +1,44 @@
+{
+  "at": "2026-10-10T04:41:17.204Z",
+  "identity": {
+    "id": "db87392020398271b86e76c8738c2ea7af619a41ef11eb3cee68d8910956deec",
+    "name": "/yuxuexing-local-mysql-1",
+    "image": "mysql:8.0",
+    "project": "yuxuexing-local",
+    "service": "mysql",
+    "status": "running",
+    "health": "healthy",
+    "port": [
+      {
+        "HostIp": "127.0.0.1",
+        "HostPort": "13306"
+      }
+    ]
+  },
+  "partialRevokes": "0",
+  "schemaOwners": [
+    {
+      "owner": "iam",
+      "schema": "r1_it1_browser_20261010_iam_5d9f4b7e",
+      "user": "it1_iam_5d9f4b7e",
+      "grants": [
+        "GRANT USAGE ON *.* TO `it1_iam_5d9f4b7e`@`%`",
+        "GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, REFERENCES, INDEX, ALTER ON `r1\\_it1\\_browser\\_20261010\\_iam\\_5d9f4b7e`.* TO `it1_iam_5d9f4b7e`@`%`"
+      ],
+      "flyway": "17\t0"
+    },
+    {
+      "owner": "content",
+      "schema": "r1_it1_browser_20261010_cnt_5d9f4b7e",
+      "user": "it1_cnt_5d9f4b7e",
+      "grants": [
+        "GRANT USAGE ON *.* TO `it1_cnt_5d9f4b7e`@`%`",
+        "GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, REFERENCES, INDEX, ALTER ON `r1\\_it1\\_browser\\_20261010\\_cnt\\_5d9f4b7e`.* TO `it1_cnt_5d9f4b7e`@`%`"
+      ],
+      "flyway": "28\t0"
+    }
+  ],
+  "accountCount": "0",
+  "contentPublicFacetCount": "0",
+  "retained": true
+}

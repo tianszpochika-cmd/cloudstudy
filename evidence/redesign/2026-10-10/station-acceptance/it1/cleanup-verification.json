@@ -1,0 +1,65 @@
+{
+  "at": "2026-10-10T04:40:47.546Z",
+  "ownedChildPids": [
+    91829,
+    91864,
+    91979,
+    91985,
+    91991,
+    93088
+  ],
+  "remainingOwnedProcesses": [],
+  "listeners": [
+    {
+      "port": 18070,
+      "listener": null
+    },
+    {
+      "port": 18087,
+      "listener": null
+    },
+    {
+      "port": 18088,
+      "listener": null
+    },
+    {
+      "port": 18089,
+      "listener": null
+    },
+    {
+      "port": 18091,
+      "listener": null
+    },
+    {
+      "port": 18180,
+      "listener": null
+    },
+    {
+      "port": 18182,
+      "listener": null
+    },
+    {
+      "port": 18183,
+      "listener": null
+    }
+  ],
+  "supervisorReported": {
+    "childrenStopped": true,
+    "remainingListeners": [],
+    "schemasRetained": true,
+    "usersRetained": true
+  },
+  "schemasRetained": {
+    "iam": {
+      "schema": "r1_it1_browser_20261010_iam_5d9f4b7e",
+      "user": "it1_iam_5d9f4b7e"
+    },
+    "content": {
+      "schema": "r1_it1_browser_20261010_cnt_5d9f4b7e",
+      "user": "it1_cnt_5d9f4b7e"
+    }
+  },
+  "processInspectionRaw": "PID  PPID COMM",
+  "supervisorExitCode": 0,
+  "supervisorClose": "stop then EOF"
+}

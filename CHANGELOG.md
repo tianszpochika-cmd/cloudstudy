@@ -1,5 +1,11 @@
 # Changelog
 
+- [STATION-ACCEPTANCE-20261010] **IT-1 本轮真实浏览器验收 REJECT / FAIL；IT-2 动态验收 BLOCKED。**
+  - 验收源码锚定 `69bea68b44b2c8c6c6dbdcdb38c0b955a458aaf1`。Web/Mobile H5 两视口共12次注册、登录、重置表单观察到认证请求目标为 HTTP Gateway，违反密码直达 IAM TLS 边界；请求发送前保护性中断，未向 Gateway 发送密码。当前 IAM 源码缺 CORS 配置，既有 artifact 的 TLS 实际 OPTIONS 缺允许 origin/credential/method 响应头（无本轮 fresh-build 绑定）；两项 P1 问题见[运行报告](evidence/redesign/2026-10-10/station-acceptance/it1/report.md)与[独立验收矩阵](evidence/redesign/2026-10-10/station-acceptance/review/acceptance-matrix.md)。
+  - 正常独立 content 下官网11页双视口22/22 HTTP200、无横向溢出/pageerror，主页与课程空态4次CTA到真实注册页；课程/下载是真实空态，价格依赖未起为诚实错误态。仅计当前具名范围，不恢复原 R1-001 完整验收/114卡墙。历史六卡独立范围验收保留，R1-007保留DELIVERY_PASS源码/单测事实而不升为独立验收。
+  - 本轮两个新 schema/各自单库账号保留，IAM迁移17/0、账号0，content迁移28/0、公开课程/facet0；learner/assessment未启动。六个自有子进程已停、监督进程exit0、8个相关固定HTTP端口无监听，见[退出收据](evidence/redesign/2026-10-10/station-acceptance/it1/cleanup-verification.json)。未启停Docker或其他容器。既有JAR摘要绑定不冒充当前源fresh build。
+  - 同步唯一进度/接手入口，清除陈旧并行与未提交描述；保留IT-2既有开发事实并校正依赖门禁；R1-029历史回放是三领域迁移至同一隔离测试schema，不是独立owner库，临时JWKS/同意stub不作正式验收。公开重测未路由/按钮disabled、旧写口及P1契约/事件缺口记为下一轮事项。未修业务源码、未执行IT-2动态验收；Luna max [独立终审](evidence/redesign/2026-10-10/station-acceptance/review/final-review.md)签字 IT-1 REJECT / FAIL、IT-2 BLOCKED。
+
 - [R1-008-20261009] **R1-008（三同意动态版）全套生命周期专库运行与双端动态自愈验证通过。**
   - **BC-008 / IC-002 / IC-054 动态版本签署与落库**：
     - 前置通过 `GET /api/v1/iam/principal/me` 动态提取激活版本（`b30-consent-v1`）；

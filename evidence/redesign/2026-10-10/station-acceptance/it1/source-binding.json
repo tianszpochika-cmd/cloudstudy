@@ -1,0 +1,136 @@
+{
+  "at": "2026-10-10T04:36:01.757Z",
+  "sourceHead": "69bea68b44b2c8c6c6dbdcdb38c0b955a458aaf1",
+  "sourceKind": "current source and target artifact digest binding; not a fresh Maven build receipt",
+  "sources": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "747d8ed7f650ec5b2ae70742fc598130a77e8608a21dbef41b9e88add1645790"
+    },
+    {
+      "path": "CURRENT-HANDOFF.md",
+      "sha256": "4c0df44b84adeb0948f35f8d635db0bbf1e2000a287bb70b3465b88fa95e164e"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/CURRENT-PROGRESS.md",
+      "sha256": "fab7785b854da1b02342e9fce3b0505ffe3691566e6dd96f82193465f78e84d4"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/dev-plan-R1.md",
+      "sha256": "be49c857a9499affbc81569697cbc197d4934857ea50e82b46d8ae2f2a036f07"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+      "sha256": "25f6bc7c78a16a64b602648185a096985a3fd2f3f50ef8a88e95413b499c2f5f"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+      "sha256": "0fd4a2f421f49832caebe0384b73b3ddaa2b5f743164a0782c80e4835a6669ea"
+    },
+    {
+      "path": "config/local-ports.json",
+      "sha256": "e75b0aa34da3f83faf5ff74939df6de43eaa7b3c163fcfa54a32b9ba504f7242"
+    },
+    {
+      "path": "services/iam-service/src/main/java/com/englishflow/iam/config/IamSecurityConfiguration.java",
+      "sha256": "6d8e60ffc543a1f707fe3da7f12e0d2f8d83fa7aae3f483d393ce57100c449ea"
+    },
+    {
+      "path": "apps/learner-web/src/stores/session.ts",
+      "sha256": "1393eeaf3b1064b3387490a5ece08811a4cb305414aaa3f2a8c2ad3e2df751f9"
+    },
+    {
+      "path": "apps/learner-web/src/auth/gateway-auth.ts",
+      "sha256": "bbadada39f872a30e1655f2133419ff24479bd710f476e326cb635d5dfc3d8cb"
+    },
+    {
+      "path": "apps/learner-web/src/platform/gateway.ts",
+      "sha256": "0b39c5451b1742a83779ae634a8b30d9676b32e0c45557cf009e3c5da6cc183a"
+    },
+    {
+      "path": "apps/mobile/src/auth/gateway-auth.ts",
+      "sha256": "2f8a74ef0c92509f02afc184aa18219a2f6c8f92f39c65c0dfe925548c988958"
+    },
+    {
+      "path": "apps/mobile/src/api/client.ts",
+      "sha256": "e1c95264d92edc7a1d07c47b434faca55de5d56c20dc2af9fe25962797558b64"
+    },
+    {
+      "path": "apps/mobile/src/platform/gateway.ts",
+      "sha256": "899362cf4165126ad44a7bacfe93697c59b658fe373e0bc0e3f4d1d17955c017"
+    },
+    {
+      "path": "apps/official-site/nuxt.config.ts",
+      "sha256": "b334ce1a11abe2002d30ff6b90c96307e97010899d20035e261a134591f32bb1"
+    },
+    {
+      "path": "scripts/redesign/station-acceptance/it1-auth-pages-observe.mjs",
+      "sha256": "1839ae8a3f98935f49b56bdb13166c54f27807a172271c88dbd1ae62961b17ff"
+    },
+    {
+      "path": "scripts/redesign/station-acceptance/it1-browser-observe.mjs",
+      "sha256": "8d816c537aeecf025f467e0e0e15f2047f6a202f29bccc38107da80e8eb1f229"
+    },
+    {
+      "path": "scripts/redesign/station-acceptance/it1-official-observe.mjs",
+      "sha256": "772c2474eb6c884eaceac6b735d4b176eee88a24fa549cd04b492969d28ed378"
+    },
+    {
+      "path": "scripts/redesign/station-acceptance/it1-runtime.mjs",
+      "sha256": "b5beb50b8a650a5560ec4221b6fab4dbd056a4a6be9b5ba5a60fcb5e28c8cdd6"
+    },
+    {
+      "path": "services/api-gateway/src/main/java/com/englishflow/gateway/policy/GatewayRouteExecutionPolicy.java",
+      "sha256": "911fa629ea33fcd17c9c72278e1ecbd41b2c2d7509eae73c6f7682a268e240de"
+    },
+    {
+      "path": "services/content-service/src/main/java/com/englishflow/content/web/ContentHttpController.java",
+      "sha256": "4f45bbf8e006e4ac79f539d357321feb10faf68356ab9e9a7f343ce441fdc4b6"
+    },
+    {
+      "path": "apps/official-site/server/api/public-projection.get.ts",
+      "sha256": "1d2ef1ca85737bc589e2edaf2834afc61aa83b214ebb1cf4637eb7b6935fff7b"
+    },
+    {
+      "path": "scripts/redesign/station-acceptance/it1-official-content-observe.mjs",
+      "sha256": "66b804ac7ced72fb28ed122dfe2146c7d8948b05b16d2cd0724471d097aac264"
+    },
+    {
+      "path": "scripts/redesign/station-acceptance/it1-official-course-cta.mjs",
+      "sha256": "ecab0a8a7cbef0a1a1c21c286e60778acf533d139beb21af34cd7869ce0cd869"
+    }
+  ],
+  "publicRuntime": {
+    "iamTls": "https://127.0.0.1:18087",
+    "gateway": "http://127.0.0.1:18070/api/v1",
+    "web": "http://127.0.0.1:18180",
+    "h5": "http://127.0.0.1:18183",
+    "official": "http://127.0.0.1:18182",
+    "browserChannel": "chrome",
+    "certificateValidation": "Node HTTPS bound test CA, rejectUnauthorized true; browser TLS auth not attempted",
+    "ignoredBrowserCertificateErrors": false,
+    "frontendGatewayOverride": "unset; repository default http://127.0.0.1:18070/api/v1",
+    "passwordDestinationGuard": "abort-before-network for observed auth POST; no request body inspected/stored",
+    "domainsStarted": [
+      "content-service"
+    ],
+    "newSchemaOwners": {
+      "iam": {
+        "schema": "r1_it1_browser_20261010_iam_5d9f4b7e",
+        "user": "it1_iam_5d9f4b7e"
+      },
+      "content": {
+        "schema": "r1_it1_browser_20261010_cnt_5d9f4b7e",
+        "user": "it1_cnt_5d9f4b7e"
+      }
+    },
+    "consentRecheckOverride": "unset; no learner process started",
+    "noBackendRegistrationSetup": true
+  },
+  "finalizedAt": "2026-10-10T04:40:47.549Z",
+  "jars": {
+    "iam-service": "7a36d7a0d1add53d05f4b3f2359cf94b4525becaef591c7f0bd485926fa98a91",
+    "api-gateway": "0222f10d11dd8b2b4b9294f3c1772401e9d45712f359685310ea12a28e96663d",
+    "content-service": "97a6815d9ba53c199e5ec88fe8f4f567c607d34afac450efe9c844e122b27f67"
+  }
+}

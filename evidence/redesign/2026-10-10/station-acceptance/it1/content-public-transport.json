@@ -1,0 +1,57 @@
+[
+  {
+    "url": "http://127.0.0.1:18070/api/v1/public/site/projection?uiLocale=zh-CN",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json"
+    },
+    "body": {
+      "data": {
+        "generatedAt": "2026-10-10T04:39:04.183990Z",
+        "projectionVersion": 1,
+        "contentEpoch": 1,
+        "courses": [],
+        "pricing": [],
+        "downloads": [],
+        "announcements": [],
+        "compliance": []
+      },
+      "meta": {
+        "projectionVersion": 1,
+        "contentEpoch": 1,
+        "generatedAt": "2026-10-10T04:39:04.183990Z",
+        "source": "CONTENT_SERVICE",
+        "stale": false,
+        "traceId": "34be449cecd84bd799ee5cf42f29cfa7"
+      }
+    }
+  },
+  {
+    "url": "http://127.0.0.1:18182/api/public-projection?locale=zh-CN",
+    "status": 200,
+    "headers": {
+      "x-public-projection-commerce": "degraded",
+      "x-public-projection-source": "gateway",
+      "content-type": "application/json"
+    },
+    "body": {
+      "projection": {
+        "schemaVersion": "public-site-v1",
+        "uiLocale": "zh-CN",
+        "contentLocale": "en-US",
+        "generatedAt": null,
+        "courses": [],
+        "pricingPlans": [],
+        "skus": [],
+        "campaigns": [],
+        "downloadChannels": [],
+        "announcements": [],
+        "complianceNotices": []
+      },
+      "state": "empty",
+      "stale": false,
+      "source": "gateway",
+      "errorCode": null
+    }
+  }
+]

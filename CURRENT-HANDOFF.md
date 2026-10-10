@@ -1,12 +1,12 @@
 # CURRENT-HANDOFF — dev-redesign 迭代 2（第二轮重设计）
 
-> 更新：2026-10-09。本分支只有一套当前进度入口：[迭代 2 当前进度](docs/06-design/v2-980plus/redesign/CURRENT-PROGRESS.md)。本文件仅提供阅读路径，不重复维护完成率或任务状态。
+> 更新：2026-10-10。本分支只有一套当前进度入口：[迭代 2 当前进度](docs/06-design/v2-980plus/redesign/CURRENT-PROGRESS.md)。本文件仅提供阅读路径，不重复维护完成率或任务状态。
 
 ## 接手入口
 
 1. 核对分支、提交与已有差量；阅读 [AGENTS](AGENTS.md)。
 2. 阅读[当前进度与最近工作点](docs/06-design/v2-980plus/redesign/CURRENT-PROGRESS.md)、[重设计包](docs/06-design/v2-980plus/redesign/README.md)、[R1 执行计划](docs/06-design/v2-980plus/redesign/dev-plan-R1.md)。
-3. 当前进度以 [CURRENT-PROGRESS](docs/06-design/v2-980plus/redesign/CURRENT-PROGRESS.md) 为准。R1-009 是同意撤回与能力回收，不是画像；画像是 R1-010。当前没有足够证据宣称 IT-1 已出站或 IT-2 已开工。
+3. 当前进度以 [CURRENT-PROGRESS](docs/06-design/v2-980plus/redesign/CURRENT-PROGRESS.md) 为准。R1-009 是同意撤回与能力回收，不是画像；画像是 R1-010。本轮 IT-1 真实浏览器验收 REJECT / FAIL，IT-2 动态验收 BLOCKED；已有 R1-018～029 历史开发/回放事实保留，但不构成 IT-1 绿灯后的合规开站或出站。Luna max 独立终审维持上述判定；原因、17卡矩阵、修复清单与终审从当前进度页链接进入。
 4. 本机启动、测试与 SDK 检查见[开发指南](docs/07-operations/local-development.md)和[10 月 6 日环境验证](docs/07-operations/local-environment-verification-2026-10-06.md)；运行状态需重新检查，环境通过不升级业务验收。
 
 “迭代 2”是这轮 Redesign；IT-2 是 R1 内的定级站；Phase 2 是产品 AI 阶段。三者分别使用，不互相解锁。
@@ -16,4 +16,4 @@
 - 原 P1R、B/DEV/G、56 页台账和九月接手顺序仅供复用与审计；[九月历史交接](CURRENT-HANDOFF-ARCHIVE-2026-09-28.md)保留原文。不要根据旧完成率、勾选或“下一步”认领新工作。
 - 不改旧 canonical manifest/验收状态，不回写或删除历史证据；本轮 R1 证据按当前提交单独收集。
 - 更新进度时只维护[当前进度页](docs/06-design/v2-980plus/redesign/CURRENT-PROGRESS.md)及对应卡证据，并提交到 `origin/dev-redesign`。
-- 本次文档整理前已有移动原型文档差量（`mockups/mobile/evidence/README.md`、`mockups/mobile/README.md`、`mockups/mobile/evidence/independent-r14/README.md`）；应核对来源并保留，不因入口整理一并覆盖或提交。
+- 移动原型三份文档已由 `69bea68b` 保存；它们属于历史原型证据，不计本轮站级验收范围。接手仍须核对当前工作区差量，不能把已提交历史记录称为未提交。

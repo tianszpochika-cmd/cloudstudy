@@ -1,0 +1,24 @@
+{
+  "kind": "BC001_REAL_EMPTY_CONTENT_CTA",
+  "at": "2026-10-10T04:39:27.669Z",
+  "interactions": [
+    {
+      "viewport": "desktop",
+      "courseEmpty": true,
+      "courseCopy": "当前公开课程\n\n这里介绍学习方式，具体课程以学习端已开放内容为准。\n\n去注册\n课程准备中\n\n这里可以了解学习方式。正式课程尚未发布；可先前往学习端注册，注册后仍需通过成人资格校验。\n\n去注册",
+      "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome",
+      "destination": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome",
+      "registerFormVisible": true,
+      "registrationSubmitted": false
+    },
+    {
+      "viewport": "mobile",
+      "courseEmpty": true,
+      "courseCopy": "当前公开课程\n\n这里介绍学习方式，具体课程以学习端已开放内容为准。\n\n去注册\n课程准备中\n\n这里可以了解学习方式。正式课程尚未发布；可先前往学习端注册，注册后仍需通过成人资格校验。\n\n去注册",
+      "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome",
+      "destination": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome",
+      "registerFormVisible": true,
+      "registrationSubmitted": false
+    }
+  ]
+}

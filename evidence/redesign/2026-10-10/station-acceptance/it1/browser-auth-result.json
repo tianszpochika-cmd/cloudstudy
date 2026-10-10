@@ -1,0 +1,245 @@
+{
+  "kind": "IT1_REAL_BROWSER_BLOCKED_TRANSPORT",
+  "at": "2026-10-10T04:33:33.285Z",
+  "sourceHead": "69bea68b44b2c8c6c6dbdcdb38c0b955a458aaf1",
+  "browser": "154.0.8037.99",
+  "observations": [
+    {
+      "app": "web",
+      "viewport": "desktop",
+      "before": {
+        "url": "http://127.0.0.1:18180/register",
+        "status": 200,
+        "body": "语学星\nA LITTLE, EVERY DAY\n让英语， 回到你的日常。\n\n记几个词，听一段对话。 一点一点，学得更从容。\n\n✦\n✧\nlittle by little\ngrow.\n✦\nLEARN A LITTLE. EVERY DAY.\n语学星\n初期免费开放 · 面向 18 岁以上成人与大学生\n创建账号，开始学习\n\n仅面向 18 岁以上成人与大学生；注册后需要确认年龄与必要说明。\n\n账号\n密码（至少 12 位）\n确认密码\n✦\n等待注册\n\n使用至少 12 位的密码，让账号更安全。\n\n注册并继续\n\n已有账号？去登录 · 忘记密码",
+        "inputs": [
+          {
+            "type": "text",
+            "label": "账号",
+            "placeholder": "邮箱或账号"
+          },
+          {
+            "type": "password",
+            "label": "密码（至少 12 位）",
+            "placeholder": "输入密码"
+          },
+          {
+            "type": "password",
+            "label": "确认密码",
+            "placeholder": "再输入一次"
+          }
+        ],
+        "buttons": [
+          "注册并继续"
+        ]
+      },
+      "after": {
+        "url": "http://127.0.0.1:18180/register",
+        "body": "语学星\nA LITTLE, EVERY DAY\n让英语， 回到你的日常。\n\n记几个词，听一段对话。 一点一点，学得更从容。\n\n✦\n✧\nlittle by little\ngrow.\n✦\nLEARN A LITTLE. EVERY DAY.\n语学星\n初期免费开放 · 面向 18 岁以上成人与大学生\n创建账号，开始学习\n\n仅面向 18 岁以上成人与大学生；注册后需要确认年龄与必要说明。\n\n账号\n密码（至少 12 位）\n确认密码\n!\n注册未完成\n\n注册没有完成，请稍后再试。\n\n注册并继续\n\n已有账号？去登录 · 忘记密码",
+        "errors": []
+      },
+      "credentialTransmission": "aborted before network",
+      "flowResult": "FAIL_AUTH_TRANSPORT",
+      "screenshot": "screenshots/web-desktop-transport-fail.png"
+    },
+    {
+      "app": "h5",
+      "viewport": "desktop",
+      "before": {
+        "url": "http://127.0.0.1:18183/#/pages/register/register",
+        "status": 200,
+        "body": "✦\n语学星\n为热爱学习的你\nCREATE ACCOUNT\n创建账号\n注册后确认成人身份。\n✦\nAa\n使用至少 12 位的密码，让账号更安全。\n账号\n邮箱或账号\n密码\n输入密码\n确认密码\n再输入一次\n注册并继续\n已有账号？去登录\n目前面向 18 岁及以上成人与大学生",
+        "inputs": [
+          {
+            "type": "text",
+            "label": null,
+            "placeholder": ""
+          },
+          {
+            "type": "password",
+            "label": null,
+            "placeholder": ""
+          },
+          {
+            "type": "password",
+            "label": null,
+            "placeholder": ""
+          }
+        ],
+        "buttons": [
+          "注册并继续",
+          "已有账号？去登录"
+        ]
+      },
+      "after": {
+        "url": "http://127.0.0.1:18183/#/pages/register/register",
+        "body": "✦\n语学星\n为热爱学习的你\nCREATE ACCOUNT\n创建账号\n注册后确认成人身份。\n✦\nAa\n使用至少 12 位的密码，让账号更安全。\n账号\n密码\n确认密码\n注册没有完成，请稍后再试。\n注册并继续\n已有账号？去登录\n目前面向 18 岁及以上成人与大学生",
+        "errors": []
+      },
+      "credentialTransmission": "aborted before network",
+      "flowResult": "FAIL_AUTH_TRANSPORT",
+      "screenshot": "screenshots/h5-desktop-transport-fail.png"
+    },
+    {
+      "app": "web",
+      "viewport": "mobile",
+      "before": {
+        "url": "http://127.0.0.1:18180/register",
+        "status": 200,
+        "body": "语学星\n初期免费开放 · 面向 18 岁以上成人与大学生\n创建账号，开始学习\n\n仅面向 18 岁以上成人与大学生；注册后需要确认年龄与必要说明。\n\n账号\n密码（至少 12 位）\n确认密码\n✦\n等待注册\n\n使用至少 12 位的密码，让账号更安全。\n\n注册并继续\n\n已有账号？去登录 · 忘记密码",
+        "inputs": [
+          {
+            "type": "text",
+            "label": "账号",
+            "placeholder": "邮箱或账号"
+          },
+          {
+            "type": "password",
+            "label": "密码（至少 12 位）",
+            "placeholder": "输入密码"
+          },
+          {
+            "type": "password",
+            "label": "确认密码",
+            "placeholder": "再输入一次"
+          }
+        ],
+        "buttons": [
+          "注册并继续"
+        ]
+      },
+      "after": {
+        "url": "http://127.0.0.1:18180/register",
+        "body": "语学星\n初期免费开放 · 面向 18 岁以上成人与大学生\n创建账号，开始学习\n\n仅面向 18 岁以上成人与大学生；注册后需要确认年龄与必要说明。\n\n账号\n密码（至少 12 位）\n确认密码\n!\n注册未完成\n\n注册没有完成，请稍后再试。\n\n注册并继续\n\n已有账号？去登录 · 忘记密码",
+        "errors": []
+      },
+      "credentialTransmission": "aborted before network",
+      "flowResult": "FAIL_AUTH_TRANSPORT",
+      "screenshot": "screenshots/web-mobile-transport-fail.png"
+    },
+    {
+      "app": "h5",
+      "viewport": "mobile",
+      "before": {
+        "url": "http://127.0.0.1:18183/#/pages/register/register",
+        "status": 200,
+        "body": "✦\n语学星\n为热爱学习的你\nCREATE ACCOUNT\n创建账号\n注册后确认成人身份。\n✦\nAa\n使用至少 12 位的密码，让账号更安全。\n账号\n邮箱或账号\n密码\n输入密码\n确认密码\n再输入一次\n注册并继续\n已有账号？去登录\n目前面向 18 岁及以上成人与大学生",
+        "inputs": [
+          {
+            "type": "text",
+            "label": null,
+            "placeholder": ""
+          },
+          {
+            "type": "password",
+            "label": null,
+            "placeholder": ""
+          },
+          {
+            "type": "password",
+            "label": null,
+            "placeholder": ""
+          }
+        ],
+        "buttons": [
+          "注册并继续",
+          "已有账号？去登录"
+        ]
+      },
+      "after": {
+        "url": "http://127.0.0.1:18183/#/pages/register/register",
+        "body": "✦\n语学星\n为热爱学习的你\nCREATE ACCOUNT\n创建账号\n注册后确认成人身份。\n✦\nAa\n使用至少 12 位的密码，让账号更安全。\n账号\n密码\n确认密码\n注册没有完成，请稍后再试。\n注册并继续\n已有账号？去登录\n目前面向 18 岁及以上成人与大学生",
+        "errors": []
+      },
+      "credentialTransmission": "aborted before network",
+      "flowResult": "FAIL_AUTH_TRANSPORT",
+      "screenshot": "screenshots/h5-mobile-transport-fail.png"
+    }
+  ],
+  "protectedRequests": [
+    {
+      "app": "web",
+      "viewport": "desktop",
+      "method": "POST",
+      "destination": "http://127.0.0.1:18070/api/v1/auth/register",
+      "action": "ABORT_BEFORE_NETWORK",
+      "reason": "PASSWORD_AUTH_MUST_BE_DIRECT_IAM_TLS"
+    },
+    {
+      "app": "h5",
+      "viewport": "desktop",
+      "method": "POST",
+      "destination": "http://127.0.0.1:18070/api/v1/auth/register",
+      "action": "ABORT_BEFORE_NETWORK",
+      "reason": "PASSWORD_AUTH_MUST_BE_DIRECT_IAM_TLS"
+    },
+    {
+      "app": "web",
+      "viewport": "mobile",
+      "method": "POST",
+      "destination": "http://127.0.0.1:18070/api/v1/auth/register",
+      "action": "ABORT_BEFORE_NETWORK",
+      "reason": "PASSWORD_AUTH_MUST_BE_DIRECT_IAM_TLS"
+    },
+    {
+      "app": "h5",
+      "viewport": "mobile",
+      "method": "POST",
+      "destination": "http://127.0.0.1:18070/api/v1/auth/register",
+      "action": "ABORT_BEFORE_NETWORK",
+      "reason": "PASSWORD_AUTH_MUST_BE_DIRECT_IAM_TLS"
+    }
+  ],
+  "cors": [
+    {
+      "origin": "http://127.0.0.1:18180",
+      "destination": "https://127.0.0.1:18087/api/v1/auth/register",
+      "status": 200,
+      "allowOrigin": null,
+      "allowCredentials": null,
+      "allowMethods": null
+    },
+    {
+      "origin": "http://127.0.0.1:18183",
+      "destination": "https://127.0.0.1:18087/api/v1/auth/register",
+      "status": 200,
+      "allowOrigin": null,
+      "allowCredentials": null,
+      "allowMethods": null
+    }
+  ],
+  "failures": [],
+  "sources": [
+    {
+      "path": "apps/learner-web/src/stores/session.ts",
+      "sha256": "1393eeaf3b1064b3387490a5ece08811a4cb305414aaa3f2a8c2ad3e2df751f9"
+    },
+    {
+      "path": "apps/learner-web/src/auth/gateway-auth.ts",
+      "sha256": "bbadada39f872a30e1655f2133419ff24479bd710f476e326cb635d5dfc3d8cb"
+    },
+    {
+      "path": "apps/learner-web/src/platform/gateway.ts",
+      "sha256": "0b39c5451b1742a83779ae634a8b30d9676b32e0c45557cf009e3c5da6cc183a"
+    },
+    {
+      "path": "apps/mobile/src/auth/gateway-auth.ts",
+      "sha256": "2f8a74ef0c92509f02afc184aa18219a2f6c8f92f39c65c0dfe925548c988958"
+    },
+    {
+      "path": "apps/mobile/src/api/client.ts",
+      "sha256": "e1c95264d92edc7a1d07c47b434faca55de5d56c20dc2af9fe25962797558b64"
+    },
+    {
+      "path": "apps/mobile/src/platform/gateway.ts",
+      "sha256": "899362cf4165126ad44a7bacfe93697c59b658fe373e0bc0e3f4d1d17955c017"
+    },
+    {
+      "path": "services/iam-service/src/main/java/com/englishflow/iam/config/IamSecurityConfiguration.java",
+      "sha256": "6d8e60ffc543a1f707fe3da7f12e0d2f8d83fa7aae3f483d393ce57100c449ea"
+    },
+    {
+      "path": "config/local-ports.json",
+      "sha256": "e75b0aa34da3f83faf5ff74939df6de43eaa7b3c163fcfa54a32b9ba504f7242"
+    }
+  ]
+}
