@@ -1,7 +1,8 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 import { ApiError } from '../api/client'
-import { listB18ReviewQueue, type B18ReviewQueueItem } from '../api/b18-learning'
+import { listB18ReviewQueue, type B18ReviewQueueItem, type ReviewHistoryEntry } from '../api/b18-learning'
+import { READ_FAILED_COPY } from '../domain/review-history'
 import { getLearningReport } from '../api/b10'
 import type { B10Report } from '../domain/b10'
 import { ILLEGAL_REVIEW, reviewFailureCopy, stageAfter } from '../domain/review-stage'
@@ -32,6 +33,9 @@ function messageFor(error: unknown): string {
 export const useB18LearningStore = defineStore('b18-learning', () => {
   const state = ref<B18LearningState>('idle')
   const queue = ref<B18ReviewQueueItem[]>([])
+  const history = ref<ReviewHistoryEntry[]>([])
+  const emptyCopy = ref('')
+  const emptyStatus = ref('')
   const report = ref<B10Report | null>(null)
   const lastError = ref<string | null>(null)
   const busyItemId = ref<string | null>(null)
@@ -41,7 +45,15 @@ export const useB18LearningStore = defineStore('b18-learning', () => {
     state.value = 'loading'
     lastError.value = null
     const [queueResult, reportResult] = await Promise.allSettled([listB18ReviewQueue(), getLearningReport('DAILY')])
-    if (queueResult.status === 'fulfilled') queue.value = queueResult.value
+    if (queueResult.status === 'fulfilled') {
+      queue.value = queueResult.value.items
+      history.value = queueResult.value.history
+      emptyCopy.value = queueResult.value.emptyCopy
+      emptyStatus.value = queueResult.value.emptyStatus
+    } else {
+      emptyStatus.value = 'READ_FAILED'
+      emptyCopy.value = READ_FAILED_COPY
+    }
     if (reportResult.status === 'fulfilled') report.value = reportResult.value
     const failures = [queueResult, reportResult].filter((result): result is PromiseRejectedResult => result.status === 'rejected')
     if (!failures.length) state.value = queue.value.length || report.value ? 'ready' : 'empty'
@@ -63,5 +75,5 @@ export const useB18LearningStore = defineStore('b18-learning', () => {
     lastError.value = '缺少可核验的答题结果，请从练习进入复习。'
   }
 
-  return { state, queue, report, lastError, busyItemId, hasReview, load, complete }
+  return { state, queue, history, emptyCopy, emptyStatus, report, lastError, busyItemId, hasReview, load, complete }
 })

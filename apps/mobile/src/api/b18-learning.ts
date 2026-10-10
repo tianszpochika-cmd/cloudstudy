@@ -30,10 +30,25 @@ function parse(value: unknown): MobileB18ReviewQueueItem | null {
   return { queueItemId, source: rawSource === 'NEW' || rawSource === 'REVIEW' || rawSource === 'MISTAKE' || rawSource === 'RETRY' ? rawSource : 'UNKNOWN', state: text(source.state) ?? 'UNKNOWN', dueAt: text(source.dueAt), priority: Math.max(0, number(source.priority)), stateVersion: Math.max(0, number(source.stateVersion)), completable: source.completable === true }
 }
 
-export async function listMobileB18ReviewQueue(): Promise<MobileB18ReviewQueueItem[]> {
+export interface MobileReviewHistoryEntry { itemId: string; disposition: 'COMPLETED' | 'DEFERRED' }
+export interface MobileReviewQueueView { items: MobileB18ReviewQueueItem[]; emptyStatus: string; emptyCopy: string; history: MobileReviewHistoryEntry[] }
+
+export async function listMobileB18ReviewQueue(): Promise<MobileReviewQueueView> {
   const response = await mobileApiClient.request<unknown>(query('/learning/review-queue'), { header: headers() })
   const source = unwrap(response)
-  const candidate = record(source).items
+  const payload = record(source)
+  const candidate = payload.items
   const items: unknown[] = Array.isArray(source) ? source : Array.isArray(candidate) ? candidate : []
-  return items.flatMap((item) => { const parsed = parse(item); return parsed ? [parsed] : [] })
+  const history = (Array.isArray(payload.history) ? payload.history : []).flatMap((item) => {
+    const row = record(item)
+    const disposition = text(row.disposition)
+    if (disposition !== 'COMPLETED' && disposition !== 'DEFERRED') return []
+    return [{ itemId: text(row.itemId) ?? '', disposition }]
+  })
+  return {
+    items: items.flatMap((item) => { const parsed = parse(item); return parsed ? [parsed] : [] }),
+    emptyStatus: text(payload.emptyStatus) ?? '',
+    emptyCopy: text(payload.emptyCopy) ?? '',
+    history,
+  }
 }

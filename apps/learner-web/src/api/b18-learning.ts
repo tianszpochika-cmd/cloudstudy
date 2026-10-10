@@ -62,10 +62,25 @@ function parseItem(value: unknown): B18ReviewQueueItem | null {
   }
 }
 
-export async function listB18ReviewQueue(): Promise<B18ReviewQueueItem[]> {
+export interface ReviewHistoryEntry { itemId: string; disposition: 'COMPLETED' | 'DEFERRED' }
+export interface ReviewQueueView { items: B18ReviewQueueItem[]; emptyStatus: string; emptyCopy: string; history: ReviewHistoryEntry[] }
+
+export async function listB18ReviewQueue(): Promise<ReviewQueueView> {
   const response = await apiClient.get<unknown>(query('/learning/review-queue'), requestOptions())
   const source = unwrap(response)
-  const candidate = record(source).items
+  const payload = record(source)
+  const candidate = payload.items
   const items: unknown[] = Array.isArray(source) ? source : Array.isArray(candidate) ? candidate : []
-  return items.flatMap((item) => { const parsed = parseItem(item); return parsed ? [parsed] : [] })
+  const history = (Array.isArray(payload.history) ? payload.history : []).flatMap((item) => {
+    const row = record(item)
+    const disposition = text(row.disposition)
+    if (disposition !== 'COMPLETED' && disposition !== 'DEFERRED') return []
+    return [{ itemId: text(row.itemId) ?? '', disposition }]
+  })
+  return {
+    items: items.flatMap((item) => { const parsed = parseItem(item); return parsed ? [parsed] : [] }),
+    emptyStatus: text(payload.emptyStatus) ?? '',
+    emptyCopy: text(payload.emptyCopy) ?? '',
+    history,
+  }
 }

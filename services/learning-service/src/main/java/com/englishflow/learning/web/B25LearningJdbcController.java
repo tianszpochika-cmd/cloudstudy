@@ -30,6 +30,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.englishflow.learning.domain.EmptyBook;
+import com.englishflow.learning.domain.ReviewBudget;
+import com.englishflow.learning.domain.ReviewHistory;
 
 /** B25 compatibility reads. Legacy review writes are closed until trusted outcome evidence exists. */
 @RestController
@@ -466,7 +468,44 @@ public class B25LearningJdbcController {
             item.put("unavailableReason", "UNTRUSTED_REVIEW_EVIDENCE");
             items.add(item);
         }
-        return Map.of("principalId", principal.subject(), "items", items, "source", "mysql");
+        int recorded = number(jdbc.queryForMap("""
+                SELECT (SELECT COUNT(*) FROM b25_learning_srs_state WHERE principal_id = ? AND tenant_id = ?)
+                     + (SELECT COUNT(*) FROM b25_learning_review WHERE principal_id = ? AND tenant_id = ?) AS total
+                """, principal.subject(), TENANT, principal.subject(), TENANT).get("total"));
+        String emptyStatus = ReviewHistory.emptyStatus(items.isEmpty(), recorded > 0);
+        List<Map<String, Object>> plans = jdbc.queryForList(
+                "SELECT target_minutes FROM b25_learning_plan WHERE principal_id = ? AND tenant_id = ? LIMIT 1",
+                principal.subject(), TENANT);
+        int targetMinutes = plans.isEmpty() ? 0 : number(plans.get(0).get("target_minutes"));
+        List<Map<String, Object>> arranged = new java.util.ArrayList<>();
+        for (Map<String, Object> item : items) arranged.add(new LinkedHashMap<>(item));
+        ReviewBudget.arrange(arranged, targetMinutes);
+        List<Map<String, Object>> history = new java.util.ArrayList<>();
+        for (Map<String, Object> review : jdbc.queryForList("""
+                SELECT item_id FROM b25_learning_review
+                 WHERE principal_id = ? AND tenant_id = ?
+                 ORDER BY created_at DESC LIMIT 20
+                """, principal.subject(), TENANT)) {
+            Map<String, Object> entry = new LinkedHashMap<>();
+            entry.put("itemId", text(review.get("item_id")));
+            entry.put("disposition", ReviewHistory.COMPLETED);
+            history.add(entry);
+        }
+        for (Map<String, Object> item : arranged) {
+            if (!ReviewHistory.DEFERRED.equals(item.get("arrangement"))) continue;
+            Map<String, Object> entry = new LinkedHashMap<>();
+            entry.put("itemId", text(item.get("itemId")));
+            entry.put("disposition", ReviewHistory.DEFERRED);
+            history.add(entry);
+        }
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("principalId", principal.subject());
+        body.put("items", items);
+        body.put("source", "mysql");
+        body.put("emptyStatus", emptyStatus);
+        body.put("emptyCopy", ReviewHistory.copy(emptyStatus));
+        body.put("history", ReviewHistory.onlyVisible(history));
+        return body;
     }
 
     @PostMapping("/review-queue/{queueItemId}/complete")

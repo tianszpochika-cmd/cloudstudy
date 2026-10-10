@@ -6,6 +6,7 @@ import EmptyState from '../components/EmptyState.vue'
 import { useLearnerContentStore } from '../stores/learner-content'
 import { useB18LearningStore } from '../stores/b18-learning'
 import { reviewFailureCopy } from '../domain/review-stage'
+import { reviewEmpty } from '../domain/review-history'
 
 const router = useRouter()
 const contentStore = useLearnerContentStore()
@@ -40,7 +41,7 @@ function startTask(taskId: string): void {
 
     <div class="grid grid--two">
       <article class="info-card"><span class="card-kicker">TODAY</span><h3>{{ tasks.length }} 个今日任务</h3><p>已完成 {{ contentStore.todayProgress }}%，内容语言 {{ contentStore.home?.contentLocale ?? 'en-US' }}。</p><div v-if="tasks.length" class="task-list task-list--compact"><div v-for="task in tasks.slice(0, 4)" :key="task.id" class="task-row"><div><strong>{{ task.title }}</strong><p>{{ task.description }} · {{ task.minutes }} 分钟</p></div><button class="button button--ghost" type="button" :disabled="task.completed" @click="startTask(task.id)">{{ task.completed ? '已完成' : '开始学习' }}</button></div></div><EmptyState v-else title="今日暂无任务" description="可以先从课程书架选择内容。" /></article>
-      <article class="info-card"><span class="card-kicker">REVIEW / REPORT</span><h3>{{ loopStore.queue.length }} 个待复习</h3><p v-if="loopStore.report">今日准确率 {{ loopStore.report.accuracy === null ? '—' : `${Math.round(loopStore.report.accuracy * 100)}%` }}，报告版本由服务端提供。</p><p v-else>报告暂时没有可展示的数据，不把空值伪装成零。</p><div class="actions"><button class="button button--secondary" type="button" @click="router.push({ name: 'vocabulary' })">打开 SRS</button><button class="button button--secondary" type="button" @click="router.push({ name: 'weakness-report' })">查看报告</button></div></article>
+      <article class="info-card"><span class="card-kicker">REVIEW / REPORT</span><h3>{{ loopStore.queue.length }} 个待复习</h3><p v-if="!loopStore.queue.length" data-review-empty>{{ loopStore.emptyCopy || reviewEmpty(loopStore.state === 'error' || loopStore.state === 'offline', true, false).copy }}</p><p v-for="row in loopStore.history" :key="`${row.disposition}-${row.itemId}`" data-review-history>{{ row.disposition === 'DEFERRED' ? '延期' : '已完成' }}</p><p v-if="loopStore.report">今日准确率 {{ loopStore.report.accuracy === null ? '—' : `${Math.round(loopStore.report.accuracy * 100)}%` }}，报告版本由服务端提供。</p><p v-else>报告暂时没有可展示的数据，不把空值伪装成零。</p><div class="actions"><button class="button button--secondary" type="button" @click="router.push({ name: 'vocabulary' })">打开 SRS</button><button class="button button--secondary" type="button" @click="router.push({ name: 'weakness-report' })">查看报告</button></div></article>
     </div>
 
     <article class="content-grid" v-if="content.length"><div class="section-heading"><div><p class="card-kicker">COURSES</p><h3>已发布课程</h3></div><button class="button button--secondary" type="button" @click="router.push({ name: 'courses' })">全部课程</button></div><button v-for="item in content.slice(0, 6)" :key="item.contentId" class="content-card" type="button" @click="openCourse(item.contentId)"><strong>{{ item.title }}</strong><span>{{ item.kind }} · {{ item.contentLocale }} · {{ item.status }}</span></button></article>
