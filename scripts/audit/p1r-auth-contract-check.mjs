@@ -607,7 +607,7 @@ function checkCookie(document, errors) {
     const cookie = setCookie['x-cookie'];
     add(errors, cookie.name === 'yuxuexing_refresh' && cookie.path === '/api/v1/auth', 'B8RefreshCookie name/path are invalid');
     add(errors, cookie.maxAge === 'positive-seconds', 'B8RefreshCookie must have a positive Max-Age');
-    add(errors, cookie.httpOnly === true && cookie.secure === true && cookie.sameSite === 'Lax', 'B8RefreshCookie must be HttpOnly, Secure and SameSite=Lax');
+    add(errors, cookie.httpOnly === true && cookie.secure === true && cookie.sameSite === 'None' && cookie.partitioned === true, 'B8RefreshCookie must be HttpOnly, Secure, SameSite=None and Partitioned');
     add(errors, cookie.transport === 'WEB_COOKIE' && cookie.native === 'forbidden', 'B8RefreshCookie must be Web-only');
   }
   add(errors, isRecord(clearCookie?.['x-cookie']), 'B8RefreshCookieClear security metadata is required');
@@ -615,7 +615,7 @@ function checkCookie(document, errors) {
     const cookie = clearCookie['x-cookie'];
     add(errors, cookie.name === 'yuxuexing_refresh' && cookie.path === '/api/v1/auth', 'B8RefreshCookieClear name/path are invalid');
     add(errors, cookie.value === 'empty' && cookie.maxAge === 0 && cookie.expires === 'past-http-date', 'B8RefreshCookieClear must expire and empty the cookie');
-    add(errors, cookie.httpOnly === true && cookie.secure === true && cookie.sameSite === 'Lax', 'B8RefreshCookieClear must retain cookie security attributes');
+    add(errors, cookie.httpOnly === true && cookie.secure === true && cookie.sameSite === 'None' && cookie.partitioned === true, 'B8RefreshCookieClear must retain cookie security attributes');
     add(errors, cookie.transport === 'WEB_COOKIE' && cookie.native === 'forbidden', 'B8RefreshCookieClear must be Web-only');
   }
 }

@@ -275,6 +275,8 @@ export function http(url, { method = 'GET', body, token, cookie, idempotencyKey,
     }
     if (cookie) {
       headers['Cookie'] = cookie;
+      // Direct IAM refresh now rejects a cookie-bearing unsafe request with no trusted learner Origin.
+      headers['Origin'] = 'http://127.0.0.1:18180';
     }
 
     const req = (secure ? httpsRequest : httpRequest)(

@@ -1,10 +1,13 @@
 export const DEFAULT_GATEWAY_BASE_URL = 'http://127.0.0.1:18070/api/v1'
+export const DEFAULT_IAM_AUTH_BASE_URL = 'https://127.0.0.1:18087/api/v1'
 
 const SAFE_PROTOCOLS = new Set(['http:', 'https:'])
+const IAM_AUTH_PATH = '/api/v1'
 
 export interface GatewayEnvironment {
   readonly VITE_GATEWAY_BASE_URL?: string
   readonly VITE_API_BASE_URL?: string
+  readonly VITE_IAM_AUTH_BASE_URL?: string
 }
 
 function trimTrailingSlash(value: string): string {
@@ -27,6 +30,31 @@ export function normalizeGatewayBaseUrl(value: unknown, fallback = DEFAULT_GATEW
 
 export function getGatewayBaseUrl(env: GatewayEnvironment = ((import.meta as ImportMeta & { readonly env?: GatewayEnvironment }).env ?? {})): string {
   return normalizeGatewayBaseUrl(env.VITE_GATEWAY_BASE_URL ?? env.VITE_API_BASE_URL)
+}
+
+/** Password posts use IAM TLS. An http override, a relative path, or a non-/api/v1 path falls back to the fixed IAM entry. */
+export function normalizeIamAuthBaseUrl(value: unknown, fallback = DEFAULT_IAM_AUTH_BASE_URL): string {
+  if (typeof value !== 'string') return fallback
+  const candidate = value.trim()
+  if (!candidate || candidate.includes('\\') || candidate.includes('?') || candidate.includes('#')) return fallback
+  try {
+    const url = new URL(candidate)
+    const path = url.pathname.replace(/\/+$/, '')
+    if (url.protocol !== 'https:' || url.username || url.password || url.search || url.hash || path !== IAM_AUTH_PATH) return fallback
+    return `${url.origin}${IAM_AUTH_PATH}`
+  } catch {
+    return fallback
+  }
+}
+
+export function requireIamAuthBaseUrl(value: unknown): string {
+  const normalized = normalizeIamAuthBaseUrl(value, '')
+  if (!normalized.startsWith('https://')) throw new Error('账号密码只能提交到 IAM 的 HTTPS 认证入口。')
+  return normalized
+}
+
+export function getIamAuthBaseUrl(env: GatewayEnvironment = ((import.meta as ImportMeta & { readonly env?: GatewayEnvironment }).env ?? {})): string {
+  return normalizeIamAuthBaseUrl(env.VITE_IAM_AUTH_BASE_URL)
 }
 
 export function safeInternalReturnTo(value: unknown, fallback = '/pages/home/home', origin = 'https://englishflow-mobile.invalid'): string {

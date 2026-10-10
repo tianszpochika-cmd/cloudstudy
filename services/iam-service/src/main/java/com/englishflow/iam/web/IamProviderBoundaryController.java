@@ -897,13 +897,22 @@ class IamAuthenticationController {
     }
 
     private ResponseCookie refreshCookie(SessionRecord session, String value) {
-        return ResponseCookie.from(properties.getJwt().getRefreshCookieName(), value).httpOnly(true)
-                .secure(properties.getJwt().isRefreshCookieSecure()).sameSite("Lax").path("/api/v1/auth")
-                .maxAge(Math.max(0, Duration.between(Instant.now(clock), session.expiresAt()).getSeconds())).build();
+        return refreshCookieBuilder(value)
+                .maxAge(Math.max(0, Duration.between(Instant.now(clock), session.expiresAt()).getSeconds()))
+                .build();
     }
     private ResponseCookie clearRefreshCookie() {
-        return ResponseCookie.from(properties.getJwt().getRefreshCookieName(), "").httpOnly(true)
-                .secure(properties.getJwt().isRefreshCookieSecure()).sameSite("Lax").path("/api/v1/auth").maxAge(0).build();
+        return refreshCookieBuilder("").maxAge(0).build();
+    }
+    /**
+     * Learner Web is HTTP and IAM is HTTPS, so the browser treats refresh as cross-site.
+     * SameSite=None; Secure; Partitioned keeps the cookie in that page partition.
+     * The IAM origin filter, not this attribute, is the CSRF decision.
+     */
+    private ResponseCookie.ResponseCookieBuilder refreshCookieBuilder(String value) {
+        return ResponseCookie.from(properties.getJwt().getRefreshCookieName(), value).httpOnly(true)
+                .secure(properties.getJwt().isRefreshCookieSecure()).sameSite("None").partitioned(true)
+                .path("/api/v1/auth");
     }
 
     private Jwt verifiedJwt(Authentication authentication) {

@@ -28,7 +28,7 @@
 
 - `packages/contracts/fragments/p1r-gateway-boundary.openapi.json` 的 `x-p1r-gateway-boundary` 是 Gateway D2 政策的单一事实源。所有 active `/api/v1` operation 必须命中有序 route rule 的唯一最高优先级项并得到唯一 service owner；未登记路径、优先级冲突、未知 owner、`/internal/v1` 外部访问和经 `core-api` 新增领域写入均失败关闭。
 - 浏览器运行形态分为 learner-web、admin-web、mobile H5、official-site 四个 origin profile。允许携带业务 Cookie 的 profile 只能使用精确 allow-list 且 `credentials=true`，不得使用 `*`；official-site 只允许具名公开读取，不建立业务会话，也不得获得业务 Cookie/Token 权限。原生客户端使用 `NATIVE_SECURE_STORAGE` Bearer/Refresh transport，不发送或接收 Cookie，并由可信客户端/设备上下文交叉校验，不能靠客户端自报绕过浏览器策略。
-- Web Cookie 参与的非安全方法必须先验证精确 `Origin`；仅在请求确实没有 `Origin` 时才允许精确 `Referer` origin 作为兼容回退。来源缺失、不受信或冲突均返回 canonical 403。该来源校验与 `HttpOnly; Secure; SameSite=Lax; Path=/api/v1/auth` 共同构成当前 CSRF 合同；若以后增加同步 token/double-submit 机制，必须先更新本 ADR、OpenAPI 和浏览器测试，不得只在单端静默实现。
+- Web Cookie 参与的非安全方法必须先验证精确 `Origin`；仅在请求确实没有 `Origin` 时才允许精确 `Referer` origin 作为兼容回退。来源缺失、不受信或冲突均返回 canonical 403。该来源校验与 `HttpOnly; Secure; SameSite=None; Partitioned; Path=/api/v1/auth` 共同构成当前 CSRF 合同。直接送到 IAM 的刷新 Cookie 使用学习端精确来源名单，不把管理端放进 IAM。若以后增加同步 token/double-submit 机制，必须先更新本 ADR、OpenAPI 和浏览器测试，不得只在单端静默实现。
 - JWT 预检固定校验 RS256、JWKS、issuer、`aud=yuxuexing-api`、时间窗口、`token_type=access` 和所需 scope/permission；仅有 `Authorization` 头和客户端 authority 头都不能建立身份。Gateway 校验后，领域服务仍必须独立验签并执行本地 PEP。
 - 登录、刷新、密码重置、公开读取、普通已认证读写和后台高风险操作分别绑定具名限流 policy。超过额度返回 canonical 429 与 `Retry-After`；受保护或高风险路径的限流后端不可用时返回 canonical 503，默认不得 fail open。
 - Gateway 生成/清洗并传播 requestId、traceId 和 W3C trace 上下文，写操作保留契约要求的幂等键；401/403/429/5xx 使用统一 envelope。边界审计只保留具名、限长、脱敏字段，不记录 Authorization、Cookie、Token 或原始敏感正文。应用层拒绝 `/internal/v1` 不能替代 Ingress/NetworkPolicy/安全组对领域服务端口的真实直连阻断。

@@ -7,7 +7,7 @@ import {
   type B8RefreshRequest,
   type B8PasswordResetConfirmRequest,
 } from '@englishflow/contracts'
-import { MobileApiError, mobileApiClient } from '../api/client'
+import { MobileApiError, mobileApiClient, mobileIamAuthClient } from '../api/client'
 import { safeInternalReturnTo } from '../platform/gateway'
 
 export type MobileAdultGateStatus = 'UNKNOWN' | 'REQUIRED' | 'PASSED' | 'REJECTED'
@@ -141,7 +141,7 @@ function authIdempotencyKey(prefix: string): string {
 export function createGatewayMobileAuthAdapter(): MobileAuthAdapter {
   return {
     async login(input) {
-      return parseTokenPair(await mobileApiClient.request('/auth/login', {
+      return parseTokenPair(await mobileIamAuthClient.request('/auth/login', {
         method: 'POST',
         data: input,
         header: { 'Idempotency-Key': authIdempotencyKey('login') },
@@ -149,7 +149,7 @@ export function createGatewayMobileAuthAdapter(): MobileAuthAdapter {
       }))
     },
     async register(input) {
-      return parseTokenPair(await mobileApiClient.request('/auth/register', {
+      return parseTokenPair(await mobileIamAuthClient.request('/auth/register', {
         method: 'POST',
         data: input,
         header: { 'Idempotency-Key': authIdempotencyKey('register') },
@@ -157,7 +157,7 @@ export function createGatewayMobileAuthAdapter(): MobileAuthAdapter {
       }))
     },
     async requestPasswordReset(input) {
-      await mobileApiClient.request('/auth/password-reset/request', {
+      await mobileIamAuthClient.request('/auth/password-reset/request', {
         method: 'POST',
         data: input,
         header: { 'Idempotency-Key': authIdempotencyKey('pwd-request') },
@@ -166,7 +166,7 @@ export function createGatewayMobileAuthAdapter(): MobileAuthAdapter {
       return { accepted: true }
     },
     async confirmPasswordReset(input) {
-      await mobileApiClient.request('/auth/password-reset/confirm', {
+      await mobileIamAuthClient.request('/auth/password-reset/confirm', {
         method: 'POST',
         data: input,
         header: { 'Idempotency-Key': authIdempotencyKey('pwd-confirm') },
@@ -182,9 +182,11 @@ export function createGatewayMobileAuthAdapter(): MobileAuthAdapter {
       }
     },
     async refresh(input) {
-      return parseTokenPair(await mobileApiClient.request('/auth/token/refresh', {
+      // H5 refresh is the IAM Secure cookie. The HTTP Gateway never receives it.
+      const data = input?.refreshToken ? input : undefined
+      return parseTokenPair(await mobileIamAuthClient.request('/auth/token/refresh', {
         method: 'POST',
-        data: input,
+        data,
         header: { 'Idempotency-Key': authIdempotencyKey('refresh') },
         skipAuthRetry: true,
         authBootstrap: 'refresh',

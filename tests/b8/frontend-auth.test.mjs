@@ -91,6 +91,32 @@ test('frontend routes expose explicit login and forbidden states and preserve lo
   assert.match(sources[5], /theme/i);
 });
 
+test('learner web and mobile submit passwords to the IAM TLS entry and keep the Gateway seam', () => {
+  for (const app of ['learner-web', 'mobile']) {
+    const gateway = read(`apps/${app}/src/platform/gateway.ts`);
+    assert.match(gateway, /https:\/\/127\.0\.0\.1:18087\/api\/v1/);
+    assert.match(gateway, /getIamAuthBaseUrl/);
+    assert.match(gateway, /http:\/\/127\.0\.0\.1:18070\/api\/v1/);
+  }
+  const webAuth = read('apps/learner-web/src/auth/gateway-auth.ts');
+  const webSession = read('apps/learner-web/src/stores/session.ts');
+  assert.match(webSession, /getGatewayBaseUrl\(\)/);
+  assert.match(webSession, /iamAuthBaseUrl: getIamAuthBaseUrl\(\)/);
+  assert.match(webAuth, /passwordClient\.post\('\/auth\/login'/);
+  assert.match(webAuth, /passwordClient\.post\('\/auth\/register'/);
+  assert.match(webAuth, /passwordClient\.post\('\/auth\/password-reset\/request'/);
+  assert.match(webAuth, /passwordClient\.post\('\/auth\/password-reset\/confirm'/);
+  assert.match(webAuth, /client\.get\('\/iam\/principal\/me'/);
+  const mobileAuth = read('apps/mobile/src/auth/gateway-auth.ts');
+  const mobileClient = read('apps/mobile/src/api/client.ts');
+  assert.match(mobileClient, /getGatewayBaseUrl\(\)/);
+  assert.match(mobileClient, /getIamAuthBaseUrl\(\)/);
+  assert.match(mobileClient, /mobileIamAuthClient/);
+  assert.match(mobileAuth, /mobileIamAuthClient\.request\('\/auth\/login'/);
+  assert.match(mobileAuth, /mobileApiClient\.request\('\/iam\/principal\/me'/);
+  assert.doesNotMatch(mobileAuth, /fetch\(|new URL\(|VITE_GATEWAY_BASE_URL/);
+});
+
 test('official site creates only a controlled public login link and owns no business session state', () => {
   const source = read('apps/official-site/utils/public-links.mjs');
   assert.match(source, /buildLearnerLoginLink/);

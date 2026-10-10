@@ -7,7 +7,7 @@ API、事件、JSON Schema、AI 输入输出和内容 schema 的共享契约。�
 ### P1R-M1-002 认证传输 profile
 
 - `X-Auth-Transport` 只选择凭据传输，不是授权事实；省略时兼容默认 `WEB_COOKIE`，`NATIVE_SECURE_STORAGE` 必须显式选择，并由 IAM 按设备类型/可信客户端上下文交叉校验、失配 fail closed。
-- Web/H5 使用 `WEB_COOKIE`：Access Token 只在内存；Refresh Token 只由 `yuxuexing_refresh` 的 `HttpOnly; Secure; SameSite=Lax; Path=/api/v1/auth` Cookie 发送和轮换，JSON `data` 永不返回 `refreshToken`。
+- Web/H5 使用 `WEB_COOKIE`：Access Token 只在内存；Refresh Token 只由 `yuxuexing_refresh` 的 `HttpOnly; Secure; SameSite=None; Partitioned; Path=/api/v1/auth` Cookie 发送和轮换，JSON `data` 永不返回 `refreshToken`。学习页与 IAM 协议不同，所以 Cookie 用 `None` 加 `Partitioned`；精确 Origin 校验仍然必须生效，SameSite 不能单独充当 CSRF 防护。
 - iOS、Android 与原生 iPad 使用 `NATIVE_SECURE_STORAGE`：JSON `data.refreshToken` 为必填，且只能保存到 Keychain/Keystore；禁止 localStorage、sessionStorage、uni-app 普通 storage 或明文 fallback。原生 refresh body 显式携带该值，且不接收 `Set-Cookie`。
 - 注册、登录和刷新共享公开 endpoint，但响应 `data.authTransport` discriminator 和具名 Web/Native schema 使生成客户端能静态区分 variant；不得重新引入可选 `refreshToken` 的混合成功响应。
 - logout、密码重置与适用的会话撤销撤销相应 token family/session：Web 返回同名同 Path 的清 Cookie（`Max-Age=0`/过去 `Expires`），原生端不发 Cookie、只清理 Keychain/Keystore。CORS、CSRF、Origin/Referer 与跨站凭据策略属于 P1R-M1-004。

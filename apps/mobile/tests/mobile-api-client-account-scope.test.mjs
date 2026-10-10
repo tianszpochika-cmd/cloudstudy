@@ -77,7 +77,11 @@ function environment({ unauthorizedHandler } = {}) {
   const apiModule = load('src/api/client.ts', {
     '../auth/access-token': { getInMemoryAuthRequestSnapshot: () => ({ accessToken, identity: requestIdentity ? { ...requestIdentity } : null, revision: requestRevision }) },
     '../platform/uni-runtime': platform,
-    '../platform/gateway': { getGatewayBaseUrl: () => 'https://gateway.test' },
+    '../platform/gateway': {
+      getGatewayBaseUrl: () => 'https://gateway.test',
+      getIamAuthBaseUrl: () => 'https://iam.example.test/api/v1',
+      requireIamAuthBaseUrl: (value) => value,
+    },
   })
   const refreshForIdentity = unauthorizedHandler ?? ((identity) => session.refreshSilentlyForIdentity(identity))
   const client = apiModule.createMobileApiClient('https://gateway.test', refreshForIdentity)

@@ -260,6 +260,7 @@ test('session logout removes B4 queue immediately even before B4 store is instan
       setInMemoryAuthSnapshot: (value) => { authSnapshot = { ...value }; token = value.accessToken },
     },
     '../api/client': { ApiError: class ApiError extends Error {} },
+    '../auth/auth-failure-copy': { learnerAuthFailureMarker: () => 'failed' },
     '../platform/gateway': { getGatewayBaseUrl: () => 'http://127.0.0.1:18070' },
     '../domain/b1': { B1_STORAGE_KEY: 'yx.b1.learner-web.v1' },
     '../router': { router: { currentRoute: { value: { name: 'login' } }, replace: async () => {} } },

@@ -36,7 +36,7 @@ learner-web、admin-web、mobile 使用同一认证中心和 audience，但分�
 
 | 运行形态 | `X-Auth-Transport` | Access Token | Refresh Token 输入与响应 | 持久化边界 |
 |---|---|---|---|---|
-| learner-web、admin-web、移动 H5，以及其他浏览器运行形态 | `WEB_COOKIE`（省略 header 时的兼容默认值） | 仅内存；不进入 URL、Web storage、日志、埋点或事件 | 注册、登录、刷新成功时仅通过 `Set-Cookie` 返回 `yuxuexing_refresh`；JSON `data` 永不含 `refreshToken`。刷新请求只携带该 HttpOnly Cookie，JSON body 不得含 `refreshToken`。 | Cookie 必须为 `HttpOnly; Secure; SameSite=Lax; Path=/api/v1/auth`。 |
+| learner-web、admin-web、移动 H5，以及其他浏览器运行形态 | `WEB_COOKIE`（省略 header 时的兼容默认值） | 仅内存；不进入 URL、Web storage、日志、埋点或事件 | 注册、登录、刷新成功时仅通过 `Set-Cookie` 返回 `yuxuexing_refresh`；JSON `data` 永不含 `refreshToken`。刷新请求只携带该 HttpOnly Cookie，JSON body 不得含 `refreshToken`。 | Cookie 必须为 `HttpOnly; Secure; SameSite=None; Partitioned; Path=/api/v1/auth`。学习页走 HTTP、IAM 走 HTTPS，浏览器按跨站处理这次刷新；`SameSite=None` 且 `Partitioned` 把 Cookie 限制在该页面分区里送出。SameSite 只是纵深防御，不能代替精确来源校验。 |
 | iOS、Android、原生 iPad 运行形态 | `NATIVE_SECURE_STORAGE`（必须显式选择） | 短时、瞬态使用；不得写入普通 storage | 注册、登录、刷新成功的 JSON `data.refreshToken` 必须存在；刷新请求 body 必须显式提交该值；不得发出 Web Refresh Cookie。 | Refresh Token 只可写入 Keychain/Keystore；禁止 localStorage、sessionStorage、uni-app 普通 storage 及任何明文 fallback。 |
 | official-site | 不建立业务会话 | 不保存 | 仅产生 allow-list 的公开登录/下载 deep link；不接收或保存业务 Token | 不承载登录后的学习业务。 |
 
@@ -49,6 +49,6 @@ Refresh Token 每次使用均轮换并保存摘要/历史；同一幂等键可�
 - learner-web、admin-web 和 mobile H5 只能从各自精确 allow-list origin 发起 credentialed 请求；不允许 `*` 与凭据组合。official-site 只能执行合同明确列出的公开读取，不接收业务 Cookie、Access Token 或 Refresh Token。
 - 任何携带认证 Cookie 的 POST/PUT/PATCH/DELETE 请求必须先精确校验 `Origin`；只有请求没有 `Origin` 时才可从完整 `Referer` 解析并精确比对 origin。`Origin` 与 `Referer` 冲突、来源缺失或不受信时均 fail closed 为 canonical 403，不能继续刷新、登出、撤销或重置会话。
 - 原生端不得携带 Cookie 或接收 `Set-Cookie`；`NATIVE_SECURE_STORAGE` 选择必须与可信客户端/设备上下文相符。CSRF 对该无 Cookie transport 不适用，但这不代表可以信任客户端声明或跳过 JWT、设备和授权校验。
-- 该来源校验与 `HttpOnly; Secure; SameSite=Lax; Path=/api/v1/auth` 共同构成当前合同。未来若改变 SameSite、Cookie Path、受信 origin，或引入同步 token/double-submit，必须同步更新 Gateway 单一事实源、ADR、契约和浏览器运行测试。
+- 该来源校验与 `HttpOnly; Secure; SameSite=None; Partitioned; Path=/api/v1/auth` 共同构成当前合同。经 Gateway 的 Cookie 请求仍由 Gateway 按各端精确来源名单校验。浏览器直接把刷新 Cookie 送到 IAM 时，IAM 对携带 `yuxuexing_refresh` 的非安全 `/api/v1/auth/` 请求做同样的精确校验；受信来源只等于 IAM CORS 里的学习端（`127.0.0.1` 与 `localhost` 的 `18180`、`18183`），不包含管理端和官网。`Origin` 与 `Referer` 冲突、来源缺失或不受信时返回 canonical 403。未来若改变 SameSite、Cookie Path、受信 origin，或引入同步 token/double-submit，必须同步更新 Gateway 单一事实源、ADR、契约和浏览器运行测试。
 
 本 ADR 与 `x-p1r-gateway-boundary` 只冻结 D2 语义，不能据此放宽 Gateway 的跨域/来源校验，也不能宣称现有 Java 运行态已经满足这些要求；实现和真实浏览器 Evidence 归 P1R-M2-001。

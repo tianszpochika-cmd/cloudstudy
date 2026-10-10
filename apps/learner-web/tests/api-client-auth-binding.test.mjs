@@ -20,6 +20,11 @@ function jsonResponse(status, body) {
   }
 }
 
+function requestPath(url) {
+  const path = new URL(url).pathname
+  return path.startsWith('/api/v1/') ? path.slice('/api/v1'.length) : path
+}
+
 function sessionSnapshot(session) {
   const subject = session.principal?.subject?.trim() || null
   const ready = session.status === 'authenticated' || session.status === 'refreshing'
@@ -277,6 +282,14 @@ function loadActualLearnerRuntime(fetchImpl) {
   const piniaModule = { pinia: {} }
   const platformModule = {
     getGatewayBaseUrl: () => 'https://gateway.example.test',
+    getIamAuthBaseUrl: () => 'https://iam.example.test/api/v1',
+    requireIamAuthBaseUrl: (value) => {
+      const url = new URL(value)
+      if (url.protocol !== 'https:' || url.pathname.replace(/\/+$/, '') !== '/api/v1') {
+        throw new Error('账号密码只能提交到 IAM 的 HTTPS 认证入口。')
+      }
+      return `${url.origin}/api/v1`
+    },
     safeInternalReturnTo: (value, fallback = '/home') => typeof value === 'string' && value.startsWith('/') ? value : fallback,
   }
   const accessTokenModule = compileTypeScript('src/auth/access-token.ts', () => {
@@ -333,6 +346,7 @@ function loadActualLearnerRuntime(fetchImpl) {
     if (name === '../auth/access-token') return accessTokenModule
     if (name === '../api/client') return clientModule
     if (name === '../platform/gateway') return platformModule
+    if (name === '../auth/auth-failure-copy') return { learnerAuthFailureMarker: () => 'failed' }
     if (name === '../domain/b1') return { B1_STORAGE_KEY: 'yx.b1.test' }
     if (name === '../router') return routerModule
     throw new Error(`unexpected session dependency: ${name}`)
@@ -370,9 +384,9 @@ test('actual learner session and gateway-auth client allow only verified IAM boo
   const permissionGate = deferred()
   const requests = []
   const fetch = async (url, init) => {
-    const path = new URL(url).pathname
+    const path = requestPath(url)
     const authorization = new Headers(init.headers).get('Authorization')
-    requests.push({ path, method: init.method, authorization })
+    requests.push({ path, origin: new URL(url).origin, method: init.method, authorization })
     if (path === '/auth/login') return jsonResponse(200, { accessToken: 'token-A-1', userId: 'A' })
     if (path === '/iam/permissions') {
       permissionStarted.resolve()
@@ -393,7 +407,10 @@ test('actual learner session and gateway-auth client allow only verified IAM boo
       generation: store.authGeneration.value,
       authenticated: false,
     })
+    assert.equal(requests[0].path, '/auth/login')
+    assert.equal(requests[0].origin, 'https://iam.example.test')
     assert.equal(requests[1].path, '/iam/permissions')
+    assert.equal(requests[1].origin, 'https://gateway.example.test')
     assert.equal(requests[1].authorization, 'Bearer token-A-1')
     await assert.rejects(() => runtime.clientModule.apiClient.get('/learning/plans'), runtime.clientModule.ApiAuthContextChangedError)
     assert.equal(requests.length, 2, 'the business client must stay closed until IAM confirms the owner')
@@ -419,7 +436,7 @@ test('actual learner API client refreshes then retries a same-owner write with t
   let protectedCalls = 0
   let permissionCalls = 0
   const fetch = async (url, init) => {
-    const path = new URL(url).pathname
+    const path = requestPath(url)
     const authorization = new Headers(init.headers).get('Authorization')
     requests.push({ path, method: init.method, authorization, idempotencyKey: new Headers(init.headers).get('Idempotency-Key'), body: init.body })
     if (path === '/auth/login') return jsonResponse(200, { accessToken: 'token-A-1', userId: 'A' })
@@ -462,7 +479,7 @@ test('actual learner API client rejects delayed A responses and never refreshes 
     const requestStarted = deferred()
     const requests = []
     const fetch = async (url, init) => {
-      const path = new URL(url).pathname
+      const path = requestPath(url)
       const authorization = new Headers(init.headers).get('Authorization')
       requests.push({ path, method: init.method, authorization })
       if (path === '/auth/login') {
@@ -513,7 +530,7 @@ test('actual learner API client refuses an A refresh result after B logs in and 
   const requests = []
   let protectedCalls = 0
   const fetch = async (url, init) => {
-    const path = new URL(url).pathname
+    const path = requestPath(url)
     const authorization = new Headers(init.headers).get('Authorization')
     requests.push({ path, method: init.method, authorization })
     if (path === '/auth/login') {
@@ -567,7 +584,7 @@ test('actual session restore verifies principal/me before enabling business requ
     for (const terminalAction of ['logout', 'revoke']) {
       const requests = []
       const fetch = async (url, init) => {
-        const path = new URL(url).pathname
+        const path = requestPath(url)
         const authorization = new Headers(init.headers).get('Authorization')
         requests.push({ path, method: init.method, authorization })
         if (path === '/auth/token/refresh') {

@@ -3092,14 +3092,15 @@
     },
     "headers": {
       "B8RefreshCookie": {
-        "description": "WEB_COOKIE variant only: Set-Cookie must set yuxuexing_refresh=<opaque>; Path=/api/v1/auth; Max-Age=<positive seconds>; HttpOnly; Secure; SameSite=Lax. It is never emitted by the native variant and is not readable by Web/H5 JavaScript.",
+        "description": "WEB_COOKIE variant only: Set-Cookie must set yuxuexing_refresh=<opaque>; Path=/api/v1/auth; Max-Age=<positive seconds>; HttpOnly; Secure; SameSite=None; Partitioned. It is never emitted by the native variant and is not readable by Web/H5 JavaScript. SameSite does not replace the exact Origin check.",
         "x-cookie": {
           "name": "yuxuexing_refresh",
           "path": "/api/v1/auth",
           "maxAge": "positive-seconds",
           "httpOnly": true,
           "secure": true,
-          "sameSite": "Lax",
+          "sameSite": "None",
+          "partitioned": true,
           "transport": "WEB_COOKIE",
           "native": "forbidden"
         },
@@ -3108,7 +3109,7 @@
         }
       },
       "B8RefreshCookieClear": {
-        "description": "WEB_COOKIE variant only: Set-Cookie must clear yuxuexing_refresh with yuxuexing_refresh=; Path=/api/v1/auth; Max-Age=0; Expires=<past HTTP-date>; HttpOnly; Secure; SameSite=Lax. It is never emitted by the native variant.",
+        "description": "WEB_COOKIE variant only: Set-Cookie must clear yuxuexing_refresh with yuxuexing_refresh=; Path=/api/v1/auth; Max-Age=0; Expires=<past HTTP-date>; HttpOnly; Secure; SameSite=None; Partitioned. It is never emitted by the native variant.",
         "x-cookie": {
           "name": "yuxuexing_refresh",
           "path": "/api/v1/auth",
@@ -3117,7 +3118,8 @@
           "expires": "past-http-date",
           "httpOnly": true,
           "secure": true,
-          "sameSite": "Lax",
+          "sameSite": "None",
+          "partitioned": true,
           "transport": "WEB_COOKIE",
           "native": "forbidden"
         },

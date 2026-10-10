@@ -1,6 +1,6 @@
 import { getInMemoryAuthRequestSnapshot } from '../auth/access-token'
 import { getUniRuntime, type UniRequestOptions } from '../platform/uni-runtime'
-import { getGatewayBaseUrl } from '../platform/gateway'
+import { getGatewayBaseUrl, getIamAuthBaseUrl, requireIamAuthBaseUrl } from '../platform/gateway'
 
 const DEFAULT_MOBILE_REQUEST_TIMEOUT_MS = 8000
 
@@ -177,4 +177,11 @@ export const mobileApiClient = createMobileApiClient(
     const [{ pinia }, { useSessionStore }] = await Promise.all([import('../stores/pinia'), import('../stores/session')])
     return useSessionStore(pinia).refreshSilentlyForIdentity(identity)
   },
+)
+
+/** Password posts and the refresh cookie. No bearer. Domain calls and bearer logout stay on mobileApiClient. */
+export const mobileIamAuthClient = createMobileApiClient(
+  requireIamAuthBaseUrl(getIamAuthBaseUrl()),
+  undefined,
+  () => ({ accessToken: null, identity: null, revision: 0 }),
 )

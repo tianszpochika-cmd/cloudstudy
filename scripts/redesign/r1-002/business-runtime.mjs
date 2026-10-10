@@ -81,9 +81,10 @@ export function validateRestrictedToken(token, document) {
 export function validateCookie(cookie, body) {
   if (typeof cookie !== 'string' || !cookie.startsWith('yuxuexing_refresh=') || !/;\s*Path=\/api\/v1\/auth(?:;|$)/.test(cookie)
       || !/;\s*HttpOnly(?:;|$)/i.test(cookie) || !/;\s*Secure(?:;|$)/i.test(cookie)
-      || !/;\s*SameSite=Lax(?:;|$)/i.test(cookie) || !/;\s*Max-Age=[1-9]\d*(?:;|$)/.test(cookie)
+      || !/;\s*SameSite=None(?:;|$)/i.test(cookie) || !/;\s*Partitioned(?:;|$)/i.test(cookie)
+      || !/;\s*Max-Age=[1-9]\d*(?:;|$)/.test(cookie)
       || Object.hasOwn(body.data ?? {}, 'refreshToken')) throw new Error('COOKIE_SECURITY');
-  return { name: 'yuxuexing_refresh', path: '/api/v1/auth', httpOnly: true, secure: true, sameSite: 'Lax', positiveMaxAge: true, bodyRefreshTokenPresent: false };
+  return { name: 'yuxuexing_refresh', path: '/api/v1/auth', httpOnly: true, secure: true, sameSite: 'None', partitioned: true, positiveMaxAge: true, bodyRefreshTokenPresent: false };
 }
 function http(url, { method = 'GET', body, token, ca } = {}) {
   return new Promise((resolve, reject) => {

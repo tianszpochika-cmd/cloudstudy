@@ -40,6 +40,14 @@ function environment() {
   const accessTokens = load('src/auth/access-token.ts', {})
   const gateway = {
     getGatewayBaseUrl: () => 'https://gateway.test',
+    getIamAuthBaseUrl: () => 'https://iam.example.test/api/v1',
+    requireIamAuthBaseUrl: (value) => {
+      const url = new URL(value)
+      if (url.protocol !== 'https:' || url.pathname.replace(/\/+$/, '') !== '/api/v1') {
+        throw new Error('账号密码只能提交到 IAM 的 HTTPS 认证入口。')
+      }
+      return `${url.origin}/api/v1`
+    },
     safeInternalReturnTo: (value, fallback) => typeof value === 'string' ? value : fallback,
   }
   const api = load('src/api/client.ts', {
@@ -78,7 +86,10 @@ async function waitFor(predicate) {
 }
 
 function requestAt(env, suffix, from = 0) {
-  return env.requests.slice(from).find((request) => new URL(request.url).pathname === suffix)
+  return env.requests.slice(from).find((request) => {
+    const path = new URL(request.url).pathname
+    return path === suffix || path === `/api/v1${suffix}`
+  })
 }
 
 test('device management remains reachable with an authenticated IAM session before learning consent', async () => {
@@ -118,11 +129,13 @@ test('real login adapter bootstraps permissions with its new token, then binds t
   await waitFor(() => env.requests.length === 1)
   const loginRequest = requestAt(env, '/auth/login')
   assert.equal(loginRequest.method, 'POST')
+  assert.equal(new URL(loginRequest.url).origin, 'https://iam.example.test')
   assert.equal(loginRequest.header.Authorization, undefined)
   await completeRequest(loginRequest, 200, { accessToken: 'token-A', sessionId: 'session-A' })
 
   await waitFor(() => Boolean(requestAt(env, '/iam/permissions')))
   const permissionRequest = requestAt(env, '/iam/permissions')
+  assert.equal(new URL(permissionRequest.url).origin, 'https://gateway.test')
   assert.equal(permissionRequest.header.Authorization, 'Bearer token-A')
   assert.equal(env.accessTokens.getInMemoryAuthRequestSnapshot().identity, null)
   await completeRequest(permissionRequest, 200, principal('A'))

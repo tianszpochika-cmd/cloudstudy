@@ -1,5 +1,5 @@
 import { ApiError, createApiClient, type ApiAuthSnapshot, type ApiClient, type ApiMethod } from '../api/client'
-import { safeInternalReturnTo } from '../platform/gateway'
+import { requireIamAuthBaseUrl, safeInternalReturnTo } from '../platform/gateway'
 
 export type AuthStatus = 'unknown' | 'restoring' | 'unauthenticated' | 'authenticated' | 'refreshing' | 'revoking' | 'error'
 export type AdultGateStatus = 'UNKNOWN' | 'REQUIRED' | 'PASSED' | 'REJECTED'
@@ -135,6 +135,8 @@ function parseSnapshot(value: unknown): AuthSessionSnapshot | null {
 
 export interface GatewayAuthAdapterOptions {
   readonly baseUrl: string
+  /** HTTPS IAM API root. Login, register, and password reset must not use the Gateway. */
+  readonly iamAuthBaseUrl: string
   readonly getAccessToken?: () => string | null
   readonly getAuthSnapshot?: () => ApiAuthSnapshot | null
   readonly fetchImpl?: typeof fetch
@@ -152,22 +154,28 @@ export function createGatewayAuthAdapter(options: GatewayAuthAdapterOptions): Jw
     fetchImpl: options.fetchImpl,
     credentials: 'include',
   })
+  // Anonymous on purpose: a password post must not carry the Gateway bearer or refresh through it.
+  const passwordClient: ApiClient = createApiClient({
+    baseUrl: requireIamAuthBaseUrl(options.iamAuthBaseUrl),
+    fetchImpl: options.fetchImpl,
+    credentials: 'include',
+  })
 
   return {
     async login(input) {
-      return parseTokenPair(await client.post('/auth/login', input, {
+      return parseTokenPair(await passwordClient.post('/auth/login', input, {
         headers: { 'Idempotency-Key': authIdempotencyKey('login') },
         skipAuthRetry: true,
       }))
     },
     async register(input) {
-      return parseTokenPair(await client.post('/auth/register', input, {
+      return parseTokenPair(await passwordClient.post('/auth/register', input, {
         headers: { 'Idempotency-Key': authIdempotencyKey('register') },
         skipAuthRetry: true,
       }))
     },
     async requestPasswordReset(input) {
-      const raw = await client.post('/auth/password-reset/request', input, {
+      const raw = await passwordClient.post('/auth/password-reset/request', input, {
         headers: { 'Idempotency-Key': authIdempotencyKey('pwd-request') },
         skipAuthRetry: true,
       })
@@ -175,7 +183,7 @@ export function createGatewayAuthAdapter(options: GatewayAuthAdapterOptions): Jw
       return { accepted: true, ...((data && typeof data === 'object' ? data : {}) as object) };
     },
     async confirmPasswordReset(input) {
-      await client.post('/auth/password-reset/confirm', input, {
+      await passwordClient.post('/auth/password-reset/confirm', input, {
         headers: { 'Idempotency-Key': authIdempotencyKey('pwd-confirm') },
         skipAuthRetry: true,
       })
@@ -189,8 +197,9 @@ export function createGatewayAuthAdapter(options: GatewayAuthAdapterOptions): Jw
       }
     },
     async refresh(input) {
+      // Web refresh is the IAM Secure cookie. The HTTP Gateway never receives it.
       const body = input?.refreshToken ? { refreshToken: input.refreshToken } : undefined
-      return parseTokenPair(await client.post('/auth/token/refresh', body, {
+      return parseTokenPair(await passwordClient.post('/auth/token/refresh', body, {
         headers: { 'Idempotency-Key': authIdempotencyKey('refresh') },
         skipAuthRetry: true,
       }))

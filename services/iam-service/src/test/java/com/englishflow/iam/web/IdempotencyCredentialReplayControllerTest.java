@@ -612,7 +612,8 @@ class IdempotencyCredentialReplayControllerTest {
         assertNotNull(firstCookie);
         assertEquals(1, first.getHeaders().get("Set-Cookie").size());
         assertTrue(firstCookie.contains("HttpOnly") && firstCookie.contains("Secure")
-                && firstCookie.contains("SameSite=Lax") && firstCookie.contains("Path=/api/v1/auth"));
+                && firstCookie.contains("SameSite=None") && firstCookie.contains("Partitioned")
+                && firstCookie.contains("Path=/api/v1/auth"));
         assertNull(firstBody.refreshToken(), "web responses must never expose the refresh token in JSON");
         assertEquals(120, firstBody.expiresIn());
 

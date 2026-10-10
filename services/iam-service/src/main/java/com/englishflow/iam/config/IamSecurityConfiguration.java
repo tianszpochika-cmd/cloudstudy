@@ -21,6 +21,7 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfigurationSource;
 import jakarta.servlet.DispatcherType;
 import java.time.Duration;
 import java.util.UUID;
@@ -32,8 +33,10 @@ public class IamSecurityConfiguration {
 
     @Bean
     SecurityFilterChain iamResourceServerChain(HttpSecurity http, JwtDecoder iamJwtDecoder,
-                                               Converter<Jwt, ? extends AbstractAuthenticationToken> converter) throws Exception {
+                                               Converter<Jwt, ? extends AbstractAuthenticationToken> converter,
+                                               CorsConfigurationSource iamAuthCorsConfigurationSource) throws Exception {
         return http.csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> cors.configurationSource(iamAuthCorsConfigurationSource))
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize

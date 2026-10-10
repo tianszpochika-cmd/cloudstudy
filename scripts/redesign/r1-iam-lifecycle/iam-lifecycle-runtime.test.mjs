@@ -144,17 +144,18 @@ test('Run approval validation enforces exact binding and rejects tampering', () 
 });
 
 test('Cookie verification requires all security attributes and forbids body refreshToken', () => {
-  const secureCookie = 'yuxuexing_refresh=synthetic-token-123; Path=/api/v1/auth; Max-Age=3600; HttpOnly; Secure; SameSite=Lax';
+  const secureCookie = 'yuxuexing_refresh=synthetic-token-123; Path=/api/v1/auth; Max-Age=3600; HttpOnly; Secure; Partitioned; SameSite=None';
   const parsed = validateCookie(secureCookie, { data: {} });
   assert.equal(parsed.name, 'yuxuexing_refresh');
   assert.equal(parsed.httpOnly, true);
   assert.equal(parsed.secure, true);
-  assert.equal(parsed.sameSite, 'Lax');
+  assert.equal(parsed.sameSite, 'None');
+  assert.equal(parsed.partitioned, true);
 
   assert.equal(parseCookieValue(secureCookie), 'synthetic-token-123');
 
   // Missing security attributes fail
-  for (const attribute of ['; Path=/api/v1/auth', '; Max-Age=3600', '; HttpOnly', '; Secure', '; SameSite=Lax']) {
+  for (const attribute of ['; Path=/api/v1/auth', '; Max-Age=3600', '; HttpOnly', '; Secure', '; Partitioned', '; SameSite=None']) {
     assert.throws(
       () => validateCookie(secureCookie.replace(attribute, ''), { data: {} }),
       /COOKIE_SECURITY/
@@ -271,7 +272,7 @@ test('R1-004 assertion evaluation checks login, rotation, old refresh replay rej
   const refresh = {
     status: 200,
     rawRefreshToken: 'refresh-token-v2',
-    cookieSecurity: { secure: true, httpOnly: true, sameSite: 'Lax' },
+    cookieSecurity: { secure: true, httpOnly: true, sameSite: 'None', partitioned: true },
     body: { data: { sessionId: 'sess-4', accessToken: 'access-v2' } }
   };
   const refreshReplay = { status: 401, body: { error: { code: 'AUTH_REFRESH_REUSE_DETECTED' } } };

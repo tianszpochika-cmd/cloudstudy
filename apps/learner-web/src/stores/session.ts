@@ -4,7 +4,7 @@ import { createGatewayAuthAdapter, safeReturnTo, type AdultGateStatus, type Auth
 import { getInMemoryAccessToken, getInMemoryAuthSnapshot, setInMemoryAuthSnapshot } from '../auth/access-token'
 import { learnerAuthFailureMarker } from '../auth/auth-failure-copy'
 import { ApiError, type ApiAuthBinding } from '../api/client'
-import { getGatewayBaseUrl } from '../platform/gateway'
+import { getGatewayBaseUrl, getIamAuthBaseUrl } from '../platform/gateway'
 import { B1_STORAGE_KEY } from '../domain/b1'
 
 export type AuthErrorCode = 'AUTH_FAILED' | 'SESSION_EXPIRED' | 'LOGOUT_FAILED' | 'REVOKE_FAILED'
@@ -106,6 +106,7 @@ export const useSessionStore = defineStore('session', () => {
     if (!activeAdapter) {
       activeAdapter = createGatewayAuthAdapter({
         baseUrl: getGatewayBaseUrl(),
+        iamAuthBaseUrl: getIamAuthBaseUrl(),
         getAccessToken: () => accessToken.value,
         getAuthSnapshot: getInMemoryAuthSnapshot,
       })

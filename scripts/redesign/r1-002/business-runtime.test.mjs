@@ -10,9 +10,11 @@ test('DB write names cannot target existing schemas or SQL injection',()=>{
   for(const value of ['iam_service','r1_002_20261008_bad;DROP DATABASE iam_service','r1_002_20261007_aabbccddeeff'])assert.throws(()=>assertSchema(value),/SCHEMA_SCOPE/);
 });
 test('cookie verification requires all browser safeguards and no JSON credential',()=>{
-  const value='yuxuexing_refresh=synthetic; Path=/api/v1/auth; Max-Age=120; HttpOnly; Secure; SameSite=Lax';
+  const value='yuxuexing_refresh=synthetic; Path=/api/v1/auth; Max-Age=120; HttpOnly; Secure; Partitioned; SameSite=None';
   assert.equal(validateCookie(value,{data:{}}).secure,true);
-  for(const attribute of ['; Path=/api/v1/auth','; Max-Age=120','; HttpOnly','; Secure','; SameSite=Lax'])assert.throws(()=>validateCookie(value.replace(attribute,''),{data:{}}),/COOKIE_SECURITY/);
+  assert.equal(validateCookie(value,{data:{}}).sameSite,'None');
+  assert.equal(validateCookie(value,{data:{}}).partitioned,true);
+  for(const attribute of ['; Path=/api/v1/auth','; Max-Age=120','; HttpOnly','; Secure','; Partitioned','; SameSite=None'])assert.throws(()=>validateCookie(value.replace(attribute,''),{data:{}}),/COOKIE_SECURITY/);
   assert.throws(()=>validateCookie(value,{data:{refreshToken:'synthetic'}}),/COOKIE_SECURITY/);
 });
 test('actual RS256 signature and exact pre-gate owner/tenant/permissions required',()=>{
