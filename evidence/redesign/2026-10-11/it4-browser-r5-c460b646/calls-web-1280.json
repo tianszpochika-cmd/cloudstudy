@@ -1,0 +1,365 @@
+[
+  {
+    "method": "POST",
+    "origin": "https://127.0.0.1:18087",
+    "path": "/api/v1/auth/register",
+    "status": 201,
+    "raw": "https://127.0.0.1:18087/api/v1/auth/register"
+  },
+  {
+    "method": "PUT",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/consents",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/iam/consents"
+  },
+  {
+    "method": "PUT",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/consents",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/iam/consents"
+  },
+  {
+    "method": "PUT",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/consents",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/iam/consents"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/targets",
+    "status": 404,
+    "raw": "http://127.0.0.1:18070/api/v1/learner/targets",
+    "body": ""
+  },
+  {
+    "method": "PUT",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/consents",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/iam/consents"
+  },
+  {
+    "method": "PUT",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/consents",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/iam/consents"
+  },
+  {
+    "method": "PUT",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/consents",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/iam/consents"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/preferences",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/learner/preferences"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/targets",
+    "status": 404,
+    "raw": "http://127.0.0.1:18070/api/v1/learner/targets",
+    "body": ""
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/profile",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/learner/profile"
+  },
+  {
+    "method": "PATCH",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/profile",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/learner/profile"
+  },
+  {
+    "method": "PUT",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/targets",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/learner/targets"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/preferences",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/learner/preferences?contentLocale=en-US"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/profile",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/learner/profile?contentLocale=en-US"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/targets",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/learner/targets?contentLocale=en-US"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/targets",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/learner/targets"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learning/today",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/learning/today",
+    "body": "{\"data\":{\"principalId\":\"79b046d3-15e0-4450-9d3c-8f2446f02b1a\",\"planId\":\"\",\"status\":\"EMPTY\",\"planVersion\":0,\"targetMinutes\":0,\"count\":0,\"items\":[],\"deferredCount\":0,\"algorithmVersion\":\"SM2_Q03_V1\",\"emptyReason\":\"NO_PLAN\",\"firstLearning\":{\"reason\":\"NO_PLAN\",\"guideVisible\":true},\"generatedAt\":\"2026-10-10T20:25:01.423160Z\"}}"
+  },
+  {
+    "method": "POST",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/assessment/placement/sessions",
+    "status": 201,
+    "raw": "http://127.0.0.1:18070/api/v1/assessment/placement/sessions"
+  },
+  {
+    "method": "POST",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/assessment/placement/sessions/asess_4b97e1d2980148a1a196fc974935d9fc/responses",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/assessment/placement/sessions/asess_4b97e1d2980148a1a196fc974935d9fc/responses"
+  },
+  {
+    "method": "POST",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/assessment/placement/sessions/asess_4b97e1d2980148a1a196fc974935d9fc/responses",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/assessment/placement/sessions/asess_4b97e1d2980148a1a196fc974935d9fc/responses"
+  },
+  {
+    "method": "POST",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/assessment/placement/sessions/asess_4b97e1d2980148a1a196fc974935d9fc/responses",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/assessment/placement/sessions/asess_4b97e1d2980148a1a196fc974935d9fc/responses"
+  },
+  {
+    "method": "POST",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/assessment/placement/sessions/asess_4b97e1d2980148a1a196fc974935d9fc/responses",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/assessment/placement/sessions/asess_4b97e1d2980148a1a196fc974935d9fc/responses"
+  },
+  {
+    "method": "POST",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/assessment/placement/sessions/asess_4b97e1d2980148a1a196fc974935d9fc/responses",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/assessment/placement/sessions/asess_4b97e1d2980148a1a196fc974935d9fc/responses"
+  },
+  {
+    "method": "POST",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/assessment/placement/sessions/asess_4b97e1d2980148a1a196fc974935d9fc/responses",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/assessment/placement/sessions/asess_4b97e1d2980148a1a196fc974935d9fc/responses"
+  },
+  {
+    "method": "POST",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/assessment/placement/sessions/asess_4b97e1d2980148a1a196fc974935d9fc/responses",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/assessment/placement/sessions/asess_4b97e1d2980148a1a196fc974935d9fc/responses"
+  },
+  {
+    "method": "POST",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/assessment/placement/sessions/asess_4b97e1d2980148a1a196fc974935d9fc/responses",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/assessment/placement/sessions/asess_4b97e1d2980148a1a196fc974935d9fc/responses"
+  },
+  {
+    "method": "POST",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/assessment/placement/sessions/asess_4b97e1d2980148a1a196fc974935d9fc/responses",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/assessment/placement/sessions/asess_4b97e1d2980148a1a196fc974935d9fc/responses"
+  },
+  {
+    "method": "POST",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/assessment/placement/sessions/asess_4b97e1d2980148a1a196fc974935d9fc/responses",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/assessment/placement/sessions/asess_4b97e1d2980148a1a196fc974935d9fc/responses"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/targets",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/learner/targets"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/grammar/mastery",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/grammar/mastery"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/grammar/exercises",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/grammar/exercises?limit=20"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/grammar/points",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/grammar/points?pageSize=50"
+  },
+  {
+    "method": "POST",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/assessment/sessions",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/assessment/sessions"
+  },
+  {
+    "method": "POST",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/assessment/sessions/asess_92c5b3c66ff9479ebb18ebf73343ab6b/attempts",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/assessment/sessions/asess_92c5b3c66ff9479ebb18ebf73343ab6b/attempts"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18180",
+    "path": "/mistakes",
+    "status": 200,
+    "raw": "http://127.0.0.1:18180/mistakes"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/targets",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/learner/targets"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learning/mistakes/queue",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/learning/mistakes/queue"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/assessment/placement/sessions/asess_4b97e1d2980148a1a196fc974935d9fc",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/assessment/placement/sessions/asess_4b97e1d2980148a1a196fc974935d9fc"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/targets",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/learner/targets"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learning/stats/daily-report",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/learning/stats/daily-report?date=2026-10-10"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/content/learner/catalog",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/content/learner/catalog?contentLocale=en-US"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learning/review-queue",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/learning/review-queue?contentLocale=en-US&limit=20"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/home",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/learner/home?contentLocale=en-US"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learning/today",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/learning/today",
+    "body": "{\"data\":{\"principalId\":\"79b046d3-15e0-4450-9d3c-8f2446f02b1a\",\"planId\":\"plan-100000\",\"status\":\"ACTIVE\",\"planVersion\":2,\"targetMinutes\":15,\"count\":3,\"items\":[{\"practiceRef\":{\"contentVersionId\":266100,\"contentCode\":\"p1.placement.v1\",\"questionItemId\":\"266001\"},\"dueAt\":\"2026-10-10T20:25:05.050381\",\"stage\":\"NEW\",\"itemId\":\"266001\",\"arrangement\":\"DUE\"},{\"practiceRef\":{\"contentVersionId\":266100,\"contentCode\":\"p1.placement.v1\",\"questionItemId\":\"266002\"},\"dueAt\":\"2026-10-10T20:25:05.051123\",\"stage\":\"NEW\",\"itemId\":\"266002\",\"arrangement\":\"DUE\"},{\"practiceRef\":{\"contentVersionId\":266100,\"contentCode\":\"p1.placement.v1\",\"questionItemId\":\"266003\"},\"dueAt\":\"2026-10-10T20:25:05.051748\",\"stage\":\"NEW\",\"itemId\":"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/targets",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/learner/targets"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/content/learner/catalog",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/content/learner/catalog?contentLocale=en-US"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/home",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/learner/home?contentLocale=en-US"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learning/today",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/learning/today",
+    "body": "{\"data\":{\"principalId\":\"79b046d3-15e0-4450-9d3c-8f2446f02b1a\",\"planId\":\"plan-100000\",\"status\":\"ACTIVE\",\"planVersion\":2,\"targetMinutes\":15,\"count\":3,\"items\":[{\"practiceRef\":{\"contentVersionId\":266100,\"contentCode\":\"p1.placement.v1\",\"questionItemId\":\"266001\"},\"dueAt\":\"2026-10-10T20:25:05.050381\",\"stage\":\"NEW\",\"itemId\":\"266001\",\"arrangement\":\"DUE\"},{\"practiceRef\":{\"contentVersionId\":266100,\"contentCode\":\"p1.placement.v1\",\"questionItemId\":\"266002\"},\"dueAt\":\"2026-10-10T20:25:05.051123\",\"stage\":\"NEW\",\"itemId\":\"266002\",\"arrangement\":\"DUE\"},{\"practiceRef\":{\"contentVersionId\":266100,\"contentCode\":\"p1.placement.v1\",\"questionItemId\":\"266003\"},\"dueAt\":\"2026-10-10T20:25:05.051748\",\"stage\":\"NEW\",\"itemId\":"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learning/today",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/learning/today",
+    "body": "{\"data\":{\"principalId\":\"79b046d3-15e0-4450-9d3c-8f2446f02b1a\",\"planId\":\"plan-100000\",\"status\":\"ACTIVE\",\"planVersion\":2,\"targetMinutes\":15,\"count\":3,\"items\":[{\"practiceRef\":{\"contentVersionId\":266100,\"contentCode\":\"p1.placement.v1\",\"questionItemId\":\"266001\"},\"dueAt\":\"2026-10-10T20:25:05.050381\",\"stage\":\"NEW\",\"itemId\":\"266001\",\"arrangement\":\"DUE\"},{\"practiceRef\":{\"contentVersionId\":266100,\"contentCode\":\"p1.placement.v1\",\"questionItemId\":\"266002\"},\"dueAt\":\"2026-10-10T20:25:05.051123\",\"stage\":\"NEW\",\"itemId\":\"266002\",\"arrangement\":\"DUE\"},{\"practiceRef\":{\"contentVersionId\":266100,\"contentCode\":\"p1.placement.v1\",\"questionItemId\":\"266003\"},\"dueAt\":\"2026-10-10T20:25:05.051748\",\"stage\":\"NEW\",\"itemId\":"
+  },
+  {
+    "method": "POST",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/assessment/sessions",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/assessment/sessions"
+  }
+]

@@ -1,0 +1,197 @@
+{
+  "kind": "R5_IT4_BROWSER",
+  "summary": "PASS",
+  "accepted": false,
+  "it4Outbound": false,
+  "lunaStamp": false,
+  "suffix": "c460b646",
+  "chain": "PASS",
+  "dbFacts": {
+    "assessmentSchema": "r5_it4_20261011_asm_c460b646",
+    "learningSchema": "r5_it4_20261011_lng_c460b646",
+    "sessions": "6",
+    "attempts": "4",
+    "mistakes": "4",
+    "zeroAttempts": "4",
+    "admittedEvents": "4",
+    "projectedZero": "4"
+  },
+  "steps": [
+    {
+      "name": "ports-free",
+      "status": "PASS"
+    },
+    {
+      "name": "dedicated-schemas",
+      "status": "PASS"
+    },
+    {
+      "name": "iam-https",
+      "status": "PASS"
+    },
+    {
+      "name": "content-seed",
+      "status": "PASS"
+    },
+    {
+      "name": "admin-ops-memory",
+      "status": "PASS"
+    },
+    {
+      "name": "register-web-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "placement-web-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "session-web-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "answer-web-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "receipt-web-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "mistake-web-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "repair-web-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "review-web-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "today-web-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "register-web-390",
+      "status": "PASS"
+    },
+    {
+      "name": "placement-web-390",
+      "status": "PASS"
+    },
+    {
+      "name": "session-web-390",
+      "status": "PASS"
+    },
+    {
+      "name": "answer-web-390",
+      "status": "PASS"
+    },
+    {
+      "name": "receipt-web-390",
+      "status": "PASS"
+    },
+    {
+      "name": "mistake-web-390",
+      "status": "PASS"
+    },
+    {
+      "name": "repair-web-390",
+      "status": "PASS"
+    },
+    {
+      "name": "review-web-390",
+      "status": "PASS"
+    },
+    {
+      "name": "today-web-390",
+      "status": "PASS"
+    },
+    {
+      "name": "register-h5-390",
+      "status": "PASS"
+    },
+    {
+      "name": "placement-h5-390",
+      "status": "PASS"
+    },
+    {
+      "name": "session-h5-390",
+      "status": "PASS"
+    },
+    {
+      "name": "answer-h5-390",
+      "status": "PASS"
+    },
+    {
+      "name": "receipt-h5-390",
+      "status": "PASS"
+    },
+    {
+      "name": "mistake-h5-390",
+      "status": "PASS"
+    },
+    {
+      "name": "repair-h5-390",
+      "status": "PASS"
+    },
+    {
+      "name": "review-h5-390",
+      "status": "PASS"
+    },
+    {
+      "name": "today-h5-390",
+      "status": "PASS"
+    },
+    {
+      "name": "register-h5-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "placement-h5-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "session-h5-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "answer-h5-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "receipt-h5-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "mistake-h5-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "repair-h5-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "review-h5-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "today-h5-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "db-facts",
+      "status": "PASS"
+    },
+    {
+      "name": "schemas-dropped",
+      "status": "PASS"
+    },
+    {
+      "name": "qida-unchanged",
+      "status": "PASS"
+    }
+  ]
+}
