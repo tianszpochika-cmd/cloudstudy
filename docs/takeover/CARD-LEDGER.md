@@ -79,7 +79,7 @@
 | R1-052 | IT-4 | 掌握度不可直写；不足为 WEAKNESS_UNKNOWN；同一目标归并 | 自带 stage 为 409「这个操作现在不能用」。无证据为 WEAKNESS_UNKNOWN。同一目标只留先到的一条。lunaStamp=false | 弱点空态和有证据列表分开 |
 | R1-053 | IT-4 | 空本区分尚未练习和已全对；跨端同投影；中断恢复同一补救 | 空态分开 NOT_PRACTICED 与 ALL_CORRECT。投影 IT4-MISTAKE-1。remediationId 稳定。lunaStamp=false | 空本文案一致，返回仍是同一任务 |
 | R1-054 | IT-4 | SRS 保持 SM2_Q03_V1；超预算顺延，不堆欠账 | 到期项都留在今日列表。超预算为 DEFERRED，不记欠账。算法仍是 SM2_Q03_V1。lunaStamp=false | 今日任务能看到到期复习 |
-| R1-055 | IT-4 | 拒绝自报写 stage；完成事件同键不重复推进 | 已定义，未实现 | 复习页没有直接标完成的写入 |
+| R1-055 | IT-4 | 拒绝自报写 stage；完成事件同键不重复推进 | 409 码仍是 UNTRUSTED_REVIEW_EVIDENCE。界面写成“这个操作现在不能用”。同键不推进 stage。lunaStamp=false | 复习页没有直接标完成的写入 |
 | R1-056 | IT-4 | 历史只显示完成和延期；遗忘只来自可信结果；空队列三态 | 已定义，未实现 | 复习历史和空队列三态 |
 | R1-057 | IT-4 | 跨端同一 stage；对账按来源唯一性，不要求行数相等 | 已定义，未实现 | 两端读回同一 stage |
 | R1-058 | IT-4 | 练错复交互验收 | 已定义，未跑 | Web/H5，1280 与 390 |

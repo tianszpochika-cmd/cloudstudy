@@ -5,6 +5,7 @@ import { useRouter } from 'vue-router'
 import EmptyState from '../components/EmptyState.vue'
 import { useLearnerContentStore } from '../stores/learner-content'
 import { useB18LearningStore } from '../stores/b18-learning'
+import { reviewFailureCopy } from '../domain/review-stage'
 
 const router = useRouter()
 const contentStore = useLearnerContentStore()
@@ -43,7 +44,8 @@ function startTask(taskId: string): void {
     </div>
 
     <article class="content-grid" v-if="content.length"><div class="section-heading"><div><p class="card-kicker">COURSES</p><h3>已发布课程</h3></div><button class="button button--secondary" type="button" @click="router.push({ name: 'courses' })">全部课程</button></div><button v-for="item in content.slice(0, 6)" :key="item.contentId" class="content-card" type="button" @click="openCourse(item.contentId)"><strong>{{ item.title }}</strong><span>{{ item.kind }} · {{ item.contentLocale }} · {{ item.status }}</span></button></article>
-    <p v-if="contentStore.lastError || loopStore.lastError" class="error-text" role="alert">{{ contentStore.lastError ?? loopStore.lastError }}</p>
+    <p v-if="reviewFailureCopy(loopStore.lastError)" data-review-illegal>{{ reviewFailureCopy(loopStore.lastError) }}</p>
+    <p v-if="contentStore.lastError || loopStore.lastError" class="error-text" role="alert">{{ reviewFailureCopy(loopStore.lastError) || contentStore.lastError || loopStore.lastError }}</p>
   </section>
 </template>
 

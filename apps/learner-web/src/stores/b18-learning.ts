@@ -4,6 +4,7 @@ import { ApiError } from '../api/client'
 import { listB18ReviewQueue, type B18ReviewQueueItem } from '../api/b18-learning'
 import { getLearningReport } from '../api/b10'
 import type { B10Report } from '../domain/b10'
+import { ILLEGAL_REVIEW, reviewFailureCopy, stageAfter } from '../domain/review-stage'
 
 export type B18LearningState = 'idle' | 'loading' | 'empty' | 'ready' | 'partial' | 'permission' | 'recovery' | 'offline' | 'error' | 'success'
 
@@ -16,7 +17,12 @@ function stateFor(error: unknown): B18LearningState {
   return error instanceof TypeError ? 'offline' : 'error'
 }
 
+const seenCompletionKeys = new Set<string>()
+
 function messageFor(error: unknown): string {
+  const raw = error instanceof Error ? error.message : ''
+  const illegal = reviewFailureCopy(raw)
+  if (illegal) return illegal
   if (error instanceof ApiError && error.status === 403) return '当前会话没有访问复习队列的权限。'
   if (error instanceof ApiError && error.status === 409) return '复习状态发生变化，请刷新后恢复。'
   if (stateFor(error) === 'offline') return '复习服务暂时不可用，已保留当前页面。'
@@ -44,9 +50,13 @@ export const useB18LearningStore = defineStore('b18-learning', () => {
   }
 
   async function complete(item: B18ReviewQueueItem): Promise<void> {
-    if (!item.completable) {
+    const key = `review-complete:${item.queueItemId}`
+    const sameKey = seenCompletionKeys.has(key)
+    seenCompletionKeys.add(key)
+    item.state = stageAfter(item.state, item.state, sameKey)
+    if (!item.completable || sameKey) {
       state.value = 'recovery'
-      lastError.value = '复习记录暂不可结算。'
+      lastError.value = ILLEGAL_REVIEW
       return
     }
     state.value = 'recovery'

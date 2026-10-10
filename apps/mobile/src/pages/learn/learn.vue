@@ -14,6 +14,7 @@ import { consumePendingNavigationQuery, openUniPage, getUniRuntime } from '../..
 import { useSessionStore } from '../../stores/session'
 import { useB18LearningStore } from '../../stores/b18-learning'
 import { weaknessView } from '../../domain/mistake-book'
+import { reviewFailureCopy } from '../../domain/review-stage'
 
 const session = useSessionStore()
 const learning = useB18LearningStore()
@@ -124,8 +125,9 @@ onShow(async () => { await session.restore(); if (!session.isAuthenticated) { ge
       <text v-else data-weakness-evidence>已有复习证据</text>
       <text v-if="learning.state === 'idle' || learning.state === 'loading'" role="status">正在读取复习安排…</text>
       <text v-else-if="learning.state === 'empty'">暂无待复习内容。</text>
+      <text v-if="reviewFailureCopy(learning.lastError)" data-review-illegal>{{ reviewFailureCopy(learning.lastError) }}</text>
       <template v-else-if="reviewNotice">
-        <text class="review-error" role="alert">{{ reviewNotice }}</text>
+        <text class="review-error" role="alert">{{ reviewFailureCopy(learning.lastError) || reviewNotice }}</text>
         <button v-if="learning.state !== 'permission' && learning.state !== 'recovery'" tabindex="0" role="button" class="yx-button yx-button--secondary" type="button" @click="learning.load()">重试</button>
       </template>
       <view v-for="item in reviewRows" :key="item.queueItemId" class="review-row">
