@@ -1,0 +1,111 @@
+{
+  "summary": "PASS",
+  "accepted": false,
+  "it2Outbound": false,
+  "lunaStamp": false,
+  "identity": "iam-rs256",
+  "schemas": "four-owners",
+  "steps": [
+    {
+      "name": "mysql-identity",
+      "status": "PASS",
+      "detail": {
+        "name": "/yuxuexing-local-mysql-1",
+        "image": "mysql:8.0",
+        "project": "yuxuexing-local",
+        "service": "mysql",
+        "status": "running",
+        "health": "healthy",
+        "port": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "13306"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ports-free",
+      "status": "PASS",
+      "detail": {
+        "occupied": []
+      }
+    },
+    {
+      "name": "four-owner-schemas",
+      "status": "PASS",
+      "detail": {
+        "iam": "it2_browser_20261010_iam_5e3c868e",
+        "learner": "it2_browser_20261010_lrn_5e3c868e",
+        "content": "it2_browser_20261010_cnt_5e3c868e",
+        "assessment": "it2_browser_20261010_asm_5e3c868e"
+      }
+    },
+    {
+      "name": "content-seed-own-schema",
+      "status": "PASS",
+      "detail": {
+        "seeded": "10",
+        "schema": "it2_browser_20261010_cnt_5e3c868e"
+      }
+    },
+    {
+      "name": "browser-ca-installed-without-ignoring-errors",
+      "status": "PASS",
+      "detail": {
+        "keychain": "temporary-user-keychain"
+      }
+    },
+    {
+      "name": "browser-register-direct-iam-tls",
+      "status": "PASS",
+      "detail": {
+        "call": {
+          "method": "POST",
+          "origin": "https://127.0.0.1:18087",
+          "path": "/api/v1/auth/register",
+          "status": 201
+        },
+        "url": "http://127.0.0.1:18180/onboarding",
+        "body": "语学星\n\n按已保存进度继续\n\n欢迎来到语学星\n\n还需要确认成人身份\n\n1\n确认身份\n2\n必要同意\n3\n学习目标\n\n确认成人身份\n\n确认成人身份\n\n只收集出生年份，用来判断是否已满 18 岁。现有成人门不需要月和日，所以不收集完整生日。成人门还没通过时，停在这一步。\n\n如果没有通过，仍可前往账号设置、帮助与反馈或退出登录。这里不提供再试一次，也不提供改年份。\n\n出生年份\n我确认自己已满 18 周岁\n\n本页还没提交的内容只留在这一页，离开后不会保留。\n\n继续\n退出登录"
+      }
+    },
+    {
+      "name": "browser-gate-consent-goal-placement-entry",
+      "status": "PASS",
+      "detail": {
+        "url": "http://127.0.0.1:18180/assessment"
+      }
+    },
+    {
+      "name": "browser-ten-items-report",
+      "status": "PASS",
+      "detail": {
+        "url": "http://127.0.0.1:18180/assessment",
+        "body": "跳到学习内容\n语学星\nLEARN A LITTLE. EVERY DAY.\n\n日常学习\n\n学习首页\n今日任务\n内容书架\n学习路径\n专项练习\n\n我的成长\n\n学习世界\n学习报告\n错题本\n掌握进度\n计划地图\n一点一点，学得更从容。\n帮助与反馈\n账户与偏好\n我的学习空间\n学习测评\n想学什么？搜索页面\n⌘ K\n我的学习空间\n找到一个适合你的起点。\n\n不必追求满分，按真实水平作答，帮助安排接下来的学习。\n\n已完成\n\n报告已生成\n\n答对 3 题，共 10 题。\n\n刚才提交的这题没有答对。\n"
+      }
+    },
+    {
+      "name": "browser-retest-new-session",
+      "status": "PASS",
+      "detail": {
+        "retest": {
+          "method": "POST",
+          "origin": "http://127.0.0.1:18070",
+          "path": "/api/v1/assessment/placement/sessions/asess_0a5b678e933049c7a76ffef2f432a657/retest",
+          "status": 201
+        },
+        "url": "http://127.0.0.1:18180/assessment"
+      }
+    }
+  ],
+  "dropped": [
+    "it2_browser_20261010_iam_5e3c868e=0",
+    "it2_browser_20261010_lrn_5e3c868e=0",
+    "it2_browser_20261010_cnt_5e3c868e=0",
+    "it2_browser_20261010_asm_5e3c868e=0"
+  ],
+  "retainedSchemasLeft": "2",
+  "listeners": [],
+  "qidaUnchanged": true
+}
