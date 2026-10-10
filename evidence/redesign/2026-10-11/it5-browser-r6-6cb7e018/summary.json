@@ -1,0 +1,259 @@
+{
+  "kind": "R6_IT5_BROWSER",
+  "summary": "FAIL",
+  "accepted": false,
+  "it5Outbound": false,
+  "lunaStamp": false,
+  "suffix": "6cb7e018",
+  "chain": "FAIL",
+  "dbFacts": {
+    "assessmentSchema": "r6_it5_20261011_asm_6cb7e018",
+    "learningSchema": "r6_it5_20261011_lng_6cb7e018",
+    "digestCount": 4,
+    "uniqueDigests": 1,
+    "digests": [
+      {
+        "label": "web-1280",
+        "availability": "NEVER_STUDIED",
+        "officialScore": false,
+        "digest": "f190cd3d4f5041ff0e01e360fa5f160e55abe2584f1b3f833628864d28ce324b"
+      },
+      {
+        "label": "web-390",
+        "availability": "NEVER_STUDIED",
+        "officialScore": false,
+        "digest": "f190cd3d4f5041ff0e01e360fa5f160e55abe2584f1b3f833628864d28ce324b"
+      },
+      {
+        "label": "h5-390",
+        "availability": "NEVER_STUDIED",
+        "officialScore": false,
+        "digest": "f190cd3d4f5041ff0e01e360fa5f160e55abe2584f1b3f833628864d28ce324b"
+      },
+      {
+        "label": "h5-1280",
+        "availability": "NEVER_STUDIED",
+        "officialScore": false,
+        "digest": "f190cd3d4f5041ff0e01e360fa5f160e55abe2584f1b3f833628864d28ce324b"
+      }
+    ],
+    "shares": "2",
+    "revokedShares": "2",
+    "learningInteractions": "0",
+    "placementSessions": "0"
+  },
+  "steps": [
+    {
+      "name": "ports-free",
+      "status": "PASS"
+    },
+    {
+      "name": "dedicated-schemas",
+      "status": "PASS"
+    },
+    {
+      "name": "iam-https",
+      "status": "PASS"
+    },
+    {
+      "name": "content-seed",
+      "status": "PASS"
+    },
+    {
+      "name": "admin-ops-memory",
+      "status": "PASS"
+    },
+    {
+      "name": "register-web-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "placement-web-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "placement-card-web-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-placement-web-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "period-web-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "digest-web-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-report-web-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "weekly-web-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "share-issue-web-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "share-open-web-1280-active",
+      "status": "FAIL"
+    },
+    {
+      "name": "overflow-share-web-1280-active",
+      "status": "PASS"
+    },
+    {
+      "name": "share-revoke-web-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "share-open-web-1280-revoked",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-share-web-1280-revoked",
+      "status": "PASS"
+    },
+    {
+      "name": "register-web-390",
+      "status": "PASS"
+    },
+    {
+      "name": "placement-web-390",
+      "status": "PASS"
+    },
+    {
+      "name": "placement-card-web-390",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-placement-web-390",
+      "status": "PASS"
+    },
+    {
+      "name": "period-web-390",
+      "status": "PASS"
+    },
+    {
+      "name": "digest-web-390",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-report-web-390",
+      "status": "PASS"
+    },
+    {
+      "name": "weekly-web-390",
+      "status": "PASS"
+    },
+    {
+      "name": "share-issue-web-390",
+      "status": "PASS"
+    },
+    {
+      "name": "share-open-web-390-active",
+      "status": "FAIL"
+    },
+    {
+      "name": "overflow-share-web-390-active",
+      "status": "PASS"
+    },
+    {
+      "name": "share-revoke-web-390",
+      "status": "PASS"
+    },
+    {
+      "name": "share-open-web-390-revoked",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-share-web-390-revoked",
+      "status": "PASS"
+    },
+    {
+      "name": "register-h5-390",
+      "status": "PASS"
+    },
+    {
+      "name": "placement-h5-390",
+      "status": "PASS"
+    },
+    {
+      "name": "placement-card-h5-390",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-placement-h5-390",
+      "status": "PASS"
+    },
+    {
+      "name": "period-h5-390",
+      "status": "PASS"
+    },
+    {
+      "name": "digest-h5-390",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-report-h5-390",
+      "status": "PASS"
+    },
+    {
+      "name": "walk-h5-390",
+      "status": "FAIL"
+    },
+    {
+      "name": "register-h5-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "placement-h5-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "placement-card-h5-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-placement-h5-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "period-h5-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "digest-h5-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-report-h5-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "walk-h5-1280",
+      "status": "FAIL"
+    },
+    {
+      "name": "clean-replay",
+      "status": "PASS"
+    },
+    {
+      "name": "db-facts",
+      "status": "PASS"
+    },
+    {
+      "name": "schemas-dropped",
+      "status": "PASS"
+    },
+    {
+      "name": "qida-unchanged",
+      "status": "PASS"
+    }
+  ]
+}

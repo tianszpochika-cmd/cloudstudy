@@ -1,5 +1,9 @@
 # Changelog
 
+- [IT5-R6-20261011] **报告站在未签字的浏览器重放里走通。**
+  - 证据目录 `evidence/redesign/2026-10-11/it5-browser-r6-1f244c3b`。Web 与 H5、1280 与 390，定级卡、空态周期报告、规则建议、只读分享和撤销都走过。四个空库摘要相同，学习交互 0。六个 `r6_it5_` 库已删除。
+  - 分享过期时间按数据库读回的无时区时间戳解析。H5 的日/周切换按 tab 点击。`summary` 是 PASS。`accepted`、`it5Outbound`、`lunaStamp` 仍是 false。较早后缀 `6cb7e018` 的失败目录没有改写。
+
 - [IT4-R5-20261011] **补救链在未签字的浏览器重放里走通。**
   - 证据目录 `evidence/redesign/2026-10-11/it4-browser-r5-c460b646`。Web 与 H5、1280 与 390，从建单走到今日复习。库事实是会话 6、作答 4、错题 4、ZERO 4、投影 4。六个 `r5_it4_` 库已删除。
   - `summary` 是 PASS。`accepted`、`it4Outbound`、`lunaStamp` 仍是 false。后缀 `614f3d8b` 的补救 FAIL 原件没有改写。

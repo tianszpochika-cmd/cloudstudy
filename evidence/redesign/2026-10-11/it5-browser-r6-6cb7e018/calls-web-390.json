@@ -1,0 +1,285 @@
+[
+  {
+    "method": "POST",
+    "origin": "https://127.0.0.1:18087",
+    "path": "/api/v1/auth/register",
+    "status": 201,
+    "raw": "https://127.0.0.1:18087/api/v1/auth/register"
+  },
+  {
+    "method": "PUT",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/consents",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/iam/consents"
+  },
+  {
+    "method": "PUT",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/consents",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/iam/consents"
+  },
+  {
+    "method": "PUT",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/consents",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/iam/consents"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/targets",
+    "status": 404,
+    "raw": "http://127.0.0.1:18070/api/v1/learner/targets",
+    "body": ""
+  },
+  {
+    "method": "PUT",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/consents",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/iam/consents"
+  },
+  {
+    "method": "PUT",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/consents",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/iam/consents"
+  },
+  {
+    "method": "PUT",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/consents",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/iam/consents"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/preferences",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/learner/preferences"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/targets",
+    "status": 404,
+    "raw": "http://127.0.0.1:18070/api/v1/learner/targets",
+    "body": ""
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/profile",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/learner/profile"
+  },
+  {
+    "method": "PATCH",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/profile",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/learner/profile"
+  },
+  {
+    "method": "PUT",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/targets",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/learner/targets"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/profile",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/learner/profile?contentLocale=en-US"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/preferences",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/learner/preferences?contentLocale=en-US"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/targets",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/learner/targets?contentLocale=en-US"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/targets",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/learner/targets"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learning/today",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/learning/today",
+    "body": "{\"data\":{\"principalId\":\"45477c4b-684f-4f96-a5bb-92fbd1798253\",\"planId\":\"\",\"status\":\"EMPTY\",\"planVersion\":0,\"targetMinutes\":0,\"count\":0,\"items\":[],\"deferredCount\":0,\"algorithmVersion\":\"SM2_Q03_V1\",\"emptyReason\":\"NO_PLAN\",\"firstLearning\":{\"reason\":\"NO_PLAN\",\"guideVisible\":true},\"generatedAt\":\"2026-10-10T21:23:28.030500Z\"}}"
+  },
+  {
+    "method": "POST",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/assessment/placement/sessions",
+    "status": 201,
+    "raw": "http://127.0.0.1:18070/api/v1/assessment/placement/sessions"
+  },
+  {
+    "method": "POST",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/assessment/placement/sessions/asess_2aee4476ba35453190d63503f02f9bcd/responses",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/assessment/placement/sessions/asess_2aee4476ba35453190d63503f02f9bcd/responses"
+  },
+  {
+    "method": "POST",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/assessment/placement/sessions/asess_2aee4476ba35453190d63503f02f9bcd/responses",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/assessment/placement/sessions/asess_2aee4476ba35453190d63503f02f9bcd/responses"
+  },
+  {
+    "method": "POST",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/assessment/placement/sessions/asess_2aee4476ba35453190d63503f02f9bcd/responses",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/assessment/placement/sessions/asess_2aee4476ba35453190d63503f02f9bcd/responses"
+  },
+  {
+    "method": "POST",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/assessment/placement/sessions/asess_2aee4476ba35453190d63503f02f9bcd/responses",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/assessment/placement/sessions/asess_2aee4476ba35453190d63503f02f9bcd/responses"
+  },
+  {
+    "method": "POST",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/assessment/placement/sessions/asess_2aee4476ba35453190d63503f02f9bcd/responses",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/assessment/placement/sessions/asess_2aee4476ba35453190d63503f02f9bcd/responses"
+  },
+  {
+    "method": "POST",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/assessment/placement/sessions/asess_2aee4476ba35453190d63503f02f9bcd/responses",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/assessment/placement/sessions/asess_2aee4476ba35453190d63503f02f9bcd/responses"
+  },
+  {
+    "method": "POST",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/assessment/placement/sessions/asess_2aee4476ba35453190d63503f02f9bcd/responses",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/assessment/placement/sessions/asess_2aee4476ba35453190d63503f02f9bcd/responses"
+  },
+  {
+    "method": "POST",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/assessment/placement/sessions/asess_2aee4476ba35453190d63503f02f9bcd/responses",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/assessment/placement/sessions/asess_2aee4476ba35453190d63503f02f9bcd/responses"
+  },
+  {
+    "method": "POST",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/assessment/placement/sessions/asess_2aee4476ba35453190d63503f02f9bcd/responses",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/assessment/placement/sessions/asess_2aee4476ba35453190d63503f02f9bcd/responses"
+  },
+  {
+    "method": "POST",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/assessment/placement/sessions/asess_2aee4476ba35453190d63503f02f9bcd/responses",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/assessment/placement/sessions/asess_2aee4476ba35453190d63503f02f9bcd/responses"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/targets",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/learner/targets"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learning/stats/daily-report",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/learning/stats/daily-report?date=2026-10-10",
+    "body": "{\"reportId\":\"09a4c0a8-ba6c-3eae-9fcb-a42dc60353d7\",\"reportType\":\"DAILY\",\"status\":\"PARTIAL\",\"generatedAt\":\"2026-10-10T21:23:30.810596Z\",\"calculationVersion\":\"B25-LEGACY-UNVERIFIED-1\",\"studyMinutes\":null,\"newItems\":null,\"reviewItems\":null,\"accuracy\":null,\"masteredIncrement\":null,\"forgettingRate\":null,\"d1Pending\":null,\"d7Pending\":null,\"weakness\":[],\"verificationStatus\":\"UNVERIFIED_LEGACY_REVIEW\",\"reasonCode\":\"TRUSTED_REVIEW_FACTS_UNAVAILABLE\",\"source\":\"learning-service\",\"periodStart\":\"2026-10-10\",\"periodEndExclusive\":\"2026-10-11\",\"period\":{\"reportType\":\"DAILY\",\"availability\":\"NEVER_STUDIED\",\"copy\":\"还没有开始学习。这不是能力评分。\",\"periodStart\":\"2026-10-10\",\"periodEndExclusive\":\"2026-10-11\",\"learningDayZone\":\"Asia/Shanghai\",\"updatedAt\":\"2026-10-10T21:23:30.810615Z\",\"newItems\":null,\"reviewItems\":null,\"accuracy\":null,\"activeMillis\":null,\"durationStatus\":\"NOT_RECORDED\",\"durationCopy\":\"有效时长还没有记录，不会用间隔冒充。\",\"su",
+    "periodAvailability": "NEVER_STUDIED",
+    "periodDigest": "f190cd3d4f5041ff0e01e360fa5f160e55abe2584f1b3f833628864d28ce324b",
+    "officialScore": false,
+    "periodCopy": "还没有开始学习。这不是能力评分。",
+    "shareStatus": "PARTIAL",
+    "shareRef": null
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learning/stats/weekly-report",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/learning/stats/weekly-report?weekStart=2026-10-10",
+    "body": "{\"reportId\":\"dc2a50f2-7ab8-3b0d-887c-61b3a2e83632\",\"reportType\":\"WEEKLY\",\"status\":\"PARTIAL\",\"generatedAt\":\"2026-10-10T21:23:31.395279Z\",\"calculationVersion\":\"B25-LEGACY-UNVERIFIED-1\",\"studyMinutes\":null,\"newItems\":null,\"reviewItems\":null,\"accuracy\":null,\"masteredIncrement\":null,\"forgettingRate\":null,\"d1Pending\":null,\"d7Pending\":null,\"weakness\":[],\"verificationStatus\":\"UNVERIFIED_LEGACY_REVIEW\",\"reasonCode\":\"TRUSTED_REVIEW_FACTS_UNAVAILABLE\",\"source\":\"learning-service\",\"periodStart\":\"2026-10-05\",\"periodEndExclusive\":\"2026-10-12\",\"period\":{\"reportType\":\"WEEKLY\",\"availability\":\"NEVER_STUDIED\",\"copy\":\"还没有开始学习。这不是能力评分。\",\"periodStart\":\"2026-10-05\",\"periodEndExclusive\":\"2026-10-12\",\"learningDayZone\":\"Asia/Shanghai\",\"updatedAt\":\"2026-10-10T21:23:31.395294Z\",\"newItems\":null,\"reviewItems\":null,\"accuracy\":null,\"activeMillis\":null,\"durationStatus\":\"NOT_RECORDED\",\"durationCopy\":\"有效时长还没有记录，不会用间隔冒充。\",\"",
+    "periodAvailability": "NEVER_STUDIED",
+    "periodDigest": "e992a4fe9037dc163e7b09a5e7b8d38300b7272e5a60074efdb405fafce227e8",
+    "officialScore": false,
+    "periodCopy": "还没有开始学习。这不是能力评分。",
+    "shareStatus": "PARTIAL",
+    "shareRef": null
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learning/stats/daily-report",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/learning/stats/daily-report?date=2026-10-10",
+    "body": "{\"reportId\":\"09a4c0a8-ba6c-3eae-9fcb-a42dc60353d7\",\"reportType\":\"DAILY\",\"status\":\"PARTIAL\",\"generatedAt\":\"2026-10-10T21:23:31.508754Z\",\"calculationVersion\":\"B25-LEGACY-UNVERIFIED-1\",\"studyMinutes\":null,\"newItems\":null,\"reviewItems\":null,\"accuracy\":null,\"masteredIncrement\":null,\"forgettingRate\":null,\"d1Pending\":null,\"d7Pending\":null,\"weakness\":[],\"verificationStatus\":\"UNVERIFIED_LEGACY_REVIEW\",\"reasonCode\":\"TRUSTED_REVIEW_FACTS_UNAVAILABLE\",\"source\":\"learning-service\",\"periodStart\":\"2026-10-10\",\"periodEndExclusive\":\"2026-10-11\",\"period\":{\"reportType\":\"DAILY\",\"availability\":\"NEVER_STUDIED\",\"copy\":\"还没有开始学习。这不是能力评分。\",\"periodStart\":\"2026-10-10\",\"periodEndExclusive\":\"2026-10-11\",\"learningDayZone\":\"Asia/Shanghai\",\"updatedAt\":\"2026-10-10T21:23:31.508768Z\",\"newItems\":null,\"reviewItems\":null,\"accuracy\":null,\"activeMillis\":null,\"durationStatus\":\"NOT_RECORDED\",\"durationCopy\":\"有效时长还没有记录，不会用间隔冒充。\",\"su",
+    "periodAvailability": "NEVER_STUDIED",
+    "periodDigest": "f190cd3d4f5041ff0e01e360fa5f160e55abe2584f1b3f833628864d28ce324b",
+    "officialScore": false,
+    "periodCopy": "还没有开始学习。这不是能力评分。",
+    "shareStatus": "PARTIAL",
+    "shareRef": null
+  },
+  {
+    "method": "POST",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learning/reports/DAILY/shares",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/learning/reports/DAILY/shares",
+    "body": "{\"ref\":\"66776cacae7d7fed02a9395d3c1a84ee\",\"expiresAt\":\"2026-10-17T21:23:31.567802Z\",\"publicPath\":\"/api/v1/public/learning/report-shares/66776cacae7d7fed02a9395d3c1a84ee\",\"status\":\"ACTIVE\"}",
+    "periodAvailability": null,
+    "periodDigest": null,
+    "officialScore": false,
+    "periodCopy": null,
+    "shareStatus": "ACTIVE",
+    "shareRef": "66776cacae7d7fed02a9395d3c1a84ee"
+  },
+  {
+    "method": "POST",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learning/report-shares/66776cacae7d7fed02a9395d3c1a84ee/revoke",
+    "status": 200,
+    "raw": "http://127.0.0.1:18070/api/v1/learning/report-shares/66776cacae7d7fed02a9395d3c1a84ee/revoke",
+    "body": "{\"status\":\"REVOKED\",\"ref\":\"66776cacae7d7fed02a9395d3c1a84ee\",\"revokedAt\":\"2026-10-10T21:23:46.922031Z\"}",
+    "periodAvailability": null,
+    "periodDigest": null,
+    "officialScore": false,
+    "periodCopy": null,
+    "shareStatus": "REVOKED",
+    "shareRef": "66776cacae7d7fed02a9395d3c1a84ee"
+  }
+]

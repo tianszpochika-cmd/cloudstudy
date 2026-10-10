@@ -15,12 +15,12 @@
 | 已定义卡 | 69 | R1-001～069。R1-030～042 是 IT-3，R1-043～059 是 IT-4，R1-060～069 是 IT-5 |
 | 卡范围独立验收（ACCEPTED_CARD_SCOPE） | 6 | R1-002/003/004/005/006/008 |
 | 源码交付、未独立终审 | 2 | R1-001（SOURCE_SCOPED_PASS）、R1-007 |
-| 已实现/回放、待站级签收 | 59 | R1-009～067。R1-058/059 的 r5 重放未签。R1-060～067 已实现并单测，浏览器站未签 |
-| 已定义、浏览器站未跑 | 2 | R1-068、R1-069。页面和领域单测已有，见第 4 节 |
+| 已实现/回放、待站级签收 | 61 | R1-009～069。R1-058/059 的 r5 重放未签。R1-068/069 的 r6 重放未签 |
+| 已定义、浏览器站未跑 | 0 | R1-068、R1-069 已于 r6 跑过，见第 3、4 节 |
 | 已跑、站级未通过 | 0 | R1-058/059 的较早后缀 `614f3d8b` 仍是补救 FAIL。其后 `c460b646` 未签字 PASS，不改写旧证据 |
 | 已定义、未实现 | 0 | 不按 114 减已有卡数补空卡 |
 | 未定义（待按站拆卡） | IT-6～IT-7 | 不按剩余张数补卡 |
-| 跳过 | 5 | 原四行保留。新增 R1-068/069 的浏览器站，见第 4 节 |
+| 跳过 | 5 | 原五行保留。R1-068/069 已追加实际结论，原行不删 |
 
 ## 2. 已定义卡
 
@@ -93,8 +93,8 @@
 | R1-065 | IT-5 | BC-068 分享只读链接 | 32 位随机引用，7 天失效，只存公开字段。主人可撤销。公开读不到主体。lunaStamp=false | 生成链接、撤销、匿名打开 |
 | R1-066 | IT-5 | BC-069 未学习与统计未就绪 | 这两态计数为空，officialScore 为 false，不显示能力零分。lunaStamp=false | 空态文案不是零分 |
 | R1-067 | IT-5 | BC-070 历史报告不改写 | 封存后的更正是新版本，摘要重算，不改已封存的一版。lunaStamp=false | 更正后能看到上一版 |
-| R1-068 | IT-5 | IC-012/IC-033 交互验收 | 两端报告页和定级页已接周期、建议、分享和定级卡。浏览器站未跑。lunaStamp=false | 幕幕对稿 |
-| R1-069 | IT-5 | 干净库重放 | 领域单测 `emptyLibraryReplaysTheSameDigest` 通过。浏览器干净库重放未跑。lunaStamp=false | 空库上同一摘要 |
+| R1-068 | IT-5 | IC-012/IC-033 交互验收 | 后缀 `1f244c3b`：Web/H5、1280 与 390，定级卡、日/周状态、有效时长、规则建议、分享与撤销 PASS。空态没有能力零分。lunaStamp=false | 幕幕对稿 |
+| R1-069 | IT-5 | 干净库重放 | 后缀 `1f244c3b`：四个空库摘要相同，学习交互 0，分享 4 且都已撤销。六个 `r6_it5_` 库已删。lunaStamp=false | 空库上同一摘要 |
 
 ## 3. 站级状态
 
@@ -104,7 +104,7 @@
 | IT-2 | BLOCKED；it2-station PASS_WITH_NOT_RUN；it2-score-browser 10 题 PASS 未签。**待 Luna 签收（外部依赖）**。三个独立 owner schema 的 IAM 真签出站仍未完成：本轮 `services:run` 只有 HTTP IAM，没有在不写钥匙串的前提下换上 r1 TLS | 三个独立 owner schema 的 IAM 真签出站。原 3 个 NOT_RUN 不回写 |
 | IT-3 计划今日 | R1-030…042 浏览器走查 PASS，后缀 d2012bf6。自审 PASS_WITH_GAPS。lunaStamp=false | BC-023…032/199 |
 | IT-4 练错复 | R1-043…057 已实现并单测。浏览器后缀 `614f3d8b`：建单、作答、回执 PASS，补救 FAIL，`summary` FAIL，目录保留。其后后缀 `c460b646`：补救到今日复习 PASS，`summary` PASS，六个 `r5_it4_` 库已删。accepted / it4Outbound / lunaStamp 仍是 false。不是出站签收 | BC-033…062/203 |
-| IT-5 报告 | R1-060…069 已从 BC-063…070 与 IC-012/033 拆出并实现。learning-service 199 项 0 失败 3 跳过，assessment-service 153 项 0 失败 2 跳过。浏览器站未跑，见第 4 节。lunaStamp=false。不是出站签收 | BC-063…070 |
+| IT-5 报告 | R1-060…069 已实现。浏览器后缀 `1f244c3b`：`summary` PASS，链 PASS，四个空库同一摘要，六个 `r6_it5_` 库已删。较早后缀 `6cb7e018` 分享打开 FAIL，目录保留。accepted / it5Outbound / lunaStamp 仍是 false。不是出站签收 | BC-063…070 |
 | IT-6 双审 | 未拆卡 TODO | BC-071…084/200/204…207 |
 | IT-7 收口 | 未拆卡 TODO | BC-085…093/185/186/188…198/208 |
 
@@ -117,6 +117,7 @@
 | local-development-gates | 已过：`pnpm typecheck`（turbo 7/7，exit 0）、`pnpm test`（turbo 只执行 `@englishflow/i18n` 11 项，缓存命中，exit 0；它不包含两端顶层 299 项）、`pnpm contracts:validate`（468 operations，exit 0）、`pnpm dod:check`（5 项 PASS，`strict:false`，exit 0）。未整跑：`pnpm build`、mobile `build:h5` / `build:app`、`mvn -B -ntp -f pom.xml test`、`pnpm test:p1r`。全量 Maven 会连共享库 `127.0.0.1:13306` 的 `iam_service` 等 schema，本轮不在共享库上跑集成上下文，也不为它新建或删除库。P1R 单文件 4 项失败在 `eee50c76` 上同样存在，不改冻结 hash。文档写明 2026-10-06 的 P1R 完整回归仍有 26 项失败 | `evidence/redesign/2026-10-10/it3-plan-today/report.md` | 2026-10-10 |
 | R1-045～059 | 每张卡都要服务端、Web、H5 和单测。R1-044 已把语法 3 道、阅读 2 道和 CLOSED_MISSING 落地。后面的保存回执、检查点、错题、补救、SRS、对账和 L4 浏览器重放没有一条可以只改文案就完成，本轮不补空实现。R1-058/059 没有新的浏览器证据。已于 r4 处理：R1-045～057 已实现；R1-058/059 已跑，结论 FAIL。 | R1-044 单测：`GrammarReadingPackTest`、`B10GrammarReadingPackTest`、`apps/learner-web/tests/grammar-reading-pack.test.mjs`。r4 证据：`evidence/redesign/2026-10-11/it4-browser`（后缀 `aa28b151`，建单 410）与 `evidence/redesign/2026-10-11/it4-browser-614f3d8b`（建单到回执 PASS，补救 FAIL）。 | 2026-10-11 |
 | R1-068 / R1-069 | 报告交互验收和干净库浏览器重放要在含报告期与分享路由的服务包上，用 HTTPS IAM 和 `r5_` 干净库走两端。本轮证据栈 JAR 打在 IT-5 代码之前（2026-10-11T04:22:22+08:00）。node 回归时 18070 与 18183 被这套旧 Gateway 和 H5 占用，回归结束后没有再打包并拉起新的证据栈。领域单测不能代替浏览器站。 | `LearningPeriodReportTest.emptyLibraryReplaysTheSameDigest`。浏览器站没有新目录。 | 2026-10-11 |
+| R1-068 / R1-069 结论 | 已用含报告期与分享路由的包重跑。分享打开失败来自 MySQL 无时区时间戳，H5 周报按钮实际是 tab。修复后后缀 `1f244c3b` 的 `summary` 为 PASS。H5 390 有无类名元素多出 10px，文档横向溢出为 0。外层报告仍是历史未核验的 PARTIAL。`b10_assessment_session` 计数是 0，定级卡来自页面读回。`lunaStamp` 仍是 false。这不是签收。 | `evidence/redesign/2026-10-11/it5-browser-r6-1f244c3b/summary.json`。失败原件 `evidence/redesign/2026-10-11/it5-browser-r6-6cb7e018/` 不改写。 | 2026-10-11 |
 
 ## 5. 轮次记录
 
