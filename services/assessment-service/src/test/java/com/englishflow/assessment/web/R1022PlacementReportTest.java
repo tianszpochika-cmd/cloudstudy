@@ -132,6 +132,15 @@ class R1022PlacementReportTest {
         assertEquals(outcomes(), first.get("outcomes"));
         assertEquals(sha256(mapper.writeValueAsString(facts(first))), first.get("digest"));
         assertTrue(String.valueOf(first.get("digest")).matches("[a-f0-9]{64}"));
+        assertEquals(finished.sessionId(), first.get("sessionId"));
+        assertEquals("ASSESSED", first.get("resultKind"));
+        assertEquals("HIGH", first.get("confidence"));
+        assertEquals("A2", first.get("referenceLevel"));
+        assertEquals(50, ((Number) first.get("aggregateScore")).intValue());
+        String storedResultId = jdbc.queryForObject(
+                "SELECT placement_result_id FROM p1_placement_result", String.class);
+        assertEquals(storedResultId, first.get("placementResultId"));
+        assertFalse(storedSummary.contains("referenceLevel"));
 
         Map<String, Object> session = data(controller.read(learner(), finished.sessionId()));
         Map<String, Object> sessionAgain = data(controller.read(learner(), finished.sessionId()));

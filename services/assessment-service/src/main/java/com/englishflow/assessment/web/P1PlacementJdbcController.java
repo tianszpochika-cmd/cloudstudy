@@ -664,28 +664,33 @@ public class P1PlacementJdbcController {
                 SELECT report_json FROM p1_placement_result WHERE session_id = ? AND tenant_id = ?
                 """, sessionId, TENANT);
         if (existing != null) return object(existing.get("report_json"));
+        List<Map<String, Object>> sealed = maps(session.get("sealed_items_json"));
+        if (sealed.size() != 10) throw unavailable("sealed placement snapshot is invalid");
         List<Map<String, Object>> answers = jdbc.queryForList("""
-                SELECT item_sequence, correct FROM p1_placement_response
+                SELECT item_sequence, item_id, correct FROM p1_placement_response
                  WHERE session_id = ? AND principal_id = ? AND tenant_id = ?
                  ORDER BY item_sequence
                 """, sessionId, principal.subject(), TENANT);
         if (answers.size() != 10) throw unavailable("placement checkpoint coverage is incomplete");
         List<Map<String, Object>> outcomes = new ArrayList<>(10);
+        Map<String, Boolean> graded = new LinkedHashMap<>();
         int fullCount = 0;
         for (int index = 0; index < answers.size(); index++) {
             Map<String, Object> answer = answers.get(index);
             int itemSequence = ((Number) answer.get("item_sequence")).intValue();
-            if (itemSequence != index + 1 || answer.get("correct") == null) {
+            if (itemSequence != index + 1 || answer.get("correct") == null || answer.get("item_id") == null) {
                 throw unavailable("placement outcome sequence is incomplete");
             }
             boolean full = Boolean.TRUE.equals(answer.get("correct"))
                     || answer.get("correct") instanceof Number number && number.intValue() == 1;
             if (full) fullCount++;
+            graded.put(String.valueOf(answer.get("item_id")), full);
             Map<String, Object> outcome = new LinkedHashMap<>();
             outcome.put("sequence", itemSequence);
             outcome.put("outcome", full ? "FULL" : "ZERO");
             outcomes.add(outcome);
         }
+        P1PlacementScorer.Assessed assessed = P1PlacementScorer.assess(scorerItems(sealed), graded);
         Map<String, Object> contentPin = object(session.get("content_pin_json"));
         String snapshotId = String.valueOf(contentPin.get("snapshotId"));
         String snapshotHash = String.valueOf(contentPin.get("snapshotHash"));
@@ -707,6 +712,7 @@ public class P1PlacementJdbcController {
         summary.put("zeroCount", 10 - fullCount);
         summary.put("snapshotId", snapshotId);
         summary.put("snapshotHash", snapshotHash);
+        String resultId = "plr_" + compactId();
         Map<String, Object> report = new LinkedHashMap<>();
         report.put("reportId", reportId);
         report.put("digest", digest);
@@ -714,6 +720,15 @@ public class P1PlacementJdbcController {
         report.put("snapshotHash", snapshotHash);
         report.put("outcomes", outcomes);
         report.put("summary", summary);
+        // Scoring facts sit beside the four digest fields. They are not part of
+        // facts(), so a later read still matches the stored outcome digest.
+        report.put("sessionId", sessionId);
+        report.put("placementResultId", resultId);
+        report.put("resultKind", "ASSESSED");
+        report.put("completedAt", now.toString());
+        report.put("confidence", assessed.progress().confidence());
+        report.put("referenceLevel", assessed.referenceLevel());
+        report.put("aggregateScore", assessed.aggregateScore());
         String reportJson = json(report);
         String summaryJson = json(summary);
         if (reportJson.contains("correctOption") || reportJson.contains("answerRule")
@@ -727,7 +742,7 @@ public class P1PlacementJdbcController {
                         (placement_result_id, session_id, report_id, principal_id, tenant_id,
                          result_kind, result_json, report_json, completed_at)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-                    """, "plr_" + compactId(), sessionId, reportId, principal.subject(), TENANT,
+                    """, resultId, sessionId, reportId, principal.subject(), TENANT,
                     "ASSESSED", summaryJson, reportJson, Timestamp.from(now));
         } catch (DuplicateKeyException conflict) {
             return storedOutcomeReport(sessionId);

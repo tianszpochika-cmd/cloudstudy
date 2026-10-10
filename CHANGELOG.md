@@ -1,5 +1,9 @@
 # Changelog
 
+- [R3-OUTCOME-PLAN-PIN-20261011] **答案无关的正式定级报告可以钉学习计划。**
+  - 十分题结果仍只对 `reportId`、`outcomes`、`snapshotId`、`snapshotHash` 做摘要。评分等级、置信度和会话号写在摘要旁边，不进入摘要事实，也不写入答案规则文本。
+  - `plans:ensure` 遇到这种快照时改向已完成会话读取内容钉、目标钉和清单。规则钉若只有 `completionRuleVersion=P1_PLACEMENT_V1`，规则摘要取该版本字符串的 sha256。带 `result` 信封的旧报告路径不变。
+
 - [R3-LOCAL-IAM-HTTPS-20261010] **本地 IAM 可按忽略目录里的测试证书以 HTTPS 监听 18087。**
   - `scripts/redesign/r3-local-https/prepare-iam-tls.mjs` 在 `.runtime/r3-iam-tls/` 生成回环 CA、PKCS12 和 JVM 信任库。口令和私钥不进 Git，也不写入 macOS 钥匙串。
   - `pnpm services:run` 发现该材料后打开 IAM TLS，JWKS 与 Gateway 上游改为 `https://127.0.0.1:18087`，令牌 `iss` 仍是 `http://127.0.0.1:18087`。没有材料时保持 HTTP。

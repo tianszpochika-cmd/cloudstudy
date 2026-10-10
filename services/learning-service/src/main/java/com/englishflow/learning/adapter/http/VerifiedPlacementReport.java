@@ -6,7 +6,11 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
+import java.util.HexFormat;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
@@ -72,6 +76,14 @@ public final class VerifiedPlacementReport {
             throw unprocessable("placement report reference is invalid");
         }
         Map<String, Object> report = get("/internal/v1/assessment/placement/reports/" + reportId, bearer);
+        if (report.get("result") instanceof Map<?, ?>) {
+            return verifyScoredEnvelope(report, bearer);
+        }
+        return verifyOutcomeSnapshot(reportId, report, bearer);
+    }
+
+    /** Scored freezeResult envelope: pins live on the report itself. */
+    private PlacementPins verifyScoredEnvelope(Map<String, Object> report, String bearer) {
         Map<String, Object> result = object(report.get("result"), "placement result is missing");
         if (!"ASSESSED".equals(result.get("resultKind"))) {
             throw unprocessable("only an assessed placement can pin a plan");
@@ -109,6 +121,113 @@ public final class VerifiedPlacementReport {
                 text(rulePin.get("answerRuleVersion"), "placement rule version"),
                 digest(rulePin.get("ruleDigest"), "placement rule digest"),
                 object(report.get("manifest"), "placement manifest is missing"));
+    }
+
+    /**
+     * Answer-free outcome snapshot. The report keeps the four-field digest and
+     * does not carry answer-rule text. Pins are read from the completed session.
+     * A completion-only rule pin is exactly {@code completionRuleVersion=P1_PLACEMENT_V1};
+     * its assembler digest is the sha256 of that version string.
+     */
+    private PlacementPins verifyOutcomeSnapshot(String requestedReportId, Map<String, Object> report, String bearer) {
+        if (!"ASSESSED".equals(report.get("resultKind"))) {
+            throw unprocessable("only an assessed placement can pin a plan");
+        }
+        String reportId = text(report.get("reportId"), "placement report is missing");
+        if (!reportId.equals(requestedReportId)) {
+            throw unprocessable("placement report is missing");
+        }
+        String reportDigest = digest(report.get("digest"), "placement report digest");
+        requireOutcomes(report.get("outcomes"));
+        Map<String, Object> summary = object(report.get("summary"), "placement summary is missing");
+        if (!reportId.equals(summary.get("reportId")) || !reportDigest.equals(summary.get("digest"))) {
+            throw unprocessable("placement summary does not match the report");
+        }
+        String sessionId = text(report.get("sessionId"), "placement session is missing");
+        Map<String, Object> session = get("/internal/v1/assessment/placement/sessions/" + sessionId, bearer);
+        if (!"COMPLETED".equals(session.get("status"))) {
+            throw unprocessable("placement session is not complete");
+        }
+        Map<String, Object> completed = object(session.get("completedResult"), "placement result is missing");
+        if (!reportId.equals(completed.get("reportId")) || !reportDigest.equals(completed.get("digest"))) {
+            throw unprocessable("placement session result does not match the report");
+        }
+        Map<String, Object> contentPin = object(session.get("contentPin"), "placement content pin is missing");
+        if (!text(report.get("snapshotId"), "placement snapshot id").equals(String.valueOf(contentPin.get("snapshotId")))
+                || !digest(report.get("snapshotHash"), "placement snapshot hash").equals(
+                        digest(contentPin.get("snapshotHash"), "placement snapshot hash"))) {
+            throw unprocessable("placement snapshot pin does not match the session");
+        }
+        Map<String, Object> targetPin = object(session.get("targetPin"), "placement target pin is missing");
+        RuleFacts rules = ruleFacts(object(session.get("answerRulePin"), "placement rule pin is missing"));
+        return new PlacementPins(
+                sessionId,
+                positiveLong(session.get("stateVersion"), "placement session version"),
+                token(session.get("sessionSnapshotDigest"), "placement session digest"),
+                text(report.get("placementResultId"), "placement result is missing"),
+                1L,
+                reportDigest,
+                reportId,
+                1L,
+                reportDigest,
+                "ASSESSED",
+                text(report.get("confidence"), "placement confidence is missing"),
+                text(report.get("referenceLevel"), "placement level is missing"),
+                text(report.get("completedAt"), "placement completion time is missing"),
+                positiveLong(targetPin.get("targetId"), "placement target id"),
+                positiveLong(targetPin.get("targetVersion"), "placement target version"),
+                digest(targetPin.get("targetSnapshotDigest"), "placement target digest"),
+                positiveLong(contentPin.get("contentVersionId"), "placement content version"),
+                nonNegativeLong(contentPin.get("contentEpoch"), "placement content epoch"),
+                text(contentPin.get("snapshotId"), "placement snapshot id"),
+                digest(contentPin.get("snapshotHash"), "placement snapshot hash"),
+                rules.setVersion(),
+                rules.ruleVersion(),
+                rules.ruleDigest(),
+                object(session.get("manifest"), "placement manifest is missing"));
+    }
+
+    private void requireOutcomes(Object raw) {
+        if (!(raw instanceof List<?> outcomes) || outcomes.size() != 10) {
+            throw unprocessable("placement outcomes are incomplete");
+        }
+        for (int index = 0; index < outcomes.size(); index++) {
+            if (!(outcomes.get(index) instanceof Map<?, ?> outcome)) {
+                throw unprocessable("placement outcomes are incomplete");
+            }
+            Object sequence = outcome.get("sequence");
+            int value = sequence instanceof Number number ? number.intValue() : -1;
+            Object kind = outcome.get("outcome");
+            if (value != index + 1 || (!"FULL".equals(kind) && !"ZERO".equals(kind))) {
+                throw unprocessable("placement outcomes are incomplete");
+            }
+        }
+    }
+
+    private RuleFacts ruleFacts(Map<String, Object> rulePin) {
+        if (rulePin.get("ruleDigest") != null) {
+            return new RuleFacts(
+                    text(rulePin.get("answerRuleSetVersion"), "placement rule set version"),
+                    text(rulePin.get("answerRuleVersion"), "placement rule version"),
+                    digest(rulePin.get("ruleDigest"), "placement rule digest"));
+        }
+        if (rulePin.size() == 1 && "P1_PLACEMENT_V1".equals(rulePin.get("completionRuleVersion"))) {
+            String version = "P1_PLACEMENT_V1";
+            return new RuleFacts(version, version, sha256(version));
+        }
+        throw unprocessable("placement rule pin is missing");
+    }
+
+    private record RuleFacts(String setVersion, String ruleVersion, String ruleDigest) {
+    }
+
+    static String sha256(String value) {
+        try {
+            return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256")
+                    .digest(value.getBytes(StandardCharsets.UTF_8)));
+        } catch (NoSuchAlgorithmException impossible) {
+            throw new IllegalStateException(impossible);
+        }
     }
 
     private Map<String, Object> get(String path, String bearer) {
