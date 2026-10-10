@@ -16,7 +16,9 @@ public record B13AdminCommandRequest(
         String aggregateRef,
         String actionCode,
         String reasonCode,
-        String confirmationRef) {
+        String confirmationRef,
+        String closureCommand,
+        Map<String, Object> closureInput) {
 
     public CommandRequest toDomainRequest() {
         Domain domain = parse(Domain.class, aggregateType, "aggregateType");

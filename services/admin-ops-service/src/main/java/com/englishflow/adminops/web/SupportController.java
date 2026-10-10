@@ -1,5 +1,6 @@
 package com.englishflow.adminops.web;
 
+import com.englishflow.adminops.closure.It7ClosureStudio;
 import com.englishflow.adminops.domain.AdminPrincipal;
 import com.englishflow.adminops.domain.AdminOpsException;
 import com.englishflow.adminops.security.AdminOpsAuthenticationToken;
@@ -10,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,9 +28,15 @@ import org.springframework.web.bind.annotation.RestController;
 public final class SupportController {
 
     private final SupportTicketService service;
+    private It7ClosureStudio closureStudio;
 
     public SupportController(SupportTicketService service) {
         this.service = service;
+    }
+
+    @Autowired
+    void setClosureStudio(It7ClosureStudio closureStudio) {
+        this.closureStudio = closureStudio;
     }
 
     @PostMapping("/tickets")
@@ -44,7 +52,11 @@ public final class SupportController {
     @GetMapping("/tickets")
     public Map<String, Object> list(
             @RequestParam(defaultValue = "false") boolean includeAll,
+            @RequestParam(required = false) String projection,
             HttpServletRequest request) {
+        if ("it7".equals(projection)) {
+            return closureBoard(request);
+        }
         List<Map<String, Object>> items = service.list(principal(), includeAll).stream()
                 .map(SupportController::ticketView)
                 .toList();
@@ -75,6 +87,23 @@ public final class SupportController {
             @RequestHeader(value = "X-Confirmation-Token", required = false) String confirmationToken,
             HttpServletRequest request) {
         throw workflowUnavailable();
+    }
+
+    private Map<String, Object> closureBoard(HttpServletRequest request) {
+        if (closureStudio == null) {
+            throw new AdminOpsException("CLOSURE_UNAVAILABLE", "closure desk is not available", 503, false);
+        }
+        AdminPrincipal current = principal();
+        It7ClosureStudio.Actor actor = current == null
+                ? It7ClosureStudio.Actor.anonymous()
+                : new It7ClosureStudio.Actor(current.subjectId(), true, current.permissions());
+        It7ClosureStudio.Result result = closureStudio.handle(actor, "BOARD", Map.of());
+        if (result.status() >= 400) {
+            String code = String.valueOf(result.error().get("code"));
+            String message = String.valueOf(result.error().get("message"));
+            throw new AdminOpsException(code, message, result.status(), false);
+        }
+        return AdminOpsHttpSupport.envelope(result.data(), request);
     }
 
     private static AdminOpsException workflowUnavailable() {

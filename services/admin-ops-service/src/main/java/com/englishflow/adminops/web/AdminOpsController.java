@@ -1,6 +1,7 @@
 package com.englishflow.adminops.web;
 
 import com.englishflow.adminops.application.AdminOpsService;
+import com.englishflow.adminops.closure.It7ClosureStudio;
 import com.englishflow.adminops.domain.AdminPrincipal;
 import com.englishflow.adminops.domain.AuditPage;
 import com.englishflow.adminops.domain.CommandAction;
@@ -15,7 +16,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -33,10 +36,16 @@ public final class AdminOpsController {
 
     private final AdminOpsService service;
     private final AuditCursorCodec auditCursorCodec;
+    private It7ClosureStudio closureStudio;
 
     public AdminOpsController(AdminOpsService service, AuditCursorCodec auditCursorCodec) {
         this.service = service;
         this.auditCursorCodec = auditCursorCodec;
+    }
+
+    @Autowired
+    void setClosureStudio(It7ClosureStudio closureStudio) {
+        this.closureStudio = closureStudio;
     }
 
     @GetMapping("/projections")
@@ -81,15 +90,42 @@ public final class AdminOpsController {
     }
 
     @PostMapping("/commands")
-    public Map<String, Object> execute(
+    public ResponseEntity<Map<String, Object>> execute(
             @RequestBody B13AdminCommandRequest body,
             @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey,
             @RequestHeader(value = "X-Confirmation-Token", required = false) String confirmationToken,
             HttpServletRequest request) {
-        return AdminOpsHttpSupport.envelope(
+        if (body != null && body.closureCommand() != null && !body.closureCommand().isBlank()) {
+            return closure(body, idempotencyKey, request);
+        }
+        return ResponseEntity.ok(AdminOpsHttpSupport.envelope(
                 commandResultView(service.executeCommand(
                         principal(), body.toDomainRequest(), idempotencyKey, confirmationToken,
-                        AdminOpsHttpSupport.traceId(request)), body), request);
+                        AdminOpsHttpSupport.traceId(request)), body), request));
+    }
+
+    private ResponseEntity<Map<String, Object>> closure(
+            B13AdminCommandRequest body, String idempotencyKey, HttpServletRequest request) {
+        if (closureStudio == null) {
+            throw new com.englishflow.adminops.domain.AdminOpsException(
+                    "CLOSURE_UNAVAILABLE", "closure desk is not available", 503, false);
+        }
+        AdminPrincipal current = principal();
+        It7ClosureStudio.Actor actor = current == null
+                ? It7ClosureStudio.Actor.anonymous()
+                : new It7ClosureStudio.Actor(current.subjectId(), true, current.permissions());
+        Map<String, Object> input = body.closureInput() == null
+                ? new LinkedHashMap<>()
+                : new LinkedHashMap<>(body.closureInput());
+        if (idempotencyKey != null && !idempotencyKey.isBlank() && !input.containsKey("idempotencyKey")) {
+            input.put("idempotencyKey", idempotencyKey);
+        }
+        It7ClosureStudio.Result result = closureStudio.handle(
+                actor, body.closureCommand().trim().toUpperCase(Locale.ROOT), input);
+        if (result.status() >= 400) {
+            return ResponseEntity.status(result.status()).body(result.errorBody());
+        }
+        return ResponseEntity.ok(AdminOpsHttpSupport.envelope(result.data(), request));
     }
 
     @GetMapping("/audit")
