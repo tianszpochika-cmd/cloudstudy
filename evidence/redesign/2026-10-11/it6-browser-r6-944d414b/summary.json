@@ -1,0 +1,184 @@
+{
+  "kind": "R6_IT6_BROWSER",
+  "summary": "FAIL",
+  "accepted": false,
+  "it6Outbound": false,
+  "lunaStamp": false,
+  "suffix": "944d414b",
+  "chain": "PASS",
+  "dbFacts": {
+    "contentSchema": "r6_it6_20261011_cnt_944d414b",
+    "iamSchema": "r6_it6_20261011_iam_944d414b",
+    "studio": "in-memory, restarted for replay"
+  },
+  "steps": [
+    {
+      "name": "ports-free",
+      "status": "PASS"
+    },
+    {
+      "name": "dedicated-schemas",
+      "status": "PASS"
+    },
+    {
+      "name": "iam-https",
+      "status": "PASS"
+    },
+    {
+      "name": "staff-sessions",
+      "status": "PASS"
+    },
+    {
+      "name": "default-mode",
+      "status": "PASS"
+    },
+    {
+      "name": "idempotent-read",
+      "status": "PASS"
+    },
+    {
+      "name": "denial-identical",
+      "status": "PASS"
+    },
+    {
+      "name": "no-ghost-draft",
+      "status": "PASS"
+    },
+    {
+      "name": "gaps-listed",
+      "status": "PASS"
+    },
+    {
+      "name": "version-lock",
+      "status": "PASS"
+    },
+    {
+      "name": "rights-unbound",
+      "status": "PASS"
+    },
+    {
+      "name": "simple-publish",
+      "status": "PASS"
+    },
+    {
+      "name": "simple-no-second-signature",
+      "status": "PASS"
+    },
+    {
+      "name": "sync-failed-hidden",
+      "status": "PASS"
+    },
+    {
+      "name": "switch-dual",
+      "status": "PASS"
+    },
+    {
+      "name": "report-mode-mismatch",
+      "status": "PASS"
+    },
+    {
+      "name": "dual-review",
+      "status": "PASS"
+    },
+    {
+      "name": "pin-keeps-v1",
+      "status": "PASS"
+    },
+    {
+      "name": "rollback",
+      "status": "PASS"
+    },
+    {
+      "name": "dashboard-states",
+      "status": "PASS"
+    },
+    {
+      "name": "media-boundary",
+      "status": "PASS"
+    },
+    {
+      "name": "b3-roster",
+      "status": "PASS"
+    },
+    {
+      "name": "admin-login-copy",
+      "status": "PASS"
+    },
+    {
+      "name": "admin-login-return",
+      "status": "PASS"
+    },
+    {
+      "name": "permission-return",
+      "status": "PASS"
+    },
+    {
+      "name": "walk-admin",
+      "status": "FAIL"
+    },
+    {
+      "name": "register-web-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "shelf-web-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-web-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "register-web-390",
+      "status": "PASS"
+    },
+    {
+      "name": "shelf-web-390",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-web-390",
+      "status": "PASS"
+    },
+    {
+      "name": "register-h5-390",
+      "status": "PASS"
+    },
+    {
+      "name": "shelf-h5-390",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-h5-390",
+      "status": "PASS"
+    },
+    {
+      "name": "register-h5-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "shelf-h5-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-h5-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "unpublish-and-force",
+      "status": "PASS"
+    },
+    {
+      "name": "clean-replay",
+      "status": "PASS"
+    },
+    {
+      "name": "schemas-dropped",
+      "status": "PASS"
+    },
+    {
+      "name": "qida-unchanged",
+      "status": "PASS"
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "kind": "R6_IT6_BROWSER",
+  "summary": "FAIL",
+  "accepted": false,
+  "it6Outbound": false,
+  "lunaStamp": false,
+  "suffix": "cd0b278e",
+  "chain": "PASS",
+  "dbFacts": {},
+  "steps": [
+    {
+      "name": "ports-free",
+      "status": "PASS"
+    },
+    {
+      "name": "dedicated-schemas",
+      "status": "PASS"
+    },
+    {
+      "name": "iam-https",
+      "status": "PASS"
+    },
+    {
+      "name": "stack",
+      "status": "FAIL"
+    },
+    {
+      "name": "schemas-dropped",
+      "status": "PASS"
+    },
+    {
+      "name": "qida-unchanged",
+      "status": "PASS"
+    }
+  ]
+}
