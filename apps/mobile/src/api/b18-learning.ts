@@ -31,7 +31,7 @@ function parse(value: unknown): MobileB18ReviewQueueItem | null {
 }
 
 export interface MobileReviewHistoryEntry { itemId: string; disposition: 'COMPLETED' | 'DEFERRED' }
-export interface MobileReviewQueueView { items: MobileB18ReviewQueueItem[]; emptyStatus: string; emptyCopy: string; history: MobileReviewHistoryEntry[] }
+export interface MobileReviewQueueView { items: MobileB18ReviewQueueItem[]; emptyStatus: string; emptyCopy: string; history: MobileReviewHistoryEntry[]; projectionVersion: string }
 
 export async function listMobileB18ReviewQueue(): Promise<MobileReviewQueueView> {
   const response = await mobileApiClient.request<unknown>(query('/learning/review-queue'), { header: headers() })
@@ -50,5 +50,6 @@ export async function listMobileB18ReviewQueue(): Promise<MobileReviewQueueView>
     emptyStatus: text(payload.emptyStatus) ?? '',
     emptyCopy: text(payload.emptyCopy) ?? '',
     history,
+    projectionVersion: text(payload.projectionVersion) ?? 'IT4-STAGE-1',
   }
 }

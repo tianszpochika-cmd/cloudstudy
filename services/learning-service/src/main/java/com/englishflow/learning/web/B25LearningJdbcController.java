@@ -32,6 +32,7 @@ import org.springframework.web.server.ResponseStatusException;
 import com.englishflow.learning.domain.EmptyBook;
 import com.englishflow.learning.domain.ReviewBudget;
 import com.englishflow.learning.domain.ReviewHistory;
+import com.englishflow.learning.domain.StageProjection;
 
 /** B25 compatibility reads. Legacy review writes are closed until trusted outcome evidence exists. */
 @RestController
@@ -461,6 +462,7 @@ public class B25LearningJdbcController {
             item.put("itemId", itemId);
             item.put("source", "NEW".equals(stage) ? "NEW" : "REVIEW");
             item.put("state", stage);
+            item.put("projectionVersion", StageProjection.VERSION);
             item.put("dueAt", row.get("due_at"));
             item.put("priority", Math.max(1, 100 - index));
             item.put("stateVersion", number(row.get("review_count")));
@@ -504,6 +506,7 @@ public class B25LearningJdbcController {
         body.put("source", "mysql");
         body.put("emptyStatus", emptyStatus);
         body.put("emptyCopy", ReviewHistory.copy(emptyStatus));
+        body.put("projectionVersion", StageProjection.VERSION);
         body.put("history", ReviewHistory.onlyVisible(history));
         return body;
     }

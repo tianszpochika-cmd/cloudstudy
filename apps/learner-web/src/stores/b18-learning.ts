@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 import { ApiError } from '../api/client'
 import { listB18ReviewQueue, type B18ReviewQueueItem, type ReviewHistoryEntry } from '../api/b18-learning'
 import { READ_FAILED_COPY } from '../domain/review-history'
+import { STAGE_PROJECTION, acceptStage } from '../domain/stage-projection'
 import { getLearningReport } from '../api/b10'
 import type { B10Report } from '../domain/b10'
 import { ILLEGAL_REVIEW, reviewFailureCopy, stageAfter } from '../domain/review-stage'
@@ -36,6 +37,7 @@ export const useB18LearningStore = defineStore('b18-learning', () => {
   const history = ref<ReviewHistoryEntry[]>([])
   const emptyCopy = ref('')
   const emptyStatus = ref('')
+  const projectionVersion = ref(STAGE_PROJECTION)
   const report = ref<B10Report | null>(null)
   const lastError = ref<string | null>(null)
   const busyItemId = ref<string | null>(null)
@@ -46,10 +48,16 @@ export const useB18LearningStore = defineStore('b18-learning', () => {
     lastError.value = null
     const [queueResult, reportResult] = await Promise.allSettled([listB18ReviewQueue(), getLearningReport('DAILY')])
     if (queueResult.status === 'fulfilled') {
-      queue.value = queueResult.value.items
+      const previous = queue.value
+      queue.value = queueResult.value.items.map((item) => {
+        const current = previous.find((row) => row.queueItemId === item.queueItemId)
+        if (!current) return item
+        return { ...item, state: acceptStage(current.state, current.stateVersion, item.state, item.stateVersion) }
+      })
       history.value = queueResult.value.history
       emptyCopy.value = queueResult.value.emptyCopy
       emptyStatus.value = queueResult.value.emptyStatus
+      projectionVersion.value = queueResult.value.projectionVersion || STAGE_PROJECTION
     } else {
       emptyStatus.value = 'READ_FAILED'
       emptyCopy.value = READ_FAILED_COPY
@@ -75,5 +83,5 @@ export const useB18LearningStore = defineStore('b18-learning', () => {
     lastError.value = '缺少可核验的答题结果，请从练习进入复习。'
   }
 
-  return { state, queue, history, emptyCopy, emptyStatus, report, lastError, busyItemId, hasReview, load, complete }
+  return { state, queue, history, emptyCopy, emptyStatus, projectionVersion, report, lastError, busyItemId, hasReview, load, complete }
 })

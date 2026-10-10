@@ -16,6 +16,7 @@ import { useB18LearningStore } from '../../stores/b18-learning'
 import { weaknessView } from '../../domain/mistake-book'
 import { reviewFailureCopy } from '../../domain/review-stage'
 import { reviewEmpty } from '../../domain/review-history'
+import { STAGE_PROJECTION } from '../../domain/stage-projection'
 
 const session = useSessionStore()
 const learning = useB18LearningStore()
@@ -126,6 +127,8 @@ onShow(async () => { await session.restore(); if (!session.isAuthenticated) { ge
       <text v-else data-weakness-evidence>已有复习证据</text>
       <text v-if="learning.state === 'idle' || learning.state === 'loading'" role="status">正在读取复习安排…</text>
       <text v-else-if="learning.state === 'empty'">暂无待复习内容。</text>
+      <text data-stage-projection>{{ learning.projectionVersion || STAGE_PROJECTION }}</text>
+      <text v-if="learning.queue[0]" data-stage>{{ learning.queue[0].state }}</text>
       <text v-if="learning.queue.length === 0 && learning.state !== 'loading'" data-review-empty>{{ learning.emptyCopy || reviewEmpty(learning.state === 'error' || learning.state === 'offline', true, false).copy }}</text>
       <text v-for="row in learning.history" :key="`${row.disposition}-${row.itemId}`" data-review-history>{{ row.disposition === 'DEFERRED' ? '延期' : '已完成' }}</text>
       <text v-if="reviewFailureCopy(learning.lastError)" data-review-illegal>{{ reviewFailureCopy(learning.lastError) }}</text>

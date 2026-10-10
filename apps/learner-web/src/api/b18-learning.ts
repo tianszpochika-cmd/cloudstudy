@@ -63,7 +63,7 @@ function parseItem(value: unknown): B18ReviewQueueItem | null {
 }
 
 export interface ReviewHistoryEntry { itemId: string; disposition: 'COMPLETED' | 'DEFERRED' }
-export interface ReviewQueueView { items: B18ReviewQueueItem[]; emptyStatus: string; emptyCopy: string; history: ReviewHistoryEntry[] }
+export interface ReviewQueueView { items: B18ReviewQueueItem[]; emptyStatus: string; emptyCopy: string; history: ReviewHistoryEntry[]; projectionVersion: string }
 
 export async function listB18ReviewQueue(): Promise<ReviewQueueView> {
   const response = await apiClient.get<unknown>(query('/learning/review-queue'), requestOptions())
@@ -82,5 +82,6 @@ export async function listB18ReviewQueue(): Promise<ReviewQueueView> {
     emptyStatus: text(payload.emptyStatus) ?? '',
     emptyCopy: text(payload.emptyCopy) ?? '',
     history,
+    projectionVersion: text(payload.projectionVersion) ?? 'IT4-STAGE-1',
   }
 }
