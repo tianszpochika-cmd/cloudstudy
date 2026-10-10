@@ -840,11 +840,7 @@ public class B25LearningJdbcController {
     }
 
     private static String instantText(Object value) {
-        if (value instanceof java.sql.Timestamp timestamp) return timestamp.toInstant().toString();
-        if (value instanceof Instant instant) return instant.toString();
-        String text = String.valueOf(value).trim().replace(' ', 'T');
-        if (text.endsWith(".0")) text = text.substring(0, text.length() - 2) + "Z";
-        return text;
+        return LearningPeriodReport.parseInstant(value).toString();
     }
 
     private static Map<String, Object> shareSnapshot(Object raw) {

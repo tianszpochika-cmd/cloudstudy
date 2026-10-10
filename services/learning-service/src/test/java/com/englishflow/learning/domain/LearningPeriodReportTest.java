@@ -80,6 +80,10 @@ class LearningPeriodReportTest {
         assertFalse(open.containsKey("token"));
         assertEquals("REVOKED", LearningPeriodReport.publicView(LearningPeriodReport.revoke(share, NOW), NOW).get("status"));
         assertEquals("EXPIRED", LearningPeriodReport.publicView(share, NOW.plus(java.time.Duration.ofDays(8))).get("status"));
+        share.put("expiresAt", "2026-10-17T21:23:08.529143");
+        Map<String, Object> reread = LearningPeriodReport.publicView(share, NOW);
+        assertEquals("ACTIVE", reread.get("status"));
+        assertEquals("先完成到期复习。", reread.get("suggestion"));
     }
 
     @Test

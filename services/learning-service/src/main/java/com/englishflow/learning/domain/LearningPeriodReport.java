@@ -174,7 +174,7 @@ public final class LearningPeriodReport {
 
     public static Map<String, Object> publicView(Map<String, Object> share, Instant now) {
         if (share.get("revokedAt") != null) return Map.of("status", "REVOKED");
-        Instant expires = Instant.parse(String.valueOf(share.get("expiresAt")));
+        Instant expires = parseInstant(share.get("expiresAt"));
         if (!now.isBefore(expires)) return Map.of("status", "EXPIRED");
         Map<String, Object> view = new LinkedHashMap<>();
         view.put("status", "ACTIVE");
@@ -271,6 +271,15 @@ public final class LearningPeriodReport {
     private static String reportId(String subject, String reportType, LocalDate start) {
         return java.util.UUID.nameUUIDFromBytes((subject + "|" + reportType + "|" + start)
                 .getBytes(StandardCharsets.UTF_8)).toString();
+    }
+
+    /** MySQL timestamps come back without a zone. They are UTC. */
+    public static Instant parseInstant(Object value) {
+        if (value instanceof Instant instant) return instant;
+        String text = String.valueOf(value).trim().replace(' ', 'T');
+        if (text.endsWith(".0")) text = text.substring(0, text.length() - 2);
+        if (!(text.endsWith("Z") || text.matches(".*[+-]\\d\\d:?\\d\\d$"))) text = text + "Z";
+        return Instant.parse(text);
     }
 
     static String digest(Map<String, Object> body) {
