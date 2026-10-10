@@ -1,0 +1,333 @@
+{
+  "summary": "PASS",
+  "accepted": false,
+  "it1Outbound": false,
+  "lunaStamp": false,
+  "historicalRejectUnchanged": true,
+  "scope": "web-and-h5-auth-destinations-cors-and-placement-entry-with-profile-readback",
+  "notCovered": [
+    "idempotency-replay",
+    "device-kick",
+    "minor-rejection",
+    "consent-withdrawal",
+    "ten-item-score"
+  ],
+  "identity": "iam-rs256",
+  "schemas": "four-owners",
+  "steps": [
+    {
+      "name": "mysql-identity",
+      "status": "PASS",
+      "detail": {
+        "name": "/yuxuexing-local-mysql-1",
+        "image": "mysql:8.0",
+        "project": "yuxuexing-local",
+        "service": "mysql",
+        "status": "running",
+        "health": "healthy",
+        "port": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "13306"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ports-free",
+      "status": "PASS",
+      "detail": {
+        "occupied": []
+      }
+    },
+    {
+      "name": "four-owner-schemas",
+      "status": "PASS",
+      "detail": {
+        "iam": "it1_recheck_20261010_iam_ce0aa296",
+        "learner": "it1_recheck_20261010_lrn_ce0aa296",
+        "content": "it1_recheck_20261010_cnt_ce0aa296",
+        "assessment": "it1_recheck_20261010_asm_ce0aa296"
+      }
+    },
+    {
+      "name": "content-seed-own-schema",
+      "status": "PASS",
+      "detail": {
+        "seeded": "10",
+        "schema": "it1_recheck_20261010_cnt_ce0aa296"
+      }
+    },
+    {
+      "name": "browser-ca-installed-without-ignoring-errors",
+      "status": "PASS",
+      "detail": {
+        "keychain": "temporary-user-keychain"
+      }
+    },
+    {
+      "name": "cors-http://127.0.0.1:18180",
+      "status": "PASS",
+      "detail": {
+        "status": 200,
+        "allowOrigin": "http://127.0.0.1:18180",
+        "allowCredentials": "true",
+        "allowMethods": "POST,OPTIONS"
+      }
+    },
+    {
+      "name": "cors-http://127.0.0.1:18183",
+      "status": "PASS",
+      "detail": {
+        "status": 200,
+        "allowOrigin": "http://127.0.0.1:18183",
+        "allowCredentials": "true",
+        "allowMethods": "POST,OPTIONS"
+      }
+    },
+    {
+      "name": "register-web-390x844",
+      "status": "PASS",
+      "detail": {
+        "method": "POST",
+        "origin": "https://127.0.0.1:18087",
+        "path": "/api/v1/auth/register",
+        "status": 201
+      }
+    },
+    {
+      "name": "login-web-390x844",
+      "status": "PASS",
+      "detail": {
+        "method": "POST",
+        "origin": "https://127.0.0.1:18087",
+        "path": "/api/v1/auth/login",
+        "status": 200
+      }
+    },
+    {
+      "name": "reset-web-390x844",
+      "status": "PASS",
+      "detail": {
+        "method": "POST",
+        "origin": "https://127.0.0.1:18087",
+        "path": "/api/v1/auth/password-reset/request",
+        "status": 202,
+        "account": "existing"
+      }
+    },
+    {
+      "name": "register-h5-1280x900",
+      "status": "PASS",
+      "detail": {
+        "method": "POST",
+        "origin": "https://127.0.0.1:18087",
+        "path": "/api/v1/auth/register",
+        "status": 201
+      }
+    },
+    {
+      "name": "login-h5-1280x900",
+      "status": "PASS",
+      "detail": {
+        "method": "POST",
+        "origin": "https://127.0.0.1:18087",
+        "path": "/api/v1/auth/login",
+        "status": 200
+      }
+    },
+    {
+      "name": "reset-h5-1280x900",
+      "status": "PASS",
+      "detail": {
+        "method": "POST",
+        "origin": "https://127.0.0.1:18087",
+        "path": "/api/v1/auth/password-reset/request",
+        "status": 202,
+        "account": "unknown"
+      }
+    },
+    {
+      "name": "register-web-1280x900",
+      "status": "PASS",
+      "detail": {
+        "method": "POST",
+        "origin": "https://127.0.0.1:18087",
+        "path": "/api/v1/auth/register",
+        "status": 201
+      }
+    },
+    {
+      "name": "web-chain-placement-entry",
+      "status": "PASS",
+      "detail": {
+        "url": "http://127.0.0.1:18180/assessment",
+        "refresh": [
+          {
+            "method": "POST",
+            "origin": "https://127.0.0.1:18087",
+            "path": "/api/v1/auth/token/refresh",
+            "status": 200
+          },
+          {
+            "method": "POST",
+            "origin": "https://127.0.0.1:18087",
+            "path": "/api/v1/auth/token/refresh",
+            "status": 200
+          }
+        ],
+        "target": {
+          "method": "PUT",
+          "origin": "http://127.0.0.1:18070",
+          "path": "/api/v1/learner/targets",
+          "status": 200,
+          "request": {
+            "idempotencyKeyLength": 61,
+            "requestId": null,
+            "traceId": null,
+            "body": {
+              "expectedStateVersion": 1,
+              "goalCode": "ZERO_BASIS",
+              "targetLevel": "A1",
+              "dailyQuotaMinutes": 15,
+              "status": "ACTIVE"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "web-profile-readback-after-learner-restart",
+      "status": "PASS",
+      "detail": {
+        "url": "http://127.0.0.1:18180/onboarding",
+        "read": {
+          "method": "GET",
+          "origin": "http://127.0.0.1:18070",
+          "path": "/api/v1/learner/targets",
+          "status": 200
+        }
+      }
+    },
+    {
+      "name": "login-web-1280x900",
+      "status": "PASS",
+      "detail": {
+        "method": "POST",
+        "origin": "https://127.0.0.1:18087",
+        "path": "/api/v1/auth/login",
+        "status": 200
+      }
+    },
+    {
+      "name": "reset-web-1280x900",
+      "status": "PASS",
+      "detail": {
+        "method": "POST",
+        "origin": "https://127.0.0.1:18087",
+        "path": "/api/v1/auth/password-reset/request",
+        "status": 202,
+        "account": "existing"
+      }
+    },
+    {
+      "name": "register-h5-390x844",
+      "status": "PASS",
+      "detail": {
+        "method": "POST",
+        "origin": "https://127.0.0.1:18087",
+        "path": "/api/v1/auth/register",
+        "status": 201
+      }
+    },
+    {
+      "name": "h5-chain-placement-entry",
+      "status": "PASS",
+      "detail": {
+        "url": "http://127.0.0.1:18183/#/pages/assessment/assessment",
+        "refresh": [
+          {
+            "method": "POST",
+            "origin": "https://127.0.0.1:18087",
+            "path": "/api/v1/auth/token/refresh",
+            "status": 200
+          },
+          {
+            "method": "POST",
+            "origin": "https://127.0.0.1:18087",
+            "path": "/api/v1/auth/token/refresh",
+            "status": 200
+          }
+        ],
+        "target": {
+          "method": "PUT",
+          "origin": "http://127.0.0.1:18070",
+          "path": "/api/v1/learner/targets",
+          "status": 200,
+          "request": {
+            "idempotencyKeyLength": 51,
+            "requestId": null,
+            "traceId": null,
+            "body": {
+              "expectedStateVersion": 0,
+              "goalCode": "ZERO_BASIS",
+              "targetLevel": "A1",
+              "dailyQuotaMinutes": 15,
+              "status": "ACTIVE"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "h5-profile-readback-after-learner-restart",
+      "status": "PASS",
+      "detail": {
+        "url": "http://127.0.0.1:18183/#/pages/onboarding/onboarding",
+        "read": {
+          "method": "GET",
+          "origin": "http://127.0.0.1:18070",
+          "path": "/api/v1/learner/targets",
+          "status": 200
+        }
+      }
+    },
+    {
+      "name": "login-h5-390x844",
+      "status": "PASS",
+      "detail": {
+        "method": "POST",
+        "origin": "https://127.0.0.1:18087",
+        "path": "/api/v1/auth/login",
+        "status": 200
+      }
+    },
+    {
+      "name": "reset-h5-390x844",
+      "status": "PASS",
+      "detail": {
+        "method": "POST",
+        "origin": "https://127.0.0.1:18087",
+        "path": "/api/v1/auth/password-reset/request",
+        "status": 202,
+        "account": "existing"
+      }
+    },
+    {
+      "name": "passwords-and-refresh-stay-off-gateway",
+      "status": "PASS",
+      "detail": {
+        "leaked": []
+      }
+    }
+  ],
+  "dropped": [
+    "it1_recheck_20261010_iam_ce0aa296=0",
+    "it1_recheck_20261010_lrn_ce0aa296=0",
+    "it1_recheck_20261010_cnt_ce0aa296=0",
+    "it1_recheck_20261010_asm_ce0aa296=0"
+  ],
+  "retainedSchemasLeft": "2",
+  "listeners": [],
+  "qidaUnchanged": true
+}
