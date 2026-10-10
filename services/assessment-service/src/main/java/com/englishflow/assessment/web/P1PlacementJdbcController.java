@@ -509,6 +509,8 @@ public class P1PlacementJdbcController {
         result.put("resultDigest", resultDigest);
         String reportDigest = sha256(json(List.of(resultDigest, manifest, contentPin, rulePin, targetPin)));
         result.put("reportDigest", reportDigest);
+        result.put("placementCard", com.englishflow.assessment.domain.PlacementReportCard.present(
+                kind, reportId, 1, reportDigest, assessed == null ? null : assessed.aggregateScore()));
         Map<String, Object> report = new LinkedHashMap<>();
         report.put("result", result);
         report.put("manifest", manifest);
@@ -998,6 +1000,9 @@ public class P1PlacementJdbcController {
             view.put("resultKind", "SKIPPED");
             view.put("baselineSource", "USER_SKIP");
             view.put("confidence", "UNVERIFIED");
+            view.put("placementCard", com.englishflow.assessment.domain.PlacementReportCard.present(
+                    "SKIPPED", String.valueOf(row.get("session_id")), 1,
+                    String.valueOf(row.get("session_snapshot_digest")), null));
             if (row.get("baseline_json") != null) {
                 Map<String, Object> baseline = object(row.get("baseline_json"));
                 if (baseline.get("requestedStartingLevel") != null) {

@@ -109,12 +109,14 @@ onShow(async () => {
     <view v-if="isSkipped" class="yx-card result-card">
       <text class="question-count">已跳过测评</text>
       <text class="result-title">水平尚未验证</text>
+      <text data-placement-card>这次跳过不是正式测评分数。</text>
       <text v-if="report?.requestedStartingLevel" class="question">你选择了 {{ report.requestedStartingLevel }} 作为起点；这不是测评等级。</text>
       <text v-else class="question">自选起点，水平尚未验证。</text>
       <button tabindex="0" role="button" class="yx-button" type="button" @click="openToday">查看今日状态</button>
     </view>
     <view v-else-if="report" class="yx-card result-card">
       <text class="question-count">报告已生成</text>
+      <text data-placement-card>这份报告和快照是同一版本。</text>
       <text v-if="report.cefrLevel && scorePercent !== null" class="result-title">{{ report.cefrLevel }} · {{ scorePercent }} 分</text>
       <text v-if="countedReport" class="question">答对 {{ countedReport.full }} 题，共 {{ countedReport.total }} 题。</text>
       <text v-if="feedbackText" class="question" role="status">{{ feedbackText }}</text>
