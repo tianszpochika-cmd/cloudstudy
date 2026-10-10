@@ -7,7 +7,7 @@ import { onShow } from '@dcloudio/uni-app'
 import { getUniRuntime, openUniPage } from '../../platform/uni-runtime'
 import { ensureMobilePageAccess } from '../../auth/navigation'
 import type { MobileTask } from '../../domain/learner-content'
-import { emptyStateView, firstLearningGuideCopy, type EmptyStateView } from '../../domain/plan-today'
+import { ALGORITHM_VERSION, arrangementLabel, emptyStateView, firstLearningGuideCopy, type EmptyStateView } from '../../domain/plan-today'
 import { useLearnerContentStore } from '../../stores/learner-content'
 import { computed } from 'vue'
 
@@ -53,6 +53,8 @@ function backHome(): void { getUniRuntime().switchTab({ url: '/pages/home/home' 
         <button tabindex="0" role="button" class="yx-button yx-button--secondary" type="button" @click="store.loadHome()">重新加载</button>
       </view>
       <template v-if="store.home"><text class="progress">{{ store.progress }}%</text><text class="yx-description">目标 {{ store.home.targetMinutes }} 分钟，已完成 {{ store.home.completedMinutes }} 分钟。</text></template>
+      <text data-algorithm>{{ store.planQueue?.algorithmVersion || ALGORITHM_VERSION }}</text>
+      <text v-for="item in store.planQueue?.arrangements ?? []" :key="item.itemId" data-arrangement>{{ arrangementLabel(item.arrangement, item.arrangementCopy) }}</text>
       <view v-if="planExplanation" class="empty" role="status">{{ planExplanation }}</view>
       <view v-if="firstLearningCopy" class="empty" role="status">{{ firstLearningCopy }}</view>
       <view v-if="store.planNotice" class="empty" role="status">{{ store.planNotice }}</view>

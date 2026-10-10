@@ -5,7 +5,7 @@ import { useRouter } from 'vue-router'
 import StatePanel from '../components/StatePanel.vue'
 import { useLearnerContentStore } from '../stores/learner-content'
 import { userFacingError } from '../platform/user-facing-error'
-import { emptyStateView, firstLearningGuideCopy, type EmptyStateView } from '../domain/plan-today'
+import { ALGORITHM_VERSION, arrangementLabel, emptyStateView, firstLearningGuideCopy, type EmptyStateView } from '../domain/plan-today'
 import { practiceFeedback } from '../domain/practice-loop'
 
 const router = useRouter()
@@ -61,6 +61,8 @@ function continueLearning(): void {
     <StatePanel v-else-if="store.todayStatus === 'offline'" state="offline" title="今日任务" description="网络暂时不可用，请重试。" action-label="重试" @action="() => { void store.loadToday() }" />
     <StatePanel v-else-if="store.lastError" state="error" title="今日任务" :description="userFacingError(store.lastError, '暂时无法读取今日任务，请稍后重试。')" action-label="重试" @action="() => { void store.loadToday() }" />
     <article v-else class="task-list">
+      <p data-algorithm>{{ store.planQueue?.algorithmVersion || ALGORITHM_VERSION }}</p>
+      <p v-for="item in store.planQueue?.arrangements ?? []" :key="item.itemId" data-arrangement>{{ arrangementLabel(item.arrangement, item.arrangementCopy) }}</p>
       <p v-if="planExplanation" class="plan-banner" role="status">{{ planExplanation }}</p>
       <p v-if="firstLearningCopy" class="plan-banner" role="status">{{ firstLearningCopy }}</p>
       <p v-if="store.planNotice" class="plan-banner" role="status">{{ store.planNotice }}</p>

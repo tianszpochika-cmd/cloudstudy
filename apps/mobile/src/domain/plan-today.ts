@@ -1,6 +1,16 @@
 export type EmptyReason = 'NO_PLAN' | 'NO_DUE_REVIEW' | 'COMPLETED' | 'READY' | 'NO_CONTENT'
 export type FirstLearningReason = 'NO_PLAN' | 'NO_CONTENT' | 'INCOMPLETE' | 'COMPLETED'
 
+export const ALGORITHM_VERSION = 'SM2_Q03_V1'
+export const DEFERRED_COPY = '今天排不下，已顺延，这不是欠账。'
+export const MINUTES_PER_ITEM = 5
+
+export interface DueArrangement {
+  itemId: string
+  arrangement: 'DUE' | 'DEFERRED'
+  arrangementCopy: string
+}
+
 export interface PlanTodayQueue {
   planId: string
   status: string
@@ -11,6 +21,9 @@ export interface PlanTodayQueue {
   explanationPinVersion: number | null
   firstLearning: { guideVisible: boolean; reason: FirstLearningReason } | null
   itemCount: number
+  algorithmVersion: string
+  deferredCount: number
+  arrangements: DueArrangement[]
 }
 
 export interface EmptyStateView {
@@ -84,7 +97,43 @@ export function parsePlanTodayQueue(value: unknown): PlanTodayQueue {
       ? { guideVisible: first.guideVisible === true, reason: firstReason as FirstLearningReason }
       : null,
     itemCount: items,
+    algorithmVersion: text(source.algorithmVersion) ?? ALGORITHM_VERSION,
+    deferredCount: whole(source.deferredCount) ?? 0,
+    arrangements: parseArrangements(source.items, whole(source.targetMinutes) ?? 0),
   }
+}
+
+export function arrangeBudget(count: number, targetMinutes: number): Array<'DUE' | 'DEFERRED'> {
+  const budget = Math.max(0, targetMinutes)
+  const marks: Array<'DUE' | 'DEFERRED'> = []
+  let used = 0
+  for (let index = 0; index < count; index += 1) {
+    if (used + MINUTES_PER_ITEM <= budget) {
+      marks.push('DUE')
+      used += MINUTES_PER_ITEM
+    } else {
+      marks.push('DEFERRED')
+    }
+  }
+  return marks
+}
+
+export function arrangementLabel(arrangement: string, copy?: string | null): string {
+  if (arrangement === 'DEFERRED') return copy?.trim() || DEFERRED_COPY
+  if (arrangement === 'DUE') return '到期复习'
+  return ''
+}
+
+function parseArrangements(value: unknown, targetMinutes: number): DueArrangement[] {
+  if (!Array.isArray(value)) return []
+  const fallback = arrangeBudget(value.length, targetMinutes)
+  return value.flatMap((item, index) => {
+    if (!record(item)) return []
+    const itemId = text(item.itemId) ?? String(index + 1)
+    const server = text(item.arrangement)
+    const arrangement = server === 'DUE' || server === 'DEFERRED' ? server : fallback[index]
+    return [{ itemId, arrangement, arrangementCopy: text(item.arrangementCopy) ?? (arrangement === 'DEFERRED' ? DEFERRED_COPY : '') }]
+  })
 }
 
 export function emptyStateView(input: { failed: boolean; reason: EmptyReason | null; hasTasks: boolean }): EmptyStateView | null {

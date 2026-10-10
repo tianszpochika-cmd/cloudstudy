@@ -1,8 +1,11 @@
 package com.englishflow.learning.web;
 
 import com.englishflow.learning.application.PlanDayFacts;
+import com.englishflow.learning.domain.ReviewBudget;
+import com.englishflow.learning.domain.Sm2Scheduler;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,11 +48,18 @@ public class V2LearningController {
     public Map<String, Object> firstDay(Authentication authentication) {
         String subject = LearningHttpPrincipals.require(authentication, "learning.plan.read").subject();
         Map<String, Object> plan = currentPlanRow(subject);
-        List<Map<String, Object>> today = todayItems(subject);
+        List<Map<String, Object>> due = todayItems(subject);
+        List<Map<String, Object>> today = mutableSlice(due, 20);
+        int deferred = ReviewBudget.arrange(today, count(plan.get("targetMinutes")));
+        Map<String, Object> todayView = new LinkedHashMap<>();
+        todayView.put("count", due.size());
+        todayView.put("items", today);
+        todayView.put("deferredCount", deferred);
+        todayView.put("algorithmVersion", Sm2Scheduler.ALGORITHM_VERSION);
         Map<String, Object> data = new LinkedHashMap<>();
         data.put("principalId", subject);
         data.put("plan", plan);
-        data.put("today", Map.of("count", today.size(), "items", today.stream().limit(20).toList()));
+        data.put("today", todayView);
         data.put("planMap", List.of(
                 Map.of("node", "TODAY", "route", "/today", "available", true),
                 Map.of("node", "PLAN", "route", "/home", "available", !plan.get("status").equals("EMPTY")),
@@ -71,8 +81,10 @@ public class V2LearningController {
     @GetMapping("/today")
     public Map<String, Object> today(Authentication authentication) {
         String subject = LearningHttpPrincipals.require(authentication, "learning.review.read").subject();
-        List<Map<String, Object>> items = todayItems(subject);
+        List<Map<String, Object>> due = todayItems(subject);
         Map<String, Object> plan = currentPlanRow(subject);
+        List<Map<String, Object>> items = mutableSlice(due, 50);
+        int deferred = ReviewBudget.arrange(items, count(plan.get("targetMinutes")));
         QueueFacts facts = queueFacts(subject);
         boolean hasPlan = !"EMPTY".equals(plan.get("status"));
         String emptyReason = PlanDayFacts.emptyReason(hasPlan, facts.openDue(), facts.total(), facts.unfinished());
@@ -82,8 +94,10 @@ public class V2LearningController {
         data.put("status", plan.get("status"));
         data.put("planVersion", plan.get("planVersion"));
         data.put("targetMinutes", plan.get("targetMinutes"));
-        data.put("count", items.size());
-        data.put("items", items.stream().limit(50).toList());
+        data.put("count", due.size());
+        data.put("items", items);
+        data.put("deferredCount", deferred);
+        data.put("algorithmVersion", Sm2Scheduler.ALGORITHM_VERSION);
         data.put("emptyReason", emptyReason);
         data.put("firstLearning", firstLearning(subject, plan));
         if (!facts.explanation().isBlank()) {
@@ -111,6 +125,15 @@ public class V2LearningController {
             return Map.of("status", "EMPTY", "planId", "", "targetMinutes", 0, "planVersion", 0);
         }
         return rows.get(0);
+    }
+
+    private static List<Map<String, Object>> mutableSlice(List<Map<String, Object>> items, int limit) {
+        List<Map<String, Object>> visible = new ArrayList<>();
+        for (Map<String, Object> item : items) {
+            if (visible.size() >= limit) break;
+            visible.add(new LinkedHashMap<>(item));
+        }
+        return visible;
     }
 
     private List<Map<String, Object>> todayItems(String subject) {
