@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import ExperienceHeader from '../components/ExperienceHeader.vue'
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { fetchMistakesQueue, type LoopMistake } from '../api/b2'
 import StatePanel from '../components/StatePanel.vue'
-import { ZERO_ONLY_COPY, closureLabel } from '../domain/mistake-book'
+import { PROJECTION_VERSION, ZERO_ONLY_COPY, closureLabel, emptyBook } from '../domain/mistake-book'
 
 type ViewState = 'loading' | 'ready' | 'empty' | 'permission' | 'error'
 
@@ -12,12 +12,24 @@ const router = useRouter()
 const state = ref<ViewState>('loading')
 const lastError = ref<string | null>(null)
 const mistakes = ref<LoopMistake[]>([])
+const attemptCount = ref(0)
+const serverEmptyCopy = ref('')
+const projectionVersion = ref(PROJECTION_VERSION)
+const emptyLabel = computed(() => {
+  if (state.value === 'error') return emptyBook(0, 0, true).copy
+  return serverEmptyCopy.value || emptyBook(attemptCount.value, mistakes.value.length).copy
+})
+const remediationId = computed(() => mistakes.value.find((item) => item.remediationId)?.remediationId ?? '')
 
 async function load(): Promise<void> {
   state.value = 'loading'
   lastError.value = null
   try {
-    mistakes.value = await fetchMistakesQueue()
+    const book = await fetchMistakesQueue()
+    mistakes.value = book.items
+    attemptCount.value = book.attemptCount
+    serverEmptyCopy.value = book.emptyCopy ?? ''
+    projectionVersion.value = book.projectionVersion || PROJECTION_VERSION
     state.value = mistakes.value.length ? 'ready' : 'empty'
   } catch (error) {
     const status = (error as { status?: number })?.status
@@ -41,11 +53,14 @@ onMounted(() => { void load() })
   <section class="page-stack">
     <ExperienceHeader page="Mistakes" icon="bookmark" />
     <p data-zero-only>{{ ZERO_ONLY_COPY }}</p>
+    <p data-projection-version>{{ projectionVersion }}</p>
+    <p v-if="state === 'empty' || state === 'error'" data-empty-book>{{ emptyLabel }}</p>
+    <p v-if="remediationId" data-remediation>{{ remediationId }}</p>
     <StatePanel
       v-if="state !== 'ready'"
       :state="state"
       title="错题本"
-      :description="state === 'empty' ? '暂无错题——答错的题目会自动出现在这里。' : state === 'permission' ? '当前会话没有错题读取权限。' : (lastError ?? '错题暂时不可用。')"
+      :description="state === 'empty' || state === 'error' ? emptyLabel : state === 'permission' ? '当前会话没有错题读取权限。' : (lastError ?? '错题暂时不可用。')"
       :action-label="state === 'error' ? '重试' : ''"
       @action="load"
     />

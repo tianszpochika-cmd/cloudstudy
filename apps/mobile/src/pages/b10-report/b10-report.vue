@@ -11,7 +11,7 @@ import { b10ThemeMode, b10T } from '../../platform/b10-foundation'
 import { useB10LearningStore } from '../../stores/b10-learning'
 import { openUniPage, getUniRuntime } from '../../platform/uni-runtime'
 import { useSessionStore } from '../../stores/session'
-import { ZERO_ONLY_COPY, closureLabel } from '../../domain/mistake-book'
+import { PROJECTION_VERSION, ZERO_ONLY_COPY, closureLabel, emptyBook } from '../../domain/mistake-book'
 
 const session = useSessionStore()
 const store = useB10LearningStore()
@@ -24,6 +24,10 @@ function setPerformance(level: PerformanceLevel): void { engine.setLevel(level, 
 function load(): void { void Promise.all([store.loadMistakes(), store.loadReport(reportPeriod.value)]) }
 function selectReportPeriod(period: 'daily' | 'weekly'): void { reportPeriod.value = period; load() }
 function retry(mistakeId: number): void { void store.startMistakeRetry(mistakeId) }
+const emptyLabel = computed(() => {
+  if (store.status === 'error' || store.status === 'offline') return emptyBook(0, 0, true).copy
+  return store.emptyCopy || emptyBook(store.attemptCount, store.mistakes.length).copy
+})
 function open(path: string): void { openUniPage(path) }
 onShow(async () => { await session.restore(); if (!session.isAuthenticated) { getUniRuntime().navigateTo({ url: '/pages/login/login' }); return } load() })
 onUnmounted(() => engine.dispose())
@@ -37,6 +41,9 @@ onUnmounted(() => engine.dispose())
 
     <B10StatusPanel :status="status" :message="store.message" :performance-level="performanceLevel" @retry="load" @performance="setPerformance" />
     <text data-zero-only>{{ ZERO_ONLY_COPY }}</text>
+    <text data-projection-version>{{ store.projectionVersion || PROJECTION_VERSION }}</text>
+    <text v-if="store.status === 'empty' || store.status === 'error' || store.status === 'offline'" data-empty-book>{{ emptyLabel }}</text>
+    <text v-if="store.remediationId" data-remediation>{{ store.remediationId }}</text>
     <view v-if="store.mistakes.length" class="yx-card b10-mistakes"><text class="b10-section-title">{{ b10T('report.mistakes') }}</text><view v-for="mistake in store.mistakes" :key="mistake.mistakeId" class="b10-mistake"><view class="b10-mistake__copy"><text class="b10-mistake__title">{{ mistake.errorCategory }}</text><text>{{ mistake.prompt ?? `题目 ${mistake.itemId}` }}</text><text class="b10-mistake__meta" data-closure>{{ closureLabel(mistake.mistakeStatus, mistake.closureCopy) }}</text><text v-for="reason in mistake.reasonTrace" :key="reason.code" class="b10-mistake__reason">{{ reason.label }}<template v-if="reason.evidence"> · {{ reason.evidence }}</template></text></view><button tabindex="0" role="button" class="b10-mini" type="button" :disabled="mistake.mistakeStatus === 'MASTERED'" @click="retry(mistake.mistakeId)">{{ b10T('report.retry') }}</button></view></view>
     <view v-else-if="store.status !== 'loading'" class="yx-card b10-empty"><text>{{ b10T('report.noMistakes') }}</text></view>
     <view v-if="store.report" class="yx-card b10-report"><view class="b10-report__header"><text class="b10-section-title">{{ b10T('report.report') }}</text><text class="b10-report__status">{{ store.report.status }}</text></view><view class="b10-report__score"><text v-if="store.report.score !== null">{{ store.report.score }}<text v-if="store.report.reportedMaxScore !== null"> / {{ store.report.reportedMaxScore }}</text></text><text v-else>{{ store.report.status === 'PARTIAL' ? b10T('report.partial') : b10T('report.noReport') }}</text></view><view v-if="store.report.metrics.length" class="b10-metrics"><view v-for="metric in store.report.metrics" :key="metric.code" class="b10-metric"><text>{{ metric.label }}</text><text>{{ metric.value }}<template v-if="metric.max !== undefined"> / {{ metric.max }}</template></text></view></view><view v-if="store.report.evidence.length" class="b10-evidence"><text class="b10-section-title">{{ b10T('report.reason') }}</text><view v-for="item in store.report.evidence" :key="`${item.label}-${item.detail}`"><text>{{ item.label }}</text><text>{{ item.detail }}</text></view></view></view>

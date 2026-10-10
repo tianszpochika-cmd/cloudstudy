@@ -135,6 +135,7 @@ export interface B10Mistake {
   questionType: B10QuestionType | null
   contentVersionId: number | null
   verificationId: number | null
+  remediationId?: number | null
   closureCopy?: string | null
   variantStatus?: string | null
 }
@@ -148,6 +149,7 @@ export interface B10Verification {
   score: number | null
   maxScore: number | null
   nextState: string | null
+  remediationId?: number | null
 }
 
 export interface B10Report {

@@ -89,6 +89,10 @@ export const useB10LearningStore = defineStore('mobile-b10-learning', () => {
   const answers = ref<Record<string, B10AnswerInput>>({})
   const answerResults = ref<Record<string, B10AnswerResult>>({})
   const mistakes = ref<B10Mistake[]>([])
+  const attemptCount = ref(0)
+  const emptyCopy = ref('')
+  const projectionVersion = ref('IT4-MISTAKE-1')
+  const remediationId = ref<number | null>(null)
   const report = ref<B10Report | null>(null)
   const reportStatus = ref<typeof status.value>('idle')
   const practiceStatus = ref<typeof status.value>('idle')
@@ -109,7 +113,7 @@ export const useB10LearningStore = defineStore('mobile-b10-learning', () => {
     restored.value = false
     status.value = 'idle'; message.value = null
     batch.value = null; currentIndex.value = 0; queuedReviews.value = []
-    practice.value = null; answers.value = {}; answerResults.value = {}; mistakes.value = []; report.value = null
+    practice.value = null; answers.value = {}; answerResults.value = {}; mistakes.value = []; attemptCount.value = 0; emptyCopy.value = ''; projectionVersion.value = 'IT4-MISTAKE-1'; remediationId.value = null; report.value = null
     reportStatus.value = 'idle'; practiceStatus.value = 'idle'; practiceMessage.value = null
   }
   watch(() => session.identityRevision, reset, { flush: 'sync' })
@@ -315,7 +319,7 @@ export const useB10LearningStore = defineStore('mobile-b10-learning', () => {
     const owner = scope()
     if (!owner) { reset(); status.value = 'forbidden'; return }
     status.value = 'loading'; message.value = null
-    try { const remote = await b10LearningApi.listMistakes(context()); if (!stillCurrent(owner)) return; mistakes.value = remote; status.value = mistakes.value.length ? 'ready' : 'empty'; persist() }
+    try { const remote = await b10LearningApi.listMistakeBook(context()); if (!stillCurrent(owner)) return; mistakes.value = remote.items; attemptCount.value = remote.attemptCount; emptyCopy.value = remote.emptyCopy; projectionVersion.value = remote.projectionVersion || 'IT4-MISTAKE-1'; const listed = remote.items.find((item) => item.remediationId)?.remediationId ?? null; if (listed) remediationId.value = listed; status.value = mistakes.value.length ? 'ready' : 'empty'; persist() }
     catch (error) { if (!stillCurrent(owner)) return; const info = b10ErrorInfo(error, '错题服务暂时不可用。'); status.value = info.kind; message.value = info.message; persist() }
   }
 
@@ -323,7 +327,7 @@ export const useB10LearningStore = defineStore('mobile-b10-learning', () => {
     const owner = scope()
     if (!owner || !mistakes.value.some((item) => item.mistakeId === mistakeId)) return
     status.value = 'loading'; message.value = null
-    try { await b10LearningApi.startMistakeRetry(context(), mistakeId, nowId(`mistake-retry-${mistakeId}`)); if (!stillCurrent(owner)) return; status.value = 'ready'; message.value = '订正会话已创建。'; await loadMistakes() }
+    try { const verification = await b10LearningApi.startMistakeRetry(context(), mistakeId, nowId(`mistake-retry-${mistakeId}`)); if (!stillCurrent(owner)) return; remediationId.value = verification.remediationId ?? verification.verificationId; status.value = 'ready'; message.value = '订正会话已创建。'; await loadMistakes() }
     catch (error) { if (!stillCurrent(owner)) return; const info = b10ErrorInfo(error, '错题订正暂时不可用。'); status.value = info.kind; message.value = info.message }
   }
 
@@ -335,5 +339,5 @@ export const useB10LearningStore = defineStore('mobile-b10-learning', () => {
     catch (error) { if (!stillCurrent(owner)) return; const info = b10ErrorInfo(error, '报告暂时不可用。'); reportStatus.value = info.kind; message.value = info.message; persist() }
   }
 
-  return { restored, status, message, batch, currentIndex, queuedReviews, practice, answers, answerResults, mistakes, report, reportStatus, practiceStatus, practiceMessage, srsQueueCount, currentCard, currentExercise, restore, persist, loadSrs, revealCard, rateCard, syncSrs, loadPractice, submitAnswer, saveCheckpoint, completePractice, loadMistakes, startMistakeRetry, loadReport }
+  return { restored, status, message, batch, currentIndex, queuedReviews, practice, answers, answerResults, mistakes, attemptCount, emptyCopy, projectionVersion, remediationId, report, reportStatus, practiceStatus, practiceMessage, srsQueueCount, currentCard, currentExercise, restore, persist, loadSrs, revealCard, rateCard, syncSrs, loadPractice, submitAnswer, saveCheckpoint, completePractice, loadMistakes, startMistakeRetry, loadReport }
 })

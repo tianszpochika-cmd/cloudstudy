@@ -273,24 +273,35 @@ export function isB2OfflineError(error: unknown): boolean {
 }
 
 /** P1R decision 1A: loop pages read owner projections directly (no local math). */
-export interface LoopMistake { interactionId: unknown; resourceKey: string | null; domainCode: string | null; actionCode: string | null; feedbackCode: string | null; message: string | null; errorCategory: string | null; mistakeStatus: string | null }
+export interface LoopMistake { interactionId: unknown; resourceKey: string | null; domainCode: string | null; actionCode: string | null; feedbackCode: string | null; message: string | null; errorCategory: string | null; mistakeStatus: string | null; remediationId: string | null }
+export interface MistakeBook { items: LoopMistake[]; attemptCount: number; mistakeCount: number; emptyStatus: string | null; emptyCopy: string | null; projectionVersion: string }
 export interface LoopMastery { total: number; newCount: number; learningCount: number; reviewCount: number; masteredCount: number }
 export interface LoopPlan { status: string | null; targetMinutes: number | null; planVersion: number | null; updatedAt: string | null }
 
-export async function fetchMistakesQueue(): Promise<LoopMistake[]> {
+export async function fetchMistakesQueue(): Promise<MistakeBook> {
   const response = await apiClient.get<unknown>('/learning/mistakes/queue')
-  const items = unwrap(response)
-  const list = Array.isArray(items) ? items : isRecord(items) && Array.isArray(items.items) ? items.items as unknown[] : []
-  return list.filter(isRecord).map((row) => ({
-    interactionId: row.interaction_id ?? null,
-    resourceKey: stringValue(row.resource_key),
-    domainCode: stringValue(row.domain_code),
-    actionCode: stringValue(row.action_code),
-    feedbackCode: stringValue(row.feedback_code),
+  const payload = unwrap(response)
+  const record = isRecord(payload) ? payload : {}
+  const list = Array.isArray(payload) ? payload : isRecord(payload) && Array.isArray(payload.items) ? payload.items as unknown[] : []
+  const items = list.filter(isRecord).map((row) => ({
+    interactionId: row.interaction_id ?? row.interactionId ?? null,
+    resourceKey: stringValue(row.resource_key ?? row.resourceKey),
+    domainCode: stringValue(row.domain_code ?? row.domainCode),
+    actionCode: stringValue(row.action_code ?? row.actionCode ?? row.action),
+    feedbackCode: stringValue(row.feedback_code ?? row.feedbackCode),
     message: stringValue(row.message),
-    errorCategory: stringValue(row.error_category),
-    mistakeStatus: stringValue(row.mistake_status) ?? 'OPEN',
+    errorCategory: stringValue(row.error_category ?? row.errorCategory),
+    mistakeStatus: stringValue(row.mistake_status ?? row.mistakeStatus) ?? 'OPEN',
+    remediationId: stringValue(row.remediationId ?? row.remediation_id) ?? (typeof (row.remediationId ?? row.remediation_id) === 'number' ? String(row.remediationId ?? row.remediation_id) : null),
   }))
+  return {
+    items,
+    attemptCount: numberValue(record.attemptCount) ?? 0,
+    mistakeCount: numberValue(record.mistakeCount) ?? items.length,
+    emptyStatus: stringValue(record.emptyStatus),
+    emptyCopy: stringValue(record.emptyCopy),
+    projectionVersion: stringValue(record.projectionVersion) ?? 'IT4-MISTAKE-1',
+  }
 }
 
 export async function fetchSrsOverview(): Promise<LoopMastery> {

@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.englishflow.learning.domain.EmptyBook;
 import com.englishflow.learning.domain.MasteryWrite;
 
 import tools.jackson.databind.ObjectMapper;
@@ -398,18 +399,20 @@ public class B3LearningJdbcController {
     @GetMapping("/mastery/mistakes")
     public Map<String, Object> mistakes(Authentication authentication) {
         Principal principal = principal(authentication, "learning.mastery.read");
-        List<Map<String, Object>> items = jdbc.queryForList("""
+        List<Map<String, Object>> rows = jdbc.queryForList("""
                 SELECT resource_key, payload_json, result_json, created_at
                   FROM b3_learning_interaction
                  WHERE tenant_id = ? AND principal_id = ?
                    AND domain_code = 'GRAMMAR' AND action_code = 'ATTEMPT'
                  ORDER BY created_at DESC
-                """, TENANT, principal.subject()).stream()
+                """, TENANT, principal.subject());
+        List<Map<String, Object>> items = rows.stream()
                 .map(row -> {
                     Map<String, Object> result = parseResult(row.get("result_json"));
                     if (Boolean.TRUE.equals(result.get("correct"))) return null;
                     String resourceKey = String.valueOf(row.get("resource_key"));
                     long mistakeId = numericId(principal.subject(), "mistake:" + resourceKey, resourceKey);
+                    long remediationId = EmptyBook.remediationId(principal.subject(), String.valueOf(mistakeId));
                     Map<String, Object> item = new LinkedHashMap<>();
                     item.put("mistakeId", mistakeId);
                     item.put("itemId", integerOrString(resourceKey));
@@ -420,12 +423,18 @@ public class B3LearningJdbcController {
                     item.put("prompt", "语法练习 " + resourceKey);
                     item.put("contentVersionId", 301);
                     item.put("verificationId", mistakeId);
+                    item.put("remediationId", remediationId);
+                    item.put("projectionVersion", EmptyBook.PROJECTION);
                     item.put("createdAt", row.get("created_at"));
                     return item;
                 })
                 .filter(java.util.Objects::nonNull)
                 .toList();
-        return Map.of("items", MasteryWrite.mergeSameTarget(items), "source", "mysql");
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("items", MasteryWrite.mergeSameTarget(items));
+        body.put("source", "mysql");
+        body.putAll(EmptyBook.projection(rows.size(), items.size()));
+        return body;
     }
 
     /** Aggregate learner-owned review and interaction facts for the B2 mastery page. */
@@ -471,8 +480,11 @@ public class B3LearningJdbcController {
             Authentication authentication,
             @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey) {
         Principal principal = principal(authentication, "learning.mastery.write");
+        long remediationId = EmptyBook.remediationId(principal.subject(), mistakeId);
         Map<String, Object> result = new LinkedHashMap<>();
-        result.put("verificationId", numericId(principal.subject(), "verification:" + mistakeId, mistakeId));
+        result.put("verificationId", remediationId);
+        result.put("remediationId", remediationId);
+        result.put("projectionVersion", EmptyBook.PROJECTION);
         result.put("mistakeId", integerOrString(mistakeId));
         result.put("stage", "D0");
         result.put("result", "PENDING");

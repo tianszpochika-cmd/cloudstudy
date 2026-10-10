@@ -463,6 +463,7 @@ function parseMistake(value: unknown): B10Mistake | null {
     questionType: ['CHOICE', 'CONNECT_LINE', 'DRAG_SORTER', 'FILL_BLANK', 'SPELL_INPUT', 'LISTEN_CHOICE', 'ERROR_CORRECTION', 'TRANSLATION_INPUT'].includes(text(value.questionType)) ? text(value.questionType) as B10Mistake['questionType'] : null,
     contentVersionId: nullableNumber(value.contentVersionId),
     verificationId: nullableNumber(value.verificationId),
+    remediationId: nullableNumber(value.remediationId),
     closureCopy: text(value.closureCopy) || null,
     variantStatus: text(value.variantStatus) || null,
   }
@@ -475,7 +476,7 @@ function parseVerification(value: unknown): B10Verification | null {
   if (!verificationId || !mistakeId) return null
   const stage = ['D0', 'D1', 'D7'].includes(text(value.stage)) ? text(value.stage) as B10Verification['stage'] : 'D0'
   const result = ['PENDING', 'PASSED', 'FAILED', 'NOT_DUE', 'EXPIRED'].includes(text(value.result)) ? text(value.result) as B10Verification['result'] : 'PENDING'
-  return { verificationId, mistakeId, stage, result, dueAt: text(value.dueAt, new Date().toISOString()), score: typeof value.score === 'number' ? value.score : null, maxScore: typeof value.maxScore === 'number' ? value.maxScore : null, nextState: text(value.nextState) || null }
+  return { verificationId, mistakeId, stage, result, dueAt: text(value.dueAt, new Date().toISOString()), score: typeof value.score === 'number' ? value.score : null, maxScore: typeof value.maxScore === 'number' ? value.maxScore : null, nextState: text(value.nextState) || null, remediationId: nullableNumber(value.remediationId) ?? verificationId }
 }
 
 function parseReport(value: unknown, fallbackType: B10Report['reportType']): B10Report {
@@ -589,8 +590,21 @@ export const b10LearningApi = {
   },
 
   async listMistakes(context: B10RequestContext): Promise<B10Mistake[]> {
+    return (await this.listMistakeBook(context)).items
+  },
+
+  async listMistakeBook(context: B10RequestContext): Promise<{ items: B10Mistake[]; attemptCount: number; mistakeCount: number; emptyStatus: string; emptyCopy: string; projectionVersion: string }> {
     const response = await mobileApiClient.request<unknown>(query(B10_GATEWAY_PATHS.assessment.masteryMistakes, { contentLocale: context.contentLocale }))
-    return listFrom(response).flatMap((item) => { const mistake = parseMistake(item); return mistake ? [mistake] : [] })
+    const source = isRecord(unwrap(response)) ? unwrap(response) as RecordValue : {}
+    const items = listFrom(response).flatMap((item) => { const mistake = parseMistake(item); return mistake ? [mistake] : [] })
+    return {
+      items,
+      attemptCount: number(source.attemptCount, 0),
+      mistakeCount: number(source.mistakeCount, items.length),
+      emptyStatus: text(source.emptyStatus),
+      emptyCopy: text(source.emptyCopy),
+      projectionVersion: text(source.projectionVersion, 'IT4-MISTAKE-1'),
+    }
   },
 
   async startMistakeRetry(context: B10RequestContext, mistakeId: number, clientEventId: string): Promise<B10Verification> {

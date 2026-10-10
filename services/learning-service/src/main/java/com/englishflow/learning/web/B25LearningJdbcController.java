@@ -29,6 +29,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.englishflow.learning.domain.EmptyBook;
+
 /** B25 compatibility reads. Legacy review writes are closed until trusted outcome evidence exists. */
 @RestController
 @RequestMapping("/internal/v1/learning")
@@ -483,7 +485,7 @@ public class B25LearningJdbcController {
         if (requestedStatus.length() > 32) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "status is too long");
         }
-        List<Map<String, Object>> items = jdbc.queryForList("""
+        List<Map<String, Object>> rows = jdbc.queryForList("""
                 SELECT interaction_id, resource_key, domain_code, action_code,
                        JSON_UNQUOTE(JSON_EXTRACT(result_json, '$.correct')) AS correct_value,
                        JSON_UNQUOTE(JSON_EXTRACT(result_json, '$.feedbackCode')) AS feedback_code,
@@ -494,7 +496,15 @@ public class B25LearningJdbcController {
                   FROM b3_learning_interaction
                  WHERE tenant_id = ? AND principal_id = ? AND status = 'ACCEPTED'
                  ORDER BY created_at DESC, interaction_id DESC
-                """, TENANT, principal.subject()).stream()
+                """, TENANT, principal.subject());
+        long attemptCount = rows.stream().filter(row -> {
+            String action = text(row.get("action_code"));
+            String correct = text(row.get("correct_value"));
+            return "ATTEMPT".equalsIgnoreCase(action)
+                    || "true".equalsIgnoreCase(correct)
+                    || "false".equalsIgnoreCase(correct);
+        }).count();
+        List<Map<String, Object>> items = rows.stream()
                 .filter(row -> !"true".equalsIgnoreCase(text(row.get("correct_value"))))
                 .map(row -> {
                     String mistakeStatus = text(row.get("mistake_status"));
@@ -520,13 +530,20 @@ public class B25LearningJdbcController {
                     item.put("resourceKey", resourceKey);
                     item.put("action", text(row.get("action_code")));
                     item.put("contentVersionId", B25_CONTENT_VERSION_ID);
+                    item.put("remediationId", EmptyBook.remediationId(principal.subject(), mistakeId));
+                    item.put("projectionVersion", EmptyBook.PROJECTION);
                     item.put("createdAt", row.get("created_at"));
                     item.put("source", "mysql");
                     return item;
                 })
                 .filter(java.util.Objects::nonNull)
                 .toList();
-        return Map.of("principalId", principal.subject(), "items", items, "source", "mysql");
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("principalId", principal.subject());
+        body.put("items", items);
+        body.put("source", "mysql");
+        body.putAll(EmptyBook.projection(attemptCount, items.size()));
+        return body;
     }
 
     @GetMapping("/continue-context")
