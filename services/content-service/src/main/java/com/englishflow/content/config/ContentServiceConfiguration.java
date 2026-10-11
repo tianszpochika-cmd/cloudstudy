@@ -27,6 +27,8 @@ import com.englishflow.content.application.ScheduledPublishExecutor;
 import com.englishflow.content.application.ScheduledPublishService;
 import com.englishflow.content.application.ContentReadService;
 import com.englishflow.content.integration.PublishedContentReadProjectionPort;
+import com.englishflow.content.release.JdbcReleaseStudioStore;
+import com.englishflow.content.release.ReleaseStudioStore;
 import com.englishflow.content.port.ContentCacheInvalidator;
 import com.englishflow.content.port.ContentIdempotencyPort;
 import com.englishflow.content.port.ContentOutboxPort;
@@ -41,6 +43,7 @@ import java.time.Clock;
 
 import javax.sql.DataSource;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -163,6 +166,20 @@ public class ContentServiceConfiguration {
     @ConditionalOnProperty(prefix = "content.persistence", name = "mode", havingValue = "jdbc")
     JdbcTemplate contentJdbcTemplate(DataSource contentDataSource) {
         return new JdbcTemplate(contentDataSource);
+    }
+
+    @Bean
+    @ConditionalOnProperty(prefix = "content.persistence", name = "mode", havingValue = "jdbc")
+    ReleaseStudioStore jdbcReleaseStudioStore(
+            JdbcTemplate contentJdbcTemplate,
+            ObjectMapper objectMapper,
+            org.springframework.beans.factory.ObjectProvider<Flyway> contentFlyway,
+            @Value("${spring.flyway.enabled:false}") boolean migrationEnabled) {
+        // A DML-only owner boots with Flyway off. Migrate only when this process is allowed to.
+        if (migrationEnabled) {
+            contentFlyway.ifAvailable(Flyway::migrate);
+        }
+        return new JdbcReleaseStudioStore(contentJdbcTemplate, objectMapper);
     }
 
     @Bean

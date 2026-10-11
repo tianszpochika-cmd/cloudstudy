@@ -18,6 +18,8 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -32,13 +34,31 @@ public class ContentReleaseStudio {
     private static final Pattern B3_EXPERIENCE = Pattern.compile("\\('b3-[^']+'");
 
     private final Object guard = new Object();
+    private final ReleaseStudioStore store;
     private String mode = "SIMPLE";
     private final Map<String, Version> versions = new LinkedHashMap<>();
     private final Map<String, Integer> pins = new LinkedHashMap<>();
     private final Map<String, Stored> idempotency = new LinkedHashMap<>();
 
+    public ContentReleaseStudio() {
+        this(new MemoryReleaseStudioStore());
+    }
+
+    @Autowired
+    public ContentReleaseStudio(ObjectProvider<ReleaseStudioStore> stores) {
+        this(stores.getIfAvailable(MemoryReleaseStudioStore::new));
+    }
+
+    public ContentReleaseStudio(ReleaseStudioStore store) {
+        this.store = store == null ? new MemoryReleaseStudioStore() : store;
+        hydrate();
+    }
+
     public Stored handle(ContentActor actor, String command, String contentCode, Map<String, Object> input) {
         synchronized (guard) {
+            if ("RELEASE_FINGERPRINT".equals(command)) {
+                return ok(Map.of("fingerprint", fingerprint()));
+            }
             String key = text(input.get("idempotencyKey"));
             if (!key.isBlank() && idempotency.containsKey(key)) {
                 return idempotency.get(key);
@@ -47,6 +67,7 @@ public class ContentReleaseStudio {
             if (!key.isBlank()) {
                 idempotency.put(key, stored);
             }
+            persist();
             return stored;
         }
     }
@@ -733,6 +754,71 @@ public class ContentReleaseStudio {
         return gap;
     }
 
+    private void hydrate() {
+        ReleaseStudioState state = store.load();
+        if (state == null) {
+            return;
+        }
+        mode = state.mode();
+        versions.clear();
+        for (ReleaseStudioState.VersionRow row : state.versions()) {
+            Version version = Version.from(row);
+            versions.put(key(version), version);
+        }
+        pins.clear();
+        for (ReleaseStudioState.PinRow pin : state.pins()) {
+            if (pin != null && pin.code() != null && !pin.code().isBlank()) {
+                pins.put(pin.code(), pin.pin());
+            }
+        }
+        idempotency.clear();
+        for (ReleaseStudioState.IdempotencyRow row : state.idempotency()) {
+            if (row != null && row.key() != null && !row.key().isBlank()) {
+                idempotency.put(row.key(), new Stored(row.status(), row.body()));
+            }
+        }
+    }
+
+    private void persist() {
+        ArrayList<ReleaseStudioState.VersionRow> versionRows = new ArrayList<>();
+        for (Version version : versions.values()) {
+            versionRows.add(version.row());
+        }
+        ArrayList<ReleaseStudioState.PinRow> pinRows = new ArrayList<>();
+        for (Map.Entry<String, Integer> pin : pins.entrySet()) {
+            pinRows.add(new ReleaseStudioState.PinRow(pin.getKey(), pin.getValue() == null ? 0 : pin.getValue()));
+        }
+        ArrayList<ReleaseStudioState.IdempotencyRow> idemRows = new ArrayList<>();
+        for (Map.Entry<String, Stored> entry : idempotency.entrySet()) {
+            idemRows.add(new ReleaseStudioState.IdempotencyRow(
+                    entry.getKey(), entry.getValue().status(), entry.getValue().body()));
+        }
+        store.save(new ReleaseStudioState(mode, versionRows, pinRows, idemRows));
+    }
+
+    private String fingerprint() {
+        ArrayList<String> versionRows = new ArrayList<>();
+        for (Version version : versions.values()) {
+            versionRows.add(key(version) + "\t" + version.status + "\t" + version.catalog + "\t"
+                    + version.stateVersion + "\t" + version.title.replace('\t', ' ').replace('\n', ' '));
+        }
+        versionRows.sort(String::compareTo);
+        ArrayList<String> pinRows = new ArrayList<>();
+        for (Map.Entry<String, Integer> pin : pins.entrySet()) {
+            pinRows.add(pin.getKey() + "=" + pin.getValue());
+        }
+        pinRows.sort(String::compareTo);
+        ArrayList<String> idemRows = new ArrayList<>();
+        for (Map.Entry<String, Stored> entry : idempotency.entrySet()) {
+            idemRows.add(entry.getKey() + ":" + entry.getValue().status());
+        }
+        idemRows.sort(String::compareTo);
+        return mode
+                + "\nversions\n" + String.join("\n", versionRows)
+                + "\npins\n" + String.join("\n", pinRows)
+                + "\nidempotency\n" + String.join("\n", idemRows);
+    }
+
     private static String key(Version version) {
         return version.code + "#" + version.number;
     }
@@ -792,5 +878,55 @@ public class ContentReleaseStudio {
         private String unpublishReason = "";
         private String unpublishScope = "";
         private boolean force;
+
+        private ReleaseStudioState.VersionRow row() {
+            return new ReleaseStudioState.VersionRow(
+                    code, number, stateVersion, title, body, kind, status, catalog, editor,
+                    copyrightRef, copyrightVersion, copyrightExpired, reportRef, reportVersion, reportMode,
+                    mediaRequired, mediaBytesConnected, mediaRef, firstReviewer, finalReviewer, publisher,
+                    reviewRecords, reviewedVersion, secondSignature, publishAudits, publishedOnce, publishedNumber,
+                    modeAtPublish, rollbackOf, unpublishReason, unpublishScope, force);
+        }
+
+        private static Version from(ReleaseStudioState.VersionRow row) {
+            Version version = new Version();
+            version.code = textOrEmpty(row.code());
+            version.number = row.number();
+            version.stateVersion = row.stateVersion();
+            version.title = textOrEmpty(row.title());
+            version.body = textOrEmpty(row.body());
+            version.kind = textOrEmpty(row.kind()).isBlank() ? "TEXT" : row.kind();
+            version.status = textOrEmpty(row.status()).isBlank() ? "DRAFT" : row.status();
+            version.catalog = textOrEmpty(row.catalog()).isBlank() ? "NONE" : row.catalog();
+            version.editor = textOrEmpty(row.editor());
+            version.copyrightRef = textOrEmpty(row.copyrightRef());
+            version.copyrightVersion = row.copyrightVersion();
+            version.copyrightExpired = row.copyrightExpired();
+            version.reportRef = textOrEmpty(row.reportRef());
+            version.reportVersion = row.reportVersion();
+            version.reportMode = textOrEmpty(row.reportMode());
+            version.mediaRequired = row.mediaRequired();
+            version.mediaBytesConnected = row.mediaBytesConnected();
+            version.mediaRef = textOrEmpty(row.mediaRef());
+            version.firstReviewer = row.firstReviewer();
+            version.finalReviewer = row.finalReviewer();
+            version.publisher = row.publisher();
+            version.reviewRecords = row.reviewRecords();
+            version.reviewedVersion = row.reviewedVersion();
+            version.secondSignature = row.secondSignature();
+            version.publishAudits = row.publishAudits();
+            version.publishedOnce = row.publishedOnce();
+            version.publishedNumber = row.publishedNumber();
+            version.modeAtPublish = textOrEmpty(row.modeAtPublish());
+            version.rollbackOf = row.rollbackOf();
+            version.unpublishReason = textOrEmpty(row.unpublishReason());
+            version.unpublishScope = textOrEmpty(row.unpublishScope());
+            version.force = row.force();
+            return version;
+        }
+
+        private static String textOrEmpty(String value) {
+            return value == null ? "" : value;
+        }
     }
 }
