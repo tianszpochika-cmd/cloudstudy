@@ -9,14 +9,14 @@
 
 | 站 | 独立结论 | 发现数 | 证据锚点 | 签收状态 |
 |---|---|---|---|---|
-| IT-1 | FINDINGS | 2（P2） | named-gates `c08e65d3`；R1-014；AUTH/CORS 源码已修 Luna P1；rv1 后缀 `a749da72` | rv1 已补代码与证据，第 4 节未签 |
-| IT-2 | PASS_PENDING_FIXES | 0 新开 | three-schema `2f1d24b6`；score-browser；full-chain | 随 rv1 回归后签收 |
-| IT-3 | PASS_PENDING_FIXES | 0 新开 | browser `d2012bf6` | 随 rv1 回归后签收 |
-| IT-4 | PASS_PENDING_FIXES | 0 新开 | browser `c460b646` | 随 rv1 回归后签收 |
-| IT-5 | PASS_PENDING_FIXES | 0 新开（P3 残留） | browser `1f244c3b` | 随 rv1 回归后签收 |
-| IT-6 | FINDINGS | 1（P1） | browser `ad30b8bc`；rv1 表 `it6_release_studio`，后缀 `a749da72` | rv1 已补持久化与重启指纹，第 4 节未签 |
-| IT-7 | PASS_PENDING_FIXES | 0 新开 | browser `3ef210cd`；desk `627fa9bf`；full-chain | 随 rv1 回归后签收 |
-| 全链 | PASS_PENDING_FIXES | — | `full-chain-r8-627fa9bf` 58/58 PASS | 随 rv1 回归后签收 |
+| IT-1 | PASS | 0 开（F-IT1-01/02 已关） | rv2 `ea1aa3c8` IT-1 11/11；AUTH/CORS 源码 + 单测 | SIGNED_PASS |
+| IT-2 | PASS | 0 新开 | three-schema `2f1d24b6`；full-chain | SIGNED_PASS |
+| IT-3 | PASS | 0 新开 | browser `d2012bf6`；full-chain | SIGNED_PASS |
+| IT-4 | PASS | 0 新开 | browser `c460b646`；full-chain | SIGNED_PASS |
+| IT-5 | PASS | 0 新开（P3 残留） | browser `1f244c3b`；full-chain | SIGNED_PASS（residual: RES-ARTWORK） |
+| IT-6 | PASS | 0 开（F-IT6-01 已关） | rv2 `ea1aa3c8` IT-6 45/45；指纹重启一致；单测 18/18 | SIGNED_PASS（residual: RES-ARTWORK） |
+| IT-7 | PASS | 0 新开 | rv2 `ea1aa3c8` IT-7 34/34；full-chain | SIGNED_PASS |
+| 全链 | PASS | — | rv2 `ea1aa3c8` 58/58；node 361/361；Maven 1680/0/1 | SIGNED_PASS |
 
 残留不挡签收（记入但不开修）：
 
@@ -75,7 +75,7 @@ F-IT6-01：全量浏览器 45 步 PASS，没有 SKIP。流程含建稿、冲突�
 
 `mvn -B -ntp -f pom.xml test` 于 2026-10-11T11:35:14+08 BUILD SUCCESS，总时间 02:15 min。合计 1680 项、0 失败、1 跳过。跳过的是 `MinioObjectStorePortReadOnlyIntegrationTest`。learning-service 199 项、0 失败、0 跳过。assessment-service 153 项、0 失败、0 跳过。admin-ops 收口 11 项、0 失败。workflow-service 58 项、0 失败、0 跳过。IAM JDBC 上下文 9 项、V13 迁移 1 项，0 失败。共享库表数前后一致。`rv2_` 与 `iam_v13_test_rv2round` 已删。qida 名称计数前后都是 50。
 
-本轮站级 SKIP 为空。第 4 节签收栏仍空。`lunaStamp` 仍是 false。本段不是 `SIGNED_PASS`。
+本轮站级 SKIP 为空。独立审查已于合并 `94e1f90b` 后填写第 4 节：`IT-1`/`IT-6`/`IT-7`/`FULL-CHAIN` = `SIGNED_PASS`。`lunaStamp` 仍是 false。
 
 ## 3. Luna P1 复核（本轮）
 
@@ -89,20 +89,19 @@ F-IT6-01：全量浏览器 45 步 PASS，没有 SKIP。流程含建稿、冲突�
 
 | 站 | independentReviewer | 日期 | commit | evidence | verdict |
 |---|---|---|---|---|---|
-| IT-1 | Grok Bot 测试项目练手 | _pending rv2_ | | rv1 `a749da72` 原始调用记录已核：未成年 201→REJECTED→/forbidden；撤回 WITHDRAWN 200→targets 403。steps.json 4 条 FAIL（断言脚本错），须 rv2 用改后脚本重采全 PASS | |
+| IT-1 | Grok Bot 测试项目练手 | 2026-10-11 | `94e1f90b` | rv2 `ea1aa3c8` IT-1 11/11 首跑 PASS；注册 IAM HTTPS 201；成人门 REJECTED；撤回 WITHDRAWN→targets 403；复跑 IamAuthCors 5/5 | SIGNED_PASS |
 | IT-2 | Grok Bot 测试项目练手 | 2026-10-11 | `f7905ab8` | three-schema `2f1d24b6`；full-chain-r8 `627fa9bf`；rv1 后 node 定向 28/28 | SIGNED_PASS |
 | IT-3 | Grok Bot 测试项目练手 | 2026-10-11 | `f7905ab8` | browser `d2012bf6`；full-chain-r8 `627fa9bf` | SIGNED_PASS |
 | IT-4 | Grok Bot 测试项目练手 | 2026-10-11 | `f7905ab8` | browser `c460b646`；full-chain-r8 `627fa9bf` | SIGNED_PASS |
 | IT-5 | Grok Bot 测试项目练手 | 2026-10-11 | `f7905ab8` | browser `1f244c3b`；full-chain-r8 `627fa9bf` | SIGNED_PASS（residual: RES-ARTWORK） |
-| IT-6 | Grok Bot 测试项目练手 | _pending rv2_ | | rv1 持久化 + 重启指纹 PASS；单测 15+3 复跑绿。`it6-full-browser` 为 SKIP，须 rv2 重跑 IT-6 全量浏览器 | |
-| IT-7 | Grok Bot 测试项目练手 | _pending rv2_ | | 须在 `f7905ab8` 后的新 HEAD 重跑全链；顶层 node 361/360，`support-real-gateway.e2e` 未起 admin-ops 失败，须全绿 | |
-| FULL-CHAIN | Grok Bot 测试项目练手 | _pending rv2_ | | 须在合并 rv1 后重跑 IT-1…IT-7 全链冒烟 | |
+| IT-6 | Grok Bot 测试项目练手 | 2026-10-11 | `94e1f90b` | rv2 `ea1aa3c8` IT-6 45/45；重启指纹一致 1803；ContentReleaseStudio* 18/18 | SIGNED_PASS（residual: RES-ARTWORK） |
+| IT-7 | Grok Bot 测试项目练手 | 2026-10-11 | `94e1f90b` | rv2 `ea1aa3c8` IT-7 34/34；收口重启指纹一致；full-chain 58/58 | SIGNED_PASS |
+| FULL-CHAIN | Grok Bot 测试项目练手 | 2026-10-11 | `94e1f90b` | rv2 `ea1aa3c8` 全链 58/58；node 361/361；Maven 1680/0/1 BUILD SUCCESS | SIGNED_PASS |
 
 签收填写规则：`verdict=SIGNED_PASS` 仅当该站发现已关、关键证据 PASS、且未改任何 `lunaStamp`。可选附 `residual: RES-*`。
 
 ## 5. 调度
 
 - 修复轮：`rv1`，screen `cs-rv1`，分支 `grok/cs-rv1-20261011`（自 `dev-redesign`）。2026-10-11 独立审查复核：代码符合三项要求，定向 node 28/28、`ContentReleaseStudio*` 18/18、`IamAuthCorsConfigurationTest` 5/5 复跑绿，已合并为 `f7905ab8`；签收 IT-2…IT-5。
-- 修复轮：`rv2`，screen `cs-rv2`，分支 `grok/cs-rv2-20261011`。RV2-01…RV2-04 的证据已写入 `evidence/redesign/2026-10-11/rv2-ea1aa3c8`，读法见该目录 `reading.md`，关闭说明见上方「rv2 关闭说明」。第 4 节签收栏仍空，本段不是 `SIGNED_PASS`。
-- 合并后由调度方按本文件第 4 节签字，必要时开 `rv2`。
+- 修复轮：`rv2`，screen `cs-rv2`，分支 `grok/cs-rv2-20261011`。RV2-01…RV2-04 证据在 `evidence/redesign/2026-10-11/rv2-ea1aa3c8`。独立审查复核：IT-1 11/11、IT-6 45/45（指纹一致）、IT-7 34/34、全链 58/58、node 361/361、Maven 1680/0/1；定向复跑 IamAuthCors 5/5、ContentReleaseStudio* 18/18。已合并为 `94e1f90b`；签收 IT-1、IT-6、IT-7、FULL-CHAIN。七站全部 `SIGNED_PASS`（仅 P3 残留）。独立审查例行已关闭。
 - Luna 字段始终外部待办。
