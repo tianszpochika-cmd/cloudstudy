@@ -466,7 +466,8 @@ async function readTargetFact(): Promise<MobileOnboardingResumeRead['target'] & 
 }
 
 async function signConsent(type: string, keySuffix: string, clientEventId: string): Promise<void> {
-  const version = cachedActiveConsentVersion ?? 'b30-consent-v1'
+  // Read the published version first; the b30 constant is only a last-resort fallback.
+  const version = cachedActiveConsentVersion ?? await refreshActiveConsentVersion()
   try {
     await mobileApiClient.request('/iam/consents', {
       method: 'PUT',
@@ -481,7 +482,8 @@ async function signConsent(type: string, keySuffix: string, clientEventId: strin
         await mobileApiClient.request('/iam/consents', {
           method: 'PUT',
           data: { type, version: latestVersion, decision: 'ACCEPTED' },
-          header: { 'Idempotency-Key': `${clientEventId}-${keySuffix}` },
+          // A different body needs its own key; reusing the first key is rejected as key_reused.
+          header: { 'Idempotency-Key': `${clientEventId}-${keySuffix}-${latestVersion}` },
         })
         return
       }

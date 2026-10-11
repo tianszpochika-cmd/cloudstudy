@@ -724,7 +724,8 @@ async function readTargetFact(): Promise<OnboardingResumeRead['target'] & { cons
 }
 
 async function signConsent(type: string, keySuffix: string, clientEventId: string): Promise<void> {
-  const version = cachedActiveConsentVersion ?? 'b30-consent-v1'
+  // Read the published version first; the b30 constant is only a last-resort fallback.
+  const version = cachedActiveConsentVersion ?? await refreshActiveConsentVersion()
   try {
     await request<unknown>('/iam/consents', {
       method: 'PUT',
@@ -744,7 +745,8 @@ async function signConsent(type: string, keySuffix: string, clientEventId: strin
         await request<unknown>('/iam/consents', {
           method: 'PUT',
           body: { type, version: latestVersion, decision: 'ACCEPTED' },
-          ...withIdempotency(`${clientEventId}-${keySuffix}`),
+          // A different body needs its own key; reusing the first key is rejected as key_reused.
+          ...withIdempotency(`${clientEventId}-${keySuffix}-${latestVersion}`),
         })
         return
       }

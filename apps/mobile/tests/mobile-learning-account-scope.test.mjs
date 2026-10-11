@@ -328,6 +328,8 @@ test('onboarding stops before learner writes if identity changes during IAM cons
       MobileApiError: class MobileApiError extends Error {},
       mobileApiClient: { request: async (route, options = {}) => {
         if (route === '/iam/consents') return consent.promise
+        // Reading the published consent version from IAM is not a learner owner write.
+        if (route === '/iam/principal/me') return { data: { consentState: { version: 'b30-consent-v1' } } }
         writes.push({ route, method: options.method ?? 'GET' })
         throw new Error('Unexpected owner request after identity change')
       } },

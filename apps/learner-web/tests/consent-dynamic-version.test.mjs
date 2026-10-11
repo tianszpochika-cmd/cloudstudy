@@ -203,3 +203,29 @@ test('BC-008: falls back gracefully to default version when /iam/principal/me is
   assert.equal(consentCalls.length, 3)
   assert.ok(consentCalls.every((c) => c.body?.version === 'b30-consent-v1'))
 })
+
+test('clyunedev: never reuses an idempotency key for a different consent body', async () => {
+  const seen = new Map()
+  const request = async (path, options = {}) => {
+    const method = options.method ?? 'GET'
+    if (path === '/iam/principal/me' && method === 'GET') {
+      return { data: { consentState: { required: true, accepted: false, version: 'clyunedev-prerelease-v1', requiredPurposes: ['PRIVACY', 'TERMS', 'ADULT_LEARNING'] } } }
+    }
+    if (path === '/iam/consents' && method === 'PUT') {
+      const key = JSON.stringify(options.headers ?? options.idempotencyKey ?? null)
+      const body = JSON.stringify(options.body)
+      if (seen.has(key)) assert.equal(seen.get(key), body, 'idempotency key reused with a different body')
+      seen.set(key, body)
+      if (options.body?.version !== 'clyunedev-prerelease-v1') throw new ApiError(409)
+      return { data: { accepted: true } }
+    }
+    if (path.startsWith('/learner/')) return { data: { stateVersion: 1 } }
+    return { data: {} }
+  }
+  await portFor(request).saveOnboarding({
+    clientEventId: 'evt-prerelease',
+    profile: { birthYear: 1995, ageConfirmed: true, privacyConsent: true, termsConsent: true, targetGoal: 'WORKPLACE', dailyQuotaMinutes: 15 },
+  })
+  const bodies = [...seen.values()].map((b) => JSON.parse(b))
+  assert.ok(bodies.filter((b) => b.version === 'clyunedev-prerelease-v1').length >= 3)
+})
