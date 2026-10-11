@@ -217,11 +217,20 @@ public record GatewayProperties(
 
         public OriginProfile profileFor(String origin) {
             String canonical = canonicalLoopbackOrigin(origin);
-            if (learnerWebOrigin.equals(canonical)) return OriginProfile.LEARNER_WEB;
-            if (adminWebOrigin.equals(canonical)) return OriginProfile.ADMIN_WEB;
-            if (mobileH5Origin.equals(canonical)) return OriginProfile.MOBILE_H5;
-            if (officialSiteOrigin.equals(canonical)) return OriginProfile.OFFICIAL_SITE;
+            if (canonical == null) return OriginProfile.UNKNOWN;
+            if (listed(learnerWebOrigin, canonical)) return OriginProfile.LEARNER_WEB;
+            if (listed(adminWebOrigin, canonical)) return OriginProfile.ADMIN_WEB;
+            if (listed(mobileH5Origin, canonical)) return OriginProfile.MOBILE_H5;
+            if (listed(officialSiteOrigin, canonical)) return OriginProfile.OFFICIAL_SITE;
             return OriginProfile.UNKNOWN;
+        }
+
+        /** Each profile accepts one exact origin or a comma-separated list of exact origins (multi-domain deploys). */
+        private static boolean listed(String configured, String canonical) {
+            for (String candidate : configured.split(",")) {
+                if (candidate.trim().equals(canonical)) return true;
+            }
+            return false;
         }
 
         private static String canonicalLoopbackOrigin(String origin) {

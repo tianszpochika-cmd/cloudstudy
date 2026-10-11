@@ -134,7 +134,7 @@ services:
       # Pre-release staging only: birth-year self-attestation for the adult gate (no trusted age source yet).
       SPRING_PROFILES_ACTIVE: prerelease
       IAM_LOCAL_ADULT_GATE_ENABLED: "true"
-      IAM_TRUSTED_LEARNER_ORIGINS: ${IAM_TRUSTED_LEARNER_ORIGINS:-https://learn.clyunedev.com,https://mobile.clyunedev.com}
+      IAM_TRUSTED_LEARNER_ORIGINS: ${IAM_TRUSTED_LEARNER_ORIGINS:-https://learn.clyunedev.com,https://mobile.clyunedev.com,https://learn.clyune.com,https://mobile.clyune.com}
       IAM_SERVER_ADDRESS: 0.0.0.0
       IAM_SERVICE_PORT: 18087
       IAM_PERSISTENCE_ENABLED: "true"
@@ -214,6 +214,7 @@ services:
         APP_PATH: learner-web
         VITE_GATEWAY_BASE_URL: https://api.clyunedev.com/api/v1
         VITE_IAM_AUTH_BASE_URL: https://api.clyunedev.com/api/v1
+        VITE_API_DOMAIN_FAMILIES: clyunedev.com,clyune.com
     restart: unless-stopped
     ports:
       - "127.0.0.1:18180:8080"
@@ -229,6 +230,7 @@ services:
         APP_PATH: admin-web
         VITE_GATEWAY_BASE_URL: https://api.clyunedev.com/api/v1
         VITE_IAM_AUTH_BASE_URL: https://api.clyunedev.com/api/v1
+        VITE_API_DOMAIN_FAMILIES: clyunedev.com,clyune.com
     restart: unless-stopped
     ports:
       - "127.0.0.1:18181:8080"
