@@ -71,7 +71,7 @@ function lmStats(date = lmDate()) {
   return { rows, count: rows.length, right: questions.reduce((n, r) => n + (r.right || 0), 0), total: questions.reduce((n, r) => n + (r.total || 0), 0), xp: counted.reduce((n, r) => n + 10 + (["practice", "repair", "listening"].includes(r.kind) ? (r.right || 0) * 2 : 0), 0) };
 }
 function lmEnsureDay() {
-  if (LM.day === lmDate()) return;
+  if (LM.day === lmDate()) { if (S.plan && LM.emptyTodayDate !== lmDate()) lmApplyPlan(LM.plan, "keep"); return; }
   lmSavePractice(); lmSaveWriting(); lmSaveWords();
   const dailyPractice = S.today.some(t => t.id === PR.taskId);
   S.today.filter(t => !t.done).forEach(t => lmStoreDeferred(t, "前一学习日未完成"));
@@ -79,7 +79,15 @@ function lmEnsureDay() {
   if (SRS.phase !== "run") SRS.phase = "idle";
   if (S.plan) lmApplyPlan(LM.plan, "keep");
 }
-function lmStoreDeferred(t, reason) { lmSavePractice(); lmSaveWriting(); lmSaveWords(); if (LM.deferred.some(x => x.id === t.id)) return; LM.deferred.push({ ...t, reason, resume: LM.practiceProgress[t.id] ? JSON.parse(JSON.stringify(LM.practiceProgress[t.id])) : null, wordState: LM.wordTask === t.id ? { seen: JSON.parse(JSON.stringify(LM.wordSeen || [])), book: DR.book, i: DR.i, known: DR.known } : null }); }
+function lmStoreDeferred(t, reason) {
+  lmSavePractice(); lmSaveWriting(); lmSaveWords();
+  // Content identifies a scheduling candidate; only the task ID identifies its saved round.
+  const old = LM.deferred.find(x => x.id === t.id), word = LM.wordProgress[t.id];
+  const stored = { ...old, ...t, sourceKey: lmTaskSource(t), reason, deferredOn: lmDate(), originDate: t.originDate || old?.originDate || t.date,
+    resume: JSON.parse(JSON.stringify(LM.practiceProgress[t.id] || t.resume || old?.resume || null)),
+    wordState: word ? { seen: JSON.parse(JSON.stringify(word.seen || [])), dr: JSON.parse(JSON.stringify(word.dr)) } : t.wordState || old?.wordState || null };
+  LM.deferred = LM.deferred.filter(x => x.id !== t.id); LM.deferred.push(stored);
+}
 function lmNewGroup(title, kind, items, passage = "") { return { title, kind, items, passage }; }
 Object.assign(GROUPS, {
   foundation: lmNewGroup("基础 · 日常表达", "grammar", [
@@ -107,30 +115,98 @@ function lmTemplate(p) {
   const group = p.goal === "college" ? (p.variant === "cet6" ? "graduate" : "g1") : p.goal;
   const read = p.goal === "foundation" ? "readbasic" : p.goal === "workplace" ? "readwork" : p.goal === "graduate" || p.variant === "cet6" ? "readgraduate" : "r1";
   const book = p.goal === "foundation" ? "b2" : p.goal === "workplace" ? "b4" : p.goal === "graduate" ? "b7" : p.variant === "cet6" ? "b3" : "b1";
-  const list = [{ key: "core", group, t: GROUPS[group].title, min: 5, kind: "grammar" }];
-  if (p.minutes >= 15) list.push({ key: "readquiz", group: read, t: GROUPS[read].title, min: 8, kind: "reading" });
-  if (p.minutes >= 30) list.push({ key: "write", t: "写作 · 给朋友的一封信", min: 10, kind: "writing" }, { key: "words", t: "词汇 · 回忆 3 个词", min: 5, kind: "words", book: p.variant === "cet6" ? "CET6" : "CET4", limit: 3 });
-  if (p.minutes >= 45) {
-    const b = BOOKS.find(b => b.id === book), ch = b.toc.findIndex((_, i) => !LM.chapters[book + ":" + i]?.done);
-    if (ch >= 0) list.push({ key: "chapter", t: "阅读 · 完成一个章节", min: 10, kind: "chapter", book, ch });
-    if (lmReviewDue().length) list.push({ key: "review", t: "复习 · 本轮回忆", min: 5, kind: "review", words: lmReviewDue().slice(0, 4).map(q => q.w) });
-  }
+  // Every budget uses this same sample pool; due work is added ahead of new learning below.
+  const list = [{ key: "core", group, t: GROUPS[group].title, min: 5, kind: "grammar" },
+    { key: "readquiz", group: read, t: GROUPS[read].title, min: 8, kind: "reading" },
+    { key: "write", t: "写作 · 给朋友的一封信", min: 10, kind: "writing" },
+    { key: "words", t: "词汇 · 回忆 3 个词", min: 5, kind: "words", book: p.variant === "cet6" ? "CET6" : "CET4", limit: 3 }];
+  const b = BOOKS.find(b => b.id === book), ch = b.toc.findIndex((_, i) => !LM.chapters[book + ":" + i]?.done);
+  if (ch >= 0) list.push({ key: "chapter", t: "阅读 · 完成一个章节", min: 10, kind: "chapter", book, ch });
   return list;
 }
+function lmTaskSource(t) {
+  if (t.kind === "writing") return "writing:friend-letter";
+  if (t.sourceKey) return t.sourceKey;
+  if (t.mistakeId) return t.kind + ":" + t.mistakeId + ":" + t.mistakeStage + ":" + t.mistakeRevision;
+  if (t.kind === "review") return "review:" + (t.words || []).slice().sort().map(w => w + "@" + (t.reviewDates?.[w] || SRSQ.find(q => q.w === w)?.due || t.date || lmDate())).join("|");
+  if (t.group) return "group:" + t.group;
+  if (t.kind === "chapter") return "chapter:" + t.book + ":" + t.ch;
+  if (t.kind === "words") return "words:" + t.book + ":" + (t.limit || 3);
+  return t.key || t.kind;
+}
+function lmTaskStarted(t) { return t.started || PR.taskId === t.id || LM.writing.taskId === t.id || LM.wordTask === t.id || (t.kind === "review" && SRS.phase === "run" && LM.reviewTask === t.id); }
+function lmPendingCurrent(t) {
+  if (t.mistakeId) { const m = S.mistakes.find(x => x.id === t.mistakeId); return !!m && m.st === t.mistakeStage && (m.revision || 0) === t.mistakeRevision; }
+  if (t.kind === "review") return lmTaskStarted(t) || (t.words || []).some(w => lmReviewDue().some(q => q.w === w));
+  return true;
+}
+function lmMistakeCandidate(m) { return { key: "mistake:" + m.id, kind: ["wait1", "wait7"].includes(m.st) ? "verify" : "repair", mistakeId: m.id, mistakeStage: m.st, mistakeRevision: m.revision || 0,
+  due: m.due || m.created, t: (m.st === "wait1" ? "次日验证 · " : m.st === "wait7" ? "七日验证 · " : "错题补救 · ") + m.t, min: 2 }; }
+function lmPlanCandidates(p, pinned, policy) {
+  const fresh = lmTemplate(p), newKeys = new Set(fresh.map(lmTaskSource)), pool = [], keys = new Set(pinned.map(lmTaskSource));
+  const claimedWords = new Set(pinned.filter(t => t.kind === "review").flatMap(t => t.words || []));
+  const add = (t, priority, reason) => { const sourceKey = lmTaskSource(t); if (keys.has(sourceKey)) return; keys.add(sourceKey); pool.push({ ...t, sourceKey, priority, scheduleReason: reason }); if (t.kind === "review") (t.words || []).forEach(w => claimedWords.add(w)); };
+  const existing = S.today.concat(LM.deferred).filter(t => !t.done && !pinned.includes(t) && lmPendingCurrent(t));
+  existing.filter(t => lmTaskStarted(t)).forEach(t => {
+    const explicitlyDeferred = policy === "defer" && S.today.includes(t) || t.deferUntilDate === lmDate();
+    if (explicitlyDeferred) { keys.add(lmTaskSource(t)); if (t.kind === "review") (t.words || []).forEach(w => claimedWords.add(w)); } else add(t, 0, "继续已保存的学习");
+  });
+  const due = lmMistakeDue().slice().sort((a, b) => a.due.localeCompare(b.due) || a.id.localeCompare(b.id));
+  due.forEach(m => add(existing.find(t => t.mistakeId === m.id && lmPendingCurrent(t)) || lmMistakeCandidate(m), 1, "延迟验证已到期"));
+  existing.filter(t => t.kind === "review" && !lmTaskStarted(t)).forEach(t => {
+    const remaining = (t.words || []).filter(w => !claimedWords.has(w));
+    if (remaining.length) add(remaining.length === t.words.length ? t : { ...t, id: null, sourceKey: null, words: remaining }, 1, "词汇复习已到期");
+  });
+  const words = lmReviewDue().slice().sort((a, b) => a.due.localeCompare(b.due) || a.w.localeCompare(b.w)).filter(q => !claimedWords.has(q.w));
+  for (let i = 0; i < words.length; i += 4) { const batch = words.slice(i, i + 4); add({ key: "review", kind: "review", t: "到期复习 · " + batch.length + " 个词", min: 5, due: batch[0].due, words: batch.map(q => q.w), reviewDates: Object.fromEntries(batch.map(q => [q.w, q.due])) }, 1, "词汇复习已到期"); }
+  S.mistakes.filter(m => ["todo", "self"].includes(m.st)).forEach(m => add(existing.find(t => t.mistakeId === m.id && lmPendingCurrent(t)) || lmMistakeCandidate(m), 2, "完成已有错题的匹配补救"));
+  existing.filter(t => !["review", "verify", "repair"].includes(t.kind) && newKeys.has(lmTaskSource(t))).forEach(t => add(t, 3, "当前目标的新学样例"));
+  fresh.forEach(t => add(t, 3, "当前目标的新学样例"));
+  return pool.sort((a, b) => a.priority - b.priority || (a.priority === 1 ? (a.due || lmDate()).localeCompare(b.due || lmDate()) : 0));
+}
 function lmPlanProjection(p, policy = "keep") {
-  const done = S.today.filter(t => t.done), active = S.today.filter(t => !t.done && (t.started || PR.taskId === t.id || LM.writing.taskId === t.id || LM.wordTask === t.id));
+  const done = S.today.filter(t => t.done), active = S.today.filter(t => !t.done && lmTaskStarted(t) && lmPendingCurrent(t));
+  if (SRS.phase === "run" && !active.some(t => t.kind === "review")) {
+    const old = LM.deferred.find(t => t.id === LM.reviewTask);
+    const words = [...new Set((SRS.results || []).map(r => r.stem).concat((SRS.order || []).map(i => SRSQ[i]?.w).filter(Boolean)))];
+    const existing = S.today.find(t => t.kind === "review" && !t.done && words.every(w => t.words?.includes(w)));
+    if (words.length && policy === "keep" && !old) active.push(existing ? { ...existing, started: true, runningReview: true } : { key: "review", kind: "review", t: "继续本轮词汇复习", min: 5, words, started: true, runningReview: true });
+  }
   const pinned = done.concat(policy === "keep" ? active : []), budget = Math.max(0, p.minutes - pinned.reduce((n, t) => n + t.min, 0));
   const isStudy = p.days.includes(new Date(lmDate() + "T12:00:00").getDay()); let room = budget;
-  const planned = isStudy ? lmTemplate(p).filter(t => !pinned.some(x => x.key === t.key)).filter(t => { if (t.min > room) return false; room -= t.min; return true; }) : [];
-  const removed = S.today.filter(t => !pinned.includes(t));
-  return { pinned, planned, removed, active, used: pinned.reduce((n, t) => n + t.min, 0) + planned.reduce((n, t) => n + t.min, 0), isStudy };
+  const planned = [], postponed = [];
+  lmPlanCandidates(p, pinned, policy).forEach(t => {
+    const unavailable = t.mistakeId && !lmVariant(S.mistakes.find(m => m.id === t.mistakeId));
+    if (!isStudy || unavailable || t.min > room) postponed.push({ ...t, reason: !isStudy ? "今天是休息日，保留原到期日期与进度" : unavailable ? "暂缺匹配变式，保留待处理来源" : "剩余 " + room + " 分钟，装不下本项预计 " + t.min + " 分钟；顺延且不改原到期日期" });
+    else { planned.push(t); room -= t.min; }
+  });
+  const retained = new Set(pinned.concat(planned).filter(t => t.id).map(t => t.id));
+  const removed = S.today.filter(t => !retained.has(t.id));
+  return { pinned, planned, postponed, removed, active, used: pinned.reduce((n, t) => n + t.min, 0) + planned.reduce((n, t) => n + t.min, 0), isStudy };
 }
 function lmApplyPlan(p, policy = "keep") {
+  lmReconcileReviews();
+  S.today.concat(LM.deferred).filter(t => t.mistakeId && t.done && t.recordId && !LM.records.some(r => r.id === t.recordId)).forEach(t => { t.done = false; delete t.recordId; t.right = 0; });
+  S.today.concat(LM.deferred).forEach(t => { t.sourceKey ||= lmTaskSource(t); });
   const x = lmPlanProjection(p, policy);
-  x.removed.filter(t => t.started).forEach(t => lmStoreDeferred(t, "计划调整后顺延"));
+  if (policy === "defer") {
+    const sources = new Set(x.active.map(lmTaskSource));
+    // Apply today's choice to other saved rounds of the same content without merging their progress.
+    S.today.concat(LM.deferred).filter(t => !t.done && sources.has(lmTaskSource(t))).forEach(t => {
+      t.deferUntilDate = lmDate();
+      if (LM.deferred.includes(t)) { t.reason = "计划调整后顺延"; t.deferredOn = lmDate(); }
+    });
+  }
+  x.removed.filter(lmTaskStarted).forEach(t => lmStoreDeferred(t, "计划调整后顺延"));
   if (policy === "defer" && x.active.some(t => t.id === PR.taskId)) { PR.taskId = null; PR.answers = []; }
   LM.plan = JSON.parse(JSON.stringify(p)); S.goal = lmGoalLabel(); S.minutes = p.minutes;
-  S.today = x.pinned.concat(x.planned.map(t => ({ ...t, id: lmId("task"), date: lmDate(), goal: lmGoalLabel(p), done: false, right: 0, total: GROUPS[t.group]?.items.length || 1 })));
+  const materialize = t => t.id ? (LM.deferred.some(x => x.id === t.id) ? { ...t, originDate: t.originDate || t.date, date: lmDate() } : t) : ({ ...t, id: lmId("task"), date: lmDate(), goal: lmGoalLabel(p), done: false, right: 0, total: t.words?.length || GROUPS[t.group]?.items.length || 1 });
+  S.today = x.pinned.concat(x.planned).map(materialize);
+  const ids = new Set(S.today.map(t => t.id)), waitingSources = new Set(x.postponed.map(lmTaskSource));
+  // Drop only superseded, unstarted derived candidates; source facts and completed/started work stay intact.
+  LM.deferred = LM.deferred.filter(t => !ids.has(t.id) && (t.done || lmTaskStarted(t) || !["review", "verify", "repair"].includes(t.kind) || waitingSources.has(lmTaskSource(t))));
+  x.postponed.forEach(t => lmStoreDeferred(materialize(t), t.reason));
+  const running = S.today.find(t => t.runningReview); if (running && SRS.phase === "run") LM.reviewTask = running.id;
   return x;
 }
 function lmFinishTask(id, record) { const t = S.today.find(t => t.id === id) || LM.deferred.find(t => t.id === id) || LM.freeTasks?.[id]; if (t && !t.done) { t.done = true; t.recordId = record.id; t.right = record.right || 0; t.total = record.total || 1; } }
@@ -154,8 +230,11 @@ function lmOpenTask(id) {
   const t = S.today.find(t => t.id === id); if (!t) return;
   if (t.kind === "review") lmReconcileReviews();
   if (t.done) { if (t.kind === "review") lmOpenReviewTask(t); else lmOpenResult(t.recordId); return; }
+  if (t.mistakeId && !lmPendingCurrent(t)) { toast("这项验证已有更新，请查看当前复习安排"); nav("#/reviewqueue"); return; }
+  if (t.kind === "review" && SRS.phase === "run" && ![...(SRS.results || []).map(r => r.stem), ...(SRS.order || []).map(i => SRSQ[i]?.w).filter(Boolean)].every(w => t.words?.includes(w))) { toast("先继续正在进行的复习，这一批仍在安排中"); nav("#/srs"); return; }
   t.started = true;
-  if (t.kind === "writing") lmOpenWriting(t.id);
+  if (t.mistakeId) lmMistakeOpen(t.mistakeId);
+  else if (t.kind === "writing") lmOpenWriting(t.id);
   else if (t.kind === "chapter") { LM.readTask = t.id; const r = LM.records.find(r => r.id === LM.chapters[t.book + ":" + t.ch]?.recordId); if (r) lmFinishTask(t.id, r); openChapter(t.book, t.ch); }
   else if (t.kind === "words") { if (LM.wordTask !== t.id || LM.wordClosed) { lmSaveWords(); LM.wordTask = t.id; LM.wordClosed = false; const saved = LM.wordProgress[t.id]; if (saved) { LM.wordSeen = JSON.parse(JSON.stringify(saved.seen)); Object.assign(DR, saved.dr); } else { LM.wordSeen = []; Object.assign(DR, { i: 0, known: 0, mode: "zhan", book: t.book || (t.goal?.includes("六级") ? "CET6" : "CET4"), show: false, quizPick: -1, quizDone: false }); } } nav("#/drill"); }
   else if (t.kind === "review") { LM.reviewTask = t.id; if (SRS.phase === "run") nav("#/srs"); else srsNew(); }
@@ -167,14 +246,25 @@ function lmResumeDeferred(id) {
   const i = LM.deferred.findIndex(t => t.id === id); if (i < 0) return;
   if (LM.deferred[i].kind === "review") lmReconcileReviews();
   if (LM.deferred[i].done) { const task = LM.deferred[i]; if (task.kind === "review") lmOpenReviewTask(task); else lmOpenResult(task.recordId); return; }
-  const t = LM.deferred.splice(i, 1)[0]; S.today.push({ ...t, originDate: t.originDate || t.date, date: lmDate() });
-  if (t.resume) LM.practiceProgress[t.id] ||= t.resume;
-  if (t.wordState) LM.wordProgress[t.id] ||= { seen: t.wordState.seen, dr: { book: t.wordState.book, i: t.wordState.i, known: t.wordState.known, mode: "zhan", show: false, quizPick: -1, quizDone: false } };
+  const t = LM.deferred[i], current = S.today.find(x => x.id === id);
+  const resumed = { ...t, ...current, originDate: current?.originDate || t.originDate || t.date, date: lmDate() }; delete resumed.deferUntilDate;
+  LM.deferred = LM.deferred.filter(x => x.id !== id);
+  if (current) S.today = S.today.map(x => x.id === id ? resumed : x); else S.today.push(resumed);
+  if (t.resume) LM.practiceProgress[t.id] ||= JSON.parse(JSON.stringify(t.resume));
+  if (t.wordState) LM.wordProgress[t.id] ||= { seen: JSON.parse(JSON.stringify(t.wordState.seen || [])), dr: t.wordState.dr || { book: t.wordState.book, i: t.wordState.i, known: t.wordState.known, mode: "zhan", show: false, quizPick: -1, quizDone: false } };
   lmOpenTask(t.id);
 }
 function lmStudyNav(active) { return `<nav class="study-nav" aria-label="学习分区">${[["today", "今日"], ["courses", "课程"], ["words", "词汇"], ["reviewqueue", "复习"]].map(([r, name]) => `<button class="mode-button${r === active ? " is-active" : ""}" aria-current="${r === active ? "page" : "false"}" onclick="nav('#/${r}')">${name}</button>`).join("")}</nav>`; }
 function lmEmpty(title, copy, action = "") { return `<div class="card empty"><h2>${title}</h2><p class="d">${copy}</p>${action}</div>`; }
-function lmTaskCard(t) { return `<div class="card task-card"><div class="section-heading"><h3>${lh(t.t)}</h3><span class="tag">${t.done ? "✓ 已完成" : t.started ? "进行中" : "待开始"}</span></div><p class="d">预计 ${t.min} 分钟${t.originDate ? " · 接回 " + lh(t.originDate) + " 的安排" : ""}${t.goal && t.goal !== S.goal ? " · 原目标：" + lh(t.goal) : ""}${t.done && t.group ? " · " + t.right + "/" + t.total + " 答对" : ""}</p><div class="actions"><button class="btn sm${t.done ? " ghost" : " primary-action"}" onclick="lmOpenTask('${t.id}')">${t.done ? "查看结果" : t.started ? "继续学习" : "开始学习"}</button>${t.done && t.group ? `<button class="btn sm ghost" onclick="lmRetryTask('${t.id}')">重新练习</button>` : ""}</div></div>`; }
+function lmTaskRound(t) { return (t.originDate || t.date || "日期未记录") + " · 本机安排 " + t.id; }
+function lmTaskCard(t) { return `<div class="card task-card"><div class="section-heading"><h3>${lh(t.t)}</h3><span class="tag">${t.done ? "✓ 已完成" : t.started ? "进行中" : "待开始"}</span></div><p class="d">${lh(lmTaskRound(t))} · 样例预计 ${t.min} 分钟${t.scheduleReason ? " · " + lh(t.scheduleReason) : ""}${t.originDate ? " · 已接回今日" : ""}${t.goal && t.goal !== S.goal ? " · 原目标：" + lh(t.goal) : ""}${t.done && t.group ? " · " + t.right + "/" + t.total + " 答对" : ""}</p><div class="actions"><button class="btn sm${t.done ? " ghost" : " primary-action"}" onclick="lmOpenTask('${t.id}')">${t.done ? "查看结果" : t.started ? "继续学习" : "开始学习"}</button>${t.done && t.group ? `<button class="btn sm ghost" onclick="lmRetryTask('${t.id}')">重新练习</button>` : ""}</div></div>`; }
+function lmDeferredCard() {
+  const rows = LM.deferred.filter(t => (t.done || lmPendingCurrent(t)) && !S.today.some(x => x.id === t.id)), groups = new Map();
+  rows.forEach(t => { const key = lmTaskSource(t); if (!groups.has(key)) groups.set(key, []); groups.get(key).push(t); });
+  const row = t => `<div class="list-row"><div><b>${lh(t.t)}</b><p class="d">${lh(lmTaskRound(t))} · ${lh(t.reason)}${t.deferUntilDate === lmDate() ? " · 今日已选择顺延此内容" : ""} · 样例预计 ${t.min} 分钟${t.due ? " · 原到期 " + lh(t.due) : ""} · ${t.done ? "✓ 已完成" : lmTaskStarted(t) ? "进度已保存" : "未开始"}</p></div><button class="btn sm ghost" onclick="lmResumeDeferred('${t.id}')">${t.done ? "查看此轮结果" : "继续此轮"}</button></div>`;
+  const content = [...groups].map(([key, tasks]) => tasks.length > 1 || S.today.some(t => lmTaskSource(t) === key) ? `<details><summary>${lh(tasks[0].t)} · 其他学习轮次（${tasks.length}）</summary><p class="d">以下轮次独立保存。请按日期与本机安排标识选择，接回后继续该轮的进度。</p>${tasks.map(row).join("")}</details>` : tasks.map(row).join("")).join("");
+  return rows.length ? `<div class="card"><h2>顺延的学习</h2><p class="d">装不下的任务保留来源、原到期日期和已有进度。可以调整预算再安排；手动接回可能增加今日用时。</p>${content}</div>` : "";
+}
 function lmResumeCard() { const p = lmLastRead(); return `<div class="card"><div class="section-heading"><h2>继续阅读</h2><span class="tag">本机记录</span></div><h3>${lh(p.book)}</h3><p class="d">${lh(p.ch)}</p><div class="actions"><button class="btn sm primary-action" onclick="resumeChapter()">继续读</button><button class="btn sm ghost" onclick="nav('#/collections')">收藏与笔记</button></div></div>` + lmFreePracticeCard(); }
 function lmFreePracticeCard() { const tasks = Object.values(LM.freeTasks).filter(t => t.started && !t.done); return tasks.length ? `<div class="card"><h2>继续自主练习</h2><p class="d">重练轮次独立保存，原来的完成结果仍可查看。</p>${tasks.map(t => `<button class="opt record-row" onclick="enterTask('${t.id}')"><span><b>${lh(t.t)}</b><span class="d">第 ${(LM.practiceProgress[t.id]?.pos || 0) + 1}/${GROUPS[t.group].items.length} 题 · 进行中</span></span><span>›</span></button>`).join("")}</div>` : ""; }
 V.home = () => {
@@ -185,7 +275,8 @@ V.home = () => {
 };
 V.today = () => {
   lmEnsureDay(); const left = S.today.filter(t => !t.done), total = S.today.reduce((n, t) => n + t.min, 0);
-  return lmStudyNav("today") + (!S.plan ? lmEmpty("还没有学习计划", "选择目标后，可以先定级，也可以直接从基础任务开始。", `<button class="btn primary-action" onclick="nav('#/onboard')">选择目标</button>`) : `<div class="card"><div class="section-heading"><h2>今日安排</h2><button class="text-link" onclick="nav('#/plan')">调整</button></div><p class="d">${lmGoalLabel()} · 目标 ${LM.plan.minutes} 分钟</p><p class="d">今日安排预计 ${total} 分钟 · 剩余预计 ${left.reduce((n, t) => n + t.min, 0)} 分钟${total > LM.plan.minutes ? "；保留和接回的任务使今日超出预算，可在计划中顺延。" : ""}</p><p class="d">已完成 ${S.today.length - left.length}/${S.today.length} 项；完成任务与掌握知识分别记录。</p></div>${S.today.map(lmTaskCard).join("")}${!left.length ? lmEmpty(S.today.length ? "今天的计划已完成" : "今天是休息日", S.today.length ? "回顾刚才的结果，看看接下来的复习安排。" : "可以休息，也可以从课程中自由学习。", `<button class="btn primary-action" onclick="lmTodayRecap()">查看今日回顾</button>`) : `<button class="btn ghost" onclick="lmTodayRecap()">查看今日回顾</button>`}`) + (LM.deferred.length ? `<div class="card"><h2>顺延的学习</h2>${LM.deferred.map(t => `<div class="list-row"><div><b>${lh(t.t)}</b><p class="d">${lh(t.reason)} · ${t.originDate || t.date || ""} · ${t.done ? "✓ 已完成" : "保留进度"}</p></div><button class="btn sm ghost" onclick="lmResumeDeferred('${t.id}')">${t.done ? "查看结果" : "接着学"}</button></div>`).join("")}</div>` : "") + lmResumeCard();
+  const study = LM.plan.days.includes(new Date(lmDate() + "T12:00:00").getDay());
+  return lmStudyNav("today") + (!S.plan ? lmEmpty("还没有学习计划", "选择目标后，可以先定级，也可以直接从基础任务开始。", `<button class="btn primary-action" onclick="nav('#/onboard')">选择目标</button>`) : `<div class="card"><div class="section-heading"><h2>今日安排</h2><button class="text-link" onclick="nav('#/plan')">调整</button></div><p class="d">${lmGoalLabel()} · 目标 ${LM.plan.minutes} 分钟</p><p class="d">先续学，再安排到期验证和词汇复习，再做补救与新学；四档预算共用这份安排。</p><p class="d">今日安排预计 ${total} 分钟 · 剩余预计 ${left.reduce((n, t) => n + t.min, 0)} 分钟${total > LM.plan.minutes ? "；保留和接回的任务使今日超出预算，今天不再自动新增，可在计划中顺延。" : ""}</p><p class="d">已完成 ${S.today.length - left.length}/${S.today.length} 项；分钟和日期均为本机样例，不代表正式编排参数。</p></div>${S.today.map(lmTaskCard).join("")}${!left.length ? lmEmpty(S.today.length ? "今天的计划已完成" : study ? "今日预算内暂无可安排任务" : "今天是休息日", S.today.length ? "回顾刚才的结果，看看接下来的复习安排。" : study ? "查看顺延原因，可调整时间安排，也可以结束学习。" : "可以休息，也可以从课程中自由学习。", `<button class="btn primary-action" onclick="lmTodayRecap()">查看今日回顾</button>`) : `<button class="btn ghost" onclick="lmTodayRecap()">查看今日回顾</button>`}`) + (S.plan ? lmDeferredCard() : "") + lmResumeCard();
 };
 function lmOpenResult(id) { const r = LM.records.find(r => r.id === id); if (!r) { toast("旧任务没有题目明细，可在学习记录查看汇总"); nav("#/history"); return; } LM.resultReviewTask = null; LM.resultId = id; nav("#/result"); }
 function lmTodayRecap() { LM.recapDate = null; nav("#/recap"); }
@@ -211,7 +302,7 @@ function lmToggleDay(d) { const p = LM.planDraft || JSON.parse(JSON.stringify(LM
 function lmPreviewPlan(onboard) { const p = lmPlanRead(); if (!p.days.length) { toast("至少选择一个学习日"); return; } LM.planDraft = p; LM.planPreview = { onboard, policy: document.getElementById("lpolicy")?.value || "keep" }; render(); }
 function lmPlanPreviewCard() {
   if (!LM.planPreview) return ""; const p = LM.planDraft, v = LM.planPreview, x = lmPlanProjection(p, v.policy);
-  return `<div class="card"><p class="eyebrow">确认前预览</p><h2>${lmGoalLabel(p)} · ${p.minutes} 分钟</h2><p class="d">每周 ${p.days.length} 天 · ${x.isStudy ? "今天是学习日" : "今天是休息日"}</p><p class="d">保留 ${x.pinned.filter(t => t.done).length} 个已完成任务，${v.policy === "keep" ? "保留" : "顺延"} ${x.active.length} 个进行中任务。</p>${x.pinned.concat(x.planned).map(t => `<p class="plan-line"><span>${lh(t.t)}</span><b>${t.min} 分钟</b></p>`).join("")}<p class="d">调整后今日预计 ${x.used} 分钟${x.used > p.minutes ? "；已完成和保留的任务超过新预算，今天不再增加任务。" : "。"}</p><p class="d">${S.plan ? x.removed.length : 0} 个原待学任务退出今日安排；已开始的进度保留在“顺延的学习”。未开始的内容可从课程重新找到。</p><button class="btn primary-action" onclick="lmConfirmPlan()">${v.onboard ? "保存目标" : "确认调整"}</button></div>`;
+  return `<div class="card"><p class="eyebrow">确认前预览 · 本机样例</p><h2>${lmGoalLabel(p)} · ${p.minutes} 分钟</h2><p class="d">每周 ${p.days.length} 天 · ${x.isStudy ? "今天是学习日" : "今天是休息日"}</p><p class="d">保留 ${x.pinned.filter(t => t.done).length} 个已完成任务，${v.policy === "keep" ? "保留" : "顺延"} ${x.active.length} 个进行中任务；先续学和到期任务，再安排新学。</p>${x.pinned.concat(x.planned).map(t => `<p class="plan-line"><span>${lh(t.t)}${t.scheduleReason ? " · " + lh(t.scheduleReason) : ""}</span><b>${t.min} 分钟</b></p>`).join("")}<p class="d">调整后今日预计 ${x.used} 分钟${x.used > p.minutes ? "；已完成和保留的任务超过新预算，今天不再自动增加任务。" : "。"}</p>${x.postponed.length ? `<h3>顺延 ${x.postponed.length} 项</h3>${x.postponed.map(t => `<p class="d"><b>${lh(t.t)}</b>：${lh(t.reason)}</p>`).join("")}` : ""}<p class="d">${S.plan ? x.removed.length : 0} 个原任务退出今日；已开始进度保留。预览不改有效安排、复习日期或完成记录，确认后才保存。</p><button class="btn primary-action" onclick="lmConfirmPlan()">${v.onboard ? "保存目标" : "确认调整"}</button></div>`;
 }
 function lmConfirmPlan() {
   const v = LM.planPreview; if (!v) return; const p = LM.planDraft;
@@ -229,7 +320,7 @@ V.pgen = () => {
 };
 function lmCancelPlan() { LM.planDraft = null; LM.planPreview = null; LM.planPolicy = "keep"; toast("未保存的调整已取消"); nav(S.plan ? "#/today" : "#/home"); }
 V.plan = () => lmPlanForm(false) + lmPlanPreviewCard() + `<div class="actions"><button class="btn sm ghost" onclick="lmCancelPlan()">取消调整</button><button class="btn sm ghost" onclick="nav('#/calendar')">学习日历</button><button class="btn sm ghost" onclick="nav('#/history')">学习记录</button></div>`;
-V.planexp = () => `<div class="card"><h2>你的学习安排</h2><p class="d">${lmGoalLabel()} · 每天 ${LM.plan.minutes} 分钟 · 每周 ${LM.plan.days.length} 天</p><p class="d">先做目标对应的小题组，再按预算加入阅读、写作、词汇和复习。当前内容是固定学习样例；测评结果作为水平参考。</p><p class="d">休息日不增加新任务；未完成内容保留在顺延列表。调整计划前可以选择保留或顺延进行中的任务。</p><button class="btn" onclick="nav('#/plan')">预览计划调整</button></div>`;
+V.planexp = () => `<div class="card"><h2>你的学习安排</h2><p class="d">${lmGoalLabel()} · 每天 ${LM.plan.minutes} 分钟 · 每周 ${LM.plan.days.length} 天</p><p class="d">5/15/30/45 分钟共用候选安排：已保存的续学优先，再安排到期验证、到期词汇复习、匹配补救和目标新学。装不下的整项保留在顺延列表，不改原到期日期。</p><p class="d">每个复习来源只安排一次；验证和词汇复习目的不同，不凭词或知识点相同就合并结果。当前分钟、题目和日期是本机样例，不是正式学习规则。</p><p class="d">休息日不自动增加任务；完成记录保留。调整计划前可以预览并选择保留或顺延进行中的任务，取消不改变有效安排。</p><button class="btn" onclick="nav('#/plan')">预览计划调整</button></div>`;
 V.calendar = () => `<div class="card"><h2>接下来两周</h2><p class="d">学习日安排目标对应的任务；休息日可以自由阅读，未完成进度可以接着学。</p><button class="btn sm ghost" onclick="nav('#/plan')">调整学习日</button></div>` + Array.from({ length: 14 }, (_, i) => { const d = lmAddDate(lmDate(), i), study = LM.plan.days.includes(new Date(d + "T12:00:00").getDay()), rows = LM.records.filter(r => r.date === d), due = S.mistakes.filter(m => m.due === d && m.st !== "verified").length + SRSQ.filter(q => q.due === d).length; return `<div class="card calendar-day"><div class="section-heading"><h3>${d.slice(5)} · 周${LDAY_NAMES[new Date(d + "T12:00:00").getDay()]}</h3><span class="tag">${i === 0 ? "今天 · " : ""}${study ? "学习日" : "休息日"}</span></div><p class="d">${study ? lmGoalLabel() + " · 预计不超过 " + LM.plan.minutes + " 分钟" : "不安排新任务"} · ${due} 项复习/验证</p>${rows.length ? `<button class="btn sm ghost" onclick="LM.recapDate='${d}';nav('#/recap')">查看 ${rows.length} 条学习记录</button>` : ""}</div>`; }).join("");
 
 /* 独立轮次：刷新恢复题目答案，查看与重练分别处理。 */
@@ -241,7 +332,7 @@ function lmSavePractice() {
 function lmRestorePractice(taskId) {
   const saved = LM.practiceProgress?.[taskId]; if (!saved || saved.phase === "result") return false;
   const token = (PR.tok || 0) + 1;
-  Object.assign(PR, JSON.parse(JSON.stringify(saved)), { tok: token });
+  Object.assign(PR, JSON.parse(JSON.stringify(saved)), { taskId, tok: token });
   if (PR.phase === "submitting") { PR.phase = "answer"; PR.fb = { cls: "wa", msg: "上次提交被中断，选择已保存，可重试。" }; }
   const g = prGroup(); if (!g) return false;
   g.items.forEach((it, i) => { delete it._ok; delete it._sel; const a = PR.answers?.[i]; if (a) Object.assign(it, { _ok: a.ok, _sel: a.sel }); });
@@ -255,7 +346,7 @@ function startGroup(taskId) {
   Object.assign(PR, { taskId: t.id, pos: 0, sel: -1, phase: "answer", fb: null, answers: [], attempt: lmId("attempt"), startedAt: Date.now(), tok: (PR.tok || 0) + 1 });
   t.started = true; dbSave(); nav("#/practice"); if (LASTR === "practice") render();
 }
-function prTask() { return S.today.find(t => t.id === PR.taskId) || LM.freeTasks?.[PR.taskId] || (LM.freeTask?.id === PR.taskId ? LM.freeTask : null); }
+function prTask() { return S.today.find(t => t.id === PR.taskId) || LM.deferred.find(t => t.id === PR.taskId) || LM.freeTasks?.[PR.taskId] || (LM.freeTask?.id === PR.taskId ? LM.freeTask : null); }
 function enterTask(taskId) { const t = S.today.find(t => t.id === taskId) || LM.freeTasks?.[taskId]; if (!t) return; if (t.done) { lmOpenResult(t.recordId); return; } lmSavePractice(); if (PR.taskId === t.id && PR.phase !== "result") nav("#/practice"); else if (!lmRestorePractice(t.id)) startGroup(t.id); }
 function prRecord(pos, sel) {
   const g = prGroup(), it = g?.items[pos]; if (!it) return;
@@ -332,6 +423,7 @@ function lmMistakeCheck() {
   else if (before === "wait1") { m.st = "wait7"; m.due = lmAddDate(m.repaired, 7); }
   else { m.st = "wait1"; m.repaired = lmDate(); m.due = lmAddDate(lmDate(), 1); }
   const r = lmRecord({ kind: "repair", title: (before === "wait1" ? "次日验证 · " : before === "wait7" ? "七日验证 · " : "错题补救 · ") + m.t, right: ok ? 1 : 0, total: 1, answers: [{ stem: q.s, chosen: q.o[LM.mistakePick], correct: q.o[q.a], why: q.why, ok }] });
+  S.today.concat(LM.deferred).filter(t => !t.done && t.mistakeId === m.id && t.mistakeStage === before && t.mistakeRevision === (m.revision || 0)).forEach(t => lmFinishTask(t.id, r));
   m.revision = (m.revision || 0) + 1; LM.mistakeUndo.afterRevision = m.revision;
   LM.mistakeUndo.record = r.id; LM.mistakeFeedback = { ok, question: q, stage: before, text: (ok ? "✓ 本次答对。" : "需要再补救。") + q.why }; render();
 }
@@ -352,7 +444,8 @@ function srsAddWord(w) {
 }
 function srsEnsure() {
   if (SRS.phase !== "idle") return;
-  SRS.order = SRSQ.map((q, i) => ({ q, i })).filter(x => (x.q.due || lmDate()) <= lmDate()).slice(0, 4).map(x => x.i);
+  const target = S.today.concat(LM.deferred).find(t => t.id === LM.reviewTask && t.kind === "review" && !t.done);
+  SRS.order = SRSQ.map((q, i) => ({ q, i })).filter(x => (x.q.due || lmDate()) <= lmDate() && (!target || target.words?.includes(x.q.w))).sort((a, b) => (a.q.due || lmDate()).localeCompare(b.q.due || lmDate()) || a.q.w.localeCompare(b.q.w)).slice(0, 4).map(x => x.i);
   Object.assign(SRS, { pos: 0, pass: 1, redo: [], batch: SRS.order.length, done: 0, again: 0, remembered: 0, phase: SRS.order.length ? "run" : "empty", undo: [], operations: 0, attempt: lmId("review"), results: [], imported: false });
   SRS.order.forEach(i => SRSQ[i].show = false);
 }
@@ -391,15 +484,16 @@ V.srs = () => {
   if (SRS.phase === "done") return `<div class="card"><h2>本轮复习完成</h2><div class="metrics"><div><strong>${SRS.batch}</strong><span>学习项</span></div><div><strong>${SRS.operations}</strong><span>回忆次数</span></div><div><strong>${SRS.remembered}</strong><span>本次记得</span></div></div><p class="d">忘记的词本轮最多再出现一次。每个词的下次日期已保存；本次记得不等于长期掌握。</p><div class="actions"><button class="btn sm primary-action" onclick="nav('#/reviewqueue')">下次复习安排</button><button class="btn sm ghost" onclick="lmTodayRecap()">今日回顾</button></div>${SRS.undo.length ? `<button class="btn ghost" onclick="srsUndo()">撤销上次评分</button>` : ""}</div>`;
   const q = SRSQ[srsCur()]; return `<div class="meta">本批 ${SRS.batch} 个词 · 第 ${SRS.pos + 1}/${SRS.order.length} 个${SRS.pass === 2 ? " · 再次回忆" : ""}</div><div class="card word-card"><h2>${lh(q.w)}</h2><p class="d">来源：${lh(q.source)}</p><div class="word-meaning">${q.show ? `<p>${lh(q.zh)}</p>` : `<button class="btn sm" onclick="srsShow()">显示释义</button>`}</div></div>${q.show ? `<div class="word-actions">${["忘记了", "有点模糊", "记得", "很熟悉"].map((label, i) => `<button class="btn sm${i >= 2 ? " primary-action" : " ghost"}" onclick="srsRate(${i})">${label}</button>`).join("")}</div>` : ""}<div class="actions">${SRS.undo.length ? `<button class="btn sm ghost" onclick="srsUndo()">撤销上次评分</button>` : ""}<button class="btn sm ghost" onclick="nav('#/reviewqueue')">稍后继续</button></div>`;
 };
-V.reviewqueue = () => lmStudyNav("reviewqueue") + `<div class="card"><h2>复习安排</h2><p class="d">今天：${lmReviewDue().length} 个词到期 · ${lmMistakeDue().length} 项延迟验证到期</p><div class="actions"><button class="btn sm primary-action" onclick="${SRS.phase === "run" ? "nav('#/srs')" : "srsNew()"}">${SRS.phase === "run" ? "继续本轮复习" : "开始到期复习"}</button><button class="btn sm ghost" onclick="LM.mistakeId=null;nav('#/mistakes')">错题与验证</button></div></div><div class="card"><h2>词汇下次日期</h2>${SRSQ.length ? SRSQ.slice().sort((a, b) => a.due.localeCompare(b.due)).map(q => `<div class="list-row"><div><b>${lh(q.w)}</b><p class="d">${lh(q.source)} · ${q.due}</p></div><span class="tag">${q.due <= lmDate() ? "已到期" : "待复习"}</span></div>`).join("") : `<p class="d">还没有加入复习的词。从词汇或阅读查词中添加。</p>`}</div><div class="card"><h2>延迟验证</h2>${S.mistakes.filter(m => ["wait1", "wait7"].includes(m.st)).map(m => `<button class="opt record-row" onclick="lmMistakeOpen('${m.id}')"><span><b>${lh(m.t)}</b><span class="d">${lmMistakeState(m)} · ${m.due}</span></span><span>›</span></button>`).join("") || `<p class="d">完成一次错题补救后，这里会显示次日和七日验证安排。</p>`}</div>`;
+V.reviewqueue = () => { lmEnsureDay(); return lmStudyNav("reviewqueue") + `<div class="card"><h2>复习安排</h2><p class="d">今天：${lmReviewDue().length} 个词到期 · ${lmMistakeDue().length} 项延迟验证到期</p><p class="d">到期项与新学使用今日同一预算；装不下的来源在顺延列表，原到期日期不变。下方单独练习属于自主继续。</p><div class="actions"><button class="btn sm primary-action" onclick="nav('#/today')">查看预算内安排</button><button class="btn sm ghost" onclick="${SRS.phase === "run" ? "nav('#/srs')" : "srsNew()"}">${SRS.phase === "run" ? "继续本轮复习" : "单独复习到期词"}</button><button class="btn sm ghost" onclick="LM.mistakeId=null;nav('#/mistakes')">错题与验证</button></div></div><div class="card"><h2>词汇下次日期</h2>${SRSQ.length ? SRSQ.slice().sort((a, b) => a.due.localeCompare(b.due)).map(q => `<div class="list-row"><div><b>${lh(q.w)}</b><p class="d">${lh(q.source)} · ${q.due}</p></div><span class="tag">${q.due <= lmDate() ? "已到期" : "待复习"}</span></div>`).join("") : `<p class="d">还没有加入复习的词。从词汇或阅读查词中添加。</p>`}</div><div class="card"><h2>延迟验证</h2>${S.mistakes.filter(m => ["wait1", "wait7"].includes(m.st)).map(m => `<button class="opt record-row" onclick="lmMistakeOpen('${m.id}')"><span><b>${lh(m.t)}</b><span class="d">${lmMistakeState(m)} · ${m.due}</span></span><span>›</span></button>`).join("") || `<p class="d">完成一次错题补救后，这里会显示次日和七日验证安排。</p>`}</div>`; };
 V.arrears = () => { lmEnsureDay(); return lmEmpty(LM.deferred.some(t => !t.done) ? "可以接着完成的学习" : "没有未完成的顺延任务", "接回任务会保留原来的题目和草稿，可按今天的时间安排继续。", `<button class="btn" onclick="nav('#/today')">查看今日与顺延安排</button>`); };
 V.celebrate = () => { lmEnsureDay(); return lmEmpty(S.plan && S.today.length && S.today.every(t => t.done) ? "今日计划已完成" : "查看这一次的学习收获", "完成结果以本机记录为准，可以查看反馈、复习安排或继续未完成的任务。", `<button class="btn" onclick="lmTodayRecap()">查看今日回顾</button><button class="btn ghost" onclick="nav('#/today')">回到学习</button>`); };
 V.offlinet = () => lmEmpty("离线时保留学习进度", "已经加载的原型页面可继续查看；选择和草稿保存在本机。当前原型没有服务端自动同步，恢复连接后请主动提交或查询未知结果。", `<button class="btn" onclick="nav('#/today')">查看保存的学习</button><button class="btn ghost" onclick="nav('#/offpkg')">离线包说明</button>`);
 
 /* 阅读：书与章节身份、完成、下一节、上下文查词与本机笔记。 */
 function lmChapterKey() { return BK.cur + ":" + BK.ch; }
-function lmNoteInput() { const key = lmChapterKey(), note = document.getElementById("chapter-note").value; LM.chapters[key] ||= { done: false, note: "" }; LM.chapters[key].note = note; dbSave(); const status = document.getElementById("note-save"); if (status) status.textContent = "已保存到本机 · " + note.length + " 字"; }
+function lmNoteInput() { const key = lmChapterKey(), note = document.getElementById("chapter-note").value; LM.chapters[key] ||= { done: false, note: "" }; LM.chapters[key].note = note;const saved=dbSave();const status = document.getElementById("note-save"); if(status)status.textContent=saved?"已保存到本机 · "+note.length+" 字":"未保存，请允许本机存储后重试；输入仍在编辑框。"; }
 function lmChapterComplete() {
+  if(document.getElementById("chapter-note")){lmNoteInput();if(window.DEMO_STORAGE_FAILED)return;}
   const key = lmChapterKey(), c = LM.chapters[key] ||= { note: "", done: false }, b = BOOKS.find(b => b.id === BK.cur); if (!b) return;
   if (!c.done) { c.done = true; c.date = lmDate(); const r = lmRecord({ key: "chapter-" + key, kind: "chapter", title: b.title + " · " + b.toc[BK.ch], bookId: b.id, chapter: BK.ch, estimated: 10 }); c.recordId = r.id; }
   const r = LM.records.find(r => r.id === c.recordId); if (r) S.today.concat(LM.deferred).filter(t => t.kind === "chapter" && t.book === b.id && t.ch === BK.ch).forEach(t => lmFinishTask(t.id, r));
@@ -437,7 +531,7 @@ function lmSaveWriting() { LM.writingProgress ||= {}; LM.writingProgress[LM.writ
 function lmOpenWriting(taskId = null) {
   taskId ||= S.today.find(t => t.kind === "writing" && !t.done)?.id || null;
   lmSaveWriting();
-  if (LM.writing.taskId !== taskId) { const saved = LM.writingProgress[taskId || "free"]; LM.writing = saved ? JSON.parse(JSON.stringify(saved)) : { text: "", revision: 0, phase: "draft", feedback: "", self: "", taskId }; }
+  if (LM.writing.taskId !== taskId) { const saved = LM.writingProgress[taskId || "free"]; LM.writing = saved ? { ...JSON.parse(JSON.stringify(saved)), taskId } : { text: "", revision: 0, phase: "draft", feedback: "", self: "", taskId }; }
   if (LM.writing.phase === "submitting") { LM.writing.phase = "draft"; LM.writing.pending = null; LM.writing.feedback = "上次提交被中断，草稿已保留。"; }
   const t = S.today.find(t => t.id === taskId); if (t) t.started = true;
   dbSave(); nav("#/writing"); if (LASTR === "writing") render();
@@ -448,10 +542,10 @@ function lmWritingRules(text) {
   return { count, checks, accepted: checks.every(c => c.ok), summary: checks.filter(c => c.ok).length + "/3 项格式与内容检查通过；不评价完整语法、语义或真实能力。" };
 }
 function lmWritingInput() {
-  LM.writing.text = document.getElementById("writing-draft").value; LM.writing.revision++; LM.writing.phase = "draft"; LM.writing.feedback = ""; dbSave();
-  document.getElementById("writing-count").textContent = lmWritingRules(LM.writing.text).count + " 个英文单词 · 草稿已保存到本机";
+  LM.writing.text = document.getElementById("writing-draft").value; LM.writing.revision++; LM.writing.phase = "draft"; LM.writing.feedback = ""; const saved=dbSave();
+  document.getElementById("writing-count").textContent = lmWritingRules(document.getElementById("writing-draft").value).count + (saved?" 个英文单词 · 草稿已保存到本机":" 个英文单词 · 未保存，请允许本机存储后重试");
 }
-function lmWritingConfirm() { if (!LM.writing.text.trim()) { toast("先写一点内容再提交"); return; } LM.writing.phase = "confirm"; LM.writing.feedback = ""; render(); }
+function lmWritingConfirm() { if(document.getElementById("writing-draft")){lmWritingInput();if(window.DEMO_STORAGE_FAILED)return;} if (!LM.writing.text.trim()) { toast("先写一点内容再提交"); return; } LM.writing.phase = "confirm"; LM.writing.feedback = ""; render(); }
 function lmWritingSubmit() {
   const w = LM.writing; if (w.phase !== "confirm") return;
   if (LAB.offline) { w.phase = "draft"; w.feedback = "当前离线，草稿已保存。恢复后再提交。"; render(); return; }
@@ -539,9 +633,10 @@ const LLEGACY_LAB = V.lab;
 function lmAdvanceDay(shift) { LM.offset += shift; lmEnsureDay(); LM.mistakeId = null; toast("演示日期：" + lmDate()); render(); }
 function labToday(mode) {
   LM.day = lmDate(); PR.taskId = null; SRS.phase = "idle";
+  LM.emptyTodayDate = mode === "empty" ? lmDate() : null;
   if (mode === "noplan") { S.plan = false; S.today = []; }
   else if (mode === "empty") { S.plan = true; S.today = []; SRSQ.forEach(q => { q.done = true; q.due = lmAddDate(lmDate(), 1); }); }
-  else { S.plan = true; S.today = []; lmApplyPlan(LM.plan, "keep"); srsSeed(); SRSQ.forEach(q => { q.due = lmDate(); q.source = "演示工具样例"; q.interval = 0; }); if (mode === "done") S.today.forEach(t => { t.done = true; const r = lmRecord({ kind: "sample", imported: true, title: t.t, estimated: t.min }); t.recordId = r.id; }); }
+  else { S.plan = true; S.today = []; srsSeed(); SRSQ.forEach(q => { q.due = lmDate(); q.source = "演示工具样例"; q.interval = 0; }); lmApplyPlan(LM.plan, "keep"); if (mode === "done") S.today.forEach(t => { t.done = true; const r = lmRecord({ kind: "sample", imported: true, title: t.t, estimated: t.min }); t.recordId = r.id; }); }
   render();
 }
 V.lab = () => `<div class="card"><h2>六能力演示工具</h2><p class="d">当前演示日期 ${lmDate()}${LM.offset ? "（已偏移 " + LM.offset + " 天）" : ""}。普通学习页不能提前通过延迟验证。</p><div class="actions"><button class="btn sm" onclick="lmAdvanceDay(1)">演示日期 +1 天</button><button class="btn sm" onclick="lmAdvanceDay(6)">演示日期 +6 天</button><button class="btn sm ghost" onclick="lmAdvanceDay(-LM.offset)">恢复真实日期</button><button class="btn sm ghost" onclick="LM.writingUnavailable=!LM.writingUnavailable;render()">写作空态：${LM.writingUnavailable ? "开" : "关"}</button></div><button class="opt" onclick="S.staff=!S.staff;render()">管理身份预览：${S.staff ? "开" : "关"}</button><div class="actions"><button class="btn sm ghost" onclick="nav('#/ai')">AI 能力预览</button><button class="btn sm ghost" onclick="nav('#/k12')">青少年阶段说明</button><button class="btn sm ghost" onclick="nav('#/admin')">后台样例</button></div></div>` + LLEGACY_LAB();

@@ -101,3 +101,66 @@ const DEMO_PERSONAS = [
 const DEMO_CURRENT_PERSONA = (() => {try {return JSON.parse(localStorage.getItem('yxx-ui-v2-controls-'+(window.DEMO_SURFACE||'mobile'))||'{}').persona||'active';} catch {return 'active';}})();
 function DEMO_PERSONA_STATE() {const p=DEMO_PERSONAS.find(x=>x.id===DEMO_CURRENT_PERSONA)||DEMO_PERSONAS[1];return {user:p.id==='new'?null:p.name,gate:p.gate,birthDate:null,consents:Object.fromEntries(['TERMS','PRIVACY','ADULT_LEARNING'].map(k=>[k,{agreed:p.agreed,version:'b30-consent-v1',source:'拟真档案'}]))};}
 const DEMO_EXTRA_FIXTURES={devices:[{id:'current',name:'当前浏览器',type:'本机',active:true,current:true,last:'刚刚'},{id:'phone',name:'iPhone 15',type:'移动端',active:true,current:false,last:'今天 08:42'},{id:'tablet',name:'iPad Air',type:'平板',active:true,current:false,last:'昨天 20:15'}],offline:[{id:'basic',name:'生活英语 · 出行篇',size:'12.4 MB',version:'2026.10',scope:'3 篇原创短文 / 12 个词汇',status:'未下载',progress:0},{id:'cet4',name:'四级词汇 · 核心练习',size:'8.2 MB',version:'2026.10',scope:'20 个原创词卡 / 3 组练习',status:'未下载',progress:0}],gameWords:[['library','图书馆'],['journey','旅程'],['improve','提高'],['evidence','证据'],['focus','专注']],rooms:[{id:'r1',name:'四级阅读自习室',members:18,topic:'每天读一篇，分享一句总结'},{id:'r2',name:'职场口语小组',members:12,topic:'练习会议中的清楚表达'},{id:'r3',name:'零基础互助营',members:24,topic:'从简单句开始，坚持十分钟'}],consentDocs:[{id:'TERMS',title:'服务条款',copy:'本演示仅供成年人试用。练习、订单和管理操作均为本机模拟，不形成真实服务合同、支付或认证。'},{id:'PRIVACY',title:'隐私说明',copy:'仅保存合成学习档案和你输入的演示草稿。请勿输入真实姓名、密码或敏感资料。你可在演示控制中重置所有本机样例。'},{id:'ADULT_LEARNING',title:'成人学习说明',copy:'开放学习需要主动确认成年人身份及学习同意。撤回学习同意立即限制学习入口；设置、同意记录和客服仍可使用。'}]};
+
+const DEMO_ACCOUNT_BASE = {
+S: {
+  user: "演示账号", gate: "PASS", birthDate: null, consents: Object.fromEntries(["TERMS", "PRIVACY", "ADULT_LEARNING"].map(key => [key, { agreed: true, version: "b30-consent-v1", source: "演示样例" }])), goal: null, staff: false, quiz: { i: 0, score: 0, sel: null, done: false },
+  mistakes: [{ t: "There ___ two books on the desk.", why: "定位：语法待补", kind: "sentence" }, { t: "abandon", why: "定位：词汇待补", kind: "word" }, { t: "Hardly had I arrived when it rained.", why: "定位：阅读待补", kind: "sentence" }], plan: false, today: [{ id: "t1", group: "g1", t: "语法 · There be 句型", min: 5, kind: "grammar", done: false, right: 0, total: 3 }, { id: "t2", group: "r1", t: "阅读 · 图书馆的一天", min: 8, kind: "reading", done: false, right: 0, total: 2 }],
+  shelf: ["四级词汇 B1", "零基础 A1", "六级 B2", "商务口语", "雅思备考", "生活英语"],
+  lastRead: { book: "四级词汇红宝书", ch: "第二章 核心 1500" },
+  msgs: [{ t: "欢迎来到语学星", d: "先定级，3 分钟出报告", read: false }, { t: "今日任务已生成", d: "语法 2 道", read: false }],
+  streak: 1, consentV: "b30-consent-v1", minutes: 15,
+},
+SRS: { order: [], pos: 0, redo: [], pass: 1, batch: 0, done: 0, again: 0, remembered: 0, phase: "idle", undo: [] },
+PV: { exp: null, del: null },
+SUP: { cat: "功能", draft: "", cur: null, from: "support", list: [{ id: "TK-1024", cat: "功能", t: "听力播到一半停了", st: "处理中" }, { id: "TK-1019", cat: "账号", t: "换手机想踢掉旧设备", st: "已回复" }] },
+PAY: { productId: null, title: "", price: 0, cat: "", intentId: null, orderId: null, phase: "idle", message: "" },
+PR: { taskId: null, pos: 0, sel: -1, phase: "answer", fb: null },
+LM: {
+  version: 1, offset: 0, day: "", serial: 0,
+  plan: { goal: "college", variant: "cet4", minutes: 15, days: [1, 2, 3, 4, 5, 6, 0] },
+  records: [], deferred: [], chapters: {}, savedCourses: [], writes: [], practiceProgress: {}, freeTasks: {}, writingProgress: {}, wordProgress: {},
+  writing: { text: "", revision: 0, phase: "draft", feedback: "", self: "", taskId: null },
+  resultId: null, recapDate: null, discover: { status: "all", goal: "all", level: "all" },
+  wordFilter: "all", wordQuery: "", planDraft: null, planPreview: null, wordTask: null,
+}
+};
+
+window.DEMO_ACCOUNT_ID = (()=>{try{return localStorage.getItem('yxx-ui-v2-'+(window.DEMO_SURFACE||'mobile')+'-'+DEMO_CURRENT_PERSONA+'-last-account')||'';}catch{return '';}})();
+function demoStorageKey(includeScenario=true){return DBKEY+(window.DEMO_ACCOUNT_ID?'-account-'+encodeURIComponent(window.DEMO_ACCOUNT_ID):'')+(includeScenario&&window.DEMO_STRESS_ACTIVE?'-stress':'');}
+function demoFreshAccount(id=null){
+  for(const [target,initial] of [[S,DEMO_ACCOUNT_BASE.S],[LM,DEMO_ACCOUNT_BASE.LM],[PR,DEMO_ACCOUNT_BASE.PR],[SRS,DEMO_ACCOUNT_BASE.SRS],[SUP,DEMO_ACCOUNT_BASE.SUP],[PV,DEMO_ACCOUNT_BASE.PV],[PAY,DEMO_ACCOUNT_BASE.PAY]]){Object.keys(target).forEach(k=>delete target[k]);Object.assign(target,structuredClone(initial));}
+  Object.assign(S,{user:id,gate:'PENDING',birthDate:null,consents:{},goal:null,plan:false,today:[],mistakes:[],lastRead:null});SRSQ.splice(0);SH.q="";SH.hist=[];SUP.list=[];RF_ORDERS.splice(0);LM.records=[];LM.day='';LM.serial=0;
+}
+function demoSeedLearner(){
+  if(window.DEMO_ACCOUNT_ID){demoFreshAccount(window.DEMO_ACCOUNT_ID);return;}
+  if(DEMO_CURRENT_PERSONA==='new'){demoFreshAccount();return;}
+  S.plan=true;LM.plan.goal=DEMO_CURRENT_PERSONA==='remedial'?'workplace':'college';LM.plan.minutes=15;LM.day=lmDate();
+  LM.records=Array.from({length:6},(_,i)=>({id:'sample-record-'+i,date:lmAddDate(lmDate(),i-5),time:'20:15',kind:i%2?'practice':'reading',title:i%2?'日常语法 · 一般现在时':'阅读 · 图书馆的一天',right:i%2?2:1,total:i%2?3:2,estimated:8,answers:[],imported:true}));
+  if(DEMO_CURRENT_PERSONA==='remedial')S.mistakes.push(...Array.from({length:8},(_,i)=>({id:'sample-mistake-'+i,t:i%2?'She ___ to work every day.':'There ___ three chairs in the room.',why:'单复数与主谓一致需要巩固',kind:'sentence',st:'todo',skill:i%2?'third':'there',src:'拟真练习'})));
+}
+
+/* Dense data is a separate scenario. It never overwrites the normal learner account. */
+const DEMO_DENSE_FIXTURES={courseTracks:['校园交流','职场沟通','阅读方法','词汇积累','语法巩固','写作表达'],ticketTitles:['阅读章节进度显示问题','复习提醒时间调整','课程收藏同步说明','登录设备查询','通知偏好设置咨询','阅读练习答案反馈'],recordKinds:['practice','reading','words','listening','writing','repair']};
+let DEMO_SCENARIO_BACKUP=null;
+function demoScenarioBackup(){if(DEMO_SCENARIO_BACKUP)return;DEMO_SCENARIO_BACKUP=structuredClone({S,LM,SUP,SRS,PR,SRSQ,BOOKS,LCATALOG,CHAP,MSGS,GOODS,RF_ORDERS,UI_FACTS,last:window.DEMO_LAST_SNAPSHOT});}
+function demoScenarioRestore(){if(!DEMO_SCENARIO_BACKUP)return;const d=DEMO_SCENARIO_BACKUP;for(const [object,value] of [[S,d.S],[LM,d.LM],[SUP,d.SUP],[SRS,d.SRS],[PR,d.PR],[CHAP,d.CHAP]]){Object.keys(object).forEach(k=>delete object[k]);Object.assign(object,value);}for(const [array,value] of [[SRSQ,d.SRSQ],[BOOKS,d.BOOKS],[LCATALOG,d.LCATALOG],[MSGS,d.MSGS],[GOODS,d.GOODS],[RF_ORDERS,d.RF_ORDERS]])array.splice(0,array.length,...value);UI_FACTS=d.UI_FACTS;window.DEMO_LAST_SNAPSHOT=d.last;window.DEMO_STRESS_ACTIVE=false;DEMO_SCENARIO_BACKUP=null;}
+function demoEnterDense(){demoScenarioBackup();window.DEMO_STRESS_ACTIVE=true;
+  const baseBooks=structuredClone(BOOKS);for(let i=0;i<28;i++){const original=baseBooks[i%baseBooks.length],id='dense-book-'+i;BOOKS.push({...original,id,title:DEMO_DENSE_FIXTURES.courseTracks[i%6]+' · '+original.title+' · 第'+(Math.floor(i/6)+1)+'辑',intro:original.intro+' 专项内容按章节循序学习，完成练习后可查看知识点反馈与复习安排。'});LCATALOG.push({id,goal:i%2?'college':'workplace',level:original.tags.at(-1)||'B1'});CHAP[id]=structuredClone(CHAP[original.id]||['# 原创学习材料\n练习表达观点，先找到原文证据，再写下自己的理解。']);}
+  LM.records.push(...Array.from({length:42},(_,i)=>({id:'dense-record-'+i,date:lmAddDate(lmDate(),-(i%14)),time:String(8+i%12).padStart(2,'0')+':30',kind:DEMO_DENSE_FIXTURES.recordKinds[i%6],title:DEMO_DENSE_FIXTURES.courseTracks[i%6]+' · 日常表达与证据阅读练习 '+(i+1),right:2,total:3,estimated:8,answers:[{stem:'There ___ two books on the desk.',chosen:'are',correct:'are',ok:true,why:'two books 为复数，使用 are。'},{stem:'She ___ to school every day.',chosen:'goes',correct:'goes',ok:true,why:'主语 she 为第三人称单数。'},{stem:'Find the main idea.',chosen:'A detail',correct:'The main claim',ok:false,why:'细节支持中心观点，但不是中心观点本身。'}],imported:true})));
+  S.mistakes.push(...Array.from({length:18},(_,i)=>({id:'dense-mistake-'+i,t:i%2?'There ___ two books on the desk.':'She ___ to school every day.',why:'主谓一致专项：结合主语单复数判断动词形式，先补救，再按安排验证。',kind:'sentence',st:'todo',skill:i%2?'there':'third',src:'拟真压力样例',created:lmDate()})));
+  SUP.list.push(...Array.from({length:18},(_,i)=>({id:'TK-DENSE-'+i,cat:i%2?'功能':'内容',t:DEMO_DENSE_FIXTURES.ticketTitles[i%6]+' · '+(i+1),st:i%3?'处理中':'已回复',messages:[{who:'me',text:'请帮助确认这个学习页面的显示与使用方法。',time:'今天 09:00'}]})));
+  MSGS.push(...Array.from({length:18},(_,i)=>({id:'dense-msg-'+i,cat:'学习',t:'学习安排与进度提醒 '+(i+1),d:'按当前目标继续学习，完成后查看今日回顾与复习建议。',time:'今天',read:false,go:'#/today'})));
+  RF_ORDERS.push(...Array.from({length:18},(_,i)=>({...structuredClone(DEMO_FIXTURES.RF_ORDERS[i%DEMO_FIXTURES.RF_ORDERS.length]),id:'dense-order-'+i,t:'专项学习计划 · '+DEMO_DENSE_FIXTURES.courseTracks[i%6]})));
+}
+function demoEnterEmpty(route){demoScenarioBackup();window.DEMO_STRESS_ACTIVE=true;LM.emptyTodayDate=lmDate();if(['srs','reviewqueue'].includes(route)){SRS.phase='idle';SRS.order=[];SRS.redo=[];}
+  if(['home','today','recap','history','weekly','result','calendar','arrears','celebrate'].includes(route)){LM.records=[];S.today=[];LM.emptyTodayDate=lmDate();}
+  if(['home','mistakes','mastery'].includes(route))S.mistakes=[];
+  if(['home','srs','reviewqueue','words','wordbook'].includes(route))SRSQ.splice(0);if(route==='words'){LM.wordFilter='review';LM.wordQuery='';}
+  if(['courses','shelf'].includes(route)){BOOKS.splice(0);LCATALOG.splice(0);}
+  if(route==='support')SUP.list=[];
+  if(route==='msgs')MSGS.splice(0);
+  if(route==='commerce')GOODS.splice(0);
+  if(['refund','subs'].includes(route))RF_ORDERS.splice(0);
+  if(route==='collections'){LM.savedCourses=[];LM.notes=[];S.fav=[];}
+}
