@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>语学星 · 学员网页端静态 Demo</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="banner" class="demo-banner">静态演示 / 假数据 · 不连正式后端 · <a href="../">返回枢纽</a></div>
+<div id="app" class="app">
+  <aside id="sidebar" class="sidebar">
+    <div class="brand">
+      <span class="logo">✦</span>
+      <div>
+        <b>语学星</b>
+        <small>学员网页 · Demo</small>
+      </div>
+    </div>
+    <nav id="nav" class="nav"></nav>
+    <div class="side-foot">
+      <span class="pill">假数据</span>
+      <button class="linkish" onclick="nav('#/lab')">演示工具</button>
+    </div>
+  </aside>
+  <div class="main">
+    <header class="top">
+      <div>
+        <h1 id="title">首页</h1>
+        <p id="crumb" class="crumb">静态桌面布局</p>
+      </div>
+      <div class="top-actions">
+        <button class="ghost" onclick="nav('#/search')">搜索</button>
+        <button class="ghost" onclick="nav('#/msgs')">消息</button>
+        <button class="ghost" id="userChip" onclick="nav('#/me')">演示账号</button>
+      </div>
+    </header>
+    <main id="view" class="view"></main>
+  </div>
+</div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<script src="app.js"></script>
+</body>
+</html>
