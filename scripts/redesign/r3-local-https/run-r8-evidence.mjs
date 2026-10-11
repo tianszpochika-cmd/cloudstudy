@@ -711,6 +711,7 @@ async function assertClosureLearner(page, label, mobile) {
   } else {
     await page.goto('http://127.0.0.1:18180/support', { waitUntil: 'domcontentloaded' });
     await page.getByText('尚未批准').waitFor({ timeout: 20000 });
+    await page.getByText('支持编号').waitFor({ timeout: 20000 });
     const support = await page.locator('.it7-closure').innerText();
     await page.goto('http://127.0.0.1:18180/settings/privacy', { waitUntil: 'domcontentloaded' });
     await page.getByText('受理不等于数据已经删除').waitFor({ timeout: 20000 });
@@ -762,7 +763,7 @@ async function walkAdmin(browser, accounts) {
     await spaGo(page, '/governance');
     await page.getByRole('heading', { name: '收口只读' }).waitFor({ timeout: 20000 });
     await page.getByRole('button', { name: '按来源建档' }).click();
-    await page.getByText('处置写链没有打开').waitFor({ timeout: 20000 });
+    await page.getByText('处置写链没有打开').first().waitFor({ timeout: 20000 });
     const governance = await page.locator('.it7-closure').innerText();
     const newCase = await page.getByRole('button', { name: '新建案件' }).count();
     const triage = await page.getByRole('button', { name: 'TRIAGE', exact: true }).count();
@@ -1287,8 +1288,8 @@ async function placementFlow(page, calls, label) {
     const body = document.body?.innerText || '';
     return body.includes('开始定级') || Boolean(document.querySelector('.option')) || body.includes('报告已生成');
   }, null, { timeout: 25000 });
-  const begin = page.getByRole('button', { name: '开始', exact: true });
-  if (await begin.count()) await begin.click();
+  const begin = page.getByText('开始', { exact: true });
+  if (await begin.count()) await begin.first().click();
   await answerOne(page);
   await page.getByText('服务端已接收 1 题').waitFor({ timeout: 20000 });
   await page.reload({ waitUntil: 'domcontentloaded' });
