@@ -73,19 +73,20 @@ F-IT6-01：content-service 用 Flyway `V30` 表 `it6_release_studio`。简审短
 
 | 站 | independentReviewer | 日期 | commit | evidence | verdict |
 |---|---|---|---|---|---|
-| IT-1 | Grok Bot 测试项目练手 | _pending rv1_ | | | |
-| IT-2 | Grok Bot 测试项目练手 | _pending rv1_ | | | |
-| IT-3 | Grok Bot 测试项目练手 | _pending rv1_ | | | |
-| IT-4 | Grok Bot 测试项目练手 | _pending rv1_ | | | |
-| IT-5 | Grok Bot 测试项目练手 | _pending rv1_ | | | |
-| IT-6 | Grok Bot 测试项目练手 | _pending rv1_ | | | |
-| IT-7 | Grok Bot 测试项目练手 | _pending rv1_ | | | |
-| FULL-CHAIN | Grok Bot 测试项目练手 | _pending rv1_ | | | |
+| IT-1 | Grok Bot 测试项目练手 | _pending rv2_ | | rv1 `a749da72` 原始调用记录已核：未成年 201→REJECTED→/forbidden；撤回 WITHDRAWN 200→targets 403。steps.json 4 条 FAIL（断言脚本错），须 rv2 用改后脚本重采全 PASS | |
+| IT-2 | Grok Bot 测试项目练手 | 2026-10-11 | `f7905ab8` | three-schema `2f1d24b6`；full-chain-r8 `627fa9bf`；rv1 后 node 定向 28/28 | SIGNED_PASS |
+| IT-3 | Grok Bot 测试项目练手 | 2026-10-11 | `f7905ab8` | browser `d2012bf6`；full-chain-r8 `627fa9bf` | SIGNED_PASS |
+| IT-4 | Grok Bot 测试项目练手 | 2026-10-11 | `f7905ab8` | browser `c460b646`；full-chain-r8 `627fa9bf` | SIGNED_PASS |
+| IT-5 | Grok Bot 测试项目练手 | 2026-10-11 | `f7905ab8` | browser `1f244c3b`；full-chain-r8 `627fa9bf` | SIGNED_PASS（residual: RES-ARTWORK） |
+| IT-6 | Grok Bot 测试项目练手 | _pending rv2_ | | rv1 持久化 + 重启指纹 PASS；单测 15+3 复跑绿。`it6-full-browser` 为 SKIP，须 rv2 重跑 IT-6 全量浏览器 | |
+| IT-7 | Grok Bot 测试项目练手 | _pending rv2_ | | 须在 `f7905ab8` 后的新 HEAD 重跑全链；顶层 node 361/360，`support-real-gateway.e2e` 未起 admin-ops 失败，须全绿 | |
+| FULL-CHAIN | Grok Bot 测试项目练手 | _pending rv2_ | | 须在合并 rv1 后重跑 IT-1…IT-7 全链冒烟 | |
 
 签收填写规则：`verdict=SIGNED_PASS` 仅当该站发现已关、关键证据 PASS、且未改任何 `lunaStamp`。可选附 `residual: RES-*`。
 
 ## 5. 调度
 
-- 修复轮：`rv1`，screen `cs-rv1`，分支 `grok/cs-rv1-20261011`（自 `dev-redesign`）。
+- 修复轮：`rv1`，screen `cs-rv1`，分支 `grok/cs-rv1-20261011`（自 `dev-redesign`）。2026-10-11 独立审查复核：代码符合三项要求，定向 node 28/28、`ContentReleaseStudio*` 18/18、`IamAuthCorsConfigurationTest` 5/5 复跑绿，已合并为 `f7905ab8`；签收 IT-2…IT-5。
+- 修复轮：`rv2`，screen `cs-rv2`，分支 `grok/cs-rv2-20261011`。待关：RV2-01 IT-1 用改后脚本重采未成年 ×4 与撤回 ×2 全 PASS；RV2-02 IT-6 全量浏览器（不得 SKIP）；RV2-03 顶层 node 起 admin-ops 后全绿；RV2-04 新 HEAD 全链冒烟 PASS。
 - 合并后由调度方按本文件第 4 节签字，必要时开 `rv2`。
 - Luna 字段始终外部待办。
