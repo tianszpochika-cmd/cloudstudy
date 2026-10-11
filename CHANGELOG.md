@@ -1,5 +1,12 @@
 # Changelog
 
+- [RV2-20261011] **IT-1、IT-6 全量浏览器、顶层 node 和 IT-1…IT-7 全链已按首跑 PASS 重采。**
+  - IT-1 后缀 `ea1aa3c8`：未成年年 2016 经表单提交，注册直达 IAM HTTPS 201，Gateway 成人门 200 REJECTED，进入无权限页。撤回后最后一次 PUT 是 ADULT_LEARNING WITHDRAWN 200，随后 targets 403 `CONSENT_REQUIRED`。提交 `404f6c6f`。
+  - IT-6 全量浏览器 45 步 PASS，没有 SKIP。重启 content-service 后指纹相同，1803 字符，库行 `70 34410`。提交 `3c33a9ed`。
+  - 顶层 node 在 admin-ops 监听时为 361 项、361 通过、0 失败。提交 `6f8670cb`。
+  - 全链与 IT-7 收口重启指纹 PASS。链内 node 同样 361/361/0。提交 `41acb289`。workflow 隔离库允许 `rv2_` 前缀，提交 `87e2c1cb`。
+  - `mvn -B -ntp -f pom.xml test` 于 2026-10-11T11:35:14+08 BUILD SUCCESS，1680 项、0 失败、1 跳过。跳过的是没有 MinIO 凭据的只读对象测试。隔离库已删。共享 schema 表数前后一致。`lunaStamp` 仍是 false。第 4 节签收栏未填。证据目录 `evidence/redesign/2026-10-11/rv2-ea1aa3c8`。
+
 - [RV1-20261011] **成人门可提交未成年年份，设置页可撤回学习同意，发布台重启后指纹不变。**
   - F-IT1-01：Web 与 H5 的出生年接受 1900 到当年。服务端仍判定未成年为 REJECTED，并进入无权限页。提交 `65be71d1`。
   - F-IT1-02：设置·隐私有「撤回学习同意」。确认后把 `ADULT_LEARNING` 标成 WITHDRAWN，学习目标口返回 403，人留在设置页。提交 `6117e6c1`。
