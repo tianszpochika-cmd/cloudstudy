@@ -40,6 +40,11 @@ onShow(async () => {
   if (await ensureMobilePageAccess('/pages/profile/profile')) await refreshAccount()
 })
 
+
+// After a successful logout leave the account page for the login entry.
+async function logoutAndLeave(): Promise<void> {
+  if (await session.logout()) openUniPage('/pages/login/login')
+}
 </script>
 
 <template>
@@ -61,7 +66,7 @@ onShow(async () => {
       <button tabindex="0" role="button" class="yx-button yx-button--secondary" type="button" @click="openUniPage('/pages/onboarding/onboarding')">修改学习目标</button>
     </view>
     <view class="yx-card"><text class="card-title">{{ mobileT('profileLinks') }}</text><button tabindex="0" role="button" v-for="page in servicePages" :key="page" class="mobile-menu-row" @click="openUniPage(`/pages/${page}/${page}`)"><text>{{ mobileT(`pages.${page}.short`) }}</text><text aria-hidden="true">›</text></button></view>
-    <button tabindex="0" role="button" v-if="session.isAuthenticated" class="yx-button" type="button" @click="session.logout">{{ authT('session.logout') }}</button>
+    <button tabindex="0" role="button" v-if="session.isAuthenticated" class="yx-button" type="button" @click="logoutAndLeave">{{ authT('session.logout') }}</button>
   </view>
 </template>
 

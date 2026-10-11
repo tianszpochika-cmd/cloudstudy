@@ -29,7 +29,7 @@ test('mobile adapter retains the legacy owner ratio and converts it once in the 
   const placement = await api.readPlacement('en-US', 'legacy-1')
   assert.equal(placement.report?.score, 0.5)
   const page = fs.readFileSync(path.join(appRoot, 'src/pages/assessment/assessment.vue'), 'utf8')
-  assert.match(page, /Math\.round\(report\.value\.score \* 100\)/)
+  assert.match(page, /placementScorePercent\(report\.value\?\.score\)/)
 })
 
 test('mobile adapter never assigns a score or measured level to a skipped baseline', async () => {

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { placementScorePercent } from '../../domain/placement-score'
 import MobilePageHeader from '../../components/MobilePageHeader.vue'
 import { useMobileExperience } from '../../platform/experience'
 const { experienceStyle, experienceMotion } = useMobileExperience()
@@ -24,7 +25,7 @@ const question = computed(() => store.placement.currentQuestion)
 const report = computed(() => store.placement.report)
 const isSkipped = computed(() => report.value?.resultKind === 'SKIPPED' || store.placement.status === 'SKIPPED')
 const heldCheckpoint = computed(() => Boolean(store.placement.sessionId?.startsWith('asess_') && !question.value && !report.value && store.placementStatus !== 'loading' && store.placementStatus !== 'idle' && store.placementStatus !== 'offline' && store.placementStatus !== 'error' && store.placementStatus !== 'forbidden'))
-const scorePercent = computed(() => report.value?.score === null || report.value?.score === undefined ? null : Math.round(report.value.score * 100))
+const scorePercent = computed(() => placementScorePercent(report.value?.score))
 const countedReport = computed(() => {
   const full = report.value?.fullCount
   const total = report.value?.itemCount
