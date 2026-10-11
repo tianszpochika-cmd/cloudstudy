@@ -107,4 +107,19 @@ uni-tabbar .uni-tabbar { background: var(--yx-surface-card) !important; }
 
 .mobile-success-note { display: block; padding: 14px; margin-bottom: 18px; border: 1px solid var(--yx-success-border); border-radius: 14px; background: var(--yx-success-soft); color: var(--yx-success); font-size: 13px; line-height: 1.7; }
 
+/* uni-h5 measures env(safe-area-inset-*) with a hidden body probe.
+   The host is 0×0 and its scroll children are 400px / 250% wide, so
+   getBoundingClientRect sticks out even though painting is clipped.
+   Give the host the scrollport size and keep those children inside it.
+   Their height stays tall so the scroll notification still fires. */
+body > div[style*="z-index: -1"][style*="visibility: hidden"] {
+  width: 100px !important;
+  height: 200px !important;
+  max-width: 100vw !important;
+}
+body > div[style*="z-index: -1"][style*="visibility: hidden"] > div > div {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
 .mobile-locale-picker { min-height: 44px; display: flex; align-items: center; padding: 0 12px; border: 1px solid var(--yx-border); border-radius: 10px; color: var(--yx-brand); }
