@@ -75,6 +75,10 @@ assessment:
       # Empty fails closed. Do not put a learner access token here.
       content-base-url: ${ASSESSMENT_PLACEMENT_SCORE_CONTENT_BASE_URL:http://127.0.0.1:18089}
       service-token: ${ASSESSMENT_PLACEMENT_SCORE_SERVICE_TOKEN:}
+      # Preferred on servers: exchange IAM client credentials for a short-lived service token.
+      iam-base-url: ${ASSESSMENT_PLACEMENT_SCORE_IAM_BASE_URL:}
+      client-id: ${ASSESSMENT_PLACEMENT_SCORE_CLIENT_ID:assessment-service}
+      client-secret: ${ASSESSMENT_PLACEMENT_SCORE_CLIENT_SECRET:}
 
 security:
   resource-server:

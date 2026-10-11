@@ -136,7 +136,24 @@ public class AssessmentPersistenceConfiguration {
             String contentBaseUrl,
             @org.springframework.beans.factory.annotation.Value(
                     "${assessment.placement.score.service-token:}")
-            String serviceToken) {
+            String serviceToken,
+            @org.springframework.beans.factory.annotation.Value(
+                    "${assessment.placement.score.iam-base-url:}")
+            String iamBaseUrl,
+            @org.springframework.beans.factory.annotation.Value(
+                    "${assessment.placement.score.client-id:assessment-service}")
+            String clientId,
+            @org.springframework.beans.factory.annotation.Value(
+                    "${assessment.placement.score.client-secret:}")
+            String clientSecret) {
+        if ((serviceToken == null || serviceToken.isBlank())
+                && iamBaseUrl != null && !iamBaseUrl.isBlank()
+                && clientSecret != null && !clientSecret.isBlank()) {
+            return new HttpPlacementRuleScorePort(objectMapper, contentBaseUrl,
+                    new com.englishflow.assessment.adapter.content.IamServiceTokenSupplier(
+                            objectMapper, iamBaseUrl, clientId, clientSecret),
+                    java.time.Duration.ofSeconds(5));
+        }
         return new HttpPlacementRuleScorePort(objectMapper, contentBaseUrl, serviceToken,
                 java.time.Duration.ofSeconds(5));
     }

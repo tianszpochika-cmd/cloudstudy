@@ -13,6 +13,7 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Map;
+import java.util.function.Supplier;
 
 /**
  * Scores one accepted placement choice by asking content-service.
@@ -23,25 +24,37 @@ public final class HttpPlacementRuleScorePort implements PlacementRuleScorePort 
     private final ObjectMapper mapper;
     private final HttpClient http;
     private final URI scoreUri;
-    private final String serviceToken;
+    private final Supplier<String> serviceToken;
     private final Duration timeout;
 
     public HttpPlacementRuleScorePort(ObjectMapper mapper, String contentBaseUrl, String serviceToken,
                                       Duration timeout) {
+        this(mapper, contentBaseUrl, staticToken(serviceToken), timeout);
+    }
+
+    /** Uses a token source (e.g. IAM client-credential exchange) instead of a fixed token. */
+    public HttpPlacementRuleScorePort(ObjectMapper mapper, String contentBaseUrl, Supplier<String> serviceToken,
+                                      Duration timeout) {
         this.mapper = mapper;
         this.http = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(2)).build();
         this.scoreUri = URI.create(normalize(contentBaseUrl) + "/internal/v1/content/placement-bank/score");
-        if (serviceToken != null && (serviceToken.contains("\r") || serviceToken.contains("\n"))) {
-            throw new IllegalArgumentException("placement score service token is invalid");
-        }
-        this.serviceToken = serviceToken == null ? "" : serviceToken;
+        this.serviceToken = serviceToken == null ? () -> "" : serviceToken;
         this.timeout = timeout == null || timeout.isNegative() || timeout.isZero()
                 ? Duration.ofSeconds(5) : timeout;
     }
 
+    private static Supplier<String> staticToken(String serviceToken) {
+        if (serviceToken != null && (serviceToken.contains("\r") || serviceToken.contains("\n"))) {
+            throw new IllegalArgumentException("placement score service token is invalid");
+        }
+        String fixed = serviceToken == null ? "" : serviceToken;
+        return () -> fixed;
+    }
+
     @Override
     public RuleScore score(long itemId, String selectedOptionId) {
-        if (serviceToken.isBlank()) {
+        String serviceToken = this.serviceToken.get();
+        if (serviceToken == null || serviceToken.isBlank()) {
             throw unavailable("placement rule score requires a service token");
         }
         if (itemId < 1 || selectedOptionId == null) {
@@ -67,6 +80,10 @@ public final class HttpPlacementRuleScorePort implements PlacementRuleScorePort 
             throw unavailable("placement rule score is unreachable");
         }
         if (response.statusCode() != 200) {
+            if ((response.statusCode() == 401 || response.statusCode() == 403)
+                    && this.serviceToken instanceof IamServiceTokenSupplier iam) {
+                iam.invalidate();
+            }
             throw unavailable("placement rule score answered " + response.statusCode());
         }
         return parse(itemId, response.body());

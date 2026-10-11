@@ -102,6 +102,7 @@ services:
     environment:
       IAM_SERVICE_CLIENT_GATEWAY_SECRET_DIGEST: ${IAM_SERVICE_CLIENT_GATEWAY_SECRET_DIGEST:?set in server env file}
       IAM_SERVICE_CLIENT_LEARNER_SECRET_DIGEST: ${IAM_SERVICE_CLIENT_LEARNER_SECRET_DIGEST:?set in server env file}
+      IAM_SERVICE_CLIENT_ASSESSMENT_SECRET_DIGEST: ${IAM_SERVICE_CLIENT_ASSESSMENT_SECRET_DIGEST:?set in server env file}
 
   audit-service:
     <<: *owner-service
@@ -213,6 +214,10 @@ services:
       ASSESSMENT_PLACEMENT_BANK_CONTENT_BASE_URL: http://content-service:18089
       ASSESSMENT_PLACEMENT_BANK_LEARNER_BASE_URL: http://learner-service:18088
       ASSESSMENT_PLACEMENT_SCORE_CONTENT_BASE_URL: http://content-service:18089
+      # Placement scoring uses an IAM-issued service token (client credentials), refreshed before expiry.
+      ASSESSMENT_PLACEMENT_SCORE_IAM_BASE_URL: http://iam-service:18087
+      ASSESSMENT_PLACEMENT_SCORE_CLIENT_ID: assessment-service
+      ASSESSMENT_PLACEMENT_SCORE_CLIENT_SECRET: ${ASSESSMENT_PLACEMENT_SCORE_CLIENT_SECRET:?set in server env file}
       ASSESSMENT_DB_USERNAME: svc_assessment
       ASSESSMENT_DB_PASSWORD: ${ASSESSMENT_DB_PASSWORD:?set in server env file}
 

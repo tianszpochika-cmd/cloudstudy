@@ -131,6 +131,11 @@ iam:
       permissions:
         - audit.ingest
       token-ttl: ${IAM_SERVICE_CLIENT_GATEWAY_TOKEN_TTL:5m}
+    assessment-service:
+      secret-digest: ${IAM_SERVICE_CLIENT_ASSESSMENT_SECRET_DIGEST:}
+      permissions:
+        - content:answer-rules:read
+      token-ttl: ${IAM_SERVICE_CLIENT_ASSESSMENT_TOKEN_TTL:5m}
     learner-service:
       secret-digest: ${IAM_SERVICE_CLIENT_LEARNER_SECRET_DIGEST:}
       permissions:
