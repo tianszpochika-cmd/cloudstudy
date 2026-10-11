@@ -1,5 +1,11 @@
 # Changelog
 
+- [R8-20261011] **定级三库真签、收口台落库，以及隔离库上的全量 Maven 都已跑过。**
+  - IT-2 证据目录 `evidence/redesign/2026-10-11/it2-three-schema-r8-2f1d24b6`。learner、content、assessment 三个 owner schema，IAM 用 RS256 签发。Web 与 H5、1280 与 390。公开重测 201，旧写口 404。`summary` 是 PASS。`accepted`、`it2Outbound`、`lunaStamp` 仍是 false。R1-029 的 26 PASS / 3 NOT_RUN 没有改写。
+  - 收口台写入 admin-ops 既有 Flyway 的 `it7_closure_desk`。重启后只读看板，指纹不变，没有重放收口命令。证据目录 `evidence/redesign/2026-10-11/it7-persist-r8-8c4d60cc` 与 `evidence/redesign/2026-10-11/it7-persist-r8-627fa9bf`。处置写关闭时，治理页上的旧风险处置按钮不再可点。
+  - 全链证据目录 `evidence/redesign/2026-10-11/full-chain-r8-627fa9bf`。同一套包重走 IT-1…IT-7，Web 与 H5，1280 与 390。node 套件 354 项全部通过。`summary` 是 PASS。`accepted`、`fullChainOutbound`、`lunaStamp` 仍是 false。
+  - `mvn -B -ntp -f pom.xml test` 于 2026-10-11T09:37:46+08 BUILD SUCCESS。数据库测试指向 `r8_` 隔离库，V13 使用 `iam_v13_test_r8round`，跑完已删。learning-service 199 项 0 失败。assessment-service 153 项 0 失败。admin-ops 收口 11 项 0 失败。learner-web、admin-web、mobile 类型检查通过。契约 471 个操作。没有在共享库 `iam_service` 上写测试。
+
 - [IT7-R7-20261011] **收口台只读挂在现有运维命令和工单投影上，处置写保持冻结。**
   - 锁定、建档、分诊、隔离、升级、关闭、举报、导出、删除回执、音频保留、补偿、Outbox、发布门、回滚和审计都走现有入口。工单正文仍未批准。学习者看不到内部审计。`lunaStamp` 仍为 false。
   - 收口台在 admin-ops 进程内存里，重启后要重放。治理页上的旧风险处置按钮还在，收口区拒绝处置写。

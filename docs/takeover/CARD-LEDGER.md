@@ -15,12 +15,12 @@
 | 已定义卡 | 115 | R1-001～115。R1-070～090 是 IT-6，R1-091～115 是 IT-7 |
 | 卡范围独立验收（ACCEPTED_CARD_SCOPE） | 6 | R1-002/003/004/005/006/008 |
 | 源码交付、未独立终审 | 2 | R1-001（SOURCE_SCOPED_PASS）、R1-007 |
-| 已实现/回放、待站级签收 | 107 | R1-009～115。R1-058/059 的 r5 重放未签。R1-068/069 与 R1-089/090 的 r6 重放未签。R1-114/115 的 r7 重放未签 |
+| 已实现/回放、待站级签收 | 107 | R1-009～115。R1-058/059 的 r5 重放未签。R1-068/069 与 R1-089/090 的 r6 重放未签。R1-114/115 的 r7 重放未签。r8 全链 `627fa9bf` 也未签 |
 | 已定义、浏览器站未跑 | 0 | R1-068、R1-069 与 R1-089、R1-090 已于 r6 跑过。R1-114、R1-115 已于 r7 跑过，见第 3 节 |
 | 已跑、站级未通过 | 0 | R1-058/059 的较早后缀 `614f3d8b` 仍是补救 FAIL。其后 `c460b646` 未签字 PASS，不改写旧证据。IT-6 较早失败后缀保留，通过后缀是 `ad30b8bc`。IT-7 较早后缀 `ffbedda0` 保留，通过后缀是 `3ef210cd` |
 | 已定义、未实现 | 0 | R1-091～115 已实现，并在后缀 `3ef210cd` 跑过。lunaStamp=false |
 | 未定义（待按站拆卡） | 无 | IT-7 已拆。不按剩余张数补卡。GAP-WALL-114 仍 OPEN |
-| 跳过 | 6 | 原五行保留。R1-068/069 已追加实际结论，原行不删。r7 追加全量 Maven 未跑，不是某张卡跳过 |
+| 跳过 | 6 | 原五行保留。R1-068/069 已追加实际结论，原行不删。r7 的「全量 Maven 未跑」原行不删。r8 追加实际 Maven 结果，不是某张卡跳过 |
 
 ## 2. 已定义卡
 
@@ -54,7 +54,7 @@
 | R1-026 | IT-2 | B3 种子 5 | 实现 | — |
 | R1-027 | IT-2 | 断网续答 | 实现/回放 | 重进续题号 |
 | R1-028 | IT-2 | 定级交互验收 | it2-score-browser 覆盖计分与重测幕；整站幕幕对稿仍未签 | 幕幕对稿 |
-| R1-029 | IT-2 | L2 干净库重放 | 原件 26 PASS / 3 NOT_RUN 不回写；其后公开重测 201 与浏览器计分已有证据，仍未出站 | 全绿归档 |
+| R1-029 | IT-2 | L2 干净库重放 | 原件 26 PASS / 3 NOT_RUN 不回写；其后公开重测 201 与浏览器计分已有证据，仍未出站。r8 三库真签后缀 `2f1d24b6`，`summary` PASS，未签 | 全绿归档 |
 | R1-030 | IT-3 | ensure 正式报告 pin 与计划 | 已实现，待站级签收 | 正式报告后读到 planId |
 | R1-031 | IT-3 | ensure 幂等重放 | 已实现，待站级签收 | 同键重放、异体 409 |
 | R1-032 | IT-3 | 首页计划横幅 | 已实现，待站级签收 | Web/H5 两视口横幅 |
@@ -124,7 +124,7 @@
 | R1-096 | IT-7 | BC-090 关闭不宣称全链 | 已实现，待签收。提交 `aac813bd`。关闭 409，closed 为 false。lunaStamp=false | closed 为 false |
 | R1-097 | IT-7 | BC-091 治理页风险区 | 已实现，待签收。提交 `aac813bd`、`cb37e2de`。学习者读案件 403；空列表和无权限文案分开。lunaStamp=false | 无案件和无权限分开 |
 | R1-098 | IT-7 | BC-092 无独立 /risk | 已实现，待签收。提交 `cb37e2de`。`/risk` 回到 `/governance`。lunaStamp=false | 旧入口回到治理页 |
-| R1-099 | IT-7 | BC-093 举报只读队列 | 已实现，待签收。提交 `aac813bd`。举报只读。收口区没有处置按钮。旧风险处置按钮仍留在治理页。lunaStamp=false | 脱敏，无处置按钮，匿名 401 |
+| R1-099 | IT-7 | BC-093 举报只读队列 | 已实现，待签收。提交 `aac813bd`。举报只读。收口区没有处置按钮。r7 时旧风险处置按钮仍留在治理页。r8 在处置写链关闭时隐藏这些按钮，并显示与收口区同一句拒绝。lunaStamp=false | 脱敏，无处置按钮，匿名 401 |
 | R1-100 | IT-7 | BC-185 工单提交边界 | 已实现，待签收。提交 `aac813bd`。提交 409 `DEC06_NOT_APPROVED`，原文不回显。lunaStamp=false | 不开放可被理解的假闭环 |
 | R1-101 | IT-7 | BC-186 工单列表 | 已实现，待签收。提交 `aac813bd`、`105e3354`。只见自己的；信息不足；同一次列表带回支持编号。lunaStamp=false | 只见自己的；hash 标信息不足 |
 | R1-102 | IT-7 | BC-188 本人导出 | 已实现，待签收。提交 `aac813bd`。未确认 403；排队且确认后 200，allComplete 为 false；完成态 409。lunaStamp=false | 状态分开，不显示全部完成 |
@@ -140,19 +140,19 @@
 | R1-112 | IT-7 | BC-198 命名回滚 | 已实现，待签收。提交 `aac813bd`。anySchemaRollback 为 false。lunaStamp=false | 不承诺任意库变更可回滚 |
 | R1-113 | IT-7 | BC-208 审计列表 | 已实现，待签收。提交 `aac813bd`、`cb37e2de`。学习者读审计 403；即使有 audit.export，导出仍是 409。lunaStamp=false | 学习者看不到内部审计 |
 | R1-114 | IT-7 | 交互验收 | 已跑，待签收。证据 `af07def7`，后缀 `3ef210cd`：Web 与 H5、1280 与 390，`summary` PASS。较早后缀 `ffbedda0` 保留。lunaStamp=false | Web/H5，1280 与 390 |
-| R1-115 | IT-7 | 干净库重放与全链冒烟 | 已跑，待签收。后缀 `3ef210cd`：重启后指纹相同，IT-1…IT-7 冒烟 PASS。六个 `r7_it7_` 库已删。lunaStamp=false | 删库重建后走收口链 |
+| R1-115 | IT-7 | 干净库重放与全链冒烟 | 已跑，待签收。后缀 `3ef210cd`：重启后指纹相同，IT-1…IT-7 冒烟 PASS。六个 `r7_it7_` 库已删。r8 收口台落到 `it7_closure_desk`。后缀 `8c4d60cc` 与 `627fa9bf` 重启后只读，指纹不变，没有重放收口命令。全链 `627fa9bf` 在 H5 会话恢复修复之后重走 IT-1…IT-7。lunaStamp=false | 删库重建后走收口链 |
 
 ## 3. 站级状态
 
 | 站 | 状态 | 出站门 |
 |---|---|---|
 | IT-1 | Luna REJECT/FAIL（基线 69bea68b）；复检 ce0aa296 PASS 未签；it1-named-gates / R1-014 PASS，自审 PASS_WITH_GAPS 未签。**待 Luna 签收（外部依赖）**，不再当作本轮开工阻塞 | 独立签收。具名门浏览器已有，仍缺 Luna。不改 `lunaStamp`，不改 station-acceptance 原件 |
-| IT-2 | BLOCKED；it2-station PASS_WITH_NOT_RUN；it2-score-browser 10 题 PASS 未签。**待 Luna 签收（外部依赖）**。三个独立 owner schema 的 IAM 真签出站仍未完成：本轮 `services:run` 只有 HTTP IAM，没有在不写钥匙串的前提下换上 r1 TLS | 三个独立 owner schema 的 IAM 真签出站。原 3 个 NOT_RUN 不回写 |
+| IT-2 | BLOCKED；it2-station PASS_WITH_NOT_RUN；it2-score-browser 10 题 PASS 未签。**待 Luna 签收（外部依赖）**。此前 `services:run` 只有 HTTP IAM。r8 已用 HTTPS IAM、learner / content / assessment 三个独立 owner schema 和 IAM RS256 重放，后缀 `2f1d24b6`，`summary` PASS，Web 与 H5、1280 与 390。四个库已删。accepted / it2Outbound / lunaStamp 仍是 false。R1-029 的 3 个 NOT_RUN 不回写。这不是出站签收 | 三个独立 owner schema 的 IAM 真签出站。证据后缀 `2f1d24b6`，未签。原 3 个 NOT_RUN 不回写 |
 | IT-3 计划今日 | R1-030…042 浏览器走查 PASS，后缀 d2012bf6。自审 PASS_WITH_GAPS。lunaStamp=false | BC-023…032/199 |
 | IT-4 练错复 | R1-043…057 已实现并单测。浏览器后缀 `614f3d8b`：建单、作答、回执 PASS，补救 FAIL，`summary` FAIL，目录保留。其后后缀 `c460b646`：补救到今日复习 PASS，`summary` PASS，六个 `r5_it4_` 库已删。accepted / it4Outbound / lunaStamp 仍是 false。不是出站签收 | BC-033…062/203 |
 | IT-5 报告 | R1-060…069 已实现。浏览器后缀 `1f244c3b`：`summary` PASS，链 PASS，四个空库同一摘要，六个 `r6_it5_` 库已删。较早后缀 `6cb7e018` 分享打开 FAIL，目录保留。accepted / it5Outbound / lunaStamp 仍是 false。不是出站签收 | BC-063…070 |
 | IT-6 双审 | R1-070…090 已实现。浏览器后缀 `ad30b8bc`：`summary` PASS，链 PASS。六个 `r6_it6_` 库已删。较早后缀 `cd0b278e`、`7f6d6931`、`072a1ca2`、`944d414b` 保留。accepted / it6Outbound / lunaStamp 仍是 false。不是出站签收 | BC-071…084/200/204…207 |
-| IT-7 收口 | R1-091…115 已实现。浏览器后缀 `3ef210cd`：`summary` PASS，链 PASS，Web 与 H5、1280 与 390。六个 `r7_it7_` 库已删。较早后缀 `ffbedda0` 保留。accepted / it7Outbound / lunaStamp 仍是 false。收口台在进程内存里。不是出站签收 | BC-085…093/185/186/188…192/193…198/208 |
+| IT-7 收口 | R1-091…115 已实现。浏览器后缀 `3ef210cd`：`summary` PASS，链 PASS，Web 与 H5、1280 与 390。六个 `r7_it7_` 库已删。较早后缀 `ffbedda0` 保留。r7 当时收口台在进程内存里。r8 落到 Flyway 表 `it7_closure_desk`。后缀 `8c4d60cc` 与 `627fa9bf` 重启后只读，指纹不变。全链 `627fa9bf` 覆盖 IT-1…IT-7，Web 与 H5，1280 与 390。处置写关闭时旧风险按钮不再可点。accepted / it7Outbound / lunaStamp 仍是 false。不是出站签收 | BC-085…093/185/186/188…192/193…198/208 |
 
 ## 4. 跳过记录
 
@@ -165,6 +165,7 @@
 | R1-068 / R1-069 | 报告交互验收和干净库浏览器重放要在含报告期与分享路由的服务包上，用 HTTPS IAM 和 `r5_` 干净库走两端。本轮证据栈 JAR 打在 IT-5 代码之前（2026-10-11T04:22:22+08:00）。node 回归时 18070 与 18183 被这套旧 Gateway 和 H5 占用，回归结束后没有再打包并拉起新的证据栈。领域单测不能代替浏览器站。 | `LearningPeriodReportTest.emptyLibraryReplaysTheSameDigest`。浏览器站没有新目录。 | 2026-10-11 |
 | R1-068 / R1-069 结论 | 已用含报告期与分享路由的包重跑。分享打开失败来自 MySQL 无时区时间戳，H5 周报按钮实际是 tab。修复后后缀 `1f244c3b` 的 `summary` 为 PASS。H5 390 有无类名元素多出 10px，文档横向溢出为 0。外层报告仍是历史未核验的 PARTIAL。`b10_assessment_session` 计数是 0，定级卡来自页面读回。`lunaStamp` 仍是 false。这不是签收。 | `evidence/redesign/2026-10-11/it5-browser-r6-1f244c3b/summary.json`。失败原件 `evidence/redesign/2026-10-11/it5-browser-r6-6cb7e018/` 不改写。 | 2026-10-11 |
 | r7 全量 Maven | 未跑 `mvn -B -ntp -f pom.xml test`。该命令会连接共享库 `iam_service`。本轮只跑 admin-ops 的 `It7ClosureStudioTest` 与 `SupportControllerFailClosedTest`（10 项、0 失败），learning-service 199 项、0 失败、3 跳过，assessment-service 153 项、0 失败、2 跳过。没有在共享 schema 上写集成测试。R1-091…115 没有因此跳过。 | 2026-10-11T07:44:17+08 的 admin-ops 单测 BUILD SUCCESS。本轮 learning-service 199 项、0 失败、3 跳过，assessment-service 153 项、0 失败、2 跳过。node 套件在 `evidence/redesign/2026-10-11/it7-browser-r7-3ef210cd/summary.json`。 | 2026-10-11 |
+| r8 全量 Maven | 已跑 `mvn -B -ntp -f pom.xml test`。需要数据库的测试指向隔离库：IAM Spring 用 `r8_mvn_iam`，V13 用 `iam_v13_test_r8round`，workflow JDBC 用 `r8_mvn_workflow`，learning relay 用 `r8_mvn_learning`。Flyway 与租户测试自己建库并在 finally 删除。生产默认 schema 仍是各服务 owner。2026-10-11T09:37:46+08 BUILD SUCCESS，总时间 02:22。learning-service 199 项、0 失败、0 跳过。assessment-service 153 项、0 失败、0 跳过。admin-ops 收口 11 项、0 失败（工作室 9、重启 2）。workflow-service 58 项、0 失败、0 跳过。IAM JDBC 上下文 9 项、V13 迁移 1 项，0 失败。共享库表数前后一致。本轮库已删。唯一跳过是 `MinioObjectStorePortReadOnlyIntegrationTest`：它假定已有私有对象和 `MEDIA_TEST_MINIO_*`，仓库里没有这些值，测试用 Assumptions 跳过，不连 MySQL。 | 反应器 BUILD SUCCESS，结束于 2026-10-11T09:37:46+08。隔离库按前缀核对后已删除。共享 schema 表数前后一致。 | 2026-10-11 |
 
 ## 5. 轮次记录
 
@@ -177,5 +178,6 @@
 | r5 | cs-r5 | 接通 IT-4 补救投影；重跑 R1-058/059；拆并实现 IT-5 R1-060…069 | 补救投影提交 `c1fb7e64`。浏览器后缀 `c460b646`：`summary` PASS，链 PASS，会话 6、作答 4、错题 4、ZERO 4、投影 4，六个 `r5_it4_20261011_*_c460b646` 已删。`accepted` / `it4Outbound` / `lunaStamp` 仍为 false。`614f3d8b` 不改写。learning-service 199 项、0 失败、3 跳过。assessment-service 153 项、0 失败、2 跳过。Gateway 路由对测 6 项通过。契约审计仍是原有三项基线差（公开 365/404、`iam-account-deletions`、内部 66/67），摘要已与冻结值一致。同一顶层 node 命令在 H5 与 Gateway 监听时为 345 项、344 通过、1 失败，失败仍是 `support-real-gateway.e2e` 注册超时；清理目标 `r5_nodesuite_20261011_iam` 已删，18087 未监听，没有写 `iam_service`。learner-web 与 mobile 类型检查通过。`pnpm contracts:validate` 为 471 operations。R1-068/069 浏览器站未跑，见第 4 节。开始时运行中的 qida 名称是 51。收口时 `qida-dev-tsz` 仍在；`qida-auth-four-chain-20261011-c8d8c36ec0eb` 于 04:56:23 +08 退出，工作目录不在本仓库，本轮没有对它执行 stop 或 start |
 | r6 | cs-r6 | 补跑 IT-5 浏览器站；拆并实现 IT-6 R1-070…090；跑浏览器站和回归 | IT-5 后缀 `1f244c3b`：`summary` PASS，提交 `26708119`、`308ac4f8`。IT-6 拆卡 `12e62e8f`，发布台 `d3945cc1`，两端页面 `74cd7e50`，强制停止 `f2512c5a`。浏览器后缀 `ad30b8bc`：`summary` PASS，链 PASS，Web 与 H5、1280 与 390。六个 `r6_it6_` 库已删。较早后缀 `cd0b278e`、`7f6d6931`、`072a1ca2`、`944d414b` 保留。`accepted` / `it6Outbound` / `lunaStamp` 仍为 false。113+2 只核对清单，没有重放清理。H5 390 文档横向溢出是 0，个别元素多出 10px 或 17px。learning-service 199 项、0 失败、3 跳过。assessment-service 153 项、0 失败、2 跳过。learner-web、mobile、admin-web 类型检查通过。`pnpm contracts:validate` 为 471 operations。同一顶层 node 命令在 H5、Gateway 与 HTTPS IAM 监听时为 348 项、348 通过、0 失败；`support-real-gateway.e2e` 通过，清理目标是 `r6_node_20261011_iam_8a9e94d1`，该库已删，没有写 `iam_service`。qida 名称计数前后都是 51，没有改这些容器。本轮服务已停，固定端口无监听 |
 | r7 | cs-r7 | 拆并实现 IT-7 R1-091…115；跑浏览器站、干净库重放和 IT-1…IT-7 冒烟 | 拆卡 `7a5e84e9`。收口台 `aac813bd`。两端与管理端页面 `cb37e2de`。工单列表带回收口文案 `105e3354`。证据脚本与两份目录 `af07def7`。25 张卡的实现提交按可编译边界合并，没有按卡号拆成 25 个不能单独编译的提交。浏览器后缀 `3ef210cd`：`summary` PASS，链 PASS，Web 与 H5、1280 与 390。干净重放指纹两次相同。IT-1 冒烟读回 `FOUNDATION` 与 `dailyQuotaMinutes` 15。六个 `r7_it7_` 库已删。较早后缀 `ffbedda0` 保留。`accepted` / `it7Outbound` / `lunaStamp` 仍为 false。收口台在进程内存里。旧风险处置按钮仍在治理页。H5 390 文档横向溢出是 0，四个无类名元素各多出 10px。admin-ops 收口单测 10 项、0 失败。learning-service 199 项、0 失败、3 跳过。assessment-service 153 项、0 失败、2 跳过。learner-web、mobile、admin-web 类型检查通过。`pnpm contracts:validate` 为 471 operations。同一顶层 node 命令在证据栈里为 352 项、352 通过、0 失败，清理目标是 `r7_it7_20261011_iam_3ef210cd`，该库已删，没有写 `iam_service`。全量 Maven 未跑，见第 4 节。证据当时 qida 名称计数前后都是 39，没有对这些容器执行 stop 或 start。收口时没有找到旧 grok PID 59062，没有向它发信号。本轮服务已停，固定端口无监听。两个保留库仍在 |
+| r8 | cs-r8 | IT-2 三库真签；收口台落库与重启指纹；全量 Maven；IT-1…IT-7 全链 | IT-2 后缀 `2f1d24b6`：`summary` PASS。learner、content、assessment 三个 owner schema，IAM RS256。Web 与 H5、1280 与 390。公开重测 201，旧写口 404。四个库已删。`accepted` / `it2Outbound` / `lunaStamp` 仍为 false。R1-029 的 26 PASS / 3 NOT_RUN 不回写。较早失败目录 `a06f8dd0`、`8c4d60cc`（仅 IT-2）、`70b7b931`、`c3698507` 保留。收口台提交落到 `it7_closure_desk`。后缀 `8c4d60cc` 与 `627fa9bf` 重启后只读，指纹不变。全链 `627fa9bf` 在 H5 会话恢复修复之后重走 IT-1…IT-7，Web 与 H5，1280 与 390，node 354/354。`fullChainOutbound` / `lunaStamp` 仍为 false。H5 390 文档横向溢出是 0，四个无类名元素各多出 10px。全量 Maven 于 2026-10-11T09:37:46+08 BUILD SUCCESS，见第 4 节。learner-web、mobile、admin-web 类型检查通过。契约 471 个操作。本轮服务已停，固定端口无监听。本轮测试库已删。两个保留库仍在。没有找到旧 grok PID 59062。没有对 qida 容器执行 stop 或 start；Maven 前后名称计数 46 与 49，多出的三个容器不是本轮启动的 |
 
 旧 grok 会话 PID 59062（01a120cd…）推送 e7cd6dd1 后空闲，保留运行但不再使用。本轮没有找到该进程，也没有向它发信号。
