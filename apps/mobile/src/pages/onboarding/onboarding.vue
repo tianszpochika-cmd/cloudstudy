@@ -7,6 +7,7 @@ import { computed, reactive, ref, watch } from 'vue'
 import { onHide, onShow } from '@dcloudio/uni-app'
 import { mobileApiClient } from '../../api/client'
 import { getUniRuntime, openUniPage } from '../../platform/uni-runtime'
+import { currentBirthYearMax, isSubmittableBirthYear } from '../../domain/adult-birth-year'
 import { emptyConsentChoices, readPublishedConsentVersion, requiredConsentItems, type RequiredConsentPurpose } from '../../domain/onboarding-consent-copy'
 import { canonicalGoalOptions, mapUiGoal, onboardingProgressLabel, prefillSavedTarget, selectOnboardingResumeStep, type OnboardingResumeStep } from '../../domain/onboarding-resume'
 import { useLearnerContentStore } from '../../stores/learner-content'
@@ -44,7 +45,8 @@ watch(() => session.identityRevision, () => {
   adultError.value = null
 }, { flush: 'sync' })
 
-const adultBirthYearValid = computed(() => Boolean(birthYear.value && birthYear.value >= 1900 && birthYear.value <= new Date().getFullYear() - 18))
+const birthYearMax = currentBirthYearMax()
+const adultBirthYearValid = computed(() => isSubmittableBirthYear(birthYear.value, birthYearMax))
 const targetDirty = computed(() => Boolean(savedGoal.value) && (goal.value !== savedGoal.value || quota.value !== savedQuota.value))
 const goalOptions = computed(() => canonicalGoalOptions(store.goals))
 const requiredConsentsChecked = computed(() => requiredConsentItems.every((item) => consentChecked[item.purpose]))
@@ -246,7 +248,7 @@ async function cancel(): Promise<void> {
         <text class="section-title">确认成人身份</text>
         <text class="section-description">只收集出生年份，用来判断是否已满 18 岁。现有成人门不需要月和日，所以不收集完整生日。成人门还没通过时，停在这一步。</text>
         <text class="flow-note">如果没有通过，仍可前往账号设置、帮助与反馈或退出登录。这里不提供再试一次，也不提供改年份。</text>
-        <label class="birth-year"><text>出生年份</text><input v-model.number="birthYear" type="number" inputmode="numeric" placeholder="例如 1995" aria-label="出生年份" /></label>
+        <label class="birth-year"><text>出生年份</text><input v-model.number="birthYear" type="number" inputmode="numeric" min="1900" :max="birthYearMax" placeholder="例如 1995" aria-label="出生年份" /></label>
         <label class="consent"><checkbox :checked="ageConfirmed" @click="ageConfirmed = !ageConfirmed" /><text>我确认自己已满 18 周岁</text></label>
       </view>
 

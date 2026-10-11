@@ -5,6 +5,7 @@ import { useRouter } from 'vue-router'
 import { apiClient } from '../api/client'
 import { dailyQuotaOptions, subTags, targetGoals, type DailyQuotaMinutes, type SubTag } from '../domain/b1'
 import { emptyConsentChoices, readPublishedConsentVersion, requiredConsentItems } from '../domain/onboarding-consent-copy'
+import { currentBirthYearMax, isSubmittableBirthYear } from '../domain/adult-birth-year'
 import { canonicalGoalOptions, mapUiGoal, onboardingProgressLabel, prefillSavedTarget, selectOnboardingResumeStep, type CanonicalTargetGoal, type OnboardingResumeStep } from '../domain/onboarding-resume'
 import { useLearnerContentStore } from '../stores/learner-content'
 import { useSessionStore } from '../stores/session'
@@ -29,7 +30,8 @@ const resumeError = ref<string | null>(null)
 
 const goalOptions = computed(() => canonicalGoalOptions(store.onboardingOptions.length ? store.onboardingOptions : targetGoals))
 const quotaOptions = computed(() => store.onboardingQuotas.length ? store.onboardingQuotas : dailyQuotaOptions)
-const adultBirthYearValid = computed(() => typeof birthYear.value === 'number' && Number.isInteger(birthYear.value) && birthYear.value >= 1900 && birthYear.value <= new Date().getFullYear() - 18)
+const birthYearMax = currentBirthYearMax()
+const adultBirthYearValid = computed(() => isSubmittableBirthYear(birthYear.value, birthYearMax))
 const targetDirty = computed(() => Boolean(savedGoal.value) && (targetGoal.value !== savedGoal.value || quota.value !== savedQuota.value))
 const requiredConsentsChecked = computed(() => requiredConsentItems.every((item) => consentChecked[item.purpose]))
 const canContinue = computed(() => {
@@ -220,7 +222,7 @@ async function cancel(): Promise<void> {
           <p class="policy-note">如果没有通过，仍可前往账号设置、帮助与反馈或退出登录。这里不提供再试一次，也不提供改年份。</p>
           <label class="field-label" for="adult-birth-year">
             出生年份
-            <input id="adult-birth-year" v-model.number="birthYear" type="number" min="1900" :max="new Date().getFullYear() - 18" autocomplete="bday-year" required />
+            <input id="adult-birth-year" v-model.number="birthYear" type="number" min="1900" :max="birthYearMax" autocomplete="bday-year" required />
           </label>
           <div class="consent-list">
             <label class="check"><input v-model="ageConfirmed" type="checkbox" required /> <span>我确认自己已满 18 周岁</span></label>
