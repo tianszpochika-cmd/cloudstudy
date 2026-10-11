@@ -1,44 +1,7 @@
 <!doctype html>
-<html lang="zh-CN">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>语学星 · 学员网页端静态 Demo</title>
-<link rel="stylesheet" href="styles.css">
-</head>
-<body>
-<div id="banner" class="demo-banner">静态演示 / 假数据 · 不连正式后端 · <a href="../">返回枢纽</a></div>
-<div id="app" class="app">
-  <aside id="sidebar" class="sidebar">
-    <div class="brand">
-      <span class="logo">✦</span>
-      <div>
-        <b>语学星</b>
-        <small>学员网页 · Demo</small>
-      </div>
-    </div>
-    <nav id="nav" class="nav"></nav>
-    <div class="side-foot">
-      <span class="pill">假数据</span>
-      <button class="linkish" onclick="nav('#/lab')">演示工具</button>
-    </div>
-  </aside>
-  <div class="main">
-    <header class="top">
-      <div>
-        <h1 id="title">首页</h1>
-        <p id="crumb" class="crumb">静态桌面布局</p>
-      </div>
-      <div class="top-actions">
-        <button class="ghost" onclick="nav('#/search')">搜索</button>
-        <button class="ghost" onclick="nav('#/msgs')">消息</button>
-        <button class="ghost" id="userChip" onclick="nav('#/me')">演示账号</button>
-      </div>
-    </header>
-    <main id="view" class="view"></main>
-  </div>
-</div>
-<div id="toast" class="toast" role="status" aria-live="polite"></div>
-<script src="app.js"></script>
-</body>
-</html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light dark"><title>语学星 · 学习工作台</title><link rel="stylesheet" href="../mobile/legacy.css"><link rel="stylesheet" href="../shared/tokens.css"><link rel="stylesheet" href="../shared/components.css"><link rel="stylesheet" href="desktop.css"></head><body class="learner-desktop"><a class="skip-link" href="#view">跳到学习内容</a>
+<div class="desktop-app"><aside class="desktop-sidebar"><a class="desktop-brand" href="#/home"><span class="brand-mark" aria-hidden="true">✦</span><span><strong>语学星</strong><small>英语学习工作台</small></span></a><button class="desktop-search" onclick="desktopOpenSearch()"><span>搜索页面与功能</span><kbd>Ctrl K</kbd></button><nav id="desktop-nav" aria-label="学习工作区"></nav><div class="sidebar-footer"><a href="../">← 返回演示枢纽</a><a href="../admin/">运营管理工作台 ↗</a><p>18 岁以上成人与大学生</p></div></aside>
+<div class="desktop-main"><div class="desktop-demo-notice"><span><i aria-hidden="true"></i><strong>静态演示 · 拟真数据</strong><span class="notice-detail">所有学习与操作仅保存在当前浏览器</span></span><a href="../mobile/">体验手机版 ↗</a></div><header class="desktop-topbar"><div class="desktop-heading"><button id="bk" class="icon-button" onclick="goBack()" aria-label="返回上一页">←</button><div><p id="desktop-crumb">学习工作区</p><h1 id="title">首页</h1></div></div><div class="desktop-top-actions"><span id="net" class="tag">本机演示</span><button class="icon-button" onclick="nav('#/msgs')" aria-label="消息中心">♧</button><button class="desktop-user" onclick="nav('#/me')"><span class="user-avatar">星</span><span id="desktop-user-name">我的档案</span></button></div></header><main id="view" tabindex="-1" aria-label="页面内容"></main><nav id="tabs" hidden aria-label="快捷导航"><a href="#/home" data-t="home">首页</a><a href="#/today" data-t="today">学习</a><a href="#/world" data-t="world">世界</a><a href="#/me" data-t="me">我的</a></nav><footer class="desktop-footer">语学星 · 让每一次练习都有反馈，让每一小步都能继续。</footer></div></div>
+<dialog id="desktop-command" class="command-dialog" aria-labelledby="command-title"><div class="command-head"><h2 id="command-title">去一个页面</h2><button class="icon-button" onclick="document.getElementById('desktop-command').close()" aria-label="关闭搜索">×</button></div><label class="sr-only" for="desktop-command-query">搜索功能</label><input id="desktop-command-query" placeholder="搜索课程、错题、报告、隐私…" oninput="desktopSearch(this.value)"><div id="desktop-command-results" class="command-results"></div><p class="d">↑↓ 选择 · Enter 打开 · Esc 关闭</p></dialog><div id="toast" class="toast" role="status" aria-live="polite"></div>
+<script>window.DEMO_SURFACE='learner-web';</script><script src="../shared/data.js"></script><script src="../mobile/app.js"></script><script src="../mobile/learning.js"></script><script src="../shared/product-overrides.js"></script><script src="../shared/preview-data.js"></script>
+<script src="../shared/preview-workflows.js"></script><script src="../shared/catalog-bridge.js"></script><script src="desktop.js"></script><script src="../shared/demo-ui.js"></script></body></html>
