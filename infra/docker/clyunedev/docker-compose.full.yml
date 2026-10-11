@@ -101,6 +101,7 @@ services:
   iam-service:
     environment:
       IAM_SERVICE_CLIENT_GATEWAY_SECRET_DIGEST: ${IAM_SERVICE_CLIENT_GATEWAY_SECRET_DIGEST:?set in server env file}
+      IAM_SERVICE_CLIENT_LEARNER_SECRET_DIGEST: ${IAM_SERVICE_CLIENT_LEARNER_SECRET_DIGEST:?set in server env file}
 
   audit-service:
     <<: *owner-service
@@ -150,6 +151,10 @@ services:
       LEARNER_JDBC_URL: jdbc:mysql://mysql:3306/learner_service?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&useSSL=true
       LEARNER_JDBC_USERNAME: svc_learner
       LEARNER_JDBC_PASSWORD: ${LEARNER_DB_PASSWORD:?set in server env file}
+      # Live learning-consent recheck (fails closed); without this every learner read is CONSENT_REQUIRED.
+      LEARNER_CONSENT_RECHECK_IAM_BASE_URL: http://iam-service:18087
+      LEARNER_CONSENT_RECHECK_CLIENT_ID: learner-service
+      LEARNER_CONSENT_RECHECK_CLIENT_SECRET: ${LEARNER_CONSENT_RECHECK_CLIENT_SECRET:?set in server env file}
 
   content-service:
     <<: *owner-service
