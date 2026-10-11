@@ -189,9 +189,12 @@ public class IamRuntimeConfiguration {
             throw new IllegalStateException(
                     "unverified NATIVE_SECURE_STORAGE trust is allowed only in an explicit local/test profile");
         }
-        if (!localOrTest && properties.isLocalAdultGateEnabled()) {
+        boolean prerelease = java.util.Arrays.asList(environment.getActiveProfiles()).contains("prerelease")
+                && !java.util.Arrays.asList(environment.getActiveProfiles()).contains("prod");
+        if (!localOrTest && !prerelease && properties.isLocalAdultGateEnabled()) {
             // The birth-year attestation switch accepts client input; outside local/test there is
-            // no trusted adult-evidence source yet, so the deployment must not start with it.
+            // no trusted adult-evidence source yet, so the deployment must not start with it. An explicit
+            // pre-release (non-prod) staging profile may opt in so the learner flow is testable end to end.
             throw new IllegalStateException(
                     "the local adult-gate attestation switch is allowed only in an explicit local/test profile");
         }

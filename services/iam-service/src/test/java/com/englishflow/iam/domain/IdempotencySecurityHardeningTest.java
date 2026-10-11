@@ -223,6 +223,15 @@ class IdempotencySecurityHardeningTest {
         MockEnvironment local = new MockEnvironment();
         local.setActiveProfiles("local");
         configuration.iamSecurityConfigurationGuard(properties, local);
+
+        MockEnvironment prerelease = new MockEnvironment();
+        prerelease.setActiveProfiles("prerelease");
+        configuration.iamSecurityConfigurationGuard(properties, prerelease);
+
+        MockEnvironment prereleaseProd = new MockEnvironment();
+        prereleaseProd.setActiveProfiles("prerelease", "prod");
+        assertThrows(IllegalStateException.class,
+                () -> configuration.iamSecurityConfigurationGuard(properties, prereleaseProd));
     }
 
     @Test
