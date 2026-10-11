@@ -61,6 +61,7 @@ export const useSessionStore = defineStore('session', () => {
   const permissions = ref<readonly string[]>([])
   const status = ref<'unknown' | 'restoring' | 'authenticated' | 'refreshing' | 'revoking' | 'unauthenticated' | 'error'>('unknown')
   const adultGate = ref<MobileAdultGateStatus>('UNKNOWN')
+  const learningConsentWithdrawn = ref(false)
   const lastError = ref<string | null>(null)
   const restored = ref(false)
   const isAuthenticated = computed(() => status.value === 'authenticated' && Boolean(accessToken.value) && Boolean(verifiedSubject.value))
@@ -321,6 +322,18 @@ export const useSessionStore = defineStore('session', () => {
     forgetInMemoryLearningIdentity()
     removeAllLearningCaches()
   }
+  function markLearningConsentWithdrawn(): void {
+    learningConsentWithdrawn.value = true
+    permissions.value = permissions.value.filter((item) => item !== 'learning.plan.read')
+  }
+  async function refreshGateFromServer(): Promise<void> {
+    if (status.value !== 'authenticated' || !accessToken.value) return
+    const snapshot = await adapter().getPermissions()
+    acceptPermissions(snapshot)
+    if (learningConsentWithdrawn.value) {
+      permissions.value = permissions.value.filter((item) => item !== 'learning.plan.read')
+    }
+  }
   function clear(): void {
     authEpoch += 1
     invalidateLearningIdentity()
@@ -330,13 +343,14 @@ export const useSessionStore = defineStore('session', () => {
     sessionId.value = null
     permissions.value = []
     adultGate.value = 'UNKNOWN'
+    learningConsentWithdrawn.value = false
     status.value = 'unauthenticated'
     setInMemoryAccessToken(null)
     clearMobileSessionHint()
     try { secureStorage()?.removeItem(REFRESH_TOKEN_KEY) } catch { /* best effort */ }
   }
 
-  return { accessToken, deviceId, sessionId, verifiedSubject, identityRevision, permissions, status, adultGate, lastError, restored, isAuthenticated, isLearningReady, getMobileApiIdentity, restore, login, register, requestPasswordReset, confirmPasswordReset, refreshSilently, refreshSilentlyForIdentity, logout, revokeCurrentSession, confirmAdultGate, setReturnTo, peekReturnTo, consumeReturnTo, setAuthAdapter, clear }
+  return { accessToken, deviceId, sessionId, verifiedSubject, identityRevision, permissions, status, adultGate, learningConsentWithdrawn, lastError, restored, isAuthenticated, isLearningReady, getMobileApiIdentity, restore, login, register, requestPasswordReset, confirmPasswordReset, refreshSilently, refreshSilentlyForIdentity, logout, revokeCurrentSession, confirmAdultGate, setReturnTo, peekReturnTo, consumeReturnTo, setAuthAdapter, markLearningConsentWithdrawn, refreshGateFromServer, clear }
 })
 
 export function readAccessToken(): string | null { return getInMemoryAccessToken() }

@@ -267,6 +267,10 @@ router.beforeEach(async (to) => {
   }
 
   const adultGateExempt = new Set(['adult-gate', 'onboarding', ...allowedAccountRoutes])
+  if (session.learningConsentWithdrawn && !allowedAccountRoutes.has(String(to.name))) {
+    session.forbiddenReason = '学习同意已撤回。学习能力已收回，账号仍保留。'
+    return { name: 'forbidden' }
+  }
   if (to.meta.requiresAuth && !adultGateExempt.has(String(to.name)) && !session.isLearningReady) {
     session.setReturnTo(to.fullPath)
     return { name: 'onboarding', query: { redirect: safeReturnTo(to.fullPath) } }

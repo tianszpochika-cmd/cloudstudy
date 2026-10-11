@@ -54,6 +54,7 @@ test('mobile withdrawal marks ADULT_LEARNING withdrawn and keeps the settings no
   const module = { exports: {} }
   const scope = vue.effectScope()
   const opened = []
+  const gateMarks = []
   scope.run(() => {
     new Function('require', 'module', 'exports', compiled)((name) => {
       const modules = {
@@ -74,8 +75,8 @@ test('mobile withdrawal marks ADULT_LEARNING withdrawn and keeps the settings no
           withdrawLearningConsent: async () => result,
         },
         '../../domain/learning-consent-withdrawal': withdrawal,
-        '../../stores/learner-content': { useLearnerContentStore: () => ({ accountStatus: 'idle', lastError: null, account: {}, loadAccount: async () => {} }) },
-        '../../stores/session': { useSessionStore: () => vue.reactive({ verifiedSubject: 'learner-a', identityRevision: 1, getMobileApiIdentity: () => null }) },
+        '../../stores/learner-content': { useLearnerContentStore: () => ({ accountStatus: 'idle', lastError: null, account: {}, loadAccount: async () => {}, forgetOnboardingResume() { gateMarks.push('resume') } }) },
+        '../../stores/session': { useSessionStore: () => vue.reactive({ verifiedSubject: 'learner-a', identityRevision: 1, getMobileApiIdentity: () => null, markLearningConsentWithdrawn() { gateMarks.push('withdrawn') } }) },
         '../../api/b12': {},
         '../../domain/notification-preferences': {
           DEFAULT_NOTIFICATION_DND_WINDOW: { startLocalTime: '22:00', endLocalTime: '07:00' },
@@ -107,6 +108,7 @@ test('mobile withdrawal marks ADULT_LEARNING withdrawn and keeps the settings no
     assert.equal(fixture.withdrawNotice.value, withdrawal.WITHDRAW_DONE_COPY)
     assert.equal(fixture.withdrawConfirming.value, false)
     assert.deepEqual(opened, [])
+    assert.deepEqual(gateMarks, ['withdrawn', 'resume'])
   } finally {
     scope.stop()
   }

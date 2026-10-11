@@ -150,7 +150,11 @@ async function confirmWithdrawLearningConsent(): Promise<void> {
   try {
     const result = await withdrawLearningConsent(`withdraw-adult-learning-${Date.now()}`)
     withdrawNotice.value = result.notice
-    if (result.withdrawn) withdrawConfirming.value = false
+    if (result.withdrawn) {
+      withdrawConfirming.value = false
+      if (typeof session.markLearningConsentWithdrawn === 'function') session.markLearningConsentWithdrawn()
+      if (typeof store.forgetOnboardingResume === 'function') store.forgetOnboardingResume()
+    }
   } finally {
     withdrawing.value = false
   }

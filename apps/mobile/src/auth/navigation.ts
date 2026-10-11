@@ -194,9 +194,80 @@ function interceptNavigation(options: RouteOptions): false | RouteOptions {
   return false
 }
 
+let gateTail: Promise<void> = Promise.resolve()
+
+function installHashRevalidation(): void {
+  if (typeof window === 'undefined') return
+  const holder = window as Window & { __yxHashGateInstalled?: boolean }
+  if (holder.__yxHashGateInstalled) return
+  holder.__yxHashGateInstalled = true
+  window.addEventListener('hashchange', () => {
+    void revalidateMobileAccess(currentMobilePagePath())
+  })
+}
+
+function sendForbidden(): void {
+  if (currentMobilePagePath() === FORBIDDEN_PATH) return
+  openUniPage(FORBIDDEN_PATH)
+}
+
+async function revalidateProtected(normalized: string): Promise<boolean> {
+  const session = useSessionStore(pinia)
+  try { await session.restore() } catch { /* restore has already closed the session */ }
+  if (!session.isAuthenticated) { showLogin(normalized); return false }
+  const wasReady = session.isLearningReady === true
+  if (typeof session.refreshGateFromServer === 'function') {
+    try { await session.refreshGateFromServer() } catch { /* keep the last verified snapshot */ }
+  }
+  if (rejectedAwayFromAccount(normalized)) {
+    sendForbidden()
+    return false
+  }
+  const withdrawn = session.learningConsentWithdrawn === true
+  if (!isMobileLearningPath(normalized) && normalized !== ONBOARDING_PATH) return true
+  let resumeStep: ReturnType<typeof selectOnboardingResumeStep> | null = null
+  let targetSavedGap = false
+  const content = useLearnerContentStore(pinia)
+  if (typeof content.loadOnboardingResume === 'function') {
+    try {
+      const facts = await content.loadOnboardingResume(true)
+      resumeStep = selectOnboardingResumeStep(facts)
+      targetSavedGap = facts.target.readable && !facts.target.saved
+    } catch { resumeStep = null }
+  }
+  if (resumeStep === 'rejected') {
+    sendForbidden()
+    return false
+  }
+  const consentIncomplete = resumeStep === 'gate' || resumeStep === 'consent'
+  if (withdrawn || (wasReady && consentIncomplete)) {
+    sendForbidden()
+    return false
+  }
+  if (!session.isLearningReady || consentIncomplete || (resumeStep === 'goal' && targetSavedGap)) {
+    showOnboarding(normalized)
+    return false
+  }
+  if (isMobileLearningPath(normalized) && !await hydrateContentLocale()) {
+    if (!session.isAuthenticated) showLogin(normalized)
+    return false
+  }
+  return true
+}
+
+/** Re-read the adult gate and consent on every navigation, including a hash change that does not reload. */
+export async function revalidateMobileAccess(target: string): Promise<boolean> {
+  const normalized = normalizeMobilePagePath(target)
+  if (!isMobileProtectedPath(normalized)) return true
+  const run = gateTail.catch(() => undefined).then(() => revalidateProtected(normalized))
+  gateTail = run.then(() => undefined, () => undefined)
+  return run
+}
+
 export function installMobileNavigationGuard(): void {
   const app = runtime()
   setMobileApiErrorHandler((status, details) => handleMobileApiError(status, details))
+  installHashRevalidation()
   if (app.addInterceptor) {
     for (const method of ['navigateTo', 'redirectTo', 'switchTab', 'reLaunch']) {
       app.addInterceptor(method, { invoke: (options) => interceptNavigation(options) })
@@ -218,19 +289,7 @@ export async function bootstrapMobileAuth(initialPath: unknown): Promise<void> {
 
 /** Page-level fallback for direct deep links and first render on runtimes without route interception. */
 export async function ensureMobilePageAccess(target: string): Promise<boolean> {
-  const normalized = normalizeMobilePagePath(target)
-  const session = useSessionStore(pinia)
-  try { await session.restore() } catch { /* restore has already closed the session */ }
-  if (!session.isAuthenticated) { showLogin(normalized); return false }
-  if (rejectedAwayFromAccount(normalized)) { openUniPage(FORBIDDEN_PATH); return false }
-  if (isMobileLearningPath(normalized) && !session.isLearningReady) { showOnboarding(normalized); return false }
-  if (isMobileLearningPath(normalized) && await redirectIfResumeBlocksLearning(normalized)) return false
-  if (isMobileLearningPath(normalized) && !await hydrateContentLocale()) {
-    if (!session.isAuthenticated) showLogin(normalized)
-    return false
-  }
-  if (!session.isAuthenticated) { showLogin(normalized); return false }
-  return true
+  return revalidateMobileAccess(target)
 }
 
 function decisionCode(details: unknown): string | null {
