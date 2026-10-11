@@ -1,0 +1,164 @@
+{
+  "kind": "R8_IT2_THREE_SCHEMA",
+  "summary": "FAIL",
+  "accepted": false,
+  "lunaStamp": false,
+  "suffix": "c3698507",
+  "it2Outbound": false,
+  "chain": "FAIL",
+  "missing": [
+    "it2-browser-h5-390",
+    "it2-browser-h5-1280"
+  ],
+  "failed": [
+    "it2-browser-h5-390",
+    "it2-browser-h5-1280"
+  ],
+  "dbFacts": {
+    "it2": {
+      "iam": "r8_it2_20261011_iam_c3698507",
+      "learner": "r8_it2_20261011_lrn_c3698507",
+      "content": "r8_it2_20261011_cnt_c3698507",
+      "assessment": "r8_it2_20261011_asm_c3698507"
+    },
+    "chain": {}
+  },
+  "steps": [
+    {
+      "name": "ports-free",
+      "status": "PASS"
+    },
+    {
+      "name": "dedicated-schemas",
+      "status": "PASS"
+    },
+    {
+      "name": "iam-https",
+      "status": "PASS"
+    },
+    {
+      "name": "staff-sessions",
+      "status": "PASS"
+    },
+    {
+      "name": "it2-three-owner-schemas",
+      "status": "PASS"
+    },
+    {
+      "name": "it2-bank",
+      "status": "PASS"
+    },
+    {
+      "name": "it2-gate-closed",
+      "status": "PASS"
+    },
+    {
+      "name": "it2-adult-gate",
+      "status": "PASS"
+    },
+    {
+      "name": "it2-target",
+      "status": "PASS"
+    },
+    {
+      "name": "it2-open-10",
+      "status": "PASS"
+    },
+    {
+      "name": "it2-out-of-order",
+      "status": "PASS"
+    },
+    {
+      "name": "it2-correct-full",
+      "status": "PASS"
+    },
+    {
+      "name": "it2-wrong-zero",
+      "status": "PASS"
+    },
+    {
+      "name": "it2-ten-report",
+      "status": "PASS"
+    },
+    {
+      "name": "it2-report-reread",
+      "status": "PASS"
+    },
+    {
+      "name": "it2-internal-retest",
+      "status": "PASS"
+    },
+    {
+      "name": "it2-public-retest",
+      "status": "PASS"
+    },
+    {
+      "name": "it2-retired-submit-step",
+      "status": "PASS"
+    },
+    {
+      "name": "it2-retired-skip",
+      "status": "PASS"
+    },
+    {
+      "name": "it2-interrupt",
+      "status": "PASS"
+    },
+    {
+      "name": "it2-incomplete-retest",
+      "status": "PASS"
+    },
+    {
+      "name": "register-web-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "it2-browser-web-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-it2-web-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "register-web-390",
+      "status": "PASS"
+    },
+    {
+      "name": "it2-browser-web-390",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-it2-web-390",
+      "status": "PASS"
+    },
+    {
+      "name": "register-h5-390",
+      "status": "PASS"
+    },
+    {
+      "name": "it2-browser-h5-390",
+      "status": "FAIL"
+    },
+    {
+      "name": "register-h5-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "it2-browser-h5-1280",
+      "status": "FAIL"
+    },
+    {
+      "name": "schemas-dropped",
+      "status": "PASS"
+    },
+    {
+      "name": "shared-admin-schema-untouched",
+      "status": "PASS"
+    },
+    {
+      "name": "qida-unchanged",
+      "status": "PASS"
+    }
+  ]
+}

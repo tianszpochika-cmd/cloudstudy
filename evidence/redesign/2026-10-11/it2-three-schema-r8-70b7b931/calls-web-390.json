@@ -1,0 +1,86 @@
+[
+  {
+    "method": "POST",
+    "origin": "https://127.0.0.1:18087",
+    "path": "/api/v1/auth/register",
+    "status": 201
+  },
+  {
+    "method": "POST",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/assessment/placement/sessions",
+    "status": 201
+  },
+  {
+    "method": "POST",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/assessment/placement/sessions/asess_416c5f80848d4c529ccf74a6178d471f/responses",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/assessment/placement/sessions/asess_416c5f80848d4c529ccf74a6178d471f",
+    "status": 200
+  },
+  {
+    "method": "POST",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/assessment/placement/sessions/asess_416c5f80848d4c529ccf74a6178d471f/responses",
+    "status": 200
+  },
+  {
+    "method": "POST",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/assessment/placement/sessions/asess_416c5f80848d4c529ccf74a6178d471f/responses",
+    "status": 200
+  },
+  {
+    "method": "POST",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/assessment/placement/sessions/asess_416c5f80848d4c529ccf74a6178d471f/responses",
+    "status": 200
+  },
+  {
+    "method": "POST",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/assessment/placement/sessions/asess_416c5f80848d4c529ccf74a6178d471f/responses",
+    "status": 200
+  },
+  {
+    "method": "POST",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/assessment/placement/sessions/asess_416c5f80848d4c529ccf74a6178d471f/responses",
+    "status": 200
+  },
+  {
+    "method": "POST",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/assessment/placement/sessions/asess_416c5f80848d4c529ccf74a6178d471f/responses",
+    "status": 200
+  },
+  {
+    "method": "POST",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/assessment/placement/sessions/asess_416c5f80848d4c529ccf74a6178d471f/responses",
+    "status": 200
+  },
+  {
+    "method": "POST",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/assessment/placement/sessions/asess_416c5f80848d4c529ccf74a6178d471f/responses",
+    "status": 200
+  },
+  {
+    "method": "POST",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/assessment/placement/sessions/asess_416c5f80848d4c529ccf74a6178d471f/responses",
+    "status": 200
+  },
+  {
+    "method": "POST",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/assessment/placement/sessions/asess_416c5f80848d4c529ccf74a6178d471f/retest",
+    "status": 201
+  }
+]
