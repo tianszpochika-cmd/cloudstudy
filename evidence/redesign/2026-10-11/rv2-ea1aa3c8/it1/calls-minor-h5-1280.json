@@ -1,0 +1,18 @@
+[
+  {
+    "method": "POST",
+    "origin": "https://127.0.0.1:18087",
+    "path": "/api/v1/auth/register",
+    "status": 201,
+    "body": "{\"data\":{\"authTransport\":\"WEB_COOKIE\",\"accessToken\":\"[REDACTED]",
+    "raw": "https://127.0.0.1:18087/api/v1/auth/register"
+  },
+  {
+    "method": "POST",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/adult-gate",
+    "status": 200,
+    "body": "{\"data\":{\"status\":\"REJECTED\",\"learningAccess\":\"RESTRICTED\",\"effectiveAt\":\"2026-10-11T03:04:05.591726Z\",\"policyVersion\":\"b30-adult-v1\",\"minimumAge\":18,\"evidenceStatus\":\"REJECTED\",\"retryAllowed\":true},\"meta\":{\"requestId\":\"req-c7bd87c1c16b4027b6cba78d6455c0d8\",\"traceId\":\"c8aa8ce2784a41de848806dfc3e1bcea\",\"apiVersion\":\"v1\",\"schemaVersion\":\"1.0.0\",\"serverTime\":\"2026-10-11T03:04:06.168239Z\"}}",
+    "raw": "http://127.0.0.1:18070/api/v1/iam/adult-gate"
+  }
+]

@@ -61,6 +61,22 @@ F-IT6-01：content-service 用 Flyway `V30` 表 `it6_release_studio`。简审短
 
 第 4 节签收栏仍空。`lunaStamp` 仍是 false。本段不是 `SIGNED_PASS`。
 
+### rv2 关闭说明
+
+证据目录：`evidence/redesign/2026-10-11/rv2-ea1aa3c8`。读法见该目录 `reading.md`。提交：`404f6c6f`（IT-1）、`3c33a9ed`（IT-6 全量浏览器）、`87e2c1cb`（workflow 允许 `rv2_` 隔离库）、`6f8670cb`（顶层 node）、`41acb289`（IT-7 与全链）。`steps.json` 与 `summary.json` 是脚本首跑原文，首跑即 PASS。
+
+F-IT1-01：后缀 `ea1aa3c8` 在 Web 与 H5、1280 与 390 用真实表单提交 2016。注册是 `POST https://127.0.0.1:18087/api/v1/auth/register`，状态 201。成人门是 `POST http://127.0.0.1:18070/api/v1/iam/adult-gate`，状态 200，响应含 `REJECTED`。页面进入无权限页。「再试一次」与「改年份」计数为 0。四条都是 PASS。
+
+F-IT1-02：Web 1280 与 H5 390 留在设置页。最后一次 `PUT /api/v1/iam/consents` 状态 200，正文含 `ADULT_LEARNING` 与 `WITHDRAWN`。随后 `GET /api/v1/learner/targets` 状态 403，正文含 `CONSENT_REQUIRED`。两条都是 PASS。
+
+F-IT6-01：全量浏览器 45 步 PASS，没有 SKIP。流程含建稿、冲突、双签与简审、发布、投影、下架与强制停止、回滚边界，Web 与 H5 的 1280 和 390。只重启 content-service 后再读指纹。前后相同，1803 字符，库行都是 `70 34410`。`replayedCommands` 是 false。H5 390 文档横向溢出是 0，装饰超出仍按 RES-ARTWORK 记录。
+
+顶层 `node --test --test-concurrency=1 apps/mobile/tests/*.mjs apps/learner-web/tests/*.mjs` 在 admin-ops 监听时为 361 项、361 通过、0 失败。全链 58 步 PASS，it7 34 步 PASS，链内 node 同样 361/361/0。收口重启后指纹相同，`versionBefore` 是 45，没有重放收口命令。
+
+`mvn -B -ntp -f pom.xml test` 于 2026-10-11T11:35:14+08 BUILD SUCCESS，总时间 02:15 min。合计 1680 项、0 失败、1 跳过。跳过的是 `MinioObjectStorePortReadOnlyIntegrationTest`。learning-service 199 项、0 失败、0 跳过。assessment-service 153 项、0 失败、0 跳过。admin-ops 收口 11 项、0 失败。workflow-service 58 项、0 失败、0 跳过。IAM JDBC 上下文 9 项、V13 迁移 1 项，0 失败。共享库表数前后一致。`rv2_` 与 `iam_v13_test_rv2round` 已删。qida 名称计数前后都是 50。
+
+本轮站级 SKIP 为空。第 4 节签收栏仍空。`lunaStamp` 仍是 false。本段不是 `SIGNED_PASS`。
+
 ## 3. Luna P1 复核（本轮）
 
 | 项 | 结果 | 依据 |
@@ -87,6 +103,6 @@ F-IT6-01：content-service 用 Flyway `V30` 表 `it6_release_studio`。简审短
 ## 5. 调度
 
 - 修复轮：`rv1`，screen `cs-rv1`，分支 `grok/cs-rv1-20261011`（自 `dev-redesign`）。2026-10-11 独立审查复核：代码符合三项要求，定向 node 28/28、`ContentReleaseStudio*` 18/18、`IamAuthCorsConfigurationTest` 5/5 复跑绿，已合并为 `f7905ab8`；签收 IT-2…IT-5。
-- 修复轮：`rv2`，screen `cs-rv2`，分支 `grok/cs-rv2-20261011`。待关：RV2-01 IT-1 用改后脚本重采未成年 ×4 与撤回 ×2 全 PASS；RV2-02 IT-6 全量浏览器（不得 SKIP）；RV2-03 顶层 node 起 admin-ops 后全绿；RV2-04 新 HEAD 全链冒烟 PASS。
+- 修复轮：`rv2`，screen `cs-rv2`，分支 `grok/cs-rv2-20261011`。RV2-01…RV2-04 的证据已写入 `evidence/redesign/2026-10-11/rv2-ea1aa3c8`，读法见该目录 `reading.md`，关闭说明见上方「rv2 关闭说明」。第 4 节签收栏仍空，本段不是 `SIGNED_PASS`。
 - 合并后由调度方按本文件第 4 节签字，必要时开 `rv2`。
 - Luna 字段始终外部待办。

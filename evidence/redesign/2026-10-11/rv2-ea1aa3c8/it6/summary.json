@@ -1,0 +1,197 @@
+{
+  "kind": "RV2_IT6_BROWSER",
+  "summary": "PASS",
+  "accepted": false,
+  "it6Outbound": false,
+  "lunaStamp": false,
+  "suffix": "ea1aa3c8",
+  "chain": "PASS",
+  "dbFacts": {
+    "contentSchema": "rv2_it6_20261011_cnt_ea1aa3c8",
+    "iamSchema": "rv2_it6_20261011_iam_ea1aa3c8",
+    "studio": "jdbc-flyway",
+    "ownerTable": "it6_release_studio"
+  },
+  "steps": [
+    {
+      "name": "ports-free",
+      "status": "PASS"
+    },
+    {
+      "name": "dedicated-schemas",
+      "status": "PASS"
+    },
+    {
+      "name": "iam-https",
+      "status": "PASS"
+    },
+    {
+      "name": "staff-sessions",
+      "status": "PASS"
+    },
+    {
+      "name": "default-mode",
+      "status": "PASS"
+    },
+    {
+      "name": "idempotent-read",
+      "status": "PASS"
+    },
+    {
+      "name": "denial-identical",
+      "status": "PASS"
+    },
+    {
+      "name": "no-ghost-draft",
+      "status": "PASS"
+    },
+    {
+      "name": "gaps-listed",
+      "status": "PASS"
+    },
+    {
+      "name": "version-lock",
+      "status": "PASS"
+    },
+    {
+      "name": "rights-unbound",
+      "status": "PASS"
+    },
+    {
+      "name": "simple-publish",
+      "status": "PASS"
+    },
+    {
+      "name": "simple-no-second-signature",
+      "status": "PASS"
+    },
+    {
+      "name": "sync-failed-hidden",
+      "status": "PASS"
+    },
+    {
+      "name": "switch-dual",
+      "status": "PASS"
+    },
+    {
+      "name": "report-mode-mismatch",
+      "status": "PASS"
+    },
+    {
+      "name": "dual-review",
+      "status": "PASS"
+    },
+    {
+      "name": "pin-keeps-v1",
+      "status": "PASS"
+    },
+    {
+      "name": "rollback",
+      "status": "PASS"
+    },
+    {
+      "name": "dashboard-states",
+      "status": "PASS"
+    },
+    {
+      "name": "media-boundary",
+      "status": "PASS"
+    },
+    {
+      "name": "b3-roster",
+      "status": "PASS"
+    },
+    {
+      "name": "admin-login-copy",
+      "status": "PASS"
+    },
+    {
+      "name": "admin-login-return",
+      "status": "PASS"
+    },
+    {
+      "name": "permission-return",
+      "status": "PASS"
+    },
+    {
+      "name": "admin-release-panel",
+      "status": "PASS"
+    },
+    {
+      "name": "admin-dashboard",
+      "status": "PASS"
+    },
+    {
+      "name": "admin-permissions",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-admin-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "register-web-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "shelf-web-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-web-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "register-web-390",
+      "status": "PASS"
+    },
+    {
+      "name": "shelf-web-390",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-web-390",
+      "status": "PASS"
+    },
+    {
+      "name": "register-h5-390",
+      "status": "PASS"
+    },
+    {
+      "name": "shelf-h5-390",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-h5-390",
+      "status": "PASS"
+    },
+    {
+      "name": "register-h5-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "shelf-h5-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-h5-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "unpublish-and-force",
+      "status": "PASS"
+    },
+    {
+      "name": "restart-fingerprint",
+      "status": "PASS"
+    },
+    {
+      "name": "schemas-dropped",
+      "status": "PASS"
+    },
+    {
+      "name": "qida-unchanged",
+      "status": "PASS"
+    }
+  ]
+}

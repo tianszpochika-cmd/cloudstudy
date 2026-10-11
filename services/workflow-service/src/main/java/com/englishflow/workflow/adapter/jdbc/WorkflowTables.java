@@ -4,7 +4,7 @@ package com.englishflow.workflow.adapter.jdbc;
  * Qualifies workflow SQL with this service's owner schema.
  *
  * <p>The production default stays {@code workflow_service}. A test may set
- * {@code WORKFLOW_SCHEMA} to an isolated {@code r8_} schema. Any other name is rejected
+ * {@code WORKFLOW_SCHEMA} to an isolated {@code r8_} or {@code rv2_} schema. Any other name is rejected
  * so a mis-set variable cannot point these statements at a shared owner schema.
  */
 public final class WorkflowTables {
@@ -26,8 +26,8 @@ public final class WorkflowTables {
         if (configured == null || configured.isBlank() || "workflow_service".equals(configured)) {
             return "workflow_service";
         }
-        if (!configured.matches("r8_[a-z0-9_]{1,48}")) {
-            throw new IllegalStateException("WORKFLOW_SCHEMA must stay workflow_service or an r8_ schema");
+        if (!configured.matches("(?:r8_|rv2_)[a-z0-9_]{1,48}")) {
+            throw new IllegalStateException("WORKFLOW_SCHEMA must stay workflow_service or an r8_/rv2_ schema");
         }
         return configured;
     }

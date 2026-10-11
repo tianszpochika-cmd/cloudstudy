@@ -1,0 +1,58 @@
+{
+  "suffix": "ea1aa3c8",
+  "steps": [
+    {
+      "name": "ports-free",
+      "status": "PASS",
+      "detail": {
+        "occupied": []
+      }
+    },
+    {
+      "name": "dedicated-schemas",
+      "status": "PASS",
+      "detail": {
+        "iam": "rv2_node_20261011_iam_ea1aa3c8",
+        "learner": "rv2_node_20261011_lrn_ea1aa3c8",
+        "content": "rv2_node_20261011_cnt_ea1aa3c8",
+        "assessment": "rv2_node_20261011_asm_ea1aa3c8",
+        "admin": "rv2_node_20261011_adm_ea1aa3c8"
+      }
+    },
+    {
+      "name": "iam-https",
+      "status": "PASS",
+      "detail": {
+        "spki": "mWxImmhXoTpY/vMc1epe0i2JIfAv5s6pLNo2Z+5XPC0=",
+        "schema": "rv2_node_20261011_iam_ea1aa3c8"
+      }
+    },
+    {
+      "name": "node-suite",
+      "status": "PASS",
+      "detail": {
+        "exit": 0,
+        "tests": 361,
+        "pass": 361,
+        "fail": 0
+      }
+    },
+    {
+      "name": "schemas-dropped",
+      "status": "PASS",
+      "detail": {
+        "suffix": "ea1aa3c8",
+        "prefix": "rv2_"
+      }
+    },
+    {
+      "name": "qida-unchanged",
+      "status": "PASS",
+      "detail": {
+        "before": 50,
+        "after": 50,
+        "dockerMutations": "none"
+      }
+    }
+  ]
+}
