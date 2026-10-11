@@ -40,9 +40,9 @@ import tools.jackson.databind.ObjectMapper;
  * completionId / string ids) that the relay forwards verbatim.
  *
  * <p>Enable with {@code -Dlearning.relay.integration=true} plus
- * {@code LEARNING_RELAY_TEST_JDBC_URL/USER/PASSWORD} pointing at the real
- * {@code learning_service} schema. Plan/task rows are cleaned up; the v2
- * outbox row stays as relay evidence for the synthetic subject.
+ * {@code LEARNING_RELAY_TEST_JDBC_URL/USER/PASSWORD} pointing at an isolated
+ * learning owner schema. The statements use that connection's database.
+ * Plan/task rows are cleaned up; the v2 outbox row stays in that schema.
  */
 @EnabledIfSystemProperty(named = "learning.relay.integration", matches = "true")
 class TrustedCompletionFlowIntegrationTest {
@@ -82,7 +82,7 @@ class TrustedCompletionFlowIntegrationTest {
                 active.version(), new IdempotencyKey("t21-complete-key-0001-long"), REQUEST));
 
         List<String> rows = jdbc.query(
-                "SELECT payload_json FROM learning_service.learning_runtime_outbox_event "
+                "SELECT payload_json FROM learning_runtime_outbox_event "
                         + "WHERE tenant_id = 'platform' AND principal_id = ? AND event_type = 'learning.task.completed.v2' "
                         + "ORDER BY created_at DESC LIMIT 5",
                 (rs, rowNum) -> rs.getString("payload_json"), PRINCIPAL);
@@ -98,9 +98,9 @@ class TrustedCompletionFlowIntegrationTest {
         assertThat(payload.path("completionRuleVersion").asText()).isEqualTo("P1_TASK_COMPLETION_V1");
 
         // Keep the outbox row as relay evidence; remove the plan/task working rows.
-        jdbc.update("DELETE FROM learning_service.learning_runtime_task WHERE tenant_id = 'platform' "
+        jdbc.update("DELETE FROM learning_runtime_task WHERE tenant_id = 'platform' "
                 + "AND principal_id = ? AND learning_plan_id = ?", PRINCIPAL, plan.planId());
-        jdbc.update("DELETE FROM learning_service.learning_runtime_plan WHERE tenant_id = 'platform' "
+        jdbc.update("DELETE FROM learning_runtime_plan WHERE tenant_id = 'platform' "
                 + "AND principal_id = ? AND plan_id = ?", PRINCIPAL, plan.planId());
     }
 

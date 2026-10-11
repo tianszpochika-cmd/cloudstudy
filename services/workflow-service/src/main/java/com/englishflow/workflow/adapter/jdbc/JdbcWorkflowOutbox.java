@@ -36,12 +36,12 @@ public class JdbcWorkflowOutbox {
     public String append(String aggregateId, String eventName, String schemaVersion, String dedupeKey,
                          String payloadJson) {
         String eventId = UUID.randomUUID().toString();
-        jdbc.update("""
+        jdbc.update(WorkflowTables.sql("""
                 INSERT INTO workflow_service.workflow_outbox_event
                     (event_id, aggregate_id, event_name, schema_version, dedupe_key, payload_json, status,
                      attempt_count, available_at, created_at, occurred_at)
                 VALUES (?, ?, ?, ?, ?, ?, 'PENDING', 0, UTC_TIMESTAMP(6), UTC_TIMESTAMP(6), UTC_TIMESTAMP(6))
-                """, eventId, aggregateId, eventName, schemaVersion, dedupeKey, payloadJson);
+                """), eventId, aggregateId, eventName, schemaVersion, dedupeKey, payloadJson);
         return eventId;
     }
 
@@ -58,13 +58,13 @@ public class JdbcWorkflowOutbox {
             connection.setAutoCommit(false);
             try {
                 List<ClaimedEvent> claimed;
-                try (java.sql.PreparedStatement statement = connection.prepareStatement("""
+                try (java.sql.PreparedStatement statement = connection.prepareStatement(WorkflowTables.sql("""
                         SELECT event_id, aggregate_id, event_name, schema_version, dedupe_key, payload_json, attempt_count
                           FROM workflow_service.workflow_outbox_event
                          WHERE status = 'PENDING' AND available_at <= UTC_TIMESTAMP(6)
                          ORDER BY available_at, event_id
                          LIMIT ? FOR UPDATE SKIP LOCKED
-                        """)) {
+                        """))) {
                     statement.setInt(1, limit);
                     claimed = new java.util.ArrayList<>();
                     try (java.sql.ResultSet rows = statement.executeQuery()) {
@@ -75,12 +75,12 @@ public class JdbcWorkflowOutbox {
                     }
                 }
                 if (!claimed.isEmpty()) {
-                    try (java.sql.PreparedStatement update = connection.prepareStatement("""
+                    try (java.sql.PreparedStatement update = connection.prepareStatement(WorkflowTables.sql("""
                             UPDATE workflow_service.workflow_outbox_event
                                SET status = 'CLAIMED', locked_by = ?,
                                    locked_until = DATE_ADD(UTC_TIMESTAMP(6), INTERVAL ? SECOND)
                              WHERE event_id = ?
-                            """)) {
+                            """))) {
                         for (ClaimedEvent event : claimed) {
                             update.setString(1, holder);
                             update.setInt(2, leaseSeconds);
@@ -104,39 +104,39 @@ public class JdbcWorkflowOutbox {
 
     /** Marks a claimed event published. Only called after the broker accepted it. */
     public boolean markPublished(String eventId) {
-        return jdbc.update("""
+        return jdbc.update(WorkflowTables.sql("""
                 UPDATE workflow_service.workflow_outbox_event
                    SET status = 'PUBLISHED', published_at = UTC_TIMESTAMP(6), locked_by = NULL, locked_until = NULL
                  WHERE event_id = ? AND status = 'CLAIMED'
-                """, eventId) == 1;
+                """), eventId) == 1;
     }
 
     /** Records a failed publish and makes the row available again after the backoff. */
     public boolean markFailed(String eventId, String errorCode, String errorMessage, int backoffSeconds) {
-        return jdbc.update("""
+        return jdbc.update(WorkflowTables.sql("""
                 UPDATE workflow_service.workflow_outbox_event
                    SET status = 'PENDING', attempt_count = attempt_count + 1, locked_by = NULL, locked_until = NULL,
                        last_error_code = ?, last_error_message = ?,
                        available_at = DATE_ADD(UTC_TIMESTAMP(6), INTERVAL ? SECOND)
                  WHERE event_id = ? AND status = 'CLAIMED'
-                """, errorCode, errorMessage, backoffSeconds, eventId) == 1;
+                """), errorCode, errorMessage, backoffSeconds, eventId) == 1;
     }
 
     /** Releases claims whose holder never came back, so a crashed relay does not strand its rows. */
     public int releaseExpiredClaims() {
-        return jdbc.update("""
+        return jdbc.update(WorkflowTables.sql("""
                 UPDATE workflow_service.workflow_outbox_event
                    SET status = 'PENDING', locked_by = NULL, locked_until = NULL
                  WHERE status = 'CLAIMED' AND locked_until IS NOT NULL AND locked_until <= UTC_TIMESTAMP(6)
-                """);
+                """));
     }
 
     /** The status of one event, read back rather than assumed. */
     public String statusOf(String eventId) {
-        List<String> rows = jdbc.query("""
+        List<String> rows = jdbc.query(WorkflowTables.sql("""
                 SELECT CONCAT(status, '|', IFNULL(locked_by,'null'), '|', attempt_count)
                   FROM workflow_service.workflow_outbox_event WHERE event_id = ?
-                """, (resultSet, index) -> resultSet.getString(1), eventId);
+                """), (resultSet, index) -> resultSet.getString(1), eventId);
         return rows.stream().filter(java.util.Objects::nonNull).findFirst().orElse(null);
     }
 }

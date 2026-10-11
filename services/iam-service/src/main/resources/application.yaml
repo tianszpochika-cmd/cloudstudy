@@ -99,7 +99,9 @@ iam:
     jdbc-url: ${IAM_JDBC_URL:jdbc:mysql://127.0.0.1:13306/iam_service?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC}
     username: ${IAM_JDBC_USERNAME:}
     password: ${IAM_JDBC_PASSWORD:}
-    schema: iam_service
+    # Default stays the owner schema. Tests set IAM_PERSISTENCE_SCHEMA to an isolated schema
+    # whose name is also the database in IAM_JDBC_URL.
+    schema: ${IAM_PERSISTENCE_SCHEMA:iam_service}
   idempotency:
     # Required when persistence is enabled; never use a committed/default production secret.
     replay-secret: ${IAM_IDEMPOTENCY_REPLAY_SECRET:}

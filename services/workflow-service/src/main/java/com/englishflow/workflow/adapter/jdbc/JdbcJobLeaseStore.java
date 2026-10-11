@@ -35,11 +35,11 @@ public class JdbcJobLeaseStore {
 
     /** Registers a job if it is not known yet, so a deployment can add one without a migration. */
     public void declare(String jobName, String cronExpression) {
-        jdbc.update("""
+        jdbc.update(WorkflowTables.sql("""
                 INSERT INTO workflow_service.scheduled_job (job_name, cron_expression, enabled, next_run_at)
                 VALUES (?, ?, 1, UTC_TIMESTAMP(6))
                 ON DUPLICATE KEY UPDATE cron_expression = VALUES(cron_expression)
-                """, jobName, cronExpression);
+                """), jobName, cronExpression);
     }
 
     /**
@@ -50,7 +50,7 @@ public class JdbcJobLeaseStore {
      */
     public LeaseAttempt acquire(String jobName, Duration leaseDuration) {
         long seconds = Math.max(1, leaseDuration.toSeconds());
-        int updated = jdbc.update("""
+        int updated = jdbc.update(WorkflowTables.sql("""
                 UPDATE workflow_service.scheduled_job
                    SET lease_owner = ?,
                        lease_expires_at = DATE_ADD(UTC_TIMESTAMP(6), INTERVAL ? SECOND),
@@ -59,15 +59,15 @@ public class JdbcJobLeaseStore {
                    AND enabled = 1
                    AND (lease_owner IS NULL OR lease_owner = ?
                         OR lease_expires_at IS NULL OR lease_expires_at <= UTC_TIMESTAMP(6))
-                """, holder, seconds, jobName, holder);
+                """), holder, seconds, jobName, holder);
         if (updated == 1) {
             return new LeaseAttempt(true, holder, null);
         }
         // Nothing was updated, so something refused it: either the job is unknown or disabled, or another
         // holder's lease is still running. Which one is reported, because they call for different responses.
-        List<String> rows = jdbc.query("""
+        List<String> rows = jdbc.query(WorkflowTables.sql("""
                 SELECT lease_owner, enabled FROM workflow_service.scheduled_job WHERE job_name = ?
-                """, (resultSet, index) -> resultSet.getString("lease_owner") + "|" + resultSet.getInt("enabled"), jobName);
+                """), (resultSet, index) -> resultSet.getString("lease_owner") + "|" + resultSet.getInt("enabled"), jobName);
         if (rows.isEmpty()) {
             return new LeaseAttempt(false, null, "no such job");
         }
@@ -80,39 +80,39 @@ public class JdbcJobLeaseStore {
 
     /** Records the outcome of a run and releases the lease so the next tick can take it. */
     public void finish(String jobName, String outcome, String errorMessage, Instant nextRunAt) {
-        jdbc.update("""
+        jdbc.update(WorkflowTables.sql("""
                 UPDATE workflow_service.scheduled_job
                    SET lease_owner = NULL, lease_expires_at = NULL, last_outcome = ?,
                        last_error_message = ?, last_run_at = UTC_TIMESTAMP(6), next_run_at = ?
                  WHERE job_name = ? AND lease_owner = ?
-                """, outcome, errorMessage, java.sql.Timestamp.from(nextRunAt), jobName, holder);
+                """), outcome, errorMessage, java.sql.Timestamp.from(nextRunAt), jobName, holder);
     }
 
     /** Releases the lease without recording an outcome, for a run that failed before doing anything. */
     public void abandon(String jobName) {
-        jdbc.update("""
+        jdbc.update(WorkflowTables.sql("""
                 UPDATE workflow_service.scheduled_job
                    SET lease_owner = NULL, lease_expires_at = NULL
                  WHERE job_name = ? AND lease_owner = ?
-                """, jobName, holder);
+                """), jobName, holder);
     }
 
     /** Whether the given holder currently holds the lease, read back rather than assumed. */
     public boolean holds(String jobName, String candidate) {
-        List<String> rows = jdbc.query("""
+        List<String> rows = jdbc.query(WorkflowTables.sql("""
                 SELECT lease_owner FROM workflow_service.scheduled_job WHERE job_name = ?
-                """, (resultSet, index) -> resultSet.getString("lease_owner"), jobName);
+                """), (resultSet, index) -> resultSet.getString("lease_owner"), jobName);
         return !rows.isEmpty() && candidate.equals(rows.getFirst());
     }
 
     /** Jobs that are due and whose lease is free or expired. */
     public List<String> due(int limit) {
-        return jdbc.query("""
+        return jdbc.query(WorkflowTables.sql("""
                 SELECT job_name FROM workflow_service.scheduled_job
                  WHERE enabled = 1 AND (next_run_at IS NULL OR next_run_at <= UTC_TIMESTAMP(6))
                    AND (lease_owner IS NULL OR lease_expires_at IS NULL OR lease_expires_at <= UTC_TIMESTAMP(6))
                  ORDER BY next_run_at LIMIT ?
-                """, (resultSet, index) -> resultSet.getString("job_name"), limit);
+                """), (resultSet, index) -> resultSet.getString("job_name"), limit);
     }
 
     /** The domain rule, exposed so a caller can ask without touching the database. */
@@ -129,11 +129,11 @@ public class JdbcJobLeaseStore {
     public Optional<String> describe(String jobName) {
         // Every nullable column is wrapped: CONCAT returns NULL if any argument is NULL, so a released lease
         // made this return an empty Optional and the caller saw a NullPointerException instead of a row.
-        List<String> rows = jdbc.query("""
+        List<String> rows = jdbc.query(WorkflowTables.sql("""
                 SELECT CONCAT(IFNULL(lease_owner,'null'), '|', IFNULL(lease_expires_at,'null'), '|',
                               attempt_count, '|', IFNULL(last_outcome,'null'))
                   FROM workflow_service.scheduled_job WHERE job_name = ?
-                """, (resultSet, index) -> resultSet.getString(1), jobName);
+                """), (resultSet, index) -> resultSet.getString(1), jobName);
         return rows.stream().filter(java.util.Objects::nonNull).findFirst();
     }
 }

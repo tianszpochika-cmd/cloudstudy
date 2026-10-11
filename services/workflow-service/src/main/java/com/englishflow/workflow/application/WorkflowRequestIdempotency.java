@@ -1,5 +1,6 @@
 package com.englishflow.workflow.application;
 
+import com.englishflow.workflow.adapter.jdbc.WorkflowTables;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -45,10 +46,10 @@ public class WorkflowRequestIdempotency {
                                                         Supplier<Map<String, Object>> action) {
         return executeInternal(tenantId, actorSubject, "SAGA_COMPENSATE", key,
                 Map.of("sagaId", sagaId, "body", body), "sagaId", () -> {
-                    List<Map<String, Object>> saga = jdbc.queryForList("""
+                    List<Map<String, Object>> saga = jdbc.queryForList(WorkflowTables.sql("""
                             SELECT saga_id FROM workflow_service.saga_instance
                              WHERE saga_id = ? FOR UPDATE
-                            """, sagaId);
+                            """), sagaId);
                     if (saga.isEmpty()) {
                         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "saga was not found");
                     }

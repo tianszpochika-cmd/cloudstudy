@@ -107,7 +107,7 @@ class JdbcJobLeaseStoreIntegrationTest {
         String job = jobName();
         JdbcJobLeaseStore store = new JdbcJobLeaseStore(jdbc, "instance-a");
         store.declare(job, "*/5 * * * *");
-        jdbc.update("UPDATE workflow_service.scheduled_job SET enabled = 0 WHERE job_name = ?", job);
+        jdbc.update(WorkflowTables.sql("UPDATE workflow_service.scheduled_job SET enabled = 0 WHERE job_name = ?"), job);
 
         JdbcJobLeaseStore.LeaseAttempt refused = store.acquire(job, Duration.ofMinutes(5));
 

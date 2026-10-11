@@ -30,45 +30,45 @@ public class JdbcRecoveryStore implements ManualRecoveryService.RecoveryStore {
 
     @Override
     public void save(ManualRecoveryRequest request, String subjectType, String subjectId, String action, String reason) {
-        jdbc.update("""
+        jdbc.update(WorkflowTables.sql("""
                 INSERT INTO workflow_service.manual_recovery_request
                     (recovery_id, subject_type, subject_id, action, reason, status, requested_by, requested_at)
                 VALUES (?, ?, ?, ?, ?, ?, ?, UTC_TIMESTAMP(6))
-                """, request.recoveryId(), subjectType, subjectId, action, reason, request.status().name(),
+                """), request.recoveryId(), subjectType, subjectId, action, reason, request.status().name(),
                 request.requestedBy());
     }
 
     @Override
     public void update(ManualRecoveryRequest request) {
-        jdbc.update("""
+        jdbc.update(WorkflowTables.sql("""
                 UPDATE workflow_service.manual_recovery_request
                    SET status = ?, approved_by = ?, approved_at = CASE WHEN ? IS NULL THEN approved_at ELSE UTC_TIMESTAMP(6) END
                  WHERE recovery_id = ?
-                """, request.status().name(), request.approvedBy(), request.approvedBy(), request.recoveryId());
+                """), request.status().name(), request.approvedBy(), request.approvedBy(), request.recoveryId());
     }
 
     @Override
     public void recordReceipt(ManualRecoveryRequest request, String executor) {
-        jdbc.update("""
+        jdbc.update(WorkflowTables.sql("""
                 UPDATE workflow_service.manual_recovery_request
                    SET executed_at = UTC_TIMESTAMP(6)
                  WHERE recovery_id = ?
-                """, request.recoveryId());
-        jdbc.update("""
+                """), request.recoveryId());
+        jdbc.update(WorkflowTables.sql("""
                 INSERT INTO workflow_service.workflow_receipt
                     (receipt_id, subject_type, subject_id, operation, outcome, detail_json, actor, occurred_at)
                 VALUES (UUID(), 'manual_recovery', ?, 'execute', ?, NULL, ?, UTC_TIMESTAMP(6))
-                """, request.recoveryId(), request.status().name(), executor);
+                """), request.recoveryId(), request.status().name(), executor);
     }
 
     @Override
     public Optional<ManualRecoveryService.StoredRecovery> find(String recoveryId) {
-        List<ManualRecoveryService.StoredRecovery> rows = jdbc.query("""
+        List<ManualRecoveryService.StoredRecovery> rows = jdbc.query(WorkflowTables.sql("""
                 SELECT recovery_id, subject_type, subject_id, action, reason, status, requested_by, approved_by
                   FROM workflow_service.manual_recovery_request
                  WHERE recovery_id = ?
                  FOR UPDATE
-                """, (resultSet, index) -> new ManualRecoveryService.StoredRecovery(
+                """), (resultSet, index) -> new ManualRecoveryService.StoredRecovery(
                 ManualRecoveryRequest.rehydrated(resultSet.getString("recovery_id"),
                         resultSet.getString("requested_by"),
                         ManualRecoveryRequest.Status.valueOf(resultSet.getString("status")),

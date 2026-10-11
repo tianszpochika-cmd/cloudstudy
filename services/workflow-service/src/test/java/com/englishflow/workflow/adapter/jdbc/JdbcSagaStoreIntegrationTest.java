@@ -43,11 +43,11 @@ class JdbcSagaStoreIntegrationTest {
     }
 
     private static void insertSaga(JdbcTemplate jdbc, String sagaId, String name) {
-        jdbc.update("""
+        jdbc.update(WorkflowTables.sql("""
                 INSERT INTO workflow_service.saga_instance
                     (saga_id, saga_name, correlation_id, status, attempt_count, started_at)
                 VALUES (?, ?, ?, 'STARTED', 0, UTC_TIMESTAMP(6))
-                """, sagaId, name, UUID.randomUUID().toString());
+                """), sagaId, name, UUID.randomUUID().toString());
     }
 
     @Test
@@ -97,10 +97,10 @@ class JdbcSagaStoreIntegrationTest {
         // Sagas abandoned by earlier runs share this database and the sweep returns the fifty oldest, so without this the
         // case measures the order of unrelated rows rather than the predicate it is about. Only rows in a non-terminal
         // state are cleared, and only for this case: a finished saga is what the second assertion needs.
-        int abandonedByEarlierRuns = jdbc.update("""
+        int abandonedByEarlierRuns = jdbc.update(WorkflowTables.sql("""
                 DELETE FROM workflow_service.saga_instance
                  WHERE status NOT IN ('COMPLETED','COMPENSATED','COMPENSATION_FAILED')
-                """);
+                """));
         assertTrue(abandonedByEarlierRuns >= 0, "the cleanup has to run");
         String unfinished = UUID.randomUUID().toString();
         String finished = UUID.randomUUID().toString();

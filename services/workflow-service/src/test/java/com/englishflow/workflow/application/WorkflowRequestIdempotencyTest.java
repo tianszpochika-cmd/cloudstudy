@@ -13,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import tools.jackson.databind.ObjectMapper;
 
+import com.englishflow.workflow.adapter.jdbc.WorkflowTables;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -153,7 +155,7 @@ class WorkflowRequestIdempotencyTest {
 
         @Override
         public List<Map<String, Object>> queryForList(String sql, Object... args) {
-            if (sql.contains("FROM workflow_service.saga_instance") && sql.contains("FOR UPDATE")) {
+            if (sql.contains("FROM " + WorkflowTables.schema() + ".saga_instance") && sql.contains("FOR UPDATE")) {
                 sagaLocks++;
                 return List.of(Map.of("saga_id", args[0]));
             }

@@ -60,7 +60,7 @@ class JdbcWorkflowOutboxIntegrationTest {
     void removeWhatThisTestAppended() {
         JdbcTemplate jdbc = jdbc();
         for (String eventId : appended) {
-            jdbc.update("DELETE FROM workflow_service.workflow_outbox_event WHERE event_id = ?", eventId);
+            jdbc.update(WorkflowTables.sql("DELETE FROM workflow_service.workflow_outbox_event WHERE event_id = ?"), eventId);
         }
         appended.clear();
     }
@@ -171,7 +171,7 @@ class JdbcWorkflowOutboxIntegrationTest {
         }
 
         String before = jdbc.queryForObject(
-                "SELECT CONCAT(status, '|', IFNULL(locked_until,'null'), '|', UTC_TIMESTAMP(6)) FROM workflow_service.workflow_outbox_event WHERE event_id = ?",
+                WorkflowTables.sql("SELECT CONCAT(status, '|', IFNULL(locked_until,'null'), '|', UTC_TIMESTAMP(6)) FROM workflow_service.workflow_outbox_event WHERE event_id = ?"),
                 String.class, eventId);
         assertTrue(crashed.releaseExpiredClaims() >= 1,
                 "at least the expired claim should be released; row was " + before);

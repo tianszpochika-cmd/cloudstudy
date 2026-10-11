@@ -1,5 +1,6 @@
 package com.englishflow.workflow.config;
 
+import com.englishflow.workflow.adapter.jdbc.WorkflowTables;
 import com.englishflow.workflow.adapter.http.SagaController;
 import com.englishflow.workflow.adapter.jdbc.JdbcJobLeaseStore;
 import com.englishflow.workflow.adapter.jdbc.JdbcRecoveryStore;
@@ -66,11 +67,11 @@ public class WorkflowWiringConfiguration {
     @Bean
     SagaController.SagaCompensationExecutorAdapter sagaCompensationExecutorAdapter(JdbcTemplate jdbc) {
         return stepName -> {
-            jdbc.update("""
+            jdbc.update(WorkflowTables.sql("""
                     INSERT INTO workflow_service.workflow_receipt
                         (receipt_id, subject_type, subject_id, operation, outcome, detail_json, actor, occurred_at)
                     VALUES (UUID(), 'saga_step', ?, 'compensate', 'ATTEMPTED', NULL, 'workflow-service', UTC_TIMESTAMP(6))
-                    """, stepName);
+                    """), stepName);
             log.warn("step {} recorded as a receipt; owner work stays operator-driven (see compensation transport)", stepName);
         };
     }
@@ -88,11 +89,11 @@ public class WorkflowWiringConfiguration {
     @Bean
     CompensationTransport sagaCompensationTransport(JdbcTemplate jdbc) {
         return compensationName -> {
-            jdbc.update("""
+            jdbc.update(WorkflowTables.sql("""
                     INSERT INTO workflow_service.workflow_receipt
                         (receipt_id, subject_type, subject_id, operation, outcome, detail_json, actor, occurred_at)
                     VALUES (UUID(), 'saga_step', ?, 'compensate', 'REFUSED_NO_TRANSPORT', NULL, 'workflow-service', UTC_TIMESTAMP(6))
-                    """, compensationName);
+                    """), compensationName);
             throw new IllegalStateException(
                     "no compensation transport for '" + compensationName + "'");
         };
