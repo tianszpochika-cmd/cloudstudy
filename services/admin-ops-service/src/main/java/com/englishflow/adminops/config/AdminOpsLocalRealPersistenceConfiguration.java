@@ -28,7 +28,9 @@ public class AdminOpsLocalRealPersistenceConfiguration {
                 .dataSource(dataSource)
                 .schemas(schema)
                 .defaultSchema(schema)
-                .createSchemas(true)
+                // The owner database is created before startup. Leaving schema
+                // creation off keeps the runtime user inside that database.
+                .createSchemas(false)
                 .baselineOnMigrate(true)
                 .baselineVersion("1")
                 .locations("classpath:db/migration")
