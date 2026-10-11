@@ -112,7 +112,16 @@ function request(options) {
     }, (response) => {
       const chunks = [];
       response.on('data', (chunk) => chunks.push(chunk));
-      response.on('end', () => resolve({ status: response.statusCode, body: Buffer.concat(chunks).toString('utf8') }));
+      response.on('end', () => {
+      const result = { status: response.statusCode, body: Buffer.concat(chunks).toString('utf8'), headers: response.headers };
+      if (result.status === 429 && (options._rateAttempt || 0) < 3) {
+        const retryAfter = Number(result.headers['retry-after'] || 1);
+        const waitMs = Math.min(60, Math.max(1, Number.isFinite(retryAfter) ? retryAfter : 1)) * 1000;
+        setTimeout(() => request({ ...options, _rateAttempt: (options._rateAttempt || 0) + 1 }).then(resolve, reject), waitMs);
+        return;
+      }
+      resolve(result);
+    });
     });
     req.on('timeout', () => req.destroy(new Error('timeout')));
     req.on('error', reject);
@@ -538,11 +547,11 @@ async function main() {
   const gateway = startJava('api-gateway', [
     ...trustArgs, '-jar', jar('api-gateway'),
   ], {
-    ...commonSecurity, SPRING_PROFILES_ACTIVE: 'local', API_GATEWAY_PORT: '18070', SERVER_ADDRESS: '127.0.0.1',
+    ...commonSecurity, SPRING_PROFILES_ACTIVE: 'local,evidence', API_GATEWAY_PORT: '18070', SERVER_ADDRESS: '127.0.0.1',
     LEARNER_SERVICE_BASE_URL: 'http://127.0.0.1:18088', CONTENT_SERVICE_BASE_URL: 'http://127.0.0.1:18089',
     ASSESSMENT_SERVICE_BASE_URL: 'http://127.0.0.1:18091', ADMIN_OPS_SERVICE_BASE_URL: 'http://127.0.0.1:18097',
     IAM_SERVICE_BASE_URL: 'https://127.0.0.1:18087',
-    GATEWAY_RATE_LIMIT_BACKEND: 'memory', GATEWAY_RATE_LIMIT_HIGH_RISK_ADMIN_REQUESTS: '2000',
+    GATEWAY_RATE_LIMIT_BACKEND: 'memory',
   });
   await waitHealth(gateway, () => request({ port: ports.gateway, path: '/actuator/health' }), 'GATEWAY');
   const mobile = startNode('mobile-h5', ['--filter', '@englishflow/mobile', 'dev:h5']);

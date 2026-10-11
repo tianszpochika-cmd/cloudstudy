@@ -8,6 +8,8 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyS
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.env.StandardEnvironment;
 
+import com.englishflow.gateway.policy.GatewayRoutePolicy;
+
 import java.time.Duration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -51,5 +53,46 @@ class GatewayYamlLoadingTest {
         assertFalse(properties.compatibility().anonymousReadEnabled(), "anonymous compatibility reads must stay disabled");
         assertEquals(Duration.ofMillis(750), properties.rateLimit().backendTimeout());
         assertTrue(properties.rateLimit().isBackendTimeoutStrictlyPositive());
+    }
+
+    @Test
+    void productionHighRiskDefaultStaysThirtyAndEvidenceProfileIsIsolated() throws Exception {
+        var loader = new YamlPropertySourceLoader();
+        var production = loader.load("gateway", new ClassPathResource("application.yml")).getFirst();
+        var evidence = loader.load("evidence", new ClassPathResource("application-evidence.yml")).getFirst();
+        assertTrue(String.valueOf(production.getProperty(
+                "gateway.rate-limit.policies.high-risk-admin.requests-per-window")).contains(":30}"));
+        assertEquals("evidence", evidence.getProperty("spring.config.activate.on-profile"));
+        assertEquals("2000", String.valueOf(evidence.getProperty(
+                "gateway.rate-limit.policies.high-risk-admin.requests-per-window")));
+        assertFalse(String.valueOf(evidence.getProperty(
+                "gateway.rate-limit.policies.high-risk-admin.requests-per-window")).contains("${"));
+
+        StandardEnvironment defaults = withoutSystemSources();
+        defaults.getPropertySources().addFirst(production);
+        ConfigurationPropertySources.attach(defaults);
+        GatewayProperties productionProperties = Binder.get(defaults)
+                .bind("gateway", Bindable.of(GatewayProperties.class))
+                .orElseThrow(() -> new IllegalStateException("production gateway properties were not bound"));
+        assertEquals(30, productionProperties.rateLimit().policyFor(GatewayRoutePolicy.AuthClass.HIGH_RISK_ADMIN).requestsPerWindow());
+        assertEquals(240, productionProperties.rateLimit().policyFor(GatewayRoutePolicy.AuthClass.PUBLIC_READ).requestsPerWindow());
+
+        StandardEnvironment overlay = withoutSystemSources();
+        overlay.getPropertySources().addLast(production);
+        overlay.getPropertySources().addFirst(evidence);
+        ConfigurationPropertySources.attach(overlay);
+        GatewayProperties evidenceProperties = Binder.get(overlay)
+                .bind("gateway", Bindable.of(GatewayProperties.class))
+                .orElseThrow(() -> new IllegalStateException("evidence gateway properties were not bound"));
+        assertEquals(2000, evidenceProperties.rateLimit().policyFor(GatewayRoutePolicy.AuthClass.HIGH_RISK_ADMIN).requestsPerWindow());
+        assertEquals(240, evidenceProperties.rateLimit().policyFor(GatewayRoutePolicy.AuthClass.PUBLIC_READ).requestsPerWindow());
+        assertEquals(30, productionProperties.rateLimit().policyFor(GatewayRoutePolicy.AuthClass.HIGH_RISK_ADMIN).requestsPerWindow());
+    }
+
+    private static StandardEnvironment withoutSystemSources() {
+        StandardEnvironment environment = new StandardEnvironment();
+        environment.getPropertySources().remove("systemProperties");
+        environment.getPropertySources().remove("systemEnvironment");
+        return environment;
     }
 }
