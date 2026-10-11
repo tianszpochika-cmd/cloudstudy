@@ -209,6 +209,10 @@ services:
       ASSESSMENT_FLYWAY_ENABLED: "false"
       SPRING_FLYWAY_ENABLED: "false"
       ASSESSMENT_DB_URL: jdbc:mysql://mysql:3306/assessment_service?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&useSSL=true
+      # Placement bank/scoring read content and learner owners over the compose network, not container loopback.
+      ASSESSMENT_PLACEMENT_BANK_CONTENT_BASE_URL: http://content-service:18089
+      ASSESSMENT_PLACEMENT_BANK_LEARNER_BASE_URL: http://learner-service:18088
+      ASSESSMENT_PLACEMENT_SCORE_CONTENT_BASE_URL: http://content-service:18089
       ASSESSMENT_DB_USERNAME: svc_assessment
       ASSESSMENT_DB_PASSWORD: ${ASSESSMENT_DB_PASSWORD:?set in server env file}
 
