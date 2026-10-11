@@ -3,6 +3,8 @@ package com.englishflow.adminops.config;
 import java.time.Clock;
 
 import com.englishflow.adminops.adapter.jdbc.JdbcAdminOpsAdapters;
+import com.englishflow.adminops.closure.ClosureDeskStore;
+import com.englishflow.adminops.closure.JdbcClosureDeskStore;
 import com.englishflow.adminops.adapter.memory.InMemoryAdminProjection;
 import com.englishflow.adminops.adapter.memory.InMemoryAuditTrail;
 import com.englishflow.adminops.adapter.memory.InMemoryDomainCommandPort;
@@ -26,6 +28,8 @@ import com.englishflow.adminops.support.SupportTicketService;
 import com.englishflow.adminops.support.SupportTicketStore;
 import com.englishflow.adminops.support.MediaObjectAuthorizationPort;
 import tools.jackson.databind.ObjectMapper;
+import org.flywaydb.core.Flyway;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -137,6 +141,13 @@ public class AdminOpsConfiguration {
     @Profile("local-real")
     RiskCaseStore localRealRiskCaseStore(JdbcTemplate jdbc, ObjectMapper mapper) {
         return new JdbcAdminOpsAdapters.RiskCases(jdbc, mapper);
+    }
+
+    @Bean
+    @Profile("local-real")
+    ClosureDeskStore jdbcClosureDeskStore(JdbcTemplate jdbc, ObjectMapper mapper, ObjectProvider<Flyway> flyway) {
+        flyway.ifAvailable(Flyway::migrate);
+        return new JdbcClosureDeskStore(jdbc, mapper);
     }
 
     @Bean

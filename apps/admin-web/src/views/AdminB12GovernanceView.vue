@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import AdminPageIntro from "../components/AdminPageIntro.vue";
 import { b12ModeLabel, b12ReasonLabel, b12StatusLabel, b12T } from "../platform/b12-i18n";
 import { useAdminStore } from "../stores/admin";
 import { B12_MODERATION_STATUSES, useB12AdminStore } from "../stores/b12";
 import { RISK_CATEGORIES, RISK_COMMANDS, RISK_SEVERITIES, useRiskAdminStore } from "../stores/risk";
 import { postClosure, readClosureBoard } from "../api/closure";
-import { governanceNotice, routeNotice, type ClosureBoard } from "../domain/it7-closure";
+import { governanceNotice, legacyDispositionRefusal, routeNotice, type ClosureBoard } from "../domain/it7-closure";
 
 const session = useAdminStore();
 const store = useB12AdminStore();
@@ -14,6 +14,8 @@ const risk = useRiskAdminStore();
 
 const closure = ref<ClosureBoard | null>(null);
 const closureNotice = ref("");
+const dispositionWritesOpen = computed(() => closure.value?.dispositionOpen === true);
+const dispositionRefusal = computed(() => legacyDispositionRefusal(closure.value));
 const showFileForm = ref(false);
 const fileCategory = ref<string>("ACCOUNT_SECURITY");
 const fileSeverity = ref<string>("MEDIUM");
@@ -44,6 +46,7 @@ async function submitFile(): Promise<void> {
 }
 
 function openDecide(caseId: string, command: string): void {
+  if (!dispositionWritesOpen.value) return;
   decideCaseId.value = caseId;
   decideCommand.value = command;
   decideReason.value = "";
@@ -186,12 +189,12 @@ watch(
           <div class="risk-actions">
             <el-button size="small" :loading="risk.busy" @click="risk.load">刷新</el-button>
             <el-button
-              v-if="risk.canWrite()"
+              v-if="dispositionWritesOpen && risk.canWrite()"
               size="small"
               :loading="risk.busy"
               @click="risk.evaluate"
             >评估规则</el-button>
-            <el-button v-if="risk.canWrite()" size="small" type="primary" @click="showFileForm = !showFileForm">
+            <el-button v-if="dispositionWritesOpen && risk.canWrite()" size="small" type="primary" @click="showFileForm = !showFileForm">
               {{ showFileForm ? "收起" : "新建案件" }}
             </el-button>
           </div>
@@ -208,7 +211,7 @@ watch(
         <el-table-column prop="status" label="状态" min-width="110" />
         <el-table-column prop="source" label="来源" min-width="120" />
         <el-table-column prop="title" label="标题" min-width="200" />
-        <el-table-column label="处置" min-width="300">
+        <el-table-column v-if="dispositionWritesOpen" label="处置" min-width="300">
           <template #default="scope">
             <el-button
               v-for="command in RISK_COMMANDS"
@@ -220,9 +223,10 @@ watch(
           </template>
         </el-table-column>
       </el-table>
+      <el-alert v-if="dispositionRefusal" :title="dispositionRefusal" type="warning" :closable="false" show-icon class="risk-notice" data-disposition-refusal="true" />
       <el-alert v-if="risk.lastNotice" :title="risk.lastNotice" type="success" :closable="false" show-icon class="risk-notice" />
       <el-alert v-if="risk.lastError && risk.viewState !== 'error'" :title="risk.lastError" type="error" :closable="false" show-icon class="risk-notice" />
-      <div v-if="showFileForm" class="risk-form">
+      <div v-if="dispositionWritesOpen && showFileForm" class="risk-form">
         <el-select v-model="fileCategory" placeholder="类别" style="width: 200px">
           <el-option v-for="category in RISK_CATEGORIES" :key="category" :label="category" :value="category" />
         </el-select>

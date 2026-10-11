@@ -54,6 +54,9 @@ test('admin closure copy separates empty, frozen writes and audit', () => {
   assert.equal(admin.governanceNotice({ casesState: 'NO_CASES' }).includes('没有权限'), false)
   assert.equal(admin.governanceNotice({ casesState: 'FORBIDDEN' }).includes('没有查看'), true)
   assert.equal(admin.governanceNotice({ casesState: 'HAS_CASES' }).includes('处置写链没有打开'), true)
+  assert.equal(admin.legacyDispositionRefusal({ dispositionOpen: false }).includes('处置写链没有打开'), true)
+  assert.equal(admin.legacyDispositionRefusal({ dispositionOpen: true }), '')
+  assert.equal(admin.legacyDispositionRefusal(null).includes('已关闭'), true)
   assert.equal(admin.routeNotice({ independentRiskRoute: false }).includes('/risk'), true)
   const audit = admin.auditNotice({
     auditSharedWithLearner: false,
@@ -79,5 +82,9 @@ test('learner and admin pages render the closure desk', () => {
   assert.equal(joined.includes('it7-closure'), true)
   assert.equal(joined.includes('path: "/risk"'), true)
   assert.equal(joined.includes('收口只读'), true)
+  const governance = readFileSync(resolve('apps/admin-web/src/views/AdminB12GovernanceView.vue'), 'utf8')
+  assert.equal(governance.includes('legacyDispositionRefusal'), true)
+  assert.equal(governance.includes('dispositionWritesOpen && risk.canWrite()'), true)
+  assert.equal(governance.includes('v-if="dispositionWritesOpen" label="处置"'), true)
   assert.equal(joined.includes('内部审计不提供给学习端'), true)
 })

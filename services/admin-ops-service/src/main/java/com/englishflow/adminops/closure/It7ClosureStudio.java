@@ -10,12 +10,15 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
  * IT-7 closure desk. Disposition writes stay frozen. Hash-only tickets are traces,
- * not a claim that support understood the problem. The desk keeps its facts in this
- * process; a restart must replay them. It does not replace the older risk service.
+ * not a claim that support understood the problem. On the local-real profile the desk
+ * writes one owner-schema snapshot and a new process reads that snapshot back.
+ * It does not replace the older risk service.
  */
 @Component
 public class It7ClosureStudio {
@@ -29,6 +32,7 @@ public class It7ClosureStudio {
     private static final Pattern SECRET_KEY = Pattern.compile("(?i)password|token|authorization|secret|cookie");
 
     private final Object guard = new Object();
+    private final ClosureDeskStore store;
     private final List<Case> cases = new ArrayList<>();
     private final List<Trace> traces = new ArrayList<>();
     private final List<ExportJob> exports = new ArrayList<>();
@@ -39,6 +43,20 @@ public class It7ClosureStudio {
     private final Map<String, Result> idempotency = new LinkedHashMap<>();
     private final Map<String, String> idempotencyFingerprint = new LinkedHashMap<>();
     private int isolationWrites;
+
+    public It7ClosureStudio() {
+        this(new MemoryClosureDeskStore());
+    }
+
+    @Autowired
+    public It7ClosureStudio(ObjectProvider<ClosureDeskStore> stores) {
+        this(stores.getIfAvailable(MemoryClosureDeskStore::new));
+    }
+
+    public It7ClosureStudio(ClosureDeskStore store) {
+        this.store = store == null ? new MemoryClosureDeskStore() : store;
+        hydrate();
+    }
 
     public int caseCount() {
         synchronized (guard) {
@@ -72,8 +90,75 @@ public class It7ClosureStudio {
                 idempotency.put(key, result);
                 idempotencyFingerprint.put(key, fingerprint);
             }
+            persist();
             return result;
         }
+    }
+
+    private void hydrate() {
+        ClosureDeskState state = store.load();
+        if (state == null) {
+            return;
+        }
+        cases.clear();
+        for (ClosureDeskState.CaseRow row : state.cases()) {
+            cases.add(new Case(row.id(), row.owner(), row.sourceRef(), row.title(), row.updatedAt()));
+        }
+        traces.clear();
+        for (ClosureDeskState.TraceRow row : state.traces()) {
+            traces.add(new Trace(row.id(), row.owner(), row.bodyHash()));
+        }
+        exports.clear();
+        for (ClosureDeskState.ExportRow row : state.exports()) {
+            exports.add(new ExportJob(row.id(), row.owner(), row.state()));
+        }
+        deletions.clear();
+        for (ClosureDeskState.DeletionRow row : state.deletions()) {
+            deletions.add(new Deletion(row.id(), row.owner()));
+        }
+        audits.clear();
+        for (ClosureDeskState.AuditRow row : state.audits()) {
+            audits.add(new AuditRow(row.id(), row.operation(), row.resourceRef(), row.occurredAt()));
+        }
+        outboxFacts.clear();
+        outboxFacts.addAll(state.outboxFacts());
+        deadLetters.clear();
+        deadLetters.addAll(state.deadLetters());
+        idempotency.clear();
+        idempotencyFingerprint.clear();
+        for (ClosureDeskState.IdempotencyRow row : state.idempotency()) {
+            idempotency.put(row.key(), new Result(row.status(), row.data(), row.error()));
+            idempotencyFingerprint.put(row.key(), row.fingerprint() == null ? "" : row.fingerprint());
+        }
+        isolationWrites = state.isolationWrites();
+    }
+
+    private void persist() {
+        List<ClosureDeskState.IdempotencyRow> keys = new ArrayList<>();
+        for (Map.Entry<String, Result> entry : idempotency.entrySet()) {
+            Result result = entry.getValue();
+            keys.add(new ClosureDeskState.IdempotencyRow(
+                    entry.getKey(),
+                    idempotencyFingerprint.getOrDefault(entry.getKey(), ""),
+                    result.status(),
+                    result.data(),
+                    result.error()));
+        }
+        store.save(new ClosureDeskState(
+                cases.stream().map(item -> new ClosureDeskState.CaseRow(
+                        item.id(), item.owner(), item.sourceRef(), item.title(), item.updatedAt())).toList(),
+                traces.stream().map(item -> new ClosureDeskState.TraceRow(
+                        item.id(), item.owner(), item.bodyHash())).toList(),
+                exports.stream().map(item -> new ClosureDeskState.ExportRow(
+                        item.id(), item.owner(), item.state())).toList(),
+                deletions.stream().map(item -> new ClosureDeskState.DeletionRow(
+                        item.id(), item.owner())).toList(),
+                audits.stream().map(item -> new ClosureDeskState.AuditRow(
+                        item.id(), item.operation(), item.resourceRef(), item.occurredAt())).toList(),
+                List.copyOf(outboxFacts),
+                List.copyOf(deadLetters),
+                keys,
+                isolationWrites));
     }
 
     private Result dispatch(Actor actor, String command, Map<String, Object> input) {

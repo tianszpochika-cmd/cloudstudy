@@ -21,6 +21,11 @@ export function governanceNotice(board: ClosureBoard | null): string {
   return board?.lockCopy || '写入开关未开启。可以查看锁定理由、影响和恢复条件，这次不会锁定账号或内容。'
 }
 
+export function legacyDispositionRefusal(board: ClosureBoard | null): string {
+  if (board?.dispositionOpen === true) return ''
+  return '处置写链没有打开。旧的风险处置写入口已关闭，和收口区一致。'
+}
+
 export function routeNotice(board: ClosureBoard | null): string {
   if (board?.independentRiskRoute === false) return '没有独立的风险页。/risk 会回到治理页，权限检查仍然有效。'
   return '没有独立的风险页。/risk 会回到治理页，权限检查仍然有效。'
