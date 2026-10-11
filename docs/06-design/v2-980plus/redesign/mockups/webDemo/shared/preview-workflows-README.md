@@ -68,4 +68,4 @@
 
 所有同页重绘、导航、原生 hash 变化、角色切换、关闭未来预览前先保存旧 DOM 归属的 key/route/entity 缓冲；失败保留当前可见输入并拒绝依赖保存的导航（hash 回到旧路由，不重绘），允许恢复存储后重试。刷新保留输入；宿主会清除管理会话，须再次显式合成登录，不自动授予 staff。账号或 fixture 切换重新读各自缓冲，选择与查询上下文清零。
 
-实际输入→导航→返回→刷新→登录→读回、角色/阶段重绘、实体/账号隔离和 QuotaExceeded 拒绝离开，已在 `shared/qa-pages.cjs` 通过真实 DOM 用例验证，原始记录在 `.git/codex-local-backups/pages-qa-1791714857740/report.json`（56 实际操作，0 失败；矩阵与后续工作流复验另记）。
+实际输入→导航→返回→刷新→登录→读回、角色/阶段重绘、实体/账号隔离，以及 QuotaExceeded 拒绝按钮/原生hash导航与同页render不换节点，已在 `shared/qa-pages.cjs` 通过真实 DOM 用例验证。最终原始记录 `.git/codex-local-backups/pages-qa-1791716251915/report.json`：4068渲染组合 +88实际操作，0失败/浏览器错误/外部请求/源码漂移、退出码0。24页在数据迁移后重新点通主操作；渲染与业务证据分开，详见 `qa-pages-README.md`。

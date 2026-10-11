@@ -1,58 +1,7 @@
 <!doctype html>
-<html lang="zh-CN">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>语学星 · 第二版静态前端演示枢纽</title>
-<style>
-:root{--bg:#f6f3fc;--card:#fff;--ink:#231a33;--mut:#6f6480;--brand:#5b2fd6;--brand2:#8b5cf6;--line:#e7e1f5;--warn:#b7791f}
-*{box-sizing:border-box}body{margin:0;background:linear-gradient(165deg,#f6f3fc,#ebe4fa 40%,#f8f6fc);color:var(--ink);font:16px/1.65 system-ui,"PingFang SC","Microsoft YaHei",sans-serif;min-height:100vh}
-.wrap{max-width:1080px;margin:0 auto;padding:48px 24px 64px}
-.badge{display:inline-flex;align-items:center;gap:8px;background:#fff7e6;color:var(--warn);border:1px solid #f0d9a8;border-radius:999px;padding:6px 14px;font-size:13px;font-weight:700;margin-bottom:18px}
-h1{font-size:34px;margin:0 0 8px;letter-spacing:-.02em}
-.sub{color:var(--mut);margin:0 0 28px;max-width:720px}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
-@media(max-width:900px){.grid{grid-template-columns:1fr}}
-a.card{display:flex;flex-direction:column;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px;text-decoration:none;color:inherit;box-shadow:0 10px 30px rgba(91,47,214,.06);transition:transform .15s,border-color .15s}
-a.card:hover{transform:translateY(-2px);border-color:var(--brand)}
-.icon{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff}
-a.card b{font-size:18px}
-a.card p{margin:0;color:var(--mut);font-size:14px;flex:1}
-.tag{display:inline-block;font-size:11px;font-weight:700;background:#efeaf9;color:var(--brand);border-radius:999px;padding:3px 10px}
-.foot{margin-top:36px;padding-top:20px;border-top:1px solid var(--line);color:var(--mut);font-size:13px}
-.foot code{background:#efeaf9;padding:1px 6px;border-radius:6px;color:var(--brand)}
-</style>
-</head>
-<body>
-<div class="wrap">
-  <div class="badge">⚠ 静态演示 / 假数据 · 不连正式后端 · 不能当作业务验收</div>
-  <h1>语学星 · 第二版前端 Demo</h1>
-  <p class="sub">根据移动端全量静态原型反推三端界面。学员网页端与管理端为<strong>独立桌面布局</strong>。请选择一端进入；正式线上学员站路由未改动。</p>
-  <div class="grid">
-    <a class="card" href="mobile/">
-      <div class="icon">📱</div>
-      <b>移动端</b>
-      <p>现有第二版整机交互稿（约 84 屏）：今日、课程、复习、阅读章节、写作、定级等。手机框预览。</p>
-      <span class="tag">静态演示 / 假数据</span>
-    </a>
-    <a class="card" href="learner-web/">
-      <div class="icon">💻</div>
-      <b>学员网页端</b>
-      <p>桌面独立布局：左侧导航 + 宽屏工作区。覆盖移动端学习侧全量功能入口与假数据页。</p>
-      <span class="tag">静态演示 / 假数据</span>
-    </a>
-    <a class="card" href="admin/">
-      <div class="icon">🛠️</div>
-      <b>管理端</b>
-      <p>桌面工作台：内容双审、发布、治理、客服、商城退款、审计、观测门。16+ 业务屏。</p>
-      <span class="tag">静态演示 / 假数据</span>
-    </a>
-  </div>
-  <div class="foot">
-    计划文档：<code>docs/06-design/v2-980plus/redesign/V2-FRONTEND-PLAN.md</code>
-    · 设计来源：<code>mockups/mobile/</code>
-    · 返回正式学员站请去掉路径 <code>/webDemo</code>
-  </div>
-</div>
-</body>
-</html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light dark"><title>语学星 · 产品演示</title><link rel="stylesheet" href="shared/tokens.css"><link rel="stylesheet" href="shared/components.css"><link rel="stylesheet" href="hub.css"></head>
+<body><a class="demo-skip" href="#main">跳到演示入口</a><div class="hub-wrap"><header class="hub-top"><a class="hub-brand" href="./"><span aria-hidden="true">✦</span><strong>语学星</strong><small>产品体验室</small></a><button id="hub-theme" class="btn ghost" aria-label="切换浅深主题">切换深色</button></header><main id="main" tabindex="-1"><div class="hub-status"><i aria-hidden="true"></i>静态演示 · 拟真数据</div><section class="hub-hero"><p class="hub-eyebrow">每一次练习，都能找到下一步。</p><h1>学习有路径，<br>成长看得见。</h1><p>为成年人与大学生设计的英语学习体验。选择一个工作空间，从建立目标到练习复盘，亲手走完一段学习旅程。</p><div class="hub-pills"><span>18 岁以上</span><span>原创学习样例</span><span>全部操作保存在本机</span></div></section><section class="hub-grid" aria-label="三个演示工作空间">
+<a class="hub-card" href="mobile/"><div class="hub-preview mobile-preview" aria-hidden="true"><div class="tiny-phone"><small>静态演示 · 拟真数据</small><b>早上好，陈晓</b><div class="tiny-focus"><span>今日学习</span><strong>把英语放进日常</strong><i></i><em>继续学习 →</em></div><div class="tiny-stats"><span>15<small>分钟目标</small></span><span>3<small>完成任务</small></span><span>7<small>连续天数</small></span></div><div class="tiny-row">▤ 语法 · 简单句 <span>›</span></div><div class="tiny-row">▧ 阅读 · 校园故事 <span>›</span></div><div class="tiny-tabs">⌂　▤　◎　◯</div></div></div><div class="hub-card-copy"><span class="hub-kicker">随身学习</span><h2>移动端 <span>↗</span></h2><p>轻巧清楚的每日安排。练习、阅读、词汇与复习，在一条路径上继续。</p><div class="hub-tags"><span>手机纵向</span><span>全量学习功能</span></div><b class="hub-link">开始移动体验 <span>→</span></b></div></a>
+<a class="hub-card" href="learner-web/"><div class="hub-preview desktop-preview" aria-hidden="true"><div class="tiny-desktop"><aside>✦<small>首页</small><small>我的学习</small><small>课程书架</small><small>学习记录</small></aside><div class="tiny-desk-main"><b>学习工作台</b><div class="tiny-focus"><span>今日计划</span><strong>专注一小步</strong><em>进入学习 →</em></div><div class="tiny-row">语法 · There be <span>进行中</span></div><div class="tiny-row">阅读 · 图书馆 <span>未开始</span></div><div class="tiny-chart"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div></div></div><div class="hub-card-copy"><span class="hub-kicker">专注与复盘</span><h2>学员网页端 <span>↗</span></h2><p>为桌面重新安排信息。侧栏导航、多栏阅读、任务表格与快捷搜索。</p><div class="hub-tags"><span>独立桌面布局</span><span>Ctrl K 快捷搜索</span></div><b class="hub-link">打开学习工作台 <span>→</span></b></div></a>
+<a class="hub-card" href="admin/"><div class="hub-preview admin-preview" aria-hidden="true"><div class="tiny-desktop"><aside>✦<small>工作台</small><small>内容审核</small><small>学员服务</small><small>审计记录</small></aside><div class="tiny-desk-main"><b>运营工作台</b><div class="tiny-stats"><span>12<small>待审核</small></span><span>8<small>待处理</small></span><span>96%<small>稳定率</small></span></div><div class="tiny-table"><b>内容资产 <span>状态</span></b><div>校园阅读 <span>待初审</span></div><div>语法练习 <span>待终审</span></div><div>职场沟通 <span>已发布</span></div></div><div class="tiny-row">双人审核 · 版本追溯</div></div></div></div><div class="hub-card-copy"><span class="hub-kicker">服务与治理</span><h2>管理端 <span>↗</span></h2><p>从内容双审到客服闭环。版本、权限、退款与处置原因清楚可追溯。</p><div class="hub-tags"><span>33 个管理页面</span><span>职责与审核分离</span></div><b class="hub-link">进入运营工作台 <span>→</span></b></div></a></section>
+<section class="hub-guide"><div><h2>怎样试用这份演示</h2><p>学员端右下角「演示控制」可切换新用户、学习中、错题较多和已撤回同意的独立档案，也可检查六种页面状态。管理端顶栏可切换合成职责与状态。</p></div><ol><li><b>选一个学员档案</b><span>先看今日计划，或新建演示账号体验完整注册。</span></li><li><b>亲手完成一次练习</b><span>错答会进入错题本，补救和报告使用实际本机记录。</span></li><li><b>试试失败与恢复</b><span>数据状态可以手动切换；一键重置只清除本端拟真记录。</span></li></ol></section><footer class="hub-footer"><p>这是产品设计与交互蓝本。没有真实认证、收费、模型调用或后台写入。请使用合成账号与资料。</p><nav aria-label="演示说明"><a href="shared/">设计系统与组件</a><a href="README.md">页面清单与验证记录</a></nav></footer></main></div><script src="hub.js"></script></body></html>
