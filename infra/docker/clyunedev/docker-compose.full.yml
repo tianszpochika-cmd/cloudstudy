@@ -344,6 +344,7 @@ services:
       dockerfile: infra/docker/clyunedev/Dockerfile.mobile-h5
       args:
         VITE_GATEWAY_BASE_URL: https://api.clyunedev.com/api/v1
+        VITE_IAM_AUTH_BASE_URL: https://api.clyunedev.com/api/v1
     ports:
       - "127.0.0.1:18183:8080"
     networks: [clyunedev]

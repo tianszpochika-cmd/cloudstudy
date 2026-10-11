@@ -6,12 +6,14 @@ FROM ${NODE_IMAGE} AS build
 ARG APP_NAME
 ARG APP_PATH
 ARG VITE_GATEWAY_BASE_URL
+# Browser password posts go to IAM over HTTPS; without this the bundle falls back to https://127.0.0.1:18087.
+ARG VITE_IAM_AUTH_BASE_URL
 WORKDIR /workspace
 RUN corepack enable && corepack prepare pnpm@10.19.0 --activate
 COPY . .
 RUN --mount=type=cache,id=cloudstudy-pnpm-store,target=/pnpm/store,sharing=locked \
   pnpm install --frozen-lockfile --filter "${APP_NAME}..." --store-dir /pnpm/store
-RUN VITE_GATEWAY_BASE_URL="${VITE_GATEWAY_BASE_URL}" pnpm --filter "${APP_NAME}" build
+RUN VITE_GATEWAY_BASE_URL="${VITE_GATEWAY_BASE_URL}" VITE_IAM_AUTH_BASE_URL="${VITE_IAM_AUTH_BASE_URL}" pnpm --filter "${APP_NAME}" build
 
 FROM nginx:1.27-alpine
 ARG APP_PATH
