@@ -1,5 +1,11 @@
 # Changelog
 
+- [RV3-20261011] **装饰溢出、证据限额、hash 门、MinIO 只读、IT-5 外层口径和权威卡墙已关闭。**
+  - 全链后缀 `ea0d8dcd`：158 步 PASS，IT-7 34 步 PASS。Web 与 H5，1280 与 390。链内 node 367 项、367 通过、0 失败。提交 `cd458ee6`、`f3c2a159`、`a6120fda`、`18aa5170`、`dd545739`、`0ffb50f3`、`a5c540aa`、`6f7e59d4`、`ea0d8dcd`。
+  - 站页横向溢出是 0。撤回或未成年拒绝后只改哈希进入无权限页。从未同意的新用户进入引导页。生产默认高风险限额仍是 30，证据 profile 单独为 2000。
+  - IT-5 外层保持 PARTIAL / B25-LEGACY-UNVERIFIED-1。本期对象 NEVER_STUDIED 且 officialScore=false，按站口径 PASS。权威卡墙是 R1-001…R1-115，共 115 张，取代未能找回的原 114 卡墙。
+  - `pnpm typecheck` 为 7/7。`pnpm contracts:validate` 为 471 个操作。`mvn -B -ntp -f pom.xml test` 于 2026-10-11T13:43:59+08 BUILD SUCCESS，1681 项、0 失败、0 跳过。MinIO 只读测试已跑通。隔离库已删。共享 schema 表数前后一致。`lunaStamp` 仍是 false。第 4 节签收栏未改。证据目录 `evidence/redesign/2026-10-11/rv3-ea0d8dcd`。
+
 - [RV2-20261011] **IT-1、IT-6 全量浏览器、顶层 node 和 IT-1…IT-7 全链已按首跑 PASS 重采。**
   - IT-1 后缀 `ea1aa3c8`：未成年年 2016 经表单提交，注册直达 IAM HTTPS 201，Gateway 成人门 200 REJECTED，进入无权限页。撤回后最后一次 PUT 是 ADULT_LEARNING WITHDRAWN 200，随后 targets 403 `CONSENT_REQUIRED`。提交 `404f6c6f`。
   - IT-6 全量浏览器 45 步 PASS，没有 SKIP。重启 content-service 后指纹相同，1803 字符，库行 `70 34410`。提交 `3c33a9ed`。

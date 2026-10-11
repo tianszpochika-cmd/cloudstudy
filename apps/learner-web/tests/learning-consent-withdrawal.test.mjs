@@ -58,12 +58,13 @@ test('settings privacy stays on the page after the withdrawal notice', async () 
     compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
   }).outputText
   const module = { exports: {} }
+  const gateMarks = []
   const scope = vue.effectScope()
   scope.run(() => {
     new Function('require', 'module', 'exports', compiled)((name) => {
       const modules = {
         'vue-router': { useRouter: () => ({ replace: async (target) => { replaced.push(target) } }), RouterLink: {} },
-        '../stores/session': { useSessionStore: () => ({ logout: async () => {} }) },
+        '../stores/session': { useSessionStore: () => ({ logout: async () => {}, markLearningConsentWithdrawn() { gateMarks.push('withdrawn') } }) },
         '../platform/experience-ui': { useExperienceText: () => (key) => key },
         '../components/ExperienceHeader.vue': {},
         '../components/NotificationPreferencesPanel.vue': {},
@@ -89,6 +90,7 @@ test('settings privacy stays on the page after the withdrawal notice', async () 
     assert.equal(fixture.withdrawNotice.value, '学习同意已撤回。学习能力已收回，账号仍保留。')
     assert.equal(fixture.withdrawConfirming.value, false)
     assert.deepEqual(replaced, [])
+    assert.deepEqual(gateMarks, ['withdrawn'])
   } finally {
     scope.stop()
   }

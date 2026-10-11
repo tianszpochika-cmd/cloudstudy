@@ -64,6 +64,7 @@ export const useSessionStore = defineStore('session', () => {
   const permissions = ref<readonly string[]>([])
   const status = ref<AuthStatus>('unknown')
   const adultGate = ref<AdultGateStatus>('UNKNOWN')
+  const learningConsentWithdrawn = ref(false)
   const lastError = ref<string | null>(null)
   const authErrorCode = ref<AuthErrorCode | null>(null)
   const forbiddenReason = ref<string | null>(null)
@@ -553,6 +554,10 @@ export const useSessionStore = defineStore('session', () => {
     activeAdapter = next
   }
 
+  function markLearningConsentWithdrawn(): void {
+    learningConsentWithdrawn.value = true
+    permissions.value = permissions.value.filter((item) => item !== 'learning.plan.read')
+  }
   function clear(): void {
     authEpoch.value += 1
     setInMemoryAuthSnapshot({ accessToken: null, subject: null, generation: authEpoch.value, authenticated: false })
@@ -566,6 +571,7 @@ export const useSessionStore = defineStore('session', () => {
     principal.value = null
     permissions.value = []
     adultGate.value = 'UNKNOWN'
+    learningConsentWithdrawn.value = false
     status.value = 'unauthenticated'
     lastError.value = null
     authErrorCode.value = null
@@ -582,6 +588,7 @@ export const useSessionStore = defineStore('session', () => {
     permissions,
     status,
     adultGate,
+    learningConsentWithdrawn,
     lastError,
     authErrorCode,
     forbiddenReason,
@@ -590,6 +597,7 @@ export const useSessionStore = defineStore('session', () => {
     isAuthenticated,
     isLearningReady,
     isAdultGateRejected,
+    markLearningConsentWithdrawn,
     restore,
     prepareLogin,
     login,

@@ -1,0 +1,57 @@
+{
+  "item": "RES-H5-RELOAD",
+  "suffix": "ea0d8dcd",
+  "status": "PASS",
+  "missing": [],
+  "failed": [],
+  "steps": [
+    {
+      "name": "hash-withdraw-web-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "hash-withdraw-web-390",
+      "status": "PASS"
+    },
+    {
+      "name": "hash-withdraw-h5-390",
+      "status": "PASS"
+    },
+    {
+      "name": "hash-withdraw-h5-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "hash-minor-web-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "hash-fresh-web-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "hash-minor-web-390",
+      "status": "PASS"
+    },
+    {
+      "name": "hash-fresh-web-390",
+      "status": "PASS"
+    },
+    {
+      "name": "hash-minor-h5-390",
+      "status": "PASS"
+    },
+    {
+      "name": "hash-fresh-h5-390",
+      "status": "PASS"
+    },
+    {
+      "name": "hash-minor-h5-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "hash-fresh-h5-1280",
+      "status": "PASS"
+    }
+  ]
+}

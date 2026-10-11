@@ -1,0 +1,17 @@
+{
+  "item": "RES-RATE-BUDGET",
+  "suffix": "ea0d8dcd",
+  "status": "PASS",
+  "missing": [],
+  "failed": [],
+  "steps": [
+    {
+      "name": "rate-budget-evidence-profile",
+      "status": "PASS"
+    },
+    {
+      "name": "node-suite",
+      "status": "PASS"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "item": "RES-IT5-OUTER",
+  "suffix": "ea0d8dcd",
+  "status": "PASS",
+  "missing": [],
+  "failed": [],
+  "steps": [
+    {
+      "name": "smoke-it5-period",
+      "status": "PASS"
+    },
+    {
+      "name": "smoke-it5-outer-shell",
+      "status": "PASS"
+    }
+  ]
+}

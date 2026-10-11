@@ -90,6 +90,21 @@ try {
       assert.equal(rendered.headers, 1, `${name}: one page header`)
       assert.ok(!rendered.title.includes('mobile.pages.'), `${name}: translated heading`)
       assert.ok(rendered.scrollWidth <= rendered.viewport + 1, `${name}/${width}/${theme}: horizontal overflow ${JSON.stringify(rendered)}`)
+      const contained = await page.evaluate(() => {
+        const viewport = document.documentElement.clientWidth
+        const offenders = []
+        for (const el of document.querySelectorAll('body *')) {
+          const rect = el.getBoundingClientRect()
+          if (rect.width < 1 || rect.height < 1) continue
+          const parent = el.parentElement
+          if (!parent) continue
+          const box = parent.getBoundingClientRect()
+          const extra = Math.max(rect.right - box.right, box.left - rect.left, rect.right - viewport, -rect.left)
+          if (extra > 1) offenders.push({ extra: Math.round(extra), cls: String(el.className || el.tagName).slice(0, 80) })
+        }
+        return offenders.slice(0, 6)
+      })
+      assert.deepEqual(contained, [], `${name}/${width}/${theme}: element overflow ${JSON.stringify(contained)}`)
       assert.ok(page.url().includes(entry.path), `${name}: route changed to ${page.url()}`)
       assert.equal(rendered.background, theme === 'high-contrast' ? 'rgb(0, 0, 0)' : theme === 'dark' ? 'rgb(22, 25, 37)' : 'rgb(247, 248, 252)', `${name}: theme applied`)
       results.push({ name, theme, width, ...rendered, state: ['home', 'profile', 'settings', 'onboarding'].includes(name) ? 'synthetic fixture' : 'unavailable/empty fixture' })

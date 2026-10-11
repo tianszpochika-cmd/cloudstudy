@@ -1,0 +1,17 @@
+{
+  "item": "GAP-WALL-114",
+  "suffix": "ea0d8dcd",
+  "status": "PASS",
+  "closedAs": "CLOSED",
+  "authoritativeWall": "R1-001…R1-115",
+  "cardCount": 115,
+  "replaces": "original 114-card wall",
+  "source": "split by station from the real BC/IC set",
+  "differenceCheckable": false,
+  "emptyCardsFilled": false,
+  "excluded": ["BC-094", "BC-187"],
+  "decisionMaker": "Grok Bot 测试项目练手",
+  "authorizedBy": "项目负责人授权的 Luna/Grok Bot",
+  "date": "2026-10-11",
+  "note": "原 114 卡墙在仓库文档、evidence 与 git 历史中未找回。本文件只记录关闭决定，不编造原卡，不补空卡。台账第 0 节的 OPEN 原文保留。"
+}

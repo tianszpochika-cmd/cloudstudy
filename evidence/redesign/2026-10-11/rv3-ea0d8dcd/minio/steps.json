@@ -1,0 +1,13 @@
+{
+  "item": "MinioObjectStorePortReadOnlyIntegrationTest",
+  "suffix": "ea0d8dcd",
+  "status": "PASS",
+  "tests": 1,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "elapsed": "0.223 s",
+  "commit": "18aa5170",
+  "assertions": ["206 partial", "206 one-byte", "403 wrong-range"],
+  "note": "未设置 MEDIA_TEST_MINIO_*。本地 MinIO 127.0.0.1:19000 开跑前已在监听，测试自建隔离 bucket。本轮没有启动或停止 MinIO，也没有启动或停止 qida。"
+}

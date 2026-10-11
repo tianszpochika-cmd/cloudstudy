@@ -1,0 +1,23 @@
+{
+  "item": "remaining-open-scan",
+  "suffix": "ea0d8dcd",
+  "status": "PASS",
+  "fixedInThisRound": [
+    "RES-ARTWORK",
+    "RES-RATE-BUDGET",
+    "RES-H5-RELOAD",
+    "MinioObjectStorePortReadOnlyIntegrationTest",
+    "RES-IT5-OUTER",
+    "GAP-WALL-114",
+    "RES-WALL-114"
+  ],
+  "leftAsExternal": [
+    "lunaStamp stays false",
+    "R1-029 three NOT_RUN stay NOT_RUN",
+    "historical FAIL directories stay",
+    "retained databases r1_it1_browser_20261010_iam_5d9f4b7e and r1_it1_browser_20261010_cnt_5d9f4b7e stay",
+    "qida containers were not started or stopped",
+    "INDEPENDENT-SIGNOFF section 4 SIGNED_PASS cells were not edited",
+    "IT-5 outer shell stays PARTIAL / B25-LEGACY-UNVERIFIED-1 by the evidence gate"
+  ]
+}

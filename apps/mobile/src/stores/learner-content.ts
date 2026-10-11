@@ -194,6 +194,10 @@ export const useLearnerContentStore = defineStore('mobile-learner-content', () =
     resumeCache = { key, facts }
     return facts
   }
+  function forgetOnboardingResume(): void {
+    resumeCache = null
+    onboardingResume.value = null
+  }
   async function recordRequiredConsents(): Promise<boolean> {
     const owner = scope()
     if (!owner) { reset(); onboardingStatus.value = 'forbidden'; return false }
@@ -539,5 +543,5 @@ export const useLearnerContentStore = defineStore('mobile-learner-content', () =
       persist()
     }
   }
-  return { onboarding, goals, quotas, account, accountStatus, home, firstDay, placement, onboardingStatus, onboardingResume, homeStatus, firstDayStatus, placementStatus, lastError, planQueue, planQueueStatus, planNotice, progress, restore, persist, loadOnboarding, loadOnboardingResume, recordRequiredConsents, saveTarget, saveOnboarding, loadAccount, savePreferences, saveContentLocale, loadFirstDay, loadPlacement, submitPlacementAnswer, retestPlacement, loadHome, refreshPlanQueue, completeTask }
+  return { onboarding, goals, quotas, account, accountStatus, home, firstDay, placement, onboardingStatus, onboardingResume, homeStatus, firstDayStatus, placementStatus, lastError, planQueue, planQueueStatus, planNotice, progress, restore, persist, loadOnboarding, loadOnboardingResume, forgetOnboardingResume, recordRequiredConsents, saveTarget, saveOnboarding, loadAccount, savePreferences, saveContentLocale, loadFirstDay, loadPlacement, submitPlacementAnswer, retestPlacement, loadHome, refreshPlanQueue, completeTask }
 })

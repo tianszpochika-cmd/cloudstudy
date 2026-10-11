@@ -1,0 +1,14 @@
+spring:
+  config:
+    activate:
+      on-profile: evidence
+
+# Opt-in evidence profile. Production application.yml keeps high-risk-admin at 30
+# per minute. This file is loaded only when the evidence profile is active, and
+# the limit below is a literal so a shell variable cannot raise the production default.
+gateway:
+  rate-limit:
+    policies:
+      high-risk-admin:
+        requests-per-window: 2000
+        window: 1m

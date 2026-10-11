@@ -1,0 +1,656 @@
+{
+  "kind": "RV3_FULL_CHAIN",
+  "summary": "PASS",
+  "accepted": false,
+  "lunaStamp": false,
+  "suffix": "ea0d8dcd",
+  "fullChainOutbound": false,
+  "chain": "PASS",
+  "missing": [],
+  "failed": [],
+  "dbFacts": {
+    "it2": {},
+    "chain": {
+      "iam": "rv3_chain_20261011_iam_ea0d8dcd",
+      "learner": "rv3_chain_20261011_lrn_ea0d8dcd",
+      "content": "rv3_chain_20261011_cnt_ea0d8dcd",
+      "assessment": "rv3_chain_20261011_asm_ea0d8dcd",
+      "learning": "rv3_chain_20261011_lng_ea0d8dcd",
+      "admin": "rv3_chain_20261011_adm_ea0d8dcd"
+    }
+  },
+  "steps": [
+    {
+      "name": "ports-free",
+      "status": "PASS"
+    },
+    {
+      "name": "dedicated-schemas",
+      "status": "PASS"
+    },
+    {
+      "name": "iam-https",
+      "status": "PASS"
+    },
+    {
+      "name": "rate-budget-evidence-profile",
+      "status": "PASS"
+    },
+    {
+      "name": "staff-sessions",
+      "status": "PASS"
+    },
+    {
+      "name": "it7-flyway",
+      "status": "PASS"
+    },
+    {
+      "name": "smoke-it1-target",
+      "status": "PASS"
+    },
+    {
+      "name": "smoke-it2-placement",
+      "status": "PASS"
+    },
+    {
+      "name": "smoke-it3-daily-task",
+      "status": "PASS"
+    },
+    {
+      "name": "smoke-it6-release",
+      "status": "PASS"
+    },
+    {
+      "name": "smoke-it5-period",
+      "status": "PASS"
+    },
+    {
+      "name": "smoke-it5-outer-shell",
+      "status": "PASS"
+    },
+    {
+      "name": "lock-read-board",
+      "status": "PASS"
+    },
+    {
+      "name": "bc085-lock",
+      "status": "PASS"
+    },
+    {
+      "name": "bc086-file",
+      "status": "PASS"
+    },
+    {
+      "name": "bc087-triage",
+      "status": "PASS"
+    },
+    {
+      "name": "bc088-isolate",
+      "status": "PASS"
+    },
+    {
+      "name": "bc089-escalate",
+      "status": "PASS"
+    },
+    {
+      "name": "bc090-close",
+      "status": "PASS"
+    },
+    {
+      "name": "bc091-cases",
+      "status": "PASS"
+    },
+    {
+      "name": "bc092-route",
+      "status": "PASS"
+    },
+    {
+      "name": "bc093-reports",
+      "status": "PASS"
+    },
+    {
+      "name": "bc185-ticket",
+      "status": "PASS"
+    },
+    {
+      "name": "bc186-visibility",
+      "status": "PASS"
+    },
+    {
+      "name": "bc188-export",
+      "status": "PASS"
+    },
+    {
+      "name": "bc189-delete",
+      "status": "PASS"
+    },
+    {
+      "name": "bc190-audio",
+      "status": "PASS"
+    },
+    {
+      "name": "bc191-worker",
+      "status": "PASS"
+    },
+    {
+      "name": "bc192-session",
+      "status": "PASS"
+    },
+    {
+      "name": "bc193-401",
+      "status": "PASS"
+    },
+    {
+      "name": "bc194-correlate",
+      "status": "PASS"
+    },
+    {
+      "name": "bc195-saga",
+      "status": "PASS"
+    },
+    {
+      "name": "bc196-outbox",
+      "status": "PASS"
+    },
+    {
+      "name": "bc197-gate",
+      "status": "PASS"
+    },
+    {
+      "name": "bc198-rollback",
+      "status": "PASS"
+    },
+    {
+      "name": "bc208-audit",
+      "status": "PASS"
+    },
+    {
+      "name": "restart-fingerprint",
+      "status": "PASS"
+    },
+    {
+      "name": "admin-login",
+      "status": "PASS"
+    },
+    {
+      "name": "admin-governance",
+      "status": "PASS"
+    },
+    {
+      "name": "admin-risk-redirect",
+      "status": "PASS"
+    },
+    {
+      "name": "admin-audit",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-admin-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "register-web-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-web-1280-home",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-web-1280-today",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-web-1280-courses",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-web-1280-vocabulary",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-web-1280-learn",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-web-1280-practice",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-web-1280-grammar",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-web-1280-writing",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-web-1280-listening",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-web-1280-reading",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-web-1280-speaking",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-web-1280-world",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-web-1280-assessment",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-web-1280-b2-report",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-web-1280-mistakes",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-web-1280-mastery",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-web-1280-plan-map",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-web-1280-support",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-web-1280-settings-profile",
+      "status": "PASS"
+    },
+    {
+      "name": "stations-web-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "smoke-it4-practice",
+      "status": "PASS"
+    },
+    {
+      "name": "closure-web-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-web-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "hash-withdraw-web-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-forbidden-withdraw-web-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "register-web-390",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-web-390-home",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-web-390-today",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-web-390-courses",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-web-390-vocabulary",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-web-390-learn",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-web-390-practice",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-web-390-grammar",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-web-390-writing",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-web-390-listening",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-web-390-reading",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-web-390-speaking",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-web-390-world",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-web-390-assessment",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-web-390-b2-report",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-web-390-mistakes",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-web-390-mastery",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-web-390-plan-map",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-web-390-support",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-web-390-settings-profile",
+      "status": "PASS"
+    },
+    {
+      "name": "stations-web-390",
+      "status": "PASS"
+    },
+    {
+      "name": "closure-web-390",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-web-390",
+      "status": "PASS"
+    },
+    {
+      "name": "hash-withdraw-web-390",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-forbidden-withdraw-web-390",
+      "status": "PASS"
+    },
+    {
+      "name": "register-h5-390",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-h5-390-pages-home-home",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-h5-390-pages-today-today",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-h5-390-pages-learn-learn",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-h5-390-pages-practice-practice",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-h5-390-pages-b2-vocabulary-b2-vocabulary",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-h5-390-pages-b3-grammar-b3-grammar",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-h5-390-pages-b3-writing-b3-writing",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-h5-390-pages-b3-listening-b3-listening",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-h5-390-pages-b3-reading-b3-reading",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-h5-390-pages-b3-speaking-b3-speaking",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-h5-390-pages-world-world",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-h5-390-pages-assessment-assessment",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-h5-390-pages-b10-report-b10-report",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-h5-390-pages-profile-profile",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-h5-390-pages-support-support",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-h5-390-pages-settings-settings",
+      "status": "PASS"
+    },
+    {
+      "name": "stations-h5-390",
+      "status": "PASS"
+    },
+    {
+      "name": "closure-h5-390",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-h5-390",
+      "status": "PASS"
+    },
+    {
+      "name": "hash-withdraw-h5-390",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-forbidden-withdraw-h5-390",
+      "status": "PASS"
+    },
+    {
+      "name": "register-h5-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-h5-1280-pages-home-home",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-h5-1280-pages-today-today",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-h5-1280-pages-learn-learn",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-h5-1280-pages-practice-practice",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-h5-1280-pages-b2-vocabulary-b2-vocabulary",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-h5-1280-pages-b3-grammar-b3-grammar",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-h5-1280-pages-b3-writing-b3-writing",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-h5-1280-pages-b3-listening-b3-listening",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-h5-1280-pages-b3-reading-b3-reading",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-h5-1280-pages-b3-speaking-b3-speaking",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-h5-1280-pages-world-world",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-h5-1280-pages-assessment-assessment",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-h5-1280-pages-b10-report-b10-report",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-h5-1280-pages-profile-profile",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-h5-1280-pages-support-support",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-station-h5-1280-pages-settings-settings",
+      "status": "PASS"
+    },
+    {
+      "name": "stations-h5-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "closure-h5-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-h5-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "hash-withdraw-h5-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-forbidden-withdraw-h5-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "edge-register-web-1280-minor",
+      "status": "PASS"
+    },
+    {
+      "name": "hash-minor-web-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "edge-register-web-1280-fresh",
+      "status": "PASS"
+    },
+    {
+      "name": "hash-fresh-web-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "edge-register-web-390-minor",
+      "status": "PASS"
+    },
+    {
+      "name": "hash-minor-web-390",
+      "status": "PASS"
+    },
+    {
+      "name": "edge-register-web-390-fresh",
+      "status": "PASS"
+    },
+    {
+      "name": "hash-fresh-web-390",
+      "status": "PASS"
+    },
+    {
+      "name": "edge-register-h5-390-minor",
+      "status": "PASS"
+    },
+    {
+      "name": "hash-minor-h5-390",
+      "status": "PASS"
+    },
+    {
+      "name": "edge-register-h5-390-fresh",
+      "status": "PASS"
+    },
+    {
+      "name": "hash-fresh-h5-390",
+      "status": "PASS"
+    },
+    {
+      "name": "edge-register-h5-1280-minor",
+      "status": "PASS"
+    },
+    {
+      "name": "hash-minor-h5-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "edge-register-h5-1280-fresh",
+      "status": "PASS"
+    },
+    {
+      "name": "hash-fresh-h5-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "smoke-it6-replay",
+      "status": "PASS"
+    },
+    {
+      "name": "node-suite",
+      "status": "PASS"
+    },
+    {
+      "name": "schemas-dropped",
+      "status": "PASS"
+    },
+    {
+      "name": "shared-admin-schema-untouched",
+      "status": "PASS"
+    },
+    {
+      "name": "qida-unchanged",
+      "status": "PASS"
+    }
+  ]
+}

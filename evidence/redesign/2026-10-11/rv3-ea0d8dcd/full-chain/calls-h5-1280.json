@@ -1,0 +1,50 @@
+[
+  {
+    "method": "POST",
+    "origin": "https://127.0.0.1:18087",
+    "path": "/api/v1/auth/register",
+    "status": 201
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18183",
+    "path": "/src/pages/assessment/assessment.vue",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18183",
+    "path": "/src/pages/assessment/assessment.vue",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learning/stats/daily-report",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/support/tickets",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/support/tickets",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/support/tickets",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/support/tickets",
+    "status": 200
+  }
+]
