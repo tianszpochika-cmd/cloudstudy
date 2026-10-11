@@ -1,0 +1,130 @@
+{
+  "suffix": "ea1aa3c8",
+  "steps": [
+    {
+      "name": "ports-free",
+      "status": "PASS",
+      "detail": {
+        "occupied": []
+      }
+    },
+    {
+      "name": "dedicated-schemas",
+      "status": "PASS",
+      "detail": {
+        "iam": "rv2_20261011_iam_ea1aa3c8",
+        "learner": "rv2_20261011_lrn_ea1aa3c8",
+        "content": "rv2_20261011_cnt_ea1aa3c8"
+      }
+    },
+    {
+      "name": "iam-https",
+      "status": "PASS",
+      "detail": {
+        "spki": "SGlNV/M+AZgPtebvm6mK9INtvZiErs43mnuQGxbS5T8=",
+        "schema": "rv2_20261011_iam_ea1aa3c8"
+      }
+    },
+    {
+      "name": "minor-year-web-1280",
+      "status": "PASS",
+      "detail": {
+        "year": 2016,
+        "registerOrigin": "https://127.0.0.1:18087",
+        "origin": "http://127.0.0.1:18070",
+        "path": "/api/v1/iam/adult-gate",
+        "status": 200,
+        "rejected": true,
+        "url": "http://127.0.0.1:18180/forbidden",
+        "retry": 0,
+        "changeYear": 0
+      }
+    },
+    {
+      "name": "minor-year-web-390",
+      "status": "PASS",
+      "detail": {
+        "year": 2016,
+        "registerOrigin": "https://127.0.0.1:18087",
+        "origin": "http://127.0.0.1:18070",
+        "path": "/api/v1/iam/adult-gate",
+        "status": 200,
+        "rejected": true,
+        "url": "http://127.0.0.1:18180/forbidden",
+        "retry": 0,
+        "changeYear": 0
+      }
+    },
+    {
+      "name": "minor-year-h5-390",
+      "status": "PASS",
+      "detail": {
+        "year": 2016,
+        "registerOrigin": "https://127.0.0.1:18087",
+        "origin": "http://127.0.0.1:18070",
+        "path": "/api/v1/iam/adult-gate",
+        "status": 200,
+        "rejected": true,
+        "url": "http://127.0.0.1:18183/#/pages/forbidden/forbidden",
+        "retry": 0,
+        "changeYear": 0
+      }
+    },
+    {
+      "name": "minor-year-h5-1280",
+      "status": "PASS",
+      "detail": {
+        "year": 2016,
+        "registerOrigin": "https://127.0.0.1:18087",
+        "origin": "http://127.0.0.1:18070",
+        "path": "/api/v1/iam/adult-gate",
+        "status": 200,
+        "rejected": true,
+        "url": "http://127.0.0.1:18183/#/pages/forbidden/forbidden",
+        "retry": 0,
+        "changeYear": 0
+      }
+    },
+    {
+      "name": "withdraw-web-1280",
+      "status": "PASS",
+      "detail": {
+        "consent": 200,
+        "withdrawn": true,
+        "targets": 403,
+        "consentRequired": true,
+        "url": "http://127.0.0.1:18180/settings/privacy",
+        "stayed": true
+      }
+    },
+    {
+      "name": "withdraw-h5-390",
+      "status": "PASS",
+      "detail": {
+        "consent": 200,
+        "withdrawn": true,
+        "targets": 403,
+        "consentRequired": true,
+        "url": "http://127.0.0.1:18183/#/pages/settings/settings",
+        "stayed": true
+      }
+    },
+    {
+      "name": "schemas-dropped",
+      "status": "PASS",
+      "detail": {
+        "suffix": "ea1aa3c8",
+        "prefix": "rv2_"
+      }
+    },
+    {
+      "name": "qida-unchanged",
+      "status": "PASS",
+      "detail": {
+        "before": 50,
+        "after": 50,
+        "dockerMutations": "none"
+      }
+    }
+  ]
+}
