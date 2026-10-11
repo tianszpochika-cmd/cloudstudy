@@ -655,13 +655,23 @@ async function measureOverflow(page, label) {
 }
 const WEB_STATIONS = ['/home', '/today', '/courses', '/vocabulary', '/learn', '/practice', '/grammar', '/writing', '/listening', '/reading', '/speaking', '/world', '/assessment', '/b2/report', '/mistakes', '/mastery', '/plan-map', '/support', '/settings/profile'];
 const H5_STATIONS = ['pages/home/home', 'pages/today/today', 'pages/learn/learn', 'pages/practice/practice', 'pages/b2-vocabulary/b2-vocabulary', 'pages/b3-grammar/b3-grammar', 'pages/b3-writing/b3-writing', 'pages/b3-listening/b3-listening', 'pages/b3-reading/b3-reading', 'pages/b3-speaking/b3-speaking', 'pages/world/world', 'pages/assessment/assessment', 'pages/b10-report/b10-report', 'pages/profile/profile', 'pages/support/support', 'pages/settings/settings'];
+async function openStation(page, route, mobile) {
+  const origin = mobile ? 'http://127.0.0.1:18183/' : 'http://127.0.0.1:18180/';
+  if (page.url().startsWith(origin)) {
+    if (mobile) await page.evaluate((next) => { window.location.hash = `#/${next}`; }, route);
+    else await spaGo(page, route);
+  } else {
+    const url = mobile ? `http://127.0.0.1:18183/#/${route}` : `http://127.0.0.1:18180${route}`;
+    await page.goto(url, { waitUntil: 'domcontentloaded' });
+  }
+  await page.locator('.yx-page, .mobile-page-title').first().waitFor({ timeout: 8000 }).catch(() => null);
+  await page.waitForTimeout(800);
+}
 async function scanStations(page, label, mobile) {
   const routes = mobile ? H5_STATIONS : WEB_STATIONS;
   const failed = [];
   for (const route of routes) {
-    const url = mobile ? `http://127.0.0.1:18183/#/${route}` : `http://127.0.0.1:18180${route}`;
-    await page.goto(url, { waitUntil: 'domcontentloaded' });
-    await page.waitForTimeout(500);
+    await openStation(page, route, mobile);
     const slug = route.replaceAll('/', '-').replace(/^-/, '');
     const ok = await measureOverflow(page, `station-${label}-${slug}`);
     if (!ok) {
@@ -746,8 +756,11 @@ async function proveAccessEdges(browser, viewport, label, mobile) {
     else await spaGo(minorPage, '/home');
     await minorPage.waitForTimeout(400);
     await minorPage.waitForFunction(() => {
-      const href = location.href;
-      return href.includes('forbidden') && !href.includes('/home') && !href.includes('pages/home');
+      const path = location.pathname;
+      const hashPath = location.hash.replace(/^#/, '').split('?')[0];
+      const forbidden = path.startsWith('/forbidden') || hashPath.startsWith('/pages/forbidden/');
+      const home = path === '/home' || path.startsWith('/home/') || hashPath.startsWith('/pages/home/');
+      return forbidden && !home;
     }, null, { timeout: 20000 });
     const url = minorPage.url();
     const body = await minorPage.locator('body').innerText();
@@ -773,10 +786,12 @@ async function proveAccessEdges(browser, viewport, label, mobile) {
     else await spaGo(freshPage, '/home');
     await freshPage.waitForTimeout(400);
     await freshPage.waitForFunction(() => {
-      const href = location.href;
-      const onboarding = href.includes('onboarding');
-      const home = href.includes('/home') || href.includes('pages/home');
-      return onboarding && !home && !href.includes('forbidden');
+      const path = location.pathname;
+      const hashPath = location.hash.replace(/^#/, '').split('?')[0];
+      const onboarding = path.startsWith('/onboarding') || hashPath.startsWith('/pages/onboarding/');
+      const home = path === '/home' || path.startsWith('/home/') || hashPath.startsWith('/pages/home/');
+      const forbidden = path.startsWith('/forbidden') || hashPath.startsWith('/pages/forbidden/');
+      return onboarding && !home && !forbidden;
     }, null, { timeout: 20000 });
     const url = freshPage.url();
     const ok = url.includes('onboarding') && !url.includes('forbidden');
