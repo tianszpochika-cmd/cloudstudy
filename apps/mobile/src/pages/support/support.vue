@@ -14,7 +14,7 @@ import { supportNotice, ticketNotice, type ClosureBoard } from '../../domain/it7
 
 const tickets = ref<MobileSupportTicket[]>([])
 const closure = ref<ClosureBoard | null>(null)
-const loading = ref(false)
+const loading = ref(true)
 const error = ref<string | null>(null)
 const categoryNames: Record<string, string> = {
   CONTENT_CORRECTION: '内容纠错', ACCOUNT_ACCESS: '账号访问', BILLING: '订单权益',
