@@ -16,6 +16,6 @@ test('learner-web and mobile-h5 bake the public HTTPS IAM auth base, never the l
   for (const f of ['Dockerfile.vite-web', 'Dockerfile.mobile-h5']) {
     const d = read(f)
     assert.match(d, /ARG VITE_IAM_AUTH_BASE_URL/)
-    assert.match(d, /VITE_IAM_AUTH_BASE_URL="\$\{VITE_IAM_AUTH_BASE_URL\}" pnpm/)
+    assert.match(d, /VITE_IAM_AUTH_BASE_URL="\$\{VITE_IAM_AUTH_BASE_URL\}"[^\n]* pnpm/)
   }
 })
