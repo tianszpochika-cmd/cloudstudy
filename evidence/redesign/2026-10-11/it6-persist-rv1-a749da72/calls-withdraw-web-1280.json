@@ -1,0 +1,74 @@
+[
+  {
+    "method": "POST",
+    "origin": "https://127.0.0.1:18087",
+    "path": "/api/v1/auth/register",
+    "status": 201,
+    "body": "{\"data\":{\"authTransport\":\"WEB_COOKIE\",\"accessToken\":\"[REDACTED]",
+    "raw": "https://127.0.0.1:18087/api/v1/auth/register"
+  },
+  {
+    "method": "POST",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/adult-gate",
+    "status": 200,
+    "body": "{\"data\":{\"status\":\"PASSED\",\"learningAccess\":\"ELIGIBLE\",\"effectiveAt\":\"2026-10-11T02:37:51.405547Z\",\"policyVersion\":\"b30-adult-v1\",\"minimumAge\":18,\"evidenceStatus\":\"SERVER_VERIFIED\",\"retryAllowed\":false},\"meta\":{\"requestId\":\"req-dbfd561dbab94f79872504281edb9d55\",\"traceId\":\"d0818e2e62e94ce2a875d8e71fa7ed00\",\"apiVersion\":\"v1\",\"schemaVersion\":\"1.0.0\",\"serverTime\":\"2026-10-11T02:37:51.407921Z\"}}",
+    "raw": "http://127.0.0.1:18070/api/v1/iam/adult-gate"
+  },
+  {
+    "method": "PUT",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/consents",
+    "status": 200,
+    "body": "{\"data\":{\"type\":\"TERMS\",\"version\":\"b30-consent-v1\",\"decision\":\"ACCEPTED\",\"decidedAt\":\"2026-10-11T02:37:52.069560Z\",\"purpose\":\"ACCOUNT_TERMS\",\"required\":true,\"document\":{\"version\":\"b30-consent-v1\",\"digest\":\"eb74b7254589589f61f5f3747d83379bc6f1e950ab7d8fd52f64f3ab50fb39fb\",\"publishedAt\":\"2026-08-30T00:00:00Z\"},\"state\":\"GRANTED\",\"effectiveAt\":\"2026-10-11T02:37:52.069560Z\",\"restrictionEffect\":\"NO_REST",
+    "raw": "http://127.0.0.1:18070/api/v1/iam/consents"
+  },
+  {
+    "method": "PUT",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/consents",
+    "status": 200,
+    "body": "{\"data\":{\"type\":\"ADULT_LEARNING\",\"version\":\"b30-consent-v1\",\"decision\":\"ACCEPTED\",\"decidedAt\":\"2026-10-11T02:37:52.100073Z\",\"purpose\":\"ADULT_LEARNING_ELIGIBILITY\",\"required\":true,\"document\":{\"version\":\"b30-consent-v1\",\"digest\":\"9702cd4fe3e50613f84030998f65c0c8e7961f058176b24f8a9e82006abea189\",\"publishedAt\":\"2026-08-30T00:00:00Z\"},\"state\":\"GRANTED\",\"effectiveAt\":\"2026-10-11T02:37:52.100073Z\",\"restr",
+    "raw": "http://127.0.0.1:18070/api/v1/iam/consents"
+  },
+  {
+    "method": "PUT",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/consents",
+    "status": 200,
+    "body": "{\"data\":{\"type\":\"PRIVACY\",\"version\":\"b30-consent-v1\",\"decision\":\"ACCEPTED\",\"decidedAt\":\"2026-10-11T02:37:52.121818Z\",\"purpose\":\"PRIVACY_NOTICE\",\"required\":true,\"document\":{\"version\":\"b30-consent-v1\",\"digest\":\"4ab15e31c11c9ef99b267ae620910420fdb8a9b6f720b988afeb59d5262ddd84\",\"publishedAt\":\"2026-08-30T00:00:00Z\"},\"state\":\"GRANTED\",\"effectiveAt\":\"2026-10-11T02:37:52.121818Z\",\"restrictionEffect\":\"NO_R",
+    "raw": "http://127.0.0.1:18070/api/v1/iam/consents"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/targets",
+    "status": 404,
+    "body": "",
+    "raw": "http://127.0.0.1:18070/api/v1/learner/targets"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/targets",
+    "status": 404,
+    "body": "",
+    "raw": "http://127.0.0.1:18070/api/v1/learner/targets"
+  },
+  {
+    "method": "PUT",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/iam/consents",
+    "status": 200,
+    "body": "{\"data\":{\"type\":\"ADULT_LEARNING\",\"version\":\"b30-consent-v1\",\"decision\":\"WITHDRAWN\",\"decidedAt\":\"2026-10-11T02:37:54.319534Z\",\"purpose\":\"ADULT_LEARNING_ELIGIBILITY\",\"required\":true,\"document\":{\"version\":\"b30-consent-v1\",\"digest\":\"9702cd4fe3e50613f84030998f65c0c8e7961f058176b24f8a9e82006abea189\",\"publishedAt\":\"2026-08-30T00:00:00Z\"},\"state\":\"WITHDRAWN\",\"effectiveAt\":\"2026-10-11T02:37:54.319534Z\",\"re",
+    "raw": "http://127.0.0.1:18070/api/v1/iam/consents"
+  },
+  {
+    "method": "GET",
+    "origin": "http://127.0.0.1:18070",
+    "path": "/api/v1/learner/targets",
+    "status": 403,
+    "body": "{\"error\":{\"message\":\"learner operation denied: CONSENT_REQUIRED\",\"retryable\":false,\"code\":\"CONSENT_REQUIRED\"}}",
+    "raw": "http://127.0.0.1:18070/api/v1/learner/targets"
+  }
+]

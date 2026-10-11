@@ -14,6 +14,8 @@ import { useB1Store } from '../stores/b1'
 import { dailyQuotaOptions, type DailyQuotaMinutes } from '../domain/b1'
 import { privacyNotices } from '../domain/it7-closure'
 import { readClosureBoard } from '../api/support'
+import { withdrawLearningConsent } from '../api/learning-consent-withdrawal'
+import { WITHDRAW_BUTTON_LABEL, WITHDRAW_CONFIRM_COPY } from '../domain/learning-consent-withdrawal'
 
 const props = defineProps<{ section?: string }>()
 const b1 = useB1Store()
@@ -22,6 +24,9 @@ const saving = ref(false)
 const saved = ref(false)
 const section = computed(() => props.section ?? 'profile')
 const privacyLines = ref<string[]>([])
+const withdrawConfirming = ref(false)
+const withdrawing = ref(false)
+const withdrawNotice = ref('')
 
 onMounted(async () => {
   await b1.loadAccountData()
@@ -46,6 +51,18 @@ async function saveQuota(): Promise<void> {
   }
 }
 
+async function confirmWithdrawLearningConsent(): Promise<void> {
+  if (withdrawing.value) return
+  withdrawing.value = true
+  withdrawNotice.value = ''
+  try {
+    const result = await withdrawLearningConsent(`withdraw-adult-learning-${Date.now()}`)
+    withdrawNotice.value = result.notice
+    if (result.withdrawn) withdrawConfirming.value = false
+  } finally {
+    withdrawing.value = false
+  }
+}
 async function revokeDevice(deviceId: string): Promise<void> { await b1.removeDevice(deviceId) }
 async function revokeOthers(): Promise<void> { await b1.removeOtherDevices() }
 async function refreshDevices(): Promise<void> { await b1.refreshDevices() }
@@ -77,6 +94,15 @@ async function refreshDevices(): Promise<void> { await b1.refreshDevices() }
       <h3>{{ et('settingsPrivacyTab') }}</h3>
       <p class="muted it7-closure">{{ et('settingsPrivacyUnavailable') }}</p>
       <p v-for="line in privacyLines" :key="line" class="muted">{{ line }}</p>
+      <h3>学习同意</h3>
+      <p class="muted">{{ WITHDRAW_CONFIRM_COPY }}</p>
+      <button v-if="!withdrawConfirming" class="button button--secondary" type="button" :disabled="withdrawing" @click="withdrawConfirming = true">{{ WITHDRAW_BUTTON_LABEL }}</button>
+      <div v-else class="consent-withdraw-confirm">
+        <p role="alert">{{ WITHDRAW_CONFIRM_COPY }}</p>
+        <button class="button button--primary" type="button" :disabled="withdrawing" @click="confirmWithdrawLearningConsent">{{ withdrawing ? '正在撤回…' : '确认撤回' }}</button>
+        <button class="button button--ghost" type="button" :disabled="withdrawing" @click="withdrawConfirming = false">取消</button>
+      </div>
+      <p v-if="withdrawNotice" class="success-text" role="status">{{ withdrawNotice }}</p>
     </article>
     <article v-else class="form-card">
       <h3>{{ et('settingsDevicesTab') }}</h3>

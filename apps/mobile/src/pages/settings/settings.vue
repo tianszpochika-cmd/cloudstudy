@@ -10,6 +10,8 @@ import { onHide, onShow } from '@dcloudio/uni-app'
 import { ensureMobilePageAccess } from '../../auth/navigation'
 import { privacyNotices } from '../../domain/it7-closure'
 import { readMobileClosureBoard } from '../../api/support'
+import { withdrawLearningConsent } from '../../api/learning-consent-withdrawal'
+import { WITHDRAW_BUTTON_LABEL, WITHDRAW_CONFIRM_COPY } from '../../domain/learning-consent-withdrawal'
 import { useLearnerContentStore } from '../../stores/learner-content'
 import { useSessionStore } from '../../stores/session'
 import { listB12NotificationPreferences, updateB12NotificationPreference } from '../../api/b12'
@@ -22,6 +24,9 @@ import type { MobileMotionMode, MobileThemeMode } from '../../domain/learner-con
 
 const store = useLearnerContentStore()
 const privacyLines = ref<string[]>([])
+const withdrawConfirming = ref(false)
+const withdrawing = ref(false)
+const withdrawNotice = ref('')
 const session = useSessionStore()
 function preferenceSyncStorage() { try { return getUniRuntime() } catch { return null } }
 let preferenceSubject: string | null = null
@@ -97,6 +102,9 @@ watch([() => session.verifiedSubject, () => session.identityRevision], ([subject
   notificationDndConflict.value = false
   notificationDndRetryPending.value = false
   notificationDndRetryTarget.value = null
+  withdrawConfirming.value = false
+  withdrawing.value = false
+  withdrawNotice.value = ''
   applyingAccountPreferences = true
   try {
     themeMode.value = 'SYSTEM'
@@ -134,6 +142,19 @@ onShow(async () => {
   privacyLines.value = privacyNotices(await readMobileClosureBoard().catch(() => null))
   await loadAccountPreferences()
 })
+
+async function confirmWithdrawLearningConsent(): Promise<void> {
+  if (withdrawing.value) return
+  withdrawing.value = true
+  withdrawNotice.value = ''
+  try {
+    const result = await withdrawLearningConsent(`withdraw-adult-learning-${Date.now()}`)
+    withdrawNotice.value = result.notice
+    if (result.withdrawn) withdrawConfirming.value = false
+  } finally {
+    withdrawing.value = false
+  }
+}
 
 onHide(() => { settingsVisible = false })
 onBeforeUnmount(unsubscribeQuality)
@@ -405,6 +426,15 @@ async function selectContentLocale(index: number): Promise<void> {
     <view class="yx-card settings-card it7-closure">
       <text class="card-title">隐私与数据</text>
       <text v-for="line in privacyLines" :key="line" class="setting-note">{{ line }}</text>
+      <text class="card-title">学习同意</text>
+      <text class="setting-note">{{ WITHDRAW_CONFIRM_COPY }}</text>
+      <button v-if="!withdrawConfirming" tabindex="0" role="button" class="setting-option" type="button" :disabled="withdrawing" @click="withdrawConfirming = true">{{ WITHDRAW_BUTTON_LABEL }}</button>
+      <view v-else>
+        <text role="alert">{{ WITHDRAW_CONFIRM_COPY }}</text>
+        <button tabindex="0" role="button" class="setting-option" type="button" :disabled="withdrawing" @click="confirmWithdrawLearningConsent">{{ withdrawing ? '正在撤回…' : '确认撤回' }}</button>
+        <button tabindex="0" role="button" class="setting-option" type="button" :disabled="withdrawing" @click="withdrawConfirming = false">取消</button>
+      </view>
+      <text v-if="withdrawNotice" class="success" role="status">{{ withdrawNotice }}</text>
     </view>
     <view class="yx-card settings-card">
       <text class="card-title">设备与会话</text>
