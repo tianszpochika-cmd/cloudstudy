@@ -185,6 +185,10 @@ services:
       LEARNING_JDBC_URL: jdbc:mysql://mysql:3306/learning_service?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&useSSL=true
       LEARNING_JDBC_USERNAME: svc_learning
       LEARNING_JDBC_PASSWORD: ${LEARNING_DB_PASSWORD:?set in server env file}
+      LEARNING_PORTS_MODE: http
+      LEARNING_PORTS_LEARNER_BASE_URL: http://learner-service:18088
+      LEARNING_PORTS_CONTENT_BASE_URL: http://content-service:18089
+      LEARNING_PORTS_ASSESSMENT_BASE_URL: http://assessment-service:18091
 
   assessment-service:
     <<: *owner-service
