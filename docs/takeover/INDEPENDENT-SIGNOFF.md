@@ -27,6 +27,17 @@
 | RES-RATE-BUDGET | P3 | 证据栈曾抬高 Gateway 高风险限额；生产默认未改 |
 | RES-H5-RELOAD | P3 | hash 不重载时内存门状态可能旧；产品路由在文档加载后会送回无权限页 |
 
+rv3 关闭（追加，不删上表）：
+
+| ID | 状态 | 提交与证据 |
+|---|---|---|
+| RES-WALL-114 | CLOSED | 权威卡墙声明：R1-001…R1-115 共 115 张取代原 114。决定人 Grok Bot 测试项目练手，日期 2026-10-11。`evidence/redesign/2026-10-11/rv3-ea0d8dcd/wall/steps.json`。台账第 0.1 节 |
+| RES-ARTWORK | CLOSED | 提交 `cd458ee6`、`0ffb50f3`。`evidence/redesign/2026-10-11/rv3-ea0d8dcd/artwork/steps.json`。站页扫描横向溢出 0，越界元素为空 |
+| RES-RATE-BUDGET | CLOSED | 提交 `a6120fda`、`6f7e59d4`。`evidence/redesign/2026-10-11/rv3-ea0d8dcd/rate-budget/steps.json`。生产默认仍是 30；证据 profile 单独为 2000 |
+| RES-H5-RELOAD | CLOSED | 提交 `f3c2a159`、`a5c540aa`。`evidence/redesign/2026-10-11/rv3-ea0d8dcd/h5-reload/steps.json`。只改哈希进入无权限页；从未同意的新用户进入引导页 |
+| RES-IT5-OUTER | CLOSED | 不改 `B25ReviewEvidenceGateTest`。`evidence/redesign/2026-10-11/rv3-ea0d8dcd/it5/steps.json`。外层保持 PARTIAL / B25-LEGACY-UNVERIFIED-1；本期 NEVER_STUDIED 且 officialScore=false，按站口径 PASS |
+| MinIO 跳过 | CLOSED | 提交 `18aa5170`。`evidence/redesign/2026-10-11/rv3-ea0d8dcd/minio/steps.json`。Maven 中 1 项、0 跳过 |
+
 ## 2. 发现明细
 
 ### F-IT1-01 未成年年份无法经表单提交（P2）
@@ -76,6 +87,20 @@ F-IT6-01：全量浏览器 45 步 PASS，没有 SKIP。流程含建稿、冲突�
 `mvn -B -ntp -f pom.xml test` 于 2026-10-11T11:35:14+08 BUILD SUCCESS，总时间 02:15 min。合计 1680 项、0 失败、1 跳过。跳过的是 `MinioObjectStorePortReadOnlyIntegrationTest`。learning-service 199 项、0 失败、0 跳过。assessment-service 153 项、0 失败、0 跳过。admin-ops 收口 11 项、0 失败。workflow-service 58 项、0 失败、0 跳过。IAM JDBC 上下文 9 项、V13 迁移 1 项，0 失败。共享库表数前后一致。`rv2_` 与 `iam_v13_test_rv2round` 已删。qida 名称计数前后都是 50。
 
 本轮站级 SKIP 为空。独立审查已于合并 `94e1f90b` 后填写第 4 节：`IT-1`/`IT-6`/`IT-7`/`FULL-CHAIN` = `SIGNED_PASS`。`lunaStamp` 仍是 false。
+
+### rv3 关闭说明
+
+证据目录：`evidence/redesign/2026-10-11/rv3-ea0d8dcd`。读法见该目录 `reading.md`。实现提交：`cd458ee6`（装饰盒）、`f3c2a159`（hash 门）、`a6120fda`（证据限额 profile）、`18aa5170`（MinIO 隔离 bucket）、`dd545739`（全链脚本）、`0ffb50f3`（H5 safe-area 探针）、`a5c540aa`（撤回后留在无权限页）、`6f7e59d4`（站页复用会话）、`ea0d8dcd`（工单列表等读取后再显示空态）。
+
+收口重跑的 `summary` 是 PASS。全链 158 步，it7 34 步，`failed` 为空。链内 `node --test --test-concurrency=1 apps/mobile/tests/*.mjs apps/learner-web/tests/*.mjs` 为 367 项、367 通过、0 失败。Web 与 H5、1280 与 390 都有截图。同后缀更早一次只因外部 qida 名称从 44 变成 46 而失败，本轮没有 stop 或 start，该次目录未入库。`rv3-dd545739` 与 `rv3-6f7e59d4` 不改写。
+
+RES-ARTWORK：站页 `getBoundingClientRect` 留在容器和视口内，文档横向溢出是 0。RES-H5-RELOAD：撤回与未成年拒绝后只改哈希，Web 到 `/forbidden`，H5 到 `#/pages/forbidden/forbidden`，`reload` 是 false。从未同意的新用户到引导页。RES-RATE-BUDGET：生产默认 `high-risk-admin` 仍是 30；`evidence` profile 单独写成 2000，并且不带占位符。IT-5：外层保持 PARTIAL / B25-LEGACY-UNVERIFIED-1，本期 NEVER_STUDIED 且 officialScore=false，按站口径 PASS，不改写成 READY。
+
+`pnpm typecheck` 为 7 项全部通过。`pnpm contracts:validate` 为 471 个操作、818 个 OpenAPI schema、192 个事件。`mvn -B -ntp -f pom.xml test` 于 2026-10-11T13:43:59+08 BUILD SUCCESS，总时间 02:20 min。合计 1681 项、0 失败、0 跳过。`MinioObjectStorePortReadOnlyIntegrationTest` 为 1 项、0 跳过。`rv3_` 与 `iam_v13_test_rv3round` 已删。共享 schema 表数前后一致。两个保留库仍在。qida 名称计数前后都是 46。固定端口无监听。
+
+权威卡墙是 R1-001…R1-115。原 114 卡墙无法找回，差异不能逐张核对，没有补空卡。BC-094 与 BC-187 不在这些站。
+
+仍保持的外部项：`lunaStamp` 是 false。R1-029 的 3 个 NOT_RUN 不回写。历史 FAIL 目录不改写。两个保留库仍在。没有对 qida 执行 stop 或 start。第 4 节已有的 `SIGNED_PASS` 单元格不改。本段不是新的 `SIGNED_PASS`。
 
 ## 3. Luna P1 复核（本轮）
 

@@ -1,0 +1,41 @@
+{
+  "item": "RES-ARTWORK",
+  "suffix": "ea0d8dcd",
+  "status": "PASS",
+  "missing": [],
+  "failed": [],
+  "steps": [
+    {
+      "name": "stations-web-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-web-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "stations-web-390",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-web-390",
+      "status": "PASS"
+    },
+    {
+      "name": "stations-h5-390",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-h5-390",
+      "status": "PASS"
+    },
+    {
+      "name": "stations-h5-1280",
+      "status": "PASS"
+    },
+    {
+      "name": "overflow-h5-1280",
+      "status": "PASS"
+    }
+  ]
+}
