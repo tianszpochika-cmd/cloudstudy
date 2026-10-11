@@ -22,6 +22,13 @@ public class IamAuthCorsConfiguration {
     static final String LEARNER_WEB_ORIGIN = "http://127.0.0.1:18180";
     static final String MOBILE_H5_ORIGIN = "http://127.0.0.1:18183";
     private static final Set<String> LEARNER_ORIGINS = Set.of(LEARNER_WEB_ORIGIN, MOBILE_H5_ORIGIN);
+    /**
+     * Deployed learner origins (e.g. https://learn.clyunedev.com) supplied by the server as an
+     * exact, comma-separated https allowlist in IAM_TRUSTED_LEARNER_ORIGINS. Unset keeps the
+     * loopback-only default.
+     */
+    private static final Set<String> DEPLOYED_LEARNER_ORIGINS =
+            parseDeployedOrigins(System.getenv("IAM_TRUSTED_LEARNER_ORIGINS"));
     private static final List<String> ALLOWED_METHODS = List.of("POST", "OPTIONS");
     private static final List<String> ALLOWED_HEADERS = List.of(
             HttpHeaders.AUTHORIZATION, HttpHeaders.CONTENT_TYPE, "Idempotency-Key", HttpHeaders.ACCEPT);
@@ -77,8 +84,28 @@ public class IamAuthCorsConfiguration {
         if (originHeader == null) return null;
         String trimmed = originHeader.trim();
         if (trimmed.isEmpty() || "null".equalsIgnoreCase(trimmed)) return null;
+        if (DEPLOYED_LEARNER_ORIGINS.contains(trimmed.toLowerCase(Locale.ROOT))) return trimmed;
         String canonical = canonicalLearnerOrigin(trimmed);
         return canonical != null && LEARNER_ORIGINS.contains(canonical) ? trimmed : null;
+    }
+
+    static Set<String> parseDeployedOrigins(String raw) {
+        if (raw == null || raw.isBlank()) return Set.of();
+        java.util.Set<String> origins = new java.util.HashSet<>();
+        for (String part : raw.split(",")) {
+            String value = part.trim().toLowerCase(Locale.ROOT);
+            if (value.isEmpty()) continue;
+            try {
+                URI uri = URI.create(value);
+                if (!"https".equals(uri.getScheme()) || uri.getHost() == null || uri.getUserInfo() != null
+                        || uri.getRawQuery() != null || uri.getRawFragment() != null
+                        || (uri.getRawPath() != null && !uri.getRawPath().isEmpty())) continue;
+                origins.add(value);
+            } catch (IllegalArgumentException ignored) {
+                // malformed entries are dropped: fail closed
+            }
+        }
+        return Set.copyOf(origins);
     }
 
     private static String canonicalLearnerOrigin(String origin) {

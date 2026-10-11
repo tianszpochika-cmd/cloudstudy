@@ -131,6 +131,7 @@ services:
       redis:
         condition: service_healthy
     environment:
+      IAM_TRUSTED_LEARNER_ORIGINS: ${IAM_TRUSTED_LEARNER_ORIGINS:-https://learn.clyunedev.com,https://mobile.clyunedev.com}
       IAM_SERVER_ADDRESS: 0.0.0.0
       IAM_SERVICE_PORT: 18087
       IAM_PERSISTENCE_ENABLED: "true"
