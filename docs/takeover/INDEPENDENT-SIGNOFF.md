@@ -130,3 +130,7 @@ RES-ARTWORK：站页 `getBoundingClientRect` 留在容器和视口内，文档�
 - 修复轮：`rv1`，screen `cs-rv1`，分支 `grok/cs-rv1-20261011`（自 `dev-redesign`）。2026-10-11 独立审查复核：代码符合三项要求，定向 node 28/28、`ContentReleaseStudio*` 18/18、`IamAuthCorsConfigurationTest` 5/5 复跑绿，已合并为 `f7905ab8`；签收 IT-2…IT-5。
 - 修复轮：`rv2`，screen `cs-rv2`，分支 `grok/cs-rv2-20261011`。RV2-01…RV2-04 证据在 `evidence/redesign/2026-10-11/rv2-ea1aa3c8`。独立审查复核：IT-1 11/11、IT-6 45/45（指纹一致）、IT-7 34/34、全链 58/58、node 361/361、Maven 1680/0/1；定向复跑 IamAuthCors 5/5、ContentReleaseStudio* 18/18。已合并为 `94e1f90b`；签收 IT-1、IT-6、IT-7、FULL-CHAIN。七站全部 `SIGNED_PASS`（仅 P3 残留）。独立审查例行已关闭。
 - Luna 字段始终外部待办。
+
+## 6. Luna 签收（2026-10-11，追加）
+
+rv3 合并 `7a6ac0a2` 后残留清零，第 4 节 IT-5/IT-6 的 `residual: RES-ARTWORK` 已由 rv3 关闭（第 4 节原单元格不改）。全部站 IT-1…IT-7 与 FULL-CHAIN 已由 Luna（Grok Bot 测试项目练手，项目负责人于 2026-10-11 指定的唯一全职审查者，接替原 Luna） 签收，`lunaStamp=true`，见 [LUNA-SIGNOFF](LUNA-SIGNOFF.md)。

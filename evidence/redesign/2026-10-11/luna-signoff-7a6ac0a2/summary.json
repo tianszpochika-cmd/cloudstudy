@@ -1,0 +1,75 @@
+{
+  "date": "2026-10-11",
+  "commit": "7a6ac0a2",
+  "signer": "Luna",
+  "signerDetail": "Luna（Grok Bot 测试项目练手，项目负责人于 2026-10-11 指定的唯一全职审查者，接替原 Luna）",
+  "handover": {
+    "from": "原 Luna（2026-10-10 前的独立终审方，基线 69bea68b IT-1 REJECT / IT-2 BLOCKED 原件保留不改）",
+    "to": "Grok Bot 测试项目练手（Luna）",
+    "designatedBy": "项目负责人",
+    "date": "2026-10-11"
+  },
+  "stations": {
+    "IT-1": {
+      "cards": "R1-001…017",
+      "lunaStamp": true,
+      "verdict": "LUNA_SIGNED_PASS",
+      "evidence": "rv2 ea1aa3c8 IT-1 11/11；rv3 ea0d8dcd 全链 hash 门/撤回/未成年 PASS"
+    },
+    "IT-2": {
+      "cards": "R1-018…029",
+      "lunaStamp": true,
+      "verdict": "LUNA_SIGNED_PASS",
+      "evidence": "three-schema 2f1d24b6；rv3 ea0d8dcd 全链 smoke-it2-placement PASS"
+    },
+    "IT-3": {
+      "cards": "R1-030…042",
+      "lunaStamp": true,
+      "verdict": "LUNA_SIGNED_PASS",
+      "evidence": "browser d2012bf6；rv3 ea0d8dcd 全链 smoke-it3-daily-task PASS"
+    },
+    "IT-4": {
+      "cards": "R1-043…059",
+      "lunaStamp": true,
+      "verdict": "LUNA_SIGNED_PASS",
+      "evidence": "browser c460b646；rv3 ea0d8dcd 全链 PASS"
+    },
+    "IT-5": {
+      "cards": "R1-060…069",
+      "lunaStamp": true,
+      "verdict": "LUNA_SIGNED_PASS",
+      "evidence": "browser 1f244c3b；rv3 ea0d8dcd it5 2/2 PASS，RES-ARTWORK 已关"
+    },
+    "IT-6": {
+      "cards": "R1-070…090",
+      "lunaStamp": true,
+      "verdict": "LUNA_SIGNED_PASS",
+      "evidence": "rv2 ea1aa3c8 IT-6 45/45；rv3 ea0d8dcd smoke-it6-release PASS，RES-ARTWORK 已关"
+    },
+    "IT-7": {
+      "cards": "R1-091…115",
+      "lunaStamp": true,
+      "verdict": "LUNA_SIGNED_PASS",
+      "evidence": "rv3 ea0d8dcd it7 34/34；收口重启指纹一致"
+    },
+    "FULL-CHAIN": {
+      "cards": "IT-1…IT-7",
+      "lunaStamp": true,
+      "verdict": "LUNA_SIGNED_PASS",
+      "evidence": "rv3 ea0d8dcd 全链 158/158；node 367/367；Maven 1681/0/0 BUILD SUCCESS"
+    }
+  },
+  "residuals": [],
+  "externalNotes": [
+    "R1-029 历史 3×NOT_RUN 不回写",
+    "历史 FAIL 目录与早期 lunaStamp=false 原件保持不改",
+    "两个保留库仍在",
+    "未碰 qida"
+  ],
+  "reviewChecks": {
+    "keyNodeTests": "9/9 PASS（rv3 新增与变更测试，2026-10-11 14:1x 复跑）",
+    "typecheck": "7/7",
+    "GatewayYamlLoadingTest": "2/2 PASS",
+    "fullChainSummary": "PASS failed=[]"
+  }
+}

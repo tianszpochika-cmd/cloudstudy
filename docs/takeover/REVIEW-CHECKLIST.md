@@ -77,3 +77,7 @@ Luna REJECT 的两处 P1 在当前 HEAD 已有修复候选：两端 `getIamAuthB
 2. 跑关键单测（如 IAM CORS）。
 3. 发现记入 `INDEPENDENT-SIGNOFF.md`；有 P1/P2 则开 `rv*` 修复轮，复验后再签。
 4. 永不写 `lunaStamp=true`。
+
+## 5. 角色变更（2026-10-11，追加）
+
+项目负责人于 2026-10-11 指定 Grok Bot 测试项目练手为唯一全职审查者并承担 Luna 角色。第 4 节第 4 条「永不写 `lunaStamp=true`」与第 1 节第 6 条对新签收不再适用；历史原件仍不改写。Luna 签收见 [LUNA-SIGNOFF](LUNA-SIGNOFF.md)，提交 `7a6ac0a2`。

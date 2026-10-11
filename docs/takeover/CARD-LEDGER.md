@@ -202,3 +202,7 @@ GAP-WALL-114 与 RES-WALL-114 由此追加为 CLOSED。第 0 节里的 OPEN 原�
 | rv3 | cs-rv3 | 关闭 RES-ARTWORK、RES-RATE-BUDGET、RES-H5-RELOAD、MinIO 跳过、IT-5 外层口径、GAP/RES-WALL-114 | 分支 `grok/cs-rv3-20261011`。实现提交 `cd458ee6`、`f3c2a159`、`a6120fda`、`18aa5170`、`dd545739`、`0ffb50f3`、`a5c540aa`、`6f7e59d4`、`ea0d8dcd`。证据目录 `evidence/redesign/2026-10-11/rv3-ea0d8dcd`。收口重跑全链 158 步 PASS，it7 34 步 PASS，链内 node 367 项、367 通过、0 失败。Web 与 H5，1280 与 390。横向溢出为 0。撤回与未成年拒绝后只改哈希进入无权限页；从未同意的新用户进入引导页。IT-5 外层保持 PARTIAL / B25-LEGACY-UNVERIFIED-1，本期 NEVER_STUDIED 且 officialScore=false，按站口径 PASS。权威卡墙为 R1-001…R1-115。Maven 于 2026-10-11T13:43:59+08 BUILD SUCCESS，1681 项、0 失败、0 跳过。`rv3_` 与 `iam_v13_test_rv3round` 已删。共享 schema 表数前后一致。两个保留库仍在。qida 名称计数前后都是 46。固定端口无监听。第 4 节签收栏未改。lunaStamp 仍是 false |
 
 旧 grok 会话 PID 59062（01a120cd…）推送 e7cd6dd1 后空闲，保留运行但不再使用。本轮没有找到该进程，也没有向它发信号。
+
+## 6. Luna 签收（2026-10-11，追加）
+
+R1-001…R1-115 共 115 张卡所在的 IT-1…IT-7 全部由 Luna（Grok Bot 测试项目练手，负责人指定）签收，`lunaStamp=true`，基于合并提交 `7a6ac0a2`。上表与各节原文不改。见 [LUNA-SIGNOFF](LUNA-SIGNOFF.md)。

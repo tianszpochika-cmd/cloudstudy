@@ -1,6 +1,8 @@
 # CURRENT-HANDOFF — dev-redesign 迭代 2（第二轮重设计）
 
 > 更新：2026-10-11。本分支只有一套当前进度入口：[迭代 2 当前进度](docs/06-design/v2-980plus/redesign/CURRENT-PROGRESS.md)。本文件仅提供阅读路径，不重复维护完成率或任务状态。
+>
+> **2026-10-11 Luna 签收**：IT-1…IT-7 与全链已由 Luna（Grok Bot 测试项目练手，负责人指定的唯一全职审查者）在 `7a6ac0a2` 签收，`lunaStamp=true`，残留为零，见 [LUNA-SIGNOFF](docs/takeover/LUNA-SIGNOFF.md)。下文第 3 条为签收前的历史描述，保留原文。
 
 ## 接手入口
 

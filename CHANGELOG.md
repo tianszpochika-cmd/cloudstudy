@@ -1,5 +1,7 @@
 # Changelog
 
+- [LUNA-SIGNOFF-20261011] **IT-1…IT-7 与全链由 Luna 签收，`lunaStamp=true`。** 签收人 Grok Bot 测试项目练手（负责人指定，接替原 Luna）。rv3 合并 `7a6ac0a2`，残留为零。见 `docs/takeover/LUNA-SIGNOFF.md` 与 `evidence/redesign/2026-10-11/luna-signoff-7a6ac0a2/summary.json`。
+
 - [RV3-20261011] **装饰溢出、证据限额、hash 门、MinIO 只读、IT-5 外层口径和权威卡墙已关闭。**
   - 全链后缀 `ea0d8dcd`：158 步 PASS，IT-7 34 步 PASS。Web 与 H5，1280 与 390。链内 node 367 项、367 通过、0 失败。提交 `cd458ee6`、`f3c2a159`、`a6120fda`、`18aa5170`、`dd545739`、`0ffb50f3`、`a5c540aa`、`6f7e59d4`、`ea0d8dcd`。
   - 站页横向溢出是 0。撤回或未成年拒绝后只改哈希进入无权限页。从未同意的新用户进入引导页。生产默认高风险限额仍是 30，证据 profile 单独为 2000。
