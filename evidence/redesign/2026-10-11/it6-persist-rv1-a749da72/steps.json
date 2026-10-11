@@ -1,0 +1,167 @@
+{
+  "suffix": "a749da72",
+  "steps": [
+    {
+      "name": "ports-free",
+      "status": "PASS",
+      "detail": {
+        "occupied": []
+      }
+    },
+    {
+      "name": "dedicated-schemas",
+      "status": "PASS",
+      "detail": {
+        "iam": "rv1_20261011_iam_a749da72",
+        "learner": "rv1_20261011_lrn_a749da72",
+        "content": "rv1_20261011_cnt_a749da72"
+      }
+    },
+    {
+      "name": "iam-https",
+      "status": "PASS",
+      "detail": {
+        "spki": "q/nlzl9TovGHSGpi451cHYoWwqMJEHrRYtOEKwWyOvM=",
+        "schema": "rv1_20261011_iam_a749da72"
+      }
+    },
+    {
+      "name": "it6-simple-chain",
+      "status": "PASS",
+      "detail": {
+        "ok": true,
+        "created": 202,
+        "rights": 200,
+        "report": 200,
+        "submitted": 202,
+        "published": 202,
+        "pinned": 200,
+        "finger": 200,
+        "row": "6 3737",
+        "chars": 260
+      }
+    },
+    {
+      "name": "it6-restart-fingerprint",
+      "status": "PASS",
+      "detail": {
+        "status": 200,
+        "same": true,
+        "rowBefore": "6 3737",
+        "rowAfter": "6 3737",
+        "beforeChars": 260,
+        "afterChars": 260
+      }
+    },
+    {
+      "name": "it6-full-browser",
+      "status": "SKIP",
+      "detail": {
+        "reason": "本轮用简审短链和只读指纹对照关闭 F-IT6-01，没有重跑 IT-6 全量浏览器。"
+      }
+    },
+    {
+      "name": "minor-year-web-1280",
+      "status": "FAIL",
+      "detail": {
+        "year": 2016,
+        "origin": "http://127.0.0.1:18070",
+        "path": "/api/v1/iam/adult-gate",
+        "status": 200,
+        "rejected": true,
+        "url": "http://127.0.0.1:18180/forbidden",
+        "retry": 0,
+        "changeYear": 0
+      }
+    },
+    {
+      "name": "minor-year-web-390",
+      "status": "FAIL",
+      "detail": {
+        "year": 2016,
+        "origin": "http://127.0.0.1:18070",
+        "path": "/api/v1/iam/adult-gate",
+        "status": 200,
+        "rejected": true,
+        "url": "http://127.0.0.1:18180/forbidden",
+        "retry": 0,
+        "changeYear": 0
+      }
+    },
+    {
+      "name": "minor-year-h5-390",
+      "status": "PASS",
+      "detail": {
+        "year": 2016,
+        "origin": "http://127.0.0.1:18070",
+        "path": "/api/v1/iam/adult-gate",
+        "status": 200,
+        "rejected": true,
+        "url": "http://127.0.0.1:18183/#/pages/forbidden/forbidden",
+        "retry": 0,
+        "changeYear": 0
+      }
+    },
+    {
+      "name": "minor-year-h5-1280",
+      "status": "PASS",
+      "detail": {
+        "year": 2016,
+        "origin": "http://127.0.0.1:18070",
+        "path": "/api/v1/iam/adult-gate",
+        "status": 200,
+        "rejected": true,
+        "url": "http://127.0.0.1:18183/#/pages/forbidden/forbidden",
+        "retry": 0,
+        "changeYear": 0
+      }
+    },
+    {
+      "name": "withdraw-web-1280",
+      "status": "FAIL",
+      "detail": {
+        "consent": 200,
+        "targets": 403,
+        "url": "http://127.0.0.1:18180/settings/privacy",
+        "stayed": true
+      }
+    },
+    {
+      "name": "withdraw-h5-390",
+      "status": "FAIL",
+      "detail": {
+        "consent": 200,
+        "targets": 403,
+        "url": "http://127.0.0.1:18183/#/pages/settings/settings",
+        "stayed": true
+      }
+    },
+    {
+      "name": "node-suite",
+      "status": "FAIL",
+      "detail": {
+        "exit": 1,
+        "tests": 361,
+        "pass": 360,
+        "fail": 1
+      }
+    },
+    {
+      "name": "schemas-dropped",
+      "status": "PASS",
+      "detail": {
+        "suffix": "a749da72",
+        "prefix": "rv1_"
+      }
+    },
+    {
+      "name": "qida-unchanged",
+      "status": "PASS",
+      "detail": {
+        "before": 50,
+        "after": 50,
+        "dockerMutations": "none"
+      }
+    }
+  ]
+}

@@ -1,5 +1,11 @@
 # Changelog
 
+- [RV1-20261011] **成人门可提交未成年年份，设置页可撤回学习同意，发布台重启后指纹不变。**
+  - F-IT1-01：Web 与 H5 的出生年接受 1900 到当年。服务端仍判定未成年为 REJECTED，并进入无权限页。提交 `65be71d1`。
+  - F-IT1-02：设置·隐私有「撤回学习同意」。确认后把 `ADULT_LEARNING` 标成 WITHDRAWN，学习目标口返回 403，人留在设置页。提交 `6117e6c1`。
+  - F-IT6-01：发布台写入 `it6_release_studio`。重启 content-service 后只读指纹不变。提交 `10a291fe`。
+  - 证据目录 `evidence/redesign/2026-10-11/it6-persist-rv1-a749da72`。后缀 `a749da72` 的指纹重启前后相同，库行是 `6 3737`。`steps.json` 保持脚本首跑原文，读法在同目录 `reading.md`。IT-6 全量浏览器 SKIP。顶层 node 361 项、360 通过、1 失败，失败是未启动 admin-ops 时的工单 503。`lunaStamp` 仍是 false。第 4 节签收栏未填。
+
 - [R8-20261011] **定级三库真签、收口台落库，以及隔离库上的全量 Maven 都已跑过。**
   - IT-2 证据目录 `evidence/redesign/2026-10-11/it2-three-schema-r8-2f1d24b6`。learner、content、assessment 三个 owner schema，IAM 用 RS256 签发。Web 与 H5、1280 与 390。公开重测 201，旧写口 404。`summary` 是 PASS。`accepted`、`it2Outbound`、`lunaStamp` 仍是 false。R1-029 的 26 PASS / 3 NOT_RUN 没有改写。
   - 收口台写入 admin-ops 既有 Flyway 的 `it7_closure_desk`。重启后只读看板，指纹不变，没有重放收口命令。证据目录 `evidence/redesign/2026-10-11/it7-persist-r8-8c4d60cc` 与 `evidence/redesign/2026-10-11/it7-persist-r8-627fa9bf`。处置写关闭时，治理页上的旧风险处置按钮不再可点。

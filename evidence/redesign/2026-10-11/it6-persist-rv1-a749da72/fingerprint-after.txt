@@ -1,0 +1,12 @@
+SIMPLE
+versions
+rv1-simple#1	PUBLISHED	PUBLISHING	5	简审课文
+pins
+rv1-simple=1
+idempotency
+rv1-a749da72-0007-9bd624:202
+rv1-a749da72-0008-939c1e:200
+rv1-a749da72-0009-be1c5c:200
+rv1-a749da72-0010-4811a1:202
+rv1-a749da72-0011-0f62d3:202
+rv1-a749da72-0012-a0692f:200
