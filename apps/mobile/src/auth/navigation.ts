@@ -98,6 +98,13 @@ function rejectedAwayFromAccount(target: string): boolean {
   return normalized === ONBOARDING_PATH || isMobileLearningPath(normalized)
 }
 
+function consentWithdrawnAwayFromAccount(target: string): boolean {
+  const session = useSessionStore(pinia)
+  if (session.learningConsentWithdrawn !== true) return false
+  const normalized = normalizeMobilePagePath(target)
+  return normalized === ONBOARDING_PATH || isMobileLearningPath(normalized)
+}
+
 async function redirectIfResumeBlocksLearning(target: string): Promise<boolean> {
   if (!isMobileLearningPath(target)) return false
   const session = useSessionStore(pinia)
@@ -162,6 +169,10 @@ async function resolveBlockedNavigation(target: string): Promise<void> {
   redirectPromise = (async () => {
     const session = useSessionStore(pinia)
     try { await session.restore() } catch { /* the session store closes the gate on restore failure */ }
+    if (consentWithdrawnAwayFromAccount(target)) {
+      openUniPage(FORBIDDEN_PATH)
+      return
+    }
     if (!session.isAuthenticated) { showLogin(target); return }
     if (rejectedAwayFromAccount(target)) {
       openUniPage(FORBIDDEN_PATH)
@@ -185,6 +196,10 @@ function interceptNavigation(options: RouteOptions): false | RouteOptions {
   const target = normalizeMobilePagePath(options.url)
   if (!isMobileProtectedPath(target)) return options
   const session = useSessionStore(pinia)
+  if (consentWithdrawnAwayFromAccount(target)) {
+    void resolveBlockedNavigation(target)
+    return false
+  }
   if (session.isAuthenticated && rejectedAwayFromAccount(target)) {
     void resolveBlockedNavigation(target)
     return false
@@ -214,7 +229,14 @@ function sendForbidden(): void {
 async function revalidateProtected(normalized: string): Promise<boolean> {
   const session = useSessionStore(pinia)
   try { await session.restore() } catch { /* restore has already closed the session */ }
-  if (!session.isAuthenticated) { showLogin(normalized); return false }
+  if (!session.isAuthenticated) {
+    if (consentWithdrawnAwayFromAccount(normalized)) {
+      sendForbidden()
+      return false
+    }
+    showLogin(normalized)
+    return false
+  }
   const wasReady = session.isLearningReady === true
   if (typeof session.refreshGateFromServer === 'function') {
     try { await session.refreshGateFromServer() } catch { /* keep the last verified snapshot */ }
@@ -280,6 +302,7 @@ export async function bootstrapMobileAuth(initialPath: unknown): Promise<void> {
   const session = useSessionStore(pinia)
   try { await session.restore() } catch { /* restore has already cleared the local session */ }
   if (!isMobileProtectedPath(target)) return
+  if (consentWithdrawnAwayFromAccount(target)) { openUniPage(FORBIDDEN_PATH); return }
   if (!session.isAuthenticated) { showLogin(target); return }
   if (rejectedAwayFromAccount(target)) { openUniPage(FORBIDDEN_PATH); return }
   if (isMobileLearningPath(target) && !session.isLearningReady) { showOnboarding(target); return }
@@ -304,7 +327,12 @@ export function handleMobileApiError(status: 401 | 403, details?: unknown): void
   const session = useSessionStore(pinia)
   const current = currentMobilePagePath()
   if (status === 401) {
+    const withdrawn = session.learningConsentWithdrawn === true
     session.clear()
+    if (withdrawn || consentWithdrawnAwayFromAccount(current)) {
+      sendForbidden()
+      return
+    }
     if (isMobileProtectedPath(current)) showLogin(current)
     return
   }
@@ -313,7 +341,13 @@ export function handleMobileApiError(status: 401 | 403, details?: unknown): void
   if (current === ONBOARDING_PATH) return
   // A new adult account can read IAM but cannot read learner facts until the
   // onboarding consents have been recorded and its access token has rotated.
+  // A withdrawn adult already had that consent; the same 403 stays on the
+  // no-permission page instead of starting onboarding again.
   if (decisionCode(details) === 'CONSENT_REQUIRED') {
+    if (session.learningConsentWithdrawn === true) {
+      sendForbidden()
+      return
+    }
     showOnboarding(current)
     return
   }

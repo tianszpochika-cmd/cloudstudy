@@ -21,12 +21,13 @@ function harness(session, content) {
   const opened = []
   const relaunched = []
   const listeners = {}
+  const handlers = []
   globalThis.window = {
     location: { hash: '#/pages/settings/settings' },
     addEventListener(type, fn) { listeners[type] = fn },
   }
   const navigation = load('src/auth/navigation.ts', {
-    '../api/client': { setMobileApiErrorHandler() {} },
+    '../api/client': { setMobileApiErrorHandler(handler) { handlers.push(handler) } },
     './gateway-auth': { safeMobileReturnTo: (value) => value },
     '../platform/uni-runtime': {
       getUniRuntime: () => ({
@@ -41,7 +42,7 @@ function harness(session, content) {
     '../stores/session': { useSessionStore: () => session },
     '../domain/onboarding-resume': load('src/domain/onboarding-resume.ts', {}),
   })
-  return { navigation, opened, relaunched, listeners }
+  return { navigation, opened, relaunched, listeners, handlers }
 }
 
 const incomplete = {
@@ -89,6 +90,18 @@ test('a rejected minor stays on the forbidden page when only the hash changes', 
   window.location.hash = '#/pages/home/home'
   assert.equal(await navigation.revalidateMobileAccess('/pages/home/home'), false)
   assert.deepEqual(opened, ['/pages/forbidden/forbidden'])
+  assert.deepEqual(relaunched, [])
+})
+
+test('a revoked session after consent withdrawal stays on the forbidden page', async () => {
+  const state = session({ learningConsentWithdrawn: true, clear() { state.learningConsentWithdrawn = true } })
+  const { navigation, opened, relaunched, handlers } = harness(state, { loadOnboardingResume: async () => incomplete })
+  navigation.installMobileNavigationGuard()
+  window.location.hash = '#/pages/home/home'
+  handlers[0](401, { error: { code: 'UNAUTHORIZED' } })
+  assert.equal(state.learningConsentWithdrawn, true)
+  handlers[0](403, { error: { code: 'CONSENT_REQUIRED' } })
+  assert.deepEqual(opened, ['/pages/forbidden/forbidden', '/pages/forbidden/forbidden'])
   assert.deepEqual(relaunched, [])
 })
 

@@ -62,6 +62,7 @@ export const useSessionStore = defineStore('session', () => {
   const status = ref<'unknown' | 'restoring' | 'authenticated' | 'refreshing' | 'revoking' | 'unauthenticated' | 'error'>('unknown')
   const adultGate = ref<MobileAdultGateStatus>('UNKNOWN')
   const learningConsentWithdrawn = ref(false)
+  const withdrawnMarkerKey = 'yx.auth.learning-consent-withdrawn'
   const lastError = ref<string | null>(null)
   const restored = ref(false)
   const isAuthenticated = computed(() => status.value === 'authenticated' && Boolean(accessToken.value) && Boolean(verifiedSubject.value))
@@ -143,7 +144,20 @@ export const useSessionStore = defineStore('session', () => {
     })()
     return restorePromise
   }
+  function withdrawnMarker(): boolean {
+    if (learningConsentWithdrawn.value) return true
+    try { return typeof sessionStorage !== 'undefined' && sessionStorage.getItem(withdrawnMarkerKey) === '1' } catch { return false }
+  }
+  function rememberWithdrawn(): void {
+    learningConsentWithdrawn.value = true
+    try { if (typeof sessionStorage !== 'undefined') sessionStorage.setItem(withdrawnMarkerKey, '1') } catch { /* Private mode keeps the in-memory flag. */ }
+  }
+  function dropWithdrawnMarker(): void {
+    learningConsentWithdrawn.value = false
+    try { if (typeof sessionStorage !== 'undefined') sessionStorage.removeItem(withdrawnMarkerKey) } catch { /* The in-memory flag is already clear. */ }
+  }
   async function login(identifier: string, password: string): Promise<boolean> {
+    dropWithdrawnMarker()
     clear()
     const epoch = authEpoch
     status.value = 'restoring'
@@ -171,6 +185,7 @@ export const useSessionStore = defineStore('session', () => {
     }
   }
   async function register(identifier: string, password: string): Promise<boolean> {
+    dropWithdrawnMarker()
     clear()
     const epoch = authEpoch
     status.value = 'restoring'
@@ -323,7 +338,7 @@ export const useSessionStore = defineStore('session', () => {
     removeAllLearningCaches()
   }
   function markLearningConsentWithdrawn(): void {
-    learningConsentWithdrawn.value = true
+    rememberWithdrawn()
     permissions.value = permissions.value.filter((item) => item !== 'learning.plan.read')
   }
   async function refreshGateFromServer(): Promise<void> {
@@ -335,6 +350,7 @@ export const useSessionStore = defineStore('session', () => {
     }
   }
   function clear(): void {
+    const withdrawn = withdrawnMarker()
     authEpoch += 1
     invalidateLearningIdentity()
     accessToken.value = null
@@ -348,6 +364,7 @@ export const useSessionStore = defineStore('session', () => {
     setInMemoryAccessToken(null)
     clearMobileSessionHint()
     try { secureStorage()?.removeItem(REFRESH_TOKEN_KEY) } catch { /* best effort */ }
+    if (withdrawn) learningConsentWithdrawn.value = true
   }
 
   return { accessToken, deviceId, sessionId, verifiedSubject, identityRevision, permissions, status, adultGate, learningConsentWithdrawn, lastError, restored, isAuthenticated, isLearningReady, getMobileApiIdentity, restore, login, register, requestPasswordReset, confirmPasswordReset, refreshSilently, refreshSilentlyForIdentity, logout, revokeCurrentSession, confirmAdultGate, setReturnTo, peekReturnTo, consumeReturnTo, setAuthAdapter, markLearningConsentWithdrawn, refreshGateFromServer, clear }
