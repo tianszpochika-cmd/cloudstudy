@@ -24,6 +24,7 @@ function load(relativePath, modules) {
 function environment() {
   piniaPackage.setActivePinia(piniaPackage.createPinia())
   const storage = new Map()
+  const cacheWipes = { count: 0 }
   globalThis.window = { localStorage: {
     getItem: (key) => storage.get(key) ?? null,
     setItem: (key, value) => storage.set(key, value),
@@ -66,13 +67,15 @@ function environment() {
     '../auth/gateway-auth': auth,
     '../platform/uni-runtime': platform,
     '../auth/auth-failure-copy': { mobileAuthFailureMarker: () => 'failed' },
-    './learning-cache': { removeAllLearningCaches() {} },
+    './learning-cache': { removeAllLearningCaches() { cacheWipes.count += 1 } },
   })
   return {
     accessTokens,
     api,
     auth,
     requests,
+    storage,
+    cacheWipes,
     session: sessionModule.useSessionStore(),
   }
 }
@@ -357,4 +360,35 @@ test('real identity bootstrap does not refresh or replay after 401', async () =>
   await completeRequest(request, 401, { code: 'expired' })
   assert.equal(await permissions, null)
   assert.equal(env.requests.length, 1)
+})
+
+test('H5 cookie restore keeps the subject-scoped placement checkpoint', async () => {
+  const env = environment()
+  const checkpoint = JSON.stringify({ subject: 'A', placementSessionId: 'asess_keep' })
+  env.storage.set('yx.auth.mobile.session-hint', '1')
+  env.storage.set('yx.v2.learner-content.mobile.v1', checkpoint)
+  const restoring = env.session.restore()
+  await waitFor(() => Boolean(requestAt(env, '/auth/token/refresh')))
+  assert.equal(env.cacheWipes.count, 0)
+  const refreshRequest = requestAt(env, '/auth/token/refresh')
+  await completeRequest(refreshRequest, 200, { accessToken: 'token-A', sessionId: 'session-A' })
+  await waitFor(() => env.requests.length === 2)
+  await completeRequest(requestAt(env, '/iam/permissions'), 200, principal('A'))
+  await waitFor(() => env.requests.length === 3)
+  const secondPermissions = env.requests[2]
+  assert.equal(new URL(secondPermissions.url).pathname, '/iam/permissions')
+  await completeRequest(secondPermissions, 200, principal('A'))
+  await restoring
+  assert.equal(env.session.verifiedSubject, 'A')
+  assert.equal(env.session.isAuthenticated, true)
+  assert.equal(env.cacheWipes.count, 0)
+  assert.equal(env.storage.get('yx.v2.learner-content.mobile.v1'), checkpoint)
+})
+
+test('clear still deletes the subject-scoped learning cache', async () => {
+  const env = environment()
+  env.storage.set('yx.v2.learner-content.mobile.v1', '{"subject":"A","placementSessionId":"asess_keep"}')
+  env.session.clear()
+  assert.equal(env.cacheWipes.count, 1)
+  assert.equal(env.session.verifiedSubject, null)
 })

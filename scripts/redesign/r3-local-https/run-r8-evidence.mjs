@@ -1266,13 +1266,13 @@ async function runIt2Api() {
 async function answerOne(page) {
   const option = page.locator('.option').first();
   await option.waitFor({ timeout: 25000 });
-  const stepText = await page.locator('.question-meta').innerText().catch(() => '');
+  const stepText = (await page.locator('.question-meta').innerText().catch(() => '')).replace(/\s+/g, '');
   await option.click();
   await page.getByRole('button', { name: '提交答案' }).click();
   await page.waitForFunction((previous) => {
     const body = document.body?.innerText || '';
     if (body.includes('报告已生成')) return true;
-    const meta = document.querySelector('.question-meta')?.textContent || '';
+    const meta = (document.querySelector('.question-meta')?.textContent || '').replace(/\s+/g, '');
     return Boolean(meta) && meta !== previous;
   }, stepText, { timeout: 25000 });
 }
@@ -1292,9 +1292,16 @@ async function placementFlow(page, calls, label) {
   ]).catch(() => null);
   if (await begin.isVisible().catch(() => false) && !(await optionReady.isVisible().catch(() => false))) await begin.click();
   await answerOne(page);
-  await page.getByText('服务端已接收 1 题').waitFor({ timeout: 20000 });
-  await page.reload({ waitUntil: 'domcontentloaded' });
   await page.getByText('服务端已接收 1 题').waitFor({ timeout: 25000 });
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  const received = page.getByText('服务端已接收 1 题');
+  const reread = page.getByRole('button', { name: '重新读取', exact: true });
+  await Promise.race([
+    received.waitFor({ timeout: 20000 }),
+    reread.waitFor({ timeout: 20000 }),
+  ]).catch(() => null);
+  if (!(await received.isVisible().catch(() => false)) && await reread.isVisible().catch(() => false)) await reread.click();
+  await received.waitFor({ timeout: 25000 });
   const resumed = (await page.locator('body').innerText()).includes('服务端已接收 1 题');
   const rest = await answerRest(page);
   const body = await page.locator('body').innerText();

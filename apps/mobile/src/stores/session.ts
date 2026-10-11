@@ -116,7 +116,11 @@ export const useSessionStore = defineStore('session', () => {
     if (restorePromise) return restorePromise
     restorePromise = (async () => {
       const epoch = authEpoch
-      invalidateLearningIdentity()
+      // A same-account H5 reload comes back through the IAM cookie. The
+      // placement checkpoint lives in the subject-scoped learning cache, so
+      // this path only drops the in-memory identity. Logout and clear still
+      // delete that cache; a different subject is dropped when the cache is read.
+      forgetInMemoryLearningIdentity()
       status.value = 'restoring'
       accessToken.value = getInMemoryAccessToken()
       refreshToken.value = isNativeAppRuntime() ? secureValue(REFRESH_TOKEN_KEY) : null
@@ -308,10 +312,13 @@ export const useSessionStore = defineStore('session', () => {
     return value
   }
   function setAuthAdapter(next: MobileAuthAdapter): void { activeAdapter = next }
-  function invalidateLearningIdentity(): void {
+  function forgetInMemoryLearningIdentity(): void {
     verifiedSubject.value = null
     identityRevision.value += 1
     setInMemoryRequestIdentity(getMobileApiIdentity(), identityRevision.value)
+  }
+  function invalidateLearningIdentity(): void {
+    forgetInMemoryLearningIdentity()
     removeAllLearningCaches()
   }
   function clear(): void {
