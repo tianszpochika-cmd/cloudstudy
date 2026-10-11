@@ -1,0 +1,82 @@
+DUAL
+versions
+it6-gap#1	DRAFT	NONE	1	听力稿
+it6-pin#1	FORCE_OFFLINE	FORCE_OFFLINE	9	第一课锁定
+it6-pin#2	FORCE_OFFLINE	FORCE_OFFLINE	9	第二课
+it6-rollback#1	PUBLISHED	PUBLISHING	9	回滚课文
+it6-simple#1	ARCHIVED	UNPUBLISHED	7	简审课文
+it6-syncfail#1	PUBLISHED	SYNC_FAILED	6	同步失败课文
+it6-ui-gap#1	DRAFT	NONE	1	界面缺项
+pins
+it6-pin=1
+idempotency
+board-computing-ea1aa3c8:200
+board-ea1aa3c8-40:200
+board-ea1aa3c8-42:200
+board-empty-ea1aa3c8:200
+board-failed-ea1aa3c8:200
+board-measured-ea1aa3c8:200
+it6-1791688069493-210f74c11b7bb:200
+it6-1791688069561-e1e782e65fd1a:202
+it6-1791688069612-6085d0d795825:409
+it6-ea1aa3c8-37:200
+it6-ea1aa3c8-38:403
+it6-ea1aa3c8-39:403
+it6-ea1aa3c8-41:400
+it6-ea1aa3c8-43:202
+it6-ea1aa3c8-44:409
+it6-ea1aa3c8-45:409
+it6-ea1aa3c8-46:409
+it6-ea1aa3c8-47:200
+it6-ea1aa3c8-48:202
+it6-ea1aa3c8-49:200
+it6-ea1aa3c8-50:200
+it6-ea1aa3c8-51:202
+it6-ea1aa3c8-52:202
+it6-ea1aa3c8-53:200
+it6-ea1aa3c8-54:409
+it6-ea1aa3c8-55:202
+it6-ea1aa3c8-56:200
+it6-ea1aa3c8-57:200
+it6-ea1aa3c8-58:202
+it6-ea1aa3c8-59:202
+it6-ea1aa3c8-60:200
+it6-ea1aa3c8-61:200
+it6-ea1aa3c8-62:409
+it6-ea1aa3c8-63:202
+it6-ea1aa3c8-64:200
+it6-ea1aa3c8-65:200
+it6-ea1aa3c8-66:202
+it6-ea1aa3c8-67:403
+it6-ea1aa3c8-68:200
+it6-ea1aa3c8-69:409
+it6-ea1aa3c8-70:200
+it6-ea1aa3c8-71:200
+it6-ea1aa3c8-72:409
+it6-ea1aa3c8-73:409
+it6-ea1aa3c8-74:202
+it6-ea1aa3c8-75:200
+it6-ea1aa3c8-76:200
+it6-ea1aa3c8-77:202
+it6-ea1aa3c8-78:200
+it6-ea1aa3c8-79:200
+it6-ea1aa3c8-80:202
+it6-ea1aa3c8-81:200
+it6-ea1aa3c8-82:200
+it6-ea1aa3c8-83:202
+it6-ea1aa3c8-84:200
+it6-ea1aa3c8-85:202
+it6-ea1aa3c8-86:200
+it6-ea1aa3c8-87:200
+it6-ea1aa3c8-88:202
+it6-ea1aa3c8-89:200
+it6-ea1aa3c8-90:200
+it6-ea1aa3c8-91:202
+it6-ea1aa3c8-92:200
+it6-ea1aa3c8-93:409
+it6-ea1aa3c8-94:202
+it6-ea1aa3c8-95:200
+it6-ea1aa3c8-96:200
+it6-ea1aa3c8-97:200
+it6-ea1aa3c8-98:200
+mode-ea1aa3c8-replay:200
