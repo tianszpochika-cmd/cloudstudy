@@ -39,10 +39,10 @@ page, uni-page-body { background: var(--yx-surface-page); color: var(--yx-text-p
 .mobile-intro--hero .mobile-kicker { color: var(--yx-hero-muted); }
 .mobile-intro--hero .mobile-page-title { max-width: 75%; color: var(--yx-hero-ink); font-size: 26px; }
 .mobile-intro--hero .mobile-page-description { max-width: 70%; color: var(--yx-hero-muted); font-size: 12px; }
-.mobile-book-art { position: absolute; z-index: 0; right: -7px; bottom: 17px; width: 112px; height: 155px; transform: rotate(-9deg); pointer-events: none; }
-.mobile-art-orbit { position: absolute; left: -12px; top: 18px; width: 140px; height: 140px; border: 1px solid var(--yx-art-line); border-radius: 50%; opacity: .45; transform: rotate(-30deg) scaleY(.7); }
-.mobile-art-book { position: absolute; left: 17px; top: 26px; width: 75px; height: 101px; border: 1px solid var(--yx-art-line); border-left: 8px solid var(--yx-art-line); border-radius: 5px 11px 11px 5px; background: var(--yx-art-paper); box-shadow: 7px 7px 0 var(--yx-art-line); transform: rotate(17deg); }
-.mobile-art-book text { display: block; margin: 12px 8px 5px; color: var(--yx-action); font-family: var(--yx-font-serif); font-size: 31px; }
+.mobile-book-art { position: absolute; z-index: 0; right: 8px; bottom: 12px; width: 112px; height: 148px; transform: none; pointer-events: none; }
+.mobile-art-orbit { position: absolute; left: 6px; top: 10px; width: 96px; height: 96px; border: 1px solid var(--yx-art-line); border-radius: 50%; opacity: .45; transform: none; }
+.mobile-art-book { position: absolute; left: 14px; top: 28px; width: 78px; height: 96px; border: 1px solid var(--yx-art-line); border-left: 8px solid var(--yx-art-line); border-radius: 5px 11px 11px 5px; background: var(--yx-art-paper); box-shadow: none; transform: none; }
+.mobile-art-book text { display: block; margin: 10px 8px 4px; color: var(--yx-action); font-family: var(--yx-font-serif); font-size: 24px; }
 .mobile-art-book view { height: 2px; margin: 7px 11px; background: var(--yx-art-line); }
 .mobile-art-spark { position: absolute; top: 0; right: 2px; color: var(--yx-art-paper); font-size: 26px; }
 .mobile-art-disc { position: absolute; width: 27px; height: 27px; left: 0; bottom: 0; border: 6px solid var(--yx-art-line); border-radius: 50%; }
@@ -96,8 +96,8 @@ page, uni-page-body { background: var(--yx-surface-page); color: var(--yx-text-p
 @keyframes mobile-enter { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 .yx-page[data-motion="off"] *, .yx-page[data-performance="Performance"] *, .yx-page.b4-world--Performance * { animation: none !important; transition: none !important; }
 @media (prefers-reduced-motion: reduce) { .yx-page *, .yx-page *::before, .yx-page *::after { animation: none !important; transition: none !important; } }
-@media (max-width: 359px) { .yx-page.yx-page { padding-inline: 16px; } .mobile-intro--hero { padding: 23px 18px; } .mobile-page-title, .mobile-intro--hero .mobile-page-title { font-size: 23px; } .mobile-book-art { right: -19px; transform: scale(.85) rotate(-9deg); } .yx-page .yx-card { padding: 18px; } .mobile-section-heading { flex-wrap: wrap; } }
-@media (min-width: 650px) { .yx-page.yx-page { padding-inline: 40px; } .mobile-intro--hero { min-height: 240px; padding: 35px; } .mobile-page-title, .mobile-intro--hero .mobile-page-title { font-size: 34px; } .mobile-book-art { right: 40px; bottom: 40px; transform: scale(1.3) rotate(-9deg); } .mobile-feature-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } .yx-login-page .yx-login-card { max-width: 500px; margin: 24px auto 0; } }
+@media (max-width: 359px) { .yx-page.yx-page { padding-inline: 16px; } .mobile-intro--hero { padding: 23px 18px; } .mobile-page-title, .mobile-intro--hero .mobile-page-title { font-size: 23px; } .mobile-book-art { right: 4px; transform: none; } .yx-page .yx-card { padding: 18px; } .mobile-section-heading { flex-wrap: wrap; } }
+@media (min-width: 650px) { .yx-page.yx-page { padding-inline: 40px; } .mobile-intro--hero { min-height: 240px; padding: 35px; } .mobile-page-title, .mobile-intro--hero .mobile-page-title { font-size: 34px; } .mobile-book-art { right: 16px; bottom: 20px; transform: scale(1.05); transform-origin: right bottom; } .mobile-feature-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } .yx-login-page .yx-login-card { max-width: 500px; margin: 24px auto 0; } }
 /* H5 tab chrome; native tab colors are synchronized through uni.setTabBarStyle. */
 uni-tabbar .uni-tabbar { border-top: 1px solid var(--yx-border); box-shadow: var(--yx-shadow); }
 uni-tabbar .uni-tabbar__label { font-size: 11px !important; }
