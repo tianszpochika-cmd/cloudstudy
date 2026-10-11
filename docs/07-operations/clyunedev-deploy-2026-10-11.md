@@ -48,10 +48,10 @@
 | 网关和 IAM 都返回了 `Access-Control-Allow-Origin`，浏览器因为出现两个值而拦截 | 网关去掉上游返回的 `Access-Control-*` 头 | `1bc789cb` |
 | 成人年龄确认返回 403 `trusted_age_required` | 新增显式的非生产 `prerelease` profile，允许出生年份自声明；`prod` 下仍然拒绝 | `7eb40497` |
 | 同意书返回 409：前端写死了 `b30-consent-v1`，重试时又复用了同一个幂等键 | 先读取已发布版本，重试时换新的幂等键（web 和 H5 都改了） | `956a815d` |
-| 学员接口返回 403 `CONSENT_REQUIRED`：learner-service 的同意复核访问的是容器内回环地址 | 接到 `iam-service`，并新增服务客户端 `learner-service` | `f4c1…`/`43809075` |
+| 学员接口返回 403 `CONSENT_REQUIRED`：learner-service 的同意复核访问的是容器内回环地址 | 接到 `iam-service`，并新增服务客户端 `learner-service` | `54820415` |
 | 开始定级返回 503：题库、学员和内容服务的地址都是回环默认值 | compose 改为连接各个服务 | `1eacdd10` |
 | 提交答案返回 503：服务器上没有评分用的服务 token | assessment-service 用 IAM 客户端凭据换取短期 token 并缓存；IAM 新增 `assessment-service` 客户端（权限 `content:answer-rules:read`） | `7902157c` |
-| 其余未接上的地址（assessment content、learner plan-view、admin-ops risk） | 在 compose 中补齐 | `bf…`（`wire remaining owner base URLs`） |
+| 其余未接上的地址（assessment content、learner plan-view、admin-ops risk） | 在 compose 中补齐 | `ba35ef00` |
 | H5 定级分数显示成 7100；H5 退出登录后停在“我的”页 | 分数按 0–100 显示；退出后回到登录页 | `c1a98cb8` |
 
 服务器上新增的密钥（只放在 `/srv/cloudstudy/env/clyunedev.env`，权限 0600，没有输出过）：`LEARNER_CONSENT_RECHECK_CLIENT_SECRET`、`IAM_SERVICE_CLIENT_LEARNER_SECRET_DIGEST`、`ASSESSMENT_PLACEMENT_SCORE_CLIENT_SECRET`、`IAM_SERVICE_CLIENT_ASSESSMENT_SECRET_DIGEST`。
@@ -59,7 +59,7 @@
 ### clyune.com 与 clyunedev.com 并行提供服务
 - nginx：`infra/docker/clyunedev/nginx-host-clyune.conf` 已安装为 `/etc/nginx/sites-enabled/clyune`，覆盖 `clyune.com`、`www`、`learn`、`admin`、`mobile`、`api` 这几个域名。官网反向代理时用 `sub_filter` 把 `clyunedev.com` 链接改写成 `clyune.com`。
 - 证书：Let's Encrypt 证书 `clyune`，覆盖以上 6 个域名，HTTP 跳转到 HTTPS，由 certbot.timer 自动续期。
-- 网关 CORS：每类来源都支持用逗号分隔多个精确来源，并逐个校验（`7cc99cb9`、`bf9ee6b1`）。服务器 env 已同时放行两个域名族的 learn/admin/mobile/官网来源。
+- 网关 CORS：每类来源都支持用逗号分隔多个精确来源，并逐个校验（`7cc99cb9`、`bf9ee6b1`；前端运行时选择 api 在 `b9f5cb07`）。服务器 env 已同时放行两个域名族的 learn/admin/mobile/官网来源。
 - IAM：`IAM_TRUSTED_LEARNER_ORIGINS` 已加入 `learn.clyune.com` 和 `mobile.clyune.com`。
 - 前端不再固定使用 clyunedev 的接口：打包时传入 `VITE_API_DOMAIN_FAMILIES=clyunedev.com,clyune.com`，运行时按当前页面所在的域名族选用 `api.<域名族>`（有白名单）。已验证：从 `learn.clyune.com` 打开时请求发往 `api.clyune.com`，从 `learn.clyunedev.com` 打开时请求发往 `api.clyunedev.com`。
 - 这次部署没有设置 CSP，所以不需要改 `connect-src`。Cookie 只作用于当前 api 主机名，不带 domain，两个域名族互不影响。
