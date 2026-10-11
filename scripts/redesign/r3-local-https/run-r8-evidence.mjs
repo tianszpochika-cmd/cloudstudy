@@ -1284,12 +1284,13 @@ async function answerRest(page) {
   return (await page.getByText('报告已生成').count()) > 0;
 }
 async function placementFlow(page, calls, label) {
-  await page.waitForFunction(() => {
-    const body = document.body?.innerText || '';
-    return body.includes('开始定级') || Boolean(document.querySelector('.option')) || body.includes('报告已生成');
-  }, null, { timeout: 25000 });
-  const begin = page.getByText('开始', { exact: true });
-  if (await begin.count()) await begin.first().click();
+  const optionReady = page.locator('.option').first();
+  const begin = page.getByRole('button', { name: '开始', exact: true });
+  await Promise.race([
+    optionReady.waitFor({ state: 'visible', timeout: 20000 }),
+    begin.waitFor({ state: 'visible', timeout: 20000 }),
+  ]).catch(() => null);
+  if (await begin.isVisible().catch(() => false) && !(await optionReady.isVisible().catch(() => false))) await begin.click();
   await answerOne(page);
   await page.getByText('服务端已接收 1 题').waitFor({ timeout: 20000 });
   await page.reload({ waitUntil: 'domcontentloaded' });
@@ -1415,7 +1416,8 @@ const chainRequired = [
 try {
   qidaBefore = qidaNames();
   const markerBefore = sharedAdminMarker();
-  await runPhase('it2', ['iam', 'learner', 'content', 'assessment'], it2Dir, ['it2'], async () => {
+  const only = process.env.R8_PHASE || 'all';
+  if (only !== 'chain') await runPhase('it2', ['iam', 'learner', 'content', 'assessment'], it2Dir, ['it2'], async () => {
     dbFacts.it2 = Object.fromEntries(Object.entries(names).map(([key, value]) => [key, value[0]]));
     const accounts = await boot({
       learning: false, admin: false, adminV1: false, frontends: ['web', 'mobile'], roles: ['learner'],
@@ -1424,7 +1426,7 @@ try {
     await runIt2Api();
     await runIt2Browser();
   });
-  await runPhase('chain', ['iam', 'learner', 'content', 'assessment', 'learning', 'admin'], chainDir, ['chain'], async () => {
+  if (only !== 'it2') await runPhase('chain', ['iam', 'learner', 'content', 'assessment', 'learning', 'admin'], chainDir, ['chain'], async () => {
     dbFacts.chain = Object.fromEntries(Object.entries(names).map(([key, value]) => [key, value[0]]));
     const accounts = await boot({
       learning: true, admin: true, adminV1: true, frontends: ['web', 'mobile', 'admin'], roles: ['ops', 'learner', 'other'],
@@ -1476,15 +1478,20 @@ try {
   record('qida-unchanged', qidaAdded.length === 0 && qidaRemoved.length === 0 ? 'PASS' : 'FAIL', {
     before: qidaBefore.length, after: qidaAfter.length, added: qidaAdded.length, removed: qidaRemoved.length, dockerMutations: 'none',
   });
-  writePack(it2Dir, 'r8 IT-2 三套 owner schema 与 IAM 真签', 'R8_IT2_THREE_SCHEMA', 'it2', it2Required,
-    'IAM 使用本轮临时测试证书监听 `https://127.0.0.1:18087`，并用真实 RS256 签发。三个领域 owner schema 是 learner、content、assessment，各自独立。Chrome 临时 profile 只放行该证书的 SPKI。没有调用 `security`，没有改系统钥匙串。schema 前缀是 `r8_it2_`，结束后删除。',
-    'it2Outbound');
-  writePack(it7Dir, 'r8 IT-7 收口台落库与重启指纹', 'R8_IT7_PERSIST', 'it7', it7Required,
-    'admin-ops 以 `local-real` 启动，Flyway 在本轮 `r8_chain_` admin schema 上执行。V1 由建库步骤预先落入空库，随后迁移补到 V7 `it7_closure_desk`。重启后只读取看板，没有重放收口命令。治理页在处置写链关闭时隐藏旧的风险处置按钮，并显示同一句拒绝。',
-    'it7Outbound');
-  writePack(chainDir, 'r8 IT-1 至 IT-7 全链回归', 'R8_FULL_CHAIN', 'chain', chainRequired,
-    '全链使用另一套干净的 `r8_chain_` schema、同一套最新包和 HTTPS IAM。Web 与 H5 都覆盖 1280 和 390。IT-7 重启指纹不重放命令。node 套件在 H5、Gateway 和 HTTPS IAM 仍在监听时运行。',
-    'fullChainOutbound');
+  const phase = process.env.R8_PHASE || 'all';
+  if (phase !== 'chain') {
+    writePack(it2Dir, 'r8 IT-2 三套 owner schema 与 IAM 真签', 'R8_IT2_THREE_SCHEMA', 'it2', it2Required,
+      'IAM 使用本轮临时测试证书监听 `https://127.0.0.1:18087`，并用真实 RS256 签发。三个领域 owner schema 是 learner、content、assessment，各自独立。Chrome 临时 profile 只放行该证书的 SPKI。没有调用 `security`，没有改系统钥匙串。schema 前缀是 `r8_it2_`，结束后删除。',
+      'it2Outbound');
+  }
+  if (phase !== 'it2') {
+    writePack(it7Dir, 'r8 IT-7 收口台落库与重启指纹', 'R8_IT7_PERSIST', 'it7', it7Required,
+      'admin-ops 以 `local-real` 启动，Flyway 在本轮 `r8_chain_` admin schema 上执行。V1 由建库步骤预先落入空库，随后迁移补到 V7 `it7_closure_desk`。重启后只读取看板，没有重放收口命令。治理页在处置写链关闭时隐藏旧的风险处置按钮，并显示同一句拒绝。',
+      'it7Outbound');
+    writePack(chainDir, 'r8 IT-1 至 IT-7 全链回归', 'R8_FULL_CHAIN', 'chain', chainRequired,
+      '全链使用另一套干净的 `r8_chain_` schema、同一套最新包和 HTTPS IAM。Web 与 H5 都覆盖 1280 和 390。IT-7 重启指纹不重放命令。node 套件在 H5、Gateway 和 HTTPS IAM 仍在监听时运行。',
+      'fullChainOutbound');
+  }
   rmSync(directory, { recursive: true, force: true });
   const failed = steps.filter((step) => step.status === 'FAIL').map((step) => step.name);
   note(`EVIDENCE suffix=${suffix} failed=${failed.join(',') || 'none'}`);
