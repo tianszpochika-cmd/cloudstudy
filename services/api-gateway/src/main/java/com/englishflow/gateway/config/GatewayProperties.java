@@ -259,7 +259,10 @@ public record GatewayProperties(
         }
 
         public List<String> allOrigins() {
-            return List.of(learnerWebOrigin, adminWebOrigin, mobileH5Origin, officialSiteOrigin);
+            return java.util.stream.Stream.of(learnerWebOrigin, adminWebOrigin, mobileH5Origin, officialSiteOrigin)
+                    .flatMap(value -> java.util.Arrays.stream(value.split(",", -1)))
+                    .map(String::trim)
+                    .toList();
         }
 
         @AssertTrue(message = "Gateway browser origins must be exact, unique http(s) origins without a path")

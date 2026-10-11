@@ -31,4 +31,18 @@ class GatewayCorsOriginListTest {
         assertThat(cors.profileFor(null)).isEqualTo(GatewayProperties.Cors.OriginProfile.UNKNOWN);
         assertThat(cors.profileFor("")).isEqualTo(GatewayProperties.Cors.OriginProfile.UNKNOWN);
     }
+
+    @Test
+    void originListsPassTheExactUniqueOriginValidation() {
+        assertThat(cors.isOriginPolicySafe()).isTrue();
+        assertThat(cors.allOrigins()).contains("https://learn.clyune.com", "https://www.clyune.com");
+        GatewayProperties.Cors withPath = new GatewayProperties.Cors(
+                "https://learn.clyune.com,https://learn.clyune.com/x", "https://a.example", "https://m.example", "https://o.example",
+                "GET", "Content-Type", "Content-Type", "X-Request-Id", "rt", "header", Duration.ofMinutes(30));
+        assertThat(withPath.isOriginPolicySafe()).isFalse();
+        GatewayProperties.Cors duplicated = new GatewayProperties.Cors(
+                "https://learn.clyune.com", "https://learn.clyune.com", "https://m.example", "https://o.example",
+                "GET", "Content-Type", "Content-Type", "X-Request-Id", "rt", "header", Duration.ofMinutes(30));
+        assertThat(duplicated.isOriginPolicySafe()).isFalse();
+    }
 }
