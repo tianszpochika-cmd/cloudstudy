@@ -243,13 +243,13 @@ async function cancel(): Promise<void> {
     <view class="yx-card yx-onboarding-card">
       <text v-if="session.adultGate === 'REJECTED'" class="flow-note" role="status">正在打开无权限页。</text>
 
-      <view v-else-if="step === 'gate'" class="yx-onboarding-step">
-        <text class="section-kicker">确认成人身份</text>
-        <text class="section-title">确认成人身份</text>
-        <text class="section-description">只收集出生年份，用来判断是否已满 18 岁。现有成人门不需要月和日，所以不收集完整生日。成人门还没通过时，停在这一步。</text>
-        <text class="flow-note">如果没有通过，仍可前往账号设置、帮助与反馈或退出登录。这里不提供再试一次，也不提供改年份。</text>
-        <label class="birth-year"><text>出生年份</text><input v-model.number="birthYear" type="number" inputmode="numeric" min="1900" :max="birthYearMax" placeholder="例如 1995" aria-label="出生年份" /></label>
-        <label class="consent"><checkbox :checked="ageConfirmed" @click="ageConfirmed = !ageConfirmed" /><text>我确认自己已满 18 周岁</text></label>
+      <view v-else-if="step === 'gate'" class="yx-onboarding-step v2-gate-step">
+        <text class="section-kicker v2-gate-kicker">确认成人身份</text>
+        <text class="section-title v2-gate-title">确认成人身份</text>
+        <text class="section-description v2-gate-desc">只收集出生年份，用来判断是否已满 18 岁。现有成人门不需要月和日，所以不收集完整生日。成人门还没通过时，停在这一步。</text>
+        <text class="flow-note v2-gate-status">如果没有通过，仍可前往账号设置、帮助与反馈或退出登录。这里不提供再试一次，也不提供改年份。</text>
+        <label class="birth-year v2-gate-field"><text>出生年份</text><input class="v2-gate-input" v-model.number="birthYear" type="number" inputmode="numeric" min="1900" :max="birthYearMax" placeholder="例如 1995" aria-label="出生年份" /></label>
+        <label class="consent v2-gate-confirm"><checkbox :checked="ageConfirmed" @click="ageConfirmed = !ageConfirmed" /><text>我确认自己已满 18 周岁</text></label>
       </view>
 
       <view v-else-if="step === 'consent'" class="yx-onboarding-step">
