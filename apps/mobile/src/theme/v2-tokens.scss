@@ -1,6 +1,6 @@
 /* 移动端 v2 design tokens —— 照抄自 docs/06-design/v2-980plus/redesign/mockups/webDemo/shared/tokens.css，
  * :root 与 :root[data-theme=dark] 的全部变量统一加 --v2- 前缀（含 var() 引用同步改名）。
- * 选择器改为 :root, page 与 :root[data-theme=dark], .yx-theme-dark。 */
+ * 选择器改为 :root, page 与 :root[data-theme=dark], .yx-theme-dark, .b10-theme--dark（App.vue 实际使用的暗色类名）。 */
 :root,
 page {
   color-scheme: light;
@@ -57,7 +57,8 @@ page {
 }
 
 :root[data-theme="dark"],
-.yx-theme-dark {
+.yx-theme-dark,
+.b10-theme--dark {
   color-scheme: dark;
   --v2-bg: #15151f;
   --v2-card: #20202d;
