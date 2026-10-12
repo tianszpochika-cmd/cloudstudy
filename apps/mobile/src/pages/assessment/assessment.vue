@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { placementScorePercent } from '../../domain/placement-score'
+import AppIcon from '../../components/AppIcon.vue'
 import MobilePageHeader from '../../components/MobilePageHeader.vue'
 import { useMobileExperience } from '../../platform/experience'
 const { experienceStyle, experienceMotion } = useMobileExperience()
@@ -107,51 +108,64 @@ onShow(async () => {
   <view class="yx-page" :style="experienceStyle" :data-motion="experienceMotion">
     <MobilePageHeader page="assessment" />
 
-    <view v-if="isSkipped" class="yx-card result-card">
-      <text class="question-count">已跳过测评</text>
-      <text class="result-title">水平尚未验证</text>
-      <text data-placement-card>这次跳过不是正式测评分数。</text>
-      <text v-if="report?.requestedStartingLevel" class="question">你选择了 {{ report.requestedStartingLevel }} 作为起点；这不是测评等级。</text>
-      <text v-else class="question">自选起点，水平尚未验证。</text>
-      <button tabindex="0" role="button" class="yx-button" type="button" @click="openToday">查看今日状态</button>
+    <view class="v2-assess-body">
+    <view v-if="isSkipped" class="yx-card result-card card v2-assess-card v2-assess-skipped">
+      <text class="question-count v2-assess-meta v2-assess-eyebrow"><AppIcon name="flag" :size="14" /><text>已跳过测评</text></text>
+      <text class="result-title v2-assess-title v2-assess-h2">水平尚未验证</text>
+      <text data-placement-card class="v2-assess-d v2-assess-desc">这次跳过不是正式测评分数。</text>
+      <text v-if="report?.requestedStartingLevel" class="question v2-assess-desc v2-assess-row">你选择了 {{ report.requestedStartingLevel }} 作为起点；这不是测评等级。</text>
+      <text v-else class="question v2-assess-desc v2-assess-row">自选起点，水平尚未验证。</text>
+      <view class="v2-assess-row v2-assess-actions">
+        <button tabindex="0" role="button" class="yx-button btn v2-assess-btn v2-assess-opt v2-assess-submit" type="button" @click="openToday">查看今日状态<AppIcon name="chev" :size="14" /></button>
+      </view>
     </view>
-    <view v-else-if="report" class="yx-card result-card">
-      <text class="question-count">报告已生成</text>
-      <text data-placement-card>这份报告和快照是同一版本。</text>
-      <text v-if="report.cefrLevel && scorePercent !== null" class="result-title">{{ report.cefrLevel }} · {{ scorePercent }} 分</text>
-      <text v-if="countedReport" class="question">答对 {{ countedReport.full }} 题，共 {{ countedReport.total }} 题。</text>
-      <text v-if="feedbackText" class="question" role="status">{{ feedbackText }}</text>
-      <text class="question">重测会另开一套题，这份报告会保留。是否调整已有计划需要另外确认。</text>
-      <button tabindex="0" role="button" class="yx-button" type="button" @click="openToday">查看今日状态</button>
-      <button tabindex="0" role="button" class="yx-button yx-button--secondary" type="button" :disabled="retestPending" @click="retest">重测</button>
+    <view v-else-if="report" class="yx-card result-card card v2-assess-card v2-assess-report">
+      <text class="question-count v2-assess-meta v2-assess-eyebrow"><AppIcon name="chart" :size="14" /><text>报告已生成</text></text>
+      <text v-if="report.cefrLevel && scorePercent !== null" class="result-title v2-assess-title v2-assess-h2">{{ report.cefrLevel }} · {{ scorePercent }} 分</text>
+      <text data-placement-card class="v2-assess-d v2-assess-desc">这份报告和快照是同一版本。</text>
+      <text v-if="countedReport" class="question v2-assess-desc v2-assess-row">答对 {{ countedReport.full }} 题，共 {{ countedReport.total }} 题。</text>
+      <text v-if="feedbackText" class="question v2-assess-desc v2-assess-fb v2-assess-row" role="status">{{ feedbackText }}</text>
+      <text class="question v2-assess-desc v2-assess-row">重测会另开一套题，这份报告会保留。是否调整已有计划需要另外确认。</text>
+      <view class="v2-assess-row v2-assess-actions">
+        <button tabindex="0" role="button" class="yx-button btn v2-assess-btn v2-assess-opt v2-assess-submit" type="button" @click="openToday">查看今日状态<AppIcon name="chev" :size="14" /></button>
+        <button tabindex="0" role="button" class="yx-button yx-button--secondary btn v2-assess-btn v2-assess-opt" type="button" :disabled="retestPending" @click="retest">重测<AppIcon name="refresh" :size="14" /></button>
+      </view>
     </view>
-    <view v-else-if="question" class="yx-card question-card">
-      <view class="question-meta"><text>第 {{ question.stepIndex }} 题，共 {{ question.totalSteps }} 题</text></view>
-      <text v-if="store.placement.acceptedSequence > 0" class="hint">服务端已接收 {{ store.placement.acceptedSequence }} 题。</text>
-      <text class="question">{{ question.stemText }}</text>
-      <text v-if="feedbackText" class="hint" role="status">{{ feedbackText }}</text>
-      <view class="options"><button tabindex="0" role="button" v-for="option in question.options" :key="option.key" class="option" :class="{ selected: selectedKey === option.key }" type="button" @click="selectedKey = option.key"><text class="option-key">{{ option.key }}</text><text>{{ option.text }}</text></button></view>
-      <text class="hint">当前选择只留在这一页。离开后，还没提交的选择不会保留。</text>
-      <text v-if="store.placementStatus === 'offline'" class="hint" role="alert">{{ store.lastError || '答案状态尚未确认。请先重新读取，不会因此新开一套题。' }}</text>
-      <button v-if="store.placementStatus === 'offline'" tabindex="0" role="button" class="yx-button" type="button" @click="load">重新读取</button>
-      <button v-else tabindex="0" role="button" class="yx-button" type="button" :disabled="!selectedKey || store.placementStatus === 'loading'" @click="submit">{{ store.placementStatus === 'loading' ? '正在记录…' : '提交答案' }}</button>
+    <view v-else-if="question" class="yx-card question-card card v2-assess-card v2-assess-question">
+      <view class="question-meta meta v2-assess-meta v2-assess-eyebrow"><AppIcon name="target" :size="14" /><text>第 {{ question.stepIndex }} 题，共 {{ question.totalSteps }} 题</text></view>
+      <view class="v2-assess-progress-track"><view class="v2-assess-progress-value" :style="{ width: `${(question.stepIndex / question.totalSteps) * 100}%` }"></view></view>
+      <text v-if="store.placement.acceptedSequence > 0" class="hint v2-assess-desc">服务端已接收 {{ store.placement.acceptedSequence }} 题。</text>
+      <text class="question v2-assess-stem v2-assess-title v2-assess-h2">{{ question.stemText }}</text>
+      <text v-if="feedbackText" class="hint v2-assess-desc v2-assess-fb" role="status">{{ feedbackText }}</text>
+      <view class="options v2-assess-list"><button tabindex="0" role="button" v-for="option in question.options" :key="option.key" class="option opt v2-assess-opt v2-assess-row" :class="{ selected: selectedKey === option.key }" type="button" @click="selectedKey = option.key"><text class="option-key v2-assess-opt-key">{{ option.key }}</text><text class="v2-assess-desc v2-assess-option-text">{{ option.text }}</text></button></view>
+      <text class="hint v2-assess-desc">当前选择只留在这一页。离开后，还没提交的选择不会保留。</text>
+      <text v-if="store.placementStatus === 'offline'" class="hint v2-assess-desc v2-assess-fb" role="alert">{{ store.lastError || '答案状态尚未确认。请先重新读取，不会因此新开一套题。' }}</text>
+      <view class="v2-assess-row v2-assess-actions">
+        <button v-if="store.placementStatus === 'offline'" tabindex="0" role="button" class="yx-button btn v2-assess-btn v2-assess-opt v2-assess-submit" type="button" @click="load">重新读取<AppIcon name="refresh" :size="14" /></button>
+        <button v-else tabindex="0" role="button" class="yx-button btn v2-assess-btn v2-assess-opt v2-assess-submit" type="button" :disabled="!selectedKey || store.placementStatus === 'loading'" @click="submit">{{ store.placementStatus === 'loading' ? '正在记录…' : '提交答案' }}<AppIcon name="check" :size="14" /></button>
+      </view>
     </view>
-    <view v-else-if="guideChecked && guidePending" class="yx-card">
-      <text class="question-count">开始定级</text>
-      <text class="question">共 10 道题。用来了解你现在的英语起点，方便安排后面的学习。</text>
-      <button tabindex="0" role="button" class="yx-button" type="button" @click="begin">开始</button>
-      <button tabindex="0" role="button" class="yx-button yx-button--secondary" type="button" @click="openHome">返回学习首页</button>
+    <view v-else-if="guideChecked && guidePending" class="yx-card card v2-assess-card v2-assess-guide">
+      <text class="question-count v2-assess-meta v2-assess-eyebrow v2-assess-title v2-assess-h2"><AppIcon name="spark" :size="14" /><text>开始定级</text></text>
+      <text class="question v2-assess-d v2-assess-desc">共 10 道题。用来了解你现在的英语起点，方便安排后面的学习。</text>
+      <view class="v2-assess-row v2-assess-actions">
+        <button tabindex="0" role="button" class="yx-button btn v2-assess-btn v2-assess-opt v2-assess-submit" type="button" @click="begin">开始<AppIcon name="chev" :size="14" /></button>
+        <button tabindex="0" role="button" class="yx-button yx-button--secondary btn v2-assess-btn v2-assess-opt" type="button" @click="openHome">返回学习首页<AppIcon name="back" :size="14" /></button>
+      </view>
     </view>
-    <view v-else class="yx-card">
-      <text class="question-count">开始定级</text>
-      <text v-if="!guideChecked || store.placementStatus === 'loading' || store.placementStatus === 'idle'" class="question" role="status">正在准备测评</text>
-      <text v-else-if="store.placementStatus === 'offline' || store.placementStatus === 'error'" class="question" role="alert">测评暂时不可用，请稍后重试。</text>
-      <text v-else-if="store.placementStatus === 'forbidden'" class="question" role="alert">当前账号没有测评权限。</text>
-      <text v-else-if="heldCheckpoint" class="question">定级进度在服务端。重新读取会从已接收检查点的下一题继续，不会新开一套题。</text>
-      <text v-else class="question">目前没有可用题目，可以稍后重试。</text>
-      <text v-if="!guideChecked || store.placementStatus === 'loading' || store.placementStatus === 'idle'" class="hint">请稍候。</text>
-      <button v-if="guideChecked && store.placementStatus !== 'loading' && store.placementStatus !== 'idle'" tabindex="0" role="button" class="yx-button" type="button" @click="load">重新读取</button>
-      <button tabindex="0" role="button" class="yx-button yx-button--secondary" type="button" @click="openHome">返回学习首页</button>
+    <view v-else class="yx-card card v2-assess-card v2-assess-pending">
+      <text class="question-count v2-assess-meta v2-assess-eyebrow v2-assess-title v2-assess-h2"><AppIcon name="clock" :size="14" /><text>开始定级</text></text>
+      <text v-if="!guideChecked || store.placementStatus === 'loading' || store.placementStatus === 'idle'" class="question v2-assess-d v2-assess-desc" role="status">正在准备测评</text>
+      <text v-else-if="store.placementStatus === 'offline' || store.placementStatus === 'error'" class="question v2-assess-d v2-assess-desc" role="alert">测评暂时不可用，请稍后重试。</text>
+      <text v-else-if="store.placementStatus === 'forbidden'" class="question v2-assess-d v2-assess-desc" role="alert">当前账号没有测评权限。</text>
+      <text v-else-if="heldCheckpoint" class="question v2-assess-d v2-assess-desc">定级进度在服务端。重新读取会从已接收检查点的下一题继续，不会新开一套题。</text>
+      <text v-else class="question v2-assess-d v2-assess-desc">目前没有可用题目，可以稍后重试。</text>
+      <text v-if="!guideChecked || store.placementStatus === 'loading' || store.placementStatus === 'idle'" class="hint v2-assess-desc v2-assess-fb">请稍候。</text>
+      <view class="v2-assess-row v2-assess-actions">
+        <button v-if="guideChecked && store.placementStatus !== 'loading' && store.placementStatus !== 'idle'" tabindex="0" role="button" class="yx-button btn v2-assess-btn v2-assess-opt v2-assess-submit" type="button" @click="load">重新读取<AppIcon name="refresh" :size="14" /></button>
+        <button tabindex="0" role="button" class="yx-button yx-button--secondary btn v2-assess-btn v2-assess-opt" type="button" @click="openHome">返回学习首页<AppIcon name="back" :size="14" /></button>
+      </view>
+    </view>
     </view>
   </view>
 </template>
