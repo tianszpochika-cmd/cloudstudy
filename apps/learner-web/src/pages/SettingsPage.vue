@@ -72,7 +72,7 @@ async function refreshDevices(): Promise<void> { await b1.refreshDevices() }
 </script>
 
 <template>
-  <section class="page-stack" aria-labelledby="settings-title">
+  <section class="page-stack v2-page v2-page--settings" aria-labelledby="settings-title">
     <ExperienceHeader page="Settings" icon="user" title-id="settings-title" />
     <nav class="settings-nav"><RouterLink :class="{ active: section === 'profile' }" to="/settings/profile">{{ et('settingsProfileTab') }}</RouterLink><RouterLink :class="{ active: section === 'notifications' }" to="/settings/notifications">通知设置</RouterLink><RouterLink :class="{ active: section === 'privacy' }" to="/settings/privacy">{{ et('settingsPrivacyTab') }}</RouterLink><RouterLink :class="{ active: section === 'devices' }" to="/settings/devices">{{ et('settingsDevicesTab') }}</RouterLink><RouterLink to="/platform">{{ et('settingsDisplayTab') }}</RouterLink></nav>
     <article v-if="section === 'notifications'" class="form-card"><NotificationPreferencesPanel /></article>
