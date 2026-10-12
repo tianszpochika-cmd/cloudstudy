@@ -14,10 +14,10 @@ b,strong,.num,.kpi b,.mini-stats b{font-variant-numeric:tabular-nums}
 .btn,.opt,.mode-button,.focus-task,.chip,.tag[role=button],.dialog-head button,.demo-controls,.icon-button,.tabbar a,.quick-links>*,.mobile-section button{
  transition:background-color var(--motion-base) var(--ease),color var(--motion-base) var(--ease),border-color var(--motion-base) var(--ease),box-shadow var(--motion-base) var(--ease),transform var(--motion-fast) var(--ease),filter var(--motion-base) var(--ease),opacity var(--motion-base) var(--ease)}
 .btn{letter-spacing:.01em;box-shadow:0 1px 0 #ffffff1f inset,0 1px 2px #1f1a3a24}
-.btn:hover:not(:disabled){filter:none;background:color-mix(in srgb,var(--brand) 88%,#000);box-shadow:0 1px 0 #ffffff1f inset,0 6px 16px color-mix(in srgb,var(--brand) 30%,transparent)}
+.btn:hover:not(:disabled){filter:brightness(.93);box-shadow:0 1px 0 #ffffff1f inset,0 6px 16px color-mix(in srgb,var(--brand) 30%,transparent)}
 .btn.ghost,.btn.sm{box-shadow:none}
-.btn.ghost:hover:not(:disabled),.btn.sm:not(.primary-action):hover:not(:disabled){background:color-mix(in srgb,var(--brand) 14%,var(--card));box-shadow:none}
-.btn.danger:hover:not(:disabled){background:color-mix(in srgb,var(--bad) 88%,#000)}
+.btn.ghost:hover:not(:disabled),.btn.sm:not(.primary-action):hover:not(:disabled){filter:none;box-shadow:0 0 0 1px var(--brand) inset}
+.btn.danger:hover:not(:disabled){filter:brightness(.92)}
 .btn:active:not(:disabled),.opt:active,.mode-button:active,.focus-task:active,.icon-button:active,.quick-links>*:active,.demo-controls:active{transform:scale(.975)}
 .hero .btn:hover:not(:disabled),.daily-focus .btn:hover:not(:disabled){background:#fff;box-shadow:0 8px 20px #1a0f4a40}
 button:disabled,.btn:disabled{box-shadow:none;filter:saturate(.6)}
@@ -37,7 +37,7 @@ input[type=checkbox],input[type=radio]{accent-color:var(--brand);width:18px;heig
 .tag,.chip{letter-spacing:.01em}
 
 /* —— 状态：空/错/无权限/骨架 —— */
-.demo-empty,.demo-error,.demo-permission{background:linear-gradient(180deg,var(--card),color-mix(in srgb,var(--soft) 40%,var(--card)))}
+
 .demo-state-icon{box-shadow:0 0 0 8px color-mix(in srgb,var(--soft) 55%,transparent);animation:refine-pop var(--motion-slow) var(--ease-out) both}
 .demo-error .demo-state-icon{background:var(--bad-soft);color:var(--bad);box-shadow:0 0 0 8px color-mix(in srgb,var(--bad-soft) 55%,transparent)}
 .demo-skeleton span{background:linear-gradient(90deg,var(--surface) 0%,color-mix(in srgb,var(--surface) 55%,var(--card)) 50%,var(--surface) 100%);background-size:200% 100%;animation:refine-shimmer 1.3s linear infinite}
@@ -51,7 +51,7 @@ input[type=checkbox],input[type=radio]{accent-color:var(--brand);width:18px;heig
 .demo-dialog{box-shadow:var(--elev-3)}
 .demo-dialog[open]{animation:refine-rise var(--motion-slow) var(--ease-out) both}
 .demo-dialog::backdrop{animation:refine-fade var(--motion-base) var(--ease) both}
-.dialog-head button:hover{background:color-mix(in srgb,var(--brand) 12%,var(--surface));color:var(--brand)}
+.dialog-head button:hover{background:var(--soft);color:var(--brand)}
 
 /* —— 演示控制：毛玻璃悬浮，不抢主内容 —— */
 .demo-controls{background:color-mix(in srgb,var(--card) 82%,transparent);-webkit-backdrop-filter:saturate(1.4) blur(10px);backdrop-filter:saturate(1.4) blur(10px);box-shadow:var(--elev-2);font-weight:650;color:var(--mut)}
@@ -61,7 +61,7 @@ input[type=checkbox],input[type=radio]{accent-color:var(--brand);width:18px;heig
 
 /* —— 表格 —— */
 .demo-table tbody tr{transition:background-color var(--motion-fast) var(--ease)}
-.demo-table tbody tr:hover td{background:color-mix(in srgb,var(--soft) 45%,transparent)}
+.demo-table tbody tr:hover td{background:var(--surface)}
 .demo-table th{font-size:12px;letter-spacing:.04em;text-transform:none}
 
 @media(prefers-reduced-motion:reduce){.btn:active,.opt:active,.focus-task:active{transform:none}.demo-skeleton span{animation:none}}
@@ -78,3 +78,13 @@ input[type=checkbox],input[type=radio]{accent-color:var(--brand);width:18px;heig
  main .card:hover{box-shadow:var(--elev-2);border-color:color-mix(in srgb,var(--brand) 18%,var(--line))}
  main .card .card:hover{box-shadow:none}
 }
+
+/* —— 管理端：工具栏不折行、按钮三态、徽标与表格节奏 —— */
+.toolbar input{flex:1 1 280px}
+.toolbar .count,.button,.toolbar select{white-space:nowrap}
+.button{transition:background-color var(--motion-base) var(--ease),border-color var(--motion-base) var(--ease),color var(--motion-base) var(--ease),box-shadow var(--motion-base) var(--ease),transform var(--motion-fast) var(--ease)}
+.button:hover:not(:disabled){border-color:color-mix(in srgb,var(--abrand,var(--brand)) 45%,var(--aline,var(--line)));color:var(--abrand,var(--brand))}
+.button.primary:hover:not(:disabled){color:var(--inverse);filter:brightness(.93);box-shadow:0 6px 16px color-mix(in srgb,var(--abrand,var(--brand)) 28%,transparent)}
+.button.danger:hover:not(:disabled){box-shadow:0 0 0 1px var(--abad,var(--bad)) inset}
+.button:active:not(:disabled){transform:scale(.97)}
+.button:focus-visible{box-shadow:var(--ring);outline:none}

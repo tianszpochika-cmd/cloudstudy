@@ -55,3 +55,41 @@
 .card.empty .btn{min-width:160px}
 .prog{border-radius:999px}
 .prog i{border-radius:inherit}
+/* 分段/多选按钮：去掉内嵌下划线，改为实心选中态 + 勾选点 */
+.mode-button{text-align:center;font-weight:600}
+.mode-button.is-active::after{display:none}
+.mode-button.is-active{background:var(--brand)!important;color:var(--inverse)!important;border-color:var(--brand)!important;box-shadow:0 4px 12px color-mix(in srgb,var(--brand) 28%,transparent)}
+.mode-button.is-active:hover{filter:brightness(.93)}
+/* —— 第 3 轮：其余移动端页面节奏 —— */
+.study-nav{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 14px;padding:4px;background:var(--surface);border-radius:14px;border:1px solid var(--line)}
+.study-nav .mode-button{flex:1 1 0;min-width:0;padding:10px 4px;font-size:13px;border:0!important;background:transparent;box-shadow:none}
+.study-nav .mode-button.is-active{background:var(--card)!important;color:var(--brand)!important;box-shadow:var(--elev-1)!important;border:0!important}
+.filter-grid,.form-grid{display:grid;gap:10px;margin:0 0 14px}
+.filter-grid{grid-template-columns:repeat(auto-fit,minmax(72px,1fr))}
+.day-picker{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin:8px 0 14px}
+.day-picker .mode-button{padding:10px 0;font-size:12px}
+.theme-picker{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:8px 0}
+.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:0 0 16px}
+.metrics>*,.mini-stats>*{text-align:center;padding:14px 8px;background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--elev-1)}
+.metrics b,.metrics strong,.mini-stats b,.mini-stats strong{display:block;font-size:22px;letter-spacing:-.02em;margin-bottom:4px}
+.metrics span,.mini-stats span{font-size:11px;color:var(--mut);line-height:1.35}
+.record-row,.list-row{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:14px 12px;margin:0 0 8px;border:1px solid var(--line);border-radius:14px;background:var(--card);transition:border-color var(--motion-base) var(--ease),box-shadow var(--motion-base) var(--ease),background-color var(--motion-base) var(--ease)}
+.record-row:hover,.list-row:hover{border-color:color-mix(in srgb,var(--brand) 30%,var(--line));box-shadow:var(--elev-1)}
+.actions,.action-row,.inline-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.actions .btn,.action-row .btn,.inline-actions .btn{flex:0 1 auto}
+.section-heading,.card-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:4px 0 12px}
+.section-heading h2,.card-heading h2{margin:0}
+.text-link{color:var(--brand);font-size:13px;font-weight:650;background:none;border:0;padding:4px 0;min-height:auto}
+.text-link:hover{text-decoration:underline}
+.checkin-card,.week-summary{position:relative}
+.calendar-day{min-height:44px;border-radius:12px;border:1px solid var(--line);background:var(--card);transition:background-color var(--motion-base) var(--ease),border-color var(--motion-base) var(--ease)}
+.calendar-day:hover,.calendar-day.studied{border-color:color-mix(in srgb,var(--brand) 40%,var(--line))}
+.calendar-day.studied{background:var(--soft);color:var(--brand);font-weight:700}
+.detail-action{width:100%;text-align:left;padding:14px 16px;border-radius:14px;border:1px solid var(--line);background:var(--card);margin:0 0 10px;transition:border-color var(--motion-base) var(--ease),box-shadow var(--motion-base) var(--ease)}
+.detail-action:hover{border-color:color-mix(in srgb,var(--brand) 35%,var(--line));box-shadow:var(--elev-1)}
+.detail-copy{display:block;color:var(--mut);font-size:13px;line-height:1.55;margin-top:4px}
+.stacked{display:grid;gap:8px}
+.eyebrow{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);font-weight:700;margin:0 0 6px}
+.quick-links{display:grid;gap:8px;margin:8px 0 16px}
+.quick-links>*{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-radius:14px;border:1px solid var(--line);background:var(--card);font-weight:550}
+.quick-links>*:hover{border-color:color-mix(in srgb,var(--brand) 30%,var(--line));box-shadow:var(--elev-1)}
