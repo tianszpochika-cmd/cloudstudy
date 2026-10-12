@@ -101,3 +101,19 @@ onMounted(() => { void load() })
 .yx-mistake-list p { margin: 0; color: var(--yx-color-text-secondary); font-size: 13px; line-height: 1.6; }
 .actions { display: flex; gap: 12px; flex-wrap: wrap; }
 </style>
+
+<style>
+.v2-page--mistakes .v2-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.v2-page--mistakes .v2-mistakes-note { margin: 0; padding: 16px 20px; background: var(--v2-card); border: 1px solid var(--v2-line); border-radius: var(--v2-radius-lg); color: var(--v2-mut); font-size: 13px; }
+.v2-page--mistakes .v2-mistakes { background: transparent; border: 0; box-shadow: none; padding: 0; }
+.v2-page--mistakes .v2-mistakes-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; list-style: none; margin: 0; padding: 0; }
+.v2-page--mistakes .v2-mistake-card { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; padding: 20px; background: var(--v2-card); border: 1px solid var(--v2-line); border-radius: var(--v2-radius-lg); box-shadow: var(--v2-shadow); text-align: left; transition: border-color var(--v2-motion-fast), transform var(--v2-motion-fast); }
+.v2-page--mistakes .v2-mistake-card:hover { border-color: var(--v2-brand2); transform: translateY(-1px); }
+.v2-page--mistakes .v2-mistake-head { display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start; gap: 6px; width: 100%; text-align: left; }
+.v2-page--mistakes .v2-mistake-head strong { font-size: 16px; color: var(--v2-ink); line-height: 1.5; }
+.v2-page--mistakes .v2-mistake-status { background: var(--v2-warn-soft); color: var(--v2-warn); font-size: 11px; font-weight: 700; padding: 2px 10px; border-radius: var(--v2-radius-pill); width: auto; }
+.v2-page--mistakes .v2-mistake-meta { background: transparent; color: var(--v2-mut); padding: 0; font-size: 12px; font-weight: 500; }
+.v2-page--mistakes .v2-mistake-card p { margin: 0; color: var(--v2-mut); font-size: 13px; }
+.v2-page--mistakes .v2-mistakes-actions { display: flex; gap: 10px; margin-top: 18px; }
+@media (max-width: 650px) { .v2-page--mistakes .v2-mistakes-grid { grid-template-columns: 1fr; } }
+</style>
