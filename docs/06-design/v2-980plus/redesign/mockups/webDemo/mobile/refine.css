@@ -315,3 +315,140 @@
 #view[data-route=alogin][data-target=aobs]>.card:first-child{border-top:4px solid #3b6fd6}
 #view[data-route=alogin][data-target=aobs]>.card:first-child::before{content:"📈  目标页 · 运行观测\A 服务健康、延迟与恢复任务\A 建议职责：运营负责人";white-space:pre-line;display:block;margin:-4px 0 16px;padding:12px 14px;border-radius:12px;background:#3b6fd614;color:var(--ink);font-size:13px;line-height:1.7;font-weight:500}
 #view[data-route=alogin]:is([data-target=admin],[data-target=aperm],[data-target=adraft],[data-target=areview],[data-target=apublish],[data-target=agov],[data-target=aaudit],[data-target=alogin],[data-target=amedia],[data-target=acs],[data-target=ashop],[data-target=areport],[data-target=aobs])>.card:first-child::first-line{font-weight:700;font-size:15px}
+
+/* R3 批次 4：练习/收藏空态插画 */
+#view[data-route=practice] .card.empty::before{content:"";width:104px;height:104px;margin:4px auto 14px;border-radius:0;box-shadow:none;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'%3E%3Ccircle cx='48' cy='48' r='40' fill='%23efeaff'/%3E%3Crect x='26' y='22' width='38' height='50' rx='6' fill='%23fff' stroke='%237555cb' stroke-width='3'/%3E%3Cpath d='M34 36h22M34 45h22M34 54h12' stroke='%23c9bdf0' stroke-width='3' stroke-linecap='round'/%3E%3Cpath d='M60 66 74 38l6 3-14 28-7 3z' fill='%23f2a33a' stroke='%23b66a00' stroke-width='2' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat}
+#view[data-route=collections] .card.empty::before{content:"";width:104px;height:104px;margin:4px auto 14px;border-radius:0;box-shadow:none;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'%3E%3Ccircle cx='48' cy='48' r='40' fill='%23fff4e3'/%3E%3Cpath d='M32 22h32v52L48 63 32 74z' fill='%23fff' stroke='%23b66a00' stroke-width='3' stroke-linejoin='round'/%3E%3Cpath d='M48 33l3.5 7 7.5 1-5.5 5 1.5 7.5-7-3.8-7 3.8 1.5-7.5-5.5-5 7.5-1z' fill='%23f2a33a'/%3E%3C/svg%3E") center/contain no-repeat}
+
+/* R3 批次 4：其余 40 路由逐页精修 */
+/* login */
+#view[data-route=login] .card .btn.ghost:last-child{background:transparent;border:0;color:var(--mut);font-size:13px;min-height:36px;width:auto;margin:4px auto 0;display:block}
+#view[data-route=login] .card .btn+.btn{background:transparent;border-color:transparent;color:var(--brand)}
+/* report：定级题 */
+#view[data-route=report]>.meta{font-weight:600;color:var(--brand)}
+#view[data-route=report]>.prog{height:8px;border-radius:99px;margin:8px 0 14px}
+#view[data-route=report] #qo .opt{min-height:52px;font-size:16px;border-radius:14px}
+#view[data-route=report] #qo .opt.sel{box-shadow:inset 0 0 0 2px var(--brand)}
+#view[data-route=report] .card h2{font-size:19px;line-height:1.45}
+/* home */
+#view[data-route=home] .mobile-welcome h1{font-size:28px;letter-spacing:-.5px}
+#view[data-route=home] .mini-stats b{color:var(--brand);font-size:24px}
+#view[data-route=home] .daily-focus .btn{box-shadow:0 8px 20px #0000002e}
+/* today */
+#view[data-route=today] .card:first-of-type>p.d{font-size:13px;margin:4px 0}
+#view[data-route=today] .card:first-of-type>p.d:first-of-type{font-weight:600;color:var(--ink);font-size:14px}
+#view[data-route=today] .card:not(:first-of-type){border-left:4px solid var(--brand)}
+/* courses / shelf：课程封面色块 */
+:is(#view[data-route=courses],#view[data-route=shelf]) .card:has(.tag)>h2::before,:is(#view[data-route=courses],#view[data-route=shelf]) .card:has(.tag)>h3::before{content:"";display:block;height:64px;margin:-4px 0 12px;border-radius:12px;background:linear-gradient(135deg,var(--brand),#a58cf0)}
+:is(#view[data-route=courses],#view[data-route=shelf]) .card:has(.tag):nth-of-type(odd)>h2::before{background:linear-gradient(135deg,#2a8a5c,#7fd1a8)}
+:is(#view[data-route=courses],#view[data-route=shelf]) .card select{min-height:46px}
+/* practice */
+#view[data-route=practice] .card.empty h2{font-size:20px}
+/* mistakes */
+#view[data-route=mistakes] .card>.eyebrow{display:inline-block;padding:2px 10px;border-radius:99px;background:var(--warn-soft,#fff4e3);color:var(--warn,#9a5a00)}
+#view[data-route=mistakes] .card:not(:first-child) .btn{flex:1}
+#view[data-route=mistakes] .card:not(:first-child)>h3{font-size:17px;margin-top:8px}
+/* weekly / mastery / recap / world：指标色 */
+:is(#view[data-route=weekly],#view[data-route=mastery],#view[data-route=recap]) .metrics strong{color:var(--brand);font-size:26px}
+#view[data-route=mastery] .metrics>div:nth-child(1) strong{color:var(--warn,#b66a00)}
+#view[data-route=mastery] .metrics>div:nth-child(2) strong{color:var(--info,#2f6fd6)}
+#view[data-route=mastery] .metrics>div:nth-child(3) strong{color:var(--ok,#1c7c45)}
+#view[data-route=weekly] .record-row b::before{content:"● ";color:var(--brand)}
+#view[data-route=weekly] .record-row:has(.d:first-child) b::before{color:var(--line)}
+#view[data-route=world] .card:first-child{background:linear-gradient(180deg,var(--soft),var(--card) 55%)}
+#view[data-route=world] .card .opt{border:0;border-bottom:1px solid var(--line);border-radius:0;background:transparent}
+/* league：奖牌与本人行 */
+#view[data-route=league] .list-row{padding:12px 14px;border-radius:12px;margin:6px 0}
+#view[data-route=league] .list-row:nth-of-type(1) b::before{content:"🥇 "}
+#view[data-route=league] .list-row:nth-of-type(2) b::before{content:"🥈 "}
+#view[data-route=league] .list-row:nth-of-type(3) b::before{content:"🥉 "}
+#view[data-route=league] .list-row:last-of-type{background:var(--soft);border-color:var(--brand)}
+#view[data-route=league] .list-row span{font-variant-numeric:tabular-nums;font-weight:700;color:var(--brand)}
+/* subs */
+#view[data-route=subs]>.card:not(:first-child):not(:last-child){border-left:4px solid var(--ok,#1c7c45)}
+#view[data-route=subs]>.card:nth-child(3){border-left-color:var(--mut)}
+#view[data-route=subs]>.card:last-child{background:transparent;box-shadow:none;border:1px dashed var(--line)}
+/* native */
+#view[data-route=native] .card h2::before{content:"📲 "}
+#view[data-route=native] .list-row,#view[data-route=native] .card>div:not(.actions){border-radius:12px}
+/* achieve：已获/未获区分 */
+#view[data-route=achieve]>.card:not(:first-child):has(.tag){position:relative}
+#view[data-route=achieve]>.card:not(:first-child):not(:has(b:first-child:not([class])))>b{font-size:16px}
+#view[data-route=achieve]>.card:has(b:first-child):not(:first-child){border-left:4px solid #f2a33a}
+#view[data-route=achieve]>.card:not(:first-child)[style*="opacity"],#view[data-route=achieve]>.card:not(:first-child):has(.tag:is(.no,.wa)){border-left-color:var(--line);background:transparent;box-shadow:none;border-style:dashed}
+/* avatar */
+#view[data-route=avatar] .card:first-child img,#view[data-route=avatar] .card:first-child svg,#view[data-route=avatar] .card:first-child canvas{border-radius:16px;box-shadow:0 10px 28px #0000003d}
+#view[data-route=avatar] .card:nth-child(2) .btn+.btn{background:transparent;color:var(--brand);border:1px solid var(--brand)}
+/* msgs：未读/已读 */
+#view[data-route=msgs] article.card{border-left:4px solid var(--brand)}
+#view[data-route=msgs] article.card:has(>p.d:first-child:not(:empty)) b{font-size:15px}
+#view[data-route=msgs] .card:first-child .action-row{display:flex;flex-wrap:wrap;gap:6px}
+#view[data-route=msgs] .card:first-child .action-row .btn{flex:0 0 auto;width:auto;border-radius:99px;min-height:34px}
+/* me：头像 */
+#view[data-route=me]>.card:first-child{position:relative;padding-left:84px;min-height:96px}
+#view[data-route=me]>.card:first-child::before{content:"陈";position:absolute;left:18px;top:20px;width:52px;height:52px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,var(--brand),#a58cf0);color:#fff;font-size:22px;font-weight:700}
+/* about */
+#view[data-route=about]>.card:first-child{background:linear-gradient(180deg,var(--soft),var(--card))}
+#view[data-route=about] details summary,#view[data-route=about] .card li{padding:6px 0}
+/* support / tdetail / commerce：胶囊筛选 */
+:is(#view[data-route=support],#view[data-route=tdetail],#view[data-route=commerce]) .inline-actions,:is(#view[data-route=commerce]) .card:first-child .action-row{display:flex;flex-wrap:wrap;gap:6px}
+:is(#view[data-route=support],#view[data-route=tdetail],#view[data-route=commerce]) .inline-actions .btn,#view[data-route=commerce] .card:first-child .action-row:first-of-type .btn{width:auto;flex:0 0 auto;border-radius:99px;min-height:34px;padding:4px 14px}
+:is(#view[data-route=support],#view[data-route=tdetail]) .card:has(>b:first-child){border-left:4px solid var(--info,#2f6fd6)}
+#view[data-route=commerce] .card del,#view[data-route=commerce] .card s{color:var(--mut);font-size:12px;margin-left:4px}
+#view[data-route=commerce] .card:not(:first-child) h2,#view[data-route=commerce] .card:not(:first-child) h3{font-size:17px}
+/* search */
+#view[data-route=search] #q{min-height:50px;padding-left:44px;border-radius:14px;background:var(--surface,var(--card)) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237555cb' stroke-width='2.4' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-3.5-3.5'/%3E%3C/svg%3E") 14px center/20px no-repeat}
+#view[data-route=search] .inline-actions .btn{border-radius:99px;width:auto}
+/* paudio：勾选行 */
+#view[data-route=paudio] label.lb:has(input[type=checkbox]){display:flex;gap:10px;align-items:center;padding:12px 14px;border:1px solid var(--line);border-radius:12px;font-weight:500}
+#view[data-route=paudio] input[type=checkbox]{width:20px;height:20px;accent-color:var(--brand);margin:0}
+/* a11y */
+#view[data-route=a11y] .card:nth-child(2){border:1px dashed var(--brand)}
+/* session */
+#view[data-route=session]>.card:nth-child(2){border-left:4px solid var(--warn,#b66a00)}
+#view[data-route=session]>.card:nth-child(3){border-left:4px solid var(--ok,#1c7c45)}
+/* firstlearn */
+#view[data-route=firstlearn] .card .btn{width:100%;margin:6px 0 0}
+#view[data-route=firstlearn] .card{text-align:center;padding:26px 20px}
+#view[data-route=firstlearn] .card::before{content:"🌱";display:block;font-size:40px;margin-bottom:6px}
+/* vocab / drill：词卡 */
+:is(#view[data-route=vocab],#view[data-route=drill]) .card:has(h1),#view[data-route=drill] .flash,#view[data-route=drill] .card:nth-of-type(1){box-shadow:0 14px 32px #4b32b81f}
+#view[data-route=vocab] .card:first-child h1,#view[data-route=vocab] .card:first-child .word{font-size:40px;letter-spacing:.5px}
+#view[data-route=drill]>.meta{font-weight:600;color:var(--brand)}
+/* speaking / listening 气泡 */
+#view[data-route=speaking] .reading-passage{padding:14px 16px;border-radius:14px;background:var(--soft);font-size:17px;line-height:1.6}
+#view[data-route=speaking] .card .actions .btn{flex:1}
+/* book */
+#view[data-route=book]>.card:first-child::before{content:"📕";display:grid;place-items:center;width:64px;height:84px;float:right;margin:0 0 8px 12px;border-radius:8px 12px 12px 8px;background:linear-gradient(135deg,#c2414b,#e98a6f);font-size:30px;box-shadow:0 8px 18px #0000002e}
+#view[data-route=book] .record-row,#view[data-route=book] .opt{border-radius:12px}
+/* wordbook */
+#view[data-route=wordbook] .card .opt{min-height:56px;font-weight:600}
+#view[data-route=wordbook] .card .opt::before{content:"📘 ";font-weight:400}
+#view[data-route=wordbook] .card .opt+.opt::before{content:"📗 "}
+/* phonics：音标方块 */
+#view[data-route=phonics] .card .card .btn.sm{min-width:72px;border-radius:12px!important}
+#view[data-route=phonics] .card .card .btn.sm .meta{font-size:11px;opacity:.75}
+/* lab：开发工具感 */
+#view[data-route=lab] .card{border-style:dashed}
+#view[data-route=lab] .card h2{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:16px}
+/* recap */
+#view[data-route=recap]>.card:first-child{background:linear-gradient(180deg,var(--soft),var(--card))}
+/* history / calendar */
+#view[data-route=history] .section-heading h2{font-size:15px;color:var(--brand);font-variant-numeric:tabular-nums}
+#view[data-route=history] .card:not(:first-child){padding-top:14px}
+#view[data-route=calendar] .calendar-day:first-of-type{border:2px solid var(--brand);background:var(--soft)}
+#view[data-route=calendar] .calendar-day h3{font-variant-numeric:tabular-nums}
+/* reviewqueue / words */
+#view[data-route=reviewqueue] .tag{background:var(--warn-soft,#fff4e3);color:var(--warn,#9a5a00)}
+:is(#view[data-route=words],#view[data-route=reviewqueue]) .opt b,:is(#view[data-route=words],#view[data-route=reviewqueue]) .list-row b{font-size:15px;letter-spacing:.2px}
+#view[data-route=words] .filter-grid .mode-button{border-radius:99px}
+/* collections */
+#view[data-route=collections] .card.empty{padding:32px 22px}
+
+/* R3 批次 4 补丁 */
+:is(#view[data-route=courses],#view[data-route=shelf]) .card:has(>.section-heading>.tag)::before{content:"";display:block;height:72px;margin:-2px 0 12px;border-radius:12px;background:linear-gradient(135deg,var(--brand),#a58cf0)}
+:is(#view[data-route=courses],#view[data-route=shelf]) .card:has(>.section-heading>.tag):nth-child(even)::before{background:linear-gradient(135deg,#2a8a5c,#7fd1a8)}
+:is(#view[data-route=courses],#view[data-route=shelf]) .card:has(>.section-heading>.tag):nth-child(3n)::before{background:linear-gradient(135deg,#b66a00,#f2c46a)}
+#view[data-route=search] #q{padding-left:44px!important;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237555cb' stroke-width='2.4' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-3.5-3.5'/%3E%3C/svg%3E")!important;background-repeat:no-repeat!important;background-position:14px center!important;background-size:20px!important}
+#view[data-route=achieve]>.card[style*="opacity"]{border:1px dashed var(--line)!important;border-left-width:1px!important;background:transparent!important;box-shadow:none!important}
+#view[data-route=calendar] .calendar-day:nth-child(2){border:2px solid var(--brand);background:var(--soft)}
