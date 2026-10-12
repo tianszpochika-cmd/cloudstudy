@@ -63,34 +63,37 @@ async function submit(): Promise<void> {
 </script>
 
 <template>
-  <view class="yx-page yx-login-page" :style="experienceStyle" :data-motion="experienceMotion">
+  <view class="yx-page yx-login-page v2-register" :style="experienceStyle" :data-motion="experienceMotion">
 
     <MobilePageHeader page="register" />
 
-    <view class="yx-card yx-login-card" :aria-busy="submitting">
-      <text class="mobile-auth-note">{{ mobileT('auth.register.passwordHint') }}</text>
-      <form @submit="submit" :aria-busy="submitting">
-        <label class="yx-field">
+    <view class="v2-register-brand" aria-hidden="true"><text class="v2-register-brand-mark">✦</text></view>
+
+    <view class="yx-card yx-login-card v2-register-card" :aria-busy="submitting">
+      <text class="v2-register-title">{{ mobileT('register') }}</text>
+      <text class="mobile-auth-note v2-register-desc">{{ mobileT('adultNote') }}</text>
+      <text class="mobile-auth-note v2-register-note">{{ mobileT('auth.register.passwordHint') }}</text>
+      <form class="v2-register-form" @submit="submit" :aria-busy="submitting">
+        <label class="yx-field v2-register-field">
           <text>{{ mobileT('auth.register.identifier') }}</text>
-          <input :aria-label="mobileT('auth.register.identifier')" v-model="identifier" type="text" autocomplete="username" :placeholder="mobileT('auth.register.identifierPlaceholder')" :disabled="submitting" />
+          <input class="v2-register-input" :aria-label="mobileT('auth.register.identifier')" v-model="identifier" type="text" autocomplete="username" :placeholder="mobileT('auth.register.identifierPlaceholder')" :disabled="submitting" />
         </label>
-        <label class="yx-field">
+        <label class="yx-field v2-register-field">
           <text>{{ mobileT('auth.register.password') }}</text>
-          <input :aria-label="mobileT('auth.register.password')" v-model="password" type="password" autocomplete="new-password" :placeholder="mobileT('auth.register.passwordPlaceholder')" :disabled="submitting" />
+          <input class="v2-register-input" :aria-label="mobileT('auth.register.password')" v-model="password" type="password" autocomplete="new-password" :placeholder="mobileT('auth.register.passwordPlaceholder')" :disabled="submitting" />
         </label>
-        <label class="yx-field">
+        <label class="yx-field v2-register-field">
           <text>{{ mobileT('auth.register.confirmPassword') }}</text>
-          <input :aria-label="mobileT('auth.register.confirmPassword')" v-model="confirm" type="password" autocomplete="new-password" :placeholder="mobileT('auth.register.confirmPasswordPlaceholder')" :disabled="submitting" />
+          <input class="v2-register-input" :aria-label="mobileT('auth.register.confirmPassword')" v-model="confirm" type="password" autocomplete="new-password" :placeholder="mobileT('auth.register.confirmPasswordPlaceholder')" :disabled="submitting" />
         </label>
-        <text v-if="error" class="yx-login-error" role="alert" aria-live="polite">{{ hint }}</text>
-        <text v-else-if="submitting" class="mobile-auth-note" role="status" aria-live="polite">{{ hint }}</text>
-        <button tabindex="0" role="button" class="yx-button" form-type="submit" :disabled="submitting">
+        <text v-if="error" class="yx-login-error v2-register-error" role="alert" aria-live="polite">{{ hint }}</text>
+        <text v-else-if="submitting" class="mobile-auth-note v2-register-note" role="status" aria-live="polite">{{ hint }}</text>
+        <button tabindex="0" role="button" class="yx-button v2-register-primary" form-type="submit" :disabled="submitting">
           {{ submitting ? mobileT('auth.register.submitting') : mobileT('auth.register.start') }}
         </button>
       </form>
+      <button tabindex="0" role="button" class="mobile-text-button v2-register-secondary" @click="openUniPage('/pages/login/login')">{{ mobileT('toLogin') }}</button>
     </view>
-    <button tabindex="0" role="button" class="mobile-text-button mobile-auth-return" @click="openUniPage('/pages/login/login')">{{ mobileT('toLogin') }}</button>
-    <text class="mobile-auth-note">{{ mobileT('adultNote') }}</text>
   </view>
 </template>
 
