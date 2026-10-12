@@ -19,6 +19,11 @@ const status = ref<'idle' | 'loading' | 'ready' | 'error'>('idle')
 const message = ref('')
 const active = computed(() => entitlements.value.filter((item) => item.status === 'ACTIVE'))
 
+const statusLabels: Record<string, string> = { ACTIVE: '生效中', EXPIRED: '已过期', REVOKED: '已撤销', CREATED: '待支付', PENDING_PAYMENT: '待支付', PAID: '已支付', CANCELLED: '已取消', REFUNDED: '已退款', FAILED: '支付失败' }
+function statusText(value: string): string { return statusLabels[value] ?? value }
+const entitlementLabels: Record<string, string> = { PREMIUM_MONTHLY: '月度会员权益', PREMIUM_YEARLY: '年度会员权益' }
+function entitlementName(value: string): string { return entitlementLabels[value] ?? '学习权益' }
+
 async function load(): Promise<void> {
   status.value = 'loading'
   message.value = ''
@@ -46,7 +51,7 @@ onShow(async () => { await session.restore(); if (!session.isAuthenticated) { ge
       <view class="b5-section card v2-shop-card">
         <view class="b5-section__heading v2-shop-head">
           <view class="v2-shop-titles">
-            <text class="v2-shop-eyebrow eyebrow"><AppIcon name="ticket" :size="14" /><text>ENTITLEMENTS</text></text>
+            <text class="v2-shop-eyebrow eyebrow"><AppIcon name="ticket" :size="14" /><text>当前权益</text></text>
             <text class="v2-shop-title v2-shop-h2 h2">当前权益</text>
             <text class="b5-muted v2-shop-d d">{{ active.length }} 项</text>
           </view>
@@ -54,10 +59,10 @@ onShow(async () => { await session.restore(); if (!session.isAuthenticated) { ge
         <view v-if="active.length" class="b5-list v2-shop-list">
           <view v-for="item in active" :key="item.sourceRef" class="b5-row list-row row v2-shop-row">
             <view class="v2-shop-copy">
-              <text class="v2-shop-name v2-shop-h2">{{ item.entitlementCode }}</text>
+              <text class="v2-shop-name v2-shop-h2">{{ entitlementName(item.entitlementCode) }}</text>
               <text class="b5-muted v2-shop-d d">有效至 {{ item.expiresAt.slice(0, 10) }}</text>
             </view>
-            <text class="b5-status v2-shop-state v2-shop-tag">{{ item.status }}</text>
+            <text class="b5-status v2-shop-state v2-shop-tag">{{ statusText(item.status) }}</text>
           </view>
         </view>
         <text v-else class="b5-empty fb d v2-shop-fb v2-shop-d v2-shop-empty">暂无生效权益</text>
@@ -65,7 +70,7 @@ onShow(async () => { await session.restore(); if (!session.isAuthenticated) { ge
       <view class="b5-section card v2-shop-card">
         <view class="b5-section__heading v2-shop-head">
           <view class="v2-shop-titles">
-            <text class="v2-shop-eyebrow eyebrow"><AppIcon name="store" :size="14" /><text>PLANS</text></text>
+            <text class="v2-shop-eyebrow eyebrow"><AppIcon name="store" :size="14" /><text>学习方案</text></text>
             <text class="v2-shop-title v2-shop-h2 h2">学习方案</text>
           </view>
         </view>
@@ -86,7 +91,7 @@ onShow(async () => { await session.restore(); if (!session.isAuthenticated) { ge
       <view class="b5-section card v2-shop-card">
         <view class="b5-section__heading v2-shop-head">
           <view class="v2-shop-titles">
-            <text class="v2-shop-eyebrow eyebrow"><AppIcon name="swap" :size="14" /><text>ORDERS</text></text>
+            <text class="v2-shop-eyebrow eyebrow"><AppIcon name="swap" :size="14" /><text>订单</text></text>
             <text class="v2-shop-title v2-shop-h2 h2">订单恢复</text>
             <text class="b5-muted v2-shop-d d">服务端状态</text>
           </view>
@@ -98,7 +103,7 @@ onShow(async () => { await session.restore(); if (!session.isAuthenticated) { ge
               <text class="b5-muted v2-shop-d d">{{ order.skuId }} · {{ money(order.amountMinor, order.currency) }}</text>
             </view>
             <view class="b5-row__right v2-shop-actions row">
-              <text class="b5-status v2-shop-state v2-shop-tag">{{ order.status }}</text>
+              <text class="b5-status v2-shop-state v2-shop-tag">{{ statusText(order.status) }}</text>
               <button tabindex="0" role="button" v-if="order.status === 'CREATED'" class="b5-secondary btn v2-shop-btn v2-shop-opt" type="button" @click="recover(order)">恢复<AppIcon name="refresh" :size="14" /></button>
             </view>
           </view>
