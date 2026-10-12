@@ -44,6 +44,8 @@ async function command(commandName: string, body: Record<string, unknown> = {}):
 
 <template>
   <section class="release-panel" data-release-panel>
+    <div class="release-panel__info">
+      <h3 class="release-panel__title">发布信息</h3>
     <p data-release-mode>{{ copy }}</p>
     <p data-release-notice>{{ notice }}</p>
     <ul v-if="gaps.length" data-release-gaps>
@@ -51,19 +53,31 @@ async function command(commandName: string, body: Record<string, unknown> = {}):
     </ul>
     <label>内容编码 <input v-model="contentCode" data-release-code /></label>
     <label>标题 <input v-model="title" data-release-title /></label>
+    </div>
+    <div class="release-panel__ops">
+      <h3 class="release-panel__title">发布操作</h3>
     <div class="release-actions">
+      <div class="release-group"><span class="release-group__label">模式</span>
       <button type="button" :disabled="!canWrite" @click="command('RELEASE_MODE')">读取模式</button>
       <button type="button" :disabled="!canWrite" @click="command('RELEASE_MODE', { mode: mode === 'SIMPLE' ? 'DUAL' : 'SIMPLE' })">切换审核模式</button>
+      </div>
+      <div class="release-group"><span class="release-group__label">流程</span>
       <button type="button" :disabled="!canWrite" @click="command('RELEASE_CREATE', { title })">建草稿</button>
       <button type="button" :disabled="!canWrite" @click="command('RELEASE_SUBMIT')">送审</button>
       <button type="button" :disabled="mode !== 'DUAL'" @click="command('RELEASE_REVIEW_L1')">初审</button>
       <button type="button" :disabled="mode !== 'DUAL'" @click="command('RELEASE_REVIEW_L2')">终审</button>
+      </div>
+      <div class="release-group"><span class="release-group__label">发布</span>
       <button type="button" :disabled="!canWrite" @click="command('RELEASE_PUBLISH')">发布</button>
       <button type="button" :disabled="!canWrite" @click="command('RELEASE_SYNC')">同步目录</button>
+      </div>
+      <div class="release-group"><span class="release-group__label">下架</span>
       <button type="button" :disabled="!canWrite" @click="command('RELEASE_UNPUBLISH', { reason: '普通收回' })">普通下架</button>
       <button type="button" :disabled="!canWrite" @click="command('RELEASE_FORCE_OFFLINE', { reason: '停止分发' })">强制停止</button>
+      </div>
     </div>
     <p v-if="mode === 'SIMPLE'" data-simple-review>简审没有第二审签名，也没有第二条审核记录。</p>
     <p data-release-denial>{{ denialCopy() }}</p>
+    </div>
   </section>
 </template>
