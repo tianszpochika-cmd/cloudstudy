@@ -125,18 +125,3 @@ async function submit(): Promise<void> {
     </section>
   </AuthLayout>
 </template>
-
-<style scoped>
-.v2-auth-title{font-size:28px;letter-spacing:-1px;color:var(--v2-ink)}
-.v2-auth-lead{color:var(--v2-mut)}
-.v2-field>span{color:var(--v2-ink);font-weight:600}
-.v2-auth-links{display:flex;justify-content:space-between;font-size:13px}
-.v2-auth-links a{color:var(--v2-brand);font-weight:600;text-decoration:none}
-.v2-auth-links a:hover{text-decoration:underline}
-.v2-auth-status{background:var(--v2-soft);border-radius:var(--v2-radius-md);color:var(--v2-ink)}
-.v2-auth-status.login-status--error{background:var(--v2-bad-soft);color:var(--v2-bad)}
-.v2-btn--primary{background:var(--v2-brand);color:var(--v2-inverse);border-radius:var(--v2-radius-md);font-weight:700;transition:background var(--v2-motion-fast)}
-.v2-btn--primary:hover:not(:disabled){background:var(--v2-brand2)}
-.v2-btn--block{width:100%}
-.v2-auth-micro{color:var(--v2-mut)}
-</style>

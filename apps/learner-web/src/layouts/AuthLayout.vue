@@ -31,4 +31,19 @@ const t = useExperienceText()
 .v2-auth-form .field input { border-radius: var(--v2-radius-md); border-color: var(--v2-line); background: var(--v2-card); }
 .v2-auth-form .field input:focus { outline: 2px solid var(--v2-focus); outline-offset: 1px; }
 @media (max-width: 900px) { .auth-layout.v2-auth { grid-template-columns: 1fr; padding: 20px 16px; } .auth-art.v2-auth-intro { min-height: 200px; padding: 25px; } .v2-auth-intro__copy h2 { font-size: 28px; } }
+.v2-auth .v2-auth-title{font-size:28px;letter-spacing:-1px;color:var(--v2-ink)}
+.v2-auth .v2-auth-lead{color:var(--v2-mut)}
+.v2-auth .v2-field>span{color:var(--v2-ink);font-weight:600}
+.v2-auth .v2-auth-links{display:flex;justify-content:space-between;font-size:13px}
+.v2-auth .v2-auth-links a{color:var(--v2-brand);font-weight:600;text-decoration:none}
+.v2-auth .v2-auth-links a:hover{text-decoration:underline}
+.v2-auth .v2-auth-status{background:var(--v2-soft);border-radius:var(--v2-radius-md);color:var(--v2-ink)}
+.v2-auth .v2-auth-status.login-status--error{background:var(--v2-bad-soft);color:var(--v2-bad)}
+.v2-auth .v2-btn--primary{background:var(--v2-brand);color:var(--v2-inverse);border-radius:var(--v2-radius-md);font-weight:700;transition:background var(--v2-motion-fast)}
+.v2-auth .v2-btn--primary:hover:not(:disabled){background:var(--v2-brand2)}
+.v2-auth .v2-btn--block{width:100%}
+.v2-auth .v2-auth-micro{color:var(--v2-mut)}
+.v2-auth .v2-btn--ghost{background:var(--v2-card);color:var(--v2-brand);border:1px solid var(--v2-line);border-radius:var(--v2-radius-md);font-weight:600}
+.v2-auth .v2-btn--ghost:hover{background:var(--v2-soft)}
+.v2-auth .v2-auth-micro a{color:var(--v2-brand);font-weight:600}
 </style>
