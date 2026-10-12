@@ -3,6 +3,7 @@ import { computed, ref, watch } from 'vue'
 import { onHide, onShow } from '@dcloudio/uni-app'
 import type { B8Device } from '@englishflow/contracts'
 import MobilePageHeader from '../../components/MobilePageHeader.vue'
+import AppIcon from '../../components/AppIcon.vue'
 import { ensureMobilePageAccess } from '../../auth/navigation'
 import { listMobileDevices, kickoutMobileDevice } from '../../api/devices'
 import { canRevokeMobileDevice, isCurrentMobileDevice } from '../../domain/devices'
@@ -152,37 +153,43 @@ onHide(() => { devicesVisible = false })
 </script>
 
 <template>
-  <view class="yx-page devices-page" :style="experienceStyle" :data-motion="experienceMotion">
+  <view class="yx-page devices-page v2-devices-page" :style="experienceStyle" :data-motion="experienceMotion">
     <MobilePageHeader page="settings" kicker="账户安全" title="设备与会话" description="查看已登录设备，退出不再使用的会话。" />
 
-    <view class="yx-card devices-card">
-      <view class="devices-heading">
-        <view><text class="devices-card-title">已登录设备</text><text class="devices-note">退出设备后，该设备需要重新登录。</text></view>
-        <button tabindex="0" role="button" class="devices-secondary" :loading="deviceStatus === 'loading'" :disabled="deviceStatus === 'loading' || Boolean(busyAction)" @click="loadDevices">刷新</button>
+    <view class="v2-devices-body">
+    <view class="yx-card devices-card card v2-devices-card">
+      <view class="devices-heading v2-devices-head">
+        <view class="v2-devices-titles">
+          <view class="v2-devices-eyebrow eyebrow"><AppIcon name="shield" :size="14" /><text>账户安全</text></view>
+          <text class="devices-card-title h2 v2-devices-title v2-devices-h2">已登录设备</text>
+          <text class="devices-note d v2-devices-d">退出设备后，该设备需要重新登录。</text>
+        </view>
+        <button tabindex="0" role="button" class="devices-secondary btn opt v2-devices-btn v2-devices-opt" :loading="deviceStatus === 'loading'" :disabled="deviceStatus === 'loading' || Boolean(busyAction)" @click="loadDevices">刷新<AppIcon name="refresh" :size="14" /></button>
       </view>
 
-      <view v-if="deviceStatus === 'loading'" class="devices-state" role="status">正在读取设备列表…</view>
-      <view v-else-if="deviceStatus === 'error'" class="devices-state devices-error" role="alert"><text>{{ errorMessage }}</text><button tabindex="0" role="button" class="devices-secondary" :disabled="Boolean(busyAction)" @click="loadDevices">重试</button></view>
-      <view v-else-if="deviceStatus === 'empty'" class="devices-state" role="status">当前账号还没有设备记录。</view>
+      <view v-if="deviceStatus === 'loading'" class="devices-state fb d v2-devices-state v2-devices-fb v2-devices-d v2-devices-empty" role="status"><AppIcon name="refresh" :size="14" /><text class="d v2-devices-d">正在读取设备列表…</text></view>
+      <view v-else-if="deviceStatus === 'error'" class="devices-state devices-error fb d v2-devices-state v2-devices-fb v2-devices-d" role="alert"><text class="d v2-devices-d">{{ errorMessage }}</text><button tabindex="0" role="button" class="devices-secondary btn opt v2-devices-btn v2-devices-opt" :disabled="Boolean(busyAction)" @click="loadDevices">重试<AppIcon name="refresh" :size="14" /></button></view>
+      <view v-else-if="deviceStatus === 'empty'" class="devices-state fb d v2-devices-state v2-devices-fb v2-devices-d v2-devices-empty" role="status"><AppIcon name="inbox" :size="14" /><text class="d v2-devices-d">当前账号还没有设备记录。</text></view>
 
       <template v-else>
-        <text v-if="!session.deviceId" class="devices-safety" role="alert">当前设备标识暂不可确认。为避免退出正在使用的设备，撤销操作已停用；请重新登录后再试。</text>
-        <button tabindex="0" role="button" class="devices-danger" :disabled="Boolean(busyAction) || !revocableDevices.length" :loading="busyAction === 'others'" @click="revokeOtherDevices">退出其他设备（{{ revocableDevices.length }}）</button>
-        <view class="device-list">
-          <view v-for="device in devices" :key="device.deviceId" class="device-row">
-            <view class="device-row-heading">
-              <view><text class="device-name">{{ deviceTypeLabel(device.deviceType) }}</text><text class="device-id">设备编号 {{ shortDeviceId(device.deviceId) }}</text></view>
-              <text :class="['device-status', device.status === 'ACTIVE' ? 'device-status--active' : '']">{{ isCurrentMobileDevice(device, session.deviceId) ? '当前设备' : device.status === 'ACTIVE' ? '使用中' : '已退出' }}</text>
+        <text v-if="!session.deviceId" class="devices-safety fb d v2-devices-fb v2-devices-d" role="alert">当前设备标识暂不可确认。为避免退出正在使用的设备，撤销操作已停用；请重新登录后再试。</text>
+        <button tabindex="0" role="button" class="devices-danger btn opt v2-devices-btn v2-devices-opt v2-devices-submit" :disabled="Boolean(busyAction) || !revocableDevices.length" :loading="busyAction === 'others'" @click="revokeOtherDevices">退出其他设备（{{ revocableDevices.length }}）<AppIcon name="swap" :size="14" /></button>
+        <view class="device-list v2-devices-list">
+          <view v-for="device in devices" :key="device.deviceId" class="device-row list-row row card v2-devices-row v2-devices-card">
+            <view class="device-row-heading v2-devices-row-head">
+              <view class="v2-devices-copy"><text class="device-name v2-devices-name v2-devices-h2">{{ deviceTypeLabel(device.deviceType) }}</text><text class="device-id d v2-devices-d">设备编号 {{ shortDeviceId(device.deviceId) }}</text></view>
+              <text class="tag v2-devices-tag v2-devices-state" :class="['device-status', device.status === 'ACTIVE' ? 'device-status--active' : '']">{{ isCurrentMobileDevice(device, session.deviceId) ? '当前设备' : device.status === 'ACTIVE' ? '使用中' : '已退出' }}</text>
             </view>
-            <text class="device-last-active">最近登录：{{ lastLoginLabel(device.lastActiveAt) }}</text>
-            <text v-if="isCurrentMobileDevice(device, session.deviceId)" class="device-protected">当前设备不能从此处退出。</text>
-            <button v-else-if="canRevokeMobileDevice(device, session.deviceId)" tabindex="0" role="button" class="devices-secondary device-revoke" :loading="busyAction === device.deviceId" :disabled="Boolean(busyAction)" @click="revokeDevice(device)">退出此设备</button>
+            <text class="device-last-active d v2-devices-d">最近登录：{{ lastLoginLabel(device.lastActiveAt) }}</text>
+            <text v-if="isCurrentMobileDevice(device, session.deviceId)" class="device-protected d v2-devices-d">当前设备不能从此处退出。</text>
+            <button v-else-if="canRevokeMobileDevice(device, session.deviceId)" tabindex="0" role="button" class="devices-secondary device-revoke btn opt v2-devices-btn v2-devices-opt" :loading="busyAction === device.deviceId" :disabled="Boolean(busyAction)" @click="revokeDevice(device)">退出此设备<AppIcon name="x" :size="14" /></button>
           </view>
         </view>
       </template>
 
-      <text v-if="actionMessage" class="devices-success" role="status">{{ actionMessage }}</text>
-      <text v-if="actionError" class="devices-error" role="alert">{{ actionError }}</text>
+      <text v-if="actionMessage" class="devices-success fb d v2-devices-fb v2-devices-d" role="status">{{ actionMessage }}</text>
+      <text v-if="actionError" class="devices-error fb d v2-devices-fb v2-devices-d" role="alert">{{ actionError }}</text>
+    </view>
     </view>
   </view>
 </template>
