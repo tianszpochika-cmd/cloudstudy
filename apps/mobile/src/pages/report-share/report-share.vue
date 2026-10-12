@@ -67,4 +67,20 @@ onLoad((query) => {
 
 <style scoped>
 .share { display: grid; gap: 12px; }
+/* v2 分享报告页换皮：对齐 practice.vue v2-practice-* 与 today.vue v2-today-* 卡片/eyebrow/标题/列表行同样数值，对齐 webDemo/mobile/styles.css、refine.css，仅用 var(--v2-*)。 */
+.v2-share-page{box-sizing:border-box;min-width:0;max-width:100%;overflow-x:hidden;font-family:var(--v2-font);overflow-wrap:anywhere}
+.v2-share-body{display:flex;flex-direction:column;gap:var(--v2-space-4);box-sizing:border-box;min-width:0;max-width:100%;font-family:var(--v2-font);overflow-wrap:anywhere}
+.v2-share-body>*{min-width:0;max-width:100%}
+.v2-share-card{display:grid;gap:var(--v2-space-2);box-sizing:border-box;min-width:0;max-width:100%;padding:var(--v2-space-5);border:1px solid var(--v2-line);border-radius:var(--v2-radius-lg);background:var(--v2-card);box-shadow:var(--v2-shadow);font-family:var(--v2-font);overflow-wrap:anywhere}
+.v2-share-card:hover{border-color:var(--v2-brand)}
+.v2-share-eyebrow{display:flex;align-items:center;flex-wrap:wrap;gap:var(--v2-space-2);box-sizing:border-box;min-width:0;max-width:100%;margin:0 0 var(--v2-space-2);color:var(--v2-mut);font-family:var(--v2-font);font-size:var(--v2-text-xs);font-weight:700;letter-spacing:.06em;text-transform:uppercase;overflow-wrap:anywhere}
+.v2-share-eyebrow>*{min-width:0;max-width:100%}
+.v2-share-title,.v2-share-h2{display:block;box-sizing:border-box;min-width:0;max-width:100%;margin:var(--v2-space-1) 0 0;color:var(--v2-ink);font-family:var(--v2-font);font-size:var(--v2-text-lg);font-weight:700;line-height:1.45;overflow-wrap:anywhere}
+.v2-share-list{display:grid;gap:var(--v2-space-2);box-sizing:border-box;min-width:0;max-width:100%;font-family:var(--v2-font);overflow-wrap:anywhere}
+.v2-share-list>*{min-width:0;max-width:100%}
+.v2-share-d{display:block;box-sizing:border-box;min-width:0;max-width:100%;color:var(--v2-mut);font-family:var(--v2-font);font-size:var(--v2-text-sm);line-height:1.7;overflow-wrap:anywhere}
+.v2-share-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--v2-space-2);box-sizing:border-box;min-width:0;max-width:100%;padding:var(--v2-space-4);border:1px solid var(--v2-line);border-radius:var(--v2-radius-md);background:var(--v2-card);font-family:var(--v2-font);overflow-wrap:anywhere}
+.v2-share-row:hover{border-color:var(--v2-brand)}
+.v2-share-row>*{min-width:0;max-width:100%}
+.v2-share-copy,.v2-share-suggestion,.v2-share-note{box-sizing:border-box;min-width:0;max-width:100%;flex:1 1 auto;color:var(--v2-mut);font-family:var(--v2-font);font-size:var(--v2-text-sm);line-height:1.7;overflow-wrap:anywhere}
 </style>
