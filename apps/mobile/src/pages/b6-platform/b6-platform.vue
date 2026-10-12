@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import MobilePageHeader from '../../components/MobilePageHeader.vue'
+import AppIcon from '../../components/AppIcon.vue'
 import { setMobileQuality, useMobileExperience } from '../../platform/experience'
 const { experienceStyle, experienceMotion } = useMobileExperience()
 
@@ -26,13 +27,62 @@ onUnload(() => { unsubscribe(); engine.dispose() })
 </script>
 
 <template>
-  <view class="yx-page b6-mobile-page" :style="experienceStyle" :data-motion="experienceMotion">
+  <view class="yx-page b6-mobile-page v2-platform-page" :style="experienceStyle" :data-motion="experienceMotion">
     <MobilePageHeader page="b6-platform" />
-    <view class="b6-mobile-heading"><view><text class="yx-description">设备支持情况与画质选项，可在这里查看。</text></view><button tabindex="0" role="button" class="yx-button yx-button--secondary b6-refresh" :loading="loading" @tap="load">刷新</button></view>
-    <view v-if="errorMessage" class="b6-mobile-alert"><text>{{ errorMessage }}</text></view>
-    <view class="yx-card"><view class="b6-mobile-card-heading"><view><text class="b6-mobile-card-title">目标端矩阵</text><text class="b6-mobile-muted">{{ matrix.matrixVersion }} · {{ matrix.codeLayerStatus }}</text></view><text class="b6-mobile-status">{{ matrix.realDeviceEvidenceStatus }}</text></view><view class="b6-mobile-target" v-for="target in matrix.targets" :key="target.platformCode"><view><text class="b6-mobile-target-code">{{ target.platformCode }}</text><text class="b6-mobile-muted">{{ target.priority }}</text></view><text class="b6-mobile-muted">{{ target.implementation }}</text><text class="b6-mobile-status">{{ target.buildStatus }}</text></view></view>
-    <view class="yx-card"><view class="b6-mobile-card-heading"><view><text class="b6-mobile-card-title">画质与降级</text><text class="b6-mobile-muted">低帧率、内存压力或离线时自动降级</text></view><text class="b6-mobile-status">{{ performanceLevel }}</text></view><view class="b6-mobile-levels"><button tabindex="0" role="button" v-for="level in ['Ultra', 'High', 'Medium', 'Performance'] as PerformanceLevel[]" :key="level" :class="['b6-level-button', { active: performanceLevel === level }]" :aria-pressed="performanceLevel === level" @tap="chooseLevel(level)">{{ level }}</button></view><view class="b6-budget-row" v-for="profile in budget.levels" :key="profile.level"><text>{{ profile.level }}</text><text class="b6-mobile-muted">{{ profile.textureBudgetMb }}MB · 粒子 {{ profile.particleBudget }} · {{ profile.enableThreeD ? '3D' : 'SVG/静态' }}</text></view></view>
-    <view class="yx-card"><view class="b6-mobile-card-heading"><view><text class="b6-mobile-card-title">无障碍替代路径</text><text class="b6-mobile-muted">{{ accessibility.releaseBlocking ? '上线阻断检查' : '建议检查' }}</text></view><text class="b6-mobile-status">{{ accessibility.checks.length }} 项</text></view><view class="b6-a11y-row" v-for="check in accessibility.checks" :key="check.checkCode"><text class="b6-check" aria-hidden="true">✓</text><view><text>{{ check.title }}</text><text class="b6-mobile-muted">{{ check.fallbackRule }}</text></view></view></view>
+    <view class="v2-platform-body">
+      <view class="b6-mobile-heading v2-platform-head">
+        <view class="v2-platform-titles">
+          <view class="eyebrow v2-platform-eyebrow"><AppIcon name="grid" :size="14" /><text>原生与多端</text></view>
+          <view><text class="yx-description d v2-platform-d">设备支持情况与画质选项，可在这里查看。</text></view>
+        </view>
+        <button tabindex="0" role="button" class="yx-button yx-button--secondary b6-refresh btn opt v2-platform-btn v2-platform-opt" :loading="loading" @tap="load">刷新<AppIcon name="refresh" :size="14" /></button>
+      </view>
+      <view v-if="errorMessage" class="b6-mobile-alert fb v2-platform-fb v2-platform-d" role="alert"><AppIcon name="alert" :size="14" /><text class="d v2-platform-d">{{ errorMessage }}</text></view>
+      <view class="yx-card card v2-platform-card">
+        <view class="b6-mobile-card-heading v2-platform-head">
+          <view class="v2-platform-titles">
+            <view class="eyebrow v2-platform-eyebrow"><AppIcon name="grid" :size="14" /><text>壳矩阵</text></view>
+            <text class="b6-mobile-card-title h2 v2-platform-title v2-platform-h2">目标端矩阵</text>
+            <text class="b6-mobile-muted d v2-platform-d">{{ matrix.matrixVersion }} · {{ matrix.codeLayerStatus }}</text>
+          </view>
+          <text class="b6-mobile-status v2-platform-state v2-platform-tag">{{ matrix.realDeviceEvidenceStatus }}</text>
+        </view>
+        <view class="v2-platform-list">
+          <view class="b6-mobile-target list-row row card v2-platform-row v2-platform-card" v-for="target in matrix.targets" :key="target.platformCode">
+            <view class="v2-platform-copy"><text class="b6-mobile-target-code h2 v2-platform-name v2-platform-h2">{{ target.platformCode }}</text><text class="b6-mobile-muted d v2-platform-d">{{ target.priority }}</text></view>
+            <text class="b6-mobile-muted d v2-platform-d">{{ target.implementation }}</text>
+            <text class="b6-mobile-status v2-platform-state v2-platform-tag">{{ target.buildStatus }}</text>
+          </view>
+        </view>
+      </view>
+      <view class="yx-card card v2-platform-card">
+        <view class="b6-mobile-card-heading v2-platform-head">
+          <view class="v2-platform-titles">
+            <view class="eyebrow v2-platform-eyebrow"><AppIcon name="gear" :size="14" /><text>画质</text></view>
+            <text class="b6-mobile-card-title h2 v2-platform-title v2-platform-h2">画质与降级</text>
+            <text class="b6-mobile-muted d v2-platform-d">低帧率、内存压力或离线时自动降级</text>
+          </view>
+          <text class="b6-mobile-status v2-platform-state v2-platform-tag">{{ performanceLevel }}</text>
+        </view>
+        <view class="b6-mobile-levels v2-platform-levels"><button tabindex="0" role="button" v-for="level in ['Ultra', 'High', 'Medium', 'Performance'] as PerformanceLevel[]" :key="level" class="btn opt v2-platform-btn v2-platform-opt" :class="['b6-level-button', { active: performanceLevel === level }]" :aria-pressed="performanceLevel === level" @tap="chooseLevel(level)">{{ level }}</button></view>
+        <view class="v2-platform-list">
+          <view class="b6-budget-row list-row row v2-platform-row" v-for="profile in budget.levels" :key="profile.level"><text class="d v2-platform-d">{{ profile.level }}</text><text class="b6-mobile-muted d v2-platform-d">{{ profile.textureBudgetMb }}MB · 粒子 {{ profile.particleBudget }} · {{ profile.enableThreeD ? '3D' : 'SVG/静态' }}</text></view>
+        </view>
+      </view>
+      <view class="yx-card card v2-platform-card">
+        <view class="b6-mobile-card-heading v2-platform-head">
+          <view class="v2-platform-titles">
+            <view class="eyebrow v2-platform-eyebrow"><AppIcon name="check" :size="14" /><text>无障碍</text></view>
+            <text class="b6-mobile-card-title h2 v2-platform-title v2-platform-h2">无障碍替代路径</text>
+            <text class="b6-mobile-muted d v2-platform-d">{{ accessibility.releaseBlocking ? '上线阻断检查' : '建议检查' }}</text>
+          </view>
+          <text class="b6-mobile-status v2-platform-state v2-platform-tag">{{ accessibility.checks.length }} 项</text>
+        </view>
+        <view class="v2-platform-list">
+          <view class="b6-a11y-row list-row row v2-platform-row" v-for="check in accessibility.checks" :key="check.checkCode"><text class="b6-check v2-platform-check" aria-hidden="true">✓</text><view class="v2-platform-copy"><text class="d v2-platform-d">{{ check.title }}</text><text class="b6-mobile-muted d v2-platform-d">{{ check.fallbackRule }}</text></view></view>
+        </view>
+      </view>
+    </view>
   </view>
 </template>
 
