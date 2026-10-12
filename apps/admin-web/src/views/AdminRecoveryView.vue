@@ -136,6 +136,7 @@ onMounted(() => {
 
 <template>
   <div class="view-stack">
+    <div class="recovery-page">
     <AdminPageIntro
       ><el-button :loading="state === 'loading'" @click="load">{{
         ui("refresh")
@@ -159,7 +160,7 @@ onMounted(() => {
       show-icon
     />
     <template v-else>
-      <el-card shadow="never">
+      <el-card shadow="never" class="recovery-apply">
         <template #header><span>申请恢复</span></template>
         <el-form label-position="top">
           <el-row :gutter="16">
@@ -191,28 +192,28 @@ onMounted(() => {
           >
         </el-form>
       </el-card>
-      <el-card shadow="never">
+      <el-card shadow="never" class="recovery-current">
         <template #header><span>当前恢复</span></template>
         <p v-if="!current">暂无选中的恢复申请；提交后在此审批执行。</p>
         <dl v-else>
-          <div>
+          <div class="detail-row">
             <dt>单号</dt>
             <dd>{{ current.recoveryId }}</dd>
           </div>
-          <div>
+          <div class="detail-row">
             <dt>状态</dt>
             <dd>{{ text(current.status) }}</dd>
           </div>
-          <div>
+          <div class="detail-row">
             <dt>申请人</dt>
             <dd>{{ text(current.requestedBy) }}</dd>
           </div>
-          <div>
+          <div class="detail-row">
             <dt>批准人</dt>
             <dd>{{ text(current.approvedBy) }}</dd>
           </div>
         </dl>
-        <el-space v-if="current">
+        <div class="recovery-actions"><el-space v-if="current">
           <el-button
             type="success"
             plain
@@ -237,9 +238,9 @@ onMounted(() => {
             @click="decide('execute')"
             >执行</el-button
           >
-        </el-space>
+        </el-space></div>
       </el-card>
-      <el-card shadow="never">
+      <el-card shadow="never" class="recovery-list">
         <template #header><span>待恢复业务流程</span></template>
         <p v-if="!sagas.length" class="muted">暂无待恢复业务流程。</p>
         <ul v-else>
@@ -247,5 +248,6 @@ onMounted(() => {
         </ul>
       </el-card>
     </template>
+    </div>
   </div>
 </template>
