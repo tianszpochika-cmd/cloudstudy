@@ -56,7 +56,7 @@ onUnmounted(() => engine.dispose())
 
       <B10StatusPanel class="v2-report-progress" :status="status" :message="store.message" :performance-level="performanceLevel" @retry="load" @performance="setPerformance" />
       <text data-zero-only class="meta v2-report-meta">{{ ZERO_ONLY_COPY }}</text>
-      <text data-projection-version class="meta v2-report-meta">{{ store.projectionVersion || PROJECTION_VERSION }}</text>
+      <text data-projection-version class="meta v2-report-meta v2-report-sr-only">{{ store.projectionVersion || PROJECTION_VERSION }}</text>
       <text v-if="store.status === 'empty' || store.status === 'error' || store.status === 'offline'" data-empty-book class="meta v2-report-meta">{{ emptyLabel }}</text>
       <text v-if="store.remediationId" data-remediation class="meta v2-report-meta">{{ store.remediationId }}</text>
       <view v-if="store.mistakes.length" class="yx-card card b10-mistakes v2-report-card v2-report-mistakes"><text class="b10-section-title v2-report-title">{{ b10T('report.mistakes') }}</text><view class="v2-report-list"><view v-for="mistake in store.mistakes" :key="mistake.mistakeId" class="b10-mistake v2-report-item"><view class="b10-mistake__copy v2-report-copy"><text class="b10-mistake__title v2-report-stem">{{ mistake.errorCategory }}</text><text class="v2-report-desc">{{ mistake.prompt ?? `题目 ${mistake.itemId}` }}</text><text class="b10-mistake__meta fb v2-report-fb" data-closure>{{ closureLabel(mistake.mistakeStatus, mistake.closureCopy) }}</text><text v-if="mistake.masteryStatus" class="b10-mistake__meta fb v2-report-fb">{{ mistake.masteryStatus }}</text><text v-for="reason in mistake.reasonTrace" :key="reason.code" class="b10-mistake__reason fb v2-report-fb">{{ reason.label }}<template v-if="reason.evidence"> · {{ reason.evidence }}</template></text></view><button tabindex="0" role="button" class="b10-mini opt v2-report-opt v2-report-submit v2-report-retry" type="button" :disabled="mistake.mistakeStatus === 'MASTERED'" @click="retry(mistake.mistakeId)">{{ b10T('report.retry') }}</button></view></view></view>
@@ -115,4 +115,5 @@ onUnmounted(() => engine.dispose())
 .v2-report-evidence{display:grid;gap:var(--v2-space-2);padding-top:var(--v2-space-4);border-top:1px solid var(--v2-line)}
 .v2-report-actions{display:flex;flex-wrap:wrap;align-items:center;gap:var(--v2-space-2)}
 .v2-report-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--v2-space-3)}
+.v2-report-sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;}
 </style>
