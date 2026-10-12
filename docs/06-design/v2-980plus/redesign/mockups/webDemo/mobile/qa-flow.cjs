@@ -4780,14 +4780,14 @@ const QA_URL = process.env.STATIC_DEMO_URL || 'http://127.0.0.1:18283/webDemo/mo
 
 // LAST_RUN_RESULT
 // {
-//   "at": "2026-10-11T10:56:34.237Z",
+//   "at": "2026-10-12T06:21:26.354Z",
 //   "url": "http://127.0.0.1:18283/webDemo/mobile/",
 //   "surface": "mobile",
 //   "viewport": 390,
-//   "theme": "dark",
+//   "theme": "light",
 //   "mode": "real DOM click; synthetic facts",
 //   "sourceHashes": {
-//     "index.html": "4849fd65fafa81dac04fba35cd5052617c51b49b1f228840d899530f8b08ee17",
+//     "index.html": "fd207376ea674379aedbb274b998a04d40bfacbb63031dba297d13fa29729d49",
 //     "app.js": "99df303b7806965d7da5cca99440aef983a8135a9271f2072371809f2b413524",
 //     "learning.js": "4863003b4aa6082a4d1577a44c097e0d554fe3dd784536617bc24059ec8be0f6",
 //     "styles.css": "506624ff08a6512320bf434a0cc38fea553f941bd60009eae9f7b26341673b62",
@@ -4796,10 +4796,10 @@ const QA_URL = process.env.STATIC_DEMO_URL || 'http://127.0.0.1:18283/webDemo/mo
 //     "../shared/components.css": "81e6fc1ee75b7b15708fba12f5742ac9db0a43793e3fb1b663893f4f4c6d4ee6",
 //     "mobile-ui.js": "62a92a888eaa7dd14e76bdd595e2aa42502236bdc706612526779ac41f5f1ffe",
 //     "../shared/data.js": "37a257521ad60beb443aec03c06729063435210652deee30fff1779910050877",
-//     "../shared/preview-data.js": "4e6a82f5f3cbe73f825a66ba3c6bc23830b22e487941ba588538a4d96a3a5520",
+//     "../shared/preview-data.js": "703faa17cc33537ea7cd5df433966c590a7432637d7345cf19a4f45d34f4fe36",
 //     "../shared/product-overrides.js": "eabaadfe7fd43518e63c175a3bc755bccb92a3fef649d32568fb5f00c11eae9a",
 //     "../shared/demo-ui.js": "5e3a23ef8bb68afd86baf4d1fae0d1e2567c6734b21d1518d69eb0833214bc0a",
-//     "../shared/preview-workflows.js": "936eb604e0f75e587c3bc09492adfdbabdd8101a6444c06498fa152e865bf5cf",
+//     "../shared/preview-workflows.js": "369f1b6a0f5bba22717804acc830c4e48aa782a0cd4116264c4a40e5adfb8613",
 //     "../shared/catalog-bridge.js": "7c86085b12ead74903b1705b01bf7d03326a9852174e690d226125e2a14bdaa1"
 //   },
 //   "steps": [
@@ -4914,7 +4914,7 @@ const QA_URL = process.env.STATIC_DEMO_URL || 'http://127.0.0.1:18283/webDemo/mo
 //       "status": "PASS",
 //       "facts": {
 //         "state": "wait1",
-//         "due": "2026-10-12",
+//         "due": "2026-10-13",
 //         "feedback": true,
 //         "repairs": 1
 //       },
@@ -4928,7 +4928,7 @@ const QA_URL = process.env.STATIC_DEMO_URL || 'http://127.0.0.1:18283/webDemo/mo
 //       "name": "日报与周报读回实际结果",
 //       "status": "PASS",
 //       "facts": {
-//         "date": "2026-10-11",
+//         "date": "2026-10-12",
 //         "records": 2,
 //         "right": 3,
 //         "total": 4,
@@ -4947,7 +4947,7 @@ const QA_URL = process.env.STATIC_DEMO_URL || 'http://127.0.0.1:18283/webDemo/mo
 //         "chapter": {
 //           "done": true,
 //           "note": "读完后核对原文证据，不增加原文没有的结论。",
-//           "date": "2026-10-11",
+//           "date": "2026-10-12",
 //           "recordId": "record-11"
 //         },
 //         "records": 1
@@ -5085,7 +5085,7 @@ const QA_URL = process.env.STATIC_DEMO_URL || 'http://127.0.0.1:18283/webDemo/mo
 //   ],
 //   "pageErrors": [],
 //   "externalRequests": [],
-//   "evidenceDir": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\.git\\codex-local-backups\\mobile-qa-1791716194239-dark",
+//   "evidenceDir": "/workspace/cs/.git/codex-local-backups/mobile-qa-1791786086357-light",
 //   "loadedScripts": [
 //     "../shared/data.js",
 //     "app.js",

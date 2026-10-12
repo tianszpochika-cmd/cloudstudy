@@ -2740,17 +2740,17 @@ const QA_URL = process.env.STATIC_DEMO_URL || 'http://127.0.0.1:18283/webDemo/le
 
 // LAST_RUN_RESULT
 // {
-//   "at": "2026-10-11T10:56:34.237Z",
+//   "at": "2026-10-12T06:18:40.337Z",
 //   "url": "http://127.0.0.1:18283/webDemo/learner-web/",
 //   "surface": "learner-web",
 //   "viewport": 1440,
 //   "mode": "real DOM click; synthetic facts",
 //   "sourceHashes": {
-//     "index.html": "672619ec08a7345ea087b2cf8965ce37130a01eba95f26896d97d39921888e0a",
-//     "desktop.js": "9a9e27f949710b5f474ae8e8d4c31fa61b617a7f29b0ec61588f417408c69cbd",
-//     "desktop.css": "488acd5bf3aae6e5bd7bdc8c464da6b54f6f31e46f2f5578d2dc4e92e5ac8081",
+//     "index.html": "bffc39a1e306beed3a89932739760ddb387e80149256e4937c2e665e8e675aaa",
+//     "desktop.js": "d34831338c4d3d3ac7dd4f93b454cd3033f68aac251b4be4fe415dc184b18e0b",
+//     "desktop.css": "356b8eb696b4fe1e8832a35c6607b07a762ac4e4c84fb01e145a2eee69bd403d",
 //     "../shared/data.js": "37a257521ad60beb443aec03c06729063435210652deee30fff1779910050877",
-//     "../shared/preview-data.js": "4e6a82f5f3cbe73f825a66ba3c6bc23830b22e487941ba588538a4d96a3a5520",
+//     "../shared/preview-data.js": "703faa17cc33537ea7cd5df433966c590a7432637d7345cf19a4f45d34f4fe36",
 //     "../shared/product-overrides.js": "eabaadfe7fd43518e63c175a3bc755bccb92a3fef649d32568fb5f00c11eae9a",
 //     "../shared/demo-ui.js": "5e3a23ef8bb68afd86baf4d1fae0d1e2567c6734b21d1518d69eb0833214bc0a",
 //     "../mobile/app.js": "99df303b7806965d7da5cca99440aef983a8135a9271f2072371809f2b413524",
@@ -2758,7 +2758,7 @@ const QA_URL = process.env.STATIC_DEMO_URL || 'http://127.0.0.1:18283/webDemo/le
 //     "../mobile/legacy.css": "778dc02de0d7c0cdf410cae76bc4b0f88c0717026eaa5c83c64a1218604e5456",
 //     "../shared/tokens.css": "82eb54043fa4a26f1341284a562819fabef85e50bc978bb33ce07a67389fc5f9",
 //     "../shared/components.css": "81e6fc1ee75b7b15708fba12f5742ac9db0a43793e3fb1b663893f4f4c6d4ee6",
-//     "../shared/preview-workflows.js": "936eb604e0f75e587c3bc09492adfdbabdd8101a6444c06498fa152e865bf5cf",
+//     "../shared/preview-workflows.js": "369f1b6a0f5bba22717804acc830c4e48aa782a0cd4116264c4a40e5adfb8613",
 //     "../shared/catalog-bridge.js": "7c86085b12ead74903b1705b01bf7d03326a9852174e690d226125e2a14bdaa1"
 //   },
 //   "steps": [
@@ -2873,7 +2873,7 @@ const QA_URL = process.env.STATIC_DEMO_URL || 'http://127.0.0.1:18283/webDemo/le
 //       "status": "PASS",
 //       "facts": {
 //         "state": "wait1",
-//         "due": "2026-10-12",
+//         "due": "2026-10-13",
 //         "feedback": true,
 //         "repairs": 1
 //       },
@@ -2887,7 +2887,7 @@ const QA_URL = process.env.STATIC_DEMO_URL || 'http://127.0.0.1:18283/webDemo/le
 //       "name": "日报与周报读回实际结果",
 //       "status": "PASS",
 //       "facts": {
-//         "date": "2026-10-11",
+//         "date": "2026-10-12",
 //         "records": 2,
 //         "right": 3,
 //         "total": 4,
@@ -2906,7 +2906,7 @@ const QA_URL = process.env.STATIC_DEMO_URL || 'http://127.0.0.1:18283/webDemo/le
 //         "chapter": {
 //           "done": true,
 //           "note": "读完后核对原文证据，不增加原文没有的结论。",
-//           "date": "2026-10-11",
+//           "date": "2026-10-12",
 //           "recordId": "record-11"
 //         },
 //         "records": 1
@@ -2982,7 +2982,7 @@ const QA_URL = process.env.STATIC_DEMO_URL || 'http://127.0.0.1:18283/webDemo/le
 //   ],
 //   "pageErrors": [],
 //   "externalRequests": [],
-//   "evidenceDir": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\.git\\codex-local-backups\\desktop-qa-1791716194240-1440",
+//   "evidenceDir": "/workspace/cs/.git/codex-local-backups/desktop-qa-1791785920340-1440",
 //   "loadedScripts": [
 //     "../shared/data.js",
 //     "../mobile/app.js",

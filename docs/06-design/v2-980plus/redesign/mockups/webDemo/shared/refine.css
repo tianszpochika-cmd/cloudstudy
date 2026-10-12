@@ -1,0 +1,80 @@
+/* 语学星静态 Demo · 视觉精修层（refine）
+   在 tokens/components/各端样式之后加载，只做视觉与交互质感，不改结构与功能。
+   规则：4/8 栅格、150–250ms 过渡、统一缓动、按压反馈、可见焦点、减少动态时全部降级。 */
+:root{--ease:cubic-bezier(.2,.7,.2,1);--ease-out:cubic-bezier(.16,1,.3,1);--motion-base:180ms;--motion-slow:240ms;
+--elev-1:0 1px 2px #1f1a3a0d,0 2px 8px #1f1a3a0a;--elev-2:0 2px 4px #1f1a3a0f,0 10px 24px #1f1a3a14;--elev-3:0 18px 48px #16122a2e;
+--ring:0 0 0 3px color-mix(in srgb,var(--brand) 28%,transparent)}
+:root[data-theme=dark]{--elev-1:0 1px 2px #0006,0 2px 8px #0004;--elev-2:0 2px 6px #0007,0 12px 28px #0006;--elev-3:0 18px 48px #000a}
+html{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility}
+body{font-feature-settings:"tnum" 0,"cv11" 1}
+b,strong,.num,.kpi b,.mini-stats b{font-variant-numeric:tabular-nums}
+::selection{background:color-mix(in srgb,var(--brand) 22%,transparent)}
+
+/* —— 按钮：统一过渡、悬停抬升、按压回弹 —— */
+.btn,.opt,.mode-button,.focus-task,.chip,.tag[role=button],.dialog-head button,.demo-controls,.icon-button,.tabbar a,.quick-links>*,.mobile-section button{
+ transition:background-color var(--motion-base) var(--ease),color var(--motion-base) var(--ease),border-color var(--motion-base) var(--ease),box-shadow var(--motion-base) var(--ease),transform var(--motion-fast) var(--ease),filter var(--motion-base) var(--ease),opacity var(--motion-base) var(--ease)}
+.btn{letter-spacing:.01em;box-shadow:0 1px 0 #ffffff1f inset,0 1px 2px #1f1a3a24}
+.btn:hover:not(:disabled){filter:none;background:color-mix(in srgb,var(--brand) 88%,#000);box-shadow:0 1px 0 #ffffff1f inset,0 6px 16px color-mix(in srgb,var(--brand) 30%,transparent)}
+.btn.ghost,.btn.sm{box-shadow:none}
+.btn.ghost:hover:not(:disabled),.btn.sm:not(.primary-action):hover:not(:disabled){background:color-mix(in srgb,var(--brand) 14%,var(--card));box-shadow:none}
+.btn.danger:hover:not(:disabled){background:color-mix(in srgb,var(--bad) 88%,#000)}
+.btn:active:not(:disabled),.opt:active,.mode-button:active,.focus-task:active,.icon-button:active,.quick-links>*:active,.demo-controls:active{transform:scale(.975)}
+.hero .btn:hover:not(:disabled),.daily-focus .btn:hover:not(:disabled){background:#fff;box-shadow:0 8px 20px #1a0f4a40}
+button:disabled,.btn:disabled{box-shadow:none;filter:saturate(.6)}
+.opt:hover:not(.sel),.mode-button:hover:not(.is-active){border-color:color-mix(in srgb,var(--brand) 35%,var(--line))}
+.opt.sel,.mode-button.is-active{box-shadow:0 0 0 1px var(--brand) inset}
+
+/* —— 表单：悬停/聚焦/错误三态 —— */
+input:not([type=checkbox]):not([type=radio]),select,textarea{transition:border-color var(--motion-base) var(--ease),box-shadow var(--motion-base) var(--ease)}
+input:not([type=checkbox]):not([type=radio]):hover,select:hover,textarea:hover{border-color:color-mix(in srgb,var(--brand) 40%,var(--line))!important}
+input:not([type=checkbox]):not([type=radio]):focus,select:focus,textarea:focus{border-color:var(--brand)!important;box-shadow:var(--ring)!important;outline:none}
+input[aria-invalid=true],textarea[aria-invalid=true]{box-shadow:0 0 0 3px color-mix(in srgb,var(--bad) 18%,transparent)}
+input::placeholder,textarea::placeholder{color:color-mix(in srgb,var(--mut) 80%,transparent)}
+input[type=checkbox],input[type=radio]{accent-color:var(--brand);width:18px;height:18px}
+
+/* —— 卡片与标签 —— */
+.card{box-shadow:var(--elev-1)}
+.tag,.chip{letter-spacing:.01em}
+
+/* —— 状态：空/错/无权限/骨架 —— */
+.demo-empty,.demo-error,.demo-permission{background:linear-gradient(180deg,var(--card),color-mix(in srgb,var(--soft) 40%,var(--card)))}
+.demo-state-icon{box-shadow:0 0 0 8px color-mix(in srgb,var(--soft) 55%,transparent);animation:refine-pop var(--motion-slow) var(--ease-out) both}
+.demo-error .demo-state-icon{background:var(--bad-soft);color:var(--bad);box-shadow:0 0 0 8px color-mix(in srgb,var(--bad-soft) 55%,transparent)}
+.demo-skeleton span{background:linear-gradient(90deg,var(--surface) 0%,color-mix(in srgb,var(--surface) 55%,var(--card)) 50%,var(--surface) 100%);background-size:200% 100%;animation:refine-shimmer 1.3s linear infinite}
+@keyframes refine-shimmer{from{background-position:100% 0}to{background-position:-100% 0}}
+@keyframes refine-pop{from{transform:scale(.86);opacity:0}to{transform:none;opacity:1}}
+@keyframes refine-rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes refine-fade{from{opacity:0}to{opacity:1}}
+
+/* —— 提示与弹层 —— */
+.toast{font-weight:550;letter-spacing:.01em}
+.demo-dialog{box-shadow:var(--elev-3)}
+.demo-dialog[open]{animation:refine-rise var(--motion-slow) var(--ease-out) both}
+.demo-dialog::backdrop{animation:refine-fade var(--motion-base) var(--ease) both}
+.dialog-head button:hover{background:color-mix(in srgb,var(--brand) 12%,var(--surface));color:var(--brand)}
+
+/* —— 演示控制：毛玻璃悬浮，不抢主内容 —— */
+.demo-controls{background:color-mix(in srgb,var(--card) 82%,transparent);-webkit-backdrop-filter:saturate(1.4) blur(10px);backdrop-filter:saturate(1.4) blur(10px);box-shadow:var(--elev-2);font-weight:650;color:var(--mut)}
+.demo-controls::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--brand);margin-right:6px;vertical-align:middle;box-shadow:0 0 0 3px var(--soft)}
+.demo-controls:hover{color:var(--brand);box-shadow:var(--elev-3)}
+.demo-ribbon{letter-spacing:.02em}
+
+/* —— 表格 —— */
+.demo-table tbody tr{transition:background-color var(--motion-fast) var(--ease)}
+.demo-table tbody tr:hover td{background:color-mix(in srgb,var(--soft) 45%,transparent)}
+.demo-table th{font-size:12px;letter-spacing:.04em;text-transform:none}
+
+@media(prefers-reduced-motion:reduce){.btn:active,.opt:active,.focus-task:active{transform:none}.demo-skeleton span{animation:none}}
+
+/* —— 桌面端（学员 Web / 管理端）侧栏与卡片质感 —— */
+.desktop-nav-item,.sidebar nav a{transition:background-color var(--motion-base) var(--ease),color var(--motion-base) var(--ease),transform var(--motion-fast) var(--ease)}
+.desktop-nav-item:hover:not([aria-current=page]){background:#ffffff14}
+.desktop-nav-item:active,.sidebar nav a:active{transform:scale(.985)}
+.desktop-nav-item[aria-current=page]{box-shadow:0 4px 14px #0003}
+.sidebar nav a:hover:not(.active){background:#ffffff14}
+.sidebar nav a.active{box-shadow:0 6px 18px #0000004d}
+@media(min-width:900px){
+ main .card{transition:box-shadow var(--motion-base) var(--ease),border-color var(--motion-base) var(--ease)}
+ main .card:hover{box-shadow:var(--elev-2);border-color:color-mix(in srgb,var(--brand) 18%,var(--line))}
+ main .card .card:hover{box-shadow:none}
+}
