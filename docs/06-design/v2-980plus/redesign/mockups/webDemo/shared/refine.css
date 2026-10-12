@@ -94,3 +94,7 @@ input[type=checkbox],input[type=radio]{accent-color:var(--brand);width:18px;heig
 .nav-ico{display:inline-grid!important;place-items:center;width:20px;height:20px;font-size:0!important;flex:none;opacity:.9}
 .nav-ico .ico{width:18px;height:18px}
 [aria-current=page] .nav-ico,.active .nav-ico{opacity:1}
+/* R2 批次 10：组件样例页 */
+.gallery .dialog-actions{align-items:center}
+.gallery .dialog-actions .d{margin:0;min-width:48px;text-align:center;font-variant-numeric:tabular-nums}
+.gallery .palette .swatch{font-weight:600}

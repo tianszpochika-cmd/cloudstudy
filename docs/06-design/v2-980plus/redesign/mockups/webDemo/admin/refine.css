@@ -65,3 +65,11 @@ td>span[aria-label="有权限"]{display:inline-grid;place-items:center;width:22p
 td>span[aria-label="无权限"]{color:var(--muted,#8b88a0);opacity:.6}
 :root[data-theme=dark] td>span[aria-label="有权限"]{background:#2e2850;color:#d8ccff}
 .timeline:has(>.muted:only-child)::before,.timeline:has(>.muted:only-child)::after,.timeline>.muted:only-child::before{display:none}
+/* R2 批次 10：管理登录 */
+body:has(main.login){background:radial-gradient(900px 520px at 18% 30%,var(--asoft) 0,transparent 65%),var(--abg)}
+:root[data-theme=dark] body:has(main.login){background:radial-gradient(900px 520px at 18% 30%,#2a2150 0,transparent 65%),var(--abg)}
+.login{min-height:calc(100vh - 34px);margin:0 auto;align-items:center}
+.login .panel select{width:100%}
+.login .panel .states{margin-top:6px;justify-content:space-between}
+.login .panel .states select{width:auto}
+.login .hero .actions{margin-top:18px}
