@@ -77,7 +77,7 @@ async function submit(): Promise<void> {
 
     <MobilePageHeader page="login" compact />
 
-    <view class="v2-login-brand" aria-hidden="true"><AppIcon name="spark" :size="28" /></view>
+    <view class="v2-login-brand" aria-hidden="true"><view class="v2-login-brand-mark"><AppIcon name="spark" :size="28" /></view></view>
 
     <view class="yx-card yx-login-card v2-login-card">
       <text class="v2-login-title">{{ mobileT('account') }}</text>
