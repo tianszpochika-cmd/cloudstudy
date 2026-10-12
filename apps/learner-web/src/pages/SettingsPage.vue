@@ -74,7 +74,8 @@ async function refreshDevices(): Promise<void> { await b1.refreshDevices() }
 <template>
   <section class="page-stack v2-page v2-page--settings" aria-labelledby="settings-title">
     <ExperienceHeader page="Settings" icon="user" title-id="settings-title" />
-    <nav class="settings-nav"><RouterLink :class="{ active: section === 'profile' }" to="/settings/profile">{{ et('settingsProfileTab') }}</RouterLink><RouterLink :class="{ active: section === 'notifications' }" to="/settings/notifications">通知设置</RouterLink><RouterLink :class="{ active: section === 'privacy' }" to="/settings/privacy">{{ et('settingsPrivacyTab') }}</RouterLink><RouterLink :class="{ active: section === 'devices' }" to="/settings/devices">{{ et('settingsDevicesTab') }}</RouterLink><RouterLink to="/platform">{{ et('settingsDisplayTab') }}</RouterLink></nav>
+    <div class="v2-settings-grid">
+    <nav class="settings-nav v2-settings-nav" aria-label="设置分组"><h3 class="v2-settings-nav__title">通知、账号与隐私</h3><RouterLink :class="{ active: section === 'profile' }" to="/settings/profile">{{ et('settingsProfileTab') }}</RouterLink><RouterLink :class="{ active: section === 'notifications' }" to="/settings/notifications">通知设置</RouterLink><RouterLink :class="{ active: section === 'privacy' }" to="/settings/privacy">{{ et('settingsPrivacyTab') }}</RouterLink><RouterLink :class="{ active: section === 'devices' }" to="/settings/devices">{{ et('settingsDevicesTab') }}</RouterLink><RouterLink to="/platform">{{ et('settingsDisplayTab') }}</RouterLink></nav>
     <article v-if="section === 'notifications'" class="form-card"><NotificationPreferencesPanel /></article>
     <article v-else-if="section === 'profile'" class="form-card">
       <h3>{{ et('settingsProfileTab') }}</h3>
@@ -119,6 +120,8 @@ async function refreshDevices(): Promise<void> { await b1.refreshDevices() }
       </div>
       <div class="device-actions"><button class="button button--secondary" type="button" :disabled="b1.deviceStatus === 'loading'" @click="refreshDevices">{{ et('settingsRefreshDevices') }}</button><button class="button button--secondary" type="button" :disabled="b1.deviceStatus !== 'ready' || !b1.devices.some((device) => !device.current && device.status === 'ACTIVE')" @click="revokeOthers">{{ et('settingsRevokeOthers') }}</button></div>
     </article>
+    <aside class="v2-settings-side"><h3>学习同意与档案</h3><p class="muted">查看已签署的学习同意，管理数据导出与删除请求。</p><RouterLink class="button button--secondary" to="/settings/privacy">管理同意和隐私</RouterLink></aside>
+    </div>
     <div class="account-signout"><span>{{ et('authNote') }}</span><button class="button button--ghost" type="button" @click="logout">{{ et('logout') }}</button></div>
     <p v-if="b1.lastError && !(section === 'profile' && b1.profileStatus === 'error')" class="error-text" role="alert">{{ b1.lastError }}</p>
   </section>
