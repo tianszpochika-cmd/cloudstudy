@@ -32,8 +32,8 @@ function startTask(taskId: string): void {
 </script>
 
 <template>
-  <section class="page-stack" aria-labelledby="learning-loop-title">
-    <ExperienceHeader page="Learn" icon="route" title-id="learning-loop-title"><button class="button button--primary" type="button" @click="openPractice">开始练习</button></ExperienceHeader>
+  <section class="page-stack v2-page v2-page--loop" aria-labelledby="learning-loop-title">
+    <ExperienceHeader class="v2-loop-head" page="Learn" icon="route" title-id="learning-loop-title"><button class="button button--primary" type="button" @click="openPractice">开始练习</button></ExperienceHeader>
 
     <div v-if="contentStore.homeStatus === 'loading' || loopStore.state === 'loading'" class="info-card"><h3>正在恢复学习投影…</h3><p>正在读取今日任务、课程、复习队列和报告。</p></div>
     <div v-else-if="contentStore.homeStatus === 'forbidden' || loopStore.state === 'permission'" class="info-card state-card state-card--warning"><h3>当前账号没有访问权限</h3><p>请重新登录；若仍无法访问，请联系管理员。</p><button class="button button--secondary" type="button" @click="router.push({ name: 'login' })">重新登录</button></div>
