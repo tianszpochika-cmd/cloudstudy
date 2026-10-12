@@ -697,3 +697,127 @@
   outline: 3px solid var(--v2-brand);
   outline-offset: 2px;
 }
+
+/* === page: dashboard layout === */
+.view-stack .dashboard-metrics .metric-card span {
+  font-size: 13px;
+  color: var(--v2-mut);
+}
+.view-stack .dashboard-metrics .metric-card strong {
+  font-size: 28px;
+  font-weight: 750;
+  letter-spacing: -0.03em;
+  color: var(--v2-ink);
+}
+.view-stack .dashboard-metrics .metric-card small {
+  font-size: 12px;
+  color: var(--v2-mut);
+}
+.view-stack .dashboard-journey .journey-step {
+  position: relative;
+  padding-left: 22px;
+  border: 0;
+}
+.view-stack .dashboard-journey .journey-step::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--v2-brand);
+  transform: translateY(-50%);
+}
+.view-stack .dashboard-journey .journey-step::after {
+  content: "";
+  position: absolute;
+  left: 3px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--v2-line);
+}
+.view-stack .dashboard-journey .journey-step:last-child::after {
+  content: none;
+}
+.view-stack .dashboard-journey .journey-step b {
+  background: none;
+  width: auto;
+  height: auto;
+  color: var(--v2-mut);
+  font-size: 12px;
+}
+@media (min-width: 1101px) {
+  .view-stack .dashboard-metrics {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+  .view-stack .dashboard-columns {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: 16px;
+    align-items: start;
+  }
+  .view-stack .shortcut-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .view-stack .shortcut-grid .shortcut-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid var(--v2-line);
+    border-radius: 0;
+    box-shadow: none;
+    transform: none;
+  }
+  .view-stack .shortcut-grid .shortcut-card:last-child {
+    border-bottom: 0;
+  }
+  .view-stack .shortcut-grid .shortcut-card:hover {
+    background: transparent;
+    border-bottom-color: var(--v2-line);
+    box-shadow: none;
+    transform: none;
+  }
+  .view-stack .shortcut-grid .shortcut-card:hover strong {
+    color: var(--v2-brand);
+  }
+  .view-stack .shortcut-grid .shortcut-card .shortcut-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    margin: 0;
+    flex-shrink: 0;
+    background: var(--v2-soft);
+    color: var(--v2-brand);
+  }
+  .view-stack .shortcut-grid .shortcut-card strong {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--v2-ink);
+  }
+  .view-stack .shortcut-grid .shortcut-card small {
+    margin-left: auto;
+    margin-top: 0;
+    display: inline-flex;
+    align-items: center;
+    background: var(--v2-soft);
+    color: var(--v2-brand);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 999px;
+  }
+}
+@media (min-width: 1201px) {
+  .view-stack .dashboard-metrics {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
