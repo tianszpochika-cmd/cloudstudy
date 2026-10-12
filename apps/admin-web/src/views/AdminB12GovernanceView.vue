@@ -200,6 +200,7 @@ watch(
           </div>
         </div>
       </template>
+      <div v-if="risk.viewState === 'ready'" class="risk-toolbar"><span class="risk-toolbar__count">共 {{ risk.cases.length }} 条</span></div>
       <el-alert v-if="risk.viewState === 'permission'" title="当前账号没有风险案件读取权限。" type="warning" :closable="false" show-icon />
       <el-alert v-else-if="risk.viewState === 'error'" :title="risk.lastError ?? '风险队列读取失败。'" type="error" :closable="false" show-icon />
       <el-alert v-else-if="risk.viewState === 'loading'" title="风险队列读取中。" type="info" :closable="false" show-icon />
@@ -209,6 +210,7 @@ watch(
         <el-table-column prop="category" label="类别" min-width="130" />
         <el-table-column prop="severity" label="严重度" min-width="90" />
         <el-table-column prop="status" label="状态" min-width="110" />
+        <el-table-column label="负责人" min-width="120"><template #default="scope">{{ scope.row.assigneeNote ?? "未分配" }}</template></el-table-column>
         <el-table-column prop="source" label="来源" min-width="120" />
         <el-table-column prop="title" label="标题" min-width="200" />
         <el-table-column v-if="dispositionWritesOpen" label="处置" min-width="300">
