@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import MobileFeatureGrid from '../../components/MobileFeatureGrid.vue'
 import MobilePageHeader from '../../components/MobilePageHeader.vue'
+import AppIcon from '../../components/AppIcon.vue'
 import { useMobileExperience } from '../../platform/experience'
 const { experienceStyle, experienceMotion } = useMobileExperience()
 
@@ -94,51 +95,58 @@ onShow(async () => { await session.restore(); if (!session.isAuthenticated) { ge
 <template>
   <view class="yx-page" :class="themeClass" :style="experienceStyle" :data-motion="experienceMotion">
     <MobilePageHeader page="learn" />
-    <MobileFeatureGrid />
-    <view class="yx-card content-card">
-      <text class="b10-flow__title">{{ contentCode ? '课程内容' : '选择课程' }}</text>
-      <text v-if="contentState === 'idle'">从首页选择一门课程。</text>
-      <text v-else-if="contentState === 'loading'">正在读取课程…</text>
-      <template v-else-if="content">
-        <text class="content-title">{{ content.title }}</text>
-        <text v-if="contentMeta" class="content-meta">{{ contentMeta }}</text>
-        <text v-if="content.summary" class="content-summary">{{ content.summary }}</text>
-        <view v-for="item in content.items" :key="item.itemId" class="content-item">
-          <text class="content-item__text">{{ item.text }}</text>
-          <text v-for="option in item.options" :key="option.key" class="content-option">{{ option.key }} · {{ option.text }}</text>
+    <view class="v2-learn-body">
+      <MobileFeatureGrid />
+      <view class="yx-card content-card card v2-learn-card v2-learn-content">
+        <view class="eyebrow v2-learn-eyebrow"><AppIcon name="book" /><text>课程</text></view>
+        <text class="b10-flow__title v2-learn-title v2-learn-h2">{{ contentCode ? '课程内容' : '选择课程' }}</text>
+        <text v-if="contentState === 'idle'" class="d v2-learn-desc v2-learn-fb">从首页选择一门课程。</text>
+        <text v-else-if="contentState === 'loading'" class="d v2-learn-desc v2-learn-fb">正在读取课程…</text>
+        <template v-else-if="content">
+          <text class="content-title v2-learn-title v2-learn-stem">{{ content.title }}</text>
+          <text v-if="contentMeta" class="content-meta d v2-learn-desc">{{ contentMeta }}</text>
+          <text v-if="content.summary" class="content-summary d v2-learn-desc">{{ content.summary }}</text>
+          <view v-for="item in content.items" :key="item.itemId" class="content-item v2-learn-row v2-learn-item">
+            <view class="v2-learn-row__head"><AppIcon name="book" /><text class="content-item__text v2-learn-stem">{{ item.text }}</text></view>
+            <text v-for="option in item.options" :key="option.key" class="content-option d v2-learn-desc v2-learn-option">{{ option.key }} · {{ option.text }}</text>
+          </view>
+          <text v-if="!content.items.length" class="content-summary d v2-learn-desc v2-learn-fb">暂无可展示的学习单元。</text>
+          <text v-if="taskId" class="content-summary d v2-learn-desc v2-learn-fb" role="status">可浏览课程，完成记录暂不可用。</text>
+        </template>
+        <template v-else-if="contentState === 'error'">
+          <text class="review-error d v2-learn-desc v2-learn-fb" role="alert">{{ contentError || '课程暂不可用。' }}</text>
+          <button tabindex="0" role="button" class="yx-button yx-button--secondary btn opt v2-learn-btn v2-learn-opt" type="button" @click="loadContent(contentCode)">重试<AppIcon name="refresh" /></button>
+        </template>
+      </view>
+      <view class="yx-card b10-flow card v2-learn-card v2-learn-practice">
+        <view class="eyebrow v2-learn-eyebrow"><AppIcon name="target" /><text>练习</text></view>
+        <text class="b10-flow__title v2-learn-title v2-learn-h2">练习入口</text>
+        <view class="v2-learn-list">
+          <view class="v2-learn-row v2-learn-entry"><button tabindex="0" role="button" class="yx-button btn opt v2-learn-btn v2-learn-opt v2-learn-submit" type="button" @click="open('/pages/b2-practice/b2-practice')">基础练习<AppIcon name="chev" /></button></view>
+          <view class="v2-learn-row v2-learn-entry"><button tabindex="0" role="button" class="yx-button yx-button--secondary btn opt v2-learn-btn v2-learn-opt" type="button" @click="open('/pages/b11-reading/b11-reading')">分级阅读<AppIcon name="chev" /></button></view>
+          <view class="v2-learn-row v2-learn-entry"><button tabindex="0" role="button" class="yx-button yx-button--secondary btn opt v2-learn-btn v2-learn-opt" type="button" @click="open('/pages/b3-grammar/b3-grammar')">语法练习<AppIcon name="chev" /></button></view>
         </view>
-        <text v-if="!content.items.length" class="content-summary">暂无可展示的学习单元。</text>
-        <text v-if="taskId" class="content-summary" role="status">可浏览课程，完成记录暂不可用。</text>
-      </template>
-      <template v-else-if="contentState === 'error'">
-        <text class="review-error" role="alert">{{ contentError || '课程暂不可用。' }}</text>
-        <button tabindex="0" role="button" class="yx-button yx-button--secondary" type="button" @click="loadContent(contentCode)">重试</button>
-      </template>
-    </view>
-    <view class="yx-card b10-flow">
-      <text class="b10-flow__title">练习入口</text>
-      <button tabindex="0" role="button" class="yx-button" type="button" @click="open('/pages/b2-practice/b2-practice')">基础练习</button>
-      <button tabindex="0" role="button" class="yx-button yx-button--secondary" type="button" @click="open('/pages/b11-reading/b11-reading')">分级阅读</button>
-      <button tabindex="0" role="button" class="yx-button yx-button--secondary" type="button" @click="open('/pages/b3-grammar/b3-grammar')">语法练习</button>
-    </view>
-    <view class="yx-card review-card">
-      <text class="b10-flow__title">{{ reviewCountKnown ? `待复习 ${learning.queue.length} 项` : '复习安排' }}</text>
-      <text v-if="learning.queue.length === 0" data-weakness-unknown>{{ weaknessView(0).copy }}</text>
-      <text v-else data-weakness-evidence>已有复习证据</text>
-      <text v-if="learning.state === 'idle' || learning.state === 'loading'" role="status">正在读取复习安排…</text>
-      <text v-else-if="learning.state === 'empty'">暂无待复习内容。</text>
-      <text data-stage-projection>{{ learning.projectionVersion || STAGE_PROJECTION }}</text>
-      <text v-if="learning.queue[0]" data-stage>{{ learning.queue[0].state }}</text>
-      <text v-if="learning.queue.length === 0 && learning.state !== 'loading'" data-review-empty>{{ learning.emptyCopy || reviewEmpty(learning.state === 'error' || learning.state === 'offline', true, false).copy }}</text>
-      <text v-for="row in learning.history" :key="`${row.disposition}-${row.itemId}`" data-review-history>{{ row.disposition === 'DEFERRED' ? '延期' : '已完成' }}</text>
-      <text v-if="reviewFailureCopy(learning.lastError)" data-review-illegal>{{ reviewFailureCopy(learning.lastError) }}</text>
-      <template v-else-if="reviewNotice">
-        <text class="review-error" role="alert">{{ reviewFailureCopy(learning.lastError) || reviewNotice }}</text>
-        <button v-if="learning.state !== 'permission' && learning.state !== 'recovery'" tabindex="0" role="button" class="yx-button yx-button--secondary" type="button" @click="learning.load()">重试</button>
-      </template>
-      <view v-for="item in reviewRows" :key="item.queueItemId" class="review-row">
-        <view class="review-row__copy"><text>{{ reviewLabel(item) }}</text></view>
-        <button tabindex="0" role="button" class="review-button" type="button" :disabled="!item.completable || learning.busyItemId === item.queueItemId" :aria-disabled="!item.completable || learning.busyItemId === item.queueItemId" @click="completeReview(item)">{{ item.completable ? '开始复习' : '暂不可操作' }}</button>
+      </view>
+      <view class="yx-card review-card card v2-learn-card v2-learn-review">
+        <view class="eyebrow v2-learn-eyebrow"><AppIcon name="clock" /><text>复习</text></view>
+        <text class="b10-flow__title v2-learn-title v2-learn-h2">{{ reviewCountKnown ? `待复习 ${learning.queue.length} 项` : '复习安排' }}</text>
+        <text v-if="learning.queue.length === 0" class="d v2-learn-desc" data-weakness-unknown>{{ weaknessView(0).copy }}</text>
+        <text v-else class="d v2-learn-desc" data-weakness-evidence>已有复习证据</text>
+        <text v-if="learning.state === 'idle' || learning.state === 'loading'" class="d v2-learn-desc v2-learn-fb" role="status">正在读取复习安排…</text>
+        <text v-else-if="learning.state === 'empty'" class="d v2-learn-desc v2-learn-fb">暂无待复习内容。</text>
+        <text class="d v2-learn-desc v2-learn-fb" data-stage-projection>{{ learning.projectionVersion || STAGE_PROJECTION }}</text>
+        <text v-if="learning.queue[0]" class="d v2-learn-desc" data-stage>{{ learning.queue[0].state }}</text>
+        <text v-if="learning.queue.length === 0 && learning.state !== 'loading'" class="d v2-learn-desc v2-learn-fb" data-review-empty>{{ learning.emptyCopy || reviewEmpty(learning.state === 'error' || learning.state === 'offline', true, false).copy }}</text>
+        <text v-for="row in learning.history" :key="`${row.disposition}-${row.itemId}`" class="d v2-learn-desc v2-learn-row" data-review-history>{{ row.disposition === 'DEFERRED' ? '延期' : '已完成' }}</text>
+        <text v-if="reviewFailureCopy(learning.lastError)" class="d v2-learn-desc v2-learn-fb" data-review-illegal>{{ reviewFailureCopy(learning.lastError) }}</text>
+        <template v-else-if="reviewNotice">
+          <text class="review-error d v2-learn-desc v2-learn-fb" role="alert">{{ reviewFailureCopy(learning.lastError) || reviewNotice }}</text>
+          <button v-if="learning.state !== 'permission' && learning.state !== 'recovery'" tabindex="0" role="button" class="yx-button yx-button--secondary btn opt v2-learn-btn v2-learn-opt" type="button" @click="learning.load()">重试<AppIcon name="refresh" /></button>
+        </template>
+        <view v-for="item in reviewRows" :key="item.queueItemId" class="review-row v2-learn-row v2-learn-item">
+          <view class="review-row__copy v2-learn-row__copy"><AppIcon name="clock" /><text class="v2-learn-stem">{{ reviewLabel(item) }}</text></view>
+          <button tabindex="0" role="button" class="review-button btn opt v2-learn-btn v2-learn-opt" type="button" :disabled="!item.completable || learning.busyItemId === item.queueItemId" :aria-disabled="!item.completable || learning.busyItemId === item.queueItemId" @click="completeReview(item)">{{ item.completable ? '开始复习' : '暂不可操作' }}</button>
+        </view>
       </view>
     </view>
   </view>
