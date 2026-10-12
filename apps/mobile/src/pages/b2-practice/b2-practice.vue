@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import MobileFeatureGrid from '../../components/MobileFeatureGrid.vue'
 import MobilePageHeader from '../../components/MobilePageHeader.vue'
+import AppIcon from '../../components/AppIcon.vue'
 import { useMobileExperience } from '../../platform/experience'
 const { experienceStyle, experienceMotion } = useMobileExperience()
 
@@ -56,25 +57,30 @@ onUnmounted(() => engine.dispose())
 </script>
 
 <template>
-  <view class="yx-page" :class="themeClass" :data-performance="performanceLevel" :style="experienceStyle" :data-motion="experienceMotion">
+  <view class="yx-page v2-b2p-page" :class="themeClass" :data-performance="performanceLevel" :style="experienceStyle" :data-motion="experienceMotion">
     <MobilePageHeader page="b2-practice" />
 
-    <B10StatusPanel :status="store.practiceStatus" :message="store.practiceMessage" :performance-level="performanceLevel" @retry="load" @performance="setPerformance" />
+    <view class="v2-b2p-body">
+      <B10StatusPanel class="v2-b2p-status" :status="store.practiceStatus" :message="store.practiceMessage" :performance-level="performanceLevel" @retry="load" @performance="setPerformance" />
 
-    <view v-if="resume.stopped" class="yx-card" role="status" data-offline-exit>{{ resume.copy }}</view>
-    <view v-else-if="exercise" class="yx-card b10-practice-card">
-      <text data-resume>{{ resume.copy }}</text>
-      <view class="b10-practice-card__progress"><text>{{ answeredCount }} / {{ store.practice?.exercises.length ?? 0 }}</text><text>{{ exercise.questionType }}</text></view>
-      <B10ExerciseCard :exercise="exercise" :disabled="store.practiceStatus === 'loading' || submitting" data-single-submit @answer="answer" />
-      <view class="b10-practice-card__actions"><button tabindex="0" role="button" class="yx-button yx-button--secondary" type="button" @click="checkpoint">{{ b10T('practice.checkpoint') }}</button><button tabindex="0" role="button" v-if="lastResult" class="yx-button yx-button--secondary" type="button" @click="lastResult = null">{{ b10T('practice.next') }}</button></view>
-      <view v-if="answerFeedback" class="b10-result" role="alert"><text class="b10-result__title">{{ lastResult?.isCorrect === true ? '规则命中' : lastResult?.isCorrect === false ? '需要修复' : '' }}</text><text v-if="lastResult?.scoringStatus">{{ lastResult.scoringStatus }}</text><text data-save-receipt>{{ answerFeedback.savedReceipt }}</text><text data-feedback-text>{{ answerFeedback.feedbackText }}</text><text data-next-question>{{ answerFeedback.nextQuestion }}</text><text v-if="lastResult?.contentVersionStale" class="b10-result__stale">{{ b10T('common.stale') }}</text></view>
+      <view v-if="resume.stopped" class="yx-card v2-b2p-card card" role="status" data-offline-exit>
+        <view class="v2-b2p-eyebrow eyebrow"><AppIcon name="alert" :size="14" /><text>练习状态</text></view>
+        <text class="v2-b2p-title">{{ resume.copy }}</text>
+      </view>
+      <view v-else-if="exercise" class="yx-card b10-practice-card v2-b2p-card card">
+        <view class="v2-b2p-eyebrow eyebrow"><AppIcon name="target" :size="14" /><text data-resume>{{ resume.copy }}</text></view>
+        <view class="b10-practice-card__progress v2-b2p-meta meta"><text>{{ answeredCount }} / {{ store.practice?.exercises.length ?? 0 }}</text><text>{{ exercise.questionType }}</text></view>
+        <B10ExerciseCard :exercise="exercise" :disabled="store.practiceStatus === 'loading' || submitting" data-single-submit @answer="answer" />
+        <view class="b10-practice-card__actions v2-b2p-actions row"><button tabindex="0" role="button" class="yx-button yx-button--secondary v2-b2p-btn btn" type="button" @click="checkpoint">{{ b10T('practice.checkpoint') }}</button><button tabindex="0" role="button" v-if="lastResult" class="yx-button yx-button--secondary v2-b2p-btn btn" type="button" @click="lastResult = null">{{ b10T('practice.next') }}<AppIcon name="chev" :size="14" /></button></view>
+        <view v-if="answerFeedback" class="b10-result v2-b2p-fb fb" role="alert"><text class="b10-result__title v2-b2p-title">{{ lastResult?.isCorrect === true ? '规则命中' : lastResult?.isCorrect === false ? '需要修复' : '' }}</text><text v-if="lastResult?.scoringStatus" class="v2-b2p-d d">{{ lastResult.scoringStatus }}</text><text data-save-receipt class="v2-b2p-d d">{{ answerFeedback.savedReceipt }}</text><text data-feedback-text class="v2-b2p-d d">{{ answerFeedback.feedbackText }}</text><text data-next-question class="v2-b2p-d d">{{ answerFeedback.nextQuestion }}</text><text v-if="lastResult?.contentVersionStale" class="b10-result__stale v2-b2p-d d">{{ b10T('common.stale') }}</text></view>
+      </view>
+
+      <view v-else-if="store.practiceStatus === 'loading'" class="yx-card b10-empty v2-b2p-card card"><view class="v2-b2p-eyebrow eyebrow"><AppIcon name="refresh" :size="14" /><text>加载中</text></view><text class="v2-b2p-d d">{{ b10T('practice.loading') }}</text></view>
+      <view v-else class="yx-card b10-empty v2-b2p-card card"><view class="v2-b2p-eyebrow eyebrow"><AppIcon name="inbox" :size="14" /><text>练习</text></view><text class="b10-empty__title v2-b2p-title">{{ store.practiceStatus === 'empty' ? b10T('practice.empty') : b10T('status.error') }}</text><text class="v2-b2p-d d">{{ store.practiceMessage ?? b10T('status.noSample') }}</text><button tabindex="0" role="button" class="yx-button v2-b2p-btn btn" type="button" @click="load">{{ b10T('status.retry') }}<AppIcon name="chev" :size="14" /></button></view>
+      <button tabindex="0" role="button" v-if="store.practice && !exercise" class="yx-button v2-b2p-btn v2-b2p-submit btn" type="button" @click="openReport">{{ b10T('practice.complete') }}<AppIcon name="chev" :size="14" /></button>
+      <text v-if="store.practice && !exercise && !showPracticeReward()" data-reward-hidden class="v2-b2p-d d">本次练习已完成。</text>
+      <MobileFeatureGrid />
     </view>
-
-    <view v-else-if="store.practiceStatus === 'loading'" class="yx-card b10-empty"><text>{{ b10T('practice.loading') }}</text></view>
-    <view v-else class="yx-card b10-empty"><text class="b10-empty__title">{{ store.practiceStatus === 'empty' ? b10T('practice.empty') : b10T('status.error') }}</text><text>{{ store.practiceMessage ?? b10T('status.noSample') }}</text><button tabindex="0" role="button" class="yx-button" type="button" @click="load">{{ b10T('status.retry') }}</button></view>
-    <button tabindex="0" role="button" v-if="store.practice && !exercise" class="yx-button" type="button" @click="openReport">{{ b10T('practice.complete') }}</button>
-    <text v-if="store.practice && !exercise && !showPracticeReward()" data-reward-hidden>本次练习已完成。</text>
-    <MobileFeatureGrid />
   </view>
 </template>
 
