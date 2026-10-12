@@ -1,7 +1,7 @@
 /* 学员 Web 桌面端精修：独立布局质感，不改信息架构 */
 .desktop-sidebar{box-shadow:8px 0 32px #00000018}
 .desktop-brand strong{letter-spacing:.08em}
-.brand-mark{background:linear-gradient(135deg,#6c4dbb,#49319a);border:0!important;box-shadow:0 6px 16px #0006;font-size:20px!important}
+.brand-mark{background:var(--brand);border:0!important;box-shadow:0 6px 16px #0006;font-size:20px!important;color:var(--inverse)}
 .desktop-search{transition:border-color var(--motion-base) var(--ease),background-color var(--motion-base) var(--ease)}
 .desktop-search:hover{background:#ffffff12;border-color:#ffffff55}
 .desktop-nav-item{transition:background-color var(--motion-base) var(--ease),color var(--motion-base) var(--ease),transform var(--motion-fast) var(--ease)}

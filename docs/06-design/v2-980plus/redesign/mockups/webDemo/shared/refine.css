@@ -88,3 +88,5 @@ input[type=checkbox],input[type=radio]{accent-color:var(--brand);width:18px;heig
 .button.danger:hover:not(:disabled){box-shadow:0 0 0 1px var(--abad,var(--bad)) inset}
 .button:active:not(:disabled){transform:scale(.97)}
 .button:focus-visible{box-shadow:var(--ring);outline:none}
+
+.toast:not(.show){animation:none!important;opacity:0;pointer-events:none}
