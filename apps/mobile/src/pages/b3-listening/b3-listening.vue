@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AppIcon from '../../components/AppIcon.vue'
 import MobilePageHeader from '../../components/MobilePageHeader.vue'
 import { useMobileExperience } from '../../platform/experience'
 const { experienceStyle, experienceMotion } = useMobileExperience()
@@ -28,21 +29,24 @@ onUnmounted(() => { audio.value?.destroy(); unsubscribe(); engine.dispose() })
 <template>
   <view class="yx-page" :style="experienceStyle" :data-motion="experienceMotion">
     <MobilePageHeader page="b3-listening" />
-    <view class="yx-card" data-closed-practice role="status"><text>听力功能暂未开放，可以先做其他练习。</text><button type="button" data-closed-back @click="getUniRuntime().navigateTo({ url: '/pages/today/today' })">回到可用学习</button></view>
+    <view class="v2-b3listen-body">
+      <view class="yx-card card v2-b3listen-card" data-closed-practice role="status"><view class="eyebrow v2-b3listen-eyebrow"><AppIcon name="lock" :size="14" /><text>听力</text></view><text class="v2-b3listen-title v2-b3listen-h2">听力功能暂未开放，可以先做其他练习。</text><button type="button" class="btn v2-b3listen-btn" data-closed-back @click="getUniRuntime().navigateTo({ url: '/pages/today/today' })"><AppIcon name="back" :size="14" />回到可用学习</button></view>
 
-    <B2StatusPanel :status="status" :message="message" :performance-level="performanceLevel" @retry="load" @performance="setPerformance" @sync="() => undefined" />
-    <view v-if="material && segment" class="yx-card listening-card">
-      <text class="card-kicker">{{ material.title }} · {{ Math.round(material.durationMs / 1000) }}s</text>
-      <view class="waveform"><view v-for="bar in 24" :key="bar" class="bar" :style="{ height: `${24 + (bar % 7) * 7}rpx` }"></view></view>
-      <text class="segment-time">{{ segment.startMs }}ms — {{ segment.endMs }}ms</text>
-      <view class="audio-controls"><button tabindex="0" role="button" class="small-button" type="button" :disabled="!audioSource" @click="playAudio">播放</button><button tabindex="0" role="button" class="small-button" type="button" :disabled="!audioSource" @click="pauseAudio">暂停</button><picker mode="selector" :range="PLAYBACK_RATES" @change="playbackRate = PLAYBACK_RATES[Number($event.detail.value)] ?? 1; changeRate()"><view class="small-button">{{ playbackRate }}x</view></picker></view>
-      <text class="hint">{{ audioSource ? '已获得授权播放地址；速度控制使用原生音频适配层。' : '当前内容没有授权播放地址；波形、时间轴和听写可检查，但不会伪造播放。' }}</text>
-      <view class="token-list"><view v-for="token in segment.tokens" :key="token.tokenId" class="token"><text>{{ token.text }}</text><text class="token__time">{{ token.startMs }}–{{ token.endMs }}ms</text></view></view>
-      <input v-model="answer" class="answer" placeholder="输入你听到的句子" confirm-type="done" />
-      <button tabindex="0" role="button" class="yx-button" type="button" @click="submit">提交听写</button>
-      <view v-if="result" class="result"><text>得分 {{ result.score }}</text><text>{{ result.feedbackCodes.join(' · ') || '已记录' }}</text></view>
+      <B2StatusPanel class="v2-b3listen-status" :status="status" :message="message" :performance-level="performanceLevel" @retry="load" @performance="setPerformance" @sync="() => undefined" />
+      <view v-if="material && segment" class="yx-card listening-card card v2-b3listen-card">
+        <view class="eyebrow v2-b3listen-eyebrow"><AppIcon name="activity" :size="14" /><text>听力材料</text></view>
+        <view class="v2-b3listen-head"><view class="v2-b3listen-titles"><text class="card-kicker v2-b3listen-kicker">{{ material.title }} · {{ Math.round(material.durationMs / 1000) }}s</text><text class="v2-b3listen-title v2-b3listen-h2">{{ material.title }}</text></view></view>
+        <view class="waveform v2-b3listen-wave"><view v-for="bar in 24" :key="bar" class="bar v2-b3listen-bar" :style="{ height: `${24 + (bar % 7) * 7}rpx` }"></view></view>
+        <text class="segment-time d v2-b3listen-d v2-b3listen-meta">{{ segment.startMs }}ms — {{ segment.endMs }}ms</text>
+        <view class="audio-controls v2-b3listen-controls v2-b3listen-row"><button tabindex="0" role="button" class="small-button btn opt v2-b3listen-btn v2-b3listen-opt v2-b3listen-tool" type="button" :disabled="!audioSource" @click="playAudio"><AppIcon name="activity" :size="14" />播放</button><button tabindex="0" role="button" class="small-button btn opt v2-b3listen-btn v2-b3listen-opt v2-b3listen-tool" type="button" :disabled="!audioSource" @click="pauseAudio">暂停</button><picker class="v2-b3listen-picker" mode="selector" :range="PLAYBACK_RATES" @change="playbackRate = PLAYBACK_RATES[Number($event.detail.value)] ?? 1; changeRate()"><view class="small-button btn opt v2-b3listen-btn v2-b3listen-opt v2-b3listen-tool"><AppIcon name="clock" :size="14" />{{ playbackRate }}x</view></picker></view>
+        <text class="hint d v2-b3listen-d">{{ audioSource ? '已获得授权播放地址；速度控制使用原生音频适配层。' : '当前内容没有授权播放地址；波形、时间轴和听写可检查，但不会伪造播放。' }}</text>
+        <view class="token-list v2-b3listen-list"><view v-for="token in segment.tokens" :key="token.tokenId" class="token v2-b3listen-row"><AppIcon name="list" :size="14" /><text class="v2-b3listen-stem">{{ token.text }}</text><text class="token__time d v2-b3listen-d v2-b3listen-time">{{ token.startMs }}–{{ token.endMs }}ms</text></view></view>
+        <input v-model="answer" class="answer v2-b3listen-input" placeholder="输入你听到的句子" confirm-type="done" />
+        <button tabindex="0" role="button" class="yx-button btn v2-b3listen-btn v2-b3listen-opt v2-b3listen-submit" type="button" @click="submit"><AppIcon name="check" :size="14" />提交听写</button>
+        <view v-if="result" class="result fb v2-b3listen-fb"><text class="d v2-b3listen-d">得分 {{ result.score }}</text><text class="d v2-b3listen-d">{{ result.feedbackCodes.join(' · ') || '已记录' }}</text></view>
+      </view>
+      <view v-else-if="status !== 'loading'" class="yx-card empty card v2-b3listen-card"><view class="eyebrow v2-b3listen-eyebrow"><AppIcon name="inbox" :size="14" /><text>暂无材料</text></view><text class="v2-b3listen-title v2-b3listen-h2">暂时没有可用的授权听力材料。</text><button tabindex="0" role="button" class="yx-button btn v2-b3listen-btn v2-b3listen-opt v2-b3listen-submit" type="button" @click="load"><AppIcon name="refresh" :size="14" />重新读取</button></view>
     </view>
-    <view v-else-if="status !== 'loading'" class="yx-card empty"><text>暂时没有可用的授权听力材料。</text><button tabindex="0" role="button" class="yx-button" type="button" @click="load">重新读取</button></view>
   </view>
 </template>
 
