@@ -991,3 +991,21 @@
   justify-content: flex-end;
   margin-top: 14px;
 }
+
+/* === page: vocab === */
+.lexeme-filters {
+  width: 100%;
+  padding: 12px;
+  background: var(--v2-surface);
+  border-radius: var(--v2-radius-md);
+  margin-bottom: 14px;
+}
+.lexeme-library .el-table td:first-child .cell {
+  font-weight: 700;
+  color: var(--v2-ink);
+}
+.lexeme-library .card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}

@@ -479,8 +479,9 @@ onMounted(() => {
       </el-space></AdminPageIntro
     >
 
-    <el-card shadow="never">
-      <el-space wrap>
+    <el-card shadow="never" class="lexeme-library">
+      <template #header><div class="card-header"><span>词汇库</span><el-tag>{{ rows.length }} 条</el-tag></div></template>
+      <el-space wrap class="lexeme-filters">
         <el-input
           v-model="q"
           placeholder="搜索单词"
