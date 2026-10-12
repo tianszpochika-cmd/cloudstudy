@@ -50,6 +50,10 @@ function reviewLabel(item: MobileB18ReviewQueueItem): string {
   const stage = ({ NEW: '初学', LEARNING: '巩固中', REVIEW: '待复习', MASTERED: '已掌握' } as Record<string, string>)[item.state]
   return source === '复习' && stage === '待复习' ? source : [source, stage].filter(Boolean).join(' · ')
 }
+const stageText = { NEW: '初学', LEARNING: '巩固中', REVIEW: '待复习', MASTERED: '已掌握' } as Record<string, string>
+function stageLabel(state: string): string {
+  return stageText[state] ?? '复习中'
+}
 function hashContentCode(): string {
   if (typeof window === 'undefined') return ''
   const hash = window.location.hash
@@ -135,7 +139,7 @@ onShow(async () => { await session.restore(); if (!session.isAuthenticated) { ge
         <text v-if="learning.state === 'idle' || learning.state === 'loading'" class="d v2-learn-desc v2-learn-fb" role="status">正在读取复习安排…</text>
         <text v-else-if="learning.state === 'empty'" class="d v2-learn-desc v2-learn-fb">暂无待复习内容。</text>
         <text class="d v2-learn-desc v2-learn-fb v2-learn-internal" data-stage-projection>{{ learning.projectionVersion || STAGE_PROJECTION }}</text>
-        <text v-if="learning.queue[0]" class="d v2-learn-desc" data-stage>{{ learning.queue[0].state }}</text>
+        <text v-if="learning.queue[0]" class="d v2-learn-desc" data-stage>{{ stageLabel(learning.queue[0].state) }}</text>
         <text v-if="learning.queue.length === 0 && learning.state !== 'loading'" class="d v2-learn-desc v2-learn-fb" data-review-empty>{{ learning.emptyCopy || reviewEmpty(learning.state === 'error' || learning.state === 'offline', true, false).copy }}</text>
         <text v-for="row in learning.history" :key="`${row.disposition}-${row.itemId}`" class="d v2-learn-desc v2-learn-row" data-review-history>{{ row.disposition === 'DEFERRED' ? '延期' : '已完成' }}</text>
         <text v-if="reviewFailureCopy(learning.lastError)" class="d v2-learn-desc v2-learn-fb" data-review-illegal>{{ reviewFailureCopy(learning.lastError) }}</text>
