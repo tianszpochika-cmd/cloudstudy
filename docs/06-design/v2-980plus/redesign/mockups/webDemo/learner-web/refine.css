@@ -51,3 +51,24 @@
 :root[data-theme=dark] .desktop-main .study-nav .mode-button.is-active{background:#2a2540!important;color:#e4dcff!important}
 :root[data-theme=dark] .desktop-main input,:root[data-theme=dark] .desktop-main select{background:#181823!important;border-color:#ffffff1f!important}
 :root[data-theme=dark] .task-card:hover{border-color:#bcabff55}
+
+/* R2 批次 9：学员 Web 逐页精修 */
+/* 筛选/日期：桌面端为胶囊行，去掉移动端下划线指示 */
+.desktop-body .filter-grid{display:flex;flex-wrap:wrap;gap:8px}
+.desktop-body .filter-grid .mode-button,.desktop-body .day-picker .mode-button{flex:0 0 auto;min-width:72px;padding:8px 16px;min-height:38px;border-radius:999px}
+.desktop-body .mode-button.is-active::after{display:none}
+.desktop-body .day-picker{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;max-width:640px}
+.desktop-body .day-picker .mode-button{min-width:0;padding:8px 4px}
+.desktop-body .day-picker .mode-button.is-active::before{content:"✓ ";font-weight:700}
+/* 表单页：控件不过度拉伸 */
+.desktop-page--plan .desktop-body select,.desktop-page--onboard .desktop-body select,.desktop-page--plan .desktop-body input,.desktop-page--onboard .desktop-body input{max-width:420px}
+/* 图书：简介与目录并排 */
+.desktop-page--book .desktop-body>.card:first-child{grid-column:auto}
+.desktop-page--book .desktop-body>.card:first-child .btn{width:auto}
+/* 收藏：空状态居中通栏 */
+.desktop-page--collections .desktop-body>.card.empty{grid-column:1/-1;text-align:center;padding:48px 24px}
+.desktop-page--collections .desktop-body>.card.empty .btn{width:auto;margin:8px auto 0}
+/* 我的：三栏 */
+.desktop-page--me .desktop-body{grid-template-columns:repeat(3,minmax(0,1fr))}
+/* 周回顾、客服：长列表通栏 */
+.desktop-page--weekly .desktop-body>.card,.desktop-page--support .desktop-body>.card{grid-column:1/-1}
