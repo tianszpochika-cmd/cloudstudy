@@ -134,7 +134,7 @@ onShow(async () => { await session.restore(); if (!session.isAuthenticated) { ge
         <text v-else class="d v2-learn-desc" data-weakness-evidence>已有复习证据</text>
         <text v-if="learning.state === 'idle' || learning.state === 'loading'" class="d v2-learn-desc v2-learn-fb" role="status">正在读取复习安排…</text>
         <text v-else-if="learning.state === 'empty'" class="d v2-learn-desc v2-learn-fb">暂无待复习内容。</text>
-        <text class="d v2-learn-desc v2-learn-fb" data-stage-projection>{{ learning.projectionVersion || STAGE_PROJECTION }}</text>
+        <text class="d v2-learn-desc v2-learn-fb v2-learn-internal" data-stage-projection>{{ learning.projectionVersion || STAGE_PROJECTION }}</text>
         <text v-if="learning.queue[0]" class="d v2-learn-desc" data-stage>{{ learning.queue[0].state }}</text>
         <text v-if="learning.queue.length === 0 && learning.state !== 'loading'" class="d v2-learn-desc v2-learn-fb" data-review-empty>{{ learning.emptyCopy || reviewEmpty(learning.state === 'error' || learning.state === 'offline', true, false).copy }}</text>
         <text v-for="row in learning.history" :key="`${row.disposition}-${row.itemId}`" class="d v2-learn-desc v2-learn-row" data-review-history>{{ row.disposition === 'DEFERRED' ? '延期' : '已完成' }}</text>
@@ -183,4 +183,5 @@ onShow(async () => { await session.restore(); if (!session.isAuthenticated) { ge
 .v2-learn-opt:disabled{background:var(--v2-surface);color:var(--v2-mut);border:1px dashed var(--v2-line);box-shadow:none}
 .v2-learn-submit{border-color:transparent;background:var(--v2-brand);color:var(--v2-inverse);font-family:var(--v2-font);font-weight:700}
 .v2-learn-submit:hover{border-color:var(--v2-brand)}
+.v2-learn-internal{display:none !important;}
 </style>
