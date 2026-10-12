@@ -282,3 +282,122 @@
   line-height: 1.6;
   color: var(--v2-mut);
 }
+
+/* === page: dashboard === */
+.dashboard-hero {
+  overflow: visible;
+  background: transparent;
+  color: var(--v2-ink);
+  padding: 0;
+  box-shadow: none;
+  min-height: 0;
+  border: 0;
+}
+.dashboard-hero small {
+  display: block;
+  margin: 0 0 6px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--v2-mut);
+}
+.dashboard-hero h2 {
+  margin: 0 0 6px;
+  font-size: 26px;
+  font-weight: 750;
+  letter-spacing: -0.03em;
+  color: var(--v2-ink);
+}
+.dashboard-hero p {
+  margin: 0;
+  color: var(--v2-mut);
+}
+.dashboard-hero-art {
+  display: none;
+}
+.dashboard-metrics {
+  gap: 14px;
+}
+.view-stack .el-card {
+  background: var(--v2-card) !important;
+  border: 1px solid var(--v2-line) !important;
+  border-radius: 16px !important;
+  box-shadow: var(--v2-elev-1) !important;
+}
+.view-stack .el-card__header {
+  border-bottom-color: var(--v2-line) !important;
+  color: var(--v2-ink);
+}
+.view-stack .card-header {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--v2-ink);
+}
+.metric-card {
+  background: var(--v2-card) !important;
+  border: 1px solid var(--v2-line) !important;
+  border-radius: 16px !important;
+  box-shadow: var(--v2-elev-1) !important;
+  transition: box-shadow var(--v2-motion-base) var(--v2-ease), transform var(--v2-motion-fast) var(--v2-ease);
+}
+.metric-card:hover {
+  box-shadow: var(--v2-elev-2) !important;
+  transform: translateY(-1px);
+}
+.dashboard-metrics .metric-card .el-card__body {
+  padding: 16px 18px !important;
+}
+.metric-card span {
+  color: var(--v2-mut);
+}
+.metric-card strong {
+  font-size: 28px;
+  font-weight: 750;
+  color: var(--v2-ink);
+}
+.metric-card small {
+  color: var(--v2-mut);
+}
+.shortcut-card {
+  background: var(--v2-surface);
+  border: 1px solid var(--v2-line);
+  border-radius: var(--v2-radius-md);
+  color: var(--v2-ink);
+  transition: box-shadow var(--v2-motion-base) var(--v2-ease), border-color var(--v2-motion-base) var(--v2-ease);
+}
+.shortcut-card:hover {
+  border-color: var(--v2-brand);
+  box-shadow: var(--v2-elev-2);
+}
+.shortcut-card strong {
+  color: var(--v2-ink);
+}
+.shortcut-card small {
+  color: var(--v2-mut);
+}
+.shortcut-icon {
+  background: var(--v2-soft);
+  color: var(--v2-brand);
+}
+.journey-step {
+  border-bottom: 1px solid var(--v2-line);
+}
+.journey-step:last-child {
+  border-bottom: 0;
+}
+.journey-step b {
+  width: 26px;
+  height: 26px;
+  background: var(--v2-soft);
+  color: var(--v2-brand);
+}
+.journey-step span {
+  color: var(--v2-ink);
+}
+[data-dashboard-metric],
+[data-media-boundary],
+[data-b3-roster] {
+  font-size: 12px;
+  color: var(--v2-mut);
+}
