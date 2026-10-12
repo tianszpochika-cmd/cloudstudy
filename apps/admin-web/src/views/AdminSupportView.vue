@@ -155,6 +155,7 @@ onMounted(() => {
 
 <template>
   <div class="view-stack b18-support">
+    <div class="support-page">
     <AdminPageIntro
       ><el-button :loading="state === 'loading'" @click="load"
         >刷新</el-button
@@ -187,7 +188,7 @@ onMounted(() => {
       :closable="false"
       show-icon
     />
-    <el-card shadow="never"
+    <el-card shadow="never" class="support-list"
       ><div class="list-toolbar">
         <el-input
           v-model="query"
@@ -198,6 +199,7 @@ onMounted(() => {
           ui("total", { count: rows.length })
         }}</span>
       </div>
+      <template #header><div class="card-header"><span>客服工单</span><el-tag>{{ rows.length }} 条</el-tag></div></template>
       <el-skeleton v-if="state === 'loading'" :rows="4" animated />
       <el-table v-else-if="filtered.length && state === 'ready'" :data="visible" stripe>
         <el-table-column label="工单引用" min-width="180">
@@ -244,16 +246,17 @@ onMounted(() => {
       <el-alert v-else-if="detailState === 'error'" title="详情暂时不可用，请返回列表重试。" type="error" :closable="false" show-icon />
       <div v-else-if="detail" class="support-detail">
         <dl>
-          <div><dt>工单引用</dt><dd>{{ detail.ticketId }}</dd></div>
-          <div><dt>分类</dt><dd>{{ label(detail.categoryCode, categories) }}</dd></div>
-          <div><dt>优先级</dt><dd>{{ label(detail.priority, priorities) }}</dd></div>
-          <div><dt>状态</dt><dd>{{ label(detail.state, states) }}</dd></div>
-          <div><dt>时效</dt><dd>{{ label(detail.slaState, slaStates) }}</dd></div>
-          <div><dt>截止时间</dt><dd>{{ dateLabel(detail.slaDueAt) }}</dd></div>
+          <div class="detail-row"><dt>工单引用</dt><dd>{{ detail.ticketId }}</dd></div>
+          <div class="detail-row"><dt>分类</dt><dd>{{ label(detail.categoryCode, categories) }}</dd></div>
+          <div class="detail-row"><dt>优先级</dt><dd>{{ label(detail.priority, priorities) }}</dd></div>
+          <div class="detail-row"><dt>状态</dt><dd>{{ label(detail.state, states) }}</dd></div>
+          <div class="detail-row"><dt>时效</dt><dd>{{ label(detail.slaState, slaStates) }}</dd></div>
+          <div class="detail-row"><dt>截止时间</dt><dd>{{ dateLabel(detail.slaDueAt) }}</dd></div>
         </dl>
         <p>此历史工单仅保存脱敏元数据，问题内容不可查看。</p>
       </div>
     </el-dialog>
+    </div>
   </div>
 </template>
 
