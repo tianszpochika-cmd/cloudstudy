@@ -2740,7 +2740,7 @@ const QA_URL = process.env.STATIC_DEMO_URL || 'http://127.0.0.1:18283/webDemo/le
 
 // LAST_RUN_RESULT
 // {
-//   "at": "2026-10-12T07:20:48.062Z",
+//   "at": "2026-10-12T07:33:07.208Z",
 //   "url": "http://127.0.0.1:18283/webDemo/learner-web/",
 //   "surface": "learner-web",
 //   "viewport": 1440,
@@ -2982,7 +2982,7 @@ const QA_URL = process.env.STATIC_DEMO_URL || 'http://127.0.0.1:18283/webDemo/le
 //   ],
 //   "pageErrors": [],
 //   "externalRequests": [],
-//   "evidenceDir": "/workspace/cs/.git/codex-local-backups/desktop-qa-1791789648065-1440",
+//   "evidenceDir": "/workspace/cs/.git/codex-local-backups/desktop-qa-1791790387211-1440",
 //   "loadedScripts": [
 //     "../shared/data.js",
 //     "../mobile/app.js",

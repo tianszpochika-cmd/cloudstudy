@@ -143,3 +143,16 @@
 /* 订单/退款卡：价格徽标与操作对齐 */
 #view .card h2 .tag{vertical-align:middle;margin-left:6px}
 .word-actions .btn{box-shadow:none!important}
+
+/* —— R2·B6：其余移动端通用修整 —— */
+/* 筛选按钮组：按内容流式换行，避免 3+1 孤行 */
+.filter-grid{display:flex!important;flex-wrap:wrap;gap:8px}
+.filter-grid>.mode-button,.filter-grid>.opt,.filter-grid>.btn{flex:1 1 auto;min-width:64px;padding-left:12px;padding-right:12px}
+.filter-grid>label,.filter-grid>.lb,.filter-grid>select,.filter-grid>input{flex:1 1 100%}
+/* 禁用主按钮：中性底而非灰紫，避免“看起来能点” */
+.btn:disabled,.btn[disabled]{background:var(--surface)!important;color:var(--mut)!important;border:1px dashed var(--line)!important;box-shadow:none!important;filter:none!important;opacity:1}
+/* 消息/工单卡片标题行 */
+#view .card h2+.tag,#view .card h3+.tag{margin-bottom:8px}
+/* 字母/音标按钮网格对齐 */
+#view .actions>.btn.sm{min-width:44px}
+#view .card>h2,#view .card>h3{white-space:normal;overflow-wrap:anywhere}

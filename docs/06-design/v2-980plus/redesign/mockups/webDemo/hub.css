@@ -13,3 +13,12 @@
 .hub-guide ol{counter-reset:hub;list-style:none;padding:0}
 .hub-guide li{position:relative;padding-left:36px;margin:12px 0}
 .hub-guide li::before{counter-increment:hub;content:counter(hub);position:absolute;left:0;top:0;width:24px;height:24px;border-radius:50%;background:var(--soft);color:var(--brand);display:grid;place-items:center;font-size:12px;font-weight:700}
+
+/* refine R2: hub dark mode */
+:root[data-theme=dark] body{background:radial-gradient(1200px 600px at 15% -10%,#2a2150 0,transparent 60%),radial-gradient(900px 500px at 100% 0,#1d2a4a55 0,transparent 60%),var(--bg)}
+:root[data-theme=dark] .hub-card{background:#1c1b28;border-color:#ffffff14;box-shadow:inset 0 1px 0 #ffffff0d,0 12px 36px #00000059}
+:root[data-theme=dark] .hub-card:hover{border-color:#bcabff59;box-shadow:inset 0 1px 0 #ffffff12,0 22px 56px #00000080}
+:root[data-theme=dark] .hub-preview{background:radial-gradient(circle at 50% 120%,#5a46a066 0,transparent 65%),#16151f}
+:root[data-theme=dark] .hub-guide{background:#1c1b28;border-color:#ffffff14;box-shadow:inset 0 1px 0 #ffffff0d}
+:root[data-theme=dark] .hub-guide li::before{background:#2e2850;color:#d8ccff}
+:root[data-theme=dark] #hub-theme{background:#2a2540;color:#e4dcff;border-color:#ffffff1f}
