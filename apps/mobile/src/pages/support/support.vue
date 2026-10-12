@@ -5,13 +5,14 @@ import { useMobileExperience } from '../../platform/experience'
 const { experienceStyle, experienceMotion } = useMobileExperience()
 
 import { onShow } from '@dcloudio/uni-app'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { ensureMobilePageAccess } from '../../auth/navigation'
 import {
   loadMobileSupportDesk,
   type MobileSupportTicket,
 } from '../../api/support'
 import { supportNotice, ticketNotice, type ClosureBoard } from '../../domain/it7-closure'
+import { b10ThemeMode } from '../../platform/b10-foundation'
 
 const tickets = ref<MobileSupportTicket[]>([])
 const closure = ref<ClosureBoard | null>(null)
@@ -25,6 +26,7 @@ const stateNames: Record<string, string> = {
   OPEN: '已提交', ACKNOWLEDGED: '已受理', IN_PROGRESS: '处理中',
   WAITING_CUSTOMER: '等待补充', RESOLVED: '已解决', CLOSED: '已关闭',
 }
+const themeClass = computed(() => `b10-theme--${b10ThemeMode.value}`)
 
 async function load(): Promise<void> {
   loading.value = true
@@ -45,7 +47,7 @@ onShow(async () => { if (await ensureMobilePageAccess('/pages/support/support'))
 </script>
 
 <template>
-  <view class="yx-page v2-support-page" :style="experienceStyle" :data-motion="experienceMotion">
+  <view class="yx-page v2-support-page" :style="experienceStyle" :data-motion="experienceMotion" :class="themeClass">
 
     <MobilePageHeader page="support" />
 
