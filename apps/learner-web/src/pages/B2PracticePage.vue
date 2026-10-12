@@ -59,7 +59,7 @@ onMounted(() => { void load() })
 </script>
 
 <template>
-  <section class="real-practice-page" aria-labelledby="practice-title">
+  <section class="real-practice-page v2-page v2-page--practice" aria-labelledby="practice-title">
     <ExperienceHeader page="Practice" icon="check" title-id="practice-title" />
 
     <section v-if="isCompleted && report" class="result-panel" aria-live="polite">
