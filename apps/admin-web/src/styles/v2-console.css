@@ -1292,3 +1292,39 @@
   justify-content: flex-end;
   margin-top: 14px;
 }
+
+/* === page: recovery === */
+.recovery-page {
+  display: grid;
+  gap: 24px;
+  min-width: 0;
+}
+.recovery-page > * {
+  min-width: 0;
+}
+.recovery-page .recovery-current .detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--v2-line);
+}
+.recovery-page .recovery-current .detail-row dt {
+  font-size: 12px;
+  color: var(--v2-mut);
+}
+.recovery-page .recovery-current .detail-row dd {
+  color: var(--v2-ink);
+  font-weight: 600;
+  text-align: right;
+}
+.recovery-page .recovery-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 14px;
+}
+.recovery-page .recovery-list .el-table td:first-child .cell {
+  font-weight: 700;
+  color: var(--v2-ink);
+}
