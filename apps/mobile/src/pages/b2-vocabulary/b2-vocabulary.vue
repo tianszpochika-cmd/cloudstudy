@@ -40,33 +40,35 @@ onUnmounted(() => engine.dispose())
   <view class="yx-page" :class="themeClass" :style="experienceStyle" :data-motion="experienceMotion">
     <MobilePageHeader page="b2-vocabulary" />
 
-    <B10StatusPanel :status="store.status" :message="store.message" :queue-count="store.srsQueueCount" :performance-level="performanceLevel" @retry="load" @sync="store.syncSrs" @performance="setPerformance" />
+    <view class="v2-vocab-body">
+      <B10StatusPanel class="v2-vocab-progress" :status="store.status" :message="store.message" :queue-count="store.srsQueueCount" :performance-level="performanceLevel" @retry="load" @sync="store.syncSrs" @performance="setPerformance" />
 
-    <view v-if="store.currentCard" class="yx-card b10-vocab-card">
-      <view class="b10-vocab-card__meta"><text>{{ store.currentCard.sourceReason }}</text><text v-if="store.currentCard.masteryStatus">{{ store.currentCard.masteryStatus }}</text></view>
-      <text class="b10-vocab-card__word">{{ store.currentCard.title }}</text>
-      <text v-if="store.currentCard.phonetic" class="b10-vocab-card__phonetic">{{ store.currentCard.phonetic }}</text>
-      <button v-if="vocabPlayable(store.currentCard.audioUrl)" type="button" data-vocab-play @click="playAudio">播放</button>
-      <text v-else data-vocab-silent>没有发音，不能播放。</text>
-      <text v-if="store.currentCard.hint && !store.currentCard.revealed" class="b10-vocab-card__hint">{{ store.currentCard.hint }}</text>
-      <text v-if="!store.currentCard.revealed" class="b10-vocab-card__privacy">正面不展示释义、例句或标准答案。</text>
-      <button tabindex="0" role="button" v-if="!store.currentCard.revealed" class="yx-button" type="button" :disabled="store.status === 'loading'" @click="reveal">{{ store.status === 'loading' ? b10T('vocab.revealing') : b10T('vocab.reveal') }}</button>
-      <view v-else class="b10-vocab-card__back">
-        <text class="b10-vocab-card__meaning">{{ store.currentCard.meaningCn ?? b10T('vocab.noAnswer') }}</text>
-        <text v-if="store.currentCard.definitionEn" class="b10-vocab-card__definition">{{ store.currentCard.definitionEn }}</text>
-        <view v-if="store.currentCard.examples.length" class="b10-vocab-card__examples"><text v-for="example in store.currentCard.examples" :key="example">{{ example }}</text></view>
-        <text v-if="store.currentCard.dueLocalDate" class="b10-vocab-card__due">{{ b10T('vocab.due') }}：{{ store.currentCard.dueLocalDate }}</text>
-        <text class="b10-vocab-card__label">{{ b10T('vocab.rate') }}</text>
-        <view class="b10-vocab-card__ratings"><button tabindex="0" role="button" v-for="option in ratingOptions" :key="option.value" class="b10-rating" type="button" :disabled="store.currentCard.reviewStatus !== 'PENDING'" @click="rate(option.value)">{{ option.value }} · {{ option.label }}</button></view>
+      <view v-if="store.currentCard" class="yx-card b10-vocab-card v2-vocab-card">
+        <view class="b10-vocab-card__meta v2-vocab-meta"><text class="v2-vocab-source">{{ store.currentCard.sourceReason }}</text><text v-if="store.currentCard.masteryStatus" class="v2-vocab-mastery">{{ store.currentCard.masteryStatus }}</text></view>
+        <text class="b10-vocab-card__word v2-vocab-word">{{ store.currentCard.title }}</text>
+        <text v-if="store.currentCard.phonetic" class="b10-vocab-card__phonetic v2-vocab-phonetic">{{ store.currentCard.phonetic }}</text>
+        <button v-if="vocabPlayable(store.currentCard.audioUrl)" class="v2-vocab-play" type="button" data-vocab-play @click="playAudio">播放</button>
+        <text v-else class="v2-vocab-silent" data-vocab-silent>没有发音，不能播放。</text>
+        <text v-if="store.currentCard.hint && !store.currentCard.revealed" class="b10-vocab-card__hint v2-vocab-hint">{{ store.currentCard.hint }}</text>
+        <text v-if="!store.currentCard.revealed" class="b10-vocab-card__privacy v2-vocab-privacy">正面不展示释义、例句或标准答案。</text>
+        <button tabindex="0" role="button" v-if="!store.currentCard.revealed" class="yx-button v2-vocab-reveal" type="button" :disabled="store.status === 'loading'" @click="reveal">{{ store.status === 'loading' ? b10T('vocab.revealing') : b10T('vocab.reveal') }}</button>
+        <view v-else class="b10-vocab-card__back v2-vocab-back">
+          <text class="b10-vocab-card__meaning v2-vocab-meaning">{{ store.currentCard.meaningCn ?? b10T('vocab.noAnswer') }}</text>
+          <text v-if="store.currentCard.definitionEn" class="b10-vocab-card__definition v2-vocab-definition">{{ store.currentCard.definitionEn }}</text>
+          <view v-if="store.currentCard.examples.length" class="b10-vocab-card__examples v2-vocab-examples"><text v-for="example in store.currentCard.examples" :key="example" class="v2-vocab-example">{{ example }}</text></view>
+          <text v-if="store.currentCard.dueLocalDate" class="b10-vocab-card__due v2-vocab-due">{{ b10T('vocab.due') }}：{{ store.currentCard.dueLocalDate }}</text>
+          <text class="b10-vocab-card__label v2-vocab-rate-label">{{ b10T('vocab.rate') }}</text>
+          <view class="b10-vocab-card__ratings v2-vocab-ratings"><button tabindex="0" role="button" v-for="option in ratingOptions" :key="option.value" class="b10-rating v2-vocab-rate" type="button" :disabled="store.currentCard.reviewStatus !== 'PENDING'" @click="rate(option.value)">{{ option.value }} · {{ option.label }}</button></view>
+        </view>
       </view>
-    </view>
 
-    <view v-else-if="completed" class="yx-card b10-empty"><text class="b10-empty__title">今日复习已完成</text><text>本批次的复习事件已逐条获得服务端确认；若有待同步项，状态栏会保留队列。</text><button tabindex="0" role="button" class="yx-button" type="button" @click="load">刷新复习队列</button></view>
-    <view v-else-if="store.status === 'idle'" class="yx-card b10-empty"><text class="b10-empty__title">等待读取词汇批次</text><text>身份与页面初始化完成后，将从学习服务读取当前复习队列。</text></view>
-    <view v-else-if="store.status === 'loading'" class="yx-card b10-empty"><text>{{ b10T('status.loading') }}</text></view>
-    <view v-else-if="store.status === 'empty'" class="yx-card b10-empty"><text class="b10-empty__title">{{ b10T('vocab.empty') }}</text><text>{{ store.message ?? b10T('status.noSample') }}</text><button tabindex="0" role="button" class="yx-button" type="button" @click="load">{{ b10T('status.retry') }}</button></view>
-    <view v-else class="yx-card b10-empty"><text class="b10-empty__title">词汇批次暂时不可用</text><text>{{ store.message ?? '请根据上方状态重试；未确认的复习不会被显示为已完成。' }}</text><button tabindex="0" role="button" class="yx-button" type="button" @click="load">{{ b10T('status.retry') }}</button></view>
-    <view class="b10-links"><button tabindex="0" role="button" class="yx-button yx-button--secondary" type="button" @click="open('/pages/assessment/assessment')">基础练习</button><button tabindex="0" role="button" class="yx-button yx-button--secondary" type="button" @click="open('/pages/b10-report/b10-report')">错题与报告</button></view>
+      <view v-else-if="completed" class="yx-card b10-empty v2-vocab-card v2-vocab-done"><text class="b10-empty__title v2-vocab-done-title">今日复习已完成</text><text class="v2-vocab-done-desc">本批次的复习事件已逐条获得服务端确认；若有待同步项，状态栏会保留队列。</text><button tabindex="0" role="button" class="yx-button v2-vocab-retry" type="button" @click="load">刷新复习队列</button></view>
+      <view v-else-if="store.status === 'idle'" class="yx-card b10-empty v2-vocab-card v2-vocab-empty"><text class="b10-empty__title v2-vocab-empty-title">等待读取词汇批次</text><text class="v2-vocab-empty-desc">身份与页面初始化完成后，将从学习服务读取当前复习队列。</text></view>
+      <view v-else-if="store.status === 'loading'" class="yx-card b10-empty v2-vocab-card v2-vocab-empty"><text class="v2-vocab-empty-desc">{{ b10T('status.loading') }}</text></view>
+      <view v-else-if="store.status === 'empty'" class="yx-card b10-empty v2-vocab-card v2-vocab-empty"><text class="b10-empty__title v2-vocab-empty-title">{{ b10T('vocab.empty') }}</text><text class="v2-vocab-empty-desc">{{ store.message ?? b10T('status.noSample') }}</text><button tabindex="0" role="button" class="yx-button v2-vocab-retry" type="button" @click="load">{{ b10T('status.retry') }}</button></view>
+      <view v-else class="yx-card b10-empty v2-vocab-card v2-vocab-empty"><text class="b10-empty__title v2-vocab-empty-title">词汇批次暂时不可用</text><text class="v2-vocab-empty-desc">{{ store.message ?? '请根据上方状态重试；未确认的复习不会被显示为已完成。' }}</text><button tabindex="0" role="button" class="yx-button v2-vocab-retry" type="button" @click="load">{{ b10T('status.retry') }}</button></view>
+      <view class="b10-links v2-vocab-links"><button tabindex="0" role="button" class="yx-button yx-button--secondary v2-vocab-link" type="button" @click="open('/pages/assessment/assessment')">基础练习</button><button tabindex="0" role="button" class="yx-button yx-button--secondary v2-vocab-link" type="button" @click="open('/pages/b10-report/b10-report')">错题与报告</button></view>
+    </view>
   </view>
 </template>
 
